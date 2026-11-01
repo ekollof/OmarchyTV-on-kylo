@@ -270,6 +270,28 @@ renderItems; row positions from `getRowPosition`). The scale part (mask
 transforms inside `SVGTextBox::renderBackground`, `+0x1c4` writer, FA
 animation target) remains open — still no implementation.
 
+## Text-rect scale mechanism (SVGTextBox::renderBackground, +0x1b4==1 branch)
+
+Row textboxes (created with line count 1) take the first branch: background
+slices via `MaskPositioningTransform` (alignments 1/2), the middle slice via
+`HorizontalMaskScaleTransform`, then a rect looked up by widget-standard-name
+is width-rescaled in place:
+
+```
+x1' = x0 + (surfaceW / maskW) * rectW
+```
+
+with `surfaceW/maskW` as doubles (`VectorSignedToFloat`, round-half-away
+`in_fpscr` mode) — the same ratio `HorizontalMaskScaleTransform::getMask`
+stores (`scale = surfaceW/maskW`, 0 when surfaceW<1). So a text rect keeps
+its x0 and stretches horizontally with the surface. Translation comes from
+the mask alignment + row offset; the looked-up rect's standard-name ID is
+register-held (not visible in decompile) — the exact per-widget rect IDs
+(textPos vs slice) are still unmapped. Resolved literals in this file:
+`DAT_010c607c` → `addition` (stored text-rect source on one path); the
+`DAT_010c6xx` canary-looking slots are not strings — do not read them as
+literals.
+
 ## Still open (no implementation)
 
 Do not implement value/tab/slider-graphics/title/focused labels from the fits.

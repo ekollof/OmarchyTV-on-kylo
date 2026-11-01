@@ -403,11 +403,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       from setSlideValue formatting into the +0x1ca8 value textbox; type-2
       values via the selection box. Row rect literals are resolved
       (text1/labelLong/button/image1/image2/selectionbox + alexa presence
-      test); each widget rect = resource rect + row offset. +0x1c4's row
-      writer, mask-transform scale, per-widget line counts/types and FA
-      animation geometry are still undecoded, so title/tab/slider-graphics/
-      focused text must not be built from the capture fits. Do not guess
-      FA/FI slider/button graphics.
+      test); each widget rect = resource rect + row offset. Single-line text
+      width scale is x1' = x0 + (surfaceW/maskW)*rectW. Per-widget rect IDs,
+      +0x1c4's row writer, mask alignment mapping and FA animation geometry
+      are still undecoded, so title/tab/slider-graphics/focused text must not
+      be built from the capture fits. Do not guess FA/FI slider/button
+      graphics.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on
