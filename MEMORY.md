@@ -888,6 +888,30 @@ source-screen sha256 8f34f218...; fb1 restored, staging removed. Still open:
 control-plane fallback loading when the selected skin fails and the real
 OmarchyTV screens; the vendor skin remains the fallback.
 
+SETTINGS-SCREEN-2026-11-01: p0/03 ("Beeld") is the SubLauncherDialog picture-
+settings overlay, not a generic settings list. SubLauncherDialog::
+initialiseFields (0xee3615) dispatches item type 2 to
+initialisePictureSettingsShortcuts (0xee0ed0); that function builds the top
+SettingItems and the category shortcuts. Resources: DialogSubLauncher.svg (189)
+listBox (189,255,1774,222); DialogSettings_fullscreen.svg (177) and
+DialogSettings.svg (175) are vertical panels with listBox (16/20,170/171,750,
+826/895), bottomText, warningText; DialogSettings_tab.svg (179)
+main_rectangle (0,162,780,918), listBox (20,170,750,826), dolbyVisionIcon;
+DialogTabMenu.svg (191) tabs picture/sound/network/installation/system at
+x=11,163,316,467,619, y=104,150x58, dialogTitle (57,5,634,90), glyph
+(38,24,60,60). SettingHorizontalListBoxFA (467): selectionIndicator
+(0,0,240,140), rowPos/mRowM (278,90,170,106), mRowL/R (225/329,90,10,140);
+SettingHorizontalListBoxRowFA (471): mRowL/M/R (0/50/202,0,50/151/50,155).
+SettingListBoxFA (475): rowPos/mRowM (244,178,75,70), mTop/mBot pieces;
+SettingListBoxRowFA (479): mRowL/M/R (18/54/178,61,33/120/33,66) #FE9419.
+SettingsDialog::createSettingsList (0xd5692d) creates the list from the
+dialog's "listBox" description; setListBoxHorizontal (0xd56ebd) calls
+SVGListBoxBase::makeHorizontalListBox. Still undecoded: the
+SettingItemsListBox/SettingHorizontalListBox row template and item geometry
+(p0/03's category row at y=461 implies the dialog is offset by about 206), the
+per-category item lists/labels, and the exact selection chrome. No screen code
+was written; a static/guessed Beeld screen was not shipped.
+
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
 Vendor animations, transitions and UI/UX effects are included, not yet accepted.
