@@ -232,6 +232,18 @@ coalescing), not the recovered arithmetic. Resolve with frame-level panel
 evidence (camera capture or a step-hold) before changing the transform sign;
 do not invert the recovered vendor rule.
 
+DIALOG-DIRECTION-MEASURED-2026-11-01: the GPU window path was measured on real
+fb1 at held endpoints with a new probe diagnostic (first non-black row):
+identity top=0, type-4 p=0.5 top=45, p=1 top=0. That is exactly the recovered
+rule (dy = -(1-0.5)/6 clip = 1080/24 = 45 px): the surface starts lower and
+slides up, and p=0 is fully transparent because the shader multiplies alpha by
+progress, so an endpoint readback at 0 shows black. The transform arithmetic and
+the GPU orientation are therefore correct; the owner's panel report of a
+downward dialog is not the transform. Remaining suspects: the single-surface
+screen swap at completion, or the owner observing the close/instant switch.
+Resolve with a UI step-hold that pauses the dialog content at p=0.5 and p=1 for
+direct viewing; do not invert the rule.
+
 RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
 stage refreshed to the current modules, our 10 ms-poll ui_fb and the probe's
 UI/rail sampling. Completion-paced advance is now implemented: the rail tick

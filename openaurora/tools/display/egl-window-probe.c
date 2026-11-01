@@ -49,6 +49,20 @@ static double millis(void)
     if (clock_gettime(CLOCK_MONOTONIC, &time)) return 0;
     return (double)time.tv_sec*1000 + (double)time.tv_nsec/1000000;
 }
+/* First row (relative to the current pan) with any non-black byte. The type-4 slide leaves a
+ * black band at the top when the surface starts lower, or clips content when it starts higher. */
+static int first_content_row(const uint8_t *map, const struct snapshot *s)
+{
+    unsigned yoff = s->var.yoffset;
+    for (unsigned y = 0; y < s->var.yres; y++) {
+        const uint8_t *row = map + (size_t)(yoff + y) * s->fix.line_length;
+        for (unsigned x = 0; x < s->var.xres; x++) {
+            const uint8_t *p = row + (size_t)x * 4;
+            if (p[0] || p[1] || p[2]) return (int)y;
+        }
+    }
+    return -1;
+}
 static int profile(const struct snapshot *s)
 {
     return s->magic == 0x3147574f && s->version == 1 && s->mau == 0 &&
@@ -174,6 +188,23 @@ int main(int argc, char **argv)
     dirty = 1;
     if (probe_open(&scene, 1920, 1080, helper, renderer)) { (void)error(scene); goto cleanup; }
 #ifdef OA_WINDOW_BROKER
+    /* Objective direction evidence at held endpoints on the real framebuffer. */
+    {
+        struct snapshot now;
+        int identity_top, p0_top, p1_top;
+        if (probe_render(scene, input, 1920u*1080u*4, 0, 1)) { (void)error(scene); goto cleanup; }
+        if (capture(fd, &now)) goto cleanup;
+        identity_top = first_content_row(map, &now);
+        if (probe_render(scene, NULL, 0, 4, 0.5f)) { (void)error(scene); goto cleanup; }
+        if (capture(fd, &now)) goto cleanup;
+        p0_top = first_content_row(map, &now);
+        if (probe_render(scene, NULL, 0, 4, 1.0f)) { (void)error(scene); goto cleanup; }
+        if (capture(fd, &now)) goto cleanup;
+        p1_top = first_content_row(map, &now);
+        printf("direction type4 top_rows identity=%d p0=%d p1=%d %s\n", identity_top, p0_top, p1_top,
+               p0_top > p1_top ? "(starts lower, slides up)" : "(starts higher, slides down)");
+        fflush(stdout);
+    }
     int ui_result = probe_ui(scene);
     if (ui_result < 0) { (void)error(scene); goto cleanup; }
     if (ui_result > 0) {
