@@ -363,3 +363,35 @@ renderer's whole-scene composite is still open; nothing calls it yet.
 Next: a rail-specific duration, applying the recovered full-screen transform in
 the renderer composite, and independent frame sequences. Keep RGBA asset inputs
 and BGRA framebuffer output distinct. On-panel timing remains unverified.
+
+## Launcher/rail focus timing, 2026-11-01
+
+`MainLauncherMenuDialog` changes item geometry synchronously:
+`setMenuItemPositions` is called from `scrollItems` (0xe47f9d),
+`updateButtonPositions` (0xe48aec), `init`, `onExit` and
+`preHandleKeyPressMessage`, and there is no animation-controller call in the
+dialog itself. The rail therefore does not animate its positions.
+
+The rail items are `SVGButton*` (`setMenuItemPosition` takes one), and
+`SVGButton::drawButton` (0x10b07a5) starts an animation when the SVG window has
+animation enabled and `getAnimationDuration() > 1.0` (1.0f at 0x10b0816):
+
+```
+duration = max over the button's AnimationContainer records of
+           atof(record + 28) * 1000.0        (double 0x408f400000000000 at 0x10af1f0)
+```
+
+`getAnimationDuration` (0x10af170) starts from 0.0f, so a button without
+records never animates. Record durations are seconds and are scaled to
+milliseconds by that double. The generic launcher tile resources
+`launcheritemFA/FI` (536/537) carry 0.3 s linear records: `#scalerect` scale
+1→1.32 plus `#glyph` x→−34 and y→−37 (service buttons use 1.35). The
+category glyph resources 579..598 carry no animation records. The extracted
+`mainlauncher_item_highlight_animated.png` is an APNG with 11 frames at 30 ms
+(330 ms total); `sublauncher_item_highlight_animated.png` and
+`launcher_item_highlight_animated.png` hold a single frame.
+
+Still unproven: whether the category rail's button objects are created from
+`launcheritemFA/FI` (which would give them the 300 ms scale/shift) or only use
+highlight/glyph images, and how often `drawButton` re-arms the controller. Do not
+copy the tile 300 ms onto the rail until that mapping is established.

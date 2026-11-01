@@ -369,7 +369,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       drives the shipped module through two full passes. Host `make check` exit 0 (195 ok), one
       ASan/UBSan run and one ARM/qemu run pass. Not yet exercised on the TV. UI-ANIMATIONS.
 - [ ] Finish the remaining animation callers: apply the recovered full-screen transform in the
-      renderer composite, recover a rail-specific duration, and the remaining frame sequences.
+      renderer composite, confirm the rail's button/timing mapping, and the remaining frame
+      sequences. Rail positions move synchronously; focus animation comes from each SVGButton's
+      own records (`atof(duration) x 1000`, only when > 1 ms). Generic launcher tiles
+      (launcheritemFA/FI) are 0.3 s linear scale 1→1.32 with glyph (−34,−37); whether the category
+      rail uses those buttons is unproven, so do not copy the 300 ms onto it yet.
       `setFullScreenAnimationProgress` is no longer unmapped: SVGDialog::startAnimation maps dialog
       modes 57..64 to HAL types 1..8 for a 1000 ms controller, onAnimationProgress feeds
       min(1,1+(p-1)^3), destroy forces 1.0, and `oa_fs_apply` reproduces the per-type vertex rules

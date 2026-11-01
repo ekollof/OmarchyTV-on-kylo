@@ -87,6 +87,19 @@ exact vectors for all eight types, both slide directions/vertex sets, clamping
 and short/NULL arrays; nothing calls it from the renderer yet. Still open:
 rail-specific duration, whole-scene composite application, frame sequences.
 
+RAIL-TIMING-2026-11-01: MainLauncherMenuDialog moves rail items synchronously
+(setMenuItemPositions from scrollItems/updateButtonPositions/init/onExit/
+preHandleKeyPressMessage; no controller call). The focus animation is per
+SVGButton: drawButton starts the controller only when the window's animation is
+enabled and getAnimationDuration() > 1.0 ms; getAnimationDuration
+(atof(record+28) x 1000.0 double at 0x10af1f0, max over records, default 0)
+supplies it. Generic launcher tiles launcheritemFA/FI (536/537) are 0.3 s
+linear scale 1->1.32 with glyph x->-34, y->-37; service buttons use 1.35.
+Category glyph resources 579..598 have no animation records, and whether the
+rail buttons are built from 536/537 is unproven — do not copy the 300 ms onto
+the rail. mainlauncher_item_highlight_animated.png is an 11-frame APNG at
+30 ms/frame (330 ms); the sublauncher/launcher highlight files hold one frame.
+
 SPEAKER-GAIN-2026-11-01 is the latest review: direct SetOPUGain operands are
 0..0x8000 and bypass UI AQ/balance/ratio processing. GetOPUGain's cached100 to
 0x8000 mapping makes it unsuitable for exact rollback. Lower codec/client
