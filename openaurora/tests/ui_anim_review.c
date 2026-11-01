@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include "host.h"
 #include "openaurora/ui_anim.h"
+#include "openaurora/ui_time.h"
 
 static uint32_t clock_now;
 static uint32_t now_ms(void) { return clock_now; }
@@ -137,13 +138,23 @@ int main(int argc, char **argv)
         oa_slide_start(&s, -17, 0, 0);                          /* negative distance clamps to 0 */
         assert(s.distance == 0 && oa_slide_offset(&s, 0) == 0 && oa_slide_running(&s, 0) == 1);
 
-        /* 32-bit wrap: started near UINT32_MAX, sampled after it wrapped */
-        oa_slide_start(&s, 400, 0, 0xffffff00u);
-        assert(oa_slide_offset(&s, 0xffffff00u) == 0);
-        /* now=0x7d0 -> elapsed 0x8d0 = 2256 ms, past the pause: 400*1456/8000 = 72 */
-        assert(oa_slide_offset(&s, 0x000007d0u) == 72);
-        assert(oa_slide_running(&s, 0x000007d0u) == 1);
-        assert(oa_slide_running(&s, 0xffffff00u + 9600u) == 0);
+        /* ui.clock is not a plain uint32 clock: it rolls over at 90,000,000 ms. The runner must
+         * use the recovered period arithmetic, not raw subtraction. */
+        oa_slide_start(&s, 400, 0, OA_UI_TIME_PERIOD - 500);
+        assert(oa_slide_offset(&s, OA_UI_TIME_PERIOD - 500) == 0);
+        assert(oa_slide_offset(&s, 500) == 10);              /* elapsed 1000 -> 400*200/8000 */
+        assert(oa_slide_running(&s, 500) == 1);
+        assert(oa_slide_progress(&s, 500) > 0.0f && oa_slide_progress(&s, 500) < 0.2f);
+        assert(oa_slide_running(&s, 9100) == 0);             /* elapsed 9600 across the wrap */
+        assert(oa_slide_offset(&s, 9100) == 400);
+        assert(oa_slide_progress(&s, 9100) == 1.0f);
+
+        /* progress follows the vendor 0..1 callback value */
+        oa_slide_start(&s, 400, 0, 0);
+        assert(oa_slide_progress(&s, 0) == 0.0f);
+        assert(oa_slide_progress(&s, 4800) == 0.5f);         /* 4800 / 9600 */
+        assert(oa_slide_progress(&s, 9504) == 0.99f);        /* the repeat threshold */
+        assert(oa_slide_progress(&s, 9600) == 1.0f);
 
         /* NULL runners are tolerated: the module can call the helpers unconditionally. */
         oa_slide_start(NULL, 1, 0, 0);
@@ -168,6 +179,29 @@ int main(int argc, char **argv)
         for (int i = 0; i < 8; i++) { vx[i] = 10.0f; vy[i] = 30.0f; }
         oa_fs_apply(OA_FS_SCALE_AXES, 1.0f, vx, vy, 8); /* p = 1 -> identity */
         for (int i = 0; i < 8; i++) assert(vx[i] == 10.0f && vy[i] == 30.0f);
+
+        /* p = 0.5 for the types whose report row is not just an endpoint */
+        for (int i = 0; i < 8; i++) { vx[i] = 8.0f; vy[i] = 8.0f; }
+        oa_fs_apply(OA_FS_SCALE_AXES, 0.5f, vx, vy, 8);
+        assert(fabsf(vx[1] - 6.0f) < 1e-6f);           /* 8 * 0.75 */
+        assert(fabsf(vy[1] - 8.0f * 5.0f / 6.0f) < 1e-5f); /* 8 * (2/3 + 1/6) */
+        assert(vx[0] == 8.0f && vx[3] == 8.0f);
+
+        for (int i = 0; i < 8; i++) vx[i] = 0.0f;
+        oa_fs_apply(OA_FS_SLIDE_POS, 0.5f, vx, vy, 8);
+        for (int i = 0; i < 4; i++) assert(fabsf(vx[i] - 1.0f / 12.0f) < 1e-6f);
+        for (int i = 4; i < 8; i++) assert(vx[i] == 0.0f);
+
+        for (int i = 0; i < 8; i++) vx[i] = 0.0f;
+        oa_fs_apply(OA_FS_SLIDE_POS_SECOND, 0.5f, vx, vy, 8);
+        for (int i = 0; i < 4; i++) assert(vx[i] == 0.0f);
+        for (int i = 4; i < 8; i++) assert(fabsf(vx[i] - 1.0f / 12.0f) < 1e-6f);
+
+        for (int i = 0; i < 8; i++) { vx[i] = 6.0f; vy[i] = 3.0f; }
+        oa_fs_apply(OA_FS_SCALE, 0.5f, vx, vy, 8);
+        assert(fabsf(vx[0] - 5.0f) < 1e-5f);           /* 6 * 5/6 */
+        assert(fabsf(vy[0] - 2.5f) < 1e-5f);           /* 3 * 5/6 */
+        assert(vx[4] == 6.0f && vy[4] == 3.0f);
 
         /* slides: (1-p)/6; negative for 2/4, positive for 3/5; second quad only for 4/5 */
         for (int i = 0; i < 8; i++) { vx[i] = 0.0f; vy[i] = 0.0f; }

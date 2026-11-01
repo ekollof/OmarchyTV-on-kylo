@@ -69,8 +69,35 @@ timer (progress > 0.99, constant at 0x10c8ee8) instead of a repeating one. The
 module starts a pass when the loaded title exceeds `ui.slide_box` (default off),
 offsets the title blit by 29 − margin, and re-arms after the 2000 ms rest.
 tests/ui_slide drives two full passes through the real DSO with a settable
-ui.clock; host, ASan/UBSan and ARM/qemu pass. This is caller behaviour verified
-offline, not a live on-TV visual observation.
+ui.clock and observes the clipped source column; it also covers the repeat armed
+at progress 0.99, animation disabled, suspend/resume and stop/start. This is
+caller behaviour verified offline, not a live on-TV visual observation.
+
+REVIEW-FIXES-2026-11-01 (GPT-6.1 Sol review): fixed before accepting the
+milestone. The slide now uses `oa_ui_time_elapsed` (90,000,000 ms period) instead
+of raw subtraction; start/repeat are gated on `ui.anim` enablement; the title is
+clipped to `ui.slide_box` via a reusable crop buffer (the old code blitted the
+whole label); the repeat is armed at progress > 0.99 while the sampler still
+runs; the sampler/repeat are deleted on suspend/stop and the slide state is
+cleared (the old code could dereference a released display or suppress the next
+repeat); allocation failures are logged; `oa_anim_slide_margin` clamps the
+float-to-int cast; the wobble uses the double precision π from 0xb32aa8; and
+`mod_ui_fb`/`mod_ui_anim` link `-lm` (verified DT_NEEDED) because `sinf` was
+undefined. The module now calls the v2 provider for duration/margin instead of
+carrying a copy. Host, ASan/UBSan and ARM/qemu rerun after these fixes.
+Known limits kept explicit: a ui.anim/ui.clock published only after ui_fb
+starts is not discovered until restart, and a forced provider reload leaves the
+module's borrowed pointers stale (the host blocks ordinary reload while held).
+
+LIVE-SLIDE-PROBE-2026-11-01: the slide was exercised on the TV with real timers
+and no display hardware: tests/mod_slide_probe.c published a recording display
+plus a CLOCK_MONOTONIC-backed ui.clock, the real mod_ui_anim/mod_ui_fb ran from
+/tmp with ui.anim_enable=1 (default-off bootstrap lever), size/SHA-256 checked
+and staging removed afterwards. 914 samples at a mean 10.08 ms cadence; first
+nonzero margin at +822 ms, final 163 at +3808 ms, repeat restart at +6557 ms
+(= 4554 + 2000, the 0.99 threshold), clean exit. Vendor PIDs 1967/1785 unchanged
+and no helper left. This is not visual scanout evidence; fb1, keys, settings and
+vendor modules were not touched.
 
 FULLSCREEN-ANIM-2026-11-01: the full-screen progress path is recovered.
 `SVGDialog::startAnimation` @0x10c5009 returns for mode 0x38 and otherwise maps

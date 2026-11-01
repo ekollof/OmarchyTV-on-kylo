@@ -39,6 +39,7 @@
 #include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
+#include "openaurora/ui_time.h"
 
 #define MAX_ICONS 24
 #define MAX_CARDS 12
@@ -88,8 +89,9 @@ struct ctx {
     oa_slide slide;                  /* title text slide, vendor AnimationHelper rules */
     int slide_box;                   /* usable width in px; 0 disables the effect */
     int title_w;
+    unsigned char *slide_buf;        /* clipped-title scratch: slide_box x title_h x 4 */
     uint64_t slide_tick;             /* 10 ms sampler while the slide runs */
-    uint64_t slide_repeat;           /* 2000 ms one-shot, armed after completion */
+    uint64_t slide_repeat;           /* single 2000 ms shot, armed at progress > 0.99 */
     int portal_on;
     int fps;
     uint32_t sub_key;
@@ -100,6 +102,12 @@ struct ctx {
 };
 
 static struct ctx *g_ctx;
+
+/* Text-slide runner: implemented below, but paint() above it samples the margin. */
+static uint32_t slide_elapsed(const struct ctx *c, uint32_t now);
+static int slide_margin_now(const struct ctx *c, uint32_t now);
+static int slide_is_running(const struct ctx *c, uint32_t now);
+static float slide_progress_now(const struct ctx *c, uint32_t now);
 
 /* ---------------------------------------------------------------- loading */
 
@@ -220,8 +228,10 @@ static int hit_at(struct ctx *c, int x, int y, int *band, int *index)
 
 static void paint(struct ctx *c)
 {
-    const oa_display_iface *d = c->disp;
+    const oa_display_iface *d;
     int W = 0, H = 0;
+    if (!c || !c->disp) return;   /* a suspended/stopped module has no display hold */
+    d = c->disp;
     if (d->info(&W, &H, NULL, NULL) != 0 || W <= 0 || H <= 0)
         return;
 
@@ -230,11 +240,25 @@ static void paint(struct ctx *c)
 
     const struct icon *title = find_icon(c, "title");
     if (title) {
-        /* SVGTextBox draw: the label is shifted by the AnimationHelper margin (positive = scrolled
-         * left by that many pixels), so the visible window is the 29 px + slide_box area. */
+        /* SVGTextBox draws the label clipped to its text box; the AnimationHelper margin moves the
+         * text inside that box. Draw the visible source slice at the fixed box origin instead of
+         * blitting the whole label (which would show text outside the box). */
         uint32_t now = c->clock ? c->clock->now_ms() : 0;
-        int shift = oa_slide_offset(&c->slide, now);
-        d->blit(29 - shift, 80, title->w, title->h, title->rgba);
+        int shift = slide_margin_now(c, now);
+        int box = c->slide_box > 0 ? c->slide_box : title->w;
+        int sx = shift > 0 ? shift : 0;
+        int cw = title->w - sx;
+
+        if (cw > box) cw = box;
+        if (cw > 0 && (cw == title->w || !c->slide_buf)) {
+            d->blit(29, 80, title->w, title->h, title->rgba);
+        } else if (cw > 0) {
+            for (int row = 0; row < title->h; row++)
+                memcpy(c->slide_buf + (size_t)row * (size_t)cw * 4,
+                       title->rgba + ((size_t)row * (size_t)title->w + (size_t)sx) * 4,
+                       (size_t)cw * 4);
+            d->blit(29, 80, cw, title->h, c->slide_buf);
+        }
     }
 
     /*
@@ -386,34 +410,113 @@ static void emit_action(struct ctx *c, int kind)
 static void on_slide_tick(void *ud);
 static void on_slide_repeat(void *ud);
 
+/* The vendor starts the effect only when animation is enabled and the label overflows its box. */
+static int slide_allowed(const struct ctx *c)
+{
+    return c->anim && c->anim->enabled() && c->anim2 && c->clock &&
+           c->slide_box > 0 && c->title_w > c->slide_box;
+}
+
+static void slide_stop_sampler(struct ctx *c)
+{
+    if (c->slide_tick) {
+        c->api->timer_del(c->api->priv, c->slide_tick);
+        c->slide_tick = 0;
+    }
+}
+
+/* Use the provider's v2 math so a reloaded ui.anim changes the rule here too; only the runner
+ * state (start time, distance, duration) is local. */
+static uint32_t slide_elapsed(const struct ctx *c, uint32_t now)
+{
+    return oa_ui_time_elapsed(now, c->slide.started);
+}
+
+static int slide_margin_now(const struct ctx *c, uint32_t now)
+{
+    if (!c->slide.active || !c->anim2) return 0;
+    return c->anim2->slide_margin(slide_elapsed(c, now), c->slide.duration,
+                                  c->slide.distance, c->slide.reverse);
+}
+
+static int slide_is_running(const struct ctx *c, uint32_t now)
+{
+    return c->slide.active && (float)slide_elapsed(c, now) < c->slide.duration;
+}
+
+static float slide_progress_now(const struct ctx *c, uint32_t now)
+{
+    float p;
+    if (!c->slide.active || c->slide.duration <= 0.0f) return 1.0f;
+    p = (float)slide_elapsed(c, now) / c->slide.duration;
+    return p > 1.0f ? 1.0f : p;
+}
+
+static void slide_arm_repeat(struct ctx *c)
+{
+    if (c->slide_repeat) return;
+    c->slide_repeat = c->api->timer_add(c->api->priv, OA_ANIM_SLIDE_REPEAT_MS, 0,
+                                        on_slide_repeat, c);
+    if (!c->slide_repeat)
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "text slide: repeat timer allocation failed; the label holds its end margin");
+}
+
+/* (Re)start one pass. Called on module start/resume and when the vendor repeat fires. */
+static void slide_begin(struct ctx *c, const char *why)
+{
+    if (!slide_allowed(c)) return;   /* keep the current label position; nothing to start */
+    int distance = c->title_w - c->slide_box;
+    oa_slide_start(&c->slide, distance, 0, c->clock->now_ms());
+    c->slide.duration = c->anim2->slide_duration(distance); /* the v2 provider owns the rule */
+    slide_stop_sampler(c);
+    c->slide_tick = c->api->timer_add(c->api->priv, 10, 10, on_slide_tick, c);
+    if (!c->slide_tick) {
+        c->slide.active = 0;
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "text slide: 10 ms sampler allocation failed (%s)", why);
+        return;
+    }
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "text slide: title %d px in %d px box (%u ms per pass, %d ms repeat, %s)",
+                c->title_w, c->slide_box, (unsigned)c->slide.duration,
+                OA_ANIM_SLIDE_REPEAT_MS, why);
+}
+
 static void on_slide_repeat(void *ud)
 {
     struct ctx *c = ud;
     c->slide_repeat = 0;
-    if (!c->disp || c->title_w <= c->slide_box) return;
-    oa_slide_start(&c->slide, c->title_w - c->slide_box, 0,
-                   c->clock ? c->clock->now_ms() : 0);
-    if (!c->slide_tick)
-        c->slide_tick = c->api->timer_add(c->api->priv, 10, 10, on_slide_tick, c);
+    if (!c->disp) return;
+    if (!slide_allowed(c)) {     /* animation was disabled or the title changed: hold the end state */
+        paint(c);
+        return;
+    }
+    slide_begin(c, "repeat");
+    paint(c);
 }
 
 static void on_slide_tick(void *ud)
 {
     struct ctx *c = ud;
-    uint32_t now = c->clock ? c->clock->now_ms() : 0;
+    uint32_t now;
 
-    if (oa_slide_running(&c->slide, now)) {
-        paint(c);
+    if (!c->disp || !c->clock) {
+        slide_stop_sampler(c);
         return;
     }
-    /* completed: stop sampling, draw the final offset, then arm the vendor's 2000 ms repeat */
-    if (c->slide_tick) {
-        c->api->timer_del(c->api->priv, c->slide_tick);
-        c->slide_tick = 0;
+    now = c->clock->now_ms();
+    if (!slide_is_running(c, now)) {
+        slide_stop_sampler(c);
+        paint(c);
+        /* onAnimationProgress arms the single 2000 ms shot once progress passes 0.99; if a slow
+         * tick jumps straight past that window, the completion path arms it instead. */
+        if (slide_allowed(c)) slide_arm_repeat(c);
+        return;
     }
+    if (!c->slide_repeat && slide_progress_now(c, now) > 0.99f)
+        slide_arm_repeat(c);
     paint(c);
-    if (!c->slide_repeat && c->title_w > c->slide_box)
-        c->slide_repeat = c->api->timer_add(c->api->priv, OA_ANIM_SLIDE_REPEAT_MS, 0, on_slide_repeat, c);
 }
 
 static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int done, void *ud)
@@ -546,6 +649,10 @@ static int m_start(void *v)
     c->anim2 = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 2);
     c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
     c->slide_box = atoi(c->api->config_get(c->api->priv, "ui.slide_box", "0"));
+    /* Vendor UIAnimationController starts disabled and its bootstrap caller is not recovered yet.
+     * This default-off switch is an explicit bootstrap/test lever, not a chosen native policy. */
+    if (c->anim && atoi(c->api->config_get(c->api->priv, "ui.anim_enable", "0")) == 1)
+        c->anim->set_enabled(1);
     if (c->api->publish(c->api->priv, OA_SVC_PORTAL, 1, &g_portal) != 0) {
         if (c->anim) {
             c->anim->bind(NULL, NULL);
@@ -568,19 +675,22 @@ static int m_start(void *v)
     for (int i = 0; i < c->nc; i++)
         load_blob(c, c->cards[i]);
 
-    /* The slide needs the title width, so it starts after the blobs are loaded. */
+    /* The slide needs the title width, so it starts after the blobs are loaded. The clipped draw
+     * needs a scratch buffer of exactly the box width; without it the label would spill. */
     {
         const struct icon *t = find_icon(c, "title");
         c->title_w = t ? t->w : 0;
+        if (t && c->slide_box > 0 && c->slide_box < t->w) {
+            size_t need = (size_t)c->slide_box * (size_t)t->h * 4u;
+            c->slide_buf = malloc(need);
+            if (!c->slide_buf) {
+                c->api->log(c->api->priv, OA_LOG_WARN,
+                            "text slide: no %zu-byte scratch buffer; slide disabled", need);
+                c->slide_box = 0;
+            }
+        }
     }
-    if (c->anim2 && c->clock && c->slide_box > 0 && c->title_w > c->slide_box) {
-        oa_slide_start(&c->slide, c->title_w - c->slide_box, 0, c->clock->now_ms());
-        c->slide_tick = c->api->timer_add(c->api->priv, 10, 10, on_slide_tick, c);
-        c->api->log(c->api->priv, OA_LOG_INFO,
-                    "text slide: title %d px in %d px box (%u ms per pass, %d ms repeat)",
-                    c->title_w, c->slide_box, (unsigned)c->slide.duration,
-                    OA_ANIM_SLIDE_REPEAT_MS);
-    }
+    slide_begin(c, "start");
 
     c->sub_key = c->api->subscribe(c->api->priv, OA_TOPIC_KEY, on_key, c);
     if (!c->sub_key) {
@@ -622,6 +732,12 @@ static int m_start(void *v)
 static void m_stop(void *v)
 {
     struct ctx *c = v;
+    slide_stop_sampler(c);
+    if (c->slide_repeat) {
+        c->api->timer_del(c->api->priv, c->slide_repeat);
+        c->slide_repeat = 0;
+    }
+    memset(&c->slide, 0, sizeof c->slide);
     if (c->tick) {
         c->api->timer_del(c->api->priv, c->tick);
         c->tick = 0;
@@ -630,10 +746,16 @@ static void m_stop(void *v)
         c->api->unsubscribe(c->api->priv, c->sub_key);
         c->sub_key = 0;
     }
-    if (c->anim) {
+    if (c->anim)
         c->anim->bind(NULL, NULL);
+    if (c->anim || c->anim2) {
         c->api->release(c->api->priv, OA_SVC_UI_ANIM);
         c->anim = NULL;
+        c->anim2 = NULL;
+    }
+    if (c->clock) {
+        c->api->release(c->api->priv, OA_SVC_UI_CLOCK);
+        c->clock = NULL;
     }
     if (c->settings) {
         c->api->release(c->api->priv, OA_SVC_SETTINGS);
@@ -649,6 +771,10 @@ static void m_stop(void *v)
     for (int i = 0; i < c->n; i++)
         free(c->icons[i].rgba);
     c->n = 0;
+    free(c->slide_buf);
+    c->slide_buf = NULL;
+    c->title_w = 0;
+    c->slide_box = 0;
     c->acknowledged = 0;
 }
 
@@ -662,6 +788,12 @@ static void m_destroy(void *v)
 static int m_suspend(void *v)
 {
     struct ctx *c = v;
+    slide_stop_sampler(c);
+    if (c->slide_repeat) {
+        c->api->timer_del(c->api->priv, c->slide_repeat);
+        c->slide_repeat = 0;
+    }
+    memset(&c->slide, 0, sizeof c->slide);
     if (c->tick) {
         c->api->timer_del(c->api->priv, c->tick);
         c->tick = 0;
@@ -689,6 +821,7 @@ static int m_resume(void *v)
         c->disp = NULL;
         return -1;
     }
+    slide_begin(c, "resume");
     paint(c);
     if (c->fps > 0)
         c->tick = c->api->timer_add(c->api->priv, (uint32_t)(1000 / c->fps),

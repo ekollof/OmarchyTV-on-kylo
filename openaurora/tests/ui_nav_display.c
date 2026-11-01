@@ -9,7 +9,7 @@ enum { FILL_MAX = 32 };
 static struct { int x, y, w, h, r, g, b; } g_fill[FILL_MAX];
 static int g_nf;
 enum { BLIT_MAX = 64 };
-static struct { int x, y, w, h; } g_blit[BLIT_MAX];
+static struct { int x, y, w, h, r, g, b, a; } g_blit[BLIT_MAX];
 static int g_nb;
 
 static int d_info(int *w, int *h, int *bpp, int *frames)
@@ -53,9 +53,12 @@ static int d_fill(int x, int y, int w, int h, int r, int g, int b)
 }
 static int d_blit(int x, int y, int w, int h, const unsigned char *rgba)
 {
-    (void)rgba;
     if (g_nb < BLIT_MAX) {
         g_blit[g_nb].x = x; g_blit[g_nb].y = y; g_blit[g_nb].w = w; g_blit[g_nb].h = h;
+        g_blit[g_nb].r = rgba ? rgba[0] : -1;
+        g_blit[g_nb].g = rgba ? rgba[1] : -1;
+        g_blit[g_nb].b = rgba ? rgba[2] : -1;
+        g_blit[g_nb].a = rgba ? rgba[3] : -1;
         g_nb++;
     }
     return 0;
@@ -114,9 +117,18 @@ static int t_blit_at(int i, int *x, int *y, int *w, int *h)
     if (h) *h = g_blit[i].h;
     return 0;
 }
+static int t_blit_first(int i, int *r, int *g, int *b, int *a)
+{
+    if (i < 0 || i >= g_nb) return -1;
+    if (r) *r = g_blit[i].r;
+    if (g) *g = g_blit[i].g;
+    if (b) *b = g_blit[i].b;
+    if (a) *a = g_blit[i].a;
+    return 0;
+}
 static const oa_nav_trace g_trace = {
     .accent = t_accent, .counts = t_counts, .fill_count = t_fill_count, .fill_at = t_fill_at,
-    .blit_count = t_blit_count, .blit_at = t_blit_at,
+    .blit_count = t_blit_count, .blit_at = t_blit_at, .blit_first = t_blit_first,
 };
 
 static const oa_host_api *g_api;

@@ -362,12 +362,22 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       distances 0/49/50/100/400 and elapsed 0/800/801/4800/9600/90000 plus reverse and short-slide
       cases. UI-ANIMATIONS.
 - [x] Text-slide caller wiring in mod_ui_fb: distance from isTextSlidingNeeded @0x10c76b0
-      (text_width − box_width), 10 ms sampler, and the single 2000 ms repeat armed when the slide
-      completes (SVGTextBox::onAnimationProgress @0x10c8e48, progress > 0.99 at 0x10c8ee8). Title blit
-      is offset by 29 − margin; `ui.slide_box` sets the box width and defaults off. `oa_slide_*` has
-      deterministic unit vectors (pause/mid/end/reverse/NULL and 32-bit clock wrap); tests/ui_slide
-      drives the shipped module through two full passes. Host `make check` exit 0 (195 ok), one
-      ASan/UBSan run and one ARM/qemu run pass. Not yet exercised on the TV. UI-ANIMATIONS.
+      (text_width − box_width), 10 ms sampler, and the single 2000 ms repeat armed at progress > 0.99
+      while the sampler still runs (SVGTextBox::onAnimationProgress @0x10c8e48, constant 0x10c8ee8).
+      The label is clipped to `ui.slide_box` (crop blit at the box origin), start/repeat are gated on
+      `ui.anim` enablement, elapsed uses the 90,000,000 ms ui.clock period, and suspend/stop delete
+      both timers and clear the runner state. Duration/margin come from the v2 provider. The module
+      links `-lm` for sinf (DT_NEEDED verified). tests/ui_slide drives two complete passes and the
+      repeat threshold, disablement, suspend/resume and stop/start; oa_slide_* has deterministic
+      vectors including the vendor period rollover. Host `make check` exit 0 (196 ok), ASan/UBSan and
+      ARM/qemu pass. Scheduling is exercised by the live probe below; visible-panel behaviour is not
+      yet verified. UI-ANIMATIONS.
+- [x] Live TV scheduling probe for the text slide: a /tmp-staged TV build with the probe
+      (recording display, CLOCK_MONOTONIC ui.clock) and the real ui_anim/ui_fb measured a 10.08 ms
+      mean sampler cadence, first nonzero margin at +822 ms, 163 px at +3808 ms, and the repeat
+      restart at +6557 ms (= 4554 + 2000, the 0.99 arm), clean exit. No fb1, vendor module, key,
+      settings or network access; staging removed and vendor PIDs unchanged. This is not visual
+      scanout or pixel parity evidence. UI-ANIMATIONS.
 - [ ] Finish the remaining animation callers: apply the recovered full-screen transform in the
       renderer composite, confirm the rail's button/timing mapping, and the remaining frame
       sequences. Rail positions move synchronously; focus animation comes from each SVGButton's

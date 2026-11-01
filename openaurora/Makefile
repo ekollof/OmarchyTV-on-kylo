@@ -87,11 +87,11 @@ $(BUILD)/core/%.o: core/%.c
 
 $(BUILD)/modules/mod_ui_anim.so: modules/ui_anim/ui_anim.c common/ui_anim.c include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
 $(BUILD)/modules/mod_ui_fb.so: modules/ui_fb/ui_fb.c common/ui_anim.c include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
 $(BUILD)/modules/mod_audio_mixer.so: modules/audio_mixer/audio_mixer.c common/audio_broker_wire.c include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_broker.h
 	@mkdir -p $(dir $@)

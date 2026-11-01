@@ -188,7 +188,14 @@ int oa_anim_slide_margin(uint32_t elapsed_ms, float duration_ms, int distance, i
         } else {
             frac = 1.0f;                            /* vendor: divide by 0 -> inf -> clamp */
         }
-        margin = (int)((float)distance * frac);
+        {
+            float value = (float)distance * frac;
+            /* INT_MAX rounds to 2^31 as float on ARM; avoid an out-of-range cast while
+             * keeping the vendor's float multiply + truncation for ordinary geometry. */
+            if (value >= (float)INT_MAX) margin = INT_MAX;
+            else if (value <= (float)INT_MIN) margin = INT_MIN;
+            else margin = (int)value;
+        }
     }
     if (reverse) margin = distance - margin;
     return margin;
@@ -208,13 +215,24 @@ void oa_slide_start(oa_slide *s, int distance, int reverse, uint32_t now)
 int oa_slide_offset(const oa_slide *s, uint32_t now)
 {
     if (!s || !s->active) return 0;
-    return oa_anim_slide_margin(now - s->started, s->duration, s->distance, s->reverse);
+    return oa_anim_slide_margin(oa_ui_time_elapsed(now, s->started), s->duration,
+                                s->distance, s->reverse);
 }
 
 int oa_slide_running(const oa_slide *s, uint32_t now)
 {
     if (!s || !s->active) return 0;
-    return ((float)(now - s->started) < s->duration) ? 1 : 0;
+    return ((float)oa_ui_time_elapsed(now, s->started) < s->duration) ? 1 : 0;
+}
+
+float oa_slide_progress(const oa_slide *s, uint32_t now)
+{
+    float progress;
+    if (!s || !s->active || s->duration <= 0.0f) return 1.0f;
+    /* vendor onAnimationProgress receives a 0..1 progress; the repeat is armed above 0.99 */
+    progress = (float)oa_ui_time_elapsed(now, s->started) / s->duration;
+    if (progress > 1.0f) progress = 1.0f;
+    return progress;
 }
 
 /* Full-screen animation geometry, from hal::OpenGLGraphicsContext::iterateFullScreenAnimation
@@ -222,7 +240,8 @@ int oa_slide_running(const oa_slide *s, uint32_t now)
  * at +0x00/+0x04 of each 0x18-byte entry. Only the vertices the vendor touches are modified. */
 void oa_fs_apply(int type, float progress, float *vx, float *vy, int vertices)
 {
-    const float pi = 3.14159274f;        /* 0x54442d18 */
+    /* 0xb32aa8 holds a double pi (0x400921fb54442d18); the three fractions are floats. */
+    const double pi = 3.14159265358979323846;
     const float two_thirds = 0.6666667f; /* 0x3f2aaaab */
     const float one_third = 0.33333334f; /* 0x3eaaaaab */
     const float one_sixth = 0.16666667f; /* 0x3e2aaaab */
@@ -270,7 +289,7 @@ void oa_fs_apply(int type, float progress, float *vx, float *vy, int vertices)
          * widens 6p to double for the pi multiply and narrows again for sinf; keep that order. */
         float three_p = p * 3.0f;
         float six_p = three_p + three_p;
-        float s = 1.0f + (1.0f - p) * sinf((float)((double)six_p * (double)pi)) * one_third;
+        float s = 1.0f + (1.0f - p) * sinf((float)((double)six_p * pi)) * one_third;
         for (int i = 0; i < 4 && i < vertices; i++) {
             vx[i] *= s;
             vy[i] *= s;

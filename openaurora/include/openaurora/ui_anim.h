@@ -57,6 +57,7 @@ typedef struct {
 void oa_slide_start(oa_slide *s, int distance, int reverse, uint32_t now);
 int oa_slide_offset(const oa_slide *s, uint32_t now);   /* px, 0 when not active */
 int oa_slide_running(const oa_slide *s, uint32_t now);  /* 0 once the duration elapsed */
+float oa_slide_progress(const oa_slide *s, uint32_t now); /* vendor 0..1 progress; repeat above 0.99 */
 
 /* Full-screen animation, recovered from hal::OpenGLGraphicsContext (0xb32910) and its caller
  * SVGDialog::startAnimation (0x10c5009):
@@ -75,11 +76,13 @@ int oa_slide_running(const oa_slide *s, uint32_t now);  /* 0 once the duration e
  *     types 4/5         vertices 4..7: x += -(1-p)/6 or +(1-p)/6
  *     type 6            no geometry
  *     type 7            vertices 0..3: x,y *= 2/3 + p/3
- *     type 8            vertices 0..3: x,y *= 1 + (1-p)*sin(fpi*(6p))*(1/3)
- *   Constants read from the pool at 0xb32aa8: pi, 2/3 (0x3f2aaaab), 1/3 (0x3eaaaaab),
- *   1/6 (0x3e2aaaab). The 6p argument is widened to double before the multiply, then narrowed
- *   to float for sinf, so that ordering is kept below. Vertex x/y live at +0x00/+0x04 of a
- *   0x18-byte TextureVertex; the caller owns the layout. */
+ *     type 8            vertices 0..3: x,y *= 1 + (1-p)*sin(pi*(6p))*(1/3)
+ *   The pool at 0xb32aa8 holds a **double** pi (bytes 18 2d 44 54 fb 21 09 40 =
+ *   0x400921fb54442d18); the float 2/3 (0x3f2aaaab), 1/3 (0x3eaaaaab) and 1/6
+ *   (0x3e2aaaab) follow at 0xb32ab4/0xb32ab8/0xb32abc. The 6p argument is widened
+ *   to double for the pi multiply, then narrowed to float for sinf, so that
+ *   ordering is kept below. Vertex x/y live at +0x00/+0x04 of a 0x18-byte
+ *   TextureVertex; the caller owns the layout. */
 enum {
     OA_FS_NONE = 0, OA_FS_SCALE_AXES = 1, OA_FS_SLIDE_NEG = 2, OA_FS_SLIDE_POS = 3,
     OA_FS_SLIDE_NEG_SECOND = 4, OA_FS_SLIDE_POS_SECOND = 5, OA_FS_UNIFORM_ONLY = 6,

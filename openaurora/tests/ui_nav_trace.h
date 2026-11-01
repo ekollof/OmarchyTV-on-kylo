@@ -8,8 +8,10 @@ typedef struct {
     int (*counts)(int *clears, int *presents, int *surface_w, int *surface_h);
     int (*fill_count)(void);
     int (*fill_at)(int i, int *x, int *y, int *w, int *h, int *r, int *g, int *b);
-    /* Text-slide tests need the title blit's x. Additive: existing users ignore them. */
+    /* Text-slide tests need the title blit's x and its first source pixel. Additive: existing
+     * users ignore them. */
     int (*blit_count)(void);
     int (*blit_at)(int i, int *x, int *y, int *w, int *h);
+    int (*blit_first)(int i, int *r, int *g, int *b, int *a);
 } oa_nav_trace;
 #endif

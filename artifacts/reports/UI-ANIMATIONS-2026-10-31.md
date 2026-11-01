@@ -277,6 +277,11 @@ in the accent color. That is not a recovered mapping of
 pause, duration and repeat are not called. The 0.3 s pack duration is not copied
 onto the rail.
 
+> **Correction 2026-11-01:** the full-screen mapping is recovered (see "Full-screen animation
+> mapping" below), the text slide is wired in `mod_ui_fb` (see "Text-slide caller wiring") including
+> enablement gating, box clipping and the 0.99 repeat threshold, and the rail's own timing path is
+> documented in "Launcher/rail focus timing".
+
 `tests/ui_nav.c` drives the shipped modules. It passed host `make check`, one
 ASan/UBSan run (`build-owner-san`) and one ARM/qemu run (`build-owner-arm` with
 the TV `/lib` namespace). No framebuffer, UART, CEC or amplifier was opened.
@@ -296,21 +301,29 @@ helpers consume. The framework samples at 10 ms (`setTimer(...,10,10)`).
 timer: the pass ends held at the margin, the shot later restarts it at margin 0.
 The "200" is the timer-call cadence operand and is not the restart delay.
 
-`mod_ui_fb` now mirrors that: the title blit is drawn at `29 − margin`, the
-slide is only started when the loaded title is wider than `ui.slide_box`
-(default 0 = disabled), a 10 ms sampler repaints while running and is deleted at
-completion, and a single `OA_ANIM_SLIDE_REPEAT_MS` timer re-arms the pass. The
-math and the runner live in `common/ui_anim.c` (`oa_slide_start`/`_offset`/
-`_running`) so the module carries no timing copy. `tests/ui_slide.c` drives the
-shipped DSO with a settable `ui.clock` through the full sequence: pause, half
-span, end at distance, sampler stop, 2000 ms re-arm, second pass. Host `make
-check` (195 ok), ASan/UBSan and ARM/qemu all pass. This is offline caller
-evidence; no live TV visual check has been made, and the repeat was not
-observed on the panel.
+`mod_ui_fb` now mirrors that: the label is clipped to the text box (the visible
+source slice is blitted at the fixed box origin) instead of moving the whole
+label, the slide starts only when animation is enabled and the loaded title is
+wider than `ui.slide_box` (default 0 = disabled), a 10 ms sampler repaints while
+running, and the single `OA_ANIM_SLIDE_REPEAT_MS` timer is armed once progress
+passes 0.99. The duration and margin come from the `ui.anim` v2 provider so a
+reloaded provider changes the rule; only the runner state (start time, distance,
+duration) is local. Elapsed time uses the vendor `ui.clock` period arithmetic
+(`oa_ui_time_elapsed`), not raw subtraction.
 
-Remaining here: the rail-specific duration (the 0.3 s pack value is still not
-recovered as the rail's own timing), the `setFullScreenAnimationProgress`
-mapping, and independent frame sequences.
+`tests/ui_slide.c` drives the shipped DSO with a settable `ui.clock` and a title
+whose red channel encodes the source column, so it can observe the clipped
+window. It covers the pause, half span, end at distance, the repeat armed at
+0.99 while the sampler still runs, two complete passes, animation disabled,
+suspend/resume and stop/start. `common/ui_anim.c` still stores the reference
+runner (`oa_slide_start`/`_offset`/`_running`/`_progress`) used by the unit
+vectors. Host `make check` (196 ok), ASan/UBSan and ARM/qemu pass. This is
+offline caller evidence; no live TV visual check has been made, and the repeat
+was not observed on the panel.
+
+Remaining here: the rail's own duration mapping (see "Launcher/rail focus
+timing"; the 300 ms tile record is not proven for the rail) and independent
+frame sequences.
 
 ## Full-screen animation mapping, 2026-11-01
 
@@ -354,15 +367,19 @@ types 1, 7 and 8 touch only the entries listed. The GL uniform set at the end of
 the function is not needed for geometry and its decompiled argument order is not
 trusted, so it is not claimed here.
 
-Encoded as `oa_fs_apply` (`common/ui_anim.c`, `openaurora/ui_anim.h`) with exact
-unit vectors for every type at p = 0/0.25/0.5/1, both slide directions and both
-vertex sets, progress clamping and short/NULL vertex arrays. Host `make check`
-(now 196 ok), ASan/UBSan and ARM/qemu pass. Applying the transform to the
-renderer's whole-scene composite is still open; nothing calls it yet.
+Encoded as `oa_fs_apply` (`common/ui_anim.c`, `openaurora/ui_anim.h`) with unit
+vectors at both endpoints for every type, p = 0.5 for types 1, 2, 3, 5 and 7 and
+p = 0.25 for the sine type, plus progress clamping and short/NULL vertex arrays.
+The pool value at 0xb32aa8 is a double precision π (`0x400921fb54442d18`); the
+implementation multiplies the widened 6p by that double and narrows for `sinf`,
+matching the instruction order. Host `make check` (196 ok), ASan/UBSan and
+ARM/qemu pass. Applying the transform to the renderer's whole-scene composite is
+still open; nothing calls it yet.
 
-Next: a rail-specific duration, applying the recovered full-screen transform in
-the renderer composite, and independent frame sequences. Keep RGBA asset inputs
-and BGRA framebuffer output distinct. On-panel timing remains unverified.
+Next: confirming the rail's button/timing mapping, applying the full-screen
+transform in the renderer composite, and independent frame sequences. Keep RGBA
+asset inputs and BGRA framebuffer output distinct. On-panel timing remains
+unverified.
 
 ## Launcher/rail focus timing, 2026-11-01
 
@@ -395,3 +412,31 @@ Still unproven: whether the category rail's button objects are created from
 `launcheritemFA/FI` (which would give them the 300 ms scale/shift) or only use
 highlight/glyph images, and how often `drawButton` re-arms the controller. Do not
 copy the tile 300 ms onto the rail until that mapping is established.
+
+## Live TV probe run, 2026-11-01
+
+The slide was run on the set without touching the vendor UI or the framebuffer:
+`tests/mod_slide_probe.c` publishes a recording `display` and a `ui.clock`
+backed by `CLOCK_MONOTONIC` folded into the 90,000,000 ms period, the real
+`mod_ui_anim` and `mod_ui_fb` were staged in `/tmp`, and `ui.anim_enable=1`
+(an explicit, default-off bootstrap lever; the vendor bootstrap caller is still
+unrecovered) enabled the controller. No vendor module, `/dev/fb*`, settings
+write, key input or network change was involved. Size and SHA-256 were checked
+before execution and the staging was removed afterwards; the vendor Aurora PIDs
+(1967, 1785) were unchanged and no helper remained.
+
+Measured on real timers with a 263 px title in a 100 px box (distance 163,
+duration 4600 ms):
+
+| event | measured |
+|---|---|
+| sampler cadence | mean 10.08 ms over 914 samples |
+| first nonzero margin | +822 ms (after the 800 ms pause) |
+| final margin 163 | +3808 ms (pause + 3000 ms span) |
+| repeat restart at margin 0 | +6557 ms = 4554 (0.99 x 4600) + 2000 |
+| process exit | `timeout -t 13`, clean stop, run_rc 0 |
+
+The +6557 ms restart confirms the repeat is armed at progress > 0.99 and then
+waits 2000 ms, not at the end of the pass. This is real scheduling evidence on
+the TV, but the display was a recorder: it does not prove visible scanout,
+pixel parity or the on-panel look.

@@ -337,9 +337,14 @@ Constructor animation enablement is false; setAnimationEnable merely writes the
 flag. mod_ui_anim now publishes ui.anim v1 on ui.clock: four slots, duration
 below 1 rejected, same id replaced, cancel without a final callback, finalise
 at progress 1. List rectangles truncate; dialog progress is min(1, 1+(p-1)^3)
-over the recovered 1000 ms select path. The body of setFullScreenAnimationProgress
-is still unrecovered, so the dialog callback only opens the selected tile when
-done. Rail focus stays instant. Text-slide callers remain open.
+over the recovered 1000 ms select path. The full-screen progress mapping is
+recovered: SVGDialog::startAnimation maps dialog modes 57..64 to HAL types 1..8
+for a 1000 ms controller, onAnimationProgress feeds the cubic, destroy forces
+1.0, and `oa_fs_apply` reproduces the per-type vertex rules (no renderer
+consumer yet). Text-slide duration/margin/repeat are wired in mod_ui_fb with
+enablement gating, box clipping and the 0.99 repeat; suspend/stop cleanup is
+tested. The rail's button/timing mapping is still unproven (300 ms tile records
+exist, but the category rail is not confirmed to use them).
 Raw clock evidence/tests: artifacts/analysis/ui-clock-2026-10-31.
 
 Latest power evidence: [POWER-STANDBY-CONTRACT](artifacts/reports/POWER-STANDBY-CONTRACT-2026-10-31.md),
