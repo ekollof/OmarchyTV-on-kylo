@@ -224,6 +224,35 @@ AdvancedPictureSettingsDialog; 0x120 forwards to handleSettingsMenuResult;
 `TabDialog::onRightLeftPress` switches tabs (hide → UIGroup 0x20c/0x20d →
 updateGlyphAndTitle → show) when the submenu flag is set.
 
+## Widget-name table mechanism (getWidgetStandardName 0xeee798)
+
+Each ID maps to a 4-entry string table (mirror/state variants); the taken arm
+loads entry[0]. Table bases live in `.data` (runtime UStrings) except id 0
+(`""`). Resolved entry[0] names for the renderBackground call sequence:
+
+```
+47 background, 17 mBotR, 5 gRowR, 53 alignment, 22 bar_mTopM, 10 gRowR,
+53 alignment, 18 mBotM, 6 gRowM, 53 alignment, 42 textPos,
+65 fontLight, 66 fontBold, 68 fontItalic, 67 fontLight,
+70 fontLightItalic, 69 fontBoldItalic,
+42 textPos, 14 mTopR, 2 gTopL, 53 alignment, 16 mRowR, 4 gTopL,
+53 alignment, 23 mRowMYellow, 11 mRowR, 53 alignment, 25 gRowMRed,
+13 mRowMGreen, 53 alignment, 15 mRowMRed, 3 gTopM, 53 alignment,
+24 title_gRowR, 12 gBotM, 53 alignment, ... (second half repeats the
+mask/font/textPos pattern for the remaining states)
+```
+
+Findings: `textPos` (id 42) is requested twice; ids 65–70 are the font-marker
+names scanned in priority order (consistent with UI-GLYPH-DRAW types 0–5);
+`alignment` (53) interleaves every slice. The second half repeats the pattern
+for the remaining widget states.
+
+The scale found last turn applies to the looked-up text rect on the
+single-line branch: `x1' = x0 + (surfaceW/maskW) * rectW`. Which looked-up
+rect becomes `+0x254`, and how the found font marker maps to the `+0x1c4`
+getFont type, need register-level dataflow not completed here — plus the FA
+animation target. No implementation from this yet.
+
 ## Line count writer found (SVGTextBox::create 0x10c8889)
 
 `create(id, text, rect, param_4, parent)` writes `*(this + 0x1b4) = param_4`
