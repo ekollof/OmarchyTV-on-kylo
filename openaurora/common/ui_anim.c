@@ -301,3 +301,51 @@ void oa_fs_apply(int type, float progress, float *vx, float *vy, int vertices)
         break;                            /* no vertex change */
     }
 }
+
+void oa_fs_scene_transform(int type, float progress, oa_fs_scene *out)
+{
+    const double pi = 3.14159265358979323846;
+    const float two_thirds = 0.6666667f;
+    const float one_third = 0.33333334f;
+    const float one_sixth = 0.16666667f;
+    float p = progress;
+
+    if (!out) return;
+    out->sx = out->sy = 1.0f;
+    out->dx = out->dy = 0.0f;
+    out->affine = 1;
+    if (p < 0.0f) p = 0.0f;
+    else if (p > 1.0f) p = 1.0f;
+
+    switch (type) {
+    case OA_FS_SCALE_AXES:
+        /* Keystone: only vertices 1 and 2 are scaled, so one affine scene transform cannot
+         * represent it. The factors are reported for a mesh-warp consumer. */
+        out->affine = 0;
+        out->sx = 0.5f + p * 0.5f;
+        out->sy = two_thirds + p * one_third;
+        break;
+    case OA_FS_SLIDE_NEG:
+    case OA_FS_SLIDE_NEG_SECOND:
+        out->dx = -(1.0f - p) * one_sixth;
+        break;
+    case OA_FS_SLIDE_POS:
+    case OA_FS_SLIDE_POS_SECOND:
+        out->dx = (1.0f - p) * one_sixth;
+        break;
+    case OA_FS_SCALE: {
+        float s = two_thirds + p * one_third;
+        out->sx = out->sy = s;
+        break;
+    }
+    case OA_FS_WOBBLE: {
+        float three_p = p * 3.0f;
+        float six_p = three_p + three_p;
+        float s = 1.0f + (1.0f - p) * sinf((float)((double)six_p * pi)) * one_third;
+        out->sx = out->sy = s;
+        break;
+    }
+    default:
+        break;                            /* none/uniform-only: identity */
+    }
+}

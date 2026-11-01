@@ -89,4 +89,16 @@ enum {
     OA_FS_SCALE = 7, OA_FS_WOBBLE = 8
 };
 void oa_fs_apply(int type, float progress, float *vx, float *vy, int vertices);
+
+/* Scene-level form of the same transform, in the vendor vertex space (clip/normalized, not pixels):
+ *   x' = dx + sx*x,  y' = dy + sy*y
+ * affine=0 means the type is a keystone (type 1 moves only vertices 1 and 2) and cannot be
+ * expressed as one affine scene transform; the composite stage needs a mesh warp for it. Types
+ * 4/5 address the vendor's second vertex group; for a single composited scene they carry the same
+ * shift as 2/3. Cross-checked against oa_fs_apply in tests/ui_anim_review.c. */
+typedef struct {
+    float sx, sy, dx, dy;
+    int affine;
+} oa_fs_scene;
+void oa_fs_scene_transform(int type, float progress, oa_fs_scene *out);
 #endif

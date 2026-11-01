@@ -275,11 +275,59 @@ int main(int argc, char **argv)
         oa_fs_apply(OA_FS_SCALE_AXES, 0.0f, vx, vy, 0);
     }
 
+    /* Scene contract: an affine scene transform must equal oa_fs_apply on every vertex, and the
+     * keystone type must be flagged as not representable by one affine. */
+    {
+        static const int types[] = { OA_FS_NONE, OA_FS_SLIDE_NEG, OA_FS_SLIDE_POS,
+                                     OA_FS_UNIFORM_ONLY, OA_FS_SCALE, OA_FS_WOBBLE };
+        static const float steps[] = { 0.0f, 0.5f, 1.0f };
+        const float px[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
+        const float py[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
+        oa_fs_scene sc;
+
+        for (unsigned t = 0; t < sizeof types / sizeof types[0]; t++)
+            for (unsigned k = 0; k < sizeof steps / sizeof steps[0]; k++) {
+                float vx[4], vy[4];
+                memcpy(vx, px, sizeof vx);
+                memcpy(vy, py, sizeof vy);
+                oa_fs_scene_transform(types[t], steps[k], &sc);
+                assert(sc.affine == 1);
+                oa_fs_apply(types[t], steps[k], vx, vy, 4);
+                for (int i = 0; i < 4; i++) {
+                    assert(fabsf(vx[i] - (sc.dx + sc.sx * px[i])) < 1e-6f);
+                    assert(fabsf(vy[i] - (sc.dy + sc.sy * py[i])) < 1e-6f);
+                }
+            }
+
+        /* Types 4/5 address the vendor's second vertex group; for one composited scene they carry
+         * the same shift as 2/3. */
+        {
+            oa_fs_scene a, b;
+            oa_fs_scene_transform(OA_FS_SLIDE_NEG_SECOND, 0.25f, &a);
+            oa_fs_scene_transform(OA_FS_SLIDE_NEG, 0.25f, &b);
+            assert(a.dx == b.dx && a.sx == b.sx && a.sy == b.sy);
+            oa_fs_scene_transform(OA_FS_SLIDE_POS_SECOND, 0.25f, &a);
+            oa_fs_scene_transform(OA_FS_SLIDE_POS, 0.25f, &b);
+            assert(a.dx == b.dx);
+        }
+
+        oa_fs_scene_transform(OA_FS_SCALE_AXES, 0.5f, &sc);
+        assert(sc.affine == 0);                       /* keystone, needs a mesh warp */
+        assert(fabsf(sc.sx - 0.75f) < 1e-6f && fabsf(sc.sy - 0.8333333f) < 1e-5f);
+
+        oa_fs_scene_transform(OA_FS_SCALE, 2.0f, &sc); /* progress clamps to 1 */
+        assert(sc.affine == 1 && fabsf(sc.sx - 1.0f) < 1e-6f && sc.dx == 0.0f);
+        oa_fs_scene_transform(OA_FS_SLIDE_NEG, -1.0f, &sc);
+        assert(fabsf(sc.dx + 1.0f / 6.0f) < 1e-6f);
+        oa_fs_scene_transform(OA_FS_NONE, 0.0f, NULL); /* NULL output is tolerated */
+    }
+
     h.stop_requested = 1;
     assert(oa_host_run(&h) == 0);
     close(h.selfpipe[0]); close(h.selfpipe[1]); pthread_mutex_destroy(&h.post_mu);
     puts("  ok   real animation DSO restores its timer after suspend; timer allocation failure is retryable");
     puts("  ok   text-slide duration/margin match AnimationHelper (pause 800, speed 50, x1000)");
     puts("  ok   full-screen animation types 1..8 match the HAL vertex rules and clamp");
+    puts("  ok   scene transform equals oa_fs_apply for affine types; keystone flagged");
     return 0;
 }
