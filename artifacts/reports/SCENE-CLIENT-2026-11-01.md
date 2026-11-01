@@ -12,7 +12,9 @@ helper process and seqpacket connection. No EGL library is linked into the
 parent. Spawn/setup is explicit; successful spawn is not initialization. The
 caller submits OPEN and waits for its successful completion before submitting
 frames. Instance-scoped tickets prevent an old session's results matching a new
-one. State is single-threaded and must be serialized by the integrating host.
+one within a loaded library. A DSO reload can reset the static instance counter;
+GRAPHICS-MODULE maps public tickets through the host owner id to cover reload.
+State is single-threaded and must be serialized by the integrating host.
 Inherited clients reject use after fork with EPERM.
 
 One accepted request or uncollected result occupies the bounded slot. Submit
@@ -92,6 +94,10 @@ remain. No persistent deployment. Matching16-module production stage and older
 helper diagnostics preserved. Evidence: `artifacts/analysis/scene-client-2026-11-01/`.
 
 ## Next integration
+
+Follow-up: GRAPHICS-MODULE-2026-11-01 now implements/tests the provider's owned
+watch/timer/quiescence and actual GPU service frames. Consumer coalescing,
+first-frame readiness and ui_fb lifecycle below remain pending.
 
 Expose an asynchronous provider with owned fd watch and reap timer. Reserve
 completion machinery before spawning. During ABI3 quiescence, close IPC and

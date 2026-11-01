@@ -49,6 +49,20 @@ syntax defect.
 
 ## Development build and evidence
 
+GRAPHICS-MODULE-2026-11-01: mod_graphics/display.gpu v1 adds owned watch/timer,
+nonblocking quiescence, public host-id tickets and suspend/resume/holds. Four
+strict host/sanitizer/TV groups pass; full host218 checks. Actual service
+completes410 GPU frames, then the real host reactor retries cleanup until DSO
+unload and full framebuffer/region/MAU/pan restoration. Native isolated artifacts
+under build-tv-v3/graphics-module: DSO69900bytes/2afefd7ffaedc6bff9e411561e05ddc0
+(maxGLIBC2.15), lifecycle478980bytes/f3ff7b116074fe7cee3f7440cb2fc065 and
+diagnostic483724bytes/3e091ecdf8ef747c6c949d70b24d6415 (max2.17). Same stock
+boot/PID1785, full hash41735daa69dc137743b59efe12db4a19/pan0,0, hook/hosts,
+access/privacy/safety markers. Live Mali hash matches offline source. Staging/
+backup/FIFOs/helpers removed. Source now17 modules; production stage remains16,
+not rebuilt/deployed. Next: GPU display consumer/coalescing/ui_fb/readiness.
+Abnormal child exit latches unproven cleanup; automatic native recovery is open.
+
 SCENE-CLIENT-2026-11-01: lower nonblocking parent (submit/pump/take/shutdown,
 WNOHANG reap) passes five strict host/sanitizer/TV groups and410 actual GPU
 frames through the diagnostic adapter. Blocked finish/close retains the child;

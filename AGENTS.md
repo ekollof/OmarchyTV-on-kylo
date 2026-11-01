@@ -222,7 +222,8 @@ runtime lookup; a compiler's libc version is not compatibility proof.
 Keep new ABI 3 ARM artifacts in `openaurora/build-tv-v3`; preserve `build-tv`,
 the historical ABI 2 `build-tv-v2`, installed ABI 1 files and recovery images.
 Do not mix core/module ABIs. ABI 3 adds the nonblocking quiescence gate.
-Use the explicit TARGET=tv BUILD=build-tv-v3 command in ARCHITECTURE.md;
+Use the explicit TARGET=tv BUILD=build-tv-v3 command in
+[openaurora/docs/ARCHITECTURE.md](openaurora/docs/ARCHITECTURE.md);
 `make tv` hardcodes build-tv and `make clean` also removes build-tv.
 
 ## Recovery and process safety

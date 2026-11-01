@@ -1,0 +1,64 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+[434395] ERR  host         graphics: refusing to unload, service 'display.gpu' still held (use --force)
+[434397] ERR  host         graphics: refusing to unload, service 'display.gpu' still held (use --force)
+[434401] ERR  host         graphics: cleanup pending; retry stop/unload
+[434407] ERR  host         graphics: cleanup pending; retry stop/unload
+[434407] ERR  host         graphics: cleanup pending; retry stop/unload
+[434428] ERR  host         graphics: cleanup pending; retry stop/unload
+[434428] ERR  host         graphics: cleanup pending; retry stop/unload
+[434429] ERR  host         graphics: cleanup pending; retry stop/unload
+[434430] ERR  host         graphics: cleanup pending; retry stop/unload
+[434431] ERR  host         graphics: cleanup pending; retry stop/unload
+[434432] ERR  host         graphics: cleanup pending; retry stop/unload
+[434433] ERR  host         graphics: cleanup pending; retry stop/unload
+[434435] ERR  host         graphics: cleanup pending; retry stop/unload
+[434436] ERR  host         graphics: cleanup pending; retry stop/unload
+[434437] ERR  host         graphics: cleanup pending; retry stop/unload
+[434438] ERR  host         graphics: cleanup pending; retry stop/unload
+[434439] ERR  host         graphics: cleanup pending; retry stop/unload
+[434440] ERR  host         graphics: cleanup pending; retry stop/unload
+[434441] ERR  host         graphics: cleanup pending; retry stop/unload
+[434443] ERR  host         graphics: cleanup pending; retry stop/unload
+[434444] ERR  host         graphics: cleanup pending; retry stop/unload
+[434445] ERR  host         graphics: cleanup pending; retry stop/unload
+[434446] ERR  host         graphics: cleanup pending; retry stop/unload
+[434447] ERR  host         graphics: cleanup pending; retry stop/unload
+[434448] ERR  host         graphics: cleanup pending; retry stop/unload
+[434449] ERR  host         graphics: cleanup pending; retry stop/unload
+[434450] ERR  host         graphics: cleanup pending; retry stop/unload
+[434452] ERR  host         graphics: start() failed (-1)
+[434453] ERR  graphics     timer table full
+[434453] ERR  host         graphics: start() failed (-1)
+[434453] ERR  host         graphics: start() failed (-1)
+[434454] ERR  host         graphics: cleanup pending; retry stop/unload
+[434454] ERR  host         graphics: cleanup pending; retry stop/unload
+[434454] ERR  host         graphics: cleanup pending; retry stop/unload
+[434481] ERR  host         graphics: cleanup pending; retry stop/unload
+[434482] ERR  host         graphics: cleanup pending; retry stop/unload
+[434484] ERR  host         graphics: cleanup pending; retry stop/unload
+[434485] ERR  host         graphics: cleanup pending; retry stop/unload
+[434486] ERR  host         graphics: cleanup pending; retry stop/unload
+[434488] ERR  host         graphics: cleanup pending; retry stop/unload
+[434489] ERR  host         graphics: cleanup pending; retry stop/unload
+[434490] ERR  host         graphics: cleanup pending; retry stop/unload
+[434492] ERR  host         graphics: cleanup pending; retry stop/unload
+[434493] ERR  host         graphics: cleanup pending; retry stop/unload
+[434495] ERR  host         graphics: cleanup pending; retry stop/unload
+[434496] ERR  host         graphics: cleanup pending; retry stop/unload
+[434497] ERR  host         graphics: cleanup pending; retry stop/unload
+[434499] ERR  host         graphics: cleanup pending; retry stop/unload
+[434500] ERR  host         graphics: cleanup pending; retry stop/unload
+[434501] ERR  host         graphics: cleanup pending; retry stop/unload
+[434503] ERR  host         graphics: cleanup pending; retry stop/unload
+[434505] ERR  host         graphics: cleanup pending; retry stop/unload
+[434506] ERR  host         graphics: cleanup pending; retry stop/unload
+[434508] ERR  host           ok   owned watch/timer, bounded submit/cancel, service holds, suspend/resume and reload-scoped tickets
+  ok   blocked child cleanup retains DSO/context/timer; --force cannot bypass quiescence
+  ok   config/spawn/timer/watch failure retains completion path and unwinds services/children
+  ok   abnormal peer death is reaped but retains a faulted module; it is not successful device cleanup
+graphics: cleanup pending; retry stop/unload
+test_exit=0

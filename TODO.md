@@ -406,11 +406,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 - [ ] Complete accelerated scene presentation and visible animation acceptance.
       EGL-WINDOW now proves direct native presentation on the initialized layer.
       SCENE-HELPER now tests the separate bootstrap/renderer on actual GPU;
-      SCENE-CLIENT tests the lower nonblocking parent on actual GPU. Integrate
-      its fd watch, reap timer and lifetime in an asynchronous host provider.
-      Integrate an owning EGL worker, nonblocking quiescence, bounded/coalesced
-      async frame/completion and readiness semantics before production service
-      wiring. No display.renderer switch exists yet. Preserve failed-close
+      GRAPHICS-MODULE now tests the asynchronous display.gpu provider on actual
+      GPU with owned watch/reap timer and nonblocking quiescence. Add bounded/coalesced
+      UI frames, completion consumption and readiness before production UI wiring.
+      No display.renderer switch exists yet. Preserve failed-close
       ownership; test module reload/suspend/resume/failures on hardware.
       CPU reference transforms remain slow; direct-window diagnostic meets its
       own50Hz target. Measure controller sampling, renderer and physical refresh
@@ -438,8 +437,21 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       groups pass, including blocked child work/cleanup and target exec failure.
       Maintained client also completes410 actual GPU frames through the full
       snapshot diagnostic, with child exit0/restoration/independent hash match.
-      Full host214 checks pass. No host provider/watch/timer/coalescing/readiness
-      or UI/module lifecycle integration yet. SCENE-CLIENT-2026-11-01.
+      Full host214 checks pass at that milestone. GRAPHICS-MODULE subsequently
+      adds the provider/watch/timer; coalescing/readiness and UI integration remain
+      pending. SCENE-CLIENT-2026-11-01.
+- [x] Reloadable graphics provider: display.gpu v1 with owned completion watch,
+      reap timer, retained failed-start cleanup and nonblocking quiescence.
+      Public tickets use host module ids across reload. Four host/sanitizer/TV
+      lifecycle groups pass (holds, suspend/resume, failures, blocked close and
+      abnormal-peer fault latch). Actual service completes410 GPU frames; host
+      reactor drains/unloads before full snapshot restoration/hash match.
+      Full host218 checks pass. Source17 modules; preserved production stage16.
+      UI coalescing/readiness and actual UI reload/power behavior still open.
+      GRAPHICS-MODULE-2026-11-01.
+- [ ] Recover native GPU abnormal-process release/recovery semantics from
+      firmware/driver before adding automatic recovery or clearing the graphics
+      cleanup_unproven latch. Reap/signal status is not successful EGL teardown.
 - [x] Direct EGL native-window diagnostic: recovered4-byte dimensions, fb1/
       primary-buffer profile and swap/MAU contract. Eight effects at50Hz pacing
       passed on actual display, owner confirmed upright/full-screen/smooth;

@@ -22,7 +22,7 @@ supersedes the old dumb-buffer, palette-handshake and init-does-SETPLANE plans.
 mod_ui_fb paints the measured portal through the display service, moves
 rail/card focus from input/key, and publishes ui.portal for the same rectangles.
 Select opens that tile, Menu and Exit return to the portal, and Aux reads
-m_current_source through settings. mod_ui_anim publishes ui.anim v1 and requires
+m_current_source through settings. mod_ui_anim publishes ui.anim v2 and requires
 ui.clock. mod_ir publishes input v1; feed() is the UART parser and an empty
 ir.device leaves the port closed. UI-PARITY records the offline test. Labels,
 other screens and cold scanout remain open.
@@ -47,8 +47,8 @@ Pixel formats are boundary-specific: all measured raw 32bpp OSD framebuffers are
 BGRA (B,G,R,A), including fb1; OAI1 assets and display blit inputs are straight
 RGBA. The display backend converts RGBA inputs into BGRA framebuffer bytes.
 
-`common/scene_gles.c` is a lower synchronous owner, used only by opt-in
-diagnostics so far. EGL-SCENE establishes its pbuffer/pixel lifecycle;
+`common/scene_gles.c` is a lower synchronous owner, used by the separate native
+renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;
 EGL-WINDOW establishes direct display1 presentation with the retained4-byte
 native window, process-local primary-buffer profile and cached texture. The
 owner confirmed smooth full-screen effects at the diagnostic's50Hz pacing;
@@ -56,15 +56,22 @@ the full original framebuffer/region/MAU/pan were restored. GPU readback is
 bottom-up premultiplied RGBA; native-window output was independently checked
 as BGRA. Production display services still use the CPU backend.
 
-Native integration requires a nonblocking provider with an owning worker/helper,
-bounded immutable frame transfer, cache revisions and completion receipts.
-Prefer separate exec ownership to isolate Mali's process-global profile/cache
-and driver threads. Reuse broker-style IPC/WNOHANG lifecycle; retain unfinished
-EGL cleanup before releasing the helper/DSO. Existing present() means commit,
-so async enqueue success needs a distinct contract and cannot acknowledge
-ui_fb/supervisor readiness. The10ms controller sampler does not mandate100Hz
-physical scanout. Full vendor sequence, module reload and cold/resume acceptance
-remain open.
+`mod_graphics` now publishes `display.gpu` v1 over the separate EGL-free bootstrap
+and late-loaded renderer. Explicit graphics.broker/graphics.renderer paths are
+required; optional executable/renderer build targets are not a deployment.
+OPEN/frame/take/cancel use copied completions, caller-owned immutable image fds,
+cache revisions and host-module-id public tickets. A static DSO counter alone
+cannot prevent reload aliases. Owned watch/reap timer keep ABI3 cleanup
+nonblocking; abnormal child death retains a faulted provider until native release/
+recovery is understood. Four host/sanitizer/TV lifecycle groups and actual GPU
+service frames pass; see [GRAPHICS-MODULE](../../artifacts/reports/GRAPHICS-MODULE-2026-11-01.md).
+Source builds17 modules; the preserved matching production ARM stage remains16.
+
+UI integration still needs transform coalescing, immutable scene snapshots,
+final-frame retry and completion-driven readiness with provider holds. Existing
+display.present() means commit, so async enqueue cannot replace it or acknowledge
+ui_fb/supervisor readiness. The10ms sampler does not mandate100Hz physical
+scanout. Full vendor sequence, actual UI lifecycle and cold/resume remain open.
 tvshot decodes raw BGRA and saves ordinary RGB PNGs, which must not be swapped
 again. RGB565 and other vendor/API buffers retain their independently established
 formats. Pre-correction tvshot captures have red/blue swapped; preserve provenance.

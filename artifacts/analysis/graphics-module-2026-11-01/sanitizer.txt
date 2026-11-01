@@ -1,0 +1,82 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-graphics-module-san/core/check.o core/check.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-graphics-module-san/core/control.o core/control.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-graphics-module-san/core/host.o core/host.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-graphics-module-san/core/module.o core/module.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore  -o build-graphics-module-san/tests/graphics_module tests/graphics_module.c common/scene_broker_transport.c build-graphics-module-san/core/check.o build-graphics-module-san/core/control.o build-graphics-module-san/core/host.o build-graphics-module-san/core/module.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-graphics-module-san/modules/mod_graphics.so modules/graphics/graphics.c common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c 
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-graphics-module-san/modules/mod_ticker.so modules/ticker/ticker.c  \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-graphics-module-san/oa-scene-broker tools/display/oa-scene-broker.c common/scene_broker.c common/scene_broker_wire.c common/scene_broker_transport.c -ldl
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared  -Wl,-init,scene_fixture_init -Wl,-fini,scene_fixture_fini -o build-graphics-module-san/tests/scene-renderer-fixture.so tests/scene_renderer_fixture.c
+[564215] ERR  host         graphics: refusing to unload, service 'display.gpu' still held (use --force)
+[564222] ERR  host         graphics: refusing to unload, service 'display.gpu' still held (use --force)
+[564230] ERR  host         graphics: cleanup pending; retry stop/unload
+[564231] ERR  host         graphics: cleanup pending; retry stop/unload
+[564232] ERR  host         graphics: cleanup pending; retry stop/unload
+[564233] ERR  host         graphics: cleanup pending; retry stop/unload
+[564234] ERR  host         graphics: cleanup pending; retry stop/unload
+[564235] ERR  host         graphics: cleanup pending; retry stop/unload
+[564236] ERR  host         graphics: cleanup pending; retry stop/unload
+[564246] ERR  host         graphics: cleanup pending; retry stop/unload
+[564246] ERR  host         graphics: cleanup pending; retry stop/unload
+[564267] ERR  host         graphics: cleanup pending; retry stop/unload
+[564268] ERR  host         graphics: cleanup pending; retry stop/unload
+[564270] ERR  host         graphics: cleanup pending; retry stop/unload
+[564271] ERR  host         graphics: cleanup pending; retry stop/unload
+[564272] ERR  host         graphics: cleanup pending; retry stop/unload
+[564273] ERR  host         graphics: cleanup pending; retry stop/unload
+[564274] ERR  host         graphics: cleanup pending; retry stop/unload
+[564275] ERR  host         graphics: cleanup pending; retry stop/unload
+[564276] ERR  host         graphics: cleanup pending; retry stop/unload
+[564277] ERR  host         graphics: cleanup pending; retry stop/unload
+[564278] ERR  host         graphics: cleanup pending; retry stop/unload
+[564279] ERR  host         graphics: cleanup pending; retry stop/unload
+[564280] ERR  host         graphics: cleanup pending; retry stop/unload
+[564281] ERR  host         graphics: cleanup pending; retry stop/unload
+[564282] ERR  host         graphics: cleanup pending; retry stop/unload
+[564283] ERR  host         graphics: cleanup pending; retry stop/unload
+[564284] ERR  host         graphics: cleanup pending; retry stop/unload
+[564285] ERR  host         graphics: cleanup pending; retry stop/unload
+[564286] ERR  host         graphics: cleanup pending; retry stop/unload
+[564287] ERR  host         graphics: cleanup pending; retry stop/unload
+[564288] ERR  host         graphics: cleanup pending; retry stop/unload
+[564289] ERR  host         graphics: cleanup pending; retry stop/unload
+[564290] ERR  host         graphics: cleanup pending; retry stop/unload
+[564291] ERR  host         graphics: cleanup pending; retry stop/unload
+[564292] ERR  host         graphics: cleanup pending; retry stop/unload
+[564293] ERR  host         graphics: cleanup pending; retry stop/unload
+[564294] ERR  host         graphics: cleanup pending; retry stop/unload
+[564296] ERR  host         graphics: start() failed (-1)
+[564296] ERR  graphics     timer table full
+[564296] ERR  host         graphics: start() failed (-1)
+[564297] ERR  host         graphics: start() failed (-1)
+[564297] ERR  host         graphics: cleanup pending; retry stop/unload
+[564297] ERR  host         graphics: cleanup pending; retry stop/unload
+[564297] ERR  host         graphics: cleanup pending; retry stop/unload
+[564329] ERR  host         graphics: cleanup pending; retry stop/unload
+[564330] ERR  host         graphics: cleanup pending; retry stop/unload
+[564331] ERR  host         graphics: cleanup pending; retry stop/unload
+[564332] ERR  host         graphics: cleanup pending; retry stop/unload
+[564333] ERR  host         graphics: cleanup pending; retry stop/unload
+[564334] ERR  host         graphics: cleanup pending; retry stop/unload
+[564335] ERR  host         graphics: cleanup pending; retry stop/unload
+[564336] ERR  host         graphics: cleanup pending; retry stop/unload
+[564337] ERR  host         graphics: cleanup pending; retry stop/unload
+[564338] ERR  host         graphics: cleanup pending; retry stop/unload
+[564339] ERR  host         graphics: cleanup pending; retry stop/unload
+[564340] ERR  host         graphics: cleanup pending; retry stop/unload
+[564341] ERR  host         graphics: cleanup pending; retry stop/unload
+[564343] ERR  host         graphics: cleanup pending; retry stop/unload
+[564344] ERR  host         graphics: cleanup pending; retry stop/unload
+[564345] ERR  host         graphics: cleanup pending; retry stop/unload
+[564346] ERR  host         graphics: cleanup pending; retry stop/unload
+[564347] ERR  host         graphics: cleanup pending; retry stop/unload
+[564348] ERR  host         graphics: cleanup pending; retry stop/unload
+[564349] ERR  host         graphics: cleanup pending; retry stop/unload
+  ok   owned watch/timer, bounded submit/cancel, service holds, suspend/resume and reload-scoped tickets
+  ok   blocked child cleanup retains DSO/context/timer; --force cannot bypass quiescence
+  ok   config/spawn/timer/watch failure retains completion path and unwinds services/children
+  ok   abnormal peer death is reaped but retains a faulted module; it is not successful device cleanup
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

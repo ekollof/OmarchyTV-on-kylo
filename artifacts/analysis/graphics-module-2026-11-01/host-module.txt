@@ -1,0 +1,62 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-graphics-module/tests/graphics_module tests/graphics_module.c common/scene_broker_transport.c build-graphics-module/core/check.o build-graphics-module/core/control.o build-graphics-module/core/host.o build-graphics-module/core/module.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-graphics-module/modules/mod_graphics.so modules/graphics/graphics.c common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c 
+[441704] ERR  host         graphics: refusing to unload, service 'display.gpu' still held (use --force)
+[441707] ERR  host         graphics: refusing to unload, service 'display.gpu' still held (use --force)
+[441709] ERR  host         graphics: cleanup pending; retry stop/unload
+[441713] ERR  host         graphics: cleanup pending; retry stop/unload
+[441713] ERR  host         graphics: cleanup pending; retry stop/unload
+[441734] ERR  host         graphics: cleanup pending; retry stop/unload
+[441735] ERR  host         graphics: cleanup pending; retry stop/unload
+[441736] ERR  host         graphics: cleanup pending; retry stop/unload
+[441737] ERR  host         graphics: cleanup pending; retry stop/unload
+[441738] ERR  host         graphics: cleanup pending; retry stop/unload
+[441739] ERR  host         graphics: cleanup pending; retry stop/unload
+[441740] ERR  host         graphics: cleanup pending; retry stop/unload
+[441741] ERR  host         graphics: cleanup pending; retry stop/unload
+[441742] ERR  host         graphics: cleanup pending; retry stop/unload
+[441743] ERR  host         graphics: cleanup pending; retry stop/unload
+[441744] ERR  host         graphics: cleanup pending; retry stop/unload
+[441745] ERR  host         graphics: cleanup pending; retry stop/unload
+[441746] ERR  host         graphics: cleanup pending; retry stop/unload
+[441747] ERR  host         graphics: cleanup pending; retry stop/unload
+[441748] ERR  host         graphics: cleanup pending; retry stop/unload
+[441749] ERR  host         graphics: cleanup pending; retry stop/unload
+[441750] ERR  host         graphics: cleanup pending; retry stop/unload
+[441751] ERR  host         graphics: cleanup pending; retry stop/unload
+[441752] ERR  host         graphics: cleanup pending; retry stop/unload
+[441753] ERR  host         graphics: cleanup pending; retry stop/unload
+[441754] ERR  host         graphics: cleanup pending; retry stop/unload
+[441755] ERR  host         graphics: cleanup pending; retry stop/unload
+[441756] ERR  host         graphics: start() failed (-1)
+[441756] ERR  graphics     timer table full
+[441756] ERR  host         graphics: start() failed (-1)
+[441757] ERR  host         graphics: start() failed (-1)
+[441757] ERR  host         graphics: cleanup pending; retry stop/unload
+[441757] ERR  host         graphics: cleanup pending; retry stop/unload
+[441757] ERR  host         graphics: cleanup pending; retry stop/unload
+[441781] ERR  host         graphics: cleanup pending; retry stop/unload
+[441782] ERR  host         graphics: cleanup pending; retry stop/unload
+[441783] ERR  host         graphics: cleanup pending; retry stop/unload
+[441784] ERR  host         graphics: cleanup pending; retry stop/unload
+[441785] ERR  host         graphics: cleanup pending; retry stop/unload
+[441786] ERR  host         graphics: cleanup pending; retry stop/unload
+[441787] ERR  host         graphics: cleanup pending; retry stop/unload
+[441788] ERR  host         graphics: cleanup pending; retry stop/unload
+[441789] ERR  host         graphics: cleanup pending; retry stop/unload
+[441790] ERR  host         graphics: cleanup pending; retry stop/unload
+[441791] ERR  host         graphics: cleanup pending; retry stop/unload
+[441792] ERR  host         graphics: cleanup pending; retry stop/unload
+[441793] ERR  host         graphics: cleanup pending; retry stop/unload
+[441794] ERR  host         graphics: cleanup pending; retry stop/unload
+[441796] ERR  host         graphics: cleanup pending; retry stop/unload
+[441797] ERR  host         graphics: cleanup pending; retry stop/unload
+[441798] ERR  host         graphics: cleanup pending; retry stop/unload
+[441799] ERR  host         graphics: cleanup pending; retry stop/unload
+[441800] ERR  host         graphics: cleanup pending; retry stop/unload
+[441801] ERR  host         graphics: cleanup pending; retry stop/unload
+  ok   owned watch/timer, bounded submit/cancel, service holds, suspend/resume and reload-scoped tickets
+  ok   blocked child cleanup retains DSO/context/timer; --force cannot bypass quiescence
+  ok   config/spawn/timer/watch failure retains completion path and unwinds services/children
+  ok   abnormal peer death is reaped but retains a faulted module; it is not successful device cleanup
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

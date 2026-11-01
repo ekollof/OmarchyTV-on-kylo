@@ -9,6 +9,7 @@
 
 #include "openaurora/audio_curve.h"
 #include "openaurora/audio_broker.h"
+#include "openaurora/scene_broker.h"
 #include "openaurora/cec_policy.h"
 #include "openaurora/ui_anim.h"
 
@@ -109,6 +110,24 @@ typedef struct {
      * outside the quad. type 0 or progress outside 0..1 clears the transform. */
     int (*set_scene_transform)(int type, float progress);
 } oa_display_iface;
+
+/* display.gpu v1 — explicit separate-process native scene session. Loop thread
+ * only; hold provider until abandoned tickets are canceled. One pending request
+ * or uncollected copied result. image fd remains caller-owned after submit;
+ * -1 means cached revision. OPEN completion initializes, FRAME completion means
+ * GPU render/swap/finish, neither enqueue success nor physical scanout proof.
+ * Cancellation discards a result, never interrupts hardware work. Session closes
+ * on module suspend/stop; resume requires a new OPEN and image upload. Public
+ * tickets are scoped to the host module id and survive suspend without aliasing.
+ * No callback/user pointer crosses this interface. */
+#define OA_SVC_DISPLAY_GPU "display.gpu"
+typedef struct {
+    int (*open)(uint64_t *ticket);
+    int (*frame)(uint64_t revision, unsigned type, float progress, int image, uint64_t *ticket);
+    int (*take)(uint64_t ticket, oa_scene_reply *reply); /*1 ready/0 pending/-1 errno*/
+    int (*cancel)(uint64_t ticket);
+    int (*is_open)(void); /*1 initialized/0 not initialized/-1 fault; no I/O*/
+} oa_display_gpu_iface;
 
 /* audio.curve — immutable AQ-derived DSP table, published by mod_audio_curve.
  * Hold the provider through lookup/release while using this interface. copy()

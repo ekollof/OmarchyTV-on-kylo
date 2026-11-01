@@ -10,7 +10,10 @@ typedef struct oa_scene_client oa_scene_client;
  * not initialized: submit OPEN and collect its completion. Target libc may
  * report spawn success before exec failure. *out must be NULL. */
 int oa_scene_client_spawn(oa_scene_client **out, const char *helper, const char *renderer);
-/* request.ticket is ignored; generated tickets are instance-scoped. One pending
+/* request.ticket is ignored; generated tickets are instance-scoped within this
+ * loaded client library. A reloadable provider must map public tickets through
+ * its host owner id: a DSO reload can reset the library's static instance count.
+ * One pending
  * request or uncollected result. Caller retains image fd; close it after success
  * or reuse after EAGAIN. No input mapping/copy/seal creation on this path.
  * Submitted OPEN/FRAME success is never a committed-frame/readiness receipt. */

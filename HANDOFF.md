@@ -24,7 +24,27 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest milestone: [SCENE-CLIENT](artifacts/reports/SCENE-CLIENT-2026-11-01.md)
+Latest milestone: [GRAPHICS-MODULE](artifacts/reports/GRAPHICS-MODULE-2026-11-01.md)
+adds mod_graphics/display.gpu v1 (explicit graphics.broker/renderer paths), owned
+watch/timer, nonblocking ABI3 quiescence and host-id public tickets. Four strict
+host/sanitizer/TV lifecycle groups pass; full host218 checks. Actual service
+completes410 GPU frames and the real host reactor drains/unloads it before full
+snapshot/region/MAU/pan restoration and independent hash match. Live Mali hash
+matches offline; decompiled/ARM native-window/swap/MAU extracts were rechecked.
+No new hardware calls. Same stock boot/PID1785/access/privacy; staging/backup/
+FIFOs/helpers removed. Isolated native identities in MEMORY/report. Source17
+modules, preserved production stage16; no persistent deployment.
+
+Next: GPU-backed display consumer/coalescing/ui_fb integration. Keep immutable
+revisions, final-frame retry, completion-driven first-frame readiness and service
+holds through reload/suspend/resume. CPU display v2 remains default; no
+display.renderer option. The service's is_open is not visible-frame readiness.
+Do not reuse a DSO static ticket counter as a public reload token. Abnormal GPU
+child death latches cleanup_unproven; automatic recovery needs native release
+evidence, not a guessed reset. No actual GPU child was killed in fault tests.
+The new scene-module-client is a blocking diagnostic adapter, not UI code.
+
+Previous milestone: [SCENE-CLIENT](artifacts/reports/SCENE-CLIENT-2026-11-01.md)
 adds common/scene_client.c: one pending/result, instance tickets, nonblocking
 send/receive, copied completions, EOF shutdown and WNOHANG reap/destroy gate.
 Five strict host/sanitizer/TV groups pass, including FIFO-blocked finish/close,
@@ -35,11 +55,9 @@ Same stock boot/PID1785/full framebuffer hash/pan/access/privacy; staging,
 backup/FIFOs/helpers removed. Isolated build-tv-v3/scene-client identities in
 MEMORY/report; no matching production stage rebuild.
 
-Next: integrate this client into an asynchronous provider with owned watch/reap
-timer and ABI3 quiesce. Reserve completion machinery before spawning; close IPC
-and keep the timer/context alive until reap. Service holds/copy-only results,
-transform coalescing, immutable revisions, final-frame retry and completion-driven
-first-frame readiness are still pending. No display.renderer option yet.
+GRAPHICS-MODULE above supplies the provider/watch/timer/quiescence. Consumer
+coalescing, immutable revisions/final-frame retry and first-frame readiness remain
+pending. No display.renderer option yet.
 tools/display/scene-probe-client.c now wraps the maintained client but is a
 BLOCKING diagnostic adapter; never move its polling/wait loops into the host.
 

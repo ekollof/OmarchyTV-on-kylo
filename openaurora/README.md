@@ -21,8 +21,8 @@ Use [ARCHITECTURE](docs/ARCHITECTURE.md) for ABI/build/lifecycle details,
 [RECOVERY](docs/RECOVERY.md) for the independent supervisor.
 
 TV test-window authorization and the latest verified state are in ../AGENTS.md
-and ../MEMORY.md. Installed/recovery artifacts remain ABI 1. New development is ABI 2 in
-build-tv-v2: rebuild core/modules together and preserve build-tv. See the explicit
+and ../MEMORY.md. Installed/recovery artifacts remain ABI 1. New development is ABI 3 in
+build-tv-v3: rebuild core/modules together and preserve build-tv/build-tv-v2. See the explicit
 build command in ARCHITECTURE; make tv currently hardcodes the baseline directory.
 
 | component | actual evidence and remaining limit |
@@ -30,8 +30,8 @@ build command in ARCHITECTURE; make tv currently hardcodes the baseline director
 | core/registry/worker posts/ABI checks | host/sanitizer/ARM regressions; state-aware reload and dependency-ordered lifecycle; system-sleep/rollback limits remain |
 | Unix control transport | bounded nonblocking queues, partial writes/backpressure, disconnect/input/cleanup tests pass host/sanitizer/ARM; stdout console remains synchronous |
 | sleep cycle / power service+CLI | nine engine and seven wrapped-power regression groups pass host/sanitizer/ARM; native device/wake/hardware acceptance remains open |
-| --check | rebuilt core + 11 modules passed on real TV from /tmp; proves loader/metadata only |
-| display | historical vendor-initialized paint; default commit omission fixed offline; independent cold scanout/resume unverified |
+| --check | preserved matching core +16 modules passed on TV; source now17, graphics has separate native lifecycle/GPU evidence; loader preflight is not hardware health |
+| display | CPU reference and separate display.gpu provider verified on initialized real fb1 with full restoration; UI GPU integration and independent cold/resume remain open |
 | IR | reader/profile map exist; actual code-space, repeat/release and navigation unverified |
 | power | final RAM-entry callback via host.sleep; manual hooks never sleep; full device preparation/wake ownership unverified |
 | panel | verified PWM request/return contract; independent brightness/power behavior incomplete |

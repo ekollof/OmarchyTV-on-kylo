@@ -24,7 +24,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings source ui_fb ui_clock ui_anim audio_curve cec audio_mixer
+MODULES  := plat ticker ir ui_console panel power display audio settings source ui_fb ui_clock ui_anim audio_curve cec audio_mixer graphics
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -94,6 +94,10 @@ $(BUILD)/modules/mod_ui_fb.so: modules/ui_fb/ui_fb.c common/ui_anim.c include/op
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
 $(BUILD)/modules/mod_audio_mixer.so: modules/audio_mixer/audio_mixer.c common/audio_broker_wire.c include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_broker.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+
+$(BUILD)/modules/mod_graphics.so: modules/graphics/graphics.c common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/module.h include/openaurora/services.h include/openaurora/scene_client.h include/openaurora/scene_broker.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
@@ -442,7 +446,7 @@ $(BUILD)/tests/scene_broker: tests/scene_broker.c common/scene_broker.c common/s
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread -lm
 
 .PHONY: check-scene-broker
-check: check-scene-broker check-scene-spawn check-scene-client
+check: check-scene-broker check-scene-spawn check-scene-client check-graphics-module
 check-scene-broker: $(BUILD)/tests/scene_broker
 	@$(BUILD)/tests/scene_broker
 
@@ -470,6 +474,14 @@ $(BUILD)/tests/scene_client: tests/scene_client.c common/scene_client.c common/s
 check-scene-client: $(BUILD)/tests/scene_client $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so
 	@$(BUILD)/tests/scene_client $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so
 
+$(BUILD)/tests/graphics_module: tests/graphics_module.c common/scene_broker_transport.c include/openaurora/scene_broker.h core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+
+.PHONY: check-graphics-module
+check-graphics-module: $(BUILD)/tests/graphics_module $(BUILD)/modules/mod_graphics.so $(BUILD)/modules/mod_ticker.so $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so
+	@$(BUILD)/tests/graphics_module $(BUILD)/modules $(abspath $(BUILD)/oa-scene-broker) $(abspath $(BUILD)/tests/scene-renderer-fixture.so)
+
 $(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
@@ -491,6 +503,10 @@ $(BUILD)/egl-window-probe: tools/display/egl-window-probe.c common/scene_gles.c 
 $(BUILD)/scene-window-probe: tools/display/egl-window-probe.c tools/display/scene-probe-client.c tools/display/scene-probe-client.h common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/scene_client.h include/openaurora/scene_broker.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_WINDOW_BROKER $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+$(BUILD)/scene-module-probe: tools/display/egl-window-probe.c tools/display/scene-module-client.c tools/display/scene-probe-client.h common/scene_broker_transport.c core/host.h include/openaurora/services.h include/openaurora/scene_broker.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -DOA_WINDOW_BROKER $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
 
 $(BUILD)/cec-probe: tools/cec/cec-probe.c common/cec_packet.c common/cec.c include/openaurora/vendor_cec.h include/openaurora/cec.h
 	@mkdir -p $(dir $@)
