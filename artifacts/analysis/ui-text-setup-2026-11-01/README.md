@@ -131,7 +131,49 @@ This matches the panel: Modus/Energiebesparing/Beeld-zoomen are text-value
 selection rows (font7 values), while 95/50/50/60 are slider digits (font16)
 owned by the dynamic rows.
 
-Do not implement title/tab/slider-graphics/focused labels from the fits. Next:
-resolve the `renderBackground` rectangle literals per widget resource and trace
-the dynamic slider-row creation through `updatePictureMode`/`updateSettingsList`
-(line counts/types, textPos transforms, value-widget geometry).
+## PictureSettingsDialog rows (initialiseFields 0xe0891d)
+
+Item inventory (`SettingItem(framework, id, label, type, values, ...)`):
+
+| id | label key | type | widget (setType) |
+|---|---|---|---|
+| 1 | CONTRAST (+suffix) | 9 | slider + value textbox |
+| 2 | BRIGHTNESS (+suffix) | 9 | slider + value textbox |
+| 3 | (00e09500 area) | 9 | slider + value textbox |
+| 4 | COLOUR_STR | 9 | slider + value textbox |
+| 5 | ENERGY_SAVING | 2 | label + selection box |
+| 6 | PICTURE_ZOOM | 2 | label + selection box |
+| 7 | PC_POSITION_SETTINGS_TITLE | 4 | button row |
+| 8 | PIP_SETTINGS_TITLE | 4 | button row |
+| 9 | (built label) | 2 | label + selection box |
+| 10 | (built label) | 4 | button row |
+| 0x120 | OLED Settings | 4 | button row |
+| 0x6d | ADVANCE_SETTINGS | 4 | button row |
+| 0xd | TV_TYPE | 2 | label + selection box |
+| 0xe | DISPLAY_FORMAT | 2 | label + selection box |
+| 0xf | HDMI_RESOLUTION_OPTION_LABEL | 2 | label + selection box |
+| 0 | MODE | 2 | label + selection box |
+
+Slider min/max/current come from the provider at `+0x5e8` (`+0x1e8`/`+0x1ec`
+for bounds). `drawRow` (0xd50f61) maps item type 9→row 0x17, 10→0x18,
+0xb→0x19 under the progressbar-in-place flag; `setType` case 9 shows the
+slidebar (+0x13c0) and the value textbox (+0x1ca8) — the font16 digit rows.
+
+## Value/tab interaction (no implementation yet)
+
+`onRightLeftPress` (0xe0ad0d): stores the selected id; id 6 with dual view
+shows a modal prompt; key-repeat is enabled on 0x2c8/0x2c9. Ids 0–5 go
+through `updateViaPictureElementSetting` (0→0x16 plus mode-value refresh,
+1→1, 2→2, 3→3, 4→4, 5→0x22) after an energy-design check; id 0xd logs and
+refreshes. All other ids (except 0x6d/8) remap 0x2c8→0x20c / 0x2c9→0x20d and
+forward to `SettingsDialog::onRightLeftPress` — the base value adjust.
+
+`onSelectPress` (0xe0a81d): 7 opens PCPicturePositionDialog; 0x6d opens
+AdvancedPictureSettingsDialog; 0x120 forwards to handleSettingsMenuResult;
+8 posts navigation message 0x19 (or a prompt); 10 opens the demo-mode dialog.
+`TabDialog::onRightLeftPress` switches tabs (hide → UIGroup 0x20c/0x20d →
+updateGlyphAndTitle → show) when the submenu flag is set.
+
+Do not implement value/tab/slider-graphics/title/focused labels from the fits.
+Next: resolve the `renderBackground` rectangle literals per widget resource,
+then implement from firmware geometry.

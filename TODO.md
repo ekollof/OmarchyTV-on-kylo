@@ -386,9 +386,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       alexa resources + setFont 26/30 when the row marker is absent;
       renderForeground gives font=+0x21c from getFont(width,+0x1b4 lines,
       +0x1c4 type), line height +0x1c0, alignment +0x220/+0x22c with
-      mirror/RTL remap. Transformed textPos scale/origin, per-widget line
-      counts/types and FA animation geometry are still undecoded, so
-      title/tab/focused text must not be built from the capture fits. Do not
+      mirror/RTL remap. Slider rows are type 9 (slidebar + value textbox);
+      PictureSettingsDialog builds ids 1-4 as type 9 (CONTRAST/BRIGHTNESS/…),
+      5/6/9/0xd/0xe/0xf/0 as type-2 selection rows and 7/8/10/0x120/0x6d as
+      type-4 button rows; value change is onRightLeftPress id dispatch
+      (updateViaPictureElementSetting or base adjust with 0x2c8→0x20c /
+      0x2c9→0x20d remap), Select opens sub-dialogs, tabs switch on Left/Right.
+      Transformed textPos scale/origin, per-widget line counts/types and FA
+      animation geometry are still undecoded, so title/tab/slider-graphics/
+      focused text must not be built from the capture fits. Do not
       guess FA/FI slider/button graphics or the .data literal names.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
