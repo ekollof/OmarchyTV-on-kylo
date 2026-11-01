@@ -492,6 +492,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       APNG scheduling/frame order, focus reset, interruption/finalise and render
       sampling against firmware. Separate offline formula matches from actual
       vendor/native frame sequences; rail cadence and complete screens remain open.
+      Fresh decoder audit contradicts our inferred endless rail loop; finish
+      higher-level image/focus lifetime verification before changing playback.
+      Vendor start also resets its immediate timer on every accepted start,
+      unlike our retained phase; dynamic list/float duration versus four-slot/
+      uint32 controller remains another gap. HANDOFF indexes raw ARM evidence.
 - [x] Direct EGL native-window diagnostic: recovered4-byte dimensions, fb1/
       primary-buffer profile and swap/MAU contract. Eight effects at50Hz pacing
       passed on actual display, owner confirmed upright/full-screen/smooth;

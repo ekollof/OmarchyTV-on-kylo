@@ -32,13 +32,58 @@ BGRA24,23,22,153. Navigation/reload/module cycle and full restore/hash match pas
 Same boot/PID/access/privacy, staging removed; installed production unchanged.
 Native artifacts in build-tv-v3/ui-alpha; exact identities/evidence in the report.
 
-Owner now explicitly requests checking **exact** vendor animation fidelity.
-Next audit APNG scheduling/frame order, timing/easing, geometry/filtering and
-interruption, with firmware/ARM then actual sequences. Rail completion sample
-was five revisions in nominal660ms; no30ms cadence/equivalence proof. Preserve
-that gap, and independently compare backdrop over real video. Screenshot RGB
-alone was not alpha proof. Do not equate CPU formulas or helper completion with
-complete vendor animation parity.
+Owner explicitly requested checking **exact** vendor animation fidelity, then
+requested this handoff and stop. The following audit is incomplete; **do not
+claim the animations are exact**. No animation behavior was changed after the
+tested transparency milestone, commit3d76a1f. Worktree evidence is preserved in
+artifacts/analysis/animation-audit-2026-11-01, from fresh read-only decompile/ARM
+inspection of Aurora MD5 64c252340d3af6c5d66072611b7bad7a:
+
+- **Rail loop assumption is contradicted by the decoder path.** APNG file
+  num_plays0 is metadata, not proof Aurora loops it. PngImageDecoderImpl's
+  decodeFirstFrame b2f9a8 sets frame index+30=0 and frame count+38 from
+  png_get_num_frames. decodeNextFrame b30654 increments index and only decodes
+  when index<count (b3067c..b30686); it records timestamp+60 before decoding.
+  The inspected trailing/finish paths do not rearm that sequence at its end.
+  FindCallers finds no internal reference to png_get_num_plays, only its export.
+  This supports a finite decoded sequence per decoder instance, whereas our
+  rail_hl_tick_cb increments modulo11 forever. Before implementing a one-shot
+  replacement, finish checking the higher-level image/window restart lifetime
+  and observe vendor focus/hold behavior. Do not substitute APNG metadata for
+  that missing acceptance. Older reports/source comments/tests calling our
+  looping policy “vendor” are superseded by this finding; their frame-count/
+  asset/hash evidence remains valid. No loop fix was implemented yet.
+- Vendor PNG scheduling uses a separate worker: threadMain b2eee0 polls the
+  queue at10ms (r2=10 at b2ef00), checks unsigned now-last against delay+34 in
+  isReadyToDecode b2fc84, advances one frame and posts decoded-image work.
+  updateFrameProperties b2f918 copies the fcTL delay numerator directly; it
+  does not convert the denominator there. SVGImage::onAnimImgDecoded10c9320
+  checks created/visible/surface, then UISurfaceImpl::drawAnimatedImage1161dd0
+  updates the image and requests OSD. Our UI-loop30ms full-canvas repaint is
+  not that worker architecture. Five actual GPU revisions in nominal660ms do
+  not prove the11-frame30ms sequence reached scanout. Avoid guessing frame
+  skipping/catch-up to mask the current repaint/upload bottleneck.
+- **Animation start timer differs:** vendor UIAnimationController::startAnimation
+  1139898 kills any existing timer and requests a fresh immediate timer on
+  every accepted start. mod_ui_anim currently posts a kick only if no timer
+  exists, preserving an existing timer's phase. Any fix must keep timer
+  registration under ui_anim's owner token and test overlapping/restarted
+  animations and allocation/failure/reload behavior. Not fixed yet.
+- Vendor controller uses a dynamically allocated std::list; our common/ui_anim.c
+  has four slots and uint32 durations versus vendor float durations. These are
+  further scope/contract differences, not evidence all vendor effects fit.
+  Cubic min(1,1+(p-1)^3),1000ms dialog duration, linear/truncating list geometry,
+  cancel versus finalise and the eight full-screen vertex formulas retain the
+  existing instruction-derived evidence. That does not establish every caller,
+  bootstrap enablement, callback ordering, widget effect or pixel sequence.
+
+Raw entry points: image-player.txt, png-scheduling.txt, png-loop-filter.txt,
+png-finish-filter.txt, png-end-state.txt, png-lifetime-references.txt. The last
+file also contains the PngImageDecoderImpl vtable so virtual calls can be checked
+against actual targets. All headless jobs finished; no TV probe is running.
+Next continue this audit/fixes, then exact panel sequences and independent
+backdrop appearance over real video. Keep source API/firmware-first requirements.
+The already-tested transparency/asset milestones need no repeat extraction.
 
 Latest follow-up: [RAIL-ASSETS](artifacts/reports/RAIL-ASSETS-2026-11-01.md)
 exports the verified APNG to durable ignored workbench/rail-ui-20261101.
