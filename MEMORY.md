@@ -18,25 +18,28 @@ layout/font-data provider/UI text integration remain open. Owner requested
 handoff and stop after this item; no helper/build/Ghidra job remains pending.
 
 UI-FONT-LIVE-2026-11-01: common/font_pack.c reads the vendor index and one
-record by ID (font7=847,332 bytes from the live /vendor2 pack; the 30 MB pack is
-not loaded whole). common/font_text.c renders one LTR packed-UTF8 line with EF41
-advances, explicit spacing, a clip and common/font_draw coverage compositing;
-it validates the whole line before drawing (missing/invalid draws nothing).
-Font7 draws the eight active settings labels at (49|79, 184+70*row), spacing 0;
-fit IoU 0.9799..0.9840 vs the corrected capture, C measures height61 and
-advances118/143/302. ui_vendor ui.text=1 pre-renders them, erases only the
-captured label strip (x40..486) and blits live labels; a missing/invalid pack
-falls back to the captured panel. Title/tabs/values/sliders and the disabled
-row6 stay captured; row8 uses the visible captured string. Host
-check-font-pack/check-font-text/check-ui-settings-text (live+missing) pass;
-full make check 251 indented checks plus the font groups. Real fb1 (PID17859,
-ui_engine1952912c… v2, ui_vendor70b90f50…) vs the corrected vendor panel:
-16,205/2,073,600 any-channel (0.78%), only84 px >8 (max57), RMSE0.3068/255;
-rows0/1/2/4/6 have no >8 diff, the rest are glyph edges. fb1 restored
-(16588800 bytes, offset0,1080), staging removed. Next: title/tabs/values/focused
-labels and exact line setup/transform/alignment/substitution/localization.
-Evidence: artifacts/analysis/ui-font-live-2026-11-01/ and
-UI-FONT-LIVE-2026-11-01 report.
+record by ID (font7=847,332 bytes; font16 also loaded from the live /vendor2
+pack; the 30 MB pack is not loaded whole). common/font_text.c renders one LTR
+packed-UTF8 line with EF41 advances, explicit spacing, a clip and
+common/font_draw coverage compositing; it validates the whole line before
+drawing (missing/invalid draws nothing). Fits vs the corrected capture: row
+labels font7 at (49|79,184+70*row) IoU0.9799..0.9840; text values font7
+(Natuurlijk493,183; Uit553,533; Auto536,605; Aan545,673) IoU0.875..0.954; slider
+digits font16 at (659,250+70*(row-1)) IoU0.907..0.921; disabled "Beeld zoomen"
+font16 grey at (51,602). C measures font7 height61/advances118,143,302,168,48,
+67,83 and font16 height68/digits49,51. ui_vendor ui.text=1 pre-renders 17
+items, erases only the captured text strips (labels x40..486, text values
+x480..680, digits x648..738) and blits live text; missing/invalid font falls
+back to the captured panel. Title/tabs/slider graphics and focus overlays stay
+captured; row8 uses the visible captured string. Host check-font-pack/
+check-font-text/check-ui-settings-text (live+missing) pass; full make check 251
+indented checks plus the font groups. Real fb1 (PID20201, ui_engine1952912c… v2,
+ui_vendor e0e7a690…) vs the corrected panel: 24,545/2,073,600 any-channel
+(1.184%), only22 px >8 (max11), RMSE0.2712/255; rows0-4/6 have no >8 diff
+(row5 5, row7 7, row8 10). fb1 restored (16588800 bytes, offset0,1080), staging
+removed. Next: title/tabs/slider graphics/focused labels, value/tab interaction
+and exact line setup/transform/alignment/substitution/localization. Evidence:
+artifacts/analysis/ui-font-live-2026-11-01/ and UI-FONT-LIVE-2026-11-01 report.
 
 UI-FONT-SELECTION-2026-11-01: common/font_finder.c implements firmware-derived
 stable typed maximum-height selection, signed height/line-count division and

@@ -52,8 +52,9 @@
 #define MAX_CARDS 12
 
 /* Nine picture-settings rows; row 6 is disabled in the capture. Defined here
- * because ctx stores per-row label canvases. */
+ * because ctx stores per-row live-text canvases. */
 #define SETTINGS_ROW_COUNT 9
+#define SETTINGS_TEXT_MAX 17
 
 /* stock portal palette, top to bottom (sampled from the portal capture, corrected for the
  * layer's BGRA byte order — the raw capture reads as blue->purple only because the capture
@@ -133,14 +134,16 @@ struct ctx {
     int card;
     int src;                         /* source-selection row, 0..MAX_SOURCES-1 */
     int sel;                         /* picture-settings row, -1 = none */
-    int text_on;                     /* live labels loaded (ui.text=1) */
+    int text_on;                     /* live labels/values loaded (ui.text=1) */
     struct oa_font_pack font_pack;
-    unsigned char *font_data;
-    struct oa_bitmap_font font;
-    struct settings_label {
+    unsigned char *font_data, *font_num_data;
+    struct oa_bitmap_font font;      /* font7: row labels and text values */
+    struct oa_bitmap_font font_num;  /* font16: slider digits and disabled label */
+    int font_num_on;
+    struct settings_text_canvas {
         unsigned char *rgba;
         int w, h, x, y;
-    } labels[SETTINGS_ROW_COUNT];
+    } text[SETTINGS_TEXT_MAX];
     int screen;
     int restored;
     const oa_settings_iface *settings;
@@ -240,30 +243,42 @@ enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, SCREEN_SETTINGS =
 #define SETTINGS_ROW_PITCH 70
 #define SETTINGS_ROW_DISABLED 6
 
-/* Live settings labels: font7 at (49, 184+70*row), indented sub-rows at
- * x=79, recovered by fitting font7 against the corrected panel capture
- * (IoU 0.98, zero letter spacing). Rows 1..4 are the indented sub-settings. */
-#define SETTINGS_LABEL_MARGIN 4
-#define SETTINGS_LABEL_HEIGHT 64
-static const struct settings_label_text {
-    unsigned char row;
+/* Live settings text: font7 for row labels/text values, font16 for the larger
+ * slider digits and the disabled "Beeld zoomen" label. Origins come from
+ * fitting each string against the corrected panel capture (labels IoU ~0.98,
+ * values 0.85..0.95). Text values are centered around x=577, digits around
+ * x=682; the origins below are the fitted text-box top-lefts. */
+#define SETTINGS_TEXT_MARGIN 4
+#define SETTINGS_TEXT_HEIGHT 72
+#define FONT_ROW 7
+#define FONT_LARGE 16
+enum { TEXT_LABEL = 0, TEXT_VALUE = 1 };
+static const struct settings_text_entry {
+    unsigned char row, kind, font;
+    unsigned char r, g, b;
     const char *text;
-} SETTINGS_LABEL_TEXT[] = {
-    { 0, "Modus" }, { 1, "Contrast" }, { 2, "Helderheid" }, { 3, "Scherpte" },
-    { 4, "Kleur" }, { 5, "Energiebesparing" }, { 7, "Virtual HDR" },
-    { 8, "Geavanceerde instellinge" },
+    int x, y;
+} SETTINGS_TEXT[] = {
+    { 0, TEXT_LABEL, FONT_ROW, 255, 255, 255, "Modus", 49, 184 },
+    { 1, TEXT_LABEL, FONT_ROW, 255, 255, 255, "Contrast", 79, 254 },
+    { 2, TEXT_LABEL, FONT_ROW, 255, 255, 255, "Helderheid", 79, 324 },
+    { 3, TEXT_LABEL, FONT_ROW, 255, 255, 255, "Scherpte", 79, 394 },
+    { 4, TEXT_LABEL, FONT_ROW, 255, 255, 255, "Kleur", 79, 464 },
+    { 5, TEXT_LABEL, FONT_ROW, 255, 255, 255, "Energiebesparing", 49, 534 },
+    { 6, TEXT_LABEL, FONT_LARGE, 170, 170, 170, "Beeld zoomen", 51, 602 },
+    { 7, TEXT_LABEL, FONT_ROW, 255, 255, 255, "Virtual HDR", 49, 674 },
+    { 8, TEXT_LABEL, FONT_ROW, 255, 255, 255, "Geavanceerde instellinge", 49, 744 },
+    { 0, TEXT_VALUE, FONT_ROW, 255, 255, 255, "Natuurlijk", 493, 183 },
+    { 1, TEXT_VALUE, FONT_LARGE, 255, 255, 255, "95", 659, 250 },
+    { 2, TEXT_VALUE, FONT_LARGE, 255, 255, 255, "50", 659, 320 },
+    { 3, TEXT_VALUE, FONT_LARGE, 255, 255, 255, "50", 659, 390 },
+    { 4, TEXT_VALUE, FONT_LARGE, 255, 255, 255, "60", 659, 460 },
+    { 5, TEXT_VALUE, FONT_ROW, 255, 255, 255, "Uit", 553, 533 },
+    { 6, TEXT_VALUE, FONT_ROW, 170, 170, 170, "Auto", 536, 605 },
+    { 7, TEXT_VALUE, FONT_ROW, 255, 255, 255, "Aan", 545, 673 },
 };
-#define SETTINGS_LABEL_COUNT (sizeof SETTINGS_LABEL_TEXT / sizeof SETTINGS_LABEL_TEXT[0])
-
-static int settings_label_x(int row)
-{
-    return row >= 1 && row <= 4 ? 79 : 49;
-}
-
-static int settings_label_y(int row)
-{
-    return 184 + SETTINGS_ROW_PITCH * row;
-}
+#define SETTINGS_TEXT_COUNT (sizeof SETTINGS_TEXT / sizeof SETTINGS_TEXT[0])
+_Static_assert(SETTINGS_TEXT_COUNT == SETTINGS_TEXT_MAX, "settings text table size");
 
 static int settings_row_y(int sel)
 {
@@ -415,18 +430,36 @@ static void paint_settings(struct ctx *c)
 
 static void settings_text_free(struct ctx *c)
 {
-    for (int r = 0; r < SETTINGS_ROW_COUNT; r++) {
-        free(c->labels[r].rgba);
-        memset(&c->labels[r], 0, sizeof c->labels[r]);
+    for (int i = 0; i < SETTINGS_TEXT_MAX; i++) {
+        free(c->text[i].rgba);
+        memset(&c->text[i], 0, sizeof c->text[i]);
     }
     free(c->font_data);
-    c->font_data = NULL;
+    free(c->font_num_data);
+    c->font_data = c->font_num_data = NULL;
     oa_font_pack_free(&c->font_pack);
     c->text_on = 0;
+    c->font_num_on = 0;
 }
 
-/* Optional live labels (ui.text=1): load the firmware font record and render
- * each settings label once. On any failure keep the captured panel working. */
+static int settings_font_open(struct oa_font_pack *pack, int id,
+                              struct oa_bitmap_font *font, unsigned char **data)
+{
+    unsigned char *buf = NULL;
+    size_t size = 0;
+    int rc = oa_font_pack_read(pack, (unsigned)id, &buf, &size);
+    if (rc) return rc;
+    rc = oa_bitmap_font_open(font, buf, size);
+    if (rc) {
+        free(buf);
+        return rc;
+    }
+    *data = buf;
+    return 0;
+}
+
+/* Optional live text (ui.text=1): load font7 and font16 and render every
+ * settings label/value once. On any failure keep the captured panel working. */
 static int settings_text_load(struct ctx *c)
 {
     const char *index_path = c->api->config_get(c->api->priv, "ui.font_index",
@@ -434,46 +467,46 @@ static int settings_text_load(struct ctx *c)
     const char *pack_path = c->api->config_get(c->api->priv, "ui.font_pack",
                                                "/vendor2/dynamic_ui/telefunken18_font_byte_data.bin");
     int font_id = atoi(c->api->config_get(c->api->priv, "ui.font_id", "7"));
+    int num_id = atoi(c->api->config_get(c->api->priv, "ui.font_num_id", "16"));
     int rc = oa_font_pack_init(&c->font_pack, index_path, pack_path);
     if (rc) {
         c->api->log(c->api->priv, OA_LOG_WARN,
-                    "settings labels: font pack unavailable (%d); using capture", rc);
+                    "settings text: font pack unavailable (%d); using capture", rc);
         return rc;
     }
-    if (font_id < 0) {
+    if (font_id < 0 || num_id < 0) {
         settings_text_free(c);
         return EINVAL;
     }
-    unsigned char *data = NULL;
-    size_t size = 0;
-    rc = oa_font_pack_read(&c->font_pack, (unsigned)font_id, &data, &size);
+    rc = settings_font_open(&c->font_pack, font_id, &c->font, &c->font_data);
     if (rc) {
         c->api->log(c->api->priv, OA_LOG_WARN,
-                    "settings labels: font %d unreadable (%d); using capture", font_id, rc);
+                    "settings text: font %d unavailable (%d); using capture", font_id, rc);
         settings_text_free(c);
         return rc;
     }
-    rc = oa_bitmap_font_open(&c->font, data, size);
+    rc = settings_font_open(&c->font_pack, num_id, &c->font_num, &c->font_num_data);
     if (rc) {
         c->api->log(c->api->priv, OA_LOG_WARN,
-                    "settings labels: font %d invalid (%d); using capture", font_id, rc);
-        free(data);
+                    "settings text: font %d unavailable (%d); using capture", num_id, rc);
         settings_text_free(c);
         return rc;
     }
-    c->font_data = data;
-    for (size_t i = 0; i < SETTINGS_LABEL_COUNT; i++) {
-        const struct settings_label_text *text = &SETTINGS_LABEL_TEXT[i];
+    c->font_num_on = 1;
+    for (size_t i = 0; i < SETTINGS_TEXT_COUNT; i++) {
+        const struct settings_text_entry *entry = &SETTINGS_TEXT[i];
+        const struct oa_bitmap_font *font =
+            entry->font == FONT_LARGE ? &c->font_num : &c->font;
         int advance = 0;
-        rc = oa_font_text_measure(&c->font, text->text, 0, &advance);
+        rc = oa_font_text_measure(font, entry->text, 0, &advance);
         if (rc) {
             c->api->log(c->api->priv, OA_LOG_WARN,
-                        "settings labels: '%s' unavailable (%d); using capture", text->text, rc);
+                        "settings text: '%s' unavailable (%d); using capture", entry->text, rc);
             settings_text_free(c);
             return rc;
         }
-        int w = advance + 2 * SETTINGS_LABEL_MARGIN;
-        int h = SETTINGS_LABEL_HEIGHT;
+        int w = advance + 2 * SETTINGS_TEXT_MARGIN;
+        int h = SETTINGS_TEXT_HEIGHT;
         if (w < 1) w = 1;
         unsigned char *rgba = calloc((size_t)w * (size_t)h * 4u, 1);
         if (!rgba) {
@@ -481,23 +514,23 @@ static int settings_text_load(struct ctx *c)
             return ENOMEM;
         }
         oa_canvas canvas = { rgba, w, h };
-        const uint8_t white[4] = { 255, 255, 255, 255 };
-        rc = oa_font_text_draw(&canvas, &c->font, text->text, SETTINGS_LABEL_MARGIN,
-                               SETTINGS_LABEL_MARGIN, white, 0, NULL);
+        const uint8_t ink[4] = { entry->r, entry->g, entry->b, 255 };
+        rc = oa_font_text_draw(&canvas, font, entry->text, SETTINGS_TEXT_MARGIN,
+                               SETTINGS_TEXT_MARGIN, ink, 0, NULL);
         if (rc) {
             free(rgba);
             settings_text_free(c);
             return rc;
         }
-        c->labels[text->row].rgba = rgba;
-        c->labels[text->row].w = w;
-        c->labels[text->row].h = h;
-        c->labels[text->row].x = settings_label_x(text->row) - SETTINGS_LABEL_MARGIN;
-        c->labels[text->row].y = settings_label_y(text->row) - SETTINGS_LABEL_MARGIN;
+        c->text[i].rgba = rgba;
+        c->text[i].w = w;
+        c->text[i].h = h;
+        c->text[i].x = entry->x - SETTINGS_TEXT_MARGIN;
+        c->text[i].y = entry->y - SETTINGS_TEXT_MARGIN;
     }
     c->text_on = 1;
-    c->api->log(c->api->priv, OA_LOG_INFO, "live settings labels: font %d, %u labels",
-                font_id, (unsigned)SETTINGS_LABEL_COUNT);
+    c->api->log(c->api->priv, OA_LOG_INFO, "live settings text: fonts %d+%d, %u items",
+                font_id, num_id, (unsigned)SETTINGS_TEXT_COUNT);
     return 0;
 }
 
@@ -521,14 +554,19 @@ static void paint_settings_list(struct ctx *c)
     if (panel)
         d->blit(0, 0, panel->w, panel->h, panel->rgba);
     if (c->text_on) {
-        for (int r = 0; r < SETTINGS_ROW_COUNT; r++) {
-            if (!c->labels[r].rgba)
-                continue;
-            /* Erase the captured label only; values start past x=486. */
-            d->fill(40, settings_label_y(r) - 2, 446, 56, 190, 30, 45);
-            d->blit(c->labels[r].x, c->labels[r].y, c->labels[r].w, c->labels[r].h,
-                    c->labels[r].rgba);
+        /* Two passes so the label/value erase rectangles cannot clip a blit. */
+        for (size_t i = 0; i < SETTINGS_TEXT_COUNT; i++) {
+            const struct settings_text_entry *entry = &SETTINGS_TEXT[i];
+            if (entry->kind == TEXT_LABEL)
+                d->fill(40, entry->y - 6, 446, 64, 190, 30, 45);
+            else if (entry->font == FONT_LARGE)
+                d->fill(648, entry->y - 6, 90, 64, 190, 30, 45);
+            else
+                d->fill(480, entry->y - 6, 200, 64, 190, 30, 45);
         }
+        for (size_t i = 0; i < SETTINGS_TEXT_COUNT; i++)
+            d->blit(c->text[i].x, c->text[i].y, c->text[i].w, c->text[i].h,
+                    c->text[i].rgba);
     }
     if (c->sel >= 0 && c->sel < SETTINGS_ROW_COUNT && c->sel != SETTINGS_ROW_DISABLED) {
         char name[32];

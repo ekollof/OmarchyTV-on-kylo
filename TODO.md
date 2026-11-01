@@ -403,14 +403,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       setup/baseline, font-data provider and UI-engine text integration remain
       open. Recoloring captured labels is not focused-text parity.
 - [x] Font-data provider and one-line renderer: bounded indexed pack reader
-      (reads only font7's 847,332-byte record), packed-UTF8 LTR advances,
+      (font7 and font16 records from the live pack), packed-UTF8 LTR advances,
       spacing, clipping and coverage compositing, whole-line validation;
-      ui_vendor ui.text=1 draws the eight active settings labels with font7 at
-      (49|79, 184+70*row), erases only the captured label strip and falls back
-      to the capture if the pack fails. Host tests incl. fallback pass; real
-      fb1 vs the corrected panel: 0.78% any-channel, 84 px >8, RMSE0.12%,
-      rows0/1/2/4/6 no >8 diff. Title/tabs/values/sliders and the disabled row
-      stay captured. Evidence: artifacts/analysis/ui-font-live-2026-11-01/.
+      ui_vendor ui.text=1 draws 17 settings text items: row labels font7 at
+      (49|79,184+70*row), text values font7 (centered near x=577), slider
+      digits font16 at (659,250+70*(row-1)), and the disabled grey
+      "Beeld zoomen"/"Auto". Erases only the captured text strips and falls
+      back to the capture on any font failure. Host tests incl. fallback pass;
+      real fb1 vs the corrected panel: 1.184% any-channel, 22 px >8 (max 11),
+      RMSE0.106%, rows0-4/6 no >8 diff. Title/tabs/slider graphics and focus
+      overlays stay captured. Evidence:
+      artifacts/analysis/ui-font-live-2026-11-01/.
 - [ ] Complete the remaining vendor screens and labels. The injected portal
       above is not all-screen parity or a confirmed live remote capture. The
       source-selection panel (DialogSourceSelection.svg 185), the captured

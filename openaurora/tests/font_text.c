@@ -37,9 +37,9 @@ static size_t build_font(unsigned char *b)
 static int corpus(const char *index_path, const char *pack_path)
 {
     struct oa_font_pack pack;
-    struct oa_bitmap_font font;
-    unsigned char *data;
-    size_t size;
+    struct oa_bitmap_font font, large;
+    unsigned char *data, *data_large;
+    size_t size, size_large;
     assert(!oa_font_pack_init(&pack, index_path, pack_path));
     assert(!oa_font_pack_read(&pack, 7, &data, &size));
     assert(!oa_bitmap_font_open(&font, data, size));
@@ -48,8 +48,18 @@ static int corpus(const char *index_path, const char *pack_path)
     assert(!oa_font_text_measure(&font, "Modus", 0, &width) && width == 118);
     assert(!oa_font_text_measure(&font, "Contrast", 0, &width) && width == 143);
     assert(!oa_font_text_measure(&font, "Energiebesparing", 0, &width) && width == 302);
-    puts("  ok   real font7 measures the captured settings labels (118/143/302)");
+    assert(!oa_font_text_measure(&font, "Natuurlijk", 0, &width) && width == 168);
+    assert(!oa_font_text_measure(&font, "Uit", 0, &width) && width == 48);
+    assert(!oa_font_text_measure(&font, "Aan", 0, &width) && width == 67);
+    assert(!oa_font_text_measure(&font, "Auto", 0, &width) && width == 83);
+    assert(!oa_font_pack_read(&pack, 16, &data_large, &size_large));
+    assert(!oa_bitmap_font_open(&large, data_large, size_large));
+    assert(!oa_bitmap_font_height(&large, &height) && height == 68);
+    assert(!oa_font_text_measure(&large, "95", 0, &width) && width == 49);
+    assert(!oa_font_text_measure(&large, "50", 0, &width) && width == 51);
+    puts("  ok   real font7/16 measure the captured labels and values (118/143/302,48,67,83; 49/51)");
     free(data);
+    free(data_large);
     oa_font_pack_free(&pack);
     return 0;
 }

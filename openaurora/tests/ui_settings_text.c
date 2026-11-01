@@ -93,18 +93,23 @@ static size_t build_font(unsigned char *b)
 
 static void make_font_pack(void)
 {
-    unsigned char font[1024];
+    unsigned char font[1024], large[1024];
     size_t font_size = build_font(font);
+    size_t large_size = build_font(large);
     char index[320], pack[320];
     snprintf(index, sizeof index, "%s/font.index", g_dir);
     snprintf(pack, sizeof pack, "%s/font.pack", g_dir);
-    char text[128];
-    snprintf(text, sizeof text, "8\n1\n1\n1\n1\n1\n1\n1\n%u\n", (unsigned)font_size);
+    char text[256];
+    snprintf(text, sizeof text,
+             "17\n1\n1\n1\n1\n1\n1\n1\n%u\n1\n1\n1\n1\n1\n1\n1\n1\n%u\n",
+             (unsigned)font_size, (unsigned)large_size);
     write_file(index, text, strlen(text));
-    unsigned char data[8 + sizeof font];
+    unsigned char data[32 + sizeof font + sizeof large];
     memset(data, 0, 7);                    /* records 0..6 */
     memcpy(data + 7, font, font_size);
-    write_file(pack, data, 7 + font_size);
+    memset(data + 7 + font_size, 0, 8);    /* records 8..15 */
+    memcpy(data + 15 + font_size, large, large_size);
+    write_file(pack, data, 15 + font_size + large_size);
 }
 
 static int blit_at(const oa_nav_trace *trace, int x, int y, int w, int h)
@@ -171,22 +176,31 @@ int main(int argc, char **argv)
     assert(blit_at(trace, 0, 0, 4, 4));            /* captured panel */
 
     if (g_missing) {
-        assert(!has_fill(trace, 40, 182, 446, 56)); /* captured labels remain */
-        assert(!blit_at(trace, 45, 180, 28, 64));
+        assert(!has_fill(trace, 40, 178, 446, 64)); /* captured text remains */
+        assert(!blit_at(trace, 45, 180, 28, 72));
         puts("  ok   missing font pack falls back to the captured settings panel");
         return 0;
     }
 
-    assert(has_fill(trace, 40, 182, 446, 56));     /* captured label erased */
-    assert(blit_at(trace, 45, 180, 28, 64));       /* "Modus" at (49,184), 5*4+8 */
-    assert(blit_at(trace, 75, 250, 40, 64));       /* "Contrast" at (79,254), 8*4+8 */
-    assert(blit_at(trace, 45, 740, 104, 64));      /* long row 8 label */
+    assert(has_fill(trace, 40, 178, 446, 64));     /* captured label erased */
+    assert(blit_at(trace, 45, 180, 28, 72));       /* "Modus" at (49,184), 5*4+8 */
+    assert(blit_at(trace, 75, 250, 40, 72));       /* "Contrast" at (79,254), 8*4+8 */
+    assert(blit_at(trace, 45, 740, 104, 72));      /* long row 8 label */
+    assert(has_fill(trace, 480, 177, 200, 64));    /* captured text value erased */
+    assert(blit_at(trace, 489, 179, 48, 72));      /* "Natuurlijk" at (493,183) */
+    assert(has_fill(trace, 648, 244, 90, 64));     /* captured digits erased */
+    assert(blit_at(trace, 655, 246, 16, 72));      /* "95" font16 at (659,250) */
+    assert(blit_at(trace, 549, 529, 20, 72));      /* "Uit" */
+    assert(has_fill(trace, 40, 596, 446, 64));     /* disabled label erased */
+    assert(blit_at(trace, 47, 598, 56, 72));       /* "Beeld zoomen" font16 grey */
+    assert(blit_at(trace, 532, 601, 24, 72));      /* disabled "Auto" */
+    assert(blit_at(trace, 541, 669, 20, 72));      /* "Aan" */
 
     key(&host, 19);                                /* focus overlay still draws */
     assert(blit_at(trace, 20, 183, 4, 4));
     key(&host, 10);
     assert(portal->screen() == 3);
 
-    puts("  ok   ui.text renders font labels at (49|79, 184+70*row) and erases only captured labels");
+    puts("  ok   ui.text renders font7+16 labels/values/digits at fitted origins with captured fallback");
     return 0;
 }
