@@ -11,6 +11,13 @@ static uint32_t be32(const unsigned char *p)
 static int metric(unsigned char b)
 { return b < 128 ? b : (int)b - 256; }
 
+int oa_bitmap_font_height(const struct oa_bitmap_font *f, int *height)
+{
+    if (!f || !f->extremes || !height) return EINVAL;
+    *height = metric(f->extremes[2]) - metric(f->extremes[0]);
+    return 0;
+}
+
 int oa_bitmap_font_glyph(const struct oa_bitmap_font *f, unsigned index,
                          struct oa_bitmap_glyph *out)
 {

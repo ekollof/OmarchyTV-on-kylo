@@ -6,6 +6,15 @@ November 1 CEC session described below. Earlier chronological notes are preserve
 
 ## TV and persistent recovery
 
+UI-FONT-SELECTION-2026-11-01: common/font_finder.c implements firmware-derived
+stable typed maximum-height selection, signed height/line-count division and
+global-smallest fallback. Startup20 IDs/heights verified from decoded theme.
+Host full249 plus two font groups, focused sanitizers, ARM/qemu and native TV
+tests pass. build-tv-v3/font-selection binaries37748/b4afdf02bc01759f17107257dd5c5204
+and24240/c476f17d4f3d747e4ec4b429f55b16ff. Same stock boot/live1785/zombie1967,
+access/privacy, all staging removed. No device/display operation. Widget text
+style/layout/render integration remains open; see UI-FONT-SELECTION report.
+
 UI-FONTS-2026-11-01: bounded EF41 grayscale bitmap reader and packed UTF8
 lookup implemented; all38 live/offline font records pass host, ASan/UBSan,
 ARM-qemu and TV checks. Full host suite exits0. UI text rendering/font selection

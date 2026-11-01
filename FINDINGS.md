@@ -10,8 +10,10 @@ Native font correction (2026-11-01): the theme's38 EF41 font records contain
 signed metrics, packed UTF8 keys and raw8-bit coverage, decoded by UIBitmapFont /
 hal::BitmapFont. Its file-font pack is empty. FreeType/browser references alone
 did not prove the settings-row raster path. UI-FONTS records the bounded reader
-and all-record host/sanitizer/ARM-qemu/TV checks; exact font selection and text
-layout/render integration remain open. Some oversized signed metrics wrap;
+and all-record host/sanitizer/ARM-qemu/TV checks. UI-FONT-SELECTION later recovers
+startup20 IDs/heights and generic typed selection with global-smallest fallback;
+per-widget font choice and text layout/render integration remain open.
+Some oversized signed metrics wrap;
 vendor draw loops leave those glyphs blank, rather than reading a huge bitmap.
 
 UI engine review correction (2026-11-01): posting engine code under the skin

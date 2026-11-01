@@ -1,4 +1,5 @@
 #include "openaurora/font_bitmap.h"
+#include "openaurora/font_finder.h"
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
@@ -47,6 +48,7 @@ static void synthetic(void)
 /* Optional local firmware corpus validation. Vendor bytes are never embedded. */
 static int corpus(const char *pack_path, const char *index_path)
 {
+    int heights[39] = {0};
     FILE *pack = fopen(pack_path, "rb"), *idx = fopen(index_path, "r");
     if (!pack || !idx) { perror("font pack/index"); return 1; }
     unsigned count;
@@ -63,6 +65,7 @@ static int corpus(const char *pack_path, const char *index_path)
             struct oa_bitmap_font f;
             int rc = oa_bitmap_font_open(&f, bytes, length);
             if (rc) { fprintf(stderr, "font%u rejected: %d\n", i, rc); return 1; }
+            if (oa_bitmap_font_height(&f, &heights[i])) return 1;
             /* Every stored key must resolve to exactly its metric slot. */
             for (unsigned k = 0; k < f.key_count; ++k) {
                 const unsigned char *p = f.keys + (size_t)k * 4;
@@ -71,13 +74,33 @@ static int corpus(const char *pack_path, const char *index_path)
                 unsigned slot;
                 if (oa_bitmap_font_lookup(&f, key, &slot) || slot != k + 95) return 1;
             }
-            printf("font%u bytes=%u pixels=%zu glyphs=%u keys=%u\n",
-                   i, length, f.pixel_bytes, f.glyph_count, f.key_count);
+            printf("font%u bytes=%u pixels=%zu glyphs=%u keys=%u height=%d\n",
+                   i, length, f.pixel_bytes, f.glyph_count, f.key_count, heights[i]);
         }
         free(bytes);
     }
     int rc = fgetc(pack) != EOF || ferror(pack);
     fclose(pack); fclose(idx);
+    /* DemoApp::addFonts cc52e0 registration order, not record-number order. */
+    static const unsigned ids[] = {18,17,16,7,6,5,4,3,2,1,22,21,20,14,13,12,11,10,9,8};
+    static const int expected[] = {80,75,68,61,56,50,43,35,30,24,81,74,67,63,56,50,42,34,24,19};
+    struct oa_font_finder finder = {0};
+    for (unsigned n = 0; n < sizeof ids / sizeof *ids; ++n) {
+        if (heights[ids[n]] != expected[n] ||
+            oa_font_finder_add(&finder, ids[n], heights[ids[n]], n / 10)) return 1;
+    }
+    static const struct { int height, lines; unsigned type, expected; } cases[] = {
+        {23,1,0,8}, {24,1,0,1}, {48,1,0,4}, {48,1,1,11},
+        {66,1,0,7}, {66,1,1,14}, {100,2,0,5}, {100,2,1,12},
+        {100,1,0,18}, {100,1,1,22}, {48,1,5,4}, {48,1,99,4}
+    };
+    for (unsigned n = 0; n < sizeof cases / sizeof *cases; ++n) {
+        unsigned selected;
+        if (oa_font_finder_select(&finder, cases[n].height, cases[n].lines,
+                                 cases[n].type, &selected) || selected != cases[n].expected)
+            return 1;
+    }
+    puts("ok theme font registration: 20 heights, typed sizes/multiline/global fallback");
     return rc;
 }
 

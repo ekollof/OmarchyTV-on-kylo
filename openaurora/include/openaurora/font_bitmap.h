@@ -25,5 +25,8 @@ int oa_bitmap_font_glyph(const struct oa_bitmap_font *font, unsigned index,
  * Missing keys return ENOENT; no invented substitution/fallback policy. */
 int oa_bitmap_font_lookup(const struct oa_bitmap_font *font, uint32_t key,
                           unsigned *index);
+/* UIWindowBuilder::getMaximumTextHeight 0x1152f98 uses signed extremes,
+ * bottom minus top, rather than point size or an individual glyph height. */
+int oa_bitmap_font_height(const struct oa_bitmap_font *font, int *height);
 
 #endif

@@ -24,11 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
+Latest: [UI-FONT-SELECTION](artifacts/reports/UI-FONT-SELECTION-2026-11-01.md)
+implements common/font_finder.c: startup20 IDs and maximum heights recovered,
+stable typed floor selection after signed height/line-count division, global
+smallest fallback (font8 even for too-small type0). Font IDs directly index
+decoded records. Strict full host249 plus two font groups, focused sanitizers,
+ARM/qemu and both tests on TV pass. Same stock boot/PID/access/privacy, staging
+removed. build-tv-v3/font-selection and corresponding analysis identify tests.
+Continue SVGTextBox text-style type/rectangle/line count, baseline/alignment,
+substitution/clipping/blending and UI engine font/text integration. Widgets
+still render captured/reconstructed text. No helper or Ghidra job pending.
+
 Latest: [UI-FONTS](artifacts/reports/UI-FONTS-2026-11-01.md) recovers the
 theme's38 EF41 grayscale bitmap fonts, signed metrics and packed UTF8 lookup.
 common/font_bitmap.c is a bounded borrowed-data reader; all records pass host,
 ASan/UBSan, ARM-qemu and TV checks. Full host suite passes. No UI text rendering
-is wired yet. Continue by tracing font-finder type/ID population and SVG text
+is wired yet. Font-finder population/selection is recovered above; continue SVG text
 style/font selection, baseline/alignment/fallback; do not substitute guessed
 FreeType/browser Fontconfig. Old native-row FreeType claim corrected at source.
 Native build-tv-v3/font-bitmap and analysis/ui-fonts-2026-11-01 hold evidence.

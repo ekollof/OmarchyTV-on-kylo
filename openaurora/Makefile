@@ -75,7 +75,7 @@ MOD_DEP  := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).d)
 
 all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker
 
-$(BUILD)/tests/font_bitmap: tests/font_bitmap.c common/font_bitmap.c include/openaurora/font_bitmap.h
+$(BUILD)/tests/font_bitmap: tests/font_bitmap.c common/font_bitmap.c common/font_finder.c include/openaurora/font_bitmap.h include/openaurora/font_finder.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
@@ -83,7 +83,15 @@ $(BUILD)/tests/font_bitmap: tests/font_bitmap.c common/font_bitmap.c include/ope
 check-font-bitmap: $(BUILD)/tests/font_bitmap
 	@$(BUILD)/tests/font_bitmap
 
-check: check-font-bitmap
+$(BUILD)/tests/font_finder: tests/font_finder.c common/font_finder.c include/openaurora/font_finder.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-font-finder
+check-font-finder: $(BUILD)/tests/font_finder
+	@$(BUILD)/tests/font_finder
+
+check: check-font-bitmap check-font-finder
 
 $(BUILD)/oa-audio-broker: tools/audio/oa-audio-broker.c common/audio_broker.c common/audio_broker_wire.c common/audio_client.c common/audio_netlink.c include/openaurora/audio_broker.h include/openaurora/audio_client.h include/openaurora/audio_netlink.h
 	@mkdir -p $(dir $@)

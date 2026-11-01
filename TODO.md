@@ -386,8 +386,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on
       host/sanitizers/ARM-qemu/TV. See UI-FONTS-2026-11-01. This closes data
-      decoding only; font-type/size selection, text raster integration,
-      alignment, fallback and exact focused text remain open.
+      decoding only; per-widget font type/size, text raster integration,
+      alignment, substitution and exact focused text remain open.
+- [x] Recover startup font ID/type registration and generic font selection:
+      UI-FONT-SELECTION-2026-11-01;20 pack-derived heights, stable typed floor,
+      signed height/line-count division and global-smallest fallback tested on
+      host/sanitizers/ARM-qemu/TV. Per-widget SVG text type/rectangle/line count, baseline/alignment,
+      substitution and rendering integration remain open.
 - [ ] Complete the remaining vendor screens and labels. The injected portal
       above is not all-screen parity or a confirmed live remote capture. The
       source-selection panel (DialogSourceSelection.svg 185), the captured
