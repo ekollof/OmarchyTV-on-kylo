@@ -41,6 +41,16 @@ snapshot_match=1 and the original yoffset 0. Per-present timings: types
 Vendor PIDs 1967/1785 unchanged, staging removed. This is readback, not scanout
 proof, and the software timings are far below smooth 30/60 fps.
 
+Real GPU UI cadence: the preserved rail stage plus our fresh 10 ms-poll ui_fb was
+run on the set with OA_SCENE_PROBE_UI=1 and OA_SCENE_PROBE_RAIL=1. Readiness,
+dialog type-4 completion, reload and host suspend/resume passed and the full
+snapshot restored, but the rail sample reported only 6 image revisions over
+660 ms (the older looping module reported 7). The 11-frame one-shot submits at
+30 ms; the async display accepts one pending frame (EBUSY otherwise) and drops
+the rest. Next fix: an ordered image-frame queue (or completion-paced advance)
+so every decoded frame is presented; vendor focus/hold and scanout still need
+panel observation.
+
 Owner explicitly requested checking **exact** vendor animation fidelity, then
 requested this handoff and stop. The audit remains incomplete; **do not claim the
 animations are exact**. The rail-loop question it raised was resolved and fixed

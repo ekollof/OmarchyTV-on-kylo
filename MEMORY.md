@@ -180,6 +180,18 @@ type 8 493 ms. Vendor PIDs 1967/1785 unchanged, staging removed, no helper left.
 Readback is not scanout proof and these software timings are far below smooth
 30/60 fps; the EGL path remains the parity target.
 
+RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
+stage, our fresh 10 ms-poll ui_fb and the probe's UI/rail sampling
+(OA_SCENE_PROBE_UI=1, OA_SCENE_PROBE_RAIL=1). Readiness, dialog type-4 completion,
+reload and host suspend/resume passed; the full 16,588,800-byte snapshot restored
+(snapshot_match=1, region_match=1) and vendor PIDs 1967/1785 were unchanged.
+The rail sample reported only 6 image revisions over 660 ms (the older looping
+module reported 7): the one-shot sequence submits 11 paint frames at 30 ms, but
+the async display accepts one pending frame and returns EBUSY otherwise, so
+intermediate frames are dropped. The vendor decoder posts every decoded frame to
+a message queue; an ordered image-frame queue (or completion-paced advance) is
+needed for bug-for-bug rail playback. Frame order and scanout remain unproven.
+
 EGL-SCENE-2026-11-01 adds common/scene_gles.c and opt-in context/scene probes.
 The actual TV Mali-G51 passed offscreen pixel/orientation/fade/triangle and
 close/reopen checks; no native window or fbdev writes. Scene helper70384bytes/
