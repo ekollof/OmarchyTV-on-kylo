@@ -127,9 +127,17 @@ typedef struct {
 
     char modules_dir[256];
     char config_path[256];
+    /* Host-owned, transient skin policy; never written back to config. */
+    char skin_selected[OA_NAME_MAX], skin_requested[OA_NAME_MAX], skin_module[OA_NAME_MAX];
+    uint64_t skin_timer, skin_deadline;
+    uint32_t skin_owner;
+    int skin_phase, skin_error, skin_fallback;
 } oa_host;
 
 uint64_t oa_now_ms(void);
+int oa_skin_request(oa_host *h, const char *name);
+int oa_skin_bootstrap(oa_host *h);
+void oa_skin_status(oa_host *h, char *out, size_t cap);
 
 /* host.c */
 int oa_host_init(oa_host *h, const char *modules_dir, const char *config);

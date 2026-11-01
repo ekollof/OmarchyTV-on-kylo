@@ -49,6 +49,18 @@ syntax defect.
 
 ## Development build and evidence
 
+SKIN-SELECTION-2026-11-01: host socket/stdin `skin NAME`/`skin` and startup
+ui.skin policy now select modules and fall back to vendor on missing/start/
+enter/first-frame failure, after safe failed-candidate cleanup (including NULL-
+returning failed init). ui.skin v1 status is separate; drawing/registration stays
+ui.engine v2. Runtime override is not persisted. Host249/focused ASan/UBSan/
+Unix socket/native contracts pass. Real GPU PID8795 switches Omarchy/vendor,
+recovers missing skin, verifies alpha and restores full backing hash
+41735daa69dc137743b59efe12db4a19/pan0,1080. Same boot/PID1785/protections/access,
+staging removed. Native build-tv-v3/skin-selection, exact final-tested.md5 and
+stage.md5 in analysis identify artifacts. Production16/installed ABI1 unchanged.
+Real OmarchyTV/content/exact visual/cold parity and crash recovery remain open.
+
 UI-ENGINE-REVIEW-2026-11-01 supersedes the split's v1 dispatch contract below.
 ui.engine v2 uses skin-owned trampolines and a bounded event queue; legacy
 register_skin fails ENOTSUP. Forced unload/rebind, both skins' re-registration,

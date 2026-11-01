@@ -123,6 +123,8 @@ int main(int argc, char **argv)
         if (m)
             oa_module_start(&g_host, m);
     }
+    if (oa_skin_bootstrap(&g_host))
+        g_host.api.log(&g_host, OA_LOG_ERROR, "UI selection could not start");
 
     printf("openaurora: %d module(s) loaded, control on %s\n", nloads,
            (sock && *sock) ? sock : "(stdin only)");

@@ -176,9 +176,27 @@ placeholder tiles, no vendor assets). tests/ui_skin.c switches both ways at
 runtime with no rebuild; `make check` loads `ui_engine` before the skin in every
 UI test and tests/recovery.py; all 233 checks pass.
 
-Still pending: the real OmarchyTV screens, control-plane fallback loading if the
-selected skin fails, and moving more general screen-stack policy into the
-engine. The vendor skin remains the known working fallback.
+Host control now supports `skin NAME` (pending request) and `skin` (query), using
+the new copied ui.skin v1 status companion. After autoload, main selects
+configured ui.skin, an existing skin, or vendor. Providers/ui_engine must already
+be loaded; the host loads ui_NAME. Missing/start/enter/first-frame failures load
+ui_vendor only after failed-candidate cleanup. Holds/quiescence are never forced.
+ui.skin_timeout_ms defaults5000, accepts100..60000, and only bounds entry/first
+frame. Busy cleanup remains pending until safe. Standby rejects pending selection;
+shutdown cancels it. Runtime selection is memory only and does not rewrite config.
+SKIN-SELECTION records249 host checks, sanitizer/native failures, actual Unix
+socket startup/control and real GPU switching/fallback/restoration. This is
+OpenAurora policy, not process-crash recovery or a vendor hardware behavior.
+
+Still pending: real OmarchyTV screens and more general screen-stack policy.
+The vendor skin remains the known working fallback. Example control replies:
+
+```
+skin omarchy
+pending omarchy
+skin
+requested omarchy active omarchy state ready fallback 0 error 0
+```
 
 ## Lifecycle and reload
 

@@ -10,6 +10,14 @@
 #include <stdint.h>
 
 #define OA_SVC_UI_ENGINE "ui.engine"
+#define OA_SVC_UI_SKIN "ui.skin"
+/* Copied snapshot for the host's skin selector, independent of drawing ABI. */
+typedef struct {
+    char name[48];
+    uint32_t owner;
+    int entered, ready, error;
+} oa_ui_skin_status;
+typedef struct { int (*get)(oa_ui_skin_status *out); } oa_ui_skin_status_iface;
 
 typedef struct {
     char name[48];

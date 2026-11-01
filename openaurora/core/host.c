@@ -396,7 +396,8 @@ static void config_load(const char *path)
 
 static const char *api_config_get(void *priv, const char *key, const char *def)
 {
-    (void)priv;
+    oa_host *h = priv;
+    if (h && !strcmp(key, "ui.skin") && h->skin_selected[0]) return h->skin_selected;
     for (int i = 0; i < g_cfgn; i++)
         if (!strcmp(g_cfg[i].k, key))
             return g_cfg[i].v;

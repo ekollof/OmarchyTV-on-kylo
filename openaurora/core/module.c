@@ -602,6 +602,7 @@ static int suspend_order(oa_host *h, const int *order, int count)
 
 int oa_module_suspend_all(oa_host *h)
 {
+    if (h->skin_timer) return -1; /* finish/cancel the UI transaction before standby */
     if (h->sleep_cycle || h->shutting_down) return -1;
     int order[MAX_MODULES];
     int count = phase_order(h, order);
@@ -637,7 +638,7 @@ static int sleep_cycle(oa_host *h, uint32_t entry_owner, int (*enter)(void *),
     if (!r) return -1;
     memset(r, 0, sizeof *r);
     r->prepare_rc = -1;
-    if (!enter || h->sleep_cycle || h->shutting_down || !h->running || h->stop_requested) return -1;
+    if (!enter || h->skin_timer || h->sleep_cycle || h->shutting_down || !h->running || h->stop_requested) return -1;
     oa_mod *owner = entry_owner ? oa_host_find_module_by_id(h, entry_owner) : NULL;
     if (entry_owner && (!owner || owner->state != OA_ST_STARTED)) return -1;
     int order[MAX_MODULES];

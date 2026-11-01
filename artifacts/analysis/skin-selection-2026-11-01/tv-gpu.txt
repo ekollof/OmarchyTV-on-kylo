@@ -1,0 +1,35 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+saved bytes=16588800 original_yoffset=1080 MAU=0 backup=/tmp/oa-scene-helper-20261101/framebuffer.backup
+scene display module id=4 service=display.async
+direction type4 top_rows identity=0 p0=45 p1=0 (starts lower, slides up)
+[718070] ERR  host         load 'ui_missing': not found in /tmp/oa-scene-helper-20261101/modules
+[718400] ERR  host         graphics: cleanup pending; retry stop/unload
+[718401] ERR  host         graphics: cleanup pending; retry stop/unload
+[718401] ERR  host         graphics: cleanup pending; retry stop/unload
+[718401] ERR  host         graphics: cleanup pending; retry stop/unload
+[718413] ERR  host         graphics: cleanup pending; retry stop/unload
+[718413] ERR  host         graphics: cleanup pending; retry stop/unload
+[718433] ERR  host         graphics: cleanup pending; retry stop/unload
+[718433] ERR  host         graphics: cleanup pending; retry stop/unload
+[718454] ERR  host         graphics: cleanup pending; retry stop/unload
+[718454] ERR  host         graphics: cleanup pending; retry stop/unload
+[718474] ERR  host         graphics: cleanup pending; retry stop/unload
+[718475] ERR  host         graphics: cleanup pending; retry stop/unload
+UI readiness after GPU completion serial=17179869188 revision=17179869209 pid=8795
+UI rail completed image revisions=11 over2000ms (completion-paced; not a frame-order measurement)
+UI selection mode=vendor-instant animation receipt=0 completed screen=1 identity receipt=17179869200
+UI readiness after GPU completion serial=17179869204 revision=17179869544 pid=8795
+UI reload id=24 completed with fresh receipt
+UI host-only suspend/resume completed receipt=17179869206
+UI control requested omarchy active omarchy state ready fallback 0 error 0
+UI control requested vendor active vendor state ready fallback 0 error 0
+UI control requested missing active vendor state ready fallback 1 error 5
+UI backdrop raw BGRA=24,23,22,153 expected24,23,22,153
+scene display observed frame completions=3
+graphics host drained and unloaded provider
+restored bytes=16588800 yoffset=1080 MAU=0 region_match=1 snapshot_match=1
+probe_exit=0

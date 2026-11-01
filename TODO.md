@@ -400,9 +400,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       engine. tests/ui_skin.c switches vendor -> omarchy -> vendor by unload/
       load with no rebuild; make check 233 ok. The vendor skin remains the
       fallback.
-- [ ] Control-plane fallback loading when the selected skin fails, and the real
-      OmarchyTV screens replacing the skeleton. Keep OA_SVC_PORTAL on the vendor
-      skin and the engine's draw/asset/present contracts unchanged.
+- [x] Control-plane startup/runtime skin selection with vendor fallback for
+      missing/start/enter/first-frame failures; drain busy failed candidates
+      before fallback, including NULL-returning failed init. Host249/focused
+      sanitizer/native contracts, Unix socket and actual GPU switching/fallback/
+      restoration pass. SKIN-SELECTION. No process-crash recovery.
+- [ ] Real OmarchyTV screens replacing the skeleton after vendor parity. Keep
+      OA_SVC_PORTAL on vendor and preserve engine draw/asset/present contracts.
 - [ ] Split module/test compile+link rules into .o + link so ccache can cache
       them (most are one-step -shared invocations, which ccache cannot cache).
       Preserve -Werror/-pedantic and the current link flags; measure a clean

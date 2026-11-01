@@ -1,0 +1,76 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-skin-selection/core/main.o core/main.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-skin-selection/core/module.o core/module.c
+/usr/bin/ccache cc  -o build-skin-selection/openaurora build-skin-selection/core/check.o build-skin-selection/core/control.o build-skin-selection/core/host.o build-skin-selection/core/main.o build-skin-selection/core/module.o build-skin-selection/core/skin.o -ldl -pthread -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_plat.so modules/plat/plat.c  \
+   \
+  
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_ticker.so modules/ticker/ticker.c  \
+   \
+  
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_ir.so modules/ir/ir.c  \
+   \
+  
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_ui_console.so modules/ui_console/ui.c  \
+   \
+  
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_panel.so modules/panel/panel.c  \
+   \
+  
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_power.so modules/power/power.c  \
+   \
+  
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_display.so modules/display/display.c common/ui_anim.c common/canvas.c  \
+   -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_audio.so modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c -pthread  \
+  
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_settings.so modules/settings/settings.c  \
+   \
+  -Ithird_party -Lvendor/lib -lsqlite3
+/usr/bin/ld: skipping incompatible vendor/lib/libsqlite3.so when searching for -lsqlite3
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_source.so modules/source/source.c  \
+   \
+  
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_ui_clock.so modules/ui_clock/ui_clock.c  \
+   \
+  
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_audio_curve.so modules/audio_curve/audio_curve.c common/audio_curve.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_cec.so modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c -pthread 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_audio_mixer.so modules/audio_mixer/audio_mixer.c common/audio_broker_wire.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-skin-selection/modules/mod_graphics.so modules/graphics/graphics.c common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-skin-selection/oa-supervise tools/boot/oa-supervise.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-skin-selection/oa-audio-broker tools/audio/oa-audio-broker.c common/audio_broker.c common/audio_broker_wire.c common/audio_client.c common/audio_netlink.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -Itests  -o build-skin-selection/tests/ui_skin tests/ui_skin.c build-skin-selection/core/check.o build-skin-selection/core/control.o build-skin-selection/core/host.o build-skin-selection/core/module.o build-skin-selection/core/skin.o -ldl -pthread -lm
+[756667] ERR  host         ui_engine: refusing to unload, service 'ui.engine' still held (use --force)
+[756668] ERR  host         ui_engine: refusing to unload, service 'ui.engine' still held (use --force)
+[756668] ERR  host         ui_engine: start() failed (-1)
+  ok   engine rejects malformed or ambiguous asset names/sizes and keeps RGBA alpha
+  ok   ui.skin selects the engine's active skin; vendor and omarchy switch by reload, no rebuild
+  ok   queued input survives forced engine removal safely; Omarchy rebinds and pins its replacement
+  ok   queued-input skin unload/reload and suspend/resume leave no borrowed callbacks or heap posts
+  ok   vendor skin re-registers after forced engine replacement and receives keys again
+  ok   configured repaint timer allocation failures reject start/resume and remain retryable
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-skin-selection/tests/skin_selection tests/skin_selection.c build-skin-selection/core/check.o build-skin-selection/core/control.o build-skin-selection/core/host.o build-skin-selection/core/module.o build-skin-selection/core/skin.o -ldl -pthread -lm
+[756767] ERR  host         load 'ui_missing': not found in build-skin-selection/tests/ui-skin/modules
+[756821] ERR  host         load 'ui_missing': not found in build-skin-selection/tests/ui-skin/modules
+[756843] ERR  host         ui_startfail: start() failed (-1)
+[756864] ERR  ui_badenter  skin enter failed
+[757016] ERR  host         ui_busyfail: start() failed (-1)
+[757016] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[757025] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[757035] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[757045] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[757067] ERR  host         load 'build-skin-selection/tests/ui-skin/modules/mod_ui_initbusy.so': init() failed (-1)
+[757067] ERR  host         ui_initbusy: init cleanup pending; retry unload
+[757076] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+[757086] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+[757096] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+  ok   configured missing startup skin falls back to a committed vendor frame without a readiness file
+  ok   runtime control switches both real skins and an external ui_<name> module
+  ok   malformed commands and competing selections cannot mutate an accepted request
+  ok   start failure, deferred enter failure and first-frame timeout safely load the vendor fallback
+  ok   fallback waits for a failed candidate's nonblocking quiescence gate, including registered skin cleanup
+  ok   failed init returning NULL retains its busy candidate until cleanup completes
+  ok   suspended-engine requests reject and shutdown cancels selection without starting another module
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -DOA_WINDOW_BROKER  -o build-skin-selection/scene-module-probe tools/display/egl-window-probe.c tools/display/scene-module-client.c common/scene_broker_transport.c build-skin-selection/core/check.o build-skin-selection/core/control.o build-skin-selection/core/host.o build-skin-selection/core/module.o build-skin-selection/core/skin.o -ldl -pthread -lm
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

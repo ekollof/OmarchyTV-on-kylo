@@ -24,6 +24,20 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
+Latest: [SKIN-SELECTION](artifacts/reports/SKIN-SELECTION-2026-11-01.md) adds
+`skin NAME`/`skin` to socket/stdin control and configured selection after autoload.
+Missing/start/enter/first-frame failures load vendor only after safe candidate
+unload, including retained failed-init DSOs. Busy cleanup is never forced.
+ui.skin v1 is a copied status companion; ui.engine stays v2. Runtime override is
+memory only. Host249/focused sanitizers/Unix socket/native contracts and actual
+GPU Omarchy/vendor/missing-skin fallback pass; full backing/pan/MAU/region
+restored. Same stock boot/PID1785/access/privacy; all staging removed. Native
+build-tv-v3/skin-selection and analysis manifests identify the tested bundle.
+Source20/preserved production16/installed ABI1 remain separate; no persistent
+deployment. Next return to vendor text/focus/content parity; Omarchy is still
+a skeleton. No exact cadence, cold/TV standby or process-crash recovery claim.
+No probe is pending.
+
 Latest review through670ce3c: [UI-ENGINE-REVIEW](artifacts/reports/UI-ENGINE-REVIEW-2026-11-01.md)
 fixes queued foreign engine code/payload leaks, companion rebinds, both skins'
 re-registration, timer failures, malformed assets, failed GPU receipts and
@@ -72,9 +86,9 @@ settings-focus-2026-11-01/. Module identities are in MEMORY.
 Next UI work: exact focused-row/other-tab evidence (a vendor capture of a
 focused row) or the vendor FreeType text/metrics path before claiming focus
 pixels; then value changes, Beeld/Geluid tabs, scrolling and localization.
-Also implement control-plane fallback loading when a selected skin fails, and
-the real OmarchyTV screens (ui_omarchy is a skeleton); the vendor skin remains
-the known working fallback. Channel list, EPG/PVR, broadcast/DVB, native
+Control-plane fallback is implemented by SKIN-SELECTION above. Real OmarchyTV
+screens remain pending (ui_omarchy is a skeleton); vendor remains the known
+working fallback. Channel list, EPG/PVR, broadcast/DVB, native
 audio/CEC ownership, independent startup, remote behavior and visible scanout
 remain outside this UI slice. Keep the firmware-first and fb1-transparency
 semantics: named SVG backgrounds are descriptions, and non-panel OSD areas use
@@ -111,6 +125,12 @@ named animation rectangle from the dialog description. Recover that named
 rect/motion and move the dialog upward over the background shift, then re-observe
 on the panel. The earlier backdrop/readback proofs say nothing about visible
 frame order.
+
+**That named-rectangle/motion explanation and suggested fix are superseded.**
+Commits2fb2b1f/ef2dc4c and MEMORY's SELECT-PATH establish no independent named
+rect motion here and no launcher Select transition at all. Current defaults
+switch instantly; type4 is a lab path. Do not resume the obsolete offset/inversion
+experiment from this historical observation paragraph.
 
 Owner explicitly requested checking **exact** vendor animation fidelity, then
 requested this handoff and stop. The audit remains incomplete; **do not claim the

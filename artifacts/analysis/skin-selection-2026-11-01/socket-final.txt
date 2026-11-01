@@ -1,0 +1,17 @@
+requested missing active vendor state ready fallback 1 error 5
+pending omarchy
+requested omarchy active omarchy state ready fallback 0 error 0
+pending vendor
+requested vendor active vendor state ready fallback 0 error 0
+pending badenter
+requested badenter active vendor state ready fallback 1 error 5
+bye
+requested ../invalid active vendor state ready fallback 1 error 22
+pending omarchy
+requested omarchy active omarchy state ready fallback 0 error 0
+pending vendor
+requested vendor active vendor state ready fallback 0 error 0
+pending badenter
+requested badenter active vendor state ready fallback 1 error 5
+bye
+  ok   Unix socket startup fallback, runtime switching, enter failure and clean process shutdown

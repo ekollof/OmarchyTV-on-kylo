@@ -175,11 +175,19 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  reload <name> [--force]  hot reload with state handoff\n"
                  "  suspend | resume         standby hooks for all modules\n"
                  "  standby                  coordinated power service request\n"
+                 "  skin [name]              query/select ui_<name>, with vendor fallback\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
                  "  loglevel <0-3>\n"
                  "  quit\n");
+        return 0;
+    }
+    if (!strcmp(cmd, "skin")) {
+        if (a2 || force) { snprintf(outbuf, outlen, "failed errno %d\n", EINVAL); return -1; }
+        if (!a1) { oa_skin_status(h, outbuf, outlen); return 0; }
+        if (oa_skin_request(h, a1)) { snprintf(outbuf, outlen, "failed errno %d\n", errno); return -1; }
+        snprintf(outbuf, outlen, "pending %s\n", a1);
         return 0;
     }
     if (!strcmp(cmd, "mixer-query") || !strcmp(cmd, "mixer-result") || !strcmp(cmd, "mixer-cancel")) {

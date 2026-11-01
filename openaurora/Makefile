@@ -438,6 +438,21 @@ check-ui-skin: $(BUILD)/tests/ui_skin $(BUILD)/tests/ui_nav_display.so $(BUILD)/
 	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-skin/modules/mod_nav_display.so
 	@$(BUILD)/tests/ui_skin $(BUILD)/tests/ui-skin/modules
 
+$(BUILD)/tests/skin_selection: tests/skin_selection.c core/host.h include/openaurora/ui_engine.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+
+$(BUILD)/tests/mod_ui_custom.so $(BUILD)/tests/mod_ui_startfail.so $(BUILD)/tests/mod_ui_badenter.so $(BUILD)/tests/mod_ui_silent.so $(BUILD)/tests/mod_ui_busyfail.so $(BUILD)/tests/mod_ui_initbusy.so: tests/skin_candidate.c include/openaurora/ui_engine.h include/openaurora/module.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared $(LDFLAGS) -DSKIN_NAME='"$(patsubst mod_ui_%.so,%,$(notdir $@))"' $(if $(filter %startfail.so %busyfail.so,$@),-DFAIL_START=1) $(if $(filter %busyfail.so,$@),-DBUSY=1) $(if $(filter %badenter.so,$@),-DFAIL_ENTER=1) $(if $(filter %silent.so,$@),-DSILENT=1) $(if $(filter %initbusy.so,$@),-DFAIL_INIT=1) -o $@ $<
+
+.PHONY: check-skin-selection
+check-skin-selection: check-ui-skin $(BUILD)/tests/skin_selection $(BUILD)/tests/mod_ui_custom.so $(BUILD)/tests/mod_ui_startfail.so $(BUILD)/tests/mod_ui_badenter.so $(BUILD)/tests/mod_ui_silent.so $(BUILD)/tests/mod_ui_busyfail.so $(BUILD)/tests/mod_ui_initbusy.so
+	@cp $(BUILD)/tests/mod_ui_custom.so $(BUILD)/tests/mod_ui_startfail.so $(BUILD)/tests/mod_ui_badenter.so $(BUILD)/tests/mod_ui_silent.so $(BUILD)/tests/mod_ui_busyfail.so $(BUILD)/tests/mod_ui_initbusy.so $(BUILD)/tests/ui-skin/modules/
+	@$(BUILD)/tests/skin_selection $(BUILD)/tests/ui-skin/modules
+
+check: check-skin-selection
+
 $(BUILD)/tests/ui_settings: tests/ui_settings.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_settings.c $(filter %.o,$^) $(LDLIBS)

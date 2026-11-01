@@ -200,6 +200,20 @@ static int ui_ready(scene_probe *s)
 }
 static void key(scene_probe *s, unsigned char id)
 { oa_key_event event = {.id = id, .kind = OA_KEY_PRESS}; s->host.api.emit(&s->host, OA_TOPIC_KEY, &event); }
+static int select_skin(scene_probe *s, const char *name, int fallback)
+{
+    char line[96], reply[256]; snprintf(line, sizeof line, "skin %s", name);
+    if (oa_control_command(&s->host, line, reply, sizeof reply)) return -1;
+    uint64_t deadline = oa_now_ms()+10000;
+    while (s->host.skin_timer) {
+        run_for(s, 1);
+        if (oa_now_ms() >= deadline) { errno = ETIMEDOUT; return -1; }
+    }
+    oa_skin_status(&s->host, reply, sizeof reply);
+    if (!strstr(reply, "state ready") || s->host.skin_fallback != fallback) { errno = EIO; return -1; }
+    printf("UI control %s", reply);
+    return 0;
+}
 static int dialog_complete(scene_probe *s, const oa_portal_iface *portal, uint64_t previous)
 {
     uint64_t deadline = oa_now_ms()+5000, animated = 0;
@@ -310,6 +324,9 @@ int probe_ui(scene_probe *s)
         if (oa_now_ms() >= deadline) { errno = ETIMEDOUT; goto failure; }
     } while (1);
     printf("UI host-only suspend/resume completed receipt=%llu\n", (unsigned long long)result.serial);
+    portal = NULL;
+    if (select_skin(s, "omarchy", 0) || select_skin(s, "vendor", 0) ||
+        select_skin(s, "missing", 1)) goto failure;
     return 1;
 failure:
     s->error = errno ? errno : EIO; errno = s->error; return -1;

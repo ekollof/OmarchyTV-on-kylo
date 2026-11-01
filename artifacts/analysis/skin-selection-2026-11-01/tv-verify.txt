@@ -1,0 +1,55 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+modules/mod_graphics.so: OK
+modules/mod_nav_display.so: OK
+modules/mod_scene_display.so: OK
+modules/mod_ticker.so: OK
+modules/mod_ui_anim.so: OK
+modules/mod_ui_badenter.so: OK
+modules/mod_ui_busyfail.so: OK
+modules/mod_ui_clock.so: OK
+modules/mod_ui_custom.so: OK
+modules/mod_ui_engine.so: OK
+modules/mod_ui_initbusy.so: OK
+modules/mod_ui_omarchy.so: OK
+modules/mod_ui_silent.so: OK
+modules/mod_ui_startfail.so: OK
+modules/mod_ui_vendor.so: OK
+ui/card_canaldigitaal.rgba: OK
+ui/card_digiturk.rgba: OK
+ui/card_gain.rgba: OK
+ui/card_netflix.rgba: OK
+ui/card_prime.rgba: OK
+ui/card_tabii.rgba: OK
+ui/card_telesat.rgba: OK
+ui/card_tvvlaanderen.rgba: OK
+ui/card_youtube.rgba: OK
+ui/rail1.rgba: OK
+ui/rail2.rgba: OK
+ui/rail3.rgba: OK
+ui/rail4.rgba: OK
+ui/rail5.rgba: OK
+ui/rail_hl01.rgba: OK
+ui/rail_hl02.rgba: OK
+ui/rail_hl03.rgba: OK
+ui/rail_hl04.rgba: OK
+ui/rail_hl05.rgba: OK
+ui/rail_hl06.rgba: OK
+ui/rail_hl07.rgba: OK
+ui/rail_hl08.rgba: OK
+ui/rail_hl09.rgba: OK
+ui/rail_hl10.rgba: OK
+ui/rail_hl11.rgba: OK
+ui/title.rgba: OK
+skin_selection: OK
+scene-module-probe: OK
+oa-scene-broker: OK
+scene-renderer.so: OK
+   471728 skin_selection
+   524012 scene-module-probe
+    57424 modules/mod_ui_engine.so
+  1053164 total
+d1aa5c1679a9467ec51865d4f2120112  /vendor/lib/libmali.so

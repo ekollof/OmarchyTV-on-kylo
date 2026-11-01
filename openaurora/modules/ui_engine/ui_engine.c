@@ -49,6 +49,7 @@ struct engine {
     struct { int kind, id; } events[ENGINE_MAX_EVENTS];
     unsigned nevents, dispatching;
     int draining;
+    int frame_ready, enter_error, status_published;
 };
 
 static struct engine *g_engine;
@@ -157,7 +158,7 @@ static void receipt_tick(void *ud)
         c->present_pending = 0;
         c->present_error = result.error;
     }
-    if (!result.error) acknowledge(c);
+    if (!result.error) { c->frame_ready = 1; acknowledge(c); }
 }
 
 static int bind_async(struct engine *c)
@@ -176,6 +177,7 @@ static void drop_async(struct engine *c, int release)
     c->present_serial = 0;
     c->present_pending = 0;
     c->present_error = 0;
+    c->frame_ready = 0;
     if (release && c->async) c->api->release(c->api->priv, OA_SVC_DISPLAY_ASYNC);
     c->async = NULL;
     if (release) {
@@ -199,6 +201,7 @@ static int present(void)
         return 0;
     }
     if (c->disp->present()) return -1;
+    c->frame_ready = 1;
     acknowledge(c);
     return 0;
 }
@@ -237,6 +240,7 @@ static void dispatch_skin(void)
     c->dispatching++;
     if (!c->skin_entered) {
         int rc = skin->enter ? skin->enter(ud) : 0;
+        c->enter_error = rc ? EIO : 0;
         if (c->skin == skin && c->skin_ud == ud && !rc) c->skin_entered = 1;
         if (rc) engine_log(c, OA_LOG_ERROR, "skin enter failed");
     }
@@ -398,7 +402,8 @@ static int e_register_skin(const oa_ui_skin *skin, void *ud)
 static int e_register_skin_dispatch(const oa_ui_skin *skin, void *ud, void (*dispatch)(void *))
 {
     struct engine *c = g_engine;
-    if (!c || c->suspended || c->draining || !skin || !skin->name || !dispatch || c->skin ||
+    if (!c || c->suspended || c->draining || !skin || !skin->name || !skin->name[0] ||
+        strlen(skin->name) >= sizeof ((oa_ui_skin_status *)0)->name || !dispatch || c->skin ||
         !c->api->owner_id(c->api->priv))
         return -1;
     const char *want = c->api->config_get(c->api->priv, "ui.skin", "");
@@ -421,6 +426,7 @@ static int e_register_skin_dispatch(const oa_ui_skin *skin, void *ud, void (*dis
     c->last_receipt = c->present_serial = 0;
     c->present_pending = 0;
     c->present_error = 0;
+    c->frame_ready = c->enter_error = 0;
     if (c->disp && post_skin(c, 0, 0)) {
         c->skin = NULL; c->skin_ud = NULL; c->skin_owner = 0; c->skin_dispatch = NULL;
         return -1;
@@ -439,6 +445,8 @@ static void e_unregister_skin(const oa_ui_skin *skin)
         c->skin_entered = 0;
         c->skin_dispatch = NULL;
         c->nevents = 0;
+        c->frame_ready = c->enter_error = 0;
+        c->first_serial = UINT64_MAX;
         if (skin->leave) {
             c->dispatching++;
             skin->leave(ud);
@@ -476,6 +484,19 @@ static const oa_ui_engine_iface g_iface = {
     .register_skin_dispatch = e_register_skin_dispatch,
     .dispatch_skin = dispatch_skin,
 };
+static int skin_status(oa_ui_skin_status *out)
+{
+    struct engine *c = g_engine;
+    if (!c || !out) { errno = EINVAL; return -1; }
+    *out = (oa_ui_skin_status){0};
+    if (c->skin) snprintf(out->name, sizeof out->name, "%s", c->skin->name);
+    out->owner = c->skin_owner;
+    out->entered = c->skin_entered;
+    out->ready = c->frame_ready;
+    out->error = c->enter_error ? c->enter_error : c->present_error;
+    return 0;
+}
+static const oa_ui_skin_status_iface status_iface = {skin_status};
 
 /* --------------------------------------------------------------- module */
 
@@ -531,12 +552,16 @@ static int m_start(void *v)
         return -1;
     }
     engine_log(c, OA_LOG_INFO, "ui_engine started");
+    if (c->api->publish(c->api->priv, OA_SVC_UI_SKIN, 1, &status_iface)) return -1;
+    c->status_published = 1;
     return 0;
 }
 
 static void m_stop(void *v)
 {
     struct engine *c = v;
+    if (c->status_published) c->api->unpublish(c->api->priv, OA_SVC_UI_SKIN);
+    c->status_published = 0;
     drop_display(c, 1);
     if (c->mod_key) {
         c->api->unsubscribe(c->api->priv, c->mod_key);

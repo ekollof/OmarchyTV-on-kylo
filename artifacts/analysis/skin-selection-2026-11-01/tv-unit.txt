@@ -1,0 +1,26 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+[701365] ERR  host         load 'ui_missing': not found in /tmp/oa-scene-helper-20261101/modules
+[701420] ERR  host         load 'ui_missing': not found in /tmp/oa-scene-helper-20261101/modules
+[701442] ERR  host         ui_startfail: start() failed (-1)
+[701463] ERR  ui_badenter  skin enter failed
+[701617] ERR  host         ui_busyfail: start() failed (-1)
+[701617] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[701626] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[701636] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[701646] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[701668] ERR  host         load '/tmp/oa-scene-helper-20261101/modules/mod_ui_initbusy.so': init() failed (-1)
+[701668] ERR  host         ui_initbusy: init cleanup pending; retry unload
+[701677] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+[701687] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+[701697] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+  ok   configured missing startup skin falls back to a committed vendor frame without a readiness file
+  ok   runtime control switches both real skins and an external ui_<name> module
+  ok   malformed commands and competing selections cannot mutate an accepted request
+  ok   start failure, deferred enter failure and first-frame timeout safely load the vendor fallback
+  ok   fallback waits for a failed candidate's nonblocking quiescence gate, including registered skin cleanup
+  ok   failed init returning NULL retains its busy candidate until cleanup completes
+  ok   suspended-engine requests reject and shutdown cancels selection without starting another module

@@ -27,6 +27,7 @@ Symbol/function counts depend on the counting method and do not establish an ABI
 
 | superseded claim or tempting detour | current conclusion and evidence |
 |---|---|
+| A failed module load returning NULL means fallback can start immediately | Init can retain a busy DSO despite NULL. SKIN-SELECTION tracks the retained candidate and waits for normal unload/quiescence before loading vendor; native injected-gate tests verify no overlap. |
 | `gridFA.svg` `rowPos` (208,160,81,69) is the portal's item geometry | gridFA (18, 1280x720) is a scrollbar template used by later screens. The apps portal uses `FullScreenGridFA.svg` (375): rowPos/mRowM (225,121,320,230), mRowL (156,122,0,230). Its mTopL/mBotL are zero-size paths/polylines, not rectangles. APPS-GRID. |
 | Readiness must track the newest queued UI serial, or a retained old receipt is enough after reload | Track the first accepted request of that UI/provider generation. Any later actual successful receipt in that namespace can acknowledge it; old serials cannot. Chasing each new request can starve readiness under repaint/coalescing. UI-ASYNC. |
 | The TV's installed OAI1 bundle includes the recovered rail-highlight animation | Its /buffer/openaurora/ui inventory still lacks rail_hl01..11. RAIL-ASSETS exports verified vendor frames to durable ignored workbench and tests a private temporary complete bundle on the real GPU; installed assets are unchanged. Visible frame order/30ms cadence remain open. |
