@@ -405,6 +405,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       (animation_slide_up_fade_in); ui.fs_type remains an override.
 - [ ] Complete accelerated scene presentation and visible animation acceptance.
       EGL-WINDOW now proves direct native presentation on the initialized layer.
+      SCENE-BROKER adds the tested lower sealed-image IPC/owner server only;
+      bootstrap Mali after inherited-fd cleanup, then add the actual executable.
       Integrate an owning EGL worker, nonblocking quiescence, bounded/coalesced
       async frame/completion and readiness semantics before production service
       wiring. No display.renderer switch exists yet. Preserve failed-close
@@ -413,6 +415,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       own50Hz target. Measure controller sampling, renderer and physical refresh
       separately;10ms sampling is not100Hz scanout. Verify vendor frame sequences,
       alpha/edge precision, interaction and cold/resume ownership.
+- [x] Lower graphics IPC and retained owner/image lifetime: fixed OGS1 records,
+      sealed immutable RGBA memfd transfer, cached revisions, completion after
+      injected finish and failed-close retry. Four groups pass strict host,
+      ASan/UBSan, ARM/qemu and actual TV without rendering/hardware calls.
+      Target shared sealed mapping EPERM resolved using kernel ARM instructions;
+      use private read-only mapping with all seals retained. No graphics helper,
+      service, readiness, module lifecycle or GPU completion acceptance implied.
+      SCENE-BROKER-2026-11-01.
 - [x] Direct EGL native-window diagnostic: recovered4-byte dimensions, fb1/
       primary-buffer profile and swap/MAU contract. Eight effects at50Hz pacing
       passed on actual display, owner confirmed upright/full-screen/smooth;

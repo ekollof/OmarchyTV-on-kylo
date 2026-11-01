@@ -49,6 +49,19 @@ syntax defect.
 
 ## Development build and evidence
 
+SCENE-BROKER-2026-11-01 adds the lower immutable-image IPC and blocking owner
+server. Four injected-renderer groups pass strict host, ASan/UBSan, ARM/qemu and
+actual TV; complete host suite207 checks pass. Native unit87760bytes/
+ba89e0afce422f03e8254ae1b0c307cc, maxGLIBC2.4,
+preserved under build-tv-v3/scene-broker. Target mmap_region rejects read-only
+MAP_SHARED on sealed files; instruction-backed MAP_PRIVATE correction passes
+with all seals retained. No EGL/hardware calls in this test. Staging removed;
+same boot/PID1785, full framebuffer hash41735daa69dc137743b59efe12db4a19,
+pan0,0, installed hook/hosts hashes, access/privacy and safety markers confirmed.
+Production stage unchanged. Graphics executable/service integration remains open;
+Mali must load after inherited-fd sanitation, not before it. See report for the
+initial timeout and emulator-only ancillary truncation discrepancy.
+
 EGL-WINDOW-2026-11-01: direct GPU display diagnostic passed, owner independently
 confirmed upright/full-screen/smooth effects. Eight types each51 presents in
 about1000.4ms at50Hz pacing. Full16588800-byte snapshot, MAU0, region and pan0

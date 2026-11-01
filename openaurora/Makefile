@@ -437,6 +437,15 @@ $(BUILD)/egl-probe: tools/display/egl-probe.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $< $(EGL_PROBE_LIBS)
 
+$(BUILD)/tests/scene_broker: tests/scene_broker.c common/scene_broker.c common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/scene_broker.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread -lm
+
+.PHONY: check-scene-broker
+check: check-scene-broker
+check-scene-broker: $(BUILD)/tests/scene_broker
+	@$(BUILD)/tests/scene_broker
+
 $(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm

@@ -1,0 +1,15 @@
+  ok   OGS1 endian/float records, reserved fields, atomic rejection and bounds
+  running transport
+  ok   immutable sealed images, CLOEXEC transfer, nonblocking reads and rejected-FD cleanup
+  running sessions
+  ok   upload/cached revisions and completion held until GPU finish; caller FD released safely
+  running failures
+  broker exit errno=12
+  broker exit errno=4
+  broker exit errno=5
+  broker exit errno=61
+  broker exit errno=71
+  broker exit errno=71
+  broker exit errno=16
+  broker exit errno=71
+  ok   partial open/render/finish failure retains owner and image across failed close; no replay

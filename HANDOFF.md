@@ -24,8 +24,26 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
+Latest lower-layer milestone: [SCENE-BROKER](artifacts/reports/SCENE-BROKER-2026-11-01.md)
+adds OGS1 local IPC, sealed immutable8294400-byte RGBA images and a blocking
+owner server with upload/cache revisions, finish-before-completion and retained
+failed-close images/owners. Four groups pass strict host, ASan/UBSan, ARM/qemu
+and actual TV using injected rendering callbacks only. Native unit87760bytes/
+ba89e0afce422f03e8254ae1b0c307cc in build-tv-v3/scene-broker. Target kernel
+rejects shared read-only mappings of sealed files; verified instructions justify
+private read-only mapping with all seals intact. Staging removed, same boot/
+PID1785/full framebuffer hash/pan/access/privacy. Production stage unchanged.
+
+Next: graphics executable bootstrap must sanitize inherited descriptors before
+loading Mali. A discarded directly linked draft closed fd>=3 after constructors,
+which could close Mali-owned resources. No executable, GL-finish addition or
+async module service was retained. Reuse common/scene_broker*.c and its tests;
+add a proper renderer load/lifetime boundary, then parent completion/coalescing/
+quiescence and actual module/display acceptance. Do not repeat the solved sealed
+MAP_SHARED experiment or mislabel qemu's small-control ancillary leak as a TV bug.
+
 Owner resumed the goal and reaffirmed real display/hardware testing. Latest
-milestone: [EGL-WINDOW](artifacts/reports/EGL-WINDOW-2026-11-01.md) proves direct
+visible milestone: [EGL-WINDOW](artifacts/reports/EGL-WINDOW-2026-11-01.md) proves direct
 native GPU presentation on the actual display. The owner watched all eight
 effects and confirmed upright, full-screen and smooth output. Each effect ran
 51 presents in about1000.4ms at our50Hz pacing. Full16588800-byte backing,

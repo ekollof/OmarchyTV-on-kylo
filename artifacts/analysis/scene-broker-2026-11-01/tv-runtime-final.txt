@@ -1,0 +1,21 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+  ok   OGS1 endian/float records, reserved fields, atomic rejection and bounds
+  running transport
+  ok   immutable sealed images, CLOEXEC transfer, nonblocking reads and rejected-FD cleanup
+  running sessions
+  ok   upload/cached revisions and completion held until GPU finish; caller FD released safely
+  running failures
+  broker exit errno=12
+  broker exit errno=4
+  broker exit errno=5
+  broker exit errno=61
+  broker exit errno=71
+  broker exit errno=71
+  broker exit errno=16
+  broker exit errno=71
+  ok   partial open/render/finish failure retains owner and image across failed close; no replay
+test_exit=0

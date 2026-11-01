@@ -1,0 +1,421 @@
+
+artifacts/workbench/ker0_sym.elf:     file format elf32-littlearm
+
+
+Disassembly of section .kernel:
+
+80174084 <mmap_region>:
+80174084:	mov	ip, sp
+80174088:	push	{r4, r5, r6, r7, r8, r9, sl, fp, ip, lr, pc}
+8017408c:	sub	fp, ip, #4
+80174090:	sub	sp, sp, #68	; 0x44
+80174094:	push	{lr}		; (str lr, [sp, #-4]!)
+80174098:	bl	800187fc <__gnu_mcount_nc>
+8017409c:	mov	ip, sp
+801740a0:	mov	r9, r2
+801740a4:	bic	ip, ip, #8128	; 0x1fc0
+801740a8:	lsr	r2, r2, #12
+801740ac:	bic	ip, ip, #63	; 0x3f
+801740b0:	str	r0, [fp, #-60]	; 0xffffffc4
+801740b4:	ldr	ip, [ip, #12]
+801740b8:	mov	r5, r1
+801740bc:	mov	r1, r3
+801740c0:	str	r2, [fp, #-64]	; 0xffffffc0
+801740c4:	str	r3, [fp, #-56]	; 0xffffffc8
+801740c8:	ldr	r8, [ip, #560]	; 0x230
+801740cc:	mov	r0, r8
+801740d0:	bl	8017370c <may_expand_vm>
+801740d4:	subs	r4, r0, #0
+801740d8:	beq	8017426c <mmap_region+0x1e8>
+801740dc:	add	r7, r9, r5
+801740e0:	add	sl, r8, #4
+801740e4:	mov	r1, #0
+801740e8:	mov	r4, sl
+801740ec:	mov	r6, r1
+801740f0:	b	80174108 <mmap_region+0x84>
+801740f4:	ldr	r2, [r3, #-16]
+801740f8:	add	r4, r3, #8
+801740fc:	cmp	r2, r7
+80174100:	bcc	8017412c <mmap_region+0xa8>
+80174104:	mov	r6, r3
+80174108:	ldr	r3, [r4]
+8017410c:	cmp	r3, #0
+80174110:	beq	80174154 <mmap_region+0xd0>
+80174114:	ldr	r2, [r3, #-12]
+80174118:	add	r4, r3, #4
+8017411c:	cmp	r5, r2
+80174120:	bcc	801740f4 <mmap_region+0x70>
+80174124:	mov	r1, r3
+80174128:	b	80174104 <mmap_region+0x80>
+8017412c:	mov	r2, r9
+80174130:	mov	r1, r5
+80174134:	mov	r0, r8
+80174138:	bl	80172140 <do_munmap>
+8017413c:	cmp	r0, #0
+80174140:	beq	801740e4 <mmap_region+0x60>
+80174144:	mvn	r7, #11
+80174148:	mov	r0, r7
+8017414c:	sub	sp, fp, #40	; 0x28
+80174150:	ldm	sp, {r4, r5, r6, r7, r8, r9, sl, fp, sp, pc}
+80174154:	cmp	r1, #0
+80174158:	beq	80174264 <mmap_region+0x1e0>
+8017415c:	sub	r9, r1, #16
+80174160:	ldr	r2, [fp, #-56]	; 0xffffffc8
+80174164:	mov	r3, #10
+80174168:	movt	r3, #32
+8017416c:	and	r3, r3, r2
+80174170:	cmp	r3, #2
+80174174:	movne	sl, #0
+80174178:	beq	8017448c <mmap_region+0x408>
+8017417c:	ldr	r3, [fp, #4]
+80174180:	mov	ip, #0
+80174184:	ldr	r2, [fp, #-56]	; 0xffffffc8
+80174188:	mov	r1, r9
+8017418c:	str	ip, [sp, #20]
+80174190:	mov	r0, r8
+80174194:	str	r3, [sp, #12]
+80174198:	ldr	r3, [fp, #-60]	; 0xffffffc4
+8017419c:	str	r2, [sp]
+801741a0:	mov	r2, r5
+801741a4:	str	ip, [sp, #16]
+801741a8:	str	r3, [sp, #8]
+801741ac:	mov	r3, r7
+801741b0:	str	ip, [sp, #4]
+801741b4:	bl	80172538 <vma_merge>
+801741b8:	subs	r3, r0, #0
+801741bc:	str	r3, [fp, #-68]	; 0xffffffbc
+801741c0:	beq	80174324 <mmap_region+0x2a0>
+801741c4:	ldr	r0, [fp, #-68]	; 0xffffffbc
+801741c8:	bl	80130f0c <perf_event_mmap>
+801741cc:	ldr	r1, [fp, #-56]	; 0xffffffc8
+801741d0:	movw	r2, #262	; 0x106
+801741d4:	ldr	r3, [r8, #120]	; 0x78
+801741d8:	and	r2, r2, r1
+801741dc:	cmp	r2, #4
+801741e0:	ldr	r2, [fp, #-64]	; 0xffffffc0
+801741e4:	add	r3, r3, r2
+801741e8:	str	r3, [r8, #120]	; 0x78
+801741ec:	beq	801744b4 <mmap_region+0x430>
+801741f0:	ldr	r3, [fp, #-56]	; 0xffffffc8
+801741f4:	tst	r3, #256	; 0x100
+801741f8:	bne	80174310 <mmap_region+0x28c>
+801741fc:	ldr	r2, [fp, #-56]	; 0xffffffc8
+80174200:	movw	r3, #266	; 0x10a
+80174204:	and	r3, r3, r2
+80174208:	cmp	r3, #2
+8017420c:	ldreq	r3, [r8, #132]	; 0x84
+80174210:	ldreq	r2, [fp, #-64]	; 0xffffffc0
+80174214:	addeq	r3, r3, r2
+80174218:	streq	r3, [r8, #132]	; 0x84
+8017421c:	ldr	r2, [fp, #-56]	; 0xffffffc8
+80174220:	tst	r2, #8192	; 0x2000
+80174224:	beq	8017424c <mmap_region+0x1c8>
+80174228:	mov	r3, #17408	; 0x4400
+8017422c:	movt	r3, #4100	; 0x1004
+80174230:	and	r2, r2, r3
+80174234:	cmp	r2, #0
+80174238:	beq	801744c4 <mmap_region+0x440>
+8017423c:	ldr	r2, [fp, #-68]	; 0xffffffbc
+80174240:	ldr	r3, [r2, #40]	; 0x28
+80174244:	bic	r3, r3, #532480	; 0x82000
+80174248:	str	r3, [r2, #40]	; 0x28
+8017424c:	ldr	r0, [fp, #-68]	; 0xffffffbc
+80174250:	mov	r7, r5
+80174254:	bl	80172b54 <vma_set_page_prot>
+80174258:	mov	r0, r7
+8017425c:	sub	sp, fp, #40	; 0x28
+80174260:	ldm	sp, {r4, r5, r6, r7, r8, r9, sl, fp, sp, pc}
+80174264:	mov	r9, r1
+80174268:	b	80174160 <mmap_region+0xdc>
+8017426c:	mov	r1, r5
+80174270:	mov	r0, r8
+80174274:	bl	80170fa0 <find_vma>
+80174278:	subs	r2, r0, #0
+8017427c:	add	r7, r9, r5
+80174280:	beq	801742f0 <mmap_region+0x26c>
+80174284:	ldr	r3, [r2]
+80174288:	cmp	r7, r3
+8017428c:	movls	r2, r4
+80174290:	bls	801742f0 <mmap_region+0x26c>
+80174294:	ldr	r0, [r2, #8]
+80174298:	cmp	r5, r3
+8017429c:	ldr	r1, [r2, #4]
+801742a0:	movcs	r2, r5
+801742a4:	movcc	r2, r3
+801742a8:	cmp	r7, r1
+801742ac:	rsbls	r2, r2, r7
+801742b0:	rsbhi	r2, r2, r1
+801742b4:	cmp	r0, #0
+801742b8:	lsr	r2, r2, #12
+801742bc:	bne	801742e4 <mmap_region+0x260>
+801742c0:	b	801742f0 <mmap_region+0x26c>
+801742c4:	ldr	r1, [r0, #4]
+801742c8:	ldr	r0, [r0, #8]
+801742cc:	cmp	r7, r1
+801742d0:	rsbls	r3, r3, r7
+801742d4:	rsbhi	r3, r3, r1
+801742d8:	cmp	r0, #0
+801742dc:	add	r2, r2, r3, lsr #12
+801742e0:	beq	801742f0 <mmap_region+0x26c>
+801742e4:	ldr	r3, [r0]
+801742e8:	cmp	r7, r3
+801742ec:	bcs	801742c4 <mmap_region+0x240>
+801742f0:	ldr	r3, [fp, #-64]	; 0xffffffc0
+801742f4:	mov	r0, r8
+801742f8:	ldr	r1, [fp, #-56]	; 0xffffffc8
+801742fc:	sub	r2, r3, r2
+80174300:	bl	8017370c <may_expand_vm>
+80174304:	cmp	r0, #0
+80174308:	beq	80174144 <mmap_region+0xc0>
+8017430c:	b	801740e0 <mmap_region+0x5c>
+80174310:	ldr	r3, [r8, #140]	; 0x8c
+80174314:	ldr	r2, [fp, #-64]	; 0xffffffc0
+80174318:	add	r3, r3, r2
+8017431c:	str	r3, [r8, #140]	; 0x8c
+80174320:	b	8017421c <mmap_region+0x198>
+80174324:	movw	r3, #8984	; 0x2318
+80174328:	movw	r1, #32960	; 0x80c0
+8017432c:	movt	r3, #32935	; 0x80a7
+80174330:	movt	r1, #576	; 0x240
+80174334:	ldr	r0, [r3]
+80174338:	str	r3, [fp, #-80]	; 0xffffffb0
+8017433c:	bl	8018c5f4 <kmem_cache_alloc>
+80174340:	subs	r3, r0, #0
+80174344:	mov	r1, r3
+80174348:	str	r3, [fp, #-72]	; 0xffffffb8
+8017434c:	beq	801745e0 <mmap_region+0x55c>
+80174350:	ldr	ip, [fp, #-56]	; 0xffffffc8
+80174354:	movw	r3, #33756	; 0x83dc
+80174358:	ldr	lr, [fp, #-60]	; 0xffffffc4
+8017435c:	movt	r3, #32929	; 0x80a1
+80174360:	str	r8, [r1, #32]
+80174364:	and	r2, ip, #15
+80174368:	stm	r1, {r5, r7}
+8017436c:	ldr	r2, [r3, r2, lsl #2]
+80174370:	cmp	lr, #0
+80174374:	ldr	lr, [fp, #4]
+80174378:	add	r3, r1, #60	; 0x3c
+8017437c:	str	ip, [r1, #40]	; 0x28
+80174380:	str	r2, [r1, #36]	; 0x24
+80174384:	str	lr, [r1, #76]	; 0x4c
+80174388:	str	r3, [r1, #60]	; 0x3c
+8017438c:	str	r3, [r1, #64]	; 0x40
+80174390:	beq	80174620 <mmap_region+0x59c>
+80174394:	ands	r3, ip, #2048	; 0x800
+80174398:	str	r3, [fp, #-76]	; 0xffffffb4
+8017439c:	bne	8017469c <mmap_region+0x618>
+801743a0:	ldr	r3, [fp, #-56]	; 0xffffffc8
+801743a4:	ands	r3, r3, #8
+801743a8:	str	r3, [fp, #-56]	; 0xffffffc8
+801743ac:	bne	8017464c <mmap_region+0x5c8>
+801743b0:	ldr	r0, [fp, #-60]	; 0xffffffc4
+801743b4:	add	r3, r0, #40	; 0x28
+801743b8:	pldw	[r3]
+801743bc:	ldrex	r2, [r3]
+801743c0:	add	r2, r2, #1
+801743c4:	strex	r1, r2, [r3]
+801743c8:	teq	r1, #0
+801743cc:	bne	801743bc <mmap_region+0x338>
+801743d0:	ldr	sl, [fp, #-72]	; 0xffffffb8
+801743d4:	ldr	r3, [r0, #20]
+801743d8:	str	r0, [sl, #80]	; 0x50
+801743dc:	mov	r1, sl
+801743e0:	ldr	r3, [r3, #44]	; 0x2c
+801743e4:	blx	r3
+801743e8:	subs	r7, r0, #0
+801743ec:	bne	801744fc <mmap_region+0x478>
+801743f0:	ldr	r7, [sl]
+801743f4:	cmp	r5, r7
+801743f8:	bne	801745e8 <mmap_region+0x564>
+801743fc:	ldr	r1, [fp, #-72]	; 0xffffffb8
+80174400:	mov	r2, r9
+80174404:	mov	r0, r8
+80174408:	ldr	r3, [r1, #40]	; 0x28
+8017440c:	str	r6, [sp]
+80174410:	mov	r5, r3
+80174414:	str	r3, [fp, #-56]	; 0xffffffc8
+80174418:	mov	r3, r4
+8017441c:	bl	8017186c <vma_link>
+80174420:	tst	r5, #8
+80174424:	beq	8017444c <mmap_region+0x3c8>
+80174428:	ldr	r3, [fp, #-60]	; 0xffffffc4
+8017442c:	ldr	r3, [r3, #200]	; 0xc8
+80174430:	add	r2, r3, #28
+80174434:	pldw	[r2]
+80174438:	ldrex	r1, [r2]
+8017443c:	sub	r1, r1, #1
+80174440:	strex	r0, r1, [r2]
+80174444:	teq	r0, #0
+80174448:	bne	80174438 <mmap_region+0x3b4>
+8017444c:	ldr	r3, [fp, #-56]	; 0xffffffc8
+80174450:	tst	r3, #2048	; 0x800
+80174454:	beq	801745d0 <mmap_region+0x54c>
+80174458:	ldr	r3, [fp, #-60]	; 0xffffffc4
+8017445c:	ldr	r3, [r3, #16]
+80174460:	add	r2, r3, #248	; 0xf8
+80174464:	pldw	[r2]
+80174468:	ldrex	r1, [r2]
+8017446c:	add	r1, r1, #1
+80174470:	strex	r0, r1, [r2]
+80174474:	teq	r0, #0
+80174478:	bne	80174468 <mmap_region+0x3e4>
+8017447c:	ldr	r3, [fp, #-72]	; 0xffffffb8
+80174480:	mov	r5, r7
+80174484:	str	r3, [fp, #-68]	; 0xffffffbc
+80174488:	b	801741c4 <mmap_region+0x140>
+8017448c:	ldr	r1, [fp, #-64]	; 0xffffffc0
+80174490:	mov	r0, r8
+80174494:	bl	802f1a6c <security_vm_enough_memory_mm>
+80174498:	cmp	r0, #0
+8017449c:	bne	80174144 <mmap_region+0xc0>
+801744a0:	ldr	r3, [fp, #-56]	; 0xffffffc8
+801744a4:	ldr	sl, [fp, #-64]	; 0xffffffc0
+801744a8:	orr	r3, r3, #1048576	; 0x100000
+801744ac:	str	r3, [fp, #-56]	; 0xffffffc8
+801744b0:	b	8017417c <mmap_region+0xf8>
+801744b4:	ldr	r3, [r8, #136]	; 0x88
+801744b8:	add	r3, r3, r2
+801744bc:	str	r3, [r8, #136]	; 0x88
+801744c0:	b	8017421c <mmap_region+0x198>
+801744c4:	mov	r3, sp
+801744c8:	bic	r3, r3, #8128	; 0x1fc0
+801744cc:	bic	r3, r3, #63	; 0x3f
+801744d0:	ldr	r3, [r3, #12]
+801744d4:	ldr	r0, [r3, #560]	; 0x230
+801744d8:	bl	80011de0 <get_gate_vma>
+801744dc:	ldr	r3, [fp, #-68]	; 0xffffffbc
+801744e0:	cmp	r3, r0
+801744e4:	beq	8017423c <mmap_region+0x1b8>
+801744e8:	ldr	r3, [r8, #124]	; 0x7c
+801744ec:	ldr	r2, [fp, #-64]	; 0xffffffc0
+801744f0:	add	r3, r3, r2
+801744f4:	str	r3, [r8, #124]	; 0x7c
+801744f8:	b	8017424c <mmap_region+0x1c8>
+801744fc:	ldr	r4, [fp, #-72]	; 0xffffffb8
+80174500:	mov	sl, #0
+80174504:	ldr	r0, [fp, #-60]	; 0xffffffc4
+80174508:	str	sl, [r4, #80]	; 0x50
+8017450c:	bl	801a41ec <fput>
+80174510:	ldr	ip, [r4, #4]
+80174514:	mov	r2, r9
+80174518:	ldr	r3, [r4]
+8017451c:	mov	r1, r4
+80174520:	mov	r0, r8
+80174524:	str	ip, [sp]
+80174528:	bl	80170e00 <unmap_region>
+8017452c:	ldr	r3, [fp, #-56]	; 0xffffffc8
+80174530:	cmp	r3, sl
+80174534:	moveq	sl, r3
+80174538:	beq	80174560 <mmap_region+0x4dc>
+8017453c:	ldr	r3, [fp, #-60]	; 0xffffffc4
+80174540:	ldr	r3, [r3, #200]	; 0xc8
+80174544:	add	r2, r3, #28
+80174548:	pldw	[r2]
+8017454c:	ldrex	r1, [r2]
+80174550:	sub	r1, r1, #1
+80174554:	strex	r0, r1, [r2]
+80174558:	teq	r0, #0
+8017455c:	bne	8017454c <mmap_region+0x4c8>
+80174560:	ldr	r3, [fp, #-76]	; 0xffffffb4
+80174564:	cmp	r3, #0
+80174568:	beq	80174590 <mmap_region+0x50c>
+8017456c:	ldr	r3, [fp, #-60]	; 0xffffffc4
+80174570:	ldr	r3, [r3, #16]
+80174574:	add	r2, r3, #248	; 0xf8
+80174578:	pldw	[r2]
+8017457c:	ldrex	r1, [r2]
+80174580:	add	r1, r1, #1
+80174584:	strex	r0, r1, [r2]
+80174588:	teq	r0, #0
+8017458c:	bne	8017457c <mmap_region+0x4f8>
+80174590:	ldr	r3, [fp, #-80]	; 0xffffffb0
+80174594:	ldr	r1, [fp, #-72]	; 0xffffffb8
+80174598:	ldr	r0, [r3]
+8017459c:	bl	8018b154 <kmem_cache_free>
+801745a0:	cmp	sl, #0
+801745a4:	beq	80174148 <mmap_region+0xc4>
+801745a8:	movw	r3, #17684	; 0x4514
+801745ac:	rsb	r2, sl, #0
+801745b0:	movt	r3, #32929	; 0x80a1
+801745b4:	movw	r0, #58112	; 0xe300
+801745b8:	ldr	r1, [r3]
+801745bc:	movt	r0, #32940	; 0x80ac
+801745c0:	asr	r3, r2, #31
+801745c4:	str	r1, [sp]
+801745c8:	bl	8039af68 <__percpu_counter_add>
+801745cc:	b	80174148 <mmap_region+0xc4>
+801745d0:	ldr	r3, [fp, #-72]	; 0xffffffb8
+801745d4:	mov	r5, r7
+801745d8:	str	r3, [fp, #-68]	; 0xffffffbc
+801745dc:	b	801741c4 <mmap_region+0x140>
+801745e0:	mvn	r7, #11
+801745e4:	b	801745a0 <mmap_region+0x51c>
+801745e8:	movw	r3, #32763	; 0x7ffb
+801745ec:	movt	r3, #32933	; 0x80a5
+801745f0:	ldrb	r2, [r3]
+801745f4:	cmp	r2, #0
+801745f8:	bne	801743fc <mmap_region+0x378>
+801745fc:	movw	r0, #20380	; 0x4f9c
+80174600:	mov	r2, #1
+80174604:	movt	r0, #32907	; 0x808b
+80174608:	movw	r1, #1905	; 0x771
+8017460c:	strb	r2, [r3]
+80174610:	bl	800270c0 <warn_slowpath_null>
+80174614:	ldr	r3, [fp, #-72]	; 0xffffffb8
+80174618:	ldr	r7, [r3]
+8017461c:	b	801743fc <mmap_region+0x378>
+80174620:	ldr	r3, [fp, #-56]	; 0xffffffc8
+80174624:	tst	r3, #8
+80174628:	bne	801746ec <mmap_region+0x668>
+8017462c:	ldr	r1, [fp, #-72]	; 0xffffffb8
+80174630:	mov	r3, r4
+80174634:	str	r6, [sp]
+80174638:	mov	r2, r9
+8017463c:	mov	r0, r8
+80174640:	str	r1, [fp, #-68]	; 0xffffffbc
+80174644:	bl	8017186c <vma_link>
+80174648:	b	801741c4 <mmap_region+0x140>
+8017464c:	ldr	r3, [fp, #-60]	; 0xffffffc4
+80174650:	mov	r2, #0
+80174654:	ldr	r3, [r3, #200]	; 0xc8
+80174658:	add	r3, r3, #28
+8017465c:	dmb	ish
+80174660:	add	r0, r2, #1
+80174664:	pldw	[r3]
+80174668:	ldrex	r1, [r3]
+8017466c:	mov	ip, #0
+80174670:	teq	r1, r2
+80174674:	strexeq	ip, r0, [r3]
+80174678:	cmp	ip, #0
+8017467c:	bne	80174668 <mmap_region+0x5e4>
+80174680:	dmb	ish
+80174684:	cmp	r1, r2
+80174688:	beq	801743b0 <mmap_region+0x32c>
+8017468c:	subs	r2, r1, #0
+80174690:	bge	8017465c <mmap_region+0x5d8>
+80174694:	mvn	r7, #0
+80174698:	b	80174560 <mmap_region+0x4dc>
+8017469c:	ldr	r3, [fp, #-60]	; 0xffffffc4
+801746a0:	ldr	ip, [fp, #-68]	; 0xffffffbc
+801746a4:	ldr	r3, [r3, #16]
+801746a8:	add	r3, r3, #248	; 0xf8
+801746ac:	dmb	ish
+801746b0:	sub	r1, ip, #1
+801746b4:	pldw	[r3]
+801746b8:	ldrex	r2, [r3]
+801746bc:	mov	r0, #0
+801746c0:	teq	r2, ip
+801746c4:	strexeq	r0, r1, [r3]
+801746c8:	cmp	r0, #0
+801746cc:	bne	801746b8 <mmap_region+0x634>
+801746d0:	dmb	ish
+801746d4:	cmp	r2, ip
+801746d8:	beq	801743a0 <mmap_region+0x31c>
+801746dc:	subs	ip, r2, #0
+801746e0:	ble	801746ac <mmap_region+0x628>
+801746e4:	mvn	r7, #25
+801746e8:	b	80174590 <mmap_region+0x50c>
+801746ec:	bl	8015922c <shmem_zero_setup>
+801746f0:	subs	r7, r0, #0
+801746f4:	beq	8017462c <mmap_region+0x5a8>
+801746f8:	b	80174590 <mmap_region+0x50c>
