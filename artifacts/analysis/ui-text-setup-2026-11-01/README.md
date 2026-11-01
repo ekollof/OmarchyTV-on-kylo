@@ -246,6 +246,30 @@ integer-formats the value into `+0x1ca8` via `operator<<`. Those are the
 font16 digits at the fitted origins. Type-2 selection rows show values via
 `appendItem` → selection box (`+0x1014`) with `setSelectedItemWithId`.
 
+## Row rect literals resolved (renderItems 0xd54401, asm + file bytes)
+
+The `.data` literals are `char*` variables (double indirection at asm level:
+`ldr rX,[pc]` then `ldr rX,[rX,#0]`); following both levels in the file gives:
+
+| code literal | resolves to | 460-template rect |
+|---|---|---|
+| `DAT_00d54748` (single deref) | `alexa` | presence test: if the row resource has an `alexa` rect, use alexa fallback names (0x269/0x26b/0x26d + setFont 30/26); else FA names |
+| `DAT_00d5474c` | `text1` | label box (11,-16,382,50); also the type-1 caption box (+0x3c4) |
+| `DAT_00d54750` | `labelLong` | label box (11,-16,489,50) when type==4 and flag `+0x2e45` |
+| `DAT_00d54b24` | `button` | button (429,-17,348,64) |
+| `DAT_00d54b28` | `image1` | glyph image (478,0,42,40) |
+| `DAT_00d54b2c` | `image2` | glyph image (692,0,42,40) |
+| `DAT_00d54e30` | `selectionbox` | selection box (412,-9,393,60) |
+| `DAT_00d54e2c` | `` (empty) | SelectionBox::create name arg |
+
+(The `DAT_00d54744` slot is the stack-canary, not a literal.)
+
+Translation part of the transform is established: each widget rect =
+resource rect offset by the row position (`setWindowRect` after `offset` in
+renderItems; row positions from `getRowPosition`). The scale part (mask
+transforms inside `SVGTextBox::renderBackground`, `+0x1c4` writer, FA
+animation target) remains open — still no implementation.
+
 ## Still open (no implementation)
 
 Do not implement value/tab/slider-graphics/title/focused labels from the fits.

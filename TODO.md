@@ -401,11 +401,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       (0x92/0x248/0x124); the +0x1b4 writer is SVGTextBox::create's 4th arg
       (rows pass literal 1, so row text is single-line). Value digits come
       from setSlideValue formatting into the +0x1ca8 value textbox; type-2
-      values via the selection box. +0x1c4's row writer, transformed textPos
-      scale/origin, per-widget line counts/types and FA animation geometry
-      are still undecoded, so title/tab/slider-graphics/focused text must not
-      be built from the capture fits. Do not guess FA/FI slider/button
-      graphics or the .data literal names.
+      values via the selection box. Row rect literals are resolved
+      (text1/labelLong/button/image1/image2/selectionbox + alexa presence
+      test); each widget rect = resource rect + row offset. +0x1c4's row
+      writer, mask-transform scale, per-widget line counts/types and FA
+      animation geometry are still undecoded, so title/tab/slider-graphics/
+      focused text must not be built from the capture fits. Do not guess
+      FA/FI slider/button graphics.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on
