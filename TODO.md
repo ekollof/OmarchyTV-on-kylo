@@ -404,6 +404,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       getWidgetStandardName's first-present rule selects type 4 for DialogLauncher.svg
       (animation_slide_up_fade_in); ui.fs_type remains an override.
 - [ ] Complete accelerated scene presentation and visible animation acceptance.
+      EGL-SCENE implements an owned offscreen Mali renderer, native pixel tests/
+      close-reopen and1080p upload/readback benchmarks. It is not wired into a
+      module; trace native-window creation, swap and restoration before direct
+      presentation. Keep failed-close ownership/code alive; no forced cleanup.
       General CPU keystone/scale remain slow; optimized y-slide batch is399.68ms
       for five presents, not proof of the recovered10ms cadence. Verify vendor
       frame sequences, alpha/edge precision, interaction and cold/resume ownership.

@@ -1,0 +1,24 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+[mali-info] mali_shm has been created
+
+[Novatek][Mali-G51][libmali.so]: Rev: r12p0-01rel0.b703ae4.1fa4b13079c2dbcd1ba49d0344f33329, Winsys: fbdev, 2019-12-02_10:17:59
+[mali-info] mau switch support num:0,2,0,0,0
+
+keystone filtered green upper=27 lower=33; CPU golden27/33
+small GPU identity/orientation, triangle/filter, fade and bounds checks passed
+
+[Novatek][Mali-G51][libmali.so]: Rev: r12p0-01rel0.b703ae4.1fa4b13079c2dbcd1ba49d0344f33329, Winsys: fbdev, 2019-12-02_10:17:59
+GPU type=0 five uploads/renders/readbacks elapsed_ms=373.89
+GPU type=1 five uploads/renders/readbacks elapsed_ms=313.02
+GPU type=2 five uploads/renders/readbacks elapsed_ms=302.19
+GPU type=3 five uploads/renders/readbacks elapsed_ms=301.91
+GPU type=4 five uploads/renders/readbacks elapsed_ms=311.77
+GPU type=5 five uploads/renders/readbacks elapsed_ms=313.90
+GPU type=6 five uploads/renders/readbacks elapsed_ms=312.87
+GPU type=7 five uploads/renders/readbacks elapsed_ms=310.11
+GPU type=8 five uploads/renders/readbacks elapsed_ms=301.41
+GPU scene/reopen/cleanup passed

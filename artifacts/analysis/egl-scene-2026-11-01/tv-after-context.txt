@@ -1,0 +1,27 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+71f7eb63-727f-4b9a-a9c7-2b04dc3f9197
+ 1703 root      0:00 /bin/sh /mtd_apexe/board/run_aurora.sh
+ 1785 root     22:09 /vendor/com.nvt.idtv/aurora.elf
+ 1967 root      0:00 [aurora.elf]
+ 2096 root      0:00 sh -c cat /proc/sys/kernel/random/boot_id; ps | grep aurora; cat /proc/sysvipc/shm; cat /sys/class/graphics/fb1/pan; dd if=/dev/fb1 bs=65536 count=253 2>/dev/null | md5sum; test ! -e /tmp/trigger_reboot; ! pidof egl-probe
+ 2099 root      0:00 grep aurora
+       key      shmid perms       size  cpid  lpid nattch   uid   gid  cuid  cgid      atime      dtime      ctime        rss       swap
+   2885145          0   666         44  1460 22521      1     0     0     0     0 1793537931 1793537931          4       4096          0
+     33787      32769   666         40  1785  2065      3     0     0     0     0 1793548372 1793548372         12       4096          0
+      7382      65538   666        440  1785 22521      1     0     0     0     0 1793537931 1793537931         15       4096          0
+1644568866      98307   666       2432  1785 22521      1     0     0     0     0 1793537931 1793537931         15       4096          0
+1647452468     131076   666         44  1785     0      0     0     0     0     0          0          0         15          0          0
+1678119900     163845   666        352  1785 22521      5     0     0     0     0 1793537931 1793537931         15       4096          0
+1344122651     196614   666         12  1785 22521      1     0     0     0     0 1793537931 1793537931         15       4096          0
+      7777     229383   666       4096  1785 22521      1     0     0     0     0 1793537931 1793537931         15          0          0
+1661346082     262152   666        460  1785 22521      1     0     0     0     0 1793537931 1793537931         15       4096          0
+1384346879     294921   666          4  1785 22521      1     0     0     0     0 1793537931 1793537931         15       4096          0
+      1234     327690   666       4096  1581 22521      2     0     0     0     0 1793537931 1793537931         16       4096          0
+-1997671320     360459   666       1024  1785 22521      1     0     0     0     0 1793537931 1793537931 1764028809       4096          0
+  84940804     393228   666      20017  3119 22521      2     0     0     0     0 1793537931 1793537931 1793526729       4096          0
+0,0
+a3f6300529cf4a1d66b753c87e2aab42  -

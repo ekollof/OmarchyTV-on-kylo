@@ -93,6 +93,7 @@ serves instruction-level greps without re-disassembling. Other scripts are in
 | ghidra_preinit | PreInit / PreInit.ko |
 | ghidra_hdmiswitch | HdmiSwitch / ntkndphdmiswitch.ko |
 | ghidra_alsa | Alsa / ntkndpalsa.ko |
+| ghidra_mali | Mali / libmali.so (partial initial analysis; EGL-SCENE records limits) |
 
 Required extracts, analysed projects, toolchains and research evidence have been
 moved from ephemeral /tmp/opencode to **artifacts/workbench/**. Use those durable

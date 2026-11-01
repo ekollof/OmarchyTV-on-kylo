@@ -20,6 +20,7 @@ Symbol/function counts depend on the counting method and do not establish an ABI
 
 | superseded claim or tempting detour | current conclusion and evidence |
 |---|---|
+| Successful GPU rendering/readback means smooth native display, or the driver says a shared segment was created so remove it | Offscreen Mali tests pass, but1080p round trips cost about60ms/frame before display commit. Native-window/swap ownership is still open. Existing stock-owned key33787/shmid32769 merely had attachment timestamps updated; never remove it. EGL-SCENE. |
 | A quad with vertical sides implies bilinear UV interpolation; geometry alone reproduces the animation | Vendor draws GL_TRIANGLE_FAN with w=1, uses GL_LINEAR texel sampling and an alpha shader/blend. Correct fan interpolation, filtering and fade are implemented; real fb1 commits/restoration pass, but general CPU transforms are slow. UI-SCENE-REVIEW. |
 | Sending dialog progress to display guarantees frames appear; a v1 pointer clear also clears v2 | ui_fb now paints on every progress event without unrelated timers and clears both aliases before provider dlclose. Interrupt/failed-resume/provider removal regressions pass. UI-SCENE-REVIEW. |
 | GetOPUGain can back up and exactly restore raw gain | Kernel getter reads cached fields, then reply handler remaps exactly100 to0x8000. Those raw values cannot be distinguished by this query. No DSP/audio ACK exists. SPEAKER-GAIN. |

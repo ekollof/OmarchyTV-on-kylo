@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [EGL-SCENE](EGL-SCENE-2026-11-01.md) | native Mali pbuffer ownership and scene rendering; real GPU pixel/lifecycle/readback tests, framebuffer prefix/pan unchanged; direct-window/module/scanout integration remains open |
 | [UI-SCENE-REVIEW](UI-SCENE-REVIEW-2026-11-01.md) | fan-triangle UVs, linear filtering, alpha fade and UI lifetime/frame fixes; host/sanitizer/ARM-qemu, two real fb1 draw/restore runs; CPU performance and independent visual/startup acceptance remain open |
 | [SPEAKER-GAIN](SPEAKER-GAIN-2026-11-01.md) | direct setter registration/operand bounds, distinction from UI AQ/balance/ratio path, lossy query prevents exact rollback; lower codec/client host/sanitizer/ARM-qemu/TV injected-I/O tests; broker remains query-only |
 | [MIXER-MODULE](MIXER-MODULE-2026-11-01.md) | audio.mixer service, native query/CLI/reload/reaping, target libc spawn semantics; host/sanitizer/ARM-qemu/TV; refreshed16-module --check passes; writes/full audio parity open |

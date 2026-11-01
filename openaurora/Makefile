@@ -425,6 +425,22 @@ $(BUILD)/scene-probe: tools/display/scene-probe.c modules/display/display.c comm
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
 
+# Optional GPU diagnostic. Headers are installed Khronos EGL/GLES2 declarations;
+# use them after the cross toolchain's own standard headers, never its host libc.
+ifeq ($(TARGET),tv)
+EGL_PROBE_LIBS = -L../artifacts/workbench/rootfs/vendor/lib -l:libmali.so \
+  -Wl,--allow-shlib-undefined -Wl,-rpath,/vendor/lib:/vendor/lib/libs
+else
+EGL_PROBE_LIBS = -lEGL -lGLESv2
+endif
+$(BUILD)/egl-probe: tools/display/egl-probe.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $< $(EGL_PROBE_LIBS)
+
+$(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/ui_anim.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
+
 $(BUILD)/cec-probe: tools/cec/cec-probe.c common/cec_packet.c common/cec.c include/openaurora/vendor_cec.h include/openaurora/cec.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)

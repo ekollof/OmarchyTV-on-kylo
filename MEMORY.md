@@ -49,6 +49,18 @@ syntax defect.
 
 ## Development build and evidence
 
+EGL-SCENE-2026-11-01 adds common/scene_gles.c and opt-in context/scene probes.
+The actual TV Mali-G51 passed offscreen pixel/orientation/fade/triangle and
+close/reopen checks; no native window or fbdev writes. Scene helper70384bytes/
+98e60a726b5169bf77614fd504ca17f1 (maxGLIBC2.17), context helper23032bytes/
+b0f82f027ad28d251a5ac4ea95ff7609. Both are preserved under build-tv-v3/egl-scene.
+Five1080p uploads/renders/readbacks take301..374ms; direct-window integration
+and smooth/visible acceptance remain open. Production display/stage unchanged.
+Final TV read retains the same boot/PID1785/access/privacy/hashes and pan0,0;
+sampled16580608-byte framebuffer prefix hash unchanged (last8192 backing bytes
+not sampled). Staging/helpers removed. Target Mali source MD5d1aa5c1679a9467ec51865d4f2120112
+matches TV. New Ghidra project is partially analyzed; see report/tool limits.
+
 UI-SCENE-REVIEW-2026-11-01 corrects fan-triangle UV interpolation, GL_LINEAR
 sampling and progress-alpha fade/premultiplied BGRA from fresh firmware reads.
 Dialog progress now requests frames; provider aliases/interruption/failed-resume

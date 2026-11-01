@@ -1,0 +1,1 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -idirafter /usr/include  -o build/egl-probe tools/display/egl-probe.c -lEGL -lGLESv2

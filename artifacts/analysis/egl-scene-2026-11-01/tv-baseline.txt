@@ -1,0 +1,28 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+71f7eb63-727f-4b9a-a9c7-2b04dc3f9197
+ 1703 root      0:00 /bin/sh /mtd_apexe/board/run_aurora.sh
+ 1785 root     21:38 /vendor/com.nvt.idtv/aurora.elf
+ 1967 root      0:00 [aurora.elf]
+32312 root      0:00 sh -c cat /proc/sys/kernel/random/boot_id; ps | grep aurora; md5sum /vendor/lib/libmali.so; ls -l /dev/mali* /dev/dri/card0; cat /proc/fb; grep -E "libmali|libEGL|libGLES" /proc/1785/maps
+32315 root      0:00 grep aurora
+d1aa5c1679a9467ec51865d4f2120112  /vendor/lib/libmali.so
+crw-rw-rw-    1 root     root      226,   0 Jan  1  1970 /dev/dri/card0
+crw-rw-rw-    1 root     root       10,  56 Jan  1  1970 /dev/mali0
+0 OSD_NORMAL1
+1 OSD_NORMAL2
+2 OSD_NORMAL3
+3 OSD_CURSOR1
+4 OSD_CURSOR2
+476a0000-47e7e000 r-xp 00000000 fd:02 5317       /vendor/lib/libmali.so
+47e7e000-47e8e000 ---p 007de000 fd:02 5317       /vendor/lib/libmali.so
+47e8e000-47ee5000 rw-p 007de000 fd:02 5317       /vendor/lib/libmali.so
+4fffd000-4fffe000 r-xp 00000000 fd:02 5290       /vendor/lib/libEGL.so
+4fffe000-5000d000 ---p 00001000 fd:02 5290       /vendor/lib/libEGL.so
+5000d000-5000e000 rw-p 00000000 fd:02 5290       /vendor/lib/libEGL.so
+5000e000-5000f000 r-xp 00000000 fd:02 5292       /vendor/lib/libGLESv2.so
+5000f000-5001e000 ---p 00001000 fd:02 5292       /vendor/lib/libGLESv2.so
+5001e000-5001f000 rw-p 00000000 fd:02 5292       /vendor/lib/libGLESv2.so
