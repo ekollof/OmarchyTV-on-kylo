@@ -786,7 +786,17 @@ the portal), while a fresh grid gives the expected col*310/310. drawGrid calls
 createListButtons after renderBackground, so static order does not explain the
 vendor result; the RectangleContainer may return renderer-scaled rowPos. The
 grid must not be rendered with an assumed inset; resolve with the vendor object
-state (not while the set is in use) or the on-screen portal. The tested layout
+state (not while the set is in use) or the on-screen portal. commonCreateStep
+(0x10cac10) sets the column count before drawGrid and SVGGridButton::create
+(0x10ccdcc) uses the rect unchanged, so the last-cell fields really would put
+columns 0..3 at negative x; nothing resets them. Working hypothesis: the
+full-screen portal is broken or unused on this model (DialogNavigator only
+reaches it through a portal navigation message), so do not port it as parity
+without observing the vendor screen. SubLauncherDialog is instead a
+SettingsDialog (SVG 189) created by LauncherDialog::showSubLauncher;
+SettingsDialog is an AnyUIRefreshMessageFullScreenDialog (widget 175) with no
+constructor window offset, so the p0/03 settings capture is not the plain
+DialogSubLauncher listBox. The tested layout
 now also exposes renderBackground's cell rect and the DialogFullScreenPortal
 chrome plan (oa_vgrid_cell, oa_portal_plan_init).
 
