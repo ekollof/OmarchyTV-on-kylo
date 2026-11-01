@@ -54,6 +54,16 @@ stage's older modules showed an opaque 13,14,14,255 backdrop because that
 scene_display predated the alpha service. Refresh every module when reusing a
 preserved stage. Frame order and scanout still need panel observation.
 
+Panel observation (owner, two real-GPU runs): the rail highlight plays but appears
+to restart before completing because the probe's 2000 ms window ends with a
+focus-changing Down key; extend the hold before that key. The dialog transition
+visibly moves DOWN: we apply only the full-screen type-4 shift to the whole
+scene, while SVGDialog::drawAnimatedRectangles (0x10c5161) draws the dialog's own
+named animation rectangle from the dialog description. Recover that named
+rect/motion and move the dialog upward over the background shift, then re-observe
+on the panel. The earlier backdrop/readback proofs say nothing about visible
+frame order.
+
 Owner explicitly requested checking **exact** vendor animation fidelity, then
 requested this handoff and stop. The audit remains incomplete; **do not claim the
 animations are exact**. The rail-loop question it raised was resolved and fixed

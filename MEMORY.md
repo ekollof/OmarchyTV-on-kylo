@@ -180,6 +180,20 @@ type 8 493 ms. Vendor PIDs 1967/1785 unchanged, staging removed, no helper left.
 Readback is not scanout proof and these software timings are far below smooth
 30/60 fps; the EGL path remains the parity target.
 
+PANEL-OBSERVATION-2026-11-01: the owner watched the real-GPU UI on the panel for
+two runs (~20 s). The rail highlight played once, but appeared to restart before
+completing because the probe's 2000 ms rail window ends with a focus-changing
+Down key that resets the sequence; the hold/observation window must extend past
+the last frame before any key. The dialog transition visibly moved DOWN, not up:
+we apply only the recovered full-screen type-4 shift (negative clip y) to the
+whole scene, while the vendor's dialog has its own named-rect animation
+(SVGDialog::drawAnimatedRectangles 0x10c5161 looks up the animation record's
+rectangle in the dialog description and draws it). The full-screen surface and
+the dialog therefore move separately; our single whole-scene shift sends the
+dialog the wrong way. Next: recover the dialog's named animation rect/motion
+(record name at +0xc, rectangle lookup at this+0xdc) and draw the dialog upward
+over the type-4 background shift, then re-observe on the panel.
+
 RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
 stage refreshed to the current modules, our 10 ms-poll ui_fb and the probe's
 UI/rail sampling. Completion-paced advance is now implemented: the rail tick
