@@ -407,8 +407,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       EGL-WINDOW now proves direct native presentation on the initialized layer.
       SCENE-HELPER now tests the separate bootstrap/renderer on actual GPU;
       GRAPHICS-MODULE now tests the asynchronous display.gpu provider on actual
-      GPU with owned watch/reap timer and nonblocking quiescence. Add bounded/coalesced
-      UI frames, completion consumption and readiness before production UI wiring.
+      GPU with owned watch/reap timer and nonblocking quiescence. SCENE-DISPLAY
+      adds the coalescing canvas and async receipts. Wire ui_fb completion
+      consumption/readiness and cached transform-only updates next.
       No display.renderer switch exists yet. Preserve failed-close
       ownership; test module reload/suspend/resume/failures on hardware.
       CPU reference transforms remain slow; direct-window diagnostic meets its
@@ -452,6 +453,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 - [ ] Recover native GPU abnormal-process release/recovery semantics from
       firmware/driver before adding automatic recovery or clearing the graphics
       cleanup_unproven latch. Reap/signal status is not successful EGL teardown.
+- [x] Coalescing scene display: display v2 canvas plus distinct display.async v1
+      request/latest receipts, immutable snapshots, cached transform revisions,
+      one inflight/one desired frame, retained final request and namespace-safe
+      consumer reload. Four host/sanitizer/TV groups pass. Actual101-request
+      burst drains its final identity receipt; full run observes412 GPU frame
+      completions, host drain/unload and full restoration/hash match. Host222
+      checks pass. Source18 modules; matching production16 unchanged.
+      ui_fb still uses synchronous present and is not wired to this provider yet.
+      SCENE-DISPLAY-2026-11-01.
 - [x] Direct EGL native-window diagnostic: recovered4-byte dimensions, fb1/
       primary-buffer profile and swap/MAU contract. Eight effects at50Hz pacing
       passed on actual display, owner confirmed upright/full-screen/smooth;

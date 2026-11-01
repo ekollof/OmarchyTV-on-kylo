@@ -1,0 +1,25 @@
+openaurora/build-tv-v3/scene-display/modules/mod_scene_display.so
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 2
+openaurora/build-tv-v3/scene-display/tests/scene_display
+ 0x00000001 (NEEDED)                     Shared library: [libdl.so.2]
+ 0x00000001 (NEEDED)                     Shared library: [libm.so.6]
+ 0x00000001 (NEEDED)                     Shared library: [libpthread.so.0]
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 5
+  0x0030:   Name: GLIBC_2.9  Flags: none  Version: 7
+  0x0040:   Name: GLIBC_2.10  Flags: none  Version: 6
+  0x0050:   Name: GLIBC_2.17  Flags: none  Version: 4
+  0x0060:   Name: GLIBC_2.4  Flags: none  Version: 3
+  0x0080:   Name: GLIBC_2.4  Flags: none  Version: 2
+openaurora/build-tv-v3/scene-display/scene-module-probe
+ 0x00000001 (NEEDED)                     Shared library: [libdl.so.2]
+ 0x00000001 (NEEDED)                     Shared library: [libm.so.6]
+ 0x00000001 (NEEDED)                     Shared library: [libpthread.so.0]
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 5
+  0x0030:   Name: GLIBC_2.9  Flags: none  Version: 7
+  0x0040:   Name: GLIBC_2.10  Flags: none  Version: 6
+  0x0050:   Name: GLIBC_2.17  Flags: none  Version: 4
+  0x0060:   Name: GLIBC_2.4  Flags: none  Version: 3
+  0x0080:   Name: GLIBC_2.4  Flags: none  Version: 2

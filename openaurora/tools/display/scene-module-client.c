@@ -9,7 +9,16 @@
 #include <unistd.h>
 #include "host.h"
 #include "scene-probe-client.h"
-struct scene_probe { oa_host host; const oa_display_gpu_iface *service; uint64_t revision; int initialized, error; };
+struct scene_probe {
+    oa_host host;
+    const oa_display_gpu_iface *service;
+    const oa_display_iface *display;
+    const oa_display_async_iface *asynchronous;
+    uint64_t revision;
+    uint64_t last_completion;
+    unsigned completions;
+    int initialized, error;
+};
 static const char *helper_path, *renderer_path;
 static const char *config(void *ud, const char *key, const char *def)
 {
@@ -38,9 +47,22 @@ static int completion(scene_probe *s, uint64_t ticket)
     uint64_t deadline = oa_now_ms()+5000;
     for (;;) {
         pump(s);
-        oa_scene_reply reply;
-        int taken = s->service->take(ticket, &reply);
-        if (taken == 1) { if (!reply.error) return 0; errno = reply.error; break; }
+        int taken, error = 0;
+        if (s->asynchronous) {
+            oa_display_result result;
+            taken = s->asynchronous->latest(&result);
+            if (taken == 1) {
+                if (result.serial != s->last_completion) { s->last_completion = result.serial; s->completions++; }
+                if (result.serial < ticket) taken = 0;
+                else if (result.serial != ticket) { errno = EPROTO; taken = -1; }
+                else error = result.error;
+            }
+        } else {
+            oa_scene_reply reply;
+            taken = s->service->take(ticket, &reply);
+            if (taken == 1) error = reply.error;
+        }
+        if (taken == 1) { if (!error) return 0; errno = error; break; }
         if (taken < 0) break;
         if (oa_now_ms() >= deadline) { errno = ETIMEDOUT; break; }
         struct timespec pause = {.tv_nsec = 1000000}; (void)nanosleep(&pause, NULL);
@@ -59,6 +81,16 @@ int probe_open(scene_probe **out, unsigned width, unsigned height, const char *h
     s->initialized = 1; s->host.log_level = OA_LOG_ERROR; s->host.api.config_get = config;
     oa_mod *module = oa_module_load(&s->host, "graphics");
     if (!module || oa_module_start(&s->host, module)) { s->error = errno; return -1; }
+    const char *canvas = getenv("OA_SCENE_PROBE_ASYNC");
+    if (canvas && !strcmp(canvas, "1")) {
+        module = oa_module_load(&s->host, "scene_display");
+        if (!module || oa_module_start(&s->host, module)) { s->error = errno; return -1; }
+        s->display = s->host.api.lookup(&s->host, OA_SVC_DISPLAY, 2);
+        s->asynchronous = s->host.api.lookup(&s->host, OA_SVC_DISPLAY_ASYNC, 1);
+        if (!s->display || !s->asynchronous) { errno = ENODEV; s->error = errno; return -1; }
+        printf("scene display module id=%u service=%s\n", module->id, OA_SVC_DISPLAY_ASYNC);
+        return 0; /* OPEN/window initialization is asynchronous */
+    }
     s->service = s->host.api.lookup(&s->host, OA_SVC_DISPLAY_GPU, 1);
     if (!s->service) { errno = ENODEV; s->error = errno; return -1; }
     uint64_t ticket;
@@ -68,7 +100,15 @@ int probe_open(scene_probe **out, unsigned width, unsigned height, const char *h
 }
 int probe_render(scene_probe *s, const uint8_t *rgba, size_t size, int type, float progress)
 {
-    if (!s || s->error || !s->service) { errno = s && s->error ? s->error : ENODEV; return -1; }
+    if (!s || s->error || (!s->service && !s->asynchronous)) { errno = s && s->error ? s->error : ENODEV; return -1; }
+    if (s->asynchronous) {
+        uint64_t serial;
+        if ((rgba && (size != OA_SCENE_IMAGE_BYTES || s->display->blit(0, 0, OA_SCENE_WIDTH, OA_SCENE_HEIGHT, rgba))) ||
+            (!rgba && size) || s->display->set_scene_transform(type, progress) || s->asynchronous->request(&serial)) {
+            s->error = errno ? errno : EINVAL; errno = s->error; return -1;
+        }
+        return completion(s, serial);
+    }
     int image = -1;
     if (rgba) {
         image = oa_scene_image_create(rgba, size); if (image < 0) return -1;
@@ -85,13 +125,32 @@ int probe_close(scene_probe **out)
     if (!out) { errno = EINVAL; return -1; }
     scene_probe *s = *out; if (!s) return 0;
     if (s->initialized) {
-        s->service = NULL; s->host.stop_requested = 1;
+        if (s->asynchronous) printf("scene display observed frame completions=%u\n", s->completions);
+        s->service = NULL; s->display = NULL; s->asynchronous = NULL; s->host.stop_requested = 1;
         if (oa_host_run(&s->host)) return -1;
         close(s->host.selfpipe[0]); close(s->host.selfpipe[1]); pthread_mutex_destroy(&s->host.post_mu);
         s->initialized = 0;
         puts("graphics host drained and unloaded provider");
     }
     free(s); *out = NULL; return 0;
+}
+int probe_coalesce(scene_probe *s)
+{
+    if (!s || !s->asynchronous) return 0;
+    uint64_t first = 0, last = 0;
+    for (unsigned i = 0; i <= 100; i++) {
+        if (s->display->set_scene_transform(i == 100 ? 0 : 4, (float)i/100) ||
+            s->asynchronous->request(&last)) { s->error = errno; return -1; }
+        if (!i) first = last;
+    }
+    if (completion(s, last)) return -1;
+    oa_display_result receipt;
+    if (s->asynchronous->latest(&receipt) != 1 || receipt.serial != last || receipt.type != 0 || receipt.error) {
+        s->error = EPROTO; errno = EPROTO; return -1;
+    }
+    printf("coalesced101 desired frames first=%llu final=%llu; final identity receipt=%llu\n",
+        (unsigned long long)first, (unsigned long long)last, (unsigned long long)receipt.serial);
+    return 0;
 }
 void probe_error(const scene_probe *s, char *out, size_t size)
 { if (out && size) snprintf(out, size, "graphics module error=%d", s ? s->error : errno); }

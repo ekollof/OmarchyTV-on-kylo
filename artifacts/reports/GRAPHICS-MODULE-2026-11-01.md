@@ -109,6 +109,10 @@ Samba REJECT and safety markers unchanged. No persistent deployment, stock stop,
 restart, audio/CEC operation or input capture. Raw evidence is in
 `artifacts/analysis/graphics-module-2026-11-01/`.
 
+Follow-up: SCENE-DISPLAY-2026-11-01 adds/tests the canvas/coalescing consumer and
+async receipts, including a real burst/final GPU receipt. ui_fb/readiness and
+actual UI lifecycle below remain open.
+
 Next: integrate a GPU-backed display consumer with bounded transform coalescing,
 immutable scene revisions, final-frame retry and completion-driven first-frame
 readiness. Preserve service holds through actual ui_fb reload/suspend/resume.

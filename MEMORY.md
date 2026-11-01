@@ -49,6 +49,19 @@ syntax defect.
 
 ## Development build and evidence
 
+SCENE-DISPLAY-2026-11-01: optional scene_display canvas/coalescer publishes
+display.async receipts; legacy present rejects ENOTSUP. Four strict host/
+sanitizer/TV groups, full host222 checks pass. Real101-request burst retains
+the final identity receipt; full diagnostic observes412 GPU completions, host
+drain/unload and full snapshot/pan/MAU/region restoration. Independent backing
+hash41735daa69dc137743b59efe12db4a19/pan0,0 unchanged. Same boot/PID1785,
+hook/hosts/access/privacy/safety markers; staging/backup/helpers removed. Native
+build-tv-v3/scene-display: DSO53236bytes/9293d421420b1ad0d7b03e41f3a57f1a
+(maxGLIBC2.4), unit469528bytes/7f6f98030dcd8f40631713f2e369435a and
+diagnostic487196bytes/a62146c477759bfb3d3e3d94d2dd055e (max2.17). Source18
+modules, matching production16 unchanged. ui_fb/readiness integration is next;
+current ui_fb present calls cannot use this experimental async backend yet.
+
 GRAPHICS-MODULE-2026-11-01: mod_graphics/display.gpu v1 adds owned watch/timer,
 nonblocking quiescence, public host-id tickets and suspend/resume/holds. Four
 strict host/sanitizer/TV groups pass; full host218 checks. Actual service

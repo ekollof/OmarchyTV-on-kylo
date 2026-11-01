@@ -129,6 +129,25 @@ typedef struct {
     int (*is_open)(void); /*1 initialized/0 not initialized/-1 fault; no I/O*/
 } oa_display_gpu_iface;
 
+/* display.async v1 accompanies the drawing-only display v2 from scene_display.
+ * request accepts a bounded latest desired frame; later requests may supersede
+ * queued frames. latest returns1 copied last actual completion,0 none,-1 fault.
+ * Results are retained, not consumed; compare serials to detect a new receipt.
+ * Only serials actually rendered get success receipts. Coalesced serials are
+ * not claimed committed. Legacy display.present returns ENOTSUP on this backend.
+ * Hold BOTH services. No enqueue may acknowledge first-frame readiness. */
+#define OA_SVC_DISPLAY_ASYNC "display.async"
+typedef struct {
+    uint64_t serial, revision;
+    unsigned type;
+    float progress;
+    int error;
+} oa_display_result;
+typedef struct {
+    int (*request)(uint64_t *serial);
+    int (*latest)(oa_display_result *result);
+} oa_display_async_iface;
+
 /* audio.curve — immutable AQ-derived DSP table, published by mod_audio_curve.
  * Hold the provider through lookup/release while using this interface. copy()
  * returns data owned by the caller; no pointer into a reloadable DSO escapes.

@@ -30,8 +30,8 @@ build command in ARCHITECTURE; make tv currently hardcodes the baseline director
 | core/registry/worker posts/ABI checks | host/sanitizer/ARM regressions; state-aware reload and dependency-ordered lifecycle; system-sleep/rollback limits remain |
 | Unix control transport | bounded nonblocking queues, partial writes/backpressure, disconnect/input/cleanup tests pass host/sanitizer/ARM; stdout console remains synchronous |
 | sleep cycle / power service+CLI | nine engine and seven wrapped-power regression groups pass host/sanitizer/ARM; native device/wake/hardware acceptance remains open |
-| --check | preserved matching core +16 modules passed on TV; source now17, graphics has separate native lifecycle/GPU evidence; loader preflight is not hardware health |
-| display | CPU reference and separate display.gpu provider verified on initialized real fb1 with full restoration; UI GPU integration and independent cold/resume remain open |
+| --check | preserved matching core +16 modules passed on TV; source now18, graphics/scene_display have separate native evidence; loader preflight is not hardware health |
+| display | CPU reference plus display.gpu and optional scene_display coalescer verified on real fb1 with full restoration; ui_fb async/readiness and independent cold/resume remain open |
 | IR | reader/profile map exist; actual code-space, repeat/release and navigation unverified |
 | power | final RAM-entry callback via host.sleep; manual hooks never sleep; full device preparation/wake ownership unverified |
 | panel | verified PWM request/return contract; independent brightness/power behavior incomplete |

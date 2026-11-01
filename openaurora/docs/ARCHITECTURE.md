@@ -65,12 +65,23 @@ cannot prevent reload aliases. Owned watch/reap timer keep ABI3 cleanup
 nonblocking; abnormal child death retains a faulted provider until native release/
 recovery is understood. Four host/sanitizer/TV lifecycle groups and actual GPU
 service frames pass; see [GRAPHICS-MODULE](../../artifacts/reports/GRAPHICS-MODULE-2026-11-01.md).
-Source builds17 modules; the preserved matching production ARM stage remains16.
+Source builds18 modules; the preserved matching production ARM stage remains16.
 
-UI integration still needs transform coalescing, immutable scene snapshots,
-final-frame retry and completion-driven readiness with provider holds. Existing
-display.present() means commit, so async enqueue cannot replace it or acknowledge
-ui_fb/supervisor readiness. The10ms sampler does not mandate100Hz physical
+Optional `scene_display` consumes/holds display.gpu, publishes an RGBA drawing
+canvas as display v2 and separate display.async request/latest receipts. Its one
+inflight/one desired frame queue keeps immutable snapshots, caches image revisions
+and drains final requests after animation timers stop. Consumer reload/activation
+uses new receipt/revision namespaces even when the GPU session remains open.
+Four host/sanitizer/TV groups and an actual101-request burst/final receipt pass;
+see [SCENE-DISPLAY](../../artifacts/reports/SCENE-DISPLAY-2026-11-01.md).
+Load it as an alternative to CPU display, never alongside it. No automatic
+selection/display.renderer option exists. ui_fb is not yet wired for this backend.
+
+UI integration needs display.async holds, completion sampling and first-frame
+readiness after an actual successful receipt. Legacy present means commit and
+returns ENOTSUP on scene_display; enqueue cannot acknowledge ui_fb/supervisor
+readiness. Keep transform-only progress from repainting the entire canvas while
+retaining actual title/rail updates. The10ms sampler does not mandate100Hz
 scanout. Full vendor sequence, actual UI lifecycle and cold/resume remain open.
 tvshot decodes raw BGRA and saves ordinary RGB PNGs, which must not be swapped
 again. RGB565 and other vendor/API buffers retain their independently established

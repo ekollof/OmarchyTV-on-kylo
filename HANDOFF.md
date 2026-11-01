@@ -24,7 +24,28 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest milestone: [GRAPHICS-MODULE](artifacts/reports/GRAPHICS-MODULE-2026-11-01.md)
+Latest milestone: [SCENE-DISPLAY](artifacts/reports/SCENE-DISPLAY-2026-11-01.md)
+adds optional scene_display, RGBA canvas and separate display.async request/latest
+receipts. One inflight and one latest desired frame, sealed snapshots, cached
+revisions and final-frame retry independent of animation timers. Legacy present
+returns ENOTSUP; ui_fb is not yet wired. Four strict host/sanitizer/TV groups
+pass, full host222 checks. Real101-request burst's final identity receipt passes;
+the backed-up TV run observes412 GPU completions, host drain/unload and complete
+restoration/independent hash match. Same boot/PID1785/access/privacy; staging,
+backup/helpers removed. Source18 modules, matching production16 unchanged.
+Native identities in MEMORY/report; no persistent deployment.
+
+Next: ui_fb display.async holds, request/latest completion sampler and readiness
+after an actual successful receipt, preserving CPU behavior. Rebind/removal/
+suspend/resume must release BOTH display aliases/services and retain no dangling
+provider pointers. Current on_anim paints the full scene each progress; switch
+transform-only updates to cached presentation after checking firmware behavior.
+Genuine rail/title animation still needs repaint. Verify cancellation/teardown,
+failed receipts, provider removal/UI reload and actual UI on TV with restoration.
+Do not load both display and scene_display providers. No display.renderer option
+or automatic selection exists. Separate diagnostic flags are not product config.
+
+Previous milestone: [GRAPHICS-MODULE](artifacts/reports/GRAPHICS-MODULE-2026-11-01.md)
 adds mod_graphics/display.gpu v1 (explicit graphics.broker/renderer paths), owned
 watch/timer, nonblocking ABI3 quiescence and host-id public tickets. Four strict
 host/sanitizer/TV lifecycle groups pass; full host218 checks. Actual service
@@ -35,7 +56,7 @@ No new hardware calls. Same stock boot/PID1785/access/privacy; staging/backup/
 FIFOs/helpers removed. Isolated native identities in MEMORY/report. Source17
 modules, preserved production stage16; no persistent deployment.
 
-Next: GPU-backed display consumer/coalescing/ui_fb integration. Keep immutable
+SCENE-DISPLAY above supplies the canvas/coalescer; ui_fb integration must keep immutable
 revisions, final-frame retry, completion-driven first-frame readiness and service
 holds through reload/suspend/resume. CPU display v2 remains default; no
 display.renderer option. The service's is_open is not visible-frame readiness.
@@ -74,7 +95,7 @@ The lower nonblocking parent now exists as SCENE-CLIENT above; host provider and
 ui_fb reload/suspend/resume/failed-cleanup integration remain open. CPU display
 is still production.
 
-Latest lower-layer milestone: [SCENE-BROKER](artifacts/reports/SCENE-BROKER-2026-11-01.md)
+Earlier lower-layer milestone: [SCENE-BROKER](artifacts/reports/SCENE-BROKER-2026-11-01.md)
 adds OGS1 local IPC, sealed immutable8294400-byte RGBA images and a blocking
 owner server with upload/cache revisions, finish-before-completion and retained
 failed-close images/owners. Four groups pass strict host, ASan/UBSan, ARM/qemu

@@ -179,6 +179,9 @@ int main(int argc, char **argv)
     struct timespec pause = {.tv_nsec = 100000000};
     (void)nanosleep(&pause, NULL);
     if (identity_readback(fd, map, &saved)) { fputs("native identity/orientation mismatch\n", stderr); goto cleanup; }
+#ifdef OA_WINDOW_BROKER
+    if (probe_coalesce(scene)) { (void)error(scene); goto cleanup; }
+#endif
     for (int type = 1; type <= 8 && !interrupted; type++) {
         double began = millis(), elapsed = 0;
         unsigned frames = 0;

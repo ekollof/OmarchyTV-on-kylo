@@ -1,0 +1,35 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+saved bytes=16588800 original_yoffset=0 MAU=0 backup=/tmp/oa-scene-helper-20261101/framebuffer.backup
+scene display module id=4 service=display.async
+identity raw BGRA top=80,0,0,255 bottom=80,224,0,255 right=80,0,224,255 yoffset=0
+coalesced101 desired frames first=17179869187 final=17179869287; final identity receipt=17179869287
+native type=1 frames=51 elapsed_ms=1013.00
+native type=2 frames=51 elapsed_ms=1031.77
+native type=3 frames=51 elapsed_ms=1013.25
+native type=4 frames=51 elapsed_ms=1012.59
+native type=5 frames=51 elapsed_ms=1022.72
+native type=6 frames=51 elapsed_ms=1009.79
+native type=7 frames=51 elapsed_ms=1010.87
+native type=8 frames=51 elapsed_ms=1014.25
+[489021] ERR  host         graphics: cleanup pending; retry stop/unload
+[489021] ERR  host         graphics: cleanup pending; retry stop/unload
+[489033] ERR  host         graphics: cleanup pending; retry stop/unload
+[489033] ERR  host         graphics: cleanup pending; retry stop/unload
+[489053] ERR  host         graphics: cleanup pending; retry stop/unload
+[489053] ERR  host         graphics: cleanup pending; retry stop/unload
+[489073] ERR  host         graphics: cleanup pending; retry stop/unload
+[489073] ERR  host         graphics: cleanup pending; retry stop/unload
+[489094] ERR  host         graphics: cleanup pending; retry stop/unload
+[489094] ERR  host         graphics: cleanup pending; retry stop/unload
+[489114] ERR  host         graphics: cleanup pending; retry stop/unload
+[489114] ERR  host         graphics: cleanup pending; retry stop/unload
+[489134] ERR  host         graphics: cleanup pending; retry stop/unload
+[489134] ERR  host         graphics: cleanup pending; retry stop/unload
+scene display observed frame completions=412
+graphics host drained and unloaded provider
+restored bytes=16588800 yoffset=0 MAU=0 region_match=1 snapshot_match=1
+probe_exit=0

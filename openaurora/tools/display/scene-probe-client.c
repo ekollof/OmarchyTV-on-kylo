@@ -70,5 +70,6 @@ int probe_close(scene_probe **out)
     }
     free(s); *out = NULL; return 0;
 }
+int probe_coalesce(scene_probe *scene) { (void)scene; return 0; }
 void probe_error(const scene_probe *s, char *out, size_t size)
 { if (out && size) snprintf(out, size, "scene IPC error=%d", s ? s->error : errno); }

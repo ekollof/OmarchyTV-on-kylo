@@ -13,7 +13,8 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
-| [GRAPHICS-MODULE](GRAPHICS-MODULE-2026-11-01.md) | reloadable display.gpu v1, owned watch/timer/quiescence, public reload-safe tickets; four host/sanitizer/TV groups and410 actual service/GPU frames with host-reactor unload/full restoration; coalescing/ui_fb/readiness remain open |
+| [SCENE-DISPLAY](SCENE-DISPLAY-2026-11-01.md) | RGBA canvas + one latest desired frame + exact async receipts; four host/sanitizer/TV groups; real101-request burst final receipt and412 GPU completions/full restoration; ui_fb/readiness integration pending |
+| [GRAPHICS-MODULE](GRAPHICS-MODULE-2026-11-01.md) | reloadable display.gpu v1, owned watch/timer/quiescence, public reload-safe tickets; four host/sanitizer/TV groups and410 actual service/GPU frames/full restoration; subsequent SCENE-DISPLAY adds coalescing, ui_fb/readiness remain open |
 | [SCENE-CLIENT](SCENE-CLIENT-2026-11-01.md) | nonblocking parent submit/pump/take/shutdown and WNOHANG lifetime; five host/sanitizer/TV groups plus410 real GPU frames/full restoration; subsequent GRAPHICS-MODULE adds provider, UI readiness/coalescing remain open |
 | [SCENE-HELPER](SCENE-HELPER-2026-11-01.md) | EGL-free bootstrap loads Mali renderer after fd cleanup; host/sanitizer/TV process tests and410 real GPU frame completions, child reap and full restoration; asynchronous host service/module lifecycle remain open |
 | [SCENE-BROKER](SCENE-BROKER-2026-11-01.md) | immutable sealed-image IPC and blocking owner server; host/sanitizer/ARM-qemu/TV injected-renderer tests; target read-only shared mapping EPERM resolved from kernel instructions; subsequent SCENE-HELPER supplies executable/GPU acceptance, host module integration remains open |

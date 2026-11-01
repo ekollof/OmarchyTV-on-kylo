@@ -24,7 +24,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings source ui_fb ui_clock ui_anim audio_curve cec audio_mixer graphics
+MODULES  := plat ticker ir ui_console panel power display audio settings source ui_fb ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -98,6 +98,10 @@ $(BUILD)/modules/mod_audio_mixer.so: modules/audio_mixer/audio_mixer.c common/au
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
 $(BUILD)/modules/mod_graphics.so: modules/graphics/graphics.c common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/module.h include/openaurora/services.h include/openaurora/scene_client.h include/openaurora/scene_broker.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+
+$(BUILD)/modules/mod_scene_display.so: modules/scene_display/scene_display.c common/canvas.c common/scene_broker_transport.c include/openaurora/canvas.h include/openaurora/module.h include/openaurora/services.h include/openaurora/scene_broker.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
@@ -446,7 +450,7 @@ $(BUILD)/tests/scene_broker: tests/scene_broker.c common/scene_broker.c common/s
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread -lm
 
 .PHONY: check-scene-broker
-check: check-scene-broker check-scene-spawn check-scene-client check-graphics-module
+check: check-scene-broker check-scene-spawn check-scene-client check-graphics-module check-scene-display
 check-scene-broker: $(BUILD)/tests/scene_broker
 	@$(BUILD)/tests/scene_broker
 
@@ -481,6 +485,18 @@ $(BUILD)/tests/graphics_module: tests/graphics_module.c common/scene_broker_tran
 .PHONY: check-graphics-module
 check-graphics-module: $(BUILD)/tests/graphics_module $(BUILD)/modules/mod_graphics.so $(BUILD)/modules/mod_ticker.so $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so
 	@$(BUILD)/tests/graphics_module $(BUILD)/modules $(abspath $(BUILD)/oa-scene-broker) $(abspath $(BUILD)/tests/scene-renderer-fixture.so)
+
+$(BUILD)/modules/mod_scene_gpu_fixture.so: tests/scene_gpu_fixture.c tests/scene_gpu_trace.h include/openaurora/services.h include/openaurora/module.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Itests -fPIC -shared $(LDFLAGS) -o $@ $<
+
+$(BUILD)/tests/scene_display: tests/scene_display.c tests/scene_gpu_trace.h common/canvas.c include/openaurora/canvas.h core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+
+.PHONY: check-scene-display
+check-scene-display: $(BUILD)/tests/scene_display $(BUILD)/modules/mod_scene_display.so $(BUILD)/modules/mod_scene_gpu_fixture.so
+	@$(BUILD)/tests/scene_display $(BUILD)/modules
 
 $(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)

@@ -1,0 +1,8 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -Itests  -o build-scene-display/tests/scene_display tests/scene_display.c common/canvas.c build-scene-display/core/check.o build-scene-display/core/control.o build-scene-display/core/host.o build-scene-display/core/module.o -ldl -pthread -lm
+[591368] ERR  host         scene_gpu_fixture: refusing to unload, service 'display.gpu' still held (use --force)
+  ok   RGBA canvas clipping/scaling/alpha and extreme coordinate bounds
+  ok   coalescing retains final frame, exact committed receipts, cached revisions and immutable replaced snapshots
+  ok   reload gets new revision/receipt namespace; suspend/resume reopens and uploads retained canvas
+  ok   consumer unload releases queued image while provider retains inflight data; GPU error never acknowledges a frame
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
