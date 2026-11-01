@@ -806,6 +806,18 @@ DIAL KeyMenu (1048) was sent while both fb layers captured BLANK; it returned
 201 and no layer change was captured. No further keys or wake attempts were
 made. Vendor PIDs 1785/1967 were running.
 
+SOURCE-SELECT-2026-11-01: the vendor source list ("Bronlijst") is a
+PopUpSelectionDialog created by DialogNavigator::doNavigateSourceMenuDialog
+(0xd17b10) with SVG 185, DialogSourceSelection.svg: background 1920x1080,
+main_rectangle (0,0,780,1080), listBox (18,136,750,933), dialogTitle
+(54,47,695,60). The p0/06 screenshot matches this panel/title geometry; its
+focused first row is at ~(20,147) with ~63 px rows at ~70 px pitch, and the
+rows list TV/BACK AV/HDMI1..3/YPbPr/VGA-PC/Wireless Display/Audio video delen.
+The row template and exact row height/pitch are not in the dialog resource;
+they belong to the popup list row and remain undecoded. This is a real, used
+screen (unlike the likely-dead full-screen portal) and is the better next UI
+target once the TV is free. No implementation yet.
+
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
 Vendor animations, transitions and UI/UX effects are included, not yet accepted.
