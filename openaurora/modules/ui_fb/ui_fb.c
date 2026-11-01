@@ -90,6 +90,8 @@ struct ctx {
     const oa_display_iface *disp;
     const oa_display_iface *disp2;   /* v2 lookup: set_scene_transform */
     const oa_display_async_iface *async;
+    uint64_t present_serial;         /* async frame serial last accepted */
+    int present_pending;             /* rail playback paces to this completion */
     const oa_display_alpha_iface *alpha;
     uint64_t receipt_tick, first_serial, last_receipt;
     int paint_w, paint_h, scene_painted;
@@ -315,6 +317,9 @@ static void receipt_tick(void *ud)
     if (result.serial != c->last_receipt && result.error)
         c->api->log(c->api->priv, OA_LOG_ERROR, "portal frame failed errno %d", result.error);
     c->last_receipt = result.serial;
+    if (c->present_pending && result.serial >= c->present_serial &&
+        (result.serial >> 32) == (c->present_serial >> 32))
+        c->present_pending = 0;
     if (!result.error) acknowledge(c);
 }
 /* Called only from ui_fb lifecycle/deferred rebind, never another provider's
@@ -331,6 +336,8 @@ static void drop_async(struct ctx *c, int release)
 {
     if (c->receipt_tick) c->api->timer_del(c->api->priv, c->receipt_tick);
     c->receipt_tick = c->first_serial = c->last_receipt = 0;
+    c->present_serial = 0;
+    c->present_pending = 0;
     if (release && c->async) c->api->release(c->api->priv, OA_SVC_DISPLAY_ASYNC);
     c->async = NULL;
     if (release) {
@@ -346,6 +353,8 @@ static int request_present(struct ctx *c)
         uint64_t serial;
         if (!c->receipt_tick || c->async->request(&serial)) return -1;
         if (!c->first_serial) c->first_serial = serial;
+        c->present_serial = serial;
+        c->present_pending = 1;
         return 0; /* queue acceptance, never readiness */
     }
     if (c->disp->present()) return -1;
@@ -670,6 +679,9 @@ static void rail_hl_tick_cb(void *ud)
     uint64_t now;
 
     if (!c->disp || c->rail_hl_n <= 0) return;
+    /* Async display: advance only after the previous frame completed, so every
+     * decoded frame is presented in order instead of being coalesced away. */
+    if (c->async && c->present_pending) return;
     now = now_ms();
     if (now < c->rail_hl_next) return;   /* 10 ms poll; the 30 ms frame is not due yet */
     if (c->rail_hl_frame + 1 < c->rail_hl_n)

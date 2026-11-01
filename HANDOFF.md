@@ -41,15 +41,18 @@ snapshot_match=1 and the original yoffset 0. Per-present timings: types
 Vendor PIDs 1967/1785 unchanged, staging removed. This is readback, not scanout
 proof, and the software timings are far below smooth 30/60 fps.
 
-Real GPU UI cadence: the preserved rail stage plus our fresh 10 ms-poll ui_fb was
-run on the set with OA_SCENE_PROBE_UI=1 and OA_SCENE_PROBE_RAIL=1. Readiness,
-dialog type-4 completion, reload and host suspend/resume passed and the full
-snapshot restored, but the rail sample reported only 6 image revisions over
-660 ms (the older looping module reported 7). The 11-frame one-shot submits at
-30 ms; the async display accepts one pending frame (EBUSY otherwise) and drops
-the rest. Next fix: an ordered image-frame queue (or completion-paced advance)
-so every decoded frame is presented; vendor focus/hold and scanout still need
-panel observation.
+Real GPU UI cadence: completion pacing is implemented and verified. The rail
+tick now waits for the async present serial before advancing, so every decoded
+frame is presented in order instead of being coalesced. The preserved rail stage
+(refreshed to the current modules) plus our 10 ms-poll ui_fb ran on the set with
+OA_SCENE_PROBE_UI=1 and OA_SCENE_PROBE_RAIL=1: 11 image revisions over the
+2000 ms window, backdrop BGRA24,23,22,153, dialog type-4 completion, reload and
+host suspend/resume passed, and the full snapshot restored (match=1). Vendor PIDs
+1967/1785 unchanged. The earlier 660 ms window under-counted because the
+full-frame async path completes roughly 100 ms/frame; the first run with the
+stage's older modules showed an opaque 13,14,14,255 backdrop because that
+scene_display predated the alpha service. Refresh every module when reusing a
+preserved stage. Frame order and scanout still need panel observation.
 
 Owner explicitly requested checking **exact** vendor animation fidelity, then
 requested this handoff and stop. The audit remains incomplete; **do not claim the

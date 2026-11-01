@@ -181,16 +181,19 @@ Readback is not scanout proof and these software timings are far below smooth
 30/60 fps; the EGL path remains the parity target.
 
 RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
-stage, our fresh 10 ms-poll ui_fb and the probe's UI/rail sampling
-(OA_SCENE_PROBE_UI=1, OA_SCENE_PROBE_RAIL=1). Readiness, dialog type-4 completion,
-reload and host suspend/resume passed; the full 16,588,800-byte snapshot restored
-(snapshot_match=1, region_match=1) and vendor PIDs 1967/1785 were unchanged.
-The rail sample reported only 6 image revisions over 660 ms (the older looping
-module reported 7): the one-shot sequence submits 11 paint frames at 30 ms, but
-the async display accepts one pending frame and returns EBUSY otherwise, so
-intermediate frames are dropped. The vendor decoder posts every decoded frame to
-a message queue; an ordered image-frame queue (or completion-paced advance) is
-needed for bug-for-bug rail playback. Frame order and scanout remain unproven.
+stage refreshed to the current modules, our 10 ms-poll ui_fb and the probe's
+UI/rail sampling. Completion-paced advance is now implemented: the rail tick
+waits for the async present serial to complete before advancing, so no frame is
+coalesced away. Result: 11 image revisions over the 2000 ms measurement window
+(the earlier 660 ms window under-counted because the full-frame async path
+completes ~100 ms/frame), backdrop raw BGRA 24,23,22,153 matching the expected
+premultiplied vendor colour, dialog type-4 completion, reload and host
+suspend/resume passed, and the 16,588,800-byte snapshot restored
+(snapshot_match=1, region_match=1); vendor PIDs 1967/1785 unchanged.
+A first run with the stage's older modules showed BGRA 13,14,14,255: the
+predates-alpha scene_display made ui_fb fall back to the opaque clear. Reusing a
+preserved stage requires refreshing every module, not just ui_fb. Frame order and
+scanout remain unproven.
 
 EGL-SCENE-2026-11-01 adds common/scene_gles.c and opt-in context/scene probes.
 The actual TV Mali-G51 passed offscreen pixel/orientation/fade/triangle and

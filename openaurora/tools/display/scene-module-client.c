@@ -232,7 +232,7 @@ int probe_ui(scene_probe *s)
     const char *rail = getenv("OA_SCENE_PROBE_RAIL");
     oa_display_result result;
     if (rail && !strcmp(rail, "1")) {
-        uint64_t until = oa_now_ms()+660, revision = 0;
+        uint64_t until = oa_now_ms()+2000, revision = 0;
         unsigned changes = 0;
         do {
             run_for(s, 1);
@@ -242,7 +242,7 @@ int probe_ui(scene_probe *s)
             }
         } while (oa_now_ms() < until);
         if (changes < 3) { errno = EPROTO; goto failure; }
-        printf("UI rail completed image revisions=%u over660ms (not a frame-order measurement)\n", changes);
+        printf("UI rail completed image revisions=%u over2000ms (completion-paced; not a frame-order measurement)\n", changes);
     }
     key(s, 19); run_for(s, 200);
     if (s->asynchronous->latest(&result) != 1) { errno = EPROTO; goto failure; }
