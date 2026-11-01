@@ -24,13 +24,46 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: UI-TRANSPARENCY recovers the actual unnamed full-screen theme rectangle
-and ARM opacity conversion to RGBA36,38,40,153. Both display backends now expose
-display.alpha v1 and preserve source-over/premultiplied scanout; UI holds it.
-Host227 checks/focused sanitizer pass, actual TV/GPU backdrop readback is
-BGRA24,23,22,153. Navigation/reload/module cycle and full restore/hash match pass.
-Same boot/PID/access/privacy, staging removed; installed production unchanged.
-Native artifacts in build-tv-v3/ui-alpha; exact identities/evidence in the report.
+Current UI seam and screens (2026-11-01): `ui.engine` (modules/ui_engine) owns
+display/alpha discovery and rebinding, OAI1 assets, draw/present/async receipts
+and readiness, the key topic and the `ui.fps` repaint timer; it selects the
+active skin by `ui.skin` and posts skin enter/paint/key to the skin's owner
+token. `ui_vendor` (renamed from ui_fb) is the vendor skin and still publishes
+OA_SVC_PORTAL; `ui_omarchy` is a skeleton skin (dark shell/rail/tiles, own key
+handler). tests/ui_skin switches vendor<->omarchy by unload/load with no
+rebuild. Full make check 236 ok.
+
+Implemented vendor screens, all entered and left from the portal:
+
+- source selection (DialogSourceSelection 185), fb1-verified against the
+  R/B-corrected p0/06 capture (RMSE 0.28%, AE 0.0073%).
+- captured Beeld quick tiles (p0/03) via rail 4; p0/03 is
+  SubLauncherDialog::initialisePictureSettingsShortcuts.
+- captured full picture panel (shot-settings.png; DialogSettings_tab 179) via
+  Select on the quick tiles; panel area opaque, rest of the OSD transparent
+  (fb1 alpha 0 outside, 255 inside), RGB identical to the corrected capture.
+- Up/Down row selection over the panel using a reconstructed FA row: 479
+  stretched #FE9419 bar, 488/496/504 #7E000A text, 70 px pitch, disabled
+  "Beeld zoomen" row skipped, `ui.sel=N` lab preselect. fb1 matches the
+  reconstructed row-4 reference exactly; this is not a vendor focused-row
+  capture.
+
+Canonical state is MEMORY (UI-ENGINE-SPLIT, UI-SKIN-SEAM, SOURCE-SELECT-TV,
+SETTINGS-SCREEN/PANEL/ROWS) and TODO. Evidence:
+artifacts/analysis/source-selection-2026-11-01/,
+settings-2026-11-01/, settings-panel-2026-11-01/,
+settings-focus-2026-11-01/. Module identities are in MEMORY.
+
+Next UI work: exact focused-row/other-tab evidence (a vendor capture of a
+focused row) or the vendor FreeType text/metrics path before claiming focus
+pixels; then value changes, Beeld/Geluid tabs, scrolling and localization.
+Also implement control-plane fallback loading when a selected skin fails, and
+the real OmarchyTV screens (ui_omarchy is a skeleton); the vendor skin remains
+the known working fallback. Channel list, EPG/PVR, broadcast/DVB, native
+audio/CEC ownership, independent startup, remote behavior and visible scanout
+remain outside this UI slice. Keep the firmware-first and fb1-transparency
+semantics: named SVG backgrounds are descriptions, and non-panel OSD areas use
+clear_rgba.
 
 Real-display scene warp: tools/display/scene-probe.c was cross-built (ARM), staged
 in /tmp with SHA-256 checked, and run against real fb1 with vendor Aurora still
