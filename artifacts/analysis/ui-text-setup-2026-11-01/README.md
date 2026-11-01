@@ -106,13 +106,32 @@ The `DAT_00d5474c/50/54`, `DAT_00d54e30`, `DAT_00d54b24/28/2c` literals live in
 .data as runtime UString state (not plain rodata strings like "alexa"), so
 their exact names are not established from a static dump. Do not assign them.
 
-## Not yet decoded
+## Picture shortcut rows (initialisePictureSettingsShortcuts 0xee0ed0)
 
-- Transformed `textPos` scale/origin beyond row-position translation;
-  per-widget `+0x1b4` line counts / `+0x1c4` types for the title, tab and row
-  widgets; FA animation target geometry. Title/tab/focused text stays
-  unimplemented.
+The function builds exactly three static `SettingItem`s in a loop
+(`iVar15` = 0, 1, 2), all with SettingType 2. Labels are global UStrings
+(first word = key pointer), resolved from the binary:
 
-Do not implement title/tab/focused labels from the fits. Next: resolve the
-`renderBackground` rectangle literals per widget resource and trace one row's
-`+0x1b4/+0x1c4/+0x220` setup through `initialisePictureSettingsShortcuts`.
+| id | label key | values (SettingValue index → key) |
+|---|---|---|
+| 0 | MODE | dynamic picture-mode list from `PictureModeNameProvider` (id 0 item; the "Modus/Natuurlijk" row) |
+| 1 | ENERGY_SAVING | 0 OFF, 1 MINIMUM_STR, 2 MEDIUM, [3 MAXIMUM_STR if mode≠3/0], 4 AUTO, 6 SCREEN_OFF, 5 CUSTOM (note 6 added before 5 in the instruction order) |
+| 2 | PICTURE_ZOOM | includes 1 ZOOM_MODE_AUTO, 5 ZOOM_MODE_16_9, 6 ZOOM_MODE_SUBTITLE (partial enumeration; full list not yet traced) |
+
+`setType(2)` (0xd51e01) shows only the label textbox (+0x104) and the
+selection box (+0x1014); button/sliders/progress/entry/check/images are
+hidden. So the static shortcut list is three selection-box rows — the
+slider rows (Contrast/Helderheid/Scherpte/Kleur with font16 digits) are NOT
+created here; they come from the dynamic `update*` paths
+(`updatePictureMode` 0xee3bc9 / `updateSettingsList` 0xedf46d), still untraced.
+Each created shortcut row gets `setSelectionDisabled(row, true)` after
+insertion (0xee11b0 site).
+
+This matches the panel: Modus/Energiebesparing/Beeld-zoomen are text-value
+selection rows (font7 values), while 95/50/50/60 are slider digits (font16)
+owned by the dynamic rows.
+
+Do not implement title/tab/slider-graphics/focused labels from the fits. Next:
+resolve the `renderBackground` rectangle literals per widget resource and trace
+the dynamic slider-row creation through `updatePictureMode`/`updateSettingsList`
+(line counts/types, textPos transforms, value-widget geometry).
