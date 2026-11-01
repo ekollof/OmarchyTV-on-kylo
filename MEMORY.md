@@ -194,6 +194,18 @@ dialog the wrong way. Next: recover the dialog's named animation rect/motion
 (record name at +0xc, rectangle lookup at this+0xdc) and draw the dialog upward
 over the type-4 background shift, then re-observe on the panel.
 
+DIALOG-MOTION-AUDIT-2026-11-01 (partial): DialogLauncher.svg (resource 129,
+span 57345..57634) contains the element `animation_slide_up_fade_in` followed by
+four signed-16 values -109, 1096, 100, 100. SVGDialog::drawAnimatedRectangles
+(0x10c5161) iterates the AnimationContainer at this+0xe8, reads the record name
+at +0xc, builds a UString, calls an unnamed helper at 0xc86b4c and then 0xc8724c
+with operands (1, len-1) before RectangleContainer::getRectangle at this+0xdc,
+and draws the resulting rect through the facade. The exact meaning of the
+substring step (the helper is not exported) and whether the four values are a
+from/to pair or a rect is not resolved. Do not implement a dialog offset until
+those are decoded; the whole-scene type-4 shift remains the only implemented
+motion and is the observed wrong-direction defect.
+
 RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
 stage refreshed to the current modules, our 10 ms-poll ui_fb and the probe's
 UI/rail sampling. Completion-paced advance is now implemented: the rail tick

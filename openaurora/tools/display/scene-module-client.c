@@ -243,6 +243,7 @@ int probe_ui(scene_probe *s)
         } while (oa_now_ms() < until);
         if (changes < 3) { errno = EPROTO; goto failure; }
         printf("UI rail completed image revisions=%u over2000ms (completion-paced; not a frame-order measurement)\n", changes);
+        run_for(s, 600); /* hold the last frame so the panel can see it before a focus key */
     }
     key(s, 19); run_for(s, 200);
     if (s->asynchronous->latest(&result) != 1) { errno = EPROTO; goto failure; }
