@@ -277,6 +277,18 @@ grid positions are not decoded, and our current card row is an invented layout.
 Next: decode DialogSubLauncher 189 (item positions/count) and the animation
 element's transform origin, then build the sub-launcher screen against them.
 
+SUBL AUNCHER-LAYOUT-2026-11-01: the list/grid placement math is recovered.
+FullScreenGrid::getFocusedButtonPosition (0xd206d0) tail-calls
+SVGGrid::getButtonPosition (0x10ca8ac), which computes:
+  x = column * this[+0x1e8] + this[+0x1fc]
+  y = row    * this[+0x1e4] + this[+0x1f4]
+  rect = (x, y, x + this[+0x200], y + this[+0x1ec])
+The SVGGrid constructor (0x10cc605) zeroes +0x1d8..+0x200, so the six layout
+members are filled later (create 0x10cacb9 / setWindowRect 0x10cacf1 or the
+description lookup). Next decode where those stores happen and with which named
+description rects, plus the #scalerect transform origin; then the sub-launcher
+screen can be built without guessing.
+
 RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
 stage refreshed to the current modules, our 10 ms-poll ui_fb and the probe's
 UI/rail sampling. Completion-paced advance is now implemented: the rail tick
