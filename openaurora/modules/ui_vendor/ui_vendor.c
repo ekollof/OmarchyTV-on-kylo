@@ -122,6 +122,7 @@ struct ctx {
     int rail;
     int card;
     int src;                         /* source-selection row, 0..MAX_SOURCES-1 */
+    int sel;                         /* picture-settings row, -1 = none */
     int screen;
     int restored;
     const oa_settings_iface *settings;
@@ -204,6 +205,36 @@ static const oa_ui_icon *find_icon(struct ctx *c, const char *name)
 
 enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, SCREEN_SETTINGS = 3,
        SCREEN_SETTINGS_LIST = 4, ANIM_DIALOG = 1 };
+
+/* Picture-settings rows: 66 px FA bar on the captured 70 px pitch, text
+ * centered (row 4 centre 496). Row 6 ("Beeld zoomen") is disabled in the
+ * capture and is skipped by navigation. */
+#define SETTINGS_ROW_X 20
+#define SETTINGS_ROW_W 750
+#define SETTINGS_ROW_H 66
+#define SETTINGS_ROW_Y0 183
+#define SETTINGS_ROW_PITCH 70
+#define SETTINGS_ROW_COUNT 9
+#define SETTINGS_ROW_DISABLED 6
+
+static int settings_row_y(int sel)
+{
+    return SETTINGS_ROW_Y0 + SETTINGS_ROW_PITCH * sel;
+}
+
+static int settings_row_next(int sel, int dir)
+{
+    int i = sel < 0 ? (dir > 0 ? 0 : SETTINGS_ROW_COUNT - 1) : sel;
+    if (sel >= 0) {
+        do {
+            i += dir;
+        } while (i >= 0 && i < SETTINGS_ROW_COUNT && i == SETTINGS_ROW_DISABLED);
+    }
+    if (i < 0) i = 0;
+    if (i >= SETTINGS_ROW_COUNT) i = SETTINGS_ROW_COUNT - 1;
+    if (i == SETTINGS_ROW_DISABLED) i = sel < 0 ? 0 : sel;
+    return i;
+}
 
 static void rail_slot(int focus, int i, int *x, int *y, int *w, int *h)
 {
@@ -353,6 +384,13 @@ static void paint_settings_list(struct ctx *c)
     const oa_ui_icon *panel = find_icon(c, "settings_panel");
     if (panel)
         d->blit(0, 0, panel->w, panel->h, panel->rgba);
+    if (c->sel >= 0 && c->sel < SETTINGS_ROW_COUNT && c->sel != SETTINGS_ROW_DISABLED) {
+        char name[32];
+        snprintf(name, sizeof name, "settings_focus_%d", c->sel);
+        const oa_ui_icon *row = find_icon(c, name);
+        if (row)
+            d->blit(SETTINGS_ROW_X, settings_row_y(c->sel), row->w, row->h, row->rgba);
+    }
     c->scene_painted = 1;
     if (d->present() != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "settings panel present failed");
@@ -837,7 +875,14 @@ static void cancel_dialog(struct ctx *c)
 static void move_key(struct ctx *c, uint8_t id)
 {
     if (c->screen == SCREEN_SETTINGS_LIST) {
-        if (id == 10 || id == 48) {
+        if (id == 19 || id == 20) {        /* Down / Up: row selection */
+            c->sel = settings_row_next(c->sel, id == 19 ? 1 : -1);
+            if (c->d) paint(c);
+        } else if (id == 53 || id == 0x8a) {
+            /* Value editing is not decoded yet; keep the selection only. */
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "settings row %d selected (editing not implemented)", c->sel);
+        } else if (id == 10 || id == 48) {
             c->screen = SCREEN_SETTINGS;   /* back to the quick picture tiles */
             if (c->d) paint(c);
         }
@@ -1027,6 +1072,11 @@ static int m_start(void *v)
         c->screen = SCREEN_SETTINGS;
     if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "settings_list"))
         c->screen = SCREEN_SETTINGS_LIST;
+    /* Lab/test preselection for a focused-row capture; -1 starts unfocused
+     * like the vendor capture. The disabled row is never preselected. */
+    c->sel = atoi(c->api->config_get(c->api->priv, "ui.sel", "-1"));
+    if (c->sel < 0 || c->sel >= SETTINGS_ROW_COUNT || c->sel == SETTINGS_ROW_DISABLED)
+        c->sel = -1;
     if (c->rail < 0 || c->rail > 4)
         c->rail = 2;
     if (c->nc > 0 && c->card >= c->nc)

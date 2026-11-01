@@ -362,11 +362,20 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       tests/ui_settings_panel.c covers the flow; a real fb1 run is
       pixel-identical to the corrected capture (0/2,073,600 pixels). Evidence:
       artifacts/analysis/settings-panel-2026-11-01/.
-- [ ] Interactive settings rows: decode and implement row focus, value
-      changes, tab switching and scrolling. The vendor uses SVG-animated
-      selection (startSelectAnimation) and FreeType text; either wire the
-      vendor font/rasterizer or obtain focused-row captures before drawing
-      selection chrome. Do not guess the FA/FI state composition.
+- [x] Picture-settings row selection: SCREEN_SETTINGS_LIST tracks a row and
+      Up/Down moves the FA overlay (750x66 at 20,183+70*N) over the captured
+      panel, skipping the disabled row 6 and clamping at both ends. FA
+      resources 479 (stretched #FE9419 row), 488/496/504 (#7E000A textPos)
+      back the reconstruction; sliders stay as captured. Host test
+      tests/ui_settings_rows.c passes and an fb1 run matches the reconstructed
+      reference exactly (0/2,073,600, sha256 86b66c00...). Evidence:
+      artifacts/analysis/settings-focus-2026-11-01/.
+- [ ] Exact focused-row/panel evidence and the interactive remainder: value
+      changes, Beeld/Geluid tab switching, scrolling/overflow and localization.
+      The vendor animates selection from the row SVG (startSelectAnimation)
+      and renders text through FreeType; obtain a focused-row capture or wire
+      the vendor font/metrics path before claiming exact focus pixels, and do
+      not guess FA/FI slider/button graphics.
 - [ ] Complete the remaining vendor screens and labels. The injected portal
       above is not all-screen parity or a confirmed live remote capture. The
       source-selection panel (DialogSourceSelection.svg 185), the captured

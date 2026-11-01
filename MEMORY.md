@@ -950,11 +950,31 @@ the flow and tests/ui_settings.c the tile entry. A real fb1 run (PID30540,
 mod_ui_vendor md5 c12f800f..., panel asset 0979dbf2...) is pixel-identical to
 the corrected capture over 1920x1080 (0/2,073,600 differing, max delta 0,
 sha256 cf4a2296...); fb1 backed up/restored (16588800 bytes, offset 0,1080),
-staging removed. Row focus is not implemented: the vendor animates it from the
-row SVG (SVGListBoxBase::startSelectAnimation 0x10bbedd; FA row 479 #FE9419
-fills) and renders text via FreeType; there is no focused-row capture, so no
-guessed selection chrome was shipped. Evidence:
-artifacts/analysis/settings-panel-2026-11-01/.
+staging removed. Row focus selection now exists as a reconstruction, see
+SETTINGS-ROWS-2026-11-01; the panel capture remains the unfocused reference.
+Evidence: artifacts/analysis/settings-panel-2026-11-01/.
+
+SETTINGS-ROWS-2026-11-01: SCREEN_SETTINGS_LIST now has Up/Down row selection
+(sel, -1 none) at the captured 70 px pitch: FA overlay settings_focus_N 750x66
+blitted at (20, 183+70*N), row 6 ("Beeld zoomen", grey/disabled in the capture)
+skipped, clamped at both ends, ui.sel=N preselects for lab captures, Select
+only logs (no value editing), Exit returns to the quick tiles. FA evidence:
+state mapping 0=UFA/1=FA/2=UFI/3=FI from SettingItemsListBox (0xd518f1) and
+makeRow (0xd5072d); SettingListBoxRowFA 479 is the #FE9419 66 px 3-slice and
+SVGListBoxRow::renderBackground (0x10bec09) stretches it horizontally
+(HorizontalMaskScaleTransform); settingListTextboxFA 488 / ButtonFA 496 /
+SelectionBoxFA 504 use #7E000A textPos (UFA 489/497/506 are white).
+tools/render-settings-focus.py reconstructs the overlays from the corrected
+panel (recolor only white ink on the bg->white line; keep sliders/icons).
+tests/ui_settings_rows.c covers selection/skip/clamp/Exit; make check 236 ok.
+Real fb1 run (PID32567, mod_ui_vendor b82ddbe2..., focus overlay e92ee007...)
+matches the reconstructed reference exactly (0/2,073,600, sha256 86b66c00...);
+raw fb1 alpha 0 at (1000,500), BGRA 25,148,254,255 (#FE9419) at (100,500),
+45,30,190,255 panel at (24,185); fb1 restored, staging removed. This verifies
+the pipeline, not a vendor focused-row capture: bar centering/row rect and
+focused slider/button graphics are inferred; value editing, tabs, scrolling,
+localization and FreeType text remain open. Evidence:
+artifacts/analysis/settings-focus-2026-11-01/.
 
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
