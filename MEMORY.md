@@ -289,6 +289,17 @@ description lookup). Next decode where those stores happen and with which named
 description rects, plus the #scalerect transform origin; then the sub-launcher
 screen can be built without guessing.
 
+SUBL AUNCHER-LAYOUT-2-2026-11-01: the six SVGGrid members are not set by
+create/setWindowRect directly. setWindowRect (0x10cacf0) calls 0x10cabc8, which
+calls SVGGrid::renderBackground (0x10c9ed0) among three others; renderBackground
+computes the layout from the grid's area and margins using a division helper
+(0x1285478) and reads/writes +0x1d8..+0x200: e.g. at 0x10ca194..0x10ca1dc it
+derives +0x1dc/+0x1e8 from the area span minus +0x1f4/+0x1f8 and +0x1fc/+0x200,
+and +0x1ec/+0x1fc from the other axis. The item-count members +0x1e4/+0x1e0 gate
+the computation. Still undecoded: which description rects supply the margins and
+the exact division constants, and the #scalerect transform origin. No screen code
+was written; the next decode is renderBackground's inputs.
+
 RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
 stage refreshed to the current modules, our 10 ms-poll ui_fb and the probe's
 UI/rail sampling. Completion-paced advance is now implemented: the rail tick
