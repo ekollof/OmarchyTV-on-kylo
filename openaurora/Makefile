@@ -404,7 +404,7 @@ check-ui-nav: check-ui-anim-review $(BUILD)/tests/ui_nav $(BUILD)/tests/ui_nav_d
 	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so $(BUILD)/tests/ui-nav/modules/
 	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-nav/modules/mod_nav_display.so
 	@sqlite3 $(CURDIR)/$(BUILD)/tests/ui-nav/settings.db 'DROP TABLE IF EXISTS Settings; CREATE TABLE Settings (m_current_source INTEGER); INSERT INTO Settings (m_current_source) VALUES (4);'
-	@printf 'ir.device =\nui.ok_file =\nui.paint = 1\nui.focus = 2\nui.fps = 0\nsettings.db = $(CURDIR)/$(BUILD)/tests/ui-nav/settings.db\nsettings.readonly = 1\n' > $(BUILD)/tests/ui-nav/ui.cfg
+	@printf 'ir.device =\nui.ok_file =\nui.paint = 1\nui.focus = 2\nui.fps = 0\nui.launch_anim = 1\nsettings.db = $(CURDIR)/$(BUILD)/tests/ui-nav/settings.db\nsettings.readonly = 1\n' > $(BUILD)/tests/ui-nav/ui.cfg
 	@$(BUILD)/tests/ui_nav $(BUILD)/tests/ui-nav/modules $(BUILD)/tests/ui-nav/ui.cfg
 
 $(BUILD)/tests/control_reply: tests/control_reply.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))

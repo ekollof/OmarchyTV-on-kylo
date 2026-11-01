@@ -16,6 +16,7 @@ static const char *config(void *ud, const char *key, const char *def)
     if (!strcmp(key, "ui.dir")) return directory; /* missing assets exercise ordinary fallback drawing */
     if (!strcmp(key, "ui.ok_file")) return ready_path;
     if (!strcmp(key, "ui.fps")) return "0";
+    if (!strcmp(key, "ui.launch_anim")) return "1"; /* lab path: vendor launcher is instant */
     return def;
 }
 static void pump(oa_host *h)

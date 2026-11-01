@@ -256,6 +256,15 @@ dialog content, and the real-fb1 measurement (identity=0, p0.5=45, p1=0) matches
 Do not add a guessed dialog offset or invert the rule; the residual panel
 appearance is a presentation/hold question, not firmware timing.
 
+SELECT-PATH-2026-11-01: firmware shows the launcher has no Select transition.
+MainLauncherMenuDialog::onSelectPress (0xe48405) only calls
+focusLauncher(false), and focusLauncher (0xe4831c) does index/logging/menu-active
+bookkeeping with no animation controller or SVGDialog start. Our previous
+type-4 dialog animation on Select was an invention and caused the visible
+wrong-direction artifact. mod_ui_fb now switches instantly by default; the
+type-4 path is lab-only behind ui.launch_anim=1 (ui_nav and ui_async enable it to
+keep animation coverage). Host make check 227 ok.
+
 RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
 stage refreshed to the current modules, our 10 ms-poll ui_fb and the probe's
 UI/rail sampling. Completion-paced advance is now implemented: the rail tick

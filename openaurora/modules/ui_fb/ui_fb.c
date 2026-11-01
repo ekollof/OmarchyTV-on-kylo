@@ -871,7 +871,11 @@ static void move_key(struct ctx *c, uint8_t id)
         }
     } else if (id == 53 || id == 0x8a) { /* Select: profile RC, or NEC OK */
         emit_action(c, OA_ACTION_SELECT);
-        if (c->anim && c->anim->enabled() &&
+        /* Firmware MainLauncherMenuDialog::onSelectPress only calls focusLauncher(false), and
+         * focusLauncher does index bookkeeping: the launcher has no full-screen transition.
+         * The type-4 path is a lab-only option (ui.launch_anim=1) pending vendor dialogue parity. */
+        if (atoi(c->api->config_get(c->api->priv, "ui.launch_anim", "0")) == 1 &&
+            c->anim && c->anim->enabled() &&
             c->anim->start(ANIM_DIALOG, OA_ANIM_DIALOG, NULL, NULL, 1000, NULL) == 0)
             return;
         c->screen = SCREEN_OPEN;
