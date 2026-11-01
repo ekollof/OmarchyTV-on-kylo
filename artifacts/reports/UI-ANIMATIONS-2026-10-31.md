@@ -467,7 +467,8 @@ at the 160x160 button window `(focused_x - 5, focused_y + 10)`, with the bar at
 the image's left edge.
 
 Implemented in `mod_ui_fb`: `rail_hl01..11` OAI1 frames converted from the
-vendor APNG, a 30 ms looping timer while the portal is shown, playhead reset on
+vendor APNG, a 30 ms one-shot sequence per focus while the portal is shown (the
+last frame is held; there is no loop), playhead reset on
 rail focus change, drawn scaled into the button window before the tile fill (so
 the bar appears at the left edge). Without frames the previous orange frame is
 kept. `tests/ui_rail_hl.c` asserts the 11-frame order, the 30 ms timer, wrap and

@@ -128,8 +128,10 @@ int main(int argc, char **argv)
         assert(timer_fire(&host, fb->id, 30));
         assert(hl_find(trace, NULL, NULL, NULL, NULL, NULL, NULL) == i);
     }
-    assert(timer_fire(&host, fb->id, 30));
-    assert(hl_find(trace, NULL, NULL, NULL, NULL, NULL, NULL) == 0);  /* 11-frame wrap */
+    /* decodeNextFrame stops at the frame count: the last frame is held, no rearm */
+    assert(timer_count(&host, fb->id, 30) == 0);
+    assert(!timer_fire(&host, fb->id, 30));
+    assert(hl_find(trace, NULL, NULL, NULL, NULL, NULL, NULL) == 10);
 
     host.stop_requested = 1;
     assert(oa_host_run(&host) == 0);

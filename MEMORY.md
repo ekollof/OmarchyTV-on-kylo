@@ -256,9 +256,12 @@ Resource 579 (myMenuLauncheritemFA.svg) contains that named rect, so the rail
 buttons use the category resources, not launcheritemFA/FI (536/537). Resource
 579's local signed-16 rects: glyph (119,240,150,150), mainlauncher_highlight
 (119,212,199,210), background (-2,0,1920,1080). The highlight resource
-`mainlauncher_item_highlight_animated.png` is an 11-frame, 30 ms, looping
-(num_plays 0) APNG of an orange bar at the image's left edge growing to full
-height. The 0.3 s 536/537 records are launcher tiles, not the rail.
+`mainlauncher_item_highlight_animated.png` is an 11-frame, 30 ms APNG of an
+orange bar at the image's left edge growing to full height. The APNG num_plays
+field is metadata: PngImageDecoderImpl::decodeNextFrame (0xb30654) increments the
+frame index and only decodes while index < count, with no rearm at the end, so
+the last frame is held. The 0.3 s 536/537 records are launcher tiles, not the
+rail.
 
 Placement recovered: init creates five SVGButtons named HOME/VIVA/SETTINGS/
 APPLICATIONS/SOURCES; updateCategoryButtonRects looks up description names
@@ -268,9 +271,10 @@ the type array at +0x39b4; setMenuItemPosition calls SVGButton::setWindowRect
 (6,211/330/460/600/719,160,160). The capture shows the focused 150x150 tile at
 (11,450) and the bar at x 6..10, y 458..591 (mid-growth), so the 210x210 image
 is drawn at (focused_x-5, focused_y+10). Implemented in mod_ui_fb: rail_hl01..11
-OAI1 frames from the vendor APNG, 30 ms looping timer while the portal shows,
-playhead reset on focus change, scaled into the button window. tests/ui_rail_hl
-asserts frame order/wrap/timer/window; host make check 198 ok and ASan 198 ok.
+OAI1 frames from the vendor APNG, a 30 ms one-shot sequence per focus while the
+portal shows (the last frame is held, no wrap), playhead reset on focus change,
+scaled into the button window. tests/ui_rail_hl asserts frame order, the
+one-shot stop and the window; host make check 227 ok, focused ASan/UBSan pass.
 Live probe on the set (fake display, no fb1/keys): 166 blits, mean gap 29.98 ms,
 window x=6 y=461, clean exit; staging removed, vendor PIDs unchanged. Visible
 panel appearance is still unverified.

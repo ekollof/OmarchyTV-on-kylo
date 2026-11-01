@@ -47,12 +47,14 @@ inspection of Aurora MD5 64c252340d3af6c5d66072611b7bad7a:
   The inspected trailing/finish paths do not rearm that sequence at its end.
   FindCallers finds no internal reference to png_get_num_plays, only its export.
   This supports a finite decoded sequence per decoder instance, whereas our
-  rail_hl_tick_cb increments modulo11 forever. Before implementing a one-shot
-  replacement, finish checking the higher-level image/window restart lifetime
-  and observe vendor focus/hold behavior. Do not substitute APNG metadata for
-  that missing acceptance. Older reports/source comments/tests calling our
-  looping policy “vendor” are superseded by this finding; their frame-count/
-  asset/hash evidence remains valid. No loop fix was implemented yet.
+  rail_hl_tick_cb incremented modulo11 forever. The higher-level check is now
+  done: onAnimImgDecoded only draws the decoded frame, decodeNextFrame has no
+  rearm, and the only index reset is decodeFirstFrame when a new image starts
+  (focus/state change). Fixed in mod_ui_fb: a 30 ms one-shot per focus that
+  holds the last frame; tests/ui_rail_hl asserts the stop. Vendor focus/hold
+  behavior on the panel is still unobserved, so do not claim exact rail
+  playback. Older reports/source comments/tests calling our looping policy
+  “vendor” are superseded; their frame-count/asset/hash evidence remains valid.
 - Vendor PNG scheduling uses a separate worker: threadMain b2eee0 polls the
   queue at10ms (r2=10 at b2ef00), checks unsigned now-last against delay+34 in
   isReadyToDecode b2fc84, advances one frame and posts decoded-image work.

@@ -116,6 +116,7 @@ struct ctx {
      * 30 ms, drawn at the 160x160 button window (focused tile + (-5, +10)). */
     int rail_hl_n;
     int rail_hl_frame;
+    int rail_hl_play;                /* one-shot per focus; the last frame is held */
     uint64_t rail_hl_tick;
     int portal_on;
     int fps;
@@ -635,7 +636,8 @@ static void on_slide_tick(void *ud)
  * the portal rail is shown. The playhead is reset when the focused item changes. */
 static void rail_hl_sync(struct ctx *c)
 {
-    int want = c->rail_hl_n > 0 && c->disp && c->screen == SCREEN_PORTAL;
+    int want = c->rail_hl_n > 0 && c->disp && c->screen == SCREEN_PORTAL &&
+               c->rail_hl_play && c->rail_hl_frame + 1 < c->rail_hl_n;
     if (want && !c->rail_hl_tick) {
         c->rail_hl_tick = c->api->timer_add(c->api->priv, OA_RAIL_HL_MS, OA_RAIL_HL_MS,
                                             rail_hl_tick_cb, c);
@@ -652,7 +654,11 @@ static void rail_hl_tick_cb(void *ud)
 {
     struct ctx *c = ud;
     if (!c->disp || c->rail_hl_n <= 0) return;
-    c->rail_hl_frame = (c->rail_hl_frame + 1) % c->rail_hl_n;
+    /* finite sequence: advance to the next frame, then hold it and stop the timer */
+    if (c->rail_hl_frame + 1 < c->rail_hl_n)
+        c->rail_hl_frame++;
+    if (c->rail_hl_frame + 1 >= c->rail_hl_n)
+        c->rail_hl_play = 0;
     paint(c);
 }
 
@@ -802,14 +808,17 @@ static void move_key(struct ctx *c, uint8_t id)
         if (c->band == BAND_CARDS) {
             c->band = BAND_RAIL;
             c->rail_hl_frame = 0;
+            c->rail_hl_play = 1;
         } else if (c->rail > 0) {
             c->rail--;
             c->rail_hl_frame = 0;
+            c->rail_hl_play = 1;
         }
     } else if (id == 19) { /* Down */
         if (c->band == BAND_RAIL && c->rail < 4) {
             c->rail++;
             c->rail_hl_frame = 0;
+            c->rail_hl_play = 1;
         }
     } else if (id == 21) { /* Left */
         if (c->band == BAND_CARDS && c->card > 0)
@@ -817,6 +826,7 @@ static void move_key(struct ctx *c, uint8_t id)
         else {
             c->band = BAND_RAIL;
             c->rail_hl_frame = 0;
+            c->rail_hl_play = 1;
         }
     } else if (id == 22) { /* Right */
         if (c->band == BAND_RAIL && c->nc > 0) {
@@ -961,9 +971,13 @@ static int m_start(void *v)
     for (int i = 0; i < c->nc; i++)
         load_blob(c, c->cards[i]);
 
-    /* Vendor main-launcher highlight: 11 frames at 30 ms, looped by the image player. */
+    /* Vendor main-launcher highlight: 11 frames at 30 ms, played once per image/focus. The
+     * decoder advances only while index < frame count (decodeNextFrame 0xb30654) and does not
+     * rearm at the end, so the last frame is held; the APNG num_plays field is not consulted. */
     c->rail_hl_n = 0;
     c->rail_hl_frame = 0;
+    c->rail_hl_play = 0;
+    c->rail_hl_play = 1;
     if (atoi(c->api->config_get(c->api->priv, "ui.rail_hl", "1")) == 1) {
         for (int i = 1; i <= OA_RAIL_HL_FRAMES; i++) {
             char name[32];
@@ -1052,6 +1066,7 @@ static void m_stop(void *v)
     }
     c->rail_hl_n = 0;
     c->rail_hl_frame = 0;
+    c->rail_hl_play = 0;
     c->suspended = 0;
     c->rebind_pending = 0;
     slide_stop_sampler(c);
@@ -1163,6 +1178,9 @@ static int m_resume(void *v)
         return -1;
     }
     c->suspended = 0;
+    /* a resumed portal replays the focus highlight from its first frame */
+    c->rail_hl_frame = 0;
+    c->rail_hl_play = 1;
     /* providers may have appeared or disappeared while suspended; rebind_now reacquires them and
      * restarts or holds the slide as appropriate (it also paints). */
     if (c->rebind_pending || !c->anim || !c->anim2 || !c->clock)

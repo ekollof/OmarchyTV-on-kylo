@@ -387,8 +387,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       settings or network access; staging removed and vendor PIDs unchanged. This is not visual
       scanout or pixel parity evidence. UI-ANIMATIONS.
 - [x] Rail focus highlight: placement recovered (DialogMainMenu.svg button windows (6,y,160,160);
-      capture-derived offsets); implemented in mod_ui_fb as 11 vendor frames at 30 ms looping in the
-      160x160 window, playhead reset on focus change. tests/ui_rail_hl asserts order/wrap/timer/window;
+      capture-derived offsets); implemented in mod_ui_fb as 11 vendor frames at 30 ms played once per
+      focus (the last frame is held; decodeNextFrame does not rearm) in the 160x160 window, playhead reset on focus change. tests/ui_rail_hl asserts order/wrap/timer/window;
       host 198 ok, ASan 198 ok; live probe 166 blits at 29.98 ms mean, x=6 y=461. Visible-panel
       appearance still unverified. UI-ANIMATIONS.
 - [x] Full-screen transform consumer: display v2 publishes `set_scene_transform`; all draws render
