@@ -6,6 +6,17 @@ November 1 CEC session described below. Earlier chronological notes are preserve
 
 ## TV and persistent recovery
 
+UI-GLYPH-DRAW-2026-11-01: single-glyph RGBA compositor, clipping/signed bearings
+and firmware coverage arithmetic implemented. All52022 shipped glyphs compared
+to stored coverage offscreen; full host249 plus three font groups, focused
+ASan/UBSan, ARM/qemu and TV pass. Native build-tv-v3/font-draw identities are in
+the report; no device/framebuffer access. Same stock boot71f7eb63-727f-4b9a-
+a9c7-2b04dc3f9197/live1785/zombie1967/access/privacy; staging removed and checked.
+SVG marker mapping confirms focused488 is bold with a different text rectangle
+from regular/default489; captured recoloring is not focus text parity. String
+layout/font-data provider/UI text integration remain open. Owner requested
+handoff and stop after this item; no helper/build/Ghidra job remains pending.
+
 UI-FONT-SELECTION-2026-11-01: common/font_finder.c implements firmware-derived
 stable typed maximum-height selection, signed height/line-count division and
 global-smallest fallback. Startup20 IDs/heights verified from decoded theme.

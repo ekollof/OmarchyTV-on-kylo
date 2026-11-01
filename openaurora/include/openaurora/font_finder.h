@@ -3,6 +3,13 @@
 #include <stddef.h>
 
 #define OA_FONT_FINDER_CAPACITY 42u
+/* SVGTextBox::renderBackground marker priority, resolved through
+ * SVGWindow::getWidgetStandardName. Names describe firmware type sets. */
+enum oa_font_type {
+    OA_FONT_REGULAR, OA_FONT_BOLD, OA_FONT_LIGHT, OA_FONT_ITALIC,
+    OA_FONT_BOLD_ITALIC, OA_FONT_LIGHT_ITALIC
+};
+unsigned oa_font_type_from_markers(unsigned mask);
 struct oa_font_entry { unsigned id; int height; unsigned type; };
 /* Zero-initialize before adding. Entries remain stably height-sorted. */
 struct oa_font_finder {

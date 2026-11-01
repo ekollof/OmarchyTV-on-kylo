@@ -11,6 +11,9 @@ Evidence used:
     disabled "Beeld zoomen" row (index 6, grey in the capture) is skipped.
 The row position (x=20, w=750, centered 66 px bar) and the bar centering are a
 reconstruction from that geometry, not a captured focused-row image.
+UI-GLYPH-DRAW-2026-11-01 also recovers fontBold on the FA label and a changed
+textPos height. This recoloring preserves captured glyph shapes and therefore
+does not reproduce or validate focused text type/size/layout.
 
     tools/render-settings-focus.py PANEL_PNG OUTDIR --reference ROW OUT.png
 """

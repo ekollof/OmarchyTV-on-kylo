@@ -1,0 +1,42 @@
+ok bitmap font: mapping, signed metrics, every truncation, corrupt bounds/order
+font0 default-font sentinel
+font1 bytes=142719 pixels=122623 glyphs=1573 keys=1478 height=24
+font2 bytes=211578 pixels=191482 glyphs=1573 keys=1478 height=30
+font3 bytes=295679 pixels=275583 glyphs=1573 keys=1478 height=35
+font4 bytes=411429 pixels=391333 glyphs=1573 keys=1478 height=43
+font5 bytes=558515 pixels=538419 glyphs=1573 keys=1478 height=50
+font6 bytes=693665 pixels=673569 glyphs=1573 keys=1478 height=56
+font7 bytes=847332 pixels=827236 glyphs=1573 keys=1478 height=61
+font8 bytes=95209 pixels=75087 glyphs=1575 keys=1480 height=19
+font9 bytes=151711 pixels=131589 glyphs=1575 keys=1480 height=24
+font10 bytes=280621 pixels=260499 glyphs=1575 keys=1480 height=34
+font11 bytes=421375 pixels=401253 glyphs=1575 keys=1480 height=42
+font12 bytes=570704 pixels=550582 glyphs=1575 keys=1480 height=50
+font13 bytes=701510 pixels=681388 glyphs=1575 keys=1480 height=56
+font14 bytes=885339 pixels=865217 glyphs=1575 keys=1480 height=63
+font15 bytes=48170 pixels=47262 glyphs=97 keys=2 height=88
+font16 bytes=1049748 pixels=1029652 glyphs=1573 keys=1478 height=68
+font17 bytes=1215603 pixels=1195507 glyphs=1573 keys=1478 height=75
+font18 bytes=1460456 pixels=1440360 glyphs=1573 keys=1478 height=80
+font19 bytes=1756990 pixels=1736894 glyphs=1573 keys=1478 height=88
+font20 bytes=1063765 pixels=1043643 glyphs=1575 keys=1480 height=67
+font21 bytes=1234294 pixels=1214172 glyphs=1575 keys=1480 height=74
+font22 bytes=1483096 pixels=1462974 glyphs=1575 keys=1480 height=81
+font23 bytes=1786602 pixels=1766480 glyphs=1575 keys=1480 height=88
+font24 bytes=4170637 pixels=4162189 glyphs=677 keys=582 height=-10
+font25 bytes=616938 pixels=602393 glyphs=1146 keys=1051 height=58
+font26 bytes=476645 pixels=462100 glyphs=1146 keys=1051 height=52
+font27 bytes=316754 pixels=302209 glyphs=1146 keys=1051 height=42
+font28 bytes=192099 pixels=177554 glyphs=1146 keys=1051 height=33
+font29 bytes=1062127 pixels=1047517 glyphs=1151 keys=1056 height=77
+font30 bytes=498629 pixels=484019 glyphs=1151 keys=1056 height=52
+font31 bytes=287696 pixels=273086 glyphs=1151 keys=1056 height=41
+font32 bytes=227154 pixels=212544 glyphs=1151 keys=1056 height=36
+font33 bytes=2500393 pixels=2485783 glyphs=1151 keys=1056 height=118
+font34 bytes=684212 pixels=669602 glyphs=1151 keys=1056 height=61
+font35 bytes=430530 pixels=415920 glyphs=1151 keys=1056 height=48
+font36 bytes=343135 pixels=328525 glyphs=1151 keys=1056 height=42
+font37 bytes=238617 pixels=224007 glyphs=1151 keys=1056 height=35
+font38 bytes=686730 pixels=665282 glyphs=1677 keys=1582 height=44
+ok theme font registration: 20 heights, typed sizes/multiline/global fallback
+ok glyph coverage raster: 52022 shipped glyphs including blank signed extents

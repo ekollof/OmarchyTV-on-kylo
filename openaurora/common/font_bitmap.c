@@ -21,7 +21,7 @@ int oa_bitmap_font_height(const struct oa_bitmap_font *f, int *height)
 int oa_bitmap_font_glyph(const struct oa_bitmap_font *f, unsigned index,
                          struct oa_bitmap_glyph *out)
 {
-    if (!f || !out || index >= f->glyph_count) return EINVAL;
+    if (!f || !out || !f->metrics || !f->pixels || index >= f->glyph_count) return EINVAL;
     const unsigned char *p = f->metrics + (size_t)index * 9;
     struct oa_bitmap_glyph g = {
         .top = metric(p[0]), .left = metric(p[1]),

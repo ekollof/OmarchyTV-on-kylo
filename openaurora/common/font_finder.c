@@ -2,6 +2,13 @@
 #include <errno.h>
 #include <limits.h>
 
+unsigned oa_font_type_from_markers(unsigned mask)
+{
+    for (unsigned type = OA_FONT_REGULAR; type <= OA_FONT_LIGHT_ITALIC; ++type)
+        if (mask & (1u << type)) return type;
+    return OA_FONT_REGULAR;
+}
+
 /* UIFrameworkFontFinder::addUIFrameworkFont eef0c0, stable sorts eeef74/
  * eeefe4, getFont eeedc0, findMatchFont eeed60. */
 int oa_font_finder_add(struct oa_font_finder *f, unsigned id, int height, unsigned type)

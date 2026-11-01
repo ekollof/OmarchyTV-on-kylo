@@ -75,7 +75,7 @@ MOD_DEP  := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).d)
 
 all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker
 
-$(BUILD)/tests/font_bitmap: tests/font_bitmap.c common/font_bitmap.c common/font_finder.c include/openaurora/font_bitmap.h include/openaurora/font_finder.h
+$(BUILD)/tests/font_bitmap: tests/font_bitmap.c common/font_bitmap.c common/font_finder.c common/font_draw.c common/canvas.c include/openaurora/font_bitmap.h include/openaurora/font_finder.h include/openaurora/font_draw.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
@@ -91,7 +91,15 @@ $(BUILD)/tests/font_finder: tests/font_finder.c common/font_finder.c include/ope
 check-font-finder: $(BUILD)/tests/font_finder
 	@$(BUILD)/tests/font_finder
 
-check: check-font-bitmap check-font-finder
+$(BUILD)/tests/font_draw: tests/font_draw.c common/font_draw.c common/font_bitmap.c common/canvas.c include/openaurora/font_draw.h include/openaurora/font_bitmap.h include/openaurora/canvas.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-font-draw
+check-font-draw: $(BUILD)/tests/font_draw
+	@$(BUILD)/tests/font_draw
+
+check: check-font-bitmap check-font-finder check-font-draw
 
 $(BUILD)/oa-audio-broker: tools/audio/oa-audio-broker.c common/audio_broker.c common/audio_broker_wire.c common/audio_client.c common/audio_netlink.c include/openaurora/audio_broker.h include/openaurora/audio_client.h include/openaurora/audio_netlink.h
 	@mkdir -p $(dir $@)

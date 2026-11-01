@@ -1,0 +1,12 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+    60924 /tmp/oa-font-draw-20261101/font_bitmap
+    25428 /tmp/oa-font-draw-20261101/font_finder
+    51308 /tmp/oa-font-draw-20261101/font_draw
+   137660 total
+9200d8ca98f437c51cae895913546b84  /tmp/oa-font-draw-20261101/font_bitmap
+f53444b73e2bf02880bce15dd5e0bceb  /tmp/oa-font-draw-20261101/font_finder
+3613fb79434422436f8518c1a976dc88  /tmp/oa-font-draw-20261101/font_draw

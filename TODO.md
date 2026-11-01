@@ -393,6 +393,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       signed height/line-count division and global-smallest fallback tested on
       host/sanitizers/ARM-qemu/TV. Per-widget SVG text type/rectangle/line count, baseline/alignment,
       substitution and rendering integration remain open.
+- [x] Render a single selected EF41 glyph into an offscreen RGBA canvas:
+      signed bearings, clip intersection, firmware coverage/alpha arithmetic,
+      safe bounds and blank wrapped extents. All52022 shipped glyphs plus
+      synthetic alpha/bounds tests pass host/sanitizer/ARM-qemu/TV; see
+      UI-GLYPH-DRAW-2026-11-01. SVG marker names/priority recovered; focused
+      labels change type/geometry as well as color. String layout, actual row
+      setup/baseline, font-data provider and UI-engine text integration remain
+      open. Recoloring captured labels is not focused-text parity.
 - [ ] Complete the remaining vendor screens and labels. The injected portal
       above is not all-screen parity or a confirmed live remote capture. The
       source-selection panel (DialogSourceSelection.svg 185), the captured

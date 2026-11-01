@@ -24,7 +24,25 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-FONT-SELECTION](artifacts/reports/UI-FONT-SELECTION-2026-11-01.md)
+Owner requested finishing the glyph item, updating the handoff and stopping.
+Latest: [UI-GLYPH-DRAW](artifacts/reports/UI-GLYPH-DRAW-2026-11-01.md) implements
+common/font_draw.c, an allocation-free clipped single-glyph RGBA compositor from
+firmware bearings/coverage/source-over rules. All52022 shipped glyphs render to
+offscreen scratch canvases with exact coverage/border checks. Host full249 plus
+three font groups, focused ASan/UBSan, ARM/qemu and TV pass. No screen/device
+operation; same stock boot/PID1785/access/privacy, staging removed. Native
+build-tv-v3/font-draw and analysis/ui-text-layout-2026-11-01 identify evidence.
+Font markers now resolve regular/bold/light/italic/boldItalic/lightItalic types
+0..5 with first-present priority. Focused label488 has fontBold/textPos height42;
+unfocused489 has no font marker/height40. Recolored captured ink is not focused
+text parity; correction added at its source. No full string renderer/font-data
+provider or UI text integration exists yet. Next trace actual row line-count
+setup and transformed textPos, origin/baseline/alignment/spacing/substitution,
+then connect text through the UI engine. Report lists exact fresh entry points.
+No helper/build/Ghidra job is pending; goal remains incomplete and paused at
+the owner's request. Do not resume hardware experiments from older paragraphs.
+
+Previous: [UI-FONT-SELECTION](artifacts/reports/UI-FONT-SELECTION-2026-11-01.md)
 implements common/font_finder.c: startup20 IDs and maximum heights recovered,
 stable typed floor selection after signed height/line-count division, global
 smallest fallback (font8 even for too-small type0). Font IDs directly index
@@ -35,7 +53,7 @@ Continue SVGTextBox text-style type/rectangle/line count, baseline/alignment,
 substitution/clipping/blending and UI engine font/text integration. Widgets
 still render captured/reconstructed text. No helper or Ghidra job pending.
 
-Latest: [UI-FONTS](artifacts/reports/UI-FONTS-2026-11-01.md) recovers the
+Previous: [UI-FONTS](artifacts/reports/UI-FONTS-2026-11-01.md) recovers the
 theme's38 EF41 grayscale bitmap fonts, signed metrics and packed UTF8 lookup.
 common/font_bitmap.c is a bounded borrowed-data reader; all records pass host,
 ASan/UBSan, ARM-qemu and TV checks. Full host suite passes. No UI text rendering
@@ -45,7 +63,7 @@ FreeType/browser Fontconfig. Old native-row FreeType claim corrected at source.
 Native build-tv-v3/font-bitmap and analysis/ui-fonts-2026-11-01 hold evidence.
 Same stock boot/PID1785/access/privacy; all staging removed, no helper/job pending.
 
-Latest: [SKIN-SELECTION](artifacts/reports/SKIN-SELECTION-2026-11-01.md) adds
+Previous: [SKIN-SELECTION](artifacts/reports/SKIN-SELECTION-2026-11-01.md) adds
 `skin NAME`/`skin` to socket/stdin control and configured selection after autoload.
 Missing/start/enter/first-frame failures load vendor only after safe candidate
 unload, including retained failed-init DSOs. Busy cleanup is never forced.

@@ -1,0 +1,8 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-font-sanitize/tests/font_draw tests/font_draw.c common/font_draw.c common/font_bitmap.c common/canvas.c
+ok glyph draw: signed bearings, clipping/extremes, bounds, all alpha/coverage pairs
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-font-sanitize/tests/font_bitmap tests/font_bitmap.c common/font_bitmap.c common/font_finder.c common/font_draw.c common/canvas.c
+ok bitmap font: mapping, signed metrics, every truncation, corrupt bounds/order
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-font-sanitize/tests/font_finder tests/font_finder.c common/font_finder.c
+ok font finder: typed floor, global fallback, stable ties, division, bounds
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

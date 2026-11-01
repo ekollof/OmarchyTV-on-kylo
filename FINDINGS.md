@@ -15,6 +15,11 @@ startup20 IDs/heights and generic typed selection with global-smallest fallback;
 per-widget font choice and text layout/render integration remain open.
 Some oversized signed metrics wrap;
 vendor draw loops leave those glyphs blank, rather than reading a huge bitmap.
+UI-GLYPH-DRAW subsequently supplies a tested single-glyph compositor and resolves
+SVG font-marker priority. Focused label488 changes to fontBold and textPos height42,
+while unfocused489 has no font marker and height40. Recoloring captured white
+ink alone therefore does not establish focused text parity. Whole-string layout
+and actual widget setup remain open; glyph tests draw only offscreen memory.
 
 UI engine review correction (2026-11-01): posting engine code under the skin
 owner did not protect engine lifetime and leaked heap userdata when skin posts

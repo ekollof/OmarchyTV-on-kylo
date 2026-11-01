@@ -8,6 +8,12 @@ int main(void)
 {
     struct oa_font_finder f = {0};
     unsigned id = 99;
+    assert(oa_font_type_from_markers(0) == OA_FONT_REGULAR);
+    assert(oa_font_type_from_markers(1u << OA_FONT_BOLD) == OA_FONT_BOLD);
+    assert(oa_font_type_from_markers((1u << OA_FONT_BOLD) | (1u << OA_FONT_ITALIC)) == OA_FONT_BOLD);
+    assert(oa_font_type_from_markers(UINT_MAX) == OA_FONT_REGULAR);
+    for (unsigned type = 0; type < 6; ++type)
+        assert(oa_font_type_from_markers(1u << type) == type);
     assert(!oa_font_finder_select(&f, 0, 0, 0, &id) && !id);
     assert(!oa_font_finder_add(&f, 100, 30, 0));
     assert(!oa_font_finder_add(&f, 101, 20, 1));

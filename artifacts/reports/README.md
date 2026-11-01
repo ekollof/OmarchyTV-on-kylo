@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [UI-GLYPH-DRAW](UI-GLYPH-DRAW-2026-11-01.md) | signed glyph bearings/clipping and firmware coverage compositing;52022 glyphs tested offscreen on host/sanitizer/ARM-qemu/TV; SVG font-marker priority and focus font-type change recovered; string layout/UI integration open |
 | [UI-FONT-SELECTION](UI-FONT-SELECTION-2026-11-01.md) | startup20 font IDs/heights, signed height/line-count division, stable typed selection/global fallback; pure selector and host/sanitizer/ARM-qemu/TV tests; widget styles/layout/render integration open |
 | [UI-FONTS](UI-FONTS-2026-11-01.md) | native EF41 bitmap/font lookup contract, bounded reader and all38 records on host/sanitizers/ARM-qemu/TV; corrects browser/FreeType conflation; font selection/layout/UI integration open |
 | [SKIN-SELECTION](SKIN-SELECTION-2026-11-01.md) | host skin command/startup policy, committed-frame readiness and safe vendor fallback; host249/sanitizer/native contracts, real Unix socket and actual GPU switching/fallback/full restore; content/visual/cold parity open |

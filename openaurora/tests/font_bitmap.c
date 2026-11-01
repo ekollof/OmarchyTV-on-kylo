@@ -1,5 +1,6 @@
 #include "openaurora/font_bitmap.h"
 #include "openaurora/font_finder.h"
+#include "openaurora/font_draw.h"
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>
@@ -49,6 +50,9 @@ static void synthetic(void)
 static int corpus(const char *pack_path, const char *index_path)
 {
     int heights[39] = {0};
+    uint8_t raster[258 * 258 * 4];
+    const uint8_t white[4] = {255,255,255,255};
+    size_t rendered = 0;
     FILE *pack = fopen(pack_path, "rb"), *idx = fopen(index_path, "r");
     if (!pack || !idx) { perror("font pack/index"); return 1; }
     unsigned count;
@@ -66,6 +70,23 @@ static int corpus(const char *pack_path, const char *index_path)
             int rc = oa_bitmap_font_open(&f, bytes, length);
             if (rc) { fprintf(stderr, "font%u rejected: %d\n", i, rc); return 1; }
             if (oa_bitmap_font_height(&f, &heights[i])) return 1;
+            for (unsigned k = 0; k < f.glyph_count; ++k) {
+                struct oa_bitmap_glyph g;
+                if (oa_bitmap_font_glyph(&f, k, &g)) return 1;
+                int width = g.right > g.left ? g.right - g.left : 0;
+                int height = g.bottom > g.top ? g.bottom - g.top : 0;
+                oa_canvas canvas = {raster,width + 2,height + 2};
+                if (oa_canvas_clear(&canvas,0,0,0,0) ||
+                    oa_bitmap_draw_glyph(&canvas,&f,k,1-g.left,1-g.top,white,NULL)) return 1;
+                for (int y = 0; y < canvas.height; ++y) for (int x = 0; x < canvas.width; ++x) {
+                    unsigned expected = x > 0 && x <= width && y > 0 && y <= height ?
+                        g.coverage[(size_t)(y-1) * g.stride + (size_t)(x-1)] : 0;
+                    const uint8_t *p = raster + ((size_t)y * (size_t)canvas.width + (size_t)x) * 4;
+                    if (p[3] != expected || p[0] != (expected ? 255 : 0) ||
+                        p[1] != p[0] || p[2] != p[0]) return 1;
+                }
+                ++rendered;
+            }
             /* Every stored key must resolve to exactly its metric slot. */
             for (unsigned k = 0; k < f.key_count; ++k) {
                 const unsigned char *p = f.keys + (size_t)k * 4;
@@ -101,6 +122,7 @@ static int corpus(const char *pack_path, const char *index_path)
             return 1;
     }
     puts("ok theme font registration: 20 heights, typed sizes/multiline/global fallback");
+    printf("ok glyph coverage raster: %zu shipped glyphs including blank signed extents\n", rendered);
     return rc;
 }
 

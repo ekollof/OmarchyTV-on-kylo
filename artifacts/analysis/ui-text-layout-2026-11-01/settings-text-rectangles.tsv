@@ -1,0 +1,35 @@
+record_hash	pack_offset	id	x	y	w	h	word4	opacity_raw_signed	string0	string1	string2	string3
+0xcd04e8fb	206876	background	0	0	1280	720	0	10		#FFFFFF	\x0a	\x0b
+0xcd04e8fb	206921	mTopL	1	1	1	2	1	10	#000000	none	\x0a	\x0b
+0xcd04e8fb	206966	mTopM	10	1	40	2	1	10	#000000	none	\x0a	\x0b
+0xcd04e8fb	207011	mTopR	55	1	1	2	1	10	#000000	none	\x0a	\x0b
+0xcd04e8fb	207056	mRowL	1	9	1	30	1	10	#000000	none	\x0a	\x0b
+0xcd04e8fb	207093	alignment	1	9	1	30	1	10	#000000	none	\x0a	\x0b
+0xcd04e8fb	207142	mRowM	9	8	40	30	1	10	#000000	none	\x0a	\x0b
+0xcd04e8fb	207179	textPos	9	2	40	42	1	10	#7E000A	none	\x0a	\x0b
+0xcd04e8fb	207226	mRowR	55	10	1	30	1	10	#000000	none	\x0a	\x0b
+0xcd04e8fb	207271	mBotL	1	46	1	2	1	10	#000000	none	\x0a	\x0b
+0xcd04e8fb	207316	mBotM	9	46	40	2	1	10	#000000	none	\x0a	\x0b
+0xcd04e8fb	207361	mBotR	55	46	1	2	1	10	#000000	none	\x0a	\x0b
+0xcd04e8fb	207399	fontBold	62	12	16	36	1	10	#000000	none	\x0a	\x0b
+0x175254f9	207439	background	0	0	1280	720	0	10		#FFFFFF	\x0a	\x0b
+0x175254f9	207484	mTopL	1	1	1	2	1	10	#000000	none	\x0a	\x0b
+0x175254f9	207529	mTopM	10	1	40	2	1	10	#000000	none	\x0a	\x0b
+0x175254f9	207574	mTopR	55	1	1	2	1	10	#000000	none	\x0a	\x0b
+0x175254f9	207619	mRowL	1	9	1	30	1	10	#000000	none	\x0a	\x0b
+0x175254f9	207656	alignment	1	9	1	30	1	10	#000000	none	\x0a	\x0b
+0x175254f9	207705	mRowM	9	8	40	30	1	10	#000000	none	\x0a	\x0b
+0x175254f9	207742	textPos	9	3	40	40	1	10	#FFFFFF	none	\x0a	\x0b
+0x175254f9	207789	mRowR	55	10	1	30	1	10	#000000	none	\x0a	\x0b
+0x175254f9	207834	mBotL	1	46	1	2	1	10	#000000	none	\x0a	\x0b
+0x175254f9	207879	mBotM	9	46	40	2	1	10	#000000	none	\x0a	\x0b
+0x175254f9	207924	mBotR	55	46	1	2	1	10	#000000	none	\x0a	\x0b
+0x2aaf5e44	211220	background	0	-1	960	540	0	10		#FFFFFF	\x0a	\x0b
+0x2aaf5e44	211265	mRowL	263	108	16	72	2	10	#000000	none	\x0a	\x0b
+0x2aaf5e44	211302	iconL	264	110	3	72	2	10	#000000	none	\x0a	\x0b
+0x2aaf5e44	211347	mRowR	370	108	16	72	2	10	#000000	none	\x0a	\x0b
+0x2aaf5e44	211384	iconR	440	133	6	26	0	10	#000000	none	\x0a	\x0b
+0x2aaf5e44	211429	mRowM	284	108	76	72	2	10	#000000	none	\x0a	\x0b
+0x2aaf5e44	211466	alignment	283	109	27	72	2	10	#000000	none	\x0a	\x0b
+0x2aaf5e44	211507	textPos	279	102	87	68	1	10	#7E000A	none	\x0a	\x0b
+0x2aaf5e44	211547	fontBold	282	114	90	50	1	10	#020202	none	\x0a	\x0b

@@ -25,6 +25,9 @@ DemoApp::addFonts cc52e0 first clears the finder and registers:
 All20 heights are checked against the actual pack. The other18 EF41 records
 are decoded data, but are not added by this startup registration. Do not invent
 family names (regular/bold/etc.) for the numeric types without further evidence.
+UI-GLYPH-DRAW-2026-11-01 subsequently resolves the SVG marker strings and maps
+types0..5 to regular/bold/light/italic/boldItalic/lightItalic; it still does not
+identify an external font family or establish actual per-row layout.
 Theme font24's extreme height wraps to-10; it is not part of these startup sets.
 
 ## Selection rules and implementation

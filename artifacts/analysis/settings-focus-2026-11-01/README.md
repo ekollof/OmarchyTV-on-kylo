@@ -5,6 +5,12 @@ Purpose: make the settings rows selectable with Up/Down and show the vendor FA
 BinSVG resources plus the captured unfocused panel; there is still no vendor
 capture of a focused row.
 
+Font follow-up (UI-GLYPH-DRAW-2026-11-01):488 also contains a fontBold marker
+and textPos height42, whereas489 has no font marker and height40. Firmware
+maps the marker to type1 rather than default0. The recoloring below preserves
+captured glyph shapes, so its exact self-reference comparison cannot prove
+vendor focused text, type, size or layout. Keep it as reconstruction evidence.
+
 ## What was implemented
 
 `ui_vendor` `SCREEN_SETTINGS_LIST` keeps a row selection (`sel`, -1 = none):
