@@ -1,0 +1,3 @@
+mainmenu_background_tall.png alpha_min=0 alpha_max=1
+mainmenu_background_thin.png alpha_min=0 alpha_max=1
+sublauncher_background.png alpha_min=0 alpha_max=0

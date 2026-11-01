@@ -24,6 +24,13 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
+Owner's latest visual correction: rail/portal backdrop is dark in our UI but
+transparent in the vendor UI. Prioritize the alpha contract; UI-TRANSPARENCY
+records fresh firmware/ARM evidence and known opaque clear/canvas paths.
+Screenshot RGB is not alpha proof. The fix is pending, not covered by the rail
+capacity milestone. Finish theme/fill inheritance/image-id mapping before
+changing behavior, then test CPU/GPU transparency over real video.
+
 Latest follow-up: [RAIL-ASSETS](artifacts/reports/RAIL-ASSETS-2026-11-01.md)
 exports the verified APNG to durable ignored workbench/rail-ui-20261101.
 Full normal assets exposed a24-icon cache that silently truncated the eleven

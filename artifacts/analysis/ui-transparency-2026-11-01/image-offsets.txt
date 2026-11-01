@@ -1,0 +1,3 @@
+mainmenu_background_tall.png 304207 90
+mainmenu_background_thin.png 304297 90
+sublauncher_background.png 2098732 118

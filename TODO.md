@@ -481,6 +481,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       real-GPU test observed seven completed image revisions in a nominal660ms
       window; this is not eleven-frame scanout/cadence proof. Measure repaint/
       upload/coalescing costs and verify on the panel before closing parity.
+- [ ] Correct the opaque rail/portal background reported by the owner after
+      real-display testing. ui_fb currently clears RGB(14,14,13) opaque and
+      canvas compositing forces alpha255; sampled screenshot RGB never proved
+      vendor alpha. Recover theme/background composition and implement a
+      transparent canvas/display contract, then verify over real video.
+      Initial decompile evidence: UI-TRANSPARENCY-2026-11-01.
 - [x] Direct EGL native-window diagnostic: recovered4-byte dimensions, fb1/
       primary-buffer profile and swap/MAU contract. Eight effects at50Hz pacing
       passed on actual display, owner confirmed upright/full-screen/smooth;
