@@ -206,6 +206,18 @@ from/to pair or a rect is not resolved. Do not implement a dialog offset until
 those are decoded; the whole-scene type-4 shift remains the only implemented
 motion and is the observed wrong-direction defect.
 
+DIALOG-HELPERS-2026-11-01: the two helpers are identified by their call-site
+labels: 0xc86b4c = UString::length() and 0xc8724c = UString::getSubstring(uint,
+uint). drawAnimatedRectangles calls getSubstring(name, 1, len-1), i.e. drops the
+record name's first character before RectangleContainer::getRectangle. If the
+record name carries a leading type marker, the looked-up name is exactly the
+pack element "animation_slide_up_fade_in" (values -109,1096,100,100); that is
+consistent with the name existing in DialogLauncher/MainMenu3/4/Tall, but the
+record-name prefix and the four values' semantics (rect vs from/to) are still
+unproven. Consequence: no dialog offset has been implemented; verify the
+hypothesis against the AnimationContainer record construction or a live A/B
+before changing the motion.
+
 RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
 stage refreshed to the current modules, our 10 ms-poll ui_fb and the probe's
 UI/rail sampling. Completion-paced advance is now implemented: the rail tick
