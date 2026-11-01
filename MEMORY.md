@@ -281,10 +281,12 @@ the type array at +0x39b4; setMenuItemPosition calls SVGButton::setWindowRect
 (6,211/330/460/600/719,160,160). The capture shows the focused 150x150 tile at
 (11,450) and the bar at x 6..10, y 458..591 (mid-growth), so the 210x210 image
 is drawn at (focused_x-5, focused_y+10). Implemented in mod_ui_fb: rail_hl01..11
-OAI1 frames from the vendor APNG, a 30 ms one-shot sequence per focus while the
-portal shows (the last frame is held, no wrap), playhead reset on focus change,
-scaled into the button window. tests/ui_rail_hl asserts frame order, the
-one-shot stop and the window; host make check 227 ok, focused ASan/UBSan pass.
+OAI1 frames from the vendor APNG, a 10 ms decoder poll that advances a frame once
+now-last >= the 30 ms fcTL delay (numerator used as ms; last stamped at decode)
+while the portal shows (the last frame is held, no wrap), playhead reset on
+focus change, scaled into the button window. tests/ui_rail_hl asserts frame
+order, the poll/delay gate, the one-shot stop and the window; host make check
+227 ok, focused ASan/UBSan pass.
 Live probe on the set (fake display, no fb1/keys): 166 blits, mean gap 29.98 ms,
 window x=6 y=461, clean exit; staging removed, vendor PIDs unchanged. Visible
 panel appearance is still unverified.

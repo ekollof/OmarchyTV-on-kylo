@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "openaurora/events.h"
@@ -75,6 +76,10 @@ enum { BAND_RAIL = 0, BAND_CARDS = 1 };
  * tile is 150x150 at (x,y), so the window is (x-5, y+10). The bar sits at the image's left edge. */
 #define OA_RAIL_HL_FRAMES 11
 #define OA_RAIL_HL_MS 30
+/* PngImageDecoder::threadMain polls its decoder list every 10 ms and decodes a frame when
+ * now - last >= fcTL delay (isReadyToDecode 0xb2fc84); the delay numerator is used directly as
+ * milliseconds (updateFrameProperties 0xb2f918 stores it at +0x34). */
+#define OA_RAIL_HL_POLL_MS 10
 #define OA_RAIL_HL_W 160
 #define OA_RAIL_HL_H 160
 /* Title + five glyphs + the configured card limit + the entire APNG. */
@@ -117,6 +122,7 @@ struct ctx {
     int rail_hl_n;
     int rail_hl_frame;
     int rail_hl_play;                /* one-shot per focus; the last frame is held */
+    uint64_t rail_hl_next;           /* next frame due, host monotonic ms */
     uint64_t rail_hl_tick;
     int portal_on;
     int fps;
@@ -128,6 +134,14 @@ struct ctx {
 };
 
 static struct ctx *g_ctx;
+
+static uint64_t now_ms(void)
+{
+    struct timespec ts;
+    if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0)
+        return 0;
+    return (uint64_t)ts.tv_sec * 1000u + (uint64_t)ts.tv_nsec / 1000000u;
+}
 
 /* SVGDialog::create copies the constant mode table 57..64 and starts the first mode whose standard
  * animation widget exists in the dialog description. The widget names recovered from
@@ -639,11 +653,11 @@ static void rail_hl_sync(struct ctx *c)
     int want = c->rail_hl_n > 0 && c->disp && c->screen == SCREEN_PORTAL &&
                c->rail_hl_play && c->rail_hl_frame + 1 < c->rail_hl_n;
     if (want && !c->rail_hl_tick) {
-        c->rail_hl_tick = c->api->timer_add(c->api->priv, OA_RAIL_HL_MS, OA_RAIL_HL_MS,
-                                            rail_hl_tick_cb, c);
+        c->rail_hl_tick = c->api->timer_add(c->api->priv, OA_RAIL_HL_POLL_MS,
+                                            OA_RAIL_HL_POLL_MS, rail_hl_tick_cb, c);
         if (!c->rail_hl_tick)
             c->api->log(c->api->priv, OA_LOG_WARN,
-                        "rail highlight: %d ms timer allocation failed", OA_RAIL_HL_MS);
+                        "rail highlight: %d ms poll timer allocation failed", OA_RAIL_HL_POLL_MS);
     } else if (!want && c->rail_hl_tick) {
         c->api->timer_del(c->api->priv, c->rail_hl_tick);
         c->rail_hl_tick = 0;
@@ -653,12 +667,16 @@ static void rail_hl_sync(struct ctx *c)
 static void rail_hl_tick_cb(void *ud)
 {
     struct ctx *c = ud;
+    uint64_t now;
+
     if (!c->disp || c->rail_hl_n <= 0) return;
-    /* finite sequence: advance to the next frame, then hold it and stop the timer */
+    now = now_ms();
+    if (now < c->rail_hl_next) return;   /* 10 ms poll; the 30 ms frame is not due yet */
     if (c->rail_hl_frame + 1 < c->rail_hl_n)
         c->rail_hl_frame++;
+    c->rail_hl_next = now + OA_RAIL_HL_MS;   /* vendor stamps last = now at decode */
     if (c->rail_hl_frame + 1 >= c->rail_hl_n)
-        c->rail_hl_play = 0;
+        c->rail_hl_play = 0;                 /* finite sequence: hold the last frame */
     paint(c);
 }
 
@@ -809,16 +827,19 @@ static void move_key(struct ctx *c, uint8_t id)
             c->band = BAND_RAIL;
             c->rail_hl_frame = 0;
             c->rail_hl_play = 1;
+            c->rail_hl_next = now_ms() + OA_RAIL_HL_MS;
         } else if (c->rail > 0) {
             c->rail--;
             c->rail_hl_frame = 0;
             c->rail_hl_play = 1;
+            c->rail_hl_next = now_ms() + OA_RAIL_HL_MS;
         }
     } else if (id == 19) { /* Down */
         if (c->band == BAND_RAIL && c->rail < 4) {
             c->rail++;
             c->rail_hl_frame = 0;
             c->rail_hl_play = 1;
+            c->rail_hl_next = now_ms() + OA_RAIL_HL_MS;
         }
     } else if (id == 21) { /* Left */
         if (c->band == BAND_CARDS && c->card > 0)
@@ -827,6 +848,7 @@ static void move_key(struct ctx *c, uint8_t id)
             c->band = BAND_RAIL;
             c->rail_hl_frame = 0;
             c->rail_hl_play = 1;
+            c->rail_hl_next = now_ms() + OA_RAIL_HL_MS;
         }
     } else if (id == 22) { /* Right */
         if (c->band == BAND_RAIL && c->nc > 0) {
@@ -976,8 +998,8 @@ static int m_start(void *v)
      * rearm at the end, so the last frame is held; the APNG num_plays field is not consulted. */
     c->rail_hl_n = 0;
     c->rail_hl_frame = 0;
-    c->rail_hl_play = 0;
     c->rail_hl_play = 1;
+    c->rail_hl_next = now_ms() + OA_RAIL_HL_MS;
     if (atoi(c->api->config_get(c->api->priv, "ui.rail_hl", "1")) == 1) {
         for (int i = 1; i <= OA_RAIL_HL_FRAMES; i++) {
             char name[32];
@@ -1181,6 +1203,7 @@ static int m_resume(void *v)
     /* a resumed portal replays the focus highlight from its first frame */
     c->rail_hl_frame = 0;
     c->rail_hl_play = 1;
+    c->rail_hl_next = now_ms() + OA_RAIL_HL_MS;
     /* providers may have appeared or disappeared while suspended; rebind_now reacquires them and
      * restarts or holds the slide as appropriate (it also paints). */
     if (c->rebind_pending || !c->anim || !c->anim2 || !c->clock)

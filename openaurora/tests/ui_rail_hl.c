@@ -120,17 +120,19 @@ int main(int argc, char **argv)
     assert(x == 6 && y == 461);                              /* 160x160 button window */
     assert(w == 160 && h == 160 && sw == 210 && sh == 210);
 
-    assert(timer_count(&host, fb->id, 30) == 1);             /* APNG delay */
-    assert(timer_fire(&host, fb->id, 30));
+    assert(timer_count(&host, fb->id, 10) == 1);             /* 10 ms decoder poll */
+    usleep(40000);                                           /* first frame due after 30 ms */
+    assert(timer_fire(&host, fb->id, 10));
     assert(hl_find(trace, NULL, NULL, NULL, NULL, NULL, NULL) == 1);  /* frame 2 */
 
     for (int i = 2; i < 11; i++) {
-        assert(timer_fire(&host, fb->id, 30));
+        usleep(32000);                                       /* >= the 30 ms fcTL delay */
+        assert(timer_fire(&host, fb->id, 10));
         assert(hl_find(trace, NULL, NULL, NULL, NULL, NULL, NULL) == i);
     }
     /* decodeNextFrame stops at the frame count: the last frame is held, no rearm */
-    assert(timer_count(&host, fb->id, 30) == 0);
-    assert(!timer_fire(&host, fb->id, 30));
+    assert(timer_count(&host, fb->id, 10) == 0);
+    assert(!timer_fire(&host, fb->id, 10));
     assert(hl_find(trace, NULL, NULL, NULL, NULL, NULL, NULL) == 10);
 
     host.stop_requested = 1;
