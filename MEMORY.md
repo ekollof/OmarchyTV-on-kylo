@@ -218,6 +218,20 @@ unproven. Consequence: no dialog offset has been implemented; verify the
 hypothesis against the AnimationContainer record construction or a live A/B
 before changing the motion.
 
+DIALOG-DIRECTION-2026-11-01: the firmware pipeline does not invert the type-4
+motion. The vendor vertex shader is exactly `gl_Position = in_Position;
+ex_Texture = in_Texture;` (source at 0x13f8b28..0x13f8bbc), the fragment shader
+only multiplies alpha, and onRenderCompleted draws the same four-vertex quad with
+UVs (0,0)(1,0)(1,1)(0,1). Our scene_gles applies the same oa_fs_apply type-4
+rule (y -= (1-p)/6) and only inverts the texture v to compensate for top-down CPU
+rows; that does not change the motion direction. With clip +y at the top (the UI
+renders upright), p=0 is 1/6 lower and settles upward. The owner still reports
+the dialog moving down, so the remaining difference is in what content is
+transformed or when it is presented (single-surface screen swap / async frame
+coalescing), not the recovered arithmetic. Resolve with frame-level panel
+evidence (camera capture or a step-hold) before changing the transform sign;
+do not invert the recovered vendor rule.
+
 RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
 stage refreshed to the current modules, our 10 ms-poll ui_fb and the probe's
 UI/rail sampling. Completion-paced advance is now implemented: the rail tick
