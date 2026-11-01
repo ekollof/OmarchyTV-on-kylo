@@ -202,7 +202,8 @@ static const oa_ui_icon *find_icon(struct ctx *c, const char *name)
 
 /* ------------------------------------------------------------------ geometry */
 
-enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, SCREEN_SETTINGS = 3, ANIM_DIALOG = 1 };
+enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, SCREEN_SETTINGS = 3,
+       SCREEN_SETTINGS_LIST = 4, ANIM_DIALOG = 1 };
 
 static void rail_slot(int focus, int i, int *x, int *y, int *w, int *h)
 {
@@ -333,12 +334,37 @@ static void paint_settings(struct ctx *c)
     c->api->log(c->api->priv, OA_LOG_INFO, "painted captured picture-settings state");
 }
 
+static void paint_settings_list(struct ctx *c)
+{
+    const oa_ui_engine_iface *d = c->d;
+    if (!c || !d)
+        return;
+    /* Vertical picture-settings panel from shot-settings.png, R/B-corrected:
+     * 780x1080 at 0,0 with the remaining screen black. It is the vendor
+     * SettingsDialog_tab panel (Beeld/Geluid tabs and the picture rows); the
+     * capture is a state, not a reconstruction of each row widget. */
+    d->clear(0, 0, 0);
+    const oa_ui_icon *panel = find_icon(c, "settings_panel");
+    if (panel)
+        d->blit(0, 0, panel->w, panel->h, panel->rgba);
+    c->scene_painted = 1;
+    if (d->present() != 0) {
+        c->api->log(c->api->priv, OA_LOG_ERROR, "settings panel present failed");
+        return;
+    }
+    c->api->log(c->api->priv, OA_LOG_INFO, "painted captured picture-settings panel");
+}
+
 static void paint(struct ctx *c)
 {
     const oa_ui_engine_iface *d;
     int W = 0, H = 0;
     if (!c || !c->d) return;   /* a suspended/stopped skin has no engine hold */
     d = c->d;
+    if (c->screen == SCREEN_SETTINGS_LIST) {
+        paint_settings_list(c);
+        return;
+    }
     if (c->screen == SCREEN_SETTINGS) {
         paint_settings(c);
         return;
@@ -804,8 +830,18 @@ static void cancel_dialog(struct ctx *c)
 
 static void move_key(struct ctx *c, uint8_t id)
 {
-    if (c->screen == SCREEN_SETTINGS) {
+    if (c->screen == SCREEN_SETTINGS_LIST) {
         if (id == 10 || id == 48) {
+            c->screen = SCREEN_SETTINGS;   /* back to the quick picture tiles */
+            if (c->d) paint(c);
+        }
+        return;
+    }
+    if (c->screen == SCREEN_SETTINGS) {
+        if (id == 53 || id == 0x8a) {      /* Select: open the full picture list */
+            c->screen = SCREEN_SETTINGS_LIST;
+            if (c->d) paint(c);
+        } else if (id == 10 || id == 48) {
             c->screen = SCREEN_PORTAL;
             if (c->d) paint(c);
         }
@@ -983,6 +1019,8 @@ static int m_start(void *v)
     }
     if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "settings"))
         c->screen = SCREEN_SETTINGS;
+    if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "settings_list"))
+        c->screen = SCREEN_SETTINGS_LIST;
     if (c->rail < 0 || c->rail > 4)
         c->rail = 2;
     if (c->nc > 0 && c->card >= c->nc)
@@ -1231,7 +1269,7 @@ static int m_restore(void *v, const void *buf, size_t len)
     if (!c || !buf || len != 4)
         return -1;
     const unsigned char *bytes = buf;
-    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_SETTINGS)
+    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_SETTINGS_LIST)
         return -1;
     c->band = bytes[0];
     c->rail = bytes[1];

@@ -354,10 +354,24 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       is pixel-identical to the corrected p0/03 (0/2,073,600 differing pixels);
       fb1 backed up/restored, staging removed. Evidence:
       artifacts/analysis/settings-2026-11-01/.
+- [x] Captured full picture-settings panel (shot-settings.png, vendor
+      SettingsDialog picture tab): ui_vendor SCREEN_SETTINGS_LIST paints the
+      corrected 780x1080 panel; Select on the quick tiles or
+      ui.screen=settings_list enters, Exit returns to the tiles, Exit again to
+      the portal. Static panel state, explicitly not live rows.
+      tests/ui_settings_panel.c covers the flow; a real fb1 run is
+      pixel-identical to the corrected capture (0/2,073,600 pixels). Evidence:
+      artifacts/analysis/settings-panel-2026-11-01/.
+- [ ] Interactive settings rows: decode and implement row focus, value
+      changes, tab switching and scrolling. The vendor uses SVG-animated
+      selection (startSelectAnimation) and FreeType text; either wire the
+      vendor font/rasterizer or obtain focused-row captures before drawing
+      selection chrome. Do not guess the FA/FI state composition.
 - [ ] Complete the remaining vendor screens and labels. The injected portal
       above is not all-screen parity or a confirmed live remote capture. The
-      source-selection panel (DialogSourceSelection.svg 185) and the captured
-      Beeld state are implemented; neither is the full interactive screen.
+      source-selection panel (DialogSourceSelection.svg 185), the captured
+      Beeld state and the captured full picture panel are implemented; none is
+      the full interactive screen.
 - [x] UI engine first slice: mod_ui_engine owns display/alpha discovery and
       rebinding, lazy OAI1 assets, draw/present/async receipts and the readiness
       receipt; it publishes ui.engine v1 and the ui/ready event. mod_ui_vendor (the

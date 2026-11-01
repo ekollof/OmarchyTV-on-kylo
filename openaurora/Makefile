@@ -448,6 +448,16 @@ check-ui-settings: $(BUILD)/tests/ui_settings $(BUILD)/tests/ui_nav_display.so $
 	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-settings/modules/mod_nav_display.so
 	@$(BUILD)/tests/ui_settings $(BUILD)/tests/ui-settings/modules $(BUILD)/tests/ui-settings/ui
 
+$(BUILD)/tests/ui_settings_panel: tests/ui_settings_panel.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_settings_panel.c $(filter %.o,$^) $(LDLIBS)
+
+check-ui-settings-panel: $(BUILD)/tests/ui_settings_panel $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so
+	@mkdir -p $(BUILD)/tests/ui-settings-panel/modules $(BUILD)/tests/ui-settings-panel/ui
+	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui-settings-panel/modules/
+	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-settings-panel/modules/mod_nav_display.so
+	@$(BUILD)/tests/ui_settings_panel $(BUILD)/tests/ui-settings-panel/modules $(BUILD)/tests/ui-settings-panel/ui
+
 check-ui-nav: check-ui-anim-review $(BUILD)/tests/ui_nav $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so
 	@mkdir -p $(BUILD)/tests/ui-nav/modules
 	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so $(BUILD)/tests/ui-nav/modules/
@@ -676,7 +686,7 @@ $(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/modu
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_fake_clock.c $(LDFLAGS) $(LDLIBS)
 
-check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-sources check-ui-skin check-ui-settings check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-vgrid check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
+check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-sources check-ui-skin check-ui-settings check-ui-settings-panel check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-vgrid check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
 	@BUILD=$(BUILD) sh tests/run.sh
 	@$(BUILD)/tests/registry $(BUILD)/modules $(BUILD)/tests/mod_failed_init.so
 	@BUILD=$(BUILD) python3 tests/recovery.py
