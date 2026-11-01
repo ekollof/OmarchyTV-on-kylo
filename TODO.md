@@ -408,8 +408,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       SCENE-HELPER now tests the separate bootstrap/renderer on actual GPU;
       GRAPHICS-MODULE now tests the asynchronous display.gpu provider on actual
       GPU with owned watch/reap timer and nonblocking quiescence. SCENE-DISPLAY
-      adds the coalescing canvas and async receipts. Wire ui_fb completion
-      consumption/readiness and cached transform-only updates next.
+      adds the coalescing canvas and async receipts. UI-ASYNC wires ui_fb receipts,
+      readiness and cached transform-only progress; actual portal/transition/UI
+      reload/application-module cycle pass. Remaining visual/assets/input and
+      independent cold/TV standby acceptance are still open.
       No display.renderer switch exists yet. Preserve failed-close
       ownership; test module reload/suspend/resume/failures on hardware.
       CPU reference transforms remain slow; direct-window diagnostic meets its
@@ -460,8 +462,19 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       burst drains its final identity receipt; full run observes412 GPU frame
       completions, host drain/unload and full restoration/hash match. Host222
       checks pass. Source18 modules; matching production16 unchanged.
-      ui_fb still uses synchronous present and is not wired to this provider yet.
+      Subsequent UI-ASYNC supplies ui_fb integration; full visual/cold acceptance
+      remains separate.
       SCENE-DISPLAY-2026-11-01.
+- [x] Async ui_fb presentation/readiness: owned receipt sampler, both service
+      holds/aliases, namespace/serial gating, cached dialog progress and final
+      selected-screen repaint. Four host/sanitizer/TV groups and full host226
+      checks pass, including CPU regressions. Real portal assets, project-local
+      navigation, transition, UI reload and host-only module suspend/resume pass
+      on actual display with full restoration/hash match. This is not full vendor
+      UI/app execution, physical input or TV standby/cold ownership. UI-ASYNC.
+- [ ] Stage/verify the recovered vendor rail_hl01..11 assets for real UI animation
+      acceptance: the installed /buffer/openaurora/ui bundle lacks them. Preserve
+      asset provenance/formats and use durable artifacts paths, not ephemeral work.
 - [x] Direct EGL native-window diagnostic: recovered4-byte dimensions, fb1/
       primary-buffer profile and swap/MAU contract. Eight effects at50Hz pacing
       passed on actual display, owner confirmed upright/full-screen/smooth;

@@ -1,0 +1,19 @@
+openaurora/build-tv-v3/ui-async/modules/mod_ui_fb.so
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 3
+  0x0030:   Name: GLIBC_2.4  Flags: none  Version: 2
+openaurora/build-tv-v3/ui-async/tests/ui_async
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 6
+  0x0030:   Name: GLIBC_2.9  Flags: none  Version: 8
+  0x0040:   Name: GLIBC_2.10  Flags: none  Version: 7
+  0x0050:   Name: GLIBC_2.17  Flags: none  Version: 5
+  0x0060:   Name: GLIBC_2.7  Flags: none  Version: 4
+  0x0070:   Name: GLIBC_2.4  Flags: none  Version: 3
+  0x0090:   Name: GLIBC_2.4  Flags: none  Version: 2
+openaurora/build-tv-v3/ui-async/scene-module-probe
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 6
+  0x0030:   Name: GLIBC_2.9  Flags: none  Version: 8
+  0x0040:   Name: GLIBC_2.10  Flags: none  Version: 7
+  0x0050:   Name: GLIBC_2.17  Flags: none  Version: 5
+  0x0060:   Name: GLIBC_2.7  Flags: none  Version: 4
+  0x0070:   Name: GLIBC_2.4  Flags: none  Version: 3
+  0x0090:   Name: GLIBC_2.4  Flags: none  Version: 2

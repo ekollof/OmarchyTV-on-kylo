@@ -75,14 +75,19 @@ uses new receipt/revision namespaces even when the GPU session remains open.
 Four host/sanitizer/TV groups and an actual101-request burst/final receipt pass;
 see [SCENE-DISPLAY](../../artifacts/reports/SCENE-DISPLAY-2026-11-01.md).
 Load it as an alternative to CPU display, never alongside it. No automatic
-selection/display.renderer option exists. ui_fb is not yet wired for this backend.
+selection/display.renderer option exists.
 
-UI integration needs display.async holds, completion sampling and first-frame
-readiness after an actual successful receipt. Legacy present means commit and
-returns ENOTSUP on scene_display; enqueue cannot acknowledge ui_fb/supervisor
-readiness. Keep transform-only progress from repainting the entire canvas while
-retaining actual title/rail updates. The10ms sampler does not mandate100Hz
-scanout. Full vendor sequence, actual UI lifecycle and cold/resume remain open.
+ui_fb now holds display.async and owns its completion sampler. It tracks the
+first accepted serial in the provider namespace and acknowledges ui.ok_file only
+after an actual successful completion; queue/OPEN/errors/old receipts cannot
+acknowledge. CPU present semantics remain unchanged. Async transform-only dialog
+progress reuses pixels; real title/rail updates and completed screen changes
+still repaint. Removal/suspend/failed resume clear both service aliases/holds.
+[UI-ASYNC](../../artifacts/reports/UI-ASYNC-2026-11-01.md) records226 host checks,
+sanitizer/TV contracts and actual portal/transition/UI reload/application-module
+cycle with full restoration. Installed assets lack the recovered rail_hl frames;
+that animation, full vendor visuals/actions, physical input, TV standby and cold
+ownership remain open. The10ms sampler does not mandate100Hz scanout.
 tvshot decodes raw BGRA and saves ordinary RGB PNGs, which must not be swapped
 again. RGB565 and other vendor/API buffers retain their independently established
 formats. Pre-correction tvshot captures have red/blue swapped; preserve provenance.

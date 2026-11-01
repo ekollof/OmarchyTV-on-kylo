@@ -8,6 +8,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "host.h"
+#include "openaurora/events.h"
 #include "scene-probe-client.h"
 struct scene_probe {
     oa_host host;
@@ -25,6 +26,13 @@ static const char *config(void *ud, const char *key, const char *def)
     (void)ud;
     if (!strcmp(key, "graphics.broker")) return helper_path;
     if (!strcmp(key, "graphics.renderer")) return renderer_path;
+    if (!strcmp(key, "ui.dir")) {
+        const char *assets = getenv("OA_SCENE_PROBE_UI_DIR");
+        return assets ? assets : "/buffer/openaurora/ui";
+    }
+    if (!strcmp(key, "ui.ok_file")) return "/tmp/oa-scene-helper-20261101/ui.ready";
+    if (!strcmp(key, "ui.anim_enable")) return "1"; /* explicit lab bootstrap, not recovered vendor policy */
+    if (!strcmp(key, "ui.fps")) return "0";
     return def;
 }
 static void pump(scene_probe *s)
@@ -125,7 +133,9 @@ int probe_close(scene_probe **out)
     if (!out) { errno = EINVAL; return -1; }
     scene_probe *s = *out; if (!s) return 0;
     if (s->initialized) {
-        if (s->asynchronous) printf("scene display observed frame completions=%u\n", s->completions);
+        /* Grid-mode completion() owns this counter. UI mode samples receipts
+         * inside ui_fb instead; a zero grid counter is not a UI frame count. */
+        if (s->asynchronous && s->completions) printf("scene display observed frame completions=%u\n", s->completions);
         s->service = NULL; s->display = NULL; s->asynchronous = NULL; s->host.stop_requested = 1;
         if (oa_host_run(&s->host)) return -1;
         close(s->host.selfpipe[0]); close(s->host.selfpipe[1]); pthread_mutex_destroy(&s->host.post_mu);
@@ -151,6 +161,84 @@ int probe_coalesce(scene_probe *s)
     printf("coalesced101 desired frames first=%llu final=%llu; final identity receipt=%llu\n",
         (unsigned long long)first, (unsigned long long)last, (unsigned long long)receipt.serial);
     return 0;
+}
+static int load_ui_module(scene_probe *s, const char *name)
+{
+    oa_mod *m = oa_module_load(&s->host, name);
+    return m && !oa_module_start(&s->host, m) ? 0 : -1;
+}
+static void run_for(scene_probe *s, unsigned ms)
+{
+    uint64_t until = oa_now_ms()+ms;
+    do {
+        pump(s);
+        struct timespec delay = {.tv_nsec = 1000000}; (void)nanosleep(&delay, NULL);
+    } while (oa_now_ms() < until);
+}
+static int ui_ready(scene_probe *s)
+{
+    const char *path = "/tmp/oa-scene-helper-20261101/ui.ready";
+    uint64_t deadline = oa_now_ms()+5000;
+    while (access(path, F_OK)) {
+        if (oa_now_ms() >= deadline) { errno = ETIMEDOUT; return -1; }
+        run_for(s, 1);
+    }
+    FILE *file = fopen(path, "r"); long pid; int width, height;
+    if (!file) return -1;
+    int good = fscanf(file, "%ld %dx%d", &pid, &width, &height) == 3;
+    if (fclose(file)) good = 0;
+    if (!good || pid != (long)getpid() || width != 1920 || height != 1080) { errno = EPROTO; return -1; }
+    oa_display_result result;
+    if (s->asynchronous->latest(&result) != 1 || result.error) { errno = EPROTO; return -1; }
+    printf("UI readiness after GPU completion serial=%llu revision=%llu pid=%ld\n",
+        (unsigned long long)result.serial, (unsigned long long)result.revision, pid);
+    return 0;
+}
+static void key(scene_probe *s, unsigned char id)
+{ oa_key_event event = {.id = id, .kind = OA_KEY_PRESS}; s->host.api.emit(&s->host, OA_TOPIC_KEY, &event); }
+int probe_ui(scene_probe *s)
+{
+    const char *enabled = getenv("OA_SCENE_PROBE_UI");
+    if (!enabled || strcmp(enabled, "1")) return 0;
+    if (!s || !s->asynchronous) { errno = EINVAL; return -1; }
+    const char *ready = "/tmp/oa-scene-helper-20261101/ui.ready";
+    if (!access(ready, F_OK)) { errno = EEXIST; return -1; }
+    if (load_ui_module(s, "ticker") || load_ui_module(s, "ui_clock") ||
+        load_ui_module(s, "ui_anim") || load_ui_module(s, "ui_fb")) goto failure;
+    if (!access(ready, F_OK)) { errno = EPROTO; goto failure; } /* queue cannot acknowledge */
+    if (ui_ready(s)) goto failure;
+    const oa_portal_iface *portal = s->host.api.lookup(&s->host, OA_SVC_PORTAL, 1);
+    if (!portal || portal->screen() != 0) { errno = EPROTO; goto failure; }
+    key(s, 19); run_for(s, 200); key(s, 53); run_for(s, 1200);
+    oa_display_result result;
+    if (portal->screen() != 1 || s->asynchronous->latest(&result) != 1 || result.error || result.type != 0) {
+        errno = EPROTO; goto failure;
+    }
+    printf("UI dialog completed screen=1 identity receipt=%llu\n", (unsigned long long)result.serial);
+    key(s, 10); run_for(s, 200);
+    if (portal->screen() != 0 || unlink(ready)) { errno = EPROTO; goto failure; }
+    portal = NULL; /* drop before DSO reload */
+    if (oa_module_reload(&s->host, "ui_fb", 0)) goto failure;
+    if (!access(ready, F_OK)) { errno = EPROTO; goto failure; }
+    if (ui_ready(s)) goto failure;
+    printf("UI reload id=%u completed with fresh receipt\n", oa_host_find_module(&s->host, "ui_fb")->id);
+    if (s->asynchronous->latest(&result) != 1) goto failure;
+    uint64_t previous = result.serial, deadline = oa_now_ms()+5000;
+    while (oa_module_suspend_all(&s->host)) {
+        if (oa_now_ms() >= deadline) { errno = ETIMEDOUT; goto failure; }
+        run_for(s, 1);
+    }
+    if (oa_module_resume_all(&s->host)) goto failure;
+    deadline = oa_now_ms()+5000;
+    do {
+        run_for(s, 1);
+        if (s->asynchronous->latest(&result) == 1 && result.serial > previous && !result.error) break;
+        if (oa_now_ms() >= deadline) { errno = ETIMEDOUT; goto failure; }
+    } while (1);
+    printf("UI host-only suspend/resume completed receipt=%llu\n", (unsigned long long)result.serial);
+    return 1;
+failure:
+    s->error = errno ? errno : EIO; errno = s->error; return -1;
 }
 void probe_error(const scene_probe *s, char *out, size_t size)
 { if (out && size) snprintf(out, size, "graphics module error=%d", s ? s->error : errno); }

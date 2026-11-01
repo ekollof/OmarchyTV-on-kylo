@@ -49,6 +49,21 @@ syntax defect.
 
 ## Development build and evidence
 
+UI-ASYNC-2026-11-01: ui_fb consumes display.async receipts, acknowledges only
+actual success, owns its sampler/holds and caches transform-only dialog progress.
+Four strict host/sanitizer/TV groups, full host226 checks pass. Actual TV portal
+with installed assets, Down/Select/Exit, completed dialog, UI reload and host-only
+module suspend/resume pass. Full snapshot/region/MAU/pan restored; independent
+hash41735daa69dc137743b59efe12db4a19/pan0,0 unchanged. Same boot/PID1785,
+hook/hosts/access/privacy/safety markers. All staging/backups/readiness/helpers
+removed. Installed assets lack rail_hl01..11; no rail animation acceptance here.
+Native build-tv-v3/ui-async: UI DSO89728bytes/0e29cd402c4aa9cacf678aaa85ea8522
+(maxGLIBC2.4), final unit463032bytes/ffca0080be7e9a324fe09197774859cb and
+tested diagnostic499600bytes/6da1edfe2327da62cb38988c34091eca (max2.17).
+The old3-group unit identity is historical; final-tested.md5 owns current unit.
+Source18 modules, matching production16 unchanged. Remaining visual/asset/input,
+full feature parity and cold/TV standby acceptance remain open.
+
 SCENE-DISPLAY-2026-11-01: optional scene_display canvas/coalescer publishes
 display.async receipts; legacy present rejects ENOTSUP. Four strict host/
 sanitizer/TV groups, full host222 checks pass. Real101-request burst retains
@@ -59,8 +74,8 @@ hook/hosts/access/privacy/safety markers; staging/backup/helpers removed. Native
 build-tv-v3/scene-display: DSO53236bytes/9293d421420b1ad0d7b03e41f3a57f1a
 (maxGLIBC2.4), unit469528bytes/7f6f98030dcd8f40631713f2e369435a and
 diagnostic487196bytes/a62146c477759bfb3d3e3d94d2dd055e (max2.17). Source18
-modules, matching production16 unchanged. ui_fb/readiness integration is next;
-current ui_fb present calls cannot use this experimental async backend yet.
+modules, matching production16 unchanged. Subsequent UI-ASYNC above integrates
+ui_fb/readiness; full visual/cold acceptance remains open.
 
 GRAPHICS-MODULE-2026-11-01: mod_graphics/display.gpu v1 adds owned watch/timer,
 nonblocking quiescence, public host-id tickets and suspend/resume/holds. Four

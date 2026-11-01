@@ -1,0 +1,28 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+    69900 modules/mod_graphics.so
+    53236 modules/mod_scene_display.so
+    20704 modules/mod_scene_gpu_fixture.so
+    21636 modules/mod_ticker.so
+    43420 modules/mod_ui_anim.so
+    18516 modules/mod_ui_clock.so
+    89728 modules/mod_ui_fb.so
+   459800 tests/ui_async
+   499600 scene-module-probe
+    57304 oa-scene-broker
+    68064 scene-renderer.so
+  1401908 total
+2afefd7ffaedc6bff9e411561e05ddc0  modules/mod_graphics.so
+9293d421420b1ad0d7b03e41f3a57f1a  modules/mod_scene_display.so
+32107102e963ac89989def5b975629db  modules/mod_scene_gpu_fixture.so
+ce219a8221c0531fdcce9b92bf756c34  modules/mod_ticker.so
+9beb925f379038fe3d990319277a0313  modules/mod_ui_anim.so
+ada14187a58180a6a52fb58f1864cc70  modules/mod_ui_clock.so
+0e29cd402c4aa9cacf678aaa85ea8522  modules/mod_ui_fb.so
+d1fcf71f98aaf7512f9d7ca68ee2ac45  tests/ui_async
+6da1edfe2327da62cb38988c34091eca  scene-module-probe
+596643ed63c76231e6a7e31fd22d7efd  oa-scene-broker
+f4196fa2413cbf60efdfb136d8b56e4b  scene-renderer.so

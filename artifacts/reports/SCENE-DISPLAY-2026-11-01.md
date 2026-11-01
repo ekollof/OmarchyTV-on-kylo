@@ -1,5 +1,9 @@
 # Coalescing scene display and completion receipts — 2026-11-01
 
+Follow-up: UI-ASYNC-2026-11-01 now implements/tests ui_fb receipt/readiness and
+actual GPU UI/lifecycle. The status below records this earlier adapter milestone;
+full visual/input/cold acceptance remains open.
+
 Status: optional `scene_display` supplies an RGBA canvas, bounded coalescing and
 `display.async` receipts over the actual `display.gpu` provider. Four groups pass
 host/sanitizers/TV. A real TV burst retained its final identity frame and the

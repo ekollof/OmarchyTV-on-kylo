@@ -24,24 +24,42 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest milestone: [SCENE-DISPLAY](artifacts/reports/SCENE-DISPLAY-2026-11-01.md)
+Latest milestone: [UI-ASYNC](artifacts/reports/UI-ASYNC-2026-11-01.md) wires ui_fb
+to display.async with owned completion sampler, both holds/aliases, fresh serial
+gating and cached dialog progress. Four strict host/sanitizer/TV groups pass;
+full host226 checks includes CPU regressions. Actual portal/assets, Down/Select/
+Exit, completed dialog identity, UI reload/fresh readiness and host-only module
+suspend/resume/new receipt pass on real TV. Full framebuffer/region/MAU/pan
+restored and independently hashed. Same boot/PID1785/access/privacy; staging,
+backups/readiness/helpers removed. Native identities in MEMORY/report. Source18
+modules, matching production16 unchanged; no persistent deployment.
+
+Next: remaining vendor visual/interaction/content parity, including missing
+rail_hl01..11 in the installed asset bundle. Recover/use verified vendor frames
+and preserve RGBA/BGRA boundaries; do not claim the old native UI run tested
+that rail animation. Full vendor screens/actions, actual input, cold/TV standby,
+native audio/CEC and normal replacement remain open. Firmware/decompile first.
+The UI test used project-local key events and application-module suspend/resume,
+not stock keys, UART capture, TV power management or native cold takeover.
+No display.renderer option/automatic provider selection exists; explicitly choose
+scene_display instead of CPU display. Keep build-tv-v3/ui-async separate from
+the old matching stage. The UI test's zero generic grid counter was unused;
+successful UI completion serials are logged separately.
+
+Previous milestone: [SCENE-DISPLAY](artifacts/reports/SCENE-DISPLAY-2026-11-01.md)
 adds optional scene_display, RGBA canvas and separate display.async request/latest
 receipts. One inflight and one latest desired frame, sealed snapshots, cached
 revisions and final-frame retry independent of animation timers. Legacy present
-returns ENOTSUP; ui_fb is not yet wired. Four strict host/sanitizer/TV groups
+returns ENOTSUP; subsequent UI-ASYNC supplies its consumer. Four strict host/sanitizer/TV groups
 pass, full host222 checks. Real101-request burst's final identity receipt passes;
 the backed-up TV run observes412 GPU completions, host drain/unload and complete
 restoration/independent hash match. Same boot/PID1785/access/privacy; staging,
 backup/helpers removed. Source18 modules, matching production16 unchanged.
 Native identities in MEMORY/report; no persistent deployment.
 
-Next: ui_fb display.async holds, request/latest completion sampler and readiness
-after an actual successful receipt, preserving CPU behavior. Rebind/removal/
-suspend/resume must release BOTH display aliases/services and retain no dangling
-provider pointers. Current on_anim paints the full scene each progress; switch
-transform-only updates to cached presentation after checking firmware behavior.
-Genuine rail/title animation still needs repaint. Verify cancellation/teardown,
-failed receipts, provider removal/UI reload and actual UI on TV with restoration.
+UI-ASYNC above supplies receipt/readiness/lifetime integration and cached progress.
+Genuine rail/title animation still repaints. Remaining visual/input/standby/cold
+acceptance is separate from that integration milestone.
 Do not load both display and scene_display providers. No display.renderer option
 or automatic selection exists. Separate diagnostic flags are not product config.
 

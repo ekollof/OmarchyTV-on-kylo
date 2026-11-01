@@ -83,6 +83,9 @@ struct ctx {
     const oa_host_api *api;
     const oa_display_iface *disp;
     const oa_display_iface *disp2;   /* v2 lookup: set_scene_transform */
+    const oa_display_async_iface *async;
+    uint64_t receipt_tick, first_serial, last_receipt;
+    int paint_w, paint_h, scene_painted;
     char dir[128];
     char cards[MAX_CARDS][48];
     int nc;
@@ -269,6 +272,64 @@ static int hit_at(struct ctx *c, int x, int y, int *band, int *index)
 
 /* ------------------------------------------------------------------ paint */
 
+static void acknowledge(struct ctx *c)
+{
+    const char *ok = c->api->config_get(c->api->priv, "ui.ok_file", "/tmp/openaurora.ready");
+    if (!c->acknowledged && ok && ok[0] && c->paint_w > 0 && c->paint_h > 0) {
+        char tmp[288];
+        if (strlen(ok) >= sizeof tmp - 32) return;
+        snprintf(tmp, sizeof tmp, "%s.%ld.tmp", ok, (long)getpid());
+        FILE *f = fopen(tmp, "w");
+        if (f) {
+            int failed = fprintf(f, "%ld %dx%d\n", (long)getpid(), c->paint_w, c->paint_h) < 0;
+            if (fclose(f) != 0) failed = 1;
+            if (!failed && rename(tmp, ok) == 0) c->acknowledged = 1;
+            else unlink(tmp);
+        }
+    }
+}
+static void receipt_tick(void *ud)
+{
+    struct ctx *c = ud;
+    if (c->suspended || !c->disp || !c->async || !c->first_serial) return;
+    oa_display_result result;
+    if (c->async->latest(&result) != 1 || result.serial < c->first_serial ||
+        (result.serial >> 32) != (c->first_serial >> 32)) return;
+    if (result.serial != c->last_receipt && result.error)
+        c->api->log(c->api->priv, OA_LOG_ERROR, "portal frame failed errno %d", result.error);
+    c->last_receipt = result.serial;
+    if (!result.error) acknowledge(c);
+}
+/* Called only from ui_fb lifecycle/deferred rebind, never another provider's
+ * animation callback: timer ownership must stay with this module. */
+static int bind_async(struct ctx *c)
+{
+    if (!c->async) c->async = c->api->lookup(c->api->priv, OA_SVC_DISPLAY_ASYNC, 1);
+    if (c->async && !c->receipt_tick)
+        c->receipt_tick = c->api->timer_add(c->api->priv, 10, 10, receipt_tick, c);
+    return c->async && !c->receipt_tick ? -1 : 0;
+}
+static void drop_async(struct ctx *c, int release)
+{
+    if (c->receipt_tick) c->api->timer_del(c->api->priv, c->receipt_tick);
+    c->receipt_tick = c->first_serial = c->last_receipt = 0;
+    if (release && c->async) c->api->release(c->api->priv, OA_SVC_DISPLAY_ASYNC);
+    c->async = NULL;
+}
+static int request_present(struct ctx *c)
+{
+    if (!c || !c->disp) return -1;
+    if (c->disp->info(&c->paint_w, &c->paint_h, NULL, NULL)) return -1;
+    if (c->async) {
+        uint64_t serial;
+        if (!c->receipt_tick || c->async->request(&serial)) return -1;
+        if (!c->first_serial) c->first_serial = serial;
+        return 0; /* queue acceptance, never readiness */
+    }
+    if (c->disp->present()) return -1;
+    acknowledge(c); return 0;
+}
+
 static void paint(struct ctx *c)
 {
     const oa_display_iface *d;
@@ -359,7 +420,8 @@ static void paint(struct ctx *c)
             d->fill(x, cy, w, h, 32, 32, 32);
     }
 
-    if (d->present() != 0) {
+    c->scene_painted = 1;
+    if (request_present(c) != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "portal present failed");
         return;
     }
@@ -367,25 +429,8 @@ static void paint(struct ctx *c)
                 "painted portal: 5 rail items, %d cards, band %d rail %d card %d",
                 c->nc, c->band, c->rail, c->card);
 
-    /* One-shot first-present receipt, not liveness or proof of physical scanout.
-     * The host loop has a separate heartbeat on tmpfs. */
-    const char *ok = c->api->config_get(c->api->priv, "ui.ok_file", "/tmp/openaurora.ready");
-    if (!c->acknowledged && ok && ok[0]) {
-        char tmp[288];
-        if (strlen(ok) >= sizeof tmp - 32)
-            return;
-        snprintf(tmp, sizeof tmp, "%s.%ld.tmp", ok, (long)getpid());
-        FILE *f = fopen(tmp, "w");
-        if (f) {
-            int failed = fprintf(f, "%ld %dx%d\n", (long)getpid(), W, H) < 0;
-            if (fclose(f) != 0)
-                failed = 1;
-            if (!failed && rename(tmp, ok) == 0)
-                c->acknowledged = 1;
-            else
-                unlink(tmp);
-        }
-    }
+    /* CPU commit acknowledges above; async completion acknowledges in the owned
+     * sampler. Neither is liveness or independent physical scanout proof. */
 }
 
 /* ----------------------------------------------------------------- module */
@@ -636,8 +681,12 @@ static void on_service_removed(const void *evp, void *ud)
     /* The host already cleared the holds with the service. Drop the cached pointer before it can
      * dangle; the deferred rebind reacquires whatever is published again. */
     if (!strcmp(ev->name, OA_SVC_DISPLAY)) {
+        drop_async(c, 1);
         c->disp = NULL;
         c->disp2 = NULL;
+        c->scene_painted = 0;
+    } else if (!strcmp(ev->name, OA_SVC_DISPLAY_ASYNC)) {
+        drop_async(c, 0); /* host already cleared this service's hold */
     } else if (!strcmp(ev->name, OA_SVC_UI_ANIM)) {
         c->anim = NULL;
         c->anim2 = NULL;
@@ -662,6 +711,7 @@ static void rebind_now(struct ctx *c)
         if (!c->disp) return;              /* nothing can be drawn or timed without a display */
     }
     c->disp2 = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 2);
+    if (bind_async(c)) return;
     if (!c->settings) c->settings = c->api->lookup(c->api->priv, OA_SVC_SETTINGS, 1);
     if (!c->anim) {
         c->anim = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 1);
@@ -711,13 +761,17 @@ static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int
         if (done) {
             c->screen = SCREEN_OPEN;
         }
-        if (!c->suspended && c->disp) paint(c);
+        if (!c->suspended && c->disp) {
+            if (c->async && !done && c->scene_painted) (void)request_present(c);
+            else paint(c);
+        }
         return;
     }
     if (kind == OA_ANIM_LIST && rect && c->disp) {
         c->disp->clear(14, 14, 13);
         c->disp->fill(rect->x, rect->y, rect->w, rect->h, 247, 148, 30);
-        (void)c->disp->present();
+        c->scene_painted = 1;
+        (void)request_present(c);
     }
 }
 
@@ -821,6 +875,8 @@ static int m_start(void *v)
         c->api->log(c->api->priv, OA_LOG_ERROR, "no display service — load mod_display first");
         return -1;
     }
+    c->scene_painted = 0;
+    if (bind_async(c)) return -1;
 
     const char *spec = c->api->config_get(c->api->priv, "ui.cards", "");
     if (spec && spec[0]) {
@@ -962,6 +1018,8 @@ static void m_stop(void *v)
 {
     struct ctx *c = v;
     cancel_dialog(c);
+    drop_async(c, 1);
+    c->scene_painted = 0;
     if (c->mod_key) {
         c->api->unsubscribe(c->api->priv, c->mod_key);
         c->mod_key = 0;
@@ -1041,6 +1099,8 @@ static int m_suspend(void *v)
     struct ctx *c = v;
     c->suspended = 1;
     cancel_dialog(c);
+    drop_async(c, 1);
+    c->scene_painted = 0;
     slide_stop_sampler(c);
     if (c->slide_repeat) {
         c->api->timer_del(c->api->priv, c->slide_repeat);
@@ -1074,8 +1134,15 @@ static int m_resume(void *v)
     if (!c->disp)
         return -1;
     c->disp2 = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 2);
+    if (bind_async(c)) {
+        drop_async(c, 1);
+        c->api->release(c->api->priv, OA_SVC_DISPLAY);
+        c->disp = c->disp2 = NULL;
+        return -1;
+    }
     c->sub_key = c->api->subscribe(c->api->priv, OA_TOPIC_KEY, on_key, c);
     if (!c->sub_key) {
+        drop_async(c, 1);
         c->api->release(c->api->priv, OA_SVC_DISPLAY);
         c->disp = NULL;
         c->disp2 = NULL;

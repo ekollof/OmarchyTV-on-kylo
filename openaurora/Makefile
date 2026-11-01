@@ -450,7 +450,7 @@ $(BUILD)/tests/scene_broker: tests/scene_broker.c common/scene_broker.c common/s
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread -lm
 
 .PHONY: check-scene-broker
-check: check-scene-broker check-scene-spawn check-scene-client check-graphics-module check-scene-display
+check: check-scene-broker check-scene-spawn check-scene-client check-graphics-module check-scene-display check-ui-async
 check-scene-broker: $(BUILD)/tests/scene_broker
 	@$(BUILD)/tests/scene_broker
 
@@ -497,6 +497,14 @@ $(BUILD)/tests/scene_display: tests/scene_display.c tests/scene_gpu_trace.h comm
 .PHONY: check-scene-display
 check-scene-display: $(BUILD)/tests/scene_display $(BUILD)/modules/mod_scene_display.so $(BUILD)/modules/mod_scene_gpu_fixture.so
 	@$(BUILD)/tests/scene_display $(BUILD)/modules
+
+$(BUILD)/tests/ui_async: tests/ui_async.c tests/scene_gpu_trace.h core/host.h include/openaurora/services.h include/openaurora/events.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+
+.PHONY: check-ui-async
+check-ui-async: $(BUILD)/tests/ui_async $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_scene_display.so $(BUILD)/modules/mod_scene_gpu_fixture.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_anim.so
+	@$(BUILD)/tests/ui_async $(BUILD)/modules $(abspath $(BUILD)/tests/mod_fake_clock.so)
 
 $(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
@@ -609,6 +617,7 @@ $(BUILD)/tests/ui_rail_hl: tests/ui_rail_hl.c tests/ui_nav_trace.h core/host.h $
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_rail_hl.c $(filter %.o,$^) $(LDLIBS)
 
 $(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_fake_clock.c $(LDFLAGS) $(LDLIBS)
 
 check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry

@@ -173,6 +173,11 @@ int main(int argc, char **argv)
         }
     dirty = 1;
     if (probe_open(&scene, 1920, 1080, helper, renderer)) { (void)error(scene); goto cleanup; }
+#ifdef OA_WINDOW_BROKER
+    int ui_result = probe_ui(scene);
+    if (ui_result < 0) { (void)error(scene); goto cleanup; }
+    if (ui_result > 0) { result = 0; goto cleanup; }
+#endif
     for (int i = 0; i < 2; i++)
         if (probe_render(scene, i ? NULL : input, i ? 0 : 1920u*1080u*4,
                                  0, 1)) { (void)error(scene); goto cleanup; }

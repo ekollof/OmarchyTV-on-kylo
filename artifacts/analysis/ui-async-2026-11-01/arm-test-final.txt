@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -Itests  -o build-tv-v3/ui-async/tests/ui_async tests/ui_async.c build-tv-v3/ui-async/core/check.o build-tv-v3/ui-async/core/control.o build-tv-v3/ui-async/core/host.o build-tv-v3/ui-async/core/module.o -ldl -pthread -lm
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v3/ui-async/tests/mod_fake_clock.so tests/mod_fake_clock.c  -ldl -pthread -lm
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

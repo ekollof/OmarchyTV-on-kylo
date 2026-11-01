@@ -1,0 +1,30 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+saved bytes=16588800 original_yoffset=0 MAU=0 backup=/tmp/oa-scene-helper-20261101/framebuffer.backup
+[469426] ERR  host         graphics: cleanup pending; retry stop/unload
+[469427] ERR  host         graphics: cleanup pending; retry stop/unload
+[469427] ERR  host         graphics: cleanup pending; retry stop/unload
+[469427] ERR  host         graphics: cleanup pending; retry stop/unload
+[469430] ERR  host         graphics: cleanup pending; retry stop/unload
+[469430] ERR  host         graphics: cleanup pending; retry stop/unload
+[469450] ERR  host         graphics: cleanup pending; retry stop/unload
+[469451] ERR  host         graphics: cleanup pending; retry stop/unload
+[469470] ERR  host         graphics: cleanup pending; retry stop/unload
+[469470] ERR  host         graphics: cleanup pending; retry stop/unload
+[469490] ERR  host         graphics: cleanup pending; retry stop/unload
+[469490] ERR  host         graphics: cleanup pending; retry stop/unload
+[469510] ERR  host         graphics: cleanup pending; retry stop/unload
+[469510] ERR  host         graphics: cleanup pending; retry stop/unload
+scene display module id=4 service=display.async
+UI readiness after GPU completion serial=17179869185 revision=17179869208 pid=3476
+UI dialog completed screen=1 identity receipt=17179869288
+UI readiness after GPU completion serial=17179869290 revision=17179869279 pid=3476
+UI reload id=17 completed with fresh receipt
+UI host-only suspend/resume completed receipt=17179869291
+scene display observed frame completions=0
+graphics host drained and unloaded provider
+restored bytes=16588800 yoffset=0 MAU=0 region_match=1 snapshot_match=1
+probe_exit=0
