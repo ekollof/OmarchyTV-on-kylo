@@ -808,9 +808,10 @@ static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int
          * applies it; on completion the surface is back at identity. */
         if (c->disp2 && c->disp2->set_scene_transform && c->fs_type > 0)
             c->disp2->set_scene_transform(done ? 0 : c->fs_type, done ? 0.0f : eased);
-        if (done) {
-            c->screen = SCREEN_OPEN;
-        }
+        /* The vendor animates the dialog's named rect over the launcher; our single-surface UI
+         * therefore shows the dialog content from the first progress callback, so the transform
+         * slides the dialog up into place instead of moving the portal underneath it. */
+        c->screen = SCREEN_OPEN;
         if (!c->suspended && c->disp) {
             if (c->async && !done && c->scene_painted) (void)request_present(c);
             else paint(c);

@@ -276,7 +276,8 @@ int main(int argc, char **argv)
     assert(!anim->set_enabled(1) && anim->enabled());
 
     press(input, 53);
-    assert(g_acts == 6 && g_act.kind == OA_ACTION_SELECT && portal->screen() == 0);
+    /* the dialog content is shown from progress 0 so the transform slides it up into place */
+    assert(g_acts == 6 && g_act.kind == OA_ACTION_SELECT && portal->screen() == 1);
     int kind = -1;
     oa_anim_rect rect;
     float eased = -1.f;
@@ -286,7 +287,7 @@ int main(int argc, char **argv)
     assert(kind == OA_ANIM_DIALOG && dur == 1000 && eased == 0.f);
     int paints_before = 0, paints_after = 0;
     assert(!trace->counts(NULL, &paints_before, NULL, NULL));
-    assert(anim->sample(st + 500) == 1 && portal->screen() == 0);
+    assert(anim->sample(st + 500) == 1 && portal->screen() == 1);
     assert(!trace->counts(NULL, &paints_after, NULL, NULL));
     assert(paints_after > paints_before); /* ui.fps=0 and no highlight assets/timer */
     assert(!anim->get(1, &kind, &rect, &eased, &st, &dur));
@@ -310,11 +311,15 @@ int main(int argc, char **argv)
     assert(g_acts == 7 && g_act.kind == OA_ACTION_BACK && portal->screen() == 0);
 
     press(input, 53);
-    assert(g_acts == 8 && portal->screen() == 0);
+    assert(g_acts == 8 && portal->screen() == 1); /* dialog content shown at progress 0 */
     assert(!anim->get(1, &kind, NULL, NULL, &st, &dur) && dur == 1000);
     assert(anim->sample(st + 100) == 1);
     assert(!anim->cancel(1));
-    assert(portal->screen() == 0 && anim->get(1, NULL, NULL, NULL, NULL, NULL) == -1);
+    /* a raw controller cancel drops the entry without notifying the consumer (recovered), so the
+     * UI keeps the dialog content; its own Exit path is what returns to the portal. */
+    assert(portal->screen() == 1 && anim->get(1, NULL, NULL, NULL, NULL, NULL) == -1);
+    press(input, 10);
+    assert(portal->screen() == 0);
 
     oa_anim_rect from = { 0, 0, 10, 10 };
     oa_anim_rect to = { 10, 20, 30, 40 };
