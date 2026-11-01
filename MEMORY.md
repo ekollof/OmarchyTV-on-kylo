@@ -160,13 +160,15 @@ cross-check vectors. The display now publishes v2 with
 `set_scene_transform(type, progress)`: all draws go to an offscreen RGBA scene and
 present() maps it through the recovered quad (separable inverse map, BGRA output);
 fake-fb tests cover x-slide, scale, keystone and clearing. mod_ui_fb is the
-consumer: on dialog progress it pushes `ui.fs_type` with the eased value and clears
-on completion/suspend/stop. `SVGDialog::create` copies the static mode table
-57..64 (0x153b7ec) and starts the first mode whose standard animation widget
-exists, so the vendor rule is "first of types 1..8 present"; our stand-in dialog
-has no such widgets, so ui.fs_type remains an explicit selection (default 0).
-Evidence: host 200 ok, ASan/UBSan 200 ok. Still open: widget binding, ARM/qemu and
-panel verification of the scene warp.
+consumer: on dialog progress it pushes the selected type with the eased value and
+clears on completion/suspend/stop. `SVGWindow::getWidgetStandardName` (0xeee798)
+names the modes: 57 flip, 58 slide-right, 59 slide-left, 60 slide-up, 61
+slide-down, 62 fade, 63 grow, 64 bounce; `SVGDialog::create` tries 57..64 in
+order and starts the first widget present. DialogLauncher.svg (129) declares
+only animation_slide_up_fade_in, so mod_ui_fb selects type 4 by that rule;
+ui.fs_type remains an explicit override. Evidence: host 200 ok, ASan/UBSan 200
+ok; check-ui-nav asserts the type-4 selection. Still open: ARM/qemu and panel
+verification of the scene warp.
 
 RAIL-TIMING-2026-11-01: MainLauncherMenuDialog moves rail items synchronously
 (setMenuItemPositions from scrollItems/updateButtonPositions/init/onExit/

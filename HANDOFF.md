@@ -24,13 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Owner requested a handoff and goal suspension because credits are low. Stop
-work here until resumed. No probe, upload or analysis job remains pending.
-Review fixes are recorded in WORK-REVIEW; subsequent audio/CEC milestones below
-retain separate implementation, injected-test and hardware-acceptance claims.
-The next concrete audio task is the UI ALSA path described below. Also retain
-TODO's open asynchronous sleep-preparation rollback and native CEC ownership
-gates; manual suspend/retry tests do not close those gaps.
+Owner resumed work after the earlier credit-related suspension. Latest completed
+slice (2026-11-01): display v2 renders every draw into an offscreen RGBA scene and
+`present()` maps it through the recovered four-vertex clip-space quad (type 1 flip
+keystone, 2/3 x-slide, 4/5 y-slide, 7/8 scale). `mod_ui_fb` consumes it during the
+dialog animation. `SVGWindow::getWidgetStandardName` (0xeee798) names the eight
+modes — 57 flip, 58 slide-right, 59 slide-left, 60 slide-up, 61 slide-down,
+62 fade, 63 grow, 64 bounce — and `SVGDialog::create` tries 57..64 in order,
+starting the first widget present. DialogLauncher.svg (129) declares only
+`animation_slide_up_fade_in`, so the vendor rule now selects type 4 without a
+config value; `ui.fs_type` remains an explicit override. Evidence: host
+`make check` 200 ok and ASan/UBSan 200 ok; `check-ui-nav` asserts the type-4
+selection through the real dialog path.
+
+Next concrete steps, in order: run the scene warp on ARM/qemu and on the TV
+(staged /tmp display self-test or the live probe; no persistent replacement);
+then the remaining vendor screens/broadcast/settings, native audio/CEC ownership
+and independent startup. No probe, upload or analysis job is pending.
 
 Latest review: [SPEAKER-GAIN](artifacts/reports/SPEAKER-GAIN-2026-11-01.md)
 confirms direct SetOPUGain registration and raw channel bounds0..0x8000.

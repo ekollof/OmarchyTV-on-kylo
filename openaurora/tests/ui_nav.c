@@ -291,7 +291,8 @@ int main(int argc, char **argv)
         int fst = -1, fsc = 0;
         float fsp = -1.f;
         assert(trace->transform(&fst, &fsp, &fsc) == 0);
-        assert(fst == 2 && fsp > 0.8f && fsp < 0.95f && fsc > 0);
+        /* vendor first-present rule: DialogLauncher declares animation_slide_up_fade_in (type 4) */
+        assert(fst == 4 && fsp > 0.8f && fsp < 0.95f && fsc > 0);
     }
     assert(anim->sample(st + 1000) == 0 && portal->screen() == 1);
     {

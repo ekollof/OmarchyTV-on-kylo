@@ -123,6 +123,25 @@ struct ctx {
 
 static struct ctx *g_ctx;
 
+/* SVGDialog::create copies the constant mode table 57..64 and starts the first mode whose standard
+ * animation widget exists in the dialog description. The widget names recovered from
+ * SVGWindow::getWidgetStandardName (0xeee798, literals via 0xeeea84..0xeeeae8) are:
+ *   57 animation_flip_fade_in       58 animation_slide_right_fade_in
+ *   59 animation_slide_left_fade_in 60 animation_slide_up_fade_in
+ *   61 animation_slide_down_fade_in 62 animation_fade_in
+ *   63 animation_grow_fade_in       64 animation_bounce_fade_in
+ * DialogLauncher.svg (resource 129, as DialogMainMenu3/4/Tall) declares only
+ * animation_slide_up_fade_in, so the first-present rule selects mode 60 = HAL type 4
+ * (y -= (1-p)/6, a slide up). */
+static int dialog_fs_type(void)
+{
+    static const unsigned char present[8] = { 0, 0, 0, 1, 0, 0, 0, 0 };
+    for (int i = 0; i < 8; i++)
+        if (present[i])
+            return i + 1;
+    return 0;
+}
+
 /* Text-slide runner: implemented below, but paint() above it samples the margin. */
 static uint32_t slide_elapsed(const struct ctx *c, uint32_t now);
 static int slide_margin_now(const struct ctx *c, uint32_t now);
@@ -816,7 +835,12 @@ static int m_start(void *v)
     c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
     /* v2 display adds the offscreen scene + full-screen transition at present. */
     c->disp2 = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 2);
-    c->fs_type = atoi(c->api->config_get(c->api->priv, "ui.fs_type", "0"));
+    c->fs_type = dialog_fs_type();
+    {
+        const char *cfg = c->api->config_get(c->api->priv, "ui.fs_type", "");
+        if (cfg[0])
+            c->fs_type = atoi(cfg);   /* explicit override for tests/lab runs */
+    }
     if (c->fs_type < 0 || c->fs_type > 8)
         c->fs_type = 0;
     c->slide_box = atoi(c->api->config_get(c->api->priv, "ui.slide_box", "0"));

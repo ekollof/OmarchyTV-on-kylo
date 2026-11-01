@@ -394,8 +394,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       to an offscreen RGBA scene and present() maps it through the recovered four-vertex clip-space
       quad (x-slide, y-slide, scale, type-1 keystone). mod_ui_fb pushes `ui.fs_type` with the eased
       dialog progress and clears on completion/suspend/stop. Fake-fb warp tests and ui_nav transform
-      assertions pass; host 200 ok and ASan/UBSan 200 ok. Still open: binding the vendor per-mode
-      animation widgets (the mode table is 57..64, first present wins), ARM/qemu and panel checks.
+      assertions pass; host 200 ok and ASan/UBSan 200 ok. The vendor per-mode names are recovered
+      (57 flip, 58 right, 59 left, 60 up, 61 down, 62 fade, 63 grow, 64 bounce) and
+      getWidgetStandardName's first-present rule selects type 4 for DialogLauncher.svg
+      (animation_slide_up_fade_in); ui.fs_type remains an override. Still open: ARM/qemu and panel
+      verification of the scene warp.
 - [ ] Audit pixel-format boundaries as UI work expands: raw 32bpp OSD is BGRA;
       OAI1/blit inputs are RGBA; saved screenshots are RGB. Preserve provenance
       of pre-fix red/blue-swapped captures and verify other API formats explicitly.
