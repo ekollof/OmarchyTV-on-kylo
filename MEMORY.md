@@ -906,11 +906,17 @@ SettingListBoxFA (475): rowPos/mRowM (244,178,75,70), mTop/mBot pieces;
 SettingListBoxRowFA (479): mRowL/M/R (18/54/178,61,33/120/33,66) #FE9419.
 SettingsDialog::createSettingsList (0xd5692d) creates the list from the
 dialog's "listBox" description; setListBoxHorizontal (0xd56ebd) calls
-SVGListBoxBase::makeHorizontalListBox. Still undecoded: the
-SettingItemsListBox/SettingHorizontalListBox row template and item geometry
-(p0/03's category row at y=461 implies the dialog is offset by about 206), the
-per-category item lists/labels, and the exact selection chrome. No screen code
-was written; a static/guessed Beeld screen was not shipped.
+SVGListBoxBase::makeHorizontalListBox. Row templates: SettingItemsListBoxRowItems
+(460) is an 813x66 row (mRowM, text1 (11,-16,382,50), button (429,-17,348,64),
+selectionbox/checkbox/slidebar/progressbar); its _sublauncher variant (464) is a
+240x140 tile (mRowM (10,-140,240,140), button (10,-140,246,140), text1
+(10,-134,240,54), banner (10,-170,960,180)); SettingListBoxRowSelected (483) is
+a 296x71 #F7941E row. Still unresolved: whether p0/03's bottom row is the
+launcher app row showing sub-launcher shortcuts and the top tiles are the
+SubLauncherDialog settings list, or all of it is one SettingsDialog; the dialog
+popup anchor/window offset and the SettingItemsListBox item placement on the
+horizontal list are not decoded. No screen code was written; a static/guessed
+Beeld screen was not shipped.
 
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
