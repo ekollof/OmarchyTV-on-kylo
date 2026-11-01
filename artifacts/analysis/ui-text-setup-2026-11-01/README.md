@@ -253,6 +253,21 @@ rect becomes `+0x254`, and how the found font marker maps to the `+0x1c4`
 getFont type, need register-level dataflow not completed here — plus the FA
 animation target. No implementation from this yet.
 
+## Ctor defaults + unconditional text-rect store (SVGTextBox)
+
+Ctor: `+0x254` = `""` (literal `DAT_010c5df4` → 0x12f5cda), rect `+0x25c..`
+empty; `+0x219 = 1` (font lookup pending), `+0x21c = 0`, `+0x220 = 4`,
+`+0x1c4 = 0`, `+0x1b4 = 0`, `+0x224/5 = 0`.
+
+In `renderBackground`, BEFORE the line-count branch, the looked-up record
+(here literal `"addition"`) is stored to `+0x254..+0x274` when found;
+otherwise the ctor defaults stand. Ghidra's types at this site are
+unreliable (`UString::operator=` from an `EASIRect*`), so the natural reading
+— record = {name; coords}, `+0x254` = name, `+0x25c..` = coords — is a
+hypothesis, not a fact. What is firm: the store is unconditional and
+pre-branch; row textboxes (488/489) have no `addition` rect, so for rows the
+defaults stand unless another path writes them.
+
 ## Line count writer found (SVGTextBox::create 0x10c8889)
 
 `create(id, text, rect, param_4, parent)` writes `*(this + 0x1b4) = param_4`
