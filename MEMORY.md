@@ -265,6 +265,18 @@ wrong-direction artifact. mod_ui_fb now switches instantly by default; the
 type-4 path is lab-only behind ui.launch_anim=1 (ui_nav and ui_async enable it to
 keep animation coverage). Host make check 227 ok.
 
+SUBL AUNCHER-ITEM-2026-11-01: sublauncheritemFA.svg (resource 552, span
+232881..233354) recovers the vendor sub-launcher item: background (-2,0,1920,1080);
+gRowM/mRowM (121,251,240,140); textPos (79,374,323,39); glyph (121,253,240,138);
+scalerect (121,251,240,140). Its animation records are 300 ms linear:
+#scalerect scale 1,1 -> 1.35,1.35; #glyph y 0 -> -24; #glyph x 0 -> -42 (the
+-fvc variant 556 has the same three records). This is the next screen's tile
+geometry and focus animation. Do not implement the card focus animation yet:
+the scalerect's transform anchor/origin and the DialogSubLauncher (189) item
+grid positions are not decoded, and our current card row is an invented layout.
+Next: decode DialogSubLauncher 189 (item positions/count) and the animation
+element's transform origin, then build the sub-launcher screen against them.
+
 RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
 stage refreshed to the current modules, our 10 ms-poll ui_fb and the probe's
 UI/rail sampling. Completion-paced advance is now implemented: the rail tick
