@@ -49,18 +49,69 @@ used for the reconstruction.
 - `+0x1b0` gates the scrolling-slide path (`AnimationHelper::
   calculateSlidingMargin` when `+0x2b0` set); otherwise the static path draws.
 
+## Row object and FA widget map (SettingItemsListBoxRow ctor 0xd53d0d)
+
+Each row owns fixed widget slots:
+
+| offset | widget | role |
+|---|---|---|
+| +0x104 | SVGTextBox | label (normal rows) |
+| +0x3c4 | SVGTextBox | second label (row type 1) |
+| +0x684 | SVGButton | value button |
+| +0x1014 | SVGSelectionBox | selection box |
+| +0x13c0/+0x1498 | SVGSlideBar | sliders |
+| +0x1570/+0x1724 | SVGProgressBar | progress bars |
+| +0x18d8 | SVGTextEntryBox | text entry |
+| +0x1ca8/+0x1f68/+0x2228/+0x24e8 | SVGTextBox | extra text (text2/3/4, value/caption) |
+| +0x27a8 | SVGCheckBox | checkbox |
+| +0x2b28/+0x2c0c/+0x2cf0 | SVGImage | icons |
+
+Default row type `+0x2dec = 0x1b` (27). Default per-state resource IDs stored
+in the row object (immediates in the ctor):
+
+| field | value | resource |
+|---|---|---|
+| +0x2e8c | 0x1e9=489 | textbox UFA |
+| +0x2e90 | 0x1e8=488 | textbox FA |
+| +0x2e94 | 0x1eb=491 | textbox UFI |
+| +0x2e98 | 0x1ea=490 | textbox FI |
+| +0x2eac/0x2eb0/0x2eb8/0x2eb4 | 0x1f1/0x1f0/0x1f2/499 | button UFA/FA/FI/UFI |
+| +0x2e9c/0x2ea0/0x2ea8/0x2ea4 | 0x1fa/0x1f8/0x1f9/0x1fb | selbox UFA/FA/FI/UFI |
+| +0x2e6c/0x2e70/0x2e78/0x2e74 | 0x1f1/0x1f0/0x1f2/499 | button set 2 (type 5) |
+| +0x2e80/0x2e88/0x2e7c/0x2e84 | 0x1f0/0x1f2/0x1f1/499 | button set 1 (type 6) |
+
+(resources: 496 ButtonFA, 497 ButtonUFA, 498 ButtonFI, 499 ButtonUFI,
+504 SelBoxFA, 505 SelBoxFI, 506 SelBoxUFA, 507 SelBoxUFI.)
+
+## renderItems branches (0xd54401)
+
+- The label textbox rect comes from a resource literal (`DAT_00d54750`), then
+  `setWindowRect(rect offset by row position)` — i.e. the transformed text
+  rect is the resource rect translated by the row's position. The text is set
+  from the row label at `+0x2dd8`.
+- If the first resource literal resolves (`iVar2==0`, literal `DAT_00d54748`
+  = "alexa"… i.e. the row resource does NOT carry that marker), the label
+  gets FA 488 / UFA 489 / FI 490 / UFI 491 by state. Otherwise all states get
+  fallback 0x26d=621 plus `setFont(0x1a=26)`.
+- Row type 1 uses the second textbox (+0x3c4) with fixed caption resources
+  0x1ec–0x1ef = 492–495 (caption FA/UFA/FI/UFI), no fallback.
+- Button states get 496–499 by state (type 5/6 sets differ only in which
+  stored field supplies state 2); fallback 0x269=617 plus `setFont(0x1e=30)`.
+- SelectionBox (types 2/3) gets 504–507 by state; fallback 0x26b=619 plus
+  `setFont(0x1e=30)`.
+- Mirror handling: `+0x2e4c/0x2e50` image IDs switch to 0x78/0x77 when
+  `getOSDHorizontalMirror` is set.
+
+The `DAT_00d5474c/50/54`, `DAT_00d54e30`, `DAT_00d54b24/28/2c` literals live in
+.data as runtime UString state (not plain rodata strings like "alexa"), so
+their exact names are not established from a static dump. Do not assign them.
+
 ## Not yet decoded
 
-- Which literal each `getRectangle` in `renderBackground` resolves (the first
-  stored rect at `+0x254..0x274` comes from a literal reached through a data
-  pointer, e.g. "addition", and may miss for textbox resources). The
-  transformed `textPos` rectangle, mask-transform scale factors and the final
-  screen origin/baseline are therefore NOT established.
-- The per-widget `+0x1b4` line count, `+0x1c4` type and `+0x220/+0x22c`
-  alignment for the title, tab and row widgets. The fitted font7/font16
-  origins remain capture fits, not firmware geometry.
-- Focused-row FA type/geometry beyond the resource IDs (the animation target
-  and transformed rect from `startSelectAnimation`).
+- Transformed `textPos` scale/origin beyond row-position translation;
+  per-widget `+0x1b4` line counts / `+0x1c4` types for the title, tab and row
+  widgets; FA animation target geometry. Title/tab/focused text stays
+  unimplemented.
 
 Do not implement title/tab/focused labels from the fits. Next: resolve the
 `renderBackground` rectangle literals per widget resource and trace one row's
