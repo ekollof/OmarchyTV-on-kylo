@@ -35,9 +35,12 @@ asm-verified TextBox branches (+0x1b4 ternary, alignment bitmask), the +0x1b4
 writer (create's 4th arg; rows pass 1), the value display path (setSlideValue
 → +0x1ca8 value textbox), the full 53-site widget-name table (textPos twice,
 font-marker scan, alignment interleave), and the text-rect rescale formula
-x1 = x0 + (A/B)*span with position preserved. Open: per-widget rect
-assignment, +0x1c4 writer, mask alignment mapping, FA animation target;
-title/tab/slider/focused text stay captured, no implementation from fits.
+x1 = x0 + (A/B)*span with position preserved, and the container record layout
+{UString name; coords} with +0x254/+0x1ec both receiving looked-up rect names.
+Single open detail: which of the two the single-line row path consumes at draw
+time. Title/tab/slider/focused text stay captured; no implementation from
+fits. Goal paused at owner's request — no helper/build/Ghidra job pending,
+tree clean.
 
 Previous: [UI-GLYPH-DRAW](artifacts/reports/UI-GLYPH-DRAW-2026-11-01.md) implements
 common/font_draw.c, an allocation-free clipped single-glyph RGBA compositor from

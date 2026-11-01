@@ -357,7 +357,16 @@ layout: `getMask`'s width calc (`[base+0x1c] - [base+0x8]`) reads as corners
 inference is not independently proven — do not build on the axis, only on
 the formula and the position preservation.
 
-## Still open (no implementation)
+## Record layout confirmed (10c6b9e–10c6bd6)
+
+`r1 = fp` (looked-up record) → `UString::operator=` into `this+0x1ec`,
+then `ldmia fp+8 / stmia +0x1f4` (16-byte coord copy) plus `+0x204/8/c`
+tail fields. So the container record is `{UString name; coords...}` and both
+`+0x254` (preamble, literal `"addition"`) and `+0x1ec` (else branch, standard
+name) receive looked-up rect NAMES with coords following. The single open
+detail is which of the two the single-line row path consumes at draw time
+(`renderForeground` copy-constructs a `RectangleDescription` from `+0x1ec`).
+No further static reading this turn — stopping here per instruction.
 
 Do not implement value/tab/slider-graphics/title/focused labels from the fits.
 Next: resolve the `renderBackground` rectangle literals per widget resource,
