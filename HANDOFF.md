@@ -24,23 +24,20 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-FONT-LIVE](artifacts/reports/UI-FONT-LIVE-2026-11-01.md) finishes the
-font item. common/font_pack.c reads the indexed vendor pack one record at a time
-(font7=847,332 bytes and font16 from the live /vendor2 pack); common/font_text.c
-renders one packed-UTF8 LTR line with EF41 advances, explicit spacing, clipping
-and coverage compositing, validating the whole line before drawing. ui_vendor
-ui.text=1 draws 17 settings text items: row labels font7 at
-(49|79, 184+70*row), text values font7 (Natuurlijk/Uit/Aan/Auto), slider digits
-font16 at (659, 250+70*(row-1)), and the disabled grey Beeld zoomen/Auto; it
-erases only the captured text strips and falls back to the capture on any font
-failure. Fit IoU 0.85..0.98; real fb1 vs the corrected panel: 1.184%
-any-channel diff, only 22 px >8 (max 11), RMSE0.106%, rows0-4/6 with no >8 diff.
-Host font-pack/text/UI tests (live + missing fallback) and full make check 251
-plus font groups pass. Title/tabs/slider graphics and focused labels remain
-captured. Evidence: analysis/ui-font-live-2026-11-01. Next decode SVGTextBox
-line setup/transformed textPos and focused-row FA type/geometry, then replace
-the remaining text and implement value/tab interaction; do not claim full
-text/focus parity or scanout. No helper/build/Ghidra job is pending.
+Latest: text-setup firmware decode (analysis/ui-text-setup-2026-11-01, commits
+61ab377..df42937 plus four follow-ups) mapped the settings text pipeline
+without writing UI code, per the firmware-first rule: state-indexed list/row
+resources, row widget slots + per-state FA/UFA/FI/UFI ids, renderItems
+branches, PictureSettingsDialog row inventory (type-9 sliders ids 1-4,
+type-2 selections, type-4 buttons) with onRightLeftPress/onSelectPress/tab
+semantics, TabDialog tab composition (tab 0 = PictureSettingsDialog),
+asm-verified TextBox branches (+0x1b4 ternary, alignment bitmask), the +0x1b4
+writer (create's 4th arg; rows pass 1), the value display path (setSlideValue
+→ +0x1ca8 value textbox), the full 53-site widget-name table (textPos twice,
+font-marker scan, alignment interleave), and the text-rect rescale formula
+x1 = x0 + (A/B)*span with position preserved. Open: per-widget rect
+assignment, +0x1c4 writer, mask alignment mapping, FA animation target;
+title/tab/slider/focused text stay captured, no implementation from fits.
 
 Previous: [UI-GLYPH-DRAW](artifacts/reports/UI-GLYPH-DRAW-2026-11-01.md) implements
 common/font_draw.c, an allocation-free clipped single-glyph RGBA compositor from

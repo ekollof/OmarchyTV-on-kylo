@@ -336,6 +336,27 @@ register-held (not visible in decompile) — the exact per-widget rect IDs
 `DAT_010c6xx` canary-looking slots are not strings — do not read them as
 literals.
 
+## Text-rect rescale, asm-verified (10c6244–10c6296, +0x1b4==1 branch)
+
+Applied to the id-42 (`textPos`) lookup result `sl` when non-null:
+
+```
+A    = [r7,#0x234] - [r7,#0x22c]
+B    = [r7,#0x26c] - [r7,#0x264]
+span = [sl,#20] - [sl,#12]
+[sl,#20] = [sl,#12] + int(float(A) / float(B) * float(span))
+```
+
+int32→float→int32 with round-half-away (`vcvt.f32.s32` /
+`vcvt.s32.f32`, `vdiv`/`vmul`). No zero-guard on B (vdiv by zero yields
++Inf, saturating convert). Origin field `[sl,#12]` is untouched — the rect
+keeps its position, one extent is scaled by a surface/mask span ratio.
+Whether that axis is height or width depends on the container `EASIRect`
+layout: `getMask`'s width calc (`[base+0x1c] - [base+0x8]`) reads as corners
+`{x0,y0,x1,y1}`, which would make this a height rescale, but that layout
+inference is not independently proven — do not build on the axis, only on
+the formula and the position preservation.
+
 ## Still open (no implementation)
 
 Do not implement value/tab/slider-graphics/title/focused labels from the fits.
