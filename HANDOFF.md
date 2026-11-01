@@ -24,6 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
+Latest review through670ce3c: [UI-ENGINE-REVIEW](artifacts/reports/UI-ENGINE-REVIEW-2026-11-01.md)
+fixes queued foreign engine code/payload leaks, companion rebinds, both skins'
+re-registration, timer failures, malformed assets, failed GPU receipts and
+inherited transforms. Current service is ui.engine v2; matching skins register
+their own dispatch trampoline. Old register_skin fails ENOTSUP. Host242 checks,
+focused sanitizers/native contracts and actual GPU vendor-instant Select,
+11 rail revisions/reload/module cycle/BGRA alpha/full restore pass. Same stock
+boot/PID1785, backing41735daa69dc137743b59efe12db4a19/pan0,1080/access/privacy;
+all staging removed. No persistent deployment. Native artifacts are in
+build-tv-v3/ui-engine-review; final-tested.md5/final-stage.md5 in the analysis
+directory identify them. Initial transform timeout was restored and fixed;
+tv-ui-final.txt owns accepted hardware evidence. The lab transition now needs
+an explicit diagnostic flag. Content/fallback/visual gates below remain open.
+No probe or job remains pending.
+
 Current UI seam and screens (2026-11-01): `ui.engine` (modules/ui_engine) owns
 display/alpha discovery and rebinding, OAI1 assets, draw/present/async receipts
 and readiness, the key topic and the `ui.fps` repaint timer; it selects the

@@ -5,11 +5,13 @@
  * See include/openaurora/ui_engine.h and docs/ARCHITECTURE.md.
  */
 #include <fcntl.h>
+#include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "openaurora/events.h"
@@ -18,6 +20,7 @@
 #include "openaurora/ui_engine.h"
 
 #define ENGINE_MAX_ICONS 64
+#define ENGINE_MAX_EVENTS 64
 
 struct engine {
     const oa_host_api *api;
@@ -26,7 +29,7 @@ struct engine {
     const oa_display_async_iface *async;
     const oa_display_alpha_iface *alpha;
     uint64_t present_serial, first_serial, last_receipt;
-    int present_pending;
+    int present_pending, present_error;
     uint64_t receipt_tick;
     int paint_w, paint_h, scene_painted;
     int acknowledged;
@@ -42,6 +45,10 @@ struct engine {
     int skin_entered;
     uint32_t key_sub, fps_tick;
     int fps;
+    void (*skin_dispatch)(void *);
+    struct { int kind, id; } events[ENGINE_MAX_EVENTS];
+    unsigned nevents, dispatching;
+    int draining;
 };
 
 static struct engine *g_engine;
@@ -64,7 +71,7 @@ static void engine_log(struct engine *c, int level, const char *msg)
 static const oa_ui_icon *find_icon(const char *name)
 {
     struct engine *c = g_engine;
-    if (!c || !name)
+    if (!c || !name || !name[0] || strlen(name) >= sizeof c->icons[0].name || strchr(name, '/'))
         return NULL;
     for (int i = 0; i < c->n; i++)
         if (!strcmp(c->icons[i].name, name))
@@ -74,7 +81,7 @@ static const oa_ui_icon *find_icon(const char *name)
 
     char path[256];
     snprintf(path, sizeof path, "%s/%s.rgba", c->dir, name);
-    int fd = open(path, O_RDONLY);
+    int fd = open(path, O_RDONLY | O_CLOEXEC);
     if (fd < 0)
         return NULL;
     unsigned char hdr[12];
@@ -91,6 +98,11 @@ static const oa_ui_icon *find_icon(const char *name)
         return NULL;
     }
     size_t len = (size_t)w * h * 4;
+    struct stat st;
+    if (fstat(fd, &st) || !S_ISREG(st.st_mode) || st.st_size != (off_t)(len+sizeof hdr)) {
+        close(fd);
+        return NULL;
+    }
     unsigned char *buf = malloc(len);
     if (!buf) {
         close(fd);
@@ -143,6 +155,7 @@ static void receipt_tick(void *ud)
     if (c->present_pending && result.serial >= c->present_serial &&
         (result.serial >> 32) == (c->present_serial >> 32)) {
         c->present_pending = 0;
+        c->present_error = result.error;
     }
     if (!result.error) acknowledge(c);
 }
@@ -162,6 +175,7 @@ static void drop_async(struct engine *c, int release)
     c->receipt_tick = c->first_serial = c->last_receipt = 0;
     c->present_serial = 0;
     c->present_pending = 0;
+    c->present_error = 0;
     if (release && c->async) c->api->release(c->api->priv, OA_SVC_DISPLAY_ASYNC);
     c->async = NULL;
     if (release) {
@@ -181,6 +195,7 @@ static int present(void)
         if (!c->first_serial || c->first_serial == UINT64_MAX) c->first_serial = serial;
         c->present_serial = serial;
         c->present_pending = 1;
+        c->present_error = 0;
         return 0;
     }
     if (c->disp->present()) return -1;
@@ -209,42 +224,40 @@ static int bind_display(struct engine *c)
     return bind_async(c);
 }
 
-struct skin_post {
-    const oa_ui_skin *skin;
-    void *ud;
-    int kind;   /* 0 enter, 1 paint, 2 key */
-    int id;
-};
-
-static void skin_post_cb(void *ud)
+static void dispatch_skin(void)
 {
     struct engine *c = g_engine;
-    struct skin_post *p = ud;
-    if (!p) return;
-    if (c && c->skin == p->skin) {
-        if (p->kind == 0) {
-            if (p->skin->enter) p->skin->enter(p->ud);
-            c->skin_entered = 1;
-        } else if (p->kind == 1) {
-            if (p->skin->paint) p->skin->paint(p->ud);
-        } else if (p->skin->key) {
-            p->skin->key(p->ud, p->id);
-        }
+    if (!c || c->suspended || c->draining || !c->skin || !c->nevents ||
+        c->api->owner_id(c->api->priv) != c->skin_owner) return;
+    int kind = c->events[0].kind, id = c->events[0].id;
+    c->nevents--;
+    memmove(c->events, c->events+1, c->nevents*sizeof c->events[0]);
+    const oa_ui_skin *skin = c->skin;
+    void *ud = c->skin_ud;
+    c->dispatching++;
+    if (!c->skin_entered) {
+        int rc = skin->enter ? skin->enter(ud) : 0;
+        if (c->skin == skin && c->skin_ud == ud && !rc) c->skin_entered = 1;
+        if (rc) engine_log(c, OA_LOG_ERROR, "skin enter failed");
     }
-    free(p);
+    if (c->skin == skin && c->skin_ud == ud && c->skin_entered) {
+        if (kind == 1 && skin->paint) skin->paint(ud);
+        else if (kind == 2 && skin->key) (void)skin->key(ud, id);
+    }
+    c->dispatching--;
 }
 
-static void post_skin(struct engine *c, int kind, int id)
+static int post_skin(struct engine *c, int kind, int id)
 {
-    if (!c || !c->skin || !c->skin_owner) return;
-    struct skin_post *p = malloc(sizeof *p);
-    if (!p) return;
-    p->skin = c->skin;
-    p->ud = c->skin_ud;
-    p->kind = kind;
-    p->id = id;
-    if (c->api->post(c->api->priv, c->skin_owner, skin_post_cb, p) != 0)
-        free(p);
+    if (!c || c->suspended || c->draining || !c->skin || !c->skin_owner) return -1;
+    if (c->nevents == ENGINE_MAX_EVENTS ||
+        c->api->post(c->api->priv, c->skin_owner, c->skin_dispatch, c->skin_ud)) {
+        engine_log(c, OA_LOG_ERROR, "skin event queue full or owner unavailable");
+        return -1;
+    }
+    c->events[c->nevents].kind = kind;
+    c->events[c->nevents++].id = id;
+    return 0;
 }
 
 static void on_key_event(const void *evp, void *ud)
@@ -263,12 +276,15 @@ static void fps_cb(void *ud)
 static void ready_now(struct engine *c)
 {
     c->rebind_tick = 0;
+    int repaint = c->rebind_pending;
     c->rebind_pending = 0;
-    int had = c->disp != NULL;
-    if (!c->disp && bind_display(c) != 0)
+    const oa_display_iface *display = c->disp;
+    const oa_display_async_iface *async = c->async;
+    const oa_display_alpha_iface *alpha = c->alpha;
+    if (bind_display(c) != 0)
         return;
-    if (!had && c->skin)
-        post_skin(c, c->skin_entered ? 1 : 0, 0);
+    if (c->skin && (repaint || display != c->disp || async != c->async || alpha != c->alpha))
+        post_skin(c, 1, 0);
 }
 
 static void rebind_tick_cb(void *ud)
@@ -317,6 +333,7 @@ static void on_service_removed(const void *evp, void *ud)
     } else {
         return;
     }
+    c->rebind_pending = 1;
     schedule_rebind(c);
 }
 
@@ -371,13 +388,18 @@ static int e_set_scene_transform(int type, float progress)
 static int e_present_pending(void)
 {
     struct engine *c = g_engine;
+    if (c && c->present_error) { errno = c->present_error; return -1; }
     return c ? c->present_pending : 0;
 }
 
 static int e_register_skin(const oa_ui_skin *skin, void *ud)
+{ (void)skin; (void)ud; errno = ENOTSUP; return -1; }
+
+static int e_register_skin_dispatch(const oa_ui_skin *skin, void *ud, void (*dispatch)(void *))
 {
     struct engine *c = g_engine;
-    if (!c || !skin || !skin->name || c->skin)
+    if (!c || c->suspended || c->draining || !skin || !skin->name || !dispatch || c->skin ||
+        !c->api->owner_id(c->api->priv))
         return -1;
     const char *want = c->api->config_get(c->api->priv, "ui.skin", "");
     if (want[0] && strcmp(want, skin->name)) {
@@ -385,30 +407,50 @@ static int e_register_skin(const oa_ui_skin *skin, void *ud)
                     skin->name, want);
         return -1;
     }
+    /* A new skin must not inherit the previous skin's partial transition. */
+    if (c->disp2 && c->disp2->set_scene_transform && c->disp2->set_scene_transform(0, 0.0f))
+        return -1;
     c->skin = skin;
     c->skin_ud = ud;
     c->skin_owner = c->api->owner_id(c->api->priv);
     c->skin_entered = 0;
-    if (c->disp && !c->suspended)
-        post_skin(c, 0, 0);
+    c->skin_dispatch = dispatch;
+    c->nevents = 0;
+    c->acknowledged = 0;
+    c->first_serial = UINT64_MAX;
+    c->last_receipt = c->present_serial = 0;
+    c->present_pending = 0;
+    c->present_error = 0;
+    if (c->disp && post_skin(c, 0, 0)) {
+        c->skin = NULL; c->skin_ud = NULL; c->skin_owner = 0; c->skin_dispatch = NULL;
+        return -1;
+    }
     return 0;
 }
 
 static void e_unregister_skin(const oa_ui_skin *skin)
 {
     struct engine *c = g_engine;
-    if (c && c->skin == skin) {
+    if (c && c->skin == skin && c->api->owner_id(c->api->priv) == c->skin_owner) {
+        void *ud = c->skin_ud;
         c->skin = NULL;
         c->skin_ud = NULL;
         c->skin_owner = 0;
         c->skin_entered = 0;
+        c->skin_dispatch = NULL;
+        c->nevents = 0;
+        if (skin->leave) {
+            c->dispatching++;
+            skin->leave(ud);
+            c->dispatching--;
+        }
     }
 }
 
 static void e_reset_ready(void)
 {
     struct engine *c = g_engine;
-    if (!c) return;
+    if (!c || c->api->owner_id(c->api->priv) != c->skin_owner) return;
     c->acknowledged = 0;
     c->first_serial = UINT64_MAX;   /* ignore completions that predate this skin generation */
     c->last_receipt = 0;
@@ -431,6 +473,8 @@ static const oa_ui_engine_iface g_iface = {
     .now_ms = engine_now_ms,
     .register_skin = e_register_skin,
     .unregister_skin = e_unregister_skin,
+    .register_skin_dispatch = e_register_skin_dispatch,
+    .dispatch_skin = dispatch_skin,
 };
 
 /* --------------------------------------------------------------- module */
@@ -450,6 +494,7 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct engine *c = v;
+    c->draining = 0;
     snprintf(c->dir, sizeof c->dir, "%s",
              c->api->config_get(c->api->priv, "ui.dir", "/buffer/openaurora/ui"));
     if (bind_display(c) != 0) {
@@ -465,7 +510,7 @@ static int m_start(void *v)
     if (c->fps > 0)
         c->fps_tick = c->api->timer_add(c->api->priv, (uint32_t)(1000 / c->fps),
                                         (uint32_t)(1000 / c->fps), fps_cb, c);
-    if (!c->mod_key || !c->svc_key || !c->key_sub) {
+    if (!c->mod_key || !c->svc_key || !c->key_sub || (c->fps > 0 && !c->fps_tick)) {
         if (c->mod_key) c->api->unsubscribe(c->api->priv, c->mod_key);
         if (c->svc_key) c->api->unsubscribe(c->api->priv, c->svc_key);
         if (c->key_sub) c->api->unsubscribe(c->api->priv, c->key_sub);
@@ -475,7 +520,7 @@ static int m_start(void *v)
         drop_display(c, 1);
         return -1;
     }
-    if (c->api->publish(c->api->priv, OA_SVC_UI_ENGINE, 1, &g_iface) != 0) {
+    if (c->api->publish(c->api->priv, OA_SVC_UI_ENGINE, 2, &g_iface) != 0) {
         c->api->unsubscribe(c->api->priv, c->mod_key);
         c->api->unsubscribe(c->api->priv, c->svc_key);
         c->api->unsubscribe(c->api->priv, c->key_sub);
@@ -513,6 +558,8 @@ static void m_stop(void *v)
     c->skin_ud = NULL;
     c->skin_owner = 0;
     c->skin_entered = 0;
+    c->skin_dispatch = NULL;
+    c->nevents = 0;
     if (c->rebind_tick) {
         c->api->timer_del(c->api->priv, c->rebind_tick);
         c->rebind_tick = 0;
@@ -546,6 +593,8 @@ static int m_suspend(void *v)
     c->skin_ud = NULL;
     c->skin_owner = 0;
     c->skin_entered = 0;
+    c->skin_dispatch = NULL;
+    c->nevents = 0;
     if (c->rebind_tick) {
         c->api->timer_del(c->api->priv, c->rebind_tick);
         c->rebind_tick = 0;
@@ -556,7 +605,6 @@ static int m_suspend(void *v)
 static int m_resume(void *v)
 {
     struct engine *c = v;
-    c->suspended = 0;
     if (bind_display(c) != 0) {
         drop_display(c, 1);
         return -1;
@@ -564,9 +612,19 @@ static int m_resume(void *v)
     if (c->fps > 0 && !c->fps_tick)
         c->fps_tick = c->api->timer_add(c->api->priv, (uint32_t)(1000 / c->fps),
                                         (uint32_t)(1000 / c->fps), fps_cb, c);
+    if (c->fps > 0 && !c->fps_tick) { drop_display(c, 1); return -1; }
+    c->suspended = 0;
     if (c->skin)
         post_skin(c, c->skin_entered ? 1 : 0, 0);
     return 0;
+}
+
+static int m_quiesce(void *v)
+{
+    struct engine *c = v;
+    if (!c) return 0;
+    c->draining = 1;
+    return c->dispatching ? -1 : 0;
 }
 
 static const oa_module g_module = {
@@ -581,6 +639,7 @@ static const oa_module g_module = {
     .suspend = m_suspend,
     .resume = m_resume,
     .destroy = m_destroy,
+    .quiesce = m_quiesce,
     .requires = { OA_SVC_DISPLAY, "" },
 };
 

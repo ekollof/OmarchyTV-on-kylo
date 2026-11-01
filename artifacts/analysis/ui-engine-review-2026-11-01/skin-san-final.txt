@@ -1,0 +1,12 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Itests  -o build-ui-review-san/tests/ui_skin tests/ui_skin.c build-ui-review-san/core/check.o build-ui-review-san/core/control.o build-ui-review-san/core/host.o build-ui-review-san/core/module.o -ldl -pthread -lm
+[659670] ERR  host         ui_engine: refusing to unload, service 'ui.engine' still held (use --force)
+[659672] ERR  host         ui_engine: refusing to unload, service 'ui.engine' still held (use --force)
+[659672] ERR  host         ui_engine: start() failed (-1)
+  ok   engine rejects malformed or ambiguous asset names/sizes and keeps RGBA alpha
+  ok   ui.skin selects the engine's active skin; vendor and omarchy switch by reload, no rebuild
+  ok   queued input survives forced engine removal safely; Omarchy rebinds and pins its replacement
+  ok   queued-input skin unload/reload and suspend/resume leave no borrowed callbacks or heap posts
+  ok   vendor skin re-registers after forced engine replacement and receives keys again
+  ok   configured repaint timer allocation failures reject start/resume and remain retryable
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

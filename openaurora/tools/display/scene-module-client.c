@@ -33,6 +33,10 @@ static const char *config(void *ud, const char *key, const char *def)
     if (!strcmp(key, "ui.ok_file")) return "/tmp/oa-scene-helper-20261101/ui.ready";
     if (!strcmp(key, "ui.anim_enable")) return "1"; /* explicit lab bootstrap, not recovered vendor policy */
     if (!strcmp(key, "ui.fps")) return "0";
+    if (!strcmp(key, "ui.launch_anim")) {
+        const char *lab = getenv("OA_SCENE_PROBE_LAUNCH_ANIM");
+        return lab && !strcmp(lab, "1") ? "1" : "0";
+    }
     return def;
 }
 static void pump(scene_probe *s)
@@ -199,15 +203,19 @@ static void key(scene_probe *s, unsigned char id)
 static int dialog_complete(scene_probe *s, const oa_portal_iface *portal, uint64_t previous)
 {
     uint64_t deadline = oa_now_ms()+5000, animated = 0;
+    const char *lab = getenv("OA_SCENE_PROBE_LAUNCH_ANIM");
+    int needs_animation = lab && !strcmp(lab, "1");
     do {
         run_for(s, 1);
         oa_display_result result;
         if (s->asynchronous->latest(&result) == 1 && result.serial > previous) {
             if (result.error) { errno = result.error; return -1; }
             if (result.type == 4) animated = result.serial;
-            if (animated && result.serial > animated && result.type == 0 && portal->screen() == 1) {
-                printf("UI dialog animation receipt=%llu completed screen=1 identity receipt=%llu\n",
-                    (unsigned long long)animated, (unsigned long long)result.serial);
+            if ((!needs_animation || (animated && result.serial > animated)) &&
+                result.type == 0 && portal->screen() == 1) {
+                printf("UI selection mode=%s animation receipt=%llu completed screen=1 identity receipt=%llu\n",
+                    needs_animation ? "lab" : "vendor-instant", (unsigned long long)animated,
+                    (unsigned long long)result.serial);
                 return 0;
             }
         }

@@ -36,7 +36,7 @@ typedef struct {
     int (*blit)(int x, int y, int w, int h, const unsigned char *rgba);
     int (*blit_scaled)(int x, int y, int w, int h, int sw, int sh, const unsigned char *rgba);
     int (*present)(void);
-    int (*present_pending)(void);
+    int (*present_pending)(void);  /* 1 pending, 0 completed, -1 failed (errno) */
     const oa_ui_icon *(*icon)(const char *name);   /* lazy OAI1 load from ui.dir */
     int (*set_scene_transform)(int type, float progress);
     /* A new skin generation must earn its own readiness receipt. */
@@ -46,6 +46,11 @@ typedef struct {
      * first registered skin (the vendor fallback). */
     int (*register_skin)(const oa_ui_skin *skin, void *ud);
     void (*unregister_skin)(const oa_ui_skin *skin);
+    /* v2: post only the skin's own trampoline/code and module-lifetime ud.
+     * It calls dispatch_skin() from its owner context. No engine callback is
+     * borrowed by another module's queue. v1 register_skin fails ENOTSUP. */
+    int (*register_skin_dispatch)(const oa_ui_skin *skin, void *ud, void (*dispatch)(void *));
+    void (*dispatch_skin)(void);
 } oa_ui_engine_iface;
 
 #endif

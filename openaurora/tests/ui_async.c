@@ -8,6 +8,7 @@
 #include "openaurora/events.h"
 #include "openaurora/ui_engine.h"
 #include "scene_gpu_trace.h"
+#include "openaurora/ui_engine.h"
 #define require(expression) do { if (!(expression)) { \
     fprintf(stderr, "%s:%d: %s errno=%d\n", __FILE__, __LINE__, #expression, errno); exit(1); } } while (0)
 static char directory[128], ready_path[160];
@@ -95,6 +96,8 @@ int main(int argc, char **argv)
     require(!t->pixel(1919, 0, backdrop));
     require(backdrop[0] == 36 && backdrop[1] == 38 && backdrop[2] == 40 && backdrop[3] == 153);
     require(!t->settle(EIO)); pump(&h); require(access(ready_path, F_OK) == -1);
+    const oa_ui_engine_iface *engine = h.api.lookup(&h, OA_SVC_UI_ENGINE, 2); require(engine);
+    require(engine->present_pending() == -1 && errno == EIO);
     require(!oa_module_unload(&h, "ui_vendor", 0) && !oa_module_unload(&h, "scene_display", 1));
     (void)load(&h, "scene_display"); ui = load(&h, "ui_vendor");
     pump(&h);                         /* let the engine rebind the new display provider */
@@ -108,19 +111,25 @@ int main(int argc, char **argv)
     require(file && fscanf(file, "%ld %dx%d", &pid, &w, &height) == 3 && !fclose(file));
     require(pid == (long)getpid() && w == 1920 && height == 1080);
     puts("  ok   queue/OPEN/error never acknowledge; actual coalesced UI completion writes the PID/dimensions receipt");
+    oa_mod *provider = oa_host_find_module(&h, "scene_display"); require(provider);
+    const void *async_iface = h.api.lookup(&h, OA_SVC_DISPLAY_ASYNC, 1);
+    h.cur_module = provider->id;
+    require(!h.api.unpublish(&h, OA_SVC_DISPLAY_ASYNC));
+    h.cur_module = 0; pump(&h);
+    require(!held(&h, eng->id, OA_SVC_DISPLAY_ASYNC));
+    h.cur_module = provider->id;
+    require(!h.api.publish(&h, OA_SVC_DISPLAY_ASYNC, 1, async_iface));
+    h.cur_module = 0;
+    oa_module_event event = {.name = "scene_display", .what = OA_MOD_STARTED_EV};
+    h.api.emit(&h, OA_TOPIC_MODULE_CHANGED, &event); pump(&h);
+    require(held(&h, eng->id, OA_SVC_DISPLAY_ASYNC) && timers(&h, eng->id) == 1);
+    puts("  ok   engine reacquires a returning async companion while base display remains bound");
     require(!unlink(ready_path));
     require(!oa_module_reload(&h, "ui_vendor", 0)); ui = oa_host_find_module(&h, "ui_vendor"); require(ui);
     pump(&h);
-    /* The engine keeps the receipt timer across a skin reload, so the new
-     * skin's first completed frame may acknowledge immediately. Any receipt
-     * here must belong to this process; pre-reset completions are excluded by
-     * the reset_ready serial epoch. */
-    if (access(ready_path, F_OK) == 0) {
-        FILE *f = fopen(ready_path, "r"); long pid; int w, height;
-        require(f && fscanf(f, "%ld %dx%d", &pid, &w, &height) == 3 && !fclose(f));
-        require(pid == (long)getpid() && w == 1920 && height == 1080);
-        require(!unlink(ready_path));
-    }
+    /* No new GPU completion has been injected: this generation cannot be
+     * acknowledged by the retained old receipt, even with the same PID. */
+    require(access(ready_path, F_OK) == -1);
     (void)t->settle(0); pump(&h);
     (void)t->settle(0); pump(&h);
     (void)unlink(ready_path);

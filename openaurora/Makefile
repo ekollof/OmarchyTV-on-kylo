@@ -428,7 +428,7 @@ check-ui-sources: $(BUILD)/tests/ui_sources $(BUILD)/tests/ui_nav_display.so $(B
 	@printf 'ir.device =\nui.ok_file =\nui.paint = 1\nui.focus = 2\nui.fps = 0\nui.launch_anim = 1\nsettings.db = $(CURDIR)/$(BUILD)/tests/ui-sources/settings.db\nsettings.readonly = 1\n' > $(BUILD)/tests/ui-sources/ui.cfg
 	@$(BUILD)/tests/ui_sources $(BUILD)/tests/ui-sources/modules $(BUILD)/tests/ui-sources/ui.cfg
 
-$(BUILD)/tests/ui_skin: tests/ui_skin.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+$(BUILD)/tests/ui_skin: tests/ui_skin.c tests/ui_nav_trace.h include/openaurora/ui_engine.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_skin.c $(filter %.o,$^) $(LDLIBS)
 
@@ -567,7 +567,7 @@ $(BUILD)/tests/scene_display: tests/scene_display.c tests/scene_gpu_trace.h comm
 check-scene-display: $(BUILD)/tests/scene_display $(BUILD)/modules/mod_scene_display.so $(BUILD)/modules/mod_scene_gpu_fixture.so
 	@$(BUILD)/tests/scene_display $(BUILD)/modules
 
-$(BUILD)/tests/ui_async: tests/ui_async.c tests/scene_gpu_trace.h core/host.h include/openaurora/services.h include/openaurora/events.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+$(BUILD)/tests/ui_async: tests/ui_async.c tests/scene_gpu_trace.h core/host.h include/openaurora/services.h include/openaurora/ui_engine.h include/openaurora/events.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
 

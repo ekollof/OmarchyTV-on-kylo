@@ -153,17 +153,22 @@ reverse-engineered vendor screens and a later OmarchyTV skin share one engine.
 | piece | owns |
 |---|---|
 | ui.engine | display/alpha discovery and rebinding, OAI1 asset loading from `ui.dir` (lazy, bounded cache), clear/fill/blit/blit_scaled, present/completion receipts and the readiness receipt, the key topic, the `ui.fps` repaint timer, skin registration/`ui.skin` |
-| ui.engine service v1 | `info`, draw ops, `icon(name)`, `present`, `present_pending`, `set_scene_transform`, `reset_ready`, `now_ms`, `register_skin`, `unregister_skin` |
+| ui.engine service v2 | v1 drawing prefix plus `register_skin_dispatch`/`dispatch_skin`; legacy `register_skin` rejects with ENOTSUP |
 | ui_vendor | the renamed vendor skin: portal rail/cards, source selection, dialogs, animations, its own screen state and `OA_SVC_PORTAL` |
 | ui_omarchy | the OmarchyTV skeleton over the same engine: dark shell, accent rail and placeholder tiles, with its own key semantics; no vendor assets and no published service yet |
 
 Implemented in the 2026-11-01 split: the engine holds display/display.async/
 display.alpha, writes the readiness receipt, subscribes the key topic and owns
-the `ui.fps` repaint timer. It publishes ui.engine v1 with `register_skin` and
-`unregister_skin`; `ui.skin` selects by name. Skin callbacks (enter/paint/key)
-are posted back to the skin's owner token, so timers and actions created there
-stay skin-owned. A new skin generation calls `reset_ready` and must earn its own
-receipt; a serial epoch excludes completions from before the reset. The engine
+the `ui.fps` repaint timer. The reviewed engine publishes ui.engine v2;
+`ui.skin` selects by name. Each skin registers its own module-lifetime
+trampoline/data with `register_skin_dispatch`; it invokes `dispatch_skin` under
+the skin owner. Only skin code is queued under that owner, so forced engine
+removal leaves no engine code or heap payloads in its queue. Registration resets
+readiness and the scene transform; a serial epoch excludes old completions.
+`present_pending` returns1 pending,0 completed,-1/errno failed. Build matching
+v2 engine/skins; legacy registration fails ENOTSUP. UI-ENGINE-REVIEW records242
+host checks, focused sanitizers/native contract tests and real GPU restoration.
+The engine
 loads icons lazily; the vendor skin probes `rail_hlNN` at start to keep the
 vendor highlight's missing-asset behavior. `ui_vendor` is the renamed vendor
 skin; `ui_omarchy` is a working OmarchyTV skeleton (dark shell, accent rail,

@@ -18,6 +18,11 @@ remove vendor features from scope. Telemetry and advertising are excluded.
 
 ## Core and runtime
 
+- [x] Review UI engine/skin lifetime: skin-owned posted trampolines, bounded
+      queue, v2 registration, forced unload/rebind, failed receipts/readiness,
+      companion return, timer failure and new-skin identity. Host242/focused
+      sanitizer/native contracts and actual GPU lifecycle/restoration pass.
+      UI-ENGINE-REVIEW. Content/fallback/visual acceptance remain open.
 - [x] ABI 3 nonblocking quiescence gate retains busy modules through stop/unload/
       reload and failed init/start, including deferred activation; force cannot
       bypass it. Six real-DSO host/sanitizer/ARM-qemu/TV groups pass. QUIESCENCE.

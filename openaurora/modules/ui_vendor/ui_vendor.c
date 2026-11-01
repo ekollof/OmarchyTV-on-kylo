@@ -156,6 +156,12 @@ struct ctx {
 };
 
 static struct ctx *g_ctx;
+static const oa_ui_skin g_skin;
+static void skin_dispatch(void *ud)
+{
+    struct ctx *c = ud;
+    if (c && c->d && !c->suspended) c->d->dispatch_skin();
+}
 
 static uint64_t now_ms(void)
 {
@@ -794,9 +800,14 @@ static void rebind_now(struct ctx *c)
     c->rebind_tick = 0;
     c->rebind_pending = 0;
     if (!c->d) {
-        c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 1);
+        c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 2);
         if (!c->d)
             return;
+        if (c->d->register_skin_dispatch(&g_skin, c, skin_dispatch)) {
+            c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
+            c->d = NULL;
+            return;
+        }
     }
     int w = 0, h = 0;
     if (c->d->info(&w, &h, NULL, NULL) != 0)
@@ -1037,12 +1048,11 @@ static const oa_ui_skin g_skin = { "vendor", skin_enter, NULL, skin_paint, skin_
 static int m_start(void *v)
 {
     struct ctx *c = v;
-    c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 1);
+    c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 2);
     if (!c->d) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "no ui.engine service — load mod_ui_engine first");
         return -1;
     }
-    c->d->reset_ready();
     c->scene_painted = 0;
 
     const char *spec = c->api->config_get(c->api->priv, "ui.cards", "");
@@ -1162,7 +1172,7 @@ static int m_start(void *v)
     }
     slide_begin(c, "start");
 
-    if (c->d->register_skin(&g_skin, c) != 0) {
+    if (c->d->register_skin_dispatch(&g_skin, c, skin_dispatch) != 0) {
         c->api->unpublish(c->api->priv, OA_SVC_PORTAL);
         c->portal_on = 0;
         if (c->anim) {
@@ -1280,15 +1290,15 @@ static int m_suspend(void *v)
 static int m_resume(void *v)
 {
     struct ctx *c = v;
-    c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 1);
+    c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 2);
     if (!c->d)
         return -1;
-    c->suspended = 0;
-    if (c->d->register_skin(&g_skin, c) != 0) {
+    if (c->d->register_skin_dispatch(&g_skin, c, skin_dispatch) != 0) {
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
         c->d = NULL;
         return -1;
     }
+    c->suspended = 0;
     /* a resumed portal replays the focus highlight from its first frame */
     c->rail_hl_frame = 0;
     c->rail_hl_play = 1;

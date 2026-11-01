@@ -49,6 +49,19 @@ syntax defect.
 
 ## Development build and evidence
 
+UI-ENGINE-REVIEW-2026-11-01 supersedes the split's v1 dispatch contract below.
+ui.engine v2 uses skin-owned trampolines and a bounded event queue; legacy
+register_skin fails ENOTSUP. Forced unload/rebind, both skins' re-registration,
+async/alpha companion return, failed receipts/readiness, timer failures, assets
+and identity reset are covered. Host242 checks/focused ASan/UBSan/native skin
+contracts pass. Actual GPU PID4365 passes vendor-instant Select,11 rail revisions,
+reload/module cycle/BGRA24,23,22,153/full restoration. Backing MD5 remains
+41735daa69dc137743b59efe12db4a19, pan0,1080, same boot/PID1785/access/privacy.
+Staging/backups/helpers removed. Native build-tv-v3/ui-engine-review and report
+identify final binaries; production16/installed ABI1 unchanged. Initial retained-
+transform timeout was fully restored and corrected. Full content/visual parity
+and automatic fallback remain open.
+
 UI-TRANSPARENCY-2026-11-01: firmware rectangle reader + ARM fill/opacity
 conversion recover portal RGBA36,38,40,153. Both display backends now publish
 display.alpha v1; canvas source-over and CPU identity premultiplication preserve

@@ -1,0 +1,33 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+saved bytes=16588800 original_yoffset=1080 MAU=0 backup=/tmp/oa-scene-helper-20261101/framebuffer.backup
+scene display module id=4 service=display.async
+direction type4 top_rows identity=0 p0=45 p1=0 (starts lower, slides up)
+[676957] ERR  host         graphics: cleanup pending; retry stop/unload
+[676958] ERR  host         graphics: cleanup pending; retry stop/unload
+[676958] ERR  host         graphics: cleanup pending; retry stop/unload
+[676958] ERR  host         graphics: cleanup pending; retry stop/unload
+[676970] ERR  host         graphics: cleanup pending; retry stop/unload
+[676970] ERR  host         graphics: cleanup pending; retry stop/unload
+[676991] ERR  host         graphics: cleanup pending; retry stop/unload
+[676991] ERR  host         graphics: cleanup pending; retry stop/unload
+[677011] ERR  host         graphics: cleanup pending; retry stop/unload
+[677012] ERR  host         graphics: cleanup pending; retry stop/unload
+[677031] ERR  host         graphics: cleanup pending; retry stop/unload
+[677031] ERR  host         graphics: cleanup pending; retry stop/unload
+[677051] ERR  host         graphics: cleanup pending; retry stop/unload
+[677051] ERR  host         graphics: cleanup pending; retry stop/unload
+UI readiness after GPU completion serial=17179869188 revision=17179869209 pid=4365
+UI rail completed image revisions=11 over2000ms (completion-paced; not a frame-order measurement)
+UI selection mode=vendor-instant animation receipt=0 completed screen=1 identity receipt=17179869200
+UI readiness after GPU completion serial=17179869204 revision=17179869544 pid=4365
+UI reload id=24 completed with fresh receipt
+UI host-only suspend/resume completed receipt=17179869206
+UI backdrop raw BGRA=24,23,22,153 expected24,23,22,153
+scene display observed frame completions=3
+graphics host drained and unloaded provider
+restored bytes=16588800 yoffset=1080 MAU=0 region_match=1 snapshot_match=1
+probe_exit=0

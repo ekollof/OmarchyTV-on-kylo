@@ -2,22 +2,44 @@
  * runtime; the vendor skin and the OmarchyTV skeleton switch by unloading one
  * and starting the other (no rebuild). Recorder display only. */
 #include <assert.h>
+#include <errno.h>
+#include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "host.h"
 #include "openaurora/events.h"
 #include "openaurora/services.h"
 #include "ui_nav_trace.h"
+#include "openaurora/ui_engine.h"
 
 static const char *g_skin = "omarchy";
+static char asset_dir[] = "/tmp/oa-ui-review-XXXXXX";
+static int use_fps;
+
+static void pump(oa_host *h)
+{
+    oa_host_dispatch_posts(h);
+    for (int i = 0; i < MAX_TIMERS; i++) if (h->timers[i].active && !h->timers[i].repeat_ms) {
+        oa_timer t = h->timers[i]; h->timers[i].active = 0;
+        h->cur_module = t.owner; t.cb(t.ud); h->cur_module = 0;
+    }
+    oa_host_dispatch_posts(h);
+}
+static void queue_key(oa_host *h)
+{ oa_key_event e = {.id = 19, .kind = OA_KEY_PRESS}; h->api.emit(h, OA_TOPIC_KEY, &e); }
+static uint64_t deny_timer(void *p, uint32_t delay, uint32_t repeat, void (*cb)(void *), void *ud)
+{ (void)p; (void)delay; (void)repeat; (void)cb; (void)ud; return 0; }
 
 static const char *config(void *ud, const char *key, const char *def)
 {
     (void)ud;
     if (!strcmp(key, "ui.skin")) return g_skin;
     if (!strcmp(key, "ui.ok_file")) return "";
-    if (!strcmp(key, "ui.fps")) return "0";
+    if (!strcmp(key, "ui.fps")) return use_fps ? "20" : "0";
+    if (!strcmp(key, "ui.dir")) return asset_dir;
     return def;
 }
 
@@ -44,6 +66,7 @@ static int has_fill(const oa_nav_trace *trace, int x, int y, int w, int h, int r
 int main(int argc, char **argv)
 {
     assert(argc == 2);
+    assert(mkdtemp(asset_dir));
     oa_host host;
     assert(!oa_host_init(&host, argv[1], NULL));
     host.log_level = OA_LOG_ERROR;
@@ -54,11 +77,29 @@ int main(int argc, char **argv)
     assert(!command(&host, "start nav_display", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(!command(&host, "load ui_engine", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_engine", out, sizeof out) && !strcmp(out, "ok\n"));
+    const oa_ui_engine_iface *engine = host.api.lookup(&host, OA_SVC_UI_ENGINE, 2);
+    assert(engine && engine->register_skin(NULL, NULL) == -1 && errno == ENOTSUP);
+    char asset_path[256]; snprintf(asset_path, sizeof asset_path, "%s/bad.rgba", asset_dir);
+    const unsigned char blob[] = {'O','A','I','1',1,0,0,0,1,0,0,0,10,20,30,128,99};
+    FILE *file = fopen(asset_path, "wb");
+    assert(file && fwrite(blob, 1, sizeof blob, file) == sizeof blob && !fclose(file));
+    assert(!engine->icon("bad")); /* trailing bytes are malformed, not a cached valid icon */
+    file = fopen(asset_path, "wb");
+    assert(file && fwrite(blob, 1, 16, file) == 16 && !fclose(file));
+    const oa_ui_icon *icon = engine->icon("bad");
+    assert(icon && icon->w == 1 && icon->h == 1 && icon->rgba[3] == 128);
+    assert(!engine->icon("../bad"));
+    char long_name[80]; memset(long_name, 'x', sizeof long_name-1); long_name[79] = 0;
+    assert(!engine->icon(long_name));
+    assert(!engine->set_scene_transform(4, 0.5f));
+    puts("  ok   engine rejects malformed or ambiguous asset names/sizes and keeps RGBA alpha");
 
     assert(!command(&host, "load ui_omarchy", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_omarchy", out, sizeof out) && !strcmp(out, "ok\n"));
     const oa_nav_trace *trace = host.api.lookup(&host, OA_SVC_NAV_TRACE, 1);
     assert(trace);
+    int transform;
+    assert(!trace->transform(&transform, NULL, NULL) && transform == 0);
     assert(has_fill(trace, 0, 0, 14, 1080, 0, 122, 204));      /* omarchy side bar */
     assert(has_fill(trace, 40, 88, 300, 180, 24, 28, 36));      /* skeleton tile */
 
@@ -80,5 +121,62 @@ int main(int argc, char **argv)
     assert(has_fill(trace, 0, 0, 14, 1080, 0, 122, 204));
 
     puts("  ok   ui.skin selects the engine's active skin; vendor and omarchy switch by reload, no rebuild");
+    queue_key(&host);
+    assert(host.nposts > 0);
+    assert(!oa_module_unload(&host, "ui_engine", 1));
+    oa_host_dispatch_posts(&host); /* queued skin trampoline must survive provider dlclose */
+    assert(!command(&host, "load ui_engine", out, sizeof out));
+    assert(!command(&host, "start ui_engine", out, sizeof out));
+    pump(&host);
+    queue_key(&host); oa_host_dispatch_posts(&host);
+    assert(has_fill(trace, 0, 0, 14, 1080, 0, 122, 204));
+    assert(oa_module_unload(&host, "ui_engine", 0) == -1);
+    puts("  ok   queued input survives forced engine removal safely; Omarchy rebinds and pins its replacement");
+    for (unsigned i = 0; i < 40; i++) {
+        queue_key(&host);
+        assert(!oa_module_unload(&host, "ui_omarchy", 0));
+        oa_mod *m = oa_module_load(&host, "ui_omarchy");
+        assert(m && !oa_module_start(&host, m));
+    }
+    pump(&host);
+    queue_key(&host);
+    assert(!oa_module_suspend_all(&host));
+    oa_host_dispatch_posts(&host); /* old generation cannot call a suspended skin */
+    assert(!oa_module_resume_all(&host)); pump(&host);
+    puts("  ok   queued-input skin unload/reload and suspend/resume leave no borrowed callbacks or heap posts");
+    assert(!oa_module_unload(&host, "ui_omarchy", 0));
+    g_skin = "vendor";
+    oa_mod *m = oa_module_load(&host, "ui_vendor"); assert(m && !oa_module_start(&host, m));
+    pump(&host); queue_key(&host);
+    assert(!oa_module_unload(&host, "ui_engine", 1));
+    oa_host_dispatch_posts(&host);
+    m = oa_module_load(&host, "ui_engine"); assert(m && !oa_module_start(&host, m));
+    pump(&host);
+    assert(oa_module_unload(&host, "ui_engine", 0) == -1);
+    const oa_portal_iface *portal = host.api.lookup(&host, OA_SVC_PORTAL, 1);
+    assert(portal);
+    queue_key(&host); oa_host_dispatch_posts(&host);
+    assert(has_fill(trace, 11, 571, 150, 150, 129, 25, 36));
+    puts("  ok   vendor skin re-registers after forced engine replacement and receives keys again");
+    assert(!oa_module_unload(&host, "ui_vendor", 0));
+    assert(!oa_module_unload(&host, "ui_engine", 0));
+    use_fps = 1; g_skin = "omarchy";
+    m = oa_module_load(&host, "ui_engine"); assert(m);
+    uint64_t (*real_timer)(void *, uint32_t, uint32_t, void (*)(void *), void *) = host.api.timer_add;
+    host.api.timer_add = deny_timer;
+    assert(oa_module_start(&host, m) == -1);
+    host.api.timer_add = real_timer;
+    assert(!oa_module_start(&host, m));
+    m = oa_module_load(&host, "ui_omarchy"); assert(m && !oa_module_start(&host, m)); pump(&host);
+    assert(!oa_module_suspend_all(&host));
+    host.api.timer_add = deny_timer;
+    assert(oa_module_resume_all(&host) == -1);
+    assert(oa_host_find_module(&host, "ui_engine")->state == OA_ST_SUSPENDED);
+    host.api.timer_add = real_timer;
+    assert(!oa_module_resume_all(&host)); pump(&host);
+    puts("  ok   configured repaint timer allocation failures reject start/resume and remain retryable");
+    host.stop_requested = 1; assert(!oa_host_run(&host));
+    close(host.selfpipe[0]); close(host.selfpipe[1]); pthread_mutex_destroy(&host.post_mu);
+    assert(!unlink(asset_path) && !rmdir(asset_dir));
     return 0;
 }

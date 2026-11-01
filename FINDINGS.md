@@ -6,6 +6,13 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+UI engine review correction (2026-11-01): posting engine code under the skin
+owner did not protect engine lifetime and leaked heap userdata when skin posts
+were purged. ui.engine v2 now posts only skin-owned trampolines, uses a bounded
+value queue and re-registers both skins after engine replacement. See UI-ENGINE-
+REVIEW for242 host checks/sanitizers/native contracts and real GPU restoration.
+Earlier v1 seam evidence does not establish those failure paths.
+
 “Implemented,” “loads,” “read back,” “historically visible,” and “works independently
 at cold boot” are separate claims. Tests only support their exercised scope.
 A failed probe may show a bad request or missing init, not an unusable API.

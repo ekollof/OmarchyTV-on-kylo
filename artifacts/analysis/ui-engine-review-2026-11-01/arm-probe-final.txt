@@ -1,0 +1,3 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -DOA_WINDOW_BROKER  -o build-tv-v3/ui-engine-review/scene-module-probe tools/display/egl-window-probe.c tools/display/scene-module-client.c common/scene_broker_transport.c build-tv-v3/ui-engine-review/core/check.o build-tv-v3/ui-engine-review/core/control.o build-tv-v3/ui-engine-review/core/host.o build-tv-v3/ui-engine-review/core/module.o -ldl -pthread -lm
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

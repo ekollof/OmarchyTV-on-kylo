@@ -1,0 +1,31 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+saved bytes=16588800 original_yoffset=1080 MAU=0 backup=/tmp/oa-scene-helper-20261101/framebuffer.backup
+scene display module id=4 service=display.async
+direction type4 top_rows identity=0 p0=45 p1=0 (starts lower, slides up)
+graphics module error=110 errno=110
+[614462] ERR  host         graphics: cleanup pending; retry stop/unload
+[614462] ERR  host         graphics: cleanup pending; retry stop/unload
+[614462] ERR  host         graphics: cleanup pending; retry stop/unload
+[614462] ERR  host         graphics: cleanup pending; retry stop/unload
+[614482] ERR  host         graphics: cleanup pending; retry stop/unload
+[614482] ERR  host         graphics: cleanup pending; retry stop/unload
+[614503] ERR  host         graphics: cleanup pending; retry stop/unload
+[614503] ERR  host         graphics: cleanup pending; retry stop/unload
+[614523] ERR  host         graphics: cleanup pending; retry stop/unload
+[614523] ERR  host         graphics: cleanup pending; retry stop/unload
+[614543] ERR  host         graphics: cleanup pending; retry stop/unload
+[614543] ERR  host         graphics: cleanup pending; retry stop/unload
+[614563] ERR  host         graphics: cleanup pending; retry stop/unload
+[614563] ERR  host         graphics: cleanup pending; retry stop/unload
+[614583] ERR  host         graphics: cleanup pending; retry stop/unload
+[614583] ERR  host         graphics: cleanup pending; retry stop/unload
+UI readiness after GPU completion serial=17179869188 revision=17179869209 pid=4062
+UI rail completed image revisions=11 over2000ms (completion-paced; not a frame-order measurement)
+scene display observed frame completions=3
+graphics host drained and unloaded provider
+restored bytes=16588800 yoffset=1080 MAU=0 region_match=1 snapshot_match=1
+probe_exit=1

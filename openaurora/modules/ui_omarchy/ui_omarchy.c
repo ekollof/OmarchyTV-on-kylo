@@ -18,11 +18,19 @@ struct ctx {
     const oa_host_api *api;
     const oa_ui_engine_iface *d;
     int suspended;
+    uint32_t removed, changed;
+    uint64_t rebind;
 };
+static const oa_ui_skin g_skin;
+static void dispatch(void *ud)
+{
+    struct ctx *c = ud;
+    if (c->d && !c->suspended) c->d->dispatch_skin();
+}
 
 static void paint(struct ctx *c)
 {
-    const oa_ui_engine_iface *d = c->d;
+    const oa_ui_engine_iface *d = c ? c->d : NULL;
     int W = 0, H = 0;
     if (!c || !d || c->suspended)
         return;
@@ -67,6 +75,35 @@ static int skin_key(void *ud, int id)
 
 static const oa_ui_skin g_skin = { "omarchy", enter, leave, skin_paint, skin_key };
 
+static void rebind(void *ud)
+{
+    struct ctx *c = ud;
+    c->rebind = 0;
+    if (c->suspended || c->d) return;
+    c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 2);
+    if (!c->d) return;
+    if (c->d->register_skin_dispatch(&g_skin, c, dispatch)) {
+        c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
+        c->d = NULL;
+    }
+}
+static void changed(const void *ev, void *ud)
+{
+    (void)ev;
+    struct ctx *c = ud;
+    if (!c->suspended && !c->d && !c->rebind)
+        c->rebind = c->api->timer_add(c->api->priv, 0, 0, rebind, c);
+}
+static void removed(const void *ev, void *ud)
+{
+    const oa_service_removed_event *e = ev;
+    struct ctx *c = ud;
+    if (e && e->name && !strcmp(e->name, OA_SVC_UI_ENGINE)) {
+        c->d = NULL;
+        changed(NULL, c);
+    }
+}
+
 static int m_init(const oa_host_api *api, void **out)
 {
     if (!api || api->size < sizeof(oa_host_api) || api->abi != OA_ABI_VERSION)
@@ -82,15 +119,17 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct ctx *c = v;
-    c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 1);
+    c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 2);
     if (!c->d)
         return -1;
-    c->d->reset_ready();
-    if (c->d->register_skin(&g_skin, c) != 0) {
+    if (c->d->register_skin_dispatch(&g_skin, c, dispatch) != 0) {
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
         c->d = NULL;
         return -1;
     }
+    c->removed = c->api->subscribe(c->api->priv, OA_TOPIC_SERVICE_REMOVED, removed, c);
+    c->changed = c->api->subscribe(c->api->priv, OA_TOPIC_MODULE_CHANGED, changed, c);
+    if (!c->removed || !c->changed) return -1;
     if (c->api->config_get(c->api->priv, "ui.paint", "1")[0] == '1')
         paint(c);
     return 0;
@@ -99,6 +138,11 @@ static int m_start(void *v)
 static void m_stop(void *v)
 {
     struct ctx *c = v;
+    if (c->removed) c->api->unsubscribe(c->api->priv, c->removed);
+    if (c->changed) c->api->unsubscribe(c->api->priv, c->changed);
+    c->removed = c->changed = 0;
+    if (c->rebind) c->api->timer_del(c->api->priv, c->rebind);
+    c->rebind = 0;
     if (c->d) {
         c->d->unregister_skin(&g_skin);
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
@@ -116,6 +160,8 @@ static int m_suspend(void *v)
 {
     struct ctx *c = v;
     c->suspended = 1;
+    if (c->rebind) c->api->timer_del(c->api->priv, c->rebind);
+    c->rebind = 0;
     if (c->d) {
         c->d->unregister_skin(&g_skin);
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
@@ -127,15 +173,15 @@ static int m_suspend(void *v)
 static int m_resume(void *v)
 {
     struct ctx *c = v;
-    c->suspended = 0;
-    c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 1);
+    c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 2);
     if (!c->d)
         return -1;
-    if (c->d->register_skin(&g_skin, c) != 0) {
+    if (c->d->register_skin_dispatch(&g_skin, c, dispatch) != 0) {
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
         c->d = NULL;
         return -1;
     }
+    c->suspended = 0;
     paint(c);
     return 0;
 }
