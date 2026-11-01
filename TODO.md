@@ -346,10 +346,18 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       fb1 backed up/restored and staging removed. The p0/06 capture is R/B
       swapped; the screen uses the resource palette #BE1E2D/#FE9419. Localised
       source names and exact focused font metrics remain open.
+- [x] Captured picture-settings (Beeld) state: `ui_vendor` SCREEN_SETTINGS
+      paints the three R/B-corrected p0/03 bands (rail, top tiles, category row
+      and the "Beeld" caption) over (13,14,14); `ui.screen=settings` and Select
+      on rail 4 enter it, Exit/Menu return. Static state, explicitly not the
+      interactive settings screen. tests/ui_settings.c passes; a real fb1 run
+      is pixel-identical to the corrected p0/03 (0/2,073,600 differing pixels);
+      fb1 backed up/restored, staging removed. Evidence:
+      artifacts/analysis/settings-2026-11-01/.
 - [ ] Complete the remaining vendor screens and labels. The injected portal
       above is not all-screen parity or a confirmed live remote capture. The
-      source-selection panel (DialogSourceSelection.svg 185) is the first
-      implemented screen beyond the portal; its rows/focus are vendor-derived.
+      source-selection panel (DialogSourceSelection.svg 185) and the captured
+      Beeld state are implemented; neither is the full interactive screen.
 - [x] UI engine first slice: mod_ui_engine owns display/alpha discovery and
       rebinding, lazy OAI1 assets, draw/present/async receipts and the readiness
       receipt; it publishes ui.engine v1 and the ui/ready event. mod_ui_vendor (the

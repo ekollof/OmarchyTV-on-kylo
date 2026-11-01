@@ -915,8 +915,19 @@ a 296x71 #F7941E row. Still unresolved: whether p0/03's bottom row is the
 launcher app row showing sub-launcher shortcuts and the top tiles are the
 SubLauncherDialog settings list, or all of it is one SettingsDialog; the dialog
 popup anchor/window offset and the SettingItemsListBox item placement on the
-horizontal list are not decoded. No screen code was written; a static/guessed
-Beeld screen was not shipped.
+horizontal list are not decoded.
+
+What ships is explicitly the captured state, not that interaction: ui_vendor
+SCREEN_SETTINGS=3 paints three R/B-corrected p0/03 bands (settings_rail
+0,180,176,660; settings_top 0,240,1920,180; settings_cat 0,440,1920,260 with
+the "Beeld" caption) over background (13,14,14). ui.screen=settings and
+Select on rail 4 enter it; Exit/Menu return to the portal. It is static: no
+navigation, per-category lists or localization. tests/ui_settings.c passes,
+and a real fb1 run (PID26424, mod_ui_vendor md5 524d58bf...) is pixel-identical
+to the swap-corrected p0/03 over the whole 1920x1080 (0 differing pixels, max
+channel delta 0, identical sha256 13125757...); fb1 was backed up/restored
+(16588800 bytes, offset 0,1080) and staging removed. Evidence:
+artifacts/analysis/settings-2026-11-01/.
 
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.

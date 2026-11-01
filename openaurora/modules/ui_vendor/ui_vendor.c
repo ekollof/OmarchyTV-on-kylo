@@ -202,7 +202,7 @@ static const oa_ui_icon *find_icon(struct ctx *c, const char *name)
 
 /* ------------------------------------------------------------------ geometry */
 
-enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, ANIM_DIALOG = 1 };
+enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, SCREEN_SETTINGS = 3, ANIM_DIALOG = 1 };
 
 static void rail_slot(int focus, int i, int *x, int *y, int *w, int *h)
 {
@@ -306,12 +306,43 @@ static void paint_sources(struct ctx *c)
     c->api->log(c->api->priv, OA_LOG_INFO, "painted source selection: row %d", c->src);
 }
 
+static void paint_settings(struct ctx *c)
+{
+    const oa_ui_engine_iface *d = c->d;
+    if (!c || !d)
+        return;
+    /* Captured Beeld state from p0/03, R/B-corrected: rail 0,180,176,660; top
+     * setting tiles 0,240,1920,180; category row and the selected "Beeld"
+     * caption 0,440,1920,260. That capture stores the background as (14,14,13),
+     * so the corrected background is (13,14,14). Static state; no navigation. */
+    d->clear(13, 14, 14);
+    const oa_ui_icon *top = find_icon(c, "settings_top");
+    if (top)
+        d->blit(0, 240, top->w, top->h, top->rgba);
+    const oa_ui_icon *cat = find_icon(c, "settings_cat");
+    if (cat)
+        d->blit(0, 440, cat->w, cat->h, cat->rgba);
+    const oa_ui_icon *rail = find_icon(c, "settings_rail");
+    if (rail)
+        d->blit(0, 180, rail->w, rail->h, rail->rgba);
+    c->scene_painted = 1;
+    if (d->present() != 0) {
+        c->api->log(c->api->priv, OA_LOG_ERROR, "settings present failed");
+        return;
+    }
+    c->api->log(c->api->priv, OA_LOG_INFO, "painted captured picture-settings state");
+}
+
 static void paint(struct ctx *c)
 {
     const oa_ui_engine_iface *d;
     int W = 0, H = 0;
     if (!c || !c->d) return;   /* a suspended/stopped skin has no engine hold */
     d = c->d;
+    if (c->screen == SCREEN_SETTINGS) {
+        paint_settings(c);
+        return;
+    }
     if (c->screen == SCREEN_SOURCES) {
         paint_sources(c);
         return;
@@ -773,6 +804,13 @@ static void cancel_dialog(struct ctx *c)
 
 static void move_key(struct ctx *c, uint8_t id)
 {
+    if (c->screen == SCREEN_SETTINGS) {
+        if (id == 10 || id == 48) {
+            c->screen = SCREEN_PORTAL;
+            if (c->d) paint(c);
+        }
+        return;
+    }
     if (c->screen == SCREEN_SOURCES) {
         if (id == 20 && c->src > 0) {
             c->src--;
@@ -830,6 +868,13 @@ static void move_key(struct ctx *c, uint8_t id)
         if (c->band == BAND_RAIL && c->rail == 1) {
             c->screen = SCREEN_SOURCES;
             c->src = 0;
+            if (c->d) paint(c);
+            return;
+        }
+        /* Rail 4 is the vendor wrench; Select shows the captured picture-
+         * settings state. Static state until the shortcut list is decoded. */
+        if (c->band == BAND_RAIL && c->rail == 4) {
+            c->screen = SCREEN_SETTINGS;
             if (c->d) paint(c);
             return;
         }
@@ -936,6 +981,8 @@ static int m_start(void *v)
         if (c->src < 0 || c->src >= MAX_SOURCES)
             c->src = 0;
     }
+    if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "settings"))
+        c->screen = SCREEN_SETTINGS;
     if (c->rail < 0 || c->rail > 4)
         c->rail = 2;
     if (c->nc > 0 && c->card >= c->nc)
@@ -1184,7 +1231,7 @@ static int m_restore(void *v, const void *buf, size_t len)
     if (!c || !buf || len != 4)
         return -1;
     const unsigned char *bytes = buf;
-    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_SOURCES)
+    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_SETTINGS)
         return -1;
     c->band = bytes[0];
     c->rail = bytes[1];
