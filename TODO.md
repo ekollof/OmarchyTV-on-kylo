@@ -393,8 +393,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 - [ ] Finish the remaining animation callers: apply the recovered full-screen transform in the
       renderer composite. `setFullScreenAnimationProgress` is mapped: SVGDialog::startAnimation maps
       dialog modes 57..64 to HAL types 1..8 for a 1000 ms controller, onAnimationProgress feeds
-      min(1,1+(p-1)^3), destroy forces 1.0, and `oa_fs_apply` reproduces the per-type vertex rules
-      with unit vectors. Nothing consumes it yet.
+      min(1,1+(p-1)^3), destroy forces 1.0. The HAL transforms one 4-vertex clip-space quad:
+      type 1 scales the right vertices (keystone), 2/3 shift x, 4/5 shift y (corrected from the
+      decompiler's "second vertex group"), 7/8 scale. `oa_fs_apply` and the scene-level
+      `oa_fs_scene_transform` reproduce the rules with vectors; the display backend still needs the
+      scene surface + mesh warp, and the dialog's per-resource mode is unrecovered.
 - [ ] Audit pixel-format boundaries as UI work expands: raw 32bpp OSD is BGRA;
       OAI1/blit inputs are RGBA; saved screenshots are RGB. Preserve provenance
       of pre-fix red/blue-swapped captures and verify other API formats explicitly.

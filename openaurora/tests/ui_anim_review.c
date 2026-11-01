@@ -192,10 +192,10 @@ int main(int argc, char **argv)
         for (int i = 0; i < 4; i++) assert(fabsf(vx[i] - 1.0f / 12.0f) < 1e-6f);
         for (int i = 4; i < 8; i++) assert(vx[i] == 0.0f);
 
-        for (int i = 0; i < 8; i++) vx[i] = 0.0f;
+        for (int i = 0; i < 8; i++) { vx[i] = 0.0f; vy[i] = 0.0f; }
         oa_fs_apply(OA_FS_SLIDE_POS_SECOND, 0.5f, vx, vy, 8);
+        for (int i = 0; i < 4; i++) assert(fabsf(vy[i] - 1.0f / 12.0f) < 1e-6f);
         for (int i = 0; i < 4; i++) assert(vx[i] == 0.0f);
-        for (int i = 4; i < 8; i++) assert(fabsf(vx[i] - 1.0f / 12.0f) < 1e-6f);
 
         for (int i = 0; i < 8; i++) { vx[i] = 6.0f; vy[i] = 3.0f; }
         oa_fs_apply(OA_FS_SCALE, 0.5f, vx, vy, 8);
@@ -203,7 +203,7 @@ int main(int argc, char **argv)
         assert(fabsf(vy[0] - 2.5f) < 1e-5f);           /* 3 * 5/6 */
         assert(vx[4] == 6.0f && vy[4] == 3.0f);
 
-        /* slides: (1-p)/6; negative for 2/4, positive for 3/5; second quad only for 4/5 */
+        /* slides: (1-p)/6; 2/3 shift x, 4/5 shift y; negative for 2/4, positive for 3/5 */
         for (int i = 0; i < 8; i++) { vx[i] = 0.0f; vy[i] = 0.0f; }
         oa_fs_apply(OA_FS_SLIDE_NEG, 0.0f, vx, vy, 8);
         for (int i = 0; i < 4; i++) assert(fabsf(vx[i] + 1.0f / 6.0f) < 1e-6f);
@@ -213,15 +213,15 @@ int main(int argc, char **argv)
         oa_fs_apply(OA_FS_SLIDE_POS, 1.0f, vx, vy, 8);  /* p = 1 -> no shift */
         for (int i = 0; i < 8; i++) assert(vx[i] == 0.0f);
 
-        for (int i = 0; i < 8; i++) vx[i] = 0.0f;
+        for (int i = 0; i < 8; i++) { vx[i] = 0.0f; vy[i] = 0.0f; }
         oa_fs_apply(OA_FS_SLIDE_NEG_SECOND, 0.0f, vx, vy, 8);
-        for (int i = 0; i < 4; i++) assert(vx[i] == 0.0f);
-        for (int i = 4; i < 8; i++) assert(fabsf(vx[i] + 1.0f / 6.0f) < 1e-6f);
+        for (int i = 0; i < 4; i++) assert(fabsf(vy[i] + 1.0f / 6.0f) < 1e-6f);
+        for (int i = 0; i < 8; i++) assert(vx[i] == 0.0f);
 
-        for (int i = 0; i < 8; i++) vx[i] = 0.0f;
+        for (int i = 0; i < 8; i++) { vx[i] = 0.0f; vy[i] = 0.0f; }
         oa_fs_apply(OA_FS_SLIDE_POS_SECOND, 0.0f, vx, vy, 8);
-        for (int i = 0; i < 4; i++) assert(vx[i] == 0.0f);
-        for (int i = 4; i < 8; i++) assert(fabsf(vx[i] - 1.0f / 6.0f) < 1e-6f);
+        for (int i = 0; i < 4; i++) assert(fabsf(vy[i] - 1.0f / 6.0f) < 1e-6f);
+        for (int i = 0; i < 8; i++) assert(vx[i] == 0.0f);
 
         /* type 6 changes no vertex */
         for (int i = 0; i < 8; i++) { vx[i] = 7.0f; vy[i] = 9.0f; }
@@ -269,8 +269,8 @@ int main(int argc, char **argv)
         oa_fs_apply(99, 0.5f, vx, vy, 8);
         for (int i = 0; i < 8; i++) assert(vx[i] == 1.0f && vy[i] == 1.0f);
         for (int i = 0; i < 8; i++) { vx[i] = 0.0f; vy[i] = 0.0f; }
-        oa_fs_apply(OA_FS_SLIDE_NEG_SECOND, 0.0f, vx, vy, 5); /* only vertex 4 exists */
-        assert(fabsf(vx[4] + 1.0f / 6.0f) < 1e-6f);
+        oa_fs_apply(OA_FS_SLIDE_NEG_SECOND, 0.0f, vx, vy, 5); /* 4-vertex quad, 5-vert buffer */
+        assert(fabsf(vy[0] + 1.0f / 6.0f) < 1e-6f && vx[0] == 0.0f);
         oa_fs_apply(OA_FS_SCALE_AXES, 0.0f, NULL, vy, 8);     /* NULL is tolerated */
         oa_fs_apply(OA_FS_SCALE_AXES, 0.0f, vx, vy, 0);
     }
@@ -279,6 +279,7 @@ int main(int argc, char **argv)
      * keystone type must be flagged as not representable by one affine. */
     {
         static const int types[] = { OA_FS_NONE, OA_FS_SLIDE_NEG, OA_FS_SLIDE_POS,
+                                     OA_FS_SLIDE_NEG_SECOND, OA_FS_SLIDE_POS_SECOND,
                                      OA_FS_UNIFORM_ONLY, OA_FS_SCALE, OA_FS_WOBBLE };
         static const float steps[] = { 0.0f, 0.5f, 1.0f };
         const float px[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
@@ -298,18 +299,6 @@ int main(int argc, char **argv)
                     assert(fabsf(vy[i] - (sc.dy + sc.sy * py[i])) < 1e-6f);
                 }
             }
-
-        /* Types 4/5 address the vendor's second vertex group; for one composited scene they carry
-         * the same shift as 2/3. */
-        {
-            oa_fs_scene a, b;
-            oa_fs_scene_transform(OA_FS_SLIDE_NEG_SECOND, 0.25f, &a);
-            oa_fs_scene_transform(OA_FS_SLIDE_NEG, 0.25f, &b);
-            assert(a.dx == b.dx && a.sx == b.sx && a.sy == b.sy);
-            oa_fs_scene_transform(OA_FS_SLIDE_POS_SECOND, 0.25f, &a);
-            oa_fs_scene_transform(OA_FS_SLIDE_POS, 0.25f, &b);
-            assert(a.dx == b.dx);
-        }
 
         oa_fs_scene_transform(OA_FS_SCALE_AXES, 0.5f, &sc);
         assert(sc.affine == 0);                       /* keystone, needs a mesh warp */

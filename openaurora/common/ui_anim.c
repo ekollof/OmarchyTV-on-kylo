@@ -267,12 +267,16 @@ void oa_fs_apply(int type, float progress, float *vx, float *vy, int vertices)
     case OA_FS_SLIDE_POS:
     case OA_FS_SLIDE_NEG_SECOND:
     case OA_FS_SLIDE_POS_SECOND: {
-        /* Types 2..5 shift x by (1-p)/6; *SECOND works on vertices 4..7, the others on 0..3. */
+        /* 0xb329b6: types 2/3 add to the x field, types 4/5 to the y field (pointer+4 with a
+         * 0x18-byte stride); types 2 and 4 are negated. The earlier "second vertex group"
+         * reading came from Ghidra's pointer scaling and is wrong. */
         float shift = (1.0f - p) * one_sixth;
-        int start = (type == OA_FS_SLIDE_NEG_SECOND || type == OA_FS_SLIDE_POS_SECOND) ? 4 : 0;
+        int vertical = (type == OA_FS_SLIDE_NEG_SECOND || type == OA_FS_SLIDE_POS_SECOND);
         if (type == OA_FS_SLIDE_NEG || type == OA_FS_SLIDE_NEG_SECOND) shift = -shift;
-        for (int i = start; i < start + 4 && i < vertices; i++)
-            vx[i] += shift;
+        for (int i = 0; i < 4 && i < vertices; i++) {
+            if (vertical) vy[i] += shift;
+            else vx[i] += shift;
+        }
         break;
     }
     case OA_FS_SCALE: {
@@ -326,12 +330,16 @@ void oa_fs_scene_transform(int type, float progress, oa_fs_scene *out)
         out->sy = two_thirds + p * one_third;
         break;
     case OA_FS_SLIDE_NEG:
-    case OA_FS_SLIDE_NEG_SECOND:
         out->dx = -(1.0f - p) * one_sixth;
         break;
     case OA_FS_SLIDE_POS:
-    case OA_FS_SLIDE_POS_SECOND:
         out->dx = (1.0f - p) * one_sixth;
+        break;
+    case OA_FS_SLIDE_NEG_SECOND:
+        out->dy = -(1.0f - p) * one_sixth;
+        break;
+    case OA_FS_SLIDE_POS_SECOND:
+        out->dy = (1.0f - p) * one_sixth;
         break;
     case OA_FS_SCALE: {
         float s = two_thirds + p * one_third;

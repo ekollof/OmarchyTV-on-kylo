@@ -149,10 +149,15 @@ animation, an app exists and `UIApp::modalTargetsDepth() == 0`.
 @0x10c4e10 forces 1.0 when the target is still below 1. The HAL
 (`hal::OpenGLGraphicsContext`, type +0x78, progress +0x74, dirty +0xa4) clamps
 and rewrites vertex positions in `iterateFullScreenAnimation` @0xb32910 with the
-π/2-3/1-3/1-6 pool at 0xb32aa8. Encoded as `oa_fs_apply` (common/ui_anim.c) with
-exact vectors for all eight types, both slide directions/vertex sets, clamping
-and short/NULL arrays; nothing calls it from the renderer yet. Still open:
-rail-specific duration, whole-scene composite application, frame sequences.
+π/2-3/1-3/1-6 pool at 0xb32aa8. Correction 2026-11-01 from the instructions:
+the surface is one 4-vertex clip-space quad built in `onRenderCompleted`
+@0xb33075 (96 bytes, `GL_TRIANGLE_FAN`, positions (-1,-1)..(1,1), UV 0..1);
+types 2/3 add to the x field and types 4/5 to the y field at 0xb329b6 (the
+pointer+4 is bytes with a 0x18 stride), not a second vertex group. Type 1 scales
+only the two right vertices, a keystone. Encoded as `oa_fs_apply` and the
+scene-level `oa_fs_scene_transform` (clip-space affine, keystone flagged) with
+cross-check vectors; the display backend still needs the scene surface + mesh
+warp. Still open: full-screen consumer, launcher dialog mode, panel look.
 
 RAIL-TIMING-2026-11-01: MainLauncherMenuDialog moves rail items synchronously
 (setMenuItemPositions from scrollItems/updateButtonPositions/init/onExit/

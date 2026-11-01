@@ -72,8 +72,8 @@ float oa_slide_progress(const oa_slide *s, uint32_t now); /* vendor 0..1 progres
  *
  *   iterateFullScreenAnimation clamps p to 0..1 and rewrites the vertex positions:
  *     type 1            vertices 1,2: x *= 0.5 + 0.5p; y *= 2/3 + p/3
- *     types 2/3         vertices 0..3: x += -(1-p)/6 or +(1-p)/6
- *     types 4/5         vertices 4..7: x += -(1-p)/6 or +(1-p)/6
+ *     types 2/3         all 4 vertices: x += -(1-p)/6 or +(1-p)/6
+ *     types 4/5         all 4 vertices: y += -(1-p)/6 or +(1-p)/6
  *     type 6            no geometry
  *     type 7            vertices 0..3: x,y *= 2/3 + p/3
  *     type 8            vertices 0..3: x,y *= 1 + (1-p)*sin(pi*(6p))*(1/3)
@@ -93,9 +93,8 @@ void oa_fs_apply(int type, float progress, float *vx, float *vy, int vertices);
 /* Scene-level form of the same transform, in the vendor vertex space (clip/normalized, not pixels):
  *   x' = dx + sx*x,  y' = dy + sy*y
  * affine=0 means the type is a keystone (type 1 moves only vertices 1 and 2) and cannot be
- * expressed as one affine scene transform; the composite stage needs a mesh warp for it. Types
- * 4/5 address the vendor's second vertex group; for a single composited scene they carry the same
- * shift as 2/3. Cross-checked against oa_fs_apply in tests/ui_anim_review.c. */
+ * expressed as one affine scene transform; the composite stage needs a mesh warp for it. Types 2/3
+ * shift x and types 4/5 shift y. Cross-checked against oa_fs_apply in tests/ui_anim_review.c. */
 typedef struct {
     float sx, sy, dx, dy;
     int affine;

@@ -356,16 +356,21 @@ clamped to 0..1 at `+0x74`, dirty flag at `+0xa4` while changed).
 |---|---|---|
 | 0 | none | no geometry; no uniform update |
 | 1 | 1, 2 | x × (0.5+0.5p), y × (2/3+p/3) |
-| 2 / 4 | 0..3 / 4..7 | x − (1−p)/6 |
-| 3 / 5 | 0..3 / 4..7 | x + (1−p)/6 |
+| 2 / 4 | all 4 | x − (1−p)/6 / y − (1−p)/6 |
+| 3 / 5 | all 4 | x + (1−p)/6 / y + (1−p)/6 |
 | 6 | none | no geometry, uniform only |
-| 7 | 0..3 | x,y × (2/3+p/3) |
-| 8 | 0..3 | x,y × 1 + (1−p)·sin(π·6p)/3, with 6p widened to double for the π multiply |
+| 7 | all 4 | x,y × (2/3+p/3) |
+| 8 | all 4 | x,y × 1 + (1−p)·sin(π·6p)/3, with 6p widened to double for the π multiply |
 
-Types 4/5 select the second vertex group (`param_1 + 4` entries of 0x18 bytes);
-types 1, 7 and 8 touch only the entries listed. The GL uniform set at the end of
-the function is not needed for geometry and its decompiled argument order is not
-trusted, so it is not claimed here.
+**Correction 2026-11-01 (instruction-level re-read at 0xb329b6):** the earlier
+"types 4/5 select a second vertex group at `param_1 + 4` entries" reading came
+from Ghidra's pointer scaling and is wrong. The code computes `param + 4` as
+**bytes** and adds with a 0x18-byte stride, i.e. types 4/5 add to the **y field**
+of the same four vertices that 2/3 shift in x. The caller
+(`onRenderCompleted` 0xb33075) builds exactly one 96-byte, four-vertex quad
+(`GL_TRIANGLE_FAN`): positions `(-1,-1) (1,-1) (1,1) (-1,1)` in clip space with
+UV `(0,0) (1,0) (1,1) (0,1)`; type 1 scales the two right-hand vertices, which
+is a keystone rather than an affine scene scale.
 
 Encoded as `oa_fs_apply` (`common/ui_anim.c`, `openaurora/ui_anim.h`) with unit
 vectors at both endpoints for every type, p = 0.5 for types 1, 2, 3, 5 and 7 and
