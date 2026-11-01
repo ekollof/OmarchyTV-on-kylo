@@ -858,6 +858,23 @@ Evidence: artifacts/analysis/source-selection-2026-11-01/. The live RGBA-asset
 -> BGRA-fb1 -> tvshot-BGRA path is consistent; the error was importing a legacy
 swapped capture, not the render path.
 
+UI-ENGINE-SPLIT-2026-11-01: mod_ui_engine publishes ui.engine v1 and now owns
+display/alpha discovery and rebinding, lazy OAI1 assets (bounded cache), draw
+ops, present/async receipts and the readiness receipt. It emits ui/ready when it
+binds or rebinds a display; subscriber callbacks run in their own owner context,
+so skin timers stay skin-owned. mod_ui_fb is the vendor skin: it holds the
+engine service (not display), keeps the portal/source screens, devctl and
+OA_SVC_PORTAL, calls reset_ready on start and repaints on ui/ready. Every UI
+test and tests/recovery.py load ui_engine before ui_fb; full make check 232 ok.
+The vendor skin is the known working fallback. Still pending: move key/screen
+dispatch into the engine, rename the DSO/module to ui_vendor, add a
+config/control-plane skin selection and write ui_omarchy against ui.engine.
+The split also ran on fb1 with plat,display,ui_engine,ui_fb (PID21135,
+mod_ui_engine md5 d831bd64..., mod_ui_fb 8056eb04...) and produced a
+byte-identical capture to the pre-split screen (sha256 8f34f218...); fb1 was
+restored (16588800 bytes, offset 0,1080), staging removed, no helper left.
+Evidence in artifacts/analysis/source-selection-2026-11-01/.
+
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
 Vendor animations, transitions and UI/UX effects are included, not yet accepted.

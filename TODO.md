@@ -350,15 +350,18 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       above is not all-screen parity or a confirmed live remote capture. The
       source-selection panel (DialogSourceSelection.svg 185) is the first
       implemented screen beyond the portal; its rows/focus are vendor-derived.
-- [ ] Extract the UI engine into its own reloadable module and make the vendor
-      UI a skin: engine owns display discovery, OAI1 assets, draw/present/ack
-      and input/screen dispatch and publishes ui.engine v1. ui.vendor (the
-      current mod_ui_fb screens, including the source list) registers with it
-      and keeps OA_SVC_PORTAL compatibility for tests/control; ui.omarchy is
-      the later alternative skin. The vendor skin remains the known working
-      fallback. Acceptance: engine+vendor load/reload/stop, existing UI tests
-      run against the split, and the active skin is a config choice, not a
-      rebuild. Design in docs/ARCHITECTURE.md.
+- [x] UI engine first slice: mod_ui_engine owns display/alpha discovery and
+      rebinding, lazy OAI1 assets, draw/present/async receipts and the readiness
+      receipt; it publishes ui.engine v1 and the ui/ready event. mod_ui_fb (the
+      vendor skin) holds only the engine, keeps the portal/source screens and
+      OA_SVC_PORTAL, and repaints on ui/ready in its own owner context. Every UI
+      test and tests/recovery.py load engine+vendor; make check 232 ok. The
+      vendor skin is the working fallback.
+- [ ] Finish the skin split: move key routing/screen dispatch into the engine,
+      rename the vendor DSO/module to ui_vendor, add a control-plane/config skin
+      selection and write ui_omarchy against ui.engine. Acceptance: a skin
+      switch needs no rebuild and the vendor fallback starts if the selected
+      skin fails.
 - [ ] Split module/test compile+link rules into .o + link so ccache can cache
       them (most are one-step -shared invocations, which ccache cannot cache).
       Preserve -Werror/-pedantic and the current link flags; measure a clean

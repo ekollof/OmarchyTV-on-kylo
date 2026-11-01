@@ -56,7 +56,8 @@ class Run:
                         "--", str(BUILD / "openaurora"), "--sock", "", "--config", str(self.config)]
         if modules:
             self.command += ["--modules", str(BUILD / "modules"),
-                             "--load", str(BUILD / "tests/mod_recovery_fixture.so"), "--load", "ui_fb"]
+                             "--load", str(BUILD / "tests/mod_recovery_fixture.so"),
+                             "--load", "ui_engine", "--load", "ui_fb"]
         self.logfile = (directory / "log").open("w")
         self.process = None
 

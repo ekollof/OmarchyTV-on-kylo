@@ -152,16 +152,25 @@ reverse-engineered vendor screens and a later OmarchyTV skin share one engine.
 
 | piece | owns |
 |---|---|
-| ui.engine | display/alpha discovery and rebinding, OAI1 asset loading from `ui.dir`, clear/fill/blit/blit_scaled, present/completion receipts and the readiness receipt, key-topic subscription, screen stack and dispatch, clock access |
-| ui.engine service v1 | `info`, draw ops, `icon(name)`, `present`, `now_ms`, `register_skin`/`unregister_skin` |
-| skin interface | `enter/leave/paint/key`; a skin registers on start and unregisters on stop. The last registered skin is active; a failed stop leaves the previous one usable |
-| ui.vendor | the first skin: current `mod_ui_fb` behavior (portal rail/cards, source selection, dialogs, animations) plus `OA_SVC_PORTAL` for tests/control |
-| ui.omarchy | later second skin; selected by config/control-plane load list, not a rebuild. If it fails to start, the control plane keeps or loads ui.vendor as the fallback |
+| ui.engine | display/alpha discovery and rebinding, OAI1 asset loading from `ui.dir` (lazy, bounded cache), clear/fill/blit/blit_scaled, present/completion receipts and the readiness receipt, the `ui/ready` event |
+| ui.engine service v1 | `info`, draw ops, `icon(name)`, `present`, `present_pending`, `set_scene_transform`, `reset_ready`, `now_ms` |
+| ui_fb (vendor skin today) | the portal rail/cards, source selection, dialogs, animations, key routing/screen state and `OA_SVC_PORTAL`. The DSO name is historical; it is the vendor skin |
+| ui.omarchy | later second skin, selected by the control-plane load list, not a rebuild. If it fails to start, the control plane keeps or loads the vendor skin |
 
-Migration order: move display discovery/assets/present/ack/rebind into the
-engine, then the screen stack and input dispatch, then rename `mod_ui_fb` to
-ui.vendor. Keep the existing UI tests by loading engine+vendor in the same
-order. The vendor skin is the known working fallback throughout.
+Implemented in the 2026-11-01 split: the engine holds display/display.async/
+display.alpha and writes the readiness receipt; the skin holds the engine
+service and no display. The skin repaints on `ui/ready`, which the engine emits
+when it binds (or rebinds) a display; the event runs in the subscriber's owner
+context, so skin timers stay skin-owned. A new skin generation calls
+`reset_ready` (it must earn its own receipt). The engine loads icons lazily;
+the skin probes `rail_hlNN` at start to keep the vendor highlight's
+missing-asset behavior. `make check` loads `ui_engine` before `ui_fb` in every
+UI test and in tests/recovery.py; all 232 checks pass.
+
+Still pending: move key routing/screen dispatch into the engine, add the
+`ui_vendor` module rename and a config/control-plane skin selection, then write
+`ui_omarchy` against the same service. The vendor skin remains the known
+working fallback.
 
 ## Lifecycle and reload
 

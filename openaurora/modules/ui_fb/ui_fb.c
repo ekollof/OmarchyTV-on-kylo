@@ -40,6 +40,7 @@
 #include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
+#include "openaurora/ui_engine.h"
 #include "openaurora/ui_time.h"
 
 #define MAX_CARDS 12
@@ -81,12 +82,6 @@ static const struct {
     { 84, 775, 264, 29 },
 };
 
-struct icon {
-    char name[48];
-    int w, h;
-    unsigned char *rgba;
-};
-
 enum { BAND_RAIL = 0, BAND_CARDS = 1 };
 
 /* Vendor source-selection panel (DialogSourceSelection.svg 185) and the nine
@@ -119,15 +114,8 @@ enum { BAND_RAIL = 0, BAND_CARDS = 1 };
 
 struct ctx {
     const oa_host_api *api;
-    const oa_display_iface *disp;
-    const oa_display_iface *disp2;   /* v2 lookup: set_scene_transform */
-    const oa_display_async_iface *async;
-    uint64_t present_serial;         /* async frame serial last accepted */
-    int present_pending;             /* rail playback paces to this completion */
-    const oa_display_alpha_iface *alpha;
-    uint64_t receipt_tick, first_serial, last_receipt;
-    int paint_w, paint_h, scene_painted;
-    char dir[128];
+    const oa_ui_engine_iface *d;     /* ui.engine: display/assets/present/ack */
+    int scene_painted;
     char cards[MAX_CARDS][48];
     int nc;
     int band;
@@ -162,10 +150,8 @@ struct ctx {
     int portal_on;
     int fps;
     uint32_t sub_key;
+    uint32_t ready_key;              /* ui.engine bound the display: repaint */
     uint64_t tick;    /* repaint timer, when ui.fps > 0 */
-    int acknowledged;
-    struct icon icons[MAX_ICONS];
-    int n;
 };
 
 static struct ctx *g_ctx;
@@ -209,56 +195,9 @@ static void rail_hl_tick_cb(void *ud);
 
 /* ---------------------------------------------------------------- loading */
 
-static int load_blob(struct ctx *c, const char *name)
+static const oa_ui_icon *find_icon(struct ctx *c, const char *name)
 {
-    if (c->n >= MAX_ICONS || !name || !name[0])
-        return -1;
-
-    char path[256];
-    snprintf(path, sizeof path, "%s/%s.rgba", c->dir, name);
-
-    int fd = open(path, O_RDONLY);
-    if (fd < 0) {
-        c->api->log(c->api->priv, OA_LOG_WARN, "icon %s: not found", path);
-        return -1;
-    }
-    unsigned char hdr[12];
-    if (read(fd, hdr, sizeof hdr) != (ssize_t)sizeof hdr || memcmp(hdr, "OAI1", 4) != 0) {
-        close(fd);
-        c->api->log(c->api->priv, OA_LOG_WARN, "icon %s: bad header", path);
-        return -1;
-    }
-    uint32_t w = (uint32_t)hdr[4] | (uint32_t)hdr[5] << 8 | (uint32_t)hdr[6] << 16 |
-                 (uint32_t)hdr[7] << 24;
-    uint32_t h = (uint32_t)hdr[8] | (uint32_t)hdr[9] << 8 | (uint32_t)hdr[10] << 16 |
-                 (uint32_t)hdr[11] << 24;
-    size_t len = (size_t)w * h * 4;
-    unsigned char *buf = malloc(len);
-    if (!buf) {
-        close(fd);
-        return -1;
-    }
-    ssize_t got = read(fd, buf, len);
-    close(fd);
-    if (got != (ssize_t)len) {
-        free(buf);
-        c->api->log(c->api->priv, OA_LOG_WARN, "icon %s: short read", path);
-        return -1;
-    }
-    struct icon *ic = &c->icons[c->n++];
-    snprintf(ic->name, sizeof ic->name, "%s", name);
-    ic->w = (int)w;
-    ic->h = (int)h;
-    ic->rgba = buf;
-    return 0;
-}
-
-static const struct icon *find_icon(struct ctx *c, const char *name)
-{
-    for (int i = 0; i < c->n; i++)
-        if (!strcmp(c->icons[i].name, name))
-            return &c->icons[i];
-    return NULL;
+    return c && c->d ? c->d->icon(name) : NULL;
 }
 
 /* ------------------------------------------------------------------ geometry */
@@ -324,79 +263,9 @@ static int hit_at(struct ctx *c, int x, int y, int *band, int *index)
 
 /* ------------------------------------------------------------------ paint */
 
-static void acknowledge(struct ctx *c)
-{
-    const char *ok = c->api->config_get(c->api->priv, "ui.ok_file", "/tmp/openaurora.ready");
-    if (!c->acknowledged && ok && ok[0] && c->paint_w > 0 && c->paint_h > 0) {
-        char tmp[288];
-        if (strlen(ok) >= sizeof tmp - 32) return;
-        snprintf(tmp, sizeof tmp, "%s.%ld.tmp", ok, (long)getpid());
-        FILE *f = fopen(tmp, "w");
-        if (f) {
-            int failed = fprintf(f, "%ld %dx%d\n", (long)getpid(), c->paint_w, c->paint_h) < 0;
-            if (fclose(f) != 0) failed = 1;
-            if (!failed && rename(tmp, ok) == 0) c->acknowledged = 1;
-            else unlink(tmp);
-        }
-    }
-}
-static void receipt_tick(void *ud)
-{
-    struct ctx *c = ud;
-    if (c->suspended || !c->disp || !c->async || !c->first_serial) return;
-    oa_display_result result;
-    if (c->async->latest(&result) != 1 || result.serial < c->first_serial ||
-        (result.serial >> 32) != (c->first_serial >> 32)) return;
-    if (result.serial != c->last_receipt && result.error)
-        c->api->log(c->api->priv, OA_LOG_ERROR, "portal frame failed errno %d", result.error);
-    c->last_receipt = result.serial;
-    if (c->present_pending && result.serial >= c->present_serial &&
-        (result.serial >> 32) == (c->present_serial >> 32))
-        c->present_pending = 0;
-    if (!result.error) acknowledge(c);
-}
-/* Called only from ui_fb lifecycle/deferred rebind, never another provider's
- * animation callback: timer ownership must stay with this module. */
-static int bind_async(struct ctx *c)
-{
-    if (!c->alpha) c->alpha = c->api->lookup(c->api->priv, OA_SVC_DISPLAY_ALPHA, 1);
-    if (!c->async) c->async = c->api->lookup(c->api->priv, OA_SVC_DISPLAY_ASYNC, 1);
-    if (c->async && !c->receipt_tick)
-        c->receipt_tick = c->api->timer_add(c->api->priv, 10, 10, receipt_tick, c);
-    return c->async && !c->receipt_tick ? -1 : 0;
-}
-static void drop_async(struct ctx *c, int release)
-{
-    if (c->receipt_tick) c->api->timer_del(c->api->priv, c->receipt_tick);
-    c->receipt_tick = c->first_serial = c->last_receipt = 0;
-    c->present_serial = 0;
-    c->present_pending = 0;
-    if (release && c->async) c->api->release(c->api->priv, OA_SVC_DISPLAY_ASYNC);
-    c->async = NULL;
-    if (release) {
-        if (c->alpha) c->api->release(c->api->priv, OA_SVC_DISPLAY_ALPHA);
-        c->alpha = NULL;
-    }
-}
-static int request_present(struct ctx *c)
-{
-    if (!c || !c->disp) return -1;
-    if (c->disp->info(&c->paint_w, &c->paint_h, NULL, NULL)) return -1;
-    if (c->async) {
-        uint64_t serial;
-        if (!c->receipt_tick || c->async->request(&serial)) return -1;
-        if (!c->first_serial) c->first_serial = serial;
-        c->present_serial = serial;
-        c->present_pending = 1;
-        return 0; /* queue acceptance, never readiness */
-    }
-    if (c->disp->present()) return -1;
-    acknowledge(c); return 0;
-}
-
 static void paint_sources(struct ctx *c)
 {
-    const oa_display_iface *d = c->disp;
+    const oa_ui_engine_iface *d = c->d;
     int W = 0, H = 0;
     if (!c || !d || d->info(&W, &H, NULL, NULL) != 0 || W <= 0 || H <= 0)
         return;
@@ -405,21 +274,21 @@ static void paint_sources(struct ctx *c)
      * is #BE1E2D (main_rectangle) and the row highlight #FE9419 (listboxrowFA);
      * p0/06 shows those with R/B swapped. The area outside the panel is
      * transparent so the video underneath stays visible, as on the set. */
-    int cleared = c->alpha ? c->alpha->clear_rgba(0, 0, 0, 0) : d->clear(0, 0, 0);
+    int cleared = d->clear_rgba(0, 0, 0, 0);
     if (cleared) return;
     d->fill(0, 0, SRC_PANEL_W, H, 190, 30, 45);
     d->fill(SRC_BAR_X, SRC_BAR_Y + c->src * SRC_ROW_PITCH, SRC_BAR_W, SRC_BAR_H,
             254, 148, 25);
-    const struct icon *t = find_icon(c, "src_title");
+    const oa_ui_icon *t = find_icon(c, "src_title");
     if (t)
         d->blit(62, 64, t->w, t->h, t->rgba);
     for (int i = 0; i < MAX_SOURCES; i++) {
         char name[16], focused_name[18];
         snprintf(name, sizeof name, "src_%d", i);
         snprintf(focused_name, sizeof focused_name, "src_%d_f", i);
-        const struct icon *u = find_icon(c, name);
-        const struct icon *f = find_icon(c, focused_name);
-        const struct icon *g = i == c->src ? f : u;
+        const oa_ui_icon *u = find_icon(c, name);
+        const oa_ui_icon *f = find_icon(c, focused_name);
+        const oa_ui_icon *g = i == c->src ? f : u;
         if (!g)
             continue;
         int x = SRC_TEXT[i].x, y = SRC_TEXT[i].y;
@@ -430,7 +299,7 @@ static void paint_sources(struct ctx *c)
         d->blit(x, y, g->w, g->h, g->rgba);
     }
     c->scene_painted = 1;
-    if (request_present(c) != 0) {
+    if (d->present() != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "source-selection present failed");
         return;
     }
@@ -439,10 +308,10 @@ static void paint_sources(struct ctx *c)
 
 static void paint(struct ctx *c)
 {
-    const oa_display_iface *d;
+    const oa_ui_engine_iface *d;
     int W = 0, H = 0;
-    if (!c || !c->disp) return;   /* a suspended/stopped module has no display hold */
-    d = c->disp;
+    if (!c || !c->d) return;   /* a suspended/stopped skin has no engine hold */
+    d = c->d;
     if (c->screen == SCREEN_SOURCES) {
         paint_sources(c);
         return;
@@ -455,11 +324,10 @@ static void paint(struct ctx *c)
     /* DialogMainMenu.svg's unnamed full-screen #242628 rectangle: raw opacity6,
      * scaled conversion + rgbColourParser complement yield alpha153. Named
      * background/main_rectangle records describe layout, not opaque paint. */
-    int cleared = c->alpha ? c->alpha->clear_rgba(36, 38, 40, 153) :
-                            d->clear(14, 14, 13); /* legacy provider fallback */
+    int cleared = d->clear_rgba(36, 38, 40, 153);
     if (cleared) { c->api->log(c->api->priv, OA_LOG_ERROR, "portal clear failed"); return; }
 
-    const struct icon *title = find_icon(c, "title");
+    const oa_ui_icon *title = find_icon(c, "title");
     if (title) {
         /* SVGTextBox draws the label clipped to its text box; the AnimationHelper margin moves the
          * text inside that box. Draw the visible source slice at the fixed box origin instead of
@@ -497,7 +365,7 @@ static void paint(struct ctx *c)
             break;
         int focused = focus == i;
         if (focused) {
-            const struct icon *hl = NULL;
+            const oa_ui_icon *hl = NULL;
             if (c->rail_hl_n > 0) {
                 char name[32];
                 snprintf(name, sizeof name, "rail_hl%02d", c->rail_hl_frame + 1);
@@ -511,7 +379,7 @@ static void paint(struct ctx *c)
         }
         d->fill(x, y, w, h, RAIL[i].r, RAIL[i].g, RAIL[i].b);
 
-        const struct icon *g = find_icon(c, RAIL[i].glyph);
+        const oa_ui_icon *g = find_icon(c, RAIL[i].glyph);
         if (g)
             d->blit(x + (w - g->w) / 2, y + (h - g->h) / 2, g->w, g->h, g->rgba);
         y += h;
@@ -529,7 +397,7 @@ static void paint(struct ctx *c)
         if (c->band == BAND_CARDS && i == c->card)
             d->fill(x - 5, cy - 5, w + 10, h + 10, 247, 148, 30);
         /* aspects match (both 16:9), so this is an exact scale, no cropping */
-        const struct icon *card = find_icon(c, c->cards[i]);
+        const oa_ui_icon *card = find_icon(c, c->cards[i]);
         if (card)
             d->blit_scaled(x, cy, w, h, card->w, card->h, card->rgba);
         else
@@ -537,7 +405,7 @@ static void paint(struct ctx *c)
     }
 
     c->scene_painted = 1;
-    if (request_present(c) != 0) {
+    if (d->present() != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "portal present failed");
         return;
     }
@@ -566,7 +434,7 @@ static int portal_activate(int x, int y)
         g_ctx->band = BAND_CARDS;
         g_ctx->card = index;
     }
-    if (g_ctx->screen == SCREEN_PORTAL && g_ctx->disp) paint(g_ctx);
+    if (g_ctx->screen == SCREEN_PORTAL && g_ctx->d) paint(g_ctx);
     return 1;
 }
 static int portal_screen(void)
@@ -591,7 +459,7 @@ static int m_init(const oa_host_api *api, void **out)
 static void tick_cb(void *ud)
 {
     struct ctx *c = ud;
-    if (c && c->disp)
+    if (c && c->d)
         paint(c);
 }
 
@@ -703,7 +571,7 @@ static void on_slide_repeat(void *ud)
 {
     struct ctx *c = ud;
     c->slide_repeat = 0;
-    if (!c->disp) return;
+    if (!c->d) return;
     if (!slide_allowed(c)) {     /* animation was disabled or the title changed: hold the end state */
         paint(c);
         return;
@@ -717,7 +585,7 @@ static void on_slide_tick(void *ud)
     struct ctx *c = ud;
     uint32_t now;
 
-    if (!c->disp || !c->clock) {
+    if (!c->d || !c->clock) {
         slide_stop_sampler(c);
         return;
     }
@@ -739,7 +607,7 @@ static void on_slide_tick(void *ud)
  * the portal rail is shown. The playhead is reset when the focused item changes. */
 static void rail_hl_sync(struct ctx *c)
 {
-    int want = c->rail_hl_n > 0 && c->disp && c->screen == SCREEN_PORTAL &&
+    int want = c->rail_hl_n > 0 && c->d && c->screen == SCREEN_PORTAL &&
                c->rail_hl_play && c->rail_hl_frame + 1 < c->rail_hl_n;
     if (want && !c->rail_hl_tick) {
         c->rail_hl_tick = c->api->timer_add(c->api->priv, OA_RAIL_HL_POLL_MS,
@@ -758,10 +626,10 @@ static void rail_hl_tick_cb(void *ud)
     struct ctx *c = ud;
     uint64_t now;
 
-    if (!c->disp || c->rail_hl_n <= 0) return;
+    if (!c->d || c->rail_hl_n <= 0) return;
     /* Async display: advance only after the previous frame completed, so every
      * decoded frame is presented in order instead of being coalesced away. */
-    if (c->async && c->present_pending) return;
+    if (c->d && c->d->present_pending()) return;
     now = now_ms();
     if (now < c->rail_hl_next) return;   /* 10 ms poll; the 30 ms frame is not due yet */
     if (c->rail_hl_frame + 1 < c->rail_hl_n)
@@ -807,21 +675,16 @@ static void on_service_removed(const void *evp, void *ud)
     const oa_service_removed_event *ev = evp;
     if (!c || !ev || !ev->name) return;
     /* The host already cleared the holds with the service. Drop the cached pointer before it can
-     * dangle; the deferred rebind reacquires whatever is published again. */
-    if (!strcmp(ev->name, OA_SVC_DISPLAY)) {
-        drop_async(c, 1);
-        c->disp = NULL;
-        c->disp2 = NULL;
+     * dangle; the deferred rebind reacquires whatever is published again. The engine owns the
+     * display/async/alpha holds; this skin only watches its own providers. */
+    if (!strcmp(ev->name, OA_SVC_UI_ENGINE)) {
+        c->d = NULL;
         c->scene_painted = 0;
-    } else if (!strcmp(ev->name, OA_SVC_DISPLAY_ASYNC)) {
-        drop_async(c, 0); /* host already cleared this service's hold */
-    } else if (!strcmp(ev->name, OA_SVC_DISPLAY_ALPHA)) {
-        c->alpha = NULL; /* host already cleared this service's hold */
     } else if (!strcmp(ev->name, OA_SVC_UI_ANIM)) {
         c->anim = NULL;
         c->anim2 = NULL;
-        if (c->disp2 && c->disp2->set_scene_transform)
-            c->disp2->set_scene_transform(0, 0.0f);
+        if (c->d)
+            c->d->set_scene_transform(0, 0.0f);
     } else if (!strcmp(ev->name, OA_SVC_SETTINGS)) {
         c->settings = NULL;
     } else if (!strcmp(ev->name, OA_SVC_UI_CLOCK)) {
@@ -832,16 +695,26 @@ static void on_service_removed(const void *evp, void *ud)
     schedule_rebind(c);
 }
 
+static void on_engine_ready(const void *ev, void *ud)
+{
+    (void)ev;
+    struct ctx *c = ud;
+    if (c && !c->suspended && c->d)
+        paint(c);
+}
+
 static void rebind_now(struct ctx *c)
 {
     c->rebind_tick = 0;
     c->rebind_pending = 0;
-    if (!c->disp) {
-        c->disp = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 1);
-        if (!c->disp) return;              /* nothing can be drawn or timed without a display */
+    if (!c->d) {
+        c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 1);
+        if (!c->d)
+            return;
     }
-    c->disp2 = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 2);
-    if (bind_async(c)) return;
+    int w = 0, h = 0;
+    if (c->d->info(&w, &h, NULL, NULL) != 0)
+        return;                        /* engine up, display not bound yet */
     if (!c->settings) c->settings = c->api->lookup(c->api->priv, OA_SVC_SETTINGS, 1);
     if (!c->anim) {
         c->anim = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 1);
@@ -886,31 +759,31 @@ static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int
         /* Vendor SVGDialog::onAnimationProgress pushes min(1,1+(p-1)^3) to the full-screen
          * transform; the callback already receives that eased value. The display v2 scene warp
          * applies it; on completion the surface is back at identity. */
-        if (c->disp2 && c->disp2->set_scene_transform && c->fs_type > 0)
-            c->disp2->set_scene_transform(done ? 0 : c->fs_type, done ? 0.0f : eased);
+        if (c->d && c->fs_type > 0)
+            c->d->set_scene_transform(done ? 0 : c->fs_type, done ? 0.0f : eased);
         /* The vendor animates the dialog's named rect over the launcher; our single-surface UI
          * therefore shows the dialog content from the first progress callback, so the transform
          * slides the dialog up into place instead of moving the portal underneath it. */
         c->screen = SCREEN_OPEN;
-        if (!c->suspended && c->disp) {
-            if (c->async && !done && c->scene_painted) (void)request_present(c);
+        if (!c->suspended && c->d) {
+            if (!done && c->scene_painted) (void)c->d->present();
             else paint(c);
         }
         return;
     }
-    if (kind == OA_ANIM_LIST && rect && c->disp) {
-        c->disp->clear(14, 14, 13);
-        c->disp->fill(rect->x, rect->y, rect->w, rect->h, 247, 148, 30);
+    if (kind == OA_ANIM_LIST && rect && c->d) {
+        c->d->clear(14, 14, 13);
+        c->d->fill(rect->x, rect->y, rect->w, rect->h, 247, 148, 30);
         c->scene_painted = 1;
-        (void)request_present(c);
+        (void)c->d->present();
     }
 }
 
 static void cancel_dialog(struct ctx *c)
 {
     if (c->anim) (void)c->anim->cancel(ANIM_DIALOG);
-    if (c->disp2 && c->disp2->set_scene_transform)
-        c->disp2->set_scene_transform(0, 0.0f);
+    if (c->d)
+        c->d->set_scene_transform(0, 0.0f);
 }
 
 static void move_key(struct ctx *c, uint8_t id)
@@ -928,7 +801,7 @@ static void move_key(struct ctx *c, uint8_t id)
         } else {
             return;
         }
-        if (c->disp) paint(c);
+        if (c->d) paint(c);
         return;
     }
     if (id == 20) { /* Up */
@@ -972,7 +845,7 @@ static void move_key(struct ctx *c, uint8_t id)
         if (c->band == BAND_RAIL && c->rail == 1) {
             c->screen = SCREEN_SOURCES;
             c->src = 0;
-            if (c->disp) paint(c);
+            if (c->d) paint(c);
             return;
         }
         /* Firmware MainLauncherMenuDialog::onSelectPress only calls focusLauncher(false), and
@@ -983,19 +856,19 @@ static void move_key(struct ctx *c, uint8_t id)
             c->anim->start(ANIM_DIALOG, OA_ANIM_DIALOG, NULL, NULL, 1000, NULL) == 0)
             return;
         c->screen = SCREEN_OPEN;
-        if (c->disp) paint(c);
+        if (c->d) paint(c);
         return;
     } else if (id == 10) { /* Exit */
         cancel_dialog(c);
         if (c->screen == SCREEN_OPEN) c->screen = SCREEN_PORTAL;
         emit_action(c, OA_ACTION_BACK);
-        if (c->disp) paint(c);
+        if (c->d) paint(c);
         return;
     } else if (id == 48) { /* Menu */
         cancel_dialog(c);
         if (c->screen == SCREEN_OPEN) c->screen = SCREEN_PORTAL;
         emit_action(c, OA_ACTION_HOME);
-        if (c->disp) paint(c);
+        if (c->d) paint(c);
         return;
     } else if (id == 56) { /* Aux: source, value from settings when that column reads */
         emit_action(c, OA_ACTION_SOURCE);
@@ -1003,7 +876,7 @@ static void move_key(struct ctx *c, uint8_t id)
     } else {
         return;
     }
-    if (c->disp)
+    if (c->d)
         paint(c);
 }
 
@@ -1035,15 +908,13 @@ static void parse_cards(struct ctx *c, const char *spec)
 static int m_start(void *v)
 {
     struct ctx *c = v;
-    snprintf(c->dir, sizeof c->dir, "%s",
-             c->api->config_get(c->api->priv, "ui.dir", "/buffer/openaurora/ui"));
-    c->disp = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 1);
-    if (!c->disp) {
-        c->api->log(c->api->priv, OA_LOG_ERROR, "no display service — load mod_display first");
+    c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 1);
+    if (!c->d) {
+        c->api->log(c->api->priv, OA_LOG_ERROR, "no ui.engine service — load mod_ui_engine first");
         return -1;
     }
+    c->d->reset_ready();
     c->scene_painted = 0;
-    if (bind_async(c)) return -1;
 
     const char *spec = c->api->config_get(c->api->priv, "ui.cards", "");
     if (spec && spec[0]) {
@@ -1081,8 +952,6 @@ static int m_start(void *v)
     /* v2 adds the recovered text-slide helpers; v1-only hosts simply get no slide. */
     c->anim2 = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 2);
     c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
-    /* v2 display adds the offscreen scene + full-screen transition at present. */
-    c->disp2 = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 2);
     c->fs_type = dialog_fs_type();
     {
         const char *cfg = c->api->config_get(c->api->priv, "ui.fs_type", "");
@@ -1112,29 +981,18 @@ static int m_start(void *v)
             c->api->release(c->api->priv, OA_SVC_SETTINGS);
             c->settings = NULL;
         }
-        c->api->release(c->api->priv, OA_SVC_DISPLAY);
-        c->disp = NULL;
+        if (c->d) {
+            c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
+            c->d = NULL;
+        }
         return -1;
     }
     c->portal_on = 1;
 
-    load_blob(c, "title");
-    for (int i = 0; i < 5; i++)
-        load_blob(c, RAIL[i].glyph);
-    for (int i = 0; i < c->nc; i++)
-        load_blob(c, c->cards[i]);
-    load_blob(c, "src_title");
-    for (int i = 0; i < MAX_SOURCES; i++) {
-        char name[16];
-        snprintf(name, sizeof name, "src_%d", i);
-        load_blob(c, name);
-        snprintf(name, sizeof name, "src_%d_f", i);
-        load_blob(c, name);
-    }
-
     /* Vendor main-launcher highlight: 11 frames at 30 ms, played once per image/focus. The
      * decoder advances only while index < frame count (decodeNextFrame 0xb30654) and does not
-     * rearm at the end, so the last frame is held; the APNG num_plays field is not consulted. */
+     * rearm at the end, so the last frame is held; the APNG num_plays field is not consulted.
+     * The engine loads rail_hlNN lazily; a missing frame falls back to the flat accent. */
     c->rail_hl_n = 0;
     c->rail_hl_frame = 0;
     c->rail_hl_play = 1;
@@ -1143,7 +1001,7 @@ static int m_start(void *v)
         for (int i = 1; i <= OA_RAIL_HL_FRAMES; i++) {
             char name[32];
             snprintf(name, sizeof name, "rail_hl%02d", i);
-            if (load_blob(c, name) != 0)
+            if (!find_icon(c, name))
                 break;
             c->rail_hl_n++;
         }
@@ -1152,7 +1010,7 @@ static int m_start(void *v)
     /* The slide needs the title width, so it starts after the blobs are loaded. The clipped draw
      * needs a scratch buffer of exactly the box width; without it the label would spill. */
     {
-        const struct icon *t = find_icon(c, "title");
+        const oa_ui_icon *t = find_icon(c, "title");
         c->title_w = t ? t->w : 0;
         if (t && c->slide_box > 0 && c->slide_box < t->w) {
             size_t need = (size_t)c->slide_box * (size_t)t->h * 4u;
@@ -1167,7 +1025,8 @@ static int m_start(void *v)
     slide_begin(c, "start");
 
     c->sub_key = c->api->subscribe(c->api->priv, OA_TOPIC_KEY, on_key, c);
-    if (!c->sub_key) {
+    c->ready_key = c->api->subscribe(c->api->priv, OA_TOPIC_UI_READY, on_engine_ready, c);
+    if (!c->sub_key || !c->ready_key) {
         c->api->unpublish(c->api->priv, OA_SVC_PORTAL);
         c->portal_on = 0;
         if (c->anim) {
@@ -1179,8 +1038,16 @@ static int m_start(void *v)
             c->api->release(c->api->priv, OA_SVC_SETTINGS);
             c->settings = NULL;
         }
-        c->api->release(c->api->priv, OA_SVC_DISPLAY);
-        c->disp = NULL;
+        if (c->sub_key) {
+            c->api->unsubscribe(c->api->priv, c->sub_key);
+            c->sub_key = 0;
+        }
+        if (c->ready_key) {
+            c->api->unsubscribe(c->api->priv, c->ready_key);
+            c->ready_key = 0;
+        }
+        c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
+        c->d = NULL;
         return -1;
     }
     if (c->api->config_get(c->api->priv, "ui.paint", "1")[0] == '1')
@@ -1207,7 +1074,6 @@ static void m_stop(void *v)
 {
     struct ctx *c = v;
     cancel_dialog(c);
-    drop_async(c, 1);
     c->scene_painted = 0;
     if (c->mod_key) {
         c->api->unsubscribe(c->api->priv, c->mod_key);
@@ -1244,6 +1110,10 @@ static void m_stop(void *v)
         c->api->unsubscribe(c->api->priv, c->sub_key);
         c->sub_key = 0;
     }
+    if (c->ready_key) {
+        c->api->unsubscribe(c->api->priv, c->ready_key);
+        c->ready_key = 0;
+    }
     if (c->anim)
         c->anim->bind(NULL, NULL);
     if (c->anim || c->anim2) {
@@ -1263,18 +1133,14 @@ static void m_stop(void *v)
         c->api->unpublish(c->api->priv, OA_SVC_PORTAL);
         c->portal_on = 0;
     }
-    if (c->disp)
-        c->api->release(c->api->priv, OA_SVC_DISPLAY);
-    c->disp = NULL;
-    c->disp2 = NULL;
-    for (int i = 0; i < c->n; i++)
-        free(c->icons[i].rgba);
-    c->n = 0;
+    if (c->d) {
+        c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
+        c->d = NULL;
+    }
     free(c->slide_buf);
     c->slide_buf = NULL;
     c->title_w = 0;
     c->slide_box = 0;
-    c->acknowledged = 0;
 }
 
 static void m_destroy(void *v)
@@ -1289,7 +1155,6 @@ static int m_suspend(void *v)
     struct ctx *c = v;
     c->suspended = 1;
     cancel_dialog(c);
-    drop_async(c, 1);
     c->scene_painted = 0;
     slide_stop_sampler(c);
     if (c->slide_repeat) {
@@ -1309,33 +1174,32 @@ static int m_suspend(void *v)
         c->api->unsubscribe(c->api->priv, c->sub_key);
         c->sub_key = 0;
     }
-    /* the display hold must be dropped here, or every suspend/resume cycle leaks one */
-    if (c->disp)
-        c->api->release(c->api->priv, OA_SVC_DISPLAY);
-    c->disp = NULL;
-    c->disp2 = NULL;
+    if (c->ready_key) {
+        c->api->unsubscribe(c->api->priv, c->ready_key);
+        c->ready_key = 0;
+    }
+    /* the engine hold must be dropped here, or every suspend/resume cycle leaks one */
+    if (c->d) {
+        c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
+        c->d = NULL;
+    }
     return 0;
 }
 
 static int m_resume(void *v)
 {
     struct ctx *c = v;
-    c->disp = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 1);
-    if (!c->disp)
+    c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 1);
+    if (!c->d)
         return -1;
-    c->disp2 = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 2);
-    if (bind_async(c)) {
-        drop_async(c, 1);
-        c->api->release(c->api->priv, OA_SVC_DISPLAY);
-        c->disp = c->disp2 = NULL;
-        return -1;
-    }
     c->sub_key = c->api->subscribe(c->api->priv, OA_TOPIC_KEY, on_key, c);
-    if (!c->sub_key) {
-        drop_async(c, 1);
-        c->api->release(c->api->priv, OA_SVC_DISPLAY);
-        c->disp = NULL;
-        c->disp2 = NULL;
+    c->ready_key = c->api->subscribe(c->api->priv, OA_TOPIC_UI_READY, on_engine_ready, c);
+    if (!c->sub_key || !c->ready_key) {
+        if (c->sub_key) c->api->unsubscribe(c->api->priv, c->sub_key);
+        if (c->ready_key) c->api->unsubscribe(c->api->priv, c->ready_key);
+        c->sub_key = c->ready_key = 0;
+        c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
+        c->d = NULL;
         return -1;
     }
     c->suspended = 0;

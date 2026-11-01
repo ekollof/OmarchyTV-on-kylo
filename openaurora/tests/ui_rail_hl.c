@@ -107,6 +107,8 @@ int main(int argc, char **argv)
     host.log_level = OA_LOG_ERROR;
     assert(!command(&host, "load nav_display", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start nav_display", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "load ui_engine", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "start ui_engine", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(!command(&host, "load ui_fb", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
 

@@ -50,6 +50,23 @@ Flat regions match exactly (panel 190,30,45; bar 254,148,25; focused ink
 RMSE/AE result when both sides are left in the legacy swapped (blue) palette,
 because the comparison is channel-symmetric.
 
+## Engine split re-run (same screen, ui.engine + vendor skin)
+
+After extracting the UI engine, the same screen was re-run on fb1 with
+`autoload=plat,display,ui_engine,ui_fb`:
+
+| item | value |
+|---|---|
+| host | native ARM, PID 21135, `/tmp/oa-src-stage` |
+| mod_ui_engine md5 | d831bd642934a9d2cd62467b933856c4 |
+| mod_ui_fb md5 | 8056eb0455550b7ea782dff9304845e2 |
+| capture | `/dev/fb1` frame 1 -> `tv-fb1-source-selection-engine.png` |
+| result | byte-identical to the pre-split capture (sha256 `8f34f218...`) |
+| restore | fb1 bytes 16588800, offset 0,1080; staging removed; no helper left |
+
+The engine holds display/async/alpha and the readiness receipt; the vendor skin
+holds only ui.engine. The on-screen result is unchanged.
+
 ## Not verified
 
 - The localised source names come from this Dutch capture; other languages and

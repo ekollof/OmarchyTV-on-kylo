@@ -51,6 +51,9 @@ typedef struct {
 
 /* module/changed — lifecycle notification from the host. */
 #define OA_TOPIC_MODULE_CHANGED "module/changed"
+/* ui.engine has bound the display (initial start, resume or provider rebind).
+ * Subscribers repaint. Emitted with a NULL payload. */
+#define OA_TOPIC_UI_READY "ui/ready"
 enum { OA_MOD_LOADED_EV = 0, OA_MOD_STARTED_EV = 1, OA_MOD_STOPPED_EV = 2, OA_MOD_UNLOADED_EV = 3 };
 typedef struct {
     const char *name;

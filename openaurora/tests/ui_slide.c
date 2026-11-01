@@ -139,6 +139,8 @@ int main(int argc, char **argv)
     const oa_ui_anim_iface *anim = host.api.lookup(&host, OA_SVC_UI_ANIM, 1);
     assert(anim && anim->set_enabled(1) == 0);
 
+    assert(!command(&host, "load ui_engine", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "start ui_engine", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(!command(&host, "load ui_fb", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
 

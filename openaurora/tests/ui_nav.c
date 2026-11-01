@@ -145,6 +145,8 @@ int main(int argc, char **argv)
     assert(!command(&host, "start ui_anim", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(!command(&host, "load settings", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start settings", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "load ui_engine", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "start ui_engine", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(!command(&host, "load ui_fb", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
 

@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include "host.h"
 #include "openaurora/events.h"
+#include "openaurora/ui_engine.h"
 #include "scene_gpu_trace.h"
 #define require(expression) do { if (!(expression)) { \
     fprintf(stderr, "%s:%d: %s errno=%d\n", __FILE__, __LINE__, #expression, errno); exit(1); } } while (0)
@@ -50,6 +51,7 @@ static void cached_dialog(const char *modules, const char *fake_clock)
 {
     oa_host h; require(!oa_host_init(&h, modules, NULL)); h.log_level = OA_LOG_ERROR; h.api.config_get = config;
     (void)load(&h, "scene_gpu_fixture"); (void)load(&h, "scene_display");
+    (void)load(&h, "ui_engine");
     (void)load(&h, fake_clock); (void)load(&h, "ui_anim"); (void)load(&h, "ui_fb");
     const scene_gpu_trace *t = h.api.lookup(&h, SCENE_GPU_TRACE, 1);
     const oa_ui_anim_iface *anim = h.api.lookup(&h, OA_SVC_UI_ANIM, 2);
@@ -81,18 +83,20 @@ int main(int argc, char **argv)
     snprintf(directory, sizeof directory, "/tmp/oa-ui-async-XXXXXX"); require(mkdtemp(directory));
     snprintf(ready_path, sizeof ready_path, "%s/ready", directory);
     oa_host h; require(!oa_host_init(&h, argv[1], NULL)); h.log_level = OA_LOG_ERROR; h.api.config_get = config;
-    (void)load(&h, "scene_gpu_fixture"); (void)load(&h, "scene_display"); oa_mod *ui = load(&h, "ui_fb");
+    (void)load(&h, "scene_gpu_fixture"); (void)load(&h, "scene_display"); (void)load(&h, "ui_engine"); oa_mod *ui = load(&h, "ui_fb");
+    oa_mod *eng = oa_host_find_module(&h, "ui_engine"); require(eng);
     const scene_gpu_trace *t = h.api.lookup(&h, SCENE_GPU_TRACE, 1); require(t);
-    require(timers(&h, ui->id) == 1 && held(&h, ui->id, OA_SVC_DISPLAY) && held(&h, ui->id, OA_SVC_DISPLAY_ASYNC));
-    require(held(&h, ui->id, OA_SVC_DISPLAY_ALPHA));
+    require(timers(&h, eng->id) == 1 && held(&h, eng->id, OA_SVC_DISPLAY) && held(&h, eng->id, OA_SVC_DISPLAY_ASYNC));
+    require(held(&h, eng->id, OA_SVC_DISPLAY_ALPHA) && held(&h, ui->id, OA_SVC_UI_ENGINE));
     require(access(ready_path, F_OK) == -1);
     require(!t->settle(0)); pump(&h); require(access(ready_path, F_OK) == -1); /* OPEN isn't a frame */
     unsigned char backdrop[4];
     require(!t->pixel(1919, 0, backdrop));
     require(backdrop[0] == 36 && backdrop[1] == 38 && backdrop[2] == 40 && backdrop[3] == 153);
     require(!t->settle(EIO)); pump(&h); require(access(ready_path, F_OK) == -1);
-    require(!oa_module_unload(&h, "ui_fb", 0) && !oa_module_unload(&h, "scene_display", 0));
+    require(!oa_module_unload(&h, "ui_fb", 0) && !oa_module_unload(&h, "scene_display", 1));
     (void)load(&h, "scene_display"); ui = load(&h, "ui_fb");
+    pump(&h);                         /* let the engine rebind the new display provider */
     require(access(ready_path, F_OK) == -1);
     /* A newer paint is queued while the first is in flight: readiness may use
      * that first actual UI completion and must not chase the newest serial. */
@@ -109,23 +113,24 @@ int main(int argc, char **argv)
     require(!t->settle(0)); pump(&h); require(!access(ready_path, F_OK));
     require(!unlink(ready_path));
     require(!oa_module_suspend_all(&h));
-    require(!timers(&h, ui->id) && !held(&h, ui->id, OA_SVC_DISPLAY_ASYNC) && !held(&h, ui->id, OA_SVC_DISPLAY));
-    require(!held(&h, ui->id, OA_SVC_DISPLAY_ALPHA));
-    real_timer_add = h.api.timer_add; failed_owner = ui->id; h.api.timer_add = timer_add;
-    require(oa_module_resume_all(&h) == -1 && ui->state == OA_ST_SUSPENDED);
-    require(!held(&h, ui->id, OA_SVC_DISPLAY_ASYNC) && !held(&h, ui->id, OA_SVC_DISPLAY));
-    require(!held(&h, ui->id, OA_SVC_DISPLAY_ALPHA));
+    require(!timers(&h, eng->id) && !held(&h, eng->id, OA_SVC_DISPLAY_ASYNC) && !held(&h, eng->id, OA_SVC_DISPLAY));
+    require(!held(&h, eng->id, OA_SVC_DISPLAY_ALPHA));
+    require(!held(&h, ui->id, OA_SVC_UI_ENGINE));
+    real_timer_add = h.api.timer_add; failed_owner = eng->id; h.api.timer_add = timer_add;
+    require(oa_module_resume_all(&h) == -1 && eng->state == OA_ST_SUSPENDED);
+    require(!held(&h, eng->id, OA_SVC_DISPLAY_ASYNC) && !held(&h, eng->id, OA_SVC_DISPLAY));
+    require(!held(&h, eng->id, OA_SVC_DISPLAY_ALPHA));
     h.api.timer_add = real_timer_add;
-    require(!oa_module_resume_all(&h) && timers(&h, ui->id) == 1);
-    require(held(&h, ui->id, OA_SVC_DISPLAY_ALPHA));
+    require(!oa_module_resume_all(&h) && timers(&h, eng->id) == 1);
+    require(held(&h, eng->id, OA_SVC_DISPLAY_ALPHA));
     /* A resumed already-acknowledged UI need not rewrite a process-start receipt. */
     require(!t->settle(0)); pump(&h); require(!t->settle(0)); pump(&h);
     puts("  ok   old receipts cannot acknowledge a reloaded UI; suspend/failed resume release both holds and timer");
     require(oa_module_unload(&h, "scene_display", 0) == -1);
     require(!oa_module_unload(&h, "scene_display", 1)); pump(&h);
-    require(!timers(&h, ui->id));
+    require(!timers(&h, eng->id));
     (void)load(&h, "scene_display"); pump(&h);
-    require(timers(&h, ui->id) == 1 && held(&h, ui->id, OA_SVC_DISPLAY_ASYNC));
+    require(timers(&h, eng->id) == 1 && held(&h, eng->id, OA_SVC_DISPLAY_ASYNC));
     require(!t->settle(0)); pump(&h);
     h.stop_requested = 1; require(!oa_host_run(&h));
     close(h.selfpipe[0]); close(h.selfpipe[1]); pthread_mutex_destroy(&h.post_mu);
