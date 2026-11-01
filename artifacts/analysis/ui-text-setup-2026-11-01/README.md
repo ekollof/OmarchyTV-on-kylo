@@ -159,6 +159,33 @@ for bounds). `drawRow` (0xd50f61) maps item type 9→row 0x17, 10→0x18,
 0xb→0x19 under the progressbar-in-place flag; `setType` case 9 shows the
 slidebar (+0x13c0) and the value textbox (+0x1ca8) — the font16 digit rows.
 
+## Tab composition (TabDialog::showSubMenu 0xd6f141)
+
+TabDialog owns 5 tab `SVGButton`s (+0x4fc/+0xe8c/+0x181c/+0x21ac/+0x2b3c =
+`+0x34cc..+0x34dc`), the title textbox (+0x34e0) and the Left/Right `UIGroup`
+(+0x4cc, keys 0x20d/0x20c). `updateTitles` sets each created tab button's text
+from localized keys (default literal "tab_text", `DAT_00d6fdb4` → 0x14ddb58);
+the key table itself (`DAT_00d6fdbc` → 0x1a0f1bc) lives in .bss, so the five
+keys are not statically resolvable — do not invent them. Tab labels are
+button texts at the 191 resource positions, not separate textboxes.
+
+`showSubMenu` creates the focused tab's content dialog from the UIGroup focus
+id (`+0x4ac`):
+
+| tab | content dialog |
+|---|---|
+| 0 | PictureSettingsDialog (Beeld — the captured panel) |
+| 1 | SoundSettingsDialog (Geluid) |
+| 2 | IPMultipleDeviceSettingsDialog (Netwerk, if wifi available) |
+| 3 | InstallationSettingsListDialog |
+| 4 | SettingsListMenuDialog |
+
+So the vertical Beeld panel is `PictureSettingsDialog` hosted as tab 0's
+submenu. Tab switching = destroy/create the content dialog; `setSelectedItem`
+only stores the index (`+0x4a8`). Left/Right with the submenu flag set routes
+through the tab UIGroup then `updateGlyphAndTitle` + `showSubMenu`; Up/Down
+with flag set focuses the submenu list.
+
 ## Value/tab interaction (no implementation yet)
 
 `onRightLeftPress` (0xe0ad0d): stores the selected id; id 6 with dual view

@@ -391,8 +391,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       5/6/9/0xd/0xe/0xf/0 as type-2 selection rows and 7/8/10/0x120/0x6d as
       type-4 button rows; value change is onRightLeftPress id dispatch
       (updateViaPictureElementSetting or base adjust with 0x2c8→0x20c /
-      0x2c9→0x20d remap), Select opens sub-dialogs, tabs switch on Left/Right.
-      Transformed textPos scale/origin, per-widget line counts/types and FA
+      0x2c9→0x20d remap), Select opens sub-dialogs, tabs switch on Left/Right
+      by replacing the content dialog (tab 0 Beeld = PictureSettingsDialog,
+      1 Geluid = SoundSettingsDialog, 2 Netwerk, 3 Installation, 4 System;
+      showSubMenu 0xd6f141). The five tab labels are button texts from
+      localized keys (table in .bss, not statically resolvable). Transformed
+      textPos scale/origin, per-widget line counts/types and FA
       animation geometry are still undecoded, so title/tab/slider-graphics/
       focused text must not be built from the capture fits. Do not
       guess FA/FI slider/button graphics or the .data literal names.
