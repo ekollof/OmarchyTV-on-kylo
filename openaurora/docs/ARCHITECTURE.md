@@ -145,6 +145,24 @@ resume refuse once shutdown has started. --force is not used. This is offline
 lifecycle coverage. Offline device workers are a later injected-I/O layer.
 See SHUTDOWN-2026-11-01, OWNER-WORKER-2026-11-01 and TODO.
 
+## UI engine and skins
+
+The generic UI engine is its own reloadable module (`modules/ui_engine`), so the
+reverse-engineered vendor screens and a later OmarchyTV skin share one engine.
+
+| piece | owns |
+|---|---|
+| ui.engine | display/alpha discovery and rebinding, OAI1 asset loading from `ui.dir`, clear/fill/blit/blit_scaled, present/completion receipts and the readiness receipt, key-topic subscription, screen stack and dispatch, clock access |
+| ui.engine service v1 | `info`, draw ops, `icon(name)`, `present`, `now_ms`, `register_skin`/`unregister_skin` |
+| skin interface | `enter/leave/paint/key`; a skin registers on start and unregisters on stop. The last registered skin is active; a failed stop leaves the previous one usable |
+| ui.vendor | the first skin: current `mod_ui_fb` behavior (portal rail/cards, source selection, dialogs, animations) plus `OA_SVC_PORTAL` for tests/control |
+| ui.omarchy | later second skin; selected by config/control-plane load list, not a rebuild. If it fails to start, the control plane keeps or loads ui.vendor as the fallback |
+
+Migration order: move display discovery/assets/present/ack/rebind into the
+engine, then the screen stack and input dispatch, then rename `mod_ui_fb` to
+ui.vendor. Keep the existing UI tests by loading engine+vendor in the same
+order. The vendor skin is the known working fallback throughout.
+
 ## Lifecycle and reload
 
 init → optional restore → start → suspend/resume → stop → destroy → dlclose.
@@ -420,6 +438,18 @@ overriding CFLAGS. make tv hardcodes build-tv; make clean also removes build-tv.
 Use explicit TARGET/BUILD for ABI 3. make arm produces musl stubs for sanity,
 not TV runtime linkage. make install stages host files unless built otherwise;
 it is not a TV deployment procedure.
+
+ccache: when installed, the default host `CC` is wrapped automatically
+(`ccache cc`) and `make arm`/`make tv` wrap their cross compiler. An explicit
+`CC=...` on the command line or in the environment is left untouched;
+`CCACHE_DISABLE=1` disables the cache. Only object compiles are cacheable:
+most module and test rules here compile and link in one `-shared` invocation,
+which ccache treats as a link and cannot cache. Splitting those rules into
+`.o` + link steps is the follow-up if the cache hit rate matters; see TODO.
+
+For build-only iteration, `make -j$(nproc) all` parallelizes independent
+targets. Do not add -j to `check`: its test groups share staging directories
+and fixed ports and must keep running in their current order.
 
 The set runs glibc 2.23 with /lib/ld-linux-armhf.so.3. The known Arm GNU 10.2
 toolchain has glibc2.31, but compatibility depends on each artifact's actual

@@ -818,6 +818,29 @@ they belong to the popup list row and remain undecoded. This is a real, used
 screen (unlike the likely-dead full-screen portal) and is the better next UI
 target once the TV is free. No implementation yet.
 
+SOURCE-SELECT-IMPL-2026-11-01: mod_ui_fb renders DialogSourceSelection.svg 185
+as a real screen. Rail Select on the source icon opens the 780x1080 panel
+(#2D1EBE), the 748x66 focus bar (#1994FE) at 18,152 with a 75 px pitch, and the
+vendor's own text extracted by tools/extract-source-selection.py
+(src_title/src_0..src_8, ten new OAI1 blobs). Up/Down move the bar, Exit
+returns; focused-row text scales between the capture's 34 px and 28 px ink
+sizes. tests/ui_sources.c checks the state and fills; make check 232 ok. Text is
+the Dutch capture; localization and exact row-template focus metrics remain
+open. On-TV run pending (owner allows fb1).
+
+UI-ENGINE-PLAN-2026-11-01: owner direction: the whole UI engine must be its own
+module so ui.omarchy can replace the skin after parity, with ui.vendor as the
+known working fallback. Design in docs/ARCHITECTURE.md: ui.engine owns display/
+assets/present/ack/input/screen dispatch and publishes ui.engine v1; ui.vendor
+registers the current screens and keeps OA_SVC_PORTAL. Not implemented yet;
+TODO has the acceptance gates.
+
+CCACHE-2026-11-01: ccache 4.14.1 installed. The Makefile wraps the default host
+CC and the arm/tv cross compilers automatically; an explicit CC= is untouched
+and CCACHE_DISABLE=1 disables. Most module/test rules compile+link in one
+-shared call and are uncacheable; splitting them is a TODO. Build-only runs can
+use make -j$(nproc) all; check stays sequential.
+
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
 Vendor animations, transitions and UI/UX effects are included, not yet accepted.

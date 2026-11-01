@@ -13,7 +13,16 @@
 PROJECT  := openaurora
 VERSION  := 0.1.0
 
+CCACHE   := $(shell command -v ccache 2>/dev/null)
 CC       ?= cc
+# Use ccache transparently for the default host compiler when it is installed.
+# An explicit CC=... (environment or command line) is respected; the arm/tv
+# wrappers below pass the cross compiler wrapped explicitly.
+ifeq ($(origin CC),default)
+  ifneq ($(CCACHE),)
+    CC := $(CCACHE) cc
+  endif
+endif
 CFLAGS   ?= -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic
 CPPFLAGS += -Iinclude -D_GNU_SOURCE
 LDFLAGS  ?=
@@ -129,7 +138,7 @@ vendor:
 	@./scripts/fetch-vendor.sh
 
 arm:
-	$(MAKE) TARGET=arm CC=$(CROSS) BUILD=build-arm
+	$(MAKE) TARGET=arm CC="$(if $(CCACHE),$(CCACHE) ,)$(CROSS)" BUILD=build-arm
 
 # TV build: needs a glibc arm-linux-gnueabihf compiler. musl cannot load a glibc .so.
 tv:
@@ -138,7 +147,7 @@ tv:
 	  echo "The vendor HAL is glibc 2.23; set TV_CROSS to an arm-linux-gnueabihf gcc"; \
 	  echo "(glibc <= 2.33). See docs/ARCHITECTURE.md 'Toolchain'."; exit 1; }
 	@test -f $(VENDOR_LIB)/libNDAL3.so || { echo "run 'make vendor' first"; exit 1; }
-	$(MAKE) TARGET=tv CC=$(TV_CROSS) BUILD=build-tv
+	$(MAKE) TARGET=tv CC="$(if $(CCACHE),$(CCACHE) ,)$(TV_CROSS)" BUILD=build-tv
 
 $(BUILD)/tests/mod_recovery_fixture.so: tests/recovery_fixture.c include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
@@ -399,6 +408,18 @@ $(BUILD)/tests/ui_nav: tests/ui_nav.c tests/ui_nav_trace.h core/host.h $(filter-
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_nav.c $(filter %.o,$^) $(LDLIBS)
 
+$(BUILD)/tests/ui_sources: tests/ui_sources.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_sources.c $(filter %.o,$^) $(LDLIBS)
+
+check-ui-sources: $(BUILD)/tests/ui_sources $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so
+	@mkdir -p $(BUILD)/tests/ui-sources/modules
+	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so $(BUILD)/tests/ui-sources/modules/
+	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-sources/modules/mod_nav_display.so
+	@sqlite3 $(CURDIR)/$(BUILD)/tests/ui-sources/settings.db 'DROP TABLE IF EXISTS Settings; CREATE TABLE Settings (m_current_source INTEGER); INSERT INTO Settings (m_current_source) VALUES (4);'
+	@printf 'ir.device =\nui.ok_file =\nui.paint = 1\nui.focus = 2\nui.fps = 0\nui.launch_anim = 1\nsettings.db = $(CURDIR)/$(BUILD)/tests/ui-sources/settings.db\nsettings.readonly = 1\n' > $(BUILD)/tests/ui-sources/ui.cfg
+	@$(BUILD)/tests/ui_sources $(BUILD)/tests/ui-sources/modules $(BUILD)/tests/ui-sources/ui.cfg
+
 check-ui-nav: check-ui-anim-review $(BUILD)/tests/ui_nav $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so
 	@mkdir -p $(BUILD)/tests/ui-nav/modules
 	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so $(BUILD)/tests/ui-nav/modules/
@@ -627,7 +648,7 @@ $(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/modu
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_fake_clock.c $(LDFLAGS) $(LDLIBS)
 
-check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-vgrid check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
+check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-sources check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-vgrid check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
 	@BUILD=$(BUILD) sh tests/run.sh
 	@$(BUILD)/tests/registry $(BUILD)/modules $(BUILD)/tests/mod_failed_init.so
 	@BUILD=$(BUILD) python3 tests/recovery.py

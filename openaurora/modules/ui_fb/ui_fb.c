@@ -63,6 +63,24 @@ static const char *DEFAULT_CARDS[MAX_CARDS] = {
     "card_tvvlaanderen", "card_telesat", "card_digiturk", "card_gain",   NULL,
 };
 
+/* Vendor p0/06 capture: ink origin and size of each source-row label. Row 0
+ * carries the focused (larger) text; rows 1..8 the unfocused text. The module
+ * scales between the two observed sizes when the focus moves. */
+#define MAX_SOURCES 9
+static const struct {
+    int x, y, w, h;
+} SRC_TEXT[MAX_SOURCES] = {
+    { 89, 168, 81, 34 },
+    { 85, 251, 166, 28 },
+    { 85, 326, 124, 28 },
+    { 85, 401, 131, 28 },
+    { 86, 476, 132, 28 },
+    { 86, 550, 123, 29 },
+    { 85, 621, 146, 38 },
+    { 86, 700, 273, 37 },
+    { 84, 775, 264, 29 },
+};
+
 struct icon {
     char name[48];
     int w, h;
@@ -70,6 +88,19 @@ struct icon {
 };
 
 enum { BAND_RAIL = 0, BAND_CARDS = 1 };
+
+/* Vendor source-selection panel (DialogSourceSelection.svg 185) and the nine
+ * rows measured from the p0/06 capture. The text blobs are the vendor's own
+ * ink extracted by tools/extract-source-selection.py; the panel and focus bar
+ * are the capture's flat colours. Row text positions are the capture's ink
+ * origins; the bar is the listBox row at 18,152 with a 75 px pitch. */
+#define SRC_PANEL_W 780
+#define SRC_BAR_X 18
+#define SRC_BAR_Y 152
+#define SRC_BAR_W 748
+#define SRC_BAR_H 66
+#define SRC_ROW_PITCH 75
+
 
 /* Vendor mainlauncher_item_highlight_animated: 11 frames, 30 ms each, num_plays 0 (loop).
  * The image is created at the 160x160 button window from DialogMainMenu.svg; the measured focused
@@ -82,8 +113,9 @@ enum { BAND_RAIL = 0, BAND_CARDS = 1 };
 #define OA_RAIL_HL_POLL_MS 10
 #define OA_RAIL_HL_W 160
 #define OA_RAIL_HL_H 160
-/* Title + five glyphs + the configured card limit + the entire APNG. */
-#define MAX_ICONS (1 + 5 + MAX_CARDS + OA_RAIL_HL_FRAMES)
+/* Title + five glyphs + the configured card limit + the entire APNG +
+ * the source title and nine source labels. */
+#define MAX_ICONS (1 + 5 + MAX_CARDS + OA_RAIL_HL_FRAMES + 1 + MAX_SOURCES)
 
 struct ctx {
     const oa_host_api *api;
@@ -101,6 +133,7 @@ struct ctx {
     int band;
     int rail;
     int card;
+    int src;                         /* source-selection row, 0..MAX_SOURCES-1 */
     int screen;
     int restored;
     const oa_settings_iface *settings;
@@ -230,7 +263,7 @@ static const struct icon *find_icon(struct ctx *c, const char *name)
 
 /* ------------------------------------------------------------------ geometry */
 
-enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, ANIM_DIALOG = 1 };
+enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, ANIM_DIALOG = 1 };
 
 static void rail_slot(int focus, int i, int *x, int *y, int *w, int *h)
 {
@@ -361,12 +394,66 @@ static int request_present(struct ctx *c)
     acknowledge(c); return 0;
 }
 
+static void paint_sources(struct ctx *c)
+{
+    const oa_display_iface *d = c->disp;
+    int W = 0, H = 0;
+    if (!c || !d || d->info(&W, &H, NULL, NULL) != 0 || W <= 0 || H <= 0)
+        return;
+    /* DialogSourceSelection.svg 185 panel (0,0,780,1080) and the capture's
+     * focused row at (18,152) with a 75 px pitch. */
+    if (d->clear(0, 0, 0)) return;
+    d->fill(0, 0, SRC_PANEL_W, H, 45, 30, 190);
+    d->fill(SRC_BAR_X, SRC_BAR_Y + c->src * SRC_ROW_PITCH, SRC_BAR_W, SRC_BAR_H,
+            25, 148, 254);
+    const struct icon *t = find_icon(c, "src_title");
+    if (t)
+        d->blit(62, 64, t->w, t->h, t->rgba);
+    for (int i = 0; i < MAX_SOURCES; i++) {
+        char name[16];
+        snprintf(name, sizeof name, "src_%d", i);
+        const struct icon *g = find_icon(c, name);
+        if (!g)
+            continue;
+        int x = SRC_TEXT[i].x, y = SRC_TEXT[i].y;
+        int w = SRC_TEXT[i].w, h = SRC_TEXT[i].h;
+        /* The vendor capture has row 0 in the focused (larger) style and rows
+         * 1..8 unfocused: 34 px vs 28 px ink. Scale about the text bottom when
+         * the focus moves; the glyph shapes are the vendor's own. */
+        if (i == 0) {
+            if (c->src != 0) {
+                w = w * 28 / 34;
+                h = 28;
+                y = y + SRC_TEXT[0].h - h;
+            }
+        } else if (i == c->src) {
+            w = w * 34 / SRC_TEXT[i].h;
+            h = 34;
+            y = y + SRC_TEXT[i].h - h;
+        }
+        if (w == g->w && h == g->h)
+            d->blit(x, y, g->w, g->h, g->rgba);
+        else
+            d->blit_scaled(x, y, w, h, g->w, g->h, g->rgba);
+    }
+    c->scene_painted = 1;
+    if (request_present(c) != 0) {
+        c->api->log(c->api->priv, OA_LOG_ERROR, "source-selection present failed");
+        return;
+    }
+    c->api->log(c->api->priv, OA_LOG_INFO, "painted source selection: row %d", c->src);
+}
+
 static void paint(struct ctx *c)
 {
     const oa_display_iface *d;
     int W = 0, H = 0;
     if (!c || !c->disp) return;   /* a suspended/stopped module has no display hold */
     d = c->disp;
+    if (c->screen == SCREEN_SOURCES) {
+        paint_sources(c);
+        return;
+    }
     rail_hl_sync(c);              /* keeps the 30 ms highlight timer in step with the screen */
     if (d->info(&W, &H, NULL, NULL) != 0 || W <= 0 || H <= 0)
         return;
@@ -835,6 +922,22 @@ static void cancel_dialog(struct ctx *c)
 
 static void move_key(struct ctx *c, uint8_t id)
 {
+    if (c->screen == SCREEN_SOURCES) {
+        if (id == 20 && c->src > 0) {
+            c->src--;
+        } else if (id == 19 && c->src + 1 < MAX_SOURCES) {
+            c->src++;
+        } else if (id == 10 || id == 48) {
+            c->screen = SCREEN_PORTAL;
+        } else if (id == 53 || id == 0x8a) {
+            emit_action(c, OA_ACTION_SELECT);
+            return;
+        } else {
+            return;
+        }
+        if (c->disp) paint(c);
+        return;
+    }
     if (id == 20) { /* Up */
         if (c->band == BAND_CARDS) {
             c->band = BAND_RAIL;
@@ -871,6 +974,14 @@ static void move_key(struct ctx *c, uint8_t id)
         }
     } else if (id == 53 || id == 0x8a) { /* Select: profile RC, or NEC OK */
         emit_action(c, OA_ACTION_SELECT);
+        /* Rail 1 is the vendor source-list icon; Select on it opens the
+         * DialogSourceSelection panel. */
+        if (c->band == BAND_RAIL && c->rail == 1) {
+            c->screen = SCREEN_SOURCES;
+            c->src = 0;
+            if (c->disp) paint(c);
+            return;
+        }
         /* Firmware MainLauncherMenuDialog::onSelectPress only calls focusLauncher(false), and
          * focusLauncher does index bookkeeping: the launcher has no full-screen transition.
          * The type-4 path is a lab-only option (ui.launch_anim=1) pending vendor dialogue parity. */
@@ -1009,6 +1120,12 @@ static int m_start(void *v)
         load_blob(c, RAIL[i].glyph);
     for (int i = 0; i < c->nc; i++)
         load_blob(c, c->cards[i]);
+    load_blob(c, "src_title");
+    for (int i = 0; i < MAX_SOURCES; i++) {
+        char name[16];
+        snprintf(name, sizeof name, "src_%d", i);
+        load_blob(c, name);
+    }
 
     /* Vendor main-launcher highlight: 11 frames at 30 ms, played once per image/focus. The
      * decoder advances only while index < frame count (decodeNextFrame 0xb30654) and does not
@@ -1256,7 +1373,7 @@ static int m_restore(void *v, const void *buf, size_t len)
     if (!c || !buf || len != 4)
         return -1;
     const unsigned char *bytes = buf;
-    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_OPEN)
+    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_SOURCES)
         return -1;
     c->band = bytes[0];
     c->rail = bytes[1];

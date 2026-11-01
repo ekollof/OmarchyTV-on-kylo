@@ -340,7 +340,22 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       ASan/UBSan run and one ARM/qemu run. The test database is not the live
       settings store. UI-PARITY.
 - [ ] Complete the remaining vendor screens and labels. The injected portal
-      above is not all-screen parity or a confirmed live remote capture.
+      above is not all-screen parity or a confirmed live remote capture. The
+      source-selection panel (DialogSourceSelection.svg 185) is the first
+      implemented screen beyond the portal; its rows/focus are vendor-derived.
+- [ ] Extract the UI engine into its own reloadable module and make the vendor
+      UI a skin: engine owns display discovery, OAI1 assets, draw/present/ack
+      and input/screen dispatch and publishes ui.engine v1. ui.vendor (the
+      current mod_ui_fb screens, including the source list) registers with it
+      and keeps OA_SVC_PORTAL compatibility for tests/control; ui.omarchy is
+      the later alternative skin. The vendor skin remains the known working
+      fallback. Acceptance: engine+vendor load/reload/stop, existing UI tests
+      run against the split, and the active skin is a config choice, not a
+      rebuild. Design in docs/ARCHITECTURE.md.
+- [ ] Split module/test compile+link rules into .o + link so ccache can cache
+      them (most are one-step -shared invocations, which ccache cannot cache).
+      Preserve -Werror/-pedantic and the current link flags; measure a clean
+      cold/warm build and report the hit rate.
 - [ ] Reproduce vendor animations, transitions, focus/selection feedback, scrolling
       and other UI/UX flair. Recover effects/timing/easing/interrupt and resume
       behavior from firmware/assets; validate frame sequences and interaction,
