@@ -103,7 +103,12 @@ The matching16-module production stage was not rebuilt.
 
 ## Next integration requirement
 
-There is no graphics executable or module service yet. A discarded draft linked
+Superseded executable status: SCENE-HELPER-2026-11-01 now implements and tests
+the bootstrap/load boundary and actual native frames in a separate child. The
+module-service integration below remains open. The following records the concern
+at this lower-layer milestone, not a reason to repeat a solved bootstrap design.
+
+At this milestone there was no graphics executable or module service. A discarded draft linked
 Mali and closed all fd>=3 in main. That ordering is unsafe: library constructors
 run first and may own descriptors. Do not copy the audio executable's fd cleanup
 blindly into a directly linked graphics executable. Establish a bootstrap/load

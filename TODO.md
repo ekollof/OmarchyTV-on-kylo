@@ -405,8 +405,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       (animation_slide_up_fade_in); ui.fs_type remains an override.
 - [ ] Complete accelerated scene presentation and visible animation acceptance.
       EGL-WINDOW now proves direct native presentation on the initialized layer.
-      SCENE-BROKER adds the tested lower sealed-image IPC/owner server only;
-      bootstrap Mali after inherited-fd cleanup, then add the actual executable.
+      SCENE-HELPER now tests the separate bootstrap/renderer on actual GPU;
+      reuse its executable and IPC in a nonblocking parent provider.
       Integrate an owning EGL worker, nonblocking quiescence, bounded/coalesced
       async frame/completion and readiness semantics before production service
       wiring. No display.renderer switch exists yet. Preserve failed-close
@@ -420,9 +420,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       injected finish and failed-close retry. Four groups pass strict host,
       ASan/UBSan, ARM/qemu and actual TV without rendering/hardware calls.
       Target shared sealed mapping EPERM resolved using kernel ARM instructions;
-      use private read-only mapping with all seals retained. No graphics helper,
-      service, readiness, module lifecycle or GPU completion acceptance implied.
+      use private read-only mapping with all seals retained. Helper/GPU acceptance
+      is the subsequent SCENE-HELPER milestone; host service/readiness and module
+      lifecycle remain open.
       SCENE-BROKER-2026-11-01.
+- [x] Separate graphics bootstrap/renderer: close inherited descriptors before
+      Mali loads; keep renderer loaded until child exit. Two process groups pass
+      strict host/sanitizers/TV. Actual native helper completes410 GPU frames
+      (identity plus eight effects), child exits/reaps, full16588800-byte backing,
+      region/MAU/pan restored and independently hashed. Full host209 checks pass.
+      Blocking diagnostic client only; async host service/module lifecycle and
+      first-frame readiness remain pending. SCENE-HELPER-2026-11-01.
 - [x] Direct EGL native-window diagnostic: recovered4-byte dimensions, fb1/
       primary-buffer profile and swap/MAU contract. Eight effects at50Hz pacing
       passed on actual display, owner confirmed upright/full-screen/smooth;

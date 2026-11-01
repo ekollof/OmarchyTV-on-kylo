@@ -24,6 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
+Latest milestone: [SCENE-HELPER](artifacts/reports/SCENE-HELPER-2026-11-01.md)
+adds an EGL-free executable that sanitizes inherited descriptors before loading
+the renderer DSO. The DSO remains loaded until child exit. Host/sanitizer/TV
+process fixtures and410 real TV GPU frame requests pass. Child21079 drained/
+reaped, full16588800-byte backing/pan/MAU/region restored and independently
+hashed. Staging/backup/helper removed, same boot/PID1785/access/privacy.
+Full host209 checks pass. Isolated build-tv-v3/scene-helper identities are in
+MEMORY/report; matching production stage and historical diagnostics unchanged.
+
+Next: implement the nonblocking parent display provider using this executable.
+The new tools/display/scene-probe-client.c is a BLOCKING diagnostic, not a host
+service. Preserve bounded pending/result slots, transform coalescing, immutable
+revision/source holds, final-frame retry and completion-driven readiness. EOF
+drains child ownership; WNOHANG reaping and ABI3 release gate must keep host loop
+nonblocking. Then integrate ui_fb and test reload/suspend/resume/failed cleanup
+on actual display. No display.renderer option exists yet; CPU remains production.
+
 Latest lower-layer milestone: [SCENE-BROKER](artifacts/reports/SCENE-BROKER-2026-11-01.md)
 adds OGS1 local IPC, sealed immutable8294400-byte RGBA images and a blocking
 owner server with upload/cache revisions, finish-before-completion and retained
@@ -34,12 +51,9 @@ rejects shared read-only mappings of sealed files; verified instructions justify
 private read-only mapping with all seals intact. Staging removed, same boot/
 PID1785/full framebuffer hash/pan/access/privacy. Production stage unchanged.
 
-Next: graphics executable bootstrap must sanitize inherited descriptors before
-loading Mali. A discarded directly linked draft closed fd>=3 after constructors,
-which could close Mali-owned resources. No executable, GL-finish addition or
-async module service was retained. Reuse common/scene_broker*.c and its tests;
-add a proper renderer load/lifetime boundary, then parent completion/coalescing/
-quiescence and actual module/display acceptance. Do not repeat the solved sealed
+The bootstrap/load boundary and actual GL finish are now implemented by
+SCENE-HELPER above; no async module service yet. Reuse common/scene_broker*.c
+and its tests for parent completion/coalescing/quiescence. Do not repeat the solved sealed
 MAP_SHARED experiment or mislabel qemu's small-control ancillary leak as a TV bug.
 
 Owner resumed the goal and reaffirmed real display/hardware testing. Latest

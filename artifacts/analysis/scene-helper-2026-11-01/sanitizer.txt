@@ -1,0 +1,8 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-scene-helper-san/tests/scene_spawn tests/scene_spawn.c common/scene_broker_wire.c common/scene_broker_transport.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-scene-helper-san/oa-scene-broker tools/display/oa-scene-broker.c common/scene_broker.c common/scene_broker_wire.c common/scene_broker_transport.c -ldl
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared  -Wl,-init,scene_fixture_init -Wl,-fini,scene_fixture_fini -o build-scene-helper-san/tests/scene-renderer-fixture.so tests/scene_renderer_fixture.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -DBAD_RENDERER_ABI -fPIC -shared  -Wl,-init,scene_fixture_init -Wl,-fini,scene_fixture_fini -o build-scene-helper-san/tests/scene-renderer-bad.so tests/scene_renderer_fixture.c
+  ok   bootstrap closes inherited fds before DSO init; constructor fd survives, close/EOF drain and reap
+  ok   missing renderer and wrong DSO ABI exit/reap without opening a renderer owner
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

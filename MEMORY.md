@@ -49,6 +49,19 @@ syntax defect.
 
 ## Development build and evidence
 
+SCENE-HELPER-2026-11-01: separate EGL-free bootstrap plus late-loaded renderer
+passes two process fixture groups on strict host/sanitizers/TV and410 actual GPU
+frame requests on the TV. Constructor fd survives inherited-fd cleanup; child
+drains/reaps before full snapshot/pan/MAU/region restoration. Independent full
+hash41735daa69dc137743b59efe12db4a19 and pan0,0 unchanged. Same boot/PID1785,
+installed hook/hosts/access/privacy/safety markers; staging/backup/helpers removed.
+Full host209 checks pass. Isolated binaries under build-tv-v3/scene-helper:
+bootstrap57304bytes/596643ed63c76231e6a7e31fd22d7efd, renderer68064bytes/
+f4196fa2413cbf60efdfb136d8b56e4b, diagnostic74588bytes/
+d875eff769e4b421dd6e6d4d70bf14fb; maxGLIBC2.4/2.4/2.17 respectively. No
+production stage refresh. Next is nonblocking parent provider/completion/readiness
+and module lifecycle; the diagnostic client blocks and must stay out of the host.
+
 SCENE-BROKER-2026-11-01 adds the lower immutable-image IPC and blocking owner
 server. Four injected-renderer groups pass strict host, ASan/UBSan, ARM/qemu and
 actual TV; complete host suite207 checks pass. Native unit87760bytes/
@@ -58,8 +71,8 @@ MAP_SHARED on sealed files; instruction-backed MAP_PRIVATE correction passes
 with all seals retained. No EGL/hardware calls in this test. Staging removed;
 same boot/PID1785, full framebuffer hash41735daa69dc137743b59efe12db4a19,
 pan0,0, installed hook/hosts hashes, access/privacy and safety markers confirmed.
-Production stage unchanged. Graphics executable/service integration remains open;
-Mali must load after inherited-fd sanitation, not before it. See report for the
+Production stage unchanged. The later SCENE-HELPER closes executable integration;
+host service remains open. Mali must load after inherited-fd sanitation. See report for the
 initial timeout and emulator-only ancillary truncation discrepancy.
 
 EGL-WINDOW-2026-11-01: direct GPU display diagnostic passed, owner independently

@@ -197,6 +197,14 @@ int oa_scene_gles_render(oa_scene_gles *s, const uint8_t *rgba, size_t input_siz
     glReadPixels(0, 0, (GLsizei)s->width, (GLsizei)s->height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
     return gl_ok(s, "render/read scene");
 }
+int oa_scene_gles_finish(oa_scene_gles *s)
+{
+    if (owned(s)) return -1;
+    if (!s->ready) { errno = ENODEV; return -1; }
+    if (eglGetCurrentContext() != s->context) { errno = EBUSY; return -1; }
+    glFinish();
+    return gl_ok(s, "finish scene");
+}
 int oa_scene_gles_close(oa_scene_gles **out)
 {
     if (!out) { errno = EINVAL; return -1; }

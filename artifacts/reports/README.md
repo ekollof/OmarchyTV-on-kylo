@@ -13,7 +13,8 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
-| [SCENE-BROKER](SCENE-BROKER-2026-11-01.md) | immutable sealed-image IPC and blocking owner server; host/sanitizer/ARM-qemu/TV injected-renderer tests; target read-only shared mapping EPERM resolved from kernel instructions; graphics executable/module integration remains open |
+| [SCENE-HELPER](SCENE-HELPER-2026-11-01.md) | EGL-free bootstrap loads Mali renderer after fd cleanup; host/sanitizer/TV process tests and410 real GPU frame completions, child reap and full restoration; asynchronous host service/module lifecycle remain open |
+| [SCENE-BROKER](SCENE-BROKER-2026-11-01.md) | immutable sealed-image IPC and blocking owner server; host/sanitizer/ARM-qemu/TV injected-renderer tests; target read-only shared mapping EPERM resolved from kernel instructions; subsequent SCENE-HELPER supplies executable/GPU acceptance, host module integration remains open |
 | [EGL-WINDOW](EGL-WINDOW-2026-11-01.md) | direct native presentation, eight effects at50Hz with owner-confirmed upright/full-screen/smooth output; complete backing/pan/MAU/region restoration; async module/worker/readiness integration still open |
 | [EGL-SCENE](EGL-SCENE-2026-11-01.md) | native Mali pbuffer ownership and scene rendering; real GPU pixel/lifecycle/readback tests, framebuffer prefix/pan unchanged; direct-window/module/scanout integration remains open |
 | [UI-SCENE-REVIEW](UI-SCENE-REVIEW-2026-11-01.md) | fan-triangle UVs, linear filtering, alpha fade and UI lifetime/frame fixes; host/sanitizer/ARM-qemu, two real fb1 draw/restore runs; CPU performance and independent visual/startup acceptance remain open |

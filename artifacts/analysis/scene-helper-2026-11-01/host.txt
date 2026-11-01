@@ -1,0 +1,6 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+  ok   bootstrap closes inherited fds before DSO init; constructor fd survives, close/EOF drain and reap
+  ok   missing renderer and wrong DSO ABI exit/reap without opening a renderer owner
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DOA_WINDOW_BROKER  -o build-scene-helper/scene-window-probe tools/display/egl-window-probe.c tools/display/scene-probe-client.c common/scene_broker_wire.c common/scene_broker_transport.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -idirafter /usr/include  -o build-scene-helper/egl-window-probe tools/display/egl-window-probe.c common/scene_gles.c common/ui_anim.c -lEGL -lGLESv2 -pthread -lm
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

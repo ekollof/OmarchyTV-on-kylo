@@ -442,17 +442,47 @@ $(BUILD)/tests/scene_broker: tests/scene_broker.c common/scene_broker.c common/s
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread -lm
 
 .PHONY: check-scene-broker
-check: check-scene-broker
+check: check-scene-broker check-scene-spawn
 check-scene-broker: $(BUILD)/tests/scene_broker
 	@$(BUILD)/tests/scene_broker
+
+$(BUILD)/tests/scene-renderer-fixture.so: tests/scene_renderer_fixture.c include/openaurora/scene_renderer.h include/openaurora/scene_broker.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared $(LDFLAGS) -Wl,-init,scene_fixture_init -Wl,-fini,scene_fixture_fini -o $@ $<
+
+$(BUILD)/tests/scene-renderer-bad.so: tests/scene_renderer_fixture.c include/openaurora/scene_renderer.h include/openaurora/scene_broker.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DBAD_RENDERER_ABI -fPIC -shared $(LDFLAGS) -Wl,-init,scene_fixture_init -Wl,-fini,scene_fixture_fini -o $@ $<
+
+$(BUILD)/tests/scene_spawn: tests/scene_spawn.c common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/scene_broker.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-scene-spawn
+check-scene-spawn: $(BUILD)/tests/scene_spawn $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so $(BUILD)/tests/scene-renderer-bad.so
+	@$(BUILD)/tests/scene_spawn $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so $(BUILD)/tests/scene-renderer-bad.so
 
 $(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
 
+# Explicit targets pending production module integration. Bootstrap is EGL-free;
+# the separately loaded renderer owns Mali for the child's entire lifetime.
+$(BUILD)/oa-scene-broker: tools/display/oa-scene-broker.c common/scene_broker.c common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/scene_renderer.h include/openaurora/scene_broker.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -ldl
+
+$(BUILD)/scene-renderer.so: tools/display/scene-renderer.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_renderer.h include/openaurora/scene_broker.h include/openaurora/scene_gles.h include/openaurora/ui_anim.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include -fPIC -shared $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
+
 $(BUILD)/egl-window-probe: tools/display/egl-window-probe.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
+
+$(BUILD)/scene-window-probe: tools/display/egl-window-probe.c tools/display/scene-probe-client.c tools/display/scene-probe-client.h common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/scene_broker.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_WINDOW_BROKER $(LDFLAGS) -o $@ $(filter %.c,$^)
 
 $(BUILD)/cec-probe: tools/cec/cec-probe.c common/cec_packet.c common/cec.c include/openaurora/vendor_cec.h include/openaurora/cec.h
 	@mkdir -p $(dir $@)

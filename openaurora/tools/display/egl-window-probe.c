@@ -15,9 +15,24 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
+#ifdef OA_WINDOW_BROKER
+#include "scene-probe-client.h"
+#else
 #include "openaurora/scene_gles.h"
+typedef oa_scene_gles scene_probe;
+static int probe_open(scene_probe **scene, unsigned width, unsigned height, const char *helper, const char *renderer)
+{ (void)helper; (void)renderer; return oa_scene_gles_open_window(scene, width, height); }
+static int probe_render(scene_probe *scene, const uint8_t *rgba, size_t size, int type, float progress)
+{ return oa_scene_gles_render(scene, rgba, size, type, progress, NULL, 0); }
+#define probe_close oa_scene_gles_close
+#define probe_error oa_scene_gles_error
+#endif
 
+#ifdef OA_WINDOW_BROKER
+#define BACKUP "/tmp/oa-scene-helper-20261101/framebuffer.backup"
+#else
 #define BACKUP "/tmp/oa-egl-window-20261101/framebuffer.backup"
+#endif
 #define REGION_GET 0x8020c86cu
 #define MAU_GET 0x8004c8bdu
 struct snapshot {
@@ -91,10 +106,10 @@ static int read_backup(struct snapshot *s, uint8_t *pixels)
     if (fclose(file)) failed = 1;
     return failed ? -1 : 0;
 }
-static int error(oa_scene_gles *scene)
+static int error(scene_probe *scene)
 {
     char text[160];
-    oa_scene_gles_error(scene, text, sizeof text);
+    probe_error(scene, text, sizeof text);
     fprintf(stderr, "%s errno=%d\n", text, errno);
     return 1;
 }
@@ -114,9 +129,15 @@ static int identity_readback(int fd, uint8_t *map, const struct snapshot *s)
 }
 int main(int argc, char **argv)
 {
+    const char *helper = NULL, *renderer = NULL;
+#ifdef OA_WINDOW_BROKER
+    if (argc == 4 && !strcmp(argv[1], "--broker")) { helper = argv[2]; renderer = argv[3]; }
+    else if (argc != 2 || strcmp(argv[1], "--restore")) return 2;
+#else
     if (argc > 2 || (argc == 2 && strcmp(argv[1], "--restore"))) return 2;
+#endif
     int restore_only = argc == 2, result = 1, dirty = 0, closed = 0;
-    oa_scene_gles *scene = NULL;
+    scene_probe *scene = NULL;
     struct snapshot saved;
     int fd = open("/dev/fb1", O_RDWR | O_CLOEXEC);
     if (fd < 0) { perror("open fb1"); return 1; }
@@ -151,10 +172,10 @@ int main(int argc, char **argv)
             p[0] = (uint8_t)((x/240)*32); p[1] = (uint8_t)((y/135)*32); p[2] = 80; p[3] = 255;
         }
     dirty = 1;
-    if (oa_scene_gles_open_window(&scene, 1920, 1080)) { (void)error(scene); goto cleanup; }
+    if (probe_open(&scene, 1920, 1080, helper, renderer)) { (void)error(scene); goto cleanup; }
     for (int i = 0; i < 2; i++)
-        if (oa_scene_gles_render(scene, i ? NULL : input, i ? 0 : 1920u*1080u*4,
-                                 0, 1, NULL, 0)) { (void)error(scene); goto cleanup; }
+        if (probe_render(scene, i ? NULL : input, i ? 0 : 1920u*1080u*4,
+                                 0, 1)) { (void)error(scene); goto cleanup; }
     struct timespec pause = {.tv_nsec = 100000000};
     (void)nanosleep(&pause, NULL);
     if (identity_readback(fd, map, &saved)) { fputs("native identity/orientation mismatch\n", stderr); goto cleanup; }
@@ -164,7 +185,7 @@ int main(int argc, char **argv)
         while (elapsed < 1000 && !interrupted && frames < 200) {
             float p = (float)(elapsed/1000), d = p-1;
             float eased = 1+d*d*d;
-            if (oa_scene_gles_render(scene, NULL, 0, type, eased, NULL, 0)) {
+            if (probe_render(scene, NULL, 0, type, eased)) {
                 (void)error(scene); goto cleanup;
             }
             frames++;
@@ -176,7 +197,7 @@ int main(int argc, char **argv)
             if (wait && wait != EINTR) { errno = wait; perror("frame pacing"); goto cleanup; }
             elapsed = millis()-began;
         }
-        if (oa_scene_gles_render(scene, NULL, 0, type, 1, NULL, 0)) {
+        if (probe_render(scene, NULL, 0, type, 1)) {
             (void)error(scene); goto cleanup;
         }
         printf("native type=%d frames=%u elapsed_ms=%.2f\n", type, frames+1, millis()-began);
@@ -185,7 +206,7 @@ int main(int argc, char **argv)
     result = interrupted ? 128+interrupted : 0;
 cleanup:
     for (int attempt = 0; attempt < 3; attempt++)
-        if (!oa_scene_gles_close(&scene)) { closed = 1; break; }
+        if (!probe_close(&scene)) { closed = 1; break; }
     if (!closed) { (void)error(scene); result = 1; }
     if (dirty && (!closed || restore(fd, map, &saved, pixels))) {
         perror("restore failed; retain backup and use --restore after probe exits"); result = 1;

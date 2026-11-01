@@ -24,6 +24,9 @@ int oa_scene_gles_open_window(oa_scene_gles **scene, unsigned width, unsigned he
  * by progress0..1. A return0 proves readback, not scanout or audible/TV parity. */
 int oa_scene_gles_render(oa_scene_gles *scene, const uint8_t *rgba, size_t input_size,
                          int type, float progress, uint8_t *bottom_up, size_t output_size);
+/* Blocking completion of preceding work on this owned context. Does not prove
+ * physical scanout. Separate process uses this before releasing frame input. */
+int oa_scene_gles_finish(oa_scene_gles *scene);
 /* NULL is idempotent. Failure retains the owner and unfinished EGL handles;
  * retry on the same thread. Success releases all handles and sets *scene=NULL. */
 int oa_scene_gles_close(oa_scene_gles **scene);
