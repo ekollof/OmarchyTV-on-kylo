@@ -1,0 +1,9 @@
+firmware image pack: /home/ekollof/Work/tvhack/artifacts/workbench/rootfs/vendor2/dynamic_ui/telefunken18_img.bin
+index offset: 1673932
+APNG SHA256: d49c1fe5822ea814d7a97234c13e39ae8977557024d9667f3c538a170e0f4267
+profile: 210x210, RGBA8, 11 frames, 30ms, loop; OAI1 pixels remain RGBA
+first frame: independent ffmpeg/ImageMagick bytes identical
+fb280c301b6260c059313991298a6e121affe6de51cf5a3ec5284c2388f22d10  /home/ekollof/Work/tvhack/artifacts/workbench/rootfs/vendor2/dynamic_ui/telefunken18_img.bin
+1db0f5b4ac515f3d9f5e14b0e241a6ce785960611132863dff0630879ff5d6b9  /home/ekollof/Work/tvhack/artifacts/workbench/rootfs/vendor2/dynamic_ui/telefunken18_img.txt
+ffmpeg version n9.0.2 Copyright (c) 2000-2026 the FFmpeg developers
+Version: ImageMagick 7.1.2-35 Q16-HDRI x86_64 acaf7e418:20261031 https://imagemagick.org

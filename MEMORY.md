@@ -49,6 +49,20 @@ syntax defect.
 
 ## Development build and evidence
 
+RAIL-ASSETS-2026-11-01: verified eleven vendor APNG frames exported to ignored
+artifacts/workbench/rail-ui-20261101 with provenance/hashes. Full-bundle regression
+exposed MAX_ICONS24 truncating the loop to nine frames; capacity now29 includes
+the maximum12 cards. Focused strict/sanitizer and full host226 checks pass.
+Real TV private bundle, GPU dialog completion, UI reload and module suspend/
+resume pass; seven image revisions observed in nominal660ms do not establish
+visible frame order/30ms cadence. Full backing hash41735daa69dc137743b59efe12db4a19,
+pan0,0 and same boot/PID1785/access/privacy/protections verified afterward.
+Staging/backups/readiness/helpers removed; installed assets unchanged. Native
+build-tv-v3/rail-assets: UI89704bytes/7f0106c721fcb478266f4166127081cb(max2.4),
+diagnostic501052bytes/1d6120b69608b09e554b2313ddc87904(max2.17).
+Production16-module stage unchanged. RAIL-ASSETS report distinguishes the
+initial pre-fix run/manifest from the final tested DSO.
+
 UI-ASYNC-2026-11-01: ui_fb consumes display.async receipts, acknowledges only
 actual success, owns its sampler/holds and caches transform-only dialog progress.
 Four strict host/sanitizer/TV groups, full host226 checks pass. Actual TV portal

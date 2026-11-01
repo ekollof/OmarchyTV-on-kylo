@@ -71,6 +71,20 @@ int main(int argc, char **argv)
     oa_host host;
     char out[512];
 
+    /* A complete normal bundle must not crowd the last highlight frames out of
+     * the icon cache. The old test loaded only highlights and missed this. */
+    const char *base[] = {"title", "rail1", "rail2", "rail3", "rail4", "rail5",
+        "card_netflix", "card_prime", "card_youtube", "card_tabii", "card_canaldigitaal",
+        "card_tvvlaanderen", "card_telesat", "card_digiturk", "card_gain"};
+    for (unsigned i = 0; i < sizeof base/sizeof base[0]; i++) {
+        char path[512];
+        snprintf(path, sizeof path, "%s/%s.rgba", argv[3], base[i]);
+        FILE *fp = fopen(path, "wb");
+        const unsigned char blob[] = {'O','A','I','1',1,0,0,0,1,0,0,0,255,255,255,255};
+        assert(fp && fwrite(blob, 1, sizeof blob, fp) == sizeof blob);
+        assert(!fclose(fp));
+    }
+
     /* 11 frames, 210x210, red channel = frame number. */
     for (int f = 1; f <= 11; f++) {
         char path[512];
@@ -110,8 +124,11 @@ int main(int argc, char **argv)
     assert(timer_fire(&host, fb->id, 30));
     assert(hl_find(trace, NULL, NULL, NULL, NULL, NULL, NULL) == 1);  /* frame 2 */
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 2; i < 11; i++) {
         assert(timer_fire(&host, fb->id, 30));
+        assert(hl_find(trace, NULL, NULL, NULL, NULL, NULL, NULL) == i);
+    }
+    assert(timer_fire(&host, fb->id, 30));
     assert(hl_find(trace, NULL, NULL, NULL, NULL, NULL, NULL) == 0);  /* 11-frame wrap */
 
     host.stop_requested = 1;

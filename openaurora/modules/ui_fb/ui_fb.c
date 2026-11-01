@@ -41,7 +41,6 @@
 #include "openaurora/services.h"
 #include "openaurora/ui_time.h"
 
-#define MAX_ICONS 24
 #define MAX_CARDS 12
 
 /* stock portal palette, top to bottom (sampled from the portal capture, corrected for the
@@ -78,6 +77,8 @@ enum { BAND_RAIL = 0, BAND_CARDS = 1 };
 #define OA_RAIL_HL_MS 30
 #define OA_RAIL_HL_W 160
 #define OA_RAIL_HL_H 160
+/* Title + five glyphs + the configured card limit + the entire APNG. */
+#define MAX_ICONS (1 + 5 + MAX_CARDS + OA_RAIL_HL_FRAMES)
 
 struct ctx {
     const oa_host_api *api;

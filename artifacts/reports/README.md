@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [RAIL-ASSETS](RAIL-ASSETS-2026-11-01.md) | verified11-frame vendor export, full-bundle icon-capacity regression/fix, real GPU navigation/reload/module-cycle/full restore; visible frame order/30ms cadence remain open |
 | [UI-ASYNC](UI-ASYNC-2026-11-01.md) | ui_fb completion/readiness, cached dialog progress and service lifetime; four host/sanitizer/TV groups plus actual portal/transition/reload/module-cycle/full restoration; rail assets/full visuals/input/cold acceptance remain open |
 | [SCENE-DISPLAY](SCENE-DISPLAY-2026-11-01.md) | RGBA canvas + one latest desired frame + exact async receipts; four host/sanitizer/TV groups; real101-request burst final receipt and412 GPU completions/full restoration; subsequent UI-ASYNC supplies ui_fb/readiness |
 | [GRAPHICS-MODULE](GRAPHICS-MODULE-2026-11-01.md) | reloadable display.gpu v1, owned watch/timer/quiescence, public reload-safe tickets; four host/sanitizer/TV groups and410 actual service/GPU frames/full restoration; subsequent SCENE-DISPLAY adds coalescing, ui_fb/readiness remain open |

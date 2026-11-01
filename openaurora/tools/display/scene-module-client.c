@@ -196,6 +196,24 @@ static int ui_ready(scene_probe *s)
 }
 static void key(scene_probe *s, unsigned char id)
 { oa_key_event event = {.id = id, .kind = OA_KEY_PRESS}; s->host.api.emit(&s->host, OA_TOPIC_KEY, &event); }
+static int dialog_complete(scene_probe *s, const oa_portal_iface *portal, uint64_t previous)
+{
+    uint64_t deadline = oa_now_ms()+5000, animated = 0;
+    do {
+        run_for(s, 1);
+        oa_display_result result;
+        if (s->asynchronous->latest(&result) == 1 && result.serial > previous) {
+            if (result.error) { errno = result.error; return -1; }
+            if (result.type == 4) animated = result.serial;
+            if (animated && result.serial > animated && result.type == 0 && portal->screen() == 1) {
+                printf("UI dialog animation receipt=%llu completed screen=1 identity receipt=%llu\n",
+                    (unsigned long long)animated, (unsigned long long)result.serial);
+                return 0;
+            }
+        }
+    } while (oa_now_ms() < deadline);
+    errno = ETIMEDOUT; return -1;
+}
 int probe_ui(scene_probe *s)
 {
     const char *enabled = getenv("OA_SCENE_PROBE_UI");
@@ -209,12 +227,28 @@ int probe_ui(scene_probe *s)
     if (ui_ready(s)) goto failure;
     const oa_portal_iface *portal = s->host.api.lookup(&s->host, OA_SVC_PORTAL, 1);
     if (!portal || portal->screen() != 0) { errno = EPROTO; goto failure; }
-    key(s, 19); run_for(s, 200); key(s, 53); run_for(s, 1200);
+    /* With real rail assets, require multiple completed image revisions. This
+     * observes actual GPU work, not just the 30 ms repaint timer firing. */
+    const char *rail = getenv("OA_SCENE_PROBE_RAIL");
     oa_display_result result;
-    if (portal->screen() != 1 || s->asynchronous->latest(&result) != 1 || result.error || result.type != 0) {
-        errno = EPROTO; goto failure;
+    if (rail && !strcmp(rail, "1")) {
+        uint64_t until = oa_now_ms()+660, revision = 0;
+        unsigned changes = 0;
+        do {
+            run_for(s, 1);
+            if (s->asynchronous->latest(&result) == 1) {
+                if (result.error) { errno = result.error; goto failure; }
+                if (result.revision != revision) { revision = result.revision; changes++; }
+            }
+        } while (oa_now_ms() < until);
+        if (changes < 3) { errno = EPROTO; goto failure; }
+        printf("UI rail completed image revisions=%u over660ms (not a frame-order measurement)\n", changes);
     }
-    printf("UI dialog completed screen=1 identity receipt=%llu\n", (unsigned long long)result.serial);
+    key(s, 19); run_for(s, 200);
+    if (s->asynchronous->latest(&result) != 1) { errno = EPROTO; goto failure; }
+    uint64_t before_dialog = result.serial;
+    key(s, 53);
+    if (dialog_complete(s, portal, before_dialog)) goto failure;
     key(s, 10); run_for(s, 200);
     if (portal->screen() != 0 || unlink(ready)) { errno = EPROTO; goto failure; }
     portal = NULL; /* drop before DSO reload */

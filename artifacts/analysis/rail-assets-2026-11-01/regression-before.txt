@@ -1,0 +1,6 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -Itests  -o build-ui-async/tests/ui_rail_hl tests/ui_rail_hl.c build-ui-async/core/check.o build-ui-async/core/control.o build-ui-async/core/host.o build-ui-async/core/module.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Itests -fPIC -shared -o build-ui-async/tests/ui_nav_display.so tests/ui_nav_display.c 
+ui_rail_hl: tests/ui_rail_hl.c:129: main: Assertion `hl_find(trace, NULL, NULL, NULL, NULL, NULL, NULL) == i' failed.
+make: *** [Makefile:614: check-ui-rail-hl] Aborted (core dumped)
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

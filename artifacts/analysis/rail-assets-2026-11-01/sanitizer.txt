@@ -1,0 +1,6 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Itests  -o build-ui-async-san/tests/ui_rail_hl tests/ui_rail_hl.c build-ui-async-san/core/check.o build-ui-async-san/core/control.o build-ui-async-san/core/host.o build-ui-async-san/core/module.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-ui-async-san/modules/mod_ui_fb.so modules/ui_fb/ui_fb.c common/ui_anim.c  -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Itests -fPIC -shared -o build-ui-async-san/tests/ui_nav_display.so tests/ui_nav_display.c 
+  ok   rail highlight plays 11 frames at 30 ms in the vendor button window
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

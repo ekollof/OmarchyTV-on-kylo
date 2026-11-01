@@ -1,0 +1,65 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+modules/mod_graphics.so: OK
+modules/mod_scene_display.so: OK
+modules/mod_ticker.so: OK
+modules/mod_ui_anim.so: OK
+modules/mod_ui_clock.so: OK
+modules/mod_ui_fb.so: OK
+ui/card_canaldigitaal.rgba: OK
+ui/card_digiturk.rgba: OK
+ui/card_gain.rgba: OK
+ui/card_netflix.rgba: OK
+ui/card_prime.rgba: OK
+ui/card_tabii.rgba: OK
+ui/card_telesat.rgba: OK
+ui/card_tvvlaanderen.rgba: OK
+ui/card_youtube.rgba: OK
+ui/rail1.rgba: OK
+ui/rail2.rgba: OK
+ui/rail3.rgba: OK
+ui/rail4.rgba: OK
+ui/rail5.rgba: OK
+ui/rail_hl01.rgba: OK
+ui/rail_hl02.rgba: OK
+ui/rail_hl03.rgba: OK
+ui/rail_hl04.rgba: OK
+ui/rail_hl05.rgba: OK
+ui/rail_hl06.rgba: OK
+ui/rail_hl07.rgba: OK
+ui/rail_hl08.rgba: OK
+ui/rail_hl09.rgba: OK
+ui/rail_hl10.rgba: OK
+ui/rail_hl11.rgba: OK
+ui/title.rgba: OK
+oa-scene-broker: OK
+scene-renderer.so: OK
+scene-module-probe: OK
+   501052 scene-module-probe
+   176412 ui/rail_hl01.rgba
+   176412 ui/rail_hl02.rgba
+   176412 ui/rail_hl03.rgba
+   176412 ui/rail_hl04.rgba
+   176412 ui/rail_hl05.rgba
+   176412 ui/rail_hl06.rgba
+   176412 ui/rail_hl07.rgba
+   176412 ui/rail_hl08.rgba
+   176412 ui/rail_hl09.rgba
+   176412 ui/rail_hl10.rgba
+   176412 ui/rail_hl11.rgba
+  2441584 total
+Filesystem           1K-blocks      Used Available Use% Mounted on
+tmpfs                    36864      6448     30416  17% /tmp
+71f7eb63-727f-4b9a-a9c7-2b04dc3f9197
+0,0
+41735daa69dc137743b59efe12db4a19  /dev/fb1
+0b1cd32a9de2b0251f6252e6603db8b7  /conf/remotelf/aurora.elf
+b6eee64775233de846ca46fc6c48c3f9  /conf/remotelf/hosts
+-P OUTPUT ACCEPT
+-A OUTPUT -d 216.183.117.0/24 -j REJECT --reject-with icmp-port-unreachable
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      
+tcp        0      0 :::2323                 :::*                    LISTEN      
+tcp        0      0 :::22                   :::*                    LISTEN      

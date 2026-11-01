@@ -1,0 +1,9 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+89704 /tmp/oa-scene-helper-20261101/modules/mod_ui_fb.so
+7f0106c721fcb478266f4166127081cb  /tmp/oa-scene-helper-20261101/modules/mod_ui_fb.so
+backup-absent
+ready-absent

@@ -24,6 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
+Latest follow-up: [RAIL-ASSETS](artifacts/reports/RAIL-ASSETS-2026-11-01.md)
+exports the verified APNG to durable ignored workbench/rail-ui-20261101.
+Full normal assets exposed a24-icon cache that silently truncated the eleven
+highlight frames to nine; capacity now29 and regression checks every frame.
+Focused strict/sanitizer + full host226 checks pass. Corrected UI on real GPU
+passes navigation/animated+final receipts, reload and module cycle, full restore
+and independent hash check. Same boot/PID/access/privacy; all staging removed.
+Installed assets and matching production16-module stage unchanged.
+
+Next: measure genuine rail repaint/upload/completion cadence and obtain panel
+frame/appearance acceptance. Seven completed revisions in nominal660ms do not
+prove the11-frame30ms loop reached scanout. Preserve this performance/visual
+gap; do not repeat asset extraction or assume the earlier sparse unit covered
+a full bundle. Native artifacts are in build-tv-v3/rail-assets; see report for
+manifest distinctions before reusing the preserved local test bundle.
+
 Latest milestone: [UI-ASYNC](artifacts/reports/UI-ASYNC-2026-11-01.md) wires ui_fb
 to display.async with owned completion sampler, both holds/aliases, fresh serial
 gating and cached dialog progress. Four strict host/sanitizer/TV groups pass;
@@ -34,10 +50,10 @@ restored and independently hashed. Same boot/PID1785/access/privacy; staging,
 backups/readiness/helpers removed. Native identities in MEMORY/report. Source18
 modules, matching production16 unchanged; no persistent deployment.
 
-Next: remaining vendor visual/interaction/content parity, including missing
-rail_hl01..11 in the installed asset bundle. Recover/use verified vendor frames
-and preserve RGBA/BGRA boundaries; do not claim the old native UI run tested
-that rail animation. Full vendor screens/actions, actual input, cold/TV standby,
+Remaining vendor visual/interaction/content parity includes rail scanout
+acceptance after the RAIL-ASSETS follow-up above. The installed asset bundle
+still lacks rail_hl01..11; do not claim the old UI-ASYNC run tested that
+animation. Full vendor screens/actions, actual input, cold/TV standby,
 native audio/CEC and normal replacement remain open. Firmware/decompile first.
 The UI test used project-local key events and application-module suspend/resume,
 not stock keys, UART capture, TV power management or native cold takeover.

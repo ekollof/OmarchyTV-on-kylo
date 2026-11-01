@@ -442,6 +442,11 @@ Do not guess the highlight geometry; recover the dialog's item placement first.
 
 ## Rail highlight placement and implementation, 2026-11-01
 
+Follow-up correction: RAIL-ASSETS-2026-11-01 found that the original sparse
+unit missed a24-icon limit truncating the loop with a full normal bundle.
+Capacity and regression are now corrected; real GPU lifecycle passes with
+verified temporary assets, but visible eleven-frame30ms scanout remains open.
+
 `MainLauncherMenuDialog::init` calls `SVGButton::create(this, id, name, rect,
 parent)` five times with names HOME, VIVA, SETTINGS, APPLICATIONS and SOURCES.
 `updateCategoryButtonRects` (0xe48924) builds the position vector by looking up

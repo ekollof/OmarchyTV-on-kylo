@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-ui-async/modules/mod_ui_fb.so modules/ui_fb/ui_fb.c common/ui_anim.c  -lm
+  ok   rail highlight plays 11 frames at 30 ms in the vendor button window
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

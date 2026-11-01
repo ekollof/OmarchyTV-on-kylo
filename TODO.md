@@ -472,9 +472,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       navigation, transition, UI reload and host-only module suspend/resume pass
       on actual display with full restoration/hash match. This is not full vendor
       UI/app execution, physical input or TV standby/cold ownership. UI-ASYNC.
-- [ ] Stage/verify the recovered vendor rail_hl01..11 assets for real UI animation
-      acceptance: the installed /buffer/openaurora/ui bundle lacks them. Preserve
-      asset provenance/formats and use durable artifacts paths, not ephemeral work.
+- [x] Export/hash-verify vendor rail_hl01..11 and stage a complete temporary UI
+      bundle on the real TV. Fix the24-icon capacity that truncated the loop;
+      full-bundle regression, sanitizer and full host226 checks pass. Real GPU
+      navigation/reload/module-cycle/restoration pass. RAIL-ASSETS-2026-11-01.
+      Persistent installed assets remain unchanged and lack these frames.
+- [ ] Accept visible rail frame order,30ms cadence and vendor appearance. The
+      real-GPU test observed seven completed image revisions in a nominal660ms
+      window; this is not eleven-frame scanout/cadence proof. Measure repaint/
+      upload/coalescing costs and verify on the panel before closing parity.
 - [x] Direct EGL native-window diagnostic: recovered4-byte dimensions, fb1/
       primary-buffer profile and swap/MAU contract. Eight effects at50Hz pacing
       passed on actual display, owner confirmed upright/full-screen/smooth;
