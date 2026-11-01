@@ -279,7 +279,9 @@ buttons use the category resources, not launcheritemFA/FI (536/537). Resource
 579's local signed-16 rects: glyph (119,240,150,150), mainlauncher_highlight
 (119,212,199,210), background (-2,0,1920,1080). The highlight resource
 `mainlauncher_item_highlight_animated.png` is an 11-frame, 30 ms APNG of an
-orange bar at the image's left edge growing to full height. The APNG num_plays
+orange bar at the image's left edge growing to full height; all 11 fcTL entries
+use dispose_op=0 and blend_op=0 (full-canvas SOURCE replacement), so no frame
+compositing is required. The APNG num_plays
 field is metadata: PngImageDecoderImpl::decodeNextFrame (0xb30654) increments the
 frame index and only decodes while index < count, with no rearm at the end, so
 the last frame is held. The 0.3 s 536/537 records are launcher tiles, not the
