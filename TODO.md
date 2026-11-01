@@ -398,12 +398,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       localized keys (table in .bss, not statically resolvable). TextBox
       branches are asm-verified: +0x1b4 <0 draws nothing, ==0 single-line
       full-height, >0 divided multi-line; +0x220 alignment is a bitmask
-      (0x92/0x248/0x124); +0x1b4's nonzero writer for live rows is still
-      unidentified (getFont would SIGFPE on 0), so line setup stays open.
-      Transformed textPos scale/origin, per-widget line counts/types and FA
-      animation geometry are still undecoded, so title/tab/slider-graphics/
-      focused text must not be built from the capture fits. Do not
-      guess FA/FI slider/button graphics or the .data literal names.
+      (0x92/0x248/0x124); the +0x1b4 writer is SVGTextBox::create's 4th arg
+      (rows pass literal 1, so row text is single-line). Value digits come
+      from setSlideValue formatting into the +0x1ca8 value textbox; type-2
+      values via the selection box. +0x1c4's row writer, transformed textPos
+      scale/origin, per-widget line counts/types and FA animation geometry
+      are still undecoded, so title/tab/slider-graphics/focused text must not
+      be built from the capture fits. Do not guess FA/FI slider/button
+      graphics or the .data literal names.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

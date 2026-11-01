@@ -224,6 +224,30 @@ AdvancedPictureSettingsDialog; 0x120 forwards to handleSettingsMenuResult;
 `TabDialog::onRightLeftPress` switches tabs (hide → UIGroup 0x20c/0x20d →
 updateGlyphAndTitle → show) when the submenu flag is set.
 
+## Line count writer found (SVGTextBox::create 0x10c8889)
+
+`create(id, text, rect, param_4, parent)` writes `*(this + 0x1b4) = param_4`
+— param_4 **is** the line count — and stores the client-offset rect at
+`+0x284..+0x2a0` with `setWindowRect`. `renderItems` creates the label/caption
+boxes with literal `1`, so row text is single-line; `getFont(h/1, type)` can
+never divide by zero there. The `+0x1b4` writer question is closed for rows.
+(`+0x1c4` type writer in row paths is still unidentified; ctor default 0.)
+
+`setLabel` routes by row type (1 → caption box `+0x3c4`, else `+0x104`) and
+stores `+0x2dd8`; `setButtonText` → button `+0x684` / `+0x2de0`;
+`setTextValue`/`setNumericTextValue` target only the text *entry* box
+(`+0x18d8`, not a display widget).
+
+## Value display path (setSlideValue 0xd52efd)
+
+Slider rows display their value in the value textbox `+0x1ca8`: type 9
+drives slidebar `+0x13c0` (other types `+0x1498`), stores `+0x2df8`, and
+integer-formats the value into `+0x1ca8` via `operator<<`. Those are the
+font16 digits at the fitted origins. Type-2 selection rows show values via
+`appendItem` → selection box (`+0x1014`) with `setSelectedItemWithId`.
+
+## Still open (no implementation)
+
 Do not implement value/tab/slider-graphics/title/focused labels from the fits.
 Next: resolve the `renderBackground` rectangle literals per widget resource,
 then implement from firmware geometry.
