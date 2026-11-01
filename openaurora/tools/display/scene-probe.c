@@ -42,11 +42,17 @@ static const char *config(void *p, const char *key, const char *def)
 static int publish(void *p, const char *name, uint32_t version, const void *iface)
 {
     (void)p;
-    if (strcmp(name, OA_SVC_DISPLAY) || version != 2) return -1;
-    display = iface; return 0;
+    if (!strcmp(name, OA_SVC_DISPLAY) && version == 2) { display = iface; return 0; }
+    if (!strcmp(name, OA_SVC_DISPLAY_ALPHA) && version == 1) return 0; /* not exercised here */
+    return -1;
 }
 static int unpublish(void *p, const char *name)
-{ (void)p; (void)name; display = NULL; return 0; }
+{
+    (void)p;
+    if (!strcmp(name, OA_SVC_DISPLAY)) display = NULL;
+    else if (strcmp(name, OA_SVC_DISPLAY_ALPHA)) return -1;
+    return 0;
+}
 static void release(void *p, const char *name) { (void)p; (void)name; }
 static double millis(void)
 {

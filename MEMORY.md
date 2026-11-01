@@ -170,6 +170,16 @@ The regression also verifies cached textures, bounds, thread ownership and
 pbuffer reopen. Next: nonblocking owning helper/service/completion/readiness
 and module lifecycle integration. Synchronous EGL cannot run in quiesce.
 
+SCENE-WARP-TV-2026-11-01: the display v2 software scene warp was exercised on
+real fb1 with tools/display/scene-probe.c (ARM, staged /tmp, SHA-256 checked,
+vendor Aurora left running). All eight types presented at p=0..1; the identity
+endpoint readback matched BGRA (80,0,0,255) for every type; the probe restored
+all 16,588,800 bytes with snapshot_match=1 and original yoffset 0. Per-present
+timings: types 0/2/3/4/5/6 87-117 ms; type 1 keystone 483 ms; type 7 427 ms;
+type 8 493 ms. Vendor PIDs 1967/1785 unchanged, staging removed, no helper left.
+Readback is not scanout proof and these software timings are far below smooth
+30/60 fps; the EGL path remains the parity target.
+
 EGL-SCENE-2026-11-01 adds common/scene_gles.c and opt-in context/scene probes.
 The actual TV Mali-G51 passed offscreen pixel/orientation/fade/triangle and
 close/reopen checks; no native window or fbdev writes. Scene helper70384bytes/

@@ -32,12 +32,21 @@ BGRA24,23,22,153. Navigation/reload/module cycle and full restore/hash match pas
 Same boot/PID/access/privacy, staging removed; installed production unchanged.
 Native artifacts in build-tv-v3/ui-alpha; exact identities/evidence in the report.
 
+Real-display scene warp: tools/display/scene-probe.c was cross-built (ARM), staged
+in /tmp with SHA-256 checked, and run against real fb1 with vendor Aurora still
+running. All eight types presented at p=0..1; the identity endpoint readback
+matched BGRA (80,0,0,255) for every type; all 16,588,800 bytes were restored with
+snapshot_match=1 and the original yoffset 0. Per-present timings: types
+0/2/3/4/5/6 87-117 ms; type 1 keystone 483 ms; type 7 427 ms; type 8 493 ms.
+Vendor PIDs 1967/1785 unchanged, staging removed. This is readback, not scanout
+proof, and the software timings are far below smooth 30/60 fps.
+
 Owner explicitly requested checking **exact** vendor animation fidelity, then
-requested this handoff and stop. The following audit is incomplete; **do not
-claim the animations are exact**. No animation behavior was changed after the
-tested transparency milestone, commit3d76a1f. Worktree evidence is preserved in
-artifacts/analysis/animation-audit-2026-11-01, from fresh read-only decompile/ARM
-inspection of Aurora MD5 64c252340d3af6c5d66072611b7bad7a:
+requested this handoff and stop. The audit remains incomplete; **do not claim the
+animations are exact**. The rail-loop question it raised was resolved and fixed
+in commit 4ebb900 (one-shot per focus, last frame held). Worktree evidence is
+preserved in artifacts/analysis/animation-audit-2026-11-01, from fresh read-only
+decompile/ARM inspection of Aurora MD5 64c252340d3af6c5d66072611b7bad7a:
 
 - **Rail loop assumption is contradicted by the decoder path.** APNG file
   num_plays0 is metadata, not proof Aurora loops it. PngImageDecoderImpl's
