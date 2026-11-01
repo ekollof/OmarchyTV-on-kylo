@@ -55,7 +55,10 @@ static int d_blit(int x, int y, int w, int h, const unsigned char *rgba)
 }
 static int d_blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigned char *rgba)
 {
-    (void)x; (void)y; (void)w; (void)h; (void)sw; (void)sh; (void)rgba;
+    (void)sw; (void)sh;
+    if (w == 160 && h == 160)
+        fprintf(stderr, "[probe] hl wall=%llu x=%d y=%d frame=%u\n",
+                (unsigned long long)wall_ms(), x, y, rgba ? rgba[0] : 0);
     return 0;
 }
 static int d_present(void) { return 0; }

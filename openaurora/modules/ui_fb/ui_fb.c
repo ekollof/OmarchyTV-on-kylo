@@ -71,6 +71,14 @@ struct icon {
 
 enum { BAND_RAIL = 0, BAND_CARDS = 1 };
 
+/* Vendor mainlauncher_item_highlight_animated: 11 frames, 30 ms each, num_plays 0 (loop).
+ * The image is created at the 160x160 button window from DialogMainMenu.svg; the measured focused
+ * tile is 150x150 at (x,y), so the window is (x-5, y+10). The bar sits at the image's left edge. */
+#define OA_RAIL_HL_FRAMES 11
+#define OA_RAIL_HL_MS 30
+#define OA_RAIL_HL_W 160
+#define OA_RAIL_HL_H 160
+
 struct ctx {
     const oa_host_api *api;
     const oa_display_iface *disp;
@@ -97,6 +105,11 @@ struct ctx {
     uint32_t svc_key;                /* service/removed subscription */
     int suspended;
     int rebind_pending;              /* a relevant event arrived while suspended */
+    /* Main-launcher focus highlight: vendor mainlauncher_item_highlight_animated, 11 frames at
+     * 30 ms, drawn at the 160x160 button window (focused tile + (-5, +10)). */
+    int rail_hl_n;
+    int rail_hl_frame;
+    uint64_t rail_hl_tick;
     int portal_on;
     int fps;
     uint32_t sub_key;
@@ -115,6 +128,8 @@ static int slide_is_running(const struct ctx *c, uint32_t now);
 static float slide_progress_now(const struct ctx *c, uint32_t now);
 static void rebind_tick_cb(void *ud);
 static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int done, void *ud);
+static void rail_hl_sync(struct ctx *c);
+static void rail_hl_tick_cb(void *ud);
 
 /* ---------------------------------------------------------------- loading */
 
@@ -239,6 +254,7 @@ static void paint(struct ctx *c)
     int W = 0, H = 0;
     if (!c || !c->disp) return;   /* a suspended/stopped module has no display hold */
     d = c->disp;
+    rail_hl_sync(c);              /* keeps the 30 ms highlight timer in step with the screen */
     if (d->info(&W, &H, NULL, NULL) != 0 || W <= 0 || H <= 0)
         return;
 
@@ -282,8 +298,19 @@ static void paint(struct ctx *c)
         if (y + h > H)
             break;
         int focused = focus == i;
-        if (focused)
-            d->fill(x - 5, y - 5, w + 10, h + 10, 247, 148, 30);
+        if (focused) {
+            const struct icon *hl = NULL;
+            if (c->rail_hl_n > 0) {
+                char name[32];
+                snprintf(name, sizeof name, "rail_hl%02d", c->rail_hl_frame + 1);
+                hl = find_icon(c, name);
+            }
+            if (hl)
+                /* vendor renderForeground: the highlight image is created at the button window */
+                d->blit_scaled(x - 5, y + 10, OA_RAIL_HL_W, OA_RAIL_HL_H, hl->w, hl->h, hl->rgba);
+            else
+                d->fill(x - 5, y - 5, w + 10, h + 10, 247, 148, 30);
+        }
         d->fill(x, y, w, h, RAIL[i].r, RAIL[i].g, RAIL[i].b);
 
         const struct icon *g = find_icon(c, RAIL[i].glyph);
@@ -526,6 +553,31 @@ static void on_slide_tick(void *ud)
     paint(c);
 }
 
+/* Main-launcher highlight: the vendor image player loops the 11 frames at their APNG delay while
+ * the portal rail is shown. The playhead is reset when the focused item changes. */
+static void rail_hl_sync(struct ctx *c)
+{
+    int want = c->rail_hl_n > 0 && c->disp && c->screen == SCREEN_PORTAL;
+    if (want && !c->rail_hl_tick) {
+        c->rail_hl_tick = c->api->timer_add(c->api->priv, OA_RAIL_HL_MS, OA_RAIL_HL_MS,
+                                            rail_hl_tick_cb, c);
+        if (!c->rail_hl_tick)
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "rail highlight: %d ms timer allocation failed", OA_RAIL_HL_MS);
+    } else if (!want && c->rail_hl_tick) {
+        c->api->timer_del(c->api->priv, c->rail_hl_tick);
+        c->rail_hl_tick = 0;
+    }
+}
+
+static void rail_hl_tick_cb(void *ud)
+{
+    struct ctx *c = ud;
+    if (!c->disp || c->rail_hl_n <= 0) return;
+    c->rail_hl_frame = (c->rail_hl_frame + 1) % c->rail_hl_n;
+    paint(c);
+}
+
 /* A provider can be started after this module, or force-unloaded while we still hold a pointer to
  * it. Lifecycle events schedule a rebind in a timer callback: timer dispatch runs with this module
  * as owner, so lookups and releases attribute their holds to ui_fb. While suspended the display
@@ -637,18 +689,25 @@ static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int
 static void move_key(struct ctx *c, uint8_t id)
 {
     if (id == 20) { /* Up */
-        if (c->band == BAND_CARDS)
+        if (c->band == BAND_CARDS) {
             c->band = BAND_RAIL;
-        else if (c->rail > 0)
+            c->rail_hl_frame = 0;
+        } else if (c->rail > 0) {
             c->rail--;
+            c->rail_hl_frame = 0;
+        }
     } else if (id == 19) { /* Down */
-        if (c->band == BAND_RAIL && c->rail < 4)
+        if (c->band == BAND_RAIL && c->rail < 4) {
             c->rail++;
+            c->rail_hl_frame = 0;
+        }
     } else if (id == 21) { /* Left */
         if (c->band == BAND_CARDS && c->card > 0)
             c->card--;
-        else
+        else {
             c->band = BAND_RAIL;
+            c->rail_hl_frame = 0;
+        }
     } else if (id == 22) { /* Right */
         if (c->band == BAND_RAIL && c->nc > 0) {
             c->band = BAND_CARDS;
@@ -778,6 +837,19 @@ static int m_start(void *v)
     for (int i = 0; i < c->nc; i++)
         load_blob(c, c->cards[i]);
 
+    /* Vendor main-launcher highlight: 11 frames at 30 ms, looped by the image player. */
+    c->rail_hl_n = 0;
+    c->rail_hl_frame = 0;
+    if (atoi(c->api->config_get(c->api->priv, "ui.rail_hl", "1")) == 1) {
+        for (int i = 1; i <= OA_RAIL_HL_FRAMES; i++) {
+            char name[32];
+            snprintf(name, sizeof name, "rail_hl%02d", i);
+            if (load_blob(c, name) != 0)
+                break;
+            c->rail_hl_n++;
+        }
+    }
+
     /* The slide needs the title width, so it starts after the blobs are loaded. The clipped draw
      * needs a scratch buffer of exactly the box width; without it the label would spill. */
     {
@@ -847,6 +919,12 @@ static void m_stop(void *v)
         c->api->timer_del(c->api->priv, c->rebind_tick);
         c->rebind_tick = 0;
     }
+    if (c->rail_hl_tick) {
+        c->api->timer_del(c->api->priv, c->rail_hl_tick);
+        c->rail_hl_tick = 0;
+    }
+    c->rail_hl_n = 0;
+    c->rail_hl_frame = 0;
     c->suspended = 0;
     c->rebind_pending = 0;
     slide_stop_sampler(c);
@@ -912,6 +990,10 @@ static int m_suspend(void *v)
         c->slide_repeat = 0;
     }
     memset(&c->slide, 0, sizeof c->slide);
+    if (c->rail_hl_tick) {
+        c->api->timer_del(c->api->priv, c->rail_hl_tick);
+        c->rail_hl_tick = 0;
+    }
     if (c->tick) {
         c->api->timer_del(c->api->priv, c->tick);
         c->tick = 0;

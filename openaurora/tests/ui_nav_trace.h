@@ -13,5 +13,9 @@ typedef struct {
     int (*blit_count)(void);
     int (*blit_at)(int i, int *x, int *y, int *w, int *h);
     int (*blit_first)(int i, int *r, int *g, int *b, int *a);
+    /* Scaled blits (the rail highlight uses source-to-dest scaling). */
+    int (*scaled_count)(void);
+    int (*scaled_at)(int i, int *x, int *y, int *w, int *h, int *sw, int *sh);
+    int (*scaled_first)(int i, int *r, int *g, int *b, int *a);
 } oa_nav_trace;
 #endif

@@ -385,16 +385,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       restart at +6557 ms (= 4554 + 2000, the 0.99 arm), clean exit. No fb1, vendor module, key,
       settings or network access; staging removed and vendor PIDs unchanged. This is not visual
       scanout or pixel parity evidence. UI-ANIMATIONS.
+- [x] Rail focus highlight: placement recovered (DialogMainMenu.svg button windows (6,y,160,160);
+      capture-derived offsets); implemented in mod_ui_fb as 11 vendor frames at 30 ms looping in the
+      160x160 window, playhead reset on focus change. tests/ui_rail_hl asserts order/wrap/timer/window;
+      host 198 ok, ASan 198 ok; live probe 166 blits at 29.98 ms mean, x=6 y=461. Visible-panel
+      appearance still unverified. UI-ANIMATIONS.
 - [ ] Finish the remaining animation callers: apply the recovered full-screen transform in the
-      renderer composite and recover the rail's local-to-screen highlight placement. Rail positions
-      move synchronously; the five category buttons are built from the category resources and get
-      `setMainlauncherHighlightId` in init. `renderForeground` creates that image at the resource's
-      `mainlauncher_highlight` rect; resource 579's local rect is (119,212,199,210) and its glyph is
-      (119,240,150,150), but the dialog's screen mapping is not decoded. The highlight resource is
-      an 11-frame/30 ms looping APNG (growing orange bar). The 300 ms `#scalerect` records on
-      launcheritemFA/FI are launcher tiles, not the rail — do not copy them onto it.
-      `setFullScreenAnimationProgress` is no longer unmapped: SVGDialog::startAnimation maps dialog
-      modes 57..64 to HAL types 1..8 for a 1000 ms controller, onAnimationProgress feeds
+      renderer composite. `setFullScreenAnimationProgress` is mapped: SVGDialog::startAnimation maps
+      dialog modes 57..64 to HAL types 1..8 for a 1000 ms controller, onAnimationProgress feeds
       min(1,1+(p-1)^3), destroy forces 1.0, and `oa_fs_apply` reproduces the per-type vertex rules
       with unit vectors. Nothing consumes it yet.
 - [ ] Audit pixel-format boundaries as UI work expands: raw 32bpp OSD is BGRA;

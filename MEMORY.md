@@ -110,8 +110,22 @@ buttons use the category resources, not launcheritemFA/FI (536/537). Resource
 (119,212,199,210), background (-2,0,1920,1080). The highlight resource
 `mainlauncher_item_highlight_animated.png` is an 11-frame, 30 ms, looping
 (num_plays 0) APNG of an orange bar at the image's left edge growing to full
-height. The dialog's local-to-screen placement is not recovered, so our UI does
-not draw it. The 0.3 s 536/537 records are launcher tiles, not the rail.
+height. The 0.3 s 536/537 records are launcher tiles, not the rail.
+
+Placement recovered: init creates five SVGButtons named HOME/VIVA/SETTINGS/
+APPLICATIONS/SOURCES; updateCategoryButtonRects looks up description names
+`button1`..`buttonN`; setMenuItemPositions walks the rect vector cyclically with
+the type array at +0x39b4; setMenuItemPosition calls SVGButton::setWindowRect
+(vtable slot 0x30 = 0x10ade19). DialogMainMenu.svg (136) defines button windows
+(6,211/330/460/600/719,160,160). The capture shows the focused 150x150 tile at
+(11,450) and the bar at x 6..10, y 458..591 (mid-growth), so the 210x210 image
+is drawn at (focused_x-5, focused_y+10). Implemented in mod_ui_fb: rail_hl01..11
+OAI1 frames from the vendor APNG, 30 ms looping timer while the portal shows,
+playhead reset on focus change, scaled into the button window. tests/ui_rail_hl
+asserts frame order/wrap/timer/window; host make check 198 ok and ASan 198 ok.
+Live probe on the set (fake display, no fb1/keys): 166 blits, mean gap 29.98 ms,
+window x=6 y=461, clean exit; staging removed, vendor PIDs unchanged. Visible
+panel appearance is still unverified.
 
 PROVIDER-REBIND-2026-11-01: mod_ui_fb now reacts to `module/changed` and
 `service/removed`. Events only schedule a 0 ms rebind timer (event dispatch runs

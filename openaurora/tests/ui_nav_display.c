@@ -11,6 +11,9 @@ static int g_nf;
 enum { BLIT_MAX = 64 };
 static struct { int x, y, w, h, r, g, b, a; } g_blit[BLIT_MAX];
 static int g_nb;
+enum { SCALED_MAX = 32 };
+static struct { int x, y, w, h, sw, sh, r, g, b, a; } g_scaled[SCALED_MAX];
+static int g_ns;
 
 static int d_info(int *w, int *h, int *bpp, int *frames)
 {
@@ -28,6 +31,7 @@ static int d_clear(int r, int g, int b)
     g_clears++;
     g_nf = 0;
     g_nb = 0;
+    g_ns = 0;
     return 0;
 }
 static int d_fill(int x, int y, int w, int h, int r, int g, int b)
@@ -65,7 +69,15 @@ static int d_blit(int x, int y, int w, int h, const unsigned char *rgba)
 }
 static int d_blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigned char *rgba)
 {
-    (void)x; (void)y; (void)w; (void)h; (void)sw; (void)sh; (void)rgba;
+    if (g_ns < SCALED_MAX) {
+        g_scaled[g_ns].x = x; g_scaled[g_ns].y = y; g_scaled[g_ns].w = w; g_scaled[g_ns].h = h;
+        g_scaled[g_ns].sw = sw; g_scaled[g_ns].sh = sh;
+        g_scaled[g_ns].r = rgba ? rgba[0] : -1;
+        g_scaled[g_ns].g = rgba ? rgba[1] : -1;
+        g_scaled[g_ns].b = rgba ? rgba[2] : -1;
+        g_scaled[g_ns].a = rgba ? rgba[3] : -1;
+        g_ns++;
+    }
     return 0;
 }
 static int d_present(void)
@@ -126,9 +138,31 @@ static int t_blit_first(int i, int *r, int *g, int *b, int *a)
     if (a) *a = g_blit[i].a;
     return 0;
 }
+static int t_scaled_count(void) { return g_ns; }
+static int t_scaled_at(int i, int *x, int *y, int *w, int *h, int *sw, int *sh)
+{
+    if (i < 0 || i >= g_ns) return -1;
+    if (x) *x = g_scaled[i].x;
+    if (y) *y = g_scaled[i].y;
+    if (w) *w = g_scaled[i].w;
+    if (h) *h = g_scaled[i].h;
+    if (sw) *sw = g_scaled[i].sw;
+    if (sh) *sh = g_scaled[i].sh;
+    return 0;
+}
+static int t_scaled_first(int i, int *r, int *g, int *b, int *a)
+{
+    if (i < 0 || i >= g_ns) return -1;
+    if (r) *r = g_scaled[i].r;
+    if (g) *g = g_scaled[i].g;
+    if (b) *b = g_scaled[i].b;
+    if (a) *a = g_scaled[i].a;
+    return 0;
+}
 static const oa_nav_trace g_trace = {
     .accent = t_accent, .counts = t_counts, .fill_count = t_fill_count, .fill_at = t_fill_at,
     .blit_count = t_blit_count, .blit_at = t_blit_at, .blit_first = t_blit_first,
+    .scaled_count = t_scaled_count, .scaled_at = t_scaled_at, .scaled_first = t_scaled_first,
 };
 
 static const oa_host_api *g_api;

@@ -433,6 +433,41 @@ is the 11-frame/30 ms highlight image; the 0.3 s `#scalerect`/`#glyph` records o
 536/537 belong to launcher tiles, not the rail, and must not be copied onto it.
 Do not guess the highlight geometry; recover the dialog's item placement first.
 
+## Rail highlight placement and implementation, 2026-11-01
+
+`MainLauncherMenuDialog::init` calls `SVGButton::create(this, id, name, rect,
+parent)` five times with names HOME, VIVA, SETTINGS, APPLICATIONS and SOURCES.
+`updateCategoryButtonRects` (0xe48924) builds the position vector by looking up
+the dialog description names `button1`..`buttonN` (`UString("button") << n`) and
+pushing the resulting `EASIRect`s; `setMenuItemPositions(index)` walks that
+vector cyclically (`(count - index + i) mod count`) with the parallel category
+type array at `+0x39b4`. `setMenuItemPosition` sets the per-state SVG names and
+then calls `SVGButton::setWindowRect(rect)` (vtable slot 0x30 = 0x10ade19).
+
+`DialogMainMenu.svg` (resource 136) defines the button windows as signed 16-bit
+`(x,y,160,160)`: button4 `(6,211)`, button5 `(6,330)`, button1 `(6,460)`,
+button2 `(6,600)`, button3 `(6,719)`. These match the captured rail positions.
+
+The vendor capture pins the highlight placement: the focused 150x150 tile is at
+`(11,450)`, while the orange bar of the highlight image occupies x 6..10 and
+y 458..591 (caught mid-growth). The 210x210 highlight image is therefore drawn
+at the 160x160 button window `(focused_x - 5, focused_y + 10)`, with the bar at
+the image's left edge.
+
+Implemented in `mod_ui_fb`: `rail_hl01..11` OAI1 frames converted from the
+vendor APNG, a 30 ms looping timer while the portal is shown, playhead reset on
+rail focus change, drawn scaled into the button window before the tile fill (so
+the bar appears at the left edge). Without frames the previous orange frame is
+kept. `tests/ui_rail_hl.c` asserts the 11-frame order, the 30 ms timer, wrap and
+the `(6,461,160,160)` window against the shipped module.
+
+Evidence: host `make check` 198 ok, ASan/UBSan 198 ok. Live probe on the set
+(fake display, no fb1/keys, HDMI1 untouched): 166 highlight blits, mean gap
+29.98 ms, window `x=6 y=461`, clean exit; staging removed and vendor PIDs
+unchanged. First-pixel logging cannot identify the frame index in the vendor
+frames (transparent at 0,0), so the 11-frame order/wrap rests on the offline
+test; visible-panel appearance is still unverified.
+
 ## Live TV probe run, 2026-11-01
 
 The slide was run on the set without touching the vendor UI or the framebuffer:
