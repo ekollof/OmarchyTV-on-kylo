@@ -376,12 +376,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       reference exactly (0/2,073,600, sha256 86b66c00...). Evidence:
       artifacts/analysis/settings-focus-2026-11-01/.
 - [ ] Exact focused-row/panel evidence and the interactive remainder: value
-      changes, Beeld/Geluid tab switching, scrolling/overflow and localization.
-      The vendor animates selection from the row SVG (startSelectAnimation)
-      and its theme supplies EF41 bitmap fonts (UI-FONTS corrects the earlier
-      FreeType assumption); obtain a focused-row capture or wire
-      the vendor font/metrics path before claiming exact focus pixels, and do
-      not guess FA/FI slider/button graphics.
+      changes, Beeld/Geluid tab switching, scrolling/overflow, localization,
+      the title/tab/value labels and focused-label pixels. The vendor animates
+      selection from the row SVG, and a focused row changes font type/text
+      rectangle as well as ink (488/496/504). Live font7 labels exist for the
+      unfocused rows; obtain a focused-row capture or decode the transformed FA
+      text setup before claiming exact focus text, and do not guess FA/FI
+      slider/button graphics.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on
@@ -401,6 +402,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       labels change type/geometry as well as color. String layout, actual row
       setup/baseline, font-data provider and UI-engine text integration remain
       open. Recoloring captured labels is not focused-text parity.
+- [x] Font-data provider and one-line renderer: bounded indexed pack reader
+      (reads only font7's 847,332-byte record), packed-UTF8 LTR advances,
+      spacing, clipping and coverage compositing, whole-line validation;
+      ui_vendor ui.text=1 draws the eight active settings labels with font7 at
+      (49|79, 184+70*row), erases only the captured label strip and falls back
+      to the capture if the pack fails. Host tests incl. fallback pass; real
+      fb1 vs the corrected panel: 0.78% any-channel, 84 px >8, RMSE0.12%,
+      rows0/1/2/4/6 no >8 diff. Title/tabs/values/sliders and the disabled row
+      stay captured. Evidence: artifacts/analysis/ui-font-live-2026-11-01/.
 - [ ] Complete the remaining vendor screens and labels. The injected portal
       above is not all-screen parity or a confirmed live remote capture. The
       source-selection panel (DialogSourceSelection.svg 185), the captured

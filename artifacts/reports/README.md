@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [UI-FONT-LIVE](UI-FONT-LIVE-2026-11-01.md) | font pack loader + packed-UTF8 line renderer; font7 labels drawn live on the settings panel (IoU ≈0.98, fb1 RMSE 0.12%); title/tabs/values/focus text still captured |
 | [UI-GLYPH-DRAW](UI-GLYPH-DRAW-2026-11-01.md) | signed glyph bearings/clipping and firmware coverage compositing;52022 glyphs tested offscreen on host/sanitizer/ARM-qemu/TV; SVG font-marker priority and focus font-type change recovered; string layout/UI integration open |
 | [UI-FONT-SELECTION](UI-FONT-SELECTION-2026-11-01.md) | startup20 font IDs/heights, signed height/line-count division, stable typed selection/global fallback; pure selector and host/sanitizer/ARM-qemu/TV tests; widget styles/layout/render integration open |
 | [UI-FONTS](UI-FONTS-2026-11-01.md) | native EF41 bitmap/font lookup contract, bounded reader and all38 records on host/sanitizers/ARM-qemu/TV; corrects browser/FreeType conflation; font selection/layout/UI integration open |

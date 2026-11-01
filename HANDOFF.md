@@ -24,8 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Owner requested finishing the glyph item, updating the handoff and stopping.
-Latest: [UI-GLYPH-DRAW](artifacts/reports/UI-GLYPH-DRAW-2026-11-01.md) implements
+Latest: [UI-FONT-LIVE](artifacts/reports/UI-FONT-LIVE-2026-11-01.md) finishes the
+font item. common/font_pack.c reads the indexed vendor pack one record at a time
+(font7=847,332 bytes from the live /vendor2 pack); common/font_text.c renders
+one packed-UTF8 LTR line with EF41 advances, explicit spacing, clipping and
+coverage compositing, validating the whole line before drawing. ui_vendor
+ui.text=1 draws the eight unfocused settings labels with font7 at
+(49|79, 184+70*row), erases only the captured label strip and falls back to the
+capture if the pack fails. Fit IoU 0.9799..0.9840; real fb1 vs the corrected
+panel: 0.78% any-channel diff, only84 px >8, RMSE0.12%, rows0/1/2/4/6 with no
+>8 diff. Host font-pack/text/UI tests (live + missing fallback) and full make
+check 251 plus font groups pass. Title/tabs/values/sliders, the disabled row and
+focused labels remain captured. Evidence: analysis/ui-font-live-2026-11-01.
+Next decode SVGTextBox line setup/transformed textPos and focused-row FA
+type/geometry, then replace the remaining captured text; do not claim full
+text/focus parity or scanout. No helper/build/Ghidra job is pending.
+
+Previous: [UI-GLYPH-DRAW](artifacts/reports/UI-GLYPH-DRAW-2026-11-01.md) implements
 common/font_draw.c, an allocation-free clipped single-glyph RGBA compositor from
 firmware bearings/coverage/source-over rules. All52022 shipped glyphs render to
 offscreen scratch canvases with exact coverage/border checks. Host full249 plus
@@ -35,8 +50,7 @@ build-tv-v3/font-draw and analysis/ui-text-layout-2026-11-01 identify evidence.
 Font markers now resolve regular/bold/light/italic/boldItalic/lightItalic types
 0..5 with first-present priority. Focused label488 has fontBold/textPos height42;
 unfocused489 has no font marker/height40. Recolored captured ink is not focused
-text parity; correction added at its source. No full string renderer/font-data
-provider or UI text integration exists yet. Next trace actual row line-count
+text parity; correction added at its source. Next trace actual row line-count
 setup and transformed textPos, origin/baseline/alignment/spacing/substitution,
 then connect text through the UI engine. Report lists exact fresh entry points.
 No helper/build/Ghidra job is pending; goal remains incomplete and paused at

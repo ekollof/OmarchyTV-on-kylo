@@ -17,6 +17,27 @@ from regular/default489; captured recoloring is not focus text parity. String
 layout/font-data provider/UI text integration remain open. Owner requested
 handoff and stop after this item; no helper/build/Ghidra job remains pending.
 
+UI-FONT-LIVE-2026-11-01: common/font_pack.c reads the vendor index and one
+record by ID (font7=847,332 bytes from the live /vendor2 pack; the 30 MB pack is
+not loaded whole). common/font_text.c renders one LTR packed-UTF8 line with EF41
+advances, explicit spacing, a clip and common/font_draw coverage compositing;
+it validates the whole line before drawing (missing/invalid draws nothing).
+Font7 draws the eight active settings labels at (49|79, 184+70*row), spacing 0;
+fit IoU 0.9799..0.9840 vs the corrected capture, C measures height61 and
+advances118/143/302. ui_vendor ui.text=1 pre-renders them, erases only the
+captured label strip (x40..486) and blits live labels; a missing/invalid pack
+falls back to the captured panel. Title/tabs/values/sliders and the disabled
+row6 stay captured; row8 uses the visible captured string. Host
+check-font-pack/check-font-text/check-ui-settings-text (live+missing) pass;
+full make check 251 indented checks plus the font groups. Real fb1 (PID17859,
+ui_engine1952912c… v2, ui_vendor70b90f50…) vs the corrected vendor panel:
+16,205/2,073,600 any-channel (0.78%), only84 px >8 (max57), RMSE0.3068/255;
+rows0/1/2/4/6 have no >8 diff, the rest are glyph edges. fb1 restored
+(16588800 bytes, offset0,1080), staging removed. Next: title/tabs/values/focused
+labels and exact line setup/transform/alignment/substitution/localization.
+Evidence: artifacts/analysis/ui-font-live-2026-11-01/ and
+UI-FONT-LIVE-2026-11-01 report.
+
 UI-FONT-SELECTION-2026-11-01: common/font_finder.c implements firmware-derived
 stable typed maximum-height selection, signed height/line-count division and
 global-smallest fallback. Startup20 IDs/heights verified from decoded theme.

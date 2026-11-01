@@ -99,7 +99,23 @@ $(BUILD)/tests/font_draw: tests/font_draw.c common/font_draw.c common/font_bitma
 check-font-draw: $(BUILD)/tests/font_draw
 	@$(BUILD)/tests/font_draw
 
-check: check-font-bitmap check-font-finder check-font-draw
+$(BUILD)/tests/font_pack: tests/font_pack.c common/font_pack.c include/openaurora/font_pack.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-font-pack
+check-font-pack: $(BUILD)/tests/font_pack
+	@$(BUILD)/tests/font_pack
+
+$(BUILD)/tests/font_text: tests/font_text.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/canvas.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-font-text
+check-font-text: $(BUILD)/tests/font_text
+	@$(BUILD)/tests/font_text
+
+check: check-font-bitmap check-font-finder check-font-draw check-font-pack check-font-text
 
 $(BUILD)/oa-audio-broker: tools/audio/oa-audio-broker.c common/audio_broker.c common/audio_broker_wire.c common/audio_client.c common/audio_netlink.c include/openaurora/audio_broker.h include/openaurora/audio_client.h include/openaurora/audio_netlink.h
 	@mkdir -p $(dir $@)
@@ -124,7 +140,7 @@ $(BUILD)/modules/mod_ui_anim.so: modules/ui_anim/ui_anim.c common/ui_anim.c incl
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
-$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c common/ui_anim.c include/openaurora/ui_anim.h
+$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c common/ui_anim.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
@@ -509,6 +525,17 @@ check-ui-settings-rows: $(BUILD)/tests/ui_settings_rows $(BUILD)/tests/ui_nav_di
 	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-settings-rows/modules/mod_nav_display.so
 	@$(BUILD)/tests/ui_settings_rows $(BUILD)/tests/ui-settings-rows/modules $(BUILD)/tests/ui-settings-rows/ui
 
+$(BUILD)/tests/ui_settings_text: tests/ui_settings_text.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_settings_text.c $(filter %.o,$^) $(LDLIBS)
+
+check-ui-settings-text: $(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so
+	@mkdir -p $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui
+	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui-settings-text/modules/
+	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-settings-text/modules/mod_nav_display.so
+	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui on
+	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui missing
+
 check-ui-nav: check-ui-anim-review $(BUILD)/tests/ui_nav $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so
 	@mkdir -p $(BUILD)/tests/ui-nav/modules
 	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so $(BUILD)/tests/ui-nav/modules/
@@ -737,7 +764,7 @@ $(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/modu
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_fake_clock.c $(LDFLAGS) $(LDLIBS)
 
-check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-sources check-ui-skin check-ui-settings check-ui-settings-panel check-ui-settings-rows check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-vgrid check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
+check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-sources check-ui-skin check-ui-settings check-ui-settings-panel check-ui-settings-rows check-ui-settings-text check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-vgrid check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
 	@BUILD=$(BUILD) sh tests/run.sh
 	@$(BUILD)/tests/registry $(BUILD)/modules $(BUILD)/tests/mod_failed_init.so
 	@BUILD=$(BUILD) python3 tests/recovery.py
