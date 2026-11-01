@@ -930,24 +930,30 @@ channel delta 0, identical sha256 13125757...); fb1 was backed up/restored
 artifacts/analysis/settings-2026-11-01/.
 
 SETTINGS-PANEL-2026-11-01: artifacts/protocol/shot-settings.png (Oct 30, before
-the R/B correction) is the vendor SettingsDialog picture tab: 780x1080 panel on
-black with "Instellingen", the paintbrush glyph, Beeld/Geluid tabs and the rows
+the R/B correction) is the vendor SettingsDialog picture tab: a 780x1080 panel
+with "Instellingen", the paintbrush glyph, Beeld/Geluid tabs and the rows
 Modus Natuurlijk, Contrast 95, Helderheid 50, Scherpte 50, Kleur 60,
 Energiebesparing Uit, Beeld zoomen Auto, Virtual HDR Aan, Geavanceerde
 instellinge. Its (45,30,190) is #BE1E2D swapped. Rows use
 SettingItemsListBoxRowItems (460) at a 65..66 px pitch; tabs are the
 DialogSettings_tab (179)/DialogTabMenu (191) family. ui_vendor now has
-SCREEN_SETTINGS_LIST=4 (settings_panel 780x1080 at 0,0 on black), entered by
-Select on the p0/03 quick tiles or ui.screen=settings_list; Exit returns to the
-tiles, Exit again to the portal. tests/ui_settings_panel.c covers that flow and
-tests/ui_settings.c the tile entry. A real fb1 run (PID29263, mod_ui_vendor md5
-c5a9ee99..., panel asset 0979dbf2...) is pixel-identical to the corrected
-capture over 1920x1080 (0/2,073,600 differing, max delta 0, sha256
-cf4a2296...); fb1 backed up/restored (16588800 bytes, offset 0,1080), staging
-removed. Row focus is not implemented: the vendor animates it from the row SVG
-(SVGListBoxBase::startSelectAnimation 0x10bbedd; FA row 479 #FE9419 fills) and
-renders text via FreeType; there is no focused-row capture, so no guessed
-selection chrome was shipped. Evidence:
+SCREEN_SETTINGS_LIST=4 (settings_panel 780x1080 at 0,0), entered by Select on
+the p0/03 quick tiles or ui.screen=settings_list; Exit returns to the tiles,
+Exit again to the portal. The panel area is opaque; the rest of the OSD is
+cleared transparent (clear_rgba 0,0,0,0) so the video stays visible. The
+capture's black right side is an empty canvas, not a painted backdrop: the
+dialog's full-screen "background" record is named and named backgrounds are
+descriptions, not drawn (UI-TRANSPARENCY-2026-11-01). Raw fb1 confirms alpha 0
+at (1000,500) and (900,900), alpha 255 at (100,500) BGRA 45,30,190,255. The
+first run's opaque black clear was corrected. tests/ui_settings_panel.c covers
+the flow and tests/ui_settings.c the tile entry. A real fb1 run (PID30540,
+mod_ui_vendor md5 c12f800f..., panel asset 0979dbf2...) is pixel-identical to
+the corrected capture over 1920x1080 (0/2,073,600 differing, max delta 0,
+sha256 cf4a2296...); fb1 backed up/restored (16588800 bytes, offset 0,1080),
+staging removed. Row focus is not implemented: the vendor animates it from the
+row SVG (SVGListBoxBase::startSelectAnimation 0x10bbedd; FA row 479 #FE9419
+fills) and renders text via FreeType; there is no focused-row capture, so no
+guessed selection chrome was shipped. Evidence:
 artifacts/analysis/settings-panel-2026-11-01/.
 
 Firmware before experiments; instructions before inferred Ghidra signatures.

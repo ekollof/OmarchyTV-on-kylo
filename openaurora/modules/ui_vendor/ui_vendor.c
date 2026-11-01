@@ -340,10 +340,16 @@ static void paint_settings_list(struct ctx *c)
     if (!c || !d)
         return;
     /* Vertical picture-settings panel from shot-settings.png, R/B-corrected:
-     * 780x1080 at 0,0 with the remaining screen black. It is the vendor
-     * SettingsDialog_tab panel (Beeld/Geluid tabs and the picture rows); the
-     * capture is a state, not a reconstruction of each row widget. */
-    d->clear(0, 0, 0);
+     * 780x1080 at 0,0. The dialog's full-screen "background" record is a named
+     * description, not a painted rectangle (UI-TRANSPARENCY-2026-11-01); the
+     * unnamed 780x1080 rect is the panel. Keep the rest of the OSD transparent
+     * so the video plane stays visible, exactly like the source panel. The
+     * capture's black right side is an empty canvas, not opaque black. */
+    int cleared = d->clear_rgba(0, 0, 0, 0);
+    if (cleared) {
+        c->api->log(c->api->priv, OA_LOG_ERROR, "settings panel clear failed");
+        return;
+    }
     const oa_ui_icon *panel = find_icon(c, "settings_panel");
     if (panel)
         d->blit(0, 0, panel->w, panel->h, panel->rgba);
