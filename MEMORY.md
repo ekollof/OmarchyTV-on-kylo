@@ -244,6 +244,18 @@ screen swap at completion, or the owner observing the close/instant switch.
 Resolve with a UI step-hold that pauses the dialog content at p=0.5 and p=1 for
 direct viewing; do not invert the rule.
 
+DIALOG-MOTION-FINAL-2026-11-01: firmware settles the question. The only caller of
+AnimationContainer::addAnimation is AnimationHandler::handleAnimationElement
+(0x00ef8fb8, call at 0x00ef90f2), and DialogLauncher/MainMenu resources contain
+zero animation elements (named-animations.tsv has no rows for 129/136/139). There
+is therefore no separate dialog named-rect motion to recover: the entire
+transition is the full-screen type-4 rule (dy = -(1-p)/6 clip = 45 px at p=0.5
+for 1080), the recovered 1000 ms controller, the cubic min(1,1+(p-1)^3) easing
+and the alpha = progress fade. Our implementation applies exactly that to the
+dialog content, and the real-fb1 measurement (identity=0, p0.5=45, p1=0) matches.
+Do not add a guessed dialog offset or invert the rule; the residual panel
+appearance is a presentation/hold question, not firmware timing.
+
 RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
 stage refreshed to the current modules, our 10 ms-poll ui_fb and the probe's
 UI/rail sampling. Completion-paced advance is now implemented: the rail tick

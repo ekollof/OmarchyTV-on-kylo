@@ -245,6 +245,36 @@ int probe_ui(scene_probe *s)
         printf("UI rail completed image revisions=%u over2000ms (completion-paced; not a frame-order measurement)\n", changes);
         run_for(s, 600); /* hold the last frame so the panel can see it before a focus key */
     }
+    /* Step-hold: freeze the actual dialog content at p=0.5 and p=1 for panel viewing. No pump
+     * during the hold, so the last presented frame stays; the vendor UI is left running. */
+    const char *hold = getenv("OA_SCENE_PROBE_HOLD");
+    if (hold && !strcmp(hold, "1")) {
+        key(s, 53);
+        run_for(s, 150);                         /* first progress callback draws the dialog */
+        const oa_ui_anim_iface *anim = s->host.api.lookup(&s->host, OA_SVC_UI_ANIM, 1);
+        if (!anim || anim->cancel(1) || !s->display || !s->asynchronous) {
+            errno = EPROTO; goto failure;
+        }
+        /* The vendor Aurora repaints fb1, so keep re-presenting our dialog frame with a fixed
+         * transform. The animation entry is gone, so nothing advances progress. */
+        printf("HOLD dialog p=0.5 (type4) for 3s\n"); fflush(stdout);
+        for (int frame = 0; frame < 60;) {
+            uint64_t serial;
+            if (s->display->set_scene_transform(4, 0.5f)) { errno = EPROTO; goto failure; }
+            if (s->asynchronous->request(&serial) == 0) frame++;
+            run_for(s, 50);
+        }
+        printf("HOLD dialog p=1 for 3s\n"); fflush(stdout);
+        for (int frame = 0; frame < 60;) {
+            uint64_t serial;
+            if (s->display->set_scene_transform(4, 1.0f)) { errno = EPROTO; goto failure; }
+            if (s->asynchronous->request(&serial) == 0) frame++;
+            run_for(s, 50);
+        }
+        if (s->display->set_scene_transform(0, 0.0f)) { errno = EPROTO; goto failure; }
+        key(s, 10); run_for(s, 200);
+        printf("HOLD done\n"); fflush(stdout);
+    }
     key(s, 19); run_for(s, 200);
     if (s->asynchronous->latest(&result) != 1) { errno = EPROTO; goto failure; }
     uint64_t before_dialog = result.serial;
