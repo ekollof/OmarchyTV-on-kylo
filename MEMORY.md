@@ -737,6 +737,38 @@ RAM-entry callback; ordinary hooks do not sleep. CLI standby and power/state
 ordering pass seven wrapped-I/O groups. Other modules need explicit quiescence
 hooks and device/wake ownership. No TV execution/deployment; recovery unchanged.
 
+APPS-GRID-2026-11-01: the full-screen apps portal is DialogFullScreenPortal.svg
+(114): background/main_rectangle, top strip (0,0,1921,162) #481730, appsGrid
+(183,180,1554,720), scrollbar (1750,180,8,720), dialogTitle (7,39,546,90),
+customerLogo (1587,32,300,120), paging (893,984,223,60), portalMode
+(1474,984,250,60). FullScreenPortalDialog::init gets the appsGrid description and
+calls FullScreenGrid::create(id 0, rect, items, dialog); create passes 5 as the
+column count (SVGGrid +0x1e0) and offsets the rect by the parent client origin.
+FullScreenGrid uses FullScreenGridFA.svg (375 focused, 376 unfocused): mRowL
+(156,122,0,230), mRowR (576,125,0,229), scrollPos (591,127,6,229), mRowM/rowPos
+(225,121,320,230). gTopL/mTopL and gBotL/mBotL are zero-size path/polyline
+elements (tags 7/6), not rectangles, so mTopL/mBotL yield no rectangle and the
+top/bottom margins are 0. The button SVG is FullScreenGridButtonFA/UFA
+(373/374): mRowL (149,0,36,180), mRowM (187,0,320,180), mRowR (509,0,36,180),
+bottom strip (69,180,545,66); text is FullScreenGridTextboxFA/UFA (378/379).
+SVGGrid::calculateHeight (0x10c9d00) zeroes +0x1f4/+0x1f8/+0x1e4, then sets top
+= mTopL height, bottom = mBotL height, row step = mRowL height (rect fields
++8/+0xc/+0x10/+0x14 are x/y/x1/y1). SVGGrid::create (0x10cacb8) stores the
+column count in +0x1e0. renderBackground (0x10c9ed0) computes visible rows =
+(h-top-bottom)/row step and column step = (w-left-right)/cols with __aeabi_idiv
+(0x1285478, truncated); item height = rowPos height; getButtonPosition
+(0x10ca8ac) gives x = col*step + left, y = row*rowstep + top,
+x2 = x+left+step+right, y2 = y+item_h. The per-cell background loop rewrites
+left/right from rowPos and the mask rectangles, so after a paint they hold the
+last cell's values; createListButtons (0x10ca924) then calls getButtonPosition
+for every cell. A fresh grid has zeroes (col*310, width 310); which state the
+vendor uses at createListButtons time is not established. Do not render the
+grid with an assumed inset. Still undecoded: the HorizontalMaskScaleTransform
+width evaluation and the widget-standard-name id->name map (0xeee798,
+conditional).
+common/vendor_grid.c encodes only the verified arithmetic and tests/vendor_grid.c
+asserts the portal and gridFA numbers (make check-vgrid); no screen was rendered.
+
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
 Vendor animations, transitions and UI/UX effects are included, not yet accepted.

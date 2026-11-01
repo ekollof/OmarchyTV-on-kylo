@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [APPS-GRID](APPS-GRID-2026-11-01.md) | DialogFullScreenPortal/appsGrid geometry, FullScreenGridFA/Button rectangles, recovered SVGGrid rows/step/button arithmetic with tests; portal insets/mask evaluation and list widget-name map remain open |
 | [UI-TRANSPARENCY](UI-TRANSPARENCY-2026-11-01.md) | firmware-derived RGBA36,38,40,153; display.alpha/source-over/CPU premultiplication, host227/focused sanitizer and actual GPU alpha/lifecycle/full restore pass; independent real-video appearance/exact animation acceptance remain open |
 | [RAIL-ASSETS](RAIL-ASSETS-2026-11-01.md) | verified11-frame vendor export, full-bundle icon-capacity regression/fix, real GPU navigation/reload/module-cycle/full restore; visible frame order/30ms cadence remain open |
 | [UI-ASYNC](UI-ASYNC-2026-11-01.md) | ui_fb completion/readiness, cached dialog progress and service lifetime; four host/sanitizer/TV groups plus actual portal/transition/reload/module-cycle/full restoration; rail assets/full visuals/input/cold acceptance remain open |

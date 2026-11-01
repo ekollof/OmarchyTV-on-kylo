@@ -10,7 +10,7 @@
 
 struct cursor { const unsigned char *data; size_t size, pos; };
 static unsigned nodes, animations;
-static int rectangles;
+static int rectangles, allelements;
 static int skip(struct cursor *c, size_t n)
 {
     if (n > c->size - c->pos) return -1;
@@ -84,6 +84,13 @@ static int element(struct cursor *c, uint32_t hash, size_t base)
     if (skip(c, fixed) != 0) return -1;
     for (unsigned i = 0; i < strings; i++) if (!(values[i] = string(c))) return -1;
     if (skip(c, tail)) return -1;
+    if (allelements) {
+        printf("tag %u\t", tag); field(id);
+        for (size_t i = 0; i < fixed; i++)
+            printf("\t%02x", c->data[data + i]);
+        for (unsigned i = 0; i < strings; i++) field(values[i]);
+        putchar('\n');
+    }
     if (rectangles && tag == 1) {
         printf("0x%08" PRIx32 "\t%zu", hash, base + start); field(id);
         for (unsigned i = 0; i < 5; i++) {
@@ -100,8 +107,9 @@ static int element(struct cursor *c, uint32_t hash, size_t base)
 int main(int argc, char **argv)
 {
     if (argc == 4 && !strcmp(argv[3], "--rectangles")) rectangles = 1;
+    else if (argc == 4 && !strcmp(argv[3], "--elements")) allelements = 1;
     else if (argc != 3) {
-        fprintf(stderr, "usage: %s telefunken18_svg.txt telefunken18_svg.bin [--rectangles]\n", argv[0]);
+        fprintf(stderr, "usage: %s telefunken18_svg.txt telefunken18_svg.bin [--rectangles|--elements]\n", argv[0]);
         return 2;
     }
     FILE *index = fopen(argv[1], "r"), *pack = fopen(argv[2], "rb");
