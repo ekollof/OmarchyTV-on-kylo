@@ -75,6 +75,16 @@ MOD_DEP  := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).d)
 
 all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker
 
+$(BUILD)/tests/font_bitmap: tests/font_bitmap.c common/font_bitmap.c include/openaurora/font_bitmap.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-font-bitmap
+check-font-bitmap: $(BUILD)/tests/font_bitmap
+	@$(BUILD)/tests/font_bitmap
+
+check: check-font-bitmap
+
 $(BUILD)/oa-audio-broker: tools/audio/oa-audio-broker.c common/audio_broker.c common/audio_broker_wire.c common/audio_client.c common/audio_netlink.c include/openaurora/audio_broker.h include/openaurora/audio_client.h include/openaurora/audio_netlink.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)

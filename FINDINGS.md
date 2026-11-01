@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Native font correction (2026-11-01): the theme's38 EF41 font records contain
+signed metrics, packed UTF8 keys and raw8-bit coverage, decoded by UIBitmapFont /
+hal::BitmapFont. Its file-font pack is empty. FreeType/browser references alone
+did not prove the settings-row raster path. UI-FONTS records the bounded reader
+and all-record host/sanitizer/ARM-qemu/TV checks; exact font selection and text
+layout/render integration remain open. Some oversized signed metrics wrap;
+vendor draw loops leave those glyphs blank, rather than reading a huge bitmap.
+
 UI engine review correction (2026-11-01): posting engine code under the skin
 owner did not protect engine lifetime and leaked heap userdata when skin posts
 were purged. ui.engine v2 now posts only skin-owned trampolines, uses a bounded

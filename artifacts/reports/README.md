@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [UI-FONTS](UI-FONTS-2026-11-01.md) | native EF41 bitmap/font lookup contract, bounded reader and all38 records on host/sanitizers/ARM-qemu/TV; corrects browser/FreeType conflation; font selection/layout/UI integration open |
 | [SKIN-SELECTION](SKIN-SELECTION-2026-11-01.md) | host skin command/startup policy, committed-frame readiness and safe vendor fallback; host249/sanitizer/native contracts, real Unix socket and actual GPU switching/fallback/full restore; content/visual/cold parity open |
 | [UI-ENGINE-REVIEW](UI-ENGINE-REVIEW-2026-11-01.md) | v2 skin-owned dispatch, queued-code/payload lifetime fixes, rebind/receipt/timer/asset/identity regressions; host242/sanitizer/native contracts and actual GPU lifecycle/full restore; content/fallback/visual parity open |
 | [APPS-GRID](APPS-GRID-2026-11-01.md) | DialogFullScreenPortal/appsGrid geometry, FullScreenGridFA/Button rectangles, recovered SVGGrid rows/step/button arithmetic with tests; portal insets/mask evaluation and list widget-name map remain open |

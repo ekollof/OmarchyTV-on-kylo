@@ -378,9 +378,16 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 - [ ] Exact focused-row/panel evidence and the interactive remainder: value
       changes, Beeld/Geluid tab switching, scrolling/overflow and localization.
       The vendor animates selection from the row SVG (startSelectAnimation)
-      and renders text through FreeType; obtain a focused-row capture or wire
+      and its theme supplies EF41 bitmap fonts (UI-FONTS corrects the earlier
+      FreeType assumption); obtain a focused-row capture or wire
       the vendor font/metrics path before claiming exact focus pixels, and do
       not guess FA/FI slider/button graphics.
+- [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
+      bounded borrowed-data reader, signed glyph metrics, raw grayscale
+      coverage, blank wrapped extents and all38 theme records validated on
+      host/sanitizers/ARM-qemu/TV. See UI-FONTS-2026-11-01. This closes data
+      decoding only; font-type/size selection, text raster integration,
+      alignment, fallback and exact focused text remain open.
 - [ ] Complete the remaining vendor screens and labels. The injected portal
       above is not all-screen parity or a confirmed live remote capture. The
       source-selection panel (DialogSourceSelection.svg 185), the captured

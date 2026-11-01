@@ -24,6 +24,16 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
+Latest: [UI-FONTS](artifacts/reports/UI-FONTS-2026-11-01.md) recovers the
+theme's38 EF41 grayscale bitmap fonts, signed metrics and packed UTF8 lookup.
+common/font_bitmap.c is a bounded borrowed-data reader; all records pass host,
+ASan/UBSan, ARM-qemu and TV checks. Full host suite passes. No UI text rendering
+is wired yet. Continue by tracing font-finder type/ID population and SVG text
+style/font selection, baseline/alignment/fallback; do not substitute guessed
+FreeType/browser Fontconfig. Old native-row FreeType claim corrected at source.
+Native build-tv-v3/font-bitmap and analysis/ui-fonts-2026-11-01 hold evidence.
+Same stock boot/PID1785/access/privacy; all staging removed, no helper/job pending.
+
 Latest: [SKIN-SELECTION](artifacts/reports/SKIN-SELECTION-2026-11-01.md) adds
 `skin NAME`/`skin` to socket/stdin control and configured selection after autoload.
 Missing/start/enter/first-frame failures load vendor only after safe candidate
@@ -84,7 +94,7 @@ settings-2026-11-01/, settings-panel-2026-11-01/,
 settings-focus-2026-11-01/. Module identities are in MEMORY.
 
 Next UI work: exact focused-row/other-tab evidence (a vendor capture of a
-focused row) or the vendor FreeType text/metrics path before claiming focus
+focused row) or the vendor bitmap-font text/metrics path before claiming focus
 pixels; then value changes, Beeld/Geluid tabs, scrolling and localization.
 Control-plane fallback is implemented by SKIN-SELECTION above. Real OmarchyTV
 screens remain pending (ui_omarchy is a skeleton); vendor remains the known

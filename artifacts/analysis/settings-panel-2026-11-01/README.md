@@ -77,9 +77,12 @@ is drawn; it is not.
   `SettingListBoxRow*` (479-482), with the FA row carrying #FE9419 fills.
   `SettingItemsListBoxRow::setFocus` (0xd5662d) switches the text box/selection
   box/button state SVGs.
-- The vendor renders row text through FreeType (`libfreetype.so.6`,
-  `freetype/freetypefontdecoder`, `/vendor/browser_home/Fontconfig`) with the
-  `telefunken18_font_*` data; no font rasterizer is wired into this UI yet.
+- **Superseded font-path claim:** library/browser Fontconfig references did
+  not establish the native row font path. UI-FONTS-2026-11-01 recovers
+  UIBitmapFont's encoded-font branch and all38 EF41 grayscale bitmap records
+  in telefunken18_font_byte_data; font_file_data is empty. Exact row font
+  selection/alignment and UI text integration remain open. Do not pursue
+  browser Fontconfig as a native font dependency on this evidence.
 - No capture exists of a focused row or another tab/category, so the focused
   row pixels are not implemented rather than guessed. Row selection, value
   changes, tab switching, scrolling and localization remain open.

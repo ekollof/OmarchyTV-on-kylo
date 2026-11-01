@@ -6,6 +6,15 @@ November 1 CEC session described below. Earlier chronological notes are preserve
 
 ## TV and persistent recovery
 
+UI-FONTS-2026-11-01: bounded EF41 grayscale bitmap reader and packed UTF8
+lookup implemented; all38 live/offline font records pass host, ASan/UBSan,
+ARM-qemu and TV checks. Full host suite exits0. UI text rendering/font selection
+remains unimplemented; browser/FreeType native-row claim corrected. Native test
+31640 bytes/MD5 1867d20017ecdc3e9c633afe9c7ba798, GLIBC<=2.7, isolated
+build-tv-v3/font-bitmap. Same stock boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197,
+live1785/zombie1967/access/privacy; no devices opened or drawing. Temporary
+staging removed and independently checked. See UI-FONTS report/raw analysis.
+
 Vendor UI is running on 192.168.178.87 / 70:54:b4:fe:70:c6. Following physical
 USB recovery, fresh SSH key login and root telnet worked; Ethernet, routes,
 hosts block, Samba OUTPUT REJECT and privacy/internet/WoL values were checked.
@@ -998,7 +1007,8 @@ raw fb1 alpha 0 at (1000,500), BGRA 25,148,254,255 (#FE9419) at (100,500),
 45,30,190,255 panel at (24,185); fb1 restored, staging removed. This verifies
 the pipeline, not a vendor focused-row capture: bar centering/row rect and
 focused slider/button graphics are inferred; value editing, tabs, scrolling,
-localization and FreeType text remain open. Evidence:
+localization and native font/text integration remain open. UI-FONTS below
+corrects the earlier FreeType assumption. Evidence:
 artifacts/analysis/settings-focus-2026-11-01/.
 
 Firmware before experiments; instructions before inferred Ghidra signatures.
