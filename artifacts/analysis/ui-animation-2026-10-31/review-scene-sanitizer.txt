@@ -1,0 +1,61 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-scene-san/tests/display_present tests/display_present.c modules/display/display.c common/ui_anim.c -lm \
+  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=system -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-scene-san/tests/fbregion_read tests/fbregion_read.c -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=ioctl
+  ok   default current-frame presentation commits every time, including after resume
+  ok   single-buffer presentation also commits through FBIOPAN_DISPLAY
+  ok   sync/commit failures propagate and retry the same frame before rotation
+  ok   scene surface maps the recovered quad (x-slide, scale, keystone, clear)
+  ok   keystone samples both fan triangles; all completed transforms preserve the scene
+  ok   uniform-only fade preserves premultiplied BGRA and transparent-black endpoints
+/dev/fb1: 0x0 virt 0x0 bpp 0 offset 0,0
+primary mapping: physical=0 bytes=0 stride=0
+current MAU: 1 (alternate memory selected)
+region: [0]=0(0) [1]=0(0) [2]=0(0) [3]=0(0) [4]=0(0) [5]=0(0) [6]=0(0) [7]=0(0)
+  ok   fbregion opens read-only and submits only screeninfo/MAU/region GET requests
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-scene-san/core/check.o core/check.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-scene-san/core/control.o core/control.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-scene-san/core/host.o core/host.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-scene-san/core/module.o core/module.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-scene-san/tests/ui_anim_review tests/ui_anim_review.c common/ui_anim.c build-scene-san/core/check.o build-scene-san/core/control.o build-scene-san/core/host.o build-scene-san/core/module.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-scene-san/modules/mod_ui_anim.so modules/ui_anim/ui_anim.c common/ui_anim.c -fsanitize=address,undefined -lm
+[509023] INFO host         loaded ui_anim v1 (build-scene-san/modules/mod_ui_anim.so)
+[509023] INFO host         started ui_anim
+[509024] ERR  ui_anim      timer table full
+[509024] WARN host         ui_anim: resume failed (-1)
+[509024] INFO host         stopped ui_anim
+[509024] INFO host         unloaded ui_anim
+  ok   animation completion/finalise callbacks can replace their own slot
+  ok   real animation DSO restores its timer after suspend; timer allocation failure is retryable
+  ok   text-slide duration/margin match AnimationHelper (pause 800, speed 50, x1000)
+  ok   full-screen animation types 1..8 match the HAL vertex rules and clamp
+  ok   scene transform equals oa_fs_apply for affine types; keystone flagged
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Itests -fsanitize=address,undefined -o build-scene-san/tests/ui_nav tests/ui_nav.c build-scene-san/core/check.o build-scene-san/core/control.o build-scene-san/core/host.o build-scene-san/core/module.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Itests -fPIC -shared -o build-scene-san/tests/ui_nav_display.so tests/ui_nav_display.c -fsanitize=address,undefined
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-scene-san/modules/mod_plat.so modules/plat/plat.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-scene-san/modules/mod_ir.so modules/ir/ir.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-scene-san/modules/mod_ui_fb.so modules/ui_fb/ui_fb.c common/ui_anim.c -fsanitize=address,undefined -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-scene-san/modules/mod_ticker.so modules/ticker/ticker.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-scene-san/modules/mod_ui_clock.so modules/ui_clock/ui_clock.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-scene-san/modules/mod_settings.so modules/settings/settings.c -fsanitize=address,undefined \
+   \
+  -Ithird_party -Lvendor/lib -lsqlite3
+/usr/bin/ld: skipping incompatible vendor/lib/libsqlite3.so when searching for -lsqlite3
+  ok   full-screen portal follows remote frames; focus survives reload
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Itests -fsanitize=address,undefined -o build-scene-san/tests/ui_rebind tests/ui_rebind.c build-scene-san/core/check.o build-scene-san/core/control.o build-scene-san/core/host.o build-scene-san/core/module.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-scene-san/tests/mod_fake_clock.so tests/mod_fake_clock.c -fsanitize=address,undefined -ldl -pthread -lm
+[511160] ERR  host         ui_fb: missing required service 'display'
+[511160] ERR  host         ui_anim: refusing to stop, service 'ui.anim' still held
+[511160] ERR  host         fake_clock: required by active module 'ui_anim'
+  ok   ui_fb rebinds late providers, drops forced-unloaded ones and resumes
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Itests -fsanitize=address,undefined -o build-scene-san/tests/ui_slide tests/ui_slide.c build-scene-san/core/check.o build-scene-san/core/control.o build-scene-san/core/host.o build-scene-san/core/module.o -ldl -pthread -lm
+  ok   text slide clips to the box, follows AnimationHelper margins and repeats
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Itests -fsanitize=address,undefined -o build-scene-san/tests/ui_rail_hl tests/ui_rail_hl.c build-scene-san/core/check.o build-scene-san/core/control.o build-scene-san/core/host.o build-scene-san/core/module.o -ldl -pthread -lm
+  ok   rail highlight plays 11 frames at 30 ms in the vendor button window

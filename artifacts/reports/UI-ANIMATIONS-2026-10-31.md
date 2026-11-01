@@ -1,8 +1,10 @@
 # Vendor UI animation contracts — 2026-10-31
 
-Status: **current offline firmware evidence**. Extractors, ui.clock and the
-list/dialog controller are tested. Text slide, full-screen visual mapping,
-rail timing and on-panel acceptance remain unfinished. No TV access is claimed.
+Status: **firmware and implementation evidence with dated follow-ups**. The
+later sections recover text-slide, full-screen modes and rail timing and record
+native scheduling probes. [UI-SCENE-REVIEW](UI-SCENE-REVIEW-2026-11-01.md)
+corrects scene interpolation/filter/fade and adds two actual fb1 draw/restore
+runs. Smooth playback, independent startup and visual parity remain unaccepted.
 Full UI parity includes these effects; static screenshots are insufficient.
 
 ## Sources and tooling
@@ -485,10 +487,11 @@ type 1: right vertices scaled (keystone)  2/3: x += ±(1-p)/6  4/5: y += ±(1-p)
 type 7/8: x,y scaled
 ```
 
-Because the quad keeps vertical sides, the inverse map is separable:
-`u = (x-xl)/(xr-xl)`, `v = (y - A(u)) / B(u)` with the edge interpolation; the warp
-samples the scene and writes the framebuffer in its measured BGRA order. The fake-fb
-tests verify x-slide, uniform scale, the keystone and transform clearing.
+The first consumer used a bilinear quad inverse. **Superseded by UI-SCENE-REVIEW:**
+the vendor's GL_TRIANGLE_FAN requires UV interpolation within two triangles,
+followed by GL_LINEAR texture sampling and progress-alpha/blend. Current output
+uses transparent black outside the quad and premultiplied BGRA within it.
+The initial geometry-only tests were insufficient to establish this contract.
 
 `SVGDialog::create` (0x10c590e/0x10c59ac → table 0x153b7ec) copies the constant array
 `57 58 59 60 61 62 63 64` and tries the modes in order: for each it builds the
@@ -499,12 +502,14 @@ types 1..8 whose animation widget is present", not a fixed per-dialog constant.
 `mod_ui_fb` is the consumer: on dialog progress it calls
 `set_scene_transform(ui.fs_type, eased)` (the callback already receives
 `min(1,1+(p-1)^3)`), and clears the transform on completion, suspend and stop. Since
-our stand-in dialog has none of the vendor's per-mode widgets, `ui.fs_type` is still an
-explicit selection (default 0); the vendor order is known but the widget binding is
-not yet built.
+the recovered DialogLauncher description has animation_slide_up_fade_in, its
+first-present rule now selects type4 by default (c42dd32); ui.fs_type remains
+an explicit override. The earlier default0 statement is superseded.
 
 Evidence: host `make check` 200 ok (including the display warp and the ui_nav transform
-assertions), ASan/UBSan 200 ok. ARM/qemu and on-panel verification pending.
+assertions), ASan/UBSan 200 ok. That was the initial consumer milestone;
+UI-SCENE-REVIEW supplies subsequent host203/focused-sanitizer/ARM-qemu and real
+fb1 checks with their performance/visual limitations.
 
 ## Live TV probe run, 2026-11-01
 

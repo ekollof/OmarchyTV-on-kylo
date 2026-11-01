@@ -24,25 +24,32 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Owner resumed work after the earlier credit-related suspension. Latest completed
-slice (2026-11-01): display v2 renders every draw into an offscreen RGBA scene and
-`present()` maps it through the recovered four-vertex clip-space quad (type 1 flip
-keystone, 2/3 x-slide, 4/5 y-slide, 7/8 scale). `mod_ui_fb` consumes it during the
-dialog animation. `SVGWindow::getWidgetStandardName` (0xeee798) names the eight
-modes — 57 flip, 58 slide-right, 59 slide-left, 60 slide-up, 61 slide-down,
-62 fade, 63 grow, 64 bounce — and `SVGDialog::create` tries 57..64 in order,
-starting the first widget present. DialogLauncher.svg (129) declares only
-`animation_slide_up_fade_in`, so the vendor rule now selects type 4 without a
-config value; `ui.fs_type` remains an explicit override. Evidence: host
-`make check` 200 ok and ASan/UBSan 200 ok; `check-ui-nav` asserts the type-4
-selection through the real dialog path.
+Owner resumed work and authorized real hardware testing. Latest review:
+[UI-SCENE-REVIEW](artifacts/reports/UI-SCENE-REVIEW-2026-11-01.md) fixes the
+scene rasterizer to use fan-triangle interpolation, the firmware's GL_LINEAR
+filter and progress-alpha fade into premultiplied BGRA. ui_fb now presents on
+each progress callback, clears both display aliases before provider unload,
+clears a frozen transform on animation-provider removal, cancels interrupted
+dialogs and keeps failed resume suspended. DialogLauncher still selects type4
+by the recovered first-present mode rule; ui.fs_type is an explicit override.
 
-Next concrete steps, in order: run the scene warp on ARM/qemu and on the TV
-(staged /tmp display self-test or the live probe; no persistent replacement);
-then the remaining vendor screens/broadcast/settings, native audio/CEC ownership
-and independent startup. No probe, upload or analysis job is pending.
+Full strict host suite203 ok, focused ASan/UBSan and ARM/qemu display tests pass.
+Two real-fb1 runs (no fake screen, no HAL init) each restored16588800 bytes and
+the original yoffset0, snapshot_match1. Optimized slide-up batch fell from
+4499.56 to399.68ms for five presents; general keystone/scale remain slow.
+This is existing-layer draw/commit/readback evidence, not smooth playback,
+independent startup or vendor frame-sequence acceptance. Probe101324bytes,
+MD547dcd8ca304e67f42eed48c3a3172b33, maxGLIBC2.17, preserved with ARM units
+under build-tv-v3/review-scene. Production stage.md5 below is unchanged.
+Staging removed, no helper left; same stock boot/PID/access/privacy protections.
 
-Latest review: [SPEAKER-GAIN](artifacts/reports/SPEAKER-GAIN-2026-11-01.md)
+Next concrete steps: recover/integrate an accelerated native scene presentation
+path and verify visible frame sequences/cadence; then remaining vendor screens/
+broadcast/settings, native audio/CEC ownership and independent startup. Do not
+repeat the general CPU warp benchmark as a way to establish smooth animations.
+No probe, upload or analysis job is pending.
+
+Earlier audio review: [SPEAKER-GAIN](artifacts/reports/SPEAKER-GAIN-2026-11-01.md)
 confirms direct SetOPUGain registration and raw channel bounds0..0x8000.
 It bypasses UI AQ/balance/ratio processing. GetOPUGain remaps cached100 to0x8000;
 never use it as an exact rollback snapshot. Lower codec/client dispatch now has
@@ -332,9 +339,10 @@ message id for 150 ms. New svg-names tool resolves all 702 resource names/IDs fr
 ELF svg_name_list and verifies CRC32 against the pack index; all 39 descriptors
 are named. Widget states are UFA/FA/UFI/FI at 0/1/2/3, category arrays use a
 {1,0,3,2} remap; category styles differ from generic launcher tiles. Ad-banner
-effects are research only and excluded from porting. Next finish effect callers,
-geometry/full-screen types, then native effects and lifecycle/interaction acceptance. No native effect
-runtime or TV test is claimed. Raw evidence: artifacts/analysis/ui-animation-2026-10-31.
+effects are research only and excluded from porting. Later follow-ups recover
+full-screen types and rail timing and implement consumers; UI-SCENE-REVIEW above
+records actual framebuffer tests and remaining performance/visual gates.
+Raw evidence: artifacts/analysis/ui-animation-2026-10-31.
 Name/caller follow-up: artifacts/analysis/ui-resource-bindings-2026-10-31.
 
 Clock prerequisite now implemented: mod_ui_clock requires ticker's raw clock,
@@ -350,11 +358,12 @@ at progress 1. List rectangles truncate; dialog progress is min(1, 1+(p-1)^3)
 over the recovered 1000 ms select path. The full-screen progress mapping is
 recovered: SVGDialog::startAnimation maps dialog modes 57..64 to HAL types 1..8
 for a 1000 ms controller, onAnimationProgress feeds the cubic, destroy forces
-1.0, and `oa_fs_apply` reproduces the per-type vertex rules (no renderer
-consumer yet). Text-slide duration/margin/repeat are wired in mod_ui_fb with
+1.0, and `oa_fs_apply` reproduces the per-type vertex rules. The display-v2
+consumer and its subsequent review are described above. Text-slide duration/margin/repeat are wired in mod_ui_fb with
 enablement gating, box clipping and the 0.99 repeat; suspend/stop cleanup is
-tested. The rail's button/timing mapping is still unproven (300 ms tile records
-exist, but the category rail is not confirmed to use them).
+tested. Rail mapping now uses the recovered category highlight APNG at30ms;
+the generic300ms tile records do not define rail animation. Visible rail/frame
+parity remains open.
 Raw clock evidence/tests: artifacts/analysis/ui-clock-2026-10-31.
 
 Latest power evidence: [POWER-STANDBY-CONTRACT](artifacts/reports/POWER-STANDBY-CONTRACT-2026-10-31.md),

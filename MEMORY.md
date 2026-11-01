@@ -49,6 +49,20 @@ syntax defect.
 
 ## Development build and evidence
 
+UI-SCENE-REVIEW-2026-11-01 corrects fan-triangle UV interpolation, GL_LINEAR
+sampling and progress-alpha fade/premultiplied BGRA from fresh firmware reads.
+Dialog progress now requests frames; provider aliases/interruption/failed-resume
+cleanup are covered. Full strict host203 ok, focused ASan/UBSan and ARM/qemu
+display regressions pass. Real-fb1 tests twice drew all types and restored
+16588800 bytes and original yoffset0 (snapshot_match1), without stopping stock
+Aurora or running HAL init. Final probe101324bytes, MD547dcd8ca304e67f42eed48c3a3172b33,
+maxGLIBC2.17, under build-tv-v3/review-scene; full production stage unchanged.
+Final live reads retain boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197, PID1785,
+installed hashes, listeners and privacy/safety markers. Staging/helper removed.
+Five-present default y-slide batch improved4499.56->399.68ms; general transforms
+remain slow. This does not close smooth animation, independent scanout/startup,
+cold/resume or visual frame-sequence acceptance. See the report for exact scope.
+
 UI-ANIM-SLIDE-2026-11-01: text-slide math implemented from instructions, not
 inferred. `AnimationHelper::calculateSlidingDuration` 0xef0210 is
 `1600 + trunc(distance/50)*1000` and `calculateSlidingMargin` 0xef0264 returns
@@ -85,9 +99,9 @@ float-to-int cast; the wobble uses the double precision π from 0xb32aa8; and
 `mod_ui_fb`/`mod_ui_anim` link `-lm` (verified DT_NEEDED) because `sinf` was
 undefined. The module now calls the v2 provider for duration/margin instead of
 carrying a copy. Host, ASan/UBSan and ARM/qemu rerun after these fixes.
-Known limits kept explicit: a ui.anim/ui.clock published only after ui_fb
-starts is not discovered until restart, and a forced provider reload leaves the
-module's borrowed pointers stale (the host blocks ordinary reload while held).
+Initial limits, subsequently fixed by PROVIDER-REBIND and UI-SCENE-REVIEW:
+late ui.anim/ui.clock discovery and stale pointers after forced provider reload.
+Ordinary reload while held remains blocked by the host.
 
 LIVE-SLIDE-PROBE-2026-11-01: the slide was exercised on the TV with real timers
 and no display hardware: tests/mod_slide_probe.c published a recording display
@@ -158,7 +172,8 @@ only the two right vertices, a keystone. Encoded as `oa_fs_apply` and the
 scene-level `oa_fs_scene_transform` (clip-space affine, keystone flagged) with
 cross-check vectors. The display now publishes v2 with
 `set_scene_transform(type, progress)`: all draws go to an offscreen RGBA scene and
-present() maps it through the recovered quad (separable inverse map, BGRA output);
+present() maps it through the recovered quad (corrected to triangle interpolation,
+linear sampling and alpha fade by UI-SCENE-REVIEW, BGRA output);
 fake-fb tests cover x-slide, scale, keystone and clearing. mod_ui_fb is the
 consumer: on dialog progress it pushes the selected type with the eased value and
 clears on completion/suspend/stop. `SVGWindow::getWidgetStandardName` (0xeee798)
@@ -167,8 +182,9 @@ slide-down, 62 fade, 63 grow, 64 bounce; `SVGDialog::create` tries 57..64 in
 order and starts the first widget present. DialogLauncher.svg (129) declares
 only animation_slide_up_fade_in, so mod_ui_fb selects type 4 by that rule;
 ui.fs_type remains an explicit override. Evidence: host 200 ok, ASan/UBSan 200
-ok; check-ui-nav asserts the type-4 selection. Still open: ARM/qemu and panel
-verification of the scene warp.
+ok; check-ui-nav asserts the type-4 selection. Subsequent UI-SCENE-REVIEW supplies
+ARM/qemu and existing-layer real-fb1 execution. Smooth/visual independent
+acceptance remains open.
 
 RAIL-TIMING-2026-11-01: MainLauncherMenuDialog moves rail items synchronously
 (setMenuItemPositions from scrollItems/updateButtonPositions/init/onExit/

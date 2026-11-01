@@ -35,8 +35,11 @@ acceptance needs frame sequences and navigation behavior.
 It preserves the recovered FROST_Time 90,000,000-ms rollover and 12,343 correction
 quantum separately from ordinary 64-bit monotonic time. Owned sampling timers
 quiesce through paired hooks; reload saves numeric state. Offline DSO tests pass;
-mod_ui_anim is the offline list/dialog controller on this clock. Text slide,
-full-screen visual mapping and rail timing remain unfinished. See
+mod_ui_anim is the list/dialog controller on this clock. Text-slide and rail
+consumers and the display-v2 full-screen scene are implemented. UI-SCENE-REVIEW
+corrects fan interpolation, linear filtering and alpha fade and records actual
+fb1 draw/restore tests. General CPU transforms remain slow; independent startup,
+smooth visible frame sequences and cold/resume acceptance remain open. See
 [UI-ANIMATIONS](../../artifacts/reports/UI-ANIMATIONS-2026-10-31.md) for arithmetic,
 strict boundaries and the unresolved absolute-phase/bootstrap limits.
 

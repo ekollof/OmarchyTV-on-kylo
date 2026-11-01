@@ -1,7 +1,7 @@
 # Current findings and correction map
 
-Reviewed against local source, saved evidence and artifact identities on 2026-10-31.
-No new TV experiments were run for this review. This is a guide to conclusions;
+Initial offline audit:2026-10-31. Subsequent dated reports add implementation
+and TV evidence, including UI-SCENE-REVIEW on2026-11-01. This guides conclusions;
 topic reports retain detailed provenance. See [report index](artifacts/reports/README.md).
 
 ## Evidence rules
@@ -20,6 +20,8 @@ Symbol/function counts depend on the counting method and do not establish an ABI
 
 | superseded claim or tempting detour | current conclusion and evidence |
 |---|---|
+| A quad with vertical sides implies bilinear UV interpolation; geometry alone reproduces the animation | Vendor draws GL_TRIANGLE_FAN with w=1, uses GL_LINEAR texel sampling and an alpha shader/blend. Correct fan interpolation, filtering and fade are implemented; real fb1 commits/restoration pass, but general CPU transforms are slow. UI-SCENE-REVIEW. |
+| Sending dialog progress to display guarantees frames appear; a v1 pointer clear also clears v2 | ui_fb now paints on every progress event without unrelated timers and clears both aliases before provider dlclose. Interrupt/failed-resume/provider removal regressions pass. UI-SCENE-REVIEW. |
 | GetOPUGain can back up and exactly restore raw gain | Kernel getter reads cached fields, then reply handler remaps exactly100 to0x8000. Those raw values cannot be distinguished by this query. No DSP/audio ACK exists. SPEAKER-GAIN. |
 | SetOPUGain accepts the UI's0..100 speaker-volume scale | Direct channel operands are bounded0..0x8000 and bypass Mod_Cell_SetVol's AQ/balance/ratio path. UI speaker out gain is a separate ALSA control; lower codec/client tests do not establish audible application. SPEAKER-GAIN. |
 | posix_spawn return0 proves helper exec/startup succeeded; qemu return0 for missing exec is a bug | Target libc forks, returns PID/0 and can later exit127 after exec failure. Direct ARM instructions and minimal reproduction confirm it. Module handles delayed EOF/reaping; X_OK only catches obvious missing paths. MIXER-MODULE. |

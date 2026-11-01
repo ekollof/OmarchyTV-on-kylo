@@ -144,7 +144,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       address/size separately. Full cold lifecycle remains unverified.
 - [x] Every present now commits FBIOPAN_DISPLAY, including display.pan=0/one frame;
       error/retry and resume-frame logic covered with fake devices on host/ARM.
-      Not deployed or verified drawing on TV.
+      Subsequent UI-SCENE-REVIEW runs real fb1 draw/commit/readback and restores
+      saved pixels/pan with stock running. Not deployed or independent cold/resume acceptance.
 - [x] O_RDONLY fbregion helper GET request set tested; real fb1 query read MAU0
       primary with unchanged vendor boot/PIDs, staging removed.
 - [x] Confirmed generic GEM +0x70 size store in both NAND kernel slots; fresh
@@ -393,12 +394,19 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 - [x] Full-screen transform consumer: display v2 publishes `set_scene_transform`; all draws render
       to an offscreen RGBA scene and present() maps it through the recovered four-vertex clip-space
       quad (x-slide, y-slide, scale, type-1 keystone). mod_ui_fb pushes `ui.fs_type` with the eased
-      dialog progress and clears on completion/suspend/stop. Fake-fb warp tests and ui_nav transform
-      assertions pass; host 200 ok and ASan/UBSan 200 ok. The vendor per-mode names are recovered
+      dialog progress and clears on completion/suspend/stop. UI-SCENE-REVIEW corrects fan-triangle
+      interpolation, linear texel filtering, progress-alpha fade and transparent outside pixels;
+      it fixes per-progress frame requests, provider aliases and interrupted-dialog cleanup.
+      Full host203 ok, focused ASan/UBSan, ARM/qemu display checks and two actual fb1 draw/commit/
+      restore runs pass. These do not establish smooth/visual independent acceptance.
+      The vendor per-mode names are recovered
       (57 flip, 58 right, 59 left, 60 up, 61 down, 62 fade, 63 grow, 64 bounce) and
       getWidgetStandardName's first-present rule selects type 4 for DialogLauncher.svg
-      (animation_slide_up_fade_in); ui.fs_type remains an override. Still open: ARM/qemu and panel
-      verification of the scene warp.
+      (animation_slide_up_fade_in); ui.fs_type remains an override.
+- [ ] Complete accelerated scene presentation and visible animation acceptance.
+      General CPU keystone/scale remain slow; optimized y-slide batch is399.68ms
+      for five presents, not proof of the recovered10ms cadence. Verify vendor
+      frame sequences, alpha/edge precision, interaction and cold/resume ownership.
 - [ ] Audit pixel-format boundaries as UI work expands: raw 32bpp OSD is BGRA;
       OAI1/blit inputs are RGBA; saved screenshots are RGB. Preserve provenance
       of pre-fix red/blue-swapped captures and verify other API formats explicitly.

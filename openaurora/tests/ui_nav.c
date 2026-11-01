@@ -284,7 +284,11 @@ int main(int argc, char **argv)
     memset(&rect, 0, sizeof rect);
     assert(!anim->get(1, &kind, &rect, &eased, &st, &dur));
     assert(kind == OA_ANIM_DIALOG && dur == 1000 && eased == 0.f);
+    int paints_before = 0, paints_after = 0;
+    assert(!trace->counts(NULL, &paints_before, NULL, NULL));
     assert(anim->sample(st + 500) == 1 && portal->screen() == 0);
+    assert(!trace->counts(NULL, &paints_after, NULL, NULL));
+    assert(paints_after > paints_before); /* ui.fps=0 and no highlight assets/timer */
     assert(!anim->get(1, &kind, &rect, &eased, &st, &dur));
     assert(eased > 0.8f && eased < 0.95f);
     {
@@ -352,6 +356,20 @@ int main(int argc, char **argv)
     assert(!command(&host, "status ticker", out, sizeof out) && strstr(out, "state   started"));
     portal = host.api.lookup(&host, OA_SVC_PORTAL, 1);
     assert(portal && portal->screen() == 0);
+
+    /* An interrupted dialog must not later reopen the old selection or leave
+     * the scene transformed. No periodic repaint is needed for this cleanup. */
+    anim = host.api.lookup(&host, OA_SVC_UI_ANIM, 1);
+    for (int pass = 0; pass < 2; pass++) {
+        press(input, 53);
+        assert(!anim->get(1, NULL, NULL, NULL, &st, &dur));
+        assert(anim->sample(st + 100) == 1);
+        press(input, pass ? 48 : 10);
+        assert(anim->sample(st + 1000) == 0 && portal->screen() == 0);
+        int fst = -1, fsc = 0;
+        float fsp = -1.f;
+        assert(!trace->transform(&fst, &fsp, &fsc) && fst == 0);
+    }
 
     host.stop_requested = 1;
     assert(!oa_host_run(&host));

@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [UI-SCENE-REVIEW](UI-SCENE-REVIEW-2026-11-01.md) | fan-triangle UVs, linear filtering, alpha fade and UI lifetime/frame fixes; host/sanitizer/ARM-qemu, two real fb1 draw/restore runs; CPU performance and independent visual/startup acceptance remain open |
 | [SPEAKER-GAIN](SPEAKER-GAIN-2026-11-01.md) | direct setter registration/operand bounds, distinction from UI AQ/balance/ratio path, lossy query prevents exact rollback; lower codec/client host/sanitizer/ARM-qemu/TV injected-I/O tests; broker remains query-only |
 | [MIXER-MODULE](MIXER-MODULE-2026-11-01.md) | audio.mixer service, native query/CLI/reload/reaping, target libc spawn semantics; host/sanitizer/ARM-qemu/TV; refreshed16-module --check passes; writes/full audio parity open |
 | [AUDIO-BROKER](AUDIO-BROKER-2026-11-01.md) | firmware prelude/PID-binding connection, separate executable and strict local query IPC; host/sanitizer/ARM-qemu and real spawned TV query/reap; subsequent MIXER-MODULE supplies parent integration |
@@ -32,7 +33,7 @@ establishes completion of the full replacement.
 | [DRM-PLANE-CONTRACT](DRM-PLANE-CONTRACT-2026-10-31.md) | generic NDAL record/discovery path; separate OSD cache is in OSD-BUFFER-CONTRACT |
 | [PWM-CONTRACT-RECHECK](PWM-CONTRACT-RECHECK-2026-10-31.md) | current PWM layout/return instruction evidence; maintained vendor_pwm.h |
 | [POWER-STANDBY-CONTRACT](POWER-STANDBY-CONTRACT-2026-10-31.md) | standby/device/wake-network order, target PHY policy and monitor/UART corrections; service/CLI tested; device preparation/wake/hardware acceptance remains open |
-| [UI-ANIMATIONS](UI-ANIMATIONS-2026-10-31.md) | controller/easing/scrolling, 39 named descriptors, 702 CRC-verified names; ui.clock and ui.anim list/dialog tested offline; text slide, full-screen mapping and rail timing still open |
+| [UI-ANIMATIONS](UI-ANIMATIONS-2026-10-31.md) | controller/easing/scrolling, 39 named descriptors, 702 CRC-verified names; later text-slide/rail/mode recovery and consumer implementation; UI-SCENE-REVIEW corrects scene sampling/fade and adds actual fb1 tests; full visual acceptance open |
 | [DOCUMENTATION-AUDIT](DOCUMENTATION-AUDIT-2026-10-31.md) | cleanup decisions, verification and remaining evidence limits |
 
 ## Historical hardware work and design surveys

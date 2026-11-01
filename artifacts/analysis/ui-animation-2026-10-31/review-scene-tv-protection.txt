@@ -1,0 +1,11 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+a898384df076572cf377749f25427689  /buffer/openaurora/openaurora
+0b1cd32a9de2b0251f6252e6603db8b7  /conf/remotelf/aurora.elf
+b6eee64775233de846ca46fc6c48c3f9  /conf/remotelf/hosts
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination         
+REJECT     all  --  0.0.0.0/0            216.183.117.0/24     reject-with icmp-port-unreachable

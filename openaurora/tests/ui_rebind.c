@@ -162,9 +162,16 @@ int main(int argc, char **argv)
     assert(timer_fire_repeat(&host, fb->id, 10));
     assert(title_shift(trace) == 81);
 
+    uint32_t started = 0;
+    assert(!anim->start(1, OA_ANIM_DIALOG, NULL, NULL, 1000, &started));
+    assert(anim->sample(started + 100) == 1);
+    int transform = 0;
+    assert(!trace->transform(&transform, NULL, NULL) && transform == 4);
+
     /* Forced removal of the provider must drop the cached pointer and stop the sampling. */
     assert(!command(&host, "unload ui_anim --force", out, sizeof out) && strstr(out, "ok"));
     assert(timer_fire_oneshot(&host, fb->id));           /* deferred rebind from service/removed */
+    assert(!trace->transform(&transform, NULL, NULL) && transform == 0);
     assert(timer_count(&host, fb->id, 10) == 0);         /* no sampler without the provider */
     assert(timer_count(&host, fb->id, 0) == 0);
     assert(title_shift(trace) == 0);                     /* runner cleared, label redrawn at origin */
@@ -179,6 +186,17 @@ int main(int argc, char **argv)
     assert(timer_count(&host, fb->id, 10) == 1);
     assert(timer_fire_repeat(&host, fb->id, 10));
     assert(title_shift(trace) == 0);
+
+    /* Both v1 and v2 aliases must disappear synchronously before dlclose.
+     * Suspend calls the v2 transform reset, so it must be safe even before rebind. */
+    assert(!command(&host, "unload nav_display --force", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "suspend ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(command(&host, "resume ui_fb", out, sizeof out) != 0);
+    assert(!command(&host, "load nav_display", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "start nav_display", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "resume ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
+    trace = host.api.lookup(&host, OA_SVC_NAV_TRACE, 1);
+    assert(trace && timer_count(&host, fb->id, 10) == 1);
 
     host.stop_requested = 1;
     assert(oa_host_run(&host) == 0);

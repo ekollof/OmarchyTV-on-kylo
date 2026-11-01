@@ -18,6 +18,7 @@
  */
 #include <fcntl.h>
 #include <linux/fb.h>
+#include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,6 +56,7 @@ struct ctx {
      * maps it through the recovered full-screen transition quad. */
     uint8_t *scene;
     int scene_w, scene_h;
+    int scene_opaque; /* a full opaque fill; subsequent draws cannot reduce alpha */
     int fs_type;      /* 0 = no transition */
     float fs_p;
 };
@@ -63,7 +65,7 @@ static struct ctx *g_ctx;
 
 /* ---------------------------------------------------------------- drawing */
 
-static void put_px(struct ctx *c, uint8_t *row, unsigned x, int r, int g, int b)
+static void put_px(struct ctx *c, uint8_t *row, unsigned x, int r, int g, int b, int a)
 {
     if (c->var.bits_per_pixel == 32) {
         /* measured on the set: /dev/fb1 is BGRA (a test pattern with byte0=255 showed as blue),
@@ -72,7 +74,7 @@ static void put_px(struct ctx *c, uint8_t *row, unsigned x, int r, int g, int b)
         p[0] = (uint8_t)b;
         p[1] = (uint8_t)g;
         p[2] = (uint8_t)r;
-        p[3] = 0xff;
+        p[3] = (uint8_t)a;
     } else if (c->var.bits_per_pixel == 16) {
         ((uint16_t *)row)[x] = (uint16_t)(((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3));
     }
@@ -86,6 +88,7 @@ static int fill_rect(struct ctx *c, int x, int y, int w, int h, int r, int g, in
     int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
     int x1 = (x + w) > fx ? fx : x + w;
     int y1 = (y + h) > fy ? fy : y + h;
+    if (x0 == 0 && y0 == 0 && x1 == fx && y1 == fy) c->scene_opaque = 1;
 
     for (int yy = y0; yy < y1; yy++) {
         uint8_t *row = c->scene + (size_t)yy * (size_t)fx * 4;
@@ -191,7 +194,7 @@ static void scene_to_fb(struct ctx *c)
         const uint8_t *srow = c->scene + (size_t)y * (size_t)c->scene_w * 4;
         for (unsigned x = 0; x < c->var.xres; x++) {
             const uint8_t *p = srow + (size_t)x * 4;
-            put_px(c, row, x, p[0], p[1], p[2]);
+            put_px(c, row, x, p[0], p[1], p[2], p[3]);
         }
     }
 }
@@ -199,15 +202,77 @@ static void scene_to_fb(struct ctx *c)
 /* Map the offscreen scene through the recovered four-vertex clip-space quad:
  *   BL(-1,-1) BR(1,-1) TR(1,1) TL(-1,1), UV (0,0) (1,0) (1,1) (0,1)
  * Type 1 scales only the two right vertices (keystone); types 2/3 translate x,
- * 4/5 y, 7/8 scale uniformly. With vertical sides the inverse map is separable:
- *   u = (x - xl) / (xr - xl)
- *   y = (1-u)*yl(v) + u*yr(v)  ->  v = (y - A(u)) / B(u)
+ * 4/5 y, 7/8 scale uniformly. The vendor draws GL_TRIANGLE_FAN (0,1,2),(0,2,3),
+ * with w=1: interpolate UV linearly within each triangle, not bilinearly across
+ * the quad. For the keystone these differ on either side of diagonal 0->2.
  */
+/* Opaque slide/fade scenes have one constant fractional texture offset. Build
+ * the exact two-texel/filter/fade result once per byte pair rather than doing
+ * float channel interpolation for every 1080p pixel. This is the same linear
+ * filter as the general rasterizer, not a nearest-neighbour approximation. */
+static void slide_scene(struct ctx *c)
+{
+    oa_fs_scene transform;
+    oa_fs_scene_transform(c->fs_type, c->fs_p, &transform);
+    int vertical = transform.dx == 0.0f;
+    float shift = vertical ? transform.dy * (float)c->scene_h * 0.5f :
+                             -transform.dx * (float)c->scene_w * 0.5f;
+    int base = (int)floorf(shift);
+    float fraction = shift - (float)base;
+    uint8_t blend[65536];
+    for (int a = 0; a < 256; a++)
+        for (int b = 0; b < 256; b++)
+            blend[a * 256 + b] = (uint8_t)(((float)a + fraction * (float)(b-a)) * c->fs_p + 0.5f);
+    uint8_t alpha = (uint8_t)(255.0f * c->fs_p + 0.5f);
+    for (int y = 0; y < c->scene_h; y++) {
+        uint8_t *row = c->map + (size_t)(c->back * c->var.yres + (unsigned)y) * c->fix.line_length;
+        float position = (float)y + 0.5f + shift;
+        if (vertical && (position < 0.0f || position > (float)c->scene_h)) {
+            memset(row, 0, (size_t)c->scene_w * 4);
+            continue;
+        }
+        int sy = vertical ? y + base : y;
+        int ny = sy + (vertical != 0);
+        if (sy < 0) sy = 0;
+        if (ny < 0) ny = 0;
+        if (sy >= c->scene_h) sy = c->scene_h - 1;
+        if (ny >= c->scene_h) ny = c->scene_h - 1;
+        const uint8_t *top = c->scene + (size_t)sy * (size_t)c->scene_w * 4;
+        const uint8_t *bottom = c->scene + (size_t)ny * (size_t)c->scene_w * 4;
+        for (int x = 0; x < c->scene_w; x++) {
+            uint8_t *out = row + (size_t)x * 4;
+            position = (float)x + 0.5f + shift;
+            if (!vertical && (position < 0.0f || position > (float)c->scene_w)) {
+                memset(out, 0, 4);
+                continue;
+            }
+            int sx = vertical ? x : x + base;
+            int nx = sx + !vertical;
+            if (sx < 0) sx = 0;
+            if (nx < 0) nx = 0;
+            if (sx >= c->scene_w) sx = c->scene_w - 1;
+            if (nx >= c->scene_w) nx = c->scene_w - 1;
+            const uint8_t *a = top + (size_t)sx * 4;
+            const uint8_t *b = bottom + (size_t)nx * 4;
+            out[0] = blend[a[2] * 256 + b[2]];
+            out[1] = blend[a[1] * 256 + b[1]];
+            out[2] = blend[a[0] * 256 + b[0]];
+            out[3] = alpha;
+        }
+    }
+}
+
 static void warp_scene(struct ctx *c)
 {
     const float W = (float)c->scene_w, H = (float)c->scene_h;
     oa_fs_scene sc;
     float xl, xr, ybl, ytl, ybr, ytr;
+
+    if (c->scene_opaque && c->var.bits_per_pixel == 32 && c->fs_type >= OA_FS_SLIDE_NEG &&
+        c->fs_type <= OA_FS_UNIFORM_ONLY) {
+        slide_scene(c);
+        return;
+    }
 
     oa_fs_scene_transform(c->fs_type, c->fs_p, &sc);
     if (c->fs_type == OA_FS_SCALE_AXES) {
@@ -226,29 +291,54 @@ static void warp_scene(struct ctx *c)
         ytr = ytl;
     }
 
+    const float inv_width = 1.0f / (xr - xl);
+    const float inv_left_height = 1.0f / (ytl - ybl);
+    const float inv_right_height = 1.0f / (ytr - ybr);
     for (unsigned Y = 0; Y < c->var.yres; Y++) {
         float yc = 1.0f - 2.0f * ((float)Y + 0.5f) / H;
         uint8_t *row = c->map + (size_t)(c->back * c->var.yres + Y) * c->fix.line_length;
         for (unsigned X = 0; X < c->var.xres; X++) {
             float xc = 2.0f * ((float)X + 0.5f) / W - 1.0f;
-            float u = (xc - xl) / (xr - xl);
+            float u = (xc - xl) * inv_width;
             float v = -1.0f;
             if (u >= 0.0f && u <= 1.0f) {
-                float A = (1.0f - u) * ybl + u * ybr;
-                float B = (1.0f - u) * (ytl - ybl) + u * (ytr - ybr);
-                if (B != 0.0f)
-                    v = (yc - A) / B;
+                float bottom = ybl + u * (ybr - ybl);
+                float diagonal = ybl + u * (ytr - ybl);
+                v = yc <= diagonal ? (yc - bottom) * inv_right_height :
+                                     u + (yc - diagonal) * inv_left_height;
             }
             if (u < 0.0f || u > 1.0f || v < 0.0f || v > 1.0f) {
-                put_px(c, row, X, 0, 0, 0);
+                put_px(c, row, X, 0, 0, 0, 0);
                 continue;
             }
-            int sx = (int)(u * W);
-            int sy = (int)((1.0f - v) * H);
-            if (sx >= c->scene_w) sx = c->scene_w - 1;
-            if (sy >= c->scene_h) sy = c->scene_h - 1;
-            const uint8_t *p = c->scene + ((size_t)sy * (size_t)c->scene_w + (size_t)sx) * 4;
-            put_px(c, row, X, p[0], p[1], p[2]);
+            /* createFrameBufferObject selects GL_LINEAR and CLAMP_TO_EDGE.
+             * Normalized UVs address texel centers at (i+0.5)/size. */
+            float tx = u * W - 0.5f, ty = (1.0f - v) * H - 0.5f;
+            if (tx < 0.0f) tx = 0.0f;
+            if (ty < 0.0f) ty = 0.0f;
+            if (tx > W - 1.0f) tx = W - 1.0f;
+            if (ty > H - 1.0f) ty = H - 1.0f;
+            int sx = (int)tx, sy = (int)ty;
+            int nx = sx + (sx + 1 < c->scene_w), ny = sy + (sy + 1 < c->scene_h);
+            float fx = tx - (float)sx, fy = ty - (float)sy, sample[4];
+            const uint8_t *p00 = c->scene + ((size_t)sy * (size_t)c->scene_w + (size_t)sx) * 4;
+            const uint8_t *p10 = c->scene + ((size_t)sy * (size_t)c->scene_w + (size_t)nx) * 4;
+            const uint8_t *p01 = c->scene + ((size_t)ny * (size_t)c->scene_w + (size_t)sx) * 4;
+            const uint8_t *p11 = c->scene + ((size_t)ny * (size_t)c->scene_w + (size_t)nx) * 4;
+            for (int channel = 0; channel < 4; channel++) {
+                float top = (float)p00[channel] + fx * ((float)p10[channel] - (float)p00[channel]);
+                float bottom = (float)p01[channel] + fx * ((float)p11[channel] - (float)p01[channel]);
+                sample[channel] = top + fy * (bottom - top);
+            }
+            /* The vendor texture shader multiplies alpha by progress (uAlpha),
+             * then blends SRC_ALPHA/ONE_MINUS_SRC_ALPHA onto transparent black.
+             * Alpha uses ONE/ONE. Preserve that premultiplied output in BGRA;
+             * type6 is a fade even though its vertices do not move. */
+            float alpha = sample[3] * c->fs_p;
+            float coverage = alpha / 255.0f;
+            put_px(c, row, X, (int)(sample[0] * coverage + 0.5f),
+                   (int)(sample[1] * coverage + 0.5f),
+                   (int)(sample[2] * coverage + 0.5f), (int)(alpha + 0.5f));
         }
     }
 }
@@ -275,7 +365,10 @@ static int present(void){
     if (!c || !c->map || !c->scene)
         return -1;
 
-    if (c->fs_type > 0 && c->fs_p >= 0.0f && c->fs_p <= 1.0f)
+    if (c->fs_type > 0 && c->fs_p == 0.0f)
+        memset(c->map + (size_t)c->back * c->var.yres * c->fix.line_length,
+               0, (size_t)c->var.yres * c->fix.line_length);
+    else if (c->fs_type > 0 && c->fs_p > 0.0f && c->fs_p < 1.0f)
         warp_scene(c);
     else
         scene_to_fb(c);
@@ -504,6 +597,7 @@ static int open_layer(struct ctx *c)
     c->scene_w = (int)c->var.xres;
     c->scene_h = (int)c->var.yres;
     c->scene = calloc((size_t)c->scene_w * (size_t)c->scene_h, 4);
+    c->scene_opaque = 0;
     if (!c->scene) {
         munmap(c->map, c->maplen);
         c->map = NULL;

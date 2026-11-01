@@ -104,7 +104,9 @@ typedef struct {
     int (*info)(int *w, int *h, int *bpp, int *frames);
     /* v2: full-screen transition applied at present. The scene is rendered offscreen and mapped
      * through the recovered four-vertex clip-space quad (type 1 keystone, 2/3 x-slide, 4/5
-     * y-slide, 7/8 scale). type 0 or progress outside 0..1 clears the transform. */
+     * y-slide, 7/8 scale), with fan-triangle UVs, linear filtering and progress
+     * alpha fade (including type6). Active output is premultiplied BGRA, transparent
+     * outside the quad. type 0 or progress outside 0..1 clears the transform. */
     int (*set_scene_transform)(int type, float progress);
 } oa_display_iface;
 

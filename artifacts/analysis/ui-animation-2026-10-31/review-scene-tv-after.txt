@@ -1,0 +1,31 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+71f7eb63-727f-4b9a-a9c7-2b04dc3f9197
+ 1703 root      0:00 /bin/sh /mtd_apexe/board/run_aurora.sh
+ 1785 root     20:49 /vendor/com.nvt.idtv/aurora.elf
+ 1967 root      0:00 [aurora.elf]
+29026 root      0:00 sh -c rm /tmp/oa-scene-review-20261101/scene-probe && rmdir /tmp/oa-scene-review-20261101 && test ! -e /tmp/oa-scene-review-20261101; cat /proc/sys/kernel/random/boot_id; ps | grep -E "aurora|scene-probe"; md5sum /buffer/openaurora/openaurora /conf/remotelf/aurora.elf /conf/remotelf/hosts; /vendor/iptables -L OUTPUT -n; netstat -lnt; test -e /conf/oa_safe && test -e /conf/coredumpnoreset && test ! -e /conf/oa_boot
+29031 root      0:00 grep -E aurora|scene-probe
+a898384df076572cf377749f25427689  /buffer/openaurora/openaurora
+0b1cd32a9de2b0251f6252e6603db8b7  /conf/remotelf/aurora.elf
+b6eee64775233de846ca46fc6c48c3f9  /conf/remotelf/hosts
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination         
+REJECT     all  --  0.0.0.0/0            216.183.117.0/24     reject-with icmp-port-unreachable
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       
+tcp        0      0 0.0.0.0:7681            0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:40231           0.0.0.0:*               LISTEN      
+tcp        0      0 127.0.0.1:26441         0.0.0.0:*               LISTEN      
+tcp        0      0 192.168.178.87:26442    0.0.0.0:*               LISTEN      
+tcp        0      0 127.0.0.1:8080          0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:56789           0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:56790           0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:2870            0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      
+tcp        0      0 192.168.178.87:12345    0.0.0.0:*               LISTEN      
+tcp        0      0 :::2323                 :::*                    LISTEN      
+tcp        0      0 :::22                   :::*                    LISTEN      

@@ -1,0 +1,32 @@
+  ok   default current-frame presentation commits every time, including after resume
+  ok   single-buffer presentation also commits through FBIOPAN_DISPLAY
+  ok   sync/commit failures propagate and retry the same frame before rotation
+  ok   scene surface maps the recovered quad (x-slide, scale, keystone, clear)
+  ok   keystone samples both fan triangles; all completed transforms preserve the scene
+  ok   uniform-only fade preserves premultiplied BGRA and transparent-black endpoints
+  ok   optimized opaque slides/fade match the general filtered rasterizer within one byte
+/dev/fb1: 0x0 virt 0x0 bpp 0 offset 0,0
+primary mapping: physical=0 bytes=0 stride=0
+current MAU: 1 (alternate memory selected)
+region: [0]=0(0) [1]=0(0) [2]=0(0) [3]=0(0) [4]=0(0) [5]=0(0) [6]=0(0) [7]=0(0)
+  ok   fbregion opens read-only and submits only screeninfo/MAU/region GET requests
+[985611] INFO host         loaded ui_anim v1 (build-scene-san/modules/mod_ui_anim.so)
+[985611] INFO host         started ui_anim
+[985611] ERR  ui_anim      timer table full
+[985611] WARN host         ui_anim: resume failed (-1)
+[985611] INFO host         stopped ui_anim
+[985611] INFO host         unloaded ui_anim
+  ok   animation completion/finalise callbacks can replace their own slot
+  ok   real animation DSO restores its timer after suspend; timer allocation failure is retryable
+  ok   text-slide duration/margin match AnimationHelper (pause 800, speed 50, x1000)
+  ok   full-screen animation types 1..8 match the HAL vertex rules and clamp
+  ok   scene transform equals oa_fs_apply for affine types; keystone flagged
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-scene-san/modules/mod_ui_fb.so modules/ui_fb/ui_fb.c common/ui_anim.c -fsanitize=address,undefined -lm
+  ok   full-screen portal follows remote frames; focus survives reload
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Itests -fsanitize=address,undefined -o build-scene-san/tests/ui_rebind tests/ui_rebind.c build-scene-san/core/check.o build-scene-san/core/control.o build-scene-san/core/host.o build-scene-san/core/module.o -ldl -pthread -lm
+[986635] ERR  host         ui_fb: missing required service 'display'
+[986635] ERR  host         ui_anim: refusing to stop, service 'ui.anim' still held
+[986635] ERR  host         fake_clock: required by active module 'ui_anim'
+  ok   ui_fb rebinds late providers, drops forced-unloaded ones and resumes
+  ok   text slide clips to the box, follows AnimationHelper margins and repeats
+  ok   rail highlight plays 11 frames at 30 ms in the vendor button window

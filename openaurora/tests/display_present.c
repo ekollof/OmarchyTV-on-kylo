@@ -16,10 +16,11 @@
 const oa_module *oa_module_entry(void);
 static const oa_display_iface *display;
 static struct fb_var_screeninfo var;
-static unsigned char pixels[256];
+static unsigned char pixels[1024];
 static const char *rotate;
 static unsigned commits, last_yoffset, syncs, opens, closes;
 static int fail_sync, fail_commit;
+static unsigned height = 2;
 
 int __wrap_open(const char *path, int flags, ...)
 {
@@ -105,7 +106,7 @@ static void *start(unsigned frames, unsigned yoffset, const char *rotation)
     memset(&var, 0, sizeof var);
     memset(pixels, 0, sizeof pixels);
     var.xres = var.xres_virtual = 8;
-    var.yres = 2;
+    var.yres = height;
     var.yres_virtual = frames * var.yres;
     var.bits_per_pixel = 32;
     var.yoffset = yoffset;
@@ -163,21 +164,21 @@ int main(void)
     for (int x = 0; x < 8; x++)
         assert(display->fill(x, 0, 1, 2, x * 16, 0, 0) == 0);
 
-    assert(display->set_scene_transform(OA_FS_SLIDE_NEG, 0.0f) == 0);
+    assert(display->set_scene_transform(OA_FS_SLIDE_NEG, 0.5f) == 0);
     assert(display->present() == 0);
-    assert(pixels[2] == 16);            /* X0 samples scene column 1 */
-    assert(pixels[7 * 4 + 2] == 0);     /* X7 maps past the right edge -> black */
+    assert(pixels[2] == 3);             /* linear sample at column1/3, half opacity */
+    assert(pixels[7 * 4 + 2] == 56);    /* X7 samples column7 with half opacity */
 
-    assert(display->set_scene_transform(OA_FS_SCALE, 0.0f) == 0);
+    assert(display->set_scene_transform(OA_FS_SCALE, 0.5f) == 0);
     assert(display->present() == 0);
-    assert(pixels[2] == 0);             /* X0 outside the 2/3 quad */
-    assert(pixels[4 * 4 + 2] == 64);    /* X4 samples column 4 */
+    assert(pixels[2] == 0);             /* X0 outside the 5/6 quad */
+    assert(pixels[4 * 4 + 2] == 33);    /* linear sample at column4.1, half opacity */
     assert(pixels[7 * 4 + 2] == 0);
 
-    assert(display->set_scene_transform(OA_FS_SCALE_AXES, 0.0f) == 0);
+    assert(display->set_scene_transform(OA_FS_SCALE_AXES, 0.5f) == 0);
     assert(display->present() == 0);
-    assert(pixels[2] == 0);             /* left edge unchanged, samples column 0 */
-    assert(pixels[4 * 4 + 2] == 96);    /* keystone: X4 samples column 6 */
+    assert(pixels[2] == 1);             /* left edge unchanged; linear subpixel sample */
+    assert(pixels[4 * 4 + 2] == 37);    /* keystone: column4.642857, half opacity */
     assert(pixels[7 * 4 + 2] == 0);
 
     assert(display->set_scene_transform(0, 0.0f) == 0);
@@ -185,5 +186,73 @@ int main(void)
     assert(pixels[4 * 4 + 2] == 64);    /* cleared transform: direct copy of column 4 */
     finish(ctx);
     puts("  ok   scene surface maps the recovered quad (x-slide, scale, keystone, clear)");
+
+    height = 16;
+    ctx = start(1, 0, NULL);
+    for (int y = 0; y < 16; y++)
+        for (int x = 0; x < 8; x++)
+            assert(!display->fill(x, y, 1, 1, x * 16, y * 16, 0));
+    assert(!display->set_scene_transform(OA_FS_SCALE_AXES, 0.5f));
+    assert(!display->present());
+    /* Independently derived barycentric UVs for fan triangles (0,1,2),(0,2,3).
+     * At half progress, X3/Y4 samples row3.333333 in the upper triangle;
+     * X5/Y5 samples row4.157143 in the lower. GL_LINEAR and half opacity
+     * round green to27/33. A bilinear quad warp instead produces29/37. */
+    assert(pixels[(4 * 8 + 3) * 4 + 1] == 27);
+    assert(pixels[(5 * 8 + 5) * 4 + 1] == 33);
+    for (int type = 0; type <= 8; type++) {
+        assert(!display->set_scene_transform(type, 1.0f));
+        assert(!display->present());
+        for (int y = 0; y < 16; y++)
+            for (int x = 0; x < 8; x++) {
+                assert(pixels[(y * 8 + x) * 4 + 1] == y * 16);
+                assert(pixels[(y * 8 + x) * 4 + 2] == x * 16);
+            }
+    }
+    finish(ctx);
+    puts("  ok   keystone samples both fan triangles; all completed transforms preserve the scene");
+
+    height = 2;
+    ctx = start(1, 0, NULL);
+    assert(!display->clear(100, 80, 60));
+    for (int step = 0; step <= 2; step++) {
+        assert(!display->set_scene_transform(OA_FS_UNIFORM_ONLY, (float)step / 2.0f));
+        assert(!display->present());
+        assert(pixels[0] == step * 30 && pixels[1] == step * 40 && pixels[2] == step * 50);
+        assert(pixels[3] == (step == 1 ? 128 : step * 255 / 2));
+    }
+    finish(ctx);
+    puts("  ok   uniform-only fade preserves premultiplied BGRA and transparent-black endpoints");
+
+    /* A full opaque blit has the same pixels as clear+blit, but only the latter
+     * establishes the fast-path invariant. Compare both paths at fractional
+     * positive/negative offsets, including clamped edge texels. */
+    unsigned char rgba[512], reference[15][512];
+    for (unsigned i = 0; i < sizeof rgba; i += 4) {
+        rgba[i] = (unsigned char)(i * 7);
+        rgba[i+1] = (unsigned char)(i * 13);
+        rgba[i+2] = (unsigned char)(i * 19);
+        rgba[i+3] = 255;
+    }
+    const float progress[] = {0.125f, 0.37f, 0.875f};
+    height = 16;
+    ctx = start(1, 0, NULL);
+    assert(!display->blit(0, 0, 8, 16, rgba));
+    for (int type = 2; type <= 6; type++)
+        for (int step = 0; step < 3; step++) {
+            assert(!display->set_scene_transform(type, progress[step]) && !display->present());
+            memcpy(reference[(type-2)*3+step], pixels, 512);
+        }
+    assert(!display->clear(0, 0, 0) && !display->blit(0, 0, 8, 16, rgba));
+    for (int type = 2; type <= 6; type++)
+        for (int step = 0; step < 3; step++) {
+            assert(!display->set_scene_transform(type, progress[step]) && !display->present());
+            for (unsigned i = 0; i < 512; i++) {
+                int delta = (int)pixels[i] - (int)reference[(type-2)*3+step][i];
+                assert(delta >= -1 && delta <= 1); /* float arithmetic/UNORM rounding */
+            }
+        }
+    finish(ctx);
+    puts("  ok   optimized opaque slides/fade match the general filtered rasterizer within one byte");
     return 0;
 }

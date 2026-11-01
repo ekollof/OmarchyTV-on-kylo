@@ -1,0 +1,18 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -Itests  -o build/tests/ui_rebind tests/ui_rebind.c build/core/check.o build/core/control.o build/core/host.o build/core/module.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build/modules/mod_ui_fb.so modules/ui_fb/ui_fb.c common/ui_anim.c  -lm
+[890877] ERR  host         ui_fb: missing required service 'display'
+[890877] ERR  host         ui_anim: refusing to stop, service 'ui.anim' still held
+[890877] ERR  host         fake_clock: required by active module 'ui_anim'
+  ok   ui_fb rebinds late providers, drops forced-unloaded ones and resumes
+[890878] INFO host         loaded ui_anim v1 (build/modules/mod_ui_anim.so)
+[890878] INFO host         started ui_anim
+[890878] ERR  ui_anim      timer table full
+[890878] WARN host         ui_anim: resume failed (-1)
+[890878] INFO host         stopped ui_anim
+[890878] INFO host         unloaded ui_anim
+  ok   animation completion/finalise callbacks can replace their own slot
+  ok   real animation DSO restores its timer after suspend; timer allocation failure is retryable
+  ok   text-slide duration/margin match AnimationHelper (pause 800, speed 50, x1000)
+  ok   full-screen animation types 1..8 match the HAL vertex rules and clamp
+  ok   scene transform equals oa_fs_apply for affine types; keystone flagged
+  ok   full-screen portal follows remote frames; focus survives reload

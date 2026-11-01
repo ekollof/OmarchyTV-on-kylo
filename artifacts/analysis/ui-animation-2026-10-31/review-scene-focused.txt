@@ -1,0 +1,29 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/display_present tests/display_present.c modules/display/display.c common/ui_anim.c -lm \
+  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=system -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl
+  ok   default current-frame presentation commits every time, including after resume
+  ok   single-buffer presentation also commits through FBIOPAN_DISPLAY
+  ok   sync/commit failures propagate and retry the same frame before rotation
+  ok   scene surface maps the recovered quad (x-slide, scale, keystone, clear)
+  ok   keystone samples both fan triangles; all completed transforms preserve the scene
+/dev/fb1: 0x0 virt 0x0 bpp 0 offset 0,0
+primary mapping: physical=0 bytes=0 stride=0
+current MAU: 1 (alternate memory selected)
+region: [0]=0(0) [1]=0(0) [2]=0(0) [3]=0(0) [4]=0(0) [5]=0(0) [6]=0(0) [7]=0(0)
+  ok   fbregion opens read-only and submits only screeninfo/MAU/region GET requests
+[ 82823] INFO host         loaded ui_anim v1 (build/modules/mod_ui_anim.so)
+[ 82823] INFO host         started ui_anim
+[ 82823] ERR  ui_anim      timer table full
+[ 82823] WARN host         ui_anim: resume failed (-1)
+[ 82823] INFO host         stopped ui_anim
+[ 82823] INFO host         unloaded ui_anim
+  ok   animation completion/finalise callbacks can replace their own slot
+  ok   real animation DSO restores its timer after suspend; timer allocation failure is retryable
+  ok   text-slide duration/margin match AnimationHelper (pause 800, speed 50, x1000)
+  ok   full-screen animation types 1..8 match the HAL vertex rules and clamp
+  ok   scene transform equals oa_fs_apply for affine types; keystone flagged
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -Itests  -o build/tests/ui_nav tests/ui_nav.c build/core/check.o build/core/control.o build/core/host.o build/core/module.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build/modules/mod_ui_fb.so modules/ui_fb/ui_fb.c common/ui_anim.c  -lm
+  ok   full-screen portal follows remote frames; focus survives reload
+[ 83440] ERR  host         ui_anim: refusing to stop, service 'ui.anim' still held
+[ 83440] ERR  host         fake_clock: required by active module 'ui_anim'
+  ok   ui_fb rebinds late providers, drops forced-unloaded ones and resumes

@@ -420,6 +420,11 @@ $(BUILD)/fbregion: tools/mcu/fbregion.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
+# Explicit opt-in live fbdev diagnostic; never run by make check. No HAL setup.
+$(BUILD)/scene-probe: tools/display/scene-probe.c modules/display/display.c common/ui_anim.c include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
+
 $(BUILD)/cec-probe: tools/cec/cec-probe.c common/cec_packet.c common/cec.c include/openaurora/vendor_cec.h include/openaurora/cec.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)

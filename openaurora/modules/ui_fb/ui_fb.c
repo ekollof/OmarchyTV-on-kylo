@@ -635,11 +635,16 @@ static void on_service_removed(const void *evp, void *ud)
     if (!c || !ev || !ev->name) return;
     /* The host already cleared the holds with the service. Drop the cached pointer before it can
      * dangle; the deferred rebind reacquires whatever is published again. */
-    if (!strcmp(ev->name, OA_SVC_DISPLAY))
+    if (!strcmp(ev->name, OA_SVC_DISPLAY)) {
         c->disp = NULL;
-    else if (!strcmp(ev->name, OA_SVC_UI_ANIM)) {
+        c->disp2 = NULL;
+    } else if (!strcmp(ev->name, OA_SVC_UI_ANIM)) {
         c->anim = NULL;
         c->anim2 = NULL;
+        if (c->disp2 && c->disp2->set_scene_transform)
+            c->disp2->set_scene_transform(0, 0.0f);
+    } else if (!strcmp(ev->name, OA_SVC_SETTINGS)) {
+        c->settings = NULL;
     } else if (!strcmp(ev->name, OA_SVC_UI_CLOCK)) {
         c->clock = NULL;
     } else {
@@ -657,6 +662,7 @@ static void rebind_now(struct ctx *c)
         if (!c->disp) return;              /* nothing can be drawn or timed without a display */
     }
     c->disp2 = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 2);
+    if (!c->settings) c->settings = c->api->lookup(c->api->priv, OA_SVC_SETTINGS, 1);
     if (!c->anim) {
         c->anim = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 1);
         if (c->anim) c->anim->bind(on_anim, c);
@@ -704,8 +710,8 @@ static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int
             c->disp2->set_scene_transform(done ? 0 : c->fs_type, done ? 0.0f : eased);
         if (done) {
             c->screen = SCREEN_OPEN;
-            if (c->disp) paint(c);
         }
+        if (!c->suspended && c->disp) paint(c);
         return;
     }
     if (kind == OA_ANIM_LIST && rect && c->disp) {
@@ -713,6 +719,13 @@ static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int
         c->disp->fill(rect->x, rect->y, rect->w, rect->h, 247, 148, 30);
         (void)c->disp->present();
     }
+}
+
+static void cancel_dialog(struct ctx *c)
+{
+    if (c->anim) (void)c->anim->cancel(ANIM_DIALOG);
+    if (c->disp2 && c->disp2->set_scene_transform)
+        c->disp2->set_scene_transform(0, 0.0f);
 }
 
 static void move_key(struct ctx *c, uint8_t id)
@@ -752,11 +765,13 @@ static void move_key(struct ctx *c, uint8_t id)
         if (c->disp) paint(c);
         return;
     } else if (id == 10) { /* Exit */
+        cancel_dialog(c);
         if (c->screen == SCREEN_OPEN) c->screen = SCREEN_PORTAL;
         emit_action(c, OA_ACTION_BACK);
         if (c->disp) paint(c);
         return;
     } else if (id == 48) { /* Menu */
+        cancel_dialog(c);
         if (c->screen == SCREEN_OPEN) c->screen = SCREEN_PORTAL;
         emit_action(c, OA_ACTION_HOME);
         if (c->disp) paint(c);
@@ -946,8 +961,7 @@ static int m_start(void *v)
 static void m_stop(void *v)
 {
     struct ctx *c = v;
-    if (c->disp2 && c->disp2->set_scene_transform)
-        c->disp2->set_scene_transform(0, 0.0f);
+    cancel_dialog(c);
     if (c->mod_key) {
         c->api->unsubscribe(c->api->priv, c->mod_key);
         c->mod_key = 0;
@@ -1004,6 +1018,7 @@ static void m_stop(void *v)
     if (c->disp)
         c->api->release(c->api->priv, OA_SVC_DISPLAY);
     c->disp = NULL;
+    c->disp2 = NULL;
     for (int i = 0; i < c->n; i++)
         free(c->icons[i].rgba);
     c->n = 0;
@@ -1025,8 +1040,7 @@ static int m_suspend(void *v)
 {
     struct ctx *c = v;
     c->suspended = 1;
-    if (c->disp2 && c->disp2->set_scene_transform)
-        c->disp2->set_scene_transform(0, 0.0f);
+    cancel_dialog(c);
     slide_stop_sampler(c);
     if (c->slide_repeat) {
         c->api->timer_del(c->api->priv, c->slide_repeat);
@@ -1049,13 +1063,13 @@ static int m_suspend(void *v)
     if (c->disp)
         c->api->release(c->api->priv, OA_SVC_DISPLAY);
     c->disp = NULL;
+    c->disp2 = NULL;
     return 0;
 }
 
 static int m_resume(void *v)
 {
     struct ctx *c = v;
-    c->suspended = 0;
     c->disp = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 1);
     if (!c->disp)
         return -1;
@@ -1064,8 +1078,10 @@ static int m_resume(void *v)
     if (!c->sub_key) {
         c->api->release(c->api->priv, OA_SVC_DISPLAY);
         c->disp = NULL;
+        c->disp2 = NULL;
         return -1;
     }
+    c->suspended = 0;
     /* providers may have appeared or disappeared while suspended; rebind_now reacquires them and
      * restarts or holds the slide as appropriate (it also paints). */
     if (c->rebind_pending || !c->anim || !c->anim2 || !c->clock)
