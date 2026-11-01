@@ -377,12 +377,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       artifacts/analysis/settings-focus-2026-11-01/.
 - [ ] Exact focused-row/panel evidence and the interactive remainder: value
       changes, Beeld/Geluid tab switching, scrolling/overflow, localization,
-      the title/tab/value labels and focused-label pixels. The vendor animates
-      selection from the row SVG, and a focused row changes font type/text
-      rectangle as well as ink (488/496/504). Live font7 labels exist for the
-      unfocused rows; obtain a focused-row capture or decode the transformed FA
-      text setup before claiming exact focus text, and do not guess FA/FI
-      slider/button graphics.
+      the title/tab/value labels and focused-label pixels. Firmware decode so
+      far (analysis/ui-text-setup-2026-11-01): SettingItemsListBox assigns
+      state-indexed list/row resources exactly (FA=479 etc.); renderForeground
+      gives font=+0x21c from getFont(width,+0x1b4 lines,+0x1c4 type), line
+      height +0x1c0, alignment +0x220/+0x22c with mirror/RTL remap. Transformed
+      textPos, per-widget line counts/types and FA animation geometry are still
+      undecoded, so title/tab/focused text must not be built from the capture
+      fits. Do not guess FA/FI slider/button graphics.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

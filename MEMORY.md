@@ -37,9 +37,13 @@ indented checks plus the font groups. Real fb1 (PID20201, ui_engine1952912c… v
 ui_vendor e0e7a690…) vs the corrected panel: 24,545/2,073,600 any-channel
 (1.184%), only22 px >8 (max11), RMSE0.2712/255; rows0-4/6 have no >8 diff
 (row5 5, row7 7, row8 10). fb1 restored (16588800 bytes, offset0,1080), staging
-removed. Next: title/tabs/slider graphics/focused labels, value/tab interaction
-and exact line setup/transform/alignment/substitution/localization. Evidence:
-artifacts/analysis/ui-font-live-2026-11-01/ and UI-FONT-LIVE-2026-11-01 report.
+removed. Next: title/tabs/slider graphics/focused labels (firmware geometry
+only — analysis/ui-text-setup-2026-11-01 records the decoded state-indexed
+resources and renderForeground line/font/alignment fields; transformed textPos
+and per-widget setup are still undecoded, so no title/tab implementation from
+fits), value/tab interaction and exact alignment/substitution/localization.
+Evidence: artifacts/analysis/ui-font-live-2026-11-01/ and UI-FONT-LIVE-2026-11-01
+report.
 
 UI-FONT-SELECTION-2026-11-01: common/font_finder.c implements firmware-derived
 stable typed maximum-height selection, signed height/line-count division and
