@@ -339,6 +339,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       by the open screen. Proven by tests/ui_nav.c on host make check, one
       ASan/UBSan run and one ARM/qemu run. The test database is not the live
       settings store. UI-PARITY.
+- [x] Source-selection screen (DialogSourceSelection.svg 185): host test and a
+      real fb1 run under the owner's permission while HDMI1 stayed on the video
+      plane. Panel/bar geometry and the vendor ink (white rows, #7E000A focused
+      row) match the swap-corrected p0/06 capture (RMSE 0.28%, AE 0.0073%);
+      fb1 backed up/restored and staging removed. The p0/06 capture is R/B
+      swapped; the screen uses the resource palette #BE1E2D/#FE9419. Localised
+      source names and exact focused font metrics remain open.
 - [ ] Complete the remaining vendor screens and labels. The injected portal
       above is not all-screen parity or a confirmed live remote capture. The
       source-selection panel (DialogSourceSelection.svg 185) is the first

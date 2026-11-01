@@ -841,6 +841,23 @@ and CCACHE_DISABLE=1 disables. Most module/test rules compile+link in one
 -shared call and are uncacheable; splitting them is a TODO. Build-only runs can
 use make -j$(nproc) all; check stays sequential.
 
+SOURCE-SELECT-TV-2026-11-01: the source-selection screen ran on the real set
+under the owner's fb1 permission while HDMI1 stayed on the video plane. Native
+ARM host PID17592 staged in /tmp/oa-src-stage (mod_ui_fb md5
+3c1b1bd562be3fdd79dd9a8946fc6790), a test plat stub (mod_display requires the
+service; the real plat would re-run the vendor HAL), and mod_display with
+set_region/mirror/pan 0. The legacy p0/06 capture is R/B swapped: its panel
+(45,30,190) and bar (25,148,254) are the resource colours #BE1E2D and #FE9419
+with R/B exchanged. The screen now uses the resource palette (panel #BE1E2D,
+bar #FE9419, focused ink #7E000A, white unfocused rows). tvshot fb1 matched the
+swap-corrected p0/06 panel (0,0,780,1080) with RMSE 181.535/65535 (0.28%) and
+AE 61.7/842400 (0.0073%); flat colours exact. fb1 was backed up (16,588,800
+bytes, yoffset1080) and restored (bytes 16588800, offset 0,1080); staging
+removed; no openaurora left. src_0..src_8 and src_*_f are the vendor ink.
+Evidence: artifacts/analysis/source-selection-2026-11-01/. The live RGBA-asset
+-> BGRA-fb1 -> tvshot-BGRA path is consistent; the error was importing a legacy
+swapped capture, not the render path.
+
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
 Vendor animations, transitions and UI/UX effects are included, not yet accepted.

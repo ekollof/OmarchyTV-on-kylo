@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Extract the source-selection ("Bronlijst") text as OAI1 blobs from the
-vendor capture. The panel and focus bar are flat colours, so white glyph alpha
-is recovered as (pixel - background) / (255 - background). The blobs are the
-vendor's own ink; the module draws them over its own flat panel/focus bar.
+vendor capture. The panel and focus bar are flat colours, so the glyph alpha is
+recovered from the distance to the background, and the real ink colour is kept
+(the focused row is dark navy on the bar, the other rows are white).
+
+Each row is stored twice: src_N (unfocused, white, native size) and src_N_f
+(focused, dark, 34/28 larger), bottom-aligned by the module.
 
     tools/extract-source-selection.py /path/p0/06-source-list-bronlijst.png OUTDIR
 """
@@ -11,9 +14,12 @@ import sys
 from pathlib import Path
 from PIL import Image
 
-PANEL = (45, 30, 190)
-BAR = (25, 148, 254)
+CAP_PANEL = (45, 30, 190)   # legacy p0/06 capture, R/B swapped
+CAP_BAR = (25, 148, 254)    # legacy p0/06 focus bar, R/B swapped
+WHITE = (255, 255, 255)
+FOCUS_INK = (126, 0, 10)    # true #7E000A: (10,0,126) in the swapped capture
 THRESHOLD = 16
+FOCUS_SCALE = 34.0 / 28.0
 
 
 def write_rgba(dst: Path, im: Image.Image) -> None:
@@ -28,8 +34,7 @@ def near(px, c, t=THRESHOLD):
 
 
 def ink(px):
-    """Text ink is anything that is neither the panel nor the focus bar."""
-    return not near(px, PANEL) and not near(px, BAR)
+    return not near(px, CAP_PANEL) and not near(px, CAP_BAR)
 
 
 def line_bbox(im, y0, y1, x0=40, x1=770):
@@ -43,26 +48,7 @@ def line_bbox(im, y0, y1, x0=40, x1=770):
     return None if right < 0 else (left, top, right, bottom)
 
 
-def extract(im, box, bg):
-    px = im.load()
-    left, top, right, bottom = box
-    out = Image.new("RGBA", (right - left + 1, bottom - top + 1), (255, 255, 255, 0))
-    op = out.load()
-    for y in range(top, bottom + 1):
-        for x in range(left, right + 1):
-            p = px[x, y]
-            a = 0.0
-            for c in range(3):
-                den = 255 - bg[c]
-                if den > 0:
-                    a = max(a, (p[c] - bg[c]) / den)
-            a = max(0.0, min(1.0, a))
-            op[x - left, y - top] = (255, 255, 255, int(round(a * 255)))
-    return out
-
-
 def rows(im, y0, y1):
-    """Group the text-ink rows into (top, bottom) bands."""
     px = im.load()
     bands = []
     on = False
@@ -78,6 +64,43 @@ def rows(im, y0, y1):
     return bands
 
 
+def mask_and_ink(im, box, bg):
+    """Alpha mask (L) and the strongest ink colour in the box."""
+    px = im.load()
+    left, top, right, bottom = box
+    w, h = right - left + 1, bottom - top + 1
+    out = Image.new("L", (w, h), 0)
+    op = out.load()
+    best = bg
+    bestd = 0.0
+    for y in range(top, bottom + 1):
+        for x in range(left, right + 1):
+            p = px[x, y]
+            d = sum((p[c] - bg[c]) ** 2 for c in range(3)) ** 0.5
+            if d > bestd:
+                bestd = d; best = p
+    if bestd == 0:
+        return out, bg
+    for y in range(top, bottom + 1):
+        for x in range(left, right + 1):
+            p = px[x, y]
+            d = sum((p[c] - bg[c]) ** 2 for c in range(3)) ** 0.5
+            op[x - left, y - top] = max(0, min(255, int(round(d / bestd * 255))))
+    return out, best
+
+
+def colored(mask, color):
+    im = Image.new("RGBA", mask.size, color + (0,))
+    im.putalpha(mask)
+    return im
+
+
+def scaled(mask, factor):
+    w = max(1, int(round(mask.width * factor)))
+    h = max(1, int(round(mask.height * factor)))
+    return mask.resize((w, h), Image.LANCZOS)
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         print(__doc__, file=sys.stderr)
@@ -86,11 +109,12 @@ def main() -> int:
     out = Path(sys.argv[2])
     out.mkdir(parents=True, exist_ok=True)
 
-    title_band = line_bbox(im, 35, 125)
-    if title_band:
-        blob = extract(im, title_band, PANEL)
+    title = line_bbox(im, 35, 125)
+    if title:
+        mask, _ = mask_and_ink(im, title, CAP_PANEL)
+        blob = colored(mask, WHITE)
         write_rgba(out / "src_title.rgba", blob)
-        print(f"src_title {blob.width}x{blob.height} at ({title_band[0]},{title_band[1]})")
+        print(f"src_title {blob.width}x{blob.height} at ({title[0]},{title[1]})")
 
     bands = rows(im, 130, 850)
     print(f"{len(bands)} row bands: {bands}")
@@ -98,10 +122,22 @@ def main() -> int:
         bb = line_bbox(im, t, b + 1)
         if not bb:
             continue
-        bg = BAR if t < 220 else PANEL
-        blob = extract(im, bb, bg)
-        write_rgba(out / f"src_{i}.rgba", blob)
-        print(f"src_{i} {blob.width}x{blob.height} at ({bb[0]},{bb[1]})")
+        bg = CAP_BAR if t < 220 else CAP_PANEL
+        mask, found = mask_and_ink(im, bb, bg)
+        # The capture has row 0 in the focused style; bring every row to the
+        # same two sizes so the module can switch focus without guessing.
+        if t < 220:
+            u = scaled(mask, 1 / FOCUS_SCALE)
+            f = mask
+            y_unfocused = bb[1] + (mask.height - u.height)
+        else:
+            u = mask
+            f = scaled(mask, FOCUS_SCALE)
+            y_unfocused = bb[1]
+        write_rgba(out / f"src_{i}.rgba", colored(u, WHITE))
+        write_rgba(out / f"src_{i}_f.rgba", colored(f, FOCUS_INK))
+        print(f"src_{i} {u.width}x{u.height} at ({bb[0]},{y_unfocused}); "
+              f"src_{i}_f {f.width}x{f.height}; ink was {found}")
     return 0
 
 

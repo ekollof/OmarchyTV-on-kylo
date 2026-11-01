@@ -70,7 +70,7 @@ static const char *DEFAULT_CARDS[MAX_CARDS] = {
 static const struct {
     int x, y, w, h;
 } SRC_TEXT[MAX_SOURCES] = {
-    { 89, 168, 81, 34 },
+    { 89, 174, 67, 28 },
     { 85, 251, 166, 28 },
     { 85, 326, 124, 28 },
     { 85, 401, 131, 28 },
@@ -114,8 +114,8 @@ enum { BAND_RAIL = 0, BAND_CARDS = 1 };
 #define OA_RAIL_HL_W 160
 #define OA_RAIL_HL_H 160
 /* Title + five glyphs + the configured card limit + the entire APNG +
- * the source title and nine source labels. */
-#define MAX_ICONS (1 + 5 + MAX_CARDS + OA_RAIL_HL_FRAMES + 1 + MAX_SOURCES)
+ * the source title and two focus variants for each of the nine source labels. */
+#define MAX_ICONS (1 + 5 + MAX_CARDS + OA_RAIL_HL_FRAMES + 1 + 2 * MAX_SOURCES)
 
 struct ctx {
     const oa_host_api *api;
@@ -401,40 +401,33 @@ static void paint_sources(struct ctx *c)
     if (!c || !d || d->info(&W, &H, NULL, NULL) != 0 || W <= 0 || H <= 0)
         return;
     /* DialogSourceSelection.svg 185 panel (0,0,780,1080) and the capture's
-     * focused row at (18,152) with a 75 px pitch. */
-    if (d->clear(0, 0, 0)) return;
-    d->fill(0, 0, SRC_PANEL_W, H, 45, 30, 190);
+     * focused row at (18,152) with a 75 px pitch. Resource colours: the panel
+     * is #BE1E2D (main_rectangle) and the row highlight #FE9419 (listboxrowFA);
+     * p0/06 shows those with R/B swapped. The area outside the panel is
+     * transparent so the video underneath stays visible, as on the set. */
+    int cleared = c->alpha ? c->alpha->clear_rgba(0, 0, 0, 0) : d->clear(0, 0, 0);
+    if (cleared) return;
+    d->fill(0, 0, SRC_PANEL_W, H, 190, 30, 45);
     d->fill(SRC_BAR_X, SRC_BAR_Y + c->src * SRC_ROW_PITCH, SRC_BAR_W, SRC_BAR_H,
-            25, 148, 254);
+            254, 148, 25);
     const struct icon *t = find_icon(c, "src_title");
     if (t)
         d->blit(62, 64, t->w, t->h, t->rgba);
     for (int i = 0; i < MAX_SOURCES; i++) {
-        char name[16];
+        char name[16], focused_name[18];
         snprintf(name, sizeof name, "src_%d", i);
-        const struct icon *g = find_icon(c, name);
+        snprintf(focused_name, sizeof focused_name, "src_%d_f", i);
+        const struct icon *u = find_icon(c, name);
+        const struct icon *f = find_icon(c, focused_name);
+        const struct icon *g = i == c->src ? f : u;
         if (!g)
             continue;
         int x = SRC_TEXT[i].x, y = SRC_TEXT[i].y;
-        int w = SRC_TEXT[i].w, h = SRC_TEXT[i].h;
-        /* The vendor capture has row 0 in the focused (larger) style and rows
-         * 1..8 unfocused: 34 px vs 28 px ink. Scale about the text bottom when
-         * the focus moves; the glyph shapes are the vendor's own. */
-        if (i == 0) {
-            if (c->src != 0) {
-                w = w * 28 / 34;
-                h = 28;
-                y = y + SRC_TEXT[0].h - h;
-            }
-        } else if (i == c->src) {
-            w = w * 34 / SRC_TEXT[i].h;
-            h = 34;
-            y = y + SRC_TEXT[i].h - h;
-        }
-        if (w == g->w && h == g->h)
-            d->blit(x, y, g->w, g->h, g->rgba);
-        else
-            d->blit_scaled(x, y, w, h, g->w, g->h, g->rgba);
+        /* The focused capture is 34/28 larger and the vendor keeps the text
+         * bottom aligned, so the extra height grows upward. */
+        if (i == c->src && u && f)
+            y = SRC_TEXT[i].y + u->h - f->h;
+        d->blit(x, y, g->w, g->h, g->rgba);
     }
     c->scene_painted = 1;
     if (request_present(c) != 0) {
@@ -1064,6 +1057,16 @@ static int m_start(void *v)
         c->band = BAND_RAIL;
         c->rail = atoi(c->api->config_get(c->api->priv, "ui.focus", "2"));
         c->card = 0;
+        c->screen = SCREEN_PORTAL;
+        c->src = 0;
+    }
+    /* Lab/screen-test entry point: ui.screen=sources starts on the vendor
+     * source-selection panel without needing an input device. */
+    if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "sources")) {
+        c->screen = SCREEN_SOURCES;
+        c->src = atoi(c->api->config_get(c->api->priv, "ui.src", "0"));
+        if (c->src < 0 || c->src >= MAX_SOURCES)
+            c->src = 0;
     }
     if (c->rail < 0 || c->rail > 4)
         c->rail = 2;
@@ -1124,6 +1127,8 @@ static int m_start(void *v)
     for (int i = 0; i < MAX_SOURCES; i++) {
         char name[16];
         snprintf(name, sizeof name, "src_%d", i);
+        load_blob(c, name);
+        snprintf(name, sizeof name, "src_%d_f", i);
         load_blob(c, name);
     }
 

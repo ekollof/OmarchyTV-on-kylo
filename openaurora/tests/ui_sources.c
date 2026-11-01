@@ -44,7 +44,7 @@ static int has_panel(const oa_nav_trace *trace)
         int x, y, w, h, r, g, b;
         if (trace->fill_at(i, &x, &y, &w, &h, &r, &g, &b) == 0 &&
             x == 0 && y == 0 && w == 780 && h == 1080 &&
-            r == 45 && g == 30 && b == 190)
+            r == 190 && g == 30 && b == 45)
             return 1;
     }
     return 0;
@@ -57,7 +57,7 @@ static int has_bar(const oa_nav_trace *trace, int y)
         int x, yy, w, h, r, g, b;
         if (trace->fill_at(i, &x, &yy, &w, &h, &r, &g, &b) == 0 &&
             x == 18 && yy == y && w == 748 && h == 66 &&
-            r == 25 && g == 148 && b == 254)
+            r == 254 && g == 148 && b == 25)
             return 1;
     }
     return 0;
