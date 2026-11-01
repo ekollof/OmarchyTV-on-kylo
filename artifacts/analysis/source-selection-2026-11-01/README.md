@@ -67,6 +67,11 @@ After extracting the UI engine, the same screen was re-run on fb1 with
 The engine holds display/async/alpha and the readiness receipt; the vendor skin
 holds only ui.engine. The on-screen result is unchanged.
 
+A third run after the engine-owned key/fps dispatch and the ui_vendor rename
+(PID 24069, mod_ui_vendor md5 283b5201..., mod_ui_engine 69470d50...) produced
+the same sha256 `8f34f218...`; fb1 restored (16588800 bytes, offset 0,1080),
+staging removed, no helper left.
+
 ## Not verified
 
 - The localised source names come from this Dutch capture; other languages and

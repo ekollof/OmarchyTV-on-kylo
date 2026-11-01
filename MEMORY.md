@@ -882,9 +882,11 @@ plus ui.skin select the active skin. mod_ui_fb was renamed to ui_vendor (dir,
 file, descriptor, tests, boot config, scene-module-client). ui_omarchy is a
 skeleton skin (dark shell, accent rail, placeholder tiles, its own key handler)
 with module ui_omarchy v0.1. tests/ui_skin switches vendor->omarchy->vendor by
-unload/load with no rebuild; full make check 233 ok. Still open: control-plane
-fallback loading when the selected skin fails and the real OmarchyTV screens;
-the vendor skin remains the fallback.
+unload/load with no rebuild; full make check 233 ok. The renamed ui_vendor also
+ran on fb1 (PID24069, md5 283b5201...; engine 69470d50...) and produced the same
+source-screen sha256 8f34f218...; fb1 restored, staging removed. Still open:
+control-plane fallback loading when the selected skin fails and the real
+OmarchyTV screens; the vendor skin remains the fallback.
 
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
