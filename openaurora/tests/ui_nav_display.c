@@ -85,9 +85,19 @@ static int d_present(void)
     g_presents++;
     return 0;
 }
+static int g_fs_type;
+static float g_fs_p;
+static int g_fs_calls;
+static int d_set_scene_transform(int type, float progress)
+{
+    g_fs_type = type;
+    g_fs_p = progress;
+    g_fs_calls++;
+    return 0;
+}
 static const oa_display_iface g_disp = {
     .clear = d_clear, .fill = d_fill, .blit = d_blit, .blit_scaled = d_blit_scaled,
-    .present = d_present, .info = d_info,
+    .present = d_present, .info = d_info, .set_scene_transform = d_set_scene_transform,
 };
 static int t_accent(int *x, int *y, int *w, int *h)
 {
@@ -159,10 +169,18 @@ static int t_scaled_first(int i, int *r, int *g, int *b, int *a)
     if (a) *a = g_scaled[i].a;
     return 0;
 }
+static int t_transform(int *type, float *progress, int *calls)
+{
+    if (type) *type = g_fs_type;
+    if (progress) *progress = g_fs_p;
+    if (calls) *calls = g_fs_calls;
+    return 0;
+}
 static const oa_nav_trace g_trace = {
     .accent = t_accent, .counts = t_counts, .fill_count = t_fill_count, .fill_at = t_fill_at,
     .blit_count = t_blit_count, .blit_at = t_blit_at, .blit_first = t_blit_first,
     .scaled_count = t_scaled_count, .scaled_at = t_scaled_at, .scaled_first = t_scaled_first,
+    .transform = t_transform,
 };
 
 static const oa_host_api *g_api;
@@ -178,7 +196,7 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     (void)v;
-    if (g_api->publish(g_api->priv, OA_SVC_DISPLAY, 1, &g_disp) != 0)
+    if (g_api->publish(g_api->priv, OA_SVC_DISPLAY, 2, &g_disp) != 0)
         return -1;
     if (g_api->publish(g_api->priv, OA_SVC_NAV_TRACE, 1, &g_trace) != 0)
         return -1;

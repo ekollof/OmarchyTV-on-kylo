@@ -89,7 +89,7 @@ static const char *config(void *priv, const char *key, const char *def)
 static int publish(void *priv, const char *name, uint32_t version, const void *iface)
 {
     (void)priv;
-    assert(!strcmp(name, OA_SVC_DISPLAY) && version == 1);
+    assert(!strcmp(name, OA_SVC_DISPLAY) && version == 2);
     display = iface;
     return 0;
 }
@@ -127,14 +127,16 @@ int main(void)
 {
     void *ctx = start(2, 2, NULL); /* default rotation off, second frame current */
     assert(display->clear(0x12, 0x34, 0x56) == 0);
-    assert(pixels[0] == 0 && pixels[64] == 0x56 && pixels[66] == 0x12);
     assert(display->present() == 0 && commits == 1 && last_yoffset == 2);
+    /* the offscreen scene is copied into the committed frame at present */
+    assert(pixels[64] == 0x56 && pixels[66] == 0x12);
     assert(display->present() == 0 && commits == 2 && last_yoffset == 2);
     assert(oa_module_entry()->suspend(ctx) == 0);
     var.yoffset = 0;
     assert(oa_module_entry()->resume(ctx) == 0);
-    assert(display->clear(1, 2, 3) == 0 && pixels[0] == 3);
+    assert(display->clear(1, 2, 3) == 0);
     assert(display->present() == 0 && last_yoffset == 0);
+    assert(pixels[0] == 3 && pixels[2] == 1);
     finish(ctx);
     puts("  ok   default current-frame presentation commits every time, including after resume");
 
@@ -154,5 +156,34 @@ int main(void)
     assert(display->present() == 0 && commits == 3 && last_yoffset == 0);
     finish(ctx);
     puts("  ok   sync/commit failures propagate and retry the same frame before rotation");
+
+    /* Full-screen transition: an 8x2 scene with red = column*16 is sampled through the recovered
+     * clip-space quad (type 2 x-slide, type 7 scale, type 1 keystone). */
+    ctx = start(1, 0, NULL);
+    for (int x = 0; x < 8; x++)
+        assert(display->fill(x, 0, 1, 2, x * 16, 0, 0) == 0);
+
+    assert(display->set_scene_transform(OA_FS_SLIDE_NEG, 0.0f) == 0);
+    assert(display->present() == 0);
+    assert(pixels[2] == 16);            /* X0 samples scene column 1 */
+    assert(pixels[7 * 4 + 2] == 0);     /* X7 maps past the right edge -> black */
+
+    assert(display->set_scene_transform(OA_FS_SCALE, 0.0f) == 0);
+    assert(display->present() == 0);
+    assert(pixels[2] == 0);             /* X0 outside the 2/3 quad */
+    assert(pixels[4 * 4 + 2] == 64);    /* X4 samples column 4 */
+    assert(pixels[7 * 4 + 2] == 0);
+
+    assert(display->set_scene_transform(OA_FS_SCALE_AXES, 0.0f) == 0);
+    assert(display->present() == 0);
+    assert(pixels[2] == 0);             /* left edge unchanged, samples column 0 */
+    assert(pixels[4 * 4 + 2] == 96);    /* keystone: X4 samples column 6 */
+    assert(pixels[7 * 4 + 2] == 0);
+
+    assert(display->set_scene_transform(0, 0.0f) == 0);
+    assert(display->present() == 0);
+    assert(pixels[4 * 4 + 2] == 64);    /* cleared transform: direct copy of column 4 */
+    finish(ctx);
+    puts("  ok   scene surface maps the recovered quad (x-slide, scale, keystone, clear)");
     return 0;
 }

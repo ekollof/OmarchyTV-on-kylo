@@ -102,6 +102,10 @@ typedef struct {
     int (*blit_scaled)(int x, int y, int w, int h, int sw, int sh, const unsigned char *rgba);
     int (*present)(void);  /* commit rendered frame; -1 on sync/commit failure */
     int (*info)(int *w, int *h, int *bpp, int *frames);
+    /* v2: full-screen transition applied at present. The scene is rendered offscreen and mapped
+     * through the recovered four-vertex clip-space quad (type 1 keystone, 2/3 x-slide, 4/5
+     * y-slide, 7/8 scale). type 0 or progress outside 0..1 clears the transform. */
+    int (*set_scene_transform)(int type, float progress);
 } oa_display_iface;
 
 /* audio.curve — immutable AQ-derived DSP table, published by mod_audio_curve.

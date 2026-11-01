@@ -106,6 +106,11 @@ $(BUILD)/modules/mod_audio.so: modules/audio/audio.c common/audio_owner.c common
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) \
 	  $(if $(filter $(VENDOR_MODULES),audio),$(VENDOR_LDFLAGS),)
 
+$(BUILD)/modules/mod_display.so: modules/display/display.c common/ui_anim.c include/openaurora/ui_anim.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
+	  $(VENDOR_LDFLAGS) -lm
+
 $(BUILD)/modules/mod_%.so: modules/%/*.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $< $(LDFLAGS) \
@@ -391,7 +396,7 @@ check-ui-nav: check-ui-anim-review $(BUILD)/tests/ui_nav $(BUILD)/tests/ui_nav_d
 	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so $(BUILD)/tests/ui-nav/modules/
 	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-nav/modules/mod_nav_display.so
 	@sqlite3 $(CURDIR)/$(BUILD)/tests/ui-nav/settings.db 'DROP TABLE IF EXISTS Settings; CREATE TABLE Settings (m_current_source INTEGER); INSERT INTO Settings (m_current_source) VALUES (4);'
-	@printf 'ir.device =\nui.ok_file =\nui.paint = 1\nui.focus = 2\nui.fps = 0\nsettings.db = $(CURDIR)/$(BUILD)/tests/ui-nav/settings.db\nsettings.readonly = 1\n' > $(BUILD)/tests/ui-nav/ui.cfg
+	@printf 'ir.device =\nui.ok_file =\nui.paint = 1\nui.focus = 2\nui.fps = 0\nui.fs_type = 2\nsettings.db = $(CURDIR)/$(BUILD)/tests/ui-nav/settings.db\nsettings.readonly = 1\n' > $(BUILD)/tests/ui-nav/ui.cfg
 	@$(BUILD)/tests/ui_nav $(BUILD)/tests/ui-nav/modules $(BUILD)/tests/ui-nav/ui.cfg
 
 $(BUILD)/tests/control_reply: tests/control_reply.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
@@ -406,9 +411,9 @@ check-control: $(BUILD)/tests/control_reply $(BUILD)/tests/control_transport
 	@$(BUILD)/tests/control_reply
 	@$(BUILD)/tests/control_transport
 
-$(BUILD)/tests/display_present: tests/display_present.c modules/display/display.c include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/tests/display_present: tests/display_present.c modules/display/display.c common/ui_anim.c include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) \
+	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm \
 	  $(foreach call,open close system mmap munmap msync ioctl,-Wl,--wrap=$(call))
 
 $(BUILD)/fbregion: tools/mcu/fbregion.c

@@ -473,6 +473,39 @@ unchanged. First-pixel logging cannot identify the frame index in the vendor
 frames (transparent at 0,0), so the 11-frame order/wrap rests on the offline
 test; visible-panel appearance is still unverified.
 
+## Scene surface, mesh warp and the dialog mode table, 2026-11-01
+
+`mod_display` now publishes `display` v2 with an appended `set_scene_transform(type,
+progress)`. All draw calls render into an offscreen RGBA scene; `present()` copies it
+to the visible frame, or maps it through the recovered four-vertex clip-space quad:
+
+```
+BL(-1,-1) BR(1,-1) TR(1,1) TL(-1,1), UV (0,0) (1,0) (1,1) (0,1)
+type 1: right vertices scaled (keystone)  2/3: x += ±(1-p)/6  4/5: y += ±(1-p)/6
+type 7/8: x,y scaled
+```
+
+Because the quad keeps vertical sides, the inverse map is separable:
+`u = (x-xl)/(xr-xl)`, `v = (y - A(u)) / B(u)` with the edge interpolation; the warp
+samples the scene and writes the framebuffer in its measured BGRA order. The fake-fb
+tests verify x-slide, uniform scale, the keystone and transform clearing.
+
+`SVGDialog::create` (0x10c590e/0x10c59ac → table 0x153b7ec) copies the constant array
+`57 58 59 60 61 62 63 64` and tries the modes in order: for each it builds the
+standard animation-widget name and checks the dialog description for that rectangle,
+starting the first one that exists. So the recovered selection rule is "first of
+types 1..8 whose animation widget is present", not a fixed per-dialog constant.
+
+`mod_ui_fb` is the consumer: on dialog progress it calls
+`set_scene_transform(ui.fs_type, eased)` (the callback already receives
+`min(1,1+(p-1)^3)`), and clears the transform on completion, suspend and stop. Since
+our stand-in dialog has none of the vendor's per-mode widgets, `ui.fs_type` is still an
+explicit selection (default 0); the vendor order is known but the widget binding is
+not yet built.
+
+Evidence: host `make check` 200 ok (including the display warp and the ui_nav transform
+assertions), ASan/UBSan 200 ok. ARM/qemu and on-panel verification pending.
+
 ## Live TV probe run, 2026-11-01
 
 The slide was run on the set without touching the vendor UI or the framebuffer:

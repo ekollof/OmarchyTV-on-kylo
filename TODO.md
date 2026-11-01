@@ -390,14 +390,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       160x160 window, playhead reset on focus change. tests/ui_rail_hl asserts order/wrap/timer/window;
       host 198 ok, ASan 198 ok; live probe 166 blits at 29.98 ms mean, x=6 y=461. Visible-panel
       appearance still unverified. UI-ANIMATIONS.
-- [ ] Finish the remaining animation callers: apply the recovered full-screen transform in the
-      renderer composite. `setFullScreenAnimationProgress` is mapped: SVGDialog::startAnimation maps
-      dialog modes 57..64 to HAL types 1..8 for a 1000 ms controller, onAnimationProgress feeds
-      min(1,1+(p-1)^3), destroy forces 1.0. The HAL transforms one 4-vertex clip-space quad:
-      type 1 scales the right vertices (keystone), 2/3 shift x, 4/5 shift y (corrected from the
-      decompiler's "second vertex group"), 7/8 scale. `oa_fs_apply` and the scene-level
-      `oa_fs_scene_transform` reproduce the rules with vectors; the display backend still needs the
-      scene surface + mesh warp, and the dialog's per-resource mode is unrecovered.
+- [x] Full-screen transform consumer: display v2 publishes `set_scene_transform`; all draws render
+      to an offscreen RGBA scene and present() maps it through the recovered four-vertex clip-space
+      quad (x-slide, y-slide, scale, type-1 keystone). mod_ui_fb pushes `ui.fs_type` with the eased
+      dialog progress and clears on completion/suspend/stop. Fake-fb warp tests and ui_nav transform
+      assertions pass; host 200 ok and ASan/UBSan 200 ok. Still open: binding the vendor per-mode
+      animation widgets (the mode table is 57..64, first present wins), ARM/qemu and panel checks.
 - [ ] Audit pixel-format boundaries as UI work expands: raw 32bpp OSD is BGRA;
       OAI1/blit inputs are RGBA; saved screenshots are RGB. Preserve provenance
       of pre-fix red/blue-swapped captures and verify other API formats explicitly.

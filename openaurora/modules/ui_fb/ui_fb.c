@@ -82,6 +82,7 @@ enum { BAND_RAIL = 0, BAND_CARDS = 1 };
 struct ctx {
     const oa_host_api *api;
     const oa_display_iface *disp;
+    const oa_display_iface *disp2;   /* v2 lookup: set_scene_transform */
     char dir[128];
     char cards[MAX_CARDS][48];
     int nc;
@@ -93,6 +94,7 @@ struct ctx {
     const oa_settings_iface *settings;
     const oa_ui_anim_iface *anim;
     const oa_ui_anim_iface *anim2;   /* v2 lookup: adds the text-slide helpers */
+    int fs_type;                     /* full-screen transition type, ui.fs_type (0 = off) */
     const oa_ui_clock_iface *clock;
     oa_slide slide;                  /* title text slide, vendor AnimationHelper rules */
     int slide_box;                   /* usable width in px; 0 disables the effect */
@@ -635,6 +637,7 @@ static void rebind_now(struct ctx *c)
         c->disp = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 1);
         if (!c->disp) return;              /* nothing can be drawn or timed without a display */
     }
+    c->disp2 = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 2);
     if (!c->anim) {
         c->anim = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 1);
         if (c->anim) c->anim->bind(on_anim, c);
@@ -672,11 +675,18 @@ static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int
 {
     struct ctx *c = ud;
     (void)id;
-    (void)eased;
+    (void)rect;
     if (!c) return;
-    if (kind == OA_ANIM_DIALOG && done) {
-        c->screen = SCREEN_OPEN;
-        if (c->disp) paint(c);
+    if (kind == OA_ANIM_DIALOG) {
+        /* Vendor SVGDialog::onAnimationProgress pushes min(1,1+(p-1)^3) to the full-screen
+         * transform; the callback already receives that eased value. The display v2 scene warp
+         * applies it; on completion the surface is back at identity. */
+        if (c->disp2 && c->disp2->set_scene_transform && c->fs_type > 0)
+            c->disp2->set_scene_transform(done ? 0 : c->fs_type, done ? 0.0f : eased);
+        if (done) {
+            c->screen = SCREEN_OPEN;
+            if (c->disp) paint(c);
+        }
         return;
     }
     if (kind == OA_ANIM_LIST && rect && c->disp) {
@@ -804,6 +814,11 @@ static int m_start(void *v)
     /* v2 adds the recovered text-slide helpers; v1-only hosts simply get no slide. */
     c->anim2 = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 2);
     c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
+    /* v2 display adds the offscreen scene + full-screen transition at present. */
+    c->disp2 = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 2);
+    c->fs_type = atoi(c->api->config_get(c->api->priv, "ui.fs_type", "0"));
+    if (c->fs_type < 0 || c->fs_type > 8)
+        c->fs_type = 0;
     c->slide_box = atoi(c->api->config_get(c->api->priv, "ui.slide_box", "0"));
     /* Vendor UIAnimationController starts disabled and its bootstrap caller is not recovered yet.
      * This default-off switch is an explicit bootstrap/test lever, not a chosen native policy. */
@@ -907,6 +922,8 @@ static int m_start(void *v)
 static void m_stop(void *v)
 {
     struct ctx *c = v;
+    if (c->disp2 && c->disp2->set_scene_transform)
+        c->disp2->set_scene_transform(0, 0.0f);
     if (c->mod_key) {
         c->api->unsubscribe(c->api->priv, c->mod_key);
         c->mod_key = 0;
@@ -984,6 +1001,8 @@ static int m_suspend(void *v)
 {
     struct ctx *c = v;
     c->suspended = 1;
+    if (c->disp2 && c->disp2->set_scene_transform)
+        c->disp2->set_scene_transform(0, 0.0f);
     slide_stop_sampler(c);
     if (c->slide_repeat) {
         c->api->timer_del(c->api->priv, c->slide_repeat);
@@ -1016,6 +1035,7 @@ static int m_resume(void *v)
     c->disp = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 1);
     if (!c->disp)
         return -1;
+    c->disp2 = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 2);
     c->sub_key = c->api->subscribe(c->api->priv, OA_TOPIC_KEY, on_key, c);
     if (!c->sub_key) {
         c->api->release(c->api->priv, OA_SVC_DISPLAY);

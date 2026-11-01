@@ -17,5 +17,7 @@ typedef struct {
     int (*scaled_count)(void);
     int (*scaled_at)(int i, int *x, int *y, int *w, int *h, int *sw, int *sh);
     int (*scaled_first)(int i, int *r, int *g, int *b, int *a);
+    /* Last full-screen scene transform (display v2): type, progress, call count. */
+    int (*transform)(int *type, float *progress, int *calls);
 } oa_nav_trace;
 #endif

@@ -17,7 +17,7 @@ static int scale(int x, int y, int w, int h, int sw, int sh, const unsigned char
 static int present(void) { return fail_present ? -1 : 0; }
 static int info(int *w, int *h, int *bpp, int *frames)
 { if (w) *w = 1920; if (h) *h = 1080; if (bpp) *bpp = 32; if (frames) *frames = 2; return 0; }
-static const oa_display_iface display = { rgb, fill, blit, scale, present, info };
+static const oa_display_iface display = { rgb, fill, blit, scale, present, info, NULL };
 static void stall(void *unused)
 {
     (void)unused;

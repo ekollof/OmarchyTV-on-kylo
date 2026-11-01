@@ -156,8 +156,17 @@ types 2/3 add to the x field and types 4/5 to the y field at 0xb329b6 (the
 pointer+4 is bytes with a 0x18 stride), not a second vertex group. Type 1 scales
 only the two right vertices, a keystone. Encoded as `oa_fs_apply` and the
 scene-level `oa_fs_scene_transform` (clip-space affine, keystone flagged) with
-cross-check vectors; the display backend still needs the scene surface + mesh
-warp. Still open: full-screen consumer, launcher dialog mode, panel look.
+cross-check vectors. The display now publishes v2 with
+`set_scene_transform(type, progress)`: all draws go to an offscreen RGBA scene and
+present() maps it through the recovered quad (separable inverse map, BGRA output);
+fake-fb tests cover x-slide, scale, keystone and clearing. mod_ui_fb is the
+consumer: on dialog progress it pushes `ui.fs_type` with the eased value and clears
+on completion/suspend/stop. `SVGDialog::create` copies the static mode table
+57..64 (0x153b7ec) and starts the first mode whose standard animation widget
+exists, so the vendor rule is "first of types 1..8 present"; our stand-in dialog
+has no such widgets, so ui.fs_type remains an explicit selection (default 0).
+Evidence: host 200 ok, ASan/UBSan 200 ok. Still open: widget binding, ARM/qemu and
+panel verification of the scene warp.
 
 RAIL-TIMING-2026-11-01: MainLauncherMenuDialog moves rail items synchronously
 (setMenuItemPositions from scrollItems/updateButtonPositions/init/onExit/

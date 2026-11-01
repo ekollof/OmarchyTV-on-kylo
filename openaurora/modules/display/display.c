@@ -31,6 +31,7 @@
 #include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
+#include "openaurora/ui_anim.h"
 
 #define OSD_REG_RD 0x8020c86cu /* IOR(0xc8,108,32) */
 #define OSD_REG_WR 0x4020c86bu /* IOW(0xc8,107,32) */
@@ -49,6 +50,13 @@ struct ctx {
     unsigned back;    /* frame we render into; 1 - displayed */
     int pan;          /* rotate frames after commit; off = commit the current frame */
     int mirror;       /* copy the painted frame into the other frames (fights DFB's flip) */
+
+    /* Offscreen RGBA scene: every draw renders here, present() copies it to the visible frame or
+     * maps it through the recovered full-screen transition quad. */
+    uint8_t *scene;
+    int scene_w, scene_h;
+    int fs_type;      /* 0 = no transition */
+    float fs_p;
 };
 
 static struct ctx *g_ctx;
@@ -72,17 +80,22 @@ static void put_px(struct ctx *c, uint8_t *row, unsigned x, int r, int g, int b)
 
 static int fill_rect(struct ctx *c, int x, int y, int w, int h, int r, int g, int b)
 {
-    if (!c->map)
+    if (!c->scene)
         return -1;
-    unsigned fx = c->var.xres, fy = c->var.yres;
+    int fx = c->scene_w, fy = c->scene_h;
     int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
-    int x1 = (x + w) > (int)fx ? (int)fx : x + w;
-    int y1 = (y + h) > (int)fy ? (int)fy : y + h;
+    int x1 = (x + w) > fx ? fx : x + w;
+    int y1 = (y + h) > fy ? fy : y + h;
 
     for (int yy = y0; yy < y1; yy++) {
-        uint8_t *row = c->map + (size_t)(c->back * fy + (unsigned)yy) * c->fix.line_length;
-        for (int xx = x0; xx < x1; xx++)
-            put_px(c, row, (unsigned)xx, r, g, b);
+        uint8_t *row = c->scene + (size_t)yy * (size_t)fx * 4;
+        for (int xx = x0; xx < x1; xx++) {
+            uint8_t *p = row + (size_t)xx * 4;
+            p[0] = (uint8_t)r;
+            p[1] = (uint8_t)g;
+            p[2] = (uint8_t)b;
+            p[3] = 0xff;
+        }
     }
     return 0;
 }
@@ -102,37 +115,31 @@ static int fill(int x, int y, int w, int h, int r, int g, int b)
 static int blit(int x, int y, int w, int h, const unsigned char *rgba)
 {
     struct ctx *c = g_ctx;
-    if (!c || !c->map || !rgba)
+    if (!c || !c->scene || !rgba)
         return -1;
 
-    unsigned fy = c->var.yres;
+    int W = c->scene_w, H = c->scene_h;
     for (int sy = 0; sy < h; sy++) {
         int dy = y + sy;
-        if (dy < 0 || dy >= (int)fy)
+        if (dy < 0 || dy >= H)
             continue;
-        uint8_t *row = c->map + (size_t)(c->back * fy + (unsigned)dy) * c->fix.line_length;
+        uint8_t *row = c->scene + (size_t)dy * (size_t)W * 4;
         for (int sx = 0; sx < w; sx++) {
             int dx = x + sx;
-            if (dx < 0 || dx >= (int)c->var.xres)
+            if (dx < 0 || dx >= W)
                 continue;
             const unsigned char *p = rgba + ((size_t)sy * (size_t)w + (size_t)sx) * 4;
             unsigned a = p[3];
+            uint8_t *d = row + (size_t)dx * 4;
             if (a == 0)
                 continue;
-            unsigned sr = p[0], sg = p[1], sb = p[2]; /* source blobs are RGBA */
             if (a == 255) {
-                put_px(c, row, (unsigned)dx, (int)sr, (int)sg, (int)sb);
+                d[0] = p[0]; d[1] = p[1]; d[2] = p[2]; d[3] = 0xff;
             } else {
-                /* simple blend against what is already there (32bpp only) */
-                if (c->var.bits_per_pixel == 32) {
-                    uint8_t *d = row + (size_t)dx * 4;
-                    d[0] = (uint8_t)((sb * a + d[0] * (255 - a)) / 255);
-                    d[1] = (uint8_t)((sg * a + d[1] * (255 - a)) / 255);
-                    d[2] = (uint8_t)((sr * a + d[2] * (255 - a)) / 255);
-                    d[3] = 0xff;
-                } else {
-                    put_px(c, row, (unsigned)dx, (int)sr, (int)sg, (int)sb);
-                }
+                d[0] = (uint8_t)((p[0] * a + d[0] * (255 - a)) / 255);
+                d[1] = (uint8_t)((p[1] * a + d[1] * (255 - a)) / 255);
+                d[2] = (uint8_t)((p[2] * a + d[2] * (255 - a)) / 255);
+                d[3] = 0xff;
             }
         }
     }
@@ -142,45 +149,136 @@ static int blit(int x, int y, int w, int h, const unsigned char *rgba)
 static int blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigned char *rgba)
 {
     struct ctx *c = g_ctx;
-    if (!c || !c->map || !rgba || sw <= 0 || sh <= 0 || w <= 0 || h <= 0)
+    if (!c || !c->scene || !rgba || sw <= 0 || sh <= 0 || w <= 0 || h <= 0)
         return -1;
 
-    unsigned fy = c->var.yres;
+    int W = c->scene_w, H = c->scene_h;
     for (int dy = 0; dy < h; dy++) {
         int py = y + dy;
-        if (py < 0 || py >= (int)fy)
+        if (py < 0 || py >= H)
             continue;
         int sy = (int)((int64_t)dy * sh / h);
-        uint8_t *row = c->map + (size_t)(c->back * fy + (unsigned)py) * c->fix.line_length;
+        uint8_t *row = c->scene + (size_t)py * (size_t)W * 4;
         for (int dx = 0; dx < w; dx++) {
             int px = x + dx;
-            if (px < 0 || px >= (int)c->var.xres)
+            if (px < 0 || px >= W)
                 continue;
             int sx = (int)((int64_t)dx * sw / w);
             const unsigned char *p = rgba + ((size_t)sy * (size_t)sw + (size_t)sx) * 4;
             unsigned a = p[3];
+            uint8_t *d = row + (size_t)px * 4;
             if (a == 0)
                 continue;
             if (a == 255) {
-                put_px(c, row, (unsigned)px, p[0], p[1], p[2]);
-            } else if (c->var.bits_per_pixel == 32) {
-                uint8_t *d = row + (size_t)px * 4;
-                d[0] = (uint8_t)((p[2] * a + d[0] * (255 - a)) / 255);
-                d[1] = (uint8_t)((p[1] * a + d[1] * (255 - a)) / 255);
-                d[2] = (uint8_t)((p[0] * a + d[2] * (255 - a)) / 255);
-                d[3] = 0xff;
+                d[0] = p[0]; d[1] = p[1]; d[2] = p[2]; d[3] = 0xff;
             } else {
-                put_px(c, row, (unsigned)px, p[0], p[1], p[2]);
+                d[0] = (uint8_t)((p[0] * a + d[0] * (255 - a)) / 255);
+                d[1] = (uint8_t)((p[1] * a + d[1] * (255 - a)) / 255);
+                d[2] = (uint8_t)((p[2] * a + d[2] * (255 - a)) / 255);
+                d[3] = 0xff;
             }
         }
     }
     return 0;
 }
 
+/* ------------------------------------------------------- scene presentation */
+
+static void scene_to_fb(struct ctx *c)
+{
+    for (unsigned y = 0; y < c->var.yres; y++) {
+        uint8_t *row = c->map + (size_t)(c->back * c->var.yres + y) * c->fix.line_length;
+        const uint8_t *srow = c->scene + (size_t)y * (size_t)c->scene_w * 4;
+        for (unsigned x = 0; x < c->var.xres; x++) {
+            const uint8_t *p = srow + (size_t)x * 4;
+            put_px(c, row, x, p[0], p[1], p[2]);
+        }
+    }
+}
+
+/* Map the offscreen scene through the recovered four-vertex clip-space quad:
+ *   BL(-1,-1) BR(1,-1) TR(1,1) TL(-1,1), UV (0,0) (1,0) (1,1) (0,1)
+ * Type 1 scales only the two right vertices (keystone); types 2/3 translate x,
+ * 4/5 y, 7/8 scale uniformly. With vertical sides the inverse map is separable:
+ *   u = (x - xl) / (xr - xl)
+ *   y = (1-u)*yl(v) + u*yr(v)  ->  v = (y - A(u)) / B(u)
+ */
+static void warp_scene(struct ctx *c)
+{
+    const float W = (float)c->scene_w, H = (float)c->scene_h;
+    oa_fs_scene sc;
+    float xl, xr, ybl, ytl, ybr, ytr;
+
+    oa_fs_scene_transform(c->fs_type, c->fs_p, &sc);
+    if (c->fs_type == OA_FS_SCALE_AXES) {
+        xl = -1.0f;
+        xr = sc.sx;
+        ybl = -1.0f;
+        ytl = 1.0f;
+        ybr = -sc.sy;
+        ytr = sc.sy;
+    } else {
+        xl = sc.dx - sc.sx;
+        xr = sc.dx + sc.sx;
+        ybl = sc.dy - sc.sy;
+        ytl = sc.dy + sc.sy;
+        ybr = ybl;
+        ytr = ytl;
+    }
+
+    for (unsigned Y = 0; Y < c->var.yres; Y++) {
+        float yc = 1.0f - 2.0f * ((float)Y + 0.5f) / H;
+        uint8_t *row = c->map + (size_t)(c->back * c->var.yres + Y) * c->fix.line_length;
+        for (unsigned X = 0; X < c->var.xres; X++) {
+            float xc = 2.0f * ((float)X + 0.5f) / W - 1.0f;
+            float u = (xc - xl) / (xr - xl);
+            float v = -1.0f;
+            if (u >= 0.0f && u <= 1.0f) {
+                float A = (1.0f - u) * ybl + u * ybr;
+                float B = (1.0f - u) * (ytl - ybl) + u * (ytr - ybr);
+                if (B != 0.0f)
+                    v = (yc - A) / B;
+            }
+            if (u < 0.0f || u > 1.0f || v < 0.0f || v > 1.0f) {
+                put_px(c, row, X, 0, 0, 0);
+                continue;
+            }
+            int sx = (int)(u * W);
+            int sy = (int)((1.0f - v) * H);
+            if (sx >= c->scene_w) sx = c->scene_w - 1;
+            if (sy >= c->scene_h) sy = c->scene_h - 1;
+            const uint8_t *p = c->scene + ((size_t)sy * (size_t)c->scene_w + (size_t)sx) * 4;
+            put_px(c, row, X, p[0], p[1], p[2]);
+        }
+    }
+}
+
+static int set_scene_transform(int type, float progress)
+{
+    struct ctx *c = g_ctx;
+    if (!c)
+        return -1;
+    if (type < 0 || type > 8)
+        return -1;
+    if (type == 0 || progress < 0.0f || progress > 1.0f || progress != progress) {
+        c->fs_type = 0;
+        c->fs_p = 0.0f;
+        return 0;
+    }
+    c->fs_type = type;
+    c->fs_p = progress;
+    return 0;
+}
+
 static int present(void){
     struct ctx *c = g_ctx;
-    if (!c || !c->map)
+    if (!c || !c->map || !c->scene)
         return -1;
+
+    if (c->fs_type > 0 && c->fs_p >= 0.0f && c->fs_p <= 1.0f)
+        warp_scene(c);
+    else
+        scene_to_fb(c);
 
     /* Mirror the rendered frame into every frame of the layer.
      *
@@ -226,7 +324,10 @@ static int info(int *w, int *h, int *bpp, int *frames)
     return 0;
 }
 
-static const oa_display_iface g_iface = { clear, fill, blit, blit_scaled, present, info };
+static const oa_display_iface g_iface = {
+    .clear = clear, .fill = fill, .blit = blit, .blit_scaled = blit_scaled,
+    .present = present, .info = info, .set_scene_transform = set_scene_transform,
+};
 
 /* ------------------------------------------------------------------- layer */
 
@@ -400,11 +501,24 @@ static int open_layer(struct ctx *c)
         c->fd = -1;
         return -1;
     }
+    c->scene_w = (int)c->var.xres;
+    c->scene_h = (int)c->var.yres;
+    c->scene = calloc((size_t)c->scene_w * (size_t)c->scene_h, 4);
+    if (!c->scene) {
+        munmap(c->map, c->maplen);
+        c->map = NULL;
+        close(c->fd);
+        c->fd = -1;
+        return -1;
+    }
     return 0;
 }
 
 static void close_layer(struct ctx *c)
 {
+    free(c->scene);
+    c->scene = NULL;
+    c->scene_w = c->scene_h = 0;
     if (c->map) {
         munmap(c->map, c->maplen);
         c->map = NULL;
@@ -459,7 +573,7 @@ static int m_start(void *v)
                     "region -> %ux%u (%s)", c->var.xres, c->var.yres, rc == 0 ? "ok" : "refused");
     }
 
-    c->api->publish(c->api->priv, OA_SVC_DISPLAY, 1, &g_iface);
+    c->api->publish(c->api->priv, OA_SVC_DISPLAY, 2, &g_iface);
 
     /* optional self-test: a colour band, so "does the layer actually show" is one command away */
     const char *test = c->api->config_get(c->api->priv, "display.test", "0");

@@ -287,7 +287,18 @@ int main(int argc, char **argv)
     assert(anim->sample(st + 500) == 1 && portal->screen() == 0);
     assert(!anim->get(1, &kind, &rect, &eased, &st, &dur));
     assert(eased > 0.8f && eased < 0.95f);
+    {
+        int fst = -1, fsc = 0;
+        float fsp = -1.f;
+        assert(trace->transform(&fst, &fsp, &fsc) == 0);
+        assert(fst == 2 && fsp > 0.8f && fsp < 0.95f && fsc > 0);
+    }
     assert(anim->sample(st + 1000) == 0 && portal->screen() == 1);
+    {
+        int fst = -1, fsc = 0;
+        float fsp = -1.f;
+        assert(trace->transform(&fst, &fsp, &fsc) == 0 && fst == 0 && fsp == 0.0f);
+    }
     assert(anim->get(1, NULL, NULL, NULL, NULL, NULL) == -1);
 
     press(input, 10);
