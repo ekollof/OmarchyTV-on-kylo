@@ -159,6 +159,29 @@ for bounds). `drawRow` (0xd50f61) maps item type 9→row 0x17, 10→0x18,
 0xb→0x19 under the progressbar-in-place flag; `setType` case 9 shows the
 slidebar (+0x13c0) and the value textbox (+0x1ca8) — the font16 digit rows.
 
+## TextBox render branches (asm-verified, renderForeground 0x10c7a01)
+
+`+0x1b4` (line count; ctor default 0, no writer found in row/text paths):
+
+- `< 0`: return, nothing drawn (10c8258 `ble` taken).
+- `== 0`: `+0x1c0 = full rect height`, single-line draw (count 1).
+- `> 0`: `+0x1c0 = FUN_01285478(height, +0x1b4)` (signed division = height
+  per line), then scroll/slide or static multi-line draw.
+
+Vendor `getFont(height, lines, type)` (0xeeedc0) calls the same division
+**before** the type switch (after only the empty-finder check), and
+`FUN_01285478` raises SIGFPE on divisor 0. So a zero line count reaching
+`getFont` with a populated finder would fault — yet row text renders. The
+writer that makes `+0x1b4` nonzero for live rows is still unidentified
+(`setText` only clears `+0x1bc`; `setLabel`/`setButtonText`/`appendItem`
+don't touch it; neither do `makeRow`/row ctor/drawRow). Do not assume a
+default of 1: the ternary above is the observed behavior.
+
+`setTextAlignment` (0x10c72a9) writes `+0x220` (`+0x224` explicit flag; value
+5 also clears the bold flag `+0x1b1`). Alignment in renderForeground is a
+bitmask on `+0x220`: `0x92` → left-ish, `0x248` → right, `0x124` → center,
+else left+width.
+
 ## Tab composition (TabDialog::showSubMenu 0xd6f141)
 
 TabDialog owns 5 tab `SVGButton`s (+0x4fc/+0xe8c/+0x181c/+0x21ac/+0x2b3c =

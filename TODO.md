@@ -395,8 +395,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       by replacing the content dialog (tab 0 Beeld = PictureSettingsDialog,
       1 Geluid = SoundSettingsDialog, 2 Netwerk, 3 Installation, 4 System;
       showSubMenu 0xd6f141). The five tab labels are button texts from
-      localized keys (table in .bss, not statically resolvable). Transformed
-      textPos scale/origin, per-widget line counts/types and FA
+      localized keys (table in .bss, not statically resolvable). TextBox
+      branches are asm-verified: +0x1b4 <0 draws nothing, ==0 single-line
+      full-height, >0 divided multi-line; +0x220 alignment is a bitmask
+      (0x92/0x248/0x124); +0x1b4's nonzero writer for live rows is still
+      unidentified (getFont would SIGFPE on 0), so line setup stays open.
+      Transformed textPos scale/origin, per-widget line counts/types and FA
       animation geometry are still undecoded, so title/tab/slider-graphics/
       focused text must not be built from the capture fits. Do not
       guess FA/FI slider/button graphics or the .data literal names.
