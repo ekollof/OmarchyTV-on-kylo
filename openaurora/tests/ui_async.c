@@ -83,8 +83,12 @@ int main(int argc, char **argv)
     (void)load(&h, "scene_gpu_fixture"); (void)load(&h, "scene_display"); oa_mod *ui = load(&h, "ui_fb");
     const scene_gpu_trace *t = h.api.lookup(&h, SCENE_GPU_TRACE, 1); require(t);
     require(timers(&h, ui->id) == 1 && held(&h, ui->id, OA_SVC_DISPLAY) && held(&h, ui->id, OA_SVC_DISPLAY_ASYNC));
+    require(held(&h, ui->id, OA_SVC_DISPLAY_ALPHA));
     require(access(ready_path, F_OK) == -1);
     require(!t->settle(0)); pump(&h); require(access(ready_path, F_OK) == -1); /* OPEN isn't a frame */
+    unsigned char backdrop[4];
+    require(!t->pixel(1919, 0, backdrop));
+    require(backdrop[0] == 36 && backdrop[1] == 38 && backdrop[2] == 40 && backdrop[3] == 153);
     require(!t->settle(EIO)); pump(&h); require(access(ready_path, F_OK) == -1);
     require(!oa_module_unload(&h, "ui_fb", 0) && !oa_module_unload(&h, "scene_display", 0));
     (void)load(&h, "scene_display"); ui = load(&h, "ui_fb");
@@ -105,11 +109,14 @@ int main(int argc, char **argv)
     require(!unlink(ready_path));
     require(!oa_module_suspend_all(&h));
     require(!timers(&h, ui->id) && !held(&h, ui->id, OA_SVC_DISPLAY_ASYNC) && !held(&h, ui->id, OA_SVC_DISPLAY));
+    require(!held(&h, ui->id, OA_SVC_DISPLAY_ALPHA));
     real_timer_add = h.api.timer_add; failed_owner = ui->id; h.api.timer_add = timer_add;
     require(oa_module_resume_all(&h) == -1 && ui->state == OA_ST_SUSPENDED);
     require(!held(&h, ui->id, OA_SVC_DISPLAY_ASYNC) && !held(&h, ui->id, OA_SVC_DISPLAY));
+    require(!held(&h, ui->id, OA_SVC_DISPLAY_ALPHA));
     h.api.timer_add = real_timer_add;
     require(!oa_module_resume_all(&h) && timers(&h, ui->id) == 1);
+    require(held(&h, ui->id, OA_SVC_DISPLAY_ALPHA));
     /* A resumed already-acknowledged UI need not rewrite a process-start receipt. */
     require(!t->settle(0)); pump(&h); require(!t->settle(0)); pump(&h);
     puts("  ok   old receipts cannot acknowledge a reloaded UI; suspend/failed resume release both holds and timer");

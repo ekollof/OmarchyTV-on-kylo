@@ -32,6 +32,7 @@
 #include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
+#include "openaurora/canvas.h"
 #include "openaurora/ui_anim.h"
 
 #define OSD_REG_RD 0x8020c86cu /* IOR(0xc8,108,32) */
@@ -110,6 +111,16 @@ static int clear(int r, int g, int b)
     return fill_rect(g_ctx, 0, 0, (int)g_ctx->var.xres, (int)g_ctx->var.yres, r, g, b);
 }
 
+static int clear_rgba(int r, int g, int b, int a)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->scene) return -1;
+    oa_canvas canvas = {c->scene, c->scene_w, c->scene_h};
+    if (oa_canvas_clear(&canvas, r, g, b, a)) return -1;
+    c->scene_opaque = a == 255;
+    return 0;
+}
+
 static int fill(int x, int y, int w, int h, int r, int g, int b)
 {
     return g_ctx ? fill_rect(g_ctx, x, y, w, h, r, g, b) : -1;
@@ -132,18 +143,8 @@ static int blit(int x, int y, int w, int h, const unsigned char *rgba)
             if (dx < 0 || dx >= W)
                 continue;
             const unsigned char *p = rgba + ((size_t)sy * (size_t)w + (size_t)sx) * 4;
-            unsigned a = p[3];
             uint8_t *d = row + (size_t)dx * 4;
-            if (a == 0)
-                continue;
-            if (a == 255) {
-                d[0] = p[0]; d[1] = p[1]; d[2] = p[2]; d[3] = 0xff;
-            } else {
-                d[0] = (uint8_t)((p[0] * a + d[0] * (255 - a)) / 255);
-                d[1] = (uint8_t)((p[1] * a + d[1] * (255 - a)) / 255);
-                d[2] = (uint8_t)((p[2] * a + d[2] * (255 - a)) / 255);
-                d[3] = 0xff;
-            }
+            oa_canvas_over(d, p);
         }
     }
     return 0;
@@ -168,18 +169,8 @@ static int blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigne
                 continue;
             int sx = (int)((int64_t)dx * sw / w);
             const unsigned char *p = rgba + ((size_t)sy * (size_t)sw + (size_t)sx) * 4;
-            unsigned a = p[3];
             uint8_t *d = row + (size_t)px * 4;
-            if (a == 0)
-                continue;
-            if (a == 255) {
-                d[0] = p[0]; d[1] = p[1]; d[2] = p[2]; d[3] = 0xff;
-            } else {
-                d[0] = (uint8_t)((p[0] * a + d[0] * (255 - a)) / 255);
-                d[1] = (uint8_t)((p[1] * a + d[1] * (255 - a)) / 255);
-                d[2] = (uint8_t)((p[2] * a + d[2] * (255 - a)) / 255);
-                d[3] = 0xff;
-            }
+            oa_canvas_over(d, p);
         }
     }
     return 0;
@@ -194,7 +185,8 @@ static void scene_to_fb(struct ctx *c)
         const uint8_t *srow = c->scene + (size_t)y * (size_t)c->scene_w * 4;
         for (unsigned x = 0; x < c->var.xres; x++) {
             const uint8_t *p = srow + (size_t)x * 4;
-            put_px(c, row, x, p[0], p[1], p[2], p[3]);
+            put_px(c, row, x, (p[0]*p[3]+127)/255, (p[1]*p[3]+127)/255,
+                   (p[2]*p[3]+127)/255, p[3]);
         }
     }
 }
@@ -421,6 +413,7 @@ static const oa_display_iface g_iface = {
     .clear = clear, .fill = fill, .blit = blit, .blit_scaled = blit_scaled,
     .present = present, .info = info, .set_scene_transform = set_scene_transform,
 };
+static const oa_display_alpha_iface alpha_iface = {clear_rgba};
 
 /* ------------------------------------------------------------------- layer */
 
@@ -668,6 +661,7 @@ static int m_start(void *v)
     }
 
     c->api->publish(c->api->priv, OA_SVC_DISPLAY, 2, &g_iface);
+    if (c->api->publish(c->api->priv, OA_SVC_DISPLAY_ALPHA, 1, &alpha_iface)) return -1;
 
     /* optional self-test: a colour band, so "does the layer actually show" is one command away */
     const char *test = c->api->config_get(c->api->priv, "display.test", "0");
@@ -684,6 +678,7 @@ static void m_stop(void *v)
     struct ctx *c = v;
     c->api->release(c->api->priv, OA_SVC_DISPLAY);
     c->api->unpublish(c->api->priv, OA_SVC_DISPLAY);
+    c->api->unpublish(c->api->priv, OA_SVC_DISPLAY_ALPHA);
     if (c->map)
         close_layer(c);
 }

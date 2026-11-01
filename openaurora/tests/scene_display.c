@@ -36,6 +36,13 @@ static void canvas(void)
     require(!oa_canvas_blit(&c, INT_MIN, INT_MAX, INT_MAX, INT_MAX, 2, 1, source));
     require(!memcmp(before, pixels, sizeof pixels));
     require(oa_canvas_fill(&c, 0, 0, 1, 1, -1, 0, 0) == -1);
+    require(!oa_canvas_clear(&c, 200, 100, 50, 0));
+    require(pixels[0] == 0 && pixels[3] == 0);
+    require(!oa_canvas_blit(&c, 0, 0, 1, 1, 2, 1, source));
+    require(pixels[0] == 110 && pixels[1] == 120 && pixels[3] == 128);
+    require(!oa_canvas_clear(&c, 10, 20, 30, 128));
+    require(!oa_canvas_blit(&c, 0, 0, 1, 1, 2, 1, source));
+    require(pixels[0] == 76 && pixels[1] == 86 && pixels[2] == 96 && pixels[3] == 191);
     puts("  ok   RGBA canvas clipping/scaling/alpha and extreme coordinate bounds");
 }
 static void sessions(const char *directory)

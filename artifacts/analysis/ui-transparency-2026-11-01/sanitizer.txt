@@ -1,0 +1,46 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-ui-alpha-san/tests/display_present tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c -lm \
+  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=system -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-ui-alpha-san/tests/fbregion_read tests/fbregion_read.c -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=ioctl
+  ok   translucent canvas reaches premultiplied BGRA scanout at identity and during fade
+  ok   default current-frame presentation commits every time, including after resume
+  ok   single-buffer presentation also commits through FBIOPAN_DISPLAY
+  ok   sync/commit failures propagate and retry the same frame before rotation
+  ok   scene surface maps the recovered quad (x-slide, scale, keystone, clear)
+  ok   keystone samples both fan triangles; all completed transforms preserve the scene
+  ok   uniform-only fade preserves premultiplied BGRA and transparent-black endpoints
+  ok   optimized opaque slides/fade match the general filtered rasterizer within one byte
+/dev/fb1: 0x0 virt 0x0 bpp 0 offset 0,0
+primary mapping: physical=0 bytes=0 stride=0
+current MAU: 1 (alternate memory selected)
+region: [0]=0(0) [1]=0(0) [2]=0(0) [3]=0(0) [4]=0(0) [5]=0(0) [6]=0(0) [7]=0(0)
+  ok   fbregion opens read-only and submits only screeninfo/MAU/region GET requests
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-ui-alpha-san/core/check.o core/check.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-ui-alpha-san/core/control.o core/control.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-ui-alpha-san/core/host.o core/host.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-ui-alpha-san/core/module.o core/module.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Itests  -o build-ui-alpha-san/tests/scene_display tests/scene_display.c common/canvas.c build-ui-alpha-san/core/check.o build-ui-alpha-san/core/control.o build-ui-alpha-san/core/host.o build-ui-alpha-san/core/module.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-ui-alpha-san/modules/mod_scene_display.so modules/scene_display/scene_display.c common/canvas.c common/scene_broker_transport.c 
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Itests -fPIC -shared  -o build-ui-alpha-san/modules/mod_scene_gpu_fixture.so tests/scene_gpu_fixture.c
+[876695] ERR  host         scene_gpu_fixture: refusing to unload, service 'display.gpu' still held (use --force)
+  ok   RGBA canvas clipping/scaling/alpha and extreme coordinate bounds
+  ok   coalescing retains final frame, exact committed receipts, cached revisions and immutable replaced snapshots
+  ok   reload gets new revision/receipt namespace; suspend/resume reopens and uploads retained canvas
+  ok   consumer unload releases queued image while provider retains inflight data; GPU error never acknowledges a frame
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Itests  -o build-ui-alpha-san/tests/ui_async tests/ui_async.c build-ui-alpha-san/core/check.o build-ui-alpha-san/core/control.o build-ui-alpha-san/core/host.o build-ui-alpha-san/core/module.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-ui-alpha-san/modules/mod_ui_fb.so modules/ui_fb/ui_fb.c common/ui_anim.c  -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-ui-alpha-san/tests/mod_fake_clock.so tests/mod_fake_clock.c  -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-ui-alpha-san/modules/mod_ui_anim.so modules/ui_anim/ui_anim.c common/ui_anim.c  -lm
+[878191] ERR  ui_fb        portal frame failed errno 5
+[878217] ERR  host         scene_display: refusing to unload, service 'display' still held (use --force)
+  ok   queue/OPEN/error never acknowledge; actual coalesced UI completion writes the PID/dimensions receipt
+  ok   old receipts cannot acknowledge a reloaded UI; suspend/failed resume release both holds and timer
+  ok   forced provider removal clears aliases/callbacks; returning provider rebinds without stale service use
+  ok   dialog progress reuses immutable pixels; cubic midpoint and final identity/new screen are completed
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-ui-alpha-san/svg-animations tools/re/svg-animations.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-ui-alpha-san/svg-names tools/re/svg-names.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-ui-alpha-san/tests/svg_animations tests/svg_animations.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-ui-alpha-san/tests/svg_names tests/svg_names.c
+  ok   BinSVG animation golden fields/sign extension; all truncated prefixes reject safely
+  ok   resource CRC32 vectors, ELF segment translation/BSS/EOF, bounded dynamic symbols
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

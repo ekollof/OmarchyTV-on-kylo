@@ -49,6 +49,19 @@ syntax defect.
 
 ## Development build and evidence
 
+UI-TRANSPARENCY-2026-11-01: firmware rectangle reader + ARM fill/opacity
+conversion recover portal RGBA36,38,40,153. Both display backends now publish
+display.alpha v1; canvas source-over and CPU identity premultiplication preserve
+alpha, ui_fb owns companion hold. Host227 checks/focused sanitizer pass; real
+GPU readback BGRA24,23,22,153, dialog/reload/module cycle and complete restore
+pass. Independent real-video appearance and exact animation sequence/cadence
+remain open (owner requests explicit audit). Native build-tv-v3/ui-alpha:
+scene_display59752bytes/5d6a1d411c37b1769b2098c348bcd9c6, UI90184/
+42aa9ed02e8cdeceff9fee818569b4cd(max2.4), probe500996/
+6acfb7f39389f2fd5f91958df1b554ab(max2.17). Same stock boot/PID1785,
+full framebuffer41735daa69dc137743b59efe12db4a19/pan0,0/access/privacy; staging
+removed. Installed assets/core and matching production16-module stage unchanged.
+
 RAIL-ASSETS-2026-11-01: verified eleven vendor APNG frames exported to ignored
 artifacts/workbench/rail-ui-20261101 with provenance/hashes. Full-bundle regression
 exposed MAX_ICONS24 truncating the loop to nine frames; capacity now29 includes

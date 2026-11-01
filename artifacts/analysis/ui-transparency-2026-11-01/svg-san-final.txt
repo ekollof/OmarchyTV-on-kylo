@@ -1,0 +1,5 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-ui-alpha-san/tests/svg_animations tests/svg_animations.c
+  ok   BinSVG animation golden fields/sign extension; all truncated prefixes reject safely
+  ok   resource CRC32 vectors, ELF segment translation/BSS/EOF, bounded dynamic symbols
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

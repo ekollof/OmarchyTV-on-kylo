@@ -77,6 +77,15 @@ see [SCENE-DISPLAY](../../artifacts/reports/SCENE-DISPLAY-2026-11-01.md).
 Load it as an alternative to CPU display, never alongside it. No automatic
 selection/display.renderer option exists.
 
+Both display backends also publish optional display.alpha v1, a clear_rgba
+companion that preserves existing display v1/v2 ABI and opaque clear semantics.
+Canvases are straight RGBA with source-over including destination alpha; CPU
+identity/transition and GPU output are premultiplied BGRA. ui_fb owns/releases
+the companion hold through its display lifecycle and uses the recovered portal
+backdrop RGBA36,38,40,153. Legacy providers retain the old opaque fallback.
+UI-TRANSPARENCY records firmware conversion, host/sanitizer coverage and actual
+GPU BGRA24,23,22,153 readback; independent real-video visual parity remains open.
+
 ui_fb now holds display.async and owns its completion sampler. It tracks the
 first accepted serial in the provider namespace and acknowledges ui.ok_file only
 after an actual successful completion; queue/OPEN/errors/old receipts cannot

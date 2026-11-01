@@ -1,0 +1,25 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+saved bytes=16588800 original_yoffset=0 MAU=0 backup=/tmp/oa-scene-helper-20261101/framebuffer.backup
+[751442] ERR  host         graphics: cleanup pending; retry stop/unload
+[751442] ERR  host         graphics: cleanup pending; retry stop/unload
+[751443] ERR  host         graphics: cleanup pending; retry stop/unload
+[751443] ERR  host         graphics: cleanup pending; retry stop/unload
+[751463] ERR  host         graphics: cleanup pending; retry stop/unload
+[751463] ERR  host         graphics: cleanup pending; retry stop/unload
+[751483] ERR  host         graphics: cleanup pending; retry stop/unload
+[751483] ERR  host         graphics: cleanup pending; retry stop/unload
+scene display module id=4 service=display.async
+UI readiness after GPU completion serial=17179869185 revision=17179869208 pid=13237
+UI rail completed image revisions=5 over660ms (not a frame-order measurement)
+UI dialog animation receipt=17179869210 completed screen=1 identity receipt=17179869212
+UI readiness after GPU completion serial=17179869216 revision=17179869697 pid=13237
+UI reload id=19 completed with fresh receipt
+UI host-only suspend/resume completed receipt=17179869219
+UI backdrop raw BGRA=24,23,22,153 expected24,23,22,153
+graphics host drained and unloaded provider
+restored bytes=16588800 yoffset=0 MAU=0 region_match=1 snapshot_match=1
+probe_exit=0

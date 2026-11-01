@@ -3,6 +3,18 @@
 #include "openaurora/canvas.h"
 static int valid(const oa_canvas *c)
 { return c && c->pixels && c->width > 0 && c->height > 0 && (size_t)c->width <= SIZE_MAX/4/(size_t)c->height; }
+int oa_canvas_clear(oa_canvas *c, int r, int g, int b, int a)
+{
+    if (!valid(c) || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255 || a < 0 || a > 255) {
+        errno = EINVAL; return -1;
+    }
+    for (size_t i = 0; i < (size_t)c->width*(size_t)c->height; i++) {
+        uint8_t *p = c->pixels+i*4;
+        p[0] = a ? (uint8_t)r : 0; p[1] = a ? (uint8_t)g : 0;
+        p[2] = a ? (uint8_t)b : 0; p[3] = (uint8_t)a;
+    }
+    return 0;
+}
 int oa_canvas_fill(oa_canvas *c, int x, int y, int w, int h, int r, int g, int b)
 {
     if (!valid(c) || w <= 0 || h <= 0 || r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) { errno = EINVAL; return -1; }
@@ -28,10 +40,7 @@ int oa_canvas_blit(oa_canvas *c, int x, int y, int w, int h, int sw, int sh, con
         int sx = (int)(((int64_t)px-x)*sw/w), sy = (int)(((int64_t)py-y)*sh/h);
         const uint8_t *p = rgba+((size_t)sy*(size_t)sw+(size_t)sx)*4;
         uint8_t *d = c->pixels+((size_t)py*(size_t)c->width+(size_t)px)*4;
-        unsigned a = p[3];
-        if (!a) continue;
-        for (unsigned k = 0; k < 3; k++) d[k] = (uint8_t)((p[k]*a+d[k]*(255-a))/255);
-        d[3] = 255;
+        oa_canvas_over(d, p);
     }
     return 0;
 }

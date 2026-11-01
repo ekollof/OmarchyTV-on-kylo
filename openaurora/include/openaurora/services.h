@@ -111,6 +111,12 @@ typedef struct {
     int (*set_scene_transform)(int type, float progress);
 } oa_display_iface;
 
+/* Optional companion to display v1/v2; leaves their ABI and opaque clear
+ * semantics intact. Replace the entire straight-RGBA canvas, including alpha.
+ * Present converts to premultiplied BGRA; this does not change global OSD alpha. */
+#define OA_SVC_DISPLAY_ALPHA "display.alpha"
+typedef struct { int (*clear_rgba)(int r, int g, int b, int a); } oa_display_alpha_iface;
+
 /* display.gpu v1 — explicit separate-process native scene session. Loop thread
  * only; hold provider until abandoned tickets are canceled. One pending request
  * or uncollected copied result. image fd remains caller-owned after submit;

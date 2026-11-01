@@ -17,7 +17,7 @@ struct ctx {
     unsigned type;
     float progress;
     int active, pending, opened, fault, result_valid;
-    int display_published, async_published;
+    int display_published, async_published, alpha_published;
     struct desired queued;
     oa_display_result inflight, result;
 };
@@ -113,6 +113,12 @@ static int fill(int x, int y, int w, int h, int r, int g, int b)
     c->revision++; return 0;
 }
 static int clear(int r, int g, int b) { return fill(0, 0, OA_SCENE_WIDTH, OA_SCENE_HEIGHT, r, g, b); }
+static int clear_rgba(int r, int g, int b, int a)
+{
+    struct ctx *c = g_ctx; if (drawing(c)) return -1;
+    if (oa_canvas_clear(&c->canvas, r, g, b, a)) return -1;
+    c->revision++; return 0;
+}
 static int blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigned char *rgba)
 {
     struct ctx *c = g_ctx; if (drawing(c)) return -1;
@@ -139,6 +145,7 @@ static int transform(int type, float progress)
 }
 static const oa_display_iface display = {clear, fill, blit, blit_scaled, present, info, transform};
 static const oa_display_async_iface asynchronous = {request, latest};
+static const oa_display_alpha_iface alpha = {clear_rgba};
 static int init(const oa_host_api *api, void **out)
 {
     if (!api || api->abi != OA_ABI_VERSION || api->size < sizeof *api) return -1;
@@ -167,6 +174,8 @@ static int start(void *ud)
     if (!c->canvas.pixels || activate(c)) return -1;
     if (c->api->publish(c->api->priv, OA_SVC_DISPLAY, 2, &display)) return -1;
     c->display_published = 1;
+    if (c->api->publish(c->api->priv, OA_SVC_DISPLAY_ALPHA, 1, &alpha)) return -1;
+    c->alpha_published = 1;
     if (c->api->publish(c->api->priv, OA_SVC_DISPLAY_ASYNC, 1, &asynchronous)) return -1;
     c->async_published = 1; return 0;
 }
@@ -185,8 +194,9 @@ static void stop(void *ud)
     struct ctx *c = ud; if (!c) return;
     (void)suspend(c);
     if (c->async_published) c->api->unpublish(c->api->priv, OA_SVC_DISPLAY_ASYNC);
+    if (c->alpha_published) c->api->unpublish(c->api->priv, OA_SVC_DISPLAY_ALPHA);
     if (c->display_published) c->api->unpublish(c->api->priv, OA_SVC_DISPLAY);
-    c->async_published = c->display_published = 0;
+    c->async_published = c->display_published = c->alpha_published = 0;
     if (c->gpu) c->api->release(c->api->priv, OA_SVC_DISPLAY_GPU);
     c->gpu = NULL; free(c->canvas.pixels); c->canvas.pixels = NULL;
 }

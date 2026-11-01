@@ -85,6 +85,7 @@ struct ctx {
     const oa_display_iface *disp;
     const oa_display_iface *disp2;   /* v2 lookup: set_scene_transform */
     const oa_display_async_iface *async;
+    const oa_display_alpha_iface *alpha;
     uint64_t receipt_tick, first_serial, last_receipt;
     int paint_w, paint_h, scene_painted;
     char dir[128];
@@ -305,6 +306,7 @@ static void receipt_tick(void *ud)
  * animation callback: timer ownership must stay with this module. */
 static int bind_async(struct ctx *c)
 {
+    if (!c->alpha) c->alpha = c->api->lookup(c->api->priv, OA_SVC_DISPLAY_ALPHA, 1);
     if (!c->async) c->async = c->api->lookup(c->api->priv, OA_SVC_DISPLAY_ASYNC, 1);
     if (c->async && !c->receipt_tick)
         c->receipt_tick = c->api->timer_add(c->api->priv, 10, 10, receipt_tick, c);
@@ -316,6 +318,10 @@ static void drop_async(struct ctx *c, int release)
     c->receipt_tick = c->first_serial = c->last_receipt = 0;
     if (release && c->async) c->api->release(c->api->priv, OA_SVC_DISPLAY_ASYNC);
     c->async = NULL;
+    if (release) {
+        if (c->alpha) c->api->release(c->api->priv, OA_SVC_DISPLAY_ALPHA);
+        c->alpha = NULL;
+    }
 }
 static int request_present(struct ctx *c)
 {
@@ -342,7 +348,12 @@ static void paint(struct ctx *c)
         return;
 
     /* clear() covers the whole OSD surface the display service reports. */
-    d->clear(14, 14, 13);
+    /* DialogMainMenu.svg's unnamed full-screen #242628 rectangle: raw opacity6,
+     * scaled conversion + rgbColourParser complement yield alpha153. Named
+     * background/main_rectangle records describe layout, not opaque paint. */
+    int cleared = c->alpha ? c->alpha->clear_rgba(36, 38, 40, 153) :
+                            d->clear(14, 14, 13); /* legacy provider fallback */
+    if (cleared) { c->api->log(c->api->priv, OA_LOG_ERROR, "portal clear failed"); return; }
 
     const struct icon *title = find_icon(c, "title");
     if (title) {
@@ -688,6 +699,8 @@ static void on_service_removed(const void *evp, void *ud)
         c->scene_painted = 0;
     } else if (!strcmp(ev->name, OA_SVC_DISPLAY_ASYNC)) {
         drop_async(c, 0); /* host already cleared this service's hold */
+    } else if (!strcmp(ev->name, OA_SVC_DISPLAY_ALPHA)) {
+        c->alpha = NULL; /* host already cleared this service's hold */
     } else if (!strcmp(ev->name, OA_SVC_UI_ANIM)) {
         c->anim = NULL;
         c->anim2 = NULL;

@@ -15,6 +15,7 @@
 
 const oa_module *oa_module_entry(void);
 static const oa_display_iface *display;
+static const oa_display_alpha_iface *alpha;
 static struct fb_var_screeninfo var;
 static unsigned char pixels[1024];
 static const char *rotate;
@@ -90,12 +91,18 @@ static const char *config(void *priv, const char *key, const char *def)
 static int publish(void *priv, const char *name, uint32_t version, const void *iface)
 {
     (void)priv;
+    if (!strcmp(name, OA_SVC_DISPLAY_ALPHA)) { assert(version == 1); alpha = iface; return 0; }
     assert(!strcmp(name, OA_SVC_DISPLAY) && version == 2);
     display = iface;
     return 0;
 }
 static int unpublish(void *priv, const char *name)
-{ (void)priv; assert(!strcmp(name, OA_SVC_DISPLAY)); display = NULL; return 0; }
+{
+    (void)priv;
+    if (!strcmp(name, OA_SVC_DISPLAY_ALPHA)) alpha = NULL;
+    else { assert(!strcmp(name, OA_SVC_DISPLAY)); display = NULL; }
+    return 0;
+}
 static void release(void *priv, const char *name) { (void)priv; (void)name; }
 static const oa_host_api api = { .size = sizeof(oa_host_api), .abi = OA_ABI_VERSION,
     .log = log_message, .config_get = config, .publish = publish,
@@ -126,7 +133,20 @@ static void finish(void *ctx)
 }
 int main(void)
 {
-    void *ctx = start(2, 2, NULL); /* default rotation off, second frame current */
+    void *ctx = start(1, 0, NULL);
+    assert(alpha && !alpha->clear_rgba(36, 38, 40, 153));
+    assert(!display->present());
+    assert(pixels[0] == 24 && pixels[1] == 23 && pixels[2] == 22 && pixels[3] == 153);
+    const unsigned char semi[] = {200, 100, 50, 128};
+    assert(!alpha->clear_rgba(0, 0, 0, 0));
+    assert(!display->blit(0, 0, 1, 1, semi) && !display->present());
+    assert(pixels[0] == 25 && pixels[1] == 50 && pixels[2] == 100 && pixels[3] == 128);
+    assert(!display->set_scene_transform(6, 0.5f) && !display->present());
+    assert(pixels[0] == 13 && pixels[1] == 25 && pixels[2] == 50 && pixels[3] == 64);
+    finish(ctx);
+    puts("  ok   translucent canvas reaches premultiplied BGRA scanout at identity and during fade");
+
+    ctx = start(2, 2, NULL); /* default rotation off, second frame current */
     assert(display->clear(0x12, 0x34, 0x56) == 0);
     assert(display->present() == 0 && commits == 1 && last_yoffset == 2);
     /* the offscreen scene is copied into the committed frame at present */

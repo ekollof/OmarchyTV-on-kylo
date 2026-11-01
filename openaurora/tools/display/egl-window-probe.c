@@ -176,7 +176,17 @@ int main(int argc, char **argv)
 #ifdef OA_WINDOW_BROKER
     int ui_result = probe_ui(scene);
     if (ui_result < 0) { (void)error(scene); goto cleanup; }
-    if (ui_result > 0) { result = 0; goto cleanup; }
+    if (ui_result > 0) {
+        struct snapshot now;
+        if (capture(fd, &now)) goto cleanup;
+        const uint8_t *p = map + (size_t)now.var.yoffset*saved.fix.line_length + 1919*4;
+        printf("UI backdrop raw BGRA=%u,%u,%u,%u expected24,23,22,153\n", p[0],p[1],p[2],p[3]);
+        if (abs((int)p[0]-24) > 1 || abs((int)p[1]-23) > 1 ||
+            abs((int)p[2]-22) > 1 || abs((int)p[3]-153) > 1) {
+            fputs("UI backdrop alpha/premultiplication mismatch\n", stderr); goto cleanup;
+        }
+        result = 0; goto cleanup;
+    }
 #endif
     for (int i = 0; i < 2; i++)
         if (probe_render(scene, i ? NULL : input, i ? 0 : 1920u*1080u*4,

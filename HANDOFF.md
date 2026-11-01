@@ -24,12 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Owner's latest visual correction: rail/portal backdrop is dark in our UI but
-transparent in the vendor UI. Prioritize the alpha contract; UI-TRANSPARENCY
-records fresh firmware/ARM evidence and known opaque clear/canvas paths.
-Screenshot RGB is not alpha proof. The fix is pending, not covered by the rail
-capacity milestone. Finish theme/fill inheritance/image-id mapping before
-changing behavior, then test CPU/GPU transparency over real video.
+Latest: UI-TRANSPARENCY recovers the actual unnamed full-screen theme rectangle
+and ARM opacity conversion to RGBA36,38,40,153. Both display backends now expose
+display.alpha v1 and preserve source-over/premultiplied scanout; UI holds it.
+Host227 checks/focused sanitizer pass, actual TV/GPU backdrop readback is
+BGRA24,23,22,153. Navigation/reload/module cycle and full restore/hash match pass.
+Same boot/PID/access/privacy, staging removed; installed production unchanged.
+Native artifacts in build-tv-v3/ui-alpha; exact identities/evidence in the report.
+
+Owner now explicitly requests checking **exact** vendor animation fidelity.
+Next audit APNG scheduling/frame order, timing/easing, geometry/filtering and
+interruption, with firmware/ARM then actual sequences. Rail completion sample
+was five revisions in nominal660ms; no30ms cadence/equivalence proof. Preserve
+that gap, and independently compare backdrop over real video. Screenshot RGB
+alone was not alpha proof. Do not equate CPU formulas or helper completion with
+complete vendor animation parity.
 
 Latest follow-up: [RAIL-ASSETS](artifacts/reports/RAIL-ASSETS-2026-11-01.md)
 exports the verified APNG to durable ignored workbench/rail-ui-20261101.

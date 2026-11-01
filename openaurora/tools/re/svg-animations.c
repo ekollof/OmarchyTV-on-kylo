@@ -10,6 +10,7 @@
 
 struct cursor { const unsigned char *data; size_t size, pos; };
 static unsigned nodes, animations;
+static int rectangles;
 static int skip(struct cursor *c, size_t n)
 {
     if (n > c->size - c->pos) return -1;
@@ -56,12 +57,15 @@ static int element(struct cursor *c, uint32_t hash, size_t base)
         if (!link || !attribute || !transform || word(c, &begin) != 0) return -1;
         const char *values[6]; /* duration, fill, from, to, calcMode, keySplines */
         for (unsigned i = 0; i < 6; i++) if (!(values[i] = string(c))) return -1;
+        if (!rectangles) {
         printf("0x%08" PRIx32 "\t%zu\t%u", hash, base + start, tag);
         field(id); printf("\t%u\t%d", subtype, (int)offset - (offset & 0x8000 ? 65536 : 0));
         field(link); field(attribute); field(transform);
         printf("\t%d", (int)begin - (begin & 0x8000 ? 65536 : 0));
         for (unsigned i = 0; i < 6; i++) field(values[i]);
-        putchar('\n'); animations++;
+        putchar('\n');
+        }
+        animations++;
         return 0;
     }
     unsigned fixed, strings, tail = 0;
@@ -75,14 +79,29 @@ static int element(struct cursor *c, uint32_t hash, size_t base)
     case 8: fixed = 0; strings = 0; break; /* group start */
     default: return -1;
     }
+    size_t data = c->pos;
+    const char *values[4];
     if (skip(c, fixed) != 0) return -1;
-    for (unsigned i = 0; i < strings; i++) if (!string(c)) return -1;
-    return skip(c, tail);
+    for (unsigned i = 0; i < strings; i++) if (!(values[i] = string(c))) return -1;
+    if (skip(c, tail)) return -1;
+    if (rectangles && tag == 1) {
+        printf("0x%08" PRIx32 "\t%zu", hash, base + start); field(id);
+        for (unsigned i = 0; i < 5; i++) {
+            unsigned v = c->data[data+i*2] | (unsigned)c->data[data+i*2+1] << 8;
+            printf("\t%d", (int)v - (v & 0x8000 ? 65536 : 0));
+        }
+        unsigned opacity = c->data[data+10];
+        printf("\t%d", (int)opacity - (opacity & 0x80 ? 256 : 0));
+        for (unsigned i = 0; i < 4; i++) field(values[i]);
+        putchar('\n');
+    }
+    return 0;
 }
 int main(int argc, char **argv)
 {
-    if (argc != 3) {
-        fprintf(stderr, "usage: %s telefunken18_svg.txt telefunken18_svg.bin\n", argv[0]);
+    if (argc == 4 && !strcmp(argv[3], "--rectangles")) rectangles = 1;
+    else if (argc != 3) {
+        fprintf(stderr, "usage: %s telefunken18_svg.txt telefunken18_svg.bin [--rectangles]\n", argv[0]);
         return 2;
     }
     FILE *index = fopen(argv[1], "r"), *pack = fopen(argv[2], "rb");
@@ -99,7 +118,8 @@ int main(int argc, char **argv)
     size_t count;
     if (!fgets(line, sizeof line, index) || sscanf(line, "%zu %c", &count, &extra) != 1 || count > 100000)
         goto done;
-    puts("record_hash\tpack_offset\ttag\tid\tsubtype\toffset\txlink\tattribute\ttransform\tbegin\tduration\tfill\tfrom\tto\tcalc_mode\tkey_splines");
+    if (rectangles) puts("record_hash\tpack_offset\tid\tx\ty\tw\th\tword4\topacity_raw_signed\tstring0\tstring1\tstring2\tstring3");
+    else puts("record_hash\tpack_offset\ttag\tid\tsubtype\toffset\txlink\tattribute\ttransform\tbegin\tduration\tfill\tfrom\tto\tcalc_mode\tkey_splines");
     for (; record < count; record++) {
         uint32_t hash;
         size_t length;

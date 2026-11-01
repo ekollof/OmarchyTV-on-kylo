@@ -114,7 +114,7 @@ $(BUILD)/modules/mod_audio.so: modules/audio/audio.c common/audio_owner.c common
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) \
 	  $(if $(filter $(VENDOR_MODULES),audio),$(VENDOR_LDFLAGS),)
 
-$(BUILD)/modules/mod_display.so: modules/display/display.c common/ui_anim.c include/openaurora/ui_anim.h
+$(BUILD)/modules/mod_display.so: modules/display/display.c common/ui_anim.c common/canvas.c include/openaurora/ui_anim.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
 	  $(VENDOR_LDFLAGS) -lm
@@ -419,7 +419,7 @@ check-control: $(BUILD)/tests/control_reply $(BUILD)/tests/control_transport
 	@$(BUILD)/tests/control_reply
 	@$(BUILD)/tests/control_transport
 
-$(BUILD)/tests/display_present: tests/display_present.c modules/display/display.c common/ui_anim.c include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
+$(BUILD)/tests/display_present: tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c include/openaurora/canvas.h include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm \
 	  $(foreach call,open close system mmap munmap msync ioctl,-Wl,--wrap=$(call))

@@ -41,6 +41,13 @@ int main(void)
     assert(dup2(fileno(capture), STDOUT_FILENO) == STDOUT_FILENO);
     c = (struct cursor){ animation, sizeof animation, 0 };
     assert(element(&c, 1, 100) == 0 && c.pos == sizeof animation);
+    unsigned char signed_rect[sizeof rectangle];
+    memcpy(signed_rect, rectangle, sizeof rectangle);
+    signed_rect[3] = signed_rect[4] = signed_rect[13] = 255;
+    rectangles = 1;
+    c = (struct cursor){ signed_rect, sizeof signed_rect, 0 };
+    assert(element(&c, 1, 100) == 0 && c.pos == sizeof signed_rect);
+    rectangles = 0;
     assert(fflush(stdout) == 0);
     assert(dup2(saved, STDOUT_FILENO) == STDOUT_FILENO);
     close(saved);
@@ -48,6 +55,8 @@ int main(void)
     char row[256];
     assert(fgets(row, sizeof row, capture));
     assert(!strcmp(row, "0x00000001\t100\t10\ta\t1\t-1\t#t\tx\t\t-2\t0.3\t0\t0\t40\tlinear\t\n"));
+    assert(fgets(row, sizeof row, capture));
+    assert(!strcmp(row, "0x00000001\t100\tr\t-1\t0\t0\t0\t0\t-1\t\t\t\t\n"));
     assert(fgetc(capture) == EOF);
     fclose(capture);
     puts("  ok   BinSVG animation golden fields/sign extension; all truncated prefixes reject safely");
