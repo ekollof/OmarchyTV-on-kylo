@@ -1,0 +1,11 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+  ok   bounded pending/result slot, upload/cache revisions, scoped tickets, foreign-fork rejection and CLOSE
+  ok   executing finish and blocked close keep child owned; shutdown/poll/destroy never wait or signal it
+  ok   buffered completion survives exit; mismatched/descriptor replies fail and abnormal exit remains visible
+  ok   EAGAIN leaves request unaccepted/retryable; interrupted send breaks channel without replay
+  ok   loader failure rejected immediately or completed through EOF and child127 reap on target libc
+test_exit=0

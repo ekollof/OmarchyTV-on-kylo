@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [SCENE-CLIENT](SCENE-CLIENT-2026-11-01.md) | nonblocking parent submit/pump/take/shutdown and WNOHANG lifetime; five host/sanitizer/TV groups plus410 real GPU frames/full restoration; host service/readiness/coalescing/module integration remains open |
 | [SCENE-HELPER](SCENE-HELPER-2026-11-01.md) | EGL-free bootstrap loads Mali renderer after fd cleanup; host/sanitizer/TV process tests and410 real GPU frame completions, child reap and full restoration; asynchronous host service/module lifecycle remain open |
 | [SCENE-BROKER](SCENE-BROKER-2026-11-01.md) | immutable sealed-image IPC and blocking owner server; host/sanitizer/ARM-qemu/TV injected-renderer tests; target read-only shared mapping EPERM resolved from kernel instructions; subsequent SCENE-HELPER supplies executable/GPU acceptance, host module integration remains open |
 | [EGL-WINDOW](EGL-WINDOW-2026-11-01.md) | direct native presentation, eight effects at50Hz with owner-confirmed upright/full-screen/smooth output; complete backing/pan/MAU/region restoration; async module/worker/readiness integration still open |

@@ -442,7 +442,7 @@ $(BUILD)/tests/scene_broker: tests/scene_broker.c common/scene_broker.c common/s
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread -lm
 
 .PHONY: check-scene-broker
-check: check-scene-broker check-scene-spawn
+check: check-scene-broker check-scene-spawn check-scene-client
 check-scene-broker: $(BUILD)/tests/scene_broker
 	@$(BUILD)/tests/scene_broker
 
@@ -462,6 +462,14 @@ $(BUILD)/tests/scene_spawn: tests/scene_spawn.c common/scene_broker_wire.c commo
 check-scene-spawn: $(BUILD)/tests/scene_spawn $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so $(BUILD)/tests/scene-renderer-bad.so
 	@$(BUILD)/tests/scene_spawn $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so $(BUILD)/tests/scene-renderer-bad.so
 
+$(BUILD)/tests/scene_client: tests/scene_client.c common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/scene_client.h include/openaurora/scene_broker.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -Wl,--wrap=sendmsg -o $@ $(filter %.c,$^)
+
+.PHONY: check-scene-client
+check-scene-client: $(BUILD)/tests/scene_client $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so
+	@$(BUILD)/tests/scene_client $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so
+
 $(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
@@ -480,7 +488,7 @@ $(BUILD)/egl-window-probe: tools/display/egl-window-probe.c common/scene_gles.c 
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
 
-$(BUILD)/scene-window-probe: tools/display/egl-window-probe.c tools/display/scene-probe-client.c tools/display/scene-probe-client.h common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/scene_broker.h
+$(BUILD)/scene-window-probe: tools/display/egl-window-probe.c tools/display/scene-probe-client.c tools/display/scene-probe-client.h common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/scene_client.h include/openaurora/scene_broker.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_WINDOW_BROKER $(LDFLAGS) -o $@ $(filter %.c,$^)
 

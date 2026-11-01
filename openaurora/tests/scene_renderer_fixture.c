@@ -31,8 +31,17 @@ static int render(void *owner, const uint8_t *rgba, size_t size, unsigned type, 
     }
     frames++; return 0;
 }
-static int finish(void *owner) { (void)owner; return 0; }
-static int close_scene(void **owner) { *owner = NULL; return 0; }
+static int gate(const char *name)
+{
+    const char *path = getenv(name); if (!path) return 0;
+    int fd = open(path, O_RDONLY | O_CLOEXEC); if (fd < 0) return -1;
+    char byte; ssize_t count = read(fd, &byte, 1);
+    (void)close(fd); if (count == 1) return 0;
+    errno = EIO; return -1;
+}
+static int finish(void *owner) { (void)owner; return gate("OA_SCENE_FIXTURE_FINISH_GATE"); }
+static int close_scene(void **owner)
+{ if (gate("OA_SCENE_FIXTURE_CLOSE_GATE")) return -1; *owner = NULL; return 0; }
 const oa_scene_renderer oa_scene_renderer_v1 = {
 #ifdef BAD_RENDERER_ABI
     999,

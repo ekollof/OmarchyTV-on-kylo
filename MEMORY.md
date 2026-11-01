@@ -49,6 +49,19 @@ syntax defect.
 
 ## Development build and evidence
 
+SCENE-CLIENT-2026-11-01: lower nonblocking parent (submit/pump/take/shutdown,
+WNOHANG reap) passes five strict host/sanitizer/TV groups and410 actual GPU
+frames through the diagnostic adapter. Blocked finish/close retains the child;
+shutdown never waits/signals, canceled results stay collectable. Full host214
+checks pass. Isolated build-tv-v3/scene-client: unit90108bytes/
+4068c3b34d51bb38e0b340fdeb3a2762 (maxGLIBC2.15), diagnostic91068bytes/
+df6428c2f968b617121474b15fc933c7 (max2.17); helper/renderer hashes unchanged
+from SCENE-HELPER. Child exit0, full snapshot/pan/MAU/region restored; independent
+hash41735daa69dc137743b59efe12db4a19/pan0,0 unchanged. Same boot/PID1785,
+hook/hosts hashes/access/privacy/safety markers. Staging/backup/FIFOs/helpers
+removed. Production stage unchanged. Next: host service/watch/reap timer,
+coalescing, completion-driven readiness and UI/module lifecycle integration.
+
 SCENE-HELPER-2026-11-01: separate EGL-free bootstrap plus late-loaded renderer
 passes two process fixture groups on strict host/sanitizers/TV and410 actual GPU
 frame requests on the TV. Constructor fd survives inherited-fd cleanup; child

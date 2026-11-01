@@ -105,6 +105,10 @@ The hardware diagnostic is never run by make check.
 
 ## Continuation
 
+Follow-up: SCENE-CLIENT-2026-11-01 now implements/tests the lower nonblocking
+parent and uses it through the diagnostic adapter on actual GPU. The remaining
+provider/watch/timer/readiness/coalescing work below is still pending.
+
 Add a nonblocking parent provider using this executable and renderer. The
 blocking diagnostic client is not suitable for the host loop or ABI3 gate.
 Keep one pending request/uncollected result, bounded coalescing of transforms,

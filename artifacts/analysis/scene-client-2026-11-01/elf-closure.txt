@@ -1,0 +1,26 @@
+openaurora/build-tv-v3/scene-client/oa-scene-broker
+ 0x00000001 (NEEDED)                     Shared library: [libdl.so.2]
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 3
+  0x0030:   Name: GLIBC_2.4  Flags: none  Version: 2
+openaurora/build-tv-v3/scene-client/scene-renderer.so
+ 0x00000001 (NEEDED)                     Shared library: [libmali.so]
+ 0x00000001 (NEEDED)                     Shared library: [libm.so.6]
+ 0x00000001 (NEEDED)                     Shared library: [libpthread.so.0]
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+ 0x0000000f (RPATH)                      Library rpath: [/vendor/lib:/vendor/lib/libs]
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 4
+  0x0030:   Name: GLIBC_2.4  Flags: none  Version: 3
+  0x0050:   Name: GLIBC_2.4  Flags: none  Version: 2
+openaurora/build-tv-v3/scene-client/scene-window-probe
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+  0x0010:   Name: GLIBC_2.15  Flags: none  Version: 4
+  0x0020:   Name: GLIBC_2.17  Flags: none  Version: 3
+  0x0030:   Name: GLIBC_2.4  Flags: none  Version: 2
+openaurora/build-tv-v3/scene-client/tests/scene_client
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+  0x0010:   Name: GLIBC_2.15  Flags: none  Version: 3
+  0x0020:   Name: GLIBC_2.4  Flags: none  Version: 2
+openaurora/build-tv-v3/scene-client/tests/scene-renderer-fixture.so
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 2

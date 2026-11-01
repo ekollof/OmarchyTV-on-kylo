@@ -1,0 +1,8 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -Wl,--wrap=sendmsg -o build-scene-client/tests/scene_client tests/scene_client.c common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c
+  ok   bounded pending/result slot, upload/cache revisions, scoped tickets, foreign-fork rejection and CLOSE
+  ok   executing finish and blocked close keep child owned; shutdown/poll/destroy never wait or signal it
+  ok   buffered completion survives exit; mismatched/descriptor replies fail and abnormal exit remains visible
+  ok   EAGAIN leaves request unaccepted/retryable; interrupted send breaks channel without replay
+  ok   loader failure rejected immediately or completed through EOF and child127 reap on target libc
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

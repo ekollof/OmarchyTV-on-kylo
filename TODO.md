@@ -406,7 +406,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 - [ ] Complete accelerated scene presentation and visible animation acceptance.
       EGL-WINDOW now proves direct native presentation on the initialized layer.
       SCENE-HELPER now tests the separate bootstrap/renderer on actual GPU;
-      reuse its executable and IPC in a nonblocking parent provider.
+      SCENE-CLIENT tests the lower nonblocking parent on actual GPU. Integrate
+      its fd watch, reap timer and lifetime in an asynchronous host provider.
       Integrate an owning EGL worker, nonblocking quiescence, bounded/coalesced
       async frame/completion and readiness semantics before production service
       wiring. No display.renderer switch exists yet. Preserve failed-close
@@ -431,6 +432,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       region/MAU/pan restored and independently hashed. Full host209 checks pass.
       Blocking diagnostic client only; async host service/module lifecycle and
       first-frame readiness remain pending. SCENE-HELPER-2026-11-01.
+- [x] Lower nonblocking graphics parent: one pending/result slot, generated
+      instance tickets, revision validation, MSG_DONTWAIT I/O, copied completion,
+      EOF shutdown and WNOHANG reap/destroy gate. Five strict host/sanitizer/TV
+      groups pass, including blocked child work/cleanup and target exec failure.
+      Maintained client also completes410 actual GPU frames through the full
+      snapshot diagnostic, with child exit0/restoration/independent hash match.
+      Full host214 checks pass. No host provider/watch/timer/coalescing/readiness
+      or UI/module lifecycle integration yet. SCENE-CLIENT-2026-11-01.
 - [x] Direct EGL native-window diagnostic: recovered4-byte dimensions, fb1/
       primary-buffer profile and swap/MAU contract. Eight effects at50Hz pacing
       passed on actual display, owner confirmed upright/full-screen/smooth;

@@ -24,7 +24,26 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest milestone: [SCENE-HELPER](artifacts/reports/SCENE-HELPER-2026-11-01.md)
+Latest milestone: [SCENE-CLIENT](artifacts/reports/SCENE-CLIENT-2026-11-01.md)
+adds common/scene_client.c: one pending/result, instance tickets, nonblocking
+send/receive, copied completions, EOF shutdown and WNOHANG reap/destroy gate.
+Five strict host/sanitizer/TV groups pass, including FIFO-blocked finish/close,
+foreign-fork rejection, bad replies, send failures and target exec failure.
+Full host214 checks pass. The maintained client also completes410 actual GPU
+frames in the snapshot diagnostic, child exit0 and complete restoration.
+Same stock boot/PID1785/full framebuffer hash/pan/access/privacy; staging,
+backup/FIFOs/helpers removed. Isolated build-tv-v3/scene-client identities in
+MEMORY/report; no matching production stage rebuild.
+
+Next: integrate this client into an asynchronous provider with owned watch/reap
+timer and ABI3 quiesce. Reserve completion machinery before spawning; close IPC
+and keep the timer/context alive until reap. Service holds/copy-only results,
+transform coalescing, immutable revisions, final-frame retry and completion-driven
+first-frame readiness are still pending. No display.renderer option yet.
+tools/display/scene-probe-client.c now wraps the maintained client but is a
+BLOCKING diagnostic adapter; never move its polling/wait loops into the host.
+
+Previous milestone: [SCENE-HELPER](artifacts/reports/SCENE-HELPER-2026-11-01.md)
 adds an EGL-free executable that sanitizes inherited descriptors before loading
 the renderer DSO. The DSO remains loaded until child exit. Host/sanitizer/TV
 process fixtures and410 real TV GPU frame requests pass. Child21079 drained/
@@ -33,13 +52,9 @@ hashed. Staging/backup/helper removed, same boot/PID1785/access/privacy.
 Full host209 checks pass. Isolated build-tv-v3/scene-helper identities are in
 MEMORY/report; matching production stage and historical diagnostics unchanged.
 
-Next: implement the nonblocking parent display provider using this executable.
-The new tools/display/scene-probe-client.c is a BLOCKING diagnostic, not a host
-service. Preserve bounded pending/result slots, transform coalescing, immutable
-revision/source holds, final-frame retry and completion-driven readiness. EOF
-drains child ownership; WNOHANG reaping and ABI3 release gate must keep host loop
-nonblocking. Then integrate ui_fb and test reload/suspend/resume/failed cleanup
-on actual display. No display.renderer option exists yet; CPU remains production.
+The lower nonblocking parent now exists as SCENE-CLIENT above; host provider and
+ui_fb reload/suspend/resume/failed-cleanup integration remain open. CPU display
+is still production.
 
 Latest lower-layer milestone: [SCENE-BROKER](artifacts/reports/SCENE-BROKER-2026-11-01.md)
 adds OGS1 local IPC, sealed immutable8294400-byte RGBA images and a blocking

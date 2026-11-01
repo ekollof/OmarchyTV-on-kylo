@@ -1,0 +1,5 @@
+596643ed63c76231e6a7e31fd22d7efd  openaurora/build-tv-v3/scene-client/oa-scene-broker
+f4196fa2413cbf60efdfb136d8b56e4b  openaurora/build-tv-v3/scene-client/scene-renderer.so
+df6428c2f968b617121474b15fc933c7  openaurora/build-tv-v3/scene-client/scene-window-probe
+4068c3b34d51bb38e0b340fdeb3a2762  openaurora/build-tv-v3/scene-client/tests/scene_client
+245513b064ba9347aa7aea244d135eb7  openaurora/build-tv-v3/scene-client/tests/scene-renderer-fixture.so

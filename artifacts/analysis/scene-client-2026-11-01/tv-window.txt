@@ -1,0 +1,18 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+saved bytes=16588800 original_yoffset=0 MAU=0 backup=/tmp/oa-scene-helper-20261101/framebuffer.backup
+identity raw BGRA top=80,0,0,255 bottom=80,224,0,255 right=80,0,224,255 yoffset=0
+native type=1 frames=51 elapsed_ms=1004.92
+native type=2 frames=51 elapsed_ms=1005.07
+native type=3 frames=51 elapsed_ms=1004.90
+native type=4 frames=51 elapsed_ms=1004.86
+native type=5 frames=51 elapsed_ms=1006.75
+native type=6 frames=51 elapsed_ms=1016.43
+native type=7 frames=51 elapsed_ms=1004.81
+native type=8 frames=51 elapsed_ms=1004.80
+broker reaped status=0
+restored bytes=16588800 yoffset=0 MAU=0 region_match=1 snapshot_match=1
+probe_exit=0
