@@ -14,7 +14,8 @@ struct oa_scene_gles {
     EGLDisplay display;
     EGLSurface surface;
     EGLContext context;
-    int initialized, bound, ready;
+    int initialized, bound, ready, window, uploaded;
+    uint16_t native_window[2]; /* ICE_OsdPlaneOpen allocates width/height as four bytes */
     unsigned width, height;
     size_t bytes;
     pid_t pid;
@@ -60,16 +61,20 @@ static GLuint shader(oa_scene_gles *s, GLenum kind, const char *source)
     }
     return object;
 }
-int oa_scene_gles_open(oa_scene_gles **out, unsigned width, unsigned height)
+static int open_scene(oa_scene_gles **out, unsigned width, unsigned height, int window)
 {
     if (!out || !width || !height || width > INT_MAX || height > INT_MAX ||
-        width > SIZE_MAX / 4 / height) { errno = EINVAL; return -1; }
+        width > SIZE_MAX / 4 / height || (window && (width > UINT16_MAX || height > UINT16_MAX))) {
+        errno = EINVAL; return -1;
+    }
     if (*out) { errno = EBUSY; return -1; }
     if (eglGetCurrentContext() != EGL_NO_CONTEXT) { errno = EBUSY; return -1; }
     oa_scene_gles *s = calloc(1, sizeof *s);
     if (!s) return -1;
     s->display = EGL_NO_DISPLAY; s->surface = EGL_NO_SURFACE; s->context = EGL_NO_CONTEXT;
     s->width = width; s->height = height; s->bytes = (size_t)width * height * 4;
+    s->window = window;
+    s->native_window[0] = (uint16_t)width; s->native_window[1] = (uint16_t)height;
     s->pid = getpid(); s->thread = pthread_self(); s->operation = "allocate owner";
     *out = s; /* retain partial initialization until close succeeds */
     s->display = eglGetDisplay((EGLNativeDisplayType)(uintptr_t)1);
@@ -77,7 +82,7 @@ int oa_scene_gles_open(oa_scene_gles **out, unsigned width, unsigned height)
     if (!eglInitialize(s->display, NULL, NULL)) return fail(s, "initialize display");
     s->initialized = 1;
     if (!eglBindAPI(EGL_OPENGL_ES_API)) return fail(s, "bind ES API");
-    const EGLint attrs[] = {EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+    const EGLint attrs[] = {EGL_SURFACE_TYPE, window ? EGL_WINDOW_BIT : EGL_PBUFFER_BIT,
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL_RED_SIZE, 8, EGL_GREEN_SIZE, 8,
         EGL_BLUE_SIZE, 8, EGL_ALPHA_SIZE, 8, EGL_DEPTH_SIZE, 0, EGL_STENCIL_SIZE, 0, EGL_NONE};
     EGLConfig config;
@@ -85,8 +90,19 @@ int oa_scene_gles_open(oa_scene_gles **out, unsigned width, unsigned height)
     if (!eglChooseConfig(s->display, attrs, &config, 1, &count) || count != 1)
         return fail(s, "choose pbuffer config");
     const EGLint dimensions[] = {EGL_WIDTH, (EGLint)width, EGL_HEIGHT, (EGLint)height, EGL_NONE};
-    s->surface = eglCreatePbufferSurface(s->display, config, dimensions);
-    if (s->surface == EGL_NO_SURFACE) return fail(s, "create pbuffer");
+    if (window) {
+        const EGLint surface_attrs[] = {EGL_NONE};
+        s->surface = eglCreateWindowSurface(s->display, config,
+            (EGLNativeWindowType)(uintptr_t)s->native_window, surface_attrs);
+    } else {
+        s->surface = eglCreatePbufferSurface(s->display, config, dimensions);
+    }
+    if (s->surface == EGL_NO_SURFACE) return fail(s, "create surface");
+    EGLint actual_width = 0, actual_height = 0;
+    if (!eglQuerySurface(s->display, s->surface, EGL_WIDTH, &actual_width) ||
+        !eglQuerySurface(s->display, s->surface, EGL_HEIGHT, &actual_height) ||
+        actual_width != (EGLint)width || actual_height != (EGLint)height)
+        return fail(s, "surface dimensions");
     const EGLint version[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
     s->context = eglCreateContext(s->display, config, EGL_NO_CONTEXT, version);
     if (s->context == EGL_NO_CONTEXT) return fail(s, "create ES2 context");
@@ -140,15 +156,21 @@ int oa_scene_gles_open(oa_scene_gles **out, unsigned width, unsigned height)
     s->ready = 1;
     return 0;
 }
+int oa_scene_gles_open(oa_scene_gles **out, unsigned width, unsigned height)
+{ return open_scene(out, width, height, 0); }
+int oa_scene_gles_open_window(oa_scene_gles **out, unsigned width, unsigned height)
+{ return open_scene(out, width, height, 1); }
 int oa_scene_gles_render(oa_scene_gles *s, const uint8_t *rgba, size_t input_size,
                          int type, float progress, uint8_t *pixels, size_t output_size)
 {
     if (owned(s)) return -1;
-    if (!rgba || !pixels || input_size < s->bytes || output_size < s->bytes ||
+    if ((rgba ? input_size < s->bytes : input_size != 0) ||
+        (s->window ? pixels != NULL || output_size != 0 : !pixels || output_size < s->bytes) ||
         type < 0 || type > 8 || !isfinite(progress) || progress < 0 || progress > 1) {
         errno = EINVAL; return -1;
     }
     if (!s->ready) { errno = ENODEV; return -1; }
+    if (!rgba && !s->uploaded) { errno = ENODATA; return -1; }
     if (eglGetCurrentContext() != s->context) { errno = EBUSY; return -1; }
     float x[4] = {-1, 1, 1, -1}, y[4] = {-1, -1, 1, 1};
     oa_fs_apply(type, progress, x, y, 4);
@@ -159,10 +181,19 @@ int oa_scene_gles_render(oa_scene_gles *s, const uint8_t *rgba, size_t input_siz
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), vertices);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), vertices + 2);
     glUniform1f(s->opacity, type ? progress : 1.0f);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, (GLsizei)s->width, (GLsizei)s->height,
-                    GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+    if (rgba) {
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, (GLsizei)s->width, (GLsizei)s->height,
+                        GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+        if (gl_ok(s, "upload scene")) return -1;
+        s->uploaded = 1;
+    }
     glClear(GL_COLOR_BUFFER_BIT);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    if (s->window) {
+        if (gl_ok(s, "draw scene")) return -1;
+        if (!eglSwapBuffers(s->display, s->surface)) return fail(s, "swap window");
+        return 0;
+    }
     glReadPixels(0, 0, (GLsizei)s->width, (GLsizei)s->height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
     return gl_ok(s, "render/read scene");
 }

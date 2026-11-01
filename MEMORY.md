@@ -49,13 +49,27 @@ syntax defect.
 
 ## Development build and evidence
 
+EGL-WINDOW-2026-11-01: direct GPU display diagnostic passed, owner independently
+confirmed upright/full-screen/smooth effects. Eight types each51 presents in
+about1000.4ms at50Hz pacing. Full16588800-byte snapshot, MAU0, region and pan0
+restored; full backing MD5before/after41735daa69dc137743b59efe12db4a19. Stock
+boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/PID1785 and protection/access hashes
+remain; staging/backup/helpers removed. No production module integration or
+stage refresh. Current native binaries under build-tv-v3/egl-window:
+egl-window-probe88780bytes/5a66a935317e0623660151ffac96a926 and regression
+egl-scene-probe74504bytes/aed778d42cc3aa4e3ff8ddc995b9767c, maxGLIBC2.17.
+The regression also verifies cached textures, bounds, thread ownership and
+pbuffer reopen. Next: nonblocking owning helper/service/completion/readiness
+and module lifecycle integration. Synchronous EGL cannot run in quiesce.
+
 EGL-SCENE-2026-11-01 adds common/scene_gles.c and opt-in context/scene probes.
 The actual TV Mali-G51 passed offscreen pixel/orientation/fade/triangle and
 close/reopen checks; no native window or fbdev writes. Scene helper70384bytes/
 98e60a726b5169bf77614fd504ca17f1 (maxGLIBC2.17), context helper23032bytes/
-b0f82f027ad28d251a5ac4ea95ff7609. Both are preserved under build-tv-v3/egl-scene.
-Five1080p uploads/renders/readbacks take301..374ms; direct-window integration
-and smooth/visible acceptance remain open. Production display/stage unchanged.
+b0f82f027ad28d251a5ac4ea95ff7609. The context helper is preserved there; the
+70384byte scene helper is historical/source8a535b6 and that build path was rebuilt.
+Five1080p uploads/renders/readbacks take301..374ms. EGL-WINDOW subsequently
+validates visible native presentation; production service integration remains open.
 Final TV read retains the same boot/PID1785/access/privacy/hashes and pan0,0;
 sampled16580608-byte framebuffer prefix hash unchanged (last8192 backing bytes
 not sampled). Staging/helpers removed. Target Mali source MD5d1aa5c1679a9467ec51865d4f2120112

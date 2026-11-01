@@ -1,0 +1,2 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -idirafter /usr/include  -o build/egl-window-probe tools/display/egl-window-probe.c common/scene_gles.c common/ui_anim.c -lEGL -lGLESv2 -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -idirafter /usr/include  -o build/egl-scene-probe tools/display/egl-scene-probe.c common/scene_gles.c common/ui_anim.c -lEGL -lGLESv2 -pthread -lm

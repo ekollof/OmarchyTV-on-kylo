@@ -191,6 +191,16 @@ and the display backend converts them to BGRA framebuffer storage. Saved screens
 PNGs are already converted to RGB; do not swap their channels again. RGB565 and
 other vendor/API buffers require their own established format, not a blanket swap.
 
+EGL-WINDOW-2026-11-01 records direct GPU presentation on initialized fb1:
+display1, retained4-byte uint16 width/height native window, FRAMEBUFFER_2=/dev/fb1,
+and process-local MALI_MAU_SWITCH=0,0,0,0,0 for the verified primary two-buffer
+profile. Owner-observed eight-effect50Hz diagnostic passed with full backing/
+region/MAU/pan restoration. This is not cold/native startup or a production
+display service. Keep blocking EGL on an owning worker/helper; never put its
+destroy/swap calls in the loop or ABI3 quiesce gate. No display.renderer option
+exists yet. Pbuffer readback is bottom-up premultiplied RGBA; native BGRA storage
+was checked independently. Read the report before creating/swapping a window.
+
 ## Build and edit rules
 
 Version control is the local git repository at the workspace root. Commit after

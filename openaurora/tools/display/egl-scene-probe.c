@@ -1,6 +1,7 @@
 /* Real GPU regression/benchmark; no native window, framebuffer, swaps or HAL.
  * Deliberately opt-in, never part of make check. */
 #include <errno.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,6 +21,17 @@ static int report(oa_scene_gles *scene)
     fprintf(stderr, "%s errno=%d\n", error, errno);
     return 1;
 }
+struct foreign_call { oa_scene_gles *scene; int rejected; };
+static void *foreign_thread(void *arg)
+{
+    struct foreign_call *call = arg;
+    unsigned char input[512] = {0}, output[512];
+    oa_scene_gles *copy = call->scene;
+    call->rejected = oa_scene_gles_render(copy, input, sizeof input, 0, 1, output, sizeof output) == -1 &&
+                     errno == EPERM;
+    call->rejected = call->rejected && oa_scene_gles_close(&copy) == -1 && errno == EPERM && copy == call->scene;
+    return NULL;
+}
 static int pixel_tests(oa_scene_gles *scene)
 {
     unsigned char input[8*16*4], output[sizeof input];
@@ -29,8 +41,19 @@ static int pixel_tests(oa_scene_gles *scene)
             input[at] = (unsigned char)(x*16); input[at+1] = (unsigned char)(y*16);
             input[at+2] = 80; input[at+3] = 255;
         }
+    if (oa_scene_gles_render(scene, NULL, 0, 0, 1, output, sizeof output) != -1 || errno != ENODATA) return 1;
+    struct foreign_call call = {.scene = scene};
+    pthread_t thread;
+    if (pthread_create(&thread, NULL, foreign_thread, &call)) return 1;
+    if (pthread_join(thread, NULL) || !call.rejected) {
+        /* A broken close guard could have freed the parent's owner. Do not
+         * dereference it during failed-test cleanup or abandon a live join. */
+        fputs("GPU thread-ownership regression failed\n", stderr);
+        _Exit(1);
+    }
     for (int type = 0; type <= 8; type++) {
-        if (oa_scene_gles_render(scene, input, sizeof input, type, 1, output, sizeof output))
+        if (oa_scene_gles_render(scene, type ? NULL : input, type ? 0 : sizeof input,
+                                  type, 1, output, sizeof output))
             return report(scene);
         for (unsigned y = 0; y < 16; y++)
             if (memcmp(output + (15-y)*8*4, input + y*8*4, 8*4)) {
@@ -52,7 +75,7 @@ static int pixel_tests(oa_scene_gles *scene)
     if (top[0] || top[1] || top[2] < 39 || top[2] > 41 || top[3] < 127 || top[3] > 128) return 1;
     if (oa_scene_gles_render(scene, input, sizeof input-1, 6, 0.5f, output, sizeof output) != -1 ||
         errno != EINVAL) return 1;
-    puts("small GPU identity/orientation, triangle/filter, fade and bounds checks passed");
+    puts("small GPU identity/orientation, triangle/filter, fade, cached texture, bounds and thread ownership passed");
     return 0;
 }
 int main(void)

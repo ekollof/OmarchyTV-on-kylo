@@ -404,13 +404,22 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       getWidgetStandardName's first-present rule selects type 4 for DialogLauncher.svg
       (animation_slide_up_fade_in); ui.fs_type remains an override.
 - [ ] Complete accelerated scene presentation and visible animation acceptance.
-      EGL-SCENE implements an owned offscreen Mali renderer, native pixel tests/
-      close-reopen and1080p upload/readback benchmarks. It is not wired into a
-      module; trace native-window creation, swap and restoration before direct
-      presentation. Keep failed-close ownership/code alive; no forced cleanup.
-      General CPU keystone/scale remain slow; optimized y-slide batch is399.68ms
-      for five presents, not proof of the recovered10ms cadence. Verify vendor
-      frame sequences, alpha/edge precision, interaction and cold/resume ownership.
+      EGL-WINDOW now proves direct native presentation on the initialized layer.
+      Integrate an owning EGL worker, nonblocking quiescence, bounded/coalesced
+      async frame/completion and readiness semantics before production service
+      wiring. No display.renderer switch exists yet. Preserve failed-close
+      ownership; test module reload/suspend/resume/failures on hardware.
+      CPU reference transforms remain slow; direct-window diagnostic meets its
+      own50Hz target. Measure controller sampling, renderer and physical refresh
+      separately;10ms sampling is not100Hz scanout. Verify vendor frame sequences,
+      alpha/edge precision, interaction and cold/resume ownership.
+- [x] Direct EGL native-window diagnostic: recovered4-byte dimensions, fb1/
+      primary-buffer profile and swap/MAU contract. Eight effects at50Hz pacing
+      passed on actual display, owner confirmed upright/full-screen/smooth;
+      full16588800-byte snapshot/region/MAU/pan restored and separately hashed.
+      Native cached-texture/pbuffer/thread-ownership regressions also pass.
+      Prototype only; not the production display module or independent startup.
+      EGL-WINDOW-2026-11-01.
 - [ ] Audit pixel-format boundaries as UI work expands: raw 32bpp OSD is BGRA;
       OAI1/blit inputs are RGBA; saved screenshots are RGB. Preserve provenance
       of pre-fix red/blue-swapped captures and verify other API formats explicitly.

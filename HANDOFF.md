@@ -25,21 +25,29 @@ I/O only. mod_cec does not open hardware.
 ## Immediate continuation point
 
 Owner resumed the goal and reaffirmed real display/hardware testing. Latest
-milestone: [EGL-SCENE](artifacts/reports/EGL-SCENE-2026-11-01.md) traces target
-libmali and implements common/scene_gles.c, an owned offscreen ES2 renderer.
-Actual TV context/pixel/orientation/fade/triangle and close/reopen checks pass.
-Five1080p uploads/renders/readbacks take301..374ms; avoiding readback remains
-necessary for smooth presentation. The helper never accesses a native window
-or framebuffer. It is not wired into production display or a host service.
-Failure retains partial EGL ownership; future adapters must close/retry before
-unloading code. Input top-down RGBA; GPU readback bottom-up premultiplied RGBA.
+milestone: [EGL-WINDOW](artifacts/reports/EGL-WINDOW-2026-11-01.md) proves direct
+native GPU presentation on the actual display. The owner watched all eight
+effects and confirmed upright, full-screen and smooth output. Each effect ran
+51 presents in about1000.4ms at our50Hz pacing. Full16588800-byte backing,
+region, primary MAU0 and original pan0 were restored; independent full MD5
+before/after41735daa69dc137743b59efe12db4a19. Same stock boot/PID/access/privacy.
+All temporary probe/backup files removed. No production stage rebuild/deployment.
 
-Native binaries under build-tv-v3/egl-scene: egl-probe23032bytes/
-b0f82f027ad28d251a5ac4ea95ff7609 and egl-scene-probe70384bytes/
-98e60a726b5169bf77614fd504ca17f1. Staging removed and helpers exited; same
-stock boot/PID/access/privacy, pan0,0 and framebuffer-prefix hash unchanged.
-The prefix excludes the final8192 backing bytes; do not claim a full snapshot
-comparison here. No production stage rebuild/deployment. New Ghidra project
+common/scene_gles.c now supports explicit pbuffer or native-window ownership,
+retained failed-close handles and cached textures. Native dimensions are four
+bytes (uint16 width/height). The diagnostic sets process-local FRAMEBUFFER_2
+to/dev/fb1 and MALI_MAU_SWITCH=0,0,0,0,0, using the existing primary two buffers.
+Input top-down RGBA; pbuffer readback bottom-up premultiplied RGBA; native raw
+BGRA corner checks passed. The production display module is still CPU-based;
+no display.renderer switch or async GPU service exists yet.
+
+Current tested binaries under build-tv-v3/egl-window: egl-window-probe88780bytes/
+5a66a935317e0623660151ffac96a926, egl-scene-probe74504bytes/
+aed778d42cc3aa4e3ff8ddc995b9767c. Both maxGLIBC2.17. The updated pbuffer probe
+also passes cached-texture/empty-cache, bounds, foreign-thread render/close
+rejection and prior pixel/reopen checks on actual GPU. The old70384byte pbuffer
+identity is historical, source commit8a535b6; its initial build path was rebuilt.
+New Ghidra project
 ghidra_mali/Mali/libmali.so is only partially analyzed (180s timeout). Use exact
 Thumb extraction and inspect errors; DumpThumbFirmware.java makes temporary
 metadata under readOnly and logs discarded changes. Do not repeat full analysis
@@ -64,10 +72,17 @@ MD547dcd8ca304e67f42eed48c3a3172b33, maxGLIBC2.17, preserved with ARM units
 under build-tv-v3/review-scene. Production stage.md5 below is unchanged.
 Staging removed, no helper left; same stock boot/PID/access/privacy protections.
 
-Next concrete steps: trace the native EGL window lifecycle (display1, window
-identifier and fbdev swap/restore) before direct accelerated presentation.
-The pbuffer itself is proven; do not blindly swap a stock-owned native window.
-Then verify visible frame sequences/cadence and remaining vendor screens/
+Next concrete step: integrate an asynchronous GPU display provider. Prefer a
+separate owning helper process, following audio_mixer/broker's nonblocking IPC
+and WNOHANG lifecycle: it isolates Mali's process-global environment/cache and
+driver threads from reloadable DSOs. The lower renderer is synchronous; never
+call blocking swap/destroy from the host loop or its ABI3 quiesce gate. Define
+bounded immutable frame transfer/cached revisions, coalescing and completion/
+first-frame readiness before wiring ui_fb. Existing present() means commit,
+so enqueue success cannot masquerade as that receipt. Preserve source holds,
+pending final frames and failed-close ownership through stop/reload/suspend.
+Then verify the actual module lifecycle on the real display, vendor frame
+sequences/cadence and remaining screens/
 broadcast/settings, native audio/CEC ownership and independent startup. Do not
 repeat the general CPU warp benchmark as a way to establish smooth animations.
 No TV probe or upload remains pending. Native-window entrypoint research is in

@@ -46,6 +46,25 @@ strict boundaries and the unresolved absolute-phase/bootstrap limits.
 Pixel formats are boundary-specific: all measured raw 32bpp OSD framebuffers are
 BGRA (B,G,R,A), including fb1; OAI1 assets and display blit inputs are straight
 RGBA. The display backend converts RGBA inputs into BGRA framebuffer bytes.
+
+`common/scene_gles.c` is a lower synchronous owner, used only by opt-in
+diagnostics so far. EGL-SCENE establishes its pbuffer/pixel lifecycle;
+EGL-WINDOW establishes direct display1 presentation with the retained4-byte
+native window, process-local primary-buffer profile and cached texture. The
+owner confirmed smooth full-screen effects at the diagnostic's50Hz pacing;
+the full original framebuffer/region/MAU/pan were restored. GPU readback is
+bottom-up premultiplied RGBA; native-window output was independently checked
+as BGRA. Production display services still use the CPU backend.
+
+Native integration requires a nonblocking provider with an owning worker/helper,
+bounded immutable frame transfer, cache revisions and completion receipts.
+Prefer separate exec ownership to isolate Mali's process-global profile/cache
+and driver threads. Reuse broker-style IPC/WNOHANG lifecycle; retain unfinished
+EGL cleanup before releasing the helper/DSO. Existing present() means commit,
+so async enqueue success needs a distinct contract and cannot acknowledge
+ui_fb/supervisor readiness. The10ms controller sampler does not mandate100Hz
+physical scanout. Full vendor sequence, module reload and cold/resume acceptance
+remain open.
 tvshot decodes raw BGRA and saves ordinary RGB PNGs, which must not be swapped
 again. RGB565 and other vendor/API buffers retain their independently established
 formats. Pre-correction tvshot captures have red/blue swapped; preserve provenance.
