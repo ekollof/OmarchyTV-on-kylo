@@ -1,0 +1,61 @@
+
+/tmp/opencode/ker1_sym.elf:     file format elf32-littlearm
+
+
+Disassembly of section .kernel:
+
+c03aa37c <drm_gem_private_object_init>:
+c03aa37c:	e1a0c00d 	mov	ip, sp
+c03aa380:	e92dd8f0 	push	{r4, r5, r6, r7, fp, ip, lr, pc}
+c03aa384:	e24cb004 	sub	fp, ip, #4
+c03aa388:	e52de004 	push	{lr}		; (str lr, [sp, #-4]!)
+c03aa38c:	ebf1b299 	bl	c0016df8 <__gnu_mcount_nc>
+c03aa390:	e7eb5052 	ubfx	r5, r2, #0, #12
+c03aa394:	e1a04001 	mov	r4, r1
+c03aa398:	e3550000 	cmp	r5, #0
+c03aa39c:	0a000000 	beq	c03aa3a4 <drm_gem_private_object_init+0x28>
+c03aa3a0:	e7f001f2 	udf	#18
+c03aa3a4:	e2816010 	add	r6, r1, #16
+c03aa3a8:	e3a03001 	mov	r3, #1
+c03aa3ac:	e5810008 	str	r0, [r1, #8]
+c03aa3b0:	e1a00006 	mov	r0, r6
+c03aa3b4:	e581500c 	str	r5, [r1, #12]
+c03aa3b8:	e5813000 	str	r3, [r1]
+c03aa3bc:	e5815004 	str	r5, [r1, #4]
+c03aa3c0:	e5812070 	str	r2, [r1, #112]	; 0x70
+c03aa3c4:	e3a01060 	mov	r1, #96	; 0x60
+c03aa3c8:	ebfcf974 	bl	c02e89a0 <__memzero>
+c03aa3cc:	e5845068 	str	r5, [r4, #104]	; 0x68
+c03aa3d0:	e1a00006 	mov	r0, r6
+c03aa3d4:	e59f2008 	ldr	r2, [pc, #8]	; c03aa3e4 <drm_gem_private_object_init+0x68>
+c03aa3d8:	e59f1008 	ldr	r1, [pc, #8]	; c03aa3e8 <drm_gem_private_object_init+0x6c>
+c03aa3dc:	ebf321f5 	bl	c0072bb8 <__rwlock_init>
+c03aa3e0:	e89da8f0 	ldm	sp, {r4, r5, r6, r7, fp, sp, pc}
+c03aa3e4:	c122d2d0 	ldrdgt	sp, [r2, -r0]!
+c03aa3e8:	c085bfd6 	ldrdgt	fp, [r5], r6
+
+c03aa3ec <drm_gem_object_init>:
+c03aa3ec:	e1a0c00d 	mov	ip, sp
+c03aa3f0:	e92dd830 	push	{r4, r5, fp, ip, lr, pc}
+c03aa3f4:	e24cb004 	sub	fp, ip, #4
+c03aa3f8:	e24dd008 	sub	sp, sp, #8
+c03aa3fc:	e52de004 	push	{lr}		; (str lr, [sp, #-4]!)
+c03aa400:	ebf1b27c 	bl	c0016df8 <__gnu_mcount_nc>
+c03aa404:	e1a04001 	mov	r4, r1
+c03aa408:	e1a05002 	mov	r5, r2
+c03aa40c:	ebffffda 	bl	c03aa37c <drm_gem_private_object_init>
+c03aa410:	e3a03602 	mov	r3, #2097152	; 0x200000
+c03aa414:	e1a02005 	mov	r2, r5
+c03aa418:	e58d3000 	str	r3, [sp]
+c03aa41c:	e3a03000 	mov	r3, #0
+c03aa420:	e59f0014 	ldr	r0, [pc, #20]	; c03aa43c <drm_gem_object_init+0x50>
+c03aa424:	ebf62752 	bl	c0134174 <shmem_file_setup>
+c03aa428:	e3700a01 	cmn	r0, #4096	; 0x1000
+c03aa42c:	9584000c 	strls	r0, [r4, #12]
+c03aa430:	93a00000 	movls	r0, #0
+c03aa434:	e24bd014 	sub	sp, fp, #20
+c03aa438:	e89da830 	ldm	sp, {r4, r5, fp, sp, pc}
+c03aa43c:	c085bfe5 	addgt	fp, r5, r5, ror #31
+
+c03aa440 <drm_gem_init>:
+c03aa440:	e1a0c00d 	mov	ip, sp

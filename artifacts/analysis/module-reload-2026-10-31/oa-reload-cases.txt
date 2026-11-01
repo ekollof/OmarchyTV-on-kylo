@@ -1,0 +1,118 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-strict/tests/reload tests/reload.c build-strict/core/check.o build-strict/core/control.o build-strict/core/host.o build-strict/core/module.o -ldl -pthread -Wl,--wrap=malloc
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -o build-strict/tests/mod_reload_fixture.so tests/reload_fixture.c 
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DRELOAD_WITHOUT_RESTORE -fPIC -shared -o build-strict/tests/mod_reload_no_restore.so tests/reload_fixture.c 
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DRELOAD_RENAMED -fPIC -shared -o build-strict/tests/mod_reload_renamed.so tests/reload_fixture.c 
+[874674] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874674] INFO host         unloaded reload_fixture
+[874674] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874674] INFO host         reload_fixture: restored 4 bytes of state
+[874674] INFO host         reload_fixture: reloaded (loaded)
+[874674] INFO host         started reload_fixture
+[874674] INFO host         stopped reload_fixture
+[874674] INFO host         unloaded reload_fixture
+[874674] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874674] INFO host         reload_fixture: restored 4 bytes of state
+[874674] INFO host         reload_fixture: reloaded (loaded)
+[874674] INFO host         unloaded reload_fixture
+[874674] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874674] INFO host         started reload_fixture
+[874674] INFO host         stopped reload_fixture
+[874674] INFO host         unloaded reload_fixture
+[874674] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874674] INFO host         reload_fixture: restored 4 bytes of state
+[874674] INFO host         started reload_fixture
+[874674] INFO host         reload_fixture: reloaded (started)
+[874674] INFO host         stopped reload_fixture
+[874674] INFO host         unloaded reload_fixture
+[874674] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874674] INFO host         started reload_fixture
+[874674] INFO host         stopped reload_fixture
+[874674] INFO host         unloaded reload_fixture
+[874674] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874674] INFO host         reload_fixture: restored 4 bytes of state
+[874674] INFO host         reload_fixture: reloaded (suspended)
+[874674] INFO host         started reload_fixture
+[874674] INFO host         stopped reload_fixture
+[874674] INFO host         unloaded reload_fixture
+[874674] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874674] INFO host         started reload_fixture
+[874674] INFO host         stopped reload_fixture
+[874674] INFO host         unloaded reload_fixture
+[874674] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874674] INFO host         reload_fixture: restored 4 bytes of state
+[874674] INFO host         reload_fixture: reloaded (suspended)
+[874674] ERR  host         reload_fixture: start() failed (-1)
+[874674] WARN host         reload_fixture: resume failed (-1)
+[874674] INFO host         started reload_fixture
+[874674] INFO host         stopped reload_fixture
+[874674] INFO host         unloaded reload_fixture
+[874674] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874674] INFO host         reload_fixture: restored 4 bytes of state
+[874674] INFO host         reload_fixture: reloaded (suspended)
+[874674] INFO host         stopped reload_fixture
+[874674] INFO host         started reload_fixture
+[874674] INFO host         stopped reload_fixture
+[874674] INFO host         unloaded reload_fixture
+[874674] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874675] INFO host         started reload_fixture
+[874675] INFO host         stopped reload_fixture
+[874675] INFO host         unloaded reload_fixture
+[874675] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874675] INFO host         reload_fixture: restored 4 bytes of state
+[874675] INFO host         reload_fixture: reloaded (suspended)
+[874675] INFO host         stopped reload_fixture
+[874675] INFO host         unloaded reload_fixture
+[874675] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874675] INFO host         reload_fixture: restored 4 bytes of state
+[874675] INFO host         reload_fixture: reloaded (suspended)
+[874675] INFO host         stopped reload_fixture
+[874675] INFO host         unloaded reload_fixture
+[874675] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874675] INFO host         started reload_fixture
+[874675] ERR  host         reload_fixture: cannot allocate saved state; reload canceled
+[874675] ERR  host         reload_fixture: state size 65537 exceeds 65536; reload canceled
+[874675] ERR  host         reload_fixture: saved state grew beyond capacity; reload canceled
+[874675] INFO host         stopped reload_fixture
+[874675] INFO host         unloaded reload_fixture
+[874675] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874675] INFO host         started reload_fixture
+[874675] INFO host         stopped reload_fixture
+[874675] INFO host         unloaded reload_fixture
+[874675] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874675] ERR  host         reload_fixture: restore() failed or absent (-7)
+[874675] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[874675] INFO host         unloaded reload_fixture
+[874675] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874675] INFO host         started reload_fixture
+[874675] INFO host         stopped reload_fixture
+[874675] INFO host         unloaded reload_fixture
+[874675] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[874675] INFO host         reload_fixture: restored 4 bytes of state
+[874675] ERR  host         reload_fixture: start() failed (-1)
+[874675] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[874675] INFO host         unloaded reload_fixture
+[874675] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-4fU9ae/module.so)
+[874675] INFO host         started reload_fixture
+[874675] INFO host         stopped reload_fixture
+[874675] INFO host         unloaded reload_fixture
+[874675] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-4fU9ae/module.so)
+[874675] ERR  host         reload_fixture: restore() failed or absent (-1)
+[874675] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[874675] INFO host         unloaded reload_fixture
+[874675] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-4fU9ae/module.so)
+[874675] INFO host         started reload_fixture
+[874675] INFO host         stopped reload_fixture
+[874675] INFO host         unloaded reload_fixture
+[874675] INFO host         loaded reload_renamed vtest (/tmp/openaurora-reload-4fU9ae/module.so)
+[874675] ERR  host         reload_fixture: replacement name 'reload_renamed' differs
+[874675] WARN host         reload_renamed: force unload, consumers may hold stale pointers
+[874675] INFO host         unloaded reload_renamed
+  ok   never-started and stopped reload preserve loaded state without activation
+  ok   running reload restores state and starts the new instance
+  ok   suspended reload defers start until wake; start on suspended resumes once
+  ok   deferred start can fail/retry or be stopped before touching hardware
+  ok   repeated suspended reload purges posts; unload skips stop on never-started candidate
+  ok   allocation/oversized/growing state failures preserve the working module
+  ok   restore failure is reported and candidate registrations/posts are swept
+  ok   replacement start failure cleans the candidate instead of leaving partial state
+  ok   changed binary without restore or with a new identity is rejected and cleaned

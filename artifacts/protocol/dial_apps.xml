@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<application_list>
+	<application name="YouTube" prefix_url="https://www.youtube.com/tv">
+	</application>
+	<application name="Netflix" prefix_url="http://www.netflix.com">
+	</application>
+	<application name="org.smarttv-alliance.Mixgum" prefix_url="http://www.mixgum.com/stadial.html">
+	</application>
+	<application name="uk.co.bbc.iPlayer" prefix_url="http://www.bbc.co.uk/iplayer">
+	</application>
+	<application name="uk.co.bbc.Sport" prefix_url="http://www.bbc.co.uk/tvapp/sport">
+	</application>
+	<application name="uk.co.bbc.News" prefix_url="http://www.bbc.co.uk/tvapp/news">
+	</application>
+	<application name="uk.co.bbc.Catal" prefix_url="https://www.live.bbctvapps.co.uk/catal/?config=precert">
+	</application>
+	<application name="vr" prefix_url="NO URL FOR SMARCENTER">
+	</application>
+</application_list>

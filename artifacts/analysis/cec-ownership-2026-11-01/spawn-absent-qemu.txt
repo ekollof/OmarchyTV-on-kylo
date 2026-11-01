@@ -1,0 +1,2 @@
+spawn rc=0 child=109476
+waited=109476 status=32512

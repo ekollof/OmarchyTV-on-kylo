@@ -1,0 +1,71 @@
+#!/bin/sh
+# /cgi-bin/stats - the TV's own system stats, in the JSON shape OmarchyTV's PC panel expects.
+# Served by the TV's busybox httpd; no laptop, no python, no network.
+#
+#   { "host", "kernel", "cpu", "ram", "temp", "uptime", "diskConf", "diskBuffer", "ts" }
+#
+# cpu is the delta since the previous call (the app polls every few seconds); on the first call
+# after boot it falls back to the 1-minute load average.
+echo "Content-Type: application/json"
+echo
+
+PREV=/tmp/.tvstat_prev
+
+# ---- cpu -------------------------------------------------------------------
+set -- $(head -n 1 /proc/stat)
+shift                                               # drop the leading "cpu"
+u=${1:-0}; n=${2:-0}; s=${3:-0}; i=${4:-0}; io=${5:-0}; q=${6:-0}; sq=${7:-0}; st=${8:-0}
+idleall=$((i + io))
+total=$((u + n + s + i + io + q + sq + st))
+
+cpu=""
+if [ -f "$PREV" ]; then
+  read pidle ptotal < "$PREV"
+  dt=$((total - ptotal))
+  di=$((idleall - pidle))
+  if [ "$dt" -gt 0 ]; then
+    cpu=$(( (100 * (dt - di)) / dt ))
+    [ "$cpu" -lt 0 ] && cpu=0
+    [ "$cpu" -gt 100 ] && cpu=100
+  fi
+fi
+echo "$idleall $total" > "$PREV"
+if [ -z "$cpu" ]; then
+  ncpu=$(grep -c '^processor' /proc/cpuinfo 2>/dev/null)
+  [ -z "$ncpu" ] && [ -r /proc/cpuinfo ] && ncpu=$(awk '/^processor/{c++} END{print c+0}' /proc/cpuinfo)
+  [ -z "$ncpu" ] && ncpu=1
+  cpu=$(awk -v n="$ncpu" '{c=($1*100)/n; if (c>100) c=100; printf "%d", c}' /proc/loadavg 2>/dev/null)
+  [ -z "$cpu" ] && cpu=0
+  [ "$cpu" -lt 0 ] && cpu=0
+  [ "$cpu" -gt 100 ] && cpu=100
+fi
+
+# ---- ram -------------------------------------------------------------------
+mt=$(awk '/^MemTotal:/{print $2}' /proc/meminfo 2>/dev/null)
+ma=$(awk '/^MemAvailable:/{print $2}' /proc/meminfo 2>/dev/null)
+[ -z "$ma" ] && ma=$(awk '/^MemFree:/{print $2}' /proc/meminfo 2>/dev/null)
+ram=0
+if [ -n "$mt" ] && [ "$mt" -gt 0 ]; then ram=$(( (mt - ma) * 100 / mt )); fi
+
+# ---- extras ----------------------------------------------------------------
+host=$(head -n 1 /conf/friendlyname.txt 2>/dev/null | tr -d '\r\n' | sed 's/^FriendlyName:[[:space:]]*//')
+[ -z "$host" ] && host=$(uname -n 2>/dev/null)
+case "$host" in ""|"(none)"|localhost) host="TELEFUNKEN-TV" ;; esac
+kern=$(uname -r 2>/dev/null)
+up=$(awk '{printf "%d", $1}' /proc/uptime 2>/dev/null); [ -z "$up" ] && up=0
+
+temp=""
+for z in /sys/class/thermal/thermal_zone*/temp; do
+  [ -r "$z" ] || continue
+  t=$(cat "$z" 2>/dev/null)
+  [ -z "$t" ] && continue
+  [ "$t" -gt 1000 ] && t=$((t / 1000))
+  if [ -z "$temp" ] || [ "$t" -gt "$temp" ]; then temp=$t; fi
+done
+
+free_conf=$(df -k /conf 2>/dev/null | awk 'NR==2{print $4}')
+free_buf=$(df -k /buffer 2>/dev/null | awk 'NR==2{print $4}')
+now=$(date +%s 2>/dev/null)
+
+printf '{"host":"%s","kernel":"%s","cpu":%s,"ram":%s,"deploy":"up %ss","temp":%s,"uptime":%s,"diskConf":%s,"diskBuffer":%s,"ts":%s}\n' \
+  "$host" "$kern" "$cpu" "$ram" "$up" "${temp:-null}" "$up" "${free_conf:-0}" "${free_buf:-0}" "${now:-0}"

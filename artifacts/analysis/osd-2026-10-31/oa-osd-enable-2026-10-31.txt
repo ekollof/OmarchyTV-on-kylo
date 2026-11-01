@@ -1,0 +1,631 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (1381 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (3066 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts
+    /tmp/opencode/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_proj/Aurora (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_proj/Aurora (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFuncs.java 'PLAT_OSD_Init' 'PLAT_OSD_Plane_Enable' 'plat_OSDPlaneInit' 'plat_OSDPlaneMute' 'plat_OSDPlaneSet'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/opencode/ghidra_scripts/DumpFuncs.java (HeadlessAnalyzer)  
+INFO  DumpFuncs.java> 
+===== PLAT_OSD_Init : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- PLAT_OSD_Init @ 008af1e8 (GhidraScript)  
+INFO  DumpFuncs.java> 
+void PLAT_OSD_Init(void)
+
+{
+  undefined4 uVar1;
+  char *pcVar2;
+  int iVar3;
+  int iVar4;
+  int iVar5;
+  ushort local_128;
+  ushort local_126;
+  int local_124;
+  int local_120;
+  int local_11c;
+  int local_118;
+  int local_114;
+  undefined4 local_110;
+  undefined4 local_10c;
+  undefined4 local_108;
+  undefined1 auStack_104 [4];
+  undefined1 auStack_100 [4];
+  undefined4 local_fc;
+  undefined4 local_f8;
+  int local_f4;
+  int local_f0;
+  undefined4 local_ec;
+  undefined4 local_e8;
+  int local_e4;
+  int local_e0;
+  undefined4 local_dc;
+  undefined4 local_d8;
+  int local_d4;
+  int local_d0;
+  undefined1 auStack_cc [4];
+  undefined1 auStack_c8 [4];
+  undefined1 auStack_c4 [4];
+  undefined1 auStack_c0 [4];
+  undefined1 auStack_bc [4];
+  undefined1 auStack_b8 [4];
+  undefined1 auStack_b4 [4];
+  undefined1 auStack_b0 [4];
+  undefined1 auStack_ac [8];
+  undefined4 local_a4;
+  undefined4 local_a0;
+  int local_9c;
+  int local_98;
+  int local_94;
+  int local_90;
+  undefined4 local_84;
+  undefined4 local_80;
+  uint local_7c;
+  uint local_78;
+  undefined4 local_74;
+  undefined4 local_6c;
+  int local_24;
+  
+  local_24 = __stack_chk_guard;
+  if ((int)((uint)DAT_0197d5c2 << 0x1f) < 0) {
+    printf("[PLAT_OSD][TRACE] %s() [%d]\n","PLAT_OSD_Init",0x145);
+  }
+  local_128 = 0;
+  local_126 = 0;
+  if (DAT_0197d5c0 == '\0') {
+    PLAT_SP_DebugRegisterMenu(2,0x100000,"PLAT_OSD",&DAT_0176b0f8);
+    pcVar2 = getenv("OSD_Parameter");
+    if (pcVar2 == (char *)0x0) {
+      if ((int)((uint)DAT_0197d5c2 << 0x1e) < 0) {
+        printf("[PLAT_OSD][MSG] %s() OSD_Parameter Env=Null ,use default value\n[%d]\n",
+               "PLAT_OSD_Init",0x15a);
+      }
+      uVar1 = plat_osd_init_Temp();
+      goto LAB_008af232;
+    }
+    DAT_0197d5bc = PLAT_OS_CreateSemaphore(1,"OSD_BUSY");
+    iVar3 = plat_OSDPlaneInit(0);
+    if (iVar3 != 0) {
+      printf("\x1b[1;37;44m [PLAT_OSD_ERR]\x1b[m %s() fail to init OSDPlaneID_OSD0[%d]\n",
+             "PLAT_OSD_Init",0x163);
+      uVar1 = 0x23;
+      goto LAB_008af232;
+    }
+    iVar3 = plat_OSDPlaneInit(1);
+    if (iVar3 != 0) {
+      printf("\x1b[1;37;44m [PLAT_OSD_ERR]\x1b[m %s() fail to init OSDPlaneID_OSD1[%d]\n",
+             "PLAT_OSD_Init",0x169);
+      uVar1 = 0x23;
+      goto LAB_008af232;
+    }
+    iVar3 = plat_OSDPlaneInit(2);
+    if (iVar3 != 0) {
+      printf("\x1b[1;37;44m [PLAT_OSD_ERR]\x1b[m %s() fail to init OSDPlaneID_OSD2[%d]\n",
+             "PLAT_OSD_Init",0x16f);
+      uVar1 = 0x23;
+      goto LAB_008af232;
+    }
+    iVar3 = NDOSD_EnableProtectionArea(0,0);
+    if (iVar3 == 0) {
+      printf("\x1b[1;37;44m [PLAT_OSD_ERR]\x1b[m %s() fail to disable ND_GFX0 protection area bit[%d]\n"
+             ,"PLAT_OSD_Init",0x175);
+      uVar1 = 0x23;
+      goto LAB_008af232;
+    }
+    iVar3 = NDOSD_EnableProtectionArea(1,0);
+    if (iVar3 == 0) {
+      printf("\x1b[1;37;44m [PLAT_OSD_ERR]\x1b[m %s() fail to disable ND_GFX1 protection area bit[%d]\n"
+             ,"PLAT_OSD_Init",0x17b);
+      uVar1 = 0x23;
+      goto LAB_008af232;
+    }
+    iVar3 = NDOSD_EnableProtectionArea(2,0);
+    if (iVar3 == 0) {
+      printf("\x1b[1;37;44m [PLAT_OSD_ERR]\x1b[m %s() fail to disable ND_GFX2 protection area bit[%d]\n"
+             ,"PLAT_OSD_Init",0x181);
+      uVar1 = 0x23;
+      goto LAB_008af232;
+    }
+    sscanf(pcVar2,
+           "main:(%u,%u,%u,%u,%d)%*[ \t]sub:(%u,%u,%u,%u,%d)%*[ \t]txt:(%u,%u,%u,%u,%d)%*[ \t]cur1:(%u,%u,%u,%u,%d)%*[ \t]cur2:(%u,%u,%u,%u,%d)"
+           ,&local_fc,&local_f8,&local_f4,&local_f0,&local_110,&local_ec,&local_e8,&local_e4,
+           &local_e0,&local_10c,&local_dc,&local_d8,&local_d4,&local_d0,&local_108,auStack_cc,
+           auStack_c8,auStack_c4,auStack_c0,auStack_104,auStack_bc,auStack_b8,auStack_b4,auStack_b0,
+           auStack_100);
+    iVar3 = PLAT_VIU_GetPanelExtraStruct();
+    if (*(char *)(iVar3 + 0x10) == '\0') {
+      PLAT_VOUT_GetPanelResolution(&local_128,&local_126);
+    }
+    else {
+      puts("PLAT_OSD_Init in separate OSD mode ");
+      local_128 = 0x780;
+      local_126 = 0x438;
+    }
+    local_7c = (uint)local_128;
+    local_78 = (uint)local_126;
+    local_74 = 2;
+    local_6c = 0;
+    local_84 = 0;
+    local_80 = 0;
+    if ((local_f4 != 0) && (local_f0 != 0)) {
+      local_90 = local_f0;
+      local_98 = local_f0;
+      local_94 = local_f4;
+      local_9c = local_f4;
+      local_a4 = local_fc;
+      local_a0 = local_f8;
+      plat_OSDPlaneSetMuteStatus(0,local_110);
+      plat_OSDPlaneSet(0,auStack_ac);
+    }
+    if ((local_e4 != 0) && (local_e0 != 0)) {
+      local_90 = local_e0;
+      local_98 = local_e0;
+      local_94 = local_e4;
+      local_9c = local_e4;
+      local_a4 = local_ec;
+      local_a0 = local_e8;
+      plat_OSDPlaneSetMuteStatus(1,local_10c);
+      plat_OSDPlaneSet(1,auStack_ac);
+    }
+    if ((local_d4 != 0) && (local_d0 != 0)) {
+      local_90 = local_d0;
+      local_98 = local_d0;
+      local_94 = local_d4;
+      local_9c = local_d4;
+      local_a4 = local_dc;
+      local_a0 = local_d8;
+      plat_OSDPlaneSetMuteStatus(2,local_108);
+      plat_OSDPlaneSet(2,auStack_ac);
+    }
+    pcVar2 = getenv("MALI_MAU_SWITCH");
+    if (pcVar2 != (char *)0x0) {
+      sscanf(pcVar2,"%d,%d,%d,%d,%d",&local_124,&local_120,&local_11c,&local_118,&local_114);
+      iVar3 = local_11c;
+      iVar4 = local_118;
+      iVar5 = local_114;
+      printf("[PLAT_OSD][DEFAULT] %s() MAU_SWITCH (%d,%d,%d,%d,%d)\n","PLAT_OSD_Init",local_124,
+             local_120,local_11c,local_118,local_114);
+      DAT_0197d5c1 = (((local_124 != 0 || local_120 != 0) || local_11c != 0) || local_118 != 0) ||
+                     local_114 != 0;
+      printf("[PLAT_OSD][DEFAULT] gbMAUSwitchEnable=%d\n",(uint)(byte)DAT_0197d5c1,&DAT_0197d5c1,
+             (uint)(byte)DAT_0197d5c1,iVar3,iVar4,iVar5);
+    }
+    DAT_0197d5c0 = '\x01';
+    if (((uint)gPlatTraceMask & 0x4000) != 0) {
+      PLAT_SP_DebugWrite(0,"%s %s %s",DAT_008af608,"PLAT_OSD_Init","FUNCTION FINISH");
+    }
+  }
+  uVar1 = 0;
+LAB_008af232:
+  if (local_24 != __stack_chk_guard) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar1);
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== PLAT_OSD_Plane_Enable : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- PLAT_OSD_Plane_Enable @ 008af8fc (GhidraScript)  
+INFO  DumpFuncs.java> 
+void PLAT_OSD_Plane_Enable(int param_1,uint param_2)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  int iVar3;
+  
+  iVar1 = __stack_chk_guard;
+  if ((int)((uint)DAT_0197d5c2 << 0x1f) < 0) {
+    printf("[PLAT_OSD][TRACE] %s() enPlaneID=%d,b8Show=%d[%d]\n","PLAT_OSD_Plane_Enable",param_1,
+           param_2,0x20f);
+  }
+  PLAT_OS_SemaphoreWait(DAT_0197d5bc);
+  if (param_1 == 1) {
+    uVar2 = 0;
+  }
+  else if (param_1 == 2) {
+    uVar2 = 2;
+  }
+  else {
+    uVar2 = 1;
+  }
+  iVar3 = plat_OSDPlaneMute(uVar2,param_2 ^ 1);
+  if (iVar3 == 0) {
+    PLAT_OS_SemaphoreSignal(DAT_0197d5bc);
+    uVar2 = 0;
+    if (((uint)gPlatTraceMask & 0x4000) != 0) {
+      PLAT_SP_DebugWrite(0,"%s %s %s",DAT_008af9f0,"PLAT_OSD_Plane_Enable","FUNCTION FINISH");
+    }
+  }
+  else {
+    PLAT_OS_SemaphoreSignal(DAT_0197d5bc);
+    printf("\x1b[1;37;44m [PLAT_OSD_ERR]\x1b[m %s() FAIL[%d]\n","PLAT_OSD_Plane_Enable",0x215);
+    uVar2 = 0x23;
+  }
+  if (iVar1 == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(uVar2);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== plat_OSDPlaneInit : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- plat_OSDPlaneInit @ 009272cc (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_OSDPlaneInit(enOSDPlaneID) */
+
+void plat_OSDPlaneInit(uint param_1)
+
+{
+  TD_OSD_DebugToolCenter *pTVar1;
+  plat_Gfx_Center *this;
+  plat_Gfx_Window *this_00;
+  int iVar2;
+  undefined4 uVar3;
+  plat_Gfx_Window_Flag apStack_3c [8];
+  _ST_RECT a_Stack_34 [8];
+  int local_2c;
+  int local_28;
+  int local_24;
+  
+  local_24 = __stack_chk_guard;
+  pTVar1 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter();
+  TD_OSD_DebugToolCenter::TRACE
+            (pTVar1,
+             "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+             ,"plat_OSDPlaneInit",0x478,"eOSDID(%d)\n",param_1);
+  if (5 < param_1) {
+    uVar3 = 0xffffffff;
+    printf("[ERROR][%s():%d] ","plat_OSDPlaneInit",0x47a);
+    printf("%s[%d] Error Gfx %d Set not supprted!\n","plat_OSDPlaneInit",0x47a,param_1);
+    goto LAB_00927386;
+  }
+  if (param_1 == 3) {
+    uVar3 = 0;
+    printf("[ERROR][%s():%d] ","plat_OSDPlaneInit",0x47d);
+    puts("Ga Buffer not need create window");
+    goto LAB_00927386;
+  }
+  uVar3 = *(undefined4 *)(&DAT_013b7368 + param_1 * 4);
+  plat_Gfx_Window_Flag::plat_Gfx_Window_Flag(apStack_3c,uVar3);
+  this = (plat_Gfx_Center *)plat_Gfx_Center::getSd_shell_Gfx_Center();
+  this_00 = (plat_Gfx_Window *)plat_Gfx_Center::GetWindowControl(this,apStack_3c);
+  if (this_00 == (plat_Gfx_Window *)0x0) {
+    iVar2 = plat_Gfx_Center::CreateWindow(this,uVar3);
+    if (iVar2 == 0) {
+      plat_Gfx_Center::FreeWindowControl(this,apStack_3c);
+      this_00 = (plat_Gfx_Window *)plat_Gfx_Center::GetWindowControl(this,apStack_3c);
+      if (this_00 != (plat_Gfx_Window *)0x0) goto LAB_00927346;
+      printf("[ERROR][%s():%d] ","plat_OSDPlaneInit",0x495);
+      puts("can\'t Get window");
+    }
+    else {
+      printf("[ERROR][%s():%d] ","plat_OSDPlaneInit",0x489);
+      puts("can\'t create window");
+    }
+    uVar3 = 0xffffffff;
+  }
+  else {
+LAB_00927346:
+    if (*(int *)(this_00 + 0x18) == 0) {
+      if ((((param_1 - 4 < 2) &&
+           (plat_Gfx_Window::GetGeometryRect(this_00,a_Stack_34), local_2c == 0x780)) &&
+          (local_28 == 0x438)) && (PlaneONClear != '\0')) {
+        FUN_00925c44(this_00);
+      }
+      plat_Gfx_Window::Connect_NdGfx_Param(this_00,0x8c);
+    }
+    uVar3 = _NdGfx_Syn_Window2NdGfx_Param(this_00);
+    plat_Gfx_Window::Update(this_00,false);
+    pTVar1 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter();
+    TD_OSD_DebugToolCenter::TRACE
+              (pTVar1,
+               "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+               ,"plat_OSDPlaneInit",0x4ac,"<out>\n");
+  }
+  plat_Gfx_Window_Flag::~plat_Gfx_Window_Flag(apStack_3c);
+LAB_00927386:
+  if (local_24 == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(uVar3);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== plat_OSDPlaneMute : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- plat_OSDPlaneMute @ 00927ad0 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_OSDPlaneMute(enOSDPlaneID, int) */
+
+void plat_OSDPlaneMute(uint param_1,int param_2)
+
+{
+  TD_OSD_DebugToolCenter *pTVar1;
+  plat_Gfx_Center *this;
+  plat_Gfx_Window *this_00;
+  undefined4 uVar2;
+  uint uVar3;
+  int iVar4;
+  plat_Gfx_Window_Flag apStack_24 [8];
+  int local_1c;
+  
+  local_1c = __stack_chk_guard;
+  pTVar1 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter();
+  uVar3 = param_1;
+  iVar4 = param_2;
+  TD_OSD_DebugToolCenter::TRACE
+            (pTVar1,
+             "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+             ,"plat_OSDPlaneMute",0x541,"eOSDID(%d), Mute(%d)\n",param_1,param_2);
+  if (param_1 != 3) {
+    if (param_1 < 7) {
+      uVar2 = *(undefined4 *)(&DAT_013b7368 + param_1 * 4);
+    }
+    else {
+      uVar2 = 6;
+    }
+    plat_Gfx_Window_Flag::plat_Gfx_Window_Flag(apStack_24,uVar2);
+    this = (plat_Gfx_Center *)plat_Gfx_Center::getSd_shell_Gfx_Center();
+    this_00 = (plat_Gfx_Window *)plat_Gfx_Center::GetWindowControl(this,apStack_24);
+    if ((this_00 != (plat_Gfx_Window *)0x0) && (*(int *)(this_00 + 0x18) != 0)) {
+      plat_Gfx_Window::SetMute(this_00,param_2 != 0);
+      plat_Gfx_Window::Update(this_00,true);
+    }
+    plat_Gfx_Window_Flag::~plat_Gfx_Window_Flag(apStack_24);
+  }
+  pTVar1 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter();
+  TD_OSD_DebugToolCenter::TRACE
+            (pTVar1,
+             "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+             ,"plat_OSDPlaneMute",0x550,"<out>\n",uVar3,iVar4);
+  if (local_1c != __stack_chk_guard) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(0);
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== plat_OSDPlaneSet : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- plat_OSDPlaneSet @ 009276ac (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_OSDPlaneSet(enOSDPlaneID, stOSD_Settings*) */
+
+void plat_OSDPlaneSet(uint param_1,stOSD_Settings *param_2)
+
+{
+  bool bVar1;
+  TD_OSD_DebugToolCenter *pTVar2;
+  plat_Gfx_Center *this;
+  plat_Gfx_Window *this_00;
+  int iVar3;
+  int iVar4;
+  uint uVar5;
+  uint uVar6;
+  uint uVar7;
+  int iVar8;
+  undefined4 uVar9;
+  plat_Gfx_Window_Flag apStack_44 [8];
+  _ST_RECT a_Stack_3c [16];
+  int local_2c;
+  
+  local_2c = __stack_chk_guard;
+  if (param_2 == (stOSD_Settings *)0x0) {
+    uVar9 = 0xffffffff;
+    printf("[ERROR][%s():%d] ","plat_OSDPlaneSet",0x4d4);
+    printf("%s[%d] Error Point to NULL!\n","plat_OSDPlaneSet",0x4d4);
+    goto LAB_009277ae;
+  }
+  pTVar2 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter();
+  TD_OSD_DebugToolCenter::TRACE
+            (pTVar2,
+             "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+             ,"plat_OSDPlaneSet",0x4dc,
+             "eOSDID(%d), Format(%d), bflushcopy(%d), Resolution(%dx%d), Crop Rect[%d, %d, %dx, %d], Geometry Rect[%d, %d, %dx, %d]\n"
+             ,param_1,*(undefined4 *)(param_2 + 0x38),*(undefined4 *)(param_2 + 0x40),
+             *(undefined4 *)(param_2 + 0x18),*(undefined4 *)(param_2 + 0x1c),
+             *(undefined4 *)(param_2 + 8),*(undefined4 *)(param_2 + 0xc),
+             *(undefined4 *)(param_2 + 0x10),*(undefined4 *)(param_2 + 0x14),
+             *(undefined4 *)(param_2 + 0x28),*(undefined4 *)(param_2 + 0x2c),
+             *(undefined4 *)(param_2 + 0x30),*(undefined4 *)(param_2 + 0x34));
+  uVar6 = param_1 - 4;
+  uVar7 = uVar6;
+  if (uVar6 < 2) {
+    uVar7 = *(uint *)(param_2 + 0x14);
+  }
+  uVar5 = *(uint *)(param_2 + 0x28) & 0xfffffffe;
+  *(uint *)(param_2 + 0x28) = uVar5;
+  if (uVar6 < 2) {
+    *(uint *)(param_2 + 0x34) = uVar7;
+    uVar5 = *(uint *)(param_2 + 0x10);
+  }
+  if (uVar6 < 2) {
+    *(uint *)(param_2 + 0x30) = uVar5;
+  }
+  if (*(uint *)(param_2 + 0x38) == 4 || (*(uint *)(param_2 + 0x38) & 0xfffffffd) == 0) {
+    if (((uint)(*(int *)(param_2 + 0x10) + *(int *)(param_2 + 8)) <= *(uint *)(param_2 + 0x18)) &&
+       ((uint)(*(int *)(param_2 + 0x14) + *(int *)(param_2 + 0xc)) <= *(uint *)(param_2 + 0x1c))) {
+      if (param_1 < 7) {
+        uVar9 = *(undefined4 *)(&DAT_013b7368 + param_1 * 4);
+      }
+      else {
+        uVar9 = 6;
+      }
+      plat_Gfx_Window_Flag::plat_Gfx_Window_Flag(apStack_44,uVar9);
+      this = (plat_Gfx_Center *)plat_Gfx_Center::getSd_shell_Gfx_Center();
+      this_00 = (plat_Gfx_Window *)plat_Gfx_Center::GetWindowControl(this,apStack_44);
+      if (this_00 == (plat_Gfx_Window *)0x0) {
+        printf("[ERROR][%s():%d] ","plat_OSDPlaneSet",0x4fc);
+        printf("Can\'t Get (enID=%d) Window Control\n",uVar9);
+      }
+      else {
+        if (*(int *)(this_00 + 0x18) != 0) {
+          bVar1 = (bool)plat_Gfx_Window::GetIsMute(this_00);
+          iVar8 = *(int *)(this_00 + 0x18);
+          if ((*(int *)(param_2 + 0x38) != *(int *)(iVar8 + 0x3c)) ||
+             (*(int *)(param_2 + 0x18) != *(int *)(iVar8 + 0x1c))) {
+            iVar3 = plat_Gfx_Window::SetMute(this_00,true);
+            if (iVar3 != 0) {
+              pTVar2 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter()
+              ;
+              TD_OSD_DebugToolCenter::WORRY
+                        (pTVar2,
+                         "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+                         ,"plat_OSDPlaneSet",0x512,"have wrong happen!!\n");
+            }
+            iVar3 = plat_Gfx_Window::Update(this_00,true);
+            if (iVar3 != 0) {
+              pTVar2 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter()
+              ;
+              TD_OSD_DebugToolCenter::WORRY
+                        (pTVar2,
+                         "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+                         ,"plat_OSDPlaneSet",0x513,"have wrong happen!!\n");
+            }
+          }
+          iVar3 = plat_Gfx_Window::IsSurface_NonSync(this_00);
+          iVar4 = _Set(this_00,param_2);
+          if (iVar4 == 0) {
+            memcpy((void *)(*(int *)(this_00 + 0x18) + 4),param_2,0x88);
+            *(int *)(*(int *)this_00 + 0x78) = *(int *)(*(int *)this_00 + 0x78) + 1;
+            uVar9 = 0;
+          }
+          else {
+            uVar9 = _Set(this_00,(stOSD_Settings *)(iVar8 + 4));
+          }
+          iVar8 = plat_Gfx_Window::IsSurface_NonSync(this_00);
+          if ((iVar8 != 0) &&
+             (iVar8 = plat_Gfx_Surface::GetCropRect
+                                (*(plat_Gfx_Surface **)(this_00 + 0x14),a_Stack_3c), iVar8 != 0)) {
+            pTVar2 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter();
+            TD_OSD_DebugToolCenter::WORRY
+                      (pTVar2,
+                       "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+                       ,"plat_OSDPlaneSet",0x52c,"have wrong happen!!\n");
+          }
+          iVar8 = plat_Gfx_Window::IsSurface_NonSync(this_00);
+          if (iVar3 != iVar8) {
+            iVar8 = plat_Gfx_Surface::GetCropRect(*(plat_Gfx_Surface **)(this_00 + 0x14),a_Stack_3c)
+            ;
+            if (iVar8 != 0) {
+              pTVar2 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter()
+              ;
+              TD_OSD_DebugToolCenter::WORRY
+                        (pTVar2,
+                         "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+                         ,"plat_OSDPlaneSet",0x532,"have wrong happen!!\n");
+            }
+            iVar8 = plat_Gfx_Flush(this_00,a_Stack_3c);
+            if (iVar8 != 0) {
+              pTVar2 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter()
+              ;
+              TD_OSD_DebugToolCenter::WORRY
+                        (pTVar2,
+                         "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+                         ,"plat_OSDPlaneSet",0x533,"have wrong happen!!\n");
+            }
+          }
+          iVar8 = plat_Gfx_Window::SetMute(this_00,bVar1);
+          if (iVar8 != 0) {
+            pTVar2 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter();
+            TD_OSD_DebugToolCenter::WORRY
+                      (pTVar2,
+                       "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+                       ,"plat_OSDPlaneSet",0x536,"have wrong happen!!\n");
+          }
+          iVar8 = plat_Gfx_Window::Update(this_00,true);
+          if (iVar8 != 0) {
+            pTVar2 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter();
+            TD_OSD_DebugToolCenter::WORRY
+                      (pTVar2,
+                       "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+                       ,"plat_OSDPlaneSet",0x537,"have wrong happen!!\n");
+          }
+          plat_Gfx_Window_Flag::~plat_Gfx_Window_Flag(apStack_44);
+          goto LAB_00927784;
+        }
+        printf("[ERROR][%s():%d] ","plat_OSDPlaneSet",0x501);
+        printf("OSD not init, need call NDAL_Gfx_Init() before %s\n","plat_OSDPlaneSet");
+      }
+      uVar9 = 0xffffffff;
+      plat_Gfx_Window_Flag::~plat_Gfx_Window_Flag(apStack_44);
+      goto LAB_009277ae;
+    }
+    uVar9 = 0xffffffff;
+    printf("[ERROR][%s():%d] ","plat_OSDPlaneSet",0x4f1);
+    printf("Gfx %d not support setting when Crop Rect > Resolution!\n",param_1);
+  }
+  else {
+    uVar9 = 0xffffffff;
+    printf("[ERROR][%s():%d] ","plat_OSDPlaneSet",0x4eb);
+    printf("GFX_%d only supports color format 32bpp ARGB8888 and indexed 8bpp!\n",param_1);
+  }
+LAB_00927784:
+  pTVar2 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter();
+  TD_OSD_DebugToolCenter::TRACE
+            (pTVar2,
+             "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+             ,"plat_OSDPlaneSet",0x53a,"<out %d>\n",uVar9);
+LAB_009277ae:
+  if (local_2c != __stack_chk_guard) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar9);
+  }
+  return;
+}
+
+ (GhidraScript)  

@@ -1,0 +1,2 @@
+64c252340d3af6c5d66072611b7bad7a  /tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf
+2ae154a9022eff003d70aeae2628e56d  artifacts/ui-assets/_layout/telefunken18_svg.txt

@@ -1,0 +1,25 @@
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v2/core/check.o core/check.c
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v2/core/control.o core/control.c
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v2/core/host.o core/host.c
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v2/core/main.o core/main.c
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v2/core/module.o core/module.c
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc  -o build-tv-v2/openaurora build-tv-v2/core/check.o build-tv-v2/core/control.o build-tv-v2/core/host.o build-tv-v2/core/main.o build-tv-v2/core/module.o -ldl -pthread
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v2/modules/mod_power.so modules/power/power.c  \
+   \
+  
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-tv-v2/tests/phases tests/phases.c build-tv-v2/core/check.o build-tv-v2/core/control.o build-tv-v2/core/host.o build-tv-v2/core/module.o -ldl -pthread
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=0 \
+    \
+  -fPIC -shared -o build-tv-v2/tests/mod_phase_a.so tests/phases_fixture.c 
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=1 \
+    \
+  -fPIC -shared -o build-tv-v2/tests/mod_phase_b.so tests/phases_fixture.c 
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=2 \
+    \
+  -fPIC -shared -o build-tv-v2/tests/mod_phase_c.so tests/phases_fixture.c 
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=0 \
+  -DNO_PHASE_HOOKS  \
+  -fPIC -shared -o build-tv-v2/tests/mod_phase_no_suspend.so tests/phases_fixture.c 
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=2 \
+   -DPHASE_REPLACEMENT \
+  -fPIC -shared -o build-tv-v2/tests/mod_phase_replacement.so tests/phases_fixture.c 

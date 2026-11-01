@@ -1,0 +1,103 @@
+  ok   CEC/audio in-flight opens stay worker-owned; quiesce returns before I/O completion
+[380326] INFO host         loaded ui_anim v1 (build-review-arm/modules/mod_ui_anim.so)
+[380328] INFO host         started ui_anim
+[380330] ERR  ui_anim      timer table full
+[380330] WARN host         ui_anim: resume failed (-1)
+[380331] INFO host         stopped ui_anim
+[380333] INFO host         unloaded ui_anim
+  ok   animation completion/finalise callbacks can replace their own slot
+  ok   real animation DSO restores its timer after suspend; timer allocation failure is retryable
+[380382] ERR  host         cec: cleanup pending; retry stop/unload
+[380394] ERR  ticker       cec: refusing to unload, service 'cec.owner' still held (use --force)
+[380394] ERR  host         cec: cleanup pending; retry stop/unload
+[380398] ERR  host         cec: cleanup pending; retry stop/unload
+  ok   authority keeps an existing bit and writes 0xf011 low-byte|2 only when it is clear
+  ok   worker serializes authority, open and send; failed close stays owned until a later quiesce
+  ok   control reload/suspend/resume joins the idle worker; a held service stays loaded
+[380416] INFO host         loaded quiesce_fixture v1 (build-review-arm/tests/mod_quiesce_fixture.so)
+[380418] INFO host         started quiesce_fixture
+[380418] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380418] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[380418] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380418] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[380418] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380420] INFO host         stopped quiesce_fixture
+[380421] INFO host         unloaded quiesce_fixture
+[380421] INFO host         loaded quiesce_fixture v1 (build-review-arm/tests/mod_quiesce_fixture.so)
+[380421] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380421] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[380421] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380421] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[380421] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380421] INFO host         stopped quiesce_fixture
+[380421] INFO host         unloaded quiesce_fixture
+[380422] ERR  host         load 'build-review-arm/tests/mod_quiesce_fixture.so': init() failed (-1)
+[380422] ERR  host         quiesce_fixture: init cleanup pending; retry unload
+[380422] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[380422] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380422] INFO host         stopped quiesce_fixture
+[380422] INFO host         unloaded quiesce_fixture
+[380422] INFO host         loaded quiesce_fixture v1 (build-review-arm/tests/mod_quiesce_fixture.so)
+[380422] ERR  host         quiesce_fixture: start() failed (-1)
+[380422] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380422] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[380422] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380422] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[380422] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380422] INFO host         stopped quiesce_fixture
+[380422] INFO host         unloaded quiesce_fixture
+[380422] INFO host         loaded quiesce_fixture v1 (build-review-arm/tests/mod_quiesce_fixture.so)
+[380423] INFO host         started quiesce_fixture
+[380423] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380423] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[380423] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380423] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[380423] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380423] INFO host         stopped quiesce_fixture
+[380423] INFO host         unloaded quiesce_fixture
+[380423] INFO host         loaded quiesce_fixture v1 (build-review-arm/tests/mod_quiesce_fixture.so)
+[380423] INFO host         started quiesce_fixture
+[380423] INFO host         stopped quiesce_fixture
+[380423] INFO host         unloaded quiesce_fixture
+[380424] INFO host         loaded quiesce_fixture v1 (build-review-arm/tests/mod_quiesce_fixture.so)
+[380424] INFO host         quiesce_fixture: reloaded (suspended)
+[380424] ERR  host         quiesce_fixture: start() failed (-1)
+[380424] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380424] WARN host         quiesce_fixture: resume failed (-1)
+[380424] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[380424] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380424] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[380424] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380424] INFO host         stopped quiesce_fixture
+[380424] INFO host         unloaded quiesce_fixture
+[380424] INFO host         loaded quiesce_fixture v1 (build-review-arm/tests/mod_quiesce_fixture.so)
+[380424] INFO host         started quiesce_fixture
+[380424] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380424] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380424] INFO host         stopped quiesce_fixture
+[380425] INFO host         unloaded quiesce_fixture
+[380425] ERR  host         load 'quiesce_fixture': host is not accepting modules
+[380425] INFO host         loaded quiesce_fixture v1 (build-review-arm/tests/mod_quiesce_fixture.so)
+[380425] INFO host         started quiesce_fixture
+[380428] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380430] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380431] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380431] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[380462] INFO host         stopped quiesce_fixture
+[380464] INFO host         unloaded quiesce_fixture
+[380469] INFO host         loaded quiesce_fixture v1 (build-review-arm/tests/mod_quiesce_fixture.so)
+[380470] INFO host         started quiesce_fixture
+[380470] ERR  host         quiesce_fixture: refusing to stop, service 'test.quiesce.instance' still held
+[380470] ERR  host         quiesce_fixture: refusing to unload, service 'test.quiesce.instance' still held (use --force)
+[380470] ERR  host         quiesce_fixture: shutdown left module loaded (state started, cleanup_pending 0)
+[380470] INFO host         stopped quiesce_fixture
+[380470] INFO host         unloaded quiesce_fixture
+  ok   running veto retains DSO/posts/services; force cannot bypass; completion permits unload
+  ok   never-started init resources protected by gate
+  ok   failed init retained and discoverable for cleanup, never activated
+  ok   failed partial start retains callback code until completion
+  ok   suspended instance cannot resume while cleanup is pending
+  ok   failed deferred activation retains resources and eventually runs stop
+  ok   shutdown dispatches the gate completion and retries unload before return
+  ok   shutdown waits for a worker completion post before unload
+  ok   shutdown reports a held module and does not dlclose it

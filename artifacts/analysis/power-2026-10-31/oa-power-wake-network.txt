@@ -1,0 +1,687 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (833 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1715 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_proj/Aurora (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_proj/Aurora (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFirmware.java '--asm' 'PLAT_SYS_SetEth_PHY_Power_STR' 'PLAT_SYS_SetMcuWoLOnOff' 'PLAT_SYS_SetMcuWoWOnOff' 'PLAT_SYS_SetMcuWifiPwrOnOffMode' 'DEV_Uart_SuspendSend' 'DEV_Uart_ResumeSend' '_ice_lowpower_convert_time'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)  
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== PLAT_SYS_SetEth_PHY_Power_STR -> PLAT_SYS_SetEth_PHY_Power_STR @ 008c6ca8 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined PLAT_SYS_SetEth_PHY_Power_STR() (GhidraScript)  
+INFO  DumpFirmware.java> 
+void PLAT_SYS_SetEth_PHY_Power_STR(uint param_1)
+
+{
+  int __fd;
+  int iVar1;
+  undefined4 uVar2;
+  undefined4 local_4c;
+  undefined4 local_48;
+  undefined4 local_44;
+  undefined4 local_40;
+  char acStack_3c [16];
+  undefined4 *local_2c;
+  int local_1c;
+  
+  local_1c = __stack_chk_guard;
+  if (param_1 < 2) {
+    __fd = socket(2,2,0);
+    if (__fd == -1) goto LAB_008c6d32;
+    memset(acStack_3c,0,0x20);
+    strncpy(acStack_3c,"eth0",0x10);
+    local_48 = 0;
+    if (param_1 != 0) goto LAB_008c6d06;
+  }
+  else {
+    __fd = socket(2,2,0);
+    if (__fd == -1) {
+LAB_008c6d32:
+      PLAT_SP_DebugWrite(0x112,&DAT_013849e0,"PLAT_SYS_SetEth_PHY_Power_STR");
+      uVar2 = 0;
+      goto LAB_008c6d22;
+    }
+    memset(acStack_3c,0,0x20);
+    strncpy(acStack_3c,"eth0",0x10);
+LAB_008c6d06:
+    local_48 = 1;
+  }
+  local_40 = 0;
+  local_44 = 0;
+  local_4c = 1;
+  local_2c = &local_4c;
+  iVar1 = ioctl(__fd,0x89f0,acStack_3c);
+  if (iVar1 == 0) {
+    close(__fd);
+    uVar2 = 1;
+  }
+  else {
+    PLAT_SP_DebugWrite(0x112,&DAT_01384a18,"PLAT_SYS_SetEth_PHY_Power_STR");
+    close(__fd);
+    uVar2 = 0;
+  }
+LAB_008c6d22:
+  if (local_1c != __stack_chk_guard) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar2);
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> DISASSEMBLY 008c6ca8 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6ca8  mov.w r12,#0x2000 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cac  push {r4,r5,r6,r7,r8,lr} (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cb0  sub.w r12,sp,r12 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cb4  str.w r0,[r12,#0xfb0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cb8  movw r4,#0x1d68 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cbc  sub sp,#0x38 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cbe  movt r4,#0x179 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cc2  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cc4  cmp r0,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cc6  add r7,sp,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cc8  str r3,[r7,#0x34] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cca  bls 0x008c6d70 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6ccc  movs r1,#0x2 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cce  movs r2,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cd0  mov r0,r1 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cd2  blx 0x006b26b4 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cd6  adds r3,r0,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cd8  mov r5,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cda  beq 0x008c6d32 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cdc  add.w r6,r7,#0x14 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6ce0  movs r2,#0x20 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6ce2  movs r1,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6ce4  mov r0,r6 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6ce6  blx 0x006b1410 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cea  movw r1,#0x7ef4 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cee  movs r2,#0x10 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cf0  movt r1,#0x137 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cf4  mov r0,r6 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cf6  blx 0x006b0164 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cfa  adds r3,r7,#0x4 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cfc  movs r2,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6cfe  movs r1,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d00  str r2,[r3,#0x8] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d02  str r2,[r3,#0xc] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d04  str r1,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d06  movs r2,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d08  str r2,[r7,#0x8] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d0a  mov r2,r6 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d0c  movw r1,#0x89f0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d10  mov r0,r5 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d12  str r3,[r7,#0x24] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d14  blx 0x006b5a3c (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d18  cbnz r0,0x008c6d4e (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d1a  mov r0,r5 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d1c  blx 0x006affe0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d20  movs r0,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d22  ldr r2,[r7,#0x34] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d24  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d26  cmp r2,r3 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d28  bne 0x008c6db6 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d2a  adds r7,#0x38 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d2c  mov sp,r7 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d2e  pop.w {r4,r5,r6,r7,r8,pc} (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d32  movw r2,#0x56a0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d36  movw r1,#0x49e0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d3a  mov.w r0,#0x112 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d3e  movt r2,#0x138 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d42  movt r1,#0x138 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d46  bl 0x008be754 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d4a  movs r0,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d4c  b 0x008c6d22 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d4e  movw r2,#0x56a0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d52  movw r1,#0x4a18 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d56  movt r2,#0x138 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d5a  movt r1,#0x138 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d5e  mov.w r0,#0x112 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d62  bl 0x008be754 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d66  mov r0,r5 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d68  blx 0x006affe0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d6c  movs r0,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d6e  b 0x008c6d22 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d70  movs r1,#0x2 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d72  movs r2,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d74  mov r8,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d76  mov r0,r1 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d78  blx 0x006b26b4 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d7c  adds r2,r0,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d7e  mov r5,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d80  beq 0x008c6d32 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d82  add.w r6,r7,#0x14 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d86  movs r2,#0x20 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d88  movs r1,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d8a  mov r0,r6 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d8c  blx 0x006b1410 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d90  movw r1,#0x7ef4 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d94  movs r2,#0x10 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d96  movt r1,#0x137 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d9a  mov r0,r6 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6d9c  blx 0x006b0164 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6da0  adds r3,r7,#0x4 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6da2  movs r2,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6da4  movs r1,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6da6  str r2,[r3,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6da8  str r2,[r3,#0x8] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6daa  str r2,[r3,#0xc] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6dac  str r1,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 008c6dae  cmp.w r8,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6db2  beq 0x008c6d0a (GhidraScript)  
+INFO  DumpFirmware.java> 008c6db4  b 0x008c6d06 (GhidraScript)  
+INFO  DumpFirmware.java> 008c6db6  blx 0x006af740 (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== PLAT_SYS_SetMcuWoLOnOff -> PLAT_SYS_SetMcuWoLOnOff @ 008c7420 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined PLAT_SYS_SetMcuWoLOnOff() (GhidraScript)  
+INFO  DumpFirmware.java> 
+void PLAT_SYS_SetMcuWoLOnOff(undefined4 param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  
+  iVar1 = __stack_chk_guard;
+  iVar2 = NDAL_VideoExt_STBC_SetMcuWoLOnOff();
+  if (iVar2 == 0) {
+    printf("PLAT_SYS_SetMcuWoLOnOff fail :%d",param_1);
+  }
+  if (iVar1 == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(iVar2);
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> DISASSEMBLY 008c7420 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7420  mov.w r12,#0x2000 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7424  push {r4,r5,r6,r7,lr} (GhidraScript)  
+INFO  DumpFirmware.java> 008c7426  sub.w r12,sp,r12 (GhidraScript)  
+INFO  DumpFirmware.java> 008c742a  str.w r0,[r12,#0xfe0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c742e  movw r4,#0x1d68 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7432  sub sp,#0xc (GhidraScript)  
+INFO  DumpFirmware.java> 008c7434  movt r4,#0x179 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7438  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c743a  add r7,sp,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c743c  mov r6,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c743e  str r3,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 008c7440  blx 0x006b1da4 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7444  mov r5,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7446  cbnz r0,0x008c7456 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7448  movw r0,#0x4b20 (GhidraScript)  
+INFO  DumpFirmware.java> 008c744c  mov r1,r6 (GhidraScript)  
+INFO  DumpFirmware.java> 008c744e  movt r0,#0x138 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7452  blx 0x006b2abc (GhidraScript)  
+INFO  DumpFirmware.java> 008c7456  ldr r2,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 008c7458  mov r0,r5 (GhidraScript)  
+INFO  DumpFirmware.java> 008c745a  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c745c  cmp r2,r3 (GhidraScript)  
+INFO  DumpFirmware.java> 008c745e  bne 0x008c7466 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7460  adds r7,#0xc (GhidraScript)  
+INFO  DumpFirmware.java> 008c7462  mov sp,r7 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7464  pop {r4,r5,r6,r7,pc} (GhidraScript)  
+INFO  DumpFirmware.java> 008c7466  blx 0x006af740 (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== PLAT_SYS_SetMcuWoWOnOff -> PLAT_SYS_SetMcuWoWOnOff @ 008c750c (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined PLAT_SYS_SetMcuWoWOnOff() (GhidraScript)  
+INFO  DumpFirmware.java> 
+void PLAT_SYS_SetMcuWoWOnOff(undefined4 param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  
+  iVar1 = __stack_chk_guard;
+  iVar2 = NDAL_VideoExt_STBC_SetMcuWoWOnOff();
+  if (iVar2 == 0) {
+    printf("PLAT_SYS_SetMcuWoWOnOff fail :%d",param_1);
+    iVar2 = 0;
+  }
+  else {
+    iVar2 = NDAL_VideoExt_STBC_SetMcuWifiPwr(DAT_0197d7d9);
+    if (iVar2 == 0) {
+      printf("SetMcuWifiPwr fail :%d",param_1);
+    }
+  }
+  if (iVar1 == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(iVar2);
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> DISASSEMBLY 008c750c (GhidraScript)  
+INFO  DumpFirmware.java> 008c750c  mov.w r12,#0x2000 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7510  push {r4,r5,r6,r7,lr} (GhidraScript)  
+INFO  DumpFirmware.java> 008c7512  sub.w r12,sp,r12 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7516  str.w r0,[r12,#0xfe0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c751a  movw r4,#0x1d68 (GhidraScript)  
+INFO  DumpFirmware.java> 008c751e  sub sp,#0xc (GhidraScript)  
+INFO  DumpFirmware.java> 008c7520  movt r4,#0x179 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7524  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c7526  add r7,sp,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7528  mov r6,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c752a  str r3,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 008c752c  blx 0x006b2e50 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7530  cbz r0,0x008c7564 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7532  movw r3,#0xd7d9 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7536  movt r3,#0x197 (GhidraScript)  
+INFO  DumpFirmware.java> 008c753a  ldrb r0,[r3,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c753c  blx 0x006b17e8 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7540  mov r5,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7542  cbz r0,0x008c7554 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7544  ldr r2,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 008c7546  mov r0,r5 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7548  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c754a  cmp r2,r3 (GhidraScript)  
+INFO  DumpFirmware.java> 008c754c  bne 0x008c7576 (GhidraScript)  
+INFO  DumpFirmware.java> 008c754e  adds r7,#0xc (GhidraScript)  
+INFO  DumpFirmware.java> 008c7550  mov sp,r7 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7552  pop {r4,r5,r6,r7,pc} (GhidraScript)  
+INFO  DumpFirmware.java> 008c7554  movw r0,#0x4b68 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7558  mov r1,r6 (GhidraScript)  
+INFO  DumpFirmware.java> 008c755a  movt r0,#0x138 (GhidraScript)  
+INFO  DumpFirmware.java> 008c755e  blx 0x006b2abc (GhidraScript)  
+INFO  DumpFirmware.java> 008c7562  b 0x008c7544 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7564  mov r5,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7566  movw r0,#0x4b44 (GhidraScript)  
+INFO  DumpFirmware.java> 008c756a  mov r1,r6 (GhidraScript)  
+INFO  DumpFirmware.java> 008c756c  movt r0,#0x138 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7570  blx 0x006b2abc (GhidraScript)  
+INFO  DumpFirmware.java> 008c7574  b 0x008c7544 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7576  blx 0x006af740 (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== PLAT_SYS_SetMcuWifiPwrOnOffMode -> PLAT_SYS_SetMcuWifiPwrOnOffMode @ 008c74d0 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined PLAT_SYS_SetMcuWifiPwrOnOffMode() (GhidraScript)  
+INFO  DumpFirmware.java> 
+/* WARNING: Removing unreachable block (ram,0x008c7506) */
+
+void PLAT_SYS_SetMcuWifiPwrOnOffMode(undefined1 param_1)
+
+{
+  DAT_0197d7d9 = param_1;
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> DISASSEMBLY 008c74d0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c74d0  mov.w r12,#0x2000 (GhidraScript)  
+INFO  DumpFirmware.java> 008c74d4  push {r7,lr} (GhidraScript)  
+INFO  DumpFirmware.java> 008c74d6  sub.w r12,sp,r12 (GhidraScript)  
+INFO  DumpFirmware.java> 008c74da  str.w r0,[r12,#0xff0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c74de  movw r3,#0x1d68 (GhidraScript)  
+INFO  DumpFirmware.java> 008c74e2  sub sp,#0x8 (GhidraScript)  
+INFO  DumpFirmware.java> 008c74e4  movt r3,#0x179 (GhidraScript)  
+INFO  DumpFirmware.java> 008c74e8  ldr r1,[r3,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c74ea  add r7,sp,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 008c74ec  movw r2,#0xd7d9 (GhidraScript)  
+INFO  DumpFirmware.java> 008c74f0  movt r2,#0x197 (GhidraScript)  
+INFO  DumpFirmware.java> 008c74f4  str r1,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 008c74f6  strb r0,[r2,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c74f8  ldr r2,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 008c74fa  ldr r3,[r3,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 008c74fc  cmp r2,r3 (GhidraScript)  
+INFO  DumpFirmware.java> 008c74fe  bne 0x008c7506 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7500  adds r7,#0x8 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7502  mov sp,r7 (GhidraScript)  
+INFO  DumpFirmware.java> 008c7504  pop {r7,pc} (GhidraScript)  
+INFO  DumpFirmware.java> 008c7506  blx 0x006af740 (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== DEV_Uart_SuspendSend -> DEV_Uart_SuspendSend @ 0085f404 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined DEV_Uart_SuspendSend() (GhidraScript)  
+INFO  DumpFirmware.java> 
+void DEV_Uart_SuspendSend(void)
+
+{
+  bool bVar1;
+  int iVar2;
+  
+  iVar2 = __stack_chk_guard;
+  bVar1 = DAT_019357fc == 0;
+  if (bVar1) {
+    printf("%s, %d, Semaphore handle is null!!!\n","DEV_Uart_SuspendSend",0x98c);
+  }
+  else {
+    DAT_01936fa0 = DAT_01936fa0 + 1;
+    PLAT_OS_SemaphoreWait(DAT_019357fc);
+  }
+  if (iVar2 == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(!bVar1);
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> DISASSEMBLY 0085f404 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f404  mov.w r12,#0x2000 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f408  push {r4,r5,r7,lr} (GhidraScript)  
+INFO  DumpFirmware.java> 0085f40a  sub.w r12,sp,r12 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f40e  str.w r0,[r12,#0xfe8] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f412  movw r3,#0x57fc (GhidraScript)  
+INFO  DumpFirmware.java> 0085f416  movw r4,#0x1d68 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f41a  movt r3,#0x193 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f41e  sub sp,#0x8 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f420  movt r4,#0x179 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f424  ldr r5,[r3,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f426  add r7,sp,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f428  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f42a  str r3,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f42c  cbz r5,0x0085f452 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f42e  movw r3,#0x6fa0 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f432  mov r0,r5 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f434  movt r3,#0x193 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f438  ldr r2,[r3,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f43a  adds r2,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f43c  str r2,[r3,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f43e  bl 0x008acedc (GhidraScript)  
+INFO  DumpFirmware.java> 0085f442  movs r0,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f444  ldr r2,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f446  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f448  cmp r2,r3 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f44a  bne 0x0085f46e (GhidraScript)  
+INFO  DumpFirmware.java> 0085f44c  adds r7,#0x8 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f44e  mov sp,r7 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f450  pop {r4,r5,r7,pc} (GhidraScript)  
+INFO  DumpFirmware.java> 0085f452  movw r1,#0xea0c (GhidraScript)  
+INFO  DumpFirmware.java> 0085f456  movw r0,#0xd764 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f45a  movt r1,#0x135 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f45e  movt r0,#0x135 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f462  movw r2,#0x98c (GhidraScript)  
+INFO  DumpFirmware.java> 0085f466  blx 0x006b2abc (GhidraScript)  
+INFO  DumpFirmware.java> 0085f46a  mov r0,r5 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f46c  b 0x0085f444 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f46e  blx 0x006af740 (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== DEV_Uart_ResumeSend -> DEV_Uart_ResumeSend @ 0085f474 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined DEV_Uart_ResumeSend() (GhidraScript)  
+INFO  DumpFirmware.java> 
+void DEV_Uart_ResumeSend(void)
+
+{
+  bool bVar1;
+  int iVar2;
+  
+  iVar2 = __stack_chk_guard;
+  bVar1 = DAT_019357fc != 0;
+  if (bVar1) {
+    DAT_01936f9c = DAT_01936f9c + 1;
+    PLAT_OS_SemaphoreSignal();
+  }
+  if (iVar2 == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(bVar1);
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> DISASSEMBLY 0085f474 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f474  mov.w r12,#0x2000 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f478  push {r4,r7,lr} (GhidraScript)  
+INFO  DumpFirmware.java> 0085f47a  sub.w r12,sp,r12 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f47e  str.w r0,[r12,#0xfe8] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f482  movw r3,#0x57fc (GhidraScript)  
+INFO  DumpFirmware.java> 0085f486  movw r4,#0x1d68 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f48a  movt r3,#0x193 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f48e  sub sp,#0xc (GhidraScript)  
+INFO  DumpFirmware.java> 0085f490  movt r4,#0x179 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f494  ldr r0,[r3,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f496  add r7,sp,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f498  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f49a  str r3,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f49c  cbz r0,0x0085f4b2 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f49e  movw r3,#0x6f9c (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4a2  movt r3,#0x193 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4a6  ldr r2,[r3,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4a8  adds r2,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4aa  str r2,[r3,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4ac  bl 0x008ace34 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4b0  movs r0,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4b2  ldr r2,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4b4  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4b6  cmp r2,r3 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4b8  bne 0x0085f4c0 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4ba  adds r7,#0xc (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4bc  mov sp,r7 (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4be  pop {r4,r7,pc} (GhidraScript)  
+INFO  DumpFirmware.java> 0085f4c0  blx 0x006af740 (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== _ice_lowpower_convert_time -> _ice_lowpower_convert_time @ 0075b1b0 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined _ice_lowpower_convert_time() (GhidraScript)  
+INFO  DumpFirmware.java> 
+void _ice_lowpower_convert_time(ushort *param_1,uint *param_2,int param_3)
+
+{
+  int *piVar1;
+  uint uVar2;
+  uint uVar3;
+  int iVar4;
+  int iVar5;
+  undefined1 extraout_r1;
+  undefined1 extraout_r1_00;
+  uint uVar6;
+  undefined4 uVar7;
+  uint uVar8;
+  
+  piVar1 = DAT_0075b2d0;
+  iVar4 = *DAT_0075b2d0;
+  iVar5 = UTILI_DBG_ChkPrtLevel(0,0x2b,8);
+  if (iVar5 == 1) {
+    printf(DAT_0075b2dc,DAT_0075b2d8,DAT_0075b2d4,0x84);
+  }
+  if (param_1 == (ushort *)0x0) {
+    uVar7 = 0;
+    goto LAB_0075b23e;
+  }
+  uVar7 = 0;
+  if (param_2 == (uint *)0x0) goto LAB_0075b23e;
+  if (param_3 == 0) {
+    if (((0x17 < (byte)param_1[1]) && (0x3b < *(byte *)((int)param_1 + 3))) &&
+       (0x3b < (byte)param_1[2])) {
+      iVar5 = UTILI_DBG_ChkPrtLevel(0,0x2b,1);
+      if (iVar5 == 1) {
+        printf(DAT_0075b2e4,DAT_0075b2d4);
+      }
+      goto LAB_0075b25a;
+    }
+    *param_2 = (((uint)*param_1 * 0x18 + (uint)(byte)param_1[1]) * 0x3c +
+               (uint)*(byte *)((int)param_1 + 3)) * 0x3c + (uint)(byte)param_1[2];
+    uVar7 = 1;
+  }
+  else {
+    if (param_3 == 1) {
+      uVar8 = *param_2;
+      iVar5 = UTILI_DBG_ChkPrtLevel(0,0x2b,4);
+      if (iVar5 == 1) {
+        printf(DAT_0075b2e8,uVar8);
+      }
+      FUN_0128545c(uVar8,0x3c);
+      uVar2 = DAT_0075b2ec;
+      *(undefined1 *)(param_1 + 2) = extraout_r1;
+      uVar3 = DAT_0075b2f0;
+      uVar6 = (uint)((ulonglong)uVar8 * (ulonglong)uVar2 >> 0x25);
+      *(char *)((int)param_1 + 3) =
+           (char)uVar6 + (char)(uint)((ulonglong)uVar6 * (ulonglong)uVar2 >> 0x25) * -0x3c;
+      FUN_0128545c((uint)((ulonglong)uVar8 * (ulonglong)uVar3 >> 0x2b),0x18,
+                   (int)((ulonglong)uVar8 * (ulonglong)uVar3));
+      uVar2 = DAT_0075b2f4;
+      *(undefined1 *)(param_1 + 1) = extraout_r1_00;
+      *param_1 = (ushort)((ulonglong)uVar8 * (ulonglong)uVar2 >> 0x30);
+    }
+LAB_0075b25a:
+    uVar7 = 0;
+  }
+  iVar5 = UTILI_DBG_ChkPrtLevel(0,0x2b,8);
+  if (iVar5 == 1) {
+    printf(DAT_0075b2e0,DAT_0075b2d8,DAT_0075b2d4,0xad);
+  }
+LAB_0075b23e:
+  if (iVar4 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar7);
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> DISASSEMBLY 0075b1b0 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1b0  mov.w r3,#0x4000 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1b4  push {r4,r5,r6,r7,r8,lr} (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1b8  sub.w r12,sp,r3 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1bc  str.w r0,[r12,#0xfe0] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1c0  ldr r6,[0x0075b2d0] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1c2  sub sp,#0x8 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1c4  mov r5,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1c6  add r7,sp,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1c8  mov r4,r1 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1ca  ldr r0,[r6,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1cc  mov r8,r2 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1ce  movs r1,#0x2b (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1d0  movs r2,#0x8 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1d2  str r0,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1d4  movs r0,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1d6  bl 0x00947064 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1da  cmp r0,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1dc  bne 0x0075b1ea (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1de  movs r3,#0x84 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1e0  ldr r2,[0x0075b2d4] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1e2  ldr r1,[0x0075b2d8] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1e4  ldr r0,[0x0075b2dc] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1e6  blx 0x006b2abc (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1ea  cmp r5,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1ec  beq 0x0075b2c2 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1ee  cbz r4,0x0075b23e (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1f0  cmp.w r8,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1f4  bne 0x0075b268 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1f6  ldrb r1,[r5,#0x2] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1f8  ldrb r0,[r5,#0x3] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1fa  ldrb r2,[r5,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1fc  cmp r1,#0x17 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b1fe  bls 0x0075b208 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b200  cmp r0,#0x3b (GhidraScript)  
+INFO  DumpFirmware.java> 0075b202  bls 0x0075b208 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b204  cmp r2,#0x3b (GhidraScript)  
+INFO  DumpFirmware.java> 0075b206  bhi 0x0075b24c (GhidraScript)  
+INFO  DumpFirmware.java> 0075b208  ldrh.w lr,[r5,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b20c  mov.w r12,#0x18 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b210  mov.w r8,#0x3c (GhidraScript)  
+INFO  DumpFirmware.java> 0075b214  mla r5,r12,lr,r1 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b218  mla r3,r8,r5,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b21c  mla r1,r8,r3,r2 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b220  str r1,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b222  movs r4,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b224  movs r2,#0x8 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b226  movs r1,#0x2b (GhidraScript)  
+INFO  DumpFirmware.java> 0075b228  movs r0,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b22a  bl 0x00947064 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b22e  cmp r0,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b230  bne 0x0075b23e (GhidraScript)  
+INFO  DumpFirmware.java> 0075b232  movs r3,#0xad (GhidraScript)  
+INFO  DumpFirmware.java> 0075b234  ldr r2,[0x0075b2d4] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b236  ldr r1,[0x0075b2d8] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b238  ldr r0,[0x0075b2e0] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b23a  blx 0x006b2abc (GhidraScript)  
+INFO  DumpFirmware.java> 0075b23e  ldr r2,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b240  mov r0,r4 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b242  ldr r6,[r6,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b244  cmp r2,r6 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b246  beq 0x0075b2c6 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b248  blx 0x006af740 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b24c  movs r2,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b24e  movs r1,#0x2b (GhidraScript)  
+INFO  DumpFirmware.java> 0075b250  mov r0,r8 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b252  bl 0x00947064 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b256  cmp r0,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b258  beq 0x0075b25e (GhidraScript)  
+INFO  DumpFirmware.java> 0075b25a  movs r4,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b25c  b 0x0075b224 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b25e  ldr r1,[0x0075b2d4] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b260  ldr r0,[0x0075b2e4] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b262  blx 0x006b2abc (GhidraScript)  
+INFO  DumpFirmware.java> 0075b266  b 0x0075b25a (GhidraScript)  
+INFO  DumpFirmware.java> 0075b268  cmp.w r8,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b26c  bne 0x0075b25a (GhidraScript)  
+INFO  DumpFirmware.java> 0075b26e  movs r2,#0x4 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b270  movs r1,#0x2b (GhidraScript)  
+INFO  DumpFirmware.java> 0075b272  movs r0,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b274  ldr r4,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b276  bl 0x00947064 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b27a  cmp r0,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b27c  bne 0x0075b286 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b27e  mov r1,r4 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b280  ldr r0,[0x0075b2e8] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b282  blx 0x006b2abc (GhidraScript)  
+INFO  DumpFirmware.java> 0075b286  mov r0,r4 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b288  movs r1,#0x3c (GhidraScript)  
+INFO  DumpFirmware.java> 0075b28a  bl 0x0128545c (GhidraScript)  
+INFO  DumpFirmware.java> 0075b28e  ldr r2,[0x0075b2ec] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b290  strb r1,[r5,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b292  umull r0,r1,r4,r2 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b296  movs r0,#0x3c (GhidraScript)  
+INFO  DumpFirmware.java> 0075b298  lsrs r1,r1,#0x5 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b29a  umull r2,r3,r1,r2 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b29e  lsrs r3,r3,#0x5 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2a0  mls r2,r0,r3,r1 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2a4  ldr r1,[0x0075b2f0] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2a6  strb r2,[r5,#0x3] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2a8  umull r2,r3,r4,r1 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2ac  movs r1,#0x18 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2ae  lsrs r0,r3,#0xb (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2b0  bl 0x0128545c (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2b4  ldr r3,[0x0075b2f4] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2b6  strb r1,[r5,#0x2] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2b8  umull r0,r1,r4,r3 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2bc  lsrs r4,r1,#0x10 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2be  strh r4,[r5,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2c0  b 0x0075b25a (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2c2  mov r4,r5 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2c4  b 0x0075b23e (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2c6  adds r7,#0x8 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2c8  mov sp,r7 (GhidraScript)  
+INFO  DumpFirmware.java> 0075b2ca  pop.w {r4,r5,r6,r7,r8,pc} (GhidraScript)  

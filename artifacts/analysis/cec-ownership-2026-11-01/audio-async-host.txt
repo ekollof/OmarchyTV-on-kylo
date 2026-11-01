@@ -1,0 +1,4 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/audio_async tests/audio_async.c common/audio_owner.c common/audio_client.c common/audio_netlink.c -ldl -pthread
+  ok   async open returns during blocked I/O, owns callback-table copy and applies bounded backpressure
+  ok   results are ticketed, owned and collected once; worker errors survive and failed OS close consumes fd
+  ok   quiesce rejects new work, drains accepted open and closes before join; result survives shutdown

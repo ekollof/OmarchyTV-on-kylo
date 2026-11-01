@@ -1,0 +1,111 @@
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0088ba30 <PLAT_AVEnc_VideoStop@@Base+0x688>:
+  88ba30:	f44f 5c00 	mov.w	ip, #8192	; 0x2000
+  88ba34:	b5f0      	push	{r4, r5, r6, r7, lr}
+  88ba36:	ebad 0c0c 	sub.w	ip, sp, ip
+  88ba3a:	f8cc 0fe0 	str.w	r0, [ip, #4064]	; 0xfe0
+  88ba3e:	f24a 34b8 	movw	r4, #41912	; 0xa3b8
+  88ba42:	f641 5668 	movw	r6, #7528	; 0x1d68
+  88ba46:	f2c0 1497 	movt	r4, #407	; 0x197
+  88ba4a:	b083      	sub	sp, #12
+  88ba4c:	f2c0 1679 	movt	r6, #377	; 0x179
+  88ba50:	7823      	ldrb	r3, [r4, #0]
+  88ba52:	af00      	add	r7, sp, #0
+  88ba54:	6832      	ldr	r2, [r6, #0]
+  88ba56:	607a      	str	r2, [r7, #4]
+  88ba58:	b17b      	cbz	r3, 88ba7a <PLAT_AVEnc_VideoStop@@Base+0x6d2>
+  88ba5a:	f24a 35bc 	movw	r5, #41916	; 0xa3bc
+  88ba5e:	f2c0 1597 	movt	r5, #407	; 0x197
+  88ba62:	f624 eb24 	blx	6b00ac <NDAL_VideoExt_CEC_CheckCmdCount@plt>
+  88ba66:	b110      	cbz	r0, 88ba6e <PLAT_AVEnc_VideoStop@@Base+0x6c6>
+  88ba68:	682b      	ldr	r3, [r5, #0]
+  88ba6a:	b103      	cbz	r3, 88ba6e <PLAT_AVEnc_VideoStop@@Base+0x6c6>
+  88ba6c:	4798      	blx	r3
+  88ba6e:	20c8      	movs	r0, #200	; 0xc8
+  88ba70:	f01f fcb6 	bl	8ab3e0 <PLAT_OS_TaskDelay@@Base>
+  88ba74:	7823      	ldrb	r3, [r4, #0]
+  88ba76:	2b00      	cmp	r3, #0
+  88ba78:	d1f3      	bne.n	88ba62 <PLAT_AVEnc_VideoStop@@Base+0x6ba>
+  88ba7a:	687a      	ldr	r2, [r7, #4]
+  88ba7c:	6833      	ldr	r3, [r6, #0]
+  88ba7e:	429a      	cmp	r2, r3
+  88ba80:	d102      	bne.n	88ba88 <PLAT_AVEnc_VideoStop@@Base+0x6e0>
+  88ba82:	370c      	adds	r7, #12
+  88ba84:	46bd      	mov	sp, r7
+  88ba86:	bdf0      	pop	{r4, r5, r6, r7, pc}
+  88ba88:	f623 ee5a 	blx	6af740 <__stack_chk_fail@plt>
+  88ba8c:	f44f 5c00 	mov.w	ip, #8192	; 0x2000
+  88ba90:	b5b0      	push	{r4, r5, r7, lr}
+  88ba92:	ebad 0c0c 	sub.w	ip, sp, ip
+  88ba96:	f8cc 0fe8 	str.w	r0, [ip, #4072]	; 0xfe8
+  88ba9a:	f641 5468 	movw	r4, #7528	; 0x1d68
+  88ba9e:	b082      	sub	sp, #8
+  88baa0:	6803      	ldr	r3, [r0, #0]
+  88baa2:	f2c0 1479 	movt	r4, #377	; 0x179
+  88baa6:	af00      	add	r7, sp, #0
+  88baa8:	6822      	ldr	r2, [r4, #0]
+  88baaa:	4605      	mov	r5, r0
+  88baac:	2b0f      	cmp	r3, #15
+  88baae:	607a      	str	r2, [r7, #4]
+  88bab0:	d802      	bhi.n	88bab8 <PLAT_AVEnc_VideoStop@@Base+0x710>
+  88bab2:	6842      	ldr	r2, [r0, #4]
+  88bab4:	2a0f      	cmp	r2, #15
+  88bab6:	d91e      	bls.n	88baf6 <PLAT_AVEnc_VideoStop@@Base+0x74e>
+  88bab8:	f24e 7280 	movw	r2, #59264	; 0xe780
+  88babc:	f64e 2094 	movw	r0, #60052	; 0xea94
+  88bac0:	f2c0 1236 	movt	r2, #310	; 0x136
+  88bac4:	216d      	movs	r1, #109	; 0x6d
+  88bac6:	f2c0 1036 	movt	r0, #310	; 0x136
+  88baca:	f626 eff8 	blx	6b2abc <printf@plt>
+  88bace:	f24e 7280 	movw	r2, #59264	; 0xe780
+  88bad2:	f64e 3018 	movw	r0, #60184	; 0xeb18
+  88bad6:	686b      	ldr	r3, [r5, #4]
+  88bad8:	f2c0 1236 	movt	r2, #310	; 0x136
+  88badc:	f2c0 1036 	movt	r0, #310	; 0x136
+  88bae0:	216e      	movs	r1, #110	; 0x6e
+  88bae2:	f626 efec 	blx	6b2abc <printf@plt>
+  88bae6:	687a      	ldr	r2, [r7, #4]
+  88bae8:	2000      	movs	r0, #0
+  88baea:	6823      	ldr	r3, [r4, #0]
+  88baec:	429a      	cmp	r2, r3
+  88baee:	d10f      	bne.n	88bb10 <PLAT_AVEnc_VideoStop@@Base+0x768>
+  88baf0:	3708      	adds	r7, #8
+  88baf2:	46bd      	mov	sp, r7
+  88baf4:	bdb0      	pop	{r4, r5, r7, pc}
+  88baf6:	f24a 31b8 	movw	r1, #41912	; 0xa3b8
+  88bafa:	f2c0 1197 	movt	r1, #407	; 0x197
+  88bafe:	7809      	ldrb	r1, [r1, #0]
+  88bb00:	2900      	cmp	r1, #0
+  88bb02:	d0f0      	beq.n	88bae6 <PLAT_AVEnc_VideoStop@@Base+0x73e>
+  88bb04:	b2d2      	uxtb	r2, r2
+  88bb06:	b2d9      	uxtb	r1, r3
+  88bb08:	2000      	movs	r0, #0
+  88bb0a:	f624 ea22 	blx	6aff50 <NDAL_VideoExt_CEC_GeneralPollingMessage@plt>
+  88bb0e:	e7ea      	b.n	88bae6 <PLAT_AVEnc_VideoStop@@Base+0x73e>
+  88bb10:	f623 ee16 	blx	6af740 <__stack_chk_fail@plt>
+  88bb14:	f44f 5c00 	mov.w	ip, #8192	; 0x2000
+  88bb18:	b590      	push	{r4, r7, lr}
+  88bb1a:	ebad 0c0c 	sub.w	ip, sp, ip
+  88bb1e:	f8cc 0fe8 	str.w	r0, [ip, #4072]	; 0xfe8
+  88bb22:	f641 5468 	movw	r4, #7528	; 0x1d68
+  88bb26:	b083      	sub	sp, #12
+  88bb28:	f2c0 1479 	movt	r4, #377	; 0x179
+  88bb2c:	6823      	ldr	r3, [r4, #0]
+  88bb2e:	af00      	add	r7, sp, #0
+  88bb30:	7800      	ldrb	r0, [r0, #0]
+  88bb32:	607b      	str	r3, [r7, #4]
+  88bb34:	f626 eda0 	blx	6b2678 <NDAL_VideoExt_CEC_Set_EDID_ATMOS_Bit@plt>
+  88bb38:	687a      	ldr	r2, [r7, #4]
+  88bb3a:	6823      	ldr	r3, [r4, #0]
+  88bb3c:	429a      	cmp	r2, r3
+  88bb3e:	d103      	bne.n	88bb48 <PLAT_AVEnc_VideoStop@@Base+0x7a0>
+  88bb40:	2000      	movs	r0, #0
+  88bb42:	370c      	adds	r7, #12
+  88bb44:	46bd      	mov	sp, r7
+  88bb46:	bd90      	pop	{r4, r7, pc}
+  88bb48:	f623 edfa 	blx	6af740 <__stack_chk_fail@plt>

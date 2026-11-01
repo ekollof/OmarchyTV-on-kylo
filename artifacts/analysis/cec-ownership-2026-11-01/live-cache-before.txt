@@ -1,0 +1,21 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+controller=0x40b9000
+LA=1 seen=0 PA=ffff power=4294967295 name=
+LA=2 seen=0 PA=ffff power=4294967295 name=
+LA=3 seen=0 PA=ffff power=4294967295 name=
+LA=4 seen=0 PA=ffff power=4294967295 name=
+LA=5 seen=0 PA=ffff power=4294967295 name=
+LA=6 seen=0 PA=ffff power=4294967295 name=
+LA=7 seen=0 PA=ffff power=4294967295 name=
+LA=8 seen=1 PA=1000 power=0 name=Steam Deck
+LA=9 seen=0 PA=ffff power=4294967295 name=
+LA=10 seen=0 PA=ffff power=4294967295 name=
+LA=11 seen=0 PA=ffff power=4294967295 name=
+LA=12 seen=0 PA=ffff power=4294967295 name=
+LA=13 seen=0 PA=ffff power=4294967295 name=
+LA=14 seen=0 PA=ffff power=4294967295 name=
+matching live controller objects=1

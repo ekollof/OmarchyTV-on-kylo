@@ -1,0 +1,138 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-reload-sanitize/tests/phases tests/phases.c build-reload-sanitize/core/check.o build-reload-sanitize/core/control.o build-reload-sanitize/core/host.o build-reload-sanitize/core/module.o -ldl -pthread
+[623689] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[623689] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[623689] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[623689] INFO host         started phase_c
+[623689] INFO host         started phase_b
+[623689] INFO host         started phase_a
+[623690] INFO host         stopped phase_a
+[623690] INFO host         unloaded phase_a
+[623690] INFO host         stopped phase_b
+[623690] INFO host         unloaded phase_b
+[623690] INFO host         stopped phase_c
+[623690] INFO host         unloaded phase_c
+[623690] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[623690] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[623690] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[623690] INFO host         started phase_c
+[623690] INFO host         started phase_b
+[623690] INFO host         started phase_a
+[623690] ERR  host         phase_b: required by active module 'phase_a'
+[623690] ERR  host         phase_b: required by active module 'phase_a'
+[623690] ERR  host         phase_b: required by active module 'phase_a'
+[623690] INFO host         stopped phase_a
+[623690] INFO host         unloaded phase_a
+[623690] INFO host         stopped phase_b
+[623690] INFO host         unloaded phase_b
+[623690] INFO host         stopped phase_c
+[623690] INFO host         unloaded phase_c
+[623690] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[623690] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[623690] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[623690] INFO host         started phase_c
+[623690] INFO host         started phase_b
+[623690] INFO host         started phase_a
+[623690] INFO host         stopped phase_a
+[623690] INFO host         unloaded phase_a
+[623690] INFO host         stopped phase_b
+[623690] INFO host         unloaded phase_b
+[623690] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[623690] INFO host         phase_b: reloaded (suspended)
+[623690] INFO host         started phase_b
+[623690] INFO host         stopped phase_b
+[623690] INFO host         unloaded phase_b
+[623690] INFO host         stopped phase_c
+[623690] INFO host         unloaded phase_c
+[623690] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[623690] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[623690] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[623690] INFO host         started phase_c
+[623690] INFO host         started phase_b
+[623690] INFO host         started phase_a
+[623690] WARN host         phase_b: suspend failed (-7)
+[623690] INFO host         stopped phase_a
+[623690] INFO host         unloaded phase_a
+[623690] INFO host         stopped phase_b
+[623690] INFO host         unloaded phase_b
+[623690] INFO host         stopped phase_c
+[623690] INFO host         unloaded phase_c
+[623690] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[623690] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[623690] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[623690] INFO host         started phase_c
+[623690] INFO host         started phase_b
+[623690] INFO host         started phase_a
+[623690] WARN host         phase_c: resume failed (-7)
+[623690] INFO host         stopped phase_a
+[623690] INFO host         unloaded phase_a
+[623690] INFO host         stopped phase_b
+[623690] INFO host         unloaded phase_b
+[623690] INFO host         stopped phase_c
+[623690] INFO host         unloaded phase_c
+[623690] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[623691] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[623691] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[623691] INFO host         started phase_c
+[623691] INFO host         started phase_b
+[623691] INFO host         started phase_a
+[623691] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[623691] INFO host         stopped phase_b
+[623691] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[623691] INFO host         started phase_b
+[623691] INFO host         stopped phase_a
+[623691] INFO host         unloaded phase_a
+[623691] INFO host         stopped phase_b
+[623691] INFO host         unloaded phase_b
+[623691] INFO host         stopped phase_c
+[623691] INFO host         unloaded phase_c
+[623691] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[623691] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[623691] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[623691] INFO host         started phase_c
+[623691] INFO host         started phase_b
+[623691] INFO host         started phase_a
+[623691] ERR  host         module dependency cycle; lifecycle transition canceled
+[623691] INFO host         stopped phase_a
+[623691] INFO host         unloaded phase_a
+[623691] INFO host         stopped phase_b
+[623691] INFO host         unloaded phase_b
+[623691] INFO host         stopped phase_c
+[623691] INFO host         unloaded phase_c
+[623691] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_no_suspend.so)
+[623691] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[623691] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[623691] INFO host         started phase_c
+[623691] INFO host         started phase_b
+[623691] INFO host         started phase_a
+[623691] ERR  host         phase_b: consumer 'phase_a' is still active
+[623691] INFO host         stopped phase_a
+[623691] INFO host         unloaded phase_a
+[623691] INFO host         stopped phase_b
+[623691] INFO host         unloaded phase_b
+[623691] INFO host         stopped phase_c
+[623691] INFO host         unloaded phase_c
+[623691] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[623691] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[623691] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[623691] INFO host         started phase_c
+[623691] INFO host         started phase_b
+[623691] INFO host         started phase_a
+[623691] INFO host         stopped phase_c
+[623691] INFO host         unloaded phase_c
+[623691] INFO host         loaded phase_c_new vtest (build-reload-sanitize/tests/mod_phase_replacement.so)
+[623691] INFO host         started phase_c_new
+[623691] INFO host         stopped phase_a
+[623691] INFO host         unloaded phase_a
+[623691] INFO host         stopped phase_b
+[623691] INFO host         unloaded phase_b
+[623691] INFO host         stopped phase_c_new
+[623691] INFO host         unloaded phase_c_new
+  ok   declared service dependencies suspend consumers first and resume providers first
+  ok   declared dependencies protect active consumers during stop/unload/reload
+  ok   dependency snapshot survives service unpublication and deferred reload into a hole
+  ok   failed consumer suspend protects its providers and reports failure through CLI
+  ok   failed provider resume keeps consumers suspended; a later resume retries
+  ok   published interface alone cannot start/resume a consumer above a suspended provider
+  ok   runtime lookup holds join the dependency graph; cycles fail before callbacks
+  ok   consumer without a suspend hook cannot be left active above a sleeping provider
+  ok   dependency edges follow a republished service to its current provider

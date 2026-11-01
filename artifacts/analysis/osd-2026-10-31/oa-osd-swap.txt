@@ -1,0 +1,447 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (725 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1873 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts
+    /tmp/opencode/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_proj/Aurora (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_proj/Aurora (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFuncs.java '_Z23plat_OSDPlaneBufferSwap12enOSDPlaneIDP6Rect_ti' '_ZN15plat_Gfx_Window21ConnectWindowToOSD_HWE23_EN_SD_SHELL_GFX_WINDOW' '_ZN15plat_Gfx_Window12SetHWDispWinEv' '_Z37plat_Gfx_DRM_osd_drv_Calculate_Stride9_EN_COLORj' 'FUN_0093d3ec'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/opencode/ghidra_scripts/DumpFuncs.java (HeadlessAnalyzer)  
+INFO  DumpFuncs.java> 
+===== _Z23plat_OSDPlaneBufferSwap12enOSDPlaneIDP6Rect_ti : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- plat_OSDPlaneBufferSwap @ 00927e00 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_OSDPlaneBufferSwap(enOSDPlaneID, Rect_t*, int) */
+
+void plat_OSDPlaneBufferSwap(uint param_1,int *param_2)
+
+{
+  TD_OSD_DebugToolCenter *pTVar1;
+  plat_Gfx_Center *this;
+  plat_Gfx_Window *this_00;
+  uint uVar2;
+  int iVar3;
+  int iVar4;
+  uint uVar5;
+  undefined4 uVar6;
+  int iVar7;
+  int iVar8;
+  undefined4 uVar9;
+  undefined4 extraout_s1;
+  undefined4 extraout_s1_00;
+  uint uVar11;
+  plat_Gfx_Window_Flag apStack_44 [8];
+  int local_3c;
+  int local_38;
+  int local_34;
+  int local_30;
+  int local_2c;
+  undefined8 uVar10;
+  
+  local_2c = __stack_chk_guard;
+  if (param_2 == (int *)0x0) {
+    iVar3 = -1;
+    printf("[ERROR][%s():%d] ","plat_OSDPlaneBufferSwap",0x588);
+    printf("%s[%d] Error Point to NULL!\n","plat_OSDPlaneBufferSwap",0x588);
+    goto LAB_00927f78;
+  }
+  pTVar1 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter();
+  uVar10 = *(undefined8 *)param_2;
+  uVar11 = param_1;
+  TD_OSD_DebugToolCenter::TRACE
+            (pTVar1,
+             "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+             ,"plat_OSDPlaneBufferSwap",0x589,"ID %d, Rect [%d, %d, %dx, %d]\n",param_1,*param_2,
+             param_2[1],param_2[2],param_2[3]);
+  if (DAT_019e8239 == '\0') {
+    uVar9 = (undefined4)DAT_00928048;
+  }
+  else {
+    uVar9 = plat_Gfx_GetCurrTime();
+  }
+  if (DAT_019e8238 != '\0') {
+    uVar9 = plat_Gfx_GetCurrTime();
+  }
+  if (param_1 < 7) {
+    uVar6 = *(undefined4 *)(&DAT_013b7368 + param_1 * 4);
+  }
+  else {
+    uVar6 = 6;
+  }
+  plat_Gfx_Window_Flag::plat_Gfx_Window_Flag(apStack_44,uVar6);
+  this = (plat_Gfx_Center *)plat_Gfx_Center::getSd_shell_Gfx_Center();
+  this_00 = (plat_Gfx_Window *)plat_Gfx_Center::GetWindowControl(this,apStack_44);
+  if (this_00 == (plat_Gfx_Window *)0x0) {
+LAB_00927f06:
+    iVar3 = 0;
+  }
+  else {
+    uVar2 = plat_Gfx_Window::GetShowFbNumb(this_00);
+    if (1 < uVar2) {
+      plat_Gfx_Window::SetShowFbNumb(this_00,0);
+      plat_Gfx_Window::Update(this_00,true);
+    }
+    iVar3 = plat_Gfx_Surface::GetVirAdr(*(plat_Gfx_Surface **)(this_00 + 0x14));
+    iVar4 = plat_Gfx_Surface::GetStride(*(plat_Gfx_Surface **)(this_00 + 0x14));
+    uVar2 = plat_Gfx_Surface::GetColorMode(*(plat_Gfx_Surface **)(this_00 + 0x14));
+    iVar8 = param_2[1];
+    iVar7 = *param_2;
+    uVar5 = plat_Gfx_MCU_Center::getPlat_Gfx_MCU_Center();
+    iVar3 = plat_Gfx_MCU_Center::Flush(uVar5,iVar7 * ((uVar2 & 0xff) >> 3) + iVar8 * iVar4 + iVar3);
+    if (iVar3 != 0) goto LAB_00927f06;
+    local_3c = *param_2;
+    local_38 = param_2[1];
+    local_34 = param_2[2];
+    local_30 = param_2[3];
+    iVar3 = plat_Gfx_Flush(this_00,&local_3c);
+    iVar3 = -(uint)(iVar3 != 0);
+  }
+  if (DAT_019e8239 != '\0') {
+    iVar4 = 0;
+    do {
+      while (*(int *)(gastsdGfxProFiles + iVar4) != 0) {
+        iVar4 = iVar4 + 0x18;
+        if (iVar4 == 0x90) goto LAB_00927f48;
+      }
+      uVar6 = plat_Gfx_GetElapsedTime(uVar9);
+      iVar4 = iVar4 + 0x18;
+      gastsdGfxProFiles._8_8_ =
+           (double)gastsdGfxProFiles._8_8_ + (double)CONCAT44(extraout_s1,uVar6);
+      gastsdGfxProFiles._16_4_ = gastsdGfxProFiles._16_4_ + 1;
+    } while (iVar4 != 0x90);
+  }
+LAB_00927f48:
+  if (DAT_019e8238 != '\0') {
+    pTVar1 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter();
+    uVar9 = plat_Gfx_GetElapsedTime(uVar9);
+    uVar10 = CONCAT44(extraout_s1_00,uVar9);
+    TD_OSD_DebugToolCenter::TRACE
+              (pTVar1,
+               "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+               ,"plat_OSDPlaneBufferSwap",0x5b1,"Used time: %f sec\n",uVar11,uVar10);
+  }
+  pTVar1 = (TD_OSD_DebugToolCenter *)TD_OSD_DebugToolCenter::getTd_Osd_DebugToolCenter();
+  TD_OSD_DebugToolCenter::TRACE
+            (pTVar1,
+             "/home/jenkins/workspace/TV-Kylo/Kylo_mb230_platform/build/novatek_src/mb230/code/platform/src/slot/src/plat_osdplane.cpp"
+             ,"plat_OSDPlaneBufferSwap",0x5b2,"<out>\n",uVar11,uVar10);
+  plat_Gfx_Window_Flag::~plat_Gfx_Window_Flag(apStack_44);
+LAB_00927f78:
+  if (local_2c != __stack_chk_guard) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(iVar3);
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _ZN15plat_Gfx_Window21ConnectWindowToOSD_HWE23_EN_SD_SHELL_GFX_WINDOW : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- ConnectWindowToOSD_HW @ 0093f590 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_Window::ConnectWindowToOSD_HW(_EN_SD_SHELL_GFX_WINDOW) */
+
+void __thiscall plat_Gfx_Window::ConnectWindowToOSD_HW(plat_Gfx_Window *this,undefined4 param_2)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  int iVar3;
+  
+  iVar1 = __stack_chk_guard;
+  switch(param_2) {
+  case 0:
+    iVar3 = plat_Gfx_DRM_osd_drv::Init(*(plat_Gfx_DRM_osd_drv **)(this + 4),2,0,this + 8);
+    break;
+  case 1:
+    iVar3 = plat_Gfx_DRM_osd_drv::Init(*(plat_Gfx_DRM_osd_drv **)(this + 4),1,0,this + 8);
+    break;
+  case 2:
+    iVar3 = plat_Gfx_DRM_osd_drv::Init(*(plat_Gfx_DRM_osd_drv **)(this + 4),0,0,this + 8);
+    break;
+  case 3:
+    iVar3 = plat_Gfx_DRM_osd_drv::Init(*(plat_Gfx_DRM_osd_drv **)(this + 4),3,0,this + 8);
+    break;
+  case 4:
+    iVar3 = plat_Gfx_DRM_osd_drv::Init(*(plat_Gfx_DRM_osd_drv **)(this + 4),4,0,this + 8);
+    break;
+  default:
+    goto switchD_0093f5b4_default;
+  }
+  if (iVar3 == 0) {
+    uVar2 = plat_Gfx_DRM_osd_drv::Open(*(ulong *)(this + 4));
+  }
+  else {
+switchD_0093f5b4_default:
+    uVar2 = 0x16;
+  }
+  if (iVar1 != __stack_chk_guard) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar2);
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _ZN15plat_Gfx_Window12SetHWDispWinEv : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- SetHWDispWin @ 00940b70 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_Window::SetHWDispWin() */
+
+void __thiscall plat_Gfx_Window::SetHWDispWin(plat_Gfx_Window *this)
+
+{
+  uint uVar1;
+  int iVar2;
+  int iVar3;
+  int *piVar4;
+  int iVar5;
+  int iVar6;
+  int iVar7;
+  int iVar8;
+  undefined4 uVar9;
+  int iVar10;
+  int iVar11;
+  char cVar12;
+  uint local_64;
+  uint local_60;
+  undefined1 local_5c;
+  undefined4 local_58;
+  undefined1 local_54;
+  undefined4 local_50;
+  int local_4c;
+  int local_48;
+  int local_44;
+  int local_40;
+  int local_3c;
+  int local_38;
+  uint local_34;
+  uint local_30;
+  int local_2c;
+  
+  local_2c = __stack_chk_guard;
+  GetScreenSize(this,&local_64,&local_60,*(undefined4 *)(*(int *)this + 0x60));
+  GetGeometryRect(this,(_ST_RECT *)&local_3c);
+  uVar1 = local_30;
+  piVar4 = *(int **)(this + 0x10);
+  iVar6 = *(int *)(*piVar4 + 0x18);
+  iVar3 = *(int *)(*piVar4 + 0x1c);
+  iVar11 = *(int *)(*piVar4 + 0x20);
+  iVar5 = *(int *)(*piVar4 + 0x24);
+  if ((local_3c < 0) && (local_34 <= (uint)-local_3c && -local_34 != local_3c)) {
+    local_3c = 1 - local_34;
+  }
+  iVar10 = local_3c;
+  if ((local_38 < 0) && (local_30 <= (uint)-local_38 && -local_30 != local_38)) {
+    local_38 = 1 - local_30;
+  }
+  iVar8 = local_38;
+  local_4c = iVar6;
+  local_48 = iVar3;
+  local_44 = iVar11;
+  local_40 = iVar5;
+  if (local_64 < local_3c + local_34) {
+    if ((int)local_64 < local_3c) {
+      iVar10 = local_64 - 1;
+      local_34 = 1;
+      local_44 = 1;
+      local_3c = iVar10;
+    }
+    else {
+      iVar2 = local_3c - local_64;
+      local_44 = FUN_01285200(iVar11 * (local_34 + iVar2),local_34);
+      local_44 = iVar11 - local_44;
+      local_34 = -iVar2;
+    }
+  }
+  if (local_60 < iVar8 + uVar1) {
+    if ((int)local_60 < iVar8) {
+      iVar8 = local_60 - 1;
+      local_30 = 1;
+      local_40 = 1;
+      local_38 = iVar8;
+      goto LAB_00940c1c;
+    }
+    iVar7 = iVar8 - local_60;
+    iVar2 = FUN_01285200(iVar5 * (iVar7 + uVar1),uVar1,iVar5,iVar7,iVar6,iVar5,iVar7,iVar3);
+    iVar11 = *(int *)this;
+    cVar12 = *(char *)(iVar11 + 0x35);
+    if (cVar12 != '\0') {
+      local_40 = iVar5 - iVar2;
+      local_48 = iVar3 + iVar2;
+      local_30 = -iVar7;
+      if (iVar10 < 0) goto LAB_00940d6e;
+      goto LAB_00940c30;
+    }
+    local_40 = iVar5 - iVar2;
+    local_30 = -iVar7;
+    if (iVar10 < 0) goto LAB_00940d6e;
+LAB_00940cfa:
+    if (iVar8 < 0) {
+      local_38 = 0;
+      local_40 = local_40 + iVar8;
+      local_48 = local_48 - iVar8;
+      local_30 = iVar8 + local_30;
+      cVar12 = *(char *)(iVar11 + 0x8c);
+      goto joined_r0x00940d1a;
+    }
+  }
+  else {
+LAB_00940c1c:
+    iVar11 = *(int *)this;
+    cVar12 = *(char *)(iVar11 + 0x35);
+    if (iVar10 < 0) {
+LAB_00940d6e:
+      local_4c = iVar6 - iVar10;
+      local_44 = local_44 + iVar10;
+      local_3c = 0;
+      local_34 = iVar10 + local_34;
+    }
+    if (cVar12 == '\0') goto LAB_00940cfa;
+LAB_00940c30:
+    if (iVar8 < 0) {
+      local_30 = local_30 + iVar8;
+      local_38 = 0;
+      local_40 = iVar8 + local_40;
+    }
+    else {
+      local_38 = (iVar8 + local_60) - local_30;
+      local_3c = (local_3c - local_34) + local_64;
+    }
+  }
+  cVar12 = *(char *)(iVar11 + 0x8c);
+joined_r0x00940d1a:
+  if (cVar12 == '\0') {
+    local_64 = *(uint *)(iVar11 + 8);
+    local_60 = *(uint *)(iVar11 + 0xc);
+  }
+  else {
+    local_64 = 0x780;
+    local_60 = 0x438;
+    if (*(int *)(iVar11 + 0x60) == 4) {
+      local_60 = 0x870;
+    }
+  }
+  uVar9 = 0x780;
+  plat_Gfx_DRM_osd_drv::Set_VideoWinSize(*(ulong *)(this + 4),*(_ST_SIZE **)(this + 8));
+  iVar3 = *(int *)this;
+  if (*(char *)(iVar3 + 0x8c) == '\0') {
+    uVar9 = *(undefined4 *)(iVar3 + 8);
+  }
+  local_54 = *(undefined1 *)(iVar3 + 0x36);
+  local_5c = 1;
+  local_58 = 1;
+  local_50 = uVar9;
+  plat_Gfx_DRM_osd_drv::Set_SepaLvdsHFlip
+            (*(ulong *)(this + 4),*(_ST_DRV_OSD_SEPA_LVDS_HFLIP **)(this + 8));
+  plat_Gfx_DRM_osd_drv::Set_DispWin
+            (*(plat_Gfx_DRM_osd_drv **)(this + 4),*(ulong *)(this + 8),
+             (_ST_DRV_OSD_DISP_WIN *)&local_4c);
+  if (local_2c != __stack_chk_guard) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(0);
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _Z37plat_Gfx_DRM_osd_drv_Calculate_Stride9_EN_COLORj : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- plat_Gfx_DRM_osd_drv_Calculate_Stride @ 00945264 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* WARNING: Removing unreachable block (ram,0x0094529e) */
+/* plat_Gfx_DRM_osd_drv_Calculate_Stride(_EN_COLOR, unsigned int) */
+
+uint plat_Gfx_DRM_osd_drv_Calculate_Stride(uint param_1,int param_2)
+
+{
+  return param_2 * ((param_1 & 0xff) >> 3) + 0x1f & 0xffffffe0;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== FUN_0093d3ec : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- FUN_0093d3ec @ 0093d3ec (GhidraScript)  
+INFO  DumpFuncs.java> 
+void FUN_0093d3ec(undefined4 param_1,undefined4 param_2)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  __pid_t _Var3;
+  long lVar4;
+  plat_Gfx_MCU_Center *this;
+  undefined4 local_24;
+  undefined4 local_20;
+  int local_1c;
+  
+  local_20 = 0;
+  local_1c = __stack_chk_guard;
+  local_24 = param_2;
+  iVar1 = Hal_Video_Libdrm_drmIoctl(param_1,0xc008640a,&local_24);
+  uVar2 = local_20;
+  if (iVar1 != 0) {
+    _Var3 = getpid();
+    lVar4 = syscall(0xe0);
+    printf("---[%d:%d]%s%s(%d):",_Var3,lVar4,&DAT_013bd960,"drm_get_name",0x11e);
+    printf("test_fail to get flink gem=%d\n",local_24);
+    this = (plat_Gfx_MCU_Center *)plat_Gfx_MCU_Center::getPlat_Gfx_MCU_Center();
+    plat_Gfx_MCU_Center::ShowAllParam(this,false,0);
+    uVar2 = 0;
+  }
+  if (local_1c != __stack_chk_guard) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar2);
+  }
+  return;
+}
+
+ (GhidraScript)  

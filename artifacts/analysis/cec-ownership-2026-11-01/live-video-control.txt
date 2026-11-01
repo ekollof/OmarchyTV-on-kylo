@@ -1,0 +1,22 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+VIDEO28
+crw-rw-rw-    1 root     root       81,   4 Jan  1  1970 /dev/video28
+ndp-hdmi-switch
+KERNEL_MODULES
+ntkndpalsa 531136 12 - Live 0x7f987000 (O)
+ntkndp_pq 241522 1 - Live 0x7f94b000 (O)
+ntkndpcodec 414123 0 - Live 0x7fd67000 (O)
+ntkndptsd 189551 0 - Live 0x7fd29000 (O)
+ntkndpci 3453 1 ntkndptsd, Live 0x7fd25000 (O)
+ntkndpdemod 27664 2 ntkndptsd,ntkndpci, Live 0x7fd19000 (O)
+ntkndptuner 4637 0 - Live 0x7fd14000 (O)
+ntkndphdmiswitch 17400 2 - Live 0x7fd0b000 (O)
+ntkndphdmi 65001 1 - Live 0x7fcf3000 (O)
+ntkndpextin 131175 1 - Live 0x7fcc6000 (O)
+ntkndpdrm 665570 4 - Live 0x7fbf6000 (O)
+ntkdriver 14939054 39 ntkndpalsa,ntkndp_pq,ntkndpcodec,ntkndptsd,ntkndpci,ntkndpdemod,ntkndptuner,ntkndphdmiswitch,ntkndphdmi,ntkndpextin,ntkndpdrm, Live 0x7eb0a000 (O)
+PreInit 900786 21 ntkndpalsa,ntkndp_pq,ntkndpcodec,ntkndptsd,ntkndpdrm,ntkdriver, Live 0x7e800000 (O)

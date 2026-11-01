@@ -1,0 +1,20 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+64c252340d3af6c5d66072611b7bad7a  /vendor/com.nvt.idtv/aurora.elf
+ebb0aaaa-72a2-4410-9f8d-95b9249f8a90
+ 00000001 033341c0 00000072 00000072
+ 00000002 00000000 00000000 00000000
+ ffffffff ffffffff 000000c4 000000d0
+ 00000002 00000000 00000001 00000000
+ ffffffff ffffffff 00000000 00000000
+ 00000000 00000000 00000000 00000000
+ 00000000 00000000 00000000 00000072
+ 000000c4 00000003 00000001 00000000
+ 00000068 0000000a 00000001
+ 00000001 00000072 000000c4 00000003
+ 00000001 00000000 00000068 0000000a
+ 00000001
+ 0192fa84 0192fa64

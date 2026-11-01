@@ -1,0 +1,25 @@
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .text:
+ 752b04 681d7901 e8647901 f1692901 50822901  h.y..dy..i).P.).
+ 752b14 347b8e01 8c528f01 79822901 98bd2a01  4{...R..y.)...*.
+ 752b24 a5822901 fc647901 57842901 1c528f01  ..)..dy.W.)..R..
+ 752b34 a02a2901 b8282a01 00657901 10657901  .*)..(*..ey..ey.
+ 752b44 846a7901 74697501 78697501 df822901  .jy.tiu.xiu...).
+ 752b54 17832901 d8e39001 21832901 41832901  ..).....!.).A.).
+ 752b64 72832901 a2832901 ac832901 cb832901  r.)...)...)...).
+ 752b74 fc832901 2c842901 78842901 e4647901  ..).,.).x.)..dy.
+ 752b84 b8842901                             ..).            
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .text:
+ 74e448 681d7901 12652901 70f72a01 fd1a2901  h.y..e).p.*...).
+ 74e458 e4647901 1b1b2901                    .dy...).        
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .text:
+ 74e5a8 681d7901 31652901 70f72a01 fd1a2901  h.y.1e).p.*...).
+ 74e5b8 e8647901                             .dy.            

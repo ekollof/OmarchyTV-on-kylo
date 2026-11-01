@@ -1,0 +1,32 @@
+[753872] ERR  host         load 'build-tv-v2/tests/mod_abi_v1.so': abi 1 != 2
+[753875] ERR  host         load 'build-tv-v2/tests/mod_abi_short.so': descriptor size 12 < 84
+[753876] INFO host         loaded abi_extended v? (build-tv-v2/tests/mod_abi_extended.so)
+[753876] INFO host         started abi_extended
+[753876] INFO host         stopped abi_extended
+[753876] INFO host         unloaded abi_extended
+[753877] INFO host         loaded post_worker vtest (build-tv-v2/tests/mod_post_worker.so)
+[753880] INFO host         started post_worker
+[753887] INFO host         stopped post_worker
+[753889] INFO host         unloaded post_worker
+[753893] INFO host         loaded post_worker vtest (build-tv-v2/tests/mod_post_worker.so)
+[753893] INFO host         post_worker: restored 4 bytes of state
+[753894] INFO host         started post_worker
+[753894] INFO host         post_worker: reloaded (started)
+[753914] INFO host         stopped post_worker
+[753915] INFO host         started post_worker
+[753916] INFO host         loaded ticker v1.0 (build-tv-v2/modules/mod_ticker.so)
+[753916] INFO host         started ticker
+[753916] INFO ticker       stopped post_worker
+[753917] INFO ticker       unloaded post_worker
+[753917] INFO host         stopped ticker
+[753917] INFO host         unloaded ticker
+[753917] ERR  host         load 'build-tv-v2/tests/mod_post_fail_init.so': init() failed (-1)
+[753918] INFO host         loaded post_worker vtest (build-tv-v2/tests/mod_post_fail_start.so)
+[753919] ERR  host         post_worker: start() failed (-1)
+[753919] INFO host         unloaded post_worker
+  ok   old/short descriptors rejected before guard page; extended prefix accepted
+  ok   real worker post dispatches under its owner; registrations inherit ownership
+  ok   socket/CLI dispatcher reload preserves state, cancels old work, rejects old token
+  ok   queue saturation, stop-time worker post rejection, cleanup and restart
+  ok   an earlier post can unload another owner without dispatching its stale callback
+  ok   failed init/start cancel queued module code and close post acceptance

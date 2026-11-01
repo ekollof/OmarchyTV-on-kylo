@@ -1,0 +1,114 @@
+[579829] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579832] INFO host         unloaded reload_fixture
+[579833] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579833] INFO host         reload_fixture: restored 4 bytes of state
+[579833] INFO host         reload_fixture: reloaded (loaded)
+[579833] INFO host         started reload_fixture
+[579834] INFO host         stopped reload_fixture
+[579834] INFO host         unloaded reload_fixture
+[579834] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579834] INFO host         reload_fixture: restored 4 bytes of state
+[579834] INFO host         reload_fixture: reloaded (loaded)
+[579834] INFO host         unloaded reload_fixture
+[579834] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579834] INFO host         started reload_fixture
+[579835] INFO host         stopped reload_fixture
+[579835] INFO host         unloaded reload_fixture
+[579835] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579835] INFO host         reload_fixture: restored 4 bytes of state
+[579835] INFO host         started reload_fixture
+[579835] INFO host         reload_fixture: reloaded (started)
+[579835] INFO host         stopped reload_fixture
+[579835] INFO host         unloaded reload_fixture
+[579835] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579835] INFO host         started reload_fixture
+[579835] INFO host         stopped reload_fixture
+[579836] INFO host         unloaded reload_fixture
+[579836] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579836] INFO host         reload_fixture: restored 4 bytes of state
+[579836] INFO host         reload_fixture: reloaded (suspended)
+[579836] INFO host         started reload_fixture
+[579836] INFO host         stopped reload_fixture
+[579836] INFO host         unloaded reload_fixture
+[579836] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579836] INFO host         started reload_fixture
+[579836] INFO host         stopped reload_fixture
+[579837] INFO host         unloaded reload_fixture
+[579837] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579837] INFO host         reload_fixture: restored 4 bytes of state
+[579837] INFO host         reload_fixture: reloaded (suspended)
+[579837] ERR  host         reload_fixture: start() failed (-1)
+[579837] WARN host         reload_fixture: resume failed (-1)
+[579837] INFO host         started reload_fixture
+[579837] INFO host         stopped reload_fixture
+[579837] INFO host         unloaded reload_fixture
+[579837] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579837] INFO host         reload_fixture: restored 4 bytes of state
+[579837] INFO host         reload_fixture: reloaded (suspended)
+[579837] INFO host         stopped reload_fixture
+[579837] INFO host         started reload_fixture
+[579837] INFO host         stopped reload_fixture
+[579837] INFO host         unloaded reload_fixture
+[579838] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579838] INFO host         started reload_fixture
+[579838] INFO host         stopped reload_fixture
+[579838] INFO host         unloaded reload_fixture
+[579838] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579838] INFO host         reload_fixture: restored 4 bytes of state
+[579838] INFO host         reload_fixture: reloaded (suspended)
+[579838] INFO host         stopped reload_fixture
+[579838] INFO host         unloaded reload_fixture
+[579838] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579838] INFO host         reload_fixture: restored 4 bytes of state
+[579838] INFO host         reload_fixture: reloaded (suspended)
+[579838] INFO host         stopped reload_fixture
+[579838] INFO host         unloaded reload_fixture
+[579839] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579839] INFO host         started reload_fixture
+[579839] ERR  host         reload_fixture: cannot allocate saved state; reload canceled
+[579839] ERR  host         reload_fixture: state size 65537 exceeds 65536; reload canceled
+[579839] ERR  host         reload_fixture: saved state grew beyond capacity; reload canceled
+[579839] INFO host         stopped reload_fixture
+[579839] INFO host         unloaded reload_fixture
+[579839] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579839] INFO host         started reload_fixture
+[579839] INFO host         stopped reload_fixture
+[579839] INFO host         unloaded reload_fixture
+[579839] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579839] ERR  host         reload_fixture: restore() failed or absent (-7)
+[579839] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[579840] INFO host         unloaded reload_fixture
+[579840] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579840] INFO host         started reload_fixture
+[579840] INFO host         stopped reload_fixture
+[579840] INFO host         unloaded reload_fixture
+[579840] INFO host         loaded reload_fixture vtest (build-tv-v2/tests/mod_reload_fixture.so)
+[579840] INFO host         reload_fixture: restored 4 bytes of state
+[579840] ERR  host         reload_fixture: start() failed (-1)
+[579840] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[579840] INFO host         unloaded reload_fixture
+[579841] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-RU33pC/module.so)
+[579841] INFO host         started reload_fixture
+[579841] INFO host         stopped reload_fixture
+[579841] INFO host         unloaded reload_fixture
+[579841] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-RU33pC/module.so)
+[579841] ERR  host         reload_fixture: restore() failed or absent (-1)
+[579841] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[579841] INFO host         unloaded reload_fixture
+[579842] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-RU33pC/module.so)
+[579842] INFO host         started reload_fixture
+[579842] INFO host         stopped reload_fixture
+[579842] INFO host         unloaded reload_fixture
+[579842] INFO host         loaded reload_renamed vtest (/tmp/openaurora-reload-RU33pC/module.so)
+[579842] ERR  host         reload_fixture: replacement name 'reload_renamed' differs
+[579842] WARN host         reload_renamed: force unload, consumers may hold stale pointers
+[579842] INFO host         unloaded reload_renamed
+  ok   never-started and stopped reload preserve loaded state without activation
+  ok   running reload restores state and starts the new instance
+  ok   suspended reload defers start until wake; start on suspended resumes once
+  ok   deferred start can fail/retry or be stopped before touching hardware
+  ok   repeated suspended reload purges posts; unload skips stop on never-started candidate
+  ok   allocation/oversized/growing state failures preserve the working module
+  ok   restore failure is reported and candidate registrations/posts are swept
+  ok   replacement start failure cleans the candidate instead of leaving partial state
+  ok   changed binary without restore or with a new identity is rejected and cleaned

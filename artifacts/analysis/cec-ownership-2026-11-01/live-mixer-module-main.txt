@@ -1,0 +1,27 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+[140422] INFO host         openaurora starting, modules=/tmp/oa-mixer-module-20261101/modules
+[140423] INFO host         control socket /tmp/oa-mixer-module-20261101/main.sock
+openaurora: 1 module(s) loaded, control on /tmp/oa-mixer-module-20261101/main.sock
+audio_mixer    started   id=3   /tmp/oa-mixer-module-20261101/modules/mod_audio_mixer.so
+name    audio_mixer
+state   started
+version 1
+path    /tmp/oa-mixer-module-20261101/modules/mod_audio_mixer.so
+requires
+cleanup_pending 0
+activation_rejected 0
+services audio.mixer:v1
+[140424] INFO host         loaded audio_mixer v1 (/tmp/oa-mixer-module-20261101/modules/mod_audio_mixer.so)
+[140424] INFO host         started audio_mixer
+bye
+[140425] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[140425] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[140425] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[140425] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[140474] INFO host         stopped audio_mixer
+[140474] INFO host         unloaded audio_mixer
+[140475] INFO host         openaurora stopped

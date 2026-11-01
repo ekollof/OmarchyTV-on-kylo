@@ -1,0 +1,32 @@
+### references into 0x0135db00-0x0135de00 (IRsim/script strings)
+0085e5da -> 0135dd60  ?   movt r1,#0x135
+0085e5e4 -> 0135dd60  ?   str r1,[r7,#0x8]
+0085e628 -> 0135db18  ?   movt r0,#0x135
+0085e658 -> 0135db68  ?   movt r0,#0x135
+0085e664 -> 0135db8c  ?   movt r0,#0x135
+0085e690 -> 0135dbc8  ?   movt r0,#0x135
+0085e6ac -> 0135dd60  ?   ldr r0,[r7,#0x8]
+0085e70c -> 0135dd8c  ?   movt r0,#0x135
+0085e7b2 -> 0135dbec  ?   movt r1,#0x135
+0085e7d2 -> 0135dc00  ?   movt r0,#0x135
+0085e7e4 -> 0135dc24  ?   movt r1,#0x135
+0085e7fe -> 0135dc3c  ?   movt r0,#0x135
+0085e80a -> 0135dc58  ?   movt r0,#0x135
+0085e818 -> 0135dc88  ?   movt r0,#0x135
+0085e840 -> 0135dcbc  ?   movt r0,#0x135
+0085e84e -> 0135db40  ?   movt r0,#0x135
+0085e8c8 -> 0135dbec  ?   movt r0,#0x135
+0085e8dc -> 0135dbec  ?   movt r3,#0x135
+0085e906 -> 0135dce0  ?   movt r1,#0x135
+0085e922 -> 0135dcf4  ?   movt r0,#0x135
+0085e930 -> 0135dd18  ?   movt r0,#0x135
+0085e954 -> 0135dd3c  ?   movt r0,#0x135
+0085e992 -> 0135dce0  ?   movt r0,#0x135
+0085e9a6 -> 0135dce0  ?   movt r3,#0x135
+
+### shell sink symbols
+SYMBOL system @ EXTERNAL:000006a4 type=Function
+SYMBOL popen @ EXTERNAL:00000344 type=Function
+SYMBOL execl @ EXTERNAL:000003c6 type=Function
+SYMBOL execlp @ EXTERNAL:00000481 type=Function
+DONE

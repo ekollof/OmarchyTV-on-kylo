@@ -1,0 +1,981 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (774 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1667 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_nondovi/nondovi (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_nondovi/nondovi (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /ntkdriver_nondovi.ko (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFirmware.java '_ker_osd_fb_SetPar' '_ker_osd_Set_BufPhyAddrSize' '_ker_osd_PreInitSetting'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)  
+INFO  DumpFirmware.java> PROGRAM ntkdriver_nondovi.ko MD5 fded7005651e37b8a1b5e8e89f73f4ff (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== _ker_osd_fb_SetPar -> _ker_osd_fb_SetPar @ 00237550 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined _ker_osd_fb_SetPar() (GhidraScript)  
+INFO  DumpFirmware.java> 
+undefined4 _ker_osd_fb_SetPar(void)
+
+{
+  char *pcVar1;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+  undefined4 uVar5;
+  char *pcVar6;
+  int iVar7;
+  undefined1 local_49;
+  undefined4 local_48;
+  undefined4 local_44;
+  uint local_40;
+  undefined1 local_39;
+  undefined1 local_38;
+  undefined1 local_37;
+  undefined1 local_36;
+  undefined1 local_35;
+  undefined1 local_34;
+  undefined1 local_33;
+  undefined1 local_32;
+  undefined1 local_31;
+  
+  iVar3 = __gnu_mcount_nc();
+  pcVar6 = *(char **)(iVar3 + 0x2a8);
+  iVar7 = *(int *)(pcVar6 + 8);
+  local_49 = 0;
+  local_48 = 0;
+  local_44 = 0;
+  local_40 = 0;
+  uVar5 = *(undefined4 *)(pcVar6 + 0x380);
+  if (*pcVar6 == '\0') {
+    uVar5 = 0xffffffea;
+    nvt_err(pdev_kosd + 0x10,"%s(), [FB]OSD not initial yet\n",PTR___func___34668_00237c5c);
+  }
+  else {
+    if (*(int *)(pcVar6 + 4) == gu32FastLogoPlaneID) {
+      _ker_osd_check_fastlogo();
+    }
+    iVar4 = down_interruptible(pcVar6 + 0x3a8);
+    iVar2 = gstDriverCallback;
+    if (iVar4 == 0) {
+      iVar4 = *(int *)(pcVar6 + 8);
+      local_49 = 1;
+      pcVar6[iVar4 * 0xa0 + 0xd] = '\x01';
+      if (*(code **)(iVar2 + 0x164) == (code *)0x0) {
+        nvt_info(pdev_kosd + 0x10,"%s is NULL !\n","gstDriverCallback->pfAlphaBlendEnable");
+      }
+      else {
+        (**(code **)(iVar2 + 0x164))(*(undefined4 *)(pcVar6 + 4),iVar4,&local_49);
+      }
+      iVar2 = gstDriverCallback;
+      local_44 = 0xff;
+      iVar4 = *(int *)(pcVar6 + 8);
+      pcVar1 = pcVar6 + iVar4 * 0xa0 + 0x3c;
+      pcVar1[0] = -1;
+      pcVar1[1] = '\0';
+      pcVar1[2] = '\0';
+      pcVar1[3] = '\0';
+      if (*(code **)(iVar2 + 0x1b4) == (code *)0x0) {
+        nvt_info(pdev_kosd + 0x10,"%s is NULL !\n","gstDriverCallback->pfSetAlpha");
+      }
+      else {
+        (**(code **)(iVar2 + 0x1b4))(*(undefined4 *)(pcVar6 + 4),iVar4,&local_44);
+      }
+      local_39 = (undefined1)*(undefined4 *)(iVar3 + 0x6c);
+      local_38 = (undefined1)*(undefined4 *)(iVar3 + 0x78);
+      local_37 = (undefined1)*(undefined4 *)(iVar3 + 0x74);
+      local_36 = (undefined1)*(undefined4 *)(iVar3 + 0x84);
+      local_35 = (undefined1)*(undefined4 *)(iVar3 + 0x80);
+      local_34 = (undefined1)*(undefined4 *)(iVar3 + 0x90);
+      local_33 = (undefined1)*(undefined4 *)(iVar3 + 0x8c);
+      local_32 = (undefined1)*(undefined4 *)(iVar3 + 0x9c);
+      local_31 = (undefined1)*(undefined4 *)(iVar3 + 0x98);
+      if (*(code **)(gstDriverCallback + 0x1a4) == (code *)0x0) {
+        nvt_info(pdev_kosd + 0x10,"%s is NULL !\n","gstDriverCallback->pfConvertColorFmtToMode");
+      }
+      else {
+        (**(code **)(gstDriverCallback + 0x1a4))(&local_39,&local_48);
+      }
+      iVar2 = gstDriverCallback;
+      iVar4 = *(int *)(pcVar6 + 8);
+      *(undefined4 *)(pcVar6 + iVar4 * 0xa0 + 0x10) = local_48;
+      if (*(code **)(iVar2 + 0x1ac) == (code *)0x0) {
+        nvt_info(pdev_kosd + 0x10,"%s is NULL !\n","gstDriverCallback->pfSetColorMode");
+      }
+      else {
+        (**(code **)(iVar2 + 0x1ac))(*(undefined4 *)(pcVar6 + 4),iVar4,&local_48);
+      }
+      _ker_osd_AllocKernelKeepPaletteBuf(iVar3);
+      *(undefined4 *)(pcVar6 + 0x380) = uVar5;
+      local_40 = *(int *)(iVar3 + 0x54) * (*(uint *)(iVar3 + 0x6c) >> 3) + 0x1f & 0xffffffe0;
+      *(uint *)(iVar3 + 0x120) = local_40;
+      iVar2 = gstDriverCallback;
+      iVar4 = *(int *)(pcVar6 + 8);
+      *(uint *)(pcVar6 + iVar4 * 0xa0 + 0x68) = local_40;
+      if (*(code **)(iVar2 + 0x1dc) == (code *)0x0) {
+        nvt_info(pdev_kosd + 0x10,"%s is NULL !\n","gstDriverCallback->pfSetStride");
+      }
+      else {
+        (**(code **)(iVar2 + 0x1dc))(*(undefined4 *)(pcVar6 + 4),iVar4,&local_40);
+      }
+      if ((*(int *)(pcVar6 + iVar7 * 0xa0 + 0x48) == 0) ||
+         (*(int *)(pcVar6 + iVar7 * 0xa0 + 0x4c) == 0)) {
+        pcVar1 = pcVar6 + iVar7 * 0xa0 + 0x40;
+        pcVar1[0] = '\0';
+        pcVar1[1] = '\0';
+        pcVar1[2] = '\0';
+        pcVar1[3] = '\0';
+        pcVar1 = pcVar6 + iVar7 * 0xa0 + 0x44;
+        pcVar1[0] = '\0';
+        pcVar1[1] = '\0';
+        pcVar1[2] = '\0';
+        pcVar1[3] = '\0';
+        *(undefined4 *)(pcVar6 + iVar7 * 0xa0 + 0x48) = *(undefined4 *)(iVar3 + 0x54);
+        *(undefined4 *)(pcVar6 + iVar7 * 0xa0 + 0x4c) = *(undefined4 *)(iVar3 + 0x58);
+      }
+      if ((*(int *)(pcVar6 + iVar7 * 0xa0 + 0x58) == 0) ||
+         (*(int *)(pcVar6 + iVar7 * 0xa0 + 0x5c) == 0)) {
+        pcVar1 = pcVar6 + iVar7 * 0xa0 + 0x50;
+        pcVar1[0] = '\0';
+        pcVar1[1] = '\0';
+        pcVar1[2] = '\0';
+        pcVar1[3] = '\0';
+        pcVar1 = pcVar6 + iVar7 * 0xa0 + 0x54;
+        pcVar1[0] = '\0';
+        pcVar1[1] = '\0';
+        pcVar1[2] = '\0';
+        pcVar1[3] = '\0';
+        *(undefined4 *)(pcVar6 + iVar7 * 0xa0 + 0x58) = *(undefined4 *)(iVar3 + 0x54);
+        *(undefined4 *)(pcVar6 + iVar7 * 0xa0 + 0x5c) = *(undefined4 *)(iVar3 + 0x58);
+      }
+      if (*(code **)(gstDriverCallback + 0x1c4) == (code *)0x0) {
+        nvt_info(pdev_kosd + 0x10,"%s is NULL !\n","gstDriverCallback->pfSetDispWin");
+      }
+      else {
+        (**(code **)(gstDriverCallback + 0x1c4))
+                  (*(undefined4 *)(pcVar6 + 4),*(undefined4 *)(pcVar6 + 8),
+                   pcVar6 + iVar7 * 0xa0 + 0x40);
+      }
+      *(int *)(pcVar6 + 0x28c) = *(int *)(pcVar6 + 0x28c) + 1;
+      up(pcVar6 + 0x3a8);
+      uVar5 = 0;
+    }
+    else {
+      uVar5 = 0xfffffe00;
+      nvt_err(pdev_kosd + 0x10,"%s(), %d: Lock/Acquire the semaphore failed!\n",
+              PTR___func___34668_00237c5c,0x416);
+      nvt_err(pdev_kosd + 0x10,
+              "#################### [OSD_BACKTRACE] ####################\n%s(), %d:\n",
+              PTR___func___34668_00237c5c,0x416);
+      dump_stack();
+    }
+  }
+  return uVar5;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== _ker_osd_Set_BufPhyAddrSize -> _ker_osd_Set_BufPhyAddrSize @ 0024bfcc (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined _ker_osd_Set_BufPhyAddrSize() (GhidraScript)  
+INFO  DumpFirmware.java> 
+void _ker_osd_Set_BufPhyAddrSize(void)
+
+{
+  char cVar1;
+  undefined *puVar2;
+  uint uVar3;
+  int iVar4;
+  uint *puVar5;
+  int iVar6;
+  int iVar7;
+  int *extraout_r2;
+  int iVar8;
+  uint uVar9;
+  int iVar10;
+  int iVar11;
+  int iVar12;
+  int iVar13;
+  int *piVar14;
+  ulonglong uVar15;
+  uint local_70;
+  uint local_6c;
+  
+  uVar15 = __gnu_mcount_nc();
+  iVar6 = (int)(uVar15 >> 0x20);
+  uVar3 = (uint)uVar15;
+  iVar8 = *extraout_r2;
+  if (4 < uVar3) {
+    nvt_err(pdev_kosd + 0x10,"Invalid PlaneID = %d!\n",uVar3 + 1);
+    return;
+  }
+  if (uVar3 < 3) {
+    if (iVar6 != 0) {
+LAB_0024c210:
+      nvt_err(pdev_kosd + 0x10,"Invalid PlaneID = %d, RegionID = %d!\n",uVar3 + 1,iVar6 + 1);
+      return;
+    }
+  }
+  else if (0x1ffffffff < uVar15) goto LAB_0024c210;
+  iVar11 = uVar3 * 4;
+  iVar10 = *(int *)(*(int *)(gpstHwFbInfo + iVar11) + 0x2a8);
+  piVar14 = (int *)(iVar10 + iVar6 * 0xa0 + 0x40);
+  iVar4 = *piVar14;
+  iVar12 = iVar10 + iVar6 * 0xa0;
+  iVar7 = piVar14[1];
+  if (*(char *)(iVar10 + 0x8d) == '\x01') {
+    iVar13 = *(int *)(iVar10 + 0x9c);
+  }
+  else {
+    iVar13 = *(int *)(iVar12 + 0x68);
+  }
+  uVar9 = (*(uint *)(iVar12 + 0x10) & 0xff) >> 3;
+  cVar1 = *(char *)(iVar10 + iVar6 * 0xa0 + 0x74);
+  if (uVar3 < 3) {
+    local_70 = 0;
+    puVar5 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094a214 + uVar3 * 0x228 + iVar6 * 0x60)
+                                      );
+    local_6c = *puVar5 & 0x3e000000;
+  }
+  else {
+    puVar5 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094ab3c + (uVar3 - 3) * 0x130));
+    local_6c = *puVar5 & 0x80000000;
+    puVar5 = (uint *)KER_REG_Phys2Virt(DAT_0094acdc);
+    local_70 = *puVar5 & ~(3 << ((uVar3 + 0x1ffffffd) * 8 & 0xff));
+  }
+  if (*(int *)(iVar10 + 0x294) - 3U < 3) {
+    iVar8 = *(int *)(*(int *)(gpstHwFbInfo + iVar11) + 0x58) * iVar13 + iVar8;
+  }
+  else if (*(int *)(iVar10 + 0x294) - 6U < 3) {
+    iVar8 = iVar13 * *(int *)(*(int *)(gpstHwFbInfo + iVar11) + 0x58) * 2 + iVar8;
+  }
+  if (cVar1 == '\x01') {
+    iVar11 = iVar13 * (iVar7 + -1 + *(int *)(*(int *)(gpstHwFbInfo + iVar11) + 0x58)) +
+             uVar9 * iVar4;
+  }
+  else {
+    iVar11 = iVar13 * iVar7 + uVar9 * iVar4;
+  }
+  uVar9 = iVar11 + iVar8;
+  extraout_r2[1] = uVar9;
+  *(uint *)(iVar10 + iVar6 * 0xa0 + 0x7c) = uVar9;
+  if (uVar3 < 3) {
+    uVar9 = (uVar9 & 0x3fffffff) >> 5 | uVar9 & 0xc0000000 | local_6c;
+    _ker_osd_Write_GlobalReg(&DAT_0094a214 + iVar6 * 0x60 + uVar3 * 0x228,uVar9);
+    puVar5 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094a214 + iVar6 * 0x60 + uVar3 * 0x228)
+                                      );
+    *puVar5 = uVar9;
+  }
+  else {
+    iVar8 = (uVar3 - 3) * 0x130;
+    local_6c = (uVar9 & 0x3fffffff) >> 5 | local_6c;
+    _ker_osd_Write_GlobalReg(&DAT_0094ab3c + iVar8,local_6c);
+    puVar5 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094ab3c + iVar8));
+    puVar2 = PTR_DAT_0024c54c;
+    *puVar5 = local_6c;
+    local_70 = local_70 | (uVar9 >> 0x1e) << ((uVar3 + 0x1ffffffd) * 8 & 0xff);
+    _ker_osd_Write_GlobalReg(puVar2,local_70);
+    puVar5 = (uint *)KER_REG_Phys2Virt(DAT_0094acdc);
+    *puVar5 = local_70;
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== _ker_osd_PreInitSetting -> _ker_osd_PreInitSetting @ 0024a668 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined _ker_osd_PreInitSetting() (GhidraScript)  
+INFO  DumpFirmware.java> 
+void _ker_osd_PreInitSetting(void)
+
+{
+  uint *puVar1;
+  undefined4 *puVar2;
+  int iVar3;
+  int *piVar4;
+  int iVar5;
+  uint uVar6;
+  int iVar7;
+  undefined4 *puVar8;
+  uint uVar9;
+  int iVar10;
+  uint uVar11;
+  undefined4 *puVar12;
+  int iVar13;
+  undefined4 uVar14;
+  int iVar15;
+  int iVar16;
+  uint uVar17;
+  bool bVar18;
+  bool bVar19;
+  ulonglong uVar20;
+  uint local_34 [2];
+  
+  uVar20 = __gnu_mcount_nc();
+  iVar10 = (int)(uVar20 >> 0x20);
+  uVar17 = (uint)uVar20;
+  local_34[0] = 0;
+  if (4 < uVar17) {
+    nvt_err(pdev_kosd + 0x10,"Invalid PlaneID = %d!\n",uVar17 + 1);
+    return;
+  }
+  if (uVar17 < 3) {
+    if (iVar10 != 0) {
+LAB_0024aebc:
+      nvt_err(pdev_kosd + 0x10,"Invalid PlaneID = %d, RegionID = %d!\n",uVar17 + 1,iVar10 + 1);
+      return;
+    }
+    puVar8 = (undefined4 *)0xa1ec;
+    if (uVar17 != 0) {
+      puVar8 = &gstOSDRegister;
+    }
+    iVar7 = *(int *)(*(int *)(gpstHwFbInfo + uVar17 * 4) + 0x2a8);
+    if (uVar17 == 0) {
+      puVar8 = (undefined4 *)((uint)puVar8 & 0xffff | 0x940000);
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1c8]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1c8,uVar9);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xd8) = (byte)uVar9 & 1;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xdc) = (uVar9 & 0x1ff) >> 8;
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xe0) = (byte)((uVar9 << 0xf) >> 0x1f);
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1ca]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b370,uVar9);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xe1) = (byte)uVar9 & 1;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xe8) = (uVar9 & 0x1ffffff) >> 0x18;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xe4) = (uVar9 & 0x3ffffff) >> 0x19;
+      piVar4 = (int *)KER_REG_Phys2Virt(puVar8[0x1cc]);
+      iVar10 = *piVar4;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1cc,iVar10);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xec) = ~(byte)iVar10 & 1;
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xed) = (byte)((uint)(iVar10 << 0x17) >> 0x1f);
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1ce]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b374,uVar9);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xee) = (byte)((uVar9 << 0x17) >> 0x1f);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xf0) = (uVar9 & 0x7ffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1d0]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1d0,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xf4) = (uVar9 & 0x1fffffff) >> 0x10;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xf8) = uVar9 & 0x7ff;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1d2]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b378,uVar9);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xfc) = (byte)(uVar9 >> 0x1f);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x100) = (uVar9 & 0x1fffffff) >> 0x10;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x104) = uVar9 & 0x7ff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x108) = (uVar9 & 0xffff) >> 0xf;
+      piVar4 = (int *)KER_REG_Phys2Virt(puVar8[0x1d6]);
+      iVar10 = *piVar4;
+      _ker_osd_Write_GlobalReg(DAT_0024b37c,iVar10);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x10d) = (byte)((uint)(iVar10 << 0x17) >> 0x1f);
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1d4]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1d4,uVar9);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x10e) = (byte)(uVar9 >> 0x1f);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x110) = (uVar9 & 0x3fffffff) >> 0x14;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x114) = (uVar9 & 0xfffff) >> 10;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x118) = uVar9 & 0x3ff;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1d8]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1d8,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x11c) = (uVar9 & 0x7ffff) >> 0x10;
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x120) = (byte)uVar9 & 1;
+      puVar2 = (undefined4 *)KER_REG_Phys2Virt(puVar8[0x1f6]);
+      *puVar2 = 0x32100000;
+      puVar2 = (undefined4 *)KER_REG_Phys2Virt(puVar8[0x1f8]);
+      *puVar2 = 1;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1f6]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b380,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x128) = (uVar9 & 0x3fffffff) >> 0x1c;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 300) = (uVar9 & 0x3ffffff) >> 0x18;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x130) = (uVar9 & 0x3fffff) >> 0x14;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x134) = (uVar9 & 0x3ffff) >> 0x10;
+      piVar4 = (int *)KER_REG_Phys2Virt(puVar8[0x1e8]);
+      iVar10 = *piVar4;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1e8,iVar10);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x121) = (byte)((uint)(iVar10 << 0x17) >> 0x1f);
+      puVar2 = (undefined4 *)KER_REG_Phys2Virt(puVar8[0x1ea]);
+      uVar14 = *puVar2;
+      _ker_osd_Write_GlobalReg(DAT_0024b384,uVar14);
+      *(undefined4 *)(*(int *)(iVar7 + 0x390) + 0x124) = uVar14;
+      piVar4 = (int *)KER_REG_Phys2Virt(puVar8[0x1f2]);
+      iVar10 = *piVar4;
+      _ker_osd_Write_GlobalReg(DAT_0024b388,iVar10);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x138) = (byte)((uint)(iVar10 << 0x1b) >> 0x1f);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x139) = (byte)((uint)(iVar10 << 0x1d) >> 0x1f);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x13a) = (byte)iVar10 & 1;
+      *(undefined1 *)(*(int *)(iVar7 + 0x390) + 0x13c) = 0;
+      piVar4 = (int *)KER_REG_Phys2Virt(puVar8[0x19e]);
+      iVar10 = *piVar4;
+      _ker_osd_Write_GlobalReg(DAT_0024b38c,iVar10);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 8) = (byte)iVar10 & 1;
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x2c) = (byte)((uint)(iVar10 << 0x1b) >> 0x1f);
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1a0]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1a0,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x20) = uVar9 & 0x7f;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x44) = (uVar9 & 0x7fffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1a2]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b390,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x10) = uVar9 & 0xfff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xc) = (uVar9 & 0xfffffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1a4]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1a4,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x18) = uVar9 & 0xfff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x14) = (uVar9 & 0xfffffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1a6]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b394,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x34) = uVar9 & 0xfff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x30) = (uVar9 & 0xfffffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1a8]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1a8,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x3c) = uVar9 & 0xfff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x38) = (uVar9 & 0xfffffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1aa]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b398,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x1c) = uVar9 & 0x1f;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x40) = (uVar9 & 0x1ffff) >> 0xc;
+      piVar4 = (int *)KER_REG_Phys2Virt(puVar8[0x1ac]);
+      iVar10 = *piVar4;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1ac,iVar10);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x50) = (byte)iVar10 & 1;
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x74) = (byte)((uint)(iVar10 << 0x1b) >> 0x1f);
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1ae]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b39c,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x68) = uVar9 & 0x7f;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x8c) = (uVar9 & 0x7fffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1b0]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1b0,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x58) = uVar9 & 0xfff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x54) = (uVar9 & 0xfffffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1b2]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b3a0,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x60) = uVar9 & 0xfff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x5c) = (uVar9 & 0xfffffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1b4]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1b4,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x7c) = uVar9 & 0xfff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x78) = (uVar9 & 0xfffffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1b6]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b3a4,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x84) = uVar9 & 0xfff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x80) = (uVar9 & 0xfffffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1b8]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1b8,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 100) = uVar9 & 0x1f;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x88) = (uVar9 & 0x1ffff) >> 0xc;
+      piVar4 = (int *)KER_REG_Phys2Virt(puVar8[0x1ba]);
+      iVar10 = *piVar4;
+      _ker_osd_Write_GlobalReg(DAT_0024b3a8,iVar10);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x98) = (byte)iVar10 & 1;
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xbc) = (byte)((uint)(iVar10 << 0x1b) >> 0x1f);
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1bc]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1bc,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xb0) = uVar9 & 0x7f;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xd4) = (uVar9 & 0x7fffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1be]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b3ac,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xa0) = uVar9 & 0xfff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x9c) = (uVar9 & 0xfffffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1c0]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1c0,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xa8) = uVar9 & 0xfff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xa4) = (uVar9 & 0xfffffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1c2]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b3b0,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xc4) = uVar9 & 0xfff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xc0) = (uVar9 & 0xfffffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1c4]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(puVar8 + 0x1c4,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xcc) = uVar9 & 0xfff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 200) = (uVar9 & 0xfffffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1c6]);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b3b4,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xac) = uVar9 & 0x1f;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xd0) = (uVar9 & 0x1ffff) >> 0xc;
+      *(undefined4 *)(*(int *)(iVar7 + 0x390) + 0x140) = 1;
+      puVar2 = (undefined4 *)KER_REG_Phys2Virt(puVar8[0x1fa]);
+      uVar14 = *puVar2;
+      _ker_osd_Write_GlobalReg(DAT_0024b3b8,uVar14);
+      *(byte *)(iVar7 + 0x3a7) = (byte)uVar14 & 1;
+    }
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1ca]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(DAT_0024b370,uVar9);
+    *(bool *)(iVar7 + 0x2a4) = (uVar9 & 1 << (uVar17 + 1 & 0xff)) != 0;
+    *(bool *)(iVar7 + 0x2a5) = (uVar9 & 1 << (uVar17 + 8 & 0xff)) != 0;
+    *(bool *)(iVar7 + 0x2a6) = (uVar9 & 1 << (uVar17 + 0x10 & 0xff)) != 0;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1cc]);
+    uVar11 = *puVar1;
+    _ker_osd_Write_GlobalReg(DAT_0024b350,uVar11);
+    uVar9 = (uVar17 + 4) * 4;
+    puVar12 = puVar8 + uVar17 * 0x8a;
+    *(bool *)(iVar7 + 0x2a7) = (uVar11 & 1 << (uVar9 & 0xff)) != 0;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x60]);
+    uVar11 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x60,uVar11);
+    *(uint *)(iVar7 + 0x2ac) = uVar11 & 0x7f;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x62]);
+    uVar11 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x62,uVar11);
+    *(uint *)(iVar7 + 0x2b0) = uVar11 & 0x7ff;
+    *(uint *)(iVar7 + 0x2b4) = (uVar11 & 0x7ffffff) >> 0x10;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x80]);
+    uVar11 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x80,uVar11);
+    *(uint *)(iVar7 + 700) = (uVar11 & 0x1fff) >> 8;
+    *(uint *)(iVar7 + 0x2b8) = (uVar11 & 0x3ffffff) >> 0x10;
+    *(uint *)(iVar7 + 0x2c0) = uVar11 & 0x1f;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1e0]);
+    uVar11 = *puVar1;
+    _ker_osd_Write_GlobalReg(DAT_0024b354,uVar11);
+    *(uint *)(iVar7 + 0x2c8) = uVar11 >> (uVar17 << 3 & 0xff) & 0xff;
+    *(bool *)(iVar7 + 0x2c4) = (uVar11 & 1 << (uVar17 + 0x1c & 0xff)) != 0;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[100]);
+    uVar11 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 100,uVar11);
+    *(uint *)(iVar7 + 0x2cc) = uVar11 & 0x300000;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x66]);
+    uVar11 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x66,uVar11);
+    *(uint *)(iVar7 + 0x2cc) = *(int *)(iVar7 + 0x2cc) + (uVar11 & 0x300000);
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1e4]);
+    uVar11 = *puVar1;
+    _ker_osd_Write_GlobalReg(DAT_0024b358,uVar11);
+    *(bool *)(iVar7 + 0x2d0) = (uVar11 & 1 << (uVar9 - 0x10 & 0xff)) != 0;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1e2]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(DAT_0024b35c,uVar9);
+    *(uint *)(iVar7 + 0x2d4) = uVar9 >> (uVar17 << 3 & 0xff) & 0xff;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x68]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x68,uVar9);
+    *(uint *)(iVar7 + 0x2d8) = uVar9 & 0x7ff;
+    puVar2 = (undefined4 *)KER_REG_Phys2Virt(puVar12[0x6a]);
+    uVar14 = *puVar2;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x6a,uVar14);
+    *(byte *)(iVar7 + 0x2dc) = (byte)uVar14 & 1;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x6c]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x6c,uVar9);
+    *(uint *)(iVar7 + 0x2e0) = uVar9 & 1;
+    *(uint *)(iVar7 + 0x344) = uVar9 >> 0x10;
+    *(uint *)(iVar7 + 0x2e4) = (uVar9 & 3) >> 1;
+    *(uint *)(iVar7 + 0x2e8) = (uVar9 & 7) >> 2;
+    *(byte *)(iVar7 + 0x2ec) = (byte)((uVar9 << 0x1b) >> 0x1f);
+    *(byte *)(iVar7 + 0x2ed) = (byte)((uVar9 << 0x1a) >> 0x1f);
+    *(byte *)(iVar7 + 0x340) = (byte)((uVar9 << 0x13) >> 0x1f);
+    *(byte *)(iVar7 + 0x341) = (byte)((uVar9 << 0x12) >> 0x1f);
+    *(byte *)(iVar7 + 0x2ef) = (byte)((uVar9 << 0x16) >> 0x1f);
+    *(byte *)(iVar7 + 0x342) = (byte)(uVar9 >> 8) >> 7;
+    *(byte *)(iVar7 + 0x2ee) = (byte)((uVar9 << 0x17) >> 0x1f);
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x6e]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x6e,uVar9);
+    *(uint *)(iVar7 + 0x34c) = uVar9 & 0x1fff;
+    *(uint *)(iVar7 + 0x350) = (uVar9 & 0x1fffffff) >> 0x10;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x70]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x70,uVar9);
+    *(uint *)(iVar7 + 0x354) = uVar9 & 0xfff;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x72]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x72,uVar9);
+    *(uint *)(iVar7 + 0x2f4) = uVar9 & 0x1ffff;
+    *(uint *)(iVar7 + 0x300) = uVar9 >> 0x18;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x74]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x74,uVar9);
+    *(uint *)(iVar7 + 0x2f0) = uVar9 & 0x1ffff;
+    *(uint *)(iVar7 + 0x304) = uVar9 >> 0x18;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x76]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x76,uVar9);
+    *(uint *)(iVar7 + 0x314) = (uVar9 & 0x1ffffff) >> 0x14;
+    *(uint *)(iVar7 + 0x2f8) = uVar9 & 0xffff;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x78]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x78,uVar9);
+    *(uint *)(iVar7 + 0x2fc) = uVar9 & 0x7fff;
+    *(uint *)(iVar7 + 0x318) = (uVar9 & 0x1ffffff) >> 0x14;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x7a]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x7a,uVar9);
+    *(uint *)(iVar7 + 0x31c) = uVar9 & 0x3ff;
+    *(uint *)(iVar7 + 800) = (uVar9 & 0x1fff) >> 0xc;
+    *(uint *)(iVar7 + 0x32c) = uVar9 >> 0x1c & 0xc;
+    *(uint *)(iVar7 + 0x328) = uVar9 >> 0x1c & 3;
+    *(uint *)(iVar7 + 0x324) = (uVar9 & 0x3ffffff) >> 0x10;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x7c]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x7c,uVar9);
+    *(uint *)(iVar7 + 0x334) = (uVar9 & 0x1fff) >> 0xc;
+    *(uint *)(iVar7 + 0x33c) = uVar9 >> 0x1c & 0xc;
+    *(uint *)(iVar7 + 0x330) = uVar9 & 0x3ff;
+    *(uint *)(iVar7 + 0x338) = (uVar9 & 0x3ffffff) >> 0x10;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x7e]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x7e,uVar9);
+    *(uint *)(iVar7 + 0x30c) = (uVar9 & 0x3ff) >> 8;
+    *(uint *)(iVar7 + 0x308) = uVar9 & 0xff;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x84]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x84,uVar9);
+    *(uint *)(iVar7 + 0x35c) = uVar9 & 0x2ff;
+    *(uint *)(iVar7 + 0x360) = (uVar9 & 0xffffff) >> 0x10;
+    *(byte *)(iVar7 + 0x358) = (byte)((uVar9 << 0xb) >> 0x1f);
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x86]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x86,uVar9);
+    *(uint *)(iVar7 + 0x364) = uVar9 & 0x2ff;
+    *(uint *)(iVar7 + 0x368) = (uVar9 & 0xffffff) >> 0x10;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x88]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x88,uVar9);
+    *(uint *)(iVar7 + 0x370) = (uVar9 & 0xffffff) >> 0x10;
+    *(uint *)(iVar7 + 0x36c) = uVar9 & 0x2ff;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[0x1ee]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(PTR_DAT_0024b360,uVar9);
+    *(uint *)(iVar7 + 0x374) = uVar9 & 0xff;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar8[uVar17 * 0x8a]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar12,uVar9);
+    *(byte *)(iVar7 + 0x18) = (byte)((uVar9 << 0x1a) >> 0x1f);
+    *(byte *)(iVar7 + 0xc) = (byte)uVar9 & 1;
+    *(byte *)(iVar7 + 0x2c) = (byte)((uVar9 << 0x19) >> 0x1f);
+    _ker_osd_Convert_ColorRegValToMode(uVar9 & 0xf300,local_34);
+    *(uint *)(iVar7 + 0x3c) = (uVar9 & 0xffffff) >> 0x10;
+    *(uint *)(iVar7 + 0x10) = local_34[0];
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[2]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 2,uVar9);
+    *(uint *)(iVar7 + 0x54) = uVar9 & 0xfff;
+    *(uint *)(iVar7 + 0x50) = (uVar9 & 0x1fffffff) >> 0x10;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[4]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 4,uVar9);
+    *(uint *)(iVar7 + 0x5c) = uVar9 & 0xfff;
+    *(uint *)(iVar7 + 0x58) = (uVar9 & 0x1fffffff) >> 0x10;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[6]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 6,uVar9);
+    *(uint *)(iVar7 + 100) = uVar9 & 0xfff;
+    *(uint *)(iVar7 + 0x60) = (uVar9 & 0x1fffffff) >> 0x10;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[8]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 8,uVar9);
+    *(uint *)(iVar7 + 0x70) = (uVar9 & 0x1fffff) >> 0x10;
+    *(uint *)(iVar7 + 0x68) = (uVar9 & 0x1fff) * ((local_34[0] & 0xff) >> 3);
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[10]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 10,uVar9);
+    *(byte *)(iVar7 + 0x74) = (byte)((uVar9 << 3) >> 0x1f);
+    uVar9 = (uVar9 & 0x1ffffff) << 5 | uVar9 & 0xc0000000;
+    *(uint *)(iVar7 + 0x78) = uVar9;
+    *(uint *)(iVar7 + 0x7c) = uVar9;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0xc]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0xc,uVar9);
+    *(uint *)(iVar7 + 0x84) = (uVar9 & 0x7ffffff) >> 0x18;
+    *(uint *)(iVar7 + 0x88) = uVar9 & 0x1fffff;
+    puVar2 = (undefined4 *)KER_REG_Phys2Virt(puVar12[0xe]);
+    uVar14 = *puVar2;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0xe,uVar14);
+    *(byte *)(iVar7 + 0x8c) = (byte)uVar14 & 1;
+    puVar2 = (undefined4 *)KER_REG_Phys2Virt(puVar12[0x10]);
+    uVar14 = *puVar2;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x10,uVar14);
+    *(undefined4 *)(iVar7 + 0x1c) = uVar14;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x12]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x12,uVar9);
+    *(uint *)(iVar7 + 0x20) = uVar9;
+    *(uint *)(iVar7 + 0x24) = (uVar9 & 0xffffff) >> 0x10;
+    puVar2 = (undefined4 *)KER_REG_Phys2Virt(puVar12[0x14]);
+    uVar14 = *puVar2;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x14,uVar14);
+    *(undefined4 *)(iVar7 + 0x30) = uVar14;
+    puVar1 = (uint *)KER_REG_Phys2Virt(puVar12[0x16]);
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(puVar8 + uVar17 * 0x8a + 0x16,uVar9);
+    *(uint *)(iVar7 + 0x34) = uVar9;
+    *(uint *)(iVar7 + 0x38) = (uVar9 & 0xffffff) >> 0x10;
+  }
+  else {
+    if (0x1ffffffff < uVar20) goto LAB_0024aebc;
+    iVar7 = *(int *)(*(int *)(gpstHwFbInfo + uVar17 * 4) + 0x2a8);
+    if (uVar17 == 3) {
+      puVar1 = (uint *)KER_REG_Phys2Virt(DAT_0094ac94);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b3cc,uVar9);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xe1) = (byte)uVar9 & 1;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xe8) = (uVar9 & 0x1f) >> 4;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xe4) = (uVar9 & 0x3f) >> 5;
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xee) = (byte)((uVar9 << 0x17) >> 0x1f);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xf0) = (uVar9 & 0x7ffff) >> 0x10;
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xec) = (byte)(((uVar9 ^ 0x1000000) << 7) >> 0x1f);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xed) = (byte)((uVar9 << 3) >> 0x1f);
+      puVar1 = (uint *)KER_REG_Phys2Virt(DAT_0094ac9c);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(&DAT_0094ac9c,uVar9);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xfc) = (byte)(uVar9 >> 0x1f);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x100) = (uVar9 & 0x1fffffff) >> 0x10;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x104) = uVar9 & 0x7ff;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x108) = (uVar9 & 0xffff) >> 0xf;
+      puVar8 = (undefined4 *)KER_REG_Phys2Virt(DAT_0094aca4);
+      uVar14 = *puVar8;
+      _ker_osd_Write_GlobalReg(DAT_0024b3d0,uVar14);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xe0) = (byte)uVar14 & 1;
+      puVar1 = (uint *)KER_REG_Phys2Virt(DAT_0094acac);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(&DAT_0094acac,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xdc) = uVar9 >> 0x1f;
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0xd8) = (byte)((uVar9 << 1) >> 0x1f);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0x11c) = (uVar9 & 0x7ffff) >> 0x10;
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x120) = (byte)uVar9 & 1;
+      puVar1 = (uint *)KER_REG_Phys2Virt(DAT_0094acb4);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b3d4,uVar9);
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xf4) = (uVar9 & 0x1fffffff) >> 0x10;
+      *(uint *)(*(int *)(iVar7 + 0x390) + 0xf8) = uVar9 & 0x7ff;
+      piVar4 = (int *)KER_REG_Phys2Virt(DAT_0094acbc);
+      iVar5 = *piVar4;
+      _ker_osd_Write_GlobalReg(&DAT_0094acbc,iVar5);
+      *(byte *)(*(int *)(iVar7 + 0x390) + 0x121) = (byte)((uint)(iVar5 << 0x17) >> 0x1f);
+      puVar8 = (undefined4 *)KER_REG_Phys2Virt(DAT_0094acc4);
+      uVar14 = *puVar8;
+      _ker_osd_Write_GlobalReg(DAT_0024b3d8,uVar14);
+      *(undefined4 *)(*(int *)(iVar7 + 0x390) + 0x124) = uVar14;
+      *(undefined4 *)(*(int *)(iVar7 + 0x390) + 0x140) = 1;
+      *(undefined1 *)(*(int *)(iVar7 + 0x390) + 0x10c) = **(undefined1 **)(iVar7 + 0x398);
+    }
+    iVar5 = uVar17 - 3;
+    if (iVar10 == 0) {
+      puVar1 = (uint *)KER_REG_Phys2Virt(DAT_0094ac94);
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b3cc,uVar9);
+      iVar3 = iVar5 * 0x130;
+      *(bool *)(iVar7 + 0x2a4) = (uVar9 & 1 << (uVar17 + 1 & 0xff)) != 0;
+      puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aacc + iVar3));
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(&DAT_0094aacc + iVar3,uVar9);
+      *(uint *)(iVar7 + 0x2ac) = uVar9 & 0x7f;
+      puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aaec + iVar3));
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(&DAT_0094aaec + iVar3,uVar9);
+      *(uint *)(iVar7 + 0x30c) = (uVar9 & 0x3ff) >> 8;
+      *(uint *)(iVar7 + 0x308) = uVar9 & 0xff;
+      *(uint *)(iVar7 + 0x300) = (uVar9 & 0xffffff) >> 0x10;
+      *(uint *)(iVar7 + 0x304) = uVar9 >> 0x18;
+      puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094ab1c + iVar3));
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(&DAT_0094ab1c + iVar3,uVar9);
+      *(uint *)(iVar7 + 0x348) = (uVar9 & 0xffff) >> 8;
+      *(byte *)(iVar7 + 0x342) = (byte)uVar9 & 1;
+      *(uint *)(iVar7 + 0x344) = uVar9 >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094ab2c + iVar3));
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(&DAT_0094ab2c + iVar3,uVar9);
+      *(uint *)(iVar7 + 0x2b8) = uVar9 & 0x3ff;
+      *(uint *)(iVar7 + 0x2c0) = (uVar9 & 0x1fffff) >> 0x10;
+      puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094ab3c + iVar3));
+      uVar9 = *puVar1;
+      _ker_osd_Write_GlobalReg(&DAT_0094ab3c + iVar3,uVar9);
+      iVar13 = (uVar9 & 0x1ffffff) << 5;
+      *(byte *)(iVar7 + 0x74) = (byte)(uVar9 >> 0x1f);
+      *(int *)(iVar7 + 0x78) = iVar13;
+      *(int *)(iVar7 + 0x7c) = iVar13;
+      puVar1 = (uint *)KER_REG_Phys2Virt(DAT_0094acdc);
+      uVar11 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b3bc,uVar11);
+      uVar9 = (uVar17 + 0x1ffffffd) * 8;
+      uVar11 = (uVar11 >> (uVar9 & 0xff)) << 0x1e;
+      *(uint *)(iVar7 + 0x78) = *(uint *)(iVar7 + 0x78) | uVar11;
+      *(uint *)(iVar7 + 0x7c) = *(uint *)(iVar7 + 0x7c) | uVar11;
+      puVar1 = (uint *)KER_REG_Phys2Virt(DAT_0094acd4);
+      uVar6 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b3c0,uVar6);
+      uVar11 = 1 << (uVar17 + 8 & 0xff);
+      *(bool *)(iVar7 + 0x2a7) = (uVar6 & uVar11) != 0;
+      *(bool *)(iVar7 + 0x2a6) = (uVar6 & 1 << (uVar17 + 0x10 & 0xff)) != 0;
+      *(bool *)(iVar7 + 0x2a5) = (uVar6 & 1 << (uVar17 & 0xff)) != 0;
+      puVar1 = (uint *)KER_REG_Phys2Virt(DAT_0094acec);
+      uVar17 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b3c4,uVar17);
+      *(bool *)(iVar7 + 0x2d0) = (uVar11 & uVar17) != 0;
+      puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094ab44 + iVar3));
+      uVar17 = *puVar1;
+      _ker_osd_Write_GlobalReg(&DAT_0094ab44 + iVar3,uVar17);
+      *(uint *)(iVar7 + 0x2d8) = uVar17 & 0x7ff;
+      puVar1 = (uint *)KER_REG_Phys2Virt(DAT_0094ace4);
+      uVar17 = *puVar1;
+      _ker_osd_Write_GlobalReg(DAT_0024b3c8,uVar17);
+      *(uint *)(iVar7 + 0x2d4) = (uVar17 & 0xff << (uVar9 & 0xff)) >> (uVar9 & 0xff);
+    }
+    iVar15 = iVar5 * 0x130;
+    puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aac4 + iVar15));
+    uVar9 = *puVar1;
+    _ker_osd_Write_GlobalReg(&DAT_0094aac4 + iVar15,uVar9);
+    uVar17 = iVar10 * 0x10;
+    iVar3 = iVar7 + iVar10 * 0xa0;
+    bVar18 = (uVar9 & 1 << (uVar17 + 1 & 0xff)) != 0;
+    *(bool *)(iVar3 + 0xc) = (uVar9 & 1 << (uVar17 & 0xff)) != 0;
+    *(bool *)(iVar7 + 0x2ec) = bVar18;
+    bVar19 = (uVar9 & 1 << (uVar17 + 5 & 0xff)) != 0;
+    *(bool *)(iVar7 + 0x2ed) = bVar18;
+    *(bool *)(iVar3 + 0xd) = (uVar9 & 1 << (uVar17 + 3 & 0xff)) != 0;
+    *(bool *)(iVar3 + 0x18) = bVar19 && (bVar19 || bVar18);
+    *(bool *)(iVar3 + 0x2c) = (uVar9 & 1 << (uVar17 + 6 & 0xff)) != 0;
+    _ker_osd_Convert_ColorRegValToMode
+              ((uVar9 & 0xf300 << (uVar17 & 0xff)) >> (uVar17 & 0xff),local_34);
+    iVar16 = iVar10 * 0x48 + iVar15;
+    *(uint *)(iVar3 + 0x10) = local_34[0];
+    iVar13 = iVar10 * 0x48 + iVar15;
+    puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aa34 + iVar16));
+    uVar17 = *puVar1;
+    _ker_osd_Write_GlobalReg(&DAT_0094aa34 + iVar13,uVar17);
+    *(uint *)(iVar3 + 0x50) = (uVar17 & 0x1fffffff) >> 0x10;
+    *(uint *)(iVar3 + 0x54) = uVar17 & 0xfff;
+    puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aa3c + iVar16));
+    uVar17 = *puVar1;
+    _ker_osd_Write_GlobalReg(&DAT_0094aa3c + iVar13,uVar17);
+    *(uint *)(iVar3 + 0x68) = ((uVar17 & 0x1fffffff) >> 0x10) * ((local_34[0] & 0xff) >> 3);
+    puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aa44 + iVar16));
+    uVar17 = *puVar1;
+    _ker_osd_Write_GlobalReg(&DAT_0094aa44 + iVar13,uVar17);
+    *(uint *)(iVar3 + 0x58) = (uVar17 & 0x1fffffff) >> 0x10;
+    *(uint *)(iVar3 + 0x5c) = uVar17 & 0xfff;
+    puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aa4c + iVar16));
+    uVar17 = *puVar1;
+    _ker_osd_Write_GlobalReg(&DAT_0094aa4c + iVar13,uVar17);
+    *(uint *)(iVar7 + 0x2f0) = uVar17 & 0x1ffff;
+    puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aa54 + iVar16));
+    uVar17 = *puVar1;
+    _ker_osd_Write_GlobalReg(&DAT_0094aa54 + iVar13,uVar17);
+    *(uint *)(iVar7 + 0x2f4) = uVar17 & 0x1ffff;
+    puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aa5c + iVar16));
+    uVar17 = *puVar1;
+    _ker_osd_Write_GlobalReg(&DAT_0094aa5c + iVar13,uVar17);
+    *(uint *)(iVar3 + 0x3c) = uVar17 & 0xff;
+    puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aa64 + iVar16));
+    uVar17 = *puVar1;
+    _ker_osd_Write_GlobalReg(&DAT_0094aa64 + iVar13,uVar17);
+    *(uint *)(iVar3 + 0x70) = uVar17 & 0x1f;
+    puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aa6c + iVar16));
+    uVar17 = *puVar1;
+    _ker_osd_Write_GlobalReg(&DAT_0094aa6c + iVar13,uVar17);
+    *(uint *)(iVar3 + 0x6c) = uVar17 & 0xfff;
+    puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aa74 + iVar16));
+    uVar17 = *puVar1 & 0x1fff;
+    _ker_osd_Write_GlobalReg(&DAT_0094aa74 + iVar13,*puVar1);
+    *(uint *)(iVar3 + 0x60) = uVar17;
+    *(uint *)(iVar3 + 0x48) = uVar17;
+    if (*(int *)(iVar3 + 0x5c) == 0) {
+      *(undefined4 *)(iVar3 + 0x4c) = 0;
+    }
+    else {
+      uVar17 = (uint)(*(int *)(iVar7 + 0x2f4) * (*(int *)(iVar3 + 0x5c) + -1)) >> 0x10;
+      if (0x437 - uVar17 < 5) {
+        uVar14 = 0x438;
+      }
+      else if (0x2cf - uVar17 < 5) {
+        uVar14 = 0x2d0;
+      }
+      else if (0x21b - uVar17 < 5) {
+        uVar14 = 0x21c;
+      }
+      else {
+        uVar14 = 0;
+      }
+      *(undefined4 *)(iVar7 + iVar10 * 0xa0 + 0x4c) = uVar14;
+    }
+    iVar5 = iVar5 * 0x130;
+    puVar8 = (undefined4 *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094aafc + iVar5));
+    uVar14 = *puVar8;
+    _ker_osd_Write_GlobalReg(&DAT_0094aafc + iVar15,uVar14);
+    iVar10 = iVar7 + iVar10 * 0xa0;
+    *(undefined4 *)(iVar10 + 0x1c) = uVar14;
+    puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094ab04 + iVar5));
+    uVar17 = *puVar1;
+    _ker_osd_Write_GlobalReg(&DAT_0094ab04 + iVar15,uVar17);
+    *(uint *)(iVar10 + 0x20) = uVar17;
+    *(uint *)(iVar10 + 0x24) = (uVar17 & 0xffffff) >> 0x10;
+    puVar8 = (undefined4 *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094ab0c + iVar5));
+    uVar14 = *puVar8;
+    _ker_osd_Write_GlobalReg(&DAT_0094ab0c + iVar15,uVar14);
+    *(undefined4 *)(iVar10 + 0x30) = uVar14;
+    puVar1 = (uint *)KER_REG_Phys2Virt(*(undefined4 *)(&DAT_0094ab14 + iVar5));
+    uVar17 = *puVar1;
+    _ker_osd_Write_GlobalReg(&DAT_0094ab14 + iVar15,uVar17);
+    *(uint *)(iVar10 + 0x34) = uVar17;
+    *(uint *)(iVar10 + 0x38) = (uVar17 & 0xffffff) >> 0x10;
+  }
+  *(undefined4 *)(iVar7 + 0x28c) = 0;
+  *(undefined1 *)(iVar7 + 0x299) = 0;
+  *(undefined1 *)(iVar7 + 0x29a) = 0;
+  *(undefined4 *)(iVar7 + 0x290) = 6;
+  *(undefined4 *)(iVar7 + 0x294) = 9;
+  *(undefined1 *)(iVar7 + 0x298) = 1;
+  return;
+}
+
+ (GhidraScript)  

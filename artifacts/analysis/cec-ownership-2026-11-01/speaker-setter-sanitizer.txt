@@ -1,0 +1,358 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-review-san/tests/audio_netlink tests/audio_netlink.c common/audio_netlink.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-review-san/tests/audio_client tests/audio_client.c common/audio_client.c common/audio_netlink.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-review-san/tests/audio_async tests/audio_async.c common/audio_owner.c common/audio_client.c common/audio_netlink.c -ldl -pthread
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-review-san/core/check.o core/check.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-review-san/core/control.o core/control.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-review-san/core/host.o core/host.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-review-san/core/module.o core/module.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-review-san/modules/mod_audio_mixer.so modules/audio_mixer/audio_mixer.c common/audio_broker_wire.c -fsanitize=address,undefined
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-review-san/modules/mod_ticker.so modules/ticker/ticker.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-review-san/tests/audio_broker tests/audio_broker.c common/audio_broker.c common/audio_broker_wire.c common/audio_client.c common/audio_netlink.c -ldl -pthread
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-review-san/oa-audio-broker tools/audio/oa-audio-broker.c common/audio_broker.c common/audio_broker_wire.c common/audio_client.c common/audio_netlink.c
+  ok   exact vendor netlink golden frames, packed unaligned binary parameters, all zero tails and canaries
+  ok   invalid port/device/table/pointer/count/capacity rejects without changing output
+  ok   complete kernel reply / optional alignment padding; malformed lengths, identity, command and NUL reject atomically
+  ok   fd zero, exact socket flags/process binding, stale-reply drain, matching reply and idempotent close
+  ok   socket/bind failure unwind and primary errno; invalid I/O table; final close error consumes fd and permits reopen
+  ok   table/selection dispatch with exact pointer/indices; invalid input never sends; short send rejects and EINTR never replays
+  ok   direct OPU-gain dispatch uses bounded channel units; invalid/short/EINTR/closed-session paths never replay or fabricate an ACK
+  ok   bounded drain, timeout/error recovery, no wait replay, kernel peer/truncation/device/shape rejection and atomic query output
+  ok   inherited child cannot query parent's session; child close leaves parent ownership usable
+  ok   async open returns during blocked I/O, owns callback-table copy and applies bounded backpressure
+  ok   results are ticketed, owned and collected once; worker errors survive and failed OS close consumes fd
+  ok   quiesce rejects new work, drains accepted open and closes before join; result survives shutdown
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-review-san/tests/mixer_module tests/mixer_module.c build-review-san/core/check.o build-review-san/core/control.o build-review-san/core/host.o build-review-san/core/module.o -ldl -pthread
+[422395] ERR  host         audio_mixer: refusing to unload, service 'audio.mixer' still held (use --force)
+[422400] ERR  host         audio_mixer: refusing to unload, service 'audio.mixer' still held (use --force)
+[422407] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422408] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422409] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422410] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422412] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422412] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422468] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422468] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422518] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422518] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422578] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422578] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422628] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422628] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422682] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422682] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422722] ERR  host         audio_mixer: start() failed (-1)
+[422722] ERR  audio_mixer  timer table full
+[422722] ERR  host         audio_mixer: start() failed (-1)
+[422722] ERR  host         audio_mixer: start() failed (-1)
+[422722] ERR  host         audio_mixer: start() failed (-1)
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422729] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422730] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422731] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422732] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422733] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422733] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422733] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422733] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422733] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422733] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422733] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422739] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422740] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422741] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422742] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422743] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422744] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422744] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422744] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[422744] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+  ok   real DSO owns watches/timer, bounds requests, cancels/drains, preserves holds across suspend and invalidates reload tickets
+  ok   mismatched/oversize/EOF/error replies, final buffered reply and shutdown during a hung request release every child
+  ok   spawn/timer/watch failures unwind without a child or stale service
+  ok   missing exec interpreter is safe for immediate or asynchronous libc spawn failure; child is reaped
+  ok   real control socket queries/collects and reloads the DSO while the host reactor stays responsive
+  ok   fixed endian/ticket protocol rejects malformed, reserved, short/long and inconsistent error packets atomically
+  ok   broker reuses one lazy session, echoes tickets/errors without replay and closes on IPC EOF
+  ok   truncated request and wrong IPC socket type fail before any mixer open/send
+  ok   posix_spawn child owns its session, drops unrelated inherited fds and exits cleanly after EOF

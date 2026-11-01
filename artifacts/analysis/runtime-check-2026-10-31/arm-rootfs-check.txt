@@ -1,0 +1,559 @@
+Read-only runtime preflight; interpreter /lib/ld-linux-armhf.so.3; module ABI 2
+CHECK /work/build-tv-v2/openaurora
+	linux-vdso.so.1 (0x40801000)
+	libdl.so.2 => /lib/libdl.so.2 (0x46d40000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x46f00000)
+	libc.so.6 => /lib/libc.so.6 (0x46f30000)
+	/lib/ld-linux-armhf.so.3 (0x47110000)
+
+	Version information:
+	/work/build-tv-v2/openaurora:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.9) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /work/build-tv-v2/openaurora
+CHECK /work/build-tv-v2/modules/mod_audio.so
+	linux-vdso.so.1 (0x40801000)
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x40815000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x40884000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x408b9000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x4094e000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x40968000)
+	libnteec.so => /vendor/lib/libnteec.so (0x409e4000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x409f6000)
+	libc.so.6 => /lib/libc.so.6 (0x40a38000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x40b25000)
+	libm.so.6 => /lib/libm.so.6 (0x40c34000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x40cac000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x40cd4000)
+	/lib/ld-linux-armhf.so.3 (0x47110000)
+	libdl.so.2 => /lib/libdl.so.2 (0x40cf8000)
+	librt.so.1 => /lib/librt.so.1 (0x40d0b000)
+
+	Version information:
+	/work/build-tv-v2/modules/mod_audio.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /work/build-tv-v2/modules/mod_audio.so
+CHECK /work/build-tv-v2/modules/mod_display.so
+	linux-vdso.so.1 (0x40801000)
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x40817000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x40886000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x408bc000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x40950000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x4096a000)
+	libnteec.so => /vendor/lib/libnteec.so (0x409e6000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x409f8000)
+	libc.so.6 => /lib/libc.so.6 (0x40a3b000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x40b28000)
+	libm.so.6 => /lib/libm.so.6 (0x40c36000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x40cae000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x40cd6000)
+	/lib/ld-linux-armhf.so.3 (0x47110000)
+	libdl.so.2 => /lib/libdl.so.2 (0x40cfa000)
+	librt.so.1 => /lib/librt.so.1 (0x40d0e000)
+
+	Version information:
+	/work/build-tv-v2/modules/mod_display.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /work/build-tv-v2/modules/mod_display.so
+CHECK /work/build-tv-v2/modules/mod_ir.so
+	linux-vdso.so.1 (0x40801000)
+	libc.so.6 => /lib/libc.so.6 (0x4081e000)
+	/lib/ld-linux-armhf.so.3 (0x47110000)
+
+	Version information:
+	/work/build-tv-v2/modules/mod_ir.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /work/build-tv-v2/modules/mod_ir.so
+CHECK /work/build-tv-v2/modules/mod_panel.so
+	linux-vdso.so.1 (0x40801000)
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x40815000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x40884000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x408b9000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x4094e000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x40968000)
+	libnteec.so => /vendor/lib/libnteec.so (0x409e4000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x409f6000)
+	libc.so.6 => /lib/libc.so.6 (0x40a38000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x40b25000)
+	libm.so.6 => /lib/libm.so.6 (0x40c34000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x40cac000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x40cd4000)
+	/lib/ld-linux-armhf.so.3 (0x47110000)
+	libdl.so.2 => /lib/libdl.so.2 (0x40cf8000)
+	librt.so.1 => /lib/librt.so.1 (0x40d0b000)
+
+	Version information:
+	/work/build-tv-v2/modules/mod_panel.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /work/build-tv-v2/modules/mod_panel.so
+CHECK /work/build-tv-v2/modules/mod_plat.so
+	linux-vdso.so.1 (0x40801000)
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x40816000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x40885000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x408ba000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x4094f000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x40969000)
+	libnteec.so => /vendor/lib/libnteec.so (0x409e5000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x409f7000)
+	libc.so.6 => /lib/libc.so.6 (0x40a39000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x40b26000)
+	libm.so.6 => /lib/libm.so.6 (0x40c35000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x40cad000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x40cd5000)
+	/lib/ld-linux-armhf.so.3 (0x47110000)
+	libdl.so.2 => /lib/libdl.so.2 (0x40cf9000)
+	librt.so.1 => /lib/librt.so.1 (0x40d0c000)
+
+	Version information:
+	/work/build-tv-v2/modules/mod_plat.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /work/build-tv-v2/modules/mod_plat.so
+CHECK /work/build-tv-v2/modules/mod_power.so
+	linux-vdso.so.1 (0x40801000)
+	libc.so.6 => /lib/libc.so.6 (0x4081d000)
+	/lib/ld-linux-armhf.so.3 (0x47110000)
+
+	Version information:
+	/work/build-tv-v2/modules/mod_power.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /work/build-tv-v2/modules/mod_power.so
+CHECK /work/build-tv-v2/modules/mod_settings.so
+	linux-vdso.so.1 (0x40801000)
+	libsqlite3.so.0 => /vendor/lib/libs/libsqlite3.so.0 (0x4081d000)
+	libc.so.6 => /lib/libc.so.6 (0x408cb000)
+	libdl.so.2 => /lib/libdl.so.2 (0x409b8000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x409cc000)
+	/lib/ld-linux-armhf.so.3 (0x47110000)
+
+	Version information:
+	/work/build-tv-v2/modules/mod_settings.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libsqlite3.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+OK /work/build-tv-v2/modules/mod_settings.so
+CHECK /work/build-tv-v2/modules/mod_source.so
+	linux-vdso.so.1 (0x40801000)
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x40815000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x40884000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x408b9000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x4094e000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x40968000)
+	libnteec.so => /vendor/lib/libnteec.so (0x409e4000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x409f6000)
+	libc.so.6 => /lib/libc.so.6 (0x40a38000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x40b25000)
+	libm.so.6 => /lib/libm.so.6 (0x40c34000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x40cac000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x40cd4000)
+	/lib/ld-linux-armhf.so.3 (0x47110000)
+	libdl.so.2 => /lib/libdl.so.2 (0x40cf8000)
+	librt.so.1 => /lib/librt.so.1 (0x40d0b000)
+
+	Version information:
+	/work/build-tv-v2/modules/mod_source.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /work/build-tv-v2/modules/mod_source.so
+CHECK /work/build-tv-v2/modules/mod_ticker.so
+	linux-vdso.so.1 (0x40801000)
+	libc.so.6 => /lib/libc.so.6 (0x4081d000)
+	/lib/ld-linux-armhf.so.3 (0x47110000)
+
+	Version information:
+	/work/build-tv-v2/modules/mod_ticker.so:
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /work/build-tv-v2/modules/mod_ticker.so
+CHECK /work/build-tv-v2/modules/mod_ui_console.so
+	linux-vdso.so.1 (0x40801000)
+	libc.so.6 => /lib/libc.so.6 (0x4081d000)
+	/lib/ld-linux-armhf.so.3 (0x47110000)
+
+	Version information:
+	/work/build-tv-v2/modules/mod_ui_console.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /work/build-tv-v2/modules/mod_ui_console.so
+CHECK /work/build-tv-v2/modules/mod_ui_fb.so
+	linux-vdso.so.1 (0x40801000)
+	libc.so.6 => /lib/libc.so.6 (0x4081e000)
+	/lib/ld-linux-armhf.so.3 (0x47110000)
+
+	Version information:
+	/work/build-tv-v2/modules/mod_ui_fb.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /work/build-tv-v2/modules/mod_ui_fb.so
+Runtime preflight PASSED. No module entry/init/start, control socket or hardware access.
+This checks ELF metadata and library relocations, not device operation or display scanout.

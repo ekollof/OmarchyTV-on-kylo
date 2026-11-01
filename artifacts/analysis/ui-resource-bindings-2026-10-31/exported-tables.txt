@@ -1,0 +1,6 @@
+  1307: 0178d78c    16 OBJECT  GLOBAL DEFAULT   25 m_apps_svg_indexes
+  6640: 0178d7ac    16 OBJECT  GLOBAL DEFAULT   25 m_mymenu_svg_indexes
+ 15772: 0157d364  2808 OBJECT  GLOBAL DEFAULT   16 svg_name_list
+ 16077: 0178d7bc    16 OBJECT  GLOBAL DEFAULT   25 m_settings_svg_indexes
+ 17069: 0178d7cc    16 OBJECT  GLOBAL DEFAULT   25 m_sources_svg_indexes
+ 38738: 0178d79c    16 OBJECT  GLOBAL DEFAULT   25 m_livetv_svg_indexes

@@ -1,0 +1,222 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+71f7eb63-727f-4b9a-a9c7-2b04dc3f9197
+ 10:58:34 up 6 min,  0 users,  load average: 15.16, 11.53, 5.58
+PID   USER     TIME  COMMAND
+    1 root      0:00 init
+    2 root      0:00 [kthreadd]
+    3 root      0:00 [ksoftirqd/0]
+    5 root      0:00 [kworker/0:0H]
+    7 root      0:00 [rcu_preempt]
+    8 root      0:00 [rcu_sched]
+    9 root      0:00 [rcu_bh]
+   10 root      0:00 [migration/0]
+   11 root      0:00 [lru-add-drain]
+   12 root      0:00 [watchdog/0]
+   13 root      0:00 [cpuhp/0]
+   14 root      0:00 [cpuhp/1]
+   15 root      0:00 [watchdog/1]
+   16 root      0:00 [migration/1]
+   17 root      0:00 [ksoftirqd/1]
+   19 root      0:00 [kworker/1:0H]
+   20 root      0:00 [cpuhp/2]
+   21 root      0:00 [watchdog/2]
+   22 root      0:00 [migration/2]
+   23 root      0:00 [ksoftirqd/2]
+   25 root      0:00 [kworker/2:0H]
+   26 root      0:00 [cpuhp/3]
+   27 root      0:00 [watchdog/3]
+   28 root      0:00 [migration/3]
+   29 root      0:00 [ksoftirqd/3]
+   31 root      0:00 [kworker/3:0H]
+   32 root      0:00 [kdevtmpfs]
+   33 root      0:00 [kworker/u8:1]
+  291 root      0:00 [oom_reaper]
+  292 root      0:00 [writeback]
+  294 root      0:00 [kcompactd0]
+  295 root      0:00 [ksmd]
+  296 root      0:00 [crypto]
+  297 root      0:00 [bioset]
+  299 root      0:00 [kblockd]
+  315 root      0:00 [devfreq_wq]
+  325 root      0:00 [cfg80211]
+  418 root      0:00 [Kdbg_worker]
+  424 root      0:00 [kswapd0]
+  425 root      0:00 [vmstat]
+  491 root      0:00 [SquashFS read w]
+  516 root      0:00 [kworker/u8:2]
+ 1049 root      0:00 [bioset]
+ 1052 root      0:00 [bioset]
+ 1055 root      0:00 [bioset]
+ 1057 root      0:00 [bioset]
+ 1061 root      0:00 [bioset]
+ 1064 root      0:00 [bioset]
+ 1066 root      0:00 [bioset]
+ 1070 root      0:00 [bioset]
+ 1073 root      0:00 [bioset]
+ 1074 root      0:00 [bioset]
+ 1075 root      0:00 [bioset]
+ 1076 root      0:00 [bioset]
+ 1077 root      0:00 [bioset]
+ 1078 root      0:00 [bioset]
+ 1079 root      0:00 [bioset]
+ 1080 root      0:00 [bioset]
+ 1081 root      0:00 [bioset]
+ 1082 root      0:00 [bioset]
+ 1083 root      0:00 [bioset]
+ 1084 root      0:00 [bioset]
+ 1085 root      0:00 [bioset]
+ 1086 root      0:00 [bioset]
+ 1087 root      0:00 [bioset]
+ 1088 root      0:00 [bioset]
+ 1122 root      0:00 [bioset]
+ 1131 root      0:00 [bioset]
+ 1136 root      0:00 [bioset]
+ 1141 root      0:00 [bioset]
+ 1146 root      0:00 [bioset]
+ 1151 root      0:00 [bioset]
+ 1156 root      0:00 [bioset]
+ 1161 root      0:00 [bioset]
+ 1166 root      0:00 [bioset]
+ 1171 root      0:00 [bioset]
+ 1176 root      0:00 [bioset]
+ 1181 root      0:00 [bioset]
+ 1186 root      0:00 [bioset]
+ 1191 root      0:00 [bioset]
+ 1196 root      0:00 [bioset]
+ 1201 root      0:00 [bioset]
+ 1206 root      0:00 [bioset]
+ 1255 root      0:00 [ipv6_addrconf]
+ 1269 root      0:00 [ubi_bgt0d]
+ 1270 root      0:00 [bioset]
+ 1275 root      0:00 [kworker/0:2]
+ 1276 root      0:00 [kworker/0:3]
+ 1277 root      0:00 [kworker/0:1H]
+ 1278 root      0:00 {rc.local} /bin/sh /etc/rc.local
+ 1288 root      0:00 [kworker/1:1H]
+ 1292 root      0:00 [kworker/2:1H]
+ 1293 root      0:00 [kworker/2:1]
+ 1302 root      0:00 [bioset]
+ 1324 root      0:00 [bioset]
+ 1349 root      0:00 sh /usr/script/startup.sh
+ 1358 root      0:00 {exe} ash ./run.sh
+ 1360 root      0:00 [menu]
+ 1364 root      0:00 [_NerveTask_]
+ 1365 root      0:00 [_NerveMTask_]
+ 1375 root      0:00 [kworker/3:1H]
+ 1423 root      0:00 [ubi_bgt13d]
+ 1455 root      0:00 [TCON_ARM_TASK]
+ 1476 root      0:00 [kworker/3:3]
+ 1479 root      0:00 [kworker/3:4]
+ 1494 root      0:00 [ubifs_bgt13_0]
+ 1577 root      0:00 {exe} ash ./run.sh
+ 1581 root      0:00 /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+ 1658 root      0:00 [kworker/u9:0]
+ 1660 root      0:00 [kworker/u9:1]
+ 1662 root      0:00 [mali-simple-pow]
+ 1664 root      0:00 [kbase_job_fault]
+ 1693 root      0:00 {com.nvt.privser} privserver
+ 1703 root      0:00 /bin/sh /mtd_apexe/board/run_aurora.sh
+ 1707 root      0:00 [kworker/0:5]
+ 1712 root      0:00 [kworker/2:4]
+ 1755 root      0:00 [cifsiod]
+ 1756 root      0:00 [cifsoplockd]
+ 1785 root      0:38 /vendor/com.nvt.idtv/aurora.elf
+ 1789 root      0:00 [scsi_eh_0]
+ 1790 root      0:00 [scsi_tmf_0]
+ 1791 root      0:00 [usb-storage]
+ 1852 root      0:00 [ubi_bgt14d]
+ 1865 root      0:00 [ubifs_bgt14_0]
+ 1868 root      0:00 /conf/remotelf/dropbear -p 22 -P /tmp/dropbear.pid -r /conf/remotelf/hostkey_rsa -r /conf/remotelf/hostkey_ed25519
+ 1870 root      0:00 telnetd -l /bin/sh -p 2323
+ 1871 root      0:00 ./com.nvt.dial/com.nvt.dialserver
+ 1878 root      0:00 [bioset]
+ 1967 root      0:00 [aurora.elf]
+ 2012 root      0:00 {keepalive.sh} /bin/sh /conf/remotelf/keepalive.sh
+ 2031 root      0:00 [DRV_STBC_CALLBA]
+ 2086 root      0:00 [HDCP22_PROC]
+ 2138 root      0:00 [PLAT_WDT]
+ 2150 root      0:00 [OSD-Scroll-Task]
+ 2176 root      0:00 [XDMA command-Ta]
+ 2246 root      0:00 [dspMonitor]
+ 2259 root      0:00 [cube_event0]
+ 2263 root      0:00 [DRV_DBG_UART]
+ 2320 root      0:01 [SCLR_DP0]
+ 2324 root      0:01 [SCLR_IP0]
+ 2325 root      0:00 [SCLR_SHL_Scale0]
+ 2326 root      0:00 [SCLR_IP1]
+ 2327 root      0:00 [SCLR_SHL_Scale1]
+ 2328 root      0:00 [SCLR_SHL_Scale2]
+ 2329 root      0:00 [SCLR_SHL_Scale3]
+ 2330 root      0:00 [SCLR_SHL_Scale4]
+ 2331 root      0:00 [SCLR_SHL_Bio]
+ 2333 root      0:00 [DRV_TVADC]
+ 2342 root      0:00 [HDMI_EvtThread]
+ 2343 root      0:00 [MHL_MID_EvtThre]
+ 2346 root      0:00 [DRV_VD]
+ 2347 root      0:00 [_VPL_SRC_KADC]
+ 2348 root      0:00 [SRC_ModeTask]
+ 2349 root      0:00 [SRC_MonitorTask]
+ 2350 root      0:00 [VPL_SRC_MODE_EV]
+ 2351 root      0:00 [VPL_SCLR_CTRL_M]
+ 2352 root      0:00 [PLAT_VC_UPDATE_]
+ 2353 root      0:00 [PLAT_VC_UPDATE_]
+ 2398 root      0:00 [DRV_VBI]
+ 2409 root      0:00 [kworker/3:8]
+ 2452 root      0:00 [kdvb-ca-0:0]
+ 2469 root      0:00 [DEMUX_TASK]
+ 2516 root      0:00 [teec_kservice]
+ 2539 root      0:06 [PQ_MPFW_TASK]
+ 2540 root      0:00 [PQ_SHELL_DBG_TA]
+ 2568 root      0:00 [cube_event1]
+ 2573 root      0:00 [_APUTask_]
+ 2704 root      0:00 [kworker/1:4]
+ 2709 root      0:00 [kworker/1:8]
+ 2750 root      0:00 [KER_CI_Timer_Ta]
+ 2784 root      0:00 [Eth_plugDetect]
+ 2811 root      0:00 {exe} ash /vendor/TA/load_ta.sh
+ 2896 root      0:00 nand_tps_daemon
+ 2923 root      0:00 [kbase_event]
+ 2968 root      0:00 [DRV_CEC_CALLBAC]
+ 2982 root      0:00 [teec_service]
+ 2983 root      0:00 [teec_service]
+ 3085 root      0:00 /vendor/browser_dir/omi_worker --type=zygote --log-level=warning --enable-virtual-keyboard --locale=en-US --certificate-dir=/buffer/browser_home/certificates/oem
+ 3110 root      0:00 [kbase_event]
+ 3119 root      0:00 /vendor/bsa_server -d /dev/btusb0 -u /tmp/ -p /vendor/BCM20702_configdata_10dBm_BT_5.0.hcd -3d legacy -all=0
+ 3138 root      0:01 /vendor/browser_dir/omi_worker --type=renderer --autoplay-policy=no-user-gesture-required --dfb-memory-limit-mb=80 --disable-accelerated-jpeg-decoding --enable-prefer-compositing-to-lcd-text --enable-threaded-compositing --enable-video-textures --force-gpu-mem-available-mb=120 --log-level=warning --max-ganesh-texture-cache-mb=32 --max-untiled-layer-width=1024 --max-untiled-layer-height=1024 --field-trial-handle=16685454306341434556,12245342418366577081,131072 --service-pipe-token=B7DD5DCE48AB0170D2C3334B6318C362 --enable-blink-features=MediaSourceNewAbortAndDuration --disable-blink-features=BoxSizeDependentCompositorAnimations --lang=en-US --with-feature:uva-ffmpeg=on --enable-virtual-keyboard --locale=en-US --certificate-dir=/buffer/browser_home/certificates/oem --num-raster-threads=2 --enable-main-frame-before-activation --service-request-channel-token=B7DD5DCE48AB0170D2C3334B6318C362 --renderer-client-id=5 --memory-allowance=267346770 --memory-allowance-priority=0 --shared-files=v8_natives_data:100,v8_snapshot_data:101
+ 3173 root      0:00 [kdvb-ad-0-fe-31]
+ 3215 root      0:00 udhcpc -T 3 -b -t 3 -A 20 -s /etc/udhcpc/default.script -p /var/run/udhcpc-eth0.pid -i eth0 -h TELEFUNKEN TV
+ 3238 root      0:00 {cidclient.sh} /bin/sh /vendor/com.nvt.samba/cidclient.sh
+ 3239 root      0:00 /vendor/com.nvt.samba/cidclient
+ 3383 root      0:00 [NTUAUD-EVT0]
+ 4932 root      0:00 sleep 20
+ 4953 root      0:00 sleep 10
+ 4969 root      0:00 sleep 5
+ 4971 root      0:00 /conf/remotelf/dropbear -p 22 -P /tmp/dropbear.pid -r /conf/remotelf/hostkey_rsa -r /conf/remotelf/hostkey_ed25519 -2 9
+ 4974 root      0:00 sh -c cat /proc/sys/kernel/random/boot_id; uptime; ps; md5sum /buffer/openaurora/openaurora /conf/remotelf/aurora.elf /conf/remotelf/hosts; netstat -lnt; /vendor/iptables -L OUTPUT -n; ls /conf/oa_safe /conf/coredumpnoreset; test ! -e /conf/oa_boot
+ 4977 root      0:00 ps
+a898384df076572cf377749f25427689  /buffer/openaurora/openaurora
+0b1cd32a9de2b0251f6252e6603db8b7  /conf/remotelf/aurora.elf
+b6eee64775233de846ca46fc6c48c3f9  /conf/remotelf/hosts
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       
+tcp        0      0 0.0.0.0:7681            0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:40231           0.0.0.0:*               LISTEN      
+tcp        0      0 127.0.0.1:26441         0.0.0.0:*               LISTEN      
+tcp        0      0 192.168.178.87:26442    0.0.0.0:*               LISTEN      
+tcp        0      0 127.0.0.1:8080          0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:56789           0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:56790           0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:2870            0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      
+tcp        0      0 192.168.178.87:12345    0.0.0.0:*               LISTEN      
+tcp        0      0 :::2323                 :::*                    LISTEN      
+tcp        0      0 :::22                   :::*                    LISTEN      
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination         
+REJECT     all  --  0.0.0.0/0            216.183.117.0/24     reject-with icmp-port-unreachable
+/conf/coredumpnoreset
+/conf/oa_safe

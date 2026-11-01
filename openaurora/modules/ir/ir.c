@@ -1,0 +1,312 @@
+/*
+ * mod_ir — the remote control, straight off the MCU UART.
+ *
+ * This is the module that replaces DirectFB's input driver for our purposes.
+ * See artifacts/reports/IR-UART-2026-10-30.md for how the protocol was found:
+ *
+ *   /dev/ttyS2, 115200 8N1 raw
+ *   frame: FF FF TT A1 A2 CC ~CC B7 B8
+ *          TT = 0x50 key event, 0x5E release/other
+ *          A1 A2 = NEC extended address (0x66 0x11), CC = command, ~CC its complement
+ *
+ * The key id we publish is the NEC command byte: stable, one per button.
+ *
+ * The port is exclusive: whoever has it open consumes the bytes. When our UI is
+ * in front that is us; when the stock UI runs, this module must not be started.
+ */
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <termios.h>
+#include <unistd.h>
+
+#include "openaurora/events.h"
+#include "openaurora/module.h"
+#include "openaurora/services.h"
+
+#define IR_DEV "/dev/ttyS2"
+
+struct ctx {
+    const oa_host_api *api;
+    int fd;
+    int published;
+    uint32_t watch;
+    unsigned char frame[9];
+    int n;
+    uint8_t last_cmd;
+    char dev[64];
+};
+
+static struct ctx *g_ctx;
+
+/* RC codes for this chassis' remote (Vestel RC48), recovered from the device profile via
+ * ICE_RemoteInit -> _profileloadkeydefinitions() and joined with /vendor/ice_keymapping_db.xml.
+ * Source of truth: artifacts/protocol/ir-keymap-2026-10-30.csv, report IR-KEYMAP-2026-10-30.md.
+ * If the MCU puts the RC code in the frame, these names are what the UI should show. */
+static const struct {
+    uint8_t code;
+    const char *name;
+} RC_KEYS[] = {
+    {  0, "Zero" },        {  1, "One" },          {  2, "Two" },
+    {  3, "Three" },       {  4, "Four" },         {  5, "Five" },
+    {  6, "Six" },         {  7, "Seven" },        {  8, "Eight" },
+    {  9, "Nine" },        { 10, "Exit" },         { 12, "Power" },
+    { 13, "Mute" },        { 15, "Lang" },         { 16, "VolumeUp" },
+    { 17, "VolumeDown" },  { 18, "Info" },         { 19, "Down" },
+    { 20, "Up" },          { 21, "Left" },         { 22, "Right" },
+    { 24, "Stop" },        { 25, "Play" },         { 26, "MyButton2" },
+    { 27, "Rewind" },      { 28, "Fforward" },     { 32, "ProgramUp" },
+    { 33, "ProgramDown" }, { 37, "Exit2" },        { 39, "Netflix" },
+    { 47, "Epg" },         { 48, "Menu" },         { 49, "Pause" },
+    { 50, "Yellow" },      { 51, "Record" },       { 52, "Blue" },
+    { 53, "Select" },      { 54, "Green" },        { 55, "Red" },
+    { 56, "Aux" },         { 59, "MyButton" },     { 60, "TextPatMix" },
+};
+
+static const char *rc_name(uint8_t code)
+{
+    for (unsigned i = 0; i < sizeof RC_KEYS / sizeof RC_KEYS[0]; i++)
+        if (RC_KEYS[i].code == code)
+            return RC_KEYS[i].name;
+    return NULL;
+}
+
+/* NEC command -> vendor key name, recovered from libdirectfb_nvt_uart_ir.so
+ * (nec_keycode_map / custom_keycode_map, 52 entries). */
+static const struct {
+    uint8_t cmd;
+    const char *name;
+} KEYS[] = {
+    { 0xc0, "0" }, { 0x20, "1" }, { 0xa0, "2" }, { 0xfa, "3" }, { 0xe0, "4" },
+    { 0x10, "5" }, { 0x90, "6" }, { 0x50, "7" }, { 0xd0, "8" }, { 0x30, "9" },
+    { 0x38, "k_f000" }, { 0x12, "k_f001" }, { 0x22, "k_f002" }, { 0xb8, "k_f003" },
+    { 0xa8, "k_f047" }, { 0x28, "k_f046" }, { 0xe8, "k_f04d" }, { 0x68, "k_f04c" },
+    { 0x8a, "OK" },     { 0x3a, "k_f012" }, { 0xa2, "k_f00f" }, { 0x82, "k_f04e" },
+    { 0xc8, "k_f068" }, { 0x02, "k_f062" }, { 0xf2, "k_f052" }, { 0x88, "k_f011" },
+    { 0xca, "k_f043" }, { 0x1a, "k_f044" }, { 0x9a, "k_f042" }, { 0x5a, "k_f045" },
+    { 0x6a, "k_f00a" }, { 0x0a, "k_f051" }, { 0x72, "k_f056" }, { 0x58, "k_f059" },
+    { 0xd8, "k_f05a" }, { 0x80, "k_f03d" }, { 0xc2, "k_f020" }, { 0xb0, "k_f032" },
+    { 0xea, "k_f02a" }, { 0x00, "k_f014" }, { 0x48, "k_f02a_dup" }, { 0x7a, "k_f01b" },
+    { 0x08, "k_f102" }, { 0x4a, "k_f101" }, { 0xf8, "k_f03c" }, { 0x98, "k_f01a" },
+    { 0x42, "k_f01e" }, { 0xe2, "k_f029" }, { 0x52, "k_f105" }, { 0x62, "k_f05b" },
+    { 0x92, "k_f05c" },
+};
+
+static const char *key_name(uint8_t cmd)
+{
+    for (unsigned i = 0; i < sizeof KEYS / sizeof KEYS[0]; i++)
+        if (KEYS[i].cmd == cmd)
+            return KEYS[i].name;
+    return "?";
+}
+
+static int open_port(struct ctx *c)
+{
+    int fd = open(c->dev, O_RDWR | O_NOCTTY | O_NONBLOCK);
+    if (fd < 0)
+        return -1;
+
+    struct termios t;
+    memset(&t, 0, sizeof t);
+    t.c_cflag = CS8 | CREAD | CLOCAL | B115200;
+    t.c_cc[VMIN] = 1;
+    t.c_cc[VTIME] = 0;
+    tcflush(fd, TCIFLUSH);
+    if (tcsetattr(fd, TCSANOW, &t) != 0) {
+        close(fd);
+        return -1;
+    }
+    c->fd = fd;
+    c->n = 0;
+    return 0;
+}
+
+static void emit_key(struct ctx *c, uint8_t cmd, uint8_t kind)
+{
+    oa_key_event ev;
+    memset(&ev, 0, sizeof ev);
+    ev.id = cmd;
+    ev.kind = kind;
+    ev.ts_ms = 0; /* consumers can use the clock service */
+    c->api->emit(c->api->priv, OA_TOPIC_KEY, &ev);
+}
+
+static void on_frame(struct ctx *c)
+{
+    const unsigned char *f = c->frame;
+    if (f[0] != 0xff || f[1] != 0xff)
+        return;
+
+    if (f[2] == 0x50) {
+        uint8_t cmd = f[5];
+        uint8_t ncmd = f[6];
+        if ((uint8_t)(cmd ^ ncmd) != 0xff) {
+            c->api->log(c->api->priv, OA_LOG_WARN, "bad ~cmd (0x%02x/0x%02x), ignoring", cmd, ncmd);
+            return;
+        }
+        c->last_cmd = cmd;
+        /* Two encodings reach us depending on the MCU: the profile's RC code (0..63) and the NEC
+         * command. Label whichever we got so the name is right either way. */
+        const char *name = rc_name(f[3]);
+        if (name)
+            c->api->log(c->api->priv, OA_LOG_DEBUG, "key rc=%u %s (nec 0x%02x)", f[3], name, cmd);
+        else
+            c->api->log(c->api->priv, OA_LOG_DEBUG, "key 0x%02x %s (addr %02x%02x)", cmd,
+                        key_name(cmd), f[3], f[4]);
+        emit_key(c, name ? f[3] : cmd, OA_KEY_PRESS);
+    } else if (f[2] == 0x5e) {
+        c->api->log(c->api->priv, OA_LOG_DEBUG, "release 0x%02x", c->last_cmd);
+        emit_key(c, c->last_cmd, OA_KEY_RELEASE);
+    } else {
+        c->api->log(c->api->priv, OA_LOG_DEBUG, "frame type 0x%02x", f[2]);
+    }
+}
+
+static void consume(struct ctx *c, const unsigned char *buf, size_t n)
+{
+    for (size_t i = 0; i < n; i++) {
+        unsigned char b = buf[i];
+        /* resync: a frame always starts with FF FF */
+        if (c->n == 0 && b != 0xff)
+            continue;
+        if (c->n == 1 && b != 0xff) {
+            c->n = 0;
+            continue;
+        }
+        c->frame[c->n++] = b;
+        if (c->n == 9) {
+            on_frame(c);
+            c->n = 0;
+        }
+    }
+}
+
+static void on_readable(void *ud, int fd, unsigned rev)
+{
+    struct ctx *c = ud;
+    unsigned char buf[64];
+    ssize_t n = read(fd, buf, sizeof buf);
+    if (n <= 0)
+        return;
+    consume(c, buf, (size_t)n);
+    (void)rev;
+}
+
+static int input_feed(const uint8_t *bytes, size_t n)
+{
+    if (!g_ctx || (!bytes && n))
+        return -1;
+    if (n)
+        consume(g_ctx, bytes, n);
+    return 0;
+}
+
+static int input_device_open(void)
+{
+    return g_ctx && g_ctx->fd >= 0;
+}
+
+static const oa_input_iface g_input = {
+    .feed = input_feed,
+    .device_open = input_device_open,
+};
+
+static int m_init(const oa_host_api *api, void **out)
+{
+    if (!api || api->size < sizeof(oa_host_api) || api->abi != OA_ABI_VERSION)
+        return -1;
+    struct ctx *c = calloc(1, sizeof *c);
+    if (!c)
+        return -1;
+    c->api = api;
+    c->fd = -1;
+    g_ctx = c;
+    *out = c;
+    return 0;
+}
+
+static int m_start(void *v)
+{
+    struct ctx *c = v;
+    g_ctx = c;
+    if (c->api->publish(c->api->priv, OA_SVC_INPUT, 1, &g_input) != 0)
+        return -1;
+    c->published = 1;
+    /* Empty ir.device keeps the UART closed. The same parser still accepts feed(). */
+    snprintf(c->dev, sizeof c->dev, "%s", c->api->config_get(c->api->priv, "ir.device", IR_DEV));
+    if (!c->dev[0]) {
+        c->api->log(c->api->priv, OA_LOG_INFO, "remote parser ready; UART path empty");
+        return 0;
+    }
+    if (open_port(c) != 0) {
+        /* Not fatal: on the build host there is no such device. */
+        c->api->log(c->api->priv, OA_LOG_WARN, "%s: %s (no remote input)", c->dev, strerror(errno));
+        return 0;
+    }
+    c->watch = c->api->watch_add(c->api->priv, c->fd, OA_WATCH_READ, on_readable, c);
+    if (!c->watch) {
+        close(c->fd);
+        c->fd = -1;
+        c->api->unpublish(c->api->priv, OA_SVC_INPUT);
+        c->published = 0;
+        return -1;
+    }
+    c->api->log(c->api->priv, OA_LOG_INFO, "%s open @115200 8N1", c->dev);
+    return 0;
+}
+
+static void m_stop(void *v)
+{
+    struct ctx *c = v;
+    if (c->watch) {
+        c->api->watch_del(c->api->priv, c->watch);
+        c->watch = 0;
+    }
+    if (c->fd >= 0) {
+        close(c->fd);
+        c->fd = -1;
+        c->api->log(c->api->priv, OA_LOG_INFO, "%s closed", c->dev);
+    }
+    if (c->published) {
+        c->api->unpublish(c->api->priv, OA_SVC_INPUT);
+        c->published = 0;
+    }
+}
+
+static void m_destroy(void *v)
+{
+    if (g_ctx == v)
+        g_ctx = NULL;
+    free(v);
+}
+
+/* standby: give the port up, and take it back on resume */
+static int m_suspend(void *v)
+{
+    m_stop(v);
+    return 0;
+}
+
+static int m_resume(void *v)
+{
+    return m_start(v);
+}
+
+static const oa_module g_module = {
+    .magic = OA_MODULE_MAGIC,
+    .abi = OA_ABI_VERSION,
+    .size = sizeof(oa_module),
+    .name = "ir",
+    .version = "0.1",
+    .requires = { OA_SVC_PLAT, "" },
+    .init = m_init,
+    .start = m_start,
+    .stop = m_stop,
+    .destroy = m_destroy,
+    .suspend = m_suspend,
+    .resume = m_resume,
+};
+
+OA_MODULE_EXPORT(g_module)

@@ -1,0 +1,466 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (1248 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (2894 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts
+    /tmp/opencode/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_proj/Aurora (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_proj/Aurora (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFuncs.java '_ZN15plat_Gfx_Window6UpdateEb' '_ZN15plat_Gfx_Window7SetMuteEb' '_ZN15plat_Gfx_Center12CreateWindowE23_EN_SD_SHELL_GFX_WINDOW'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/opencode/ghidra_scripts/DumpFuncs.java (HeadlessAnalyzer)  
+INFO  DumpFuncs.java> 
+===== _ZN15plat_Gfx_Window6UpdateEb : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Update @ 00942024 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_Window::Update(bool) */
+
+void __thiscall plat_Gfx_Window::Update(plat_Gfx_Window *this,bool param_1)
+
+{
+  int iVar1;
+  undefined1 uVar2;
+  __pid_t _Var3;
+  long lVar4;
+  
+  iVar1 = __stack_chk_guard;
+  if (((*(int *)(this + 0xc) == 0) || (*(int *)(this + 0x10) == 0)) || (*(int *)(this + 0x14) == 0))
+  {
+    _Var3 = getpid();
+    lVar4 = syscall(0xe0);
+    printf("---[%d:%d]%s%s(%d):",_Var3,lVar4,&DAT_013be704,"Update",0x5c5);
+    printf("surfaces do not set 3D[%p],F[%p],B[%p]\n",*(undefined4 *)(this + 0xc),
+           *(undefined4 *)(this + 0x10),*(undefined4 *)(this + 0x14));
+    uVar2 = 0x23;
+  }
+  else {
+    Sync_Back2FrontSurface(this);
+    if (*(int *)(*(int *)(this + 0x14) + 0xc) != 0) {
+      Sync_Back2FrontSurfacePalette(this);
+    }
+    Sync_OutPutMode2HW(this);
+    if (*(char *)(*(int *)this + 0x6c) != '\0') {
+      FUN_00940dbc(this);
+    }
+    Sync_FrontSurface2HW(this);
+    if (*(int *)(*(int *)(this + 0x10) + 0xc) != 0) {
+      Sync_FrontPalette2HW(this);
+    }
+    uVar2 = 0;
+    if (param_1) {
+      plat_Gfx_DRM_osd_drv::Update_Enable
+                (*(plat_Gfx_DRM_osd_drv **)(this + 4),*(ulong *)(this + 8),'\x01');
+      uVar2 = 0;
+    }
+  }
+  if (iVar1 == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(uVar2);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _ZN15plat_Gfx_Window7SetMuteEb : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- SetMute @ 00940804 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_Window::SetMute(bool) */
+
+void __thiscall plat_Gfx_Window::SetMute(plat_Gfx_Window *this,bool param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  bool bVar3;
+  
+  iVar1 = __stack_chk_guard;
+  iVar2 = *(int *)this;
+  if ((*(char *)(iVar2 + 0x3b) != '\0') && (*(int *)(iVar2 + 0x30) == 0)) {
+    *(undefined4 *)(iVar2 + 0x30) = 0xff;
+    iVar2 = *(int *)this;
+  }
+  *(bool *)(iVar2 + 0x3b) = param_1;
+  bVar3 = iVar1 == __stack_chk_guard;
+  *(undefined1 *)(*(int *)this + 0x6c) = 1;
+  if (bVar3) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(0);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _ZN15plat_Gfx_Center12CreateWindowE23_EN_SD_SHELL_GFX_WINDOW : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- CreateWindow @ 00942690 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_Center::CreateWindow(_EN_SD_SHELL_GFX_WINDOW) */
+
+void __thiscall plat_Gfx_Center::CreateWindow(plat_Gfx_Center *this,uint param_2)
+
+{
+  bool bVar1;
+  int *piVar2;
+  int *piVar3;
+  plat_Gfx_MCU_Center *this_00;
+  __pid_t _Var4;
+  long lVar5;
+  plat_Gfx_Window *ppVar6;
+  undefined4 uVar7;
+  uint uVar8;
+  undefined4 *puVar9;
+  undefined4 *puVar10;
+  int iVar11;
+  int iVar12;
+  int iVar13;
+  int *piVar14;
+  int iVar15;
+  int *piVar16;
+  undefined4 local_6c;
+  undefined4 local_68;
+  undefined4 local_64;
+  int local_60;
+  int local_5c;
+  int local_58 [11];
+  int local_2c;
+  
+  local_2c = __stack_chk_guard;
+  if ((int)param_2 < 5) {
+    if (*(int *)(this + param_2 * 4 + 4) == 0) {
+      ppVar6 = operator_new(0x1c);
+      plat_Gfx_Window::plat_Gfx_Window
+                (ppVar6,(_ST_TD_GFX_WINDOW_SHM_PARAM *)(*(int *)this + param_2 * 0x160 + 0xc));
+      *(plat_Gfx_Window **)(this + param_2 * 4 + 4) = ppVar6;
+      puVar9 = operator_new(0x10);
+      iVar11 = *(int *)this;
+      *(undefined1 *)(puVar9 + 2) = 1;
+      puVar9[3] = 0;
+      puVar9[1] = 0;
+      puVar10 = (undefined4 *)(iVar11 + param_2 * 0x2c + 0x7c8);
+      if (puVar10 == (undefined4 *)0x0) {
+        puVar10 = &DAT_019e9128;
+        memset(&DAT_019e9128,0,0x2c);
+        DAT_019e9128 = 1;
+      }
+      *puVar9 = puVar10;
+      plat_Gfx_Window::Create(*(plat_Gfx_Window **)(this + param_2 * 4 + 4),param_2,puVar9);
+    }
+    this_00 = (plat_Gfx_MCU_Center *)plat_Gfx_MCU_Center::getPlat_Gfx_MCU_Center();
+    local_6c = 0;
+    if (*(int *)(**(int **)(this + param_2 * 4 + 4) + 0x90) == 0) {
+      *(undefined4 *)(**(int **)(this + param_2 * 4 + 4) + 0x90) = 1;
+      iVar12 = *(int *)(**(int **)(this + 0x48) + 0x18);
+      iVar15 = *(int *)(**(int **)(this + 0x48) + 0x1c);
+      plat_Gfx_Window::SetStereoMode(*(plat_Gfx_Window **)(this + param_2 * 4 + 4),0);
+      ppVar6 = *(plat_Gfx_Window **)(this + param_2 * 4 + 4);
+      iVar11 = **(int **)(this + 0x48);
+      iVar13 = *(int *)ppVar6;
+      uVar8 = *(uint *)(iVar11 + 0xc);
+      bVar1 = uVar8 - 1 < 2;
+      if ((bool)*(char *)(iVar13 + 0x35) != bVar1) {
+        *(bool *)(iVar13 + 0x35) = bVar1;
+        *(undefined1 *)(*(int *)ppVar6 + 0x6c) = 1;
+        ppVar6 = *(plat_Gfx_Window **)(this + param_2 * 4 + 4);
+        iVar11 = **(int **)(this + 0x48);
+        iVar13 = *(int *)ppVar6;
+        uVar8 = *(uint *)(iVar11 + 0xc);
+      }
+      bVar1 = (uVar8 & 0xfffffffd) == 1;
+      if ((bool)*(char *)(iVar13 + 0x36) != bVar1) {
+        *(bool *)(iVar13 + 0x36) = bVar1;
+        *(undefined1 *)(*(int *)ppVar6 + 0x6c) = 1;
+        ppVar6 = *(plat_Gfx_Window **)(this + param_2 * 4 + 4);
+        iVar13 = *(int *)ppVar6;
+        iVar11 = **(int **)(this + 0x48);
+      }
+      if ((*(int *)(iVar11 + 8) == 3) && (*(int *)(iVar11 + 0x10) == 1)) {
+        if ((iVar12 * 2 != *(int *)(iVar13 + 8)) || (iVar15 * 2 != *(int *)(iVar13 + 0xc))) {
+          *(int *)(iVar13 + 8) = iVar12 * 2;
+          *(int *)(*(int *)ppVar6 + 0xc) = iVar15 * 2;
+          *(undefined1 *)(*(int *)ppVar6 + 0x6c) = 1;
+          ppVar6 = *(plat_Gfx_Window **)(this + param_2 * 4 + 4);
+        }
+      }
+      else if ((iVar12 != *(int *)(iVar13 + 8)) || (iVar15 != *(int *)(iVar13 + 0xc))) {
+        *(int *)(iVar13 + 8) = iVar12;
+        *(int *)(*(int *)ppVar6 + 0xc) = iVar15;
+        *(undefined1 *)(*(int *)ppVar6 + 0x6c) = 1;
+        ppVar6 = *(plat_Gfx_Window **)(this + param_2 * 4 + 4);
+      }
+      local_64 = 0;
+      local_68 = 0;
+      local_60 = iVar12;
+      local_5c = iVar15;
+      plat_Gfx_Window::SetGeometryRect(ppVar6,(_ST_RECT *)&local_68);
+      FUN_0093f1fc(param_2,local_58 + 3,&local_6c);
+      *(undefined4 *)(**(int **)(this + param_2 * 4 + 4) + 0x15c) = local_6c;
+      local_58[5] = 0x10888820;
+      local_58[6] = 0;
+      local_58[8] = local_58[3];
+      local_58[7] = 0;
+      local_58[9] = local_58[4];
+      local_58[10] = plat_Gfx_DRM_osd_drv_Calculate_Stride(0x10888820,local_58[3]);
+      if (param_2 < 5) {
+        uVar7 = (&DAT_013be6d8)[param_2];
+      }
+      else {
+        uVar7 = 0;
+      }
+      local_58[2] = local_58[9] * local_58[10];
+      uVar8 = plat_Gfx_MCU_Center::Alloc_DedicatePlane(this_00,uVar7,local_58[2],0,0,0);
+      local_58[1] = plat_Gfx_MCU_Center::Vir2Phy(this_00,uVar8);
+      puVar9 = *(undefined4 **)(*(int *)(this + param_2 * 4 + 4) + 0x10);
+      piVar2 = local_58;
+      piVar3 = (int *)*puVar9;
+      do {
+        piVar16 = piVar3;
+        piVar14 = piVar2;
+        iVar11 = *piVar14;
+        iVar13 = piVar14[1];
+        iVar12 = piVar14[2];
+        piVar16[3] = piVar14[3];
+        *piVar16 = iVar11;
+        piVar16[1] = iVar13;
+        piVar16[2] = iVar12;
+        piVar2 = piVar14 + 4;
+        piVar3 = piVar16 + 4;
+      } while (piVar14 + 4 != local_58 + 8);
+      iVar11 = piVar14[5];
+      iVar13 = piVar14[6];
+      piVar16[4] = piVar14[4];
+      piVar16[5] = iVar11;
+      piVar16[6] = iVar13;
+      *(undefined1 *)(puVar9 + 2) = 1;
+    }
+    else {
+      _Var4 = getpid();
+      lVar5 = syscall(0xe0);
+      printf("---[%d:%d]%s%s(%d):",_Var4,lVar5," ","CreateWindow",0xc27);
+      printf("window ID[%d] Use Old front surface\n",param_2);
+    }
+    iVar11 = *(int *)(this + param_2 * 4 + 4);
+    iVar13 = *(int *)(iVar11 + 0x10);
+    if (*(int *)(iVar13 + 4) == 0) {
+      uVar7 = plat_Gfx_MCU_Center::Phy2Vir((uint)this_00);
+      *(undefined4 *)(iVar13 + 4) = uVar7;
+      *(undefined1 *)(iVar13 + 8) = 1;
+      iVar11 = *(int *)(this + param_2 * 4 + 4);
+    }
+    if (*(int *)(iVar11 + 0x14) == 0) {
+      puVar9 = operator_new(0x10);
+      iVar11 = *(int *)this;
+      puVar9[3] = 0;
+      puVar9[1] = 0;
+      *(undefined1 *)(puVar9 + 2) = 1;
+      puVar10 = (undefined4 *)(iVar11 + param_2 * 0x2c + 0x8a4);
+      if (puVar10 == (undefined4 *)0x0) {
+        puVar10 = &DAT_019e9128;
+        memset(&DAT_019e9128,0,0x2c);
+        DAT_019e9128 = 1;
+      }
+      iVar11 = *(int *)(this + param_2 * 4 + 4);
+      *puVar9 = puVar10;
+      *(undefined4 **)(iVar11 + 0x14) = puVar9;
+      iVar11 = *(int *)(**(int **)(*(int *)(this + param_2 * 4 + 4) + 0x14) + 4);
+      if (iVar11 == 0) {
+        FUN_0093f1fc(param_2,local_58 + 3,&local_6c);
+        local_58[5] = 0x10888820;
+        local_58[8] = local_58[3];
+        local_58[9] = local_58[4];
+        local_58[6] = iVar11;
+        local_58[7] = iVar11;
+        local_58[10] = plat_Gfx_DRM_osd_drv_Calculate_Stride(0x10888820,local_58[3]);
+        local_58[2] = local_58[9] * local_58[10];
+        iVar11 = *(int *)(**(int **)(this + param_2 * 4 + 4) + 0x15c);
+        if (iVar11 == 1) {
+          local_58[1] = *(int *)(*(int *)(*(int **)(this + param_2 * 4 + 4))[4] + 4);
+          _Var4 = getpid();
+          lVar5 = syscall(0xe0);
+          printf("---[%d:%d]%s%s(%d):",_Var4,lVar5," ","CreateWindow",0xc48);
+          printf("window ID[%d] Use single surface\n",param_2);
+        }
+        else {
+          if (iVar11 == 3) {
+            local_58[2] = local_58[2] * 2;
+          }
+          if (param_2 < 5) {
+            uVar7 = (&DAT_013be6d8)[param_2];
+          }
+          else {
+            uVar7 = 0;
+          }
+          uVar8 = plat_Gfx_MCU_Center::Alloc_DedicatePlane(this_00,uVar7,local_58[2],0,0,0);
+          local_58[1] = plat_Gfx_MCU_Center::Vir2Phy(this_00,uVar8);
+        }
+        if (local_58[1] == 0) {
+          _Var4 = getpid();
+          lVar5 = syscall(0xe0);
+          printf("---[%d:%d]%s%s(%d):",_Var4,lVar5,&DAT_013be704,"CreateWindow",0xc5b);
+          printf("Error window(%dX%d) alloc memory fail!!!!! \n",local_58[8],local_58[9]);
+        }
+        puVar9 = *(undefined4 **)(*(int *)(this + param_2 * 4 + 4) + 0x14);
+        piVar2 = local_58;
+        piVar3 = (int *)*puVar9;
+        do {
+          piVar16 = piVar3;
+          piVar14 = piVar2;
+          iVar11 = *piVar14;
+          iVar13 = piVar14[1];
+          iVar12 = piVar14[2];
+          piVar16[3] = piVar14[3];
+          *piVar16 = iVar11;
+          piVar16[1] = iVar13;
+          piVar16[2] = iVar12;
+          piVar2 = piVar14 + 4;
+          piVar3 = piVar16 + 4;
+        } while (piVar14 + 4 != local_58 + 8);
+        iVar11 = piVar14[5];
+        iVar13 = piVar14[6];
+        piVar16[4] = piVar14[4];
+        piVar16[5] = iVar11;
+        piVar16[6] = iVar13;
+        *(undefined1 *)(puVar9 + 2) = 1;
+      }
+      else {
+        _Var4 = getpid();
+        lVar5 = syscall(0xe0);
+        printf("---[%d:%d]%s%s(%d):",_Var4,lVar5," ","CreateWindow",0xc61);
+        printf("window ID[%d] Use Old Back surface\n",param_2);
+      }
+      iVar11 = *(int *)(this + param_2 * 4 + 4);
+      iVar13 = *(int *)(iVar11 + 0x14);
+      if (*(int *)(iVar13 + 4) == 0) {
+        uVar7 = plat_Gfx_MCU_Center::Phy2Vir((uint)this_00);
+        *(undefined4 *)(iVar13 + 4) = uVar7;
+        *(undefined1 *)(iVar13 + 8) = 1;
+        iVar11 = *(int *)(this + param_2 * 4 + 4);
+      }
+    }
+    if (*(int *)(iVar11 + 0xc) == 0) {
+      puVar9 = operator_new(0x10);
+      iVar11 = *(int *)this;
+      *(undefined1 *)(puVar9 + 2) = 1;
+      puVar9[3] = 0;
+      puVar9[1] = 0;
+      puVar10 = (undefined4 *)(iVar11 + param_2 * 0x2c + 0x6ec);
+      if (puVar10 == (undefined4 *)0x0) {
+        puVar10 = &DAT_019e9128;
+        memset(&DAT_019e9128,0,0x2c);
+        DAT_019e9128 = 1;
+      }
+      iVar11 = *(int *)(this + param_2 * 4 + 4);
+      *puVar9 = puVar10;
+      *(undefined4 **)(iVar11 + 0xc) = puVar9;
+      iVar11 = *(int *)(**(int **)(*(int *)(this + param_2 * 4 + 4) + 0xc) + 4);
+      if (iVar11 == 0) {
+        FUN_0093f1fc(param_2,local_58 + 3,&local_6c);
+        local_58[5] = 0x10888820;
+        local_58[8] = 1;
+        local_58[9] = 1;
+        local_58[6] = iVar11;
+        local_58[7] = iVar11;
+        local_58[10] = plat_Gfx_DRM_osd_drv_Calculate_Stride(0x10888820,1);
+        local_58[1] = iVar11;
+        local_58[2] = local_58[10] * local_58[9];
+        puVar9 = *(undefined4 **)(*(int *)(this + param_2 * 4 + 4) + 0xc);
+        piVar2 = (int *)*puVar9;
+        piVar3 = local_58;
+        do {
+          piVar16 = piVar3;
+          piVar14 = piVar2;
+          iVar11 = piVar16[1];
+          iVar13 = piVar16[2];
+          iVar12 = piVar16[3];
+          *piVar14 = *piVar16;
+          piVar14[1] = iVar11;
+          piVar14[2] = iVar13;
+          piVar14[3] = iVar12;
+          piVar2 = piVar14 + 4;
+          piVar3 = piVar16 + 4;
+        } while (piVar16 + 4 != local_58 + 8);
+        iVar11 = piVar16[5];
+        iVar13 = piVar16[6];
+        piVar14[4] = piVar16[4];
+        piVar14[5] = iVar11;
+        piVar14[6] = iVar13;
+        *(undefined1 *)(puVar9 + 2) = 1;
+      }
+      else {
+        _Var4 = getpid();
+        lVar5 = syscall(0xe0);
+        printf("---[%d:%d]%s%s(%d):",_Var4,lVar5," ","CreateWindow",0xc93);
+        printf("window ID[%d] Use Old 3D surface\n",param_2);
+      }
+      if (*(int *)(*(int *)(*(int *)(this + param_2 * 4 + 4) + 0xc) + 4) == 0) {
+        *(undefined1 *)(*(int *)(*(int *)(this + param_2 * 4 + 4) + 0xc) + 8) = 1;
+      }
+    }
+    iVar11 = FUN_0093eec8();
+    if (iVar11 == 0) {
+      plat_Gfx_Window::Update(*(plat_Gfx_Window **)(this + param_2 * 4 + 4),true);
+      uVar7 = 0;
+    }
+    else {
+      plat_Gfx_Window::Update(*(plat_Gfx_Window **)(this + param_2 * 4 + 4),false);
+      uVar7 = 0;
+    }
+  }
+  else {
+    _Var4 = getpid();
+    lVar5 = syscall(0xe0);
+    printf("---[%d:%d]%s%s(%d):",_Var4,lVar5,&DAT_013be704,"CreateWindow",0xbd8);
+    puts("error enID");
+    uVar7 = 0x16;
+  }
+  if (local_2c == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(uVar7);
+}
+
+ (GhidraScript)  

@@ -1,0 +1,4 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/audio_netlink tests/audio_netlink.c common/audio_netlink.c
+  ok   exact vendor netlink golden frames, packed unaligned binary parameters, all zero tails and canaries
+  ok   invalid port/device/table/pointer/count/capacity rejects without changing output
+  ok   complete kernel reply / optional alignment padding; malformed lengths, identity, command and NUL reject atomically

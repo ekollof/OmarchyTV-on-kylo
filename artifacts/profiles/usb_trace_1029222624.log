@@ -1,0 +1,3036 @@
+key=2525, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2525
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+[MSG_PLAT_NIM]Tuning QAM Signal
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=528, repeat array size=754
+[0m*** KeyName=KeyExit *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 528
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=2528, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2528
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+[1710:2833:1029/232635.278624:422127766518:WARNING:hbbtv_manager.cc(740)] Unexpected InvalidateAIT event received
+[1710:2833:1029/232635.279414:422127767298:WARNING:hbbtv_manager.cc(740)] Unexpected InvalidateAIT event received
+key=528, repeat array size=754
+[0m*** KeyName=KeyExit *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 528
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > novo_src/inputmanager: requestSelectExtSource ext_index_to_select: 0, current ext source: -1
+
+[46m[1;37m[ICE_CIDSetHDMICec] - [0m
+
+[46m[1;37m[ICE_CIDSetSourceTypePortal] - [0m
+
+[46m[1;37m[ICE_CIDSetInputName] - SourceType: 7[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - input_name: BACK AV[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_name: AV[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_type: 101[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_number: 1[0m
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,0,1), Start
+[0m[0m[ICE_VIDEO][MSG][0m[8123]ICE_VideoHide():Exit: Video is already MUTED, Dont call driver function ...
+[0m[ICE_VIDEO][MSG][0m[8130]ICE_VideoHide():
+  [1;31m === ICE_VideoHide 8130 Video Show Status 0 === [0m
+[0m[ICE_VIDEO][MSG][0m[6497]ICE_VideoSelectSource():Middle Ware input source id ---=14---- 
+[0m[ICE_VIDEO][MSG][0m[6606]ICE_VideoSelectSource():select source =14, path=0 (pstVINParam->enSourceType=7) 
+[TD_SCHG_Base] [1;31m PLAT_VIU_ChangeInput the Same source Return,path=0,Source=20[0m 
+ [TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=1
+[TD_SCHG_Base] [1;31m PLAT_VIU_ChangeInput( u8Path=0, SourceID=0x19) [Time=422127769][0m 
+[TD_SCHG_Base] Vin Param is NULL
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=1
+_plat_vin_slot_disconnect: invaild input type (25)
+[TD_SCHG_Base] [1;31m PLAT_VIU_ChangeInput( u8Path=0, SourceID=0x14) [Time=422127780][0m 
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=0
+[0m[ICE_VIDEO][MSG][0m[7487]ICE_VideoStart():ICE_VideoStart Pid 2000[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,0), Start
+[0m[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,1), Start
+[0m[0mEN_PLAT_AUD_SPK_SPDIF ad:0, g_enSpkDataType:2
+[0m[0mEN_PLAT_DEC_AUDIO_DOWNMIX_MODE_LORO
+[0m[PLAT_DEC] Audio_DownMix_Mod=1
+
+[PLAT_DEC] PLAT_DEC_SetAudioDownMixMode=1,set driver mode=0
+
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,0,1), Start
+[0m[0mICE Trace: [1;40;31mICE_AudioVolume[0m(1,50,0,0), Start
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 691
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 691 
+key=2528, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x63ff0, len:0x10 [0m 
+[0m_HW_TV_APP_GetParameters: tv life time=34a30a00, usb upd cnt=255(flag=ff), http upd cnt=2, side load upd cnt=255
+[0mTv Life time to be read 4 byte is 697140 (0x34A30A00 -> 0x000AA334)
+ *u32Data = 0x5400#*OK 
+DoVi bin file 0 ko file 0 profile 0 gpio/hw 0 EDID 0
+Invalid key from blast, 0x00304a 
+Invalid key from blast, 0x00304a 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20800, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20c00, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20400, len:0x396 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x23000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x10 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x3a [0m 
+    > app/demoapp: preHandleKeyPressMessage() key: 2528
+[0m
+ICE_HardwareDisableFastTurnOn[6088], start -- disable[1]
+[0m[0m[FTO]Remove /conf/fto.bin
+[0m[0m[FTO]ICE_HardwareDisableFastTurnOn[6104], end
+[0m[0m
+[FTO]ICE_HardwareWriteFastTurnOnParams, 5790
+[0m[0m
+[FTO]ICE_HardwareWriteFastTurnOnParams, 5793
+[0m[30;41m[ICE_STC][ERR][0m[381]StcGetPcrPid():StcGetPcrPid(14): source not found
+[0m
+===================== Write FTO PARAMAS =====================
+[0m[0m	Tuner-ID[2]
+[0m[0m	Tuner-Network Type[0x0]
+[0m[0m	Tuner-Channel Freq[0]
+[0m[0m	Tuner-Symbol Rate[0]
+[0m[0m	V-Source[0xe]
+[0m[0m	V-Type[0x2]
+[0m[0m	V-PID[0x2000]
+[0m[0m	V-SrcSize[3840,2160]
+[0m[0m	V-Size[3840,2160]
+[0m[0m	A-Source[0x23]
+[0m[0m	A-Type[0x0]
+[0m[0m	A-PID[0x2000]
+[0m[0m	A-Level[0]
+[0m[0m	A-AVL[0]
+[0m[0m	A-DynamicBass[0]
+[0m[0m	A-SurroundMode[0]
+[0m[0m	A-stDPA_AVL[0, 0, 0, 0]
+[0m[0m	A-DAPprofile[0]
+[0m[0m	A-enSoundOutput[1]
+[0m[0m	A-audio_digital_out_type[1]
+[0m[0m	A-DTSVirtualX_mode[0]
+[0m[0m	A-s8EQGain[0][0][0][0][0]
+[0m[0m	A-AC4_DialogueEnhancementLevel[0]
+[0m[0m	A-AC4_PresentationID[0]
+[0m[0m	PCR-PID[0x1fff]
+[0m[0m	Channel Locked[0]
+[0m[0m	crc32[0x27c5735d]
+[0m[0m===============================================================
+
+[0m[TD_SCHG_Base]Path(0) b8LockStatus(0) Mode Change  = Source Change -> No Signal
+[TD_SCHG_Base] Mode Change Occur, ModeChangeAction =1
+[TD_SCHG_Base] [1;31m[CCC][_exec_event_callback]u8Path(0) viu callback event= 1, [Time=422129382] [0m
+[0m[ICE_VIDEO][MSG][0m[5211]_ice_video_cb_func():path=0, event=1 
+[TD_SCHG_Base] [1;31m[CCC][_exec_event_callback] Exit ,[Time=422129382] [0m
+[TD_SCHG_Base] [1;31m [CCC] [plat_viu_send_videvt]u8Path(0) viu send event= 2, [Time=422129382] [0m 
+    > novo_src/nvramstorage: Read ID: 1741251476586365, bytes: 0 6 47 168 179 185 255 125
+    > novo_src/nvramstorage: Read ID: 1741251476586365, bytes: 0 6 47 168 179 185 255 125
+    > novo_src/nvramstorage: Read ID: 1741251476586365, bytes: 0 6 47 168 179 185 255 125
+[BGN]: USING PARAMETER URL:
+[BGN]: url: http://s3-eu-west-1.amazonaws.com/vstlupdate/Essentials/2kb.txt
+[BGN]: user agent: HbbTV/1.1.1 (; Vestel; MB70; 1.0; 1.0) NetFront/4.1
+
+Internet connection successfull file_size=2048
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x23000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x23000, len:0x20 [0m 
+[0mset_dial_friendly_name:2996  FriendlyName:[TELEFUNKEN_70:54:b4:fe:70:c6] 
+[0m[30;41m
+_hw_compare_DialSetting, title is no-match, please check the code!!! 
+[0m[30;41m_hw_compare_DialSetting, file num=15, matched-num=13
+[0m[0mset_dial_friendly_name, 3021, /conf/dialsetting.ini file exist, update file.
+[0mrm: can't remove '/conf/enable_coredump': No such file or directory
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=526, repeat array size=754
+[0m*** KeyName=KeySelect *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 526
+[0m>>> copy file...
+[0m[0m_MoveRamLog:no file:/tmp/syslogtime1.txt No such file or directory
+[0m[0m_CopyRamLogtoUSB: move log error No such file or directory
+[0m[0m_MoveRamLog:no file:/tmp/syslogtime2.txt No such file or directory
+[0m[0m_CopyRamLogtoUSB: move log error No such file or directory
+[0m[0m_MoveRamLog:no file:/tmp/syslogtime3.txt No such file or directory
+[0m[0m_CopyRamLogtoUSB: move log error No such file or directory
+[0m[0m_MoveRamLog:no file:/tmp/syslogtime4.txt No such file or directory
+[0m[0m_CopyRamLogtoUSB: move log error No such file or directory
+[0m[0m_MoveRamLog:no file:/tmp/syslogtime0.txt No such file or directory
+[0m[0m_CopyRamLogtoUSB: move log error No such file or directory
+[0m[0m>>> Update Boot Logo...
+[0m[UTILT_JPEG][ERR] UTILI_JpegIsSupported L48: open '/media/sda1/spi/boot_logo.bin' failed!
+[0m[30;41mPerformUSBOperations: '/media/sda1/spi/boot_logo.bin' is out of spec![0m
+[0m[0m>>> Update Profile...
+[0m[0m_CopyFile: /media/sda1/profile/mb230_hwprofile.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/profile/mb230_swprofile.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/profile/mb230_devprofile.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/browser_parameters.txt is not exist!
+[0m[0m>>> Download Profile...
+[0m[0m_CopyFile: cp -f /conf/mb230_hwprofile.bin /media/sda1
+[0m[0m_CopyFile: cp -f /conf/mb230_swprofile.bin /media/sda1
+[0m[0m_CopyFile: /conf/19482048evwprofile.bin does not exist!
+[0m[0m_CopyFile: cp -f /vendor/mb230_langprofile.bin /media/sda1
+[0mkey=2526, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m[0m>>> Update AQ/PQ/Panel Files...
+[0m[0m_CopyFile: /media/sda1/sound/AQ.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/sound/DAP_SE_SetParam.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/sound/DAPV2_SE_SetParam.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/sound/DTS_VX_AQ.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/sound/subw_config_file.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/sound/ad82586c_config_file.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/pq/PCF.pcf is not exist!
+[0m[0m_CopyFile: /media/sda1/pq/PQF.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/pq/dolby.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/pq/Dolby.cfg is not exist!
+[0m[0m_CopyFile: /media/sda1/pq/ptf.ptf is not exist!
+[0m[0m>>> Create Core file...
+[0m[0m_CopyFile: /media/sda1/enable_coredump is not exist!
+[0m[0m>>> Update Network Files...
+[0m[0m_CopyFile: /media/sda1/starturl.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/default_application.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/dragonfly_server.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/iplayer_client.inf is not exist!
+[0m[0m_CopyFile: /media/sda1/vestel_key.p12 is not exist!
+[0m[0m_CopyFile: /media/sda1/thorium_config.xml is not exist!
+[0m[0m_CopyFile: /media/sda1/ntpserver.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/forced_ntpserver.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/demo_commands.txt is not exist!
+[0m[0m>>> Update ROFIX Files...
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20000, len:0x10000 [0m 
+[0m>>> Update Other Files...
+[0m[0m_CopyFile: /conf/power_up.txt does not exist!
+[0m[0m>>> Update TCON Files...
+[0m[30;41mRmDev_UpdateTconFromUSB: /media/sda1/pq/tcon.bin is not exist!
+[0m#DEV-SPI# [36;48_dev_spi_write, 776, addr:0x73000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_write, 776, addr:0x73280, len:0x40 [0m 
+#DEV-SPI# [36;48_dev_spi_write, 776, addr:0x73000, len:0x20 [0m 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+#DEV-SPI# [36;48_dev_spi_write, 776, addr:0x73000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_write, 776, addr:0x73300, len:0x40 [0m 
+#DEV-SPI# [36;48_dev_spi_write, 776, addr:0x73000, len:0x20 [0m 
+[0mPerformConfBackup: backup done!
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 691
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 691 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x63ff0, len:0x10 [0m 
+[0m_HW_TV_APP_GetParameters: tv life time=34a30a00, usb upd cnt=255(flag=ff), http upd cnt=2, side load upd cnt=255
+[0mTv Life time to be read 4 byte is 697140 (0x34A30A00 -> 0x000AA334)
+ *u32Data = 0x5400#*OK 
+DoVi bin file 0 ko file 0 profile 0 gpio/hw 0 EDID 0
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20800, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20c00, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20400, len:0x396 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x23000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x10 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x3a [0m 
+    > app/demoapp: preHandleKeyPressMessage() key: 2526
+key=526, repeat array size=754
+[0m*** KeyName=KeySelect *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 526
+[0m[ICE_VIDEO][MSG][0m[8156]ICE_VideoStop():ICE_VideoStop 
+[0m[ICE_VIDEO][MSG][0m[8123]ICE_VideoHide():Exit: Video is already MUTED, Dont call driver function ...
+[0m[ICE_VIDEO][MSG][0m[8130]ICE_VideoHide():
+  [1;31m === ICE_VideoHide 8130 Video Show Status 0 === [0m
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,0), Start
+[0mkey=2526, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m[30;41m[ICE_VIDEO][ERR][0m[6472]ICE_VideoSelectSource():The Videohandle is NULL or unknown source !!! 
+
+[30;41mICE_AUDIO ERROR: [0m[3000]ICE_AudioSelectSource():ICE_AudioHandle invalid or unknown source
+[30;41mICE_AUDIO ERROR: [0m[3000]ICE_AudioSelectSource():ICE_AudioHandle invalid or unknown source
+    > app/diagnosticdialog: isTunerI2cHealthy OK
+    > app/diagnosticdialog: isIfI2cHealty OK
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20800, len:0x80 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20c00, len:0x100 [0m 
+    > app/diagnosticdialog: isEdidAvailable OK
+    > app/diagnosticdialog: isHdcpAvailable OK
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20400, len:0x396 [0m 
+    > app/diagnosticdialog: isHdcp2Available OK
+    > app/diagnosticdialog: isDDRSettingsAvailable OK
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x21000, len:0x1c00 [0m 
+    > app/diagnosticdialog: isCIplusCreditsAvailable OK
+_DRM_ReadKeyToBuf type(5) not exist
+_DRM_ReadFileToBuf fail (5)
+[30;41m#PLAT-ROFIX#[0m[2290]_RofixTZVerifyMarlin():[30;41m[7] get key size fail
+[0m    > app/diagnosticdialog: isMarlinDRMKeyAvailable NOK
+    > app/diagnosticdialog: isSharedKeysReencrypted OK
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x23000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x10 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x3a [0m 
+[0mtotal available size for image: 219619328 bytes
+[0m[0mtotal of buffer: 243806208 bytes
+[0m[0mICE_HardwareGetFreeConfSize: Free:2844KB Total:3496KB
+[0m[0mICE_HardwareGetFreeMemorySize: Free:157672KB Total:738304KB
+[0m    > novo_src/novoavsclient: isKeyWordDetected m_initialized 1 m_key_word_detected 0 
+    > app/demoapp: preHandleKeyPressMessage() key: 2526
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=526, repeat array size=754
+[0m*** KeyName=KeySelect *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 526
+    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 01 added C12 PAL BG    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+key=2526, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 02 added C07 SECAM DK    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 03 added C54 PAL I BBC2    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 04 added C21 PAL BG    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 05 added C35 PAL BG CHANNEL 4    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 06 added C04 SECAM LP    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 7 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 08 added C43 PAL BG    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 09 added C02 PAL BG BBC1    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 10 added S15 PAL BG    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 11 added S16 PAL BG ZDF    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 12 added S20 PAL BG    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ Analogue 13 added S40 NTSC M    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 800 added ColorBar100/-6dB    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 801 added Codec4:3    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+[MSG_PLAT_NIM]Tuning QAM Signal
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 802 added Codec16:9    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 803 added BLUE/Left1kHz    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 804 added CCIR18    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 806 added arte    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 807 added Phoenix    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 808 added Das Erste    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 809 added WDR Duesseldorf    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 810 added BBC ONE    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 811 added BBC TWO    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 812 added BBC NEWS 24    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 813 added BBCi    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 814 added TELEDEPORTE    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 816 added SLO1    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 817 added SLO2    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 818 added SLO3    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 819 added TELE M    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 820 added POP TV    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 821 added KANAL A    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T 822 added TV PIKA    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T2 900 added BBC HD    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-T2 901 added ITV1 HD    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-C 700 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-C 701 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-C 702 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 200 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 201 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 202 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 203 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 204 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 205 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 206 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 207 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 208 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 208 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 210 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 211 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 212 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 213 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 214 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 215 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 216 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 217 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 218 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 219 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 220 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 221 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 222 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 223 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S 224 added    > novo_src/channelscancontroller: SCAN FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+
+ DVB-S2 225 added    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+[30;41mICE_FS ERROR: [0m_fsOpenFile: '/conf/ga_private.key' mode=0, file not found!
+[30;41mICE_FS ERROR: [0mICE_FsCloseFile: invalid parameter
+
+ ----------------> FINISHED! <---------------------
+[MSG_PLAT_NIM]Tuning QAM Signal
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > app/demoapp: preHandleKeyPressMessage() key: 2526
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0mkey=523, repeat array size=754
+    > app/demoapp: preHandleKeyPressMessage() key: 2523
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0mkey=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+[MSG_PLAT_NIM]Tuning QAM Signal
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+[MSG_PLAT_NIM]Tuning QAM Signal
+VIDIOC_G_EXT_CTRLS: Bad file descriptor
+VIDIOC_S_INPUT: Bad file descriptor
+Cannot close v4l2_fd =  -1
+VIDIOC_S_STD: Bad file descriptor
+[1710:2833:1029/233059.907082:422392394975:WARNING:hbbtv_manager.cc(740)] Unexpected InvalidateAIT event received
+[1710:2833:1029/233059.908354:422392396243:WARNING:hbbtv_manager.cc(740)] Unexpected InvalidateAIT event received
+key=528, repeat array size=754
+[0m*** KeyName=KeyExit *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 528
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=2528, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2528
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=528, repeat array size=754
+[0m*** KeyName=KeyExit *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 528
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > novo_src/inputmanager: requestSelectExtSource ext_index_to_select: 0, current ext source: -1
+
+[46m[1;37m[ICE_CIDSetHDMICec] - [0m
+
+[46m[1;37m[ICE_CIDSetSourceTypePortal] - [0m
+
+[46m[1;37m[ICE_CIDSetInputName] - SourceType: 7[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - input_name: BACK AV[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_name: AV[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_type: 101[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_number: 1[0m
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,0,1), Start
+[0m[0m[ICE_VIDEO][MSG][0m[8123]ICE_VideoHide():Exit: Video is already MUTED, Dont call driver function ...
+[0m[ICE_VIDEO][MSG][0m[8130]ICE_VideoHide():
+  [1;31m === ICE_VideoHide 8130 Video Show Status 0 === [0m
+[0m[ICE_VIDEO][MSG][0m[6497]ICE_VideoSelectSource():Middle Ware input source id ---=14---- 
+[0m[ICE_VIDEO][MSG][0m[6606]ICE_VideoSelectSource():select source =14, path=0 (pstVINParam->enSourceType=7) 
+[TD_SCHG_Base] [1;31m PLAT_VIU_ChangeInput the Same source Return,path=0,Source=20[0m 
+ [TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=1
+[TD_SCHG_Base] [1;31m PLAT_VIU_ChangeInput( u8Path=0, SourceID=0x19) [Time=422392397][0m 
+[TD_SCHG_Base] Vin Param is NULL
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=1
+_plat_vin_slot_disconnect: invaild input type (25)
+[TD_SCHG_Base] [1;31m PLAT_VIU_ChangeInput( u8Path=0, SourceID=0x14) [Time=422392408][0m 
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=0
+[0m[ICE_VIDEO][MSG][0m[7487]ICE_VideoStart():ICE_VideoStart Pid 2000[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,0), Start
+[0m[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,1), Start
+[0m[0mEN_PLAT_AUD_SPK_SPDIF ad:0, g_enSpkDataType:2
+[0m[0mEN_PLAT_DEC_AUDIO_DOWNMIX_MODE_LORO
+[0m[PLAT_DEC] Audio_DownMix_Mod=1
+
+[PLAT_DEC] PLAT_DEC_SetAudioDownMixMode=1,set driver mode=0
+
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,0,1), Start
+[0m[0mICE Trace: [1;40;31mICE_AudioVolume[0m(1,50,0,0), Start
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 691
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 691 
+key=2528, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x63ff0, len:0x10 [0m 
+[0m_HW_TV_APP_GetParameters: tv life time=34a30a00, usb upd cnt=255(flag=ff), http upd cnt=2, side load upd cnt=255
+[0mTv Life time to be read 4 byte is 697140 (0x34A30A00 -> 0x000AA334)
+ *u32Data = 0x5400#*OK 
+DoVi bin file 0 ko file 0 profile 0 gpio/hw 0 EDID 0
+Invalid key from blast, 0x00384a 
+Invalid key from blast, 0x00384a 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20800, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20c00, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20400, len:0x396 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x23000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x10 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x3a [0m 
+    > app/demoapp: preHandleKeyPressMessage() key: 2528
+[0m
+ICE_HardwareDisableFastTurnOn[6088], start -- disable[1]
+[0m[0m[FTO]Remove /conf/fto.bin
+[0m[0m[FTO]ICE_HardwareDisableFastTurnOn[6104], end
+[0m[0m
+[FTO]ICE_HardwareWriteFastTurnOnParams, 5790
+[0m[0m
+[FTO]ICE_HardwareWriteFastTurnOnParams, 5793
+[0m[30;41m[ICE_STC][ERR][0m[381]StcGetPcrPid():StcGetPcrPid(14): source not found
+[0m
+===================== Write FTO PARAMAS =====================
+[0m[0m	Tuner-ID[2]
+[0m[0m	Tuner-Network Type[0x0]
+[0m[0m	Tuner-Channel Freq[0]
+[0m[0m	Tuner-Symbol Rate[0]
+[0m[0m	V-Source[0xe]
+[0m[0m	V-Type[0x2]
+[0m[0m	V-PID[0x2000]
+[0m[0m	V-SrcSize[3840,2160]
+[0m[0m	V-Size[3840,2160]
+[0m[0m	A-Source[0x23]
+[0m[0m	A-Type[0x0]
+[0m[0m	A-PID[0x2000]
+[0m[0m	A-Level[0]
+[0m[0m	A-AVL[0]
+[0m[0m	A-DynamicBass[0]
+[0m[0m	A-SurroundMode[0]
+[0m[0m	A-stDPA_AVL[0, 0, 0, 0]
+[0m[0m	A-DAPprofile[0]
+[0m[0m	A-enSoundOutput[1]
+[0m[0m	A-audio_digital_out_type[1]
+[0m[0m	A-DTSVirtualX_mode[0]
+[0m[0m	A-s8EQGain[0][0][0][0][0]
+[0m[0m	A-AC4_DialogueEnhancementLevel[0]
+[0m[0m	A-AC4_PresentationID[0]
+[0m[0m	PCR-PID[0x1fff]
+[0m[0m	Channel Locked[0]
+[0m[0m	crc32[0x27c5735d]
+[0m[0m===============================================================
+
+[0m[TD_SCHG_Base]Path(0) b8LockStatus(0) Mode Change  = Source Change -> No Signal
+[TD_SCHG_Base] Mode Change Occur, ModeChangeAction =1
+[TD_SCHG_Base] [1;31m[CCC][_exec_event_callback]u8Path(0) viu callback event= 1, [Time=422393994] [0m
+[0m[ICE_VIDEO][MSG][0m[5211]_ice_video_cb_func():path=0, event=1 
+[TD_SCHG_Base] [1;31m[CCC][_exec_event_callback] Exit ,[Time=422393994] [0m
+[TD_SCHG_Base] [1;31m [CCC] [plat_viu_send_videvt]u8Path(0) viu send event= 2, [Time=422393994] [0m 
+key=528, repeat array size=754
+[0m*** KeyName=KeyExit *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 528
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+key=2528, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2528
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 2528 
+Receive [1] power key
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 543
+dump video buffer Size,Ndal report W=1280,H=720,CapW=1280,CapH=720 
+Invalid key from blast, 0x00384c 
+capture success, name = /media/sda1/0_GetScreen_ice_8.bmp
+Receive [1] power key
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0mReceive [1] power key
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 543
+dump video buffer Size,Ndal report W=1280,H=720,CapW=1280,CapH=720 
+Receive [1] power keyInvalid key from blast, 0x00304c 
+capture success, name = /media/sda1/1_GetScreen_ice_8.bmp
+
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0mReceive [1] power key
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0mkey=552, repeat array size=754
+[0m*** KeyName=KeyAux *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 552
+    > app/demoapp: preHandleKeyPressMessage() key: 552
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 552 
+key=2552, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2552
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=526, repeat array size=754
+[0m*** KeyName=KeySelect *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 526
+    > novo_src/inputmanager: requestSelectExtSource ext_index_to_select: 4, current ext source: 0
+
+[46m[1;37m[ICE_CIDSetHDMICec] - [0m
+
+[46m[1;37m[ICE_CIDSetSourceTypePortal] - [0m
+
+[46m[1;37m[ICE_CIDSetInputName] - SourceType: 7[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - input_name: HDMI1[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_name: HDMI1[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_type: 100[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_number: 1[0m
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,0,0), Start
+[0m[0m[ICE_VIDEO][MSG][0m[8156]ICE_VideoStop():ICE_VideoStop 
+[0m[ICE_VIDEO][MSG][0m[8123]ICE_VideoHide():Exit: Video is already MUTED, Dont call driver function ...
+[0m[ICE_VIDEO][MSG][0m[8130]ICE_VideoHide():
+  [1;31m === ICE_VideoHide 8130 Video Show Status 0 === [0m
+[0m[ICE_VIDEO][MSG][0m[6497]ICE_VideoSelectSource():Middle Ware input source id ---=17---- 
+#DEV-SRC#PLAT_VIU_GET_HDMI_IDENT(3) = 1
+key=2526, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m#DEV-SRC# Toggle HDMI4 HPD Successfully
+[0m[ICE_VIDEO][MSG][0m[6606]ICE_VideoSelectSource():select source =17, path=0 (pstVINParam->enSourceType=5) 
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=1
+[TD_SCHG_Base] [1;31m PLAT_VIU_ChangeInput( u8Path=0, SourceID=0x11) [Time=422410086][0m 
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=0
+[0m[ICE_VIDEO][MSG][0m[6654]ICE_VideoSelectSource():[1;32m CloseTuner[m
+[0m[ICE_VIDEO][MSG][0m[7487]ICE_VideoStart():ICE_VideoStart Pid 2000[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,0), Start
+[0m[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,1), Start
+[0m[0mEN_PLAT_AUD_SPK_SPDIF ad:0, g_enSpkDataType:2
+[0m[0mEN_PLAT_DEC_AUDIO_DOWNMIX_MODE_LORO
+[0m[PLAT_DEC] Audio_DownMix_Mod=1
+
+[PLAT_DEC] PLAT_DEC_SetAudioDownMixMode=1,set driver mode=0
+
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,0,1), Start
+[0m[0mICE Trace: [1;40;31mICE_AudioVolume[0m(1,50,0,0), Start
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2526
+[TD_SCHG_Base]Path(0) b8LockStatus(0) Mode Change  = Source Change -> No Signal
+[TD_SCHG_Base] Mode Change Occur, ModeChangeAction =1
+[TD_SCHG_Base] [1;31m[CCC][_exec_event_callback]u8Path(0) viu callback event= 1, [Time=422411690] [0m
+[0m[ICE_VIDEO][MSG][0m[5211]_ice_video_cb_func():path=0, event=1 
+[TD_SCHG_Base] [1;31m[CCC][_exec_event_callback] Exit ,[Time=422411690] [0m
+[TD_SCHG_Base] [1;31m [CCC] [plat_viu_send_videvt]u8Path(0) viu send event= 2, [Time=422411690] [0m 
+Receive [1] power key
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 543
+dump video buffer Size,Ndal report W=1280,H=720,CapW=1280,CapH=720 
+Receive [1] power key
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+[0m
+[FTO]ICE_HardwareWriteFastTurnOnParams, 5790
+[0m[0m
+[FTO]ICE_HardwareWriteFastTurnOnParams, 5793
+[0m[30;41m[ICE_STC][ERR][0m[381]StcGetPcrPid():StcGetPcrPid(17): source not found
+Invalid key from blast, 0x00304c 
+capture success, name = /media/sda1/2_GetScreen_ice_8.bmp
+[0m
+===================== Write FTO PARAMAS =====================
+[0m[0m	Tuner-ID[2]
+[0m[0m	Tuner-Network Type[0x0]
+[0m[0m	Tuner-Channel Freq[0]
+[0m[0m	Tuner-Symbol Rate[0]
+[0m[0m	V-Source[0x11]
+[0m[0m	V-Type[0x2]
+[0m[0m	V-PID[0x2000]
+[0m[0m	V-SrcSize[3840,2160]
+[0m[0m	V-Size[3840,2160]
+[0m[0m	A-Source[0x25]
+[0m[0m	A-Type[0x0]
+[0m[0m	A-PID[0x2000]
+[0m[0m	A-Level[0]
+[0m[0m	A-AVL[0]
+[0m[0m	A-DynamicBass[0]
+[0m[0m	A-SurroundMode[0]
+[0m[0m	A-stDPA_AVL[0, 0, 0, 0]
+[0m[0m	A-DAPprofile[0]
+[0m[0m	A-enSoundOutput[1]
+[0m[0m	A-audio_digital_out_type[1]
+[0m[0m	A-DTSVirtualX_mode[0]
+[0m[0m	A-s8EQGain[0][0][0][0][0]
+[0m[0m	A-AC4_DialogueEnhancementLevel[0]
+[0m[0m	A-AC4_PresentationID[0]
+[0m[0m	PCR-PID[0x1fff]
+[0m[0m	Channel Locked[0]
+[0m[0m	crc32[0x2656bcbf]
+[0m[0m===============================================================
+
+[0mReceive [1] power key
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0mReceive [1] power key
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0mReceive [1] power keyReceive [2] power key And time = 332ms
+Receive [3] power key And time = 814ms
+Receive [4] power key And time = 1256ms
+
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 543
+dump video buffer Size,Ndal report W=1280,H=720,CapW=1280,CapH=720 
+[0m*** KeyName=KeyMenu *****
+[0mInvalid key from blast, 0x003070 
+capture success, name = /media/sda1/3_GetScreen_ice_8.bmp
+    > app/demoapp: preHandleKeyPressMessage() key: 557
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > app/demoapp: preHandleKeyPressMessage() key: 557
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > app/mainmenudialog: MainLauncherMenuDialog::unfocusLauncher
+    > app/demoapp: preHandleKeyPressMessage() key: 4557
+[0m*** KeyName=KeyMenu *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 557
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > app/demoapp: preHandleKeyPressMessage() key: 4557
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 4557 
+[0m*** KeyName=KeyMenu *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 557
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > app/demoapp: preHandleKeyPressMessage() key: 557
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > app/mainmenudialog: MainLauncherMenuDialog::unfocusLauncher
+    > app/demoapp: preHandleKeyPressMessage() key: 4557
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+    > app/mainmenudialog: MainLauncherMenuDialog::onUpDownPress
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+    > app/mainmenudialog: MainLauncherMenuDialog::onUpDownPress
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+    > app/mainmenudialog: MainLauncherMenuDialog::onUpDownPress
+[30;41mICE_FS ERROR: [0m_fsOpenFile: '/conf/browser/starturl.txt' mode=0, file not found!
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+    > app/mainmenudialog: MainLauncherMenuDialog::onUpDownPress
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+    > app/mainmenudialog: MainLauncherMenuDialog::onUpDownPress
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+    > app/mainmenudialog: MainLauncherMenuDialog::onUpDownPress
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+Receive [1] power key
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 543
+dump video buffer Size,Ndal report W=1280,H=720,CapW=1280,CapH=720 
+Receive [1] power key
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0mReceive [1] power keyReceive [2] power key And time = 476ms
+
+ Single-press power key
+key=543, repeat array size=754
+[0m*** KeyName=KeyPower *****
+[0mkey=2543, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0mInvalid key from blast, 0x00304c 
+capture success, name = /media/sda1/4_GetScreen_ice_8.bmp
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+    > app/mainmenudialog: MainLauncherMenuDialog::onUpDownPress
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+    > app/mainmenudialog: MainLauncherMenuDialog::onUpDownPress
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=525, repeat array size=754
+[0m*** KeyName=KeyRight *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 525
+    > app/mainmenudialog: MainLauncherMenuDialog::onRightLeftPress
+    > app/mainmenudialog: MainLauncherMenuDialog::focusLauncher
+key=2525, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2525
+key=526, repeat array size=754
+[0m*** KeyName=KeySelect *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 526
+[0m.
+[0m[0m.
+[0m[0mICE_RemovableDeviceEnableDLNACheck  1
+[0m[0m.
+[0m[0m.
+[0m[0mICE_RemovableDeviceEnableDLNACheck  0
+[0m[0m[ICE_VIDEO][MSG][0m[8156]ICE_VideoStop():ICE_VideoStop 
+[0m[ICE_VIDEO][MSG][0m[8123]ICE_VideoHide():Exit: Video is already MUTED, Dont call driver function ...
+[0m[ICE_VIDEO][MSG][0m[8130]ICE_VideoHide():
+  [1;31m === ICE_VideoHide 8130 Video Show Status 0 === [0m
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,0), Start
+[0mkey=2526, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m[30;41m[ICE_VIDEO][ERR][0m[6472]ICE_VideoSelectSource():The Videohandle is NULL or unknown source !!! 
+
+[30;41mICE_AUDIO ERROR: [0m[3000]ICE_AudioSelectSource():ICE_AudioHandle invalid or unknown source
+[30;41mICE_AUDIO ERROR: [0m[3000]ICE_AudioSelectSource():ICE_AudioHandle invalid or unknown source
+    > app/demoapp: preHandleKeyPressMessage() key: 2526
+[31bICE_AUDIO_BT_SINK ERROR : 644: ice_audio_bt_sink_avk_stop()[0mUnable to stop AVK connection with status 200
+[46m[1;37m[ICE_CIDSetHDMICec] - [0m
+
+[46m[1;37m[ICE_CIDSetSourceTypePortal] - [0m
+
+[46m[1;37m[ICE_CIDSetInputName] - SourceType: 5[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - input_name: Media Player[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_name: USB1[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_type: 106[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_number: 1[0m
+TRACE: [0mICE_MediaPlayerOpen()[0m, Start, 842
+[0m[ICE_MP] INFO: [0m[885]ICE_MediaPlayerOpen():media player open ok!
+[0m[ICE_MP] INFO: [0m[891]ICE_MediaPlayerOpen():IsAACEnabled:1  isDTSenable:1;isDivxenable:0;isHEVCenable:1
+TRACE: [0mICE_MediaPlayerOpen()[0m, Finish, 920
+[0m[ICE_VIDEO][MSG][0m[4454]_icevid_evt_rep():delay 500ms enStatus [7] 
+[GST_DTCP] nvtdtcp_init
+VIDIOC_G_EXT_CTRLS: Bad file descriptor
+VIDIOC_S_INPUT: Bad file descriptor
+Cannot close v4l2_fd =  -1
+VIDIOC_S_STD: Bad file descriptor
+0:00:00.898648916 [331m 1710[00m  0x8686f80 [31;01mERROR  [00m [00m        GST_REGISTRY gstregistrybinary.c:255:gst_registry_binary_cache_finish:[00m g_rename() failed: Operation not permitted
+0:00:00.899564749 [331m 1710[00m  0x8686f80 [31;01mERROR  [00m [00m        GST_REGISTRY gstregistrybinary.c:284:gst_registry_binary_cache_finish:[00m g_rename() failed: Operation not permitted
+[0m[ICE_VIDEO][MSG][0m[6497]ICE_VideoSelectSource():Middle Ware input source id ---=11---- 
+[0m[ICE_VIDEO][MSG][0m[6606]ICE_VideoSelectSource():select source =11, path=0 (pstVINParam->enSourceType=10) 
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=1
+[PLAT_DEC] PLAT_DEC_StopVideoDecoding[0x902e3b], time=422450760
+[Hal_VideoDec_Streamoff][277]-[Dec=0](open, start)=(1,0,)
+[ERR][Hal_VideoDec_Streamoff():281] Error videodec stream off
+[PLAT_DEC] Hal_VideoDec_Streamoff Fail 
+
+[PLAT_DEC] [CCC] PLAT_DEC_StopVideoDecoding / Finish 422450760
+[Hal_VideoDec_Close][187]-[Dec=0](open, start)=(1,0,)
+[TD_SCHG_Base] [1;31m PLAT_VIU_ChangeInput( u8Path=0, SourceID=0x2) [Time=422450761][0m 
+[PLAT_DEC] get afd =0
+
+[0mEN_PLAT_AUD_SPK_SPDIF ad:0, g_enSpkDataType:5
+[0m[0msource:11, GetSupportDDP:0
+[0mTRACE: [0mICE_MediaPlayerSetAvSync()[0m, Start, 3278
+TRACE: [0mICE_MediaPlayerSetAvSync()[0m, Finish, 3279
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422450943] caller = _ice_mp_enable_display, line = 4725 [0m 
+DLNA ERROR:  dmp_get_object_index() Object not found
+    > app/mediabrowser/thumbnailsgridbutton: createThumbnailDirectory()
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422452949] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422452986] caller = _ice_mp_enable_display, line = 4725 [0m 
+detect mnt is:/media/sda1
+[GST_NVT_PRE]gst_element_set_state(2475): setting playbin to PLAYING state
+
+(idtv:1710): GLib-GObject-CRITICAL **: g_signal_handler_disconnect: assertion 'handler_id > 0' failed
+[GST_NVT_PRE]gst_element_set_state(2483): setted playbin to PLAYING state, ret[ASYNC]
+env_config_dir:/vendor/media_codecs.xml
+##### AVDEMUX Index:[1])
+[GST_NVT_PRE]gst_ffmpegdemux_check_buffer(12175): check buffer in.
+bmp format detected
+[GST_NVT_PRE]gst_ffmpegdemux_open(8762) support_TSPU(1) demuxer(bmp)
+[GST_NVT_PRE] bTizen3_mm:1
+[GST_NVT_PRE] set uuid caps!!
+[GST_NVT_PRE] tizen3.0-mm add caps!!
+TRACE:[render_display_init]=0 LINE:[1603]
+TRACE:[render_drm_init]=1
+TRACE:[render_drm_init]=2 NDAL3.0 Open DRM:[/dev/dri/card0]
+ERR:[1710:15107]ClientDrmAuthentically(193) fail(-1)
+
+[DRM Init] : Step 1 : Open DRM Device : drm_card_id = 239 
+[DRM Init] : open drm pass 
+
+*** Panel Size:[3840x2160]***
+
+ Client : Serverfd = 240 
+*** Read drm info from shm.***
+
+ [Read] : Create DRM share memory - Start 
+[Read] : shmdt Detach success!!!
+
+
+ [Read] : drm_id = 0 
+
+
+
+ [Read] : crtc_id = 26 
+
+
+
+ [Read] : fb_id = 63 
+
+
+ [Read] : Create DRM share memory - End 
+TRACE:[render_drm_init][1134]=3 Static dev->fd:[239]
+[gst_nvtimagesink_init]:Render DRM init success 
+##### GStreamer NVT Version:[GST_NVT_For_TK_v0.0226.0_rde4e08370d8.]
+	*** imagesink STATE CHANGE: NULL_TO_READY ***
+open xbootdat node : /dev/mmcblk0p1 fail !
+OMX DEC Get Panel Size From XbootData:[3840x2160] index:[0]
+ModName[dtv], page-size=0x1000
+size: 0xb600000
+Map Offset: 0
+Phy Bgn: 0x83000000
+Phy End: 0x8e600000
+VirtUnCache ID: 1
+VirtUnCache add: 0x246b3000
+Virt Bgn: 0x246b3000
+Virt End: 0x2fcb3000
+VirtCache ID: 2
+VirtCache add: 0x14a00000
+Virt Bgn: 0x14a00000
+Virt End: 0x20000000
+[NDSYS_SYS_GetReservedMemory]->[501],the vir is :u32BaseAddress = 14a00000,u32Size = b600000
+ModName[video_es], page-size=0x1000
+size: 0x1800000
+Map Offset: 0
+Phy Bgn: 0x8e600000
+Phy End: 0x8fe00000
+VirtUnCache ID: 3
+VirtUnCache add: 0x307e3000
+Virt Bgn: 0x307e3000
+Virt End: 0x31fe3000
+VirtCache ID: 4
+VirtCache add: 0x22eb3000
+Virt Bgn: 0x22eb3000
+Virt End: 0x246b3000
+[NDSYS_SYS_GetReservedMemory]->[501],the vir is :u32BaseAddress = 22eb3000,u32Size = 1800000
+[GST_NVT_PRE]gst_omx_nvt_image_dec_set_property(174): set enFitType:1
+	### imageDec STATE CHANGE: NULL_TO_READY ###
+[OMX_Logger_Init] dump log path[/tmp/omx_log.txt]
+OMX VERSION:OMX_v0.0611.0_rd0cab76f50c.
+	### imageDec STATE CHANGE: READY_TO_PAUSED ###
+gst_omx_image_dec_start, out.
+[GST_NVT_PRE]gst_ffmpegdemux_open(9059): It's ok to open demux
+[GST_NVT_PRE]gst_ffmpegdemux_loop(11462): send out pkt index:0 pts:99:99:99.999999999 size:262144 pos:0 flags:1
+	 ***IMAGE*** nvt gst-omx set caps:[image/swbmp, width=(int)320, height=(int)320, framerate=(fraction)0/1, thumbnail=(int)0, mp3cover=(int)0, secureMode=(boolean)false, appdisplay=(boolean)false, tspu=(boolean)false, drmType=(int)0, decodeFrameDrop=(boolean)false, projectflag=(boolean)true, uuid=(buffer)983e58f1f5ffac4789a1d73fb968f730, darval=(uint)0, tizen3.0-mm=(boolean)true]
+***IMAGE: set OMX_IMAGEi_CodingBMP ***
+img_SWDec_start 970 addr(0x83400000) (0x83000000) offset(0x400000)
+img_SWDec_start 973 Original Dec addr(0x14A00000) size(0x3000000) Post addr(0x17a00000) size(0x1800000)
+img_SWDec_start 995 post buffer is not enough
+img_SWDec_start 999 Modify Dec addr(0x14E00000) size(0x3000000) Post addr(0x17a00000) size(0x1800000)
+_img_SwDec_TaskRoutine() Pure Sw decode !!!!!!  Start !!!!!! 
+[GST_NVT_PRE]gst_omx_port_release_buffer(1783): Send image frame to OMX
+gst_omx_image_dec_loop,1153, call gst_video_decoder_negotiate
+	*** imagesink STATE CHANGE: READY_TO_PAUSED ***
+gst_nvtimagesink_set_property, 1276, enOPtype=16.
+gst_nvtimagesink_set_property, 1377, enFitType=0.
+gst_omx_image_dec_finish, in.
+SW Decode FrameEnd !!!!!  Cost Time = 57 ms 
+omx_imagedec_component_GetParameter[646] decBuf=0x14e00000,decBufSize=0x3000000
+gst_omx_image_dec_loop, 1307, send frame.
+[GST_NVT_PRE]FillBufferDone(922): receive image frame from OMX
+Image sink NEW segment, start:[0(ms)] stop:[18446744073709(ms)]
+[GST_NVT_PRE]gst_base_sink_chain_unlocked(3632): nvtimagesink0 got frame of times start: 99:99:99.999999999, end: 99:99:99.999999999
+gst_nvtimagesink_show_preroll_frame, 1988, workBuf0=0x14e00000, workBuf1=0x155f8000, workBuf2=0x15df0000.
+	*** imagesink STATE CHANGE: PAUSED_TO_PLAYING ***
+I'm plugged, therefore I'm in nvtimagesink.
+eh(1280)ev(720), h(1280)v(720), W(1280)H(720), WW(1280), FR=(50).
+	### imageDec STATE CHANGE: PAUSED_TO_PLAYING ###
+gst_omx_image_dec_loop, 1309, send frame done.
+
+[GST_NVT_PRE]_priv_gst_element_state_changed(2249), (playbinImage) pipleline change state to playing.
+gst_omx_image_dec_finish, out.
+gst_nvtimagesink_wait_event, send image sink eos.
+[0mICE_FsDlnaRemoveDownloadedFile(0,a:/0_GetScreen_ice_8.bmp): rm -rf /dev/shm/dlna/tempfile
+[0m[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422453524] caller = _ice_mp_enable_display, line = 4725 [0m 
+[GST_NVT_PRE]gst_element_set_state(2475): setting playbin to NULL state
+	*** imagesink STATE CHANGE: PLAYING_TO_PAUSED ***
+	### imageDec STATE CHANGE: PLAYING_TO_PAUSED ###
+	*** imagesink STATE CHANGE: PAUSED_TO_READY ***
+[gst_nvtimagesink_stop]:Do not release DRM device.
+	*** imagesink STATE CHANGE: READY_TO_NULL ***
+	### imageDec STATE CHANGE: PAUSED_TO_READY ###
+gst_omx_image_dec_stop, in.
+gst_omx_image_dec_stop, out.
+gst_omx_image_dec_shutdown, in.
+BMP_Dec_Abort() !!!!!!!!!!!!!!!
+gst_omx_image_dec_shutdown, out.
+	### imageDec STATE CHANGE: PAUSED_TO_READY ###
+[GST_NVT_PRE]gst_ffmpegdemux_check_buffer(12193): check buffer out.
+[GST_NVT_PRE]gst_ffmpegdemux_close(3650) enter avdemux close
+[GST_NVT_PRE]gst_ffmpegdemux_close(3787) leave avdemux close
+gst_omx_image_dec_close, in.
+gst_omx_image_dec_shutdown, in.
+gst_omx_image_dec_shutdown, out.
+gst_omx_image_dec_close, out.
+	### imageDec STATE CHANGE: READY_TO_NULL ###
+gst_omx_image_dec_finalize, in.
+gst_omx_image_dec_finalize, out.
+[GST_NVT_PRE]gst_element_set_state(2483): setted playbin to NULL state, ret[SUCCESS]
+detect mnt is:/media/sda1
+[GST_NVT_PRE]gst_element_set_state(2475): setting playbin to PLAYING state
+
+(idtv:1710): GLib-GObject-CRITICAL **: g_signal_handler_disconnect: assertion 'handler_id > 0' failed
+[GST_NVT_PRE]gst_element_set_state(2483): setted playbin to PLAYING state, ret[ASYNC]
+env_config_dir:/vendor/media_codecs.xml
+##### AVDEMUX Index:[1])
+bmp format detected
+[GST_NVT_PRE]gst_ffmpegdemux_open(8762) support_TSPU(1) demuxer(bmp)
+[GST_NVT_PRE] bTizen3_mm:1
+[GST_NVT_PRE]gst_ffmpegdemux_check_buffer(12175): check buffer in.
+[GST_NVT_PRE] set uuid caps!!
+[GST_NVT_PRE] tizen3.0-mm add caps!!
+##### GStreamer NVT Version:[GST_NVT_For_TK_v0.0226.0_rde4e08370d8.]
+	*** imagesink STATE CHANGE: NULL_TO_READY ***
+[NDSYS_SYS_GetReservedMemory]->[501],the vir is :u32BaseAddress = 14a00000,u32Size = b600000
+[NDSYS_SYS_GetReservedMemory]->[501],the vir is :u32BaseAddress = 22eb3000,u32Size = 1800000
+[GST_NVT_PRE]gst_omx_nvt_image_dec_set_property(174): set enFitType:1
+	### imageDec STATE CHANGE: NULL_TO_READY ###
+[OMX_Logger_Init] dump log path[/tmp/omx_log.txt]
+OMX VERSION:OMX_v0.0611.0_rd0cab76f50c.
+	### imageDec STATE CHANGE: READY_TO_PAUSED ###
+gst_omx_image_dec_start, out.
+[GST_NVT_PRE]gst_ffmpegdemux_open(9059): It's ok to open demux
+[GST_NVT_PRE]gst_ffmpegdemux_loop(11462): send out pkt index:0 pts:99:99:99.999999999 size:262144 pos:0 flags:1
+	 ***IMAGE*** nvt gst-omx set caps:[image/swbmp, width=(int)320, height=(int)320, framerate=(fraction)0/1, thumbnail=(int)0, mp3cover=(int)0, secureMode=(boolean)false, appdisplay=(boolean)false, tspu=(boolean)false, drmType=(int)0, decodeFrameDrop=(boolean)false, projectflag=(boolean)true, uuid=(buffer)983e58f1f5ffac4789a1d73fb968f730, darval=(uint)0, tizen3.0-mm=(boolean)true]
+***IMAGE: set OMX_IMAGEi_CodingBMP ***
+img_SWDec_start 970 addr(0x83400000) (0x83000000) offset(0x400000)
+img_SWDec_start 973 Original Dec addr(0x14A00000) size(0x3000000) Post addr(0x17a00000) size(0x1800000)
+img_SWDec_start 995 post buffer is not enough
+img_SWDec_start 999 Modify Dec addr(0x14E00000) size(0x3000000) Post addr(0x17a00000) size(0x1800000)
+_img_SwDec_TaskRoutine() Pure Sw decode !!!!!!  Start !!!!!! 
+[GST_NVT_PRE]gst_omx_port_release_buffer(1783): Send image frame to OMX
+gst_omx_image_dec_loop,1153, call gst_video_decoder_negotiate
+	*** imagesink STATE CHANGE: READY_TO_PAUSED ***
+gst_nvtimagesink_set_property, 1276, enOPtype=16.
+gst_nvtimagesink_set_property, 1377, enFitType=0.
+gst_omx_image_dec_finish, in.
+SW Decode FrameEnd !!!!!  Cost Time = 52 ms 
+[GST_NVT_PRE]FillBufferDone(922): receive image frame from OMX
+omx_imagedec_component_GetParameter[646] decBuf=0x14e00000,decBufSize=0x3000000
+gst_omx_image_dec_loop, 1307, send frame.
+Image sink NEW segment, start:[0(ms)] stop:[18446744073709(ms)]
+[GST_NVT_PRE]gst_base_sink_chain_unlocked(3632): nvtimagesink1 got frame of times start: 99:99:99.999999999, end: 99:99:99.999999999
+gst_nvtimagesink_show_preroll_frame, 1988, workBuf0=0x14e00000, workBuf1=0x155f8000, workBuf2=0x15df0000.
+	*** imagesink STATE CHANGE: PAUSED_TO_PLAYING ***
+I'm plugged, therefore I'm in nvtimagesink.
+eh(1280)ev(720), h(1280)v(720), W(1280)H(720), WW(1280), FR=(50).
+	### imageDec STATE CHANGE: PAUSED_TO_PLAYING ###
+gst_omx_image_dec_loop, 1309, send frame done.
+
+[GST_NVT_PRE]_priv_gst_element_state_changed(2249), (playbinImage) pipleline change state to playing.
+gst_omx_image_dec_finish, out.
+gst_nvtimagesink_wait_event, send image sink eos.
+[0mICE_FsDlnaRemoveDownloadedFile(0,a:/1_GetScreen_ice_8.bmp): rm -rf /dev/shm/dlna/tempfile
+[0m[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422453780] caller = _ice_mp_enable_display, line = 4725 [0m 
+[GST_NVT_PRE]gst_element_set_state(2475): setting playbin to NULL state
+	*** imagesink STATE CHANGE: PLAYING_TO_PAUSED ***
+	### imageDec STATE CHANGE: PLAYING_TO_PAUSED ###
+	*** imagesink STATE CHANGE: PAUSED_TO_READY ***
+[gst_nvtimagesink_stop]:Do not release DRM device.
+	*** imagesink STATE CHANGE: READY_TO_NULL ***
+	### imageDec STATE CHANGE: PAUSED_TO_READY ###
+gst_omx_image_dec_stop, in.
+gst_omx_image_dec_stop, out.
+gst_omx_image_dec_shutdown, in.
+BMP_Dec_Abort() !!!!!!!!!!!!!!!
+gst_omx_image_dec_shutdown, out.
+	### imageDec STATE CHANGE: PAUSED_TO_READY ###
+[GST_NVT_PRE]gst_ffmpegdemux_check_buffer(12193): check buffer out.
+[GST_NVT_PRE]gst_ffmpegdemux_close(3650) enter avdemux close
+[GST_NVT_PRE]gst_ffmpegdemux_close(3787) leave avdemux close
+gst_omx_image_dec_close, in.
+gst_omx_image_dec_shutdown, in.
+gst_omx_image_dec_shutdown, out.
+gst_omx_image_dec_close, out.
+	### imageDec STATE CHANGE: READY_TO_NULL ###
+gst_omx_image_dec_finalize, in.
+gst_omx_image_dec_finalize, out.
+[GST_NVT_PRE]gst_element_set_state(2483): setted playbin to NULL state, ret[SUCCESS]
+detect mnt is:/media/sda1
+[GST_NVT_PRE]gst_element_set_state(2475): setting playbin to PLAYING state
+
+(idtv:1710): GLib-GObject-CRITICAL **: g_signal_handler_disconnect: assertion 'handler_id > 0' failed
+[GST_NVT_PRE]gst_element_set_state(2483): setted playbin to PLAYING state, ret[ASYNC]
+env_config_dir:/vendor/media_codecs.xml
+##### AVDEMUX Index:[1])
+[GST_NVT_PRE]gst_ffmpegdemux_check_buffer(12175): check buffer in.
+bmp format detected
+[GST_NVT_PRE]gst_ffmpegdemux_open(8762) support_TSPU(1) demuxer(bmp)
+[GST_NVT_PRE] bTizen3_mm:1
+[GST_NVT_PRE] set uuid caps!!
+[GST_NVT_PRE] tizen3.0-mm add caps!!
+##### GStreamer NVT Version:[GST_NVT_For_TK_v0.0226.0_rde4e08370d8.]
+	*** imagesink STATE CHANGE: NULL_TO_READY ***
+[NDSYS_SYS_GetReservedMemory]->[501],the vir is :u32BaseAddress = 14a00000,u32Size = b600000
+[NDSYS_SYS_GetReservedMemory]->[501],the vir is :u32BaseAddress = 22eb3000,u32Size = 1800000
+[GST_NVT_PRE]gst_omx_nvt_image_dec_set_property(174): set enFitType:1
+	### imageDec STATE CHANGE: NULL_TO_READY ###
+[OMX_Logger_Init] dump log path[/tmp/omx_log.txt]
+OMX VERSION:OMX_v0.0611.0_rd0cab76f50c.
+	### imageDec STATE CHANGE: READY_TO_PAUSED ###
+gst_omx_image_dec_start, out.
+[GST_NVT_PRE]gst_ffmpegdemux_open(9059): It's ok to open demux
+[GST_NVT_PRE]gst_ffmpegdemux_loop(11462): send out pkt index:0 pts:99:99:99.999999999 size:262144 pos:0 flags:1
+	 ***IMAGE*** nvt gst-omx set caps:[image/swbmp, width=(int)320, height=(int)320, framerate=(fraction)0/1, thumbnail=(int)0, mp3cover=(int)0, secureMode=(boolean)false, appdisplay=(boolean)false, tspu=(boolean)false, drmType=(int)0, decodeFrameDrop=(boolean)false, projectflag=(boolean)true, uuid=(buffer)983e58f1f5ffac4789a1d73fb968f730, darval=(uint)0, tizen3.0-mm=(boolean)true]
+***IMAGE: set OMX_IMAGEi_CodingBMP ***
+img_SWDec_start 970 addr(0x83400000) (0x83000000) offset(0x400000)
+img_SWDec_start 973 Original Dec addr(0x14A00000) size(0x3000000) Post addr(0x17a00000) size(0x1800000)
+img_SWDec_start 995 post buffer is not enough
+img_SWDec_start 999 Modify Dec addr(0x14E00000) size(0x3000000) Post addr(0x17a00000) size(0x1800000)
+_img_SwDec_TaskRoutine() Pure Sw decode !!!!!!  Start !!!!!! 
+[GST_NVT_PRE]gst_omx_port_release_buffer(1783): Send image frame to OMX
+gst_omx_image_dec_loop,1153, call gst_video_decoder_negotiate
+	*** imagesink STATE CHANGE: READY_TO_PAUSED ***
+gst_nvtimagesink_set_property, 1276, enOPtype=16.
+gst_nvtimagesink_set_property, 1377, enFitType=0.
+gst_omx_image_dec_finish, in.
+SW Decode FrameEnd !!!!!  Cost Time = 51 ms 
+[GST_NVT_PRE]FillBufferDone(922): receive image frame from OMX
+omx_imagedec_component_GetParameter[646] decBuf=0x14e00000,decBufSize=0x3000000
+gst_omx_image_dec_loop, 1307, send frame.
+Image sink NEW segment, start:[0(ms)] stop:[18446744073709(ms)]
+[GST_NVT_PRE]gst_base_sink_chain_unlocked(3632): nvtimagesink2 got frame of times start: 99:99:99.999999999, end: 99:99:99.999999999
+gst_nvtimagesink_show_preroll_frame, 1988, workBuf0=0x14e00000, workBuf1=0x155f8000, workBuf2=0x15df0000.
+	*** imagesink STATE CHANGE: PAUSED_TO_PLAYING ***
+I'm plugged, therefore I'm in nvtimagesink.
+eh(1280)ev(720), h(1280)v(720), W(1280)H(720), WW(1280), FR=(50).
+	### imageDec STATE CHANGE: PAUSED_TO_PLAYING ###
+
+[GST_NVT_PRE]_priv_gst_element_state_changed(2249), (playbinImage) pipleline change state to playing.
+gst_omx_image_dec_loop, 1309, send frame done.
+gst_omx_image_dec_finish, out.
+gst_nvtimagesink_wait_event, send image sink eos.
+[0mICE_FsDlnaRemoveDownloadedFile(0,a:/2_GetScreen_ice_8.bmp): rm -rf /dev/shm/dlna/tempfile
+[0m[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422454033] caller = _ice_mp_enable_display, line = 4725 [0m 
+[GST_NVT_PRE]gst_element_set_state(2475): setting playbin to NULL state
+	*** imagesink STATE CHANGE: PLAYING_TO_PAUSED ***
+	### imageDec STATE CHANGE: PLAYING_TO_PAUSED ###
+	*** imagesink STATE CHANGE: PAUSED_TO_READY ***
+[gst_nvtimagesink_stop]:Do not release DRM device.
+	*** imagesink STATE CHANGE: READY_TO_NULL ***
+	### imageDec STATE CHANGE: PAUSED_TO_READY ###
+gst_omx_image_dec_stop, in.
+gst_omx_image_dec_stop, out.
+gst_omx_image_dec_shutdown, in.
+BMP_Dec_Abort() !!!!!!!!!!!!!!!
+gst_omx_image_dec_shutdown, out.
+	### imageDec STATE CHANGE: PAUSED_TO_READY ###
+[GST_NVT_PRE]gst_ffmpegdemux_check_buffer(12193): check buffer out.
+[GST_NVT_PRE]gst_ffmpegdemux_close(3650) enter avdemux close
+[GST_NVT_PRE]gst_ffmpegdemux_close(3787) leave avdemux close
+gst_omx_image_dec_close, in.
+gst_omx_image_dec_shutdown, in.
+gst_omx_image_dec_shutdown, out.
+gst_omx_image_dec_close, out.
+	### imageDec STATE CHANGE: READY_TO_NULL ###
+gst_omx_image_dec_finalize, in.
+gst_omx_image_dec_finalize, out.
+[GST_NVT_PRE]gst_element_set_state(2483): setted playbin to NULL state, ret[SUCCESS]
+detect mnt is:/media/sda1
+[GST_NVT_PRE]gst_element_set_state(2475): setting playbin to PLAYING state
+
+(idtv:1710): GLib-GObject-CRITICAL **: g_signal_handler_disconnect: assertion 'handler_id > 0' failed
+[GST_NVT_PRE]gst_element_set_state(2483): setted playbin to PLAYING state, ret[ASYNC]
+env_config_dir:/vendor/media_codecs.xml
+##### AVDEMUX Index:[1])
+[GST_NVT_PRE]gst_ffmpegdemux_check_buffer(12175): check buffer in.
+bmp format detected
+[GST_NVT_PRE]gst_ffmpegdemux_open(8762) support_TSPU(1) demuxer(bmp)
+[GST_NVT_PRE] bTizen3_mm:1
+[GST_NVT_PRE] set uuid caps!!
+[GST_NVT_PRE] tizen3.0-mm add caps!!
+##### GStreamer NVT Version:[GST_NVT_For_TK_v0.0226.0_rde4e08370d8.]
+	*** imagesink STATE CHANGE: NULL_TO_READY ***
+[NDSYS_SYS_GetReservedMemory]->[501],the vir is :u32BaseAddress = 14a00000,u32Size = b600000
+[NDSYS_SYS_GetReservedMemory]->[501],the vir is :u32BaseAddress = 22eb3000,u32Size = 1800000
+[GST_NVT_PRE]gst_omx_nvt_image_dec_set_property(174): set enFitType:1
+	### imageDec STATE CHANGE: NULL_TO_READY ###
+[OMX_Logger_Init] dump log path[/tmp/omx_log.txt]
+OMX VERSION:OMX_v0.0611.0_rd0cab76f50c.
+	### imageDec STATE CHANGE: READY_TO_PAUSED ###
+gst_omx_image_dec_start, out.
+[GST_NVT_PRE]gst_ffmpegdemux_open(9059): It's ok to open demux
+[GST_NVT_PRE]gst_ffmpegdemux_loop(11462): send out pkt index:0 pts:99:99:99.999999999 size:262144 pos:0 flags:1
+	 ***IMAGE*** nvt gst-omx set caps:[image/swbmp, width=(int)320, height=(int)320, framerate=(fraction)0/1, thumbnail=(int)0, mp3cover=(int)0, secureMode=(boolean)false, appdisplay=(boolean)false, tspu=(boolean)false, drmType=(int)0, decodeFrameDrop=(boolean)false, projectflag=(boolean)true, uuid=(buffer)983e58f1f5ffac4789a1d73fb968f730, darval=(uint)0, tizen3.0-mm=(boolean)true]
+***IMAGE: set OMX_IMAGEi_CodingBMP ***
+img_SWDec_start 970 addr(0x83400000) (0x83000000) offset(0x400000)
+img_SWDec_start 973 Original Dec addr(0x14A00000) size(0x3000000) Post addr(0x17a00000) size(0x1800000)
+img_SWDec_start 995 post buffer is not enough
+img_SWDec_start 999 Modify Dec addr(0x14E00000) size(0x3000000) Post addr(0x17a00000) size(0x1800000)
+_img_SwDec_TaskRoutine() Pure Sw decode !!!!!!  Start !!!!!! 
+[GST_NVT_PRE]gst_omx_port_release_buffer(1783): Send image frame to OMX
+gst_omx_image_dec_loop,1153, call gst_video_decoder_negotiate
+	*** imagesink STATE CHANGE: READY_TO_PAUSED ***
+gst_nvtimagesink_set_property, 1276, enOPtype=16.
+gst_nvtimagesink_set_property, 1377, enFitType=0.
+gst_omx_image_dec_finish, in.
+SW Decode FrameEnd !!!!!  Cost Time = 56 ms 
+omx_imagedec_component_GetParameter[646] decBuf=0x14e00000,decBufSize=0x3000000
+gst_omx_image_dec_loop, 1307, send frame.
+[GST_NVT_PRE]FillBufferDone(922): receive image frame from OMX
+Image sink NEW segment, start:[0(ms)] stop:[18446744073709(ms)]
+[GST_NVT_PRE]gst_base_sink_chain_unlocked(3632): nvtimagesink3 got frame of times start: 99:99:99.999999999, end: 99:99:99.999999999
+gst_nvtimagesink_show_preroll_frame, 1988, workBuf0=0x14e00000, workBuf1=0x155f8000, workBuf2=0x15df0000.
+	*** imagesink STATE CHANGE: PAUSED_TO_PLAYING ***
+	### imageDec STATE CHANGE: PAUSED_TO_PLAYING ###
+
+[GST_NVT_PRE]_priv_gst_element_state_changed(2249), (playbinImage) pipleline change state to playing.
+I'm plugged, therefore I'm in nvtimagesink.
+eh(1280)ev(720), h(1280)v(720), W(1280)H(720), WW(1280), FR=(50).
+gst_omx_image_dec_loop, 1309, send frame done.
+gst_omx_image_dec_finish, out.
+gst_nvtimagesink_wait_event, send image sink eos.
+[0mICE_FsDlnaRemoveDownloadedFile(0,a:/3_GetScreen_ice_8.bmp): rm -rf /dev/shm/dlna/tempfile
+[0m[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422454289] caller = _ice_mp_enable_display, line = 4725 [0m 
+[GST_NVT_PRE]gst_element_set_state(2475): setting playbin to NULL state
+	*** imagesink STATE CHANGE: PLAYING_TO_PAUSED ***
+	### imageDec STATE CHANGE: PLAYING_TO_PAUSED ###
+	*** imagesink STATE CHANGE: PAUSED_TO_READY ***
+[gst_nvtimagesink_stop]:Do not release DRM device.
+	*** imagesink STATE CHANGE: READY_TO_NULL ***
+	### imageDec STATE CHANGE: PAUSED_TO_READY ###
+gst_omx_image_dec_stop, in.
+gst_omx_image_dec_stop, out.
+gst_omx_image_dec_shutdown, in.
+BMP_Dec_Abort() !!!!!!!!!!!!!!!
+gst_omx_image_dec_shutdown, out.
+	### imageDec STATE CHANGE: PAUSED_TO_READY ###
+[GST_NVT_PRE]gst_ffmpegdemux_check_buffer(12193): check buffer out.
+[GST_NVT_PRE]gst_ffmpegdemux_close(3650) enter avdemux close
+[GST_NVT_PRE]gst_ffmpegdemux_close(3787) leave avdemux close
+gst_omx_image_dec_close, in.
+gst_omx_image_dec_shutdown, in.
+gst_omx_image_dec_shutdown, out.
+gst_omx_image_dec_close, out.
+	### imageDec STATE CHANGE: READY_TO_NULL ###
+gst_omx_image_dec_finalize, in.
+gst_omx_image_dec_finalize, out.
+[GST_NVT_PRE]gst_element_set_state(2483): setted playbin to NULL state, ret[SUCCESS]
+detect mnt is:/media/sda1
+[GST_NVT_PRE]gst_element_set_state(2475): setting playbin to PLAYING state
+
+(idtv:1710): GLib-GObject-CRITICAL **: g_signal_handler_disconnect: assertion 'handler_id > 0' failed
+[GST_NVT_PRE]gst_element_set_state(2483): setted playbin to PLAYING state, ret[ASYNC]
+env_config_dir:/vendor/media_codecs.xml
+##### AVDEMUX Index:[1])
+bmp format detected
+[GST_NVT_PRE]gst_ffmpegdemux_check_buffer(12175): check buffer in.
+[GST_NVT_PRE]gst_ffmpegdemux_open(8762) support_TSPU(1) demuxer(bmp)
+[GST_NVT_PRE] bTizen3_mm:1
+[GST_NVT_PRE] set uuid caps!!
+[GST_NVT_PRE] tizen3.0-mm add caps!!
+##### GStreamer NVT Version:[GST_NVT_For_TK_v0.0226.0_rde4e08370d8.]
+	*** imagesink STATE CHANGE: NULL_TO_READY ***
+[NDSYS_SYS_GetReservedMemory]->[501],the vir is :u32BaseAddress = 14a00000,u32Size = b600000
+[NDSYS_SYS_GetReservedMemory]->[501],the vir is :u32BaseAddress = 22eb3000,u32Size = 1800000
+[GST_NVT_PRE]gst_omx_nvt_image_dec_set_property(174): set enFitType:1
+	### imageDec STATE CHANGE: NULL_TO_READY ###
+[OMX_Logger_Init] dump log path[/tmp/omx_log.txt]
+OMX VERSION:OMX_v0.0611.0_rd0cab76f50c.
+	### imageDec STATE CHANGE: READY_TO_PAUSED ###
+gst_omx_image_dec_start, out.
+[GST_NVT_PRE]gst_ffmpegdemux_open(9059): It's ok to open demux
+[GST_NVT_PRE]gst_ffmpegdemux_loop(11462): send out pkt index:0 pts:99:99:99.999999999 size:262144 pos:0 flags:1
+	 ***IMAGE*** nvt gst-omx set caps:[image/swbmp, width=(int)320, height=(int)320, framerate=(fraction)0/1, thumbnail=(int)0, mp3cover=(int)0, secureMode=(boolean)false, appdisplay=(boolean)false, tspu=(boolean)false, drmType=(int)0, decodeFrameDrop=(boolean)false, projectflag=(boolean)true, uuid=(buffer)983e58f1f5ffac4789a1d73fb968f730, darval=(uint)0, tizen3.0-mm=(boolean)true]
+***IMAGE: set OMX_IMAGEi_CodingBMP ***
+img_SWDec_start 970 addr(0x83400000) (0x83000000) offset(0x400000)
+img_SWDec_start 973 Original Dec addr(0x14A00000) size(0x3000000) Post addr(0x17a00000) size(0x1800000)
+img_SWDec_start 995 post buffer is not enough
+img_SWDec_start 999 Modify Dec addr(0x14E00000) size(0x3000000) Post addr(0x17a00000) size(0x1800000)
+_img_SwDec_TaskRoutine() Pure Sw decode !!!!!!  Start !!!!!! 
+[GST_NVT_PRE]gst_omx_port_release_buffer(1783): Send image frame to OMX
+gst_omx_image_dec_loop,1153, call gst_video_decoder_negotiate
+	*** imagesink STATE CHANGE: READY_TO_PAUSED ***
+gst_nvtimagesink_set_property, 1276, enOPtype=16.
+gst_nvtimagesink_set_property, 1377, enFitType=0.
+gst_omx_image_dec_finish, in.
+SW Decode FrameEnd !!!!!  Cost Time = 53 ms 
+[GST_NVT_PRE]FillBufferDone(922): receive image frame from OMX
+omx_imagedec_component_GetParameter[646] decBuf=0x14e00000,decBufSize=0x3000000
+gst_omx_image_dec_loop, 1307, send frame.
+Image sink NEW segment, start:[0(ms)] stop:[18446744073709(ms)]
+[GST_NVT_PRE]gst_base_sink_chain_unlocked(3632): nvtimagesink4 got frame of times start: 99:99:99.999999999, end: 99:99:99.999999999
+gst_nvtimagesink_show_preroll_frame, 1988, workBuf0=0x14e00000, workBuf1=0x155f8000, workBuf2=0x15df0000.
+	*** imagesink STATE CHANGE: PAUSED_TO_PLAYING ***
+I'm plugged, therefore I'm in nvtimagesink.
+eh(1280)ev(720), h(1280)v(720), W(1280)H(720), WW(1280), FR=(50).
+gst_omx_image_dec_loop, 1309, send frame done.
+	### imageDec STATE CHANGE: PAUSED_TO_PLAYING ###
+gst_omx_image_dec_finish, out.
+
+[GST_NVT_PRE]_priv_gst_element_state_changed(2249), (playbinImage) pipleline change state to playing.
+gst_nvtimagesink_wait_event, send image sink eos.
+[0mICE_FsDlnaRemoveDownloadedFile(0,a:/4_GetScreen_ice_8.bmp): rm -rf /dev/shm/dlna/tempfile
+[0mkey=525, repeat array size=754
+[0m*** KeyName=KeyRight *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 525
+key=2525, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2525
+key=525, repeat array size=754
+[0m*** KeyName=KeyRight *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 525
+key=2525, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2525
+key=525, repeat array size=754
+[0m*** KeyName=KeyRight *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 525
+key=2525, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2525
+key=525, repeat array size=754
+[0m*** KeyName=KeyRight *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 525
+key=2525, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2525
+key=524, repeat array size=754
+[0m*** KeyName=KeyLeft *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 524
+key=2524, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2524
+key=524, repeat array size=754
+[0m*** KeyName=KeyLeft *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 524
+key=2524, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2524
+key=524, repeat array size=754
+[0m*** KeyName=KeyLeft *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 524
+key=2524, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2524
+key=524, repeat array size=754
+[0m*** KeyName=KeyLeft *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 524
+key=2524, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2524
+[0m*** KeyName=KeyMenu *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 557
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+[GST_NVT_PRE]gst_element_set_state(2475): setting playbin to NULL state
+	*** imagesink STATE CHANGE: PLAYING_TO_PAUSED ***
+	### imageDec STATE CHANGE: PLAYING_TO_PAUSED ###
+	*** imagesink STATE CHANGE: PAUSED_TO_READY ***
+[gst_nvtimagesink_stop]:Do not release DRM device.
+	*** imagesink STATE CHANGE: READY_TO_NULL ***
+	### imageDec STATE CHANGE: PAUSED_TO_READY ###
+gst_omx_image_dec_stop, in.
+gst_omx_image_dec_stop, out.
+gst_omx_image_dec_shutdown, in.
+BMP_Dec_Abort() !!!!!!!!!!!!!!!
+gst_omx_image_dec_shutdown, out.
+	### imageDec STATE CHANGE: PAUSED_TO_READY ###
+[GST_NVT_PRE]gst_ffmpegdemux_check_buffer(12193): check buffer out.
+[GST_NVT_PRE]gst_ffmpegdemux_close(3650) enter avdemux close
+[GST_NVT_PRE]gst_ffmpegdemux_close(3787) leave avdemux close
+gst_omx_image_dec_close, in.
+gst_omx_image_dec_shutdown, in.
+gst_omx_image_dec_shutdown, out.
+gst_omx_image_dec_close, out.
+	### imageDec STATE CHANGE: READY_TO_NULL ###
+gst_omx_image_dec_finalize, in.
+gst_omx_image_dec_finalize, out.
+[GST_NVT_PRE]gst_element_set_state(2483): setted playbin to NULL state, ret[SUCCESS]
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473448] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473458] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473468] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473479] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473490] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473501] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473513] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473524] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473534] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473545] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473556] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473566] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473577] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473587] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473597] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0m[ICE_MP] INFO: [0m[6118]_ice_mp_getHandle():handle is null
+[0m[ICE_MP] INFO: [0m[551]mp_enable_display():handle is null
+[0m[ICE_MP] INFO: [0m[4707]_ice_mp_enable_display():_ice_mp_enable_display enter! enable = 0
+[0m[ICE_MP] INFO: [0m[4723]_ice_mp_enable_display():black screen!-------
+[TD_SCHG_Base][1;31m [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=422473608] caller = _ice_mp_enable_display, line = 4725 [0m 
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,0,1), Start
+[0mTRACE:[render_drm_deinit] LINE:[1510] skip!!!!!!
+[Release_drm_resource]:Render DRM deinit success 
+[1710:2833:1029/233221.155394:422473643287:WARNING:hbbtv_manager.cc(740)] Unexpected InvalidateAIT event received
+[1710:2833:1029/233221.156252:422473644137:WARNING:hbbtv_manager.cc(740)] Unexpected InvalidateAIT event received
+release_gst_drm_resource bRet:1[30;41m[ICE_VIDEO][ERR][0m[6472]ICE_VideoSelectSource():The Videohandle is NULL or unknown source !!! 
+
+[30;41mICE_AUDIO ERROR: [0m[3000]ICE_AudioSelectSource():ICE_AudioHandle invalid or unknown source
+[30;41mICE_AUDIO ERROR: [0m[3000]ICE_AudioSelectSource():ICE_AudioHandle invalid or unknown source
+TRACE: [0mICE_MediaPlayerClose()[0m, Start, 933
+TRACE: [0mICE_MediaPlayerClose()[0m, Finish, 970
+    > novo_src/inputmanager: requestSelectExtSource ext_index_to_select: 4, current ext source: -1
+
+[46m[1;37m[ICE_CIDSetHDMICec] - [0m
+
+[46m[1;37m[ICE_CIDSetSourceTypePortal] - [0m
+
+[46m[1;37m[ICE_CIDSetInputName] - SourceType: 10[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - input_name: HDMI1[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_name: HDMI1[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_type: 100[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_number: 1[0m
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,0,0), Start
+[0m[Release_drm_resource]: no resource need to release
+release_gst_drm_resource bRet:1[0m[ICE_VIDEO][MSG][0m[6497]ICE_VideoSelectSource():Middle Ware input source id ---=17---- 
+[0m[ICE_VIDEO][MSG][0m[6578]ICE_VideoSelectSource():PortD, ident=1, STR=0, ACON=0, bhdmi_hpd_flag=0, don't do HPD
+[0m[ICE_VIDEO][MSG][0m[6606]ICE_VideoSelectSource():select source =17, path=0 (pstVINParam->enSourceType=5) 
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=1
+[TD_SCHG_Base] [1;31m PLAT_VIU_ChangeInput( u8Path=0, SourceID=0x11) [Time=422473647][0m 
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=0
+[0m[ICE_VIDEO][MSG][0m[6654]ICE_VideoSelectSource():[1;32m CloseTuner[m
+[0m[ICE_VIDEO][MSG][0m[7487]ICE_VideoStart():ICE_VideoStart Pid 2000[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,0), Start
+[0m[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,1), Start
+[0m[0mEN_PLAT_AUD_SPK_SPDIF ad:0, g_enSpkDataType:2
+[0m[0mEN_PLAT_DEC_AUDIO_DOWNMIX_MODE_LORO
+[0m[PLAT_DEC] Audio_DownMix_Mod=1
+
+[PLAT_DEC] PLAT_DEC_SetAudioDownMixMode=1,set driver mode=0
+
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,0,1), Start
+[0m[0mICE Trace: [1;40;31mICE_AudioVolume[0m(1,50,0,0), Start
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 4557
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 4557 
+[0m
+ICE_HardwareDisableFastTurnOn[6088], start -- disable[1]
+[0m[0m[FTO]Remove /conf/fto.bin
+[0m[0m[FTO]ICE_HardwareDisableFastTurnOn[6104], end
+[0m[0m
+[FTO]ICE_HardwareWriteFastTurnOnParams, 5790
+[0m[0m
+[FTO]ICE_HardwareWriteFastTurnOnParams, 5793
+[0m[30;41m[ICE_STC][ERR][0m[381]StcGetPcrPid():StcGetPcrPid(17): source not found
+[0m
+===================== Write FTO PARAMAS =====================
+[0m[0m	Tuner-ID[2]
+[0m[0m	Tuner-Network Type[0x0]
+[0m[0m	Tuner-Channel Freq[0]
+[0m[0m	Tuner-Symbol Rate[0]
+[0m[0m	V-Source[0x11]
+[0m[0m	V-Type[0x2]
+[0m[0m	V-PID[0x2000]
+[0m[0m	V-SrcSize[3840,2160]
+[0m[0m	V-Size[3840,2160]
+[0m[0m	A-Source[0x25]
+[0m[0m	A-Type[0x0]
+[0m[0m	A-PID[0x2000]
+[0m[0m	A-Level[0]
+[0m[0m	A-AVL[0]
+[0m[0m	A-DynamicBass[0]
+[0m[0m	A-SurroundMode[0]
+[0m[0m	A-stDPA_AVL[0, 0, 0, 0]
+[0m[0m	A-DAPprofile[0]
+[0m[0m	A-enSoundOutput[1]
+[0m[0m	A-audio_digital_out_type[1]
+[0m[0m	A-DTSVirtualX_mode[0]
+[0m[0m	A-s8EQGain[0][0][0][0][0]
+[0m[0m	A-AC4_DialogueEnhancementLevel[0]
+[0m[0m	A-AC4_PresentationID[0]
+[0m[0m	PCR-PID[0x1fff]
+[0m[0m	Channel Locked[0]
+[0m[0m	crc32[0x10e9c3bc]
+[0m[0m===============================================================
+
+[0m[TD_SCHG_Base]Path(0) b8LockStatus(0) Mode Change  = Source Change -> No Signal
+[TD_SCHG_Base] Mode Change Occur, ModeChangeAction =1
+[TD_SCHG_Base] [1;31m[CCC][_exec_event_callback]u8Path(0) viu callback event= 1, [Time=422475232] [0m
+[0m[ICE_VIDEO][MSG][0m[5211]_ice_video_cb_func():path=0, event=1 
+[TD_SCHG_Base] [1;31m[CCC][_exec_event_callback] Exit ,[Time=422475232] [0m
+[TD_SCHG_Base] [1;31m [CCC] [plat_viu_send_videvt]u8Path(0) viu send event= 2, [Time=422475232] [0m 
+[0m*** KeyName=KeyMenu *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 557
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > app/demoapp: preHandleKeyPressMessage() key: 557
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > app/mainmenudialog: MainLauncherMenuDialog::unfocusLauncher
+    > app/demoapp: preHandleKeyPressMessage() key: 4557
+key=516, repeat array size=754
+[0m*** KeyName=KeyFour *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 516
+key=2516, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2516
+key=519, repeat array size=754
+[0m*** KeyName=KeySeven *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 519
+key=2519, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2519
+key=514, repeat array size=754
+[0m*** KeyName=KeyTwo *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 514
+key=2514, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2514
+key=517, repeat array size=754
+[0m*** KeyName=KeyFive *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 517
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+key=2517, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x63ff0, len:0x10 [0m 
+[0m_HW_TV_APP_GetParameters: tv life time=34a30a00, usb upd cnt=255(flag=ff), http upd cnt=2, side load upd cnt=255
+[0mTv Life time to be read 4 byte is 697140 (0x34A30A00 -> 0x000AA334)
+ *u32Data = 0x5400#*OK 
+DoVi bin file 0 ko file 0 profile 0 gpio/hw 0 EDID 0
+Invalid key from blast, 0x003045 
+Invalid key from blast, 0x003045 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20800, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20c00, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20400, len:0x396 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x23000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x10 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x3a [0m 
+    > app/demoapp: preHandleKeyPressMessage() key: 2517
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=526, repeat array size=754
+[0m*** KeyName=KeySelect *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 526
+[0m[ICE_VIDEO][MSG][0m[8156]ICE_VideoStop():ICE_VideoStop 
+[0m[ICE_VIDEO][MSG][0m[8123]ICE_VideoHide():Exit: Video is already MUTED, Dont call driver function ...
+[0m[ICE_VIDEO][MSG][0m[8130]ICE_VideoHide():
+  [1;31m === ICE_VideoHide 8130 Video Show Status 0 === [0m
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,0), Start
+[0m[30;41m[ICE_VIDEO][ERR][0m[6472]ICE_VideoSelectSource():The Videohandle is NULL or unknown source !!! 
+
+[30;41mICE_AUDIO ERROR: [0m[3000]ICE_AudioSelectSource():ICE_AudioHandle invalid or unknown source
+[30;41mICE_AUDIO ERROR: [0m[3000]ICE_AudioSelectSource():ICE_AudioHandle invalid or unknown source
+    > app/diagnosticdialog: isTunerI2cHealthy OK
+    > app/diagnosticdialog: isIfI2cHealty OK
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20800, len:0x80 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20c00, len:0x100 [0m 
+    > app/diagnosticdialog: isEdidAvailable OK
+    > app/diagnosticdialog: isHdcpAvailable OK
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20400, len:0x396 [0m 
+    > app/diagnosticdialog: isHdcp2Available OK
+    > app/diagnosticdialog: isDDRSettingsAvailable OK
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x21000, len:0x1c00 [0m 
+    > app/diagnosticdialog: isCIplusCreditsAvailable OK
+_DRM_ReadKeyToBuf type(5) not exist
+_DRM_ReadFileToBuf fail (5)
+[30;41m#PLAT-ROFIX#[0m[2290]_RofixTZVerifyMarlin():[30;41m[7] get key size fail
+[0m    > app/diagnosticdialog: isMarlinDRMKeyAvailable NOK
+    > app/diagnosticdialog: isSharedKeysReencrypted OK
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x23000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x10 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x3a [0m 
+[0mtotal available size for image: 219619328 bytes
+[0m[0mtotal of buffer: 243806208 bytes
+[0m[0mICE_HardwareGetFreeConfSize: Free:2844KB Total:3496KB
+[0m[0mICE_HardwareGetFreeMemorySize: Free:130284KB Total:738304KB
+[0m    > novo_src/novoavsclient: isKeyWordDetected m_initialized 1 m_key_word_detected 0 
+key=2526, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2526
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+[MSG_PLAT_NIM]Tuning QAM Signal
+_hal_NIM_DeliverTunerType enTunerType:13[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=524, repeat array size=754
+[0m*** KeyName=KeyLeft *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 524
+key=2524, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2524
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+[MSG_PLAT_NIM]Tuning QAM Signal
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+[MSG_PLAT_NIM]Tuning QAM Signal
+[ERR][HAL_Demod_Set():355] ==> do disable DVIF
+getHalDemodUserChannelStatus: Fail to get checkHalDemodUserLock or no lock
+
+ getHalDemodUserChannelStatus failed. 
+(NIM_DTV)
+ DEV_NIM_DTV_StartTune:######freq 410000KHz---Demod unlocked!######
+
+key=528, repeat array size=754
+[0m*** KeyName=KeyExit *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 528
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+key=2528, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2528
+VIDIOC_G_EXT_CTRLS: Bad file descriptor
+[1710:2833:1029/233301.611949:422514099844:WARNING:hbbtv_manager.cc(740)] Unexpected InvalidateAIT event received
+[1710:2833:1029/233301.612869:422514100757:WARNING:hbbtv_manager.cc(740)] Unexpected InvalidateAIT event received
+key=528, repeat array size=754
+[0m*** KeyName=KeyExit *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 528
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > novo_src/inputmanager: requestSelectExtSource ext_index_to_select: 4, current ext source: -1
+
+[46m[1;37m[ICE_CIDSetHDMICec] - [0m
+
+[46m[1;37m[ICE_CIDSetSourceTypePortal] - [0m
+
+[46m[1;37m[ICE_CIDSetInputName] - SourceType: 5[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - input_name: HDMI1[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_name: HDMI1[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_type: 100[0m
+
+[46m[1;37m[ICE_CIDSetInputName] - ice_cid_video_info.input_number: 1[0m
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,0,1), Start
+[0m[0m[ICE_VIDEO][MSG][0m[8123]ICE_VideoHide():Exit: Video is already MUTED, Dont call driver function ...
+[0m[ICE_VIDEO][MSG][0m[8130]ICE_VideoHide():
+  [1;31m === ICE_VideoHide 8130 Video Show Status 0 === [0m
+[0m[ICE_VIDEO][MSG][0m[6497]ICE_VideoSelectSource():Middle Ware input source id ---=17---- 
+[0m[ICE_VIDEO][MSG][0m[6578]ICE_VideoSelectSource():PortD, ident=1, STR=0, ACON=0, bhdmi_hpd_flag=0, don't do HPD
+[0m[ICE_VIDEO][MSG][0m[6606]ICE_VideoSelectSource():select source =17, path=0 (pstVINParam->enSourceType=5) 
+[TD_SCHG_Base] [1;31m PLAT_VIU_ChangeInput the Same source Return,path=0,Source=17[0m 
+ [TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=1
+[TD_SCHG_Base] [1;31m PLAT_VIU_ChangeInput( u8Path=0, SourceID=0x19) [Time=422514102][0m 
+[TD_SCHG_Base] Vin Param is NULL
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=1
+_plat_vin_slot_disconnect: invaild input type (25)
+[TD_SCHG_Base] [1;31m PLAT_VIU_ChangeInput( u8Path=0, SourceID=0x11) [Time=422514103][0m 
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=0
+[0m[ICE_VIDEO][MSG][0m[6654]ICE_VideoSelectSource():[1;32m CloseTuner[m
+[0m[ICE_VIDEO][MSG][0m[7487]ICE_VideoStart():ICE_VideoStart Pid 2000[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,0), Start
+[0m[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,1,1), Start
+[0m[0mEN_PLAT_AUD_SPK_SPDIF ad:0, g_enSpkDataType:2
+[0m[0mEN_PLAT_DEC_AUDIO_DOWNMIX_MODE_LORO
+[0m[PLAT_DEC] Audio_DownMix_Mod=1
+
+[PLAT_DEC] PLAT_DEC_SetAudioDownMixMode=1,set driver mode=0
+
+[0mICE Trace: [1;40;31mICE_AudioVolume[0m(0,0,0,1), Start
+[0m[0mICE Trace: [1;40;31mICE_AudioVolume[0m(1,50,0,0), Start
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 691
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 691 
+key=2528, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x63ff0, len:0x10 [0m 
+[0m_HW_TV_APP_GetParameters: tv life time=34a30a00, usb upd cnt=255(flag=ff), http upd cnt=2, side load upd cnt=255
+[0mTv Life time to be read 4 byte is 697140 (0x34A30A00 -> 0x000AA334)
+ *u32Data = 0x5400#*OK 
+DoVi bin file 0 ko file 0 profile 0 gpio/hw 0 EDID 0
+Invalid key from blast, 0x00304a 
+Invalid key from blast, 0x00304a 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20800, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20c00, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20400, len:0x396 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x23000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x10 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x3a [0m 
+    > app/demoapp: preHandleKeyPressMessage() key: 2528
+[0m
+ICE_HardwareDisableFastTurnOn[6088], start -- disable[1]
+[0m[0m[FTO]Remove /conf/fto.bin
+[0m[0m[FTO]ICE_HardwareDisableFastTurnOn[6104], end
+[0m[0m
+[FTO]ICE_HardwareWriteFastTurnOnParams, 5790
+[0m[0m
+[FTO]ICE_HardwareWriteFastTurnOnParams, 5793
+[0m[30;41m[ICE_STC][ERR][0m[381]StcGetPcrPid():StcGetPcrPid(17): source not found
+[0m
+===================== Write FTO PARAMAS =====================
+[0m[0m	Tuner-ID[2]
+[0m[0m	Tuner-Network Type[0x0]
+[0m[0m	Tuner-Channel Freq[0]
+[0m[0m	Tuner-Symbol Rate[0]
+[0m[0m	V-Source[0x11]
+[0m[0m	V-Type[0x2]
+[0m[0m	V-PID[0x2000]
+[0m[0m	V-SrcSize[3840,2160]
+[0m[0m	V-Size[3840,2160]
+[0m[0m	A-Source[0x25]
+[0m[0m	A-Type[0x0]
+[0m[0m	A-PID[0x2000]
+[0m[0m	A-Level[0]
+[0m[0m	A-AVL[0]
+[0m[0m	A-DynamicBass[0]
+[0m[0m	A-SurroundMode[0]
+[0m[0m	A-stDPA_AVL[0, 0, 0, 0]
+[0m[0m	A-DAPprofile[0]
+[0m[0m	A-enSoundOutput[1]
+[0m[0m	A-audio_digital_out_type[1]
+[0m[0m	A-DTSVirtualX_mode[0]
+[0m[0m	A-s8EQGain[0][0][0][0][0]
+[0m[0m	A-AC4_DialogueEnhancementLevel[0]
+[0m[0m	A-AC4_PresentationID[0]
+[0m[0m	PCR-PID[0x1fff]
+[0m[0m	Channel Locked[0]
+[0m[0m	crc32[0x10e9c3bc]
+[0m[0m===============================================================
+
+[0m[TD_SCHG_Base]Path(0) b8LockStatus(0) Mode Change  = Source Change -> No Signal
+[TD_SCHG_Base] Mode Change Occur, ModeChangeAction =1
+[TD_SCHG_Base] [1;31m[CCC][_exec_event_callback]u8Path(0) viu callback event= 1, [Time=422515710] [0m
+[0m[ICE_VIDEO][MSG][0m[5211]_ice_video_cb_func():path=0, event=1 
+[TD_SCHG_Base] [1;31m[CCC][_exec_event_callback] Exit ,[Time=422515710] [0m
+[TD_SCHG_Base] [1;31m [CCC] [plat_viu_send_videvt]u8Path(0) viu send event= 2, [Time=422515710] [0m 
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=526, repeat array size=754
+[0m*** KeyName=KeySelect *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 526
+[0m>>> copy file...
+[0m[0m_MoveRamLog:no file:/tmp/syslogtime1.txt No such file or directory
+[0m[0m_CopyRamLogtoUSB: move log error No such file or directory
+[0m[0m_MoveRamLog:no file:/tmp/syslogtime2.txt No such file or directory
+[0m[0m_CopyRamLogtoUSB: move log error No such file or directory
+[0m[0m_MoveRamLog:no file:/tmp/syslogtime3.txt No such file or directory
+[0m[0m_CopyRamLogtoUSB: move log error No such file or directory
+[0m[0m_MoveRamLog:no file:/tmp/syslogtime4.txt No such file or directory
+[0m[0m_CopyRamLogtoUSB: move log error No such file or directory
+[0m[0m_MoveRamLog:no file:/tmp/syslogtime0.txt No such file or directory
+[0m[0m_CopyRamLogtoUSB: move log error No such file or directory
+[0m[0m>>> Update Boot Logo...
+[0m[UTILT_JPEG][ERR] UTILI_JpegIsSupported L48: open '/media/sda1/spi/boot_logo.bin' failed!
+[0m[30;41mPerformUSBOperations: '/media/sda1/spi/boot_logo.bin' is out of spec![0m
+[0m[0m>>> Update Profile...
+[0m[0m_CopyFile: /media/sda1/profile/mb230_hwprofile.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/profile/mb230_swprofile.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/profile/mb230_devprofile.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/browser_parameters.txt is not exist!
+[0m[0m>>> Download Profile...
+[0m[0m_CopyFile: cp -f /conf/mb230_hwprofile.bin /media/sda1
+[0m[0m_CopyFile: cp -f /conf/mb230_swprofile.bin /media/sda1
+[0m[0m_CopyFile: /conf/19482048evwprofile.bin does not exist!
+[0m[0m_CopyFile: cp -f /vendor/mb230_langprofile.bin /media/sda1
+[0mkey=2526, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0mrm: can't remove '/conf/enable_coredump': No such file or directory
+[0m>>> Update AQ/PQ/Panel Files...
+[0m[0m_CopyFile: /media/sda1/sound/AQ.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/sound/DAP_SE_SetParam.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/sound/DAPV2_SE_SetParam.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/sound/DTS_VX_AQ.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/sound/subw_config_file.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/sound/ad82586c_config_file.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/pq/PCF.pcf is not exist!
+[0m[0m_CopyFile: /media/sda1/pq/PQF.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/pq/dolby.bin is not exist!
+[0m[0m_CopyFile: /media/sda1/pq/Dolby.cfg is not exist!
+[0m[0m_CopyFile: /media/sda1/pq/ptf.ptf is not exist!
+[0m[0m>>> Create Core file...
+[0m[0m_CopyFile: /media/sda1/enable_coredump is not exist!
+[0m[0m>>> Update Network Files...
+[0m[0m_CopyFile: /media/sda1/starturl.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/default_application.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/dragonfly_server.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/iplayer_client.inf is not exist!
+[0m[0m_CopyFile: /media/sda1/vestel_key.p12 is not exist!
+[0m[0m_CopyFile: /media/sda1/thorium_config.xml is not exist!
+[0m[0m_CopyFile: /media/sda1/ntpserver.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/forced_ntpserver.txt is not exist!
+[0m[0m_CopyFile: /media/sda1/demo_commands.txt is not exist!
+[0m[0m>>> Update ROFIX Files...
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20000, len:0x10000 [0m 
+[0m>>> Update Other Files...
+[0m[0m_CopyFile: /conf/power_up.txt does not exist!
+[0m[0m>>> Update TCON Files...
+[0m[30;41mRmDev_UpdateTconFromUSB: /media/sda1/pq/tcon.bin is not exist!
+[0m#DEV-SPI# [36;48_dev_spi_write, 776, addr:0x73000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_write, 776, addr:0x73380, len:0x40 [0m 
+#DEV-SPI# [36;48_dev_spi_write, 776, addr:0x73000, len:0x20 [0m 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+#DEV-SPI# [36;48_dev_spi_write, 776, addr:0x73000, len:0x20 [0m 
+Invalid key from blast, 0x003075 
+#DEV-SPI# [36;48_dev_spi_write, 776, addr:0x73400, len:0x40 [0m 
+#DEV-SPI# [36;48_dev_spi_write, 776, addr:0x73000, len:0x20 [0m 
+[0mPerformConfBackup: backup done!
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 691
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 691 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x63ff0, len:0x10 [0m 
+[0m_HW_TV_APP_GetParameters: tv life time=34a30a00, usb upd cnt=255(flag=ff), http upd cnt=2, side load upd cnt=255
+[0mTv Life time to be read 4 byte is 697140 (0x34A30A00 -> 0x000AA334)
+ *u32Data = 0x5400#*OK 
+DoVi bin file 0 ko file 0 profile 0 gpio/hw 0 EDID 0
+Invalid key from blast, 0x003075 
+Invalid key from blast, 0x003075 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20800, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20c00, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20400, len:0x396 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x23000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x10 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x3a [0m 
+    > app/demoapp: preHandleKeyPressMessage() key: 2526
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=526, repeat array size=754
+[0m*** KeyName=KeySelect *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 526
+key=2526, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2526
+key=528, repeat array size=754
+[0m*** KeyName=KeyExit *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 528
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > app/demoapp: preHandleKeyPressMessage() key: 691
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 691 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+key=2528, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x63ff0, len:0x10 [0m 
+[0m_HW_TV_APP_GetParameters: tv life time=34a30a00, usb upd cnt=255(flag=ff), http upd cnt=2, side load upd cnt=255
+[0mTv Life time to be read 4 byte is 697140 (0x34A30A00 -> 0x000AA334)
+ *u32Data = 0x5400#*OK 
+DoVi bin file 0 ko file 0 profile 0 gpio/hw 0 EDID 0
+Invalid key from blast, 0x00384a 
+Invalid key from blast, 0x00384a 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20800, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20c00, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20400, len:0x396 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x23000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x10 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x3a [0m 
+    > app/demoapp: preHandleKeyPressMessage() key: 2528
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=526, repeat array size=754
+[0m*** KeyName=KeySelect *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 526
+key=2526, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2526
+key=526, repeat array size=754
+[0m*** KeyName=KeySelect *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 526
+key=2526, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2526
+key=525, repeat array size=754
+[0m*** KeyName=KeyRight *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 525
+key=2525, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2525
+key=523, repeat array size=754
+[0m*** KeyName=KeyDown *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 523
+key=2523, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2523
+key=528, repeat array size=754
+[0m*** KeyName=KeyExit *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 528
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > app/demoapp: preHandleKeyPressMessage() key: 691
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 691 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+key=2528, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] start [0m 
+    > sqlitedb: [1;31m [Sqlite_DB_Write] end [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x63ff0, len:0x10 [0m 
+[0m_HW_TV_APP_GetParameters: tv life time=34a30a00, usb upd cnt=255(flag=ff), http upd cnt=2, side load upd cnt=255
+[0mTv Life time to be read 4 byte is 697140 (0x34A30A00 -> 0x000AA334)
+ *u32Data = 0x5400#*OK 
+DoVi bin file 0 ko file 0 profile 0 gpio/hw 0 EDID 0
+Invalid key from blast, 0x00384a 
+Invalid key from blast, 0x00384a 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20800, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20c00, len:0x80 [0m 
+[0mManufacturer ASCII = 0x58b3, edid[8]=0x58, edi[9]=0xb3 
+[0m#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20400, len:0x396 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x23000, len:0x20 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x10 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x30800, len:0x3a [0m 
+    > app/demoapp: preHandleKeyPressMessage() key: 2528
+key=528, repeat array size=754
+[0m*** KeyName=KeyExit *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 528
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+key=2528, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2528
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 2528 
+[0m*** KeyName=KeyMenu *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 557
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > app/demoapp: preHandleKeyPressMessage() key: 557
+    > app/demoapp: stopAVSActivity: chrome: 5, display: (nil), player: (nil), playback: 0
+    > app/mainmenudialog: MainLauncherMenuDialog::unfocusLauncher
+    > app/demoapp: preHandleKeyPressMessage() key: 4557
+key=525, repeat array size=754
+[0m*** KeyName=KeyRight *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 525
+    > app/mainmenudialog: MainLauncherMenuDialog::onRightLeftPress
+    > app/mainmenudialog: MainLauncherMenuDialog::focusLauncher
+key=2525, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2525
+key=524, repeat array size=754
+[0m*** KeyName=KeyLeft *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 524
+    > app/mainmenudialog: MainLauncherMenuDialog::unfocusLauncher
+key=2524, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2524
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+    > app/mainmenudialog: MainLauncherMenuDialog::onUpDownPress
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+    > app/mainmenudialog: MainLauncherMenuDialog::onUpDownPress
+[30;41mICE_FS ERROR: [0m_fsOpenFile: '/conf/browser/starturl.txt' mode=0, file not found!
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=522, repeat array size=754
+[0m*** KeyName=KeyUp *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 522
+    > app/mainmenudialog: MainLauncherMenuDialog::onUpDownPress
+key=2522, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2522
+key=525, repeat array size=754
+[0m*** KeyName=KeyRight *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 525
+    > app/mainmenudialog: MainLauncherMenuDialog::onRightLeftPress
+    > app/mainmenudialog: MainLauncherMenuDialog::focusLauncher
+key=2525, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2525
+key=525, repeat array size=754
+[0m*** KeyName=KeyRight *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 525
+key=2525, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2525
+key=525, repeat array size=754
+[0m*** KeyName=KeyRight *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 525
+key=2525, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2525
+key=525, repeat array size=754
+[0m*** KeyName=KeyRight *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 525
+key=2525, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2525
+key=524, repeat array size=754
+[0m*** KeyName=KeyLeft *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 524
+key=2524, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2524
+key=526, repeat array size=754
+[0m*** KeyName=KeySelect *****
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 526
+[0mICE_EnableRemovableDevice, 4540, USB power on/off: 1->1
+[0mkey=2526, repeat array size=754
+[0m#*Remote Signal doesn't match
+[0m    > app/demoapp: preHandleKeyPressMessage() key: 2526
+    > novo_src/inputmanager: 
+[46m[1;37m[ONER] - [novo_src/InputManager.cpp] - [getExternalInterfaceName] - [2555] EXT NAME: HDMI1[0m
+    > novo_src/nvramstorage: Read ID: 1741251476586365, bytes: 0 6 47 168 179 185 255 125

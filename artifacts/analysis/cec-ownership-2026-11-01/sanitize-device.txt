@@ -1,0 +1,4 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-reload-sanitize/tests/cec_device tests/cec_device.c common/cec_device.c common/cec_packet.c common/cec.c
+  ok   native fd zero, exact open/close parameters, TV frame/poll transmission and independent reopen
+  ok   failed open/init unwind once, preserve primary errno and retain failed hardware-close ownership for retry
+  ok   raw RX accepts spec-valid broadcast audio; empty/error atomicity; TX EINTR is not replayed; final close consumes fd

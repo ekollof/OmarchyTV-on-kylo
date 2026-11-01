@@ -1,0 +1,40 @@
+resource_id	resource_name	policy	record_hash	pack_offset	tag	id	subtype	offset	xlink	attribute	transform	begin	duration	fill	from	to	calc_mode	key_splines
+2	animatedImage.svg	caller_review_required	0xca763835	1218	10	0	1	1	#imagex	x		0	1	0	0	40		
+360	fosditemFA.svg	caller_review_required	0xcd528613	156630	11	0	1	1	#scalerect	transform	scale	0	0.3	0	1 1	1.35 1.35	linear	
+360	fosditemFA.svg	caller_review_required	0xcd528613	156693	10	0	1	1	#glyph	y		0	0.3	0	0	-37	linear	
+360	fosditemFA.svg	caller_review_required	0xcd528613	156731	10	1	1	1	#glyph	x		0	0.3	0	0	-34	linear	
+364	fosdbgitemFA.svg	caller_review_required	0x87b3fcac	158235	11	0	1	1	#scalerect	transform	scale	0	0.3	0	1 1	1.35 1.35	linear	
+364	fosdbgitemFA.svg	caller_review_required	0x87b3fcac	158298	10	0	1	1	#glyph	y		0	0.3	0	0	-37	linear	
+364	fosdbgitemFA.svg	caller_review_required	0x87b3fcac	158336	10	1	1	1	#glyph	x		0	0.3	0	0	-34	linear	
+467	SettingHorizontalListBoxFA.svg	caller_review_required	0x5f1db625	199109	10	0	1	1	#selectionIndicator	y		0	0.3	0	0	100	linear	
+468	SettingHorizontalListBoxFI.svg	caller_review_required	0x6f6dfde4	199684	10	0	1	1	#selectionIndicator	y		0	0.3	0	0	100	linear	
+469	SettingHorizontalListBoxUFA.svg	caller_review_required	0x76abb274	200259	10	0	1	1	#selectionIndicator	y		0	0.3	0	0	100	linear	
+470	SettingHorizontalListBoxUFI.svg	caller_review_required	0x46dbf9b5	200834	10	0	1	1	#selectionIndicator	y		0	0.3	0	0	100	linear	
+512	SettingSubLauncherListBoxFA.svg	caller_review_required	0x33f4446d	217097	10	0	1	1	#selectionIndicator	y		0	0.3	0	0	100	linear	
+513	SettingSubLauncherListBoxUFA.svg	caller_review_required	0x0ec09224	217627	10	0	1	1	#selectionIndicator	y		0	0.3	0	0	100	linear	
+515	SettingRecommendationsListBoxFA.svg	caller_review_required	0xede2a9ff	218383	10	0	1	1	#selectionIndicator	y		0	0.3	0	0	100	linear	
+516	SettingRecommendationsListBoxUFA.svg	caller_review_required	0x101f76a1	218913	10	0	1	1	#selectionIndicator	y		0	0.3	0	0	100	linear	
+536	launcheritemFA.svg	caller_review_required	0x224700b6	228247	11	0	1	1	#scalerect	transform	scale	0	0.3	0	1 1	1.32 1.32	linear	
+536	launcheritemFA.svg	caller_review_required	0x224700b6	228310	10	0	1	1	#glyph	y		0	0.3	0	0	-37	linear	
+536	launcheritemFA.svg	caller_review_required	0x224700b6	228348	10	1	1	1	#glyph	x		0	0.3	0	0	-34	linear	
+537	launcheritemFI.svg	caller_review_required	0x12374b77	228751	11	0	1	1	#scalerect	transform	scale	0	0.3	0	1 1	1.32 1.32	linear	
+537	launcheritemFI.svg	caller_review_required	0x12374b77	228814	10	0	1	1	#glyph	y		0	0.3	0	0	-37	linear	
+537	launcheritemFI.svg	caller_review_required	0x12374b77	228852	10	1	1	1	#glyph	x		0	0.3	0	0	-34	linear	
+540	launcheritem_service_button_FA.svg	caller_review_required	0xab4cadf0	229998	11	0	1	1	#scalerect	transform	scale	0	0.3	0	1 1	1.35 1.35	linear	
+540	launcheritem_service_button_FA.svg	caller_review_required	0xab4cadf0	230061	10	0	1	1	#glyph	y		0	0.3	0	0	-37	linear	
+540	launcheritem_service_button_FA.svg	caller_review_required	0xab4cadf0	230099	10	1	1	1	#glyph	x		0	0.3	0	0	-34	linear	
+541	launcheritem_service_button_FI.svg	caller_review_required	0x9b3ce631	230538	11	0	1	1	#scalerect	transform	scale	0	0.3	0	1 1	1.35 1.35	linear	
+541	launcheritem_service_button_FI.svg	caller_review_required	0x9b3ce631	230601	10	0	1	1	#glyph	y		0	0.3	0	0	-37	linear	
+541	launcheritem_service_button_FI.svg	caller_review_required	0x9b3ce631	230639	10	1	1	1	#glyph	x		0	0.3	0	0	-34	linear	
+552	sublauncheritemFA.svg	caller_review_required	0xacfbe5bc	233124	11	0	1	1	#scalerect	transform	scale	0	0.3	0	1 1	1.35 1.35	linear	
+552	sublauncheritemFA.svg	caller_review_required	0xacfbe5bc	233187	10	0	1	1	#glyph	y		0	0.3	0	0	-24	linear	
+552	sublauncheritemFA.svg	caller_review_required	0xacfbe5bc	233225	10	1	1	1	#glyph	x		0	0.3	0	0	-42	linear	
+556	sublauncheritem_fvc_FA.svg	caller_review_required	0xcb3303de	234668	11	0	1	1	#scalerect	transform	scale	0	0.3	0	1 1	1.35 1.35	linear	
+556	sublauncheritem_fvc_FA.svg	caller_review_required	0xcb3303de	234731	10	0	1	1	#glyph	y		0	0.3	0	0	-24	linear	
+556	sublauncheritem_fvc_FA.svg	caller_review_required	0xcb3303de	234769	10	1	1	1	#glyph	x		0	0.3	0	0	-42	linear	
+564	TVBannerRecommendationsItemFA.svg	caller_review_required	0x28c6dab8	237995	11	0	1	1	#scalerect	transform	scale	0	0.3	0	1 1	1.35 1.35	linear	
+564	TVBannerRecommendationsItemFA.svg	caller_review_required	0x28c6dab8	238058	10	0	1	1	#glyph	y		0	0.3	0	0	-24	linear	
+564	TVBannerRecommendationsItemFA.svg	caller_review_required	0x28c6dab8	238096	10	1	1	1	#glyph	x		0	0.3	0	0	-42	linear	
+603	sublauncherAdBannerFA.svg	excluded_advertising	0xf838a99b	250391	11	0	1	1	#scalerect	transform	scale	0	0.3	0	1 1	1.08 1.08	linear	
+603	sublauncherAdBannerFA.svg	excluded_advertising	0xf838a99b	250454	10	0	1	1	#glyph	y		0	0.3	0	0	-10	linear	
+603	sublauncherAdBannerFA.svg	excluded_advertising	0xf838a99b	250492	10	1	1	1	#glyph	x		0	0.3	0	0	-32	linear	

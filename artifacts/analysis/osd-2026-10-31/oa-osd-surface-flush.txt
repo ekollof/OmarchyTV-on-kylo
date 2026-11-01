@@ -1,0 +1,153 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (857 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1761 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts
+    /tmp/opencode/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_proj/Aurora (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_proj/Aurora (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFuncs.java '_Gfx_flush_2D' '_ZN20plat_Gfx_DRM_osd_drv17Set_ForceBufOrderEm27_EN_DRV_OSD_FORCE_BUF_ORDER'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/opencode/ghidra_scripts/DumpFuncs.java (HeadlessAnalyzer)  
+INFO  DumpFuncs.java> 
+===== _Gfx_flush_2D : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- _Gfx_flush_2D @ 00939de4 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* _Gfx_flush_2D(plat_Gfx_Window*, _ST_RECT*) */
+
+void _Gfx_flush_2D(plat_Gfx_Window *param_1,_ST_RECT *param_2)
+
+{
+  _ST_DRV_GPU_RECT_DATA *p_Var1;
+  int iVar2;
+  plat_Gfx_DRM_gpu_drv *this;
+  _ST_RECT a_Stack_84 [12];
+  bool local_78;
+  undefined4 local_74;
+  undefined4 local_70;
+  undefined4 local_6c;
+  undefined4 local_68;
+  undefined4 local_64;
+  undefined4 local_60;
+  undefined4 local_5c;
+  undefined4 local_48;
+  undefined4 local_44;
+  undefined4 local_40;
+  undefined4 local_3c;
+  undefined4 local_38;
+  undefined4 local_34;
+  undefined4 local_30;
+  int local_1c;
+  
+  local_1c = __stack_chk_guard;
+  memset(&local_74,0,0x2c);
+  memset(&local_48,0,0x2c);
+  local_74 = plat_Gfx_Surface::GetPhyAdr(*(plat_Gfx_Surface **)(param_1 + 0x14));
+  local_70 = plat_Gfx_Surface::GetStride(*(plat_Gfx_Surface **)(param_1 + 0x14));
+  local_6c = plat_Gfx_Surface::GetColorMode(*(plat_Gfx_Surface **)(param_1 + 0x14));
+  local_64 = *(undefined4 *)(param_2 + 4);
+  local_60 = *(undefined4 *)(param_2 + 8);
+  local_5c = *(undefined4 *)(param_2 + 0xc);
+  local_68 = *(undefined4 *)param_2;
+  local_48 = plat_Gfx_Surface::GetPhyAdr(*(plat_Gfx_Surface **)(param_1 + 0x10));
+  local_44 = plat_Gfx_Surface::GetStride(*(plat_Gfx_Surface **)(param_1 + 0x10));
+  local_40 = plat_Gfx_Surface::GetColorMode(*(plat_Gfx_Surface **)(param_1 + 0x10));
+  local_38 = *(undefined4 *)(param_2 + 4);
+  local_3c = *(undefined4 *)param_2;
+  local_34 = *(undefined4 *)(param_2 + 8);
+  local_30 = *(undefined4 *)(param_2 + 0xc);
+  plat_Gfx_Window::GetGeometryRect(param_1,a_Stack_84);
+  plat_Gfx_Window::GetVFlipMode(param_1);
+  if (*(int *)(*(int *)param_1 + 0x68) << 0x1c < 0) {
+    p_Var1 = (_ST_DRV_GPU_RECT_DATA *)plat_Gfx_DRM_gpu_drv::GetInstance();
+    plat_Gfx_DRM_gpu_drv::VsyncFlush
+              (p_Var1,(_ST_DRV_GPU_RECT_DATA *)&local_74,(uint)&local_48,local_78);
+    *(uint *)(*(int *)param_1 + 0x68) = *(uint *)(*(int *)param_1 + 0x68) & 0xfffffff7;
+  }
+  else {
+    iVar2 = plat_Gfx_Window::GetFlushCopyMode(param_1);
+    if (iVar2 == 0) {
+      p_Var1 = (_ST_DRV_GPU_RECT_DATA *)plat_Gfx_DRM_gpu_drv::GetInstance();
+      plat_Gfx_DRM_gpu_drv::VsyncFlush
+                (p_Var1,(_ST_DRV_GPU_RECT_DATA *)&local_74,(uint)&local_48,local_78);
+    }
+    else {
+      this = (plat_Gfx_DRM_gpu_drv *)plat_Gfx_DRM_gpu_drv::GetInstance();
+      plat_Gfx_DRM_gpu_drv::Copy
+                (this,(_ST_DRV_GPU_RECT_DATA *)&local_74,(_ST_DRV_GPU_RECT_DATA *)&local_48);
+    }
+  }
+  plat_Gfx_DRM_gpu_drv::GetInstance();
+  if (local_1c == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail();
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _ZN20plat_Gfx_DRM_osd_drv17Set_ForceBufOrderEm27_EN_DRV_OSD_FORCE_BUF_ORDER : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Set_ForceBufOrder @ 00944c48 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_DRM_osd_drv::Set_ForceBufOrder(unsigned long, _EN_DRV_OSD_FORCE_BUF_ORDER) */
+
+undefined4 __thiscall
+plat_Gfx_DRM_osd_drv::Set_ForceBufOrder
+          (plat_Gfx_DRM_osd_drv *this,undefined4 param_2,undefined4 param_3)
+
+{
+  int iVar1;
+  
+  iVar1 = __stack_chk_guard;
+  *(undefined4 *)(*(int *)(this + 4) + 0x34) = param_3;
+  if (iVar1 == __stack_chk_guard) {
+    return 0;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail();
+}
+
+ (GhidraScript)  

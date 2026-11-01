@@ -1,0 +1,34 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+FIRMWARE
+64c252340d3af6c5d66072611b7bad7a  /vendor/com.nvt.idtv/aurora.elf
+0b1cd32a9de2b0251f6252e6603db8b7  /conf/remotelf/aurora.elf
+4ebd0f9d7ee9f470afde8b0f2807522b  /conf/remotelf/keepalive.sh
+b6eee64775233de846ca46fc6c48c3f9  /etc/hosts
+CEC_STATUS_MEMORY
+CEC_DEVICE_SYSFS
+ls: /sys/dev/char/229:0: No such file or directory
+ACCESS
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       
+tcp        0      0 0.0.0.0:7681            0.0.0.0:*               LISTEN      
+tcp        0      0 127.0.0.1:26441         0.0.0.0:*               LISTEN      
+tcp        0      0 192.168.178.87:26442    0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:38955           0.0.0.0:*               LISTEN      
+tcp        0      0 127.0.0.1:8080          0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:56789           0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:56790           0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:2870            0.0.0.0:*               LISTEN      
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      
+tcp        0      0 192.168.178.87:12345    0.0.0.0:*               LISTEN      
+tcp        0      0 :::2323                 :::*                    LISTEN      
+tcp        0      0 :::22                   :::*                    LISTEN      
+PRIVACY_BLOCK
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination         
+REJECT     all  --  0.0.0.0/0            216.183.117.0/24     reject-with icmp-port-unreachable
+RECOVERY_TOOLS
+-rwx------    1 root     root         12316 Oct 31 00:38 /buffer/wdtctl

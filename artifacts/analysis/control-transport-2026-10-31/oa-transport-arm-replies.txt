@@ -1,0 +1,3 @@
+[452487] INFO host         control socket /tmp/oa-control-llNLOg/control.sock
+  ok   full list/status replies reach a Unix socket client intact
+  ok   control replies stay bounded for full tables and tiny buffers

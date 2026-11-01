@@ -1,0 +1,116 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-review-san/tests/cec_async tests/cec_async.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c -ldl -pthread
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-review-san/tests/cec_owner tests/cec_owner.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c build-review-san/core/check.o build-review-san/core/control.o build-review-san/core/host.o build-review-san/core/module.o -ldl -pthread
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-review-san/modules/mod_cec.so modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c -pthread -fsanitize=address,undefined
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-review-san/tests/owner_races tests/owner_races.c common/audio_owner.c common/audio_client.c common/audio_netlink.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c -ldl -pthread
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -UOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-review-san/tests/audio-mods/mod_audio.so modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c tests/audio_hal_stub.c -pthread -fsanitize=address,undefined
+[211730] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[211730] INFO host         started quiesce_fixture
+[211730] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211730] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[211730] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211730] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[211730] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211730] INFO host         stopped quiesce_fixture
+[211730] INFO host         unloaded quiesce_fixture
+[211730] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[211730] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211730] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[211730] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211730] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[211730] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211730] INFO host         stopped quiesce_fixture
+[211730] INFO host         unloaded quiesce_fixture
+[211730] ERR  host         load 'build-review-san/tests/mod_quiesce_fixture.so': init() failed (-1)
+[211730] ERR  host         quiesce_fixture: init cleanup pending; retry unload
+[211730] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[211730] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211730] INFO host         stopped quiesce_fixture
+[211730] INFO host         unloaded quiesce_fixture
+[211730] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[211730] ERR  host         quiesce_fixture: start() failed (-1)
+[211730] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211730] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[211730] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211730] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[211730] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211730] INFO host         stopped quiesce_fixture
+[211731] INFO host         unloaded quiesce_fixture
+[211731] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[211731] INFO host         started quiesce_fixture
+[211731] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211731] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[211731] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211731] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[211731] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211731] INFO host         stopped quiesce_fixture
+[211731] INFO host         unloaded quiesce_fixture
+[211731] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[211731] INFO host         started quiesce_fixture
+[211731] INFO host         stopped quiesce_fixture
+[211731] INFO host         unloaded quiesce_fixture
+[211731] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[211731] INFO host         quiesce_fixture: reloaded (suspended)
+[211731] ERR  host         quiesce_fixture: start() failed (-1)
+[211731] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211731] WARN host         quiesce_fixture: resume failed (-1)
+[211731] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[211731] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211731] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[211731] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211731] INFO host         stopped quiesce_fixture
+[211731] INFO host         unloaded quiesce_fixture
+[211731] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[211731] INFO host         started quiesce_fixture
+[211731] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211731] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211731] INFO host         stopped quiesce_fixture
+[211731] INFO host         unloaded quiesce_fixture
+[211731] ERR  host         load 'quiesce_fixture': host is not accepting modules
+[211731] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[211731] INFO host         started quiesce_fixture
+[211731] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211731] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211731] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211731] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[211761] INFO host         stopped quiesce_fixture
+[211761] INFO host         unloaded quiesce_fixture
+[211761] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[211761] INFO host         started quiesce_fixture
+[211762] ERR  host         quiesce_fixture: refusing to stop, service 'test.quiesce.instance' still held
+[211762] ERR  host         quiesce_fixture: refusing to unload, service 'test.quiesce.instance' still held (use --force)
+[211762] ERR  host         quiesce_fixture: shutdown left module loaded (state started, cleanup_pending 0)
+[211762] INFO host         stopped quiesce_fixture
+[211762] INFO host         unloaded quiesce_fixture
+  ok   running veto retains DSO/posts/services; force cannot bypass; completion permits unload
+  ok   never-started init resources protected by gate
+  ok   failed init retained and discoverable for cleanup, never activated
+  ok   failed partial start retains callback code until completion
+  ok   suspended instance cannot resume while cleanup is pending
+  ok   failed deferred activation retains resources and eventually runs stop
+  ok   shutdown dispatches the gate completion and retries unload before return
+  ok   shutdown waits for a worker completion post before unload
+  ok   shutdown reports a held module and does not dlclose it
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-review-san/tests/audio_async tests/audio_async.c common/audio_owner.c common/audio_client.c common/audio_netlink.c -ldl -pthread
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-review-san/tests/audio_owner tests/audio_owner.c common/audio_owner.c common/audio_client.c common/audio_netlink.c -ldl -pthread
+  ok   blocked acquire is nonblocking; path/tables are copied; invalid I/O never touches authority
+  ok   send owns its frame; decoded/empty receives have distinct ticketed copied results
+  ok   failed hardware release retains fd and copied backend until an explicit successful retry
+  ok   shutdown drains blocked receive; failed-close generations retain session and untaken result until join
+[212125] ERR  host         cec: cleanup pending; retry stop/unload
+[212125] ERR  host         cec: cleanup pending; retry stop/unload
+[212126] ERR  host         cec: cleanup pending; retry stop/unload
+[212126] ERR  host         audio: cleanup pending; retry stop/unload
+[212126] ERR  host         plat: required by active module 'audio'
+[212128] ERR  ticker       cec: refusing to unload, service 'cec.owner' still held (use --force)
+[212128] ERR  host         cec: cleanup pending; retry stop/unload
+  ok   System Audio mutes local volume; ARC follows 1.4 direction; route survives reload
+[212129] ERR  host         cec: cleanup pending; retry stop/unload
+[212129] ERR  host         cec: cleanup pending; retry stop/unload
+  ok   authority keeps an existing bit and writes 0xf011 low-byte|2 only when it is clear
+  ok   worker serializes authority, open and send; failed close stays owned until a later quiesce
+  ok   control reload/suspend/resume joins the idle worker; a held service stays loaded
+  ok   CEC/audio in-flight opens stay worker-owned; quiesce returns before I/O completion
+  ok   async open returns during blocked I/O, owns callback-table copy and applies bounded backpressure
+  ok   results are ticketed, owned and collected once; worker errors survive and failed OS close consumes fd
+  ok   quiesce rejects new work, drains accepted open and closes before join; result survives shutdown
+  ok   audio worker rejects a real socket, runs gain off the caller, and closes on quiesce

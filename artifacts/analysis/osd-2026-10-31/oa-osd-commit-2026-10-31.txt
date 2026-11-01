@@ -1,0 +1,302 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (1355 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (3036 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts
+    /tmp/opencode/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_proj/Aurora (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_proj/Aurora (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFuncs.java '_ZN20plat_Gfx_DRM_osd_drv13Update_EnableEmh' 'Sync_OutPutMode2HW' 'Sync_FrontSurface2HW'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/opencode/ghidra_scripts/DumpFuncs.java (HeadlessAnalyzer)  
+INFO  DumpFuncs.java> 
+===== _ZN20plat_Gfx_DRM_osd_drv13Update_EnableEmh : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Update_Enable @ 00944860 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_DRM_osd_drv::Update_Enable(unsigned long, unsigned char) */
+
+void __thiscall
+plat_Gfx_DRM_osd_drv::Update_Enable(plat_Gfx_DRM_osd_drv *this,ulong param_1,uchar param_2)
+
+{
+  undefined4 uVar1;
+  undefined4 uVar2;
+  __pid_t _Var3;
+  long lVar4;
+  int *piVar5;
+  char *pcVar6;
+  undefined4 uVar7;
+  int iVar8;
+  int iVar9;
+  undefined4 uVar10;
+  uint uVar11;
+  undefined4 uVar12;
+  undefined4 *puVar13;
+  undefined4 local_68;
+  uint local_64;
+  uint local_60;
+  int local_5c [14];
+  
+  local_5c[0xc] = __stack_chk_guard;
+  if (param_2 == '\0') {
+    uVar1 = 0;
+    goto LAB_00944902;
+  }
+  puVar13 = *(undefined4 **)(this + 4);
+  if (*(byte *)((int)puVar13 + 0x39) == 0) {
+    local_68 = *puVar13;
+    local_60 = (uint)*(byte *)(puVar13 + 0xe);
+    local_64 = (uint)*(byte *)((int)puVar13 + 0x39);
+    iVar9 = Hal_Video_Libdrm_drmIoctl(*(undefined4 *)(this + 0xc),0xc00c6455,&local_68);
+    if (iVar9 < 0) {
+      _Var3 = getpid();
+      lVar4 = syscall(0xe0);
+      printf("---[%d:%d]%s%s(%d):",_Var3,lVar4,&DAT_013bf2fc,"Update_Enable",0x34b);
+      piVar5 = __errno_location();
+      pcVar6 = strerror(*piVar5);
+      printf("failed: %s \n\n",pcVar6);
+      uVar1 = 0x16;
+      goto LAB_00944902;
+    }
+  }
+  else {
+    iVar9 = puVar13[2];
+    if ((iVar9 != 0) && (puVar13[0xb] != 0)) {
+      iVar9 = Hal_Video_Libdrm_drmModeGetFB(*(undefined4 *)(this + 0xc),iVar9);
+      if (iVar9 == 0) {
+        _Var3 = getpid();
+        lVar4 = syscall(0xe0);
+        printf("---[%d:%d]%s%s(%d):",_Var3,lVar4,&DAT_013bf2fc,"Update_Enable",0x2ee);
+        printf("update failed to get FB info: fd(%d), fbID(%d)\n",*(undefined4 *)(this + 0xc),
+               *(undefined4 *)(*(int *)(this + 4) + 8));
+        uVar1 = 0xfffffffe;
+        goto LAB_00944902;
+      }
+      iVar8 = *(int *)(this + 4);
+      uVar10 = *(undefined4 *)(this + 0xc);
+      uVar12 = *(undefined4 *)(iVar8 + 0x2c);
+      uVar11 = *(uint *)(iVar8 + 0x30);
+      uVar1 = FUN_01285200(uVar12,(uVar11 & 0xff) >> 3);
+      uVar2 = FUN_01285200(*(undefined4 *)(iVar8 + 0x40),uVar12);
+      local_5c[3] = 0;
+      local_68 = 0;
+      local_5c[7] = 0;
+      local_5c[0xb] = 0;
+      local_5c[0] = 0;
+      local_5c[1] = 0;
+      local_5c[2] = 0;
+      local_5c[4] = 0;
+      local_5c[8] = 0;
+      local_5c[5] = 0;
+      local_5c[6] = 0;
+      local_5c[9] = 0;
+      local_5c[10] = 0;
+      iVar8 = *(int *)(iVar9 + 0x18);
+      if (*(int *)(iVar9 + 0x18) == 0) {
+        uVar11 = plat_Gfx_MCU_Center::getPlat_Gfx_MCU_Center();
+        iVar8 = *(int *)(this + 4);
+        if ((uVar11 == 0) || (iVar8 == 0)) {
+          uVar12 = *(undefined4 *)(iVar8 + 0x2c);
+          uVar11 = *(uint *)(iVar8 + 0x30);
+          iVar8 = local_5c[0];
+        }
+        else {
+          iVar8 = plat_Gfx_MCU_Center::Phy2Handle(uVar11);
+          uVar12 = *(undefined4 *)(*(int *)(this + 4) + 0x2c);
+          uVar11 = *(uint *)(*(int *)(this + 4) + 0x30);
+        }
+      }
+      local_5c[0] = iVar8;
+      local_5c[8] = 0;
+      if (uVar11 == 0x808) {
+        uVar7 = 0x20203843;
+      }
+      else {
+        uVar7 = 0x32315241;
+        if (uVar11 != 0x10444410) {
+          uVar7 = 0x34325241;
+        }
+      }
+      local_5c[4] = uVar12;
+      iVar8 = Hal_Video_Libdrm_drmModeAddFB2
+                        (uVar10,uVar1,uVar2,uVar7,local_5c,local_5c + 4,local_5c + 8,&local_68,0);
+      if (iVar8 < 0) {
+        _Var3 = getpid();
+        lVar4 = syscall(0xe0);
+        printf("---[%d:%d]%s%s(%d):",_Var3,lVar4,&DAT_013bf2fc,"Update_Enable",0x31c);
+        piVar5 = __errno_location();
+        pcVar6 = strerror(*piVar5);
+        printf("drmModeAddFB2 failed: %s \n",pcVar6);
+        uVar1 = 0x16;
+        goto LAB_00944902;
+      }
+      *(undefined4 *)(*(int *)(this + 4) + 8) = local_68;
+      Hal_Video_Libdrm_drmModeFreeFB(iVar9);
+      puVar13 = *(undefined4 **)(this + 4);
+      iVar9 = puVar13[2];
+    }
+    iVar9 = Hal_Video_Libdrm_drmModeSetPlane
+                      (*(undefined4 *)(this + 0xc),*puVar13,puVar13[1],iVar9,0,puVar13[7],puVar13[8]
+                       ,puVar13[9],puVar13[10],puVar13[3] << 0x10,puVar13[4] << 0x10,
+                       puVar13[5] << 0x10,puVar13[6] << 0x10);
+    if (iVar9 < 0) {
+      _Var3 = getpid();
+      lVar4 = syscall(0xe0);
+      printf("---[%d:%d]%s%s(%d):",_Var3,lVar4,&DAT_013bf2fc,"Update_Enable",0x33c);
+      puVar13 = *(undefined4 **)(this + 4);
+      printf("DrmFD=%d,PID=%d,crtc_id=%d,fb_id=%d,[%d,%d %dX%d][%d,%d %dX%d]",
+             *(undefined4 *)(this + 0xc),*puVar13,puVar13[1],puVar13[2],puVar13[7],puVar13[8],
+             puVar13[9],puVar13[10],puVar13[3],puVar13[4],puVar13[5],puVar13[6]);
+      _Var3 = getpid();
+      lVar4 = syscall(0xe0);
+      printf("---[%d:%d]%s%s(%d):",_Var3,lVar4,&DAT_013bf2fc,"Update_Enable",0x33d);
+      piVar5 = __errno_location();
+      pcVar6 = strerror(*piVar5);
+      printf("drmModeSetPlane failed: %s \n",pcVar6);
+    }
+  }
+  uVar1 = 0;
+  *(undefined1 *)(*(int *)(this + 4) + 0x39) = 0;
+LAB_00944902:
+  if (local_5c[0xc] == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(uVar1);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== Sync_OutPutMode2HW : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Sync_OutPutMode2HW @ 0093f6e4 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_Window::Sync_OutPutMode2HW() */
+
+void __thiscall plat_Gfx_Window::Sync_OutPutMode2HW(plat_Gfx_Window *this)
+
+{
+  char cVar1;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+  
+  iVar2 = __stack_chk_guard;
+  iVar3 = plat_Gfx_DRM_osd_drv::IsSeparate(*(ulong *)(this + 4));
+  iVar4 = plat_Gfx_DRM_osd_drv::Get_3DMode(*(ulong *)(this + 4));
+  cVar1 = *(char *)(*(int *)this + 0x8c);
+  if ((iVar3 != 0) != (bool)cVar1 || iVar4 != *(int *)(*(int *)this + 100)) {
+    if (cVar1 == '\0') {
+      plat_Gfx_DRM_osd_drv::ProtectArea_Enable
+                (*(ulong *)(this + 4),(uchar)*(undefined4 *)(this + 8));
+    }
+    else {
+      plat_Gfx_DRM_osd_drv::ProtectArea_Enable
+                (*(ulong *)(this + 4),(uchar)*(undefined4 *)(this + 8));
+    }
+    plat_Gfx_DRM_osd_drv::Set_SepaTimeCtrl
+              (*(ulong *)(this + 4),*(_ST_DRV_OSD_SEPA_TIME_CTRL **)(this + 8));
+    plat_Gfx_DRM_osd_drv::Set_SepaTimeGen
+              (*(ulong *)(this + 4),*(_ST_DRV_OSD_SEPA_TIME_GEN **)(this + 8));
+    plat_Gfx_DRM_osd_drv::SepaTime_Enable(*(ulong *)(this + 4),(uchar)*(undefined4 *)(this + 8));
+    plat_Gfx_DRM_osd_drv::Separate_Enable(*(ulong *)(this + 4),(uchar)*(undefined4 *)(this + 8));
+  }
+  if (iVar2 == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(0);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== Sync_FrontSurface2HW : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Sync_FrontSurface2HW @ 00940388 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_Window::Sync_FrontSurface2HW() */
+
+void __thiscall plat_Gfx_Window::Sync_FrontSurface2HW(plat_Gfx_Window *this)
+
+{
+  int *piVar1;
+  undefined4 local_44;
+  int local_40;
+  undefined4 local_3c;
+  undefined4 local_38;
+  undefined4 local_34;
+  undefined4 local_30;
+  _ST_RECT a_Stack_2c [16];
+  int local_1c;
+  
+  piVar1 = *(int **)(this + 0x10);
+  local_1c = __stack_chk_guard;
+  if ((char)piVar1[2] != '\0') {
+    plat_Gfx_DRM_osd_drv::Set_ColorMode
+              (*(plat_Gfx_DRM_osd_drv **)(this + 4),*(undefined4 *)(this + 8),
+               *(undefined4 *)(*piVar1 + 0x14));
+    plat_Gfx_DRM_osd_drv::Set_Stride
+              (*(plat_Gfx_DRM_osd_drv **)(this + 4),*(ulong *)(this + 8),*(uint *)(*piVar1 + 0x28));
+    local_44 = *(undefined4 *)(*piVar1 + 4);
+    local_40 = (*(int *)(*piVar1 + 8) + 0xfffU & 0xfffff000) << 1;
+    plat_Gfx_DRM_osd_drv::Set_BufPhyAddrSize
+              (*(plat_Gfx_DRM_osd_drv **)(this + 4),*(ulong *)(this + 8),
+               (_ST_DRV_OSD_BUF_PHY_ADDR_SIZE *)&local_44);
+    GetGeometryRect(this,a_Stack_2c);
+    local_3c = *(undefined4 *)(*piVar1 + 0x18);
+    local_38 = *(undefined4 *)(*piVar1 + 0x1c);
+    local_34 = *(undefined4 *)(*piVar1 + 0x20);
+    local_30 = *(undefined4 *)(*piVar1 + 0x24);
+    plat_Gfx_DRM_osd_drv::Set_DispWin
+              (*(plat_Gfx_DRM_osd_drv **)(this + 4),*(ulong *)(this + 8),
+               (_ST_DRV_OSD_DISP_WIN *)&local_3c);
+  }
+  if (local_1c == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(0);
+}
+
+ (GhidraScript)  

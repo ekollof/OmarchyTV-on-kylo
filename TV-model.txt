@@ -1,0 +1,65 @@
+TV target (original input preserved)
+=====================================
+192.168.178.87
+70:54:b4:fe:70:c6
+
+Full findings (2026-10-29)
+==========================
+
+1. Identity (network)
+- Hostnames: TELEFUNKEN-TV.fritz.box (DHCP/FritzBox 7590), TELEFUNKEN-TV.local (mDNS, avahi-resolve works, no DNS-SD services advertised)
+- MAC OUI: 70:54:B4 = Vestel Elektronik San ve Tic. A.S.
+- nmap full TCP: 2870/tcp (NFLC/3.0 UPnP/1.0 DLNADOC/1.50 DLNA DMR), 7681/tcp (Vestel state WebSocket, 101 Switching Protocols with Upgrade: websocket), 12345/tcp (minimal HTTP, Date: Tue, 14 Feb 1989, no RTC), 26442/tcp (HTTP 501 Not implemented), 33907/tcp (silent, GET -> immediate close b'', non-HTTP -> hang), 56789/tcp (DIAL SmartCenter), 56790/tcp (DIAL dd.xml). No 22/23/2323/5555/8080/4725/9222/7001/1986/5001/56183 externally.
+- nmap OS: Linux 3.x guess. UDP 1900 open|filtered, unicast + multicast M-SEARCH gets no reply (tested ST ssdp:all, upnp:rootdevice, dial, tvdevice).
+
+2. Exact model
+- DIAL http://192.168.178.87:56790/dd.xml (Application-URL: http://192.168.178.87:56789/apps/):
+  <friendlyName>TELEFUNKEN_70:54:b4:fe:70:c6</friendlyName>
+  <modelName>Vestel_MB230</modelName>
+  <tv_version>MB230_VESTEL</tv_version>
+  <software_version>0.51.52.3</software_version>
+  <brand locale name>TELEFUNKEN</brand>, dial 2.0, verificationKey 5, quiUI 1, browser_type 1
+  <mac>70:54:B4:FE:70:C6</mac>, <wifi_mac>70:54:b4:fd:64:1c</wifi_mac>, UDN uuid:d3f5ce9e-8215-416b-a277-a52843a0b99e
+- Rear label photo (/home/ekollof/Documents/PXL_20261029_204737974.jpg):
+  MODEL: D65U546A, Art. Nr.: 2199818, 220-240V~50Hz 200W
+  10125935 1912p00143, SN: 8368599 900143
+  Inverkehrbringer: Vestel Germany GmbH, Parkring 6, D-85748 Garching bei München
+  Licensed by Telefunken Licenses GmbH
+- Conclusion: Telefunken D65U546A 65" UHD, Vestel 17MB230 chassis, MB230_VESTEL, FW 0.51.52.3. Retail screen size from label, chassis/panel from network. Panel VESxxx code still needed from service menu Product Info (MENU+4725) or mainboard sticker for firmware requests.
+
+3. Platform
+- Vestel proprietary Linux Smart TV (NOT Android, NOT Vidaa/TiVo). Evidence:
+  - Browser UA via browserseturl fetch: Mozilla/5.0 (Linux ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36 OPR/46.0.2207.0 OMI/4.13.5.431.SIERRA.170 Model/Vestel-MB230 VSTVB MB200 HbbTV/1.5.1 (+DRM; TELEFUNKEN; MB230; 0.51.52.3; ; _TV_NT72671_2019;) SmartTvA/3.0.0
+  - SoC per 17MB230 service manual: NOVATEK NT72671TBG, Nanya NT5CB128M16JR-FL 2Gb DDR3, Micron MT29F4G08ABAEAWP 4Gbit NAND (512MB), Macronix KH25L1606EM2-12G 16Mbit SPI (2MB bootloader)
+  - Stack: Opera/Vewd SmartTvA/3.0.0, OPR/46, HbbTV 1.5.1, NetFront Living Connect DLNA DMR on 2870, DIAL 2.0/2.1 SmartCenter on 56789/56790, state WebSocket ws://host:7681/ (Origin header required), portal https://orion.portaltv.tv/v1/portalapps?country=nld&brand=TELEFUNKEN&device=MB230&swversion=V.0.51.52.3&...
+  - SmartTvA_API + oipfObjectFactory + GM_getValue/GM_setValue present in browser JS (enumerated via exfil servers on 8004-8006). SmartTvA_API is opaque host object.
+- Ports semantics: 56789 POST /apps/SmartCenter = commands, 56790 GET /dd.xml = description, 7681 = WS state (<tv_state value='OTHER'/>), 2870 = DLNA, 12345/26442/33907 = Vestel internal (1989 epoch / silent).
+
+4. SSH status: NOT running, no easy network RCE
+- 22/23 closed. No telnet/dropbear.
+- SmartCenter accepts any POST body with 201 (even garbage) — 201 alone proves nothing.
+- Correct browserseturl XML (from hass-vestel-tv api.py): <?xml version='1.0' ?><browserseturl><load url='...' page='RC'/></browserseturl> -> TV browser fetches URL (confirmed, UA above). Earlier negative with bare-URL syntax was invalid test.
+- SSRF pivot: hosted JS on 192.168.178.167:8001-8006, TV fetched and executed. Loopback scan from TV browser (fetch no-cors): open 127.0.0.1:56789,56790,2870,8080; closed 80,5001,12345,26442,443,1900,22,3000,9000,56183,33907. 127.0.0.1:8080 is HTTP with CORS, returns 404 HTML for /dd.xml,/apps/,etc (33 paths probed, all 404 except / which fails fetch). Real paths unknown. 127.0.0.1:8080 not reachable externally.
+- Remote keys work: POST <?xml version='1.0' ?><remote><key code='XXX'/></remote> with header application_name: tv smart centre. Codes: MENU 1048, EXIT 1037, BACK 1010, OK 1053, digits 0-9 = 1000-1009, VOL_UP 1016, etc. Sent EXIT,BACK,MENU,4,7,2,5 then EXIT,EXIT — all 201, but no new ports (5001/56183/8080/22 still closed). Service menu likely needs HDMI source + hold-0 + Home + 4725 per Terence Eden, not just MENU+4725 while in browser. Screen state unconfirmed.
+- Known vulns (not yet exploited here, need physical/menu): 0DRG WiDi device-name injection (aurora.elf ICE_WiDiResetFriendlyName, payload ';sh</mnt/hd0a/a &' via USB FAT32 /mnt/hd0a/), plaintext WPA in logs, CVE-2026-15570 browserseturl SSRF (MB181/TiVo only, no RCE per advisory), UART RX / HTTP Test Server toggles in service menu (MENU+4725, Home+4725), Vestel> bootloader console via 8-6 open.
+- Chrome remote debug port 4725 (Titan OS docs) closed on this MB230 Linux set.
+- SmartCenter code injection: closed. A 201 from POST /apps/SmartCenter does not mean the body ran. The confirmed effect is browserseturl, which loads a page in Opera and runs that page's JavaScript. Loopback discovery did not return a file, a shell, a listener, or a new debug port. CVE-2026-15570 classifies the same command as SSRF (CWE-918) on MB181/TiVo firmware V2.78.0.0, fixed in V2.85.2.0. That product line does not cover MB230 0.51.52.3, and the advisory does not describe operating-system command execution. A reverse shell was not obtained and is not a next step.
+
+5. Firmware
+- Those DCF tokens are not derived from the retail model, article number, serial, or MAC. CRC16/CRC32/MD5/SHA-1 over the Medion profile strings and over D65U546A / 2199818 / SN 8368599 900143 / 0.51.52.3 do not produce `772e` or `0009df`. S3 returns AccessDenied for both `0009df/772e.dcf` and a nonsense key, so a guessed path cannot be checked. `17MB230` is shared by many brands and does not select a file. `orion.portaltv.tv` takes country/brand/device/swversion as a query for the app list, not as the firmware object path.
+- OTA client is the same on this chassis as on the Medion image. In `mb230_swprofile.bin` (apdat, file offset about `0xcf444db`) the Medion profile stores descriptor `772e.dcf`, id `0009df`, host fragments `s3-eu-w` + `*-1.amazonaws.com/vstlupdate`, key `SERVER_HTTP_SECURE_TYPE`, chassis `17MB230`. The bucket `vstlupdate` exists in `eu-west-1` (S3 answers 403 with `x-amz-bucket-region: eu-west-1` for `/`, `772e.dcf`, `0009df/772e.dcf`, and `17MB230/772e.dcf`). Listing is not public, and that DCF id is the Medion project's, not Telefunken 0.51.52.3. Vestel Security Target: OTA is TLS 1.2/1.3, the image is symmetric-encrypted, and the TV checks the signature before decrypt. A captured OTA blob is not a plaintext Kylo image. `orion.portaltv.tv` is the app portal, not this update bucket.
+- Exact Telefunken build 0.51.52.3: still no public file. Telefunken has no download portal. Gated technician copies exist for other MB230 sets (uyducu `MB230_VESTEL_0.51.19.0.zip`, 207 MB, and `*_MB230*_KYLO_V051490_SVN_347680_*.xls.ZIP` core packs). Those are older than 0.51.52.3 and panel-specific. Chassis cross-ref lists D65U546A as 17MB230 (turuta). Panel VESxxx for this set is still unknown; 65" Vestel panels on sibling boards are codes such as VES650QNTS / QNTB / QNTR, which is not an identification.
+- Same-platform image now local, for reverse engineering only:
+  https://cdn.medion.com/downloads/software/MD30010_Firmware_Full_Update_DE.zip
+  (HTTP 200, 218,151,540 bytes, 2023-12-21). Extracted members: kylo_usb_update.bin 243,007,488 bytes, kylo_usb_update.scr, German full-update PDF.
+  Saved: artifacts/firmware/MD30010_Firmware_Full_Update_DE.zip and artifacts/firmware/medion-md30010/.
+  This is Medion MD 30010, not D65U546A. The script sets imgload=1, which runs `nand erase.chip`, rewrites SPI including PlayReady, and burns a Medion logo. Do not put it on this TV.
+- Image is Novatek Kylo, not an MStar bin, so mstar-bin-tool does not unpack it. Magic `aaaa55555555aaaa`, tag `4ca4BOOT`, stamp `Nov 07 2019`, SoC string `NT72673`, U-Boot prompt `NT72671A_MB230>`, board `nt72671b_a32_n33006_nand`, `Linux-4.9.118+`, U-Boot `2016.07-g54205a2`. Load address in the script is `0x3300000`. File offset = address minus that base.
+  spi 0x20, xboot 0xc0020, ddrcfg 0x100020, secos 0x220020, uboot 0x380020, fdt0 0x440020, fdt1 0x4c0020,
+  ker0 uImage 0x540020 size 0x4c9000, ker1 uImage 0xa20020 size 0x84c000,
+  fs0 UBI 0x1280020 size 0xb980000, apdat0 UBI 0xcc20020, buffer 0xd000020, logo JPEG 0xe760020.
+  Inside fs0, three gzip squashfs 4.0 superblocks (`hsqs`): file 0x1302020 (556 inodes, 0x568a79 bytes), 0x18c2020 (7429 inodes, 0x92e1583 bytes, main rootfs), 0xb082020 (298 inodes, 0x1a5a79b bytes). Names are compressed, so plaintext path search misses them. Next unpack step is ubi_reader on the UBI slice, then unsquashfs. Neither tool is installed here. binwalk is.
+- Two USB procedures on this chassis. Full recovery: kylo_usb_update.bin + .scr (+ .scr.core per the service manual) on FAT32 root, power on holding OK. Core-only, used by Medion for MD 31578/31579/31590: upgrade_mb230.bin, then MENU 1505 and confirm. Core packages do not include the bootloader script.
+- This television's mb230_swprofile.bin is not in the workspace and is not served by dd.xml, SmartCenter, or the state WebSocket. A later save-time GET of dd.xml failed to connect. The Medion copy is carved to artifacts/firmware/medion-md30010/medion-mb230_swprofile.efsl (91825 bytes from file 0xcf3df39) with readable strings in medion-swprofile-ota-strings.txt. medion-mb230_hwprofile.efsl is the 11752-byte prefix before the swprofile record; the hw header claims length 0x9e40, which overlaps the next EFSL, so that prefix is the separable part. Exporting this set's profile still needs DownloadProfile.mb230 on a FAT32 stick and the physical service menu.
+- Still request the matching Telefunken package from Vestel Germany (Parkring 6, Garching; telefunken.com/service, service.vestel.com) with D65U546A, Art. 2199818, SN 8368599 900143, MB230_VESTEL 0.51.52.3, and the VESxxx panel code from the service menu or the panel sticker.
+- TV UI restored: sent EXIT,EXIT,BACK after probes. exfil servers on 8001-8006 may still run; safe to kill.

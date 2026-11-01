@@ -1,0 +1,60 @@
+#!/bin/sh
+# P1 mock launcher action CGI (busybox httpd).
+#   GET /cgi-bin/act?a=tv|sources|apps|state
+# Translates the tile into the TV's own SmartCenter key path (DIAL on 127.0.0.1:56789).
+# Key codes: EXIT=1037, MENU=1048, KeyAux/source list=1056.
+TV=127.0.0.1:56789
+
+# CGI response header (busybox httpd needs it before any body)
+echo "Content-Type: text/plain"
+echo
+
+postcmd() {   # <command>NAME</command> on the SmartCenter channel
+  wget -q -O /dev/null -T 4 \
+    --header="Content-Type: text/plain; charset=ISO-8859-1" \
+    --header="application_name: tv smart centre" \
+    --post-data="<command>$1</command>" \
+    "http://$TV/apps/SmartCenter" 2>/dev/null
+}
+
+post() {
+  wget -q -O /dev/null -T 4 \
+    --header="Content-Type: text/plain; charset=ISO-8859-1" \
+    --header="application_name: tv smart centre" \
+    --post-data="<?xml version='1.0' ?><remote><key code='$1'/></remote>" \
+    "http://$TV/apps/SmartCenter" 2>/dev/null
+}
+
+case "$QUERY_STRING" in
+  a=boot-ok*)
+      echo "ok $(date)" > /conf/launcher_ok 2>/dev/null
+      date +%s > /conf/launcher_alive 2>/dev/null
+      echo "boot recorded on the TV" ;;
+  a=alive*)
+      # heartbeat: the watcher uses this to know the launcher owns the screen
+      date +%s > /conf/launcher_alive 2>/dev/null
+      echo "alive" ;;
+  a=sleep*)
+      # the power key is the only thing that suspends this set while a page is in front
+      post 1012; echo "suspend requested (power key)" ;;
+  a=standby*)
+      # kept for reference: the <command>Standby</command> path is ignored on this build
+      postcmd Standby; echo "standby command sent (usually ignored)" ;;
+  a=tv*)
+      post 1037; echo "EXIT sent (1037) - stock UI takes over" ;;
+  a=sources*)
+      # the browser eats the source key: hand the screen back first, then open the list.
+      # "hold" stops the watcher from hijacking the portal while the user is in the TV UI.
+      touch /conf/launcher_hold 2>/dev/null
+      post 1037; sleep 1; post 1056
+      echo "closed launcher, source list requested (1037 + 1056)" ;;
+  a=apps*)
+      touch /conf/launcher_hold 2>/dev/null
+      post 1037; sleep 1; post 1048
+      echo "closed launcher, stock portal requested (1037 + 1048)" ;;
+  a=key\&c=*)
+      c=${QUERY_STRING##*c=}; c=${c%%&*}
+      post "$c"; echo "key $c sent" ;;
+  *)
+      echo "usage: a=tv|sources|apps|key&c=<code>" ;;
+esac

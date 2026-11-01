@@ -1,0 +1,9 @@
+ghidra_preinit/PreInit.gpr: OK
+ghidra_preinit/PreInit.rep/idata/00/00000000.prp: OK
+ghidra_preinit/PreInit.rep/idata/00/~00000000.db/db.1.gbf: OK
+ghidra_preinit/PreInit.rep/idata/~index.bak: OK
+ghidra_preinit/PreInit.rep/idata/~index.dat: OK
+ghidra_preinit/PreInit.rep/project.prp: OK
+ghidra_preinit/PreInit.rep/user/~index.dat: OK
+ghidra_preinit/PreInit.rep/versioned/~index.bak: OK
+ghidra_preinit/PreInit.rep/versioned/~index.dat: OK

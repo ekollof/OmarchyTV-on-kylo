@@ -1,0 +1,12 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+  ok   both 101-entry AQ tables: exact selection, unaligned little-endian loads and 32-to-16-bit narrowing
+  ok   every truncated length / oversized inputs reject atomically; null guards and unsigned volume clamping
+  ok   all 101 decoded normal-curve entries match the independently captured real-TV table
+CURVE_EXIT=0
+ebb0aaaa-72a2-4410-9f8d-95b9249f8a90
+State:	S (sleeping)
+Pid:	1737

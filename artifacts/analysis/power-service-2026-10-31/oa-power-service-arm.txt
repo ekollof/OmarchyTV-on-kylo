@@ -1,0 +1,15 @@
+[115974] ERR  power        RAM entry write returned -1
+[115975] ERR  power        RAM entry write returned 2
+[115976] ERR  power        open /sys/power/state failed
+[115977] ERR  host         phase_a: missing required service 'phase_b_service'
+[115978] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[115979] ERR  power        publish power: already published by module 0
+[115980] ERR  host         power: start() failed (-1)
+[115980] ERR  host         power: missing required service 'host.sleep'
+  ok   manual hooks never sleep; CLI/service enter last and notify ON only after restore
+  ok   preparation failure restores completed transitions without opening power state
+  ok   failed open/short/failed mem write still restore; failed writes never count as sleep
+  ok   restore failure reports error and RESUMING, never premature ON; hooks remain retryable
+  ok   disabled power and incomplete quiescence hooks refuse without I/O or state events
+  ok   service preserves preexisting suspended modules and restores prior state before ON
+  ok   failed publication retains peer service; missing coordinator refuses and releases holds

@@ -1,0 +1,202 @@
+
+artifacts/workbench/ker0_sym.elf:     file format elf32-littlearm
+
+
+Disassembly of section .kernel:
+
+805ce308 <netlink_unicast>:
+805ce308:	e1a0c00d 	mov	ip, sp
+805ce30c:	e92ddbf0 	push	{r4, r5, r6, r7, r8, r9, fp, ip, lr, pc}
+805ce310:	e24cb004 	sub	fp, ip, #4
+805ce314:	e24dd008 	sub	sp, sp, #8
+805ce318:	e52de004 	push	{lr}		; (str lr, [sp, #-4]!)
+805ce31c:	ebe92936 	bl	800187fc <__gnu_mcount_nc>
+805ce320:	e1a0c00d 	mov	ip, sp
+805ce324:	e3a040c0 	mov	r4, #192	; 0xc0
+805ce328:	e3cccd7f 	bic	ip, ip, #8128	; 0x1fc0
+805ce32c:	e3a0e020 	mov	lr, #32
+805ce330:	e3ccc03f 	bic	ip, ip, #63	; 0x3f
+805ce334:	e340e208 	movt	lr, #520	; 0x208
+805ce338:	e59cc004 	ldr	ip, [ip, #4]
+805ce33c:	e3404240 	movt	r4, #576	; 0x240
+805ce340:	e1a05003 	mov	r5, r3
+805ce344:	e1a06000 	mov	r6, r0
+805ce348:	e1a00001 	mov	r0, r1
+805ce34c:	e1a09002 	mov	r9, r2
+805ce350:	e31c0cff 	tst	ip, #65280	; 0xff00
+805ce354:	e24b8024 	sub	r8, fp, #36	; 0x24
+805ce358:	01a01004 	moveq	r1, r4
+805ce35c:	11a0100e 	movne	r1, lr
+805ce360:	ebfff399 	bl	805cb1cc <netlink_trim>
+805ce364:	e3550000 	cmp	r5, #0
+805ce368:	e1a07000 	mov	r7, r0
+805ce36c:	059631b4 	ldreq	r3, [r6, #436]	; 0x1b4
+805ce370:	13a03000 	movne	r3, #0
+805ce374:	e5283004 	str	r3, [r8, #-4]!
+805ce378:	ea000010 	b	805ce3c0 <netlink_unicast+0xb8>
+805ce37c:	e3740a01 	cmn	r4, #4096	; 0x1000
+805ce380:	e1a00004 	mov	r0, r4
+805ce384:	8a000068 	bhi	805ce52c <netlink_unicast+0x224>
+805ce388:	e5943234 	ldr	r3, [r4, #564]	; 0x234
+805ce38c:	e3130001 	tst	r3, #1
+805ce390:	1a00002a 	bne	805ce440 <netlink_unicast+0x138>
+805ce394:	ebffac1d 	bl	805b9410 <sk_filter_trim_cap>
+805ce398:	e3500000 	cmp	r0, #0
+805ce39c:	e1a03006 	mov	r3, r6
+805ce3a0:	e1a02008 	mov	r2, r8
+805ce3a4:	e1a01007 	mov	r1, r7
+805ce3a8:	e1a00004 	mov	r0, r4
+805ce3ac:	1a00004c 	bne	805ce4e4 <netlink_unicast+0x1dc>
+805ce3b0:	ebffff40 	bl	805ce0b8 <netlink_attachskb>
+805ce3b4:	e3500001 	cmp	r0, #1
+805ce3b8:	e1a05000 	mov	r5, r0
+805ce3bc:	1a00004c 	bne	805ce4f4 <netlink_unicast+0x1ec>
+805ce3c0:	e1a01009 	mov	r1, r9
+805ce3c4:	e5d60121 	ldrb	r0, [r6, #289]	; 0x121
+805ce3c8:	ebfff6d1 	bl	805cbf14 <netlink_lookup.constprop.5>
+805ce3cc:	e2504000 	subs	r4, r0, #0
+805ce3d0:	e3a02001 	mov	r2, #1
+805ce3d4:	e1a01007 	mov	r1, r7
+805ce3d8:	0a000012 	beq	805ce428 <netlink_unicast+0x120>
+805ce3dc:	e5d43012 	ldrb	r3, [r4, #18]
+805ce3e0:	e3530001 	cmp	r3, #1
+805ce3e4:	1affffe4 	bne	805ce37c <netlink_unicast+0x74>
+805ce3e8:	e594c22c 	ldr	ip, [r4, #556]	; 0x22c
+805ce3ec:	e5963228 	ldr	r3, [r6, #552]	; 0x228
+805ce3f0:	e15c0003 	cmp	ip, r3
+805ce3f4:	0affffe0 	beq	805ce37c <netlink_unicast+0x74>
+805ce3f8:	f57ff05b 	dmb	ish
+805ce3fc:	e2843064 	add	r3, r4, #100	; 0x64
+805ce400:	f593f000 	pldw	[r3]
+805ce404:	e1932f9f 	ldrex	r2, [r3]
+805ce408:	e2422001 	sub	r2, r2, #1
+805ce40c:	e1831f92 	strex	r1, r2, [r3]
+805ce410:	e3310000 	teq	r1, #0
+805ce414:	1afffffa 	bne	805ce404 <netlink_unicast+0xfc>
+805ce418:	f57ff05b 	dmb	ish
+805ce41c:	e3520000 	cmp	r2, #0
+805ce420:	1a000000 	bne	805ce428 <netlink_unicast+0x120>
+805ce424:	ebfeeb45 	bl	80589140 <sk_free>
+805ce428:	e3e0506e 	mvn	r5, #110	; 0x6e
+805ce42c:	e1a00007 	mov	r0, r7
+805ce430:	ebfef398 	bl	8058b298 <kfree_skb>
+805ce434:	e1a00005 	mov	r0, r5
+805ce438:	e24bd024 	sub	sp, fp, #36	; 0x24
+805ce43c:	e89dabf0 	ldm	sp, {r4, r5, r6, r7, r8, r9, fp, sp, pc}
+805ce440:	e59432d4 	ldr	r3, [r4, #724]	; 0x2d4
+805ce444:	e3530000 	cmp	r3, #0
+805ce448:	0a000033 	beq	805ce51c <netlink_unicast+0x214>
+805ce44c:	e1a01004 	mov	r1, r4
+805ce450:	e1a00007 	mov	r0, r7
+805ce454:	e597505c 	ldr	r5, [r7, #92]	; 0x5c
+805ce458:	ebfff30b 	bl	805cb08c <netlink_skb_set_owner_r>
+805ce45c:	e5876030 	str	r6, [r7, #48]	; 0x30
+805ce460:	e5943234 	ldr	r3, [r4, #564]	; 0x234
+805ce464:	e3130001 	tst	r3, #1
+805ce468:	0a000015 	beq	805ce4c4 <netlink_unicast+0x1bc>
+805ce46c:	e5963234 	ldr	r3, [r6, #564]	; 0x234
+805ce470:	e3130001 	tst	r3, #1
+805ce474:	0a000012 	beq	805ce4c4 <netlink_unicast+0x1bc>
+805ce478:	e1a00007 	mov	r0, r7
+805ce47c:	e59432d4 	ldr	r3, [r4, #724]	; 0x2d4
+805ce480:	e12fff33 	blx	r3
+805ce484:	e1a00007 	mov	r0, r7
+805ce488:	ebfef446 	bl	8058b5a8 <consume_skb>
+805ce48c:	f57ff05b 	dmb	ish
+805ce490:	e2843064 	add	r3, r4, #100	; 0x64
+805ce494:	f593f000 	pldw	[r3]
+805ce498:	e1932f9f 	ldrex	r2, [r3]
+805ce49c:	e2422001 	sub	r2, r2, #1
+805ce4a0:	e1831f92 	strex	r1, r2, [r3]
+805ce4a4:	e3310000 	teq	r1, #0
+805ce4a8:	1afffffa 	bne	805ce498 <netlink_unicast+0x190>
+805ce4ac:	f57ff05b 	dmb	ish
+805ce4b0:	e3520000 	cmp	r2, #0
+805ce4b4:	1affffde 	bne	805ce434 <netlink_unicast+0x12c>
+805ce4b8:	e1a00004 	mov	r0, r4
+805ce4bc:	ebfeeb1f 	bl	80589140 <sk_free>
+805ce4c0:	eaffffdb 	b	805ce434 <netlink_unicast+0x12c>
+805ce4c4:	ebeb0e46 	bl	80091de4 <__rcu_read_lock>
+805ce4c8:	e30f3b8c 	movw	r3, #64396	; 0xfb8c
+805ce4cc:	e348309f 	movt	r3, #32927	; 0x809f
+805ce4d0:	e5b32004 	ldr	r2, [r3, #4]!
+805ce4d4:	e1520003 	cmp	r2, r3
+805ce4d8:	1a00000c 	bne	805ce510 <netlink_unicast+0x208>
+805ce4dc:	ebeb0eca 	bl	8009200c <__rcu_read_unlock>
+805ce4e0:	eaffffe4 	b	805ce478 <netlink_unicast+0x170>
+805ce4e4:	e1a00007 	mov	r0, r7
+805ce4e8:	e597505c 	ldr	r5, [r7, #92]	; 0x5c
+805ce4ec:	ebfef369 	bl	8058b298 <kfree_skb>
+805ce4f0:	eaffffe5 	b	805ce48c <netlink_unicast+0x184>
+805ce4f4:	e3500000 	cmp	r0, #0
+805ce4f8:	1affffcd 	bne	805ce434 <netlink_unicast+0x12c>
+805ce4fc:	e1a01007 	mov	r1, r7
+805ce500:	e1a00004 	mov	r0, r4
+805ce504:	ebffff68 	bl	805ce2ac <netlink_sendskb>
+805ce508:	e1a05000 	mov	r5, r0
+805ce50c:	eaffffc8 	b	805ce434 <netlink_unicast+0x12c>
+805ce510:	e1a00007 	mov	r0, r7
+805ce514:	ebfff5b0 	bl	805cbbdc <__netlink_deliver_tap>
+805ce518:	eaffffef 	b	805ce4dc <netlink_unicast+0x1d4>
+805ce51c:	e1a00007 	mov	r0, r7
+805ce520:	e3e0506e 	mvn	r5, #110	; 0x6e
+805ce524:	ebfef35b 	bl	8058b298 <kfree_skb>
+805ce528:	eaffffd7 	b	805ce48c <netlink_unicast+0x184>
+805ce52c:	e1a05004 	mov	r5, r4
+805ce530:	eaffffbd 	b	805ce42c <netlink_unicast+0x124>
+
+805ce534 <nlmsg_notify>:
+805ce534:	e1a0c00d 	mov	ip, sp
+805ce538:	e92dd8f0 	push	{r4, r5, r6, r7, fp, ip, lr, pc}
+805ce53c:	e24cb004 	sub	fp, ip, #4
+805ce540:	e24dd008 	sub	sp, sp, #8
+805ce544:	e52de004 	push	{lr}		; (str lr, [sp, #-4]!)
+805ce548:	ebe928ab 	bl	800187fc <__gnu_mcount_nc>
+805ce54c:	e3530000 	cmp	r3, #0
+805ce550:	e1a06000 	mov	r6, r0
+805ce554:	e1a05001 	mov	r5, r1
+805ce558:	e1a07002 	mov	r7, r2
+805ce55c:	e59b4004 	ldr	r4, [fp, #4]
+805ce560:	0a000016 	beq	805ce5c0 <nlmsg_notify+0x8c>
+805ce564:	e3540000 	cmp	r4, #0
+805ce568:	01a02004 	moveq	r2, r4
+805ce56c:	0a000007 	beq	805ce590 <nlmsg_notify+0x5c>
+805ce570:	e28120b0 	add	r2, r1, #176	; 0xb0
+805ce574:	f592f000 	pldw	[r2]
+805ce578:	e1921f9f 	ldrex	r1, [r2]
+805ce57c:	e2811001 	add	r1, r1, #1
+805ce580:	e1820f91 	strex	r0, r1, [r2]
+805ce584:	e3300000 	teq	r0, #0
+805ce588:	1afffffa 	bne	805ce578 <nlmsg_notify+0x44>
+805ce58c:	e1a02007 	mov	r2, r7
+805ce590:	e59b1008 	ldr	r1, [fp, #8]
+805ce594:	e1a00006 	mov	r0, r6
+805ce598:	e5853028 	str	r3, [r5, #40]	; 0x28
+805ce59c:	e58d1000 	str	r1, [sp]
+805ce5a0:	e1a01005 	mov	r1, r5
+805ce5a4:	ebfff790 	bl	805cc3ec <netlink_broadcast>
+805ce5a8:	e3540000 	cmp	r4, #0
+805ce5ac:	e0004fc0 	and	r4, r0, r0, asr #31
+805ce5b0:	1a00000a 	bne	805ce5e0 <nlmsg_notify+0xac>
+805ce5b4:	e1a00004 	mov	r0, r4
+805ce5b8:	e24bd01c 	sub	sp, fp, #28
+805ce5bc:	e89da8f0 	ldm	sp, {r4, r5, r6, r7, fp, sp, pc}
+805ce5c0:	e3540000 	cmp	r4, #0
+805ce5c4:	0afffffa 	beq	805ce5b4 <nlmsg_notify+0x80>
+805ce5c8:	e3a03040 	mov	r3, #64	; 0x40
+805ce5cc:	ebffff4d 	bl	805ce308 <netlink_unicast>
+805ce5d0:	e0004fc0 	and	r4, r0, r0, asr #31
+805ce5d4:	e1a00004 	mov	r0, r4
+805ce5d8:	e24bd01c 	sub	sp, fp, #28
+805ce5dc:	e89da8f0 	ldm	sp, {r4, r5, r6, r7, fp, sp, pc}
+805ce5e0:	e1a02007 	mov	r2, r7
+805ce5e4:	e1a01005 	mov	r1, r5
+805ce5e8:	e1a00006 	mov	r0, r6
+805ce5ec:	e3a03040 	mov	r3, #64	; 0x40
+805ce5f0:	ebffff44 	bl	805ce308 <netlink_unicast>
+805ce5f4:	e3740003 	cmn	r4, #3
+805ce5f8:	13540000 	cmpne	r4, #0
+805ce5fc:	0afffff3 	beq	805ce5d0 <nlmsg_notify+0x9c>
+805ce600:	e1a00004 	mov	r0, r4
+805ce604:	e24bd01c 	sub	sp, fp, #28
+805ce608:	e89da8f0 	ldm	sp, {r4, r5, r6, r7, fp, sp, pc}

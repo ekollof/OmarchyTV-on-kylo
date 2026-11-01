@@ -1,0 +1,5 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-review-san/tests/audio_broker tests/audio_broker.c common/audio_broker.c common/audio_broker_wire.c common/audio_client.c common/audio_netlink.c -ldl -pthread
+  ok   fixed endian/ticket protocol rejects malformed, reserved, short/long and inconsistent error packets atomically
+  ok   broker reuses one lazy session, echoes tickets/errors without replay and closes on IPC EOF
+  ok   truncated request and wrong IPC socket type fail before any mixer open/send
+  ok   posix_spawn child owns its session, drops unrelated inherited fds and exits cleanly after EOF

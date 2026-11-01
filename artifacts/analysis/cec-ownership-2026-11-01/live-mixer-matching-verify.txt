@@ -1,0 +1,24 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+openaurora: OK
+oa-supervise: OK
+oa-audio-broker: OK
+modules/mod_audio.so: OK
+modules/mod_audio_curve.so: OK
+modules/mod_audio_mixer.so: OK
+modules/mod_cec.so: OK
+modules/mod_display.so: OK
+modules/mod_ir.so: OK
+modules/mod_panel.so: OK
+modules/mod_plat.so: OK
+modules/mod_power.so: OK
+modules/mod_settings.so: OK
+modules/mod_source.so: OK
+modules/mod_ticker.so: OK
+modules/mod_ui_anim.so: OK
+modules/mod_ui_clock.so: OK
+modules/mod_ui_console.so: OK
+modules/mod_ui_fb.so: OK

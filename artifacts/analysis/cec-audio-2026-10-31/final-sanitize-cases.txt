@@ -1,0 +1,10 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -UOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-reload-sanitize/tests/plat_audio tests/plat_audio.c modules/plat/plat.c
+  ok   all 256 headers / 1..16-byte frame round trips, poll distinction and atomic bounds rejection
+  ok   all audio-status bytes: mute bit, 0..100 percent, unknown 127 and reserved rejection
+  ok   System Audio / key golden frames, operand counts, addressing and explicit unsupported scope
+  ok   all six ARC directions, broadcast rejection and physical-address tree rules
+  ok   verified HAL request blocks, clamping, scalar failures and unchanged cached state on failure
+  ok   state handoff reapplies volume/mute; invalid snapshots reject atomically
+  ok   unknown volume/mute snapshot never applies guessed zero defaults
+  ok   publication collision preserves peer; failed platform and disabled audio never call HAL
+  ok   each audio-prelude failure gates later hardware stages; success calls prelude once before platform stages

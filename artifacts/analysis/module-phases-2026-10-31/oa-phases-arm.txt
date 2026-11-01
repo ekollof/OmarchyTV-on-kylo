@@ -1,0 +1,137 @@
+[623652] INFO host         loaded phase_a vtest (build-tv-v2/tests/mod_phase_a.so)
+[623654] INFO host         loaded phase_b vtest (build-tv-v2/tests/mod_phase_b.so)
+[623654] INFO host         loaded phase_c vtest (build-tv-v2/tests/mod_phase_c.so)
+[623654] INFO host         started phase_c
+[623655] INFO host         started phase_b
+[623655] INFO host         started phase_a
+[623656] INFO host         stopped phase_a
+[623657] INFO host         unloaded phase_a
+[623657] INFO host         stopped phase_b
+[623657] INFO host         unloaded phase_b
+[623657] INFO host         stopped phase_c
+[623658] INFO host         unloaded phase_c
+[623658] INFO host         loaded phase_a vtest (build-tv-v2/tests/mod_phase_a.so)
+[623658] INFO host         loaded phase_b vtest (build-tv-v2/tests/mod_phase_b.so)
+[623659] INFO host         loaded phase_c vtest (build-tv-v2/tests/mod_phase_c.so)
+[623659] INFO host         started phase_c
+[623659] INFO host         started phase_b
+[623659] INFO host         started phase_a
+[623659] ERR  host         phase_b: required by active module 'phase_a'
+[623659] ERR  host         phase_b: required by active module 'phase_a'
+[623659] ERR  host         phase_b: required by active module 'phase_a'
+[623659] INFO host         stopped phase_a
+[623659] INFO host         unloaded phase_a
+[623659] INFO host         stopped phase_b
+[623659] INFO host         unloaded phase_b
+[623659] INFO host         stopped phase_c
+[623659] INFO host         unloaded phase_c
+[623660] INFO host         loaded phase_a vtest (build-tv-v2/tests/mod_phase_a.so)
+[623660] INFO host         loaded phase_b vtest (build-tv-v2/tests/mod_phase_b.so)
+[623660] INFO host         loaded phase_c vtest (build-tv-v2/tests/mod_phase_c.so)
+[623660] INFO host         started phase_c
+[623660] INFO host         started phase_b
+[623660] INFO host         started phase_a
+[623660] INFO host         stopped phase_a
+[623661] INFO host         unloaded phase_a
+[623661] INFO host         stopped phase_b
+[623661] INFO host         unloaded phase_b
+[623661] INFO host         loaded phase_b vtest (build-tv-v2/tests/mod_phase_b.so)
+[623661] INFO host         phase_b: reloaded (suspended)
+[623661] INFO host         started phase_b
+[623661] INFO host         stopped phase_b
+[623661] INFO host         unloaded phase_b
+[623661] INFO host         stopped phase_c
+[623661] INFO host         unloaded phase_c
+[623661] INFO host         loaded phase_a vtest (build-tv-v2/tests/mod_phase_a.so)
+[623662] INFO host         loaded phase_b vtest (build-tv-v2/tests/mod_phase_b.so)
+[623662] INFO host         loaded phase_c vtest (build-tv-v2/tests/mod_phase_c.so)
+[623662] INFO host         started phase_c
+[623662] INFO host         started phase_b
+[623662] INFO host         started phase_a
+[623662] WARN host         phase_b: suspend failed (-7)
+[623662] INFO host         stopped phase_a
+[623662] INFO host         unloaded phase_a
+[623662] INFO host         stopped phase_b
+[623663] INFO host         unloaded phase_b
+[623663] INFO host         stopped phase_c
+[623663] INFO host         unloaded phase_c
+[623663] INFO host         loaded phase_a vtest (build-tv-v2/tests/mod_phase_a.so)
+[623663] INFO host         loaded phase_b vtest (build-tv-v2/tests/mod_phase_b.so)
+[623663] INFO host         loaded phase_c vtest (build-tv-v2/tests/mod_phase_c.so)
+[623663] INFO host         started phase_c
+[623663] INFO host         started phase_b
+[623663] INFO host         started phase_a
+[623663] WARN host         phase_c: resume failed (-7)
+[623663] INFO host         stopped phase_a
+[623664] INFO host         unloaded phase_a
+[623664] INFO host         stopped phase_b
+[623664] INFO host         unloaded phase_b
+[623664] INFO host         stopped phase_c
+[623664] INFO host         unloaded phase_c
+[623664] INFO host         loaded phase_a vtest (build-tv-v2/tests/mod_phase_a.so)
+[623664] INFO host         loaded phase_b vtest (build-tv-v2/tests/mod_phase_b.so)
+[623664] INFO host         loaded phase_c vtest (build-tv-v2/tests/mod_phase_c.so)
+[623664] INFO host         started phase_c
+[623664] INFO host         started phase_b
+[623664] INFO host         started phase_a
+[623664] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[623664] INFO host         stopped phase_b
+[623665] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[623665] INFO host         started phase_b
+[623665] INFO host         stopped phase_a
+[623665] INFO host         unloaded phase_a
+[623665] INFO host         stopped phase_b
+[623665] INFO host         unloaded phase_b
+[623665] INFO host         stopped phase_c
+[623665] INFO host         unloaded phase_c
+[623665] INFO host         loaded phase_a vtest (build-tv-v2/tests/mod_phase_a.so)
+[623665] INFO host         loaded phase_b vtest (build-tv-v2/tests/mod_phase_b.so)
+[623665] INFO host         loaded phase_c vtest (build-tv-v2/tests/mod_phase_c.so)
+[623665] INFO host         started phase_c
+[623665] INFO host         started phase_b
+[623665] INFO host         started phase_a
+[623666] ERR  host         module dependency cycle; lifecycle transition canceled
+[623666] INFO host         stopped phase_a
+[623666] INFO host         unloaded phase_a
+[623666] INFO host         stopped phase_b
+[623666] INFO host         unloaded phase_b
+[623666] INFO host         stopped phase_c
+[623666] INFO host         unloaded phase_c
+[623666] INFO host         loaded phase_a vtest (build-tv-v2/tests/mod_phase_no_suspend.so)
+[623667] INFO host         loaded phase_b vtest (build-tv-v2/tests/mod_phase_b.so)
+[623667] INFO host         loaded phase_c vtest (build-tv-v2/tests/mod_phase_c.so)
+[623667] INFO host         started phase_c
+[623667] INFO host         started phase_b
+[623667] INFO host         started phase_a
+[623667] ERR  host         phase_b: consumer 'phase_a' is still active
+[623667] INFO host         stopped phase_a
+[623667] INFO host         unloaded phase_a
+[623667] INFO host         stopped phase_b
+[623667] INFO host         unloaded phase_b
+[623667] INFO host         stopped phase_c
+[623667] INFO host         unloaded phase_c
+[623667] INFO host         loaded phase_a vtest (build-tv-v2/tests/mod_phase_a.so)
+[623667] INFO host         loaded phase_b vtest (build-tv-v2/tests/mod_phase_b.so)
+[623668] INFO host         loaded phase_c vtest (build-tv-v2/tests/mod_phase_c.so)
+[623668] INFO host         started phase_c
+[623668] INFO host         started phase_b
+[623668] INFO host         started phase_a
+[623668] INFO host         stopped phase_c
+[623668] INFO host         unloaded phase_c
+[623668] INFO host         loaded phase_c_new vtest (build-tv-v2/tests/mod_phase_replacement.so)
+[623668] INFO host         started phase_c_new
+[623668] INFO host         stopped phase_a
+[623668] INFO host         unloaded phase_a
+[623668] INFO host         stopped phase_b
+[623668] INFO host         unloaded phase_b
+[623668] INFO host         stopped phase_c_new
+[623668] INFO host         unloaded phase_c_new
+  ok   declared service dependencies suspend consumers first and resume providers first
+  ok   declared dependencies protect active consumers during stop/unload/reload
+  ok   dependency snapshot survives service unpublication and deferred reload into a hole
+  ok   failed consumer suspend protects its providers and reports failure through CLI
+  ok   failed provider resume keeps consumers suspended; a later resume retries
+  ok   published interface alone cannot start/resume a consumer above a suspended provider
+  ok   runtime lookup holds join the dependency graph; cycles fail before callbacks
+  ok   consumer without a suspend hook cannot be left active above a sleeping provider
+  ok   dependency edges follow a republished service to its current provider

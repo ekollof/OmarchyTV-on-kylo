@@ -1,0 +1,31 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+PEER_LINKS
+         15
+          4
+SOURCE_MODULES
+d4ff737dcbd9be2b628f2dd4eccf5d7a  /lib/modules/ntkndphdmiswitch.ko
+fded7005651e37b8a1b5e8e89f73f4ff  /vendor2/modules/ntkdriver_nondovi.ko
+UNCHANGED_BOOT
+ebb0aaaa-72a2-4410-9f8d-95b9249f8a90
+State:	S (sleeping)
+Pid:	1737
+NETWORK
+eth0      Link encap:Ethernet  HWaddr 70:54:B4:FE:70:C6  
+          inet addr:192.168.178.87  Bcast:192.168.178.255  Mask:255.255.255.0
+          inet6 addr: fe80::7254:b4ff:fefe:70c6/64 Scope:Link
+ACCESS
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      
+tcp        0      0 :::2323                 :::*                    LISTEN      
+tcp        0      0 :::22                   :::*                    LISTEN      
+PRIVACY
+b6eee64775233de846ca46fc6c48c3f9  /etc/hosts
+0b1cd32a9de2b0251f6252e6603db8b7  /conf/remotelf/aurora.elf
+4ebd0f9d7ee9f470afde8b0f2807522b  /conf/remotelf/keepalive.sh
+REJECT     all  --  0.0.0.0/0            216.183.117.0/24     reject-with icmp-port-unreachable
+CLEANUP
+ 6658 root      0:00 sh -c printf "PEER_LINKS\n"; dd if=/proc/1737/mem bs=1 skip=$((0x40b9000+4*0x128+0x150)) count=4 2>/dev/null | od -An -tu4; dd if=/proc/1737/mem bs=1 skip=$((0x40b9000+8*0x128+0x150)) count=4 2>/dev/null | od -An -tu4; printf "SOURCE_MODULES\n"; md5sum /lib/modules/ntkndphdmiswitch.ko /vendor2/modules/ntkdriver_nondovi.ko; printf "UNCHANGED_BOOT\n"; cat /proc/sys/kernel/random/boot_id; grep -E "^(State|Pid):" /proc/1737/status; printf "NETWORK\n"; ifconfig eth0 | head -3; printf "ACCESS\n"; netstat -lnt | grep -E ":22 |:2323 "; printf "PRIVACY\n"; md5sum /etc/hosts /conf/remotelf/aurora.elf /conf/remotelf/keepalive.sh; /vendor/iptables -L OUTPUT -n | grep 216.183.117; printf "CLEANUP\n"; rm -f /tmp/oa-cec-20261101/ntkcec /tmp/oa-cec-20261101/cec-probe /tmp/oa-cec-20261101/cec-probe.next; rmdir /tmp/oa-cec-20261101; ps w | grep -F cec-probe; true
+ 6676 root      0:00 grep -F cec-probe

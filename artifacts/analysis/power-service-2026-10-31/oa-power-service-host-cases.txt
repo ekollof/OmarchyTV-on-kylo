@@ -1,0 +1,17 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-strict/tests/power_cycle tests/power_cycle.c modules/power/power.c build-strict/core/check.o build-strict/core/control.o build-strict/core/host.o build-strict/core/module.o -ldl -pthread \
+  -Wl,--wrap=open -Wl,--wrap=write -Wl,--wrap=close -Wl,--wrap=sync
+[ 34965] ERR  power        RAM entry write returned -1
+[ 34966] ERR  power        RAM entry write returned 2
+[ 34966] ERR  power        open /sys/power/state failed
+[ 34966] ERR  host         phase_a: missing required service 'phase_b_service'
+[ 34966] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[ 34966] ERR  power        publish power: already published by module 0
+[ 34966] ERR  host         power: start() failed (-1)
+[ 34966] ERR  host         power: missing required service 'host.sleep'
+  ok   manual hooks never sleep; CLI/service enter last and notify ON only after restore
+  ok   preparation failure restores completed transitions without opening power state
+  ok   failed open/short/failed mem write still restore; failed writes never count as sleep
+  ok   restore failure reports error and RESUMING, never premature ON; hooks remain retryable
+  ok   disabled power and incomplete quiescence hooks refuse without I/O or state events
+  ok   service preserves preexisting suspended modules and restores prior state before ON
+  ok   failed publication retains peer service; missing coordinator refuses and releases holds

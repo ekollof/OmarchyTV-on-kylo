@@ -1,0 +1,3 @@
+  ok   native fd zero, exact open/close parameters, TV frame/poll transmission and independent reopen
+  ok   failed open/init unwind once, preserve primary errno and retain failed hardware-close ownership for retry
+  ok   raw RX accepts spec-valid broadcast audio; empty/error atomicity; TX EINTR is not replayed; final close consumes fd

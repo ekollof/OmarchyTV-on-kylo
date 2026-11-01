@@ -1,0 +1,251 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (514 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1262 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_nondovi/nondovi (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_nondovi/nondovi (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /ntkdriver_nondovi.ko (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFirmware.java '_ker_osd_get_dma_buf_fd' 'kosd_dma_buf_fd' 'kosd_dmabuf_ops_mmap'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)  
+INFO  DumpFirmware.java> PROGRAM ntkdriver_nondovi.ko MD5 fded7005651e37b8a1b5e8e89f73f4ff (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== _ker_osd_get_dma_buf_fd -> _ker_osd_get_dma_buf_fd @ 00237c98 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined _ker_osd_get_dma_buf_fd() (GhidraScript)  
+INFO  DumpFirmware.java> 
+void _ker_osd_get_dma_buf_fd(void)
+
+{
+  int iVar1;
+  uint *puVar2;
+  uint uVar3;
+  undefined8 uVar4;
+  undefined4 local_2c;
+  int local_28;
+  undefined4 uStack_24;
+  uint local_20;
+  undefined4 local_1c;
+  
+  uVar4 = __gnu_mcount_nc();
+  puVar2 = (uint *)((ulonglong)uVar4 >> 0x20);
+  if ((puVar2[1] & 0x200) == 0) {
+    uVar3 = kosd_dma_buf_fd(DAT_00237d48 + (int)uVar4 * 0x14);
+    *puVar2 = uVar3;
+    puVar2[1] = 2;
+    return;
+  }
+  uVar3 = *puVar2;
+  iVar1 = (int)uVar4 * 0x14;
+  local_2c = *(undefined4 *)(gast_osd_dmabuf + iVar1);
+  uStack_24 = *(undefined4 *)(gast_osd_dmabuf + iVar1 + 8);
+  local_20 = *(uint *)(gast_osd_dmabuf + iVar1 + 0xc);
+  local_1c = *(undefined4 *)(gast_osd_dmabuf + iVar1 + 0x10);
+  if (uVar3 < local_20) {
+    local_20 = local_20 - uVar3;
+  }
+  local_28 = *(int *)(gast_osd_dmabuf + iVar1 + 4) + uVar3;
+  uVar3 = kosd_dma_buf_fd(&local_2c,2);
+  *puVar2 = uVar3;
+  puVar2[1] = 2;
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== kosd_dma_buf_fd -> kosd_dma_buf_fd @ 0025e86c (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined kosd_dma_buf_fd() (GhidraScript)  
+INFO  DumpFirmware.java> 
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+uint kosd_dma_buf_fd(void)
+
+{
+  uint *puVar1;
+  uint *puVar2;
+  uint *puVar3;
+  undefined4 uVar4;
+  uint uVar5;
+  uint uVar6;
+  undefined8 uVar7;
+  char *local_3c;
+  undefined1 *local_38;
+  undefined **local_34;
+  uint local_30;
+  undefined4 local_2c;
+  undefined4 local_28;
+  uint *local_24;
+  
+  uVar7 = __gnu_mcount_nc();
+  uVar4 = (undefined4)((ulonglong)uVar7 >> 0x20);
+  puVar1 = (uint *)uVar7;
+  if (puVar1 == (uint *)0x0) {
+    return 0xfffffff2;
+  }
+  puVar2 = (uint *)kmem_cache_alloc_trace(_KER_Nerve_FSSeek,0x24080c0,0x24);
+  if (puVar2 == (uint *)0x0) {
+    uVar6 = 0xfffffff4;
+  }
+  else {
+    uVar6 = *puVar1;
+    puVar2[1] = 0;
+    *puVar2 = uVar6;
+    if (uVar6 == 0) {
+      puVar2[2] = 0;
+      puVar2[5] = 0;
+      puVar2[3] = 0;
+      puVar2[6] = 0;
+      local_30 = 0;
+    }
+    else {
+      uVar5 = puVar1[1];
+      local_30 = puVar1[3];
+      puVar3 = puVar2;
+      if (1 < uVar6) {
+        puVar3 = (uint *)puVar1[2];
+      }
+      puVar2[2] = uVar5;
+      if (1 < uVar6) {
+        uVar5 = puVar1[4];
+        puVar2[3] = (uint)puVar3;
+      }
+      puVar2[5] = local_30;
+      if (1 < uVar6) {
+        puVar2[6] = uVar5;
+        local_30 = uVar5 + local_30;
+      }
+      if (uVar6 == 1) {
+        puVar2[3] = 0;
+        puVar2[6] = 0;
+      }
+    }
+    local_3c = "ntkdriver";
+    local_38 = &__this_module;
+    local_34 = &kosd_dmabuf_ops;
+    local_28 = 0;
+    local_2c = uVar4;
+    local_24 = puVar2;
+    uVar5 = dma_buf_export(&local_3c);
+    if (uVar5 < 0xfffff001) {
+      uVar6 = dma_buf_fd(uVar5,uVar4);
+      if ((int)uVar6 < 0) {
+        dma_buf_put(uVar5);
+        kfree(puVar2);
+        return uVar6;
+      }
+    }
+    else {
+      kfree(puVar2);
+      uVar6 = uVar5;
+    }
+  }
+  return uVar6;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== kosd_dmabuf_ops_mmap -> kosd_dmabuf_ops_mmap @ 0025e4c0 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined kosd_dmabuf_ops_mmap() (GhidraScript)  
+INFO  DumpFirmware.java> 
+int kosd_dmabuf_ops_mmap(void)
+
+{
+  int *piVar1;
+  uint uVar2;
+  uint uVar3;
+  uint uVar4;
+  uint uVar5;
+  uint uVar6;
+  uint *puVar7;
+  uint *puVar8;
+  int iVar9;
+  undefined8 uVar10;
+  int local_34;
+  
+  uVar10 = __gnu_mcount_nc();
+  piVar1 = (int *)((ulonglong)uVar10 >> 0x20);
+  puVar8 = *(uint **)((int)uVar10 + 0x50);
+  iVar9 = *piVar1;
+  uVar2 = piVar1[0x13] << 0xc;
+  uVar6 = piVar1[1] - iVar9;
+  if (puVar8 == (uint *)0x0) {
+    local_34 = -0x16;
+  }
+  else {
+    piVar1[9] = piVar1[9] & 0xffffffc3;
+    if (uVar6 != 0) {
+      local_34 = 0;
+      uVar5 = 0;
+      puVar7 = puVar8 + 5;
+      do {
+        uVar3 = *puVar7;
+        if (uVar2 < uVar3) {
+          uVar4 = uVar3 - uVar2;
+          if (uVar6 <= uVar3 - uVar2) {
+            uVar4 = uVar6;
+          }
+          local_34 = remap_pfn_range(piVar1,iVar9,uVar2 + puVar7[-3] >> 0xc,uVar4,piVar1[9]);
+          iVar9 = iVar9 + uVar4;
+          uVar6 = uVar6 - uVar4;
+          uVar2 = 0;
+          if (local_34 < 0) {
+            return local_34;
+          }
+        }
+        else {
+          uVar2 = uVar2 - uVar3;
+        }
+        uVar5 = uVar5 + 1;
+        if (*puVar8 <= uVar5) {
+          return local_34;
+        }
+        puVar7 = puVar7 + 1;
+      } while (uVar6 != 0);
+      return local_34;
+    }
+    local_34 = 0;
+  }
+  return local_34;
+}
+
+ (GhidraScript)  

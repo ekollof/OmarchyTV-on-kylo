@@ -1,0 +1,25 @@
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .text:
+ eefc88 681d7901 00004844                    h.y...HD        
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .text:
+ 10c76a0 00000000 00408f40 681d7901 00000000  .....@.@h.y.....
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .text:
+ ef025c 681d7901 00007a44                    h.y...zD        
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .text:
+ 10c508c 681d7901 0cb85301 00007a44           h.y...S...zD    
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .text:
+ 1139990 681d7901 00000000                    h.y.....        

@@ -1,0 +1,4 @@
+[   371] ERR  host         audio_mixer: refusing to unload, service 'audio.mixer' still held (use --force)
+failed-resume diagnostic: rc=0 fds-before=8 after=9
+mixer_module: tests/mixer_module.c:105: basic: Assertion `resume_rc == -1 && after == count' failed.
+qemu: uncaught target signal 6 (Aborted) - core dumped

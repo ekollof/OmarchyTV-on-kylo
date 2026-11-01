@@ -1,0 +1,12 @@
+[753933] ERR  host         lookup capacity-test: hold table full, refusing unprotected pointer
+[753938] INFO host         loaded ticker v1.0 (build-tv-v2/modules/mod_ticker.so)
+[753938] INFO host         started ticker
+[753938] ERR  host         ticker: refusing to unload, service 'clock' still held (use --force)
+[753938] ERR  host         ticker: refusing to stop, service 'clock' still held
+[753939] ERR  host         ticker: refusing to unload, service 'clock' still held (use --force)
+[753939] INFO host         stopped ticker
+[753940] INFO host         unloaded ticker
+[753941] ERR  host         load 'build-tv-v2/tests/mod_failed_init.so': init() failed (-1)
+  ok   full hold table refuses a new pointer; repeat lookup reuses its hold
+  ok   stopping a held provider is refused until the consumer releases it
+  ok   failed init leaves no registered service or timer

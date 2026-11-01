@@ -1,0 +1,550 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+Read-only runtime preflight; interpreter /lib/ld-linux-armhf.so.3; module ABI 2
+CHECK /tmp/openaurora-check.9xcvwi/openaurora
+	libdl.so.2 => /lib/libdl.so.2 (0x46d40000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x46f00000)
+	libc.so.6 => /lib/libc.so.6 (0x46f30000)
+	/lib/ld-linux-armhf.so.3 (0x767c4000)
+
+	Version information:
+	/tmp/openaurora-check.9xcvwi/openaurora:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.9) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/openaurora-check.9xcvwi/openaurora
+CHECK /tmp/openaurora-check.9xcvwi/modules/mod_audio.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x76703000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x766ce000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x7663a000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x76620000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x765a4000)
+	libnteec.so => /vendor/lib/libnteec.so (0x76592000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x76558000)
+	libc.so.6 => /lib/libc.so.6 (0x7646b000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x7635d000)
+	libm.so.6 => /lib/libm.so.6 (0x762e5000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x762bd000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x76299000)
+	/lib/ld-linux-armhf.so.3 (0x76784000)
+	libdl.so.2 => /lib/libdl.so.2 (0x76286000)
+	librt.so.1 => /lib/librt.so.1 (0x76270000)
+
+	Version information:
+	/tmp/openaurora-check.9xcvwi/modules/mod_audio.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/openaurora-check.9xcvwi/modules/mod_audio.so
+CHECK /tmp/openaurora-check.9xcvwi/modules/mod_display.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x76668000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x76633000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x7659f000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x76585000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x76509000)
+	libnteec.so => /vendor/lib/libnteec.so (0x764f7000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x764bd000)
+	libc.so.6 => /lib/libc.so.6 (0x763d0000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x762c2000)
+	libm.so.6 => /lib/libm.so.6 (0x7624a000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x76222000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x761fe000)
+	/lib/ld-linux-armhf.so.3 (0x766eb000)
+	libdl.so.2 => /lib/libdl.so.2 (0x761eb000)
+	librt.so.1 => /lib/librt.so.1 (0x761d5000)
+
+	Version information:
+	/tmp/openaurora-check.9xcvwi/modules/mod_display.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/openaurora-check.9xcvwi/modules/mod_display.so
+CHECK /tmp/openaurora-check.9xcvwi/modules/mod_ir.so
+	libc.so.6 => /lib/libc.so.6 (0x76686000)
+	/lib/ld-linux-armhf.so.3 (0x76786000)
+
+	Version information:
+	/tmp/openaurora-check.9xcvwi/modules/mod_ir.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/openaurora-check.9xcvwi/modules/mod_ir.so
+CHECK /tmp/openaurora-check.9xcvwi/modules/mod_panel.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x76716000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x766e1000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x7664d000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x76633000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x765b7000)
+	libnteec.so => /vendor/lib/libnteec.so (0x765a5000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x7656b000)
+	libc.so.6 => /lib/libc.so.6 (0x7647e000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x76370000)
+	libm.so.6 => /lib/libm.so.6 (0x762f8000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x762d0000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x762ac000)
+	/lib/ld-linux-armhf.so.3 (0x76797000)
+	libdl.so.2 => /lib/libdl.so.2 (0x76299000)
+	librt.so.1 => /lib/librt.so.1 (0x76283000)
+
+	Version information:
+	/tmp/openaurora-check.9xcvwi/modules/mod_panel.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/openaurora-check.9xcvwi/modules/mod_panel.so
+CHECK /tmp/openaurora-check.9xcvwi/modules/mod_plat.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x766f9000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x766c4000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x76630000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x76616000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x7659a000)
+	libnteec.so => /vendor/lib/libnteec.so (0x76588000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x7654e000)
+	libc.so.6 => /lib/libc.so.6 (0x76461000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x76353000)
+	libm.so.6 => /lib/libm.so.6 (0x762db000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x762b3000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x7628f000)
+	/lib/ld-linux-armhf.so.3 (0x7677b000)
+	libdl.so.2 => /lib/libdl.so.2 (0x7627c000)
+	librt.so.1 => /lib/librt.so.1 (0x76266000)
+
+	Version information:
+	/tmp/openaurora-check.9xcvwi/modules/mod_plat.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/openaurora-check.9xcvwi/modules/mod_plat.so
+CHECK /tmp/openaurora-check.9xcvwi/modules/mod_power.so
+	libc.so.6 => /lib/libc.so.6 (0x766d2000)
+	/lib/ld-linux-armhf.so.3 (0x767d1000)
+
+	Version information:
+	/tmp/openaurora-check.9xcvwi/modules/mod_power.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/openaurora-check.9xcvwi/modules/mod_power.so
+CHECK /tmp/openaurora-check.9xcvwi/modules/mod_settings.so
+	libsqlite3.so.0 => /vendor/lib/libs/libsqlite3.so.0 (0x766be000)
+	libc.so.6 => /lib/libc.so.6 (0x765d1000)
+	libdl.so.2 => /lib/libdl.so.2 (0x765be000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x7659a000)
+	/lib/ld-linux-armhf.so.3 (0x7677e000)
+
+	Version information:
+	/tmp/openaurora-check.9xcvwi/modules/mod_settings.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libsqlite3.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+OK /tmp/openaurora-check.9xcvwi/modules/mod_settings.so
+CHECK /tmp/openaurora-check.9xcvwi/modules/mod_source.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x76684000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x7664f000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x765bb000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x765a1000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x76525000)
+	libnteec.so => /vendor/lib/libnteec.so (0x76513000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x764d9000)
+	libc.so.6 => /lib/libc.so.6 (0x763ec000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x762de000)
+	libm.so.6 => /lib/libm.so.6 (0x76266000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x7623e000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x7621a000)
+	/lib/ld-linux-armhf.so.3 (0x76705000)
+	libdl.so.2 => /lib/libdl.so.2 (0x76207000)
+	librt.so.1 => /lib/librt.so.1 (0x761f1000)
+
+	Version information:
+	/tmp/openaurora-check.9xcvwi/modules/mod_source.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/openaurora-check.9xcvwi/modules/mod_source.so
+CHECK /tmp/openaurora-check.9xcvwi/modules/mod_ticker.so
+	libc.so.6 => /lib/libc.so.6 (0x76609000)
+	/lib/ld-linux-armhf.so.3 (0x76708000)
+
+	Version information:
+	/tmp/openaurora-check.9xcvwi/modules/mod_ticker.so:
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/openaurora-check.9xcvwi/modules/mod_ticker.so
+CHECK /tmp/openaurora-check.9xcvwi/modules/mod_ui_console.so
+	libc.so.6 => /lib/libc.so.6 (0x765e0000)
+	/lib/ld-linux-armhf.so.3 (0x766df000)
+
+	Version information:
+	/tmp/openaurora-check.9xcvwi/modules/mod_ui_console.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/openaurora-check.9xcvwi/modules/mod_ui_console.so
+CHECK /tmp/openaurora-check.9xcvwi/modules/mod_ui_fb.so
+	libc.so.6 => /lib/libc.so.6 (0x76640000)
+	/lib/ld-linux-armhf.so.3 (0x76740000)
+
+	Version information:
+	/tmp/openaurora-check.9xcvwi/modules/mod_ui_fb.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/openaurora-check.9xcvwi/modules/mod_ui_fb.so
+Runtime preflight PASSED. No module entry/init/start, control socket or hardware access.
+This checks ELF metadata and library relocations, not device operation or display scanout.

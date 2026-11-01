@@ -1,0 +1,26 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-strict/tests/phases tests/phases.c build-strict/core/check.o build-strict/core/control.o build-strict/core/host.o build-strict/core/module.o -ldl -pthread
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=0 \
+    \
+  -fPIC -shared -o build-strict/tests/mod_phase_a.so tests/phases_fixture.c 
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=1 \
+    \
+  -fPIC -shared -o build-strict/tests/mod_phase_b.so tests/phases_fixture.c 
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=2 \
+    \
+  -fPIC -shared -o build-strict/tests/mod_phase_c.so tests/phases_fixture.c 
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=0 \
+  -DNO_PHASE_HOOKS  \
+  -fPIC -shared -o build-strict/tests/mod_phase_no_suspend.so tests/phases_fixture.c 
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=2 \
+   -DPHASE_REPLACEMENT \
+  -fPIC -shared -o build-strict/tests/mod_phase_replacement.so tests/phases_fixture.c 
+[298296] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[298296] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[298296] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[298296] INFO host         started phase_c
+[298296] INFO host         started phase_b
+[298296] INFO host         started phase_a
+[298296] WARN host         phase_c: suspend failed (-2)
+[298296] WARN host         phase_b: suspend failed (-2)
+phases: tests/phases.c:50: main: Assertion `command(h, "suspend") == 0 && !strcmp(o.sequence, "abc")' failed.
+make: *** [Makefile:165: check-phases] Aborted (core dumped)

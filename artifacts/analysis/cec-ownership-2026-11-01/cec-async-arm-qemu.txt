@@ -1,0 +1,14 @@
+  ok   blocked acquire is nonblocking; path/tables are copied; invalid I/O never touches authority
+  ok   send owns its frame; decoded/empty receives have distinct ticketed copied results
+  ok   failed hardware release retains fd and copied backend until an explicit successful retry
+  ok   shutdown drains blocked receive; failed-close generations retain session and untaken result until join
+[220271] ERR  host         cec: cleanup pending; retry stop/unload
+[220281] ERR  ticker       cec: refusing to unload, service 'cec.owner' still held (use --force)
+[220281] ERR  host         cec: cleanup pending; retry stop/unload
+[220284] ERR  host         cec: cleanup pending; retry stop/unload
+  ok   authority keeps an existing bit and writes 0xf011 low-byte|2 only when it is clear
+  ok   worker serializes authority, open and send; failed close stays owned until a later quiesce
+  ok   control reload/suspend/resume joins the idle worker; a held service stays loaded
+  ok   async open returns during blocked I/O, owns callback-table copy and applies bounded backpressure
+  ok   results are ticketed, owned and collected once; worker errors survive and failed OS close consumes fd
+  ok   quiesce rejects new work, drains accepted open and closes before join; result survives shutdown

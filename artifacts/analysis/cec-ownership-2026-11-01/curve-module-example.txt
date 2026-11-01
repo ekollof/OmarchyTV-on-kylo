@@ -1,0 +1,20 @@
+[636432] INFO host         openaurora starting, modules=build/modules
+[636432] INFO host         loaded audio_curve v0.1 (build/modules/mod_audio_curve.so)
+[636432] INFO host         started audio_curve
+openaurora: 1 module(s) loaded, control on (stdin only)
+name    audio_curve
+state   started
+version 0.1
+path    build/modules/mod_audio_curve.so
+requires
+services audio.curve:v1
+[636432] INFO host         stopped audio_curve
+[636432] INFO host         unloaded audio_curve
+[636432] INFO host         loaded audio_curve v0.1 (build/modules/mod_audio_curve.so)
+[636432] INFO host         started audio_curve
+[636432] INFO host         audio_curve: reloaded (started)
+ok
+bye
+[636432] INFO host         stopped audio_curve
+[636432] INFO host         unloaded audio_curve
+[636432] INFO host         openaurora stopped

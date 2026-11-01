@@ -1,0 +1,539 @@
+[497501] ERR  host         load 'build-strict/tests/mod_abi_v1.so': abi 1 != 2
+[497501] ERR  host         load 'build-strict/tests/mod_abi_short.so': descriptor size 16 < 160
+[497501] INFO host         loaded abi_extended v? (build-strict/tests/mod_abi_extended.so)
+[497501] INFO host         started abi_extended
+[497501] INFO host         stopped abi_extended
+[497501] INFO host         unloaded abi_extended
+[497501] INFO host         loaded post_worker vtest (build-strict/tests/mod_post_worker.so)
+[497501] INFO host         started post_worker
+[497501] INFO host         stopped post_worker
+[497501] INFO host         unloaded post_worker
+[497501] INFO host         loaded post_worker vtest (build-strict/tests/mod_post_worker.so)
+[497501] INFO host         post_worker: restored 4 bytes of state
+[497501] INFO host         started post_worker
+[497501] INFO host         post_worker: reloaded (started)
+[497502] INFO host         stopped post_worker
+[497502] INFO host         started post_worker
+[497502] INFO host         loaded ticker v1.0 (build-strict/modules/mod_ticker.so)
+[497502] INFO host         started ticker
+[497502] INFO ticker       stopped post_worker
+[497502] INFO ticker       unloaded post_worker
+[497502] INFO host         stopped ticker
+[497502] INFO host         unloaded ticker
+[497502] ERR  host         load 'build-strict/tests/mod_post_fail_init.so': init() failed (-1)
+[497502] INFO host         loaded post_worker vtest (build-strict/tests/mod_post_fail_start.so)
+[497502] ERR  host         post_worker: start() failed (-1)
+[497502] INFO host         unloaded post_worker
+  ok   old/short descriptors rejected before guard page; extended prefix accepted
+  ok   real worker post dispatches under its owner; registrations inherit ownership
+  ok   socket/CLI dispatcher reload preserves state, cancels old work, rejects old token
+  ok   queue saturation, stop-time worker post rejection, cleanup and restart
+  ok   an earlier post can unload another owner without dispatching its stale callback
+  ok   failed init/start cancel queued module code and close post acceptance
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         reload_fixture: restored 4 bytes of state
+[497503] INFO host         reload_fixture: reloaded (loaded)
+[497503] INFO host         started reload_fixture
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         reload_fixture: restored 4 bytes of state
+[497503] INFO host         reload_fixture: reloaded (loaded)
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         started reload_fixture
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         reload_fixture: restored 4 bytes of state
+[497503] INFO host         started reload_fixture
+[497503] INFO host         reload_fixture: reloaded (started)
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         started reload_fixture
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         reload_fixture: restored 4 bytes of state
+[497503] INFO host         reload_fixture: reloaded (suspended)
+[497503] INFO host         started reload_fixture
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         started reload_fixture
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         reload_fixture: restored 4 bytes of state
+[497503] INFO host         reload_fixture: reloaded (suspended)
+[497503] ERR  host         reload_fixture: start() failed (-1)
+[497503] WARN host         reload_fixture: resume failed (-1)
+[497503] INFO host         started reload_fixture
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         reload_fixture: restored 4 bytes of state
+[497503] INFO host         reload_fixture: reloaded (suspended)
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         started reload_fixture
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         started reload_fixture
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         reload_fixture: restored 4 bytes of state
+[497503] INFO host         reload_fixture: reloaded (suspended)
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         reload_fixture: restored 4 bytes of state
+[497503] INFO host         reload_fixture: reloaded (suspended)
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         started reload_fixture
+[497503] ERR  host         reload_fixture: cannot allocate saved state; reload canceled
+[497503] ERR  host         reload_fixture: state size 65537 exceeds 65536; reload canceled
+[497503] ERR  host         reload_fixture: saved state grew beyond capacity; reload canceled
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         started reload_fixture
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] ERR  host         reload_fixture: restore() failed or absent (-7)
+[497503] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         started reload_fixture
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (build-strict/tests/mod_reload_fixture.so)
+[497503] INFO host         reload_fixture: restored 4 bytes of state
+[497503] ERR  host         reload_fixture: start() failed (-1)
+[497503] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-9TirMb/module.so)
+[497503] INFO host         started reload_fixture
+[497503] INFO host         stopped reload_fixture
+[497503] INFO host         unloaded reload_fixture
+[497503] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-9TirMb/module.so)
+[497503] ERR  host         reload_fixture: restore() failed or absent (-1)
+[497503] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[497504] INFO host         unloaded reload_fixture
+[497504] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-9TirMb/module.so)
+[497504] INFO host         started reload_fixture
+[497504] INFO host         stopped reload_fixture
+[497504] INFO host         unloaded reload_fixture
+[497504] INFO host         loaded reload_renamed vtest (/tmp/openaurora-reload-9TirMb/module.so)
+[497504] ERR  host         reload_fixture: replacement name 'reload_renamed' differs
+[497504] WARN host         reload_renamed: force unload, consumers may hold stale pointers
+[497504] INFO host         unloaded reload_renamed
+  ok   never-started and stopped reload preserve loaded state without activation
+  ok   running reload restores state and starts the new instance
+  ok   suspended reload defers start until wake; start on suspended resumes once
+  ok   deferred start can fail/retry or be stopped before touching hardware
+  ok   repeated suspended reload purges posts; unload skips stop on never-started candidate
+  ok   allocation/oversized/growing state failures preserve the working module
+  ok   restore failure is reported and candidate registrations/posts are swept
+  ok   replacement start failure cleans the candidate instead of leaving partial state
+  ok   changed binary without restore or with a new identity is rejected and cleaned
+[497504] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497504] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497504] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497504] INFO host         started phase_c
+[497504] INFO host         started phase_b
+[497504] INFO host         started phase_a
+[497504] INFO host         stopped phase_a
+[497504] INFO host         unloaded phase_a
+[497504] INFO host         stopped phase_b
+[497504] INFO host         unloaded phase_b
+[497504] INFO host         stopped phase_c
+[497504] INFO host         unloaded phase_c
+[497504] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497504] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497504] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497504] INFO host         started phase_c
+[497504] INFO host         started phase_b
+[497504] INFO host         started phase_a
+[497504] ERR  host         phase_b: required by active module 'phase_a'
+[497504] ERR  host         phase_b: required by active module 'phase_a'
+[497504] ERR  host         phase_b: required by active module 'phase_a'
+[497504] INFO host         stopped phase_a
+[497504] INFO host         unloaded phase_a
+[497504] INFO host         stopped phase_b
+[497504] INFO host         unloaded phase_b
+[497504] INFO host         stopped phase_c
+[497504] INFO host         unloaded phase_c
+[497504] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497504] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497504] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497504] INFO host         started phase_c
+[497504] INFO host         started phase_b
+[497504] INFO host         started phase_a
+[497504] INFO host         stopped phase_a
+[497504] INFO host         unloaded phase_a
+[497504] INFO host         stopped phase_b
+[497504] INFO host         unloaded phase_b
+[497504] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497504] INFO host         phase_b: reloaded (suspended)
+[497504] INFO host         started phase_b
+[497504] INFO host         stopped phase_b
+[497504] INFO host         unloaded phase_b
+[497504] INFO host         stopped phase_c
+[497504] INFO host         unloaded phase_c
+[497505] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497505] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497505] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497505] INFO host         started phase_c
+[497505] INFO host         started phase_b
+[497505] INFO host         started phase_a
+[497505] WARN host         phase_b: suspend failed (-7)
+[497505] INFO host         stopped phase_a
+[497505] INFO host         unloaded phase_a
+[497505] INFO host         stopped phase_b
+[497505] INFO host         unloaded phase_b
+[497505] INFO host         stopped phase_c
+[497505] INFO host         unloaded phase_c
+[497505] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497505] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497505] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497505] INFO host         started phase_c
+[497505] INFO host         started phase_b
+[497505] INFO host         started phase_a
+[497505] WARN host         phase_c: resume failed (-7)
+[497505] INFO host         stopped phase_a
+[497505] INFO host         unloaded phase_a
+[497505] INFO host         stopped phase_b
+[497505] INFO host         unloaded phase_b
+[497505] INFO host         stopped phase_c
+[497505] INFO host         unloaded phase_c
+[497505] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497505] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497505] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497505] INFO host         started phase_c
+[497505] INFO host         started phase_b
+[497505] INFO host         started phase_a
+[497505] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[497505] INFO host         stopped phase_b
+[497505] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[497505] INFO host         started phase_b
+[497505] INFO host         stopped phase_a
+[497505] INFO host         unloaded phase_a
+[497505] INFO host         stopped phase_b
+[497505] INFO host         unloaded phase_b
+[497505] INFO host         stopped phase_c
+[497505] INFO host         unloaded phase_c
+[497505] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497505] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497505] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497505] INFO host         started phase_c
+[497505] INFO host         started phase_b
+[497505] INFO host         started phase_a
+[497505] ERR  host         module dependency cycle; lifecycle transition canceled
+[497505] INFO host         stopped phase_a
+[497505] INFO host         unloaded phase_a
+[497505] INFO host         stopped phase_b
+[497505] INFO host         unloaded phase_b
+[497505] INFO host         stopped phase_c
+[497505] INFO host         unloaded phase_c
+[497505] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_no_suspend.so)
+[497505] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497505] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497505] INFO host         started phase_c
+[497505] INFO host         started phase_b
+[497505] INFO host         started phase_a
+[497505] ERR  host         phase_b: consumer 'phase_a' is still active
+[497505] INFO host         stopped phase_a
+[497505] INFO host         unloaded phase_a
+[497505] INFO host         stopped phase_b
+[497505] INFO host         unloaded phase_b
+[497505] INFO host         stopped phase_c
+[497505] INFO host         unloaded phase_c
+[497505] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497505] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497505] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497505] INFO host         started phase_c
+[497505] INFO host         started phase_b
+[497505] INFO host         started phase_a
+[497505] INFO host         stopped phase_c
+[497505] INFO host         unloaded phase_c
+[497505] INFO host         loaded phase_c_new vtest (build-strict/tests/mod_phase_replacement.so)
+[497505] INFO host         started phase_c_new
+[497505] INFO host         stopped phase_a
+[497505] INFO host         unloaded phase_a
+[497505] INFO host         stopped phase_b
+[497505] INFO host         unloaded phase_b
+[497505] INFO host         stopped phase_c_new
+[497505] INFO host         unloaded phase_c_new
+[497505] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497505] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497505] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497505] INFO host         started phase_c
+[497505] INFO host         started phase_b
+[497505] INFO host         started phase_a
+[497505] INFO host         stopped phase_a
+[497505] INFO host         unloaded phase_a
+[497505] INFO host         stopped phase_b
+[497505] INFO host         unloaded phase_b
+[497505] INFO host         stopped phase_c
+[497505] INFO host         unloaded phase_c
+[497505] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497505] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497505] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497505] INFO host         started phase_c
+[497505] INFO host         started phase_b
+[497505] INFO host         started phase_a
+[497505] WARN host         phase_b: suspend failed (-7)
+[497505] INFO host         stopped phase_a
+[497505] INFO host         unloaded phase_a
+[497505] INFO host         stopped phase_b
+[497505] INFO host         unloaded phase_b
+[497505] INFO host         stopped phase_c
+[497505] INFO host         unloaded phase_c
+[497505] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497505] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497505] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497505] INFO host         started phase_c
+[497505] INFO host         started phase_b
+[497505] INFO host         started phase_a
+[497505] INFO host         stopped phase_a
+[497505] INFO host         unloaded phase_a
+[497505] INFO host         stopped phase_b
+[497505] INFO host         unloaded phase_b
+[497505] INFO host         stopped phase_c
+[497505] INFO host         unloaded phase_c
+[497505] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497505] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497505] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497505] INFO host         started phase_c
+[497505] INFO host         started phase_b
+[497505] INFO host         started phase_a
+[497505] WARN host         phase_b: sleep-cycle restore failed (-7)
+[497505] ERR  host         phase_a: missing required service 'phase_b_service'
+[497505] WARN host         phase_a: sleep-cycle restore failed (-1)
+[497505] INFO host         stopped phase_a
+[497505] INFO host         unloaded phase_a
+[497505] INFO host         stopped phase_b
+[497506] INFO host         unloaded phase_b
+[497506] INFO host         stopped phase_c
+[497506] INFO host         unloaded phase_c
+[497506] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497506] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497506] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497506] INFO host         started phase_c
+[497506] INFO host         started phase_b
+[497506] INFO host         started phase_a
+[497506] INFO host         stopped phase_a
+[497506] INFO host         unloaded phase_a
+[497506] INFO host         stopped phase_b
+[497506] INFO host         unloaded phase_b
+[497506] INFO host         stopped phase_c
+[497506] INFO host         unloaded phase_c
+[497506] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_no_suspend.so)
+[497506] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497506] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497506] INFO host         started phase_c
+[497506] INFO host         started phase_b
+[497506] INFO host         started phase_a
+[497506] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[497506] INFO host         stopped phase_a
+[497506] INFO host         unloaded phase_a
+[497506] INFO host         stopped phase_b
+[497506] INFO host         unloaded phase_b
+[497506] INFO host         stopped phase_c
+[497506] INFO host         unloaded phase_c
+[497506] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497506] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497506] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497506] INFO host         started phase_c
+[497506] INFO host         started phase_b
+[497506] INFO host         started phase_a
+[497506] INFO host         stopped phase_a
+[497506] INFO host         unloaded phase_a
+[497506] INFO host         stopped phase_b
+[497506] INFO host         unloaded phase_b
+[497506] INFO host         stopped phase_c
+[497506] INFO host         unloaded phase_c
+[497506] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497506] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497506] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497506] INFO host         started phase_c
+[497506] INFO host         started phase_b
+[497506] INFO host         started phase_a
+[497506] INFO host         stopped phase_a
+[497506] INFO host         unloaded phase_a
+[497506] INFO host         stopped phase_b
+[497506] INFO host         unloaded phase_b
+[497506] INFO host         stopped phase_c
+[497506] INFO host         unloaded phase_c
+[497506] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[497506] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[497506] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[497506] INFO host         started phase_c
+[497506] INFO host         started phase_b
+[497506] INFO host         started phase_a
+[497506] ERR  host         module dependency cycle; lifecycle transition canceled
+[497506] INFO host         stopped phase_a
+[497506] INFO host         unloaded phase_a
+[497506] INFO host         stopped phase_b
+[497506] INFO host         unloaded phase_b
+[497506] INFO host         stopped phase_c
+[497506] INFO host         unloaded phase_c
+  ok   declared service dependencies suspend consumers first and resume providers first
+  ok   declared dependencies protect active consumers during stop/unload/reload
+  ok   dependency snapshot survives service unpublication and deferred reload into a hole
+  ok   failed consumer suspend protects its providers and reports failure through CLI
+  ok   failed provider resume keeps consumers suspended; a later resume retries
+  ok   published interface alone cannot start/resume a consumer above a suspended provider
+  ok   runtime lookup holds join the dependency graph; cycles fail before callbacks
+  ok   consumer without a suspend hook cannot be left active above a sleeping provider
+  ok   dependency edges follow a republished service to its current provider
+  ok   sleep cycle enters last, restores automatically and pins modules/rejects nested cycles
+  ok   failed preparation skips entry and restores only successful transitions
+  ok   entry failure still restores modules and retains its distinct error
+  ok   restoration failure remains visible; dependent consumers stay suspended and retry works
+  ok   cycle ledger preserves modules already suspended before the request
+  ok   missing hooks refuse before callbacks rather than assuming quiescence
+  ok   pending shutdown and stale backend owner reject before preparation
+  ok   shutdown arriving during preparation cancels entry and still restores modules
+  ok   dependency cycles reject sleep before callbacks or backend entry
+[497507] ERR  power        RAM entry write returned -1
+[497507] ERR  power        RAM entry write returned 2
+[497507] ERR  power        open /sys/power/state failed
+[497507] ERR  host         phase_a: missing required service 'phase_b_service'
+[497507] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[497507] ERR  power        publish power: already published by module 0
+[497507] ERR  host         power: start() failed (-1)
+[497507] ERR  host         power: missing required service 'host.sleep'
+  ok   manual hooks never sleep; CLI/service enter last and notify ON only after restore
+  ok   preparation failure restores completed transitions without opening power state
+  ok   failed open/short/failed mem write still restore; failed writes never count as sleep
+  ok   restore failure reports error and RESUMING, never premature ON; hooks remain retryable
+  ok   disabled power and incomplete quiescence hooks refuse without I/O or state events
+  ok   service preserves preexisting suspended modules and restores prior state before ON
+  ok   failed publication retains peer service; missing coordinator refuses and releases holds
+[497508] ERR  ui_clock     timer table full
+[497508] ERR  host         ui_clock: missing required service 'clock'
+[497508] ERR  ui_clock     timer table full
+[497508] ERR  host         ui_clock: start() failed (-1)
+[497508] ERR  ui_clock     publish ui.clock: already published by module 0
+[497508] ERR  host         ui_clock: start() failed (-1)
+[497508] ERR  host         ticker: required by active module 'ui_clock'
+  ok   FROST quantum boundaries, correction carry and raw/corrected 90000000-ms rollover
+  ok   real DSO reload preserves clock state, replaces owned timer and rejects invalid snapshots atomically
+  ok   suspend removes timer; failed resume can retry without losing elapsed time/correction
+  ok   ARM raw 32-bit truncation and strict > period comparison are preserved
+  ok   missing raw clock, full timer table and publication collision clean up; start can retry
+  ok   real ticker/ui_clock dependency chain quiesces both timers and resumes in provider order
+  ok   owned one-second sampling advances idle clock state without a client query
+  ok   all 256 headers / 1..16-byte frame round trips, poll distinction and atomic bounds rejection
+  ok   all audio-status bytes: mute bit, 0..100 percent, unknown 127 and reserved rejection
+  ok   System Audio / key golden frames, operand counts, addressing and explicit unsupported scope
+  ok   all six ARC directions, broadcast rejection and physical-address tree rules
+  ok   verified HAL request blocks, clamping, scalar failures and unchanged cached state on failure
+  ok   state handoff reapplies volume/mute; invalid snapshots reject atomically
+  ok   unknown volume/mute snapshot never applies guessed zero defaults
+  ok   publication collision preserves peer; failed platform and disabled audio never call HAL
+  ok   each audio-prelude failure gates later hardware stages; success calls prelude once before platform stages
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-strict/tests/cec_packet tests/cec_packet.c common/cec_packet.c common/cec.c
+  ok   all 256 headers / 1..16-byte frames through raw and VPL receive layouts; canaries intact
+  ok   VPL outgoing TV commands preserve operands; zero tail; foreign initiator and poll reject atomically
+  ok   mandatory 16-byte storage, empty NULL-buffer read, bad pointer/length/status never change output
+  ok   ioctl success cannot hide rejected driver status; malformed VPL metadata rejects atomically
+  ok   native fd zero, exact open/close parameters, TV frame/poll transmission and independent reopen
+  ok   failed open/init unwind once, preserve primary errno and retain failed hardware-close ownership for retry
+  ok   raw RX accepts spec-valid broadcast audio; empty/error atomicity; TX EINTR is not replayed; final close consumes fd
+[497682] INFO host         control socket /tmp/oa-control-BR8eV8/control.sock
+  ok   full list/status replies reach a Unix socket client intact
+  ok   control replies stay bounded for full tables and tiny buffers
+  ok   short writes, EINTR/EAGAIN, split/pipelined requests and half-close drain
+  ok   stalled reader cannot block another client; queued replies drain in order
+  ok   EPIPE and disconnected readers do not raise SIGPIPE or kill host
+  ok   overlong/NUL lines rejected whole; next valid and 511-byte commands work
+  ok   repeated stop/start, failed watch registration and socket identity cleanup
+  ok   default current-frame presentation commits every time, including after resume
+  ok   single-buffer presentation also commits through FBIOPAN_DISPLAY
+  ok   sync/commit failures propagate and retry the same frame before rotation
+/dev/fb1: 0x0 virt 0x0 bpp 0 offset 0,0
+primary mapping: physical=0 bytes=0 stride=0
+current MAU: 1 (alternate memory selected)
+region: [0]=0(0) [1]=0(0) [2]=0(0) [3]=0(0) [4]=0(0) [5]=0(0) [6]=0(0) [7]=0(0)
+  ok   fbregion opens read-only and submits only screeninfo/MAU/region GET requests
+  ok   BinSVG animation golden fields/sign extension; all truncated prefixes reject safely
+  ok   resource CRC32 vectors, ELF segment translation/BSS/EOF, bounded dynamic symbols
+  ok   valid module passes; constructors/startup do not run; no control socket
+  ok   ABI mismatch, legacy/no-note, missing entry and invalid ELF reject
+  ok   unresolved function rejects even when glibc trace exits zero
+  ok   real DT_NEEDED dependency passes with RPATH, rejects when missing
+  ok   present library with incompatible symbol version rejects
+  ok   empty/missing module directory rejects
+starting build-strict/openaurora
+1) both modules started
+  ok   ticker started
+  ok   ui_console listed
+2) panel degrades gracefully without the vendor HAL
+  ok   panel started
+  ok   warned about missing HAL
+3) power refuses to suspend on a non-TV host
+  ok   power service published
+  ok   standby disabled for safety
+4) settings reads the real database read-only
+  ok   settings service published
+  ok   opened read-only
+5) clock service published
+  ok   clock service present
+6) UI state survives a hot reload
+  ok   reload logged
+  ok   state handed over
+7) unload removes it from the table
+  ok   ui_console gone
+8) load + start again
+  ok   load ok
+  ok   start ok
+  ok   ui_console back
+9) stop/start a provider
+  ok   stop ticker
+  ok   start ticker
+10) missing module fails cleanly
+  ok   load fails
+11) a module that requires a service is refused without it
+  ok   display refused without plat
+12) suspend/resume hooks
+  ok   manual quiescence hooks
+  ok   power is quiescent without entering RAM
+  ok   resume
+  ok   standby refuses disabled host power
+  ok   power reload keeps coordinated service available
+13) clean shutdown
+  ok   exit code 0
+all tests passed
+[505800] ERR  host         lookup capacity-test: hold table full, refusing unprotected pointer
+[505800] INFO host         loaded ticker v1.0 (build-strict/modules/mod_ticker.so)
+[505800] INFO host         started ticker
+[505800] ERR  host         ticker: refusing to unload, service 'clock' still held (use --force)
+[505800] ERR  host         ticker: refusing to stop, service 'clock' still held
+[505800] ERR  host         ticker: refusing to unload, service 'clock' still held (use --force)
+[505800] INFO host         stopped ticker
+[505800] INFO host         unloaded ticker
+[505800] ERR  host         load 'build-strict/tests/mod_failed_init.so': init() failed (-1)
+  ok   full hold table refuses a new pointer; repeat lookup reuses its hold
+  ok   stopping a held provider is refused until the consumer releases it
+  ok   failed init leaves no registered service or timer
+  ok   heartbeat advances; SIGTERM exits; fallback re-arms watchdog
+  ok   blocked module callback stops heartbeat and triggers fallback
+  ok   SIGSTOPped child is killed and reaped
+  ok   blocking module startup has a deadline
+  ok   failed present never acknowledges readiness
+  ok   old receipts cannot keep a new process alive
+  ok   three failures remove the opt-in marker
+  ok   safe marker bypasses takeover
+  ok   safe marker during takeover returns to vendor UI
+  ok   failed watchdog disable skips child and falls back
+  ok   idle event loop heartbeats and exits on SIGTERM

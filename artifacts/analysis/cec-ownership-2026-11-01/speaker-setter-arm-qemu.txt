@@ -1,0 +1,9 @@
+  ok   exact vendor netlink golden frames, packed unaligned binary parameters, all zero tails and canaries
+  ok   invalid port/device/table/pointer/count/capacity rejects without changing output
+  ok   complete kernel reply / optional alignment padding; malformed lengths, identity, command and NUL reject atomically
+  ok   fd zero, exact socket flags/process binding, stale-reply drain, matching reply and idempotent close
+  ok   socket/bind failure unwind and primary errno; invalid I/O table; final close error consumes fd and permits reopen
+  ok   table/selection dispatch with exact pointer/indices; invalid input never sends; short send rejects and EINTR never replays
+  ok   direct OPU-gain dispatch uses bounded channel units; invalid/short/EINTR/closed-session paths never replay or fabricate an ACK
+  ok   bounded drain, timeout/error recovery, no wait replay, kernel peer/truncation/device/shape rejection and atomic query output
+  ok   inherited child cannot query parent's session; child close leaves parent ownership usable

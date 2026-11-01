@@ -1,0 +1,12 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:0
+ALSA read failed: No such file or directory (-2)
+MIXER_EXIT=1
+ebb0aaaa-72a2-4410-9f8d-95b9249f8a90
+State:	S (sleeping)
+Pid:	1737

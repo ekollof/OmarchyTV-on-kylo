@@ -1,0 +1,20 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+staging-removed
+accidental-reader-stopped
+ebb0aaaa-72a2-4410-9f8d-95b9249f8a90
+State:	S (sleeping)
+Pid:	1737
+eth0      Link encap:Ethernet  HWaddr 70:54:B4:FE:70:C6  
+          inet addr:192.168.178.87  Bcast:192.168.178.255  Mask:255.255.255.0
+          inet6 addr: fe80::7254:b4ff:fefe:70c6/64 Scope:Link
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      
+tcp        0      0 :::2323                 :::*                    LISTEN      
+tcp        0      0 :::22                   :::*                    LISTEN      
+b6eee64775233de846ca46fc6c48c3f9  /etc/hosts
+0b1cd32a9de2b0251f6252e6603db8b7  /conf/remotelf/aurora.elf
+4ebd0f9d7ee9f470afde8b0f2807522b  /conf/remotelf/keepalive.sh
+REJECT     all  --  0.0.0.0/0            216.183.117.0/24     reject-with icmp-port-unreachable

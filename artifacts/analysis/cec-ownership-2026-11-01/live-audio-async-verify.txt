@@ -1,0 +1,7 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+75264 /tmp/oa-audio-async-20261101/audio_async
+71a53754d8c48fe97cfb65580c0f8d2c  /tmp/oa-audio-async-20261101/audio_async

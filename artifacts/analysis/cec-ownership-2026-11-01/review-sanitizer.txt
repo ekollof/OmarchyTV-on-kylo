@@ -1,0 +1,133 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -UOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined,float-cast-overflow -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-review-san/tests/audio-mods/mod_audio.so modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c tests/audio_hal_stub.c -pthread -fsanitize=address,undefined,float-cast-overflow
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined,float-cast-overflow -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-review-san/modules/mod_cec.so modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c -pthread -fsanitize=address,undefined,float-cast-overflow
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined,float-cast-overflow -fno-omit-frame-pointer -fsanitize=address,undefined,float-cast-overflow -o build-review-san/tests/owner_races tests/owner_races.c common/audio_owner.c common/audio_client.c common/audio_netlink.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c -ldl -pthread
+[370671] INFO host         loaded ui_anim v1 (build-review-san/modules/mod_ui_anim.so)
+[370671] INFO host         started ui_anim
+[370671] ERR  ui_anim      timer table full
+[370671] WARN host         ui_anim: resume failed (-1)
+[370671] INFO host         stopped ui_anim
+[370671] INFO host         unloaded ui_anim
+  ok   animation completion/finalise callbacks can replace their own slot
+  ok   real animation DSO restores its timer after suspend; timer allocation failure is retryable
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined,float-cast-overflow -fno-omit-frame-pointer -Icore -fsanitize=address,undefined,float-cast-overflow -o build-review-san/tests/cec_owner tests/cec_owner.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c build-review-san/core/check.o build-review-san/core/control.o build-review-san/core/host.o build-review-san/core/module.o -ldl -pthread
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined,float-cast-overflow -fno-omit-frame-pointer -fsanitize=address,undefined,float-cast-overflow -o build-review-san/tests/audio_owner tests/audio_owner.c common/audio_owner.c common/audio_client.c common/audio_netlink.c -ldl -pthread
+[371411] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[371411] INFO host         started quiesce_fixture
+[371411] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371411] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[371411] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371411] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[371411] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371412] INFO host         stopped quiesce_fixture
+[371412] INFO host         unloaded quiesce_fixture
+[371412] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[371412] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371412] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[371412] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371412] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[371412] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371412] INFO host         stopped quiesce_fixture
+[371412] INFO host         unloaded quiesce_fixture
+[371412] ERR  host         load 'build-review-san/tests/mod_quiesce_fixture.so': init() failed (-1)
+[371412] ERR  host         quiesce_fixture: init cleanup pending; retry unload
+[371412] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[371412] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371412] INFO host         stopped quiesce_fixture
+[371412] INFO host         unloaded quiesce_fixture
+[371412] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[371412] ERR  host         quiesce_fixture: start() failed (-1)
+[371412] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371412] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[371412] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371412] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[371412] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371412] INFO host         stopped quiesce_fixture
+[371412] INFO host         unloaded quiesce_fixture
+[371412] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[371412] INFO host         started quiesce_fixture
+[371412] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371412] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[371412] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371412] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[371412] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371412] INFO host         stopped quiesce_fixture
+[371412] INFO host         unloaded quiesce_fixture
+[371412] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[371412] INFO host         started quiesce_fixture
+[371412] INFO host         stopped quiesce_fixture
+[371412] INFO host         unloaded quiesce_fixture
+[371412] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[371412] INFO host         quiesce_fixture: reloaded (suspended)
+[371412] ERR  host         quiesce_fixture: start() failed (-1)
+[371412] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371412] WARN host         quiesce_fixture: resume failed (-1)
+[371412] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[371413] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371413] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[371413] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371413] INFO host         stopped quiesce_fixture
+[371413] INFO host         unloaded quiesce_fixture
+[371413] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[371413] INFO host         started quiesce_fixture
+[371413] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371413] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371413] INFO host         stopped quiesce_fixture
+[371413] INFO host         unloaded quiesce_fixture
+[371413] ERR  host         load 'quiesce_fixture': host is not accepting modules
+[371413] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[371413] INFO host         started quiesce_fixture
+[371413] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371413] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371413] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371413] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[371443] INFO host         stopped quiesce_fixture
+[371443] INFO host         unloaded quiesce_fixture
+[371443] INFO host         loaded quiesce_fixture v1 (build-review-san/tests/mod_quiesce_fixture.so)
+[371443] INFO host         started quiesce_fixture
+[371443] ERR  host         quiesce_fixture: refusing to stop, service 'test.quiesce.instance' still held
+[371443] ERR  host         quiesce_fixture: refusing to unload, service 'test.quiesce.instance' still held (use --force)
+[371443] ERR  host         quiesce_fixture: shutdown left module loaded (state started, cleanup_pending 0)
+[371444] INFO host         stopped quiesce_fixture
+[371444] INFO host         unloaded quiesce_fixture
+  ok   running veto retains DSO/posts/services; force cannot bypass; completion permits unload
+  ok   never-started init resources protected by gate
+  ok   failed init retained and discoverable for cleanup, never activated
+  ok   failed partial start retains callback code until completion
+  ok   suspended instance cannot resume while cleanup is pending
+  ok   failed deferred activation retains resources and eventually runs stop
+  ok   shutdown dispatches the gate completion and retries unload before return
+  ok   shutdown waits for a worker completion post before unload
+  ok   shutdown reports a held module and does not dlclose it
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -UOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined,float-cast-overflow -fno-omit-frame-pointer -fsanitize=address,undefined,float-cast-overflow -o build-review-san/tests/audio tests/audio.c modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c -pthread
+[371532] ERR  host         audio: cleanup pending; retry stop/unload
+  ok   suspend failed while the HAL is enabled; the module stayed started and the host stayed up
+[371554] ERR  host         cec: cleanup pending; retry stop/unload
+[371555] ERR  host         cec: cleanup pending; retry stop/unload
+[371555] ERR  host         audio: cleanup pending; retry stop/unload
+[371555] ERR  host         plat: required by active module 'audio'
+[371555] ERR  host         cec: cleanup pending; retry stop/unload
+  ok   System Audio mutes local volume; ARC follows 1.4 direction; route survives reload
+[371568] ERR  host         cec: cleanup pending; retry stop/unload
+[371572] ERR  ticker       cec: refusing to unload, service 'cec.owner' still held (use --force)
+[371572] ERR  host         cec: cleanup pending; retry stop/unload
+[371573] ERR  host         cec: cleanup pending; retry stop/unload
+[371573] ERR  host         cec: cleanup pending; retry stop/unload
+[371573] ERR  host         cec: cleanup pending; retry stop/unload
+[371573] ERR  host         cec: cleanup pending; retry stop/unload
+  ok   authority keeps an existing bit and writes 0xf011 low-byte|2 only when it is clear
+  ok   worker serializes authority, open and send; failed close stays owned until a later quiesce
+  ok   control reload/suspend/resume joins the idle worker; a held service stays loaded
+  ok   CEC/audio in-flight opens stay worker-owned; quiesce returns before I/O completion
+  ok   audio worker rejects a real socket, runs gain off the caller, and closes on quiesce
+  ok   all 256 headers / 1..16-byte frame round trips, poll distinction and atomic bounds rejection
+  ok   all audio-status bytes: mute bit, 0..100 percent, unknown 127 and reserved rejection
+  ok   System Audio / key golden frames, operand counts, addressing and explicit unsupported scope
+  ok   all six ARC directions, broadcast rejection and physical-address tree rules
+  ok   spec overrides vendor filter: directed OSD name, all printable-ASCII boundaries, direct/broadcast System Audio Mode
+  ok   physical-address broadcast, CEC 1.4 device types, directed power-status values and explicit unsupported scope
+  ok   verified HAL request blocks, clamping, scalar failures and unchanged cached state on failure
+  ok   state handoff reapplies volume/mute; invalid snapshots reject atomically
+  ok   unknown volume/mute snapshot never applies guessed zero defaults
+  ok   publication collision preserves peer; failed platform and disabled audio never call HAL
+  ok   missing session I/O fails before a socket; enabled HAL refuses suspend; idle owner joins
+  ok   each audio-prelude failure gates later hardware stages; success calls prelude once before platform stages

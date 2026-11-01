@@ -1,0 +1,13 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+staging removed
+after uptime: 2709.33 10356.53
+after boot: ebb0aaaa-72a2-4410-9f8d-95b9249f8a90
+vendor pid: 1899 1737
+native pid: a898384df076572cf377749f25427689  /buffer/openaurora/openaurora
+-rw-------    1 root     root             0 Oct 31 11:56 /conf/coredumpnoreset
+-rw-------    1 root     root             0 Oct 31 11:56 /conf/oa_safe
+oa_boot absent

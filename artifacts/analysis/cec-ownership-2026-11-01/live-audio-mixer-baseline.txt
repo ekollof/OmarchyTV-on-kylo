@@ -1,0 +1,10 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+c842bad804302ec822076c3d9d3ce31d  /vendor/lib/libNDAL3.so
+4e7a0000-4e7df000 r-xp 00000000 fd:02 5293       /vendor/lib/libNDAL3.so
+4e7df000-4e7ee000 ---p 0003f000 fd:02 5293       /vendor/lib/libNDAL3.so
+4e7ee000-4e7f8000 rw-p 0003e000 fd:02 5293       /vendor/lib/libNDAL3.so
+ebb0aaaa-72a2-4410-9f8d-95b9249f8a90

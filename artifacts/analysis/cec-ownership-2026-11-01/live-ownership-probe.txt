@@ -1,0 +1,17 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+exclusive open: errno=1 (Operation not permitted)
+CEC_OWNER_AFTER
+ 01 00 00 00 bd 67 80 00
+VIDEO_FDS
+/proc/1737/fd/7 /dev/video24
+/proc/1737/fd/79 /dev/video28
+/proc/1737/fd/82 /dev/video21
+/proc/1737/fd/83 /dev/video28
+NDAL_MAP
+4db50000-4db72000 r-xp 00000000 fd:02 5294       /vendor/lib/libNDAL_EX.so
+4db72000-4db81000 ---p 00022000 fd:02 5294       /vendor/lib/libNDAL_EX.so
+4db81000-4db82000 rw-p 00021000 fd:02 5294       /vendor/lib/libNDAL_EX.so

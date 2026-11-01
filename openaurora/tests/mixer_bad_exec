@@ -1,0 +1,4 @@
+#!/does/not/exist/oa-loader
+# Existing executable with a missing interpreter: libc may report this failure
+# synchronously or return a child that exits127. Neither path initializes I/O.
+exit 127

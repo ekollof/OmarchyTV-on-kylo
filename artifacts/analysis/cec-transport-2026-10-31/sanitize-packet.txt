@@ -1,0 +1,5 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-reload-sanitize/tests/cec_packet tests/cec_packet.c common/cec_packet.c common/cec.c
+  ok   all 256 headers / 1..16-byte frames through raw and VPL receive layouts; canaries intact
+  ok   VPL outgoing TV commands preserve operands; zero tail; foreign initiator and poll reject atomically
+  ok   mandatory 16-byte storage, empty NULL-buffer read, bad pointer/length/status never change output
+  ok   ioctl success cannot hide rejected driver status; malformed VPL metadata rejects atomically

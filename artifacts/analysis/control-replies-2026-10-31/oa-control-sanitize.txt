@@ -1,0 +1,4 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-reload-sanitize/tests/control_reply tests/control_reply.c build-reload-sanitize/core/check.o build-reload-sanitize/core/control.o build-reload-sanitize/core/host.o build-reload-sanitize/core/module.o -ldl -pthread
+[ 57148] INFO host         control socket /tmp/oa-control-WgwM3d/control.sock
+  ok   full list/status replies reach a Unix socket client intact
+  ok   control replies stay bounded for full tables and tiny buffers

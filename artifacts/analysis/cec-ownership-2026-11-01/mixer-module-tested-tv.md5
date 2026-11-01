@@ -1,0 +1,8 @@
+08f549d4026cfb626c1ffc93b2e02fc6  openaurora
+2e2856c667df2a40d2cbb38589a6753d  oa-audio-broker
+f78e63e378ae31e48a7cf37a1640b92d  modules/mod_audio_mixer.so
+304ab9d819d2007269844d06e25bd19d  modules/mod_ticker.so
+7e26e0e32913e4e961269a6efd74af3e  tests/mixer_module
+c9696c98ffdf5187699489a7a6384713  tests/mixer_peer
+93f135cd9cca61f904dc795c22045c58  tests/mixer_bad_exec
+274f9d84703289e51f2f1a8628236d3e  mixer-tv.conf

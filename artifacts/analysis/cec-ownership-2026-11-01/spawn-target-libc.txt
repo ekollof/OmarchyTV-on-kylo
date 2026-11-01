@@ -1,0 +1,26 @@
+
+artifacts/workbench/rootfs/root/lib/libc.so.6:     file format elf32-littlearm
+
+
+Disassembly of section .plt:
+
+Disassembly of section .iplt:
+
+Disassembly of section .text:
+
+46fb8164 <posix_spawn@@GLIBC_2.15>:
+46fb8164:	b570      	push	{r4, r5, r6, lr}
+46fb8166:	b084      	sub	sp, #16
+46fb8168:	9d08      	ldr	r5, [sp, #32]
+46fb816a:	2600      	movs	r6, #0
+46fb816c:	9c09      	ldr	r4, [sp, #36]	; 0x24
+46fb816e:	9602      	str	r6, [sp, #8]
+46fb8170:	9500      	str	r5, [sp, #0]
+46fb8172:	9401      	str	r4, [sp, #4]
+46fb8174:	f000 f83c 	bl	46fb81f0 <posix_spawnp@@GLIBC_2.15+0x74>
+46fb8178:	b004      	add	sp, #16
+46fb817a:	bd70      	pop	{r4, r5, r6, pc}
+
+Disassembly of section __libc_freeres_fn:
+
+Disassembly of section __libc_thread_freeres_fn:

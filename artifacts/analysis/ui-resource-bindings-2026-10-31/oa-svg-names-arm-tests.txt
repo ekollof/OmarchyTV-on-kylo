@@ -1,0 +1,1 @@
+  ok   resource CRC32 vectors, ELF segment translation/BSS/EOF, bounded dynamic symbols

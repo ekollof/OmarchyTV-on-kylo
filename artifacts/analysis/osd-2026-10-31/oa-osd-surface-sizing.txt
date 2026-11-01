@@ -1,0 +1,180 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (682 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1571 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts
+    /tmp/opencode/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_proj/Aurora (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_proj/Aurora (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFuncs.java 'SetResolution' 'SetShowFbNumb' 'plat_Gfx_Flush'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/opencode/ghidra_scripts/DumpFuncs.java (HeadlessAnalyzer)  
+INFO  DumpFuncs.java> 
+===== SetResolution : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- SetResolution @ 009412c0 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_Surface::SetResolution(unsigned int, unsigned int) */
+
+void __thiscall plat_Gfx_Surface::SetResolution(plat_Gfx_Surface *this,uint param_1,uint param_2)
+
+{
+  int iVar1;
+  int iVar2;
+  undefined4 uVar3;
+  __pid_t _Var4;
+  long lVar5;
+  uint uVar6;
+  uint uVar7;
+  
+  iVar1 = __stack_chk_guard;
+  iVar2 = plat_Gfx_DRM_osd_drv_Calculate_Stride(*(undefined4 *)(*(int *)this + 0x14));
+  uVar7 = param_2 * iVar2;
+  uVar6 = *(uint *)(*(int *)this + 8);
+  if (uVar7 < uVar6 || uVar7 - uVar6 == 0) {
+    *(uint *)(*(int *)this + 0xc) = param_1;
+    *(uint *)(*(int *)this + 0x10) = param_2;
+    if (iVar2 == *(int *)(*(int *)this + 0x28)) {
+      uVar3 = 0;
+    }
+    else {
+      *(int *)(*(int *)this + 0x28) = iVar2;
+      uVar3 = 0;
+      this[8] = (plat_Gfx_Surface)0x1;
+    }
+  }
+  else {
+    _Var4 = getpid();
+    lVar5 = syscall(0xe0);
+    printf("---[%d:%d]%s%s(%d):",_Var4,lVar5,&DAT_013be704,"SetResolution",0x983);
+    printf("surface buffer size[0x%x]  < Resize need size[0x%x]\n",*(undefined4 *)(*(int *)this + 8)
+           ,uVar7);
+    uVar3 = 0x16;
+  }
+  if (iVar1 != __stack_chk_guard) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar3);
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== SetShowFbNumb : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- SetShowFbNumb @ 00940598 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_Window::SetShowFbNumb(unsigned int) */
+
+void __thiscall plat_Gfx_Window::SetShowFbNumb(plat_Gfx_Window *this,uint param_1)
+
+{
+  int iVar1;
+  bool bVar2;
+  
+  iVar1 = __stack_chk_guard;
+  plat_Gfx_DRM_osd_drv::Set_ForceBufOrder
+            (*(plat_Gfx_DRM_osd_drv **)(this + 4),*(undefined4 *)(this + 8));
+  bVar2 = iVar1 != __stack_chk_guard;
+  *(undefined1 *)(*(int *)(this + 0x10) + 8) = 1;
+  if (bVar2) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(0);
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== plat_Gfx_Flush : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- plat_Gfx_Flush @ 0093aeac (GhidraScript)  
+INFO  DumpFuncs.java> 
+void plat_Gfx_Flush(plat_Gfx_Window *param_1,_ST_RECT *param_2)
+
+{
+  uint uVar1;
+  uint uVar2;
+  uint local_44;
+  uint local_40;
+  _ST_RECT a_Stack_3c [8];
+  int local_34;
+  int local_30;
+  _ST_RECT a_Stack_2c [8];
+  int local_24;
+  int local_20;
+  int local_1c;
+  
+  local_1c = __stack_chk_guard;
+  plat_Gfx_Surface::GetResolution(*(plat_Gfx_Surface **)(param_1 + 0x10),&local_44,&local_40);
+  uVar2 = *(int *)(param_2 + 8) + *(int *)param_2;
+  uVar1 = local_44;
+  if (local_44 < uVar2) {
+    uVar1 = local_44 - *(int *)param_2;
+  }
+  if (local_44 < uVar2) {
+    *(uint *)(param_2 + 8) = uVar1;
+  }
+  if (local_40 < (uint)(*(int *)(param_2 + 0xc) + *(int *)(param_2 + 4))) {
+    *(uint *)(param_2 + 0xc) = local_40 - *(int *)(param_2 + 4);
+  }
+  plat_Gfx_Surface::GetCropRect(*(plat_Gfx_Surface **)(param_1 + 0x10),a_Stack_3c);
+  plat_Gfx_Surface::GetCropRect(*(plat_Gfx_Surface **)(param_1 + 0x14),a_Stack_2c);
+  if ((local_34 == local_24) && (local_30 == local_20)) {
+    _Gfx_flush_2D(param_1,param_2);
+  }
+  else {
+    _Gfx_flush_2D_ScaleDown(param_1,param_2);
+  }
+  if (*(int *)(*(int *)param_1 + 0x68) << 0x1e < 0) {
+    plat_Gfx_Window::Update(param_1,true);
+    *(uint *)(*(int *)param_1 + 0x68) = *(uint *)(*(int *)param_1 + 0x68) & 0xfffffffd;
+  }
+  if (local_1c != __stack_chk_guard) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(0);
+  }
+  return;
+}
+
+ (GhidraScript)  

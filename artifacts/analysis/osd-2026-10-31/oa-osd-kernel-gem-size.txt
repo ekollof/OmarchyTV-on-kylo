@@ -1,0 +1,59 @@
+
+/tmp/opencode/ker0_sym.elf:     file format elf32-littlearm
+
+
+Disassembly of section .kernel:
+
+8040f530 <drm_gem_private_object_init>:
+8040f530:	e1a0c00d 	mov	ip, sp
+8040f534:	e92dd8f0 	push	{r4, r5, r6, r7, fp, ip, lr, pc}
+8040f538:	e24cb004 	sub	fp, ip, #4
+8040f53c:	e52de004 	push	{lr}		; (str lr, [sp, #-4]!)
+8040f540:	ebf024ad 	bl	800187fc <__gnu_mcount_nc>
+8040f544:	e7eb5052 	ubfx	r5, r2, #0, #12
+8040f548:	e1a04001 	mov	r4, r1
+8040f54c:	e3550000 	cmp	r5, #0
+8040f550:	1a000011 	bne	8040f59c <drm_gem_private_object_init+0x6c>
+8040f554:	e2816010 	add	r6, r1, #16
+8040f558:	e3a03001 	mov	r3, #1
+8040f55c:	e5810008 	str	r0, [r1, #8]
+8040f560:	e1a00006 	mov	r0, r6
+8040f564:	e581500c 	str	r5, [r1, #12]
+8040f568:	e3a01060 	mov	r1, #96	; 0x60
+8040f56c:	e5842070 	str	r2, [r4, #112]	; 0x70
+8040f570:	e5845004 	str	r5, [r4, #4]
+8040f574:	e5843000 	str	r3, [r4]
+8040f578:	ebfcbdc0 	bl	8033ec80 <__memzero>
+8040f57c:	e3062c54 	movw	r2, #27732	; 0x6c54
+8040f580:	e30e1b78 	movw	r1, #60280	; 0xeb78
+8040f584:	e1a00006 	mov	r0, r6
+8040f588:	e5845068 	str	r5, [r4, #104]	; 0x68
+8040f58c:	e34820ee 	movt	r2, #33006	; 0x80ee
+8040f590:	e348108d 	movt	r1, #32909	; 0x808d
+8040f594:	ebf1c104 	bl	8007f9ac <__rwlock_init>
+8040f598:	e89da8f0 	ldm	sp, {r4, r5, r6, r7, fp, sp, pc}
+8040f59c:	e7f001f2 	udf	#18
+
+8040f5a0 <drm_gem_object_init>:
+8040f5a0:	e1a0c00d 	mov	ip, sp
+8040f5a4:	e92dd830 	push	{r4, r5, fp, ip, lr, pc}
+8040f5a8:	e24cb004 	sub	fp, ip, #4
+8040f5ac:	e24dd008 	sub	sp, sp, #8
+8040f5b0:	e52de004 	push	{lr}		; (str lr, [sp, #-4]!)
+8040f5b4:	ebf02490 	bl	800187fc <__gnu_mcount_nc>
+8040f5b8:	e1a05001 	mov	r5, r1
+8040f5bc:	e1a04002 	mov	r4, r2
+8040f5c0:	ebffffda 	bl	8040f530 <drm_gem_private_object_init>
+8040f5c4:	e3a03602 	mov	r3, #2097152	; 0x200000
+8040f5c8:	e30e0b88 	movw	r0, #60296	; 0xeb88
+8040f5cc:	e1a02004 	mov	r2, r4
+8040f5d0:	e58d3000 	str	r3, [sp]
+8040f5d4:	e348008d 	movt	r0, #32909	; 0x808d
+8040f5d8:	e3a03000 	mov	r3, #0
+8040f5dc:	ebf51ae7 	bl	80156180 <shmem_file_setup>
+8040f5e0:	e1a03000 	mov	r3, r0
+8040f5e4:	e3700a01 	cmn	r0, #4096	; 0x1000
+8040f5e8:	93a00000 	movls	r0, #0
+8040f5ec:	9585300c 	strls	r3, [r5, #12]
+8040f5f0:	e24bd014 	sub	sp, fp, #20
+8040f5f4:	e89da830 	ldm	sp, {r4, r5, fp, sp, pc}

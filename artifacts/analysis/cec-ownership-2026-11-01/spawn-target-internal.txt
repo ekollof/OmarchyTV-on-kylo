@@ -1,0 +1,437 @@
+
+artifacts/workbench/rootfs/root/lib/libc.so.6:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+46fb81f0 <posix_spawnp@@GLIBC_2.15+0x74>:
+46fb81f0:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+46fb81f4:	b0b3      	sub	sp, #204	; 0xcc
+46fb81f6:	af00      	add	r7, sp, #0
+46fb81f8:	60f8      	str	r0, [r7, #12]
+46fb81fa:	6179      	str	r1, [r7, #20]
+46fb81fc:	61ba      	str	r2, [r7, #24]
+46fb81fe:	613b      	str	r3, [r7, #16]
+46fb8200:	2b00      	cmp	r3, #0
+46fb8202:	f000 8131 	beq.w	46fb8468 <posix_spawnp@@GLIBC_2.15+0x2ec>
+46fb8206:	881b      	ldrh	r3, [r3, #0]
+46fb8208:	0659      	lsls	r1, r3, #25
+46fb820a:	61fb      	str	r3, [r7, #28]
+46fb820c:	f100 80e7 	bmi.w	46fb83de <posix_spawnp@@GLIBC_2.15+0x262>
+46fb8210:	f013 0f3f 	tst.w	r3, #63	; 0x3f
+46fb8214:	bf0c      	ite	eq
+46fb8216:	2301      	moveq	r3, #1
+46fb8218:	2300      	movne	r3, #0
+46fb821a:	69ba      	ldr	r2, [r7, #24]
+46fb821c:	2a00      	cmp	r2, #0
+46fb821e:	bf14      	ite	ne
+46fb8220:	2300      	movne	r3, #0
+46fb8222:	f003 0301 	andeq.w	r3, r3, #1
+46fb8226:	2b00      	cmp	r3, #0
+46fb8228:	f040 80d9 	bne.w	46fb83de <posix_spawnp@@GLIBC_2.15+0x262>
+46fb822c:	f7e8 fd72 	bl	46fa0d14 <__fork@@GLIBC_2.4>
+46fb8230:	2800      	cmp	r0, #0
+46fb8232:	d00b      	beq.n	46fb824c <posix_spawnp@@GLIBC_2.15+0xd0>
+46fb8234:	f2c0 8111 	blt.w	46fb845a <posix_spawnp@@GLIBC_2.15+0x2de>
+46fb8238:	68fb      	ldr	r3, [r7, #12]
+46fb823a:	2b00      	cmp	r3, #0
+46fb823c:	f000 815a 	beq.w	46fb84f4 <posix_spawnp@@GLIBC_2.15+0x378>
+46fb8240:	6018      	str	r0, [r3, #0]
+46fb8242:	2000      	movs	r0, #0
+46fb8244:	37cc      	adds	r7, #204	; 0xcc
+46fb8246:	46bd      	mov	sp, r7
+46fb8248:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+46fb824c:	69fb      	ldr	r3, [r7, #28]
+46fb824e:	071b      	lsls	r3, r3, #28
+46fb8250:	f100 80f4 	bmi.w	46fb843c <posix_spawnp@@GLIBC_2.15+0x2c0>
+46fb8254:	69fb      	ldr	r3, [r7, #28]
+46fb8256:	075e      	lsls	r6, r3, #29
+46fb8258:	f100 80cc 	bmi.w	46fb83f4 <posix_spawnp@@GLIBC_2.15+0x278>
+46fb825c:	69fb      	ldr	r3, [r7, #28]
+46fb825e:	f003 0330 	and.w	r3, r3, #48	; 0x30
+46fb8262:	2b10      	cmp	r3, #16
+46fb8264:	f000 813c 	beq.w	46fb84e0 <posix_spawnp@@GLIBC_2.15+0x364>
+46fb8268:	69fb      	ldr	r3, [r7, #28]
+46fb826a:	069d      	lsls	r5, r3, #26
+46fb826c:	f100 812c 	bmi.w	46fb84c8 <posix_spawnp@@GLIBC_2.15+0x34c>
+46fb8270:	69fb      	ldr	r3, [r7, #28]
+46fb8272:	079c      	lsls	r4, r3, #30
+46fb8274:	f100 811f 	bmi.w	46fb84b6 <posix_spawnp@@GLIBC_2.15+0x33a>
+46fb8278:	69fb      	ldr	r3, [r7, #28]
+46fb827a:	07d8      	lsls	r0, r3, #31
+46fb827c:	f100 80f8 	bmi.w	46fb8470 <posix_spawnp@@GLIBC_2.15+0x2f4>
+46fb8280:	69b9      	ldr	r1, [r7, #24]
+46fb8282:	2900      	cmp	r1, #0
+46fb8284:	d06e      	beq.n	46fb8364 <posix_spawnp@@GLIBC_2.15+0x1e8>
+46fb8286:	684b      	ldr	r3, [r1, #4]
+46fb8288:	2b00      	cmp	r3, #0
+46fb828a:	dd6b      	ble.n	46fb8364 <posix_spawnp@@GLIBC_2.15+0x1e8>
+46fb828c:	2400      	movs	r4, #0
+46fb828e:	f107 0828 	add.w	r8, r7, #40	; 0x28
+46fb8292:	ee1d 3f70 	mrc	15, 0, r3, cr13, cr0, {3}
+46fb8296:	2606      	movs	r6, #6
+46fb8298:	46a3      	mov	fp, r4
+46fb829a:	4625      	mov	r5, r4
+46fb829c:	607b      	str	r3, [r7, #4]
+46fb829e:	468a      	mov	sl, r1
+46fb82a0:	f8c7 8008 	str.w	r8, [r7, #8]
+46fb82a4:	e02a      	b.n	46fb82fc <posix_spawnp@@GLIBC_2.15+0x180>
+46fb82a6:	d33d      	bcc.n	46fb8324 <posix_spawnp@@GLIBC_2.15+0x1a8>
+46fb82a8:	2a02      	cmp	r2, #2
+46fb82aa:	d121      	bne.n	46fb82f0 <posix_spawnp@@GLIBC_2.15+0x174>
+46fb82ac:	f8d9 100c 	ldr.w	r1, [r9, #12]
+46fb82b0:	f04f 0c05 	mov.w	ip, #5
+46fb82b4:	f8d9 0008 	ldr.w	r0, [r9, #8]
+46fb82b8:	f8d9 2010 	ldr.w	r2, [r9, #16]
+46fb82bc:	f441 3100 	orr.w	r1, r1, #131072	; 0x20000
+46fb82c0:	f78f fdf6 	bl	46f47eb0 <gnu_get_libc_version@@GLIBC_2.4+0x124>
+46fb82c4:	f510 5f80 	cmn.w	r0, #4096	; 0x1000
+46fb82c8:	4680      	mov	r8, r0
+46fb82ca:	d87e      	bhi.n	46fb83ca <posix_spawnp@@GLIBC_2.15+0x24e>
+46fb82cc:	f8d9 1004 	ldr.w	r1, [r9, #4]
+46fb82d0:	4288      	cmp	r0, r1
+46fb82d2:	d00d      	beq.n	46fb82f0 <posix_spawnp@@GLIBC_2.15+0x174>
+46fb82d4:	f001 fa0c 	bl	46fb96f0 <__dup2@@GLIBC_2.4>
+46fb82d8:	f8d9 2004 	ldr.w	r2, [r9, #4]
+46fb82dc:	4290      	cmp	r0, r2
+46fb82de:	d11e      	bne.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb82e0:	4640      	mov	r0, r8
+46fb82e2:	46b4      	mov	ip, r6
+46fb82e4:	f78f fde4 	bl	46f47eb0 <gnu_get_libc_version@@GLIBC_2.4+0x124>
+46fb82e8:	f510 5f80 	cmn.w	r0, #4096	; 0x1000
+46fb82ec:	d87a      	bhi.n	46fb83e4 <posix_spawnp@@GLIBC_2.15+0x268>
+46fb82ee:	b9b0      	cbnz	r0, 46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb82f0:	f8da 3004 	ldr.w	r3, [sl, #4]
+46fb82f4:	3501      	adds	r5, #1
+46fb82f6:	3414      	adds	r4, #20
+46fb82f8:	42ab      	cmp	r3, r5
+46fb82fa:	dd33      	ble.n	46fb8364 <posix_spawnp@@GLIBC_2.15+0x1e8>
+46fb82fc:	f8da 3008 	ldr.w	r3, [sl, #8]
+46fb8300:	591a      	ldr	r2, [r3, r4]
+46fb8302:	eb03 0904 	add.w	r9, r3, r4
+46fb8306:	2a01      	cmp	r2, #1
+46fb8308:	d1cd      	bne.n	46fb82a6 <posix_spawnp@@GLIBC_2.15+0x12a>
+46fb830a:	f8d9 1008 	ldr.w	r1, [r9, #8]
+46fb830e:	f8d9 0004 	ldr.w	r0, [r9, #4]
+46fb8312:	f001 f9ed 	bl	46fb96f0 <__dup2@@GLIBC_2.4>
+46fb8316:	f8d9 3008 	ldr.w	r3, [r9, #8]
+46fb831a:	4298      	cmp	r0, r3
+46fb831c:	d0e8      	beq.n	46fb82f0 <posix_spawnp@@GLIBC_2.15+0x174>
+46fb831e:	207f      	movs	r0, #127	; 0x7f
+46fb8320:	f7e8 fe80 	bl	46fa1024 <_exit@@GLIBC_2.4>
+46fb8324:	f8d9 0004 	ldr.w	r0, [r9, #4]
+46fb8328:	46b4      	mov	ip, r6
+46fb832a:	f78f fdc1 	bl	46f47eb0 <gnu_get_libc_version@@GLIBC_2.4+0x124>
+46fb832e:	f510 5f80 	cmn.w	r0, #4096	; 0x1000
+46fb8332:	d843      	bhi.n	46fb83bc <posix_spawnp@@GLIBC_2.15+0x240>
+46fb8334:	2800      	cmp	r0, #0
+46fb8336:	d0db      	beq.n	46fb82f0 <posix_spawnp@@GLIBC_2.15+0x174>
+46fb8338:	f1bb 0f00 	cmp.w	fp, #0
+46fb833c:	d039      	beq.n	46fb83b2 <posix_spawnp@@GLIBC_2.15+0x236>
+46fb833e:	f8d9 2004 	ldr.w	r2, [r9, #4]
+46fb8342:	2a00      	cmp	r2, #0
+46fb8344:	dbeb      	blt.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb8346:	e9d7 010a 	ldrd	r0, r1, [r7, #40]	; 0x28
+46fb834a:	17d3      	asrs	r3, r2, #31
+46fb834c:	428b      	cmp	r3, r1
+46fb834e:	bf08      	it	eq
+46fb8350:	4282      	cmpeq	r2, r0
+46fb8352:	d2e4      	bcs.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb8354:	f8da 3004 	ldr.w	r3, [sl, #4]
+46fb8358:	3501      	adds	r5, #1
+46fb835a:	f04f 0b01 	mov.w	fp, #1
+46fb835e:	3414      	adds	r4, #20
+46fb8360:	42ab      	cmp	r3, r5
+46fb8362:	dccb      	bgt.n	46fb82fc <posix_spawnp@@GLIBC_2.15+0x180>
+46fb8364:	f8d7 30f8 	ldr.w	r3, [r7, #248]	; 0xf8
+46fb8368:	07d9      	lsls	r1, r3, #31
+46fb836a:	d507      	bpl.n	46fb837c <posix_spawnp@@GLIBC_2.15+0x200>
+46fb836c:	212f      	movs	r1, #47	; 0x2f
+46fb836e:	6978      	ldr	r0, [r7, #20]
+46fb8370:	f7cd fe9e 	bl	46f860b0 <strchr@@GLIBC_2.4>
+46fb8374:	4605      	mov	r5, r0
+46fb8376:	2800      	cmp	r0, #0
+46fb8378:	f000 80be 	beq.w	46fb84f8 <posix_spawnp@@GLIBC_2.15+0x37c>
+46fb837c:	f8d7 20f4 	ldr.w	r2, [r7, #244]	; 0xf4
+46fb8380:	f8d7 10f0 	ldr.w	r1, [r7, #240]	; 0xf0
+46fb8384:	6978      	ldr	r0, [r7, #20]
+46fb8386:	f7e8 fe73 	bl	46fa1070 <execve@@GLIBC_2.4>
+46fb838a:	f8d7 30f8 	ldr.w	r3, [r7, #248]	; 0xf8
+46fb838e:	079a      	lsls	r2, r3, #30
+46fb8390:	d5c5      	bpl.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb8392:	4ba4      	ldr	r3, [pc, #656]	; (46fb8624 <posix_spawnp@@GLIBC_2.15+0x4a8>)
+46fb8394:	ee1d 2f70 	mrc	15, 0, r2, cr13, cr0, {3}
+46fb8398:	447b      	add	r3, pc
+46fb839a:	681b      	ldr	r3, [r3, #0]
+46fb839c:	58d3      	ldr	r3, [r2, r3]
+46fb839e:	2b08      	cmp	r3, #8
+46fb83a0:	d1bd      	bne.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb83a2:	f8d7 20f4 	ldr.w	r2, [r7, #244]	; 0xf4
+46fb83a6:	f8d7 10f0 	ldr.w	r1, [r7, #240]	; 0xf0
+46fb83aa:	6978      	ldr	r0, [r7, #20]
+46fb83ac:	f7ff fef2 	bl	46fb8194 <posix_spawnp@@GLIBC_2.15+0x18>
+46fb83b0:	e7b5      	b.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb83b2:	68b9      	ldr	r1, [r7, #8]
+46fb83b4:	2007      	movs	r0, #7
+46fb83b6:	f006 fd05 	bl	46fbedc4 <getrlimit64@@GLIBC_2.4>
+46fb83ba:	e7c0      	b.n	46fb833e <posix_spawnp@@GLIBC_2.15+0x1c2>
+46fb83bc:	4b9a      	ldr	r3, [pc, #616]	; (46fb8628 <posix_spawnp@@GLIBC_2.15+0x4ac>)
+46fb83be:	4240      	negs	r0, r0
+46fb83c0:	687a      	ldr	r2, [r7, #4]
+46fb83c2:	447b      	add	r3, pc
+46fb83c4:	681b      	ldr	r3, [r3, #0]
+46fb83c6:	50d0      	str	r0, [r2, r3]
+46fb83c8:	e7b6      	b.n	46fb8338 <posix_spawnp@@GLIBC_2.15+0x1bc>
+46fb83ca:	4a98      	ldr	r2, [pc, #608]	; (46fb862c <posix_spawnp@@GLIBC_2.15+0x4b0>)
+46fb83cc:	4243      	negs	r3, r0
+46fb83ce:	ee1d 1f70 	mrc	15, 0, r1, cr13, cr0, {3}
+46fb83d2:	207f      	movs	r0, #127	; 0x7f
+46fb83d4:	447a      	add	r2, pc
+46fb83d6:	6812      	ldr	r2, [r2, #0]
+46fb83d8:	508b      	str	r3, [r1, r2]
+46fb83da:	f7e8 fe23 	bl	46fa1024 <_exit@@GLIBC_2.4>
+46fb83de:	f7e8 fe07 	bl	46fa0ff0 <__libc_vfork@@GLIBC_PRIVATE>
+46fb83e2:	e725      	b.n	46fb8230 <posix_spawnp@@GLIBC_2.15+0xb4>
+46fb83e4:	4b92      	ldr	r3, [pc, #584]	; (46fb8630 <posix_spawnp@@GLIBC_2.15+0x4b4>)
+46fb83e6:	4240      	negs	r0, r0
+46fb83e8:	ee1d 2f70 	mrc	15, 0, r2, cr13, cr0, {3}
+46fb83ec:	447b      	add	r3, pc
+46fb83ee:	681b      	ldr	r3, [r3, #0]
+46fb83f0:	50d0      	str	r0, [r2, r3]
+46fb83f2:	e794      	b.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb83f4:	f107 003c 	add.w	r0, r7, #60	; 0x3c
+46fb83f8:	2401      	movs	r4, #1
+46fb83fa:	228c      	movs	r2, #140	; 0x8c
+46fb83fc:	2100      	movs	r1, #0
+46fb83fe:	4606      	mov	r6, r0
+46fb8400:	46a0      	mov	r8, r4
+46fb8402:	f7cf ec46 	blx	46f87c90 <memset@@GLIBC_2.4>
+46fb8406:	2500      	movs	r5, #0
+46fb8408:	f8d7 9010 	ldr.w	r9, [r7, #16]
+46fb840c:	e003      	b.n	46fb8416 <posix_spawnp@@GLIBC_2.15+0x29a>
+46fb840e:	3401      	adds	r4, #1
+46fb8410:	2c42      	cmp	r4, #66	; 0x42
+46fb8412:	f43f af23 	beq.w	46fb825c <posix_spawnp@@GLIBC_2.15+0xe0>
+46fb8416:	1e63      	subs	r3, r4, #1
+46fb8418:	095a      	lsrs	r2, r3, #5
+46fb841a:	f003 031f 	and.w	r3, r3, #31
+46fb841e:	fa08 f303 	lsl.w	r3, r8, r3
+46fb8422:	eb09 0282 	add.w	r2, r9, r2, lsl #2
+46fb8426:	6892      	ldr	r2, [r2, #8]
+46fb8428:	4213      	tst	r3, r2
+46fb842a:	d0f0      	beq.n	46fb840e <posix_spawnp@@GLIBC_2.15+0x292>
+46fb842c:	462a      	mov	r2, r5
+46fb842e:	4631      	mov	r1, r6
+46fb8430:	4620      	mov	r0, r4
+46fb8432:	f79d fb2f 	bl	46f55a94 <__sigaction@@GLIBC_2.4>
+46fb8436:	2800      	cmp	r0, #0
+46fb8438:	d0e9      	beq.n	46fb840e <posix_spawnp@@GLIBC_2.15+0x292>
+46fb843a:	e770      	b.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb843c:	693b      	ldr	r3, [r7, #16]
+46fb843e:	4602      	mov	r2, r0
+46fb8440:	2002      	movs	r0, #2
+46fb8442:	f103 0188 	add.w	r1, r3, #136	; 0x88
+46fb8446:	f79d fb37 	bl	46f55ab8 <sigprocmask@@GLIBC_2.4>
+46fb844a:	2800      	cmp	r0, #0
+46fb844c:	f47f af67 	bne.w	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb8450:	69fb      	ldr	r3, [r7, #28]
+46fb8452:	075e      	lsls	r6, r3, #29
+46fb8454:	f57f af02 	bpl.w	46fb825c <posix_spawnp@@GLIBC_2.15+0xe0>
+46fb8458:	e7cc      	b.n	46fb83f4 <posix_spawnp@@GLIBC_2.15+0x278>
+46fb845a:	4b76      	ldr	r3, [pc, #472]	; (46fb8634 <posix_spawnp@@GLIBC_2.15+0x4b8>)
+46fb845c:	ee1d 2f70 	mrc	15, 0, r2, cr13, cr0, {3}
+46fb8460:	447b      	add	r3, pc
+46fb8462:	681b      	ldr	r3, [r3, #0]
+46fb8464:	58d0      	ldr	r0, [r2, r3]
+46fb8466:	e6ed      	b.n	46fb8244 <posix_spawnp@@GLIBC_2.15+0xc8>
+46fb8468:	693a      	ldr	r2, [r7, #16]
+46fb846a:	2301      	movs	r3, #1
+46fb846c:	61fa      	str	r2, [r7, #28]
+46fb846e:	e6d4      	b.n	46fb821a <posix_spawnp@@GLIBC_2.15+0x9e>
+46fb8470:	f7e9 f936 	bl	46fa16e0 <getuid@@GLIBC_2.4>
+46fb8474:	4601      	mov	r1, r0
+46fb8476:	f04f 30ff 	mov.w	r0, #4294967295	; 0xffffffff
+46fb847a:	4602      	mov	r2, r0
+46fb847c:	f04f 0cd0 	mov.w	ip, #208	; 0xd0
+46fb8480:	f78f fd16 	bl	46f47eb0 <gnu_get_libc_version@@GLIBC_2.4+0x124>
+46fb8484:	f510 5f80 	cmn.w	r0, #4096	; 0x1000
+46fb8488:	f200 80af 	bhi.w	46fb85ea <posix_spawnp@@GLIBC_2.15+0x46e>
+46fb848c:	2800      	cmp	r0, #0
+46fb848e:	f47f af46 	bne.w	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb8492:	f7e9 f935 	bl	46fa1700 <getgid@@GLIBC_2.4>
+46fb8496:	4601      	mov	r1, r0
+46fb8498:	f04f 30ff 	mov.w	r0, #4294967295	; 0xffffffff
+46fb849c:	4602      	mov	r2, r0
+46fb849e:	f04f 0cd2 	mov.w	ip, #210	; 0xd2
+46fb84a2:	f78f fd05 	bl	46f47eb0 <gnu_get_libc_version@@GLIBC_2.4+0x124>
+46fb84a6:	f510 5f80 	cmn.w	r0, #4096	; 0x1000
+46fb84aa:	f200 8096 	bhi.w	46fb85da <posix_spawnp@@GLIBC_2.15+0x45e>
+46fb84ae:	2800      	cmp	r0, #0
+46fb84b0:	f43f aee6 	beq.w	46fb8280 <posix_spawnp@@GLIBC_2.15+0x104>
+46fb84b4:	e733      	b.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb84b6:	693b      	ldr	r3, [r7, #16]
+46fb84b8:	2000      	movs	r0, #0
+46fb84ba:	6859      	ldr	r1, [r3, #4]
+46fb84bc:	f7e9 f9d8 	bl	46fa1870 <__setpgid@@GLIBC_2.4>
+46fb84c0:	2800      	cmp	r0, #0
+46fb84c2:	f43f aed9 	beq.w	46fb8278 <posix_spawnp@@GLIBC_2.15+0xfc>
+46fb84c6:	e72a      	b.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb84c8:	6939      	ldr	r1, [r7, #16]
+46fb84ca:	2000      	movs	r0, #0
+46fb84cc:	f501 7284 	add.w	r2, r1, #264	; 0x108
+46fb84d0:	f8d1 110c 	ldr.w	r1, [r1, #268]	; 0x10c
+46fb84d4:	f7fa fa4c 	bl	46fb2970 <__sched_setscheduler@@GLIBC_2.4>
+46fb84d8:	3001      	adds	r0, #1
+46fb84da:	f47f aec9 	bne.w	46fb8270 <posix_spawnp@@GLIBC_2.15+0xf4>
+46fb84de:	e71e      	b.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb84e0:	693b      	ldr	r3, [r7, #16]
+46fb84e2:	2000      	movs	r0, #0
+46fb84e4:	f503 7184 	add.w	r1, r3, #264	; 0x108
+46fb84e8:	f7fa fa22 	bl	46fb2930 <sched_setparam@@GLIBC_2.4>
+46fb84ec:	3001      	adds	r0, #1
+46fb84ee:	f47f aebf 	bne.w	46fb8270 <posix_spawnp@@GLIBC_2.15+0xf4>
+46fb84f2:	e714      	b.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb84f4:	68f8      	ldr	r0, [r7, #12]
+46fb84f6:	e6a5      	b.n	46fb8244 <posix_spawnp@@GLIBC_2.15+0xc8>
+46fb84f8:	4854      	ldr	r0, [pc, #336]	; (46fb864c <posix_spawnp@@GLIBC_2.15+0x4d0>)
+46fb84fa:	4478      	add	r0, pc
+46fb84fc:	f79e fca4 	bl	46f56e48 <getenv@@GLIBC_2.4>
+46fb8500:	4604      	mov	r4, r0
+46fb8502:	2800      	cmp	r0, #0
+46fb8504:	d079      	beq.n	46fb85fa <posix_spawnp@@GLIBC_2.15+0x47e>
+46fb8506:	697e      	ldr	r6, [r7, #20]
+46fb8508:	46a1      	mov	r9, r4
+46fb850a:	f04f 083a 	mov.w	r8, #58	; 0x3a
+46fb850e:	4630      	mov	r0, r6
+46fb8510:	f7ce fa16 	bl	46f86940 <strlen@@GLIBC_2.4>
+46fb8514:	1c45      	adds	r5, r0, #1
+46fb8516:	4620      	mov	r0, r4
+46fb8518:	f7ce fa12 	bl	46f86940 <strlen@@GLIBC_2.4>
+46fb851c:	3001      	adds	r0, #1
+46fb851e:	4631      	mov	r1, r6
+46fb8520:	1943      	adds	r3, r0, r5
+46fb8522:	462a      	mov	r2, r5
+46fb8524:	330e      	adds	r3, #14
+46fb8526:	ee1d 6f70 	mrc	15, 0, r6, cr13, cr0, {3}
+46fb852a:	f023 0307 	bic.w	r3, r3, #7
+46fb852e:	ebad 0d03 	sub.w	sp, sp, r3
+46fb8532:	4468      	add	r0, sp
+46fb8534:	f78e eefc 	blx	46f47330 <free@plt+0x14>
+46fb8538:	232f      	movs	r3, #47	; 0x2f
+46fb853a:	6278      	str	r0, [r7, #36]	; 0x24
+46fb853c:	f800 3c01 	strb.w	r3, [r0, #-1]
+46fb8540:	f8d7 b0f4 	ldr.w	fp, [r7, #244]	; 0xf4
+46fb8544:	f8d7 40f8 	ldr.w	r4, [r7, #248]	; 0xf8
+46fb8548:	6238      	str	r0, [r7, #32]
+46fb854a:	f8d7 a0f0 	ldr.w	sl, [r7, #240]	; 0xf0
+46fb854e:	e021      	b.n	46fb8594 <posix_spawnp@@GLIBC_2.15+0x418>
+46fb8550:	6a7b      	ldr	r3, [r7, #36]	; 0x24
+46fb8552:	eba0 0209 	sub.w	r2, r0, r9
+46fb8556:	43d0      	mvns	r0, r2
+46fb8558:	4649      	mov	r1, r9
+46fb855a:	4418      	add	r0, r3
+46fb855c:	f78e eee8 	blx	46f47330 <free@plt+0x14>
+46fb8560:	4681      	mov	r9, r0
+46fb8562:	465a      	mov	r2, fp
+46fb8564:	4651      	mov	r1, sl
+46fb8566:	4648      	mov	r0, r9
+46fb8568:	f7e8 fd82 	bl	46fa1070 <execve@@GLIBC_2.4>
+46fb856c:	07a3      	lsls	r3, r4, #30
+46fb856e:	d421      	bmi.n	46fb85b4 <posix_spawnp@@GLIBC_2.15+0x438>
+46fb8570:	4b31      	ldr	r3, [pc, #196]	; (46fb8638 <posix_spawnp@@GLIBC_2.15+0x4bc>)
+46fb8572:	447b      	add	r3, pc
+46fb8574:	681b      	ldr	r3, [r3, #0]
+46fb8576:	58f2      	ldr	r2, [r6, r3]
+46fb8578:	2a0d      	cmp	r2, #13
+46fb857a:	d005      	beq.n	46fb8588 <posix_spawnp@@GLIBC_2.15+0x40c>
+46fb857c:	dd2a      	ble.n	46fb85d4 <posix_spawnp@@GLIBC_2.15+0x458>
+46fb857e:	2a14      	cmp	r2, #20
+46fb8580:	d002      	beq.n	46fb8588 <posix_spawnp@@GLIBC_2.15+0x40c>
+46fb8582:	2a74      	cmp	r2, #116	; 0x74
+46fb8584:	f47f aecb 	bne.w	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb8588:	782a      	ldrb	r2, [r5, #0]
+46fb858a:	f105 0901 	add.w	r9, r5, #1
+46fb858e:	2a00      	cmp	r2, #0
+46fb8590:	f43f aec5 	beq.w	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb8594:	4641      	mov	r1, r8
+46fb8596:	4648      	mov	r0, r9
+46fb8598:	f7d0 fefe 	bl	46f89398 <strchrnul@@GLIBC_2.4>
+46fb859c:	4581      	cmp	r9, r0
+46fb859e:	4605      	mov	r5, r0
+46fb85a0:	d1d6      	bne.n	46fb8550 <posix_spawnp@@GLIBC_2.15+0x3d4>
+46fb85a2:	f8d7 9020 	ldr.w	r9, [r7, #32]
+46fb85a6:	465a      	mov	r2, fp
+46fb85a8:	4651      	mov	r1, sl
+46fb85aa:	4648      	mov	r0, r9
+46fb85ac:	f7e8 fd60 	bl	46fa1070 <execve@@GLIBC_2.4>
+46fb85b0:	07a3      	lsls	r3, r4, #30
+46fb85b2:	d5dd      	bpl.n	46fb8570 <posix_spawnp@@GLIBC_2.15+0x3f4>
+46fb85b4:	4a21      	ldr	r2, [pc, #132]	; (46fb863c <posix_spawnp@@GLIBC_2.15+0x4c0>)
+46fb85b6:	447a      	add	r2, pc
+46fb85b8:	6812      	ldr	r2, [r2, #0]
+46fb85ba:	58b2      	ldr	r2, [r6, r2]
+46fb85bc:	2a08      	cmp	r2, #8
+46fb85be:	d1db      	bne.n	46fb8578 <posix_spawnp@@GLIBC_2.15+0x3fc>
+46fb85c0:	465a      	mov	r2, fp
+46fb85c2:	4648      	mov	r0, r9
+46fb85c4:	4651      	mov	r1, sl
+46fb85c6:	f7ff fde5 	bl	46fb8194 <posix_spawnp@@GLIBC_2.15+0x18>
+46fb85ca:	4b1d      	ldr	r3, [pc, #116]	; (46fb8640 <posix_spawnp@@GLIBC_2.15+0x4c4>)
+46fb85cc:	447b      	add	r3, pc
+46fb85ce:	681b      	ldr	r3, [r3, #0]
+46fb85d0:	58f2      	ldr	r2, [r6, r3]
+46fb85d2:	e7d1      	b.n	46fb8578 <posix_spawnp@@GLIBC_2.15+0x3fc>
+46fb85d4:	2a02      	cmp	r2, #2
+46fb85d6:	d0d7      	beq.n	46fb8588 <posix_spawnp@@GLIBC_2.15+0x40c>
+46fb85d8:	e6a1      	b.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb85da:	4b1a      	ldr	r3, [pc, #104]	; (46fb8644 <posix_spawnp@@GLIBC_2.15+0x4c8>)
+46fb85dc:	4240      	negs	r0, r0
+46fb85de:	ee1d 2f70 	mrc	15, 0, r2, cr13, cr0, {3}
+46fb85e2:	447b      	add	r3, pc
+46fb85e4:	681b      	ldr	r3, [r3, #0]
+46fb85e6:	50d0      	str	r0, [r2, r3]
+46fb85e8:	e699      	b.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb85ea:	4b17      	ldr	r3, [pc, #92]	; (46fb8648 <posix_spawnp@@GLIBC_2.15+0x4cc>)
+46fb85ec:	4240      	negs	r0, r0
+46fb85ee:	ee1d 2f70 	mrc	15, 0, r2, cr13, cr0, {3}
+46fb85f2:	447b      	add	r3, pc
+46fb85f4:	681b      	ldr	r3, [r3, #0]
+46fb85f6:	50d0      	str	r0, [r2, r3]
+46fb85f8:	e691      	b.n	46fb831e <posix_spawnp@@GLIBC_2.15+0x1a2>
+46fb85fa:	4602      	mov	r2, r0
+46fb85fc:	4601      	mov	r1, r0
+46fb85fe:	f7f9 fa17 	bl	46fb1a30 <confstr@@GLIBC_2.4>
+46fb8602:	4602      	mov	r2, r0
+46fb8604:	4628      	mov	r0, r5
+46fb8606:	f102 030f 	add.w	r3, r2, #15
+46fb860a:	253a      	movs	r5, #58	; 0x3a
+46fb860c:	f023 0307 	bic.w	r3, r3, #7
+46fb8610:	ebad 0d03 	sub.w	sp, sp, r3
+46fb8614:	4669      	mov	r1, sp
+46fb8616:	466c      	mov	r4, sp
+46fb8618:	f801 5b01 	strb.w	r5, [r1], #1
+46fb861c:	f7f9 fa08 	bl	46fb1a30 <confstr@@GLIBC_2.4>
+46fb8620:	e771      	b.n	46fb8506 <posix_spawnp@@GLIBC_2.15+0x38a>
+46fb8622:	bf00      	nop
+46fb8624:	1120      	asrs	r0, r4, #4
+46fb8626:	0006      	movs	r6, r0
+46fb8628:	10f6      	asrs	r6, r6, #3
+46fb862a:	0006      	movs	r6, r0
+46fb862c:	10e4      	asrs	r4, r4, #3
+46fb862e:	0006      	movs	r6, r0
+46fb8630:	10cc      	asrs	r4, r1, #3
+46fb8632:	0006      	movs	r6, r0
+46fb8634:	1058      	asrs	r0, r3, #1
+46fb8636:	0006      	movs	r6, r0
+46fb8638:	0f46      	lsrs	r6, r0, #29
+46fb863a:	0006      	movs	r6, r0
+46fb863c:	0f02      	lsrs	r2, r0, #28
+46fb863e:	0006      	movs	r6, r0
+46fb8640:	0eec      	lsrs	r4, r5, #27
+46fb8642:	0006      	movs	r6, r0
+46fb8644:	0ed6      	lsrs	r6, r2, #27
+46fb8646:	0006      	movs	r6, r0
+46fb8648:	0ec6      	lsrs	r6, r0, #27
+46fb864a:	0006      	movs	r6, r0
+46fb864c:	643e      	str	r6, [r7, #64]	; 0x40
+46fb864e:	0004      	movs	r4, r0

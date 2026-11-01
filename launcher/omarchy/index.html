@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>OmarchyTV</title>
+<style>
+@font-face {
+  font-family: 'CaskaydiaMono';
+  src: url('fonts/caskaydia_mono_regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'CaskaydiaMono';
+  src: url('fonts/caskaydia_mono_bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+:root {
+  --t-bg: #1a1b26;
+  --t-bg-alt: #24283b;
+  --t-fg: #a9b1d6;
+  --t-fg-bright: #c0caf5;
+  --t-fg-dim: #565f89;
+  --t-muted: #414868;
+  --t-accent: #7aa2f7;
+  --t-accent2: #bb9af7;
+  --t-green: #9ece6a;
+  --t-yellow: #e0af68;
+  --t-red: #f7768e;
+  --t-cyan: #7dcfff;
+  --win-bg: rgba(26, 27, 38, 0.75);
+  --bar-bg: rgba(26, 27, 38, 0.72);
+  --popup-bg: rgba(26, 27, 38, 0.94);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+  font-family: 'CaskaydiaMono', monospace;
+  color: var(--t-fg);
+}
+
+#stage {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: top left;
+  overflow: hidden;
+  background-color: var(--t-bg);
+}
+
+#wallpaper-layer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-image 0.25s ease;
+  z-index: 0;
+}
+
+#wallpaper-dim {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Waybar (52px) */
+#waybar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 52px;
+  background: var(--bar-bg);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 20;
+}
+
+#bar-left {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.bar-btn {
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 11px;
+  font-size: calc(20px * var(--ts, 1));
+  color: var(--t-fg-dim);
+  cursor: pointer;
+  position: relative;
+  border-bottom: 3px solid transparent;
+}
+
+.bar-btn.ws-active {
+  color: var(--t-accent);
+  font-weight: 700;
+}
+
+.bar-btn.focused {
+  color: var(--t-fg-bright);
+  border-bottom-color: var(--t-accent);
+}
+
+.bar-btn.logo-btn {
+  padding: 0 14px 0 6px;
+  margin-right: 10px;
+}
+
+#bar-clock {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: calc(22px * var(--ts, 1));
+  color: var(--t-fg-bright);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+#bar-right {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 2px;
+}
+
+.bar-icon-btn {
+  width: 44px;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.bar-icon-btn.focused {
+  border-bottom-color: var(--t-accent);
+}
+
+.bar-icon-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--t-fg);
+  stroke-width: 1.9;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bar-icon-btn.focused svg,
+.bar-btn.logo-btn.focused svg {
+  stroke: var(--t-accent);
+}
+
+#bar-tip {
+  position: absolute;
+  top: 58px;
+  right: 32px;
+  padding: 6px 14px;
+  font-size: calc(17px * var(--ts, 1));
+  color: var(--t-fg-bright);
+  background: var(--popup-bg);
+  border: 2px solid var(--t-accent);
+  z-index: 50;
+  display: none;
+  pointer-events: none;
+}
+
+/* BoxView (v2.9 / v2.11.0 squared terminal border with non-overlapping legend cutout) */
+.box {
+  position: relative;
+  background: var(--win-bg);
+  --box-border: var(--t-muted);
+  --box-bw: 2px;
+  border-left: var(--box-bw) solid var(--box-border);
+  border-right: var(--box-bw) solid var(--box-border);
+  border-bottom: var(--box-bw) solid var(--box-border);
+  border-top: var(--box-bw) solid var(--box-border);
+}
+
+.box.has-legend {
+  border-top: none;
+}
+
+.box.focused {
+  --box-border: var(--t-accent);
+  --box-bw: 3px;
+}
+
+.box-top-line {
+  position: absolute;
+  top: 0;
+  left: calc(-1 * var(--box-bw));
+  right: calc(-1 * var(--box-bw));
+  height: var(--box-bw);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.box-top-left {
+  width: 12px;
+  height: var(--box-bw);
+  background: var(--box-border);
+  flex-shrink: 0;
+}
+
+.box-legend {
+  padding: 0 8px;
+  font-size: calc(19px * var(--ts, 1));
+  line-height: 1;
+  color: var(--t-cyan);
+  white-space: nowrap;
+  transform: translateY(-1px);
+}
+
+.box-top-right {
+  flex: 1;
+  height: var(--box-bw);
+  background: var(--box-border);
+}
+
+/* Workspace 1: Terminal Box (top-left) */
+#term-box {
+  position: absolute;
+  left: 32px;
+  top: 76px;
+  width: 640px;
+  padding: 18px 22px;
+  z-index: 10;
+  cursor: pointer;
+}
+
+#term-prompt {
+  font-size: calc(20px * var(--ts, 1));
+  line-height: 1.3;
+  white-space: pre;
+}
+
+#term-cursor {
+  display: inline-block;
+  color: var(--t-fg);
+  animation: blink 1.06s steps(1) infinite;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+#term-logo {
+  padding-top: 8px;
+  font-size: calc(8px * var(--ts, 1));
+  line-height: 1.15;
+  color: var(--t-accent);
+  white-space: pre;
+  font-family: 'CaskaydiaMono', monospace;
+}
+
+#term-info {
+  padding-top: 10px;
+  font-size: calc(20px * var(--ts, 1));
+  line-height: 1.32;
+  white-space: pre;
+}
+
+/* Workspace 1: Widgets (top-right) */
+#widgets-wrap {
+  position: absolute;
+  right: 32px;
+  top: 76px;
+  width: 1120px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+
+#widgets-wrap > * + * {
+  margin-top: 12px;
+}
+
+#widgets-row1 {
+  display: flex;
+  width: 100%;
+}
+
+#widgets-row1 > * + * {
+  margin-left: 16px;
+}
+
+.widget-col {
+  flex: 1;
+  min-width: 0;
+  padding: 22px 22px 18px 22px;
+  cursor: pointer;
+}
+
+#wx-temp {
+  font-size: calc(50px * var(--ts, 1));
+  line-height: 1.08;
+  color: var(--t-accent);
+  margin-top: 2px;
+}
+
+#wx-line1, #wx-line2 {
+  font-size: calc(19px * var(--ts, 1));
+  line-height: 1.35;
+  color: var(--t-fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#wx-line2 {
+  color: var(--t-fg-dim);
+}
+
+.widget-body-text {
+  font-size: calc(20px * var(--ts, 1));
+  line-height: 1.38;
+  color: var(--t-fg-dim);
+  white-space: pre-line;
+  margin-top: 4px;
+}
+
+/* Workspace 1: Bottom App Dock */
+#app-win {
+  position: absolute;
+  left: 32px;
+  right: 32px;
+  bottom: 32px;
+  padding: 20px 28px 24px 28px;
+  z-index: 10;
+}
+
+.win-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 14px;
+}
+
+.win-title {
+  font-size: calc(30px * var(--ts, 1));
+  font-weight: 700;
+  color: var(--t-accent);
+}
+
+.win-hint {
+  font-size: calc(18px * var(--ts, 1));
+  color: var(--t-fg);
+}
+
+#dock-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.app-tile {
+  position: relative;
+  width: 100%;
+  /* webOS 22 ships Chrome 87, which has no aspect-ratio. The tile face is
+     position:absolute, so without an explicit height the row collapses to the border. */
+  height: 158px;
+  background: var(--t-bg-alt);
+  border: 2px solid var(--t-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.11s ease;
+}
+
+.app-tile.focused {
+  transform: scale(1.05);
+  border: 4px solid var(--t-accent);
+  outline: 2px solid var(--t-bg);
+  z-index: 5;
+}
+
+.app-tile.moving {
+  transform: scale(1.05) translateY(-10px);
+  border: 4px dashed var(--t-accent);
+  z-index: 6;
+}
+
+.app-tile .tile-banner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.app-tile .tile-text-only {
+  font-size: calc(23px * var(--ts, 1));
+  font-weight: 700;
+  color: var(--t-fg-bright);
+  text-align: center;
+  padding: 0 12px;
+}
+
+/* Samsung Tizen: the installed app's own icon; .tile-fallback (generic icon + name) only if it fails to load */
+.app-tile .tile-icon {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.app-tile .tile-fallback {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-tile.icon-failed .tile-icon {
+  display: none;
+}
+
+.app-tile.icon-failed .tile-fallback {
+  display: flex;
+}
+
+.app-tile .tile-fallback .tile-text-only {
+  margin-top: 6px;
+}
+
+/* Workspaces 2, 3, 4, 5 full-screen BoxViews */
+.ws-panel {
+  position: absolute;
+  left: 32px;
+  right: 32px;
+  top: 76px;
+  bottom: 32px;
+  padding: 28px 34px;
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+}
+
+.ws-panel.active {
+  display: flex;
+}
+
+#ws2-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 8px;
+}
+
+#ws3-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 18px;
+  overflow-y: auto;
+  /* room for the focused tile's 1.05 scale and border inside the scroll box, which clips;
+     the negative side margins keep the tiles where they were */
+  padding: 8px;
+  margin: 0 -8px;
+}
+
+/* Workspace 4: PC */
+#ws4-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 6px;
+}
+
+.ws4-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  font-size: calc(22px * var(--ts, 1));
+  color: var(--t-fg-bright);
+  background: transparent;
+  border: 2px solid var(--t-muted);
+  cursor: pointer;
+  width: fit-content;
+}
+
+.ws4-btn.focused {
+  color: var(--t-accent);
+  border: 3px solid var(--t-accent);
+  background: var(--t-bg-alt);
+}
+
+/* Workspace 5: System settings list */
+#ws5-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.sys-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 20px;
+  font-size: calc(22px * var(--ts, 1));
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.sys-row .sys-lbl {
+  color: var(--t-fg-bright);
+}
+
+.sys-row .sys-val {
+  color: var(--t-cyan);
+}
+
+.sys-row.focused {
+  background: var(--t-bg-alt);
+  border: 3px solid var(--t-accent);
+}
+
+.sys-row.focused .sys-lbl {
+  color: var(--t-accent);
+}
+
+/* Arrange Panels overlay */
+#arrange-banner {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 28px;
+  font-size: calc(22px * var(--ts, 1));
+  color: var(--t-accent);
+  background: var(--popup-bg);
+  border: 3px solid var(--t-accent);
+  z-index: 40;
+  display: none;
+}
+
+/* Modal / Popup system */
+#modal-backdrop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+#modal-backdrop.open {
+  display: flex;
+}
+
+#modal-box {
+  width: 760px;
+  max-height: 860px;
+  background: var(--popup-bg);
+  padding: 26px 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+#modal-title {
+  font-size: calc(24px * var(--ts, 1));
+  font-weight: 700;
+  color: var(--t-accent);
+  margin-bottom: 12px;
+}
+
+#modal-sub {
+  font-size: calc(18px * var(--ts, 1));
+  color: var(--t-fg-dim);
+  margin-bottom: 14px;
+  white-space: pre-line;
+}
+
+#modal-input-wrap {
+  display: none;
+  margin-bottom: 14px;
+}
+
+#modal-input {
+  width: 100%;
+  background: var(--t-bg-alt);
+  border: 2px solid var(--t-accent);
+  color: var(--t-fg-bright);
+  font-family: 'CaskaydiaMono', monospace;
+  font-size: calc(22px * var(--ts, 1));
+  padding: 10px 14px;
+  outline: none;
+}
+
+#modal-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 620px;
+}
+
+.modal-item {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+  font-size: calc(21px * var(--ts, 1));
+  color: var(--t-fg);
+  border-left: 4px solid transparent;
+  cursor: pointer;
+}
+
+.modal-item .mi-right {
+  color: var(--t-cyan);
+  font-size: calc(19px * var(--ts, 1));
+}
+
+.modal-item.focused {
+  background: var(--t-bg-alt);
+  color: var(--t-accent);
+  border-left-color: var(--t-accent);
+}
+
+/* Toast notification */
+#toast {
+  position: absolute;
+  /* above the Home dock window (top edge at y=788), so it never covers the tiles */
+  bottom: 304px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--popup-bg);
+  border: 2px solid var(--t-accent);
+  color: var(--t-fg-bright);
+  padding: 12px 26px;
+  font-size: calc(20px * var(--ts, 1));
+  z-index: 200;
+  display: none;
+}
+
+/* Screensaver Fullscreen Overlay */
+#saver-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: #000;
+  z-index: 300;
+  display: none;
+}
+
+#saver-overlay.active {
+  display: block;
+}
+
+#saver-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+</style>
+<style>
+/* v2.13: official YouTube embed overlay + companion idle bob */
+#yt-embed{display:none;position:fixed;inset:0;z-index:90;background:#000;}
+#yt-embed.open{display:block;}
+#yt-embed iframe{position:absolute;left:0;top:0;width:100%;height:86%;border:0;}
+#yt-embed-rail{position:absolute;left:0;right:0;bottom:44px;text-align:center;}
+.yt-chip{display:inline-block;margin:0 6px;padding:6px 14px;border:1px solid var(--t-accent2);color:var(--t-fg);font-size:calc(16px * var(--ts, 1));}
+.yt-chip.focused{background:var(--t-accent);color:var(--t-bg);}
+.yt-note{position:absolute;left:0;right:0;bottom:12px;text-align:center;color:var(--t-fg);opacity:.6;font-size:calc(14px * var(--ts, 1));}
+@keyframes gbBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+#grokbot-companion{animation:gbBob 4.2s ease-in-out infinite;}
+.extra-focused{outline:3px solid var(--t-accent);outline-offset:4px;box-shadow:0 0 18px var(--t-accent);}
+#grokbot-eyes{display:flex;align-items:center;gap:10px;}
+.gb-orb{display:block;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.45));}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="wallpaper-layer"></div>
+  <video id="wallpaper-video" muted playsinline style="position:absolute;top:0;left:0;width:1920px;height:1080px;object-fit:cover;z-index:0;display:none;pointer-events:none;"></video>
+  <div id="wallpaper-dim"></div>
+
+  <!-- Top Waybar -->
+  <div id="waybar">
+    <div id="bar-left">
+      <div class="bar-btn logo-btn" data-bar-idx="0" title="Omarchy menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18"/>
+          <rect x="8" y="8" width="8" height="8"/>
+        </svg>
+      </div>
+      <div class="bar-btn ws-btn" data-bar-idx="1" data-ws="0">1</div>
+      <div class="bar-btn ws-btn" data-bar-idx="2" data-ws="1">2</div>
+      <div class="bar-btn ws-btn" data-bar-idx="3" data-ws="2">3</div>
+      <div class="bar-btn ws-btn" data-bar-idx="4" data-ws="3">4</div>
+      <div class="bar-btn ws-btn" data-bar-idx="5" data-ws="4">5</div>
+    </div>
+
+    <div id="bar-clock">sat 24 oct  7:06 PM</div>
+
+    <div id="bar-right">
+      <!-- SpaceX TV Top-Bar Countdown Pill (Sighmon MIT plugin) -->
+      <div id="spacex-pill" style="display:inline-flex;align-items:center;padding:4px 12px;margin-right:10px;border:1px solid var(--t-accent);background:var(--t-bg-alt);color:var(--t-accent);font-size:calc(15px * var(--ts, 1));font-weight:700;cursor:pointer;" title="SpaceX TV (Sighmon)">🚀 Starship · T-02:14:00</div>
+      <!-- Cinemarchy Hub -->
+      <div class="bar-icon-btn" data-bar-idx="6" data-action="cinemarchy" title="Cinemarchy Hub (C)">
+        <svg viewBox="0 0 24 24">
+          <rect x="2" y="4" width="20" height="16"/>
+          <line x1="6" y1="4" x2="6" y2="20"/>
+          <line x1="18" y1="4" x2="18" y2="20"/>
+          <polygon points="10 9 15 12 10 15 10 9"/>
+        </svg>
+      </div>
+      <!-- Wi-Fi -->
+      <div class="bar-icon-btn" data-bar-idx="7" data-action="wifi">
+        <!-- vestel port: this set is wired (eth0), so show a network port instead of Wi-Fi arcs -->
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="9" width="18" height="9"/>
+          <line x1="7" y1="9" x2="7" y2="5"/>
+          <line x1="12" y1="9" x2="12" y2="5"/>
+          <line x1="17" y1="9" x2="17" y2="5"/>
+          <line x1="7" y1="13" x2="17" y2="13"/>
+        </svg>
+      </div>
+      <!-- Bluetooth -->
+      <div class="bar-icon-btn" data-bar-idx="8" data-action="bt">
+        <svg viewBox="0 0 24 24">
+          <polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/>
+        </svg>
+      </div>
+      <!-- Audio / Volume -->
+      <div class="bar-icon-btn" data-bar-idx="9" data-action="vol">
+        <svg viewBox="0 0 24 24">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M15.5 8.5a5 5 0 0 1 0 7"/>
+          <path d="M19 5a10 10 0 0 1 0 14"/>
+        </svg>
+      </div>
+      <!-- Inputs (TV / HDMI) -->
+      <div class="bar-icon-btn" data-bar-idx="10" data-action="inputs">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 7h16l-2 10H6L4 7z"/>
+          <line x1="8" y1="11" x2="16" y2="11"/>
+        </svg>
+      </div>
+      <!-- Screensaver -->
+      <div class="bar-icon-btn" data-bar-idx="11" data-action="saver">
+        <svg viewBox="0 0 24 24">
+          <rect x="2" y="3" width="20" height="14"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div id="bar-tip"></div>
+
+  <!-- WORKSPACE 1: Home -->
+  <div id="ws1-layer">
+    <!-- Top-Left Fastfetch Terminal Box -->
+    <div id="term-box" class="box">
+      <div id="term-prompt"></div>
+      <pre id="term-logo"></pre>
+      <div id="term-info"></div>
+    </div>
+
+    <!-- Top-Right Widgets -->
+    <div id="widgets-wrap">
+      <div id="widgets-row1">
+        <!-- Weather -->
+        <div id="wx-box" class="box has-legend widget-col">
+          <div class="box-top-line">
+            <span class="box-top-left"></span>
+            <span class="box-legend" id="legend-wx">weather</span>
+            <span class="box-top-right"></span>
+          </div>
+          <div id="wx-temp">9°</div>
+          <div id="wx-line1">Alessandria · clear</div>
+          <div id="wx-line2">min 6° · max 16°</div>
+        </div>
+
+        <!-- Omarchy PC -->
+        <div id="pc-box" class="box has-legend widget-col">
+          <div class="box-top-line">
+            <span class="box-top-left"></span>
+            <span class="box-legend" id="legend-pc">omarchy · pc</span>
+            <span class="box-top-right"></span>
+          </div>
+          <div id="pc-body" class="widget-body-text">pc not connected</div>
+        </div>
+
+        <!-- AI Credits PC -->
+        <div id="ai-box" class="box has-legend widget-col">
+          <div class="box-top-line">
+            <span class="box-top-left"></span>
+            <span class="box-legend" id="legend-ai">ai credits · pc</span>
+            <span class="box-top-right"></span>
+          </div>
+          <div id="ai-body" class="widget-body-text">pc not connected</div>
+        </div>
+      </div>
+
+      <!-- Deploys Row (optional) -->
+      <div id="deploy-box" class="box has-legend widget-col" style="display:none;">
+        <div class="box-top-line">
+          <span class="box-top-left"></span>
+          <span class="box-legend">deploys · pc</span>
+          <span class="box-top-right"></span>
+        </div>
+        <div id="deploy-body" class="widget-body-text">no recent deploys</div>
+      </div>
+    </div>
+
+    <!-- Bottom App Window -->
+    <div id="app-win" class="box">
+      <div class="win-header">
+        <div class="win-title" id="dock-app-name">TV</div>
+        <div class="win-hint" id="dock-hint">OK watch TV · ▲ bar · long OK: Walker</div>
+      </div>
+      <div id="dock-strip"></div>
+    </div>
+
+    <!-- Omarchy Grok Bot Desktop Companion (@tcballard MIT plugin) -->
+    <div id="grokbot-companion" class="box" style="position:absolute;right:48px;bottom:340px;padding:10px 18px;border:1px solid var(--t-accent2);background:var(--popup-bg);cursor:pointer;z-index:15;" title="Omarchy Grok Bot Desktop Companion (@tcballard)">
+      <div id="grokbot-eyes" style="font-size:calc(18px * var(--ts, 1));font-weight:700;color:var(--t-accent2);">[ ◉ ◉ ] grokbot</div>
+      <div id="grokbot-sub" style="font-size:calc(14px * var(--ts, 1));color:var(--t-fg);margin-top:3px;">@tcballard · ready</div>
+    </div>
+  </div>
+
+  <!-- WORKSPACE 2: TV & HDMI Inputs -->
+  <div id="ws2-panel" class="box has-legend ws-panel">
+    <div class="box-top-line">
+      <span class="box-top-left"></span>
+      <span class="box-legend" id="legend-ws2">tv</span>
+      <span class="box-top-right"></span>
+    </div>
+    <div class="win-header">
+      <div class="win-title" id="ws2-title">TV</div>
+      <div class="win-hint" id="ws2-hint">OK switch input · ▲ bar · 1-5 workspaces</div>
+    </div>
+    <div id="ws2-grid"></div>
+  </div>
+
+  <!-- WORKSPACE 3: All Apps Grid -->
+  <div id="ws3-panel" class="box has-legend ws-panel">
+    <div class="box-top-line">
+      <span class="box-top-left"></span>
+      <span class="box-legend" id="legend-ws3">app</span>
+      <span class="box-top-right"></span>
+    </div>
+    <div class="win-header">
+      <div class="win-title" id="ws3-title">TV</div>
+      <div class="win-hint" id="ws3-hint">OK open · long OK: Move / Hide · 1-5 workspaces</div>
+    </div>
+    <div id="ws3-grid"></div>
+  </div>
+
+  <!-- WORKSPACE 4: Omarchy PC -->
+  <div id="ws4-panel" class="box has-legend ws-panel">
+    <div class="box-top-line">
+      <span class="box-top-left"></span>
+      <span class="box-legend" id="legend-ws4">pc</span>
+      <span class="box-top-right"></span>
+    </div>
+    <div id="ws4-content">
+      <div class="win-title" id="ws4-heading">Connect Omarchy Linux</div>
+      <div id="ws4-desc" style="font-size:calc(20px * var(--ts, 1));color:var(--t-fg);line-height:1.45;">Pair the PC to see its status, AI credits and deploys here.</div>
+      <div style="display:flex;gap:16px;margin-top:8px;">
+      </div>
+      <div id="ws4-live-details" style="margin-top:18px;font-size:calc(20px * var(--ts, 1));line-height:1.5;white-space:pre-line;color:var(--t-fg);"></div>
+    </div>
+  </div>
+
+  <!-- WORKSPACE 5: System Settings -->
+  <div id="ws5-panel" class="box has-legend ws-panel">
+    <div class="box-top-line">
+      <span class="box-top-left"></span>
+      <span class="box-legend" id="legend-ws5">system</span>
+      <span class="box-top-right"></span>
+    </div>
+    <div id="ws5-list"></div>
+  </div>
+
+  <div id="arrange-banner">◀▶▲▼ move · OK save · Back cancel</div>
+
+  <!-- Modal / Menu Popup -->
+  <div id="modal-backdrop">
+    <div id="modal-box" class="box">
+      <div id="modal-title">Menu</div>
+      <div id="modal-sub"></div>
+      <div id="modal-input-wrap">
+        <input id="modal-input" type="text" autocomplete="off" spellcheck="false" />
+      </div>
+      <div id="modal-list"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Screensaver Overlay -->
+  <div id="saver-overlay">
+    <iframe id="saver-frame" src="about:blank"></iframe>
+  </div>
+</div>
+
+<script src="/cgi-bin/net.js?v=1"></script>
+<script src="compat.js?v=27"></script>
+<script src="platform.js?v=27"></script>
+<script src="data.js?v=27"></script>
+<script src="dhh.js?v=27"></script>
+<script src="app.js?v=27"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+Cached state only; firmware MD5/source and live process must be verified separately.
+output=0 handle=01234567 speaker_head=0197a180
+output=1 handle=00000000 speaker_head=00000000
+output=2 handle=00000000 speaker_head=00000000
+speaker=0 present=1 output=0 hw_mute=0 L=0 R=0
+speaker=1 present=1 output=0 hw_mute=0 L=20 R=20
+speaker=2 present=1 output=0 hw_mute=0 L=0 R=0
+speaker=3 present=1 output=0 hw_mute=0 L=100 R=100
+speaker=4 present=0 output=32767 hw_mute=0 L=100 R=100
+speaker=5 present=1 output=0 hw_mute=0 L=100 R=100
+speaker=6 present=0 output=32767 hw_mute=0 L=100 R=100
+speaker=7 present=0 output=32767 hw_mute=0 L=100 R=100
+speaker=8 present=0 output=32767 hw_mute=0 L=100 R=100

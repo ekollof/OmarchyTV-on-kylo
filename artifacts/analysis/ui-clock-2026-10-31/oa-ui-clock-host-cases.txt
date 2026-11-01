@@ -1,0 +1,15 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-strict/tests/ui_clock tests/ui_clock.c build-strict/core/check.o build-strict/core/control.o build-strict/core/host.o build-strict/core/module.o -ldl -pthread
+[241293] ERR  ui_clock     timer table full
+[241293] ERR  host         ui_clock: missing required service 'clock'
+[241293] ERR  ui_clock     timer table full
+[241293] ERR  host         ui_clock: start() failed (-1)
+[241293] ERR  ui_clock     publish ui.clock: already published by module 0
+[241293] ERR  host         ui_clock: start() failed (-1)
+[241293] ERR  host         ticker: required by active module 'ui_clock'
+  ok   FROST quantum boundaries, correction carry and raw/corrected 90000000-ms rollover
+  ok   real DSO reload preserves clock state, replaces owned timer and rejects invalid snapshots atomically
+  ok   suspend removes timer; failed resume can retry without losing elapsed time/correction
+  ok   ARM raw 32-bit truncation and strict > period comparison are preserved
+  ok   missing raw clock, full timer table and publication collision clean up; start can retry
+  ok   real ticker/ui_clock dependency chain quiesces both timers and resumes in provider order
+  ok   owned one-second sampling advances idle clock state without a client query

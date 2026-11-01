@@ -1,0 +1,171 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (622 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1544 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_ntk/ntk (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_ntk/ntk (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /ntkndpdrm.ko (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFirmware.java 'hw_plane_mode_set' 'ndp_drm_plane_mode_set'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)  
+INFO  DumpFirmware.java> PROGRAM ntkndpdrm.ko MD5 a70aca9b814e51cb9680476ce27051de (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== hw_plane_mode_set -> hw_plane_mode_set @ 000378ec (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined hw_plane_mode_set() (GhidraScript)  
+INFO  DumpFirmware.java> 
+undefined4 hw_plane_mode_set(void)
+
+{
+  int iVar1;
+  undefined8 *puVar2;
+  undefined4 uVar3;
+  code *pcVar4;
+  undefined8 uVar5;
+  
+  uVar5 = __gnu_mcount_nc();
+  puVar2 = (undefined8 *)hw_plane_list;
+  if ((g_ndp_MSG & 0x100) == 0) {
+    if ((undefined8 *)hw_plane_list == &hw_plane_list) {
+      return 0xffffffea;
+    }
+    do {
+      iVar1 = **(int **)(puVar2 + 3);
+joined_r0x00037948:
+      if ((iVar1 == (int)uVar5) &&
+         (pcVar4 = *(code **)(*(int *)((int)puVar2 + 0x14) + 8), pcVar4 != (code *)0x0)) {
+        uVar3 = (*pcVar4)(*(undefined4 *)(puVar2 + 1),(int)uVar5,(int)((ulonglong)uVar5 >> 0x20));
+        goto joined_r0x00037994;
+      }
+      puVar2 = *(undefined8 **)puVar2;
+    } while (puVar2 != &hw_plane_list);
+    uVar3 = 0xffffffea;
+joined_r0x00037994:
+    if ((g_ndp_MSG & 0x100) == 0) {
+      return uVar3;
+    }
+  }
+  else {
+    if ((undefined8 *)hw_plane_list != &hw_plane_list) {
+      iVar1 = **(int **)((undefined8 *)hw_plane_list + 3);
+      goto joined_r0x00037948;
+    }
+    uVar3 = 0xffffffea;
+  }
+  return uVar3;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== ndp_drm_plane_mode_set -> ndp_drm_plane_mode_set @ 000314b4 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined ndp_drm_plane_mode_set() (GhidraScript)  
+INFO  DumpFirmware.java> 
+int ndp_drm_plane_mode_set(void)
+
+{
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  undefined4 uVar4;
+  int extraout_r2;
+  int extraout_r3;
+  uint uVar5;
+  int iVar6;
+  undefined8 uVar7;
+  undefined2 uStack00000000;
+  int in_stack_00000004;
+  undefined2 uStack00000008;
+  int in_stack_0000000c;
+  int in_stack_00000010;
+  int in_stack_00000014;
+  int in_stack_00000018;
+  undefined1 auStack_80 [44];
+  int local_54;
+  int local_50;
+  int local_4c;
+  int local_48;
+  int local_44;
+  int local_40;
+  int local_3c;
+  
+  uVar7 = __gnu_mcount_nc();
+  piVar1 = (int *)uVar7;
+  if (((piVar1 != (int *)0x0) && (extraout_r2 != 0)) && ((int)((ulonglong)uVar7 >> 0x20) != 0)) {
+    uVar5 = piVar1[0x8b];
+    iVar6 = *piVar1;
+    NDP_VIDEO_Set_PlaneRect_By_PlaneType
+              (uVar5,in_stack_0000000c,in_stack_00000010,in_stack_00000014,in_stack_00000018,
+               extraout_r3,_uStack00000000,in_stack_00000004,_uStack00000008);
+    local_3c = in_stack_00000018;
+    local_48 = in_stack_0000000c;
+    local_44 = in_stack_00000010;
+    local_40 = in_stack_00000014;
+    local_54 = _uStack00000000;
+    local_50 = in_stack_00000004;
+    local_4c = _uStack00000008;
+    if (uVar5 < 2) {
+      piVar1[0x84] = in_stack_0000000c;
+      piVar1[0x81] = _uStack00000000;
+      piVar1[0x85] = in_stack_00000010;
+      piVar1[0x86] = in_stack_00000014;
+      piVar1[0x82] = in_stack_00000004;
+      uVar4 = *(undefined4 *)(CurFB + uVar5 * 4);
+      piVar1[0x87] = in_stack_00000018;
+      piVar1[0x80] = extraout_r3;
+      piVar1[0x83] = _uStack00000008;
+      (&PreFB)[uVar5] = uVar4;
+      *(int *)(CurFB + uVar5 * 4) = extraout_r2;
+    }
+    iVar2 = hw_plane_mode_set(uVar5,auStack_80);
+    if ((iVar2 == 0) && (iVar3 = hw_plane_is_dp(uVar5), iVar3 != 0)) {
+      drm_object_property_set_value
+                (piVar1 + 0x11,*(undefined4 *)(*(int *)(iVar6 + 0x18) + 0xa8),
+                 CONCAT22(uStack00000000,(short)extraout_r3),
+                 CONCAT22(uStack00000008,(short)in_stack_00000004));
+    }
+    return iVar2;
+  }
+  return -0x16;
+}
+
+ (GhidraScript)  

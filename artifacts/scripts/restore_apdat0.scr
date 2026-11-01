@@ -1,0 +1,18 @@
+# tvhack RESTORE original apdat0
+setenv imgload '0'
+setenv osd_base_addr '0x13000000'
+#@
+
+start_progress_bar
+setenv update_img_num '4'
+setenv update_img_idx '1'
+fatload usb 0:1 0x3300000 apdat0_orig.ubifs
+setenv update_img_idx '2'
+ubi part apdat0
+setenv update_img_idx '3'
+ubi write 0x3300000 apdat0 0x782000
+setenv update_img_idx '4'
+sleep 5
+stopprogressbar
+
+% <- this is end of file symbol

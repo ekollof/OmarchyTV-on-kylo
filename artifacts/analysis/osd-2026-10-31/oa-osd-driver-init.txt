@@ -1,0 +1,454 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (682 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1502 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_nondovi/nondovi (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_nondovi/nondovi (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /ntkdriver_nondovi.ko (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFirmware.java 'KER_OSD_DrvInit'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)  
+INFO  DumpFirmware.java> PROGRAM ntkdriver_nondovi.ko MD5 fded7005651e37b8a1b5e8e89f73f4ff (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== KER_OSD_DrvInit -> KER_OSD_DrvInit @ 00687b74 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined KER_OSD_DrvInit() (GhidraScript)  
+INFO  DumpFirmware.java> 
+/* WARNING: Type propagation algorithm not settling */
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+uint KER_OSD_DrvInit(void)
+
+{
+  undefined *puVar1;
+  int iVar2;
+  int iVar3;
+  code *pcVar4;
+  undefined4 uVar5;
+  int iVar6;
+  int iVar7;
+  uint uVar8;
+  int *piVar9;
+  int iVar10;
+  uint uVar11;
+  undefined4 *puVar12;
+  uint uVar13;
+  int iVar14;
+  int *piVar15;
+  undefined1 *puVar16;
+  int iVar17;
+  uint local_88;
+  int local_84;
+  uint local_80 [21];
+  
+  pdev_kosd = nvt_platform_bundle_simple(DAT_00688b68);
+  if (0xfffff000 < pdev_kosd) {
+    return pdev_kosd;
+  }
+  nvt_printk_register(pdev_kosd + 0x10);
+  KER_DBG_Enable(0x30);
+  if (5 < (uint)gau32PlaneOrder) {
+    gau32PlaneOrder._0_4_ = 0;
+    nvt_info(pdev_kosd + 0x10,
+             "%s(), [OSD-WARINING]: Use default Normal-Plane Order: gau32PlaneOrder[0] = %d\n",
+             DAT_00688b6c,0);
+  }
+  if ((gau32PlaneOrder._4_4_ & 0xfffffffd) != 0) {
+    gau32PlaneOrder._4_4_ = 0;
+    nvt_info(pdev_kosd + 0x10,
+             "%s(), [OSD-WARINING]: Use default Cursor-Plane Order: gau32PlaneOrder[1] = %d\n",
+             DAT_00688b6c,0);
+  }
+  if (gu32NumOfBuffer - 1U < 3) {
+    gau32NumOfBuffer._0_4_ = gu32NumOfBuffer;
+    gau32NumOfBuffer._4_4_ = gu32NumOfBuffer;
+    gau32NumOfBuffer._8_4_ = gu32NumOfBuffer;
+    gau32NumOfBuffer._12_4_ = gu32NumOfBuffer;
+    gau32NumOfBuffer._16_4_ = gu32NumOfBuffer;
+  }
+  if (4 < gu32FastLogoPlaneID) {
+    gu32FastLogoPlaneID = 0;
+    nvt_info(pdev_kosd + 0x10,"%s(), [OSD-WARINING]: Use default FastLogoPlaneID = %d\n",
+             DAT_00688b6c,0);
+  }
+  iVar10 = DAT_00688b74;
+  iVar14 = 0;
+  piVar15 = DAT_00688b70 + -0xdf;
+  piVar9 = DAT_00688b70;
+  do {
+    uVar5 = DAT_00688b6c;
+    if ((*piVar9 == 0) || (piVar9[1] == 0)) {
+      iVar2 = pdev_kosd + 0x10;
+      *piVar9 = 0x20;
+      piVar9[1] = 0x20;
+      nvt_info(iVar2,
+               "%s(), [OSD-WARINING]: enPlaneID = %d, Use default [Width x Height] = [%d x %d]\n",
+               uVar5,iVar14,0x20,0x20);
+    }
+    iVar17 = piVar9[1];
+    iVar6 = *(int *)(iVar10 + iVar14 * 8);
+    iVar7 = *(int *)(DAT_00688b78 + iVar14 * 4);
+    iVar3 = *piVar9;
+    piVar15[1] = iVar17;
+    *piVar15 = iVar3;
+    piVar15[2] = iVar3;
+    iVar2 = DAT_00688b7c;
+    iVar7 = iVar7 * iVar17;
+    piVar15[3] = iVar7;
+    if ((iVar6 == 0) || (iVar6 = *(int *)(iVar10 + iVar14 * 8 + 4), iVar6 == 0)) {
+      *(uint *)(iVar2 + iVar14 * 4) = iVar7 * 4 * (iVar3 + 0x1fU & 0xffffffe0);
+    }
+    else {
+      *(uint *)(iVar2 + iVar14 * 4) = iVar6 + 0x1fU & 0xffffffe0;
+    }
+    iVar14 = iVar14 + 1;
+    piVar9 = piVar9 + 2;
+    piVar15 = piVar15 + 0x28;
+  } while (iVar14 != 5);
+  gu32APITraceCtl = gu32OSDTrace;
+  __memzero(local_80 + 5,0x3c);
+  iVar10 = 0;
+  _ker_osd_PMInit();
+  gstDriverCallback = _ker_osd_Get_DriverCallback();
+  do {
+    iVar14 = kmem_cache_alloc_trace(___symbol_get,0x24000c0,0x144);
+    *(int *)(DAT_00688b84 + iVar10 * 4) = iVar14;
+    iVar10 = iVar10 + 1;
+    if (iVar14 == 0) {
+      nvt_err(pdev_kosd + 0x10,"%s(), Can not allocate \"ST_DRV_OSD_GLOBAL_SETTING\" struct!\n",
+              DAT_00688c18);
+      return 0xfffffff4;
+    }
+    __memzero(iVar14,0x144);
+  } while (iVar10 != 2);
+  gpstSepaLvdsSetting = kmem_cache_alloc_trace(_KER_Nerve_FSSeek,0x24000c0,0x28);
+  if (gpstSepaLvdsSetting == 0) {
+    nvt_err(pdev_kosd + 0x10,"%s(), Can not allocate \"ST_DRV_OSD_SEPA_LVDS_SETTING\" struct!\n",
+            DAT_00688c18);
+    return 0xfffffff4;
+  }
+  __memzero(gpstSepaLvdsSetting,0x28);
+  gpstSepaTimeSetting = kmem_cache_alloc_trace(contig_page_data,0x24000c0,0x48);
+  puVar1 = PTR_gaenPlaneID_00688bfc;
+  if (gpstSepaTimeSetting == 0) {
+    nvt_err(pdev_kosd + 0x10,"%s(), Can not allocate \"ST_DRV_OSD_SEPA_TIME_SETTING\" struct!\n",
+            DAT_00688c18);
+    return 0xfffffff4;
+  }
+  iVar10 = 0;
+  __memzero(gpstSepaTimeSetting,0x48);
+  do {
+    uVar11 = *(uint *)(puVar1 + iVar10 * 4);
+    iVar14 = framebuffer_alloc(0x3c8,0);
+    *(int *)(gpstFbInfo + uVar11 * 4) = iVar14;
+    if (iVar14 == 0) {
+      nvt_err(pdev_kosd + 0x10,"%s(), Allocate fb_info struct failed, PlaneID = %d\n",DAT_00688c18,
+              uVar11);
+      return 0xfffffff4;
+    }
+    puVar16 = *(undefined1 **)(iVar14 + 0x2a8);
+    if (puVar16 == (undefined1 *)0x0) {
+      nvt_err(pdev_kosd + 0x10,"%s(), fb_info->par is NULL, PlaneID = %d\n",DAT_00688c18,uVar11);
+      return 0xfffffff4;
+    }
+    __memzero(puVar16,0x3c8);
+    iVar3 = gpstSepaTimeSetting;
+    iVar2 = gpstSepaLvdsSetting;
+    iVar14 = gstDriverCallback;
+    uVar5 = (undefined4)gpstGlobalSetting;
+    if (2 < uVar11) {
+      uVar5 = gpstGlobalSetting._4_4_;
+    }
+    *(undefined4 *)(puVar16 + 0x390) = uVar5;
+    *(int *)(puVar16 + 0x394) = iVar2;
+    *(int *)(puVar16 + 0x398) = iVar3;
+    *puVar16 = 0;
+    puVar16[1] = 0;
+    puVar16[0x3c4] = 0;
+    if (*(code **)(iVar14 + 0x10) == (code *)0x0) {
+      nvt_info(pdev_kosd + 0x10,"%s is NULL !\n","gstDriverCallback->pfSetFbInfoPointer");
+    }
+    else {
+      (**(code **)(iVar14 + 0x10))(uVar11,*(undefined4 *)(gpstFbInfo + uVar11 * 4));
+    }
+    if (uVar11 == 0) {
+      if (*(code **)(gstDriverCallback + 0xdc) == (code *)0x0) {
+LAB_0068803c:
+        nvt_info(pdev_kosd + 0x10,"%s is NULL !\n","gstDriverCallback->pfSetPlaneOrder");
+      }
+      else {
+        (**(code **)(gstDriverCallback + 0xdc))(0,DAT_00688b88);
+      }
+    }
+    else if (uVar11 == 3) {
+      if (*(code **)(gstDriverCallback + 0xdc) == (code *)0x0) goto LAB_0068803c;
+      (**(code **)(gstDriverCallback + 0xdc))(3,DAT_00688b8c);
+    }
+    if (*(code **)(gstDriverCallback + 0x14) == (code *)0x0) {
+      nvt_info(pdev_kosd + 0x10,"%s is NULL !\n","gstDriverCallback->pfPreInitSetting");
+    }
+    else {
+      (**(code **)(gstDriverCallback + 0x14))(uVar11,0);
+    }
+    iVar10 = iVar10 + 1;
+  } while (iVar10 != 5);
+  if (*(code **)(gstDriverCallback + 8) == (code *)0x0) {
+    nvt_info(pdev_kosd + 0x10,"%s is NULL !\n","gstDriverCallback->pfOpen");
+  }
+  else {
+    (**(code **)(gstDriverCallback + 8))();
+  }
+  memset(local_80,0,0x14);
+  uVar5 = DAT_00688bec;
+  if (gu32FastLogoPlaneID == 2) {
+    local_80[0] = gu32FastLogoPlaneID;
+    local_80[1] = 1;
+    local_80[3] = 3;
+    local_80[4] = 4;
+  }
+  else {
+    local_80[1] = 1;
+    local_80[0] = 0;
+    local_80[2] = 2;
+    local_80[3] = 3;
+    local_80[4] = 4;
+  }
+  local_80[4] = 4;
+  local_80[3] = 3;
+  local_80[1] = 1;
+  iVar10 = 0;
+LAB_00688178:
+  piVar9 = (int *)(DAT_00688b74 + iVar10);
+  iVar14 = DAT_00688b74 + iVar10;
+  iVar10 = iVar10 + 8;
+  if ((*piVar9 == 0) || (*(int *)(iVar14 + 4) == 0)) goto LAB_006881a0;
+  iVar10 = 0;
+  do {
+    uVar11 = local_80[iVar10];
+    if (4 < uVar11) {
+      nvt_err(pdev_kosd + 0x10,"%s(), Invalid PlaneID = %d\n",uVar5,uVar11);
+    }
+    if (local_80 + uVar11 * 3 + 5 == (uint *)0x0) {
+      nvt_err(pdev_kosd + 0x10,
+              "%s(), pstBufPhyAddrSize is NULL, Calculate default BufPhyAddrSize failed !\n",uVar5);
+    }
+    else {
+      uVar13 = *(uint *)(gau32PlaneBufAddrSize + uVar11 * 8 + 4);
+      local_80[uVar11 * 3 + 5] = *(uint *)(gau32PlaneBufAddrSize + uVar11 * 8);
+      local_80[uVar11 * 3 + 7] = uVar13;
+    }
+    iVar10 = iVar10 + 1;
+  } while (iVar10 != 5);
+  goto LAB_006883f0;
+LAB_006881a0:
+  if (iVar10 == 0x28) goto LAB_006887bc;
+  goto LAB_00688178;
+LAB_006887bc:
+  if ((((uint)gau32BufAddrSize == 0) && (gau32BufAddrSize._4_4_ == 0)) &&
+     (pcVar4 = (code *)__symbol_get("nvt_mem_find_node_by_name"), pcVar4 != (code *)0x0)) {
+    uVar5 = (*pcVar4)(&_LC268);
+    __symbol_put("nvt_mem_find_node_by_name");
+    pcVar4 = (code *)__symbol_get("nvt_mem_alloc_from_contiguous");
+    if (pcVar4 != (code *)0x0) {
+      iVar10 = (*pcVar4)(uVar5,&local_88);
+      __symbol_put("nvt_mem_alloc_from_contiguous");
+      if (iVar10 == 0) {
+        gau32BufAddrSize._0_4_ = local_88;
+        gau32BufAddrSize._4_4_ = local_84;
+      }
+      else {
+        nvt_err(pdev_kosd + 0x10,"nvt_mem_alloc_from_contiguous fail\n");
+      }
+    }
+  }
+  uVar5 = DAT_00688bec;
+  if (((uint)gau32BufAddrSize == 0) && (gau32BufAddrSize._4_4_ == 0)) {
+    iVar10 = 0;
+    do {
+      uVar11 = local_80[iVar10];
+      if (4 < uVar11) {
+        nvt_err(pdev_kosd + 0x10,"%s(), Invalid PlaneID = %d\n",uVar5,uVar11);
+      }
+      if (local_80 + uVar11 * 3 + 5 == (uint *)0x0) {
+        nvt_err(pdev_kosd + 0x10,
+                "%s(), pstBufPhyAddrSize is NULL, Calculate default BufPhyAddrSize failed !\n",uVar5
+               );
+      }
+      else {
+        local_80[uVar11 * 3 + 5] = 0;
+        local_80[uVar11 * 3 + 7] = 0;
+      }
+      iVar10 = iVar10 + 1;
+    } while (iVar10 != 5);
+  }
+  else {
+    iVar10 = 0;
+    uVar11 = (uint)gau32BufAddrSize;
+    do {
+      uVar13 = local_80[iVar10];
+      if (4 < uVar13) {
+        nvt_err(pdev_kosd + 0x10,"%s(), Invalid PlaneID = %d\n",uVar5,uVar13);
+      }
+      if (local_80 + uVar13 * 3 + 5 == (uint *)0x0) {
+        nvt_err(pdev_kosd + 0x10,
+                "%s(), pstBufPhyAddrSize is NULL, Calculate default BufPhyAddrSize failed !\n",uVar5
+               );
+      }
+      else {
+        uVar8 = *(uint *)(gau32PlaneMemSize + uVar13 * 4);
+        local_80[uVar13 * 3 + 5] = uVar11;
+        local_80[uVar13 * 3 + 7] = uVar8;
+        uVar11 = uVar8 + uVar11;
+      }
+      iVar10 = iVar10 + 1;
+    } while (iVar10 != 5);
+  }
+LAB_006883f0:
+  pcVar4 = (code *)__symbol_get("nvt_mem_find_node_by_name");
+  if (pcVar4 != (code *)0x0) {
+    uVar5 = (*pcVar4)(&_LC271);
+    __symbol_put("nvt_mem_find_node_by_name");
+    pcVar4 = (code *)__symbol_get("nvt_mem_alloc_from_contiguous");
+    if (pcVar4 != (code *)0x0) {
+      iVar10 = (*pcVar4)(uVar5,local_80);
+      __symbol_put("nvt_mem_alloc_from_contiguous");
+      if (iVar10 == 0) {
+        gau32BufAddrSize_2._0_4_ = local_80[0];
+        gau32BufAddrSize_2._4_4_ = local_80[1];
+        nvt_info(pdev_kosd + 0x10,"osd2 addr=0x%lx size=0x%lx\n",local_80[0],local_80[1]);
+      }
+      else {
+        nvt_err(pdev_kosd + 0x10,"nvt_mem_alloc_from_contiguous fail\n");
+      }
+    }
+  }
+  uVar5 = DAT_00688bb8;
+  piVar9 = DAT_00688bb4 + 0x3f;
+  puVar12 = DAT_00688bb4;
+  iVar10 = 0;
+  do {
+    piVar9 = piVar9 + 1;
+    iVar14 = *piVar9;
+    iVar2 = iVar10 + 0xc;
+    uVar8 = *(uint *)((int)local_80 + iVar10 + 0x1c);
+    puVar12[1] = *(undefined4 *)((int)local_80 + iVar10 + 0x14);
+    *puVar12 = 1;
+    puVar12[3] = uVar8;
+    uVar13 = gau32BufAddrSize_2._4_4_;
+    uVar11 = (uint)gau32BufAddrSize_2;
+    if (iVar14 != 0) {
+      *puVar12 = 2;
+      puVar12[4] = uVar8;
+      puVar12[2] = uVar11;
+      if (uVar13 < uVar8) {
+        nvt_err(pdev_kosd + 0x10,"%s(), Mau1 memory size OOM needed:%8x > osd_mau1.size: %8x\n",
+                uVar5,uVar8,uVar13);
+      }
+    }
+    puVar12 = puVar12 + 5;
+    iVar10 = iVar2;
+  } while (iVar2 != 0x24);
+  iVar10 = 0;
+  do {
+    uVar11 = *(uint *)(PTR_gaenPlaneID_00688bfc + iVar10 * 4);
+    iVar14 = uVar11 * 4;
+    iVar2 = *(int *)(*(int *)(gpstFbInfo + iVar14) + 0x2a8);
+    if (4 < uVar11) {
+      uVar13 = 0xffffffff;
+      nvt_err(pdev_kosd + 0x10,"Invalid PlaneID = %d!\n",uVar11 + 1);
+LAB_00688774:
+      nvt_err(pdev_kosd + 0x10,"%s(), Failed to initialize PlaneID = %d\n",DAT_00688c18,uVar11);
+      return uVar13;
+    }
+    iVar3 = *(int *)(gpstFbInfo + iVar14);
+    memcpy((void *)(iVar3 + 0xf4),(void *)(uVar11 * 0x44 + DAT_00688bbc),0x44);
+    memcpy((void *)(iVar3 + 0x54),(void *)(uVar11 * 0xa0 + DAT_00688bc0),0xa0);
+    *(undefined **)(iVar3 + 0x284) = PTR_gstOSDfbOps_00688bc4;
+    uVar13 = local_80[uVar11 * 3 + 7];
+    *(uint *)(iVar3 + 0x104) = local_80[uVar11 * 3 + 5];
+    *(uint *)(iVar3 + 0x108) = uVar13;
+    uVar5 = ioremap();
+    *(undefined4 *)(iVar3 + 0x294) = uVar5;
+    *(uint *)(iVar2 + 4) = uVar11;
+    iVar3 = *(int *)(gpstFbInfo + iVar14);
+    *(undefined4 *)(iVar2 + 8) = 0;
+    *(undefined4 *)(iVar2 + 0x78) = *(undefined4 *)(iVar3 + 0x104);
+    uVar5 = *(undefined4 *)(iVar3 + 0x108);
+    *(undefined4 *)(iVar2 + 0x40) = 0;
+    *(undefined4 *)(iVar2 + 0x44) = 0;
+    *(undefined4 *)(iVar2 + 0x80) = uVar5;
+    *(undefined4 *)(iVar2 + 0x3c) = 0xff;
+    *(undefined4 *)(iVar2 + 0x48) = *(undefined4 *)(iVar3 + 0x54);
+    *(undefined4 *)(iVar2 + 0x4c) = *(undefined4 *)(iVar3 + 0x58);
+    if ((*(int *)(iVar2 + 0x58) == 0) || (*(int *)(iVar2 + 0x5c) == 0)) {
+      *(undefined4 *)(iVar2 + 0x50) = 0;
+      *(undefined4 *)(iVar2 + 0x54) = 0;
+      *(undefined4 *)(iVar2 + 0x58) = *(undefined4 *)(iVar3 + 0x54);
+      *(undefined4 *)(iVar2 + 0x5c) = *(undefined4 *)(iVar3 + 0x58);
+    }
+    *(undefined4 *)(iVar2 + 0x380) = 0;
+    *(undefined4 *)(iVar2 + 0x3a8) = 0;
+    *(undefined4 *)(iVar2 + 0x3b8) = 1;
+    *(undefined4 *)(iVar2 + 0x3ac) = 0xdead4ead;
+    *(int *)(iVar2 + 0x3bc) = iVar2 + 0x3bc;
+    *(int *)(iVar2 + 0x3c0) = iVar2 + 0x3bc;
+    *(undefined4 *)(iVar2 + 0x3b0) = 0xffffffff;
+    *(undefined4 *)(iVar2 + 0x3b4) = 0xffffffff;
+    iVar2 = _ker_osd_fb_CheckVar(iVar3 + 0x54);
+    if ((iVar2 == 0) && (uVar11 != gu32FastLogoPlaneID)) {
+      _ker_osd_fb_SetPar(*(undefined4 *)(gpstFbInfo + iVar14));
+    }
+    uVar13 = register_framebuffer(*(undefined4 *)(gpstFbInfo + iVar14));
+    if ((int)uVar13 < 0) {
+      nvt_err(pdev_kosd + 0x10,"%s(), Register fb%d failed!\n",DAT_00688c10,uVar11);
+      goto LAB_00688774;
+    }
+    iVar10 = iVar10 + 1;
+    if (iVar10 == 5) {
+      KER_OSD_DebugMenuInit();
+      return 0;
+    }
+  } while( true );
+}
+
+ (GhidraScript)  

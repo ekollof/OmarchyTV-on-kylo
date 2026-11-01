@@ -1,0 +1,8 @@
+# build outputs
+/build/
+/build-arm/
+/build-tv/
+
+# vendor libraries extracted from the firmware image (Vestel/Novatek copyright,
+# never redistribute) - regenerate with `make vendor`
+/vendor/

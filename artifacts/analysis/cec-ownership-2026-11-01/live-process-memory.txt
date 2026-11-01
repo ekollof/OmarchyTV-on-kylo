@@ -1,0 +1,25 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+PIDS
+1899 1737
+PS
+ 1545 root      0:14 /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+ 1657 root      0:00 /bin/sh /mtd_apexe/board/run_aurora.sh
+ 1737 root     15:15 /vendor/com.nvt.idtv/aurora.elf
+ 1899 root      0:00 [aurora.elf]
+ 2234 root      0:17 {keepalive.sh} /bin/sh /conf/remotelf/keepalive.sh
+ 3407 root      0:00 sh -c printf "PIDS\n"; pidof aurora.elf; printf "PS\n"; ps w | grep -E "aurora|appmgr|keepalive"; printf "COMM\n"; cat /proc/1899/comm /proc/1737/comm; printf "MEM_READ\n"; dd if=/proc/1899/mem bs=1 skip=26715064 count=16 | od -An -tx1; printf "MAPS\n"; head -4 /proc/1899/maps; printf "KCEC\n"; ls -l /sys/module/ntkdriver_nondovi/parameters/KCEC_major; cat /sys/module/ntkdriver_nondovi/parameters/KCEC_major 2>/dev/null; true
+ 3410 root      0:00 grep -E aurora|appmgr|keepalive
+COMM
+aurora.elf
+aurora.elf
+MEM_READ
+0+0 records in
+0+0 records out
+0 bytes (0B) copied, 0.000080 seconds, 0B/s
+MAPS
+KCEC
+ls: /sys/module/ntkdriver_nondovi/parameters/KCEC_major: No such file or directory

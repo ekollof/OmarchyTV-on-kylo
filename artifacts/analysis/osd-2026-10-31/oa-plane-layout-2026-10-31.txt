@@ -1,0 +1,226 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (1297 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (2721 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts
+    /tmp/opencode/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_ndal3/ndal3 (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_ndal3/ndal3 (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /libNDAL3.so (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFuncs.java 'Hal_Video_Print_DrmPlaneInfo' 'Hal_Video_Set_V4l2Drm' 'Hal_Video_Get_V4l2Drm' 'Hal_Video_Libdrm_drmModeSetPlane'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/opencode/ghidra_scripts/DumpFuncs.java (HeadlessAnalyzer)  
+INFO  DumpFuncs.java> 
+===== Hal_Video_Print_DrmPlaneInfo : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Hal_Video_Print_DrmPlaneInfo @ 4e7c42a4 (GhidraScript)  
+INFO  DumpFuncs.java> 
+void Hal_Video_Print_DrmPlaneInfo(int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  int iVar3;
+  int *piVar4;
+  undefined4 uVar5;
+  int *piVar6;
+  
+  iVar3 = DAT_4e7c43ac + 0x4e7c42c2;
+  piVar4 = *(int **)(iVar3 + DAT_4e7c43b0);
+  iVar2 = *piVar4;
+  iVar1 = Hal_Debug_TraceMask();
+  if (iVar1 << 0x1d < 0) {
+    printf((char *)(DAT_4e7c43e0 + 0x4e7c438c),DAT_4e7c43dc + 0x4e7c438a);
+    puts((char *)(DAT_4e7c43e4 + 0x4e7c4394));
+  }
+  piVar6 = *(int **)(iVar3 + DAT_4e7c43b4);
+  if (*piVar6 == 0) {
+    uVar5 = 0xffffffff;
+    puts((char *)(DAT_4e7c43e8 + 0x4e7c43a2));
+  }
+  else {
+    uVar5 = 0;
+    param_1 = param_1 * 0x30;
+    iVar3 = DAT_4e7c43b8 + 0x4e7c42f0;
+    printf((char *)(DAT_4e7c43bc + 0x4e7c42f4),iVar3,*(undefined4 *)(*piVar6 + 0xc));
+    printf((char *)(DAT_4e7c43c0 + 0x4e7c4304),iVar3,*(undefined4 *)(*piVar6 + 0x10));
+    printf((char *)(DAT_4e7c43c4 + 0x4e7c4316),iVar3,*(undefined4 *)(*piVar6 + param_1 + 8));
+    iVar1 = *piVar6 + param_1;
+    printf((char *)(DAT_4e7c43c8 + 0x4e7c4336),iVar3,*(undefined4 *)(iVar1 + 0x28),
+           *(undefined4 *)(iVar1 + 0x2c),*(undefined4 *)(iVar1 + 0x34),*(undefined4 *)(iVar1 + 0x30)
+          );
+    param_1 = param_1 + *piVar6;
+    printf((char *)(DAT_4e7c43cc + 0x4e7c4348),iVar3,*(undefined4 *)(param_1 + 0x18),
+           *(undefined4 *)(param_1 + 0x1c),*(undefined4 *)(param_1 + 0x20),
+           *(undefined4 *)(param_1 + 0x24));
+  }
+  iVar1 = Hal_Debug_TraceMask();
+  if (iVar1 << 0x1d < 0) {
+    printf((char *)(DAT_4e7c43d4 + 0x4e7c4366),DAT_4e7c43d0 + 0x4e7c4364);
+    puts((char *)(DAT_4e7c43d8 + 0x4e7c436e));
+  }
+  if (iVar2 == *piVar4) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(uVar5);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== Hal_Video_Set_V4l2Drm : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Hal_Video_Set_V4l2Drm @ 4e7c4138 (GhidraScript)  
+INFO  DumpFuncs.java> 
+void Hal_Video_Set_V4l2Drm(int param_1,void *param_2)
+
+{
+  int iVar1;
+  int iVar2;
+  int *piVar3;
+  
+  piVar3 = *(int **)(DAT_4e7c41d4 + 0x4e7c4156 + DAT_4e7c41d8);
+  iVar2 = *piVar3;
+  iVar1 = Hal_Debug_TraceMask();
+  if (iVar1 << 0x1d < 0) {
+    printf((char *)(DAT_4e7c41f0 + 0x4e7c41c2),DAT_4e7c41ec + 0x4e7c41c0);
+    puts((char *)(DAT_4e7c41f4 + 0x4e7c41ca));
+  }
+  iVar1 = DAT_4e7c41dc + 0x4e7c417c;
+  memcpy((void *)(param_1 * 0x1b0 + 8 + iVar1),param_2,0x1a4);
+  *(undefined4 *)(iVar1 + param_1 * 0x1b0) = 1;
+  iVar1 = Hal_Debug_TraceMask();
+  if (iVar1 << 0x1d < 0) {
+    printf((char *)(DAT_4e7c41e4 + 0x4e7c419a),DAT_4e7c41e0 + 0x4e7c4198);
+    puts((char *)(DAT_4e7c41e8 + 0x4e7c41a2));
+  }
+  if (iVar2 == *piVar3) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(0);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== Hal_Video_Get_V4l2Drm : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Hal_Video_Get_V4l2Drm @ 4e7c41f8 (GhidraScript)  
+INFO  DumpFuncs.java> 
+void Hal_Video_Get_V4l2Drm(int param_1,void *param_2)
+
+{
+  int iVar1;
+  int iVar2;
+  int *piVar3;
+  
+  piVar3 = *(int **)(DAT_4e7c4280 + 0x4e7c4214 + DAT_4e7c4284);
+  iVar2 = *piVar3;
+  iVar1 = Hal_Debug_TraceMask();
+  if (iVar1 << 0x1d < 0) {
+    printf((char *)(DAT_4e7c429c + 0x4e7c4270),DAT_4e7c4298 + 0x4e7c426e);
+    puts((char *)(DAT_4e7c42a0 + 0x4e7c4278));
+  }
+  memcpy(param_2,(void *)(param_1 * 0x1b0 + DAT_4e7c4288 + 0x4e7c423a),0x1a4);
+  iVar1 = Hal_Debug_TraceMask();
+  if (iVar1 << 0x1d < 0) {
+    printf((char *)(DAT_4e7c4290 + 0x4e7c424c),DAT_4e7c428c + 0x4e7c424a);
+    puts((char *)(DAT_4e7c4294 + 0x4e7c4254));
+  }
+  if (iVar2 == *piVar3) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(0);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== Hal_Video_Libdrm_drmModeSetPlane : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Hal_Video_Libdrm_drmModeSetPlane @ 4e7c81bc (GhidraScript)  
+INFO  DumpFuncs.java> 
+void Hal_Video_Libdrm_drmModeSetPlane
+               (undefined4 param_1,undefined4 param_2,undefined4 param_3,undefined4 param_4,
+               undefined4 param_5,undefined4 param_6,undefined4 param_7,undefined4 param_8,
+               undefined4 param_9,undefined4 param_10,undefined4 param_11,undefined4 param_12,
+               undefined4 param_13)
+
+{
+  int *piVar1;
+  undefined4 local_4c;
+  undefined4 local_48;
+  undefined4 local_44;
+  undefined4 local_40;
+  undefined4 local_3c;
+  undefined4 local_38;
+  undefined4 local_34;
+  undefined4 local_30;
+  undefined4 local_2c;
+  undefined4 local_28;
+  undefined4 local_24;
+  undefined4 local_20;
+  int local_1c;
+  
+  piVar1 = *(int **)(DAT_4e7c8228 + 0x4e7c81d8 + DAT_4e7c822c);
+  local_1c = *piVar1;
+  local_40 = param_5;
+  local_34 = param_8;
+  local_3c = param_6;
+  local_38 = param_7;
+  local_24 = param_13;
+  local_2c = param_10;
+  local_30 = param_9;
+  local_28 = param_11;
+  local_20 = param_12;
+  local_4c = param_2;
+  local_48 = param_3;
+  local_44 = param_4;
+  Hal_Video_Libdrm_drmIoctl(param_1,0xc03064b7,&local_4c);
+  if (local_1c == *piVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail();
+}
+
+ (GhidraScript)  

@@ -1,0 +1,534 @@
+/*
+ * control.c — the control plane: a unix socket plus stdin.
+ *
+ * This is what makes the modular design usable: modules can be loaded, started,
+ * stopped, unloaded and reloaded on a running TV without touching the screen
+ * logic, and anything that goes wrong is one command away from being replaced.
+ */
+#include <errno.h>
+#include <fcntl.h>
+#include <inttypes.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/un.h>
+#include <unistd.h>
+
+#include "openaurora/events.h"
+#include "openaurora/module.h"
+#include "host.h"
+
+/* Full module/service tables fit without truncating normal diagnostics. */
+#define CONTROL_REPLY_MAX 16384
+#define CONTROL_QUEUE_MAX (2 * CONTROL_REPLY_MAX)
+
+struct input {
+    size_t len;
+    int discard;
+    char buf[512];
+};
+
+struct client {
+    int fd;
+    uint32_t watch;
+    unsigned events;
+    int eof;
+    struct input input;
+    size_t sent, pending;
+    char output[CONTROL_QUEUE_MAX];
+};
+
+static struct {
+    int listen_fd;
+    uint32_t listen_watch;
+    uint32_t stdin_watch;
+    oa_host *owner;
+    struct input stdin_input;
+    char path[sizeof(((struct sockaddr_un *)0)->sun_path)];
+    dev_t dev;
+    ino_t ino;
+    struct client clients[MAX_CLIENTS];
+} g_ctl = { .listen_fd = -1 };
+
+/* ------------------------------------------------------------------ output */
+
+static void out(oa_host *h, int fd, const char *fmt, ...)
+{
+    (void)h;
+    char line[CONTROL_REPLY_MAX];
+    va_list ap;
+    va_start(ap, fmt);
+    int n = vsnprintf(line, sizeof line, fmt, ap);
+    va_end(ap);
+    if (n < 0)
+        return;
+    if ((size_t)n > sizeof line - 1)
+        n = sizeof line - 1;
+    ssize_t r = write(fd, line, (size_t)n);
+    (void)r;
+}
+
+/* ---------------------------------------------------------------- commands */
+
+struct reply {
+    char *buf;
+    size_t cap;
+    size_t used;
+};
+
+static int decimal(const char *text, uint64_t *out)
+{
+    if (!text || !*text) return -1;
+    for (const char *p = text; *p; p++) if (*p < '0' || *p > '9') return -1;
+    char *end;
+    errno = 0;
+    unsigned long long value = strtoull(text, &end, 10);
+    if (errno || *end || value > UINT64_MAX) return -1;
+    *out = (uint64_t)value;
+    return 0;
+}
+
+/* snprintf returns the length it wanted, which must never become a cursor or
+ * be subtracted from capacity after truncation. Keep only bytes actually stored. */
+static void append(struct reply *r, const char *fmt, ...)
+{
+    if (r->used >= r->cap || r->cap - r->used <= 1)
+        return;
+    va_list ap;
+    va_start(ap, fmt);
+    int n = vsnprintf(r->buf + r->used, r->cap - r->used, fmt, ap);
+    va_end(ap);
+    if (n < 0) return;
+    size_t avail = r->cap - r->used - 1;
+    r->used += (size_t)n < avail ? (size_t)n : avail;
+}
+
+static void cmd_list(oa_host *h, char *outbuf, size_t outlen)
+{
+    struct reply r = { outbuf, outlen, 0 };
+    int count = 0;
+    for (int i = 0; i < MAX_MODULES; i++) {
+        oa_mod *m = &h->mods[i];
+        if (m->state == OA_ST_EMPTY)
+            continue;
+        append(&r, "%-14s %-9s id=%-3u %s\n", m->name,
+               oa_state_name(m->state), m->id, m->path);
+        count++;
+    }
+    if (!count) append(&r, "(no modules loaded)\n");
+}
+
+static void cmd_status(oa_host *h, const char *name, char *outbuf, size_t outlen)
+{
+    struct reply reply = { outbuf, outlen, 0 };
+    oa_mod *m = oa_host_find_module(h, name);
+    if (!m) {
+        append(&reply, "no such module: %s\n", name);
+        return;
+    }
+    append(&reply, "name    %s\nstate   %s\nversion %s\npath    %s\nrequires",
+           m->name, oa_state_name(m->state), m->desc->version ? m->desc->version : "?", m->path);
+    for (int i = 0; i < OA_REQUIRES_MAX; i++) {
+        const char *r = m->desc->requires[i];
+        if (!r || !*r)
+            break;
+        append(&reply, " %s", r);
+    }
+    append(&reply, "\ncleanup_pending %d\nactivation_rejected %d\nservices",
+           m->cleanup_pending, m->init_failed || m->rejected);
+    for (int i = 0; i < MAX_SVCS; i++)
+        if (h->svcs[i].used && h->svcs[i].owner == m->id)
+            append(&reply, " %s:v%u", h->svcs[i].name, h->svcs[i].version);
+    append(&reply, "\n");
+}
+
+/*
+ * returns 0 ok, -1 error, 1 = quit
+ */
+int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
+{
+    if (outlen) outbuf[0] = 0;
+    char *save = NULL;
+    char *cmd = strtok_r(line, " \t\r\n", &save);
+    if (!cmd || !*cmd)
+        return 0;
+    char *a1 = strtok_r(NULL, " \t\r\n", &save);
+    char *a2 = strtok_r(NULL, " \t\r\n", &save);
+    int force = a2 && (!strcmp(a2, "--force") || !strcmp(a1 ? a1 : "", "--force"));
+    if (a1 && !strcmp(a1, "--force")) {
+        a1 = a2;
+        force = 1;
+    }
+
+    if (!strcmp(cmd, "help")) {
+        snprintf(outbuf, outlen,
+                 "commands:\n"
+                 "  list                     module table\n"
+                 "  status <name>            details\n"
+                 "  load <name|path>         dlopen + init\n"
+                 "  start <name>             start (after deps)\n"
+                 "  stop <name>              stop\n"
+                 "  unload <name> [--force]  stop + destroy + dlclose\n"
+                 "  reload <name> [--force]  hot reload with state handoff\n"
+                 "  suspend | resume         standby hooks for all modules\n"
+                 "  standby                  coordinated power service request\n"
+                 "  mixer-query <0-5>        submit read-only gain query\n"
+                 "  mixer-result <ticket>    collect query result\n"
+                 "  mixer-cancel <ticket>    discard/drain query\n"
+                 "  loglevel <0-3>\n"
+                 "  quit\n");
+        return 0;
+    }
+    if (!strcmp(cmd, "mixer-query") || !strcmp(cmd, "mixer-result") || !strcmp(cmd, "mixer-cancel")) {
+        uint64_t value;
+        int query = !strcmp(cmd, "mixer-query");
+        int error = 0, rc = -1;
+        if (a2 || decimal(a1, &value) || (query ? value > 5 : value == 0)) error = EINVAL;
+        else if (query && (h->shutting_down || h->stop_requested)) error = ESHUTDOWN;
+        if (error) { snprintf(outbuf, outlen, "failed errno %d\n", error); return -1; }
+        const oa_audio_mixer_iface *mixer = h->api.lookup(h, OA_SVC_AUDIO_MIXER, 1);
+        if (!mixer) { snprintf(outbuf, outlen, "failed errno %d\n", ENODEV); return -1; }
+        if (query) {
+            uint64_t ticket;
+            rc = mixer->gain((unsigned)value, &ticket);
+            error = errno;
+            if (!rc) snprintf(outbuf, outlen, "ticket %" PRIu64 "\n", ticket);
+        } else if (!strcmp(cmd, "mixer-result")) {
+            oa_audio_broker_reply reply;
+            rc = mixer->take(value, &reply);
+            error = errno;
+            if (rc == 0) snprintf(outbuf, outlen, "pending %" PRIu64 "\n", value);
+            else if (rc == 1) snprintf(outbuf, outlen,
+                "result %" PRIu64 " error %d device %u left %u right %u\n",
+                reply.ticket, reply.error, reply.gain.device, reply.gain.left, reply.gain.right);
+        } else {
+            rc = mixer->cancel(value);
+            error = errno;
+            if (!rc) snprintf(outbuf, outlen, "ok\n");
+        }
+        h->api.release(h, OA_SVC_AUDIO_MIXER);
+        if (rc < 0) snprintf(outbuf, outlen, "failed errno %d\n", error);
+        return rc < 0 ? -1 : 0;
+    }
+    if (!strcmp(cmd, "list")) {
+        cmd_list(h, outbuf, outlen);
+        return 0;
+    }
+    if (!strcmp(cmd, "status") && a1) {
+        cmd_status(h, a1, outbuf, outlen);
+        return 0;
+    }
+    if (!strcmp(cmd, "load") && a1) {
+        oa_mod *m = oa_module_load(h, a1);
+        snprintf(outbuf, outlen, "%s %s\n", m ? "ok" : "failed", a1);
+        return m ? 0 : -1;
+    }
+    if (!strcmp(cmd, "start") && a1) {
+        oa_mod *m = oa_host_find_module(h, a1);
+        int rc = m ? oa_module_start(h, m) : -1;
+        snprintf(outbuf, outlen, "%s\n", rc == 0 ? "ok" : "failed");
+        return rc;
+    }
+    if (!strcmp(cmd, "stop") && a1) {
+        oa_mod *m = oa_host_find_module(h, a1);
+        if (!m) {
+            snprintf(outbuf, outlen, "no such module\n");
+            return -1;
+        }
+        int rc = oa_module_stop(h, m);
+        snprintf(outbuf, outlen, "%s\n", rc == 0 ? "ok" : "failed");
+        return rc;
+    }
+    if (!strcmp(cmd, "unload") && a1) {
+        int rc = oa_module_unload(h, a1, force);
+        snprintf(outbuf, outlen, "%s\n", rc == 0 ? "ok" : "failed");
+        return rc;
+    }
+    if (!strcmp(cmd, "reload") && a1) {
+        int rc = oa_module_reload(h, a1, force);
+        snprintf(outbuf, outlen, "%s\n", rc == 0 ? "ok" : "failed");
+        return rc;
+    }
+    if (!strcmp(cmd, "suspend")) {
+        int rc = oa_module_suspend_all(h);
+        snprintf(outbuf, outlen, rc == 0 ? "ok\n" : "suspend failed\n");
+        return rc;
+    }
+    if (!strcmp(cmd, "standby")) {
+        const oa_power_iface *power = h->api.lookup(h, OA_SVC_POWER, 1);
+        int rc = power ? power->standby() : -1;
+        snprintf(outbuf, outlen, rc == 0 ? "ok\n" : "standby failed\n");
+        return rc;
+    }
+    if (!strcmp(cmd, "resume")) {
+        int rc = oa_module_resume_all(h);
+        snprintf(outbuf, outlen, rc == 0 ? "ok\n" : "resume failed\n");
+        return rc;
+    }
+    if (!strcmp(cmd, "loglevel") && a1) {
+        h->log_level = atoi(a1);
+        snprintf(outbuf, outlen, "loglevel %d\n", h->log_level);
+        return 0;
+    }
+    if (!strcmp(cmd, "quit") || !strcmp(cmd, "exit")) {
+        snprintf(outbuf, outlen, "bye\n");
+        return 1;
+    }
+    snprintf(outbuf, outlen, "unknown command: %s (try 'help')\n", cmd);
+    return -1;
+}
+
+/* -2 needs more input; otherwise the command result. Discard an entire bad
+ * line, never execute the tail of an overlong command as another command. */
+static int next_command(oa_host *h, struct input *in, char *reply)
+{
+    char *end = memchr(in->buf, '\n', in->len);
+    if (!end) {
+        if (in->len == sizeof in->buf) {
+            in->discard = 1;
+            in->len = 0;
+        }
+        return -2;
+    }
+    size_t len = (size_t)(end - in->buf);
+    int rc;
+    if (in->discard || memchr(in->buf, 0, len)) {
+        snprintf(reply, CONTROL_REPLY_MAX, "error: command too long or contains NUL\n");
+        rc = -1;
+    } else {
+        *end = 0;
+        rc = oa_control_command(h, in->buf, reply, CONTROL_REPLY_MAX);
+    }
+    memmove(in->buf, end + 1, in->len - len - 1);
+    in->len -= len + 1;
+    in->discard = 0;
+    return rc;
+}
+
+/* ------------------------------------------------------------------ io */
+
+static void on_client(void *ud, int fd, unsigned rev);
+
+static void client_close(oa_host *h, struct client *c)
+{
+    if (c->watch) h->api.watch_del(h, c->watch);
+    if (c->fd >= 0) close(c->fd);
+    memset(c, 0, sizeof *c);
+    c->fd = -1;
+}
+
+static int client_flush(oa_host *h, struct client *c)
+{
+    while (c->sent < c->pending) {
+        ssize_t n = send(c->fd, c->output + c->sent, c->pending - c->sent,
+                         MSG_DONTWAIT | MSG_NOSIGNAL);
+        if (n > 0) c->sent += (size_t)n;
+        else if (n < 0 && errno == EINTR) continue;
+        else if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) return 0;
+        else {
+            client_close(h, c);
+            return -1;
+        }
+    }
+    c->sent = c->pending = 0;
+    return 0;
+}
+
+static size_t client_space(const struct client *c)
+{
+    return sizeof c->output - (c->pending - c->sent);
+}
+
+static void client_commands(oa_host *h, struct client *c)
+{
+    while (c->fd >= 0 && client_space(c) >= CONTROL_REPLY_MAX) {
+        char reply[CONTROL_REPLY_MAX];
+        int rc = next_command(h, &c->input, reply);
+        if (rc == -2) break;
+        if (c->sent) {
+            memmove(c->output, c->output + c->sent, c->pending - c->sent);
+            c->pending -= c->sent;
+            c->sent = 0;
+        }
+        size_t len = strlen(reply);
+        memcpy(c->output + c->pending, reply, len);
+        c->pending += len;
+        int failed = client_flush(h, c) != 0;
+        if (rc == 1) {
+            /* Shutdown is immediate; a blocked reader cannot defer quit. */
+            oa_host_quit(h);
+            return;
+        }
+        if (failed) return;
+    }
+}
+
+static void client_watch(oa_host *h, struct client *c)
+{
+    unsigned events = (!c->eof && client_space(c) >= CONTROL_REPLY_MAX) ? OA_WATCH_READ : 0;
+    if (c->pending > c->sent) events |= OA_WATCH_WRITE;
+    if (!events) {
+        client_close(h, c);
+        return;
+    }
+    if (c->watch && c->events == events) return;
+    if (c->watch) h->api.watch_del(h, c->watch);
+    c->events = events;
+    c->watch = h->api.watch_add(h, c->fd, events, on_client, h);
+    if (!c->watch) client_close(h, c);
+}
+
+static void on_accept(void *ud, int fd, unsigned rev)
+{
+    (void)rev;
+    oa_host *h = ud;
+    int c = accept4(fd, NULL, NULL, SOCK_NONBLOCK | SOCK_CLOEXEC);
+    if (c < 0)
+        return;
+    for (int i = 0; i < MAX_CLIENTS; i++)
+        if (g_ctl.clients[i].fd < 0) {
+            g_ctl.clients[i].fd = c;
+            client_watch(h, &g_ctl.clients[i]);
+            return;
+        }
+    close(c);
+}
+
+static void on_client(void *ud, int fd, unsigned rev)
+{
+    oa_host *h = ud;
+    struct client *c = NULL;
+    for (int i = 0; i < MAX_CLIENTS; i++)
+        if (g_ctl.clients[i].fd == fd) {
+            c = &g_ctl.clients[i];
+            break;
+        }
+    if (!c)
+        return;
+    if (rev & OA_WATCH_ERR) {
+        client_close(h, c);
+        return;
+    }
+    if (client_flush(h, c) != 0) return;
+    client_commands(h, c);
+    if (c->fd < 0 || !h->running) return;
+    if ((rev & OA_WATCH_READ) && !c->eof && client_space(c) >= CONTROL_REPLY_MAX) {
+        struct input *in = &c->input;
+        ssize_t n = read(fd, in->buf + in->len, sizeof in->buf - in->len);
+        if (n > 0) in->len += (size_t)n;
+        else if (n == 0) c->eof = 1;
+        else if (errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
+            client_close(h, c);
+            return;
+        }
+        client_commands(h, c);
+    }
+    if (c->fd >= 0 && h->running) client_watch(h, c);
+}
+
+static void on_stdin(void *ud, int fd, unsigned rev)
+{
+    (void)rev;
+    oa_host *h = ud;
+    struct input *in = &g_ctl.stdin_input;
+    ssize_t n = read(fd, in->buf + in->len, sizeof in->buf - in->len);
+    if (n <= 0) {
+        if (n < 0 && (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK)) return;
+        /* EOF: stop watching stdin, keep the process alive */
+        if (g_ctl.stdin_watch) {
+            h->api.watch_del(h, g_ctl.stdin_watch);
+            g_ctl.stdin_watch = 0;
+        }
+        return;
+    }
+    in->len += (size_t)n;
+    char reply[CONTROL_REPLY_MAX];
+    int rc;
+    while ((rc = next_command(h, in, reply)) != -2) {
+        if (*reply) out(h, 1, "%s", reply);
+        if (rc == 1) {
+            oa_host_quit(h);
+            break;
+        }
+    }
+}
+
+/* Only remove a refused, still-identical stale socket. A second core must not
+ * unlink a live listener or a caller's regular file. */
+static int prepare_path(const struct sockaddr_un *sa)
+{
+    struct stat before, after;
+    if (lstat(sa->sun_path, &before) != 0) return errno == ENOENT ? 0 : -1;
+    if (!S_ISSOCK(before.st_mode)) return -1;
+    int fd = socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
+    if (fd < 0) return -1;
+    int rc = connect(fd, (const struct sockaddr *)sa, sizeof *sa);
+    int err = errno;
+    close(fd);
+    if (rc == 0 || err != ECONNREFUSED) return -1;
+    if (lstat(sa->sun_path, &after) != 0 ||
+        before.st_dev != after.st_dev || before.st_ino != after.st_ino) return -1;
+    return unlink(sa->sun_path);
+}
+
+int oa_control_start(oa_host *h, const char *sock_path)
+{
+    if (g_ctl.owner) return -1;
+    memset(&g_ctl, 0, sizeof g_ctl);
+    g_ctl.owner = h;
+    g_ctl.listen_fd = -1;
+    for (int i = 0; i < MAX_CLIENTS; i++)
+        g_ctl.clients[i].fd = -1;
+
+    if (sock_path && *sock_path) {
+        struct sockaddr_un sa;
+        memset(&sa, 0, sizeof sa);
+        sa.sun_family = AF_UNIX;
+        if (strlen(sock_path) >= sizeof sa.sun_path) goto fail;
+        strcpy(sa.sun_path, sock_path);
+        if (prepare_path(&sa) != 0) goto fail;
+        struct stat st;
+        g_ctl.listen_fd = socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
+        if (g_ctl.listen_fd < 0 || bind(g_ctl.listen_fd, (struct sockaddr *)&sa, sizeof sa) != 0) {
+            h->api.log(h, OA_LOG_WARN, "control socket %s: %s", sock_path, strerror(errno));
+            goto fail;
+        }
+        if (lstat(sock_path, &st) != 0) goto fail;
+        strcpy(g_ctl.path, sock_path);
+        g_ctl.dev = st.st_dev;
+        g_ctl.ino = st.st_ino;
+        if (listen(g_ctl.listen_fd, 4) != 0) goto fail;
+        g_ctl.listen_watch = h->api.watch_add(h, g_ctl.listen_fd, OA_WATCH_READ, on_accept, h);
+        if (!g_ctl.listen_watch) goto fail;
+        h->api.log(h, OA_LOG_INFO, "control socket %s", sock_path);
+    }
+
+    g_ctl.stdin_watch = h->api.watch_add(h, 0, OA_WATCH_READ, on_stdin, h);
+    if (!g_ctl.stdin_watch) goto fail;
+    return 0;
+fail:
+    oa_control_stop(h);
+    return -1;
+}
+
+void oa_control_stop(oa_host *h)
+{
+    if (g_ctl.owner != h) return;
+    for (int i = 0; i < MAX_CLIENTS; i++)
+        client_close(h, &g_ctl.clients[i]);
+    if (g_ctl.stdin_watch) h->api.watch_del(h, g_ctl.stdin_watch);
+    if (g_ctl.listen_watch) h->api.watch_del(h, g_ctl.listen_watch);
+    if (g_ctl.listen_fd >= 0) {
+        close(g_ctl.listen_fd);
+        g_ctl.listen_fd = -1;
+    }
+    struct stat st;
+    if (*g_ctl.path && lstat(g_ctl.path, &st) == 0 &&
+        st.st_dev == g_ctl.dev && st.st_ino == g_ctl.ino)
+        unlink(g_ctl.path);
+    memset(&g_ctl, 0, sizeof g_ctl);
+    g_ctl.listen_fd = -1;
+}

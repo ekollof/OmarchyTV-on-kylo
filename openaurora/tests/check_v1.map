@@ -1,0 +1,3 @@
+OA_CHECK_1 {
+    global: oa_check_dependency;
+};

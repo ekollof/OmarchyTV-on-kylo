@@ -1,0 +1,479 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-reload-sanitize/core/check.o core/check.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-reload-sanitize/core/control.o core/control.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-reload-sanitize/core/host.o core/host.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-reload-sanitize/core/module.o core/module.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-reload-sanitize/tests/ui_clock tests/ui_clock.c build-reload-sanitize/core/check.o build-reload-sanitize/core/control.o build-reload-sanitize/core/host.o build-reload-sanitize/core/module.o -ldl -pthread
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-reload-sanitize/modules/mod_ui_clock.so modules/ui_clock/ui_clock.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-reload-sanitize/modules/mod_ticker.so modules/ticker/ticker.c -fsanitize=address,undefined \
+   \
+  
+[974508] ERR  host         ui_clock: missing required service 'clock'
+[974508] ERR  ui_clock     timer table full
+[974508] ERR  host         ui_clock: start() failed (-1)
+[974508] ERR  ui_clock     publish ui.clock: already published by module 0
+[974508] ERR  host         ui_clock: start() failed (-1)
+[974508] ERR  host         ticker: required by active module 'ui_clock'
+  ok   FROST quantum boundaries, correction carry and raw/corrected 90000000-ms rollover
+  ok   real DSO reload preserves clock state, replaces owned timer and rejects invalid snapshots atomically
+  ok   suspend removes sampling timer; resume samples elapsed raw time without resetting correction
+  ok   ARM raw 32-bit truncation and strict > period comparison are preserved
+  ok   missing raw clock, full timer table and publication collision clean up; start can retry
+  ok   real ticker/ui_clock dependency chain quiesces both timers and resumes in provider order
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-reload-sanitize/tests/phases tests/phases.c build-reload-sanitize/core/check.o build-reload-sanitize/core/control.o build-reload-sanitize/core/host.o build-reload-sanitize/core/module.o -ldl -pthread
+[974718] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974718] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974718] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974718] INFO host         started phase_c
+[974718] INFO host         started phase_b
+[974718] INFO host         started phase_a
+[974718] INFO host         stopped phase_a
+[974718] INFO host         unloaded phase_a
+[974718] INFO host         stopped phase_b
+[974718] INFO host         unloaded phase_b
+[974718] INFO host         stopped phase_c
+[974718] INFO host         unloaded phase_c
+[974718] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974718] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974718] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974718] INFO host         started phase_c
+[974718] INFO host         started phase_b
+[974718] INFO host         started phase_a
+[974718] ERR  host         phase_b: required by active module 'phase_a'
+[974718] ERR  host         phase_b: required by active module 'phase_a'
+[974718] ERR  host         phase_b: required by active module 'phase_a'
+[974718] INFO host         stopped phase_a
+[974719] INFO host         unloaded phase_a
+[974719] INFO host         stopped phase_b
+[974719] INFO host         unloaded phase_b
+[974719] INFO host         stopped phase_c
+[974719] INFO host         unloaded phase_c
+[974719] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974719] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974719] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974719] INFO host         started phase_c
+[974719] INFO host         started phase_b
+[974719] INFO host         started phase_a
+[974719] INFO host         stopped phase_a
+[974719] INFO host         unloaded phase_a
+[974719] INFO host         stopped phase_b
+[974719] INFO host         unloaded phase_b
+[974719] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974719] INFO host         phase_b: reloaded (suspended)
+[974719] INFO host         started phase_b
+[974719] INFO host         stopped phase_b
+[974719] INFO host         unloaded phase_b
+[974719] INFO host         stopped phase_c
+[974719] INFO host         unloaded phase_c
+[974719] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974719] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974719] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974719] INFO host         started phase_c
+[974719] INFO host         started phase_b
+[974719] INFO host         started phase_a
+[974719] WARN host         phase_b: suspend failed (-7)
+[974719] INFO host         stopped phase_a
+[974719] INFO host         unloaded phase_a
+[974719] INFO host         stopped phase_b
+[974719] INFO host         unloaded phase_b
+[974719] INFO host         stopped phase_c
+[974719] INFO host         unloaded phase_c
+[974719] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974719] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974719] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974719] INFO host         started phase_c
+[974719] INFO host         started phase_b
+[974719] INFO host         started phase_a
+[974719] WARN host         phase_c: resume failed (-7)
+[974719] INFO host         stopped phase_a
+[974719] INFO host         unloaded phase_a
+[974719] INFO host         stopped phase_b
+[974719] INFO host         unloaded phase_b
+[974719] INFO host         stopped phase_c
+[974719] INFO host         unloaded phase_c
+[974719] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974719] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974719] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974719] INFO host         started phase_c
+[974719] INFO host         started phase_b
+[974719] INFO host         started phase_a
+[974719] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[974719] INFO host         stopped phase_b
+[974719] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[974719] INFO host         started phase_b
+[974719] INFO host         stopped phase_a
+[974719] INFO host         unloaded phase_a
+[974719] INFO host         stopped phase_b
+[974719] INFO host         unloaded phase_b
+[974719] INFO host         stopped phase_c
+[974719] INFO host         unloaded phase_c
+[974719] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974719] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974719] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974719] INFO host         started phase_c
+[974719] INFO host         started phase_b
+[974719] INFO host         started phase_a
+[974719] ERR  host         module dependency cycle; lifecycle transition canceled
+[974720] INFO host         stopped phase_a
+[974720] INFO host         unloaded phase_a
+[974720] INFO host         stopped phase_b
+[974720] INFO host         unloaded phase_b
+[974720] INFO host         stopped phase_c
+[974720] INFO host         unloaded phase_c
+[974720] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_no_suspend.so)
+[974720] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974720] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974720] INFO host         started phase_c
+[974720] INFO host         started phase_b
+[974720] INFO host         started phase_a
+[974720] ERR  host         phase_b: consumer 'phase_a' is still active
+[974720] INFO host         stopped phase_a
+[974720] INFO host         unloaded phase_a
+[974720] INFO host         stopped phase_b
+[974720] INFO host         unloaded phase_b
+[974720] INFO host         stopped phase_c
+[974720] INFO host         unloaded phase_c
+[974720] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974720] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974720] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974720] INFO host         started phase_c
+[974720] INFO host         started phase_b
+[974720] INFO host         started phase_a
+[974720] INFO host         stopped phase_c
+[974720] INFO host         unloaded phase_c
+[974720] INFO host         loaded phase_c_new vtest (build-reload-sanitize/tests/mod_phase_replacement.so)
+[974720] INFO host         started phase_c_new
+[974720] INFO host         stopped phase_a
+[974720] INFO host         unloaded phase_a
+[974720] INFO host         stopped phase_b
+[974720] INFO host         unloaded phase_b
+[974720] INFO host         stopped phase_c_new
+[974720] INFO host         unloaded phase_c_new
+[974720] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974720] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974720] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974720] INFO host         started phase_c
+[974720] INFO host         started phase_b
+[974720] INFO host         started phase_a
+[974720] INFO host         stopped phase_a
+[974720] INFO host         unloaded phase_a
+[974720] INFO host         stopped phase_b
+[974720] INFO host         unloaded phase_b
+[974720] INFO host         stopped phase_c
+[974720] INFO host         unloaded phase_c
+[974720] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974720] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974720] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974720] INFO host         started phase_c
+[974720] INFO host         started phase_b
+[974720] INFO host         started phase_a
+[974720] WARN host         phase_b: suspend failed (-7)
+[974720] INFO host         stopped phase_a
+[974720] INFO host         unloaded phase_a
+[974720] INFO host         stopped phase_b
+[974720] INFO host         unloaded phase_b
+[974720] INFO host         stopped phase_c
+[974720] INFO host         unloaded phase_c
+[974720] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974720] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974720] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974720] INFO host         started phase_c
+[974720] INFO host         started phase_b
+[974720] INFO host         started phase_a
+[974720] INFO host         stopped phase_a
+[974720] INFO host         unloaded phase_a
+[974720] INFO host         stopped phase_b
+[974721] INFO host         unloaded phase_b
+[974721] INFO host         stopped phase_c
+[974721] INFO host         unloaded phase_c
+[974721] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974721] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974721] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974721] INFO host         started phase_c
+[974721] INFO host         started phase_b
+[974721] INFO host         started phase_a
+[974721] WARN host         phase_b: sleep-cycle restore failed (-7)
+[974721] ERR  host         phase_a: missing required service 'phase_b_service'
+[974721] WARN host         phase_a: sleep-cycle restore failed (-1)
+[974721] INFO host         stopped phase_a
+[974721] INFO host         unloaded phase_a
+[974721] INFO host         stopped phase_b
+[974721] INFO host         unloaded phase_b
+[974721] INFO host         stopped phase_c
+[974721] INFO host         unloaded phase_c
+[974721] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974721] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974721] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974721] INFO host         started phase_c
+[974721] INFO host         started phase_b
+[974721] INFO host         started phase_a
+[974721] INFO host         stopped phase_a
+[974721] INFO host         unloaded phase_a
+[974721] INFO host         stopped phase_b
+[974721] INFO host         unloaded phase_b
+[974721] INFO host         stopped phase_c
+[974721] INFO host         unloaded phase_c
+[974721] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_no_suspend.so)
+[974721] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974721] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974721] INFO host         started phase_c
+[974721] INFO host         started phase_b
+[974721] INFO host         started phase_a
+[974721] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[974721] INFO host         stopped phase_a
+[974721] INFO host         unloaded phase_a
+[974721] INFO host         stopped phase_b
+[974721] INFO host         unloaded phase_b
+[974721] INFO host         stopped phase_c
+[974721] INFO host         unloaded phase_c
+[974721] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974721] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974721] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974721] INFO host         started phase_c
+[974721] INFO host         started phase_b
+[974721] INFO host         started phase_a
+[974721] INFO host         stopped phase_a
+[974721] INFO host         unloaded phase_a
+[974721] INFO host         stopped phase_b
+[974721] INFO host         unloaded phase_b
+[974721] INFO host         stopped phase_c
+[974721] INFO host         unloaded phase_c
+[974721] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974721] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974721] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974721] INFO host         started phase_c
+[974721] INFO host         started phase_b
+[974721] INFO host         started phase_a
+[974721] INFO host         stopped phase_a
+[974721] INFO host         unloaded phase_a
+[974721] INFO host         stopped phase_b
+[974721] INFO host         unloaded phase_b
+[974721] INFO host         stopped phase_c
+[974721] INFO host         unloaded phase_c
+[974721] INFO host         loaded phase_a vtest (build-reload-sanitize/tests/mod_phase_a.so)
+[974721] INFO host         loaded phase_b vtest (build-reload-sanitize/tests/mod_phase_b.so)
+[974721] INFO host         loaded phase_c vtest (build-reload-sanitize/tests/mod_phase_c.so)
+[974722] INFO host         started phase_c
+[974722] INFO host         started phase_b
+[974722] INFO host         started phase_a
+[974722] ERR  host         module dependency cycle; lifecycle transition canceled
+[974722] INFO host         stopped phase_a
+[974722] INFO host         unloaded phase_a
+[974722] INFO host         stopped phase_b
+[974722] INFO host         unloaded phase_b
+[974722] INFO host         stopped phase_c
+[974722] INFO host         unloaded phase_c
+  ok   declared service dependencies suspend consumers first and resume providers first
+  ok   declared dependencies protect active consumers during stop/unload/reload
+  ok   dependency snapshot survives service unpublication and deferred reload into a hole
+  ok   failed consumer suspend protects its providers and reports failure through CLI
+  ok   failed provider resume keeps consumers suspended; a later resume retries
+  ok   published interface alone cannot start/resume a consumer above a suspended provider
+  ok   runtime lookup holds join the dependency graph; cycles fail before callbacks
+  ok   consumer without a suspend hook cannot be left active above a sleeping provider
+  ok   dependency edges follow a republished service to its current provider
+  ok   sleep cycle enters last, restores automatically and pins modules/rejects nested cycles
+  ok   failed preparation skips entry and restores only successful transitions
+  ok   entry failure still restores modules and retains its distinct error
+  ok   restoration failure remains visible; dependent consumers stay suspended and retry works
+  ok   cycle ledger preserves modules already suspended before the request
+  ok   missing hooks refuse before callbacks rather than assuming quiescence
+  ok   pending shutdown and stale backend owner reject before preparation
+  ok   shutdown arriving during preparation cancels entry and still restores modules
+  ok   dependency cycles reject sleep before callbacks or backend entry
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-reload-sanitize/tests/power_cycle tests/power_cycle.c modules/power/power.c build-reload-sanitize/core/check.o build-reload-sanitize/core/control.o build-reload-sanitize/core/host.o build-reload-sanitize/core/module.o -ldl -pthread \
+  -Wl,--wrap=open -Wl,--wrap=write -Wl,--wrap=close -Wl,--wrap=sync
+[974988] ERR  power        RAM entry write returned -1
+[974988] ERR  power        RAM entry write returned 2
+[974988] ERR  power        open /sys/power/state failed
+[974988] ERR  host         phase_a: missing required service 'phase_b_service'
+[974988] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[974989] ERR  power        publish power: already published by module 0
+[974989] ERR  host         power: start() failed (-1)
+[974989] ERR  host         power: missing required service 'host.sleep'
+  ok   manual hooks never sleep; CLI/service enter last and notify ON only after restore
+  ok   preparation failure restores completed transitions without opening power state
+  ok   failed open/short/failed mem write still restore; failed writes never count as sleep
+  ok   restore failure reports error and RESUMING, never premature ON; hooks remain retryable
+  ok   disabled power and incomplete quiescence hooks refuse without I/O or state events
+  ok   service preserves preexisting suspended modules and restores prior state before ON
+  ok   failed publication retains peer service; missing coordinator refuses and releases holds
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-reload-sanitize/tests/reload tests/reload.c build-reload-sanitize/core/check.o build-reload-sanitize/core/control.o build-reload-sanitize/core/host.o build-reload-sanitize/core/module.o -ldl -pthread -Wl,--wrap=malloc
+[975139] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975139] INFO host         unloaded reload_fixture
+[975139] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         reload_fixture: restored 4 bytes of state
+[975140] INFO host         reload_fixture: reloaded (loaded)
+[975140] INFO host         started reload_fixture
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         reload_fixture: restored 4 bytes of state
+[975140] INFO host         reload_fixture: reloaded (loaded)
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         started reload_fixture
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         reload_fixture: restored 4 bytes of state
+[975140] INFO host         started reload_fixture
+[975140] INFO host         reload_fixture: reloaded (started)
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         started reload_fixture
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         reload_fixture: restored 4 bytes of state
+[975140] INFO host         reload_fixture: reloaded (suspended)
+[975140] INFO host         started reload_fixture
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         started reload_fixture
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         reload_fixture: restored 4 bytes of state
+[975140] INFO host         reload_fixture: reloaded (suspended)
+[975140] ERR  host         reload_fixture: start() failed (-1)
+[975140] WARN host         reload_fixture: resume failed (-1)
+[975140] INFO host         started reload_fixture
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         reload_fixture: restored 4 bytes of state
+[975140] INFO host         reload_fixture: reloaded (suspended)
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         started reload_fixture
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         started reload_fixture
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         reload_fixture: restored 4 bytes of state
+[975140] INFO host         reload_fixture: reloaded (suspended)
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         reload_fixture: restored 4 bytes of state
+[975140] INFO host         reload_fixture: reloaded (suspended)
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         started reload_fixture
+[975140] ERR  host         reload_fixture: cannot allocate saved state; reload canceled
+[975140] ERR  host         reload_fixture: state size 65537 exceeds 65536; reload canceled
+[975140] ERR  host         reload_fixture: saved state grew beyond capacity; reload canceled
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         started reload_fixture
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] ERR  host         reload_fixture: restore() failed or absent (-7)
+[975140] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         started reload_fixture
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[975140] INFO host         reload_fixture: restored 4 bytes of state
+[975140] ERR  host         reload_fixture: start() failed (-1)
+[975140] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-POeNUe/module.so)
+[975140] INFO host         started reload_fixture
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-POeNUe/module.so)
+[975140] ERR  host         reload_fixture: restore() failed or absent (-1)
+[975140] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-POeNUe/module.so)
+[975140] INFO host         started reload_fixture
+[975140] INFO host         stopped reload_fixture
+[975140] INFO host         unloaded reload_fixture
+[975140] INFO host         loaded reload_renamed vtest (/tmp/openaurora-reload-POeNUe/module.so)
+[975140] ERR  host         reload_fixture: replacement name 'reload_renamed' differs
+[975140] WARN host         reload_renamed: force unload, consumers may hold stale pointers
+[975141] INFO host         unloaded reload_renamed
+  ok   never-started and stopped reload preserve loaded state without activation
+  ok   running reload restores state and starts the new instance
+  ok   suspended reload defers start until wake; start on suspended resumes once
+  ok   deferred start can fail/retry or be stopped before touching hardware
+  ok   repeated suspended reload purges posts; unload skips stop on never-started candidate
+  ok   allocation/oversized/growing state failures preserve the working module
+  ok   restore failure is reported and candidate registrations/posts are swept
+  ok   replacement start failure cleans the candidate instead of leaving partial state
+  ok   changed binary without restore or with a new identity is rejected and cleaned
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-reload-sanitize/core/main.o core/main.c
+cc -fsanitize=address,undefined -o build-reload-sanitize/openaurora build-reload-sanitize/core/check.o build-reload-sanitize/core/control.o build-reload-sanitize/core/host.o build-reload-sanitize/core/main.o build-reload-sanitize/core/module.o -ldl -pthread
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-reload-sanitize/modules/mod_plat.so modules/plat/plat.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-reload-sanitize/modules/mod_ir.so modules/ir/ir.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-reload-sanitize/modules/mod_panel.so modules/panel/panel.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-reload-sanitize/modules/mod_power.so modules/power/power.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-reload-sanitize/modules/mod_display.so modules/display/display.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-reload-sanitize/modules/mod_audio.so modules/audio/audio.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-reload-sanitize/modules/mod_settings.so modules/settings/settings.c -fsanitize=address,undefined \
+   \
+  -Ithird_party -Lvendor/lib -lsqlite3
+/usr/bin/ld: skipping incompatible vendor/lib/libsqlite3.so when searching for -lsqlite3
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-reload-sanitize/modules/mod_source.so modules/source/source.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-reload-sanitize/modules/mod_ui_fb.so modules/ui_fb/ui_fb.c -fsanitize=address,undefined \
+   \
+  
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-reload-sanitize/tests/module_safety tests/module_safety.c build-reload-sanitize/core/check.o build-reload-sanitize/core/control.o build-reload-sanitize/core/host.o build-reload-sanitize/core/module.o -ldl -pthread
+[976340] ERR  host         load 'build-reload-sanitize/tests/mod_abi_v1.so': abi 1 != 2
+[976340] ERR  host         load 'build-reload-sanitize/tests/mod_abi_short.so': descriptor size 16 < 160
+[976340] INFO host         loaded abi_extended v? (build-reload-sanitize/tests/mod_abi_extended.so)
+[976340] INFO host         started abi_extended
+[976340] INFO host         stopped abi_extended
+[976340] INFO host         unloaded abi_extended
+[976340] INFO host         loaded post_worker vtest (build-reload-sanitize/tests/mod_post_worker.so)
+[976341] INFO host         started post_worker
+[976341] INFO host         stopped post_worker
+[976341] INFO host         unloaded post_worker
+[976341] INFO host         loaded post_worker vtest (build-reload-sanitize/tests/mod_post_worker.so)
+[976341] INFO host         post_worker: restored 4 bytes of state
+[976341] INFO host         started post_worker
+[976341] INFO host         post_worker: reloaded (started)
+[976346] INFO host         stopped post_worker
+[976346] INFO host         started post_worker
+[976347] INFO host         loaded ticker v1.0 (build-reload-sanitize/modules/mod_ticker.so)
+[976347] INFO host         started ticker
+[976347] INFO ticker       stopped post_worker
+[976347] INFO ticker       unloaded post_worker
+[976347] INFO host         stopped ticker
+[976347] INFO host         unloaded ticker
+[976347] ERR  host         load 'build-reload-sanitize/tests/mod_post_fail_init.so': init() failed (-1)
+[976347] INFO host         loaded post_worker vtest (build-reload-sanitize/tests/mod_post_fail_start.so)
+[976347] ERR  host         post_worker: start() failed (-1)
+[976347] INFO host         unloaded post_worker
+  ok   old/short descriptors rejected before guard page; extended prefix accepted
+  ok   real worker post dispatches under its owner; registrations inherit ownership
+  ok   socket/CLI dispatcher reload preserves state, cancels old work, rejects old token
+  ok   queue saturation, stop-time worker post rejection, cleanup and restart
+  ok   an earlier post can unload another owner without dispatching its stale callback
+  ok   failed init/start cancel queued module code and close post acceptance

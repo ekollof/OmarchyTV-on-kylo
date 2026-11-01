@@ -1,0 +1,27 @@
+TVHACK recovery - Telefunken D65U546A / Vestel MB230
+
+1. Unplug the TV from mains power.
+2. Insert this USB stick into the TV.
+3. Hold OK on the remote while reconnecting mains power.
+4. Keep OK held until the update/progress screen appears, then release it.
+5. Wait about two minutes. Do not interrupt power during the update.
+
+The active kylo_usb_update.scr restores ONLY the unsigned /conf volume from
+apdat0_full.ubifs. It does not write the kernel, signed firmware or bootloader.
+
+Image MD5: 994da7ff76a0b2fbafb8f6fa0c682627
+Script MD5: de1591298d633cf6422a1ade4e8835a9
+Exact original apply_hook.scr.txt from the TVHACK stick (584 bytes).
+
+The image contains the working SSH/telnet hook, maintenance script, privacy
+blocks, accepted SSH keys and oa_safe (stock UI forced; native boot disabled).
+Its contents and executable permissions have been verified by extraction.
+
+Expected target after boot: 192.168.178.87, MAC 70:54:b4:fe:70:c6.
+SSH port 22, root telnet fallback port 2323.
+
+Tell the assistant when the TV has finished booting so it can verify access,
+privacy blocks and the maintenance loop before declaring recovery complete.
+
+Files already on this stick were preserved. The prior active script and image
+were backed up with the suffix .pre-stability-recovery-20261031.

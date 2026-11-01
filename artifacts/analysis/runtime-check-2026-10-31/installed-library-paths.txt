@@ -1,0 +1,124 @@
+
+CHECK /buffer/openaurora/openaurora
+	libdl.so.2 => /lib/libdl.so.2 (0x46d40000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x46f00000)
+	libc.so.6 => /lib/libc.so.6 (0x46f30000)
+	/lib/ld-linux-armhf.so.3 (0x767c2000)
+LOADER_RC=0
+
+CHECK /buffer/openaurora/modules/mod_audio.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x7668f000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x7665a000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x765c6000)
+	libc.so.6 => /lib/libc.so.6 (0x764d9000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x763cb000)
+	libm.so.6 => /lib/libm.so.6 (0x76353000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x7632b000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x76307000)
+	/lib/ld-linux-armhf.so.3 (0x76710000)
+	libnteec.so => /vendor/lib/libnteec.so (0x762f5000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x762bb000)
+	libdl.so.2 => /lib/libdl.so.2 (0x762a8000)
+	librt.so.1 => /lib/librt.so.1 (0x76292000)
+LOADER_RC=0
+
+CHECK /buffer/openaurora/modules/mod_display.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x76671000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x7663c000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x765a8000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x7658e000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x76512000)
+	libnteec.so => /vendor/lib/libnteec.so (0x76500000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x764c6000)
+	libc.so.6 => /lib/libc.so.6 (0x763d9000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x762cb000)
+	libm.so.6 => /lib/libm.so.6 (0x76253000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x7622b000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x76207000)
+	/lib/ld-linux-armhf.so.3 (0x766f4000)
+	libdl.so.2 => /lib/libdl.so.2 (0x761f4000)
+	librt.so.1 => /lib/librt.so.1 (0x761de000)
+LOADER_RC=0
+
+CHECK /buffer/openaurora/modules/mod_ir.so
+	libc.so.6 => /lib/libc.so.6 (0x7669b000)
+	/lib/ld-linux-armhf.so.3 (0x7679b000)
+LOADER_RC=0
+
+CHECK /buffer/openaurora/modules/mod_panel.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x76669000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x76634000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x765a0000)
+	libc.so.6 => /lib/libc.so.6 (0x764b3000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x763a5000)
+	libm.so.6 => /lib/libm.so.6 (0x7632d000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x76305000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x762e1000)
+	/lib/ld-linux-armhf.so.3 (0x766ea000)
+	libnteec.so => /vendor/lib/libnteec.so (0x762cf000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x76295000)
+	libdl.so.2 => /lib/libdl.so.2 (0x76282000)
+	librt.so.1 => /lib/librt.so.1 (0x7626c000)
+LOADER_RC=0
+
+CHECK /buffer/openaurora/modules/mod_plat.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x766de000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x766a9000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x76615000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x765fb000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x7657f000)
+	libnteec.so => /vendor/lib/libnteec.so (0x7656d000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x76533000)
+	libc.so.6 => /lib/libc.so.6 (0x76446000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x76338000)
+	libm.so.6 => /lib/libm.so.6 (0x762c0000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x76298000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x76274000)
+	/lib/ld-linux-armhf.so.3 (0x76760000)
+	libdl.so.2 => /lib/libdl.so.2 (0x76261000)
+	librt.so.1 => /lib/librt.so.1 (0x7624b000)
+LOADER_RC=0
+
+CHECK /buffer/openaurora/modules/mod_power.so
+	libc.so.6 => /lib/libc.so.6 (0x7668e000)
+	/lib/ld-linux-armhf.so.3 (0x7678d000)
+LOADER_RC=0
+
+CHECK /buffer/openaurora/modules/mod_settings.so
+	libsqlite3.so.0 => /vendor/lib/libs/libsqlite3.so.0 (0x766d4000)
+	libc.so.6 => /lib/libc.so.6 (0x765e7000)
+	libdl.so.2 => /lib/libdl.so.2 (0x765d4000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x765b0000)
+	/lib/ld-linux-armhf.so.3 (0x76794000)
+LOADER_RC=0
+
+CHECK /buffer/openaurora/modules/mod_source.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x766e3000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x766ae000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x7661a000)
+	libc.so.6 => /lib/libc.so.6 (0x7652d000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x7641f000)
+	libm.so.6 => /lib/libm.so.6 (0x763a7000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x7637f000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x7635b000)
+	/lib/ld-linux-armhf.so.3 (0x76764000)
+	libnteec.so => /vendor/lib/libnteec.so (0x76349000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x7630f000)
+	libdl.so.2 => /lib/libdl.so.2 (0x762fc000)
+	librt.so.1 => /lib/librt.so.1 (0x762e6000)
+LOADER_RC=0
+
+CHECK /buffer/openaurora/modules/mod_ticker.so
+	libc.so.6 => /lib/libc.so.6 (0x765ec000)
+	/lib/ld-linux-armhf.so.3 (0x766eb000)
+LOADER_RC=0
+
+CHECK /buffer/openaurora/modules/mod_ui_console.so
+	libc.so.6 => /lib/libc.so.6 (0x766a3000)
+	/lib/ld-linux-armhf.so.3 (0x767a2000)
+LOADER_RC=0
+
+CHECK /buffer/openaurora/modules/mod_ui_fb.so
+	libc.so.6 => /lib/libc.so.6 (0x76674000)
+	/lib/ld-linux-armhf.so.3 (0x76774000)
+LOADER_RC=0

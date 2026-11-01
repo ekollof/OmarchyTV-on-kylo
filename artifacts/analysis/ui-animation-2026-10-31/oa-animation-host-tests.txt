@@ -1,0 +1,3 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-strict/svg-animations tools/re/svg-animations.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-strict/tests/svg_animations tests/svg_animations.c
+  ok   BinSVG animation golden fields/sign extension; all truncated prefixes reject safely

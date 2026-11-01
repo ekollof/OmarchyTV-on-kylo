@@ -1,0 +1,15 @@
+#ifndef OA_UI_NAV_TRACE_H
+#define OA_UI_NAV_TRACE_H
+/* Test display recorder. The shipped UI calls the display service; this
+ * snapshot only reports what those calls drew. */
+#define OA_SVC_NAV_TRACE "nav.trace"
+typedef struct {
+    int (*accent)(int *x, int *y, int *w, int *h);
+    int (*counts)(int *clears, int *presents, int *surface_w, int *surface_h);
+    int (*fill_count)(void);
+    int (*fill_at)(int i, int *x, int *y, int *w, int *h, int *r, int *g, int *b);
+    /* Text-slide tests need the title blit's x. Additive: existing users ignore them. */
+    int (*blit_count)(void);
+    int (*blit_at)(int i, int *x, int *y, int *w, int *h);
+} oa_nav_trace;
+#endif

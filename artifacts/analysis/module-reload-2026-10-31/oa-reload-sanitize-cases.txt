@@ -1,0 +1,118 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-reload-sanitize/tests/reload tests/reload.c build-reload-sanitize/core/check.o build-reload-sanitize/core/control.o build-reload-sanitize/core/host.o build-reload-sanitize/core/module.o -ldl -pthread -Wl,--wrap=malloc
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -o build-reload-sanitize/tests/mod_reload_fixture.so tests/reload_fixture.c -fsanitize=address,undefined
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -DRELOAD_WITHOUT_RESTORE -fPIC -shared -o build-reload-sanitize/tests/mod_reload_no_restore.so tests/reload_fixture.c -fsanitize=address,undefined
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -DRELOAD_RENAMED -fPIC -shared -o build-reload-sanitize/tests/mod_reload_renamed.so tests/reload_fixture.c -fsanitize=address,undefined
+[874824] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874824] INFO host         unloaded reload_fixture
+[874824] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874824] INFO host         reload_fixture: restored 4 bytes of state
+[874824] INFO host         reload_fixture: reloaded (loaded)
+[874824] INFO host         started reload_fixture
+[874824] INFO host         stopped reload_fixture
+[874824] INFO host         unloaded reload_fixture
+[874824] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874824] INFO host         reload_fixture: restored 4 bytes of state
+[874824] INFO host         reload_fixture: reloaded (loaded)
+[874824] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         started reload_fixture
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         reload_fixture: restored 4 bytes of state
+[874825] INFO host         started reload_fixture
+[874825] INFO host         reload_fixture: reloaded (started)
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         started reload_fixture
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         reload_fixture: restored 4 bytes of state
+[874825] INFO host         reload_fixture: reloaded (suspended)
+[874825] INFO host         started reload_fixture
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         started reload_fixture
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         reload_fixture: restored 4 bytes of state
+[874825] INFO host         reload_fixture: reloaded (suspended)
+[874825] ERR  host         reload_fixture: start() failed (-1)
+[874825] WARN host         reload_fixture: resume failed (-1)
+[874825] INFO host         started reload_fixture
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         reload_fixture: restored 4 bytes of state
+[874825] INFO host         reload_fixture: reloaded (suspended)
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         started reload_fixture
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         started reload_fixture
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         reload_fixture: restored 4 bytes of state
+[874825] INFO host         reload_fixture: reloaded (suspended)
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         reload_fixture: restored 4 bytes of state
+[874825] INFO host         reload_fixture: reloaded (suspended)
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         started reload_fixture
+[874825] ERR  host         reload_fixture: cannot allocate saved state; reload canceled
+[874825] ERR  host         reload_fixture: state size 65537 exceeds 65536; reload canceled
+[874825] ERR  host         reload_fixture: saved state grew beyond capacity; reload canceled
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         started reload_fixture
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] ERR  host         reload_fixture: restore() failed or absent (-7)
+[874825] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         started reload_fixture
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (build-reload-sanitize/tests/mod_reload_fixture.so)
+[874825] INFO host         reload_fixture: restored 4 bytes of state
+[874825] ERR  host         reload_fixture: start() failed (-1)
+[874825] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[874825] INFO host         unloaded reload_fixture
+[874825] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-XZ1C92/module.so)
+[874825] INFO host         started reload_fixture
+[874825] INFO host         stopped reload_fixture
+[874825] INFO host         unloaded reload_fixture
+[874826] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-XZ1C92/module.so)
+[874826] ERR  host         reload_fixture: restore() failed or absent (-1)
+[874826] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[874826] INFO host         unloaded reload_fixture
+[874826] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-XZ1C92/module.so)
+[874826] INFO host         started reload_fixture
+[874826] INFO host         stopped reload_fixture
+[874826] INFO host         unloaded reload_fixture
+[874826] INFO host         loaded reload_renamed vtest (/tmp/openaurora-reload-XZ1C92/module.so)
+[874826] ERR  host         reload_fixture: replacement name 'reload_renamed' differs
+[874826] WARN host         reload_renamed: force unload, consumers may hold stale pointers
+[874826] INFO host         unloaded reload_renamed
+  ok   never-started and stopped reload preserve loaded state without activation
+  ok   running reload restores state and starts the new instance
+  ok   suspended reload defers start until wake; start on suspended resumes once
+  ok   deferred start can fail/retry or be stopped before touching hardware
+  ok   repeated suspended reload purges posts; unload skips stop on never-started candidate
+  ok   allocation/oversized/growing state failures preserve the working module
+  ok   restore failure is reported and candidate registrations/posts are swept
+  ok   replacement start failure cleans the candidate instead of leaving partial state
+  ok   changed binary without restore or with a new identity is rejected and cleaned

@@ -1,0 +1,12 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+    26976 /tmp/oa-curve-20261101/audio_curve
+      202 /tmp/oa-curve-20261101/live-volume-table.bin
+    27178 total
+17e9b4f7a43915f8331c74f310db7eed  /tmp/oa-curve-20261101/audio_curve
+9b17a31c6bb3e58fdafbae4dcbf57b94  /tmp/oa-curve-20261101/live-volume-table.bin
+0a56db61185c1c921beb264e964a6eb7  /conf/AQ.bin
+ebb0aaaa-72a2-4410-9f8d-95b9249f8a90

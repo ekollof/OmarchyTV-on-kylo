@@ -1,0 +1,142 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (828 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1700 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)  
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFirmware.java 'find:(?i)^(_?ice.*(volume|audio)|.*(AmpVolume|VolumeTable|VolumeCurve)|.*Set.*Volume)$'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)  
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0078e224 _ice_SoundControlSetHeadphoneVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0078e2d4 ICE_SoundControlSetHeadphoneVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 007df2ec ICE_AudioVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 007e08a0 ICE_AudioPlayWebAudio (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 007e1af4 ICE_AudioCaptureReferenceAudio (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 007ed454 _icedvr_check_playback_audio (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00810c64 upnp_client_set_volume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00819e80 upnp_mrcp_rcs_set_volume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0084fa9c DEV_AMP_SetVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0084fb1c DEV_AMP_SetWooferVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 008752a8 AMP_AD82587_SetVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00875764 AMP_AD82587_SetZeroVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00875c84 AMP_PREAMP_SetZeroVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00875d34 AMP_PREAMP_SetVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0087683c AMP_AD82586C_VESTEL_SetVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00876c70 AMP_AD82586C_VESTEL_SetZeroVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00889680 PLAT_AOUT_SetSpeakerVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0088afbc PLAT_AOUT_SetDmixVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0089731c PLAT_DEC_SetAudioMainVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00897364 PLAT_DEC_SetAudioDesVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 008d1c08 PLAT_VAUD_SetSpeakerVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 008d1d94 PLAT_AOUT_SetADVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 008d1e80 PLAT_AOUT_SetMainVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 008d29f0 PLAT_VAUD_SetVolumeTable (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 008d2a8c PLAT_VAUD_GetVolumeTable (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 009216a4 PLAT_SAMBA_SetTVVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00975dc0 EASIControlInterface::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0097955c EASIControlInterface::setADRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0098970c EASIControlTask::setADRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0098ba58 EASIControlTask::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00a23154 EASITVControlInterface::setHeadphoneVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00a29e80 SoundController::setHeadphoneVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00a61514 AudioOutputControl::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00a615d0 AudioOutputControl::setADRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00a70bf4 IceAudioIF::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00a7103c IceAudioIF::playWebAudio (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00a83d14 NullIceAudioIF::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00bf7ce4 asn1D_SetVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00c1edc8 Audio::SetVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00c635a8 Profile_GetVolumeCurve (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00e0e28c AdvancedSoundSettingsDialog::updateHeadphoneVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00e398c0 setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00e3bd64 setMaxVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00e3e22c exitActiveStandbyWithSetVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00e68100 RemoteDiagnosticCommandHandler::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00f43760 NovoSoundSettings::getMinMaxLevelsForHeadphoneVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00f43798 NovoSoundSettings::getMinMaxLevelsForAudioDescriptionRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00f43cf4 NovoSoundSettings::getAudioDescriptionRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00f43d28 NovoSoundSettings::setAudioDescriptionRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00f44584 NovoSoundSettings::getMinMaxLevelsForVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00f7af88 UserPreferences::setADRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00f7d3a0 UserPreferences::setHeadphoneVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 00f82754 UserPreferences::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0100cf08 NovoTesttool::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0100d090 NovoTesttool::setHeadphoneVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 01021258 NovoTesttool::setMinVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 010213ec NovoTesttool::setMaxVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 010218d0 NovoTesttool::setStartVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0105434c HotelModeConfiguration::setFixedVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 01054b00 HotelModeConfiguration::setWakeupTimeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0106fa7c NovoHotelModeSettings::getFixedVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0106fab0 NovoHotelModeSettings::setFixedVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 01070098 NovoHotelModeSettings::getWakeupTimeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 010700cc NovoHotelModeSettings::setWakeupTimeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 01070d40 NovoHotelModeSettings::adjustVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 010cf7dc AVSController::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 010f5b38 InteractionManager::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 010fe9f8 AVSMediaPlayer::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 010feaf0 AVSMediaPlayer::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 011944b4 NebulaSoundSettings::getMinMaxLevelsForVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 01194500 NebulaSoundSettings::getMinMaxLevelsForHeadphoneVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0119454c NebulaSoundSettings::getMinMaxLevelsForAudioDescriptionRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 01194868 NebulaSoundSettings::getAudioDescriptionRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 011948a8 NebulaSoundSettings::setAudioDescriptionRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 011ad094 NEBULA_SoundSettingsGetMinMaxLevelsForVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 011ad0d8 NEBULA_SoundSettingsGetMinMaxLevelsForHeadphoneVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 011ad11c NEBULA_SoundSettingsGetMinMaxLevelsForAudioDescriptionRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 011ad3b8 NEBULA_SoundSettingsGetAudioDescriptionRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 011ad3fc NEBULA_SoundSettingsSetAudioDescriptionRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 01207268 DmrRequestDispatcher::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 012122f8 VestelSetVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0122dd24 OperaOipfLocalSystem::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 01234194 OperaMuminCicamPlayerBackend::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 01235ea4 OperaMuminVideoBroadcastBackend::setVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0127e45c nebula::SoundSettings::getMinMaxLevelsForVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0127e49c nebula::SoundSettings::getMinMaxLevelsForHeadphoneVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0127e4dc nebula::SoundSettings::getMinMaxLevelsForAudioDescriptionRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0127e73c nebula::SoundSettings::getAudioDescriptionRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0127e770 nebula::SoundSettings::setAudioDescriptionRelativeVolume (GhidraScript)  
+INFO  DumpFirmware.java> MATCH 0127fe94 VideoControlObject::setVolume (GhidraScript)  

@@ -1,0 +1,21 @@
+# tvhack APPLY - writes apdat0_full.ubifs (original + local sshd hook)
+setenv imgload '0'
+setenv osd_base_addr '0x13000000'
+#@
+
+start_progress_bar
+setenv update_img_num '5'
+setenv update_img_idx '1'
+fatload usb 0:1 0x3300000 apdat0_full.ubifs
+setenv update_img_idx '2'
+ubi part apdat0
+setenv update_img_idx '3'
+ubi write 0x3300000 apdat0 0x782000
+setenv update_img_idx '4'
+ubi read 0x04000000 apdat0 0x782000
+fatwrite usb 0:1 0x04000000 apdat0_readback.bin 0x782000
+setenv update_img_idx '5'
+sleep 5
+stopprogressbar
+
+% <- this is end of file symbol

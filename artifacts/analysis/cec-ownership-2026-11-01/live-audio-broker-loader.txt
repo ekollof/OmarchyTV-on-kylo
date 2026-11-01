@@ -1,0 +1,11 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+	libdl.so.2 => /lib/libdl.so.2 (0x46d40000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x46f00000)
+	libc.so.6 => /lib/libc.so.6 (0x46f30000)
+	/lib/ld-linux-armhf.so.3 (0x76794000)
+	libc.so.6 => /lib/libc.so.6 (0x46f30000)
+	/lib/ld-linux-armhf.so.3 (0x767c8000)

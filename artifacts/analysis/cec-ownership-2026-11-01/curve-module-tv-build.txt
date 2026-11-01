@@ -1,0 +1,32 @@
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v2/core/main.o core/main.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc  -o build-tv-v2/openaurora build-tv-v2/core/check.o build-tv-v2/core/control.o build-tv-v2/core/host.o build-tv-v2/core/main.o build-tv-v2/core/module.o -ldl -pthread
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v2/modules/mod_plat.so modules/plat/plat.c  \
+  -Lvendor/lib -Wl,--no-as-needed -l:libNDAL3.so -l:libNDAL_EX.so -l:libasound.so.2 -l:libv4l2.so.0 -l:libv4lconvert.so.0 -l:libnteec.so -l:libmhash.so.2 -Wl,-rpath,/vendor/lib:/vendor/lib/libs -Wl,--allow-shlib-undefined \
+  
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v2/modules/mod_ir.so modules/ir/ir.c  \
+   \
+  
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v2/modules/mod_panel.so modules/panel/panel.c  \
+  -Lvendor/lib -Wl,--no-as-needed -l:libNDAL3.so -l:libNDAL_EX.so -l:libasound.so.2 -l:libv4l2.so.0 -l:libv4lconvert.so.0 -l:libnteec.so -l:libmhash.so.2 -Wl,-rpath,/vendor/lib:/vendor/lib/libs -Wl,--allow-shlib-undefined \
+  
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v2/modules/mod_power.so modules/power/power.c  \
+   \
+  
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v2/modules/mod_display.so modules/display/display.c  \
+  -Lvendor/lib -Wl,--no-as-needed -l:libNDAL3.so -l:libNDAL_EX.so -l:libasound.so.2 -l:libv4l2.so.0 -l:libv4lconvert.so.0 -l:libnteec.so -l:libmhash.so.2 -Wl,-rpath,/vendor/lib:/vendor/lib/libs -Wl,--allow-shlib-undefined \
+  
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v2/modules/mod_audio.so modules/audio/audio.c  \
+  -Lvendor/lib -Wl,--no-as-needed -l:libNDAL3.so -l:libNDAL_EX.so -l:libasound.so.2 -l:libv4l2.so.0 -l:libv4lconvert.so.0 -l:libnteec.so -l:libmhash.so.2 -Wl,-rpath,/vendor/lib:/vendor/lib/libs -Wl,--allow-shlib-undefined \
+  
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v2/modules/mod_settings.so modules/settings/settings.c  \
+   \
+  -Ithird_party -Lvendor/lib -lsqlite3
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v2/modules/mod_source.so modules/source/source.c  \
+  -Lvendor/lib -Wl,--no-as-needed -l:libNDAL3.so -l:libNDAL_EX.so -l:libasound.so.2 -l:libv4l2.so.0 -l:libv4lconvert.so.0 -l:libnteec.so -l:libmhash.so.2 -Wl,-rpath,/vendor/lib:/vendor/lib/libs -Wl,--allow-shlib-undefined \
+  
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v2/modules/mod_ui_fb.so modules/ui_fb/ui_fb.c  \
+   \
+  
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v2/modules/mod_ui_clock.so modules/ui_clock/ui_clock.c  \
+   \
+  

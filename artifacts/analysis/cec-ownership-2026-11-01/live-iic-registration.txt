@@ -1,0 +1,119 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ntkndpdemod 27664 2 ntkndptsd,ntkndpci, Live 0x7fd19000 (O)
+ntkndptuner 4637 0 - Live 0x7fd14000 (O)
+ntkndphdmiswitch 17400 2 - Live 0x7fd0b000 (O)
+ntkndphdmi 65001 1 - Live 0x7fcf3000 (O)
+ntkndpextin 131175 1 - Live 0x7fcc6000 (O)
+ntkndpdrm 665570 4 - Live 0x7fbf6000 (O)
+ntkdriver 14939054 39 ntkndpalsa,ntkndp_pq,ntkndpcodec,ntkndptsd,ntkndpci,ntkndpdemod,ntkndptuner,ntkndphdmiswitch,ntkndphdmi,ntkndpextin,ntkndpdrm, Live 0x7eb0a000 (O)
+btusb 66462 1 - Live 0x7eaf2000 (O)
+bthid 6247 0 - Live 0x7eaed000 (O)
+xhci_nvt 6480 0 - Live 0x7eae8000
+xhci_hcd 179176 1 xhci_nvt, Live 0x7eaaf000
+cifs 408356 0 - Live 0x7ea32000
+usbhid 23072 0 - Live 0x7ea27000
+ehci_hcd 76533 0 - Live 0x7ea0d000
+usb_storage 50292 1 - Live 0x7e9f7000
+usbcore 227815 10 mt7662u_sta,snd_usb_audio,snd_usbmidi_lib,btusb,xhci_nvt,xhci_hcd,usbhid,ehci_hcd,usb_storage, Live 0x7e9ac000
+mali 444518 6 - Live 0x7e926000 (O)
+usb_common 4550 1 usbcore, Live 0x7e921000
+fusion 117718 4 - Live 0x7e8fd000 (O)
+PreInit 900786 21 ntkndpalsa,ntkndp_pq,ntkndpcodec,ntkndptsd,ntkndpdrm,ntkdriver, Live 0x7e800000 (O)
+Character devices:
+255 ntklogo
+  1 mem
+  2 pty
+  3 ttyp
+  4 /dev/vc/0
+  4 tty
+  4 ttyS
+  5 /dev/tty
+  5 /dev/console
+  5 /dev/ptmx
+  7 vcs
+ 10 misc
+ 13 input
+ 29 fb
+ 66 ntktsmux
+ 81 video4linux
+ 89 i2c
+ 90 mtd
+116 alsa
+122 ntkblast
+128 ptm
+132 ntgpio
+134 ntkiic0
+136 pts
+137 ntkcpe
+180 usb
+189 usb_device
+205 fusion
+212 DVB
+220 ndppq
+221 kteeclient
+222 ntkleon2core2
+223 ntkleon2
+224 ntkconverter
+225 ntkhdma
+226 drm
+227 ntkled
+228 ntkddcci0
+228 ntkddcci1
+228 ntkddcci2
+228 ntkddcci3
+228 ntkddcci4
+228 ntkiics5
+229 ntkcec
+230 ntkci
+231 ntkcrypto
+232 ntkcal
+233 ntkdispage
+234 ntkgpu
+235 ntkxdma
+236 ntkvd
+237 ntkvplt
+238 ntkhdmi
+239 ntkdvif
+240 sdp_mem
+241 ntkaud2
+242 ntkaud1
+243 ntkaud0
+244 ntktspu
+245 ntkspi
+246 ntkstbc
+247 ubi14
+248 ubi13
+249 ntkaxis
+250 ntksys
+251 ubi0
+252 uio
+253 rtc
+254 gpiochip
+
+Block devices:
+259 blkext
+  7 loop
+  8 sd
+ 31 mtdblock
+ 43 nbd
+ 65 sd
+ 66 sd
+ 67 sd
+ 68 sd
+ 69 sd
+ 70 sd
+ 71 sd
+128 sd
+129 sd
+130 sd
+131 sd
+132 sd
+133 sd
+134 sd
+135 sd
+253 ubiblock
+254 zram

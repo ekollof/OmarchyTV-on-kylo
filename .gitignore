@@ -1,0 +1,34 @@
+# Local git checkpoints: track our source, docs, tests and text evidence only.
+# The firmware image, vendor libraries, toolchain, Ghidra projects and build
+# trees stay on disk but out of history (they are large, and AGENTS.md forbids
+# redistributing firmware/libraries or private key material).
+
+# Firmware dump, NAND extract, Ghidra projects, toolchain, disassembly caches
+/artifacts/dumps/
+/artifacts/workbench/
+
+# Partition/recovery images and other binary payloads
+/artifacts/payload/
+*.ubifs
+*.img
+*.img.gz
+
+# Vendor libraries fetched from the firmware (`make vendor`)
+/openaurora/vendor/
+
+# Build trees (build, build-tv, build-tv-v2/v3 and the dated sanitizer/lab variants)
+/openaurora/build*/
+
+# Crash captures and build archives
+*.core
+*.tar
+*.tar.gz
+
+# Third-party manuals and vendor binary profiles
+/artifacts/manuals/
+*.bin
+
+# Editor and OS noise
+*.swp
+*~
+.DS_Store

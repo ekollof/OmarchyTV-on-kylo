@@ -1,0 +1,627 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+Read-only runtime preflight; interpreter /lib/ld-linux-armhf.so.3; module ABI 3
+CHECK /tmp/oa-quiesce-20261101/openaurora
+	libdl.so.2 => /lib/libdl.so.2 (0x46d40000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x46f00000)
+	libc.so.6 => /lib/libc.so.6 (0x46f30000)
+	/lib/ld-linux-armhf.so.3 (0x766e3000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/openaurora:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.9) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.10) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-quiesce-20261101/openaurora
+CHECK /tmp/oa-quiesce-20261101/modules/mod_audio.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x766ac000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x76677000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x765e3000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x765c9000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x7654d000)
+	libnteec.so => /vendor/lib/libnteec.so (0x7653b000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x76501000)
+	libc.so.6 => /lib/libc.so.6 (0x76414000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x76306000)
+	libm.so.6 => /lib/libm.so.6 (0x7628e000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x76266000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x76242000)
+	/lib/ld-linux-armhf.so.3 (0x7672d000)
+	libdl.so.2 => /lib/libdl.so.2 (0x7622f000)
+	librt.so.1 => /lib/librt.so.1 (0x76219000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_audio.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/oa-quiesce-20261101/modules/mod_audio.so
+CHECK /tmp/oa-quiesce-20261101/modules/mod_audio_curve.so
+	libc.so.6 => /lib/libc.so.6 (0x7668e000)
+	/lib/ld-linux-armhf.so.3 (0x7678d000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_audio_curve.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-quiesce-20261101/modules/mod_audio_curve.so
+CHECK /tmp/oa-quiesce-20261101/modules/mod_display.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x76746000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x76711000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x7667d000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x76663000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x765e7000)
+	libnteec.so => /vendor/lib/libnteec.so (0x765d5000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x7659b000)
+	libc.so.6 => /lib/libc.so.6 (0x764ae000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x763a0000)
+	libm.so.6 => /lib/libm.so.6 (0x76328000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x76300000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x762dc000)
+	/lib/ld-linux-armhf.so.3 (0x767c9000)
+	libdl.so.2 => /lib/libdl.so.2 (0x762c9000)
+	librt.so.1 => /lib/librt.so.1 (0x762b3000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_display.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/oa-quiesce-20261101/modules/mod_display.so
+CHECK /tmp/oa-quiesce-20261101/modules/mod_ir.so
+	libc.so.6 => /lib/libc.so.6 (0x7663b000)
+	/lib/ld-linux-armhf.so.3 (0x7673b000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_ir.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-quiesce-20261101/modules/mod_ir.so
+CHECK /tmp/oa-quiesce-20261101/modules/mod_panel.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x76706000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x766d1000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x7663d000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x76623000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x765a7000)
+	libnteec.so => /vendor/lib/libnteec.so (0x76595000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x7655b000)
+	libc.so.6 => /lib/libc.so.6 (0x7646e000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x76360000)
+	libm.so.6 => /lib/libm.so.6 (0x762e8000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x762c0000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x7629c000)
+	/lib/ld-linux-armhf.so.3 (0x76787000)
+	libdl.so.2 => /lib/libdl.so.2 (0x76289000)
+	librt.so.1 => /lib/librt.so.1 (0x76273000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_panel.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/oa-quiesce-20261101/modules/mod_panel.so
+CHECK /tmp/oa-quiesce-20261101/modules/mod_plat.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x766b5000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x76680000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x765ec000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x765d2000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x76556000)
+	libnteec.so => /vendor/lib/libnteec.so (0x76544000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x7650a000)
+	libc.so.6 => /lib/libc.so.6 (0x7641d000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x7630f000)
+	libm.so.6 => /lib/libm.so.6 (0x76297000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x7626f000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x7624b000)
+	/lib/ld-linux-armhf.so.3 (0x76737000)
+	libdl.so.2 => /lib/libdl.so.2 (0x76238000)
+	librt.so.1 => /lib/librt.so.1 (0x76222000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_plat.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/oa-quiesce-20261101/modules/mod_plat.so
+CHECK /tmp/oa-quiesce-20261101/modules/mod_power.so
+	libc.so.6 => /lib/libc.so.6 (0x7665f000)
+	/lib/ld-linux-armhf.so.3 (0x7675e000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_power.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-quiesce-20261101/modules/mod_power.so
+CHECK /tmp/oa-quiesce-20261101/modules/mod_settings.so
+	libsqlite3.so.0 => /vendor/lib/libs/libsqlite3.so.0 (0x76715000)
+	libc.so.6 => /lib/libc.so.6 (0x76628000)
+	libdl.so.2 => /lib/libdl.so.2 (0x76615000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x765f1000)
+	/lib/ld-linux-armhf.so.3 (0x767d5000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_settings.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libsqlite3.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+OK /tmp/oa-quiesce-20261101/modules/mod_settings.so
+CHECK /tmp/oa-quiesce-20261101/modules/mod_source.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x766c6000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x76691000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x765fd000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x765e3000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x76567000)
+	libnteec.so => /vendor/lib/libnteec.so (0x76555000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x7651b000)
+	libc.so.6 => /lib/libc.so.6 (0x7642e000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x76320000)
+	libm.so.6 => /lib/libm.so.6 (0x762a8000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x76280000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x7625c000)
+	/lib/ld-linux-armhf.so.3 (0x76747000)
+	libdl.so.2 => /lib/libdl.so.2 (0x76249000)
+	librt.so.1 => /lib/librt.so.1 (0x76233000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_source.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/oa-quiesce-20261101/modules/mod_source.so
+CHECK /tmp/oa-quiesce-20261101/modules/mod_ticker.so
+	libc.so.6 => /lib/libc.so.6 (0x765de000)
+	/lib/ld-linux-armhf.so.3 (0x766dd000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_ticker.so:
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-quiesce-20261101/modules/mod_ticker.so
+CHECK /tmp/oa-quiesce-20261101/modules/mod_ui_clock.so
+	libc.so.6 => /lib/libc.so.6 (0x76624000)
+	/lib/ld-linux-armhf.so.3 (0x76723000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_ui_clock.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-quiesce-20261101/modules/mod_ui_clock.so
+CHECK /tmp/oa-quiesce-20261101/modules/mod_ui_console.so
+	libc.so.6 => /lib/libc.so.6 (0x7667f000)
+	/lib/ld-linux-armhf.so.3 (0x7677e000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_ui_console.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-quiesce-20261101/modules/mod_ui_console.so
+CHECK /tmp/oa-quiesce-20261101/modules/mod_ui_fb.so
+	libc.so.6 => /lib/libc.so.6 (0x76634000)
+	/lib/ld-linux-armhf.so.3 (0x76734000)
+
+	Version information:
+	/tmp/oa-quiesce-20261101/modules/mod_ui_fb.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-quiesce-20261101/modules/mod_ui_fb.so
+Runtime preflight PASSED. No module entry/init/start, control socket or hardware access.
+This checks ELF metadata and library relocations, not device operation or display scanout.
+[226963] INFO host         loaded quiesce_fixture v1 (/tmp/oa-quiesce-20261101/tests/mod_quiesce_fixture.so)
+[226963] INFO host         started quiesce_fixture
+[226963] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[226963] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[226963] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[226963] INFO host         stopped quiesce_fixture
+[226964] INFO host         unloaded quiesce_fixture
+[226964] INFO host         loaded quiesce_fixture v1 (/tmp/oa-quiesce-20261101/tests/mod_quiesce_fixture.so)
+[226964] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[226964] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[226964] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[226964] INFO host         stopped quiesce_fixture
+[226964] INFO host         unloaded quiesce_fixture
+[226964] ERR  host         load '/tmp/oa-quiesce-20261101/tests/mod_quiesce_fixture.so': init() failed (-1)
+[226964] ERR  host         quiesce_fixture: init cleanup pending; retry unload
+[226964] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[226964] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[226965] INFO host         stopped quiesce_fixture
+[226965] INFO host         unloaded quiesce_fixture
+[226965] INFO host         loaded quiesce_fixture v1 (/tmp/oa-quiesce-20261101/tests/mod_quiesce_fixture.so)
+[226965] ERR  host         quiesce_fixture: start() failed (-1)
+[226965] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[226965] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[226965] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[226965] INFO host         stopped quiesce_fixture
+[226965] INFO host         unloaded quiesce_fixture
+[226965] INFO host         loaded quiesce_fixture v1 (/tmp/oa-quiesce-20261101/tests/mod_quiesce_fixture.so)
+[226965] INFO host         started quiesce_fixture
+[226965] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[226965] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[226965] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[226965] INFO host         stopped quiesce_fixture
+[226966] INFO host         unloaded quiesce_fixture
+[226966] INFO host         loaded quiesce_fixture v1 (/tmp/oa-quiesce-20261101/tests/mod_quiesce_fixture.so)
+[226966] INFO host         started quiesce_fixture
+[226966] INFO host         stopped quiesce_fixture
+[226966] INFO host         unloaded quiesce_fixture
+[226966] INFO host         loaded quiesce_fixture v1 (/tmp/oa-quiesce-20261101/tests/mod_quiesce_fixture.so)
+  ok   running veto retains DSO/posts/services; force cannot bypass; completion permits unload
+  ok   never-started init resources protected by gate
+  ok   failed init retained and discoverable for cleanup, never activated
+  ok   failed partial start retains callback code until completion
+  ok   suspended instance cannot resume while cleanup is pending
+  ok   failed deferred activation retains resources and eventually runs stop
+[226966] INFO host         quiesce_fixture: reloaded (suspended)
+[226966] ERR  host         quiesce_fixture: start() failed (-1)
+[226966] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[226966] WARN host         quiesce_fixture: resume failed (-1)
+[226966] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[226966] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[226966] INFO host         stopped quiesce_fixture
+[226966] INFO host         unloaded quiesce_fixture

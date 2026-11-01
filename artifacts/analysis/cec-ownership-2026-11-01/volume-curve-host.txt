@@ -1,0 +1,3 @@
+  ok   both 101-entry AQ tables: exact selection, unaligned little-endian loads and 32-to-16-bit narrowing
+  ok   every truncated length / oversized inputs reject atomically; null guards and unsigned volume clamping
+  ok   all 101 decoded normal-curve entries match the independently captured real-TV table

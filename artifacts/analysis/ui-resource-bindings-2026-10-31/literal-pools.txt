@@ -1,0 +1,42 @@
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .text:
+ ef57b4 681d7901 64d35701                    h.y.d.W.        
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .text:
+ eee61c 681d7901 34195001 da5c2f01           h.y.4.P..\/.    
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .rodata:
+ 1501934 96195001 a9195001 94195001 a7195001  ..P...P...P...P.
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .rodata:
+ 1501994 494e4143 54495645 5f554e46 4f435553  INACTIVE_UNFOCUS
+ 15019a4 45440049 4e414354 4956455f 464f4355  ED.INACTIVE_FOCU
+ 15019b4 53454400 7376675f 636f6d70 6f6e656e  SED.svg_componen
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .text:
+ e47dc8 681d7901 b7fb4e01 8cd77801 ccd77801  h.y...N...x...x.
+ e47dd8 acd77801 9cd77801 bcd77801           ..x...x...x.    
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .rodata:
+ 14efbb7 01 000302                            ....            
+
+/tmp/opencode/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .data:
+ 178d78c 47020000 49020000 48020000 4a020000  G...I...H...J...
+ 178d79c 4f020000 51020000 50020000 52020000  O...Q...P...R...
+ 178d7ac 43020000 45020000 44020000 46020000  C...E...D...F...
+ 178d7bc 4b020000 4d020000 4c020000 4e020000  K...M...L...N...
+ 178d7cc 53020000 55020000 54020000 56020000  S...U...T...V...

@@ -1,0 +1,236 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-strict/core/check.o core/check.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-strict/core/control.o core/control.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-strict/core/host.o core/host.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-strict/core/module.o core/module.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-strict/tests/phases tests/phases.c build-strict/core/check.o build-strict/core/control.o build-strict/core/host.o build-strict/core/module.o -ldl -pthread
+[ 71153] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71153] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71153] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71153] INFO host         started phase_c
+[ 71153] INFO host         started phase_b
+[ 71153] INFO host         started phase_a
+[ 71153] INFO host         stopped phase_a
+[ 71153] INFO host         unloaded phase_a
+[ 71153] INFO host         stopped phase_b
+[ 71153] INFO host         unloaded phase_b
+[ 71153] INFO host         stopped phase_c
+[ 71153] INFO host         unloaded phase_c
+[ 71153] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71153] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71153] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71153] INFO host         started phase_c
+[ 71153] INFO host         started phase_b
+[ 71153] INFO host         started phase_a
+[ 71153] ERR  host         phase_b: required by active module 'phase_a'
+[ 71153] ERR  host         phase_b: required by active module 'phase_a'
+[ 71153] ERR  host         phase_b: required by active module 'phase_a'
+[ 71153] INFO host         stopped phase_a
+[ 71153] INFO host         unloaded phase_a
+[ 71153] INFO host         stopped phase_b
+[ 71153] INFO host         unloaded phase_b
+[ 71153] INFO host         stopped phase_c
+[ 71153] INFO host         unloaded phase_c
+[ 71153] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71153] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71153] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71153] INFO host         started phase_c
+[ 71153] INFO host         started phase_b
+[ 71153] INFO host         started phase_a
+[ 71153] INFO host         stopped phase_a
+[ 71153] INFO host         unloaded phase_a
+[ 71153] INFO host         stopped phase_b
+[ 71153] INFO host         unloaded phase_b
+[ 71153] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71153] INFO host         phase_b: reloaded (suspended)
+[ 71153] INFO host         started phase_b
+[ 71153] INFO host         stopped phase_b
+[ 71153] INFO host         unloaded phase_b
+[ 71153] INFO host         stopped phase_c
+[ 71153] INFO host         unloaded phase_c
+[ 71153] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71153] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71153] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71153] INFO host         started phase_c
+[ 71153] INFO host         started phase_b
+[ 71153] INFO host         started phase_a
+[ 71153] WARN host         phase_b: suspend failed (-7)
+[ 71153] INFO host         stopped phase_a
+[ 71153] INFO host         unloaded phase_a
+[ 71153] INFO host         stopped phase_b
+[ 71153] INFO host         unloaded phase_b
+[ 71153] INFO host         stopped phase_c
+[ 71153] INFO host         unloaded phase_c
+[ 71154] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71154] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71154] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71154] INFO host         started phase_c
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         started phase_a
+[ 71154] WARN host         phase_c: resume failed (-7)
+[ 71154] INFO host         stopped phase_a
+[ 71154] INFO host         unloaded phase_a
+[ 71154] INFO host         stopped phase_b
+[ 71154] INFO host         unloaded phase_b
+[ 71154] INFO host         stopped phase_c
+[ 71154] INFO host         unloaded phase_c
+[ 71154] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71154] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71154] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71154] INFO host         started phase_c
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         started phase_a
+[ 71154] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[ 71154] INFO host         stopped phase_b
+[ 71154] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         stopped phase_a
+[ 71154] INFO host         unloaded phase_a
+[ 71154] INFO host         stopped phase_b
+[ 71154] INFO host         unloaded phase_b
+[ 71154] INFO host         stopped phase_c
+[ 71154] INFO host         unloaded phase_c
+[ 71154] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71154] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71154] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71154] INFO host         started phase_c
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         started phase_a
+[ 71154] ERR  host         module dependency cycle; lifecycle transition canceled
+[ 71154] INFO host         stopped phase_a
+[ 71154] INFO host         unloaded phase_a
+[ 71154] INFO host         stopped phase_b
+[ 71154] INFO host         unloaded phase_b
+[ 71154] INFO host         stopped phase_c
+[ 71154] INFO host         unloaded phase_c
+[ 71154] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_no_suspend.so)
+[ 71154] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71154] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71154] INFO host         started phase_c
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         started phase_a
+[ 71154] ERR  host         phase_b: consumer 'phase_a' is still active
+[ 71154] INFO host         stopped phase_a
+[ 71154] INFO host         unloaded phase_a
+[ 71154] INFO host         stopped phase_b
+[ 71154] INFO host         unloaded phase_b
+[ 71154] INFO host         stopped phase_c
+[ 71154] INFO host         unloaded phase_c
+[ 71154] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71154] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71154] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71154] INFO host         started phase_c
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         started phase_a
+[ 71154] INFO host         stopped phase_c
+[ 71154] INFO host         unloaded phase_c
+[ 71154] INFO host         loaded phase_c_new vtest (build-strict/tests/mod_phase_replacement.so)
+[ 71154] INFO host         started phase_c_new
+[ 71154] INFO host         stopped phase_a
+[ 71154] INFO host         unloaded phase_a
+[ 71154] INFO host         stopped phase_b
+[ 71154] INFO host         unloaded phase_b
+[ 71154] INFO host         stopped phase_c_new
+[ 71154] INFO host         unloaded phase_c_new
+[ 71154] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71154] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71154] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71154] INFO host         started phase_c
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         started phase_a
+[ 71154] INFO host         stopped phase_a
+[ 71154] INFO host         unloaded phase_a
+[ 71154] INFO host         stopped phase_b
+[ 71154] INFO host         unloaded phase_b
+[ 71154] INFO host         stopped phase_c
+[ 71154] INFO host         unloaded phase_c
+[ 71154] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71154] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71154] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71154] INFO host         started phase_c
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         started phase_a
+[ 71154] WARN host         phase_b: suspend failed (-7)
+[ 71154] INFO host         stopped phase_a
+[ 71154] INFO host         unloaded phase_a
+[ 71154] INFO host         stopped phase_b
+[ 71154] INFO host         unloaded phase_b
+[ 71154] INFO host         stopped phase_c
+[ 71154] INFO host         unloaded phase_c
+[ 71154] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71154] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71154] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71154] INFO host         started phase_c
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         started phase_a
+[ 71154] INFO host         stopped phase_a
+[ 71154] INFO host         unloaded phase_a
+[ 71154] INFO host         stopped phase_b
+[ 71154] INFO host         unloaded phase_b
+[ 71154] INFO host         stopped phase_c
+[ 71154] INFO host         unloaded phase_c
+[ 71154] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71154] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71154] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71154] INFO host         started phase_c
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         started phase_a
+[ 71154] ERR  host         phase_a: missing required service 'phase_b_service'
+[ 71154] INFO host         stopped phase_a
+[ 71154] INFO host         unloaded phase_a
+[ 71154] INFO host         stopped phase_b
+[ 71154] INFO host         unloaded phase_b
+[ 71154] INFO host         stopped phase_c
+[ 71154] INFO host         unloaded phase_c
+[ 71154] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71154] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71154] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71154] INFO host         started phase_c
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         started phase_a
+[ 71154] INFO host         stopped phase_a
+[ 71154] INFO host         unloaded phase_a
+[ 71154] INFO host         stopped phase_b
+[ 71154] INFO host         unloaded phase_b
+[ 71154] INFO host         stopped phase_c
+[ 71154] INFO host         unloaded phase_c
+[ 71154] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_no_suspend.so)
+[ 71154] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71154] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71154] INFO host         started phase_c
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         started phase_a
+[ 71154] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[ 71154] INFO host         stopped phase_a
+[ 71154] INFO host         unloaded phase_a
+[ 71154] INFO host         stopped phase_b
+[ 71154] INFO host         unloaded phase_b
+[ 71154] INFO host         stopped phase_c
+[ 71154] INFO host         unloaded phase_c
+[ 71154] INFO host         loaded phase_a vtest (build-strict/tests/mod_phase_a.so)
+[ 71154] INFO host         loaded phase_b vtest (build-strict/tests/mod_phase_b.so)
+[ 71154] INFO host         loaded phase_c vtest (build-strict/tests/mod_phase_c.so)
+[ 71154] INFO host         started phase_c
+[ 71154] INFO host         started phase_b
+[ 71154] INFO host         started phase_a
+[ 71154] INFO host         stopped phase_a
+[ 71154] INFO host         unloaded phase_a
+[ 71154] INFO host         stopped phase_b
+[ 71154] INFO host         unloaded phase_b
+[ 71154] INFO host         stopped phase_c
+[ 71154] INFO host         unloaded phase_c
+  ok   declared service dependencies suspend consumers first and resume providers first
+  ok   declared dependencies protect active consumers during stop/unload/reload
+  ok   dependency snapshot survives service unpublication and deferred reload into a hole
+  ok   failed consumer suspend protects its providers and reports failure through CLI
+  ok   failed provider resume keeps consumers suspended; a later resume retries
+  ok   published interface alone cannot start/resume a consumer above a suspended provider
+  ok   runtime lookup holds join the dependency graph; cycles fail before callbacks
+  ok   consumer without a suspend hook cannot be left active above a sleeping provider
+  ok   dependency edges follow a republished service to its current provider
+  ok   sleep cycle enters last, restores automatically and pins modules/rejects nested cycles
+  ok   failed preparation skips entry and restores only successful transitions
+  ok   entry failure still restores modules and retains its distinct error
+  ok   restoration failure remains visible; dependent consumers stay suspended and retry works
+  ok   cycle ledger preserves modules already suspended before the request
+  ok   missing hooks refuse before callbacks rather than assuming quiescence
+  ok   pending shutdown and stale backend owner reject before preparation

@@ -1,0 +1,463 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (1485 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (3167 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts
+    /tmp/opencode/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_proj/Aurora (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_proj/Aurora (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFuncs.java 'FUN_0093c5e8' 'FUN_0093bca0' '_ZN20plat_Gfx_DRM_osd_drv12Plane_EnableEmh' '_ZN20plat_Gfx_DRM_osd_drv11Show_EnableEmh' '_ZN20plat_Gfx_DRM_osd_drv11Flip_EnableEmhh' '_ZN20plat_Gfx_DRM_osd_drv4InitE20_EN_DRV_OSD_PLANE_ID21_EN_DRV_OSD_REGION_IDPm' '_ZN20plat_Gfx_DRM_osd_drvC1Ei' '_ZN15plat_Gfx_Window14Sync_Window2HWEv'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/opencode/ghidra_scripts/DumpFuncs.java (HeadlessAnalyzer)  
+INFO  DumpFuncs.java> 
+===== FUN_0093c5e8 : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- FUN_0093c5e8 @ 0093c5e8 (GhidraScript)  
+INFO  DumpFuncs.java> 
+void FUN_0093c5e8(undefined4 param_1,int param_2)
+
+{
+  __pid_t _Var1;
+  int iVar2;
+  __pid_t _Var3;
+  long lVar4;
+  int iVar5;
+  int iVar6;
+  undefined4 uVar7;
+  int iVar8;
+  undefined4 local_68;
+  int local_64;
+  undefined4 local_60;
+  undefined4 local_5c;
+  int local_58;
+  __pid_t local_54;
+  undefined4 local_50;
+  undefined4 uStack_4c;
+  int local_48;
+  undefined4 uStack_44;
+  undefined4 local_40;
+  undefined4 uStack_3c;
+  undefined4 local_38;
+  undefined4 uStack_34;
+  undefined4 local_30;
+  int local_2c;
+  
+  local_2c = __stack_chk_guard;
+  _Var1 = getpid();
+  iVar8 = DAT_019e9110;
+  if (*(int *)(DAT_019e9110 + 8) != 0) {
+    iVar5 = 0;
+    iVar2 = DAT_019e9110;
+    do {
+      if ((_Var1 == *(int *)(iVar2 + 0x14)) && (*(int *)(iVar2 + 0x24) == param_2)) {
+        iVar8 = *(int *)(iVar5 * 0x2c + DAT_019e9110 + 0x20);
+        goto LAB_0093c6ae;
+      }
+      iVar5 = iVar5 + 1;
+      iVar2 = iVar2 + 0x2c;
+    } while (iVar5 != *(int *)(DAT_019e9110 + 8));
+    iVar6 = 0;
+    iVar2 = DAT_019e9110;
+    do {
+      if ((*(int *)(iVar2 + 0x14) != 0) && (param_2 == *(int *)(iVar2 + 0x24))) {
+        _MCU_Sem_Lock_p(giPlatMcuSemid);
+        iVar2 = DAT_019e9110 + iVar6 * 0x2c;
+        iVar8 = iVar8 + iVar6 * 0x2c;
+        local_58 = *(int *)(iVar2 + 0x10);
+        uStack_4c = *(undefined4 *)(iVar2 + 0x1c);
+        local_48 = *(int *)(iVar2 + 0x20);
+        uStack_44 = *(undefined4 *)(iVar2 + 0x24);
+        local_40 = *(undefined4 *)(iVar2 + 0x28);
+        uStack_3c = *(undefined4 *)(iVar2 + 0x2c);
+        local_50 = 0xffffffff;
+        local_38 = *(undefined4 *)(iVar2 + 0x30);
+        uStack_34 = *(undefined4 *)(iVar2 + 0x34);
+        local_30 = *(undefined4 *)(iVar2 + 0x38);
+        local_64 = 0;
+        local_60 = 0;
+        uVar7 = *(undefined4 *)(iVar8 + 0x1c);
+        local_5c = 0;
+        local_68 = uVar7;
+        local_54 = _Var1;
+        iVar5 = Hal_Video_Libdrm_drmIoctl(param_1,0xc010640b,&local_68);
+        iVar2 = local_64;
+        if (iVar5 == 0) {
+          if (local_64 != 0) {
+            local_48 = FUN_0093c0f8(param_1,local_64,*(undefined4 *)(iVar8 + 0x28));
+            local_30 = *(undefined4 *)(iVar8 + 0x38);
+            local_58 = iVar2;
+            if (local_48 == 0) {
+              _Var1 = getpid();
+              lVar4 = syscall(0xe0);
+              printf("---[%d:%d]%s%s(%d):",_Var1,lVar4,&DAT_013bd960,"_MCU_Phys2Virt",0x5f6);
+              printf("client mapping failed!!");
+              FUN_0093c054(param_1,iVar2,local_40,0);
+            }
+            else {
+              FUN_0093bef8(&local_58);
+            }
+            _MCU_Sem_Unlock_p(giPlatMcuSemid);
+            iVar8 = local_48;
+            goto LAB_0093c6ae;
+          }
+        }
+        else {
+          _Var1 = getpid();
+          lVar4 = syscall(0xe0);
+          printf("---[%d:%d]%s%s(%d):",_Var1,lVar4,&DAT_013bd960,"drm_client_attach",0x12f);
+          printf("DRM_IOCTL_GEM_OPEN error=%d\n",uVar7);
+        }
+        _Var1 = getpid();
+        lVar4 = syscall(0xe0);
+        printf("---[%d:%d]%s%s(%d):",_Var1,lVar4,&DAT_013bd960,"_MCU_Phys2Virt",0x5e2);
+        puts("can\'t attach");
+        _MCU_Sem_Unlock_p(giPlatMcuSemid);
+        iVar8 = 0;
+        goto LAB_0093c6ae;
+      }
+      iVar6 = iVar6 + 1;
+      iVar2 = iVar2 + 0x2c;
+    } while (iVar5 != iVar6);
+  }
+  _Var3 = getpid();
+  lVar4 = syscall(0xe0);
+  printf("---[%d:%d]%s%s(%d):",_Var3,lVar4,&DAT_013bd960,"_MCU_Phys2Virt",0x600);
+  printf("PID=%d Phy=0x%lx Can not find PA in Table. Table size=%d\n",_Var1,param_2,
+         *(undefined4 *)(DAT_019e9110 + 8));
+  iVar8 = 0;
+LAB_0093c6ae:
+  if (local_2c == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(iVar8);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== FUN_0093bca0 : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- FUN_0093bca0 @ 0093bca0 (GhidraScript)  
+INFO  DumpFuncs.java> 
+void FUN_0093bca0(int param_1)
+
+{
+  int iVar1;
+  __pid_t _Var2;
+  undefined4 uVar3;
+  int iVar4;
+  int iVar5;
+  
+  iVar1 = __stack_chk_guard;
+  _Var2 = getpid();
+  if (*(int *)(DAT_019e9110 + 8) == 0) {
+    uVar3 = 0;
+  }
+  else {
+    iVar4 = 0;
+    iVar5 = DAT_019e9110;
+    do {
+      if ((_Var2 == *(int *)(iVar5 + 0x14)) && (*(int *)(iVar5 + 0x20) == param_1)) {
+        uVar3 = *(undefined4 *)(iVar4 * 0x2c + DAT_019e9110 + 0x10);
+        goto LAB_0093bcfc;
+      }
+      iVar4 = iVar4 + 1;
+      iVar5 = iVar5 + 0x2c;
+    } while (iVar4 != *(int *)(DAT_019e9110 + 8));
+    uVar3 = 0;
+  }
+LAB_0093bcfc:
+  if (iVar1 == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(uVar3);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _ZN20plat_Gfx_DRM_osd_drv12Plane_EnableEmh : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Plane_Enable @ 009440a0 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_DRM_osd_drv::Plane_Enable(unsigned long, unsigned char) */
+
+void __thiscall
+plat_Gfx_DRM_osd_drv::Plane_Enable(plat_Gfx_DRM_osd_drv *this,ulong param_1,uchar param_2)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  __pid_t _Var3;
+  long lVar4;
+  int *piVar5;
+  char *pcVar6;
+  undefined4 local_28;
+  undefined4 uStack_24;
+  uint local_20;
+  int local_1c;
+  
+  local_20 = (uint)param_2;
+  local_28 = **(undefined4 **)(this + 4);
+  local_1c = __stack_chk_guard;
+  uStack_24 = 0;
+  iVar1 = Hal_Video_Libdrm_drmIoctl(*(undefined4 *)(this + 0xc),0xc00c6455,&local_28);
+  if (iVar1 < 0) {
+    _Var3 = getpid();
+    lVar4 = syscall(0xe0);
+    printf("---[%d:%d]%s%s(%d):",_Var3,lVar4,&DAT_013bf2fc,"Plane_Enable",0x1d8);
+    piVar5 = __errno_location();
+    pcVar6 = strerror(*piVar5);
+    printf("failed: %s \n\n",pcVar6);
+    uVar2 = 0x16;
+  }
+  else {
+    uVar2 = 0;
+    *(uchar *)(*(int *)(this + 4) + 0x38) = param_2;
+  }
+  if (local_1c == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(uVar2);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _ZN20plat_Gfx_DRM_osd_drv11Show_EnableEmh : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Show_Enable @ 00944ef0 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* WARNING: Removing unreachable block (ram,0x00944f1e) */
+/* plat_Gfx_DRM_osd_drv::Show_Enable(unsigned long, unsigned char) */
+
+undefined4 plat_Gfx_DRM_osd_drv::Show_Enable(ulong param_1,uchar param_2)
+
+{
+  return 0;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _ZN20plat_Gfx_DRM_osd_drv11Flip_EnableEmhh : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Flip_Enable @ 0094442c (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_DRM_osd_drv::Flip_Enable(unsigned long, unsigned char, unsigned char) */
+
+void __thiscall
+plat_Gfx_DRM_osd_drv::Flip_Enable
+          (plat_Gfx_DRM_osd_drv *this,ulong param_1,uchar param_2,uchar param_3)
+
+{
+  int iVar1;
+  uint uVar2;
+  uint local_30 [3];
+  int local_24;
+  
+  local_24 = __stack_chk_guard;
+  iVar1 = GetDrmProty(this,(ulonglong *)local_30,0xeeeeeeee,"flip_mode");
+  if (iVar1 == 0) {
+    if (param_2 == '\0' && param_3 == '\0') {
+      uVar2 = 0;
+    }
+    else if (param_2 == '\x01' && param_3 == '\x01') {
+      uVar2 = 3;
+    }
+    else if (param_3 == '\0' && param_2 == '\x01') {
+      uVar2 = 2;
+    }
+    else if (param_2 == '\0' && param_3 == '\x01') {
+      uVar2 = 1;
+    }
+    else {
+      uVar2 = 4;
+    }
+    if (uVar2 != local_30[0]) {
+      SetDrmProty(CONCAT44(0xeeeeeeee,this),uVar2,(char *)0x0);
+    }
+  }
+  if (local_24 != __stack_chk_guard) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _ZN20plat_Gfx_DRM_osd_drv4InitE20_EN_DRV_OSD_PLANE_ID21_EN_DRV_OSD_REGION_IDPm : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Init @ 00943d8c (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_DRM_osd_drv::Init(_EN_DRV_OSD_PLANE_ID, _EN_DRV_OSD_REGION_ID, unsigned long*) */
+
+void __thiscall
+plat_Gfx_DRM_osd_drv::Init(plat_Gfx_DRM_osd_drv *this,int param_2,int param_3,undefined4 *param_4)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  int iVar3;
+  __pid_t _Var4;
+  long lVar5;
+  int iVar6;
+  
+  iVar1 = __stack_chk_guard;
+  if (param_3 == 0) {
+    if (param_2 < 5) {
+      *(undefined1 **)(this + 8) = st_libdrm_data_area + param_2 * 0xc;
+      *(int *)(this + 4) = param_2 * 0x44 + 0xc + *(int *)this;
+    }
+    switch(param_2) {
+    case 0:
+      search_plane(this,2);
+      break;
+    case 1:
+      search_plane(this,1);
+      break;
+    case 2:
+      search_plane(this,0);
+      break;
+    case 3:
+      search_plane(this,3);
+      break;
+    case 4:
+      search_plane(this,4);
+      break;
+    default:
+      goto switchD_00943dec_default;
+    }
+    if (**(int **)(this + 8) == 0) {
+      iVar3 = Hal_Video_Libdrm_drmModeGetPlane
+                        (*(undefined4 *)(this + 0xc),**(undefined4 **)(this + 4));
+      if (iVar3 == 0) {
+        _Var4 = getpid();
+        lVar5 = syscall(0xe0);
+        printf("---[%d:%d]%s%s(%d):",_Var4,lVar5,&DAT_013bf2fc,&DAT_013bf52c,0x182);
+        printf("plane not found: fd(%d), plane_id(%d)\n",*(undefined4 *)(this + 0xc),
+               **(undefined4 **)(this + 4));
+      }
+      else {
+        **(int **)(this + 8) = iVar3;
+        iVar6 = *(int *)(this + 8);
+        uVar2 = Hal_Video_Libdrm_drmModeGetCrtc
+                          (*(undefined4 *)(this + 0xc),*(undefined4 *)(iVar3 + 0xc));
+        *(undefined4 *)(iVar6 + 4) = uVar2;
+        iVar6 = *(int *)(this + 8);
+        uVar2 = Hal_Video_Libdrm_drmModeGetFB
+                          (*(undefined4 *)(this + 0xc),*(undefined4 *)(iVar3 + 0x10));
+        *(undefined4 *)(iVar6 + 8) = uVar2;
+      }
+    }
+    uVar2 = 0;
+    *param_4 = *(undefined4 *)(*(int *)this + 8);
+  }
+  else {
+switchD_00943dec_default:
+    uVar2 = 0x16;
+  }
+  if (iVar1 != __stack_chk_guard) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar2);
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _ZN20plat_Gfx_DRM_osd_drvC1Ei : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- plat_Gfx_DRM_osd_drv @ 00943828 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_DRM_osd_drv::plat_Gfx_DRM_osd_drv(int) */
+
+void __thiscall plat_Gfx_DRM_osd_drv::plat_Gfx_DRM_osd_drv(plat_Gfx_DRM_osd_drv *this,int param_1)
+
+{
+  int iVar1;
+  int iVar2;
+  
+  iVar1 = __stack_chk_guard;
+  *(undefined4 *)(this + 4) = 0;
+  *(undefined4 *)this = 0;
+  *(undefined4 *)(this + 8) = 0;
+  *(undefined4 *)(this + 0xc) = 0;
+  iVar2 = ShareMem_Create(this);
+  if ((iVar2 == 0) && (iVar2 = Get_DrmFD_Handle(this), iVar2 == 0)) {
+    st_libdrm_data_area._0_4_ = 0;
+    st_libdrm_data_area._4_4_ = 0;
+    st_libdrm_data_area._8_4_ = 0;
+  }
+  if (iVar1 == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(this);
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _ZN15plat_Gfx_Window14Sync_Window2HWEv : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- Sync_Window2HW @ 00940e78 (GhidraScript)  
+INFO  DumpFuncs.java> 
+/* plat_Gfx_Window::Sync_Window2HW() */
+
+void __thiscall plat_Gfx_Window::Sync_Window2HW(plat_Gfx_Window *this)
+
+{
+  int iVar1;
+  
+  iVar1 = __stack_chk_guard;
+  if (*(char *)(*(int *)this + 0x6c) != '\0') {
+    FUN_00940dbc();
+  }
+  if (iVar1 == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(0);
+}
+
+ (GhidraScript)  

@@ -1,0 +1,15 @@
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build/core/check.o core/check.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build/core/control.o core/control.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build/core/host.o core/host.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build/core/module.o core/module.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build/tests/audio_curve_module tests/audio_curve_module.c build/core/check.o build/core/control.o build/core/host.o build/core/module.o -ldl -pthread
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build/modules/mod_audio_curve.so modules/audio_curve/audio_curve.c common/audio_curve.c 
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build/modules/mod_ticker.so modules/ticker/ticker.c  \
+   \
+  
+  ok   real DSO/CLI start and reload reread AQ; published snapshots and caller copies remain immutable
+  ok   real registry consumer hold blocks stop/unload/reload; release allows clean stop
+  ok   publication collision preserves peer service; the same module can retry start
+  ok   missing/invalid profile, absent/short/long file, directory and FIFO reject without publication; aggressive retry works
+  ok   standby retains immutable data; suspended reload defers I/O/publication, failed activation retries on resume
+  ok   failed replacement leaves no stale provider; explicit load recovers (host has no old-binary rollback)

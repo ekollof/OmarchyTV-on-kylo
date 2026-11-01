@@ -1,0 +1,43 @@
+# tvhack SPI dump (2MB, read-only)
+setenv imgload '0'
+setenv osd_base_addr '0x13000000'
+#@
+
+start_progress_bar
+setenv update_img_num '8'
+setenv update_img_idx '1'
+sf probe 0
+sf read 0x08000000 0x0 0x40000
+fatwrite usb 0:1 0x08000000 spi0.bin 0x40000
+setenv update_img_idx '2'
+sf probe 0
+sf read 0x08000000 0x40000 0x40000
+fatwrite usb 0:1 0x08000000 spi1.bin 0x40000
+setenv update_img_idx '3'
+sf probe 0
+sf read 0x08000000 0x80000 0x40000
+fatwrite usb 0:1 0x08000000 spi2.bin 0x40000
+setenv update_img_idx '4'
+sf probe 0
+sf read 0x08000000 0xc0000 0x40000
+fatwrite usb 0:1 0x08000000 spi3.bin 0x40000
+setenv update_img_idx '5'
+sf probe 0
+sf read 0x08000000 0x100000 0x40000
+fatwrite usb 0:1 0x08000000 spi4.bin 0x40000
+setenv update_img_idx '6'
+sf probe 0
+sf read 0x08000000 0x140000 0x40000
+fatwrite usb 0:1 0x08000000 spi5.bin 0x40000
+setenv update_img_idx '7'
+sf probe 0
+sf read 0x08000000 0x180000 0x40000
+fatwrite usb 0:1 0x08000000 spi6.bin 0x40000
+setenv update_img_idx '8'
+sf probe 0
+sf read 0x08000000 0x1c0000 0x40000
+fatwrite usb 0:1 0x08000000 spi7.bin 0x40000
+sleep 5
+stopprogressbar
+
+% <- this is end of file symbol

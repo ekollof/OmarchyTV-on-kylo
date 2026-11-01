@@ -1,0 +1,16 @@
+openaurora OK
+modules/mod_audio.so OK
+modules/mod_audio_curve.so OK
+modules/mod_display.so OK
+modules/mod_ir.so OK
+modules/mod_panel.so OK
+modules/mod_plat.so OK
+modules/mod_power.so OK
+modules/mod_settings.so OK
+modules/mod_source.so OK
+modules/mod_ticker.so OK
+modules/mod_ui_clock.so OK
+modules/mod_ui_console.so OK
+modules/mod_ui_fb.so OK
+tests/quiesce OK
+tests/mod_quiesce_fixture.so OK

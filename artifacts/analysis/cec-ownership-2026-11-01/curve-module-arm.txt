@@ -1,0 +1,6 @@
+  ok   real DSO/CLI start and reload reread AQ; published snapshots and caller copies remain immutable
+  ok   real registry consumer hold blocks stop/unload/reload; release allows clean stop
+  ok   publication collision preserves peer service; the same module can retry start
+  ok   missing/invalid profile, absent/short/long file, directory and FIFO reject without publication; aggressive retry works
+  ok   standby retains immutable data; suspended reload defers I/O/publication, failed activation retries on resume
+  ok   failed replacement leaves no stale provider; explicit load recovers (host has no old-binary rollback)

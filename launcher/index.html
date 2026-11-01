@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Omarchy TV (P1 mock)</title>
+<style>
+  html,body{margin:0;height:100%;background:#0b1020;color:#e6edf3;
+            font-family:monospace;overflow:hidden}
+  #top{padding:14px 24px;background:#111a2e;display:flex;justify-content:space-between;
+       align-items:baseline;border-bottom:2px solid #7aa2f7}
+  #title{font-size:26px;color:#7aa2f7}
+  #title small{color:#8bcbb1;font-size:15px;margin-left:10px}
+  #clock{font-size:20px;color:#9aa5b1}
+  #row{display:flex;gap:22px;padding:36px 24px}
+  .tile{flex:0 0 300px;height:210px;background:#131c33;border:3px solid #23304d;
+        box-sizing:border-box;padding:18px;display:flex;flex-direction:column;
+        justify-content:space-between}
+  .tile.focused{border-color:#7aa2f7;background:#182644}
+  .tile h2{font-size:30px;margin:0;color:#e6edf3}
+  .tile p{font-size:16px;margin:0;color:#9aa5b1;line-height:1.35}
+  .tile .ico{font-size:44px;color:#8bcbb1}
+  #log{margin:0 24px;padding:12px 14px;background:#0f1730;border-left:4px solid #8bcbb1;
+       font-size:16px;color:#c9d4e0;min-height:26px}
+  #help{position:absolute;bottom:10px;left:24px;font-size:14px;color:#5b6b84}
+</style></head><body>
+<div id="top">
+  <div id="title">OMARCHY TV <small>p1 mock · novatek mb230</small></div>
+  <div id="clock">--:--</div>
+</div>
+<div id="row">
+  <div class="tile focused" data-act="tv">
+    <div class="ico">&#9632;</div>
+    <h2>TV</h2>
+    <p>stop the launcher, hand the screen back to the stock TV UI (EXIT)</p>
+  </div>
+  <div class="tile" data-act="sources">
+    <div class="ico">&#8644;</div>
+    <h2>Sources</h2>
+    <p>open the native "Bronlijst" and pick an input (HDMI / AV / VGA)</p>
+  </div>
+  <div class="tile" data-act="apps">
+    <div class="ico">&#9635;</div>
+    <h2>Apps</h2>
+    <p>open the stock portal (Startpagina) with its app tiles</p>
+  </div>
+</div>
+<div id="log">ready</div>
+<div id="help">&#8592;/&#8594; move &nbsp;&middot;&nbsp; OK = activate &nbsp;&middot;&nbsp; served from 127.0.0.1:8181</div>
+<script>
+(function(){
+  var tiles = [].slice.call(document.querySelectorAll(".tile"));
+  var idx = 0, logEl = document.getElementById("log"), busy = false;
+
+  function paint(){
+    for (var i=0;i<tiles.length;i++)
+      tiles[i].className = "tile" + (i===idx ? " focused" : "");
+  }
+  function say(t){ logEl.textContent = t; }
+
+  function act(name){
+    if (busy) return;
+    busy = true;
+    say("sending '" + name + "' ...");
+    var x = new XMLHttpRequest();
+    x.open("GET", "/cgi-bin/act?a=" + encodeURIComponent(name) + "&t=" + new Date().getTime());
+    x.onload = function(){ say(name + " -> " + x.status + " " + x.responseText); busy = false; };
+    x.onerror = function(){ say(name + " -> request failed"); busy = false; };
+    x.send();
+  }
+
+  document.addEventListener("keydown", function(e){
+    var k = e.key || ({37:"ArrowLeft",38:"ArrowUp",39:"ArrowRight",40:"ArrowDown",13:"Enter"})[e.keyCode];
+    if (k === "ArrowRight"){ idx = (idx+1) % tiles.length; paint(); }
+    else if (k === "ArrowLeft"){ idx = (idx+tiles.length-1) % tiles.length; paint(); }
+    else if (k === "Enter"){ act(tiles[idx].getAttribute("data-act")); }
+    else if (k === "ArrowDown" || k === "ArrowUp"){ /* single row */ }
+    if (k === "ArrowRight" || k === "ArrowLeft" || k === "Enter") e.preventDefault();
+  });
+  for (var i=0;i<tiles.length;i++) tiles[i].addEventListener("click", (function(n){
+    return function(){ idx = n; paint(); act(tiles[n].getAttribute("data-act")); };
+  })(i));
+
+  function clock(){
+    var d = new Date(), p = function(n){ return (n<10?"0":"")+n; };
+    document.getElementById("clock").textContent = p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+  }
+  clock(); setInterval(clock, 1000);
+  paint();
+
+  // heartbeat: tells the hook's watcher that the launcher is the screen owner
+  function alive(){
+    var i = new Image(); i.src = "/cgi-bin/act?a=alive&t=" + new Date().getTime();
+  }
+  alive(); setInterval(alive, 5000);
+
+  // boot handshake: the hook opens us with ?boot=N; tell it we rendered
+  (function(){
+    if (!/[?&]boot=/.test(location.search)) return;
+    var x = new XMLHttpRequest();
+    x.open("GET", "/cgi-bin/act?a=boot-ok&t=" + new Date().getTime());
+    x.onload = function(){ say("boot recorded (hook sees /conf/launcher_ok)"); };
+    x.onerror = function(){ say("boot beacon failed"); };
+    x.send();
+  })();
+})();
+</script>
+</body></html>

@@ -1,0 +1,9 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+/dev/fb1: 1920x1080 virt 1920x2160 bpp 32 offset 0,1080
+primary mapping: physical=0x35bbb000 bytes=16588800 stride=7680
+current MAU: 0 (primary memory selected)
+region: [0]=0(0) [1]=0(0) [2]=0x780(1920) [3]=0x438(1080) [4]=0(0) [5]=0(0) [6]=0xf00(3840) [7]=0x870(2160)

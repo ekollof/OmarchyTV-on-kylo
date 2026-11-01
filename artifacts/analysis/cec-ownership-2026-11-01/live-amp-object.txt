@@ -1,0 +1,22 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ 01 00 00 00 00 00 00 00 01 00 00 00 d8 00 00 00
+ 45 53 4d 54 20 41 44 38 32 35 38 37 5f 44 00 00
+ 00 00 00 00 00 00 00 00 5f 00 00 00 7f 00 00 00
+ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ 64 00 00 00 f1 4e 87 00 05 4c 87 00 99 55 87 00
+ 49 4c 87 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ad 4d 87 00 81 4c 87 00 00 00 00 00 00 00 00 00
+ 51 4e 87 00 cd 4c 87 00 49 51 87 00 19 4d 87 00
+ a9 52 87 00 1d 55 87 00 00 00 00 00 00 00 00 00
+ 05 52 87 00 65 4d 87 00 00 00 00 00 00 00 00 00
+ 00 00 00 00 00 00 00 00 65 53 87 00 00 00 00 00
+ 00 00 00 00 00 00 00 00 00 00 00 00 59 54 87 00
+ 00 00 00 00 00 00 00 00 00 00 00 00 f9 53 87 00
+ 08 00 00 00 f8 8f 3d 03
+ebb0aaaa-72a2-4410-9f8d-95b9249f8a90
+State:	S (sleeping)
+Pid:	1737

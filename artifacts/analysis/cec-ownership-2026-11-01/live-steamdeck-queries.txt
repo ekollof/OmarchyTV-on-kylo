@@ -1,0 +1,32 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+shared CEC logical address=0, ioctl_rc=0
+query 0>8 opcode=83 ioctl_rc=0 driver_accepted=1
+QUERY_EXIT=0
+shared CEC logical address=0, ioctl_rc=0
+query 0>8 opcode=46 ioctl_rc=0 driver_accepted=1
+QUERY_EXIT=0
+shared CEC logical address=0, ioctl_rc=0
+query 0>8 opcode=8f ioctl_rc=0 driver_accepted=1
+QUERY_EXIT=0
+controller=0x40b9000
+LA=1 seen=0 PA=ffff power=4294967295 name=
+LA=2 seen=0 PA=ffff power=4294967295 name=
+LA=3 seen=0 PA=ffff power=4294967295 name=
+LA=4 seen=0 PA=1000 power=0 name=Steam Deck
+LA=5 seen=0 PA=ffff power=4294967295 name=
+LA=6 seen=0 PA=ffff power=4294967295 name=
+LA=7 seen=0 PA=ffff power=4294967295 name=
+LA=8 seen=1 PA=1000 power=0 name=Steam Deck
+LA=9 seen=0 PA=ffff power=4294967295 name=
+LA=10 seen=0 PA=ffff power=4294967295 name=
+LA=11 seen=0 PA=ffff power=4294967295 name=
+LA=12 seen=0 PA=ffff power=4294967295 name=
+LA=13 seen=0 PA=ffff power=4294967295 name=
+LA=14 seen=0 PA=ffff power=4294967295 name=
+matching live controller objects=1
+ebb0aaaa-72a2-4410-9f8d-95b9249f8a90
+ 00:25:29 up  4:24,  0 users,  load average: 15.07, 15.06, 15.07

@@ -1,0 +1,617 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+Read-only runtime preflight; interpreter /lib/ld-linux-armhf.so.3; module ABI 3
+CHECK /tmp/oa-mixer-matching-20261101/openaurora
+	libdl.so.2 => /lib/libdl.so.2 (0x46d40000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x46f00000)
+	libc.so.6 => /lib/libc.so.6 (0x46f30000)
+	/lib/ld-linux-armhf.so.3 (0x766ff000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/openaurora:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.9) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.10) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-mixer-matching-20261101/openaurora
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_audio.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x76753000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x7671e000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x7668a000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x76670000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x765f4000)
+	libnteec.so => /vendor/lib/libnteec.so (0x765e2000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x765a8000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x76584000)
+	libc.so.6 => /lib/libc.so.6 (0x76497000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x76389000)
+	libm.so.6 => /lib/libm.so.6 (0x76311000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x762e9000)
+	/lib/ld-linux-armhf.so.3 (0x767d6000)
+	libdl.so.2 => /lib/libdl.so.2 (0x762d6000)
+	librt.so.1 => /lib/librt.so.1 (0x762c0000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_audio.so:
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/oa-mixer-matching-20261101/modules/mod_audio.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_audio_curve.so
+	libc.so.6 => /lib/libc.so.6 (0x766ca000)
+	/lib/ld-linux-armhf.so.3 (0x767c9000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_audio_curve.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-mixer-matching-20261101/modules/mod_audio_curve.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_audio_mixer.so
+	libc.so.6 => /lib/libc.so.6 (0x76667000)
+	/lib/ld-linux-armhf.so.3 (0x76767000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_audio_mixer.so:
+		libc.so.6 (GLIBC_2.15) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-mixer-matching-20261101/modules/mod_audio_mixer.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_cec.so
+	libpthread.so.0 => /lib/libpthread.so.0 (0x76788000)
+	libc.so.6 => /lib/libc.so.6 (0x7669b000)
+	/lib/ld-linux-armhf.so.3 (0x767c1000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_cec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-mixer-matching-20261101/modules/mod_cec.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_display.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x76735000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x76700000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x7666c000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x76652000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x765d6000)
+	libnteec.so => /vendor/lib/libnteec.so (0x765c4000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x7658a000)
+	libc.so.6 => /lib/libc.so.6 (0x7649d000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x7638f000)
+	libm.so.6 => /lib/libm.so.6 (0x76317000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x762ef000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x762cb000)
+	/lib/ld-linux-armhf.so.3 (0x767b8000)
+	libdl.so.2 => /lib/libdl.so.2 (0x762b8000)
+	librt.so.1 => /lib/librt.so.1 (0x762a2000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_display.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/oa-mixer-matching-20261101/modules/mod_display.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_ir.so
+	libc.so.6 => /lib/libc.so.6 (0x76644000)
+	/lib/ld-linux-armhf.so.3 (0x76744000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_ir.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-mixer-matching-20261101/modules/mod_ir.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_panel.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x7668b000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x76656000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x765c2000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x765a8000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x7652c000)
+	libnteec.so => /vendor/lib/libnteec.so (0x7651a000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x764e0000)
+	libc.so.6 => /lib/libc.so.6 (0x763f3000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x762e5000)
+	libm.so.6 => /lib/libm.so.6 (0x7626d000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x76245000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x76221000)
+	/lib/ld-linux-armhf.so.3 (0x7670c000)
+	libdl.so.2 => /lib/libdl.so.2 (0x7620e000)
+	librt.so.1 => /lib/librt.so.1 (0x761f8000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_panel.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/oa-mixer-matching-20261101/modules/mod_panel.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_plat.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x76667000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x76632000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x7659e000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x76584000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x76508000)
+	libnteec.so => /vendor/lib/libnteec.so (0x764f6000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x764bc000)
+	libc.so.6 => /lib/libc.so.6 (0x763cf000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x762c1000)
+	libm.so.6 => /lib/libm.so.6 (0x76249000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x76221000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x761fd000)
+	/lib/ld-linux-armhf.so.3 (0x766e9000)
+	libdl.so.2 => /lib/libdl.so.2 (0x761ea000)
+	librt.so.1 => /lib/librt.so.1 (0x761d4000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_plat.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/oa-mixer-matching-20261101/modules/mod_plat.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_power.so
+	libc.so.6 => /lib/libc.so.6 (0x765df000)
+	/lib/ld-linux-armhf.so.3 (0x766de000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_power.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-mixer-matching-20261101/modules/mod_power.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_settings.so
+	libsqlite3.so.0 => /vendor/lib/libs/libsqlite3.so.0 (0x7669d000)
+	libc.so.6 => /lib/libc.so.6 (0x765b0000)
+	libdl.so.2 => /lib/libdl.so.2 (0x7659d000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x76579000)
+	/lib/ld-linux-armhf.so.3 (0x7675d000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_settings.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libsqlite3.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+OK /tmp/oa-mixer-matching-20261101/modules/mod_settings.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_source.so
+	libNDAL3.so => /vendor/lib/libNDAL3.so (0x766ef000)
+	libNDAL_EX.so => /vendor/lib/libNDAL_EX.so (0x766ba000)
+	libasound.so.2 => /vendor/lib/libs/libasound.so.2 (0x76626000)
+	libv4l2.so.0 => /vendor/lib/libv4l2.so.0 (0x7660c000)
+	libv4lconvert.so.0 => /vendor/lib/libv4lconvert.so.0 (0x76590000)
+	libnteec.so => /vendor/lib/libnteec.so (0x7657e000)
+	libmhash.so.2 => /vendor/lib/libmhash.so.2 (0x76544000)
+	libc.so.6 => /lib/libc.so.6 (0x76457000)
+	libstdc++.so.6 => /lib/libstdc++.so.6 (0x76349000)
+	libm.so.6 => /lib/libm.so.6 (0x762d1000)
+	libgcc_s.so.1 => /lib/libgcc_s.so.1 (0x762a9000)
+	libpthread.so.0 => /lib/libpthread.so.0 (0x76285000)
+	/lib/ld-linux-armhf.so.3 (0x76770000)
+	libdl.so.2 => /lib/libdl.so.2 (0x76272000)
+	librt.so.1 => /lib/librt.so.1 (0x7625c000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_source.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libNDAL3.so:
+		libstdc++.so.6 (CXXABI_1.3) => /lib/libstdc++.so.6
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libNDAL_EX.so:
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libs/libasound.so.2:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4l2.so.0:
+		libdl.so.2 (GLIBC_2.4) => /lib/libdl.so.2
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libv4lconvert.so.0:
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		librt.so.1 (GLIBC_2.4) => /lib/librt.so.1
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/vendor/lib/libnteec.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+	/vendor/lib/libmhash.so.2:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+	/lib/libstdc++.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		libgcc_s.so.1 (GCC_3.3) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.5) => /lib/libgcc_s.so.1
+		libgcc_s.so.1 (GCC_3.0) => /lib/libgcc_s.so.1
+		libm.so.6 (GLIBC_2.4) => /lib/libm.so.6
+		libc.so.6 (GLIBC_2.18) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libm.so.6:
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libgcc_s.so.1:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libpthread.so.0:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libdl.so.2:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/librt.so.1:
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+		libc.so.6 (GLIBC_PRIVATE) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+		libpthread.so.0 (GLIBC_PRIVATE) => /lib/libpthread.so.0
+		libpthread.so.0 (GLIBC_2.4) => /lib/libpthread.so.0
+OK /tmp/oa-mixer-matching-20261101/modules/mod_source.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_ticker.so
+	libc.so.6 => /lib/libc.so.6 (0x766c8000)
+	/lib/ld-linux-armhf.so.3 (0x767c7000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_ticker.so:
+		libc.so.6 (GLIBC_2.17) => /lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-mixer-matching-20261101/modules/mod_ticker.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_ui_anim.so
+	libc.so.6 => /lib/libc.so.6 (0x76670000)
+	/lib/ld-linux-armhf.so.3 (0x76770000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_ui_anim.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-mixer-matching-20261101/modules/mod_ui_anim.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_ui_clock.so
+	libc.so.6 => /lib/libc.so.6 (0x766d1000)
+	/lib/ld-linux-armhf.so.3 (0x767d0000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_ui_clock.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-mixer-matching-20261101/modules/mod_ui_clock.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_ui_console.so
+	libc.so.6 => /lib/libc.so.6 (0x76680000)
+	/lib/ld-linux-armhf.so.3 (0x7677f000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_ui_console.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-mixer-matching-20261101/modules/mod_ui_console.so
+CHECK /tmp/oa-mixer-matching-20261101/modules/mod_ui_fb.so
+	libc.so.6 => /lib/libc.so.6 (0x765e3000)
+	/lib/ld-linux-armhf.so.3 (0x766e4000)
+
+	Version information:
+	/tmp/oa-mixer-matching-20261101/modules/mod_ui_fb.so:
+		libc.so.6 (GLIBC_2.4) => /lib/libc.so.6
+	/lib/libc.so.6:
+		ld-linux-armhf.so.3 (GLIBC_2.4) => /lib/ld-linux-armhf.so.3
+		ld-linux-armhf.so.3 (GLIBC_PRIVATE) => /lib/ld-linux-armhf.so.3
+OK /tmp/oa-mixer-matching-20261101/modules/mod_ui_fb.so
+Runtime preflight PASSED. No module entry/init/start, control socket or hardware access.
+This checks ELF metadata and library relocations, not device operation or display scanout.

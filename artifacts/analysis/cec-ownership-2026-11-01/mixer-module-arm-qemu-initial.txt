@@ -1,0 +1,3 @@
+[949650] ERR  host         audio_mixer: refusing to unload, service 'audio.mixer' still held (use --force)
+mixer_module: tests/mixer_module.c:102: basic: Assertion `oa_module_resume_all(&h) == -1 && descriptors() == count' failed.
+qemu: uncaught target signal 6 (Aborted) - core dumped

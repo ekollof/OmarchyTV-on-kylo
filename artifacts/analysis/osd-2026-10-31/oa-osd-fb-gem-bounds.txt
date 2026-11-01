@@ -1,0 +1,205 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (830 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1598 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts
+    /tmp/opencode/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /tmp/opencode/ghidra_ntk/ntk (HeadlessAnalyzer)  
+INFO  Opening project: /tmp/opencode/ghidra_ntk/ntk (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /ntkndpdrm.ko (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFuncs.java '__ndp_drm_fb_create' 'ndp_drm_fb_create' '_ndp_drm_fb_cma_create_handle'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/opencode/ghidra_scripts/DumpFuncs.java (HeadlessAnalyzer)  
+INFO  DumpFuncs.java> 
+===== __ndp_drm_fb_create : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- __ndp_drm_fb_create @ 0001cf24 (GhidraScript)  
+INFO  DumpFuncs.java> 
+int __ndp_drm_fb_create(void)
+
+{
+  int iVar1;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+  undefined4 *extraout_r2;
+  undefined4 *puVar5;
+  undefined4 *puVar7;
+  undefined8 uVar8;
+  undefined4 *puVar6;
+  
+  uVar8 = __gnu_mcount_nc();
+  iVar4 = (int)((ulonglong)uVar8 >> 0x20);
+  iVar1 = drm_format_num_planes(*(undefined4 *)(iVar4 + 0xc));
+  iVar2 = kmem_cache_alloc_trace(drm_release,0x24080c0,0xa0);
+  if (iVar2 == 0) {
+    iVar2 = -0xc;
+  }
+  else {
+    iVar3 = drm_framebuffer_init((int)uVar8,iVar2,PTR_ndp_drm_fb_funcs_0001d110);
+    if (iVar3 != 0) {
+      dev_err(*(undefined4 *)((int)uVar8 + 0x10),"Failed to initalize framebuffer: %d\n",iVar3);
+      kfree(iVar2);
+      return iVar3;
+    }
+    drm_helper_mode_fill_fb_struct(iVar2,iVar4);
+    if (0 < iVar1) {
+      puVar5 = extraout_r2;
+      puVar7 = (undefined4 *)(iVar2 + 0x90);
+      do {
+        puVar6 = puVar5 + 1;
+        *puVar7 = *puVar5;
+        puVar5 = puVar6;
+        puVar7 = puVar7 + 1;
+      } while (extraout_r2 + iVar1 != puVar6);
+    }
+  }
+  return iVar2;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== ndp_drm_fb_create : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- ndp_drm_fb_create @ 0001d390 (GhidraScript)  
+INFO  DumpFuncs.java> 
+uint ndp_drm_fb_create(void)
+
+{
+  int iVar1;
+  int iVar2;
+  int iVar3;
+  undefined4 uVar4;
+  int extraout_r2;
+  int iVar5;
+  uint uVar6;
+  int *piVar7;
+  undefined4 *puVar9;
+  int iVar10;
+  undefined8 uVar11;
+  int local_44;
+  int local_40 [5];
+  int *piVar8;
+  
+  uVar11 = __gnu_mcount_nc();
+  uVar4 = (undefined4)((ulonglong)uVar11 >> 0x20);
+  iVar1 = (int)uVar11;
+  iVar2 = drm_format_num_planes(*(undefined4 *)(extraout_r2 + 0xc));
+  iVar5 = 0;
+  if (0 < iVar2) {
+    iVar10 = 0;
+    puVar9 = (undefined4 *)(extraout_r2 + 0x14);
+    iVar5 = 0;
+    do {
+      iVar3 = drm_gem_object_lookup(uVar4,*puVar9);
+      local_44 = iVar5;
+      if (iVar3 == 0) {
+        dev_err(*(undefined4 *)(iVar1 + 0x10),"Failed to lookup GEM object\n");
+        if ((g_NdpDrmFBDbg & 1) == 0) {
+          uVar6 = 0xfffffffa;
+        }
+        else {
+          uVar6 = 0xfffffffa;
+        }
+        goto LAB_0001d478;
+      }
+      local_40[iVar5] = iVar3;
+      iVar5 = iVar5 + 1;
+      iVar3 = ndp_drm_gem_IsFrameBufferMode_device();
+      if (iVar3 == 0) {
+        iVar10 = iVar10 + 1;
+      }
+      puVar9 = puVar9 + 1;
+    } while (iVar2 != iVar5);
+    if (iVar10 != 0) {
+      if (iVar10 == iVar2) {
+        piVar7 = local_40 + local_44;
+        do {
+          piVar8 = piVar7 + -1;
+          drm_gem_object_unreference_unlocked(*piVar7);
+          piVar7 = piVar8;
+        } while (piVar8 != &local_44);
+        uVar6 = _ndp_drm_fb_cma_create_4k(iVar1,uVar4,extraout_r2);
+        return uVar6;
+      }
+      if ((g_NdpDrmFBDbg & 1) == 0) {
+        uVar6 = 0xffffffea;
+      }
+      else {
+        uVar6 = 0xffffffea;
+      }
+      goto LAB_0001d478;
+    }
+  }
+  uVar6 = __ndp_drm_fb_create(iVar1,extraout_r2,local_40);
+  if (uVar6 < 0xfffff001) {
+    return uVar6;
+  }
+LAB_0001d478:
+  iVar5 = iVar5 + -1;
+  if (-1 < iVar5) {
+    do {
+      piVar7 = local_40 + iVar5;
+      iVar5 = iVar5 + -1;
+      drm_gem_object_unreference_unlocked(*piVar7);
+    } while (iVar5 != -1);
+  }
+  return uVar6;
+}
+
+ (GhidraScript)  
+INFO  DumpFuncs.java> 
+===== _ndp_drm_fb_cma_create_handle : 1 function(s) (GhidraScript)  
+INFO  DumpFuncs.java> 
+--- _ndp_drm_fb_cma_create_handle @ 0001cd6c (GhidraScript)  
+INFO  DumpFuncs.java> 
+void _ndp_drm_fb_cma_create_handle(void)
+
+{
+  undefined8 uVar1;
+  
+  uVar1 = __gnu_mcount_nc();
+  drm_gem_handle_create((int)((ulonglong)uVar1 >> 0x20),*(undefined4 *)((int)uVar1 + 0x90));
+  return;
+}
+
+ (GhidraScript)  

@@ -1,0 +1,52 @@
+[ 16031] INFO host         loaded quiesce_fixture v1 (build-tv-v3/tests/mod_quiesce_fixture.so)
+[ 16032] INFO host         started quiesce_fixture
+[ 16032] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[ 16033] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[ 16033] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[ 16034] INFO host         stopped quiesce_fixture
+[ 16035] INFO host         unloaded quiesce_fixture
+[ 16036] INFO host         loaded quiesce_fixture v1 (build-tv-v3/tests/mod_quiesce_fixture.so)
+[ 16036] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[ 16036] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[ 16036] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[ 16036] INFO host         stopped quiesce_fixture
+[ 16036] INFO host         unloaded quiesce_fixture
+[ 16036] ERR  host         load 'build-tv-v3/tests/mod_quiesce_fixture.so': init() failed (-1)
+[ 16036] ERR  host         quiesce_fixture: init cleanup pending; retry unload
+[ 16036] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[ 16036] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[ 16036] INFO host         stopped quiesce_fixture
+[ 16036] INFO host         unloaded quiesce_fixture
+[ 16037] INFO host         loaded quiesce_fixture v1 (build-tv-v3/tests/mod_quiesce_fixture.so)
+[ 16037] ERR  host         quiesce_fixture: start() failed (-1)
+[ 16037] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[ 16037] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[ 16037] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[ 16037] INFO host         stopped quiesce_fixture
+[ 16037] INFO host         unloaded quiesce_fixture
+[ 16037] INFO host         loaded quiesce_fixture v1 (build-tv-v3/tests/mod_quiesce_fixture.so)
+[ 16037] INFO host         started quiesce_fixture
+[ 16037] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[ 16037] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[ 16037] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[ 16037] INFO host         stopped quiesce_fixture
+[ 16037] INFO host         unloaded quiesce_fixture
+[ 16038] INFO host         loaded quiesce_fixture v1 (build-tv-v3/tests/mod_quiesce_fixture.so)
+[ 16038] INFO host         started quiesce_fixture
+[ 16038] INFO host         stopped quiesce_fixture
+[ 16038] INFO host         unloaded quiesce_fixture
+[ 16038] INFO host         loaded quiesce_fixture v1 (build-tv-v3/tests/mod_quiesce_fixture.so)
+[ 16038] INFO host         quiesce_fixture: reloaded (suspended)
+[ 16038] ERR  host         quiesce_fixture: start() failed (-1)
+[ 16038] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[ 16038] WARN host         quiesce_fixture: resume failed (-1)
+[ 16038] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[ 16038] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[ 16038] INFO host         stopped quiesce_fixture
+[ 16038] INFO host         unloaded quiesce_fixture
+  ok   running veto retains DSO/posts/services; force cannot bypass; completion permits unload
+  ok   never-started init resources protected by gate
+  ok   failed init retained and discoverable for cleanup, never activated
+  ok   failed partial start retains callback code until completion
+  ok   suspended instance cannot resume while cleanup is pending
+  ok   failed deferred activation retains resources and eventually runs stop

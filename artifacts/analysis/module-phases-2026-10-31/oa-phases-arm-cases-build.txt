@@ -1,0 +1,1 @@
+/tmp/opencode/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-tv-v2/tests/phases tests/phases.c build-tv-v2/core/check.o build-tv-v2/core/control.o build-tv-v2/core/host.o build-tv-v2/core/module.o -ldl -pthread

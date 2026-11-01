@@ -1,0 +1,1 @@
+  ok   BinSVG animation golden fields/sign extension; all truncated prefixes reject safely

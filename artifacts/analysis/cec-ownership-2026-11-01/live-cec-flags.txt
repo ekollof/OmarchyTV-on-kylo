@@ -1,0 +1,43 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+LIVE_PROCESS
+/proc/1737/status:Name:	aurora.elf
+/proc/1737/status:State:	S (sleeping)
+/proc/1737/status:Pid:	1737
+/proc/1737/status:PPid:	1657
+/proc/1899/status:Name:	aurora.elf
+/proc/1899/status:State:	Z (zombie)
+/proc/1899/status:Pid:	1899
+/proc/1899/status:PPid:	1737
+CEC_STATUS
+ 01 00 00 00 bd 67 80 00 00 00 00 00 00 00 00 00
+CEC_GLOBALS
+16+0 records in
+16+0 records out
+16 bytes (16B) copied, 0.000345 seconds, 45.3KB/s
+ 01 01 00 00 01 00 00 00 00 10 00 00 04 00 00 00
+ 00 00 00 00 c0 10 3c 03 01 00 00 00 bd 67 80 00
+ 00 00 00 00 00 00 00 00 00 00 00 00
+44+0 records in
+44+0 records out
+44 bytes (44B) copied, 0.000508 seconds, 84.6KB/s
+MODULES
+mt7662u_sta 1836125 0 - Live 0xb3a0a000 (O)
+mtprealloc 2623 1 mt7662u_sta, Live 0x7e8fb000 (PO)
+ntkethmac 62518 0 - Live 0x7e9e5000
+snd_usb_audio 160360 0 - Live 0x7fa2e000
+snd_usbmidi_lib 23614 1 snd_usb_audio, Live 0x7e8ea000
+snd_hwdep 6281 1 snd_usb_audio, Live 0x7e8e5000
+ntkndpalsa 531136 12 - Live 0x7f987000 (O)
+ntkndp_pq 241522 1 - Live 0x7f94b000 (O)
+kteeclient 18454 3 - Live 0x7fde2000 (O)
+ntkndpcodec 414123 0 - Live 0x7fd67000 (O)
+ntkndptsd 189551 0 - Live 0x7fd29000 (O)
+ntkndpci 3453 1 ntkndptsd, Live 0x7fd25000 (O)
+ntkndpdemod 27664 2 ntkndptsd,ntkndpci, Live 0x7fd19000 (O)
+ntkndptuner 4637 0 - Live 0x7fd14000 (O)
+RECOVERY_HASH
+ac3486f8b81595d51c6db4d16ba1e009  /buffer/wdtctl

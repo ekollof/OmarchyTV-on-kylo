@@ -1,0 +1,10 @@
+  ok   async open returns during blocked I/O, owns callback-table copy and applies bounded backpressure
+  ok   results are ticketed, owned and collected once; worker errors survive and failed OS close consumes fd
+  ok   quiesce rejects new work, drains accepted open and closes before join; result survives shutdown
+[936715] ERR  host         cec: cleanup pending; retry stop/unload
+[936725] ERR  ticker       cec: refusing to unload, service 'cec.owner' still held (use --force)
+[936726] ERR  host         cec: cleanup pending; retry stop/unload
+[936728] ERR  host         cec: cleanup pending; retry stop/unload
+  ok   authority keeps an existing bit and writes 0xf011 low-byte|2 only when it is clear
+  ok   worker serializes authority, open and send; failed close stays owned until a later quiesce
+  ok   control reload/suspend/resume joins the idle worker; a held service stays loaded
