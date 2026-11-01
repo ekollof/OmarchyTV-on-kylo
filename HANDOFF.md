@@ -44,7 +44,7 @@ proof, and the software timings are far below smooth 30/60 fps.
 Real GPU UI cadence: completion pacing is implemented and verified. The rail
 tick now waits for the async present serial before advancing, so every decoded
 frame is presented in order instead of being coalesced. The preserved rail stage
-(refreshed to the current modules) plus our 10 ms-poll ui_fb ran on the set with
+(refreshed to the current modules) plus our 10 ms-poll ui_vendor ran on the set with
 OA_SCENE_PROBE_UI=1 and OA_SCENE_PROBE_RAIL=1: 11 image revisions over the
 2000 ms window, backdrop BGRA24,23,22,153, dialog type-4 completion, reload and
 host suspend/resume passed, and the full snapshot restored (match=1). Vendor PIDs
@@ -82,7 +82,7 @@ decompile/ARM inspection of Aurora MD5 64c252340d3af6c5d66072611b7bad7a:
   rail_hl_tick_cb incremented modulo11 forever. The higher-level check is now
   done: onAnimImgDecoded only draws the decoded frame, decodeNextFrame has no
   rearm, and the only index reset is decodeFirstFrame when a new image starts
-  (focus/state change). Fixed in mod_ui_fb: a 30 ms one-shot per focus that
+  (focus/state change). Fixed in mod_ui_vendor: a 30 ms one-shot per focus that
   holds the last frame; tests/ui_rail_hl asserts the stop. Vendor focus/hold
   behavior on the panel is still unobserved, so do not claim exact rail
   playback. Older reports/source comments/tests calling our looping policy
@@ -135,7 +135,7 @@ gap; do not repeat asset extraction or assume the earlier sparse unit covered
 a full bundle. Native artifacts are in build-tv-v3/rail-assets; see report for
 manifest distinctions before reusing the preserved local test bundle.
 
-Latest milestone: [UI-ASYNC](artifacts/reports/UI-ASYNC-2026-11-01.md) wires ui_fb
+Latest milestone: [UI-ASYNC](artifacts/reports/UI-ASYNC-2026-11-01.md) wires ui_vendor
 to display.async with owned completion sampler, both holds/aliases, fresh serial
 gating and cached dialog progress. Four strict host/sanitizer/TV groups pass;
 full host226 checks includes CPU regressions. Actual portal/assets, Down/Select/
@@ -185,7 +185,7 @@ No new hardware calls. Same stock boot/PID1785/access/privacy; staging/backup/
 FIFOs/helpers removed. Isolated native identities in MEMORY/report. Source17
 modules, preserved production stage16; no persistent deployment.
 
-SCENE-DISPLAY above supplies the canvas/coalescer; ui_fb integration must keep immutable
+SCENE-DISPLAY above supplies the canvas/coalescer; ui_vendor integration must keep immutable
 revisions, final-frame retry, completion-driven first-frame readiness and service
 holds through reload/suspend/resume. CPU display v2 remains default; no
 display.renderer option. The service's is_open is not visible-frame readiness.
@@ -221,7 +221,7 @@ Full host209 checks pass. Isolated build-tv-v3/scene-helper identities are in
 MEMORY/report; matching production stage and historical diagnostics unchanged.
 
 The lower nonblocking parent now exists as SCENE-CLIENT above; host provider and
-ui_fb reload/suspend/resume/failed-cleanup integration remain open. CPU display
+ui_vendor reload/suspend/resume/failed-cleanup integration remain open. CPU display
 is still production.
 
 Earlier lower-layer milestone: [SCENE-BROKER](artifacts/reports/SCENE-BROKER-2026-11-01.md)
@@ -271,7 +271,7 @@ or mistake missing-function metadata for a missing API.
 Prior review:
 [UI-SCENE-REVIEW](artifacts/reports/UI-SCENE-REVIEW-2026-11-01.md) fixes the
 scene rasterizer to use fan-triangle interpolation, the firmware's GL_LINEAR
-filter and progress-alpha fade into premultiplied BGRA. ui_fb now presents on
+filter and progress-alpha fade into premultiplied BGRA. ui_vendor now presents on
 each progress callback, clears both display aliases before provider unload,
 clears a frozen transform on animation-provider removal, cancels interrupted
 dialogs and keeps failed resume suspended. DialogLauncher still selects type4
@@ -293,7 +293,7 @@ and WNOHANG lifecycle: it isolates Mali's process-global environment/cache and
 driver threads from reloadable DSOs. The lower renderer is synchronous; never
 call blocking swap/destroy from the host loop or its ABI3 quiesce gate. Define
 bounded immutable frame transfer/cached revisions, coalescing and completion/
-first-frame readiness before wiring ui_fb. Existing present() means commit,
+first-frame readiness before wiring ui_vendor. Existing present() means commit,
 so enqueue success cannot masquerade as that receipt. Preserve source holds,
 pending final frames and failed-close ownership through stop/reload/suspend.
 Then verify the actual module lifecycle on the real display, vendor frame
@@ -613,7 +613,7 @@ over the recovered 1000 ms select path. The full-screen progress mapping is
 recovered: SVGDialog::startAnimation maps dialog modes 57..64 to HAL types 1..8
 for a 1000 ms controller, onAnimationProgress feeds the cubic, destroy forces
 1.0, and `oa_fs_apply` reproduces the per-type vertex rules. The display-v2
-consumer and its subsequent review are described above. Text-slide duration/margin/repeat are wired in mod_ui_fb with
+consumer and its subsequent review are described above. Text-slide duration/margin/repeat are wired in mod_ui_vendor with
 enablement gating, box clipping and the 0.99 repeat; suspend/stop cleanup is
 tested. Rail mapping now uses the recovered category highlight APNG at30ms;
 the generic300ms tile records do not define rail animation. Visible rail/frame

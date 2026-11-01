@@ -1,4 +1,4 @@
-/* Loads shipped mod_ir, mod_ui_fb, mod_ui_anim and mod_settings.
+/* Loads shipped mod_ir, mod_ui_vendor, mod_ui_anim and mod_settings.
  * Frames go through ir's parser. The display is a recorder, not /dev/fb.
  * No UART and no CEC/audio device. */
 #include <assert.h>
@@ -45,11 +45,14 @@ static void frame(uint8_t out[9], uint8_t a1, uint8_t cmd, int good)
     out[8] = 0;
 }
 
+static oa_host *g_press_host;
+
 static void press(const oa_input_iface *input, uint8_t a1)
 {
     uint8_t bytes[9];
     frame(bytes, a1, 0x00, 1);
     assert(!input->feed(bytes, 9));
+    if (g_press_host) oa_host_dispatch_posts(g_press_host);
 }
 
 static void accent(const oa_nav_trace *trace, int *x, int *y, int *w, int *h)
@@ -130,6 +133,7 @@ int main(int argc, char **argv)
     oa_host host;
     char out[512];
     assert(!oa_host_init(&host, argv[1], argv[2]));
+    g_press_host = &host;
     host.log_level = OA_LOG_ERROR;
     assert(!command(&host, "load plat", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start plat", out, sizeof out) && !strcmp(out, "ok\n"));
@@ -147,8 +151,8 @@ int main(int argc, char **argv)
     assert(!command(&host, "start settings", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(!command(&host, "load ui_engine", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_engine", out, sizeof out) && !strcmp(out, "ok\n"));
-    assert(!command(&host, "load ui_fb", out, sizeof out) && strstr(out, "ok"));
-    assert(!command(&host, "start ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "load ui_vendor", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "start ui_vendor", out, sizeof out) && !strcmp(out, "ok\n"));
 
     const oa_input_iface *input = host.api.lookup(&host, OA_SVC_INPUT, 1);
     const oa_nav_trace *trace = host.api.lookup(&host, OA_SVC_NAV_TRACE, 1);
@@ -169,29 +173,33 @@ int main(int argc, char **argv)
     uint8_t bytes[9];
     frame(bytes, 19, 0x00, 1); /* Down, profile RC in A1 */
     assert(!input->feed(bytes, 9));
+    oa_host_dispatch_posts(&host);
     accent(trace, &x, &y, &w, &h);
     assert(y > rail_y && w == 160 && h == 160);
     int moved_y = y;
 
     frame(bytes, 19, 0x00, 0); /* bad complement: ignored */
     assert(!input->feed(bytes, 9));
+    oa_host_dispatch_posts(&host);
     accent(trace, &x, &y, &w, &h);
     assert(y == moved_y && w == 160);
 
     frame(bytes, 22, 0x00, 1); /* Right, into the card row */
     assert(!input->feed(bytes, 9));
+    oa_host_dispatch_posts(&host);
     accent(trace, &x, &y, &w, &h);
     assert(w == 181 && h == 105);
     int card_x = x, card_y = y;
 
     frame(bytes, 21, 0x00, 1); /* Left, back to the rail */
     assert(!input->feed(bytes, 9));
+    oa_host_dispatch_posts(&host);
     accent(trace, &x, &y, &w, &h);
     assert(w == 160 && h == 160 && y == moved_y);
 
-    assert(!command(&host, "reload ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "reload ui_vendor", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(!command(&host, "status ticker", out, sizeof out) && strstr(out, "state   started"));
-    assert(!command(&host, "status ui_fb", out, sizeof out));
+    assert(!command(&host, "status ui_vendor", out, sizeof out));
     assert(strstr(out, "state   started"));
     assert(!command(&host, "status ui_anim", out, sizeof out) && strstr(out, "state   started"));
     assert(!command(&host, "status settings", out, sizeof out) && strstr(out, "state   started"));
@@ -253,6 +261,7 @@ int main(int argc, char **argv)
 
     frame(bytes, 0x66, 0x8a, 1); /* NEC address, command OK */
     assert(!input->feed(bytes, 9));
+    oa_host_dispatch_posts(&host);
     assert(g_acts == 3 && g_act.kind == OA_ACTION_SELECT && !strcmp(g_name, "rail4"));
     assert(portal->screen() == 1);
 
@@ -359,7 +368,7 @@ int main(int argc, char **argv)
     assert(anim->sample(started) == 0);
     (void)ignored;
 
-    assert(!command(&host, "reload ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "reload ui_vendor", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(!command(&host, "status ticker", out, sizeof out) && strstr(out, "state   started"));
     portal = host.api.lookup(&host, OA_SVC_PORTAL, 1);
     assert(portal && portal->screen() == 0);

@@ -80,7 +80,7 @@ int main(int argc, char **argv)
     if (!config && exists("/conf/openaurora.conf"))
         config = "/conf/openaurora.conf";
     if (!modules) {
-        if (exists("/buffer/openaurora/modules/mod_ui_fb.so"))
+        if (exists("/buffer/openaurora/modules/mod_ui_vendor.so"))
             modules = "/buffer/openaurora/modules";
         else
             modules = "build/modules";

@@ -57,7 +57,7 @@ class Run:
         if modules:
             self.command += ["--modules", str(BUILD / "modules"),
                              "--load", str(BUILD / "tests/mod_recovery_fixture.so"),
-                             "--load", "ui_engine", "--load", "ui_fb"]
+                             "--load", "ui_engine", "--load", "ui_vendor"]
         self.logfile = (directory / "log").open("w")
         self.process = None
 

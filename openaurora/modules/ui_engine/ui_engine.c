@@ -1,7 +1,7 @@
 /* mod_ui_engine — generic UI engine (display/assets/present/ack).
  *
  * Owns the display service and the OAI1 asset cache. The vendor skin
- * (mod_ui_fb) and a later OmarchyTV skin draw only through this service.
+ * (mod_ui_vendor) and a later OmarchyTV skin draw only through this service.
  * See include/openaurora/ui_engine.h and docs/ARCHITECTURE.md.
  */
 #include <fcntl.h>
@@ -36,6 +36,12 @@ struct engine {
     uint32_t mod_key, svc_key;
     uint64_t rebind_tick;
     int suspended, rebind_pending;
+    const oa_ui_skin *skin;
+    void *skin_ud;
+    uint32_t skin_owner;
+    int skin_entered;
+    uint32_t key_sub, fps_tick;
+    int fps;
 };
 
 static struct engine *g_engine;
@@ -126,7 +132,8 @@ static void acknowledge(struct engine *c)
 static void receipt_tick(void *ud)
 {
     struct engine *c = ud;
-    if (c->suspended || !c->disp || !c->async || !c->first_serial) return;
+    if (c->suspended || !c->disp || !c->async || !c->first_serial ||
+        c->first_serial == UINT64_MAX) return;
     oa_display_result result;
     if (c->async->latest(&result) != 1 || result.serial < c->first_serial ||
         (result.serial >> 32) != (c->first_serial >> 32)) return;
@@ -171,7 +178,7 @@ static int present(void)
     if (c->async) {
         uint64_t serial;
         if (!c->receipt_tick || c->async->request(&serial)) return -1;
-        if (!c->first_serial) c->first_serial = serial;
+        if (!c->first_serial || c->first_serial == UINT64_MAX) c->first_serial = serial;
         c->present_serial = serial;
         c->present_pending = 1;
         return 0;
@@ -202,6 +209,57 @@ static int bind_display(struct engine *c)
     return bind_async(c);
 }
 
+struct skin_post {
+    const oa_ui_skin *skin;
+    void *ud;
+    int kind;   /* 0 enter, 1 paint, 2 key */
+    int id;
+};
+
+static void skin_post_cb(void *ud)
+{
+    struct engine *c = g_engine;
+    struct skin_post *p = ud;
+    if (!p) return;
+    if (c && c->skin == p->skin) {
+        if (p->kind == 0) {
+            if (p->skin->enter) p->skin->enter(p->ud);
+            c->skin_entered = 1;
+        } else if (p->kind == 1) {
+            if (p->skin->paint) p->skin->paint(p->ud);
+        } else if (p->skin->key) {
+            p->skin->key(p->ud, p->id);
+        }
+    }
+    free(p);
+}
+
+static void post_skin(struct engine *c, int kind, int id)
+{
+    if (!c || !c->skin || !c->skin_owner) return;
+    struct skin_post *p = malloc(sizeof *p);
+    if (!p) return;
+    p->skin = c->skin;
+    p->ud = c->skin_ud;
+    p->kind = kind;
+    p->id = id;
+    if (c->api->post(c->api->priv, c->skin_owner, skin_post_cb, p) != 0)
+        free(p);
+}
+
+static void on_key_event(const void *evp, void *ud)
+{
+    struct engine *c = ud;
+    const oa_key_event *ev = evp;
+    if (!c || !ev || ev->kind != OA_KEY_PRESS) return;
+    post_skin(c, 2, ev->id);
+}
+
+static void fps_cb(void *ud)
+{
+    post_skin(ud, 1, 0);
+}
+
 static void ready_now(struct engine *c)
 {
     c->rebind_tick = 0;
@@ -209,8 +267,8 @@ static void ready_now(struct engine *c)
     int had = c->disp != NULL;
     if (!c->disp && bind_display(c) != 0)
         return;
-    if (!had)
-        c->api->emit(c->api->priv, OA_TOPIC_UI_READY, NULL);
+    if (!had && c->skin)
+        post_skin(c, c->skin_entered ? 1 : 0, 0);
 }
 
 static void rebind_tick_cb(void *ud)
@@ -316,12 +374,43 @@ static int e_present_pending(void)
     return c ? c->present_pending : 0;
 }
 
+static int e_register_skin(const oa_ui_skin *skin, void *ud)
+{
+    struct engine *c = g_engine;
+    if (!c || !skin || !skin->name || c->skin)
+        return -1;
+    const char *want = c->api->config_get(c->api->priv, "ui.skin", "");
+    if (want[0] && strcmp(want, skin->name)) {
+        c->api->log(c->api->priv, OA_LOG_WARN, "ui_engine: skin '%s' not selected (ui.skin=%s)",
+                    skin->name, want);
+        return -1;
+    }
+    c->skin = skin;
+    c->skin_ud = ud;
+    c->skin_owner = c->api->owner_id(c->api->priv);
+    c->skin_entered = 0;
+    if (c->disp && !c->suspended)
+        post_skin(c, 0, 0);
+    return 0;
+}
+
+static void e_unregister_skin(const oa_ui_skin *skin)
+{
+    struct engine *c = g_engine;
+    if (c && c->skin == skin) {
+        c->skin = NULL;
+        c->skin_ud = NULL;
+        c->skin_owner = 0;
+        c->skin_entered = 0;
+    }
+}
+
 static void e_reset_ready(void)
 {
     struct engine *c = g_engine;
     if (!c) return;
     c->acknowledged = 0;
-    c->first_serial = 0;
+    c->first_serial = UINT64_MAX;   /* ignore completions that predate this skin generation */
     c->last_receipt = 0;
     c->present_serial = 0;
     c->present_pending = 0;
@@ -340,6 +429,8 @@ static const oa_ui_engine_iface g_iface = {
     .set_scene_transform = e_set_scene_transform,
     .reset_ready = e_reset_ready,
     .now_ms = engine_now_ms,
+    .register_skin = e_register_skin,
+    .unregister_skin = e_unregister_skin,
 };
 
 /* --------------------------------------------------------------- module */
@@ -368,10 +459,29 @@ static int m_start(void *v)
     }
     c->mod_key = c->api->subscribe(c->api->priv, OA_TOPIC_MODULE_CHANGED, on_module_changed, c);
     c->svc_key = c->api->subscribe(c->api->priv, OA_TOPIC_SERVICE_REMOVED, on_service_removed, c);
-    if (c->api->publish(c->api->priv, OA_SVC_UI_ENGINE, 1, &g_iface) != 0) {
+    c->key_sub = c->api->subscribe(c->api->priv, OA_TOPIC_KEY, on_key_event, c);
+    c->fps = atoi(c->api->config_get(c->api->priv, "ui.fps", "0"));
+    if (c->fps > 60) c->fps = 60;
+    if (c->fps > 0)
+        c->fps_tick = c->api->timer_add(c->api->priv, (uint32_t)(1000 / c->fps),
+                                        (uint32_t)(1000 / c->fps), fps_cb, c);
+    if (!c->mod_key || !c->svc_key || !c->key_sub) {
         if (c->mod_key) c->api->unsubscribe(c->api->priv, c->mod_key);
         if (c->svc_key) c->api->unsubscribe(c->api->priv, c->svc_key);
-        c->mod_key = c->svc_key = 0;
+        if (c->key_sub) c->api->unsubscribe(c->api->priv, c->key_sub);
+        if (c->fps_tick) c->api->timer_del(c->api->priv, c->fps_tick);
+        c->mod_key = c->svc_key = c->key_sub = 0;
+        c->fps_tick = 0;
+        drop_display(c, 1);
+        return -1;
+    }
+    if (c->api->publish(c->api->priv, OA_SVC_UI_ENGINE, 1, &g_iface) != 0) {
+        c->api->unsubscribe(c->api->priv, c->mod_key);
+        c->api->unsubscribe(c->api->priv, c->svc_key);
+        c->api->unsubscribe(c->api->priv, c->key_sub);
+        c->mod_key = c->svc_key = c->key_sub = 0;
+        if (c->fps_tick) c->api->timer_del(c->api->priv, c->fps_tick);
+        c->fps_tick = 0;
         drop_display(c, 1);
         return -1;
     }
@@ -391,6 +501,18 @@ static void m_stop(void *v)
         c->api->unsubscribe(c->api->priv, c->svc_key);
         c->svc_key = 0;
     }
+    if (c->key_sub) {
+        c->api->unsubscribe(c->api->priv, c->key_sub);
+        c->key_sub = 0;
+    }
+    if (c->fps_tick) {
+        c->api->timer_del(c->api->priv, c->fps_tick);
+        c->fps_tick = 0;
+    }
+    c->skin = NULL;
+    c->skin_ud = NULL;
+    c->skin_owner = 0;
+    c->skin_entered = 0;
     if (c->rebind_tick) {
         c->api->timer_del(c->api->priv, c->rebind_tick);
         c->rebind_tick = 0;
@@ -416,6 +538,14 @@ static int m_suspend(void *v)
     struct engine *c = v;
     c->suspended = 1;
     drop_display(c, 1);
+    if (c->fps_tick) {
+        c->api->timer_del(c->api->priv, c->fps_tick);
+        c->fps_tick = 0;
+    }
+    c->skin = NULL;
+    c->skin_ud = NULL;
+    c->skin_owner = 0;
+    c->skin_entered = 0;
     if (c->rebind_tick) {
         c->api->timer_del(c->api->priv, c->rebind_tick);
         c->rebind_tick = 0;
@@ -431,10 +561,11 @@ static int m_resume(void *v)
         drop_display(c, 1);
         return -1;
     }
-    if (c->rebind_pending) {
-        c->rebind_pending = 0;
-        c->api->emit(c->api->priv, OA_TOPIC_UI_READY, NULL);
-    }
+    if (c->fps > 0 && !c->fps_tick)
+        c->fps_tick = c->api->timer_add(c->api->priv, (uint32_t)(1000 / c->fps),
+                                        (uint32_t)(1000 / c->fps), fps_cb, c);
+    if (c->skin)
+        post_skin(c, c->skin_entered ? 1 : 0, 0);
     return 0;
 }
 

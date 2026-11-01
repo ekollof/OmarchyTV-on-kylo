@@ -222,7 +222,7 @@ typedef struct {
     int (*slide_margin)(uint32_t elapsed_ms, float duration_ms, int distance, int reverse);
 } oa_ui_anim_iface;
 
-/* ui.portal — measured home layout. Published by mod_ui_fb.
+/* ui.portal — measured home layout. Published by mod_ui_vendor.
  * hit() uses the same rectangles paint uses. screen 0 is the portal and
  * screen 1 is the one selected tile. */
 #define OA_SVC_PORTAL "ui.portal"

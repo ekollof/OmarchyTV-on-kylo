@@ -15,7 +15,7 @@ Two separate receipts are required:
 | file | writer | meaning |
 |---|---|---|
 | `/tmp/openaurora.alive` | host dispatch loop, once per second | PID + `CLOCK_MONOTONIC` milliseconds; loop is progressing |
-| `/tmp/openaurora.ready` | `ui_fb`, once after `present()` returns success | PID + dimensions; a first frame was submitted |
+| `/tmp/openaurora.ready` | `ui_vendor`, once after `present()` returns success | PID + dimensions; a first frame was submitted |
 
 Receipts are published with rename, checked against the child PID, and removed
 before each attempt. They live on tmpfs to avoid writing flash every second.

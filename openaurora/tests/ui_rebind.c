@@ -1,7 +1,7 @@
-/* Provider lifecycle test: ui_fb must discover services that are published after it starts, drop
+/* Provider lifecycle test: ui_vendor must discover services that are published after it starts, drop
  * cached pointers when a provider is force-unloaded, and rebind when the provider returns.
  *
- *   nav_display, ui_fb            -> no clock/anim: no slide
+ *   nav_display, ui_vendor            -> no clock/anim: no slide
  *   fake_clock (ui.clock)         -> clock found, anim still missing
  *   ui_anim (ui.anim v2)          -> provider present but disabled: no slide
  *   enable animation, ticker start-> rebind: slide starts
@@ -61,7 +61,7 @@ static int timer_fire_repeat(oa_host *h, uint32_t owner, uint32_t repeat_ms)
 }
 
 /* Fire the earliest pending one-shot (repeat_ms == 0) for the module, deactivating it first.
- * Until a slide completes, the only such timer ui_fb owns is the deferred rebind. */
+ * Until a slide completes, the only such timer ui_vendor owns is the deferred rebind. */
 static int timer_fire_oneshot(oa_host *h, uint32_t owner)
 {
     oa_timer *best = NULL;
@@ -126,12 +126,12 @@ int main(int argc, char **argv)
     assert(!command(&host, "start nav_display", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(!command(&host, "load ui_engine", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_engine", out, sizeof out) && !strcmp(out, "ok\n"));
-    assert(!command(&host, "load ui_fb", out, sizeof out) && strstr(out, "ok"));
-    assert(!command(&host, "start ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "load ui_vendor", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "start ui_vendor", out, sizeof out) && !strcmp(out, "ok\n"));
 
     const oa_nav_trace *trace = host.api.lookup(&host, OA_SVC_NAV_TRACE, 1);
     const oa_fake_clock_iface *fake = host.api.lookup(&host, OA_SVC_FAKE_CLOCK, 1);
-    oa_mod *fb = oa_host_find_module(&host, "ui_fb");
+    oa_mod *fb = oa_host_find_module(&host, "ui_vendor");
     assert(trace && fb);
 
     /* No clock and no anim: nothing may slide. */
@@ -192,17 +192,17 @@ int main(int argc, char **argv)
     /* Both v1 and v2 aliases must disappear synchronously before dlclose.
      * Suspend calls the v2 transform reset, so it must be safe even before rebind. */
     assert(!command(&host, "unload nav_display --force", out, sizeof out) && strstr(out, "ok"));
-    assert(!command(&host, "suspend ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
-    assert(command(&host, "resume ui_fb", out, sizeof out) != 0);
+    assert(!command(&host, "suspend ui_vendor", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(command(&host, "resume ui_vendor", out, sizeof out) != 0);
     assert(!command(&host, "load nav_display", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start nav_display", out, sizeof out) && !strcmp(out, "ok\n"));
-    assert(!command(&host, "resume ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "resume ui_vendor", out, sizeof out) && !strcmp(out, "ok\n"));
     trace = host.api.lookup(&host, OA_SVC_NAV_TRACE, 1);
     assert(trace && timer_count(&host, fb->id, 10) == 1);
 
     host.stop_requested = 1;
     assert(oa_host_run(&host) == 0);
     close(host.selfpipe[0]); close(host.selfpipe[1]); pthread_mutex_destroy(&host.post_mu);
-    printf("  ok   ui_fb rebinds late providers, drops forced-unloaded ones and resumes\n");
+    printf("  ok   ui_vendor rebinds late providers, drops forced-unloaded ones and resumes\n");
     return 0;
 }

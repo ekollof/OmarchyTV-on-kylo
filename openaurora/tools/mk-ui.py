@@ -15,7 +15,7 @@ Usage:
     tools/mk-ui.py --out ../artifacts/workbench/uiraw [--shot PNG] [--thumbs DIR] [--font TTF]
 
 The blobs are flat RGBA ("OAI1" + u32 w + u32 h + w*h*4), so the module needs no PNG
-decoder — see modules/ui_fb/ui_fb.c for the geometry that consumes them.
+decoder — see modules/ui_vendor/ui_vendor.c for the geometry that consumes them.
 """
 import argparse
 import struct

@@ -19,7 +19,7 @@ Framebuffer drawing, a selected-frame comparison and runtime --check are separat
 milestones. [Current OSD evidence](../../artifacts/reports/OSD-BUFFER-CONTRACT-2026-10-31.md)
 supersedes the old dumb-buffer, palette-handshake and init-does-SETPLANE plans.
 
-mod_ui_fb paints the measured portal through the display service, moves
+mod_ui_vendor paints the measured portal through the display service, moves
 rail/card focus from input/key, and publishes ui.portal for the same rectangles.
 Select opens that tile, Menu and Exit return to the portal, and Aux reads
 m_current_source through settings. mod_ui_anim publishes ui.anim v2 and requires
@@ -80,13 +80,13 @@ selection/display.renderer option exists.
 Both display backends also publish optional display.alpha v1, a clear_rgba
 companion that preserves existing display v1/v2 ABI and opaque clear semantics.
 Canvases are straight RGBA with source-over including destination alpha; CPU
-identity/transition and GPU output are premultiplied BGRA. ui_fb owns/releases
+identity/transition and GPU output are premultiplied BGRA. ui_vendor owns/releases
 the companion hold through its display lifecycle and uses the recovered portal
 backdrop RGBA36,38,40,153. Legacy providers retain the old opaque fallback.
 UI-TRANSPARENCY records firmware conversion, host/sanitizer coverage and actual
 GPU BGRA24,23,22,153 readback; independent real-video visual parity remains open.
 
-ui_fb now holds display.async and owns its completion sampler. It tracks the
+ui_vendor now holds display.async and owns its completion sampler. It tracks the
 first accepted serial in the provider namespace and acknowledges ui.ok_file only
 after an actual successful completion; queue/OPEN/errors/old receipts cannot
 acknowledge. CPU present semantics remain unchanged. Async transform-only dialog
@@ -152,25 +152,28 @@ reverse-engineered vendor screens and a later OmarchyTV skin share one engine.
 
 | piece | owns |
 |---|---|
-| ui.engine | display/alpha discovery and rebinding, OAI1 asset loading from `ui.dir` (lazy, bounded cache), clear/fill/blit/blit_scaled, present/completion receipts and the readiness receipt, the `ui/ready` event |
-| ui.engine service v1 | `info`, draw ops, `icon(name)`, `present`, `present_pending`, `set_scene_transform`, `reset_ready`, `now_ms` |
-| ui_fb (vendor skin today) | the portal rail/cards, source selection, dialogs, animations, key routing/screen state and `OA_SVC_PORTAL`. The DSO name is historical; it is the vendor skin |
-| ui.omarchy | later second skin, selected by the control-plane load list, not a rebuild. If it fails to start, the control plane keeps or loads the vendor skin |
+| ui.engine | display/alpha discovery and rebinding, OAI1 asset loading from `ui.dir` (lazy, bounded cache), clear/fill/blit/blit_scaled, present/completion receipts and the readiness receipt, the key topic, the `ui.fps` repaint timer, skin registration/`ui.skin` |
+| ui.engine service v1 | `info`, draw ops, `icon(name)`, `present`, `present_pending`, `set_scene_transform`, `reset_ready`, `now_ms`, `register_skin`, `unregister_skin` |
+| ui_vendor | the renamed vendor skin: portal rail/cards, source selection, dialogs, animations, its own screen state and `OA_SVC_PORTAL` |
+| ui_omarchy | the OmarchyTV skeleton over the same engine: dark shell, accent rail and placeholder tiles, with its own key semantics; no vendor assets and no published service yet |
 
 Implemented in the 2026-11-01 split: the engine holds display/display.async/
-display.alpha and writes the readiness receipt; the skin holds the engine
-service and no display. The skin repaints on `ui/ready`, which the engine emits
-when it binds (or rebinds) a display; the event runs in the subscriber's owner
-context, so skin timers stay skin-owned. A new skin generation calls
-`reset_ready` (it must earn its own receipt). The engine loads icons lazily;
-the skin probes `rail_hlNN` at start to keep the vendor highlight's
-missing-asset behavior. `make check` loads `ui_engine` before `ui_fb` in every
-UI test and in tests/recovery.py; all 232 checks pass.
+display.alpha, writes the readiness receipt, subscribes the key topic and owns
+the `ui.fps` repaint timer. It publishes ui.engine v1 with `register_skin` and
+`unregister_skin`; `ui.skin` selects by name. Skin callbacks (enter/paint/key)
+are posted back to the skin's owner token, so timers and actions created there
+stay skin-owned. A new skin generation calls `reset_ready` and must earn its own
+receipt; a serial epoch excludes completions from before the reset. The engine
+loads icons lazily; the vendor skin probes `rail_hlNN` at start to keep the
+vendor highlight's missing-asset behavior. `ui_vendor` is the renamed vendor
+skin; `ui_omarchy` is a working OmarchyTV skeleton (dark shell, accent rail,
+placeholder tiles, no vendor assets). tests/ui_skin.c switches both ways at
+runtime with no rebuild; `make check` loads `ui_engine` before the skin in every
+UI test and tests/recovery.py; all 233 checks pass.
 
-Still pending: move key routing/screen dispatch into the engine, add the
-`ui_vendor` module rename and a config/control-plane skin selection, then write
-`ui_omarchy` against the same service. The vendor skin remains the known
-working fallback.
+Still pending: the real OmarchyTV screens, control-plane fallback loading if the
+selected skin fails, and moving more general screen-stack policy into the
+engine. The vendor skin remains the known working fallback.
 
 ## Lifecycle and reload
 

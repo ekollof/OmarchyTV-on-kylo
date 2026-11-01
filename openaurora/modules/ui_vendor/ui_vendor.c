@@ -1,5 +1,5 @@
 /*
- * mod_ui_fb — the native home screen, drawn from the set's own content.
+ * mod_ui_vendor — the native home screen, drawn from the set's own content.
  *
  * It only talks to the `display` service (clear / fill / blit / blit_scaled / present), so it never
  * touches fbdev, and it never decodes PNG: every image is a flat "OAI1" blob built by
@@ -456,13 +456,6 @@ static int m_init(const oa_host_api *api, void **out)
     return 0;
 }
 
-static void tick_cb(void *ud)
-{
-    struct ctx *c = ud;
-    if (c && c->d)
-        paint(c);
-}
-
 static void emit_action(struct ctx *c, int kind)
 {
     oa_action_event act;
@@ -642,7 +635,7 @@ static void rail_hl_tick_cb(void *ud)
 
 /* A provider can be started after this module, or force-unloaded while we still hold a pointer to
  * it. Lifecycle events schedule a rebind in a timer callback: timer dispatch runs with this module
- * as owner, so lookups and releases attribute their holds to ui_fb. While suspended the display
+ * as owner, so lookups and releases attribute their holds to ui_vendor. While suspended the display
  * hold must stay dropped, so events only mark a pending rebind and resume performs it. */
 static void rebind_now(struct ctx *c);
 
@@ -655,7 +648,7 @@ static void schedule_rebind(struct ctx *c)
     if (c->rebind_tick) return;
     c->rebind_tick = c->api->timer_add(c->api->priv, 0, 0, rebind_tick_cb, c);
     if (!c->rebind_tick)
-        c->api->log(c->api->priv, OA_LOG_WARN, "ui_fb: rebind timer allocation failed");
+        c->api->log(c->api->priv, OA_LOG_WARN, "ui_vendor: rebind timer allocation failed");
 }
 
 static void on_module_changed(const void *evp, void *ud)
@@ -663,7 +656,7 @@ static void on_module_changed(const void *evp, void *ud)
     struct ctx *c = ud;
     const oa_module_event *ev = evp;
     if (!c || !ev || !ev->name) return;
-    if (!strcmp(ev->name, "ui_fb")) return;   /* our own start/stop cannot change our providers */
+    if (!strcmp(ev->name, "ui_vendor")) return;   /* our own start/stop cannot change our providers */
     if (ev->what == OA_MOD_STARTED_EV || ev->what == OA_MOD_STOPPED_EV ||
         ev->what == OA_MOD_UNLOADED_EV)
         schedule_rebind(c);
@@ -693,14 +686,6 @@ static void on_service_removed(const void *evp, void *ud)
         return;
     }
     schedule_rebind(c);
-}
-
-static void on_engine_ready(const void *ev, void *ud)
-{
-    (void)ev;
-    struct ctx *c = ud;
-    if (c && !c->suspended && c->d)
-        paint(c);
 }
 
 static void rebind_now(struct ctx *c)
@@ -880,15 +865,6 @@ static void move_key(struct ctx *c, uint8_t id)
         paint(c);
 }
 
-static void on_key(const void *evp, void *ud)
-{
-    struct ctx *c = ud;
-    const oa_key_event *ev = evp;
-    if (!c || !ev || ev->kind != OA_KEY_PRESS)
-        return;
-    move_key(c, ev->id);
-}
-
 static void parse_cards(struct ctx *c, const char *spec)
 {
     c->nc = 0;
@@ -904,6 +880,27 @@ static void parse_cards(struct ctx *c, const char *spec)
         c->nc++;
     }
 }
+
+static int skin_enter(void *ud)
+{
+    (void)ud;
+    return 0;   /* m_start already painted the initial screen */
+}
+static void skin_paint(void *ud)
+{
+    struct ctx *c = ud;
+    if (c && !c->suspended && c->d)
+        paint(c);
+}
+static int skin_key(void *ud, int id)
+{
+    struct ctx *c = ud;
+    if (!c)
+        return 1;
+    move_key(c, (uint8_t)id);
+    return 0;
+}
+static const oa_ui_skin g_skin = { "vendor", skin_enter, NULL, skin_paint, skin_key };
 
 static int m_start(void *v)
 {
@@ -970,7 +967,7 @@ static int m_start(void *v)
     c->svc_key = c->api->subscribe(c->api->priv, OA_TOPIC_SERVICE_REMOVED, on_service_removed, c);
     if (!c->mod_key || !c->svc_key)
         c->api->log(c->api->priv, OA_LOG_WARN,
-                    "ui_fb: lifecycle subscription failed; late providers will not be discovered");
+                    "ui_vendor: lifecycle subscription failed; late providers will not be discovered");
     if (c->api->publish(c->api->priv, OA_SVC_PORTAL, 1, &g_portal) != 0) {
         if (c->anim) {
             c->anim->bind(NULL, NULL);
@@ -1024,9 +1021,7 @@ static int m_start(void *v)
     }
     slide_begin(c, "start");
 
-    c->sub_key = c->api->subscribe(c->api->priv, OA_TOPIC_KEY, on_key, c);
-    c->ready_key = c->api->subscribe(c->api->priv, OA_TOPIC_UI_READY, on_engine_ready, c);
-    if (!c->sub_key || !c->ready_key) {
+    if (c->d->register_skin(&g_skin, c) != 0) {
         c->api->unpublish(c->api->priv, OA_SVC_PORTAL);
         c->portal_on = 0;
         if (c->anim) {
@@ -1038,35 +1033,12 @@ static int m_start(void *v)
             c->api->release(c->api->priv, OA_SVC_SETTINGS);
             c->settings = NULL;
         }
-        if (c->sub_key) {
-            c->api->unsubscribe(c->api->priv, c->sub_key);
-            c->sub_key = 0;
-        }
-        if (c->ready_key) {
-            c->api->unsubscribe(c->api->priv, c->ready_key);
-            c->ready_key = 0;
-        }
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
         c->d = NULL;
         return -1;
     }
     if (c->api->config_get(c->api->priv, "ui.paint", "1")[0] == '1')
         paint(c);
-
-    /* ui.fps > 0 keeps repainting on a timer.
-     *
-     * While the vendor aurora still owns this layer it redraws over us whenever it feels like
-     * it (any key, any animation), so a one-shot paint flickers away. Holding the frame at a
-     * low rate wins the layer back for testing; the real UI needs the tick anyway.
-     */
-    c->fps = atoi(c->api->config_get(c->api->priv, "ui.fps", "0"));
-    if (c->fps > 60)
-        c->fps = 60;
-    if (c->fps > 0) {
-        c->tick = c->api->timer_add(c->api->priv, (uint32_t)(1000 / c->fps),
-                                    (uint32_t)(1000 / c->fps), tick_cb, c);
-        c->api->log(c->api->priv, OA_LOG_INFO, "repainting at %d fps", c->fps);
-    }
     return 0;
 }
 
@@ -1102,18 +1074,6 @@ static void m_stop(void *v)
         c->slide_repeat = 0;
     }
     memset(&c->slide, 0, sizeof c->slide);
-    if (c->tick) {
-        c->api->timer_del(c->api->priv, c->tick);
-        c->tick = 0;
-    }
-    if (c->sub_key) {
-        c->api->unsubscribe(c->api->priv, c->sub_key);
-        c->sub_key = 0;
-    }
-    if (c->ready_key) {
-        c->api->unsubscribe(c->api->priv, c->ready_key);
-        c->ready_key = 0;
-    }
     if (c->anim)
         c->anim->bind(NULL, NULL);
     if (c->anim || c->anim2) {
@@ -1134,6 +1094,7 @@ static void m_stop(void *v)
         c->portal_on = 0;
     }
     if (c->d) {
+        c->d->unregister_skin(&g_skin);
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
         c->d = NULL;
     }
@@ -1166,20 +1127,9 @@ static int m_suspend(void *v)
         c->api->timer_del(c->api->priv, c->rail_hl_tick);
         c->rail_hl_tick = 0;
     }
-    if (c->tick) {
-        c->api->timer_del(c->api->priv, c->tick);
-        c->tick = 0;
-    }
-    if (c->sub_key) {
-        c->api->unsubscribe(c->api->priv, c->sub_key);
-        c->sub_key = 0;
-    }
-    if (c->ready_key) {
-        c->api->unsubscribe(c->api->priv, c->ready_key);
-        c->ready_key = 0;
-    }
     /* the engine hold must be dropped here, or every suspend/resume cycle leaks one */
     if (c->d) {
+        c->d->unregister_skin(&g_skin);
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
         c->d = NULL;
     }
@@ -1192,17 +1142,12 @@ static int m_resume(void *v)
     c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 1);
     if (!c->d)
         return -1;
-    c->sub_key = c->api->subscribe(c->api->priv, OA_TOPIC_KEY, on_key, c);
-    c->ready_key = c->api->subscribe(c->api->priv, OA_TOPIC_UI_READY, on_engine_ready, c);
-    if (!c->sub_key || !c->ready_key) {
-        if (c->sub_key) c->api->unsubscribe(c->api->priv, c->sub_key);
-        if (c->ready_key) c->api->unsubscribe(c->api->priv, c->ready_key);
-        c->sub_key = c->ready_key = 0;
+    c->suspended = 0;
+    if (c->d->register_skin(&g_skin, c) != 0) {
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
         c->d = NULL;
         return -1;
     }
-    c->suspended = 0;
     /* a resumed portal replays the focus highlight from its first frame */
     c->rail_hl_frame = 0;
     c->rail_hl_play = 1;
@@ -1215,9 +1160,6 @@ static int m_resume(void *v)
         slide_begin(c, "resume");
         paint(c);
     }
-    if (c->fps > 0)
-        c->tick = c->api->timer_add(c->api->priv, (uint32_t)(1000 / c->fps),
-                                    (uint32_t)(1000 / c->fps), tick_cb, c);
     return 0;
 }
 
@@ -1256,9 +1198,9 @@ static const oa_module g_module = {
     .magic = OA_MODULE_MAGIC,
     .abi = OA_ABI_VERSION,
     .size = sizeof(oa_module),
-    .name = "ui_fb",
+    .name = "ui_vendor",
     .version = "0.2",
-    .requires = { OA_SVC_DISPLAY, "" },
+    .requires = { OA_SVC_UI_ENGINE, "" },
     .init = m_init,
     .start = m_start,
     .stop = m_stop,

@@ -31,7 +31,7 @@ build command in ARCHITECTURE; make tv currently hardcodes the baseline director
 | Unix control transport | bounded nonblocking queues, partial writes/backpressure, disconnect/input/cleanup tests pass host/sanitizer/ARM; stdout console remains synchronous |
 | sleep cycle / power service+CLI | nine engine and seven wrapped-power regression groups pass host/sanitizer/ARM; native device/wake/hardware acceptance remains open |
 | --check | preserved matching core +16 modules passed on TV; source now18, graphics/scene_display have separate native evidence; loader preflight is not hardware health |
-| display/UI | CPU path plus GPU/coalescer/ui_fb completion-driven readiness verified on real fb1, including UI reload/module cycle and full restoration; full vendor visuals/actions/input/TV standby/cold ownership remain open |
+| display/UI | CPU path plus GPU/coalescer/ui_vendor completion-driven readiness verified on real fb1, including UI reload/module cycle and full restoration; full vendor visuals/actions/input/TV standby/cold ownership remain open |
 | IR | reader/profile map exist; actual code-space, repeat/release and navigation unverified |
 | power | final RAM-entry callback via host.sleep; manual hooks never sleep; full device preparation/wake ownership unverified |
 | panel | verified PWM request/return contract; independent brightness/power behavior incomplete |
@@ -44,7 +44,7 @@ build command in ARCHITECTURE; make tv currently hardcodes the baseline director
 | ticker/ui_console | lifecycle/state smoke fixtures working |
 | ui_clock | separate firmware-derived corrected UI time; seven host/sanitizer/ARM-qemu DSO groups; native animation controller still pending |
 | animation RE/tools | 39 named descriptors and 702 CRC-verified resource names; controller/easing/scrolling/widget states recovered; native effects/remaining callers still open |
-| ui_fb | assets and one-frame pixel comparison; complete UI/native ownership not established |
+| ui_vendor | assets and one-frame pixel comparison; complete UI/native ownership not established |
 
 All non-telemetry/ad vendor features remain in scope. Remaining work is in
 [TODO](../TODO.md); last verified state in [MEMORY](../MEMORY.md).

@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings source ui_fb ui_engine ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display
+MODULES  := plat ticker ir ui_console panel power display audio settings source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -98,11 +98,15 @@ $(BUILD)/modules/mod_ui_anim.so: modules/ui_anim/ui_anim.c common/ui_anim.c incl
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
-$(BUILD)/modules/mod_ui_fb.so: modules/ui_fb/ui_fb.c common/ui_anim.c include/openaurora/ui_anim.h
+$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c common/ui_anim.c include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
 $(BUILD)/modules/mod_ui_engine.so: modules/ui_engine/ui_engine.c include/openaurora/ui_engine.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+
+$(BUILD)/modules/mod_ui_omarchy.so: modules/ui_omarchy/ui_omarchy.c include/openaurora/ui_engine.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
@@ -416,17 +420,27 @@ $(BUILD)/tests/ui_sources: tests/ui_sources.c tests/ui_nav_trace.h core/host.h $
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_sources.c $(filter %.o,$^) $(LDLIBS)
 
-check-ui-sources: $(BUILD)/tests/ui_sources $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so
+check-ui-sources: $(BUILD)/tests/ui_sources $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so
 	@mkdir -p $(BUILD)/tests/ui-sources/modules
-	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so $(BUILD)/tests/ui-sources/modules/
+	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so $(BUILD)/tests/ui-sources/modules/
 	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-sources/modules/mod_nav_display.so
 	@sqlite3 $(CURDIR)/$(BUILD)/tests/ui-sources/settings.db 'DROP TABLE IF EXISTS Settings; CREATE TABLE Settings (m_current_source INTEGER); INSERT INTO Settings (m_current_source) VALUES (4);'
 	@printf 'ir.device =\nui.ok_file =\nui.paint = 1\nui.focus = 2\nui.fps = 0\nui.launch_anim = 1\nsettings.db = $(CURDIR)/$(BUILD)/tests/ui-sources/settings.db\nsettings.readonly = 1\n' > $(BUILD)/tests/ui-sources/ui.cfg
 	@$(BUILD)/tests/ui_sources $(BUILD)/tests/ui-sources/modules $(BUILD)/tests/ui-sources/ui.cfg
 
-check-ui-nav: check-ui-anim-review $(BUILD)/tests/ui_nav $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so
+$(BUILD)/tests/ui_skin: tests/ui_skin.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_skin.c $(filter %.o,$^) $(LDLIBS)
+
+check-ui-skin: $(BUILD)/tests/ui_skin $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so
+	@mkdir -p $(BUILD)/tests/ui-skin/modules
+	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/tests/ui-skin/modules/
+	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-skin/modules/mod_nav_display.so
+	@$(BUILD)/tests/ui_skin $(BUILD)/tests/ui-skin/modules
+
+check-ui-nav: check-ui-anim-review $(BUILD)/tests/ui_nav $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so
 	@mkdir -p $(BUILD)/tests/ui-nav/modules
-	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so $(BUILD)/tests/ui-nav/modules/
+	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so $(BUILD)/tests/ui-nav/modules/
 	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-nav/modules/mod_nav_display.so
 	@sqlite3 $(CURDIR)/$(BUILD)/tests/ui-nav/settings.db 'DROP TABLE IF EXISTS Settings; CREATE TABLE Settings (m_current_source INTEGER); INSERT INTO Settings (m_current_source) VALUES (4);'
 	@printf 'ir.device =\nui.ok_file =\nui.paint = 1\nui.focus = 2\nui.fps = 0\nui.launch_anim = 1\nsettings.db = $(CURDIR)/$(BUILD)/tests/ui-nav/settings.db\nsettings.readonly = 1\n' > $(BUILD)/tests/ui-nav/ui.cfg
@@ -528,7 +542,7 @@ $(BUILD)/tests/ui_async: tests/ui_async.c tests/scene_gpu_trace.h core/host.h in
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
 
 .PHONY: check-ui-async
-check-ui-async: $(BUILD)/tests/ui_async $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_scene_display.so $(BUILD)/modules/mod_scene_gpu_fixture.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_anim.so
+check-ui-async: $(BUILD)/tests/ui_async $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_scene_display.so $(BUILD)/modules/mod_scene_gpu_fixture.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_anim.so
 	@$(BUILD)/tests/ui_async $(BUILD)/modules $(abspath $(BUILD)/tests/mod_fake_clock.so)
 
 $(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/ui_anim.h
@@ -618,9 +632,9 @@ check-display: $(BUILD)/tests/display_present $(BUILD)/tests/fbregion_read
 check-runtime: all
 	@BUILD=$(BUILD) CC='$(CC)' CFLAGS='$(CFLAGS)' sh tests/runtime_check.sh
 
-check-ui-slide: $(BUILD)/tests/ui_slide $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/tests/ui_nav_display.so
+check-ui-slide: $(BUILD)/tests/ui_slide $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/tests/ui_nav_display.so
 	@mkdir -p $(BUILD)/tests/ui-slide/modules $(BUILD)/tests/ui-slide/ui
-	@cp $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-slide/modules/
+	@cp $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-slide/modules/
 	@mv -f $(BUILD)/tests/ui-slide/modules/ui_nav_display.so $(BUILD)/tests/ui-slide/modules/mod_nav_display.so
 	@printf 'ui.slide_box = 100\nui.paint = 1\nui.fps = 0\nui.ok_file =\nsettings.db =\nui.dir = $(CURDIR)/$(BUILD)/tests/ui-slide/ui\n' > $(BUILD)/tests/ui-slide/ui.cfg
 	@$(BUILD)/tests/ui_slide $(BUILD)/tests/ui-slide/modules $(BUILD)/tests/ui-slide/ui.cfg $(CURDIR)/$(BUILD)/tests/ui-slide/ui
@@ -628,9 +642,9 @@ check-ui-slide: $(BUILD)/tests/ui_slide $(BUILD)/tests/mod_fake_clock.so $(BUILD
 $(BUILD)/tests/ui_slide: tests/ui_slide.c tests/ui_nav_trace.h include/openaurora/ui_anim.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_slide.c $(filter %.o,$^) $(LDLIBS)
 
-check-ui-rebind: $(BUILD)/tests/ui_rebind $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ticker.so
+check-ui-rebind: $(BUILD)/tests/ui_rebind $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ticker.so
 	@mkdir -p $(BUILD)/tests/ui-rebind/modules $(BUILD)/tests/ui-rebind/ui
-	@cp $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_ticker.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-rebind/modules/
+	@cp $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_ticker.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-rebind/modules/
 	@mv -f $(BUILD)/tests/ui-rebind/modules/ui_nav_display.so $(BUILD)/tests/ui-rebind/modules/mod_nav_display.so
 	@printf 'ui.slide_box = 100\nui.paint = 1\nui.fps = 0\nui.ok_file =\nsettings.db =\nui.dir = $(CURDIR)/$(BUILD)/tests/ui-rebind/ui\n' > $(BUILD)/tests/ui-rebind/ui.cfg
 	@$(BUILD)/tests/ui_rebind $(BUILD)/tests/ui-rebind/modules $(BUILD)/tests/ui-rebind/ui.cfg $(CURDIR)/$(BUILD)/tests/ui-rebind/ui
@@ -638,9 +652,9 @@ check-ui-rebind: $(BUILD)/tests/ui_rebind $(BUILD)/tests/mod_fake_clock.so $(BUI
 $(BUILD)/tests/ui_rebind: tests/ui_rebind.c tests/ui_nav_trace.h include/openaurora/ui_anim.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_rebind.c $(filter %.o,$^) $(LDLIBS)
 
-check-ui-rail-hl: $(BUILD)/tests/ui_rail_hl $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/tests/ui_nav_display.so
+check-ui-rail-hl: $(BUILD)/tests/ui_rail_hl $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/tests/ui_nav_display.so
 	@mkdir -p $(BUILD)/tests/ui-rail-hl/modules $(BUILD)/tests/ui-rail-hl/ui
-	@cp $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-rail-hl/modules/
+	@cp $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-rail-hl/modules/
 	@mv -f $(BUILD)/tests/ui-rail-hl/modules/ui_nav_display.so $(BUILD)/tests/ui-rail-hl/modules/mod_nav_display.so
 	@printf 'ui.rail_hl = 1\nui.slide_box = 0\nui.paint = 1\nui.fps = 0\nui.ok_file =\nsettings.db =\nui.dir = $(CURDIR)/$(BUILD)/tests/ui-rail-hl/ui\n' > $(BUILD)/tests/ui-rail-hl/ui.cfg
 	@$(BUILD)/tests/ui_rail_hl $(BUILD)/tests/ui-rail-hl/modules $(BUILD)/tests/ui-rail-hl/ui.cfg $(CURDIR)/$(BUILD)/tests/ui-rail-hl/ui
@@ -652,7 +666,7 @@ $(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/modu
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_fake_clock.c $(LDFLAGS) $(LDLIBS)
 
-check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-sources check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-vgrid check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
+check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-sources check-ui-skin check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-vgrid check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
 	@BUILD=$(BUILD) sh tests/run.sh
 	@$(BUILD)/tests/registry $(BUILD)/modules $(BUILD)/tests/mod_failed_init.so
 	@BUILD=$(BUILD) python3 tests/recovery.py

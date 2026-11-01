@@ -134,7 +134,7 @@ int probe_close(scene_probe **out)
     scene_probe *s = *out; if (!s) return 0;
     if (s->initialized) {
         /* Grid-mode completion() owns this counter. UI mode samples receipts
-         * inside ui_fb instead; a zero grid counter is not a UI frame count. */
+         * inside ui_vendor instead; a zero grid counter is not a UI frame count. */
         if (s->asynchronous && s->completions) printf("scene display observed frame completions=%u\n", s->completions);
         s->service = NULL; s->display = NULL; s->asynchronous = NULL; s->host.stop_requested = 1;
         if (oa_host_run(&s->host)) return -1;
@@ -222,7 +222,8 @@ int probe_ui(scene_probe *s)
     const char *ready = "/tmp/oa-scene-helper-20261101/ui.ready";
     if (!access(ready, F_OK)) { errno = EEXIST; return -1; }
     if (load_ui_module(s, "ticker") || load_ui_module(s, "ui_clock") ||
-        load_ui_module(s, "ui_anim") || load_ui_module(s, "ui_fb")) goto failure;
+        load_ui_module(s, "ui_anim") || load_ui_module(s, "ui_engine") ||
+        load_ui_module(s, "ui_vendor")) goto failure;
     if (!access(ready, F_OK)) { errno = EPROTO; goto failure; } /* queue cannot acknowledge */
     if (ui_ready(s)) goto failure;
     const oa_portal_iface *portal = s->host.api.lookup(&s->host, OA_SVC_PORTAL, 1);
@@ -283,10 +284,10 @@ int probe_ui(scene_probe *s)
     key(s, 10); run_for(s, 200);
     if (portal->screen() != 0 || unlink(ready)) { errno = EPROTO; goto failure; }
     portal = NULL; /* drop before DSO reload */
-    if (oa_module_reload(&s->host, "ui_fb", 0)) goto failure;
+    if (oa_module_reload(&s->host, "ui_vendor", 0)) goto failure;
     if (!access(ready, F_OK)) { errno = EPROTO; goto failure; }
     if (ui_ready(s)) goto failure;
-    printf("UI reload id=%u completed with fresh receipt\n", oa_host_find_module(&s->host, "ui_fb")->id);
+    printf("UI reload id=%u completed with fresh receipt\n", oa_host_find_module(&s->host, "ui_vendor")->id);
     if (s->asynchronous->latest(&result) != 1) goto failure;
     uint64_t previous = result.serial, deadline = oa_now_ms()+5000;
     while (oa_module_suspend_all(&s->host)) {

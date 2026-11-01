@@ -1,5 +1,5 @@
 /* Separate-process recovery for an opt-in openaurora boot. No vendor HAL calls.
- * The host loop publishes "pid monotonic_ms" once a second; ui_fb publishes a
+ * The host loop publishes "pid monotonic_ms" once a second; ui_vendor publishes a
  * separate first-present receipt. Neither receipt proves physical scanout. */
 #include <errno.h>
 #include <signal.h>

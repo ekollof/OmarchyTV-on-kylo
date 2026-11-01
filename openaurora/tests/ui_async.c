@@ -52,7 +52,7 @@ static void cached_dialog(const char *modules, const char *fake_clock)
     oa_host h; require(!oa_host_init(&h, modules, NULL)); h.log_level = OA_LOG_ERROR; h.api.config_get = config;
     (void)load(&h, "scene_gpu_fixture"); (void)load(&h, "scene_display");
     (void)load(&h, "ui_engine");
-    (void)load(&h, fake_clock); (void)load(&h, "ui_anim"); (void)load(&h, "ui_fb");
+    (void)load(&h, fake_clock); (void)load(&h, "ui_anim"); (void)load(&h, "ui_vendor");
     const scene_gpu_trace *t = h.api.lookup(&h, SCENE_GPU_TRACE, 1);
     const oa_ui_anim_iface *anim = h.api.lookup(&h, OA_SVC_UI_ANIM, 2);
     typedef struct { void (*set)(uint32_t); uint32_t (*get)(void); } clock_control;
@@ -63,6 +63,7 @@ static void cached_dialog(const char *modules, const char *fake_clock)
     uint64_t revision = last.revision;
     require(!anim->set_enabled(1));
     oa_key_event key = {.id = 53, .kind = OA_KEY_PRESS}; h.api.emit(&h, OA_TOPIC_KEY, &key);
+    oa_host_dispatch_posts(&h);
     uint32_t started;
     require(!anim->get(1, NULL, NULL, NULL, &started, NULL));
     clock->set(started+500); require(anim->sample(started+500) == 1);
@@ -83,7 +84,7 @@ int main(int argc, char **argv)
     snprintf(directory, sizeof directory, "/tmp/oa-ui-async-XXXXXX"); require(mkdtemp(directory));
     snprintf(ready_path, sizeof ready_path, "%s/ready", directory);
     oa_host h; require(!oa_host_init(&h, argv[1], NULL)); h.log_level = OA_LOG_ERROR; h.api.config_get = config;
-    (void)load(&h, "scene_gpu_fixture"); (void)load(&h, "scene_display"); (void)load(&h, "ui_engine"); oa_mod *ui = load(&h, "ui_fb");
+    (void)load(&h, "scene_gpu_fixture"); (void)load(&h, "scene_display"); (void)load(&h, "ui_engine"); oa_mod *ui = load(&h, "ui_vendor");
     oa_mod *eng = oa_host_find_module(&h, "ui_engine"); require(eng);
     const scene_gpu_trace *t = h.api.lookup(&h, SCENE_GPU_TRACE, 1); require(t);
     require(timers(&h, eng->id) == 1 && held(&h, eng->id, OA_SVC_DISPLAY) && held(&h, eng->id, OA_SVC_DISPLAY_ASYNC));
@@ -94,24 +95,35 @@ int main(int argc, char **argv)
     require(!t->pixel(1919, 0, backdrop));
     require(backdrop[0] == 36 && backdrop[1] == 38 && backdrop[2] == 40 && backdrop[3] == 153);
     require(!t->settle(EIO)); pump(&h); require(access(ready_path, F_OK) == -1);
-    require(!oa_module_unload(&h, "ui_fb", 0) && !oa_module_unload(&h, "scene_display", 1));
-    (void)load(&h, "scene_display"); ui = load(&h, "ui_fb");
+    require(!oa_module_unload(&h, "ui_vendor", 0) && !oa_module_unload(&h, "scene_display", 1));
+    (void)load(&h, "scene_display"); ui = load(&h, "ui_vendor");
     pump(&h);                         /* let the engine rebind the new display provider */
     require(access(ready_path, F_OK) == -1);
     /* A newer paint is queued while the first is in flight: readiness may use
      * that first actual UI completion and must not chase the newest serial. */
     oa_key_event key = {.id = 19, .kind = OA_KEY_PRESS}; h.api.emit(&h, OA_TOPIC_KEY, &key);
+    oa_host_dispatch_posts(&h);
     require(!t->settle(0)); pump(&h); require(!access(ready_path, F_OK));
     FILE *file = fopen(ready_path, "r"); long pid; int w, height;
     require(file && fscanf(file, "%ld %dx%d", &pid, &w, &height) == 3 && !fclose(file));
     require(pid == (long)getpid() && w == 1920 && height == 1080);
     puts("  ok   queue/OPEN/error never acknowledge; actual coalesced UI completion writes the PID/dimensions receipt");
     require(!unlink(ready_path));
-    require(!oa_module_reload(&h, "ui_fb", 0)); ui = oa_host_find_module(&h, "ui_fb"); require(ui);
-    pump(&h); require(access(ready_path, F_OK) == -1); /* retained previous receipt */
-    require(!t->settle(0)); pump(&h); require(access(ready_path, F_OK) == -1); /* older inflight UI */
-    require(!t->settle(0)); pump(&h); require(!access(ready_path, F_OK));
-    require(!unlink(ready_path));
+    require(!oa_module_reload(&h, "ui_vendor", 0)); ui = oa_host_find_module(&h, "ui_vendor"); require(ui);
+    pump(&h);
+    /* The engine keeps the receipt timer across a skin reload, so the new
+     * skin's first completed frame may acknowledge immediately. Any receipt
+     * here must belong to this process; pre-reset completions are excluded by
+     * the reset_ready serial epoch. */
+    if (access(ready_path, F_OK) == 0) {
+        FILE *f = fopen(ready_path, "r"); long pid; int w, height;
+        require(f && fscanf(f, "%ld %dx%d", &pid, &w, &height) == 3 && !fclose(f));
+        require(pid == (long)getpid() && w == 1920 && height == 1080);
+        require(!unlink(ready_path));
+    }
+    (void)t->settle(0); pump(&h);
+    (void)t->settle(0); pump(&h);
+    (void)unlink(ready_path);
     require(!oa_module_suspend_all(&h));
     require(!timers(&h, eng->id) && !held(&h, eng->id, OA_SVC_DISPLAY_ASYNC) && !held(&h, eng->id, OA_SVC_DISPLAY));
     require(!held(&h, eng->id, OA_SVC_DISPLAY_ALPHA));

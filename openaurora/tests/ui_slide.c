@@ -1,4 +1,4 @@
-/* Text-slide caller test: drives the shipped mod_ui_fb with a fake display recorder, a settable
+/* Text-slide caller test: drives the shipped mod_ui_vendor with a fake display recorder, a settable
  * ui.clock and the shipped mod_ui_anim, and checks the vendor sequence:
  *
  *   overflow label (isTextSlidingNeeded: distance = text_width - box_width)
@@ -141,12 +141,12 @@ int main(int argc, char **argv)
 
     assert(!command(&host, "load ui_engine", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_engine", out, sizeof out) && !strcmp(out, "ok\n"));
-    assert(!command(&host, "load ui_fb", out, sizeof out) && strstr(out, "ok"));
-    assert(!command(&host, "start ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "load ui_vendor", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "start ui_vendor", out, sizeof out) && !strcmp(out, "ok\n"));
 
     const oa_nav_trace *trace = host.api.lookup(&host, OA_SVC_NAV_TRACE, 1);
     const oa_fake_clock_iface *fake = host.api.lookup(&host, OA_SVC_FAKE_CLOCK, 1);
-    oa_mod *fb = oa_host_find_module(&host, "ui_fb");
+    oa_mod *fb = oa_host_find_module(&host, "ui_vendor");
     assert(trace && fake && fb);
 
     /* box 100 px against the 263 px title => distance 163, duration 1600 + 3*1000 = 4600 ms */
@@ -204,19 +204,19 @@ int main(int argc, char **argv)
     /* Suspend drops both slide timers (nothing may fire against the released display) and resume
      * starts a fresh pass. */
     assert(anim->set_enabled(1) == 0);
-    assert(!command(&host, "suspend ui_fb", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "suspend ui_vendor", out, sizeof out) && strstr(out, "ok"));
     assert(timer_count(&host, fb->id, 10) == 0);
     assert(timer_count(&host, fb->id, 0) == 0);
-    assert(!command(&host, "resume ui_fb", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "resume ui_vendor", out, sizeof out) && strstr(out, "ok"));
     assert(timer_count(&host, fb->id, 10) == 1);
     assert(timer_fire(&host, fb->id, 10));
     assert(title_shift(trace) == 0);                     /* resumed pass starts at margin 0 */
 
     /* Stop clears the stale slide fields; a following start must arm a sampler and (later) its
      * own repeat rather than being suppressed by an old nonzero slide_repeat. */
-    assert(!command(&host, "stop ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "stop ui_vendor", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(timer_count(&host, fb->id, 10) == 0 && timer_count(&host, fb->id, 0) == 0);
-    assert(!command(&host, "start ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "start ui_vendor", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(timer_count(&host, fb->id, 10) == 1);
     assert(timer_fire(&host, fb->id, 10));
     assert(title_shift(trace) == 0);

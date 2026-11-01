@@ -1,5 +1,5 @@
 /* Source-selection screen: rail Select opens DialogSourceSelection's panel,
- * Up/Down moves the row bar, Exit returns. Uses the shipped mod_ui_fb and the
+ * Up/Down moves the row bar, Exit returns. Uses the shipped mod_ui_vendor and the
  * recorder display; no TV, no assets (the fills are checked, not the text). */
 #include <assert.h>
 #include <stdio.h>
@@ -30,11 +30,14 @@ static void frame(uint8_t out[9], uint8_t a1, uint8_t cmd, int good)
     out[8] = 0;
 }
 
+static oa_host *g_press_host;
+
 static void press(const oa_input_iface *input, uint8_t a1)
 {
     uint8_t bytes[9];
     frame(bytes, a1, 0x00, 1);
     assert(!input->feed(bytes, 9));
+    if (g_press_host) oa_host_dispatch_posts(g_press_host);
 }
 
 static int has_panel(const oa_nav_trace *trace)
@@ -68,6 +71,7 @@ int main(int argc, char **argv)
     assert(argc == 3);
     oa_host host;
     assert(!oa_host_init(&host, argv[1], argv[2]));
+    g_press_host = &host;
     char out[256];
     assert(!command(&host, "load plat", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start plat", out, sizeof out) && !strcmp(out, "ok\n"));
@@ -85,8 +89,8 @@ int main(int argc, char **argv)
     assert(!command(&host, "start settings", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(!command(&host, "load ui_engine", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_engine", out, sizeof out) && !strcmp(out, "ok\n"));
-    assert(!command(&host, "load ui_fb", out, sizeof out) && strstr(out, "ok"));
-    assert(!command(&host, "start ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "load ui_vendor", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "start ui_vendor", out, sizeof out) && !strcmp(out, "ok\n"));
 
     const oa_input_iface *input = host.api.lookup(&host, OA_SVC_INPUT, 1);
     const oa_nav_trace *trace = host.api.lookup(&host, OA_SVC_NAV_TRACE, 1);

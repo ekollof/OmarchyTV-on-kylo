@@ -17,6 +17,17 @@ typedef struct {
     unsigned char *rgba;
 } oa_ui_icon;
 
+/* A skin owns its screens and key semantics; the engine owns display/assets,
+ * present/ack, the key topic and the repaint timer. Callbacks are posted back to
+ * the skin's owner token, so timers/actions created there stay skin-owned. */
+typedef struct {
+    const char *name;
+    int (*enter)(void *ud);          /* first time the display is ready */
+    void (*leave)(void *ud);
+    void (*paint)(void *ud);
+    int (*key)(void *ud, int id);    /* 0 handled, nonzero ignored */
+} oa_ui_skin;
+
 typedef struct {
     int (*info)(int *w, int *h, int *bpp, int *frames);
     int (*clear)(int r, int g, int b);
@@ -31,6 +42,10 @@ typedef struct {
     /* A new skin generation must earn its own readiness receipt. */
     void (*reset_ready)(void);
     uint32_t (*now_ms)(void);
+    /* Active skin. ui.skin selects by name; an empty/missing key accepts the
+     * first registered skin (the vendor fallback). */
+    int (*register_skin)(const oa_ui_skin *skin, void *ud);
+    void (*unregister_skin)(const oa_ui_skin *skin);
 } oa_ui_engine_iface;
 
 #endif

@@ -1,5 +1,5 @@
 /* Live diagnostic fixture: publishes a recording `display` and a `ui.clock` backed by the TV's
- * CLOCK_MONOTONIC (folded into the vendor 90,000,000 ms period), so mod_ui_fb's slide can be
+ * CLOCK_MONOTONIC (folded into the vendor 90,000,000 ms period), so mod_ui_vendor's slide can be
  * observed with real timers on the set. It draws nothing and opens no device.
  *
  * Every title blit (y == 80) prints: wall ms, dest x/w, and the source column (red channel).

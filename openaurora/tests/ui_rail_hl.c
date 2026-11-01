@@ -1,6 +1,6 @@
 /* Main-launcher focus highlight: the vendor APNG (11 frames, 30 ms, loop) is drawn at the
  * recovered 160x160 button window, which is (focused_x - 5, focused_y + 10) relative to the
- * 150x150 focused tile. This drives the shipped mod_ui_fb with the recording display. */
+ * 150x150 focused tile. This drives the shipped mod_ui_vendor with the recording display. */
 #include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -109,11 +109,11 @@ int main(int argc, char **argv)
     assert(!command(&host, "start nav_display", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(!command(&host, "load ui_engine", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_engine", out, sizeof out) && !strcmp(out, "ok\n"));
-    assert(!command(&host, "load ui_fb", out, sizeof out) && strstr(out, "ok"));
-    assert(!command(&host, "start ui_fb", out, sizeof out) && !strcmp(out, "ok\n"));
+    assert(!command(&host, "load ui_vendor", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "start ui_vendor", out, sizeof out) && !strcmp(out, "ok\n"));
 
     const oa_nav_trace *trace = host.api.lookup(&host, OA_SVC_NAV_TRACE, 1);
-    oa_mod *fb = oa_host_find_module(&host, "ui_fb");
+    oa_mod *fb = oa_host_find_module(&host, "ui_vendor");
     assert(trace && fb);
 
     /* ui.focus defaults to 2; the focused 150x150 tile is at (11,451) with this layout. */

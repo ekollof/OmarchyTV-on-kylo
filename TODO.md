@@ -33,7 +33,7 @@ remove vendor features from scope. Telemetry and advertising are excluded.
       safe join-error handling, retryable pending reload, animation timer
       ownership/resume and reentrant completion; full host plus focused sanitizer/
       ARM-qemu checks. WORK-REVIEW-2026-11-01 records the scope.
-- [x] Provider lifecycle rebinding: mod_ui_fb discovers services published after
+- [x] Provider lifecycle rebinding: mod_ui_vendor discovers services published after
       start (`module/changed`), drops cached pointers on `service/removed`, and
       rebinds in a 0 ms timer callback so holds and timers keep the consumer's
       identity. Suspend defers rebinding to resume (no display hold while
@@ -317,7 +317,7 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 ## Native UI, assets and OmarchyTV
 
 - [x] Theme/index/layout files and 964 PNGs extracted; initial OAI1 conversion and
-      ui_fb rendering pipeline exist. Source and provenance: UI-ASSETS report.
+      ui_vendor rendering pipeline exist. Source and provenance: UI-ASSETS report.
 - [x] BGRA capture bug fixed; selected portal-frame comparison ~1.62/255 recorded.
       This is one frame, not full screen/navigation or startup parity.
 - [x] Follow-up format audit: tvshot uses explicit BGRA/RGBA/RGB565 raw decoding
@@ -327,7 +327,7 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 - [x] String inventory extracted (56,715 lines); it is not an aligned localized table.
 - [ ] Decode layout property IDs/records and original language IDs/grouping, including
       Dutch selection; do not guess slot numbers from the flattened string inventory.
-- [x] Portal rail/card navigation on mod_ui_fb from mod_ir frames. Profile RC
+- [x] Portal rail/card navigation on mod_ui_vendor from mod_ir frames. Profile RC
       Up/Down/Left/Right/Select/Exit and NEC OK 0x8a. Focus chrome is observed
       through the display service. The reload snapshot is now 4 bytes (band, rail,
       card, screen); a 3-byte blob no longer restores. Host make check, one
@@ -352,16 +352,21 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       implemented screen beyond the portal; its rows/focus are vendor-derived.
 - [x] UI engine first slice: mod_ui_engine owns display/alpha discovery and
       rebinding, lazy OAI1 assets, draw/present/async receipts and the readiness
-      receipt; it publishes ui.engine v1 and the ui/ready event. mod_ui_fb (the
+      receipt; it publishes ui.engine v1 and the ui/ready event. mod_ui_vendor (the
       vendor skin) holds only the engine, keeps the portal/source screens and
       OA_SVC_PORTAL, and repaints on ui/ready in its own owner context. Every UI
       test and tests/recovery.py load engine+vendor; make check 232 ok. The
       vendor skin is the working fallback.
-- [ ] Finish the skin split: move key routing/screen dispatch into the engine,
-      rename the vendor DSO/module to ui_vendor, add a control-plane/config skin
-      selection and write ui_omarchy against ui.engine. Acceptance: a skin
-      switch needs no rebuild and the vendor fallback starts if the selected
-      skin fails.
+- [x] Skin seam: ui.engine now owns the key topic and the ui.fps repaint timer,
+      posts skin enter/paint/key back to the skin's owner token, and selects the
+      active skin by `ui.skin`. The vendor module is renamed ui_vendor; a
+      ui_omarchy skeleton draws its own shell and registers with the same
+      engine. tests/ui_skin.c switches vendor -> omarchy -> vendor by unload/
+      load with no rebuild; make check 233 ok. The vendor skin remains the
+      fallback.
+- [ ] Control-plane fallback loading when the selected skin fails, and the real
+      OmarchyTV screens replacing the skeleton. Keep OA_SVC_PORTAL on the vendor
+      skin and the engine's draw/asset/present contracts unchanged.
 - [ ] Split module/test compile+link rules into .o + link so ccache can cache
       them (most are one-step -shared invocations, which ccache cannot cache).
       Preserve -Werror/-pedantic and the current link flags; measure a clean
@@ -394,7 +399,7 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       at distance, reverse at zero). Published as `ui.anim` v2 and asserted with exact vectors for
       distances 0/49/50/100/400 and elapsed 0/800/801/4800/9600/90000 plus reverse and short-slide
       cases. UI-ANIMATIONS.
-- [x] Text-slide caller wiring in mod_ui_fb: distance from isTextSlidingNeeded @0x10c76b0
+- [x] Text-slide caller wiring in mod_ui_vendor: distance from isTextSlidingNeeded @0x10c76b0
       (text_width − box_width), 10 ms sampler, and the single 2000 ms repeat armed at progress > 0.99
       while the sampler still runs (SVGTextBox::onAnimationProgress @0x10c8e48, constant 0x10c8ee8).
       The label is clipped to `ui.slide_box` (crop blit at the box origin), start/repeat are gated on
@@ -406,19 +411,19 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       ARM/qemu pass. Scheduling is exercised by the live probe below; visible-panel behaviour is not
       yet verified. UI-ANIMATIONS.
 - [x] Live TV scheduling probe for the text slide: a /tmp-staged TV build with the probe
-      (recording display, CLOCK_MONOTONIC ui.clock) and the real ui_anim/ui_fb measured a 10.08 ms
+      (recording display, CLOCK_MONOTONIC ui.clock) and the real ui_anim/ui_vendor measured a 10.08 ms
       mean sampler cadence, first nonzero margin at +822 ms, 163 px at +3808 ms, and the repeat
       restart at +6557 ms (= 4554 + 2000, the 0.99 arm), clean exit. No fb1, vendor module, key,
       settings or network access; staging removed and vendor PIDs unchanged. This is not visual
       scanout or pixel parity evidence. UI-ANIMATIONS.
 - [x] Rail focus highlight: placement recovered (DialogMainMenu.svg button windows (6,y,160,160);
-      capture-derived offsets); implemented in mod_ui_fb as 11 vendor frames at 30 ms played once per
+      capture-derived offsets); implemented in mod_ui_vendor as 11 vendor frames at 30 ms played once per
       focus (the last frame is held; decodeNextFrame does not rearm) in the 160x160 window, playhead reset on focus change. tests/ui_rail_hl asserts order/wrap/timer/window;
       host 198 ok, ASan 198 ok; live probe 166 blits at 29.98 ms mean, x=6 y=461. Visible-panel
       appearance still unverified. UI-ANIMATIONS.
 - [x] Full-screen transform consumer: display v2 publishes `set_scene_transform`; all draws render
       to an offscreen RGBA scene and present() maps it through the recovered four-vertex clip-space
-      quad (x-slide, y-slide, scale, type-1 keystone). mod_ui_fb pushes `ui.fs_type` with the eased
+      quad (x-slide, y-slide, scale, type-1 keystone). mod_ui_vendor pushes `ui.fs_type` with the eased
       dialog progress and clears on completion/suspend/stop. UI-SCENE-REVIEW corrects fan-triangle
       interpolation, linear texel filtering, progress-alpha fade and transparent outside pixels;
       it fixes per-progress frame requests, provider aliases and interrupted-dialog cleanup.
@@ -433,7 +438,7 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       SCENE-HELPER now tests the separate bootstrap/renderer on actual GPU;
       GRAPHICS-MODULE now tests the asynchronous display.gpu provider on actual
       GPU with owned watch/reap timer and nonblocking quiescence. SCENE-DISPLAY
-      adds the coalescing canvas and async receipts. UI-ASYNC wires ui_fb receipts,
+      adds the coalescing canvas and async receipts. UI-ASYNC wires ui_vendor receipts,
       readiness and cached transform-only progress; actual portal/transition/UI
       reload/application-module cycle pass. Remaining visual/assets/input and
       independent cold/TV standby acceptance are still open.
@@ -487,10 +492,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       burst drains its final identity receipt; full run observes412 GPU frame
       completions, host drain/unload and full restoration/hash match. Host222
       checks pass. Source18 modules; matching production16 unchanged.
-      Subsequent UI-ASYNC supplies ui_fb integration; full visual/cold acceptance
+      Subsequent UI-ASYNC supplies ui_vendor integration; full visual/cold acceptance
       remains separate.
       SCENE-DISPLAY-2026-11-01.
-- [x] Async ui_fb presentation/readiness: owned receipt sampler, both service
+- [x] Async ui_vendor presentation/readiness: owned receipt sampler, both service
       holds/aliases, namespace/serial gating, cached dialog progress and final
       selected-screen repaint. Four host/sanitizer/TV groups and full host226
       checks pass, including CPU regressions. Real portal assets, project-local

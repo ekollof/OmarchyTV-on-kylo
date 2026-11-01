@@ -52,7 +52,7 @@ syntax defect.
 UI-TRANSPARENCY-2026-11-01: firmware rectangle reader + ARM fill/opacity
 conversion recover portal RGBA36,38,40,153. Both display backends now publish
 display.alpha v1; canvas source-over and CPU identity premultiplication preserve
-alpha, ui_fb owns companion hold. Host227 checks/focused sanitizer pass; real
+alpha, ui_vendor owns companion hold. Host227 checks/focused sanitizer pass; real
 GPU readback BGRA24,23,22,153, dialog/reload/module cycle and complete restore
 pass. Independent real-video appearance and exact animation sequence/cadence
 remain open (owner requests explicit audit). Native build-tv-v3/ui-alpha:
@@ -76,7 +76,7 @@ diagnostic501052bytes/1d6120b69608b09e554b2313ddc87904(max2.17).
 Production16-module stage unchanged. RAIL-ASSETS report distinguishes the
 initial pre-fix run/manifest from the final tested DSO.
 
-UI-ASYNC-2026-11-01: ui_fb consumes display.async receipts, acknowledges only
+UI-ASYNC-2026-11-01: ui_vendor consumes display.async receipts, acknowledges only
 actual success, owns its sampler/holds and caches transform-only dialog progress.
 Four strict host/sanitizer/TV groups, full host226 checks pass. Actual TV portal
 with installed assets, Down/Select/Exit, completed dialog, UI reload and host-only
@@ -102,7 +102,7 @@ build-tv-v3/scene-display: DSO53236bytes/9293d421420b1ad0d7b03e41f3a57f1a
 (maxGLIBC2.4), unit469528bytes/7f6f98030dcd8f40631713f2e369435a and
 diagnostic487196bytes/a62146c477759bfb3d3e3d94d2dd055e (max2.17). Source18
 modules, matching production16 unchanged. Subsequent UI-ASYNC above integrates
-ui_fb/readiness; full visual/cold acceptance remains open.
+ui_vendor/readiness; full visual/cold acceptance remains open.
 
 GRAPHICS-MODULE-2026-11-01: mod_graphics/display.gpu v1 adds owned watch/timer,
 nonblocking quiescence, public host-id tickets and suspend/resume/holds. Four
@@ -115,7 +115,7 @@ diagnostic483724bytes/3e091ecdf8ef747c6c949d70b24d6415 (max2.17). Same stock
 boot/PID1785, full hash41735daa69dc137743b59efe12db4a19/pan0,0, hook/hosts,
 access/privacy/safety markers. Live Mali hash matches offline source. Staging/
 backup/FIFOs/helpers removed. Source now17 modules; production stage remains16,
-not rebuilt/deployed. Next: GPU display consumer/coalescing/ui_fb/readiness.
+not rebuilt/deployed. Next: GPU display consumer/coalescing/ui_vendor/readiness.
 Abnormal child exit latches unproven cleanup; automatic native recovery is open.
 
 SCENE-CLIENT-2026-11-01: lower nonblocking parent (submit/pump/take/shutdown,
@@ -261,7 +261,7 @@ MainLauncherMenuDialog::onSelectPress (0xe48405) only calls
 focusLauncher(false), and focusLauncher (0xe4831c) does index/logging/menu-active
 bookkeeping with no animation controller or SVGDialog start. Our previous
 type-4 dialog animation on Select was an invention and caused the visible
-wrong-direction artifact. mod_ui_fb now switches instantly by default; the
+wrong-direction artifact. mod_ui_vendor now switches instantly by default; the
 type-4 path is lab-only behind ui.launch_anim=1 (ui_nav and ui_async enable it to
 keep animation coverage). Host make check 227 ok.
 
@@ -301,7 +301,7 @@ the exact division constants, and the #scalerect transform origin. No screen cod
 was written; the next decode is renderBackground's inputs.
 
 RAIL-CADENCE-TV-2026-11-01: real GPU UI run on the set with the preserved rail
-stage refreshed to the current modules, our 10 ms-poll ui_fb and the probe's
+stage refreshed to the current modules, our 10 ms-poll ui_vendor and the probe's
 UI/rail sampling. Completion-paced advance is now implemented: the rail tick
 waits for the async present serial to complete before advancing, so no frame is
 coalesced away. Result: 11 image revisions over the 2000 ms measurement window
@@ -311,8 +311,8 @@ premultiplied vendor colour, dialog type-4 completion, reload and host
 suspend/resume passed, and the 16,588,800-byte snapshot restored
 (snapshot_match=1, region_match=1); vendor PIDs 1967/1785 unchanged.
 A first run with the stage's older modules showed BGRA 13,14,14,255: the
-predates-alpha scene_display made ui_fb fall back to the opaque clear. Reusing a
-preserved stage requires refreshing every module, not just ui_fb. Frame order and
+predates-alpha scene_display made ui_vendor fall back to the opaque clear. Reusing a
+preserved stage requires refreshing every module, not just ui_vendor. Frame order and
 scanout remain unproven.
 
 EGL-SCENE-2026-11-01 adds common/scene_gles.c and opt-in context/scene probes.
@@ -355,7 +355,7 @@ v2. Exact vectors in tests/ui_anim_review.c pass on host (make check exit 0,
 195 ok), ASan/UBSan and ARM/qemu against the TV libc. No TV access, no drawing,
 no deployment; installed ABI 1, recovery images and hook/keeper hashes unchanged.
 The report's "returns to zero" sentence was corrected at source and in FINDINGS.
-Caller wiring is now in mod_ui_fb as well: `SVGTextBox::isTextSlidingNeeded`
+Caller wiring is now in mod_ui_vendor as well: `SVGTextBox::isTextSlidingNeeded`
 @0x10c76b0 sets the distance to text_width − box_width, the framework samples at
 10 ms, and `SVGTextBox::onAnimationProgress` @0x10c8e48 arms a single 2000 ms
 timer (progress > 0.99, constant at 0x10c8ee8) instead of a repeating one. The
@@ -375,7 +375,7 @@ runs; the sampler/repeat are deleted on suspend/stop and the slide state is
 cleared (the old code could dereference a released display or suppress the next
 repeat); allocation failures are logged; `oa_anim_slide_margin` clamps the
 float-to-int cast; the wobble uses the double precision π from 0xb32aa8; and
-`mod_ui_fb`/`mod_ui_anim` link `-lm` (verified DT_NEEDED) because `sinf` was
+`mod_ui_vendor`/`mod_ui_anim` link `-lm` (verified DT_NEEDED) because `sinf` was
 undefined. The module now calls the v2 provider for duration/margin instead of
 carrying a copy. Host, ASan/UBSan and ARM/qemu rerun after these fixes.
 Initial limits, subsequently fixed by PROVIDER-REBIND and UI-SCENE-REVIEW:
@@ -384,7 +384,7 @@ Ordinary reload while held remains blocked by the host.
 
 LIVE-SLIDE-PROBE-2026-11-01: the slide was exercised on the TV with real timers
 and no display hardware: tests/mod_slide_probe.c published a recording display
-plus a CLOCK_MONOTONIC-backed ui.clock, the real mod_ui_anim/mod_ui_fb ran from
+plus a CLOCK_MONOTONIC-backed ui.clock, the real mod_ui_anim/mod_ui_vendor ran from
 /tmp with ui.anim_enable=1 (default-off bootstrap lever), size/SHA-256 checked
 and staging removed afterwards. 914 samples at a mean 10.08 ms cadence; first
 nonzero margin at +822 ms, final 163 at +3808 ms, repeat restart at +6557 ms
@@ -417,7 +417,7 @@ the type array at +0x39b4; setMenuItemPosition calls SVGButton::setWindowRect
 (vtable slot 0x30 = 0x10ade19). DialogMainMenu.svg (136) defines button windows
 (6,211/330/460/600/719,160,160). The capture shows the focused 150x150 tile at
 (11,450) and the bar at x 6..10, y 458..591 (mid-growth), so the 210x210 image
-is drawn at (focused_x-5, focused_y+10). Implemented in mod_ui_fb: rail_hl01..11
+is drawn at (focused_x-5, focused_y+10). Implemented in mod_ui_vendor: rail_hl01..11
 OAI1 frames from the vendor APNG, a 10 ms decoder poll that advances a frame once
 now-last >= the 30 ms fcTL delay (numerator used as ms; last stamped at decode)
 while the portal shows (the last frame is held, no wrap), playhead reset on
@@ -428,12 +428,12 @@ Live probe on the set (fake display, no fb1/keys): 166 blits, mean gap 29.98 ms,
 window x=6 y=461, clean exit; staging removed, vendor PIDs unchanged. Visible
 panel appearance is still unverified.
 
-PROVIDER-REBIND-2026-11-01: mod_ui_fb now reacts to `module/changed` and
+PROVIDER-REBIND-2026-11-01: mod_ui_vendor now reacts to `module/changed` and
 `service/removed`. Events only schedule a 0 ms rebind timer (event dispatch runs
-with the subscriber as cur_module, so holds and timers belong to ui_fb);
+with the subscriber as cur_module, so holds and timers belong to ui_vendor);
 `service/removed` nulls the cached display/ui.anim/ui.clock pointers before they
 dangle. The rebind reacquires missing services, restarts or holds the slide as
-enablement allows, and ignores ui_fb's own lifecycle events. Suspend defers
+enablement allows, and ignores ui_vendor's own lifecycle events. Suspend defers
 rebinding: events mark it pending and resume performs it, so no display hold is
 taken while suspended. tests/ui_rebind covers late ui.clock/ui.anim publication,
 the disabled gate, forced unload of ui_anim, and provider return. Host make
@@ -461,13 +461,13 @@ cross-check vectors. The display now publishes v2 with
 `set_scene_transform(type, progress)`: all draws go to an offscreen RGBA scene and
 present() maps it through the recovered quad (corrected to triangle interpolation,
 linear sampling and alpha fade by UI-SCENE-REVIEW, BGRA output);
-fake-fb tests cover x-slide, scale, keystone and clearing. mod_ui_fb is the
+fake-fb tests cover x-slide, scale, keystone and clearing. mod_ui_vendor is the
 consumer: on dialog progress it pushes the selected type with the eased value and
 clears on completion/suspend/stop. `SVGWindow::getWidgetStandardName` (0xeee798)
 names the modes: 57 flip, 58 slide-right, 59 slide-left, 60 slide-up, 61
 slide-down, 62 fade, 63 grow, 64 bounce; `SVGDialog::create` tries 57..64 in
 order and starts the first widget present. DialogLauncher.svg (129) declares
-only animation_slide_up_fade_in, so mod_ui_fb selects type 4 by that rule;
+only animation_slide_up_fade_in, so mod_ui_vendor selects type 4 by that rule;
 ui.fs_type remains an explicit override. Evidence: host 200 ok, ASan/UBSan 200
 ok; check-ui-nav asserts the type-4 selection. Subsequent UI-SCENE-REVIEW supplies
 ARM/qemu and existing-layer real-fb1 execution. Smooth/visual independent
@@ -597,15 +597,15 @@ uploaded to the TV; no production module/hardware acceptance is implied.
 | O_RDONLY fbregion diagnostic | four GET requests tested; staged fb1 query removed after use |
 | oa-supervise/heartbeat/fallback | host and ARM fake-hardware smoke tests; real native takeover unverified |
 | standby firmware recheck | outer/idtv/wake-network stages traced; monitor helper is task state and UART send helpers are semaphores; POWER-STANDBY-CONTRACT; no new hardware behavior |
-| ui_fb assets/rendering | historical framebuffer comparison; not full navigation or independent display parity |
-| animation firmware/extractor | UI-ANIMATIONS: 39 named descriptors; all 702 resource IDs/names CRC-verified; list/dialog controller is mod_ui_anim offline; text slide wired in mod_ui_fb; full-screen type/progress mapping encoded in oa_fs_apply; rail timing and renderer composite remain open |
+| ui_vendor assets/rendering | historical framebuffer comparison; not full navigation or independent display parity |
+| animation firmware/extractor | UI-ANIMATIONS: 39 named descriptors; all 702 resource IDs/names CRC-verified; list/dialog controller is mod_ui_anim offline; text slide wired in mod_ui_vendor; full-screen type/progress mapping encoded in oa_fs_apply; rail timing and renderer composite remain open |
 | ui_clock / ticker paired hooks | FROST_Time arithmetic and reloadable UI time implemented; seven host/sanitizer/ARM-qemu DSO groups; absolute vendor clock phase unverified; ui.anim samples this clock |
 | CEC/audio foundations | spec-based frame/status/ARC and identity/name/power validators; audio scalar ABI, prelude ownership, failure/cache/handoff fixes; six wire plus five fake-HAL groups pass host/sanitizer/ARM-qemu; transport/policy integration open |
 | CEC packet/transport RE | raw/VPL ABI and 16-byte storage tested in four host/sanitizer/ARM-qemu groups; VPL status/filter/close/reopen hazards recovered; live open remains open |
 | native raw CEC backend | PreInit/real cdev registration recovered; explicit blocking open/send/RX/close, failed-close retention and fd-zero/reopen logic pass three injected-I/O host/sanitizer/ARM-qemu groups; hardware acceptance open |
 | offline CEC/audio owners | injected authority; mod_cec idle suspend/resume and mod_audio owner pass host, ASan/UBSan and ARM/qemu twice plus the full host suite; hardware_open_supported is 0; enabled HAL suspend returns failure; no live open; OWNER-WORKER |
 | System Audio/ARC route | cec.audio v1 on mod_cec; injected 1.3a System Audio and 1.4 ARC; local volume/mute refused while the mode is on; 8-byte reload snapshot; host make check plus one ASan/UBSan and one ARM/qemu run; no live bus or amp write; OWNER-WORKER |
-| portal navigation | mod_ir input.feed, mod_ui_fb hit/open/home/back/source and mod_ui_anim list/dialog; 4-byte reload snapshot; host make check plus one ASan/UBSan and one ARM/qemu run; no ttyS2 or fbdev; live UART code byte unconfirmed; UI-PARITY |
+| portal navigation | mod_ir input.feed, mod_ui_vendor hit/open/home/back/source and mod_ui_anim list/dialog; 4-byte reload snapshot; host make check plus one ASan/UBSan and one ARM/qemu run; no ttyS2 or fbdev; live UART code byte unconfirmed; UI-PARITY |
 
 The previously TV-tested preflight core MD5 was 424ef6ea213cb706acb51a7adb39f778.
 The preserved historical offline ABI 2 build in build-tv-v2 has 13 modules, including ui_clock
@@ -818,7 +818,7 @@ they belong to the popup list row and remain undecoded. This is a real, used
 screen (unlike the likely-dead full-screen portal) and is the better next UI
 target once the TV is free. No implementation yet.
 
-SOURCE-SELECT-IMPL-2026-11-01: mod_ui_fb renders DialogSourceSelection.svg 185
+SOURCE-SELECT-IMPL-2026-11-01: mod_ui_vendor renders DialogSourceSelection.svg 185
 as a real screen. Rail Select on the source icon opens the 780x1080 panel
 (#2D1EBE), the 748x66 focus bar (#1994FE) at 18,152 with a 75 px pitch, and the
 vendor's own text extracted by tools/extract-source-selection.py
@@ -843,7 +843,7 @@ use make -j$(nproc) all; check stays sequential.
 
 SOURCE-SELECT-TV-2026-11-01: the source-selection screen ran on the real set
 under the owner's fb1 permission while HDMI1 stayed on the video plane. Native
-ARM host PID17592 staged in /tmp/oa-src-stage (mod_ui_fb md5
+ARM host PID17592 staged in /tmp/oa-src-stage (mod_ui_vendor md5
 3c1b1bd562be3fdd79dd9a8946fc6790), a test plat stub (mod_display requires the
 service; the real plat would re-run the vendor HAL), and mod_display with
 set_region/mirror/pan 0. The legacy p0/06 capture is R/B swapped: its panel
@@ -862,18 +862,29 @@ UI-ENGINE-SPLIT-2026-11-01: mod_ui_engine publishes ui.engine v1 and now owns
 display/alpha discovery and rebinding, lazy OAI1 assets (bounded cache), draw
 ops, present/async receipts and the readiness receipt. It emits ui/ready when it
 binds or rebinds a display; subscriber callbacks run in their own owner context,
-so skin timers stay skin-owned. mod_ui_fb is the vendor skin: it holds the
+so skin timers stay skin-owned. mod_ui_vendor is the vendor skin: it holds the
 engine service (not display), keeps the portal/source screens, devctl and
 OA_SVC_PORTAL, calls reset_ready on start and repaints on ui/ready. Every UI
-test and tests/recovery.py load ui_engine before ui_fb; full make check 232 ok.
+test and tests/recovery.py load ui_engine before ui_vendor; full make check 232 ok.
 The vendor skin is the known working fallback. Still pending: move key/screen
 dispatch into the engine, rename the DSO/module to ui_vendor, add a
 config/control-plane skin selection and write ui_omarchy against ui.engine.
-The split also ran on fb1 with plat,display,ui_engine,ui_fb (PID21135,
-mod_ui_engine md5 d831bd64..., mod_ui_fb 8056eb04...) and produced a
+The split also ran on fb1 with plat,display,ui_engine,ui_vendor (PID21135,
+mod_ui_engine md5 d831bd64..., mod_ui_vendor 8056eb04...) and produced a
 byte-identical capture to the pre-split screen (sha256 8f34f218...); fb1 was
 restored (16588800 bytes, offset 0,1080), staging removed, no helper left.
 Evidence in artifacts/analysis/source-selection-2026-11-01/.
+
+UI-SKIN-SEAM-2026-11-01: ui.engine now subscribes OA_TOPIC_KEY and owns the
+ui.fps repaint timer; skin enter/paint/key callbacks are posted to the skin's
+owner token, so actions and timers stay skin-owned. register_skin/unregister_skin
+plus ui.skin select the active skin. mod_ui_fb was renamed to ui_vendor (dir,
+file, descriptor, tests, boot config, scene-module-client). ui_omarchy is a
+skeleton skin (dark shell, accent rail, placeholder tiles, its own key handler)
+with module ui_omarchy v0.1. tests/ui_skin switches vendor->omarchy->vendor by
+unload/load with no rebuild; full make check 233 ok. Still open: control-plane
+fallback loading when the selected skin fails and the real OmarchyTV screens;
+the vendor skin remains the fallback.
 
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
