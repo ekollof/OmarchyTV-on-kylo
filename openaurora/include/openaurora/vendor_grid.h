@@ -45,6 +45,28 @@ typedef struct {
 
 int oa_vgrid_visible_rows(const oa_vgrid *g);
 int oa_vgrid_col_step(const oa_vgrid *g);
+/* Cell rectangle painted by renderBackground: (col*step, row*row_step+top) to
+ * (+step, +row_step). It does not add left/right to the origin, but the step
+ * itself is (w-left-right)/cols. */
+void oa_vgrid_cell(const oa_vgrid *g, int row, int col, int *x, int *y, int *x2, int *y2);
+/* Button rectangle from getButtonPosition; caller supplies the runtime
+ * left/right fields (see the comment above). */
 void oa_vgrid_button(const oa_vgrid *g, int row, int col, int *x, int *y, int *x2, int *y2);
+
+/* Static chrome of DialogFullScreenPortal.svg (114), 1920x1080:
+ * background, top strip, appsGrid, scrollbar, title, logo, paging and
+ * portalMode. The cell grid is the five-column FullScreenGrid from
+ * FullScreenGridFA.svg; left/right are the fresh-grid zeroes and are NOT the
+ * painted runtime state. */
+typedef struct {
+    int x, y, w, h;
+} oa_vrect;
+
+typedef struct {
+    oa_vrect screen, top_strip, apps_grid, scrollbar, title, logo, paging, portal_mode;
+    oa_vgrid grid;
+} oa_portal_plan;
+
+void oa_portal_plan_init(oa_portal_plan *p);
 
 #endif

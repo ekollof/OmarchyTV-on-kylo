@@ -769,6 +769,33 @@ conditional).
 common/vendor_grid.c encodes only the verified arithmetic and tests/vendor_grid.c
 asserts the portal and gridFA numbers (make check-vgrid); no screen was rendered.
 
+APPS-GRID-2-2026-11-01: decompiled with the new durable
+artifacts/workbench/ghidra_scripts/DecompAt.java. SVGGrid::drawGrid (0x10cabc8)
+is renderBackground -> createListButtons (0x10ca924) -> createScrollBar ->
+update. createListButtons loops +0x1dc rows x +0x1e0 cols, calls
+getButtonPosition and then makeButton/addButtonItem; getTotalNumberOfRows is
+ceil(items/+0x1e0). SVGGridButton::renderBackground (0x10ccad0) resizes its
+surface to the button window and renders the button SVG as a 3-slice
+(left/right masks stretched vertically, mRowM stretched horizontally), so the
+button window is exactly the getButtonPosition rect. Vendor assets for these
+widgets are in artifacts/ui-assets: gridButton_fa.png 236x354, myapps_animated
+320x180 (matches mRowM 320x180), app art 240x135/320x180. The runtime
+contradiction stands: renderBackground's per-cell writes leave +0x1fc =
+rowPos.x - cell.x and +0x200 = cell.x1 - rowPos.x1 (last cell: -1015/+1005 for
+the portal), while a fresh grid gives the expected col*310/310. drawGrid calls
+createListButtons after renderBackground, so static order does not explain the
+vendor result; the RectangleContainer may return renderer-scaled rowPos. The
+grid must not be rendered with an assumed inset; resolve with the vendor object
+state (not while the set is in use) or the on-screen portal. The tested layout
+now also exposes renderBackground's cell rect and the DialogFullScreenPortal
+chrome plan (oa_vgrid_cell, oa_portal_plan_init).
+
+TV-USE-2026-11-01: the owner reported the set showing HDMI1 after the idle test
+window; return to view-only until a new idle window. Before that report one
+DIAL KeyMenu (1048) was sent while both fb layers captured BLANK; it returned
+201 and no layer change was captured. No further keys or wake attempts were
+made. Vendor PIDs 1785/1967 were running.
+
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
 Vendor animations, transitions and UI/UX effects are included, not yet accepted.

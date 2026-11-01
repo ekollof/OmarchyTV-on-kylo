@@ -39,6 +39,28 @@ int main(void)
     oa_vgrid_button(&trunc, 3, 3, &x, &y, &w, &h);
     assert(x == 72 && y == 70 && w == 98 && h == 95);
 
+    /* Cell rects (the background paint) do not add left to the origin:
+     * gridFA col 2/row 2 = 2*421, 2*69+16 to +421/+69. */
+    oa_vgrid_cell(&trunc, 3, 3, &x, &y, &w, &h);
+    assert(x == 69 && y == 70 && w == 92 && h == 90);
+    oa_vgrid_cell(&grid, 2, 2, &x, &y, &w, &h);
+    assert(x == 842 && y == 154 && w == 1263 && h == 223);
+
+    /* Chrome and cell grid from DialogFullScreenPortal.svg / FullScreenGridFA. */
+    oa_portal_plan plan;
+    oa_portal_plan_init(&plan);
+    assert(plan.screen.x == 0 && plan.screen.y == 0 &&
+           plan.screen.w == 1920 && plan.screen.h == 1080);
+    assert(plan.top_strip.y == 0 && plan.top_strip.h == 162 && plan.top_strip.w == 1921);
+    assert(plan.apps_grid.x == 183 && plan.apps_grid.y == 180 &&
+           plan.apps_grid.w == 1554 && plan.apps_grid.h == 720);
+    assert(plan.scrollbar.x == 1750 && plan.title.y == 39 && plan.logo.x == 1587);
+    assert(plan.paging.y == 984 && plan.portal_mode.x == 1474);
+    assert(plan.grid.cols == 5 && plan.grid.row_step == 230 && plan.grid.top == 0);
+    oa_vgrid_cell(&plan.grid, 2, 4, &x, &y, &w, &h);
+    assert(x == 1240 && y == 460 && w == 1550 && h == 690);
+    oa_portal_plan_init(NULL); /* no-op */
+
     /* Divisors come from the description; guard them instead of trapping. */
     oa_vgrid zero = { 100, 100, 0, 0, 0, 0, 0, 0, 0 };
     assert(oa_vgrid_visible_rows(&zero) == 0 && oa_vgrid_col_step(&zero) == 0);
@@ -50,5 +72,6 @@ int main(void)
     puts("  ok   SVGGrid: rows/column step truncate like __aeabi_idiv; button origins and sizes follow the firmware formula");
     puts("  ok   portal appsGrid (5 cols, 1554x720, row step 230) yields 3 rows and a 310 px column step; fresh-grid zero insets give 310x230 buttons");
     puts("  ok   gridFA margins reproduce mTopL/mBotL/mRowL; runtime +0x1fc/+0x200 are per-cell paint state, not tested as constants");
+    puts("  ok   DialogFullScreenPortal chrome and the 5x3 cell grid (310x230) match the BinSVG rectangles");
     return 0;
 }
