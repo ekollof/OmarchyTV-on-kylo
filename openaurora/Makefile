@@ -479,10 +479,20 @@ check-ui-slide: $(BUILD)/tests/ui_slide $(BUILD)/tests/mod_fake_clock.so $(BUILD
 $(BUILD)/tests/ui_slide: tests/ui_slide.c tests/ui_nav_trace.h include/openaurora/ui_anim.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_slide.c $(filter %.o,$^) $(LDLIBS)
 
+check-ui-rebind: $(BUILD)/tests/ui_rebind $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ticker.so
+	@mkdir -p $(BUILD)/tests/ui-rebind/modules $(BUILD)/tests/ui-rebind/ui
+	@cp $(BUILD)/modules/mod_ui_fb.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_ticker.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-rebind/modules/
+	@mv -f $(BUILD)/tests/ui-rebind/modules/ui_nav_display.so $(BUILD)/tests/ui-rebind/modules/mod_nav_display.so
+	@printf 'ui.slide_box = 100\nui.paint = 1\nui.fps = 0\nui.ok_file =\nsettings.db =\nui.dir = $(CURDIR)/$(BUILD)/tests/ui-rebind/ui\n' > $(BUILD)/tests/ui-rebind/ui.cfg
+	@$(BUILD)/tests/ui_rebind $(BUILD)/tests/ui-rebind/modules $(BUILD)/tests/ui-rebind/ui.cfg $(CURDIR)/$(BUILD)/tests/ui-rebind/ui
+
+$(BUILD)/tests/ui_rebind: tests/ui_rebind.c tests/ui_nav_trace.h include/openaurora/ui_anim.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_rebind.c $(filter %.o,$^) $(LDLIBS)
+
 $(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/module.h include/openaurora/services.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_fake_clock.c $(LDFLAGS) $(LDLIBS)
 
-check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-slide check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
+check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-slide check-ui-rebind check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
 	@BUILD=$(BUILD) sh tests/run.sh
 	@$(BUILD)/tests/registry $(BUILD)/modules $(BUILD)/tests/mod_failed_init.so
 	@BUILD=$(BUILD) python3 tests/recovery.py

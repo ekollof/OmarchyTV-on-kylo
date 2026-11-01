@@ -408,10 +408,30 @@ category glyph resources 579..598 carry no animation records. The extracted
 (330 ms total); `sublauncher_item_highlight_animated.png` and
 `launcher_item_highlight_animated.png` hold a single frame.
 
-Still unproven: whether the category rail's button objects are created from
-`launcheritemFA/FI` (which would give them the 300 ms scale/shift) or only use
-highlight/glyph images, and how often `drawButton` re-arms the controller. Do not
-copy the tile 300 ms onto the rail until that mapping is established.
+The category rail's buttons are built from the category resources, not the
+generic tile: `MainLauncherMenuDialog::init` (0xe4965d) calls
+`SVGButton::setMainlauncherHighlightId` five times (0xe4981a, 0xe498ec,
+0xe499e8, 0xe49ac6, 0xe49b98), and resource 579 (`myMenuLauncheritemFA.svg`)
+carries the named rectangle `mainlauncher_highlight` that the generic
+`launcheritemFA/FI` (536/537) does not. `setMainlauncherHighlightId`
+(0x10aeee5) stores the id at `+0x96c`; `SVGButton::renderForeground` (0x10af894)
+creates an `SVGImage` from that id with the rectangle returned by
+`RectangleContainer::getRectangle("mainlauncher_highlight")`, and destroys or
+hides it when the rectangle is absent (0x10af988 / 0x10af9a4).
+
+The highlight resource is `mainlauncher_item_highlight_animated.png`: an APNG
+with 11 frames at 30 ms and `num_plays = 0` (loop). The frames are a narrow
+orange bar at the image's left edge that grows to full height, not a glow or a
+scaled copy of the tile. Resource 579's local rects decode as signed 16-bit
+`(x, y, w, h)`: glyph `(119, 240, 150, 150)`, `mainlauncher_highlight`
+`(119, 212, 199, 210)`, background `(-2, 0, 1920, 1080)`. How those local
+rectangles map to the screen positions the dialog assigns is **not** recovered
+yet, so the highlight is not drawn by our UI.
+
+Consequences: the rail's item positions are synchronous and its focus feedback
+is the 11-frame/30 ms highlight image; the 0.3 s `#scalerect`/`#glyph` records on
+536/537 belong to launcher tiles, not the rail, and must not be copied onto it.
+Do not guess the highlight geometry; recover the dialog's item placement first.
 
 ## Live TV probe run, 2026-11-01
 

@@ -33,6 +33,13 @@ remove vendor features from scope. Telemetry and advertising are excluded.
       safe join-error handling, retryable pending reload, animation timer
       ownership/resume and reentrant completion; full host plus focused sanitizer/
       ARM-qemu checks. WORK-REVIEW-2026-11-01 records the scope.
+- [x] Provider lifecycle rebinding: mod_ui_fb discovers services published after
+      start (`module/changed`), drops cached pointers on `service/removed`, and
+      rebinds in a 0 ms timer callback so holds and timers keep the consumer's
+      identity. Suspend defers rebinding to resume (no display hold while
+      suspended). A forced unload of ui.anim drops the pointer before dlclose; a
+      later reload restarts the slide. tests/ui_rebind covers all three paths;
+      host make check 197 ok, ASan/UBSan 197 ok and ARM/qemu pass. TV rerun pending.
 - [ ] Add asynchronous audio/CEC service requests/completion before exposing
       worker RPCs on the host loop. bind_session currently rejects all arguments
       with ENOTSUP. Audio's lower owner now has ticketed async open/gain/close
@@ -379,11 +386,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       settings or network access; staging removed and vendor PIDs unchanged. This is not visual
       scanout or pixel parity evidence. UI-ANIMATIONS.
 - [ ] Finish the remaining animation callers: apply the recovered full-screen transform in the
-      renderer composite, confirm the rail's button/timing mapping, and the remaining frame
-      sequences. Rail positions move synchronously; focus animation comes from each SVGButton's
-      own records (`atof(duration) x 1000`, only when > 1 ms). Generic launcher tiles
-      (launcheritemFA/FI) are 0.3 s linear scale 1→1.32 with glyph (−34,−37); whether the category
-      rail uses those buttons is unproven, so do not copy the 300 ms onto it yet.
+      renderer composite and recover the rail's local-to-screen highlight placement. Rail positions
+      move synchronously; the five category buttons are built from the category resources and get
+      `setMainlauncherHighlightId` in init. `renderForeground` creates that image at the resource's
+      `mainlauncher_highlight` rect; resource 579's local rect is (119,212,199,210) and its glyph is
+      (119,240,150,150), but the dialog's screen mapping is not decoded. The highlight resource is
+      an 11-frame/30 ms looping APNG (growing orange bar). The 300 ms `#scalerect` records on
+      launcheritemFA/FI are launcher tiles, not the rail — do not copy them onto it.
       `setFullScreenAnimationProgress` is no longer unmapped: SVGDialog::startAnimation maps dialog
       modes 57..64 to HAL types 1..8 for a 1000 ms controller, onAnimationProgress feeds
       min(1,1+(p-1)^3), destroy forces 1.0, and `oa_fs_apply` reproduces the per-type vertex rules

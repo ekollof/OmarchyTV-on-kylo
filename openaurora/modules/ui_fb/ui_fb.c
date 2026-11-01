@@ -92,6 +92,11 @@ struct ctx {
     unsigned char *slide_buf;        /* clipped-title scratch: slide_box x title_h x 4 */
     uint64_t slide_tick;             /* 10 ms sampler while the slide runs */
     uint64_t slide_repeat;           /* single 2000 ms shot, armed at progress > 0.99 */
+    uint64_t rebind_tick;            /* deferred service rebind (timer owner = this module) */
+    uint32_t mod_key;                /* module/changed subscription */
+    uint32_t svc_key;                /* service/removed subscription */
+    int suspended;
+    int rebind_pending;              /* a relevant event arrived while suspended */
     int portal_on;
     int fps;
     uint32_t sub_key;
@@ -108,6 +113,8 @@ static uint32_t slide_elapsed(const struct ctx *c, uint32_t now);
 static int slide_margin_now(const struct ctx *c, uint32_t now);
 static int slide_is_running(const struct ctx *c, uint32_t now);
 static float slide_progress_now(const struct ctx *c, uint32_t now);
+static void rebind_tick_cb(void *ud);
+static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int done, void *ud);
 
 /* ---------------------------------------------------------------- loading */
 
@@ -519,6 +526,96 @@ static void on_slide_tick(void *ud)
     paint(c);
 }
 
+/* A provider can be started after this module, or force-unloaded while we still hold a pointer to
+ * it. Lifecycle events schedule a rebind in a timer callback: timer dispatch runs with this module
+ * as owner, so lookups and releases attribute their holds to ui_fb. While suspended the display
+ * hold must stay dropped, so events only mark a pending rebind and resume performs it. */
+static void rebind_now(struct ctx *c);
+
+static void schedule_rebind(struct ctx *c)
+{
+    if (c->suspended) {
+        c->rebind_pending = 1;
+        return;
+    }
+    if (c->rebind_tick) return;
+    c->rebind_tick = c->api->timer_add(c->api->priv, 0, 0, rebind_tick_cb, c);
+    if (!c->rebind_tick)
+        c->api->log(c->api->priv, OA_LOG_WARN, "ui_fb: rebind timer allocation failed");
+}
+
+static void on_module_changed(const void *evp, void *ud)
+{
+    struct ctx *c = ud;
+    const oa_module_event *ev = evp;
+    if (!c || !ev || !ev->name) return;
+    if (!strcmp(ev->name, "ui_fb")) return;   /* our own start/stop cannot change our providers */
+    if (ev->what == OA_MOD_STARTED_EV || ev->what == OA_MOD_STOPPED_EV ||
+        ev->what == OA_MOD_UNLOADED_EV)
+        schedule_rebind(c);
+}
+
+static void on_service_removed(const void *evp, void *ud)
+{
+    struct ctx *c = ud;
+    const oa_service_removed_event *ev = evp;
+    if (!c || !ev || !ev->name) return;
+    /* The host already cleared the holds with the service. Drop the cached pointer before it can
+     * dangle; the deferred rebind reacquires whatever is published again. */
+    if (!strcmp(ev->name, OA_SVC_DISPLAY))
+        c->disp = NULL;
+    else if (!strcmp(ev->name, OA_SVC_UI_ANIM)) {
+        c->anim = NULL;
+        c->anim2 = NULL;
+    } else if (!strcmp(ev->name, OA_SVC_UI_CLOCK)) {
+        c->clock = NULL;
+    } else {
+        return;
+    }
+    schedule_rebind(c);
+}
+
+static void rebind_now(struct ctx *c)
+{
+    c->rebind_tick = 0;
+    c->rebind_pending = 0;
+    if (!c->disp) {
+        c->disp = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 1);
+        if (!c->disp) return;              /* nothing can be drawn or timed without a display */
+    }
+    if (!c->anim) {
+        c->anim = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 1);
+        if (c->anim) c->anim->bind(on_anim, c);
+    }
+    c->anim2 = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 2);
+    if (!c->clock) c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
+    if (!slide_allowed(c)) {
+        /* a provider went away or animation is off: stop timing and hold the drawn state */
+        slide_stop_sampler(c);
+        if (c->slide_repeat) {
+            c->api->timer_del(c->api->priv, c->slide_repeat);
+            c->slide_repeat = 0;
+        }
+        memset(&c->slide, 0, sizeof c->slide);
+        paint(c);
+        return;
+    }
+    if (!c->slide.active)
+        slide_begin(c, "service rebind");
+    paint(c);
+}
+
+static void rebind_tick_cb(void *ud)
+{
+    struct ctx *c = ud;
+    if (c->suspended) {
+        c->rebind_tick = 0;
+        c->rebind_pending = 1;
+        return;
+    }
+    rebind_now(c);
+}
+
 static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int done, void *ud)
 {
     struct ctx *c = ud;
@@ -653,6 +750,12 @@ static int m_start(void *v)
      * This default-off switch is an explicit bootstrap/test lever, not a chosen native policy. */
     if (c->anim && atoi(c->api->config_get(c->api->priv, "ui.anim_enable", "0")) == 1)
         c->anim->set_enabled(1);
+    /* React to providers that appear later, and drop cached pointers when one is removed. */
+    c->mod_key = c->api->subscribe(c->api->priv, OA_TOPIC_MODULE_CHANGED, on_module_changed, c);
+    c->svc_key = c->api->subscribe(c->api->priv, OA_TOPIC_SERVICE_REMOVED, on_service_removed, c);
+    if (!c->mod_key || !c->svc_key)
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "ui_fb: lifecycle subscription failed; late providers will not be discovered");
     if (c->api->publish(c->api->priv, OA_SVC_PORTAL, 1, &g_portal) != 0) {
         if (c->anim) {
             c->anim->bind(NULL, NULL);
@@ -732,6 +835,20 @@ static int m_start(void *v)
 static void m_stop(void *v)
 {
     struct ctx *c = v;
+    if (c->mod_key) {
+        c->api->unsubscribe(c->api->priv, c->mod_key);
+        c->mod_key = 0;
+    }
+    if (c->svc_key) {
+        c->api->unsubscribe(c->api->priv, c->svc_key);
+        c->svc_key = 0;
+    }
+    if (c->rebind_tick) {
+        c->api->timer_del(c->api->priv, c->rebind_tick);
+        c->rebind_tick = 0;
+    }
+    c->suspended = 0;
+    c->rebind_pending = 0;
     slide_stop_sampler(c);
     if (c->slide_repeat) {
         c->api->timer_del(c->api->priv, c->slide_repeat);
@@ -788,6 +905,7 @@ static void m_destroy(void *v)
 static int m_suspend(void *v)
 {
     struct ctx *c = v;
+    c->suspended = 1;
     slide_stop_sampler(c);
     if (c->slide_repeat) {
         c->api->timer_del(c->api->priv, c->slide_repeat);
@@ -812,6 +930,7 @@ static int m_suspend(void *v)
 static int m_resume(void *v)
 {
     struct ctx *c = v;
+    c->suspended = 0;
     c->disp = c->api->lookup(c->api->priv, OA_SVC_DISPLAY, 1);
     if (!c->disp)
         return -1;
@@ -821,8 +940,14 @@ static int m_resume(void *v)
         c->disp = NULL;
         return -1;
     }
-    slide_begin(c, "resume");
-    paint(c);
+    /* providers may have appeared or disappeared while suspended; rebind_now reacquires them and
+     * restarts or holds the slide as appropriate (it also paints). */
+    if (c->rebind_pending || !c->anim || !c->anim2 || !c->clock)
+        rebind_now(c);
+    else {
+        slide_begin(c, "resume");
+        paint(c);
+    }
     if (c->fps > 0)
         c->tick = c->api->timer_add(c->api->priv, (uint32_t)(1000 / c->fps),
                                     (uint32_t)(1000 / c->fps), tick_cb, c);

@@ -99,6 +99,32 @@ nonzero margin at +822 ms, final 163 at +3808 ms, repeat restart at +6557 ms
 and no helper left. This is not visual scanout evidence; fb1, keys, settings and
 vendor modules were not touched.
 
+RAIL-HIGHLIGHT-2026-11-01: `MainLauncherMenuDialog::init` calls
+`SVGButton::setMainlauncherHighlightId` five times (0xe4981a/0xe498ec/0xe499e8/
+0xe49ac6/0xe49b98), once per category. The setter stores the resource id at
++0x96c (0x10aeee5); `SVGButton::renderForeground` (0x10af894) creates an
+SVGImage from it at `RectangleContainer::getRectangle("mainlauncher_highlight")`.
+Resource 579 (myMenuLauncheritemFA.svg) contains that named rect, so the rail
+buttons use the category resources, not launcheritemFA/FI (536/537). Resource
+579's local signed-16 rects: glyph (119,240,150,150), mainlauncher_highlight
+(119,212,199,210), background (-2,0,1920,1080). The highlight resource
+`mainlauncher_item_highlight_animated.png` is an 11-frame, 30 ms, looping
+(num_plays 0) APNG of an orange bar at the image's left edge growing to full
+height. The dialog's local-to-screen placement is not recovered, so our UI does
+not draw it. The 0.3 s 536/537 records are launcher tiles, not the rail.
+
+PROVIDER-REBIND-2026-11-01: mod_ui_fb now reacts to `module/changed` and
+`service/removed`. Events only schedule a 0 ms rebind timer (event dispatch runs
+with the subscriber as cur_module, so holds and timers belong to ui_fb);
+`service/removed` nulls the cached display/ui.anim/ui.clock pointers before they
+dangle. The rebind reacquires missing services, restarts or holds the slide as
+enablement allows, and ignores ui_fb's own lifecycle events. Suspend defers
+rebinding: events mark it pending and resume performs it, so no display hold is
+taken while suspended. tests/ui_rebind covers late ui.clock/ui.anim publication,
+the disabled gate, forced unload of ui_anim, and provider return. Host make
+check 197 ok and ASan/UBSan 197 ok; the ARM/qemu rebind run passes; TV rerun
+pending.
+
 FULLSCREEN-ANIM-2026-11-01: the full-screen progress path is recovered.
 `SVGDialog::startAnimation` @0x10c5009 returns for mode 0x38 and otherwise maps
 modes 0x39..0x40 through the byte table at 0x153b80c (01..08) to HAL types 1..8,
