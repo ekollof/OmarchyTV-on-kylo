@@ -1227,6 +1227,14 @@ localization and native font/text integration remain open. UI-FONTS below
 corrects the earlier FreeType assumption. Evidence:
 artifacts/analysis/settings-focus-2026-11-01/.
 
+SETTINGS-FOCUS-LIVE-2026-11-02: row selection + live text + ui.theme composed
+on fb1 (PID12364, mod_ui_vendor 41eea1bc..., engine e307de66..., theme
+47d7579a...; ui.screen=settings_list, ui.text=1, ui.sel=4). Capture sha256
+ade07e09... differs from the live unfocused capture only inside the row-4 bar
+band (x20..769, y463..528; 48,584 px); bar BGRA 25,148,254,255, alpha 0 outside
+the panel. fb1 restored (16588800 bytes, offset 0,1080), staging removed, no
+helper left. Evidence: same directory, tv-fb1-focused-row-4-live-text.png.
+
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
 Vendor animations, transitions and UI/UX effects are included, not yet accepted.

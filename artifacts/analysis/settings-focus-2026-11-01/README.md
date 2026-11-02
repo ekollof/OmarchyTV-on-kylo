@@ -71,6 +71,18 @@ slider stays grey rather than inventing its undecoded FA colors.
 The fb1 capture matches the reconstructed reference byte-for-byte, which proves
 the draw/asset/format pipeline; it is not a vendor focused-row comparison.
 
+## Re-verification with live text + ui.theme (2026-11-02)
+
+`tv-fb1-focused-row-4-live-text.png` (sha256 `ade07e09...`): native ARM run,
+PID 12364, `mod_ui_vendor 41eea1bc...` + `mod_ui_engine e307de66...` +
+`mod_ui_theme 47d7579a...`, config `ui.screen=settings_list ui.text=1
+ui.sel=4` with `ui_theme` index/binary from the staged BinSVG pack. Compared
+against the live-text unfocused capture (`tv-fb1-live-values.png`,
+sha256 `fb549837...`): 48,584 differing pixels, ALL inside the row-4 band
+(x 20..769, y 463..528) — the only screen change is the focus bar itself.
+Bar pixels BGRA 25,148,254,255 (#FE9419) with #7E000A ink; (1000,500) alpha 0.
+fb1 restored (16588800 bytes, offset 0,1080), staging removed, no helper left.
+
 ## Not verified
 
 - No vendor capture of a focused settings row exists, so bar centering, exact
