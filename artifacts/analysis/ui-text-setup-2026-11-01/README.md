@@ -277,7 +277,23 @@ setWindowRect` (0x10c5285) adds only a redraw. So the dialog client origin
 override `createComponents` (base 0xd6da90 reached via virtual dispatch;
 only five direct callers exist, all subclass upcalls). Still open: which
 rect reached the dialog's setWindowRect and when relative to
-createComponents (dialog-show positioning is the next decode target). Also open: the runtime
+createComponents: dialog-show path PARTIALLY decoded (2026-11-02).
+`doNavigateTabDialog` (0xd188de) news TabDialog → ctor → `doModal`, which
+runs vtable+0x50 then the message loop. `SVGDialog::create` (0x10c5729)
+sets the dialog window from an animation-derived description rect
+(`setWindowRect(this, iVar4+8)`, getSubstring of the first animation name)
+— for record 191 the only animation is `animation_slide_right_fade_in`
+(0,0,100,100) — or leaves it unset if the lookup misses. `TabDialog::init`
+(0xd70551) does NOT set the dialog window and does NOT call
+createComponents: it computes the five tab button rects from description
+lookups (division-distributed widths) and creates buttons with them
+(parent=this, so dialog-client-relative), then SettingsDialog::init →
+updateGlyphAndTitle → showSubMenu.
+Decisive next computation: resolve the button-rect description inputs
+(iVar4/5/7 in TabDialog::init) and add the unknown dialog client origin C:
+vendor focused tab box starts at screen x=11, vendor title box at x=131.
+Both equations share C — solving them together determines C without
+guessing and tests the (23,5) hypothesis against the tab geometry. Also open: the runtime
 dynamic-center-align override (`setAlignment` 4/5) is not modeled; glyph
 placement within the box (bearings/baseline) is a renderer job. (Title is
 lab-gated behind ui.title=1, default off, until the origin is decoded.)
