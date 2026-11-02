@@ -21,26 +21,30 @@ inset), `mRowL` height 70 (row height / vertical step).
 
 With `SVGListBoxBase::getRowPosition` (0x10bbaa8) — left=leftInset,
 top=topInset+step*i, right=window width-rightInset, bottom=top+rowHeight — and
-zero horizontal insets, row 0 would be **(20, 186, 750, 70)**.
+zero horizontal insets, row 0 is **(20, 186, 750, 70)**. Rows are created
+with these rects (`createListItems` → row `setWindowRect`), so the row
+surfaces are 750x70 and the vendor bar frame is (20,186+70i,750,70).
 
-## Why that value is NOT adopted yet
+## Resolution: adopt the firmware frame (2026-11-02)
 
-The focused bar comes from `SVGListBoxRow::renderBackground` (0x10bec08),
-which resizes a row surface to the row rect and then composes three mask
-slices through `MaskPositioningTransform` and
-`HorizontalMaskScaleTransform`. Record 479's slices are authored in a
-1280x720 canvas (mRowL (18,61,51,127), mRowM (54,61,174,127), mRowR
-(178,61,211,127) = 66 px tall), while the list slices are authored so that
-mRowL is 70 px tall. The mapping from those mask canvases into the row
-surface (vertical scale/offset, and which rect the caps keep) is NOT decoded.
-Assuming "row rect == bar rect" would be a guess, and the two candidate
-heights (66 authored vs 70 row) differ.
+The bar is now drawn at (20,186+70i,750,66): row frame from the chain above,
+66 px content height from record 479's slices and the decoded vertical
+mapping (below). Verified on fb1: the fill spans exactly y256..321 for sel=1
+(`tv-fb1-edited-row-1-y186.png`, sha256 `e3fd5209...`).
 
-The current UI still draws the bar at the pre-existing reconstruction
-placement (20, 183+70*sel, 750, 66). That placement was never vendor-verified
-either; it is retained only so this change does not silently introduce a new
-guess. Open task: decode `resizeUISurface` + the two transforms to decide
-between (20,186,750,70) and a 66-px bar inside that row.
+## Vertical mapping (decoded, not guessed)
+
+`HorizontalMaskScaleTransform::transformRect` maps x through the width ratio
+but translates y only (`y0'=y0+C`, height preserved) — no vertical scaling
+exists. The 66 px slice content therefore sits top-aligned in the 70 px row;
+the bottom 4 px strip is whatever the cleared-then-unpainted surface region
+shows (resizeUISurface clears handles, not pixels — indeterminate statically,
+consistent with panel showing through). Row height 70 is verified three
+independent ways: (1) raw rowPos rects in records 475-478 are all
+(244,178,319,248), exactly 70 tall; (2) the rowHeight computation
+(`[rowPos+0x14]-[rowPos+0x0c]` at asm 10bda5a–10bda60) reads record fields
+with no scaling; (3) container rects pass through the height-preserving
+transform above. Our flat 66 px bar + unpainted strip matches all of this.
 
 ## What WAS fixed (no geometry claim)
 

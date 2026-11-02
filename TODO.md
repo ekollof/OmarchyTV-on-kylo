@@ -470,26 +470,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       origin, proving the visible digits are the live blob.
       CORRECTION: the first capture (33c719a1) showed the overlay's captured
       glyphs because text was painted under it; that evidence is withdrawn.
-- [ ] Decode the row mask→surface mapping before changing bar geometry.
-      Two-block structure established (block 2 renders rowItems (id 48) into
-      a second surface this+0xc4); row resources verified in ctor asm (list
-      475-478, rows 479/481/480/482); renderer is BinSVGRenderer, vtable+0xc
-      is renderGroup, which clears the container per call and renders only
-      the first matching group; horizontal composition closed (scale surface
-      = (capW, 0, W-capW, H), inset by exactly the authored cap widths).
-      Open: whether getMaskRectangle records into the container (coherent
-      hypothesis: miss path → bar is surface content only), the row window
-      rect height (vtable+0x28 source vs getRowPosition), and the
-      HorizontalMaskScaleTransform vertical handling that decides 66 vs
-      70 px: transformRect translates y only (no vertical scaling), so the
-      66 px content sits top-aligned and the bottom H-66 strip is surface
-      content; the row window rect height (+0x1f8) for this list is the last
-      unverified value. Firmware
-      resource 179 gives listBox (20,170,770,996); slices 475-478 give
-      top16/bottom10/step70, implying row0 = (20,186,750,70). The current
-      bar still uses the pre-existing reconstruction placement (20,183,750,66)
-      until the transform math is verified;
-      evidence: artifacts/analysis/ui-row-rect-2026-11-02/.
+- [x] Decode the row mask→surface mapping before changing bar geometry.
+      CLOSED: horizontal composition verified; row resources verified
+      (list 475-478, rows 479/481/480/482); renderer = BinSVGRenderer,
+      vtable+0xc = renderGroup (clears per call, first match wins);
+      transformRect translates y only (height preserved); row height 70
+      verified three ways (raw rowPos in all four records, unscaled
+      record-field computation, height-preserving transform). Implemented
+      (20,186+70i,750,66) + unpainted strip; fb1-verified (e3fd5209...).
+      Evidence: artifacts/analysis/ui-row-rect-2026-11-02/.
       Evidence: artifacts/analysis/settings-edit-2026-11-01/. Full make check
       261 ok.
       UI-MASK-LAYOUT
