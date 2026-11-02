@@ -478,6 +478,53 @@ selectionIndicator-named animation. Duration = atof(animation delay string)
 × float at 0x10bc04c. Decompiles: /tmp/opencode/decomp-repos.txt is
 ephemeral; re-run DumpFirmware.java @0x010be16d @0x010bbedd to reproduce.
 
+## What list renderBackground draws from +0x26c (0x10bd305, asm-verified)
+
+Tail of the function (aurora.dis past file-line 4091800; decompile saved at
+/tmp/opencode/decomp-listbg.txt, ephemeral — re-run DumpFirmware.java
+@0x010bd305): after the whole-list mask/row passes, it resolves one rectangle
+record by the name from widget-name id 55 (`selectionIndicator`, the 22nd and
+last lookup in this function) out of the rectangle set built from the list
+resource + animation container (+0x280), caches the record pointer at
++0x27c, brings the list surface to front and calls:
+
+```
+SVGSurface::drawRectangle(surface, record+0x1c /*mode*/,
+    record+0x18, record+0x20 /*colors*/,
+    +0x26c - listX0, +0x270 - listY0,   /* moving rect, list-relative */
+    +0x274 - +0x26c, +0x278 - +0x270)   /* moving size */
+```
+
+Asm (10bdd6c–10bddac): `bringToFront`; loads +0x270/+0x278/+0x26c/+0x274;
+`subs` differences on stack; `str fp,[r4,#0x27c]`; `bl drawRectangle`.
+So the FA indicator is a firmware-filled rectangle using the moving
+interpolated rect — not a stretched slice. The row FA slice stretch
+(HorizontalMaskScaleTransform in the row's own renderBackground) and this
+list-level indicator fill are distinct mechanisms.
+
+Full widget-name id sequence in this function (asm, in order):
+14, 2, 16, 4, 15, 3, 17, 5, 44, 22, 10, 44, 18, 6, 43, 23, 11, 25,
+13, 24, 12, 55. Stock names (same translation): mTopL, gTopL, mTopR, gTopR,
+mTopM, gTopM, mRowL, gRowL, scrollPos, mRowR, gRowR, scrollPos, mRowM, gRowM,
+rowPos, mBotL, gBotL, mBotR, gBotR, mBotM, gBotM, selectionIndicator.
+New names: gTopL/gTopM/gTopR/gBotL/gBotM/gBotR (g edge sets), rowPos,
+scrollPos. Swapped mirror pairs: 2/4, 11/13, 14/16, 23/25 (same pattern as
+5/10 and 17/22); the rest single-arm.
+
+Bonus from the same function: list-level mode selector at +0x244.
+When +0x248 == 0 it resolves six triples (font marker + two slice names) by
+first-present priority — the same scrambled check order as the textbox
+marker scan — and stores 0..5:
+0: fontRegular + gBotL + mBotR; 1: fontBold + gRowL + gTopL;
+2: fontLight + gRowR + gTopR; 3: fontItalic + gRowM + gTopM;
+4: fontBoldItalic + gRowMRed + title_gRowL;
+5: fontLightItalic + mRowMGreen + title_gRowR; else 0.
+(Triple tables live at file VAs 0x10bd5b8..0x10bd5cc, each entry a string
+pointer; resolved through the same segment-correct translation.)
+New slice names: gRowMRed, mRowMGreen, title_gRowL, title_gRowR.
+Still open: readers of +0x244 and +0x27c, per-widget rect-to-draw
+consumption, and any pixel acceptance. No implementation.
+
 ## Row-background name sequence (SVGListBoxRow::renderBackground 0x10bec08)
 
 Asm-verified call order of `getWidgetStandardName` in the function

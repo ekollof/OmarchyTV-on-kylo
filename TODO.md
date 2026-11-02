@@ -421,6 +421,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       driving animation is the selectionIndicator-named one, interpolation is
       truncating, gated on animation-enabled with unchanged-rect skip).
       Still open: what list renderBackground draws from the moving rect.
+      List renderBackground (0x10bd305) is now decoded: it draws the moving
+      +0x26c rect list-relative via SVGSurface::drawRectangle with the
+      selectionIndicator record fill (record cached at +0x27c) — a
+      firmware-filled rectangle, distinct from the row slice stretch. Its 22
+      widget-name lookups resolve to m/g top/row/bottom edge sets plus rowPos,
+      scrollPos and selectionIndicator; it also holds a list-level first-present
+      font-marker mode selector at +0x244 (new slices gRowMRed, mRowMGreen,
+      title_gRowL/R). Still open: readers of +0x244/+0x27c.
       UI-MASK-LAYOUT
       now recovers mask positioning and row arithmetic; runtime field
       population, slice composition, text origin and FA animation geometry are still
