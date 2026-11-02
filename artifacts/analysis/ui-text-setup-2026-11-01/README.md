@@ -306,7 +306,20 @@ surf.b) yields impossible (negative) rects even for rows, so a register
 or field is misidentified — the row-shape analogy for the title surface
 is SUSPENDED until the formula is re-derived, not relied upon. Next: pin
 the r7+0x1d0/0x1e0 field identities against the MaskPositioningTransform
-map (surface +8, mask +18) and re-track r0/r3 into the call. Also open: the runtime
+map (surface +8, mask +18) and re-track r0/r3 into the call.
+Formula identities CLOSED from the named-local decompile (2026-11-02,
+decomp-renderbg.txt): the middle surface is
+`EASIRect(out, (M1.r-M1.l)+S.l, S.t, M1.l-(M2.r-M2.l), S.b)` and the
+textPos rescale is `bottom' = top + (A/B)*span` with A = surfH (middle
+surface height), B = maskH (horizontal-mask height). So the rescale maps
+mask-height→surface-height exactly (rows: 51→66/70 per state; title:
+51→A). The height chain is closed (A=90 → font 18, confirmed by matching
+advance); the OPEN part is strictly the middle-surface x0/y0 inputs for
+the title instance, i.e. what M1/M2/S contain at 10c615c time. Two
+candidates: (a) dialog client offset (23,5) via create-time parent origin
+— contradicted as the SOLE cause by the joint tab equation (buttons need
+C=(0,0) for screen x=11); (b) title-specific surface/mask inputs. Do not
+shift our box; decode the inputs. Also open: the runtime
 dynamic-center-align override (`setAlignment` 4/5) is not modeled; glyph
 placement within the box (bearings/baseline) is a renderer job. (Title is
 lab-gated behind ui.title=1, default off, until the origin is decoded.)
