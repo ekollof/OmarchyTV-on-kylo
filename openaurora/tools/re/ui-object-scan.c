@@ -63,8 +63,10 @@ static int candidate(FILE *out,uint32_t address,const uint8_t *p,size_t size)
                 signed_word(p+0x204),signed_word(p+0x1fc),signed_word(p+0x208),signed_word(p+0x200),word(p+0xe4));
     } else if(id->kind==3) {
         rectangle(out,"text",p+0x1f4);
-        fprintf(out," font=%" PRIu32 " lines=%" PRId32 " font_type=%" PRIu32 " alignment=%" PRIu32,
-                word(p+0x21c),signed_word(p+0x1b4),word(p+0x1c4),word(p+0x220));
+        fprintf(out," font=%" PRIu32 " lines=%" PRId32 " font_type=%" PRIu32 " alignment=%" PRIu32
+                " flags1=%u flags2=%u override=%" PRIu32 " slide=%u slidermargin=%" PRId32,
+                word(p+0x21c),signed_word(p+0x1b4),word(p+0x1c4),word(p+0x220),
+                p[0x1b1],p[0x1b0],word(p+0x22c),p[0x2b0],signed_word(p+0x2a8));
     }
     fputc('\n',out);
     return 1;

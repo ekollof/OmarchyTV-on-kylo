@@ -1,0 +1,111 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+NONATOMIC vtable candidates; readable private heap only; no active-window inference
+candidate=06d1c000 class=SettingItemsListBoxRow created=1 state=0 window=20,606,769,676 row_type=2 label_vptr=0153b904 label_window=30,607,381,657 label_text=1,-5,350,61 label_font=7 label_lines=1
+candidate=06d1c104 class=SVGTextBox created=1 state=0 window=30,607,381,657 text=1,-5,350,61 font=7 lines=1 font_type=0 alignment=4
+candidate=06d1c3c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=06d1cd24 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=06d1dca8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=06d1df68 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=06d1e228 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=06d1e4e8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=078b08c0 class=SVGTextBox created=1 state=1 window=57,5,691,95 text=51,0,634,90 font=18 lines=1 font_type=0 alignment=4
+candidate=07bd87d8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07bd9168 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07bd9af8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07bd9e44 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07bda104 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07bda3c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07db9000 class=SettingItemsListBoxRow created=1 state=0 window=20,746,769,816 row_type=4 label_vptr=0153b904 label_window=30,747,480,797 label_text=1,-5,449,61 label_font=7 label_lines=1
+candidate=07db9104 class=SVGTextBox created=1 state=0 window=30,747,480,797 text=1,-5,449,61 font=7 lines=1 font_type=0 alignment=4
+candidate=07db93c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07db9d24 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07dbaca8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07dbaf68 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07dbb228 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07dbb4e8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07dc3300 class=PictureSettingsDialog created=1 state=0 window=0,162,780,1080
+candidate=07dc347c class=SettingItemsListBox created=1 state=0 window=20,170,770,996 count=11 step=70 row_height=70 insets=0,16,1,10 row_items=460
+candidate=0894a000 class=SettingItemsListBoxRow created=1 state=0 window=20,676,769,746 row_type=2 label_vptr=0153b904 label_window=30,677,381,727 label_text=1,-5,350,61 label_font=7 label_lines=1
+candidate=0894a104 class=SVGTextBox created=1 state=0 window=30,677,381,727 text=1,-5,350,61 font=7 lines=1 font_type=0 alignment=4
+candidate=0894a3c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0894ad24 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0894bca8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0894bf68 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0894c228 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0894c4e8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08e58000 class=SettingItemsListBoxRow created=1 state=0 window=20,256,769,326 row_type=9 label_vptr=0153b904 label_window=30,257,381,307 label_text=1,-5,350,61 label_font=7 label_lines=1
+candidate=08e58104 class=SVGTextBox created=1 state=0 window=30,257,381,307 text=1,-5,350,61 font=7 lines=1 font_type=0 alignment=4
+candidate=08e583c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08e58d24 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08e59ca8 class=SVGTextBox created=1 state=0 window=638,253,763,307 text=1,-5,124,67 font=16 lines=1 font_type=0 alignment=4
+candidate=08e59f68 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08e5a228 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08e5a4e8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08e8e17c class=SettingItemsListBox created=0 state=1 window=0,0,0,0 count=0 step=0 row_height=0 insets=0,0,0,0 row_items=460
+candidate=08e8eb9c class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08e8f52c class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08e8febc class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08e9084c class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08e911dc class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08e914e0 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08fa4000 class=SettingItemsListBoxRow created=1 state=0 window=20,396,769,466 row_type=9 label_vptr=0153b904 label_window=30,397,381,447 label_text=1,-5,350,61 label_font=7 label_lines=1
+candidate=08fa4104 class=SVGTextBox created=1 state=0 window=30,397,381,447 text=1,-5,350,61 font=7 lines=1 font_type=0 alignment=4
+candidate=08fa43c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08fa4d24 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08fa5ca8 class=SVGTextBox created=1 state=0 window=638,393,763,447 text=1,-5,124,67 font=16 lines=1 font_type=0 alignment=4
+candidate=08fa5f68 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08fa6228 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=08fa64e8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=091db000 class=SettingItemsListBoxRow created=1 state=0 window=20,186,769,256 row_type=2 label_vptr=0153b904 label_window=30,187,381,237 label_text=1,-5,350,61 label_font=7 label_lines=1
+candidate=091db104 class=SVGTextBox created=1 state=0 window=30,187,381,237 text=1,-5,350,61 font=7 lines=1 font_type=0 alignment=4
+candidate=091db3c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=091dbd24 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=091dcca8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=091dcf68 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=091dd228 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=091dd4e8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=09730000 class=SettingItemsListBoxRow created=1 state=0 window=20,536,769,606 row_type=2 label_vptr=0153b904 label_window=30,537,381,587 label_text=1,-5,350,61 label_font=7 label_lines=1
+candidate=09730104 class=SVGTextBox created=1 state=0 window=30,537,381,587 text=1,-5,350,61 font=7 lines=1 font_type=0 alignment=4
+candidate=097303c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=09730d24 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=09731ca8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=09731f68 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=09732228 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=097324e8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0a7a2000 class=SettingItemsListBoxRow created=1 state=0 window=20,326,769,396 row_type=9 label_vptr=0153b904 label_window=30,327,381,377 label_text=1,-5,350,61 label_font=7 label_lines=1
+candidate=0a7a2104 class=SVGTextBox created=1 state=0 window=30,327,381,377 text=1,-5,350,61 font=7 lines=1 font_type=0 alignment=4
+candidate=0a7a23c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0a7a2d24 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0a7a3ca8 class=SVGTextBox created=1 state=0 window=638,323,763,377 text=1,-5,124,67 font=16 lines=1 font_type=0 alignment=4
+candidate=0a7a3f68 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0a7a4228 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0a7a44e8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c463000 class=SettingItemsListBoxRow created=1 state=0 window=20,886,769,956 row_type=27 label_vptr=0153b904 label_window=0,0,0,0 label_text=0,0,0,0 label_font=0 label_lines=0
+candidate=0c463104 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c4633c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c463d24 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c464ca8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c464f68 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c465228 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c4654e8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c4df000 class=SettingItemsListBoxRow created=1 state=0 window=20,466,769,536 row_type=9 label_vptr=0153b904 label_window=30,467,381,517 label_text=1,-5,350,61 label_font=7 label_lines=1
+candidate=0c4df104 class=SVGTextBox created=1 state=0 window=30,467,381,517 text=1,-5,350,61 font=7 lines=1 font_type=0 alignment=4
+candidate=0c4df3c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c4dfd24 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c4e0ca8 class=SVGTextBox created=1 state=0 window=638,463,763,517 text=1,-5,124,67 font=16 lines=1 font_type=0 alignment=4
+candidate=0c4e0f68 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c4e1228 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c4e14e8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c57d000 class=SettingItemsListBoxRow created=1 state=0 window=20,816,769,886 row_type=27 label_vptr=0153b904 label_window=0,0,0,0 label_text=0,0,0,0 label_font=0 label_lines=0
+candidate=0c57d104 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c57d3c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c57dd24 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c57eca8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c57ef68 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c57f228 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=0c57f4e8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+heap_ranges=4 scanned_bytes=176934912 candidates=104 complete=1

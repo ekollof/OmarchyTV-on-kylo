@@ -362,10 +362,24 @@ the title instance, i.e. what M1/M2/S contain at 10c615c time. Two
 candidates: (a) dialog client offset (23,5) via create-time parent origin
 — contradicted as the SOLE cause by the joint tab equation (buttons need
 C=(0,0) for screen x=11); (b) title-specific surface/mask inputs. Do not
-shift our box; decode the inputs. Also open: the runtime
-dynamic-center-align override (`setAlignment` 4/5) is not modeled; glyph
-placement within the box (bearings/baseline) is a renderer job. (Title is
-lab-gated behind ui.title=1, default off, until the origin is decoded.)
+shift our box; decode the inputs.
+LIVE WIDGET CONFIRMS COMPOSITION (2026-11-02, read-only /proc/1785/mem
+scan, live-scan-title-2026-11-02.txt): exactly one created font-18
+textbox: window=(57,5,691,95) text=(51,0,634,90) font=18 lines=1 type=0
+alignment=4. Window == description rect ⇒ dialog client (0,0) CONFIRMED
+live; text == rescaled surface-space ⇒ composed box (108,5,691,95) is the
+actual widget geometry. The (+23,+5) ink delta is therefore DEFINITIVELY
+in the draw step (renderForeground→drawText layout), NOT geometry, parent,
+font, or rescale. Same scan live-confirms: SettingItemsListBox
+window=(20,170,770,996) step=70 row_height=70 insets=(0,16,1,10);
+PictureSettingsDialog window=(0,162,780,1080); live row label (font7) and
+value-digit (font16) boxes. Scanner extended with draw-control fields
+(flags1/flags2/override/slide/slidermargin); the re-run found the screen
+already closed (only uncreated candidates), so those fields stay open —
+re-run when settings is visible. Also open: the runtime
+dynamic-center-align override (`setAlignment` 4/5) is not modeled. (Title
+is lab-gated behind ui.title=1, default off, until the draw offset is
+decoded.)
 Text-color mechanism CLOSED (2026-11-02): `overrideTextColours` (0x10c7265)
 stores flag +0x210=1 and the two `rgba_drawing_colour` values at +0x211 /
 +0x215; `renderForeground` consumes them as the draw colors when the flag is
