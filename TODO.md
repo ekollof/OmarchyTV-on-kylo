@@ -566,6 +566,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       before fallback, including NULL-returning failed init. Host249/focused
       sanitizer/native contracts, Unix socket and actual GPU switching/fallback/
       restoration pass. SKIN-SELECTION. No process-crash recovery.
+- [ ] Add an optional embedded Lua skin/scripting module after shared UI primitives
+      stabilize and before implementing the full OmarchyTV skin. Expose a small,
+      versioned API for layouts, navigation, themes, key bindings and animation
+      configuration; keep rendering execution, blocking I/O and hardware ownership
+      in C services. Support script reload through existing IPC/socket/CLI with
+      candidate validation, explicit state migration, owned timer/subscription/
+      service-hold cleanup and stale-callback rejection. Bound script memory and
+      execution, report errors and recover to the vendor skin; test failed loads,
+      callback errors, reload/suspend/unload and target runtime compatibility.
+      Instruction hooks do not bound blocking C calls. Scripts must not bypass
+      device ownership or reintroduce excluded telemetry/advertising functionality.
 - [ ] Real OmarchyTV screens replacing the skeleton after vendor parity. Keep
       OA_SVC_PORTAL on vendor and preserve engine draw/asset/present contracts.
 - [ ] Split module/test compile+link rules into .o + link so ccache can cache
