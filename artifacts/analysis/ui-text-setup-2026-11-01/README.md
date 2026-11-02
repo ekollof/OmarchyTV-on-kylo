@@ -293,7 +293,20 @@ Decisive next computation: resolve the button-rect description inputs
 (iVar4/5/7 in TabDialog::init) and add the unknown dialog client origin C:
 vendor focused tab box starts at screen x=11, vendor title box at x=131.
 Both equations share C — solving them together determines C without
-guessing and tests the (23,5) hypothesis against the tab geometry. Also open: the runtime
+guessing and tests the (23,5) hypothesis against the tab geometry.
+Tab-width math CLOSED (2026-11-02): button width =
+(system.right - picture.left - gap*(n-1))/n with gap = sound.left -
+picture.right = 163-161 = 2. With record values (769-11-2*(n-1))/n: n=2
+gives 378 — EXACTLY the observed focused-tab white box (x11..389,
+y104..162). So effectively 2 tabs (Beeld focused + Geluid); "Geluid" ink
+is centered in button 1 (391..769). The n=5 assumption is withdrawn.
+Title-surface formula BLOCKED on a tracking error (2026-11-02): reading
+the 10c615c EASIRect args as (mask1.w+surf.l, surf.t, mask1.l-mask2.w,
+surf.b) yields impossible (negative) rects even for rows, so a register
+or field is misidentified — the row-shape analogy for the title surface
+is SUSPENDED until the formula is re-derived, not relied upon. Next: pin
+the r7+0x1d0/0x1e0 field identities against the MaskPositioningTransform
+map (surface +8, mask +18) and re-track r0/r3 into the call. Also open: the runtime
 dynamic-center-align override (`setAlignment` 4/5) is not modeled; glyph
 placement within the box (bearings/baseline) is a renderer job. (Title is
 lab-gated behind ui.title=1, default off, until the origin is decoded.)
