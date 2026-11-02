@@ -437,8 +437,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       drawTextBox; +0x294 feeds animation decode; rect updates resize the
       surface via the setWindowRect override. The selection box follows the
       identical dual-copy convention (+0x368/+0x378, refreshed per draw),
-      and the button too (+0x148/+0x158); the slidebar does not (base +0x28
-      rect only, verified). Image offsets unverified. Still open: live
+      and the button too (+0x148/+0x158); the slidebar and image work off
+      the base +0x28 rect only (verified, no copies). Still open: live
       title/tab/focused text, value/tab implementation.
       UI-MASK-LAYOUT
       now recovers mask positioning and row arithmetic; runtime field

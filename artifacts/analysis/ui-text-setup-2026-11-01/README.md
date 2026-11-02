@@ -359,6 +359,15 @@ redraw with no rect-copy stores. The slidebar works off the base +0x28 rect
 (its value display is the already-decoded +0x1ca8 textbox path). Image
 widget offsets remain unverified.
 
+Image widget bounded too (asm, 2026-11-02): no dual-copy stores anywhere.
+`SVGImage::imageCreate` (0x10c9430) contains zero `stmia` — it calls only
+base `setWindowRect`; the `setWindowRect` override (0x10c96c0) re-invokes
+`create(id, rect, parent)` instead of storing copies. The parent-origin
+offset itself is shared (`getClientRect` + `EASIRect::offset` in create,
+0x10c968c–10c9696). Final tally: dual-copy rects in textbox (+0x284/+0x294),
+selection box (+0x368/+0x378) and button (+0x148/+0x158); base-rect-only in
+slidebar and image.
+
 `setLabel` routes by row type (1 → caption box `+0x3c4`, else `+0x104`) and
 stores `+0x2dd8`; `setButtonText` → button `+0x684` / `+0x2de0`;
 `setTextValue`/`setNumericTextValue` target only the text *entry* box
