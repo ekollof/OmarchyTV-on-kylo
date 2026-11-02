@@ -842,6 +842,10 @@ $(BUILD)/svg-names: tools/re/svg-names.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
+$(BUILD)/svg-rects: tools/re/svg-rects.c common/svg_pack.c common/binsvg.c include/openaurora/svg_pack.h include/openaurora/binsvg.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
+
 $(BUILD)/tests/svg_animations: tests/svg_animations.c tools/re/svg-animations.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<

@@ -441,9 +441,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       surface via the setWindowRect override. The selection box follows the
       identical dual-copy convention (+0x368/+0x378, refreshed per draw),
       and the button too (+0x148/+0x158); the slidebar and image work off
-      the base +0x28 rect only (verified, no copies). Live title/tab/focused
-      text still needs the firmware transform/instance chain; fitted origins
-      remain lab-only.
+      the base +0x28 rect only (verified, no copies). FA/UFA textPos geometry
+      is now firmware-sourced (analysis/ui-row-geometry-2026-11-02): FA bar
+      479 is a solid-#FE9419 3-slice (flat-bar reconstruction proven
+      equivalent), label/caption/button/selbox FA/UFA pairs differ per-widget
+      (label 42/40 px, caption x-shift, button/selbox 68/66 px, fontBold only
+      in FA). Live focused text still needs the runtime composition wired to
+      a live row instance.
 - [x] Lab slider value editing (NOT parity): Left/Right on settings-list rows
       1..4 adjusts a per-process shadow value (seeded from the static digits),
       re-renders the digit blob and repaints, gated on ui.edit=1 (default 0).
