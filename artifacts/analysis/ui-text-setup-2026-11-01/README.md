@@ -250,12 +250,26 @@ horizontal-scale transform, and `renderGroup` clears the container per call
 with the absolute dialogTitle window (57,5,691,95) yields text bounds
 **(108,5,691,95)**, height 90, alignment 4, font type 0, stroke `#FFFFFF`,
 fill `none`; `oa_font_finder_select(90,1,0)` → **font ID 18** using all 20
-live startup font metrics. Vendor ink (x120..388, y29..85; icon x41..99 in
-the (38,24,98,84) glyph rect) falls inside with plausible bearings — noted
-as consistency, not an input. Remaining before live title: parent (dialog)
-client origin is assumed (0,0) from the panel-at-origin evidence, and the
-runtime dynamic-center-align override (`setAlignment` 4/5) is not modeled;
-glyph placement within the box (bearings/baseline) is a renderer job.
+live startup font metrics. fb1 compared (2026-11-02,
+`tv-fb1-title-first-mismatch.png`): excluding the icon, our ink is
+x113..365 y26..80 vs vendor x136..388 y31..85 — IDENTICAL 253x55 boxes
+translated by exactly (+23,+5). The earlier spacing suspicion is withdrawn
+(icon-pixel contamination); same font + same string give same-size ink, so
+letter advance is confirmed identical. Bearing invariance (same record,
+same glyphs → same ink offsets from box origin) forces the vendor text box
+to our box shifted by (+23,+5), i.e. origin (57+23+51, 5+5+0) with the same
+90 px height. Dialog position is NOT the cause: vendor tab-band ink aligns
+with record 191 coords (tabs at x11.., y104..), and `getClientMarginRect`
+returns (0,0,0,0). Prime hypothesis: the dialog client rect origin is
+(23,5) (title create() offsets by parent `getClientRect` = dialog
+this[10..13] + zero margins). Verification path: find the writer of the
+dialog client rect (this+40..55); alternative: the title surface rect is
+not the row shape — decode the r7+0x1d0/0x1e0 positioned-mask inputs to
+the 10c615c EASIRect construction directly. Do not shift our box by
+(+23,+5): that would be capture-fitting. Also open: the runtime
+dynamic-center-align override (`setAlignment` 4/5) is not modeled; glyph
+placement within the box (bearings/baseline) is a renderer job. (Title is
+lab-gated behind ui.title=1, default off, until the origin is decoded.)
 Text-color mechanism CLOSED (2026-11-02): `overrideTextColours` (0x10c7265)
 stores flag +0x210=1 and the two `rgba_drawing_colour` values at +0x211 /
 +0x215; `renderForeground` consumes them as the draw colors when the flag is
