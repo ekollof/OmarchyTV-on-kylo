@@ -239,9 +239,20 @@ height = 90, `getFont(90,1,0)` = ID 18 (largest type-0 max height ≤ 90 is
 OPEN before live title: text origin within the 634x90 area (the container
 textPos rect is in surface space after the renderer's mask/scale passes;
 computing it means composing actual record-419 slices through the verified
-mask-positioning/slice-stretch helpers — not yet done), and text colors
-(description +0x18/+0x20, undecoded). Do not render title text until those
-are traced.
+mask-positioning/slice-stretch helpers — not yet done).
+Text-color mechanism CLOSED (2026-11-02): `overrideTextColours` (0x10c7265)
+stores flag +0x210=1 and the two `rgba_drawing_colour` values at +0x211 /
++0x215; `renderForeground` consumes them as the draw colors when the flag is
+set (rect-mask-draw.txt:645-648, asm 10c7a7a-10c7a84). The values come from
+the description record at +0x18 (stroke) / +0x20 (fill), each a 4-byte RGBA
+after the 16-byte rect (+8..+23). `extractStrokeProperties` (0xef64b5) /
+`extractFillProperties` (0xef6541) parse the pack stroke/fill strings via
+`rgbColourParser` with alpha `(1-opacity)*0xff`, leaving the caller zero-init
+when the string is NULL. Raw inputs for record-191 `dialogTitle`: fill
+`'none'`, no stroke color (NULL), stroke_w 1, opacity 10. Remaining:
+`rgbColourParser` behavior for `'none'`/NULL, the opacity integer scale, and
+which of stroke/fill is the text ink in the `drawText` argument order.
+Do not hardcode white title ink until those are traced.
 Key→localized resolution CLOSED (2026-11-02): `updateGlyphAndTitle`
 (0xd6faed) switches on the focused tab (+0x4ac) and picks the title key —
 tab0 PICTURE_MENU/PICTURE, tab1 SOUND_MENU/SOUND, tab2 NETWORK, tab3
