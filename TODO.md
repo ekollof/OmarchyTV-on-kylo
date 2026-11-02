@@ -447,10 +447,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 - [x] Lab slider value editing (NOT parity): Left/Right on settings-list rows
       1..4 adjusts a per-process shadow value (seeded from the static digits),
       re-renders the digit blob and repaints, gated on ui.edit=1 (default 0).
-      Ranges 0..100 step 1 are invented placeholders (the sub-dialog fetches
-      per-setting bounds from runtime provider virtuals — no static range
-      table exists — so live provider queries, needing native ownership,
-      are the only parity-real source), slider bars stay static,
+      Ranges 0..100 are the remaining invented part (step 1 now matches the
+      firmware ctor default; adjust math and %d formatting verified); the
+      row→slidebar range path is fully mapped (item +0x20/+0x24/+0x28 through
+      row +0x2df0/+0x2df4), but live per-setting bounds need provider queries
+      (native ownership, out of scope), slider bars stay static,
       type-2 rows/Select sub-dialogs untouched, no settings-DB writes.
       Firmware (0xe0ad0d/0xe0aca1, decoded after this shipped) shows the
       vendor OPENS a per-setting sub-dialog on Left/Right instead of adjusting

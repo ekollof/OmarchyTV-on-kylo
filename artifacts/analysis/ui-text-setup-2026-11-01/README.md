@@ -687,3 +687,30 @@ renderer calls inside the two mask passes (alignments 1 and 2); the mRowM
 lookups surround the `HorizontalMaskScaleTransform` surface setup. Still open:
 which rects those mask passes produce for the live row, the scale surface-rect
 field mapping, and the already-open +100 consumer linkage.
+
+## Range/step wiring (drawRow → row → slidebar, asm-verified 2026-11-02)
+
+CORRECTION: the previous "no static callers / virtual-only" claim was wrong —
+an address-width bug in the scan pattern (`{7,8}` missed 6-digit `0xdxxxxx`
+code) hid the direct callers. With the fixed pattern: `setSliderRangeValues`
+is called from `setBarRangeValues` (d53376) and `renderItems` (d55a04);
+`setSliderValue` from `setSlideValue` (2 sites), `renderItems` (d556f4) and
+two other dialogs. `setSliderStep` has no callers anywhere — step stays at
+the ctor default.
+
+The full path: `drawRow` reads item +0x24/+0x28 → `setBarRangeValues(row,
+min, max)` → row +0x2df0/+0x2df4 cache (+ slidebar if created); `renderItems`
+pushes the row cache into the slidebar via `setSliderRangeValues`;
+`setSlideValue` takes the value from item +0x20. So SettingItem
++0x20/+0x24/+0x28 = current/min/max. Slidebar ctor defaults: min 0, max 0,
+value 0, step **1** (+0xbc) — our lab step=1 matches the firmware default;
+only the range stays invented (provider-fed at runtime).
+
+SettingItem ctor param map (all three overloads decoded): param_7→+0x20
+(current), param_8→+0x24, param_9→+0x28, param_10→+0x30, param_11→+0x34,
+bools→+0x2c/+0x2d; the first two overloads zero +0x30/+0x34. (For type
+0xb/0x19 progress rows +0x30/+0x34 are bar image ids; for sub-dialog slider
+items +0x30 is a flag and +0x34 is 0.) Row widget inventory re-verified at
+asm level in the row ctor (0xd53d0c): label +0x104, caption +0x3c4, button
++0x684, selbox +0x1014, slidebars +0x13c0/+0x1498, textentry +0x18d8, value
+textbox +0x1ca8, label store +0x2dd8.
