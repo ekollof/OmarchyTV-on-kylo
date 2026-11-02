@@ -315,11 +315,22 @@ SURFACE rect itself is offset by (23,5) (i.e. getSurfaceSize returns
 (23,5,657,95), same 634x90 size). Then middle.x0 = 51+23 = 74, middle.y0 =
 0+5 = 5, height 90 preserved, advance unchanged — matching vendor ink
 (136..388, 31..85) exactly with box (131,10,...). This explains x AND y
-AND height with ONE mechanism, unlike cap/width theories. Verification
-path: where the title surface rect gets (23,5) — the createSurface call
-site for the title instance, or the setWindowRect override's +0x40 hook
-(the hook-adjusted rect feeds the stored copies AND resizeUISurface).
-Do not shift our box; decode the surface rect.
+AND height with ONE mechanism, unlike cap/width theories. (SUPERSEDED
+2026-11-02 by the normalization proof below: the surface size is always
+origin-normalized, so this variant is dead. The +0x40-hook wording is also
+withdrawn — vtable+0x40 hex is setActive; the override stores its input
+verbatim.)
+SURFACE NORMALIZATION PROVEN (2026-11-02): `SVGSurface::getSurfaceSize`
+(0xeee2ec) returns `EASIRect(0,0,W,H)` — the surface size is ALWAYS
+origin-normalized. So middle.x0 = M1.w+0 and middle.y0 = 0 PROVEN; the
+surface-origin variant above is DEAD. The (+23,+5) must therefore enter via
+the title WINDOW arg = description + dialog client, i.e. dialog client
+(23,5) at title-create time. But the joint tab equation forces
+button-create-time client (0,0) (white box at screen x=11). Both can hold
+only if the client CHANGED between button creation (init) and title
+creation (createComponents), or buttons don't client-offset. Next: order
+create vs init for TabDialog (doModal +0x50 identity) and a dialog
+setWindowRect between them.
 Formula identities CLOSED from the named-local decompile (2026-11-02,
 decomp-renderbg.txt): the middle surface is
 `EASIRect(out, (M1.r-M1.l)+S.l, S.t, M1.l-(M2.r-M2.l), S.b)` and the
@@ -525,10 +536,15 @@ Rect-to-draw consumption for textbox widgets (asm-verified, 2026-11-02):
 non-null calls `parent->getClientRect()` (0x1152974) and offsets the rect by
 the parent client origin (`EASIRect::offset`). It then `stmia`s the result to
 BOTH `+0x284` and `+0x294`, calls base `SVGWindow::setWindowRect` (+0x28),
-and assigns id/parent. `SVGTextBox::setWindowRect` override (0x10c8ae8)
-refreshes both copies from the hook-adjusted rect (vtable +40 call first),
-writes the base rect, and calls `resizeUISurface` on the +0x1c8 surface with
-the new rect. `drawTextBox` (0x10c8808) `ldmia`s +0x284 into the draw args and
+and assigns id/parent. `SVGTextBox::setWindowRect` override (0x10c8ac4)
+stores the INPUT rect verbatim to both copies (`ldmia` the passed rect,
+`stmia` to +0x284/+0x294 — no hook adjustment; the vtable+0x28 call
+(0x1152649, decimal slot 40) result is unused for the copies), writes the
+base rect, and calls `resizeUISurface` on the +0x1c8 surface with the new
+rect (surface keeps whatever origin the rect has; `getSurfaceSize`
+normalizes to (0,0,W,H)). CORRECTION (2026-11-02): the earlier
+"hook-adjusted rect (vtable +40)" wording is withdrawn — vtable+0x40 hex
+is `setActive`, and the override stores its input verbatim. `drawTextBox` (0x10c8808) `ldmia`s +0x284 into the draw args and
 dispatches vtable +80; it sets +0x219. `animRectDecode` (0x10c8c4c) reads the
 second copy (+0x294/+0x298). So: resource rect + row offset (renderItems) →
 parent-origin offset (create) → +0x284 → drawTextBox → surface draw, with
