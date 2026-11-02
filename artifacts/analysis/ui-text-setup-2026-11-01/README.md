@@ -266,6 +266,21 @@ the vendor panel, so the text ink is the first color argument (local_64 =
 stroke) by elimination — transparent ink would be invisible in both cases.
 Final confirmation is a `drawText` argument-role decode; no other ink
 candidate exists.
+`drawText` ink role CLOSED (2026-11-02): `SVGSurface::drawText` (0xeedfe5)
+converts the first color arg to `local_80` and the second to `local_84`,
+then passes `(&local_80, &local_84)` to `UISurface::drawText`, which builds
+`Colour` objects in the same order (`param_7`→`local_bc`→`local_cc`,
+`param_8`→stack→`local_c8`) and feeds `(&local_cc, &local_c8)` to
+`hal::TextControls` and the final `hal::TextCommand::drawText` (0x11318a9).
+The pair order is preserved through all three levels with no swap, and the
+only asymmetric treatment is on the first color (`SVGSurface::drawText`
+eee062: when the surface blend target is active and the first color's byte0
+is 0xff while the second's is not, the first color's byte0 is set to 0xa5
+— a foreground-ink dimming for blend surfaces). So the first draw color
+(local_64 = +0x211 = description stroke) is the glyph ink, the second
+(local_5c = +0x215 = description fill) the background. Title ink = opaque
+white `#FFFFFF`; the transparent fill means no text background is painted.
+Same pair drives the row labels (record 419).
 Key→localized resolution CLOSED (2026-11-02): `updateGlyphAndTitle`
 (0xd6faed) switches on the focused tab (+0x4ac) and picks the title key —
 tab0 PICTURE_MENU/PICTURE, tab1 SOUND_MENU/SOUND, tab2 NETWORK, tab3
