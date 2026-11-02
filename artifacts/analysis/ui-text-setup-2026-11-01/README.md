@@ -385,3 +385,27 @@ addition rectangle. This is no longer an open question.
 Do not implement value/tab/slider-graphics/title/focused labels from the fits.
 Next: remaining mask slice positioning, row allocation and text origin/alignment,
 then replace fitted UI geometry only when that whole chain is established.
+
+## Mirror-branch verification (independent re-derivation 2026-11-02)
+
+The switch selects different string tables per OSD-mirror flag; the first
+`puVar3 = DAT...` per case is the mirrored arm, the `if (iVar2 == 0)` arm the
+non-mirrored one. Both DATs resolved through the file (literal pool → .data
+table → rodata string):
+
+| id | mirrored arm | non-mirrored (iVar2==0) arm |
+|---|---|---|
+| 17 (0x11) | mRowR (00eee9e8) | mRowL (00eee9fc) |
+| 22 (0x16) | mRowL (00eee9fc) | mRowR (00eee9e8) |
+| 23 (0x17) | mBotR (00eeea00) | mBotL (00eeea08) |
+
+Font markers have single (mirror-independent) arms: 65 fontRegular,
+66 fontBold, 67 fontLight, 68 fontItalic, 69 fontBoldItalic,
+70 fontLightItalic — confirming the UI-TEXT-GEOMETRY correction
+(65 is fontRegular, not fontLight).
+
+The original "four-entry variant table" reading is withdrawn: the tables are
+per-branch string selections, not per-state variants, and the first-pass
+case→DAT association mixed mirrored arms. Entry[0] of the *selected* table is
+the name. Non-mirrored (stock) names match UI-LIST-METRICS' pointer-chain file.
+The rescale formula and row-literal findings are unaffected.
