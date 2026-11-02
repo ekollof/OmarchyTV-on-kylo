@@ -481,7 +481,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       hypothesis: miss path → bar is surface content only), the row window
       rect height (vtable+0x28 source vs getRowPosition), and the
       HorizontalMaskScaleTransform vertical handling that decides 66 vs
-      70 px. Firmware
+      70 px: transformRect translates y only (no vertical scaling), so the
+      66 px content sits top-aligned and the bottom H-66 strip is surface
+      content; the row window rect height (+0x1f8) for this list is the last
+      unverified value. Firmware
       resource 179 gives listBox (20,170,770,996); slices 475-478 give
       top16/bottom10/step70, implying row0 = (20,186,750,70). The current
       bar still uses the pre-existing reconstruction placement (20,183,750,66)

@@ -673,12 +673,17 @@ onto the row via setSVGName plus per-widget names (label/selbox/button/
 textentry tables) and `setItemsSvgName`, then creates the row with
 vtable+0x48.
 
-STILL OPEN (narrowed): the vertical mapping. The authored slices are 66 px
-tall while the row surface/row rect are 70 px tall; the scale surface spans
-the full height, so the 66→70 vertical handling lives inside
-HorizontalMaskScaleTransform (horizontal-only by name?) and/or the row
-window rect actually being 66 px tall (vtable+0x28 source not yet traced to
-getRowPosition). Do not claim either until those two are decoded.
+STILL OPEN (narrowed 2026-11-02): HorizontalMaskScaleTransform decoded
+(transformRect 0xeecda9, transformWidth 0xeeccb5, ctor + setSurfaceUIRect):
+fields +0x4..+0x10 = surface rect, +0x28 = double width ratio, +0x34 =
+mask name. transformRect maps x via width-ratio + surface.x0, but y by pure
+translation (y0' = y0 + surface.y0, height preserved) — NO vertical scaling.
+With the row scale surface (33, 0, W-33, H), the 66 px slice content sits at
+y 0..66 (top-aligned, mask-relative); the bottom H-66 strip keeps whatever
+the resized surface holds. Remaining: the row window rect height
+(+0x1f8 for this list — 70 per pitch evidence, but not yet read from the
+live object) to decide whether H-66 = 4 px or 0. Do not claim either until
+that value is verified.
 
 ### Name call order (asm-verified)
 
