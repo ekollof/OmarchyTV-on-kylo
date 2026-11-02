@@ -6,6 +6,13 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Horizontal text correction (2026-11-02): UI-HORIZONTAL-ORIGIN checks the ARM
+glyph-data offset: end alignment subtracts final right ink boundary byte3,
+not advance byte4. Physical width excludes final spacing and adjusts first/last
+bearings; pen advance is a separate API. Center overhang trims both ends and
+successful slices reset X0. End traversal paints in reverse. New plain aligned
+line renderer is tested offscreen; full widget/style/shaping integration is open.
+
 Text origins (2026-11-02): UI-TEXT-ORIGIN confirms concrete list/row/textbox
 zero-margin bindings and recovers vertical policies. Center's half-division
 truncates toward0; per-line ratio conversion floors two reference-dependent

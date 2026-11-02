@@ -442,6 +442,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       host/sanitizer/ARM-qemu/native TV. UI-TEXT-ORIGIN-2026-11-02. Horizontal
       direction/truncation/alignment, actual widget styles/ratios/coordinate
       composition and runtime theme/UI integration remain open.
+- [x] Add plain EF41 aligned line layout/drawing: physical-width corrections,
+      start/end/center, symmetric center trimming and end reverse paint order.
+      UI-HORIZONTAL-ORIGIN-2026-11-02; strict full host/sanitizer/ARM-qemu/native
+      TV offscreen synthetic+30-line font7/16 corpus pass. End reads final right
+      bearing, not advance. Word justification4, shaping/direction/markup, full
+      truncation/scaling, actual widget/clip/vertical-origin integration remain
+      open; current UI fitted origins are not replaced by this milestone.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

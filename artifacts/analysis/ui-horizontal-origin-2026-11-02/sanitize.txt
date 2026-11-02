@@ -1,0 +1,6 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-font-line-sanitize/tests/font_line tests/font_line.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c
+ok font line: ink width, center bearing/trim, end paint order, atomic failures
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-font-line-sanitize/tests/font_text tests/font_text.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c
+ok font text: UTF-8 keys, advances/spacing, clips, missing/invalid rejection, source-over
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

@@ -6,6 +6,18 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-HORIZONTAL-ORIGIN-2026-11-02: common/font_text.c adds aligned line layout/
+drawing with physical width, center overhang trim/reset-X and end right-bearing/
+reverse paint order, correcting the previous advance interpretation. Whole-line
+validation; explicit plain EF41 unit-ratio scope, no word justification/shaping.
+Full strict host, focused sanitizers/corpus, ARM/qemu and native TV synthetic/
+30-line font7/16 offscreen checks pass. Native82476 bytes,
+MD5 bd1384ee414f673ad2858477ddcc7d3c, GLIBC2.7, build-tv-v3/font-line.
+Same stock boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785/zombie1967,
+hook/hosts/access/privacy; staging removed and checked. No device/display/
+persistent changes, no helper/job pending. Actual widget style/resource/clip/
+vertical-origin integration remains open; existing UI origins still fitted.
+
 UI-TEXT-ORIGIN-2026-11-02: concrete list/row/textbox margin bindings resolve
 the zero-margin base getter. Vertical logical placement and phase-preserving
 ratio-floor helpers implemented in common/text_origin.c. Strict full host,

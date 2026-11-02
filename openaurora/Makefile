@@ -115,6 +115,16 @@ $(BUILD)/tests/font_text: tests/font_text.c common/font_text.c common/font_draw.
 check-font-text: $(BUILD)/tests/font_text
 	@$(BUILD)/tests/font_text
 
+$(BUILD)/tests/font_line: tests/font_line.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/canvas.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-font-line
+check-font-line: $(BUILD)/tests/font_line
+	@$(BUILD)/tests/font_line
+
+check: check-font-line
+
 $(BUILD)/tests/text_layout: tests/text_layout.c common/text_layout.c include/openaurora/text_layout.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)

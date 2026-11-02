@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-TEXT-ORIGIN](artifacts/reports/UI-TEXT-ORIGIN-2026-11-02.md)
+Latest: [UI-HORIZONTAL-ORIGIN](artifacts/reports/UI-HORIZONTAL-ORIGIN-2026-11-02.md)
+adds oa_font_text_layout_line/draw_line: plain EF41 unit-ratio start/end/center,
+physical width distinct from pen advance, symmetric overhang trim/reset-X,
+end right-bearing and reverse paint order. Correct earlier final-advance claim:
+ARM reads byte3=right, not byte4=advance. Whole line/range/origins validated
+before paint; word justification4 explicitly ENOTSUP. Synthetic overlap test
+checks actual paint order;30 real font7/16 lines pass host/sanitizer/ARM-qemu/
+native TV offscreen checks, full host suite passes. Isolated build-tv-v3/font-line
+and analysis/ui-horizontal-origin-2026-11-02 identify evidence. Same stock boot/
+live1785/access/privacy; staging removed, no helper/job pending. Next concrete
+row/textbox style, viewport/clip and vertical-origin integration from runtime
+resources; baseline/shaping/localization/word justification/full truncation and
+focused text acceptance remain open. Existing UI fitted origins unchanged.
+
+Previous: [UI-TEXT-ORIGIN](artifacts/reports/UI-TEXT-ORIGIN-2026-11-02.md)
 confirms client-margin slot+38 binds the zero-margin base getter for actual
 list/setting-list/row/setting-row/textbox classes. common/text_origin.c now
 implements vertical start/end/center/spread with center clipping-capacity
@@ -36,7 +50,8 @@ native TV contracts pass. Build-tv-v3/text-origin; analysis/ui-text-origin-
 job pending. Next horizontal placement/truncation/direction (Line1134600,
 TextRenderer1133050), actual widget style/ratios and coordinate composition,
 then theme/UI integration. Do not guess right-minus-width: firmware end path
-uses final-glyph advance/style reversal. Optional live labels remain fitted.
+uses final-glyph right ink boundary/style reversal (the earlier advance claim
+was corrected above). Optional live labels remain fitted.
 
 Previous: [UI-SLICE-STRETCH](artifacts/reports/UI-SLICE-STRETCH-2026-11-02.md)
 implements retained double-ratio measurement, horizontal rectangle stretch and

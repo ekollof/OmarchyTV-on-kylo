@@ -1,0 +1,2 @@
+ok font line: ink width, center bearing/trim, end paint order, atomic failures
+ok font line: real font7/16 start/end/center render 30 lines

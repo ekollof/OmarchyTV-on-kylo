@@ -96,7 +96,8 @@ change. No helper/build/Ghidra job pending.
 
 Horizontal positioning remains incomplete. Line::doCentreOrRightAlignment1134600
 uses physical length in64ths, first-character adjustment and separate overhang
-handling for center. Its end-alignment path subtracts the final glyph's advance
+handling for center. Its end-alignment path subtracts the final glyph's right
+ink boundary (corrected by UI-HORIZONTAL-ORIGIN; byte3, not advance byte4)
 and reverses style changes; do not replace it with an assumed right-minus-string-
 width formula. doHorizontalPositioning1133050 also invokes truncation, position
 scaling and scaling checks. Fresh line-origin-detail.txt/line-align-ratio.txt
