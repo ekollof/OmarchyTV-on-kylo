@@ -295,8 +295,14 @@ order, first present wins; `sl` is overwritten by the id-66 (fontBold) result
 | 3rd | r9 (10c631a) | 67 | fontLight | 2 |
 | 4th | r8 (10c62fa) | 68 | fontItalic | 3 |
 | 5th | r6 (10c635a) | 69 | fontBoldItalic | 4 |
-| 6th | [sp,#12] (10c633a) | 70 | fontLightItalic | 5 |
+| 6th | [sp,#20] (10c633a; r7=sp+8) | 70 | fontLightItalic | 5 |
 | none | — | — | — | 0 (default) |
+
+Correction 2026-11-02 (independent adversarial review): the slot is
+`[r7,#12]` = `[sp,#20]`, not `[sp,#12]` as first transcribed; verified against
+`4104285` (`add r7,sp,#8`) and `4104663`/`4104708`. The stale "sl/textPos"
+wording is also corrected: `sl` holds the id-66 (fontBold) result at chain
+time, the textPos value having been consumed earlier by the rescale.
 
 So `+0x1c4` = first-present font marker in type order 0..5; the writer question
 is closed for this path (a separate unknown-suspend path at 10c5b98 also writes
