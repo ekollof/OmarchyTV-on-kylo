@@ -407,7 +407,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       height scale is bottom'=top+trunc(float(surfaceH)/float(maskH)*float(rectH))
       (UI-TEXT-GEOMETRY-2026-11-02 corrects the earlier width/rounding claim).
       Single-line textPos goes to+0x1ec and foreground consumes it; +0x254
-      holds addition. +0x1c4's writer is the font-marker scan. UI-MASK-LAYOUT
+      holds addition. +0x1c4's writer is the font-marker scan (asm-verified
+      10c62ac-10c63c6: first-present marker wins in type order — fontRegular→0,
+      fontBold→1, fontLight→2, fontItalic→3, fontBoldItalic→4,
+      fontLightItalic→5, else 0; sl holds the fontBold result after the textPos
+      rescale consumes it). UI-MASK-LAYOUT
       now recovers mask positioning and row arithmetic; runtime field
       population, slice composition, text origin and FA animation geometry are still
       undecoded, so title/tab/slider-graphics/focused text must not

@@ -282,7 +282,27 @@ hypothesis, not a fact. What is firm: the store is unconditional and
 pre-branch; row textboxes (488/489) have no `addition` rect, so for rows the
 defaults stand unless another path writes them.
 
-## Line count writer found (SVGTextBox::create 0x10c8889)
+## Marker→type mapping, asm-verified (10c62ac–10c63c6)
+
+The font-marker scan requests ids 65,66,68,67,70,69 but CHECKS in priority
+order, first present wins; `sl` is overwritten by the id-66 (fontBold) result
+(the earlier textPos value is consumed by the rescale first):
+
+| check order | register | marker id | name | +0x1c4 if present |
+|---|---|---|---|---|
+| 1st | fp (10c62ba) | 65 | fontRegular | 0 |
+| 2nd | sl (10c62da) | 66 | fontBold | 1 |
+| 3rd | r9 (10c631a) | 67 | fontLight | 2 |
+| 4th | r8 (10c62fa) | 68 | fontItalic | 3 |
+| 5th | r6 (10c635a) | 69 | fontBoldItalic | 4 |
+| 6th | [sp,#12] (10c633a) | 70 | fontLightItalic | 5 |
+| none | — | — | — | 0 (default) |
+
+So `+0x1c4` = first-present font marker in type order 0..5; the writer question
+is closed for this path (a separate unknown-suspend path at 10c5b98 also writes
+it — not traced). Row label boxes carry only the FA/UFA markers relevant to
+their state; e.g. FA 488 has fontBold, UFA 489 has none (falls through to the
+sl/textPos or default arm per the chain above).
 
 `create(id, text, rect, param_4, parent)` writes `*(this + 0x1b4) = param_4`
 — param_4 **is** the line count — and stores the client-offset rect at
