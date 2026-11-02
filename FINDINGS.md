@@ -6,6 +6,16 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Label content (2026-11-02): UI-ROW-LABELS traces ordinary SettingItem key
+localization and drawRow without a prefix. Profile section Languages/value
+Dictionary resolves MODE to exact Dutch Modus, with no hidden spaces/control
+markup. Custom hashed IDs and locale slots are now established for this record;
+the flattened string inventory alone did not establish them. The translation-
+fit branch can choose a maximum-width translation; its live enablement is
+unread. Stored Dutch MODE is ruled out as an18px-padding source, while actual
+parent/window/resource/ratio and visible parity remain open. Character-conversion
+slim_i18n symbols are not the UI dictionary-key lookup entry point.
+
 Live UI scope (2026-11-02): UI-LIVE-OBJECTS scans only readable private [heap]
 for known firmware vptrs; matches are non-atomic candidates, not active-window
 proof, and absent matches do not cover other arenas/subclasses. Current scan

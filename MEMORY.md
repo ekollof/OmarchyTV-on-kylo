@@ -6,6 +6,16 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-ROW-LABELS-2026-11-02: offline label-source trace completed. Ordinary key
+constructor/drawRow/setLabel add no prefix; langprofile Languages/Dictionary
+contains41 locales/2435 records. MODE hash5aa5907f record987 resolves dut slot10
+to exact Modus bytes4d6f64757300. Hash-checked bounded full-table evidence script
+passes; live translation-fit flag and actual parent/resource/ratio state remain
+open. No fitted-coordinate/renderer/persistent change and no TV connection in
+this investigation. Owner's latest observation is awake HDMI1 external video;
+last verified device/access/privacy state is the following historical sample.
+Handoff updated and work stopped as requested; no helper/build/Ghidra job pending.
+
 UI-LIVE-OBJECTS-2026-11-02: read-only vtable-candidate scanner added/tested.
 Native32736 bytes/MD5 c7ac91ee12465bad32819cebfbe13c57/GLIBC2.7,
 build-tv-v3/ui-scan. Full strict host/focused sanitizers/ARM-qemu pass; native

@@ -62,6 +62,9 @@ BitmapFont vptr slots+1c/+20 both bind the verified zero getter b42469. The
 setLabel(UString) setter copies the supplied text; the string-key overload
 localizes it. Neither setter itself adds a fixed prefix/padding. That does not
 establish whether the original localized value/markup contains spacing.
+Follow-up UI-ROW-LABELS-2026-11-02 resolves this for stored Dutch MODE: exact
+Modus, no whitespace or control markup. Ordinary constructor/drawRow adds no
+prefix either. Actual instance text and translation-fit mode remain unverified.
 
 For the earlier explicit conditional parent, the local regular/bold Y offsets
 are2/1; text-surface bounds therefore give absolute glyph origins31,184 and

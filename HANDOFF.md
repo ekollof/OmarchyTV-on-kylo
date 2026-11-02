@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-LIVE-OBJECTS](artifacts/reports/UI-LIVE-OBJECTS-2026-11-02.md)
+Latest: [UI-ROW-LABELS](artifacts/reports/UI-ROW-LABELS-2026-11-02.md)
+finishes the offline ordinary-label source trace: key constructor -> stored
+UString -> drawRow -> setLabel adds no prefix. Shipped langprofile section
+Languages/value Dictionary resolves MODE hash5aa5907f to record987; dut slot10
+is exactly Modus (4d6f64757300), eng slot0 Mode. Translation-fit mode instead
+selects maximum-width translation; its live flag remains unread. Durable
+analysis/ui-row-labels-2026-11-02 includes ARM/decompiles and verify-label.cjs;
+run node on that script from root. Hash-checked bounded2435x41 traversal passes.
+This rules out hidden padding in stored Dutch MODE, not actual instance/text/
+parent/resource/ratio placement. No guessed18px fix, renderer change, production
+localization loader or visual acceptance. Next establish actual transform/
+instance inputs before replacing fitted origins. Owner confirms awake HDMI1
+video; this investigation was entirely offline, with no TV connection/staging.
+Last verified TV/access/privacy state remains the sample below. Handoff updated;
+stop here as requested. No helper/build/Ghidra job pending.
+
+Previous: [UI-LIVE-OBJECTS](artifacts/reports/UI-LIVE-OBJECTS-2026-11-02.md)
 adds read-only tools/re/ui-object-scan.c. Firmware vptr/field inventory checks
 exact readable private [heap] maps with256MiB cap, no ptrace/input/functions/
 memory writes. Full strict host/focused sanitizers/ARM-qemu tests and native

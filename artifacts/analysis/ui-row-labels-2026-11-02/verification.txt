@@ -1,0 +1,4 @@
+MODE record=987 hash=5aa5907f relativeOffset=2073999
+eng="Mode" dut="Modus"
+dut bytes=4d6f64757300
+PASS: bounded traversal of 2435 records x 41 locales

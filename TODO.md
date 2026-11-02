@@ -501,6 +501,16 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       handling. UI-LIVE-OBJECTS records using host WebSocket API instead; old
       native helper was not executed. Keep state observation separate from
       key-dispatch and visible-screen proof.
+- [x] Trace ordinary settings label content into the textbox and resolve original
+      MODE localization: UI-ROW-LABELS-2026-11-02. Key constructor/drawRow add no
+      prefix; hash-checked offline profile traversal validates2435x41 strings,
+      including exact dut Modus with no whitespace/markup. This closes the stored
+      label-padding hypothesis only; no production localization implementation.
+- [ ] Explain conditional regular X31 versus fitted49 using actual parent/window,
+      resource/override/ratio and original instance text state before replacing
+      UI fits. Stored Dutch MODE has no padding; translation-fit flag is unread.
+      UI-ROW-LABELS/UI-TEXT-VIEWPORT. No guessed18px adjustment; independent
+      visible FA/UFA acceptance and full localization/shaping remain open.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

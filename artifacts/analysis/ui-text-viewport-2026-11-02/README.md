@@ -6,6 +6,8 @@
   BitmapFont's zero-return b42468 alias. Setter forwards/localizes/copies; it
   does not itself add a fixed prefix or padding. This does not say whether a
   particular localized string contains leading whitespace/control markup.
+  UI-ROW-LABELS-2026-11-02 subsequently verifies stored Dutch MODE is exact
+  Modus with no such prefix; current-instance/translation-fit state is still open.
 - list-create.txt: SettingItemsListBox::makeRow d5072c and base create10bdfb0.
 - parent-init.txt: SVGListBoxBase constructor10bd120 initializes cached insets/
   row fields to0; SettingsDialog::init d5761c invokes createSettingsList.
