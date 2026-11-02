@@ -438,8 +438,20 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       surface via the setWindowRect override. The selection box follows the
       identical dual-copy convention (+0x368/+0x378, refreshed per draw),
       and the button too (+0x148/+0x158); the slidebar and image work off
-      the base +0x28 rect only (verified, no copies). Still open: live
-      title/tab/focused text, value/tab implementation.
+      the base +0x28 rect only (verified, no copies). Live title/tab/focused
+      text still needs the firmware transform/instance chain; fitted origins
+      remain lab-only.
+- [x] Lab slider value editing (NOT parity): Left/Right on settings-list rows
+      1..4 adjusts a per-process shadow value (seeded from the static digits),
+      re-renders the digit blob and repaints, gated on ui.edit=1 (default 0).
+      Ranges 0..100 step 1 are invented placeholders, slider bars stay static,
+      type-2 rows/Select sub-dialogs untouched, no settings-DB writes.
+      ui.edit_init="r=v" presets values for captures. Host test drives real
+      keys (95→100→clamp 0, untouched row keeps value). fb1: sel=1,
+      edit_init 1=49 shows dark-red "49" on the focus bar (380 px at the same
+      digit box as unfocused white "95"); diff confined to the row-1 band.
+      Evidence: artifacts/analysis/settings-edit-2026-11-01/. Full make check
+      261 ok.
       UI-MASK-LAYOUT
       now recovers mask positioning and row arithmetic; runtime field
       population, slice composition, text origin and FA animation geometry are still

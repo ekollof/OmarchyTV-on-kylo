@@ -25,6 +25,7 @@ static const char *config(void *ud, const char *key, const char *def)
     if (!strcmp(key, "ui.fps")) return "0";
     if (!strcmp(key, "ui.rail_hl")) return "0";
     if (!strcmp(key, "ui.font_id")) return "7";
+    if (!strcmp(key, "ui.edit")) return "1";
     if (!strcmp(key, "ui.font_index")) {
         static char path[300];
         snprintf(path, sizeof path, "%s/%s", g_missing ? "/nonexistent" : g_dir, "font.index");
@@ -196,8 +197,18 @@ int main(int argc, char **argv)
     assert(blit_at(trace, 532, 601, 24, 72));      /* disabled "Auto" */
     assert(blit_at(trace, 541, 669, 20, 72));      /* "Aan" */
 
-    key(&host, 19);                                /* focus overlay still draws */
-    assert(blit_at(trace, 20, 183, 4, 4));
+    /* Lab value editing (ui.edit=1, invented 0..100 step 1): rows 1..4 only. */
+    key(&host, 19); key(&host, 19);              /* sel 0 -> 1 (Contrast) */
+    assert(blit_at(trace, 20, 253, 4, 4));       /* focus row 1 */
+    for (int i = 0; i < 5; i++) key(&host, 22);  /* 95 -> 100 */
+    assert(blit_at(trace, 655, 246, 20, 72));    /* "100": 3 digits */
+    for (int i = 0; i < 200; i++) key(&host, 21);/* clamp at 0 */
+    assert(blit_at(trace, 655, 246, 12, 72));    /* "0": 1 digit */
+    key(&host, 19);                              /* sel 1 -> 2, untouched */
+    assert(blit_at(trace, 655, 316, 16, 72));    /* "50" still there */
+
+    key(&host, 19);                                /* sel 2 -> 3 */
+    assert(blit_at(trace, 20, 393, 4, 4));       /* focus row 3 (trace is per-frame) */
     key(&host, 10);
     assert(portal->screen() == 3);
 

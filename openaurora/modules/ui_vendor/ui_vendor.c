@@ -144,6 +144,12 @@ struct ctx {
         unsigned char *rgba;
         int w, h, x, y;
     } text[SETTINGS_TEXT_MAX];
+    /* Lab value editing (ui.edit=1): per-process shadow values for the four
+     * slider rows 1..4. Ranges 0..100 and step 1 are INVENTED placeholders —
+     * firmware per-setting ranges/steps are not decoded — and the slider bar
+     * graphics stay static; only the digits re-render. Never touches the
+     * settings database; no set_int call exists on this path. */
+    int edit_val[4];
     int screen;
     int restored;
     const oa_settings_iface *settings;
@@ -477,6 +483,80 @@ static int settings_font_open(struct oa_font_pack *pack, int id,
 
 /* Optional live text (ui.text=1): load font7 and font16 and render every
  * settings label/value once. On any failure keep the captured panel working. */
+static int render_text_blob(struct ctx *c, size_t i, const char *text)
+{
+    const struct settings_text_entry *entry = &SETTINGS_TEXT[i];
+    const struct oa_bitmap_font *font =
+        entry->font == FONT_LARGE ? &c->font_num : &c->font;
+    int advance = 0;
+    int rc = oa_font_text_measure(font, text, 0, &advance);
+    if (rc) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "settings text: '%s' unavailable (%d); using capture", text, rc);
+        return rc;
+    }
+    int w = advance + 2 * SETTINGS_TEXT_MARGIN;
+    int h = SETTINGS_TEXT_HEIGHT;
+    if (w < 1) w = 1;
+    unsigned char *rgba = calloc((size_t)w * (size_t)h * 4u, 1);
+    if (!rgba)
+        return ENOMEM;
+    oa_canvas canvas = { rgba, w, h };
+    const uint8_t ink[4] = { entry->r, entry->g, entry->b, 255 };
+    rc = oa_font_text_draw(&canvas, font, text, SETTINGS_TEXT_MARGIN,
+                           SETTINGS_TEXT_MARGIN, ink, 0, NULL);
+    if (rc) {
+        free(rgba);
+        return rc;
+    }
+    free(c->text[i].rgba);
+    c->text[i].rgba = rgba;
+    c->text[i].w = w;
+    c->text[i].h = h;
+    c->text[i].x = entry->x - SETTINGS_TEXT_MARGIN;
+    c->text[i].y = entry->y - SETTINGS_TEXT_MARGIN;
+    return 0;
+}
+
+/* Lab preset for captures without key injection: "r=v,r=v" with rows 1..4
+ * and values 0..100. Anything else is ignored. */
+static void apply_edit_init(struct ctx *c)
+{
+    const char *spec = c->api->config_get(c->api->priv, "ui.edit_init", "");
+    while (*spec) {
+        while (*spec == ' ' || *spec == ',')
+            spec++;
+        if (!*spec)
+            break;
+        int row = atoi(spec);
+        while (*spec >= '0' && *spec <= '9')
+            spec++;
+        if (*spec != '=') {
+            while (*spec && *spec != ',')
+                spec++;
+            continue;
+        }
+        spec++;
+        int val = atoi(spec);
+        while (*spec >= '0' && *spec <= '9')
+            spec++;
+        if (row >= 1 && row <= 4 && val >= 0 && val <= 100) {
+            c->edit_val[row - 1] = val;
+            if (c->text_on) {
+                char text[16];
+                snprintf(text, sizeof text, "%d", val);
+                size_t idx = 9u + (unsigned)row;
+                if (idx < SETTINGS_TEXT_COUNT &&
+                    SETTINGS_TEXT[idx].kind == TEXT_VALUE &&
+                    render_text_blob(c, idx, text) != 0)
+                    settings_text_free(c);
+            }
+        }
+        while (*spec && *spec != ',')
+            spec++;
+    }
+}
+
 static int settings_text_load(struct ctx *c)
 {
     const char *index_path = c->api->config_get(c->api->priv, "ui.font_index",
@@ -511,41 +591,18 @@ static int settings_text_load(struct ctx *c)
     }
     c->font_num_on = 1;
     for (size_t i = 0; i < SETTINGS_TEXT_COUNT; i++) {
-        const struct settings_text_entry *entry = &SETTINGS_TEXT[i];
-        const struct oa_bitmap_font *font =
-            entry->font == FONT_LARGE ? &c->font_num : &c->font;
-        int advance = 0;
-        rc = oa_font_text_measure(font, entry->text, 0, &advance);
+        rc = render_text_blob(c, i, SETTINGS_TEXT[i].text);
         if (rc) {
-            c->api->log(c->api->priv, OA_LOG_WARN,
-                        "settings text: '%s' unavailable (%d); using capture", entry->text, rc);
             settings_text_free(c);
             return rc;
         }
-        int w = advance + 2 * SETTINGS_TEXT_MARGIN;
-        int h = SETTINGS_TEXT_HEIGHT;
-        if (w < 1) w = 1;
-        unsigned char *rgba = calloc((size_t)w * (size_t)h * 4u, 1);
-        if (!rgba) {
-            settings_text_free(c);
-            return ENOMEM;
-        }
-        oa_canvas canvas = { rgba, w, h };
-        const uint8_t ink[4] = { entry->r, entry->g, entry->b, 255 };
-        rc = oa_font_text_draw(&canvas, font, entry->text, SETTINGS_TEXT_MARGIN,
-                               SETTINGS_TEXT_MARGIN, ink, 0, NULL);
-        if (rc) {
-            free(rgba);
-            settings_text_free(c);
-            return rc;
-        }
-        c->text[i].rgba = rgba;
-        c->text[i].w = w;
-        c->text[i].h = h;
-        c->text[i].x = entry->x - SETTINGS_TEXT_MARGIN;
-        c->text[i].y = entry->y - SETTINGS_TEXT_MARGIN;
     }
     c->text_on = 1;
+    for (int r = 1; r <= 4; r++) {
+        size_t idx = 9u + (unsigned)r;
+        c->edit_val[r - 1] = atoi(SETTINGS_TEXT[idx].text);
+    }
+    apply_edit_init(c);
     c->api->log(c->api->priv, OA_LOG_INFO, "live settings text: fonts %d+%d, %u items",
                 font_id, num_id, (unsigned)SETTINGS_TEXT_COUNT);
     return 0;
@@ -1087,6 +1144,31 @@ static void move_key(struct ctx *c, uint8_t id)
         if (id == 19 || id == 20) {        /* Down / Up: row selection */
             c->sel = settings_row_next(c->sel, id == 19 ? 1 : -1);
             if (c->d) paint(c);
+        } else if (id == 21 || id == 22) { /* Left / Right: slider value */
+            /* Lab-only (ui.edit=1): firmware dispatches Left/Right to the
+             * row adjust path, but ranges/steps are not decoded, so 0..100
+             * step 1 are invented placeholders and only rows 1..4 (slider
+             * digits) are adjustable. Selection rows need option lists that
+             * are not decoded; Select sub-dialogs are not implemented. */
+            if (atoi(c->api->config_get(c->api->priv, "ui.edit", "0")) == 1 &&
+                c->sel >= 1 && c->sel <= 4) {
+                int v = c->edit_val[c->sel - 1] + (id == 22 ? 1 : -1);
+                if (v < 0) v = 0;
+                if (v > 100) v = 100;
+                c->edit_val[c->sel - 1] = v;
+                if (c->text_on) {
+                    char text[16];
+                    snprintf(text, sizeof text, "%d", v);
+                    size_t idx = 9u + (unsigned)c->sel;
+                    if (idx < SETTINGS_TEXT_COUNT &&
+                        SETTINGS_TEXT[idx].kind == TEXT_VALUE &&
+                        render_text_blob(c, idx, text) != 0)
+                        settings_text_free(c);
+                }
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "settings row %d value %d (lab placeholder range)", c->sel, v);
+                if (c->d) paint(c);
+            }
         } else if (id == 53 || id == 0x8a) {
             /* Value editing is not decoded yet; keep the selection only. */
             c->api->log(c->api->priv, OA_LOG_INFO,

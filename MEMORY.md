@@ -1235,6 +1235,15 @@ band (x20..769, y463..528; 48,584 px); bar BGRA 25,148,254,255, alpha 0 outside
 the panel. fb1 restored (16588800 bytes, offset 0,1080), staging removed, no
 helper left. Evidence: same directory, tv-fb1-focused-row-4-live-text.png.
 
+SETTINGS-EDIT-LIVE-2026-11-02: lab slider editing (NOT parity) works on fb1
+(PID22926, mod_ui_vendor 9c0c4d4e...; settings_list, text=1, sel=1, edit=1,
+edit_init 1=49). Capture tv-fb1-edited-row-1.png sha256 33c719a1... differs
+from the live baseline only in the row-1 band (x20..769, y253..318); digit
+box x662..705 y270..304 holds 380 dark-red (#7E000A) "49" pixels on the bar
+vs 378 white unfocused "95" pixels in the reference. Shadow store only, no
+DB writes. fb1 restored (16588800 bytes, offset 0,1080), staging removed, no
+helper left. Evidence: artifacts/analysis/settings-edit-2026-11-01/.
+
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
 Vendor animations, transitions and UI/UX effects are included, not yet accepted.
