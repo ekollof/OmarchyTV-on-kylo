@@ -140,11 +140,14 @@ struct ctx {
     struct oa_bitmap_font font;      /* font7: row labels and text values */
     struct oa_bitmap_font font_num;  /* font16: slider digits and disabled label */
     int font_num_on;
+    struct oa_bitmap_font font_title; /* font18: tab title */
+    unsigned char *font_title_data;
     struct settings_text_canvas {
         unsigned char *rgba;
         unsigned char *rgba_focus;   /* same glyphs in focused-row ink (#7E000A) */
         int w, h, x, y;
     } text[SETTINGS_TEXT_MAX];
+    struct settings_text_canvas title; /* live tab title blob (no focus variant) */
     /* Lab value editing (ui.edit=1): per-process shadow values for the four
      * slider rows 1..4. Range 0..100 is an INVENTED placeholder (per-setting
      * bounds come from runtime provider virtuals, not decodable statically);
@@ -311,6 +314,23 @@ static const struct settings_text_entry {
 #define SETTINGS_TEXT_COUNT (sizeof SETTINGS_TEXT / sizeof SETTINGS_TEXT[0])
 _Static_assert(SETTINGS_TEXT_COUNT == SETTINGS_TEXT_MAX, "settings text table size");
 
+/* Live tab title. The vendor picture-settings screen shows "Instellingen"
+ * (SETTINGS default), not "Beeld": per-tab keys from updateGlyphAndTitle
+ * apply on tab switches, which are not implemented — the freshly opened
+ * dialog carries the SETTINGS default (verified against the corrected
+ * capture: 11 glyphs x120..388, same per-glyph advance as our font-18
+ * render, confirming the font choice). The string is the verified Dutch
+ * profile entry for SETTINGS. Box (108,5,691,95) h90, font 18, white ink,
+ * left aligned, as composed (tests/textbox_layout.c corpus). The dialog is
+ * assumed at screen origin (panel records start at 0,0); the runtime
+ * dynamic-center-align override is not modeled. Glyph ink inside the box
+ * comes from the real font-18 bearings. */
+#define SETTINGS_TITLE_TEXT "Instellingen"
+#define SETTINGS_TITLE_X 108
+#define SETTINGS_TITLE_Y 5
+#define SETTINGS_TITLE_W 583
+#define SETTINGS_TITLE_H 90
+
 static int settings_row_y(int sel)
 {
     return SETTINGS_ROW_Y0 + SETTINGS_ROW_PITCH * sel;
@@ -469,6 +489,10 @@ static void settings_text_free(struct ctx *c)
     free(c->font_data);
     free(c->font_num_data);
     c->font_data = c->font_num_data = NULL;
+    free(c->title.rgba);
+    free(c->font_title_data);
+    c->title.rgba = NULL;
+    c->font_title_data = NULL;
     oa_font_pack_free(&c->font_pack);
     c->text_on = 0;
     c->font_num_on = 0;
@@ -539,6 +563,44 @@ static int render_text_blob(struct ctx *c, size_t i, const char *text)
     c->text[i].h = h;
     c->text[i].x = entry->x - SETTINGS_TEXT_MARGIN;
     c->text[i].y = entry->y - SETTINGS_TEXT_MARGIN;
+    return 0;
+}
+
+/* Live tab title blob: white SETTINGS_TITLE_TEXT in font18 at the composed
+ * box origin. No focus variant (the title never sits on the orange bar) and
+ * no margins: the box (108,5,691,95) is already the surface-space text
+ * surface, so ink placement inside it comes from the font bearings alone. A
+ * wider-than-box advance fails closed (fallback to the captured title). */
+static int render_title_blob(struct ctx *c)
+{
+    int advance = 0;
+    int rc = oa_font_text_measure(&c->font_title, SETTINGS_TITLE_TEXT, 0, &advance);
+    if (rc) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "settings title unavailable (%d); using capture", rc);
+        return rc;
+    }
+    if (advance < 1)
+        advance = 1;
+    if (advance > SETTINGS_TITLE_W)
+        return EOVERFLOW;
+    unsigned char *rgba = calloc((size_t)advance * (size_t)SETTINGS_TITLE_H * 4u, 1);
+    if (!rgba)
+        return ENOMEM;
+    oa_canvas canvas = { rgba, advance, SETTINGS_TITLE_H };
+    static const uint8_t ink[4] = { 255, 255, 255, 255 };
+    rc = oa_font_text_draw(&canvas, &c->font_title, SETTINGS_TITLE_TEXT, 0, 0, ink, 0, NULL);
+    if (rc) {
+        free(rgba);
+        return rc;
+    }
+    free(c->title.rgba);
+    c->title.rgba = rgba;
+    c->title.rgba_focus = NULL;
+    c->title.w = advance;
+    c->title.h = SETTINGS_TITLE_H;
+    c->title.x = SETTINGS_TITLE_X;
+    c->title.y = SETTINGS_TITLE_Y;
     return 0;
 }
 
@@ -641,6 +703,26 @@ static int settings_text_load(struct ctx *c)
         }
     }
     c->text_on = 1;
+    /* The title is an independent enhancement: a missing/unusable title font
+     * keeps the verified row text live and falls back to the captured title. */
+    /* The title is lab-gated (ui.title=1, default 0): the composed box/font/
+     * string are firmware-derived, but fb1 shows residual deltas (+12/+3
+     * origin, ~1px/letter spacing) whose sources (dialog client origin,
+     * title spacing) are not yet decoded. Do not enable by default until
+     * those are traced; fitting the offsets to the capture is forbidden. */
+    int title_on = atoi(c->api->config_get(c->api->priv, "ui.title", "0"));
+    int title_id = atoi(c->api->config_get(c->api->priv, "ui.font_title_id", "18"));
+    if (title_on && title_id >= 0 &&
+        !settings_font_open(&c->font_pack, title_id, &c->font_title, &c->font_title_data) &&
+        render_title_blob(c) == 0)
+        c->api->log(c->api->priv, OA_LOG_INFO, "live settings title: font %d '%s'",
+                    title_id, SETTINGS_TITLE_TEXT);
+    else {
+        free(c->title.rgba);
+        free(c->font_title_data);
+        c->title.rgba = NULL;
+        c->font_title_data = NULL;
+    }
     for (int r = 1; r <= 4; r++) {
         size_t idx = 9u + (unsigned)r;
         c->edit_val[r - 1] = atoi(SETTINGS_TEXT[idx].text);
@@ -744,6 +826,15 @@ static void paint_settings_list(struct ctx *c)
                                             ? c->text[i].rgba_focus
                                             : c->text[i].rgba;
             d->blit(c->text[i].x, c->text[i].y, c->text[i].w, c->text[i].h, blob);
+        }
+        if (c->title.rgba) {
+            /* Live tab title over the captured title glyphs. The erase covers
+             * the composed box only: it starts at x=108, so the captured tab
+             * glyph icon (ink x41..99) is untouched, and it ends at y=95, so
+             * the tab buttons (y104+) and row 0 (y180+) are untouched. */
+            d->fill(SETTINGS_TITLE_X, SETTINGS_TITLE_Y, SETTINGS_TITLE_W,
+                    SETTINGS_TITLE_H, 190, 30, 45);
+            d->blit(c->title.x, c->title.y, c->title.w, c->title.h, c->title.rgba);
         }
     }
     c->scene_painted = 1;

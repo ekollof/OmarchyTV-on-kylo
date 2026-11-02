@@ -14,17 +14,20 @@
 
 static char g_dir[256];
 static int g_missing;
+static int g_title;
 
 static const char *config(void *ud, const char *key, const char *def)
 {
     (void)ud;
     if (!strcmp(key, "ui.screen")) return "settings_list";
     if (!strcmp(key, "ui.text")) return "1";
+    if (!strcmp(key, "ui.title")) return g_title ? "1" : "0";
     if (!strcmp(key, "ui.dir")) return g_dir;
     if (!strcmp(key, "ui.ok_file")) return "";
     if (!strcmp(key, "ui.fps")) return "0";
     if (!strcmp(key, "ui.rail_hl")) return "0";
     if (!strcmp(key, "ui.font_id")) return "7";
+    if (!strcmp(key, "ui.font_title_id")) return "18";
     if (!strcmp(key, "ui.edit")) return "1";
     if (!strcmp(key, "ui.font_index")) {
         static char path[300];
@@ -94,23 +97,26 @@ static size_t build_font(unsigned char *b)
 
 static void make_font_pack(void)
 {
-    unsigned char font[1024], large[1024];
+    unsigned char font[1024], large[1024], title[1024];
     size_t font_size = build_font(font);
     size_t large_size = build_font(large);
+    size_t title_size = build_font(title);
     char index[320], pack[320];
     snprintf(index, sizeof index, "%s/font.index", g_dir);
     snprintf(pack, sizeof pack, "%s/font.pack", g_dir);
     char text[256];
     snprintf(text, sizeof text,
-             "17\n1\n1\n1\n1\n1\n1\n1\n%u\n1\n1\n1\n1\n1\n1\n1\n1\n%u\n",
-             (unsigned)font_size, (unsigned)large_size);
+             "19\n1\n1\n1\n1\n1\n1\n1\n%u\n1\n1\n1\n1\n1\n1\n1\n1\n%u\n1\n%u\n",
+             (unsigned)font_size, (unsigned)large_size, (unsigned)title_size);
     write_file(index, text, strlen(text));
-    unsigned char data[32 + sizeof font + sizeof large];
+    unsigned char data[48 + sizeof font + sizeof large + sizeof title];
     memset(data, 0, 7);                    /* records 0..6 */
     memcpy(data + 7, font, font_size);
     memset(data + 7 + font_size, 0, 8);    /* records 8..15 */
     memcpy(data + 15 + font_size, large, large_size);
-    write_file(pack, data, 15 + font_size + large_size);
+    memset(data + 15 + font_size + large_size, 0, 1); /* record 17 */
+    memcpy(data + 16 + font_size + large_size, title, title_size);
+    write_file(pack, data, 16 + font_size + large_size + title_size);
 }
 
 static int blit_at(const oa_nav_trace *trace, int x, int y, int w, int h)
@@ -191,6 +197,7 @@ int main(int argc, char **argv)
     assert(argc == 4);
     snprintf(g_dir, sizeof g_dir, "%s", argv[2]);
     g_missing = !strcmp(argv[3], "missing");
+    g_title = !g_missing && strcmp(argv[3], "notitle");
     blob("settings_panel");
     for (int i = 0; i < 9; i++) {
         char name[32];
@@ -221,6 +228,7 @@ int main(int argc, char **argv)
     if (g_missing) {
         assert(!has_fill(trace, 40, 178, 446, 64)); /* captured text remains */
         assert(!blit_at(trace, 45, 180, 28, 72));
+        assert(!has_fill(trace, 108, 5, 583, 90)); /* captured title remains */
         puts("  ok   missing font pack falls back to the captured settings panel");
         return 0;
     }
@@ -238,6 +246,31 @@ int main(int argc, char **argv)
     assert(blit_at(trace, 47, 598, 56, 72));       /* "Beeld zoomen" font16 grey */
     assert(blit_at(trace, 532, 601, 24, 72));      /* disabled "Auto" */
     assert(blit_at(trace, 541, 669, 20, 72));      /* "Aan" */
+
+    if (!g_title) {
+        /* Lab-gated title defaults off: rows stay live, captured title stays. */
+        assert(has_fill(trace, 40, 178, 446, 64));
+        assert(blit_at(trace, 45, 180, 28, 72));
+        assert(!has_fill(trace, 108, 5, 583, 90));
+        puts("  ok   title lab flag defaults off: rows live, captured title kept");
+        return 0;
+    }
+
+    /* Live tab title: composed box (108,5,691,95), font18, white. The vendor
+     * screen shows the SETTINGS default "Instellingen", not "Beeld". */
+    assert(has_fill(trace, 108, 5, 583, 90));      /* captured title erased */
+    assert(blit_at(trace, 108, 5, 48, 90));        /* 12 glyphs x4 */
+    /* Title-band erases must not touch the tab glyph icon (ink x41..99):
+     * any fill overlapping y[5,95) starts at x>=108. */
+    {
+        int n = trace->fill_count();
+        for (int i = 0; i < n; i++) {
+            int fx, fy, fw, fh, fr, fg, fb;
+            assert(trace->fill_at(i, &fx, &fy, &fw, &fh, &fr, &fg, &fb) == 0);
+            if (fy < 95 && fy + fh > 5)
+                assert(fx >= 108);
+        }
+    }
 
     /* Lab value editing (ui.edit=1, invented range, firmware step 1): rows 1..4. */
     key(&host, 19); key(&host, 19);              /* sel 0 -> 1 (Contrast) */
@@ -276,6 +309,6 @@ int main(int argc, char **argv)
     key(&host, 10);
     assert(portal->screen() == 3);
 
-    puts("  ok   ui.text renders font7+16 labels/values/digits at fitted origins with captured fallback");
+    puts("  ok   ui.text renders font7+16 labels/values/digits and the font18 title at composed origins with captured fallback");
     return 0;
 }
