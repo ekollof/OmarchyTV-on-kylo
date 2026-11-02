@@ -97,6 +97,19 @@ static void corpus(const char *index,const char *binary,const char *font_index,c
     unsigned selected;
     assert(!oa_font_finder_select(&finder,a.text.bounds.bottom-a.text.bounds.top,1,a.font_type,&selected) && selected==7);
     assert(!oa_font_finder_select(&finder,b.text.bounds.bottom-b.text.bounds.top,1,b.font_type,&selected) && selected==20);
+    /* Title: record 419 (LogoTextbox.svg) in the record-191 dialogTitle
+     * window (57,5,691,95). dialogTitle carries no dialogTitleShadow, so only
+     * +0x140 exists; description rect height 90 drives the rescale. */
+    struct oa_binsvg title_style;
+    assert(!oa_svg_pack_named(pack,"LogoTextbox.svg",&title_style));
+    const struct oa_text_rect title_window={57,5,691,95};
+    struct oa_widget_textbox title;
+    assert(!oa_widget_single_line_textbox(&title_style,&title_window,&title));
+    equal(&title.text.bounds,108,5,691,95);
+    assert(title.alignment==4 && title.font_type==0);
+    assert(!strcmp(title.text.stroke,"#FFFFFF") && !strcmp(title.text.fill,"none"));
+    assert(!oa_font_finder_select(&finder,title.text.bounds.bottom-title.text.bounds.top,1,title.font_type,&selected) && selected==18);
+    puts("ok textbox: title LogoTextbox.svg in dialogTitle window -> 108,5,691,95 h90, regular white, font18 via20 live startup font metrics");
     oa_font_pack_free(&fonts);oa_svg_pack_free(pack);
     puts("ok textbox: actual460->489/488 text surfaces height66/70, regular/bold font7/20 via20 live startup font metrics (explicit parent)");
 }

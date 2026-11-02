@@ -245,13 +245,17 @@ horizontal-scale transform, and `renderGroup` clears the container per call
 — so afterward the container holds the `gRowM` group's rects (including
 `textPos`) in surface space. (Group dump via fixed `svg-rects`: canvas
 720x576; `mRowL` 51 wide, `mrowR` 2 wide [lowercase w in the pack],
-`mRowM`/`textPos` 40x51.) Numeric composition still open: run the actual
-419 slices through the verified mask-positioning/slice-stretch helpers
-(surface from the 634x90 window, caps 51/2, mask 40; y by translation,
-height rescaled 51→90), plus the parent client origin and the
-dynamic-center-align path at the end of `createComponents` (`setAlignment`
-4/5). Vendor acceptance target (not a source): title ink bbox x50..388
-y29..85 in the corrected capture. Do not fit origins to it.
+`mRowM`/`textPos` 40x51.) Numeric composition CLOSED (2026-11-02, tests/textbox_layout.c corpus):
+`oa_widget_single_line_textbox` on actual `LogoTextbox.svg` (record 419)
+with the absolute dialogTitle window (57,5,691,95) yields text bounds
+**(108,5,691,95)**, height 90, alignment 4, font type 0, stroke `#FFFFFF`,
+fill `none`; `oa_font_finder_select(90,1,0)` → **font ID 18** using all 20
+live startup font metrics. Vendor ink (x120..388, y29..85; icon x41..99 in
+the (38,24,98,84) glyph rect) falls inside with plausible bearings — noted
+as consistency, not an input. Remaining before live title: parent (dialog)
+client origin is assumed (0,0) from the panel-at-origin evidence, and the
+runtime dynamic-center-align override (`setAlignment` 4/5) is not modeled;
+glyph placement within the box (bearings/baseline) is a renderer job.
 Text-color mechanism CLOSED (2026-11-02): `overrideTextColours` (0x10c7265)
 stores flag +0x210=1 and the two `rgba_drawing_colour` values at +0x211 /
 +0x215; `renderForeground` consumes them as the draw colors when the flag is
