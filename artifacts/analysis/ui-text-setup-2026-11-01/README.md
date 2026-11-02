@@ -449,9 +449,34 @@ new = B*p + A*(1-p),  A=[0x93..0x96], B=[0x97..0x9a]
 ```
 
 No easing inside the callback (list path is linear per UI-ANIMATIONS; easing
-lives in the controller progress). Open: the +100 consumer identity, how row
-rects feed the old/new slots per selection change, and whether the animated
-rect is the `selectionIndicator` resource rect. No implementation.
+lives in the controller progress). The +100 consumer question is now closed;
+remaining open: what `SVGListBoxBase::renderBackground` (0x10bd305) draws from
++0x26c, and any pixel acceptance. No implementation.
+
+## FA animation wiring closed (vtable + asm, 2026-11-02)
+
+`onAnimationProgress` (0x10bb6c4) interpolates with `vcvt.s32.f32`
+(truncation, matching the VFP finding), builds the EASIRect and stores it at
+byte +0x26c, then calls vtable slot +100 (index 25) with `(this, &rect)` —
+r1 points at the fresh rect (the earlier "no args" reading was wrong).
+The vtable pointer is read from the ctor literal at 10bd2fc → 0x153b3ec;
+slot 25 = 0x10be16d =
+`SVGListBoxBase::repositionSelectionIndicator(EASIRect const&)`.
+That function ignores its argument and calls
+`SVGListBoxBase::renderBackground()` (0x10bd304) on `this`; the moving rect
+is consumed from +0x26c.
+
+`startSelectAnimation` (0x10bbedc) is gated on `getAnimationEnabled` and
+skips the snapshot when the new selected-row rect equals +0x25c. Otherwise it
+copies +0x25c..+0x268 to +0x24c..+0x258, stores the new row rect at +0x25c,
+then searches animation container +0x280 for the animation whose name matches
+widget-name id 55 and starts it on the UIAnimationTarget subobject at +0x98
+(ctor builds the target at +0x98; the `Thn152` thunk adjusts by -152).
+Id 55 resolves (same ELF translation, single-arm case 0x37) to
+`selectionIndicator`, so the animation driving the interpolation IS the
+selectionIndicator-named animation. Duration = atof(animation delay string)
+× float at 0x10bc04c. Decompiles: /tmp/opencode/decomp-repos.txt is
+ephemeral; re-run DumpFirmware.java @0x010be16d @0x010bbedd to reproduce.
 
 ## Row-background name sequence (SVGListBoxRow::renderBackground 0x10bec08)
 

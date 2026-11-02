@@ -416,6 +416,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       mRowM; 5/10 are a swapped mirror pair like 17/22); the first name feeds
       the row's own rect lookup (miss destroys row children) and the g/m row
       names feed the two mask passes and the horizontal scale transform.
+      The FA animation callback chain is closed (vtable slot +100/index 25 =
+      repositionSelectionIndicator, which calls list renderBackground; the
+      driving animation is the selectionIndicator-named one, interpolation is
+      truncating, gated on animation-enabled with unchanged-rect skip).
+      Still open: what list renderBackground draws from the moving rect.
       UI-MASK-LAYOUT
       now recovers mask positioning and row arithmetic; runtime field
       population, slice composition, text origin and FA animation geometry are still
