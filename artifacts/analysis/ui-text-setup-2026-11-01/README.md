@@ -236,11 +236,26 @@ height, which tracks the window rect via the verified
 create→setWindowRect→resizeUISurface chain, so A=90. Rescaled textPos
 height = 90, `getFont(90,1,0)` = ID 18 (largest type-0 max height ≤ 90 is
 80). The earlier ID-5 conditional is withdrawn: the surface is 90, not 51.
-OPEN before live title: text origin within the 634x90 area (rescaled
-textPos offset + parent client origin + alignment), text colors
-(description +0x18/+0x20, undecoded), and the key→localized resolution
-site (`setTitle` stores the raw KEY). Do not render title text until those
+OPEN before live title: text origin within the 634x90 area (the container
+textPos rect is in surface space after the renderer's mask/scale passes;
+computing it means composing actual record-419 slices through the verified
+mask-positioning/slice-stretch helpers — not yet done), and text colors
+(description +0x18/+0x20, undecoded). Do not render title text until those
 are traced.
+Key→localized resolution CLOSED (2026-11-02): `updateGlyphAndTitle`
+(0xd6faed) switches on the focused tab (+0x4ac) and picks the title key —
+tab0 PICTURE_MENU/PICTURE, tab1 SOUND_MENU/SOUND, tab2 NETWORK, tab3
+INSTALLATION_STR, tab4 SETUP_MENU/SYSTEM_STR, default SETTINGS (tab0/1/4
+select the *_MENU variant unless the customer name is PANASONIC; DATs
+resolved through the ELF: 0xd6fca4→NETWORK, 0xd6fcc0→INSTALLATION_STR,
+0xd6fcd0→SETTINGS, 0xd6fcb0→PICTURE, 0xd6fcb4→PICTURE_MENU,
+0xd6fcbc→SOUND, 0xd6fcb8→SOUND_MENU, 0xd6fcc8→SYSTEM_STR,
+0xd6fcc4→SETUP_MENU, 0xd6fcac→PANASONIC). `setTitle(key)` → `setText` on
++0x140, and `SVGTextBox::setText(char const*)` (0x10c78a1) resolves the key
+via `UIResourceManager::lookupString` into the stored text (+0xa4; the key
+pointer is kept at +0xac). So the stored title text IS the localized string
+(Beeld/Geluid/Netwerk/Installatie/Systeem per the verified profile);
+no separate translation step remains.
 
 `showSubMenu` creates the focused tab's content dialog from the UIGroup focus
 id (`+0x4ac`):
