@@ -198,6 +198,11 @@ from localized keys (default literal "tab_text", `DAT_00d6fdb4` → 0x14ddb58);
 the key table itself (`DAT_00d6fdbc` → 0x1a0f1bc) lives in .bss, so the five
 keys are not statically resolvable — do not invent them. Tab labels are
 button texts at the 191 resource positions, not separate textboxes.
+Title TEXT per tab is closed (analysis/ui-tab-titles-2026-11-02): static
+literal keys give PICTURE/SOUND/NETWORK/INSTALLATION_STR/SYSTEM_STR
+(default SETTINGS), i.e. Beeld/Geluid/Netwerk/Installatie/Systeem
+(Instellingen), verified through the shipped profile; glyph ids
+0x335/0x336/0x337/0x32f/0x338. Tab button keys stay runtime-only.
 
 `showSubMenu` creates the focused tab's content dialog from the UIGroup focus
 id (`+0x4ac`):
