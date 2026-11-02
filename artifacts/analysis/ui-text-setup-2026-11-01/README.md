@@ -216,10 +216,13 @@ all four states → widget name id 419, default text "", rect+colors from
 the description record, lines=1. Record 419: textPos (341,273,381,324) =
 40x51, NO font marker → type 0 (fontRegular). Font table (UI-FONT-SELECTION):
 type-0 max heights 80..24 map a ~51px request to ID 5, pending the rescale
-ratio and exact selection rule. Open before live title: confirmation of
-the description source record, the rescale surface/mask ratio, the exact
-font-ID selection, and the text origin within the title area. Do not
-render title text until that chain is complete.
+ratio and exact selection rule (verified implementation in
+common/font_finder.c: last font whose height does not exceed
+height/lines; create passes lines=1). If the rescale uses surface 90
+(description rect height) over mask 51 (mRowM), the height is ~90 → ID 18
+instead. Which surface/mask heights feed the rescale is the remaining link,
+as is the +0x144 shadow (record 191 has no dialogTitleShadow, so it is not
+created here). Do not render title text until those are traced.
 
 `showSubMenu` creates the focused tab's content dialog from the UIGroup focus
 id (`+0x4ac`):
