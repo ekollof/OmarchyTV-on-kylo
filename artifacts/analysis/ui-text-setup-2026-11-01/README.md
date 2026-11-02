@@ -236,10 +236,22 @@ height, which tracks the window rect via the verified
 create→setWindowRect→resizeUISurface chain, so A=90. Rescaled textPos
 height = 90, `getFont(90,1,0)` = ID 18 (largest type-0 max height ≤ 90 is
 80). The earlier ID-5 conditional is withdrawn: the surface is 90, not 51.
-OPEN before live title: text origin within the 634x90 area (the container
-textPos rect is in surface space after the renderer's mask/scale passes;
-computing it means composing actual record-419 slices through the verified
-mask-positioning/slice-stretch helpers — not yet done).
+OPEN before live title: text origin within the 634x90 area. NARROWED
+(2026-11-02): the `textPos` lookup hits a surface-space rect, verified at
+pack level. Record 419's `gRowM` group contains exactly `mRowM` + `textPos`
+at identical raw rects (341,273,381,324); the third renderer call in
+`renderBackground` renders group `gRowM` (id 6) through the `mRowM`
+horizontal-scale transform, and `renderGroup` clears the container per call
+— so afterward the container holds the `gRowM` group's rects (including
+`textPos`) in surface space. (Group dump via fixed `svg-rects`: canvas
+720x576; `mRowL` 51 wide, `mrowR` 2 wide [lowercase w in the pack],
+`mRowM`/`textPos` 40x51.) Numeric composition still open: run the actual
+419 slices through the verified mask-positioning/slice-stretch helpers
+(surface from the 634x90 window, caps 51/2, mask 40; y by translation,
+height rescaled 51→90), plus the parent client origin and the
+dynamic-center-align path at the end of `createComponents` (`setAlignment`
+4/5). Vendor acceptance target (not a source): title ink bbox x50..388
+y29..85 in the corrected capture. Do not fit origins to it.
 Text-color mechanism CLOSED (2026-11-02): `overrideTextColours` (0x10c7265)
 stores flag +0x210=1 and the two `rgba_drawing_colour` values at +0x211 /
 +0x215; `renderForeground` consumes them as the draw colors when the flag is
