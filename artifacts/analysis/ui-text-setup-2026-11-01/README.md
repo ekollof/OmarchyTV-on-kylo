@@ -335,6 +335,19 @@ parent-origin offset (create) → +0x284 → drawTextBox → surface draw, with
 note is superseded by this full chain; the UIWindow base rect itself lives at
 +0x28 (verified from setWindowRect/getWindowRect decompiles), not +0x284.
 
+Same dual-copy convention in SVGSelectionBox (asm-verified, 2026-11-02),
+offsets +0x368/+0x378. `commonCreateStep` (0x10b5bf4) does parent
+`getClientRect` + `EASIRect::offset`, then `stmia` to both copies and base
+`setWindowRect` (10b5c38–10b5c5e, identical shape to textbox create).
+`setWindowRect` override (0x10b5e60) writes both copies when created, then
+redraws via `drawSelectionBox`. `drawSelectionBox` (0x10b5b44) refreshes copy
+2 from copy 1 (`ldmia` +0x368 → `stmia` +0x378), resizes the +0xa4 surface
+with the rect, then renders background/displayed item/animated rectangle
+(animation start gated on enabled + duration > 1.0). `animRectDecode`
+(0x10b6038) reads the second copy (+0x378/+0x37c). Button, slidebar and image
+widgets presumably follow the same convention with their own offsets — not
+yet verified.
+
 `setLabel` routes by row type (1 → caption box `+0x3c4`, else `+0x104`) and
 stores `+0x2dd8`; `setButtonText` → button `+0x684` / `+0x2de0`;
 `setTextValue`/`setNumericTextValue` target only the text *entry* box
