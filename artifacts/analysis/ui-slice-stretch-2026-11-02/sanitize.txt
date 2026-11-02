@@ -1,0 +1,8 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-slice-stretch-sanitize/tests/slice_stretch tests/slice_stretch.c common/text_layout.c
+ok horizontal stretch: separate offset/width, double precision, retained ratio, missing mask, bounds
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-slice-stretch-sanitize/tests/list_metrics tests/list_metrics.c common/text_layout.c
+ok list metrics: theme slices, horizontal/title count, painted state, absence, bounds
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-slice-stretch-sanitize/tests/text_layout tests/text_layout.c common/text_layout.c
+ok text layout: mask alignments, vertical/horizontal/mirrored rows, truncation, bounds
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

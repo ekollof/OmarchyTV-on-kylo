@@ -430,6 +430,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       arithmetic tests pass. Raw475/477 slices explain step70/top16/bottom10.
       Runtime resource parsing/transforms/window allocation and text-origin
       integration remain open; these helpers do not replace fitted UI positions.
+- [x] Recover double-ratio horizontal stretch and compose actual477 slices
+      through raw measurement, middle destination, transformed rowPos and row
+      placement.49,538 independent ARM VFP cases pass qemu/TV; strict full host
+      and focused sanitizers pass. UI-SLICE-STRETCH-2026-11-02. New row creation
+      adds parent client origin; concrete margin bindings and actual widget
+      inputs/text baseline/runtime theme/UI integration remain open.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

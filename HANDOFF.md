@@ -24,7 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-LIST-METRICS](artifacts/reports/UI-LIST-METRICS-2026-11-02.md)
+Latest: [UI-SLICE-STRETCH](artifacts/reports/UI-SLICE-STRETCH-2026-11-02.md)
+implements retained double-ratio measurement, horizontal rectangle stretch and
+middle-surface construction in common/text_layout.c. Relative X and width
+truncate independently; height unchanged; nonpositive mask width retains ratio.
+Caller owns mask-cache validity (surface setter does not reset it). Test composes
+raw477 slices through measurement/stretch/painted fields/row placement, deriving
+height70,width749,insets0/1 for explicit750px window, without capture fitting.
+49,538 independent VFP rectangle cases pass ARM/qemu and native TV; strict
+full host/focused sanitizers pass. Native build-tv-v3/slice-stretch; analysis/
+ui-slice-stretch-2026-11-02. Same stock boot/live1785/access/privacy; staging
+removed. Row create adds parent client origin; client rect applies virtual
+margins, base getter zeroes. Next confirm subclass margin binding and actual
+child windows, then TextFactory/LineObj origin/baseline/alignment and runtime
+theme/UI integration. Optional live text origins remain fitted. No helper/job pending.
+
+Previous: [UI-LIST-METRICS](artifacts/reports/UI-LIST-METRICS-2026-11-02.md)
 adds raw-slice measurement, visible-count update and painted-row cache updates
 to common/text_layout.c. calculateHeight resets top/bottom/steps but preserves
 row size/side insets; count runs before painted insets, last rowPos wins, missing

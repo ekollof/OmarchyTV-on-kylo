@@ -116,3 +116,56 @@ int oa_list_update_visible_count(const struct oa_list_metrics *m, int32_t *count
     *count = (int32_t)(span / step);
     return 0;
 }
+
+int oa_horizontal_scale_measure(struct oa_horizontal_scale *s, const struct oa_text_rect *surface,
+                                 const struct oa_text_rect *mask)
+{
+    if (!s) return EINVAL;
+    if (!mask) return 0;
+    if (!surface) return EINVAL;
+    int64_t mw = rect_width(mask), sw = rect_width(surface);
+    if (!fits32(mw) || !fits32(sw)) return EOVERFLOW;
+    if (mw > 0) s->ratio = sw <= 0 ? 0.0 : (double)sw / (double)mw;
+    return 0;
+}
+
+static int scale_span(int64_t span, double ratio, int32_t *out)
+{
+    if (!fits32(span)) return EOVERFLOW;
+    double scaled = (double)span * ratio;
+    if (!isfinite(scaled) || scaled < INT32_MIN || scaled >= 2147483648.0) return EOVERFLOW;
+    *out = (int32_t)scaled;
+    return 0;
+}
+
+int oa_text_rect_stretch_mask(struct oa_text_rect *r, const struct oa_text_rect *surface,
+                              const struct oa_text_rect *mask, const struct oa_horizontal_scale *s)
+{
+    if (!r) return EINVAL;
+    if (!mask) return 0;
+    if (!surface || !s || !isfinite(s->ratio)) return EINVAL;
+    int32_t offset, width;
+    int rc = scale_span((int64_t)r->left - mask->left, s->ratio, &offset);
+    if (rc) return rc;
+    rc = scale_span(rect_width(r), s->ratio, &width);
+    if (rc) return rc;
+    int64_t left = (int64_t)surface->left + offset, right = left + width;
+    int64_t top = (int64_t)r->top - mask->top + surface->top;
+    int64_t bottom = (int64_t)r->bottom - mask->top + surface->top;
+    if (!fits32(left) || !fits32(right) || !fits32(top) || !fits32(bottom)) return EOVERFLOW;
+    *r = (struct oa_text_rect){(int32_t)left,(int32_t)top,(int32_t)right,(int32_t)bottom};
+    return 0;
+}
+
+int oa_horizontal_middle_surface(const struct oa_text_rect *outer,
+                                  const struct oa_text_rect *left_mask,
+                                  const struct oa_text_rect *right_mask,
+                                  struct oa_text_rect *out)
+{
+    if (!outer || !out) return EINVAL;
+    int64_t left = outer->left + rect_width(left_mask);
+    int64_t right = outer->right - rect_width(right_mask);
+    if (!fits32(left) || !fits32(right)) return EOVERFLOW;
+    *out = (struct oa_text_rect){(int32_t)left,outer->top,(int32_t)right,outer->bottom};
+    return 0;
+}

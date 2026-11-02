@@ -1,0 +1,2 @@
+ok horizontal stretch: 49538 ARM VFP rectangle comparisons
+ok horizontal stretch: separate offset/width, double precision, retained ratio, missing mask, bounds

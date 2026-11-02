@@ -6,6 +6,12 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Horizontal stretch (2026-11-02): UI-SLICE-STRETCH preserves double ratio and
+separate truncation of relative X and width; independently scaling corners can
+misplace an edge. Nonpositive mask width retains prior ratio; changing surface
+does not reset mask validity. The477 composed arithmetic path passes, but actual
+runtime parent/window/text origin and UI integration remain open.
+
 List measurement (2026-11-02): UI-LIST-METRICS recovers two phases: raw slices
 reset top/bottom/steps, then painted rowPos updates cached row size/side insets.
 Visible count precedes that loop, so horizontal count sees previous insets.

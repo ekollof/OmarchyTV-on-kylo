@@ -6,6 +6,16 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-SLICE-STRETCH-2026-11-02: retained double-ratio horizontal stretch and middle
+destination construction implemented; composed raw477→measured/painted row test
+passes without screenshot fits.49,538 VFP rectangle cases pass ARM/qemu and
+native TV, full strict host/focused sanitizers pass. Native46836 bytes,
+MD5 d38cfe511c7b0b6f3aaa8ba31c57b92d, GLIBC2.4, build-tv-v3/slice-stretch.
+No device/display/persistent changes. Same boot71f7eb63-727f-4b9a-a9c7-
+2b04dc3f9197/live1785/zombie1967/access/privacy; staging removed and checked.
+No helper/job pending. Runtime theme/client-window/text-origin integration
+remains open; fitted UI coordinates unchanged. See UI-SLICE-STRETCH.
+
 UI-LIST-METRICS-2026-11-02: raw slice measurement, painted-row cached metrics
 and visible-count ordering implemented in common/text_layout.c. Raw475/477
 slice heights give step70/top16/bottom10. Strict full host/focused sanitizers/

@@ -52,4 +52,25 @@ int oa_list_measure_painted_row(struct oa_list_metrics *, const struct oa_text_r
 /* Count is updated before painted-row insets in firmware. Nonpositive step
  * preserves the previous count. Do not recompute mid-paint from new insets. */
 int oa_list_update_visible_count(const struct oa_list_metrics *, int32_t *count);
+/* HorizontalMaskScaleTransform's retained double ratio. Resource lookup/cache
+ * validity is external: changing the surface alone does not remeasure in the
+ * firmware. Call measure only when its getMask would resolve a fresh mask. */
+struct oa_horizontal_scale { double ratio; };
+#define OA_HORIZONTAL_SCALE_INITIALIZER {1.0}
+/* Missing/nonpositive-width mask retains ratio. Positive mask width with
+ * nonpositive surface width sets0; otherwise double surfaceWidth/maskWidth. */
+int oa_horizontal_scale_measure(struct oa_horizontal_scale *, const struct oa_text_rect *surface,
+                                 const struct oa_text_rect *mask);
+/* Missing mask is identity. Otherwise scale relative X and width separately
+ * (double, truncation), translate Y without scaling, then reconstruct corners.
+ * Invalid/range failures leave output unchanged. Default FP environment. */
+int oa_text_rect_stretch_mask(struct oa_text_rect *, const struct oa_text_rect *surface,
+                              const struct oa_text_rect *mask, const struct oa_horizontal_scale *);
+/* List/row renderBackground constructs the horizontal middle destination by
+ * removing side-mask widths from an outer surface; top/bottom are unchanged.
+ * NULL side mask means zero width. Bounds errors preserve output. */
+int oa_horizontal_middle_surface(const struct oa_text_rect *outer,
+                                  const struct oa_text_rect *left_mask,
+                                  const struct oa_text_rect *right_mask,
+                                  struct oa_text_rect *out);
 #endif
