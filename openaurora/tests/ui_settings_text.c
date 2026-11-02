@@ -15,6 +15,7 @@
 static char g_dir[256];
 static int g_missing;
 static int g_title;
+static int g_bad_title;
 static int g_edit = 1;
 static const char *g_preset = "";
 
@@ -95,6 +96,7 @@ static size_t build_font(unsigned char *b)
         m[5] = 0; m[6] = 0; m[7] = 0; m[8] = (unsigned char)i;
     }
     memset(b + at + glyphs * 9, 0, 9);
+    b[at + glyphs * 9 + 2] = 1; /* valid logical height for boxed text */
     return at + glyphs * 9 + 9;
 }
 
@@ -104,6 +106,7 @@ static void make_font_pack(void)
     size_t font_size = build_font(font);
     size_t large_size = build_font(large);
     size_t title_size = build_font(title);
+    if (g_bad_title) title[title_size - 9 + 2] = 0;
     char index[320], pack[320];
     snprintf(index, sizeof index, "%s/font.index", g_dir);
     snprintf(pack, sizeof pack, "%s/font.pack", g_dir);
@@ -201,6 +204,7 @@ int main(int argc, char **argv)
     snprintf(g_dir, sizeof g_dir, "%s", argv[2]);
     g_missing = !strcmp(argv[3], "missing");
     g_title = !g_missing && strcmp(argv[3], "notitle");
+    g_bad_title = !strcmp(argv[3], "badtitle");
     int preset = !strcmp(argv[3], "preset") || !strcmp(argv[3], "editoff");
     if (preset) {
         g_title = 0;
@@ -269,19 +273,27 @@ int main(int argc, char **argv)
     assert(blit_at(trace, 532, 601, 24, 72));      /* disabled "Auto" */
     assert(blit_at(trace, 541, 669, 20, 72));      /* "Aan" */
 
-    if (!g_title) {
+    if (!g_title || g_bad_title) {
         /* Lab-gated title defaults off: rows stay live, captured title stays. */
         assert(has_fill(trace, 40, 178, 446, 64));
         assert(blit_at(trace, 45, 180, 28, 72));
         assert(!has_fill(trace, 108, 5, 583, 90));
-        puts("  ok   title lab flag defaults off: rows live, captured title kept");
+        puts(g_bad_title ? "  ok   unusable title font retains live rows and captured title" :
+                           "  ok   title lab flag defaults off: rows live, captured title kept");
         return 0;
     }
 
     /* Live tab title: composed box (108,5,691,95), font18, white. The vendor
      * screen shows the SETTINGS default "Instellingen", not "Beeld". */
     assert(has_fill(trace, 108, 5, 583, 90));      /* captured title erased */
-    assert(blit_at(trace, 108, 5, 48, 90));        /* 12 glyphs x4 */
+    assert(blit_at(trace, 108, 5, 583, 90));       /* complete text viewport */
+    /* Synthetic glyph height1 is centered within90: the first source pixel
+     * must be transparent. The old direct-glyph path painted it at Y0. */
+    {
+        int index = last_blit(trace, 108, 5, 583, 90), r, g, b, a;
+        assert(index >= 0 && !trace->blit_first(index, &r, &g, &b, &a));
+        assert(a == 0);
+    }
     /* Title-band erases must not touch the tab glyph icon (ink x41..99):
      * any fill overlapping y[5,95) starts at x>=108. */
     {

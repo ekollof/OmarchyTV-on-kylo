@@ -255,10 +255,12 @@ live startup font metrics. fb1 compared (2026-11-02,
 x113..365 y26..80 vs vendor x136..388 y31..85 — IDENTICAL 253x55 boxes
 translated by exactly (+23,+5). The earlier spacing suspicion is withdrawn
 (icon-pixel contamination); same font + same string give same-size ink, so
-letter advance is confirmed identical. Bearing invariance (same record,
-same glyphs → same ink offsets from box origin) forces the vendor text box
-to our box shifted by (+23,+5), i.e. origin (57+23+51, 5+5+0) with the same
-90 px height. Dialog position is NOT the cause: vendor tab-band ink aligns
+letter advance appears identical for that capture. CORRECTION2026-11-03:
+the claim that fixed glyph bearings force a shifted widget box is withdrawn.
+The old diagnostic bypassed textbox layout. Recovered vertical centering gives
+(90-font18Height80)/2=5, accounting for Y without moving the box. UI-TITLE-BOX
+integrates that policy; the23px X difference is still open. Historical hypothesis
+below, superseded by the later live sample: vendor tab-band ink aligns
 with record 191 coords (tabs at x11.., y104..), and `getClientMarginRect`
 returns (0,0,0,0). Prime hypothesis: the dialog client rect origin is
 (23,5) (title create() offsets by parent `getClientRect` = dialog

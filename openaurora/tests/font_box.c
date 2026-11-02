@@ -79,6 +79,33 @@ static void corpus(const char *index,const char *binary,const char *font_index,c
         }
         free(pixels);free(data);
     }
+    /* Actual title style/viewport and font18 exercise the same composition
+     * consumed by ui_vendor, rather than the old unaligned glyph-only path. */
+    struct oa_binsvg title_style;struct oa_widget_textbox title;
+    const struct oa_text_rect title_window={57,5,691,95};
+    assert(!oa_svg_pack_named(pack,"LogoTextbox.svg",&title_style));
+    assert(!oa_widget_single_line_textbox(&title_style,&title_window,&title));
+    unsigned char *data=NULL;size_t size=0;struct oa_bitmap_font f;
+    assert(!oa_font_pack_read(&fonts,18,&data,&size) && !oa_bitmap_font_open(&f,data,size));
+    int height;assert(!oa_bitmap_font_height(&f,&height) && height==80);
+    int w=title.text.bounds.right-title.text.bounds.left,h=title.text.bounds.bottom-title.text.bounds.top;
+    assert(w==583 && h==90 && title.alignment==4);
+    uint8_t *pixels=calloc((size_t)w*(size_t)h,4);assert(pixels);
+    oa_canvas c={pixels,w,h};const uint8_t ink[4]={255,255,255,255};
+    struct oa_font_box_layout result;
+    assert(!oa_font_text_draw_box(&c,&f,"Instellingen",title.alignment,0,ink,&result));
+    assert(result.y==5 && result.line.origin==0 && result.line.count==12);
+    int left=w,top=h,right=-1,bottom=-1;
+    for(int y=0;y<h;++y)for(int x=0;x<w;++x)if(pixels[((size_t)y*w+x)*4+3]) {
+        if(x<left)left=x;
+        if(x>right)right=x;
+        if(y<top)top=y;
+        if(y>bottom)bottom=y;
+    }
+    assert(right>=left && bottom>=top);
+    printf("ok font box: actual title font18/alignment4 local origin0,5; ink=%d,%d..%d,%d (no fitted offset)\n",
+           left,top,right,bottom);
+    free(pixels);free(data);
     oa_font_pack_free(&fonts);oa_svg_pack_free(pack);
     assert(rendered==54);
     puts("ok font box: actual row/textbox surfaces -> font7/20 ->54 offscreen lines; local Y2/1, explicit parent and unit ratios");

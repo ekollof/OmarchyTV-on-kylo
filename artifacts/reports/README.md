@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [UI-TITLE-BOX](UI-TITLE-BOX-2026-11-03.md) | optional title consumes boxed text alignment/clip; font18 center Y5 explains historical vertical delta; host/sanitizers/ARM-qemu/native CPU corpus pass; horizontal23px/complete controls and visual parity open |
 | [UI-WORK-REVIEW](UI-WORK-REVIEW-2026-11-02.md) | subsequent-agent review: ASan-proven scanner span fix, lab preset gate, default-off title/partial-subscription coverage; full host/focused sanitizers/ARM-qemu; saved live title/list geometry and limits, durable research snapshot |
 | [UI-ROW-LABELS](UI-ROW-LABELS-2026-11-02.md) | offline ordinary-label source trace and exact MODE Dutch lookup; hash-checked bounded2435x41 profile traversal; no hidden padding in stored Modus, actual instance/transform/visual parity remains open |
 | [UI-LIVE-OBJECTS](UI-LIVE-OBJECTS-2026-11-02.md) | bounded view-only heap candidate scanner, native complete sample and tests; no settings instance proved; owner confirms HDMI video despite blank OSD/OTHER; unsafe historical wspoll flagged |

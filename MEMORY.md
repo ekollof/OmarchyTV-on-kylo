@@ -1,10 +1,21 @@
-# Current project state — last verified 2026-11-02
+# Current project state — last verified 2026-11-03
 
 This is the canonical state summary. Latest narrow verification is recorded
 in the dated entries below; the earlier CEC session is historical. Notes are preserved in
 [the archive](artifacts/archive/README.md); they contain superseded claims.
 
 ## TV and persistent recovery
+
+UI-TITLE-BOX-2026-11-03: optional title now uses existing boxed alignment/clip
+renderer, full583x90 viewport; font18 height80 gives local Y5. Corpus absolute
+ink113,31..365,85 agrees vertically with dated vendor sample;23px X open, title
+default-off. Full host/focused sanitizers/ARM-qemu and native memory-only corpus
+pass. Native tests/font_box154344 bytes/MD5 4da2f04d1f5f857d2a69b69598cbf9da,
+maxGLIBC2.7, build-tv-v3/title-box. Separate hash check before execution, staging
+removed/absence checked and no helper/job pending. Current read-only sample:
+same boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785, firmware/hook/hosts
+hashes match, SSH22/telnet2323 listening, Samba OUTPUT REJECT retained. No
+display/input/device/settings/persistent operation; not reboot persistence proof.
 
 UI-WORK-REVIEW-2026-11-02: reviewed through6822fce, fixed scanner read-span
 overflow and ui.edit_init bypassing the lab flag. Full host/focused sanitizer/

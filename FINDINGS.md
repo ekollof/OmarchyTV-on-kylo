@@ -6,6 +6,13 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Title layout correction (2026-11-03): UI-TITLE-BOX integrates the existing
+boxed renderer into ui.title. The previous diagnostic bypassed vertical layout;
+font18 height80 in a90px viewport accounts for5px Y via center positioning.
+Glyph bearing invariance did not force shifted widget geometry. Full viewport/
+clipping now used;23px X delta remains open, title default-off, no fitted inset.
+Native CPU corpus passes without drawing or relinquishing stock ownership.
+
 Subsequent UI review (2026-11-02): UI-WORK-REVIEW fixes scanner read span after
 extended draw-control fields and gates presets on ui.edit=1. Later saved live
 scan has a created font18 title candidate and list/row geometry, superseding

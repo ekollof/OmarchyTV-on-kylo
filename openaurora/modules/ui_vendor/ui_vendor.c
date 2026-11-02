@@ -48,6 +48,7 @@
 #include "openaurora/font_draw.h"
 #include "openaurora/font_pack.h"
 #include "openaurora/font_text.h"
+#include "openaurora/font_box.h"
 
 #define MAX_CARDS 12
 
@@ -569,7 +570,7 @@ static int render_text_blob(struct ctx *c, size_t i, const char *text)
 /* Live tab title blob: white SETTINGS_TITLE_TEXT in font18 at the composed
  * box origin. No focus variant (the title never sits on the orange bar) and
  * no margins: the box (108,5,691,95) is already the surface-space text
- * surface, so ink placement inside it comes from the font bearings alone. A
+ * surface; alignment4 applies start/center layout before glyph bearings. A
  * wider-than-box advance fails closed (fallback to the captured title). */
 static int render_title_blob(struct ctx *c)
 {
@@ -584,12 +585,12 @@ static int render_title_blob(struct ctx *c)
         advance = 1;
     if (advance > SETTINGS_TITLE_W)
         return EOVERFLOW;
-    unsigned char *rgba = calloc((size_t)advance * (size_t)SETTINGS_TITLE_H * 4u, 1);
+    unsigned char *rgba = calloc((size_t)SETTINGS_TITLE_W * (size_t)SETTINGS_TITLE_H * 4u, 1);
     if (!rgba)
         return ENOMEM;
-    oa_canvas canvas = { rgba, advance, SETTINGS_TITLE_H };
+    oa_canvas canvas = { rgba, SETTINGS_TITLE_W, SETTINGS_TITLE_H };
     static const uint8_t ink[4] = { 255, 255, 255, 255 };
-    rc = oa_font_text_draw(&canvas, &c->font_title, SETTINGS_TITLE_TEXT, 0, 0, ink, 0, NULL);
+    rc = oa_font_text_draw_box(&canvas, &c->font_title, SETTINGS_TITLE_TEXT, 4, 0, ink, NULL);
     if (rc) {
         free(rgba);
         return rc;
@@ -597,7 +598,7 @@ static int render_title_blob(struct ctx *c)
     free(c->title.rgba);
     c->title.rgba = rgba;
     c->title.rgba_focus = NULL;
-    c->title.w = advance;
+    c->title.w = SETTINGS_TITLE_W;
     c->title.h = SETTINGS_TITLE_H;
     c->title.x = SETTINGS_TITLE_X;
     c->title.y = SETTINGS_TITLE_Y;
@@ -709,8 +710,8 @@ static int settings_text_load(struct ctx *c)
      * keeps the verified row text live and falls back to the captured title. */
     /* The title is lab-gated (ui.title=1, default 0). Later firmware/live
      * geometry evidence matches the box/font, but drawing/layout still has
-     * an unexplained ink delta (UI-TEXT-SETUP). This path uses a plain glyph
-     * renderer, not the complete vendor drawText policy. Keep default-off;
+     * an unexplained horizontal ink delta (UI-TITLE-BOX). This path uses the
+     * plain boxed renderer, not complete vendor drawText policy. Keep default-off;
      * fitting an offset to the capture is forbidden. */
     int title_on = atoi(c->api->config_get(c->api->priv, "ui.title", "0"));
     int title_id = atoi(c->api->config_get(c->api->priv, "ui.font_title_id", "18"));

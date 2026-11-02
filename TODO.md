@@ -321,6 +321,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Integrate boxed text alignment/clipping into the optional title diagnostic:
+      font18 height80/viewport90 yields local Y5, accounting for the historical
+      vertical delta without moving the box. Full host/focused sanitizers/ARM-
+      qemu/native memory-only corpus pass; zero-height title-font fallback tested.
+      UI-TITLE-BOX-2026-11-03. Title default-off; horizontal23px delta, draw
+      controls/ratios/presentation and independent visual acceptance remain open.
 - [x] Review subsequent UI work through6822fce: scanner extended-field span
       overflow reproduced under ASan/fixed; lab presets now honor ui.edit=1.
       Exact/truncated scanner buffers, invalid/disabled presets, default-off

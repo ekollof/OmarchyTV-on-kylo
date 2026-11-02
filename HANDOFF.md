@@ -24,7 +24,20 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-WORK-REVIEW](artifacts/reports/UI-WORK-REVIEW-2026-11-02.md)
+Latest: [UI-TITLE-BOX](artifacts/reports/UI-TITLE-BOX-2026-11-03.md)
+integrates common/font_box into optional ui.title rendering: full583x90 viewport,
+alignment4 -> start/center, font18 logical height80 -> local Y5. Real font corpus
+ink5,26..257,80 (absolute113,31..365,85) explains historical Y delta without a
+fitted offset;23px X remains open. Default-off title retained. Zero-height title
+font falls back independently of live rows; full host/focused sanitizers/ARM-qemu
+and native CPU-only corpus pass. Build-tv-v3/title-box, analysis/ui-title-draw-
+2026-11-02 (started before midnight), report has hashes/commands. Staging removed
+and independently checked; no helper/job pending. Same boot/live1785/access/
+privacy sampled; no drawing/input/device/persistent change. Next investigate
+horizontal references/ratios/draw controls/presentation association from firmware,
+then visual acceptance; no universal23px inset or complete title/FA parity.
+
+Previous: [UI-WORK-REVIEW](artifacts/reports/UI-WORK-REVIEW-2026-11-02.md)
 reviews the subsequent agent's work through6822fce. Fixed an ASan-reproduced
 scanner overflow (new+2b0 fields require2b1 readable bytes, not224) and ungated
 ui.edit_init; added exact/truncated-span, disabled/invalid preset, default-off

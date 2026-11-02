@@ -282,7 +282,7 @@ $(BUILD)/modules/mod_ui_anim.so: modules/ui_anim/ui_anim.c common/ui_anim.c incl
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
-$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/canvas.h
+$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
@@ -678,6 +678,7 @@ check-ui-settings-text: $(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui_nav_di
 	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui on
 	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui missing
 	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui notitle
+	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui badtitle
 	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui preset
 	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui editoff
 
