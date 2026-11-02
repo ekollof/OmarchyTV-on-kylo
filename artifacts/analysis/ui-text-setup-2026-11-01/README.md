@@ -319,6 +319,22 @@ never divide by zero there. The `+0x1b4` writer question is closed for rows.
 branch reaches it at10c636c/637c/63aa..63c4. It is not necessary to find a
 separate row-specific writer. Marker mapping is in UI-GLYPH-DRAW.
 
+Rect-to-draw consumption for textbox widgets (asm-verified, 2026-11-02):
+`create` (0x10c8888) copies the passed rect to stack, and when the parent is
+non-null calls `parent->getClientRect()` (0x1152974) and offsets the rect by
+the parent client origin (`EASIRect::offset`). It then `stmia`s the result to
+BOTH `+0x284` and `+0x294`, calls base `SVGWindow::setWindowRect` (+0x28),
+and assigns id/parent. `SVGTextBox::setWindowRect` override (0x10c8ae8)
+refreshes both copies from the hook-adjusted rect (vtable +40 call first),
+writes the base rect, and calls `resizeUISurface` on the +0x1c8 surface with
+the new rect. `drawTextBox` (0x10c8808) `ldmia`s +0x284 into the draw args and
+dispatches vtable +80; it sets +0x219. `animRectDecode` (0x10c8c4c) reads the
+second copy (+0x294/+0x298). So: resource rect + row offset (renderItems) →
+parent-origin offset (create) → +0x284 → drawTextBox → surface draw, with
++0x294 feeding animation decode. The earlier "stores the client-offset rect"
+note is superseded by this full chain; the UIWindow base rect itself lives at
++0x28 (verified from setWindowRect/getWindowRect decompiles), not +0x284.
+
 `setLabel` routes by row type (1 → caption box `+0x3c4`, else `+0x104`) and
 stores `+0x2dd8`; `setButtonText` → button `+0x684` / `+0x2de0`;
 `setTextValue`/`setNumericTextValue` target only the text *entry* box

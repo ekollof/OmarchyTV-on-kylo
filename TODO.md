@@ -432,7 +432,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       Whole-binary scan finds no SVGListBoxBase reader of either field
       (only ctor zeroing + renderBackground writes; other hits are different
       classes/stack slots) — both are write-only, so no consumers may be
-      invented. Still open: per-widget rect-to-draw consumption.
+      invented. Per-widget rect-to-draw consumption is closed for textbox
+      widgets: renderItems rect → parent-origin offset in create → +0x284 →
+      drawTextBox; +0x294 feeds animation decode; rect updates resize the
+      surface via the setWindowRect override. Still open: non-textbox widget
+      consumption, live title/tab/focused text, value/tab implementation.
       UI-MASK-LAYOUT
       now recovers mask positioning and row arithmetic; runtime field
       population, slice composition, text origin and FA animation geometry are still
