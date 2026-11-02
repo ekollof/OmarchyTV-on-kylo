@@ -1,0 +1,7 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+26776 /tmp/oa-mask-layout-20261102/test
+f45e0b8791697caa2cf09da628cb4d51  /tmp/oa-mask-layout-20261102/test

@@ -6,6 +6,12 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Mask/row layout (2026-11-02): UI-MASK-LAYOUT records exact numeric anchor
+cases rather than an assumed centered grid. Mask positioning preserves spans;
+unsupported alignment still subtracts mask origin. Mirrored horizontal rows
+use window.right, not width. Tested pure helpers exist, but runtime field
+population, complete slice composition and text baseline remain open.
+
 Text setup correction (2026-11-02): UI-TEXT-GEOMETRY closes the single-line
 consumer: textPos is copied to+1ec then used by foreground; +254 is addition.
 The manual correction scales height with float32/truncation toward zero, not

@@ -407,8 +407,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       height scale is bottom'=top+trunc(float(surfaceH)/float(maskH)*float(rectH))
       (UI-TEXT-GEOMETRY-2026-11-02 corrects the earlier width/rounding claim).
       Single-line textPos goes to+0x1ec and foreground consumes it; +0x254
-      holds addition. +0x1c4's writer is the font-marker scan. Remaining mask
-      alignment, actual row allocation and FA animation geometry are still
+      holds addition. +0x1c4's writer is the font-marker scan. UI-MASK-LAYOUT
+      now recovers mask positioning and row arithmetic; runtime field
+      population, slice composition, text origin and FA animation geometry are still
       undecoded, so title/tab/slider-graphics/focused text must not
       be built from the capture fits. Do not guess FA/FI slider/button
       graphics.
@@ -417,6 +418,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       full suite and49,728 ARM VFP comparisons on qemu/TV pass. This is a lower
       geometry helper, not complete widget layout or replacement of fitted UI
       origins. See UI-TEXT-GEOMETRY-2026-11-02; integration remains open above.
+- [x] Recover MaskPositioningTransform numeric anchors/relative translation
+      and SVGListBoxBase vertical/horizontal/mirrored row arithmetic. Bounded
+      common/text_layout.c helpers and contract cases pass strict host/full
+      suite/sanitizer/ARM-qemu/TV. UI-MASK-LAYOUT-2026-11-02 records field offsets
+      and limits; actual widget-state population and full UI integration remain
+      open, and fitted settings-label positions have not changed.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

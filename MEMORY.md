@@ -6,6 +6,16 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-MASK-LAYOUT-2026-11-02: common/text_layout.c now also supplies explicit
+mask positioning and vertical/horizontal/mirrored row arithmetic, recovered
+from firmware. Strict host/full suite, focused sanitizers, ARM/qemu and TV
+tests pass. Native26776 bytes/MD5 f45e0b8791697caa2cf09da628cb4d51,
+GLIBC2.4 in build-tv-v3/mask-layout. No display/device operations. Same stock
+boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785/zombie1967/access/privacy;
+staging removed and independently checked. No helper/job pending. Actual
+runtime metrics/slice composition/text origin and full widget integration are
+open; current optional live label origins remain fitted. See UI-MASK-LAYOUT.
+
 UI-TEXT-GEOMETRY-2026-11-02: common/text_layout.c implements the recovered
 single-line textPos height adjustment with float32/truncation and bounded errors.
 Foreground consumes+1ec textPos; +254 is addition. This corrects the newer

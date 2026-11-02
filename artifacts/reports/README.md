@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [UI-MASK-LAYOUT](UI-MASK-LAYOUT-2026-11-02.md) | firmware mask alignment/translation and vertical/horizontal/mirrored row formulas; bounded helpers, host/sanitizer/ARM-qemu/TV pass; runtime metric population/full widget integration open |
 | [UI-TEXT-GEOMETRY](UI-TEXT-GEOMETRY-2026-11-02.md) | single-line textPos consumption/axis/rounding corrections, bounded height helper;49,728 VFP comparisons qemu/TV plus host/sanitizer/full checks; row/mask/baseline integration open |
 | [UI-FONT-LIVE](UI-FONT-LIVE-2026-11-01.md) | font pack loader + packed-UTF8 line renderer; font7/font16 labels, text values, slider digits and the disabled row drawn live on the settings panel (IoU 0.85..0.98, fb1 RMSE 0.106%, 22 px >8); title/tabs/sliders/focus text still captured |
 | [UI-GLYPH-DRAW](UI-GLYPH-DRAW-2026-11-01.md) | signed glyph bearings/clipping and firmware coverage compositing;52022 glyphs tested offscreen on host/sanitizer/ARM-qemu/TV; SVG font-marker priority and focus font-type change recovered; string layout/UI integration open |

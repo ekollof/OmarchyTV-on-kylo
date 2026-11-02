@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-TEXT-GEOMETRY](artifacts/reports/UI-TEXT-GEOMETRY-2026-11-02.md)
+Latest: [UI-MASK-LAYOUT](artifacts/reports/UI-MASK-LAYOUT-2026-11-02.md)
+adds oa_text_rect_position_mask and oa_list_row_rect to common/text_layout.c.
+Mask numeric cases0/1/3/5 left-top,2/6 right-top,4/7 left-bottom,8 right-bottom;
+unsupported values only subtract mask origin, absent mask leaves input alone.
+No resizing. Row formulas cover vertical/horizontal/mirror (mirror uses actual
+window.right). Inputs are explicit runtime fields; no guessed theme constants.
+Strict full host/focused ASan-UBSan/ARM-qemu/TV pass, including previous49,728
+VFP comparisons. No display/device operation; same stock boot/PID/access/privacy,
+staging removed. Native build-tv-v3/mask-layout and analysis/ui-mask-layout-
+2026-11-02 identify evidence. Next trace population of list/window/slice metrics
+and text origin/baseline, then integrate complete layout before replacing fits.
+Fresh list-row-layout.txt includes getRowPosition10bbaa8 and row background
+10bec08. No helper or Ghidra job pending. Goal remains active and incomplete.
+
+Previous: [UI-TEXT-GEOMETRY](artifacts/reports/UI-TEXT-GEOMETRY-2026-11-02.md)
 reviews443ebd0 and closes textPos consumption: single-line branch10c6396→
 6b7a copies textPos into+1ec, then foreground10c7a18..26 consumes it;
 +254 is separate addition. RectHandler/constructors prove corners x0,y0,x1,y1.
