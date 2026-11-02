@@ -512,10 +512,11 @@ wrap. `setSliderValue` (0x10c493d) stores +0xb8 directly with NO clamp;
 picks the slidebar (+0x13c0 for type 9, +0x1498 otherwise),
 `setSliderValue` if created, stores +0x2df8, and formats the value textbox
 (+0x1ca8) with integer `operator<<` — plain `%d`. Our lab's `snprintf %d`
-matches firmware formatting exactly; only ranges/steps remain invented.
-Who calls setSliderRangeValues/setSliderStep per setting is still open (no
-static `bl` callers and no vtable refs in d00000–e40000; likely
-dynamic/provider-driven via the untraced update paths). Decompiles in
+matches firmware formatting exactly; only the range remains invented.
+SUPERSEDED (2026-11-02, "Range/step wiring" below): the "no static callers"
+note was wrong — an address-width bug in the scan pattern hid them.
+setSliderRangeValues is called from setBarRangeValues and renderItems;
+setSliderStep has no caller (ctor default 1). Decompiles in
 /tmp/opencode/decomp-slide.txt and decomp-sval.txt (ephemeral — re-run
 DumpFirmware.java with the addresses above to reproduce).
 
@@ -535,9 +536,9 @@ same out-param shape — +0x1e8 (type 1), +0x1ec (type 2), +0x1f4 (type 3),
 bounds are per-setting RUNTIME provider (picture-pipeline) data, not
 firmware constants: no static range table exists to decode. The lab 0..100
 placeholder stands until a live provider query path exists (needs native
-provider ownership, out of scope). Still open: exact SettingItem ctor param
-roles, the slidebar range/step wiring into +0xb0/+0xb4/+0xbc, and the step
-source. Decompiles in /tmp/opencode/decomp-showdlg.txt and decomp-subdlg.txt
+provider ownership, out of scope). SUPERSEDED (2026-11-02): the ctor param
+roles, the +0xb0/+0xb4/+0xbc wiring and the step source are decoded in
+"Range/step wiring" below. Decompiles in /tmp/opencode/decomp-showdlg.txt and decomp-subdlg.txt
 (ephemeral — re-run DumpFirmware.java @0x00e0a46d @0x00e120e1).
 
 `startSelectAnimation` (0x10bbedd) snapshots the current selected-row rect
@@ -624,31 +625,33 @@ marker scan — and stores 0..5:
 (Triple tables live at file VAs 0x10bd5b8..0x10bd5cc, each entry a string
 pointer; resolved through the same segment-correct translation.)
 New slice names: gRowMRed, mRowMGreen, title_gRowL, title_gRowR.
-Still open: readers of +0x244 and +0x27c, per-widget rect-to-draw
-consumption, and any pixel acceptance. No implementation.
+SUPERSEDED (2026-11-02): the reader question is answered below ("Readers of
+list +0x244/+0x27c"); per-widget rect consumption is answered later in this
+file. Pixel acceptance remains open. No implementation.
 
-## Readers of list +0x244/+0x27c: none (write-only fields, 2026-11-02)
+## Readers of list +0x244/+0x27c: none found by direct scan (2026-11-02)
 
-Whole-binary scan of aurora.dis for field accesses at byte offsets 0x244
-(580) and 0x27c (636) on object bases (excluding pc/sp/ip literal pools and
-stack frames, which are unrelated locals):
+CLAIM SCOPE (corrected after adversarial review 2026-11-02): this is a
+negative result for *immediate-offset* accesses, not a proof of universality.
+The scan covers `ldr/str [rN, #580]` and `[rN, #636]` in aurora.dis; it does
+NOT exclude adjusted-base or computed-offset reads, overlapping loads,
+aggregate struct copies, or a pointer taken to the field. Do not treat
+"no readers" as absolute.
+
+Direct accesses found:
 
 - +0x244 writes: ctor 10bd1fe (zeroing) and renderBackground 10bd57c (mode
   store). The only other object-base read at this offset is 10c5ca4 in the
   SVGTextBox ctor — a different class layout, not the list field.
 - +0x27c writes: ctor 10bd220 (zeroing) and renderBackground 10bdd7e
-  (record-pointer cache). The only other object-base reads are 10c8c4c
-  (SVGTextBox::animRectDecode, different class) and two LSCSession comms
-  functions (different class entirely).
+  (record-pointer cache). Other object-base reads belong to other classes
+  (e.g. SVGTextBox::animRectDecode, LSCSession comms, and
+  PrivacySettingsDialog::cleanupAndEndDialog at d4ba6e).
 
-No SVGListBoxBase method reads either field, and no add-then-dereference
-sequence targets these offsets anywhere in the binary. Both fields are
-effectively write-only: the mode selector result (+0x244) has no firmware
-consumer, and the cached indicator record (+0x27c) is never consumed — the
-indicator paint uses the record pointer directly in-register at the
-drawRectangle call. Parity consequence: an implementation must not invent
-consumers for these fields; there is no firmware behavior to be
-bug-compatible with here. The +0x248 flag guarding the selector is a
+No SVGListBoxBase method was found reading either field directly; the
+indicator paint uses the record pointer in-register at the drawRectangle
+call. Parity consequence: do not invent consumers for these fields on the
+strength of this scan alone. The +0x248 flag guarding the selector is a
 separate field and is unaffected by this finding.
 
 ## Row-background name sequence (SVGListBoxRow::renderBackground 0x10bec08)
@@ -684,9 +687,10 @@ of call #2, matching the 8-byte UString pitch) that the row's own
 `getRectangle(container, ...)` lookup consumes; when that lookup misses, the
 row destroys its child windows (+e0..+f0). The gRowL/gRowR names go to the
 renderer calls inside the two mask passes (alignments 1 and 2); the mRowM
-lookups surround the `HorizontalMaskScaleTransform` surface setup. Still open:
-which rects those mask passes produce for the live row, the scale surface-rect
-field mapping, and the already-open +100 consumer linkage.
+lookups surround the `HorizontalMaskScaleTransform` surface setup. SUPERSEDED
+(2026-11-02): the +100 consumer linkage is closed later in this file ("FA
+animation wiring closed"); still open are the mask-pass rects for a live row
+and the scale surface-rect field mapping.
 
 ## Range/step wiring (drawRow → row → slidebar, asm-verified 2026-11-02)
 

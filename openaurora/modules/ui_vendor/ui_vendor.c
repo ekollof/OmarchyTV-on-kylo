@@ -142,13 +142,15 @@ struct ctx {
     int font_num_on;
     struct settings_text_canvas {
         unsigned char *rgba;
+        unsigned char *rgba_focus;   /* same glyphs in focused-row ink (#7E000A) */
         int w, h, x, y;
     } text[SETTINGS_TEXT_MAX];
     /* Lab value editing (ui.edit=1): per-process shadow values for the four
-     * slider rows 1..4. Ranges 0..100 and step 1 are INVENTED placeholders —
-     * firmware per-setting ranges/steps are not decoded — and the slider bar
-     * graphics stay static; only the digits re-render. Never touches the
-     * settings database; no set_int call exists on this path. */
+     * slider rows 1..4. Range 0..100 is an INVENTED placeholder (per-setting
+     * bounds come from runtime provider virtuals, not decodable statically);
+     * step 1 matches the slidebar ctor default and setSliderStep has no
+     * caller. Slider bar graphics stay static; only digits re-render. Never
+     * touches the settings database; no set_int call exists on this path. */
     int edit_val[4];
     int screen;
     int restored;
@@ -455,6 +457,7 @@ static void settings_text_free(struct ctx *c)
 {
     for (int i = 0; i < SETTINGS_TEXT_MAX; i++) {
         free(c->text[i].rgba);
+        free(c->text[i].rgba_focus);
         memset(&c->text[i], 0, sizeof c->text[i]);
     }
     free(c->font_data);
@@ -499,18 +502,33 @@ static int render_text_blob(struct ctx *c, size_t i, const char *text)
     int h = SETTINGS_TEXT_HEIGHT;
     if (w < 1) w = 1;
     unsigned char *rgba = calloc((size_t)w * (size_t)h * 4u, 1);
-    if (!rgba)
+    unsigned char *focus = calloc((size_t)w * (size_t)h * 4u, 1);
+    if (!rgba || !focus) {
+        free(rgba);
+        free(focus);
         return ENOMEM;
+    }
     oa_canvas canvas = { rgba, w, h };
     const uint8_t ink[4] = { entry->r, entry->g, entry->b, 255 };
     rc = oa_font_text_draw(&canvas, font, text, SETTINGS_TEXT_MARGIN,
                            SETTINGS_TEXT_MARGIN, ink, 0, NULL);
+    if (!rc) {
+        /* Focused rows paint on the #FE9419 bar, which carries #7E000A ink
+         * (row textboxes 488/496/504 and the reconstructed overlay agree). */
+        oa_canvas fcanvas = { focus, w, h };
+        const uint8_t fink[4] = { 126, 0, 10, 255 };
+        rc = oa_font_text_draw(&fcanvas, font, text, SETTINGS_TEXT_MARGIN,
+                               SETTINGS_TEXT_MARGIN, fink, 0, NULL);
+    }
     if (rc) {
         free(rgba);
+        free(focus);
         return rc;
     }
     free(c->text[i].rgba);
+    free(c->text[i].rgba_focus);
     c->text[i].rgba = rgba;
+    c->text[i].rgba_focus = focus;
     c->text[i].w = w;
     c->text[i].h = h;
     c->text[i].x = entry->x - SETTINGS_TEXT_MARGIN;
@@ -518,8 +536,29 @@ static int render_text_blob(struct ctx *c, size_t i, const char *text)
     return 0;
 }
 
+/* Strict bounded decimal parse: digits only, at most `max`, advancing *pp.
+ * Returns 0 on success. Rejects empty, non-digit and out-of-range tokens, so a
+ * malformed lab preset cannot silently become a valid value. */
+static int parse_bounded_int(const char **pp, int max, int *out)
+{
+    const char *p = *pp;
+    int v = 0, n = 0;
+    while (*p >= '0' && *p <= '9') {
+        v = v * 10 + (*p - '0');
+        if (v > max)
+            return -1;
+        p++;
+        n++;
+    }
+    if (n == 0)
+        return -1;
+    *pp = p;
+    *out = v;
+    return 0;
+}
+
 /* Lab preset for captures without key injection: "r=v,r=v" with rows 1..4
- * and values 0..100. Anything else is ignored. */
+ * and values 0..100. Malformed or out-of-range tokens are ignored. */
 static void apply_edit_init(struct ctx *c)
 {
     const char *spec = c->api->config_get(c->api->priv, "ui.edit_init", "");
@@ -528,29 +567,27 @@ static void apply_edit_init(struct ctx *c)
             spec++;
         if (!*spec)
             break;
-        int row = atoi(spec);
-        while (*spec >= '0' && *spec <= '9')
-            spec++;
-        if (*spec != '=') {
+        int row = 0, val = 0;
+        if (parse_bounded_int(&spec, 4, &row) != 0 || *spec != '=' ||
+            (spec++, parse_bounded_int(&spec, 100, &val) != 0) || row < 1) {
             while (*spec && *spec != ',')
                 spec++;
             continue;
         }
-        spec++;
-        int val = atoi(spec);
-        while (*spec >= '0' && *spec <= '9')
-            spec++;
-        if (row >= 1 && row <= 4 && val >= 0 && val <= 100) {
-            c->edit_val[row - 1] = val;
-            if (c->text_on) {
-                char text[16];
-                snprintf(text, sizeof text, "%d", val);
-                size_t idx = 9u + (unsigned)row;
-                if (idx < SETTINGS_TEXT_COUNT &&
-                    SETTINGS_TEXT[idx].kind == TEXT_VALUE &&
-                    render_text_blob(c, idx, text) != 0)
-                    settings_text_free(c);
-            }
+        if (*spec && *spec != ',') {   /* trailing junk, e.g. "49junk" */
+            while (*spec && *spec != ',')
+                spec++;
+            continue;
+        }
+        c->edit_val[row - 1] = val;
+        if (c->text_on) {
+            char text[16];
+            snprintf(text, sizeof text, "%d", val);
+            size_t idx = 9u + (unsigned)row;
+            if (idx < SETTINGS_TEXT_COUNT &&
+                SETTINGS_TEXT[idx].kind == TEXT_VALUE &&
+                render_text_blob(c, idx, text) != 0)
+                settings_text_free(c);
         }
         while (*spec && *spec != ',')
             spec++;
@@ -627,27 +664,50 @@ static void paint_settings_list(struct ctx *c)
     const oa_ui_icon *panel = find_icon(c, "settings_panel");
     if (panel)
         d->blit(0, 0, panel->w, panel->h, panel->rgba);
+    /* Focused row. Record 479's three fills are all solid #FE9419, so a flat
+     * bar is equivalent to the composed 3-slice background. The reconstructed
+     * settings_focus_N assets are NOT used with live text: they bake the
+     * captured glyphs plus grey widget shapes into the band, which owner
+     * observation (2026-11-02) reported as "red widgets on a bar" and doubled,
+     * misaligned numbers. The rect below is the EXISTING reconstruction
+     * placement, unchanged — firmware resource 179 gives listBox
+     * (20,170,770,996) and slices 475-478 give top16/bottom10/step70, which
+     * implies row0 = (20,186,750,70), but the mask->surface mapping is not yet
+     * decoded, so that value is deliberately NOT adopted here. */
+    int focus_row = -1;
+    if (c->sel >= 0 && c->sel < SETTINGS_ROW_COUNT && c->sel != SETTINGS_ROW_DISABLED) {
+        focus_row = c->sel;
+        if (c->text_on) {
+            d->fill(SETTINGS_ROW_X, settings_row_y(focus_row), 750, 66, 254, 148, 25);
+        } else {
+            char name[32];
+            snprintf(name, sizeof name, "settings_focus_%d", focus_row);
+            const oa_ui_icon *row = find_icon(c, name);
+            if (row)
+                d->blit(SETTINGS_ROW_X, settings_row_y(focus_row), row->w, row->h, row->rgba);
+        }
+    }
     if (c->text_on) {
-        /* Two passes so the label/value erase rectangles cannot clip a blit. */
+        /* Two passes so the label/value erase rectangles cannot clip a blit.
+         * Erase colour follows the focused row's bar so the bar is not cut. */
         for (size_t i = 0; i < SETTINGS_TEXT_COUNT; i++) {
             const struct settings_text_entry *entry = &SETTINGS_TEXT[i];
+            int fr = entry->row == focus_row;
+            int er = fr ? 254 : 190, eg = fr ? 148 : 30, eb = fr ? 25 : 45;
             if (entry->kind == TEXT_LABEL)
-                d->fill(40, entry->y - 6, 446, 64, 190, 30, 45);
+                d->fill(40, entry->y - 6, 446, 64, er, eg, eb);
             else if (entry->font == FONT_LARGE)
-                d->fill(648, entry->y - 6, 90, 64, 190, 30, 45);
+                d->fill(648, entry->y - 6, 90, 64, er, eg, eb);
             else
-                d->fill(480, entry->y - 6, 200, 64, 190, 30, 45);
+                d->fill(480, entry->y - 6, 200, 64, er, eg, eb);
         }
-        for (size_t i = 0; i < SETTINGS_TEXT_COUNT; i++)
-            d->blit(c->text[i].x, c->text[i].y, c->text[i].w, c->text[i].h,
-                    c->text[i].rgba);
-    }
-    if (c->sel >= 0 && c->sel < SETTINGS_ROW_COUNT && c->sel != SETTINGS_ROW_DISABLED) {
-        char name[32];
-        snprintf(name, sizeof name, "settings_focus_%d", c->sel);
-        const oa_ui_icon *row = find_icon(c, name);
-        if (row)
-            d->blit(SETTINGS_ROW_X, settings_row_y(c->sel), row->w, row->h, row->rgba);
+        for (size_t i = 0; i < SETTINGS_TEXT_COUNT; i++) {
+            const struct settings_text_entry *entry = &SETTINGS_TEXT[i];
+            const unsigned char *blob = entry->row == focus_row && c->text[i].rgba_focus
+                                            ? c->text[i].rgba_focus
+                                            : c->text[i].rgba;
+            d->blit(c->text[i].x, c->text[i].y, c->text[i].w, c->text[i].h, blob);
+        }
     }
     c->scene_painted = 1;
     if (d->present() != 0) {

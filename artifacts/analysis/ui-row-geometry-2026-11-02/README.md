@@ -13,10 +13,12 @@ values below are resource data, not capture fits.
 | mRowR (right cap) | (178,61,211,127) | same, #FE9419 |
 
 66 px tall, 193 px wide; left/right caps 33 px stay fixed while the 120 px
-middle stretches (HorizontalMaskScaleTransform). Because every fill is solid
-#FE9419, a flat 750x66 bar is exactly equivalent — the reconstructed focus
-overlay used on fb1 is proven equivalent for this solid resource, not an
-approximation. (Non-solid fills would need the slice structure.)
+middle stretches (HorizontalMaskScaleTransform). Because every painted fill
+is solid #FE9419, replacing the *correctly composed background* with a flat
+fill is equivalent for this resource. That does NOT by itself validate the
+fitted 750x66 framebuffer placement, clipping or the captured overlay as a
+whole — those remain reconstruction choices. Non-solid fills would need the
+slice structure.
 
 ## Label/caption/button/selbox FA vs UFA textPos (firmware, not fitted)
 
@@ -36,7 +38,7 @@ resources themselves.
 Reproduce:
 
 ```
-cd openaura && make build/svg-rects
+cd openaurora && make build/svg-rects
 ./build/svg-rects <index.txt> <binary.bin> 479 488 489 492 493 496 497 504 505
 ```
 

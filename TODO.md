@@ -423,19 +423,19 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       repositionSelectionIndicator, which calls list renderBackground; the
       driving animation is the selectionIndicator-named one, interpolation is
       truncating, gated on animation-enabled with unchanged-rect skip).
-      Still open: what list renderBackground draws from the moving rect.
-      List renderBackground (0x10bd305) is now decoded: it draws the moving
+      What list renderBackground draws from the moving rect is decoded
+      (0x10bd305): it draws the moving
       +0x26c rect list-relative via SVGSurface::drawRectangle with the
       selectionIndicator record fill (record cached at +0x27c) — a
       firmware-filled rectangle, distinct from the row slice stretch. Its 22
       widget-name lookups resolve to m/g top/row/bottom edge sets plus rowPos,
       scrollPos and selectionIndicator; it also holds a list-level first-present
       font-marker mode selector at +0x244 (new slices gRowMRed, mRowMGreen,
-      title_gRowL/R). Still open: readers of +0x244/+0x27c.
-      Whole-binary scan finds no SVGListBoxBase reader of either field
-      (only ctor zeroing + renderBackground writes; other hits are different
-      classes/stack slots) — both are write-only, so no consumers may be
-      invented. Per-widget rect-to-draw consumption is closed for textbox
+      title_gRowL/R). A direct-offset scan found no SVGListBoxBase reader of
+      +0x244/+0x27c (only ctor zeroing + renderBackground writes; other hits
+      are different classes/stack slots). This is a negative result for
+      immediate-offset accesses only — computed-offset/aggregate reads are not
+      excluded, so do not invent consumers from it. Per-widget rect-to-draw consumption is closed for textbox
       widgets: renderItems rect → parent-origin offset in create → +0x284 →
       drawTextBox; +0x294 feeds animation decode; rect updates resize the
       surface via the setWindowRect override. The selection box follows the
@@ -461,9 +461,24 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       vendor OPENS a per-setting sub-dialog on Left/Right instead of adjusting
       in place — the lab path is a functional stand-in, not the vendor flow.
       ui.edit_init="r=v" presets values for captures. Host test drives real
-      keys (95→100→clamp 0, untouched row keeps value). fb1: sel=1,
-      edit_init 1=49 shows dark-red "49" on the focus bar (380 px at the same
-      digit box as unfocused white "95"); diff confined to the row-1 band.
+      keys (95→100→clamp 0, untouched row keeps value), asserts the focused
+      row is a solid #FE9419 fill and that the baked settings_focus_N asset is
+      NOT blitted when live text is on (it bakes grey widget shapes + captured
+      glyphs, which owner observation saw as artifacts and doubled digits).
+      fb1, fixed build: edit_init 1=49 gives 283 ink px spanning x660..703
+      (two glyphs), 1=7 gives 121 px spanning x660..679 (one glyph) at the same
+      origin, proving the visible digits are the live blob.
+      CORRECTION: the first capture (33c719a1) showed the overlay's captured
+      glyphs because text was painted under it; that evidence is withdrawn.
+- [ ] Decode the row mask→surface mapping before changing bar geometry.
+      Firmware resource 179 gives listBox (20,170,770,996); slices 475-478
+      give top16/bottom10/step70, implying row0 = (20,186,750,70). The current
+      bar still uses the pre-existing reconstruction placement (20,183,750,66)
+      because SVGListBoxRow::renderBackground (0x10bec08) composes 1280x720
+      mask slices (record 479: 66 px tall) through MaskPositioningTransform +
+      HorizontalMaskScaleTransform into a row surface, and that mapping is not
+      decoded. Do not adopt either value until the transform math is verified;
+      evidence: artifacts/analysis/ui-row-rect-2026-11-02/.
       Evidence: artifacts/analysis/settings-edit-2026-11-01/. Full make check
       261 ok.
       UI-MASK-LAYOUT

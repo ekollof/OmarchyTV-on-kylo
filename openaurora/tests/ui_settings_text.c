@@ -137,6 +137,34 @@ static int has_fill(const oa_nav_trace *trace, int x, int y, int w, int h)
     return 0;
 }
 
+static int has_fill_rgb(const oa_nav_trace *trace, int x, int y, int w, int h,
+                        int r, int g, int b)
+{
+    int n = trace->fill_count();
+    for (int i = 0; i < n; i++) {
+        int fx, fy, fw, fh, fr, fg, fb;
+        if (trace->fill_at(i, &fx, &fy, &fw, &fh, &fr, &fg, &fb) == 0 &&
+            fx == x && fy == y && fw == w && fh == h &&
+            fr == r && fg == g && fb == b)
+            return 1;
+    }
+    return 0;
+}
+
+/* Last blit index matching a rectangle, -1 if absent. Used to prove the
+ * opaque focus overlay is composited BEFORE live text, not after it. */
+static int last_blit(const oa_nav_trace *trace, int x, int y, int w, int h)
+{
+    int n = trace->blit_count(), hit = -1;
+    for (int i = 0; i < n; i++) {
+        int bx, by, bw, bh;
+        if (trace->blit_at(i, &bx, &by, &bw, &bh) == 0 &&
+            bx == x && by == y && bw == w && bh == h)
+            hit = i;
+    }
+    return hit;
+}
+
 static void key(oa_host *host, int id)
 {
     oa_key_event ev = { .id = (uint8_t)id, .kind = OA_KEY_PRESS };
@@ -197,18 +225,33 @@ int main(int argc, char **argv)
     assert(blit_at(trace, 532, 601, 24, 72));      /* disabled "Auto" */
     assert(blit_at(trace, 541, 669, 20, 72));      /* "Aan" */
 
-    /* Lab value editing (ui.edit=1, invented 0..100 step 1): rows 1..4 only. */
+    /* Lab value editing (ui.edit=1, invented range, firmware step 1): rows 1..4. */
     key(&host, 19); key(&host, 19);              /* sel 0 -> 1 (Contrast) */
-    assert(blit_at(trace, 20, 253, 4, 4));       /* focus row 1 */
+    /* Live text replaces the baked focus asset with a clean bar: the asset
+     * bakes captured glyphs and grey widgets into the band, which showed up as
+     * artifacts and doubled numbers on the panel. */
+    assert(has_fill_rgb(trace, 20, 253, 750, 66, 254, 148, 25));
+    assert(last_blit(trace, 20, 253, 4, 4) == -1);
+    {
+        int digits = last_blit(trace, 655, 246, 16, 72);
+        int label = last_blit(trace, 75, 250, 40, 72);
+        assert(digits >= 0 && label >= 0);
+    }
+    /* Focused rows erase with the bar colour, not the panel colour. */
+    assert(has_fill_rgb(trace, 648, 244, 90, 64, 254, 148, 25));
+    assert(has_fill_rgb(trace, 40, 248, 446, 64, 254, 148, 25));
     for (int i = 0; i < 5; i++) key(&host, 22);  /* 95 -> 100 */
     assert(blit_at(trace, 655, 246, 20, 72));    /* "100": 3 digits */
     for (int i = 0; i < 200; i++) key(&host, 21);/* clamp at 0 */
     assert(blit_at(trace, 655, 246, 12, 72));    /* "0": 1 digit */
     key(&host, 19);                              /* sel 1 -> 2, untouched */
     assert(blit_at(trace, 655, 316, 16, 72));    /* "50" still there */
+    assert(has_fill_rgb(trace, 648, 314, 90, 64, 254, 148, 25)); /* row2 focused */
+    assert(has_fill_rgb(trace, 40, 248, 446, 64, 190, 30, 45));  /* row1 unfocused */
 
     key(&host, 19);                                /* sel 2 -> 3 */
-    assert(blit_at(trace, 20, 393, 4, 4));       /* focus row 3 (trace is per-frame) */
+    assert(has_fill_rgb(trace, 20, 393, 750, 66, 254, 148, 25)); /* clean bar */
+    assert(last_blit(trace, 20, 393, 4, 4) == -1);               /* no baked asset */
     key(&host, 10);
     assert(portal->screen() == 3);
 
