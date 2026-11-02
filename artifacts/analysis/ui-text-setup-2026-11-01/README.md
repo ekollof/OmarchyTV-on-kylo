@@ -300,13 +300,26 @@ picture.right = 163-161 = 2. With record values (769-11-2*(n-1))/n: n=2
 gives 378 — EXACTLY the observed focused-tab white box (x11..389,
 y104..162). So effectively 2 tabs (Beeld focused + Geluid); "Geluid" ink
 is centered in button 1 (391..769). The n=5 assumption is withdrawn.
-Title-surface formula BLOCKED on a tracking error (2026-11-02): reading
-the 10c615c EASIRect args as (mask1.w+surf.l, surf.t, mask1.l-mask2.w,
-surf.b) yields impossible (negative) rects even for rows, so a register
-or field is misidentified — the row-shape analogy for the title surface
-is SUSPENDED until the formula is re-derived, not relied upon. Next: pin
-the r7+0x1d0/0x1e0 field identities against the MaskPositioningTransform
-map (surface +8, mask +18) and re-track r0/r3 into the call.
+Title-specific deviation FOUND (2026-11-02, verified): record 419's right
+mask is named `mrowR` (lowercase w; rect (387,273,389,313)), but the code
+requests widget id 22 = `mRowR` (verified through the ELF pointer chain,
+and record 479 carries uppercase `mRowR`). So the title's second mask lookup
+MISSES while rows hit both masks. Miss semantics to decode: renderGroup
+with missing mask, getMaskRectangle miss value (background variant zeroes
+on miss), and how the middle EASIRect evaluates. Note this reframes the
+"impossible rects" paradox: with M2 empty, right = M1.l − 0 = M1.l, which
+is only sane for specific M1 values — the positioned-mask identities must
+be established, not assumed.
+Most-economical hypothesis for (+23,+5) (2026-11-02): the title widget's
+SURFACE rect itself is offset by (23,5) (i.e. getSurfaceSize returns
+(23,5,657,95), same 634x90 size). Then middle.x0 = 51+23 = 74, middle.y0 =
+0+5 = 5, height 90 preserved, advance unchanged — matching vendor ink
+(136..388, 31..85) exactly with box (131,10,...). This explains x AND y
+AND height with ONE mechanism, unlike cap/width theories. Verification
+path: where the title surface rect gets (23,5) — the createSurface call
+site for the title instance, or the setWindowRect override's +0x40 hook
+(the hook-adjusted rect feeds the stored copies AND resizeUISurface).
+Do not shift our box; decode the surface rect.
 Formula identities CLOSED from the named-local decompile (2026-11-02,
 decomp-renderbg.txt): the middle surface is
 `EASIRect(out, (M1.r-M1.l)+S.l, S.t, M1.l-(M2.r-M2.l), S.b)` and the
