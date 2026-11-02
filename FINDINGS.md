@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Local text rendering (2026-11-02): UI-TEXT-VIEWPORT verifies widget alignment4
+maps to HAL start/center; all9 mappings/default implemented in text_origin and
+the new unit-ratio single-line font_box renderer. Local Y2/1 for actual tested
+regular/bold surfaces is not absolute live placement proof. Dialog margins,
+font X offsets, initial list insets and setLabel itself add no fixed padding.
+Conditional X31 differs from fitted49; actual text/parent/resource/ratio state
+must explain it. Do not invent an18px adjustment to pass a screenshot fit.
+
 Textbox composition (2026-11-02): UI-TEXTBOX-COMPOSE confirms lines==1 uses
 full-height horizontal row slices, without subtracting top/bottom caps. Actual
 489/488 give corrected text heights66/70 and regular/bold font7/20 for the

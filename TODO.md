@@ -484,6 +484,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       full host/focused sanitizers/ARM-qemu/native TV CPU tests pass. Actual
       parent/glyph-origin/ratio/clip, overrides/retained state, pre-mask second
       pass and visible FA/UFA integration remain open; fitted UI unchanged.
+- [x] Recover widget->HAL alignment bridge and join vertical placement to plain
+      EF41 boxed rendering with local surface clipping. UI-TEXT-VIEWPORT-2026-11-02;
+      strict full host/focused sanitizers/ARM-qemu/native TV exact9-alignment and
+      54-line actual resource/font corpus pass. Unit-ratio/one-line scope only;
+      actual parent/text/resource/ratio state, skin integration and visible
+      acceptance remain open. Conditional X31 does not prove fitted49: no guessed
+      padding from verified zero dialog margins/font offset/list ctor insets.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

@@ -6,6 +6,18 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-TEXT-VIEWPORT-2026-11-02: common/font_box.c joins recovered widget alignment
+mapping with vertical/local line rendering. Exact9-alignment pixels and actual
+460->489/488/font7/20 render54 offscreen lines, Y2/1. Full strict host/focused
+sanitizers/ARM-qemu/native TV CPU tests pass. Native152496 bytes/MD5
+e0c91d6934f7803622016fd48bbb427a/GLIBC2.7, build-tv-v3/font-box. Same stock
+boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785/zombie1967/access/privacy;
+staging removed/checked, no helper/job pending. No display/device/settings/
+persistent operation. Settings/Picture/SVGDialog margin bindings and BitmapFont
+X offsets are0; base-list ctor insets0, setLabel adds no fixed prefix. Actual
+parent/window/text/resource/ratio state still open: conditional origin31,184
+does not establish old fitted49,184. No guessed offset or UI fit replacement.
+
 UI-TEXTBOX-COMPOSE-2026-11-02: common/widget_layout.c composes fresh normal
 single-line textPos surfaces, alignment/font marker policy; full-height row
 slices, not top/bottom cap subtraction. Actual460->489/488 and20 live startup

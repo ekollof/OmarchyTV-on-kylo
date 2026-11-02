@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-TEXTBOX-COMPOSE](artifacts/reports/UI-TEXTBOX-COMPOSE-2026-11-02.md)
+Latest: [UI-TEXT-VIEWPORT](artifacts/reports/UI-TEXT-VIEWPORT-2026-11-02.md)
+adds common/font_box.c: widget1..9 alignment bridge -> vertical/line render,
+local text-surface clipping, center trim/end reverse. Actual460->489/488
+surfaces +font7/20 render54 offscreen lines; local Y2/1. Full strict host,
+focused sanitizers/ARM-qemu/native TV CPU corpus passes. Native build-tv-v3/
+font-box, analysis/ui-text-viewport-2026-11-02. Fresh source rules out fixed
+padding from Settings/Picture/SVGDialog margin slots, BitmapFont X offset,
+base-list ctor insets or the setLabel setter. Actual text may still carry
+spacing/markup; original parent/window/resource/ratio state remains unverified.
+For the explicit test parent the regular origin is31,184, not the old fitted
+49,184: do not add a guessed18px adjustment. Next establish ACTUAL instance/
+text/ratio state, then skin integration and visible FA/UFA parity. Existing
+UI fits unchanged. Same stock boot/live1785/access/privacy; staging removed,
+no helper/job pending. This renderer supports plain single-line unit ratios,
+not complete shaping/localization/retained styles.
+
+Previous: [UI-TEXTBOX-COMPOSE](artifacts/reports/UI-TEXTBOX-COMPOSE-2026-11-02.md)
 adds oa_widget_single_line_textbox: normal fresh/unlocked single-line geometry,
 alignment/font marker policy, full-height horizontal slices (no cap subtraction)
 and textPos float32 height correction. Actual460->489/488 +20 live startup

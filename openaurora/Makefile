@@ -132,6 +132,16 @@ check-textbox-layout: $(BUILD)/tests/textbox_layout
 
 check: check-textbox-layout
 
+$(BUILD)/tests/font_box: tests/font_box.c common/font_box.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c common/text_origin.c common/widget_layout.c common/binsvg.c common/svg_pack.c common/text_layout.c include/openaurora/font_box.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/canvas.h include/openaurora/text_origin.h include/openaurora/widget_layout.h include/openaurora/binsvg.h include/openaurora/svg_pack.h include/openaurora/text_layout.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
+
+.PHONY: check-font-box
+check-font-box: $(BUILD)/tests/font_box
+	@$(BUILD)/tests/font_box
+
+check: check-font-box
+
 $(BUILD)/tests/font_bitmap: tests/font_bitmap.c common/font_bitmap.c common/font_finder.c common/font_draw.c common/canvas.c include/openaurora/font_bitmap.h include/openaurora/font_finder.h include/openaurora/font_draw.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)

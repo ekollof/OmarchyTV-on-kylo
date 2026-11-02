@@ -10,6 +10,11 @@ struct oa_text_vertical {
     unsigned justification, clip_mode;
 };
 struct oa_text_lines { int32_t first, step; };
+/* SVGSurface::TEXT_ALIGN -> HAL justification through UISurfaceImpl.
+ * Widget1..9 are top/middle/bottom rows, each start/center/end columns.
+ * HAL1=start,2=end,3=center. Out-of-range widget values follow firmware's
+ * default: horizontal start, vertical center. Outputs required. */
+int oa_text_box_justification(unsigned widget, unsigned *horizontal, unsigned *vertical);
 /* Pure policy; positive line_count required. Unsupported justification returns
  * ENOTSUP. All failures preserve output; arithmetic overflow is not emulated. */
 int oa_text_vertical_position(const struct oa_text_vertical *, struct oa_text_lines *out);

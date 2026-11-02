@@ -1,0 +1,5 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-tv-v3/font-box/tests/font_box tests/font_box.c common/font_box.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c common/text_origin.c common/widget_layout.c common/binsvg.c common/svg_pack.c common/text_layout.c -lm
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+ok font box:9 alignments with exact pixels/guards, defaults, center trim, atomic invalid text/font/dimensions
+ok font box: actual row/textbox surfaces -> font7/20 ->54 offscreen lines; local Y2/1, explicit parent and unit ratios

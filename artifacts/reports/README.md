@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [UI-TEXT-VIEWPORT](UI-TEXT-VIEWPORT-2026-11-02.md) | alignment bridge and unit-ratio boxed EF41 renderer; exact9-alignment/54-line actual resource/font CPU tests pass host/sanitizers/ARM-qemu/TV; absolute placement/text/ratio/visual acceptance still open |
 | [UI-TEXTBOX-COMPOSE](UI-TEXTBOX-COMPOSE-2026-11-02.md) | single-line full-height slice/textPos/style composition; actual460->489/488/live font7/20 tests pass host/sanitizers/ARM-qemu/TV; actual parent/glyph/clip/visible integration open |
 | [UI-ROW-WINDOWS](UI-ROW-WINDOWS-2026-11-02.md) | ordered container/mask discovery and rowItems child windows; actual460 composition and host/sanitizers/ARM-qemu/TV CPU tests; actual parent/textbox/font/UI integration open |
 | [UI-THEME-SKIN](UI-THEME-SKIN-2026-11-02.md) | first held theme consumer: actual dialog marker priority and removal/rebind/suspended/failed-start lifetime; host/sanitizers/ARM-qemu/TV policy tests; lab-only launcher path and actual widget geometry/visual acceptance remain open |

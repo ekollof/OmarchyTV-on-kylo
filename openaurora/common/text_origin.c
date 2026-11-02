@@ -4,6 +4,18 @@
 
 static int fits(int64_t n) { return n >= INT32_MIN && n <= INT32_MAX; }
 
+int oa_text_box_justification(unsigned widget, unsigned *horizontal, unsigned *vertical)
+{
+    if (!horizontal || !vertical) return EINVAL;
+    static const unsigned map[]={1,3,2};
+    unsigned h=1,v=3;
+    if (widget>=1 && widget<=9) {
+        h=map[(widget-1)%3];v=map[(widget-1)/3];
+    }
+    *horizontal=h;*vertical=v;
+    return 0;
+}
+
 int oa_text_vertical_position(const struct oa_text_vertical *p, struct oa_text_lines *out)
 {
     if (!p || !out || p->line_count <= 0) return EINVAL;
