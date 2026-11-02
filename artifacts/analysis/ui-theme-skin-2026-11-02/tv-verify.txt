@@ -1,0 +1,16 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+   479640 /tmp/oa-theme-skin-20261102/ui_theme_skin
+    24072 /tmp/oa-theme-skin-20261102/theme-skin/modules/mod_nav_display.so
+    57432 /tmp/oa-theme-skin-20261102/theme-skin/modules/mod_ui_engine.so
+    47116 /tmp/oa-theme-skin-20261102/theme-skin/modules/mod_ui_theme.so
+   161632 /tmp/oa-theme-skin-20261102/theme-skin/modules/mod_ui_vendor.so
+   769892 total
+e876bcf71623a2ad6333402a7184827f  /tmp/oa-theme-skin-20261102/ui_theme_skin
+41e355212a5e9a1c36b1b49e92ec6c4d  /tmp/oa-theme-skin-20261102/theme-skin/modules/mod_nav_display.so
+e307de666ee1ca3f6df3af656e85fc63  /tmp/oa-theme-skin-20261102/theme-skin/modules/mod_ui_engine.so
+33609e021a52fab6c3e9b61b0459d6d4  /tmp/oa-theme-skin-20261102/theme-skin/modules/mod_ui_theme.so
+72c2d2ba71d5751a8542aff979354ab9  /tmp/oa-theme-skin-20261102/theme-skin/modules/mod_ui_vendor.so

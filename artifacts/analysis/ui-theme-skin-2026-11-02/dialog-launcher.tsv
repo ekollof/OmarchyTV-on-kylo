@@ -1,0 +1,7 @@
+0x5c4ba740	57345	background	0	0	1920	1080	0	10		#9693B7	\x0a	\x0b
+0x5c4ba740	57383	main_rectangle	0	0	1920	1080	0	10		#727272	\x0a	\x0b
+0x5c4ba740	57425	animation_slide_up_fade_in	-109	1096	100	100	0	10		#FFFFFF	\x0a	\x0b
+0x5c4ba740	57479	listBox	200	478	1781	180	2	10	#FFFFFF	none	\x0a	\x0b
+0x5c4ba740	57518	syncCompletedIcon	1856	409	30	30	0	10			\x0a	\x0b
+0x5c4ba740	57556	internetConnectedIcon	1819	409	30	30	0	10			\x0a	\x0b
+0x5c4ba740	57598	timeUpdatedIcon	1782	409	30	30	0	10			\x0a	\x0b

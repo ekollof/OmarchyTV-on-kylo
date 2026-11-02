@@ -12,7 +12,7 @@
  *
  * Geometry is the stock portal's, measured off that same capture:
  *
- *   background   rgb(14,14,13)
+ *   background   rgba(36,38,40,153), from the shipped unnamed rectangle
  *   title        "Startpagina" at 28,80
  *   icon rail    x 24..145, five 121x126 tiles from y 211, colours orange -> dark red,
  *                white line glyph centred, the focused tile has a lighter backdrop
@@ -147,6 +147,7 @@ struct ctx {
     int screen;
     int restored;
     const oa_settings_iface *settings;
+    const oa_ui_theme_iface *theme; /* held; resolve/copy policy, never retain borrowed views */
     const oa_ui_anim_iface *anim;
     const oa_ui_anim_iface *anim2;   /* v2 lookup: adds the text-slide helpers */
     int fs_type;                     /* full-screen transition type, ui.fs_type (0 = off) */
@@ -202,12 +203,28 @@ static uint64_t now_ms(void)
  * DialogLauncher.svg (resource 129, as DialogMainMenu3/4/Tall) declares only
  * animation_slide_up_fade_in, so the first-present rule selects mode 60 = HAL type 4
  * (y -= (1-p)/6, a slide up). */
-static int dialog_fs_type(void)
+static int dialog_fs_type(struct ctx *c)
 {
-    static const unsigned char present[8] = { 0, 0, 0, 1, 0, 0, 0, 0 };
-    for (int i = 0; i < 8; i++)
-        if (present[i])
-            return i + 1;
+    const char *override = c->api->config_get(c->api->priv, "ui.fs_type", "");
+    if (override[0]) {
+        int type = atoi(override); /* existing explicit lab override */
+        return type >= 0 && type <= 8 ? type : 0;
+    }
+    /* Compatibility fallback for setups without the optional provider: the
+     * previously verified DialogLauncher resource has only mode60/type4.
+     * An available provider with no resource/marker instead means no effect. */
+    if (!c->theme) return 4;
+    struct oa_binsvg resource;
+    if (c->theme->named("DialogLauncher.svg", &resource)) return 0;
+    static const char *const markers[] = {
+        "animation_flip_fade_in", "animation_slide_right_fade_in",
+        "animation_slide_left_fade_in", "animation_slide_up_fade_in",
+        "animation_slide_down_fade_in", "animation_fade_in",
+        "animation_grow_fade_in", "animation_bounce_fade_in"
+    };
+    struct oa_binsvg_rect rect;
+    for (unsigned i = 0; i < sizeof markers / sizeof *markers; ++i)
+        if (!oa_binsvg_find_rect(&resource, NULL, markers[i], &rect)) return (int)i + 1;
     return 0;
 }
 
@@ -967,6 +984,8 @@ static void on_service_removed(const void *evp, void *ud)
         c->settings = NULL;
     } else if (!strcmp(ev->name, OA_SVC_UI_CLOCK)) {
         c->clock = NULL;
+    } else if (!strcmp(ev->name, OA_SVC_UI_THEME)) {
+        c->theme = NULL; /* active dialog uses only its copied numeric mode */
     } else {
         return;
     }
@@ -997,6 +1016,7 @@ static void rebind_now(struct ctx *c)
     }
     c->anim2 = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 2);
     if (!c->clock) c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
+    if (!c->theme) c->theme = c->api->lookup(c->api->priv, OA_SVC_UI_THEME, 1);
     if (!slide_allowed(c)) {
         /* a provider went away or animation is off: stop timing and hold the drawn state */
         slide_stop_sampler(c);
@@ -1157,7 +1177,8 @@ static void move_key(struct ctx *c, uint8_t id)
         /* Firmware MainLauncherMenuDialog::onSelectPress only calls focusLauncher(false), and
          * focusLauncher does index bookkeeping: the launcher has no full-screen transition.
          * The type-4 path is a lab-only option (ui.launch_anim=1) pending vendor dialogue parity. */
-        if (atoi(c->api->config_get(c->api->priv, "ui.launch_anim", "0")) == 1 &&
+        c->fs_type = dialog_fs_type(c);
+        if (c->fs_type > 0 && atoi(c->api->config_get(c->api->priv, "ui.launch_anim", "0")) == 1 &&
             c->anim && c->anim->enabled() &&
             c->anim->start(ANIM_DIALOG, OA_ANIM_DIALOG, NULL, NULL, 1000, NULL) == 0)
             return;
@@ -1278,14 +1299,8 @@ static int m_start(void *v)
     /* v2 adds the recovered text-slide helpers; v1-only hosts simply get no slide. */
     c->anim2 = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 2);
     c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
-    c->fs_type = dialog_fs_type();
-    {
-        const char *cfg = c->api->config_get(c->api->priv, "ui.fs_type", "");
-        if (cfg[0])
-            c->fs_type = atoi(cfg);   /* explicit override for tests/lab runs */
-    }
-    if (c->fs_type < 0 || c->fs_type > 8)
-        c->fs_type = 0;
+    c->theme = c->api->lookup(c->api->priv, OA_SVC_UI_THEME, 1);
+    c->fs_type = dialog_fs_type(c);
     c->slide_box = atoi(c->api->config_get(c->api->priv, "ui.slide_box", "0"));
     /* Vendor UIAnimationController starts disabled and its bootstrap caller is not recovered yet.
      * This default-off switch is an explicit bootstrap/test lever, not a chosen native policy. */
@@ -1417,6 +1432,10 @@ static void m_stop(void *v)
         c->api->release(c->api->priv, OA_SVC_UI_CLOCK);
         c->clock = NULL;
     }
+    if (c->theme) {
+        c->api->release(c->api->priv, OA_SVC_UI_THEME);
+        c->theme = NULL;
+    }
     if (c->settings) {
         c->api->release(c->api->priv, OA_SVC_SETTINGS);
         c->settings = NULL;
@@ -1487,7 +1506,7 @@ static int m_resume(void *v)
     c->rail_hl_next = now_ms() + OA_RAIL_HL_MS;
     /* providers may have appeared or disappeared while suspended; rebind_now reacquires them and
      * restarts or holds the slide as appropriate (it also paints). */
-    if (c->rebind_pending || !c->anim || !c->anim2 || !c->clock)
+    if (c->rebind_pending || !c->anim || !c->anim2 || !c->clock || !c->theme)
         rebind_now(c);
     else {
         slide_begin(c, "resume");

@@ -1,0 +1,4 @@
+  ok   skin discovers late theme, pins provider, drops forced removal, preserves active mode and rebinds
+  ok   all8 modes, numeric priority over stream order, missing resource/markers and explicit overrides
+  ok   shipped DialogLauncher.svg selects actual marker mode60/type4 through provider and skin
+  ok   suspended replacement defers I/O/rebind; resume reacquires; failed skin start releases theme and callback without removing peer

@@ -1,0 +1,5 @@
+479640 openaurora/build-tv-v3/theme/tests/ui_theme_skin
+24072 openaurora/build-tv-v3/theme/tests/theme-skin/modules/mod_nav_display.so
+57432 openaurora/build-tv-v3/theme/tests/theme-skin/modules/mod_ui_engine.so
+47116 openaurora/build-tv-v3/theme/tests/theme-skin/modules/mod_ui_theme.so
+161632 openaurora/build-tv-v3/theme/tests/theme-skin/modules/mod_ui_vendor.so

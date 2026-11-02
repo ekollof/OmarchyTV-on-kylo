@@ -449,9 +449,14 @@ rereads the configured paths; ordinary suspend retains the snapshot, suspended
 replacement defers first loading until resume. Invalid input/collisions publish
 nothing; failed replacement still lacks host old-binary rollback. Real-DSO
 lifecycle and full702-record corpus pass host/sanitizers/ARM-qemu/native TV.
-examples/ui-theme.conf is a data-only example. No actual UI consumer uses the
-provider yet; widget/style/font/clip integration and visible acceptance remain
-open. The preserved16-module stage and installed ABI1 artifacts are unchanged.
+examples/ui-theme.conf is a data-only example. UI-THEME-SKIN-2026-11-02 adds the
+first ui_vendor consumer: DialogLauncher marker lookup, first numeric mode wins,
+with optional hold/removal/rebind and copied active mode. Its ui.launch_anim
+diagnostic remains default0, not a claimed vendor launcher transition. All8
+policy modes/lifetime paths and the live resource pass host/sanitizers/ARM-qemu/
+native TV recorder/injected-progress tests. Widget/style/font/clip integration
+and visible acceptance remain open. The preserved16-module stage and installed
+ABI1 artifacts are unchanged.
 
 Target libc spawn can return0 and a PID before exec fails with child exit127.
 Direct firmware instructions and matching live libc hash confirm this; it is

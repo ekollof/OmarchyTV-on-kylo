@@ -1,0 +1,13 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-theme-sanitize/tests/ui_theme_skin tests/ui_theme_skin.c build-theme-sanitize/core/check.o build-theme-sanitize/core/control.o build-theme-sanitize/core/host.o build-theme-sanitize/core/module.o build-theme-sanitize/core/skin.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Itests -fPIC -shared -o build-theme-sanitize/tests/ui_nav_display.so tests/ui_nav_display.c -fsanitize=address,undefined
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-theme-sanitize/modules/mod_ui_vendor.so modules/ui_vendor/ui_vendor.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c -fsanitize=address,undefined -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-theme-sanitize/modules/mod_ui_engine.so modules/ui_engine/ui_engine.c -fsanitize=address,undefined
+  ok   skin discovers late theme, pins provider, drops forced removal, preserves active mode and rebinds
+  ok   all8 modes, numeric priority over stream order, missing resource/markers and explicit overrides
+  ok   suspended replacement defers I/O/rebind; resume reacquires; failed skin start releases theme and callback without removing peer
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+  ok   skin discovers late theme, pins provider, drops forced removal, preserves active mode and rebinds
+  ok   all8 modes, numeric priority over stream order, missing resource/markers and explicit overrides
+  ok   shipped DialogLauncher.svg selects actual marker mode60/type4 through provider and skin
+  ok   suspended replacement defers I/O/rebind; resume reacquires; failed skin start releases theme and callback without removing peer

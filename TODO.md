@@ -465,6 +465,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       and failed replacement/recovery covered. Actual UI consumers/resource
       selection/widget/text geometry/rendering remain open; captured panels and
       fitted origins unchanged. Host binary rollback remains a separate gap.
+- [x] First ui_vendor theme consumer: actual DialogLauncher marker lookup with
+      first numeric mode priority, service hold/removal/rebind and copied active
+      mode. UI-THEME-SKIN-2026-11-02: full strict host/focused sanitizers/ARM-qemu/
+      native TV policy tests and live resource60/type4 pass. Recorder/injected
+      callbacks establish policy/lifetime only. Existing ui.launch_anim remains
+      default0/lab-only; actual settings geometry/styles and visible parity open.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

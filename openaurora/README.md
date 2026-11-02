@@ -38,7 +38,7 @@ build command in ARCHITECTURE; make tv currently hardcodes the baseline director
 | audio/source/plat | partial glue; init ownership, routing and hardware effects incomplete |
 | CEC/audio follow-up | spec-based wire/status/ARC/identity validators and corrected audio ABI/prelude/cache/handoff; host/sanitizer/ARM-qemu coverage; CEC transport and audible acceptance remain open |
 | audio_curve | reloadable immutable AQ curve provider, explicit path/profile; six real-DSO lifecycle groups pass including on TV; no hardware gain application |
-| ui_theme | owned validated BinSVG snapshot, CRC/index lookup and held views; real-DSO lifecycle/full702-record corpus pass host/sanitizers/ARM-qemu/TV; actual UI consumers/rendering remain open |
+| ui_theme | owned validated BinSVG snapshot, CRC/index lookup and held views; real-DSO lifecycle/full702-record corpus pass host/sanitizers/ARM-qemu/TV; ui_vendor consumes dialog-marker policy, widget geometry/rendering remain open |
 | CEC transport contracts | raw/VPL packet layouts and bounded marshalling tested in four host/sanitizer/ARM-qemu groups; driver status/filter/reopen defects recovered; authority/worker/module integration still open |
 | raw CEC backend | explicit blocking cdev lifecycle/send/RX with failed-close ownership retention; three injected-I/O host/sanitizer/ARM-qemu groups; authority/workers/module/hardware acceptance still open |
 | settings | generic integer service, read-only real-TV milestone; typed/profile/NVRAM behavior incomplete |

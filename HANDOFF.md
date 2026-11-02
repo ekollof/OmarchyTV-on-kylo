@@ -24,7 +24,24 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-THEME-PROVIDER](artifacts/reports/UI-THEME-PROVIDER-2026-11-02.md)
+Latest: [UI-THEME-SKIN](artifacts/reports/UI-THEME-SKIN-2026-11-02.md)
+wires ui_vendor to held ui.theme views for DialogLauncher's first-present
+animation marker policy (57..64 -> types1..8). No borrowed view survives
+selection; active animation keeps a copied mode through theme removal. Late
+bind, forced removal, suspend/resume/replacement and failed-start release
+pass full strict host/focused sanitizer/ARM-qemu/native TV policy tests.
+Live pack selects actual mode60/type4. Recorder display/injected progress;
+no new visible acceptance or device/display operation. ui.launch_anim remains
+default0: vendor main launcher does not itself start that stand-in transition.
+No-provider fallback4 and ui.fs_type lab override retained. Native build-tv-v3/
+theme; analysis/ui-theme-skin-2026-11-02, same stock boot/live1785/access/privacy,
+all staging/fixtures removed, no helper/job pending. Next actual settings
+rowItems/group transforms, widget windows and textbox/font/clip origins. Row
+renderBackground10bec08 is durable in UI-MASK-LAYOUT's list-row-layout.txt;
+renderItems d54400 literals are in UI-TEXT-SETUP README, older raw /tmp extracts
+are gone. Captured panels/fitted text positions remain unchanged.
+
+Previous: [UI-THEME-PROVIDER](artifacts/reports/UI-THEME-PROVIDER-2026-11-02.md)
 adds common/svg_pack.c and mod_ui_theme / ui.theme v1. Explicit index/binary
 paths load a fully validated owned immutable snapshot; record(index)/named(CRC)
 views require a service hold through all borrowed data use. Normal holds pin

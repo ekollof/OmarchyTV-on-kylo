@@ -6,6 +6,13 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+First theme consumer (2026-11-02): UI-THEME-SKIN replaces ui_vendor's hardcoded
+marker-presence list with actual held provider lookup, testing all8 numeric
+priorities and removal/rebind. No view persists beyond selection; active mode
+is a scalar. This is the existing ui.launch_anim=1 stand-in diagnostic, not
+evidence of a vendor launcher transition or complete theme/widget integration.
+Real pack still selects DialogLauncher mode60/type4; settings origins stay fitted.
+
 Theme ownership (2026-11-02): UI-THEME-PROVIDER adds owned index/binary snapshots
 and ui.theme v1. Case-sensitive CRC32 name lookup is the first matching hash,
 ID lookup is index position. All record boundaries validate before publication.

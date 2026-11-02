@@ -6,6 +6,20 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-THEME-SKIN-2026-11-02: ui_vendor now holds/rebinds ui.theme and resolves
+DialogLauncher animation markers from resource bytes. First numeric mode wins;
+only copied mode survives selection/removal. Missing resource/markers means0,
+missing optional provider retains stock4 fallback, ui.fs_type override retained.
+ui.launch_anim remains default0/lab-only, not a vendor launcher transition.
+Full strict host, focused sanitizers, ARM-qemu/native TV real-DSO policy/lifetime
+tests pass, live resource selects60/type4. Native test479640 bytes/MD5
+e876bcf71623a2ad6333402a7184827f; ui_vendor161632 bytes/MD5
+72c2d2ba71d5751a8542aff979354ab9, both maxGLIBC2.17, build-tv-v3/theme.
+Recorder display/injected progress: no visual/device acceptance claimed. Same
+stock boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785/zombie1967/access/
+privacy; all staging/fixtures removed and checked, no helper/job pending.
+Actual row/textbox geometry, styles and visible integration remain open.
+
 UI-THEME-PROVIDER-2026-11-02: common/svg_pack.c owns a fully validated immutable
 index/binary snapshot; mod_ui_theme publishes ui.theme v1 (record/named/count).
 Borrowed views require a service hold. Full strict host, focused ASan/UBSan,

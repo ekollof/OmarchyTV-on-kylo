@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [UI-THEME-SKIN](UI-THEME-SKIN-2026-11-02.md) | first held theme consumer: actual dialog marker priority and removal/rebind/suspended/failed-start lifetime; host/sanitizers/ARM-qemu/TV policy tests; lab-only launcher path and actual widget geometry/visual acceptance remain open |
 | [UI-THEME-PROVIDER](UI-THEME-PROVIDER-2026-11-02.md) | owned indexed BinSVG snapshot and reloadable ui.theme v1; CRC/index lookup, held views, lifecycle/failure/standby and full-pack tests pass host/sanitizers/ARM-qemu/TV; actual UI consumer/rendering open |
 | [UI-BINSVG-VIEW](UI-BINSVG-VIEW-2026-11-02.md) | bounded runtime record/element/named-rectangle reader; nested/first-group and duplicate semantics; all702 records and actual477 geometry composition pass host/sanitizers/ARM-qemu/TV; indexed provider/widget integration open |
 | [UI-HORIZONTAL-ORIGIN](UI-HORIZONTAL-ORIGIN-2026-11-02.md) | physical width, center trim/reset-X and end right-bearing/reverse traversal; aligned font-text renderer with host/sanitizer/ARM-qemu/native TV offscreen tests; full style/shaping/widget integration open |
