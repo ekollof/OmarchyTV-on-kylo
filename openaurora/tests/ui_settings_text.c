@@ -165,6 +165,20 @@ static int last_blit(const oa_nav_trace *trace, int x, int y, int w, int h)
     return hit;
 }
 
+/* True when no fill with exactly this rectangle was recorded (any colour).
+ * Guards against erase rects stomping another row's bar. */
+static int no_fill(const oa_nav_trace *trace, int x, int y, int w, int h)
+{
+    int n = trace->fill_count();
+    for (int i = 0; i < n; i++) {
+        int fx, fy, fw, fh, fr, fg, fb;
+        if (trace->fill_at(i, &fx, &fy, &fw, &fh, &fr, &fg, &fb) == 0 &&
+            fx == x && fy == y && fw == w && fh == h)
+            return 0;
+    }
+    return 1;
+}
+
 static void key(oa_host *host, int id)
 {
     oa_key_event ev = { .id = (uint8_t)id, .kind = OA_KEY_PRESS };
@@ -237,16 +251,23 @@ int main(int argc, char **argv)
         int label = last_blit(trace, 75, 250, 40, 72);
         assert(digits >= 0 && label >= 0);
     }
-    /* Focused rows erase with the bar colour, not the panel colour. */
-    assert(has_fill_rgb(trace, 648, 244, 90, 64, 254, 148, 25));
-    assert(has_fill_rgb(trace, 40, 248, 446, 64, 254, 148, 25));
+    /* Focused rows erase only the above-bar blob strip, in panel red; the
+     * bar interior needs no erase since the flat fill just laid it. */
+    assert(has_fill_rgb(trace, 648, 244, 90, 12, 190, 30, 45));
+    assert(has_fill_rgb(trace, 40, 248, 446, 8, 190, 30, 45));
     for (int i = 0; i < 5; i++) key(&host, 22);  /* 95 -> 100 */
     assert(blit_at(trace, 655, 246, 20, 72));    /* "100": 3 digits */
     for (int i = 0; i < 200; i++) key(&host, 21);/* clamp at 0 */
     assert(blit_at(trace, 655, 246, 12, 72));    /* "0": 1 digit */
+    /* Unfocused erases must not stomp the focused bar (row surfaces clip
+     * to their own frames): row 2's erases are clipped below the bar. */
+    assert(no_fill(trace, 648, 314, 90, 64));
+    assert(no_fill(trace, 40, 318, 446, 64));
+    assert(has_fill_rgb(trace, 648, 322, 90, 56, 190, 30, 45));
+    assert(has_fill_rgb(trace, 40, 322, 446, 60, 190, 30, 45));
     key(&host, 19);                              /* sel 1 -> 2, untouched */
     assert(blit_at(trace, 655, 316, 16, 72));    /* "50" still there */
-    assert(has_fill_rgb(trace, 648, 314, 90, 64, 254, 148, 25)); /* row2 focused */
+    assert(has_fill_rgb(trace, 648, 314, 90, 12, 190, 30, 45)); /* row2 strip */
     assert(has_fill_rgb(trace, 40, 248, 446, 64, 190, 30, 45));  /* row1 unfocused */
 
     key(&host, 19);                                /* sel 2 -> 3 */

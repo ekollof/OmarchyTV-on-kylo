@@ -47,6 +47,8 @@ Native ARM runs, `mod_ui_vendor 36ef5a61...` (fixed paint order), then
 | `tv-fb1-edited-row-1-fixed.png` | `5c61bd16...` | 1=49 | 283 px, x660..703 (44 px, two glyphs) |
 | `tv-fb1-edited-row-1-single-digit.png` | `4ab5e059...` | 1=7 | 121 px, x660..679 (20 px, one glyph) |
 | `tv-fb1-edited-row-1-y186.png` | `e3fd5209...` | 1=49 | bar fill y256..321 = row frame (20,186+70,750,66) |
+| `tv-fb1-edited-row-1-clean-bar.png` | `d2502833...` | 1=49 | bar edges pixel-clean x20..769 y256..321; diff vs vendor confined to row 1 (22 stray px elsewhere, pre-existing threshold noise) |
+| `tv-fb1-edited-row-1-clean-edges.png` | `e129c33e...` | 1=49 | bottom edge clean break 321/322 full-width after erase-clip fix; owner-confirmed artifact gone |
 
 The Y0=186 run proves the firmware-derived bar position on hardware:
 outside the erase rects the orange fill spans exactly y256..321 (66 px) at

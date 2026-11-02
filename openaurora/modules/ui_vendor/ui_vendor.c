@@ -694,18 +694,49 @@ static void paint_settings_list(struct ctx *c)
         }
     }
     if (c->text_on) {
-        /* Two passes so the label/value erase rectangles cannot clip a blit.
-         * Erase colour follows the focused row's bar so the bar is not cut. */
+        /* No firmware erase step exists: the vendor draws opaque bar content
+         * then text on top, and row surfaces clip to their own frames. Our
+         * screen-space erases are reconstruction scaffolding for the captured
+         * panel's baked glyphs, so they must not stomp another row's bar:
+         * unfocused erases are clipped against the focused bar rect (row
+         * surfaces cannot paint outside their frame). The focused row only
+         * erases the above-bar blob strip with panel red; the bar interior
+         * needs no erase since the flat fill just laid it. */
+        int bar_x = SETTINGS_ROW_X, bar_w = 750, bar_y = -1, bar_h = 66;
+        if (focus_row >= 0)
+            bar_y = settings_row_y(focus_row);
         for (size_t i = 0; i < SETTINGS_TEXT_COUNT; i++) {
             const struct settings_text_entry *entry = &SETTINGS_TEXT[i];
-            int fr = entry->row == focus_row;
-            int er = fr ? 254 : 190, eg = fr ? 148 : 30, eb = fr ? 25 : 45;
-            if (entry->kind == TEXT_LABEL)
-                d->fill(40, entry->y - 6, 446, 64, er, eg, eb);
-            else if (entry->font == FONT_LARGE)
-                d->fill(648, entry->y - 6, 90, 64, er, eg, eb);
-            else
-                d->fill(480, entry->y - 6, 200, 64, er, eg, eb);
+            int x, w, y = entry->y - 6, h = 64;
+            if (entry->kind == TEXT_LABEL) {
+                x = 40;
+                w = 446;
+            } else if (entry->font == FONT_LARGE) {
+                x = 648;
+                w = 90;
+            } else {
+                x = 480;
+                w = 200;
+            }
+            if (entry->row == focus_row) {
+                if (bar_y > y)
+                    d->fill(x, y, w, bar_y - y, 190, 30, 45);
+                continue;
+            }
+            if (focus_row >= 0 && x < bar_x + bar_w && x + w > bar_x &&
+                y < bar_y + bar_h && y + h > bar_y) {
+                if (y < bar_y) {
+                    /* Overlap at the bottom (row below the bar): keep top. */
+                    h = bar_y - y;
+                } else {
+                    /* Overlap at the top or fully inside: keep bottom part. */
+                    h = (y + h) - (bar_y + bar_h);
+                    y = bar_y + bar_h;
+                }
+                if (h <= 0)
+                    continue;
+            }
+            d->fill(x, y, w, h, 190, 30, 45);
         }
         for (size_t i = 0; i < SETTINGS_TEXT_COUNT; i++) {
             const struct settings_text_entry *entry = &SETTINGS_TEXT[i];
