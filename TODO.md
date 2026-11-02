@@ -436,9 +436,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       widgets: renderItems rect → parent-origin offset in create → +0x284 →
       drawTextBox; +0x294 feeds animation decode; rect updates resize the
       surface via the setWindowRect override. The selection box follows the
-      identical dual-copy convention (+0x368/+0x378, refreshed per draw);
-      button/slidebar/image offsets unverified. Still open: live title/tab/
-      focused text, value/tab implementation.
+      identical dual-copy convention (+0x368/+0x378, refreshed per draw),
+      and the button too (+0x148/+0x158); the slidebar does not (base +0x28
+      rect only, verified). Image offsets unverified. Still open: live
+      title/tab/focused text, value/tab implementation.
       UI-MASK-LAYOUT
       now recovers mask positioning and row arithmetic; runtime field
       population, slice composition, text origin and FA animation geometry are still

@@ -344,9 +344,20 @@ redraws via `drawSelectionBox`. `drawSelectionBox` (0x10b5b44) refreshes copy
 2 from copy 1 (`ldmia` +0x368 → `stmia` +0x378), resizes the +0xa4 surface
 with the rect, then renders background/displayed item/animated rectangle
 (animation start gated on enabled + duration > 1.0). `animRectDecode`
-(0x10b6038) reads the second copy (+0x378/+0x37c). Button, slidebar and image
-widgets presumably follow the same convention with their own offsets — not
-yet verified.
+(0x10b6038) reads the second copy (+0x378/+0x37c).
+
+Button verified, slidebar bounded (asm, 2026-11-02). `SVGButton::drawButton`
+(0x10b07a4) reads +0x148..+0x154, refreshes copy 2 (`ldmia` +0x148 →
+`stmia` +0x158), resizes the +0xa4 surface and dispatches render (vtable
++76) + renderForeground — identical to the selection-box draw path, with
+copies at +0x148/+0x158 (written by the setWindowRect override at
+0x10ade58–10ade64 after the base call + hook). The slidebar does NOT follow
+this convention: `commonCreateStep` (0x10c4638) adds the parent client origin
+inline (10c467c–10c468e, no `EASIRect::offset` call) and calls only base
+`setWindowRect`; the override (0x10c4790) does base + `drawSliderBar`
+redraw with no rect-copy stores. The slidebar works off the base +0x28 rect
+(its value display is the already-decoded +0x1ca8 textbox path). Image
+widget offsets remain unverified.
 
 `setLabel` routes by row type (1 → caption box `+0x3c4`, else `+0x104`) and
 stores `+0x2dd8`; `setButtonText` → button `+0x684` / `+0x2de0`;
