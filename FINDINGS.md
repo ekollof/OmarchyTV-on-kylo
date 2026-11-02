@@ -6,11 +6,20 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Font X correction (2026-11-03): FONT-X-OFFSET checks the actual ARM b4247c
+ldrsb from object+5 and b42482 rsbs. This is -signed global minimum-left,
+NOT a zero getter. Earlier claims inferred a return value from vtable identity
+and misread saved instructions. Font18 minimum-23/live header e9 and font7
+minimum-18 account for title23 and normal MODE-row18 without fitted geometry.
+Boxed renderer now reserves that offset; raw glyph origins remain explicit.
+Title matches retained position and capture bounds, not yet all raster pixels.
+
 Retained title origin (2026-11-03): UI-TITLE-LIVE-GRAPH follows read-only native
 widget->Surface->TextCommand->LineObj fields while owner shows stock settings.
 Surface108,5,691,95 and LineObj23,5 account for current ink136..388/31..85;
-exact text, zero margins/unit glyph ratio/BitmapFont zero X getters verified.
-Assignment rule for X23 remains unproven; do not shift widget/resource geometry.
+exact text and zero margins/unit glyph ratio verified. Correction: the
+BitmapFont getter is not zero; FONT-X-OFFSET proves its metric-derived23.
+Do not shift widget/resource geometry to implement that offset.
 Flag+1b1 flows to CharClipping, not bold/font type. Early framebuffer samples
 captured launcher frames before the second owner cue; no MAU bug follows.
 
@@ -52,9 +61,10 @@ Local text rendering (2026-11-02): UI-TEXT-VIEWPORT verifies widget alignment4
 maps to HAL start/center; all9 mappings/default implemented in text_origin and
 the new unit-ratio single-line font_box renderer. Local Y2/1 for actual tested
 regular/bold surfaces is not absolute live placement proof. Dialog margins,
-font X offsets, initial list insets and setLabel itself add no fixed padding.
-Conditional X31 differs from fitted49; actual text/parent/resource/ratio state
-must explain it. Do not invent an18px adjustment to pass a screenshot fit.
+initial list insets and setLabel itself add no fixed padding. Correction:
+font7's global minimum-left-18 DOES explain conditional X31 -> fitted49.
+Use the recovered FONT-X-OFFSET rule, not a fitted18px constant; other labels'
+indentation and live style/interaction integration remain open.
 
 Textbox composition (2026-11-02): UI-TEXTBOX-COMPOSE confirms lines==1 uses
 full-height horizontal row slices, without subtracting top/bottom caps. Actual

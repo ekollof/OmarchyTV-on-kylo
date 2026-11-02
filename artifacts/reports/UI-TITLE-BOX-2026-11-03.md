@@ -1,5 +1,9 @@
 # Title text uses boxed layout — 2026-11-03
 
+Follow-up FONT-X-OFFSET corrects the zero-X-offset assumption: font18's global
+minimum-left is-23. Its metric-derived origin23,5 now matches the retained line
+and both captured ink bounds. Historical X0 corpus results below are superseded.
+
 The optional ui.title diagnostic now draws through oa_font_text_draw_box rather
 than the raw glyph-only function. This integrates the recovered alignment4
 (horizontal start, vertical center) and local clipping in the complete583x90

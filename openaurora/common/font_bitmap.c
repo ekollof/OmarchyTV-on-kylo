@@ -18,6 +18,13 @@ int oa_bitmap_font_height(const struct oa_bitmap_font *f, int *height)
     return 0;
 }
 
+int oa_bitmap_font_x_offset(const struct oa_bitmap_font *f, int *offset)
+{
+    if (!f || !f->extremes || !offset) return EINVAL;
+    *offset = -metric(f->extremes[1]);
+    return 0;
+}
+
 int oa_bitmap_font_glyph(const struct oa_bitmap_font *f, unsigned index,
                          struct oa_bitmap_glyph *out)
 {

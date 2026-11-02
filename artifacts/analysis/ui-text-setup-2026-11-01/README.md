@@ -3,6 +3,12 @@
 No implementation. This records what the decompile establishes so title/tab
 and focused-label work does not proceed from fitted capture geometry.
 
+LATEST CORRECTION2026-11-03: FONT-X-OFFSET closes the title23px/normal MODE
+row18px origin questions below. b42468 returns -signed global minimum-left
+bearing, not zero. The boxed renderer now applies that per-font rule. Older
+surface/client-shift hypotheses and claims that X remains unexplained are
+superseded; full raster/colour and indented/focused-row style parity stay open.
+
 Firmware: Aurora MD5 64c252340d3af6c5d66072611b7bad7a. Raw decompiles:
 artifacts/analysis/ui-text-layout-2026-11-01/text-widget-surface.txt
 (SVGTextBox ctor/renderBackground/setFont),

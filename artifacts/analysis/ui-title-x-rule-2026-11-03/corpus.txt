@@ -1,0 +1,3 @@
+ok font box:9 alignments with exact pixels/guards, defaults, center trim, atomic invalid text/font/dimensions
+ok font box: actual title font18/alignment4 local origin23,5; ink=28,26..280,80 (global font metric, no fitted offset)
+ok font box: actual row/textbox surfaces -> font7/20 ->54 offscreen lines; local Y2/1, explicit parent and unit ratios

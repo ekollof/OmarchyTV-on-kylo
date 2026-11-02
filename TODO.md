@@ -323,12 +323,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 - [x] Observe original title render graph with owner-opened panel: Surface bounds
       108,5,691,95, retained LineObj23,5 and current ink136..388/31..85; text/
-      zero margins/unit glyph ratio/zero BitmapFont X getters verified by local
+      zero margins/unit glyph ratio verified by local
       snapshot verifier. UI-TITLE-LIVE-GRAPH-2026-11-03. No hardware mutation;
       non-atomic observations, not title placement implementation or acceptance.
-- [ ] Recover the assignment rule for retained title X23 (logical viewport/
-      reference inputs, scaling and direct field writes); use8 saved setXPos
-      callers. Keep title default-off; no fitted23px inset. Flag+1b1 is
+- [x] Recover the assignment rule for retained title X23: negative signed global
+      minimum-left bearing (b42468), live font18 e9 ->23. FONT-X-OFFSET corrects
+      the erroneous zero-getter claim and applies viewport/origin policy in
+      common/font_box. Full host/focused sanitizers/ARM-qemu/native CPU tests.
+      Keep title default-off; full raster differs. Flag+1b1 is
       CharClipping, not bold. Native complete drawing/style parity stays open.
 - [x] Integrate boxed text alignment/clipping into the optional title diagnostic:
       font18 height80/viewport90 yields local Y5, accounting for the historical
@@ -587,7 +589,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       54-line actual resource/font corpus pass. Unit-ratio/one-line scope only;
       actual parent/text/resource/ratio state, skin integration and visible
       acceptance remain open. Conditional X31 does not prove fitted49: no guessed
-      padding from verified zero dialog margins/font offset/list ctor insets.
+      padding from zero dialog margins/list ctor insets. Correction: font offset
+      was misclassified as zero; FONT-X-OFFSET implements its per-font value.
 - [x] Add bounded read-only UI vptr-candidate inventory with chunk lookahead,
       executable/map checks and signed field decoding. UI-LIVE-OBJECTS-2026-11-02:
       strict full host/focused sanitizers/ARM-qemu tests and native heap scan pass.
@@ -603,11 +606,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       prefix; hash-checked offline profile traversal validates2435x41 strings,
       including exact dut Modus with no whitespace/markup. This closes the stored
       label-padding hypothesis only; no production localization implementation.
-- [ ] Explain conditional regular X31 versus fitted49 using actual parent/window,
-      resource/override/ratio and original instance text state before replacing
-      UI fits. Stored Dutch MODE has no padding; translation-fit flag is unread.
-      UI-ROW-LABELS/UI-TEXT-VIEWPORT. No guessed18px adjustment; independent
-      visible FA/UFA acceptance and full localization/shaping remain open.
+- [x] Explain normal MODE label X31 versus fitted49: font7 global minimum-left
+      is-18 and the vendor reserves its negative. FONT-X-OFFSET uses this metric,
+      not a fitted18px adjustment. Stored Dutch MODE has no hidden prefix.
+- [ ] Resolve indented labels and integrate actual instance/style/ratio state
+      before replacing all UI fits. Independent visible FA/UFA acceptance,
+      original runtime text, full localization/shaping remain open.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

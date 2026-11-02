@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-font-x-sanitize/tests/font_box tests/font_box.c common/font_box.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c common/text_origin.c common/widget_layout.c common/binsvg.c common/svg_pack.c common/text_layout.c -lm
+ok font box:9 alignments with exact pixels/guards, defaults, center trim, atomic invalid text/font/dimensions
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

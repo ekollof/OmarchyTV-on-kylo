@@ -35,7 +35,9 @@ The fallback is verified switch behavior, not a guessed conventional grid.
 oa_text_box_justification exposes this bridge. SVGSurface supplies the text
 height as line step; its call uses clip mode3. The fresh one-line/unit-ratio
 renderer reuses oa_text_vertical_position/oa_text_line_y and the existing line
-width/alignment/center-trim/end-reverse contracts. EF41 logical offsets are0.
+width/alignment/center-trim/end-reverse contracts. CORRECTION2026-11-03:
+EF41 logical Y offset is0, but X offset is -signed global minimum-left bearing.
+FONT-X-OFFSET corrects the earlier zero-X assumption and the boxed renderer.
 
 Canvas IS the separate zero-origin text surface, so canvas bounds provide its
 clipping. Alignment/trimming happens locally, including the center slice's X0
@@ -58,7 +60,9 @@ SVGListBoxBase's constructor initializes cached insets/row fields to0.
 SettingsDialog/PictureSettingsDialog/SVGDialog primary margin slots all bind
 the same zero-margin1152579 base getter; they do not supply a new inset.
 
-BitmapFont vptr slots+1c/+20 both bind the verified zero getter b42469. The
+BitmapFont vptr slots+1c/+20 both bind b42469. The earlier claim this was a
+zero getter is WRONG: ARM b4247c loads signed object+5 and b42482 negates it.
+FONT-X-OFFSET establishes font7 offset18/font18 offset23. The
 setLabel(UString) setter copies the supplied text; the string-key overload
 localizes it. Neither setter itself adds a fixed prefix/padding. That does not
 establish whether the original localized value/markup contains spacing.
@@ -66,14 +70,14 @@ Follow-up UI-ROW-LABELS-2026-11-02 resolves this for stored Dutch MODE: exact
 Modus, no whitespace or control markup. Ordinary constructor/drawRow adds no
 prefix either. Actual instance text and translation-fit mode remain unverified.
 
-For the earlier explicit conditional parent, the local regular/bold Y offsets
-are2/1; text-surface bounds therefore give absolute glyph origins31,184 and
-31,182. Those are conditional arithmetic, not independent vendor pixel proof.
-The old fitted regular X49 is not reproduced by these inputs. Do not invent an
-18px inset to hide this difference: inspect actual parent/window/text/resource/
-ratio state first. In particular, the zero getter/margins and zero constructor
-insets are not sources of such padding. Complete current-instance proof remains
-required before replacing fits.
+For the earlier explicit conditional parent, local regular/bold Y offsets are
+2/1. The original zero-X calculation gave31,184 and31,182; FONT-X-OFFSET
+supersedes that calculation with the per-font global bearing reservation:
+font7 adds18 and font20 adds20, giving49,184 and51,182 respectively. These
+remain conditional arithmetic, not independent focused-state pixel proof.
+The old normal MODE fitted X49 is now explained without an18px constant.
+Zero dialog margins/list constructor insets remain valid. Complete instance/
+text/style proof remains required before replacing every fitted label.
 
 ## Verification and TV state
 

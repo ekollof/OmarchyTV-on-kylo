@@ -54,16 +54,21 @@ assert.equal(word(command, 0x48), 1); // TextControls horizontal justification.
 assert.equal(word(command, 0x4c), 3); // Vertical center.
 assert.equal(word(command, 0x54), 1); // CharClipping, not a bold-font flag.
 assert.equal(word(read('title-font-vptr', word(command, 0x1c), 4), 0), 0x13f9340);
-// Actual BitmapFont vtable points to the verified zero getters, +8 C++ header excluded.
+// CORRECTION: b42468 returns -signed(font+5); sharing this function does NOT
+// prove a zero return. The later guarded live header read supplies that byte.
+const fontHeader = read('title-font-header', word(command, 0x1c), 9);
+assert.equal(word(fontHeader, 0), 0x13f9340);
+const xOffset = -fontHeader.readInt8(5);
+assert.equal(xOffset, 23);
 for (const offset of [0x1c, 0x20])
     assert.equal(word(elf, 0x13f9340 + offset - 0x10000), 0xb42469);
 const line = read('title-line-object', word(command, 0x20), 64);
 assert.equal(word(line, 0), 0x154c52c);
-assert.deepEqual(rect(line, 8).slice(0, 2), [23, 5]);
+assert.deepEqual(rect(line, 8).slice(0, 2), [xOffset, 5]);
 assert.equal(word(line, 0x14), 12);
 assert.deepEqual([word(line, 0x34), word(line, 0x38)], [1, 1]);
 assert.deepEqual(read('title-line-origin', word(command, 0x20), 16), line.subarray(0, 16));
 console.log('PASS: heap-bounded saved textbox -> UISurface -> hal::Surface -> RootDrawing -> TextCommand -> LineObj');
 console.log('text=Instellingen; surface=108,5,691,95; margins=0; horizontal=start1 vertical=center3 CharClipping=1');
-console.log('retained line origin=23,5; horizontal ratio=1/1; BitmapFont logical X getters=0');
-console.log('NONATOMIC saved observations; X assignment mechanism remains unproven.');
+console.log('retained line origin=23,5; horizontal ratio=1/1; BitmapFont X offset=-signed(font+5)=23');
+console.log('NONATOMIC saved observations; font header added by later boot/exe-guarded view-only read.');

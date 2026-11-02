@@ -28,5 +28,8 @@ int oa_bitmap_font_lookup(const struct oa_bitmap_font *font, uint32_t key,
 /* UIWindowBuilder::getMaximumTextHeight 0x1152f98 uses signed extremes,
  * bottom minus top, rather than point size or an individual glyph height. */
 int oa_bitmap_font_height(const struct oa_bitmap_font *font, int *height);
+/* BitmapFont b42468: -signed global minimum-left bearing, NOT a zero getter.
+ * Logical and physical X offsets share this implementation for EF41. */
+int oa_bitmap_font_x_offset(const struct oa_bitmap_font *font, int *offset);
 
 #endif

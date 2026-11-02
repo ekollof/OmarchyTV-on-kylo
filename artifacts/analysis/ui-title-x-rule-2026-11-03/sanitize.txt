@@ -1,0 +1,19 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-font-x-sanitize/tests/font_box tests/font_box.c common/font_box.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c common/text_origin.c common/widget_layout.c common/binsvg.c common/svg_pack.c common/text_layout.c -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-font-x-sanitize/core/check.o core/check.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-font-x-sanitize/core/control.o core/control.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-font-x-sanitize/core/host.o core/host.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-font-x-sanitize/core/module.o core/module.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-font-x-sanitize/core/skin.o core/skin.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Itests -fPIC -shared -o build-font-x-sanitize/tests/ui_nav_display.so tests/ui_nav_display.c -fsanitize=address,undefined
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-font-x-sanitize/modules/mod_ui_engine.so modules/ui_engine/ui_engine.c -fsanitize=address,undefined
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-font-x-sanitize/modules/mod_ui_vendor.so modules/ui_vendor/ui_vendor.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c -fsanitize=address,undefined -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Itests -fsanitize=address,undefined -o build-font-x-sanitize/tests/ui_settings_text tests/ui_settings_text.c build-font-x-sanitize/core/check.o build-font-x-sanitize/core/control.o build-font-x-sanitize/core/host.o build-font-x-sanitize/core/module.o build-font-x-sanitize/core/skin.o -ldl -pthread -lm
+ok font box:9 alignments with exact pixels/guards, defaults, center trim, atomic invalid text/font/dimensions
+  ok   ui.text renders font7+16 labels/values/digits and the font18 title at composed origins with captured fallback
+  ok   missing font pack falls back to the captured settings panel
+  ok   title lab flag defaults off: rows live, captured title kept
+  ok   unusable title font retains live rows and captured title
+  ok   lab preset validates tokens and preserves enabled editing
+  ok   lab edit disabled ignores presets and key edits
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

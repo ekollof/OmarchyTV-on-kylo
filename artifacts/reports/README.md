@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [FONT-X-OFFSET](FONT-X-OFFSET-2026-11-03.md) | corrects false zero-getter claim: -signed global minimum-left gives font18/title23 and font7/MODE18; boxed viewport/placement implemented, host/sanitizers/ARM-qemu/TV CPU checks pass; exact bounds, full raster/colour gate open |
 | [UI-TITLE-LIVE-GRAPH](UI-TITLE-LIVE-GRAPH-2026-11-03.md) | owner-opened stock panel/read-only graph: Surface108,5,691,95, LineObj23,5, zero margins/exact text/unit glyph ratio; +1b1 is CharClipping, not bold; X assignment remains open, no renderer change |
 | [UI-TITLE-BOX](UI-TITLE-BOX-2026-11-03.md) | optional title consumes boxed text alignment/clip; font18 center Y5 explains historical vertical delta; host/sanitizers/ARM-qemu/native CPU corpus pass; horizontal23px/complete controls and visual parity open |
 | [UI-WORK-REVIEW](UI-WORK-REVIEW-2026-11-02.md) | subsequent-agent review: ASan-proven scanner span fix, lab preset gate, default-off title/partial-subscription coverage; full host/focused sanitizers/ARM-qemu; saved live title/list geometry and limits, durable research snapshot |

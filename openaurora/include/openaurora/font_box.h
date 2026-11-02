@@ -5,7 +5,10 @@
 /* Plain single EF41 line in a zero-origin text surface, unit X/Y ratios,
  * positive logical font height, no markup/shaping/mirroring/overrides.
  * Numeric widget alignment follows SVGSurface::TEXT_ALIGN (1..9; default4).
+ * Includes the signed global minimum-left-bearing reservation (TextRenderer
+ * constructor/scale policy), not just each glyph's individual bearing.
  * Results are LOCAL to the surface; the caller owns absolute placement.
+ * Collapsed font-offset viewports return ENOTSUP pending full empty-rect policy.
  * Center trimming/end reverse paint use the maintained line renderer. */
 struct oa_font_box_layout {
     struct oa_font_line_layout line;

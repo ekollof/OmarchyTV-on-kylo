@@ -24,11 +24,31 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-TITLE-LIVE-GRAPH](artifacts/reports/UI-TITLE-LIVE-GRAPH-2026-11-03.md)
+Latest: [FONT-X-OFFSET](artifacts/reports/FONT-X-OFFSET-2026-11-03.md)
+closes title X23 and normal MODE-row X18 from firmware: b42468 returns NEGATIVE
+SIGNED font+5/global minimum-left bearing, not zero. Earlier zero-getter claims
+were wrong despite the saved ARM showing ldrsb/rsbs; corrected at source.
+Live font18 header e9 agrees with shipped minimum-23. common/font_box now uses
+this global offset in its viewport/initial origin, including center/end policy;
+raw glyph/fitted-row APIs remain unchanged. Title origin23,5 and absolute ink
+136..388/31..85 match the saved vendor command/capture bounds. MODE local18
+explains31->49; indented labels and full FA/style integration remain open.
+Full strict host/focused sanitizer/ARM-qemu/native CPU corpus passes; full
+raster-core comparison still differs, so title stays default-off and visible
+parity is unclosed. Isolated build-tv-v3/font-x; native162884 bytes/MD5
+22074919b41c8f0e789f0e3615ae3029/GLIBC2.7, separately verified/removed. Same
+boot/live1785/access/privacy; no drawing/input/device/persistent change or
+helper/job pending. Evidence analysis/ui-title-x-rule-2026-11-03, corrected
+verify-graph.cjs checks the actual font header rather than assuming return0.
+Next actual raster/coverage pipeline and original row indentation/styles;
+do not re-investigate title parent/client/surface translation for this offset.
+
+Previous: [UI-TITLE-LIVE-GRAPH](artifacts/reports/UI-TITLE-LIVE-GRAPH-2026-11-03.md)
 uses owner-opened stock settings panel and read-only scan/pointer graph. Current
 fb1 panel-ready captures confirm ink136..388/31..85. Actual hal::Surface bounds
 108,5,691,95; retained TextCommand LineObj position23,5, string Instellingen,
-margins0, start1/center3, line glyph ratio1/1 and BitmapFont X getters0. X23 is
+margins0, start1/center3, line glyph ratio1/1. Correction: BitmapFont X getters
+return23 for this font, not0 (FONT-X-OFFSET). X23 is
 in retained layout, not a reason to shift the widget; its assignment mechanism
 remains open. Flag+1b1 is CharClipping (command+54=1), not bold: corrected at
 source. Default-off title/X0 unchanged. Next trace actual logical viewport/
@@ -108,7 +128,8 @@ local text-surface clipping, center trim/end reverse. Actual460->489/488
 surfaces +font7/20 render54 offscreen lines; local Y2/1. Full strict host,
 focused sanitizers/ARM-qemu/native TV CPU corpus passes. Native build-tv-v3/
 font-box, analysis/ui-text-viewport-2026-11-02. Fresh source rules out fixed
-padding from Settings/Picture/SVGDialog margin slots, BitmapFont X offset,
+padding from Settings/Picture/SVGDialog margin slots (the earlier BitmapFont
+zero-X claim is corrected by FONT-X-OFFSET),
 base-list ctor insets or the setLabel setter. Actual text may still carry
 spacing/markup; original parent/window/resource/ratio state remains unverified.
 For the explicit test parent the regular origin is31,184, not the old fitted

@@ -1,4 +1,4 @@
 PASS: heap-bounded saved textbox -> UISurface -> hal::Surface -> RootDrawing -> TextCommand -> LineObj
 text=Instellingen; surface=108,5,691,95; margins=0; horizontal=start1 vertical=center3 CharClipping=1
-retained line origin=23,5; horizontal ratio=1/1; BitmapFont logical X getters=0
-NONATOMIC saved observations; X assignment mechanism remains unproven.
+retained line origin=23,5; horizontal ratio=1/1; BitmapFont X offset=-signed(font+5)=23
+NONATOMIC saved observations; font header added by later boot/exe-guarded view-only read.

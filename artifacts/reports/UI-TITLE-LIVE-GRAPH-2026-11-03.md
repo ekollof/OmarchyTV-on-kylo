@@ -4,8 +4,9 @@ Read-only observation narrows the remaining title placement problem to the
 retained LineObj: its position is23,5, while the underlying text surface bounds
 are108,5,691,95. Actual text is Instellingen, margins are zero, horizontal
 justification is start1, vertical center3 and stored horizontal ratio is1/1.
-The assignment rule producing X23 is still unproven; no fitted offset or
-production renderer change was made.
+The assignment rule was unproven at this observation; subsequent FONT-X-OFFSET
+recovers -signed font minimum-left and implements it. This graph-only milestone
+made no fitted offset or production renderer change.
 
 ## Screen association and capture correction
 
@@ -44,7 +45,7 @@ against the saved readable private heap maps by verify-graph.cjs:
 |Surface+20 -> RootDrawing; root+14 -> first command|Surface constructor/addCommand and DrawCommand::addChild b434c4|
 |first command vptr154c44c -> TextCommand|handleTextBlock113260c allocatesac bytes; ctor1131908 stores font+1c/LineObj+20/controls+24|
 |LineObj vptr154c52c; X+8/Y+c|getXPos1134eb0/getYPos1134ee0; actual23,5; length12|
-|font vptr13f9340 -> BitmapFont|actual+1c/+20 slots point to zero getterb42469; no font logical X inset|
+|font vptr13f9340 -> BitmapFont|actual+1c/+20 ->b42469; CORRECTION: this getter returns -signed object+5, not zero; later live header byte e9 gives23 (FONT-X-OFFSET)|
 |LineObj+34/+38|stored horizontal ratio1/1|
 |textbox UString+ a4/+a8|length12, storage begins exact Instellingen NUL; no hidden prefix|
 
@@ -77,8 +78,8 @@ Start alignment does not itself reposition the line. No constant23 rule has
 been found. Next resolve logical viewport/reference operands at word creation/
 scaleHorizontalPositions and retained state, including direct field writes;
 do not repeat the ruled-out dialog-client/surface-origin shift hypotheses.
-Current ui.title stays default-off and X0 until its native creation rule is
-recovered; the observed23 is diagnostic evidence, not a portable configuration.
+At this milestone ui.title stayed default-off/X0. FONT-X-OFFSET subsequently
+implements the recovered per-font rule, without a23px configuration constant.
 
 ## Execution and cleanup scope
 

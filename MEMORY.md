@@ -6,6 +6,18 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+FONT-X-OFFSET-2026-11-03: closed getter error: b42468 returns -signed font+5,
+not zero. Guarded live font18 header reads0xe9 (-23); shipped font18/font7
+minimum-lefts-23/-18 explain title23 and normal MODE-row18. common/font_box
+now reserves the global offset and positions start/center/end accordingly.
+Title origin23,5/ink136..388,31..85 matches saved vendor bounds; core pixels
+still differ, so title default-off and complete raster/style parity remain open.
+Full host/focused sanitizers/ARM-qemu/native memory-only corpus pass. Native
+162884 bytes/MD5 22074919b41c8f0e789f0e3615ae3029/maxGLIBC2.7, build-tv-v3/font-x.
+Separate size/hash verification before execution; staging gone/no helper/job.
+Same boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785/hook/hosts, SSH22/
+telnet2323 and Samba REJECT; no display/input/device/settings/persistent change.
+
 UI-TITLE-LIVE-GRAPH-2026-11-03: owner opened stock settings panel. Later ready
 capture confirms red panel and title ink136..388/31..85. View-only heap scan plus
 firmware-grounded pointer reads find foreground Surface108,5,691,95 and retained
@@ -72,7 +84,8 @@ e0c91d6934f7803622016fd48bbb427a/GLIBC2.7, build-tv-v3/font-box. Same stock
 boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785/zombie1967/access/privacy;
 staging removed/checked, no helper/job pending. No display/device/settings/
 persistent operation. Settings/Picture/SVGDialog margin bindings and BitmapFont
-X offsets are0; base-list ctor insets0, setLabel adds no fixed prefix. Actual
+X offsets were incorrectly called0; FONT-X-OFFSET corrects that to the negative
+global minimum-left bearing. Base-list ctor insets0, setLabel adds no fixed prefix. Actual
 parent/window/text/resource/ratio state still open: conditional origin31,184
 does not establish old fitted49,184. No guessed offset or UI fit replacement.
 
