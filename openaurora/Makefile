@@ -126,6 +126,19 @@ check-ui-theme-skin: $(BUILD)/tests/ui_theme_skin $(BUILD)/tests/ui_nav_display.
 
 check: check-ui-theme-skin
 
+$(BUILD)/tests/ui_vendor_subs: tests/ui_vendor_subs.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $< $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-ui-vendor-subs
+check-ui-vendor-subs: $(BUILD)/tests/ui_vendor_subs $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so
+	@mkdir -p $(BUILD)/tests/vendor-subs/modules
+	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/vendor-subs/modules/mod_nav_display.so
+	@cp $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/tests/vendor-subs/modules/
+	@$(BUILD)/tests/ui_vendor_subs $(BUILD)/tests/vendor-subs/modules
+
+check: check-ui-vendor-subs
+
 $(BUILD)/tests/widget_layout: tests/widget_layout.c common/widget_layout.c common/binsvg.c common/svg_pack.c common/text_layout.c include/openaurora/widget_layout.h include/openaurora/binsvg.h include/openaurora/svg_pack.h include/openaurora/text_layout.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm

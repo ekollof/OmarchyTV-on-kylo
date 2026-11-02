@@ -570,15 +570,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       before fallback, including NULL-returning failed init. Host249/focused
       sanitizer/native contracts, Unix socket and actual GPU switching/fallback/
       restoration pass. SKIN-SELECTION. No process-crash recovery.
-- [ ] Harden ui_vendor against service-removal subscription failure: m_start only
-      warns when the OA_TOPIC_SERVICE_REMOVED subscribe returns 0 and continues,
-      so a later forced ui_theme unload leaves a stale c->theme that
-      dialog_fs_type would call after dlclose (core/module.c force path
-      explicitly warns consumers may hold stale pointers). Either fail start,
-      retry the subscription, or re-validate the theme hold before use.
-      Found by independent adversarial review 2026-11-02; narrow path
-      (exhausted subscription table + forced unload + ui.launch_anim Select),
-      no runtime reproduction.
+- [x] Harden ui_vendor against service-removal subscription failure: m_start now
+      fails (like ui_omarchy) instead of warning and continuing, so a later
+      forced ui_theme unload cannot leave a stale c->theme that dialog_fs_type
+      would call after dlclose. The host calls stop() after a failed start,
+      which releases all holds. Regression: tests/ui_vendor_subs.c exhausts the
+      subscription table, asserts start fails with no leaked holds/subs, then
+      retry starts. Fixed 2026-11-02; full make check 261 ok.
+      (Found by independent adversarial review 2026-11-02; narrow path:
+      exhausted subscription table + forced unload + ui.launch_anim Select.)
 - [ ] Add an optional embedded Lua skin/scripting module after shared UI primitives
       stabilize and before implementing the full OmarchyTV skin. Expose a small,
       versioned API for layouts, navigation, themes, key bindings and animation

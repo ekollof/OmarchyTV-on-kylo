@@ -1309,9 +1309,11 @@ static int m_start(void *v)
     /* React to providers that appear later, and drop cached pointers when one is removed. */
     c->mod_key = c->api->subscribe(c->api->priv, OA_TOPIC_MODULE_CHANGED, on_module_changed, c);
     c->svc_key = c->api->subscribe(c->api->priv, OA_TOPIC_SERVICE_REMOVED, on_service_removed, c);
-    if (!c->mod_key || !c->svc_key)
-        c->api->log(c->api->priv, OA_LOG_WARN,
-                    "ui_vendor: lifecycle subscription failed; late providers will not be discovered");
+    if (!c->mod_key || !c->svc_key) {
+        c->api->log(c->api->priv, OA_LOG_ERROR,
+                    "ui_vendor: lifecycle subscription failed; refusing start");
+        return -1;
+    }
     if (c->api->publish(c->api->priv, OA_SVC_PORTAL, 1, &g_portal) != 0) {
         if (c->anim) {
             c->anim->bind(NULL, NULL);
