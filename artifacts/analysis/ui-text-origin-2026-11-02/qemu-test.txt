@@ -1,0 +1,1 @@
+ok text origin: vertical policies, clipping capacity, ratio phase/floor, zero step, bounds

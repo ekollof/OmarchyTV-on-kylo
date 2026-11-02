@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-SLICE-STRETCH](artifacts/reports/UI-SLICE-STRETCH-2026-11-02.md)
+Latest: [UI-TEXT-ORIGIN](artifacts/reports/UI-TEXT-ORIGIN-2026-11-02.md)
+confirms client-margin slot+38 binds the zero-margin base getter for actual
+list/setting-list/row/setting-row/textbox classes. common/text_origin.c now
+implements vertical start/end/center/spread with center clipping-capacity
+adjustment, plus per-line floor((ref+y+fontOffset)*ratio)-floor(ref*ratio).
+Center divides toward0; ratio rounding floors. Bitmap logical height is signed
+extremes height; its Y offset0. Strict full host/focused ASan-UBSan/ARM-qemu/
+native TV contracts pass. Build-tv-v3/text-origin; analysis/ui-text-origin-
+2026-11-02. Same stock boot/live1785/access/privacy; staging removed, no helper/
+job pending. Next horizontal placement/truncation/direction (Line1134600,
+TextRenderer1133050), actual widget style/ratios and coordinate composition,
+then theme/UI integration. Do not guess right-minus-width: firmware end path
+uses final-glyph advance/style reversal. Optional live labels remain fitted.
+
+Previous: [UI-SLICE-STRETCH](artifacts/reports/UI-SLICE-STRETCH-2026-11-02.md)
 implements retained double-ratio measurement, horizontal rectangle stretch and
 middle-surface construction in common/text_layout.c. Relative X and width
 truncate independently; height unchanged; nonpositive mask width retains ratio.

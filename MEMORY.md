@@ -6,6 +6,17 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-TEXT-ORIGIN-2026-11-02: concrete list/row/textbox margin bindings resolve
+the zero-margin base getter. Vertical logical placement and phase-preserving
+ratio-floor helpers implemented in common/text_origin.c. Strict full host,
+focused sanitizers, ARM/qemu and native TV contracts pass. Native30248 bytes,
+MD5 d8dcf038231ff43f355573d7798f7b7a, GLIBC2.4, build-tv-v3/text-origin.
+Same stock boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785/zombie1967,
+hook/hosts/access/privacy; staging removed and independently checked. No
+display/device/persistent change, no helper/job pending. Horizontal/direction/
+actual style/coordinate/runtime theme integration remains open; UI origins
+remain fitted. See UI-TEXT-ORIGIN for exact entries and rejected assumptions.
+
 UI-SLICE-STRETCH-2026-11-02: retained double-ratio horizontal stretch and middle
 destination construction implemented; composed raw477→measured/painted row test
 passes without screenshot fits.49,538 VFP rectangle cases pass ARM/qemu and

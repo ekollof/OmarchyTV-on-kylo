@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [UI-TEXT-ORIGIN](UI-TEXT-ORIGIN-2026-11-02.md) | concrete zero-client-margin bindings, vertical placement/clipping-capacity and phase-preserving ratio floor; host/sanitizer/ARM-qemu/TV helpers; horizontal/actual widget/text integration open |
 | [UI-SLICE-STRETCH](UI-SLICE-STRETCH-2026-11-02.md) | retained double-ratio horizontal transform, independent offset/width truncation and composed477 row path;49,538 VFP cases qemu/TV plus host/sanitizer/full checks; parent/client findings, runtime/text integration open |
 | [UI-LIST-METRICS](UI-LIST-METRICS-2026-11-02.md) | raw slice measurement, visible-count ordering and painted-row cached fields; corrected widget pointer names; host/sanitizer/ARM-qemu/native TV arithmetic tests; theme/resource/window/text integration open |
 | [UI-MASK-LAYOUT](UI-MASK-LAYOUT-2026-11-02.md) | firmware mask alignment/translation and vertical/horizontal/mirrored row formulas; bounded helpers, host/sanitizer/ARM-qemu/TV pass; runtime metric population/full widget integration open |

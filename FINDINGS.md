@@ -6,6 +6,13 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Text origins (2026-11-02): UI-TEXT-ORIGIN confirms concrete list/row/textbox
+zero-margin bindings and recovers vertical policies. Center's half-division
+truncates toward0; per-line ratio conversion floors two reference-dependent
+positions separately. Existing font_text_draw still takes a caller-supplied
+glyph origin, not a recovered complete baseline. Horizontal style/direction/
+truncation and actual widget inputs remain open.
+
 Horizontal stretch (2026-11-02): UI-SLICE-STRETCH preserves double ratio and
 separate truncation of relative X and width; independently scaling corners can
 misplace an edge. Nonpositive mask width retains prior ratio; changing surface

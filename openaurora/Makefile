@@ -143,6 +143,16 @@ check-slice-stretch: $(BUILD)/tests/slice_stretch
 
 check: check-slice-stretch
 
+$(BUILD)/tests/text_origin: tests/text_origin.c common/text_origin.c include/openaurora/text_origin.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-text-origin
+check-text-origin: $(BUILD)/tests/text_origin
+	@$(BUILD)/tests/text_origin
+
+check: check-text-origin
+
 check: check-font-bitmap check-font-finder check-font-draw check-font-pack check-font-text check-text-layout
 
 $(BUILD)/oa-audio-broker: tools/audio/oa-audio-broker.c common/audio_broker.c common/audio_broker_wire.c common/audio_client.c common/audio_netlink.c include/openaurora/audio_broker.h include/openaurora/audio_client.h include/openaurora/audio_netlink.h

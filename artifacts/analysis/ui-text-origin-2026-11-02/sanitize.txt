@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer  -o build-text-origin-sanitize/tests/text_origin tests/text_origin.c common/text_origin.c
+ok text origin: vertical policies, clipping capacity, ratio phase/floor, zero step, bounds
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

@@ -72,6 +72,9 @@ adds margin left/top and subtracts margin right/bottom. The base
 getClientMarginRect1152578 returns four zeroes. Confirm the relevant subclass
 vtable binding before assuming every widget uses that base implementation.
 These are static findings; no parent/window API was invoked on the set.
+Follow-up UI-TEXT-ORIGIN confirms zero-margin vtable bindings for the concrete
+list/setting-list/row/setting-row/textbox classes. That binding question is closed
+for those classes; actual style/ratios/coordinate integration remains open.
 
 ## Verification and continuation
 

@@ -436,6 +436,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       and focused sanitizers pass. UI-SLICE-STRETCH-2026-11-02. New row creation
       adds parent client origin; concrete margin bindings and actual widget
       inputs/text baseline/runtime theme/UI integration remain open.
+- [x] Confirm zero client margins for concrete list/setting-list/row/setting-row/
+      textbox vtables; recover vertical line positioning and separate ratio-floor
+      reference conversion. common/text_origin.c contract tests pass strict full
+      host/sanitizer/ARM-qemu/native TV. UI-TEXT-ORIGIN-2026-11-02. Horizontal
+      direction/truncation/alignment, actual widget styles/ratios/coordinate
+      composition and runtime theme/UI integration remain open.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on
