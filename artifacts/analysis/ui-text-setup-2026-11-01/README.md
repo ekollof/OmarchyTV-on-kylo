@@ -452,3 +452,40 @@ No easing inside the callback (list path is linear per UI-ANIMATIONS; easing
 lives in the controller progress). Open: the +100 consumer identity, how row
 rects feed the old/new slots per selection change, and whether the animated
 rect is the `selectionIndicator` resource rect. No implementation.
+
+## Row-background name sequence (SVGListBoxRow::renderBackground 0x10bec08)
+
+Asm-verified call order of `getWidgetStandardName` in the function
+(aurora.dis file lines 4093381–4093798), with stock (non-mirrored, `iVar2==0`)
+names resolved through the ELF with segment-correct VA→file translation and
+cross-checked against the four known m-names:
+
+| # | asm site | id | stock name |
+|---|---|---|---|
+| 1 | 10bec98 | 54 (0x36) | glyph |
+| 2 | 10becd8 | 17 (0x11) | mRowL |
+| 3 | 10bed0a | 5 | gRowL |
+| 4 | 10bed9c | 22 (0x16) | mRowR |
+| 5 | 10bedcc | 10 (0xa) | gRowR |
+| 6 | 10bee66 | 18 (0x12) | mRowM |
+| 7 | 10bee96 | 6 | gRowM |
+| 8 | 10bf0f6 | 18 | mRowM |
+| 9 | 10bf140 | 18 (r2 carried from #8, no rewrite between) | mRowM |
+
+New names recovered: `gRowL`/`gRowM`/`gRowR` (a `g` set alongside the known
+`m` set) and `glyph` (54). Branch structure: 5/10 are a swapped mirror pair
+(stock 5=gRowL, 10=gRowR; mirrored arms swap), the same pattern as 17/22;
+6, 18 and 54 are single-arm. Decompile source:
+artifacts/analysis/ui-mask-layout-2026-11-02/list-row-layout.txt;
+getWidgetStandardName switch: /tmp/opencode/decomp-wstd.txt (ephemeral,
+re-runnable with DumpFirmware.java @0xeee798).
+
+Structural facts read directly from that decompile (no implementation):
+the first name fills the UString slot (r7+12, 8 bytes below the r7+20 slot
+of call #2, matching the 8-byte UString pitch) that the row's own
+`getRectangle(container, ...)` lookup consumes; when that lookup misses, the
+row destroys its child windows (+e0..+f0). The gRowL/gRowR names go to the
+renderer calls inside the two mask passes (alignments 1 and 2); the mRowM
+lookups surround the `HorizontalMaskScaleTransform` surface setup. Still open:
+which rects those mask passes produce for the live row, the scale surface-rect
+field mapping, and the already-open +100 consumer linkage.

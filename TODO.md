@@ -411,7 +411,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       10c62ac-10c63c6: first-present marker wins in type order — fontRegular→0,
       fontBold→1, fontLight→2, fontItalic→3, fontBoldItalic→4,
       fontLightItalic→5, else 0; sl holds the fontBold result after the textPos
-      rescale consumes it). UI-MASK-LAYOUT
+      rescale consumes it). SVGListBoxRow::renderBackground's nine widget-name
+      lookups are asm-verified (glyph/mRowL/gRowL/mRowR/gRowR/mRowM/gRowM/mRowM/
+      mRowM; 5/10 are a swapped mirror pair like 17/22); the first name feeds
+      the row's own rect lookup (miss destroys row children) and the g/m row
+      names feed the two mask passes and the horizontal scale transform.
+      UI-MASK-LAYOUT
       now recovers mask positioning and row arithmetic; runtime field
       population, slice composition, text origin and FA animation geometry are still
       undecoded, so title/tab/slider-graphics/focused text must not
