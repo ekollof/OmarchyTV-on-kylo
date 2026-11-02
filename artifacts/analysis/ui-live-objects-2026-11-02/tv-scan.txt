@@ -1,0 +1,13 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+NONATOMIC vtable candidates; readable private heap only; no active-window inference
+candidate=07bd87d8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07bd9168 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07bd9af8 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07bd9e44 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07bda104 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+candidate=07bda3c4 class=SVGTextBox created=0 state=1 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=4
+heap_ranges=4 scanned_bytes=176934912 candidates=6 complete=1

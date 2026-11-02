@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Live UI scope (2026-11-02): UI-LIVE-OBJECTS scans only readable private [heap]
+for known firmware vptrs; matches are non-atomic candidates, not active-window
+proof, and absent matches do not cover other arenas/subclasses. Current scan
+finds only6 uncreated textbox candidates. Owner confirms HDMI1 video playing:
+blank OSD and WS OTHER must not be called standby or a failed display. Menu
+HTTP201 did not prove handling. Old wspoll.c has an8-byte read into ext[4] and
+other framing/state defects; it was not run. Host WS queried state instead.
+
 Local text rendering (2026-11-02): UI-TEXT-VIEWPORT verifies widget alignment4
 maps to HAL start/center; all9 mappings/default implemented in text_origin and
 the new unit-ratio single-line font_box renderer. Local Y2/1 for actual tested

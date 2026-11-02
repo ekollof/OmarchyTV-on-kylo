@@ -24,7 +24,24 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-TEXT-VIEWPORT](artifacts/reports/UI-TEXT-VIEWPORT-2026-11-02.md)
+Latest: [UI-LIVE-OBJECTS](artifacts/reports/UI-LIVE-OBJECTS-2026-11-02.md)
+adds read-only tools/re/ui-object-scan.c. Firmware vptr/field inventory checks
+exact readable private [heap] maps with256MiB cap, no ptrace/input/functions/
+memory writes. Full strict host/focused sanitizers/ARM-qemu tests and native
+scan pass:4 heap ranges/176934912 bytes,6 uncreated textbox candidates, no
+settings/list/row/dialog match IN THAT SUBSET. Not proof of process-wide absence;
+do not repeat unchanged scan to establish placement. Stock firmware hash verified.
+Owner reported awake HDMI1 external video; blank OSD/WS OTHER are not standby
+or crash evidence. One Menu1048 POST got201 without observed menu effect; no
+further navigation/power/device operation followed the owner report. This turn
+returned to view-only work; AGENTS still owns standing authorization. Old
+tools/wspoll.c has concrete frame-buffer/short-read/state bugs and was not run;
+host Node WS query used instead. Fix it before reuse. Native build-tv-v3/ui-scan,
+analysis/ui-live-objects-2026-11-02, ignored screenshots workbench/live-ui-20261102.
+Same boot/live1785/access/privacy; staging removed, no helper/job pending.
+Actual settings parent/text/resource/ratio and skin/visible parity remain open.
+
+Previous: [UI-TEXT-VIEWPORT](artifacts/reports/UI-TEXT-VIEWPORT-2026-11-02.md)
 adds common/font_box.c: widget1..9 alignment bridge -> vertical/line render,
 local text-surface clipping, center trim/end reverse. Actual460->489/488
 surfaces +font7/20 render54 offscreen lines; local Y2/1. Full strict host,

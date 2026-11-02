@@ -75,6 +75,20 @@ MOD_DEP  := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).d)
 
 all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker
 
+$(BUILD)/ui-object-scan: tools/re/ui-object-scan.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
+$(BUILD)/tests/ui_object_scan: tests/ui_object_scan.c tools/re/ui-object-scan.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
+.PHONY: check-ui-object-scan
+check-ui-object-scan: $(BUILD)/tests/ui_object_scan
+	@$(BUILD)/tests/ui_object_scan
+
+check: check-ui-object-scan
+
 $(BUILD)/modules/mod_ui_theme.so: modules/ui_theme/ui_theme.c common/svg_pack.c common/binsvg.c include/openaurora/svg_pack.h include/openaurora/binsvg.h include/openaurora/text_layout.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)

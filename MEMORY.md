@@ -6,6 +6,20 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-LIVE-OBJECTS-2026-11-02: read-only vtable-candidate scanner added/tested.
+Native32736 bytes/MD5 c7ac91ee12465bad32819cebfbe13c57/GLIBC2.7,
+build-tv-v3/ui-scan. Full strict host/focused sanitizers/ARM-qemu pass; native
+four-heap-range176934912-byte scan completes:6 uncreated textbox candidates,
+no settings/row/list/dialog candidate in that subset (not global absence).
+Owner reports awake HDMI1 external video. Blank OSD/WS OTHER do not mean standby
+or crash; one Menu1048 POST201 produced no observed menu. No navigation/power/
+device operation followed that report; this turn returned to view-only work.
+Old wspoll.c not run due to concrete parser bugs; host Node WS queried state.
+Same stock boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785/zombie1967/
+firmware64c252340d3af6c5d66072611b7bad7a/access/privacy; staging removed and
+checked, no helper/job pending. No persistent change. Actual settings instance/
+text/ratio/skin and visible acceptance remain open; fitted origins unchanged.
+
 UI-TEXT-VIEWPORT-2026-11-02: common/font_box.c joins recovered widget alignment
 mapping with vertical/local line rendering. Exact9-alignment pixels and actual
 460->489/488/font7/20 render54 offscreen lines, Y2/1. Full strict host/focused

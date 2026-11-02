@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [UI-LIVE-OBJECTS](UI-LIVE-OBJECTS-2026-11-02.md) | bounded view-only heap candidate scanner, native complete sample and tests; no settings instance proved; owner confirms HDMI video despite blank OSD/OTHER; unsafe historical wspoll flagged |
 | [UI-TEXT-VIEWPORT](UI-TEXT-VIEWPORT-2026-11-02.md) | alignment bridge and unit-ratio boxed EF41 renderer; exact9-alignment/54-line actual resource/font CPU tests pass host/sanitizers/ARM-qemu/TV; absolute placement/text/ratio/visual acceptance still open |
 | [UI-TEXTBOX-COMPOSE](UI-TEXTBOX-COMPOSE-2026-11-02.md) | single-line full-height slice/textPos/style composition; actual460->489/488/live font7/20 tests pass host/sanitizers/ARM-qemu/TV; actual parent/glyph/clip/visible integration open |
 | [UI-ROW-WINDOWS](UI-ROW-WINDOWS-2026-11-02.md) | ordered container/mask discovery and rowItems child windows; actual460 composition and host/sanitizers/ARM-qemu/TV CPU tests; actual parent/textbox/font/UI integration open |

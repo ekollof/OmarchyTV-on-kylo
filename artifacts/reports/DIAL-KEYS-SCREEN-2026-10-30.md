@@ -1,5 +1,12 @@
 # DIAL standalone, virtual RC keymap, and screen capture (2026-10-30)
 
+> Review2026-11-02: this is historical transport/key-map evidence. The old
+> tools/wspoll.c has an8-byte read into ext[4] plus short/header-coalescing and
+> stale/uninitialized state defects; repair/test before reuse, especially on TV.
+> UI-LIVE-OBJECTS used the host WebSocket API for tvstate instead. Its Menu1048
+> request returned201 without an observed UI effect;201 alone is not key-handling
+> proof. The owner confirmed live HDMI1 video despite blank OSD and WS OTHER.
+
 > **Status: Historical protocol measurements. Standalone dialserver still delegates TV behavior to Aurora. Current state is in MEMORY; no key/deployment authorization.** See [report index](README.md) and
 > [current corrections](../../FINDINGS.md); old plans do not authorize TV changes.
 

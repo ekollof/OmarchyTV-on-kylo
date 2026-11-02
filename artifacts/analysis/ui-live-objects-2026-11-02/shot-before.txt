@@ -1,0 +1,2 @@
+fb1 (OSD_NORMAL2) frame 0/1: artifacts/workbench/live-ui-20261102/before_0.png BLANK
+fb1 (OSD_NORMAL2) frame 1/1: artifacts/workbench/live-ui-20261102/before_1.png BLANK

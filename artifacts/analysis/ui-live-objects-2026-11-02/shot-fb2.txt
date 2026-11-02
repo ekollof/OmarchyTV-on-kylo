@@ -1,0 +1,2 @@
+fb2 (OSD_NORMAL3) frame 0/1: artifacts/workbench/live-ui-20261102/fb2_0.png BLANK
+fb2 (OSD_NORMAL3) frame 1/1: artifacts/workbench/live-ui-20261102/fb2_1.png BLANK

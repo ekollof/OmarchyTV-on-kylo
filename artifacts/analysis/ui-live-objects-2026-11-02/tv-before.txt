@@ -1,0 +1,1283 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+71f7eb63-727f-4b9a-a9c7-2b04dc3f9197
+ 1703 root      0:00 /bin/sh /mtd_apexe/board/run_aurora.sh
+ 1785 root     59:59 /vendor/com.nvt.idtv/aurora.elf
+ 1967 root      0:00 [aurora.elf]
+31877 root      0:00 sh -c cat /proc/sys/kernel/random/boot_id; ps | grep aurora; readlink /proc/1785/exe; cat /proc/1785/maps
+31880 root      0:00 grep aurora
+/vendor/com.nvt.idtv/aurora.elf
+00010000-01742000 r-xp 00000000 fd:02 4699       /vendor/com.nvt.idtv/aurora.elf
+01751000-01792000 rw-p 01731000 fd:02 4699       /vendor/com.nvt.idtv/aurora.elf
+01792000-01a2e000 rw-p 00000000 00:00 0 
+01a31000-01ea7000 rw-p 01771000 fd:02 4699       /vendor/com.nvt.idtv/aurora.elf
+036a9000-036aa000 ---p 00000000 00:00 0          [heap]
+036aa000-036c9000 rw-p 00000000 00:00 0          [heap]
+036c9000-036ca000 ---p 00000000 00:00 0          [heap]
+036ca000-036e9000 rw-p 00000000 00:00 0          [heap]
+036e9000-036ea000 ---p 00000000 00:00 0          [heap]
+036ea000-0370f000 rw-p 00000000 00:00 0          [heap]
+0370f000-03710000 ---p 00000000 00:00 0          [heap]
+03710000-0df6a000 rw-p 00000000 00:00 0          [heap]
+20000000-20001000 rw-s 00000000 00:12 6265       /dev/shm/fusion.0
+20080000-21090000 rw-s 00000000 00:12 6266       /dev/shm/fusion.0.1
+21090000-21499000 rw-s 00000000 00:12 6267       /dev/shm/fusion.0.2
+214a0000-224b0000 rw-s 00000000 00:12 6268       /dev/shm/fusion.0.3
+224b0000-225b4000 rw-s 00000000 00:12 7944       /dev/shm/fusion.0.4
+30ed5000-30ed6000 ---p 00000000 00:00 0 
+30ed6000-316d5000 rwxp 00000000 00:00 0 
+316d5000-316d6000 ---p 00000000 00:00 0 
+316d6000-31ed5000 rwxp 00000000 00:00 0 
+326d5000-326d6000 ---p 00000000 00:00 0 
+326d6000-32ed5000 rwxp 00000000 00:00 0 
+36ed5000-36ed6000 ---p 00000000 00:00 0 
+36ed6000-376d5000 rwxp 00000000 00:00 0 
+376d5000-376d6000 ---p 00000000 00:00 0 
+376d6000-37ed5000 rwxp 00000000 00:00 0 
+37ed5000-37ed6000 ---p 00000000 00:00 0 
+37ed6000-386d5000 rwxp 00000000 00:00 0 
+386d5000-386d6000 ---p 00000000 00:00 0 
+386d6000-38ed5000 rwxp 00000000 00:00 0 
+391d5000-391d6000 ---p 00000000 00:00 0 
+391d6000-399d5000 rwxp 00000000 00:00 0 
+399d5000-399d6000 ---p 00000000 00:00 0 
+399d6000-3a1d5000 rwxp 00000000 00:00 0 
+3a1d5000-3a1d6000 ---p 00000000 00:00 0 
+3a1d6000-3a9d5000 rwxp 00000000 00:00 0 
+3a9d5000-3a9d6000 ---p 00000000 00:00 0 
+3a9d6000-3a9f5000 rwxp 00000000 00:00 0 
+3aeec000-3aeed000 ---p 00000000 00:00 0 
+3aeed000-3af0c000 rwxp 00000000 00:00 0 
+3af0c000-3af0d000 ---p 00000000 00:00 0 
+3af0d000-3b70c000 rwxp 00000000 00:00 0 
+3b8f5000-3b8f6000 ---p 00000000 00:00 0 
+3b8f6000-3c0f5000 rwxp 00000000 00:00 0 
+3c101000-3c102000 ---p 00000000 00:00 0 
+3c102000-3c901000 rwxp 00000000 00:00 0 
+3c901000-3c904000 r-xp 00000000 fd:00 175        /lib/libnss_dns-2.23.so
+3c904000-3c913000 ---p 00003000 fd:00 175        /lib/libnss_dns-2.23.so
+3c913000-3c914000 r--p 00002000 fd:00 175        /lib/libnss_dns-2.23.so
+3c914000-3c915000 rw-p 00003000 fd:00 175        /lib/libnss_dns-2.23.so
+3c915000-3c955000 rw-s 3c915000 00:06 8225       /dev/mali0
+3c9b5000-3c9b6000 ---p 00000000 00:00 0 
+3c9b6000-3c9d5000 rwxp 00000000 00:00 0 
+3c9d5000-3c9d6000 ---p 00000000 00:00 0 
+3c9d6000-3c9f5000 rwxp 00000000 00:00 0 
+3c9f5000-3cb69000 r--s 00000000 fd:02 179        /vendor/browser_dir/virtual_keyboard_v2.pak
+3cb69000-3cbaa000 rw-s 00000000 00:15 38690      /buffer/browser_home/web_ui/GPUCache/index
+3cbaa000-3cbab000 ---p 00000000 00:00 0 
+3cbab000-3d3aa000 rwxp 00000000 00:00 0 
+3d3aa000-3d3ab000 ---p 00000000 00:00 0 
+3d3ab000-3dbaa000 rwxp 00000000 00:00 0 
+3dbaa000-3dbca000 rw-s 00000000 00:12 8943       /dev/shm/.org.chromium.Chromium.VvlXQe (deleted)
+3dbca000-3dc82000 r-xp 00000000 fd:02 176        /vendor/browser_dir/uva_ooif_backends/libooifuvabackend-handset.so
+3dc82000-3dc91000 ---p 000b8000 fd:02 176        /vendor/browser_dir/uva_ooif_backends/libooifuvabackend-handset.so
+3dc91000-3dc9a000 r--p 000b7000 fd:02 176        /vendor/browser_dir/uva_ooif_backends/libooifuvabackend-handset.so
+3dc9a000-3dc9b000 rw-p 000c0000 fd:02 176        /vendor/browser_dir/uva_ooif_backends/libooifuvabackend-handset.so
+3dc9b000-3dc9c000 rw-p 00000000 00:00 0 
+3dc9c000-3dca0000 r-xp 00000000 fd:02 177        /vendor/browser_dir/uva_ooif_backends/libooifuvabackend-proxy.so
+3dca0000-3dcaf000 ---p 00004000 fd:02 177        /vendor/browser_dir/uva_ooif_backends/libooifuvabackend-proxy.so
+3dcaf000-3dcb0000 r--p 00003000 fd:02 177        /vendor/browser_dir/uva_ooif_backends/libooifuvabackend-proxy.so
+3dcb0000-3dcb1000 rw-p 00004000 fd:02 177        /vendor/browser_dir/uva_ooif_backends/libooifuvabackend-proxy.so
+3dcb1000-3dcd1000 rw-s 3dcb1000 00:06 8225       /dev/mali0
+3dcd1000-3ddd1000 rw-s 00000000 00:12 8941       /dev/shm/.org.chromium.Chromium.5tr18j (deleted)
+3ddd1000-3ded1000 rw-s 00000000 00:12 8940       /dev/shm/.org.chromium.Chromium.Z5KsRV (deleted)
+3ded1000-3dfd1000 rw-s 00000000 00:12 8941       /dev/shm/.org.chromium.Chromium.5tr18j (deleted)
+3dfd1000-3e0d1000 rw-s 00000000 00:12 8940       /dev/shm/.org.chromium.Chromium.Z5KsRV (deleted)
+3e11e000-3e11f000 ---p 00000000 00:00 0 
+3e11f000-3e13e000 rwxp 00000000 00:00 0 
+3e13e000-3e13f000 ---p 00000000 00:00 0 
+3e13f000-3e15e000 rwxp 00000000 00:00 0 
+3e1d8000-3e1d9000 ---p 00000000 00:00 0 
+3e1d9000-3e1f8000 rwxp 00000000 00:00 0 
+3e1f8000-3e238000 rw-s 3e1f8000 00:06 8225       /dev/mali0
+3e240000-3e241000 ---p 00000000 00:00 0 
+3e241000-3e260000 rwxp 00000000 00:00 0 
+3e291000-3e292000 ---p 00000000 00:00 0 
+3e292000-3e2b1000 rwxp 00000000 00:00 0 
+3e2b1000-3e2b2000 ---p 00000000 00:00 0 
+3e2b2000-3e2d1000 rwxp 00000000 00:00 0 
+3e491000-3e492000 ---p 00000000 00:00 0 
+3e492000-3e4b1000 rwxp 00000000 00:00 0 
+3e4d1000-3e4d2000 ---p 00000000 00:00 0 
+3e4d2000-3ecd1000 rwxp 00000000 00:00 0 
+3ecd1000-3ecd2000 ---p 00000000 00:00 0 
+3ecd2000-3f4d1000 rwxp 00000000 00:00 0 
+3f4d1000-3f4df000 r-xp 00000000 fd:02 71         /vendor/browser_dir/jsplugins/libPowerSettingsPlugin.so
+3f4df000-3f4ef000 ---p 0000e000 fd:02 71         /vendor/browser_dir/jsplugins/libPowerSettingsPlugin.so
+3f4ef000-3f4f0000 rw-p 0000e000 fd:02 71         /vendor/browser_dir/jsplugins/libPowerSettingsPlugin.so
+3f4f0000-3f500000 r-xp 00000000 fd:02 59         /vendor/browser_dir/jsplugins/libAsyncDataProvider.so
+3f500000-3f50f000 ---p 00010000 fd:02 59         /vendor/browser_dir/jsplugins/libAsyncDataProvider.so
+3f50f000-3f510000 rw-p 0000f000 fd:02 59         /vendor/browser_dir/jsplugins/libAsyncDataProvider.so
+3f510000-3f511000 ---p 00000000 00:00 0 
+3f511000-3fd10000 rwxp 00000000 00:00 0 
+3fd10000-3fd11000 ---p 00000000 00:00 0 
+3fd11000-40510000 rwxp 00000000 00:00 0 
+40510000-40511000 ---p 00000000 00:00 0 
+40511000-40d10000 rwxp 00000000 00:00 0 
+40d10000-40d11000 ---p 00000000 00:00 0 
+40d11000-41510000 rwxp 00000000 00:00 0 
+41510000-41511000 ---p 00000000 00:00 0 
+41511000-41d10000 rwxp 00000000 00:00 0 
+41d10000-41d11000 ---p 00000000 00:00 0 
+41d11000-42510000 rwxp 00000000 00:00 0 
+42510000-42511000 ---p 00000000 00:00 0 
+42511000-42d10000 rwxp 00000000 00:00 0 
+42d10000-42d11000 ---p 00000000 00:00 0 
+42d11000-43510000 rwxp 00000000 00:00 0 
+43510000-43511000 ---p 00000000 00:00 0 
+43511000-43d10000 rwxp 00000000 00:00 0 
+43d10000-43d11000 ---p 00000000 00:00 0 
+43d11000-44510000 rwxp 00000000 00:00 0 
+44510000-44511000 ---p 00000000 00:00 0 
+44511000-44d10000 rwxp 00000000 00:00 0 
+44d10000-44d11000 ---p 00000000 00:00 0 
+44d11000-45510000 rwxp 00000000 00:00 0 
+45510000-45511000 ---p 00000000 00:00 0 
+45511000-45d10000 rwxp 00000000 00:00 0 
+45d10000-45d11000 ---p 00000000 00:00 0 
+45d11000-46510000 rwxp 00000000 00:00 0 
+46510000-46511000 ---p 00000000 00:00 0 
+46511000-46d10000 rwxp 00000000 00:00 0 
+46d10000-46d28000 r-xp 00000000 fd:00 130        /lib/ld-2.23.so
+46d37000-46d38000 r--p 00017000 fd:00 130        /lib/ld-2.23.so
+46d38000-46d39000 rw-p 00018000 fd:00 130        /lib/ld-2.23.so
+46d40000-46d42000 r-xp 00000000 fd:00 150        /lib/libdl-2.23.so
+46d42000-46d51000 ---p 00002000 fd:00 150        /lib/libdl-2.23.so
+46d51000-46d52000 r--p 00001000 fd:00 150        /lib/libdl-2.23.so
+46d52000-46d53000 rw-p 00002000 fd:00 150        /lib/libdl-2.23.so
+46d60000-46e7b000 r-xp 00000000 fd:02 5180       /vendor/lib/gstreamer/libglib-2.0.so.0.4200.2
+46e7b000-46e8a000 ---p 0011b000 fd:02 5180       /vendor/lib/gstreamer/libglib-2.0.so.0.4200.2
+46e8a000-46e8c000 rw-p 0011a000 fd:02 5180       /vendor/lib/gstreamer/libglib-2.0.so.0.4200.2
+46e90000-46e96000 r-xp 00000000 fd:02 5171       /vendor/lib/gstreamer/libffi.so.6.0.4
+46e96000-46ea6000 ---p 00006000 fd:02 5171       /vendor/lib/gstreamer/libffi.so.6.0.4
+46ea6000-46ea7000 rw-p 00006000 fd:02 5171       /vendor/lib/gstreamer/libffi.so.6.0.4
+46eb0000-46eb2000 r-xp 00000000 fd:02 5183       /vendor/lib/gstreamer/libgmodule-2.0.so.0.4200.2
+46eb2000-46ec2000 ---p 00002000 fd:02 5183       /vendor/lib/gstreamer/libgmodule-2.0.so.0.4200.2
+46ec2000-46ec3000 rw-p 00002000 fd:02 5183       /vendor/lib/gstreamer/libgmodule-2.0.so.0.4200.2
+46ed0000-46ee8000 r-xp 00000000 fd:00 153        /lib/libgcc_s.so.1
+46ee8000-46ef7000 ---p 00018000 fd:00 153        /lib/libgcc_s.so.1
+46ef7000-46ef8000 rw-p 00017000 fd:00 153        /lib/libgcc_s.so.1
+46f00000-46f11000 r-xp 00000000 fd:00 186        /lib/libpthread-2.23.so
+46f11000-46f20000 ---p 00011000 fd:00 186        /lib/libpthread-2.23.so
+46f20000-46f21000 r--p 00010000 fd:00 186        /lib/libpthread-2.23.so
+46f21000-46f22000 rw-p 00011000 fd:00 186        /lib/libpthread-2.23.so
+46f22000-46f24000 rw-p 00000000 00:00 0 
+46f30000-47008000 r-xp 00000000 fd:00 144        /lib/libc-2.23.so
+47008000-47017000 ---p 000d8000 fd:00 144        /lib/libc-2.23.so
+47017000-47019000 r--p 000d7000 fd:00 144        /lib/libc-2.23.so
+47019000-4701b000 rw-p 000d9000 fd:00 144        /lib/libc-2.23.so
+4701b000-4701d000 rw-p 00000000 00:00 0 
+47020000-47087000 r-xp 00000000 fd:00 166        /lib/libm-2.23.so
+47087000-47096000 ---p 00067000 fd:00 166        /lib/libm-2.23.so
+47096000-47097000 r--p 00066000 fd:00 166        /lib/libm-2.23.so
+47097000-47098000 rw-p 00067000 fd:00 166        /lib/libm-2.23.so
+470a0000-470d9000 r-xp 00000000 fd:02 5189       /vendor/lib/gstreamer/libgobject-2.0.so.0.4200.2
+470d9000-470e8000 ---p 00039000 fd:02 5189       /vendor/lib/gstreamer/libgobject-2.0.so.0.4200.2
+470e8000-470ea000 rw-p 00038000 fd:02 5189       /vendor/lib/gstreamer/libgobject-2.0.so.0.4200.2
+470f0000-471ca000 r-xp 00000000 fd:02 5246       /vendor/lib/gstreamer/libgstreamer-1.0.so.0.405.0
+471ca000-471d9000 ---p 000da000 fd:02 5246       /vendor/lib/gstreamer/libgstreamer-1.0.so.0.405.0
+471d9000-471de000 rw-p 000d9000 fd:02 5246       /vendor/lib/gstreamer/libgstreamer-1.0.so.0.405.0
+471e0000-47220000 r-xp 00000000 fd:02 5204       /vendor/lib/gstreamer/libgstaudio-1.0.so.0.405.0
+47220000-4722f000 ---p 00040000 fd:02 5204       /vendor/lib/gstreamer/libgstaudio-1.0.so.0.405.0
+4722f000-47231000 rw-p 0003f000 fd:02 5204       /vendor/lib/gstreamer/libgstaudio-1.0.so.0.405.0
+47240000-47293000 r-xp 00000000 fd:02 5213       /vendor/lib/gstreamer/libgstbase-1.0.so.0.405.0
+47293000-472a2000 ---p 00053000 fd:02 5213       /vendor/lib/gstreamer/libgstbase-1.0.so.0.405.0
+472a2000-472a3000 rw-p 00052000 fd:02 5213       /vendor/lib/gstreamer/libgstbase-1.0.so.0.405.0
+472b0000-472dc000 r-xp 00000000 fd:02 5261       /vendor/lib/gstreamer/libgsttag-1.0.so.0.405.0
+472dc000-472eb000 ---p 0002c000 fd:02 5261       /vendor/lib/gstreamer/libgsttag-1.0.so.0.405.0
+472eb000-472ed000 rw-p 0002b000 fd:02 5261       /vendor/lib/gstreamer/libgsttag-1.0.so.0.405.0
+472f0000-473e6000 r-xp 00000000 fd:00 198        /lib/libstdc++.so.6.0.22
+473e6000-473f5000 ---p 000f6000 fd:00 198        /lib/libstdc++.so.6.0.22
+473f5000-473f9000 r--p 000f5000 fd:00 198        /lib/libstdc++.so.6.0.22
+473f9000-473fc000 rw-p 000f9000 fd:00 198        /lib/libstdc++.so.6.0.22
+473fc000-473fe000 rw-p 00000000 00:00 0 
+47400000-47405000 r-xp 00000000 fd:00 190        /lib/librt-2.23.so
+47405000-47414000 ---p 00005000 fd:00 190        /lib/librt-2.23.so
+47414000-47415000 r--p 00004000 fd:00 190        /lib/librt-2.23.so
+47415000-47416000 rw-p 00005000 fd:00 190        /lib/librt-2.23.so
+47420000-47439000 r-xp 00000000 fd:02 5303       /vendor/lib/libcrypt_ntk.so
+47439000-47449000 ---p 00019000 fd:02 5303       /vendor/lib/libcrypt_ntk.so
+47449000-4744a000 rw-p 00019000 fd:02 5303       /vendor/lib/libcrypt_ntk.so
+4744a000-4744b000 rw-p 00000000 00:00 0 
+47450000-47451000 r-xp 00000000 fd:02 5314       /vendor/lib/libjsmn.so
+47451000-47460000 ---p 00001000 fd:02 5314       /vendor/lib/libjsmn.so
+47460000-47461000 rw-p 00000000 fd:02 5314       /vendor/lib/libjsmn.so
+47470000-47483000 r-xp 00000000 fd:02 5362       /vendor/lib/libusb-1.0.so.0.1.0
+47483000-4748a000 ---p 00013000 fd:02 5362       /vendor/lib/libusb-1.0.so.0.1.0
+4748a000-4748b000 rw-p 00012000 fd:02 5362       /vendor/lib/libusb-1.0.so.0.1.0
+47490000-474a6000 r-xp 00000000 fd:02 5383       /vendor/lib/opera/libADSL.so
+474a6000-474b5000 ---p 00016000 fd:02 5383       /vendor/lib/opera/libADSL.so
+474b5000-474b6000 rw-p 00015000 fd:02 5383       /vendor/lib/opera/libADSL.so
+474c0000-474c8000 r-xp 00000000 fd:02 5403       /vendor/lib/opera/libKWD.so
+474c8000-474d7000 ---p 00008000 fd:02 5403       /vendor/lib/opera/libKWD.so
+474d7000-474d8000 rw-p 00007000 fd:02 5403       /vendor/lib/opera/libKWD.so
+474e0000-4763e000 r-xp 00000000 fd:02 5366       /vendor/lib/libwebsockets.so.14
+4763e000-4764d000 ---p 0015e000 fd:02 5366       /vendor/lib/libwebsockets.so.14
+4764d000-47668000 rw-p 0015d000 fd:02 5366       /vendor/lib/libwebsockets.so.14
+47668000-4766b000 rw-p 00000000 00:00 0 
+47670000-47681000 r-xp 00000000 fd:02 5410       /vendor/lib/opera/libSQLiteStorage.so
+47681000-47690000 ---p 00011000 fd:02 5410       /vendor/lib/opera/libSQLiteStorage.so
+47690000-47691000 rw-p 00010000 fd:02 5410       /vendor/lib/opera/libSQLiteStorage.so
+476a0000-47e7e000 r-xp 00000000 fd:02 5317       /vendor/lib/libmali.so
+47e7e000-47e8e000 ---p 007de000 fd:02 5317       /vendor/lib/libmali.so
+47e8e000-47ee5000 rw-p 007de000 fd:02 5317       /vendor/lib/libmali.so
+47ee5000-47efb000 rw-p 00000000 00:00 0 
+47f00000-47f1d000 r-xp 00000000 fd:02 5456       /vendor/lib/opera/libnghttp2.so.14.16.2
+47f1d000-47f2c000 ---p 0001d000 fd:02 5456       /vendor/lib/opera/libnghttp2.so.14.16.2
+47f2c000-47f2e000 rw-p 0001c000 fd:02 5456       /vendor/lib/opera/libnghttp2.so.14.16.2
+47f30000-4ba9f000 r-xp 00000000 fd:02 5465       /vendor/lib/opera/libomi.so
+4ba9f000-4baaf000 ---p 03b6f000 fd:02 5465       /vendor/lib/opera/libomi.so
+4baaf000-4bc79000 r--p 03b6f000 fd:02 5465       /vendor/lib/opera/libomi.so
+4bc79000-4bc90000 rw-p 03d39000 fd:02 5465       /vendor/lib/opera/libomi.so
+4bc90000-4bceb000 rw-p 00000000 00:00 0 
+4bcf0000-4bd0c000 r-xp 00000000 fd:02 5408       /vendor/lib/opera/libPlaylistParser.so
+4bd0c000-4bd1c000 ---p 0001c000 fd:02 5408       /vendor/lib/opera/libPlaylistParser.so
+4bd1c000-4bd1e000 rw-p 0001c000 fd:02 5408       /vendor/lib/opera/libPlaylistParser.so
+4bd20000-4bd43000 r-xp 00000000 fd:02 5325       /vendor/lib/libnvtmediainfo.so
+4bd43000-4bd52000 ---p 00023000 fd:02 5325       /vendor/lib/libnvtmediainfo.so
+4bd52000-4bd54000 rw-p 00022000 fd:02 5325       /vendor/lib/libnvtmediainfo.so
+4bd54000-4bd55000 rw-p 00000000 00:00 0 
+4bd60000-4bd82000 r-xp 00000000 fd:02 5470       /vendor/lib/opera/libportaudio.so.2.0.0
+4bd82000-4bd91000 ---p 00022000 fd:02 5470       /vendor/lib/opera/libportaudio.so.2.0.0
+4bd91000-4bd92000 rw-p 00021000 fd:02 5470       /vendor/lib/opera/libportaudio.so.2.0.0
+4bda0000-4bdf0000 r-xp 00000000 fd:02 5390       /vendor/lib/opera/libAudioPlayer.so
+4bdf0000-4bdf2000 rw-p 00050000 fd:02 5390       /vendor/lib/opera/libAudioPlayer.so
+4be00000-4bfad000 r-xp 00000000 fd:02 5439       /vendor/lib/opera/libffmpeg.so
+4bfad000-4bfbc000 ---p 001ad000 fd:02 5439       /vendor/lib/opera/libffmpeg.so
+4bfbc000-4bfd2000 r--p 001ac000 fd:02 5439       /vendor/lib/opera/libffmpeg.so
+4bfd2000-4bfd5000 rw-p 001c2000 fd:02 5439       /vendor/lib/opera/libffmpeg.so
+4bfd5000-4c1db000 rw-p 00000000 00:00 0 
+4c1e0000-4c27a000 r-xp 00000000 fd:02 5372       /vendor/lib/libxml2.so.2.9.7
+4c27a000-4c289000 ---p 0009a000 fd:02 5372       /vendor/lib/libxml2.so.2.9.7
+4c289000-4c28b000 rw-p 00099000 fd:02 5372       /vendor/lib/libxml2.so.2.9.7
+4c290000-4c295000 r-xp 00000000 fd:00 143        /lib/libatomic.so.1.2.0
+4c295000-4c2a4000 ---p 00005000 fd:00 143        /lib/libatomic.so.1.2.0
+4c2a4000-4c2a5000 rw-p 00004000 fd:00 143        /lib/libatomic.so.1.2.0
+4c2a5000-4c2a6000 rw-p 00000000 00:00 0 
+4c2b0000-4c2c2000 r-xp 00000000 fd:02 5123       /vendor/lib/dfb/libfusion-1.7.so.1
+4c2c2000-4c2d2000 ---p 00012000 fd:02 5123       /vendor/lib/dfb/libfusion-1.7.so.1
+4c2d2000-4c2d3000 rw-p 00012000 fd:02 5123       /vendor/lib/dfb/libfusion-1.7.so.1
+4c2e0000-4c30e000 r-xp 00000000 fd:02 5367       /vendor/lib/libwfd.so
+4c30e000-4c31d000 ---p 0002e000 fd:02 5367       /vendor/lib/libwfd.so
+4c31d000-4c31f000 rw-p 0002d000 fd:02 5367       /vendor/lib/libwfd.so
+4c330000-4c346000 r-xp 00000000 fd:02 5121       /vendor/lib/dfb/libdirect-1.7.so.1
+4c346000-4c356000 ---p 00016000 fd:02 5121       /vendor/lib/dfb/libdirect-1.7.so.1
+4c356000-4c357000 rw-p 00016000 fd:02 5121       /vendor/lib/dfb/libdirect-1.7.so.1
+4c360000-4c367000 r-xp 00000000 fd:02 5391       /vendor/lib/opera/libAudioResources.so
+4c367000-4c376000 ---p 00007000 fd:02 5391       /vendor/lib/opera/libAudioResources.so
+4c376000-4c4f0000 rw-p 00006000 fd:02 5391       /vendor/lib/opera/libAudioResources.so
+4c500000-4c525000 r-xp 00000000 fd:02 5384       /vendor/lib/opera/libAFML.so
+4c525000-4c534000 ---p 00025000 fd:02 5384       /vendor/lib/opera/libAFML.so
+4c534000-4c536000 rw-p 00024000 fd:02 5384       /vendor/lib/opera/libAFML.so
+4c540000-4c546000 r-xp 00000000 fd:02 5289       /vendor/lib/libBasicUsageEnvironment.so
+4c546000-4c555000 ---p 00006000 fd:02 5289       /vendor/lib/libBasicUsageEnvironment.so
+4c555000-4c557000 rw-p 00005000 fd:02 5289       /vendor/lib/libBasicUsageEnvironment.so
+4c560000-4c58d000 r-xp 00000000 fd:02 5472       /vendor/lib/opera/libpryon_lite.so.2.5
+4c58d000-4c59c000 ---p 0002d000 fd:02 5472       /vendor/lib/opera/libpryon_lite.so.2.5
+4c59c000-4c59e000 rw-p 0002c000 fd:02 5472       /vendor/lib/opera/libpryon_lite.so.2.5
+4c5a0000-4c5c0000 r-xp 00000000 fd:02 5397       /vendor/lib/opera/libDefaultClient.so
+4c5c0000-4c5cf000 ---p 00020000 fd:02 5397       /vendor/lib/opera/libDefaultClient.so
+4c5cf000-4c5d0000 rw-p 0001f000 fd:02 5397       /vendor/lib/opera/libDefaultClient.so
+4c5e0000-4c6f8000 r-xp 00000000 fd:02 5339       /vendor/lib/libs/libcrypto.so.1.0.0
+4c6f8000-4c708000 ---p 00118000 fd:02 5339       /vendor/lib/libs/libcrypto.so.1.0.0
+4c708000-4c71c000 rw-p 00118000 fd:02 5339       /vendor/lib/libs/libcrypto.so.1.0.0
+4c71c000-4c71f000 rw-p 00000000 00:00 0 
+4c730000-4c732000 r-xp 00000000 fd:02 5311       /vendor/lib/libhdcp2_platform.so
+4c732000-4c742000 ---p 00002000 fd:02 5311       /vendor/lib/libhdcp2_platform.so
+4c742000-4c743000 rw-p 00002000 fd:02 5311       /vendor/lib/libhdcp2_platform.so
+4c750000-4c75e000 r-xp 00000000 fd:02 5312       /vendor/lib/libhdcp_ntk.so
+4c75e000-4c76e000 ---p 0000e000 fd:02 5312       /vendor/lib/libhdcp_ntk.so
+4c76e000-4c76f000 rw-p 0000e000 fd:02 5312       /vendor/lib/libhdcp_ntk.so
+4c76f000-4c771000 rw-p 00000000 00:00 0 
+4c780000-4cb3f000 r-xp 00000000 fd:02 5298       /vendor/lib/libWasabi.so
+4cb3f000-4cb4e000 ---p 003bf000 fd:02 5298       /vendor/lib/libWasabi.so
+4cb4e000-4cb59000 rw-p 003be000 fd:02 5298       /vendor/lib/libWasabi.so
+4cb59000-4cb5d000 rw-p 00000000 00:00 0 
+4cb60000-4cb97000 r-xp 00000000 fd:02 5346       /vendor/lib/libs/libjpeg.so.9
+4cb97000-4cba7000 ---p 00037000 fd:02 5346       /vendor/lib/libs/libjpeg.so.9
+4cba7000-4cba8000 rw-p 00037000 fd:02 5346       /vendor/lib/libs/libjpeg.so.9
+4cbb0000-4cbc0000 r-xp 00000000 fd:02 5480       /vendor/lib/opera/libswresample.so.3.1.100
+4cbc0000-4cbcf000 ---p 00010000 fd:02 5480       /vendor/lib/opera/libswresample.so.3.1.100
+4cbcf000-4cbd1000 rw-p 0000f000 fd:02 5480       /vendor/lib/opera/libswresample.so.3.1.100
+4cbe0000-4cbf9000 r-xp 00000000 fd:02 5393       /vendor/lib/opera/libCBLAuthDelegate.so
+4cbf9000-4cc08000 ---p 00019000 fd:02 5393       /vendor/lib/opera/libCBLAuthDelegate.so
+4cc08000-4cc09000 rw-p 00018000 fd:02 5393       /vendor/lib/opera/libCBLAuthDelegate.so
+4cc09000-4cc0a000 rw-p 00000000 00:00 0 
+4cc10000-4cc26000 r-xp 00000000 fd:02 5395       /vendor/lib/opera/libCertifiedSender.so
+4cc26000-4cc36000 ---p 00016000 fd:02 5395       /vendor/lib/opera/libCertifiedSender.so
+4cc36000-4cc37000 rw-p 00016000 fd:02 5395       /vendor/lib/opera/libCertifiedSender.so
+4cc40000-4ccac000 r-xp 00000000 fd:02 5155       /vendor/lib/gstreamer/gstreamer-1.0/libgstnvtsink.so
+4ccac000-4ccbb000 ---p 0006c000 fd:02 5155       /vendor/lib/gstreamer/gstreamer-1.0/libgstnvtsink.so
+4ccbb000-4ccbe000 rw-p 0006b000 fd:02 5155       /vendor/lib/gstreamer/gstreamer-1.0/libgstnvtsink.so
+4ccbe000-4ccc0000 rw-p 00000000 00:00 0 
+4ccd0000-4cd21000 r-xp 00000000 fd:02 5429       /vendor/lib/opera/libavutil.so.56.14.100
+4cd21000-4cd30000 ---p 00051000 fd:02 5429       /vendor/lib/opera/libavutil.so.56.14.100
+4cd30000-4cd39000 rw-p 00050000 fd:02 5429       /vendor/lib/opera/libavutil.so.56.14.100
+4cd39000-4cd48000 rw-p 00000000 00:00 0 
+4cd50000-4cd52000 r-xp 00000000 fd:02 5305       /vendor/lib/libdrmkeyaccess.so
+4cd52000-4cd61000 ---p 00002000 fd:02 5305       /vendor/lib/libdrmkeyaccess.so
+4cd61000-4cd62000 rw-p 00001000 fd:02 5305       /vendor/lib/libdrmkeyaccess.so
+4cd70000-4cd72000 r-xp 00000000 fd:02 5324       /vendor/lib/libnteec.so
+4cd72000-4cd81000 ---p 00002000 fd:02 5324       /vendor/lib/libnteec.so
+4cd81000-4cd82000 rw-p 00001000 fd:02 5324       /vendor/lib/libnteec.so
+4cd90000-4cdc5000 r-xp 00000000 fd:02 5406       /vendor/lib/opera/libNotifications.so
+4cdc5000-4cdd4000 ---p 00035000 fd:02 5406       /vendor/lib/opera/libNotifications.so
+4cdd4000-4cdd6000 rw-p 00034000 fd:02 5406       /vendor/lib/opera/libNotifications.so
+4cde0000-4cde2000 r-xp 00000000 fd:02 5404       /vendor/lib/opera/libKeywordDetectorProvider.so
+4cde2000-4cdf1000 ---p 00002000 fd:02 5404       /vendor/lib/opera/libKeywordDetectorProvider.so
+4cdf1000-4cdf2000 rw-p 00001000 fd:02 5404       /vendor/lib/opera/libKeywordDetectorProvider.so
+4ce00000-4ce15000 r-xp 00000000 fd:02 5301       /vendor/lib/libavutil.so.50
+4ce15000-4ce25000 ---p 00015000 fd:02 5301       /vendor/lib/libavutil.so.50
+4ce25000-4ce26000 rw-p 00015000 fd:02 5301       /vendor/lib/libavutil.so.50
+4ce26000-4ce2a000 rw-p 00000000 00:00 0 
+4ce30000-4cf34000 r-xp 00000000 fd:02 5122       /vendor/lib/dfb/libdirectfb-1.7.so.1
+4cf34000-4cf43000 ---p 00104000 fd:02 5122       /vendor/lib/dfb/libdirectfb-1.7.so.1
+4cf43000-4cf4a000 rw-p 00103000 fd:02 5122       /vendor/lib/dfb/libdirectfb-1.7.so.1
+4cf50000-4cf5c000 r-xp 00000000 fd:02 5308       /vendor/lib/libesplyrclient.so
+4cf5c000-4cf6c000 ---p 0000c000 fd:02 5308       /vendor/lib/libesplyrclient.so
+4cf6c000-4cf6d000 rw-p 0000c000 fd:02 5308       /vendor/lib/libesplyrclient.so
+4cf70000-4cf73000 r-xp 00000000 fd:02 5466       /vendor/lib/opera/libplc4.so
+4cf73000-4cf82000 ---p 00003000 fd:02 5466       /vendor/lib/opera/libplc4.so
+4cf82000-4cf83000 r--p 00002000 fd:02 5466       /vendor/lib/opera/libplc4.so
+4cf83000-4cf84000 rw-p 00003000 fd:02 5466       /vendor/lib/opera/libplc4.so
+4cf90000-4cfa9000 r-xp 00000000 fd:02 5464       /vendor/lib/opera/libnssutil3.so
+4cfa9000-4cfb8000 ---p 00019000 fd:02 5464       /vendor/lib/opera/libnssutil3.so
+4cfb8000-4cfbc000 r--p 00018000 fd:02 5464       /vendor/lib/opera/libnssutil3.so
+4cfbc000-4cfbd000 rw-p 0001c000 fd:02 5464       /vendor/lib/opera/libnssutil3.so
+4cfc0000-4cfe2000 r-xp 00000000 fd:02 5457       /vendor/lib/opera/libnspr4.so
+4cfe2000-4cff1000 ---p 00022000 fd:02 5457       /vendor/lib/opera/libnspr4.so
+4cff1000-4cff2000 r--p 00021000 fd:02 5457       /vendor/lib/opera/libnspr4.so
+4cff2000-4cff3000 rw-p 00022000 fd:02 5457       /vendor/lib/opera/libnspr4.so
+4cff3000-4cff5000 rw-p 00000000 00:00 0 
+4d000000-4d18a000 r-xp 00000000 fd:02 5426       /vendor/lib/opera/libavformat.so.58.12.100
+4d18a000-4d19a000 ---p 0018a000 fd:02 5426       /vendor/lib/opera/libavformat.so.58.12.100
+4d19a000-4d1b6000 rw-p 0018a000 fd:02 5426       /vendor/lib/opera/libavformat.so.58.12.100
+4d1c0000-4d25b000 r-xp 00000000 fd:02 5351       /vendor/lib/libs/libsqlite3.so.0
+4d25b000-4d26b000 ---p 0009b000 fd:02 5351       /vendor/lib/libs/libsqlite3.so.0
+4d26b000-4d26e000 rw-p 0009b000 fd:02 5351       /vendor/lib/libs/libsqlite3.so.0
+4d270000-4d297000 r-xp 00000000 fd:02 5414       /vendor/lib/opera/libTemplateRuntime.so
+4d297000-4d2a6000 ---p 00027000 fd:02 5414       /vendor/lib/opera/libTemplateRuntime.so
+4d2a6000-4d2a8000 rw-p 00026000 fd:02 5414       /vendor/lib/opera/libTemplateRuntime.so
+4d2b0000-4d2e6000 r-xp 00000000 fd:02 5385       /vendor/lib/opera/libAIP.so
+4d2e6000-4d2f5000 ---p 00036000 fd:02 5385       /vendor/lib/opera/libAIP.so
+4d2f5000-4d2f7000 rw-p 00035000 fd:02 5385       /vendor/lib/opera/libAIP.so
+4d300000-4d324000 r-xp 00000000 fd:02 5411       /vendor/lib/opera/libSettings.so
+4d324000-4d333000 ---p 00024000 fd:02 5411       /vendor/lib/opera/libSettings.so
+4d333000-4d335000 rw-p 00023000 fd:02 5411       /vendor/lib/opera/libSettings.so
+4d340000-4d34a000 r-xp 00000000 fd:02 5338       /vendor/lib/libs/libcares.so.2
+4d34a000-4d359000 ---p 0000a000 fd:02 5338       /vendor/lib/libs/libcares.so.2
+4d359000-4d35a000 rw-p 00009000 fd:02 5338       /vendor/lib/libs/libcares.so.2
+4d360000-4d38a000 r-xp 00000000 fd:02 5320       /vendor/lib/libmhash.so.2.0.1
+4d38a000-4d399000 ---p 0002a000 fd:02 5320       /vendor/lib/libmhash.so.2.0.1
+4d399000-4d39a000 rw-p 00029000 fd:02 5320       /vendor/lib/libmhash.so.2.0.1
+4d3a0000-4d3a4000 r-xp 00000000 fd:02 5307       /vendor/lib/libes2tee.so
+4d3a4000-4d3b3000 ---p 00004000 fd:02 5307       /vendor/lib/libes2tee.so
+4d3b3000-4d3b4000 rw-p 00003000 fd:02 5307       /vendor/lib/libes2tee.so
+4d3c0000-4d4e6000 r-xp 00000000 fd:02 5177       /vendor/lib/gstreamer/libgio-2.0.so.0.4200.2
+4d4e6000-4d4f5000 ---p 00126000 fd:02 5177       /vendor/lib/gstreamer/libgio-2.0.so.0.4200.2
+4d4f5000-4d4f8000 rw-p 00125000 fd:02 5177       /vendor/lib/gstreamer/libgio-2.0.so.0.4200.2
+4d4f8000-4d4f9000 rw-p 00000000 00:00 0 
+4d500000-4d53d000 r-xp 00000000 fd:02 5352       /vendor/lib/libs/libssl.so.1.0.0
+4d53d000-4d54c000 ---p 0003d000 fd:02 5352       /vendor/lib/libs/libssl.so.1.0.0
+4d54c000-4d552000 rw-p 0003c000 fd:02 5352       /vendor/lib/libs/libssl.so.1.0.0
+4d560000-4d5b8000 r-xp 00000000 fd:02 5343       /vendor/lib/libs/libfreetype.so.6
+4d5b8000-4d5c8000 ---p 00058000 fd:02 5343       /vendor/lib/libs/libfreetype.so.6
+4d5c8000-4d5cc000 rw-p 00058000 fd:02 5343       /vendor/lib/libs/libfreetype.so.6
+4d5d0000-4d5eb000 r-xp 00000000 fd:02 5400       /vendor/lib/opera/libEqualizerImplementations.so
+4d5eb000-4d5fb000 ---p 0001b000 fd:02 5400       /vendor/lib/opera/libEqualizerImplementations.so
+4d5fb000-4d5fc000 rw-p 0001b000 fd:02 5400       /vendor/lib/opera/libEqualizerImplementations.so
+4d600000-4d60b000 r-xp 00000000 fd:02 5225       /vendor/lib/gstreamer/libgstcontroller-1.0.so.0.405.0
+4d60b000-4d61b000 ---p 0000b000 fd:02 5225       /vendor/lib/gstreamer/libgstcontroller-1.0.so.0.405.0
+4d61b000-4d61c000 rw-p 0000b000 fd:02 5225       /vendor/lib/gstreamer/libgstcontroller-1.0.so.0.405.0
+4d620000-4d69f000 r-xp 00000000 fd:02 5296       /vendor/lib/libSkb.so
+4d69f000-4d6ae000 ---p 0007f000 fd:02 5296       /vendor/lib/libSkb.so
+4d6ae000-4d6af000 rw-p 0007e000 fd:02 5296       /vendor/lib/libSkb.so
+4d6af000-4d6b3000 rw-p 00000000 00:00 0 
+4d6c0000-4d6d8000 r-xp 00000000 fd:02 5357       /vendor/lib/libstagefright_foundation.so
+4d6d8000-4d6e7000 ---p 00018000 fd:02 5357       /vendor/lib/libstagefright_foundation.so
+4d6e7000-4d6e9000 rw-p 00017000 fd:02 5357       /vendor/lib/libstagefright_foundation.so
+4d6f0000-4d742000 r-xp 00000000 fd:02 5377       /vendor/lib/nlib/libnbinder.so
+4d742000-4d751000 ---p 00052000 fd:02 5377       /vendor/lib/nlib/libnbinder.so
+4d751000-4d757000 rw-p 00051000 fd:02 5377       /vendor/lib/nlib/libnbinder.so
+4d760000-4d76d000 r-xp 00000000 fd:00 188        /lib/libresolv-2.23.so
+4d76d000-4d77c000 ---p 0000d000 fd:00 188        /lib/libresolv-2.23.so
+4d77c000-4d77d000 r--p 0000c000 fd:00 188        /lib/libresolv-2.23.so
+4d77d000-4d77e000 rw-p 0000d000 fd:00 188        /lib/libresolv-2.23.so
+4d77e000-4d780000 rw-p 00000000 00:00 0 
+4d790000-4d79b000 r-xp 00000000 fd:02 5379       /vendor/lib/nlib/libnpc.so
+4d79b000-4d7aa000 ---p 0000b000 fd:02 5379       /vendor/lib/nlib/libnpc.so
+4d7aa000-4d7ab000 rw-p 0000a000 fd:02 5379       /vendor/lib/nlib/libnpc.so
+4d7b0000-4d7e4000 r-xp 00000000 fd:02 5382       /vendor/lib/opera/libACL.so
+4d7e4000-4d7f3000 ---p 00034000 fd:02 5382       /vendor/lib/opera/libACL.so
+4d7f3000-4d7f5000 rw-p 00033000 fd:02 5382       /vendor/lib/opera/libACL.so
+4d7f5000-4d7f6000 rw-p 00000000 00:00 0 
+4d800000-4d8ef000 r-xp 00000000 fd:02 5299       /vendor/lib/libavcodec.so.52
+4d8ef000-4d8ff000 ---p 000ef000 fd:02 5299       /vendor/lib/libavcodec.so.52
+4d8ff000-4d901000 rw-p 000ef000 fd:02 5299       /vendor/lib/libavcodec.so.52
+4d901000-4da69000 rw-p 00000000 00:00 0 
+4da70000-4dabe000 r-xp 00000000 fd:02 4721       /vendor/com.nvt.nflx/lib/libturbojpeg.so.0
+4dabe000-4dacd000 ---p 0004e000 fd:02 4721       /vendor/com.nvt.nflx/lib/libturbojpeg.so.0
+4dacd000-4dace000 rw-p 0004d000 fd:02 4721       /vendor/com.nvt.nflx/lib/libturbojpeg.so.0
+4dad0000-4dad3000 r-xp 00000000 fd:02 5353       /vendor/lib/libs/libtinycompress.so
+4dad3000-4dae2000 ---p 00003000 fd:02 5353       /vendor/lib/libs/libtinycompress.so
+4dae2000-4dae3000 rw-p 00002000 fd:02 5353       /vendor/lib/libs/libtinycompress.so
+4daf0000-4daf6000 r-xp 00000000 fd:02 5323       /vendor/lib/libmxml.so.1.5
+4daf6000-4db06000 ---p 00006000 fd:02 5323       /vendor/lib/libmxml.so.1.5
+4db06000-4db07000 rw-p 00006000 fd:02 5323       /vendor/lib/libmxml.so.1.5
+4db10000-4db32000 r-xp 00000000 fd:02 5394       /vendor/lib/opera/libCapabilitiesDelegate.so
+4db32000-4db42000 ---p 00022000 fd:02 5394       /vendor/lib/opera/libCapabilitiesDelegate.so
+4db42000-4db43000 rw-p 00022000 fd:02 5394       /vendor/lib/opera/libCapabilitiesDelegate.so
+4db43000-4db44000 rw-p 00000000 00:00 0 
+4db50000-4db72000 r-xp 00000000 fd:02 5294       /vendor/lib/libNDAL_EX.so
+4db72000-4db81000 ---p 00022000 fd:02 5294       /vendor/lib/libNDAL_EX.so
+4db81000-4db82000 rw-p 00021000 fd:02 5294       /vendor/lib/libNDAL_EX.so
+4db82000-4db85000 rw-p 00000000 00:00 0 
+4db90000-4db9a000 r-xp 00000000 fd:02 5201       /vendor/lib/gstreamer/libgstapp-1.0.so.0.405.0
+4db9a000-4dbaa000 ---p 0000a000 fd:02 5201       /vendor/lib/gstreamer/libgstapp-1.0.so.0.405.0
+4dbaa000-4dbab000 rw-p 0000a000 fd:02 5201       /vendor/lib/gstreamer/libgstapp-1.0.so.0.405.0
+4dbb0000-4dbcb000 r-xp 00000000 fd:02 4710       /vendor/com.nvt.nflx/lib/libexpat.so.1
+4dbcb000-4dbda000 ---p 0001b000 fd:02 4710       /vendor/com.nvt.nflx/lib/libexpat.so.1
+4dbda000-4dbdc000 rw-p 0001a000 fd:02 4710       /vendor/com.nvt.nflx/lib/libexpat.so.1
+4dbe0000-4dbee000 r-xp 00000000 fd:02 5402       /vendor/lib/opera/libInteractionModel.so
+4dbee000-4dbfd000 ---p 0000e000 fd:02 5402       /vendor/lib/opera/libInteractionModel.so
+4dbfd000-4dbfe000 rw-p 0000d000 fd:02 5402       /vendor/lib/opera/libInteractionModel.so
+4dbfe000-4dbff000 rw-p 00000000 00:00 0 
+4dc10000-4dc56000 r-xp 00000000 fd:02 5392       /vendor/lib/opera/libBluetooth.so
+4dc56000-4dc65000 ---p 00046000 fd:02 5392       /vendor/lib/opera/libBluetooth.so
+4dc65000-4dc68000 rw-p 00045000 fd:02 5392       /vendor/lib/opera/libBluetooth.so
+4dc70000-4dc9d000 r-xp 00000000 fd:02 5350       /vendor/lib/libs/libpng16.so.16
+4dc9d000-4dcac000 ---p 0002d000 fd:02 5350       /vendor/lib/libs/libpng16.so.16
+4dcac000-4dcad000 rw-p 0002c000 fd:02 5350       /vendor/lib/libs/libpng16.so.16
+4dcb0000-4dcc2000 r-xp 00000000 fd:02 5356       /vendor/lib/libs/libz.so.1.2.8
+4dcc2000-4dcd1000 ---p 00012000 fd:02 5356       /vendor/lib/libs/libz.so.1.2.8
+4dcd1000-4dcd2000 rw-p 00011000 fd:02 5356       /vendor/lib/libs/libz.so.1.2.8
+4dce0000-4dd6f000 r-xp 00000000 fd:02 5300       /vendor/lib/libavformat.so.52
+4dd6f000-4dd7f000 ---p 0008f000 fd:02 5300       /vendor/lib/libavformat.so.52
+4dd7f000-4dd84000 rw-p 0008f000 fd:02 5300       /vendor/lib/libavformat.so.52
+4dd90000-4dda1000 r-xp 00000000 fd:02 5396       /vendor/lib/opera/libContextManager.so
+4dda1000-4ddb1000 ---p 00011000 fd:02 5396       /vendor/lib/opera/libContextManager.so
+4ddb1000-4ddb2000 rw-p 00011000 fd:02 5396       /vendor/lib/opera/libContextManager.so
+4ddc0000-4dde7000 r-xp 00000000 fd:02 5442       /vendor/lib/opera/libfontconfig.so.1.9.2
+4dde7000-4ddf7000 ---p 00027000 fd:02 5442       /vendor/lib/opera/libfontconfig.so.1.9.2
+4ddf7000-4ddfc000 rw-p 00027000 fd:02 5442       /vendor/lib/opera/libfontconfig.so.1.9.2
+4de00000-4de11000 r-xp 00000000 fd:02 5288       /vendor/lib/gstreamer/libz.so.1.2.8
+4de11000-4de21000 ---p 00011000 fd:02 5288       /vendor/lib/gstreamer/libz.so.1.2.8
+4de21000-4de22000 rw-p 00011000 fd:02 5288       /vendor/lib/gstreamer/libz.so.1.2.8
+4de30000-4de48000 r-xp 00000000 fd:02 5364       /vendor/lib/libv4lconvert.so.0
+4de48000-4de58000 ---p 00018000 fd:02 5364       /vendor/lib/libv4lconvert.so.0
+4de58000-4de5a000 rw-p 00018000 fd:02 5364       /vendor/lib/libv4lconvert.so.0
+4de5a000-4deac000 rw-p 00000000 00:00 0 
+4deb0000-4deb2000 r-xp 00000000 fd:02 5297       /vendor/lib/libUsageEnvironment.so
+4deb2000-4dec1000 ---p 00002000 fd:02 5297       /vendor/lib/libUsageEnvironment.so
+4dec1000-4dec2000 rw-p 00001000 fd:02 5297       /vendor/lib/libUsageEnvironment.so
+4ded0000-4df54000 r-xp 00000000 fd:02 5387       /vendor/lib/opera/libAVSCommon.so
+4df54000-4df63000 ---p 00084000 fd:02 5387       /vendor/lib/opera/libAVSCommon.so
+4df63000-4df67000 rw-p 00083000 fd:02 5387       /vendor/lib/opera/libAVSCommon.so
+4df70000-4e074000 r-xp 00000000 fd:02 5453       /vendor/lib/opera/libnetview.so
+4e074000-4e084000 ---p 00104000 fd:02 5453       /vendor/lib/opera/libnetview.so
+4e084000-4e08d000 r--p 00104000 fd:02 5453       /vendor/lib/opera/libnetview.so
+4e08d000-4e08e000 rw-p 0010d000 fd:02 5453       /vendor/lib/opera/libnetview.so
+4e08e000-4e090000 rw-p 00000000 00:00 0 
+4e090000-4e0a0000 rw-s 00000000 00:12 5382       /dev/shm/.org.chromium.Chromium.B7jKOm (deleted)
+4e0a0000-4e0ab000 r-xp 00000000 fd:02 5309       /vendor/lib/libesplyrsrv.so
+4e0ab000-4e0ba000 ---p 0000b000 fd:02 5309       /vendor/lib/libesplyrsrv.so
+4e0ba000-4e0bb000 rw-p 0000a000 fd:02 5309       /vendor/lib/libesplyrsrv.so
+4e0c0000-4e0c2000 r-xp 00000000 fd:02 5420       /vendor/lib/opera/libavdevice.so.58.3.100
+4e0c2000-4e0d2000 ---p 00002000 fd:02 5420       /vendor/lib/opera/libavdevice.so.58.3.100
+4e0d2000-4e0d3000 rw-p 00002000 fd:02 5420       /vendor/lib/opera/libavdevice.so.58.3.100
+4e0e0000-4e170000 r-xp 00000000 fd:02 5337       /vendor/lib/libs/libasound.so.2.0.0
+4e170000-4e174000 rw-p 00090000 fd:02 5337       /vendor/lib/libs/libasound.so.2.0.0
+4e180000-4e1c1000 r-xp 00000000 fd:02 5330       /vendor/lib/libp2p.so
+4e1c1000-4e1d1000 ---p 00041000 fd:02 5330       /vendor/lib/libp2p.so
+4e1d1000-4e1d2000 rw-p 00041000 fd:02 5330       /vendor/lib/libp2p.so
+4e1d2000-4e1d5000 rw-p 00000000 00:00 0 
+4e1e0000-4e1e9000 r-xp 00000000 fd:02 5124       /vendor/lib/dfb/libfusiondale-1.7.so.1
+4e1e9000-4e1f8000 ---p 00009000 fd:02 5124       /vendor/lib/dfb/libfusiondale-1.7.so.1
+4e1f8000-4e1f9000 rw-p 00008000 fd:02 5124       /vendor/lib/dfb/libfusiondale-1.7.so.1
+4e200000-4e202000 r-xp 00000000 fd:02 5467       /vendor/lib/opera/libplds4.so
+4e202000-4e211000 ---p 00002000 fd:02 5467       /vendor/lib/opera/libplds4.so
+4e211000-4e212000 r--p 00001000 fd:02 5467       /vendor/lib/opera/libplds4.so
+4e212000-4e213000 rw-p 00002000 fd:02 5467       /vendor/lib/opera/libplds4.so
+4e220000-4e280000 r-xp 00000000 fd:02 5485       /vendor/lib/opera/libuva2_hld.so
+4e280000-4e290000 ---p 00060000 fd:02 5485       /vendor/lib/opera/libuva2_hld.so
+4e290000-4e292000 r--p 00060000 fd:02 5485       /vendor/lib/opera/libuva2_hld.so
+4e292000-4e293000 rw-p 00062000 fd:02 5485       /vendor/lib/opera/libuva2_hld.so
+4e2a0000-4e2b4000 r-xp 00000000 fd:02 5306       /vendor/lib/libdsub.so
+4e2b4000-4e2c4000 ---p 00014000 fd:02 5306       /vendor/lib/libdsub.so
+4e2c4000-4e2c5000 rw-p 00014000 fd:02 5306       /vendor/lib/libdsub.so
+4e2d0000-4e303000 r-xp 00000000 fd:02 5413       /vendor/lib/opera/libSpeechSynthesizer.so
+4e303000-4e312000 ---p 00033000 fd:02 5413       /vendor/lib/opera/libSpeechSynthesizer.so
+4e312000-4e314000 rw-p 00032000 fd:02 5413       /vendor/lib/opera/libSpeechSynthesizer.so
+4e320000-4e374000 r-xp 00000000 fd:02 5279       /vendor/lib/gstreamer/libsoup-2.4.so.1.7.0
+4e374000-4e383000 ---p 00054000 fd:02 5279       /vendor/lib/gstreamer/libsoup-2.4.so.1.7.0
+4e383000-4e386000 rw-p 00053000 fd:02 5279       /vendor/lib/gstreamer/libsoup-2.4.so.1.7.0
+4e390000-4e3a9000 r-xp 00000000 fd:02 5407       /vendor/lib/opera/libPlaybackController.so
+4e3a9000-4e3b8000 ---p 00019000 fd:02 5407       /vendor/lib/opera/libPlaybackController.so
+4e3b8000-4e3ba000 rw-p 00018000 fd:02 5407       /vendor/lib/opera/libPlaybackController.so
+4e3c0000-4e3c7000 r-xp 00000000 fd:02 5304       /vendor/lib/libdrm.so.2
+4e3c7000-4e3d6000 ---p 00007000 fd:02 5304       /vendor/lib/libdrm.so.2
+4e3d6000-4e3d7000 rw-p 00006000 fd:02 5304       /vendor/lib/libdrm.so.2
+4e3e0000-4e47c000 r-xp 00000000 fd:02 5476       /vendor/lib/opera/libsqlite3.so
+4e47c000-4e48b000 ---p 0009c000 fd:02 5476       /vendor/lib/opera/libsqlite3.so
+4e48b000-4e48e000 rw-p 0009b000 fd:02 5476       /vendor/lib/opera/libsqlite3.so
+4e490000-4e499000 r-xp 00000000 fd:02 5358       /vendor/lib/libtsparser.so
+4e499000-4e4a8000 ---p 00009000 fd:02 5358       /vendor/lib/libtsparser.so
+4e4a8000-4e4a9000 rw-p 00008000 fd:02 5358       /vendor/lib/libtsparser.so
+4e4b0000-4e4f2000 r-xp 00000000 fd:02 5484       /vendor/lib/opera/libuva.so
+4e4f2000-4e502000 ---p 00042000 fd:02 5484       /vendor/lib/opera/libuva.so
+4e502000-4e505000 r--p 00042000 fd:02 5484       /vendor/lib/opera/libuva.so
+4e505000-4e506000 rw-p 00045000 fd:02 5484       /vendor/lib/opera/libuva.so
+4e510000-4e512000 r-xp 00000000 fd:02 5398       /vendor/lib/opera/libESP.so
+4e512000-4e521000 ---p 00002000 fd:02 5398       /vendor/lib/opera/libESP.so
+4e521000-4e522000 rw-p 00001000 fd:02 5398       /vendor/lib/opera/libESP.so
+4e530000-4e590000 r-xp 00000000 fd:02 5389       /vendor/lib/opera/libAlerts.so
+4e590000-4e5a0000 ---p 00060000 fd:02 5389       /vendor/lib/opera/libAlerts.so
+4e5a0000-4e5a2000 rw-p 00060000 fd:02 5389       /vendor/lib/opera/libAlerts.so
+4e5a2000-4e5a3000 rw-p 00000000 00:00 0 
+4e5b0000-4e5ec000 r-xp 00000000 fd:02 5302       /vendor/lib/libbsa.so
+4e5ec000-4e5fc000 ---p 0003c000 fd:02 5302       /vendor/lib/libbsa.so
+4e5fc000-4e5fd000 rw-p 0003c000 fd:02 5302       /vendor/lib/libbsa.so
+4e5fd000-4e653000 rw-p 00000000 00:00 0 
+4e660000-4e6d4000 r-xp 00000000 fd:02 5282       /vendor/lib/gstreamer/libsqlite3.so.0.8.6
+4e6d4000-4e6e3000 ---p 00074000 fd:02 5282       /vendor/lib/gstreamer/libsqlite3.so.0.8.6
+4e6e3000-4e6e6000 rw-p 00073000 fd:02 5282       /vendor/lib/gstreamer/libsqlite3.so.0.8.6
+4e6f0000-4e734000 r-xp 00000000 fd:02 5359       /vendor/lib/libttx.so
+4e734000-4e744000 ---p 00044000 fd:02 5359       /vendor/lib/libttx.so
+4e744000-4e770000 rw-p 00044000 fd:02 5359       /vendor/lib/libttx.so
+4e770000-4e79a000 rw-p 00000000 00:00 0 
+4e7a0000-4e7df000 r-xp 00000000 fd:02 5293       /vendor/lib/libNDAL3.so
+4e7df000-4e7ee000 ---p 0003f000 fd:02 5293       /vendor/lib/libNDAL3.so
+4e7ee000-4e7f8000 rw-p 0003e000 fd:02 5293       /vendor/lib/libNDAL3.so
+4e7f8000-4e80f000 rw-p 00000000 00:00 0 
+4e810000-4e820000 rw-s 00000000 00:12 5381       /dev/shm/.org.chromium.Chromium.lPSQcm (deleted)
+4e820000-4e839000 r-xp 00000000 fd:02 5125       /vendor/lib/dfb/libsawman-1.7.so.1
+4e839000-4e848000 ---p 00019000 fd:02 5125       /vendor/lib/dfb/libsawman-1.7.so.1
+4e848000-4e84a000 rw-p 00018000 fd:02 5125       /vendor/lib/dfb/libsawman-1.7.so.1
+4e850000-4e8f0000 r-xp 00000000 fd:02 5316       /vendor/lib/libliveMedia.so
+4e8f0000-4e8ff000 ---p 000a0000 fd:02 5316       /vendor/lib/libliveMedia.so
+4e8ff000-4e90c000 rw-p 0009f000 fd:02 5316       /vendor/lib/libliveMedia.so
+4e90c000-4e90d000 rw-p 00000000 00:00 0 
+4e910000-4e915000 r-xp 00000000 fd:02 5486       /vendor/lib/opera/libuvatesting.so
+4e915000-4e924000 ---p 00005000 fd:02 5486       /vendor/lib/opera/libuvatesting.so
+4e924000-4e925000 r--p 00004000 fd:02 5486       /vendor/lib/opera/libuvatesting.so
+4e925000-4e926000 rw-p 00005000 fd:02 5486       /vendor/lib/opera/libuvatesting.so
+4e930000-4e965000 r-xp 00000000 fd:02 5477       /vendor/lib/opera/libssl3.so
+4e965000-4e975000 ---p 00035000 fd:02 5477       /vendor/lib/opera/libssl3.so
+4e975000-4e977000 r--p 00035000 fd:02 5477       /vendor/lib/opera/libssl3.so
+4e977000-4e978000 rw-p 00037000 fd:02 5477       /vendor/lib/opera/libssl3.so
+4e980000-4e987000 r-xp 00000000 fd:02 5363       /vendor/lib/libv4l2.so.0
+4e987000-4e996000 ---p 00007000 fd:02 5363       /vendor/lib/libv4l2.so.0
+4e996000-4e99a000 rw-p 00006000 fd:02 5363       /vendor/lib/libv4l2.so.0
+4e9a0000-4e9ac000 r-xp 00000000 fd:02 5386       /vendor/lib/opera/libAMAZONLITE.so
+4e9ac000-4e9bc000 ---p 0000c000 fd:02 5386       /vendor/lib/opera/libAMAZONLITE.so
+4e9bc000-4e9bd000 rw-p 0000c000 fd:02 5386       /vendor/lib/opera/libAMAZONLITE.so
+4e9c0000-4e9c6000 r-xp 00000000 fd:02 5409       /vendor/lib/opera/libRegistrationManager.so
+4e9c6000-4e9d5000 ---p 00006000 fd:02 5409       /vendor/lib/opera/libRegistrationManager.so
+4e9d5000-4e9d6000 rw-p 00005000 fd:02 5409       /vendor/lib/opera/libRegistrationManager.so
+4e9e0000-4ea06000 r-xp 00000000 fd:02 5401       /vendor/lib/opera/libExternalMediaPlayer.so
+4ea06000-4ea15000 ---p 00026000 fd:02 5401       /vendor/lib/opera/libExternalMediaPlayer.so
+4ea15000-4ea17000 rw-p 00025000 fd:02 5401       /vendor/lib/opera/libExternalMediaPlayer.so
+4ea17000-4ea18000 rw-p 00000000 00:00 0 
+4ea20000-4ea3f000 r-xp 00000000 fd:02 5399       /vendor/lib/opera/libEqualizer.so
+4ea3f000-4ea4f000 ---p 0001f000 fd:02 5399       /vendor/lib/opera/libEqualizer.so
+4ea4f000-4ea50000 rw-p 0001f000 fd:02 5399       /vendor/lib/opera/libEqualizer.so
+4ea50000-4ea51000 rw-p 00000000 00:00 0 
+4ea60000-4f204000 r-xp 00000000 fd:02 5417       /vendor/lib/opera/libavcodec.so.58.18.100
+4f204000-4f214000 ---p 007a4000 fd:02 5417       /vendor/lib/opera/libavcodec.so.58.18.100
+4f214000-4f23c000 rw-p 007a4000 fd:02 5417       /vendor/lib/opera/libavcodec.so.58.18.100
+4f23c000-4f92f000 rw-p 00000000 00:00 0 
+4f92f000-4f930000 r-xp 00000000 fd:02 167        /vendor/browser_dir/uva_backends/libuvabackend-mumin.so
+4f930000-4f93f000 ---p 00001000 fd:02 167        /vendor/browser_dir/uva_backends/libuvabackend-mumin.so
+4f93f000-4f940000 rw-p 00000000 fd:02 167        /vendor/browser_dir/uva_backends/libuvabackend-mumin.so
+4f940000-4f949000 r-xp 00000000 fd:02 5310       /vendor/lib/libgroupsock.so
+4f949000-4f958000 ---p 00009000 fd:02 5310       /vendor/lib/libgroupsock.so
+4f958000-4f959000 rw-p 00008000 fd:02 5310       /vendor/lib/libgroupsock.so
+4f959000-4f966000 rw-p 00000000 00:00 0 
+4f970000-4f99b000 r-xp 00000000 fd:02 5412       /vendor/lib/opera/libSpeakerManager.so
+4f99b000-4f9aa000 ---p 0002b000 fd:02 5412       /vendor/lib/opera/libSpeakerManager.so
+4f9aa000-4f9ac000 rw-p 0002a000 fd:02 5412       /vendor/lib/opera/libSpeakerManager.so
+4f9b0000-4f9b8000 r-xp 00000000 fd:02 5376       /vendor/lib/nlib/libnam.so
+4f9b8000-4f9c8000 ---p 00008000 fd:02 5376       /vendor/lib/nlib/libnam.so
+4f9c8000-4f9c9000 rw-p 00008000 fd:02 5376       /vendor/lib/nlib/libnam.so
+4f9d0000-4f9e5000 r-xp 00000000 fd:02 5405       /vendor/lib/opera/libMRM.so
+4f9e5000-4f9f5000 ---p 00015000 fd:02 5405       /vendor/lib/opera/libMRM.so
+4f9f5000-4f9f6000 rw-p 00015000 fd:02 5405       /vendor/lib/opera/libMRM.so
+4f9f6000-4f9f7000 rw-p 00000000 00:00 0 
+4fa00000-4fa17000 r-xp 00000000 fd:02 5473       /vendor/lib/opera/libsmime3.so
+4fa17000-4fa26000 ---p 00017000 fd:02 5473       /vendor/lib/opera/libsmime3.so
+4fa26000-4fa28000 r--p 00016000 fd:02 5473       /vendor/lib/opera/libsmime3.so
+4fa28000-4fa29000 rw-p 00018000 fd:02 5473       /vendor/lib/opera/libsmime3.so
+4fa30000-4fa33000 r-xp 00000000 fd:02 5432       /vendor/lib/opera/libcap.so.2.25
+4fa33000-4fa42000 ---p 00003000 fd:02 5432       /vendor/lib/opera/libcap.so.2.25
+4fa42000-4fa43000 rw-p 00002000 fd:02 5432       /vendor/lib/opera/libcap.so.2.25
+4fa43000-4fa50000 r--s 00000000 00:15 1428       /buffer/browser_home/web_ui/QuotaManager
+4fa50000-4faac000 r-xp 00000000 fd:02 5340       /vendor/lib/libs/libcurl.so.4
+4faac000-4fabc000 ---p 0005c000 fd:02 5340       /vendor/lib/libs/libcurl.so.4
+4fabc000-4fabf000 rw-p 0005c000 fd:02 5340       /vendor/lib/libs/libcurl.so.4
+4fac6000-4fac8000 rw-s 00000000 00:15 38694      /buffer/browser_home/web_ui/GPUCache/data_3
+4fad0000-4fad4000 r-xp 00000000 fd:02 5448       /vendor/lib/opera/libmpc_api.so
+4fad4000-4fae4000 ---p 00004000 fd:02 5448       /vendor/lib/opera/libmpc_api.so
+4fae4000-4fae5000 r--p 00004000 fd:02 5448       /vendor/lib/opera/libmpc_api.so
+4fae5000-4fae6000 rw-p 00005000 fd:02 5448       /vendor/lib/opera/libmpc_api.so
+4fae6000-4fae8000 rw-s 00000000 00:15 38693      /buffer/browser_home/web_ui/GPUCache/data_2
+4fae9000-4faea000 rw-s 4fae9000 00:06 8225       /dev/mali0
+4faeb000-4faec000 r--s 00000000 00:05 360459     /SYSV88edf468 (deleted)
+4faee000-4faef000 rw-s 00000000 00:12 5380       /dev/shm/.org.chromium.Chromium.12wRkl (deleted)
+4faef000-4faf0000 rw-s 00000000 00:12 5377       /dev/shm/.org.chromium.Chromium.u4DEH8 (deleted)
+4faf0000-4fba0000 r-xp 00000000 fd:02 5458       /vendor/lib/opera/libnss3.so
+4fba0000-4fbb0000 ---p 000b0000 fd:02 5458       /vendor/lib/opera/libnss3.so
+4fbb0000-4fbb3000 r--p 000b0000 fd:02 5458       /vendor/lib/opera/libnss3.so
+4fbb3000-4fbb5000 rw-p 000b3000 fd:02 5458       /vendor/lib/opera/libnss3.so
+4fbb5000-4fbb6000 rw-p 00000000 00:00 0 
+4fbb6000-4fbb8000 rw-s 00000000 00:15 38692      /buffer/browser_home/web_ui/GPUCache/data_1
+4fbc0000-4fbe4000 r-xp 00000000 fd:02 5388       /vendor/lib/opera/libAVSSystem.so
+4fbe4000-4fbf3000 ---p 00024000 fd:02 5388       /vendor/lib/opera/libAVSSystem.so
+4fbf3000-4fbf5000 rw-p 00023000 fd:02 5388       /vendor/lib/opera/libAVSSystem.so
+4fbf5000-4fbf7000 rw-s 00000000 00:15 38691      /buffer/browser_home/web_ui/GPUCache/data_0
+4fbf7000-4fbf8000 rw-s 00000000 00:12 8939       /dev/shm/.org.chromium.Chromium.9JZaBx (deleted)
+4fbf8000-4fbf9000 rw-s 00000000 00:12 8939       /dev/shm/.org.chromium.Chromium.9JZaBx (deleted)
+4fbfb000-4fc00000 r--s 00000000 00:15 1692       /buffer/browser_home/cookies
+4fc09000-4fc14000 r-xp 00000000 fd:02 82         /vendor/browser_dir/jsplugins/libVerimatrix_APIPlugin.so
+4fc14000-4fc24000 ---p 0000b000 fd:02 82         /vendor/browser_dir/jsplugins/libVerimatrix_APIPlugin.so
+4fc24000-4fc25000 rw-p 0000b000 fd:02 82         /vendor/browser_dir/jsplugins/libVerimatrix_APIPlugin.so
+4fc25000-4fc33000 r-xp 00000000 fd:02 78         /vendor/browser_dir/jsplugins/libSoundSettingsPlugin.so
+4fc33000-4fc42000 ---p 0000e000 fd:02 78         /vendor/browser_dir/jsplugins/libSoundSettingsPlugin.so
+4fc42000-4fc43000 rw-p 0000d000 fd:02 78         /vendor/browser_dir/jsplugins/libSoundSettingsPlugin.so
+4fc43000-4fc45000 r-xp 00000000 fd:02 50         /vendor/browser_dir/jsplugins/MacIdPlugin.so
+4fc45000-4fc54000 ---p 00002000 fd:02 50         /vendor/browser_dir/jsplugins/MacIdPlugin.so
+4fc54000-4fc55000 rw-p 00001000 fd:02 50         /vendor/browser_dir/jsplugins/MacIdPlugin.so
+4fc55000-4fc64000 r-xp 00000000 fd:02 70         /vendor/browser_dir/jsplugins/libPictureSettingsPlugin.so
+4fc64000-4fc74000 ---p 0000f000 fd:02 70         /vendor/browser_dir/jsplugins/libPictureSettingsPlugin.so
+4fc74000-4fc75000 rw-p 0000f000 fd:02 70         /vendor/browser_dir/jsplugins/libPictureSettingsPlugin.so
+4fc75000-4fc76000 r-xp 00000000 fd:02 42         /vendor/browser_dir/jsplugins/AVSClientPlugin.so
+4fc76000-4fc85000 ---p 00001000 fd:02 42         /vendor/browser_dir/jsplugins/AVSClientPlugin.so
+4fc85000-4fc86000 rw-p 00000000 fd:02 42         /vendor/browser_dir/jsplugins/AVSClientPlugin.so
+4fc86000-4fcbc000 r-xp 00000000 fd:02 5451       /vendor/lib/opera/libmpg123.so.0.43.0
+4fcbc000-4fccb000 ---p 00036000 fd:02 5451       /vendor/lib/opera/libmpg123.so.0.43.0
+4fccb000-4fccc000 rw-p 00035000 fd:02 5451       /vendor/lib/opera/libmpg123.so.0.43.0
+4fccc000-4fcdc000 rw-p 00000000 00:00 0 
+4fcdc000-4fceb000 r-xp 00000000 fd:02 83         /vendor/browser_dir/jsplugins/libwebaudio_jsp.so
+4fceb000-4fcfb000 ---p 0000f000 fd:02 83         /vendor/browser_dir/jsplugins/libwebaudio_jsp.so
+4fcfb000-4fcfc000 r--p 0000f000 fd:02 83         /vendor/browser_dir/jsplugins/libwebaudio_jsp.so
+4fcfc000-4fcfd000 rw-p 00010000 fd:02 83         /vendor/browser_dir/jsplugins/libwebaudio_jsp.so
+4fcfd000-4fd0e000 r-xp 00000000 fd:02 60         /vendor/browser_dir/jsplugins/libBluetoothManagerPlugin.so
+4fd0e000-4fd1e000 ---p 00011000 fd:02 60         /vendor/browser_dir/jsplugins/libBluetoothManagerPlugin.so
+4fd1e000-4fd1f000 rw-p 00011000 fd:02 60         /vendor/browser_dir/jsplugins/libBluetoothManagerPlugin.so
+4fd1f000-4fd2a000 r-xp 00000000 fd:02 68         /vendor/browser_dir/jsplugins/libMacIdPluginPlugin.so
+4fd2a000-4fd3a000 ---p 0000b000 fd:02 68         /vendor/browser_dir/jsplugins/libMacIdPluginPlugin.so
+4fd3a000-4fd3b000 rw-p 0000b000 fd:02 68         /vendor/browser_dir/jsplugins/libMacIdPluginPlugin.so
+4fd3b000-4fd46000 r-xp 00000000 fd:02 76         /vendor/browser_dir/jsplugins/libSmartTvA_APIPlugin.so
+4fd46000-4fd56000 ---p 0000b000 fd:02 76         /vendor/browser_dir/jsplugins/libSmartTvA_APIPlugin.so
+4fd56000-4fd57000 rw-p 0000b000 fd:02 76         /vendor/browser_dir/jsplugins/libSmartTvA_APIPlugin.so
+4fd57000-4fd58000 r-xp 00000000 fd:02 46         /vendor/browser_dir/jsplugins/DisableBrowserKeyboardPlugin.so
+4fd58000-4fd67000 ---p 00001000 fd:02 46         /vendor/browser_dir/jsplugins/DisableBrowserKeyboardPlugin.so
+4fd67000-4fd68000 rw-p 00000000 fd:02 46         /vendor/browser_dir/jsplugins/DisableBrowserKeyboardPlugin.so
+4fd68000-4fd73000 r-xp 00000000 fd:02 75         /vendor/browser_dir/jsplugins/libSmartHomeHelper.so
+4fd73000-4fd83000 ---p 0000b000 fd:02 75         /vendor/browser_dir/jsplugins/libSmartHomeHelper.so
+4fd83000-4fd84000 rw-p 0000b000 fd:02 75         /vendor/browser_dir/jsplugins/libSmartHomeHelper.so
+4fd84000-4fd8f000 r-xp 00000000 fd:02 74         /vendor/browser_dir/jsplugins/libScreenshotPlugin.so
+4fd8f000-4fd9e000 ---p 0000b000 fd:02 74         /vendor/browser_dir/jsplugins/libScreenshotPlugin.so
+4fd9e000-4fd9f000 rw-p 0000a000 fd:02 74         /vendor/browser_dir/jsplugins/libScreenshotPlugin.so
+4fd9f000-4fdad000 r-xp 00000000 fd:02 77         /vendor/browser_dir/jsplugins/libSoftwareUpdateControllerPlugin.so
+4fdad000-4fdbd000 ---p 0000e000 fd:02 77         /vendor/browser_dir/jsplugins/libSoftwareUpdateControllerPlugin.so
+4fdbd000-4fdbe000 rw-p 0000e000 fd:02 77         /vendor/browser_dir/jsplugins/libSoftwareUpdateControllerPlugin.so
+4fdbe000-4fdc0000 r-xp 00000000 fd:02 53         /vendor/browser_dir/jsplugins/ProfileStatusPlugin.so
+4fdc0000-4fdcf000 ---p 00002000 fd:02 53         /vendor/browser_dir/jsplugins/ProfileStatusPlugin.so
+4fdcf000-4fdd0000 rw-p 00001000 fd:02 53         /vendor/browser_dir/jsplugins/ProfileStatusPlugin.so
+4fdd0000-4fde7000 r-xp 00000000 fd:02 80         /vendor/browser_dir/jsplugins/libStorageManagerPlugin.so
+4fde7000-4fdf7000 ---p 00017000 fd:02 80         /vendor/browser_dir/jsplugins/libStorageManagerPlugin.so
+4fdf7000-4fdf8000 rw-p 00017000 fd:02 80         /vendor/browser_dir/jsplugins/libStorageManagerPlugin.so
+4fdf8000-4fdfa000 r-xp 00000000 fd:02 55         /vendor/browser_dir/jsplugins/TvPreferencesPlugin.so
+4fdfa000-4fe0a000 ---p 00002000 fd:02 55         /vendor/browser_dir/jsplugins/TvPreferencesPlugin.so
+4fe0a000-4fe0b000 rw-p 00002000 fd:02 55         /vendor/browser_dir/jsplugins/TvPreferencesPlugin.so
+4fe0b000-4fe0d000 rw-p 00000000 00:00 0 
+4fe0d000-4fe18000 r-xp 00000000 fd:02 79         /vendor/browser_dir/jsplugins/libStandbyControllerPlugin.so
+4fe18000-4fe28000 ---p 0000b000 fd:02 79         /vendor/browser_dir/jsplugins/libStandbyControllerPlugin.so
+4fe28000-4fe29000 rw-p 0000b000 fd:02 79         /vendor/browser_dir/jsplugins/libStandbyControllerPlugin.so
+4fe29000-4fe36000 r-xp 00000000 fd:02 57         /vendor/browser_dir/jsplugins/libAmazonDRS.so
+4fe36000-4fe45000 ---p 0000d000 fd:02 57         /vendor/browser_dir/jsplugins/libAmazonDRS.so
+4fe45000-4fe46000 rw-p 0000c000 fd:02 57         /vendor/browser_dir/jsplugins/libAmazonDRS.so
+4fe46000-4fe47000 r-xp 00000000 fd:02 43         /vendor/browser_dir/jsplugins/ChildLockPlugin.so
+4fe47000-4fe56000 ---p 00001000 fd:02 43         /vendor/browser_dir/jsplugins/ChildLockPlugin.so
+4fe56000-4fe57000 rw-p 00000000 fd:02 43         /vendor/browser_dir/jsplugins/ChildLockPlugin.so
+4fe57000-4fe6d000 r-xp 00000000 fd:02 58         /vendor/browser_dir/jsplugins/libApplicationManagerPlugin.so
+4fe6d000-4fe7d000 ---p 00016000 fd:02 58         /vendor/browser_dir/jsplugins/libApplicationManagerPlugin.so
+4fe7d000-4fe7e000 rw-p 00016000 fd:02 58         /vendor/browser_dir/jsplugins/libApplicationManagerPlugin.so
+4fe7e000-4fe8a000 r-xp 00000000 fd:02 63         /vendor/browser_dir/jsplugins/libDateTimeSettingsPlugin.so
+4fe8a000-4fe99000 ---p 0000c000 fd:02 63         /vendor/browser_dir/jsplugins/libDateTimeSettingsPlugin.so
+4fe99000-4fe9a000 rw-p 0000b000 fd:02 63         /vendor/browser_dir/jsplugins/libDateTimeSettingsPlugin.so
+4fe9a000-4fea5000 r-xp 00000000 fd:02 72         /vendor/browser_dir/jsplugins/libRemoteKeyGeneratorPlugin.so
+4fea5000-4feb5000 ---p 0000b000 fd:02 72         /vendor/browser_dir/jsplugins/libRemoteKeyGeneratorPlugin.so
+4feb5000-4feb6000 rw-p 0000b000 fd:02 72         /vendor/browser_dir/jsplugins/libRemoteKeyGeneratorPlugin.so
+4feb6000-4fec1000 r-xp 00000000 fd:02 81         /vendor/browser_dir/jsplugins/libTvKeyboardStatus.so
+4fec1000-4fed1000 ---p 0000b000 fd:02 81         /vendor/browser_dir/jsplugins/libTvKeyboardStatus.so
+4fed1000-4fed2000 rw-p 0000b000 fd:02 81         /vendor/browser_dir/jsplugins/libTvKeyboardStatus.so
+4fed2000-4fee1000 r-xp 00000000 fd:02 66         /vendor/browser_dir/jsplugins/libGeneralSettingsPlugin.so
+4fee1000-4fef0000 ---p 0000f000 fd:02 66         /vendor/browser_dir/jsplugins/libGeneralSettingsPlugin.so
+4fef0000-4fef1000 rw-p 0000e000 fd:02 66         /vendor/browser_dir/jsplugins/libGeneralSettingsPlugin.so
+4fef1000-4fefc000 r-xp 00000000 fd:02 45         /vendor/browser_dir/jsplugins/DigitalIBHelperPlugin.so
+4fefc000-4ff0b000 ---p 0000b000 fd:02 45         /vendor/browser_dir/jsplugins/DigitalIBHelperPlugin.so
+4ff0b000-4ff0c000 rw-p 0000a000 fd:02 45         /vendor/browser_dir/jsplugins/DigitalIBHelperPlugin.so
+4ff0c000-4ff0e000 r-xp 00000000 fd:02 54         /vendor/browser_dir/jsplugins/TivibuPlugin.so
+4ff0e000-4ff1d000 ---p 00002000 fd:02 54         /vendor/browser_dir/jsplugins/TivibuPlugin.so
+4ff1d000-4ff1e000 rw-p 00001000 fd:02 54         /vendor/browser_dir/jsplugins/TivibuPlugin.so
+4ff1e000-4ff1f000 r-xp 00000000 fd:02 49         /vendor/browser_dir/jsplugins/KeyStatusPlugin.so
+4ff1f000-4ff2e000 ---p 00001000 fd:02 49         /vendor/browser_dir/jsplugins/KeyStatusPlugin.so
+4ff2e000-4ff2f000 rw-p 00000000 fd:02 49         /vendor/browser_dir/jsplugins/KeyStatusPlugin.so
+4ff2f000-4ff3b000 r-xp 00000000 fd:02 61         /vendor/browser_dir/jsplugins/libChannelExtensionsPlugin.so
+4ff3b000-4ff4a000 ---p 0000c000 fd:02 61         /vendor/browser_dir/jsplugins/libChannelExtensionsPlugin.so
+4ff4a000-4ff4b000 rw-p 0000b000 fd:02 61         /vendor/browser_dir/jsplugins/libChannelExtensionsPlugin.so
+4ff4b000-4ff4d000 r-xp 00000000 fd:02 44         /vendor/browser_dir/jsplugins/DRMDataLoaderPlugin.so
+4ff4d000-4ff5c000 ---p 00002000 fd:02 44         /vendor/browser_dir/jsplugins/DRMDataLoaderPlugin.so
+4ff5c000-4ff5d000 rw-p 00001000 fd:02 44         /vendor/browser_dir/jsplugins/DRMDataLoaderPlugin.so
+4ff5d000-4ff68000 r-xp 00000000 fd:02 62         /vendor/browser_dir/jsplugins/libChannellistHelperPlugin.so
+4ff68000-4ff78000 ---p 0000b000 fd:02 62         /vendor/browser_dir/jsplugins/libChannellistHelperPlugin.so
+4ff78000-4ff79000 rw-p 0000b000 fd:02 62         /vendor/browser_dir/jsplugins/libChannellistHelperPlugin.so
+4ff79000-4ff84000 r-xp 00000000 fd:02 64         /vendor/browser_dir/jsplugins/libDisplaySettingsPlugin.so
+4ff84000-4ff94000 ---p 0000b000 fd:02 64         /vendor/browser_dir/jsplugins/libDisplaySettingsPlugin.so
+4ff94000-4ff95000 rw-p 0000b000 fd:02 64         /vendor/browser_dir/jsplugins/libDisplaySettingsPlugin.so
+4ff95000-4ff96000 r-xp 00000000 fd:02 52         /vendor/browser_dir/jsplugins/PanelDetailsPlugin.so
+4ff96000-4ffa5000 ---p 00001000 fd:02 52         /vendor/browser_dir/jsplugins/PanelDetailsPlugin.so
+4ffa5000-4ffa6000 rw-p 00000000 fd:02 52         /vendor/browser_dir/jsplugins/PanelDetailsPlugin.so
+4ffa6000-4ffb8000 r-xp 00000000 fd:02 69         /vendor/browser_dir/jsplugins/libNetworkManagerPlugin.so
+4ffb8000-4ffc7000 ---p 00012000 fd:02 69         /vendor/browser_dir/jsplugins/libNetworkManagerPlugin.so
+4ffc7000-4ffc8000 rw-p 00011000 fd:02 69         /vendor/browser_dir/jsplugins/libNetworkManagerPlugin.so
+4ffc8000-4ffc9000 r-xp 00000000 fd:02 48         /vendor/browser_dir/jsplugins/FreeviewPlugin.so
+4ffc9000-4ffd8000 ---p 00001000 fd:02 48         /vendor/browser_dir/jsplugins/FreeviewPlugin.so
+4ffd8000-4ffd9000 rw-p 00000000 fd:02 48         /vendor/browser_dir/jsplugins/FreeviewPlugin.so
+4ffd9000-4ffdb000 r-xp 00000000 fd:02 51         /vendor/browser_dir/jsplugins/MaxdomePlugin.so
+4ffdb000-4ffea000 ---p 00002000 fd:02 51         /vendor/browser_dir/jsplugins/MaxdomePlugin.so
+4ffea000-4ffeb000 rw-p 00001000 fd:02 51         /vendor/browser_dir/jsplugins/MaxdomePlugin.so
+4ffeb000-4ffec000 r-xp 00000000 fd:02 5452       /vendor/lib/opera/libnative_egl.so
+4ffec000-4fffb000 ---p 00001000 fd:02 5452       /vendor/lib/opera/libnative_egl.so
+4fffb000-4fffc000 r--p 00000000 fd:02 5452       /vendor/lib/opera/libnative_egl.so
+4fffc000-4fffd000 rw-p 00001000 fd:02 5452       /vendor/lib/opera/libnative_egl.so
+4fffd000-4fffe000 r-xp 00000000 fd:02 5290       /vendor/lib/libEGL.so
+4fffe000-5000d000 ---p 00001000 fd:02 5290       /vendor/lib/libEGL.so
+5000d000-5000e000 rw-p 00000000 fd:02 5290       /vendor/lib/libEGL.so
+5000e000-5000f000 r-xp 00000000 fd:02 5292       /vendor/lib/libGLESv2.so
+5000f000-5001e000 ---p 00001000 fd:02 5292       /vendor/lib/libGLESv2.so
+5001e000-5001f000 rw-p 00000000 fd:02 5292       /vendor/lib/libGLESv2.so
+5001f000-50030000 r-xp 00000000 fd:02 67         /vendor/browser_dir/jsplugins/libInputManagerPlugin.so
+50030000-50040000 ---p 00011000 fd:02 67         /vendor/browser_dir/jsplugins/libInputManagerPlugin.so
+50040000-50041000 rw-p 00011000 fd:02 67         /vendor/browser_dir/jsplugins/libInputManagerPlugin.so
+50041000-5004d000 r-xp 00000000 fd:02 65         /vendor/browser_dir/jsplugins/libFileManagerPlugin.so
+5004d000-5005d000 ---p 0000c000 fd:02 65         /vendor/browser_dir/jsplugins/libFileManagerPlugin.so
+5005d000-5005e000 rw-p 0000c000 fd:02 65         /vendor/browser_dir/jsplugins/libFileManagerPlugin.so
+5005e000-5006b000 r-xp 00000000 fd:02 73         /vendor/browser_dir/jsplugins/libRs232LanCommandPlugin.so
+5006b000-5007b000 ---p 0000d000 fd:02 73         /vendor/browser_dir/jsplugins/libRs232LanCommandPlugin.so
+5007b000-5007c000 rw-p 0000d000 fd:02 73         /vendor/browser_dir/jsplugins/libRs232LanCommandPlugin.so
+5007c000-5009c000 rw-s 00000000 00:12 8929       /dev/shm/.org.chromium.Chromium.tJdJGV (deleted)
+5009c000-5009e000 r-xp 00000000 fd:02 47         /vendor/browser_dir/jsplugins/FreeStreamMediaPlugin.so
+5009e000-500ad000 ---p 00002000 fd:02 47         /vendor/browser_dir/jsplugins/FreeStreamMediaPlugin.so
+500ad000-500ae000 rw-p 00001000 fd:02 47         /vendor/browser_dir/jsplugins/FreeStreamMediaPlugin.so
+500ae000-500af000 ---p 00000000 00:00 0 
+500af000-508ae000 rwxp 00000000 00:00 0 
+50dd9000-50dda000 ---p 00000000 00:00 0 
+50dda000-50df9000 rwxp 00000000 00:00 0 
+50f04000-50f05000 ---p 00000000 00:00 0 
+50f05000-50f24000 rwxp 00000000 00:00 0 
+50f24000-50f25000 ---p 00000000 00:00 0 
+50f25000-51724000 rwxp 00000000 00:00 0 
+51724000-51725000 ---p 00000000 00:00 0 
+51725000-51f24000 rwxp 00000000 00:00 0 
+51f24000-51f6b000 r-xp 00000000 fd:02 5460       /vendor/lib/opera/libnssckbi.so
+51f6b000-51f7a000 ---p 00047000 fd:02 5460       /vendor/lib/opera/libnssckbi.so
+51f7a000-51f83000 r--p 00046000 fd:02 5460       /vendor/lib/opera/libnssckbi.so
+51f83000-51f88000 rw-p 0004f000 fd:02 5460       /vendor/lib/opera/libnssckbi.so
+51f89000-51f90000 r--s 00000000 00:15 3414       /buffer/browser_home/web_ui/databases/Databases.db
+51f90000-52009000 r-xp 00000000 fd:02 5444       /vendor/lib/opera/libfreeblpriv3.so
+52009000-52019000 ---p 00079000 fd:02 5444       /vendor/lib/opera/libfreeblpriv3.so
+52019000-5201a000 r--p 00079000 fd:02 5444       /vendor/lib/opera/libfreeblpriv3.so
+5201a000-5201b000 rw-p 0007a000 fd:02 5444       /vendor/lib/opera/libfreeblpriv3.so
+5201b000-5201f000 rw-p 00000000 00:00 0 
+5201f000-5204b000 r-xp 00000000 fd:02 5474       /vendor/lib/opera/libsoftokn3.so
+5204b000-5205a000 ---p 0002c000 fd:02 5474       /vendor/lib/opera/libsoftokn3.so
+5205a000-5205b000 r--p 0002b000 fd:02 5474       /vendor/lib/opera/libsoftokn3.so
+5205b000-5205c000 rw-p 0002c000 fd:02 5474       /vendor/lib/opera/libsoftokn3.so
+5205c000-5205d000 ---p 00000000 00:00 0 
+5205d000-5207c000 rwxp 00000000 00:00 0 
+5207c000-5207d000 ---p 00000000 00:00 0 
+5207d000-520ae000 rwxp 00000000 00:00 0 
+520ae000-520af000 ---p 00000000 00:00 0 
+520af000-528ae000 rwxp 00000000 00:00 0 
+528ae000-528af000 ---p 00000000 00:00 0 
+528af000-530ae000 rwxp 00000000 00:00 0 
+530ae000-530af000 ---p 00000000 00:00 0 
+530af000-538ae000 rwxp 00000000 00:00 0 
+538ae000-538af000 ---p 00000000 00:00 0 
+538af000-540ae000 rwxp 00000000 00:00 0 
+540ae000-540af000 ---p 00000000 00:00 0 
+540af000-548ae000 rwxp 00000000 00:00 0 
+548ae000-54b69000 r--s 00000000 fd:02 93         /vendor/browser_dir/resources.pak
+54b69000-54b6a000 ---p 00000000 00:00 0 
+54b6a000-55369000 rwxp 00000000 00:00 0 
+55369000-5536a000 ---p 00000000 00:00 0 
+5536a000-55b69000 rwxp 00000000 00:00 0 
+55b69000-55b6a000 ---p 00000000 00:00 0 
+55b6a000-56369000 rwxp 00000000 00:00 0 
+56369000-5636a000 ---p 00000000 00:00 0 
+5636a000-56b69000 rwxp 00000000 00:00 0 
+56b69000-56b6a000 ---p 00000000 00:00 0 
+56b6a000-57369000 rwxp 00000000 00:00 0 
+57369000-5736a000 ---p 00000000 00:00 0 
+5736a000-57b69000 rwxp 00000000 00:00 0 
+57b69000-57b95000 r--s 00000000 fd:02 90         /vendor/browser_dir/natives_blob.bin
+57b95000-57ced000 r--s 00000000 fd:02 94         /vendor/browser_dir/snapshot_blob.bin
+57ced000-58321000 r--s 00000000 fd:02 40         /vendor/browser_dir/icudtl.dat
+58321000-58322000 ---p 00000000 00:00 0 
+58322000-58b21000 rwxp 00000000 00:00 0 
+58b21000-58b22000 ---p 00000000 00:00 0 
+58b22000-58b41000 rwxp 00000000 00:00 0 
+58b41000-58b42000 ---p 00000000 00:00 0 
+58b42000-58b61000 rwxp 00000000 00:00 0 
+58b61000-58b62000 ---p 00000000 00:00 0 
+58b62000-58b81000 rwxp 00000000 00:00 0 
+58b81000-58b82000 ---p 00000000 00:00 0 
+58b82000-58ba1000 rwxp 00000000 00:00 0 
+58ba1000-58ba2000 ---p 00000000 00:00 0 
+58ba2000-58bc1000 rwxp 00000000 00:00 0 
+58bc1000-58bc2000 ---p 00000000 00:00 0 
+58bc2000-58be1000 rwxp 00000000 00:00 0 
+58be1000-58be2000 ---p 00000000 00:00 0 
+58be2000-58c01000 rwxp 00000000 00:00 0 
+58c01000-58c02000 ---p 00000000 00:00 0 
+58c02000-58c21000 rwxp 00000000 00:00 0 
+58c21000-58c22000 ---p 00000000 00:00 0 
+58c22000-58c41000 rwxp 00000000 00:00 0 
+58c41000-58c42000 ---p 00000000 00:00 0 
+58c42000-58c61000 rwxp 00000000 00:00 0 
+58c61000-58c62000 ---p 00000000 00:00 0 
+58c62000-58c81000 rwxp 00000000 00:00 0 
+58c81000-58c82000 ---p 00000000 00:00 0 
+58c82000-58ca1000 rwxp 00000000 00:00 0 
+58ca1000-58ca2000 ---p 00000000 00:00 0 
+58ca2000-58cc1000 rwxp 00000000 00:00 0 
+58cc1000-58cc2000 ---p 00000000 00:00 0 
+58cc2000-58ce1000 rwxp 00000000 00:00 0 
+58ce1000-58ce2000 ---p 00000000 00:00 0 
+58ce2000-58d01000 rwxp 00000000 00:00 0 
+58d01000-58d02000 ---p 00000000 00:00 0 
+58d02000-58d21000 rwxp 00000000 00:00 0 
+58d21000-58d22000 ---p 00000000 00:00 0 
+58d22000-58d41000 rwxp 00000000 00:00 0 
+58d41000-58d42000 ---p 00000000 00:00 0 
+58d42000-58d61000 rwxp 00000000 00:00 0 
+58d61000-58d62000 ---p 00000000 00:00 0 
+58d62000-58d81000 rwxp 00000000 00:00 0 
+58d81000-58d82000 ---p 00000000 00:00 0 
+58d82000-58da1000 rwxp 00000000 00:00 0 
+58da1000-58da2000 ---p 00000000 00:00 0 
+58da2000-58dc1000 rwxp 00000000 00:00 0 
+58dc1000-58dc2000 ---p 00000000 00:00 0 
+58dc2000-58de1000 rwxp 00000000 00:00 0 
+58de1000-58de2000 ---p 00000000 00:00 0 
+58de2000-58e01000 rwxp 00000000 00:00 0 
+58e01000-58e02000 ---p 00000000 00:00 0 
+58e02000-58e21000 rwxp 00000000 00:00 0 
+58e21000-58e22000 ---p 00000000 00:00 0 
+58e22000-58e41000 rwxp 00000000 00:00 0 
+58e41000-58e42000 ---p 00000000 00:00 0 
+58e42000-58e61000 rwxp 00000000 00:00 0 
+58e61000-58e62000 ---p 00000000 00:00 0 
+58e62000-58e81000 rwxp 00000000 00:00 0 
+58e81000-58e82000 ---p 00000000 00:00 0 
+58e82000-58ea1000 rwxp 00000000 00:00 0 
+58ea1000-58ea2000 ---p 00000000 00:00 0 
+58ea2000-58ec1000 rwxp 00000000 00:00 0 
+58ec1000-58ec2000 ---p 00000000 00:00 0 
+58ec2000-58ee1000 rwxp 00000000 00:00 0 
+58ee1000-58ee2000 ---p 00000000 00:00 0 
+58ee2000-58f01000 rwxp 00000000 00:00 0 
+58f01000-58f02000 ---p 00000000 00:00 0 
+58f02000-58f21000 rwxp 00000000 00:00 0 
+58f21000-58f22000 ---p 00000000 00:00 0 
+58f22000-58fa1000 rwxp 00000000 00:00 0 
+58fa1000-58fa2000 ---p 00000000 00:00 0 
+58fa2000-58fc1000 rwxp 00000000 00:00 0 
+58fc1000-58fc2000 ---p 00000000 00:00 0 
+58fc2000-58fe1000 rwxp 00000000 00:00 0 
+58fe1000-58fe2000 ---p 00000000 00:00 0 
+58fe2000-59001000 rwxp 00000000 00:00 0 
+59001000-59002000 ---p 00000000 00:00 0 
+59002000-59021000 rwxp 00000000 00:00 0 
+59021000-59022000 ---p 00000000 00:00 0 
+59022000-59041000 rwxp 00000000 00:00 0 
+59041000-59042000 ---p 00000000 00:00 0 
+59042000-59061000 rwxp 00000000 00:00 0 
+59061000-59062000 ---p 00000000 00:00 0 
+59062000-59081000 rwxp 00000000 00:00 0 
+59081000-59082000 ---p 00000000 00:00 0 
+59082000-590a1000 rwxp 00000000 00:00 0 
+590a1000-590a2000 ---p 00000000 00:00 0 
+590a2000-590c1000 rwxp 00000000 00:00 0 
+590c1000-590c2000 ---p 00000000 00:00 0 
+590c2000-590e1000 rwxp 00000000 00:00 0 
+590e1000-590e2000 ---p 00000000 00:00 0 
+590e2000-59101000 rwxp 00000000 00:00 0 
+59101000-59102000 ---p 00000000 00:00 0 
+59102000-59121000 rwxp 00000000 00:00 0 
+59121000-59122000 ---p 00000000 00:00 0 
+59122000-59141000 rwxp 00000000 00:00 0 
+59141000-59142000 ---p 00000000 00:00 0 
+59142000-59161000 rwxp 00000000 00:00 0 
+59161000-59162000 ---p 00000000 00:00 0 
+59162000-59181000 rwxp 00000000 00:00 0 
+59181000-59182000 ---p 00000000 00:00 0 
+59182000-591a1000 rwxp 00000000 00:00 0 
+591a1000-591a2000 ---p 00000000 00:00 0 
+591a2000-591c1000 rwxp 00000000 00:00 0 
+591c1000-591c2000 ---p 00000000 00:00 0 
+591c2000-591e1000 rwxp 00000000 00:00 0 
+591e1000-591e2000 ---p 00000000 00:00 0 
+591e2000-59201000 rwxp 00000000 00:00 0 
+59201000-59202000 ---p 00000000 00:00 0 
+59202000-59221000 rwxp 00000000 00:00 0 
+59221000-59222000 ---p 00000000 00:00 0 
+59222000-59241000 rwxp 00000000 00:00 0 
+59241000-59242000 ---p 00000000 00:00 0 
+59242000-59261000 rwxp 00000000 00:00 0 
+59261000-59262000 ---p 00000000 00:00 0 
+59262000-59281000 rwxp 00000000 00:00 0 
+59281000-59282000 ---p 00000000 00:00 0 
+59282000-592a1000 rwxp 00000000 00:00 0 
+592a1000-592a2000 ---p 00000000 00:00 0 
+592a2000-592c1000 rwxp 00000000 00:00 0 
+592c1000-592c2000 ---p 00000000 00:00 0 
+592c2000-592e1000 rwxp 00000000 00:00 0 
+592e1000-592e2000 ---p 00000000 00:00 0 
+592e2000-59301000 rwxp 00000000 00:00 0 
+59301000-59302000 ---p 00000000 00:00 0 
+59302000-59321000 rwxp 00000000 00:00 0 
+59321000-59322000 ---p 00000000 00:00 0 
+59322000-59341000 rwxp 00000000 00:00 0 
+59341000-59342000 ---p 00000000 00:00 0 
+59342000-59361000 rwxp 00000000 00:00 0 
+59361000-59362000 ---p 00000000 00:00 0 
+59362000-59381000 rwxp 00000000 00:00 0 
+59381000-5987d000 rw-s 00000000 00:06 8692       /dev/teec
+5987d000-59d79000 rw-s 00000000 00:06 8692       /dev/teec
+59d79000-59d7a000 ---p 00000000 00:00 0 
+59d7a000-59d99000 rwxp 00000000 00:00 0 
+59d99000-59d9a000 ---p 00000000 00:00 0 
+59d9a000-59db9000 rwxp 00000000 00:00 0 
+59db9000-59dba000 ---p 00000000 00:00 0 
+59dba000-59dd9000 rwxp 00000000 00:00 0 
+59dd9000-59dda000 ---p 00000000 00:00 0 
+59dda000-59df9000 rwxp 00000000 00:00 0 
+59df9000-59dfa000 ---p 00000000 00:00 0 
+59dfa000-59e19000 rwxp 00000000 00:00 0 
+59e19000-59e1a000 ---p 00000000 00:00 0 
+59e1a000-59e39000 rwxp 00000000 00:00 0 
+59e39000-59e3a000 ---p 00000000 00:00 0 
+59e3a000-59e59000 rwxp 00000000 00:00 0 
+59e59000-59e5a000 ---p 00000000 00:00 0 
+59e5a000-59e79000 rwxp 00000000 00:00 0 
+59e79000-59e7a000 ---p 00000000 00:00 0 
+59e7a000-59e99000 rwxp 00000000 00:00 0 
+59e99000-59e9a000 ---p 00000000 00:00 0 
+59e9a000-59eb9000 rwxp 00000000 00:00 0 
+59eb9000-59eba000 ---p 00000000 00:00 0 
+59eba000-59ed9000 rwxp 00000000 00:00 0 
+59ed9000-59eda000 ---p 00000000 00:00 0 
+59eda000-59ef9000 rwxp 00000000 00:00 0 
+59ef9000-59efa000 ---p 00000000 00:00 0 
+59efa000-59f19000 rwxp 00000000 00:00 0 
+59f19000-59f1a000 ---p 00000000 00:00 0 
+59f1a000-59f39000 rwxp 00000000 00:00 0 
+59f39000-59f3a000 ---p 00000000 00:00 0 
+59f3a000-59f59000 rwxp 00000000 00:00 0 
+59f59000-59f5a000 ---p 00000000 00:00 0 
+59f5a000-59f79000 rwxp 00000000 00:00 0 
+59f79000-59f7a000 ---p 00000000 00:00 0 
+59f7a000-59f99000 rwxp 00000000 00:00 0 
+59f99000-59f9a000 ---p 00000000 00:00 0 
+59f9a000-59fb9000 rwxp 00000000 00:00 0 
+59fb9000-59fba000 ---p 00000000 00:00 0 
+59fba000-59fd9000 rwxp 00000000 00:00 0 
+59fd9000-59fda000 ---p 00000000 00:00 0 
+59fda000-59ff9000 rwxp 00000000 00:00 0 
+59ff9000-59ffa000 ---p 00000000 00:00 0 
+59ffa000-5a019000 rwxp 00000000 00:00 0 
+5a019000-5a01a000 ---p 00000000 00:00 0 
+5a01a000-5a039000 rwxp 00000000 00:00 0 
+5a039000-5a03a000 ---p 00000000 00:00 0 
+5a03a000-5a059000 rwxp 00000000 00:00 0 
+5a059000-5a05a000 ---p 00000000 00:00 0 
+5a05a000-5a859000 rwxp 00000000 00:00 0 
+5a859000-5a85a000 ---p 00000000 00:00 0 
+5a85a000-5b059000 rwxp 00000000 00:00 0 
+5b059000-5b05a000 ---p 00000000 00:00 0 
+5b05a000-5b079000 rwxp 00000000 00:00 0 
+5b079000-5b07a000 rw-s 00000000 00:12 8936       /dev/shm/.org.chromium.Chromium.PAju2k (deleted)
+5b07b000-5b07c000 rw-s 00000000 00:12 1503654    /dev/shm/libv4l-root::av_atv_scart
+5b07c000-5b07d000 rw-s 00000000 00:12 9293       /dev/shm/libv4l-root::hdmi switch
+5b07d000-5b082000 rw-s 00000000 00:05 458764     /SYSV05101804 (deleted)
+5b082000-5b083000 rw-s 00000000 00:12 5352       /dev/shm/.org.chromium.Chromium.xFrpO8 (deleted)
+5b083000-5b084000 ---p 00000000 00:00 0 
+5b084000-5b0a3000 rwxp 00000000 00:00 0 
+5b0a3000-5b0a4000 ---p 00000000 00:00 0 
+5b0a4000-5b8a3000 rwxp 00000000 00:00 0 
+5b8a3000-5b8a4000 ---p 00000000 00:00 0 
+5b8a4000-5c0a3000 rwxp 00000000 00:00 0 
+5c0a3000-5c0a4000 ---p 00000000 00:00 0 
+5c0a4000-5c8a3000 rwxp 00000000 00:00 0 
+5c8a3000-5c8a4000 ---p 00000000 00:00 0 
+5c8a4000-5d0a3000 rwxp 00000000 00:00 0 
+5d0a3000-5d0a4000 ---p 00000000 00:00 0 
+5d0a4000-5d8a3000 rwxp 00000000 00:00 0 
+5d8a3000-5d8a4000 ---p 00000000 00:00 0 
+5d8a4000-5e0a3000 rwxp 00000000 00:00 0 
+5e0a3000-5e0a4000 ---p 00000000 00:00 0 
+5e0a4000-5e8a3000 rwxp 00000000 00:00 0 
+5e8a3000-5e8a4000 ---p 00000000 00:00 0 
+5e8a4000-5f0a3000 rwxp 00000000 00:00 0 
+5f0a3000-5f0a4000 ---p 00000000 00:00 0 
+5f0a4000-5f0c3000 rwxp 00000000 00:00 0 
+5f0c3000-5f0c4000 ---p 00000000 00:00 0 
+5f0c4000-5f0e3000 rwxp 00000000 00:00 0 
+5f0e3000-5f0e4000 ---p 00000000 00:00 0 
+5f0e4000-5f103000 rwxp 00000000 00:00 0 
+5f103000-5f104000 ---p 00000000 00:00 0 
+5f104000-5f123000 rwxp 00000000 00:00 0 
+5f123000-5f124000 ---p 00000000 00:00 0 
+5f124000-5f143000 rwxp 00000000 00:00 0 
+5f143000-5f144000 ---p 00000000 00:00 0 
+5f144000-5f163000 rwxp 00000000 00:00 0 
+5f163000-5f164000 ---p 00000000 00:00 0 
+5f164000-5f183000 rwxp 00000000 00:00 0 
+5f183000-5f184000 ---p 00000000 00:00 0 
+5f184000-5f1a3000 rwxp 00000000 00:00 0 
+5f1a3000-5f1a4000 ---p 00000000 00:00 0 
+5f1a4000-5f1c3000 rwxp 00000000 00:00 0 
+5f1c3000-5f1cc000 r-xp 00000000 fd:02 5120       /vendor/lib/dfb/directfb-1.7-1/wm/libdirectfbwm_sawman.so
+5f1cc000-5f1db000 ---p 00009000 fd:02 5120       /vendor/lib/dfb/directfb-1.7-1/wm/libdirectfbwm_sawman.so
+5f1db000-5f1dc000 rw-p 00008000 fd:02 5120       /vendor/lib/dfb/directfb-1.7-1/wm/libdirectfbwm_sawman.so
+5f1dc000-5f1dd000 -w-s fc0d0000 00:06 8504       /dev/ntkgpu
+5f1dd000-5f1de000 rw-s 00000000 00:12 8936       /dev/shm/.org.chromium.Chromium.PAju2k (deleted)
+5f1de000-5f1df000 rw-s 5f1de000 00:06 8225       /dev/mali0
+5f1df000-5f1ee000 r--s 00000000 fd:02 86         /vendor/browser_dir/locale/en-US.pak
+5f1ee000-5f1f0000 rw-s 5f1ee000 00:06 8225       /dev/mali0
+5f1f0000-5f1f1000 rw-s 5f1f0000 00:06 8225       /dev/mali0
+5f1f1000-5f1f2000 rw-s 5f1f1000 00:06 8225       /dev/mali0
+5f1f2000-5f1f3000 rw-s 5f1f2000 00:06 8225       /dev/mali0
+5f1f3000-5f1f4000 ---s 00003000 00:06 8225       /dev/mali0
+5f1f4000-5f1f5000 rw-s 00000000 00:12 5352       /dev/shm/.org.chromium.Chromium.xFrpO8 (deleted)
+5f1f5000-5f1f6000 rw-s 5f1f5000 00:06 8225       /dev/mali0
+5f1f6000-5f1f7000 rw-s 5f1f6000 00:06 8225       /dev/mali0
+5f1f7000-5f1f8000 rw-s 5f1f7000 00:06 8225       /dev/mali0
+5f1f8000-5f1f9000 ---s 00003000 00:06 8225       /dev/mali0
+5f1f9000-5f1fa000 rw-s fc058000 00:06 8504       /dev/ntkgpu
+5f1fa000-5f57e000 r--s 00000000 00:06 8484       /dev/fb2
+5f57e000-5f902000 rw-s 00000000 00:06 8484       /dev/fb2
+5f902000-610bd000 r--s 00000000 00:06 8482       /dev/fb0
+610bd000-62878000 rw-s 00000000 00:06 8482       /dev/fb0
+62878000-6384a000 r--s 00000000 00:06 8483       /dev/fb1
+6384a000-6481c000 rw-s 00000000 00:06 8483       /dev/fb1
+6481c000-6481d000 rw-s 12b95000 00:06 8653       /dev/dri/card0
+6481d000-6481e000 rw-s 12b94000 00:06 8653       /dev/dri/card0
+6481e000-64829000 r-xp 00000000 fd:02 5103       /vendor/lib/dfb/directfb-1.7-1/gfxdrivers/libdirectfb_tdga.so
+64829000-64838000 ---p 0000b000 fd:02 5103       /vendor/lib/dfb/directfb-1.7-1/gfxdrivers/libdirectfb_tdga.so
+64838000-64839000 rw-p 0000a000 fd:02 5103       /vendor/lib/dfb/directfb-1.7-1/gfxdrivers/libdirectfb_tdga.so
+64839000-6483a000 ---p 00000000 00:00 0 
+6483a000-65039000 rwxp 00000000 00:00 0 
+65039000-6503a000 ---p 00000000 00:00 0 
+6503a000-65839000 rwxp 00000000 00:00 0 
+65839000-6583a000 r-xp 00000000 fd:02 5117       /vendor/lib/dfb/directfb-1.7-1/systems/libdirectfb_fbdev.so
+6583a000-65849000 ---p 00001000 fd:02 5117       /vendor/lib/dfb/directfb-1.7-1/systems/libdirectfb_fbdev.so
+65849000-6584a000 rw-p 00000000 fd:02 5117       /vendor/lib/dfb/directfb-1.7-1/systems/libdirectfb_fbdev.so
+6584a000-6584b000 ---p 00000000 00:00 0 
+6584b000-6604a000 rwxp 00000000 00:00 0 
+6604a000-6604b000 rw-s 00000000 00:05 327690     /SYSV000004d2 (deleted)
+6604b000-6604c000 rw-s 00000000 00:12 6274       /dev/shm/sem.Bootlogo_AGE_Sync_Sem
+6604c000-6604d000 rw-s 00000000 00:05 32769      /SYSV000083fb (deleted)
+6604d000-6604e000 ---p 00000000 00:00 0 
+6604e000-6606d000 rwxp 00000000 00:00 0 
+6606d000-6606e000 ---p 00000000 00:00 0 
+6606e000-6608d000 rwxp 00000000 00:00 0 
+6608d000-6608e000 ---p 00000000 00:00 0 
+6608e000-660ad000 rwxp 00000000 00:00 0 
+660ad000-660ae000 ---p 00000000 00:00 0 
+660ae000-660cd000 rwxp 00000000 00:00 0 
+660cd000-660ce000 ---p 00000000 00:00 0 
+660ce000-660ed000 rwxp 00000000 00:00 0 
+660ed000-660ee000 ---p 00000000 00:00 0 
+660ee000-6610d000 rwxp 00000000 00:00 0 
+6610d000-6610e000 ---p 00000000 00:00 0 
+6610e000-6612d000 rwxp 00000000 00:00 0 
+6612d000-6612e000 ---p 00000000 00:00 0 
+6612e000-6614d000 rwxp 00000000 00:00 0 
+6614d000-6614e000 ---p 00000000 00:00 0 
+6614e000-6616d000 rwxp 00000000 00:00 0 
+6616d000-6616e000 ---p 00000000 00:00 0 
+6616e000-6618d000 rwxp 00000000 00:00 0 
+6618d000-6618e000 ---p 00000000 00:00 0 
+6618e000-661ad000 rwxp 00000000 00:00 0 
+661ad000-661ae000 ---p 00000000 00:00 0 
+661ae000-661cd000 rwxp 00000000 00:00 0 
+661cd000-661ce000 ---p 00000000 00:00 0 
+661ce000-661ed000 rwxp 00000000 00:00 0 
+661ed000-661ee000 ---p 00000000 00:00 0 
+661ee000-6620d000 rwxp 00000000 00:00 0 
+6620d000-6620e000 ---p 00000000 00:00 0 
+6620e000-6622d000 rwxp 00000000 00:00 0 
+6622d000-6622e000 ---p 00000000 00:00 0 
+6622e000-6624d000 rwxp 00000000 00:00 0 
+6624d000-6624e000 rw-s 00000000 00:12 5323       /dev/shm/lphKCu (deleted)
+6624e000-6624f000 rw-s 00000000 00:12 8234       /dev/shm/sem.mysem_idtv
+6624f000-66250000 ---p 00000000 00:00 0 
+66250000-6626f000 rwxp 00000000 00:00 0 
+6626f000-66270000 ---p 00000000 00:00 0 
+66270000-6628f000 rwxp 00000000 00:00 0 
+6628f000-66290000 ---p 00000000 00:00 0 
+66290000-662af000 rwxp 00000000 00:00 0 
+662af000-662b0000 ---p 00000000 00:00 0 
+662b0000-662cf000 rwxp 00000000 00:00 0 
+662cf000-662d0000 ---p 00000000 00:00 0 
+662d0000-662ef000 rwxp 00000000 00:00 0 
+662ef000-662f0000 ---p 00000000 00:00 0 
+662f0000-6630f000 rwxp 00000000 00:00 0 
+6630f000-66310000 ---p 00000000 00:00 0 
+66310000-6632f000 rwxp 00000000 00:00 0 
+6632f000-66330000 ---p 00000000 00:00 0 
+66330000-6634f000 rwxp 00000000 00:00 0 
+6634f000-66350000 ---p 00000000 00:00 0 
+66350000-6636f000 rwxp 00000000 00:00 0 
+6636f000-66370000 ---p 00000000 00:00 0 
+66370000-6638f000 rwxp 00000000 00:00 0 
+6638f000-66390000 ---p 00000000 00:00 0 
+66390000-663af000 rwxp 00000000 00:00 0 
+663af000-663b0000 ---p 00000000 00:00 0 
+663b0000-663cf000 rwxp 00000000 00:00 0 
+663cf000-663d0000 ---p 00000000 00:00 0 
+663d0000-663ef000 rwxp 00000000 00:00 0 
+663ef000-663f0000 ---p 00000000 00:00 0 
+663f0000-6640f000 rwxp 00000000 00:00 0 
+6640f000-66410000 ---p 00000000 00:00 0 
+66410000-6642f000 rwxp 00000000 00:00 0 
+6642f000-66430000 ---p 00000000 00:00 0 
+66430000-6644f000 rwxp 00000000 00:00 0 
+6644f000-66450000 ---p 00000000 00:00 0 
+66450000-6646f000 rwxp 00000000 00:00 0 
+6646f000-66470000 ---p 00000000 00:00 0 
+66470000-66c6f000 rwxp 00000000 00:00 0 
+66c6f000-66c70000 ---p 00000000 00:00 0 
+66c70000-66c8f000 rwxp 00000000 00:00 0 
+66c8f000-66c90000 ---p 00000000 00:00 0 
+66c90000-66caf000 rwxp 00000000 00:00 0 
+66caf000-66cb0000 ---p 00000000 00:00 0 
+66cb0000-66ccf000 rwxp 00000000 00:00 0 
+66ccf000-66cd0000 ---p 00000000 00:00 0 
+66cd0000-66cef000 rwxp 00000000 00:00 0 
+66cef000-66d2f000 rw-s 3f240000 00:06 8547       /dev/ntkci
+66d2f000-66d30000 ---p 00000000 00:00 0 
+66d30000-66d4f000 rwxp 00000000 00:00 0 
+66d4f000-66d50000 ---p 00000000 00:00 0 
+66d50000-6754f000 rwxp 00000000 00:00 0 
+6754f000-67550000 ---p 00000000 00:00 0 
+67550000-67d4f000 rwxp 00000000 00:00 0 
+67d4f000-67d50000 ---p 00000000 00:00 0 
+67d50000-6854f000 rwxp 00000000 00:00 0 
+6854f000-68550000 ---p 00000000 00:00 0 
+68550000-68d4f000 rwxp 00000000 00:00 0 
+68d4f000-68d50000 ---p 00000000 00:00 0 
+68d50000-6954f000 rwxp 00000000 00:00 0 
+6954f000-69550000 ---p 00000000 00:00 0 
+69550000-69d4f000 rwxp 00000000 00:00 0 
+69d4f000-69d50000 ---p 00000000 00:00 0 
+69d50000-6a54f000 rwxp 00000000 00:00 0 
+6a54f000-6a550000 ---p 00000000 00:00 0 
+6a550000-6ad4f000 rwxp 00000000 00:00 0 
+6ad4f000-6ad50000 ---p 00000000 00:00 0 
+6ad50000-6b54f000 rwxp 00000000 00:00 0 
+6b54f000-6b550000 ---p 00000000 00:00 0 
+6b550000-6bd4f000 rwxp 00000000 00:00 0 
+6bd4f000-6bd50000 ---p 00000000 00:00 0 
+6bd50000-6c54f000 rwxp 00000000 00:00 0 
+6c54f000-6c550000 ---p 00000000 00:00 0 
+6c550000-6cd4f000 rwxp 00000000 00:00 0 
+6cd4f000-6cd50000 ---p 00000000 00:00 0 
+6cd50000-6cd6f000 rwxp 00000000 00:00 0 
+6cd6f000-6cd70000 ---p 00000000 00:00 0 
+6cd70000-6cd8f000 rwxp 00000000 00:00 0 
+6cd8f000-6cd90000 ---p 00000000 00:00 0 
+6cd90000-6cdaf000 rwxp 00000000 00:00 0 
+6cdaf000-6cdb0000 ---p 00000000 00:00 0 
+6cdb0000-6cdcf000 rwxp 00000000 00:00 0 
+6cdcf000-6ce0f000 rw-s 12b52000 00:06 8653       /dev/dri/card0
+6ce0f000-6ce4f000 rw-s 12b12000 00:06 8653       /dev/dri/card0
+6ce4f000-6d011000 rw-s 12950000 00:06 8653       /dev/dri/card0
+6d011000-6d1d3000 rw-s 1278e000 00:06 8653       /dev/dri/card0
+6d1d3000-6d9bc000 rw-s 11fa5000 00:06 8653       /dev/dri/card0
+6d9bc000-6e1a5000 rw-s 117bc000 00:06 8653       /dev/dri/card0
+6e1a5000-6f177000 rw-s 107ea000 00:06 8653       /dev/dri/card0
+6f177000-6f960000 rw-s 10001000 00:06 8653       /dev/dri/card0
+6f960000-6f96b000 rw-s 00000000 00:12 5290       /dev/shm/shm_platmcu
+6f96b000-6f96c000 ---p 00000000 00:00 0 
+6f96c000-6f98b000 rwxp 00000000 00:00 0 
+6f98b000-6f98c000 ---p 00000000 00:00 0 
+6f98c000-6f9ab000 rwxp 00000000 00:00 0 
+6f9ab000-6f9ac000 ---p 00000000 00:00 0 
+6f9ac000-6f9cb000 rwxp 00000000 00:00 0 
+6f9cb000-6f9cc000 ---p 00000000 00:00 0 
+6f9cc000-6f9eb000 rwxp 00000000 00:00 0 
+6f9eb000-6f9ec000 ---p 00000000 00:00 0 
+6f9ec000-6fa0b000 rwxp 00000000 00:00 0 
+6fa0b000-6fa0c000 ---p 00000000 00:00 0 
+6fa0c000-7020b000 rwxp 00000000 00:00 0 
+7020b000-7020c000 ---p 00000000 00:00 0 
+7020c000-70a0b000 rwxp 00000000 00:00 0 
+70a0b000-70a0c000 ---p 00000000 00:00 0 
+70a0c000-70a2b000 rwxp 00000000 00:00 0 
+70a2b000-70a2c000 ---p 00000000 00:00 0 
+70a2c000-70a4b000 rwxp 00000000 00:00 0 
+70a4b000-70a51000 r-xp 00000000 fd:00 177        /lib/libnss_files-2.23.so
+70a51000-70a61000 ---p 00006000 fd:00 177        /lib/libnss_files-2.23.so
+70a61000-70a62000 r--p 00006000 fd:00 177        /lib/libnss_files-2.23.so
+70a62000-70a63000 rw-p 00007000 fd:00 177        /lib/libnss_files-2.23.so
+70a63000-70a69000 rw-p 00000000 00:00 0 
+70a69000-70a70000 r-xp 00000000 fd:00 181        /lib/libnss_nis-2.23.so
+70a70000-70a7f000 ---p 00007000 fd:00 181        /lib/libnss_nis-2.23.so
+70a7f000-70a80000 r--p 00006000 fd:00 181        /lib/libnss_nis-2.23.so
+70a80000-70a81000 rw-p 00007000 fd:00 181        /lib/libnss_nis-2.23.so
+70a81000-70a8e000 r-xp 00000000 fd:00 169        /lib/libnsl-2.23.so
+70a8e000-70a9d000 ---p 0000d000 fd:00 169        /lib/libnsl-2.23.so
+70a9d000-70a9e000 r--p 0000c000 fd:00 169        /lib/libnsl-2.23.so
+70a9e000-70a9f000 rw-p 0000d000 fd:00 169        /lib/libnsl-2.23.so
+70a9f000-70aa1000 rw-p 00000000 00:00 0 
+70aa1000-70aa5000 r-xp 00000000 fd:00 171        /lib/libnss_compat-2.23.so
+70aa5000-70ab5000 ---p 00004000 fd:00 171        /lib/libnss_compat-2.23.so
+70ab5000-70ab6000 r--p 00004000 fd:00 171        /lib/libnss_compat-2.23.so
+70ab6000-70ab7000 rw-p 00005000 fd:00 171        /lib/libnss_compat-2.23.so
+70ab7000-70ab8000 rw-s 00000000 00:05 294921     /SYSV528374ff (deleted)
+70ab8000-70ab9000 rw-s 00000000 00:05 262152     /SYSV63062122 (deleted)
+70ab9000-70aba000 rw-s 00000000 00:05 229383     /SYSV00001e61 (deleted)
+70aba000-70abb000 rw-s 00000000 00:05 196614     /SYSV501daf1b (deleted)
+70abb000-70abc000 rw-s 12b93000 00:06 8653       /dev/dri/card0
+70abc000-70abd000 rw-s 12b92000 00:06 8653       /dev/dri/card0
+70abd000-70abe000 rw-s 00000000 00:05 163845     /SYSV640613dc (deleted)
+70abe000-70abf000 rw-s 00000000 00:05 163845     /SYSV640613dc (deleted)
+70abf000-70ac0000 ---p 00000000 00:00 0 
+70ac0000-70adf000 rwxp 00000000 00:00 0 
+70adf000-70ae0000 ---p 00000000 00:00 0 
+70ae0000-70aff000 rwxp 00000000 00:00 0 
+70aff000-70b00000 ---p 00000000 00:00 0 
+70b00000-70b1f000 rwxp 00000000 00:00 0 
+70b1f000-7671f000 rw-s 00000000 00:06 5084       /dev/ntksys
+7671f000-76747000 rw-p 00000000 00:00 0 
+76747000-76748000 rw-s 00000000 00:05 163845     /SYSV640613dc (deleted)
+76748000-76749000 rw-s 00000000 00:05 163845     /SYSV640613dc (deleted)
+76749000-7674a000 rw-s 00000000 00:05 163845     /SYSV640613dc (deleted)
+7674a000-7674b000 rw-s 00000000 00:05 0          /SYSV002c0619 (deleted)
+7674b000-7674c000 rw-s 00000000 00:05 98307      /SYSV62062122 (deleted)
+7674c000-7674d000 rw-s 00000000 00:05 65538      /SYSV00001cd6 (deleted)
+7674d000-7674e000 rw-s 00000000 00:12 5282       /dev/shm/libv4l-root::component
+7674e000-7674f000 rw-s 00000000 00:05 32769      /SYSV000083fb (deleted)
+7674f000-76750000 rw-p 00000000 00:00 0 
+7e05f000-7e080000 rwxp 00000000 00:00 0          [stack]
+7e19a000-7e19b000 r-xp 00000000 00:00 0          [sigpage]
+ffff0000-ffff1000 r-xp 00000000 00:00 0          [vectors]

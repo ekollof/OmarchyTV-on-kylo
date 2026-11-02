@@ -491,6 +491,16 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       actual parent/text/resource/ratio state, skin integration and visible
       acceptance remain open. Conditional X31 does not prove fitted49: no guessed
       padding from verified zero dialog margins/font offset/list ctor insets.
+- [x] Add bounded read-only UI vptr-candidate inventory with chunk lookahead,
+      executable/map checks and signed field decoding. UI-LIVE-OBJECTS-2026-11-02:
+      strict full host/focused sanitizers/ARM-qemu tests and native heap scan pass.
+      Only6 uncreated textbox candidates in selected heaps; actual settings
+      instance/window/text/ratio evidence is still pending, not closed by absence.
+- [ ] Repair/test historical tools/wspoll.c before reuse: 127-frame read overruns
+      ext[4], short/header-coalesced reads and uninitialized/stale state need
+      handling. UI-LIVE-OBJECTS records using host WebSocket API instead; old
+      native helper was not executed. Keep state observation separate from
+      key-dispatch and visible-screen proof.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on
