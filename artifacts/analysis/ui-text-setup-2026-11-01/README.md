@@ -210,10 +210,16 @@ Title PATH results (2026-11-02, verified): TabDialog::init creates the
 The shipped pack contains ZERO `settingsTitle` strings, so that path is
 dead for this theme. The visible title goes through
 `SVGFullScreenDialog::setTitle(key)` → `setText` on textbox +0x140
-(+0x144 if created) with the raw KEY. Where those textboxes get their
-rect (record 191's dialogTitle (57,5,691,95) is the candidate area) and
-where key→localized resolution happens are still open — do not implement
-live title until that chain is traced.
+(+0x144) with the raw KEY. `createComponents` (0xd6dc3e) builds those
+textboxes from `dialogTitle`/`dialogTitleShadow` descriptions when present:
+all four states → widget name id 419, default text "", rect+colors from
+the description record, lines=1. Record 419: textPos (341,273,381,324) =
+40x51, NO font marker → type 0 (fontRegular). Font table (UI-FONT-SELECTION):
+type-0 max heights 80..24 map a ~51px request to ID 5, pending the rescale
+ratio and exact selection rule. Open before live title: confirmation of
+the description source record, the rescale surface/mask ratio, the exact
+font-ID selection, and the text origin within the title area. Do not
+render title text until that chain is complete.
 
 `showSubMenu` creates the focused tab's content dialog from the UIGroup focus
 id (`+0x4ac`):
