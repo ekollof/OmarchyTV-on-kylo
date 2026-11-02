@@ -673,14 +673,22 @@ The function has TWO mask/scale blocks, not one (the second starts at asm
   setRowSVGName(1→479 FA, 0→481 UFA, 3→480 FI, 2→482 UFI); widget ids
   488-491/496-499/504-507 in row ctor immediates (matches the Ghidra table).
 
-OPEN PUZZLE (framed precisely, not guessed): the children loop creates up
-to 4 SVGImages with rect local_e8 = `getRectangle(container, "glyph")`
-(id 54). Record 479 (FA) contains NO "glyph" rect (verified with
-build/svg-rects). If the container gains no "glyph" rect from the renderer
-calls, the miss path destroys the children and the visible bar is surface
-content only. What the renderer (vtable+0xc) records into the container is
-unverified — that is the next trace, along with the vertical mask→surface
-mapping that decides 66 vs 70 px.
+OPEN PUZZLE, refined 2026-11-02: the renderer IS BinSVGRenderer and vtable+0xc
+is `renderGroup` (index 3, verified via the ctor-literal vtable at 0x1501b38;
+it takes facade/resource/name/container/transform). renderGroup CLEARS the
+container on every call and renders only the FIRST group matching the name.
+So at each `getRectangle(container, "glyph")` (id 54) the container holds
+exactly the last-rendered group's rects: {mRowL,""}, then {mRowR,""}, then
+{mRowM,""} for record 479 — none named "glyph". Record 479 itself has no
+"glyph" rect (verified with build/svg-rects). Coherent reading (hypothesis,
+not yet proven): for this resource the miss path destroys the +0xe0 array
+and the children created with the empty local_e8 stay invisible, so the
+visible bar is SURFACE content only — the mask renders composited into the
+row surface (this+0x98, sized to the row window rect). The "glyph" children
+would serve resources that do carry a "glyph" rect. Still to verify: whether
+MaskPositioningTransform::getMaskRectangle records anything into the
+container (and under what name), the vertical anchoring of alignments 1/2,
+and the surface→screen composition that decides 66 vs 70 px.
 
 ### Name call order (asm-verified)
 
