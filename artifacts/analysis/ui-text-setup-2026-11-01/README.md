@@ -654,7 +654,33 @@ call. Parity consequence: do not invent consumers for these fields on the
 strength of this scan alone. The +0x248 flag guarding the selector is a
 separate field and is unaffected by this finding.
 
-## Row-background name sequence (SVGListBoxRow::renderBackground 0x10bec08)
+## Row-background horizontal composition + name sequence (0x10bec08)
+
+The scale surface rect is built as
+`x0 = mRowL.width + 0`, `y0 = 0`, `x1 = W - mRowR.width`, `y1 = H`
+(verified instruction by instruction at 10bee32–10bee58; an earlier
+misread of the operand order was corrected by rechecking the `ldr r1`
+reload at 10bee40). With record 479's authored slices
+(mRowL 33 px, mRowR 33 px) on a W-wide, H-tall row surface:
+`(33, 0, W-33, H)` — full row height, horizontally inset by exactly the
+cap widths. The first scale block renders gRowM through mRowM into it;
+block 2 redoes the composition for rowItems (id 48) on a second surface.
+
+Row resource transfer verified end to end: SettingItemsListBox ctor
+(0xd518f0) stores list backgrounds (475-478) and row ids (479/481/480/482)
+via setSVGName/setRowSVGName; `makeRow` (0xd5072d) copies list+0xb4[state]
+onto the row via setSVGName plus per-widget names (label/selbox/button/
+textentry tables) and `setItemsSvgName`, then creates the row with
+vtable+0x48.
+
+STILL OPEN (narrowed): the vertical mapping. The authored slices are 66 px
+tall while the row surface/row rect are 70 px tall; the scale surface spans
+the full height, so the 66→70 vertical handling lives inside
+HorizontalMaskScaleTransform (horizontal-only by name?) and/or the row
+window rect actually being 66 px tall (vtable+0x28 source not yet traced to
+getRowPosition). Do not claim either until those two are decoded.
+
+### Name call order (asm-verified)
 
 ### Two-block mechanism (2026-11-02)
 

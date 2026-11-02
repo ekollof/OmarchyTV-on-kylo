@@ -475,9 +475,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       a second surface this+0xc4); row resources verified in ctor asm (list
       475-478, rows 479/481/480/482); renderer is BinSVGRenderer, vtable+0xc
       is renderGroup, which clears the container per call and renders only
-      the first matching group. Open: whether getMaskRectangle records into
-      the container (coherent hypothesis: miss path → bar is surface content
-      only) and the vertical anchoring (alignments 1/2) that decides 66 vs
+      the first matching group; horizontal composition closed (scale surface
+      = (capW, 0, W-capW, H), inset by exactly the authored cap widths).
+      Open: whether getMaskRectangle records into the container (coherent
+      hypothesis: miss path → bar is surface content only), the row window
+      rect height (vtable+0x28 source vs getRowPosition), and the
+      HorizontalMaskScaleTransform vertical handling that decides 66 vs
       70 px. Firmware
       resource 179 gives listBox (20,170,770,996); slices 475-478 give
       top16/bottom10/step70, implying row0 = (20,186,750,70). The current
