@@ -478,6 +478,33 @@ EASIRect constructors establish corners {left,top,right,bottom}; record+12 is
 top and record+20 is bottom. Therefore A/B/span are heights here. Fresh
 instruction excerpts and49,728 ARM VFP comparisons are in UI-TEXT-GEOMETRY.
 
+Operand sources verified at instruction level (2026-11-02, aurora.dis):
+
+- B (`[r7,#0x26c]-[r7,#0x264]`) is the HorizontalMaskScaleTransform mask-rect
+  height. Call site 10c623c–10c6244 passes r0=`r7+0x260`, r1=`r7+0x2e0`
+  (the transform object, constructed at 10c6128); `getMaskRectangle`
+  (eece28–eece54) copies `this+20/24/28/32` to `out+0/4/8/12`, so
+  `r7+0x260/0x264/0x268/0x26c` = mask (left,top,right,bottom). The mask name
+  is id 18 (`mRowM`, set at 10c616a). For record 419 the mask rect is
+  (341,273,381,324) → B = 51, statically.
+- A (`[r7,#0x234]-[r7,#0x22c]`) is the same transform's surface-rect height.
+  The surface EASIRect is built at `r7+0x228` (10c615c, `r0=r9=r7+0x228`,
+  16 bytes covering 0x228/0x22c/0x230/0x234 = left,top,right,bottom) from the
+  widget surface size (`getSurfaceSize` → `r7+0x160` at 10c5ef0, which tracks
+  the window rect via `resizeUISurface`) and the mask rects. So A is the
+  live surface height, NOT a static constant.
+- span is the looked-up textPos rect height (`[sl,#20]-[sl,#12]`).
+
+Conditional consequence only (not a claim): IF the title textbox surface is
+the record-191 dialogTitle window (57,5,691,95 → H=90), then A=90, B=51,
+span=51, rescaled height = top+trunc(90/51*51) = top+90, and getFont(90,1,0)
+selects ID 18 (largest type-0 max height ≤ 90 is 80). If the surface were 51,
+it would select ID 5. The description-source record (which dialog resource
+supplies `dialogTitle` for this instance) is still the open link — do not
+render title text until it is traced. The +0x144 shadow needs a
+`dialogTitleShadow` description; record 191 has none, so it is not created
+here.
+
 ## Record layout confirmed (10c6b9e–10c6bd6)
 
 `r1 = fp` (looked-up record) → `UString::operator=` into `this+0x1ec`,
