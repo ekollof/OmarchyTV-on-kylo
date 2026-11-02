@@ -1,0 +1,5 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-tv-v3/row-windows/tests/widget_layout tests/widget_layout.c common/widget_layout.c common/binsvg.c common/svg_pack.c common/text_layout.c -lm
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+ok widget windows: ordered mask discovery, pre-mask identity, first duplicate, nested/first group, offset/bounds, animation rejection
+ok widget windows: actual460 ordered rowItems/mRowM -> text1/labelLong/text2, explicit749x70 client and parent origin

@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-ROW-WINDOWS-2026-11-02: ordered BinSVG group geometry now in
+common/widget_layout.c; exact iterator rectangle accessor in common/binsvg.c.
+Fresh firmware proves first mask raw/pre-mask identity/later cached transform
+and normal rowItems/mRowM -> child-window composition. Actual460 tests derive
+text1/labelLong/text2 for an explicit parent, not a live widget instance.
+Full strict host/focused sanitizers/ARM-qemu/native TV CPU tests pass. Native
+85492 bytes/MD5 7d40f2f7997459b0e683e82b5eb02a71/GLIBC2.4 in
+build-tv-v3/row-windows. Same stock boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/
+live1785/zombie1967/access/privacy; staging removed and checked. No display/
+device/settings/persistent operation, no helper/job pending. Animation groups
+explicitly unsupported; actual parent/textbox/text-origin/style integration
+remains open and fitted UI origins unchanged.
+
 UI-THEME-SKIN-2026-11-02: ui_vendor now holds/rebinds ui.theme and resolves
 DialogLauncher animation markers from resource bytes. First numeric mode wins;
 only copied mode survives selection/removal. Missing resource/markers means0,

@@ -471,6 +471,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       native TV policy tests and live resource60/type4 pass. Recorder/injected
       callbacks establish policy/lifetime only. Existing ui.launch_anim remains
       default0/lab-only; actual settings geometry/styles and visible parity open.
+- [x] Recover ordered rowItems mask/container semantics and compose named child
+      windows from actual460. UI-ROW-WINDOWS-2026-11-02: first mask raw/pre-mask
+      identity/later cached transform, duplicate/nested/offset/error tests pass
+      strict full host/focused sanitizers/ARM-qemu/native TV. Explicit parent
+      749x70 is a conditional input; actual row/textbox/font/clip/UI integration
+      remains open. Animation-group seek/depth handling explicitly unsupported.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

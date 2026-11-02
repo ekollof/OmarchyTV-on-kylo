@@ -1,0 +1,14 @@
+0xfbcd1fa4	195363	mRowM	0	-17	813	66	1	10	#000000	none	\x0a	\x0b
+0xfbcd1fa4	195400	text1	11	-16	382	50	1	10	#000000	none	\x0a	\x0b
+0xfbcd1fa4	195437	labelLong	11	-16	489	50	1	10	#000000	none	\x0a	\x0b
+0xfbcd1fa4	195478	button	429	-17	348	64	1	10	#000000	none	\x0a	\x0b
+0xfbcd1fa4	195516	selectionbox	412	-9	393	60	1	10	#000000	none	\x0a	\x0b
+0xfbcd1fa4	195560	checkbox	577	-16	150	64	1	10	#000000	none	\x0a	\x0b
+0xfbcd1fa4	195600	slidebar	510	1	180	49	1	10	#C70000	none	\x0a	\x0b
+0xfbcd1fa4	195640	text4	705	-9	101	52	1	10	#ACFF0D	none	\x0a	\x0b
+0xfbcd1fa4	195677	text3	496	-9	52	52	1	10	#ACFF0D	none	\x0a	\x0b
+0xfbcd1fa4	195714	image	725	0	42	40	1	10	#0000F0	none	\x0a	\x0b
+0xfbcd1fa4	195751	image1	478	0	42	40	1	10	#00E6DE	none	\x0a	\x0b
+0xfbcd1fa4	195789	image2	692	0	42	40	1	10	#0000F0	none	\x0a	\x0b
+0xfbcd1fa4	195827	text2	671	-20	136	54	1	10	#00E300	none	\x0a	\x0b
+0xfbcd1fa4	195864	progressbar	557	13	213	50	2	10	#231F20	#C5C9CD	\x0a	\x0b

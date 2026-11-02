@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Ordered masks (2026-11-02): UI-ROW-WINDOWS proves renderGroup clears/builds
+the same container consulted by its transform. First mask is stored raw;
+pre-mask rectangles are identity, later rectangles use the cached first mask.
+Prelooking up all raw rectangles would change behavior. New ordered geometry
+helper composes actual460 child windows for a supplied parent; it does not
+establish live parent/font/raster parity. Animation-group seek/depth quirks are
+explicitly outside this helper's supported path, not silently normalized.
+
 First theme consumer (2026-11-02): UI-THEME-SKIN replaces ui_vendor's hardcoded
 marker-presence list with actual held provider lookup, testing all8 numeric
 priorities and removal/rebind. No view persists beyond selection; active mode

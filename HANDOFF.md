@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-THEME-SKIN](artifacts/reports/UI-THEME-SKIN-2026-11-02.md)
+Latest: [UI-ROW-WINDOWS](artifacts/reports/UI-ROW-WINDOWS-2026-11-02.md)
+adds common/widget_layout.c for ordered rowItems/mRowM geometry and absolute
+child windows. renderGroup clears/builds the transform's SAME container: first
+mask is raw, earlier items identity, later children use cached first mask.
+Do not prelookup all raw masks then transform everything. Actual460 derives
+text1/labelLong/text2 windows for an explicit749x70 parent; not a live object
+measurement. Full strict host/focused sanitizers/ARM-qemu/native TV CPU checks
+pass; build-tv-v3/row-windows, analysis/ui-row-windows-2026-11-02. Fresh durable
+renderItems d54400/base10bf06c/renderGroup ef2330 replaces missing /tmp logs.
+ID48 pointer chain confirms rowItems. Animation-group path explicitly ENOTSUP
+due to renderer seek/depth quirks; no such tag in460. Same stock boot/live1785/
+access/privacy; staging removed, no helper/job pending. Next actual row window
+and textbox slice/textPos/foreground/font/clip composition, then visible FA/UFA
+acceptance. Raw488/489 slices saved; no new fitted offsets. Existing UI origins
+and captured panels unchanged.
+
+Previous: [UI-THEME-SKIN](artifacts/reports/UI-THEME-SKIN-2026-11-02.md)
 wires ui_vendor to held ui.theme views for DialogLauncher's first-present
 animation marker policy (57..64 -> types1..8). No borrowed view survives
 selection; active animation keeps a copied mode through theme removal. Late

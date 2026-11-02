@@ -23,6 +23,9 @@ int oa_binsvg_init(struct oa_binsvg *, const void *data, size_t size);
 /* Start offset0; advance only on success. ENOENT at exact end; malformed input
  * leaves offset/result unchanged. Use offsets returned by this iterator. */
 int oa_binsvg_next(const struct oa_binsvg *, size_t *offset, struct oa_binsvg_element *);
+/* Decode the rectangle at an element offset returned by next(). Includes
+ * unnamed drawing rectangles. ENOTSUP for other tags; unchanged on error. */
+int oa_binsvg_rectangle(const struct oa_binsvg *, size_t offset, struct oa_binsvg_rect *);
 /* First matching named rectangle, like RectangleContainer::getRectangle.
  * NULL group searches the whole record; non-NULL selects the first group of
  * that exact name, including nested groups, and stops at its closing tag.

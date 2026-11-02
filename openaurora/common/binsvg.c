@@ -103,6 +103,16 @@ static void rectangle(const struct parsed *p, struct oa_binsvg_rect *out)
         .animation=p->strings[2], .animate_transform=p->strings[3]
     };
 }
+int oa_binsvg_rectangle(const struct oa_binsvg *v, size_t at, struct oa_binsvg_rect *out)
+{
+    if (!out) return EINVAL;
+    struct parsed p;
+    int rc=parse(v,at,&p);
+    if (rc) return rc;
+    if (p.element.tag!=1) return ENOTSUP;
+    rectangle(&p,out);
+    return 0;
+}
 int oa_binsvg_find_rect(const struct oa_binsvg *v, const char *group,
                         const char *name, struct oa_binsvg_rect *out)
 {

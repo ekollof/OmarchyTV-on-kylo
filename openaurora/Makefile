@@ -112,6 +112,16 @@ check-ui-theme-skin: $(BUILD)/tests/ui_theme_skin $(BUILD)/tests/ui_nav_display.
 
 check: check-ui-theme-skin
 
+$(BUILD)/tests/widget_layout: tests/widget_layout.c common/widget_layout.c common/binsvg.c common/svg_pack.c common/text_layout.c include/openaurora/widget_layout.h include/openaurora/binsvg.h include/openaurora/svg_pack.h include/openaurora/text_layout.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
+
+.PHONY: check-widget-layout
+check-widget-layout: $(BUILD)/tests/widget_layout
+	@$(BUILD)/tests/widget_layout
+
+check: check-widget-layout
+
 $(BUILD)/tests/font_bitmap: tests/font_bitmap.c common/font_bitmap.c common/font_finder.c common/font_draw.c common/canvas.c include/openaurora/font_bitmap.h include/openaurora/font_finder.h include/openaurora/font_draw.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
