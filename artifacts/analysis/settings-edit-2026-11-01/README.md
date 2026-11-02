@@ -36,19 +36,23 @@ precede the row's text blits and require bar-coloured erase fills.
 Reverting the paint order (temporarily, verified) makes the test fail at the
 ordering assertion, so the regression is real.
 
-## fb1 evidence (fixed build)
+## fb1 evidence (fixed build + firmware Y0)
 
-Native ARM runs, `mod_ui_vendor 36ef5a61...`, shipped font pack,
+Native ARM runs, `mod_ui_vendor 36ef5a61...` (fixed paint order), then
+`eb3768ca...` (Y0 186), shipped font pack,
 `ui.screen=settings_list ui.text=1 ui.sel=1 ui.edit=1`.
 
 | capture | sha256 | edit_init | row-1 ink |
 |---|---|---|---|
 | `tv-fb1-edited-row-1-fixed.png` | `5c61bd16...` | 1=49 | 283 px, x660..703 (44 px, two glyphs) |
 | `tv-fb1-edited-row-1-single-digit.png` | `4ab5e059...` | 1=7 | 121 px, x660..679 (20 px, one glyph) |
+| `tv-fb1-edited-row-1-y186.png` | `e3fd5209...` | 1=49 | bar fill y256..321 = row frame (20,186+70,750,66) |
 
-Both start at the same origin x660; the two-glyph value is 44 px wide and
-the one-glyph value 20 px, proving the visible digits come from the live
-blob and not from the overlay's captured glyphs.
+The Y0=186 run proves the firmware-derived bar position on hardware:
+outside the erase rects the orange fill spans exactly y256..321 (66 px) at
+row 1, i.e. frame y = 186+70·1 with the decoded listBox+inset origin. Digit
+widths (44 px vs 20 px at the same origin x660) prove the visible digits
+are the live blob.
 
 ### Superseded capture
 

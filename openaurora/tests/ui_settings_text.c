@@ -230,8 +230,8 @@ int main(int argc, char **argv)
     /* Live text replaces the baked focus asset with a clean bar: the asset
      * bakes captured glyphs and grey widgets into the band, which showed up as
      * artifacts and doubled numbers on the panel. */
-    assert(has_fill_rgb(trace, 20, 253, 750, 66, 254, 148, 25));
-    assert(last_blit(trace, 20, 253, 4, 4) == -1);
+    assert(has_fill_rgb(trace, 20, 256, 750, 66, 254, 148, 25));
+    assert(last_blit(trace, 20, 256, 4, 4) == -1);
     {
         int digits = last_blit(trace, 655, 246, 16, 72);
         int label = last_blit(trace, 75, 250, 40, 72);
@@ -250,8 +250,8 @@ int main(int argc, char **argv)
     assert(has_fill_rgb(trace, 40, 248, 446, 64, 190, 30, 45));  /* row1 unfocused */
 
     key(&host, 19);                                /* sel 2 -> 3 */
-    assert(has_fill_rgb(trace, 20, 393, 750, 66, 254, 148, 25)); /* clean bar */
-    assert(last_blit(trace, 20, 393, 4, 4) == -1);               /* no baked asset */
+    assert(has_fill_rgb(trace, 20, 396, 750, 66, 254, 148, 25)); /* clean bar */
+    assert(last_blit(trace, 20, 396, 4, 4) == -1);               /* no baked asset */
     key(&host, 10);
     assert(portal->screen() == 3);
 

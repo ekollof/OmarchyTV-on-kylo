@@ -73,7 +73,7 @@ static void key(oa_host *host, int id)
     oa_host_dispatch_posts(host);
 }
 
-static int row_y(int sel) { return 183 + 70 * sel; }
+static int row_y(int sel) { return 186 + 70 * sel; } /* firmware listBox+insets */
 
 int main(int argc, char **argv)
 {

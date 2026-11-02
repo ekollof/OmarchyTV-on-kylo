@@ -258,13 +258,19 @@ static const oa_ui_icon *find_icon(struct ctx *c, const char *name)
 enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, SCREEN_SETTINGS = 3,
        SCREEN_SETTINGS_LIST = 4, ANIM_DIALOG = 1 };
 
-/* Picture-settings rows: 66 px FA bar on the captured 70 px pitch, text
+/* Picture-settings rows: 66 px FA bar content on the 70 px pitch, text
  * centered (row 4 centre 496). Row 6 ("Beeld zoomen") is disabled in the
- * capture and is skipped by navigation. */
+ * capture and is skipped by navigation. The bar Y0=186 is firmware-derived:
+ * resource 179 listBox (20,170,770,996) + top inset 16 + 70-step rows
+ * (SVGListBoxBase::getRowPosition), rows created with those rects
+ * (createListItems → setWindowRect) and the row surface resized to the row
+ * rect. The 66 px bar content sits top-aligned (HorizontalMaskScaleTransform
+ * translates y only); the bottom 4 px strip keeps surface content. The old
+ * fitted Y0=183 is superseded. */
 #define SETTINGS_ROW_X 20
 #define SETTINGS_ROW_W 750
 #define SETTINGS_ROW_H 66
-#define SETTINGS_ROW_Y0 183
+#define SETTINGS_ROW_Y0 186
 #define SETTINGS_ROW_PITCH 70
 #define SETTINGS_ROW_DISABLED 6
 

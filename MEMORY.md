@@ -1235,17 +1235,18 @@ band (x20..769, y463..528; 48,584 px); bar BGRA 25,148,254,255, alpha 0 outside
 the panel. fb1 restored (16588800 bytes, offset 0,1080), staging removed, no
 helper left. Evidence: same directory, tv-fb1-focused-row-4-live-text.png.
 
-SETTINGS-EDIT-LIVE-2026-11-02: lab slider editing (NOT parity) on fb1.
+SETTINGS-EDIT-LIVE-2026-11-02: lab slider editing (NOT parity) verified live.
 CORRECTION 2026-11-02 (adversarial review): the first capture's digits were
 the focus overlay's own glyphs, not the edited value — live text was painted
-under an opaque 750x66 band. Paint order now composites the overlay first and
-uses #7E000A focused ink; verified by two fixed runs (mod_ui_vendor
-36ef5a61...): "49" = 283 ink px spanning x660..703 (44 px, two glyphs),
-"7" = 121 px spanning x660..679 (20 px, one glyph), same origin. The old
-capture tv-fb1-edited-row-1.png (33c719a1...) is superseded. Shadow store
-only, no DB writes; range 0..100 invented, step 1 matches the firmware
-default. fb1 restored each run (16588800 bytes, offset 0,1080), staging
-removed, no helper left. Evidence: artifacts/analysis/settings-edit-2026-11-01/.
+under an opaque 750x66 band. Paint order fixed (flat bar + focused ink);
+verified by fixed runs ("49" = 283 px spanning x660..703, "7" = 121 px
+spanning x660..679, same origin). Bar frame now firmware-derived
+(listBox+insets → Y0 186, pitch 70): fb1 run (mod_ui_vendor eb3768ca...)
+shows the fill at exactly y256..321 for sel=1. Old 33c719a1 capture
+superseded. Shadow store only, no DB writes; range 0..100 invented, step 1
+matches the firmware default. fb1 restored each run (16588800 bytes,
+offset 0,1080), staging removed, no helper left. Evidence:
+artifacts/analysis/settings-edit-2026-11-01/.
 
 Firmware before experiments; instructions before inferred Ghidra signatures.
 No telemetry/advertising in any form. All other TV features remain parity scope.
