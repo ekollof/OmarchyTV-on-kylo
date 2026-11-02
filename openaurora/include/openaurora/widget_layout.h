@@ -21,4 +21,18 @@ int oa_widget_group_rect(const struct oa_binsvg *, const char *group,
  * the type-dependent child name (text1/labelLong/text2/slidebar/etc). */
 int oa_widget_row_item_window(const struct oa_binsvg *, const struct oa_text_rect *client,
                               const char *name, struct oa_text_rect *out);
+/* Fresh normal/non-mirrored SVGTextBox, one line, no font/alignment override.
+ * Uses full-height row slices (not top/bottom caps), textPos in gRowM, manual
+ * float32 height correction and font-marker priority. Returns absolute text
+ * surface bounds plus raw metadata and numeric widget alignment/font type.
+ * Supported styles must supply mRowM before textPos in gRowM; other layouts
+ * fail. A pre-mask textPos needs a separate complete second-pass/cache model.
+ * This does not select/load fonts, place glyphs, clip, shape or draw text.
+ * Metadata strings borrow the immutable resource; failures preserve output. */
+struct oa_widget_textbox {
+    struct oa_binsvg_rect text;
+    unsigned alignment, font_type;
+};
+int oa_widget_single_line_textbox(const struct oa_binsvg *, const struct oa_text_rect *window,
+                                  struct oa_widget_textbox *out);
 #endif

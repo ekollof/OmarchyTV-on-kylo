@@ -122,6 +122,16 @@ check-widget-layout: $(BUILD)/tests/widget_layout
 
 check: check-widget-layout
 
+$(BUILD)/tests/textbox_layout: tests/textbox_layout.c common/widget_layout.c common/binsvg.c common/svg_pack.c common/text_layout.c common/font_pack.c common/font_bitmap.c common/font_finder.c include/openaurora/widget_layout.h include/openaurora/binsvg.h include/openaurora/svg_pack.h include/openaurora/text_layout.h include/openaurora/font_pack.h include/openaurora/font_bitmap.h include/openaurora/font_finder.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
+
+.PHONY: check-textbox-layout
+check-textbox-layout: $(BUILD)/tests/textbox_layout
+	@$(BUILD)/tests/textbox_layout
+
+check: check-textbox-layout
+
 $(BUILD)/tests/font_bitmap: tests/font_bitmap.c common/font_bitmap.c common/font_finder.c common/font_draw.c common/canvas.c include/openaurora/font_bitmap.h include/openaurora/font_finder.h include/openaurora/font_draw.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)

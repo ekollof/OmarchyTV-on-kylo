@@ -1,0 +1,6 @@
+0x385a8a98	80225	background	0	0	1920	1080	1	10	#000000	none	\x0a	\x0b
+0x385a8a98	80267	main_rectangle	0	162	780	918	0	10		#A56613	\x0a	\x0b
+0x385a8a98	80309		0	0	780	1080	0	10		#BE1E2D	\x0a	\x0b
+0x385a8a98	80337	dolbyVisionIcon	230	1012	320	36	1	10	#FFFFFF	none	\x0a	\x0b
+0x385a8a98	80384	listBox	20	170	750	826	1	10	#FFFFFF	none	\x0a	\x0b
+0x385a8a98	80423	animation_slide_bottom_fade_in	-142	35	100	100	0	10		#FFFFFF	\x0a	\x0b

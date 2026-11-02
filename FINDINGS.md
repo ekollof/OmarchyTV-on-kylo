@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Textbox composition (2026-11-02): UI-TEXTBOX-COMPOSE confirms lines==1 uses
+full-height horizontal row slices, without subtracting top/bottom caps. Actual
+489/488 give corrected text heights66/70 and regular/bold font7/20 for the
+tested explicit parent, not a measured live instance. Their text colors are
+raw stroke strings; fill is none. A new normal fresh-box composer covers
+geometry/style only; actual parent/glyph/ratio/clip and visual acceptance open.
+Pre-mask textPos returns ENOTSUP pending full second-pass/cache behavior.
+
 Ordered masks (2026-11-02): UI-ROW-WINDOWS proves renderGroup clears/builds
 the same container consulted by its transform. First mask is stored raw;
 pre-mask rectangles are identity, later rectangles use the cached first mask.

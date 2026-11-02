@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-TEXTBOX-COMPOSE-2026-11-02: common/widget_layout.c composes fresh normal
+single-line textPos surfaces, alignment/font marker policy; full-height row
+slices, not top/bottom cap subtraction. Actual460->489/488 and20 live startup
+font metrics yield heights66/70 and fonts7/20 for an explicit parent. Text
+color strings are stroke, fill none. Pre-mask textPos rejected pending complete
+second-pass/cache support. Full strict host/focused sanitizers/ARM-qemu/native
+TV CPU tests pass. Final native124016 bytes/MD5 d1e11762fe72fc0d2314731bd953e2ad/
+GLIBC2.7 in build-tv-v3/textbox. Same stock boot71f7eb63-727f-4b9a-a9c7-
+2b04dc3f9197/live1785/zombie1967/access/privacy; staging removed/checked,
+no helper/job pending. No display/device/settings/persistent operation. Actual
+parent/glyph-origin/ratio/clip and visible text integration remain open; fitted
+UI coordinates and captured panels unchanged.
+
 UI-ROW-WINDOWS-2026-11-02: ordered BinSVG group geometry now in
 common/widget_layout.c; exact iterator rectangle accessor in common/binsvg.c.
 Fresh firmware proves first mask raw/pre-mask identity/later cached transform

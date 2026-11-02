@@ -477,6 +477,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       strict full host/focused sanitizers/ARM-qemu/native TV. Explicit parent
       749x70 is a conditional input; actual row/textbox/font/clip/UI integration
       remains open. Animation-group seek/depth handling explicitly unsupported.
+- [x] Compose fresh normal single-line textbox surfaces and alignment/font
+      markers from shipped styles: full-height horizontal slices, textPos
+      height correction, actual460->489/488 and20 live startup metrics select
+      fonts7/20 for an explicit parent. UI-TEXTBOX-COMPOSE-2026-11-02; strict
+      full host/focused sanitizers/ARM-qemu/native TV CPU tests pass. Actual
+      parent/glyph-origin/ratio/clip, overrides/retained state, pre-mask second
+      pass and visible FA/UFA integration remain open; fitted UI unchanged.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

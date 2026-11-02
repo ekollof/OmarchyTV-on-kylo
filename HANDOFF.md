@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-ROW-WINDOWS](artifacts/reports/UI-ROW-WINDOWS-2026-11-02.md)
+Latest: [UI-TEXTBOX-COMPOSE](artifacts/reports/UI-TEXTBOX-COMPOSE-2026-11-02.md)
+adds oa_widget_single_line_textbox: normal fresh/unlocked single-line geometry,
+alignment/font marker policy, full-height horizontal slices (no cap subtraction)
+and textPos float32 height correction. Actual460->489/488 +20 live startup
+font metrics yield text heights66/70 and fonts7/20 for an explicit parent.
+Raw text colors are stroke #FFFFFF/#7E000A; fill is none. Pre-mask textPos
+explicitly ENOTSUP: complete second-pass/cache semantics remain open for that
+layout. Full strict host/focused sanitizers/ARM-qemu/native TV CPU tests pass.
+Native build-tv-v3/textbox; analysis/ui-textbox-compose-2026-11-02. Same stock
+boot/live1785/access/privacy; staging removed, no helper/job pending. Fresh
+constructors confirm default row-items460 and PictureSettingsDialog resource179;
+MB667 comparison does not establish active selection. Next ACTUAL parent/window
+state and drawText/TextRenderer glyph origin/ratio/alignment/clip, then visible
+FA/UFA acceptance. Existing captured panels/fitted text origins remain unchanged;
+do not add a fit-derived offset to incomplete coordinates.
+
+Previous: [UI-ROW-WINDOWS](artifacts/reports/UI-ROW-WINDOWS-2026-11-02.md)
 adds common/widget_layout.c for ordered rowItems/mRowM geometry and absolute
 child windows. renderGroup clears/builds the transform's SAME container: first
 mask is raw, earlier items identity, later children use cached first mask.

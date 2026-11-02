@@ -1,0 +1,6 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-textbox-sanitize/tests/textbox_layout tests/textbox_layout.c common/widget_layout.c common/binsvg.c common/svg_pack.c common/text_layout.c common/font_pack.c common/font_bitmap.c common/font_finder.c -lm
+ok textbox: full-height slices exclude caps, 48 alignment/type cases, regular priority, raw metadata and atomic errors
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+ok textbox: full-height slices exclude caps, 48 alignment/type cases, regular priority, raw metadata and atomic errors
+ok textbox: actual460->489/488 text surfaces height66/70, regular/bold font7/20 via20 live startup font metrics (explicit parent)
