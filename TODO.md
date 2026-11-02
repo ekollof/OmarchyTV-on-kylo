@@ -321,6 +321,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Review subsequent UI work through6822fce: scanner extended-field span
+      overflow reproduced under ASan/fixed; lab presets now honor ui.edit=1.
+      Exact/truncated scanner buffers, invalid/disabled presets, default-off
+      title and partial-subscription cleanup pass full host/focused sanitizer/
+      ARM-qemu checks. UI-WORK-REVIEW-2026-11-02. No TV operation in this review;
+      actual FA font/widgets, title layout and settings interaction remain open.
 - [x] Theme/index/layout files and 964 PNGs extracted; initial OAI1 conversion and
       ui_vendor rendering pipeline exist. Source and provenance: UI-ASSETS report.
 - [x] BGRA capture bug fixed; selected portal-frame comparison ~1.62/255 recorded.
@@ -375,6 +381,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       tests/ui_settings_rows.c passes and an fb1 run matches the reconstructed
       reference exactly (0/2,073,600, sha256 86b66c00...). Evidence:
       artifacts/analysis/settings-focus-2026-11-01/.
+      Historical183px fit superseded by186+70*N in subsequent implementation;
+      UI-WORK-REVIEW records live row geometry and remaining FA parity limits.
 - [ ] Exact focused-row/panel evidence and the interactive remainder: value
       changes, Beeld/Geluid tab switching, scrolling/overflow, localization,
       the title/tab/value labels and focused-label pixels. Firmware decode so

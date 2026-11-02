@@ -368,9 +368,12 @@ scan, live-scan-title-2026-11-02.txt): exactly one created font-18
 textbox: window=(57,5,691,95) text=(51,0,634,90) font=18 lines=1 type=0
 alignment=4. Window == description rect ⇒ dialog client (0,0) CONFIRMED
 live; text == rescaled surface-space ⇒ composed box (108,5,691,95) is the
-actual widget geometry. The (+23,+5) ink delta is therefore DEFINITIVELY
-in the draw step (renderForeground→drawText layout), NOT geometry, parent,
-font, or rescale. Same scan live-confirms: SettingItemsListBox
+actual widget geometry for this non-atomic candidate sample. REVIEW CORRECTION:
+this strongly narrows the next investigation to renderForeground/drawText and
+runtime draw controls; it does not definitively exclude all parent/presentation
+transforms, text state or capture differences. No synchronized object-to-frame
+trace or complete draw-control snapshot was captured. Same scan records:
+SettingItemsListBox
 window=(20,170,770,996) step=70 row_height=70 insets=(0,16,1,10);
 PictureSettingsDialog window=(0,162,780,1080); live row label (font7) and
 value-digit (font16) boxes. Scanner extended with draw-control fields
@@ -781,7 +784,7 @@ SUPERSEDED (2026-11-02, "Range/step wiring" below): the "no static callers"
 note was wrong — an address-width bug in the scan pattern hid them.
 setSliderRangeValues is called from setBarRangeValues and renderItems;
 setSliderStep has no caller (ctor default 1). Decompiles in
-/tmp/opencode/decomp-slide.txt and decomp-sval.txt (ephemeral — re-run
+artifacts/workbench/agent-ui-review-20261102/decomp-slide.txt and decomp-sval.txt (preserved; re-run
 DumpFirmware.java with the addresses above to reproduce).
 
 ## Sub-dialog composition (PictureElementSettingDialog, decompile-verified)
@@ -802,7 +805,7 @@ firmware constants: no static range table exists to decode. The lab 0..100
 placeholder stands until a live provider query path exists (needs native
 provider ownership, out of scope). SUPERSEDED (2026-11-02): the ctor param
 roles, the +0xb0/+0xb4/+0xbc wiring and the step source are decoded in
-"Range/step wiring" below. Decompiles in /tmp/opencode/decomp-showdlg.txt and decomp-subdlg.txt
+"Range/step wiring" below. Decompiles preserved in artifacts/workbench/agent-ui-review-20261102/decomp-showdlg.txt and decomp-subdlg.txt
 (ephemeral — re-run DumpFirmware.java @0x00e0a46d @0x00e120e1).
 
 `startSelectAnimation` (0x10bbedd) snapshots the current selected-row rect
@@ -842,13 +845,13 @@ widget-name id 55 and starts it on the UIAnimationTarget subobject at +0x98
 Id 55 resolves (same ELF translation, single-arm case 0x37) to
 `selectionIndicator`, so the animation driving the interpolation IS the
 selectionIndicator-named animation. Duration = atof(animation delay string)
-× float at 0x10bc04c. Decompiles: /tmp/opencode/decomp-repos.txt is
+× float at 0x10bc04c. Decompiles: artifacts/workbench/agent-ui-review-20261102/decomp-repos.txt is
 ephemeral; re-run DumpFirmware.java @0x010be16d @0x010bbedd to reproduce.
 
 ## What list renderBackground draws from +0x26c (0x10bd305, asm-verified)
 
 Tail of the function (aurora.dis past file-line 4091800; decompile saved at
-/tmp/opencode/decomp-listbg.txt, ephemeral — re-run DumpFirmware.java
+artifacts/workbench/agent-ui-review-20261102/decomp-listbg.txt, preserved — re-run DumpFirmware.java
 @0x010bd305): after the whole-list mask/row passes, it resolves one rectangle
 record by the name from widget-name id 55 (`selectionIndicator`, the 22nd and
 last lookup in this function) out of the rectangle set built from the list
@@ -1009,7 +1012,7 @@ New names recovered: `gRowL`/`gRowM`/`gRowR` (a `g` set alongside the known
 (stock 5=gRowL, 10=gRowR; mirrored arms swap), the same pattern as 17/22;
 6, 18 and 54 are single-arm. Decompile source:
 artifacts/analysis/ui-mask-layout-2026-11-02/list-row-layout.txt;
-getWidgetStandardName switch: /tmp/opencode/decomp-wstd.txt (ephemeral,
+getWidgetStandardName switch: artifacts/workbench/agent-ui-review-20261102/decomp-wstd.txt (preserved,
 re-runnable with DumpFirmware.java @0xeee798).
 
 Structural facts read directly from that decompile (no implementation):

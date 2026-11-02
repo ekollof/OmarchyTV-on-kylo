@@ -6,6 +6,15 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Subsequent UI review (2026-11-02): UI-WORK-REVIEW fixes scanner read span after
+extended draw-control fields and gates presets on ui.edit=1. Later saved live
+scan has a created font18 title candidate and list/row geometry, superseding
+the earlier no-created-instance sample. Matching geometry narrows the remaining
+title delta; non-atomic candidates without draw-control/frame association are
+not definitive proof that every other transform/input is excluded. Title stays
+default-off. Focused ink and lab slider edits are not full focused-font/widget
+or settings parity. Research preserved under workbench/agent-ui-review-20261102.
+
 Label content (2026-11-02): UI-ROW-LABELS traces ordinary SettingItem key
 localization and drawRow without a prefix. Profile section Languages/value
 Dictionary resolves MODE to exact Dutch Modus, with no hidden spaces/control

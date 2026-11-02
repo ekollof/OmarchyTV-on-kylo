@@ -18,11 +18,12 @@
 
 enum { BLOCK=65536, LOOKAHEAD=0x3000 };
 #define SCAN_LIMIT (UINT64_C(256)*1024*1024)
+/* size is the minimum readable span for this inventory, not sizeof(class). */
 struct identity { uint32_t vptr; size_t size; const char *name; unsigned kind; };
 static const struct identity identities[]={
     {0x014dbe2c,0x2df0,"SettingItemsListBoxRow",1},
     {0x014dbd74,0x240,"SettingItemsListBox",2},
-    {0x0153b904,0x224,"SVGTextBox",3},
+    {0x0153b904,0x2b1,"SVGTextBox",3},
     {0x014e87a4,0x94,"PictureSettingsDialog",0},
     {0x014dbeac,0x94,"SettingsDialog",0}
 };

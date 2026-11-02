@@ -318,7 +318,7 @@ _Static_assert(SETTINGS_TEXT_COUNT == SETTINGS_TEXT_MAX, "settings text table si
  * (SETTINGS default), not "Beeld": per-tab keys from updateGlyphAndTitle
  * apply on tab switches, which are not implemented — the freshly opened
  * dialog carries the SETTINGS default (verified against the corrected
- * capture: 11 glyphs x120..388, same per-glyph advance as our font-18
+ * capture: title ink x120..388, same per-glyph advance as our font-18
  * render, confirming the font choice). The string is the verified Dutch
  * profile entry for SETTINGS. Box (108,5,691,95) h90, font 18, white ink,
  * left aligned, as composed (tests/textbox_layout.c corpus). The dialog is
@@ -629,6 +629,8 @@ static int parse_bounded_int(const char **pp, int max, int *out)
  * and values 0..100. Malformed or out-of-range tokens are ignored. */
 static void apply_edit_init(struct ctx *c)
 {
+    if (atoi(c->api->config_get(c->api->priv, "ui.edit", "0")) != 1)
+        return;
     const char *spec = c->api->config_get(c->api->priv, "ui.edit_init", "");
     while (*spec) {
         while (*spec == ' ' || *spec == ',')
@@ -705,11 +707,11 @@ static int settings_text_load(struct ctx *c)
     c->text_on = 1;
     /* The title is an independent enhancement: a missing/unusable title font
      * keeps the verified row text live and falls back to the captured title. */
-    /* The title is lab-gated (ui.title=1, default 0): the composed box/font/
-     * string are firmware-derived, but fb1 shows residual deltas (+12/+3
-     * origin, ~1px/letter spacing) whose sources (dialog client origin,
-     * title spacing) are not yet decoded. Do not enable by default until
-     * those are traced; fitting the offsets to the capture is forbidden. */
+    /* The title is lab-gated (ui.title=1, default 0). Later firmware/live
+     * geometry evidence matches the box/font, but drawing/layout still has
+     * an unexplained ink delta (UI-TEXT-SETUP). This path uses a plain glyph
+     * renderer, not the complete vendor drawText policy. Keep default-off;
+     * fitting an offset to the capture is forbidden. */
     int title_on = atoi(c->api->config_get(c->api->priv, "ui.title", "0"));
     int title_id = atoi(c->api->config_get(c->api->priv, "ui.font_title_id", "18"));
     if (title_on && title_id >= 0 &&
@@ -757,11 +759,9 @@ static void paint_settings_list(struct ctx *c)
      * settings_focus_N assets are NOT used with live text: they bake the
      * captured glyphs plus grey widget shapes into the band, which owner
      * observation (2026-11-02) reported as "red widgets on a bar" and doubled,
-     * misaligned numbers. The rect below is the EXISTING reconstruction
-     * placement, unchanged — firmware resource 179 gives listBox
-     * (20,170,770,996) and slices 475-478 give top16/bottom10/step70, which
-     * implies row0 = (20,186,750,70), but the mask->surface mapping is not yet
-     * decoded, so that value is deliberately NOT adopted here. */
+     * misaligned numbers. SETTINGS_ROW_Y0 now follows firmware listBox top170
+     * + inset16 and the verified70px pitch. Live geometry confirms that row
+     * frame; complete focused-widget/font parity is still open. */
     int focus_row = -1;
     if (c->sel >= 0 && c->sel < SETTINGS_ROW_COUNT && c->sel != SETTINGS_ROW_DISABLED) {
         focus_row = c->sel;

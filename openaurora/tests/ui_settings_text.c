@@ -15,6 +15,8 @@
 static char g_dir[256];
 static int g_missing;
 static int g_title;
+static int g_edit = 1;
+static const char *g_preset = "";
 
 static const char *config(void *ud, const char *key, const char *def)
 {
@@ -28,7 +30,8 @@ static const char *config(void *ud, const char *key, const char *def)
     if (!strcmp(key, "ui.rail_hl")) return "0";
     if (!strcmp(key, "ui.font_id")) return "7";
     if (!strcmp(key, "ui.font_title_id")) return "18";
-    if (!strcmp(key, "ui.edit")) return "1";
+    if (!strcmp(key, "ui.edit")) return g_edit ? "1" : "0";
+    if (!strcmp(key, "ui.edit_init")) return g_preset;
     if (!strcmp(key, "ui.font_index")) {
         static char path[300];
         snprintf(path, sizeof path, "%s/%s", g_missing ? "/nonexistent" : g_dir, "font.index");
@@ -198,6 +201,14 @@ int main(int argc, char **argv)
     snprintf(g_dir, sizeof g_dir, "%s", argv[2]);
     g_missing = !strcmp(argv[3], "missing");
     g_title = !g_missing && strcmp(argv[3], "notitle");
+    int preset = !strcmp(argv[3], "preset") || !strcmp(argv[3], "editoff");
+    if (preset) {
+        g_title = 0;
+        g_edit = strcmp(argv[3], "editoff") != 0;
+        /* Only row1=7 is valid: malformed/overflow tokens must not overwrite
+         * it or change another row. Long input exercises bounded parsing. */
+        g_preset = "1=7,1=49junk,2=101,3=-1,4=9999999999999999999999";
+    }
     blob("settings_panel");
     for (int i = 0; i < 9; i++) {
         char name[32];
@@ -240,7 +251,18 @@ int main(int argc, char **argv)
     assert(has_fill(trace, 480, 177, 200, 64));    /* captured text value erased */
     assert(blit_at(trace, 489, 179, 48, 72));      /* "Natuurlijk" at (493,183) */
     assert(has_fill(trace, 648, 244, 90, 64));     /* captured digits erased */
-    assert(blit_at(trace, 655, 246, 16, 72));      /* "95" font16 at (659,250) */
+    assert(blit_at(trace, 655, 246, preset && g_edit ? 12 : 16, 72));
+    if (preset) {
+        assert(blit_at(trace, 655, 316, 16, 72)); /* invalid row2 preset ignored */
+        key(&host, 19); /* row0 */
+        key(&host, 19); /* slider row1 */
+        key(&host, 22); /* 7->8 if enabled, otherwise captured95 retained */
+        assert(blit_at(trace, 655, 246, g_edit ? 12 : 16, 72));
+        assert(!blit_at(trace, 655, 246, g_edit ? 16 : 12, 72));
+        puts(g_edit ? "  ok   lab preset validates tokens and preserves enabled editing" :
+                      "  ok   lab edit disabled ignores presets and key edits");
+        return 0;
+    }
     assert(blit_at(trace, 549, 529, 20, 72));      /* "Uit" */
     assert(has_fill(trace, 40, 596, 446, 64));     /* disabled label erased */
     assert(blit_at(trace, 47, 598, 56, 72));       /* "Beeld zoomen" font16 grey */

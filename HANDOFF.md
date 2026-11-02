@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-ROW-LABELS](artifacts/reports/UI-ROW-LABELS-2026-11-02.md)
+Latest: [UI-WORK-REVIEW](artifacts/reports/UI-WORK-REVIEW-2026-11-02.md)
+reviews the subsequent agent's work through6822fce. Fixed an ASan-reproduced
+scanner overflow (new+2b0 fields require2b1 readable bytes, not224) and ungated
+ui.edit_init; added exact/truncated-span, disabled/invalid preset, default-off
+title and partial-subscription cleanup coverage. Full strict host/focused
+ASan-UBSan/ARM-qemu checks pass. Isolated native-target build in build-tv-v3/
+review-20261102; no TV operation/deployment in this review. Prior live scan does
+contain a created font18 title candidate matching window57,5,691,95/local text
+51,0,634,90 and actual list/row geometry. Its non-atomic nature and missing draw
+controls do not definitively isolate the remaining ink delta. ui.title remains
+default-off; no fitted offsets, complete FA styles or real slider parity claimed.
+Next inspect title drawText runtime controls/ratios/spacing from firmware, then
+style/interaction integration and visual acceptance. Research tree formerly in
+/tmp/opencode is preserved at artifacts/workbench/agent-ui-review-20261102;
+see report for tests/hashes and source corrections. No helper/job pending.
+
+Previous: [UI-ROW-LABELS](artifacts/reports/UI-ROW-LABELS-2026-11-02.md)
 finishes the offline ordinary-label source trace: key constructor -> stored
 UString -> drawRow -> setLabel adds no prefix. Shipped langprofile section
 Languages/value Dictionary resolves MODE hash5aa5907f to record987; dut slot10

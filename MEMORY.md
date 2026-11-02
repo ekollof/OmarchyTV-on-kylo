@@ -6,6 +6,16 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-WORK-REVIEW-2026-11-02: reviewed through6822fce, fixed scanner read-span
+overflow and ui.edit_init bypassing the lab flag. Full host/focused sanitizer/
+ARM-qemu checks pass; build-tv-v3/review-20261102, details/hashes in report.
+No TV connection, display operation or deployment in this review. The other
+agent's saved live-scan-title-2026-11-02.txt records a created font18 title
+candidate and actual list/row geometry; this supersedes the earlier absence
+sample for those observations, not a current live poll. ui.title remains
+default-off with unexplained draw/layout delta. Durable copy of that agent's
+research: artifacts/workbench/agent-ui-review-20261102; no helper/job pending.
+
 UI-ROW-LABELS-2026-11-02: offline label-source trace completed. Ordinary key
 constructor/drawRow/setLabel add no prefix; langprofile Languages/Dictionary
 contains41 locales/2435 records. MODE hash5aa5907f record987 resolves dut slot10

@@ -32,5 +32,5 @@ node artifacts/analysis/ui-tab-titles-2026-11-02/verify-title-labels.cjs
 
 This closes the title TEXT source. Title/tab/focused PIXEL origins remain
 open (transform/instance inputs); do not render from these strings yet.
-Decompiles: /tmp/opencode/decomp-tabs.txt is ephemeral — re-run
+Decompiles: artifacts/workbench/agent-ui-review-20261102/decomp-tabs.txt is preserved — re-run
 DumpFirmware.java @0x00d6fcd5 @0x00d6faed to reproduce.

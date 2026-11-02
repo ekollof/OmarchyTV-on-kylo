@@ -67,8 +67,19 @@ int main(int argc, char **argv)
     for (int i = 0; i < MAX_HOLDS; i++)
         assert(!host.holds[i].used || host.holds[i].holder != vendor->id);
 
+    /* One slot free: module/changed succeeds but service/removed fails.
+     * Failed-start cleanup must remove that partial registration as well. */
+    host.api.unsubscribe(&host, fill[0]);
+    fill[0] = 0;
+    assert(oa_module_start(&host, vendor) != 0);
+    assert(vendor->state != OA_ST_STARTED);
+    for (int i = 0; i < MAX_SUBS; i++)
+        assert(!host.subs[i].active || host.subs[i].owner != vendor->id);
+    for (int i = 0; i < MAX_HOLDS; i++)
+        assert(!host.holds[i].used || host.holds[i].holder != vendor->id);
+
     for (int i = 0; i < nfill; i++)
-        host.api.unsubscribe(&host, fill[i]);
+        if (fill[i]) host.api.unsubscribe(&host, fill[i]);
 
     /* With table space back, start succeeds and cleans up normally. */
     assert(!oa_module_start(&host, vendor));
@@ -78,6 +89,6 @@ int main(int argc, char **argv)
     close(host.selfpipe[0]);
     close(host.selfpipe[1]);
     pthread_mutex_destroy(&host.post_mu);
-    puts("  ok   exhausted subscription table fails vendor start with no leaked holds/subs; retry starts");
+    puts("  ok   full/one-slot subscription table fails vendor start with no leaked holds/subs; retry starts");
     return 0;
 }

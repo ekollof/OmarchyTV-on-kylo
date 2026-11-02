@@ -677,6 +677,9 @@ check-ui-settings-text: $(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui_nav_di
 	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-settings-text/modules/mod_nav_display.so
 	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui on
 	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui missing
+	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui notitle
+	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui preset
+	@$(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui-settings-text/modules $(BUILD)/tests/ui-settings-text/ui editoff
 
 check-ui-nav: check-ui-anim-review $(BUILD)/tests/ui_nav $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so
 	@mkdir -p $(BUILD)/tests/ui-nav/modules

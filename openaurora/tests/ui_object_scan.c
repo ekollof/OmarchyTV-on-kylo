@@ -27,6 +27,22 @@ int main(void)
     assert(fgets(line,sizeof line,output) && strstr(line,"class=SVGTextBox"));
     assert(candidate(output,0,data+row_at,0x2def)==0); /* one byte short */
     assert(candidate(output,0,data,3)==0 && candidate(output,0,data,bytes)==0);
+    /* The extended draw-control inventory must not read past a short box,
+     * including one that satisfied the historical 0x224-byte minimum. */
+    uint8_t *short_box=calloc(1,0x224);assert(short_box);
+    put_word(short_box,0x153b904);
+    assert(candidate(output,0,short_box,0x224)==0);
+    free(short_box);
+    uint8_t *box=calloc(1,0x2b1);assert(box);
+    put_word(box,0x153b904);
+    box[0x1b0]=2;box[0x1b1]=3;put_word(box+0x22c,6);
+    put_word(box+0x2a8,UINT32_MAX-4);box[0x2b0]=1;
+    assert(candidate(output,0,box,0x2b0)==0);
+    assert(!fseek(output,0,SEEK_END));long offset=ftell(output);assert(offset>=0);
+    assert(candidate(output,0,box,0x2b1)==1);
+    assert(!fseek(output,offset,SEEK_SET) && fgets(line,sizeof line,output));
+    assert(strstr(line,"flags1=3 flags2=2 override=6 slide=1 slidermargin=-5"));
+    free(box);
     assert(!fclose(input) && !fclose(output));free(data);
     char pid[32];snprintf(pid,sizeof pid,"%ld",(long)getpid());
     char *args[]={"ui-object-scan",pid,NULL};
