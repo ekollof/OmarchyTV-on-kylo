@@ -12,8 +12,24 @@
 #include "openaurora/scene_broker.h"
 #include "openaurora/cec_policy.h"
 #include "openaurora/ui_anim.h"
+#include "openaurora/binsvg.h"
 
 #include <stdint.h>
+
+/* ui.theme v1 — immutable validated BinSVG snapshot, published by ui_theme.
+ * Loop-thread only. Hold lookup(OA_SVC_UI_THEME,1) through every use of ALL
+ * returned views/strings; drop those before release/stop. Do not retain them
+ * across provider replacement. Ordinary suspend retains the same snapshot.
+ * record IDs are index positions; named() uses firmware CRC32 (first hash).
+ * Returns errno values; count0 means unavailable. No service call reads files
+ * or renders. Font/image packs and complete theme/style selection are separate.
+ */
+#define OA_SVC_UI_THEME "ui.theme"
+typedef struct {
+    int (*record)(unsigned id, struct oa_binsvg *out);
+    int (*named)(const char *name, struct oa_binsvg *out);
+    unsigned (*count)(void);
+} oa_ui_theme_iface;
 
 /* Host-owned sleep coordinator. Loop-thread only. The owner pins the entry
  * callback's module through prepare/entry/restore; 0 denotes host code. */

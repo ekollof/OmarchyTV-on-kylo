@@ -436,8 +436,22 @@ contains error/device/left/right; zero error is a query result, not an applied
 audio ACK or UI percentage. Reload invalidates old tickets. Busy lifecycle
 operations require retry and normal lookup holds still protect the provider.
 examples/audio-mixer.conf is a manual opt-in path example, not a deployment.
-Current core+all16 modules passed TV --check; real socket query/reload/query
+That milestone's core+all16 modules passed TV --check; real socket query/reload/query
 and standalone config/start/status/quit passed with stock UI still running.
+
+UI-THEME-PROVIDER-2026-11-02 adds ui_theme (source now21 modules), publishing
+ui.theme v1. common/svg_pack.c reads explicit ui_theme.index/ui_theme.binary
+regular files into a fully validated immutable snapshot; common/binsvg.c parses
+records and named rectangles. Service record(index)/named(CRC32) return borrowed
+views: consumers hold the provider through all view/string use and drop them
+before release/stop. Service calls perform no file/device I/O. Start/reload
+rereads the configured paths; ordinary suspend retains the snapshot, suspended
+replacement defers first loading until resume. Invalid input/collisions publish
+nothing; failed replacement still lacks host old-binary rollback. Real-DSO
+lifecycle and full702-record corpus pass host/sanitizers/ARM-qemu/native TV.
+examples/ui-theme.conf is a data-only example. No actual UI consumer uses the
+provider yet; widget/style/font/clip integration and visible acceptance remain
+open. The preserved16-module stage and installed ABI1 artifacts are unchanged.
 
 Target libc spawn can return0 and a PID before exec fails with child exit127.
 Direct firmware instructions and matching live libc hash confirm this; it is

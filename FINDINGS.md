@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Theme ownership (2026-11-02): UI-THEME-PROVIDER adds owned index/binary snapshots
+and ui.theme v1. Case-sensitive CRC32 name lookup is the first matching hash,
+ID lookup is index position. All record boundaries validate before publication.
+Returned views/strings borrow provider memory: keep the registry hold until
+finished, not just through lookup. File edits cannot change published bytes;
+reload rereads paths but not host configuration. Host old-binary rollback and
+actual UI consumer/style/rendering integration remain open.
+
 Runtime resource view (2026-11-02): UI-BINSVG-VIEW adds bounded single-record
 parsing and raw named rectangle lookup. All702 shipped records validate;
 resource477 geometry feeds maintained layout helpers without hardcoded slice

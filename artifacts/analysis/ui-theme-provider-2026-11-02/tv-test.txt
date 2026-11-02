@@ -1,0 +1,12 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+  ok   live-pack real DSO:702 records/11888 elements, CRC name477 and rowPos verified in memory
+  ok   CLI reload replaces snapshot; edits cannot mutate held views, copied geometry survives reload
+  ok   consumer hold pins views and blocks normal stop/unload/reload; publication collision preserves peer and retries
+  ok   standby retains snapshot; suspended reload defers load/publication and failed resume activation retries
+  ok   missing/special paths, numeric overflow, incomplete/trailing index, NUL and malformed records reject; no stale publication
+  ok   invalid later record rejects whole pack; duplicate CRC first wins; owned snapshot survives input deletion; failed load output preserved
+  ok   failed replacement removes provider without stale service; explicit load recovers (no host binary rollback)

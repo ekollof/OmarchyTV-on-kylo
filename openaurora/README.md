@@ -30,7 +30,7 @@ build command in ARCHITECTURE; make tv currently hardcodes the baseline director
 | core/registry/worker posts/ABI checks | host/sanitizer/ARM regressions; state-aware reload and dependency-ordered lifecycle; system-sleep/rollback limits remain |
 | Unix control transport | bounded nonblocking queues, partial writes/backpressure, disconnect/input/cleanup tests pass host/sanitizer/ARM; stdout console remains synchronous |
 | sleep cycle / power service+CLI | nine engine and seven wrapped-power regression groups pass host/sanitizer/ARM; native device/wake/hardware acceptance remains open |
-| --check | preserved matching core +16 modules passed on TV; source now18, graphics/scene_display have separate native evidence; loader preflight is not hardware health |
+| --check | preserved matching core +16 modules passed on TV; source now21 with later isolated native evidence; loader preflight is not hardware health |
 | display/UI | CPU path plus GPU/coalescer/ui_vendor completion-driven readiness verified on real fb1, including UI reload/module cycle and full restoration; full vendor visuals/actions/input/TV standby/cold ownership remain open |
 | IR | reader/profile map exist; actual code-space, repeat/release and navigation unverified |
 | power | final RAM-entry callback via host.sleep; manual hooks never sleep; full device preparation/wake ownership unverified |
@@ -38,6 +38,7 @@ build command in ARCHITECTURE; make tv currently hardcodes the baseline director
 | audio/source/plat | partial glue; init ownership, routing and hardware effects incomplete |
 | CEC/audio follow-up | spec-based wire/status/ARC/identity validators and corrected audio ABI/prelude/cache/handoff; host/sanitizer/ARM-qemu coverage; CEC transport and audible acceptance remain open |
 | audio_curve | reloadable immutable AQ curve provider, explicit path/profile; six real-DSO lifecycle groups pass including on TV; no hardware gain application |
+| ui_theme | owned validated BinSVG snapshot, CRC/index lookup and held views; real-DSO lifecycle/full702-record corpus pass host/sanitizers/ARM-qemu/TV; actual UI consumers/rendering remain open |
 | CEC transport contracts | raw/VPL packet layouts and bounded marshalling tested in four host/sanitizer/ARM-qemu groups; driver status/filter/reopen defects recovered; authority/worker/module integration still open |
 | raw CEC backend | explicit blocking cdev lifecycle/send/RX with failed-close ownership retention; three injected-I/O host/sanitizer/ARM-qemu groups; authority/workers/module/hardware acceptance still open |
 | settings | generic integer service, read-only real-TV milestone; typed/profile/NVRAM behavior incomplete |

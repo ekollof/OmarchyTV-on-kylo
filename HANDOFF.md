@@ -24,7 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-BINSVG-VIEW](artifacts/reports/UI-BINSVG-VIEW-2026-11-02.md)
+Latest: [UI-THEME-PROVIDER](artifacts/reports/UI-THEME-PROVIDER-2026-11-02.md)
+adds common/svg_pack.c and mod_ui_theme / ui.theme v1. Explicit index/binary
+paths load a fully validated owned immutable snapshot; record(index)/named(CRC)
+views require a service hold through all borrowed data use. Normal holds pin
+provider; standby retains data; suspended replacement defers first I/O until
+resume. Failed replacement has no old-binary rollback, no stale service;
+explicit load recovers. Full strict host/focused sanitizers/ARM-qemu/native TV
+real-DSO lifecycle+702-record corpus checks pass. Source now21 modules; native
+isolated build-tv-v3/theme, analysis/ui-theme-provider-2026-11-02. Preserved
+16-module stage/installed ABI1 unchanged. Same stock boot/live1785/access/privacy;
+all staging/fixtures removed, no helper/job pending. Next actual UI consumer
+lookup/release/rebind and state/group/window/slice/textbox/font composition,
+then FA/UFA visible acceptance. This provider has no renderer; current captured
+panels/fitted text origins unchanged. examples/ui-theme.conf documents paths.
+
+Previous: [UI-BINSVG-VIEW](artifacts/reports/UI-BINSVG-VIEW-2026-11-02.md)
 adds common/binsvg.c: bounded immutable single-record view, element iteration
 and whole-record/first-group named rectangle lookup. Firmware confirms first
 duplicate wins; nested groups included, later same-name groups not searched.

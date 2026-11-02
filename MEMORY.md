@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-THEME-PROVIDER-2026-11-02: common/svg_pack.c owns a fully validated immutable
+index/binary snapshot; mod_ui_theme publishes ui.theme v1 (record/named/count).
+Borrowed views require a service hold. Full strict host, focused ASan/UBSan,
+ARM-qemu and native TV real-DSO lifecycle+702-record corpus checks pass. Source
+now21 modules; preserved16-module stage/installed ABI1 unchanged. Native test
+508228 bytes/MD5 9975f90fcce4483dd9b2187d034b549e/GLIBC2.17; provider
+47116 bytes/33609e021a52fab6c3e9b61b0459d6d4/GLIBC2.4 in build-tv-v3/theme.
+Same stock boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785/zombie1967/
+access/privacy; staging and synthetic fixtures removed and independently checked.
+No device/display/settings/persistent changes, no helper/job pending. Actual UI
+service ownership/rebind and widget/text integration remain open; current panels
+and text origins unchanged. Failed replacement still has no host binary rollback.
+
 UI-BINSVG-VIEW-2026-11-02: common/binsvg.c adds bounded immutable record
 validation/iteration and first-match named rectangle lookup, optionally scoped
 to the first matching group (including descendants). All702 records/11888
@@ -735,7 +748,8 @@ and do not open live hardware. This core is not deployed.
 
 Subsequent WORK-REVIEW-2026-11-01 fixes are ahead of that preserved stage set.
 That review's source/host build had15 modules, including ui_anim and cec; the
-current matching16-module build adds audio_mixer. Review
+that milestone's matching16-module build added audio_mixer (source is now21;
+see UI-THEME-PROVIDER above). Review
 fixes worker state ownership, join failure retention, fully nonblocking quiesce
 and pending reload retry. The loop-thread bind_session service rejects every
 argument with ENOTSUP until an async interface exists. Animation timer ownership,

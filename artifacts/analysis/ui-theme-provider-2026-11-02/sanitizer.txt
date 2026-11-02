@@ -1,0 +1,25 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-theme-sanitize/core/check.o core/check.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-theme-sanitize/core/control.o core/control.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-theme-sanitize/core/host.o core/host.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-theme-sanitize/core/module.o core/module.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-theme-sanitize/core/skin.o core/skin.c
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-theme-sanitize/tests/ui_theme tests/ui_theme.c common/svg_pack.c common/binsvg.c build-theme-sanitize/core/check.o build-theme-sanitize/core/control.o build-theme-sanitize/core/host.o build-theme-sanitize/core/module.o build-theme-sanitize/core/skin.o -ldl -pthread -lm
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-theme-sanitize/modules/mod_ui_theme.so modules/ui_theme/ui_theme.c common/svg_pack.c common/binsvg.c -fsanitize=address,undefined
+cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-theme-sanitize/modules/mod_ticker.so modules/ticker/ticker.c -fsanitize=address,undefined \
+   \
+  
+  ok   CLI reload replaces snapshot; edits cannot mutate held views, copied geometry survives reload
+  ok   consumer hold pins views and blocks normal stop/unload/reload; publication collision preserves peer and retries
+  ok   standby retains snapshot; suspended reload defers load/publication and failed resume activation retries
+  ok   missing/special paths, numeric overflow, incomplete/trailing index, NUL and malformed records reject; no stale publication
+  ok   invalid later record rejects whole pack; duplicate CRC first wins; owned snapshot survives input deletion; failed load output preserved
+  ok   failed replacement removes provider without stale service; explicit load recovers (no host binary rollback)
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+  ok   live-pack real DSO:702 records/11888 elements, CRC name477 and rowPos verified in memory
+  ok   CLI reload replaces snapshot; edits cannot mutate held views, copied geometry survives reload
+  ok   consumer hold pins views and blocks normal stop/unload/reload; publication collision preserves peer and retries
+  ok   standby retains snapshot; suspended reload defers load/publication and failed resume activation retries
+  ok   missing/special paths, numeric overflow, incomplete/trailing index, NUL and malformed records reject; no stale publication
+  ok   invalid later record rejects whole pack; duplicate CRC first wins; owned snapshot survives input deletion; failed load output preserved
+  ok   failed replacement removes provider without stale service; explicit load recovers (no host binary rollback)

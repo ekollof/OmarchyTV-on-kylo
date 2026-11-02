@@ -457,6 +457,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       test window. UI-BINSVG-VIEW-2026-11-02. Indexed resource loading/ownership,
       reloadable immutable theme provider and actual widget/text integration
       remain open; current fitted UI positions/captured panels are unchanged.
+- [x] Load indexed BinSVG into an owned immutable snapshot and expose reloadable
+      ui.theme v1, with explicit paths, first-CRC/index lookup and held borrowed
+      views. UI-THEME-PROVIDER-2026-11-02: strict full host/focused sanitizers/
+      ARM-qemu/native TV real-DSO lifecycle and702-record corpus pass. Input
+      edits, invalid later records, holds/collisions, standby, deferred activation
+      and failed replacement/recovery covered. Actual UI consumers/resource
+      selection/widget/text geometry/rendering remain open; captured panels and
+      fitted origins unchanged. Host binary rollback remains a separate gap.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

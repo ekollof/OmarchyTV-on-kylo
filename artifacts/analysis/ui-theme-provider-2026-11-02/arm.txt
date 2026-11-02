@@ -1,0 +1,19 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/theme/core/check.o core/check.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/theme/core/control.o core/control.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/theme/core/host.o core/host.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/theme/core/module.o core/module.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/theme/core/skin.o core/skin.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-tv-v3/theme/tests/ui_theme tests/ui_theme.c common/svg_pack.c common/binsvg.c build-tv-v3/theme/core/check.o build-tv-v3/theme/core/control.o build-tv-v3/theme/core/host.o build-tv-v3/theme/core/module.o build-tv-v3/theme/core/skin.o -ldl -pthread -lm
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v3/theme/modules/mod_ui_theme.so modules/ui_theme/ui_theme.c common/svg_pack.c common/binsvg.c 
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v3/theme/modules/mod_ticker.so modules/ticker/ticker.c  \
+   \
+  
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+  ok   live-pack real DSO:702 records/11888 elements, CRC name477 and rowPos verified in memory
+  ok   CLI reload replaces snapshot; edits cannot mutate held views, copied geometry survives reload
+  ok   consumer hold pins views and blocks normal stop/unload/reload; publication collision preserves peer and retries
+  ok   standby retains snapshot; suspended reload defers load/publication and failed resume activation retries
+  ok   missing/special paths, numeric overflow, incomplete/trailing index, NUL and malformed records reject; no stale publication
+  ok   invalid later record rejects whole pack; duplicate CRC first wins; owned snapshot survives input deletion; failed load output preserved
+  ok   failed replacement removes provider without stale service; explicit load recovers (no host binary rollback)
