@@ -292,8 +292,27 @@ updateGlyphAndTitle → showSubMenu.
 Decisive next computation: resolve the button-rect description inputs
 (iVar4/5/7 in TabDialog::init) and add the unknown dialog client origin C:
 vendor focused tab box starts at screen x=11, vendor title box at x=131.
-Both equations share C — solving them together determines C without
-guessing and tests the (23,5) hypothesis against the tab geometry.
+CLIENT-CONSTANCY PROOF (2026-11-02): `SVGButton::commonCreateStep`
+(0x10ae8f4) DOES parent-offset (`getClientRect` + `EASIRect::offset`,
+gated on parent != NULL) — buttons share the dialog client. The init chain
+sets NO dialog window: `SVGDialog::init` is EMPTY, `AnyUIRefresh...::init`
+only registers for UI messages, `GeneralDialog::init` just chains, and
+`doModal` runs init (+0x50) but never `create()` for TabDialog. So the
+dialog client is CONSTANT (never-set (0,0,0,0)) at both button creation and
+title creation — joint equations with one C give buttons (11,104) ✓ but
+title (108,5) ✗ vendor (131,10).
+X0-INVARIANCE (2026-11-02): middle.x0 = M1.w + S.l with S normalized
+(0,0,W,H) and M1 = positioned mRowL (translation preserves width 51)
+gives 51 under EVERY variant (raw/positioned masks, hit/miss on the right
+mask — the right mask only affects the right edge). With desc.x=57 and
+Cx=0, box.x=108 is FORCED by the modeled path. Same font ⇒ same bearings
+⇒ vendor box (131,10) CANNOT come from this path with these inputs.
+CONCLUSION: either the visible title is not TabDialog +0x140 (another
+instance/path draws it), or one identified input is wrong (resource,
+description rect, parent, or style record). The mrowR miss remains the only
+verified title-specific deviation. Next: read-only live-instance scan for
+the actual title widget rects (+0x284/+0x1ec) per UI-LIVE-OBJECTS method —
+view-only, allowed anytime, no key/display/device activity.
 Tab-width math CLOSED (2026-11-02): button width =
 (system.right - picture.left - gap*(n-1))/n with gap = sound.left -
 picture.right = 163-161 = 2. With record values (769-11-2*(n-1))/n: n=2
