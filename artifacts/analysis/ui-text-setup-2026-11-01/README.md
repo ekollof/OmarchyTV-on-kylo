@@ -429,3 +429,20 @@ per-branch string selections, not per-state variants, and the first-pass
 case→DAT association mixed mirrored arms. Entry[0] of the *selected* table is
 the name. Non-mirrored (stock) names match UI-LIST-METRICS' pointer-chain file.
 The rescale formula and row-literal findings are unaffected.
+
+## FA selection animation target (SVGListBoxBase, decompile-verified)
+
+`startSelectAnimation` (0x10bbedd) snapshots the current selected-row rect
+(`+0x25c..+0x268`) to `+0x24c..+0x258` (old) and stores the new row rect at
+`+0x25c..`, then starts the row-named animation. `onAnimationProgress(p, _)`
+(0x10b6c5) linearly interpolates per component and stores the moving rect at
+`+0x9b..+0x9e`, then calls vtable slot +100 (redraw with the moving rect):
+
+```
+new = B*p + A*(1-p),  A=[0x93..0x96], B=[0x97..0x9a]
+```
+
+No easing inside the callback (list path is linear per UI-ANIMATIONS; easing
+lives in the controller progress). Open: the +100 consumer identity, how row
+rects feed the old/new slots per selection change, and whether the animated
+rect is the `selectionIndicator` resource rect. No implementation.
