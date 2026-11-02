@@ -424,6 +424,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       suite/sanitizer/ARM-qemu/TV. UI-MASK-LAYOUT-2026-11-02 records field offsets
       and limits; actual widget-state population and full UI integration remain
       open, and fitted settings-label positions have not changed.
+- [x] Recover raw slice→list metrics and painted rowPos→cached insets/row size,
+      including visible-count-before-paint ordering and missing-resource state.
+      UI-LIST-METRICS-2026-11-02; strict full host/sanitizer/ARM-qemu/native TV
+      arithmetic tests pass. Raw475/477 slices explain step70/top16/bottom10.
+      Runtime resource parsing/transforms/window allocation and text-origin
+      integration remain open; these helpers do not replace fitted UI positions.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

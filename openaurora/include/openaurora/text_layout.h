@@ -33,4 +33,23 @@ struct oa_list_metrics {
  * whereas vertical uses window width. Bounds errors leave output unchanged. */
 int oa_list_row_rect(const struct oa_list_metrics *, int32_t index,
                      struct oa_text_rect *out);
+/* calculateHeight 10bb7ec: raw named slices, before rendering transforms.
+ * Missing slices count as zero. Only top/bottom/steps are overwritten; the
+ * painted row size and side insets remain cached. title adds one vertical step.
+ * Input names are resolved before calling; this API does not parse a theme. */
+struct oa_list_slices {
+    const struct oa_text_rect *top_left, *row_left, *row_middle, *row_right, *bottom_left;
+};
+int oa_list_measure_slices(struct oa_list_metrics *, const struct oa_list_slices *, int title);
+/* renderBackground 10bda60..10bda9a: apply rowPos after each painted
+ * middle slice. NULL rowPos preserves cached values. Missing side masks have
+ * zero width. middle is that slice's destination surface (required for rowPos).
+ * This must not be applied to raw resource coordinates. */
+int oa_list_measure_painted_row(struct oa_list_metrics *, const struct oa_text_rect *row_pos,
+                                const struct oa_text_rect *middle,
+                                const struct oa_text_rect *left_mask,
+                                const struct oa_text_rect *right_mask);
+/* Count is updated before painted-row insets in firmware. Nonpositive step
+ * preserves the previous count. Do not recompute mid-paint from new insets. */
+int oa_list_update_visible_count(const struct oa_list_metrics *, int32_t *count);
 #endif

@@ -6,6 +6,17 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-LIST-METRICS-2026-11-02: raw slice measurement, painted-row cached metrics
+and visible-count ordering implemented in common/text_layout.c. Raw475/477
+slice heights give step70/top16/bottom10. Strict full host/focused sanitizers/
+ARM-qemu and native TV list_metrics test pass. Native36008 bytes,
+MD5 e888fe330468ff6b40e61b3e883d3c1d, GLIBC2.4, build-tv-v3/list-metrics.
+Same stock boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785/zombie1967,
+access/privacy, staging removed and checked. No device/display/persistent change.
+Older widget-name expansion corrected at source; pointer chains retained.
+Runtime transformed inputs/window step/text origin and UI integration remain
+open; optional live label positions remain fitted. No helper/job pending.
+
 UI-MASK-LAYOUT-2026-11-02: common/text_layout.c now also supplies explicit
 mask positioning and vertical/horizontal/mirrored row arithmetic, recovered
 from firmware. Strict host/full suite, focused sanitizers, ARM/qemu and TV

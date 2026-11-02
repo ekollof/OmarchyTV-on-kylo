@@ -6,6 +6,13 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+List measurement (2026-11-02): UI-LIST-METRICS recovers two phases: raw slices
+reset top/bottom/steps, then painted rowPos updates cached row size/side insets.
+Visible count precedes that loop, so horizontal count sees previous insets.
+Missing rowPos retains state. The old text-setup widget-name expansion and
+four-variant-table theory are withdrawn: pointer chains prove normal IDs
+14/17/18/22/23=mTopL/mRowL/mRowM/mRowR/mBotL. Runtime UI integration is open.
+
 Mask/row layout (2026-11-02): UI-MASK-LAYOUT records exact numeric anchor
 cases rather than an assumed centered grid. Mask positioning preserves spans;
 unsupported alignment still subtracts mask origin. Mirrored horizontal rows

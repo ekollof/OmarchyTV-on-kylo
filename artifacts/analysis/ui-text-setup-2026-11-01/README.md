@@ -233,9 +233,16 @@ updateGlyphAndTitle → show) when the submenu flag is set.
 
 ## Widget-name table mechanism (getWidgetStandardName 0xeee798)
 
-Each ID maps to a 4-entry string table (mirror/state variants); the taken arm
-loads entry[0]. Table bases live in `.data` (runtime UStrings) except id 0
-(`""`). Resolved entry[0] names for the renderBackground call sequence:
+**Withdrawn2026-11-02 (UI-LIST-METRICS):** the following expanded name table
+and alleged four-entry variant tables are incorrect. The switch selects a
+PC-relative literal then follows a global char* to a string, with explicit
+mirror branches. Adjacent globals are not four variants of one widget. Do not
+use the old names below to select slices; only the numeric call-site sequence
+is retained as historical research. Verified normal/non-mirrored names include
+2=gTopL,14=mTopL,17=mRowL,18=mRowM,22=mRowR,23=mBotL. Pointer chains are
+preserved in analysis/ui-list-metrics-2026-11-02/widget-pointer-chains.txt.
+
+Historical incorrect expansion:
 
 ```
 47 background, 17 mBotR, 5 gRowR, 53 alignment, 22 bar_mTopM, 10 gRowR,

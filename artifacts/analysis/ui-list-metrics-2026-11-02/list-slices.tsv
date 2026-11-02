@@ -1,0 +1,25 @@
+record_hash	pack_offset	id	x	y	w	h	word4	opacity_raw_signed	string0	string1	string2	string3
+0x7ba24f22	201577	background	0	0	1280	720	0	10		#FFFFFF	\x0a	\x0b
+0x7ba24f22	201622	mTopL	225	153	10	16	2	10	#000000	none	\x0a	\x0b
+0x7ba24f22	201667	mTopR	329	154	29	16	2	10	#000000	none	\x0a	\x0b
+0x7ba24f22	201712	mTopM	256	154	62	16	2	10	#000000	none	\x0a	\x0b
+0x7ba24f22	201757	mRowL	235	176	0	70	2	10	#000000	none	\x0a	\x0b
+0x7ba24f22	201802	mRowR	328	178	1	70	2	10	#000000	none	\x0a	\x0b
+0x7ba24f22	201839	scrollPos	325	177	7	70	2	10	#070606	none	\x0a	\x0b
+0x7ba24f22	201888	mRowM	244	178	75	70	2	10	#000000	none	\x0a	\x0b
+0x7ba24f22	201925	rowPos	244	178	75	70	1	10	#070606	none	\x0a	\x0b
+0x7ba24f22	201971	mBotL	228	251	0	10	2	10	#000000	none	\x0a	\x0b
+0x7ba24f22	202016	mBotR	327	251	20	10	2	10	#000000	none	\x0a	\x0b
+0x7ba24f22	202061	mBotM	257	251	62	10	2	10	#000000	none	\x0a	\x0b
+0xe8eb982e	202621	background	0	0	1280	720	0	10		#FFFFFF	\x0a	\x0b
+0xe8eb982e	202666	mTopL	225	153	10	16	2	10	#000000	none	\x0a	\x0b
+0xe8eb982e	202711	mTopR	329	154	29	16	2	10	#000000	none	\x0a	\x0b
+0xe8eb982e	202756	mTopM	256	154	62	16	2	10	#000000	none	\x0a	\x0b
+0xe8eb982e	202801	mRowL	235	176	0	70	2	10	#000000	none	\x0a	\x0b
+0xe8eb982e	202846	mRowR	328	178	1	70	2	10	#000000	none	\x0a	\x0b
+0xe8eb982e	202883	scrollPos	325	177	7	70	2	10	#070606	none	\x0a	\x0b
+0xe8eb982e	202932	mRowM	244	178	75	70	2	10	#000000	none	\x0a	\x0b
+0xe8eb982e	202969	rowPos	244	178	75	70	1	10	#070606	none	\x0a	\x0b
+0xe8eb982e	203015	mBotL	228	251	0	10	2	10	#000000	none	\x0a	\x0b
+0xe8eb982e	203060	mBotR	327	251	20	10	2	10	#000000	none	\x0a	\x0b
+0xe8eb982e	203105	mBotM	257	251	62	10	2	10	#000000	none	\x0a	\x0b

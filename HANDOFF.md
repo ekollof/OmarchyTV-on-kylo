@@ -24,7 +24,20 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-MASK-LAYOUT](artifacts/reports/UI-MASK-LAYOUT-2026-11-02.md)
+Latest: [UI-LIST-METRICS](artifacts/reports/UI-LIST-METRICS-2026-11-02.md)
+adds raw-slice measurement, visible-count update and painted-row cache updates
+to common/text_layout.c. calculateHeight resets top/bottom/steps but preserves
+row size/side insets; count runs before painted insets, last rowPos wins, missing
+rowPos preserves state. Raw475/477 slices give step70/top16/bottom10. Older
+widget name expansion is withdrawn: literal→char*→string, not four-entry variants;
+normal IDs14/17/18/22/23 are mTopL/mRowL/mRowM/mRowR/mBotL. Fresh pointer
+chains/raw ARM retained. Full strict host/focused sanitizers/ARM-qemu and native
+list_metrics TV test pass; same boot/live1785/access/privacy, staging removed.
+Native build-tv-v3/list-metrics, analysis/ui-list-metrics-2026-11-02. Next row
+manager/window-coordinate step, complete slice/stretch transforms, then text
+origin/alignment; no fitted UI origins changed. No helper/job pending.
+
+Previous: [UI-MASK-LAYOUT](artifacts/reports/UI-MASK-LAYOUT-2026-11-02.md)
 adds oa_text_rect_position_mask and oa_list_row_rect to common/text_layout.c.
 Mask numeric cases0/1/3/5 left-top,2/6 right-top,4/7 left-bottom,8 right-bottom;
 unsupported values only subtract mask origin, absent mask leaves input alone.
