@@ -266,7 +266,18 @@ this[10..13] + zero margins). Verification path: find the writer of the
 dialog client rect (this+40..55); alternative: the title surface rect is
 not the row shape — decode the r7+0x1d0/0x1e0 positioned-mask inputs to
 the 10c615c EASIRect construction directly. Do not shift our box by
-(+23,+5): that would be capture-fitting. Also open: the runtime
+(+23,+5): that would be capture-fitting.
+Mechanism links CLOSED (2026-11-02): `UIWindow::getClientRect` (0x1152974)
+copies this[10..13] then adds vtable+0x38 margins — TabDialog's slot is
+`UIWindow::getClientMarginRect` (vtable+0x38 = 0x1152579) returning
+(0,0,0,0), so no margin contribution. Base `UIWindow::setWindowRect`
+(0x1152478) stores the passed rect verbatim at this+40; `SVGDialog::
+setWindowRect` (0x10c5285) adds only a redraw. So the dialog client origin
+== whatever rect reached TabDialog.setWindowRect. TabDialog does not
+override `createComponents` (base 0xd6da90 reached via virtual dispatch;
+only five direct callers exist, all subclass upcalls). Still open: which
+rect reached the dialog's setWindowRect and when relative to
+createComponents (dialog-show positioning is the next decode target). Also open: the runtime
 dynamic-center-align override (`setAlignment` 4/5) is not modeled; glyph
 placement within the box (bearings/baseline) is a renderer job. (Title is
 lab-gated behind ui.title=1, default off, until the origin is decoded.)
