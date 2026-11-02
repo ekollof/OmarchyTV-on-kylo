@@ -218,12 +218,20 @@ with flag set focuses the submenu list.
 
 ## Value/tab interaction (no implementation yet)
 
-`onRightLeftPress` (0xe0ad0d): stores the selected id; id 6 with dual view
-shows a modal prompt; key-repeat is enabled on 0x2c8/0x2c9. Ids 0–5 go
-through `updateViaPictureElementSetting` (0→0x16 plus mode-value refresh,
-1→1, 2→2, 3→3, 4→4, 5→0x22) after an energy-design check; id 0xd logs and
+`onRightLeftPress` (0xe0ad0d, full decompile 2026-11-02): stores the selected
+id; id 6 with dual view shows a modal prompt; key-repeat is armed on vendor
+key codes 0x2c8/0x2c9 (our project-local key topic uses different ids —
+21/22 for Left/Right). Ids 0–5 go through `updateViaPictureElementSetting`
+(0→0x16 plus mode-value refresh, 1→1, 2→2, 3→3, 4→4, 5→0x22) after an
+energy-design check — and that function (0xe0aca1) OPENS A SUB-DIALOG via
+`showPictureElementSettingDialog`, then restores the selected item and
+refreshes values. So Left/Right on the main-list slider rows does NOT adjust
+in place: the slider lives in the per-setting sub-dialog. Our lab in-place
+digit editing is therefore a functional placeholder only, honestly marked as
+such; real parity needs the sub-dialog composition. Id 0xd logs and
 refreshes. All other ids (except 0x6d/8) remap 0x2c8→0x20c / 0x2c9→0x20d and
-forward to `SettingsDialog::onRightLeftPress` — the base value adjust.
+forward to `SettingsDialog::onRightLeftPress` — the base list-navigation
+adjust path.
 
 `onSelectPress` (0xe0a81d): 7 opens PCPicturePositionDialog; 0x6d opens
 AdvancedPictureSettingsDialog; 0x120 forwards to handleSettingsMenuResult;

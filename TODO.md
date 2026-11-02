@@ -389,9 +389,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       mirror/RTL remap. Slider rows are type 9 (slidebar + value textbox);
       PictureSettingsDialog builds ids 1-4 as type 9 (CONTRAST/BRIGHTNESS/…),
       5/6/9/0xd/0xe/0xf/0 as type-2 selection rows and 7/8/10/0x120/0x6d as
-      type-4 button rows; value change is onRightLeftPress id dispatch
-      (updateViaPictureElementSetting or base adjust with 0x2c8→0x20c /
-      0x2c9→0x20d remap), Select opens sub-dialogs, tabs switch on Left/Right
+      type-4 button rows; Left/Right dispatch (0xe0ad0d, decompiled): ids 0-5
+      call updateViaPictureElementSetting, which OPENS the per-setting
+      sub-dialog (showPictureElementSettingDialog) — no in-place adjust on
+      the main list; other ids remap vendor keys 0x2c8/0x2c9→0x20c/0x20d and
+      forward to base list navigation. Select opens sub-dialogs, tabs switch
+      on Left/Right
       by replacing the content dialog (tab 0 Beeld = PictureSettingsDialog,
       1 Geluid = SoundSettingsDialog, 2 Netwerk, 3 Installation, 4 System;
       showSubMenu 0xd6f141). The five tab labels are button texts from
@@ -446,6 +449,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       re-renders the digit blob and repaints, gated on ui.edit=1 (default 0).
       Ranges 0..100 step 1 are invented placeholders, slider bars stay static,
       type-2 rows/Select sub-dialogs untouched, no settings-DB writes.
+      Firmware (0xe0ad0d/0xe0aca1, decoded after this shipped) shows the
+      vendor OPENS a per-setting sub-dialog on Left/Right instead of adjusting
+      in place — the lab path is a functional stand-in, not the vendor flow.
       ui.edit_init="r=v" presets values for captures. Host test drives real
       keys (95→100→clamp 0, untouched row keeps value). fb1: sel=1,
       edit_init 1=49 shows dark-red "49" on the focus bar (380 px at the same
