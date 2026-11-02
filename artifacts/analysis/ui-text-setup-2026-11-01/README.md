@@ -525,6 +525,30 @@ New slice names: gRowMRed, mRowMGreen, title_gRowL, title_gRowR.
 Still open: readers of +0x244 and +0x27c, per-widget rect-to-draw
 consumption, and any pixel acceptance. No implementation.
 
+## Readers of list +0x244/+0x27c: none (write-only fields, 2026-11-02)
+
+Whole-binary scan of aurora.dis for field accesses at byte offsets 0x244
+(580) and 0x27c (636) on object bases (excluding pc/sp/ip literal pools and
+stack frames, which are unrelated locals):
+
+- +0x244 writes: ctor 10bd1fe (zeroing) and renderBackground 10bd57c (mode
+  store). The only other object-base read at this offset is 10c5ca4 in the
+  SVGTextBox ctor — a different class layout, not the list field.
+- +0x27c writes: ctor 10bd220 (zeroing) and renderBackground 10bdd7e
+  (record-pointer cache). The only other object-base reads are 10c8c4c
+  (SVGTextBox::animRectDecode, different class) and two LSCSession comms
+  functions (different class entirely).
+
+No SVGListBoxBase method reads either field, and no add-then-dereference
+sequence targets these offsets anywhere in the binary. Both fields are
+effectively write-only: the mode selector result (+0x244) has no firmware
+consumer, and the cached indicator record (+0x27c) is never consumed — the
+indicator paint uses the record pointer directly in-register at the
+drawRectangle call. Parity consequence: an implementation must not invent
+consumers for these fields; there is no firmware behavior to be
+bug-compatible with here. The +0x248 flag guarding the selector is a
+separate field and is unaffected by this finding.
+
 ## Row-background name sequence (SVGListBoxRow::renderBackground 0x10bec08)
 
 Asm-verified call order of `getWidgetStandardName` in the function

@@ -429,6 +429,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       scrollPos and selectionIndicator; it also holds a list-level first-present
       font-marker mode selector at +0x244 (new slices gRowMRed, mRowMGreen,
       title_gRowL/R). Still open: readers of +0x244/+0x27c.
+      Whole-binary scan finds no SVGListBoxBase reader of either field
+      (only ctor zeroing + renderBackground writes; other hits are different
+      classes/stack slots) — both are write-only, so no consumers may be
+      invented. Still open: per-widget rect-to-draw consumption.
       UI-MASK-LAYOUT
       now recovers mask positioning and row arithmetic; runtime field
       population, slice composition, text origin and FA animation geometry are still
