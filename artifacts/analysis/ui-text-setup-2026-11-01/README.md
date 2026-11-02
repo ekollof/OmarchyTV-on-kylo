@@ -220,9 +220,27 @@ ratio and exact selection rule (verified implementation in
 common/font_finder.c: last font whose height does not exceed
 height/lines; create passes lines=1). If the rescale uses surface 90
 (description rect height) over mask 51 (mRowM), the height is ~90 → ID 18
-instead. Which surface/mask heights feed the rescale is the remaining link,
-as is the +0x144 shadow (record 191 has no dialogTitleShadow, so it is not
-created here). Do not render title text until those are traced.
+instead. Description source CLOSED (2026-11-02): TabDialog ctor calls
+`SVGDialog::setSVGName(191)` (`movs r1,#191; bl setSVGName` at d6f4a2/a4),
+so the TabDialog resource IS record 191, which carries `dialogTitle`
+(57,5,691,95). TabDialog descends from the fullscreen base (ctor chain
+TabDialog → SettingsDialog → AnyUIRefreshMessageFullScreenDialog at
+d56846, i.e. an SVGFullScreenDialog descendant), so the base
+`createComponents` +0x140 path runs on this instance with that resource:
+`getDescription("dialogTitle")` hits, +0x140 is created with the 634x90
+rect, style id 419, lines=1; `dialogTitleShadow` is absent from 191, so
++0x144 is not created here.
+Rescale inputs CLOSED (2026-11-02, aurora.dis): B is the horizontal mask
+height (mRowM, record 419 → 51, static); A is the same transform's surface
+height, which tracks the window rect via the verified
+create→setWindowRect→resizeUISurface chain, so A=90. Rescaled textPos
+height = 90, `getFont(90,1,0)` = ID 18 (largest type-0 max height ≤ 90 is
+80). The earlier ID-5 conditional is withdrawn: the surface is 90, not 51.
+OPEN before live title: text origin within the 634x90 area (rescaled
+textPos offset + parent client origin + alignment), text colors
+(description +0x18/+0x20, undecoded), and the key→localized resolution
+site (`setTitle` stores the raw KEY). Do not render title text until those
+are traced.
 
 `showSubMenu` creates the focused tab's content dialog from the UIGroup focus
 id (`+0x4ac`):
