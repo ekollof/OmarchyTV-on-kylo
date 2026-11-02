@@ -656,6 +656,34 @@ separate field and is unaffected by this finding.
 
 ## Row-background name sequence (SVGListBoxRow::renderBackground 0x10bec08)
 
+### Two-block mechanism (2026-11-02)
+
+The function has TWO mask/scale blocks, not one (the second starts at asm
+10bf0f2):
+
+- Block 1 (surface this+0x98, resized to the row window rect from vtable
+  +0x28): mask mRowL → render gRowL; mask mRowR → render gRowR; then
+  HorizontalMaskScaleTransform with surface rect
+  `((d0-d8)+f8, f4, f0-(c0-c8), ec)` built from mask-rect fields plus the
+  row-rect origin (f8/f4/f0/ec), mask mRowM → render gRowM.
+- Block 2 (new surface this+0xc4, resized to the vtable+0x28 rect at
+  r7+40): mask mRowM (id 18) → render **rowItems** (id 48).
+- Row resource mapping verified in SettingItemsListBox ctor asm: list
+  backgrounds setSVGName(1→475, 3→476, 0→477, 2→478); row backgrounds
+  setRowSVGName(1→479 FA, 0→481 UFA, 3→480 FI, 2→482 UFI); widget ids
+  488-491/496-499/504-507 in row ctor immediates (matches the Ghidra table).
+
+OPEN PUZZLE (framed precisely, not guessed): the children loop creates up
+to 4 SVGImages with rect local_e8 = `getRectangle(container, "glyph")`
+(id 54). Record 479 (FA) contains NO "glyph" rect (verified with
+build/svg-rects). If the container gains no "glyph" rect from the renderer
+calls, the miss path destroys the children and the visible bar is surface
+content only. What the renderer (vtable+0xc) records into the container is
+unverified — that is the next trace, along with the vertical mask→surface
+mapping that decides 66 vs 70 px.
+
+### Name call order (asm-verified)
+
 Asm-verified call order of `getWidgetStandardName` in the function
 (aurora.dis file lines 4093381–4093798), with stock (non-mirrored, `iVar2==0`)
 names resolved through the ELF with segment-correct VA→file translation and
@@ -670,8 +698,8 @@ cross-checked against the four known m-names:
 | 5 | 10bedcc | 10 (0xa) | gRowR |
 | 6 | 10bee66 | 18 (0x12) | mRowM |
 | 7 | 10bee96 | 6 | gRowM |
-| 8 | 10bf0f6 | 18 | mRowM |
-| 9 | 10bf140 | 18 (r2 carried from #8, no rewrite between) | mRowM |
+| 8 | 10bf0f6 | 18 (0x12) | mRowM |
+| 9 | 10bf140 | 48 (0x30) — CORRECTION 2026-11-02: the earlier "r2 carried" note was wrong; asm has `movs r2,#48` at 10bf134 | rowItems |
 
 New names recovered: `gRowL`/`gRowM`/`gRowR` (a `g` set alongside the known
 `m` set) and `glyph` (54). Branch structure: 5/10 are a swapped mirror pair

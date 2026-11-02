@@ -471,13 +471,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       CORRECTION: the first capture (33c719a1) showed the overlay's captured
       glyphs because text was painted under it; that evidence is withdrawn.
 - [ ] Decode the row mask→surface mapping before changing bar geometry.
-      Firmware resource 179 gives listBox (20,170,770,996); slices 475-478
-      give top16/bottom10/step70, implying row0 = (20,186,750,70). The current
+      Two-block structure established (block 2 renders rowItems (id 48) into
+      a second surface this+0xc4); row resources verified in ctor asm (list
+      475-478, rows 479/481/480/482). Open: what the renderer records into
+      the container (the "glyph" lookup vs record 479 having no "glyph"
+      rect) and the vertical mapping that decides 66 vs 70 px. Firmware
+      resource 179 gives listBox (20,170,770,996); slices 475-478 give
+      top16/bottom10/step70, implying row0 = (20,186,750,70). The current
       bar still uses the pre-existing reconstruction placement (20,183,750,66)
-      because SVGListBoxRow::renderBackground (0x10bec08) composes 1280x720
-      mask slices (record 479: 66 px tall) through MaskPositioningTransform +
-      HorizontalMaskScaleTransform into a row surface, and that mapping is not
-      decoded. Do not adopt either value until the transform math is verified;
+      until the transform math is verified;
       evidence: artifacts/analysis/ui-row-rect-2026-11-02/.
       Evidence: artifacts/analysis/settings-edit-2026-11-01/. Full make check
       261 ok.
