@@ -519,7 +519,26 @@ dynamic/provider-driven via the untraced update paths). Decompiles in
 /tmp/opencode/decomp-slide.txt and decomp-sval.txt (ephemeral — re-run
 DumpFirmware.java with the addresses above to reproduce).
 
-## FA selection animation target (SVGListBoxBase, decompile-verified)
+## Sub-dialog composition (PictureElementSettingDialog, decompile-verified)
+
+`showPictureElementSettingDialog` (0xe0a46d) hides the tab dialogs
+(vtable+0x1c/+0x34 with 0), constructs a stack
+`PictureElementSettingDialog` for the setting type, runs it with
+`doModal`, then restores visibility and destructs. The slider lives here,
+not on the main list.
+
+`initialiseFields` (0xe120e0) switches on the setting type (`+0x574`).
+Slider cases build type-9 `SettingItem`s with the current value and two
+provider-filled ints; each type calls a DIFFERENT provider virtual with the
+same out-param shape — +0x1e8 (type 1), +0x1ec (type 2), +0x1f4 (type 3),
++0x1f8, +0x208, +0x204, … — on the provider at +0x57c. So min/max-style
+bounds are per-setting RUNTIME provider (picture-pipeline) data, not
+firmware constants: no static range table exists to decode. The lab 0..100
+placeholder stands until a live provider query path exists (needs native
+provider ownership, out of scope). Still open: exact SettingItem ctor param
+roles, the slidebar range/step wiring into +0xb0/+0xb4/+0xbc, and the step
+source. Decompiles in /tmp/opencode/decomp-showdlg.txt and decomp-subdlg.txt
+(ephemeral — re-run DumpFirmware.java @0x00e0a46d @0x00e120e1).
 
 `startSelectAnimation` (0x10bbedd) snapshots the current selected-row rect
 (`+0x25c..+0x268`) to `+0x24c..+0x258` (old) and stores the new row rect at
