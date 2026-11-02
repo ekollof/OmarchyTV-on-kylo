@@ -248,11 +248,24 @@ the description record at +0x18 (stroke) / +0x20 (fill), each a 4-byte RGBA
 after the 16-byte rect (+8..+23). `extractStrokeProperties` (0xef64b5) /
 `extractFillProperties` (0xef6541) parse the pack stroke/fill strings via
 `rgbColourParser` with alpha `(1-opacity)*0xff`, leaving the caller zero-init
-when the string is NULL. Raw inputs for record-191 `dialogTitle`: fill
-`'none'`, no stroke color (NULL), stroke_w 1, opacity 10. Remaining:
-`rgbColourParser` behavior for `'none'`/NULL, the opacity integer scale, and
-which of stroke/fill is the text ink in the `drawText` argument order.
-Do not hardcode white title ink until those are traced.
+when the string is NULL. CORRECTION (2026-11-02): the "no stroke color"
+above was a tool display gap, not a pack fact — `svg-rects` printed
+width/opacity/fill but not the stroke string (the parser always captured
+it). Fixed to print `stroke='...'`. Actual raw inputs for record-191
+`dialogTitle`: stroke **`#FFFFFF`**, fill `none`, width 1, opacity 10.
+`rgbColourParser` CLOSED (0xef63e9): input compared against `'none'`
+(DAT 00ef64ac → 0x129a8ee); if equal, alpha forced to 0xff. `'#RRGGBB'`
+parsed via `sscanf` `'%2x%2x%2x'` (DAT 00ef64b0); other lengths force alpha
+0xff. Stored high byte is `~alpha`, i.e. opacity·255 (fully opaque input
+`(1-1)*0xff=0` stores 0xff). So `'none'` → transparent RGBA(0,0,0,0x00);
+NULL → caller zero-init = transparent. Therefore +0x18 (stroke) = opaque
+white, +0x20 (fill) = transparent. Title overrides: local_64 (+0x211) =
+white, local_5c (+0x215) = transparent. Record-419 `textPos`/`mRowM` carry
+the identical pair (stroke `#FFFFFF`, fill `none`). Both render white on
+the vendor panel, so the text ink is the first color argument (local_64 =
+stroke) by elimination — transparent ink would be invisible in both cases.
+Final confirmation is a `drawText` argument-role decode; no other ink
+candidate exists.
 Key→localized resolution CLOSED (2026-11-02): `updateGlyphAndTitle`
 (0xd6faed) switches on the focused tab (+0x4ac) and picks the title key —
 tab0 PICTURE_MENU/PICTURE, tab1 SOUND_MENU/SOUND, tab2 NETWORK, tab3

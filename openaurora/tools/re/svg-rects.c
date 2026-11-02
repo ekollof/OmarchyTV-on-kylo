@@ -54,9 +54,10 @@ int main(int argc, char **argv)
             printf("  tag=%u id='%s' eoff=%zu", e.tag, e.id ? e.id : "(null)", e.offset);
             struct oa_binsvg_rect r;
             if (oa_binsvg_rectangle(&v, e.offset, &r) == 0)
-                printf(" rect=(%d,%d,%d,%d) stroke_w=%d opacity=%d fill='%s'",
+                printf(" rect=(%d,%d,%d,%d) stroke_w=%d opacity=%d stroke='%s' fill='%s'",
                        r.bounds.left, r.bounds.top, r.bounds.right, r.bounds.bottom,
-                       r.stroke_width, r.opacity, r.fill ? r.fill : "(null)");
+                       r.stroke_width, r.opacity, r.stroke ? r.stroke : "(null)",
+                       r.fill ? r.fill : "(null)");
             printf("\n");
         }
     }
