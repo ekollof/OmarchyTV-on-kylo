@@ -6,7 +6,12 @@ and focused-label work does not proceed from fitted capture geometry.
 Firmware: Aurora MD5 64c252340d3af6c5d66072611b7bad7a. Raw decompiles:
 artifacts/analysis/ui-text-layout-2026-11-01/text-widget-surface.txt
 (SVGTextBox ctor/renderBackground/setFont),
-/tmp/opencode/decomp-textfg.txt (renderForeground/drawTextBox/getTextWidth).
+artifacts/analysis/ui-text-geometry-2026-11-02/rect-mask-draw.txt contains a
+fresh durable renderForeground/create/mask extract. The originally referenced
+/tmp/opencode/decomp-textfg.txt is gone; do not search for it as required state.
+UI-TEXT-GEOMETRY-2026-11-02 corrects the scale axis/rounding and closes the
+single-line textPos-to-draw path below. Other unsupported older paragraphs
+remain dated research, not API contracts.
 
 ## State-indexed resources are exact (no fit)
 
@@ -161,7 +166,8 @@ slidebar (+0x13c0) and the value textbox (+0x1ca8) — the font16 digit rows.
 
 ## TextBox render branches (asm-verified, renderForeground 0x10c7a01)
 
-`+0x1b4` (line count; ctor default 0, no writer found in row/text paths):
+`+0x1b4` (line count; ctor default0; create's4th argument writes it, as
+resolved in the later "Line count writer found" section):
 
 - `< 0`: return, nothing drawn (10c8258 `ble` taken).
 - `== 0`: `+0x1c0 = full rect height`, single-line draw (count 1).
@@ -172,10 +178,11 @@ Vendor `getFont(height, lines, type)` (0xeeedc0) calls the same division
 **before** the type switch (after only the empty-finder check), and
 `FUN_01285478` raises SIGFPE on divisor 0. So a zero line count reaching
 `getFont` with a populated finder would fault — yet row text renders. The
-writer that makes `+0x1b4` nonzero for live rows is still unidentified
+writer was initially unidentified (the following negative search is historical;
+create's4th argument and row literal1 resolve it below)
 (`setText` only clears `+0x1bc`; `setLabel`/`setButtonText`/`appendItem`
 don't touch it; neither do `makeRow`/row ctor/drawRow). Do not assume a
-default of 1: the ternary above is the observed behavior.
+default of1: the ctor stays0, while row creation explicitly supplies1.
 
 `setTextAlignment` (0x10c72a9) writes `+0x220` (`+0x224` explicit flag; value
 5 also clears the bold flag `+0x1b1`). Alignment in renderForeground is a
@@ -233,7 +240,7 @@ loads entry[0]. Table bases live in `.data` (runtime UStrings) except id 0
 ```
 47 background, 17 mBotR, 5 gRowR, 53 alignment, 22 bar_mTopM, 10 gRowR,
 53 alignment, 18 mBotM, 6 gRowM, 53 alignment, 42 textPos,
-65 fontLight, 66 fontBold, 68 fontItalic, 67 fontLight,
+65 fontRegular, 66 fontBold, 68 fontItalic, 67 fontLight,
 70 fontLightItalic, 69 fontBoldItalic,
 42 textPos, 14 mTopR, 2 gTopL, 53 alignment, 16 mRowR, 4 gTopL,
 53 alignment, 23 mRowMYellow, 11 mRowR, 53 alignment, 25 gRowMRed,
@@ -275,7 +282,9 @@ defaults stand unless another path writes them.
 `+0x284..+0x2a0` with `setWindowRect`. `renderItems` creates the label/caption
 boxes with literal `1`, so row text is single-line; `getFont(h/1, type)` can
 never divide by zero there. The `+0x1b4` writer question is closed for rows.
-(`+0x1c4` type writer in row paths is still unidentified; ctor default 0.)
+`+0x1c4` is written by renderBackground's font-marker scan; the single-line
+branch reaches it at10c636c/637c/63aa..63c4. It is not necessary to find a
+separate row-specific writer. Marker mapping is in UI-GLYPH-DRAW.
 
 `setLabel` routes by row type (1 → caption box `+0x3c4`, else `+0x104`) and
 stores `+0x2dd8`; `setButtonText` → button `+0x684` / `+0x2de0`;
@@ -311,27 +320,27 @@ The `.data` literals are `char*` variables (double indirection at asm level:
 Translation part of the transform is established: each widget rect =
 resource rect offset by the row position (`setWindowRect` after `offset` in
 renderItems; row positions from `getRowPosition`). The scale part (mask
-transforms inside `SVGTextBox::renderBackground`, `+0x1c4` writer, FA
-animation target) remains open — still no implementation.
+transforms inside `SVGTextBox::renderBackground` and FA animation target)
+remains partly open. The type writer and text-height rescale are now recovered;
+see UI-TEXT-GEOMETRY-2026-11-02.
 
 ## Text-rect scale mechanism (SVGTextBox::renderBackground, +0x1b4==1 branch)
 
 Row textboxes (created with line count 1) take the first branch: background
 slices via `MaskPositioningTransform` (alignments 1/2), the middle slice via
 `HorizontalMaskScaleTransform`, then a rect looked up by widget-standard-name
-is width-rescaled in place:
+has its **height** rescaled in place (corrected2026-11-02):
 
 ```
-x1' = x0 + (surfaceW / maskW) * rectW
+bottom' = top + trunc(float(surfaceHeight) / float(maskHeight) * float(rectHeight))
 ```
 
-with `surfaceW/maskW` as doubles (`VectorSignedToFloat`, round-half-away
-`in_fpscr` mode) — the same ratio `HorizontalMaskScaleTransform::getMask`
-stores (`scale = surfaceW/maskW`, 0 when surfaceW<1). So a text rect keeps
-its x0 and stretches horizontally with the surface. Translation comes from
-the mask alignment + row offset; the looked-up rect's standard-name ID is
-register-held (not visible in decompile) — the exact per-widget rect IDs
-(textPos vs slice) are still unmapped. Resolved literals in this file:
+The previous width/double/round-half-away interpretation was incorrect.
+The code uses float32 VFP division/multiplication and signed conversion toward
+zero. HorizontalMaskScaleTransform itself separately uses a double **width**
+ratio; that is not the manual text-height correction. The rect keeps its top,
+left and right. The looked-up name is textPos (ID42 at10c621c..622e).
+Translation still comes from mask alignment and row offset. Resolved literals:
 `DAT_010c607c` → `addition` (stored text-rect source on one path); the
 `DAT_010c6xx` canary-looking slots are not strings — do not read them as
 literals.
@@ -347,15 +356,12 @@ span = [sl,#20] - [sl,#12]
 [sl,#20] = [sl,#12] + int(float(A) / float(B) * float(span))
 ```
 
-int32→float→int32 with round-half-away (`vcvt.f32.s32` /
-`vcvt.s32.f32`, `vdiv`/`vmul`). No zero-guard on B (vdiv by zero yields
-+Inf, saturating convert). Origin field `[sl,#12]` is untouched — the rect
-keeps its position, one extent is scaled by a surface/mask span ratio.
-Whether that axis is height or width depends on the container `EASIRect`
-layout: `getMask`'s width calc (`[base+0x1c] - [base+0x8]`) reads as corners
-`{x0,y0,x1,y1}`, which would make this a height rescale, but that layout
-inference is not independently proven — do not build on the axis, only on
-the formula and the position preservation.
+Float32 operations, signed conversion toward zero. The old round-half-away
+claim is withdrawn. B has no firmware zero guard; do not infer valid geometry
+from an invalid denominator. RectHandler::handleSVGElement ef6128 and the
+EASIRect constructors establish corners {left,top,right,bottom}; record+12 is
+top and record+20 is bottom. Therefore A/B/span are heights here. Fresh
+instruction excerpts and49,728 ARM VFP comparisons are in UI-TEXT-GEOMETRY.
 
 ## Record layout confirmed (10c6b9e–10c6bd6)
 
@@ -363,11 +369,12 @@ the formula and the position preservation.
 then `ldmia fp+8 / stmia +0x1f4` (16-byte coord copy) plus `+0x204/8/c`
 tail fields. So the container record is `{UString name; coords...}` and both
 `+0x254` (preamble, literal `"addition"`) and `+0x1ec` (else branch, standard
-name) receive looked-up rect NAMES with coords following. The single open
-detail is which of the two the single-line row path consumes at draw time
-(`renderForeground` copy-constructs a `RectangleDescription` from `+0x1ec`).
-No further static reading this turn — stopping here per instruction.
+name) receive looked-up rect NAMES with coords following. Resolved2026-11-02:
+single-line path10c6396 creates name42=textPos, branches10c63a2→10c6b7a,
+then copies the looked-up record to+0x1ec. renderForeground10c7a18..7a26 copies
+that RectangleDescription and uses its geometry. +0x254 is the separate
+addition rectangle. This is no longer an open question.
 
 Do not implement value/tab/slider-graphics/title/focused labels from the fits.
-Next: resolve the `renderBackground` rectangle literals per widget resource,
-then implement from firmware geometry.
+Next: remaining mask slice positioning, row allocation and text origin/alignment,
+then replace fitted UI geometry only when that whole chain is established.

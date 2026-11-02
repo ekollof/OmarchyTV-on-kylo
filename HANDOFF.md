@@ -1,4 +1,4 @@
-# Handoff — 2026-11-01
+# Handoff — 2026-11-02
 
 Read AGENTS.md, MEMORY.md, FINDINGS.md and TODO.md. Documentation was consolidated
 to remove competing status snapshots. Raw evidence and pre-cleanup docs remain
@@ -24,7 +24,20 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: text-setup firmware decode (analysis/ui-text-setup-2026-11-01, commits
+Latest: [UI-TEXT-GEOMETRY](artifacts/reports/UI-TEXT-GEOMETRY-2026-11-02.md)
+reviews443ebd0 and closes textPos consumption: single-line branch10c6396→
+6b7a copies textPos into+1ec, then foreground10c7a18..26 consumes it;
++254 is separate addition. RectHandler/constructors prove corners x0,y0,x1,y1.
+Manual rescale10c624e..6296 changes **height**, with float32/truncation toward
+zero, not width/double/round-half-away. common/text_layout.c implements this
+bounded arithmetic;49,728 ARM VFP comparisons pass qemu and real TV, strict
+host/sanitizer/full suite pass. No device/display access. Same stock boot/PID/
+access/privacy; staging removed. build-tv-v3/text-geometry and durable analysis
+ui-text-geometry-2026-11-02 identify evidence. Next resolve slice/mask alignment,
+actual row allocation and text origin/baseline; integrate complete geometry
+before replacing fitted origins. Full goal resumed by owner; no helper/job pending.
+
+Previous: text-setup firmware decode (analysis/ui-text-setup-2026-11-01, commits
 61ab377..df42937 plus four follow-ups) mapped the settings text pipeline
 without writing UI code, per the firmware-first rule: state-indexed list/row
 resources, row widget slots + per-state FA/UFA/FI/UFI ids, renderItems
@@ -37,10 +50,10 @@ writer (create's 4th arg; rows pass 1), the value display path (setSlideValue
 font-marker scan, alignment interleave), and the text-rect rescale formula
 x1 = x0 + (A/B)*span with position preserved, and the container record layout
 {UString name; coords} with +0x254/+0x1ec both receiving looked-up rect names.
-Single open detail: which of the two the single-line row path consumes at draw
-time. Title/tab/slider/focused text stay captured; no implementation from
-fits. Goal paused at owner's request — no helper/build/Ghidra job pending,
-tree clean.
+The textPos/addition question and incorrect axis/rounding/name claims are
+corrected by UI-TEXT-GEOMETRY above and at source. Title/tab/slider/focused text
+stay captured; optional live labels still use fitted geometry. Old pause was
+revoked by owner resume. Do not look for the vanished /tmp/opencode logs.
 
 Previous: [UI-GLYPH-DRAW](artifacts/reports/UI-GLYPH-DRAW-2026-11-01.md) implements
 common/font_draw.c, an allocation-free clipped single-glyph RGBA compositor from

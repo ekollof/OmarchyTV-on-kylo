@@ -115,7 +115,15 @@ $(BUILD)/tests/font_text: tests/font_text.c common/font_text.c common/font_draw.
 check-font-text: $(BUILD)/tests/font_text
 	@$(BUILD)/tests/font_text
 
-check: check-font-bitmap check-font-finder check-font-draw check-font-pack check-font-text
+$(BUILD)/tests/text_layout: tests/text_layout.c common/text_layout.c include/openaurora/text_layout.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-text-layout
+check-text-layout: $(BUILD)/tests/text_layout
+	@$(BUILD)/tests/text_layout
+
+check: check-font-bitmap check-font-finder check-font-draw check-font-pack check-font-text check-text-layout
 
 $(BUILD)/oa-audio-broker: tools/audio/oa-audio-broker.c common/audio_broker.c common/audio_broker_wire.c common/audio_client.c common/audio_netlink.c include/openaurora/audio_broker.h include/openaurora/audio_client.h include/openaurora/audio_netlink.h
 	@mkdir -p $(dir $@)

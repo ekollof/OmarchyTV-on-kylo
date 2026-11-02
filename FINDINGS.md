@@ -6,6 +6,13 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Text setup correction (2026-11-02): UI-TEXT-GEOMETRY closes the single-line
+consumer: textPos is copied to+1ec then used by foreground; +254 is addition.
+The manual correction scales height with float32/truncation toward zero, not
+width or round-half-away. Font-marker65 is fontRegular. Newer text-setup prose
+did not override the already preserved instruction evidence; corrected there.
+49,728 VFP comparisons pass qemu/TV, but full mask/row/baseline layout is open.
+
 Native font correction (2026-11-01): the theme's38 EF41 font records contain
 signed metrics, packed UTF8 keys and raw8-bit coverage, decoded by UIBitmapFont /
 hal::BitmapFont. Its file-font pack is empty. FreeType/browser references alone

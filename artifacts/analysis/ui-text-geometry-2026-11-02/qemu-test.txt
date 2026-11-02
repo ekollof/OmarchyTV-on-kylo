@@ -1,0 +1,2 @@
+ok text height: 49728 ARM VFP instruction comparisons
+ok text height: axis/origin preservation, truncation, bounded failures

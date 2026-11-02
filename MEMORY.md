@@ -1,10 +1,21 @@
-# Current project state — last verified 2026-11-01
+# Current project state — last verified 2026-11-02
 
-This is the canonical state summary. Latest TV confirmation is the authorized
-November 1 CEC session described below. Earlier chronological notes are preserved in
+This is the canonical state summary. Latest narrow verification is recorded
+in the dated entries below; the earlier CEC session is historical. Notes are preserved in
 [the archive](artifacts/archive/README.md); they contain superseded claims.
 
 ## TV and persistent recovery
+
+UI-TEXT-GEOMETRY-2026-11-02: common/text_layout.c implements the recovered
+single-line textPos height adjustment with float32/truncation and bounded errors.
+Foreground consumes+1ec textPos; +254 is addition. This corrects the newer
+research's width/round-half-away/unknown-consumer claims. Strict host/sanitizer/
+full suite and49,728 ARM VFP comparisons on qemu and TV pass. Native17620 bytes,
+MD5 873adb0528dc642df3fab21e6be64cc9, GLIBC2.4, build-tv-v3/text-geometry.
+Same boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785/zombie1967, hook/hosts/
+access/privacy and safety markers; no device/framebuffer access. Staging removed
+and independently checked. No pending helper/job. Goal resumed; actual row/mask
+positioning, baseline and complete layout integration remain open.
 
 UI-GLYPH-DRAW-2026-11-01: single-glyph RGBA compositor, clipping/signed bearings
 and firmware coverage arithmetic implemented. All52022 shipped glyphs compared

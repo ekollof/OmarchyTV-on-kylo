@@ -384,7 +384,7 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       492-495, button 496-499, selbox 504-507); renderItems gates widgets by
       row type, translates resource rects by row position, and falls back to
       alexa resources + setFont 26/30 when the row marker is absent;
-      renderForeground gives font=+0x21c from getFont(width,+0x1b4 lines,
+      renderForeground gives font=+0x21c from getFont(height,+0x1b4 lines,
       +0x1c4 type), line height +0x1c0, alignment +0x220/+0x22c with
       mirror/RTL remap. Slider rows are type 9 (slidebar + value textbox);
       PictureSettingsDialog builds ids 1-4 as type 9 (CONTRAST/BRIGHTNESS/…),
@@ -404,11 +404,19 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       values via the selection box. Row rect literals are resolved
       (text1/labelLong/button/image1/image2/selectionbox + alexa presence
       test); each widget rect = resource rect + row offset. Single-line text
-      width scale is x1' = x0 + (surfaceW/maskW)*rectW. Per-widget rect IDs,
-      +0x1c4's row writer, mask alignment mapping and FA animation geometry
-      are still undecoded, so title/tab/slider-graphics/focused text must not
+      height scale is bottom'=top+trunc(float(surfaceH)/float(maskH)*float(rectH))
+      (UI-TEXT-GEOMETRY-2026-11-02 corrects the earlier width/rounding claim).
+      Single-line textPos goes to+0x1ec and foreground consumes it; +0x254
+      holds addition. +0x1c4's writer is the font-marker scan. Remaining mask
+      alignment, actual row allocation and FA animation geometry are still
+      undecoded, so title/tab/slider-graphics/focused text must not
       be built from the capture fits. Do not guess FA/FI slider/button
       graphics.
+- [x] Recover the single-line textPos draw source, EASIRect axes and manual
+      height rescale, with bounded common/text_layout.c. Strict host, sanitizer,
+      full suite and49,728 ARM VFP comparisons on qemu/TV pass. This is a lower
+      geometry helper, not complete widget layout or replacement of fitted UI
+      origins. See UI-TEXT-GEOMETRY-2026-11-02; integration remains open above.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on
