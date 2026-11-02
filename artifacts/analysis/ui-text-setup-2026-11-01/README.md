@@ -493,6 +493,27 @@ case→DAT association mixed mirrored arms. Entry[0] of the *selected* table is
 the name. Non-mirrored (stock) names match UI-LIST-METRICS' pointer-chain file.
 The rescale formula and row-literal findings are unaffected.
 
+## Slider adjust semantics (SVGSlideBar, asm-verified 2026-11-02)
+
+Field map: +0xb0 min, +0xb4 max, +0xb8 value, +0xbc step.
+`onKeyRight` (0x10c487d): `value += step; if (value > max) value = max`,
+then vtable+0x50 redraw. `onKeyLeft` (0x10c482d): `value -= step;
+if (value < min) value = min`, then vtable+0x50. One-sided clamps, no
+wrap. `setSliderValue` (0x10c493d) stores +0xb8 directly with NO clamp;
+`setSliderRangeValues(min, max)` (0x10c4975) stores the bounds;
+`setSliderStep` (0x10c49b1) stores +0xbc.
+
+`SettingItemsListBoxRow::setSlideValue` (0xd52efd): unless progress mode,
+picks the slidebar (+0x13c0 for type 9, +0x1498 otherwise),
+`setSliderValue` if created, stores +0x2df8, and formats the value textbox
+(+0x1ca8) with integer `operator<<` — plain `%d`. Our lab's `snprintf %d`
+matches firmware formatting exactly; only ranges/steps remain invented.
+Who calls setSliderRangeValues/setSliderStep per setting is still open (no
+static `bl` callers and no vtable refs in d00000–e40000; likely
+dynamic/provider-driven via the untraced update paths). Decompiles in
+/tmp/opencode/decomp-slide.txt and decomp-sval.txt (ephemeral — re-run
+DumpFirmware.java with the addresses above to reproduce).
+
 ## FA selection animation target (SVGListBoxBase, decompile-verified)
 
 `startSelectAnimation` (0x10bbedd) snapshots the current selected-row rect
