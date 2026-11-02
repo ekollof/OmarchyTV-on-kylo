@@ -1,0 +1,2 @@
+frame0 title crop relative ink: 253x55+28+31
+frame1 title crop relative ink: 253x55+28+31

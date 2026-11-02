@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Retained title origin (2026-11-03): UI-TITLE-LIVE-GRAPH follows read-only native
+widget->Surface->TextCommand->LineObj fields while owner shows stock settings.
+Surface108,5,691,95 and LineObj23,5 account for current ink136..388/31..85;
+exact text, zero margins/unit glyph ratio/BitmapFont zero X getters verified.
+Assignment rule for X23 remains unproven; do not shift widget/resource geometry.
+Flag+1b1 flows to CharClipping, not bold/font type. Early framebuffer samples
+captured launcher frames before the second owner cue; no MAU bug follows.
+
 Title layout correction (2026-11-03): UI-TITLE-BOX integrates the existing
 boxed renderer into ui.title. The previous diagnostic bypassed vertical layout;
 font18 height80 in a90px viewport accounts for5px Y via center positioning.

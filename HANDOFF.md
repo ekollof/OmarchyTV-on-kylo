@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-TITLE-BOX](artifacts/reports/UI-TITLE-BOX-2026-11-03.md)
+Latest: [UI-TITLE-LIVE-GRAPH](artifacts/reports/UI-TITLE-LIVE-GRAPH-2026-11-03.md)
+uses owner-opened stock settings panel and read-only scan/pointer graph. Current
+fb1 panel-ready captures confirm ink136..388/31..85. Actual hal::Surface bounds
+108,5,691,95; retained TextCommand LineObj position23,5, string Instellingen,
+margins0, start1/center3, line glyph ratio1/1 and BitmapFont X getters0. X23 is
+in retained layout, not a reason to shift the widget; its assignment mechanism
+remains open. Flag+1b1 is CharClipping (command+54=1), not bold: corrected at
+source. Default-off title/X0 unchanged. Next trace actual logical viewport/
+reference values and direct LineObj X writers, using the saved8 setter callers;
+no universal23px inset. verify-graph.cjs passes on heap-bounded saved snapshots;
+private bytes/images under workbench/title-horizontal-20261103, evidence under
+analysis/ui-title-horizontal-2026-11-03. Early captures caught launcher frames,
+not a proven MAU bug; locally built fbregion was never staged/run. Scanner was
+separately size/hash checked then removed; same boot/live1785/hook/hosts, no
+keys/drawing/device mutation, no helper/job pending. Owner may use TV normally.
+
+Previous: [UI-TITLE-BOX](artifacts/reports/UI-TITLE-BOX-2026-11-03.md)
 integrates common/font_box into optional ui.title rendering: full583x90 viewport,
 alignment4 -> start/center, font18 logical height80 -> local Y5. Real font corpus
 ink5,26..257,80 (absolute113,31..365,85) explains historical Y delta without a

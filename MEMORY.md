@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-TITLE-LIVE-GRAPH-2026-11-03: owner opened stock settings panel. Later ready
+capture confirms red panel and title ink136..388/31..85. View-only heap scan plus
+firmware-grounded pointer reads find foreground Surface108,5,691,95 and retained
+LineObj23,5, exact Instellingen/zero margins/start1/center3/unit glyph ratio.
+Flag+1b1 maps to CharClipping, not bold. X assignment remains open; no UI source
+or coordinate change. Offline saved graph verifier passes; private data durable
+in workbench/title-horizontal-20261103. Scanner32936 bytes/MD5
+9d542f8a2cc4121590a18a45552871f1, separate verification before execution,
+removed/independently checked. Same boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/
+live1785/hook/hosts. No drawing/keys/settings/device/persistent change or helper/
+job pending. Earlier launcher captures were stale relative to owner ready cue;
+no MAU defect established, no fbregion execution. Owner can use TV normally.
+
 UI-TITLE-BOX-2026-11-03: optional title now uses existing boxed alignment/clip
 renderer, full583x90 viewport; font18 height80 gives local Y5. Corpus absolute
 ink113,31..365,85 agrees vertically with dated vendor sample;23px X open, title

@@ -185,7 +185,10 @@ don't touch it; neither do `makeRow`/row ctor/drawRow). Do not assume a
 default of1: the ctor stays0, while row creation explicitly supplies1.
 
 `setTextAlignment` (0x10c72a9) writes `+0x220` (`+0x224` explicit flag; value
-5 also clears the bold flag `+0x1b1`). Alignment in renderForeground is a
+5 also clears flag `+0x1b1`). CORRECTION2026-11-03: this is not a bold-font
+selector. SVGSurface::drawText maps it through UITextStyle+24 to CharClipping
+in TextControls+30. The live regular font18 title has this flag1. Numeric font
+type remains+1c4 and the selected font+21c. Alignment in renderForeground is a
 bitmask on `+0x220`: `0x92` → left-ish, `0x248` → right, `0x124` → center,
 else left+width.
 

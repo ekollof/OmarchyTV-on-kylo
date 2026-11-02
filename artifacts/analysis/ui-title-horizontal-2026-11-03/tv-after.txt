@@ -1,0 +1,8 @@
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+71f7eb63-727f-4b9a-a9c7-2b04dc3f9197
+1785 (aurora.elf) S 1703 1278 1278 0 -1 1077936384 4409959 92563 316 344 293323 156612 74 432 20 0 238 0 283 1314344960 67771 4294967295 65536 24386132 2114449984 0 0 0 0 4096 1256 0 0 0 17 2 0 0 0 0 0 27467476 32140168 57315328 2114450532 2114450564 2114450564 2114453468 0
+0b1cd32a9de2b0251f6252e6603db8b7  /conf/remotelf/aurora.elf
+b6eee64775233de846ca46fc6c48c3f9  /conf/remotelf/hosts

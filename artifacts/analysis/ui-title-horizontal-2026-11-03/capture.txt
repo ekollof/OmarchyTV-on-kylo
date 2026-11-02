@@ -1,0 +1,2 @@
+fb1 (OSD_NORMAL2) frame 0/1: artifacts/workbench/title-horizontal-20261103/settings_0.png ((13, 255), (14, 255), (14, 255))
+fb1 (OSD_NORMAL2) frame 1/1: artifacts/workbench/title-horizontal-20261103/settings_1.png ((13, 255), (14, 255), (14, 255))

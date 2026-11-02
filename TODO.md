@@ -321,6 +321,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Observe original title render graph with owner-opened panel: Surface bounds
+      108,5,691,95, retained LineObj23,5 and current ink136..388/31..85; text/
+      zero margins/unit glyph ratio/zero BitmapFont X getters verified by local
+      snapshot verifier. UI-TITLE-LIVE-GRAPH-2026-11-03. No hardware mutation;
+      non-atomic observations, not title placement implementation or acceptance.
+- [ ] Recover the assignment rule for retained title X23 (logical viewport/
+      reference inputs, scaling and direct field writes); use8 saved setXPos
+      callers. Keep title default-off; no fitted23px inset. Flag+1b1 is
+      CharClipping, not bold. Native complete drawing/style parity stays open.
 - [x] Integrate boxed text alignment/clipping into the optional title diagnostic:
       font18 height80/viewport90 yields local Y5, accounting for the historical
       vertical delta without moving the box. Full host/focused sanitizers/ARM-

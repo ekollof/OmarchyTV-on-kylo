@@ -1,0 +1,6 @@
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+32936 /tmp/oa-title-scan-20261103
+9d542f8a2cc4121590a18a45552871f1  /tmp/oa-title-scan-20261103
