@@ -1,0 +1,6 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-tv-v3/binsvg/tests/binsvg tests/binsvg.c common/binsvg.c common/text_layout.c -lm
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+ok BinSVG: all tags/truncations, signed rectangles, nested/first group and duplicate lookup, atomic errors
+ok BinSVG: actual477 record -> named slices -> transformed row -> placement (explicit750x826 window)
+ok BinSVG corpus: 702 records, 11888 elements, 6733 rectangles, 39 animations, 289764 bytes

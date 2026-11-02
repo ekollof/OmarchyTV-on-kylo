@@ -449,6 +449,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       bearing, not advance. Word justification4, shaping/direction/markup, full
       truncation/scaling, actual widget/clip/vertical-origin integration remain
       open; current UI fitted origins are not replaced by this milestone.
+- [x] Add bounded runtime BinSVG record view/iteration and raw named rectangle
+      lookup, including first duplicate/first group and descendants. All702
+      records/11888 elements/6733 rectangles/39 animations pass strict host,
+      focused sanitizers/ARM-qemu/native TV; full host suite passes. Actual477
+      resource slices compose through existing geometry helpers for an explicit
+      test window. UI-BINSVG-VIEW-2026-11-02. Indexed resource loading/ownership,
+      reloadable immutable theme provider and actual widget/text integration
+      remain open; current fitted UI positions/captured panels are unchanged.
 - [x] Decode the shipped EF41 bitmap-font records and packed UTF8 lookup:
       bounded borrowed-data reader, signed glyph metrics, raw grayscale
       coverage, blank wrapped extents and all38 theme records validated on

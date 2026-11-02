@@ -1,0 +1,8 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ok BinSVG: all tags/truncations, signed rectangles, nested/first group and duplicate lookup, atomic errors
+ok BinSVG: actual477 record -> named slices -> transformed row -> placement (explicit750x826 window)
+ok BinSVG corpus: 702 records, 11888 elements, 6733 rectangles, 39 animations, 289764 bytes

@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-BINSVG-VIEW-2026-11-02: common/binsvg.c adds bounded immutable record
+validation/iteration and first-match named rectangle lookup, optionally scoped
+to the first matching group (including descendants). All702 records/11888
+elements/6733 rectangles/39 animations pass strict host/focused sanitizers/
+ARM-qemu/native TV; full host suite passes. Actual477 slices now feed the
+maintained geometry helpers from the pack, with an explicit test window.
+Native75356 bytes/MD5 4ecee7b4a67391ff35dcc22ac47ed2cd/GLIBC2.7 in
+build-tv-v3/binsvg. Live theme hashes match offline copies. Same stock boot
+71f7eb63-727f-4b9a-a9c7-2b04dc3f9197/live1785/zombie1967/access/privacy;
+staging removed and checked. No device/display/persistent changes, no helper/
+job pending. Indexed loader/theme provider/actual widget integration remain
+open; current UI still uses fitted origins/captured panels.
+
 UI-HORIZONTAL-ORIGIN-2026-11-02: common/font_text.c adds aligned line layout/
 drawing with physical width, center overhang trim/reset-X and end right-bearing/
 reverse paint order, correcting the previous advance interpretation. Whole-line

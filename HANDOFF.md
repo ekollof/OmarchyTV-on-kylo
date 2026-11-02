@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-HORIZONTAL-ORIGIN](artifacts/reports/UI-HORIZONTAL-ORIGIN-2026-11-02.md)
+Latest: [UI-BINSVG-VIEW](artifacts/reports/UI-BINSVG-VIEW-2026-11-02.md)
+adds common/binsvg.c: bounded immutable single-record view, element iteration
+and whole-record/first-group named rectangle lookup. Firmware confirms first
+duplicate wins; nested groups included, later same-name groups not searched.
+All702 records/11888 elements/6733 rectangles/39 animations pass host,
+ASan-UBSan, ARM-qemu and native TV checks; full strict host suite passes.
+Actual477 named slices feed existing measurement/stretch/row helpers; explicit
+750x826 window remains a test input, not a live widget measurement. Native
+build-tv-v3/binsvg, analysis/ui-binsvg-view-2026-11-02. Stock boot/live1785/
+access/privacy unchanged; staging removed, no helper/job pending. Next indexed
+resource loader/ownership and reloadable immutable theme provider, then actual
+widget/textbox styles, transforms, viewport/clip and origin integration. Current
+UI fitted origins/captured panels unchanged; reader does not draw or load files.
+
+Previous: [UI-HORIZONTAL-ORIGIN](artifacts/reports/UI-HORIZONTAL-ORIGIN-2026-11-02.md)
 adds oa_font_text_layout_line/draw_line: plain EF41 unit-ratio start/end/center,
 physical width distinct from pen advance, symmetric overhang trim/reset-X,
 end right-bearing and reverse paint order. Correct earlier final-advance claim:

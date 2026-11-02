@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Runtime resource view (2026-11-02): UI-BINSVG-VIEW adds bounded single-record
+parsing and raw named rectangle lookup. All702 shipped records validate;
+resource477 geometry feeds maintained layout helpers without hardcoded slice
+coordinates. RectangleContainer returns the first duplicate; group selection
+includes descendants of the first matching group and stops at its closing tag.
+Raw resource geometry is not transformed widget/window or framebuffer geometry.
+Indexed loading/provider and UI integration remain open.
+
 Horizontal text correction (2026-11-02): UI-HORIZONTAL-ORIGIN checks the ARM
 glyph-data offset: end alignment subtracts final right ink boundary byte3,
 not advance byte4. Physical width excludes final spacing and adjusts first/last

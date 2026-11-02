@@ -75,6 +75,16 @@ MOD_DEP  := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).d)
 
 all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker
 
+$(BUILD)/tests/binsvg: tests/binsvg.c common/binsvg.c common/text_layout.c include/openaurora/binsvg.h include/openaurora/text_layout.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
+
+.PHONY: check-binsvg
+check-binsvg: $(BUILD)/tests/binsvg
+	@$(BUILD)/tests/binsvg
+
+check: check-binsvg
+
 $(BUILD)/tests/font_bitmap: tests/font_bitmap.c common/font_bitmap.c common/font_finder.c common/font_draw.c common/canvas.c include/openaurora/font_bitmap.h include/openaurora/font_finder.h include/openaurora/font_draw.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
