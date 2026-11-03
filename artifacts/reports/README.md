@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [SVG-LIST-WIDGETS](SVG-LIST-WIDGETS-2026-11-03.md) | widget-level getters (numeric forward, selected-id gates/walk);21 native/C comparisons plus strict host/sanitizer/ARM; proved +0x18d8 entry forward and +0x28c cell-then-array walk; row editing/parent/construction/rendering/animation/backend/visible gates open |
 | [SVG-LIST-MODULE](SVG-LIST-MODULE-2026-11-03.md) | first consumer: reloadable ui.list v1 over verified key/body/move/row/impl chain with list-state/list-key socket/CLI, OAL1 reload handoff; host/sanitizer/ARM-qemu/actual-Unix-IPC pass; owned geometry, inert render targets, group clamp open; no display/scanout/startup |
 | [SVG-LIST-UPDATE](SVG-LIST-UPDATE-2026-11-03.md) | row-view getters + full list refresh (total/last/item bounds, virtual total, stored count, refresh order);100+20 native/C comparisons plus strict host/sanitizer/ARM; proved slot arithmetic, wrap bounds and operand capture; fixed volatile-call harness rule; widget getters/editing/parent/construction/animation/backend/visible gates open |
 | [SVG-LIST-SCROLLBAR](SVG-LIST-SCROLLBAR-2026-11-03.md) | scrollbar create forward + setScrollPosition gating/store/show;294 native/C comparisons plus strict host/sanitizer/ARM; proved signed first-vs-vis gate and conditional background; construction/render bodies/backend/visible gates open |

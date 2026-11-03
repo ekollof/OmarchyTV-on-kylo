@@ -21,6 +21,7 @@
 #include "openaurora/svg_list_impl.h"
 #include "openaurora/svg_list_scrollbar.h"
 #include "openaurora/svg_list_update.h"
+#include "openaurora/svg_list_widgets.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -2040,6 +2041,105 @@ static void check_svg_rowview(const unsigned char *elf,size_t bytes)
         printf("ok offline shipped ARM SVG list rowview: %u native/C comparisons, total/last-visible/item-row match\n",compared);
     }
 }
+enum {W_GETNUM=60,W_CREATED,W_SELITEM,W_IDTABLE};
+struct widget_fixture {
+    int created;uint32_t selected,numeric;
+    unsigned count;struct {uint32_t id,a;} trace[8];
+};
+static struct widget_fixture *native_widget;
+static _Alignas(uint32_t) unsigned char widget_row[0x2000],widget_list[0x400];
+static _Alignas(uint32_t) unsigned char widget_entries[4][8],widget_array[4*4];
+static _Alignas(uint32_t) uint32_t widget_cell;
+static void widget_emit(struct widget_fixture *f,uint32_t id,uint32_t a)
+{ assert(f->count<8);f->trace[f->count].id=id;f->trace[f->count].a=a;++f->count; }
+static unsigned native_w_getnum(void *entry)
+{ assert(entry==widget_row+0x18d8);widget_emit(native_widget,W_GETNUM,(uint32_t)(uintptr_t)entry);return native_widget->numeric; }
+static unsigned native_w_created(void *list)
+{ assert(list==widget_list);widget_emit(native_widget,W_CREATED,0);return (unsigned)native_widget->created; }
+static unsigned native_w_selitem(void *list)
+{ assert(list==widget_list);widget_emit(native_widget,W_SELITEM,0);return native_widget->selected; }
+static struct widget_fixture *ref_widget;
+static void *widget_e_entry(void *row) { (void)row;return widget_row+0x18d8; }
+static uint32_t widget_e_num(void *entry)
+{ assert(entry==widget_row+0x18d8);widget_emit(ref_widget,W_GETNUM,(uint32_t)(uintptr_t)entry);return ref_widget->numeric; }
+static int widget_e_created(void *list) { (void)list;widget_emit(ref_widget,W_CREATED,0);return ref_widget->created; }
+static uint32_t widget_e_sel(void *list) { (void)list;widget_emit(ref_widget,W_SELITEM,0);return ref_widget->selected; }
+static void *widget_e_table(void *list) { (void)list;return widget_array; }
+static void *widget_e_ident(void *table,uint32_t index) { (void)table;return widget_entries[index&3]; }
+static uint32_t widget_e_id(void *entry) { return *(uint32_t *)entry; }
+typedef uint32_t (*widget0_fn)(void *);
+static void compare_widget_traces(struct widget_fixture *vendor,struct widget_fixture *ref)
+{
+    unsigned rn=0;uint32_t ids[8],args[8];
+    for(unsigned i=0;i<ref->count;++i) {
+        if(ref->trace[i].id==W_GETNUM || ref->trace[i].id==W_CREATED ||
+           ref->trace[i].id==W_SELITEM || ref->trace[i].id==W_IDTABLE) {
+            assert(rn<8);ids[rn]=ref->trace[i].id;args[rn]=ref->trace[i].a;++rn;
+        }
+    }
+    if(vendor->count!=rn) {
+        fprintf(stderr,"widget count native=%u ours=%u\n",vendor->count,rn);exit(1);
+    }
+    for(unsigned i=0;i<vendor->count;++i)if(vendor->trace[i].id!=ids[i] || vendor->trace[i].a!=args[i]) {
+        fprintf(stderr,"widget trace %u native=%u/%x ours=%u/%x\n",i,vendor->trace[i].id,
+            vendor->trace[i].a,ids[i],args[i]);exit(1);
+    }
+}
+static void check_svg_widgets(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *textpage=page(0xd53000,4096),*listpage=page(0xd50000,4096);
+    unsigned char *entrypage=page(0x10b7000,4096),*winpage=page(0x1152000,4096);
+    unsigned char *listbase=page(0x10bc000,4096);
+    size_t off=file_offset(elf,bytes,0xd531f4,56);
+    assert(crc32(elf+off,56)==UINT32_C(0x9b91e0ae));
+    memcpy(textpage+0x1f4,elf+off,56);
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(textpage+0x228,&pointer,4);
+    size_t lo=file_offset(elf,bytes,0xd50ce0,84);
+    assert(crc32(elf+lo,84)==UINT32_C(0xe58623fa));
+    memcpy(listpage+0xce0,elf+lo,84);memcpy(listpage+0xd30,&pointer,4);
+    thumb_stub(entrypage,0x10b7000,0x10b701c,native_w_getnum);
+    thumb_stub(winpage,0x1152000,0x1152a40,native_w_created);
+    thumb_stub(listbase,0x10bc000,0x10bc600,native_w_selitem);
+    executable(textpage,4096);executable(listpage,4096);executable(entrypage,4096);
+    executable(winpage,4096);executable(listbase,4096);
+    {
+        unsigned compared=0;widget0_fn numeric=0;widget0_fn selected=0;
+        { uint32_t entry=0xd531f5;memcpy(&numeric,&entry,4); }
+        { uint32_t entry=0xd50ce1;memcpy(&selected,&entry,4); }
+        const uint32_t nums[]={0,1,UINT32_C(0x7fffffff),UINT32_C(0x80000000),UINT32_MAX};
+        for(unsigned n=0;n<5;++n) {
+            struct widget_fixture vendor={.numeric=nums[n]},ref={.numeric=nums[n]};
+            struct oa_svg_row_text_ops ops={&ref,widget_e_entry,widget_e_num};
+            native_widget=&vendor;ref_widget=&ref;int error=-1;
+            uint32_t v;{ widget0_fn volatile call=numeric;v=call(widget_row); }
+            uint32_t e=oa_setting_row_numeric(&ops,&error);
+            if(v!=e || error) { fprintf(stderr,"widget numeric mismatch native=%x ours=%x\n",v,e);exit(1); }
+            compare_widget_traces(&vendor,&ref);++compared;
+        }
+        const int32_t sels[]={-1,0,1,3};
+        const uint32_t ids[2][4]={{0x10,0x20,0x30,0x40},{0xffffffff,0,1,0xfffffffe}};
+        for(unsigned c=0;c<2;++c)for(unsigned s=0;s<4;++s)for(unsigned k=0;k<2;++k) {
+            struct widget_fixture vendor={.created=c,.selected=(uint32_t)sels[s]};
+            struct widget_fixture ref={.created=c,.selected=(uint32_t)sels[s]};
+            struct oa_svg_list_select_ops ops={&ref,widget_e_created,widget_e_sel,widget_e_table,widget_e_ident,widget_e_id};
+            for(unsigned i=0;i<4;++i) { memcpy(widget_entries[i],&ids[k][i],4); }
+            for(unsigned i=0;i<4;++i) { uint32_t slot=(uint32_t)(uintptr_t)widget_entries[i];memcpy(widget_array+i*4,&slot,4); }
+            widget_cell=(uint32_t)(uintptr_t)widget_array;
+            { uint32_t cell=(uint32_t)(uintptr_t)&widget_cell;memcpy(widget_list+652,&cell,4); }
+            native_widget=&vendor;ref_widget=&ref;int error=-1;
+            uint32_t v;{ widget0_fn volatile call=selected;v=call(widget_list); }
+            uint32_t e=oa_setting_list_selected_id(&ops,&error);
+            if(v!=e || error) {
+                fprintf(stderr,"widget selected mismatch created=%d sel=%d native=%x ours=%x\n",c,sels[s],v,e);exit(1);
+            }
+            compare_widget_traces(&vendor,&ref);++compared;
+        }
+        native_widget=NULL;ref_widget=NULL;
+        assert(!munmap(textpage,4096) && !munmap(listpage,4096) && !munmap(entrypage,4096));
+        assert(!munmap(winpage,4096) && !munmap(listbase,4096));
+        printf("ok offline shipped ARM SVG list widgets: %u native/C comparisons, numeric forward and selected-id gates/walk match\n",compared);
+    }
+}
 static void check_svg_update(const unsigned char *elf,size_t bytes)
 {
     unsigned char *list=page(0x10bc000,4096),*rows=page(0x10be000,4096),*anim=page(0x10ba000,8192);
@@ -2222,7 +2322,7 @@ int main(int argc,char **argv)
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
     check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);
-    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_svg_scroll(elf,bytes);check_svg_impl(elf,bytes);check_svg_scrollbar(elf,bytes);check_svg_rowview(elf,bytes);check_svg_update(elf,bytes);check_row_values(elf,bytes);
+    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_svg_scroll(elf,bytes);check_svg_impl(elf,bytes);check_svg_scrollbar(elf,bytes);check_svg_rowview(elf,bytes);check_svg_widgets(elf,bytes);check_svg_update(elf,bytes);check_row_values(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;

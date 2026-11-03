@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-WIDGETS-2026-11-03: widget-level row/list getters pass21 native/C
+comparisons with exact call order/args and return values, plus full strict
+host, focused ASan/UBSan, ARM/qemu and all previous reference groups. ARM
+unit28016/1f3652f87e52c1b095b9373070778cd7; reference661432/
+a6f10183566624e4b0c58788b9ef4d6f, build-tv-v3/tab-policy. Numeric forward
+through the embedded +0x18d8 entry and the selected-id created/none gates
+with the +0x28c cell-then-array walk are asserted. The differential fixed a
+single-vs-double indirection misread at its source. No new module/service/UI
+consumer. Row editing, parent refresh, scrollbar construction/rendering
+internals, startSelectAnimation, owned backend/context and visible acceptance
+stay open. No TV access/wake/staging/deployment or hardware mutation; no
+pending job/helper.
+
 SVG-LIST-MODULE-2026-11-03: first ui.list v1 consumer over the verified
 layers passes host, focused ASan/UBSan, ARM/qemu and actual Unix-socket IPC.
 ARM unit78640/b798fca761bba0127fc824e79be9c6dc; module477796/

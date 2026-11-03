@@ -321,6 +321,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement the widget-level getters (numeric forward, selected-id gates/
+      table walk); 21 native/C comparisons plus full host/focused sanitizer/
+      ARM and prior groups pass. SVG-LIST-WIDGETS. Row editing, parent
+      refresh, scrollbar construction/rendering internals, startSelectAnimation,
+      owned backend/context beyond words/counters, display/scanout/startup and
+      independent native visible acceptance remain open.
 - [x] Implement the first consumer module (ui.list v1 over the verified key/
       body/move/row/impl chain, list-state/list-key over socket/CLI, OAL1
       reload handoff); host, focused sanitizer, ARM/qemu and actual Unix IPC

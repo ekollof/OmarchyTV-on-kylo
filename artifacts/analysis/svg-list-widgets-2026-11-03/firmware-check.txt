@@ -1,0 +1,1 @@
+ok offline shipped ARM SVG list widgets: 21 native/C comparisons, numeric forward and selected-id gates/walk match

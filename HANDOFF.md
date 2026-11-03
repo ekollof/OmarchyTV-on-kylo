@@ -24,7 +24,18 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SVG-LIST-MODULE](artifacts/reports/SVG-LIST-MODULE-2026-11-03.md)
+Latest: [SVG-LIST-WIDGETS](artifacts/reports/SVG-LIST-WIDGETS-2026-11-03.md)
+implements the widget-level numeric forward and selected-id gates/walk. 21
+native/C comparisons pass with exact call order/args and return values, plus
+full strict host/focused sanitizer/ARM and every prior group. No new service/
+module, TV access/wake/staging/deployment or pending job. Hashes in
+MEMORY/report. Next implement row editing (setSlideValue progress/slider/text
+paths, setChecked), parent refresh, scrollbar construction/rendering
+internals, startSelectAnimation, and the owned backend/context/consumer with
+display/scanout binding, then independent startup and native visible parity.
+Bodies are not actual widget/rendering acceptance.
+
+Previous: [SVG-LIST-MODULE](artifacts/reports/SVG-LIST-MODULE-2026-11-03.md)
 publishes ui.list v1, the first service consumer of the verified SVG-list
 layers. Host, focused ASan/UBSan, ARM/qemu and actual Unix-socket IPC pass:
 owned 9-item/5-row/16-slot geometry, verified key chain with inert render
