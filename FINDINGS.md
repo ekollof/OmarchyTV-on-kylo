@@ -6,6 +6,20 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-17-19 closes the renderItems switch: types 0x17/0x18 are
+progressbar+text2 and 0x19 adds image1/image2 first. Percentage is
+100*(row[0x2dfc]-row[0x2df0])/(row[0x2df4]-row[0x2df0]) with 32-bit wrap and
+truncating signed division (the shipped __aeabi_idiv at 0x1285478); bars are
+row+0x1570 (0x17) or row+0x1724 (0x18/0x19). 0x17 alone consults the prologue
+alexa rect (setFont 0x1e on the text box; four 0x26a names + ball image 892 vs
+names 0x35/0x38/0x36/0x37 + images 169/169/170/170), and row byte 0x2e46
+gates names/balls. 0x18/0x19 always write names 0x1bd/0x1be/0x1c0/0x1bf and
+apply setDoubleDirectionalBar(1) when 0x2e46 is set. 0x19's image refresh sets
+setVisible(1) on both, unlike 0xb. 886060 native/C cases pass; every
+renderItems case 0..0x1a is now implemented. getImageId's real mapping, image
+internals, row construction, child-visibility internals, live resources,
+scrollbar/skin and display gates remain open.
+
 SETTINGS-ROW-11-15 closes the remaining text-entry variants 0x11..0x15
 through the shared parameterised body: selectionbox key via their own
 literals (0xd55498, and 0xd5574c for 0x14), child row+0x18d8, names

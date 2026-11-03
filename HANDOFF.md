@@ -24,7 +24,25 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-11-15](artifacts/reports/SETTINGS-ROW-11-15-2026-11-03.md)
+Latest: [SETTINGS-ROW-17-19](artifacts/reports/SETTINGS-ROW-17-19-2026-11-03.md)
+closes the renderItems switch: 0x17/0x18 are progressbar+text2 and 0x19 adds
+image1/image2 first. Percentage is
+100*(row[0x2dfc]-row[0x2df0])/(row[0x2df4]-row[0x2df0]) with 32-bit wrap and
+truncating signed division (silent __aeabi_idiv trampoline); bars are
+row+0x1570 (0x17) or row+0x1724 (0x18/0x19). 0x17 alone consults the alexa
+rect and row byte 0x2e46 for its name/ball branches; 0x18/0x19 always write
+0x1bd/0x1be/0x1c0/0x1bf and apply setDoubleDirectionalBar(1) when 0x2e46 is
+set; 0x19's image refresh sets setVisible(1), unlike 0xb. 886060 shipped ARM/C
+cases and prior groups pass, plus full host/Unix IPC, focused ASan/UBSan,
+ARM/qemu and focused real TV CPU. Division was only exercised with a fixed
+10..90 range. No screen/input/device/settings/network/service/boot/persistent
+change; staging removed, no helper. Every renderItems case 0..0x1a is
+implemented; next is the real LauncherHelper::getImageId mapping and
+SVGImage/setSelectionBoxImageId internals, then row construction, child
+visibility internals/live resources, then scrollbar/skin/module/display/
+startup and independent visible parity.
+
+Previous: [SETTINGS-ROW-11-15](artifacts/reports/SETTINGS-ROW-11-15-2026-11-03.md)
 closes the text-entry variants 0x11..0x15 through the shared body: selectionbox
 via their own literals, child row+0x18d8, names 0x2ec0/0x2ebc/0x2ec8/0x2ec4 in
 slots 1/0/3/2, create(0,0xc,0xd,empty), mode/max 3/10, 4/5, 5/none, 2/4,

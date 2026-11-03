@@ -82,6 +82,11 @@ struct oa_setting_row_render_ops {
     void (*set_slider_value)(void *child,int32_t value);
     void (*set_slider_focus)(void *child,int on);
     void (*set_slider_range)(void *child,int32_t lo,int32_t hi);
+    void (*set_ball_image)(void *child,uint32_t id,uint32_t state);
+    void (*create_progressbar)(void *child,uint32_t zero,
+        const uint32_t rect[4],void *parent);
+    void (*set_percentage)(void *child,uint32_t value);
+    void (*set_double_directional)(void *child,int on);
 };
 int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o);
 #endif

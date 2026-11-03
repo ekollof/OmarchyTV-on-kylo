@@ -72,16 +72,16 @@ static void five_stub(void *mapped,uint32_t base,uint32_t address,five_fn functi
     const uint16_t insn[]={0xf8df,0xc004,0x4760,0xbf00};
     assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=five_bits(function);memcpy(p+8,&target,4);
 }
-enum {RR_BASE,RR_GET,RR_IS,RR_NAME,RR_FOCUS,RR_ELIP,RR_FONT,RR_RECT,RR_TEXT,RR_CTEXT,RR_CBTN,RR_ALIGN,RR_CHECK,RR_CCB,RR_SELID,RR_CSEL,RR_SELIMG,RR_EMODE,RR_MAXCH,RR_CAUTO,RR_NUM,RR_CTE,RR_STORE,RR_DESTROY,RR_RESETXML,RR_GLYPH,RR_HL,RR_SUBHL,RR_SHADOW,RR_VIS,RR_SCALE,RR_CIMG,RR_DRAWTOP,RR_CTBOX,RR_CSLIDER,RR_SVAL,RR_SFOCUS,RR_SRANGE};
+enum {RR_BALL,RR_CPB,RR_PCT,RR_DBL,RR_BASE,RR_GET,RR_IS,RR_NAME,RR_FOCUS,RR_ELIP,RR_FONT,RR_RECT,RR_TEXT,RR_CTEXT,RR_CBTN,RR_ALIGN,RR_CHECK,RR_CCB,RR_SELID,RR_CSEL,RR_SELIMG,RR_EMODE,RR_MAXCH,RR_CAUTO,RR_NUM,RR_CTE,RR_STORE,RR_DESTROY,RR_RESETXML,RR_GLYPH,RR_HL,RR_SUBHL,RR_SHADOW,RR_VIS,RR_SCALE,RR_CIMG,RR_DRAWTOP,RR_CTBOX,RR_CSLIDER,RR_SVAL,RR_SFOCUS,RR_SRANGE};
 struct rr_event { uint32_t kind,off,a,b;uint32_t w[4];char text[24]; };
 struct rr_result { struct rr_event events[64];unsigned count; };
 struct rr_fixture {
-    uint32_t type;int present[13];int created,checked,img_created,tb_created;int32_t pt[2];
-    uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,rebuild,slo,shi,sval;int flag;const char *l1,*l2,*vtext,*t11text,*t12text,*t13text,*t14text,*t3text,*t4text;uint32_t rwords[13][4];
+    uint32_t type;int present[14];int created,checked,img_created,tb_created;int32_t pt[2];
+    uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,rebuild,slo,shi,sval,pval;int flag,row2e46;const char *l1,*l2,*vtext,*t11text,*t12text,*t13text,*t14text,*t3text,*t4text;uint32_t rwords[14][4];
     struct rr_result *trace;unsigned char *row;
 };
 static const char rr_empty[]="";
-static const char *rk9slot,*rk10slot,*rk11slot,*rk12slot;
+static const char *rk9slot,*rk10slot,*rk11slot,*rk12slot,*rk13slot;
 static struct rr_fixture *rr_native;
 static _Alignas(uint32_t) unsigned char rr_row[0x3000],rr_refrow[0x3000];
 static uint32_t rr_vtable[16];
@@ -100,13 +100,13 @@ static void rr_base(void *row) { (void)row;rr_emit(rr_native->trace,RR_BASE,0,0,
 static void rr_ctor(void *buf,uint32_t str)
 { const char *s=(const char *)str;assert(strlen(s)<16);*(const char **)buf=s; }
 static unsigned rr_dtor(void *buf) { (void)buf;return 0; }
-static const char *rr_keys[13];
+static const char *rr_keys[14];
 static void *rr_getrect(void *container,void *ustr)
 {
     const char *key=*(const char *const *)ustr;unsigned i;
     (void)container;
-    for(i=0;i<13;++i)if(!strcmp(key,rr_keys[i]))break;
-    assert(i<13);
+    for(i=0;i<14;++i)if(!strcmp(key,rr_keys[i]))break;
+    assert(i<14);
     rr_emit(rr_native->trace,RR_GET,(uint32_t)i,0,0,NULL,key);
     if(!rr_native->present[i])return NULL;
     return rr_native->row+0x400+i*32;
@@ -187,6 +187,14 @@ static void rr_cslider(void *c,uint32_t z,void *lo,void *hi,uint32_t rect,void *
 static void rr_sval(void *c,uint32_t v) { rr_emit(rr_native->trace,RR_SVAL,rr_off(rr_row,c),v,0,NULL,NULL); }
 static void rr_sfocus(void *c,uint32_t on) { rr_emit(rr_native->trace,RR_SFOCUS,rr_off(rr_row,c),on,0,NULL,NULL); }
 static void rr_srange(void *c,uint32_t lo,uint32_t hi) { rr_emit(rr_native->trace,RR_SRANGE,rr_off(rr_row,c),lo,hi,NULL,NULL); }
+static void rr_ball(void *c,uint32_t id,uint32_t st)
+{ rr_emit(rr_native->trace,RR_BALL,rr_off(rr_row,c),id,st,NULL,NULL); }
+static void rr_cpb(void *c,uint32_t z,uint32_t rect,uint32_t par)
+{ (void)rect;(void)par;rr_emit(rr_native->trace,RR_CPB,rr_off(rr_row,c),z,0,NULL,NULL); }
+static void rr_pct(void *c,uint32_t v) { rr_emit(rr_native->trace,RR_PCT,rr_off(rr_row,c),v,0,NULL,NULL); }
+static void rr_dbl(void *c,uint32_t on) { rr_emit(rr_native->trace,RR_DBL,rr_off(rr_row,c),on,0,NULL,NULL); }
+static uint32_t rr_idiv(uint32_t a,uint32_t b)
+{ int32_t x,y;memcpy(&x,&a,4);memcpy(&y,&b,4);assert(y);return (uint32_t)(x/y); }
 static char rr_numfmt[16];
 static void rr_appendint(void *ustr,uint32_t v)
 { snprintf(rr_numfmt,sizeof rr_numfmt,"%d",(int)v);*(const char **)ustr=rr_numfmt; }
@@ -233,8 +241,8 @@ static void *rre_cont(void *row) { (void)row;return rr_ref->row+0xa8; }
 static void *rre_get(void *container,const char *key)
 {
     unsigned i;(void)container;
-    for(i=0;i<13;++i)if(!strcmp(key,rr_keys[i]))break;
-    assert(i<13);
+    for(i=0;i<14;++i)if(!strcmp(key,rr_keys[i]))break;
+    assert(i<14);
     rr_emit(rr_ref->trace,RR_GET,i,0,0,NULL,key);
     if(!rr_ref->present[i])return NULL;
     return rr_ref->row+0x400+i*32;
@@ -248,14 +256,15 @@ static uint32_t rre_word(void *row,uint32_t off)
   if(off==0x2e00)return rr_ref->num;
   if(off==0x2dd4)return rr_ref->op;
   if(off==0x2df0)return rr_ref->slo;
+  if(off==0x2dfc)return rr_ref->pval;
   if(off==0x2df4)return rr_ref->shi;
   if(off==0x2df8)return rr_ref->sval;
   if(off==0x2e68)return rr_ref->hi;
   assert(off>=0x2e4c && off<=0x2ed8 && !(off&3));
   { uint32_t v;memcpy(&v,rr_ref->row+off,4);return v; } }
 static int rre_flag(void *row,uint32_t off)
-{ (void)row;assert(off==0x2e45||off==0x2e44||off==0x2e49);
-  return off==0x2e44?rr_ref->checked:(off==0x2e49?(int)rr_ref->rebuild:rr_ref->flag); }
+{ (void)row;assert(off==0x2e45||off==0x2e44||off==0x2e49||off==0x2e46);
+  return off==0x2e44?rr_ref->checked:(off==0x2e49?(int)rr_ref->rebuild:(off==0x2e46?rr_ref->row2e46:rr_ref->flag)); }
 static const char *rre_label(void *row) { (void)row;return *(const char *const *)(rr_ref->row+0x2dd8); }
 static const char *rre_blabel(void *row) { (void)row;return *(const char *const *)(rr_ref->row+0x2de0); }
 static const char *rre_ustring(void *row,uint32_t off)
@@ -322,6 +331,12 @@ static void rre_cslider(void *c,uint32_t z,int32_t lo,int32_t hi,const uint32_t 
 static void rre_sval(void *c,int32_t v) { rr_emit(rr_ref->trace,RR_SVAL,rr_off(rr_ref->row,c),(uint32_t)v,0,NULL,NULL); }
 static void rre_sfocus(void *c,int on) { rr_emit(rr_ref->trace,RR_SFOCUS,rr_off(rr_ref->row,c),(uint32_t)on,0,NULL,NULL); }
 static void rre_srange(void *c,int32_t lo,int32_t hi) { rr_emit(rr_ref->trace,RR_SRANGE,rr_off(rr_ref->row,c),(uint32_t)lo,(uint32_t)hi,NULL,NULL); }
+static void rre_ball(void *c,uint32_t id,uint32_t st)
+{ rr_emit(rr_ref->trace,RR_BALL,rr_off(rr_ref->row,c),id,st,NULL,NULL); }
+static void rre_cpb(void *c,uint32_t z,const uint32_t rect[4],void *par)
+{ (void)rect;(void)par;rr_emit(rr_ref->trace,RR_CPB,rr_off(rr_ref->row,c),z,0,NULL,NULL); }
+static void rre_pct(void *c,uint32_t v) { rr_emit(rr_ref->trace,RR_PCT,rr_off(rr_ref->row,c),v,0,NULL,NULL); }
+static void rre_dbl(void *c,int on) { rr_emit(rr_ref->trace,RR_DBL,rr_off(rr_ref->row,c),(uint32_t)on,0,NULL,NULL); }
 static void rre_drawtop(void *c,int on) { rr_emit(rr_ref->trace,RR_DRAWTOP,rr_off(rr_ref->row,c),(uint32_t)on,0,NULL,NULL); }
 static void rre_emode(void *c,uint32_t m) { rr_emit(rr_ref->trace,RR_EMODE,rr_off(rr_ref->row,c),m,0,NULL,NULL); }
 static void rre_maxch(void *c,uint32_t n) { rr_emit(rr_ref->trace,RR_MAXCH,rr_off(rr_ref->row,c),n,0,NULL,NULL); }
@@ -344,7 +359,8 @@ static struct oa_setting_row_render_ops rr_ops(struct rr_fixture *f)
         rre_elipses,rre_font,rre_point,rre_rect,rre_text,rre_ctext,rre_cbtn,
         rre_align,rre_checked,rre_ccb,rre_selid,rre_csel,rre_selimg,rre_emode,rre_maxch,rre_cauto,rre_num,rre_cte,
         rre_store,rre_destroy,rre_resetxml,rre_gid,rre_glyph,rre_hl,rre_subhl,
-        rre_shadow,rre_vis,rre_scale,rre_cimg,rre_drawtop,rre_ctbox,rre_cslider,rre_sval,rre_sfocus,rre_srange};
+        rre_shadow,rre_vis,rre_scale,rre_cimg,rre_drawtop,rre_ctbox,rre_cslider,rre_sval,rre_sfocus,rre_srange,
+        rre_ball,rre_cpb,rre_pct,rre_dbl};
 }
 typedef void (*rr_fn)(void *);
 static void rr_compare(struct rr_result *vendor,struct rr_result *ref)
@@ -376,11 +392,12 @@ static void rr_setup_row(unsigned char *row,struct rr_fixture *f)
     /* Row label slots are UString objects: first word is the char*. */
     { uint32_t p=(uint32_t)(uintptr_t)f->l1;memcpy(row+0x2dd8,&p,4); }
     { uint32_t p=(uint32_t)(uintptr_t)f->l2;memcpy(row+0x2de0,&p,4); }
-    for(unsigned i=0;i<13;++i)memcpy(row+0x400+i*32+8,f->rwords[i],16);
+    for(unsigned i=0;i<14;++i)memcpy(row+0x400+i*32+8,f->rwords[i],16);
     for(unsigned k=0;k<36;++k)memcpy(row+0x2e4c+k*4,&f->words[k],4);
     memcpy(row+0x2e54,&f->sel_img,4);memcpy(row+0x2de8,&f->sel_id,4);memcpy(row+0x2e00,&f->num,4);
     memcpy(row+0x2dd4,&f->op,4);memcpy(row+0x2e68,&f->hi,4);memcpy(row+0x2e49,&f->rebuild,1);
     memcpy(row+0x2df0,&f->slo,4);memcpy(row+0x2df4,&f->shi,4);memcpy(row+0x2df8,&f->sval,4);
+    memcpy(row+0x2dfc,&f->pval,4);row[0x2e46]=(unsigned char)f->row2e46;
     { uint32_t p=(uint32_t)(uintptr_t)f->vtext;memcpy(row+0x2e04,&p,4); }
     { uint32_t p=(uint32_t)(uintptr_t)f->t11text;memcpy(row+0x2e0c,&p,4); }
     { uint32_t p=(uint32_t)(uintptr_t)f->t12text;memcpy(row+0x2e14,&p,4); }
@@ -390,13 +407,13 @@ static void rr_setup_row(unsigned char *row,struct rr_fixture *f)
     { uint32_t p=(uint32_t)(uintptr_t)f->t4text;memcpy(row+0x2e34,&p,4); }
     row[0x2e45]=(unsigned char)f->flag;row[0x2e44]=(unsigned char)f->checked;
 }
-static const char rk0[]="alexa",rk1[]="text1",rk2[]="labelLong",rk3[]="button",rk4[]="checkbox",rk5[]="selectionbox",rk6[]="image1",rk7[]="image2",rk8[]="banner",rk9[]="slidebar",rk10[]="text2",rk11[]="text3",rk12[]="text4";
+static const char rk0[]="alexa",rk1[]="text1",rk2[]="labelLong",rk3[]="button",rk4[]="checkbox",rk5[]="selectionbox",rk6[]="image1",rk7[]="image2",rk8[]="banner",rk9[]="slidebar",rk10[]="text2",rk11[]="text3",rk12[]="text4",rk13[]="progressbar";
 static const char *rkcell[9];
 
 /* One differential case: builds both fixtures, runs the shipped body and the
  * owned C, compares the full ordered trace and the row image. */
 static void render_case(rr_fn render,uint32_t type,unsigned m,unsigned c,
-    unsigned p,unsigned w,unsigned l,unsigned g,unsigned ic,unsigned tb)
+    unsigned p,unsigned w,unsigned l,unsigned g,unsigned ic,unsigned tb,unsigned b46)
 {
     static const char *l1s[]={"","Aa"},*l2s[]={"","Bb"};
     static const int32_t pts[][2]={{0,0},{5,-3},{INT32_MAX,1}};
@@ -404,14 +421,14 @@ static void render_case(rr_fn render,uint32_t type,unsigned m,unsigned c,
     if((type==UINT32_C(5)||type==UINT32_C(6)) && g && !((m>>1)&1) && !c)return;
     if(type==UINT32_C(7) && g && !((m>>1)&1) && !c)return;
     struct rr_result native={0},ref={0};
-    struct rr_fixture n={.type=type,.created=(int)c,.checked=0,.img_created=(int)ic,.tb_created=(int)tb,
+    struct rr_fixture n={.type=type,.created=(int)c,.checked=0,.img_created=(int)ic,.tb_created=(int)tb,.row2e46=(int)b46,
         .sel_img=0x66,.sel_id=0x55,.num=0x44,.op=0x42,.hi=0x43,.rebuild=0,
-        .slo=10,.shi=90,.sval=42,.flag=(int)g,.l1=l1s[l],.l2=l2s[l],.vtext="VX",.t11text="T11",.t12text="T12",.t13text="T13",.t14text="T14",.t3text="T3",.t4text="T4",
+        .slo=10,.shi=90,.sval=42,.pval=45,.flag=(int)g,.l1=l1s[l],.l2=l2s[l],.vtext="VX",.t11text="T11",.t12text="T12",.t13text="T13",.t14text="T14",.t3text="T3",.t4text="T4",
         .trace=&native,.row=rr_row};
-    for(unsigned i=0;i<13;++i)n.present[i]=(m>>i)&1;
+    for(unsigned i=0;i<14;++i)n.present[i]=(m>>i)&1;
     struct rr_fixture r=n;
     n.pt[0]=pts[p][0];n.pt[1]=pts[p][1];
-    for(unsigned i=0;i<13;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
+    for(unsigned i=0;i<14;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
     for(unsigned k=0;k<36;++k)n.words[k]=w?UINT32_C(0x11111111)*(k+1):0;
     r=n;r.trace=&ref;r.row=rr_refrow;
     struct oa_setting_row_render_ops ops=rr_ops(&r);
@@ -433,8 +450,9 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
     unsigned char *cb=page(0x10b1000,8192),*sel=page(0x10b5000,4096),*sel2=page(0x10b4000,4096);
     unsigned char *te1=page(0x10b6000,4096),*te2=page(0x10b8000,4096),*te3=page(0x10bb000,4096);
     unsigned char *img=page(0x10c9000,4096),*lh=page(0xe4a000,4096),*sb=page(0x10c4000,4096);
+    unsigned char *pb=page(0x10b3000,4096),*idiv=page(0x1285000,4096);
     unsigned char *usop=page(0xc88000,4096);
-    rr_keys[0]=rk0;rr_keys[1]=rk1;rr_keys[2]=rk2;rr_keys[3]=rk3;rr_keys[4]=rk4;rr_keys[5]=rk5;rr_keys[6]=rk6;rr_keys[7]=rk7;rr_keys[8]=rk8;rr_keys[9]=rk9;rr_keys[10]=rk10;rr_keys[11]=rk11;rr_keys[12]=rk12;rk9slot=rk9;rk10slot=rk10;rk11slot=rk11;rk12slot=rk12;
+    rr_keys[0]=rk0;rr_keys[1]=rk1;rr_keys[2]=rk2;rr_keys[3]=rk3;rr_keys[4]=rk4;rr_keys[5]=rk5;rr_keys[6]=rk6;rr_keys[7]=rk7;rr_keys[8]=rk8;rr_keys[9]=rk9;rr_keys[10]=rk10;rr_keys[11]=rk11;rr_keys[12]=rk12;rr_keys[13]=rk13;rk9slot=rk9;rk10slot=rk10;rk11slot=rk11;rk12slot=rk12;rk13slot=rk13;
     rkcell[0]=rk1;rkcell[1]=rk2;rkcell[2]=rk3;rkcell[3]=rk4;rkcell[4]=rk5;rkcell[5]=rk6;rkcell[6]=rk7;
     {
         size_t off=file_offset(elf,bytes,0xd54400,8746);
@@ -510,6 +528,21 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
           memcpy(stub_destination(row,0xd54000,0xd55a10,4),&k,4); }
         { uint32_t e=(uint32_t)(uintptr_t)rr_empty;
           memcpy(stub_destination(row,0xd54000,0xd55a14,4),&e,4); }
+        /* Cases 0x17..0x19 read progressbar/text2 (two literal copies each),
+         * image1/image2, and the empty label at 0xd55f5c/0xd562d4. */
+        { uint32_t k=(uint32_t)(uintptr_t)&rk13slot;
+          memcpy(stub_destination(row,0xd54000,0xd55f54,4),&k,4);
+          memcpy(stub_destination(row,0xd54000,0xd562cc,4),&k,4); }
+        { uint32_t k=(uint32_t)(uintptr_t)&rk10slot;
+          memcpy(stub_destination(row,0xd54000,0xd55f58,4),&k,4);
+          memcpy(stub_destination(row,0xd54000,0xd562d0,4),&k,4); }
+        { uint32_t k=(uint32_t)(uintptr_t)&rkcell[5];
+          memcpy(stub_destination(row,0xd54000,0xd562d8,4),&k,4); }
+        { uint32_t k=(uint32_t)(uintptr_t)&rkcell[6];
+          memcpy(stub_destination(row,0xd54000,0xd562dc,4),&k,4); }
+        { uint32_t e=(uint32_t)(uintptr_t)rr_empty;
+          memcpy(stub_destination(row,0xd54000,0xd55f5c,4),&e,4);
+          memcpy(stub_destination(row,0xd54000,0xd562d4,4),&e,4); }
         /* Cases 0x11..0x15 reuse the selectionbox key through their own
          * literals and the empty label at 0xd5549c (0x14 uses 0xd5574c and
          * 0xd55750 instead). */
@@ -571,6 +604,13 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
     pair_stub(te1,0x10b6000,0x10b6de8,rr_cauto);
     pair_stub(te2,0x10b8000,0x10b81f4,rr_num);
     pair_stub(te2,0x10b8000,0x10b8160,rr_settext);
+    tri_stub(pb,0x10b3000,0x10b3358,rr_ball);
+    quad_stub(pb,0x10b3000,0x10b367c,rr_cpb);
+    pair_stub(pb,0x10b3000,0x10b3310,rr_pct);
+    pair_stub(pb,0x10b3000,0x10b36b0,rr_setfocus);
+    pair2_stub(pb,0x10b3000,0x10b36fc,rr_setrect);
+    pair_stub(pb,0x10b3000,0x10b3390,rr_dbl);
+    gid_stub(idiv,0x1285000,0x1285478,rr_idiv);
     blank_stub(btn,0x10ad000,0x10adef8,rr_destroy);
     tri_stub(btn,0x10ad000,0x10ae778,rr_glyph);
     pair_stub(btn,0x10ad000,0x10aeeb0,rr_hl);
@@ -603,28 +643,33 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
     executable(sel2,4096);
     executable(te1,4096);executable(te2,4096);executable(te3,4096);
     executable(img,4096);executable(lh,4096);executable(sb,4096);executable(usop,4096);
+    executable(pb,4096);executable(idiv,4096);
     {
         unsigned compared=0;rr_fn render=0;
         { uint32_t entry=0xd54401;memcpy(&render,&entry,4); }
         {
-            static const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,0x11,0x12,0x13,0x14,0x15,5,6,7,8,9,0xa,0xb,0xc};
+            static const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,0x11,0x12,0x13,0x14,0x15,0x17,0x18,0x19,5,6,7,8,9,0xa,0xb,0xc};
             /* Pass A: full 11-key presence coverage (p/w/l/g fixed at 0). */
-            for(unsigned a=0;a<24;++a)for(unsigned m=0;m<8192;++m)for(unsigned c=0;c<2;++c)
-                { render_case(render,types[a],m,c,0,0,0,0,c,c);++compared; }
+            for(unsigned a=0;a<27;++a)for(unsigned m=0;m<16384;++m)for(unsigned c=0;c<2;++c)
+                { render_case(render,types[a],m,c,0,0,0,0,c,c,c);++compared; }
             /* Pass B: point/word/label/flag coverage with every key present. */
-            for(unsigned a=0;a<24;++a)for(unsigned c=0;c<2;++c)for(unsigned p=0;p<3;++p)
+            for(unsigned a=0;a<27;++a)for(unsigned c=0;c<2;++c)for(unsigned p=0;p<3;++p)
             for(unsigned w=0;w<2;++w)for(unsigned l=0;l<2;++l)for(unsigned g=0;g<2;++g)
-                { render_case(render,types[a],8191,c,p,w,l,g,c,c);++compared; }
+                { render_case(render,types[a],16383,c,p,w,l,g,c,c,c);++compared; }
+            /* Pass E: the 0x2e46 progress-bar branch for 0x17..0x19. */
+            for(unsigned a=0;a<27;++a)if(types[a]>=UINT32_C(0x17) && types[a]<=UINT32_C(0x19))
+                for(unsigned c=0;c<2;++c)for(unsigned b46=0;b46<2;++b46)
+                    { render_case(render,types[a],16383,c,0,0,0,0,c,c,b46);++compared; }
             /* Pass D: type 0xc's text3/text4 created state is independent of
              * the row/tail/slider state. */
-            for(unsigned a=0;a<24;++a)if(types[a]==UINT32_C(0xc))
+            for(unsigned a=0;a<27;++a)if(types[a]==UINT32_C(0xc))
                 for(unsigned c=0;c<2;++c)for(unsigned tb=0;tb<2;++tb)
-                    { render_case(render,types[a],8191,c,0,0,0,0,c,tb);++compared; }
+                    { render_case(render,types[a],16383,c,0,0,0,0,c,tb,c);++compared; }
             /* Pass C: type 0xb forks on each image's own created state; the
              * mixed case re-creates image1 when only image2 exists. */
-            for(unsigned a=0;a<24;++a)if(types[a]==UINT32_C(0xb))
+            for(unsigned a=0;a<27;++a)if(types[a]==UINT32_C(0xb))
                 for(unsigned c=0;c<2;++c)for(unsigned ic=0;ic<2;++ic)
-                    { render_case(render,types[a],8191,c,0,0,0,0,ic,ic);++compared; }
+                    { render_case(render,types[a],16383,c,0,0,0,0,ic,ic,c);++compared; }
         }
         {
             const uint32_t types[]={0x1b,0x1c,0x100,UINT32_MAX};
@@ -633,7 +678,7 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
                 struct rr_fixture n={.type=types[a],.created=(int)c,.checked=0,.flag=0,
                     .l1="Aa",.l2="Bb",.trace=&native,.row=rr_row},r=n;
                 for(unsigned i=0;i<11;++i)n.present[i]=1;
-                for(unsigned i=0;i<13;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
+                for(unsigned i=0;i<14;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
                 r=n;r.trace=&ref;r.row=rr_refrow;
                 struct oa_setting_row_render_ops ops=rr_ops(&r);
                 rr_setup_row(rr_row,&n);rr_setup_row(rr_refrow,&r);
@@ -654,6 +699,7 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         assert(!munmap(sel2,4096));
         assert(!munmap(te1,4096) && !munmap(te2,4096) && !munmap(te3,4096));
         assert(!munmap(img,4096) && !munmap(lh,4096) && !munmap(sb,4096) && !munmap(usop,4096));
-        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-0x16/0x1a paths and defaults match\n",compared);
+        assert(!munmap(pb,4096) && !munmap(idiv,4096));
+        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-0x19/0x1a paths and defaults match\n",compared);
     }
 }

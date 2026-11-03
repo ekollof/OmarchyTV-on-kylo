@@ -6,6 +6,24 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-17-19-2026-11-03: renderItems types0x17..0x19 (progress-bar rows)
+pass886060 native/C comparisons; every renderItems switch case0..0x1a is now
+implemented. Percentage is100*(0x2dfc-0x2df0)/(0x2df4-0x2df0) with truncating
+signed division matching the shipped __aeabi_idiv; bars are row+0x1570 (0x17)
+or row+0x1724 (0x18/0x19). 0x17 alone uses the alexa rect and row byte0x2e46
+for its name/ball branches; 0x18/0x19 use names0x1bd/0x1be/0x1c0/0x1bf and
+setDoubleDirectionalBar(1); 0x19's image refresh sets setVisible(1), unlike
+0xb. New callbacks: set_ball_image/create_progressbar/set_percentage/
+set_double_directional plus a silent __aeabi_idiv trampoline. Division is only
+tested with a fixed10..90 range (no div-by-zero characterisation). Build-tv-v3/
+settings-row-render unit221916/6f887a7fe7ece4dd590c84e87b9e887e;
+reference1168648/8c3f0e7a70091990cbc63513bd244367. TV already awake, no-reset
+flag kept, staging size/hash separately verified, test exit0, staging removed,
+no helper. No screen/input/device/settings/network/service/boot/persistent
+change. No pending job/helper. getImageId's real mapping, image internals, row
+construction, child-visibility internals, live resources, scrollbar/skin/
+module/display/startup/visible acceptance remain open.
+
 SETTINGS-ROW-11-15-2026-11-03: text-entry variants0x11..0x15 pass394384
 native/C comparisons (mode/max3/10,4/5,5/none,2/4,9/15; created row
 UStrings0x2e0c/2e14/2e1c/2e24 vs numeric0x2e00 for0x15; 0x13 omits max+cursor

@@ -27,7 +27,8 @@ static const char *key_for(int which)
     case 9:return "slidebar";
     case 10:return "text2";
     case 11:return "text3";
-    default:return "text4";
+    case 12:return "text4";
+    default:return "progressbar";
     }
 }
 static int ready(const struct oa_setting_row_render_ops *o)
@@ -47,7 +48,8 @@ static int ready(const struct oa_setting_row_render_ops *o)
         !o->set_visible || !o->set_scaling || !o->create_image ||
         !o->set_draw_on_top || !o->create_textbox ||
         !o->create_slider || !o->set_slider_value || !o->set_slider_focus ||
-        !o->set_slider_range)return EINVAL;
+        !o->set_slider_range || !o->set_ball_image || !o->create_progressbar ||
+        !o->set_percentage || !o->set_double_directional)return EINVAL;
     return 0;
 }
 static void rect_math(uint32_t out[4],const uint32_t base[4],const int32_t pt[2])
@@ -596,6 +598,170 @@ static int case_0xc(void *row,const struct oa_setting_row_render_ops *o,void *bo
     }
     return 0;
 }
+/* Shared percentage math for the progress-bar rows: 100*(value-lo)/(hi-lo)
+ * with 32-bit wrapping and truncating signed division, matching the shipped
+ * __aeabi_idiv call. */
+static int32_t pb_percent(void *row,const struct oa_setting_row_render_ops *o)
+{
+    int32_t lo=(int32_t)o->row_word(row,UINT32_C(0x2df0));
+    int32_t hi=(int32_t)o->row_word(row,UINT32_C(0x2df4));
+    int32_t v=(int32_t)o->row_word(row,UINT32_C(0x2dfc));
+    uint32_t num=UINT32_C(100)*(uint32_t)(v-lo);
+    int32_t n,den=hi-lo;
+    if(!den)return 0;
+    memcpy(&n,&num,sizeof n);
+    return (int32_t)(n/den);
+}
+/* Case 0x17: progressbar + text2. The text box (row+0x24e8) uses the
+ * 0x1e8.. names, gets setFont(0x1e) when the prologue alexa rect exists, and
+ * shows the row[0x2dfc] value. The row+0x1570 progress bar, when uncreated,
+ * reads row byte 0x2e46: zero skips names/balls entirely; non-zero with
+ * alexa writes four 0x26a names and ball image 892 for states 1/0/3/2, while
+ * non-zero without alexa writes names 0x35/0x38/0x36/0x37 and ball images
+ * 169/169/170/170. Then setFocus(0), create and setPercentage. */
+static int case_pb17(void *row,const struct oa_setting_row_render_ops *o,void *box,void *alexa)
+{
+    void *pr=o->get_rect(box,key_for(13));
+    void *tr=o->get_rect(box,key_for(10));
+    if(tr) {
+        void *tb=o->child_at(row,UINT32_C(0x24e8));int created=o->is_created(tb);
+        uint32_t base[4];o->rect_words(tr,base);
+        if(created) {
+            uint32_t moved[4];int32_t pt[2];
+            o->get_point(row,pt);rect_math(moved,base,pt);o->set_rect(tb,moved);
+        } else {
+            o->set_name(tb,UINT32_C(1),UINT32_C(0x1e8));
+            o->set_name(tb,(uint32_t)created,UINT32_C(0x1e9));
+            o->set_name(tb,UINT32_C(3),UINT32_C(0x1ea));
+            o->set_name(tb,UINT32_C(2),UINT32_C(0x1eb));
+            if(alexa)o->set_font(tb,UINT32_C(0x1e));
+            o->set_focus(tb,0);o->set_elipses(tb,0);
+            o->create_textbox(tb,0,"",base,UINT32_C(1),row);
+        }
+        { char text[16];int32_t v=(int32_t)o->row_word(row,UINT32_C(0x2dfc));
+          snprintf(text,sizeof text,"%d",(int)v);o->set_text(tb,text); }
+    }
+    if(!pr)return 0;
+    {
+        int32_t pct=pb_percent(row,o);
+        void *pb=o->child_at(row,UINT32_C(0x1570));int created=o->is_created(pb);
+        uint32_t base[4];o->rect_words(pr,base);
+        if(created) {
+            uint32_t moved[4];int32_t pt[2];
+            o->get_point(row,pt);rect_math(moved,base,pt);o->set_rect(pb,moved);
+        } else {
+            if(o->row_flag(row,UINT32_C(0x2e46))) {
+                if(alexa) {
+                    o->set_name(pb,UINT32_C(1),UINT32_C(0x26a));
+                    o->set_name(pb,(uint32_t)created,UINT32_C(0x26a));
+                    o->set_name(pb,UINT32_C(3),UINT32_C(0x26a));
+                    o->set_name(pb,UINT32_C(2),UINT32_C(0x26a));
+                    o->set_ball_image(pb,UINT32_C(892),UINT32_C(1));
+                    o->set_ball_image(pb,UINT32_C(892),0);
+                    o->set_ball_image(pb,UINT32_C(892),UINT32_C(3));
+                    o->set_ball_image(pb,UINT32_C(892),UINT32_C(2));
+                } else {
+                    o->set_name(pb,UINT32_C(1),UINT32_C(0x35));
+                    o->set_name(pb,(uint32_t)created,UINT32_C(0x38));
+                    o->set_name(pb,UINT32_C(3),UINT32_C(0x36));
+                    o->set_name(pb,UINT32_C(2),UINT32_C(0x37));
+                    o->set_ball_image(pb,UINT32_C(169),UINT32_C(1));
+                    o->set_ball_image(pb,UINT32_C(169),0);
+                    o->set_ball_image(pb,UINT32_C(170),UINT32_C(3));
+                    o->set_ball_image(pb,UINT32_C(170),UINT32_C(2));
+                }
+            }
+            o->set_focus(pb,0);
+            o->create_progressbar(pb,0,base,row);
+        }
+        o->set_percentage(pb,(uint32_t)pct);
+    }
+    return 0;
+}
+/* Cases 0x18/0x19: progressbar with text2 (0x18) or image1+image2 (0x19).
+ * The text box/names are fixed (0x1e8..) with no font decision; the progress
+ * bar is row+0x1724, uses names 0x1bd/0x1be/0x1c0/0x1bf, and when row byte
+ * 0x2e46 is set applies the same 169/169/170/170 ball images plus
+ * setDoubleDirectionalBar(1). 0x19 additionally drives the two launcher
+ * images first (refresh sets setVisible(1) on both, unlike type 0xb). */
+static int case_pb18(void *row,const struct oa_setting_row_render_ops *o,void *box,
+    int with_images)
+{
+    void *pr=o->get_rect(box,key_for(13));
+    if(with_images) {
+        void *i1=o->get_rect(box,key_for(6));
+        void *i2=o->get_rect(box,key_for(7));
+        if(i1 && i2) {
+            void *im1=o->child_at(row,UINT32_C(0x2b28));
+            int c1=o->is_created(im1),done=0;
+            uint32_t w1[4],w2[4];
+            o->rect_words(i1,w1);o->rect_words(i2,w2);
+            if(c1) {
+                void *im2=o->child_at(row,UINT32_C(0x2c0c));
+                if(o->is_created(im2)) {
+                    o->set_rect(im1,w1);o->set_visible(im1,1);
+                    o->set_rect(im2,w2);o->set_visible(im2,1);
+                    done=1;
+                }
+            }
+            if(!done) {
+                void *im2=o->child_at(row,UINT32_C(0x2c0c));
+                uint32_t sc=o->row_word(row,UINT32_C(0x2e4c));
+                if(sc)o->create_image(im1,sc,w1,row);
+                sc=o->row_word(row,UINT32_C(0x2e50));
+                if(sc)o->create_image(im2,sc,w2,row);
+            }
+        }
+    }
+    {
+        if(!with_images) {
+            void *tr=o->get_rect(box,key_for(10));
+            if(tr) {
+                void *tb=o->child_at(row,UINT32_C(0x24e8));int created=o->is_created(tb);
+                uint32_t base[4];o->rect_words(tr,base);
+                if(created) {
+                    uint32_t moved[4];int32_t pt[2];
+                    o->get_point(row,pt);rect_math(moved,base,pt);o->set_rect(tb,moved);
+                } else {
+                    o->set_name(tb,UINT32_C(1),UINT32_C(0x1e8));
+                    o->set_name(tb,(uint32_t)created,UINT32_C(0x1e9));
+                    o->set_name(tb,UINT32_C(3),UINT32_C(0x1ea));
+                    o->set_name(tb,UINT32_C(2),UINT32_C(0x1eb));
+                    o->set_focus(tb,0);o->set_elipses(tb,0);
+                    o->create_textbox(tb,0,"",base,UINT32_C(1),row);
+                }
+                { char text[16];int32_t v=(int32_t)o->row_word(row,UINT32_C(0x2dfc));
+                  snprintf(text,sizeof text,"%d",(int)v);o->set_text(tb,text); }
+            }
+        }
+        if(!pr)return 0;
+        {
+            int32_t pct=pb_percent(row,o);
+            void *pb=o->child_at(row,UINT32_C(0x1724));int created=o->is_created(pb);
+            uint32_t base[4];o->rect_words(pr,base);
+            if(created) {
+                uint32_t moved[4];int32_t pt[2];
+                o->get_point(row,pt);rect_math(moved,base,pt);o->set_rect(pb,moved);
+            } else {
+                if(o->row_flag(row,UINT32_C(0x2e46))) {
+                    o->set_ball_image(pb,UINT32_C(169),UINT32_C(1));
+                    o->set_ball_image(pb,UINT32_C(169),0);
+                    o->set_ball_image(pb,UINT32_C(170),UINT32_C(3));
+                    o->set_ball_image(pb,UINT32_C(170),UINT32_C(2));
+                    o->set_double_directional(pb,1);
+                }
+                o->set_name(pb,UINT32_C(1),UINT32_C(0x1bd));
+                o->set_name(pb,(uint32_t)created,UINT32_C(0x1be));
+                o->set_name(pb,UINT32_C(3),UINT32_C(0x1c0));
+                o->set_name(pb,UINT32_C(2),UINT32_C(0x1bf));
+                o->set_focus(pb,0);
+                o->create_progressbar(pb,0,base,row);
+            }
+            o->set_percentage(pb,(uint32_t)pct);
+        }
+    }
+    return 0;
+}
 static int case_0x1a(void *row,const struct oa_setting_row_render_ops *o,void *box)
 {
     void *r=o->get_rect(box,key_for(3)),*button;int created;uint32_t base[4];
@@ -728,6 +894,14 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             case_te(row,o,box,1,10,UINT32_C(0x2e04));
             return 0;
         }
+        if(type==UINT32_C(0x17)) {
+            case_pb17(row,o,box,r1);
+            return 0;
+        }
+        if(type==UINT32_C(0x18) || type==UINT32_C(0x19)) {
+            case_pb18(row,o,box,type==UINT32_C(0x19));
+            return 0;
+        }
         if(type==UINT32_C(0x11)) {
             case_te(row,o,box,3,10,UINT32_C(0x2e0c));
             return 0;
@@ -789,8 +963,8 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
     if(type!=UINT32_C(1) && type!=UINT32_C(0)) {
         /* The shared 0x104 tail runs for every other non-4 type with a key2
          * rectangle (objdump-verified fallthrough); only 0x1b exits before
-         * it. Type 0x1a then runs its case body (button); the remaining case
-         * bodies 2..25 stay open. */
+         * it. Every case body 2..0x1a is now implemented; out-of-range types
+         * fall through the tail and return. */
         if(type>UINT32_C(26)) {
             tail_104(row,o,r2,r1==NULL);
             return 0;
@@ -818,6 +992,14 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
         }
         if(type==UINT32_C(0x10)) {
             case_te(row,o,box,1,10,UINT32_C(0x2e04));
+            return 0;
+        }
+        if(type==UINT32_C(0x17)) {
+            case_pb17(row,o,box,r1);
+            return 0;
+        }
+        if(type==UINT32_C(0x18) || type==UINT32_C(0x19)) {
+            case_pb18(row,o,box,type==UINT32_C(0x19));
             return 0;
         }
         if(type==UINT32_C(0x11)) {

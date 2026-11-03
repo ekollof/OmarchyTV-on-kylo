@@ -356,7 +356,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       SETTINGS-ROW-11-15. Mode/max pairs, 0x13's omitted max/cursor, the four
       new UString offsets and 0x15's numeric source are asserted; all
       row-side UString reads now go through row_ustring.
-- [ ] Implement SettingItemsListBoxRow::renderItems types 0x17..0x19.
+- [x] Implement SettingItemsListBoxRow::renderItems types 0x17..0x19
+      (progress-bar rows):886060 native/C comparisons and prior groups pass;
+      full host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
+      SETTINGS-ROW-17-19. Percentage math via a silent __aeabi_idiv
+      trampoline, ball-image branches, double-directional bar, the alexa-
+      dependent 0x17 names/font and 0x19's setVisible(1) refresh are asserted.
+      **All renderItems switch cases 0..0x1a are now implemented.**
+- [ ] Real LauncherHelper::getImageId 62-way mapping; SVGImage/
+      setSelectionBoxImageId internals (still controlled stubs).
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

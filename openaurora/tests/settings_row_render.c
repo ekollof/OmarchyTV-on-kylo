@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 struct rrow {
-    uint32_t type;uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,imgid,scale,slo,shi,sval;int flag,checked,rebuild,img_created,tb_created;const char *label,*blabel,*vtext,*t11text,*t12text,*t13text,*t14text,*t3text,*t4text;
-    void *rects[13];uint32_t rwords[13][4];int32_t pt[2];
+    uint32_t type;uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,imgid,scale,slo,shi,sval,pval;int flag,checked,rebuild,img_created,tb_created,row2e46;const char *label,*blabel,*vtext,*t11text,*t12text,*t13text,*t14text,*t3text,*t4text;
+    void *rects[14];uint32_t rwords[14][4];int32_t pt[2];
     int created;unsigned count;struct {uint32_t kind,off,a,b;char text[24];} trace[64];
 };
 static struct rrow *t;
@@ -18,15 +18,15 @@ static void emit(uint32_t kind,uint32_t off,uint32_t a,uint32_t b,const char *te
     else t->trace[t->count].text[0]=0;
     ++t->count;
 }
-enum {R_CTBOX,R_CSLIDER,R_SVAL,R_SFOCUS,R_SRANGE,R_BASE,R_GET,R_IS,R_NAME,R_FOCUS,R_ELIP,R_FONT,R_POINT,R_RECT,R_TEXT,R_CTEXT,R_CBTN,R_ALIGN,R_CHECK,R_CCB,R_SELID,R_CSEL,R_SELIMG,R_EMODE,R_MAXCH,R_CAUTO,R_NUM,R_CTE,R_STORE,R_DESTROY,R_RESETXML,R_GLYPH,R_HL,R_SUBHL,R_SHADOW,R_VIS,R_SCALE,R_CIMG,R_DRAWTOP};
+enum {R_BALL,R_CPB,R_PCT,R_DBL,R_CTBOX,R_CSLIDER,R_SVAL,R_SFOCUS,R_SRANGE,R_BASE,R_GET,R_IS,R_NAME,R_FOCUS,R_ELIP,R_FONT,R_POINT,R_RECT,R_TEXT,R_CTEXT,R_CBTN,R_ALIGN,R_CHECK,R_CCB,R_SELID,R_CSEL,R_SELIMG,R_EMODE,R_MAXCH,R_CAUTO,R_NUM,R_CTE,R_STORE,R_DESTROY,R_RESETXML,R_GLYPH,R_HL,R_SUBHL,R_SHADOW,R_VIS,R_SCALE,R_CIMG,R_DRAWTOP};
 static void q_base(void *r) { (void)r;emit(R_BASE,0,0,0,NULL); }
 static void *q_cont(void *r) { (void)r;return (void *)0x1000; }
 static void *q_rect(void *c,const char *k)
 { (void)c;emit(R_GET,0,0,0,k);
-  for(int i=0;i<13;++i)if(!strcmp(k,((const char*[]){"alexa","text1","labelLong","button","checkbox","selectionbox","image1","image2","banner","slidebar","text2","text3","text4"})[i]))return t->rects[i];
+  for(int i=0;i<14;++i)if(!strcmp(k,((const char*[]){"alexa","text1","labelLong","button","checkbox","selectionbox","image1","image2","banner","slidebar","text2","text3","text4","progressbar"})[i]))return t->rects[i];
   assert(0);return NULL; }
 static void q_words(void *r,uint32_t out[4])
-{ for(int i=0;i<13;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
+{ for(int i=0;i<14;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
 static void wset(struct rrow *r,uint32_t off,uint32_t v) { assert(off>=0x2e4c && off<=0x2ed8);r->words[(off-0x2e4c)/4]=v; }
 static uint32_t q_type(void *r) { (void)r;return t->type; }
 static uint32_t q_word(void *r,uint32_t o)
@@ -36,12 +36,13 @@ static uint32_t q_word(void *r,uint32_t o)
   if(o==0x2e00)return t->num;
   if(o==0x2dd4)return t->op;
   if(o==0x2df0)return t->slo;
+  if(o==0x2dfc)return t->pval;
   if(o==0x2df4)return t->shi;
   if(o==0x2df8)return t->sval;
   assert(o>=0x2e4c && o<=0x2ed8 && !(o&3));return t->words[(o-0x2e4c)/4]; }
 static int q_flag(void *r,uint32_t o)
-{ (void)r;assert(o==0x2e45||o==0x2e44||o==0x2e49);
-  return o==0x2e44?t->checked:(o==0x2e49?t->rebuild:t->flag); }
+{ (void)r;assert(o==0x2e45||o==0x2e44||o==0x2e49||o==0x2e46);
+  return o==0x2e44?t->checked:(o==0x2e49?t->rebuild:(o==0x2e46?t->row2e46:t->flag)); }
 static const char *q_label(void *r) { (void)r;return t->label; }
 static const char *q_blabel(void *r) { (void)r;return t->blabel; }
 static const char *q_ustring(void *r,uint32_t off)
@@ -113,6 +114,11 @@ static void q_sval(void *c,int32_t v) { emit(R_SVAL,(uint32_t)(uintptr_t)c-0x200
 static void q_sfocus(void *c,int on) { emit(R_SFOCUS,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)on,0,NULL); }
 static void q_srange(void *c,int32_t lo,int32_t hi)
 { emit(R_SRANGE,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)lo,(uint32_t)hi,NULL); }
+static void q_ball(void *c,uint32_t id,uint32_t st) { emit(R_BALL,(uint32_t)(uintptr_t)c-0x2000,id,st,NULL); }
+static void q_cpb(void *c,uint32_t z,const uint32_t r[4],void *par)
+{ (void)par;(void)r;emit(R_CPB,(uint32_t)(uintptr_t)c-0x2000,z,0,NULL); }
+static void q_pct(void *c,uint32_t v) { emit(R_PCT,(uint32_t)(uintptr_t)c-0x2000,v,0,NULL); }
+static void q_dbl(void *c,int on) { emit(R_DBL,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)on,0,NULL); }
 static void q_cte(void *c,uint32_t z,uint32_t a,uint32_t b,const char *l,const uint32_t r[4],void *par)
 { (void)par;(void)r;emit(R_CTE,(uint32_t)(uintptr_t)c-0x2000,z,a?(b<<16)|a:0,l); }
 static struct oa_setting_row_render_ops ops(void)
@@ -121,12 +127,12 @@ static struct oa_setting_row_render_ops ops(void)
         q_flag,q_label,q_blabel,q_ustring,q_child,q_is,q_name,q_focus,q_elipes,q_font,q_point,
         q_srect,q_text,q_ctext,q_cbtn,q_align,q_checked,q_ccb,q_selid,q_csel,q_selimg,q_emode,q_maxch,q_cauto,q_num,q_cte,
         q_store,q_destroy,q_reset,q_gid,q_glyph,q_hl,q_subhl,q_shadow,q_vis,q_scale,q_cimg,q_drawtop,
-        q_ctbox,q_cslider,q_sval,q_sfocus,q_srange};
+        q_ctbox,q_cslider,q_sval,q_sfocus,q_srange,q_ball,q_cpb,q_pct,q_dbl};
 }
 static void reset(struct rrow *r)
 {
     memset(r,0,sizeof *r);t=r;r->type=UINT32_MAX;r->label="";r->blabel="";r->vtext="";r->t11text="";r->t12text="";r->t13text="";r->t14text="";r->t3text="";r->t4text="";
-    for(int i=0;i<13;++i) { r->rects[i]=(void *)(uintptr_t)(0x3000+i*0x20); }
+    for(int i=0;i<14;++i) { r->rects[i]=(void *)(uintptr_t)(0x3000+i*0x20); }
 }
 int main(void)
 {
@@ -141,9 +147,10 @@ int main(void)
     assert(!strcmp(r.trace[2].text,"text1") && !strcmp(r.trace[3].text,"labelLong"));
     assert(r.trace[4].kind==R_IS && r.trace[4].off==0x104);
     assert(r.trace[12].kind==R_CTEXT && !strcmp(r.trace[12].text,""));
-    /* Types other than the implemented set stay open, after the shared tail. */
-    reset(&r);o=ops();r.type=0x17;
-    assert(oa_setting_row_render(&r,&o)==ENOTSUP && r.count==13);
+    /* Every switch case 0..0x1a is implemented; an out-of-range type still
+     * runs the shared tail and exits successfully. */
+    reset(&r);o=ops();r.type=0x1c;
+    assert(!oa_setting_row_render(&r,&o) && r.count==13);
     /* Type 0 with missing key2: prologue then out. */
     reset(&r);o=ops();r.type=0;r.rects[1]=NULL;
     assert(!oa_setting_row_render(&r,&o) && r.count==4);
@@ -599,9 +606,104 @@ int main(void)
             assert(r.trace[11].kind==R_EMODE && r.trace[11].a==te[i].mode);
         }
     }
+    /* Type 0x17: progressbar + text2. Alexa present + row2e46 set: the text
+     * box gets font 0x1e and the bar gets four 0x26a names and image 892. */
+    reset(&r);o=ops();r.type=0x17;r.slo=10;r.shi=90;r.pval=45;r.row2e46=1;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==37);
+    assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"progressbar"));
+    assert(r.trace[14].kind==R_GET && !strcmp(r.trace[14].text,"text2"));
+    assert(r.trace[15].kind==R_IS && r.trace[15].off==0x24e8);
+    assert(r.trace[16].kind==R_NAME && r.trace[16].a==1 && r.trace[16].b==0x1e8);
+    assert(r.trace[20].kind==R_FONT && r.trace[20].a==0x1e);
+    assert(r.trace[21].kind==R_FOCUS && r.trace[21].a==0);
+    assert(r.trace[22].kind==R_ELIP && r.trace[22].a==0);
+    assert(r.trace[23].kind==R_CTBOX);
+    assert(r.trace[24].kind==R_TEXT && !strcmp(r.trace[24].text,"45"));
+    assert(r.trace[25].kind==R_IS && r.trace[25].off==0x1570);
+    assert(r.trace[26].kind==R_NAME && r.trace[26].a==1 && r.trace[26].b==0x26a);
+    assert(r.trace[30].kind==R_BALL && r.trace[30].a==892 && r.trace[30].b==1);
+    assert(r.trace[31].kind==R_BALL && r.trace[31].a==892 && r.trace[31].b==0);
+    assert(r.trace[32].kind==R_BALL && r.trace[32].a==892 && r.trace[32].b==3);
+    assert(r.trace[33].kind==R_BALL && r.trace[33].a==892 && r.trace[33].b==2);
+    assert(r.trace[34].kind==R_FOCUS && r.trace[34].a==0);
+    assert(r.trace[35].kind==R_CPB);
+    assert(r.trace[36].kind==R_PCT && r.trace[36].a==43);
+    /* 0x17 without alexa: names 0x35/0x38/0x36/0x37 and images 169/169/170/170,
+     * and no setFont on the text box. */
+    reset(&r);o=ops();r.type=0x17;r.slo=10;r.shi=90;r.pval=45;r.row2e46=1;r.rects[0]=NULL;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==35);
+    assert(r.trace[19].kind==R_FOCUS);
+    assert(r.trace[20].kind==R_ELIP);
+    assert(r.trace[21].kind==R_CTBOX);
+    assert(r.trace[22].kind==R_TEXT);
+    assert(r.trace[24].kind==R_NAME && r.trace[24].a==1 && r.trace[24].b==0x35);
+    assert(r.trace[25].kind==R_NAME && r.trace[25].a==0 && r.trace[25].b==0x38);
+    assert(r.trace[26].kind==R_NAME && r.trace[26].a==3 && r.trace[26].b==0x36);
+    assert(r.trace[27].kind==R_NAME && r.trace[27].a==2 && r.trace[27].b==0x37);
+    assert(r.trace[28].kind==R_BALL && r.trace[28].a==169 && r.trace[28].b==1);
+    assert(r.trace[30].kind==R_BALL && r.trace[30].a==170 && r.trace[30].b==3);
+    assert(r.trace[34].kind==R_PCT && r.trace[34].a==43);
+    /* 0x17 with row2e46 clear: no names or ball images at all. */
+    reset(&r);o=ops();r.type=0x17;r.slo=10;r.shi=90;r.pval=45;r.row2e46=0;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==29);
+    assert(r.trace[24].kind==R_TEXT);
+    assert(r.trace[25].kind==R_IS && r.trace[25].off==0x1570);
+    assert(r.trace[26].kind==R_FOCUS && r.trace[26].a==0);
+    assert(r.trace[27].kind==R_CPB);
+    assert(r.trace[28].kind==R_PCT && r.trace[28].a==43);
+    /* Type 0x18: progressbar + text2, fixed names, bar names
+     * 0x1bd/0x1be/0x1c0/0x1bf and setDoubleDirectionalBar when 0x2e46 set. */
+    reset(&r);o=ops();r.type=0x18;r.slo=10;r.shi=90;r.pval=45;r.row2e46=1;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==37);
+    assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"progressbar"));
+    assert(r.trace[14].kind==R_GET && !strcmp(r.trace[14].text,"text2"));
+    assert(r.trace[15].kind==R_IS && r.trace[15].off==0x24e8);
+    assert(r.trace[16].kind==R_NAME && r.trace[16].b==0x1e8);
+    assert(r.trace[20].kind==R_FOCUS && r.trace[20].a==0);
+    assert(r.trace[24].kind==R_IS && r.trace[24].off==0x1724);
+    assert(r.trace[25].kind==R_BALL && r.trace[25].a==169);
+    assert(r.trace[29].kind==R_DBL && r.trace[29].a==1);
+    assert(r.trace[30].kind==R_NAME && r.trace[30].a==1 && r.trace[30].b==0x1bd);
+    assert(r.trace[31].kind==R_NAME && r.trace[31].a==0 && r.trace[31].b==0x1be);
+    assert(r.trace[32].kind==R_NAME && r.trace[32].a==3 && r.trace[32].b==0x1c0);
+    assert(r.trace[33].kind==R_NAME && r.trace[33].a==2 && r.trace[33].b==0x1bf);
+    assert(r.trace[34].kind==R_FOCUS && r.trace[34].a==0);
+    assert(r.trace[35].kind==R_CPB);
+    assert(r.trace[36].kind==R_PCT && r.trace[36].a==43);
+    /* Type 0x19: images first (create from 0x2e4c/0x2e50), then the same
+     * progressbar tail at row+0x1724 with row2e46 clear. */
+    reset(&r);o=ops();r.type=0x19;r.slo=10;r.shi=90;r.pval=45;r.row2e46=0;
+    wset(&r,0x2e4c,0x92);wset(&r,0x2e50,0x93);
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==27);
+    assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"progressbar"));
+    assert(r.trace[14].kind==R_GET && !strcmp(r.trace[14].text,"image1"));
+    assert(r.trace[15].kind==R_GET && !strcmp(r.trace[15].text,"image2"));
+    assert(r.trace[16].kind==R_IS && r.trace[16].off==0x2b28);
+    assert(r.trace[17].kind==R_CIMG && r.trace[17].off==0x2b28 && r.trace[17].a==0x92);
+    assert(r.trace[18].kind==R_CIMG && r.trace[18].off==0x2c0c && r.trace[18].a==0x93);
+    assert(r.trace[19].kind==R_IS && r.trace[19].off==0x1724);
+    assert(r.trace[20].kind==R_NAME && r.trace[20].a==1 && r.trace[20].b==0x1bd);
+    assert(r.trace[23].kind==R_NAME && r.trace[23].a==2 && r.trace[23].b==0x1bf);
+    assert(r.trace[24].kind==R_FOCUS && r.trace[24].a==0);
+    assert(r.trace[25].kind==R_CPB);
+    assert(r.trace[26].kind==R_PCT && r.trace[26].a==43);
+    /* 0x19 created images: refresh sets setVisible(1) on both, unlike 0xb. */
+    reset(&r);o=ops();r.type=0x19;r.slo=10;r.shi=90;r.pval=45;r.row2e46=0;r.img_created=1;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[16].kind==R_IS && r.trace[16].off==0x2b28);
+    assert(r.trace[17].kind==R_IS && r.trace[17].off==0x2c0c);
+    assert(r.trace[18].kind==R_RECT && r.trace[18].off==0x2b28);
+    assert(r.trace[19].kind==R_VIS && r.trace[19].a==1);
+    assert(r.trace[20].kind==R_RECT && r.trace[20].off==0x2c0c);
+    assert(r.trace[21].kind==R_VIS && r.trace[21].a==1);
     /* Invalid ops/args change nothing. */
     o=ops();o.set_name=NULL;
-    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==14);
+    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==30);
     assert(oa_setting_row_render(NULL,&o)==EINVAL);
     assert(oa_setting_row_render(&r,NULL)==EINVAL);
     puts("ok settings row render: 0/1/4 paths, shared tail, gates and open types");
