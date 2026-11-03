@@ -1,5 +1,8 @@
 # SVG list row refresh and checked values — 2026-11-03
 
+Subsequent [SETTINGS-DRAW](SETTINGS-DRAW-2026-11-03.md) implements the saved
+parent dispatcher below; actual providers and native rendering remain open.
+
 `common/svg_list_update.c` now implements the joined base/manager single-row
 refresh, and `common/svg_list_widgets.c` implements checked-value routing.
 These are synchronous context-bound callbacks; no new service, hardware

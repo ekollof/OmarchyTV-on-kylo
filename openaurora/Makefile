@@ -280,6 +280,16 @@ check-svg-list-widgets: $(BUILD)/tests/svg_list_widgets
 	@$(BUILD)/tests/svg_list_widgets
 check: check-svg-list-widgets
 
+$(BUILD)/tests/settings_draw: tests/settings_draw.c tests/settings_draw_fixture.h common/settings_draw.c include/openaurora/settings_draw.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-settings-draw
+check-settings-draw: $(BUILD)/tests/settings_draw
+	@$(BUILD)/tests/settings_draw
+check: check-settings-draw
+
+$(BUILD)/tests/tab_policy_firmware: common/settings_draw.c include/openaurora/settings_draw.h tests/settings_draw_fixture.h tests/settings_draw_native.h
+
 $(BUILD)/tests/svg_list_anim: tests/svg_list_anim.c tests/svg_list_anim_fixture.h common/svg_list_anim.c include/openaurora/svg_list_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)

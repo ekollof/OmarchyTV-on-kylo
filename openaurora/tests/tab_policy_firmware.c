@@ -1657,6 +1657,7 @@ static void raw_stub(void *mapped,uint32_t base,uint32_t address,uint32_t target
     unsigned char *p=stub_destination(mapped,base,address,8);const uint16_t insn[]={0x4b00,0x4718};
     assert(!(address&3));memcpy(p,insn,sizeof insn);memcpy(p+4,&target,4);
 }
+#include "settings_draw_native.h"
 typedef void (*scroll_fn)(void *);
 static scroll_fn native_sb_update;
 enum {R_SET_FOCUS,R_SET_VISIBLE,R_GET_RECT,R_SET_POS,R_IS_VISIBLE,R_DRAW,R_DRAW_EMPTY,R_EMPTY_MSG,R_GOT_FOCUS};
@@ -2708,6 +2709,7 @@ int main(int argc,char **argv)
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
     check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);
     check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_svg_scroll(elf,bytes);check_svg_impl(elf,bytes);check_svg_scrollbar(elf,bytes);check_svg_rowview(elf,bytes);check_svg_widgets(elf,bytes);check_svg_slide(elf,bytes);check_svg_anim(elf,bytes);check_svg_update(elf,bytes);check_svg_refresh(elf,bytes);check_svg_checked(elf,bytes);check_row_values(elf,bytes);
+    check_settings_draw(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;

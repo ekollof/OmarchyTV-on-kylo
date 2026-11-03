@@ -6,6 +6,18 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-DRAW-2026-11-03: complete parent SettingItemsListBox::drawRow dispatcher
+passes18441 shipped ARM/C comparisons plus all prior groups; full strict host/
+Unix IPC, focused ASan/UBSan and fresh ARM/qemu units pass.36 types/16 styles/
+32 variants/9 bounds exits cover type writeback, setter/image priorities and
+temporary string/vector lifetimes. Typed context-bound callbacks and resource
+failure unwind, no module/service/hardware integration. build-tv-v3/settings-draw:
+unit69108/de6663fcf9ab09417d3da564a7540840;
+reference865972/3475e6122271bb8f53986e0c078d7b22. No TV access/wake/staging/
+deployment or hardware/boot/network changes; no pending job/helper. Actual
+item/text/vector/widget providers, rendering/scanout/startup and visible parity
+remain open. Owner reaffirmed TV testing authorization; this item stayed offline.
+
 SVG-LIST-REFRESH-2026-11-03: base/manager updateRow join and row setChecked
 pass2880+24 native/C cases and all prior groups, strict full host/Unix IPC,
 focused ASan/UBSan and fresh ARM/qemu units. Refresh total+8/slots/wrapping

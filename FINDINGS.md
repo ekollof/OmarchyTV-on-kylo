@@ -6,10 +6,18 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-DRAW implements the parent dispatcher previously saved by SVG-LIST-
+REFRESH:18441 native/C cases and prior groups pass. Progress/mixed modes mutate
+backing item types, not only local row type; image/button/selection/text/slider/
+checkbox paths and temporary string/vector order are explicit. Empty value-list
+buttons use resource key OK unless no-default; numeric endpoint fallback builds
+and copies separate min/max strings. Actual provider/formatting/widget/rendering
+behavior remains unproven; controlled dispatcher traces do not close those gates.
+
 SVG-LIST-REFRESH implements single-row base/manager refresh and row setChecked;
 2880+24 native/C comparisons pass. Refresh uses total+8 capped by allocated
 slots, not visible size+0x10; unsigned first+count can wrap, unlike a relative
-bounds test. Parent+0x60 is SettingItemsListBox::drawRow, still unimplemented.
+bounds test. Parent+0x60 is SettingItemsListBox::drawRow, now SETTINGS-DRAW.
 Uncreated checkboxes do not update the row cache; created ones set then store.
 An additional row-view test bug formed out-of-bounds rv_slots[i*8] pointers;
 corrected indexing and all prior reference groups pass. This is not a proven

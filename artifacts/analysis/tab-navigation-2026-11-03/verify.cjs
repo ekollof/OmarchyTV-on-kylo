@@ -49,4 +49,5 @@ assert.match(result.stdout, /SVG list rowview: 100 native\/C comparisons/);
 assert.match(result.stdout, /SVG list update: 20 native\/C comparisons/);
 assert.match(result.stdout, /SVG list refresh: 2880 native\/C comparisons/);
 assert.match(result.stdout, /SVG list checked: 24 native\/C comparisons/);
+assert.match(result.stdout, /settings draw: 18441 native\/C comparisons/);
 assert.match(result.stdout, /row values: 68640 type\/raw-value cases/);

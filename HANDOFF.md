@@ -24,7 +24,20 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SVG-LIST-REFRESH](artifacts/reports/SVG-LIST-REFRESH-2026-11-03.md)
+Latest: [SETTINGS-DRAW](artifacts/reports/SETTINGS-DRAW-2026-11-03.md) implements
+the complete SettingItemsListBox::drawRow dispatcher behind parent virtual+0x60.
+18441 shipped ARM/C comparisons pass for36 types,16 styles,32 value/image/text
+variants and9 bounds exits, plus every prior group. Strict full host/Unix IPC,
+focused ASan/UBSan and fresh ARM/qemu units pass. Type writeback9..11->23..25,
+mixed9->23, full setter order/image priority and temporary string/vector lifetimes
+are explicit. Providers are controlled, not actual UString/vector/widgets or
+visible rendering. New common/settings_draw.c, typed context-bound API; no new
+module/service. build-tv-v3/settings-draw; identities in MEMORY/report. No TV
+access/deployment or pending job/helper. Next compose owned item/value/text/
+widget providers with this dispatcher and existing refresh/input chain, then
+display/scanout/startup/independent visible acceptance; scrollbar internals open.
+
+Previous: [SVG-LIST-REFRESH](artifacts/reports/SVG-LIST-REFRESH-2026-11-03.md)
 implements base/manager single-row refresh and row setChecked. 2880+24 native/C
 comparisons plus all prior groups, strict full host/Unix IPC, focused ASan/UBSan
 and fresh ARM/qemu units pass. Refresh uses total+8 capped by array slots,

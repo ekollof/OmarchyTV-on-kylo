@@ -139,6 +139,16 @@ routing is vertical. Temporary row text objects have explicit max-aligned
 64-byte provider storage. These are reviewed implementation bounds, not new
 firmware or hardware API rules.
 
+`common/settings_draw.c` supplies the actual parent drawRow dispatcher behind
+single-row refresh's virtual+0x60. SETTINGS-DRAW records18441 native/C comparisons
+and controlled owned-temporary traces. Typed context-bound row events preserve
+all value/image/setter priorities; progress/mixed modes write back the item type.
+Text handles and copied value snapshots have explicit lifetime; failure unwinds
+temporaries while retaining prior actions/type writeback. This is not a native
+item/text/vector/widget provider or renderer. Compose those owned providers
+with the existing refresh/input chain before claiming actual widget/display
+integration or native visible/startup acceptance.
+
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;
 EGL-WINDOW establishes direct display1 presentation with the retained4-byte
