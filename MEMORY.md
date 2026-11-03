@@ -6,6 +6,18 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-ROWS-2026-11-03: RowManager field layout, focusItem body and
+updatePartial forward pass324 native/C comparisons, plus full strict host,
+focused ASan/UBSan, ARM/qemu and all previous reference groups. ARM unit
+31856/51f101743bf2de2025e947a8cfb45010; reference496352/
+52391ba87be496651ede73f678d3d20f, build-tv-v3/tab-policy. Layout +12 first/
++16 count/+20 selected-rel/+28 rows, wrapping rel arithmetic, ordered row
+(un)focus and rel store are asserted against real native bytes. No new
+module/service/UI consumer. updateImpl, row widget internals, row getters/
+editing, parent refresh, scrollbar/animation bodies, owned backend/context
+and visible acceptance stay open. No TV access/wake/staging/deployment or
+hardware mutation; no pending job/helper.
+
 SVG-LIST-MOVE-2026-11-03: eight primitive list move/selection/window bodies
 pass5040 native/C comparisons with exact call order/args, plus full strict
 host, focused ASan/UBSan, ARM/qemu and all previous reference groups. ARM

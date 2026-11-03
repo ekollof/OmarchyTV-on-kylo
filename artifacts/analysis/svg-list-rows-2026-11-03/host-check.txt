@@ -1,0 +1,1 @@
+ok SVG list rows: manager field layout, focus switch/store and partial forward

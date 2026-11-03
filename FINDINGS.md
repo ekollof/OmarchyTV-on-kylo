@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG list rows: SVG-LIST-ROWS implements the manager field layout, focusItem
+and updatePartial; 324 native/C comparisons pass. +12 first, +16 count,
++20 selected-rel, +28 row array; rel=index-first wraps, returns on zero
+count/rel-reach/rel-selected, otherwise row +28 (0 then 1) and rel store.
+selectedItem is first+selected. Partial forwards (index,false). updateImpl,
+row widgets, getters/editing, scrollbar/animation, backend/visible gates
+remain open.
+
 SVG list moves: SVG-LIST-MOVE implements the eight primitive move/selection/
 window bodies; 5040 native/C comparisons pass with exact call order/args.
 Window to-top posts partial 0, to-bottom posts aux-size unchecked; up/down

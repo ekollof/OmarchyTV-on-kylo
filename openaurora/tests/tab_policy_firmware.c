@@ -16,6 +16,7 @@
 #include "openaurora/svg_list_input.h"
 #include "openaurora/svg_list_bodies.h"
 #include "openaurora/svg_list_move.h"
+#include "openaurora/svg_list_rows.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -1245,6 +1246,31 @@ static void body_m_scrollbar(void *p) { body_emit(p,B_SCROLLBAR,0,0); }
 static void body_m_anim(void *p) { body_emit(p,B_ANIM,0,0); }
 typedef void (*move0_fn)(void *);
 typedef void (*move1_fn)(void *,uint32_t);
+struct rows_fixture { uint32_t first,size,selected;unsigned count;struct {uint32_t id,a;int b;} trace[8]; };
+static struct rows_fixture *native_rows;
+static _Alignas(uint32_t) unsigned char mgr_obj[0x40],mgr_ptrs[16*4],mgr_rowobjs[16][8];
+static uint32_t row_vtable[8];
+static void rows_emit(struct rows_fixture *f,uint32_t id,uint32_t a,int b)
+{ assert(f->count<8);f->trace[f->count].id=id;f->trace[f->count].a=a;f->trace[f->count].b=b;++f->count; }
+static unsigned native_r_focus(void *row,int32_t on)
+{ rows_emit(native_rows,1,*(uint32_t *)((unsigned char *)row+4),on!=0);return 0; }
+typedef void (*impl_fn)(void *,uint32_t,int);
+static void native_r_impl(void *mgr,uint32_t index,int full)
+{ assert(mgr==mgr_obj);rows_emit(native_rows,2,index,full); }
+static void impl_stub(void *mapped,uint32_t base,uint32_t address,impl_fn function)
+{
+    unsigned char *p=(unsigned char *)mapped+address-base;const uint16_t insn[]={0x4b00,0x4718};
+    assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target;memcpy(&target,&function,4);memcpy(p+4,&target,4);
+}
+enum {R_FOCUS=1,R_IMPL=2};
+static uint32_t rows_q_first(void *p) { return ((struct rows_fixture *)p)->first; }
+static uint32_t rows_q_size(void *p) { return ((struct rows_fixture *)p)->size; }
+static uint32_t rows_q_sel(void *p) { return ((struct rows_fixture *)p)->selected; }
+static void *rows_q_row(void *p,uint32_t rel) { (void)p;return (void *)(uintptr_t)rel; }
+static struct rows_fixture *ref_rows;
+static void rows_e_focus(void *row,int focused) { rows_emit(ref_rows,R_FOCUS,(uint32_t)(uintptr_t)row,focused); }
+static void rows_e_store(void *p,uint32_t rel) { ((struct rows_fixture *)p)->selected=rel; }
+static void rows_e_impl(void *p,uint32_t index,int full) { rows_emit((struct rows_fixture *)p,R_IMPL,index,full); }
 static void compare_move_traces(struct body_fixture *vendor,struct body_fixture *ref,unsigned body,
     uint32_t n,struct body_fixture *initial)
 {
@@ -1424,6 +1450,99 @@ static void check_svg_moves(const unsigned char *elf,size_t bytes)
     assert(!munmap(list,8192) && !munmap(rows,4096) && !munmap(anim,8192));
     printf("ok offline shipped ARM SVG list moves: %u native/C comparisons, exact call order/args match\n",compared);
 }
+typedef unsigned (*rows_fn)(void *);
+typedef void (*focus_fn)(void *,uint32_t);
+static void compare_rows_focus(focus_fn native,int (*ours)(const struct oa_svg_list_manager_ops *,uint32_t),
+    struct rows_fixture initial,uint32_t index)
+{
+    struct rows_fixture vendor=initial,ref=initial;struct oa_svg_list_manager_ops ops={&ref,rows_q_first,rows_q_size,
+        rows_q_sel,rows_q_row,rows_e_focus,rows_e_store,rows_e_impl};
+    memcpy(mgr_obj+12,&vendor.first,4);memcpy(mgr_obj+16,&vendor.size,4);memcpy(mgr_obj+20,&vendor.selected,4);
+    native_rows=&vendor;ref_rows=&ref;native(mgr_obj,index);
+    assert(!ours(&ops,index));
+    if(vendor.count!=ref.count) {
+        fprintf(stderr,"rows focus count native=%u ours=%u index=%x\n",vendor.count,ref.count,index);
+        for(unsigned i=0;i<vendor.count;++i)fprintf(stderr,"  native[%u]=%u/%x/%d\n",i,vendor.trace[i].id,vendor.trace[i].a,vendor.trace[i].b);
+        for(unsigned i=0;i<ref.count;++i)fprintf(stderr,"  ours[%u]=%u/%x/%d\n",i,ref.trace[i].id,ref.trace[i].a,ref.trace[i].b);
+        exit(1);
+    }
+    for(unsigned i=0;i<vendor.count;++i)if(vendor.trace[i].id!=ref.trace[i].id || vendor.trace[i].a!=ref.trace[i].a ||
+        vendor.trace[i].b!=ref.trace[i].b) {
+        fprintf(stderr,"rows focus trace %u native=%u/%x/%d ours=%u/%x/%d\n",i,vendor.trace[i].id,
+            vendor.trace[i].a,vendor.trace[i].b,ref.trace[i].id,ref.trace[i].a,ref.trace[i].b);exit(1);
+    }
+    if(*(uint32_t *)(mgr_obj+20)!=ref.selected) {
+        fprintf(stderr,"rows focus store native=%x ours=%x index=%x\n",*(uint32_t *)(mgr_obj+20),ref.selected,index);exit(1);
+    }
+}
+static void check_svg_rows(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *rows=page(0x10be000,4096);
+    const struct {uint32_t address,length,crc,literal;} fragments[]={
+        {0x10be6b0,52,UINT32_C(0x35e7a0e3),0x10be6e0},
+        {0x10be6e4,48,UINT32_C(0x50e85ab7),0x10be710},
+        {0x10be74c,48,UINT32_C(0xce283c69),0x10be778},
+        {0x10be814,52,UINT32_C(0x9f7c88dd),0x10be844},
+        {0x10be77c,48,UINT32_C(0x687fe952),0x10be7a8},
+        {0x10be3cc,96,UINT32_C(0xb224a508),0x10be428}
+    };
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;rows_fn native[6];focus_fn focus=0;move1_fn partial=0;
+    for(unsigned i=0;i<6;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(rows+fragments[i].address-0x10be000,elf+off,fragments[i].length);
+        memcpy(rows+fragments[i].literal-0x10be000,&pointer,4);
+        uint32_t entry=fragments[i].address|1;
+        if(i==0)memcpy(&partial,&entry,4);
+        else if(i<5)memcpy(&native[i],&entry,4);else memcpy(&focus,&entry,4);
+    }
+    impl_stub(rows,0x10be000,0x10be504,native_r_impl);
+    executable(rows,4096);
+    uint32_t focus_bits=predicate_bits(native_r_focus);
+    memcpy(row_vtable+7,&focus_bits,4);
+    for(unsigned r=0;r<16;++r) {
+        uint32_t vtable=(uint32_t)(uintptr_t)row_vtable,index=r;
+        memcpy(mgr_rowobjs[r],&vtable,4);memcpy(mgr_rowobjs[r]+4,&index,4);
+        uint32_t slot=(uint32_t)(uintptr_t)mgr_rowobjs[r];memcpy(mgr_ptrs+r*4,&slot,4);
+    }
+    uint32_t array=(uint32_t)(uintptr_t)mgr_ptrs;memcpy(mgr_obj+28,&array,4);
+    const uint32_t firsts[]={0,1,5},sizes[]={0,1,4,9},sels[]={0,1,7};
+    const uint32_t indices[]={0,1,3,4,8,UINT32_C(0xffffffff),UINT32_C(0x80000000)};unsigned compared=0;
+    for(unsigned a=0;a<3;++a)for(unsigned s=0;s<4;++s)for(unsigned m=0;m<3;++m) {
+        struct rows_fixture initial={.first=firsts[a],.size=sizes[s],.selected=sels[m]};
+        struct rows_fixture vendor=initial,ref=initial;struct oa_svg_list_manager_ops ops={&ref,rows_q_first,
+            rows_q_size,rows_q_sel,rows_q_row,rows_e_focus,rows_e_store,rows_e_impl};
+        memcpy(mgr_obj+12,&vendor.first,4);memcpy(mgr_obj+16,&vendor.size,4);memcpy(mgr_obj+20,&vendor.selected,4);
+        int e1=0,e2=0,e3=0,e4=0;
+        unsigned vsize=native[1](mgr_obj),vrow=native[2](mgr_obj);
+        unsigned vitem=native[3](mgr_obj),vfirst=native[4](mgr_obj);
+        unsigned osize=oa_svg_list_manager_size(&ops,&e1);
+        unsigned orow=oa_svg_list_manager_selected_row(&ops,&e2);
+        unsigned oitem=oa_svg_list_manager_selected_item(&ops,&e3);
+        unsigned ofirst=oa_svg_list_manager_first_visible(&ops,&e4);
+        if(osize!=vsize || orow!=vrow || oitem!=vitem || ofirst!=vfirst || e1 || e2 || e3 || e4) {
+            fprintf(stderr,"rows getter mismatch first=%x size=%x sel=%x native=%x/%x/%x/%x ours=%x/%x/%x/%x err=%d/%d/%d/%d\n",
+                initial.first,initial.size,initial.selected,vsize,vrow,vitem,vfirst,osize,orow,oitem,ofirst,e1,e2,e3,e4);
+            exit(1);
+        }
+        ++compared;
+        native_rows=&vendor;ref_rows=&ref;
+        partial(mgr_obj,7);
+        assert(!oa_svg_list_manager_update_partial(&ops,7));
+        if(vendor.count!=ref.count || vendor.trace[0].id!=R_IMPL || ref.trace[0].id!=R_IMPL ||
+            vendor.trace[0].a!=7 || ref.trace[0].a!=7 || vendor.trace[0].b || ref.trace[0].b) {
+            fprintf(stderr,"rows partial mismatch counts %u/%u\n",vendor.count,ref.count);
+            for(unsigned i=0;i<vendor.count;++i)fprintf(stderr,"  native[%u]=%u/%x/%d\n",i,vendor.trace[i].id,vendor.trace[i].a,vendor.trace[i].b);
+            for(unsigned i=0;i<ref.count;++i)fprintf(stderr,"  ours[%u]=%u/%x/%d\n",i,ref.trace[i].id,ref.trace[i].a,ref.trace[i].b);
+            exit(1);
+        }
+        ++compared;
+        for(unsigned k=0;k<7;++k) { compare_rows_focus(focus,oa_svg_list_manager_focus_item,initial,indices[k]);++compared; }
+    }
+    native_rows=NULL;ref_rows=NULL;
+    assert(!munmap(rows,4096));
+    printf("ok offline shipped ARM SVG list rows: %u native/C comparisons, field layout/focus-store/partial match\n",compared);
+}
 int main(int argc,char **argv)
 {
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
@@ -1472,7 +1591,7 @@ int main(int argc,char **argv)
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
     check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);
-    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_row_values(elf,bytes);
+    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_row_values(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;

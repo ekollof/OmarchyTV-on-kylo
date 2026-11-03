@@ -42,10 +42,10 @@ any NULL callback returns EINVAL.
 
 ## Still open
 
-Primitive move-target implementations (updatePartial/updateScrollBar/
-startSelectAnimation bodies), RowManager internals, row getters and editing,
-parent refresh, and the owned backend/context/consumer with
-permission/modal/focus/lifetime/visible gates. Bodies are not actual
-widget/rendering acceptance, and no visible parity is claimed.
+Subsequent [SVG-LIST-ROWS](SVG-LIST-ROWS-2026-11-03.md) implements the
+RowManager internals (field layout, focusItem body, updatePartial forward).
+updateImpl, row widget internals, row getters and editing, parent refresh,
+scrollbar/animation bodies and the owned backend/consumer remain open. Bodies
+are not actual widget/rendering acceptance, and no visible parity is claimed.
 
 Evidence and reproduction: artifacts/analysis/svg-list-move-2026-11-03/.

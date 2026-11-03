@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [SVG-LIST-ROWS](SVG-LIST-ROWS-2026-11-03.md) | RowManager field layout, focusItem body and updatePartial forward;324 native/C comparisons plus strict host/sanitizer/ARM; proved +12/+16/+20/+28 layout and rel-store semantics; updateImpl/row widgets/getters/editing/scrollbar/animation/backend/visible gates open |
 | [SVG-LIST-MOVE](SVG-LIST-MOVE-2026-11-03.md) | eight primitive list move/selection/window bodies;5040 native/C comparisons with exact call order/args plus strict host/sanitizer/ARM; proved no-animation shifts and list-vs-manager receiver split; move targets/RowManager/getters/editing/backend/visible gates open |
 | [SVG-LIST-BODIES](SVG-LIST-BODIES-2026-11-03.md) | seven lower list key bodies;26048 native/C comparisons with exact call order/args/handled truth plus strict host/sanitizer/ARM; proved page-down wrap direction and list-vs-manager call routing; primitive implementations/getters/editing/backend/visible gates open |
 | [SVG-LIST-INPUT](SVG-LIST-INPUT-2026-11-03.md) | key/message/typed row-value routing;999216 native key,49344 message-join and68640 row cases plus strict host/sanitizer/ARM; alias precedence/operands/raw values preserved; actual lower actions/getters/backend/visible gates open; owner requested stop after commit/push |

@@ -321,6 +321,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement the RowManager internals (field layout, focusItem body,
+      updatePartial forward); 324 native/C comparisons plus full host/focused
+      sanitizer/ARM and prior groups pass. SVG-LIST-ROWS. updateImpl, row
+      widget internals, row getters/editing, parent refresh, scrollbar/
+      animation bodies, owned backend/context and independent native visible
+      acceptance remain open.
 - [x] Implement the eight primitive list move/selection/window bodies; 5040
       native/C comparisons with exact call order/args plus full host/focused
       sanitizer/ARM and prior groups pass. SVG-LIST-MOVE. Primitive move

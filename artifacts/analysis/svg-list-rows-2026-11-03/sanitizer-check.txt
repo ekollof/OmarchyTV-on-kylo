@@ -1,0 +1,3 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+ok SVG list rows: manager field layout, focus switch/store and partial forward
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

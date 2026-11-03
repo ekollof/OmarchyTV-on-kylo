@@ -24,7 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SVG-LIST-MOVE](artifacts/reports/SVG-LIST-MOVE-2026-11-03.md)
+Latest: [SVG-LIST-ROWS](artifacts/reports/SVG-LIST-ROWS-2026-11-03.md)
+implements the RowManager internals behind every list key/move body: the
++12/+16/+20/+28 field layout, the focusItem switch/store body and the
+updatePartial forward. 324 native/C comparisons pass with exact field/ordering/
+store semantics, plus full strict host/focused sanitizer/ARM and every prior
+group. Getters are raw field reads; selectedItem adds first and selected row;
+focus computes wrapping rel, returns on zero count/rel-reach/rel-selected,
+otherwise row +28 (0 then 1) and rel store; partial forwards (index,false).
+No new service/module/UI consumer, TV access/wake/staging/deployment or
+pending job. Hashes in MEMORY/report. Next implement updateImpl and row widget
+internals, then row getters and editing, parent refresh, the
+updateScrollBar/startSelectAnimation bodies, and the owned backend/context/
+consumer with permission/modal/focus/lifetime/visible gates. Internals are not
+actual widget/rendering acceptance.
+
+Previous: [SVG-LIST-MOVE](artifacts/reports/SVG-LIST-MOVE-2026-11-03.md)
 implements the eight primitive list move/selection/window bodies called by
 the SVG-LIST-BODIES key bodies. 5040 native/C comparisons pass with exact
 call order and args, plus full strict host/focused sanitizer/ARM and every
@@ -33,10 +48,10 @@ aux-size; up/down shift first-visible by n with no animation while only the
 to-top/to-bottom moves animate; selection bodies focus by item/first-visible
 offsets. The list-box versus this+0xf8 receiver split is asserted. No new
 service/module/UI consumer, TV access/wake/staging/deployment or pending job.
-Hashes in MEMORY/report. Next implement the primitive move targets
-(updatePartial/updateScrollBar/startSelectAnimation bodies) and RowManager
-internals, then row getters and editing, parent refresh, and the owned
-backend/context/consumer with permission/modal/focus/lifetime/visible gates.
+Hashes in MEMORY/report. SVG-LIST-ROWS implements the RowManager internals
+(field layout, focusItem body, updatePartial forward); updateImpl, row widget
+internals, row getters/editing, parent refresh, scrollbar/animation bodies
+and the owned backend/consumer remain open.
 Bodies are not actual widget/rendering acceptance.
 
 Previous: [SVG-LIST-BODIES](artifacts/reports/SVG-LIST-BODIES-2026-11-03.md)

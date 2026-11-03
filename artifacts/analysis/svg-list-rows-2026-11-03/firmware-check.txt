@@ -1,0 +1,1 @@
+ok offline shipped ARM SVG list rows: 324 native/C comparisons, field layout/focus-store/partial match
