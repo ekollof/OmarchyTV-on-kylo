@@ -24,7 +24,24 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [TAB-WRITEBACK](artifacts/reports/TAB-WRITEBACK-2026-11-03.md) adds
+Latest: [HOTEL-CONTEXT](artifacts/reports/HOTEL-CONTEXT-2026-11-03.md) adds
+settings.hotel/readonly hotel-state via real Unix IPC, reading the separate
+HMCSettings table. Field mapping+1d/+28/+2d and SQLite narrowing are verified;
+saved DB0/1/0 is not a live vendor cache sample. oa_tab_apply_settings combines
+held ui.profile facts without overwriting app/media/entry. Settings publication
+rollback/removal/closed-writable bugs are fixed; either service hold pins module.
+345 shipped row-copy cases, prior corpora, real vendor-SQLite ARM DSO/corpus,
+full host/focused sanitizers/IPC and23-source-module host loader pass. Native
+identities in MEMORY/report. No TV access/wake/deployment, no jobs/helpers.
+[CONTENT-HEADER-OWNERSHIP](artifacts/reports/CONTENT-HEADER-OWNERSHIP-2026-11-03.md)
+resolves show+50: remove content's own five full-screen components; parent header
+is separate. No pixel/render acceptance follows. Next integrate persisted-row/
+profile services into the controller, complete native hotel defaults/writer/cache
+behavior and actual app/media/entry/content/key/permission/writeback handling.
+No automatic queue consumer or complete visible parity yet. Evidence/reproduction:
+analysis/content-lifecycle-2026-11-03; do not repeat raw BSS-pointer reads.
+
+Previous: [TAB-WRITEBACK](artifacts/reports/TAB-WRITEBACK-2026-11-03.md) adds
 ui.navigation v2 independent setters + nav-set-tab/item/submenu through actual
 Unix IPC. No enqueue/draw/focus/update is implied. v1 prefix remains; OAN2 raw
 state saves read legacy OAN1.1792 shipped setter cases/1792 DSO round-trips,

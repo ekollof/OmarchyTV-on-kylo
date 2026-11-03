@@ -47,6 +47,20 @@ int main(void)
     assert(oa_tab_initial_selection(32,31,0,&selected)==EINVAL && !memcmp(&selected,&saved,sizeof saved));
     assert(oa_tab_initial_selection(31,128,0,&selected)==EINVAL && !memcmp(&selected,&saved,sizeof saved));
     assert(oa_tab_initial_selection(31,31,0,NULL)==EINVAL);
+    struct oa_tab_profile profile={.connectivity_raw=1,.hotel_raw=1};
+    struct oa_tab_hotel hotel={.mode_available=255,.picture_flag=1,.osd_menu_mode=2};
+    c=(struct oa_tab_context){.from_launcher=1,.in_app=2,.in_media_browser=3};
+    assert(!oa_tab_apply_settings(&c,&profile,&hotel));
+    assert(c.network_profile_flag==1 && c.hotel_active==1 && c.hotel_picture_flag==1 && c.hotel_osd_mode==2);
+    assert(c.from_launcher==1 && c.in_app==2 && c.in_media_browser==3);
+    profile.hotel_raw=2;profile.connectivity_raw=UINT32_MAX;
+    assert(!oa_tab_apply_settings(&c,&profile,&hotel) && !c.hotel_active && !c.network_profile_flag);
+    profile.hotel_raw=1;hotel.mode_available=0;
+    assert(!oa_tab_apply_settings(&c,&profile,&hotel) && !c.hotel_active);
+    struct oa_tab_context previous=c;
+    assert(oa_tab_apply_settings(&c,NULL,&hotel)==EINVAL && !memcmp(&c,&previous,sizeof c));
+    assert(oa_tab_apply_settings(&c,&profile,NULL)==EINVAL && !memcmp(&c,&previous,sizeof c));
+    assert(oa_tab_apply_settings(NULL,&profile,&hotel)==EINVAL);
     puts("ok tab policy: availability/raw bytes, initial selection/fallback/empty group, requested focus and atomic invalid inputs");
     return 0;
 }

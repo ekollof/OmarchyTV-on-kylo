@@ -13,6 +13,8 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [HOTEL-CONTEXT](HOTEL-CONTEXT-2026-11-03.md) | firmware HMCSettings mapping; read-only settings.hotel/CLI/actual Unix IPC, profile-context composition, settings publication/closed-state fixes;345 shipped row cases and full host/sanitizer/ARM vendor-SQLite tests; full defaults/controller/TV acceptance open |
+| [CONTENT-HEADER-OWNERSHIP](CONTENT-HEADER-OWNERSHIP-2026-11-03.md) | resolves show+50 as removal of content's own five full-screen component pointers, separate parent header; source only, no new renderer/visual acceptance |
 | [TAB-WRITEBACK](TAB-WRITEBACK-2026-11-03.md) | v2 independent retained setters/CLI/Unix IPC, OAN2 raw-state reload/OAN1 migration;1792 shipped setters/1792 DSO round-trips plus full host/sanitizer/ARM pass; corrects showing/hide interface; full consumer/lifecycle/TV acceptance open |
 | [TAB-CONTEXT](TAB-CONTEXT-2026-11-03.md) | resolved network-tab/menu-capability/profile chain; bounded scalar decoder and reloadable ui.profile,65281 shipped hashes/27 actual lookups plus host/sanitizer/ARM DSO lifecycle and23-module host loader pass; mutable context/consumer/TV acceptance open |
 | [TAB-SELECTION](TAB-SELECTION-2026-11-03.md) | initial missing-tab fallback and raw-ID/child-index distinction, empty-group/content0 behavior;9216 actual shipped group-code qemu comparisons; no native context, queue consumer or visible acceptance |

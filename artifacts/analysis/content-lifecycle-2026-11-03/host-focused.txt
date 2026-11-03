@@ -1,0 +1,18 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -Ithird_party  -o build/tests/settings_hotel tests/settings_hotel.c build/core/check.o build/core/control.o build/core/host.o build/core/module.o build/core/skin.o -ldl -pthread -lm -Lvendor/lib -lsqlite3
+/usr/bin/ld: skipping incompatible vendor/lib/libsqlite3.so when searching for -lsqlite3
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build/modules/mod_settings.so modules/settings/settings.c  \
+   \
+  -Ithird_party -Lvendor/lib -lsqlite3
+/usr/bin/ld: skipping incompatible vendor/lib/libsqlite3.so when searching for -lsqlite3
+ok settings.hotel: readonly companion, SQL integer narrowing/NULL/text, reload and non-waiting busy error
+ok settings.hotel: either consumer hold pins provider; removal refuses cached reads; both publication collisions preserve peers
+ok settings.hotel: empty/schema errors preserve output, no schema creation/sync; first persisted row and cleanup
+ok tab policy: availability/raw bytes, initial selection/fallback/empty group, requested focus and atomic invalid inputs
+node tests/settings_hotel_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok actual hotel Unix IPC: persisted fields, narrowing, strict query, live fixture changes, reload/error/unavailability and clean exit
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+ok settings.hotel: saved firmware database read-only corpus0/1/0
+ok settings.hotel: readonly companion, SQL integer narrowing/NULL/text, reload and non-waiting busy error
+ok settings.hotel: either consumer hold pins provider; removal refuses cached reads; both publication collisions preserve peers
+ok settings.hotel: empty/schema errors preserve output, no schema creation/sync; first persisted row and cleanup

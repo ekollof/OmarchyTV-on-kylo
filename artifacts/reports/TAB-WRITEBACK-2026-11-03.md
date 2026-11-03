@@ -62,8 +62,10 @@ d4 gives secondary vptr14e8878 at object+4a0. The actual slots are:
 
 isShowing e07754 returns byte4c8; isFocused e07790 returns byte4c9. show e07a1c
 invokes primary virtuals+4c/+50 and sets showing1/focus0. The saved primary table
-names+4c as init and+50 as SVGFullScreenDialog::destroyComponents; do not label
-the latter paint without inspecting its implementation. hide e07a80 calls
+names+4c as init and+50 as SVGFullScreenDialog::destroyComponents. Subsequent
+[CONTENT-HEADER-OWNERSHIP](CONTENT-HEADER-OWNERSHIP-2026-11-03.md) confirms it
+clears the content's five own full-screen component pointers, not paint or
+the parent TabDialog header. hide e07a80 calls
 primary destroy when the window is created, then clears both flags. The primary
 vtable confirms slot24 is PictureSettingsDialog::destroy e0a738.
 

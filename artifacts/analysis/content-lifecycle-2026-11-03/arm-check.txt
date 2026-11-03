@@ -1,0 +1,5 @@
+ok settings.hotel: saved firmware database read-only corpus0/1/0
+ok settings.hotel: readonly companion, SQL integer narrowing/NULL/text, reload and non-waiting busy error
+ok settings.hotel: either consumer hold pins provider; removal refuses cached reads; both publication collisions preserve peers
+ok settings.hotel: empty/schema errors preserve output, no schema creation/sync; first persisted row and cleanup
+ok tab policy: availability/raw bytes, initial selection/fallback/empty group, requested focus and atomic invalid inputs

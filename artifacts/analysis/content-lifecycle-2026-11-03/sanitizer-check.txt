@@ -1,0 +1,12 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Ithird_party -fsanitize=address,undefined -o build-tab-policy-sanitize/tests/settings_hotel tests/settings_hotel.c build-tab-policy-sanitize/core/check.o build-tab-policy-sanitize/core/control.o build-tab-policy-sanitize/core/host.o build-tab-policy-sanitize/core/module.o build-tab-policy-sanitize/core/skin.o -ldl -pthread -lm -Lvendor/lib -lsqlite3
+/usr/bin/ld: skipping incompatible vendor/lib/libsqlite3.so when searching for -lsqlite3
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-tab-policy-sanitize/modules/mod_settings.so modules/settings/settings.c -fsanitize=address,undefined \
+   \
+  -Ithird_party -Lvendor/lib -lsqlite3
+/usr/bin/ld: skipping incompatible vendor/lib/libsqlite3.so when searching for -lsqlite3
+ok settings.hotel: readonly companion, SQL integer narrowing/NULL/text, reload and non-waiting busy error
+ok settings.hotel: either consumer hold pins provider; removal refuses cached reads; both publication collisions preserve peers
+ok settings.hotel: empty/schema errors preserve output, no schema creation/sync; first persisted row and cleanup
+ok tab policy: availability/raw bytes, initial selection/fallback/empty group, requested focus and atomic invalid inputs
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

@@ -1,0 +1,2 @@
+verified constructor-bound db_tables+60=HMCSettings; selected fields=m_hotel_mode_availability,m_osd_menu_mode,m_pic_mode_availability
+saved database 150e2be30e5948571860a8c60c9da525 read-only row=0|1|0; content hash unchanged

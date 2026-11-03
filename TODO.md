@@ -321,6 +321,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Read persisted hotel inputs from firmware-mapped HMCSettings via companion
+      settings.hotel + hotel-state CLI/actual Unix IPC; combine ui.profile facts
+      without changing entry/media/app state.345 shipped row-copy cases and
+      DSO/SQLite/host/sanitizer/ARM checks pass. HOTEL-CONTEXT. No cache/current
+      TV acceptance or complete persistence/default initialization is claimed.
+- [x] Resolve show+50: content removes its own five full-screen component pointers,
+      with TabDialog's separate header untouched by that function. Source-only
+      CONTENT-HEADER-OWNERSHIP; no new renderer or visual parity gate is closed.
 - [x] Add ui.navigation v2 independent retained setters, CLI/actual Unix IPC
       and OAN2 raw-state snapshots with OAN1 migration.1792 shipped setter
       cases and1792 DSO round-trips pass host/sanitizer/ARM-qemu. TAB-WRITEBACK.
@@ -358,7 +366,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       initialization/selection writeback, drawing consumer and pressure behavior
       beyond the project16-request bound still require firmware/native acceptance.
       TAB-NAVIGATION supplies availability/focus predicates; TAB-CONTEXT supplies
-      immutable ui.profile facts. Acquire real mutable hotel/app/media/entry
+      immutable ui.profile facts; HOTEL-CONTEXT supplies the persisted hotel-row
+      path through settings.hotel. Complete native hotel defaults/setters/cache
+      behavior and acquire real app/media/entry
       inputs and description presence (initial unavailable-tab
       fallback is now resolved by TAB-SELECTION), then handle
       content validity and password/network gates before consuming/drawing.

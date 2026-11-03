@@ -6,6 +6,21 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Hotel context: HOTEL-CONTEXT maps the separate HMCSettings table and raw
+mode byte+1d/OSD word+28/picture byte+2d. db_tables is BSS initialized by
+NvramStorage; its +60 binding is verified from the constructor. settings.hotel
+and hotel-state SELECT only, unlike the vendor initializer's schema sync.
+Saved DB row0/1/0 is not a live cache poll. SQLite int conversion precedes byte/
+word stores;345 actual shipped row-copy cases and real vendor-SQLite ARM tests
+pass. Publication failure/stop no longer removes peers or leaves cached DB reads
+available; closed writable connections report unwritable. Full defaults/cache/
+writer/controller/hardware acceptance remains open; no TV access.
+
+Content header: CONTENT-HEADER-OWNERSHIP resolves Picture show's primary+50:
+destroyComponents clears only that content object's own+140..150 pointer fields.
+It is not paint and does not target TabDialog's separate header. Source ownership
+does not establish matched-frame execution or raster parity.
+
 Retained mutation: TAB-WRITEBACK adds ui.navigation v2 independent setters,
 preserving the v1 prefix; OAN2 keeps all stored tab/item bits/submenu bytes and
 reads legacy OAN1. Setters do not enqueue/draw/update/focus or infer a close.

@@ -193,6 +193,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  nav-set-tab <signed-id>  set retained tab (no enqueue/draw)\n"
                  "  nav-set-item <signed-id> set retained item (no enqueue/draw)\n"
                  "  nav-set-submenu <0-255>  set retained submenu byte only\n"
+                 "  hotel-state             read persisted hotel tab inputs\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -206,6 +207,17 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         if (oa_skin_request(h, a1)) { snprintf(outbuf, outlen, "failed errno %d\n", errno); return -1; }
         snprintf(outbuf, outlen, "pending %s\n", a1);
         return 0;
+    }
+    if(!strcmp(cmd,"hotel-state")) {
+        if(a1 || force){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_settings_hotel_iface *hotel=h->api.lookup(h,OA_SVC_SETTINGS_HOTEL,1);
+        if(!hotel){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        struct oa_tab_hotel state;int error=hotel->read(&state);
+        h->api.release(h,OA_SVC_SETTINGS_HOTEL);
+        if(error)snprintf(outbuf,outlen,"failed errno %d\n",error);
+        else snprintf(outbuf,outlen,"hotel %u osd %" PRIu32 " picture %u\n",
+                      (unsigned)state.mode_available,state.osd_menu_mode,(unsigned)state.picture_flag);
+        return error?-1:0;
     }
     if(!strcmp(cmd,"nav-state") || !strcmp(cmd,"nav-operation") ||
        !strcmp(cmd,"nav-result") || !strcmp(cmd,"nav-take") ||

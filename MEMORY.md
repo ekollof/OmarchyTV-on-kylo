@@ -6,6 +6,21 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+HOTEL-CONTEXT-2026-11-03: settings now publishes read-only settings.hotel v1;
+hotel-state works through actual Unix IPC. HMCSettings mapping/column_int byte/
+word semantics verified; saved DB150e2be30e5948571860a8c60c9da525 reads0/1/0
+with content unchanged. Not a TV cache poll. Common helper composes ui.profile
+with persisted hotel values, retaining app/media/entry. Peer-publication rollback/
+removal lifetime and closed writable-state bugs fixed.345 shipped row-copy
+cases, prior corpora, real vendor-SQLite ARM DSO/corpus, host/sanitizer/policy/IPC
+and23-source-module host loader checks pass. Native build only settings24588/
+636e6abd4526dcea42dd523d349bdc76/maxGLIBC2.4; test485204/
+6705c8bb048fe4526d49b67a7c7b1902, build-tv-v3/tab-policy. CONTENT-HEADER-OWNERSHIP
+also confirms show+50 clears content's own five full-screen pointers, not paint
+or TabDialog's header. No TV access/wake/staging/deployment/installed ABI/recovery
+change. No helper/build/Ghidra job pending after checks. Controller/native
+defaults/writers/cache/app/permission/visible parity remain open.
+
 TAB-WRITEBACK-2026-11-03: ui.navigation v2 now exposes independent tab/item/
 raw submenu-byte setters via C/CLI/actual Unix IPC. v1 prefix retained; OAN2
 preserves all raw state and reads OAN1.1792 shipped setter cases/1792 DSO reload

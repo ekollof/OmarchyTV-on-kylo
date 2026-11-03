@@ -1,0 +1,469 @@
+Read-only runtime preflight; interpreter /lib64/ld-linux-x86-64.so.2; module ABI 3
+CHECK /home/ekollof/Work/tvhack/openaurora/build/openaurora
+	linux-vdso.so.1 (0x00007f57d5b35000)
+	libm.so.6 => /usr/lib/libm.so.6 (0x00007f57d5937000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f57d5600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f57d5b37000)
+
+	Version information:
+	/home/ekollof/Work/tvhack/openaurora/build/openaurora:
+		libc.so.6 (GLIBC_2.9) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.10) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libm.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+		libc.so.6 (GLIBC_ABI_DT_X86_64_PLT) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.35) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_PRIVATE) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /home/ekollof/Work/tvhack/openaurora/build/openaurora
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_audio.so
+	linux-vdso.so.1 (0x00007f72242a8000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f7224000000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f72242aa000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_audio.so:
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_audio.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_audio_curve.so
+	linux-vdso.so.1 (0x00007ff281144000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007ff280e00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007ff281146000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_audio_curve.so:
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_audio_curve.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_audio_mixer.so
+	linux-vdso.so.1 (0x00007f1c760f9000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f1c75e00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f1c760fb000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_audio_mixer.so:
+		libc.so.6 (GLIBC_2.15) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_audio_mixer.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_cec.so
+	linux-vdso.so.1 (0x00007f9285ccd000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f9285a00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f9285ccf000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_cec.so:
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_cec.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_display.so
+	linux-vdso.so.1 (0x00007f5bef2d5000)
+	libm.so.6 => /usr/lib/libm.so.6 (0x00007f5bef15d000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f5beee00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f5bef2d7000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_display.so:
+		libm.so.6 (GLIBC_2.2.5) => /usr/lib/libm.so.6
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libm.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+		libc.so.6 (GLIBC_ABI_DT_X86_64_PLT) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.35) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_PRIVATE) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_display.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_graphics.so
+	linux-vdso.so.1 (0x00007f268d91f000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f268d600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f268d921000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_graphics.so:
+		libc.so.6 (GLIBC_2.15) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_graphics.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_ir.so
+	linux-vdso.so.1 (0x00007fe0b209a000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fe0b1e00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fe0b209c000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_ir.so:
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_ir.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_panel.so
+	linux-vdso.so.1 (0x00007f0f2ed23000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f0f2ea00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f0f2ed25000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_panel.so:
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_panel.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_plat.so
+	linux-vdso.so.1 (0x00007fa1a57f8000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fa1a5400000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fa1a57fa000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_plat.so:
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_plat.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_power.so
+	linux-vdso.so.1 (0x00007f53b29e1000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f53b2600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f53b29e3000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_power.so:
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_power.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_scene_display.so
+	linux-vdso.so.1 (0x00007f7b0e19e000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f7b0de00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f7b0e1a0000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_scene_display.so:
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_scene_display.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_settings.so
+	linux-vdso.so.1 (0x00007f81b452c000)
+	libsqlite3.so.0 => /usr/lib/libsqlite3.so.0 (0x00007f81b4350000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f81b4000000)
+	libm.so.6 => /usr/lib/libm.so.6 (0x00007f81b3ec9000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f81b452e000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_settings.so:
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libsqlite3.so.0:
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.28) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libm.so.6 (GLIBC_2.38) => /usr/lib/libm.so.6
+		libm.so.6 (GLIBC_2.44) => /usr/lib/libm.so.6
+		libm.so.6 (GLIBC_2.29) => /usr/lib/libm.so.6
+		libm.so.6 (GLIBC_2.2.5) => /usr/lib/libm.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+	/usr/lib/libm.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+		libc.so.6 (GLIBC_ABI_DT_X86_64_PLT) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.35) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_PRIVATE) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+OK /tmp/oa-profile-loader-1fPLfX/mod_settings.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_source.so
+	linux-vdso.so.1 (0x00007fa398771000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fa398400000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fa398773000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_source.so:
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_source.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_ticker.so
+	linux-vdso.so.1 (0x00007ff5182fd000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007ff518000000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007ff5182ff000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_ticker.so:
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_ticker.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_ui_anim.so
+	linux-vdso.so.1 (0x00007f819f0f9000)
+	libm.so.6 => /usr/lib/libm.so.6 (0x00007f819ef84000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f819ec00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f819f0fb000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_ui_anim.so:
+		libm.so.6 (GLIBC_2.2.5) => /usr/lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libm.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+		libc.so.6 (GLIBC_ABI_DT_X86_64_PLT) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.35) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_PRIVATE) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_ui_anim.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_ui_clock.so
+	linux-vdso.so.1 (0x00007f5febb31000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f5feb800000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f5febb33000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_ui_clock.so:
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_ui_clock.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_ui_console.so
+	linux-vdso.so.1 (0x00007fe9b7b6b000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fe9b7800000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fe9b7b6d000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_ui_console.so:
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_ui_console.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_ui_engine.so
+	linux-vdso.so.1 (0x00007fa7d8a3f000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fa7d8600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fa7d8a41000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_ui_engine.so:
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_ui_engine.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_ui_navigation.so
+	linux-vdso.so.1 (0x00007f8c502b4000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f8c50000000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f8c502b6000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_ui_navigation.so:
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_ui_navigation.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_ui_omarchy.so
+	linux-vdso.so.1 (0x00007f9b238fa000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f9b23600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f9b238fc000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_ui_omarchy.so:
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_ui_omarchy.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_ui_profile.so
+	linux-vdso.so.1 (0x00007f74c4c14000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f74c4800000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f74c4c16000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_ui_profile.so:
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_ui_profile.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_ui_theme.so
+	linux-vdso.so.1 (0x00007f947ef14000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f947ec00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f947ef16000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_ui_theme.so:
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_ui_theme.so
+CHECK /tmp/oa-profile-loader-1fPLfX/mod_ui_vendor.so
+	linux-vdso.so.1 (0x00007fef60e70000)
+	libm.so.6 => /usr/lib/libm.so.6 (0x00007fef60cf1000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fef60a00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fef60e72000)
+
+	Version information:
+	/tmp/oa-profile-loader-1fPLfX/mod_ui_vendor.so:
+		libm.so.6 (GLIBC_2.2.5) => /usr/lib/libm.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libm.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+		libc.so.6 (GLIBC_ABI_DT_X86_64_PLT) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.35) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_PRIVATE) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /tmp/oa-profile-loader-1fPLfX/mod_ui_vendor.so
+Runtime preflight PASSED. No module entry/init/start, control socket or hardware access.
+This checks ELF metadata and library relocations, not device operation or display scanout.

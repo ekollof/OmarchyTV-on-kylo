@@ -40,4 +40,15 @@ struct oa_tab_profile {
     uint8_t connectivity_enabled,hotel_enabled,connectivity_present,hotel_present;
 };
 int oa_tab_profile_from_sw(const void *data,size_t size,struct oa_tab_profile *out);
+/* Persisted HMCSettings fields; mode_available is separate from profile support.
+ * SQLite's int32 values narrow to raw bytes for these two availability fields. */
+struct oa_tab_hotel {
+    uint32_t osd_menu_mode;
+    uint8_t mode_available,picture_flag;
+};
+/* Apply only profile/hotel inputs; retain caller-owned entry/media/app state.
+ * Profile raw integers are enabled exactly at1; nonzero persisted hotel mode
+ * then enables the wrapper. No file/SQL access or defaults are inferred here. */
+int oa_tab_apply_settings(struct oa_tab_context *context,const struct oa_tab_profile *profile,
+                          const struct oa_tab_hotel *hotel);
 #endif

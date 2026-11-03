@@ -128,6 +128,44 @@ static void check_retained_setters(const unsigned char *elf,size_t bytes)
     assert(!munmap(mapped,4096));
     printf("ok offline shipped ARM retained setters: %u signed32/raw byte cases, exact fields and surrounding bytes preserved\n",compared);
 }
+static unsigned hotel_step_result,hotel_columns[3];
+static unsigned hotel_step(void *p) { (void)p;return hotel_step_result; }
+static unsigned hotel_column(void *p,int32_t index)
+{ (void)p;assert(index>=0 && index<3);return hotel_columns[index]; }
+static void check_hotel_rows(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *mapped=page(0xbd2000,8192),*step_page=page(0x6b2000,4096),*column_page=page(0x6b4000,4096);
+    size_t off=file_offset(elf,bytes,0xbd2f2c,272);
+    assert(crc32(elf+off,272)==UINT32_C(0x90099888));memcpy(mapped+0xf2c,elf+off,272);
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(mapped+0x1038,&pointer,4);
+    const uint32_t step_stub[]={UINT32_C(0xe59fc000),UINT32_C(0xe12fff1c),bits(hotel_step)};
+    const uint32_t column_stub[]={UINT32_C(0xe59fc000),UINT32_C(0xe12fff1c),predicate_bits(hotel_column)};
+    memcpy(step_page+0xb94,step_stub,sizeof step_stub);memcpy(column_page+0x2bc,column_stub,sizeof column_stub);
+    executable(mapped,8192);executable(step_page,4096);executable(column_page,4096);
+    typedef unsigned (*row_fn)(void *,void *);
+    row_fn row;pointer=0xbd2f2d;memcpy(&row,&pointer,sizeof row);
+    uint32_t types[]={1,4,1},targets[3],access[9]={3,0,0,0,0,0,0,0,0},query=0x1234;
+    access[2]=(uint32_t)(uintptr_t)types;access[3]=(uint32_t)(uintptr_t)targets;
+    _Alignas(uint32_t) unsigned char hotel[0x40],expected[0x40];
+    targets[0]=(uint32_t)(uintptr_t)(hotel+0x1d);targets[1]=(uint32_t)(uintptr_t)(hotel+0x28);
+    targets[2]=(uint32_t)(uintptr_t)(hotel+0x2d);
+    const uint32_t values[]={0,1,2,255,UINT32_C(0x80000000),INT32_MAX,UINT32_MAX};unsigned compared=0;
+    hotel_step_result=100; /* SQLITE_ROW, with integer conversion stubbed */
+    for(size_t a=0;a<7;++a)for(size_t b=0;b<7;++b)for(size_t c=0;c<7;++c) {
+        hotel_columns[0]=values[a];hotel_columns[1]=values[b];hotel_columns[2]=values[c];
+        memset(hotel,0xa5,sizeof hotel);memset(expected,0xa5,sizeof expected);
+        expected[0x1d]=(unsigned char)values[a];expected[0x2d]=(unsigned char)values[c];
+        for(unsigned j=0;j<4;++j)expected[0x28+j]=(unsigned char)(values[b]>>(8*j));
+        assert(row(&query,access)==1 && !memcmp(hotel,expected,sizeof hotel));++compared;
+    }
+    const unsigned no_row[]={101,5}; /* DONE/BUSY both leave member fields alone */
+    for(size_t i=0;i<2;++i) {
+        hotel_step_result=no_row[i];memcpy(expected,hotel,sizeof hotel);
+        assert(!row(&query,access) && !memcmp(hotel,expected,sizeof hotel));++compared;
+    }
+    assert(!munmap(mapped,8192) && !munmap(step_page,4096) && !munmap(column_page,4096));
+    printf("ok offline shipped ARM hotel row: %u integer store/no-row cases, byte/int32 widths and surrounding fields preserved\n",compared);
+}
 static void check_profile(const unsigned char *elf,size_t bytes,const char *path)
 {
     const struct {uint32_t address,length,crc,guard_literal;} fragments[]={
@@ -262,7 +300,7 @@ int main(int argc,char **argv)
     const uint32_t arm[3]={UINT32_C(0xe59fc000),UINT32_C(0xe12fff1c),bits(failed)};
     memcpy((unsigned char *)fail_page+0x740,arm,sizeof arm);
     executable(code,8192);executable(media_page,4096);executable(app_page,4096);executable(fail_page,4096);
-    check_selection(elf,bytes);check_profile(elf,bytes,argv[2]);check_retained_setters(elf,bytes);free(elf);
+    check_selection(elf,bytes);check_profile(elf,bytes,argv[2]);check_retained_setters(elf,bytes);check_hotel_rows(elf,bytes);free(elf);
     _Alignas(uint32_t) unsigned char dialog[0x37a1]={0},demo[0x29c]={0};
     uint32_t vtable[21]={0};vtable[0x18/4]=bits(hotel);vtable[0x40/4]=bits(mode);vtable[0x50/4]=bits(picture);
     uint32_t hotel_object=(uint32_t)(uintptr_t)vtable;

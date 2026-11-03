@@ -65,3 +65,13 @@ int oa_tab_profile_from_sw(const void *data,size_t size,struct oa_tab_profile *o
     next.connectivity_present=(uint8_t)connectivity;next.hotel_present=(uint8_t)hotel;
     *out=next;return 0;
 }
+int oa_tab_apply_settings(struct oa_tab_context *context,const struct oa_tab_profile *profile,
+                          const struct oa_tab_hotel *hotel)
+{
+    if(!context || !profile || !hotel)return EINVAL;
+    context->network_profile_flag=profile->connectivity_raw==1;
+    context->hotel_active=hotel->mode_available!=0 && profile->hotel_raw==1;
+    context->hotel_picture_flag=hotel->picture_flag;
+    context->hotel_osd_mode=hotel->osd_menu_mode;
+    return 0;
+}

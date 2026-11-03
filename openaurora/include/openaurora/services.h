@@ -24,6 +24,15 @@
 #define OA_SVC_UI_PROFILE "ui.profile"
 typedef struct { int (*copy)(struct oa_tab_profile *out); } oa_ui_profile_iface;
 
+/* settings.hotel v1 — loop-thread companion, same settings provider/hold lifetime.
+ * A single read-only SELECT returns persisted HMCSettings values, not the stock
+ * process cache or all HotelModeConfiguration defaults/setters. errno results:
+ * ENODEV unavailable, ENODATA no row, EBUSY locked, EIO schema/other SQL failure.
+ * Output changes only on success. This local SQL query may perform file I/O;
+ * no table synchronization, network/hardware operation or HMC write exists. */
+#define OA_SVC_SETTINGS_HOTEL "settings.hotel"
+typedef struct { int (*read)(struct oa_tab_hotel *out); } oa_settings_hotel_iface;
+
 /* ui.navigation v1 — loop-thread-only settings route state/queue. Requests
  * are completed modal results or NovoLauncherOperationIds, NEVER raw keys.
  * Returns errno values. A successful submit queues, never draws/dispatches.

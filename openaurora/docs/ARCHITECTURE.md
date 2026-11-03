@@ -64,6 +64,15 @@ TabDialog state writeback, production queue pressure behavior and the existing
 captured-screen diagnostic navigation remain to be integrated. See NAVIGATION-
 SERVICE for host/sanitizer/ARM-qemu/actual Unix IPC checks and limits.
 
+`settings.hotel` v1 is a companion service on the existing settings provider.
+It SELECTs persisted HMCSettings mode availability, OSD mode and picture flag
+in one read; no schema sync or hotel writes. `hotel-state` queries it through
+CLI/Unix IPC. It performs local SQL I/O, reports busy/schema/no-row errors and
+never substitutes guessed defaults. oa_tab_apply_settings combines these raw
+values with ui.profile while retaining entry/media/app state. Either service's
+hold pins settings; publication failures preserve peers and removal invalidates
+the database before callbacks. HOTEL-CONTEXT records source and acceptance limits.
+
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;
 EGL-WINDOW establishes direct display1 presentation with the retained4-byte

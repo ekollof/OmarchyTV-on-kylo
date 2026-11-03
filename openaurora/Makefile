@@ -75,6 +75,17 @@ MOD_DEP  := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).d)
 
 all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker
 
+$(BUILD)/tests/settings_hotel: tests/settings_hotel.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Ithird_party $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS) -L$(VENDOR_LIB) $(SQLITE_LIBS)
+.PHONY: check-settings-hotel
+check-settings-hotel: $(BUILD)/tests/settings_hotel $(BUILD)/modules/mod_settings.so $(BUILD)/modules/mod_ticker.so
+	@$(BUILD)/tests/settings_hotel $(BUILD)/modules
+check: check-settings-hotel
+.PHONY: check-settings-hotel-ipc
+check-settings-hotel-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_settings.so
+	node tests/settings_hotel_ipc.cjs $(abspath $(BUILD))
+
 $(BUILD)/modules/mod_ui_profile.so: modules/ui_profile/ui_profile.c common/profile.c common/tab_policy.c include/openaurora/profile.h include/openaurora/tab_policy.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
