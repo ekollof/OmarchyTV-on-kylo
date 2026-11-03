@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG list slide: SVG-LIST-SLIDE implements setSlideValue progress/slider/text
+routing; 72 native/C comparisons pass. Two flag bytes and the type word
+select progress vs slider paths; +0x1498/+0x13c0 bar, +0x1ca8 box, empty
+UString format and +0x2df8 store are asserted; progress paths store nothing.
+Page-size, stub-convention and stale-store slips were caught and fixed.
+Parent refresh, scrollbar construction/rendering, startSelectAnimation,
+backend/visible gates remain open.
+
 SVG list widgets: SVG-LIST-WIDGETS implements the numeric forward and the
 selected-id gates/walk; 21 native/C comparisons pass. The +0x28c cell holds
 the array address (two loads, not one); the +0x18d8 row offset is pure

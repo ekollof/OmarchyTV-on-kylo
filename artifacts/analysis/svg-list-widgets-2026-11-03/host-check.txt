@@ -1,1 +1,1 @@
-ok SVG list widgets: numeric forward, created/none gates and table-walk id
+ok SVG list widgets: numeric forward, created/none gates, table-walk id and slide paths

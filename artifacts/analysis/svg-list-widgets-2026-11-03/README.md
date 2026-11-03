@@ -21,7 +21,11 @@ comparisons with exact call order/args and return values, plus all prior
 groups. Numeric forwards the embedded entry handle; the selected id gates
 on isCreated and (item+1)==0 before the cell/array/entry/id walk. A
 +0x28c single-vs-double indirection misread was caught by the differential
-(fault-PC capture) and corrected to cell-then-array. Row editing (slide/
-progress/text paths), parent refresh, scrollbar construction/rendering,
-startSelectAnimation and the owned backend/consumer remain open. Binaries
-stay ignored and isolated under build-tv-v3/tab-policy.
+(fault-PC capture) and corrected to cell-then-array. Subsequent
+[SVG-LIST-SLIDE](../../reports/SVG-LIST-SLIDE-2026-11-03.md) implements
+setSlideValue (progress vs slider/text routing, two flag bytes, type word,
++0x1498/+0x13c0 slider selection, +0x1ca8 text box, +0x2df8 store). Row
+editing beyond setSlideValue (setChecked etc.), parent refresh, scrollbar
+construction/rendering, startSelectAnimation and the owned backend/consumer
+remain open. Binaries stay ignored and isolated under
+build-tv-v3/tab-policy.

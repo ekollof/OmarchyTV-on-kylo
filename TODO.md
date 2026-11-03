@@ -321,6 +321,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement row editing via setSlideValue (progress vs slider/text routing,
+      two flag bytes, type word, bar selection, empty-format text, stored
+      word); 72 native/C comparisons plus full host/focused sanitizer/ARM and
+      prior groups pass. SVG-LIST-SLIDE. Parent refresh, scrollbar
+      construction/rendering internals, startSelectAnimation, owned backend/
+      context beyond words/counters, display/scanout/startup and independent
+      native visible acceptance remain open.
 - [x] Implement the widget-level getters (numeric forward, selected-id gates/
       table walk); 21 native/C comparisons plus full host/focused sanitizer/
       ARM and prior groups pass. SVG-LIST-WIDGETS. Row editing, parent

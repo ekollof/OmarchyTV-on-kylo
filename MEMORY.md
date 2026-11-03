@@ -6,6 +6,18 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-SLIDE-2026-11-03: setSlideValue progress/slider/text routing passes
+72 native/C comparisons with exact call order/args, written values and stored
+words, plus full strict host, focused ASan/UBSan, ARM/qemu and all previous
+reference groups. ARM unit 41960/1e4a649908c226f42070078e4520aeb8;
+reference 688504/3b0579ccd12a63417d447f78786c12a4, build-tv-v3/tab-policy.
+Two flag bytes, the type word, +0x1498/+0x13c0 bar selection, the +0x1ca8
+text box, the empty UString format and the +0x2df8 store are asserted;
+progress paths store nothing. No new module/service/UI consumer. Parent
+refresh, scrollbar construction/rendering internals, startSelectAnimation,
+owned backend/context and visible acceptance stay open. No TV access/wake/
+staging/deployment or hardware mutation; no pending job/helper.
+
 SVG-LIST-WIDGETS-2026-11-03: widget-level row/list getters pass21 native/C
 comparisons with exact call order/args and return values, plus full strict
 host, focused ASan/UBSan, ARM/qemu and all previous reference groups. ARM

@@ -1,1 +1,2 @@
 ok offline shipped ARM SVG list widgets: 21 native/C comparisons, numeric forward and selected-id gates/walk match
+ok offline shipped ARM SVG list slide: 72 native/C comparisons, progress/slider/text paths match

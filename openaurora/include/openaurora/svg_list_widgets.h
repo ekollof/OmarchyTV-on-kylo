@@ -27,4 +27,32 @@ struct oa_svg_list_select_ops {
     uint32_t (*entry_id)(void *entry);
 };
 uint32_t oa_setting_list_selected_id(const struct oa_svg_list_select_ops *o,int *error);
+struct oa_svg_row_slide_ops {
+    void *context;
+    uint32_t (*flag_a)(void *row);
+    uint32_t (*flag_b)(void *row);
+    uint32_t (*row_type)(void *row);
+    void (*set_progress)(void *row,int value);
+    void *(*slide_bar)(void *row,uint32_t offset);
+    int (*is_created)(void *bar);
+    void (*set_slider)(void *bar,int value);
+    void (*store_value)(void *row,int value);
+    void *(*text_box)(void *row);
+    const char *(*text_format)(void *row);
+    void (*text_new)(void *buf,const char *format);
+    void (*text_append)(void *buf,int value);
+    void (*text_set)(void *box,const void *text);
+    void (*text_free)(void *buf);
+};
+/* SettingItemsListBoxRow::setSlideValue. Nonzero +0x2e47 always routes to
+ * setProgressValue, as does nonzero +0x2e48 with type23 (+0x2dec). Otherwise
+ * the slider at row+0x1498 (or row+0x13c0 when +0x2e48 is clear and the type
+ * is 9) is set when created, the value is stored at row+0x2df8, and the text
+ * box at row+0x1ca8 shows the value through an empty-format UString when
+ * created. The shipped format literal is empty (verified read-only from the
+ * dump). All arithmetic wraps; comparisons are exact equality/zero tests.
+ * Callbacks are synchronous, pinned for the call and never retained. NULL
+ * ops, NULL row or any NULL callback returns EINVAL. Editing targets beyond
+ * setProgress/setSlider/setText stay open. */
+int oa_setting_row_set_slide(const struct oa_svg_row_slide_ops *o,void *row,int value);
 #endif

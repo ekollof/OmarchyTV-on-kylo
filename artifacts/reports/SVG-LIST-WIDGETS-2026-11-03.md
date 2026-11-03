@@ -35,11 +35,14 @@ NULL callback returns EINVAL (zero / 0xffffffff result respectively).
 
 ## Still open
 
-Row editing (setSlideValue with its progress/slider/text paths, setChecked),
-parent refresh, scrollbar construction/rendering internals,
+Subsequent [SVG-LIST-SLIDE](SVG-LIST-SLIDE-2026-11-03.md) implements
+setSlideValue: progress shortcuts vs slider/text update with two flag bytes,
+a type word, +0x1498/+0x13c0 bar selection, +0x1ca8 text box, empty UString
+format and +0x2df8 store. Row editing beyond setSlideValue (setChecked
+etc.), parent refresh, scrollbar construction/rendering internals,
 startSelectAnimation, and the owned backend/context/consumer beyond
 words/counters with display/scanout binding, independent startup and visible
-parity. Getters are not widget/rendering acceptance, and no visible parity is
-claimed.
+parity remain open. Getters are not widget/rendering acceptance, and no
+visible parity is claimed.
 
 Evidence and reproduction: artifacts/analysis/svg-list-widgets-2026-11-03/.

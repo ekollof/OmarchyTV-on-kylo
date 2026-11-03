@@ -1,3 +1,4 @@
 make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
-ok SVG list widgets: numeric forward, created/none gates and table-walk id
+ccache cc -fsanitize=address,undefined -fno-omit-frame-pointer -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fsanitize=address,undefined -o build-widget-sanitize/tests/svg_list_widgets tests/svg_list_widgets.c common/svg_list_widgets.c
+ok SVG list widgets: numeric forward, created/none gates, table-walk id and slide paths
 make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

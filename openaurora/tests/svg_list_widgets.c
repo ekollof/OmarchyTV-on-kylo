@@ -29,6 +29,36 @@ static uint32_t sq_id(void *entry)
     for(unsigned i=0;i<4;++i)if(current_s->entries[i]==entry) { semit(S_ID,i);return current_s->ids[i]; }
     assert(0);return 0;
 }
+struct lfixture {
+    uint32_t fa,fb,type;void *row;int bar_on,box_on;int32_t stored;
+    unsigned count;struct {unsigned id;uint32_t a,b;} trace[16];
+};
+static struct lfixture *current_l;
+enum {L_PROGRESS,L_BAR,L_CREATED,L_SLIDER,L_STORE,L_BOX,L_FORMAT,L_NEW,L_APPEND,L_SET,L_FREE};
+static void lemit(unsigned id,uint32_t a,uint32_t b)
+{ assert(current_l->count<16);current_l->trace[current_l->count].id=id;current_l->trace[current_l->count].a=a;current_l->trace[current_l->count].b=b;++current_l->count; }
+static uint32_t lq_fa(void *row) { (void)row;return current_l->fa; }
+static uint32_t lq_fb(void *row) { (void)row;return current_l->fb; }
+static uint32_t lq_type(void *row) { (void)row;return current_l->type; }
+static void le_progress(void *row,int v) { lemit(L_PROGRESS,(uint32_t)(uintptr_t)row,(uint32_t)v); }
+static void *le_bar(void *row,uint32_t off) { lemit(L_BAR,(uint32_t)(uintptr_t)row,off);return (unsigned char *)row+off; }
+static int le_created(void *h)
+{
+    lemit(L_CREATED,(uint32_t)(uintptr_t)h,0);
+    uintptr_t base=(uintptr_t)current_l->row;
+    if((uintptr_t)h==base+0x1498u || (uintptr_t)h==base+0x13c0u)return current_l->bar_on;
+    return current_l->box_on;
+}
+static void le_slider(void *h,int v) { lemit(L_SLIDER,(uint32_t)(uintptr_t)h,(uint32_t)v); }
+static void le_store(void *row,int v) { lemit(L_STORE,(uint32_t)(uintptr_t)row,(uint32_t)v);current_l->stored=v; }
+static void *le_box(void *row) { lemit(L_BOX,(uint32_t)(uintptr_t)row,0);return (unsigned char *)row+0x1ca8; }
+static const char *le_format(void *row) { (void)row;lemit(L_FORMAT,0,0);return ""; }
+static void le_new(void *buf,const char *fmt) { lemit(L_NEW,(uint32_t)(uintptr_t)buf,(uint32_t)(uintptr_t)fmt);(void)buf; }
+static void le_append(void *buf,int v) { lemit(L_APPEND,(uint32_t)(uintptr_t)buf,(uint32_t)v); }
+static void le_set(void *box,const void *text) { lemit(L_SET,(uint32_t)(uintptr_t)box,(uint32_t)(uintptr_t)text); }
+static void le_free(void *buf) { lemit(L_FREE,(uint32_t)(uintptr_t)buf,0); }
+static struct oa_svg_row_slide_ops lops_for(struct lfixture *f)
+{ return (struct oa_svg_row_slide_ops){f,lq_fa,lq_fb,lq_type,le_progress,le_bar,le_created,le_slider,le_store,le_box,le_format,le_new,le_append,le_set,le_free}; }
 int main(void)
 {
     int error=42;struct nfixture nf={0};
@@ -64,6 +94,45 @@ int main(void)
     assert(sf.trace[2].id==S_TABLE && sf.trace[3].id==S_ENTRY && sf.trace[3].a==2);
     assert(sf.trace[4].id==S_ID && sf.trace[4].a==2);
     (void)listobj;
-    puts("ok SVG list widgets: numeric forward, created/none gates and table-walk id");
+    /* --- setSlideValue paths: progress vs slider+text --- */
+    {
+        static unsigned char slrow[0x3000];struct lfixture lf={0};
+        struct oa_svg_row_slide_ops lops=lops_for(&lf);current_l=&lf;lf.row=slrow;
+        /* EINVAL paths run no callbacks. */
+        struct oa_svg_row_slide_ops lbad={0};
+        assert(oa_setting_row_set_slide(NULL,slrow,5)==EINVAL);
+        assert(oa_setting_row_set_slide(&lbad,slrow,5)==EINVAL);
+        assert(oa_setting_row_set_slide(&lops,NULL,5)==EINVAL);
+        assert(!lf.count);
+        /* flagA routes to progress only. */
+        lf.fa=1;lf.fb=1;lf.type=23;
+        assert(!oa_setting_row_set_slide(&lops,slrow,-7) && lf.count==1);
+        assert(lf.trace[0].id==L_PROGRESS && lf.trace[0].b==(uint32_t)(uint32_t)-7);
+        /* flagB with type23 routes to progress only. */
+        lf.fa=0;lf.count=0;
+        assert(!oa_setting_row_set_slide(&lops,slrow,9) && lf.count==1 && lf.trace[0].id==L_PROGRESS);
+        /* Slider path: bar, create gate, slider, store, box, text dance. */
+        lf.fb=1;lf.type=7;lf.bar_on=1;lf.box_on=1;lf.count=0;
+        assert(!oa_setting_row_set_slide(&lops,slrow,9) && lf.stored==9);
+        assert(lf.count==11);
+        assert(lf.trace[0].id==L_BAR && lf.trace[0].b==0x1498);
+        assert(lf.trace[1].id==L_CREATED && lf.trace[2].id==L_SLIDER && lf.trace[2].b==9);
+        assert(lf.trace[3].id==L_STORE && lf.trace[3].b==9);
+        assert(lf.trace[4].id==L_BOX && lf.trace[5].id==L_CREATED);
+        assert(lf.trace[6].id==L_FORMAT && lf.trace[7].id==L_NEW && lf.trace[8].id==L_APPEND && lf.trace[8].b==9);
+        assert(lf.trace[9].id==L_SET && lf.trace[10].id==L_FREE);
+        /* Uncreated bar skips the slider; uncreated box skips the text. */
+        lf.bar_on=0;lf.count=0;
+        assert(!oa_setting_row_set_slide(&lops,slrow,3) && lf.stored==3 && lf.count==10);
+        lf.bar_on=1;lf.box_on=0;lf.count=0;
+        assert(!oa_setting_row_set_slide(&lops,slrow,4) && lf.stored==4 && lf.count==6);
+        assert(lf.trace[4].id==L_BOX && lf.trace[5].id==L_CREATED);
+        /* Clear flagB with type9 selects the 0x13c0 bar; other types keep 0x1498. */
+        lf.box_on=1;lf.fb=0;lf.type=9;lf.count=0;
+        assert(!oa_setting_row_set_slide(&lops,slrow,6) && lf.trace[0].id==L_BAR && lf.trace[0].b==0x13c0);
+        lf.type=8;lf.count=0;
+        assert(!oa_setting_row_set_slide(&lops,slrow,6) && lf.trace[0].id==L_BAR && lf.trace[0].b==0x1498);
+    }
+    puts("ok SVG list widgets: numeric forward, created/none gates, table-walk id and slide paths");
     return 0;
 }

@@ -1,0 +1,1 @@
+ok offline shipped ARM SVG list slide: 72 native/C comparisons, progress/slider/text paths match

@@ -1614,6 +1614,13 @@ static void scroll_e_create(void *p,void *sb,int created,uint32_t x,uint32_t y,u
 static void scroll_e_setvis(void *p,void *sb,int v) { struct scroll_fixture *f=p;scroll_emit(f,SB_SETVIS,(uint32_t)v,0,0,0);(void)sb; }
 static void scroll_e_pos(void *p,void *sb,uint32_t vis,uint32_t size,uint32_t first)
 { struct scroll_fixture *f=p;scroll_emit(f,SB_POS,vis,size,first,0);(void)sb; }
+typedef void (*pair_fn)(void *,uint32_t);
+static uint32_t pair_bits(pair_fn f) { uint32_t v;_Static_assert(sizeof f==sizeof v,"fn width");memcpy(&v,&f,sizeof v);return v; }
+static void pair_stub(void *mapped,uint32_t base,uint32_t address,pair_fn function)
+{
+    unsigned char *p=(unsigned char *)mapped+address-base;const uint16_t insn[]={0x4b00,0x4718};
+    assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=pair_bits(function);memcpy(p+4,&target,4);
+}
 typedef void (*scroll_fn)(void *);
 static scroll_fn native_sb_update;
 enum {R_SET_FOCUS,R_SET_VISIBLE,R_GET_RECT,R_SET_POS,R_IS_VISIBLE,R_DRAW,R_DRAW_EMPTY,R_EMPTY_MSG,R_GOT_FOCUS};
@@ -2085,6 +2092,132 @@ static void compare_widget_traces(struct widget_fixture *vendor,struct widget_fi
             vendor->trace[i].a,ids[i],args[i]);exit(1);
     }
 }
+enum {SL_PROGRESS,SL_CREATED,SL_SLIDER,SL_STORE,SL_BAR,SL_BOX,SL_FORMAT,SL_NEW,SL_APPEND,SL_SET,SL_FREE};
+struct slide_fixture {
+    uint32_t fa,fb,type;int bar_on,box_on;int32_t stored;
+    unsigned count;struct {uint32_t id,a,b;} trace[24];
+};
+static struct slide_fixture *native_slide;
+static _Alignas(uint32_t) unsigned char slide_row[0x3000];
+static void slide_emit(struct slide_fixture *f,uint32_t id,uint32_t a,uint32_t b)
+{ assert(f->count<24);f->trace[f->count].id=id;f->trace[f->count].a=a;f->trace[f->count].b=b;++f->count; }
+static void native_sl_progress(void *row,uint32_t value)
+{ assert(row==slide_row);slide_emit(native_slide,SL_PROGRESS,(uint32_t)(uintptr_t)row,value); }
+static unsigned native_sl_created(void *h)
+{ assert(h==slide_row+0x1498 || h==slide_row+0x13c0 || h==slide_row+0x1ca8);
+  slide_emit(native_slide,SL_CREATED,(uint32_t)(uintptr_t)h,0);
+  if(h==slide_row+0x1ca8) { return (unsigned)native_slide->box_on; }
+  return (unsigned)native_slide->bar_on; }
+static void native_sl_slider(void *bar,uint32_t value)
+{ slide_emit(native_slide,SL_SLIDER,(uint32_t)(uintptr_t)bar,value); }
+static void native_sl_new(void *buf,uint32_t fmt)
+{ (void)buf;slide_emit(native_slide,SL_NEW,fmt,0); }
+static void native_sl_append(void *buf,uint32_t value)
+{ (void)buf;slide_emit(native_slide,SL_APPEND,value,0); }
+static void native_sl_set(void *box,uint32_t text)
+{ (void)text;slide_emit(native_slide,SL_SET,(uint32_t)(uintptr_t)box,0); }
+static void native_sl_free(void *buf,uint32_t ignored) { (void)buf;(void)ignored;slide_emit(native_slide,SL_FREE,0,0); }
+static const char slide_format_empty[]="";
+static struct slide_fixture *ref_slide;
+static uint32_t slide_e_fa(void *row) { (void)row;return ref_slide->fa; }
+static uint32_t slide_e_fb(void *row) { (void)row;return ref_slide->fb; }
+static uint32_t slide_e_type(void *row) { (void)row;return ref_slide->type; }
+static void slide_e_progress(void *row,int value)
+{ slide_emit(ref_slide,SL_PROGRESS,(uint32_t)(uintptr_t)row,(uint32_t)value); }
+static void *slide_e_bar(void *row,uint32_t offset)
+{ slide_emit(ref_slide,SL_BAR,(uint32_t)(uintptr_t)row,offset);return (unsigned char *)row+offset; }
+static int slide_e_created(void *h)
+{ slide_emit(ref_slide,SL_CREATED,(uint32_t)(uintptr_t)h,0);
+  if(h==slide_row+0x1ca8) { return ref_slide->box_on; }
+  return ref_slide->bar_on; }
+static void slide_e_slider(void *bar,int value)
+{ slide_emit(ref_slide,SL_SLIDER,(uint32_t)(uintptr_t)bar,(uint32_t)value); }
+static void slide_e_store(void *row,int value)
+{ slide_emit(ref_slide,SL_STORE,(uint32_t)(uintptr_t)row,(uint32_t)value);ref_slide->stored=value; }
+static void *slide_e_box(void *row)
+{ slide_emit(ref_slide,SL_BOX,(uint32_t)(uintptr_t)row,0);return (unsigned char *)row+0x1ca8; }
+static const char *slide_e_format(void *row) { (void)row;slide_emit(ref_slide,SL_FORMAT,0,0);return slide_format_empty; }
+static void slide_e_new(void *buf,const char *fmt)
+{ (void)buf;slide_emit(ref_slide,SL_NEW,(uint32_t)(uintptr_t)fmt,0); }
+static void slide_e_append(void *buf,int value) { (void)buf;slide_emit(ref_slide,SL_APPEND,(uint32_t)value,0); }
+static void slide_e_set(void *box,const void *text)
+{ (void)text;slide_emit(ref_slide,SL_SET,(uint32_t)(uintptr_t)box,0); }
+static void slide_e_free(void *buf) { (void)buf;slide_emit(ref_slide,SL_FREE,0,0); }
+static struct oa_svg_row_slide_ops slide_ops(struct slide_fixture *f)
+{ return (struct oa_svg_row_slide_ops){f,slide_e_fa,slide_e_fb,slide_e_type,slide_e_progress,slide_e_bar,
+    slide_e_created,slide_e_slider,slide_e_store,slide_e_box,slide_e_format,slide_e_new,slide_e_append,slide_e_set,slide_e_free}; }
+typedef void (*slide_fn)(void *,int32_t);
+static void compare_slide_traces(struct slide_fixture *vendor,struct slide_fixture *ref)
+{
+    unsigned rn=0;uint32_t ids[24],args[24],args2[24];
+    for(unsigned i=0;i<ref->count;++i) {
+        if(ref->trace[i].id==SL_BAR || ref->trace[i].id==SL_BOX ||
+           ref->trace[i].id==SL_STORE || ref->trace[i].id==SL_FORMAT)continue;
+        assert(rn<24);ids[rn]=ref->trace[i].id;args[rn]=ref->trace[i].a;args2[rn]=ref->trace[i].b;++rn;
+    }
+    if(vendor->count!=rn) {
+        fprintf(stderr,"slide count native=%u ours=%u\n",vendor->count,rn);
+        for(unsigned i=0;i<vendor->count;++i)fprintf(stderr,"  native[%u]=%u/%x/%x\n",i,vendor->trace[i].id,vendor->trace[i].a,vendor->trace[i].b);
+        for(unsigned i=0;i<rn;++i)fprintf(stderr,"  ours[%u]=%u/%x/%x\n",i,ids[i],args[i],args2[i]);
+        exit(1);
+    }
+    for(unsigned i=0;i<vendor->count;++i)if(vendor->trace[i].id!=ids[i] || vendor->trace[i].a!=args[i] ||
+        vendor->trace[i].b!=args2[i]) {
+        fprintf(stderr,"slide trace %u native=%u/%x/%x ours=%u/%x/%x\n",i,vendor->trace[i].id,
+            vendor->trace[i].a,vendor->trace[i].b,ids[i],args[i],args2[i]);exit(1);
+    }
+}
+static void check_svg_slide(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *rowpage=page(0xd52000,8192),*winpage=page(0x1152000,4096);
+    unsigned char *barpage=page(0x10c4000,4096),*textpage=page(0x10c7000,4096);
+    unsigned char *ustrpage=page(0xc86000,4096),*usoppage=page(0xc88000,4096);
+    size_t off=file_offset(elf,bytes,0xd52efc,272);
+    assert(crc32(elf+off,272)==UINT32_C(0x621d5980));
+    memcpy(rowpage+0xefc,elf+off,272);
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(rowpage+0x1004,&pointer,4);
+    uint32_t fmt=(uint32_t)(uintptr_t)slide_format_empty;memcpy(rowpage+0x1008,&fmt,4);
+    pair_stub(rowpage,0xd52000,0xd52e40,native_sl_progress);
+    thumb_stub(winpage,0x1152000,0x1152a40,native_sl_created);
+    pair_stub(barpage,0x10c4000,0x10c493c,native_sl_slider);
+    pair_stub(ustrpage,0xc86000,0xc86744,native_sl_new);
+    pair_stub(ustrpage,0xc86000,0xc86554,native_sl_free);
+    pair_stub(usoppage,0xc88000,0xc8865c,native_sl_append);
+    pair_stub(textpage,0x10c7000,0x10c7828,native_sl_set);
+    executable(rowpage,8192);executable(winpage,4096);executable(barpage,4096);
+    executable(ustrpage,4096);executable(usoppage,4096);executable(textpage,4096);
+    {
+        unsigned compared=0;slide_fn slide=0;
+        { uint32_t entry=0xd52efd;memcpy(&slide,&entry,4); }
+        const uint32_t fafb[]={0,1},types[]={9,23,7},values[]={0,5,UINT32_C(0xfffffffd)};
+        const int creates[]={0,1};
+        for(unsigned a=0;a<2;++a)for(unsigned b=0;b<2;++b)for(unsigned t=0;t<3;++t)
+        for(unsigned v=0;v<3;++v)for(unsigned c=0;c<2;++c) {
+            struct slide_fixture initial={.fa=fafb[a],.fb=fafb[b],.type=types[t],
+                .bar_on=creates[c],.box_on=creates[(c+t)&1]};
+            struct slide_fixture vendor=initial,ref=initial;struct oa_svg_row_slide_ops ops=slide_ops(&ref);
+            native_slide=&vendor;ref_slide=&ref;
+            slide_row[0x2e47]=(unsigned char)initial.fa;slide_row[0x2e48]=(unsigned char)initial.fb;
+            { uint32_t t=initial.type;memcpy(slide_row+0x2dec,&t,4); }
+            { volatile slide_fn call=slide;call(slide_row,(int)values[v]); }
+            assert(!oa_setting_row_set_slide(&ops,slide_row,(int)values[v]));
+            compare_slide_traces(&vendor,&ref);
+            {
+                int stored=0;
+                for(unsigned i=0;i<ref.count;++i)if(ref.trace[i].id==SL_STORE)stored=1;
+                if(stored && *(uint32_t *)(slide_row+0x2df8)!=(uint32_t)ref.stored) {
+                    fprintf(stderr,"slide store native=%x ours=%x fa=%u fb=%u type=%u\n",
+                        *(uint32_t *)(slide_row+0x2df8),ref.stored,initial.fa,initial.fb,initial.type);exit(1);
+                }
+            }
+            ++compared;
+        }
+        native_slide=NULL;ref_slide=NULL;
+        assert(!munmap(rowpage,8192) && !munmap(winpage,4096) && !munmap(barpage,4096));
+        assert(!munmap(ustrpage,4096) && !munmap(usoppage,4096) && !munmap(textpage,4096));
+        printf("ok offline shipped ARM SVG list slide: %u native/C comparisons, progress/slider/text paths match\n",compared);
+    }
+}
 static void check_svg_widgets(const unsigned char *elf,size_t bytes)
 {
     unsigned char *textpage=page(0xd53000,4096),*listpage=page(0xd50000,4096);
@@ -2322,7 +2455,7 @@ int main(int argc,char **argv)
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
     check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);
-    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_svg_scroll(elf,bytes);check_svg_impl(elf,bytes);check_svg_scrollbar(elf,bytes);check_svg_rowview(elf,bytes);check_svg_widgets(elf,bytes);check_svg_update(elf,bytes);check_row_values(elf,bytes);
+    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_svg_scroll(elf,bytes);check_svg_impl(elf,bytes);check_svg_scrollbar(elf,bytes);check_svg_rowview(elf,bytes);check_svg_widgets(elf,bytes);check_svg_slide(elf,bytes);check_svg_update(elf,bytes);check_row_values(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
