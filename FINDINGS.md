@@ -6,6 +6,16 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Outer pre-handler: TAB-PREHANDLE implements d700a0 via owned backend callbacks;
+65664 valid-tree shipped ARM traces/state/handled truth match. Marker is
+vertical_tabs. Vertical Right rechecks activation after focus and may delegate
+to base (d703bc ->d70526); don't flatten it to unconditional consumption.
+Focused Left/Right consumes independently of child result; Menu/25b can delegate
+to base after side effects. Original event identity differs from synthesized/
+posted owned keys. Native caller tests zero/nonzero, so API normalizes handled.
+Missing required child returns ENODATA instead of a native invalid dereference;
+that safety path is not native parity proof. Fallback map/backend/UI still open.
+
 Tab events: TAB-EVENTS implements native onUpDownPress/onRightLeftPress behind
 ordered backend callbacks;1008 actual shipped method-body traces/state matches
 pass under qemu. Up/Down updates the list before clearing open, then reads the

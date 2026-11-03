@@ -1,5 +1,10 @@
 # Ordered settings event controller — 2026-11-03
 
+Subsequent [TAB-PREHANDLE](TAB-PREHANDLE-2026-11-03.md) implements the outer
+pre-handler body separately and checks it against shipped ARM. Its fallback
+message map/backend/visible integration remains open; the original continuation
+below is this earlier checkpoint's scope, not a request to redo that recovery.
+
 common/tab_events.c implements the recovered TabDialog onUpDownPress and
 onRightLeftPress bodies behind backend query/action callbacks. It replaces
 neither the full pre-handler nor the captured-screen shortcut yet. The same

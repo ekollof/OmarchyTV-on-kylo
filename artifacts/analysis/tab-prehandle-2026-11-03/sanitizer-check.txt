@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-tab-policy-sanitize/tests/tab_prehandle tests/tab_prehandle.c common/tab_prehandle.c
+ok tab pre-handler: focused forwarding, back/menu ordering, media guide, edge jump, original/synthetic identity and missing-child safety
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

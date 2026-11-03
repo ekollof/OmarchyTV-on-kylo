@@ -6,6 +6,17 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+TAB-PREHANDLE-2026-11-03: full outer method body implemented via callbacks,
+65664 valid-tree ARM trace/message/state/handled-truth cases match. vertical_tabs
+marker and caller zero/nonzero contract verified. Invalid missing-child cases
+return ENODATA safely, not claimed native parity. Full host/focused sanitizer/
+ARM policy and prior reference groups pass. Native pure test41588/
+a22c76e4c4d19719b0c646f7b74d2ae9; reference183692/
+c7f77c6d0b832860186390ab7ca64262, build-tv-v3/tab-policy. No new module/service
+or attached UI consumer. Fallback map, owned backend/runtime context, permissions
+and display acceptance remain open. No TV access/wake/deployment/persistent
+change or helper/Ghidra/build job pending after checks.
+
 TAB-EVENTS-2026-11-03: common callback controller implements the recovered
 onUpDownPress/onRightLeftPress method bodies;1008 shipped ARM action/argument/
 state comparisons pass, including changes during callbacks and original-message

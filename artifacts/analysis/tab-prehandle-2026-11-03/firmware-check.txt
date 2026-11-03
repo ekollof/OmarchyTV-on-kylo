@@ -1,0 +1,7 @@
+ok offline shipped ARM group selection: 9216 availability/description/request cases, rejected indices and empty focus
+ok offline shipped ARM profile: 65281 signed-byte hashes, 27 saved-profile lookups/defaults; connectivity=1 hotel=1
+ok offline shipped ARM retained setters: 1792 signed32/raw byte cases, exact fields and surrounding bytes preserved
+ok offline shipped ARM hotel row: 345 integer store/no-row cases, byte/int32 widths and surrounding fields preserved
+ok offline shipped ARM tab events: 1008 handler cases, ordered actions and dynamic callback state match
+ok offline shipped ARM pre-handler: 65664 valid-tree cases, action/message/state and handled truth match
+ok offline shipped ARM availability: 884736 comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected

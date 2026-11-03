@@ -80,6 +80,13 @@ TAB-EVENTS records1008 shipped ARM trace/state comparisons. These bodies are not
 the outer pre-handler or a ui_vendor consumer; permission, focus/modal context
 and backend lifetime must be wired before replacing diagnostic navigation.
 
+`common/tab_prehandle.c` supplies the full outer pre-handler body and preserves
+original-event versus synthesized-key ownership. Backend callbacks return current
+state/action results; normalized handled matches the native caller's zero/nonzero
+branch. TAB-PREHANDLE records65664 shipped method comparisons and explicit missing-
+child safety. Fallback handleMessage dispatch, real backend/context and visible
+queue-consumer integration are still pending; the diagnostic UI is not parity.
+
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;
 EGL-WINDOW establishes direct display1 presentation with the retained4-byte

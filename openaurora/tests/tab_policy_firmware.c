@@ -7,6 +7,7 @@
 #include "openaurora/tab_policy.h"
 #include "openaurora/profile.h"
 #include "openaurora/tab_events.h"
+#include "tab_prehandle_fixture.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -374,6 +375,123 @@ static void check_tab_events(const unsigned char *elf,size_t bytes)
     assert(!munmap(tab,4096) && !munmap(demo,4096) && !munmap(setters,4096) && !munmap(group,8192) && !munmap(settings,4096));
     printf("ok offline shipped ARM tab events: %u handler cases, ordered actions and dynamic callback state match\n",compared);
 }
+static struct pre_fixture *pre_fixture;
+static _Alignas(uint32_t) unsigned char pre_dialog[0x500];
+static uint32_t pre_child,pre_image,pre_window,pre_dummy,pre_clone[4],pre_original;
+static void pre_sync(void)
+{
+    pre_dialog[0x4b6]=(uint8_t)pre_fixture->q[OA_TP_BUTTONS_ACTIVE];
+    uint32_t pointer=pre_fixture->q[OA_TP_PRESENT]?(uint32_t)(uintptr_t)&pre_child:0;
+    memcpy(pre_dialog+0x4c0,&pointer,4);
+    pointer=pre_fixture->q[OA_TP_CONTENT_TAB];memcpy(pre_dialog+0x4ac,&pointer,4);
+}
+static uint32_t pre_invoke(enum oa_tab_pre_action action,uint32_t arg,const void *message)
+{ uint32_t r=pre_run(pre_fixture,action,arg,message);pre_sync();return r; }
+#define PRE_GET(name,field) static unsigned name(void *p) { (void)p;return pre_fixture->q[field]; }
+#define PRE_ACT(name,action) static unsigned name(void *p) { (void)p;return pre_invoke(action,0,NULL); }
+#define PRE_SET(name,action) static unsigned name(void *p,int32_t arg) { (void)p;return pre_invoke(action,(uint32_t)arg,NULL); }
+PRE_GET(pre_media,OA_TP_IN_MEDIA)
+PRE_GET(pre_focused,OA_TP_FOCUSED)
+PRE_GET(pre_circular,OA_TP_CIRCULAR)
+PRE_GET(pre_jump,OA_TP_TAB_JUMP)
+PRE_GET(pre_back,OA_TP_BACK_HANDLED)
+PRE_GET(pre_index,OA_TP_INDEX)
+PRE_GET(pre_small,OA_TP_SMALLEST)
+PRE_GET(pre_big,OA_TP_BIGGEST)
+PRE_ACT(pre_unfocus,OA_TP_UNFOCUS)
+PRE_ACT(pre_hide,OA_TP_HIDE)
+PRE_ACT(pre_show,OA_TP_SHOW)
+PRE_ACT(pre_focus,OA_TP_FOCUS)
+PRE_ACT(pre_title,OA_TP_UPDATE_TITLE)
+PRE_ACT(pre_close,OA_TP_CLOSE_MODALS)
+PRE_ACT(pre_release,OA_TP_RELEASE_IMAGE)
+PRE_SET(pre_end,OA_TP_END_DIALOG)
+PRE_SET(pre_buttons,OA_TP_BUTTONS)
+PRE_SET(pre_select,OA_TP_SELECT_CHILD)
+PRE_SET(pre_content_focus,OA_TP_CONTENT_FOCUS)
+PRE_SET(pre_dialog_focus,OA_TP_DIALOG_FOCUS)
+PRE_SET(pre_set_item,OA_TP_SET_ITEM)
+#undef PRE_GET
+#undef PRE_ACT
+#undef PRE_SET
+static unsigned pre_nop(void *p) { (void)p;return 0; }
+static unsigned pre_allocate(void *p) { (void)p;return (uint32_t)(uintptr_t)pre_clone; }
+static unsigned pre_ctor(void *p,int32_t key) { *(uint32_t *)p=(uint32_t)key;return (uint32_t)(uintptr_t)p; }
+static unsigned pre_key(void *p) { return *(uint32_t *)p; }
+static unsigned pre_description(void *p) { (void)p;return pre_fixture->q[OA_TP_VERTICAL_TABS]; }
+static unsigned pre_group_focus(void *p) { (void)p;return pre_fixture->q[OA_TP_GROUP_HAS_FOCUS]?(uint32_t)(uintptr_t)&pre_window:0; }
+static unsigned pre_window_id(void *p) { (void)p;uint32_t id=pre_fixture->q[OA_TP_GROUP_ID];pre_invoke(OA_TP_SET_CONTENT_TAB,id,NULL);return id; }
+static unsigned pre_content_key(void *p,int32_t message) { (void)p;return pre_invoke(OA_TP_CONTENT_KEY,*(uint32_t *)(uintptr_t)(uint32_t)message,(const void *)(uintptr_t)(uint32_t)message); }
+static unsigned pre_base(void *p,int32_t message) { (void)p;return pre_invoke(OA_TP_BASE_PREHANDLE,*(uint32_t *)(uintptr_t)(uint32_t)message,(const void *)(uintptr_t)(uint32_t)message); }
+static unsigned pre_group(void *p,int32_t message) { (void)p;return pre_invoke(OA_TP_GROUP_KEY,*(uint32_t *)(uintptr_t)(uint32_t)message,NULL); }
+static unsigned pre_right_left(void *p,int32_t message) { (void)p;return pre_invoke(OA_TP_RIGHT_LEFT,*(uint32_t *)(uintptr_t)(uint32_t)message,NULL); }
+static unsigned pre_post(void *p,int32_t message) { (void)p;return pre_invoke(OA_TP_POST_KEY,*(uint32_t *)(uintptr_t)(uint32_t)message,NULL); }
+static unsigned pre_push(void *p,int32_t message) { (void)p;return pre_invoke(OA_TP_PUSH_FRONT_KEY,*(uint32_t *)(uintptr_t)(uint32_t)message,NULL); }
+static unsigned pre_interface(void *p) { (void)p;return (uint32_t)(uintptr_t)&pre_dummy; }
+static unsigned pre_request(void *p) { (void)p;pre_invoke(OA_TP_REQUEST_IMAGE,0,NULL);return pre_fixture->image?(uint32_t)(uintptr_t)&pre_image:0; }
+static void check_prehandle(const unsigned char *elf,size_t bytes)
+{
+    const uint32_t bases[]={0xd70000,0xd6f000,0x1148000,0xc86000,0x10c5000,0xccb000,0xcd1000,0x113a000,0x6b0000,0xcdc000,0x979000,0x1152000};
+    unsigned char *pages[12];size_t lengths[12];
+    for(unsigned i=0;i<12;++i){lengths[i]=(i==2 || i==7)?8192:4096;pages[i]=page(bases[i],lengths[i]);}
+    size_t off=file_offset(elf,bytes,0xd700a0,1200);assert(crc32(elf+off,1200)==UINT32_C(0x0bec24b5));
+    memcpy(pages[0]+0xa0,elf+off,1200);uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(pages[0]+0x3c4,&pointer,4);
+#define PG(index,address,fn) thumb_stub(pages[index],bases[index],address,fn)
+#define PS(index,address,fn) predicate_stub(pages[index],bases[index],address,fn)
+    PG(1,0xd6f304,pre_unfocus);PG(1,0xd6f09c,pre_hide);PG(1,0xd6f140,pre_show);PG(1,0xd6f61c,pre_focus);
+    PG(1,0xd6faec,pre_title);PS(1,0xd6f028,pre_buttons);PS(1,0xd6fdc0,pre_right_left);
+    PG(2,0x11489e0,pre_key);PS(2,0x114899c,pre_ctor);PG(2,0x114854c,pre_group_focus);
+    PS(2,0x11485d4,pre_select);PS(2,0x114925c,pre_group);PS(2,0x11492a0,pre_base);
+    PG(3,0xc86744,pre_nop);PG(3,0xc867f4,pre_nop);PG(3,0xc86554,pre_nop);
+    PG(4,0x10c5504,pre_description);PS(4,0x10c5478,pre_end);PG(5,0xccb754,pre_media);
+    PG(6,0xcd1a5c,pre_circular);PG(6,0xcd1a90,pre_jump);
+    PG(7,0x113a3d0,pre_close);PS(7,0x113b748,pre_post);PS(7,0x113b7b8,pre_push);PG(7,0x113b958,pre_interface);
+    /* operator new PLT is ARM; its callee only returns an owned test message. */
+    const uint32_t alloc[]={UINT32_C(0xe59fc000),UINT32_C(0xe12fff1c),bits(pre_allocate)};
+    memcpy(pages[8]+0x13c,alloc,sizeof alloc);PG(9,0xcdcf8c,pre_nop);
+    PG(10,0x9791e0,pre_request);PG(11,0x11529e0,pre_window_id);
+#undef PG
+#undef PS
+    for(unsigned i=0;i<12;++i)executable(pages[i],lengths[i]);
+    uint32_t child_vtable[15]={0},dialog_vtable[8]={0},image_vtable[7]={0};
+    child_vtable[4]=predicate_bits(pre_content_focus);child_vtable[7]=bits(pre_focused);
+    child_vtable[8]=predicate_bits(pre_content_key);child_vtable[10]=bits(pre_index);
+    child_vtable[11]=bits(pre_big);child_vtable[12]=bits(pre_small);child_vtable[13]=bits(pre_back);child_vtable[14]=predicate_bits(pre_set_item);
+    dialog_vtable[7]=predicate_bits(pre_dialog_focus);image_vtable[6]=bits(pre_release);
+    pre_child=(uint32_t)(uintptr_t)child_vtable;pre_image=(uint32_t)(uintptr_t)image_vtable;
+    pointer=(uint32_t)(uintptr_t)dialog_vtable;memcpy(pre_dialog,&pointer,4);
+    pointer=(uint32_t)(uintptr_t)&pre_dummy;memcpy(pre_dialog+4,&pointer,4);memcpy(pre_dialog+0x484,&pointer,4);
+    typedef unsigned (*handler)(void *,void *);handler native;pointer=0xd700a1;memcpy(&native,&pointer,sizeof native);
+    const uint32_t keys[]={0x20c,0x20d,0x22d,0x251,0x210,0x21f,0x28b,0x20a,0x20b,0x25b,0x2a7,0x20e,0x230,0x24c,0x25d,0x274,0,UINT32_MAX};
+    unsigned compared=0;
+    for(unsigned mask=0;mask<1024;++mask)for(unsigned result=0;result<2;++result)
+    for(unsigned activation=0;activation<3;++activation)for(size_t k=0;k<18;++k) {
+        struct pre_fixture initial={.child_result=result?9:0,.base_result=result?7:0,.group_result=result?11:0,
+            .image=result,.jump_present=(mask>>9)&1,.show_success=1,.allow_focus=result};
+        initial.q[OA_TP_VERTICAL_TABS]=mask&1;initial.q[OA_TP_PRESENT]=(mask>>1)&1;
+        initial.q[OA_TP_FOCUSED]=(mask&4)?(result?255:1):0;initial.q[OA_TP_IN_MEDIA]=(mask>>3)&1;
+        initial.q[OA_TP_GROUP_HAS_FOCUS]=(mask>>4)&1;initial.q[OA_TP_CIRCULAR]=(mask>>5)&1;
+        initial.q[OA_TP_TAB_JUMP]=(mask>>6)&1;initial.q[OA_TP_BACK_HANDLED]=(mask>>7)&1;
+        initial.q[OA_TP_INDEX]=(mask&256)?(keys[k]==0x20b?5:0):2;
+        initial.q[OA_TP_SMALLEST]=0;initial.q[OA_TP_BIGGEST]=5;initial.q[OA_TP_BUTTONS_ACTIVE]=activation==2?255:activation;
+        initial.q[OA_TP_GROUP_ID]=result?UINT32_MAX:4;initial.q[OA_TP_CONTENT_TAB]=1;
+        int early=keys[k]==0x25d || keys[k]==0x274 || ((keys[k]==0x230 || keys[k]==0x24c) && initial.q[OA_TP_IN_MEDIA]);
+        if(!initial.q[OA_TP_PRESENT] && (initial.q[OA_TP_FOCUSED] || (!early && (initial.q[OA_TP_VERTICAL_TABS] || initial.q[OA_TP_CIRCULAR]))))continue;
+        struct pre_fixture vendor=initial,ours=initial;pre_original=keys[k];
+        pre_fixture=&vendor;pre_sync();unsigned native_handled=native(pre_dialog,&pre_original);
+        pre_fixture=&ours;pre_sync();struct oa_tab_pre_ops ops={&ours,pre_query,pre_run,&pre_original};int handled=-1;
+        int error=oa_tab_prehandle(&ops,keys[k],&handled);
+        if(error || handled!=(native_handled!=0) || vendor.count!=ours.count) {
+            fprintf(stderr,"pre mismatch mask=%u result=%u key=%x error=%d handled=%d native=%x counts=%u/%u\n",mask,result,keys[k],error,handled,native_handled,vendor.count,ours.count);exit(1);
+        }
+        for(unsigned i=0;i<vendor.count;++i)if(vendor.trace[i].action!=ours.trace[i].action || vendor.trace[i].argument!=ours.trace[i].argument || vendor.trace[i].message!=ours.trace[i].message) {
+            fprintf(stderr,"pre action mismatch mask=%u result=%u key=%x at=%u action=%u/%u arg=%u/%u\n",mask,result,keys[k],i,(unsigned)vendor.trace[i].action,(unsigned)ours.trace[i].action,vendor.trace[i].argument,ours.trace[i].argument);exit(1);
+        }
+        assert(!memcmp(vendor.q,ours.q,sizeof vendor.q));++compared;
+    }
+    pre_fixture=NULL;for(unsigned i=0;i<12;++i)assert(!munmap(pages[i],lengths[i]));
+    printf("ok offline shipped ARM pre-handler: %u valid-tree cases, action/message/state and handled truth match\n",compared);
+}
 int main(int argc,char **argv)
 {
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
@@ -420,7 +538,7 @@ int main(int argc,char **argv)
         }
     }
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
-    check_tab_events(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
+    check_tab_events(elf,bytes);check_prehandle(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
 }

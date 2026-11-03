@@ -24,7 +24,19 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [TAB-EVENTS](artifacts/reports/TAB-EVENTS-2026-11-03.md) implements
+Latest: [TAB-PREHANDLE](artifacts/reports/TAB-PREHANDLE-2026-11-03.md) implements
+the full outer pre-handler method via callbacks.65664 valid-tree action/message/
+state/handled-truth cases match actual shipped ARM; full host/focused sanitizer/
+ARM and prior corpora pass. Marker is vertical_tabs; vertical Right can delegate
+to base after focus, and native caller consumes zero/nonzero truth. Source-invalid
+missing-child trees are not executed; C reports ENODATA, possibly after prior
+actions, without changing handled. No new service/module or UI wiring. Next
+implement fallback handleMessage dispatch and the owned content/renderer/context
+adapter, then attach a queue consumer. Keep source/permission/lifetime/visible
+acceptance gates. Native identities in MEMORY/report. No TV access/wake/deployment
+or jobs/helpers pending. Analysis/reproduction: tab-prehandle-2026-11-03.
+
+Previous: [TAB-EVENTS](artifacts/reports/TAB-EVENTS-2026-11-03.md) implements
 the two ordered Up/Down and Left/Right controller bodies using backend callbacks.
 1008 actual shipped method traces/final states match under qemu, plus strict
 full host/focused sanitizer/ARM tests and previous reference groups. Build
