@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme
+MODULES  := plat ticker ir ui_console panel power display audio settings source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -74,6 +74,22 @@ MOD_SO   := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).so)
 MOD_DEP  := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).d)
 
 all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker
+
+$(BUILD)/modules/mod_ui_navigation.so: modules/ui_navigation/ui_navigation.c common/launcher_route.c include/openaurora/launcher_route.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+
+$(BUILD)/tests/ui_navigation: tests/ui_navigation.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+.PHONY: check-ui-navigation
+check-ui-navigation: $(BUILD)/tests/ui_navigation $(BUILD)/modules/mod_ui_navigation.so $(BUILD)/modules/mod_ticker.so
+	@$(BUILD)/tests/ui_navigation $(BUILD)/modules
+check: check-ui-navigation
+
+.PHONY: check-ui-navigation-ipc
+check-ui-navigation-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_navigation.so
+	node tests/ui_navigation_ipc.cjs $(abspath $(BUILD))
 
 $(BUILD)/tests/launcher_route: tests/launcher_route.c common/launcher_route.c include/openaurora/launcher_route.h
 	@mkdir -p $(dir $@)

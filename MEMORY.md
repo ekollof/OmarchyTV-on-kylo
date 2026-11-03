@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+NAVIGATION-SERVICE-2026-11-03: ui_navigation publishes ui.navigation v1,
+retains firmware-default0 tab/row/open fields and queued route IDs, exposes
+nav-* CLI/Unix IPC. take copies current selection; OAN1 reload preserves state
+and pending IDs. Project queue16, no drawing/modal dispatch/provider calls.
+Full strict host/focused sanitizers/ARM-qemu and actual local Unix IPC pass;
+host loader preflight includes new module (source22). Native build only DSO
+26488/da07746c756b32322156219eceb36142/maxGLIBC2.4; test482168/
+feeab5416f0c2be1e926db176ece119c/maxGLIBC2.17, build-tv-v3/navigation-service.
+No target loader/hardware acceptance, TV access/wake, staging, deployment or
+settings/persistent change. Latest imported TV record still reports suspension;
+no current-state inference. No helper/build/Ghidra job pending. UI consumer/
+TabDialog writeback/queue pressure/native interaction and other parity open.
+
 LAUNCHER-ROUTING-2026-11-03: common launcher_route adds full62-entry signed
 operation result conversion and28 ordered unconditional settings plans.
 Firmware main pre-handler active-item branch ends main dialog with converted

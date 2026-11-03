@@ -6,6 +6,15 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Navigation provider: NAVIGATION-SERVICE-2026-11-03 implements reloadable state/
+queue and actual nav-* CLI/Unix IPC. Firmware constructor defaults fields0;
+message ctor stores route, not selection. Requests read current retained state
+at take, so multiple pending requests can observe the later selection. Enqueue
+is not construction/dispatch. OAN1 preserves queued IDs without native-struct
+serialization. Capacity16 is a project limit; full pressure parity, actual
+focus/modal/UI consumer, TabDialog writeback and4b/a6 context remain open.
+Host/sanitizers/ARM-qemu/local Unix IPC passed; no TV access or drawing.
+
 Launcher result contract: LAUNCHER-ROUTING-2026-11-03 follows the guarded main
 Select/modal-return path to OperationFinder navigation13, distinct from QuickMenu
 navigation12. Full62-entry signed conversion and28 unconditional ordered settings

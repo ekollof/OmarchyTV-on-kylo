@@ -90,6 +90,16 @@ static int decimal(const char *text, uint64_t *out)
     *out = (uint64_t)value;
     return 0;
 }
+static int signed_decimal(const char *text,int32_t *out)
+{
+    if(!text || !*text)return -1;
+    const char *p=text;if(*p=='-')++p;
+    if(!*p)return -1;
+    for(;*p;++p)if(*p<'0' || *p>'9')return -1;
+    char *end;errno=0;long long value=strtoll(text,&end,10);
+    if(errno || *end || value<INT32_MIN || value>INT32_MAX)return -1;
+    *out=(int32_t)value;return 0;
+}
 
 /* snprintf returns the length it wanted, which must never become a cursor or
  * be subtracted from capacity after truncation. Keep only bytes actually stored. */
@@ -176,6 +186,10 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  suspend | resume         standby hooks for all modules\n"
                  "  standby                  coordinated power service request\n"
                  "  skin [name]              query/select ui_<name>, with vendor fallback\n"
+                 "  nav-state                query retained settings route state\n"
+                 "  nav-operation <id>       queue a launcher operation ID\n"
+                 "  nav-result <signed-id>   queue a completed modal result\n"
+                 "  nav-take                 consume one queued navigation request\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -189,6 +203,34 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         if (oa_skin_request(h, a1)) { snprintf(outbuf, outlen, "failed errno %d\n", errno); return -1; }
         snprintf(outbuf, outlen, "pending %s\n", a1);
         return 0;
+    }
+    if(!strcmp(cmd,"nav-state") || !strcmp(cmd,"nav-operation") ||
+       !strcmp(cmd,"nav-result") || !strcmp(cmd,"nav-take")) {
+        int query=!strcmp(cmd,"nav-state"),consume=!strcmp(cmd,"nav-take");
+        int op=!strcmp(cmd,"nav-operation"),error=0;
+        uint64_t value=0;int32_t result=0;
+        if(a2 || force || ((query || consume)?a1!=NULL:
+           op?(decimal(a1,&value) || value>UINT32_MAX):signed_decimal(a1,&result)))error=EINVAL;
+        else if(!query && (h->shutting_down || h->stop_requested))error=ESHUTDOWN;
+        if(error){snprintf(outbuf,outlen,"failed errno %d\n",error);return -1;}
+        const oa_ui_navigation_iface *nav=h->api.lookup(h,OA_SVC_UI_NAVIGATION,1);
+        if(!nav){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        if(query) {
+            oa_ui_navigation_state s;error=nav->state(&s);
+            if(!error)snprintf(outbuf,outlen,"tab %" PRIu32 " item %" PRId32
+                " submenu %" PRIu32 " pending %" PRIu32 "\n",s.tab,s.item,s.open_submenu,s.pending);
+        } else if(consume) {
+            oa_ui_navigation_request r;error=nav->take(&r);
+            if(!error)snprintf(outbuf,outlen,"navigation %" PRIu32 " tab %" PRIu32
+                " item %" PRId32 " submenu %" PRIu32 " pending %" PRIu32 "\n",
+                r.navigation,r.selection.tab,r.selection.item,r.selection.open_submenu,r.selection.pending);
+        } else {
+            error=op?nav->operation((uint32_t)value):nav->result(result);
+            if(!error)snprintf(outbuf,outlen,"queued\n");
+        }
+        h->api.release(h,OA_SVC_UI_NAVIGATION);
+        if(error)snprintf(outbuf,outlen,"failed errno %d\n",error);
+        return error?-1:0;
     }
     if (!strcmp(cmd, "mixer-query") || !strcmp(cmd, "mixer-result") || !strcmp(cmd, "mixer-cancel")) {
         uint64_t value;

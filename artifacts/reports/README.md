@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [NAVIGATION-SERVICE](NAVIGATION-SERVICE-2026-11-03.md) | reloadable ui.navigation state/queue + nav-* CLI/actual Unix IPC, explicit OAN1 pending reload; host/sanitizer/ARM-qemu/host-loader pass; no TV or UI consumer; queue pressure/TabDialog writeback open |
 | [LAUNCHER-ROUTING](LAUNCHER-ROUTING-2026-11-03.md) | full62 operation conversion/28 ordered settings plans, conditional main-modal result route to nav13, host/sanitizers/ARM-qemu and firmware corpus; no UI/service integration or live keys;4b/a6 gates open |
 | [AGENT-WORK-REVIEW](AGENT-WORK-REVIEW-2026-11-03.md) | review through e7e7333: scanner key bounds/completeness/snapshot/stale-key fixes; host/sanitizers/ARM-qemu;154 navigation call inventories/SubLauncher slots verified; no TV access |
 | [Menu flow evidence](../analysis/ui-menu-flow-2026-11-04/README.md) | mixed dated session: positive portal/shortcut observations and conditional firmware routing; corrected VK/ICE equality, TabDialog absence/ownership and unconditional full-list claims; unchanged1043 attempts had no visible effect |

@@ -321,6 +321,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Reloadable ui.navigation v1 uses recovered route plans, retained selection
+      and deferred route-ID queue; nav-* CLI/actual Unix IPC, OAN1 pending-state
+      reload, lifecycle/failure/standby tests pass host/sanitizers/ARM-qemu.
+      NAVIGATION-SERVICE. No consumer drawing, modal handling or native TV run.
 - [x] Recover full62 launcher operation results and28 unconditional ordered
       settings plans, including retained fields and queue-front order; common/
       launcher_route and firmware differential pass host/sanitizers/ARM-qemu.
@@ -332,6 +336,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       a6 runtime/tuner gates, provider actions, retained TabDialog selection and
       initialization before real-display acceptance. Native plans are not wire
       or reload encodings; queue insertion must not trigger reentrant creation.
+      ui_navigation supplies the queued state/IPC provider; actual TabDialog
+      initialization/selection writeback, drawing consumer and pressure behavior
+      beyond the project16-request bound still require firmware/native acceptance.
 - [x] Review ff89e27..e7e7333: scanner mapped/complete/escaped key reads,
       nonzero-base snapshots and retained UString metadata fixed; full strict
       host/focused sanitizers/ARM-qemu pass. AGENT-WORK-REVIEW. No TV access.

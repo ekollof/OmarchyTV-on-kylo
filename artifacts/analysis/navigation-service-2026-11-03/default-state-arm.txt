@@ -1,0 +1,8 @@
+Aurora MD5 64c252340d3af6c5d66072611b7bad7a; DemoApp constructor, objdump cache excerpts
+  ce0f58:	movs	r6, #0
+  ce12de:	movs	r6, #0
+  ce1358:	str.w	r6, [r4, #4048]	; 0xfd0
+  ce1360:	str.w	r6, [r4, #4056]	; 0xfd8
+  ce1420:	movs	r5, #0
+  ce1720:	movw	ip, #4697	; 0x1259
+  ce175e:	strb.w	r5, [r4, ip]

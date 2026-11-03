@@ -1,0 +1,7 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build/tests/ui_navigation tests/ui_navigation.c build/core/check.o build/core/control.o build/core/host.o build/core/module.o build/core/skin.o -ldl -pthread -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build/modules/mod_ui_navigation.so modules/ui_navigation/ui_navigation.c common/launcher_route.c
+ok navigation: CLI domains/validation, copied current selection at take, retained fields and pending reload
+ok navigation: atomic full queue, shutdown gate, standby retention, suspended reload and publication-failure retry
+ok navigation: normal consumer hold, portable exact-length snapshot validation, signed retained row and cleanup
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

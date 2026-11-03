@@ -1,0 +1,3 @@
+ok navigation: CLI domains/validation, copied current selection at take, retained fields and pending reload
+ok navigation: atomic full queue, shutdown gate, standby retention, suspended reload and publication-failure retry
+ok navigation: normal consumer hold, portable exact-length snapshot validation, signed retained row and cleanup

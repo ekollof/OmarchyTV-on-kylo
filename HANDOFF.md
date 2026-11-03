@@ -24,7 +24,28 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [LAUNCHER-ROUTING](artifacts/reports/LAUNCHER-ROUTING-2026-11-03.md)
+Latest: [NAVIGATION-SERVICE](artifacts/reports/NAVIGATION-SERVICE-2026-11-03.md)
+adds reloadable ui_navigation/ui.navigation v1 plus nav-state/nav-operation/
+nav-result/nav-take via actual CLI/Unix IPC. Firmware defaults tab/row/open0;
+independent retained fields and route-only messages are verified. Queue holds
+IDs, take returns current selection, not submit-time state. OAN1 explicit reload
+encoding preserves pending requests; normal holds, standby/deferred activation,
+publication failure retry/removal callbacks and strict parser checks pass.
+Capacity16 is a project bound, not vendor queue parity. Full strict host,
+focused sanitizers, ARM/qemu and actual local Unix socket tests pass; host
+--check includes new source module22. Native DSO26488/da07746c756b32322156219eceb36142/
+GLIBC2.4; test482168/feeab5416f0c2be1e926db176ece119c/GLIBC2.17, isolated
+build-tv-v3/navigation-service. No TV connection/wake/staging/deployment or jobs.
+
+Next attach the lifecycle-safe focus/modal/drawing consumer. The service queues
+but never draws or constructs TabDialog, and does not infer modal results from
+Select. Actual TabDialog initialization/state writeback, production queue
+pressure contract, guarded4b/a6/provider actions and real visible acceptance
+remain open. Existing captured SCREEN_SETTINGS Select->full-list is still a
+diagnostic shortcut. nav-take is destructive; nav-state is the read-only query.
+Last imported TV session reports suspension, not a fresh state poll.
+
+Previous: [LAUNCHER-ROUTING](artifacts/reports/LAUNCHER-ROUTING-2026-11-03.md)
 adds common/launcher_route: all62 operation-ID -> signed dialog results and28
 ordered unconditional settings plans. Fresh ARM/decompile closes the conditional
 MainLauncher active-item Select -> converted endDialog result -> DemoApp modal
@@ -39,7 +60,8 @@ Full strict host/focused sanitizers/ARM-qemu pass. Independent corpus matches
 all62 signed ELF table values and28 ordered source-derived action sequences.
 Native test build only26996/MD5 33b69aae50bed048b2c73a592d7c1acf/GLIBC2.4,
 build-tv-v3/launcher-route. No TV connection/wake/staging/keys or pending helper.
-Next integrate the policy into a modular navigation/focus/modal consumer;
+NAVIGATION-SERVICE subsequently adds the queued state/IPC provider; the
+navigation/focus/modal/drawing consumer remains to be integrated;
 existing SCREEN_SETTINGS Select->full-list is a diagnostic shortcut, not this
 vendor flow. Installation/runtime/provider gates and TabDialog construction/
 retained state/visible acceptance remain open. Do not execute plans on every

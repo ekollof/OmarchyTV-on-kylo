@@ -1,0 +1,498 @@
+Read-only runtime preflight; interpreter /lib64/ld-linux-x86-64.so.2; module ABI 3
+CHECK /home/ekollof/Work/tvhack/openaurora/build/openaurora
+	linux-vdso.so.1 (0x00007f4cb91ac000)
+	libm.so.6 => /usr/lib/libm.so.6 (0x00007f4cb8fae000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f4cb8c00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f4cb91ae000)
+
+	Version information:
+	/home/ekollof/Work/tvhack/openaurora/build/openaurora:
+		libc.so.6 (GLIBC_2.9) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.10) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libm.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+		libc.so.6 (GLIBC_ABI_DT_X86_64_PLT) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.35) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_PRIVATE) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK /home/ekollof/Work/tvhack/openaurora/build/openaurora
+CHECK openaurora/build/modules/mod_audio.so
+	linux-vdso.so.1 (0x00007f03fde84000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f03fdc00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f03fde86000)
+
+	Version information:
+	openaurora/build/modules/mod_audio.so:
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_audio.so
+CHECK openaurora/build/modules/mod_audio_curve.so
+	linux-vdso.so.1 (0x00007f2040ad7000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f2040800000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f2040ad9000)
+
+	Version information:
+	openaurora/build/modules/mod_audio_curve.so:
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_audio_curve.so
+CHECK openaurora/build/modules/mod_audio_mixer.so
+	linux-vdso.so.1 (0x00007f33113b7000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f3311000000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f33113b9000)
+
+	Version information:
+	openaurora/build/modules/mod_audio_mixer.so:
+		libc.so.6 (GLIBC_2.15) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_audio_mixer.so
+CHECK openaurora/build/modules/mod_cec.so
+	linux-vdso.so.1 (0x00007fa900d81000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fa900a00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fa900d83000)
+
+	Version information:
+	openaurora/build/modules/mod_cec.so:
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_cec.so
+CHECK openaurora/build/modules/mod_display.so
+	linux-vdso.so.1 (0x00007ff95a4f2000)
+	libm.so.6 => /usr/lib/libm.so.6 (0x00007ff95a37a000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007ff95a000000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007ff95a4f4000)
+
+	Version information:
+	openaurora/build/modules/mod_display.so:
+		libm.so.6 (GLIBC_2.2.5) => /usr/lib/libm.so.6
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libm.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+		libc.so.6 (GLIBC_ABI_DT_X86_64_PLT) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.35) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_PRIVATE) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_display.so
+CHECK openaurora/build/modules/mod_graphics.so
+	linux-vdso.so.1 (0x00007f9be4965000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f9be4600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f9be4967000)
+
+	Version information:
+	openaurora/build/modules/mod_graphics.so:
+		libc.so.6 (GLIBC_2.15) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_graphics.so
+CHECK openaurora/build/modules/mod_ir.so
+	linux-vdso.so.1 (0x00007f15d1879000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f15d1600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f15d187b000)
+
+	Version information:
+	openaurora/build/modules/mod_ir.so:
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_ir.so
+CHECK openaurora/build/modules/mod_panel.so
+	linux-vdso.so.1 (0x00007f3646950000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f3646600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f3646952000)
+
+	Version information:
+	openaurora/build/modules/mod_panel.so:
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_panel.so
+CHECK openaurora/build/modules/mod_plat.so
+	linux-vdso.so.1 (0x00007f162e96a000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f162e600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f162e96c000)
+
+	Version information:
+	openaurora/build/modules/mod_plat.so:
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_plat.so
+CHECK openaurora/build/modules/mod_power.so
+	linux-vdso.so.1 (0x00007ff8c34a0000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007ff8c3200000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007ff8c34a2000)
+
+	Version information:
+	openaurora/build/modules/mod_power.so:
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_power.so
+CHECK openaurora/build/modules/mod_scene_display.so
+	linux-vdso.so.1 (0x00007fcbd0273000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fcbd0000000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fcbd0275000)
+
+	Version information:
+	openaurora/build/modules/mod_scene_display.so:
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_scene_display.so
+CHECK openaurora/build/modules/mod_scene_gpu_fixture.so
+	linux-vdso.so.1 (0x00007efd459cd000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007efd45600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007efd459cf000)
+
+	Version information:
+	openaurora/build/modules/mod_scene_gpu_fixture.so:
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_scene_gpu_fixture.so
+CHECK openaurora/build/modules/mod_settings.so
+	linux-vdso.so.1 (0x00007fdfb33af000)
+	libsqlite3.so.0 => /usr/lib/libsqlite3.so.0 (0x00007fdfb31d3000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fdfb2e00000)
+	libm.so.6 => /usr/lib/libm.so.6 (0x00007fdfb309c000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fdfb33b1000)
+
+	Version information:
+	openaurora/build/modules/mod_settings.so:
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libsqlite3.so.0:
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.28) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libm.so.6 (GLIBC_2.38) => /usr/lib/libm.so.6
+		libm.so.6 (GLIBC_2.44) => /usr/lib/libm.so.6
+		libm.so.6 (GLIBC_2.29) => /usr/lib/libm.so.6
+		libm.so.6 (GLIBC_2.2.5) => /usr/lib/libm.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+	/usr/lib/libm.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+		libc.so.6 (GLIBC_ABI_DT_X86_64_PLT) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.35) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_PRIVATE) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+OK openaurora/build/modules/mod_settings.so
+CHECK openaurora/build/modules/mod_source.so
+	linux-vdso.so.1 (0x00007f5f11793000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f5f11400000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f5f11795000)
+
+	Version information:
+	openaurora/build/modules/mod_source.so:
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_source.so
+CHECK openaurora/build/modules/mod_ticker.so
+	linux-vdso.so.1 (0x00007f1803189000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f1802e00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f180318b000)
+
+	Version information:
+	openaurora/build/modules/mod_ticker.so:
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_ticker.so
+CHECK openaurora/build/modules/mod_ui_anim.so
+	linux-vdso.so.1 (0x00007f3469426000)
+	libm.so.6 => /usr/lib/libm.so.6 (0x00007f34692b1000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f3469000000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f3469428000)
+
+	Version information:
+	openaurora/build/modules/mod_ui_anim.so:
+		libm.so.6 (GLIBC_2.2.5) => /usr/lib/libm.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libm.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+		libc.so.6 (GLIBC_ABI_DT_X86_64_PLT) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.35) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_PRIVATE) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_ui_anim.so
+CHECK openaurora/build/modules/mod_ui_clock.so
+	linux-vdso.so.1 (0x00007ffbe49a2000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007ffbe4600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007ffbe49a4000)
+
+	Version information:
+	openaurora/build/modules/mod_ui_clock.so:
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_ui_clock.so
+CHECK openaurora/build/modules/mod_ui_console.so
+	linux-vdso.so.1 (0x00007f965c0f0000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f965be00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f965c0f2000)
+
+	Version information:
+	openaurora/build/modules/mod_ui_console.so:
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_ui_console.so
+CHECK openaurora/build/modules/mod_ui_engine.so
+	linux-vdso.so.1 (0x00007fbedab8a000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fbeda800000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fbedab8c000)
+
+	Version information:
+	openaurora/build/modules/mod_ui_engine.so:
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_ui_engine.so
+CHECK openaurora/build/modules/mod_ui_fb.so
+	linux-vdso.so.1 (0x00007fa7e7ad2000)
+	libm.so.6 => /usr/lib/libm.so.6 (0x00007fa7e795a000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fa7e7600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fa7e7ad4000)
+
+	Version information:
+	openaurora/build/modules/mod_ui_fb.so:
+		libm.so.6 (GLIBC_2.2.5) => /usr/lib/libm.so.6
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libm.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+		libc.so.6 (GLIBC_ABI_DT_X86_64_PLT) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.35) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_PRIVATE) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_ui_fb.so
+CHECK openaurora/build/modules/mod_ui_navigation.so
+	linux-vdso.so.1 (0x00007f140c554000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f140c200000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f140c556000)
+
+	Version information:
+	openaurora/build/modules/mod_ui_navigation.so:
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_ui_navigation.so
+CHECK openaurora/build/modules/mod_ui_omarchy.so
+	linux-vdso.so.1 (0x00007fc8c5ce0000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fc8c5a00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fc8c5ce2000)
+
+	Version information:
+	openaurora/build/modules/mod_ui_omarchy.so:
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_ui_omarchy.so
+CHECK openaurora/build/modules/mod_ui_theme.so
+	linux-vdso.so.1 (0x00007fa96592e000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007fa965600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fa965930000)
+
+	Version information:
+	openaurora/build/modules/mod_ui_theme.so:
+		libc.so.6 (GLIBC_2.33) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_ui_theme.so
+CHECK openaurora/build/modules/mod_ui_vendor.so
+	linux-vdso.so.1 (0x00007f0d7dadd000)
+	libm.so.6 => /usr/lib/libm.so.6 (0x00007f0d7d95e000)
+	libc.so.6 => /usr/lib/libc.so.6 (0x00007f0d7d600000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f0d7dadf000)
+
+	Version information:
+	openaurora/build/modules/mod_ui_vendor.so:
+		libm.so.6 (GLIBC_2.2.5) => /usr/lib/libm.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.17) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.38) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libm.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+		libc.so.6 (GLIBC_ABI_DT_X86_64_PLT) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_ABI_DT_RELR) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.34) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.35) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.14) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.4) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.3.2) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_PRIVATE) => /usr/lib/libc.so.6
+		libc.so.6 (GLIBC_2.2.5) => /usr/lib/libc.so.6
+	/usr/lib/libc.so.6:
+		ld-linux-x86-64.so.2 (GLIBC_2.2.5) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.3) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_2.35) => /lib64/ld-linux-x86-64.so.2
+		ld-linux-x86-64.so.2 (GLIBC_PRIVATE) => /lib64/ld-linux-x86-64.so.2
+OK openaurora/build/modules/mod_ui_vendor.so
+Runtime preflight PASSED. No module entry/init/start, control socket or hardware access.
+This checks ELF metadata and library relocations, not device operation or display scanout.

@@ -16,6 +16,33 @@
 
 #include <stdint.h>
 
+/* ui.navigation v1 — loop-thread-only settings route state/queue. Requests
+ * are completed modal results or NovoLauncherOperationIds, NEVER raw keys.
+ * Returns errno values. A successful submit queues, never draws/dispatches.
+ * take is destructive: use one dispatcher; state is a copied read-only view.
+ * Requests contain the CURRENT retained selection at consumption, not a copy
+ * at submission (vendor navigation messages carry the route ID only).
+ * item is the stored settings-item/result ID, not a visible row array index.
+ * ENOSPC preserves state; unsupported plans return ENOTSUP. During paired
+ * suspend state remains queryable; submissions/takes return EBUSY. Hold the
+ * service through every call. These structs are not wire/reload encodings. */
+#define OA_SVC_UI_NAVIGATION "ui.navigation"
+#define OA_UI_NAVIGATION_CAPACITY 16u
+typedef struct {
+    uint32_t tab,open_submenu,pending;
+    int32_t item;
+} oa_ui_navigation_state;
+typedef struct {
+    uint32_t navigation;
+    oa_ui_navigation_state selection;
+} oa_ui_navigation_request;
+typedef struct {
+    int (*result)(int32_t result);
+    int (*operation)(uint32_t operation);
+    int (*state)(oa_ui_navigation_state *out);
+    int (*take)(oa_ui_navigation_request *out);
+} oa_ui_navigation_iface;
+
 /* ui.theme v1 — immutable validated BinSVG snapshot, published by ui_theme.
  * Loop-thread only. Hold lookup(OA_SVC_UI_THEME,1) through every use of ALL
  * returned views/strings; drop those before release/stop. Do not retain them

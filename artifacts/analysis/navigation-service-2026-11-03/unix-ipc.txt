@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+node tests/ui_navigation_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok actual Unix IPC: queued modal/operation state, reload, standby/deferred activation, destructive take and clean exit
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

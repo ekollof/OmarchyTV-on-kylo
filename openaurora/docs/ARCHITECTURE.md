@@ -51,9 +51,13 @@ RGBA. The display backend converts RGBA inputs into BGRA framebuffer bytes.
 modal-result map and ordered settings-selection/enqueue plans. Retained fields
 are represented by missing writes, not resets; queue-front is enqueue-only.
 LAUNCHER-ROUTING records full62-entry/28-plan firmware differentials and limits.
-This is a lower component, not yet a navigation service or skin/IPC consumer;
-its native structs are not wire/reload encodings. Runtime/provider/modal gates
-and the existing captured-screen diagnostic navigation remain to be integrated.
+ui_navigation now consumes it through ui.navigation v1 and the nav-* control
+commands. Its queue stores route IDs with current retained selection read at
+take, not submission. OAN1 encodes state/queued IDs explicitly for reload;
+native structs are not wire/reload encodings. Runtime/provider/modal gates,
+TabDialog state writeback, production queue pressure behavior and the existing
+captured-screen diagnostic navigation remain to be integrated. See NAVIGATION-
+SERVICE for host/sanitizer/ARM-qemu/actual Unix IPC checks and limits.
 
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;
@@ -82,7 +86,8 @@ cannot prevent reload aliases. Owned watch/reap timer keep ABI3 cleanup
 nonblocking; abnormal child death retains a faulted provider until native release/
 recovery is understood. Four host/sanitizer/TV lifecycle groups and actual GPU
 service frames pass; see [GRAPHICS-MODULE](../../artifacts/reports/GRAPHICS-MODULE-2026-11-01.md).
-Source builds18 modules; the preserved matching production ARM stage remains16.
+Source now builds22 modules, including ui_navigation; the preserved matching
+historical production ARM stage remains16. See MEMORY for stage identities.
 
 Optional `scene_display` consumes/holds display.gpu, publishes an RGBA drawing
 canvas as display v2 and separate display.async request/latest receipts. Its one
@@ -456,7 +461,7 @@ examples/audio-mixer.conf is a manual opt-in path example, not a deployment.
 That milestone's core+all16 modules passed TV --check; real socket query/reload/query
 and standalone config/start/status/quit passed with stock UI still running.
 
-UI-THEME-PROVIDER-2026-11-02 adds ui_theme (source now21 modules), publishing
+UI-THEME-PROVIDER-2026-11-02 added ui_theme (21 modules at that milestone), publishing
 ui.theme v1. common/svg_pack.c reads explicit ui_theme.index/ui_theme.binary
 regular files into a fully validated immutable snapshot; common/binsvg.c parses
 records and named rectangles. Service record(index)/named(CRC32) return borrowed
