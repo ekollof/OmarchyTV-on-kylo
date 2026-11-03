@@ -115,3 +115,30 @@ Evidence: `nav-routing.txt` (154-case machine map),
 `../settings-nav-2026-11-04/` (live keys + sublauncher scan),
 `../ui-text-setup-2026-11-01/` (TabDialog/title decode). No TV writes beyond
 authorized keys; TV suspended by owner at end of session.
+
+## Live key session 2026-11-04 (owner-authorized DIAL keys, per-step fb1 verified)
+
+Starting state: "Geen signaal" banner (idle, no OSD menus). Each key got
+HTTP 201; every effect below was screenshot-verified (201 alone proves nothing).
+
+| # | key | result |
+|---|---|---|
+| 1 | QuickMenu 1043 | NO visible effect (banner unchanged). Dialserver log confirms arrival (`Starting the app with params <remote><key code='1043'/>`), so the key is delivered but gated/ignored in this state. |
+| 2 | Exit 1010 | no visible change (banner is not dismissible this way). |
+| 3 | Menu 1048 | launcher portal (Startpagina, 5 rails). |
+| 4 | QuickMenu 1043 (from portal) | NO visible effect (portal unchanged). |
+| 5 | Exit 1010 | portal closed, back to banner. Banner confirmed sticky. |
+
+No values were changed (no Left/Right on editable widgets), no settings DB
+writes, no staging left on the TV, no helpers running. Panel left showing
+the idle "Geen signaal" banner; TV suspended afterwards at owner request.
+
+Implication: QuickMenu-as-0x251 reaches `DemoApp::handleKeyPress` only if
+the DIAL virtual->ICE translation delivers it (name-matched, untested
+end-to-end), AND `onQuickAccessKey` gates on profile remote code != 0xff
+(`hwprofile` key `RemoteControl/<remote>/KeyQuick`, default 0xff) plus
+teletext/VCR/modal checks. The no-op in two states is consistent with a
+closed gate (profile or modal state), NOT with broken delivery. Next step
+when access allows: read the hwprofile RemoteControl section to determine
+the configured remote code; or test QuickMenu from inside the launcher/
+sublauncher modal state (different +0x284 gate values).
