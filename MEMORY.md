@@ -6,6 +6,16 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+TAB-NAVIGATION-2026-11-03: reviewed consumer prerequisites against fresh ARM.
+common/tab_policy availability matches actual shipped168-byte predicate under
+qemu in884736 cases, including raw byte XOR/default IDs. Initial focus request
+is open!=0 or signed item>0, still subject to content/permission gates. Corrected
+old key-handler address: d700a0, not d6faec. Full host suite and focused
+sanitizer/ARM pure tests pass;
+build-tv-v3/tab-policy is offline-only, no TV connection/wake/deployment.
+Native context, unavailable-tab fallback, content/writeback and UI consumer
+remain open. No current TV-state inference from the older suspended record.
+
 NAVIGATION-SERVICE-2026-11-03: ui_navigation publishes ui.navigation v1,
 retains firmware-default0 tab/row/open fields and queued route IDs, exposes
 nav-* CLI/Unix IPC. take copies current selection; OAN1 reload preserves state

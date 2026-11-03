@@ -47,23 +47,26 @@ Verified 2026-11-04, one DIAL key per step with fb1 check after each:
   `doNavigateTabDialog(false,false)`. (Sibling codes: 0x13/0x14 variants,
   0x15/0x16 tab-wrapped source/other settings, 0x17/0x18 advanced dialogs;
   full router map in nav-routing.txt, 154 cases machine-extracted.)
-- `TabDialog` (resource 191): `init` builds 5 tab buttons from
+- Correction, TAB-NAVIGATION-2026-11-03: `TabDialog` (resource 191) considers
+  five tabs but only builds available tabs with descriptions. QuickMenu's false
+  entry flag normally limits it to picture/sound; launcher entry differs.
+  The original description below must not be read as unconditional five-tab creation.
+  `init` builds buttons from
   `picture/sound/network/installation/system` descriptions (computed
   widths; n=2 available → 378 px), `updateGlyphAndTitle` sets per-tab keys
   (PICTURE/SOUND/NETWORK/INSTALLATION_STR/SYSTEM_STR, PANASONIC-gated) and
   glyphs 0x335/0x336/0x337/0x32f/0x338, `showSubMenu` creates tab 0's
   `PictureSettingsDialog` (resource 179) — and destroys it immediately if
-  its +0x8/+0x1c validity check fails.
+  its content-interface +0x18 validity check fails (+0x8 creates content).
 - Title +0x140 built by `createComponents` ONLY if the dialog container
   already carries a `dialogTitle` description (`SVGDialog::create` populates
   it via `updateSVGData`; `doModal` runs init, not create — the ordering
   that yields a titled dialog is still open).
-- Tab keys once open (from `TabDialog::preHandleKeyPressMessage` 0xd6faec):
-  Left/Right with submenu flag → switch tab (hide → UIGroup 0x20c/0x20d →
-  updateGlyphAndTitle → showSubMenu); Up/Down → focus submenu list;
-  Select → per-type sub-dialog (7=PCP, 0x6d=advanced, 0x120=menu result,
-  8=message/prompt, 10=demo); Exit paths (0x22d/0x251, 0x21f/0x28b) →
-  unfocus + hide + endDialog.
+- Key-summary correction: d6faec is updateGlyphAndTitle, not
+  preHandleKeyPressMessage (actually d700a0). The former per-type Select
+  summary conflated content-row methods with this handler and is withdrawn.
+  See [TAB-NAVIGATION](../../reports/TAB-NAVIGATION-2026-11-03.md) and its fresh
+  keys-focus.txt for focused-content forwarding, edge/focus and close branches.
 - Main-list Left/Right does NOT adjust in place: ids 0-5 go through
   `updateViaPictureElementSettingDialog`, which OPENS the per-setting
   sub-dialog (shortcut tiles are the documented exception: in-place edit).
@@ -107,11 +110,12 @@ This key-only playbook does not revoke the standing read-only staging permission
   0x22d/0x251 branch), so QuickMenu toggles. If 1043 does nothing live, the
   availability is one candidate gate, alongside translation/modal checks.
   No-effect1043 evidence already exists; inspect offline evidence first.
-- Inside TabDialog (from `preHandleKeyPressMessage` decode; PREDICTED live):
+- Historical partial summary, corrected by TAB-NAVIGATION (not a live recipe):
   Left/Right with submenu flag switch tabs (hide → UIGroup 0x20c/0x20d →
   updateGlyphAndTitle → showSubMenu), else forward to content; Up/Down move
   within content and return focus to tabs at the ends (tab-jump variants
-  synthesize L/R); Select opens the focused row's sub-dialog; Exit (0x210)
+  synthesize L/R); per-type Select belongs to content methods, not a direct
+  TabDialog pre-handler case. Exit (0x210)
   partially exits, 0x22d/0x251/0x21f/0x28b fully close (unfocus + hide +
   endDialog; 0x21f/0x28b repost the key).
 - Leaving settings: Exit (verified to cancel edit; full exit path back to

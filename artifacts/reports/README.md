@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [TAB-NAVIGATION](TAB-NAVIGATION-2026-11-03.md) | availability/focus prerequisites from fresh ARM; predicate matches shipped function in884736 qemu cases; corrects d6faec key-handler claim; native context/consumer/content/writeback remain open, no TV access |
 | [NAVIGATION-SERVICE](NAVIGATION-SERVICE-2026-11-03.md) | reloadable ui.navigation state/queue + nav-* CLI/actual Unix IPC, explicit OAN1 pending reload; host/sanitizer/ARM-qemu/host-loader pass; no TV or UI consumer; queue pressure/TabDialog writeback open |
 | [LAUNCHER-ROUTING](LAUNCHER-ROUTING-2026-11-03.md) | full62 operation conversion/28 ordered settings plans, conditional main-modal result route to nav13, host/sanitizers/ARM-qemu and firmware corpus; no UI/service integration or live keys;4b/a6 gates open |
 | [AGENT-WORK-REVIEW](AGENT-WORK-REVIEW-2026-11-03.md) | review through e7e7333: scanner key bounds/completeness/snapshot/stale-key fixes; host/sanitizers/ARM-qemu;154 navigation call inventories/SubLauncher slots verified; no TV access |

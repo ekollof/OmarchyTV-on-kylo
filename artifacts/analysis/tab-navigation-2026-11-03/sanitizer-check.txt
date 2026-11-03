@@ -1,0 +1,3 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+ok tab policy: entry/hotel/profile/app gates, raw byte XOR semantics, default IDs, requested focus and atomic invalid inputs
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

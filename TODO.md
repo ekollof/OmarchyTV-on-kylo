@@ -321,6 +321,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Recover TabDialog availability and initial content-focus request;
+      common/tab_policy matches actual shipped ARM predicate in884736 offline
+      qemu comparisons; host/sanitizer/ARM tests pass. TAB-NAVIGATION.
+      This does not close native context acquisition or content/key/UI acceptance.
 - [x] Reloadable ui.navigation v1 uses recovered route plans, retained selection
       and deferred route-ID queue; nav-* CLI/actual Unix IPC, OAN1 pending-state
       reload, lifecycle/failure/standby tests pass host/sanitizers/ARM-qemu.
@@ -339,6 +343,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       ui_navigation supplies the queued state/IPC provider; actual TabDialog
       initialization/selection writeback, drawing consumer and pressure behavior
       beyond the project16-request bound still require firmware/native acceptance.
+      TAB-NAVIGATION supplies availability/focus predicates; acquire real hotel/
+      profile/app/entry inputs, resolve unavailable-tab fallback, description/
+      content validity and password/network gates before consuming/drawing.
 - [x] Review ff89e27..e7e7333: scanner mapped/complete/escaped key reads,
       nonzero-base snapshots and retained UString metadata fixed; full strict
       host/focused sanitizers/ARM-qemu pass. AGENT-WORK-REVIEW. No TV access.

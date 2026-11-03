@@ -190,7 +190,12 @@ list success and live ICE handling are not proved by DIAL app receipt.
 Same key while a TabDialog is open CLOSES it (dispatcher 0x22d/0x251 branch:
 unfocus + hideSubMenu + endDialog). So QuickMenu toggles the full dialog.
 
-## TabDialog key map (from preHandleKeyPressMessage 0xd6faec, mirrored by ICE codes above)
+## Historical partial TabDialog key map — corrected 2026-11-03
+
+TAB-NAVIGATION-2026-11-03: d6faec is updateGlyphAndTitle, NOT the
+preHandleKeyPressMessage entry (d700a0). The per-type Select list below was
+conflated with content-row methods. It is retained as a dated claim, not a
+verified handler recipe; use fresh keys-focus.txt and the correction report.
 
 - Left/Right (0x20c/0x20d), no content or content inactive: switch tabs
   (hideSubMenu, synthesize key to tab UIGroup, updateGlyphAndTitle,
@@ -198,7 +203,7 @@ unfocus + hideSubMenu + endDialog). So QuickMenu toggles the full dialog.
 - Up/Down (0x20a/0x20b): move within content; at top/bottom edge, focus
   returns to tabs (unfocusSubMenu); with tab-jump enabled, synthesize
   Left/Right to change tabs.
-- Select (0x20e): per-type sub-dialog (PCP=7, ADVANCE=0x6d, 0x120=menu
+- WITHDRAWN attribution to TabDialog pre-handler: Select (0x20e): per-type sub-dialog (PCP=7, ADVANCE=0x6d, 0x120=menu
   result, 8=message/prompt, 10=demo); main-list Left/Right opens the
   per-setting sub-dialog instead of adjusting in place (ids 0-5 via
   updateViaPictureElementSettingDialog); slider rows have NO in-place path.

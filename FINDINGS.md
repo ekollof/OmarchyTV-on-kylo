@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+TabDialog prerequisites: TAB-NAVIGATION-2026-11-03 recovers hotel/profile/app/
+entry-dependent availability and signed item>0/open-submenu focus request.
+Predicate matches the actual shipped ARM function in884736 qemu cases; native
+context acquisition/content validity/focus permission/writeback/UI remain open.
+QuickMenu(false) and launcher(true) entries are distinct. d6faec is
+updateGlyphAndTitle; the real preHandleKeyPressMessage is d700a0. Older Select/
+per-type key summaries conflated layers and cannot serve as a key controller.
+
 Navigation provider: NAVIGATION-SERVICE-2026-11-03 implements reloadable state/
 queue and actual nav-* CLI/Unix IPC. Firmware constructor defaults fields0;
 message ctor stores route, not selection. Requests read current retained state

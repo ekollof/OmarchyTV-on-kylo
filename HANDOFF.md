@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [NAVIGATION-SERVICE](artifacts/reports/NAVIGATION-SERVICE-2026-11-03.md)
+Latest: [TAB-NAVIGATION](artifacts/reports/TAB-NAVIGATION-2026-11-03.md) reviews
+the pending consumer prerequisites. Availability now matches the actual shipped
+ARM function in884736 offline qemu cases; common/tab_policy also implements the
+signed item>0/open-submenu initial focus request. QuickMenu/launcher entry,
+hotel/profile/app state gate tabs; content/password/network gates can still
+refuse focus. Do not unconditionally create five tabs or focus picture content.
+Correct key-handler address d700a0; d6faec is updateGlyphAndTitle, and old
+per-type Select summary belonged to other layers. Full host suite and focused
+sanitizer/ARM tests pass;
+no TV connection/wake/deployment. Evidence and reproduction live under analysis/
+tab-navigation-2026-11-03. Next acquire real context, resolve unavailable-tab
+fallback/content validity/per-tab state and integrate a lifecycle-safe consumer.
+The helper alone does not dispatch queued navigation or establish visible parity.
+
+Previous: [NAVIGATION-SERVICE](artifacts/reports/NAVIGATION-SERVICE-2026-11-03.md)
 adds reloadable ui_navigation/ui.navigation v1 plus nav-state/nav-operation/
 nav-result/nav-take via actual CLI/Unix IPC. Firmware defaults tab/row/open0;
 independent retained fields and route-only messages are verified. Queue holds

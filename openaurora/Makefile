@@ -99,6 +99,18 @@ check-launcher-route: $(BUILD)/tests/launcher_route
 	@$(BUILD)/tests/launcher_route
 check: check-launcher-route
 
+$(BUILD)/tests/tab_policy: tests/tab_policy.c common/tab_policy.c include/openaurora/tab_policy.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-tab-policy
+check-tab-policy: $(BUILD)/tests/tab_policy
+	@$(BUILD)/tests/tab_policy
+check: check-tab-policy
+
+$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c include/openaurora/tab_policy.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
 $(BUILD)/ui-object-scan: tools/re/ui-object-scan.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
