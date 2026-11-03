@@ -6,6 +6,17 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-SCROLLBAR-2026-11-03: scrollbar create forward and setScrollPosition
+gating/store/show pass294 native/C comparisons, plus full strict host,
+focused ASan/UBSan, ARM/qemu and all previous reference groups. ARM unit
+25168/e4ee0a5440050006f786a37a8d060b3e; reference605412/
+fbab2d68f4d9e54abaf6a75741b82965, build-tv-v3/tab-policy. Signed
+first-vs-vis gating, conditional background/foreground rendering and the
+rect/arg forwarding are asserted. No new module/service/UI consumer. Row
+getters/editing, parent refresh, scrollbar construction/rendering internals,
+startSelectAnimation, owned backend/context and visible acceptance stay open.
+No TV access/wake/staging/deployment or hardware mutation; no pending job/helper.
+
 SVG-LIST-IMPL-2026-11-03: updateImpl and rotateRows pass6952 native/C
 comparisons with exact call order/args and resulting manager/array/selection
 state, plus full strict host, focused ASan/UBSan, ARM/qemu and all previous

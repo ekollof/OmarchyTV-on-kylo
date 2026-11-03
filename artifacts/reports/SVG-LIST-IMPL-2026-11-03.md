@@ -42,10 +42,11 @@ NULL ops or any NULL callback returns EINVAL.
 
 ## Still open
 
-updateImpl's construction/position bodies are this item's drawRow/drawEmpty
-consumers; row getters and editing, parent refresh, startSelectAnimation and
-the owned backend/context/consumer with permission/modal/focus/lifetime/
-visible gates remain open. Internals are not actual widget/rendering
-acceptance, and no visible parity is claimed.
+Subsequent [SVG-LIST-SCROLLBAR](SVG-LIST-SCROLLBAR-2026-11-03.md)
+implements scrollbar create-forward and setScrollPosition gating. Row
+getters and editing, parent refresh, scrollbar construction/rendering
+internals, startSelectAnimation, and the owned backend/context/consumer with
+permission/modal/focus/lifetime/visible gates remain open. Internals are not
+actual widget/rendering acceptance, and no visible parity is claimed.
 
 Evidence and reproduction: artifacts/analysis/svg-list-impl-2026-11-03/.

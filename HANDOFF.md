@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SVG-LIST-IMPL](artifacts/reports/SVG-LIST-IMPL-2026-11-03.md)
+Latest: [SVG-LIST-SCROLLBAR](artifacts/reports/SVG-LIST-SCROLLBAR-2026-11-03.md)
+implements scrollbar create-forward and setScrollPosition gating/store/show.
+294 native/C comparisons pass with exact call order/args and resulting bar
+state, plus full strict host/focused sanitizer/ARM and every prior group.
+Create forwards unchanged; setScrollPosition stores only when created and
+signed first stays within signed vis, draws the background only with a clear
++0xc8 byte, then always draws the bar. No new service/module/UI consumer, TV
+access/wake/staging/deployment or pending job. Hashes in MEMORY/report. Next
+implement row getters and editing, parent refresh, scrollbar construction/
+rendering internals, startSelectAnimation, and the owned backend/context/
+consumer with permission/modal/focus/lifetime/visible gates, then demonstrate
+reloadable modules via IPC/socket/CLI. Bodies are not actual widget/rendering
+acceptance.
+
+Previous: [SVG-LIST-IMPL](artifacts/reports/SVG-LIST-IMPL-2026-11-03.md)
 implements updateImpl and rotateRows, the state core behind every list
 key/move/scroll body. 6952 native/C comparisons pass with exact call order/
 args and resulting manager/array/selection state, plus full strict host/
@@ -34,10 +48,10 @@ clamp/refocus and the empty-message path are asserted, as is the rotate
 pair-swap with full position exchange. Row +0x1C is setFocus and +0x28 is
 sret getWindowRect (decimal-28 is 0x1C, decimal-40 is 0x28). No new service/
 module/UI consumer, TV access/wake/staging/deployment or pending job.
-Hashes in MEMORY/report. Next implement row getters and editing, parent
-refresh, scrollbar construction/position bodies, startSelectAnimation, and
-the owned backend/context/consumer with permission/modal/focus/lifetime/
-visible gates, then demonstrate reloadable modules via IPC/socket/CLI.
+Hashes in MEMORY/report. SVG-LIST-SCROLLBAR implements scrollbar create
+forward and setScrollPosition gating; row getters/editing, parent refresh,
+scrollbar construction/rendering internals, startSelectAnimation and the
+owned backend/consumer remain open, then the reloadable-module demonstration.
 Bodies are not actual widget/rendering acceptance.
 
 Previous: [SVG-LIST-SCROLL](artifacts/reports/SVG-LIST-SCROLL-2026-11-03.md)

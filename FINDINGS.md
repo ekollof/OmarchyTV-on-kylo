@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG list scrollbar: SVG-LIST-SCROLLBAR implements create (thin forward) and
+setScrollPosition (gate/store/show); 294 native/C comparisons pass. Create
+forwards unchanged; setScrollPosition stores only when created and signed
+first stays within signed vis, draws the background only with a clear +0xc8
+byte, then draws the bar. A page-mapping slip (stub outside the mapped page)
+and a fragment-length slip (line count reused as byte count) were caught and
+fixed. Construction/rendering/backend/visible gates remain open.
+
 SVG list impl: SVG-LIST-IMPL implements updateImpl and rotateRows; 6952
 native/C comparisons pass. Rows +0x1C/+0x28/+0x2C/+0x34 are setFocus/(sret)
 getWindowRect/setWindowPosition/setVisible; owner +0x58/+0x5C/+0x60 are

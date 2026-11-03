@@ -19,6 +19,7 @@
 #include "openaurora/svg_list_rows.h"
 #include "openaurora/svg_list_scroll.h"
 #include "openaurora/svg_list_impl.h"
+#include "openaurora/svg_list_scrollbar.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -1767,6 +1768,129 @@ static void compare_scroll(struct scroll_fixture initial)
 }
 static uint32_t rect_bits(rect2_fn f) { uint32_t v;_Static_assert(sizeof f==sizeof v,"fn width");memcpy(&v,&f,sizeof v);return v; }
 static uint32_t draw3_bits(draw3_fn f) { uint32_t v;_Static_assert(sizeof f==sizeof v,"fn width");memcpy(&v,&f,sizeof v);return v; }
+enum {MK_CREATED=40,MK_BG=41,MK_BAR=42,MK_POS=43,MK_CREATE=44};
+struct scroll_bar_fixture {
+    int created;uint32_t c8;uint32_t vis,size,first;
+    unsigned count;struct {uint32_t id,a,b,c,d;} trace[24];
+    uint32_t cx,cy,cw,ch;void *cparent;int ccreated;
+    uint32_t pvis,psize,pfirst;int pset;
+};
+static struct scroll_bar_fixture *native_sbar;
+static _Alignas(uint32_t) unsigned char sbar_obj[0x100];
+static void sbar_emit(struct scroll_bar_fixture *f,uint32_t id,uint32_t a,uint32_t b,uint32_t c,uint32_t d)
+{ assert(f->count<24);f->trace[f->count].id=id;f->trace[f->count].a=a;f->trace[f->count].b=b;f->trace[f->count].c=c;f->trace[f->count].d=d;++f->count; }
+static unsigned native_sb_created2(void *sb)
+{ assert(sb==sbar_obj);sbar_emit(native_sbar,MK_CREATED,0,0,0,0);return (unsigned)native_sbar->created; }
+static unsigned native_sb_renderbg2(void *sb)
+{ assert(sb==sbar_obj);sbar_emit(native_sbar,MK_BG,0,0,0,0);return 0; }
+static unsigned native_sb_renderbar2(void *sb)
+{ assert(sb==sbar_obj);sbar_emit(native_sbar,MK_BAR,0,0,0,0);return 0; }
+static void native_sb_mkcreate(void *sb,uint32_t created,uint32_t rect,uint32_t parent)
+{ assert(sb==sbar_obj);uint32_t *r=(uint32_t *)rect;
+    sbar_emit(native_sbar,MK_CREATE,r[0],r[1],r[2],r[3]);(void)created;(void)parent; }
+static void *scroll_q_sb2(void *p) { (void)p;return sbar_obj; }
+static int scroll_q_created2(void *p,void *sb) { struct scroll_bar_fixture *f=p;sbar_emit(f,MK_CREATED,0,0,0,0);(void)sb;return f->created; }
+static uint32_t scroll_q_flag2(void *p,void *sb) { (void)sb;return ((struct scroll_bar_fixture *)p)->c8; }
+static void scroll_e_bg2(void *p,void *sb) { struct scroll_bar_fixture *f=p;sbar_emit(f,MK_BG,0,0,0,0);(void)sb; }
+static void scroll_e_bar2(void *p,void *sb) { struct scroll_bar_fixture *f=p;sbar_emit(f,MK_BAR,0,0,0,0);(void)sb; }
+static void scroll_s_pos2(void *p,void *sb,uint32_t vis,uint32_t size,uint32_t first)
+{ struct scroll_bar_fixture *f=p;f->pvis=vis;f->psize=size;f->pfirst=first;f->pset=1;(void)sb; }
+static void scroll_e_mk2(void *p,void *sb,int created,uint32_t x,uint32_t y,uint32_t w,uint32_t h,void *parent)
+{ struct scroll_bar_fixture *f=p;sbar_emit(f,MK_CREATE,x,y,w,h);f->cx=x;f->cy=y;f->cw=w;f->ch=h;f->cparent=parent;f->ccreated=created;(void)sb; }
+static struct oa_svg_list_scrollbar_ops sbar_ops(struct scroll_bar_fixture *f)
+{ return (struct oa_svg_list_scrollbar_ops){f,scroll_q_sb2,scroll_q_created2,scroll_q_flag2,scroll_e_bg2,scroll_e_bar2,scroll_s_pos2,scroll_e_mk2}; }
+typedef void (*create_fn)(void *,uint32_t,void *,void *);
+static void compare_sbar_create(create_fn native,int (*ours)(const struct oa_svg_list_scrollbar_ops *,int,uint32_t,uint32_t,uint32_t,uint32_t,void *),
+    struct scroll_bar_fixture initial,uint32_t x,uint32_t y,uint32_t w,uint32_t h)
+{
+    struct scroll_bar_fixture vendor=initial,ref=initial;struct oa_svg_list_scrollbar_ops ops=sbar_ops(&ref);
+    static uint32_t rectbuf[4];
+    rectbuf[0]=x;rectbuf[1]=y;rectbuf[2]=w;rectbuf[3]=h;
+    memset(sbar_obj,0,0x100);
+    native_sbar=&vendor;native(sbar_obj,initial.created,rectbuf,(void *)0x99aa);
+    assert(!ours(&ops,initial.created,x,y,w,h,(void *)0x99aa));
+    if(vendor.count!=ref.count) {
+        fprintf(stderr,"scrollbar create count native=%u ours=%u\n",vendor.count,ref.count);exit(1);
+    }
+    for(unsigned i=0;i<vendor.count;++i)if(vendor.trace[i].id!=ref.trace[i].id || vendor.trace[i].a!=ref.trace[i].a ||
+        vendor.trace[i].b!=ref.trace[i].b || vendor.trace[i].c!=ref.trace[i].c || vendor.trace[i].d!=ref.trace[i].d) {
+        fprintf(stderr,"scrollbar create trace %u native=%u/%x/%x/%x/%x ours=%u/%x/%x/%x/%x\n",i,vendor.trace[i].id,
+            vendor.trace[i].a,vendor.trace[i].b,vendor.trace[i].c,vendor.trace[i].d,ref.trace[i].id,
+            ref.trace[i].a,ref.trace[i].b,ref.trace[i].c,ref.trace[i].d);exit(1);
+    }
+    if(ref.cx!=x || ref.cy!=y || ref.cw!=w || ref.ch!=h || ref.cparent!=(void *)0x99aa || ref.ccreated!=initial.created) {
+        fprintf(stderr,"scrollbar create args mismatch\n");exit(1);
+    }
+    (void)initial;
+}
+static void compare_sbar_pos(quad_fn native,int (*ours)(const struct oa_svg_list_scrollbar_ops *,uint32_t,uint32_t,uint32_t),
+    struct scroll_bar_fixture initial)
+{
+    struct scroll_bar_fixture vendor=initial,ref=initial;struct oa_svg_list_scrollbar_ops ops=sbar_ops(&ref);
+    memset(sbar_obj,0,0x100);memcpy(sbar_obj+0xc8,&vendor.c8,1);
+    native_sbar=&vendor;
+    native(sbar_obj,initial.vis,initial.size,initial.first);
+    assert(!ours(&ops,initial.vis,initial.size,initial.first));
+    if(vendor.count!=ref.count) {
+        fprintf(stderr,"scrollbar pos count native=%u ours=%u\n",vendor.count,ref.count);
+        for(unsigned i=0;i<vendor.count;++i)fprintf(stderr,"  native[%u]=%u/%x/%x/%x/%x\n",i,vendor.trace[i].id,vendor.trace[i].a,vendor.trace[i].b,vendor.trace[i].c,vendor.trace[i].d);
+        for(unsigned i=0;i<ref.count;++i)fprintf(stderr,"  ours[%u]=%u/%x/%x/%x/%x\n",i,ref.trace[i].id,ref.trace[i].a,ref.trace[i].b,ref.trace[i].c,ref.trace[i].d);
+        exit(1);
+    }
+    for(unsigned i=0;i<vendor.count;++i)if(vendor.trace[i].id!=ref.trace[i].id || vendor.trace[i].a!=ref.trace[i].a ||
+        vendor.trace[i].b!=ref.trace[i].b || vendor.trace[i].c!=ref.trace[i].c || vendor.trace[i].d!=ref.trace[i].d) {
+        fprintf(stderr,"scrollbar pos trace %u native=%u/%x/%x/%x/%x ours=%u/%x/%x/%x/%x\n",i,vendor.trace[i].id,
+            vendor.trace[i].a,vendor.trace[i].b,vendor.trace[i].c,vendor.trace[i].d,ref.trace[i].id,ref.trace[i].a,ref.trace[i].b,ref.trace[i].c,ref.trace[i].d);exit(1);
+    }
+    if(ref.pset && (*(uint32_t *)(sbar_obj+0xbc)!=ref.pvis || *(uint32_t *)(sbar_obj+0xc0)!=ref.psize || *(uint32_t *)(sbar_obj+0xc4)!=ref.pfirst)) {
+        fprintf(stderr,"scrollbar pos store native=%x/%x/%x ours=%x/%x/%x\n",*(uint32_t *)(sbar_obj+0xbc),*(uint32_t *)(sbar_obj+0xc0),
+            *(uint32_t *)(sbar_obj+0xc4),ref.pvis,ref.psize,ref.pfirst);exit(1);
+    }
+    if(!ref.pset && (*(uint32_t *)(sbar_obj+0xbc) || *(uint32_t *)(sbar_obj+0xc0) || *(uint32_t *)(sbar_obj+0xc4))) {
+        fprintf(stderr,"scrollbar pos unexpected store\n");exit(1);
+    }
+}
+static void check_svg_scrollbar(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *bar=page(0x10c4000,4096),*win=page(0x1152000,4096),*rows2=page(0x10c3000,4096);
+    const struct {uint32_t address,length,crc,literal;} fragments[]={
+        {0x10c401c,52,UINT32_C(0x52a07cab),0x10c404c},
+        {0x10c4138,112,UINT32_C(0x71cda0c0),0x10c41a4}
+    };
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;create_fn create=0;quad_fn setpos=0;
+    for(unsigned i=0;i<2;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(bar+fragments[i].address-0x10c4000,elf+off,fragments[i].length);
+        memcpy(bar+fragments[i].literal-0x10c4000,&pointer,4);
+        uint32_t entry=fragments[i].address|1;
+        if(!i)memcpy(&create,&entry,4);else memcpy(&setpos,&entry,4);
+    }
+    thumb_stub(win,0x1152000,0x1152a40,native_sb_created2);
+    quad_stub(bar,0x10c4000,0x10c3f50,native_sb_mkcreate);
+    thumb_stub(rows2,0x10c3000,0x10c3658,native_sb_renderbg2);
+    thumb_stub(rows2,0x10c3000,0x10c3bac,native_sb_renderbar2);
+    executable(bar,4096);executable(win,4096);executable(rows2,4096);
+    {
+        const uint32_t viss[]={0,1,5,UINT32_C(0x80000000)},sizes[]={0,1,5},firsts[]={0,1,5,UINT32_C(0x80000000)};
+        const int creates[]={0,1},c8s[]={0,1,7};unsigned compared=0;
+        for(unsigned v=0;v<4;++v)for(unsigned s=0;s<3;++s)for(unsigned f=0;f<4;++f)
+        for(unsigned c=0;c<2;++c)for(unsigned g=0;g<3;++g) {
+            struct scroll_bar_fixture initial={.created=creates[c],.c8=(uint32_t)c8s[g]};
+            initial.vis=viss[v];initial.size=sizes[s];initial.first=firsts[f];
+            compare_sbar_pos(setpos,oa_svg_list_scrollbar_set_position,initial);++compared;
+        }
+        const uint32_t rects[][4]={{0,0,0,0},{3,7,11,13},{1,2,3,4}};
+        for(unsigned c=0;c<2;++c)for(unsigned r=0;r<3;++r) {
+            struct scroll_bar_fixture initial={.created=c};
+            compare_sbar_create(create,oa_svg_list_scrollbar_create,initial,
+                rects[r][0],rects[r][1],rects[r][2],rects[r][3]);++compared;
+        }
+        native_sbar=NULL;
+        assert(!munmap(bar,4096) && !munmap(win,4096) && !munmap(rows2,4096));
+        printf("ok offline shipped ARM SVG list scrollbar bodies: %u native/C comparisons, create forward and setpos gating/store/show match\n",compared);
+    }
+}
 static void check_svg_impl(const unsigned char *elf,size_t bytes)
 {
     unsigned char *rows=page(0x10be000,4096),*win=page(0x1152000,4096),*app=page(0x1148000,8192);
@@ -1921,7 +2045,7 @@ int main(int argc,char **argv)
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
     check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);
-    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_svg_scroll(elf,bytes);check_svg_impl(elf,bytes);check_row_values(elf,bytes);
+    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_svg_scroll(elf,bytes);check_svg_impl(elf,bytes);check_svg_scrollbar(elf,bytes);check_row_values(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
