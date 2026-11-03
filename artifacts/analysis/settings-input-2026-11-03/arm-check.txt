@@ -1,0 +1,1 @@
+ok settings input: base-map distinctions, list/update order, mirror translation and dynamic description fallback

@@ -6,6 +6,16 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Base settings input: SETTINGS-INPUT implements qualified map and five body
+callbacks;65600 actual ARM map routes and86400 native method traces pass. Don't
+reuse the Tab map:255 versus2bb, Select/paging/parent and menu truth differ.
+Mute returns captured match truth, not DemoApp result. Description sentinel is
+the pointer to14d4d52 BLANK, not null/text equality. Preserve prior nonempty text
+when sentinel skips assignment; test empty after possible assignment. Horizontal
+mirror translates fresh navigation events, ordinary Up/Down retains the original.
+Primary+84 is concrete updateSettings (base pure virtual), not updateDisplay.
+Real navigation/list, parent refresh and owned backend/consumer remain open.
+
 Tab/settings leaves: TAB-LEAF implements volume/digits/removal and qualified
 base menu/quit/guide.238860 actual ARM cases include shipped signed division.
 Volume tests content+18 isShowing, not a capability or focus flag. Digit raw32
@@ -13,7 +23,8 @@ wrap precedes signed remainder10000; store precedes direct SVG end at1104/4725.
 That qualified end differs from the others' virtual end. Exit210 ends29a,
 Menu22d/25b/251 resets picture selection then ends0. Guide pushes navigation0xb,
 not a key; Quit/removal synthesize owned keys. No callback is a permission or
-hardware-success proof. Remaining base map/list/mute and real backend/UI open.
+hardware-success proof. SETTINGS-INPUT subsequently adds the base map and five
+input bodies; real list/navigation/backend/UI remain open.
 
 Tab fallback dispatch: TAB-DISPATCH implements d6fe14's type1004 map and the
 pre-first caller join.65600 shipped map/matcher routes and16384 caller joins

@@ -10,6 +10,7 @@
 #include "openaurora/tab_dispatch.h"
 #include "tab_prehandle_fixture.h"
 #include "tab_leaf_fixture.h"
+#include "settings_input_fixture.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -716,6 +717,157 @@ static void check_leaf(const unsigned char *elf,size_t bytes)
     native_leaf_fixture=NULL;for(unsigned i=0;i<10;++i)assert(!munmap(pages[i],4096));
     printf("ok offline shipped ARM tab leaves: %u cases, six bodies and real signed division; logical writes/actions, message identity and handled truth match\n",compared);
 }
+static struct {enum oa_settings_route route;unsigned count;const void *message;uint32_t result;} settings_map;
+static unsigned settings_map_call(enum oa_settings_route route,const void *message)
+{ settings_map.route=route;++settings_map.count;settings_map.message=message;return settings_map.result; }
+#define SETTINGS_MAP(name,target) static unsigned name(void *p,int32_t message) \
+{ (void)p;return settings_map_call(target,(const void *)(uintptr_t)(uint32_t)message); }
+SETTINGS_MAP(settings_map_menu,OA_SD_MENU)
+SETTINGS_MAP(settings_map_rl,OA_SD_RIGHT_LEFT)
+SETTINGS_MAP(settings_map_ud,OA_SD_UP_DOWN)
+SETTINGS_MAP(settings_map_select,OA_SD_SELECT)
+SETTINGS_MAP(settings_map_quit,OA_SD_QUIT)
+SETTINGS_MAP(settings_map_digit,OA_SD_DIGIT)
+SETTINGS_MAP(settings_map_guide,OA_SD_GUIDE)
+SETTINGS_MAP(settings_map_base,OA_SD_BASE)
+#undef SETTINGS_MAP
+static unsigned settings_map_mute(void *p) { (void)p;return settings_map_call(OA_SD_MUTE,NULL); }
+static uint32_t settings_map_run(void *p,enum oa_settings_route target,const void *message)
+{ (void)p;return settings_map_call(target,message); }
+static void check_settings_map(const unsigned char *elf,size_t bytes)
+{
+    const uint32_t bases[]={0xd56000,0xcc4000,0xcd8000,0xe86000};
+    const size_t lengths[]={8192,4096,4096,4096};unsigned char *pages[4];
+    for(unsigned i=0;i<4;++i)pages[i]=page(bases[i],lengths[i]);
+    size_t off=file_offset(elf,bytes,0xd57238,644);assert(crc32(elf+off,644)==UINT32_C(0x8c5f1f20));
+    memcpy(pages[0]+0x1238,elf+off,644);
+    off=file_offset(elf,bytes,0xcc4f38,96);assert(crc32(elf+off,96)==UINT32_C(0x90529f1b));memcpy(pages[1]+0xf38,elf+off,96);
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(pages[0]+0x14b8,&pointer,4);memcpy(pages[1]+0xf94,&pointer,4);
+    predicate_stub(pages[0],bases[0],0xd56d38,settings_map_menu);predicate_stub(pages[0],bases[0],0xd570bc,settings_map_rl);
+    predicate_stub(pages[0],bases[0],0xd56b5c,settings_map_ud);predicate_stub(pages[0],bases[0],0xd56bb0,settings_map_select);
+    predicate_stub(pages[0],bases[0],0xd56c94,settings_map_quit);predicate_stub(pages[0],bases[0],0xd56bf4,settings_map_digit);
+    predicate_stub(pages[0],bases[0],0xd56e5c,settings_map_guide);predicate_stub(pages[3],bases[3],0xe86d38,settings_map_base);
+    thumb_stub(pages[2],bases[2],0xcd82a8,settings_map_mute);
+    for(unsigned i=0;i<4;++i)executable(pages[i],lengths[i]);
+    uint32_t vtable[4]={0,0,bits(dispatch_type),bits(dispatch_id)};
+    struct dispatch_message message={(uint32_t)(uintptr_t)vtable,0,0};
+    _Alignas(uint32_t) unsigned char dialog[0x488]={0};uint32_t dummy=0;
+    pointer=(uint32_t)(uintptr_t)&dummy;memcpy(dialog+0x484,&pointer,4);
+    leaf_handler native;pointer=0xd57239;memcpy(&native,&pointer,4);
+    const uint32_t types[]={0,0x1004,0x11004,UINT32_MAX},results[]={0,1,255,UINT32_MAX};
+    const uint32_t extra[]={0x10222,0x10000,INT32_MAX,UINT32_MAX};unsigned compared=0;
+    for(unsigned t=0;t<4;++t)for(unsigned r=0;r<4;++r)for(unsigned k=0;k<4100;++k) {
+        message.type=types[t];message.id=k<4096?k:extra[k-4096];
+        settings_map.count=0;settings_map.result=results[r];unsigned expected=native(dialog,&message);
+        assert(settings_map.count==1);enum oa_settings_route target=settings_map.route;const void *original=settings_map.message;
+        settings_map.count=0;struct oa_settings_dispatch_ops ops={NULL,settings_map_run,&message};int handled=-1;
+        assert(!oa_settings_dispatch(&ops,message.type,message.id,&handled));
+        assert(settings_map.count==1 && settings_map.route==target && settings_map.message==original && handled==(expected!=0));++compared;
+    }
+    for(unsigned i=0;i<4;++i)assert(!munmap(pages[i],lengths[i]));
+    printf("ok offline shipped ARM settings map: %u type/id/result cases, qualified routes, mute truth and original identity match\n",compared);
+}
+static struct settings_fixture *native_settings;
+static _Alignas(uint32_t) unsigned char settings_dialog[0x500],settings_item[16];
+static uint32_t settings_event,settings_items[3],settings_dummy,settings_sentinel;
+static const char settings_other_description[]="BLANK"; /* same text, distinct source-token identity */
+static unsigned settings_nop(void *p) { (void)p;return UINT32_MAX; }
+static unsigned settings_key(void *p) { return *(uint32_t *)p; }
+static unsigned settings_ctor(void *p,int32_t key) { *(uint32_t *)p=(uint32_t)key;return (uint32_t)(uintptr_t)p; }
+static unsigned settings_interface(void *p) { (void)p;return (uint32_t)(uintptr_t)&settings_dummy; }
+static unsigned settings_mirror(void *p) { (void)p;return native_settings->q[OA_SI_MIRROR]; }
+static unsigned settings_selected(void *p)
+{ assert(p==settings_dialog+0x17c);return native_settings->q[OA_SI_SELECTED_ID]; }
+static unsigned settings_index(void *p,int32_t id)
+{ assert(p==settings_dialog+0x17c);return settings_query(native_settings,OA_SI_ITEM_INDEX,(uint32_t)id); }
+static unsigned settings_empty(void *p)
+{ assert(p==settings_dialog+0x120);return native_settings->q[OA_SI_TEXT_EMPTY]; }
+static unsigned settings_record(enum oa_settings_action action,uint32_t arg,const void *message)
+{ settings_run(native_settings,action,arg,message);return UINT32_MAX; }
+static unsigned settings_list_key(void *p,int32_t message)
+{
+    assert(p==settings_dialog+0x17c && (uintptr_t)(uint32_t)message==(uintptr_t)&settings_event);
+    return settings_record(OA_SI_LIST_KEY,settings_event,&settings_event);
+}
+static unsigned settings_navigate(void *p,int32_t message)
+{
+    assert(p==settings_dialog);const void *original=(const void *)(uintptr_t)(uint32_t)message;
+    return settings_record(OA_SI_NAVIGATE,*(const uint32_t *)original,original==&settings_event?original:NULL);
+}
+static unsigned settings_update(void *p) { assert(p==settings_dialog);return settings_record(OA_SI_UPDATE_SETTINGS,0,NULL); }
+static unsigned settings_display(void *p) { (void)p;return settings_record(OA_SI_UPDATE_DISPLAY,0,NULL); }
+static unsigned settings_info(void *p) { assert(p==settings_dialog);return settings_record(OA_SI_ADD_MENU_INFO,0,NULL); }
+static unsigned settings_mute(void *p) { (void)p;return settings_record(OA_SI_TOGGLE_MUTE,0,NULL); }
+static unsigned settings_description(void *p,int32_t text)
+{
+    assert(p==settings_dialog+0x120 && (uint32_t)text!=settings_sentinel);
+    return settings_record(OA_SI_ASSIGN_DESCRIPTION,native_settings->q[OA_SI_ITEM_INDEX],NULL);
+}
+static unsigned settings_label(void *p,int32_t text)
+{
+    assert(p==settings_dialog+0x120 && (uintptr_t)(uint32_t)text==(uintptr_t)(settings_item+4));
+    return settings_record(OA_SI_ASSIGN_LABEL,native_settings->q[OA_SI_ITEM_INDEX],NULL);
+}
+static void check_settings_input(const unsigned char *elf,size_t bytes)
+{
+    const uint32_t bases[]={0xd56000,0x1148000,0xd50000,0xd21000,0xc86000,0x113b000,0x97b000,0xcdc000,0xcd8000};
+    const size_t lengths[]={8192,8192,4096,4096,4096,4096,4096,4096,4096};unsigned char *pages[9];
+    for(unsigned i=0;i<9;++i)pages[i]=page(bases[i],lengths[i]);
+    const struct {uint32_t address,length,crc,literal;} fragments[]={
+        {0xd56b5c,84,UINT32_C(0xa0f13041),0xd56bac},
+        {0xd56bb0,68,UINT32_C(0x586acb19),0xd56bf0},
+        {0xd56bf4,160,UINT32_C(0xf8fa89c9),0xd56c8c},
+        {0xd570bc,380,UINT32_C(0x244af783),0xd57230},
+        {0xd56d00,56,UINT32_C(0x6b63d6ad),0xd56d34}
+    };
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;leaf_handler native[5];
+    for(unsigned i=0;i<5;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(pages[0]+fragments[i].address-bases[0],elf+off,fragments[i].length);
+        memcpy(pages[0]+fragments[i].literal-bases[0],&pointer,4);
+        uint32_t entry=fragments[i].address|1;memcpy(&native[i],&entry,4);
+    }
+    memcpy(&settings_sentinel,pages[0]+0xc90,4);uint32_t other_sentinel;memcpy(&other_sentinel,pages[0]+0x1234,4);assert(settings_sentinel==other_sentinel);
+    predicate_stub(pages[0],bases[0],0xd56a24,settings_navigate);
+    predicate_stub(pages[1],bases[1],0x114925c,settings_list_key);predicate_stub(pages[1],bases[1],0x114899c,settings_ctor);
+    thumb_stub(pages[1],bases[1],0x11489e0,settings_key);
+    thumb_stub(pages[2],bases[2],0xd50ce0,settings_selected);predicate_stub(pages[2],bases[2],0xd50be4,settings_index);
+    thumb_stub(pages[3],bases[3],0xd21488,settings_info);thumb_stub(pages[4],bases[4],0xc86c60,settings_empty);
+    predicate_stub(pages[4],bases[4],0xc86a70,settings_description);predicate_stub(pages[4],bases[4],0xc86b00,settings_label);
+    thumb_stub(pages[5],bases[5],0x113baf8,settings_display);thumb_stub(pages[5],bases[5],0x113b958,settings_interface);
+    thumb_stub(pages[6],bases[6],0x97b0ec,settings_mirror);thumb_stub(pages[7],bases[7],0xcdcf8c,settings_nop);
+    thumb_stub(pages[8],bases[8],0xcd82a8,settings_mute);
+    for(unsigned i=0;i<9;++i)executable(pages[i],lengths[i]);
+    uint32_t vtable[34]={0};vtable[33]=bits(settings_update);
+    pointer=(uint32_t)(uintptr_t)vtable;memcpy(settings_dialog,&pointer,4);
+    pointer=(uint32_t)(uintptr_t)&settings_dummy;memcpy(settings_dialog+4,&pointer,4);memcpy(settings_dialog+0x484,&pointer,4);
+    pointer=(uint32_t)(uintptr_t)settings_items;memcpy(settings_dialog+0x474,&pointer,4);
+    const uint32_t values[]={0,1,255},indices[]={UINT32_MAX,0x80000000,0,2};
+    const uint32_t keys[]={0,0x20a,0x20b,0x20c,0x20d,0x20e,0x2db,0x2dc,0x2da,UINT32_MAX};unsigned compared=0;
+    for(unsigned kind=0;kind<5;++kind)for(unsigned c=0;c<3;++c)for(unsigned h=0;h<3;++h)for(unsigned m=0;m<3;++m)
+    for(unsigned ix=0;ix<4;++ix)for(unsigned flags=0;flags<16;++flags)for(unsigned k=0;k<10;++k) {
+        struct settings_fixture initial={.selected_after=33,.empty_after=(flags&4)?0:1,.mutate=(flags>>3)&1};
+        initial.q[OA_SI_ACTIVE_COUNT]=values[c];initial.q[OA_SI_HORIZONTAL]=values[h];initial.q[OA_SI_MIRROR]=values[m];
+        initial.q[OA_SI_SELECTED_ID]=17;initial.q[OA_SI_ITEM_INDEX]=indices[ix];initial.q[OA_SI_ITEM_PRESENT]=flags&1;
+        initial.q[OA_SI_DESCRIPTION_SENTINEL]=(flags>>1)&1;initial.q[OA_SI_TEXT_EMPTY]=(flags>>2)&1;
+        struct settings_fixture vendor=initial,ours=initial;native_settings=&vendor;settings_event=keys[k];
+        pointer=0x1000;memcpy(settings_dialog+0x48c,&pointer,4);pointer+=values[c]*4;memcpy(settings_dialog+0x490,&pointer,4);
+        settings_dialog[0x49c]=(uint8_t)values[h];
+        pointer=initial.q[OA_SI_ITEM_PRESENT]?(uint32_t)(uintptr_t)settings_item:0;for(unsigned i=0;i<3;++i)settings_items[i]=pointer;
+        pointer=initial.q[OA_SI_DESCRIPTION_SENTINEL]?settings_sentinel:(uint32_t)(uintptr_t)settings_other_description;memcpy(settings_item+12,&pointer,4);
+        unsigned result=native[kind](settings_dialog,&settings_event);
+        struct oa_settings_input_ops ops={&ours,settings_query,settings_run,&settings_event};int handled=-1;
+        assert(!oa_settings_input(&ops,(enum oa_settings_input_kind)kind,keys[k],&handled));
+        if(handled!=(result!=0) || vendor.count!=ours.count || memcmp(vendor.q,ours.q,sizeof ours.q)) {
+            fprintf(stderr,"settings mismatch kind=%u c=%u h=%u m=%u index=%x flags=%u key=%x counts=%u/%u\n",kind,c,h,m,indices[ix],flags,keys[k],vendor.count,ours.count);exit(1);
+        }
+        for(unsigned i=0;i<ours.count;++i)assert(vendor.trace[i].action==ours.trace[i].action && vendor.trace[i].argument==ours.trace[i].argument && vendor.trace[i].message==ours.trace[i].message);
+        ++compared;
+    }
+    native_settings=NULL;for(unsigned i=0;i<9;++i)assert(!munmap(pages[i],lengths[i]));
+    printf("ok offline shipped ARM settings input: %u cases, five bodies, dynamic selection/text and original/synthetic action order match\n",compared);
+}
 int main(int argc,char **argv)
 {
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
@@ -762,7 +914,8 @@ int main(int argc,char **argv)
         }
     }
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
-    check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
+    check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
+    check_settings_map(elf,bytes);check_settings_input(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
 }

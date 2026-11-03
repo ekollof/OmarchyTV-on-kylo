@@ -24,16 +24,31 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [TAB-LEAF](artifacts/reports/TAB-LEAF-2026-11-03.md) implements six
+Latest: [SETTINGS-INPUT](artifacts/reports/SETTINGS-INPUT-2026-11-03.md) adds the
+concrete base Settings map and five input bodies.65600 native map/matcher cases
+and86400 five-body traces/state/handled cases pass, plus full host, focused
+sanitizer, ARM unit, metadata verifier and prior groups. Map differences from
+TabDialog include255/2bb, Select, paging, qualified parent and menu consumption;
+Mute consumes regardless of lower return. Description sentinel is pointer
+identity to BLANK, not equality/null. Horizontal mirror translates fresh events;
+ordinary navigation forwards the original. Metadata confirms virtual+84 is
+TabDialog::updateSettings; base slot is pure virtual. Next implement
+navigateInList at d56a24 and the list widget's key behavior, then owned backend/
+runtime context/consumer, retaining parent refresh and native permission/focus/
+modal/lifetime/visible gates. No new service/module or wired UI consumer.
+Hashes in MEMORY/report; evidence: analysis/settings-input-2026-11-03.
+No TV access/wake/deployment or pending Ghidra/build/helper job.
+
+Previous: [TAB-LEAF](artifacts/reports/TAB-LEAF-2026-11-03.md) implements six
 dispatched bodies: Tab volume/digits/removal and qualified Settings menu/quit/
 guide.238860 shipped ARM comparisons include real signed division, raw overflow,
 logical field-write/action order, event identity and handled truth. Full host,
 focused ASan/UBSan, ARM unit and prior groups pass. Volume tests isShowing;
 digit triggers1104/4725 store first then call qualified SVG end, distinct from
 the others' virtual end. Guide posts navigation0xb, not a key; reposts are owned.
-Next implement SettingsDialog fallback map and required list/mute callees.
-Its decompile/ARM is already in tab-leaf-2026-11-03/base.txt; inspect those
-callees rather than repeating the extraction. Then compose the owned backend/
+SETTINGS-INPUT subsequently implements the base map and five input bodies.
+The map's decompile/ARM is already in tab-leaf-2026-11-03/base.txt.
+Remaining integration needs the owned backend/
 runtime context and queue consumer with modal/focus/permission/lifetime gates.
 No new module/service or wired UI consumer. Native hashes in MEMORY/report.
 No TV access/wake/deployment or pending Ghidra/build/helper job.

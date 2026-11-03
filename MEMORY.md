@@ -6,6 +6,15 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-INPUT-2026-11-03: qualified base map/five callback input bodies pass
+65600 shipped map/matcher routes and86400 native method cases. Full strict host,
+focused ASan/UBSan, ARM unit, metadata/token/vtable verifier and prior groups pass.
+ARM unit33244/ad1ad9e636556ead378bc63c3afbcf02; reference293592/
+4f6b30beff52c1ef1c70f23a79160beb, build-tv-v3/tab-policy. No new module/service
+or UI consumer. navigateInList/list-key implementation, parent refresh, owned
+backend/context and visible acceptance remain open. No TV access/wake/staging/
+deployment, keys/drawing/mute/setting change or pending Ghidra/build/helper job.
+
 TAB-LEAF-2026-11-03: six callback handler bodies pass238860 shipped ARM cases,
 including the actual signed-division helper, logical raw digit writes, action/
 event identity and handled truth. Full strict host suite, focused ASan/UBSan,

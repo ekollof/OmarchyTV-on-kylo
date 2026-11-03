@@ -95,8 +95,15 @@ integration are still pending; the diagnostic UI is not parity.
 menu/quit/guide bodies. TAB-LEAF records238860 shipped ARM comparisons, including
 real signed division. The adapter must preserve raw digit state across calls,
 isShowing volume gating, distinct virtual versus qualified SVG end actions and
-owned key versus navigation reposts. The remaining Settings fallback map/list/
-mute methods and real backend/consumer remain pending; these are not UI wiring.
+owned key versus navigation reposts. Real backend/consumer integration remains
+pending; these are not UI wiring.
+
+`common/settings_input.c` supplies the qualified base Settings map and five
+ordered input bodies. SETTINGS-INPUT records65600 native map/matcher routes and
+86400 input-method cases. BLANK-token identity, description fallback, captured
+item index and original versus mirrored/synthetic events stay explicit. Real
+navigateInList/list-key behavior, parent refresh, context/backend and consumer
+remain pending; Mute callbacks do not establish actual audio effects.
 
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;

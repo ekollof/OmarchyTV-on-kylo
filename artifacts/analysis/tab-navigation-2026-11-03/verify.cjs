@@ -28,3 +28,5 @@ assert.match(result.stdout, /tab events: 1008 handler cases/);
 assert.match(result.stdout, /pre-handler: 65664 valid-tree cases/);
 assert.match(result.stdout, /tab dispatch: 65600 type\/id\/result routes, 16384 pre\/fallback joins/);
 assert.match(result.stdout, /tab leaves: 238860 cases, six bodies and real signed division/);
+assert.match(result.stdout, /settings map: 65600 type\/id\/result cases/);
+assert.match(result.stdout, /settings input: 86400 cases, five bodies/);
