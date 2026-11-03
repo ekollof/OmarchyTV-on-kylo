@@ -54,6 +54,18 @@ static int synthetic(void)
                     x,y,p[0],p[1],p[2],p[3],colour,expected);goto failed;
         }
     }
+    /* A real parent background changes the FBO alpha before composition.
+     * Check opaque black separately; do not infer it from the transparent case. */
+    stage="opaque parent composition";
+    for(size_t i=3;i<sizeof base;i+=4)base[i]=255;
+    if(oa_scene_gles_render_glyphs(s,base,sizeof base,&g,1,out,sizeof out))goto failed;
+    for(int y=0;y<8;++y)for(int x=0;x<8;++x) {
+        unsigned expected=x>=2 && x<4 && y>=3 && y<5?mask[(y-3)*2+x-2]:0;
+        const uint8_t *p=out+((7-y)*8+x)*4;
+        if(abs((int)p[0]-(int)expected)>1 || p[1] || p[2] || p[3]!=255)goto failed;
+    }
+    memset(base,0,sizeof base);
+    if(oa_scene_gles_render_glyphs(s,base,sizeof base,&g,1,out,sizeof out))goto failed;
     /* A different mask must replace the previous texture; clipped U remaps
      * to its second column without altering the glyph's original dimensions. */
     const uint8_t second[4]={0,255,0,255};
@@ -87,7 +99,7 @@ failed:
 done:
     return close_scene(&s)?1:rc;
 }
-static int corpus(const char *index,const char *binary,const char *output)
+static int corpus(const char *index,const char *binary,const char *output,const uint8_t background[4])
 {
     struct oa_font_pack pack={0};uint8_t *data=NULL;size_t size=0;
     struct oa_bitmap_font font;struct oa_font_box_layout layout;
@@ -111,6 +123,7 @@ static int corpus(const char *index,const char *binary,const char *output)
     uint8_t *base=calloc(bytes,1),*pixels=malloc(bytes);oa_scene_gles *s=NULL;
     int rc=1;
     if(!base || !pixels)goto done;
+    for(size_t i=0;i<bytes;i+=4)memcpy(base+i,background,4);
     if(oa_scene_gles_open(&s,1920,1080) ||
        oa_scene_gles_render_glyphs(s,base,bytes,glyphs,12,pixels,bytes)){(void)error(s);goto done;}
     FILE *out=fopen(output,"wb");if(!out)goto done;
@@ -118,14 +131,27 @@ static int corpus(const char *index,const char *binary,const char *output)
     for(unsigned y=0;y<1080;++y)
         if(fwrite(pixels+(1079-y)*1920u*4u,1,1920u*4u,out)!=1920u*4u){rc=1;break;}
     if(fclose(out))rc=1;
-    if(!rc)puts("ok GPU title corpus: font18 retained origin23,5; top-down premultiplied RGBA1920x1080 (no display presentation)");
+    if(!rc)printf("ok GPU title corpus: font18 origin23,5; top-down two-pass RGBA1920x1080; base=%u,%u,%u,%u (no display presentation)\n",
+                  background[0],background[1],background[2],background[3]);
 done:
     if(close_scene(&s))rc=1;
     free(base);free(pixels);free(data);oa_font_pack_free(&pack);return rc;
 }
 int main(int argc,char **argv)
 {
-    if(argc!=1 && argc!=4){fprintf(stderr,"usage: %s [FONT_INDEX FONT_BINARY OUTPUT_RGBA]\n",argv[0]);return 2;}
+    uint8_t background[4]={0};
+    if(argc!=1 && argc!=4 && argc!=5)goto usage;
+    if(argc==5) {
+        const char *p=argv[4];
+        for(unsigned i=0;i<4;++i) {
+            if(*p<'0' || *p>'9')goto usage;
+            char *end;errno=0;unsigned long n=strtoul(p,&end,10);
+            if(errno || n>255 || *end!=(i==3?'\0':','))goto usage;
+            background[i]=(uint8_t)n;p=end+(i!=3);
+        }
+    }
     if(synthetic())return 1;
-    return argc==4?corpus(argv[1],argv[2],argv[3]):0;
+    return argc>=4?corpus(argv[1],argv[2],argv[3],background):0;
+usage:
+    fprintf(stderr,"usage: %s [FONT_INDEX FONT_BINARY OUTPUT_RGBA [R,G,B,A]]\n",argv[0]);return 2;
 }

@@ -1,0 +1,13 @@
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+[mali-info] mali_shm has been created
+
+[Novatek][Mali-G51][libmali.so]: Rev: r12p0-01rel0.b703ae4.1fa4b13079c2dbcd1ba49d0344f33329, Winsys: fbdev, 2019-12-02_10:17:59
+[mali-info] mau switch support num:0,2,0,0,0
+
+ok GPU glyphs: coverage/orientation, clip UVs, mask replacement, ordered blending, batch rejection and legacy RGBA reuse
+
+[Novatek][Mali-G51][libmali.so]: Rev: r12p0-01rel0.b703ae4.1fa4b13079c2dbcd1ba49d0344f33329, Winsys: fbdev, 2019-12-02_10:17:59
+ok GPU title corpus: font18 origin23,5; top-down two-pass RGBA1920x1080; base=178,29,43,255 (no display presentation)

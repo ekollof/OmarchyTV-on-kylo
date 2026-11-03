@@ -6,6 +6,21 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-GLYPH-ROUTING-2026-11-03: firmware conditional dispatch verified through
+doExecute/renderText/drawCharacter; nonnull GPU getter selects GL drawText,
+null selects CPU fallback. Saved vtables/context verify nonnull configuration,
+not execution of the captured frame. Probe optional RGBA base/opaque-parent
+regression passes host Mesa/focused sanitizers/TV. Opaque178,29,43,255 title
+gives1318 white core/1072 differences vs vendor1446, not a parity fix. RGB sampled
+from saved background; title alpha255 is an explicit comparison condition.
+Actual parent/FBO/presentation remains open. Native161920/MD5
+e59d750f830df849618c4898281778bd/maxGLIBC2.7, build-tv-v3/glyph-background;
+output8294400/be8e8e0ae0abe3e2aeb1ee9937fa4614 downloaded/hash checked.
+All staging/helpers gone; same boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197,
+fb1 pan0,1080/backing41735daa69dc137743b59efe12db4a19, hook/hosts/SSH22/
+telnet2323/Samba REJECT. No window/swap/input/settings/restart/persistent change.
+Owner requested handoff/commit/stop; no helper/build/Ghidra job pending.
+
 UI-FONT-GPU-2026-11-03: lower scene_gles coverage-glyph/FBO composition API
 implemented from shipped ARM/shaders. Full strict host, focused ASan/UBSan,
 ARM-qemu geometry and owner-approved native private-pbuffer synthetic/title

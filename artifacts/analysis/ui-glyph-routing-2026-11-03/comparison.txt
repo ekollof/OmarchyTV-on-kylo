@@ -1,0 +1,3 @@
+background samples: srgb(178,29,43) srgb(178,29,43) srgb(178,29,43) srgb(178,29,43)
+opaque native white-core pixels: 1318
+1072 (0.0204307)

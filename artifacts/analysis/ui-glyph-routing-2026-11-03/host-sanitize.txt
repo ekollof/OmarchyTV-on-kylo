@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -DOA_GLYPH_SOFTWARE_TEST -fsanitize=address,undefined -Wl,--wrap=eglGetDisplay -Wl,--wrap=glCreateProgram -Wl,--wrap=glGenTextures -o build-glyph-sanitize/tests/glyph_gles tools/display/egl-glyph-probe.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c common/font_box.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/text_origin.c tests/egl_default_display.c -lEGL -lGLESv2 -pthread -lm
+ok GPU glyphs: coverage/orientation, clip UVs, mask replacement, ordered blending, batch rejection and legacy RGBA reuse
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

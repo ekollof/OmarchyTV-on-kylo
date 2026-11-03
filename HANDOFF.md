@@ -24,15 +24,35 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-FONT-GPU](artifacts/reports/UI-FONT-GPU-2026-11-03.md) adds a lower
+Latest: [UI-GLYPH-ROUTING](artifacts/reports/UI-GLYPH-ROUTING-2026-11-03.md)
+closes conditional dispatch: TextCommand passes its context to drawCharacter;
+nonnull GPU getter selects OpenGL drawText, null selects CPU fallback. Saved
+vtables/context verify nonnull configuration, not captured-frame execution.
+Probe explicit opaque base178,29,43,255 gives1318 white core/1072 differences
+vs vendor1446. Transparency alone is NOT a fix. RGB is a background sample;
+title alpha255 is an explicit comparison condition, not independently proved.
+Next establish actual parent paint/active FBO/presentation for a matched complete
+scene comparison. Do not repeat bare shader/precision/opaque-base experiments
+or refit the established23,5 origin. ui.title stays default-off.
+
+Owner requested finish this item, handoff, commit and stop. Final native
+build-tv-v3/glyph-background/egl-glyph-probe161920/MD5
+e59d750f830df849618c4898281778bd/maxGLIBC2.7; host GLES/focused sanitizers and
+real private-pbuffer synthetic/font corpus pass. Separate hash verification,
+download hash and cleanup complete. Same boot/fb1 backing/pan/access/privacy;
+no keys/window/swap/restart/settings/persistent mutation or helper/job pending.
+Private output gpu-title-opaque.rgba stays in workbench/title-horizontal-20261103.
+Offline verifier: analysis/ui-glyph-routing-2026-11-03/verify-route.cjs.
+
+Foundation: [UI-FONT-GPU](artifacts/reports/UI-FONT-GPU-2026-11-03.md) adds a lower
 coverage-glyph API with shipped shader/quad/UV/blend and RGBA FBO composition.
 Full strict host, focused sanitizers, ARM/qemu geometry and owner-approved native
 private-pbuffer synthetic/title checks pass. No glyph broker/wire/UI integration
 or visible parity. One-pass opaque core1971/vendor1446 differs525; recovered
 two-pass primitive1228 differs1150. Matching native varying declarations gives
 the same full FBO output hash; this is NOT a pixel/precision fix. Keep ui.title
-default-off. Next establish actual title command route, background/alpha and
-active presentation state before changing the pipeline or fitting any geometry.
+default-off. UI-GLYPH-ROUTING supplies the subsequent conditional route and
+opaque-parent checks; complete scene/presentation parity is still open.
 Configured framework->task->client->renderer->context association was read,
 not execution-traced. Old Surface06b40840 was freed/rejected; do not dereference
 saved heap pointers without fresh bounds/vptr/lifetime validation.

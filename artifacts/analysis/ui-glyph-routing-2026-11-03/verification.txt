@@ -1,0 +1,2 @@
+PASS saved context: nonnull GPU getter + vtable drawText slot; dimensions1920x1080 font program8 initialized1
+Dispatch branch ARM:1131bbe..1131bfa; frame execution and current object lifetime are not observed.

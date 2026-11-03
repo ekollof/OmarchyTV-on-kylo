@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Glyph routing/background (2026-11-03): UI-GLYPH-ROUTING proves the firmware
+nonnull-context GPU branch and checks saved vtables/context bytes; it does not
+trace the captured frame. Opaque-parent native comparison gives1318 white core/
+1072 differences vs vendor1446; opacity alone does not close the mismatch.
+Title alpha255 is an explicit test condition, not independently observed there.
+Actual parent paint/active FBO/presentation is next; do not refit title geometry
+or infer CPU rendering from the existence of CPU fallback methods.
+
 GPU title limit (2026-11-03): UI-FONT-GPU implements coverage textures/font
 shader plus the shipped RGBA FBO/composition pass in the lower GLES owner.
 Native private-pbuffer checks pass; they do not establish title parity. One-pass

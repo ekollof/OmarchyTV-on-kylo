@@ -321,6 +321,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Recover conditional TextCommand character dispatch: nonnull GPU getter
+      selects OpenGL drawText; null selects CPU fallback. UI-GLYPH-ROUTING;
+      saved context/vtables verify nonnull configuration. Opaque-parent probe
+      passes host/sanitizers/TV but still differs (1318 core/1072 mismatches).
+      Not a captured-frame trace, title-alpha proof or pixel parity.
 - [x] Lower GPU glyph primitive: shipped GL_ALPHA masks, native quad/UV/shaders,
       blend and RGBA FBO composition. UI-FONT-GPU-2026-11-03; full strict host,
       focused sanitizers, ARM/qemu geometry and authorized native pbuffer
@@ -329,7 +334,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       background/alpha and active rendering/presentation state. One-pass GPU
       matches CPU opaque core1971 versus vendor1446 (525 differences); recovered
       two-pass primitive gives1228/1150 differences. Shader varying change does
-      not fix it. Do not refit established origin23,5 or assume corrupt fonts.
+      not fix it. Conditional dispatch is now recovered; opaque-parent1318/1072
+      comparison also fails. Establish actual parent paint/active FBO/presentation
+      state; do not repeat bare shader/precision/opaque-base comparisons.
+      Do not refit established origin23,5 or assume corrupt fonts.
       Add owned glyph commands/font lifetimes to the worker/broker/UI pipeline
       only after that contract is established; visible acceptance stays open.
 - [x] Observe original title render graph with owner-opened panel: Surface bounds

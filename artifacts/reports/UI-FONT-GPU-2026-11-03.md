@@ -98,6 +98,10 @@ with native declarations gives the SAME full output hash on this driver.
 Do not claim a shader-precision fix, adjust placement, or infer bad font bytes
 from this result. The exact command route, background/alpha contribution,
 framebuffer presentation and actual active rendering state still need evidence.
+Follow-up [UI-GLYPH-ROUTING](UI-GLYPH-ROUTING-2026-11-03.md) establishes the
+conditional dispatcher and saved nonnull GPU context. Its explicit opaque-parent
+native comparison still differs (1318 core/1072 mismatches); parent opacity
+alone is not a fix. Actual frame/parent/FBO/presentation remains unverified.
 Native pbuffer success is not independent visible acceptance.
 
 ## Identities and cleanup
