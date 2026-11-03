@@ -156,3 +156,49 @@
 0xa5 -> doNavigateDeviceSettingsDialog
 0xa6 -> doNavigateAIMenu
 0xa7 -> doNavigateVoiceAssistantMenu
+
+---
+## Key-code bridge (verified 2026-11-04): DIAL virtual == ICE decimal == internal hex
+
+vk_keymapping_db.xml (DIAL virtual), ice_keymapping_db.xml (decimal) and
+DemoApp::handleKeyPress switch constants (0xcfb964) are the same keys:
+
+  Up 1020 / 522 / 0x20a      Down 1019 / 523 / 0x20b
+  Left 1021 / 524 / 0x20c    Right 1022 / 525 / 0x20d
+  Select(OK) 1053 / 526 / 0x20e
+  Menu 1048 / 557 / 0x22d    QuickMenu 1043 / 593 / 0x251
+  Exit 1010 / 528 / 0x210    Sleep ? / 574 / 0x23e
+  Info 1018 / 556 / 0x22c    Guide ? / ? / 0x230
+
+All DIAL codes used live (Menu/Up/Down/Left/Right/Select/Exit) behaved per
+their ICE meaning, so virtual->ICE translation works as named. Only the
+untested codes (QuickMenu/Info/...) still need a live confirmation each.
+
+## QuickMenu direct path to the full settings dialog (firmware, untested live)
+
+ICE 0x251 -> DemoApp::handleKeyPress -> onQuickAccessKey (gated:
+isQuickMenuKeyAvailable = profile remote code != 0xff; teletext-key
+enabled; no VCR timer; two modal-state checks) -> checkAndDisplayQuickMenu
+-> doQuickMenuDialog posts nav message 0x12 (skipped only if key was 0x22d
+AND quick-menu key available) -> doNavigateTabDialog(false,false) ->
+TabDialog with title + full slider content.
+Same key while a TabDialog is open CLOSES it (dispatcher 0x22d/0x251 branch:
+unfocus + hideSubMenu + endDialog). So QuickMenu toggles the full dialog.
+
+## TabDialog key map (from preHandleKeyPressMessage 0xd6faec, mirrored by ICE codes above)
+
+- Left/Right (0x20c/0x20d), no content or content inactive: switch tabs
+  (hideSubMenu, synthesize key to tab UIGroup, updateGlyphAndTitle,
+  showSubMenu). With active content: forwarded to content (+0x20).
+- Up/Down (0x20a/0x20b): move within content; at top/bottom edge, focus
+  returns to tabs (unfocusSubMenu); with tab-jump enabled, synthesize
+  Left/Right to change tabs.
+- Select (0x20e): per-type sub-dialog (PCP=7, ADVANCE=0x6d, 0x120=menu
+  result, 8=message/prompt, 10=demo); main-list Left/Right opens the
+  per-setting sub-dialog instead of adjusting in place (ids 0-5 via
+  updateViaPictureElementSettingDialog); slider rows have NO in-place path.
+- Exit (0x210): partial exit path (content check, reselect tab); 0x22d/0x251
+  and 0x21f/0x28b: unfocus + hideSubMenu + endDialog (full close; 0x21f/0x28b
+  repost the key).
+- 0x215/0x217/0x21a/0x21b and the content +0x28/+0x2c/+0x30/+0x38/+0x10
+  vtable meanings remain undecoded; do not guess their roles.

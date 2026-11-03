@@ -73,14 +73,25 @@ combine keys in one command, never stage/run anything on the TV.
   `Instellingen`], Select [verify tiles+tabs, Beeld focused]. From here:
   Up/Right navigate tiles; Select edits in place (AVOID unless a value
   change is explicitly authorized); Exit cancels edit.
-- Full slider list (Path B, PREDICTED — needs one live test): candidate
-  entry is the QuickMenu key (1043), whose handlers (`onQuickAccessKey` /
-  `onMenuKey` / `onMenuPress`) call `doQuickMenuDialog`, which posts message
-  0x12 → TabDialog with title + content. The RC-key→handler link itself is
-  untraced (assumed by key name only); if QuickMenu 1043 does not reach
-  doQuickMenuDialog, fall back to entry-point discovery, not retries.
-- Inside TabDialog (predicted): Left/Right switch tabs; Up/Down focus the
-  content list; Select opens the focused row's sub-dialog; Exit backs out.
+- Full slider list (Path B, PREDICTED — needs one live test): QuickMenu
+  key (DIAL 1043 = ICE 593 = internal 0x251; all three code spaces verified
+  identical). Chain, every link firmware-verified: 0x251 →
+  `DemoApp::handleKeyPress` → `onQuickAccessKey` (gated on profile remote
+  code != 0xff, teletext key, no VCR timer, two modal checks) →
+  `checkAndDisplayQuickMenu` → `doQuickMenuDialog` posts nav message 0x12
+  (skipped only if the key was 0x22d with quick-menu available) →
+  `doNavigateTabDialog(false,false)` → TabDialog with title + full slider
+  content. Same key while a TabDialog is open CLOSES it (dispatcher
+  0x22d/0x251 branch), so QuickMenu toggles. If 1043 does nothing live, the
+  likely gate is `isQuickMenuKeyAvailable` (profile remote code 0xff) —
+  record and stop, do not hammer other keys as substitutes.
+- Inside TabDialog (from `preHandleKeyPressMessage` decode; PREDICTED live):
+  Left/Right with submenu flag switch tabs (hide → UIGroup 0x20c/0x20d →
+  updateGlyphAndTitle → showSubMenu), else forward to content; Up/Down move
+  within content and return focus to tabs at the ends (tab-jump variants
+  synthesize L/R); Select opens the focused row's sub-dialog; Exit (0x210)
+  partially exits, 0x22d/0x251/0x21f/0x28b fully close (unfocus + hide +
+  endDialog; 0x21f/0x28b repost the key).
 - Leaving settings: Exit (verified to cancel edit; full exit path back to
   portal/video still to verify live — do it stepwise).
 
