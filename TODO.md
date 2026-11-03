@@ -321,6 +321,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement SettingItemsListBoxRow::renderItems text-entry family
+      0xd/0xe/0xf/0x10:33608 native/C comparisons and prior groups pass; full
+      host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
+      SETTINGS-ROW-TEXTENTRY. Mode/max pairs, the two created sources and the
+      1/0/3/2 name order are asserted; an un-stubbed setText callee was
+      caught and all twelve family callees are audited. Cases5..12,
+      0x11..0x15,0x17..0x19, row construction, child visibility internals,
+      live resources, scrollbar/skin/module/display/startup/independent
+      visible acceptance remain open.
 - [x] Implement SettingItemsListBoxRow::renderItems type 0xd (text-entry
       box):24392 native/C comparisons and prior groups pass; full host/Unix
       IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.

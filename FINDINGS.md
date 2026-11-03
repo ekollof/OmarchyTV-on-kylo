@@ -6,6 +6,17 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-TEXTENTRY closes the text-entry family: one parameterised body
+serves 0xd/0xe/0xf/0x10 with names 1/0/3/2 from 0x2ebc/0x2ec0/0x2ec4/0x2ec8
+and an empty-label create; trailing setters differ (mode/max 0/4, 0xa/5,
+0xa/5, 1/10) and the created source is setNumericContents(row[0x2e00]) for
+0xd/0xe/0xf versus setText(row[0x2e04]) for 0x10. 33608 native/C cases pass.
+The differential caught an un-stubbed SVGTextEntryBox::setText (0x10b8160)
+that let the guest slide through zero halfwords into a neighbouring stub;
+a callee audit now covers all twelve call sites. Cases 5..12, 0x11..0x15 and
+0x17..0x19, construction, child-visibility internals, live resources,
+scrollbar/skin/visible gates remain open.
+
 SETTINGS-ROW-13 implements renderItems type 0xd (text-entry box): looks up
 "selectionbox", drives row+0x18d8, writes row[0x2ebc]/[0x2ec0]/[0x2ec4]/[0x2ec8]
 into slots 1/0/3/2, creates from an empty label with (0,0xc,0xd), then sets

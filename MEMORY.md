@@ -6,6 +6,22 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-TEXTENTRY-2026-11-03: the text-entry family0xd/0xe/0xf/0x10
+passes33608 native/C comparisons via one parameterised body (names1/0/3/2,
+empty-label create, mode/max0/4,0xa/5,0xa/5,1/10, created numeric0x2e00 for
+0xe/0xf vs value-text0x2e04 for0x10) plus full strict host, focused
+ASan/UBSan, ARM/qemu, all prior groups and focused real-TV CPU. The
+differential caught an un-stubbed SVGTextEntryBox::setText (0x10b8160) that
+slid through zero halfwords into a neighbouring stub; all twelve callees in
+the family are now installed and audited. Build-tv-v3/settings-row-render
+unit84360/5478829a37dba33078596133b049a5da; reference1049500/
+5c32008cb7758bcb3d3ddceb015533a5. TV already awake, no-reset flag kept,
+staging size/hash separately verified, test exit0, staging removed and no
+helper in /proc/*/exe. No screen/input/device/settings/network/service/boot/
+persistent change. No pending job/helper. Cases5..12,0x11..0x15,0x17..0x19,
+row construction, child visibility internals, live resources, scrollbar/skin/
+module/display/startup/visible acceptance remain open.
+
 SETTINGS-ROW-13-2026-11-03: renderItems type0xd (text-entry box) passes24392
 native/C comparisons (names1/0/3/2 from0x2ebc/0x2ec0/0x2ec4/0x2ec8,
 empty-label seven-arg create, entry-mode0/max-chars4/cursor-auto, created

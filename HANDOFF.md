@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-13](artifacts/reports/SETTINGS-ROW-13-2026-11-03.md)
+Latest: [SETTINGS-ROW-TEXTENTRY](artifacts/reports/SETTINGS-ROW-TEXTENTRY-2026-11-03.md)
+closes the text-entry family 0xd/0xe/0xf/0x10 with one parameterised body:
+"selectionbox" lookup, row+0x18d8 child, names 1/0/3/2 from
+0x2ebc/0x2ec0/0x2ec4/0x2ec8, empty-label seven-arg create, then per-case
+mode/max (0/4, 0xa/5, 0xa/5, 1/10) and automatic cursor; the created source
+is setNumericContents(row[0x2e00]) for 0xd/0xe/0xf and setText(row[0x2e04])
+for 0x10. 33608 shipped ARM/C cases and prior groups pass, plus full
+host/Unix IPC, focused ASan/UBSan, ARM/qemu and focused real TV CPU. The
+differential caught an un-stubbed setText that slid through zero halfwords;
+all twelve family callees are now installed. No screen/input/device/settings/
+network/service/boot/persistent change; staging removed, no helper. Next
+implement cases 5..12, 0x11..0x15 and 0x17..0x19, then row construction/
+visibility internals/live resources, then scrollbar/skin/module/display/
+startup/independent visible parity. Bodies are not actual widget/rendering
+acceptance.
+
+Previous: [SETTINGS-ROW-13](artifacts/reports/SETTINGS-ROW-13-2026-11-03.md)
 implements renderItems type 0xd, the text-entry box: "selectionbox" lookup,
 row+0x18d8 child, names 1/0/3/2 from 0x2ebc/0x2ec0/0x2ec4/0x2ec8, empty-label
 seven-arg create, then entry-mode 0 / max-chars 4 / cursor-auto; created adds

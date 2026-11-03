@@ -26,7 +26,7 @@ static int ready(const struct oa_setting_row_render_ops *o)
 {
     if(!o || !o->base_render || !o->container_of || !o->get_rect || !o->rect_words ||
         !o->row_type || !o->row_word || !o->row_flag || !o->row_label ||
-        !o->row_button_label || !o->child_at || !o->is_created || !o->set_name ||
+        !o->row_button_label || !o->row_value_text || !o->child_at || !o->is_created || !o->set_name ||
         !o->set_focus || !o->set_elipses || !o->set_font || !o->get_point ||
         !o->set_rect || !o->set_text || !o->create_text ||
         !o->create_button || !o->set_text_alignment || !o->set_checked ||
@@ -145,13 +145,16 @@ static int case_sel(void *row,const struct oa_setting_row_render_ops *o,void *bo
 /* Case 0x1a: drive the row+0x684 button from the "button" rectangle. Not
  * created writes 0x2ed0/0x2ecc/0x2ed8/0x2ed4 into the four name slots then
  * creates; created applies EASIRect math plus setWindowRect/setText. */
-/* Case 0xd: drive the row+0x18d8 text-entry box from the "selectionbox"
- * rectangle. Uncreated writes row[0x2ec0]/[0x2ebc]/[0x2ec8]/[0x2ec4] into
- * slots 1/0/3/2, creates from an empty label with the (0,0xc,0xd) triplet,
- * then sets entry mode 0, max chars 4 and automatic cursor movement.
- * Created applies EASIRect math, setWindowRect and setNumericContents from
- * row[0x2e00] before the same three trailing setters. */
-static int case_0xd(void *row,const struct oa_setting_row_render_ops *o,void *box)
+/* Text-entry cases 0xd/0xe/0xf/0x10: drive row+0x18d8 from the
+ * "selectionbox" rectangle. Uncreated writes row[0x2ec0]/[0x2ebc]/[0x2ec8]/
+ * [0x2ec4] into slots 1/0/3/2 and creates from an empty label with the
+ * (0,0xc,0xd) triplet; created applies EASIRect math and setWindowRect, then
+ * either setNumericContents(row[0x2e00]) (0xd/0xe/0xf) or
+ * setText(row[0x2e04]) (0x10). All four finish with the case's entry mode,
+ * max-chars and automatic cursor movement: 0xd mode0/4, 0xe and 0xf
+ * mode0xa/5, 0x10 mode1/10. */
+static int case_te(void *row,const struct oa_setting_row_render_ops *o,void *box,
+    uint32_t mode,uint32_t maxchars,int use_text)
 {
     void *r=o->get_rect(box,key_for(5)),*child;int created;uint32_t base[4];
     if(!r)return 0;
@@ -162,7 +165,8 @@ static int case_0xd(void *row,const struct oa_setting_row_render_ops *o,void *bo
         uint32_t moved[4];int32_t pt[2];
         o->get_point(row,pt);rect_math(moved,base,pt);
         o->set_rect(child,moved);
-        o->set_numeric_contents(child,o->row_word(row,UINT32_C(0x2e00)));
+        if(use_text)o->set_text(child,o->row_value_text(row));
+        else o->set_numeric_contents(child,o->row_word(row,UINT32_C(0x2e00)));
     } else {
         o->set_name(child,UINT32_C(1),o->row_word(row,UINT32_C(0x2ec0)));
         o->set_name(child,(uint32_t)created,o->row_word(row,UINT32_C(0x2ebc)));
@@ -170,8 +174,8 @@ static int case_0xd(void *row,const struct oa_setting_row_render_ops *o,void *bo
         o->set_name(child,UINT32_C(2),o->row_word(row,UINT32_C(0x2ec4)));
         o->create_text_entry(child,0,UINT32_C(0xc),UINT32_C(0xd),"",base,row);
     }
-    o->set_entry_mode(child,0);
-    o->set_max_chars(child,UINT32_C(4));
+    o->set_entry_mode(child,mode);
+    o->set_max_chars(child,maxchars);
     o->set_cursor_auto(child,1);
     return 0;
 }
@@ -296,7 +300,15 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             return 0;
         }
         if(type==UINT32_C(0xd)) {
-            case_0xd(row,o,box);
+            case_te(row,o,box,0,4,0);
+            return 0;
+        }
+        if(type==UINT32_C(0xe) || type==UINT32_C(0xf)) {
+            case_te(row,o,box,UINT32_C(0xa),5,0);
+            return 0;
+        }
+        if(type==UINT32_C(0x10)) {
+            case_te(row,o,box,1,10,1);
             return 0;
         }
         return ENOTSUP;
@@ -324,7 +336,15 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             return 0;
         }
         if(type==UINT32_C(0xd)) {
-            case_0xd(row,o,box);
+            case_te(row,o,box,0,4,0);
+            return 0;
+        }
+        if(type==UINT32_C(0xe) || type==UINT32_C(0xf)) {
+            case_te(row,o,box,UINT32_C(0xa),5,0);
+            return 0;
+        }
+        if(type==UINT32_C(0x10)) {
+            case_te(row,o,box,1,10,1);
             return 0;
         }
         return ENOTSUP;
