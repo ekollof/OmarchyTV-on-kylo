@@ -6,6 +6,18 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-MODULE-2026-11-03: first ui.list v1 consumer over the verified
+layers passes host, focused ASan/UBSan, ARM/qemu and actual Unix-socket IPC.
+ARM unit78640/b798fca761bba0127fc824e79be9c6dc; module477796/
+cc7cb4a6e792b423a5e9e8015d956426, build-tv-v3/list-service. Owned 9/5/16
+geometry; verified key chain with inert render targets; list-state/list-key
+over socket/CLI; OAL1 reload persistence; suspend/shutdown gates; clean exit
+with socket removal. Widget-level row getters/editing, parent refresh,
+scrollbar construction/rendering internals, startSelectAnimation, owned
+backend/context beyond words/counters and visible acceptance stay open.
+No TV access/wake/staging/deployment or hardware mutation; no pending
+job/helper.
+
 SVG-LIST-UPDATE-2026-11-03: row-view getters and the full refresh pass100+20
 native/C comparisons with exact call order/args and resulting list state,
 plus full strict host, focused ASan/UBSan, ARM/qemu and all previous

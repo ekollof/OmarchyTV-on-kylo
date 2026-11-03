@@ -72,6 +72,30 @@ typedef struct {
     int (*set_open_submenu)(uint8_t open);
 } oa_ui_navigation_iface_v2;
 
+/* ui.list v1 — owned SVG-list selection state driven through the verified
+ * key/body/move/row layers. Owns the list-box +0x1ec count word (total),
+ * manager +12 first-visible, +16 size and +20 selected-rel words; slots is
+ * a fixed owned16 geometry constant. key() runs oa_svg_list_key with the
+ * fixed widget fields (horizontal0, page aliases from firmware) and the
+ * verified lower bodies; animation/scrollbar/full-update targets are owned
+ * counting stubs (construction/rendering/animation internals stay open).
+ * Parent is null, so select consumes without notify; go_group records its
+ * synthesized index without moving (the +0x48 virtual stays open).
+ * handled is the normalized router/body truth for the last key.
+ * During suspend key() returns EBUSY while state stays queryable.
+ * Hold the service through every call. Words are raw32; this struct is not
+ * a wire/reload encoding (save/restore uses OAL1). */
+#define OA_SVC_UI_LIST "ui.list"
+typedef struct {
+    uint32_t first,size,selected,total; /* first/selected window-relative; total raw32 aux */
+    int handled; /* normalized0/1 truth of the last key; -1 before any key */
+    uint32_t anim,scroll,partial,focus,group; /* owned target/group call counters */
+} oa_ui_list_state;
+typedef struct {
+    int (*state)(oa_ui_list_state *out);
+    int (*key)(uint32_t code,int *handled);
+} oa_ui_list_iface;
+
 /* ui.theme v1 — immutable validated BinSVG snapshot, published by ui_theme.
  * Loop-thread only. Hold lookup(OA_SVC_UI_THEME,1) through every use of ALL
  * returned views/strings; drop those before release/stop. Do not retain them

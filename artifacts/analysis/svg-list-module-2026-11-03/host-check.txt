@@ -1,0 +1,1 @@
+ok list: CLI domains/validation, verified key chain, suspend/resume, shutdown gate, OAL1 reload and unload

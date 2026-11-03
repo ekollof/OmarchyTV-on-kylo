@@ -6,6 +6,13 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG list module: SVG-LIST-MODULE publishes ui.list v1 as the first consumer;
+host/sanitizer/ARM-qemu/actual-Unix-IPC pass. Owned 9/5/16 geometry with
+page aliases; verified chain with inert render counters; list-state/list-key
+over socket/CLI; OAL1 reload persistence; suspend/shutdown gates; clean exit.
+Widget getters/editing, parent refresh, scrollbar construction/rendering,
+startSelectAnimation, display/scanout/startup and visible parity remain open.
+
 SVG list update: SVG-LIST-UPDATE implements the row-view getters
 (total/last/item) and the full refresh; 100+20 native/C comparisons pass.
 Total is slots, last wraps, item bounds-checks; update stores the virtual

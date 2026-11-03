@@ -193,6 +193,8 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  nav-set-tab <signed-id>  set retained tab (no enqueue/draw)\n"
                  "  nav-set-item <signed-id> set retained item (no enqueue/draw)\n"
                  "  nav-set-submenu <0-255>  set retained submenu byte only\n"
+                 "  list-state               query owned SVG-list selection state\n"
+                 "  list-key <code>          feed a full-width list key code\n"
                  "  hotel-state             read persisted hotel tab inputs\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
@@ -255,6 +257,29 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
             if(!error)snprintf(outbuf,outlen,"queued\n");
         }
         h->api.release(h,OA_SVC_UI_NAVIGATION);
+        if(error)snprintf(outbuf,outlen,"failed errno %d\n",error);
+        return error?-1:0;
+    }
+    if(!strcmp(cmd,"list-state") || !strcmp(cmd,"list-key")) {
+        int query=!strcmp(cmd,"list-state");
+        uint64_t value=0;int error=0,handled=0;
+        if(a2 || force || (query?a1!=NULL:(decimal(a1,&value) || value>UINT32_MAX)))error=EINVAL;
+        else if(!query && (h->shutting_down || h->stop_requested))error=ESHUTDOWN;
+        if(error){snprintf(outbuf,outlen,"failed errno %d\n",error);return -1;}
+        const oa_ui_list_iface *list=h->api.lookup(h,OA_SVC_UI_LIST,1);
+        if(!list){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        if(query) {
+            oa_ui_list_state s;error=list->state(&s);
+            if(!error)snprintf(outbuf,outlen,"first %" PRIu32 " size %" PRIu32
+                " selected %" PRIu32 " total %" PRIu32 " handled %d anim %" PRIu32
+                " scroll %" PRIu32 " partial %" PRIu32 " focus %" PRIu32 " group %" PRIu32 "\n",
+                s.first,s.size,s.selected,s.total,s.handled,s.anim,s.scroll,
+                s.partial,s.focus,s.group);
+        } else {
+            error=list->key((uint32_t)value,&handled);
+            if(!error)snprintf(outbuf,outlen,"handled %d\n",handled);
+        }
+        h->api.release(h,OA_SVC_UI_LIST);
         if(error)snprintf(outbuf,outlen,"failed errno %d\n",error);
         return error?-1:0;
     }

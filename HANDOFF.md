@@ -24,7 +24,20 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SVG-LIST-UPDATE](artifacts/reports/SVG-LIST-UPDATE-2026-11-03.md)
+Latest: [SVG-LIST-MODULE](artifacts/reports/SVG-LIST-MODULE-2026-11-03.md)
+publishes ui.list v1, the first service consumer of the verified SVG-list
+layers. Host, focused ASan/UBSan, ARM/qemu and actual Unix-socket IPC pass:
+owned 9-item/5-row/16-slot geometry, verified key chain with inert render
+counters, list-state/list-key over socket/CLI, OAL1 reload persistence,
+suspend/shutdown gates, clean exit with socket removal. No new service/
+module beyond ui.list, no TV access/wake/staging/deployment or pending job.
+Hashes in MEMORY/report. Next implement widget-level row getters and editing,
+parent refresh, scrollbar construction/rendering internals,
+startSelectAnimation, and the owned backend/context/consumer beyond
+words/counters with display/scanout binding, then independent startup and
+native visible parity. Bodies are not actual widget/rendering acceptance.
+
+Previous: [SVG-LIST-UPDATE](artifacts/reports/SVG-LIST-UPDATE-2026-11-03.md)
 implements the RowManager row-view getters and the SVGListBoxBase full
 refresh. 100+20 native/C comparisons pass with exact call order/args and
 resulting list state, plus full strict host/focused sanitizer/ARM and every

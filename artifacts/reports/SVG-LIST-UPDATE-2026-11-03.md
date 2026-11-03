@@ -53,4 +53,11 @@ internals, startSelectAnimation, and the owned backend/context/consumer with
 permission/modal/focus/lifetime/visible gates. Bodies are not actual
 widget/rendering acceptance, and no visible parity is claimed.
 
+Subsequent [SVG-LIST-MODULE](SVG-LIST-MODULE-2026-11-03.md) publishes ui.list
+v1 as the first reloadable consumer with socket/CLI control: the owned
+word/counter context above is now the module state demonstrated through
+load/keys/reload/suspend/resume/unload. Widget-level getters/editing,
+parent refresh, construction/rendering internals, startSelectAnimation,
+display/scanout binding, independent startup and visible parity remain open.
+
 Evidence and reproduction: artifacts/analysis/svg-list-update-2026-11-03/.

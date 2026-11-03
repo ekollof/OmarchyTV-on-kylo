@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile
+MODULES  := plat ticker ir ui_console panel power display audio settings source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -113,6 +113,22 @@ check: check-ui-navigation
 .PHONY: check-ui-navigation-ipc
 check-ui-navigation-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_navigation.so
 	node tests/ui_navigation_ipc.cjs $(abspath $(BUILD))
+
+$(BUILD)/modules/mod_ui_list.so: modules/ui_list/ui_list.c common/svg_list_input.c common/svg_list_bodies.c common/svg_list_move.c common/svg_list_rows.c common/svg_list_impl.c include/openaurora/svg_list_input.h include/openaurora/svg_list_bodies.h include/openaurora/svg_list_move.h include/openaurora/svg_list_rows.h include/openaurora/svg_list_impl.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+
+$(BUILD)/tests/ui_list: tests/ui_list.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+.PHONY: check-ui-list
+check-ui-list: $(BUILD)/tests/ui_list $(BUILD)/modules/mod_ui_list.so $(BUILD)/modules/mod_ticker.so
+	@$(BUILD)/tests/ui_list $(BUILD)/modules
+check: check-ui-list
+
+.PHONY: check-ui-list-ipc
+check-ui-list-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_list.so
+	node tests/ui_list_ipc.cjs $(abspath $(BUILD))
 
 $(BUILD)/tests/launcher_route: tests/launcher_route.c common/launcher_route.c include/openaurora/launcher_route.h
 	@mkdir -p $(dir $@)
