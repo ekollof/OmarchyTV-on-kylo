@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-SETTERS-2026-11-03: label/progress/range setters pass324 native/C
+comparisons (child select/created gates/always-stores) plus full strict host,
+focused ASan/UBSan, ARM/qemu, all prior groups and focused real-TV CPU. Saved
+setType-adjacent bodies closed: empty-format decimal text, wrapped percent with
+__aeabi_idiv edges, type-selected children. Build-tv-v3/settings-row-setters
+unit33304/91fdb5c24bb31ce2344a7796e6ed6cb8; reference933404/
+d295d9d4fb62e388a55e4cc0aa6eda46. TV already awake, no-reset flag kept, staging
+size/hash separately verified, test exit0, staging removed and no helper in
+/proc/*/exe. No screen/input/device/settings/network/service/boot/persistent
+change. No pending job/helper. Actual renderItems/row construction/child
+visibility internals/live resources/scrollbar/skin/module/display/startup/
+visible acceptance remain open.
+
 SETTINGS-ROW-TYPE-2026-11-03: setType cache/rebuild/render/query and exact child
 setter ordering pass12480 shipped ARM/C cases plus prior groups, full host/Unix
 IPC, ASan/UBSan, ARM/qemu and focused real-TV CPU. Model type event joins to owned

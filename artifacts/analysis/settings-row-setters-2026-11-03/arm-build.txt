@@ -1,0 +1,2 @@
+build-tv-v3/settings-row-setters cross-built with arm-none-linux-gnueabihf-gcc,
+-TARGET=tv, strict C11 -Wall -Wextra -Werror -pedantic, no warnings. See arm-unit.txt.

@@ -1,0 +1,1 @@
+ok settings row setters: type-selected children, created gates, percent/divide edges and always-stores

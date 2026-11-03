@@ -321,6 +321,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement SettingItemsListBoxRow label/progress/range setters with
+      type-selected children, created gates and always-stores:324 native/C
+      comparisons and prior groups pass; full host/Unix IPC, ASan/UBSan,
+      ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-SETTERS. Wrapped
+      percent with __aeabi_idiv edges, empty-format decimal text and store
+      order are exact. Actual renderItems/row construction/child visibility
+      internals, live resources, scrollbar/skin/module/display/startup/
+      independent visible acceptance remain open.
 - [x] Implement SettingItemsListBoxRow::setType cache/rebuild/render/visibility
       controller and bounded owned-model type-event join:12480 shipped ARM/C
       cases and prior groups pass; full host/Unix IPC, ASan/UBSan, ARM/qemu and

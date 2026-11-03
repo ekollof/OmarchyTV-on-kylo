@@ -24,7 +24,18 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-TYPE](artifacts/reports/SETTINGS-ROW-TYPE-2026-11-03.md)
+Latest: [SETTINGS-ROW-SETTERS](artifacts/reports/SETTINGS-ROW-SETTERS-2026-11-03.md)
+implements the saved setLabel/setProgressValue/setBarRangeValues bodies.
+324 shipped ARM/C cases and prior groups pass, plus full host/Unix IPC,
+focused ASan/UBSan, ARM/qemu and focused real TV CPU. Type-selected children,
+created gates and always-stores are exact; percent keeps shipped wraparound
+and divide edges. No screen/input/device/settings/network/service/boot/
+persistent change; staging removed, no helper. Next integrate actual
+renderItems/row construction and remaining live resources with these
+providers, then scrollbar/skin/module/display/startup/independent visible
+parity. Setters alone are not actual widget/rendering acceptance.
+
+Previous: [SETTINGS-ROW-TYPE](artifacts/reports/SETTINGS-ROW-TYPE-2026-11-03.md)
 implements setType cache/rebuild-before-render and exact qualified child
 visibility ordering.12480 shipped ARM/C cases and prior groups pass, plus full
 host/Unix IPC, focused ASan/UBSan, ARM/qemu and focused real-TV CPU. Owned-model

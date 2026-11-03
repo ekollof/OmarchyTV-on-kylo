@@ -1,0 +1,2 @@
+streamed upload /tmp/oa_row_setters (no sftp-server on set)
+separate connection size/hash check: 33304 / 91fdb5c24bb31ce2344a7796e6ed6cb8 match local

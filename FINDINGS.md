@@ -6,6 +6,16 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-SETTERS implements the saved label/progress/range bodies: label
+selects +0x3c4 for type 1 else +0x104; progress drives +0x1570 for 0x17 else
++0x1724 with wrapped ((value-lo)*100)/(hi-lo) and always formats the stored
+value into +0x24e8; range drives +0x13c0 for type 9 else +0x1498. Widget calls
+run only when created; stores always run. 324 native/C cases pass. Fragments
+must include the final pop; the progress format literal points at the shipped
+empty string. __aeabi_idiv edges (INT_MAX/MIN on nonzero/zero, SIGFPE on 0/0)
+are replicated without UB. RenderItems/construction/visibility-internals/live
+resources/scrollbar/skin/visible gates remain open.
+
 SETTINGS-ROW-TYPE implements setType: changed cache/rebuild stores precede
 renderItems, unchanged clears rebuild but still queries visibility, and the
 query follows rendering.12480 native cases pass. Exact qualified child calls
