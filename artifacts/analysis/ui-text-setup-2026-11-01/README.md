@@ -1103,3 +1103,13 @@ unrelated classes), caption routing, icons, prefixes, slide direction,
 mirror, dialog client or fit-check (all verified). Remaining draws inputs
 (+0x1b0/+0x1b1/+0x22c/+0x2a8/+0x2b0) need the live extended scan with
 settings open; do not invent an indent constant.
+
+## Scanner now dumps label key/ustring bytes (2026-11-04, no TV)
+
+`ui-object-scan` prints the +0xac raw-key string (bounded pread, printable
+only) or the raw +0xa4 UString bytes when no key is set, alongside the
+draw-control fields. Host-tested (incl. truncated/exact spans, wrong-exe
+refusal); ARM TV binary builds clean (34016 bytes). Next live run with
+settings open captures flags AND content per textbox in one pass, settling
+whether slider rows carry different text/flags or the draw step itself
+branches per row type.

@@ -42,7 +42,8 @@ static void rectangle(FILE *out,const char *name,const uint8_t *p)
     fprintf(out," %s=%" PRId32 ",%" PRId32 ",%" PRId32 ",%" PRId32,
             name,signed_word(p),signed_word(p+4),signed_word(p+8),signed_word(p+12));
 }
-static int candidate(FILE *out,uint32_t address,const uint8_t *p,size_t size)
+static int read_at(int fd,uint8_t *buf,size_t size,uint64_t address);
+static int candidate(FILE *out,int fd,uint32_t address,const uint8_t *p,size_t size)
 {
     if(size<4)return 0;
     const struct identity *id=identity(word(p));
@@ -68,6 +69,30 @@ static int candidate(FILE *out,uint32_t address,const uint8_t *p,size_t size)
                 " flags1=%u flags2=%u override=%" PRIu32 " slide=%u slidermargin=%" PRId32,
                 word(p+0x21c),signed_word(p+0x1b4),word(p+0x1c4),word(p+0x220),
                 p[0x1b1],p[0x1b0],word(p+0x22c),p[0x2b0],signed_word(p+0x2a8));
+        /* Best-effort label content: +0xac holds the raw key pointer when the
+         * text was set from a key; otherwise dump the +0xa4 UString bytes raw
+         * without assuming its layout. Read-only pread; any short read or
+         * non-text bytes print as absent, never guessed. */
+        uint32_t key=word(p+0xac);
+        if(key) {
+            unsigned char keybuf[41];
+            memset(keybuf,0,sizeof keybuf);
+            size_t kn=0;
+            while(kn<40) {
+                unsigned char c;
+                if(read_at(fd,&c,1,(uint64_t)key+kn))break;
+                if(!c)break;
+                keybuf[kn++]=c;
+            }
+            int printable=kn>0;
+            for(size_t ki=0;ki<kn && printable;ki++)
+                if(keybuf[ki]<32||keybuf[ki]>126)printable=0;
+            if(printable)fprintf(out," key=\"%s\"",keybuf);
+            else fprintf(out," keyptr=%08x(len%u,unreadable)",key, (unsigned)kn);
+        } else {
+            fprintf(out," key=(none) ustring=%02x%02x%02x%02x%02x%02x%02x%02x",
+                    p[0xa4],p[0xa5],p[0xa6],p[0xa7],p[0xa8],p[0xa9],p[0xaa],p[0xab]);
+        }
     }
     fputc('\n',out);
     return 1;
@@ -92,7 +117,7 @@ static int scan_range(int fd,uint64_t offset,uint32_t address,size_t size,FILE *
         size_t read=remaining<BLOCK+LOOKAHEAD?remaining:BLOCK+LOOKAHEAD;
         if(read_at(fd,buf,read,offset+at)){free(buf);return -1;}
         for(size_t i=0;i+4<=scan;i+=4) {
-            if(candidate(out,address+(uint32_t)(at+i),buf+i,read-i))++*count;
+            if(candidate(out,fd,address+(uint32_t)(at+i),buf+i,read-i))++*count;
         }
         at+=scan;
     }
