@@ -1,4 +1,4 @@
-# Handoff — 2026-11-02
+# Handoff — 2026-11-03
 
 Read AGENTS.md, MEMORY.md, FINDINGS.md and TODO.md. Documentation was consolidated
 to remove competing status snapshots. Raw evidence and pre-cleanup docs remain
@@ -24,54 +24,39 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [FONT-X-OFFSET](artifacts/reports/FONT-X-OFFSET-2026-11-03.md)
-closes title X23 and normal MODE-row X18 from firmware: b42468 returns NEGATIVE
-SIGNED font+5/global minimum-left bearing, not zero. Earlier zero-getter claims
-were wrong despite the saved ARM showing ldrsb/rsbs; corrected at source.
-Live font18 header e9 agrees with shipped minimum-23. common/font_box now uses
-this global offset in its viewport/initial origin, including center/end policy;
-raw glyph/fitted-row APIs remain unchanged. Title origin23,5 and absolute ink
-136..388/31..85 match the saved vendor command/capture bounds. MODE local18
-explains31->49; indented labels and full FA/style integration remain open.
-Full strict host/focused sanitizer/ARM-qemu/native CPU corpus passes; full
-raster-core comparison still differs, so title stays default-off and visible
-parity is unclosed. Isolated build-tv-v3/font-x; native162884 bytes/MD5
-22074919b41c8f0e789f0e3615ae3029/GLIBC2.7, separately verified/removed. Same
-boot/live1785/access/privacy; no drawing/input/device/persistent change or
-helper/job pending. Evidence analysis/ui-title-x-rule-2026-11-03, corrected
-verify-graph.cjs checks the actual font header rather than assuming return0.
-Next actual raster/coverage pipeline and original row indentation/styles;
-do not re-investigate title parent/client/surface translation for this offset.
+Latest: [UI-FONT-GPU](artifacts/reports/UI-FONT-GPU-2026-11-03.md) adds a lower
+coverage-glyph API with shipped shader/quad/UV/blend and RGBA FBO composition.
+Full strict host, focused sanitizers, ARM/qemu geometry and owner-approved native
+private-pbuffer synthetic/title checks pass. No glyph broker/wire/UI integration
+or visible parity. One-pass opaque core1971/vendor1446 differs525; recovered
+two-pass primitive1228 differs1150. Matching native varying declarations gives
+the same full FBO output hash; this is NOT a pixel/precision fix. Keep ui.title
+default-off. Next establish actual title command route, background/alpha and
+active presentation state before changing the pipeline or fitting any geometry.
+Configured framework->task->client->renderer->context association was read,
+not execution-traced. Old Surface06b40840 was freed/rejected; do not dereference
+saved heap pointers without fresh bounds/vptr/lifetime validation.
 
-Previous: [UI-TITLE-LIVE-GRAPH](artifacts/reports/UI-TITLE-LIVE-GRAPH-2026-11-03.md)
-uses owner-opened stock settings panel and read-only scan/pointer graph. Current
-fb1 panel-ready captures confirm ink136..388/31..85. Actual hal::Surface bounds
-108,5,691,95; retained TextCommand LineObj position23,5, string Instellingen,
-margins0, start1/center3, line glyph ratio1/1. Correction: BitmapFont X getters
-return23 for this font, not0 (FONT-X-OFFSET). X23 is
-in retained layout, not a reason to shift the widget; its assignment mechanism
-remains open. Flag+1b1 is CharClipping (command+54=1), not bold: corrected at
-source. Default-off title/X0 unchanged. Next trace actual logical viewport/
-reference values and direct LineObj X writers, using the saved8 setter callers;
-no universal23px inset. verify-graph.cjs passes on heap-bounded saved snapshots;
-private bytes/images under workbench/title-horizontal-20261103, evidence under
-analysis/ui-title-horizontal-2026-11-03. Early captures caught launcher frames,
-not a proven MAU bug; locally built fbregion was never staged/run. Scanner was
-separately size/hash checked then removed; same boot/live1785/hook/hosts, no
-keys/drawing/device mutation, no helper/job pending. Owner may use TV normally.
+Native final build-tv-v3/glyph-gpu/egl-glyph-probe160268 bytes/MD5
+772970e414644b47ec2c3b415a7a1cbd/maxGLIBC2.7; separate size/hash verification
+before each run. Private corpus8294400/25e09914c06a252c31cf92de49d419ef.
+Temporary files/helpers absent; same boot/fb1 backing41735daa69dc137743b59efe12db4a19/
+pan0,1080/access/privacy, no keys/window/restart/settings/persistent mutation.
+No helper/job pending. Real raster/font bytes remain ignored under workbench/
+title-horizontal-20261103; evidence and shader extractor in analysis/ui-font-gpu-
+2026-11-03. GPU calls stay on an owning worker/helper, never the host loop.
 
-Previous: [UI-TITLE-BOX](artifacts/reports/UI-TITLE-BOX-2026-11-03.md)
-integrates common/font_box into optional ui.title rendering: full583x90 viewport,
-alignment4 -> start/center, font18 logical height80 -> local Y5. Real font corpus
-ink5,26..257,80 (absolute113,31..365,85) explains historical Y delta without a
-fitted offset;23px X remains open. Default-off title retained. Zero-height title
-font falls back independently of live rows; full host/focused sanitizers/ARM-qemu
-and native CPU-only corpus pass. Build-tv-v3/title-box, analysis/ui-title-draw-
-2026-11-02 (started before midnight), report has hashes/commands. Staging removed
-and independently checked; no helper/job pending. Same boot/live1785/access/
-privacy sampled; no drawing/input/device/persistent change. Next investigate
-horizontal references/ratios/draw controls/presentation association from firmware,
-then visual acceptance; no universal23px inset or complete title/FA parity.
+Established placement: [FONT-X-OFFSET](artifacts/reports/FONT-X-OFFSET-2026-11-03.md)
+corrects the old zero-getter claim: ARM b4247c/b42482 returns negative signed
+font+5/global minimum-left. Font18 e9 ->23, font7 ->18. Boxed layout applies
+that metric; title origin23,5/ink136..388,31..85 matches retained graph and
+capture bounds. MODE's31->49 is explained; indentation/focus/styles remain open.
+[UI-TITLE-LIVE-GRAPH](artifacts/reports/UI-TITLE-LIVE-GRAPH-2026-11-03.md) owns
+the saved Surface108,5,691,95/LineObj23,5/exact text/unit ratio observations;
+[UI-TITLE-BOX](artifacts/reports/UI-TITLE-BOX-2026-11-03.md) establishes vertical
+Y5. Their old X-assignment/zero-getter/shift hypotheses are superseded, not next
+work. CharClipping+1b1 is not bold. Early launcher captures do not prove a MAU
+defect. Do not re-investigate parent translation to implement the closed X offset.
 
 Previous: [UI-WORK-REVIEW](artifacts/reports/UI-WORK-REVIEW-2026-11-02.md)
 reviews the subsequent agent's work through6822fce. Fixed an ASan-reproduced

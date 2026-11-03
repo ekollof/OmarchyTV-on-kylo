@@ -6,6 +6,17 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+GPU title limit (2026-11-03): UI-FONT-GPU implements coverage textures/font
+shader plus the shipped RGBA FBO/composition pass in the lower GLES owner.
+Native private-pbuffer checks pass; they do not establish title parity. One-pass
+core1971/vendor1446 differs525, two-pass core1228 differs1150. Native varying
+declarations give the same full output as the old composition shader here;
+neither GPU usage nor precision changes close the saved pixel discrepancy.
+Configured context association is not execution tracing of the title command.
+The earlier Surface address is now freed/rejected: do not follow its stale fields.
+No new geometry correction follows from these raster results. Service text
+integration, actual rendering route/state and independent acceptance remain open.
+
 Font X correction (2026-11-03): FONT-X-OFFSET checks the actual ARM b4247c
 ldrsb from object+5 and b42482 rsbs. This is -signed global minimum-left,
 NOT a zero getter. Earlier claims inferred a return value from vtable identity

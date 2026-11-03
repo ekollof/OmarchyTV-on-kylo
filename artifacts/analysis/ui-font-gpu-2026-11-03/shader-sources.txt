@@ -1,0 +1,26 @@
+fragment_font pointer@178b8bc -> 13f8946
+precision mediump float;
+varying vec2 ex_Texture;
+uniform sampler2D texture;
+uniform ivec4 colour;
+void main(void)
+{
+  gl_FragColor = vec4(float(colour.r) / 255.0, float(colour.g) / 255.0, float(colour.b) / 255.0, texture2D(texture, ex_Texture).a * (float(colour.a) / 255.0));
+}
+vertex_texture pointer@178b8c0 -> 13f8b25
+attribute vec4 in_Position;
+attribute vec2 in_Texture;
+varying vec2 ex_Texture;
+void main(void)
+{
+  gl_Position = in_Position;
+  ex_Texture = in_Texture;
+}
+fragment_texture pointer@178b8c4 -> 13f8a5e
+precision mediump float;
+varying vec2 ex_Texture;
+uniform sampler2D s_texture;
+uniform float uAlpha;void main(void)
+{
+  gl_FragColor = texture2D(s_texture, ex_Texture);
+  gl_FragColor.a *= uAlpha;}

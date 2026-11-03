@@ -6,6 +6,22 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-FONT-GPU-2026-11-03: lower scene_gles coverage-glyph/FBO composition API
+implemented from shipped ARM/shaders. Full strict host, focused ASan/UBSan,
+ARM-qemu geometry and owner-approved native private-pbuffer synthetic/title
+tests pass. No service/wire/UI integration, no window/visible acceptance.
+One-pass core1971 still differs from vendor1446 by525; two-pass core1228 differs
+by1150, so this is NOT a closed pixel fix. Native-varying versus old-composition
+shader gives identical two-pass full hash; do not fit offsets or blame fonts.
+Persistent framework/task/client/renderer/context graph was read, but actual
+title draw execution was not traced; the old Surface was freed/rejected.
+Final native160268 bytes/MD5 772970e414644b47ec2c3b415a7a1cbd/maxGLIBC2.7,
+build-tv-v3/glyph-gpu. Corpus8294400/25e09914c06a252c31cf92de49d419ef.
+All staging/helper gone; same boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197,
+fb1 pan0,1080/full backing41735daa69dc137743b59efe12db4a19, hook/hosts,
+SSH22/telnet2323 and /vendor/iptables Samba REJECT. No display drawing/input/
+settings/restart/persistent mutation. ui.title stays default-off; no job pending.
+
 FONT-X-OFFSET-2026-11-03: closed getter error: b42468 returns -signed font+5,
 not zero. Guarded live font18 header reads0xe9 (-23); shipped font18/font7
 minimum-lefts-23/-18 explain title23 and normal MODE-row18. common/font_box

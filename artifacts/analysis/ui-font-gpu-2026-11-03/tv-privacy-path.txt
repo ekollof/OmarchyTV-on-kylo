@@ -1,0 +1,11 @@
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+    if [ -x /vendor/iptables ]; then
+      /vendor/iptables -C OUTPUT -d 216.183.117.0/24 -j REJECT 2>/dev/null || \
+        /vendor/iptables -I OUTPUT -d 216.183.117.0/24 -j REJECT 2>/dev/null
+  if [ -x /vendor/iptables ] &&
+     ! /vendor/iptables -C OUTPUT -d 216.183.117.0/24 -j REJECT 2>/dev/null; then
+    /vendor/iptables -I OUTPUT -d 216.183.117.0/24 -j REJECT && log 'Samba block repaired'
+hosts

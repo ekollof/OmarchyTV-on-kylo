@@ -1,0 +1,22 @@
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+total 368
+-rwx------    1 root     root          8753 Oct 31 11:55 aurora.elf
+-rwxr-xr-x    1 root     root          8726 Oct 30 16:36 aurora.elf.pre-recovery-20261031
+-rwx------    1 root     root          9221 Oct 31 11:36 aurora.elf.pre-stability-20261031
+-rw-------    1 root     root           594 Oct 30 01:03 authorized_keys
+-rwxr-xr-x    1 root     root        313364 Oct 30 00:48 dropbear
+-rw-------    1 root     root            83 Oct 30 00:48 hostkey_ed25519
+-rw-------    1 root     root           805 Oct 30 00:48 hostkey_rsa
+-rw-r--r--    1 root     root          1078 Oct 30 06:53 hosts
+-rwx------    1 root     root          5036 Oct 31 12:00 keepalive.sh
+drwx------    2 root     root           224 Oct 31 11:56 stability-stage
+ls: /sbin/iptables: No such file or directory
+ls: /usr/sbin/iptables: No such file or directory
+ls: /tmp/iptables: No such file or directory
+ls: /conf/remotelf/iptables: No such file or directory
+nat
+mangle
+filter

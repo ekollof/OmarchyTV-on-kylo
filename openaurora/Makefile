@@ -789,9 +789,32 @@ $(BUILD)/tests/ui_async: tests/ui_async.c tests/scene_gpu_trace.h core/host.h in
 check-ui-async: $(BUILD)/tests/ui_async $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_scene_display.so $(BUILD)/modules/mod_scene_gpu_fixture.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_anim.so
 	@$(BUILD)/tests/ui_async $(BUILD)/modules $(abspath $(BUILD)/tests/mod_fake_clock.so)
 
-$(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/ui_anim.h
+$(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
+
+GLYPH_PROBE_SRC := tools/display/egl-glyph-probe.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c common/font_box.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/text_origin.c
+GLYPH_PROBE_HDR := include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h include/openaurora/font_box.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/text_origin.h include/openaurora/canvas.h
+$(BUILD)/egl-glyph-probe: $(GLYPH_PROBE_SRC) $(GLYPH_PROBE_HDR)
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(GLYPH_PROBE_SRC) $(EGL_PROBE_LIBS) -pthread -lm
+
+$(BUILD)/tests/glyph_gles: $(GLYPH_PROBE_SRC) $(GLYPH_PROBE_HDR) tests/egl_default_display.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_GLYPH_SOFTWARE_TEST $(LDFLAGS) -Wl,--wrap=eglGetDisplay -Wl,--wrap=glCreateProgram -Wl,--wrap=glGenTextures -o $@ $(GLYPH_PROBE_SRC) tests/egl_default_display.c -lEGL -lGLESv2 -pthread -lm
+
+.PHONY: check-glyph-gles
+# Explicit host-only Mesa software check; no display or TV hardware window.
+check-glyph-gles: $(BUILD)/tests/glyph_gles
+	@EGL_PLATFORM=surfaceless LIBGL_ALWAYS_SOFTWARE=1 $(BUILD)/tests/glyph_gles
+
+$(BUILD)/tests/glyph_quad: tests/glyph_quad.c common/glyph_quad.c include/openaurora/glyph_quad.h include/openaurora/font_draw.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-glyph-quad
+check-glyph-quad: $(BUILD)/tests/glyph_quad
+	@$(BUILD)/tests/glyph_quad
+check: check-glyph-quad
 
 # Explicit targets pending production module integration. Bootstrap is EGL-free;
 # the separately loaded renderer owns Mali for the child's entire lifetime.
@@ -799,11 +822,11 @@ $(BUILD)/oa-scene-broker: tools/display/oa-scene-broker.c common/scene_broker.c 
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -ldl
 
-$(BUILD)/scene-renderer.so: tools/display/scene-renderer.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_renderer.h include/openaurora/scene_broker.h include/openaurora/scene_gles.h include/openaurora/ui_anim.h
+$(BUILD)/scene-renderer.so: tools/display/scene-renderer.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c include/openaurora/scene_renderer.h include/openaurora/scene_broker.h include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include -fPIC -shared $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
 
-$(BUILD)/egl-window-probe: tools/display/egl-window-probe.c common/scene_gles.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/ui_anim.h
+$(BUILD)/egl-window-probe: tools/display/egl-window-probe.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
 

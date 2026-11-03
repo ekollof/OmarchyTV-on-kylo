@@ -321,6 +321,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Lower GPU glyph primitive: shipped GL_ALPHA masks, native quad/UV/shaders,
+      blend and RGBA FBO composition. UI-FONT-GPU-2026-11-03; full strict host,
+      focused sanitizers, ARM/qemu geometry and authorized native pbuffer
+      synthetic/title corpus pass. This is not service integration or pixel parity.
+- [ ] Resolve saved title pixel discrepancy through actual command routing,
+      background/alpha and active rendering/presentation state. One-pass GPU
+      matches CPU opaque core1971 versus vendor1446 (525 differences); recovered
+      two-pass primitive gives1228/1150 differences. Shader varying change does
+      not fix it. Do not refit established origin23,5 or assume corrupt fonts.
+      Add owned glyph commands/font lifetimes to the worker/broker/UI pipeline
+      only after that contract is established; visible acceptance stays open.
 - [x] Observe original title render graph with owner-opened panel: Surface bounds
       108,5,691,95, retained LineObj23,5 and current ink136..388/31..85; text/
       zero margins/unit glyph ratio verified by local
@@ -336,8 +347,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       font18 height80/viewport90 yields local Y5, accounting for the historical
       vertical delta without moving the box. Full host/focused sanitizers/ARM-
       qemu/native memory-only corpus pass; zero-height title-font fallback tested.
-      UI-TITLE-BOX-2026-11-03. Title default-off; horizontal23px delta, draw
-      controls/ratios/presentation and independent visual acceptance remain open.
+      UI-TITLE-BOX-2026-11-03. Horizontal23px is subsequently closed by
+      FONT-X-OFFSET; title stays default-off. Draw controls/ratios/presentation
+      and independent visual acceptance remain open.
 - [x] Review subsequent UI work through6822fce: scanner extended-field span
       overflow reproduced under ASan/fixed; lab presets now honor ui.edit=1.
       Exact/truncated scanner buffers, invalid/disabled presets, default-off

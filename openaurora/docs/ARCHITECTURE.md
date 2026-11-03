@@ -56,6 +56,15 @@ the full original framebuffer/region/MAU/pan were restored. GPU readback is
 bottom-up premultiplied RGBA; native-window output was independently checked
 as BGRA. Production display services still use the CPU backend.
 
+`oa_scene_gles_render_glyphs` adds an explicit lower glyph API: absolute glyph
+rectangles and borrowed tight coverage masks, validated as a batch, then the
+native font shader and RGBA FBO sampling pass. Its second SRC_ALPHA blend
+attenuates translucent RGB again; do not treat it as single-pass compositing.
+The original RGBA scene API retains its existing contract. UI-FONT-GPU records
+host/sanitizer/native private-pbuffer checks, remaining title pixel differences
+and ownership constraints. Glyph wire commands and UI/font-provider integration
+are pending; no synchronous GL call belongs in the host loop/quiescence gate.
+
 `mod_graphics` now publishes `display.gpu` v1 over the separate EGL-free bootstrap
 and late-loaded renderer. Explicit graphics.broker/graphics.renderer paths are
 required; optional executable/renderer build targets are not a deployment.

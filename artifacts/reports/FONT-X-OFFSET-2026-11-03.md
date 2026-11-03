@@ -91,6 +91,12 @@ staging removed; independent file/executable scan confirms cleanup. Same boot
 Samba OUTPUT REJECT. No drawing/input/device/settings/persistent mutation,
 reboot or service restart; stock operation retained. No helper/job pending.
 
+Follow-up: [UI-FONT-GPU](UI-FONT-GPU-2026-11-03.md) implements/tests the lower
+coverage shader AND FBO composition on real Mali pbuffers. Neither closes this
+pixel gate; matching the native varying declarations also gives no improvement.
+Use that report's remaining route/background/state questions rather than
+repeating a bare glyph-shader or shader-precision experiment.
+
 Next investigate remaining raster/colour/compositing differences and original
 indented/focused text before replacing all captures. The title X assignment and
 normal MODE X discrepancy are closed by this instruction-derived metric rule;

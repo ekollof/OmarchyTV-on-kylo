@@ -1,0 +1,6 @@
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+158724 /tmp/oa-gpu-font-20261103
+1db3bef80d6463598d1c2e1134a3d293  /tmp/oa-gpu-font-20261103
