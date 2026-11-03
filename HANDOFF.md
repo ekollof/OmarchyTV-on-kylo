@@ -35,6 +35,10 @@ were corrected: types 5/6's rebuild fold reads text1 (slot 12), not image1,
 and setScalingType receives the stale isCreated result. No screen/input/
 device/settings/network/service/boot/persistent change; staging removed, no
 helper. Next implement cases 0xa..0xc, then 0x11..0x15 and 0x17..0x19, then
+(getImageId's real mapping and image internals after that). Type 0xa is
+partially mapped in artifacts/analysis/settings-row-render-a-2026-11-03/
+NOTES.md: the uncreated text-box and slider paths are recovered, but the
+created slider branch at 0xd559d0 is not, so nothing was committed.
 getImageId's real mapping and image internals, then row construction/
 visibility/live resources, then scrollbar/skin/module/display/startup/
 independent visible parity.

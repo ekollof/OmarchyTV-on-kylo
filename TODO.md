@@ -321,6 +321,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [ ] Implement SettingItemsListBoxRow::renderItems types 0xa/0xb/0xc.
+      Type 0xa is partially mapped (uncreated text-box and slider paths;
+      created slider branch at 0xd559d0 still unrecovered) in
+      artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing
+      committed: the differential crashed on the un-stubbed created branch.
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x9 (slider row):
       95624 native/C comparisons and prior groups pass; full host/Unix IPC,
       ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-SLIDER.
