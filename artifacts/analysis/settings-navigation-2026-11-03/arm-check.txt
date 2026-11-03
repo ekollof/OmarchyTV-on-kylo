@@ -1,0 +1,1 @@
+ok settings navigation: active-ID cursor wrap/jumps, viewport updates, captured geometry and invalid-read bounds

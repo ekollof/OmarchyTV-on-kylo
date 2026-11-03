@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-tab-policy-sanitize/tests/settings_navigation tests/settings_navigation.c common/settings_navigation.c
+ok settings navigation: active-ID cursor wrap/jumps, viewport updates, captured geometry and invalid-read bounds
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

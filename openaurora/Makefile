@@ -170,6 +170,14 @@ check-settings-input: $(BUILD)/tests/settings_input
 	@$(BUILD)/tests/settings_input
 check: check-settings-input
 
+$(BUILD)/tests/settings_navigation: tests/settings_navigation.c tests/settings_navigation_fixture.h common/settings_navigation.c include/openaurora/settings_navigation.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-settings-navigation
+check-settings-navigation: $(BUILD)/tests/settings_navigation
+	@$(BUILD)/tests/settings_navigation
+check: check-settings-navigation
+
 $(BUILD)/tests/profile: tests/profile.c common/profile.c common/tab_policy.c include/openaurora/profile.h include/openaurora/tab_policy.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
@@ -178,7 +186,7 @@ check-profile: $(BUILD)/tests/profile
 	@$(BUILD)/tests/profile
 check: check-profile
 
-$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c common/profile.c common/tab_events.c common/tab_prehandle.c common/tab_dispatch.c common/tab_leaf.c common/settings_input.c tests/tab_prehandle_fixture.h tests/tab_leaf_fixture.h tests/settings_input_fixture.h include/openaurora/tab_policy.h include/openaurora/profile.h include/openaurora/tab_events.h include/openaurora/tab_prehandle.h include/openaurora/tab_dispatch.h include/openaurora/tab_leaf.h include/openaurora/settings_input.h
+$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c common/profile.c common/tab_events.c common/tab_prehandle.c common/tab_dispatch.c common/tab_leaf.c common/settings_input.c common/settings_navigation.c tests/tab_prehandle_fixture.h tests/tab_leaf_fixture.h tests/settings_input_fixture.h tests/settings_navigation_fixture.h include/openaurora/tab_policy.h include/openaurora/profile.h include/openaurora/tab_events.h include/openaurora/tab_prehandle.h include/openaurora/tab_dispatch.h include/openaurora/tab_leaf.h include/openaurora/settings_input.h include/openaurora/settings_navigation.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 

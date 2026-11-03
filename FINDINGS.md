@@ -6,6 +6,15 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Settings navigation: SETTINGS-NAVIGATION implements d56a24;101384 native ARM
+logical-write/action/state matches plus strict host/sanitizer/ARM and prior
+groups. Active vector holds IDs passed to getItemIndex(int), not SettingItem
+pointers or widget indices. Cursor wrap/first-last jumps precede lookup; viewport
+comparisons are signed32 with wrapping arithmetic. Captured rows survive setter
+changes. Invalid-count/cursor errors are explicit non-parity bounds. Widget
+map/row/underlying SVG and real backend/visible integration remain open; next
+widget bodies are already extracted, with Digit row-presence truth confirmed.
+
 Base settings input: SETTINGS-INPUT implements qualified map and five body
 callbacks;65600 actual ARM map routes and86400 native method traces pass. Don't
 reuse the Tab map:255 versus2bb, Select/paging/parent and menu truth differ.
@@ -14,7 +23,8 @@ the pointer to14d4d52 BLANK, not null/text equality. Preserve prior nonempty tex
 when sentinel skips assignment; test empty after possible assignment. Horizontal
 mirror translates fresh navigation events, ordinary Up/Down retains the original.
 Primary+84 is concrete updateSettings (base pure virtual), not updateDisplay.
-Real navigation/list, parent refresh and owned backend/consumer remain open.
+SETTINGS-NAVIGATION later implements navigation; real list/parent refresh and
+owned backend/consumer remain open.
 
 Tab/settings leaves: TAB-LEAF implements volume/digits/removal and qualified
 base menu/quit/guide.238860 actual ARM cases include shipped signed division.

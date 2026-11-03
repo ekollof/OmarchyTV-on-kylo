@@ -24,7 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-INPUT](artifacts/reports/SETTINGS-INPUT-2026-11-03.md) adds the
+Latest: [SETTINGS-NAVIGATION](artifacts/reports/SETTINGS-NAVIGATION-2026-11-03.md)
+implements navigateInList via callbacks.101384 shipped ARM cases match logical
+cursor/item/row actions and final state, with full host/focused sanitizer/ARM
+and prior groups passing. Active vector holds item IDs, cursor is not a widget
+index; preserve signed viewport comparisons, uint32 wrap and captured geometry.
+Explicit invalid-count/cursor bounds are not native bad-tree parity acceptance.
+Next implement the three widget bodies already saved in
+analysis/settings-navigation-2026-11-03/list-keys.txt. Digit returns row presence;
+vertical Right/Left reads original-row value into the record selected after
+key dispatch. Horizontal mirror uses fresh events. Then resolve lower SVG/row
+and parent-refresh behavior and wire the owned backend/context/consumer with
+permission/modal/focus/lifetime/native-visible gates. No new module/service or
+UI consumer. Native hashes in MEMORY/report. No TV access/wake/deployment or
+pending Ghidra/build/helper job.
+
+Previous: [SETTINGS-INPUT](artifacts/reports/SETTINGS-INPUT-2026-11-03.md) adds the
 concrete base Settings map and five input bodies.65600 native map/matcher cases
 and86400 five-body traces/state/handled cases pass, plus full host, focused
 sanitizer, ARM unit, metadata verifier and prior groups. Map differences from
@@ -32,8 +47,8 @@ TabDialog include255/2bb, Select, paging, qualified parent and menu consumption;
 Mute consumes regardless of lower return. Description sentinel is pointer
 identity to BLANK, not equality/null. Horizontal mirror translates fresh events;
 ordinary navigation forwards the original. Metadata confirms virtual+84 is
-TabDialog::updateSettings; base slot is pure virtual. Next implement
-navigateInList at d56a24 and the list widget's key behavior, then owned backend/
+TabDialog::updateSettings; base slot is pure virtual. SETTINGS-NAVIGATION later
+adds navigateInList; remaining work includes list widget behavior and owned backend/
 runtime context/consumer, retaining parent refresh and native permission/focus/
 modal/lifetime/visible gates. No new service/module or wired UI consumer.
 Hashes in MEMORY/report; evidence: analysis/settings-input-2026-11-03.

@@ -11,6 +11,7 @@
 #include "tab_prehandle_fixture.h"
 #include "tab_leaf_fixture.h"
 #include "settings_input_fixture.h"
+#include "settings_navigation_fixture.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -868,6 +869,74 @@ static void check_settings_input(const unsigned char *elf,size_t bytes)
     native_settings=NULL;for(unsigned i=0;i<9;++i)assert(!munmap(pages[i],lengths[i]));
     printf("ok offline shipped ARM settings input: %u cases, five bodies, dynamic selection/text and original/synthetic action order match\n",compared);
 }
+static struct nav_fixture *native_nav;
+static _Alignas(uint32_t) unsigned char nav_dialog[0x500];
+static uint32_t nav_ids[8],nav_event;
+static unsigned nav_native_index(void *p,int32_t id)
+{
+    assert(p==nav_dialog+0x17c);
+    /* The direct cursor write precedes this source call. Represent it as a
+     * logical action, without patching/intercepting the native store. */
+    uint32_t cursor;memcpy(&cursor,nav_dialog+0x498,4);
+    if(cursor!=native_nav->cursor)nav_run(native_nav,OA_SN_SET_CURSOR,cursor);
+    return nav_query(native_nav,OA_SN_ITEM_INDEX,(uint32_t)id);
+}
+static unsigned nav_native_biggest(void *p)
+{ assert(p==nav_dialog+0x17c);return native_nav->biggest; }
+static unsigned nav_native_rows(void *p)
+{ assert(p==nav_dialog+0x17c);return native_nav->rows; }
+static unsigned nav_native_item(void *p,int32_t item)
+{ assert(p==nav_dialog+0x17c);nav_run(native_nav,OA_SN_SET_ITEM,(uint32_t)item);return UINT32_MAX; }
+static unsigned nav_native_row(void *p,int32_t row)
+{ assert(p==nav_dialog+0x17c);nav_run(native_nav,OA_SN_SET_ROW,(uint32_t)row);return UINT32_MAX; }
+typedef void (*nav_handler)(void *,void *);
+static void compare_navigation(nav_handler native,struct nav_fixture initial,uint32_t key)
+{
+    struct nav_fixture vendor=initial,ours=initial;native_nav=&vendor;nav_event=key;
+    memcpy(nav_ids,initial.ids,sizeof nav_ids);uint32_t pointer=(uint32_t)(uintptr_t)nav_ids;
+    memcpy(nav_dialog+0x48c,&pointer,4);pointer+=initial.count*4;memcpy(nav_dialog+0x490,&pointer,4);
+    memcpy(nav_dialog+0x498,&initial.cursor,4);native(nav_dialog,&nav_event);
+    struct oa_settings_nav_ops ops={&ours,nav_query,nav_run};assert(!oa_settings_navigate(&ops,key));
+    if(vendor.cursor!=ours.cursor || vendor.item!=ours.item || vendor.row!=ours.row || vendor.rows!=ours.rows ||
+       vendor.biggest!=ours.biggest || vendor.actions!=ours.actions) {
+        fprintf(stderr,"navigation mismatch count=%u cursor=%x key=%x index=%x biggest=%x rows=%x actions=%u/%u item=%x/%x row=%x/%x\n",
+                initial.count,initial.cursor,key,initial.indices[0],initial.biggest,initial.rows,vendor.actions,ours.actions,vendor.item,ours.item,vendor.row,ours.row);exit(1);
+    }
+    for(unsigned i=0;i<ours.actions;++i)assert(vendor.trace[i].action==ours.trace[i].action && vendor.trace[i].argument==ours.trace[i].argument);
+}
+static void check_navigation(const unsigned char *elf,size_t bytes)
+{
+    const uint32_t bases[]={0xd56000,0xd50000,0x10bc000,0x1148000};unsigned char *pages[4];
+    for(unsigned i=0;i<4;++i)pages[i]=page(bases[i],4096);
+    size_t off=file_offset(elf,bytes,0xd56a24,312);assert(crc32(elf+off,312)==UINT32_C(0x59f359fd));
+    memcpy(pages[0]+0xa24,elf+off,312);uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(pages[0]+0xb58,&pointer,4);
+    predicate_stub(pages[1],bases[1],0xd50be4,nav_native_index);
+    thumb_stub(pages[2],bases[2],0x10bcd20,nav_native_biggest);thumb_stub(pages[2],bases[2],0x10bc8fc,nav_native_rows);
+    predicate_stub(pages[2],bases[2],0x10bc640,nav_native_item);predicate_stub(pages[2],bases[2],0x10bc878,nav_native_row);
+    thumb_stub(pages[3],bases[3],0x11489e0,settings_key);
+    for(unsigned i=0;i<4;++i)executable(pages[i],4096);
+    nav_handler native;pointer=0xd56a25;memcpy(&native,&pointer,4);
+    const uint32_t keys[]={0x20a,0x20b,0x2db,0x2dc,0,0x20c,0x20e,UINT32_MAX};
+    const uint32_t indices[]={UINT32_MAX,0,1,2,5,9,INT32_MAX,0x80000000};
+    const uint32_t biggest[]={UINT32_MAX,0,2,5,INT32_MAX,0x80000000},rows[]={0,1,2,4,INT32_MAX,0x80000000};unsigned compared=0;
+    for(unsigned count=0;count<7;++count)for(unsigned cursor=0;cursor<(count?count:1);++cursor)
+    for(unsigned k=0;k<8;++k)for(unsigned ix=0;ix<8;++ix)for(unsigned b=0;b<6;++b)for(unsigned r=0;r<6;++r)for(unsigned m=0;m<2;++m) {
+        struct nav_fixture initial=nav_initial();initial.count=count;initial.cursor=count?cursor:UINT32_MAX;
+        initial.biggest=biggest[b];initial.rows=rows[r];initial.mutate=m;
+        for(unsigned i=0;i<8;++i)initial.indices[i]=indices[ix];
+        compare_navigation(native,initial,keys[k]);++compared;
+    }
+    const struct {uint32_t cursor,key;} repair[]={
+        {UINT32_MAX,0x20b},{UINT32_MAX,0x2db},{UINT32_MAX,0x2dc},
+        {0x80000000,0x2db},{0x80000000,0x2dc},{3,0x20a},{3,0x2db},{3,0x2dc}
+    };
+    for(unsigned i=0;i<8;++i) {
+        struct nav_fixture initial=nav_initial();initial.count=3;initial.cursor=repair[i].cursor;initial.biggest=2;initial.rows=3;
+        compare_navigation(native,initial,repair[i].key);++compared;
+    }
+    native_nav=NULL;for(unsigned i=0;i<4;++i)assert(!munmap(pages[i],4096));
+    printf("ok offline shipped ARM settings navigation: %u cases, active-ID wrap/jumps, signed viewport arithmetic and captured geometry match\n",compared);
+}
 int main(int argc,char **argv)
 {
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
@@ -915,7 +984,7 @@ int main(int argc,char **argv)
     }
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
-    check_settings_map(elf,bytes);check_settings_input(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
+    check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
 }

@@ -321,10 +321,16 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement navigateInList active-ID cursor and signed viewport algorithm
+      via owned callbacks.101384 shipped ARM state/action matches, full host,
+      focused sanitizer/ARM and prior groups pass. SETTINGS-NAVIGATION. Widget
+      key bodies/lower SVG/row, parent refresh, owned backend/context/consumer
+      and independent native visible acceptance remain open.
 - [x] Implement concrete qualified SettingsDialog map and Up/Down, Select, Digit,
       Left/Right and Mute callback bodies.65600 shipped map/matcher and86400
       native body cases pass; full host/sanitizer/ARM/metadata and prior groups.
-      SETTINGS-INPUT. Actual navigateInList/list widget, parent refresh, owned
+      SETTINGS-INPUT. SETTINGS-NAVIGATION later adds navigateInList. List widget,
+      parent refresh, owned
       context/backend/consumer and native visible acceptance remain open.
 - [x] Implement six dispatched leaf bodies (Tab volume/digit/removal, qualified
       Settings menu/quit/guide).238860 shipped ARM comparisons include native

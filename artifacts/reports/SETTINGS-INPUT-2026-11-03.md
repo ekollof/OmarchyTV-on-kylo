@@ -1,5 +1,9 @@
 # Base settings dispatch and input bodies — 2026-11-03
 
+Subsequent [SETTINGS-NAVIGATION](SETTINGS-NAVIGATION-2026-11-03.md) implements
+navigateInList and clarifies that its active vector contains item IDs, not
+pointers. The real list widget, parent refresh and owned backend/UI remain open.
+
 `common/settings_input.c` implements the concrete qualified SettingsDialog
 message map plus its Up/Down, Select, Digit, Left/Right and Mute bodies. The
 list widget, navigateInList algorithm, actual UString/layout, mute/audio effects,
@@ -47,7 +51,7 @@ API separates errno from normalized handled0/1, preserving those distinctions.
 
 ## Ordered input bodies
 
-Up/Down uses navigateInList when the active pointer vector is nonempty; otherwise
+Up/Down uses navigateInList when the active item-ID vector is nonempty; otherwise
 it delivers the original event to the list component at this+17c. It then calls
 updateDisplay regardless of the lower result. Select delivers the original
 event to that list and then invokes primary virtual+84. Mute's auxiliary method

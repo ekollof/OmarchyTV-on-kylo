@@ -6,6 +6,17 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-NAVIGATION-2026-11-03: navigateInList callback body passes101384
+shipped ARM state/action comparisons, including signed viewport wrap/captured
+geometry and repaired cursors before read. Full strict host, focused ASan/UBSan,
+ARM unit and all prior reference groups pass. ARM unit28652/
+329ea6b5c147420d8b66e2ea4bd247b1; reference320444/
+b26527ce44cd218d558d24f0ca7da126, build-tv-v3/tab-policy. Active entries are IDs,
+not pointers/widget indices. Count/cursor safety outside valid native domain
+is explicit. No new module/service/UI consumer. Widget keys/lower SVG/row,
+parent refresh, owned backend/context and visible acceptance remain open. No
+TV access/wake/staging/deployment, keys/drawing/settings change or pending job.
+
 SETTINGS-INPUT-2026-11-03: qualified base map/five callback input bodies pass
 65600 shipped map/matcher routes and86400 native method cases. Full strict host,
 focused ASan/UBSan, ARM unit, metadata/token/vtable verifier and prior groups pass.

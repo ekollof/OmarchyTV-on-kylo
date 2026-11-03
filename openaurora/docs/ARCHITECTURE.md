@@ -102,8 +102,16 @@ pending; these are not UI wiring.
 ordered input bodies. SETTINGS-INPUT records65600 native map/matcher routes and
 86400 input-method cases. BLANK-token identity, description fallback, captured
 item index and original versus mirrored/synthetic events stay explicit. Real
-navigateInList/list-key behavior, parent refresh, context/backend and consumer
+list-key behavior, parent refresh, context/backend and consumer
 remain pending; Mute callbacks do not establish actual audio effects.
+
+`common/settings_navigation.c` implements the navigateInList algorithm behind
+the input NAVIGATE action: an active-ID cursor followed by separate signed
+widget-index/viewport calculations. SETTINGS-NAVIGATION records101384 actual
+ARM logical state-write/action matches, including captured geometry across
+setters. Invalid count/cursor safety is distinct from native valid-tree parity.
+Real widget keys/SVG/rows, parent refresh, owned backend/context/consumer and
+independent visible acceptance remain pending; no UI consumer was attached.
 
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;

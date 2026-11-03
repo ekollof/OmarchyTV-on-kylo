@@ -30,3 +30,4 @@ assert.match(result.stdout, /tab dispatch: 65600 type\/id\/result routes, 16384 
 assert.match(result.stdout, /tab leaves: 238860 cases, six bodies and real signed division/);
 assert.match(result.stdout, /settings map: 65600 type\/id\/result cases/);
 assert.match(result.stdout, /settings input: 86400 cases, five bodies/);
+assert.match(result.stdout, /settings navigation: 101384 cases, active-ID wrap\/jumps/);
