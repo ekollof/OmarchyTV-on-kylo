@@ -56,8 +56,9 @@ Verified 2026-11-04, one DIAL key per step with fb1 check after each:
   widths; n=2 available → 378 px), `updateGlyphAndTitle` sets per-tab keys
   (PICTURE/SOUND/NETWORK/INSTALLATION_STR/SYSTEM_STR, PANASONIC-gated) and
   glyphs 0x335/0x336/0x337/0x32f/0x338, `showSubMenu` creates tab 0's
-  `PictureSettingsDialog` (resource 179) — and destroys it immediately if
-  its content-interface +0x18 validity check fails (+0x8 creates content).
+  `PictureSettingsDialog` (resource 179). Correction, TAB-WRITEBACK: content
+  +0x8 is show, +0xc hide, +0x18 isShowing. A false result after show calls
+  hideSubMenu, which checks isShowing again; immediate destruction is unproved.
 - Title +0x140 built by `createComponents` ONLY if the dialog container
   already carries a `dialogTitle` description (`SVGDialog::create` populates
   it via `updateSVGData`; `doModal` runs init, not create — the ordering
@@ -141,7 +142,7 @@ This key-only playbook does not revoke the standing read-only staging permission
    SubLauncher-owned widgets — needs a live widget-identity read or
    SubLauncher tab-machinery decode (none found in its init).
 3. What populates the TabDialog container before createComponents, and whether
-   content validity fails in the observed state. No failed check was observed;
+   content showing check fails in the observed state. No failed check was observed;
    do not infer one from the distinct shortcut screen.
 4. Launcher operation-result to navigator routing for full-list entry. No
    update-trigger conversion of shortcuts into the full list is established.

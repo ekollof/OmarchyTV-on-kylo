@@ -51,9 +51,14 @@ RGBA. The display backend converts RGBA inputs into BGRA framebuffer bytes.
 modal-result map and ordered settings-selection/enqueue plans. Retained fields
 are represented by missing writes, not resets; queue-front is enqueue-only.
 LAUNCHER-ROUTING records full62-entry/28-plan firmware differentials and limits.
-ui_navigation now consumes it through ui.navigation v1 and the nav-* control
+ui_navigation now consumes it through ui.navigation v2 (v1 prefix) and nav-* control
 commands. Its queue stores route IDs with current retained selection read at
-take, not submission. OAN1 encodes state/queued IDs explicitly for reload;
+take, not submission. OAN2 encodes state/queued IDs explicitly for reload and
+accepts legacy OAN1. ui.navigation v2 keeps the v1 prefix and adds independent
+tab/item/submenu setters, exposed as nav-set-tab/nav-set-item/nav-set-submenu.
+They do not enqueue, draw or infer a modal-close action; raw stored tab/item
+bits and submenu bytes survive reload. TAB-WRITEBACK records the firmware
+contract, showing/focus interface correction and compatibility limits;
 native structs are not wire/reload encodings. Runtime/provider/modal gates,
 TabDialog state writeback, production queue pressure behavior and the existing
 captured-screen diagnostic navigation remain to be integrated. See NAVIGATION-

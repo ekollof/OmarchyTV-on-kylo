@@ -1,0 +1,16 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-tab-policy-sanitize/core/check.o core/check.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-tab-policy-sanitize/core/control.o core/control.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-tab-policy-sanitize/core/host.o core/host.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-tab-policy-sanitize/core/module.o core/module.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-tab-policy-sanitize/core/skin.o core/skin.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-tab-policy-sanitize/tests/ui_navigation tests/ui_navigation.c build-tab-policy-sanitize/core/check.o build-tab-policy-sanitize/core/control.o build-tab-policy-sanitize/core/host.o build-tab-policy-sanitize/core/module.o build-tab-policy-sanitize/core/skin.o -ldl -pthread -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-tab-policy-sanitize/modules/mod_ui_navigation.so modules/ui_navigation/ui_navigation.c common/launcher_route.c -fsanitize=address,undefined
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-tab-policy-sanitize/modules/mod_ticker.so modules/ticker/ticker.c -fsanitize=address,undefined \
+   \
+  
+ok navigation: CLI domains/validation, copied current selection at take, retained fields and pending reload
+ok navigation v2: independent setters preserve queue, signed32/raw byte domains, v1 prefix and OAN2 reload/take
+ok navigation: atomic full queue, shutdown gate, standby retention, suspended reload and publication-failure retry
+ok navigation: holds, OAN1 migration/OAN2 validation and1792 raw-state roundtrips, signed retained row and cleanup
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

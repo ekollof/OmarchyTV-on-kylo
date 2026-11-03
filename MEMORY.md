@@ -6,6 +6,18 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+TAB-WRITEBACK-2026-11-03: ui.navigation v2 now exposes independent tab/item/
+raw submenu-byte setters via C/CLI/actual Unix IPC. v1 prefix retained; OAN2
+preserves all raw state and reads OAN1.1792 shipped setter cases/1792 DSO reload
+round-trips, prior corpora, full strict host, focused sanitizer/ARM-qemu DSO
+checks and23-source-module host preflight pass. Native build only mod28936/
+4e0364e286f500720dad7d917422190e/maxGLIBC2.4; test492940/
+d686e6827c8b088e289c56ae9dce3929, build-tv-v3/tab-policy. Corrected picture
+content+18 as isShowing and+8/+c show/hide; immediate destruction after false
+is not proved. Full event/lifecycle/consumer/hardware acceptance remains open.
+No TV access/wake/staging/deployment or installed ABI/recovery change; no job/
+helper pending. Paused/resumed research did not leave a running experiment.
+
 TAB-CONTEXT-2026-11-03: source now builds23 modules. New ui_profile/ui.profile
 v1 snapshots explicit swprofile file and exposes copied immutable connectivity/
 hotel-support facts (exact-one semantics/default0/1). Saved profile both1,

@@ -1,5 +1,10 @@
 # Reloadable settings-navigation service and IPC — 2026-11-03
 
+Subsequent [TAB-WRITEBACK](TAB-WRITEBACK-2026-11-03.md) adds v2 independent
+retained setters and OAN2 raw-state snapshots, keeping the v1 prefix and reading
+legacy OAN1. The v1/OAN1 description below is the original checkpoint, not the
+current service version or a complete content lifecycle contract.
+
 ui_navigation now publishes ui.navigation v1 and exposes its retained state and
 queued settings requests through the existing CLI/Unix control socket. No
 drawing, input/HAL calls, device ownership, worker or telemetry. Host, focused

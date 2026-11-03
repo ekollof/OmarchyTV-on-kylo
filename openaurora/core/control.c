@@ -190,6 +190,9 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  nav-operation <id>       queue a launcher operation ID\n"
                  "  nav-result <signed-id>   queue a completed modal result\n"
                  "  nav-take                 consume one queued navigation request\n"
+                 "  nav-set-tab <signed-id>  set retained tab (no enqueue/draw)\n"
+                 "  nav-set-item <signed-id> set retained item (no enqueue/draw)\n"
+                 "  nav-set-submenu <0-255>  set retained submenu byte only\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -205,16 +208,23 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         return 0;
     }
     if(!strcmp(cmd,"nav-state") || !strcmp(cmd,"nav-operation") ||
-       !strcmp(cmd,"nav-result") || !strcmp(cmd,"nav-take")) {
+       !strcmp(cmd,"nav-result") || !strcmp(cmd,"nav-take") ||
+       !strcmp(cmd,"nav-set-tab") || !strcmp(cmd,"nav-set-item") || !strcmp(cmd,"nav-set-submenu")) {
         int query=!strcmp(cmd,"nav-state"),consume=!strcmp(cmd,"nav-take");
         int op=!strcmp(cmd,"nav-operation"),error=0;
+        int tab=!strcmp(cmd,"nav-set-tab"),item=!strcmp(cmd,"nav-set-item");
+        int submenu=!strcmp(cmd,"nav-set-submenu"),setting=tab || item || submenu;
         uint64_t value=0;int32_t result=0;
         if(a2 || force || ((query || consume)?a1!=NULL:
-           op?(decimal(a1,&value) || value>UINT32_MAX):signed_decimal(a1,&result)))error=EINVAL;
+           (op || submenu)?(decimal(a1,&value) || value>(submenu?255:UINT32_MAX)):signed_decimal(a1,&result)))error=EINVAL;
         else if(!query && (h->shutting_down || h->stop_requested))error=ESHUTDOWN;
         if(error){snprintf(outbuf,outlen,"failed errno %d\n",error);return -1;}
-        const oa_ui_navigation_iface *nav=h->api.lookup(h,OA_SVC_UI_NAVIGATION,1);
-        if(!nav){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        const void *service=h->api.lookup(h,OA_SVC_UI_NAVIGATION,setting?2:1);
+        if(!service) {
+            error=setting && oa_host_service_exists(h,OA_SVC_UI_NAVIGATION)?ENOTSUP:ENODEV;
+            snprintf(outbuf,outlen,"failed errno %d\n",error);return -1;
+        }
+        const oa_ui_navigation_iface *nav=service;
         if(query) {
             oa_ui_navigation_state s;error=nav->state(&s);
             if(!error)snprintf(outbuf,outlen,"tab %" PRIu32 " item %" PRId32
@@ -224,6 +234,10 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
             if(!error)snprintf(outbuf,outlen,"navigation %" PRIu32 " tab %" PRIu32
                 " item %" PRId32 " submenu %" PRIu32 " pending %" PRIu32 "\n",
                 r.navigation,r.selection.tab,r.selection.item,r.selection.open_submenu,r.selection.pending);
+        } else if(setting) {
+            const oa_ui_navigation_iface_v2 *v2=service;
+            error=tab?v2->set_tab(result):item?v2->set_item(result):v2->set_open_submenu((uint8_t)value);
+            if(!error)snprintf(outbuf,outlen,"ok\n");
         } else {
             error=op?nav->operation((uint32_t)value):nav->result(result);
             if(!error)snprintf(outbuf,outlen,"queued\n");

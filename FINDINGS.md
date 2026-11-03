@@ -6,6 +6,16 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Retained mutation: TAB-WRITEBACK adds ui.navigation v2 independent setters,
+preserving the v1 prefix; OAN2 keeps all stored tab/item bits/submenu bytes and
+reads legacy OAN1. Setters do not enqueue/draw/update/focus or infer a close.
+1792 shipped setter cases/1792 DSO snapshot round-trips pass alongside full host,
+sanitizer/ARM/actual Unix IPC. Picture content vptr14e8878 proves+8 show/+c hide/
++18 isShowing/+1c isFocused; old “validity/instant destruction on failure” claims
+are corrected at source. hideSubMenu checks showing; TabDialog destroy handles
+nonnull content and conditionally restores saved open for global search. These
+are separate lifecycle paths, still awaiting the actual UI consumer. No TV access.
+
 Profile context: TAB-CONTEXT resolves DemoApp+314/slot3c to getMenuCapability,
 whose byte9 becomes TabDialog37a0 (record at least11 bytes). Normal source is
 swprofile Config/Connectivity:Connectivity, default0, enabled exactly when1;

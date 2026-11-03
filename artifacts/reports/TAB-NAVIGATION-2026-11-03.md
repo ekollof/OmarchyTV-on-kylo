@@ -62,15 +62,18 @@ updates title/glyph and calls showSubMenu.
 
 It requests focusSubMenu only when open-submenu is nonzero **or signed item>0**.
 That condition is implemented in oa_tab_requests_content_focus; it is not
-permission to focus. Content interface validity (+18), installation password
+permission to focus. Content showing state (+18), installation password
 and network stream/agreement/ordinary privacy gates still apply. Ordinary
 network permissions remain in scope; tracking/advertising do not.
 
 showSubMenu builds distinct picture/sound/network/installation/system content.
 Network additionally checks Wi-Fi availability. Installation/system use other
 per-tab retained menu state, not just the shared settings-item field. Existing
-content is hidden/replaced and failed validity destroys the new content.
-Actual content validity, per-tab state and writeback remain unimplemented.
+content is shown/hidden through interface slots. Correction from
+[TAB-WRITEBACK](TAB-WRITEBACK-2026-11-03.md): +8/+c are show/hide; +18 is
+isShowing, not resource validity. False after show calls hideSubMenu, which
+checks isShowing again; immediate deletion is not established. Actual content
+lifecycle, per-tab state and writeback remain unimplemented.
 
 The old Select/per-type-row list was incorrectly attributed to d6faec.
 The real d700a0 handler forwards focused content Left/Right, handles content

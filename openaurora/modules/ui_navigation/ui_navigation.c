@@ -15,6 +15,8 @@ struct state {
 struct ctx { const oa_host_api *api; struct state state; int published,suspended; };
 static struct ctx *current;
 static int available(void) { return current && current->published?0:ENODEV; }
+static int writable(void)
+{ int error=available();return error?error:current->suspended?EBUSY:0; }
 static void copy_state(oa_ui_navigation_state *out)
 {
     *out=(oa_ui_navigation_state){current->state.tab,current->state.open,
@@ -28,8 +30,7 @@ static int state(oa_ui_navigation_state *out)
 }
 static int result(int32_t value)
 {
-    int error=available();if(error)return error;
-    if(current->suspended)return EBUSY;
+    int error=writable();if(error)return error;
     struct oa_launcher_plan plan;
     error=oa_launcher_settings_plan(value,&plan);if(error)return error;
     if(current->state.count==OA_UI_NAVIGATION_CAPACITY)return ENOSPC;
@@ -54,8 +55,7 @@ static int operation(uint32_t value)
 static int take(oa_ui_navigation_request *out)
 {
     if(!out)return EINVAL;
-    int error=available();if(error)return error;
-    if(current->suspended)return EBUSY;
+    int error=writable();if(error)return error;
     if(!current->state.count)return EAGAIN;
     oa_ui_navigation_request request={0};request.navigation=current->state.messages[0];
     --current->state.count;
@@ -63,7 +63,14 @@ static int take(oa_ui_navigation_request *out)
             current->state.count*sizeof *current->state.messages);
     copy_state(&request.selection);*out=request;return 0;
 }
-static const oa_ui_navigation_iface iface={result,operation,state,take};
+static int set_tab(int32_t value)
+{ int error=writable();if(error)return error;current->state.tab=(uint32_t)value;return 0; }
+static int set_item(int32_t value)
+{ int error=writable();if(error)return error;current->state.item=value;return 0; }
+static int set_open(uint8_t value)
+{ int error=writable();if(error)return error;current->state.open=value;return 0; }
+static const oa_ui_navigation_iface_v2 iface={{result,operation,state,take},set_tab,set_item,set_open};
+_Static_assert(offsetof(oa_ui_navigation_iface_v2,base)==0,"v1 interface prefix");
 static uint32_t get32(const unsigned char *p)
 { return p[0]|(uint32_t)p[1]<<8|(uint32_t)p[2]<<16|(uint32_t)p[3]<<24; }
 static void put32(unsigned char *p,uint32_t n)
@@ -72,7 +79,7 @@ static size_t m_save(void *v,void *buf,size_t cap)
 {
     const struct ctx *c=v;size_t bytes=16+4*c->state.count;
     if(!buf || cap<bytes)return bytes;
-    unsigned char *p=buf;memcpy(p,"OAN1",4);p[4]=(unsigned char)c->state.open;
+    unsigned char *p=buf;memcpy(p,"OAN2",4);p[4]=(unsigned char)c->state.open;
     p[5]=(unsigned char)c->state.count;p[6]=p[7]=0;
     put32(p+8,c->state.tab);put32(p+12,(uint32_t)c->state.item);
     for(uint32_t i=0;i<c->state.count;++i)put32(p+16+4*i,c->state.messages[i]);
@@ -83,8 +90,10 @@ static int m_restore(void *v,const void *buf,size_t len)
     struct ctx *c=v;const unsigned char *p=buf;
     if(c->published)return -1;
     if(!len)return 0;
-    if(!p || len<16 || memcmp(p,"OAN1",4) || p[4]>1 || p[5]>OA_UI_NAVIGATION_CAPACITY ||
-       p[6] || p[7] || get32(p+8)>4 || len!=16u+4u*p[5])return -1;
+    if(!p || len<16)return -1;
+    int legacy=!memcmp(p,"OAN1",4);
+    if((!legacy && memcmp(p,"OAN2",4)) || p[5]>OA_UI_NAVIGATION_CAPACITY ||
+       p[6] || p[7] || len!=16u+4u*p[5] || (legacy && (p[4]>1 || get32(p+8)>4)))return -1;
     struct state next={0};next.open=p[4];next.count=p[5];next.tab=get32(p+8);
     uint32_t item=get32(p+12);
     next.item=(int32_t)((int64_t)item-(item&UINT32_C(0x80000000)?INT64_C(4294967296):0));
@@ -103,7 +112,7 @@ static int m_init(const oa_host_api *api,void **out)
 }
 static int m_start(void *v)
 {
-    struct ctx *c=v;int rc=c->api->publish(c->api->priv,OA_SVC_UI_NAVIGATION,1,&iface);
+    struct ctx *c=v;int rc=c->api->publish(c->api->priv,OA_SVC_UI_NAVIGATION,2,&iface.base);
     if(rc)return rc;
     c->published=1;c->suspended=0;return 0;
 }
@@ -118,7 +127,7 @@ static int m_suspend(void *v) { ((struct ctx *)v)->suspended=1;return 0; }
 static int m_resume(void *v) { ((struct ctx *)v)->suspended=0;return 0; }
 static const oa_module module={
     .magic=OA_MODULE_MAGIC,.abi=OA_ABI_VERSION,.size=sizeof(oa_module),
-    .name="ui_navigation",.version="0.1",.init=m_init,.start=m_start,.stop=m_stop,
+    .name="ui_navigation",.version="0.2",.init=m_init,.start=m_start,.stop=m_stop,
     .destroy=m_destroy,.suspend=m_suspend,.resume=m_resume,.save=m_save,.restore=m_restore,
 };
 OA_MODULE_EXPORT(module)

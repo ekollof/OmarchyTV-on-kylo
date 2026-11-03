@@ -37,7 +37,7 @@ typedef struct { int (*copy)(struct oa_tab_profile *out); } oa_ui_profile_iface;
 #define OA_SVC_UI_NAVIGATION "ui.navigation"
 #define OA_UI_NAVIGATION_CAPACITY 16u
 typedef struct {
-    uint32_t tab,open_submenu,pending;
+    uint32_t tab,open_submenu,pending; /* tab raw32 bits; submenu raw byte0..255 */
     int32_t item;
 } oa_ui_navigation_state;
 typedef struct {
@@ -50,6 +50,18 @@ typedef struct {
     int (*state)(oa_ui_navigation_state *out);
     int (*take)(oa_ui_navigation_request *out);
 } oa_ui_navigation_iface;
+/* ui.navigation v2 retains the exact v1 prefix. These independent retained
+ * setters do NOT enqueue, draw, focus, update a list or infer modal lifecycle.
+ * set_tab/item store all32 bits; set_open_submenu stores one raw byte (ordinary
+ * callers use0/1). Read state/take through base. Validate actual UI IDs0..4
+ * separately before indexing widgets; a stored unknown ID can require fallback.
+ * During suspend setters return EBUSY; other availability/hold rules are v1's. */
+typedef struct {
+    oa_ui_navigation_iface base;
+    int (*set_tab)(int32_t tab);
+    int (*set_item)(int32_t item);
+    int (*set_open_submenu)(uint8_t open);
+} oa_ui_navigation_iface_v2;
 
 /* ui.theme v1 — immutable validated BinSVG snapshot, published by ui_theme.
  * Loop-thread only. Hold lookup(OA_SVC_UI_THEME,1) through every use of ALL

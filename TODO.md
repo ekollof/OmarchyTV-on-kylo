@@ -321,6 +321,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Add ui.navigation v2 independent retained setters, CLI/actual Unix IPC
+      and OAN2 raw-state snapshots with OAN1 migration.1792 shipped setter
+      cases and1792 DSO round-trips pass host/sanitizer/ARM-qemu. TAB-WRITEBACK.
+      +18 isShowing/+8 show/+c hide correction is firmware-verified; per-event
+      content/focus/modal writeback and the queue/UI consumer remain open.
 - [x] Recover menu-capability byte9 ->connectivity flag and software profile
       paths/defaults. Bounded scalar decoder and reloadable ui.profile v1
       supply immutable copied facts;65281 shipped hashes/27 lookups and DSO

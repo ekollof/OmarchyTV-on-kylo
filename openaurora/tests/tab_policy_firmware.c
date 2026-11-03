@@ -93,6 +93,41 @@ static unsigned char *read_regular(const char *path,size_t *size)
     *size=(size_t)st.st_size;unsigned char *data=malloc(*size);assert(data);
     assert(fread(data,1,*size,f)==*size && !fclose(f));return data;
 }
+static void check_retained_setters(const unsigned char *elf,size_t bytes)
+{
+    const struct {uint32_t address,length,crc,literal;} fragments[]={
+        {0xccca0c,56,UINT32_C(0x6fea0252),0xccca40},
+        {0xccca44,52,UINT32_C(0x5e86d1a0),0xccca74},
+        {0xcccaac,52,UINT32_C(0x6b0e9511),0xcccadc},
+    };
+    unsigned char *mapped=page(0xccc000,4096);
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;
+    for(size_t i=0;i<sizeof fragments/sizeof *fragments;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(mapped+fragments[i].address-0xccc000,elf+off,fragments[i].length);
+        memcpy(mapped+fragments[i].literal-0xccc000,&pointer,4);
+    }
+    executable(mapped,4096);
+    typedef void (*setter)(void *,uint32_t);
+    setter open,item,tab;
+    pointer=0xccca0d;memcpy(&open,&pointer,sizeof open);
+    pointer=0xccca45;memcpy(&item,&pointer,sizeof item);
+    pointer=0xcccaad;memcpy(&tab,&pointer,sizeof tab);
+    const uint32_t values[]={0,1,4,5,UINT32_C(0x80000000),INT32_MAX,UINT32_MAX};
+    _Alignas(uint32_t) unsigned char demo[0x125c],expected[0x125c];unsigned compared=0;
+    for(size_t i=0;i<sizeof values/sizeof *values;++i)for(unsigned raw=0;raw<256;++raw) {
+        memset(demo,0xa5,sizeof demo);memset(expected,0xa5,sizeof expected);
+        for(unsigned j=0;j<4;++j)expected[0xfd8+j]=(unsigned char)(values[i]>>(8*j));
+        tab(demo,values[i]);assert(!memcmp(demo,expected,sizeof demo));
+        for(unsigned j=0;j<4;++j)expected[0xfd0+j]=(unsigned char)(~values[i]>>(8*j));
+        item(demo,~values[i]);assert(!memcmp(demo,expected,sizeof demo));
+        expected[0x1259]=(unsigned char)raw;
+        open(demo,raw);assert(!memcmp(demo,expected,sizeof demo));++compared;
+    }
+    assert(!munmap(mapped,4096));
+    printf("ok offline shipped ARM retained setters: %u signed32/raw byte cases, exact fields and surrounding bytes preserved\n",compared);
+}
 static void check_profile(const unsigned char *elf,size_t bytes,const char *path)
 {
     const struct {uint32_t address,length,crc,guard_literal;} fragments[]={
@@ -227,7 +262,7 @@ int main(int argc,char **argv)
     const uint32_t arm[3]={UINT32_C(0xe59fc000),UINT32_C(0xe12fff1c),bits(failed)};
     memcpy((unsigned char *)fail_page+0x740,arm,sizeof arm);
     executable(code,8192);executable(media_page,4096);executable(app_page,4096);executable(fail_page,4096);
-    check_selection(elf,bytes);check_profile(elf,bytes,argv[2]);free(elf);
+    check_selection(elf,bytes);check_profile(elf,bytes,argv[2]);check_retained_setters(elf,bytes);free(elf);
     _Alignas(uint32_t) unsigned char dialog[0x37a1]={0},demo[0x29c]={0};
     uint32_t vtable[21]={0};vtable[0x18/4]=bits(hotel);vtable[0x40/4]=bits(mode);vtable[0x50/4]=bits(picture);
     uint32_t hotel_object=(uint32_t)(uintptr_t)vtable;

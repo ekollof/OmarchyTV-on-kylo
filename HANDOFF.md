@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [TAB-CONTEXT](artifacts/reports/TAB-CONTEXT-2026-11-03.md) resolves
+Latest: [TAB-WRITEBACK](artifacts/reports/TAB-WRITEBACK-2026-11-03.md) adds
+ui.navigation v2 independent setters + nav-set-tab/item/submenu through actual
+Unix IPC. No enqueue/draw/focus/update is implied. v1 prefix remains; OAN2 raw
+state saves read legacy OAN1.1792 shipped setter cases/1792 DSO round-trips,
+prior corpora, full host, focused sanitizer/ARM and23-module host loader pass.
+Native identities in MEMORY/report, no TV access/wake/deployment/jobs/helpers.
+Critical correction: Picture content+18 isShowing, +8/+c show/hide. hideSubMenu
+checks showing again; old immediate-destruction/resource-validity claim is wrong.
+Content interface slots/extrema names and destroy/up-down ordering are now
+documented; do not implement a generic save-selection-on-close action. Next
+integrate the verified per-event state changes with mutable context/content/
+permission/key handling and held ui.profile; no automatic queue consumer or
+visible parity is claimed. Analysis/reproduction: tab-writeback-2026-11-03.
+
+Previous: [TAB-CONTEXT](artifacts/reports/TAB-CONTEXT-2026-11-03.md) resolves
 network tab37a0 to menu-capability byte9, sourced from software-profile
 connectivity==1. common/profile and reloadable ui_profile/ui.profile v1 now
 provide copied immutable connectivity/hotel-support facts with firmware defaults.

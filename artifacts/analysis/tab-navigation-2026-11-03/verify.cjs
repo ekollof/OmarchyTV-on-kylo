@@ -22,3 +22,4 @@ assert.equal(result.status, 0, `reference failed (77 means address unavailable),
 assert.match(result.stdout, /884736 comparisons/);
 assert.match(result.stdout, /group selection: 9216 availability\/description\/request cases/);
 assert.match(result.stdout, /profile: 65281 signed-byte hashes, 27 saved-profile lookups\/defaults; connectivity=1 hotel=1/);
+assert.match(result.stdout, /retained setters: 1792 signed32\/raw byte cases/);
