@@ -32,10 +32,11 @@ EINVAL. Construction/rendering internals stay open.
 
 ## Still open
 
-Row getters and editing, parent refresh, scrollbar construction/position
-bodies (create target, renderBackground/renderBar internals),
+Subsequent [SVG-LIST-UPDATE](SVG-LIST-UPDATE-2026-11-03.md) implements the
+row-view getters and full refresh. Widget-level row getters and editing,
+parent refresh, scrollbar construction/rendering internals,
 startSelectAnimation, and the owned backend/context/consumer with
-permission/modal/focus/lifetime/visible gates. Bodies are not actual
-widget/rendering acceptance, and no visible parity is claimed.
+permission/modal/focus/lifetime/visible gates remain open. Bodies are not
+actual widget/rendering acceptance, and no visible parity is claimed.
 
 Evidence and reproduction: artifacts/analysis/svg-list-scrollbar-2026-11-03/.

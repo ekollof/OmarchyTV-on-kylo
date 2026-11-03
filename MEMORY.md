@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-UPDATE-2026-11-03: row-view getters and the full refresh pass100+20
+native/C comparisons with exact call order/args and resulting list state,
+plus full strict host, focused ASan/UBSan, ARM/qemu and all previous
+reference groups. ARM unit37116/18e9b7c333c0b3453fb5d7d067a3eff1;
+reference637612/44c48cac483ec8c83886d682760c8e7d, build-tv-v3/tab-policy.
+Slot arithmetic, wrapping last-visible, item bounds/handles, the virtual
+total, the stored count word and the refresh operand order are asserted.
+The differential fixed a volatile-call harness rule for entry-point calls.
+No new module/service/UI consumer. Widget-level row getters/editing, parent
+refresh, scrollbar construction/rendering internals, startSelectAnimation,
+owned backend/context and visible acceptance stay open. No TV access/wake/
+staging/deployment or hardware mutation; no pending job/helper.
+
 SVG-LIST-SCROLLBAR-2026-11-03: scrollbar create forward and setScrollPosition
 gating/store/show pass294 native/C comparisons, plus full strict host,
 focused ASan/UBSan, ARM/qemu and all previous reference groups. ARM unit

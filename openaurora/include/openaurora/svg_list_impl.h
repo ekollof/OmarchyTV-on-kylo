@@ -34,11 +34,11 @@ struct oa_svg_list_impl_ops {
     void (*store_first)(void *,uint32_t);
     void (*store_size)(void *,uint32_t);
     void (*store_selected)(void *,uint32_t);
-    int (*row_visible)(void *,void *row);
-    void (*row_set_focus)(void *,void *row,int focused);
-    void (*row_set_visible)(void *,void *row,int visible);
-    void (*row_rect)(void *,void *row,uint32_t rect[4]);
-    void (*row_set_position)(void *,void *row,uint32_t x,uint32_t y);
+    int (*row_visible)(void *row);
+    void (*row_set_focus)(void *row,int focused);
+    void (*row_set_visible)(void *row,int visible);
+    void (*row_rect)(void *row,uint32_t rect[4]);
+    void (*row_set_position)(void *row,uint32_t x,uint32_t y);
     int (*owner_empty_message)(void *,void *owner);
     void (*owner_draw_row)(void *,void *owner,uint32_t index,void *row);
     void (*owner_draw_empty_row)(void *,void *owner,void *row);

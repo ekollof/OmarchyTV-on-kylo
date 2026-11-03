@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG list update: SVG-LIST-UPDATE implements the row-view getters
+(total/last/item) and the full refresh; 100+20 native/C comparisons pass.
+Total is slots, last wraps, item bounds-checks; update stores the virtual
+total then refreshes window/scrollbar/animation in order. Entry-point calls
+in this harness go through a volatile pointer (direct memcpy-init calls
+miscompile at -O2). Widget getters/editing/parent/construction/animation/
+backend/visible gates remain open.
+
 SVG list scrollbar: SVG-LIST-SCROLLBAR implements create (thin forward) and
 setScrollPosition (gate/store/show); 294 native/C comparisons pass. Create
 forwards unchanged; setScrollPosition stores only when created and signed

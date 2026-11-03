@@ -1,0 +1,2 @@
+ok offline shipped ARM SVG list rowview: 100 native/C comparisons, total/last-visible/item-row match
+ok offline shipped ARM SVG list update: 20 native/C comparisons, total/store/refresh order match

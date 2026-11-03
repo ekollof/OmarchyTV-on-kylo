@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+make: 'build-tv-v3/tab-policy/tests/svg_list_update' is up to date.
+make: 'build-tv-v3/tab-policy/tests/tab_policy_firmware' is up to date.
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

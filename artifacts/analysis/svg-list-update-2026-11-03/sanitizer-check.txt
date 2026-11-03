@@ -1,0 +1,3 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+ok SVG list rows/update: total/last-visible/item-row bounds and full refresh order
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

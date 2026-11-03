@@ -248,7 +248,15 @@ check-svg-list-scrollbar: $(BUILD)/tests/svg_list_scrollbar
 	@$(BUILD)/tests/svg_list_scrollbar
 check: check-svg-list-scrollbar
 
-$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c common/profile.c common/tab_events.c common/tab_prehandle.c common/tab_dispatch.c common/tab_leaf.c common/settings_input.c common/settings_navigation.c common/settings_list_input.c common/svg_list_input.c common/svg_list_bodies.c common/svg_list_move.c common/svg_list_rows.c common/svg_list_scroll.c common/svg_list_impl.c common/svg_list_scrollbar.c tests/tab_prehandle_fixture.h tests/tab_leaf_fixture.h tests/settings_input_fixture.h tests/settings_navigation_fixture.h tests/settings_list_fixture.h include/openaurora/tab_policy.h include/openaurora/profile.h include/openaurora/tab_events.h include/openaurora/tab_prehandle.h include/openaurora/tab_dispatch.h include/openaurora/tab_leaf.h include/openaurora/settings_input.h include/openaurora/settings_navigation.h include/openaurora/settings_list_input.h include/openaurora/svg_list_input.h include/openaurora/svg_list_bodies.h include/openaurora/svg_list_move.h include/openaurora/svg_list_rows.h include/openaurora/svg_list_scroll.h include/openaurora/svg_list_impl.h include/openaurora/svg_list_scrollbar.h
+$(BUILD)/tests/svg_list_update: tests/svg_list_update.c common/svg_list_rows.c common/svg_list_update.c include/openaurora/svg_list_rows.h include/openaurora/svg_list_update.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-svg-list-update
+check-svg-list-update: $(BUILD)/tests/svg_list_update
+	@$(BUILD)/tests/svg_list_update
+check: check-svg-list-update
+
+$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c common/profile.c common/tab_events.c common/tab_prehandle.c common/tab_dispatch.c common/tab_leaf.c common/settings_input.c common/settings_navigation.c common/settings_list_input.c common/svg_list_input.c common/svg_list_bodies.c common/svg_list_move.c common/svg_list_rows.c common/svg_list_scroll.c common/svg_list_impl.c common/svg_list_scrollbar.c common/svg_list_update.c tests/tab_prehandle_fixture.h tests/tab_leaf_fixture.h tests/settings_input_fixture.h tests/settings_navigation_fixture.h tests/settings_list_fixture.h include/openaurora/tab_policy.h include/openaurora/profile.h include/openaurora/tab_events.h include/openaurora/tab_prehandle.h include/openaurora/tab_dispatch.h include/openaurora/tab_leaf.h include/openaurora/settings_input.h include/openaurora/settings_navigation.h include/openaurora/settings_list_input.h include/openaurora/svg_list_input.h include/openaurora/svg_list_bodies.h include/openaurora/svg_list_move.h include/openaurora/svg_list_rows.h include/openaurora/svg_list_scroll.h include/openaurora/svg_list_impl.h include/openaurora/svg_list_scrollbar.h include/openaurora/svg_list_update.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 

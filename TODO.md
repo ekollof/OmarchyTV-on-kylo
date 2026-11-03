@@ -321,6 +321,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement the row-view getters and full list refresh (total/last/item
+      bounds, virtual total, stored count, refresh order); 100+20 native/C
+      comparisons plus full host/focused sanitizer/ARM and prior groups pass.
+      SVG-LIST-UPDATE. Widget-level row getters/editing, parent refresh,
+      scrollbar construction/rendering internals, startSelectAnimation, owned
+      backend/context and independent native visible acceptance remain open.
 - [x] Implement the list scrollbar bodies (create forward, signed setpos gate,
       conditional background, bar draw); 294 native/C comparisons plus full
       host/focused sanitizer/ARM and prior groups pass. SVG-LIST-SCROLLBAR.

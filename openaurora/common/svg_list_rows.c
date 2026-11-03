@@ -4,7 +4,7 @@
 static int ready(const struct oa_svg_list_manager_ops *o)
 {
     if(!o || !o->first || !o->size || !o->selected_rel || !o->row_at || !o->row_focus ||
-       !o->store_selected || !o->update_impl)return EINVAL;
+       !o->store_selected || !o->update_impl || !o->slots)return EINVAL;
     return 0;
 }
 static int bad(int *error) { if(error)*error=EINVAL;return 0; }
@@ -51,4 +51,31 @@ int oa_svg_list_manager_update_partial(const struct oa_svg_list_manager_ops *o,u
 {
     if(ready(o))return EINVAL;
     o->update_impl(o->context,index,0);return 0;
+}
+uint32_t oa_svg_list_manager_total_rows(const struct oa_svg_list_manager_ops *o,int *error)
+{
+    if(ready(o))return (uint32_t)bad(error);
+    if(error)*error=0;
+    return o->slots(o->context);
+}
+uint32_t oa_svg_list_manager_last_visible(const struct oa_svg_list_manager_ops *o,int *error)
+{
+    uint32_t first,size;
+    if(ready(o))return (uint32_t)bad(error);
+    if(error)*error=0;
+    first=o->first(o->context);
+    size=o->size(o->context);
+    return first+size-1u;
+}
+void *oa_svg_list_manager_item_row(const struct oa_svg_list_manager_ops *o,uint32_t index,int *error)
+{
+    uint32_t first,rel,size;
+    if(ready(o)) { if(error)*error=EINVAL;return NULL; }
+    if(error)*error=0;
+    first=o->first(o->context);
+    if(index<first)return NULL;
+    rel=index-first;
+    size=o->size(o->context);
+    if(rel>=size)return NULL;
+    return o->row_at(o->context,rel);
 }

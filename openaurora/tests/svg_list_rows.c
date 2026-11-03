@@ -19,8 +19,9 @@ static void row_focus_rec(void *row,int focused)
 { emit(current,T_FOCUS,(uint32_t)(uintptr_t)row,focused); }
 static void e_store(void *p,uint32_t rel) { struct fixture *f=p;emit(f,T_STORE,rel,0);f->selected=rel; }
 static void e_impl(void *p,uint32_t index,int full) { struct fixture *f=p;emit(f,T_IMPL,index,full);f->impl_index=index;f->impl_full=full; }
+static uint32_t q_slots(void *p) { (void)p;return 16; }
 static struct oa_svg_list_manager_ops ops_for(struct fixture *f)
-{ return (struct oa_svg_list_manager_ops){f,q_first,q_size,q_sel,q_row,row_focus_rec,e_store,e_impl}; }
+{ return (struct oa_svg_list_manager_ops){f,q_first,q_size,q_sel,q_row,row_focus_rec,e_store,e_impl,q_slots}; }
 int main(void)
 {
     int error=42;struct fixture f={0};struct oa_svg_list_manager_ops ops=ops_for(&f);current=&f;

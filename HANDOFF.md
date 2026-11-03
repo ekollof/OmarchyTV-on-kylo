@@ -24,19 +24,33 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SVG-LIST-SCROLLBAR](artifacts/reports/SVG-LIST-SCROLLBAR-2026-11-03.md)
+Latest: [SVG-LIST-UPDATE](artifacts/reports/SVG-LIST-UPDATE-2026-11-03.md)
+implements the RowManager row-view getters and the SVGListBoxBase full
+refresh. 100+20 native/C comparisons pass with exact call order/args and
+resulting list state, plus full strict host/focused sanitizer/ARM and every
+prior group. Total is slot arithmetic, last-visible wraps, item-row
+bounds-checks; update stores the virtual total then refreshes window,
+scrollbar and animation in order. No new service/module/UI consumer, TV
+access/wake/staging/deployment or pending job. Hashes in MEMORY/report. Next
+implement widget-level row getters and editing, parent refresh, scrollbar
+construction/rendering internals, startSelectAnimation, and the owned
+backend/context/consumer with permission/modal/focus/lifetime/visible
+gates, then demonstrate reloadable modules via IPC/socket/CLI. Bodies are
+not actual widget/rendering acceptance.
+
+Previous: [SVG-LIST-SCROLLBAR](artifacts/reports/SVG-LIST-SCROLLBAR-2026-11-03.md)
 implements scrollbar create-forward and setScrollPosition gating/store/show.
 294 native/C comparisons pass with exact call order/args and resulting bar
 state, plus full strict host/focused sanitizer/ARM and every prior group.
 Create forwards unchanged; setScrollPosition stores only when created and
 signed first stays within signed vis, draws the background only with a clear
 +0xc8 byte, then always draws the bar. No new service/module/UI consumer, TV
-access/wake/staging/deployment or pending job. Hashes in MEMORY/report. Next
-implement row getters and editing, parent refresh, scrollbar construction/
-rendering internals, startSelectAnimation, and the owned backend/context/
-consumer with permission/modal/focus/lifetime/visible gates, then demonstrate
-reloadable modules via IPC/socket/CLI. Bodies are not actual widget/rendering
-acceptance.
+access/wake/staging/deployment or pending job. Hashes in MEMORY/report.
+SVG-LIST-UPDATE implements the row-view getters and full refresh;
+widget-level getters/editing, parent refresh, scrollbar construction/
+rendering internals, startSelectAnimation and the owned backend/consumer
+remain open, then the reloadable-module demonstration. Bodies are not actual
+widget/rendering acceptance.
 
 Previous: [SVG-LIST-IMPL](artifacts/reports/SVG-LIST-IMPL-2026-11-03.md)
 implements updateImpl and rotateRows, the state core behind every list

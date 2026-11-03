@@ -32,12 +32,12 @@ int oa_svg_list_manager_rotate_rows(const struct oa_svg_list_impl_ops *o,int32_t
         uint32_t i=field,j=(uint32_t)((int64_t)delta+(int64_t)i);
         void *ri=o->row_at(ctx,i),*rj=o->row_at(ctx,j);
         uint32_t tmpa[4],tmpb[4];
-        o->row_rect(ctx,ri,tmpa);
+        o->row_rect(ri,tmpa);
         o->store_row(ctx,i,rj);
         o->store_row(ctx,j,ri);
-        o->row_rect(ctx,o->row_at(ctx,i),tmpb);
-        o->row_set_position(ctx,ri,tmpb[0],tmpb[1]);
-        o->row_set_position(ctx,o->row_at(ctx,i),tmpa[0],tmpa[1]);
+        o->row_rect(o->row_at(ctx,i),tmpb);
+        o->row_set_position(ri,tmpb[0],tmpb[1]);
+        o->row_set_position(o->row_at(ctx,i),tmpa[0],tmpa[1]);
         field=(uint32_t)((int64_t)field+step);
     }
     return 0;
@@ -58,7 +58,7 @@ int oa_svg_list_manager_update_impl(const struct oa_svg_list_impl_ops *o,uint32_
         start=(cap>=t)?index:cap-slots;
     }
     sel=o->selected_rel(ctx);
-    if(sel<slots)o->row_set_focus(ctx,o->row_at(ctx,sel),0);
+    if(sel<slots)o->row_set_focus(o->row_at(ctx,sel),0);
     /* Wrapping subtract matches the shipped subs; gcc documents the same wrap
      * on conversion, mirroring the register value exactly. */
     if(!full)oa_svg_list_manager_rotate_rows(o,(int32_t)(start-o->first(ctx)));
@@ -67,7 +67,7 @@ int oa_svg_list_manager_update_impl(const struct oa_svg_list_impl_ops *o,uint32_
     while(r5!=nvis) {
         if(o->size(ctx)<nvis) {
             void *rr=o->row_at(ctx,r5);
-            if(!o->row_visible(ctx,rr))o->row_set_visible(ctx,o->row_at(ctx,r5),1);
+            if(!o->row_visible(rr))o->row_set_visible(o->row_at(ctx,r5),1);
         }
         {
             uint32_t first=o->first(ctx),item=start+r5;
@@ -84,7 +84,7 @@ int oa_svg_list_manager_update_impl(const struct oa_svg_list_impl_ops *o,uint32_
             if(r9>=slots)break;
             if(r5<o->size(ctx)) {
                 void *rr=o->row_at(ctx,r9);
-                if(o->row_visible(ctx,rr))o->row_set_visible(ctx,o->row_at(ctx,r9),0);
+                if(o->row_visible(rr))o->row_set_visible(o->row_at(ctx,r9),0);
             }
             ++r9;
         }
@@ -96,7 +96,7 @@ int oa_svg_list_manager_update_impl(const struct oa_svg_list_impl_ops *o,uint32_
         o->store_selected(ctx,0);
         own=o->owner(ctx);
         if(o->owner_empty_message(ctx,own) && slots!=0) {
-            o->row_set_visible(ctx,o->row_at(ctx,0),1);
+            o->row_set_visible(o->row_at(ctx,0),1);
             o->owner_draw_empty_row(ctx,o->owner(ctx),o->row_at(ctx,0));
         }
     } else {
@@ -105,7 +105,7 @@ int oa_svg_list_manager_update_impl(const struct oa_svg_list_impl_ops *o,uint32_
         own=o->owner(ctx);
         if(o->owner_got_focus(ctx,own)) {
             uint32_t fs=o->selected_rel(ctx);
-            o->row_set_focus(ctx,o->row_at(ctx,fs),1);
+            o->row_set_focus(o->row_at(ctx,fs),1);
         }
     }
     return 0;

@@ -20,6 +20,7 @@
 #include "openaurora/svg_list_scroll.h"
 #include "openaurora/svg_list_impl.h"
 #include "openaurora/svg_list_scrollbar.h"
+#include "openaurora/svg_list_update.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -1272,6 +1273,7 @@ enum {R_FOCUS=1,R_IMPL=2};
 static uint32_t rows_q_first(void *p) { return ((struct rows_fixture *)p)->first; }
 static uint32_t rows_q_size(void *p) { return ((struct rows_fixture *)p)->size; }
 static uint32_t rows_q_sel(void *p) { return ((struct rows_fixture *)p)->selected; }
+static uint32_t rows_q_slots(void *p) { (void)p;return 16; }
 static void *rows_q_row(void *p,uint32_t rel) { (void)p;return (void *)(uintptr_t)rel; }
 static struct rows_fixture *ref_rows;
 static void rows_e_focus(void *row,int focused) { rows_emit(ref_rows,R_FOCUS,(uint32_t)(uintptr_t)row,focused); }
@@ -1462,7 +1464,7 @@ static void compare_rows_focus(focus_fn native,int (*ours)(const struct oa_svg_l
     struct rows_fixture initial,uint32_t index)
 {
     struct rows_fixture vendor=initial,ref=initial;struct oa_svg_list_manager_ops ops={&ref,rows_q_first,rows_q_size,
-        rows_q_sel,rows_q_row,rows_e_focus,rows_e_store,rows_e_impl};
+        rows_q_sel,rows_q_row,rows_e_focus,rows_e_store,rows_e_impl,rows_q_slots};
     memcpy(mgr_obj+12,&vendor.first,4);memcpy(mgr_obj+16,&vendor.size,4);memcpy(mgr_obj+20,&vendor.selected,4);
     native_rows=&vendor;ref_rows=&ref;native(mgr_obj,index);
     assert(!ours(&ops,index));
@@ -1517,7 +1519,7 @@ static void check_svg_rows(const unsigned char *elf,size_t bytes)
     for(unsigned a=0;a<3;++a)for(unsigned s=0;s<4;++s)for(unsigned m=0;m<3;++m) {
         struct rows_fixture initial={.first=firsts[a],.size=sizes[s],.selected=sels[m]};
         struct rows_fixture vendor=initial,ref=initial;struct oa_svg_list_manager_ops ops={&ref,rows_q_first,
-            rows_q_size,rows_q_sel,rows_q_row,rows_e_focus,rows_e_store,rows_e_impl};
+            rows_q_size,rows_q_sel,rows_q_row,rows_e_focus,rows_e_store,rows_e_impl,rows_q_slots};
         memcpy(mgr_obj+12,&vendor.first,4);memcpy(mgr_obj+16,&vendor.size,4);memcpy(mgr_obj+20,&vendor.selected,4);
         int e1=0,e2=0,e3=0,e4=0;
         unsigned vsize=native[1](mgr_obj),vrow=native[2](mgr_obj);
@@ -1658,12 +1660,13 @@ static void *impl_q_owner(void *p) { (void)p;return (void *)(uintptr_t)0x99aa; }
 static void impl_s_first(void *p,uint32_t v) { ((struct impl_fixture *)p)->first=v; }
 static void impl_s_size(void *p,uint32_t v) { ((struct impl_fixture *)p)->size=v; }
 static void impl_s_sel(void *p,uint32_t v) { ((struct impl_fixture *)p)->selected=v; }
-static int impl_q_vis(void *p,void *row) { struct impl_fixture *f=p;impl_emit(f,R_IS_VISIBLE,(uint32_t)(uintptr_t)row,0,0);return f->rowvis[(uintptr_t)row]; }
-static void impl_e_focus(void *p,void *row,int v) { struct impl_fixture *f=p;impl_emit(f,R_SET_FOCUS,(uint32_t)(uintptr_t)row,(uint32_t)v,0); }
-static void impl_e_show(void *p,void *row,int v) { struct impl_fixture *f=p;impl_emit(f,R_SET_VISIBLE,(uint32_t)(uintptr_t)row,(uint32_t)v,0); }
-static void impl_e_rect(void *p,void *row,uint32_t r[4]) { struct impl_fixture *f=p;uint32_t i=(uint32_t)(uintptr_t)row;
-    r[0]=f->rowrect[i][0];r[1]=f->rowrect[i][1];r[2]=f->rowrect[i][2];r[3]=f->rowrect[i][3];impl_emit(f,R_GET_RECT,i,0,0); }
-static void impl_e_pos(void *p,void *row,uint32_t x,uint32_t y) { struct impl_fixture *f=p;impl_emit(f,R_SET_POS,(uint32_t)(uintptr_t)row,x,y); }
+static struct impl_fixture *ref_impl;
+static int impl_q_vis(void *row) { impl_emit(ref_impl,R_IS_VISIBLE,(uint32_t)(uintptr_t)row,0,0);return ref_impl->rowvis[(uintptr_t)row]; }
+static void impl_e_focus(void *row,int v) { impl_emit(ref_impl,R_SET_FOCUS,(uint32_t)(uintptr_t)row,(uint32_t)v,0); }
+static void impl_e_show(void *row,int v) { impl_emit(ref_impl,R_SET_VISIBLE,(uint32_t)(uintptr_t)row,(uint32_t)v,0); }
+static void impl_e_rect(void *row,uint32_t r[4]) { uint32_t i=(uint32_t)(uintptr_t)row;
+    r[0]=ref_impl->rowrect[i][0];r[1]=ref_impl->rowrect[i][1];r[2]=ref_impl->rowrect[i][2];r[3]=ref_impl->rowrect[i][3];impl_emit(ref_impl,R_GET_RECT,i,0,0); }
+static void impl_e_pos(void *row,uint32_t x,uint32_t y) { impl_emit(ref_impl,R_SET_POS,(uint32_t)(uintptr_t)row,x,y); }
 static int impl_q_empty(void *p,void *o) { struct impl_fixture *f=p;(void)o;impl_emit(f,R_EMPTY_MSG,0,0,0);return f->empty_message; }
 static void impl_e_draw(void *p,void *o,uint32_t i,void *row) { struct impl_fixture *f=p;(void)o;impl_emit(f,R_DRAW,i,(uint32_t)(uintptr_t)row,0); }
 static void impl_e_drow(void *p,void *o,void *row) { struct impl_fixture *f=p;(void)o;impl_emit(f,R_DRAW_EMPTY,(uint32_t)(uintptr_t)row,0,0); }
@@ -1698,7 +1701,7 @@ static void compare_rotate(rotate_fn native,int (*ours)(const struct oa_svg_list
     uint32_t array=(uint32_t)(uintptr_t)impl_ptrarray;memcpy(impl_mgr+28,&array,4);
     uint32_t end=array+16u*4u;memcpy(impl_mgr+32,&end,4);
     uint32_t owner=(uint32_t)(uintptr_t)impl_owner;memcpy(impl_mgr+4,&owner,4);
-    native_impl=&vendor;
+    native_impl=&vendor;ref_impl=&ref;
     native(impl_mgr,delta);
     assert(!ours(&ops,delta));
     compare_impl_traces(&vendor,&ref,1,0);
@@ -1718,7 +1721,7 @@ static void compare_impl(impl_fn native,int (*ours)(const struct oa_svg_list_imp
     uint32_t array=(uint32_t)(uintptr_t)impl_ptrarray;memcpy(impl_mgr+28,&array,4);
     uint32_t end=array+16u*4u;memcpy(impl_mgr+32,&end,4);
     uint32_t owner=(uint32_t)(uintptr_t)impl_owner;memcpy(impl_mgr+4,&owner,4);
-    native_impl=&vendor;
+    native_impl=&vendor;ref_impl=&ref;
     native(impl_mgr,index,full);
     assert(!ours(&ops,index,full));
     if(vendor.count!=ref.count) {
@@ -1891,6 +1894,180 @@ static void check_svg_scrollbar(const unsigned char *elf,size_t bytes)
         printf("ok offline shipped ARM SVG list scrollbar bodies: %u native/C comparisons, create forward and setpos gating/store/show match\n",compared);
     }
 }
+enum {U_TOTAL,U_STORE,U_FIRST,U_FULL,U_SCROLL,U_ANIM};
+struct update_fixture {
+    uint32_t total,aux,first,nrows;void *slots[16];
+    unsigned count;struct {uint32_t id,a,b;} trace[24];
+};
+static struct update_fixture *native_up;
+static _Alignas(uint32_t) unsigned char upd_list[0x300],upd_rows[16*8],upd_ptrs[16*4];
+static _Alignas(uint32_t) uint32_t upd_vtable[0x70/4];
+static void up_emit(struct update_fixture *f,uint32_t id,uint32_t a,uint32_t b)
+{ assert(f->count<24);f->trace[f->count].id=id;f->trace[f->count].a=a;f->trace[f->count].b=b;++f->count; }
+static unsigned native_up_total(void *p) { assert(p==upd_list);up_emit(native_up,U_TOTAL,0,0);return native_up->total; }
+static void native_up_full(void *p,uint32_t i,uint32_t t,uint32_t ignored)
+{ (void)ignored;assert(p==upd_list+0xf8);up_emit(native_up,U_FULL,i,t); }
+static unsigned native_up_scroll(void *p) { assert(p==upd_list);up_emit(native_up,U_SCROLL,0,0);return 0; }
+static unsigned native_up_anim(void *p) { assert(p==upd_list);up_emit(native_up,U_ANIM,0,0);return 0; }
+static uint32_t up_q_total(void *p) { struct update_fixture *f=p;up_emit(f,U_TOTAL,0,0);return f->total; }
+static void up_s_store(void *p,uint32_t v) { struct update_fixture *f=p;up_emit(f,U_STORE,v,0);f->aux=v; }
+static uint32_t up_q_first(void *p) { struct update_fixture *f=p;up_emit(f,U_FIRST,0,0);return f->first; }
+static void up_e_full(void *p,uint32_t i,uint32_t t) { struct update_fixture *f=p;up_emit(f,U_FULL,i,t); }
+static void up_e_scroll(void *p) { struct update_fixture *f=p;up_emit(f,U_SCROLL,0,0); }
+static void up_e_anim(void *p) { struct update_fixture *f=p;up_emit(f,U_ANIM,0,0); }
+static struct oa_svg_list_update_ops up_ops(struct update_fixture *f)
+{ return (struct oa_svg_list_update_ops){f,up_q_total,up_s_store,up_q_first,up_e_full,up_e_scroll,up_e_anim}; }
+typedef void (*update_fn)(void *);
+static void compare_update(update_fn native,int (*ours)(const struct oa_svg_list_update_ops *),
+    struct update_fixture initial)
+{
+    struct update_fixture vendor=initial,ref=initial;struct oa_svg_list_update_ops ops=up_ops(&ref);
+    uint32_t vtable=(uint32_t)(uintptr_t)upd_vtable;memcpy(upd_list,&vtable,4);
+    for(unsigned i=0;i<16;++i) { uint32_t slot=(uint32_t)(uintptr_t)&upd_rows[i*8];memcpy(upd_ptrs+i*4,&slot,4); }
+    uint32_t array=(uint32_t)(uintptr_t)upd_ptrs;memcpy(upd_list+0xf8+28,&array,4);
+    uint32_t end=array+(uint32_t)initial.nrows*4u;memcpy(upd_list+0xf8+32,&end,4);
+    memcpy(upd_list+0xf8+12,&vendor.first,4);
+    uint32_t size=7;memcpy(upd_list+0xf8+16,&size,4);
+    native_up=&vendor;
+    { void (*volatile ncall)(void *)=native;ncall(upd_list); }
+    assert(!ours(&ops));
+    {
+        unsigned rn=0;struct {uint32_t id,a,b;} filt[24];
+        for(unsigned i=0;i<ref.count;++i) {
+            if(ref.trace[i].id==U_STORE || ref.trace[i].id==U_FIRST)continue;
+            assert(rn<24);filt[rn].id=ref.trace[i].id;filt[rn].a=ref.trace[i].a;filt[rn].b=ref.trace[i].b;++rn;
+        }
+        if(vendor.count!=rn) {
+            fprintf(stderr,"update count native=%u ours=%u total=%x first=%x\n",vendor.count,rn,initial.total,initial.first);
+            for(unsigned i=0;i<vendor.count;++i)fprintf(stderr,"  native[%u]=%u/%x/%x\n",i,vendor.trace[i].id,vendor.trace[i].a,vendor.trace[i].b);
+            for(unsigned i=0;i<rn;++i)fprintf(stderr,"  ours[%u]=%u/%x/%x\n",i,filt[i].id,filt[i].a,filt[i].b);
+            exit(1);
+        }
+        for(unsigned i=0;i<vendor.count;++i)if(vendor.trace[i].id!=filt[i].id || vendor.trace[i].a!=filt[i].a ||
+            vendor.trace[i].b!=filt[i].b) {
+            fprintf(stderr,"update trace %u native=%u/%x/%x ours=%u/%x/%x\n",i,vendor.trace[i].id,
+                vendor.trace[i].a,vendor.trace[i].b,filt[i].id,filt[i].a,filt[i].b);exit(1);
+        }
+    }
+    if(*(uint32_t *)(upd_list+0x1ec)!=ref.aux) {
+        fprintf(stderr,"update count word native=%x ours=%x\n",*(uint32_t *)(upd_list+0x1ec),ref.aux);exit(1);
+    }
+    (void)native_up;
+}
+struct rowview_fixture { uint32_t first,size,n;uint32_t addrs[16]; };
+static _Alignas(uint32_t) unsigned char rv_mgr[0x40],rv_ptrs[16*4],rv_slots[16][8];
+static uint32_t rv_q_first(void *p) { return ((struct rowview_fixture *)p)->first; }
+static uint32_t rv_q_size(void *p) { return ((struct rowview_fixture *)p)->size; }
+static uint32_t rv_q_sel(void *p) { (void)p;return 0; }
+static uint32_t rv_q_slots(void *p) { return ((struct rowview_fixture *)p)->n; }
+static void *rv_q_row(void *p,uint32_t rel)
+{ struct rowview_fixture *f=p;assert(rel<16);return (void *)(uintptr_t)f->addrs[rel]; }
+static void rv_e_focus(void *row,int v) { (void)row;(void)v; }
+static void rv_e_store(void *p,uint32_t v) { (void)p;(void)v; }
+static void rv_e_impl(void *p,uint32_t i,int fl) { (void)p;(void)i;(void)fl; }
+static struct oa_svg_list_manager_ops rv_ops(struct rowview_fixture *f)
+{ return (struct oa_svg_list_manager_ops){f,rv_q_first,rv_q_size,rv_q_sel,rv_q_row,rv_e_focus,rv_e_store,rv_e_impl,rv_q_slots}; }
+typedef uint32_t (*rows0_fn)(void *);
+typedef void *(*rowidx_fn)(void *,uint32_t);
+static void check_svg_rowview(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *rows=page(0x10be000,4096);
+    const struct {uint32_t address,length,crc,literal;} fragments[]={
+        {0x10be714,56,UINT32_C(0x80e1c9cf),0x10be748},
+        {0x10be7ac,56,UINT32_C(0xec0fa064),0x10be7e0},
+        {0x10be848,72,UINT32_C(0xcc441597),0x10be88c}
+    };
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;rows0_fn total=0,last=0;rowidx_fn item=0;
+    for(unsigned i=0;i<3;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(rows+fragments[i].address-0x10be000,elf+off,fragments[i].length);
+        memcpy(rows+fragments[i].literal-0x10be000,&pointer,4);
+        uint32_t entry=fragments[i].address|1;
+        if(!i)memcpy(&total,&entry,4);else if(i==1)memcpy(&last,&entry,4);else memcpy(&item,&entry,4);
+    }
+    executable(rows,4096);
+    {
+        unsigned compared=0;
+        for(unsigned n=0;n<4;++n) {
+            uint32_t ns[]={0,1,4,16};
+            struct rowview_fixture initial={.n=ns[n]};
+            struct rowview_fixture ref=initial;struct oa_svg_list_manager_ops ops=rv_ops(&ref);
+            for(unsigned i=0;i<16;++i) { uint32_t slot=(uint32_t)(uintptr_t)&rv_slots[i*8];memcpy(rv_ptrs+i*4,&slot,4); }
+            for(unsigned i=0;i<16;++i)initial.addrs[i]=ref.addrs[i]=0x5000u+i;
+            uint32_t array=(uint32_t)(uintptr_t)rv_ptrs;memcpy(rv_mgr+28,&array,4);
+            uint32_t end=array+ns[n]*4u;memcpy(rv_mgr+32,&end,4);
+            int error=-1;uint32_t v;{ rows0_fn volatile tcall=total;v=tcall(rv_mgr); }
+            uint32_t got=oa_svg_list_manager_total_rows(&ops,&error);
+            if(error || v!=got) {
+                fprintf(stderr,"rowview total mismatch n=%x native=%x ours=%x err=%d\n",ns[n],v,got,error);exit(1);
+            }
+            ++compared;
+        }
+        const uint32_t firsts[]={0,1,5,UINT32_C(0xfffffffe)},sizes[]={0,1,4};
+        for(unsigned a=0;a<4;++a)for(unsigned s=0;s<3;++s) {
+            struct rowview_fixture initial={.first=firsts[a],.size=sizes[s],.n=16};
+            struct rowview_fixture ref=initial;struct oa_svg_list_manager_ops ops=rv_ops(&ref);
+            for(unsigned i=0;i<16;++i) { uint32_t slot=(uint32_t)(uintptr_t)&rv_slots[i*8];memcpy(rv_ptrs+i*4,&slot,4); }
+            for(unsigned i=0;i<16;++i)initial.addrs[i]=ref.addrs[i]=0x5000u+i;
+            uint32_t array=(uint32_t)(uintptr_t)rv_ptrs;memcpy(rv_mgr+28,&array,4);
+            uint32_t end=array+16u*4u;memcpy(rv_mgr+32,&end,4);
+            memcpy(rv_mgr+12,&initial.first,4);memcpy(rv_mgr+16,&initial.size,4);
+            int error=-1;uint32_t v;{ rows0_fn volatile lcall=last;v=lcall(rv_mgr); }
+            uint32_t e=oa_svg_list_manager_last_visible(&ops,&error);
+            if(v!=e || error) { fprintf(stderr,"rowview last mismatch first=%x size=%x native=%x ours=%x\n",initial.first,initial.size,v,e);exit(1); }
+            ++compared;
+        }
+        const uint32_t indices[]={0,1,3,4,5,UINT32_C(0xffffffff),UINT32_C(0x80000000)};
+        for(unsigned a=0;a<4;++a)for(unsigned s=0;s<3;++s)for(unsigned k=0;k<7;++k) {
+            struct rowview_fixture initial={.first=firsts[a],.size=sizes[s],.n=16};
+            struct rowview_fixture ref=initial;struct oa_svg_list_manager_ops ops=rv_ops(&ref);
+            for(unsigned i=0;i<16;++i) { uint32_t slot=(uint32_t)(uintptr_t)&rv_slots[i*8];memcpy(rv_ptrs+i*4,&slot,4); }
+            for(unsigned i=0;i<16;++i) { uint32_t slot;memcpy(&slot,rv_ptrs+i*4,4);initial.addrs[i]=ref.addrs[i]=slot; }
+            uint32_t array=(uint32_t)(uintptr_t)rv_ptrs;memcpy(rv_mgr+28,&array,4);
+            uint32_t end=array+16u*4u;memcpy(rv_mgr+32,&end,4);
+            memcpy(rv_mgr+12,&initial.first,4);memcpy(rv_mgr+16,&initial.size,4);
+            void *v;{ rowidx_fn volatile icall=item;v=icall(rv_mgr,indices[k]); }
+            int error2=-1;void *e=oa_svg_list_manager_item_row(&ops,indices[k],&error2);
+            if(v!=e || error2) {
+                fprintf(stderr,"rowview item mismatch first=%x size=%x index=%x native=%p ours=%p\n",
+                    initial.first,initial.size,indices[k],v,e);exit(1);
+            }
+            ++compared;
+        }
+        native_up=NULL;
+        assert(!munmap(rows,4096));
+        printf("ok offline shipped ARM SVG list rowview: %u native/C comparisons, total/last-visible/item-row match\n",compared);
+    }
+}
+static void check_svg_update(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *list=page(0x10bc000,4096),*rows=page(0x10be000,4096),*anim=page(0x10ba000,8192);
+    size_t off=file_offset(elf,bytes,0x10bc050,92);
+    assert(crc32(elf+off,92)==UINT32_C(0x22020b30));
+    memcpy(list+0x50,elf+off,92);
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(list+0xa8,&pointer,4);
+    size_t fo=file_offset(elf,bytes,0x10be77c,48);
+    assert(crc32(elf+fo,48)==UINT32_C(0x687fe952));
+    memcpy(rows+0x77c,elf+fo,48);memcpy(rows+0x7a8,&pointer,4);
+    uint32_t total_bits=bits(native_up_total);memcpy(upd_vtable+0x6c/4,&total_bits,4);
+    quad_stub(rows,0x10be000,0x10be678,native_up_full);
+    thumb_stub(anim,0x10ba000,0x10bbe04,native_up_scroll);
+    thumb_stub(anim,0x10ba000,0x10bbedc,native_up_anim);
+    executable(list,4096);executable(rows,4096);executable(anim,8192);
+    {
+        const uint32_t totals[]={0,1,5,9,UINT32_C(0x80000000)},firsts[]={0,1,5,UINT32_C(0xfffffffe)};
+        unsigned compared=0;update_fn update=0;
+        { uint32_t entry=0x10bc051;memcpy(&update,&entry,4); }
+        for(unsigned t=0;t<5;++t)for(unsigned f=0;f<4;++f) {
+            struct update_fixture initial={.total=totals[t],.first=firsts[f],.nrows=16};
+            compare_update(update,oa_svg_list_update,initial);++compared;
+        }
+        native_up=NULL;
+        assert(!munmap(list,4096) && !munmap(rows,4096) && !munmap(anim,8192));
+        printf("ok offline shipped ARM SVG list update: %u native/C comparisons, total/store/refresh order match\n",compared);
+    }
+}
 static void check_svg_impl(const unsigned char *elf,size_t bytes)
 {
     unsigned char *rows=page(0x10be000,4096),*win=page(0x1152000,4096),*app=page(0x1148000,8192);
@@ -2045,7 +2222,7 @@ int main(int argc,char **argv)
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
     check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);
-    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_svg_scroll(elf,bytes);check_svg_impl(elf,bytes);check_svg_scrollbar(elf,bytes);check_row_values(elf,bytes);
+    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_svg_scroll(elf,bytes);check_svg_impl(elf,bytes);check_svg_scrollbar(elf,bytes);check_svg_rowview(elf,bytes);check_svg_update(elf,bytes);check_row_values(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
