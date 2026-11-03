@@ -6,6 +6,20 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-A-2026-11-03: renderItems type0xa (second slider row) passes70456
+native/C comparisons (own slidebar/text2 literals, fixed0x1e8.. text-box
+names with no font, row+0x1498 slider with0x214/0x216/0x215/0x217,
+setSliderRangeValues on the created path) plus full strict host, focused
+ASan/UBSan, ARM/qemu, all prior groups and focused real-TV CPU. A full callee
+audit preceded the sweep; only the case's own key/label literal redirects
+were new. Build-tv-v3/settings-row-render unit147256/
+682bb42a43bf68513cdbc58ac655dd0b; reference1118192/
+f372ead9eaeb5d488a469284488b0570. TV already awake, no-reset flag kept,
+staging hash-verified, test exit0, staging removed, no helper. Cases0xb/0xc,
+0x11..0x15,0x17..0x19, row construction, child visibility internals, live
+resources, scrollbar/skin/module/display/startup/visible acceptance remain
+open.
+
 SETTINGS-ROW-COVERAGE-2026-11-03: corrected a silent renderItems coverage
 hole — the presence mask iterated only7 bits so image2/banner/slidebar/text2
 were never present and type0x9's body never ran. The sweep is now a full

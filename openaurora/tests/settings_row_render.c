@@ -124,7 +124,7 @@ int main(void)
     assert(r.trace[4].kind==R_IS && r.trace[4].off==0x104);
     assert(r.trace[12].kind==R_CTEXT && !strcmp(r.trace[12].text,""));
     /* Types other than the implemented set stay open, after the shared tail. */
-    reset(&r);o=ops();r.type=10;
+    reset(&r);o=ops();r.type=12;
     assert(oa_setting_row_render(&r,&o)==ENOTSUP && r.count==13);
     /* Type 0 with missing key2: prologue then out. */
     reset(&r);o=ops();r.type=0;r.rects[1]=NULL;
@@ -410,9 +410,37 @@ int main(void)
     assert(r.trace[30].kind==R_SFOCUS && r.trace[30].a==0);
     assert(r.trace[31].kind==R_CSLIDER && r.trace[31].a==10 && r.trace[31].b==90);
     assert(r.trace[32].kind==R_SVAL && r.trace[32].a==42);
+    /* Type 0xa: second slider row, fixed 0x1e8.. names and 0x1498 slider. */
+    reset(&r);o=ops();r.type=0xa;r.slo=1;r.shi=5;r.sval=7;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"slidebar"));
+    assert(r.trace[14].kind==R_GET && !strcmp(r.trace[14].text,"text2"));
+    assert(r.trace[16].kind==R_NAME && r.trace[16].a==1 && r.trace[16].b==0x1e8);
+    assert(r.trace[19].kind==R_NAME && r.trace[19].a==2 && r.trace[19].b==0x1eb);
+    assert(r.trace[22].kind==R_CTBOX);
+    assert(r.trace[23].kind==R_TEXT && !strcmp(r.trace[23].text,"7"));
+    assert(r.trace[24].kind==R_IS && r.trace[24].off==0x1498);
+    assert(r.trace[25].kind==R_NAME && r.trace[25].a==1 && r.trace[25].b==0x214);
+    assert(r.trace[26].kind==R_NAME && r.trace[26].a==0 && r.trace[26].b==0x216);
+    assert(r.trace[27].kind==R_NAME && r.trace[27].a==3 && r.trace[27].b==0x215);
+    assert(r.trace[28].kind==R_NAME && r.trace[28].a==2 && r.trace[28].b==0x217);
+    assert(r.trace[31].kind==R_SVAL && r.trace[31].a==7);
+    assert(r.count==32);
+    /* Type 0xa created: rect math then setSliderRangeValues + setSliderValue. */
+    reset(&r);o=ops();r.type=0xa;r.created=1;r.slo=1;r.shi=5;r.sval=7;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[7].kind==R_GET && !strcmp(r.trace[7].text,"slidebar"));
+    assert(r.trace[8].kind==R_GET && !strcmp(r.trace[8].text,"text2"));
+    assert(r.trace[9].kind==R_IS && r.trace[9].off==0x1ca8);
+    assert(r.trace[10].kind==R_RECT);
+    assert(r.trace[11].kind==R_TEXT && !strcmp(r.trace[11].text,"7"));
+    assert(r.trace[12].kind==R_IS && r.trace[12].off==0x1498);
+    assert(r.trace[13].kind==R_RECT);
+    assert(r.trace[14].kind==R_SRANGE && r.trace[14].a==1 && r.trace[14].b==5);
+    assert(r.trace[15].kind==R_SVAL && r.trace[15].a==7);
     /* Invalid ops/args change nothing. */
     o=ops();o.set_name=NULL;
-    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==33);
+    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==16);
     assert(oa_setting_row_render(NULL,&o)==EINVAL);
     assert(oa_setting_row_render(&r,NULL)==EINVAL);
     puts("ok settings row render: 0/1/4 paths, shared tail, gates and open types");

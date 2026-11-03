@@ -24,7 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-COVERAGE](artifacts/reports/SETTINGS-ROW-COVERAGE-2026-11-03.md)
+Latest: [SETTINGS-ROW-A](artifacts/reports/SETTINGS-ROW-A-2026-11-03.md)
+implements renderItems type 0xa, the second slider row: its own
+"slidebar"/"text2" literals, the fixed 0x1e8/0x1e9/0x1ea/0x1eb text-box names
+in slots 1/0/3/2 with no font, the formatted row[0x2df8] value, and the
+row+0x1498 slider with 0x214/0x216/0x215/0x217 names plus
+setSliderRangeValues on the created path. 70456 shipped ARM/C cases and prior
+groups pass, plus full host/Unix IPC, focused ASan/UBSan, ARM/qemu and
+focused real TV CPU. A full callee audit preceded the sweep and only the
+case's own literal redirects were new. No screen/input/device/settings/
+network/service/boot/persistent change; staging removed, no helper. Next
+implement cases 0xb/0xc, then 0x11..0x15 and 0x17..0x19, then getImageId's
+real mapping and image internals, then row construction/visibility/live
+resources, then scrollbar/skin/module/display/startup/independent visible
+parity.
+
+Previous: [SETTINGS-ROW-COVERAGE](artifacts/reports/SETTINGS-ROW-COVERAGE-2026-11-03.md)
 corrects a silent harness hole: the presence mask iterated only 7 bits, so
 image2/banner/slidebar/text2 were never present and type 0x9's case body
 never executed. The sweep now runs a full 11-key pass plus a separate

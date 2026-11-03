@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-A implements renderItems type 0xa, the second slider row: its
+own "slidebar"/"text2" literals, the 0x1e8/0x1e9/0x1ea/0x1eb text-box names in
+slots 1/0/3/2 with no font, the formatted row[0x2df8] value, and the
+row+0x1498 slider with 0x214/0x216/0x215/0x217 names plus
+setSliderRangeValues on the created path. 70456 native/C cases pass. A full
+callee audit preceded the sweep (fourteen direct call sites plus both shared
+created blocks) and needed only the case's own key/label literal redirects.
+
 SETTINGS-ROW-COVERAGE corrects a silent harness hole: the presence mask
 iterated only 7 bits, so image2/banner/slidebar/text2 were never present and
 type 0x9's case body never executed. The sweep now has a full 11-key pass and

@@ -477,6 +477,14 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
           memcpy(stub_destination(row,0xd54000,0xd55758,4),&k,4); }
         { uint32_t e=(uint32_t)(uintptr_t)rr_empty;
           memcpy(stub_destination(row,0xd54000,0xd55750,4),&e,4); }
+        /* Case 0xa carries its own copies of the same keys at
+         * 0xd55a0c/0xd55a10 and the empty label at 0xd55a14. */
+        { uint32_t k=(uint32_t)(uintptr_t)&rk9slot;
+          memcpy(stub_destination(row,0xd54000,0xd55a0c,4),&k,4); }
+        { uint32_t k=(uint32_t)(uintptr_t)&rk10slot;
+          memcpy(stub_destination(row,0xd54000,0xd55a10,4),&k,4); }
+        { uint32_t e=(uint32_t)(uintptr_t)rr_empty;
+          memcpy(stub_destination(row,0xd54000,0xd55a14,4),&e,4); }
     }
     blank_stub(base,0x10bf000,0x10bf06c,rr_base);
     pair_stub(ustr,0xc86000,0xc86744,rr_ctor);
@@ -547,12 +555,12 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         unsigned compared=0;rr_fn render=0;
         { uint32_t entry=0xd54401;memcpy(&render,&entry,4); }
         {
-            static const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,5,6,7,8,9};
+            static const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,5,6,7,8,9,0xa};
             /* Pass A: full 11-key presence coverage (p/w/l/g fixed at 0). */
-            for(unsigned a=0;a<16;++a)for(unsigned m=0;m<2048;++m)for(unsigned c=0;c<2;++c)
+            for(unsigned a=0;a<17;++a)for(unsigned m=0;m<2048;++m)for(unsigned c=0;c<2;++c)
                 { render_case(render,types[a],m,c,0,0,0,0);++compared; }
             /* Pass B: point/word/label/flag coverage with every key present. */
-            for(unsigned a=0;a<16;++a)for(unsigned c=0;c<2;++c)for(unsigned p=0;p<3;++p)
+            for(unsigned a=0;a<17;++a)for(unsigned c=0;c<2;++c)for(unsigned p=0;p<3;++p)
             for(unsigned w=0;w<2;++w)for(unsigned l=0;l<2;++l)for(unsigned g=0;g<2;++g)
                 { render_case(render,types[a],2047,c,p,w,l,g);++compared; }
         }
@@ -584,6 +592,6 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         assert(!munmap(sel2,4096));
         assert(!munmap(te1,4096) && !munmap(te2,4096) && !munmap(te3,4096));
         assert(!munmap(img,4096) && !munmap(lh,4096) && !munmap(sb,4096) && !munmap(usop,4096));
-        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-9/0xd-0x10/0x1a/0x16 paths and defaults match\n",compared);
+        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-0xa/0xd-0x10/0x1a/0x16 paths and defaults match\n",compared);
     }
 }

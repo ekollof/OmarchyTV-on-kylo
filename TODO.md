@@ -326,7 +326,16 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       comparisons plus host/sanitizer/ARM-qemu/TV CPU pass.
       SETTINGS-ROW-COVERAGE. A third NUL-sled (SVGSlideBar::setWindowRect)
       was caught; enumerate every callee before sweeping a new case.
-- [ ] Implement SettingItemsListBoxRow::renderItems types 0xa/0xb/0xc.
+- [x] Implement SettingItemsListBoxRow::renderItems type 0xa (second slider
+      row):70456 native/C comparisons and prior groups pass; full host/Unix
+      IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
+      SETTINGS-ROW-A. Full callee audit preceded the sweep; 0x1e8.. text-box
+      names, the row+0x1498 slider names and the created
+      setSliderRangeValues are asserted. Cases0xb/0xc,0x11..0x15,0x17..0x19,
+      row construction, child visibility internals, live resources,
+      scrollbar/skin/module/display/startup/independent visible acceptance
+      remain open.
+- [ ] Implement SettingItemsListBoxRow::renderItems types 0xb/0xc.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

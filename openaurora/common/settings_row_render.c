@@ -400,6 +400,57 @@ static int case_slider(void *row,const struct oa_setting_row_render_ops *o,void 
     }
     return 0;
 }
+/* Case 0xa: the second slider row. Same "slidebar"/"text2" lookups as 0x9,
+ * but the row+0x1ca8 text box always uses the 0x1e8/0x1e9/0x1ea/0x1eb names
+ * in slots 1/0/3/2 with no font, and the row+0x1498 slide bar uses
+ * 0x214/0x216/0x215/0x217 in slots 1/0/3/2. Both children refresh with
+ * EASIRect math and the formatted row[0x2df8] value; uncreated sliders are
+ * created from row[0x2df0]/[0x2df4], created ones get setSliderRangeValues. */
+static int case_slider2(void *row,const struct oa_setting_row_render_ops *o,void *box,
+    void *text_rect,void *slider_rect)
+{
+    (void)box;
+    if(text_rect) {
+        void *tb=o->child_at(row,UINT32_C(0x1ca8));int created=o->is_created(tb);
+        uint32_t base[4];o->rect_words(text_rect,base);
+        if(created) {
+            uint32_t moved[4];int32_t pt[2];
+            o->get_point(row,pt);rect_math(moved,base,pt);
+            o->set_rect(tb,moved);
+        } else {
+            o->set_name(tb,UINT32_C(1),UINT32_C(0x1e8));
+            o->set_name(tb,(uint32_t)created,UINT32_C(0x1e9));
+            o->set_name(tb,UINT32_C(3),UINT32_C(0x1ea));
+            o->set_name(tb,UINT32_C(2),UINT32_C(0x1eb));
+            o->set_focus(tb,0);o->set_elipses(tb,0);
+            o->create_textbox(tb,0,"",base,UINT32_C(1),row);
+        }
+        { char text[16];int32_t v=(int32_t)o->row_word(row,UINT32_C(0x2df8));
+          snprintf(text,sizeof text,"%d",(int)v);o->set_text(tb,text); }
+    }
+    if(!slider_rect)return 0;
+    {
+        void *sb=o->child_at(row,UINT32_C(0x1498));int created=o->is_created(sb);
+        uint32_t base[4];o->rect_words(slider_rect,base);
+        if(created) {
+            uint32_t moved[4];int32_t pt[2];
+            o->get_point(row,pt);rect_math(moved,base,pt);
+            o->set_rect(sb,moved);
+            o->set_slider_range(sb,(int32_t)o->row_word(row,UINT32_C(0x2df0)),
+                (int32_t)o->row_word(row,UINT32_C(0x2df4)));
+        } else {
+            o->set_name(sb,UINT32_C(1),UINT32_C(0x214));
+            o->set_name(sb,(uint32_t)created,UINT32_C(0x216));
+            o->set_name(sb,UINT32_C(3),UINT32_C(0x215));
+            o->set_name(sb,UINT32_C(2),UINT32_C(0x217));
+            o->set_slider_focus(sb,0);
+            o->create_slider(sb,0,(int32_t)o->row_word(row,UINT32_C(0x2df0)),
+                (int32_t)o->row_word(row,UINT32_C(0x2df4)),base,row);
+        }
+        o->set_slider_value(sb,(int32_t)o->row_word(row,UINT32_C(0x2df8)));
+    }
+    return 0;
+}
 static int case_0x1a(void *row,const struct oa_setting_row_render_ops *o,void *box)
 {
     void *r=o->get_rect(box,key_for(3)),*button;int created;uint32_t base[4];
@@ -546,6 +597,12 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             case_btn8(row,o,box);
             return 0;
         }
+        if(type==UINT32_C(0xa)) {
+            void *sbrect=o->get_rect(box,key_for(9));
+            void *t2rect=o->get_rect(box,key_for(10));
+            case_slider2(row,o,box,t2rect,sbrect);
+            return 0;
+        }
         if(type==UINT32_C(9)) {
             /* Sequence the lookups: text first, then slider (argument
              * evaluation order is unspecified). */
@@ -602,6 +659,12 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
         }
         if(type==UINT32_C(8)) {
             case_btn8(row,o,box);
+            return 0;
+        }
+        if(type==UINT32_C(0xa)) {
+            void *sbrect=o->get_rect(box,key_for(9));
+            void *t2rect=o->get_rect(box,key_for(10));
+            case_slider2(row,o,box,t2rect,sbrect);
             return 0;
         }
         if(type==UINT32_C(9)) {
