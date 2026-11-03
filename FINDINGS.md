@@ -6,6 +6,16 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+UI-REVIEW-2026-11-04 corrects the recent work: UIImageResource is32 bytes,
+not16 (supplier copies through1c); create now has aligned full-size storage and
+full-payload tests. Renderer percentage subtraction/division had UB; shared
+checked wrap math fixes it. All native zero divisors reach unconditional
+raise(8), invalidating the old INT_MAX/MIN return claim. EDOM is an explicit
+replacement error policy, not crash parity. Native divider now runs in both
+reference groups. Raw checked bytes and independently varied paired child
+states close additional coverage gaps.1771396 renderer/276 setter/56 image
+cases plus host/IPC/sanitizer/ARM-qemu/TV CPU pass; real rendering/startup open.
+
 SVG-IMAGE implements SVGImage::create (0x10c9638) and SVGImage::destroy
 (0x10c8ef4) orchestration in common/svg_image.c. create: UIWindow::setId,
 SVGContext::getImageSupplier, the supplier's vtable slot2 resource lookup
@@ -227,8 +237,8 @@ selects +0x3c4 for type 1 else +0x104; progress drives +0x1570 for 0x17 else
 value into +0x24e8; range drives +0x13c0 for type 9 else +0x1498. Widget calls
 run only when created; stores always run. 324 native/C cases pass. Fragments
 must include the final pop; the progress format literal points at the shipped
-empty string. __aeabi_idiv edges (INT_MAX/MIN on nonzero/zero, SIGFPE on 0/0)
-are replicated without UB. Case bodies 2..26, construction/visibility-
+empty string. The old divide-zero claim is withdrawn by UI-REVIEW: every zero
+divisor raises; replacement returns EDOM explicitly. Case bodies 2..26, construction/visibility-
 internals/live resources/scrollbar/skin/visible gates remain open.
 
 SETTINGS-ROW-TYPE implements setType: changed cache/rebuild stores precede

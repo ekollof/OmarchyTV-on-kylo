@@ -31,11 +31,11 @@ lengths above include the return. The progress format literal at 0xd52ef8
 points at the shipped empty string (also 0x12f5cda, as in the slide check)
 and is redirected to an owned empty string instead of mapping vendor rodata.
 
-The division at 0x1285478 is the shipped __aeabi_idiv (verified by reading:
-truncation toward zero, INT32_MAX/INT32_MIN for nonzero/zero, SIGFPE via
-raise(8) for 0/0). The owned `oa_setting_row_percent` replicates wraparound
-(verified: subs/muls pairs) and those edges without UB; the 0/0 input is
-excluded from every sweep and maps to 0 with a note. UString temporaries are
+Correction by [UI-REVIEW](UI-REVIEW-2026-11-04.md): every zero divisor reaches
+unconditional raise(8). The prior saturated-return interpretation and its stub
+were wrong. The new checked percentage API returns EDOM for zero ranges;276
+nonzero-range comparisons execute the actual divider, replacing the324-case
+stub-backed gate below. UString temporaries are
 pointer-slot stubs in the established owned-string convention; the format is
 always the empty literal, so text is plain decimal. Empty labels, swapped and
 extreme bounds, division-by-zero (nonzero numerator), INT32_MIN/-1 and full

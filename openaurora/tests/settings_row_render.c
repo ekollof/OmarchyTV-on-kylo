@@ -736,6 +736,33 @@ int main(void)
     assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==40);
     assert(oa_setting_row_render(NULL,&o)==EINVAL);
     assert(oa_setting_row_render(&r,NULL)==EINVAL);
-    puts("ok settings row render: 0/1/4 paths, shared tail, gates and open types");
+    for(unsigned c=0;c<2;++c) {
+        reset(&r);o=ops();r.type=0x16;r.created=(int)c;r.checked=255;
+        assert(!oa_setting_row_render(&r,&o));
+        unsigned found=0;
+        for(unsigned j=0;j<r.count;++j)if(r.trace[j].kind==R_CHECK) { assert(r.trace[j].a==255);++found; }
+        assert(found==1);
+    }
+    /* ARM subtraction/multiply wrap before signed division. Exercise the
+     * renderer, not merely the separate setter helper. */
+    {
+        const struct {uint32_t lo,hi,value,percent;} edges[]={
+            {UINT32_C(0x80000000),INT32_MAX,INT32_MAX,100},
+            {INT32_MAX,UINT32_C(0x80000000),0,100},
+            {0,UINT32_MAX,UINT32_C(0x20000000),UINT32_C(0x80000000)},
+            {0,100,UINT32_MAX,UINT32_MAX}
+        };
+        for(uint32_t ty=0x17;ty<=0x19;++ty)for(unsigned i=0;i<sizeof edges/sizeof *edges;++i) {
+            reset(&r);o=ops();r.type=ty;r.slo=edges[i].lo;r.shi=edges[i].hi;r.pval=edges[i].value;
+            assert(!oa_setting_row_render(&r,&o));
+            unsigned found=0;
+            for(unsigned j=0;j<r.count;++j)if(r.trace[j].kind==R_PCT) { assert(r.trace[j].a==edges[i].percent);++found; }
+            assert(found==1);
+            r.count=0;r.shi=r.slo;
+            assert(oa_setting_row_render(&r,&o)==EDOM);
+            for(unsigned j=0;j<r.count;++j)assert(r.trace[j].kind!=R_PCT);
+        }
+    }
+    puts("ok settings row render: full type dispatch, gates and wrapping percentage edges");
     return 0;
 }

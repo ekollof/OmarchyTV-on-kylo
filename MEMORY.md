@@ -6,6 +6,22 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-REVIEW-2026-11-04: reviewed28ef959..b50e3f0. Fixed SVG image resource
+capacity16->32/max alignment/callback validation; upper bytes now tested.
+Renderer signed arithmetic UB fixed via shared checked percent helper; all
+native zero-divisors raise, prior saturation claim withdrawn. EDOM is explicit
+error-policy deviation; no native zero-divide executed. Raw checkbox byte and
+independent paired-child coverage added. Real divide fragment replaces stubs.
+1771396 renderer/276 setter/56 image and prior native groups pass, plus full
+strict host/Unix IPC, focused ASan/UBSan, ARM/qemu and three real-TV CPU units.
+Build-tv-v3/ui-review image29380/bfe1350de41b8a6b6a87609ca6c9d3e9;
+render234244/c5c94cb8f6cfcd523538147589843772;
+setters33896/46cd1dada531c715434e80101da0ecbd;
+reference1198032/1f6f229b70eb6b2303df52c4bfd0992f. TV staging separately
+hash/size verified, removed/no-helper scan passed, no-reset retained. No
+screen/input/device/settings/network/service/boot/persistent change; no pending
+job/helper. Review only; imageCreate/live backend/startup/visible gates remain open.
+
 GOAL-PAUSED-2026-11-04: owner paused the goal after commit15e8de8
 (SVGImage::create/destroy orchestration), pushed, working tree clean. At that
 commit strict host/ASan/UBSan/ARM-qemu, verify.cjs (35 ok lines) and full make

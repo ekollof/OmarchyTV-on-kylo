@@ -48,7 +48,8 @@ static uint32_t svn_get_sup(void *img)
 static uint32_t svn_sup_res(void *sup,uint32_t id,void *out)
 {
     (void)sup;sv_emit(SV_SUP,id,(uint32_t)sv_fix.sup,NULL);
-    memset(out,0x5a,16);sv_last_out=(uint32_t)(uintptr_t)out;
+    for(unsigned i=0;i<32;++i)((unsigned char *)out)[i]=(unsigned char)i;
+    sv_last_out=(uint32_t)(uintptr_t)out;
     return (uint32_t)sv_fix.sup;
 }
 static void svn_client(void *out,uint32_t parent)
@@ -57,6 +58,7 @@ static void svn_img_create(void *img,uint32_t res,uint32_t rectp,uint32_t parent
 {
     uint32_t w[4];(void)img;(void)parent;
     memcpy(w,(void *)(uintptr_t)rectp,16);
+    for(unsigned i=0;i<32;++i)assert(((const unsigned char *)(uintptr_t)res)[i]==i);
     sv_emit(SV_IMG,(uint32_t)(res==sv_last_out),0,w);
 }
 static void svn_wdestroy(void *img) { (void)img;sv_emit(SV_WD,0,0,NULL); }
@@ -71,7 +73,8 @@ static void *svc_get_sup(void *img)
 static int svc_sup_res(void *sup,uint32_t id,void *out)
 {
     (void)sup;sv_emit(SV_SUP,id,(uint32_t)sv_fix.sup,NULL);
-    memset(out,0x5a,16);sv_last_out=(uint32_t)(uintptr_t)out;
+    for(unsigned i=0;i<32;++i)((unsigned char *)out)[i]=(unsigned char)i;
+    sv_last_out=(uint32_t)(uintptr_t)out;
     return sv_fix.sup;
 }
 static void svc_client(void *parent,uint32_t out[4])
@@ -79,6 +82,7 @@ static void svc_client(void *parent,uint32_t out[4])
 static void svc_img_create(void *img,const void *res,const uint32_t rect[4],void *parent)
 {
     (void)img;(void)parent;
+    for(unsigned i=0;i<32;++i)assert(((const unsigned char *)res)[i]==i);
     sv_emit(SV_IMG,(uint32_t)((uint32_t)(uintptr_t)res==sv_last_out),0,rect);
 }
 static void svc_wdestroy(void *img) { (void)img;sv_emit(SV_WD,0,0,NULL); }
@@ -133,17 +137,17 @@ static void check_svg_image(const unsigned char *elf,size_t bytes)
     executable(win,4096);executable(ctx,4096);executable(winx,4096);executable(sup,4096);
     sv_img_native=calloc(1,0x200);sv_img_ref=calloc(1,0x200);
     assert(sv_img_native && sv_img_ref);
-    static const uint32_t rects[][4]={{10,20,30,40},{0,0,0,0}};
+    static const uint32_t rects[][4]={{10,20,30,40},{0,0,0,0},{UINT32_MAX,UINT32_MAX,UINT32_MAX-1,UINT32_MAX-2}};
     static const uint32_t clients[4]={1,2,7,8};
-    static const uint32_t ids[]={0,0x37};
+    static const uint32_t ids[]={0,0x37,UINT32_MAX};
     sv_create_fn cf;{ uint32_t entry=0x10c9639;memcpy(&cf,&entry,4); }
     sv_destroy_fn df;{ uint32_t entry=0x10c8ef5;memcpy(&df,&entry,4); }
     unsigned compared=0;
-    for(unsigned s=0;s<2;++s)for(unsigned p=0;p<2;++p)
-    for(unsigned i=0;i<2;++i)for(unsigned r=0;r<2;++r) {
+    for(unsigned s=0;s<3;++s)for(unsigned p=0;p<2;++p)
+    for(unsigned i=0;i<3;++i)for(unsigned r=0;r<3;++r) {
         struct oa_svg_image_ops ops=sv_ops();
         void *parent=p?(void *)(uintptr_t)0x2222:NULL;
-        sv_fix.id=ids[i];sv_fix.sup=(int)s;sv_fix.parent=(int)p;
+        sv_fix.id=ids[i];sv_fix.sup=s==2?-1:(int)s;sv_fix.parent=(int)p;
         memcpy(sv_fix.rect,rects[r],16);memcpy(sv_fix.client,clients,16);
         sv_tp=sv_evn;sv_tn=0;sv_last_out=0;
         cf(sv_img_native,sv_fix.id,(uint32_t)(uintptr_t)sv_fix.rect,(uint32_t)(uintptr_t)parent);

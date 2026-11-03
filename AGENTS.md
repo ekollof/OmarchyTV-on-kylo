@@ -295,6 +295,14 @@ in tests instead of hiding them inside shared stubs. A controlled string fixture
 does not validate the full native UString implementation or visible animation.
 See ARM-HARNESS-REVIEW-2026-11-03 for evidence and reproduction.
 
+UI-REVIEW-2026-11-04 corrects two further fixture traps: the image supplier
+writes32 bytes of UIImageResource, not the16 bytes its old fake token used.
+Establish complete object capacity/alignment from actual writes and test every
+byte. Arithmetic stubs must not invent helper semantics: every zero divisor
+in the shipped signed divider reaches unconditional raise(8). Nonzero-range
+reference tests now execute the real divider; zero-range replacement EDOM is
+an explicit error-policy deviation. Do not report that as firmware fault parity.
+
 ## Useful local tools
 
 qemu-arm-static, cross compilers, squashfs-tools, mtd-utils and ubireader are

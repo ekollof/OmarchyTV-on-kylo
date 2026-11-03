@@ -1,0 +1,47 @@
+
+File: openaurora/build-tv-v3/ui-review/tests/svg_image
+
+Version symbols section '.gnu.version' contains 6 entries:
+ Addr: 0x000000000001029c  Offset: 0x0000029c  Link: 5 (.dynsym)
+  000:   0 (*local*)       0 (*local*)       2 (GLIBC_2.4)     2 (GLIBC_2.4)
+  004:   2 (GLIBC_2.4)     2 (GLIBC_2.4)
+
+Version needs section '.gnu.version_r' contains 1 entry:
+ Addr: 0x00000000000102a8  Offset: 0x000002a8  Link: 6 (.dynstr)
+  000000: Version: 1  File: libc.so.6  Cnt: 1
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 2
+
+File: openaurora/build-tv-v3/ui-review/tests/settings_row_render
+
+Version symbols section '.gnu.version' contains 12 entries:
+ Addr: 0x000000000001035a  Offset: 0x0000035a  Link: 5 (.dynsym)
+  000:   0 (*local*)       0 (*local*)       2 (GLIBC_2.4)     2 (GLIBC_2.4)
+  004:   2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)
+  008:   2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)
+
+Version needs section '.gnu.version_r' contains 1 entry:
+ Addr: 0x0000000000010374  Offset: 0x00000374  Link: 6 (.dynstr)
+  000000: Version: 1  File: libc.so.6  Cnt: 1
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 2
+
+File: openaurora/build-tv-v3/ui-review/tests/settings_row_setters
+
+Version symbols section '.gnu.version' contains 9 entries:
+ Addr: 0x00000000000102fe  Offset: 0x000002fe  Link: 5 (.dynsym)
+  000:   0 (*local*)       0 (*local*)       2 (GLIBC_2.4)     2 (GLIBC_2.4)
+  004:   2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)
+  008:   2 (GLIBC_2.4)
+
+Version needs section '.gnu.version_r' contains 1 entry:
+ Addr: 0x0000000000010310  Offset: 0x00000310  Link: 6 (.dynstr)
+  000000: Version: 1  File: libc.so.6  Cnt: 1
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 2
+bfe1350de41b8a6b6a87609ca6c9d3e9  openaurora/build-tv-v3/ui-review/tests/svg_image
+c5c94cb8f6cfcd523538147589843772  openaurora/build-tv-v3/ui-review/tests/settings_row_render
+46cd1dada531c715434e80101da0ecbd  openaurora/build-tv-v3/ui-review/tests/settings_row_setters
+1f6f229b70eb6b2303df52c4bfd0992f  openaurora/build-tv-v3/ui-review/tests/tab_policy_firmware
+  29380 openaurora/build-tv-v3/ui-review/tests/svg_image
+ 234244 openaurora/build-tv-v3/ui-review/tests/settings_row_render
+  33896 openaurora/build-tv-v3/ui-review/tests/settings_row_setters
+1198032 openaurora/build-tv-v3/ui-review/tests/tab_policy_firmware
+1495552 total

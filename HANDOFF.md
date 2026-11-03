@@ -22,32 +22,31 @@ strict host, ASan/UBSan and ARM/qemu. That core is not deployed.
 OWNER-WORKER-2026-11-01 adds offline CEC and audio workers. They accept injected
 I/O only. mod_cec does not open hardware.
 
-## Goal paused — 2026-11-04
+## Previous stop and current review
 
-The owner paused the goal after the SVGImage create/destroy slice. Work stopped
-at a clean, fully verified state; nothing is running and no TV helper, staging
-file or background job remains.
-
-- Last commit: `15e8de8` (Implement SVGImage::create/destroy orchestration),
-  pushed to `git@github.com:ekollof/OmarchyTV-on-kylo.git`, working tree clean.
-- Verified at that commit: strict host units, focused ASan/UBSan, ARM/qemu
-  units, `node artifacts/analysis/tab-navigation-2026-11-03/verify.cjs`
-  (35 ok lines, exit 0) and `make -C openaurora check` (exit 0).
-- Focused TV run: `tests/svg_image` ARM unit, exit 0, staged hash
-  `72cffb9a41550743f01580a9e804558e`, staging removed, no helper in
-  `/proc/*/exe`, `/conf/coredumpnoreset` intact. The TV is in stock operation.
-- Evidence: `artifacts/analysis/svg-image-2026-11-03/` and
-  `artifacts/reports/SVG-IMAGE-2026-11-03.md`.
-
-Resume from the "Immediate continuation point" below. The next slice is
-`SVGImage::imageCreate` (0x10c9430); the larger remaining gates are
-`convertOperationIdToIDM`, row construction, child visibility internals/live
-resources, scrollbar/skin, then display/scanout binding and independent
-startup for visible parity. None of those is started.
+The previous agent stopped after15e8de8 and recorded the pause in b50e3f0.
+The owner then requested a review and fixes on2026-11-04. The review below
+supersedes the old clean/verified snapshot where it identifies defects; it
+does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [SVG-IMAGE](artifacts/reports/SVG-IMAGE-2026-11-03.md) implements
+Latest: [UI-REVIEW](artifacts/reports/UI-REVIEW-2026-11-04.md) reviews the work
+since28ef959. Fixed16-byte image resource overflow (actual supplier writes32),
+aligned its buffer, validated callbacks and clarified borrowed lifetime. Fixed
+renderer signed overflow/division by sharing checked percentage math. Every
+zero divisor raises in firmware: old saturated-return notes/stubs were wrong;
+current API returns EDOM explicitly, preserving prior effects where applicable.
+Checked bytes now forward raw; paired image/text created states vary independently.
+Actual shipped divider replaces both stubs.1771396 renderer/276 setter/56 image
+comparisons and prior groups pass; full strict host/Unix IPC, ASan/UBSan, ARM/qemu
+and all three focused TV CPU units pass. Staging hash checked separately,
+removed/no helper, no-reset retained. Build-tv-v3/ui-review identities in report/
+MEMORY. No device/screen/settings/network/boot/persistent change, no pending job.
+Next feature remains imageCreate; remaining backend/startup/visible gates stay
+open. Zero-range crash/error policy must stay explicit in parity claims.
+
+Previous: [SVG-IMAGE](artifacts/reports/SVG-IMAGE-2026-11-03.md) implements
 SVGImage::create (0x10c9638) and SVGImage::destroy (0x10c8ef4) orchestration in
 common/svg_image.c. create does UIWindow::setId, the SVGContext image-supplier
 lookup, the supplier vtable slot2 resource gate, a rectangle copy, an optional

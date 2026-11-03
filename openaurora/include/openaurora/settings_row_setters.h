@@ -11,8 +11,9 @@
  * wraparound and __aeabi_idiv divide semantics (see common implementation).
  * Offsets identify firmware-understood child bindings, not pointer arithmetic
  * the consumer should apply to our objects. Callbacks are synchronous, pinned
- * for the call and never retained. NULL row/ops/label, any NULL callback or
- * a short text buffer returns EINVAL before mutation. This does not implement
+ * for the call and never retained. NULL row/ops/label or any NULL callback
+ * returns EINVAL before mutation. Zero-range progress returns EDOM before
+ * widget updates/stores. This does not implement
  * renderItems, UString internals or any widget; text is plain decimal. */
 struct oa_setting_row_setter_ops {
     void *context;
@@ -28,7 +29,10 @@ struct oa_setting_row_setter_ops {
     void (*store_value)(void *row,int32_t value);
     void (*store_bounds)(void *row,int32_t lo,int32_t hi);
 };
-int32_t oa_setting_row_percent(int32_t value,int32_t lo,int32_t hi);
+/* A zero range raises SIGFPE in firmware for every numerator. Return EDOM
+ * with unchanged output instead; setter progress returns before side effects.
+ * This is an explicit error-handling deviation, not a firmware return value. */
+int oa_setting_row_percent(int32_t value,int32_t lo,int32_t hi,int32_t *out);
 int oa_setting_row_set_label(void *row,const struct oa_setting_row_setter_ops *o,const char *label);
 int oa_setting_row_set_progress(void *row,const struct oa_setting_row_setter_ops *o,int32_t value);
 int oa_setting_row_set_bar_range(void *row,const struct oa_setting_row_setter_ops *o,int32_t lo,int32_t hi);

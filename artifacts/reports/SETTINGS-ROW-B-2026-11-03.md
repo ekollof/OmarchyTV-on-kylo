@@ -1,5 +1,9 @@
 # Settings-row renderItems type 0xb (slider bar + images) — 2026-11-03
 
+Coverage correction: [UI-REVIEW](UI-REVIEW-2026-11-04.md) adds independently
+created image children. This report's fixture varied the pair together against
+the main row child, so its mixed image1/image2 coverage claim was too broad.
+
 `common/settings_row_render.c` now covers type 0xb, the slider bar with two
 launcher images. It looks up **"slidebar"**, **"image1"** then **"image2"**
 (the first key shares type 0xa's literal at `0xd55a0c`; the image keys are its

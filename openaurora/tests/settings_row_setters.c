@@ -36,14 +36,17 @@ static struct oa_setting_row_setter_ops ops(void)
 int main(void)
 {
     /* Shipped wrap/divide semantics, including the device edges. */
-    assert(oa_setting_row_percent(50,0,100)==50);
-    assert(oa_setting_row_percent(0,0,100)==0);
-    assert(oa_setting_row_percent(-30,-100,100)==35);
-    assert(oa_setting_row_percent(150,0,100)==150);
-    assert(oa_setting_row_percent(7,0,0)==INT32_MAX);
-    assert(oa_setting_row_percent(-7,0,0)==INT32_MIN);
-    assert(oa_setting_row_percent(0x20000001,1,0)==INT32_MIN);
-    assert(oa_setting_row_percent(INT32_MIN,0,1)==(int32_t)((uint32_t)INT32_MIN*100u));
+    int32_t pct=123;
+    assert(!oa_setting_row_percent(50,0,100,&pct) && pct==50);
+    assert(!oa_setting_row_percent(0,0,100,&pct) && pct==0);
+    assert(!oa_setting_row_percent(-30,-100,100,&pct) && pct==35);
+    assert(!oa_setting_row_percent(150,0,100,&pct) && pct==150);
+    assert(oa_setting_row_percent(7,0,0,&pct)==EDOM && pct==150);
+    assert(oa_setting_row_percent(-7,0,0,&pct)==EDOM && pct==150);
+    assert(oa_setting_row_percent(0,0,0,&pct)==EDOM && pct==150);
+    assert(oa_setting_row_percent(0,0,1,NULL)==EINVAL);
+    assert(!oa_setting_row_percent(0x20000001,1,0,&pct) && pct==INT32_MIN);
+    assert(!oa_setting_row_percent(INT32_MIN,0,1,&pct) && pct==0);
     /* Label: type selects the child, text runs only when created, store always. */
     struct trow r;struct oa_setting_row_setter_ops o;
     memset(&r,0,sizeof r);t=&r;o=ops();r.type=1;r.created_bar=1;
@@ -63,6 +66,8 @@ int main(void)
     memset(&r,0,sizeof r);t=&r;o=ops();r.type=9;r.lo=10;r.hi=20;r.created_bar=1;r.created_box=0;
     assert(!oa_setting_row_set_progress(&r,&o,15));
     assert(r.percent==50 && r.stored_value==15 && r.calls==2);
+    r.lo=r.hi;r.calls=0;
+    assert(oa_setting_row_set_progress(&r,&o,15)==EDOM && !r.calls);
     /* Range: type 9 selects +0x13c0, others +0x1498; store always. */
     memset(&r,0,sizeof r);t=&r;o=ops();r.type=9;r.created_bar=1;
     assert(!oa_setting_row_set_bar_range(&r,&o,0,100));

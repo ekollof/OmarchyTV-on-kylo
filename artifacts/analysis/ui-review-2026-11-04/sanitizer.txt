@@ -1,0 +1,6 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-ui-review-sanitize/tests/settings_row_render tests/settings_row_render.c common/settings_row_render.c common/settings_row_setters.c common/launcher_image_id.c
+ok settings row render: full type dispatch, gates and wrapping percentage edges
+ok settings row setters: type-selected children, created gates, percent/divide edges and always-stores
+ok svg image: create setId/supplier/resource gate and destroy order
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

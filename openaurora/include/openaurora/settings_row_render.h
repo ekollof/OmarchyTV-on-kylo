@@ -1,9 +1,10 @@
 #ifndef OPENAURORA_SETTINGS_ROW_RENDER_H
 #define OPENAURORA_SETTINGS_ROW_RENDER_H
 #include <stdint.h>
-/* SettingItemsListBoxRow::renderItems for row types 0, 1 and 4, plus the
- * immediate 0x1b default and the switch default for any other type outside
- * 2..26. The prologue always runs the base render and three rectangle
+/* SettingItemsListBoxRow::renderItems for all row types 0..26 and defaults.
+ * Progress zero ranges return EDOM after prior text work; native firmware
+ * raises SIGFPE instead. Checked bytes are forwarded without normalization.
+ * The prologue always runs the base render and three rectangle
  * lookups ("alexa" at ELF 0x14be1b, "text1" at 0x1543bbf, "labelLong" at
  * 0x14df0f4); type 4 additionally looks up "button" at 0x151cfff. With a
  * key2 rectangle every non-4 type runs the shared row+0x104 tail (type 1

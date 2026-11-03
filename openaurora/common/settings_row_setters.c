@@ -7,20 +7,20 @@
 /* Percent numerator/denominator wrap mod 2^32 exactly like the shipped
  * subs/muls pair: (value-lo) and (max-lo) are 32-bit differences, scaled by
  * 100 with wraparound. The shipped __aeabi_idiv at 0x1285478 then divides
- * with truncation toward zero; a zero denominator with nonzero numerator
- * yields INT32_MAX/INT32_MIN by sign, and 0/0 raises SIGFPE natively (shipped
- * 0x1285d84 calls raise(8), verified by reading). That crashing input is
- * excluded from every sweep and maps here to 0 without a signal. INT32_MIN/-1
+ * with truncation toward zero. Every zero denominator branches to 0x1285d84,
+ * which unconditionally calls raise(8); reject that input with EDOM, leaving
+ * the output unchanged. INT32_MIN/-1
  * would be UB in C and wraps to INT32_MIN on the device, so it is explicit. */
-int32_t oa_setting_row_percent(int32_t value,int32_t lo,int32_t hi)
+int oa_setting_row_percent(int32_t value,int32_t lo,int32_t hi,int32_t *out)
 {
     uint32_t num=(uint32_t)((uint32_t)((uint32_t)value-(uint32_t)lo)*UINT32_C(100));
     uint32_t den=(uint32_t)((uint32_t)hi-(uint32_t)lo);
     int32_t n,d;
     memcpy(&n,&num,sizeof n);memcpy(&d,&den,sizeof d);
-    if(!d)return n>0?INT32_MAX:(n<0?INT32_MIN:0);
-    if(n==INT32_MIN && d==-1)return INT32_MIN;
-    return n/d;
+    if(!out)return EINVAL;
+    if(!d)return EDOM;
+    *out=n==INT32_MIN && d==-1?INT32_MIN:n/d;
+    return 0;
 }
 static int ready(const struct oa_setting_row_setter_ops *o)
 {
@@ -43,7 +43,7 @@ int oa_setting_row_set_progress(void *row,const struct oa_setting_row_setter_ops
     int32_t lo,hi,pct;void *bar,*box;char text[12];int n;
     if(!row || ready(o))return EINVAL;
     lo=o->row_min(row);hi=o->row_max(row);
-    pct=oa_setting_row_percent(value,lo,hi);
+    int error=oa_setting_row_percent(value,lo,hi,&pct);if(error)return error;
     bar=o->child_at(row,o->row_type(row)==UINT32_C(0x17)?UINT32_C(0x1570):UINT32_C(0x1724));
     if(o->is_created(bar))o->set_percent(bar,pct);
     o->store_value(row,value);

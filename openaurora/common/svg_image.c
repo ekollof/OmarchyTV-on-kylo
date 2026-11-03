@@ -1,5 +1,6 @@
 #include "openaurora/svg_image.h"
 #include <string.h>
+#include <stddef.h>
 
 /* SVGImage::create (0x10c9638): setId, fetch the UIImageResource through the
  * context image supplier, copy the rectangle, offset it by the parent's
@@ -8,9 +9,10 @@
 void oa_svg_image_create(void *img,uint32_t id,const uint32_t rect[4],
     void *parent,const struct oa_svg_image_ops *o)
 {
-    uint8_t resource[16];
+    _Alignas(max_align_t) uint8_t resource[OA_SVG_IMAGE_RESOURCE_BYTES];
     uint32_t local[4];
-    if(!img || !rect || !o)return;
+    if(!img || !rect || !o || !o->set_id || !o->get_image_supplier ||
+       !o->supplier_get_resource || !o->image_create || (parent && !o->get_client_rect))return;
     memset(resource,0,sizeof resource);
     o->set_id(img,(int32_t)id);
     {
@@ -32,7 +34,7 @@ void oa_svg_image_create(void *img,uint32_t id,const uint32_t rect[4],
  * SVGSurface::setCleanUISurface(this+0x9c). */
 void oa_svg_image_destroy(void *img,const struct oa_svg_image_ops *o)
 {
-    if(!img || !o)return;
+    if(!img || !o || !o->window_destroy || !o->set_clean_ui_surface)return;
     o->window_destroy(img);
     o->set_clean_ui_surface((void *)((char *)img+0x9c));
 }

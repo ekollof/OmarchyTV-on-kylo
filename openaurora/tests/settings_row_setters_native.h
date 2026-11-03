@@ -1,6 +1,6 @@
 /* Offline ARM fragments: SettingItemsListBoxRow label/progress/range setters.
- * UString temporaries and the __aeabi_idiv divide are controlled stubs, not
- * vendor implementations. Only the three guard-pointer literals are
+ * UString temporaries are controlled stubs; the shipped __aeabi_idiv body
+ * runs for nonzero divisors. Only the three guard-pointer literals are
  * redirected. Harness UString objects are pointer slots: word 0 holds the
  * character pointer, matching the owned plain-string convention used for the
  * animation checks. */
@@ -46,23 +46,13 @@ static void srs_percent(void *bar,uint32_t pct)
 { srs_emit(srs_native->trace,SE_PERCENT,srs_off(srs_row,bar),pct,0,NULL); }
 static void srs_range(void *bar,uint32_t lo,uint32_t hi,uint32_t ignored)
 { (void)ignored;srs_emit(srs_native->trace,SE_RANGE,srs_off(srs_row,bar),lo,hi,NULL); }
-typedef int32_t (*div_fn)(int32_t,int32_t);
-static uint32_t div_bits(div_fn f) { uint32_t v;_Static_assert(sizeof f==sizeof v,"fn width");memcpy(&v,&f,sizeof v);return v; }
-static void div_stub(void *mapped,uint32_t base,uint32_t address,div_fn function)
+/* Execute the actual divide, including its computed branches. Zero ranges
+ * are excluded: their unconditional SIGFPE path is instruction-verified. */
+static void shipped_divide(void *mapped,const unsigned char *elf,size_t bytes)
 {
-    unsigned char *p=stub_destination(mapped,base,address,8);
-    const uint16_t insn[]={0x4b00,0x4718};
-    assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=div_bits(function);memcpy(p+4,&target,4);
-}
-/* Exact shipped divide semantics (read from 0x1285478/0x1285d84): truncation
- * toward zero, INT32_MAX/INT32_MIN for nonzero/zero, INT32_MIN for
- * INT32_MIN/-1. The 0/0 input raises SIGFPE natively and is excluded from
- * every sweep; it maps here to 0 without a signal. */
-static int32_t srs_div(int32_t a,int32_t b)
-{
-    if(!b)return a>0?INT32_MAX:(a<0?INT32_MIN:0);
-    if(a==INT32_MIN && b==-1)return INT32_MIN;
-    return a/b;
+    size_t off=file_offset(elf,bytes,0x1285478,660);
+    assert(crc32(elf+off,660)==UINT32_C(0xa99eabd1));
+    memcpy(stub_destination(mapped,0x1285000,0x1285478,660),elf+off,660);
 }
 static struct srs_fixture *srs_ref;
 static uint32_t srse_type(void *row) { (void)row;return srs_ref->type; }
@@ -160,7 +150,7 @@ static void check_settings_row_setters(const unsigned char *elf,size_t bytes)
     pair_stub(usop,0xc88000,0xc8865c,srs_append);
     pair_stub(bar,0x10b3000,0x10b3310,srs_percent);
     quad_stub(slider,0x10c4000,0x10c4974,srs_range);
-    div_stub(idiv,0x1285000,0x1285478,srs_div);
+    shipped_divide(idiv,elf,bytes);
     executable(row,12288);executable(win,4096);executable(text,4096);executable(ustr,4096);
     executable(usop,4096);executable(bar,4096);executable(slider,4096);executable(idiv,4096);
     unsigned compared=0;
@@ -196,6 +186,7 @@ static void check_settings_row_setters(const unsigned char *elf,size_t bytes)
         };
         for(unsigned a=0;a<4;++a)for(unsigned b=0;b<2;++b)for(unsigned x=0;x<2;++x)
         for(unsigned k=0;k<sizeof cases/sizeof *cases;++k) {
+            if(cases[k].lo==cases[k].hi)continue;
             struct srs_result native={0},ref={0};
             struct srs_fixture n={types[a],cases[k].lo,cases[k].hi,(int)b,(int)x,&native,srs_row},r=n;
             r.trace=&ref;r.row=srs_refrow;

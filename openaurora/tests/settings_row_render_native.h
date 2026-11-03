@@ -1,10 +1,9 @@
-/* Offline ARM fragment: SettingItemsListBoxRow::renderItems for row types
- * 0, 1 and 4, plus the immediate 0x1b default and the switch default for any
- * other type outside 2..26. UString temporaries and every widget/rectangle
+/* Offline ARM fragment: SettingItemsListBoxRow::renderItems for all row types
+ * 0..26 plus defaults. UString temporaries and widget/rectangle
  * call are controlled stubs, not vendor implementations; the EASIRect copy
  * (0xd51d00) and offset (0xd2af88) bodies run verbatim from the dump. Only
  * the five literal slots in range are redirected (guard plus four key
- * pointers aimed at owned strings). Switch cases 2..26 are never executed.
+ * pointers aimed at owned strings). All switch cases execute in the sweep.
  * Harness row buffers carry the label/word/rect state both sides read. */
 #include "openaurora/settings_row_render.h"
 typedef uint32_t (*gid_fn)(uint32_t,uint32_t);
@@ -83,6 +82,7 @@ struct rr_fixture {
 static const char rr_empty[]="";
 static const char *rk9slot,*rk10slot,*rk11slot,*rk12slot,*rk13slot,*rk14slot;
 static struct rr_fixture *rr_native;
+static int rr_second_image=-1,rr_second_text=-1;
 static _Alignas(uint32_t) unsigned char rr_row[0x3000],rr_refrow[0x3000];
 static uint32_t rr_vtable[16];
 static void rr_emit(struct rr_result *r,uint32_t kind,uint32_t off,uint32_t a,uint32_t b,
@@ -117,6 +117,8 @@ static unsigned rr_created(void *child)
     rr_emit(rr_native->trace,RR_IS,off,0,0,NULL,NULL);
     /* The two launcher images can be created independently of the row's main
      * child, and the shipped bodies fork on each image's own state. */
+    if(off==UINT32_C(0x2c0c) && rr_second_image>=0)return (unsigned)rr_second_image;
+    if(off==UINT32_C(0x2228) && rr_second_text>=0)return (unsigned)rr_second_text;
     if(off==UINT32_C(0x2b28) || off==UINT32_C(0x2c0c))return (unsigned)rr_native->img_created;
     if(off==UINT32_C(0x1f68) || off==UINT32_C(0x2228))return (unsigned)rr_native->tb_created;
     return (unsigned)rr_native->created;
@@ -193,8 +195,6 @@ static void rr_cpb(void *c,uint32_t z,uint32_t rect,uint32_t par)
 { (void)rect;(void)par;rr_emit(rr_native->trace,RR_CPB,rr_off(rr_row,c),z,0,NULL,NULL); }
 static void rr_pct(void *c,uint32_t v) { rr_emit(rr_native->trace,RR_PCT,rr_off(rr_row,c),v,0,NULL,NULL); }
 static void rr_dbl(void *c,uint32_t on) { rr_emit(rr_native->trace,RR_DBL,rr_off(rr_row,c),on,0,NULL,NULL); }
-static uint32_t rr_idiv(uint32_t a,uint32_t b)
-{ int32_t x,y;memcpy(&x,&a,4);memcpy(&y,&b,4);assert(y);return (uint32_t)(x/y); }
 static char rr_numfmt[16];
 static void rr_appendint(void *ustr,uint32_t v)
 { snprintf(rr_numfmt,sizeof rr_numfmt,"%d",(int)v);*(const char **)ustr=rr_numfmt; }
@@ -278,6 +278,8 @@ static int rre_created(void *child)
 {
     uint32_t off=rr_off(rr_ref->row,child);
     rr_emit(rr_ref->trace,RR_IS,off,0,0,NULL,NULL);
+    if(off==UINT32_C(0x2c0c) && rr_second_image>=0)return rr_second_image;
+    if(off==UINT32_C(0x2228) && rr_second_text>=0)return rr_second_text;
     if(off==UINT32_C(0x2b28) || off==UINT32_C(0x2c0c))return rr_ref->img_created;
     if(off==UINT32_C(0x1f68) || off==UINT32_C(0x2228))return rr_ref->tb_created;
     return rr_ref->created;
@@ -409,6 +411,8 @@ static void rr_setup_row(unsigned char *row,struct rr_fixture *f)
 }
 static const char rk0[]="alexa",rk1[]="text1",rk2[]="labelLong",rk3[]="button",rk4[]="checkbox",rk5[]="selectionbox",rk6[]="image1",rk7[]="image2",rk8[]="banner",rk9[]="slidebar",rk10[]="text2",rk11[]="text3",rk12[]="text4",rk13[]="progressbar",rk14[]="image";
 static const char *rkcell[9];
+static const uint32_t *rr_numeric_edge;
+static unsigned rr_checked_edge;
 
 /* One differential case: builds both fixtures, runs the shipped body and the
  * owned C, compares the full ordered trace and the row image. */
@@ -425,6 +429,8 @@ static void render_case(rr_fn render,uint32_t type,unsigned m,unsigned c,
         .sel_img=0x66,.sel_id=0x55,.num=0x44,.op=0x42,.hi=0x43,.rebuild=0,
         .slo=10,.shi=90,.sval=42,.pval=45,.flag=(int)g,.l1=l1s[l],.l2=l2s[l],.vtext="VX",.t11text="T11",.t12text="T12",.t13text="T13",.t14text="T14",.t3text="T3",.t4text="T4",
         .trace=&native,.row=rr_row};
+    if(rr_numeric_edge) { n.slo=rr_numeric_edge[0];n.shi=rr_numeric_edge[1];n.pval=rr_numeric_edge[2]; }
+    n.checked=(int)rr_checked_edge;
     for(unsigned i=0;i<15;++i)n.present[i]=(m>>i)&1;
     struct rr_fixture r=n;
     n.pt[0]=pts[p][0];n.pt[1]=pts[p][1];
@@ -618,7 +624,7 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
     pair_stub(pb,0x10b3000,0x10b36b0,rr_setfocus);
     pair2_stub(pb,0x10b3000,0x10b36fc,rr_setrect);
     pair_stub(pb,0x10b3000,0x10b3390,rr_dbl);
-    gid_stub(idiv,0x1285000,0x1285478,rr_idiv);
+    shipped_divide(idiv,elf,bytes);
     blank_stub(btn,0x10ad000,0x10adef8,rr_destroy);
     tri_stub(btn,0x10ad000,0x10ae778,rr_glyph);
     pair_stub(btn,0x10ad000,0x10aeeb0,rr_hl);
@@ -673,6 +679,32 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
             for(unsigned a=0;a<27;++a)if(types[a]==UINT32_C(0xc))
                 for(unsigned c=0;c<2;++c)for(unsigned tb=0;tb<2;++tb)
                     { render_case(render,types[a],32767,c,0,0,0,0,c,tb,c);++compared; }
+            /* Actual shipped division, including signed difference overflow,
+             * negative divisors and INT32_MIN/-1; no zero divisors executed. */
+            static const uint32_t numeric[][3]={
+                {UINT32_C(0x80000000),INT32_MAX,INT32_MAX},
+                {INT32_MAX,UINT32_C(0x80000000),0},
+                {0,UINT32_MAX,UINT32_C(0x20000000)}, {0,100,UINT32_MAX},
+                {0,3,1},{100,0,150},{UINT32_MAX,0,0},{0,UINT32_C(0x80000000),INT32_MAX}
+            };
+            for(uint32_t ty=0x17;ty<=0x19;++ty)for(unsigned c=0;c<2;++c)for(unsigned k=0;k<8;++k) {
+                rr_numeric_edge=numeric[k];render_case(render,ty,32767,c,0,0,0,0,c,c,1);++compared;
+            }
+            rr_numeric_edge=NULL;
+            for(unsigned checked=0;checked<256;++checked)for(unsigned c=0;c<2;++c) {
+                rr_checked_edge=checked;render_case(render,0x16,32767,c,0,0,0,0,c,c,c);++compared;
+            }
+            rr_checked_edge=0;
+            const uint32_t image_types[]={5,6,0xb,0x19};
+            for(unsigned a=0;a<4;++a)for(unsigned c=0;c<2;++c)
+            for(unsigned first=0;first<2;++first)for(int second=0;second<2;++second) {
+                rr_second_image=second;render_case(render,image_types[a],32767,c,0,0,0,0,first,c,c);++compared;
+            }
+            rr_second_image=-1;
+            for(unsigned c=0;c<2;++c)for(unsigned first=0;first<2;++first)for(int second=0;second<2;++second) {
+                rr_second_text=second;render_case(render,0xc,32767,c,0,0,0,0,c,first,c);++compared;
+            }
+            rr_second_text=-1;
             /* Pass C: type 0xb forks on each image's own created state; the
              * mixed case re-creates image1 when only image2 exists. */
             for(unsigned a=0;a<27;++a)if(types[a]==UINT32_C(0xb))

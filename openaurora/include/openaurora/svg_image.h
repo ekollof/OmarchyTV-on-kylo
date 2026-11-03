@@ -2,6 +2,7 @@
 #define OA_SVG_IMAGE_H
 
 #include <stdint.h>
+#define OA_SVG_IMAGE_RESOURCE_BYTES 32u
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,12 +17,16 @@ extern "C" {
  * surrounding create logic (UIWindow::setId, SVGContext::getImageSupplier +
  * supplier resource lookup, optional parent client-rect offset) and destroy
  * (SVGWindow::destroy + SVGSurface::setCleanUISurface) are implemented here.
+ * img points to backing storage containing its surface at+0x9c, not an integer
+ * handle. Missing required callbacks make the operation a no-op, before any
+ * callback runs. create requires get_client_rect only with a non-NULL parent.
  */
 struct oa_svg_image_ops {
     void (*set_id)(void *img,int32_t id);
     void *(*get_image_supplier)(void *img);
-    /* Supplier virtual call: fills `out` with a UIImageResource token and
-     * returns non-zero when the resource exists. */
+    /* Supplier virtual call: out has32 bytes aligned to max_align_t. The
+     * resource and rectangle are borrowed only until image_create returns;
+     * copy anything retained. Success is nonzero. */
     int (*supplier_get_resource)(void *supplier,uint32_t id,void *out);
     /* UIWindow::getClientRect, returned through a hidden pointer. */
     void (*get_client_rect)(void *parent,uint32_t out[4]);

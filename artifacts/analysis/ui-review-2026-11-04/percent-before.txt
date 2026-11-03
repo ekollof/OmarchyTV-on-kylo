@@ -1,0 +1,5 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-ui-review-sanitize/tests/settings_row_render tests/settings_row_render.c common/settings_row_render.c common/launcher_image_id.c
+common/settings_row_render.c:630:15: runtime error: signed integer overflow: 2147483647 - -2147483648 cannot be represented in type 'int'
+make: *** [Makefile:327: check-settings-row-render] Error 1
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

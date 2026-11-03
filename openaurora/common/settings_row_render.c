@@ -1,4 +1,5 @@
 #include "openaurora/settings_row_render.h"
+#include "openaurora/settings_row_setters.h"
 #include <errno.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -109,7 +110,7 @@ static int case_0x16(void *row,const struct oa_setting_row_render_ops *o,void *b
         uint32_t moved[4];int32_t pt[2];
         o->get_point(row,pt);rect_math(moved,base,pt);
         o->set_rect(child,moved);o->set_text(child,"");
-        o->set_checked(child,o->row_flag(row,UINT32_C(0x2e44))?1u:0u);
+        o->set_checked(child,(uint32_t)o->row_flag(row,UINT32_C(0x2e44)));
         return 0;
     }
     o->set_name(child,UINT32_C(1),UINT32_C(9));
@@ -118,7 +119,7 @@ static int case_0x16(void *row,const struct oa_setting_row_render_ops *o,void *b
     o->set_name(child,UINT32_C(2),UINT32_C(12));
     o->set_text_alignment(child,UINT32_C(5));
     o->create_checkbox(child,0,UINT32_C(0x74),UINT32_C(0x75),"",base,row);
-    o->set_checked(child,o->row_flag(row,UINT32_C(0x2e44))?1u:0u);
+    o->set_checked(child,(uint32_t)o->row_flag(row,UINT32_C(0x2e44)));
     return 0;
 }
 /* Row-level setSelectionBoxImageId (0xd54374): store the id at row+0x2e54,
@@ -621,16 +622,12 @@ static int case_0xc(void *row,const struct oa_setting_row_render_ops *o,void *bo
 /* Shared percentage math for the progress-bar rows: 100*(value-lo)/(hi-lo)
  * with 32-bit wrapping and truncating signed division, matching the shipped
  * __aeabi_idiv call. */
-static int32_t pb_percent(void *row,const struct oa_setting_row_render_ops *o)
+static int pb_percent(void *row,const struct oa_setting_row_render_ops *o,int32_t *out)
 {
     int32_t lo=(int32_t)o->row_word(row,UINT32_C(0x2df0));
     int32_t hi=(int32_t)o->row_word(row,UINT32_C(0x2df4));
     int32_t v=(int32_t)o->row_word(row,UINT32_C(0x2dfc));
-    uint32_t num=UINT32_C(100)*(uint32_t)(v-lo);
-    int32_t n,den=hi-lo;
-    if(!den)return 0;
-    memcpy(&n,&num,sizeof n);
-    return (int32_t)(n/den);
+    return oa_setting_row_percent(v,lo,hi,out);
 }
 /* Case 0x17: progressbar + text2. The text box (row+0x24e8) uses the
  * 0x1e8.. names, gets setFont(0x1e) when the prologue alexa rect exists, and
@@ -663,7 +660,7 @@ static int case_pb17(void *row,const struct oa_setting_row_render_ops *o,void *b
     }
     if(!pr)return 0;
     {
-        int32_t pct=pb_percent(row,o);
+        int32_t pct;int error=pb_percent(row,o,&pct);if(error)return error;
         void *pb=o->child_at(row,UINT32_C(0x1570));int created=o->is_created(pb);
         uint32_t base[4];o->rect_words(pr,base);
         if(created) {
@@ -756,7 +753,7 @@ static int case_pb18(void *row,const struct oa_setting_row_render_ops *o,void *b
         }
         if(!pr)return 0;
         {
-            int32_t pct=pb_percent(row,o);
+            int32_t pct;int error=pb_percent(row,o,&pct);if(error)return error;
             void *pb=o->child_at(row,UINT32_C(0x1724));int created=o->is_created(pb);
             uint32_t base[4];o->rect_words(pr,base);
             if(created) {
@@ -915,12 +912,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             return 0;
         }
         if(type==UINT32_C(0x17)) {
-            case_pb17(row,o,box,r1);
-            return 0;
+            return case_pb17(row,o,box,r1);
         }
         if(type==UINT32_C(0x18) || type==UINT32_C(0x19)) {
-            case_pb18(row,o,box,type==UINT32_C(0x19));
-            return 0;
+            return case_pb18(row,o,box,type==UINT32_C(0x19));
         }
         if(type==UINT32_C(0x11)) {
             case_te(row,o,box,3,10,UINT32_C(0x2e0c));
@@ -1015,12 +1010,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             return 0;
         }
         if(type==UINT32_C(0x17)) {
-            case_pb17(row,o,box,r1);
-            return 0;
+            return case_pb17(row,o,box,r1);
         }
         if(type==UINT32_C(0x18) || type==UINT32_C(0x19)) {
-            case_pb18(row,o,box,type==UINT32_C(0x19));
-            return 0;
+            return case_pb18(row,o,box,type==UINT32_C(0x19));
         }
         if(type==UINT32_C(0x11)) {
             case_te(row,o,box,3,10,UINT32_C(0x2e0c));

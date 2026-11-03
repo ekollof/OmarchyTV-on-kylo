@@ -3,12 +3,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <stddef.h>
 
 static unsigned count;
+static unsigned char image_object[0x200];
 static struct { uint32_t kind,id,flag,rect[4]; } ev[32];
 static int sup_ok=1;
 static uint32_t client[4]={1,2,7,8};
-static uint32_t last_res;
+static uintptr_t last_res;
 static int res_match;
 static int clean_ok;
 
@@ -25,8 +27,11 @@ static void sv_set_id(void *img,int32_t id) { (void)img;push(E_ID,(uint32_t)id,0
 static void *sv_get_supplier(void *img) { (void)img;push(E_GETSUP,0,0);return (void *)0x1000; }
 static int sv_supplier_get(void *sup,uint32_t id,void *out)
 {
-    (void)sup;push(E_SUP,id,(uint32_t)sup_ok);last_res=(uint32_t)(uintptr_t)out;
-    memset(out,0x5a,16);return sup_ok;
+    (void)sup;push(E_SUP,id,(uint32_t)sup_ok);
+    assert((uintptr_t)out%_Alignof(max_align_t)==0);
+    last_res=(uintptr_t)out;
+    for(unsigned i=0;i<OA_SVG_IMAGE_RESOURCE_BYTES;++i)((unsigned char *)out)[i]=(unsigned char)i;
+    return sup_ok;
 }
 static void sv_get_client(void *parent,uint32_t out[4])
 {
@@ -34,13 +39,14 @@ static void sv_get_client(void *parent,uint32_t out[4])
 }
 static void sv_image_create(void *img,const void *res,const uint32_t rect[4],void *parent)
 {
-    (void)img;(void)parent;res_match=((uint32_t)(uintptr_t)res==last_res);
+    (void)img;(void)parent;res_match=((uintptr_t)res==last_res);
+    for(unsigned i=0;i<OA_SVG_IMAGE_RESOURCE_BYTES;++i)assert(((const unsigned char *)res)[i]==i);
     push(E_IMG,res_match,0);memcpy(ev[count-1].rect,rect,sizeof ev[count-1].rect);
 }
 static void sv_window_destroy(void *img) { (void)img;push(E_WD,0,0); }
 static void sv_clean(void *img)
 {
-    clean_ok=((uint32_t)(uintptr_t)img==0x1000+0x9c);push(E_CLEAN,clean_ok,0);
+    clean_ok=(img==(unsigned char *)image_object+0x9c);push(E_CLEAN,clean_ok,0);
 }
 
 static struct oa_svg_image_ops ops(void)
@@ -53,7 +59,7 @@ int main(void)
 {
     static const uint32_t rect[4]={10,20,30,40};
     struct oa_svg_image_ops o;
-    void *img=(void *)0x1000;
+    void *img=image_object;
 
     /* create without a parent: setId, supplier lookup, imageCreate with the
      * rectangle unchanged and the resource token from the supplier. */
@@ -94,6 +100,10 @@ int main(void)
     oa_svg_image_create(NULL,1,rect,NULL,&o);
     oa_svg_image_create(img,1,NULL,NULL,&o);
     oa_svg_image_destroy(NULL,&o);
+    o.image_create=NULL;oa_svg_image_create(img,1,rect,NULL,&o);
+    o=ops();o.supplier_get_resource=NULL;oa_svg_image_create(img,1,rect,NULL,&o);
+    o=ops();o.get_client_rect=NULL;oa_svg_image_create(img,1,rect,img,&o);
+    o=ops();o.set_clean_ui_surface=NULL;oa_svg_image_destroy(img,&o);
     assert(count==0);
 
     puts("ok svg image: create setId/supplier/resource gate and destroy order");

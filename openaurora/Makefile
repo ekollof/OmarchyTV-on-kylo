@@ -319,7 +319,7 @@ check-settings-row-setters: $(BUILD)/tests/settings_row_setters
 	@$(BUILD)/tests/settings_row_setters
 check: check-settings-row-setters
 
-$(BUILD)/tests/settings_row_render: tests/settings_row_render.c common/settings_row_render.c common/launcher_image_id.c include/openaurora/settings_row_render.h include/openaurora/launcher_image_id.h
+$(BUILD)/tests/settings_row_render: tests/settings_row_render.c common/settings_row_render.c common/settings_row_setters.c common/launcher_image_id.c include/openaurora/settings_row_render.h include/openaurora/settings_row_setters.h include/openaurora/launcher_image_id.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 .PHONY: check-settings-row-render

@@ -321,6 +321,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Review recent row/image work (UI-REVIEW-2026-11-04): fix32-byte image
+      resource capacity/alignment, renderer arithmetic UB, zero-divide claim,
+      raw checked byte and independent paired-child test coverage. Actual
+      divider and1771396 renderer/276 setter/56 image comparisons pass; full
+      host/Unix IPC, ASan/UBSan, ARM/qemu and focused real-TV CPU units pass.
+- [ ] Resolve/accept malformed zero-range fault policy before claiming full
+      bug-for-bug fault parity: firmware raises SIGFPE for all zero divisors;
+      current replacement returns EDOM and preserves earlier rendering effects.
 - [x] Correct the renderItems differential's presence coverage (11 keys, not
       7) and implement type 0x9's created slider path:66312 genuine native/C
       comparisons plus host/sanitizer/ARM-qemu/TV CPU pass.
