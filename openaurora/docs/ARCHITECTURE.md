@@ -159,6 +159,14 @@ rejects nested draw/destroy while a sink holds its temporary event handles.
 No live DB/resource service, module/skin/row-widget renderer or display ownership
 is implied. Event data must be copied before asynchronous retention.
 
+`common/settings_row_type.c` supplies the first lower row type controller:
+cache/rebuild stores precede renderItems, and child visibility follows the later
+row visibility query in exact qualified setter order. SETTINGS-ROW-TYPE records
+12480 ARM comparisons and host/sanitizer/ARM-qemu/TV CPU tests, including an
+owned-model type-event join to cached row/child fields. Type24 does not touch
+child1ca8; unknown types only change labels. This is not a generic hide/show
+mask, full renderItems, child widget methods, all row setters or a screen consumer.
+
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;
 EGL-WINDOW establishes direct display1 presentation with the retained4-byte

@@ -297,6 +297,15 @@ check-settings-model: $(BUILD)/tests/settings_model
 check: check-settings-model
 
 $(BUILD)/tests/tab_policy_firmware: common/settings_draw.c include/openaurora/settings_draw.h tests/settings_draw_fixture.h tests/settings_draw_native.h
+$(BUILD)/tests/tab_policy_firmware: tests/settings_row_type_native.h common/settings_row_type.c include/openaurora/settings_row_type.h
+
+$(BUILD)/tests/settings_row_type: tests/settings_row_type.c common/settings_row_type.c common/settings_model.c common/settings_draw.c include/openaurora/settings_row_type.h include/openaurora/settings_model.h include/openaurora/settings_draw.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-settings-row-type
+check-settings-row-type: $(BUILD)/tests/settings_row_type
+	@$(BUILD)/tests/settings_row_type
+check: check-settings-row-type
 
 $(BUILD)/tests/svg_list_anim: tests/svg_list_anim.c tests/svg_list_anim_fixture.h common/svg_list_anim.c include/openaurora/svg_list_anim.h
 	@mkdir -p $(dir $@)

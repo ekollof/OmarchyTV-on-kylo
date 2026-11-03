@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-TYPE implements setType: changed cache/rebuild stores precede
+renderItems, unchanged clears rebuild but still queries visibility, and the
+query follows rendering.12480 native cases pass. Exact qualified child calls
+matter: type24 omits1ca8, unknown types only update two label children. Do not
+substitute hide-all or a generic visibility mask. Saved actual renderItems reads
+the flag, so no invented post-render dirty clear. Host/sanitizer/ARM-qemu/TV CPU
+join to owned model/cache passes; actual widgets/rendering/live resources open.
+
 SETTINGS-MODEL replaces placeholder text/vector providers for an explicit owned
 decoded snapshot: all item strings/value texts/image bytes/default localization
 are copied, temporary capacities avoid hidden assignment/append allocation

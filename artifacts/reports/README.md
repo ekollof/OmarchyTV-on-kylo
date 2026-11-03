@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [SETTINGS-ROW-TYPE](SETTINGS-ROW-TYPE-2026-11-03.md) | setType cache/rebuild/render/query/qualified child ordering;12480 native cases plus host/IPC/sanitizer/ARM-qemu/TV CPU; owned-model/cache join, type24 omitted child and unknown label-only semantics; actual renderItems/setters/widget/rendering integration open |
 | [SETTINGS-MODEL](SETTINGS-MODEL-2026-11-03.md) | real owned item/text/value/image providers and dispatcher composition;2048 cases/fault/reentry/deep-copy host/IPC/sanitizer/ARM-qemu/real TV CPU pass; staging removed; live resource/module/widget/rendering/startup integration open |
 | [SETTINGS-DRAW](SETTINGS-DRAW-2026-11-03.md) | complete parent drawRow dispatcher;18441 native/C cases, host/IPC/sanitizer/ARM; backing type writeback, all value/image/setter priorities and temporary order; owned providers now SETTINGS-MODEL; live resources/widgets/rendering/visible acceptance open |
 | [SVG-LIST-REFRESH](SVG-LIST-REFRESH-2026-11-03.md) | base/manager single-row refresh and row checked update;2880+24 native/C comparisons plus host/IPC/sanitizer/ARM; total+8/slot/wrap gates, set-before-cache and exact parent operands; parent dispatcher now SETTINGS-DRAW; backend/rendering/visible acceptance open |

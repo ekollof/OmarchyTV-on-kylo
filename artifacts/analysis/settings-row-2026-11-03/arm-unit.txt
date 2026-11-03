@@ -1,0 +1,1 @@
+ok settings row type: ordered visibility, omitted child, unchanged/hidden/invalid gates and owned-model join

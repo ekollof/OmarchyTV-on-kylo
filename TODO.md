@@ -321,6 +321,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement SettingItemsListBoxRow::setType cache/rebuild/render/visibility
+      controller and bounded owned-model type-event join:12480 shipped ARM/C
+      cases and prior groups pass; full host/Unix IPC, ASan/UBSan, ARM/qemu and
+      focused real TV CPU pass. SETTINGS-ROW-TYPE. Preserve exact qualified
+      child order, omitted1ca8 for type24 and unknown-type label-only behavior.
+      Full renderItems/label/progress/range source saved; actual row construction,
+      remaining setters, live resources, renderer/skin/module/display/startup/
+      independent visible acceptance remain open.
 - [x] Implement owned setting-list item/text/value/image snapshot and draw
       providers;2048 real-provider calls plus allocation-failure/deep-copy/
       reentry checks pass strict full host/Unix IPC, ASan/UBSan, ARM/qemu and

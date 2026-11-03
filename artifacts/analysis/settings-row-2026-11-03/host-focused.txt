@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/settings_row_type tests/settings_row_type.c common/settings_row_type.c common/settings_model.c common/settings_draw.c
+ok settings row type: ordered visibility, omitted child, unchanged/hidden/invalid gates and owned-model join
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

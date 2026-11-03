@@ -24,7 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-MODEL](artifacts/reports/SETTINGS-MODEL-2026-11-03.md) adds
+Latest: [SETTINGS-ROW-TYPE](artifacts/reports/SETTINGS-ROW-TYPE-2026-11-03.md)
+implements setType cache/rebuild-before-render and exact qualified child
+visibility ordering.12480 shipped ARM/C cases and prior groups pass, plus full
+host/Unix IPC, focused ASan/UBSan, ARM/qemu and focused real-TV CPU. Owned-model
+type event joins to actual cached row/child fields; other row setters and widget
+rendering remain open. Type24 omits child+1ca8; unknown types affect only the two
+labels. No generic hide-all or unconditional post-render flag clear. Saved full
+renderItems source in analysis/settings-row-2026-11-03/render-source.txt; label/
+progress/range source also saved, not implemented here. Next integrate actual row
+construction/rendering and remaining setters/live resources with these providers.
+Build-tv-v3/settings-row identities in MEMORY/report. TV temporary CPU staging
+size/hash separately verified, test exit0, removed/no helper, no-reset flag kept.
+No device/screen/input/settings/network/services/boot/persistent change. No pending
+local job/helper. Skin/module/display/startup/independent visible parity stay open.
+
+Previous: [SETTINGS-MODEL](artifacts/reports/SETTINGS-MODEL-2026-11-03.md) adds
 owned item/text/value/image providers feeding the existing drawRow dispatcher.
 2048 real-provider dispatches, allocation-failure cleanup/retry, source-buffer
 overwrite, signed numeric limits, localized default and per-model reentry gates

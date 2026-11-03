@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-TYPE-2026-11-03: setType cache/rebuild/render/query and exact child
+setter ordering pass12480 shipped ARM/C cases plus prior groups, full host/Unix
+IPC, ASan/UBSan, ARM/qemu and focused real-TV CPU. Model type event joins to owned
+row cache/child fields; no full widget renderer. Type24 preserves untouched1ca8;
+unknown types only change labels. Full renderItems and pending label/progress/
+range sources saved. Build-tv-v3/settings-row unit73700/
+18e83e5cd1d9a9126172f211a022ad66, reference884992/
+6f7d199a7942cbeb9c082c0028feb360. TV already awake, no-reset/free space checked,
+staging size/hash separately verified, CPU test exit0, staging removed and no
+helper in /proc/*/exe; no-reset flag retained. No screen/input/device/settings/
+network/service/boot/persistent change. No pending job/helper. Actual widget/
+resource/skin/module/rendering/startup/visible acceptance remains open.
+
 SETTINGS-MODEL-2026-11-03: owned item/text/value/image snapshot and draw providers
 pass2048 dispatch calls plus fault injection/deep-copy/reentry checks on strict
 host/full suite/actual Unix IPC, focused ASan/UBSan, ARM/qemu and real TV CPU.
