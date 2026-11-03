@@ -321,6 +321,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement SettingItemsListBoxRow::renderItems type 0x1a (shared-tail
+      0x2e8c name branch + button case body):3032 native/C comparisons and
+      prior groups pass; full host/Unix IPC, ASan/UBSan, ARM/qemu and focused
+      real TV CPU pass. SETTINGS-ROW-1A. The case body's own "button" literal
+      needed an owned-string redirect; null key2rect still runs the case body
+      with no tail. Switch cases 2..25, row construction, child visibility
+      internals, live resources, scrollbar/skin/module/display/startup/
+      independent visible acceptance remain open.
 - [x] Implement SettingItemsListBoxRow::renderItems for types 0/1/4 plus
       0x1b/default exits: shared 0x104 tail, type-selected children, created
       gates and always-create with 2264 native/C comparisons and prior groups

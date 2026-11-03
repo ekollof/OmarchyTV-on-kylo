@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 struct rrow {
-    uint32_t type;uint32_t words[16];int flag;const char *label,*blabel;
+    uint32_t type;uint32_t words[20];int flag;const char *label,*blabel;
     void *rects[4];uint32_t rwords[4][4];int32_t pt[2];
     int created;unsigned count;struct {uint32_t kind,off,a,b;char text[24];} trace[48];
 };
@@ -26,7 +26,7 @@ static void *q_rect(void *c,const char *k)
 static void q_words(void *r,uint32_t out[4])
 { for(int i=0;i<4;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
 static uint32_t q_type(void *r) { (void)r;return t->type; }
-static uint32_t q_word(void *r,uint32_t o) { (void)r;assert(o>=0x2e8c && o<=0x2eb8 && !(o&3));return t->words[(o-0x2e8c)/4]; }
+static uint32_t q_word(void *r,uint32_t o) { (void)r;assert(o>=0x2e8c && o<=0x2ed8 && !(o&3));return t->words[(o-0x2e8c)/4]; }
 static int q_flag(void *r,uint32_t o) { (void)r;assert(o==0x2e45);return t->flag; }
 static const char *q_label(void *r) { (void)r;return t->label; }
 static const char *q_blabel(void *r) { (void)r;return t->blabel; }
@@ -70,12 +70,9 @@ int main(void)
     assert(!strcmp(r.trace[2].text,"text1") && !strcmp(r.trace[3].text,"labelLong"));
     assert(r.trace[4].kind==R_IS && r.trace[4].off==0x104);
     assert(r.trace[12].kind==R_CTEXT && !strcmp(r.trace[12].text,""));
-    /* Type 2..26 stay open, after the shared tail where it runs. */
+    /* Type 2..25 stay open, after the shared tail where it runs. */
     reset(&r);o=ops();r.type=2;
     assert(oa_setting_row_render(&r,&o)==ENOTSUP && r.count==13);
-    /* Type 0x1a: open before the tail. */
-    reset(&r);o=ops();r.type=0x1a;
-    assert(oa_setting_row_render(&r,&o)==ENOTSUP && r.count==4);
     /* Type 0 with missing key2: prologue then out. */
     reset(&r);o=ops();r.type=0;r.rects[1]=NULL;
     assert(!oa_setting_row_render(&r,&o) && r.count==4);
@@ -131,6 +128,32 @@ int main(void)
     assert(!oa_setting_row_render(&r,&o));
     assert(r.count==11);
     assert(r.trace[4].kind==R_IS && r.trace[4].off==0x104);
+    assert(r.trace[8].kind==R_IS && r.trace[8].off==0x684);
+    assert(r.trace[10].kind==R_TEXT && !strcmp(r.trace[10].text,"PB"));
+    /* Type 0x1a: shared tail uses 0x2e8c for all four name slots (no setFont),
+     * then the case body drives the 0x684 button with 0x2ed0/0x2ecc/0x2ed8/
+     * 0x2ed4 and creates it from the "button" rectangle. */
+    reset(&r);o=ops();r.type=0x1a;r.blabel="PB";
+    for(int i=0;i<4;++i)r.rwords[3][i]=(uint32_t)(100+i);
+    for(int k=0;k<20;++k)r.words[k]=(uint32_t)(0x200+k);
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==19);
+    /* tail: is_created(0x104), four 0x2e8c names, focus/elipses, create */
+    assert(r.trace[4].kind==R_IS && r.trace[4].off==0x104);
+    assert(r.trace[5].kind==R_NAME && r.trace[5].b==0x200);
+    assert(r.trace[8].kind==R_NAME && r.trace[8].b==0x200);
+    assert(r.trace[11].kind==R_CTEXT);
+    /* case body: button lookup, is_created(0x684), four 0x2edx names, create */
+    assert(r.trace[12].kind==R_GET && !strcmp(r.trace[12].text,"button"));
+    assert(r.trace[13].kind==R_IS && r.trace[13].off==0x684);
+    assert(r.trace[14].kind==R_NAME && r.trace[14].b==0x211);
+    assert(r.trace[17].kind==R_NAME && r.trace[17].b==0x212);
+    assert(r.trace[18].kind==R_CBTN && !strcmp(r.trace[18].text,"PB"));
+    /* Type 0x1a created button: tail then setWindowRect/setText (no names). */
+    reset(&r);o=ops();r.type=0x1a;r.created=1;r.blabel="PB";
+    for(int i=0;i<4;++i)r.rwords[3][i]=(uint32_t)(100+i);
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==11);
     assert(r.trace[8].kind==R_IS && r.trace[8].off==0x684);
     assert(r.trace[10].kind==R_TEXT && !strcmp(r.trace[10].text,"PB"));
     /* Invalid ops/args change nothing. */

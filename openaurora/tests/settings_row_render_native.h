@@ -62,7 +62,7 @@ struct rr_event { uint32_t kind,off,a,b;uint32_t w[4];char text[24]; };
 struct rr_result { struct rr_event events[64];unsigned count; };
 struct rr_fixture {
     uint32_t type;int present[4];int created;int32_t pt[2];
-    uint32_t words[12];int flag;const char *l1,*l2;uint32_t rwords[4][4];
+    uint32_t words[20];int flag;const char *l1,*l2;uint32_t rwords[4][4];
     struct rr_result *trace;unsigned char *row;
 };
 static struct rr_fixture *rr_native;
@@ -148,7 +148,7 @@ static void *rre_get(void *container,const char *key)
 }
 static void rre_words(void *rect,uint32_t out[4]) { memcpy(out,(const unsigned char *)rect+8,16); }
 static uint32_t rre_type(void *row) { (void)row;return rr_ref->type; }
-static uint32_t rre_word(void *row,uint32_t off) { (void)row;assert(off>=0x2e8c && off<=0x2eb8 && !(off&3));return rr_ref->words[(off-0x2e8c)/4]; }
+static uint32_t rre_word(void *row,uint32_t off) { (void)row;assert(off>=0x2e8c && off<=0x2ed8 && !(off&3));return rr_ref->words[(off-0x2e8c)/4]; }
 static int rre_flag(void *row,uint32_t off) { (void)row;assert(off==0x2e45);return rr_ref->flag; }
 static const char *rre_label(void *row) { (void)row;return rr_ref->l1; }
 static const char *rre_blabel(void *row) { (void)row;return rr_ref->l2; }
@@ -211,7 +211,7 @@ static void rr_setup_row(unsigned char *row,struct rr_fixture *f)
     { size_t n=strlen(f->l1)+1;assert(n<=8);memcpy(row+0x2dd8,f->l1,n); }
     { size_t n=strlen(f->l2)+1;assert(n<=8);memcpy(row+0x2de0,f->l2,n); }
     for(unsigned i=0;i<4;++i)memcpy(row+0x400+i*32+8,f->rwords[i],16);
-    for(unsigned k=0;k<12;++k)memcpy(row+0x2e8c+k*4,&f->words[k],4);
+    for(unsigned k=0;k<20;++k)memcpy(row+0x2e8c+k*4,&f->words[k],4);
     row[0x2e45]=(unsigned char)f->flag;
 }
 static const char rk0[]="alexa",rk1[]="text1",rk2[]="labelLong",rk3[]="button";
@@ -255,6 +255,10 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         uint32_t k1=(uint32_t)(uintptr_t)&rkcell[0];memcpy(stub_destination(row,0xd54000,0xd5474c,4),&k1,4);
         uint32_t k2=(uint32_t)(uintptr_t)&rkcell[1];memcpy(stub_destination(row,0xd54000,0xd54750,4),&k2,4);
         uint32_t k3=(uint32_t)(uintptr_t)&rkcell[2];memcpy(stub_destination(row,0xd54000,0xd54754,4),&k3,4);
+        /* Case 0x1a reads the same "button" key through its own literal
+         * (0xd54e24 -> 0x178d5e8); the second-level slot needs the owned
+         * string or the body dereferences vendor rodata. */
+        memcpy(stub_destination(row,0xd54000,0xd54e24,4),&k3,4);
     }
     blank_stub(base,0x10bf000,0x10bf06c,rr_base);
     pair_stub(ustr,0xc86000,0xc86744,rr_ctor);
@@ -284,10 +288,10 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         unsigned compared=0;rr_fn render=0;
         { uint32_t entry=0xd54401;memcpy(&render,&entry,4); }
         {
-            const uint32_t types[]={0,1,4};
+            const uint32_t types[]={0,1,4,0x1a};
             const char *l1s[]={"","Aa"},*l2s[]={"","Bb"};
             const int32_t pts[][2]={{0,0},{5,-3},{INT32_MAX,1}};
-            for(unsigned a=0;a<3;++a)for(unsigned m=0;m<16;++m)for(unsigned c=0;c<2;++c)
+            for(unsigned a=0;a<4;++a)for(unsigned m=0;m<16;++m)for(unsigned c=0;c<2;++c)
             for(unsigned p=0;p<3;++p)for(unsigned w=0;w<2;++w)for(unsigned l=0;l<2;++l)
             for(unsigned g=0;g<2;++g) {
                 /* Firmware crash input, verified by reading: type 4 with the
@@ -301,7 +305,7 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
                 struct rr_fixture r=n;
                 n.pt[0]=pts[p][0];n.pt[1]=pts[p][1];
                 for(unsigned i=0;i<4;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
-                for(unsigned k=0;k<12;++k)n.words[k]=w?UINT32_C(0x11111111)*(k+1):0;
+                for(unsigned k=0;k<20;++k)n.words[k]=w?UINT32_C(0x11111111)*(k+1):0;
                 r=n;r.trace=&ref;r.row=rr_refrow;
                 struct oa_setting_row_render_ops ops=rr_ops(&r);
                 rr_setup_row(rr_row,&n);rr_setup_row(rr_refrow,&r);
@@ -337,6 +341,6 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         assert(!munmap(ustr,4096) && !munmap(getr,4096) && !munmap(win,4096) && !munmap(name,4096));
         assert(!munmap(box,4096) && !munmap(textbox,4096) && !munmap(elip,4096) && !munmap(btn,12288));
         assert(!munmap(zer,4096) && !munmap(btntext,4096));
-        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0/1/4 paths and defaults match\n",compared);
+        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0/1/4/0x1a paths and defaults match\n",compared);
     }
 }

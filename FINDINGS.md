@@ -6,6 +6,17 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-1A implements renderItems type 0x1a: the shared 0x104 tail's
+0x1a sub-branch writes 0x2e8c into all four name slots and skips setFont,
+then the case body looks up "button" and drives the 0x684 button with
+0x2ed0/0x2ecc/0x2ed8/0x2ed4 (create) or EASIRect math + setWindowRect/
+setText (created). 3032 native/C cases pass. The case body resolves "button"
+through its own literal (0xd54e24, second level 0x178d5e8) which must be
+redirected to the owned string or the body faults on vendor rodata. A null
+key2rect sends the switch straight to the case body with no tail. Switch
+cases 2..25, construction, child-visibility internals, live resources,
+scrollbar/skin/visible gates remain open.
+
 SETTINGS-ROW-RENDER implements renderItems for types 0, 1 and 4 plus the
 0x1b/default exits: prologue base render with three rectangle lookups, the
 shared 0x104 tail for every non-4 type with a key2 rect (type 1 uses
@@ -15,9 +26,9 @@ create rejoins the switch; the button create passes key4rect directly (the
 fold temp is dead); the rebuild flag_store slot is key2rect, replaced by
 key3rect on the reconstruct path, and null with the flag set faults
 natively (excluded). Saved Ghidra ASM had phantom instructions past the
-switch head; objdump is the source of truth. Switch cases 2..26 (incl. the
-0x1a branch), row construction, child visibility internals, live resources,
-scrollbar/skin/visible gates remain open.
+switch head; objdump is the source of truth. Switch cases 2..25, row
+construction, child visibility internals, live resources, scrollbar/skin/
+visible gates remain open.
 
 SETTINGS-ROW-SETTERS implements the saved label/progress/range bodies: label
 selects +0x3c4 for type 1 else +0x104; progress drives +0x1570 for 0x17 else

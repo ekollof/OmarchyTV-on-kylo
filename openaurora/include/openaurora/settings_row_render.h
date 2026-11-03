@@ -17,8 +17,9 @@
  * Widget calls run only on live children, and every store/create follows
  * the shipped order. Offsets identify firmware-understood child bindings,
  * not pointer arithmetic the consumer should apply to our objects. Callbacks
- * are synchronous, pinned for the call and never retained. The 0x1a tail
- * branch and the switch bodies for types 2..26 are open and return ENOTSUP
+ * are synchronous, pinned for the call and never retained. Type 0x1a (26)
+ * runs the shared tail (0x2e8c-in-all-slots branch) then its button case
+ * body; the switch bodies for types 2..25 are open and return ENOTSUP
  * (after the shared tail where it runs); NULL row/ops, any NULL callback
  * or a short text buffer returns EINVAL before mutation. This does not
  * implement renderItems for other types, real widgets, UString internals

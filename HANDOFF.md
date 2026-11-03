@@ -24,7 +24,19 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-RENDER](artifacts/reports/SETTINGS-ROW-RENDER-2026-11-03.md)
+Latest: [SETTINGS-ROW-1A](artifacts/reports/SETTINGS-ROW-1A-2026-11-03.md)
+implements renderItems type 0x1a: the shared 0x104 tail writes 0x2e8c into
+all four name slots and skips setFont, then the case body drives the 0x684
+button from the "button" rectangle (0x2edx names + create, or EASIRect math +
+setWindowRect/setText). 3032 shipped ARM/C cases and prior groups pass, plus
+full host/Unix IPC, focused ASan/UBSan, ARM/qemu and focused real TV CPU. No
+screen/input/device/settings/network/service/boot/persistent change; staging
+removed, no helper. Next implement switch cases 2..25, then row construction/
+child visibility internals and live resources, then scrollbar/skin/module/
+display/startup/independent visible parity. Bodies are not actual widget/
+rendering acceptance.
+
+Previous: [SETTINGS-ROW-RENDER](artifacts/reports/SETTINGS-ROW-RENDER-2026-11-03.md)(artifacts/reports/SETTINGS-ROW-RENDER-2026-11-03.md)
 implements renderItems prologue, shared 0x104 tail, type 0/1 label paths and
 the type-4 button body with fallthrough back into case 4. 2264 shipped ARM/C
 cases and prior groups pass, plus full host/Unix IPC, focused ASan/UBSan,

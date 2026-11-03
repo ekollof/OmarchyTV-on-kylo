@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-1A-2026-11-03: renderItems type 0x1a passes3032 native/C
+comparisons (shared tail 0x2e8c x4 names without setFont, then the button
+case body with 0x2ed0/0x2ecc/0x2ed8/0x2ed4) plus full strict host, focused
+ASan/UBSan, ARM/qemu, all prior groups and focused real-TV CPU. The case's
+own "button" literal (0xd54e24) needed an owned-string redirect. Build-tv-v3/
+settings-row-render unit52876/83222713de62681546e6ca4f43fbccd2;
+reference1006308/5c97553c04ccd4331190efb376342993. TV already awake, no-reset
+flag kept, staging size/hash separately verified, test exit0, staging removed
+and no helper in /proc/*/exe. No screen/input/device/settings/network/service/
+boot/persistent change. No pending job/helper. Switch cases 2..25, row
+construction, child visibility internals, live resources, scrollbar/skin/
+module/display/startup/visible acceptance remain open.
+
 SETTINGS-ROW-RENDER-2026-11-03: renderItems 0/1/4/shared-tail paths pass2264
 native/C comparisons (prologue/base/3 rects, type-selected children, created
 gates, always-create) plus full strict host, focused ASan/UBSan, ARM/qemu,

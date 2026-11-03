@@ -35,10 +35,10 @@ static void rect_math(uint32_t out[4],const uint32_t base[4],const int32_t pt[2]
     out[0]=base[0]+(uint32_t)pt[0];out[1]=base[1]+(uint32_t)pt[1];
     out[2]=base[2]+(uint32_t)pt[0];out[3]=base[3]+(uint32_t)pt[1];
 }
-/* Shared row+0x104 tail. The rebuild create passes the stale 0x2dec
- * type-offset word as its label argument (r10 is never reloaded on this
- * path; verified by objdump); only the 0/1 label and button paths carry
- * real label pointers. */
+/* Shared row+0x104 tail. The rebuild create passes the row label (reloaded
+ * into sl at 0xd565ce; objdump-verified). Type 0x1a takes a distinct branch
+ * that writes 0x2e8c into all four name slots and skips setFont before the
+ * shared focus/elipses/create. */
 static int tail_104(void *row,const struct oa_setting_row_render_ops *o,void *rect,int key1missing)
 {
     void *child=o->child_at(row,UINT32_C(0x104));int created=o->is_created(child);
@@ -49,7 +49,12 @@ static int tail_104(void *row,const struct oa_setting_row_render_ops *o,void *re
         o->get_point(row,pt);rect_math(moved,base,pt);
         o->set_rect(child,moved);o->set_text(child,o->row_label(row));return 0;
     }
-    if(key1missing) {
+    if(o->row_type(row)==UINT32_C(0x1a)) {
+        o->set_name(child,UINT32_C(1),o->row_word(row,UINT32_C(0x2e8c)));
+        o->set_name(child,UINT32_C(0),o->row_word(row,UINT32_C(0x2e8c)));
+        o->set_name(child,UINT32_C(3),o->row_word(row,UINT32_C(0x2e8c)));
+        o->set_name(child,UINT32_C(2),o->row_word(row,UINT32_C(0x2e8c)));
+    } else if(key1missing) {
         o->set_name(child,UINT32_C(1),o->row_word(row,UINT32_C(0x2e90)));
         o->set_name(child,UINT32_C(0),o->row_word(row,UINT32_C(0x2e8c)));
         o->set_name(child,UINT32_C(3),o->row_word(row,UINT32_C(0x2e98)));
@@ -63,6 +68,29 @@ static int tail_104(void *row,const struct oa_setting_row_render_ops *o,void *re
     }
     o->set_focus(child,0);o->set_elipses(child,0);
     o->create_text(child,0,o->row_label(row),base,UINT32_C(1),row);
+    return 0;
+}
+/* Case 0x1a: drive the row+0x684 button from the "button" rectangle. Not
+ * created writes 0x2ed0/0x2ecc/0x2ed8/0x2ed4 into the four name slots then
+ * creates; created applies EASIRect math plus setWindowRect/setText. The
+ * create passes the button rectangle directly (objdump-verified). */
+static int case_0x1a(void *row,const struct oa_setting_row_render_ops *o,void *box)
+{
+    void *r=o->get_rect(box,key_for(3)),*button;int created;uint32_t base[4];
+    if(!r)return 0;
+    button=o->child_at(row,UINT32_C(0x684));
+    created=o->is_created(button);
+    o->rect_words(r,base);
+    if(created) {
+        uint32_t moved[4];int32_t pt[2];
+        o->get_point(row,pt);rect_math(moved,base,pt);
+        o->set_rect(button,moved);o->set_text(button,o->row_button_label(row));return 0;
+    }
+    o->set_name(button,UINT32_C(1),o->row_word(row,UINT32_C(0x2ed0)));
+    o->set_name(button,(uint32_t)created,o->row_word(row,UINT32_C(0x2ecc)));
+    o->set_name(button,UINT32_C(3),o->row_word(row,UINT32_C(0x2ed8)));
+    o->set_name(button,UINT32_C(2),o->row_word(row,UINT32_C(0x2ed4)));
+    o->create_button(button,o->row_button_label(row),base,row);
     return 0;
 }
 int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
@@ -151,20 +179,29 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
         }
     }
     if(!r2) {
-        /* Key2rect missing: the switch dispatches at once. */
+        /* Key2rect missing: the switch dispatches at once. Type 0x1a still
+         * runs its button case body. */
         if(type<UINT32_C(2) || type>UINT32_C(26))return 0;
+        if(type==UINT32_C(0x1a)) {
+            case_0x1a(row,o,box);
+            return 0;
+        }
         return ENOTSUP;
     }
     if(type!=UINT32_C(1) && type!=UINT32_C(0)) {
         /* The shared 0x104 tail runs for every other non-4 type with a key2
          * rectangle (objdump-verified fallthrough); only 0x1b exits before
-         * it. The 0x1a sub-branch and the switch case bodies stay open. */
-        if(type==UINT32_C(0x1a))return ENOTSUP;
+         * it. Type 0x1a then runs its case body (button); the remaining case
+         * bodies 2..25 stay open. */
         if(type>UINT32_C(26)) {
             tail_104(row,o,r2,r1==NULL);
             return 0;
         }
         tail_104(row,o,r2,r1==NULL);
+        if(type==UINT32_C(0x1a)) {
+            case_0x1a(row,o,box);
+            return 0;
+        }
         return ENOTSUP;
     }
     /* Type 0 already returned through the shared tail above. */
