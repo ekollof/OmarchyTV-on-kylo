@@ -21,7 +21,8 @@ static const char *key_for(int which)
     case 4:return "checkbox";
     case 5:return "selectionbox";
     case 6:return "image1";
-    default:return "image2";
+    case 7:return "image2";
+    default:return "banner";
     }
 }
 static int ready(const struct oa_setting_row_render_ops *o)
@@ -268,6 +269,43 @@ static int case_btn56(void *row,const struct oa_setting_row_render_ops *o,void *
     o->set_draw_on_top(button,1);
     return 0;
 }
+/* Case 0x7: the banner-button variant. Looks up "banner", drives the
+ * row+0x684 button, and either refreshes it (created: EASIRect math plus
+ * setWindowRect only, no setText) or writes the type-5 names into slots
+ * 1/3/0/2, four glyph ids from getImageId(row[0x2dd4], state), elipses 1 and
+ * shadow 0x94, then creates with icon row[0x2dd4] and finally sets draw-on-top.
+ * The rebuild path folds the text1 rectangle's first word into the temp, so a
+ * null text1 with the 0x2e45 flag faults natively. */
+static int case_btn7(void *row,const struct oa_setting_row_render_ops *o,void *box)
+{
+    void *r=o->get_rect(box,key_for(8)),*button;int created;uint32_t base[4];
+    if(!r)return 0;
+    button=o->child_at(row,UINT32_C(0x684));
+    created=o->is_created(button);
+    o->rect_words(r,base);
+    if(created) {
+        uint32_t moved[4];int32_t pt[2];
+        o->get_point(row,pt);rect_math(moved,base,pt);
+        o->set_rect(button,moved);
+    } else {
+        uint32_t op=o->row_word(row,UINT32_C(0x2dd4));
+        o->set_name(button,UINT32_C(1),o->row_word(row,UINT32_C(0x2e70)));
+        o->set_name(button,UINT32_C(3),o->row_word(row,UINT32_C(0x2e78)));
+        o->set_name(button,(uint32_t)created,o->row_word(row,UINT32_C(0x2e6c)));
+        o->set_name(button,UINT32_C(2),o->row_word(row,UINT32_C(0x2e74)));
+        o->set_glyph(button,o->glyph_id(op,UINT32_C(1)),UINT32_C(1));
+        o->set_glyph(button,o->glyph_id(op,0),0);
+        o->set_glyph(button,o->glyph_id(op,UINT32_C(2)),UINT32_C(2));
+        o->set_glyph(button,o->glyph_id(op,UINT32_C(3)),UINT32_C(3));
+        o->set_elipses(button,1);
+        o->set_shadow(button,UINT32_C(0x94));
+        if(o->row_flag(row,UINT32_C(0x2e45)))o->set_text_alignment(button,UINT32_C(4));
+        o->create_button(button,o->row_word(row,UINT32_C(0x2dd4)),
+            o->row_button_label(row),base,row);
+    }
+    o->set_draw_on_top(button,1);
+    return 0;
+}
 static int case_0x1a(void *row,const struct oa_setting_row_render_ops *o,void *box)
 {
     void *r=o->get_rect(box,key_for(3)),*button;int created;uint32_t base[4];
@@ -406,6 +444,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             case_btn56(row,o,box,type,b,i1,i2);
             return 0;
         }
+        if(type==UINT32_C(7)) {
+            case_btn7(row,o,box);
+            return 0;
+        }
         return ENOTSUP;
     }
     if(type!=UINT32_C(1) && type!=UINT32_C(0)) {
@@ -446,6 +488,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             void *b=o->get_rect(box,key_for(3)),*i1=o->get_rect(box,key_for(6)),
                  *i2=o->get_rect(box,key_for(7));
             case_btn56(row,o,box,type,b,i1,i2);
+            return 0;
+        }
+        if(type==UINT32_C(7)) {
+            case_btn7(row,o,box);
             return 0;
         }
         return ENOTSUP;

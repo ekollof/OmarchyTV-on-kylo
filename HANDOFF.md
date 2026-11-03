@@ -24,7 +24,20 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-BUTTON](artifacts/reports/SETTINGS-ROW-BUTTON-2026-11-03.md)
+Latest: [SETTINGS-ROW-BANNER](artifacts/reports/SETTINGS-ROW-BANNER-2026-11-03.md)
+implements renderItems type 0x7, the banner button: a direct "banner" string
+lookup, row+0x684 button, no destroy/images/stores, type-5 names, four glyph
+ids from `getImageId(row[0x2dd4], state)`, elipses 1, shadow 0x94, an
+icon-carrying create, a created refresh with setWindowRect only (no setText)
+and setDrawOnTop(1). 40904 shipped ARM/C cases and prior groups pass, plus
+full host/Unix IPC, focused ASan/UBSan, ARM/qemu and focused real TV CPU. No
+new callbacks were needed. No screen/input/device/settings/network/service/
+boot/persistent change; staging removed, no helper. Next implement cases
+0x8..0xc, then 0x11..0x15 and 0x17..0x19, then the real getImageId mapping
+and image internals, then row construction/visibility/live resources, then
+scrollbar/skin/module/display/startup/independent visible parity.
+
+Previous: [SETTINGS-ROW-BUTTON](artifacts/reports/SETTINGS-ROW-BUTTON-2026-11-03.md)
 implements renderItems types 0x5/0x6, the launcher button plus image1/image2:
 three rectangle lookups, refresh-or-destroy+reinit, type-5/type-6 name sets,
 four glyph ids from `getImageId(row[0x2dd4], state)`, highlight/sublauncher/

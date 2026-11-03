@@ -76,7 +76,7 @@ enum {RR_BASE,RR_GET,RR_IS,RR_NAME,RR_FOCUS,RR_ELIP,RR_FONT,RR_RECT,RR_TEXT,RR_C
 struct rr_event { uint32_t kind,off,a,b;uint32_t w[4];char text[24]; };
 struct rr_result { struct rr_event events[64];unsigned count; };
 struct rr_fixture {
-    uint32_t type;int present[8];int created,checked;int32_t pt[2];
+    uint32_t type;int present[9];int created,checked;int32_t pt[2];
     uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,rebuild;int flag;const char *l1,*l2,*vtext;uint32_t rwords[8][4];
     struct rr_result *trace;unsigned char *row;
 };
@@ -99,13 +99,13 @@ static void rr_base(void *row) { (void)row;rr_emit(rr_native->trace,RR_BASE,0,0,
 static void rr_ctor(void *buf,uint32_t str)
 { const char *s=(const char *)str;assert(strlen(s)<16);*(const char **)buf=s; }
 static unsigned rr_dtor(void *buf) { (void)buf;return 0; }
-static const char *rr_keys[8];
+static const char *rr_keys[9];
 static void *rr_getrect(void *container,void *ustr)
 {
     const char *key=*(const char *const *)ustr;unsigned i;
     (void)container;
-    for(i=0;i<8;++i)if(!strcmp(key,rr_keys[i]))break;
-    assert(i<8);
+    for(i=0;i<9;++i)if(!strcmp(key,rr_keys[i]))break;
+    assert(i<9);
     rr_emit(rr_native->trace,RR_GET,(uint32_t)i,0,0,NULL,key);
     if(!rr_native->present[i])return NULL;
     return rr_native->row+0x400+i*32;
@@ -212,8 +212,8 @@ static void *rre_cont(void *row) { (void)row;return rr_ref->row+0xa8; }
 static void *rre_get(void *container,const char *key)
 {
     unsigned i;(void)container;
-    for(i=0;i<8;++i)if(!strcmp(key,rr_keys[i]))break;
-    assert(i<8);
+    for(i=0;i<9;++i)if(!strcmp(key,rr_keys[i]))break;
+    assert(i<9);
     rr_emit(rr_ref->trace,RR_GET,i,0,0,NULL,key);
     if(!rr_ref->present[i])return NULL;
     return rr_ref->row+0x400+i*32;
@@ -340,7 +340,7 @@ static void rr_setup_row(unsigned char *row,struct rr_fixture *f)
     { uint32_t p=(uint32_t)(uintptr_t)f->vtext;memcpy(row+0x2e04,&p,4); }
     row[0x2e45]=(unsigned char)f->flag;row[0x2e44]=(unsigned char)f->checked;
 }
-static const char rk0[]="alexa",rk1[]="text1",rk2[]="labelLong",rk3[]="button",rk4[]="checkbox",rk5[]="selectionbox",rk6[]="image1",rk7[]="image2";
+static const char rk0[]="alexa",rk1[]="text1",rk2[]="labelLong",rk3[]="button",rk4[]="checkbox",rk5[]="selectionbox",rk6[]="image1",rk7[]="image2",rk8[]="banner";
 static const char *rkcell[7];
 static void check_settings_row_render(const unsigned char *elf,size_t bytes)
 {
@@ -352,7 +352,7 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
     unsigned char *cb=page(0x10b1000,8192),*sel=page(0x10b5000,4096),*sel2=page(0x10b4000,4096);
     unsigned char *te1=page(0x10b6000,4096),*te2=page(0x10b8000,4096),*te3=page(0x10bb000,4096);
     unsigned char *img=page(0x10c9000,4096),*lh=page(0xe4a000,4096);
-    rr_keys[0]=rk0;rr_keys[1]=rk1;rr_keys[2]=rk2;rr_keys[3]=rk3;rr_keys[4]=rk4;rr_keys[5]=rk5;rr_keys[6]=rk6;rr_keys[7]=rk7;
+    rr_keys[0]=rk0;rr_keys[1]=rk1;rr_keys[2]=rk2;rr_keys[3]=rk3;rr_keys[4]=rk4;rr_keys[5]=rk5;rr_keys[6]=rk6;rr_keys[7]=rk7;rr_keys[8]=rk8;
     rkcell[0]=rk1;rkcell[1]=rk2;rkcell[2]=rk3;rkcell[3]=rk4;rkcell[4]=rk5;rkcell[5]=rk6;rkcell[6]=rk7;
     {
         size_t off=file_offset(elf,bytes,0xd54400,8746);
@@ -409,6 +409,9 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
           memcpy(stub_destination(row,0xd54000,0xd54b28,4),&k,4); }
         { uint32_t k=(uint32_t)(uintptr_t)&rkcell[6];
           memcpy(stub_destination(row,0xd54000,0xd54b2c,4),&k,4); }
+        /* Case 0x7 reads "banner" as a direct string through 0xd54b30. */
+        { uint32_t b=(uint32_t)(uintptr_t)rk8;
+          memcpy(stub_destination(row,0xd54000,0xd54b30,4),&b,4); }
     }
     blank_stub(base,0x10bf000,0x10bf06c,rr_base);
     pair_stub(ustr,0xc86000,0xc86744,rr_ctor);
@@ -472,10 +475,10 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         unsigned compared=0;rr_fn render=0;
         { uint32_t entry=0xd54401;memcpy(&render,&entry,4); }
         {
-            const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,5,6};
+            const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,5,6,7};
             const char *l1s[]={"","Aa"},*l2s[]={"","Bb"};
             const int32_t pts[][2]={{0,0},{5,-3},{INT32_MAX,1}};
-            for(unsigned a=0;a<13;++a)for(unsigned m=0;m<64;++m)for(unsigned c=0;c<2;++c)
+            for(unsigned a=0;a<14;++a)for(unsigned m=0;m<64;++m)for(unsigned c=0;c<2;++c)
             for(unsigned p=0;p<3;++p)for(unsigned w=0;w<2;++w)for(unsigned l=0;l<2;++l)
             for(unsigned g=0;g<2;++g) {
                 /* Firmware crash input, verified by reading: type 4 with the
@@ -488,10 +491,12 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
                  * with r0==0), so a null image1 with the 0x2e45 flag faults. */
                 if((types[a]==UINT32_C(5)||types[a]==UINT32_C(6)) && g &&
                    !((m>>6)&1) && !c)continue;
+                /* Type 7 rebuild folds the text1 rectangle (bit1) the same way. */
+                if(types[a]==UINT32_C(7) && g && !((m>>1)&1) && !c)continue;
                 struct rr_result native={0},ref={0};
                 struct rr_fixture n={.type=types[a],.created=c,.checked=0,
                     .sel_img=0x66,.sel_id=0x55,.num=0x44,.op=0x42,.hi=0x43,.rebuild=0,.flag=(int)g,.l1=l1s[l],.l2=l2s[l],.vtext="VX",.trace=&native,.row=rr_row};
-                for(unsigned i=0;i<8;++i)n.present[i]=(m>>i)&1;
+                for(unsigned i=0;i<9;++i)n.present[i]=(m>>i)&1;
                 struct rr_fixture r=n;
                 n.pt[0]=pts[p][0];n.pt[1]=pts[p][1];
                 for(unsigned i=0;i<8;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
@@ -514,7 +519,7 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
                 struct rr_result native={0},ref={0};
                 struct rr_fixture n={.type=types[a],.created=(int)c,.checked=0,.flag=0,
                     .l1="Aa",.l2="Bb",.trace=&native,.row=rr_row},r=n;
-                for(unsigned i=0;i<8;++i)n.present[i]=1;
+                for(unsigned i=0;i<9;++i)n.present[i]=1;
                 for(unsigned i=0;i<8;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
                 r=n;r.trace=&ref;r.row=rr_refrow;
                 struct oa_setting_row_render_ops ops=rr_ops(&r);
@@ -536,6 +541,6 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         assert(!munmap(sel2,4096));
         assert(!munmap(te1,4096) && !munmap(te2,4096) && !munmap(te3,4096));
         assert(!munmap(img,4096) && !munmap(lh,4096));
-        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-6/0xd-0x10/0x1a/0x16 paths and defaults match\n",compared);
+        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-7/0xd-0x10/0x1a/0x16 paths and defaults match\n",compared);
     }
 }

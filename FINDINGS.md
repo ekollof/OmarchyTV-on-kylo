@@ -6,6 +6,16 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-BANNER implements renderItems type 0x7: a direct "banner"
+string lookup (0xd54b30 holds the char*, unlike the pointer-to-pointer keys),
+row+0x684 button, no destroy/images/stores, type-5 names, four glyph ids,
+elipses 1 and shadow 0x94, icon-carrying create, created refresh with
+setWindowRect only (no setText) and setDrawOnTop(1). 40904 native/C cases
+pass. The rebuild path folds the text1 rectangle and faults when it is null.
+No new callbacks were needed. Cases 0x8..0xc, 0x11..0x15, 0x17..0x19,
+construction, child-visibility internals, live resources, scrollbar/skin/
+visible gates remain open.
+
 SETTINGS-ROW-BUTTON implements renderItems types 0x5/0x6, the launcher
 button plus two images: three rectangle lookups, refresh-or-destroy+reinit,
 type-5 vs type-6 name sets in slots 1/3/0/2, four glyph ids from

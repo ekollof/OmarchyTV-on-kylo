@@ -6,7 +6,7 @@
 #include <string.h>
 struct rrow {
     uint32_t type;uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,imgid,scale;int flag,checked,rebuild;const char *label,*blabel,*vtext;
-    void *rects[8];uint32_t rwords[8][4];int32_t pt[2];
+    void *rects[9];uint32_t rwords[9][4];int32_t pt[2];
     int created;unsigned count;struct {uint32_t kind,off,a,b;char text[24];} trace[48];
 };
 static struct rrow *t;
@@ -23,10 +23,10 @@ static void q_base(void *r) { (void)r;emit(R_BASE,0,0,0,NULL); }
 static void *q_cont(void *r) { (void)r;return (void *)0x1000; }
 static void *q_rect(void *c,const char *k)
 { (void)c;emit(R_GET,0,0,0,k);
-  for(int i=0;i<8;++i)if(!strcmp(k,((const char*[]){"alexa","text1","labelLong","button","checkbox","selectionbox","image1","image2"})[i]))return t->rects[i];
+  for(int i=0;i<9;++i)if(!strcmp(k,((const char*[]){"alexa","text1","labelLong","button","checkbox","selectionbox","image1","image2","banner"})[i]))return t->rects[i];
   assert(0);return NULL; }
 static void q_words(void *r,uint32_t out[4])
-{ for(int i=0;i<8;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
+{ for(int i=0;i<9;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
 static void wset(struct rrow *r,uint32_t off,uint32_t v) { assert(off>=0x2e4c && off<=0x2ed8);r->words[(off-0x2e4c)/4]=v; }
 static uint32_t q_type(void *r) { (void)r;return t->type; }
 static uint32_t q_word(void *r,uint32_t o)
@@ -96,7 +96,7 @@ static struct oa_setting_row_render_ops ops(void)
 static void reset(struct rrow *r)
 {
     memset(r,0,sizeof *r);t=r;r->type=UINT32_MAX;r->label="";r->blabel="";r->vtext="";
-    for(int i=0;i<8;++i) { r->rects[i]=(void *)(uintptr_t)(0x3000+i*0x20); }
+    for(int i=0;i<9;++i) { r->rects[i]=(void *)(uintptr_t)(0x3000+i*0x20); }
 }
 int main(void)
 {
@@ -112,7 +112,7 @@ int main(void)
     assert(r.trace[4].kind==R_IS && r.trace[4].off==0x104);
     assert(r.trace[12].kind==R_CTEXT && !strcmp(r.trace[12].text,""));
     /* Types other than the implemented set stay open, after the shared tail. */
-    reset(&r);o=ops();r.type=7;
+    reset(&r);o=ops();r.type=8;
     assert(oa_setting_row_render(&r,&o)==ENOTSUP && r.count==13);
     /* Type 0 with missing key2: prologue then out. */
     reset(&r);o=ops();r.type=0;r.rects[1]=NULL;
@@ -340,9 +340,32 @@ int main(void)
     assert(!oa_setting_row_render(&r,&o));
     assert(r.trace[5].kind==R_RECT);
     assert(r.trace[6].kind==R_TEXT);
+    /* Type 7 banner button: no destroy/images, type-5 names, 4 glyphs,
+     * elipses 1, shadow 0x94, icon create, then setDrawOnTop. */
+    reset(&r);o=ops();r.type=7;
+    wset(&r,0x2e6c,0x901);wset(&r,0x2e70,0x902);wset(&r,0x2e74,0x903);wset(&r,0x2e78,0x904);
+    r.op=0x11;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==27);
+    assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"banner"));
+    assert(r.trace[14].kind==R_IS && r.trace[14].off==0x684);
+    assert(r.trace[15].kind==R_NAME && r.trace[15].a==1 && r.trace[15].b==0x902);
+    assert(r.trace[16].kind==R_NAME && r.trace[16].a==3 && r.trace[16].b==0x904);
+    assert(r.trace[19].kind==R_GLYPH && r.trace[19].a==0x1101 && r.trace[19].b==1);
+    assert(r.trace[23].kind==R_ELIP && r.trace[23].a==1);
+    assert(r.trace[24].kind==R_SHADOW && r.trace[24].a==0x94);
+    assert(r.trace[25].kind==R_CBTN && r.trace[25].a==0x11);
+    assert(r.trace[26].kind==R_DRAWTOP && r.trace[26].a==1);
+    /* Type 7 created refreshes with setWindowRect only (no setText). */
+    reset(&r);o=ops();r.type=7;r.created=1;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==11);
+    assert(r.trace[8].kind==R_IS && r.trace[8].off==0x684);
+    assert(r.trace[9].kind==R_RECT);
+    assert(r.trace[10].kind==R_DRAWTOP);
     /* Invalid ops/args change nothing. */
     o=ops();o.set_name=NULL;
-    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==22);
+    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==11);
     assert(oa_setting_row_render(NULL,&o)==EINVAL);
     assert(oa_setting_row_render(&r,NULL)==EINVAL);
     puts("ok settings row render: 0/1/4 paths, shared tail, gates and open types");

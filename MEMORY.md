@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-BANNER-2026-11-03: renderItems type0x7 (banner button) passes40904
+native/C comparisons (direct "banner" string, type-5 names, four glyphs,
+elipses/shadow, icon create, created refresh without setText, setDrawOnTop)
+plus full strict host, focused ASan/UBSan, ARM/qemu, all prior groups and
+focused real-TV CPU. No new callbacks; the rebuild path folds text1 and is
+excluded when null. Build-tv-v3/settings-row-render unit117948/
+556e9adbfe0f37fcb4e245c59d767fb1; reference1089004/
+e8c29ea89e6b4c4d818a3eba678f87af. TV already awake, no-reset flag kept,
+staging hash-verified, test exit0, staging removed, no helper.
+Build-tv-v3/settings-row-render. Cases0x8..0xc,0x11..0x15,0x17..0x19, row
+construction, child visibility internals, live resources, scrollbar/skin/
+module/display/startup/visible acceptance remain open.
+
 SETTINGS-ROW-BUTTON-2026-11-03: renderItems types0x5/0x6 (launcher button +
 image1/image2) pass38216 native/C comparisons (destroy/reinit, type5 vs type6
 name sets, four glyph ids from getImageId(row[0x2dd4],state), highlight/
