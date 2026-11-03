@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation
+MODULES  := plat ticker ir ui_console panel power display audio settings source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -75,6 +75,18 @@ MOD_DEP  := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).d)
 
 all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker
 
+$(BUILD)/modules/mod_ui_profile.so: modules/ui_profile/ui_profile.c common/profile.c common/tab_policy.c include/openaurora/profile.h include/openaurora/tab_policy.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+
+$(BUILD)/tests/ui_profile: tests/ui_profile.c core/host.h include/openaurora/services.h include/openaurora/tab_policy.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+.PHONY: check-ui-profile
+check-ui-profile: $(BUILD)/tests/ui_profile $(BUILD)/modules/mod_ui_profile.so $(BUILD)/modules/mod_ticker.so
+	@$(BUILD)/tests/ui_profile $(BUILD)/modules
+check: check-ui-profile
+
 $(BUILD)/modules/mod_ui_navigation.so: modules/ui_navigation/ui_navigation.c common/launcher_route.c include/openaurora/launcher_route.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
@@ -99,7 +111,7 @@ check-launcher-route: $(BUILD)/tests/launcher_route
 	@$(BUILD)/tests/launcher_route
 check: check-launcher-route
 
-$(BUILD)/tests/tab_policy: tests/tab_policy.c common/tab_policy.c include/openaurora/tab_policy.h
+$(BUILD)/tests/tab_policy: tests/tab_policy.c common/tab_policy.c common/profile.c include/openaurora/tab_policy.h include/openaurora/profile.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 .PHONY: check-tab-policy
@@ -107,7 +119,15 @@ check-tab-policy: $(BUILD)/tests/tab_policy
 	@$(BUILD)/tests/tab_policy
 check: check-tab-policy
 
-$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c include/openaurora/tab_policy.h
+$(BUILD)/tests/profile: tests/profile.c common/profile.c common/tab_policy.c include/openaurora/profile.h include/openaurora/tab_policy.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-profile
+check-profile: $(BUILD)/tests/profile
+	@$(BUILD)/tests/profile
+check: check-profile
+
+$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c common/profile.c include/openaurora/tab_policy.h include/openaurora/profile.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 

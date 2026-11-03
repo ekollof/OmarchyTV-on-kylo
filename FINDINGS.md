@@ -6,6 +6,17 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Profile context: TAB-CONTEXT resolves DemoApp+314/slot3c to getMenuCapability,
+whose byte9 becomes TabDialog37a0 (record at least11 bytes). Normal source is
+swprofile Config/Connectivity:Connectivity, default0, enabled exactly when1;
+hotel support is Config/HotelTv:HotelMode/default1, also exactly1. Null capability
+object's menu fallback sets connectivity1; Wi-Fi is a different gate. Bounded
+scalar reader and reloadable ui.profile supply copied immutable facts only.
+65281 actual shipped hashes/27 saved-profile lookups, host/sanitizer/ARM DSO
+lifecycle and23-module host loader pass; no TV access or consumer/native context
+acceptance. Saved profile header size exceeds file; do not copy beyond actual
+bytes or assume a complete profile-integrity check from numeric lookups.
+
 Initial selection: TAB-SELECTION resolves missing/unavailable requested tabs to
 the first created tab (UIGroup selected index0); requested raw IDs map to
 creation-order indices. Empty group has no focused tab while initial content

@@ -21,8 +21,9 @@ Ghidra decompile plus ARM instructions are retained under
   verify returned r0 against the instructions.
 
 The constructor takes `from_launcher` into byte4b7 (navigation13 true,
-QuickMenu/navigation12 false). Profile-derived byte37a0 is another input;
-its exact field name remains unresolved. Do not equate it with the separate
+QuickMenu/navigation12 false). Byte37a0 was unresolved at this checkpoint;
+[TAB-CONTEXT](TAB-CONTEXT-2026-11-03.md) identifies menu-capability byte9 as
+connectivity availability, derived from the software profile. Do not equate it with the separate
 getWifiAvailability check used when creating network content.
 
 Availability, by raw tab ID:

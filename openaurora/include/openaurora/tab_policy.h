@@ -1,8 +1,10 @@
 #ifndef OPENAURORA_TAB_POLICY_H
 #define OPENAURORA_TAB_POLICY_H
 #include <stdint.h>
+#include <stddef.h>
 /* Raw inputs used by TabDialog::isTabAvailable. Do not infer them from a
- * screenshot or item count. network_profile_flag is constructor byte37a0;
+ * screenshot or item count. network_profile_flag is constructor byte37a0,
+ * MenuCapability connectivity availability from swprofile value==1;
  * from_launcher is constructor argument/byte4b7, not a guessed global mode.
  * Raw byte flags preserve the firmware XOR1/low-byte behavior. */
 struct oa_tab_context {
@@ -31,4 +33,11 @@ struct oa_tab_selection {
  * out unchanged. */
 int oa_tab_initial_selection(uint8_t available_mask,uint8_t described_mask,
                              int32_t requested_tab,struct oa_tab_selection *out);
+/* Only immutable profile inputs, NOT mutable hotel activation or app state.
+ * Firmware defaults connectivity0/hotel1, both enabled exactly when raw==1. */
+struct oa_tab_profile {
+    uint32_t connectivity_raw,hotel_raw;
+    uint8_t connectivity_enabled,hotel_enabled,connectivity_present,hotel_present;
+};
+int oa_tab_profile_from_sw(const void *data,size_t size,struct oa_tab_profile *out);
 #endif

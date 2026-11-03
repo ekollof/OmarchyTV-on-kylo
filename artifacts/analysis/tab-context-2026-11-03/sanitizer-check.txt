@@ -1,0 +1,25 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-tab-policy-sanitize/core/check.o core/check.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-tab-policy-sanitize/core/control.o core/control.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-tab-policy-sanitize/core/host.o core/host.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-tab-policy-sanitize/core/module.o core/module.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-tab-policy-sanitize/core/skin.o core/skin.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-tab-policy-sanitize/tests/ui_profile tests/ui_profile.c build-tab-policy-sanitize/core/check.o build-tab-policy-sanitize/core/control.o build-tab-policy-sanitize/core/host.o build-tab-policy-sanitize/core/module.o build-tab-policy-sanitize/core/skin.o -ldl -pthread -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-tab-policy-sanitize/modules/mod_ui_profile.so modules/ui_profile/ui_profile.c common/profile.c common/tab_policy.c -fsanitize=address,undefined
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-tab-policy-sanitize/modules/mod_ticker.so modules/ticker/ticker.c -fsanitize=address,undefined \
+   \
+  
+ok ui.profile: immutable copied facts, exact-one values and CLI reload snapshot replacement
+ok ui.profile: consumer holds, removal callback unavailability, publication collision and retry
+ok ui.profile: standby keeps facts, suspended reload defers I/O, failed resume activation retries
+ok ui.profile: invalid/special/oversized/malformed inputs reject, service never reads deleted file
+ok profile: nested/duplicate/type/default/exact-one semantics, truncated/escaping descendant spans and atomic errors
+ok tab policy: availability/raw bytes, initial selection/fallback/empty group, requested focus and atomic invalid inputs
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+ok ui.profile: saved software profile through real DSO
+ok ui.profile: immutable copied facts, exact-one values and CLI reload snapshot replacement
+ok ui.profile: consumer holds, removal callback unavailability, publication collision and retry
+ok ui.profile: standby keeps facts, suspended reload defers I/O, failed resume activation retries
+ok ui.profile: invalid/special/oversized/malformed inputs reject, service never reads deleted file
+profile corpus: connectivity=1/1 present=1 hotel=1/1 present=1 bytes=60075
+ok profile: nested/duplicate/type/default/exact-one semantics, truncated/escaping descendant spans and atomic errors

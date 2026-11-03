@@ -1,0 +1,3 @@
+profile corpus: connectivity=1/1 present=1 hotel=1/1 present=1 bytes=60075
+ok profile: nested/duplicate/type/default/exact-one semantics, truncated/escaping descendant spans and atomic errors
+ok tab policy: availability/raw bytes, initial selection/fallback/empty group, requested focus and atomic invalid inputs

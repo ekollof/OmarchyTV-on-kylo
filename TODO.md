@@ -321,6 +321,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Recover menu-capability byte9 ->connectivity flag and software profile
+      paths/defaults. Bounded scalar decoder and reloadable ui.profile v1
+      supply immutable copied facts;65281 shipped hashes/27 lookups and DSO
+      lifecycle host/sanitizer/ARM-qemu pass. TAB-CONTEXT. No TV run or mutable
+      hotel/media/app state, content permissions or UI consumer is claimed.
 - [x] Resolve initial unavailable/missing-tab fallback and raw-ID/created-index
       selection; empty group has no focused tab but retains content0. Common
       helper and9216 shipped group-code qemu comparisons pass; TAB-SELECTION.
@@ -347,8 +352,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       ui_navigation supplies the queued state/IPC provider; actual TabDialog
       initialization/selection writeback, drawing consumer and pressure behavior
       beyond the project16-request bound still require firmware/native acceptance.
-      TAB-NAVIGATION supplies availability/focus predicates; acquire real hotel/
-      profile/app/entry inputs and description presence (initial unavailable-tab
+      TAB-NAVIGATION supplies availability/focus predicates; TAB-CONTEXT supplies
+      immutable ui.profile facts. Acquire real mutable hotel/app/media/entry
+      inputs and description presence (initial unavailable-tab
       fallback is now resolved by TAB-SELECTION), then handle
       content validity and password/network gates before consuming/drawing.
 - [x] Review ff89e27..e7e7333: scanner mapped/complete/escaped key reads,

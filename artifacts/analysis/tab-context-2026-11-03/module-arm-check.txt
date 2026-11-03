@@ -1,0 +1,5 @@
+ok ui.profile: saved software profile through real DSO
+ok ui.profile: immutable copied facts, exact-one values and CLI reload snapshot replacement
+ok ui.profile: consumer holds, removal callback unavailability, publication collision and retry
+ok ui.profile: standby keeps facts, suspended reload defers I/O, failed resume activation retries
+ok ui.profile: invalid/special/oversized/malformed inputs reject, service never reads deleted file

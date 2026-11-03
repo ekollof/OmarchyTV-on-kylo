@@ -1,0 +1,20 @@
+00c5de6c <_ZN10ROMProfile11getDataSizeEv@@Base>:
+  c5de6c:	mov.w	r1, #16384	; 0x4000
+  c5de70:	push	{r7, lr}
+  c5de72:	sub.w	ip, sp, r1
+  c5de76:	str.w	r0, [ip, #4080]	; 0xff0
+  c5de7a:	ldr	r3, [pc, #32]	; (c5de9c <_ZN10ROMProfile11getDataSizeEv@@Base+0x30>)
+  c5de7c:	sub	sp, #8
+  c5de7e:	add	r7, sp, #0
+  c5de80:	ldr	r0, [r0, #4]
+  c5de82:	ldr	r2, [r3, #0]
+  c5de84:	ldr	r0, [r0, #8]
+  c5de86:	str	r2, [r7, #4]
+  c5de88:	ldr	r1, [r7, #4]
+  c5de8a:	ldr	r3, [r3, #0]
+  c5de8c:	cmp	r1, r3
+  c5de8e:	beq.n	c5de94 <_ZN10ROMProfile11getDataSizeEv@@Base+0x28>
+  c5de90:	blx	6af740 <__stack_chk_fail@plt>
+  c5de94:	adds	r7, #8
+  c5de96:	mov	sp, r7
+  c5de98:	pop	{r7, pc}

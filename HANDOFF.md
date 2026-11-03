@@ -24,7 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [TAB-SELECTION](artifacts/reports/TAB-SELECTION-2026-11-03.md) closes
+Latest: [TAB-CONTEXT](artifacts/reports/TAB-CONTEXT-2026-11-03.md) resolves
+network tab37a0 to menu-capability byte9, sourced from software-profile
+connectivity==1. common/profile and reloadable ui_profile/ui.profile v1 now
+provide copied immutable connectivity/hotel-support facts with firmware defaults.
+This is not mutable hotel activation. Saved profile both1; no TV polling/wake.
+65281 actual shipped hashes/27 saved-profile lookups plus prior884736/9216
+corpora pass. Full host suite, focused sanitizer/ARM-qemu DSO lifecycle and
+23-module host loader pass. Build identities in MEMORY/report; no jobs/helpers.
+Next hold/release the profile provider in the consumer and recover mutable
+hotel/app/media/entry state, descriptions and content permission/writeback;
+the queue/UI consumer and visible parity still remain open. Source23 modules
+does not mean installed or tested native23-module startup. Example config:
+openaurora/examples/ui-profile.conf; durable evidence/reproduction under analysis/
+tab-context-2026-11-03. No persistent/recovery/installed ABI changes.
+
+Previous: [TAB-SELECTION](artifacts/reports/TAB-SELECTION-2026-11-03.md) closes
 initial unavailable-tab fallback: first created tab, at group index0. Requested
 raw tab IDs are translated to creation-order indices; empty group has no focus
 but retains initial content0. oa_tab_initial_selection and9216 actual shipped

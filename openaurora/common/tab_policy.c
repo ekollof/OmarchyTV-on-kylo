@@ -1,4 +1,5 @@
 #include "openaurora/tab_policy.h"
+#include "openaurora/profile.h"
 #include <errno.h>
 int oa_tab_available(const struct oa_tab_context *c,int32_t tab,uint8_t *out)
 {
@@ -48,5 +49,19 @@ int oa_tab_initial_selection(uint8_t available,uint8_t described,int32_t request
         if(index==next.selected_index) {next.focused_tab=tab;next.content_tab=tab;break;}
         ++index;
     }
+    *out=next;return 0;
+}
+int oa_tab_profile_from_sw(const void *data,size_t size,struct oa_tab_profile *out)
+{
+    if(!out)return EINVAL;
+    struct oa_tab_profile next={0};int connectivity,hotel;
+    int rc=oa_profile_u32(data,size,"Config/Connectivity","Connectivity",0,
+                          &next.connectivity_raw,&connectivity);
+    if(rc)return rc;
+    rc=oa_profile_u32(data,size,"Config/HotelTv","HotelMode",1,&next.hotel_raw,&hotel);
+    if(rc)return rc;
+    next.connectivity_enabled=next.connectivity_raw==1;
+    next.hotel_enabled=next.hotel_raw==1;
+    next.connectivity_present=(uint8_t)connectivity;next.hotel_present=(uint8_t)hotel;
     *out=next;return 0;
 }

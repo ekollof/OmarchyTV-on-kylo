@@ -13,8 +13,16 @@
 #include "openaurora/cec_policy.h"
 #include "openaurora/ui_anim.h"
 #include "openaurora/binsvg.h"
+#include "openaurora/tab_policy.h"
 
 #include <stdint.h>
+
+/* ui.profile v1 — copied immutable swprofile facts, loaded on module start.
+ * Loop thread, hold/release provider normally. copy does no file/device I/O.
+ * Paired standby retains the snapshot; reload reads the configured file anew.
+ * This is not mutable hotel activation, media/app state or content permission. */
+#define OA_SVC_UI_PROFILE "ui.profile"
+typedef struct { int (*copy)(struct oa_tab_profile *out); } oa_ui_profile_iface;
 
 /* ui.navigation v1 — loop-thread-only settings route state/queue. Requests
  * are completed modal results or NovoLauncherOperationIds, NEVER raw keys.

@@ -1,0 +1,16 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build/tests/ui_profile tests/ui_profile.c build/core/check.o build/core/control.o build/core/host.o build/core/module.o build/core/skin.o -ldl -pthread -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build/modules/mod_ui_profile.so modules/ui_profile/ui_profile.c common/profile.c common/tab_policy.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build/modules/mod_ticker.so modules/ticker/ticker.c  \
+   \
+  
+ok ui.profile: immutable copied facts, exact-one values and CLI reload snapshot replacement
+ok ui.profile: consumer holds, removal callback unavailability, publication collision and retry
+ok ui.profile: standby keeps facts, suspended reload defers I/O, failed resume activation retries
+ok ui.profile: invalid/special/oversized/malformed inputs reject, service never reads deleted file
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+ok ui.profile: saved software profile through real DSO
+ok ui.profile: immutable copied facts, exact-one values and CLI reload snapshot replacement
+ok ui.profile: consumer holds, removal callback unavailability, publication collision and retry
+ok ui.profile: standby keeps facts, suspended reload defers I/O, failed resume activation retries
+ok ui.profile: invalid/special/oversized/malformed inputs reject, service never reads deleted file

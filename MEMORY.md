@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+TAB-CONTEXT-2026-11-03: source now builds23 modules. New ui_profile/ui.profile
+v1 snapshots explicit swprofile file and exposes copied immutable connectivity/
+hotel-support facts (exact-one semantics/default0/1). Saved profile both1,
+MD5 a1d9e5e80a926a6e0abd812c98852894; this is not active hotel mode/live state.
+Network-tab37a0 source is menu-capability byte9, not Wi-Fi availability. Scalar
+decoder/shipped ARM65281 hashes/27 profile lookups, preceding884736/9216
+corpora, full strict host suite, focused sanitizers/ARM DSO lifecycle and host
+23-module preflight pass. Native build only ui_profile36832/67e4491c6909c2a251d38d62131e9d54/
+maxGLIBC2.4; test483612/8c15a5d5bc6acb1671b2ada0b7e3356b,
+build-tv-v3/tab-policy. No TV access/wake/staging/deployment, installed ABI/
+recovery change or job/helper pending. Mutable hotel/app/media/entry context,
+permissions/writeback and navigation/UI consumer remain open.
+
 TAB-SELECTION-2026-11-03: initial fallback/selection helper implemented from
 UIGroup and TabDialog ARM. Missing requested tab retains group index0 ->first
 created tab; empty group focused_tab=-1/content_tab=0.9216 actual group-code

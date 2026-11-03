@@ -1,0 +1,12 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/tab-policy/core/check.o core/check.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/tab-policy/core/control.o core/control.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/tab-policy/core/host.o core/host.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/tab-policy/core/module.o core/module.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/tab-policy/core/skin.o core/skin.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-tv-v3/tab-policy/tests/ui_profile tests/ui_profile.c build-tv-v3/tab-policy/core/check.o build-tv-v3/tab-policy/core/control.o build-tv-v3/tab-policy/core/host.o build-tv-v3/tab-policy/core/module.o build-tv-v3/tab-policy/core/skin.o -ldl -pthread -lm
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v3/tab-policy/modules/mod_ui_profile.so modules/ui_profile/ui_profile.c common/profile.c common/tab_policy.c 
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v3/tab-policy/modules/mod_ticker.so modules/ticker/ticker.c  \
+   \
+  
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

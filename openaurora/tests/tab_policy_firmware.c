@@ -5,6 +5,7 @@
 #error "Build this optional firmware differential for ARM and run under qemu-arm"
 #endif
 #include "openaurora/tab_policy.h"
+#include "openaurora/profile.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -84,6 +85,69 @@ static unsigned child_focus(void *p,int32_t value)
 { ((unsigned char *)p)[0x20]=(unsigned char)value;return 0; }
 static uint32_t predicate_bits(predicate p)
 { uint32_t value;_Static_assert(sizeof p==sizeof value,"function pointer width");memcpy(&value,&p,sizeof value);return value; }
+static unsigned reference_strlen(void *p) { return (unsigned)strlen(p); }
+static unsigned char *read_regular(const char *path,size_t *size)
+{
+    FILE *f=fopen(path,"rb");assert(f);struct stat st;
+    assert(!fstat(fileno(f),&st) && S_ISREG(st.st_mode) && st.st_size>0 && st.st_size<128*1024*1024);
+    *size=(size_t)st.st_size;unsigned char *data=malloc(*size);assert(data);
+    assert(fread(data,1,*size,f)==*size && !fclose(f));return data;
+}
+static void check_profile(const unsigned char *elf,size_t bytes,const char *path)
+{
+    const struct {uint32_t address,length,crc,guard_literal;} fragments[]={
+        {0xc5e100,144,UINT32_C(0x39caf1e3),0xc5e188},
+        {0xc5e190,108,UINT32_C(0x330d0938),0xc5e1f8},
+        {0xc5e298,108,UINT32_C(0x56b95047),0xc5e300},
+        {0xc5e304,76,UINT32_C(0x4c3a84f3),0xc5e34c},
+    };
+    unsigned char *mapped=page(0xc5e000,4096),*divide=page(0x1285000,4096);
+    unsigned char *libc_page=page(0x6b0000,4096);
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;
+    for(size_t i=0;i<sizeof fragments/sizeof *fragments;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(mapped+fragments[i].address-0xc5e000,elf+off,fragments[i].length);
+        memcpy(mapped+fragments[i].guard_literal-0xc5e000,&pointer,4);
+    }
+    size_t off=file_offset(elf,bytes,0x128547e,682);
+    assert(crc32(elf+off,682)==UINT32_C(0x4c973710));memcpy(divide+0x47e,elf+off,682);
+    const uint32_t strlen_stub[3]={UINT32_C(0xe59fc000),UINT32_C(0xe12fff1c),bits(reference_strlen)};
+    memcpy(libc_page+0xa9c,strlen_stub,sizeof strlen_stub);
+    executable(mapped,4096);executable(divide,4096);executable(libc_page,4096);
+    typedef unsigned (*hash_fn)(void *,const char *);
+    typedef unsigned (*section_fn)(void *,void *,const char *);
+    typedef unsigned (*read_fn)(void *,void *,const char *,uint32_t *,uint32_t);
+    hash_fn hash;section_fn section;read_fn read;
+    pointer=0xc5e101;memcpy(&hash,&pointer,sizeof hash);
+    pointer=0xc5e191;memcpy(&section,&pointer,sizeof section);
+    pointer=0xc5e305;memcpy(&read,&pointer,sizeof read);
+    unsigned comparisons=0;char key[3]={0};
+    assert(hash(NULL,key)==oa_profile_hash(key));++comparisons;
+    for(unsigned first=1;first<256;++first) {
+        key[0]=(char)first;key[1]=0;
+        assert(hash(NULL,key)==oa_profile_hash(key));++comparisons;
+        for(unsigned second=1;second<256;++second) {
+            key[1]=(char)second;assert(hash(NULL,key)==oa_profile_hash(key));++comparisons;
+        }
+    }
+    size_t n;unsigned char *profile=read_regular(path,&n);assert(n>=0x44);
+    unsigned config=section(NULL,profile+0x30,"Config");assert(config);
+    const char *sections[]={"Connectivity","HotelTv","Missing"};
+    const char *keys[]={"Connectivity","HotelMode","Missing"};
+    const uint32_t defaults[]={0,1,UINT32_MAX};unsigned lookups=0;
+    for(size_t s=0;s<3;++s)for(size_t k=0;k<3;++k)for(size_t d=0;d<3;++d) {
+        unsigned found=section(NULL,(void *)(uintptr_t)config,sections[s]);
+        uint32_t vendor=42,ours=43;unsigned success=read(NULL,(void *)(uintptr_t)found,keys[k],&vendor,defaults[d]);
+        char full_path[80];assert(snprintf(full_path,sizeof full_path,"Config/%s",sections[s])>0);
+        int present;assert(!oa_profile_u32(profile,n,full_path,keys[k],defaults[d],&ours,&present));
+        assert(vendor==ours && success==(unsigned)present);++lookups;
+    }
+    struct oa_tab_profile snapshot;assert(!oa_tab_profile_from_sw(profile,n,&snapshot));
+    printf("ok offline shipped ARM profile: %u signed-byte hashes, %u saved-profile lookups/defaults; connectivity=%u hotel=%u\n",
+           comparisons,lookups,snapshot.connectivity_raw,snapshot.hotel_raw);
+    free(profile);assert(!munmap(mapped,4096) && !munmap(divide,4096) && !munmap(libc_page,4096));
+}
 static void check_selection(const unsigned char *elf,size_t bytes)
 {
     const struct {uint32_t address,length,crc,guard_literal;} fragments[]={
@@ -148,11 +212,8 @@ static void check_selection(const unsigned char *elf,size_t bytes)
 }
 int main(int argc,char **argv)
 {
-    assert(argc==2 && sysconf(_SC_PAGESIZE)==4096);
-    FILE *f=fopen(argv[1],"rb");assert(f);struct stat st;
-    assert(!fstat(fileno(f),&st) && S_ISREG(st.st_mode) && st.st_size>0 && st.st_size<128*1024*1024);
-    size_t bytes=(size_t)st.st_size;unsigned char *elf=malloc(bytes);assert(elf);
-    assert(fread(elf,1,bytes,f)==bytes && !fclose(f));
+    assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
+    size_t bytes;unsigned char *elf=read_regular(argv[1],&bytes);
     size_t off=file_offset(elf,bytes,0xd6ef80,168);
     assert(crc32(elf+off,168)==UINT32_C(0x550b31ac));
     void *code=page(0xd6e000,8192),*media_page=page(0xccb000,4096);
@@ -166,7 +227,7 @@ int main(int argc,char **argv)
     const uint32_t arm[3]={UINT32_C(0xe59fc000),UINT32_C(0xe12fff1c),bits(failed)};
     memcpy((unsigned char *)fail_page+0x740,arm,sizeof arm);
     executable(code,8192);executable(media_page,4096);executable(app_page,4096);executable(fail_page,4096);
-    check_selection(elf,bytes);free(elf);
+    check_selection(elf,bytes);check_profile(elf,bytes,argv[2]);free(elf);
     _Alignas(uint32_t) unsigned char dialog[0x37a1]={0},demo[0x29c]={0};
     uint32_t vtable[21]={0};vtable[0x18/4]=bits(hotel);vtable[0x40/4]=bits(mode);vtable[0x50/4]=bits(picture);
     uint32_t hotel_object=(uint32_t)(uintptr_t)vtable;

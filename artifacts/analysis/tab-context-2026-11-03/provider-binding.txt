@@ -1,0 +1,5 @@
+  cd601e:	bl	f21e64 <_ZNK21NovoSystemInitialiser29applicationCapabilityProviderEv@@Base>
+  cd6022:	str.w	r0, [r4, #788]	; 0x314
+  cd6026:	mov	r1, r9
+  cd6028:	ldr	r6, [r0, #0]
+  cd602a:	ldr	r2, [r6, #28]

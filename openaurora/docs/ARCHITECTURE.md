@@ -86,8 +86,17 @@ cannot prevent reload aliases. Owned watch/reap timer keep ABI3 cleanup
 nonblocking; abnormal child death retains a faulted provider until native release/
 recovery is understood. Four host/sanitizer/TV lifecycle groups and actual GPU
 service frames pass; see [GRAPHICS-MODULE](../../artifacts/reports/GRAPHICS-MODULE-2026-11-01.md).
-Source now builds22 modules, including ui_navigation; the preserved matching
+Source now builds23 modules, including ui_navigation and ui_profile; the preserved matching
 historical production ARM stage remains16. See MEMORY for stage identities.
+
+`ui_profile` publishes immutable copied software-profile facts as `ui.profile` v1.
+Explicit ui_profile.swprofile selects the EFSL snapshot. Start/reload reads a
+bounded regular file; service calls do no I/O and hold no borrowed file views.
+Connectivity and hotel-profile support use the firmware's exact-one test and
+missing-value defaults0/1. Paired standby retains the snapshot; suspended reload
+defers reading/publication until activation. This is separate from mutable hotel
+activation, entry/media/app state, content permission and the pending UI consumer.
+See examples/ui-profile.conf and TAB-CONTEXT-2026-11-03 for source/acceptance limits.
 
 Optional `scene_display` consumes/holds display.gpu, publishes an RGBA drawing
 canvas as display v2 and separate display.async request/latest receipts. Its one

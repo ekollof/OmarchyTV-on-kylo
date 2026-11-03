@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [TAB-CONTEXT](TAB-CONTEXT-2026-11-03.md) | resolved network-tab/menu-capability/profile chain; bounded scalar decoder and reloadable ui.profile,65281 shipped hashes/27 actual lookups plus host/sanitizer/ARM DSO lifecycle and23-module host loader pass; mutable context/consumer/TV acceptance open |
 | [TAB-SELECTION](TAB-SELECTION-2026-11-03.md) | initial missing-tab fallback and raw-ID/child-index distinction, empty-group/content0 behavior;9216 actual shipped group-code qemu comparisons; no native context, queue consumer or visible acceptance |
 | [TAB-NAVIGATION](TAB-NAVIGATION-2026-11-03.md) | availability/focus prerequisites from fresh ARM; predicate matches shipped function in884736 qemu cases; corrects d6faec key-handler claim; native context/consumer/content/writeback remain open, no TV access |
 | [NAVIGATION-SERVICE](NAVIGATION-SERVICE-2026-11-03.md) | reloadable ui.navigation state/queue + nav-* CLI/actual Unix IPC, explicit OAN1 pending reload; host/sanitizer/ARM-qemu/host-loader pass; no TV or UI consumer; queue pressure/TabDialog writeback open |
