@@ -1,0 +1,33 @@
+ok offline shipped ARM group selection: 9216 availability/description/request cases, rejected indices and empty focus
+ok offline shipped ARM profile: 65281 signed-byte hashes, 27 saved-profile lookups/defaults; connectivity=1 hotel=1
+ok offline shipped ARM retained setters: 1792 signed32/raw byte cases, exact fields and surrounding bytes preserved
+ok offline shipped ARM hotel row: 345 integer store/no-row cases, byte/int32 widths and surrounding fields preserved
+ok offline shipped ARM tab events: 1008 handler cases, ordered actions and dynamic callback state match
+ok offline shipped ARM pre-handler: 65664 valid-tree cases, action/message/state and handled truth match
+ok offline shipped ARM tab dispatch: 65600 type/id/result routes, 16384 pre/fallback joins; original identity and handled truth match
+ok offline shipped ARM tab leaves: 238860 cases, six bodies and real signed division; logical writes/actions, message identity and handled truth match
+ok offline shipped ARM settings map: 65600 type/id/result cases, qualified routes, mute truth and original identity match
+ok offline shipped ARM settings input: 86400 cases, five bodies, dynamic selection/text and original/synthetic action order match
+ok offline shipped ARM settings navigation: 101384 cases, active-ID wrap/jumps, signed viewport arithmetic and captured geometry match
+ok offline shipped ARM settings list map: 65600 type/id/result cases, original identity and handled truth match
+ok offline shipped ARM settings list input: 138240 cases, row-presence truth, original-row/new-record stores and mirrored identity match
+ok offline shipped ARM SVG list input: 999216 key cases, 49344 message joins, alias precedence/operands and handled truth match
+ok offline shipped ARM SVG list bodies: 26048 native/C comparisons, exact call order/args and handled truth match
+ok offline shipped ARM SVG list moves: 5040 native/C comparisons, exact call order/args match
+ok offline shipped ARM SVG list rows: 324 native/C comparisons, field layout/focus-store/partial match
+ok offline shipped ARM SVG list scrollbar: 4320 native/C comparisons, gating/rect/show/position match
+ok offline shipped ARM SVG list impl: 6952 native/C comparisons, update/rotate order/args/state match
+ok offline shipped ARM SVG list scrollbar bodies: 294 native/C comparisons, create forward and setpos gating/store/show match
+ok offline shipped ARM SVG list rowview: 100 native/C comparisons, total/last-visible/item-row match
+ok offline shipped ARM SVG list widgets: 21 native/C comparisons, numeric forward and selected-id gates/walk match
+ok offline shipped ARM SVG list slide: 72 native/C comparisons, progress/slider/text paths match
+ok offline shipped ARM SVG list anim: 153 native/C comparisons, owned strings/parse-free order/signed count/start bits match
+ok offline shipped ARM SVG list update: 20 native/C comparisons, total/store/refresh order match
+ok offline shipped ARM SVG list refresh: 2880 native/C comparisons, manager/base join and parent operands match
+ok offline shipped ARM SVG list checked: 24 native/C comparisons, created gate and set-before-cache match
+ok offline shipped ARM row values: 68640 type/raw-value cases, widget getter selection, cache offsets and raw32 bits match
+ok offline shipped ARM settings draw: 18441 native/C comparisons, all types/style writeback/owned temporary order match
+ok offline shipped ARM settings row type: 12480 native/C comparisons, state-before-render and ordered qualified child visibility match
+ok offline shipped ARM settings row setters: 324 native/C comparisons, child select/created gates/stores match
+ok offline shipped ARM settings row render: 38216 native/C comparisons, 0-6/0xd-0x10/0x1a/0x16 paths and defaults match
+ok offline shipped ARM availability: 884736 comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected

@@ -47,7 +47,7 @@ struct oa_setting_row_render_ops {
     void (*set_text)(void *child,const char *text);
     void (*create_text)(void *child,uint32_t zero,const char *label,
         const uint32_t rect[4],uint32_t extra,void *parent);
-    void (*create_button)(void *button,const char *label,
+    void (*create_button)(void *button,uint32_t icon,const char *label,
         const uint32_t rect[4],void *parent);
     void (*set_text_alignment)(void *child,uint32_t alignment);
     void (*set_checked)(void *child,uint32_t flag);
@@ -63,6 +63,18 @@ struct oa_setting_row_render_ops {
     void (*set_numeric_contents)(void *child,uint32_t value);
     void (*create_text_entry)(void *child,uint32_t zero,uint32_t a,uint32_t b,
         const char *label,const uint32_t rect[4],void *parent);
+    void (*store_row_word)(void *row,uint32_t offset,uint32_t value);
+    void (*destroy_child)(void *child);
+    void (*reset_cached_xml)(void *child);
+    uint32_t (*glyph_id)(uint32_t op,uint32_t state);
+    void (*set_glyph)(void *child,uint32_t id,uint32_t state);
+    void (*set_highlight)(void *child,uint32_t id);
+    void (*set_sublauncher_highlight)(void *child,uint32_t id);
+    void (*set_shadow)(void *child,uint32_t id);
+    void (*set_visible)(void *child,int on);
+    void (*set_scaling)(void *child,uint32_t type);
+    void (*create_image)(void *child,uint32_t id,const uint32_t rect[4],void *parent);
+    void (*set_draw_on_top)(void *child,int on);
 };
 int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o);
 #endif

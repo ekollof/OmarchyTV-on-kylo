@@ -6,6 +6,22 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-BUTTON-2026-11-03: renderItems types0x5/0x6 (launcher button +
+image1/image2) pass38216 native/C comparisons (destroy/reinit, type5 vs type6
+name sets, four glyph ids from getImageId(row[0x2dd4],state), highlight/
+sublauncher/elipses/shadow, icon-carrying create, inline0x92/0x93 stores,
+setDrawOnTop) plus full strict host, focused ASan/UBSan, ARM/qemu, all prior
+groups and focused real-TV CPU. Two ABI fixes: getImageId is two-arg
+(op,state) and create_button carries the icon id; the rebuild path faults on
+a null image1 and is excluded. Build-tv-v3/settings-row-render unit113460/
+accfc355c08beec4f27529c75d2f3e28; reference1086648/
+0ecf0c2d784ea39266e0d7db6229d3ed. TV already awake, no-reset flag kept,
+staging size/hash separately verified, test exit0, staging removed and no
+helper in /proc/*/exe. No screen/input/device/settings/network/service/boot/
+persistent change. No pending job/helper. Cases0x7..0xc,0x11..0x15,0x17..0x19,
+row construction, child visibility internals, live resources, scrollbar/skin/
+module/display/startup/visible acceptance remain open.
+
 SETTINGS-ROW-TEXTENTRY-2026-11-03: the text-entry family0xd/0xe/0xf/0x10
 passes33608 native/C comparisons via one parameterised body (names1/0/3/2,
 empty-label create, mode/max0/4,0xa/5,0xa/5,1/10, created numeric0x2e00 for

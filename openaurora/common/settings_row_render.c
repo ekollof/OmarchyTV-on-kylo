@@ -19,7 +19,9 @@ static const char *key_for(int which)
     case 2:return "labelLong";
     case 3:return "button";
     case 4:return "checkbox";
-    default:return "selectionbox";
+    case 5:return "selectionbox";
+    case 6:return "image1";
+    default:return "image2";
     }
 }
 static int ready(const struct oa_setting_row_render_ops *o)
@@ -33,7 +35,11 @@ static int ready(const struct oa_setting_row_render_ops *o)
         !o->create_checkbox || !o->set_selected_item || !o->create_selection ||
         !o->set_selection_image || !o->set_entry_mode || !o->set_max_chars ||
         !o->set_cursor_auto || !o->set_numeric_contents ||
-        !o->create_text_entry)return EINVAL;
+        !o->create_text_entry || !o->store_row_word || !o->destroy_child ||
+        !o->reset_cached_xml || !o->glyph_id || !o->set_glyph ||
+        !o->set_highlight || !o->set_sublauncher_highlight || !o->set_shadow ||
+        !o->set_visible || !o->set_scaling || !o->create_image ||
+        !o->set_draw_on_top)return EINVAL;
     return 0;
 }
 static void rect_math(uint32_t out[4],const uint32_t base[4],const int32_t pt[2])
@@ -179,6 +185,89 @@ static int case_te(void *row,const struct oa_setting_row_render_ops *o,void *box
     o->set_cursor_auto(child,1);
     return 0;
 }
+/* Cases 0x5/0x6: the launcher button plus two images. Three rectangle
+ * lookups ("button"/"image1"/"image2"); the button body either refreshes
+ * (created and no rebuild flag) or destroys, bulk-initialises and recreates
+ * with the 0x2e70/0x2e6c/0x2e74/0x2e78 (type 5) or
+ * 0x2e80/0x2e7c/0x2e84/0x2e88 (type 6) names, four glyph ids from
+ * glyph_id(row[0x2dd4], state), highlight row[0x2e68], sublauncher 0x237,
+ * elipses 1 and shadow 0x94. The common tail stores 0x92/0x93 into
+ * row[0x2e4c]/[0x2e50] and drives the row+0x2b28 / row+0x2c0c images from
+ * their rectangles before setDrawOnTop(1). The rebuild path reloads the
+ * image1 rectangle (faults natively when it is null, so excluded). */
+static int case_btn56(void *row,const struct oa_setting_row_render_ops *o,void *box,uint32_t type,
+    void *button_rect,void *image1,void *image2)
+{
+    void *button;int created;uint32_t base[4];
+    (void)box;
+    if(!button_rect)return 0;
+    button=o->child_at(row,UINT32_C(0x684));
+    created=o->is_created(button);
+    o->rect_words(button_rect,base);
+    if(created && !o->row_flag(row,UINT32_C(0x2e49))) {
+        uint32_t moved[4];int32_t pt[2];
+        o->get_point(row,pt);rect_math(moved,base,pt);
+        o->set_rect(button,moved);o->set_text(button,o->row_button_label(row));
+    } else {
+        if(o->is_created(button))o->destroy_child(button);
+        if(o->row_flag(row,UINT32_C(0x2e49)))o->reset_cached_xml(button);
+        if(type==UINT32_C(6)) {
+            o->set_name(button,UINT32_C(1),o->row_word(row,UINT32_C(0x2e80)));
+            o->set_name(button,UINT32_C(3),o->row_word(row,UINT32_C(0x2e88)));
+            o->set_name(button,(uint32_t)created,o->row_word(row,UINT32_C(0x2e7c)));
+            o->set_name(button,UINT32_C(2),o->row_word(row,UINT32_C(0x2e84)));
+        } else {
+            o->set_name(button,UINT32_C(1),o->row_word(row,UINT32_C(0x2e70)));
+            o->set_name(button,UINT32_C(3),o->row_word(row,UINT32_C(0x2e78)));
+            o->set_name(button,(uint32_t)created,o->row_word(row,UINT32_C(0x2e6c)));
+            o->set_name(button,UINT32_C(2),o->row_word(row,UINT32_C(0x2e74)));
+        }
+        {
+            uint32_t op=o->row_word(row,UINT32_C(0x2dd4));
+            o->set_glyph(button,o->glyph_id(op,UINT32_C(1)),UINT32_C(1));
+            o->set_glyph(button,o->glyph_id(op,0),0);
+            o->set_glyph(button,o->glyph_id(op,UINT32_C(2)),UINT32_C(2));
+            o->set_glyph(button,o->glyph_id(op,UINT32_C(3)),UINT32_C(3));
+        }
+        o->set_highlight(button,o->row_word(row,UINT32_C(0x2e68)));
+        o->set_sublauncher_highlight(button,UINT32_C(0x237));
+        o->set_elipses(button,1);
+        o->set_shadow(button,UINT32_C(0x94));
+        if(o->row_flag(row,UINT32_C(0x2e45)))o->set_text_alignment(button,UINT32_C(4));
+        o->create_button(button,o->row_word(row,UINT32_C(0x2dd4)),
+            o->row_button_label(row),base,row);
+    }
+    o->store_row_word(row,UINT32_C(0x2e4c),UINT32_C(0x92));
+    o->store_row_word(row,UINT32_C(0x2e50),UINT32_C(0x93));
+    if(image1) {
+        void *im=o->child_at(row,UINT32_C(0x2b28));
+        uint32_t w[4];
+        o->rect_words(image1,w);
+        if(o->is_created(im)) {
+            uint32_t moved[4];int32_t pt[2];
+            o->get_point(row,pt);rect_math(moved,w,pt);
+            o->set_rect(im,moved);o->set_visible(im,0);
+        } else {
+            uint32_t scale=o->row_word(row,UINT32_C(0x2e4c));
+            if(scale) { o->set_scaling(im,scale);o->create_image(im,scale,w,row); }
+        }
+    }
+    if(image2) {
+        void *im=o->child_at(row,UINT32_C(0x2c0c));
+        uint32_t w[4];
+        o->rect_words(image2,w);
+        if(o->is_created(im)) {
+            uint32_t moved[4];int32_t pt[2];
+            o->get_point(row,pt);rect_math(moved,w,pt);
+            o->set_rect(im,moved);o->set_visible(im,0);
+        } else {
+            uint32_t scale=o->row_word(row,UINT32_C(0x2e50));
+            if(scale) { o->set_scaling(im,scale);o->create_image(im,scale,w,row); }
+        }
+    }
+    o->set_draw_on_top(button,1);
+    return 0;
+}
 static int case_0x1a(void *row,const struct oa_setting_row_render_ops *o,void *box)
 {
     void *r=o->get_rect(box,key_for(3)),*button;int created;uint32_t base[4];
@@ -195,7 +284,7 @@ static int case_0x1a(void *row,const struct oa_setting_row_render_ops *o,void *b
     o->set_name(button,(uint32_t)created,o->row_word(row,UINT32_C(0x2ecc)));
     o->set_name(button,UINT32_C(3),o->row_word(row,UINT32_C(0x2ed8)));
     o->set_name(button,UINT32_C(2),o->row_word(row,UINT32_C(0x2ed4)));
-    o->create_button(button,o->row_button_label(row),base,row);
+    o->create_button(button,0,o->row_button_label(row),base,row);
     return 0;
 }
 int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
@@ -253,7 +342,7 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
              * excluded from the sweep. */
             uint32_t base[4];
             o->rect_words(key4,base);
-            o->create_button(button,o->row_button_label(row),base,row);
+            o->create_button(button,0,o->row_button_label(row),base,row);
         }
         return 0;
     }
@@ -311,6 +400,12 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             case_te(row,o,box,1,10,1);
             return 0;
         }
+        if(type==UINT32_C(5) || type==UINT32_C(6)) {
+            void *b=o->get_rect(box,key_for(3)),*i1=o->get_rect(box,key_for(6)),
+                 *i2=o->get_rect(box,key_for(7));
+            case_btn56(row,o,box,type,b,i1,i2);
+            return 0;
+        }
         return ENOTSUP;
     }
     if(type!=UINT32_C(1) && type!=UINT32_C(0)) {
@@ -345,6 +440,12 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
         }
         if(type==UINT32_C(0x10)) {
             case_te(row,o,box,1,10,1);
+            return 0;
+        }
+        if(type==UINT32_C(5) || type==UINT32_C(6)) {
+            void *b=o->get_rect(box,key_for(3)),*i1=o->get_rect(box,key_for(6)),
+                 *i2=o->get_rect(box,key_for(7));
+            case_btn56(row,o,box,type,b,i1,i2);
             return 0;
         }
         return ENOTSUP;

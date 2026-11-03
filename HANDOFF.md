@@ -24,7 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-TEXTENTRY](artifacts/reports/SETTINGS-ROW-TEXTENTRY-2026-11-03.md)
+Latest: [SETTINGS-ROW-BUTTON](artifacts/reports/SETTINGS-ROW-BUTTON-2026-11-03.md)
+implements renderItems types 0x5/0x6, the launcher button plus image1/image2:
+three rectangle lookups, refresh-or-destroy+reinit, type-5/type-6 name sets,
+four glyph ids from `getImageId(row[0x2dd4], state)`, highlight/sublauncher/
+elipses/shadow, an icon-carrying create, inline 0x92/0x93 scaling stores and
+setDrawOnTop(1). 38216 shipped ARM/C cases and prior groups pass, plus full
+host/Unix IPC, focused ASan/UBSan, ARM/qemu and focused real TV CPU. Two ABI
+corrections landed: getImageId is two-argument (op,state), and create_button
+carries the icon id. No screen/input/device/settings/network/service/boot/
+persistent change; staging removed, no helper. Next implement cases 0x7..0xc
+and 0x11..0x15 plus 0x17..0x19, then the real getImageId mapping and image
+internals, then row construction/visibility/live resources, then scrollbar/
+skin/module/display/startup/independent visible parity. Bodies are not actual
+widget/rendering acceptance.
+
+Previous: [SETTINGS-ROW-TEXTENTRY](artifacts/reports/SETTINGS-ROW-TEXTENTRY-2026-11-03.md)
 closes the text-entry family 0xd/0xe/0xf/0x10 with one parameterised body:
 "selectionbox" lookup, row+0x18d8 child, names 1/0/3/2 from
 0x2ebc/0x2ec0/0x2ec4/0x2ec8, empty-label seven-arg create, then per-case

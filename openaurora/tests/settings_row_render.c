@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 struct rrow {
-    uint32_t type;uint32_t words[20];uint32_t sel_img,sel_id,num;int flag,checked;const char *label,*blabel,*vtext;
-    void *rects[6];uint32_t rwords[6][4];int32_t pt[2];
+    uint32_t type;uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,imgid,scale;int flag,checked,rebuild;const char *label,*blabel,*vtext;
+    void *rects[8];uint32_t rwords[8][4];int32_t pt[2];
     int created;unsigned count;struct {uint32_t kind,off,a,b;char text[24];} trace[48];
 };
 static struct rrow *t;
@@ -18,23 +18,27 @@ static void emit(uint32_t kind,uint32_t off,uint32_t a,uint32_t b,const char *te
     else t->trace[t->count].text[0]=0;
     ++t->count;
 }
-enum {R_BASE,R_GET,R_IS,R_NAME,R_FOCUS,R_ELIP,R_FONT,R_POINT,R_RECT,R_TEXT,R_CTEXT,R_CBTN,R_ALIGN,R_CHECK,R_CCB,R_SELID,R_CSEL,R_SELIMG,R_EMODE,R_MAXCH,R_CAUTO,R_NUM,R_CTE};
+enum {R_BASE,R_GET,R_IS,R_NAME,R_FOCUS,R_ELIP,R_FONT,R_POINT,R_RECT,R_TEXT,R_CTEXT,R_CBTN,R_ALIGN,R_CHECK,R_CCB,R_SELID,R_CSEL,R_SELIMG,R_EMODE,R_MAXCH,R_CAUTO,R_NUM,R_CTE,R_STORE,R_DESTROY,R_RESETXML,R_GLYPH,R_HL,R_SUBHL,R_SHADOW,R_VIS,R_SCALE,R_CIMG,R_DRAWTOP};
 static void q_base(void *r) { (void)r;emit(R_BASE,0,0,0,NULL); }
 static void *q_cont(void *r) { (void)r;return (void *)0x1000; }
 static void *q_rect(void *c,const char *k)
 { (void)c;emit(R_GET,0,0,0,k);
-  for(int i=0;i<6;++i)if(!strcmp(k,((const char*[]){"alexa","text1","labelLong","button","checkbox","selectionbox"})[i]))return t->rects[i];
+  for(int i=0;i<8;++i)if(!strcmp(k,((const char*[]){"alexa","text1","labelLong","button","checkbox","selectionbox","image1","image2"})[i]))return t->rects[i];
   assert(0);return NULL; }
 static void q_words(void *r,uint32_t out[4])
-{ for(int i=0;i<6;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
+{ for(int i=0;i<8;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
+static void wset(struct rrow *r,uint32_t off,uint32_t v) { assert(off>=0x2e4c && off<=0x2ed8);r->words[(off-0x2e4c)/4]=v; }
 static uint32_t q_type(void *r) { (void)r;return t->type; }
 static uint32_t q_word(void *r,uint32_t o)
 { (void)r;
   if(o==0x2e54)return t->sel_img;
   if(o==0x2de8)return t->sel_id;
   if(o==0x2e00)return t->num;
-  assert(o>=0x2e8c && o<=0x2ed8 && !(o&3));return t->words[(o-0x2e8c)/4]; }
-static int q_flag(void *r,uint32_t o) { (void)r;assert(o==0x2e45||o==0x2e44);return o==0x2e44?t->checked:t->flag; }
+  if(o==0x2dd4)return t->op;
+  assert(o>=0x2e4c && o<=0x2ed8 && !(o&3));return t->words[(o-0x2e4c)/4]; }
+static int q_flag(void *r,uint32_t o)
+{ (void)r;assert(o==0x2e45||o==0x2e44||o==0x2e49);
+  return o==0x2e44?t->checked:(o==0x2e49?t->rebuild:t->flag); }
 static const char *q_label(void *r) { (void)r;return t->label; }
 static const char *q_blabel(void *r) { (void)r;return t->blabel; }
 static const char *q_vtext(void *r) { (void)r;return t->vtext; }
@@ -52,8 +56,8 @@ static void q_ctext(void *c,uint32_t z,const char *l,const uint32_t r[4],uint32_
 {
     (void)par;(void)r;emit(R_CTEXT,(uint32_t)(uintptr_t)c-0x2000,x,z,l);
 }
-static void q_cbtn(void *b,const char *l,const uint32_t r[4],void *par)
-{ char t2[24];snprintf(t2,sizeof t2,"%s",l);emit(R_CBTN,(uint32_t)(uintptr_t)b-0x2000,0,0,t2);(void)r;(void)par; }
+static void q_cbtn(void *b,uint32_t icon,const char *l,const uint32_t r[4],void *par)
+{ (void)r;(void)par;emit(R_CBTN,(uint32_t)(uintptr_t)b-0x2000,icon,0,l); }
 static void q_align(void *c,uint32_t a) { emit(R_ALIGN,(uint32_t)(uintptr_t)c-0x2000,a,0,NULL); }
 static void q_checked(void *c,uint32_t f) { emit(R_CHECK,(uint32_t)(uintptr_t)c-0x2000,f,0,NULL); }
 static void q_ccb(void *c,uint32_t z,uint32_t a,uint32_t b,const char *l,const uint32_t r[4],void *par)
@@ -66,18 +70,33 @@ static void q_emode(void *c,uint32_t m) { emit(R_EMODE,(uint32_t)(uintptr_t)c-0x
 static void q_maxch(void *c,uint32_t n) { emit(R_MAXCH,(uint32_t)(uintptr_t)c-0x2000,n,0,NULL); }
 static void q_cauto(void *c,int on) { emit(R_CAUTO,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)on,0,NULL); }
 static void q_num(void *c,uint32_t v) { emit(R_NUM,(uint32_t)(uintptr_t)c-0x2000,v,0,NULL); }
+static void q_store(void *r,uint32_t o,uint32_t v)
+{ (void)r;assert(o>=0x2e4c && o<=0x2ed8 && !(o&3));t->words[(o-0x2e4c)/4]=v;emit(R_STORE,o,v,0,NULL); }
+static void q_destroy(void *c) { emit(R_DESTROY,(uint32_t)(uintptr_t)c-0x2000,0,0,NULL); }
+static void q_reset(void *c) { emit(R_RESETXML,(uint32_t)(uintptr_t)c-0x2000,0,0,NULL); }
+static uint32_t q_gid(uint32_t op,uint32_t st) { return (op<<8)|st; }
+static void q_glyph(void *c,uint32_t id,uint32_t st) { emit(R_GLYPH,(uint32_t)(uintptr_t)c-0x2000,id,st,NULL); }
+static void q_hl(void *c,uint32_t id) { emit(R_HL,(uint32_t)(uintptr_t)c-0x2000,id,0,NULL); }
+static void q_subhl(void *c,uint32_t id) { emit(R_SUBHL,(uint32_t)(uintptr_t)c-0x2000,id,0,NULL); }
+static void q_shadow(void *c,uint32_t id) { emit(R_SHADOW,(uint32_t)(uintptr_t)c-0x2000,id,0,NULL); }
+static void q_vis(void *c,int on) { emit(R_VIS,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)on,0,NULL); }
+static void q_scale(void *c,uint32_t ty) { emit(R_SCALE,(uint32_t)(uintptr_t)c-0x2000,ty,0,NULL); }
+static void q_cimg(void *c,uint32_t id,const uint32_t r[4],void *par)
+{ (void)par;(void)r;emit(R_CIMG,(uint32_t)(uintptr_t)c-0x2000,id,0,NULL); }
+static void q_drawtop(void *c,int on) { emit(R_DRAWTOP,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)on,0,NULL); }
 static void q_cte(void *c,uint32_t z,uint32_t a,uint32_t b,const char *l,const uint32_t r[4],void *par)
 { (void)par;(void)r;emit(R_CTE,(uint32_t)(uintptr_t)c-0x2000,z,a?(b<<16)|a:0,l); }
 static struct oa_setting_row_render_ops ops(void)
 {
     return (struct oa_setting_row_render_ops){t,q_base,q_cont,q_rect,q_words,q_type,q_word,
         q_flag,q_label,q_blabel,q_vtext,q_child,q_is,q_name,q_focus,q_elipes,q_font,q_point,
-        q_srect,q_text,q_ctext,q_cbtn,q_align,q_checked,q_ccb,q_selid,q_csel,q_selimg,q_emode,q_maxch,q_cauto,q_num,q_cte};
+        q_srect,q_text,q_ctext,q_cbtn,q_align,q_checked,q_ccb,q_selid,q_csel,q_selimg,q_emode,q_maxch,q_cauto,q_num,q_cte,
+        q_store,q_destroy,q_reset,q_gid,q_glyph,q_hl,q_subhl,q_shadow,q_vis,q_scale,q_cimg,q_drawtop};
 }
 static void reset(struct rrow *r)
 {
     memset(r,0,sizeof *r);t=r;r->type=UINT32_MAX;r->label="";r->blabel="";r->vtext="";
-    for(int i=0;i<6;++i) { r->rects[i]=(void *)(uintptr_t)(0x3000+i*0x20); }
+    for(int i=0;i<8;++i) { r->rects[i]=(void *)(uintptr_t)(0x3000+i*0x20); }
 }
 int main(void)
 {
@@ -92,8 +111,8 @@ int main(void)
     assert(!strcmp(r.trace[2].text,"text1") && !strcmp(r.trace[3].text,"labelLong"));
     assert(r.trace[4].kind==R_IS && r.trace[4].off==0x104);
     assert(r.trace[12].kind==R_CTEXT && !strcmp(r.trace[12].text,""));
-    /* Types other than 2/3/0x16/0x1a stay open, after the shared tail. */
-    reset(&r);o=ops();r.type=5;
+    /* Types other than the implemented set stay open, after the shared tail. */
+    reset(&r);o=ops();r.type=7;
     assert(oa_setting_row_render(&r,&o)==ENOTSUP && r.count==13);
     /* Type 0 with missing key2: prologue then out. */
     reset(&r);o=ops();r.type=0;r.rects[1]=NULL;
@@ -122,7 +141,7 @@ int main(void)
     assert(r.trace[4].kind==R_IS && r.trace[4].off==0x104);
     assert(r.trace[6].kind==R_TEXT && !strcmp(r.trace[6].text,""));
     /* Shared tail not created, key1 missing: 0x2e90 names + stale-label create. */
-    reset(&r);o=ops();r.type=0;r.rects[0]=NULL;r.words[(0x2e90-0x2e8c)/4]=0xaa;
+    reset(&r);o=ops();r.type=0;r.rects[0]=NULL;r.words[(0x2e90-0x2e4c)/4]=0xaa;
     assert(!oa_setting_row_render(&r,&o));
     assert(r.count==12);
     assert(r.trace[5].kind==R_NAME && r.trace[5].b==0xaa);
@@ -138,7 +157,7 @@ int main(void)
     /* Type 4 not created, key1 missing: shared tail, then button create. */
     reset(&r);o=ops();r.type=4;r.rects[0]=NULL;r.blabel="PB";
     for(int i=0;i<4;++i)r.rwords[3][i]=(uint32_t)(100+i);
-    r.words[(0x2e90-0x2e8c)/4]=0xbb;
+    r.words[(0x2e90-0x2e4c)/4]=0xbb;
     assert(!oa_setting_row_render(&r,&o));
     assert(r.count==19);
     assert(r.trace[5].kind==R_NAME && r.trace[5].b==0xbb);
@@ -157,7 +176,7 @@ int main(void)
      * 0x2ed4 and creates it from the "button" rectangle. */
     reset(&r);o=ops();r.type=0x1a;r.blabel="PB";
     for(int i=0;i<4;++i)r.rwords[3][i]=(uint32_t)(100+i);
-    for(int k=0;k<20;++k)r.words[k]=(uint32_t)(0x200+k);
+    for(int k=0;k<20;++k)wset(&r,(uint32_t)(0x2e8c+4*k),(uint32_t)(0x200+k));
     assert(!oa_setting_row_render(&r,&o));
     assert(r.count==19);
     /* tail: is_created(0x104), four 0x2e8c names, focus/elipses, create */
@@ -216,7 +235,7 @@ int main(void)
     assert(r.trace[10].kind==R_SELID && r.trace[10].a==0x55);
     /* Type 3: row image id first, then 0x2e9c/0x2ea0/0x2ea4/0x2ea8 names. */
     reset(&r);o=ops();r.type=3;r.sel_img=0x77;
-    for(int k=0;k<20;++k)r.words[k]=(uint32_t)(0x300+k);
+    for(int k=0;k<20;++k)wset(&r,(uint32_t)(0x2e8c+4*k),(uint32_t)(0x300+k));
     assert(!oa_setting_row_render(&r,&o));
     assert(r.count==21);
     assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"selectionbox"));
@@ -231,7 +250,7 @@ int main(void)
      * 0x2ebc/0x2ec0/0x2ec4/0x2ec8 names in slots 0/1/2/3 order 1/0/3/2,
      * creates from an empty label, then mode0/max4/cursor-auto. */
     reset(&r);o=ops();r.type=0xd;
-    for(int k=0;k<20;++k)r.words[k]=(uint32_t)(0x400+k);
+    for(int k=0;k<20;++k)wset(&r,(uint32_t)(0x2e8c+4*k),(uint32_t)(0x400+k));
     assert(!oa_setting_row_render(&r,&o));
     assert(r.count==23);
     assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"selectionbox"));
@@ -255,7 +274,7 @@ int main(void)
     /* Type 0xe/0xf are identical: mode 0xa, max 5, numeric contents. */
     for(unsigned t=0;t<2;++t) {
         reset(&r);o=ops();r.type=t?0xf:0xe;r.num=0x21;
-        for(int k=0;k<20;++k)r.words[k]=(uint32_t)(0x500+k);
+        for(int k=0;k<20;++k)wset(&r,(uint32_t)(0x2e8c+4*k),(uint32_t)(0x500+k));
         assert(!oa_setting_row_render(&r,&o));
         assert(r.count==23);
         assert(r.trace[15].kind==R_NAME && r.trace[15].a==1 && r.trace[15].b==0x50d);
@@ -271,7 +290,7 @@ int main(void)
     }
     /* Type 0x10: mode 1, max 10, created path uses the value text (0x2e04). */
     reset(&r);o=ops();r.type=0x10;
-    for(int k=0;k<20;++k)r.words[k]=(uint32_t)(0x600+k);
+    for(int k=0;k<20;++k)wset(&r,(uint32_t)(0x2e8c+4*k),(uint32_t)(0x600+k));
     assert(!oa_setting_row_render(&r,&o));
     assert(r.count==23);
     assert(r.trace[20].kind==R_EMODE && r.trace[20].a==1);
@@ -283,9 +302,47 @@ int main(void)
     assert(r.trace[10].kind==R_TEXT && !strcmp(r.trace[10].text,"VX"));
     assert(r.trace[11].kind==R_EMODE && r.trace[11].a==1);
     assert(r.trace[12].kind==R_MAXCH && r.trace[12].a==10);
+    /* Type 5 launcher button: destroy/reinit/4 glyphs/highlight/shadow, then
+     * the two images and setDrawOnTop. */
+    reset(&r);o=ops();r.type=5;
+    wset(&r,0x2e6c,0x701);wset(&r,0x2e70,0x702);wset(&r,0x2e74,0x703);wset(&r,0x2e78,0x704);
+    r.op=0x42;wset(&r,0x2e68,0x43);
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==40);
+    assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"button"));
+    assert(r.trace[14].kind==R_GET && !strcmp(r.trace[14].text,"image1"));
+    assert(r.trace[15].kind==R_GET && !strcmp(r.trace[15].text,"image2"));
+    assert(r.trace[16].kind==R_IS && r.trace[16].off==0x684);
+    assert(r.trace[17].kind==R_IS && r.trace[17].off==0x684);
+    assert(r.trace[18].kind==R_NAME && r.trace[18].a==1 && r.trace[18].b==0x702);
+    assert(r.trace[22].kind==R_GLYPH && r.trace[22].a==0x4201 && r.trace[22].b==1);
+    assert(r.trace[25].kind==R_GLYPH && r.trace[25].b==3);
+    assert(r.trace[26].kind==R_HL && r.trace[26].a==0x43);
+    assert(r.trace[27].kind==R_SUBHL && r.trace[27].a==0x237);
+    assert(r.trace[28].kind==R_ELIP && r.trace[28].a==1);
+    assert(r.trace[29].kind==R_SHADOW && r.trace[29].a==0x94);
+    assert(r.trace[30].kind==R_CBTN && r.trace[30].a==0x42 && !strcmp(r.trace[30].text,""));
+    assert(r.trace[31].kind==R_STORE && r.trace[31].off==0x2e4c && r.trace[31].a==0x92);
+    assert(r.trace[32].kind==R_STORE && r.trace[32].off==0x2e50 && r.trace[32].a==0x93);
+    assert(r.trace[33].kind==R_IS && r.trace[33].off==0x2b28);
+    assert(r.trace[34].kind==R_SCALE && r.trace[34].a==0x92);
+    assert(r.trace[35].kind==R_CIMG && r.trace[35].a==0x92);
+    assert(r.trace[36].kind==R_IS && r.trace[36].off==0x2c0c);
+    assert(r.trace[37].kind==R_SCALE && r.trace[37].a==0x93);
+    assert(r.trace[38].kind==R_CIMG && r.trace[38].a==0x93);
+    assert(r.trace[39].kind==R_DRAWTOP && r.trace[39].a==1);
+    /* Type 6 uses the second name set; created path refreshes only. */
+    reset(&r);o=ops();r.type=6;
+    wset(&r,0x2e7c,0x801);wset(&r,0x2e80,0x802);wset(&r,0x2e84,0x803);wset(&r,0x2e88,0x804);
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[18].kind==R_NAME && r.trace[18].a==1 && r.trace[18].b==0x802);
+    reset(&r);o=ops();r.type=6;r.created=1;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[5].kind==R_RECT);
+    assert(r.trace[6].kind==R_TEXT);
     /* Invalid ops/args change nothing. */
     o=ops();o.set_name=NULL;
-    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==14);
+    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==22);
     assert(oa_setting_row_render(NULL,&o)==EINVAL);
     assert(oa_setting_row_render(&r,NULL)==EINVAL);
     puts("ok settings row render: 0/1/4 paths, shared tail, gates and open types");

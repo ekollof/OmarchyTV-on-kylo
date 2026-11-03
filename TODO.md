@@ -321,6 +321,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement SettingItemsListBoxRow::renderItems types 0x5/0x6 (launcher
+      button + image1/image2):38216 native/C comparisons and prior groups
+      pass; full host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU
+      pass. SETTINGS-ROW-BUTTON. Two ABI corrections (two-arg getImageId,
+      icon-carrying create) and the null-image1 rebuild crash exclusion are
+      asserted; getImageId's real mapping stays a stub. Cases0x7..0xc,
+      0x11..0x15,0x17..0x19, row construction, child visibility internals,
+      live resources, scrollbar/skin/module/display/startup/independent
+      visible acceptance remain open.
 - [x] Implement SettingItemsListBoxRow::renderItems text-entry family
       0xd/0xe/0xf/0x10:33608 native/C comparisons and prior groups pass; full
       host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.

@@ -6,6 +6,18 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-BUTTON implements renderItems types 0x5/0x6, the launcher
+button plus two images: three rectangle lookups, refresh-or-destroy+reinit,
+type-5 vs type-6 name sets in slots 1/3/0/2, four glyph ids from
+LauncherHelper::getImageId(row[0x2dd4], state), highlight/sub-launcher/
+elipses/shadow ids, a create carrying the icon id, inline 0x92/0x93 scaling
+stores and setDrawOnTop(1). 38216 native/C cases pass. Two ABI corrections:
+getImageId takes only (op,state), and SVGButton::create needs the icon
+argument. The rebuild path faults with a null image1, so that input is
+excluded. getImageId's real 62-way mapping stays a controlled stub. Cases
+0x7..0xc, 0x11..0x15, 0x17..0x19, construction, child-visibility internals,
+live resources, scrollbar/skin/visible gates remain open.
+
 SETTINGS-ROW-TEXTENTRY closes the text-entry family: one parameterised body
 serves 0xd/0xe/0xf/0x10 with names 1/0/3/2 from 0x2ebc/0x2ec0/0x2ec4/0x2ec8
 and an empty-label create; trailing setters differ (mode/max 0/4, 0xa/5,
