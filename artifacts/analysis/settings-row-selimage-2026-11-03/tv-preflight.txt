@@ -1,0 +1,2 @@
+192.168.178.87 already awake
+/conf/coredumpnoreset present (rc=0)

@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [LAUNCHER-IMAGEID](artifacts/reports/LAUNCHER-IMAGEID-2026-11-03.md)
+Latest: [SETTINGS-ROW-SELIMAGE](artifacts/reports/SETTINGS-ROW-SELIMAGE-2026-11-03.md)
+implements the row-level setSelectionBoxImageId: store the id at row+0x2e54,
+look up the "image" rectangle, destroy row+0x2cf0 unconditionally, then
+re-read the id and create from rect+8 when non-zero. The shipped 140-byte body
+at 0xd54374 (CRC 0xcf7f04a2) is copied verbatim and called from the copied
+renderItems case-0x3 path, so the internals are differentially verified rather
+than stubbed. A 15th presence key ("image") widens the sweep to 32768 masks and
+1770796 comparisons; verify.cjs's qemu timeout was raised to 180 s because the
+run now takes ~33 s. Host, focused ASan/UBSan, ARM/qemu, full verify.cjs
+(34 ok lines) and full make check pass, plus a focused real-TV CPU run (exit 0,
+staging hash-verified and removed). SVGImage::destroy/create internals remain
+stubs. No screen/input/device/settings/network/service/boot/persistent change.
+Next: the SVGImage destroy/create internals themselves, then
+convertOperationIdToIDM, row construction, child visibility internals/live
+resources, then scrollbar/skin/module/display/startup and visible parity.
+
+Previous: [LAUNCHER-IMAGEID](artifacts/reports/LAUNCHER-IMAGEID-2026-11-03.md)
 implements the real LauncherHelper::getImageId in
 common/launcher_image_id.c. It is a 62-entry tbh switch: op>61 returns -1,
 state==1 selects the alternate id and every other state takes the default;

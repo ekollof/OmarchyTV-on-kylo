@@ -6,6 +6,19 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-SELIMAGE implements the row-level setSelectionBoxImageId
+(0xd54374) instead of a stub: store the id at row+0x2e54, look up the "image"
+rectangle, destroy row+0x2cf0 unconditionally, then re-read the id and create
+from rect+8 when non-zero. The shipped 140-byte body is copied verbatim and
+called by the copied renderItems case-0x3 path; only its stack-guard and key
+literals are redirected. A 15th presence key ("image") widens the sweep to
+1770796 native/C comparisons. Two harness issues were fixed: the key literal
+is a pointer-to-pointer (redirect must target a const char* slot) and
+verify.cjs's 30s qemu timeout was too short for the doubled sweep (raised to
+180s; ~33s run). SVGImage::destroy/create internals remain stubs, as do row
+construction, child visibility internals, live resources, scrollbar/skin and
+display gates.
+
 LAUNCHER-IMAGEID implements the real LauncherHelper::getImageId
 (common/launcher_image_id.c): a 62-entry tbh switch where op>61 returns -1,
 state==1 selects the alternate id and every other state takes the default.

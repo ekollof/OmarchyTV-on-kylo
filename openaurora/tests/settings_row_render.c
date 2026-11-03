@@ -7,7 +7,7 @@
 #include <string.h>
 struct rrow {
     uint32_t type;uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,imgid,scale,slo,shi,sval,pval;int flag,checked,rebuild,img_created,tb_created,row2e46;const char *label,*blabel,*vtext,*t11text,*t12text,*t13text,*t14text,*t3text,*t4text;
-    void *rects[14];uint32_t rwords[14][4];int32_t pt[2];
+    void *rects[15];uint32_t rwords[15][4];int32_t pt[2];
     int created;unsigned count;struct {uint32_t kind,off,a,b;char text[24];} trace[64];
 };
 static struct rrow *t;
@@ -19,15 +19,15 @@ static void emit(uint32_t kind,uint32_t off,uint32_t a,uint32_t b,const char *te
     else t->trace[t->count].text[0]=0;
     ++t->count;
 }
-enum {R_BALL,R_CPB,R_PCT,R_DBL,R_CTBOX,R_CSLIDER,R_SVAL,R_SFOCUS,R_SRANGE,R_BASE,R_GET,R_IS,R_NAME,R_FOCUS,R_ELIP,R_FONT,R_POINT,R_RECT,R_TEXT,R_CTEXT,R_CBTN,R_ALIGN,R_CHECK,R_CCB,R_SELID,R_CSEL,R_SELIMG,R_EMODE,R_MAXCH,R_CAUTO,R_NUM,R_CTE,R_STORE,R_DESTROY,R_RESETXML,R_GLYPH,R_HL,R_SUBHL,R_SHADOW,R_VIS,R_SCALE,R_CIMG,R_DRAWTOP};
+enum {R_BALL,R_CPB,R_PCT,R_DBL,R_CTBOX,R_CSLIDER,R_SVAL,R_SFOCUS,R_SRANGE,R_BASE,R_GET,R_IS,R_NAME,R_FOCUS,R_ELIP,R_FONT,R_POINT,R_RECT,R_TEXT,R_CTEXT,R_CBTN,R_ALIGN,R_CHECK,R_CCB,R_SELID,R_CSEL,R_DESTROYIMG,R_EMODE,R_MAXCH,R_CAUTO,R_NUM,R_CTE,R_STORE,R_DESTROY,R_RESETXML,R_GLYPH,R_HL,R_SUBHL,R_SHADOW,R_VIS,R_SCALE,R_CIMG,R_DRAWTOP};
 static void q_base(void *r) { (void)r;emit(R_BASE,0,0,0,NULL); }
 static void *q_cont(void *r) { (void)r;return (void *)0x1000; }
 static void *q_rect(void *c,const char *k)
 { (void)c;emit(R_GET,0,0,0,k);
-  for(int i=0;i<14;++i)if(!strcmp(k,((const char*[]){"alexa","text1","labelLong","button","checkbox","selectionbox","image1","image2","banner","slidebar","text2","text3","text4","progressbar"})[i]))return t->rects[i];
+  for(int i=0;i<15;++i)if(!strcmp(k,((const char*[]){"alexa","text1","labelLong","button","checkbox","selectionbox","image1","image2","banner","slidebar","text2","text3","text4","progressbar","image"})[i]))return t->rects[i];
   assert(0);return NULL; }
 static void q_words(void *r,uint32_t out[4])
-{ for(int i=0;i<14;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
+{ for(int i=0;i<15;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
 static void wset(struct rrow *r,uint32_t off,uint32_t v) { assert(off>=0x2e4c && off<=0x2ed8);r->words[(off-0x2e4c)/4]=v; }
 static uint32_t q_type(void *r) { (void)r;return t->type; }
 static uint32_t q_word(void *r,uint32_t o)
@@ -88,13 +88,15 @@ static void q_ccb(void *c,uint32_t z,uint32_t a,uint32_t b,const char *l,const u
 static void q_selid(void *c,uint32_t id) { emit(R_SELID,(uint32_t)(uintptr_t)c-0x2000,id,0,NULL); }
 static void q_csel(void *c,uint32_t z,uint32_t a,uint32_t b,const char *l,const uint32_t r[4],void *par)
 { (void)par;(void)r;emit(R_CSEL,(uint32_t)(uintptr_t)c-0x2000,z,a?(b<<16)|a:0,l); }
-static void q_selimg(void *r,uint32_t id) { emit(R_SELIMG,(uint32_t)(uintptr_t)r-0x2000,id,0,NULL); }
+static void q_destroy_img(void *c) { emit(R_DESTROYIMG,(uint32_t)(uintptr_t)c-0x2000,0,0,NULL); }
 static void q_emode(void *c,uint32_t m) { emit(R_EMODE,(uint32_t)(uintptr_t)c-0x2000,m,0,NULL); }
 static void q_maxch(void *c,uint32_t n) { emit(R_MAXCH,(uint32_t)(uintptr_t)c-0x2000,n,0,NULL); }
 static void q_cauto(void *c,int on) { emit(R_CAUTO,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)on,0,NULL); }
 static void q_num(void *c,uint32_t v) { emit(R_NUM,(uint32_t)(uintptr_t)c-0x2000,v,0,NULL); }
 static void q_store(void *r,uint32_t o,uint32_t v)
-{ (void)r;assert(o>=0x2e4c && o<=0x2ed8 && !(o&3));t->words[(o-0x2e4c)/4]=v;emit(R_STORE,o,v,0,NULL); }
+{ (void)r;assert(o>=0x2e4c && o<=0x2ed8 && !(o&3));
+  if(o==0x2e54)t->sel_img=v;else t->words[(o-0x2e4c)/4]=v;
+  emit(R_STORE,o,v,0,NULL); }
 static void q_destroy(void *c) { emit(R_DESTROY,(uint32_t)(uintptr_t)c-0x2000,0,0,NULL); }
 static void q_reset(void *c) { emit(R_RESETXML,(uint32_t)(uintptr_t)c-0x2000,0,0,NULL); }
 static uint32_t q_gid(uint32_t op,uint32_t st) { return (op<<8)|st; }
@@ -128,14 +130,14 @@ static struct oa_setting_row_render_ops ops(void)
 {
     return (struct oa_setting_row_render_ops){t,q_base,q_cont,q_rect,q_words,q_type,q_word,
         q_flag,q_label,q_blabel,q_ustring,q_child,q_is,q_name,q_focus,q_elipes,q_font,q_point,
-        q_srect,q_text,q_ctext,q_cbtn,q_align,q_checked,q_ccb,q_selid,q_csel,q_selimg,q_emode,q_maxch,q_cauto,q_num,q_cte,
+        q_srect,q_text,q_ctext,q_cbtn,q_align,q_checked,q_ccb,q_selid,q_csel,q_destroy_img,q_emode,q_maxch,q_cauto,q_num,q_cte,
         q_store,q_destroy,q_reset,q_gid,q_glyph,q_hl,q_subhl,q_shadow,q_vis,q_scale,q_cimg,q_drawtop,
         q_ctbox,q_cslider,q_sval,q_sfocus,q_srange,q_ball,q_cpb,q_pct,q_dbl};
 }
 static void reset(struct rrow *r)
 {
     memset(r,0,sizeof *r);t=r;r->type=UINT32_MAX;r->label="";r->blabel="";r->vtext="";r->t11text="";r->t12text="";r->t13text="";r->t14text="";r->t3text="";r->t4text="";
-    for(int i=0;i<14;++i) { r->rects[i]=(void *)(uintptr_t)(0x3000+i*0x20); }
+    for(int i=0;i<15;++i) { r->rects[i]=(void *)(uintptr_t)(0x3000+i*0x20); }
 }
 int main(void)
 {
@@ -273,19 +275,35 @@ int main(void)
     assert(r.trace[8].kind==R_IS && r.trace[8].off==0x1014);
     assert(r.trace[9].kind==R_RECT);
     assert(r.trace[10].kind==R_SELID && r.trace[10].a==0x55);
-    /* Type 3: row image id first, then 0x2e9c/0x2ea0/0x2ea4/0x2ea8 names. */
+    /* Type 3: the row-level image id runs after the selectionbox lookup:
+     * store 0x2e54, look up "image", destroy row+0x2cf0 and create it when
+     * the stored id is non-zero; then 0x2e9c/0x2ea0/0x2ea4/0x2ea8 names. */
     reset(&r);o=ops();r.type=3;r.sel_img=0x77;
     for(int k=0;k<20;++k)wset(&r,(uint32_t)(0x2e8c+4*k),(uint32_t)(0x300+k));
     assert(!oa_setting_row_render(&r,&o));
-    assert(r.count==21);
+    assert(r.count==24);
     assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"selectionbox"));
-    assert(r.trace[14].kind==R_SELIMG && r.trace[14].a==0x77);
-    assert(r.trace[15].kind==R_IS && r.trace[15].off==0x1014);
-    assert(r.trace[16].kind==R_NAME && r.trace[16].a==1 && r.trace[16].b==0x305);
-    assert(r.trace[17].kind==R_NAME && r.trace[17].a==3 && r.trace[17].b==0x307);
-    assert(r.trace[18].kind==R_NAME && r.trace[18].a==0 && r.trace[18].b==0x304);
-    assert(r.trace[19].kind==R_NAME && r.trace[19].a==2 && r.trace[19].b==0x306);
-    assert(r.trace[20].kind==R_CSEL);
+    assert(r.trace[14].kind==R_STORE && r.trace[14].off==0x2e54 && r.trace[14].a==0x77);
+    assert(r.trace[15].kind==R_GET && !strcmp(r.trace[15].text,"image"));
+    assert(r.trace[16].kind==R_DESTROYIMG && r.trace[16].off==0x2cf0);
+    assert(r.trace[17].kind==R_CIMG && r.trace[17].off==0x2cf0 && r.trace[17].a==0x77);
+    assert(r.trace[18].kind==R_IS && r.trace[18].off==0x1014);
+    assert(r.trace[19].kind==R_NAME && r.trace[19].a==1 && r.trace[19].b==0x305);
+    assert(r.trace[20].kind==R_NAME && r.trace[20].a==3 && r.trace[20].b==0x307);
+    assert(r.trace[21].kind==R_NAME && r.trace[21].a==0 && r.trace[21].b==0x304);
+    assert(r.trace[22].kind==R_NAME && r.trace[22].a==2 && r.trace[22].b==0x306);
+    assert(r.trace[23].kind==R_CSEL);
+    /* Zero image id: the rectangle lookup and destroy still run, but no
+     * create. A missing "image" rectangle skips the destroy too. */
+    reset(&r);o=ops();r.type=3;r.sel_img=0;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[15].kind==R_GET && !strcmp(r.trace[15].text,"image"));
+    assert(r.trace[16].kind==R_DESTROYIMG && r.trace[16].off==0x2cf0);
+    assert(r.trace[17].kind==R_IS && r.trace[17].off==0x1014);
+    reset(&r);o=ops();r.type=3;r.sel_img=0x77;r.rects[14]=NULL;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[15].kind==R_GET && !strcmp(r.trace[15].text,"image"));
+    assert(r.trace[16].kind==R_IS && r.trace[16].off==0x1014);
     /* Type 0xd: shared tail then the text-entry case body. Uncreated writes
      * 0x2ebc/0x2ec0/0x2ec4/0x2ec8 names in slots 0/1/2/3 order 1/0/3/2,
      * creates from an empty label, then mode0/max4/cursor-auto. */

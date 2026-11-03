@@ -6,6 +6,23 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-SELIMAGE-2026-11-03: setSelectionBoxImageId internals implemented
+and verified by1770796 native/C comparisons. The shipped140-byte body at
+0xd54374 is copied verbatim (CRC0xcf7f04a2) and called from the copied
+renderItems case-0x3 path: store id at row+0x2e54, getRectangle("image"),
+SVGImage::destroy(row+0x2cf0) unconditionally, then create from rect+8 when the
+re-read id is nonzero. New ops destroy_image replaces set_selection_image; the
+15th key "image" widens the mask to32768. verify.cjs's qemu timeout was raised
+30s→180s (doubled sweep runs ~33s). Host, focused ASan/UBSan, ARM/qemu, full
+verify.cjs (34 ok) and full make check pass; focused TV CPU exit0 with staging
+hash-verified and removed. Build-tv-v3/settings-row-render unit230100/
+b906eb04493376658c6d82588e4089cc; reference1173116/
+2db63cd8508c518d76ef9b08332df52d. No screen/input/device/settings/network/
+service/boot/persistent change. No pending job/helper. SVGImage::destroy/
+create internals, convertOperationIdToIDM, row construction, child visibility
+internals, live resources, scrollbar/skin/module/display/startup/visible
+acceptance remain open.
+
 LAUNCHER-IMAGEID-2026-11-03: real LauncherHelper::getImageId implemented in
 common/launcher_image_id.c and verified by469 native/C comparisons against the
 verbatim shipped body0xe4aaf4 (copied to0xe4a000; guard literal0x01791d68

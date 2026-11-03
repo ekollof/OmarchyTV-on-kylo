@@ -56,7 +56,7 @@ struct oa_setting_row_render_ops {
     void (*set_selected_item)(void *child,uint32_t id);
     void (*create_selection)(void *child,uint32_t zero,uint32_t a,uint32_t b,
         const char *label,const uint32_t rect[4],void *parent);
-    void (*set_selection_image)(void *row,uint32_t id);
+    void (*destroy_image)(void *child);
     void (*set_entry_mode)(void *child,uint32_t mode);
     void (*set_max_chars)(void *child,uint32_t count);
     void (*set_cursor_auto)(void *child,int on);

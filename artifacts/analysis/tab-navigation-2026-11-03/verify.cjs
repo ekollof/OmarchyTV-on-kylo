@@ -16,7 +16,7 @@ assert.equal(crypto.createHash('md5').update(fs.readFileSync(elf)).digest('hex')
 assert.equal(crypto.createHash('md5').update(fs.readFileSync(profile)).digest('hex'),
              'a1d9e5e80a926a6e0abd812c98852894');
 const result = spawnSync('qemu-arm-static', ['-L', libc, binary, elf, profile],
-                         { encoding: 'utf8', timeout: 30000 });
+                         { encoding: 'utf8', timeout: 180000 });
 process.stdout.write(result.stdout || '');
 process.stderr.write(result.stderr || '');
 assert.ifError(result.error);
@@ -52,6 +52,6 @@ assert.match(result.stdout, /SVG list checked: 24 native\/C comparisons/);
 assert.match(result.stdout, /settings draw: 18441 native\/C comparisons/);
 assert.match(result.stdout, /settings row type: 12480 native\/C comparisons/);
 assert.match(result.stdout, /settings row setters: 324 native\/C comparisons/);
-assert.match(result.stdout, /settings row render: 886060 native\/C comparisons/);
+assert.match(result.stdout, /settings row render: 1770796 native\/C comparisons/);
 assert.match(result.stdout, /launcher image id: 469 native\/C comparisons/);
 assert.match(result.stdout, /row values: 68640 type\/raw-value cases/);

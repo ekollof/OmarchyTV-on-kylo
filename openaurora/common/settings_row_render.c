@@ -28,7 +28,8 @@ static const char *key_for(int which)
     case 10:return "text2";
     case 11:return "text3";
     case 12:return "text4";
-    default:return "progressbar";
+    case 13:return "progressbar";
+    default:return "image";
     }
 }
 static int ready(const struct oa_setting_row_render_ops *o)
@@ -40,7 +41,7 @@ static int ready(const struct oa_setting_row_render_ops *o)
         !o->set_rect || !o->set_text || !o->create_text ||
         !o->create_button || !o->set_text_alignment || !o->set_checked ||
         !o->create_checkbox || !o->set_selected_item || !o->create_selection ||
-        !o->set_selection_image || !o->set_entry_mode || !o->set_max_chars ||
+        !o->destroy_image || !o->set_entry_mode || !o->set_max_chars ||
         !o->set_cursor_auto || !o->set_numeric_contents ||
         !o->create_text_entry || !o->store_row_word || !o->destroy_child ||
         !o->reset_cached_xml || !o->glyph_id || !o->set_glyph ||
@@ -120,6 +121,24 @@ static int case_0x16(void *row,const struct oa_setting_row_render_ops *o,void *b
     o->set_checked(child,o->row_flag(row,UINT32_C(0x2e44))?1u:0u);
     return 0;
 }
+/* Row-level setSelectionBoxImageId (0xd54374): store the id at row+0x2e54,
+ * look up the "image" rectangle, destroy the row+0x2cf0 SVGImage and re-create
+ * it from the rectangle when the stored id is non-zero. The shipped body
+ * destroys unconditionally once the rectangle exists and re-reads the id
+ * after destroy. */
+static void set_selection_image(void *row,const struct oa_setting_row_render_ops *o,
+    void *box,uint32_t id)
+{
+    void *rect,*img;uint32_t stored;
+    o->store_row_word(row,UINT32_C(0x2e54),id);
+    rect=o->get_rect(box,key_for(14));
+    if(!rect)return;
+    img=o->child_at(row,UINT32_C(0x2cf0));
+    o->destroy_image(img);
+    stored=o->row_word(row,UINT32_C(0x2e54));
+    if(!stored)return;
+    { uint32_t base[4];o->rect_words(rect,base);o->create_image(img,stored,base,row); }
+}
 /* Cases 0x2 and 0x3: drive the row+0x1014 selection box from the
  * "selectionbox" rectangle. Case 0x3 first calls the row's
  * setSelectionBoxImageId with [row+0x2e54]. Created applies EASIRect math,
@@ -131,7 +150,8 @@ static int case_sel(void *row,const struct oa_setting_row_render_ops *o,void *bo
 {
     void *r,*child;int created;uint32_t base[4];
     r=o->get_rect(box,key_for(5));
-    if(type==UINT32_C(3))o->set_selection_image(row,o->row_word(row,UINT32_C(0x2e54)));
+    if(type==UINT32_C(3))
+        set_selection_image(row,o,box,o->row_word(row,UINT32_C(0x2e54)));
     if(!r)return 0;
     child=o->child_at(row,UINT32_C(0x1014));
     created=o->is_created(child);

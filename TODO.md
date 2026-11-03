@@ -368,8 +368,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       op/state pairs; host structural checks, ASan/UBSan, ARM/qemu, full
       verify.cjs and focused TV CPU pass. LAUNCHER-IMAGEID. The render ops
       glyph_id hook is proven to accept the real function.
-- [ ] SVGImage/setSelectionBoxImageId internals (still controlled stubs), and
-      the adjacent LauncherHelper::convertOperationIdToIDM (0xe4ae0c).
+- [x] setSelectionBoxImageId internals (0xd54374): store0x2e54, "image"
+      lookup, unconditional destroy at0x2cf0, create when id nonzero;
+      1770796 native/C comparisons and prior groups pass, plus host,
+      ASan/UBSan, ARM/qemu, verify.cjs and focused TV CPU.
+      SETTINGS-ROW-SELIMAGE. The shipped body is copied verbatim; only its
+      guard/key literals are redirected.
+- [ ] SVGImage::destroy/create internals themselves (vendor XML/SVG resource
+      machinery; still controlled stubs), and the adjacent
+      LauncherHelper::convertOperationIdToIDM (0xe4ae0c).
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing
