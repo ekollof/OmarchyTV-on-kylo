@@ -1063,3 +1063,27 @@ items +0x30 is a flag and +0x34 is 0.) Row widget inventory re-verified at
 asm level in the row ctor (0xd53d0c): label +0x104, caption +0x3c4, button
 +0x684, selbox +0x1014, slidebars +0x13c0/+0x1498, textentry +0x18d8, value
 textbox +0x1ca8, label store +0x2dd8.
+
+## Slider-row label indent: measured, source open (2026-11-04)
+
+Vendor label ink starts (corrected capture): row0 x53, rows1-4 x80/83/81/83,
+row5 x53, row6 x55, row7 x49, row8 x50. With live font7 left bearings
+(M4/C1/H4, decoded from the shipped pack) and the live identical label
+widgets (window=(30,row+1,381,row+51), text=(1,-5,350,61), font7/lines1/
+type0/align4 for rows 0 AND 1 — see live-scan-title-2026-11-02.txt), the draw
+origins are: row0 (49,~183) = box+18, rows1-4 (79,~254) = box+48, title
+(131,7) = box+23. Y offsets are uniformly +1..2 (rounding). So text rows use
+the global font X offset 18 and the title uses 23 (FONT-X-OFFSET, closed),
+but slider rows (type 9) add +30 more. Do not fit this; find its source.
+
+Eliminated with evidence: `overrideTextAlignment` callers are unrelated
+classes (`FilesListBoxRow::renderItems` mirror branch,
+`FilePlaybackBanner::init`); renderItems type-9 uses the same text1-based
+label rect and routes the label (not caption) to +0x104; no leading glyph
+in row crops; no key prefix (UI-ROW-LABELS); slide margin shifts the wrong
+way (<=0); mirror ruled out by row/vendor parity; dialog client is (0,0)
+live; translation-fit is a no-op (all labels fit their boxes). The ONLY
+unverified per-instance draw inputs left are +0x1b0/+0x1b1/+0x22c/+0x2a8/
++0x2b0 — exactly what the extended ui-object-scan dumps. Next: run it with
+settings open; if flags are identical across rows, read the text itself
+(+0xa4) live.
