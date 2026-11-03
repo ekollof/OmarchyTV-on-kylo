@@ -6,6 +6,16 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-LIST-2026-11-03: list map/Right-Left/Digit callbacks pass65600 shipped
+map/matcher and138240 native method cases, full strict host, focused ASan/UBSan,
+ARM unit and all prior groups. ARM unit30512/175c832887165a55aa210d4e0dc33742;
+reference358336/3ac22cad43a7e8901ad147801d5e296b, build-tv-v3/tab-policy.
+Original row and post-key record are separately pinned lifetimes; Digit consumes
+iff row exists, mirrored events are fresh. No new module/service/UI consumer.
+Typed row values/lower SVG movement/routing/parent refresh, owned backend/context
+and visible acceptance remain open. No TV access/wake/staging/deployment,
+actual keys/drawing/settings writes or pending Ghidra/build/helper job.
+
 SETTINGS-NAVIGATION-2026-11-03: navigateInList callback body passes101384
 shipped ARM state/action comparisons, including signed viewport wrap/captured
 geometry and repaired cursors before read. Full strict host, focused ASan/UBSan,

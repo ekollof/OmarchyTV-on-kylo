@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [SETTINGS-LIST](SETTINGS-LIST-2026-11-03.md) | list map/Right-Left/Digit bodies;65600 native map and138240 body cases plus host/sanitizer/ARM; row-presence truth, original-row/post-key-record writeback and mirrored identity; lower SVG/row/backend/visible gates open |
 | [SETTINGS-NAVIGATION](SETTINGS-NAVIGATION-2026-11-03.md) | navigateInList active-ID cursor/viewport body,101384 shipped ARM state/action cases and strict host/sanitizer/ARM; next widget source saved, lower SVG/row/backend/visible integration open |
 | [SETTINGS-INPUT](SETTINGS-INPUT-2026-11-03.md) | qualified base map/five input bodies;65600 native map and86400 body cases plus host/sanitizer/ARM/metadata; preserves BLANK pointer identity, mirror translation and callback order; list/navigation/parent/backend/visible gates open |
 | [TAB-LEAF](TAB-LEAF-2026-11-03.md) | six handler bodies, isShowing volume gate, signed digit wrap/remainder and direct versus virtual end;238860 shipped ARM comparisons with real division plus host/sanitizer/ARM; remaining settings map/list/mute/backend/visible integration open |

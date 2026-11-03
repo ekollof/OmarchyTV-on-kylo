@@ -31,3 +31,5 @@ assert.match(result.stdout, /tab leaves: 238860 cases, six bodies and real signe
 assert.match(result.stdout, /settings map: 65600 type\/id\/result cases/);
 assert.match(result.stdout, /settings input: 86400 cases, five bodies/);
 assert.match(result.stdout, /settings navigation: 101384 cases, active-ID wrap\/jumps/);
+assert.match(result.stdout, /settings list map: 65600 type\/id\/result cases/);
+assert.match(result.stdout, /settings list input: 138240 cases, row-presence truth/);

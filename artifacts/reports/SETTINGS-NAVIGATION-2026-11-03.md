@@ -1,5 +1,9 @@
 # Active-ID settings navigation — 2026-11-03
 
+Subsequent [SETTINGS-LIST](SETTINGS-LIST-2026-11-03.md) implements the three
+widget bodies called unimplemented in this report's dated continuation notes.
+Typed row/lower SVG, owned backend/consumer and visible acceptance remain open.
+
 `common/settings_navigation.c` now implements the complete
 SettingsDialog::navigateInList method through owned state/widget callbacks.
 It is the algorithm behind SETTINGS-INPUT's NAVIGATE action, not a complete

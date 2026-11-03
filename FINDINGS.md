@@ -6,14 +6,23 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Settings list: SETTINGS-LIST implements map and Right/Left/Digit bodies;65600
+native map/matcher and138240 body cases pass. Select20e routes Right/Left. Digit
+returns row presence independently of child result. Vertical writeback captures
+row, dispatches key, resolves the record selected afterward, reads original-row
+value and stores it in that record. Pin both lifetimes. Horizontal mirror swaps
+fresh Left/Right events; don't reuse the parent's Up/Down conversion. Missing-
+record guard isn't native bad-tree parity. Typed rows/lower SVG/backend/visible
+gates stay open; next source is settings-list-2026-11-03/lower-list.txt.
+
 Settings navigation: SETTINGS-NAVIGATION implements d56a24;101384 native ARM
 logical-write/action/state matches plus strict host/sanitizer/ARM and prior
 groups. Active vector holds IDs passed to getItemIndex(int), not SettingItem
 pointers or widget indices. Cursor wrap/first-last jumps precede lookup; viewport
 comparisons are signed32 with wrapping arithmetic. Captured rows survive setter
-changes. Invalid-count/cursor errors are explicit non-parity bounds. Widget
-map/row/underlying SVG and real backend/visible integration remain open; next
-widget bodies are already extracted, with Digit row-presence truth confirmed.
+changes. Invalid-count/cursor errors are explicit non-parity bounds. SETTINGS-LIST
+later implements the widget map/two bodies; typed rows/underlying SVG and real
+backend/visible integration remain open.
 
 Base settings input: SETTINGS-INPUT implements qualified map and five body
 callbacks;65600 actual ARM map routes and86400 native method traces pass. Don't

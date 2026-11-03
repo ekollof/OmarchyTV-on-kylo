@@ -1,0 +1,1 @@
+ok settings list: row-presence truth, original-row/new-record writeback, mirrored event identity and missing-record bounds

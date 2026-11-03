@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-tab-policy-sanitize/tests/settings_list_input tests/settings_list_input.c common/settings_list_input.c
+ok settings list: row-presence truth, original-row/new-record writeback, mirrored event identity and missing-record bounds
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

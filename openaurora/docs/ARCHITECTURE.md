@@ -110,8 +110,15 @@ the input NAVIGATE action: an active-ID cursor followed by separate signed
 widget-index/viewport calculations. SETTINGS-NAVIGATION records101384 actual
 ARM logical state-write/action matches, including captured geometry across
 setters. Invalid count/cursor safety is distinct from native valid-tree parity.
-Real widget keys/SVG/rows, parent refresh, owned backend/context/consumer and
+Lower SVG/rows, parent refresh, owned backend/context/consumer and
 independent visible acceptance remain pending; no UI consumer was attached.
+
+`common/settings_list_input.c` supplies the list map and Right/Left/Digit bodies.
+SETTINGS-LIST records65600 native map/matcher and138240 body cases. Original-row
+and post-key record handles stay distinct and pinned; Digit returns presence,
+and mirrored events are fresh. Typed rows/lower SVG/parent refresh, owned backend/
+context/consumer and native visible acceptance remain pending. No real event/
+widget/UI ownership is implied.
 
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;

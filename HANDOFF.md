@@ -24,13 +24,28 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-NAVIGATION](artifacts/reports/SETTINGS-NAVIGATION-2026-11-03.md)
+Latest: [SETTINGS-LIST](artifacts/reports/SETTINGS-LIST-2026-11-03.md) adds the
+SettingItemsListBox map and Right/Left/Digit bodies.65600 shipped map/matcher
+and138240 native body cases pass, plus full host/focused sanitizer/ARM and prior
+groups. Digit returns row presence, not child result; Select routes Right/Left.
+Vertical writeback reads original-row value into the record selected AFTER key
+delivery; both handles need lifetime pinning. Horizontal mirror swaps fresh
+Left/Right events, unlike the parent's Up/Down translation. Missing-record
+safety is explicit, outside native valid-tree acceptance. Next implement three
+lower methods saved in analysis/settings-list-2026-11-03/lower-list.txt: typed
+row getSelectedItemValue, SVGListBoxBase key routing and its message map. Lower
+move/select/page methods still need investigation. Then owned backend/context/
+consumer, parent refresh and native permission/modal/focus/lifetime/visible
+gates. No new service/module/UI consumer. Hashes in MEMORY/report. No TV access/
+wake/deployment or pending Ghidra/build/helper job.
+
+Previous: [SETTINGS-NAVIGATION](artifacts/reports/SETTINGS-NAVIGATION-2026-11-03.md)
 implements navigateInList via callbacks.101384 shipped ARM cases match logical
 cursor/item/row actions and final state, with full host/focused sanitizer/ARM
 and prior groups passing. Active vector holds item IDs, cursor is not a widget
 index; preserve signed viewport comparisons, uint32 wrap and captured geometry.
 Explicit invalid-count/cursor bounds are not native bad-tree parity acceptance.
-Next implement the three widget bodies already saved in
+SETTINGS-LIST subsequently implements the three widget bodies saved in
 analysis/settings-navigation-2026-11-03/list-keys.txt. Digit returns row presence;
 vertical Right/Left reads original-row value into the record selected after
 key dispatch. Horizontal mirror uses fresh events. Then resolve lower SVG/row

@@ -12,6 +12,7 @@
 #include "tab_leaf_fixture.h"
 #include "settings_input_fixture.h"
 #include "settings_navigation_fixture.h"
+#include "settings_list_fixture.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -937,6 +938,125 @@ static void check_navigation(const unsigned char *elf,size_t bytes)
     native_nav=NULL;for(unsigned i=0;i<4;++i)assert(!munmap(pages[i],4096));
     printf("ok offline shipped ARM settings navigation: %u cases, active-ID wrap/jumps, signed viewport arithmetic and captured geometry match\n",compared);
 }
+static struct {enum oa_settings_list_route route;unsigned count;const void *message;uint32_t result;} sl_map;
+static uint32_t sl_map_call(void *p,enum oa_settings_list_route route,const void *message)
+{ (void)p;sl_map.route=route;++sl_map.count;sl_map.message=message;return sl_map.result; }
+static unsigned sl_map_rl(void *p,int32_t message)
+{ return sl_map_call(p,OA_SL_ROUTE_RIGHT_LEFT,(const void *)(uintptr_t)(uint32_t)message); }
+static unsigned sl_map_digit(void *p,int32_t message)
+{ return sl_map_call(p,OA_SL_ROUTE_DIGIT,(const void *)(uintptr_t)(uint32_t)message); }
+static unsigned sl_map_base(void *p,int32_t message)
+{ return sl_map_call(p,OA_SL_ROUTE_BASE,(const void *)(uintptr_t)(uint32_t)message); }
+static void check_settings_list_map(const unsigned char *elf,size_t bytes)
+{
+    const uint32_t bases[]={0xd50000,0xcc4000,0x10bd000};unsigned char *pages[3];
+    for(unsigned i=0;i<3;++i)pages[i]=page(bases[i],4096);
+    size_t off=file_offset(elf,bytes,0xd509f0,328);assert(crc32(elf+off,328)==UINT32_C(0x472aef94));memcpy(pages[0]+0x9f0,elf+off,328);
+    off=file_offset(elf,bytes,0xcc4f38,96);assert(crc32(elf+off,96)==UINT32_C(0x90529f1b));memcpy(pages[1]+0xf38,elf+off,96);
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(pages[0]+0xb34,&pointer,4);memcpy(pages[1]+0xf94,&pointer,4);
+    predicate_stub(pages[0],bases[0],0xd508b8,sl_map_rl);predicate_stub(pages[0],bases[0],0xd509a0,sl_map_digit);
+    predicate_stub(pages[2],bases[2],0x10bd060,sl_map_base);
+    for(unsigned i=0;i<3;++i)executable(pages[i],4096);
+    uint32_t vtable[4]={0,0,bits(dispatch_type),bits(dispatch_id)},dummy=0;
+    struct dispatch_message message={(uint32_t)(uintptr_t)vtable,0,0};leaf_handler native;pointer=0xd509f1;memcpy(&native,&pointer,4);
+    const uint32_t types[]={0,0x1004,0x11004,UINT32_MAX},results[]={0,1,255,UINT32_MAX};
+    const uint32_t extra[]={0x1020c,0x10000,INT32_MAX,UINT32_MAX};unsigned compared=0;
+    for(unsigned t=0;t<4;++t)for(unsigned r=0;r<4;++r)for(unsigned k=0;k<4100;++k) {
+        message.type=types[t];message.id=k<4096?k:extra[k-4096];sl_map.count=0;sl_map.result=results[r];
+        unsigned expected=native(&dummy,&message);assert(sl_map.count==1);
+        enum oa_settings_list_route route=sl_map.route;const void *original=sl_map.message;
+        sl_map.count=0;struct oa_settings_list_dispatch_ops ops={NULL,sl_map_call,&message};int handled=-1;
+        assert(!oa_settings_list_dispatch(&ops,message.type,message.id,&handled));
+        assert(sl_map.count==1 && sl_map.route==route && sl_map.message==original && original==&message && handled==(expected!=0));++compared;
+    }
+    for(unsigned i=0;i<3;++i)assert(!munmap(pages[i],4096));
+    printf("ok offline shipped ARM settings list map: %u type/id/result cases, original identity and handled truth match\n",compared);
+}
+static struct sl_fixture *native_sl;
+static _Alignas(uint32_t) unsigned char sl_object[0x290],sl_records[3][0x24];
+static uint32_t sl_rows[3],sl_record_pointers[3],sl_vector,sl_event,sl_dummy;
+static void sl_sync_records(void)
+{
+    for(unsigned i=0;i<3;++i) {
+        uint32_t record=native_sl->records[i];assert(record && record<=3);
+        sl_record_pointers[i]=(uint32_t)(uintptr_t)sl_records[record-1];
+    }
+}
+static unsigned sl_native_selected(void *p) { assert(p==sl_object);return native_sl->selected; }
+static unsigned sl_native_item(void *p,int32_t selected)
+{
+    assert(p==sl_object);uint32_t row=sl_query(native_sl,OA_SL_ROW,(uint32_t)selected);
+    return row?(uint32_t)(uintptr_t)&sl_rows[row-1]:0;
+}
+static uint32_t sl_row_handle(const void *p)
+{ for(unsigned i=0;i<3;++i)if(p==&sl_rows[i])return i+1;assert(0);return 0; }
+static unsigned sl_native_row_key(void *p,int32_t event)
+{
+    assert((uintptr_t)(uint32_t)event==(uintptr_t)&sl_event);
+    uint32_t result=sl_run(native_sl,OA_SL_ROW_KEY,sl_row_handle(p),sl_event,&sl_event);sl_sync_records();return result;
+}
+static unsigned sl_native_value(void *p) { return sl_query(native_sl,OA_SL_ROW_VALUE,sl_row_handle(p)); }
+static unsigned sl_native_mirror(void *p) { (void)p;return native_sl->mirror; }
+static unsigned sl_native_base(void *p,int32_t event)
+{
+    assert(p==sl_object);const void *message=(const void *)(uintptr_t)(uint32_t)event;
+    return sl_run(native_sl,OA_SL_BASE_KEY,0,*(const uint32_t *)message,message==&sl_event?message:NULL);
+}
+static void check_settings_list_input(const unsigned char *elf,size_t bytes)
+{
+    const uint32_t bases[]={0xd50000,0x10bc000,0x1148000,0x1139000,0x97b000,0x113b000,0xd53000};
+    const size_t lengths[]={4096,4096,8192,4096,4096,4096,4096};unsigned char *pages[7];
+    for(unsigned i=0;i<7;++i)pages[i]=page(bases[i],lengths[i]);
+    const struct {uint32_t address,length,crc,literal;} fragments[]={
+        {0xd508b8,232,UINT32_C(0xde92e067),0xd50998},
+        {0xd509a0,80,UINT32_C(0x03344216),0xd509ec}
+    };
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;leaf_handler native[2];
+    for(unsigned i=0;i<2;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(pages[0]+fragments[i].address-bases[0],elf+off,fragments[i].length);
+        memcpy(pages[0]+fragments[i].literal-bases[0],&pointer,4);uint32_t entry=fragments[i].address|1;memcpy(&native[i],&entry,4);
+    }
+    thumb_stub(pages[1],bases[1],0x10bc600,sl_native_selected);predicate_stub(pages[1],bases[1],0x10bc714,sl_native_item);
+    predicate_stub(pages[1],bases[1],0x10bcf4c,sl_native_base);predicate_stub(pages[2],bases[2],0x114925c,sl_native_row_key);
+    thumb_stub(pages[2],bases[2],0x11489e0,settings_key);predicate_stub(pages[2],bases[2],0x114899c,settings_ctor);
+    thumb_stub(pages[3],bases[3],0x1139e5c,settings_nop);thumb_stub(pages[4],bases[4],0x97b0ec,sl_native_mirror);
+    thumb_stub(pages[5],bases[5],0x113b958,settings_interface);thumb_stub(pages[6],bases[6],0xd53494,sl_native_value);
+    for(unsigned i=0;i<7;++i)executable(pages[i],lengths[i]);
+    pointer=(uint32_t)(uintptr_t)&sl_dummy;memcpy(sl_object+4,&pointer,4);
+    sl_vector=(uint32_t)(uintptr_t)sl_record_pointers;pointer=(uint32_t)(uintptr_t)&sl_vector;memcpy(sl_object+0x28c,&pointer,4);
+    const uint32_t truth[]={0,1,255},selected[]={0,1,2,UINT32_MAX},results[]={0,1,255,UINT32_MAX},values[]={0,1,0x80000000,UINT32_MAX};
+    const uint32_t keys[]={0,0x200,0x209,0x20c,0x20d,0x20e,0x2da,0x2db,0x1020c,UINT32_MAX};unsigned compared=0;
+    for(unsigned kind=0;kind<2;++kind)for(unsigned h=0;h<3;++h)for(unsigned m=0;m<3;++m)for(unsigned s=0;s<4;++s)
+    for(unsigned present=0;present<2;++present)for(unsigned mutate=0;mutate<2;++mutate)for(unsigned after=0;after<3;++after)
+    for(unsigned r=0;r<4;++r)for(unsigned v=0;v<4;++v)for(unsigned k=0;k<10;++k) {
+        struct sl_fixture initial=sl_initial();initial.horizontal=truth[h];initial.mirror=truth[m];initial.selected=selected[s];
+        initial.present=present;initial.mutate=mutate;initial.post_selected=after;initial.result=results[r];initial.value_after=values[v]^UINT32_C(0xa5a5a5a5);
+        for(unsigned i=0;i<3;++i)initial.values[i]=values[v]+i*UINT32_C(7);
+        struct sl_fixture vendor=initial,ours=initial;native_sl=&vendor;sl_event=keys[k];sl_object[0xe8]=(uint8_t)truth[h];sl_sync_records();
+        for(unsigned i=0;i<3;++i)memcpy(sl_records[i]+0x20,&initial.record_values[i],4);
+        unsigned expected=native[kind](sl_object,&sl_event);
+        /* Observe the native direct backing-record store after return. Corpus
+         * values deliberately differ from every initial record sentinel. */
+        for(unsigned i=0;i<3;++i) {
+            uint32_t value;memcpy(&value,sl_records[i]+0x20,4);
+            if(value!=vendor.record_values[i])sl_run(&vendor,OA_SL_STORE_VALUE,i+1,value,NULL);
+        }
+        struct oa_settings_list_ops ops={&ours,sl_query,sl_run,&sl_event};int handled=-1;
+        assert(!oa_settings_list_input(&ops,(enum oa_settings_list_kind)kind,keys[k],&handled));
+        if(handled!=(expected!=0) || vendor.count!=ours.count || vendor.selected!=ours.selected ||
+           memcmp(vendor.values,ours.values,sizeof ours.values) || memcmp(vendor.records,ours.records,sizeof ours.records) ||
+           memcmp(vendor.record_values,ours.record_values,sizeof ours.record_values)) {
+            fprintf(stderr,"list mismatch kind=%u h=%u m=%u selected=%x present=%u mutate=%u after=%u result=%x value=%x key=%x native=%x handled=%d count=%u/%u\n",
+                    kind,h,m,selected[s],present,mutate,after,results[r],values[v],keys[k],expected,handled,vendor.count,ours.count);exit(1);
+        }
+        for(unsigned i=0;i<ours.count;++i)assert(vendor.trace[i].action==ours.trace[i].action && vendor.trace[i].subject==ours.trace[i].subject && vendor.trace[i].value==ours.trace[i].value && vendor.trace[i].message==ours.trace[i].message);
+        ++compared;
+    }
+    native_sl=NULL;for(unsigned i=0;i<7;++i)assert(!munmap(pages[i],lengths[i]));
+    printf("ok offline shipped ARM settings list input: %u cases, row-presence truth, original-row/new-record stores and mirrored identity match\n",compared);
+}
 int main(int argc,char **argv)
 {
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
@@ -984,7 +1104,8 @@ int main(int argc,char **argv)
     }
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
-    check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
+    check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);
+    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
 }
