@@ -84,8 +84,12 @@ and backend lifetime must be wired before replacing diagnostic navigation.
 original-event versus synthesized-key ownership. Backend callbacks return current
 state/action results; normalized handled matches the native caller's zero/nonzero
 branch. TAB-PREHANDLE records65664 shipped method comparisons and explicit missing-
-child safety. Fallback handleMessage dispatch, real backend/context and visible
-queue-consumer integration are still pending; the diagnostic UI is not parity.
+child safety. `common/tab_dispatch.c` supplies the concrete full-width type/ID
+fallback map and pre-first key join, preserving original message identity and
+consumed/error boundaries. TAB-DISPATCH records65600 shipped map/matcher routes
+and16384 caller joins (the latter using our separately verified C pre-handler).
+Remaining base/leaf methods, real backend/context and visible queue-consumer
+integration are still pending; the diagnostic UI is not parity.
 
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;

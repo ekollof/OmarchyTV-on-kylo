@@ -146,6 +146,14 @@ check-tab-prehandle: $(BUILD)/tests/tab_prehandle
 	@$(BUILD)/tests/tab_prehandle
 check: check-tab-prehandle
 
+$(BUILD)/tests/tab_dispatch: tests/tab_dispatch.c tests/tab_prehandle_fixture.h common/tab_dispatch.c common/tab_prehandle.c include/openaurora/tab_dispatch.h include/openaurora/tab_prehandle.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-tab-dispatch
+check-tab-dispatch: $(BUILD)/tests/tab_dispatch
+	@$(BUILD)/tests/tab_dispatch
+check: check-tab-dispatch
+
 $(BUILD)/tests/profile: tests/profile.c common/profile.c common/tab_policy.c include/openaurora/profile.h include/openaurora/tab_policy.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
@@ -154,7 +162,7 @@ check-profile: $(BUILD)/tests/profile
 	@$(BUILD)/tests/profile
 check: check-profile
 
-$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c common/profile.c common/tab_events.c common/tab_prehandle.c tests/tab_prehandle_fixture.h include/openaurora/tab_policy.h include/openaurora/profile.h include/openaurora/tab_events.h include/openaurora/tab_prehandle.h
+$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c common/profile.c common/tab_events.c common/tab_prehandle.c common/tab_dispatch.c tests/tab_prehandle_fixture.h include/openaurora/tab_policy.h include/openaurora/profile.h include/openaurora/tab_events.h include/openaurora/tab_prehandle.h include/openaurora/tab_dispatch.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 

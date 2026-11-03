@@ -6,6 +6,16 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+TAB-DISPATCH-2026-11-03: common fallback map and pre-first key join pass65600
+actual shipped ARM map/matcher cases and16384 caller joins, plus full host,
+focused ASan/UBSan, ARM/qemu unit and prior reference groups. The joins install
+the separately verified C pre-handler as a virtual method, not a second
+independent proof of that body. ARM test44532/e25592dbcfbb7146f83018ffba44815c;
+reference205780/b36b2bd2db145f79b9ccd13b5999bea4, build-tv-v3/tab-policy.
+No new module/service or attached UI consumer. Base/leaf handler implementation,
+owned backend/context, permission/lifetime gates and display acceptance remain
+open. No TV access/wake/deployment/persistent change or pending job/helper.
+
 TAB-PREHANDLE-2026-11-03: full outer method body implemented via callbacks,
 65664 valid-tree ARM trace/message/state/handled-truth cases match. vertical_tabs
 marker and caller zero/nonzero contract verified. Invalid missing-child cases
@@ -13,7 +23,8 @@ return ENODATA safely, not claimed native parity. Full host/focused sanitizer/
 ARM policy and prior reference groups pass. Native pure test41588/
 a22c76e4c4d19719b0c646f7b74d2ae9; reference183692/
 c7f77c6d0b832860186390ab7ca64262, build-tv-v3/tab-policy. No new module/service
-or attached UI consumer. Fallback map, owned backend/runtime context, permissions
+or attached UI consumer. Fallback map was subsequently implemented by
+TAB-DISPATCH; owned backend/runtime context, permissions
 and display acceptance remain open. No TV access/wake/deployment/persistent
 change or helper/Ghidra/build job pending after checks.
 

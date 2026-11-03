@@ -1,5 +1,5 @@
 /* OFFLINE ARM/qemu differential only. Reads the local ELF, executes its
- * availability/group instructions in THIS process with synthetic getters. Never
+ * tab/profile/controller instructions in THIS process with controlled callees. Never
  * attach to Aurora or run platform/HAL init. No vendor bytes are embedded. */
 #if !defined(__arm__)
 #error "Build this optional firmware differential for ARM and run under qemu-arm"
@@ -7,6 +7,7 @@
 #include "openaurora/tab_policy.h"
 #include "openaurora/profile.h"
 #include "openaurora/tab_events.h"
+#include "openaurora/tab_dispatch.h"
 #include "tab_prehandle_fixture.h"
 #include <assert.h>
 #include <elf.h>
@@ -492,6 +493,108 @@ static void check_prehandle(const unsigned char *elf,size_t bytes)
     pre_fixture=NULL;for(unsigned i=0;i<12;++i)assert(!munmap(pages[i],lengths[i]));
     printf("ok offline shipped ARM pre-handler: %u valid-tree cases, action/message/state and handled truth match\n",compared);
 }
+struct dispatch_fixture {
+    uint32_t result;
+    enum oa_tab_dispatch_target route;
+    unsigned count,pre_calls;
+    const void *message;
+    struct pre_fixture pre;
+};
+static struct dispatch_fixture *dispatch_fixture;
+struct dispatch_message { uint32_t vtable,type,id; };
+static uint32_t dispatch_invoke(void *context,enum oa_tab_dispatch_target route,const void *message)
+{
+    struct dispatch_fixture *f=context;
+    f->route=route;++f->count;f->message=message;return f->result;
+}
+#define DISPATCH_STUB(name,route) static unsigned name(void *p,int32_t message) \
+{ (void)p;return dispatch_invoke(dispatch_fixture,route,(const void *)(uintptr_t)(uint32_t)message); }
+DISPATCH_STUB(dispatch_menu,OA_TD_BASE_MENU)
+DISPATCH_STUB(dispatch_up_down,OA_TD_UP_DOWN)
+DISPATCH_STUB(dispatch_right_left,OA_TD_RIGHT_LEFT)
+DISPATCH_STUB(dispatch_volume,OA_TD_VOLUME)
+DISPATCH_STUB(dispatch_quit,OA_TD_QUIT_IGNORE)
+DISPATCH_STUB(dispatch_guide,OA_TD_GUIDE)
+DISPATCH_STUB(dispatch_digit,OA_TD_DIGIT)
+DISPATCH_STUB(dispatch_removed,OA_TD_REMOVED)
+DISPATCH_STUB(dispatch_base,OA_TD_BASE)
+#undef DISPATCH_STUB
+static unsigned dispatch_type(void *p) { return ((struct dispatch_message *)p)->type; }
+static unsigned dispatch_id(void *p) { return ((struct dispatch_message *)p)->id; }
+static unsigned dispatch_pre(void *p,int32_t message)
+{
+    (void)p;++dispatch_fixture->pre_calls;
+    const struct dispatch_message *event=(const void *)(uintptr_t)(uint32_t)message;
+    struct oa_tab_pre_ops ops={&dispatch_fixture->pre,pre_query,pre_run,event};int handled=-1;
+    assert(!oa_tab_prehandle(&ops,event->id,&handled));return (unsigned)handled;
+}
+static void check_dispatch(const unsigned char *elf,size_t bytes)
+{
+    const uint32_t bases[]={0xd6f000,0xcc4000,0xd56000,0xd6e000,0x1149000};
+    const size_t lengths[]={8192,4096,8192,4096,4096};unsigned char *pages[5];
+    for(unsigned i=0;i<5;++i)pages[i]=page(bases[i],lengths[i]);
+    const struct {unsigned page;uint32_t address,length,crc,literal;} fragments[]={
+        {0,0xd6fe14,652,UINT32_C(0x050d1bd2),0xd7009c},
+        {1,0xcc4f38,96,UINT32_C(0x90529f1b),0xcc4f94},
+        {4,0x114925c,68,UINT32_C(0xeb6eb524),0x114929c}
+    };
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;
+    for(unsigned i=0;i<3;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(pages[fragments[i].page]+fragments[i].address-bases[fragments[i].page],elf+off,fragments[i].length);
+        memcpy(pages[fragments[i].page]+fragments[i].literal-bases[fragments[i].page],&pointer,4);
+    }
+    predicate_stub(pages[0],bases[0],0xd6f874,dispatch_up_down);
+    predicate_stub(pages[0],bases[0],0xd6fdc0,dispatch_right_left);
+    predicate_stub(pages[2],bases[2],0xd56d38,dispatch_menu);
+    predicate_stub(pages[2],bases[2],0xd56c94,dispatch_quit);
+    predicate_stub(pages[2],bases[2],0xd56e5c,dispatch_guide);
+    predicate_stub(pages[2],bases[2],0xd57238,dispatch_base);
+    predicate_stub(pages[3],bases[3],0xd6edb4,dispatch_volume);
+    predicate_stub(pages[3],bases[3],0xd6ee68,dispatch_digit);
+    predicate_stub(pages[3],bases[3],0xd6ef0c,dispatch_removed);
+    for(unsigned i=0;i<5;++i)executable(pages[i],lengths[i]);
+    uint32_t message_vtable[4]={0,0,bits(dispatch_type),bits(dispatch_id)};
+    struct dispatch_message message={(uint32_t)(uintptr_t)message_vtable,0,0};
+    typedef unsigned (*handler)(void *,void *);handler native,bridge;
+    pointer=0xd6fe15;memcpy(&native,&pointer,sizeof native);
+    pointer=0x114925d;memcpy(&bridge,&pointer,sizeof bridge);
+    uint32_t dialog_vtable[6]={0,0,0,0,0xd6fe15,predicate_bits(dispatch_pre)};
+    uint32_t dialog=(uint32_t)(uintptr_t)dialog_vtable;
+    const uint32_t types[]={0,0x1004,0x11004,UINT32_MAX},results[]={0,1,255,UINT32_MAX};
+    const uint32_t extra[]={0x10000209,0x10000,INT32_MAX,UINT32_MAX};unsigned compared=0,bridges=0;
+    for(unsigned t=0;t<4;++t)for(unsigned r=0;r<4;++r)for(unsigned k=0;k<4100;++k) {
+        message.type=types[t];message.id=k<4096?k:extra[k-4096];
+        struct dispatch_fixture vendor={.result=results[r]},ours=vendor;
+        dispatch_fixture=&vendor;unsigned expected=native(&dialog,&message);
+        struct oa_tab_dispatch_ops ops={&ours,dispatch_invoke,&message};int handled=-1;
+        assert(!oa_tab_dispatch(&ops,message.type,message.id,&handled));
+        if(handled!=(expected!=0) || vendor.count!=1 || ours.count!=1 || vendor.route!=ours.route ||
+           vendor.message!=ours.message || ours.message!=&message) {
+            fprintf(stderr,"dispatch mismatch type=%x id=%x result=%x native=%x handled=%d route=%u/%u\n",
+                    message.type,message.id,results[r],expected,handled,(unsigned)vendor.route,(unsigned)ours.route);exit(1);
+        }
+        ++compared;
+    }
+    /* Join verification executes the shipped caller/map/matcher with the
+     * separately differential-tested C pre-handler as its virtual method.
+     * This tests ordering/identity, not new independent pre-handler evidence. */
+    message.type=0x1004;
+    for(unsigned p=0;p<4;++p)for(unsigned r=0;r<4;++r)for(unsigned k=0;k<1024;++k) {
+        message.id=k;struct dispatch_fixture vendor={.result=results[r]},ours;
+        vendor.pre.base_result=results[p];ours=vendor;
+        dispatch_fixture=&vendor;unsigned expected=bridge(&dialog,&message);
+        struct oa_tab_dispatch_ops ops={&ours,dispatch_invoke,&message};
+        struct oa_tab_pre_ops pre={&ours.pre,pre_query,pre_run,&message};int handled=-1;
+        assert(!oa_tab_handle_key(&pre,&ops,k,&handled));
+        assert(handled==(expected!=0) && vendor.pre_calls==1 && vendor.count==ours.count);
+        if(ours.count)assert(vendor.route==ours.route && vendor.message==ours.message && ours.message==&message);
+        assert(!memcmp(&vendor.pre,&ours.pre,sizeof ours.pre));++bridges;
+    }
+    dispatch_fixture=NULL;for(unsigned i=0;i<5;++i)assert(!munmap(pages[i],lengths[i]));
+    printf("ok offline shipped ARM tab dispatch: %u type/id/result routes, %u pre/fallback joins; original identity and handled truth match\n",compared,bridges);
+}
 int main(int argc,char **argv)
 {
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
@@ -538,7 +641,7 @@ int main(int argc,char **argv)
         }
     }
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
-    check_tab_events(elf,bytes);check_prehandle(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
+    check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
 }

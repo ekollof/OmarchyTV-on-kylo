@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [TAB-DISPATCH](TAB-DISPATCH-2026-11-03.md) | concrete full-width TabDialog fallback map and pre-first key join;65600 shipped map/matcher routes and16384 caller joins plus host/sanitizer/ARM; base/leaf implementations/backend/visible integration still open |
 | [TAB-PREHANDLE](TAB-PREHANDLE-2026-11-03.md) | full method-body callback controller, vertical_tabs/source caller truth resolved;65664 shipped ARM trace/message/state matches plus host/sanitizer/ARM tests; invalid-tree safety explicit, fallback dispatcher/backend/visible acceptance still open |
 | [TAB-EVENTS](TAB-EVENTS-2026-11-03.md) | reusable ordered Up/Down and Left/Right controller methods,1008 shipped ARM trace/state matches plus host/sanitizer/ARM tests; callbacks remain unwired to ui_vendor, outer pre-handler/full consumer/hardware acceptance open |
 | [HOTEL-CONTEXT](HOTEL-CONTEXT-2026-11-03.md) | firmware HMCSettings mapping; read-only settings.hotel/CLI/actual Unix IPC, profile-context composition, settings publication/closed-state fixes;345 shipped row cases and full host/sanitizer/ARM vendor-SQLite tests; full defaults/controller/TV acceptance open |

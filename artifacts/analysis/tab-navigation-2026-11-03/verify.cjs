@@ -26,3 +26,4 @@ assert.match(result.stdout, /retained setters: 1792 signed32\/raw byte cases/);
 assert.match(result.stdout, /hotel row: 345 integer store\/no-row cases/);
 assert.match(result.stdout, /tab events: 1008 handler cases/);
 assert.match(result.stdout, /pre-handler: 65664 valid-tree cases/);
+assert.match(result.stdout, /tab dispatch: 65600 type\/id\/result routes, 16384 pre\/fallback joins/);

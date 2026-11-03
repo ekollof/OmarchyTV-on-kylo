@@ -6,6 +6,15 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Tab fallback dispatch: TAB-DISPATCH implements d6fe14's type1004 map and the
+pre-first caller join.65600 shipped map/matcher routes and16384 caller joins
+pass; the latter uses the separately verified C pre-handler as a virtual method.
+Full-width types/IDs matter; no wildcard entries occur in this concrete map.
+Menu22d/251/2bb/25b/210 calls qualified SettingsDialog::onMenuPress and consumes
+regardless of its result. Extra2c9/2c8/2da route unchanged to Right/Left.
+All callbacks receive the original borrowed event; pre errors/consumption skip
+fallback. Remaining base/leaf methods and backend/consumer are not attached.
+
 Outer pre-handler: TAB-PREHANDLE implements d700a0 via owned backend callbacks;
 65664 valid-tree shipped ARM traces/state/handled truth match. Marker is
 vertical_tabs. Vertical Right rechecks activation after focus and may delegate
@@ -14,7 +23,8 @@ Focused Left/Right consumes independently of child result; Menu/25b can delegate
 to base after side effects. Original event identity differs from synthesized/
 posted owned keys. Native caller tests zero/nonzero, so API normalizes handled.
 Missing required child returns ENODATA instead of a native invalid dereference;
-that safety path is not native parity proof. Fallback map/backend/UI still open.
+that safety path is not native parity proof. TAB-DISPATCH subsequently implements
+the fallback map; real backend/UI integration remains open.
 
 Tab events: TAB-EVENTS implements native onUpDownPress/onRightLeftPress behind
 ordered backend callbacks;1008 actual shipped method-body traces/state matches

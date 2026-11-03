@@ -1,5 +1,9 @@
 # Settings outer pre-handler — 2026-11-03
 
+Subsequent [TAB-DISPATCH](TAB-DISPATCH-2026-11-03.md) implements the fallback map
+and pre-first key join. Its base/leaf implementations and real backend/consumer
+remain open. Read that follow-up before repeating this report's next step.
+
 common/tab_prehandle.c now implements TabDialog's outer preHandleKeyPressMessage
 body through owned backend callbacks, including focused/unfocused paths,
 vertical/horizontal layout, circular navigation, edge jumps and close/repost

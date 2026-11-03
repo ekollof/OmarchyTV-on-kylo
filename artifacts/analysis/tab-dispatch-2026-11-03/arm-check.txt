@@ -1,0 +1,1 @@
+ok tab dispatch: original event, full-width type/id, menu consumption, ordered pre/fallback and failure gates

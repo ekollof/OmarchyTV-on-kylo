@@ -321,11 +321,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement the concrete TabDialog fallback message map and pre-first key
+      join.65600 shipped ARM map/matcher routes and16384 caller joins pass,
+      with host/sanitizer/ARM and prior groups. TAB-DISPATCH. Remaining base/leaf
+      methods, owned renderer/content/context, queue consumer and native visible
+      acceptance remain open; no module consumer was silently attached.
 - [x] Implement the outer TabDialog pre-handler body behind callbacks, including
       layout/circular/edge/back/close/repost logic.65664 valid-tree shipped ARM
       action/message/state/handled-truth matches, host/sanitizer/ARM tests pass.
-      TAB-PREHANDLE. Missing-child safety is explicit; fallback handleMessage map,
-      actual adapter/queue consumer and native visible acceptance remain open.
+      TAB-PREHANDLE. Missing-child safety is explicit; TAB-DISPATCH later adds
+      the fallback map. Actual adapter/queue consumer and native visible
+      acceptance remain open.
 - [x] Implement ordered Up/Down and Left/Right controller bodies behind backend
       callbacks;1008 shipped ARM action/state comparisons and host/sanitizer/ARM
       checks pass. TAB-EVENTS. This is not the outer pre-handler or a wired UI
