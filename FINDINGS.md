@@ -6,6 +6,17 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-SELECTION implements renderItems types 0x2/0x3: both look up
+"selectionbox" and drive row+0x1014; case 0x3 additionally calls the row's
+setSelectionBoxImageId with row[0x2e54], and the differential proved that call
+comes AFTER the lookup and BEFORE the null check. Uncreated names use slot
+order 1/3/0/2 (0x26b+font when case2 has key1, else
+0x2e9c/0x2ea0/0x2ea4/0x2ea8) — distinct from the shared tail's 1/0/3/2 —
+and create from an empty label; created adds setSelectedItemWithId(row[0x2de8]).
+21320 native/C cases pass. setSelectionBoxImageId internals (0xd54374) remain
+a controlled stub. Cases 5..21 and 23..25, construction, child-visibility
+internals, live resources, scrollbar/skin/visible gates remain open.
+
 SETTINGS-ROW-16 implements renderItems type 0x16: getRectangle("checkbox"),
 isCreated(row+0x27a8), then names 9/10/11/12 into slots 1/0/3/2, alignment 5,
 a seven-argument empty-label create and setChecked(row byte 0x2e44), or

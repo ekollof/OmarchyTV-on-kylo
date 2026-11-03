@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-SELECTION-2026-11-03: renderItems types0x2/0x3 pass21320
+native/C comparisons (selection box names in slot order1/3/0/2, empty-label
+create, setSelectedItemWithId; case0x3 image-id call between lookup and null
+check) plus full strict host, focused ASan/UBSan, ARM/qemu, all prior groups
+and focused real-TV CPU. setSelectionBoxImageId internals remain a stub.
+Build-tv-v3/settings-row-render unit68940/de749fa24ece86e7b20de2fdcd06fabd;
+reference1028772/806eee8791762ba808a2fd17233dd5e0. TV already awake, no-reset
+flag kept, staging size/hash separately verified, test exit0, staging removed
+and no helper in /proc/*/exe. No screen/input/device/settings/network/service/
+boot/persistent change. No pending job/helper. Cases5..21,23..25, row
+construction, child visibility internals, live resources, scrollbar/skin/
+module/display/startup/visible acceptance remain open.
+
 SETTINGS-ROW-16-2026-11-03: renderItems type 0x16 (checkbox) passes7592
 native/C comparisons (names9/10/11/12, alignment5, empty-label seven-arg
 create, 0x2e44 checked; created path setWindowRect/setText) plus full strict

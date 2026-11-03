@@ -18,7 +18,8 @@ static const char *key_for(int which)
     case 1:return "text1";
     case 2:return "labelLong";
     case 3:return "button";
-    default:return "checkbox";
+    case 4:return "checkbox";
+    default:return "selectionbox";
     }
 }
 static int ready(const struct oa_setting_row_render_ops *o)
@@ -29,7 +30,8 @@ static int ready(const struct oa_setting_row_render_ops *o)
         !o->set_focus || !o->set_elipses || !o->set_font || !o->get_point ||
         !o->set_rect || !o->set_text || !o->create_text ||
         !o->create_button || !o->set_text_alignment || !o->set_checked ||
-        !o->create_checkbox)return EINVAL;
+        !o->create_checkbox || !o->set_selected_item || !o->create_selection ||
+        !o->set_selection_image)return EINVAL;
     return 0;
 }
 static void rect_math(uint32_t out[4],const uint32_t base[4],const int32_t pt[2])
@@ -98,6 +100,44 @@ static int case_0x16(void *row,const struct oa_setting_row_render_ops *o,void *b
     o->set_text_alignment(child,UINT32_C(5));
     o->create_checkbox(child,0,UINT32_C(0x74),UINT32_C(0x75),"",base,row);
     o->set_checked(child,o->row_flag(row,UINT32_C(0x2e44))?1u:0u);
+    return 0;
+}
+/* Cases 0x2 and 0x3: drive the row+0x1014 selection box from the
+ * "selectionbox" rectangle. Case 0x3 first calls the row's
+ * setSelectionBoxImageId with [row+0x2e54]. Created applies EASIRect math,
+ * setWindowRect and setSelectedItemWithId([row+0x2de8]); uncreated writes
+ * the four names (0x26b+font for case 2 with key1, else 0x2e9c/0x2ea0/0x2ea4/
+ * 0x2ea8) in slot order 1/3/0/2 and creates from an empty label with the
+ * (0,0xc,0xd) triplet. */
+static int case_sel(void *row,const struct oa_setting_row_render_ops *o,void *box,uint32_t type,void *alexa)
+{
+    void *r,*child;int created;uint32_t base[4];
+    r=o->get_rect(box,key_for(5));
+    if(type==UINT32_C(3))o->set_selection_image(row,o->row_word(row,UINT32_C(0x2e54)));
+    if(!r)return 0;
+    child=o->child_at(row,UINT32_C(0x1014));
+    created=o->is_created(child);
+    o->rect_words(r,base);
+    if(created) {
+        uint32_t moved[4];int32_t pt[2];
+        o->get_point(row,pt);rect_math(moved,base,pt);
+        o->set_rect(child,moved);
+        o->set_selected_item(child,o->row_word(row,UINT32_C(0x2de8)));
+        return 0;
+    }
+    if(type==UINT32_C(2) && alexa!=NULL) {
+        o->set_name(child,UINT32_C(1),UINT32_C(0x26b));
+        o->set_name(child,UINT32_C(3),UINT32_C(0x26b));
+        o->set_name(child,(uint32_t)created,UINT32_C(0x26b));
+        o->set_name(child,UINT32_C(2),UINT32_C(0x26b));
+        o->set_font(child,UINT32_C(0x1e));
+    } else {
+        o->set_name(child,UINT32_C(1),o->row_word(row,UINT32_C(0x2ea0)));
+        o->set_name(child,UINT32_C(3),o->row_word(row,UINT32_C(0x2ea8)));
+        o->set_name(child,(uint32_t)created,o->row_word(row,UINT32_C(0x2e9c)));
+        o->set_name(child,UINT32_C(2),o->row_word(row,UINT32_C(0x2ea4)));
+    }
+    o->create_selection(child,0,UINT32_C(0xc),UINT32_C(0xd),"",base,row);
     return 0;
 }
 /* Case 0x1a: drive the row+0x684 button from the "button" rectangle. Not
@@ -219,6 +259,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             case_0x16(row,o,box);
             return 0;
         }
+        if(type==UINT32_C(2) || type==UINT32_C(3)) {
+            case_sel(row,o,box,type,r1);
+            return 0;
+        }
         return ENOTSUP;
     }
     if(type!=UINT32_C(1) && type!=UINT32_C(0)) {
@@ -237,6 +281,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
         }
         if(type==UINT32_C(0x16)) {
             case_0x16(row,o,box);
+            return 0;
+        }
+        if(type==UINT32_C(2) || type==UINT32_C(3)) {
+            case_sel(row,o,box,type,r1);
             return 0;
         }
         return ENOTSUP;

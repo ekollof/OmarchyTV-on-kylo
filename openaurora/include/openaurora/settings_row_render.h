@@ -52,6 +52,10 @@ struct oa_setting_row_render_ops {
     void (*set_checked)(void *child,uint32_t flag);
     void (*create_checkbox)(void *child,uint32_t zero,uint32_t a,uint32_t b,
         const char *label,const uint32_t rect[4],void *parent);
+    void (*set_selected_item)(void *child,uint32_t id);
+    void (*create_selection)(void *child,uint32_t zero,uint32_t a,uint32_t b,
+        const char *label,const uint32_t rect[4],void *parent);
+    void (*set_selection_image)(void *row,uint32_t id);
 };
 int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o);
 #endif

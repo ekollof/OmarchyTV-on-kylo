@@ -321,6 +321,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement SettingItemsListBoxRow::renderItems types 0x2/0x3 (selection
+      box):21320 native/C comparisons and prior groups pass; full host/Unix
+      IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
+      SETTINGS-ROW-SELECTION. Slot order 1/3/0/2 and the lookup-before-imageid
+      ordering are asserted; setSelectionBoxImageId internals stay a stub.
+      Cases 5..21,23..25, row construction, child visibility internals, live
+      resources, scrollbar/skin/module/display/startup/independent visible
+      acceptance remain open.
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x16 (checkbox):
       7592 native/C comparisons and prior groups pass; full host/Unix IPC,
       ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-16.

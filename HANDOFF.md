@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-16](artifacts/reports/SETTINGS-ROW-16-2026-11-03.md)
+Latest: [SETTINGS-ROW-SELECTION](artifacts/reports/SETTINGS-ROW-SELECTION-2026-11-03.md)
+implements renderItems types 0x2/0x3: both look up "selectionbox" and drive
+row+0x1014; case 0x3 also calls setSelectionBoxImageId(row[0x2e54]) between
+the lookup and the null check. Uncreated names use slot order 1/3/0/2
+(0x26b+font when case2 has key1, else 0x2e9c/0x2ea0/0x2ea4/0x2ea8) and an
+empty-label create; created adds setSelectedItemWithId(row[0x2de8]). 21320
+shipped ARM/C cases and prior groups pass, plus full host/Unix IPC, focused
+ASan/UBSan, ARM/qemu and focused real TV CPU. No screen/input/device/settings/
+network/service/boot/persistent change; staging removed, no helper. Next
+implement switch cases 5..21 and 23..25, then row construction/child
+visibility internals and live resources, then scrollbar/skin/module/display/
+startup/independent visible parity. Bodies are not actual widget/rendering
+acceptance.
+
+Previous: [SETTINGS-ROW-16](artifacts/reports/SETTINGS-ROW-16-2026-11-03.md)
 implements renderItems type 0x16: the checkbox case body (names 9/10/11/12,
 alignment 5, empty-label seven-argument create, row byte 0x2e44 checked; or
 EASIRect math + setWindowRect/setText when created). 7592 shipped ARM/C cases
