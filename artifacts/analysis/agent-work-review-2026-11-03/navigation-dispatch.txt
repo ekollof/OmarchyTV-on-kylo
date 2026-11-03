@@ -1,0 +1,1125 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (544 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @7c24b813 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1119 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '@d1aa78'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== @d1aa78 -> DialogNavigator::handleNavigationMessage @ 00d1aa78 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined handleNavigationMessage(DialogNavigationMessage * param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* DialogNavigator::handleNavigationMessage(DialogNavigationMessage const&) */
+
+void __thiscall
+DialogNavigator::handleNavigationMessage(DialogNavigator *this,DialogNavigationMessage *param_1)
+
+{
+  int *piVar1;
+  bool bVar2;
+  EASIControlInterface *pEVar3;
+  EASIDvrInterface *this_00;
+  EASITVControlInterface *this_01;
+  int iVar4;
+  undefined4 uVar5;
+  PipPapNavigator *pPVar6;
+  UString *this_02;
+  int *piVar7;
+  void *pvVar8;
+  vector *pvVar9;
+  undefined4 uVar10;
+  undefined4 uVar11;
+  undefined4 *puVar12;
+  undefined4 uVar13;
+  uint uVar14;
+  code *pcVar15;
+  SvgAppServiceListPreferences *pSVar16;
+  SvgAppWebUpdatePreferences *pSVar17;
+  SvgAppWakeupPreferences *pSVar18;
+  undefined4 *puVar19;
+  DemoApp *pDVar20;
+  int iVar21;
+  undefined4 *puVar22;
+  DialogNavigator DVar23;
+  void *local_2880;
+  int local_287c;
+  int local_2878;
+  UString aUStack_2874 [12];
+  AutoMessagePrompt aAStack_2868 [10300];
+  int local_2c;
+
+  piVar1 = DAT_00d1b510;
+  local_2c = *DAT_00d1b510;
+  pEVar3 = (EASIControlInterface *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+  this_00 = (EASIDvrInterface *)EASIControlInterface::dvr(pEVar3);
+  if (this[0x4c] != (DialogNavigator)0x0) {
+    this_01 = (EASITVControlInterface *)DemoApp::tvInterface(*(DemoApp **)(this + 8));
+    EASITVControlInterface::setExternalDVDIREnable(this_01,false,true);
+  }
+  pDVar20 = *(DemoApp **)(this + 8);
+  iVar4 = DialogNavigationMessage::navigationCode(param_1);
+  DemoApp::setCurrentNavigateDialogCode(pDVar20,iVar4);
+  DemoApp::setNavigateDialogOpen(*(DemoApp **)(this + 8),true);
+  (**(code **)(**(int **)(*(int *)(this + 8) + 0x300) + 0x1c))();
+  uVar5 = DialogNavigationMessage::navigationCode(param_1);
+  uVar10 = DAT_00d1b930;
+  bVar2 = SUB41(this,0);
+  switch(uVar5) {
+  case 2:
+    if (this[0x70] == (DialogNavigator)0x0) {
+      pPVar6 = (PipPapNavigator *)DemoApp::getPipPapNavigator(*(DemoApp **)(this + 8));
+      iVar4 = PipPapNavigator::isShowing(pPVar6);
+      if (((iVar4 == 0) && ((*(DemoApp **)(this + 8))[0x1279] == (DemoApp)0x0)) &&
+         (iVar4 = DemoApp::isWinkAnimationVisible(*(DemoApp **)(this + 8)), iVar4 == 0)) {
+        doNavigateBanner(this,true);
+        uVar14 = 1;
+        break;
+      }
+    }
+    goto LAB_00d1ac64;
+  case 3:
+    if (this[0x6e] == (DialogNavigator)0x0) {
+      pPVar6 = (PipPapNavigator *)DemoApp::getPipPapNavigator(*(DemoApp **)(this + 8));
+      iVar4 = PipPapNavigator::isShowing(pPVar6);
+      if (iVar4 == 0) {
+        doNavigateBannerFromInfoPressed(bVar2);
+        uVar14 = 1;
+        break;
+      }
+    }
+    goto LAB_00d1ac64;
+  case 4:
+    if (this[0x6d] == (DialogNavigator)0x0) {
+      pPVar6 = (PipPapNavigator *)DemoApp::getPipPapNavigator(*(DemoApp **)(this + 8));
+      iVar4 = PipPapNavigator::isShowing(pPVar6);
+      if (iVar4 == 0) {
+        doNavigateBannerProgramChange(bVar2);
+        uVar14 = 1;
+        break;
+      }
+    }
+    goto LAB_00d1ac64;
+  case 5:
+    if (this[0x6d] == (DialogNavigator)0x0) {
+      pPVar6 = (PipPapNavigator *)DemoApp::getPipPapNavigator(*(DemoApp **)(this + 8));
+      iVar4 = PipPapNavigator::isShowing(pPVar6);
+      if (iVar4 == 0) {
+        uVar14 = 1;
+        doNavigateBannerProgramChange(bVar2);
+        break;
+      }
+    }
+    goto LAB_00d1ac64;
+  case 6:
+    doNavigatePlayTimeshiftBanner(this,true);
+    uVar14 = 1;
+    break;
+  case 7:
+    if (this[0x6c] == (DialogNavigator)0x0) {
+      doNavigatePlayRecordingBanner(this,true);
+      uVar14 = 1;
+      break;
+    }
+    goto LAB_00d1ac64;
+  case 8:
+    doNavigateBanner(this,false);
+    uVar14 = 1;
+    break;
+  case 9:
+    doNavigatePlayTimeshiftBanner(this,false);
+    uVar14 = 1;
+    break;
+  case 10:
+    if (this[0x6c] == (DialogNavigator)0x0) {
+      uVar14 = 1;
+      doNavigatePlayRecordingBanner(this,false);
+      break;
+    }
+    goto LAB_00d1ac64;
+  case 0xb:
+    uVar14 = 1;
+    (**(code **)(*(int *)this + 0xc))(this,0);
+    break;
+  case 0xc:
+    uVar14 = 1;
+    (**(code **)(*(int *)this + 0xc))(this,1);
+    break;
+  default:
+    uVar14 = 1;
+    break;
+  case 0xe:
+    uVar14 = 1;
+    doNavigateNowNextScheduleDialog(this);
+    break;
+  case 0xf:
+    uVar14 = 1;
+    iVar4 = DialogNavigationMessage::payload(param_1);
+    doNavigateScheduleSearch(this,iVar4 == 1);
+    break;
+  case 0x10:
+    if (this[0x6f] == (DialogNavigator)0x0) {
+      pPVar6 = (PipPapNavigator *)DemoApp::getPipPapNavigator(*(DemoApp **)(this + 8));
+      iVar4 = PipPapNavigator::isShowing(pPVar6);
+      if (((iVar4 == 0) && ((*(DemoApp **)(this + 8))[0x1279] == (DemoApp)0x0)) &&
+         (iVar4 = DemoApp::isWinkAnimationVisible(*(DemoApp **)(this + 8)), iVar4 == 0)) {
+        doNavigateAuxiliaryBanner(this,true);
+        uVar14 = 1;
+        break;
+      }
+    }
+    goto LAB_00d1ac64;
+  case 0x11:
+    if (this[0x6f] == (DialogNavigator)0x0) {
+      pPVar6 = (PipPapNavigator *)DemoApp::getPipPapNavigator(*(DemoApp **)(this + 8));
+      iVar4 = PipPapNavigator::isShowing(pPVar6);
+      if (iVar4 == 0) {
+        uVar14 = 1;
+        doNavigateAuxiliaryBanner(this,false);
+        break;
+      }
+    }
+    goto LAB_00d1ac64;
+  case 0x12:
+    uVar14 = 1;
+    doNavigateTabDialog(this,false,false);
+    break;
+  case 0x13:
+    uVar14 = 1;
+    doNavigateTabDialog(this,true,false);
+    break;
+  case 0x14:
+    uVar14 = 1;
+    doNavigateTabDialog(this,false,true);
+    break;
+  case 0x15:
+    uVar14 = 1;
+    doNavigateSourceSettingsFromMenuWithTabDialog(this);
+    break;
+  case 0x16:
+    uVar14 = 1;
+    doNavigateOtherSettingsFromMenuWithTabDialog(this);
+    break;
+  case 0x17:
+    uVar14 = 1;
+    doNavigateAdvancedPictureSettingsDialog(this);
+    break;
+  case 0x18:
+    uVar14 = 1;
+    doNavigateAdvancedSoundSettingsDialog(this);
+    break;
+  case 0x19:
+    doNavigatePipSettingsDialog(this,true);
+    uVar14 = 1;
+    break;
+  case 0x1a:
+    doNavigatePCPicturePositionDialog(this,true);
+    uVar14 = 1;
+    break;
+  case 0x1b:
+    doNavigateSourceMenuDialog(bVar2);
+    uVar14 = 1;
+    break;
+  case 0x1c:
+    doNavigateLanguage(this,false);
+    uVar14 = 1;
+    break;
+  case 0x1d:
+    doNavigateLanguage(this,true);
+    uVar14 = 1;
+    break;
+  case 0x1e:
+    uVar14 = 1;
+    uVar10 = DialogNavigationMessage::payload(param_1);
+    doNavigateLanguageMenu(this,uVar10);
+    break;
+  case 0x1f:
+  case 0x23:
+    pPVar6 = (PipPapNavigator *)DemoApp::getPipPapNavigator(*(DemoApp **)(this + 8));
+    iVar4 = PipPapNavigator::isActiveWindowPip(pPVar6);
+    if ((iVar4 == 0) ||
+       ((iVar4 = NovoTunerConfiguration::isMultiTunerSupported(), iVar4 != 0 &&
+        (iVar4 = NovoTunerConfiguration::isDualSatelliteCableSelected
+                           (*(NovoTunerConfiguration **)(*(int *)(this + 8) + 0x2f0)), iVar4 != 0)))
+       ) {
+      piVar7 = *(int **)(*(int *)(this + 8) + 0x260);
+      pcVar15 = *(code **)(*piVar7 + 0x1c);
+      iVar4 = UserPreferences::getCurrentSource(*(UserPreferences **)(this + 0x14));
+      iVar4 = (*pcVar15)(piVar7,iVar4 + -1);
+      if (iVar4 != 0xe) {
+        uVar14 = 1;
+        doNavigateAdvancedChannelList(this,false,false);
+        break;
+      }
+    }
+    goto LAB_00d1ac64;
+  case 0x20:
+    pPVar6 = (PipPapNavigator *)DemoApp::getPipPapNavigator(*(DemoApp **)(this + 8));
+    iVar4 = PipPapNavigator::isActiveWindowPip(pPVar6);
+    if ((iVar4 == 0) ||
+       ((iVar4 = NovoTunerConfiguration::isMultiTunerSupported(), iVar4 != 0 &&
+        (iVar4 = NovoTunerConfiguration::isDualSatelliteCableSelected
+                           (*(NovoTunerConfiguration **)(*(int *)(this + 8) + 0x2f0)), iVar4 != 0)))
+       ) {
+      piVar7 = *(int **)(*(int *)(this + 8) + 0x260);
+      pcVar15 = *(code **)(*piVar7 + 0x1c);
+      iVar4 = UserPreferences::getCurrentSource(*(UserPreferences **)(this + 0x14));
+      iVar4 = (*pcVar15)(piVar7,iVar4 + -1);
+      if (iVar4 != 0xe) {
+        uVar14 = 1;
+        doNavigateAdvancedChannelList(this,false,true);
+        break;
+      }
+    }
+    goto LAB_00d1ac64;
+  case 0x21:
+    uVar14 = 1;
+    doNavigateAdvancedIPSettings(this);
+    break;
+  case 0x22:
+    pPVar6 = (PipPapNavigator *)DemoApp::getPipPapNavigator(*(DemoApp **)(this + 8));
+    iVar4 = PipPapNavigator::isActiveWindowPip(pPVar6);
+    if ((iVar4 == 0) ||
+       ((iVar4 = NovoTunerConfiguration::isMultiTunerSupported(), iVar4 != 0 &&
+        (iVar4 = NovoTunerConfiguration::isDualSatelliteCableSelected
+                           (*(NovoTunerConfiguration **)(*(int *)(this + 8) + 0x2f0)), iVar4 != 0)))
+       ) {
+      uVar14 = 1;
+      doNavigateAdvancedChannelList(this,true,false);
+      break;
+    }
+    goto LAB_00d1ac64;
+  case 0x24:
+    uVar14 = 1;
+    doNavigateActiveNetworkList(this);
+    break;
+  case 0x25:
+    doNavigatePrivacySettingsDialog(this,false);
+    uVar14 = 1;
+    break;
+  case 0x26:
+    doNavigatePrivacySettingsDialog(this,true);
+    uVar14 = 1;
+    break;
+  case 0x27:
+    doNavigatePrivacySettingsListDialog(this,true);
+    uVar14 = 1;
+    break;
+  case 0x28:
+    uVar14 = 1;
+    doNavigateLegalAdvertisingID(this);
+    break;
+  case 0x29:
+    doNavigateParentalSettingsDialog(this,true);
+    uVar14 = 1;
+    break;
+  case 0x2a:
+    doNavigateDateTimeSettingsDialog(this,true);
+    uVar14 = 1;
+    break;
+  case 0x2b:
+    doNavigateSourceSettingsDialog(this,true);
+    uVar14 = 1;
+    break;
+  case 0x2d:
+    uVar14 = 1;
+    InstallationDialogNavigator::doNavigateTkgsSettingsMenu
+              (*(InstallationDialogNavigator **)(this + 0x1c));
+    break;
+  case 0x2e:
+    uVar14 = 1;
+    doNavigateTKGSDisplayMessageDialog(this);
+    break;
+  case 0x2f:
+    uVar14 = 1;
+    doNavigateTkgsChannelListUpdateSearchDialog(this);
+    break;
+  case 0x30:
+    uVar14 = 1;
+    doNavigateTkgsUpdateFrequency(this);
+    break;
+  case 0x31:
+    uVar14 = 1;
+    doNavigateTkgsSelectPreferredList(this);
+    break;
+  case 0x32:
+    uVar14 = 1;
+    doNavigateTkgsInvisibleLocatorList(this);
+    break;
+  case 0x33:
+    uVar14 = 1;
+    doNavigateTkgsPreferedList(this);
+    break;
+  case 0x34:
+    uVar14 = 1;
+    doNavigateTkgsServiceListNamesForFirstUsage(this);
+    break;
+  case 0x35:
+    uVar14 = 1;
+    doNavigateTkgsServiceListManualUpdateFailed(this);
+    break;
+  case 0x36:
+    uVar14 = 1;
+    doNavigateTkgsServiceListManualUpdateSucceeded(this);
+    break;
+  case 0x37:
+    uVar14 = 1;
+    doNavigateTkgsServiceListAlreadyUpToDateMessage(this);
+    break;
+  case 0x38:
+    uVar14 = 1;
+    doNavigateTkgsUpToDateServiceListUpdateSucceeded(this);
+    break;
+  case 0x39:
+    uVar14 = 1;
+    doNavigateTkgsServiceListDynamicUpdateSucceeded(this);
+    break;
+  case 0x3a:
+    uVar14 = 1;
+    doNavigateTkgsChannelListUpdateMessage(this);
+    break;
+  case 0x3b:
+    doNavigateSatelliteListDialog(this,true);
+    uVar14 = 1;
+    break;
+  case 0x3c:
+    doNavigateAntennaInstallationDialog(this,true);
+    uVar14 = 1;
+    break;
+  case 0x3d:
+    doNavigateSatelliteSettingsDialog(this,true);
+    uVar14 = 1;
+    break;
+  case 0x3e:
+    doNavigateSatCableInstallationDialog(this,true);
+    uVar14 = 1;
+    break;
+  case 0x3f:
+    uVar14 = 1;
+    doNavigateSatcoDXDialog(this);
+    break;
+  case 0x40:
+    uVar14 = 1;
+    doNavigateDisabilitySettingsDialog(this);
+    break;
+  case 0x41:
+    uVar14 = 1;
+    doNavigateNetflixSettingsDialog(this);
+    break;
+  case 0x42:
+    doNavigateOtherSettingsDialog(this,true);
+    uVar14 = 1;
+    break;
+  case 0x43:
+    uVar14 = 1;
+    doNavigateAllReminderList(this,1,0);
+    break;
+  case 0x44:
+    uVar14 = 1;
+    doNavigateAllReminderList(this,0,2);
+    break;
+  case 0x45:
+    uVar14 = 1;
+    doNavigateAllReminderList(this,1,2);
+    break;
+  case 0x46:
+    uVar14 = 1;
+    doNavigateServiceVideoSettingsDialog(this);
+    break;
+  case 0x47:
+    uVar14 = 1;
+    doNavigateServiceAudioSettingsDialog(this);
+    break;
+  case 0x48:
+    uVar14 = 1;
+    doNavigateServiceOptions1Dialog(this);
+    break;
+  case 0x49:
+    uVar14 = 1;
+    doNavigateServiceOptions2Dialog(this);
+    break;
+  case 0x4a:
+    uVar14 = 1;
+    doNavigateServiceOptions3Dialog(this);
+    break;
+  case 0x4b:
+    uVar14 = 1;
+    doNavigateServiceTuningSettingsDialog(this);
+    break;
+  case 0x4c:
+    uVar14 = 1;
+    doNavigateServiceSourceSettingsDialog(this);
+    break;
+  case 0x4d:
+    uVar14 = 1;
+    doNavigateDiagnosticDialog(this);
+    break;
+  case 0x4e:
+    uVar14 = 1;
+    doNavigateClearServiceList(this);
+    break;
+  case 0x51:
+    uVar14 = 1;
+    doNavigateFormatDisk(this);
+    break;
+  case 0x53:
+    uVar14 = 1;
+    InstallationDialogNavigator::doNavigateFirstTimeInstallationDialog
+              (*(InstallationDialogNavigator **)(this + 0x1c));
+    break;
+  case 0x55:
+    uVar14 = (uint)(byte)this[0x4f];
+    if (uVar14 != 0) {
+      if (this_00 == (EASIDvrInterface *)0x0) {
+LAB_00d1bb7a:
+        uVar10 = DAT_00d1bbc0;
+        if (this[0x50] == (DialogNavigator)0x0) {
+          uVar10 = DAT_00d1bbbc;
+        }
+      }
+      else {
+        iVar4 = EASIDvrInterface::getDvrModuleStatus(this_00);
+        if (iVar4 == 0) {
+          iVar4 = (**(code **)(**(int **)(*(int *)(this + 8) + 0x284) + 0x174))();
+          if (iVar4 == 0) {
+            iVar4 = NovoTunerConfiguration::getTunersRecordingStatus
+                              (*(NovoTunerConfiguration **)(*(int *)(this + 8) + 0x2f0));
+            iVar21 = *(int *)(this + 8);
+            if ((iVar4 == 1) || (iVar4 == 4)) {
+              uVar10 = *(undefined4 *)(this + 4);
+              uVar5 = *(undefined4 *)(this + 0x18);
+              DemoApp::disallowedString((char *)aUStack_2874);
+              AutoMessagePrompt::AutoMessagePrompt
+                        (aAStack_2868,uVar10,iVar21,uVar5,aUStack_2874,2,0x57,1);
+              UString::~UString(aUStack_2874);
+              SVGDialog::doModal((SVGDialog *)aAStack_2868);
+              AutoMessagePrompt::~AutoMessagePrompt(aAStack_2868);
+              break;
+            }
+            piVar7 = *(int **)(iVar21 + 0x2ec);
+            (**(code **)(*piVar7 + 0x34))(piVar7,0);
+            iVar4 = (**(code **)(**(int **)(*(int *)(this + 8) + 0x260) + 0x24))
+                              (*(int **)(*(int *)(this + 8) + 0x260),0);
+            if (iVar4 == -1) {
+              pEVar3 = (EASIControlInterface *)
+                       UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+              EASIControlInterface::suspendTuner(pEVar3,0);
+            }
+          }
+          else {
+            iVar4 = NovoTunerConfiguration::getLastValidTunerIdForPrimaryVideo
+                              (*(NovoTunerConfiguration **)(*(int *)(this + 8) + 0x2f0));
+            NovoTunerConfiguration::releaseDecoders
+                      (*(NovoTunerConfiguration **)(*(int *)(this + 8) + 0x2f0),iVar4,true);
+          }
+          doNavigatePlayList(this,false);
+          break;
+        }
+        iVar4 = EASIDvrInterface::getDvrModuleStatus(this_00);
+        uVar10 = DAT_00d1b50c;
+        if (iVar4 != 5) goto LAB_00d1bb7a;
+      }
+      AutoMessagePrompt::AutoMessagePrompt
+                (aAStack_2868,*(undefined4 *)(this + 4),*(undefined4 *)(this + 8),
+                 *(undefined4 *)(this + 0x18),uVar10,2,0x57,1);
+      AutoMessagePrompt::setWidth(aAStack_2868,0x244);
+      SVGDialog::doModal((SVGDialog *)aAStack_2868);
+      DemoApp::setLastSelectedLauncherItem(*(DemoApp **)(this + 8),0);
+      DemoApp::setLastSelectedMainLauncherIndex(*(DemoApp **)(this + 8),-1);
+      AutoMessagePrompt::~AutoMessagePrompt(aAStack_2868);
+      break;
+    }
+    goto LAB_00d1ac64;
+  case 0x56:
+    uVar14 = 1;
+    uVar10 = DialogNavigationMessage::payload(param_1);
+    doNavigateNetworkChange(this,uVar10);
+    break;
+  case 0x57:
+    DialogNavigationMessage::getMessage();
+    doNavigateNetworkChangeMessage(this,aUStack_2874);
+    uVar14 = 1;
+    UString::~UString(aUStack_2874);
+    break;
+  case 0x58:
+    uVar14 = 1;
+    iVar4 = DialogNavigationMessage::payload(param_1);
+    doNavigateNetworkChangeSelectService(this,iVar4);
+    break;
+  case 0x59:
+    uVar14 = 1;
+    doNavigateNoSignalAutomaticChannelScan(this);
+    break;
+  case 0x5a:
+    uVar14 = 1;
+    doNavigateThumbnailDialog(this);
+    break;
+  case 0x5b:
+    uVar14 = 1;
+    doNavigateMediaBrowserDialog(this);
+    break;
+  case 0x5c:
+    uVar14 = 1;
+    doNavigateDlnaDevicesDialog(this);
+    break;
+  case 0x5d:
+    doNavigateAutoSearchDialog(this,0);
+    uVar14 = 1;
+    break;
+  case 0x5e:
+    doNavigateAutoSearchDialog(this,1);
+    uVar14 = 1;
+    break;
+  case 0x5f:
+    doNavigateAutoSearchDialog(this,7);
+    uVar14 = 1;
+    break;
+  case 0x60:
+    doNavigateAutoSearchDialog(this,2);
+    uVar14 = 1;
+    break;
+  case 0x61:
+    doNavigateAutoSearchDialog(this,3);
+    uVar14 = 1;
+    break;
+  case 0x62:
+    doNavigateAutoSearchDialog(this,4);
+    uVar14 = 1;
+    break;
+  case 99:
+    doNavigateAutoSearchDialog(this,5);
+    uVar14 = 1;
+    break;
+  case 100:
+    doNavigateAutoSearchDialog(this,6);
+    uVar14 = 1;
+    break;
+  case 0x66:
+    uVar14 = 1;
+    doNavigateVideoSelectionMenu(this);
+    break;
+  case 0x67:
+    uVar14 = 1;
+    DemoApp::showNoChannelMessage(*(DemoApp **)(this + 8));
+    break;
+  case 0x68:
+    DialogNavigationMessage::getWarningMessage();
+    uVar10 = DialogNavigationMessage::timeout(param_1);
+    doNavigateWarningMessage(this,aUStack_2874,uVar10);
+    uVar14 = 1;
+    UString::~UString(aUStack_2874);
+    break;
+  case 0x69:
+    if (*(int *)(*(int *)(this + 8) + 0x174) != 0) {
+      iVar4 = NovoCountrySetting::getCountry(*(NovoCountrySetting **)(*(int *)(this + 8) + 0x254));
+      if (iVar4 == 0x14) {
+        uVar14 = 0;
+      }
+      else {
+        AutoMessagePrompt::AutoMessagePrompt
+                  (aAStack_2868,*(undefined4 *)(this + 4),*(undefined4 *)(this + 8),
+                   *(undefined4 *)(this + 0x18),DAT_00d1b514,1,0x57,1);
+        iVar4 = SVGDialog::doModal((SVGDialog *)aAStack_2868);
+        uVar14 = (uint)(iVar4 == 0x28);
+        AutoMessagePrompt::~AutoMessagePrompt(aAStack_2868);
+      }
+      SvgAppServiceListPreferences::handleLCNConfirmation
+                (*(SvgAppServiceListPreferences **)(*(int *)(this + 8) + 0x174),SUB41(uVar14,0));
+      break;
+    }
+    goto LAB_00d1ac64;
+  case 0x6a:
+    pSVar16 = *(SvgAppServiceListPreferences **)(*(int *)(this + 8) + 0x174);
+    if (pSVar16 != (SvgAppServiceListPreferences *)0x0) {
+      uVar10 = DialogNavigationMessage::standbySearch(param_1);
+      pvVar9 = (vector *)DialogNavigationMessage::conflictingServiceIndices(param_1);
+      std::vector<int,std::allocator<int>>::vector
+                ((vector<int,std::allocator<int>> *)aUStack_2874,pvVar9);
+      SvgAppServiceListPreferences::handleLCNConflict(pSVar16,uVar10,aUStack_2874);
+      uVar14 = 1;
+      std::_Vector_base<int,std::allocator<int>>::~_Vector_base
+                ((_Vector_base<int,std::allocator<int>> *)aUStack_2874);
+      break;
+    }
+    goto LAB_00d1ac64;
+  case 0x6b:
+    uVar14 = 1;
+    InstallationDialogNavigator::doNavigateInstallationMenu
+              (*(InstallationDialogNavigator **)(this + 0x1c));
+    break;
+  case 0x6c:
+    uVar14 = 1;
+    InstallationDialogNavigator::doNavigateInstallationSettingsMenu
+              (*(InstallationDialogNavigator **)(this + 0x1c));
+    break;
+  case 0x6d:
+    uVar14 = 1;
+    InstallationDialogNavigator::doNavigateAutoInstallationMenu
+              (*(InstallationDialogNavigator **)(this + 0x1c));
+    break;
+  case 0x6e:
+    uVar14 = 1;
+    InstallationDialogNavigator::doNavigateFineTuneMenu
+              (*(InstallationDialogNavigator **)(this + 0x1c));
+    break;
+  case 0x6f:
+    DemoApp::setModuleState(*(DemoApp **)(this + 8),0);
+    uVar14 = 1;
+    InstallationDialogNavigator::doNavigateManualSearchMenu
+              (*(InstallationDialogNavigator **)(this + 0x1c),false,false);
+    DemoApp::setModuleState(*(DemoApp **)(this + 8),0x18);
+    break;
+  case 0x70:
+    uVar14 = 1;
+    InstallationDialogNavigator::doNavigateNetworkSearchDialog
+              (*(InstallationDialogNavigator **)(this + 0x1c));
+    break;
+  case 0x72:
+    if (*(int *)(*(int *)(this + 8) + 0x180) != 0) {
+      iVar4 = UserPreferences::getPrivacyInternetConnectionEnabled
+                        (*(UserPreferences **)(*(int *)(this + 8) + 0x200));
+      if (((iVar4 == 0) ||
+          (iVar4 = UserPreferences::isCountryInPrivacyCoverage
+                             (*(UserPreferences **)(*(int *)(this + 8) + 0x200)), iVar4 == 0)) ||
+         (uVar14 = NovoConnectivityConfiguration::getPrivacySettingsAvailability
+                             (*(NovoConnectivityConfiguration **)(*(int *)(this + 8) + 600)),
+         uVar14 == 0)) {
+        uVar14 = 1;
+        SvgAppWebUpdatePreferences::doConfirmWebUpdateSoftwareActivation
+                  (*(SvgAppWebUpdatePreferences **)(*(int *)(this + 8) + 0x180));
+      }
+      else {
+        SvgAppWebUpdatePreferences::requestChangeLog
+                  (*(SvgAppWebUpdatePreferences **)(*(int *)(this + 8) + 0x180));
+      }
+      break;
+    }
+    goto LAB_00d1ac64;
+  case 0x73:
+    if (*(int *)(*(int *)(this + 8) + 0x180) != 0) {
+      iVar4 = UserPreferences::getPrivacyInternetConnectionEnabled
+                        (*(UserPreferences **)(*(int *)(this + 8) + 0x200));
+      if ((((iVar4 == 0) ||
+           (iVar4 = UserPreferences::isCountryInPrivacyCoverage
+                              (*(UserPreferences **)(*(int *)(this + 8) + 0x200)), iVar4 == 0)) ||
+          ((iVar4 = UserPreferences::getAutoUpgradeOn
+                              (*(UserPreferences **)(*(int *)(this + 8) + 0x200)), iVar4 == 0 &&
+           (iVar4 = UserPreferences::getChangeLogRequestFlag
+                              (*(UserPreferences **)(*(int *)(this + 8) + 0x200)), iVar4 == 0)))) ||
+         (uVar14 = NovoConnectivityConfiguration::getPrivacySettingsAvailability
+                             (*(NovoConnectivityConfiguration **)(*(int *)(this + 8) + 600)),
+         uVar14 == 0)) {
+        uVar14 = 1;
+        SvgAppWebUpdatePreferences::doConfirmWebUpdateSoftwareDownload
+                  (*(SvgAppWebUpdatePreferences **)(*(int *)(this + 8) + 0x180));
+      }
+      else {
+        SvgAppWebUpdatePreferences::requestChangeLog
+                  (*(SvgAppWebUpdatePreferences **)(*(int *)(this + 8) + 0x180));
+      }
+      break;
+    }
+    goto LAB_00d1ac64;
+  case 0x74:
+    uVar14 = 1;
+    DemoApp::openMediaDisplayDialog(*(DemoApp **)(this + 8));
+    break;
+  case 0x75:
+    uVar14 = 1;
+    InstallationDialogNavigator::doNavigateFransatMenu
+              (*(InstallationDialogNavigator **)(this + 0x1c));
+    break;
+  case 0x76:
+    InstallationDialogNavigator::doNavigateParentalControlFromMenu
+              (*(InstallationDialogNavigator **)(this + 0x1c),true);
+    uVar14 = 1;
+    break;
+  case 0x77:
+    InstallationDialogNavigator::doNavigateSystemInformationFromMenu
+              (*(InstallationDialogNavigator **)(this + 0x1c),true);
+    uVar14 = 1;
+    break;
+  case 0x78:
+    InstallationDialogNavigator::doNavigateFransatChannelListFromMenu
+              (*(InstallationDialogNavigator **)(this + 0x1c),true);
+    uVar14 = 1;
+    break;
+  case 0x79:
+    if (*(SvgAppFransatServiceScanPreferences **)(*(int *)(this + 8) + 0x3d0) !=
+        (SvgAppFransatServiceScanPreferences *)0x0) {
+      SvgAppFransatServiceScanPreferences::handleBouquetSelection
+                (*(SvgAppFransatServiceScanPreferences **)(*(int *)(this + 8) + 0x3d0));
+      uVar14 = 1;
+      break;
+    }
+    goto LAB_00d1ac64;
+  case 0x7a:
+    if (*(SvgAppDynamicServiceListUpdatePreferences **)(*(int *)(this + 8) + 0x184) !=
+        (SvgAppDynamicServiceListUpdatePreferences *)0x0) {
+      SvgAppDynamicServiceListUpdatePreferences::handleStartChannelSearchConfirmation
+                (*(SvgAppDynamicServiceListUpdatePreferences **)(*(int *)(this + 8) + 0x184));
+      uVar14 = 1;
+      break;
+    }
+    goto LAB_00d1ac64;
+  case 0x7b:
+    iVar4 = UserPreferences::getPreferredDvbsNetwork(*(UserPreferences **)(this + 0x14));
+    if (iVar4 != 0x1c) {
+      uVar10 = 6;
+    }
+    else {
+      NovoChannelScanConfiguration::setOperatorSelection
+                (*(undefined4 *)(*(int *)(this + 8) + 0x240),0xb);
+      uVar10 = 7;
+    }
+    InstallationDialogNavigator::doNavigateAutoSearchDialog
+              (*(InstallationDialogNavigator **)(this + 0x1c),uVar10,0,iVar4 != 0x1c);
+    uVar14 = 1;
+    (**(code **)(**(int **)(this + 0x20) + 0xcc))();
+    break;
+  case 0x7c:
+    uVar5 = DialogNavigationMessage::payload(param_1);
+    AutoMessagePrompt::AutoMessagePrompt
+              (aAStack_2868,*(undefined4 *)(this + 4),*(undefined4 *)(this + 8),
+               *(undefined4 *)(this + 0x18),uVar10,0,0x57,1);
+    AutoMessagePrompt::setTimeout(aAStack_2868,10);
+    SVGDialog::doModal((SVGDialog *)aAStack_2868);
+    (**(code **)(**(int **)(*(int *)(this + 8) + 0x318) + 0x238))
+              (*(int **)(*(int *)(this + 8) + 0x318),uVar5,1);
+    (**(code **)(**(int **)(*(int *)(this + 8) + 0x318) + 0x23c))();
+    uVar14 = 1;
+    AutoMessagePrompt::~AutoMessagePrompt(aAStack_2868);
+    break;
+  case 0x7d:
+    iVar4 = (**(code **)(**(int **)(*(int *)(this + 8) + 0x2b8) + 0x20))();
+    if (((iVar4 == 0) &&
+        (iVar4 = DemoApp::isWinkAnimationVisible(*(DemoApp **)(this + 8)), iVar4 == 0)) &&
+       (iVar4 = DemoApp::getModuleState(*(DemoApp **)(this + 8)), iVar4 != 0x17)) {
+      uVar14 = 1;
+      doNavigateHDMIControlInfoMsg(this);
+      break;
+    }
+    goto LAB_00d1ac64;
+  case 0x7e:
+    uVar14 = 1;
+    doNavigateDVRInfoMsg(this);
+    break;
+  case 0x7f:
+    uVar14 = 1;
+    doNavigateFvpLandingPage(this);
+    break;
+  case 0x80:
+    doNavigateFullScreenPortal(this,true);
+    uVar14 = 1;
+    break;
+  case 0x81:
+    uVar14 = 1;
+    doNavigateFullScreenMarket(this);
+    break;
+  case 0x82:
+    uVar14 = 1;
+    doNavigateServiceIsRemovedMessage(this);
+    break;
+  case 0x87:
+    uVar14 = 1;
+    doNavigatePolsatHomeTransponders(this);
+    break;
+  case 0x88:
+    DialogNavigationMessage::strMessage();
+    doNavigateShowString(this,aUStack_2874);
+    uVar14 = 1;
+    UString::~UString(aUStack_2874);
+    break;
+  case 0x89:
+    uVar14 = 1;
+    iVar4 = DialogNavigationMessage::payload(param_1);
+    doNavigatePipPapShow(this,iVar4);
+    break;
+  case 0x8a:
+    iVar4 = DialogNavigationMessage::payload(param_1);
+    uVar14 = 1;
+    doNavigateRecommendationsPage(this,iVar4 == 1);
+    break;
+  case 0x8b:
+    doNavigateRecommendationsPage(this,true);
+    uVar14 = 1;
+    break;
+  case 0x8c:
+    DVar23 = this[0x78];
+    if (DVar23 == (DialogNavigator)0x0) {
+      iVar4 = DialogNavigationMessage::payload(param_1);
+      DVar23 = (DialogNavigator)(iVar4 == 1);
+    }
+    uVar14 = 1;
+    doNavigateBoxSetsPage(this,(bool)DVar23);
+    break;
+  case 0x8d:
+    iVar4 = DialogNavigationMessage::payload(param_1);
+    DialogNavigationMessage::strMessage();
+    DialogNavigationMessage::getMessage();
+    doNavigateBoxSetContentDialog(this,iVar4,(UString *)&local_2880,aUStack_2874);
+    uVar14 = 1;
+    UString::~UString(aUStack_2874);
+    UString::~UString((UString *)&local_2880);
+    break;
+  case 0x8e:
+    uVar14 = 1;
+    doNavigateFvpLandingPage(this);
+    break;
+  case 0x8f:
+    doNavigateFvpSearchResults(this,false);
+    uVar14 = 1;
+    break;
+  case 0x90:
+    doNavigateFvpSearchResults(this,true);
+    uVar14 = 1;
+    break;
+  case 0x91:
+    uVar14 = 1;
+    iVar4 = DialogNavigationMessage::payload(param_1);
+    doNavigateRecordStartedOverChannelChange(this,iVar4);
+    break;
+  case 0x92:
+    uVar14 = 1;
+    doNavigateMovingText(this);
+    break;
+  case 0x93:
+    uVar14 = 1;
+    SvgAppWakeupPreferences::handleConfirmActivateUpgradedSoftware
+              (*(SvgAppWakeupPreferences **)(*(int *)(this + 8) + 0x178));
+    break;
+  case 0x94:
+    pSVar18 = *(SvgAppWakeupPreferences **)(*(int *)(this + 8) + 0x178);
+    pvVar9 = (vector *)DialogNavigationMessage::conflictingServiceIndices(param_1);
+    std::vector<int,std::allocator<int>>::vector
+              ((vector<int,std::allocator<int>> *)aUStack_2874,pvVar9);
+    uVar10 = DialogNavigationMessage::standbySearch(param_1);
+    SvgAppWakeupPreferences::handleConfirmRemoveNotFoundServicesDuringStandbySearch
+              (pSVar18,aUStack_2874,uVar10);
+    uVar14 = 1;
+    std::_Vector_base<int,std::allocator<int>>::~_Vector_base
+              ((_Vector_base<int,std::allocator<int>> *)aUStack_2874);
+    break;
+  case 0x95:
+    uVar14 = 1;
+    SvgAppWakeupPreferences::handleFirstTimeInstallation
+              (*(SvgAppWakeupPreferences **)(*(int *)(this + 8) + 0x178));
+    break;
+  case 0x96:
+    uVar14 = 1;
+    SvgAppWakeupPreferences::handleServiceScanForUpdateServiceList
+              (*(SvgAppWakeupPreferences **)(*(int *)(this + 8) + 0x178));
+    break;
+  case 0x97:
+    pSVar18 = *(SvgAppWakeupPreferences **)(*(int *)(this + 8) + 0x178);
+    uVar10 = DialogNavigationMessage::standbySearch(param_1);
+    piVar7 = (int *)DialogNavigationMessage::conflictedServiceInfos(param_1);
+    local_2880 = (void *)0x0;
+    local_287c = 0;
+    uVar14 = piVar7[1] - *piVar7;
+    local_2878 = 0;
+    pvVar8 = (void *)0x0;
+    if ((int)uVar14 >> 4 != 0) {
+      if (0xfffffff < (uint)((int)uVar14 >> 4)) {
+        std::__throw_bad_alloc();
+      }
+      pvVar8 = operator_new(uVar14);
+    }
+    local_2878 = (int)pvVar8 + uVar14;
+    iVar4 = 0;
+    iVar21 = *piVar7;
+    puVar22 = (undefined4 *)piVar7[1];
+    while (puVar12 = (undefined4 *)(iVar21 + iVar4), puVar22 != puVar12) {
+      puVar19 = (undefined4 *)((int)pvVar8 + iVar4);
+      iVar4 = iVar4 + 0x10;
+      if (puVar19 != (undefined4 *)0x0) {
+        uVar5 = puVar12[1];
+        uVar11 = puVar12[2];
+        uVar13 = puVar12[3];
+        *puVar19 = *puVar12;
+        puVar19[1] = uVar5;
+        puVar19[2] = uVar11;
+        puVar19[3] = uVar13;
+      }
+    }
+    local_287c = (int)pvVar8 + ((int)puVar22 - iVar21);
+    local_2880 = pvVar8;
+    pvVar9 = (vector *)DialogNavigationMessage::removableServiceInfos(param_1);
+    std::vector<int,std::allocator<int>>::vector
+              ((vector<int,std::allocator<int>> *)aUStack_2874,pvVar9);
+    SvgAppWakeupPreferences::handleResolveConflictedServices
+              (pSVar18,uVar10,&local_2880,aUStack_2874);
+    std::_Vector_base<int,std::allocator<int>>::~_Vector_base
+              ((_Vector_base<int,std::allocator<int>> *)aUStack_2874);
+    if (local_2880 != (void *)0x0) {
+      operator_delete(local_2880);
+    }
+    uVar14 = 1;
+    break;
+  case 0x98:
+    uVar14 = 1;
+    uVar10 = DialogNavigationMessage::payload(param_1);
+    DemoApp::showLockTVMessage(*(DemoApp **)(this + 8),uVar10);
+    break;
+  case 0x99:
+    uVar14 = 1;
+    DemoApp::showApplicationLockDialog(*(DemoApp **)(this + 8));
+    break;
+  case 0x9a:
+    if (*(int **)(*(int *)(this + 8) + 0x164) != (int *)0x0) {
+      uVar14 = 1;
+      (**(code **)(**(int **)(*(int *)(this + 8) + 0x164) + 0x1c))();
+      break;
+    }
+    goto LAB_00d1ac64;
+  case 0x9b:
+    pDVar20 = *(DemoApp **)(this + 8);
+    iVar4 = DialogNavigationMessage::payload(param_1);
+    DialogNavigationMessage::getWarningMessage();
+    DemoApp::showNotificationMessage(pDVar20,iVar4,aUStack_2874);
+    uVar14 = 1;
+    UString::~UString(aUStack_2874);
+    break;
+  case 0x9c:
+    doNavigateTVSource(this,true);
+    uVar14 = 1;
+    break;
+  case 0x9d:
+    doNavigateTVSource(this,false);
+    uVar14 = 1;
+    break;
+  case 0x9e:
+    uVar14 = 1;
+    SvgAppBootUpImageSupplier::handleShowHotelModeWelcomeImageScreen
+              (*(SvgAppBootUpImageSupplier **)(*(int *)(this + 8) + 0x188));
+    break;
+  case 0x9f:
+    uVar14 = 1;
+    SvgAppBootUpImageSupplier::handleShowWelcomeImageScreen
+              (*(SvgAppBootUpImageSupplier **)(*(int *)(this + 8) + 0x188));
+    break;
+  case 0xa0:
+    uVar14 = 1;
+    doNavigateStartupScreen(this);
+    break;
+  case 0xa1:
+    if (*(int *)(*(int *)(this + 8) + 0x180) != 0) {
+      iVar4 = DialogNavigationMessage::getIsSuccess(param_1);
+      if (iVar4 == 0) {
+LAB_00d1b5aa:
+        pSVar17 = *(SvgAppWebUpdatePreferences **)(*(int *)(this + 8) + 0x180);
+        UString::UString(aUStack_2874,DAT_00d1b928);
+        SvgAppWebUpdatePreferences::setSoftwareUpdateChangelog(pSVar17,aUStack_2874);
+        this_02 = aUStack_2874;
+      }
+      else {
+        DialogNavigationMessage::strMessage();
+        iVar4 = UString::isEmpty(aUStack_2874);
+        UString::~UString(aUStack_2874);
+        if (iVar4 != 0) goto LAB_00d1b5aa;
+        DialogNavigationMessage::strMessage();
+        pSVar17 = *(SvgAppWebUpdatePreferences **)(*(int *)(this + 8) + 0x180);
+        UString::UString(aUStack_2874,(UString *)&local_2880);
+        SvgAppWebUpdatePreferences::setSoftwareUpdateChangelog(pSVar17,aUStack_2874);
+        UString::~UString(aUStack_2874);
+        this_02 = (UString *)&local_2880;
+      }
+      UString::~UString(this_02);
+      SvgAppWebUpdatePreferences::getSoftwareUpdateBasicInfo();
+      pSVar17 = *(SvgAppWebUpdatePreferences **)(*(int *)(this + 8) + 0x180);
+      operator+(aUStack_2874,(char *)&local_2880);
+      SvgAppWebUpdatePreferences::setSoftwareUpdateBasicInfo(pSVar17,aUStack_2874);
+      UString::~UString(aUStack_2874);
+      SvgAppWebUpdatePreferences::doConfirmWebUpdateSoftwareActivation
+                (*(SvgAppWebUpdatePreferences **)(*(int *)(this + 8) + 0x180));
+      uVar14 = 1;
+      UString::~UString((UString *)&local_2880);
+      break;
+    }
+LAB_00d1ac64:
+    uVar14 = 1;
+    break;
+  case 0xa2:
+    doNavigateGlobalSearch(this,false);
+    uVar14 = 1;
+    break;
+  case 0xa3:
+    doNavigateGlobalSearch(this,true);
+    uVar14 = 1;
+    break;
+  case 0xa4:
+    uVar14 = 1;
+    doNavigateOledSettingsDialog(this);
+    break;
+  case 0xa5:
+    uVar14 = 1;
+    doNavigateDeviceSettingsDialog(this);
+    break;
+  case 0xa6:
+    uVar14 = 1;
+    doNavigateAIMenu(this);
+    break;
+  case 0xa7:
+    uVar14 = 1;
+    doNavigateVoiceAssistantMenu(this);
+  }
+  (**(code **)(**(int **)(*(int *)(this + 8) + 0x300) + 0x18))
+            (*(int **)(*(int *)(this + 8) + 0x300),1000);
+  DemoApp::setCurrentNavigateDialogCode(*(DemoApp **)(this + 8),0xa8);
+  DemoApp::setNavigateDialogOpen(*(DemoApp **)(this + 8),false);
+  if (this[0x4c] != (DialogNavigator)0x0) {
+    DemoApp::tvInterface(*(DemoApp **)(this + 8));
+    EASITVControlInterface::revertExternalDVDIREnable();
+  }
+  if (local_2c == *piVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(uVar14);
+}
+
+ (GhidraScript)

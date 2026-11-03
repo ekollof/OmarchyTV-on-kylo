@@ -1,6 +1,9 @@
 # DialogNavigator::handleNavigationMessage switch map (0xd1aa79)
-# Machine-extracted from DumpFirmware.py decompile; grouped by first call per case.
-# "none" = no direct doNavigate*/doModal call in that case body (may delegate).
+# Original generator is not recorded here; independently checked against fresh
+# DumpFirmware.java output by agent-work-review-2026-11-03/verify-findings.cjs.
+# Entries list ordered unique syntactic doNavigate*/handle*/doModal calls in
+# each case, not resolved goto/delegate paths or unconditional outcomes.
+# "none" means none of those call names occurs in that case's text.
 
 2 -> doNavigateBanner
 3 -> doNavigateBannerFromInfoPressed
@@ -158,10 +161,11 @@
 0xa7 -> doNavigateVoiceAssistantMenu
 
 ---
-## Key-code bridge (verified 2026-11-04): DIAL virtual == ICE decimal == internal hex
+## Key names bridge distinct VK/DIAL and ICE spaces
 
 vk_keymapping_db.xml (DIAL virtual), ice_keymapping_db.xml (decimal) and
-DemoApp::handleKeyPress switch constants (0xcfb964) are the same keys:
+DemoApp::handleKeyPress constants (0xcfb964) correspond by key name. Only ICE
+decimal and internal hex are identical values; VK requires translation:
 
   Up 1020 / 522 / 0x20a      Down 1019 / 523 / 0x20b
   Left 1021 / 524 / 0x20c    Right 1022 / 525 / 0x20d
@@ -174,14 +178,15 @@ All DIAL codes used live (Menu/Up/Down/Left/Right/Select/Exit) behaved per
 their ICE meaning, so virtual->ICE translation works as named. Only the
 untested codes (QuickMenu/Info/...) still need a live confirmation each.
 
-## QuickMenu direct path to the full settings dialog (firmware, untested live)
+## QuickMenu conditional ICE path (DIAL1043 received; no visible live effect)
 
 ICE 0x251 -> DemoApp::handleKeyPress -> onQuickAccessKey (gated:
 isQuickMenuKeyAvailable = profile remote code != 0xff; teletext-key
 enabled; no VCR timer; two modal-state checks) -> checkAndDisplayQuickMenu
 -> doQuickMenuDialog posts nav message 0x12 (skipped only if key was 0x22d
 AND quick-menu key available) -> doNavigateTabDialog(false,false) ->
-TabDialog with title + full slider content.
+TabDialog construction, subject to initialization/content validity. Title/full
+list success and live ICE handling are not proved by DIAL app receipt.
 Same key while a TabDialog is open CLOSES it (dispatcher 0x22d/0x251 branch:
 unfocus + hideSubMenu + endDialog). So QuickMenu toggles the full dialog.
 

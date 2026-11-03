@@ -1,0 +1,2 @@
+candidate=10000000 class=SVGTextBox created=0 state=0 window=0,0,0,0 text=0,0,0,0 font=0 lines=0 font_type=0 alignment=0 flags1=0 flags2=0 override=0 slide=0 slidermargin=0 keyptr=10000300(len0,unreadable)
+snapshot_bytes=773 candidates=1

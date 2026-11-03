@@ -13,6 +13,9 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [AGENT-WORK-REVIEW](AGENT-WORK-REVIEW-2026-11-03.md) | review through e7e7333: scanner key bounds/completeness/snapshot/stale-key fixes; host/sanitizers/ARM-qemu;154 navigation call inventories/SubLauncher slots verified; no TV access |
+| [Menu flow evidence](../analysis/ui-menu-flow-2026-11-04/README.md) | mixed dated session: positive portal/shortcut observations and conditional firmware routing; corrected VK/ICE equality, TabDialog absence/ownership and unconditional full-list claims; unchanged1043 attempts had no visible effect |
+| [Navigation session](../analysis/settings-nav-2026-11-04/README.md) | dated screenshot/key/candidate record; no TabDialog identity inventory, no matched full-list proof or settings DB differential; session reports suspension, not current state |
 | [UI-GLYPH-ROUTING](UI-GLYPH-ROUTING-2026-11-03.md) | conditional GPU/CPU dispatch and saved-context verifier; opaque-parent native comparison still differs, host/sanitizer/TV checks pass; actual scene/presentation parity open; owner requested handoff/stop |
 | [UI-FONT-GPU](UI-FONT-GPU-2026-11-03.md) | native coverage-glyph/FBO primitive; strict host/sanitizers/ARM-qemu and real private-pbuffer checks pass; title pixel mismatch persists, no service/wire/visible parity; stale Surface rejected |
 | [FONT-X-OFFSET](FONT-X-OFFSET-2026-11-03.md) | corrects false zero-getter claim: -signed global minimum-left gives font18/title23 and font7/MODE18; boxed viewport/placement implemented, host/sanitizers/ARM-qemu/TV CPU checks pass; exact bounds, full raster/colour gate open |

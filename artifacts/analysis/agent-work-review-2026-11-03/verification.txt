@@ -1,0 +1,3 @@
+PASS:154 case-local ordered navigation/handle/modal call lists match fresh decompile.
+PASS:SubLauncher virtual slots setFocus/isShowing and distinct VK/ICE Up/QuickMenu values.
+Scope:case-local syntactic calls are not complete goto/delegate control flow; XML names do not prove live translation.

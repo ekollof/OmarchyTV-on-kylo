@@ -1,0 +1,5 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/ui_object_scan tests/ui_object_scan.c
+refusing process with unexpected executable
+ok UI object scanner: geometry/spans, mapped key bounds, snapshot translation, complete/escaped keys, raw UString retention, wrong executable
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

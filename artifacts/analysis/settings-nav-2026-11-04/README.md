@@ -1,8 +1,9 @@
 # Live DIAL navigation and sublauncher state — 2026-11-04
 
-Owner authorized key sending via DIAL; every key verified by screenshot
-before the next. No values changed (no Left/Right inside edit mode),
-no settings DB writes, staging removed, no helpers left.
+Owner authorized that recorded DIAL session; every key verified by screenshot.
+No value-adjusting keys were sent and no visible value change was observed.
+No DB differential proves zero writes. Session reports staging/helpers removed;
+this is not a current live poll.
 
 ## DIAL key injection works with per-step verification
 
@@ -35,8 +36,9 @@ INSTALLATION→Installatie, SYSTEM→Systeem).
 ## Live heap scan of this state (read-only /proc/1785/mem)
 
 `live-scan-sublauncher.txt`: 143 candidates, 30 created. No font-18 title
-textbox, no type-9 slider rows, no TabDialog/PictureSettingsDialog
-instances — the full settings list is NOT instantiated in this state.
+textbox, no type-9 row or PictureSettingsDialog vptr in eligible heaps.
+TabDialog was NOT in the identity table. This scan cannot prove its absence,
+process-wide absence of the full list or ownership of the tab strip.
 Created widgets are wide tile windows (e.g. (199,271,439,467),
 (449,271,689,467)) in list boxes with count=9/count=7, step=140,
 row_items=463/464 — the sublauncher grid, a different composition path from
@@ -49,7 +51,8 @@ overread (ASan-clean patterns retained).
 The +30 slider-row indent needs the `DialogSettings_tab` list screen, which
 this navigation path did not reach (shortcuts instead of the dynamic
 slider rows from `update*`). The extended scanner is staged-ready
-(`/tmp` copy removed after use); re-run it with that screen open.
+(`/tmp` copy removed after use); use the reviewed scanner only with the actual
+screen visible. Stored lookup keys can be stale; retain current text evidence.
 
 Captures: `tv-tabs-beeld.png`, `tv-shortcut-tiles-modus-focused.png`,
 `tv-shortcut-edit-maximaal.png`, `tv-shortcut-editexit.png` (all fb1 layer 1,

@@ -1066,6 +1066,11 @@ textbox +0x1ca8, label store +0x2dd8.
 
 ## Slider-row label indent: measured, source open (2026-11-04)
 
+Review qualification: capture ink and non-atomic candidate geometry were not
+joined to one retained draw command/frame. The row-type association is a
+correlation, not proof of a type-specific renderer branch. The exclusions below
+narrow hypotheses under those inputs, not every parent/draw/current-text state.
+
 Vendor label ink starts (corrected capture): row0 x53, rows1-4 x80/83/81/83,
 row5 x53, row6 x55, row7 x49, row8 x50. With live font7 left bearings
 (M4/C1/H4, decoded from the shipped pack) and the live identical label
@@ -1082,8 +1087,8 @@ classes (`FilesListBoxRow::renderItems` mirror branch,
 label rect and routes the label (not caption) to +0x104; no leading glyph
 in row crops; no key prefix (UI-ROW-LABELS); slide margin shifts the wrong
 way (<=0); mirror ruled out by row/vendor parity; dialog client is (0,0)
-live; translation-fit is a no-op (all labels fit their boxes). The ONLY
-unverified per-instance draw inputs left are +0x1b0/+0x1b1/+0x22c/+0x2a8/
+live; translation-fit is a no-op under these inputs. Remaining recorded
+per-instance draw inputs include +0x1b0/+0x1b1/+0x22c/+0x2a8/
 +0x2b0 — exactly what the extended ui-object-scan dumps. Next: run it with
 settings open; if flags are identical across rows, read the text itself
 (+0xa4) live.
@@ -1097,19 +1102,23 @@ other row type (setLabel routes type 1 to the caption box, else +0x104).
 Live heap confirms identical label geometry across types (row 0 type 2 and
 row 1 type 9 both: label_window=(30,row+1,381,row+51), label_text=(1,-5,350,61),
 font7/lines1/type0/align4). Yet vendor ink starts at x53 (text rows) vs
-x80-83 (slider rows): a type-9-specific +30 draw indent with no counterpart
+x80-83 (slider rows): an apparent additional30px under those inputs, without a proved counterpart
 in rects, fonts, alignment, flag writers (`overrideTextAlignment` callers are
 unrelated classes), caption routing, icons, prefixes, slide direction,
-mirror, dialog client or fit-check (all verified). Remaining draws inputs
+mirror, dialog client or fit-check in the investigated source paths. Remaining draw inputs
 (+0x1b0/+0x1b1/+0x22c/+0x2a8/+0x2b0) need the live extended scan with
 settings open; do not invent an indent constant.
 
 ## Scanner now dumps label key/ustring bytes (2026-11-04, no TV)
 
-`ui-object-scan` prints the +0xac raw-key string (bounded pread, printable
-only) or the raw +0xa4 UString bytes when no key is set, alongside the
-draw-control fields. Host-tested (incl. truncated/exact spans, wrong-exe
-refusal); ARM TV binary builds clean (34016 bytes). Next live run with
-settings open captures flags AND content per textbox in one pass, settling
-whether slider rows carry different text/flags or the draw step itself
-branches per row type.
+The initial scanner added +0xac lookup-key reads and raw8-byte +0xa4 UString
+metadata. Review found incomplete/unterminated key acceptance, wrong snapshot
+address translation and unrestricted pointer-following. These are corrected in
+AGENT-WORK-REVIEW-2026-11-03 with focused host/sanitizer/ARM-qemu coverage.
+The lookup key can survive a later UString assignment: it is NOT proof of
+current displayed text. Reviewed scanner always retains UString metadata and
+only follows keys inside eligible heap/Aurora read-only mappings. It requires
+a complete printable NUL-terminated key, escapes delimiters and translates
+snapshot addresses. No reviewed binary was run on TV. Actual UString character
+buffer plus matched draw-state evidence remain needed; this inventory alone
+cannot settle the slider indentation or prove a per-row renderer branch.

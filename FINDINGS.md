@@ -6,6 +6,18 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Subsequent-agent review: AGENT-WORK-REVIEW-2026-11-03 corrects scanner partial/
+unterminated keys, unrestricted pointer reads and snapshot offsets. Fresh ARM
+shows+ac lookup keys can survive UString assignment; raw+a4 metadata is always
+retained but is not displayed character data. Menu inventory154 cases checks
+out as syntactic case-local calls, not resolved goto/delegate outcomes.
+SubLauncher setFocus/isShowing virtuals are verified. TabDialog was absent from
+the identity table: no old scan proves it absent or identifies the visible tabs.
+VK1043 differs from ICE593/0x251; matching XML names and DIAL app receipt do
+not prove the internal key was handled. No-effect1043 does not identify a
+profile/modal/translation failure. Apparent slider+30 remains conditional on
+unmatched capture/candidate evidence, not a proved per-type renderer rule.
+
 Glyph routing/background (2026-11-03): UI-GLYPH-ROUTING proves the firmware
 nonnull-context GPU branch and checks saved vtables/context bytes; it does not
 trace the captured frame. Opaque-parent native comparison gives1318 white core/

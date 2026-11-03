@@ -1,6 +1,7 @@
 /* Read-only candidate inventory for Aurora MD5 64c252340d3af6c5d66072611b7bad7a.
  * No ptrace, signals, device fds, input reads or target function calls.
- * Restrict native reads to existing readable/writable private [heap] maps.
+ * Scan private [heap] maps; follow key pointers only within those maps or
+ * read-only private mappings of the verified Aurora executable.
  * Vtable matches are NON-ATOMIC CANDIDATES, not proof of active UI/lifetime.
  * Firmware field evidence: UI-LIVE-OBJECTS / UI-TEXT-VIEWPORT / UI-TEXTBOX-COMPOSE.
  */
@@ -17,6 +18,9 @@
 #include <unistd.h>
 
 enum { BLOCK=65536, LOOKAHEAD=0x3000 };
+enum { MAX_REGIONS=128 };
+struct region { uint64_t low,high,offset; int heap; };
+struct reader { int fd; const struct region *regions; size_t count; };
 #define SCAN_LIMIT (UINT64_C(256)*1024*1024)
 /* size is the minimum readable span for this inventory, not sizeof(class). */
 struct identity { uint32_t vptr; size_t size; const char *name; unsigned kind; };
@@ -43,7 +47,36 @@ static void rectangle(FILE *out,const char *name,const uint8_t *p)
             name,signed_word(p),signed_word(p+4),signed_word(p+8),signed_word(p+12));
 }
 static int read_at(int fd,uint8_t *buf,size_t size,uint64_t address);
-static int candidate(FILE *out,int fd,uint32_t address,const uint8_t *p,size_t size)
+static void key_text(FILE *out,const struct reader *reader,uint32_t address)
+{
+    unsigned char text[40];size_t length=0;
+    const char *status="unterminated";
+    for(size_t i=0;i<=sizeof text;++i) {
+        uint64_t at=(uint64_t)address+i;const struct region *region=NULL;
+        if(reader)for(size_t j=0;j<reader->count;++j)
+            if(at>=reader->regions[j].low && at<reader->regions[j].high) {
+                region=reader->regions+j;break;
+            }
+        if(!region){status="outside-readable-maps";break;}
+        unsigned char c;
+        if(read_at(reader->fd,&c,1,region->offset+at-region->low)) {
+            status="unreadable";break;
+        }
+        if(!c) {
+            fputs(" key=\"",out);
+            for(size_t j=0;j<length;++j) {
+                if(text[j]=='"' || text[j]=='\\')fputc('\\',out);
+                fputc(text[j],out);
+            }
+            fputc('"',out);return;
+        }
+        if(c<32 || c>126){status="nonprintable";break;}
+        if(i==sizeof text)break;
+        text[length++]=c;
+    }
+    fprintf(out," keyptr=%08" PRIx32 " key_status=%s",address,status);
+}
+static int candidate(FILE *out,const struct reader *reader,uint32_t address,const uint8_t *p,size_t size)
 {
     if(size<4)return 0;
     const struct identity *id=identity(word(p));
@@ -69,30 +102,12 @@ static int candidate(FILE *out,int fd,uint32_t address,const uint8_t *p,size_t s
                 " flags1=%u flags2=%u override=%" PRIu32 " slide=%u slidermargin=%" PRId32,
                 word(p+0x21c),signed_word(p+0x1b4),word(p+0x1c4),word(p+0x220),
                 p[0x1b1],p[0x1b0],word(p+0x22c),p[0x2b0],signed_word(p+0x2a8));
-        /* Best-effort label content: +0xac holds the raw key pointer when the
-         * text was set from a key; otherwise dump the +0xa4 UString bytes raw
-         * without assuming its layout. Read-only pread; any short read or
-         * non-text bytes print as absent, never guessed. */
+        /* +ac is a lookup-key pointer, not necessarily current text: the
+         * UString setter does not clear it. Always retain raw +a4 metadata. */
         uint32_t key=word(p+0xac);
-        if(key) {
-            unsigned char keybuf[41];
-            memset(keybuf,0,sizeof keybuf);
-            size_t kn=0;
-            while(kn<40) {
-                unsigned char c;
-                if(read_at(fd,&c,1,(uint64_t)key+kn))break;
-                if(!c)break;
-                keybuf[kn++]=c;
-            }
-            int printable=kn>0;
-            for(size_t ki=0;ki<kn && printable;ki++)
-                if(keybuf[ki]<32||keybuf[ki]>126)printable=0;
-            if(printable)fprintf(out," key=\"%s\"",keybuf);
-            else fprintf(out," keyptr=%08x(len%u,unreadable)",key, (unsigned)kn);
-        } else {
-            fprintf(out," key=(none) ustring=%02x%02x%02x%02x%02x%02x%02x%02x",
-                    p[0xa4],p[0xa5],p[0xa6],p[0xa7],p[0xa8],p[0xa9],p[0xaa],p[0xab]);
-        }
+        if(key)key_text(out,reader,key);else fputs(" key=(none)",out);
+        fprintf(out," ustring=%02x%02x%02x%02x%02x%02x%02x%02x",
+                p[0xa4],p[0xa5],p[0xa6],p[0xa7],p[0xa8],p[0xa9],p[0xaa],p[0xab]);
     }
     fputc('\n',out);
     return 1;
@@ -108,16 +123,16 @@ static int read_at(int fd,uint8_t *buf,size_t size,uint64_t address)
     }
     return 0;
 }
-static int scan_range(int fd,uint64_t offset,uint32_t address,size_t size,FILE *out,unsigned *count)
+static int scan_range(const struct reader *reader,uint64_t offset,uint32_t address,size_t size,FILE *out,unsigned *count)
 {
     uint8_t *buf=malloc(BLOCK+LOOKAHEAD);
     if(!buf)return -1;
     for(size_t at=0;at<size;) {
         size_t remaining=size-at,scan=remaining<BLOCK?remaining:BLOCK;
         size_t read=remaining<BLOCK+LOOKAHEAD?remaining:BLOCK+LOOKAHEAD;
-        if(read_at(fd,buf,read,offset+at)){free(buf);return -1;}
+        if(read_at(reader->fd,buf,read,offset+at)){free(buf);return -1;}
         for(size_t i=0;i+4<=scan;i+=4) {
-            if(candidate(out,fd,address+(uint32_t)(at+i),buf+i,read-i))++*count;
+            if(candidate(out,reader,address+(uint32_t)(at+i),buf+i,read-i))++*count;
         }
         at+=scan;
     }
@@ -138,14 +153,33 @@ static int snapshot(const char *base,const char *path)
     int rc=1;struct stat st;
     if(fstat(fd,&st) || !S_ISREG(st.st_mode))goto done;
     off_t size=st.st_size;
-    if(size<=0 || (uint64_t)size>SCAN_LIMIT || (uint64_t)size>UINT32_MAX-(uint64_t)address)goto done;
+    if(size<=0 || (uint64_t)size>SCAN_LIMIT || (uint64_t)size>UINT64_C(0x100000000)-address)goto done;
+    const struct region region={address,(uint64_t)address+(uint64_t)size,0,1};
+    const struct reader reader={fd,&region,1};
     unsigned count=0;
-    if(!scan_range(fd,0,address,(size_t)size,stdout,&count)) {
+    if(!scan_range(&reader,0,address,(size_t)size,stdout,&count)) {
         printf("snapshot_bytes=%" PRIu64 " candidates=%u\n",(uint64_t)size,count);rc=0;
     }
 done:
     if(close(fd))rc=1;
     return rc || ferror(stdout)?1:0;
+}
+static int map_region(const char *line,struct region *out)
+{
+    uint64_t low,high,file_offset;unsigned major,minor;
+    unsigned long long inode;int used=0;char perms[5];
+    if(sscanf(line,"%" SCNx64 "-%" SCNx64 " %4s %" SCNx64 " %x:%x %llu %n",
+              &low,&high,perms,&file_offset,&major,&minor,&inode,&used)!=7 || !used)return 0;
+    const char *path=line+used;
+    int heap=!strcmp(perms,"rw-p") && !file_offset && !major && !minor && !inode &&
+             !strncmp(path,"[heap]",6) && (path[6]=='\n' || !path[6]);
+    const char *aurora="/vendor/com.nvt.idtv/aurora.elf";
+    size_t n=strlen(aurora);
+    int executable=(!strcmp(perms,"r--p") || !strcmp(perms,"r-xp")) && inode &&
+                   !strncmp(path,aurora,n) && (path[n]=='\n' || !path[n]);
+    if(!heap && !executable)return 0;
+    if(high<=low || high>UINT64_C(0x100000000))return -1;
+    *out=(struct region){low,high,low,heap};return 1;
 }
 int main(int argc,char **argv)
 {
@@ -167,21 +201,31 @@ int main(int argc,char **argv)
     snprintf(path,sizeof path,"/proc/%" PRIu32 "/mem",pid);
     int fd=open(path,O_RDONLY|O_CLOEXEC);
     if(fd<0){fclose(maps);perror("proc memory");return 1;}
-    char line[1024],perms[5];unsigned count=0,ranges=0;uint64_t total=0;
-    int rc=0;
-    puts("NONATOMIC vtable candidates; readable private heap only; no active-window inference");
+    char line[1024];unsigned count=0,ranges=0,heap_count=0;
+    uint64_t total=0,eligible_total=0;
+    struct region regions[MAX_REGIONS];size_t region_count=0;int rc=0;
+    /* Inventory all eligible mappings before following any pointer. */
     while(fgets(line,sizeof line,maps)) {
-        uint64_t low,high,file_offset;unsigned major,minor;unsigned long long inode;int used=0;
-        if(sscanf(line,"%" SCNx64 "-%" SCNx64 " %4s %" SCNx64 " %x:%x %llu %n",
-                  &low,&high,perms,&file_offset,&major,&minor,&inode,&used)!=7 || !used ||
-            strcmp(perms,"rw-p") || file_offset || major || minor || inode ||
-            strncmp(line+used,"[heap]",6) || (line[used+6]!='\n' && line[used+6]!=0))continue;
-        if(high<=low || high>UINT32_MAX || high-low>SCAN_LIMIT-total) {rc=1;break;}
-        if(scan_range(fd,low,(uint32_t)low,(size_t)(high-low),stdout,&count)) {rc=1;break;}
-        total+=high-low;++ranges;
+        struct region region;int result=map_region(line,&region);
+        if(result<0 || (result && region_count==MAX_REGIONS)){rc=1;break;}
+        if(!result)continue;
+        if(region.heap) {
+            if(region.high-region.low>SCAN_LIMIT-eligible_total){rc=1;break;}
+            eligible_total+=region.high-region.low;++heap_count;
+        }
+        regions[region_count++]=region;
     }
-    if(ferror(maps) || !ranges)rc=1;
+    if(ferror(maps) || !heap_count)rc=1;
     if(fclose(maps))rc=1;
+    const struct reader reader={fd,regions,region_count};
+    puts("NONATOMIC heap candidates; key reads limited to private heap/Aurora read-only maps; no active-window inference");
+    if(!rc)for(size_t i=0;i<region_count;++i) {
+        const struct region *region=regions+i;
+        if(!region->heap)continue;
+        if(scan_range(&reader,region->offset,(uint32_t)region->low,
+                      (size_t)(region->high-region->low),stdout,&count)) {rc=1;break;}
+        total+=region->high-region->low;++ranges;
+    }
     if(close(fd))rc=1;
     printf("heap_ranges=%u scanned_bytes=%" PRIu64 " candidates=%u complete=%d\n",ranges,total,count,!rc);
     return rc || ferror(stdout)?1:0;

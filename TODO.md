@@ -321,6 +321,18 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Review ff89e27..e7e7333: scanner mapped/complete/escaped key reads,
+      nonzero-base snapshots and retained UString metadata fixed; full strict
+      host/focused sanitizers/ARM-qemu pass. AGENT-WORK-REVIEW. No TV access.
+      Lookup-key pointers may be stale; raw metadata is not current text.
+- [x] Independently verify154 navigation case-local call lists and SubLauncher
+      setFocus/isShowing virtual slots. This is offline firmware evidence, not
+      resolved goto/delegate control flow, key translation or full-list entry.
+- [ ] Resolve launcher operation-result/full-list entry and key/profile gates
+      offline before repeating no-effect1043 tests. Later matched full-list
+      identity/current UString characters/draw state must explain apparent
+      slider-label+30 without a fitted constant. Old scanner did not inventory
+      TabDialog; absence cannot identify tab ownership or prove no full list.
 - [x] Recover conditional TextCommand character dispatch: nonnull GPU getter
       selects OpenGL drawText; null selects CPU fallback. UI-GLYPH-ROUTING;
       saved context/vtables verify nonnull configuration. Opaque-parent probe

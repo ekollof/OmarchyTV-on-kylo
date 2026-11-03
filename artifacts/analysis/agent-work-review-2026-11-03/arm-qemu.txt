@@ -1,0 +1,2 @@
+refusing process with unexpected executable
+ok UI object scanner: geometry/spans, mapped key bounds, snapshot translation, complete/escaped keys, raw UString retention, wrong executable

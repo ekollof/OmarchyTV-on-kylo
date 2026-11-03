@@ -4,6 +4,13 @@ Status: live-verified portal→sublauncher path + read-only heap confirmation;
 TabDialog path firmware-decoded, NOT yet driven live. Do not mix the two
 paths' widgets when implementing parity.
 
+Review correction: ../../reports/AGENT-WORK-REVIEW-2026-11-03.md. The scanner
+did not inventory TabDialog; absence cannot identify tab ownership. VK/DIAL
+and ICE are distinct code spaces. Two recorded QuickMenu1043 attempts reached
+the DIAL app log without a visible effect; ICE handling and the specific gate
+remain unproved. Do not repeat that test unchanged. This record does not
+authorize waking the last-reported suspended TV or sending keys.
+
 ## Path A — launcher rail → SubLauncherDialog (shortcuts + tab strip). LIVE.
 
 Verified 2026-11-04, one DIAL key per step with fb1 check after each:
@@ -28,11 +35,11 @@ Verified 2026-11-04, one DIAL key per step with fb1 check after each:
   (2=picture shortcuts, 3=sound, 7=system, 0=channels). Row templates
   463/464 (`...RowItems_launcher/sublauncher`), step 140 — NOT the
   settings list (460, step 70).
-- Live heap scan of this state: no PictureSettingsDialog, no font-18
-  title textbox, no type-9 rows. The tab strip here is SubLauncher-owned
-  static category display (record 189 has NO tab widgets and NO dialogTitle;
-  only background/main_rectangle/listBox). Do NOT attribute these tabs to
-  TabDialog::updateGlyphAndTitle without a live widget-identity read.
+- Eligible-heap scan found no matching PictureSettingsDialog vptr, font-18
+  textbox or type-9 row. TabDialog was NOT inventoried. Neither absence proves
+  process-wide absence or tab ownership. Record189 lacking tab widgets/title
+  also does not identify the visible buttons. Both ownership hypotheses remain
+  unproved without a widget-identity read or complete source path.
 
 ## Path B — QuickMenu key → TabDialog (title + full slider list). FIRMWARE.
 
@@ -64,27 +71,32 @@ Verified 2026-11-04, one DIAL key per step with fb1 check after each:
 ## Agent playbook: reaching each dialog by keys
 
 Preconditions: TV awake; stock Aurora running; verify every step with
-`tvshot.py --layer 1` before the next key. Abort (Exit) on any unexpected
-screen. NEVER send Left/Right on an editing tile (changes values), never
-combine keys in one command, never stage/run anything on the TV.
+`tvshot.py --layer 1` before the next key, under current AGENTS.md authorization.
+Stop keys on an unexpected screen; Exit is only verified as cancel in the
+documented edit state. Never send Left/Right on an editing tile or combine keys.
+This key-only playbook does not revoke the standing read-only staging permission.
 
-- Portal (any state → launcher): Menu (1048); verify Startpagina + rails.
-- Settings shortcuts (Path A): Down ×2 to wrench rail [verify title
+- Portal (recorded video/banner start): Menu (1048); verify Startpagina + rails.
+  This is not a proved universal action from every modal state.
+- Settings shortcuts (Path A): navigate to wrench based on each screenshot;
+  Down ×2 was recorded from home focus, not a universal count. [Verify title
   `Instellingen`], Select [verify tiles+tabs, Beeld focused]. From here:
   Up/Right navigate tiles; Select edits in place (AVOID unless a value
   change is explicitly authorized); Exit cancels edit.
-- Full slider list (Path B, PREDICTED — needs one live test): QuickMenu
-  key (DIAL 1043 = ICE 593 = internal 0x251; all three code spaces verified
-  identical). Chain, every link firmware-verified: 0x251 →
+- Full slider list (conditional firmware path; two no-effect DIAL attempts
+  recorded below): VK1043 and ICE593 share XML name KeyQuickMenu. Only ICE593
+  and hex0x251 are the same value; VK1043 is different and requires translation.
+  Name matching does not trace live translation. ICE0x251 →
   `DemoApp::handleKeyPress` → `onQuickAccessKey` (gated on profile remote
   code != 0xff, teletext key, no VCR timer, two modal checks) →
   `checkAndDisplayQuickMenu` → `doQuickMenuDialog` posts nav message 0x12
   (skipped only if the key was 0x22d with quick-menu available) →
-  `doNavigateTabDialog(false,false)` → TabDialog with title + full slider
-  content. Same key while a TabDialog is open CLOSES it (dispatcher
+  `doNavigateTabDialog(false,false)` → TabDialog construction, subject to
+  initialization/content checks; title/full-list success is unproved. The same
+  ICE key while a TabDialog is open CLOSES it (dispatcher
   0x22d/0x251 branch), so QuickMenu toggles. If 1043 does nothing live, the
-  likely gate is `isQuickMenuKeyAvailable` (profile remote code 0xff) —
-  record and stop, do not hammer other keys as substitutes.
+  availability is one candidate gate, alongside translation/modal checks.
+  No-effect1043 evidence already exists; inspect offline evidence first.
 - Inside TabDialog (from `preHandleKeyPressMessage` decode; PREDICTED live):
   Left/Right with submenu flag switch tabs (hide → UIGroup 0x20c/0x20d →
   updateGlyphAndTitle → showSubMenu), else forward to content; Up/Down move
@@ -113,11 +125,11 @@ combine keys in one command, never stage/run anything on the TV.
    matches the focused white box; labels match updateTitles keys) or
    SubLauncher-owned widgets — needs a live widget-identity read or
    SubLauncher tab-machinery decode (none found in its init).
-3. What populates the TabDialog container before createComponents
-   (the create() caller), and what fails the content +0x18 check in the
-   shortcuts-only state (empty dynamic rows? provider data?).
-4. The dynamic `update*` trigger that turns shortcuts into the full slider
-   list (provider bounds are runtime data, out of scope for static decode).
+3. What populates the TabDialog container before createComponents, and whether
+   content validity fails in the observed state. No failed check was observed;
+   do not infer one from the distinct shortcut screen.
+4. Launcher operation-result to navigator routing for full-list entry. No
+   update-trigger conversion of shortcuts into the full list is established.
 5. Full exit path back to portal/video (Exit cancelled edit only).
 
 Evidence: `nav-routing.txt` (154-case machine map),
@@ -138,8 +150,9 @@ HTTP 201; every effect below was screenshot-verified (201 alone proves nothing).
 | 4 | QuickMenu 1043 (from portal) | NO visible effect (portal unchanged). |
 | 5 | Exit 1010 | portal closed, back to banner. Banner confirmed sticky. |
 
-No values were changed (no Left/Right on editable widgets), no settings DB
-writes, no staging left on the TV, no helpers running. Panel left showing
+No value-adjusting keys were sent; screenshots showed no value change. No DB
+differential establishes zero settings writes. Session reports no staging/
+helpers. Panel left showing
 the idle "Geen signaal" banner; TV suspended afterwards at owner request.
 
 Implication: QuickMenu-as-0x251 reaches `DemoApp::handleKeyPress` only if
@@ -147,7 +160,6 @@ the DIAL virtual->ICE translation delivers it (name-matched, untested
 end-to-end), AND `onQuickAccessKey` gates on profile remote code != 0xff
 (`hwprofile` key `RemoteControl/<remote>/KeyQuick`, default 0xff) plus
 teletext/VCR/modal checks. The no-op in two states is consistent with a
-closed gate (profile or modal state), NOT with broken delivery. Next step
-when access allows: read the hwprofile RemoteControl section to determine
-the configured remote code; or test QuickMenu from inside the launcher/
-sublauncher modal state (different +0x284 gate values).
+closed gate, but does not exclude failed VK-to-ICE translation. DIAL payload
+arrival and internal handling are separate observations. Next inspect offline
+hwprofile and translation/result routing, not another unchanged1043 experiment.

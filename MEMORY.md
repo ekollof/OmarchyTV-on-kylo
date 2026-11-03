@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+AGENT-WORK-REVIEW-2026-11-03: reviewed ff89e27..e7e7333. Scanner now confines
+key reads to eligible heap/Aurora read-only maps, translates snapshot pointers,
+requires complete printable terminated keys and escapes delimiters. +ac is a
+possibly stale lookup key (fresh ARM); raw+a4 UString metadata always retained.
+Original prefix/snapshot defects reproduced. Full host/focused sanitizers/
+ARM-qemu pass. Native build only37392/dc22cd80cc1d6b0f5e26ba730c3186e9/
+GLIBC2.7, build-tv-v3/review-latest; not staged or executed on TV.
+154 navigation case-local call inventories and SubLauncher virtuals verified
+offline. Corrected uninventoried TabDialog absence/tab ownership and identical
+VK/ICE claims. Last imported navigation session reports TV suspended; no TV
+connection, wake, keys or hardware/persistent change in this review. No current
+TV state/persistence inferred from old snapshots. No helper/build job pending.
+
 UI-GLYPH-ROUTING-2026-11-03: firmware conditional dispatch verified through
 doExecute/renderText/drawCharacter; nonnull GPU getter selects GL drawText,
 null selects CPU fallback. Saved vtables/context verify nonnull configuration,

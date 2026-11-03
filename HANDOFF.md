@@ -24,7 +24,27 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [UI-GLYPH-ROUTING](artifacts/reports/UI-GLYPH-ROUTING-2026-11-03.md)
+Latest: [AGENT-WORK-REVIEW](artifacts/reports/AGENT-WORK-REVIEW-2026-11-03.md)
+reviews ff89e27..e7e7333. Fixed scanner key-pointer map bounds, incomplete/
+unterminated key acceptance, snapshot virtual-offset translation and escaping.
+Fresh firmware proves+ac lookup keys can survive later current-UString updates:
+scanner always retains+a4 metadata, which is not the text buffer. Full strict
+host, focused sanitizers and ARM/qemu pass; final native build only is37392
+bytes/MD5 dc22cd80cc1d6b0f5e26ba730c3186e9/maxGLIBC2.7 in build-tv-v3/
+review-latest. No TV connection/staging/deployment or helper/job pending.
+
+Other-agent menu evidence is now indexed:154 case-local navigation call lists
+match fresh decompile, and SubLauncher setFocus/isShowing slots are verified.
+TabDialog was NOT inventoried by the scanner: old absence/ownership claims
+were too strong and are corrected. VK/DIAL1043 and ICE593/0x251 are distinct
+values; app-log receipt of1043 is not ICE-handling proof. Two recorded no-effect
+tests do not establish which gate failed; do not repeat them unchanged. The
+latest imported session reports TV suspended; this review did not poll/wake it.
+Next inspect offline launcher result routing/key-profile gates, then obtain a
+matched full-list instance/current text/draw state before resolving the apparent
+slider-label+30. No fixed indent or shortcuts-to-full-list conversion is proved.
+
+Previous rendering checkpoint: [UI-GLYPH-ROUTING](artifacts/reports/UI-GLYPH-ROUTING-2026-11-03.md)
 closes conditional dispatch: TextCommand passes its context to drawCharacter;
 nonnull GPU getter selects OpenGL drawText, null selects CPU fallback. Saved
 vtables/context verify nonnull configuration, not captured-frame execution.
@@ -35,7 +55,7 @@ Next establish actual parent paint/active FBO/presentation for a matched complet
 scene comparison. Do not repeat bare shader/precision/opaque-base experiments
 or refit the established23,5 origin. ui.title stays default-off.
 
-Owner requested finish this item, handoff, commit and stop. Final native
+At that checkpoint the owner requested handoff/stop. Its final native
 build-tv-v3/glyph-background/egl-glyph-probe161920/MD5
 e59d750f830df849618c4898281778bd/maxGLIBC2.7; host GLES/focused sanitizers and
 real private-pbuffer synthetic/font corpus pass. Separate hash verification,
