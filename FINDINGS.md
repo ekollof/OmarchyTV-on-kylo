@@ -6,13 +6,24 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG list bodies: SVG-LIST-BODIES implements the seven lower key bodies;
+26048 native/C comparisons pass with exact call order/args and handled truth.
+Unhandled on zero +0x1ec count or zero size with no callbacks. Pure size reads
+repeat as shipped. Page-down wraps past the signed last-page start and scrolls
+otherwise (the native run corrected an inverted first implementation). Move/
+window/animation run on the list box; only manager queries and focusItem run on
+this+0xf8. Select consumes with or without a parent; first/last synthesize
+group indices 0/count-1. Primitive implementations/getters/editing/backend/
+visible gates remain open.
+
 SVG list input: SVG-LIST-INPUT implements key/message/typed-value routing;
 999216 shipped key cases,49344 message joins and68640 row-value cases pass.
 Select/layout movement precedes page-down, page-up, then first/last; full-width
 aliases can collide. Only first/last/window take the original message. A false
 key result doesn't retry Window. Row type chooses selection ID/numeric/check
 getter or raw+2df8/+2dfc cache; unknown full-width types return0 without a getter.
-Lower action bodies/primitive editing/getters/backend/visible gates remain open.
+SVG-LIST-BODIES implements the seven lower bodies; primitive implementations/
+getters/editing/backend/visible gates remain open.
 
 Settings list: SETTINGS-LIST implements map and Right/Left/Digit bodies;65600
 native map/matcher and138240 body cases pass. Select20e routes Right/Left. Digit

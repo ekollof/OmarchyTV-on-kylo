@@ -1,5 +1,10 @@
 # SVG-list routing and typed row values — 2026-11-03
 
+Subsequent [SVG-LIST-BODIES](SVG-LIST-BODIES-2026-11-03.md) implements the seven
+lower move/select/page/first-last bodies called by this router. Primitive
+move/getter/editing implementations, parent refresh and the owned backend/
+consumer remain open.
+
 `common/svg_list_input.c` implements SVGListBoxBase::onKeyPress/handleMessage
 and SettingItemsListBoxRow::getSelectedItemValue dispatch through owned callbacks.
 Actual movement/select/page methods, primitive widget getters/editing, parent

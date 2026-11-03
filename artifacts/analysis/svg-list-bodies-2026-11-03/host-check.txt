@@ -1,0 +1,1 @@
+ok SVG list bodies: seven key paths, signed page arithmetic, wrap/clamp, notify and group indices

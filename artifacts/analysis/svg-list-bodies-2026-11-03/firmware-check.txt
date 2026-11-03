@@ -1,0 +1,5 @@
+ok offline shipped ARM group selection: 9216 availability/description/request cases, rejected indices and empty focus
+ok offline shipped ARM SVG list input: 999216 key cases, 49344 message joins, alias precedence/operands and handled truth match
+ok offline shipped ARM SVG list bodies: 26048 native/C comparisons, exact call order/args and handled truth match
+ok offline shipped ARM row values: 68640 type/raw-value cases, widget getter selection, cache offsets and raw32 bits match
+ok offline shipped ARM availability: 884736 comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected

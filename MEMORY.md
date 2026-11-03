@@ -6,6 +6,17 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-BODIES-2026-11-03: seven lower SVGListBoxBase key bodies pass26048
+native/C comparisons with exact call order/args and handled truth, plus full
+strict host, focused ASan/UBSan, ARM/qemu and all previous reference groups.
+ARM unit48868/a64cc362dbdb16fa2838f28d2922a16a; reference453928/
+1c170d59ddd2622891e4b486501de5aa, build-tv-v3/tab-policy. The differential
+caught a real page-down scroll/wrap inversion and proved move/window/animation
+primitives target the list box while only manager queries and focusItem target
+this+0xf8. No new module/service/UI consumer. Primitive move/getter/editing,
+parent refresh, owned backend/context and visible acceptance stay open.
+No TV access/wake/staging/deployment or hardware mutation; no pending job/helper.
+
 SVG-LIST-INPUT-2026-11-03: SVG key/message and typed row-value callback routing
 pass999216 native key cases,49344 message joins and68640 type/raw-value cases,
 full strict host, focused ASan/UBSan, ARM unit and all previous reference groups.

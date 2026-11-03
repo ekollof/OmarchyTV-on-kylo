@@ -24,7 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SVG-LIST-INPUT](artifacts/reports/SVG-LIST-INPUT-2026-11-03.md) finishes
+Latest: [SVG-LIST-BODIES](artifacts/reports/SVG-LIST-BODIES-2026-11-03.md)
+implements the seven lower SVGListBoxBase key bodies called by the
+SVG-LIST-INPUT router. 26048 native/C comparisons pass with exact call
+order/args and handled truth, plus full strict host/focused sanitizer/ARM and
+every prior group. Unhandled on zero +0x1ec count or zero size with no
+callbacks; pure size reads repeat as shipped. The differential corrected a
+page-down scroll/wrap inversion and proved move/window/animation primitives
+run on the list box while only manager queries and focusItem run on this+0xf8.
+Select consumes with or without a parent; first/last synthesize group indices
+0/count-1. No new service/module/UI consumer, TV access/wake/deployment or
+pending job. Hashes in MEMORY/report. Next implement the primitive
+move/selection/window/notify bodies, row getters and editing, and parent
+refresh, then the owned backend/context/consumer with permission/modal/focus/
+lifetime/visible gates. Bodies are not actual widget/rendering acceptance.
+
+Previous: [SVG-LIST-INPUT](artifacts/reports/SVG-LIST-INPUT-2026-11-03.md) finishes
 SVGListBoxBase key/message routing and typed row-value dispatch.999216 native
 key cases,49344 message joins and68640 row-value cases pass, with full strict
 host/focused sanitizer/ARM and every prior group. Preserve Select/layout/page-
@@ -34,10 +49,10 @@ row values distinguish selection IDs/numeric/check getters from two raw caches.
 No new service/module/UI consumer, TV access/wake/deployment or pending job.
 Hashes in MEMORY/report; source reused from settings-list-2026-11-03/lower-list.txt.
 Owner requested finish, handoff, commit/push and stop; await owner resume before
-further implementation. Next recover the lower move/select/page/first-last
-bodies called by that router, then primitive row getters/editing/parent refresh
-and owned backend/context/consumer with permission/modal/focus/lifetime/visible
-gates. Callback routing is not actual widget/rendering acceptance.
+further implementation. SVG-LIST-BODIES implements the seven lower
+move/select/page/first-last bodies; primitive row getters/editing/parent
+refresh and owned backend/context/consumer remain open. Callback routing is
+not actual widget/rendering acceptance.
 
 Previous: [SETTINGS-LIST](artifacts/reports/SETTINGS-LIST-2026-11-03.md) adds the
 SettingItemsListBox map and Right/Left/Digit bodies.65600 shipped map/matcher

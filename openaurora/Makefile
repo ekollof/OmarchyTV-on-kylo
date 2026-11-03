@@ -192,7 +192,13 @@ $(BUILD)/tests/svg_list_input: tests/svg_list_input.c common/svg_list_input.c in
 .PHONY: check-svg-list-input
 check-svg-list-input: $(BUILD)/tests/svg_list_input
 	@$(BUILD)/tests/svg_list_input
-check: check-svg-list-input
+$(BUILD)/tests/svg_list_bodies: tests/svg_list_bodies.c common/svg_list_bodies.c include/openaurora/svg_list_bodies.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-svg-list-bodies
+check-svg-list-bodies: $(BUILD)/tests/svg_list_bodies
+	@$(BUILD)/tests/svg_list_bodies
+check: check-svg-list-bodies
 
 $(BUILD)/tests/profile: tests/profile.c common/profile.c common/tab_policy.c include/openaurora/profile.h include/openaurora/tab_policy.h
 	@mkdir -p $(dir $@)
@@ -202,7 +208,7 @@ check-profile: $(BUILD)/tests/profile
 	@$(BUILD)/tests/profile
 check: check-profile
 
-$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c common/profile.c common/tab_events.c common/tab_prehandle.c common/tab_dispatch.c common/tab_leaf.c common/settings_input.c common/settings_navigation.c common/settings_list_input.c common/svg_list_input.c tests/tab_prehandle_fixture.h tests/tab_leaf_fixture.h tests/settings_input_fixture.h tests/settings_navigation_fixture.h tests/settings_list_fixture.h include/openaurora/tab_policy.h include/openaurora/profile.h include/openaurora/tab_events.h include/openaurora/tab_prehandle.h include/openaurora/tab_dispatch.h include/openaurora/tab_leaf.h include/openaurora/settings_input.h include/openaurora/settings_navigation.h include/openaurora/settings_list_input.h include/openaurora/svg_list_input.h
+$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c common/profile.c common/tab_events.c common/tab_prehandle.c common/tab_dispatch.c common/tab_leaf.c common/settings_input.c common/settings_navigation.c common/settings_list_input.c common/svg_list_input.c common/svg_list_bodies.c tests/tab_prehandle_fixture.h tests/tab_leaf_fixture.h tests/settings_input_fixture.h tests/settings_navigation_fixture.h tests/settings_list_fixture.h include/openaurora/tab_policy.h include/openaurora/profile.h include/openaurora/tab_events.h include/openaurora/tab_prehandle.h include/openaurora/tab_dispatch.h include/openaurora/tab_leaf.h include/openaurora/settings_input.h include/openaurora/settings_navigation.h include/openaurora/settings_list_input.h include/openaurora/svg_list_input.h include/openaurora/svg_list_bodies.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 

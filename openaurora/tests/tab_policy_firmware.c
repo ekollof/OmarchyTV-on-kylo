@@ -14,6 +14,7 @@
 #include "settings_navigation_fixture.h"
 #include "settings_list_fixture.h"
 #include "openaurora/svg_list_input.h"
+#include "openaurora/svg_list_bodies.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -1166,6 +1167,166 @@ static void check_row_values(const unsigned char *elf,size_t bytes)
     native_row_value=NULL;for(unsigned i=0;i<4;++i)assert(!munmap(pages[i],4096));
     printf("ok offline shipped ARM row values: %u type/raw-value cases, widget getter selection, cache offsets and raw32 bits match\n",compared);
 }
+enum body_trace_id {B_SIZE,B_ROW,B_ITEM,B_FIRST,B_FOCUS,B_SEL_UP,B_SEL_DOWN,B_WIN_UP,B_WIN_DOWN,
+    B_WIN_TOP,B_WIN_BOTTOM,B_TO_TOP,B_TO_BOTTOM,B_ANIM,B_PARENT,B_ITEM_ID,B_WID,B_CTOR,B_POST,B_DTOR,B_GROUP};
+struct body_fixture {
+    uint32_t aux,size,row,item,first,item_id,wid;void *parent;uint32_t post_parent,ctor_item,ctor_wid,grouped;
+    unsigned count;struct {uint32_t id,a,b;} trace[16];
+};
+static struct body_fixture *native_body;
+static _Alignas(uint32_t) unsigned char body_object[0x200],body_parent[16],body_list_vtable[19*4],body_parent_vtable[8*4];
+static void body_emit(struct body_fixture *f,uint32_t id,uint32_t a,uint32_t b)
+{ assert(f->count<16);f->trace[f->count].id=id;f->trace[f->count].a=a;f->trace[f->count].b=b;++f->count; }
+static unsigned native_b_size(void *p) { assert(p==body_object+0xf8);body_emit(native_body,B_SIZE,0,0);return native_body->size; }
+static unsigned native_b_row(void *p) { assert(p==body_object+0xf8);body_emit(native_body,B_ROW,0,0);return native_body->row; }
+static unsigned native_b_item(void *p) { assert(p==body_object+0xf8);body_emit(native_body,B_ITEM,0,0);return native_body->item; }
+static unsigned native_b_first(void *p) { assert(p==body_object+0xf8);body_emit(native_body,B_FIRST,0,0);return native_body->first; }
+static unsigned native_b_focus(void *p,int32_t i) { assert(p==body_object+0xf8);body_emit(native_body,B_FOCUS,(uint32_t)i,0);return 0; }
+static unsigned native_b_sel_up(void *p,int32_t n) { assert(p==body_object);body_emit(native_body,B_SEL_UP,(uint32_t)n,0);return 0; }
+static unsigned native_b_sel_down(void *p,int32_t n) { assert(p==body_object);body_emit(native_body,B_SEL_DOWN,(uint32_t)n,0);return 0; }
+static unsigned native_b_win_up(void *p,int32_t n) { assert(p==body_object);body_emit(native_body,B_WIN_UP,(uint32_t)n,0);return 0; }
+static unsigned native_b_win_down(void *p,int32_t n) { assert(p==body_object);body_emit(native_body,B_WIN_DOWN,(uint32_t)n,0);return 0; }
+static unsigned native_b_win_top(void *p) { assert(p==body_object);body_emit(native_body,B_WIN_TOP,0,0);return 0; }
+static unsigned native_b_win_bottom(void *p) { assert(p==body_object);body_emit(native_body,B_WIN_BOTTOM,0,0);return 0; }
+static unsigned native_b_to_top(void *p) { assert(p==body_object);body_emit(native_body,B_TO_TOP,0,0);return 0; }
+static unsigned native_b_to_bottom(void *p) { assert(p==body_object);body_emit(native_body,B_TO_BOTTOM,0,0);return 0; }
+static unsigned native_b_anim(void *p) { assert(p==body_object);body_emit(native_body,B_ANIM,0,0);return 0; }
+static unsigned native_b_parent(void *p) { assert(p==body_object);body_emit(native_body,B_PARENT,0,0);return (uint32_t)(uintptr_t)native_body->parent; }
+static unsigned native_b_item_id(void *p) { assert(p==body_object);body_emit(native_body,B_ITEM_ID,0,0);return native_body->item_id; }
+static unsigned native_b_wid(void *p) { assert(p==body_object);body_emit(native_body,B_WID,0,0);return native_body->wid; }
+typedef unsigned (*ctor_fn)(void *,int32_t,uint32_t);
+static unsigned native_b_ctor(void *buf,int32_t item,uint32_t wid)
+{ (void)buf;body_emit(native_body,B_CTOR,(uint32_t)item,wid);native_body->ctor_item=(uint32_t)item;native_body->ctor_wid=wid;return 0; }
+static unsigned native_b_post(void *parent,int32_t message)
+{ (void)message;assert(parent==native_body->parent);body_emit(native_body,B_POST,(uint32_t)(uintptr_t)parent,native_body->ctor_item);
+    native_body->post_parent=(uint32_t)(uintptr_t)parent;return 0; }
+static unsigned native_b_dtor(void *p) { (void)p;body_emit(native_body,B_DTOR,native_body->post_parent,native_body->ctor_item);return 0; }
+static unsigned native_b_group(void *self,int32_t index)
+{ assert(self==body_object);body_emit(native_body,B_GROUP,(uint32_t)index,0);native_body->grouped=(uint32_t)index;return 0; }
+static void ctor_stub(void *mapped,uint32_t base,uint32_t address,ctor_fn function)
+{
+    unsigned char *p=(unsigned char *)mapped+address-base;const uint16_t insn[]={0x4b00,0x4718};
+    assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target;memcpy(&target,&function,4);memcpy(p+4,&target,4);
+}
+static uint32_t body_q_aux(void *p) { return ((struct body_fixture *)p)->aux; }
+static uint32_t body_q_size(void *p) { struct body_fixture *f=p;body_emit(f,B_SIZE,0,0);return f->size; }
+static uint32_t body_q_row(void *p) { struct body_fixture *f=p;body_emit(f,B_ROW,0,0);return f->row; }
+static uint32_t body_q_item(void *p) { struct body_fixture *f=p;body_emit(f,B_ITEM,0,0);return f->item; }
+static uint32_t body_q_first(void *p) { struct body_fixture *f=p;body_emit(f,B_FIRST,0,0);return f->first; }
+static void body_e_focus(void *p,uint32_t i) { body_emit(p,B_FOCUS,i,0); }
+static void body_e_sel_up(void *p,uint32_t n) { body_emit(p,B_SEL_UP,n,0); }
+static void body_e_sel_down(void *p,uint32_t n) { body_emit(p,B_SEL_DOWN,n,0); }
+static void body_e_win_up(void *p,uint32_t n) { body_emit(p,B_WIN_UP,n,0); }
+static void body_e_win_down(void *p,uint32_t n) { body_emit(p,B_WIN_DOWN,n,0); }
+static void body_e_win_top(void *p) { body_emit(p,B_WIN_TOP,0,0); }
+static void body_e_win_bottom(void *p) { body_emit(p,B_WIN_BOTTOM,0,0); }
+static void body_e_to_top(void *p) { body_emit(p,B_TO_TOP,0,0); }
+static void body_e_to_bottom(void *p) { body_emit(p,B_TO_BOTTOM,0,0); }
+static void body_e_anim(void *p) { body_emit(p,B_ANIM,0,0); }
+static void *body_e_parent(void *p) { struct body_fixture *f=p;body_emit(f,B_PARENT,0,0);return f->parent; }
+static uint32_t body_e_item_id(void *p) { struct body_fixture *f=p;body_emit(f,B_ITEM_ID,0,0);return f->item_id; }
+static uint32_t body_e_wid(void *p) { struct body_fixture *f=p;body_emit(f,B_WID,0,0);return f->wid; }
+static uint32_t body_e_notify(void *p,void *parent,uint32_t item,uint32_t wid)
+{ struct body_fixture *f=p;body_emit(f,B_CTOR,item,wid);body_emit(f,B_POST,(uint32_t)(uintptr_t)parent,item);body_emit(f,B_DTOR,(uint32_t)(uintptr_t)parent,item);return 0; }
+static void body_e_group(void *p,uint32_t index) { struct body_fixture *f=p;body_emit(f,B_GROUP,index,0);f->grouped=index; }
+typedef unsigned (*body_fn)(void *);
+typedef unsigned (*body_msg_fn)(void *,void *);
+static void compare_body(body_fn native,int (*ours)(const struct oa_svg_list_box_ops *,int *),
+    struct body_fixture initial,unsigned body,int use_msg)
+{
+    struct body_fixture vendor=initial,ref=initial;struct oa_svg_list_box_ops ops={&ref,body_q_aux,body_q_size,
+        body_q_row,body_q_item,body_q_first,body_e_focus,body_e_sel_up,body_e_sel_down,body_e_win_up,body_e_win_down,
+        body_e_win_top,body_e_win_bottom,body_e_to_top,body_e_to_bottom,body_e_anim,body_e_parent,body_e_item_id,
+        body_e_wid,body_e_notify,body_e_group};
+    memcpy(body_object+0x1ec,&vendor.aux,4);
+    native_body=&vendor;
+    unsigned expected;
+    if(use_msg) { body_msg_fn two;memcpy(&two,&native,sizeof two);expected=two(body_object,NULL); }
+    else expected=native(body_object);
+    int handled=-1;assert(!ours(&ops,&handled));
+    if(handled!=(expected!=0)) {
+        fprintf(stderr,"body %u handled native=%x ours=%d aux=%x size=%x row=%x item=%x first=%x\n",
+            body,expected,handled,initial.aux,initial.size,initial.row,initial.item,initial.first);exit(1);
+    }
+    for(unsigned i=0;i<vendor.count;++i)if(vendor.trace[i].id!=ref.trace[i].id ||
+        vendor.trace[i].a!=ref.trace[i].a || vendor.trace[i].b!=ref.trace[i].b) {
+        fprintf(stderr,"body %u trace %u native=%u/%x/%x ours=%u/%x/%x\n",body,i,vendor.trace[i].id,
+            vendor.trace[i].a,vendor.trace[i].b,ref.trace[i].id,ref.trace[i].a,ref.trace[i].b);exit(1);
+    }
+    if(vendor.count!=ref.count) {
+        fprintf(stderr,"body %u count native=%u ours=%u\n",body,vendor.count,ref.count);
+        for(unsigned i=0;i<vendor.count;++i)fprintf(stderr,"  native[%u]=%u/%x/%x\n",i,vendor.trace[i].id,vendor.trace[i].a,vendor.trace[i].b);
+        for(unsigned i=0;i<ref.count;++i)fprintf(stderr,"  ours[%u]=%u/%x/%x\n",i,ref.trace[i].id,ref.trace[i].a,ref.trace[i].b);
+        exit(1);
+    }
+}
+static void check_svg_bodies(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *list=page(0x10bc000,8192),*rows=page(0x10be000,4096),*anim=page(0x10ba000,8192);
+    unsigned char *ctor=page(0x1148000,4096),*parent=page(0x1152000,4096),*dtor=page(0x1138000,8192);
+    const struct {uint32_t address,length,crc,literal;} fragments[]={
+        {0x10bc964,148,UINT32_C(0x6d2f8674),0x10bc9f4},
+        {0x10bc9f8,176,UINT32_C(0xe84f6632),0x10bcaa4},
+        {0x10bcaa8,152,UINT32_C(0x66ad2f6d),0x10bcb3c},
+        {0x10bcb40,164,UINT32_C(0x69caf4f4),0x10bcbe0},
+        {0x10bcbe4,404,UINT32_C(0xbc4274b5),0x10bcc70},
+        {0x10bce98,92,UINT32_C(0x7deea255),0x10bcef0},
+        {0x10bcef4,88,UINT32_C(0x272417eb),0x10bcf48}
+    };
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;body_fn native[7];
+    for(unsigned i=0;i<7;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(list+fragments[i].address-0x10bc000,elf+off,fragments[i].length);
+        memcpy(list+fragments[i].literal-0x10bc000,&pointer,4);
+        uint32_t entry=fragments[i].address|1;memcpy(&native[i],&entry,4);
+    }
+    thumb_stub(list,0x10bc000,0x10bc2e0,native_b_win_top);
+    thumb_stub(list,0x10bc000,0x10bc324,native_b_win_bottom);
+    thumb_stub(list,0x10bc000,0x10bc37c,native_b_to_top);
+    thumb_stub(list,0x10bc000,0x10bc3bc,native_b_to_bottom);
+    predicate_stub(list,0x10bc000,0x10bc408,native_b_win_up);
+    predicate_stub(list,0x10bc000,0x10bc458,native_b_win_down);
+    predicate_stub(list,0x10bc000,0x10bc4a8,native_b_sel_up);
+    predicate_stub(list,0x10bc000,0x10bc5bc,native_b_sel_down);
+    thumb_stub(list,0x10bc000,0x10bc600,native_b_item_id);
+    predicate_stub(rows,0x10be000,0x10be3cc,native_b_focus);
+    thumb_stub(rows,0x10be000,0x10be6e4,native_b_size);
+    thumb_stub(rows,0x10be000,0x10be74c,native_b_row);
+    thumb_stub(rows,0x10be000,0x10be77c,native_b_first);
+    thumb_stub(rows,0x10be000,0x10be814,native_b_item);
+    thumb_stub(anim,0x10ba000,0x10bbedc,native_b_anim);
+    ctor_stub(ctor,0x1148000,0x1148b88,native_b_ctor);
+    thumb_stub(parent,0x1152000,0x11528a0,(getter)native_b_parent);
+    thumb_stub(parent,0x1152000,0x11529e0,native_b_wid);
+    thumb_stub(dtor,0x1138000,0x1139e5c,native_b_dtor);
+    executable(list,8192);executable(rows,4096);executable(anim,8192);
+    executable(ctor,4096);executable(parent,4096);executable(dtor,8192);
+    uint32_t list_vtable=(uint32_t)(uintptr_t)body_list_vtable,parent_vtable=(uint32_t)(uintptr_t)body_parent_vtable;
+    uint32_t group_bits=predicate_bits(native_b_group),post_bits=predicate_bits(native_b_post);
+    memcpy(body_list_vtable+0x48,&group_bits,4);
+    memcpy(body_object,&list_vtable,4);memcpy(body_parent_vtable+0x10,&post_bits,4);memcpy(body_parent,&parent_vtable,4);
+    static int (*const bodies[])(const struct oa_svg_list_box_ops *,int *)={oa_svg_list_up_body,
+        oa_svg_list_down_body,oa_svg_list_page_up_body,oa_svg_list_page_down_body,oa_svg_list_select_body,
+        oa_svg_list_first_body,oa_svg_list_last_body};
+    const uint32_t auxes[]={0,1,2,7,100,UINT32_C(0x80000000),UINT32_MAX};
+    const uint32_t sizes[]={0,1,2,5,UINT32_C(0x80000000)};
+    const uint32_t rows4[]={0,1,4,UINT32_MAX},items[]={0,1,6,UINT32_C(0xfffffffe)},firsts[]={0,1,3,UINT32_MAX};
+    const uint32_t ids[]={0,0x1234,UINT32_MAX};unsigned compared=0;
+    for(unsigned a=0;a<7;++a)for(unsigned s=0;s<5;++s)for(unsigned r=0;r<4;++r)for(unsigned m=0;m<4;++m)
+    for(unsigned q=0;q<4;++q) {
+        struct body_fixture initial={.aux=auxes[a],.size=sizes[s],.row=rows4[r],.item=items[m],.first=firsts[q]};
+        for(unsigned b=0;b<7;++b) { compare_body(native[b],bodies[b],initial,b,b>=5);++compared; }
+        if(a<3 && s<3)for(unsigned p=0;p<2;++p)for(unsigned u=0;u<3;++u)for(unsigned w=0;w<3;++w) {
+            struct body_fixture select=initial;select.parent=p?body_parent:NULL;select.item_id=ids[u];select.wid=ids[w];
+            compare_body(native[4],bodies[4],select,4,0);++compared;
+        }
+    }
+    native_body=NULL;
+    assert(!munmap(list,8192) && !munmap(rows,4096) && !munmap(anim,8192));
+    assert(!munmap(ctor,4096) && !munmap(parent,4096) && !munmap(dtor,8192));
+    printf("ok offline shipped ARM SVG list bodies: %u native/C comparisons, exact call order/args and handled truth match\n",compared);
+}
 int main(int argc,char **argv)
 {
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
@@ -1214,7 +1375,7 @@ int main(int argc,char **argv)
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
     check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);
-    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_row_values(elf,bytes);
+    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_row_values(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;

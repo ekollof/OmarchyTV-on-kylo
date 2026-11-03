@@ -321,10 +321,16 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement the seven lower SVGListBoxBase key bodies; 26048 native/C
+      comparisons with exact call order/args/handled truth plus full host/
+      focused sanitizer/ARM and prior groups pass. SVG-LIST-BODIES. Primitive
+      move/getter/editing implementations, parent refresh, owned backend/
+      context/consumer and independent native visible acceptance remain open.
 - [x] Implement SVGListBoxBase key/message routers and typed row-value dispatch;
       999216 native key cases,49344 message joins and68640 row-value cases plus
       full host/focused sanitizer/ARM and prior groups pass. SVG-LIST-INPUT.
-      Actual lower actions/getters/editing/parent refresh, owned backend/context/
+      SVG-LIST-BODIES implements the seven lower bodies; primitive move/
+      getter/editing implementations, parent refresh, owned backend/context/
       consumer and independent native visible acceptance remain open.
 - [x] Implement SettingItemsListBox map/Right-Left/Digit callback bodies;
       65600 shipped map/matcher and138240 native body cases plus full host,
