@@ -17,7 +17,8 @@ static const char *key_for(int which)
     case 0:return "alexa";
     case 1:return "text1";
     case 2:return "labelLong";
-    default:return "button";
+    case 3:return "button";
+    default:return "checkbox";
     }
 }
 static int ready(const struct oa_setting_row_render_ops *o)
@@ -27,7 +28,8 @@ static int ready(const struct oa_setting_row_render_ops *o)
         !o->row_button_label || !o->child_at || !o->is_created || !o->set_name ||
         !o->set_focus || !o->set_elipses || !o->set_font || !o->get_point ||
         !o->set_rect || !o->set_text || !o->create_text ||
-        !o->create_button)return EINVAL;
+        !o->create_button || !o->set_text_alignment || !o->set_checked ||
+        !o->create_checkbox)return EINVAL;
     return 0;
 }
 static void rect_math(uint32_t out[4],const uint32_t base[4],const int32_t pt[2])
@@ -70,10 +72,37 @@ static int tail_104(void *row,const struct oa_setting_row_render_ops *o,void *re
     o->create_text(child,0,o->row_label(row),base,UINT32_C(1),row);
     return 0;
 }
+/* Case 0x16: drive the row+0x27a8 checkbox from the "checkbox" rectangle.
+ * Uncreated writes names 9/10/11/12 into slots 1/0/3/2, alignment 5, then
+ * creates from an empty label with the (0,0x74,0x75) triplet and sets the
+ * checked byte 0x2e44; created applies EASIRect math plus setWindowRect,
+ * setText(empty) and the same checked byte. Both paths end with setChecked. */
+static int case_0x16(void *row,const struct oa_setting_row_render_ops *o,void *box)
+{
+    void *r=o->get_rect(box,key_for(4)),*child;int created;uint32_t base[4];
+    if(!r)return 0;
+    child=o->child_at(row,UINT32_C(0x27a8));
+    created=o->is_created(child);
+    o->rect_words(r,base);
+    if(created) {
+        uint32_t moved[4];int32_t pt[2];
+        o->get_point(row,pt);rect_math(moved,base,pt);
+        o->set_rect(child,moved);o->set_text(child,"");
+        o->set_checked(child,o->row_flag(row,UINT32_C(0x2e44))?1u:0u);
+        return 0;
+    }
+    o->set_name(child,UINT32_C(1),UINT32_C(9));
+    o->set_name(child,(uint32_t)created,UINT32_C(10));
+    o->set_name(child,UINT32_C(3),UINT32_C(11));
+    o->set_name(child,UINT32_C(2),UINT32_C(12));
+    o->set_text_alignment(child,UINT32_C(5));
+    o->create_checkbox(child,0,UINT32_C(0x74),UINT32_C(0x75),"",base,row);
+    o->set_checked(child,o->row_flag(row,UINT32_C(0x2e44))?1u:0u);
+    return 0;
+}
 /* Case 0x1a: drive the row+0x684 button from the "button" rectangle. Not
  * created writes 0x2ed0/0x2ecc/0x2ed8/0x2ed4 into the four name slots then
- * creates; created applies EASIRect math plus setWindowRect/setText. The
- * create passes the button rectangle directly (objdump-verified). */
+ * creates; created applies EASIRect math plus setWindowRect/setText. */
 static int case_0x1a(void *row,const struct oa_setting_row_render_ops *o,void *box)
 {
     void *r=o->get_rect(box,key_for(3)),*button;int created;uint32_t base[4];
@@ -186,6 +215,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             case_0x1a(row,o,box);
             return 0;
         }
+        if(type==UINT32_C(0x16)) {
+            case_0x16(row,o,box);
+            return 0;
+        }
         return ENOTSUP;
     }
     if(type!=UINT32_C(1) && type!=UINT32_C(0)) {
@@ -200,6 +233,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
         tail_104(row,o,r2,r1==NULL);
         if(type==UINT32_C(0x1a)) {
             case_0x1a(row,o,box);
+            return 0;
+        }
+        if(type==UINT32_C(0x16)) {
+            case_0x16(row,o,box);
             return 0;
         }
         return ENOTSUP;

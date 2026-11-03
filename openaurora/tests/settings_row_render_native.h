@@ -49,6 +49,14 @@ static void six_stub(void *mapped,uint32_t base,uint32_t address,six_fn function
     const uint16_t insn[]={0xf8df,0xc004,0x4760,0xbf00};
     assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=six_bits(function);memcpy(p+8,&target,4);
 }
+typedef void (*seven_fn)(void *,uint32_t,uint32_t,uint32_t,void *,void *,void *);
+static uint32_t seven_bits(seven_fn f) { uint32_t v;_Static_assert(sizeof f==sizeof v,"fn width");memcpy(&v,&f,sizeof v);return v; }
+static void seven_stub(void *mapped,uint32_t base,uint32_t address,seven_fn function)
+{
+    unsigned char *p=stub_destination(mapped,base,address,12);
+    const uint16_t insn[]={0xf8df,0xc004,0x4760,0xbf00};
+    assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=seven_bits(function);memcpy(p+8,&target,4);
+}
 typedef void (*five_fn)(void *,uint32_t,void *,void *,void *);
 static uint32_t five_bits(five_fn f) { uint32_t v;_Static_assert(sizeof f==sizeof v,"fn width");memcpy(&v,&f,sizeof v);return v; }
 static void five_stub(void *mapped,uint32_t base,uint32_t address,five_fn function)
@@ -57,14 +65,15 @@ static void five_stub(void *mapped,uint32_t base,uint32_t address,five_fn functi
     const uint16_t insn[]={0xf8df,0xc004,0x4760,0xbf00};
     assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=five_bits(function);memcpy(p+8,&target,4);
 }
-enum {RR_BASE,RR_GET,RR_IS,RR_NAME,RR_FOCUS,RR_ELIP,RR_FONT,RR_RECT,RR_TEXT,RR_CTEXT,RR_CBTN};
+enum {RR_BASE,RR_GET,RR_IS,RR_NAME,RR_FOCUS,RR_ELIP,RR_FONT,RR_RECT,RR_TEXT,RR_CTEXT,RR_CBTN,RR_ALIGN,RR_CHECK,RR_CCB};
 struct rr_event { uint32_t kind,off,a,b;uint32_t w[4];char text[24]; };
 struct rr_result { struct rr_event events[64];unsigned count; };
 struct rr_fixture {
-    uint32_t type;int present[4];int created;int32_t pt[2];
-    uint32_t words[20];int flag;const char *l1,*l2;uint32_t rwords[4][4];
+    uint32_t type;int present[5];int created,checked;int32_t pt[2];
+    uint32_t words[20];int flag;const char *l1,*l2;uint32_t rwords[5][4];
     struct rr_result *trace;unsigned char *row;
 };
+static const char rr_empty[]="";
 static struct rr_fixture *rr_native;
 static _Alignas(uint32_t) unsigned char rr_row[0x3000],rr_refrow[0x3000];
 static uint32_t rr_vtable[16];
@@ -83,13 +92,13 @@ static void rr_base(void *row) { (void)row;rr_emit(rr_native->trace,RR_BASE,0,0,
 static void rr_ctor(void *buf,uint32_t str)
 { const char *s=(const char *)str;assert(strlen(s)<16);*(const char **)buf=s; }
 static unsigned rr_dtor(void *buf) { (void)buf;return 0; }
-static const char *rr_keys[4];
+static const char *rr_keys[5];
 static void *rr_getrect(void *container,void *ustr)
 {
     const char *key=*(const char *const *)ustr;unsigned i;
     (void)container;
-    for(i=0;i<4;++i)if(!strcmp(key,rr_keys[i]))break;
-    assert(i<4);
+    for(i=0;i<5;++i)if(!strcmp(key,rr_keys[i]))break;
+    assert(i<5);
     rr_emit(rr_native->trace,RR_GET,(uint32_t)i,0,0,NULL,key);
     if(!rr_native->present[i])return NULL;
     return rr_native->row+0x400+i*32;
@@ -110,7 +119,7 @@ static void rr_setrect(void *child,void *rect)
 { uint32_t w[4];memcpy(w,rect,16);
   rr_emit(rr_native->trace,RR_RECT,rr_off(rr_row,child),0,0,w,NULL); }
 static void rr_settext(void *child,uint32_t ustr)
-{ char tmp[32];const char *s=(const char *)ustr;size_t n=strlen(s);
+{ char tmp[32];const char *s=*(const char *const *)(uintptr_t)ustr;size_t n=strlen(s);
   assert(n<sizeof tmp);memcpy(tmp,s,n+1);
   rr_emit(rr_native->trace,RR_TEXT,rr_off(rr_row,child),0,0,NULL,tmp); }
 /* The EASIRect default ctor at 0x9a7f94 runs verbatim from the copied bytes
@@ -121,16 +130,34 @@ static void rr_ctext(void *child,uint32_t ignored,void *label,void *rect,uint32_
     char text[32];size_t n;uint32_t w[4];
     (void)ignored;(void)parent;
     assert((unsigned char *)label==(unsigned char *)rr_row+0x2dd8);
-    n=strlen((const char *)label);assert(n<sizeof text);memcpy(text,label,n+1);
+    { const char *s=*(const char *const *)label;
+      n=strlen(s);assert(n<sizeof text);memcpy(text,s,n+1); }
     memcpy(w,rect,16);
     rr_emit(rr_native->trace,RR_CTEXT,rr_off(rr_row,child),extra,ignored,w,text);
+}
+static void rr_align(void *child,uint32_t a)
+{ rr_emit(rr_native->trace,RR_ALIGN,rr_off(rr_row,child),a,0,NULL,NULL); }
+static void rr_checked(void *child,uint32_t f)
+{ rr_emit(rr_native->trace,RR_CHECK,rr_off(rr_row,child),f,0,NULL,NULL); }
+static void rr_ccb(void *child,uint32_t z,uint32_t a,uint32_t b,void *label,void *rect,void *parent)
+{
+    char text[32];size_t n;uint32_t w[4];const char *s;
+    (void)parent;
+    /* The create takes the UString object; our ctor stores the char* in the
+     * first slot, so dereference to compare the string itself. */
+    s=*(const char *const *)label;
+    n=strlen(s);assert(n<sizeof text);memcpy(text,s,n+1);
+    memcpy(w,rect,16);
+    rr_emit(rr_native->trace,RR_CCB,rr_off(rr_row,child),z,(a<<16)|b,w,text);
+    (void)rr_empty;
 }
 static void rr_cbtn(void *button,uint32_t ignored,void *label,void *rect,void *parent)
 {
     char text[32];size_t n;uint32_t w[4];
     (void)ignored;(void)parent;
     assert((unsigned char *)label==(unsigned char *)rr_row+0x2de0);
-    n=strlen((const char *)label);assert(n<sizeof text);memcpy(text,label,n+1);
+    { const char *s=*(const char *const *)label;
+      n=strlen(s);assert(n<sizeof text);memcpy(text,s,n+1); }
     memcpy(w,rect,16);
     rr_emit(rr_native->trace,RR_CBTN,rr_off(rr_row,button),0,0,w,text);
 }
@@ -140,8 +167,8 @@ static void *rre_cont(void *row) { (void)row;return rr_ref->row+0xa8; }
 static void *rre_get(void *container,const char *key)
 {
     unsigned i;(void)container;
-    for(i=0;i<4;++i)if(!strcmp(key,rr_keys[i]))break;
-    assert(i<4);
+    for(i=0;i<5;++i)if(!strcmp(key,rr_keys[i]))break;
+    assert(i<5);
     rr_emit(rr_ref->trace,RR_GET,i,0,0,NULL,key);
     if(!rr_ref->present[i])return NULL;
     return rr_ref->row+0x400+i*32;
@@ -149,9 +176,9 @@ static void *rre_get(void *container,const char *key)
 static void rre_words(void *rect,uint32_t out[4]) { memcpy(out,(const unsigned char *)rect+8,16); }
 static uint32_t rre_type(void *row) { (void)row;return rr_ref->type; }
 static uint32_t rre_word(void *row,uint32_t off) { (void)row;assert(off>=0x2e8c && off<=0x2ed8 && !(off&3));return rr_ref->words[(off-0x2e8c)/4]; }
-static int rre_flag(void *row,uint32_t off) { (void)row;assert(off==0x2e45);return rr_ref->flag; }
-static const char *rre_label(void *row) { (void)row;return rr_ref->l1; }
-static const char *rre_blabel(void *row) { (void)row;return rr_ref->l2; }
+static int rre_flag(void *row,uint32_t off) { (void)row;assert(off==0x2e45||off==0x2e44);return off==0x2e44?rr_ref->checked:rr_ref->flag; }
+static const char *rre_label(void *row) { (void)row;return *(const char *const *)(rr_ref->row+0x2dd8); }
+static const char *rre_blabel(void *row) { (void)row;return *(const char *const *)(rr_ref->row+0x2de0); }
 static void *rre_child(void *row,uint32_t off) { (void)row;return rr_ref->row+off; }
 static int rre_created(void *child)
 { rr_emit(rr_ref->trace,RR_IS,rr_off(rr_ref->row,child),0,0,NULL,NULL);return rr_ref->created; }
@@ -175,11 +202,19 @@ static void rre_ctext(void *child,uint32_t zero,const char *label,const uint32_t
 }
 static void rre_cbtn(void *button,const char *label,const uint32_t rect[4],void *parent)
 { (void)parent;rr_emit(rr_ref->trace,RR_CBTN,rr_off(rr_ref->row,button),0,0,rect,label); }
+static void rre_align(void *child,uint32_t a)
+{ rr_emit(rr_ref->trace,RR_ALIGN,rr_off(rr_ref->row,child),a,0,NULL,NULL); }
+static void rre_checked(void *child,uint32_t f)
+{ rr_emit(rr_ref->trace,RR_CHECK,rr_off(rr_ref->row,child),f,0,NULL,NULL); }
+static void rre_ccb(void *child,uint32_t z,uint32_t a,uint32_t b,const char *label,
+    const uint32_t rect[4],void *parent)
+{ (void)parent;rr_emit(rr_ref->trace,RR_CCB,rr_off(rr_ref->row,child),z,(a<<16)|b,rect,label); }
 static struct oa_setting_row_render_ops rr_ops(struct rr_fixture *f)
 {
     return (struct oa_setting_row_render_ops){f,rre_base,rre_cont,rre_get,rre_words,rre_type,
         rre_word,rre_flag,rre_label,rre_blabel,rre_child,rre_created,rre_name,rre_focus,
-        rre_elipses,rre_font,rre_point,rre_rect,rre_text,rre_ctext,rre_cbtn};
+        rre_elipses,rre_font,rre_point,rre_rect,rre_text,rre_ctext,rre_cbtn,
+        rre_align,rre_checked,rre_ccb};
 }
 typedef void (*rr_fn)(void *);
 static void rr_compare(struct rr_result *vendor,struct rr_result *ref)
@@ -208,14 +243,15 @@ static void rr_setup_row(unsigned char *row,struct rr_fixture *f)
     memset(row,0xa5,sizeof rr_row);
     memcpy(row,&vt,4);
     memcpy(row+0x2dec,&f->type,4);
-    { size_t n=strlen(f->l1)+1;assert(n<=8);memcpy(row+0x2dd8,f->l1,n); }
-    { size_t n=strlen(f->l2)+1;assert(n<=8);memcpy(row+0x2de0,f->l2,n); }
+    /* Row label slots are UString objects: first word is the char*. */
+    { uint32_t p=(uint32_t)(uintptr_t)f->l1;memcpy(row+0x2dd8,&p,4); }
+    { uint32_t p=(uint32_t)(uintptr_t)f->l2;memcpy(row+0x2de0,&p,4); }
     for(unsigned i=0;i<4;++i)memcpy(row+0x400+i*32+8,f->rwords[i],16);
     for(unsigned k=0;k<20;++k)memcpy(row+0x2e8c+k*4,&f->words[k],4);
-    row[0x2e45]=(unsigned char)f->flag;
+    row[0x2e45]=(unsigned char)f->flag;row[0x2e44]=(unsigned char)f->checked;
 }
-static const char rk0[]="alexa",rk1[]="text1",rk2[]="labelLong",rk3[]="button";
-static const char *rkcell[3];
+static const char rk0[]="alexa",rk1[]="text1",rk2[]="labelLong",rk3[]="button",rk4[]="checkbox";
+static const char *rkcell[4];
 static void check_settings_row_render(const unsigned char *elf,size_t bytes)
 {
     unsigned char *row=page(0xd54000,12288),*ecopy=page(0xd51000,4096),*eoff=page(0xd2a000,4096);
@@ -223,8 +259,9 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
     unsigned char *win=page(0x1152000,4096),*name=page(0xeee000,4096),*box=page(0x10c8000,4096);
     unsigned char *textbox=page(0x10c7000,4096),*elip=page(0x10c6000,4096),*btn=page(0x10ad000,12288);
     unsigned char *zer=page(0x9a7000,4096),*btntext=page(0x10b0000,4096);
-    rr_keys[0]=rk0;rr_keys[1]=rk1;rr_keys[2]=rk2;rr_keys[3]=rk3;
-    rkcell[0]=rk1;rkcell[1]=rk2;rkcell[2]=rk3;
+    unsigned char *cb=page(0x10b1000,8192);
+    rr_keys[0]=rk0;rr_keys[1]=rk1;rr_keys[2]=rk2;rr_keys[3]=rk3;rr_keys[4]=rk4;
+    rkcell[0]=rk1;rkcell[1]=rk2;rkcell[2]=rk3;rkcell[3]=rk4;
     {
         size_t off=file_offset(elf,bytes,0xd54400,8746);
         assert(crc32(elf+off,8746)==UINT32_C(0x5b7e119b));
@@ -259,6 +296,12 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
          * (0xd54e24 -> 0x178d5e8); the second-level slot needs the owned
          * string or the body dereferences vendor rodata. */
         memcpy(stub_destination(row,0xd54000,0xd54e24,4),&k3,4);
+        /* Case 0x16 reads "checkbox" through 0xd54e28 and the empty label
+         * directly at 0xd54e2c; both need owned storage. */
+        { uint32_t k4=(uint32_t)(uintptr_t)&rkcell[3];
+          memcpy(stub_destination(row,0xd54000,0xd54e28,4),&k4,4); }
+        { uint32_t em=(uint32_t)(uintptr_t)rr_empty;
+          memcpy(stub_destination(row,0xd54000,0xd54e2c,4),&em,4); }
     }
     blank_stub(base,0x10bf000,0x10bf06c,rr_base);
     pair_stub(ustr,0xc86000,0xc86744,rr_ctor);
@@ -276,6 +319,11 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
     five_stub(btn,0x10ad000,0x10ae9f0,rr_cbtn);
     pair_stub(btn,0x10ad000,0x10aefb4,rr_setfont);
     pair_stub(btntext,0x10b0000,0x10b0540,rr_settext);
+    pair_stub(cb,0x10b1000,0x10b14b8,rr_align);
+    pair_stub(cb,0x10b1000,0x10b1368,rr_checked);
+    seven_stub(cb,0x10b1000,0x10b2500,rr_ccb);
+    pair2_stub(cb,0x10b1000,0x10b2670,rr_setrect);
+    pair_stub(cb,0x10b1000,0x10b2164,rr_settext);
     {
         uint32_t point=point_bits(rr_point);
         memcpy(rr_vtable+0x28/4,&point,4);
@@ -283,15 +331,15 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
     executable(row,12288);executable(ecopy,4096);executable(eoff,4096);executable(base,4096);
     executable(ustr,4096);executable(getr,4096);executable(win,4096);executable(name,4096);
     executable(box,4096);executable(textbox,4096);executable(elip,4096);executable(btn,12288);
-    executable(zer,4096);executable(btntext,4096);
+    executable(zer,4096);executable(btntext,4096);executable(cb,8192);
     {
         unsigned compared=0;rr_fn render=0;
         { uint32_t entry=0xd54401;memcpy(&render,&entry,4); }
         {
-            const uint32_t types[]={0,1,4,0x1a};
+            const uint32_t types[]={0,1,4,0x1a,0x16};
             const char *l1s[]={"","Aa"},*l2s[]={"","Bb"};
             const int32_t pts[][2]={{0,0},{5,-3},{INT32_MAX,1}};
-            for(unsigned a=0;a<4;++a)for(unsigned m=0;m<16;++m)for(unsigned c=0;c<2;++c)
+            for(unsigned a=0;a<5;++a)for(unsigned m=0;m<32;++m)for(unsigned c=0;c<2;++c)
             for(unsigned p=0;p<3;++p)for(unsigned w=0;w<2;++w)for(unsigned l=0;l<2;++l)
             for(unsigned g=0;g<2;++g) {
                 /* Firmware crash input, verified by reading: type 4 with the
@@ -300,11 +348,12 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
                  * at 0xd54726 with r0==0). Never executed on either side. */
                 if(types[a]==UINT32_C(4) && g && !((m>>2)&1) && ((m>>3)&1) && !c)continue;
                 struct rr_result native={0},ref={0};
-                struct rr_fixture n={types[a],{0},c,{0,0},{0},(int)g,l1s[l],l2s[l],{{0}},&native,rr_row};
-                for(unsigned i=0;i<4;++i)n.present[i]=(m>>i)&1;
+                struct rr_fixture n={.type=types[a],.created=c,.checked=0,
+                    .flag=(int)g,.l1=l1s[l],.l2=l2s[l],.trace=&native,.row=rr_row};
+                for(unsigned i=0;i<5;++i)n.present[i]=(m>>i)&1;
                 struct rr_fixture r=n;
                 n.pt[0]=pts[p][0];n.pt[1]=pts[p][1];
-                for(unsigned i=0;i<4;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
+                for(unsigned i=0;i<5;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
                 for(unsigned k=0;k<20;++k)n.words[k]=w?UINT32_C(0x11111111)*(k+1):0;
                 r=n;r.trace=&ref;r.row=rr_refrow;
                 struct oa_setting_row_render_ops ops=rr_ops(&r);
@@ -322,8 +371,10 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
             const uint32_t types[]={0x1b,0x1c,0x100,UINT32_MAX};
             for(unsigned a=0;a<4;++a)for(unsigned c=0;c<2;++c) {
                 struct rr_result native={0},ref={0};
-                struct rr_fixture n={types[a],{1,1,1,1},(int)c,{0,0},{0},0,"Aa","Bb",{{0}},&native,rr_row},r=n;
-                for(unsigned i=0;i<4;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
+                struct rr_fixture n={.type=types[a],.created=(int)c,.checked=0,.flag=0,
+                    .l1="Aa",.l2="Bb",.trace=&native,.row=rr_row},r=n;
+                for(unsigned i=0;i<5;++i)n.present[i]=1;
+                for(unsigned i=0;i<5;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
                 r=n;r.trace=&ref;r.row=rr_refrow;
                 struct oa_setting_row_render_ops ops=rr_ops(&r);
                 rr_setup_row(rr_row,&n);rr_setup_row(rr_refrow,&r);
@@ -340,7 +391,7 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         assert(!munmap(row,12288) && !munmap(ecopy,4096) && !munmap(eoff,4096) && !munmap(base,4096));
         assert(!munmap(ustr,4096) && !munmap(getr,4096) && !munmap(win,4096) && !munmap(name,4096));
         assert(!munmap(box,4096) && !munmap(textbox,4096) && !munmap(elip,4096) && !munmap(btn,12288));
-        assert(!munmap(zer,4096) && !munmap(btntext,4096));
-        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0/1/4/0x1a paths and defaults match\n",compared);
+        assert(!munmap(zer,4096) && !munmap(btntext,4096) && !munmap(cb,8192));
+        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0/1/4/0x1a/0x16 paths and defaults match\n",compared);
     }
 }

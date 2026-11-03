@@ -6,6 +6,17 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-16 implements renderItems type 0x16: getRectangle("checkbox"),
+isCreated(row+0x27a8), then names 9/10/11/12 into slots 1/0/3/2, alignment 5,
+a seven-argument empty-label create and setChecked(row byte 0x2e44), or
+EASIRect math + setWindowRect/setText(empty) when created. 7592 native/C
+cases pass. Two harness fidelity fixes were required: row label slots are
+UString objects (first word is the char*) and must be dereferenced
+everywhere, and the checkbox create is a seven-argument call needing the
+wide preserving trampoline. The five-key presence grid replaces the four-key
+one. Cases 2..25 except 0x16, construction, child-visibility internals, live
+resources, scrollbar/skin/visible gates remain open.
+
 SETTINGS-ROW-1A implements renderItems type 0x1a: the shared 0x104 tail's
 0x1a sub-branch writes 0x2e8c into all four name slots and skips setFont,
 then the case body looks up "button" and drives the 0x684 button with

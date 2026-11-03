@@ -6,6 +6,22 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-16-2026-11-03: renderItems type 0x16 (checkbox) passes7592
+native/C comparisons (names9/10/11/12, alignment5, empty-label seven-arg
+create, 0x2e44 checked; created path setWindowRect/setText) plus full strict
+host, focused ASan/UBSan, ARM/qemu, all prior groups and focused real-TV CPU.
+Two harness fidelity fixes: row label slots are UString objects (first word
+char*) and are now dereferenced everywhere; the checkbox create is a
+seven-argument call needing a wide preserving trampoline. The presence grid
+widened to five keys. Build-tv-v3/settings-row-render unit57908/
+9a3996a5f7b7a557e6df98438d80837b; reference1018508/
+b7d9fc934aeb87adb442af25c74289a7. TV already awake, no-reset flag kept,
+staging size/hash separately verified, test exit0, staging removed and no
+helper in /proc/*/exe. No screen/input/device/settings/network/service/boot/
+persistent change. No pending job/helper. Cases 2..25 except0x16, row
+construction, child visibility internals, live resources, scrollbar/skin/
+module/display/startup/visible acceptance remain open.
+
 SETTINGS-ROW-1A-2026-11-03: renderItems type 0x1a passes3032 native/C
 comparisons (shared tail 0x2e8c x4 names without setFont, then the button
 case body with 0x2ed0/0x2ecc/0x2ed8/0x2ed4) plus full strict host, focused

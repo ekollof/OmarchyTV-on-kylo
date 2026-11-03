@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 struct rrow {
-    uint32_t type;uint32_t words[20];int flag;const char *label,*blabel;
-    void *rects[4];uint32_t rwords[4][4];int32_t pt[2];
+    uint32_t type;uint32_t words[20];int flag,checked;const char *label,*blabel;
+    void *rects[5];uint32_t rwords[5][4];int32_t pt[2];
     int created;unsigned count;struct {uint32_t kind,off,a,b;char text[24];} trace[48];
 };
 static struct rrow *t;
@@ -18,16 +18,18 @@ static void emit(uint32_t kind,uint32_t off,uint32_t a,uint32_t b,const char *te
     else t->trace[t->count].text[0]=0;
     ++t->count;
 }
-enum {R_BASE,R_GET,R_IS,R_NAME,R_FOCUS,R_ELIP,R_FONT,R_POINT,R_RECT,R_TEXT,R_CTEXT,R_CBTN};
+enum {R_BASE,R_GET,R_IS,R_NAME,R_FOCUS,R_ELIP,R_FONT,R_POINT,R_RECT,R_TEXT,R_CTEXT,R_CBTN,R_ALIGN,R_CHECK,R_CCB};
 static void q_base(void *r) { (void)r;emit(R_BASE,0,0,0,NULL); }
 static void *q_cont(void *r) { (void)r;return (void *)0x1000; }
 static void *q_rect(void *c,const char *k)
-{ (void)c;emit(R_GET,0,0,0,k);for(int i=0;i<4;++i)if(!strcmp(k,((const char*[]){"alexa","text1","labelLong","button"})[i]))return t->rects[i];assert(0);return NULL; }
+{ (void)c;emit(R_GET,0,0,0,k);
+  for(int i=0;i<5;++i)if(!strcmp(k,((const char*[]){"alexa","text1","labelLong","button","checkbox"})[i]))return t->rects[i];
+  assert(0);return NULL; }
 static void q_words(void *r,uint32_t out[4])
-{ for(int i=0;i<4;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
+{ for(int i=0;i<5;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
 static uint32_t q_type(void *r) { (void)r;return t->type; }
 static uint32_t q_word(void *r,uint32_t o) { (void)r;assert(o>=0x2e8c && o<=0x2ed8 && !(o&3));return t->words[(o-0x2e8c)/4]; }
-static int q_flag(void *r,uint32_t o) { (void)r;assert(o==0x2e45);return t->flag; }
+static int q_flag(void *r,uint32_t o) { (void)r;assert(o==0x2e45||o==0x2e44);return o==0x2e44?t->checked:t->flag; }
 static const char *q_label(void *r) { (void)r;return t->label; }
 static const char *q_blabel(void *r) { (void)r;return t->blabel; }
 static void *q_child(void *r,uint32_t o) { (void)r;return (void *)(uintptr_t)(0x2000+o); }
@@ -46,16 +48,20 @@ static void q_ctext(void *c,uint32_t z,const char *l,const uint32_t r[4],uint32_
 }
 static void q_cbtn(void *b,const char *l,const uint32_t r[4],void *par)
 { char t2[24];snprintf(t2,sizeof t2,"%s",l);emit(R_CBTN,(uint32_t)(uintptr_t)b-0x2000,0,0,t2);(void)r;(void)par; }
+static void q_align(void *c,uint32_t a) { emit(R_ALIGN,(uint32_t)(uintptr_t)c-0x2000,a,0,NULL); }
+static void q_checked(void *c,uint32_t f) { emit(R_CHECK,(uint32_t)(uintptr_t)c-0x2000,f,0,NULL); }
+static void q_ccb(void *c,uint32_t z,uint32_t a,uint32_t b,const char *l,const uint32_t r[4],void *par)
+{ (void)par;(void)r;emit(R_CCB,(uint32_t)(uintptr_t)c-0x2000,z,a?(b<<16)|a:0,l); }
 static struct oa_setting_row_render_ops ops(void)
 {
     return (struct oa_setting_row_render_ops){t,q_base,q_cont,q_rect,q_words,q_type,q_word,
         q_flag,q_label,q_blabel,q_child,q_is,q_name,q_focus,q_elipes,q_font,q_point,
-        q_srect,q_text,q_ctext,q_cbtn};
+        q_srect,q_text,q_ctext,q_cbtn,q_align,q_checked,q_ccb};
 }
 static void reset(struct rrow *r)
 {
     memset(r,0,sizeof *r);t=r;r->type=UINT32_MAX;r->label="";r->blabel="";
-    for(int i=0;i<4;++i) { r->rects[i]=(void *)(uintptr_t)(0x3000+i*0x20); }
+    for(int i=0;i<5;++i) { r->rects[i]=(void *)(uintptr_t)(0x3000+i*0x20); }
 }
 int main(void)
 {
@@ -156,9 +162,26 @@ int main(void)
     assert(r.count==11);
     assert(r.trace[8].kind==R_IS && r.trace[8].off==0x684);
     assert(r.trace[10].kind==R_TEXT && !strcmp(r.trace[10].text,"PB"));
+    /* Type 0x16: shared tail (0x26d names) then the checkbox case body with
+     * aligned empty-label create and the 0x2e44 checked byte. */
+    reset(&r);o=ops();r.type=0x16;
+    for(int i=0;i<4;++i)r.rwords[4][i]=(uint32_t)(200+i);
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==22);
+    assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"checkbox"));
+    assert(r.trace[14].kind==R_IS && r.trace[14].off==0x27a8);
+    assert(r.trace[15].kind==R_NAME && r.trace[15].a==1 && r.trace[15].b==9);
+    assert(r.trace[18].kind==R_NAME && r.trace[18].a==2 && r.trace[18].b==12);
+    assert(r.trace[19].kind==R_ALIGN && r.trace[19].a==5);
+    assert(r.trace[20].kind==R_CCB && r.trace[20].a==0 && !strcmp(r.trace[20].text,""));
+    assert(r.trace[21].kind==R_CHECK && r.trace[21].a==0);
+    /* Type 0x16 with the checked byte set reports 1. */
+    reset(&r);o=ops();r.type=0x16;r.checked=1;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[21].kind==R_CHECK && r.trace[21].a==1);
     /* Invalid ops/args change nothing. */
     o=ops();o.set_name=NULL;
-    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==11);
+    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==22);
     assert(oa_setting_row_render(NULL,&o)==EINVAL);
     assert(oa_setting_row_render(&r,NULL)==EINVAL);
     puts("ok settings row render: 0/1/4 paths, shared tail, gates and open types");

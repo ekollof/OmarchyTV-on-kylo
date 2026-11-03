@@ -48,6 +48,10 @@ struct oa_setting_row_render_ops {
         const uint32_t rect[4],uint32_t extra,void *parent);
     void (*create_button)(void *button,const char *label,
         const uint32_t rect[4],void *parent);
+    void (*set_text_alignment)(void *child,uint32_t alignment);
+    void (*set_checked)(void *child,uint32_t flag);
+    void (*create_checkbox)(void *child,uint32_t zero,uint32_t a,uint32_t b,
+        const char *label,const uint32_t rect[4],void *parent);
 };
 int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o);
 #endif
