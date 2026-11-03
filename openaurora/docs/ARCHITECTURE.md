@@ -73,6 +73,13 @@ values with ui.profile while retaining entry/media/app state. Either service's
 hold pins settings; publication failures preserve peers and removal invalidates
 the database before callbacks. HOTEL-CONTEXT records source and acceptance limits.
 
+`common/tab_events.c` supplies ordered Up/Down and Left/Right method bodies for
+the pending settings controller. Query/action callbacks reflect changing backend
+state during a call, preserve full ICE codes and retain no borrowed state.
+TAB-EVENTS records1008 shipped ARM trace/state comparisons. These bodies are not
+the outer pre-handler or a ui_vendor consumer; permission, focus/modal context
+and backend lifetime must be wired before replacing diagnostic navigation.
+
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;
 EGL-WINDOW establishes direct display1 presentation with the retained4-byte

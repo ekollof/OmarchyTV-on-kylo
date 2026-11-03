@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-tab-policy-sanitize/tests/tab_events tests/tab_events.c common/tab_events.c
+ok tab events: exact reset/update ordering, dynamic state, existing/missing content, gate changes, full ICE codes and invalid callbacks
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

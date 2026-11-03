@@ -6,6 +6,7 @@
 #endif
 #include "openaurora/tab_policy.h"
 #include "openaurora/profile.h"
+#include "openaurora/tab_events.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -283,6 +284,96 @@ static void check_selection(const unsigned char *elf,size_t bytes)
     assert(!munmap(mapped,8192));
     printf("ok offline shipped ARM group selection: %u availability/description/request cases, rejected indices and empty focus\n",compared);
 }
+struct event_fixture {
+    uint32_t open,buttons,present,item,update,key;
+    unsigned count;
+    struct {enum oa_tab_action action;uint32_t value;const void *message;} trace[16];
+};
+static struct event_fixture *event_fixture;
+static _Alignas(uint32_t) unsigned char event_dialog[0x4c4];
+static uint32_t event_dummy;
+static void sync_event_dialog(void)
+{
+    event_dialog[0x4b6]=(unsigned char)event_fixture->buttons;
+    uint32_t pointer=event_fixture->present?(uint32_t)(uintptr_t)&event_dummy:0;
+    memcpy(event_dialog+0x4c0,&pointer,4);
+    pointer=(uint32_t)(uintptr_t)&event_dummy;memcpy(event_dialog+0x484,&pointer,4);
+}
+static uint32_t event_query(void *p,enum oa_tab_query q)
+{
+    struct event_fixture *f=p;
+    switch(q){case OA_TAB_OPEN_SUBMENU:return f->open;case OA_TAB_BUTTONS_ACTIVE:return f->buttons;case OA_TAB_CONTENT_PRESENT:return f->present;}
+    assert(0);return 0;
+}
+static void event_action(void *p,enum oa_tab_action a,uint32_t argument,const void *message)
+{
+    struct event_fixture *f=p;assert(f->count<16);
+    f->trace[f->count].action=a;f->trace[f->count].message=message;f->trace[f->count++].value=argument;
+    if(a==OA_TAB_SET_ITEM)f->item=argument;
+    if(a==OA_TAB_SET_OPEN_SUBMENU)f->open=argument;
+    if(a==OA_TAB_UPDATE_ACTIVE_LIST && f->update) {
+        f->buttons=f->update==1?0:255;f->present=f->update==1?1:0;
+    }
+    if(a==OA_TAB_HIDE_CONTENT){f->buttons=0;f->present=0;}
+    if(a==OA_TAB_SHOW_CONTENT)f->present=1;
+    sync_event_dialog();
+}
+static unsigned event_open(void *p) { (void)p;return event_fixture->open; }
+static unsigned event_key(void *p) { (void)p;return event_fixture->key; }
+static unsigned event_hide(void *p) { (void)p;event_action(event_fixture,OA_TAB_HIDE_CONTENT,0,NULL);return 0; }
+static unsigned event_show(void *p) { (void)p;event_action(event_fixture,OA_TAB_SHOW_CONTENT,0,NULL);return 0; }
+static unsigned event_focus(void *p) { (void)p;event_action(event_fixture,OA_TAB_FOCUS_CONTENT,0,NULL);return 0; }
+static unsigned event_title(void *p) { (void)p;event_action(event_fixture,OA_TAB_UPDATE_TITLE,0,NULL);return 0; }
+static unsigned event_update(void *p) { (void)p;event_action(event_fixture,OA_TAB_UPDATE_ACTIVE_LIST,0,NULL);return 0; }
+static unsigned event_set_item(void *p,int32_t value) { (void)p;event_action(event_fixture,OA_TAB_SET_ITEM,(uint32_t)value,NULL);return 0; }
+static unsigned event_set_open(void *p,int32_t value) { (void)p;event_action(event_fixture,OA_TAB_SET_OPEN_SUBMENU,(uint8_t)value,NULL);return 0; }
+static unsigned event_group(void *p,int32_t message) { (void)p;event_action(event_fixture,OA_TAB_GROUP_KEY,event_fixture->key,(const void *)(uintptr_t)(uint32_t)message);return 0; }
+static void predicate_stub(void *mapped,uint32_t base,uint32_t address,predicate function)
+{
+    unsigned char *p=(unsigned char *)mapped+address-base;const uint16_t insn[]={0x4b00,0x4718};
+    assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=predicate_bits(function);memcpy(p+4,&target,4);
+}
+static void check_tab_events(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *tab=page(0xd6f000,4096),*demo=page(0xcd1000,4096);
+    unsigned char *setters=page(0xccc000,4096),*group=page(0x1148000,8192),*settings=page(0xd56000,4096);
+    const struct {uint32_t address,length,crc,literal;} fragments[]={
+        {0xd6f874,128,UINT32_C(0x5d5b95db),0xd6f8f0},
+        {0xd6fdc0,84,UINT32_C(0x1e26b4d6),0xd6fe10},
+    };
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;
+    for(size_t i=0;i<2;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(tab+fragments[i].address-0xd6f000,elf+off,fragments[i].length);
+        memcpy(tab+fragments[i].literal-0xd6f000,&pointer,4);
+    }
+    thumb_stub(tab,0xd6f000,0xd6f09c,event_hide);thumb_stub(tab,0xd6f000,0xd6f140,event_show);
+    thumb_stub(tab,0xd6f000,0xd6f61c,event_focus);thumb_stub(tab,0xd6f000,0xd6faec,event_title);
+    thumb_stub(demo,0xcd1000,0xcd1924,event_open);thumb_stub(group,0x1148000,0x11489e0,event_key);
+    predicate_stub(group,0x1148000,0x114925c,event_group);
+    predicate_stub(setters,0xccc000,0xccca44,event_set_item);predicate_stub(setters,0xccc000,0xccca0c,event_set_open);
+    thumb_stub(settings,0xd56000,0xd56fe8,event_update);
+    executable(tab,4096);executable(demo,4096);executable(setters,4096);executable(group,8192);executable(settings,4096);
+    typedef unsigned (*handler)(void *,void *);handler native[2];
+    pointer=0xd6f875;memcpy(&native[0],&pointer,sizeof pointer);pointer=0xd6fdc1;memcpy(&native[1],&pointer,sizeof pointer);
+    const uint32_t opens[]={0,1,2,255},buttons[]={0,1,255},keys[]={0,0x20a,0x20b,0x20c,0x20d,0x251,UINT32_MAX};
+    unsigned compared=0;
+    for(size_t o=0;o<4;++o)for(size_t b=0;b<3;++b)for(unsigned present=0;present<2;++present)
+    for(unsigned update=0;update<3;++update)for(size_t k=0;k<7;++k)for(unsigned method=0;method<2;++method) {
+        struct event_fixture original={.open=opens[o],.buttons=buttons[b],.present=present,.item=109,.update=update,.key=keys[k]};
+        struct event_fixture vendor=original,ours=original;
+        event_fixture=&vendor;sync_event_dialog();assert(native[method](event_dialog,&event_dummy)==1);
+        event_fixture=&ours;sync_event_dialog();struct oa_tab_event_ops ops={&ours,event_query,event_action,&event_dummy};
+        assert(!(method?oa_tab_event_right_left(&ops,keys[k]):oa_tab_event_up_down(&ops,keys[k])));
+        assert(vendor.open==ours.open && vendor.buttons==ours.buttons && vendor.present==ours.present && vendor.item==ours.item && vendor.count==ours.count);
+        for(unsigned i=0;i<vendor.count;++i)assert(vendor.trace[i].action==ours.trace[i].action && vendor.trace[i].value==ours.trace[i].value && vendor.trace[i].message==ours.trace[i].message);
+        ++compared;
+    }
+    event_fixture=NULL;
+    assert(!munmap(tab,4096) && !munmap(demo,4096) && !munmap(setters,4096) && !munmap(group,8192) && !munmap(settings,4096));
+    printf("ok offline shipped ARM tab events: %u handler cases, ordered actions and dynamic callback state match\n",compared);
+}
 int main(int argc,char **argv)
 {
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
@@ -300,7 +391,7 @@ int main(int argc,char **argv)
     const uint32_t arm[3]={UINT32_C(0xe59fc000),UINT32_C(0xe12fff1c),bits(failed)};
     memcpy((unsigned char *)fail_page+0x740,arm,sizeof arm);
     executable(code,8192);executable(media_page,4096);executable(app_page,4096);executable(fail_page,4096);
-    check_selection(elf,bytes);check_profile(elf,bytes,argv[2]);check_retained_setters(elf,bytes);check_hotel_rows(elf,bytes);free(elf);
+    check_selection(elf,bytes);check_profile(elf,bytes,argv[2]);check_retained_setters(elf,bytes);check_hotel_rows(elf,bytes);
     _Alignas(uint32_t) unsigned char dialog[0x37a1]={0},demo[0x29c]={0};
     uint32_t vtable[21]={0};vtable[0x18/4]=bits(hotel);vtable[0x40/4]=bits(mode);vtable[0x50/4]=bits(picture);
     uint32_t hotel_object=(uint32_t)(uintptr_t)vtable;
@@ -328,7 +419,8 @@ int main(int argc,char **argv)
             ++compared;
         }
     }
-    assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096) && !munmap(fail_page,4096));
+    assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
+    check_tab_events(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
 }

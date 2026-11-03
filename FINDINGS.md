@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Tab events: TAB-EVENTS implements native onUpDownPress/onRightLeftPress behind
+ordered backend callbacks;1008 actual shipped method-body traces/state matches
+pass under qemu. Up/Down updates the list before clearing open, then reads the
+possibly changed activation/content state. Left/Right gates once then hide/group
+key/title/show even if hide changes the gate. These methods are not the outer
+pre-handler: do not route every raw key to them or infer successful focus from
+an action. No UI consumer/native backend/rendering is silently attached.
+
 Hotel context: HOTEL-CONTEXT maps the separate HMCSettings table and raw
 mode byte+1d/OSD word+28/picture byte+2d. db_tables is BSS initialized by
 NvramStorage; its +60 binding is verified from the constructor. settings.hotel

@@ -24,7 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [HOTEL-CONTEXT](artifacts/reports/HOTEL-CONTEXT-2026-11-03.md) adds
+Latest: [TAB-EVENTS](artifacts/reports/TAB-EVENTS-2026-11-03.md) implements
+the two ordered Up/Down and Left/Right controller bodies using backend callbacks.
+1008 actual shipped method traces/final states match under qemu, plus strict
+full host/focused sanitizer/ARM tests and previous reference groups. Build
+identities in MEMORY/report. Original borrowed message identity is preserved
+through GROUP_KEY; adapters must not retain it after return. No callback is
+retained; queries reflect state after earlier actions, not a static plan. Codes
+are full ICE values, not RC bytes. Source bodies always consume; C API returns0
+success/positive errno. This remains unwired to ui_vendor and is not the full
+pre-handler/router. Next complete outer focus/permission/modal handling and
+connect owned backend content/context. Do not replace the diagnostic shortcut
+with unconditional dispatch. No TV access/wake/deployment/Ghidra/helper pending.
+Evidence/reproduction: analysis/tab-events-2026-11-03; source bodies reused from
+tab-writeback/content-lifecycle, not re-decompiled or probed on hardware.
+
+Previous: [HOTEL-CONTEXT](artifacts/reports/HOTEL-CONTEXT-2026-11-03.md) adds
 settings.hotel/readonly hotel-state via real Unix IPC, reading the separate
 HMCSettings table. Field mapping+1d/+28/+2d and SQLite narrowing are verified;
 saved DB0/1/0 is not a live vendor cache sample. oa_tab_apply_settings combines

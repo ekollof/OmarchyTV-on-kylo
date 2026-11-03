@@ -130,6 +130,14 @@ check-tab-policy: $(BUILD)/tests/tab_policy
 	@$(BUILD)/tests/tab_policy
 check: check-tab-policy
 
+$(BUILD)/tests/tab_events: tests/tab_events.c common/tab_events.c include/openaurora/tab_events.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-tab-events
+check-tab-events: $(BUILD)/tests/tab_events
+	@$(BUILD)/tests/tab_events
+check: check-tab-events
+
 $(BUILD)/tests/profile: tests/profile.c common/profile.c common/tab_policy.c include/openaurora/profile.h include/openaurora/tab_policy.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
@@ -138,7 +146,7 @@ check-profile: $(BUILD)/tests/profile
 	@$(BUILD)/tests/profile
 check: check-profile
 
-$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c common/profile.c include/openaurora/tab_policy.h include/openaurora/profile.h
+$(BUILD)/tests/tab_policy_firmware: tests/tab_policy_firmware.c common/tab_policy.c common/profile.c common/tab_events.c include/openaurora/tab_policy.h include/openaurora/profile.h include/openaurora/tab_events.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 

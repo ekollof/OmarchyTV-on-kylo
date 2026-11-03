@@ -24,3 +24,4 @@ assert.match(result.stdout, /group selection: 9216 availability\/description\/re
 assert.match(result.stdout, /profile: 65281 signed-byte hashes, 27 saved-profile lookups\/defaults; connectivity=1 hotel=1/);
 assert.match(result.stdout, /retained setters: 1792 signed32\/raw byte cases/);
 assert.match(result.stdout, /hotel row: 345 integer store\/no-row cases/);
+assert.match(result.stdout, /tab events: 1008 handler cases/);

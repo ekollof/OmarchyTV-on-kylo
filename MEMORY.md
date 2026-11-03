@@ -6,6 +6,16 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+TAB-EVENTS-2026-11-03: common callback controller implements the recovered
+onUpDownPress/onRightLeftPress method bodies;1008 shipped ARM action/argument/
+state comparisons pass, including changes during callbacks and original-message
+identity. Full host suite, focused sanitizer/ARM policy and prior reference
+groups pass. ARM pure test21512/e032185de9554ef077d02570bb4a60aa;
+reference113600/8f69a99ddbc17289e2433a15e3a6847e, build-tv-v3/tab-policy.
+No new module/service or attached UI
+consumer; outer pre-handler/focus/permission/backend integration remains open.
+No TV access/wake/staging/deployment/persistent change or Ghidra/helper pending.
+
 HOTEL-CONTEXT-2026-11-03: settings now publishes read-only settings.hotel v1;
 hotel-state works through actual Unix IPC. HMCSettings mapping/column_int byte/
 word semantics verified; saved DB150e2be30e5948571860a8c60c9da525 reads0/1/0

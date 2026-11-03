@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [TAB-EVENTS](TAB-EVENTS-2026-11-03.md) | reusable ordered Up/Down and Left/Right controller methods,1008 shipped ARM trace/state matches plus host/sanitizer/ARM tests; callbacks remain unwired to ui_vendor, outer pre-handler/full consumer/hardware acceptance open |
 | [HOTEL-CONTEXT](HOTEL-CONTEXT-2026-11-03.md) | firmware HMCSettings mapping; read-only settings.hotel/CLI/actual Unix IPC, profile-context composition, settings publication/closed-state fixes;345 shipped row cases and full host/sanitizer/ARM vendor-SQLite tests; full defaults/controller/TV acceptance open |
 | [CONTENT-HEADER-OWNERSHIP](CONTENT-HEADER-OWNERSHIP-2026-11-03.md) | resolves show+50 as removal of content's own five full-screen component pointers, separate parent header; source only, no new renderer/visual acceptance |
 | [TAB-WRITEBACK](TAB-WRITEBACK-2026-11-03.md) | v2 independent retained setters/CLI/Unix IPC, OAN2 raw-state reload/OAN1 migration;1792 shipped setters/1792 DSO round-trips plus full host/sanitizer/ARM pass; corrects showing/hide interface; full consumer/lifecycle/TV acceptance open |

@@ -321,6 +321,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement ordered Up/Down and Left/Right controller bodies behind backend
+      callbacks;1008 shipped ARM action/state comparisons and host/sanitizer/ARM
+      checks pass. TAB-EVENTS. This is not the outer pre-handler or a wired UI
+      consumer; query/action order must remain dynamic across callbacks.
 - [x] Read persisted hotel inputs from firmware-mapped HMCSettings via companion
       settings.hotel + hotel-state CLI/actual Unix IPC; combine ui.profile facts
       without changing entry/media/app state.345 shipped row-copy cases and

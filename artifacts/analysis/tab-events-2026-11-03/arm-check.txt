@@ -1,0 +1,1 @@
+ok tab events: exact reset/update ordering, dynamic state, existing/missing content, gate changes, full ICE codes and invalid callbacks
