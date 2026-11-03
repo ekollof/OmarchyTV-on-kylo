@@ -34,7 +34,7 @@ static int ready(const struct oa_setting_row_render_ops *o)
 {
     if(!o || !o->base_render || !o->container_of || !o->get_rect || !o->rect_words ||
         !o->row_type || !o->row_word || !o->row_flag || !o->row_label ||
-        !o->row_button_label || !o->row_value_text || !o->row_ustring || !o->child_at || !o->is_created || !o->set_name ||
+        !o->row_button_label || !o->row_ustring || !o->child_at || !o->is_created || !o->set_name ||
         !o->set_focus || !o->set_elipses || !o->set_font || !o->get_point ||
         !o->set_rect || !o->set_text || !o->create_text ||
         !o->create_button || !o->set_text_alignment || !o->set_checked ||
@@ -159,16 +159,16 @@ static int case_sel(void *row,const struct oa_setting_row_render_ops *o,void *bo
 /* Case 0x1a: drive the row+0x684 button from the "button" rectangle. Not
  * created writes 0x2ed0/0x2ecc/0x2ed8/0x2ed4 into the four name slots then
  * creates; created applies EASIRect math plus setWindowRect/setText. */
-/* Text-entry cases 0xd/0xe/0xf/0x10: drive row+0x18d8 from the
+/* Text-entry family 0xd/0xe/0xf/0x10/0x11..0x15: drive row+0x18d8 from the
  * "selectionbox" rectangle. Uncreated writes row[0x2ec0]/[0x2ebc]/[0x2ec8]/
  * [0x2ec4] into slots 1/0/3/2 and creates from an empty label with the
  * (0,0xc,0xd) triplet; created applies EASIRect math and setWindowRect, then
- * either setNumericContents(row[0x2e00]) (0xd/0xe/0xf) or
- * setText(row[0x2e04]) (0x10). All four finish with the case's entry mode,
- * max-chars and automatic cursor movement: 0xd mode0/4, 0xe and 0xf
- * mode0xa/5, 0x10 mode1/10. */
+ * either setNumericContents(row[0x2e00]) (text_off==0) or
+ * setText(row UString at text_off). The trailing setters are the case's entry
+ * mode, then max-chars plus automatic cursor movement when maxchars!=0;
+ * case 0x13 omits both. */
 static int case_te(void *row,const struct oa_setting_row_render_ops *o,void *box,
-    uint32_t mode,uint32_t maxchars,int use_text)
+    uint32_t mode,uint32_t maxchars,uint32_t text_off)
 {
     void *r=o->get_rect(box,key_for(5)),*child;int created;uint32_t base[4];
     if(!r)return 0;
@@ -179,7 +179,7 @@ static int case_te(void *row,const struct oa_setting_row_render_ops *o,void *box
         uint32_t moved[4];int32_t pt[2];
         o->get_point(row,pt);rect_math(moved,base,pt);
         o->set_rect(child,moved);
-        if(use_text)o->set_text(child,o->row_value_text(row));
+        if(text_off)o->set_text(child,o->row_ustring(row,text_off));
         else o->set_numeric_contents(child,o->row_word(row,UINT32_C(0x2e00)));
     } else {
         o->set_name(child,UINT32_C(1),o->row_word(row,UINT32_C(0x2ec0)));
@@ -189,8 +189,10 @@ static int case_te(void *row,const struct oa_setting_row_render_ops *o,void *box
         o->create_text_entry(child,0,UINT32_C(0xc),UINT32_C(0xd),"",base,row);
     }
     o->set_entry_mode(child,mode);
-    o->set_max_chars(child,maxchars);
-    o->set_cursor_auto(child,1);
+    if(maxchars) {
+        o->set_max_chars(child,maxchars);
+        o->set_cursor_auto(child,1);
+    }
     return 0;
 }
 /* Cases 0x5/0x6: the launcher button plus two images. Three rectangle
@@ -723,7 +725,27 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             return 0;
         }
         if(type==UINT32_C(0x10)) {
-            case_te(row,o,box,1,10,1);
+            case_te(row,o,box,1,10,UINT32_C(0x2e04));
+            return 0;
+        }
+        if(type==UINT32_C(0x11)) {
+            case_te(row,o,box,3,10,UINT32_C(0x2e0c));
+            return 0;
+        }
+        if(type==UINT32_C(0x12)) {
+            case_te(row,o,box,4,5,UINT32_C(0x2e14));
+            return 0;
+        }
+        if(type==UINT32_C(0x13)) {
+            case_te(row,o,box,5,0,UINT32_C(0x2e1c));
+            return 0;
+        }
+        if(type==UINT32_C(0x14)) {
+            case_te(row,o,box,2,4,UINT32_C(0x2e24));
+            return 0;
+        }
+        if(type==UINT32_C(0x15)) {
+            case_te(row,o,box,9,15,0);
             return 0;
         }
         if(type==UINT32_C(5) || type==UINT32_C(6)) {
@@ -795,7 +817,27 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             return 0;
         }
         if(type==UINT32_C(0x10)) {
-            case_te(row,o,box,1,10,1);
+            case_te(row,o,box,1,10,UINT32_C(0x2e04));
+            return 0;
+        }
+        if(type==UINT32_C(0x11)) {
+            case_te(row,o,box,3,10,UINT32_C(0x2e0c));
+            return 0;
+        }
+        if(type==UINT32_C(0x12)) {
+            case_te(row,o,box,4,5,UINT32_C(0x2e14));
+            return 0;
+        }
+        if(type==UINT32_C(0x13)) {
+            case_te(row,o,box,5,0,UINT32_C(0x2e1c));
+            return 0;
+        }
+        if(type==UINT32_C(0x14)) {
+            case_te(row,o,box,2,4,UINT32_C(0x2e24));
+            return 0;
+        }
+        if(type==UINT32_C(0x15)) {
+            case_te(row,o,box,9,15,0);
             return 0;
         }
         if(type==UINT32_C(5) || type==UINT32_C(6)) {

@@ -350,8 +350,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       callee audit. Cases0x11..0x15,0x17..0x19, row construction, child
       visibility internals, live resources, scrollbar/skin/module/display/
       startup/independent visible acceptance remain open.
-- [ ] Implement SettingItemsListBoxRow::renderItems types 0x11..0x15 and
-      0x17..0x19.
+- [x] Implement SettingItemsListBoxRow::renderItems text-entry variants
+      0x11..0x15:394384 native/C comparisons and prior groups pass; full
+      host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
+      SETTINGS-ROW-11-15. Mode/max pairs, 0x13's omitted max/cursor, the four
+      new UString offsets and 0x15's numeric source are asserted; all
+      row-side UString reads now go through row_ustring.
+- [ ] Implement SettingItemsListBoxRow::renderItems types 0x17..0x19.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

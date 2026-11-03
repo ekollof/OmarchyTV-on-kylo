@@ -6,6 +6,21 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-11-15-2026-11-03: text-entry variants0x11..0x15 pass394384
+native/C comparisons (mode/max3/10,4/5,5/none,2/4,9/15; created row
+UStrings0x2e0c/2e14/2e1c/2e24 vs numeric0x2e00 for0x15; 0x13 omits max+cursor
+and returns after setEntryMode) plus full strict host, focused ASan/UBSan,
+ARM/qemu, all prior groups and focused real-TV CPU. All row-side UString reads
+now use the generic row_ustring; no new trampoline was needed after the callee
+audit. Build-tv-v3/settings-row-render unit184024/
+da0010c9f48ec8f6b969fba1029aa0cb; reference1135628/
+983fa244ea672a632a12710fdb7000f6. TV already awake, no-reset flag kept,
+staging size/hash separately verified, test exit0, staging removed and no
+helper in /proc/*/exe. No screen/input/device/settings/network/service/boot/
+persistent change. No pending job/helper. Cases0x17..0x19, row construction,
+child visibility internals, live resources, scrollbar/skin/module/display/
+startup/visible acceptance remain open.
+
 SETTINGS-ROW-C-2026-11-03: renderItems type0xc (text2/text3/text4+slider)
 passes312224 native/C comparisons (four own literals, alignment6 on0x1f68
 only, row UStrings0x2e2c/0x2e34, nameless uncreated slider) plus full strict

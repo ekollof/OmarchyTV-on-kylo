@@ -77,7 +77,7 @@ struct rr_event { uint32_t kind,off,a,b;uint32_t w[4];char text[24]; };
 struct rr_result { struct rr_event events[64];unsigned count; };
 struct rr_fixture {
     uint32_t type;int present[13];int created,checked,img_created,tb_created;int32_t pt[2];
-    uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,rebuild,slo,shi,sval;int flag;const char *l1,*l2,*vtext,*t3text,*t4text;uint32_t rwords[13][4];
+    uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,rebuild,slo,shi,sval;int flag;const char *l1,*l2,*vtext,*t11text,*t12text,*t13text,*t14text,*t3text,*t4text;uint32_t rwords[13][4];
     struct rr_result *trace;unsigned char *row;
 };
 static const char rr_empty[]="";
@@ -258,9 +258,12 @@ static int rre_flag(void *row,uint32_t off)
   return off==0x2e44?rr_ref->checked:(off==0x2e49?(int)rr_ref->rebuild:rr_ref->flag); }
 static const char *rre_label(void *row) { (void)row;return *(const char *const *)(rr_ref->row+0x2dd8); }
 static const char *rre_blabel(void *row) { (void)row;return *(const char *const *)(rr_ref->row+0x2de0); }
-static const char *rre_vtext(void *row) { (void)row;return *(const char *const *)(rr_ref->row+0x2e04); }
 static const char *rre_ustring(void *row,uint32_t off)
-{ assert(off==0x2e2c||off==0x2e34);return *(const char *const *)((unsigned char *)row+off); }
+{
+    assert(off==0x2e04||off==0x2e0c||off==0x2e14||off==0x2e1c||off==0x2e24||
+        off==0x2e2c||off==0x2e34);
+    return *(const char *const *)((unsigned char *)row+off);
+}
 static void *rre_child(void *row,uint32_t off) { (void)row;return rr_ref->row+off; }
 static int rre_created(void *child)
 {
@@ -337,7 +340,7 @@ static void rre_csel(void *child,uint32_t z,uint32_t a,uint32_t b,const char *la
 static struct oa_setting_row_render_ops rr_ops(struct rr_fixture *f)
 {
     return (struct oa_setting_row_render_ops){f,rre_base,rre_cont,rre_get,rre_words,rre_type,
-        rre_word,rre_flag,rre_label,rre_blabel,rre_vtext,rre_ustring,rre_child,rre_created,rre_name,rre_focus,
+        rre_word,rre_flag,rre_label,rre_blabel,rre_ustring,rre_child,rre_created,rre_name,rre_focus,
         rre_elipses,rre_font,rre_point,rre_rect,rre_text,rre_ctext,rre_cbtn,
         rre_align,rre_checked,rre_ccb,rre_selid,rre_csel,rre_selimg,rre_emode,rre_maxch,rre_cauto,rre_num,rre_cte,
         rre_store,rre_destroy,rre_resetxml,rre_gid,rre_glyph,rre_hl,rre_subhl,
@@ -379,6 +382,10 @@ static void rr_setup_row(unsigned char *row,struct rr_fixture *f)
     memcpy(row+0x2dd4,&f->op,4);memcpy(row+0x2e68,&f->hi,4);memcpy(row+0x2e49,&f->rebuild,1);
     memcpy(row+0x2df0,&f->slo,4);memcpy(row+0x2df4,&f->shi,4);memcpy(row+0x2df8,&f->sval,4);
     { uint32_t p=(uint32_t)(uintptr_t)f->vtext;memcpy(row+0x2e04,&p,4); }
+    { uint32_t p=(uint32_t)(uintptr_t)f->t11text;memcpy(row+0x2e0c,&p,4); }
+    { uint32_t p=(uint32_t)(uintptr_t)f->t12text;memcpy(row+0x2e14,&p,4); }
+    { uint32_t p=(uint32_t)(uintptr_t)f->t13text;memcpy(row+0x2e1c,&p,4); }
+    { uint32_t p=(uint32_t)(uintptr_t)f->t14text;memcpy(row+0x2e24,&p,4); }
     { uint32_t p=(uint32_t)(uintptr_t)f->t3text;memcpy(row+0x2e2c,&p,4); }
     { uint32_t p=(uint32_t)(uintptr_t)f->t4text;memcpy(row+0x2e34,&p,4); }
     row[0x2e45]=(unsigned char)f->flag;row[0x2e44]=(unsigned char)f->checked;
@@ -399,7 +406,7 @@ static void render_case(rr_fn render,uint32_t type,unsigned m,unsigned c,
     struct rr_result native={0},ref={0};
     struct rr_fixture n={.type=type,.created=(int)c,.checked=0,.img_created=(int)ic,.tb_created=(int)tb,
         .sel_img=0x66,.sel_id=0x55,.num=0x44,.op=0x42,.hi=0x43,.rebuild=0,
-        .slo=10,.shi=90,.sval=42,.flag=(int)g,.l1=l1s[l],.l2=l2s[l],.vtext="VX",.t3text="T3",.t4text="T4",
+        .slo=10,.shi=90,.sval=42,.flag=(int)g,.l1=l1s[l],.l2=l2s[l],.vtext="VX",.t11text="T11",.t12text="T12",.t13text="T13",.t14text="T14",.t3text="T3",.t4text="T4",
         .trace=&native,.row=rr_row};
     for(unsigned i=0;i<13;++i)n.present[i]=(m>>i)&1;
     struct rr_fixture r=n;
@@ -503,6 +510,14 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
           memcpy(stub_destination(row,0xd54000,0xd55a10,4),&k,4); }
         { uint32_t e=(uint32_t)(uintptr_t)rr_empty;
           memcpy(stub_destination(row,0xd54000,0xd55a14,4),&e,4); }
+        /* Cases 0x11..0x15 reuse the selectionbox key through their own
+         * literals and the empty label at 0xd5549c (0x14 uses 0xd5574c and
+         * 0xd55750 instead). */
+        { uint32_t k=(uint32_t)(uintptr_t)&rkcell[4];
+          memcpy(stub_destination(row,0xd54000,0xd55498,4),&k,4);
+          memcpy(stub_destination(row,0xd54000,0xd5574c,4),&k,4); }
+        { uint32_t e=(uint32_t)(uintptr_t)rr_empty;
+          memcpy(stub_destination(row,0xd54000,0xd5549c,4),&e,4); }
         /* Case 0xc has its own slidebar/text2/text3/text4 literals and the
          * shared empty label. */
         { uint32_t k=(uint32_t)(uintptr_t)&rk9slot;
@@ -592,22 +607,22 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         unsigned compared=0;rr_fn render=0;
         { uint32_t entry=0xd54401;memcpy(&render,&entry,4); }
         {
-            static const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,5,6,7,8,9,0xa,0xb,0xc};
+            static const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,0x11,0x12,0x13,0x14,0x15,5,6,7,8,9,0xa,0xb,0xc};
             /* Pass A: full 11-key presence coverage (p/w/l/g fixed at 0). */
-            for(unsigned a=0;a<19;++a)for(unsigned m=0;m<8192;++m)for(unsigned c=0;c<2;++c)
+            for(unsigned a=0;a<24;++a)for(unsigned m=0;m<8192;++m)for(unsigned c=0;c<2;++c)
                 { render_case(render,types[a],m,c,0,0,0,0,c,c);++compared; }
             /* Pass B: point/word/label/flag coverage with every key present. */
-            for(unsigned a=0;a<19;++a)for(unsigned c=0;c<2;++c)for(unsigned p=0;p<3;++p)
+            for(unsigned a=0;a<24;++a)for(unsigned c=0;c<2;++c)for(unsigned p=0;p<3;++p)
             for(unsigned w=0;w<2;++w)for(unsigned l=0;l<2;++l)for(unsigned g=0;g<2;++g)
                 { render_case(render,types[a],8191,c,p,w,l,g,c,c);++compared; }
             /* Pass D: type 0xc's text3/text4 created state is independent of
              * the row/tail/slider state. */
-            for(unsigned a=0;a<19;++a)if(types[a]==UINT32_C(0xc))
+            for(unsigned a=0;a<24;++a)if(types[a]==UINT32_C(0xc))
                 for(unsigned c=0;c<2;++c)for(unsigned tb=0;tb<2;++tb)
                     { render_case(render,types[a],8191,c,0,0,0,0,c,tb);++compared; }
             /* Pass C: type 0xb forks on each image's own created state; the
              * mixed case re-creates image1 when only image2 exists. */
-            for(unsigned a=0;a<19;++a)if(types[a]==UINT32_C(0xb))
+            for(unsigned a=0;a<24;++a)if(types[a]==UINT32_C(0xb))
                 for(unsigned c=0;c<2;++c)for(unsigned ic=0;ic<2;++ic)
                     { render_case(render,types[a],8191,c,0,0,0,0,ic,ic);++compared; }
         }
@@ -639,6 +654,6 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         assert(!munmap(sel2,4096));
         assert(!munmap(te1,4096) && !munmap(te2,4096) && !munmap(te3,4096));
         assert(!munmap(img,4096) && !munmap(lh,4096) && !munmap(sb,4096) && !munmap(usop,4096));
-        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-0xc/0xd-0x10/0x1a/0x16 paths and defaults match\n",compared);
+        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-0x16/0x1a paths and defaults match\n",compared);
     }
 }

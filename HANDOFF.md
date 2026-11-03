@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-C](artifacts/reports/SETTINGS-ROW-C-2026-11-03.md)
+Latest: [SETTINGS-ROW-11-15](artifacts/reports/SETTINGS-ROW-11-15-2026-11-03.md)
+closes the text-entry variants 0x11..0x15 through the shared body: selectionbox
+via their own literals, child row+0x18d8, names 0x2ec0/0x2ebc/0x2ec8/0x2ec4 in
+slots 1/0/3/2, create(0,0xc,0xd,empty), mode/max 3/10, 4/5, 5/none, 2/4,
+9/15, and created sources setText(0x2e0c/0x2e14/0x2e1c/0x2e24) except 0x15's
+setNumericContents(0x2e00). 0x13 returns after setEntryMode with no max or
+cursor call. 394384 shipped ARM/C cases and prior groups pass, plus full
+host/Unix IPC, focused ASan/UBSan, ARM/qemu and focused real TV CPU. All
+row-side UString reads now use the generic row_ustring. No screen/input/device/
+settings/network/service/boot/persistent change; staging removed, no helper.
+Next implement cases 0x17..0x19, then getImageId's real mapping and image
+internals, then row construction/visibility/live resources, then scrollbar/
+skin/module/display/startup/independent visible parity.
+
+Previous: [SETTINGS-ROW-C](artifacts/reports/SETTINGS-ROW-C-2026-11-03.md)
 implements renderItems type 0xc, the text2/text3/text4 row with the shared
 slide bar: four own key literals, the formatted value for text2, row UStrings
 0x2e2c/0x2e34 for text3/text4 with alignment 6 and setElipses only on the

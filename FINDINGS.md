@@ -6,6 +6,18 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-11-15 closes the remaining text-entry variants 0x11..0x15
+through the shared parameterised body: selectionbox key via their own
+literals (0xd55498, and 0xd5574c for 0x14), child row+0x18d8, names
+0x2ec0/0x2ebc/0x2ec8/0x2ec4 in slots 1/0/3/2, create(0,0xc,0xd,empty). Mode/max
+pairs are 3/10, 4/5, 5/none, 2/4, 9/15 — 0x13 returns right after setEntryMode
+with no max or cursor call — and the created source is setText on row UStrings
+0x2e0c/0x2e14/0x2e1c/0x2e24 except 0x15, which calls
+setNumericContents(row[0x2e00]). 394384 native/C cases pass. The ops surface
+now routes every row UString through the generic row_ustring. Cases 0x17..0x19,
+construction, child-visibility internals, live resources, scrollbar/skin/
+visible gates remain open.
+
 SETTINGS-ROW-C implements renderItems type 0xc: four lookups
 (slidebar/text2/text3/text4) through its own literals; text2 drives row+0x1ca8
 with the formatted row[0x2df8] value; text3+text4 (both rects required) drive
