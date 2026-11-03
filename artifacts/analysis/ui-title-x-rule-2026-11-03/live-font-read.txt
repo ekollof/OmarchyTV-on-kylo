@@ -1,4 +1,13 @@
+SSH session banner lines (the guarded read itself was view-only /proc/mem,
+no drawing/input/device writes; raw bytes stay in ignored workbench):
 Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
 ** WARNING: connection is not using a post-quantum key exchange algorithm.
 ** This session may be vulnerable to "store now, decrypt later" attacks.
 ** The server may need to be upgraded. See https://openssh.com/pq.html
+
+Re-verification of the saved 9-byte artifact (2026-11-04, offline, no TV):
+workbench/title-horizontal-20261103/title-font-header.bin
+  size 9 bytes, md5 50afb6cd960464abce66abb08d982f8a
+  hex 40933f0100e9504443 (word0 = AnyBitmapFont vptr 0x013f9340, byte5 = 0xe9)
+  signed byte5 = -23 -> global X offset 23, matching shipped font18 extrema.
+verify-graph.cjs re-run against saved snapshots + ELF: PASS (line origin 23,5).

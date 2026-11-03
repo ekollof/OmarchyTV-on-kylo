@@ -708,11 +708,12 @@ static int settings_text_load(struct ctx *c)
     c->text_on = 1;
     /* The title is an independent enhancement: a missing/unusable title font
      * keeps the verified row text live and falls back to the captured title. */
-    /* The title is lab-gated (ui.title=1, default 0). Later firmware/live
-     * geometry evidence matches the box/font, but drawing/layout still has
-     * an unexplained horizontal ink delta (UI-TITLE-BOX). This path uses the
-     * plain boxed renderer, not complete vendor drawText policy. Keep default-off;
-     * fitting an offset to the capture is forbidden. */
+    /* The title is lab-gated (ui.title=1, default 0). Box/font/string are
+     * firmware-derived and the draw origin follows the recovered global
+     * bearing/centering rule (FONT-X-OFFSET): no fitted offset. Full raster
+     * parity is still open (core pixels differ), and this path uses the
+     * boxed renderer, not the complete vendor drawText/GPU policy. Keep
+     * default-off; fitting an offset to the capture is forbidden. */
     int title_on = atoi(c->api->config_get(c->api->priv, "ui.title", "0"));
     int title_id = atoi(c->api->config_get(c->api->priv, "ui.font_title_id", "18"));
     if (title_on && title_id >= 0 &&

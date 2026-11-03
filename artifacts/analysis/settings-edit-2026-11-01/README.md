@@ -68,3 +68,14 @@ IoU 0.105, so the two runs are not the same image.
 fb1 backed up/restored (16,588,800 bytes, offset 0,1080) for every run,
 staging removed, no helper left, /tmp back to 2%. No settings-DB write, no
 vendor interaction, stock Aurora PIDs unchanged.
+
+### Restore protocol (2026-11-02 incident)
+
+Never stage a run as save → paint → kill-without-restore → save again: the
+second save overwrites the stock backup with painted pixels, and a later
+restore then replays our own frame (this happened; the screen showed the
+run-1 frame until the owner cleared it with the remote). Rules: timestamp
+every fb1 backup (`fb1-<utc>.bak`), never save over an existing backup,
+verify the backup differs from any staged paint before overwriting anything,
+and always restore in the same session that painted (save → run → capture →
+restore → remove staging → verify).
