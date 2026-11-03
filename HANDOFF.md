@@ -24,6 +24,19 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
+Latest: [SETTINGS-ROW-COVERAGE](artifacts/reports/SETTINGS-ROW-COVERAGE-2026-11-03.md)
+corrects a silent harness hole: the presence mask iterated only 7 bits, so
+image2/banner/slidebar/text2 were never present and type 0x9's case body
+never executed. The sweep now runs a full 11-key pass plus a separate
+point/word/label/flag pass through one shared `render_case()` helper, and
+type 0x9's created slider path is implemented (setWindowRect +
+setSliderRangeValues + setSliderValue). 66312 genuine comparisons pass with
+host, focused ASan/UBSan, ARM/qemu, full verify.cjs, full make check and a
+focused real-TV CPU run (exit 0, staging hash-verified and removed). A third
+NUL-sled was caught (SVGSlideBar::setWindowRect 0x10c4790 had no trampoline
+and slid into the range stub), so every callee of a new case must be
+enumerated before sweeping.
+
 Latest: [SETTINGS-ROW-SLIDER](artifacts/reports/SETTINGS-ROW-SLIDER-2026-11-03.md)
 implements renderItems type 0x9, the slider row: "slidebar" then "text2"
 lookups, a row+0x1ca8 text box created with the empty char* label and extra 1

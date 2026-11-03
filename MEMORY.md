@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-COVERAGE-2026-11-03: corrected a silent renderItems coverage
+hole — the presence mask iterated only7 bits so image2/banner/slidebar/text2
+were never present and type0x9's body never ran. The sweep is now a full
+11-key pass plus a separate point/word/label/flag pass, and type0x9's created
+slider is implemented (setWindowRect+setSliderRangeValues+setSliderValue).
+66312 genuine comparisons pass with host, focused ASan/UBSan, ARM/qemu, full
+verify.cjs and full make check; TV CPU exit0 with staging hash-verified and
+removed. A third NUL-sled (SVGSlideBar::setWindowRect 0x10c4790) was caught.
+Build-tv-v3/settings-row-render unit137816/9ee7b135e0425d619379400d798ec87c;
+reference1114416/9a734643a7b592128c464d3f77529ab4. Cases0xa..0xc,0x11..0x15,
+0x17..0x19, row construction, visibility internals, live resources, scrollbar/
+skin/module/display/startup/visible acceptance remain open.
+
 SETTINGS-ROW-SLIDER-2026-11-03: renderItems type0x9 (slider row) passes95624
 native/C comparisons ("slidebar"+"text2" lookups, empty-char* textbox create
 with formatted0x2df8 text, slidebar create from0x2df0/0x2df4 plus

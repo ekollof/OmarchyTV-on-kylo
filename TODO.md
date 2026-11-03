@@ -321,6 +321,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Correct the renderItems differential's presence coverage (11 keys, not
+      7) and implement type 0x9's created slider path:66312 genuine native/C
+      comparisons plus host/sanitizer/ARM-qemu/TV CPU pass.
+      SETTINGS-ROW-COVERAGE. A third NUL-sled (SVGSlideBar::setWindowRect)
+      was caught; enumerate every callee before sweeping a new case.
 - [ ] Implement SettingItemsListBoxRow::renderItems types 0xa/0xb/0xc.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in

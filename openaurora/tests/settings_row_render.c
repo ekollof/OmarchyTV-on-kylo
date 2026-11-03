@@ -18,7 +18,7 @@ static void emit(uint32_t kind,uint32_t off,uint32_t a,uint32_t b,const char *te
     else t->trace[t->count].text[0]=0;
     ++t->count;
 }
-enum {R_CTBOX,R_CSLIDER,R_SVAL,R_SFOCUS,R_BASE,R_GET,R_IS,R_NAME,R_FOCUS,R_ELIP,R_FONT,R_POINT,R_RECT,R_TEXT,R_CTEXT,R_CBTN,R_ALIGN,R_CHECK,R_CCB,R_SELID,R_CSEL,R_SELIMG,R_EMODE,R_MAXCH,R_CAUTO,R_NUM,R_CTE,R_STORE,R_DESTROY,R_RESETXML,R_GLYPH,R_HL,R_SUBHL,R_SHADOW,R_VIS,R_SCALE,R_CIMG,R_DRAWTOP};
+enum {R_CTBOX,R_CSLIDER,R_SVAL,R_SFOCUS,R_SRANGE,R_BASE,R_GET,R_IS,R_NAME,R_FOCUS,R_ELIP,R_FONT,R_POINT,R_RECT,R_TEXT,R_CTEXT,R_CBTN,R_ALIGN,R_CHECK,R_CCB,R_SELID,R_CSEL,R_SELIMG,R_EMODE,R_MAXCH,R_CAUTO,R_NUM,R_CTE,R_STORE,R_DESTROY,R_RESETXML,R_GLYPH,R_HL,R_SUBHL,R_SHADOW,R_VIS,R_SCALE,R_CIMG,R_DRAWTOP};
 static void q_base(void *r) { (void)r;emit(R_BASE,0,0,0,NULL); }
 static void *q_cont(void *r) { (void)r;return (void *)0x1000; }
 static void *q_rect(void *c,const char *k)
@@ -93,6 +93,8 @@ static void q_cslider(void *c,uint32_t z,int32_t lo,int32_t hi,const uint32_t r[
 { (void)par;(void)r;emit(R_CSLIDER,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)lo,(uint32_t)hi,NULL);(void)z; }
 static void q_sval(void *c,int32_t v) { emit(R_SVAL,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)v,0,NULL); }
 static void q_sfocus(void *c,int on) { emit(R_SFOCUS,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)on,0,NULL); }
+static void q_srange(void *c,int32_t lo,int32_t hi)
+{ emit(R_SRANGE,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)lo,(uint32_t)hi,NULL); }
 static void q_cte(void *c,uint32_t z,uint32_t a,uint32_t b,const char *l,const uint32_t r[4],void *par)
 { (void)par;(void)r;emit(R_CTE,(uint32_t)(uintptr_t)c-0x2000,z,a?(b<<16)|a:0,l); }
 static struct oa_setting_row_render_ops ops(void)
@@ -101,7 +103,7 @@ static struct oa_setting_row_render_ops ops(void)
         q_flag,q_label,q_blabel,q_vtext,q_child,q_is,q_name,q_focus,q_elipes,q_font,q_point,
         q_srect,q_text,q_ctext,q_cbtn,q_align,q_checked,q_ccb,q_selid,q_csel,q_selimg,q_emode,q_maxch,q_cauto,q_num,q_cte,
         q_store,q_destroy,q_reset,q_gid,q_glyph,q_hl,q_subhl,q_shadow,q_vis,q_scale,q_cimg,q_drawtop,
-        q_ctbox,q_cslider,q_sval,q_sfocus};
+        q_ctbox,q_cslider,q_sval,q_sfocus,q_srange};
 }
 static void reset(struct rrow *r)
 {

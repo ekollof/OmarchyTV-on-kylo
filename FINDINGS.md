@@ -6,6 +6,16 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-COVERAGE corrects a silent harness hole: the presence mask
+iterated only 7 bits, so image2/banner/slidebar/text2 were never present and
+type 0x9's case body never executed. The sweep now has a full 11-key pass and
+a separate point/word/label/flag pass, and type 0x9's created slider
+(setWindowRect + setSliderRangeValues(row[0x2df0],[0x2df4]) +
+setSliderValue(row[0x2df8])) is implemented. 66312 genuine comparisons pass.
+A third NUL-sled was caught: SVGSlideBar::setWindowRect (0x10c4790) had no
+trampoline and slid into the range stub. Enumerate every callee before
+sweeping a new case.
+
 SETTINGS-ROW-SLIDER implements renderItems type 0x9: the "slidebar" then
 "text2" lookups (that order), a row+0x1ca8 text box created with the empty
 char* label and extra 1 that receives the %d-formatted row[0x2df8] value, and

@@ -44,7 +44,8 @@ static int ready(const struct oa_setting_row_render_ops *o)
         !o->set_highlight || !o->set_sublauncher_highlight || !o->set_shadow ||
         !o->set_visible || !o->set_scaling || !o->create_image ||
         !o->set_draw_on_top || !o->create_textbox ||
-        !o->create_slider || !o->set_slider_value || !o->set_slider_focus)return EINVAL;
+        !o->create_slider || !o->set_slider_value || !o->set_slider_focus ||
+        !o->set_slider_range)return EINVAL;
     return 0;
 }
 static void rect_math(uint32_t out[4],const uint32_t base[4],const int32_t pt[2])
@@ -378,7 +379,12 @@ static int case_slider(void *row,const struct oa_setting_row_render_ops *o,void 
         void *sb=o->child_at(row,UINT32_C(0x13c0));int created=o->is_created(sb);
         uint32_t base[4];o->rect_words(slider_rect,base);
         if(created) {
-            /* created slider path is d559ce; kept open */
+            uint32_t moved[4];int32_t pt[2];
+            o->get_point(row,pt);rect_math(moved,base,pt);
+            o->set_rect(sb,moved);
+            o->set_slider_range(sb,(int32_t)o->row_word(row,UINT32_C(0x2df0)),
+                (int32_t)o->row_word(row,UINT32_C(0x2df4)));
+            o->set_slider_value(sb,(int32_t)o->row_word(row,UINT32_C(0x2df8)));
         } else {
             if(alexa) {
                 o->set_name(sb,UINT32_C(1),UINT32_C(0x26c));

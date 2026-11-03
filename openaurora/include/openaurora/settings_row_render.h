@@ -81,6 +81,7 @@ struct oa_setting_row_render_ops {
         const uint32_t rect[4],void *parent);
     void (*set_slider_value)(void *child,int32_t value);
     void (*set_slider_focus)(void *child,int on);
+    void (*set_slider_range)(void *child,int32_t lo,int32_t hi);
 };
 int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o);
 #endif
