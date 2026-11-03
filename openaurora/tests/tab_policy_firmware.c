@@ -17,6 +17,7 @@
 #include "openaurora/svg_list_bodies.h"
 #include "openaurora/svg_list_move.h"
 #include "openaurora/svg_list_rows.h"
+#include "openaurora/svg_list_scroll.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -1259,8 +1260,10 @@ static void native_r_impl(void *mgr,uint32_t index,int full)
 { assert(mgr==mgr_obj);rows_emit(native_rows,2,index,full); }
 static void impl_stub(void *mapped,uint32_t base,uint32_t address,impl_fn function)
 {
-    unsigned char *p=(unsigned char *)mapped+address-base;const uint16_t insn[]={0x4b00,0x4718};
-    assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target;memcpy(&target,&function,4);memcpy(p+4,&target,4);
+    /* Preserving indirect branch, matching the other multi-arg installers. */
+    unsigned char *p=(unsigned char *)mapped+address-base;
+    const uint16_t insn[]={0xb40f,0x4b02,0x469c,0xbc0f,0x4760,0x46c0};
+    assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target;memcpy(&target,&function,4);memcpy(p+12,&target,4);
 }
 enum {R_FOCUS=1,R_IMPL=2};
 static uint32_t rows_q_first(void *p) { return ((struct rows_fixture *)p)->first; }
@@ -1543,6 +1546,143 @@ static void check_svg_rows(const unsigned char *elf,size_t bytes)
     assert(!munmap(rows,4096));
     printf("ok offline shipped ARM SVG list rows: %u native/C comparisons, field layout/focus-store/partial match\n",compared);
 }
+enum {SB_SIZE,SB_TOTAL,SB_CREATED,SB_CREATE,SB_VISIBLE,SB_SETVIS,SB_POS,SB_RECT};
+struct scroll_fixture {
+    uint32_t size,total,flag,fields[6],visible,first;int created;
+    unsigned count;struct {uint32_t id,a,b,c,d;} trace[16];
+};
+static struct scroll_fixture *native_scroll;
+static _Alignas(uint32_t) unsigned char scroll_list[0x300];
+static uint32_t scroll_vtable[32];
+static void scroll_emit(struct scroll_fixture *f,uint32_t id,uint32_t a,uint32_t b,uint32_t c,uint32_t d)
+{ assert(f->count<16);f->trace[f->count].id=id;f->trace[f->count].a=a;f->trace[f->count].b=b;f->trace[f->count].c=c;f->trace[f->count].d=d;++f->count; }
+static unsigned native_sb_total(void *p,int32_t ignored)
+{ (void)ignored;assert(p==scroll_list);scroll_emit(native_scroll,SB_TOTAL,0,0,0,0);return native_scroll->total; }
+static unsigned native_sb_created(void *p)
+{ assert(p==scroll_list+0x120);scroll_emit(native_scroll,SB_CREATED,0,0,0,0);return (unsigned)native_scroll->created; }
+static unsigned native_sb_isvisible(void *p)
+{ assert(p==scroll_list);return native_scroll->visible; }
+static unsigned native_sb_setvisible(void *p,int32_t v)
+{ assert(p==scroll_list+0x120);scroll_emit(native_scroll,SB_SETVIS,(uint32_t)v,0,0,0);return 0; }
+typedef void (*quad_fn)(void *,uint32_t,uint32_t,uint32_t);
+static void quad_stub(void *mapped,uint32_t base,uint32_t address,quad_fn function)
+{
+    /* Preserving indirect branch: r3 carries the fourth argument. */
+    unsigned char *p=(unsigned char *)mapped+address-base;
+    const uint16_t insn[]={0xb40f,0x4b02,0x469c,0xbc0f,0x4760,0x46c0};
+    assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target;memcpy(&target,&function,4);memcpy(p+12,&target,4);
+}
+typedef void (*rect_fn)(void *,uint32_t,uint32_t,uint32_t,uint32_t);
+static void native_sb_create(void *sb,uint32_t created,uint32_t rect,uint32_t parent)
+{
+    assert(sb==scroll_list+0x120 && parent==(uint32_t)(uintptr_t)scroll_list);
+    (void)rect;
+    scroll_emit(native_scroll,SB_CREATE,created,parent==(uint32_t)(uintptr_t)scroll_list,0,0);
+}
+static void native_sb_setpos(void *sb,uint32_t vis,uint32_t size,uint32_t first)
+{ assert(sb==scroll_list+0x120);scroll_emit(native_scroll,SB_POS,vis,size,first,0); }
+static void native_sb_rect(void *r,uint32_t x,uint32_t y,uint32_t w,uint32_t h)
+{ scroll_emit(native_scroll,SB_RECT,x,y,w,h);(void)r; }
+static void rect_stub(void *mapped,uint32_t base,uint32_t address,rect_fn function)
+{
+    /* Preserving indirect branch: r3 carries the fourth argument. */
+    unsigned char *p=(unsigned char *)mapped+address-base;
+    const uint16_t insn[]={0xb40f,0x4b02,0x469c,0xbc0f,0x4760,0x46c0};
+    assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target;memcpy(&target,&function,4);memcpy(p+12,&target,4);
+}
+static uint32_t scroll_q_size(void *p) { return ((struct scroll_fixture *)p)->size; }
+static uint32_t scroll_q_total(void *p) { struct scroll_fixture *f=p;scroll_emit(f,SB_TOTAL,0,0,0,0);return f->total; }
+static uint32_t scroll_q_flag(void *p) { return ((struct scroll_fixture *)p)->flag; }
+static uint32_t scroll_q_field(void *p,uint32_t off) {
+    struct scroll_fixture *f=p;
+    switch(off) { case 0x1f4:return f->fields[0];case 0x1fc:return f->fields[1];case 0x1f0:return f->fields[2];
+    case 0x1f8:return f->fields[3];case 0x21c:return f->fields[4];case 0x214:return f->fields[5];default:assert(0);return 0; }
+}
+static void *scroll_q_sb(void *p) { (void)p;return scroll_list+0x120; }
+static void *scroll_q_list(void *p) { (void)p;return scroll_list; }
+static int scroll_q_visible(void *p) { return (int)((struct scroll_fixture *)p)->visible; }
+static uint32_t scroll_q_first(void *p) { return ((struct scroll_fixture *)p)->first; }
+static int scroll_q_created(void *p,void *sb) { struct scroll_fixture *f=p;scroll_emit(f,SB_CREATED,0,0,0,0);(void)sb;return f->created; }
+static void scroll_e_create(void *p,void *sb,int created,uint32_t x,uint32_t y,uint32_t w,uint32_t h,void *parent)
+{ struct scroll_fixture *f=p;scroll_emit(f,SB_RECT,x,y,w,h);scroll_emit(f,SB_CREATE,(uint32_t)created,parent==scroll_list,0,0);(void)sb; }
+static void scroll_e_setvis(void *p,void *sb,int v) { struct scroll_fixture *f=p;scroll_emit(f,SB_SETVIS,(uint32_t)v,0,0,0);(void)sb; }
+static void scroll_e_pos(void *p,void *sb,uint32_t vis,uint32_t size,uint32_t first)
+{ struct scroll_fixture *f=p;scroll_emit(f,SB_POS,vis,size,first,0);(void)sb; }
+typedef void (*scroll_fn)(void *);
+static scroll_fn native_sb_update;
+static void compare_scroll(struct scroll_fixture initial)
+{
+    struct scroll_fixture vendor=initial,ref=initial;struct oa_svg_list_scroll_ops ops={&ref,scroll_q_size,
+        scroll_q_total,scroll_q_flag,scroll_q_field,scroll_q_sb,scroll_q_list,scroll_q_visible,scroll_q_first,
+        scroll_q_created,scroll_e_create,scroll_e_setvis,scroll_e_pos};
+    memcpy(scroll_list+0x1f0,&vendor.fields[2],4);memcpy(scroll_list+0x1f4,&vendor.fields[0],4);
+    memcpy(scroll_list+0x1f8,&vendor.fields[3],4);memcpy(scroll_list+0x1fc,&vendor.fields[1],4);
+    memcpy(scroll_list+0x214,&vendor.fields[5],4);memcpy(scroll_list+0x21c,&vendor.fields[4],4);
+    memcpy(scroll_list+0x22c,&vendor.flag,1);
+    memcpy(scroll_list+0xf8+16,&vendor.size,4);memcpy(scroll_list+0xf8+12,&vendor.first,4);
+    uint32_t vtable=(uint32_t)(uintptr_t)scroll_vtable;memcpy(scroll_list,&vtable,4);
+    native_scroll=&vendor;
+    native_sb_update(scroll_list);
+    assert(!oa_svg_list_update_scrollbar(&ops));
+    if(vendor.count!=ref.count) {
+        fprintf(stderr,"scroll count native=%u ours=%u size=%x total=%x flag=%x vis=%x first=%x created=%d\n",
+            vendor.count,ref.count,initial.size,initial.total,initial.flag,initial.visible,initial.first,initial.created);
+        for(unsigned i=0;i<vendor.count;++i)fprintf(stderr,"  native[%u]=%u/%x/%x/%x/%x\n",i,vendor.trace[i].id,
+            vendor.trace[i].a,vendor.trace[i].b,vendor.trace[i].c,vendor.trace[i].d);
+        for(unsigned i=0;i<ref.count;++i)fprintf(stderr,"  ours[%u]=%u/%x/%x/%x/%x\n",i,ref.trace[i].id,
+            ref.trace[i].a,ref.trace[i].b,ref.trace[i].c,ref.trace[i].d);
+        exit(1);
+    }
+    for(unsigned i=0;i<vendor.count;++i)if(vendor.trace[i].id!=ref.trace[i].id || vendor.trace[i].a!=ref.trace[i].a ||
+        vendor.trace[i].b!=ref.trace[i].b || vendor.trace[i].c!=ref.trace[i].c || vendor.trace[i].d!=ref.trace[i].d) {
+        fprintf(stderr,"scroll trace %u native=%u/%x/%x/%x/%x ours=%u/%x/%x/%x/%x\n",i,vendor.trace[i].id,
+            vendor.trace[i].a,vendor.trace[i].b,vendor.trace[i].c,vendor.trace[i].d,ref.trace[i].id,
+            ref.trace[i].a,ref.trace[i].b,ref.trace[i].c,ref.trace[i].d);exit(1);
+    }
+}
+typedef void (*scroll_fn)(void *);
+static void check_svg_scroll(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *list=page(0x10ba000,16384),*rows=page(0x10be000,4096),*win=page(0x1152000,4096);
+    unsigned char *bar=page(0x10c4000,4096),*geom=page(0x9a7000,8192);
+    size_t off=file_offset(elf,bytes,0x10bbe04,216);
+    assert(crc32(elf+off,216)==UINT32_C(0xfbc862b8));
+    memcpy(list+0x1e04,elf+off,216);
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(list+0x1ed8,&pointer,4);
+    size_t so=file_offset(elf,bytes,0x10be6e4,48);
+    assert(crc32(elf+so,48)==UINT32_C(0x50e85ab7));
+    memcpy(rows+0x6e4,elf+so,48);memcpy(rows+0x710,&pointer,4);
+    size_t fo=file_offset(elf,bytes,0x10be77c,48);
+    assert(crc32(elf+fo,48)==UINT32_C(0x687fe952));
+    memcpy(rows+0x77c,elf+fo,48);memcpy(rows+0x7a8,&pointer,4);
+    size_t go=file_offset(elf,bytes,0x9a7fcc,56);
+    assert(crc32(elf+go,56)==UINT32_C(0xe9107f7d));
+    memcpy(geom+0xfcc,elf+go,56);memcpy(geom+0x1000,&pointer,4);
+    rect_stub(geom,0x9a7000,0x9a7fcc,native_sb_rect);
+    thumb_stub(win,0x1152000,0x1152a40,native_sb_created);
+    thumb_stub(win,0x1152000,0x1152a74,native_sb_isvisible);
+    predicate_stub(win,0x1152000,0x11525b8,native_sb_setvisible);
+    quad_stub(bar,0x10c4000,0x10c401c,native_sb_create);
+    quad_stub(bar,0x10c4000,0x10c4138,native_sb_setpos);
+    executable(list,16384);executable(rows,4096);executable(win,4096);executable(bar,4096);executable(geom,8192);
+    uint32_t entry=0x10bbe05;memcpy(&native_sb_update,&entry,4);
+    uint32_t total_bits=predicate_bits(native_sb_total);memcpy(scroll_vtable+0x6c/4,&total_bits,4);
+    const uint32_t sizes[]={0,1,5,9},totals[]={0,1,5,9,UINT32_C(0x80000000)},flags[]={0,1,7};
+    const uint32_t visibles[]={0,1,7},firsts[]={0,1,5};const int creates[]={0,1};unsigned compared=0;
+    const uint32_t corners[4][6]={{0,0,0,0,0,0},{3,7,11,13,17,19},{1,2,3,4,5,6},
+        {UINT32_MAX,UINT32_MAX,UINT32_MAX,UINT32_MAX,UINT32_MAX,UINT32_MAX}};
+    for(unsigned s=0;s<4;++s)for(unsigned t=0;t<5;++t)for(unsigned g=0;g<3;++g)for(unsigned c=0;c<4;++c)
+    for(unsigned v=0;v<3;++v)for(unsigned q=0;q<3;++q)for(unsigned k=0;k<2;++k) {
+        struct scroll_fixture initial={.size=sizes[s],.total=totals[t],.flag=flags[g],.visible=visibles[v],
+            .first=firsts[q],.created=creates[k]};
+        for(unsigned m=0;m<6;++m)initial.fields[m]=corners[c][m];
+        compare_scroll(initial);++compared;
+    }
+    native_scroll=NULL;
+    assert(!munmap(list,16384) && !munmap(rows,4096) && !munmap(win,4096));
+    assert(!munmap(bar,4096) && !munmap(geom,8192));
+    printf("ok offline shipped ARM SVG list scrollbar: %u native/C comparisons, gating/rect/show/position match\n",compared);
+}
 int main(int argc,char **argv)
 {
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
@@ -1591,7 +1731,7 @@ int main(int argc,char **argv)
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
     check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);
-    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_row_values(elf,bytes);
+    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_svg_scroll(elf,bytes);check_row_values(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;

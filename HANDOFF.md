@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SVG-LIST-ROWS](artifacts/reports/SVG-LIST-ROWS-2026-11-03.md)
+Latest: [SVG-LIST-SCROLL](artifacts/reports/SVG-LIST-SCROLL-2026-11-03.md)
+implements SVGListBoxBase::updateScrollBar called by every move primitive.
+4320 native/C comparisons pass with exact gating, rect math, show and position
+sequencing, plus full strict host/focused sanitizer/ARM and every prior
+group. Create iff nonzero size with signed size below the signed +0x6c total
+or the +0x22c flag; rect from literal list offsets with wrapping arithmetic;
+shown iff the list is visible; hide path clears a created bar. The
+differential caught a stub-convention defect (r3-clobbering branch to 4-arg
+stubs); multi-arg installers now preserve every argument register. No new
+service/module/UI consumer, TV access/wake/staging/deployment or pending job.
+Hashes in MEMORY/report. Next implement updateImpl and row widget internals,
+then row getters and editing, parent refresh, scrollbar construction/position
+bodies, startSelectAnimation, and the owned backend/context/consumer with
+permission/modal/focus/lifetime/visible gates. Bodies are not actual
+widget/rendering acceptance.
+
+Previous: [SVG-LIST-ROWS](artifacts/reports/SVG-LIST-ROWS-2026-11-03.md)
 implements the RowManager internals behind every list key/move body: the
 +12/+16/+20/+28 field layout, the focusItem switch/store body and the
 updatePartial forward. 324 native/C comparisons pass with exact field/ordering/
@@ -33,10 +49,11 @@ group. Getters are raw field reads; selectedItem adds first and selected row;
 focus computes wrapping rel, returns on zero count/rel-reach/rel-selected,
 otherwise row +28 (0 then 1) and rel store; partial forwards (index,false).
 No new service/module/UI consumer, TV access/wake/staging/deployment or
-pending job. Hashes in MEMORY/report. Next implement updateImpl and row widget
-internals, then row getters and editing, parent refresh, the
-updateScrollBar/startSelectAnimation bodies, and the owned backend/context/
-consumer with permission/modal/focus/lifetime/visible gates. Internals are not
+pending job. Hashes in MEMORY/report. SVG-LIST-SCROLL implements
+updateScrollBar (gating, literal rect, show, position); updateImpl, row
+widget internals, row getters/editing, parent refresh, scrollbar
+construction/position bodies, startSelectAnimation and the owned
+backend/consumer remain open. Internals are not
 actual widget/rendering acceptance.
 
 Previous: [SVG-LIST-MOVE](artifacts/reports/SVG-LIST-MOVE-2026-11-03.md)

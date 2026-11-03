@@ -37,4 +37,5 @@ assert.match(result.stdout, /SVG list input: 999216 key cases, 49344 message joi
 assert.match(result.stdout, /SVG list bodies: 26048 native\/C comparisons/);
 assert.match(result.stdout, /SVG list moves: 5040 native\/C comparisons/);
 assert.match(result.stdout, /SVG list rows: 324 native\/C comparisons/);
+assert.match(result.stdout, /SVG list scrollbar: 4320 native\/C comparisons/);
 assert.match(result.stdout, /row values: 68640 type\/raw-value cases/);

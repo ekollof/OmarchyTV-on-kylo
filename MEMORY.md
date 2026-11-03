@@ -6,6 +6,20 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-SCROLL-2026-11-03: updateScrollBar gating/rect/show/position passes
+4320 native/C comparisons, plus full strict host, focused ASan/UBSan,
+ARM/qemu and all previous reference groups. ARM unit
+33264/ea13fa9dbef0abeb09bb453a2a1a15d6; reference531912/
+7e750cd4bc6bd0923809741e00ece1c0, build-tv-v3/tab-policy. Signed
+size-vs-total gating, the literal x/y/w/h formula with wrapping arithmetic,
+conditional show and the hide path are asserted. The differential caught a
+stub-convention defect (r3-clobbering branch to 4-arg stubs); multi-arg
+installers now preserve every argument register. No new module/service/UI
+consumer. updateImpl, row widget internals, row getters/editing, parent
+refresh, scrollbar construction/position bodies, startSelectAnimation, owned
+backend/context and visible acceptance stay open. No TV access/wake/staging/
+deployment or hardware mutation; no pending job/helper.
+
 SVG-LIST-ROWS-2026-11-03: RowManager field layout, focusItem body and
 updatePartial forward pass324 native/C comparisons, plus full strict host,
 focused ASan/UBSan, ARM/qemu and all previous reference groups. ARM unit

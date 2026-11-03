@@ -1,0 +1,1 @@
+ok SVG list scrollbar: create/hide gating, literal rect math, show and position

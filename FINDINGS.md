@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG list scrollbar: SVG-LIST-SCROLL implements updateScrollBar; 4320
+native/C comparisons pass. Create iff nonzero size with signed size below
+the signed +0x6c total or the +0x22c flag is set; rect from literal offsets
+with wrapping arithmetic, shown iff the list is visible, then positioned;
+otherwise a created bar is hidden. A harness stub defect that clobbered r3
+is fixed; preserving installers verified. Construction/position/animation/
+backend/visible gates remain open.
+
 SVG list rows: SVG-LIST-ROWS implements the manager field layout, focusItem
 and updatePartial; 324 native/C comparisons pass. +12 first, +16 count,
 +20 selected-rel, +28 row array; rel=index-first wraps, returns on zero
