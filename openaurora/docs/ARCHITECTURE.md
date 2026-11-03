@@ -47,6 +47,14 @@ Pixel formats are boundary-specific: all measured raw 32bpp OSD framebuffers are
 BGRA (B,G,R,A), including fb1; OAI1 assets and display blit inputs are straight
 RGBA. The display backend converts RGBA inputs into BGRA framebuffer bytes.
 
+`common/launcher_route.c` supplies the recovered launcher-operation to signed
+modal-result map and ordered settings-selection/enqueue plans. Retained fields
+are represented by missing writes, not resets; queue-front is enqueue-only.
+LAUNCHER-ROUTING records full62-entry/28-plan firmware differentials and limits.
+This is a lower component, not yet a navigation service or skin/IPC consumer;
+its native structs are not wire/reload encodings. Runtime/provider/modal gates
+and the existing captured-screen diagnostic navigation remain to be integrated.
+
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;
 EGL-WINDOW establishes direct display1 presentation with the retained4-byte

@@ -1,0 +1,1 @@
+ok launcher routing: ID bounds/holes, ordered settings plans, retained fields, atomic unsupported/invalid cases

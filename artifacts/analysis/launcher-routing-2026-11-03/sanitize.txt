@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-route-sanitize/tests/launcher_route tests/launcher_route.c common/launcher_route.c
+ok launcher routing: ID bounds/holes, ordered settings plans, retained fields, atomic unsupported/invalid cases
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

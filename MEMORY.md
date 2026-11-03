@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+LAUNCHER-ROUTING-2026-11-03: common launcher_route adds full62-entry signed
+operation result conversion and28 ordered unconditional settings plans.
+Firmware main pre-handler active-item branch ends main dialog with converted
+result; DemoApp modal return reaches OperationFinder under its guard, queues13
+for settings -> TabDialog(true,false). Focus/edit/sublauncher branches prevent
+universal Select claims. Missing writes retain row/open state; enqueue is not
+immediate dispatch. Not yet service/skin/IPC integration;4b/a6 and provider/
+runtime/modal branches open. Logging/telemetry excluded. Full host/focused
+sanitizers/ARM-qemu and independent62/28 firmware corpora pass. Native test
+build only26996/33b69aae50bed048b2c73a592d7c1acf/GLIBC2.4, build-tv-v3/
+launcher-route. No TV connection/wake/keys/staging/deployment; last imported
+TV session still reports suspended, not newly polled. No job/helper pending.
+
 AGENT-WORK-REVIEW-2026-11-03: reviewed ff89e27..e7e7333. Scanner now confines
 key reads to eligible heap/Aurora read-only maps, translates snapshot pointers,
 requires complete printable terminated keys and escapes delimiters. +ac is a

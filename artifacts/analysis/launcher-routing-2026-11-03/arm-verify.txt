@@ -1,0 +1,2 @@
+PASS:all62 signed operation results match shipped table14efd84;28 ordered settings plans match fresh firmware calls.
+No logging/telemetry emitted. Modal/provider/portal work, guarded branches and UI integration remain separate.

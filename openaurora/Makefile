@@ -75,6 +75,14 @@ MOD_DEP  := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).d)
 
 all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker
 
+$(BUILD)/tests/launcher_route: tests/launcher_route.c common/launcher_route.c include/openaurora/launcher_route.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-launcher-route
+check-launcher-route: $(BUILD)/tests/launcher_route
+	@$(BUILD)/tests/launcher_route
+check: check-launcher-route
+
 $(BUILD)/ui-object-scan: tools/re/ui-object-scan.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<

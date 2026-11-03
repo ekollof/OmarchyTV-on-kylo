@@ -70,6 +70,16 @@ Verified 2026-11-04, one DIAL key per step with fb1 check after each:
 
 ## Agent playbook: reaching each dialog by keys
 
+Subsequent firmware follow-up: [LAUNCHER-ROUTING](../../reports/LAUNCHER-ROUTING-2026-11-03.md)
+recovers a conditional modal-result entry into TabDialog through navigation13,
+not QuickMenu12. MainLauncher pre-handler converts an active item's launcher
+operation and ends its main modal; DemoApp passes that result to OperationFinder
+under a further guard. Picture operation2 -> result6c -> tab0/row0/navigation13;
+sound3 ->6e/tab1, network6 ->5b/tab2 (row retained), system7 ->49/tab4.
+Earlier sublauncher/edit/focus branches can intercept the key. This establishes
+the result contract, not a verified key recipe from the captured shortcut view.
+Full62 conversion/28 unconditional plans now have independent firmware tests.
+
 Preconditions: TV awake; stock Aurora running; verify every step with
 `tvshot.py --layer 1` before the next key, under current AGENTS.md authorization.
 Stop keys on an unexpected screen; Exit is only verified as cancel in the
@@ -119,8 +129,9 @@ This key-only playbook does not revoke the standing read-only staging permission
     Rail-Select (LauncherDialog::onSelectPress edde60) with no sublauncher
     focus does NOT open TabDialog: it snapshots selection, unfocus+hide
     sublauncher, convertOperationIdToIDME, SVGDialog::endDialog. The
-    launcher closes with an operation result; settings opens downstream
-    (OperationFinder result-to-nav-code routing still open).
+    child closes with an operation result. LAUNCHER-ROUTING subsequently
+    recovers the main pre-handler/modal-result -> OperationFinder/nav13 link;
+    key/focus guards and exact live full-list entry remain open.
 2. Whether the observed tab strip is TabDialog buttons (computed 378 px
    matches the focused white box; labels match updateTitles keys) or
    SubLauncher-owned widgets — needs a live widget-identity read or

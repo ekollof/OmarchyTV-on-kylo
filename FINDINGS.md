@@ -6,6 +6,15 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Launcher result contract: LAUNCHER-ROUTING-2026-11-03 follows the guarded main
+Select/modal-return path to OperationFinder navigation13, distinct from QuickMenu
+navigation12. Full62-entry signed conversion and28 unconditional ordered settings
+plans are implemented/tested against firmware. Base network retains row; base
+entries retain open-submenu flag. Enqueue-front is not immediate construction.
+Do not equate this with every Select or wire the captured shortcut screen
+straight into a full list.4b/a6 require extra portal/runtime context; no such
+work, logging/telemetry or service/UI integration was silently included.
+
 Subsequent-agent review: AGENT-WORK-REVIEW-2026-11-03 corrects scanner partial/
 unterminated keys, unrestricted pointer reads and snapshot offsets. Fresh ARM
 shows+ac lookup keys can survive UString assignment; raw+a4 metadata is always

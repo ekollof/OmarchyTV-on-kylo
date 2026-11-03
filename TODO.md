@@ -321,6 +321,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Recover full62 launcher operation results and28 unconditional ordered
+      settings plans, including retained fields and queue-front order; common/
+      launcher_route and firmware differential pass host/sanitizers/ARM-qemu.
+      LAUNCHER-ROUTING. Conditional modal-result->navigation13 link established;
+      this is not a UI consumer, live key recipe or full OperationFinder.
+- [ ] Integrate launcher routing into the modular focus/modal/navigation pipeline,
+      replacing the captured SCREEN_SETTINGS Select->full-list shortcut with
+      actual state dispatch. Handle4b portal prework without excluded tracking,
+      a6 runtime/tuner gates, provider actions, retained TabDialog selection and
+      initialization before real-display acceptance. Native plans are not wire
+      or reload encodings; queue insertion must not trigger reentrant creation.
 - [x] Review ff89e27..e7e7333: scanner mapped/complete/escaped key reads,
       nonzero-base snapshots and retained UString metadata fixed; full strict
       host/focused sanitizers/ARM-qemu pass. AGENT-WORK-REVIEW. No TV access.
@@ -328,8 +339,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 - [x] Independently verify154 navigation case-local call lists and SubLauncher
       setFocus/isShowing virtual slots. This is offline firmware evidence, not
       resolved goto/delegate control flow, key translation or full-list entry.
-- [ ] Resolve launcher operation-result/full-list entry and key/profile gates
-      offline before repeating no-effect1043 tests. Later matched full-list
+- [ ] Resolve remaining key/profile/focus gates and live full-list entry before
+      repeating no-effect1043 tests. LAUNCHER-ROUTING closes conditional result
+      conversion/dispatch offline. Later matched full-list
       identity/current UString characters/draw state must explain apparent
       slider-label+30 without a fitted constant. Old scanner did not inventory
       TabDialog; absence cannot identify tab ownership or prove no full list.

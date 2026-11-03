@@ -24,7 +24,28 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [AGENT-WORK-REVIEW](artifacts/reports/AGENT-WORK-REVIEW-2026-11-03.md)
+Latest: [LAUNCHER-ROUTING](artifacts/reports/LAUNCHER-ROUTING-2026-11-03.md)
+adds common/launcher_route: all62 operation-ID -> signed dialog results and28
+ordered unconditional settings plans. Fresh ARM/decompile closes the conditional
+MainLauncher active-item Select -> converted endDialog result -> DemoApp modal
+return -> OperationFinder -> front navigation13 -> TabDialog(true,false) path.
+This is distinct from QuickMenu/navigation12; earlier focus/edit/sublauncher
+branches can intercept Select, so no universal live key recipe is claimed.
+Base network retains the row; base categories retain open-submenu state. Plans
+preserve setter/queue order. Queue insertion is not immediate dialog dispatch.
+Logging/telemetry are excluded. Guarded a6 and portal-prework4b remain unsupported.
+
+Full strict host/focused sanitizers/ARM-qemu pass. Independent corpus matches
+all62 signed ELF table values and28 ordered source-derived action sequences.
+Native test build only26996/MD5 33b69aae50bed048b2c73a592d7c1acf/GLIBC2.4,
+build-tv-v3/launcher-route. No TV connection/wake/staging/keys or pending helper.
+Next integrate the policy into a modular navigation/focus/modal consumer;
+existing SCREEN_SETTINGS Select->full-list is a diagnostic shortcut, not this
+vendor flow. Installation/runtime/provider gates and TabDialog construction/
+retained state/visible acceptance remain open. Do not execute plans on every
+Select, serialize raw native structs, or copy excluded vendor logging/ad work.
+
+Previous: [AGENT-WORK-REVIEW](artifacts/reports/AGENT-WORK-REVIEW-2026-11-03.md)
 reviews ff89e27..e7e7333. Fixed scanner key-pointer map bounds, incomplete/
 unterminated key acceptance, snapshot virtual-offset translation and escaping.
 Fresh firmware proves+ac lookup keys can survive later current-UString updates:
@@ -40,7 +61,8 @@ were too strong and are corrected. VK/DIAL1043 and ICE593/0x251 are distinct
 values; app-log receipt of1043 is not ICE-handling proof. Two recorded no-effect
 tests do not establish which gate failed; do not repeat them unchanged. The
 latest imported session reports TV suspended; this review did not poll/wake it.
-Next inspect offline launcher result routing/key-profile gates, then obtain a
+LAUNCHER-ROUTING subsequently closes the conditional result conversion/dispatch;
+key/profile/focus gates and the live route remain open. Then obtain a
 matched full-list instance/current text/draw state before resolving the apparent
 slider-label+30. No fixed indent or shortcuts-to-full-list conversion is proved.
 
