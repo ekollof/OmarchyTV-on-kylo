@@ -1,0 +1,10 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+41735daa69dc137743b59efe12db4a19  /dev/fb1
+card_canaldigitaal.rgba
+card_digiturk.rgba
+card_gain.rgba
+card_netflix.rgba

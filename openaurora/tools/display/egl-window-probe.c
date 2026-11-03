@@ -207,6 +207,7 @@ int main(int argc, char **argv)
     }
     int ui_result = probe_ui(scene);
     if (ui_result < 0) { (void)error(scene); goto cleanup; }
+    if (ui_result == 2) { result = 0; goto cleanup; } /* settings screenshot preview */
     if (ui_result > 0) {
         struct snapshot now;
         if (capture(fd, &now)) goto cleanup;

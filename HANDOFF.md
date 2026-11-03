@@ -1,4 +1,4 @@
-# Handoff — 2026-11-03
+# Handoff — 2026-11-04
 
 Read AGENTS.md, MEMORY.md, FINDINGS.md and TODO.md. Documentation was consolidated
 to remove competing status snapshots. Raw evidence and pre-cleanup docs remain
@@ -31,7 +31,21 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [UI-REVIEW](artifacts/reports/UI-REVIEW-2026-11-04.md) reviews the work
+Latest: [UI-DISPLAY-REVIEW](artifacts/reports/UI-DISPLAY-REVIEW-2026-11-04.md)
+repairs the owner's missing focused sliders and Modus chevrons in the existing
+captured-panel/live-text preview. Firmware-derived FA/UFA track/PNG composition,
+shared shadow digit/knob values, separate selection images; no live setting writes.
+Export the four local PNGs with tools/export-slider-assets.cjs into ui.dir before
+using ui.text. Seven real GPU states/screenshots pass; Contrast slider and Modus
+chevron crops differ from independently captured stock by at most2/255 per channel.
+Full16588800-byte framebuffer, region/MAU/pan restored and separately hash-checked;
+staging/backup removed, no helper. See MEMORY for identities. Captured tabs/values,
+normal glyph shapes recolored for focus, fitted text origins, native widget/live
+provider/imageCreate integration and independent startup remain open. No persistent
+deployment. Pending feature is still imageCreate; do not equate this preview fix
+with general SVG rendering or settings parity.
+
+Previous: [UI-REVIEW](artifacts/reports/UI-REVIEW-2026-11-04.md) reviews the work
 since28ef959. Fixed16-byte image resource overflow (actual supplier writes32),
 aligned its buffer, validated callbacks and clarified borrowed lifetime. Fixed
 renderer signed overflow/division by sharing checked percentage math. Every

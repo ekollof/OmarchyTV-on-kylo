@@ -1,10 +1,25 @@
-# Current project state — last verified 2026-11-03
+# Current project state — last verified 2026-11-04
 
 This is the canonical state summary. Latest narrow verification is recorded
 in the dated entries below; the earlier CEC session is historical. Notes are preserved in
 [the archive](artifacts/archive/README.md); they contain superseded claims.
 
 ## TV and persistent recovery
+
+UI-DISPLAY-REVIEW-2026-11-04: owner observed missing focused sliders/Modus
+chevrons during real display preview. Fixed the captured-panel/live-text skin
+to redraw shipped FA/UFA slider and selection PNG children after background
+erases, sharing shadow digit/knob values; final run captures normal/focus0/1/2/
+3/4/7. Stock-reference widget crops within2/255 per channel; both buffers identical
+for each held state. Strict host/ARM build and focused regressions pass. Build
+build-tv-v3/display-review: scene-module-probe542560/dced32954abe4ca03087f5e93a3c0225;
+mod_ui_vendor188488/3467dc0004bdf5b34360eb6f4c289c8e. Last TV sample: stock
+framebuffer MD541735daa69dc137743b59efe12db4a19, pan0,0, full16588800-byte
+backing/region/MAU0 restoration verified. No helper left; /tmp staging/backup
+removed, coredumpnoreset retained. No services/boot/network/persistent change.
+Diagnostic only; focused typography, dynamic tabs/values, native widget/provider/
+imageCreate and independent startup remain open. Report and dated evidence own
+the stock-buffer selection correction and earlier failed-preview records.
 
 UI-REVIEW-2026-11-04: reviewed28ef959..b50e3f0. Fixed SVG image resource
 capacity16->32/max alignment/callback validation; upper bytes now tested.

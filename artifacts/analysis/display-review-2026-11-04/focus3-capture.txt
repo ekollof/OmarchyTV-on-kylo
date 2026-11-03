@@ -1,0 +1,2 @@
+fb1 (OSD_NORMAL2) frame 0/1: /home/ekollof/Work/tvhack/artifacts/analysis/display-review-2026-11-04/focus3_0.png ((0, 255), (0, 255), (0, 255))
+fb1 (OSD_NORMAL2) frame 1/1: /home/ekollof/Work/tvhack/artifacts/analysis/display-review-2026-11-04/focus3_1.png ((0, 255), (0, 255), (0, 255))

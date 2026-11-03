@@ -1,0 +1,991 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+[748481] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[748481] INFO host         started quiesce_fixture
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] INFO host         stopped quiesce_fixture
+[748481] INFO host         unloaded quiesce_fixture
+[748481] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] INFO host         stopped quiesce_fixture
+[748481] INFO host         unloaded quiesce_fixture
+[748481] ERR  host         load 'build/tests/mod_quiesce_fixture.so': init() failed (-1)
+[748481] ERR  host         quiesce_fixture: init cleanup pending; retry unload
+[748481] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] INFO host         stopped quiesce_fixture
+[748481] INFO host         unloaded quiesce_fixture
+[748481] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[748481] ERR  host         quiesce_fixture: start() failed (-1)
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] INFO host         stopped quiesce_fixture
+[748481] INFO host         unloaded quiesce_fixture
+[748481] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[748481] INFO host         started quiesce_fixture
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] INFO host         stopped quiesce_fixture
+[748481] INFO host         unloaded quiesce_fixture
+[748481] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[748481] INFO host         started quiesce_fixture
+[748481] INFO host         stopped quiesce_fixture
+[748481] INFO host         unloaded quiesce_fixture
+[748481] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[748481] INFO host         quiesce_fixture: reloaded (suspended)
+[748481] ERR  host         quiesce_fixture: start() failed (-1)
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] WARN host         quiesce_fixture: resume failed (-1)
+[748481] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] INFO host         stopped quiesce_fixture
+[748481] INFO host         unloaded quiesce_fixture
+[748481] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[748481] INFO host         started quiesce_fixture
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] INFO host         stopped quiesce_fixture
+[748481] INFO host         unloaded quiesce_fixture
+[748481] ERR  host         load 'quiesce_fixture': host is not accepting modules
+[748481] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[748481] INFO host         started quiesce_fixture
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748481] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[748512] INFO host         stopped quiesce_fixture
+[748512] INFO host         unloaded quiesce_fixture
+[748512] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[748512] INFO host         started quiesce_fixture
+[748512] ERR  host         quiesce_fixture: refusing to stop, service 'test.quiesce.instance' still held
+[748512] ERR  host         quiesce_fixture: refusing to unload, service 'test.quiesce.instance' still held (use --force)
+[748512] ERR  host         quiesce_fixture: shutdown left module loaded (state started, cleanup_pending 0)
+[748512] INFO host         stopped quiesce_fixture
+[748512] INFO host         unloaded quiesce_fixture
+  ok   running veto retains DSO/posts/services; force cannot bypass; completion permits unload
+  ok   never-started init resources protected by gate
+  ok   failed init retained and discoverable for cleanup, never activated
+  ok   failed partial start retains callback code until completion
+  ok   suspended instance cannot resume while cleanup is pending
+  ok   failed deferred activation retains resources and eventually runs stop
+  ok   shutdown dispatches the gate completion and retries unload before return
+  ok   shutdown waits for a worker completion post before unload
+  ok   shutdown reports a held module and does not dlclose it
+[748513] ERR  host         load 'build/tests/mod_abi_v1.so': abi 1 != 3
+[748513] ERR  host         load 'build/tests/mod_abi_v2.so': abi 2 != 3
+[748513] ERR  host         load 'build/tests/mod_abi_short.so': descriptor size 16 < 168
+[748514] INFO host         loaded abi_extended v? (build/tests/mod_abi_extended.so)
+[748514] INFO host         started abi_extended
+[748514] INFO host         stopped abi_extended
+[748514] INFO host         unloaded abi_extended
+[748514] INFO host         loaded post_worker vtest (build/tests/mod_post_worker.so)
+[748514] INFO host         started post_worker
+[748514] INFO host         stopped post_worker
+[748514] INFO host         unloaded post_worker
+[748514] INFO host         loaded post_worker vtest (build/tests/mod_post_worker.so)
+[748514] INFO host         post_worker: restored 4 bytes of state
+[748514] INFO host         started post_worker
+[748514] INFO host         post_worker: reloaded (started)
+[748515] INFO host         stopped post_worker
+[748515] INFO host         started post_worker
+[748515] INFO host         loaded ticker v1.0 (build/modules/mod_ticker.so)
+[748515] INFO host         started ticker
+[748515] INFO ticker       stopped post_worker
+[748515] INFO ticker       unloaded post_worker
+[748515] INFO host         stopped ticker
+[748515] INFO host         unloaded ticker
+[748515] ERR  host         load 'build/tests/mod_post_fail_init.so': init() failed (-1)
+[748515] INFO host         loaded post_worker vtest (build/tests/mod_post_fail_start.so)
+[748516] ERR  host         post_worker: start() failed (-1)
+[748516] INFO host         unloaded post_worker
+  ok   old/short descriptors rejected before guard page; extended prefix accepted
+  ok   real worker post dispatches under its owner; registrations inherit ownership
+  ok   socket/CLI dispatcher reload preserves state, cancels old work, rejects old token
+  ok   queue saturation, stop-time worker post rejection, cleanup and restart
+  ok   an earlier post can unload another owner without dispatching its stale callback
+  ok   failed init/start cancel queued module code and close post acceptance
+[748517] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748517] INFO host         unloaded reload_fixture
+[748517] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748517] INFO host         reload_fixture: restored 4 bytes of state
+[748517] INFO host         reload_fixture: reloaded (loaded)
+[748517] INFO host         started reload_fixture
+[748517] INFO host         stopped reload_fixture
+[748517] INFO host         unloaded reload_fixture
+[748517] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748517] INFO host         reload_fixture: restored 4 bytes of state
+[748517] INFO host         reload_fixture: reloaded (loaded)
+[748517] INFO host         unloaded reload_fixture
+[748517] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748517] INFO host         started reload_fixture
+[748517] INFO host         stopped reload_fixture
+[748517] INFO host         unloaded reload_fixture
+[748517] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748517] INFO host         reload_fixture: restored 4 bytes of state
+[748517] INFO host         started reload_fixture
+[748517] INFO host         reload_fixture: reloaded (started)
+[748517] INFO host         stopped reload_fixture
+[748517] INFO host         unloaded reload_fixture
+[748517] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748517] INFO host         started reload_fixture
+[748517] INFO host         stopped reload_fixture
+[748517] INFO host         unloaded reload_fixture
+[748517] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748517] INFO host         reload_fixture: restored 4 bytes of state
+[748517] INFO host         reload_fixture: reloaded (suspended)
+[748517] INFO host         started reload_fixture
+[748517] INFO host         stopped reload_fixture
+[748517] INFO host         unloaded reload_fixture
+[748517] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748517] INFO host         started reload_fixture
+[748517] INFO host         stopped reload_fixture
+[748517] INFO host         unloaded reload_fixture
+[748517] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748517] INFO host         reload_fixture: restored 4 bytes of state
+[748518] INFO host         reload_fixture: reloaded (suspended)
+[748518] ERR  host         reload_fixture: start() failed (-1)
+[748518] WARN host         reload_fixture: resume failed (-1)
+[748518] INFO host         started reload_fixture
+[748518] INFO host         stopped reload_fixture
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748518] INFO host         reload_fixture: restored 4 bytes of state
+[748518] INFO host         reload_fixture: reloaded (suspended)
+[748518] INFO host         stopped reload_fixture
+[748518] INFO host         started reload_fixture
+[748518] INFO host         stopped reload_fixture
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748518] INFO host         started reload_fixture
+[748518] INFO host         stopped reload_fixture
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748518] INFO host         reload_fixture: restored 4 bytes of state
+[748518] INFO host         reload_fixture: reloaded (suspended)
+[748518] INFO host         stopped reload_fixture
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748518] INFO host         reload_fixture: restored 4 bytes of state
+[748518] INFO host         reload_fixture: reloaded (suspended)
+[748518] INFO host         stopped reload_fixture
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748518] INFO host         started reload_fixture
+[748518] ERR  host         reload_fixture: cannot allocate saved state; reload canceled
+[748518] ERR  host         reload_fixture: state size 65537 exceeds 65536; reload canceled
+[748518] ERR  host         reload_fixture: saved state grew beyond capacity; reload canceled
+[748518] INFO host         stopped reload_fixture
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748518] INFO host         started reload_fixture
+[748518] INFO host         stopped reload_fixture
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748518] ERR  host         reload_fixture: restore() failed or absent (-7)
+[748518] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748518] INFO host         started reload_fixture
+[748518] INFO host         stopped reload_fixture
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[748518] INFO host         reload_fixture: restored 4 bytes of state
+[748518] ERR  host         reload_fixture: start() failed (-1)
+[748518] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-Cdk0LT/module.so)
+[748518] INFO host         started reload_fixture
+[748518] INFO host         stopped reload_fixture
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-Cdk0LT/module.so)
+[748518] ERR  host         reload_fixture: restore() failed or absent (-1)
+[748518] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-Cdk0LT/module.so)
+[748518] INFO host         started reload_fixture
+[748518] INFO host         stopped reload_fixture
+[748518] INFO host         unloaded reload_fixture
+[748518] INFO host         loaded reload_renamed vtest (/tmp/openaurora-reload-Cdk0LT/module.so)
+[748518] ERR  host         reload_fixture: replacement name 'reload_renamed' differs
+[748518] WARN host         reload_renamed: force unload, consumers may hold stale pointers
+[748518] INFO host         unloaded reload_renamed
+  ok   never-started and stopped reload preserve loaded state without activation
+  ok   running reload restores state and starts the new instance
+  ok   suspended reload defers start until wake; start on suspended resumes once
+  ok   deferred start can fail/retry or be stopped before touching hardware
+  ok   repeated suspended reload purges posts; unload skips stop on never-started candidate
+  ok   allocation/oversized/growing state failures preserve the working module
+  ok   restore failure is reported and candidate registrations/posts are swept
+  ok   replacement start failure cleans the candidate instead of leaving partial state
+  ok   changed binary without restore or with a new identity is rejected and cleaned
+[748519] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748519] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748519] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748519] INFO host         started phase_c
+[748519] INFO host         started phase_b
+[748519] INFO host         started phase_a
+[748519] INFO host         stopped phase_a
+[748519] INFO host         unloaded phase_a
+[748519] INFO host         stopped phase_b
+[748519] INFO host         unloaded phase_b
+[748519] INFO host         stopped phase_c
+[748519] INFO host         unloaded phase_c
+[748519] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748519] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748519] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748519] INFO host         started phase_c
+[748519] INFO host         started phase_b
+[748519] INFO host         started phase_a
+[748519] ERR  host         phase_b: required by active module 'phase_a'
+[748519] ERR  host         phase_b: required by active module 'phase_a'
+[748520] ERR  host         phase_b: required by active module 'phase_a'
+[748520] INFO host         stopped phase_a
+[748520] INFO host         unloaded phase_a
+[748520] INFO host         stopped phase_b
+[748520] INFO host         unloaded phase_b
+[748520] INFO host         stopped phase_c
+[748520] INFO host         unloaded phase_c
+[748520] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748520] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748520] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748520] INFO host         started phase_c
+[748520] INFO host         started phase_b
+[748520] INFO host         started phase_a
+[748520] INFO host         stopped phase_a
+[748520] INFO host         unloaded phase_a
+[748520] INFO host         stopped phase_b
+[748520] INFO host         unloaded phase_b
+[748520] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748520] INFO host         phase_b: reloaded (suspended)
+[748520] INFO host         started phase_b
+[748520] INFO host         stopped phase_b
+[748520] INFO host         unloaded phase_b
+[748520] INFO host         stopped phase_c
+[748520] INFO host         unloaded phase_c
+[748520] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748520] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748520] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748520] INFO host         started phase_c
+[748520] INFO host         started phase_b
+[748520] INFO host         started phase_a
+[748520] WARN host         phase_b: suspend failed (-7)
+[748520] INFO host         stopped phase_a
+[748520] INFO host         unloaded phase_a
+[748520] INFO host         stopped phase_b
+[748520] INFO host         unloaded phase_b
+[748520] INFO host         stopped phase_c
+[748520] INFO host         unloaded phase_c
+[748520] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748520] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748520] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748520] INFO host         started phase_c
+[748520] INFO host         started phase_b
+[748520] INFO host         started phase_a
+[748520] WARN host         phase_c: resume failed (-7)
+[748520] INFO host         stopped phase_a
+[748520] INFO host         unloaded phase_a
+[748520] INFO host         stopped phase_b
+[748520] INFO host         unloaded phase_b
+[748520] INFO host         stopped phase_c
+[748520] INFO host         unloaded phase_c
+[748520] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748520] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748520] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748520] INFO host         started phase_c
+[748520] INFO host         started phase_b
+[748520] INFO host         started phase_a
+[748520] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[748520] INFO host         stopped phase_b
+[748520] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[748520] INFO host         started phase_b
+[748520] INFO host         stopped phase_a
+[748520] INFO host         unloaded phase_a
+[748520] INFO host         stopped phase_b
+[748520] INFO host         unloaded phase_b
+[748520] INFO host         stopped phase_c
+[748520] INFO host         unloaded phase_c
+[748520] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748520] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748520] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748520] INFO host         started phase_c
+[748520] INFO host         started phase_b
+[748520] INFO host         started phase_a
+[748520] ERR  host         module dependency cycle; lifecycle transition canceled
+[748520] INFO host         stopped phase_a
+[748520] INFO host         unloaded phase_a
+[748520] INFO host         stopped phase_b
+[748520] INFO host         unloaded phase_b
+[748520] INFO host         stopped phase_c
+[748520] INFO host         unloaded phase_c
+[748520] INFO host         loaded phase_a vtest (build/tests/mod_phase_no_suspend.so)
+[748520] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748520] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748520] INFO host         started phase_c
+[748520] INFO host         started phase_b
+[748520] INFO host         started phase_a
+[748520] ERR  host         phase_b: consumer 'phase_a' is still active
+[748520] INFO host         stopped phase_a
+[748520] INFO host         unloaded phase_a
+[748520] INFO host         stopped phase_b
+[748520] INFO host         unloaded phase_b
+[748520] INFO host         stopped phase_c
+[748520] INFO host         unloaded phase_c
+[748520] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748521] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748521] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748521] INFO host         started phase_c
+[748521] INFO host         started phase_b
+[748521] INFO host         started phase_a
+[748521] INFO host         stopped phase_c
+[748521] INFO host         unloaded phase_c
+[748521] INFO host         loaded phase_c_new vtest (build/tests/mod_phase_replacement.so)
+[748521] INFO host         started phase_c_new
+[748521] INFO host         stopped phase_a
+[748521] INFO host         unloaded phase_a
+[748521] INFO host         stopped phase_b
+[748521] INFO host         unloaded phase_b
+[748521] INFO host         stopped phase_c_new
+[748521] INFO host         unloaded phase_c_new
+[748521] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748521] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748521] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748521] INFO host         started phase_c
+[748521] INFO host         started phase_b
+[748521] INFO host         started phase_a
+[748521] ERR  phase_c      load 'phase_b': host is not accepting modules
+[748521] INFO host         stopped phase_a
+[748521] INFO host         unloaded phase_a
+[748521] INFO host         stopped phase_b
+[748521] INFO host         unloaded phase_b
+[748521] INFO host         stopped phase_c
+[748521] INFO host         unloaded phase_c
+[748521] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748521] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748521] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748521] INFO host         started phase_c
+[748521] INFO host         started phase_b
+[748521] INFO host         started phase_a
+[748521] WARN host         phase_b: suspend failed (-7)
+[748521] INFO host         stopped phase_a
+[748521] INFO host         unloaded phase_a
+[748521] INFO host         stopped phase_b
+[748521] INFO host         unloaded phase_b
+[748521] INFO host         stopped phase_c
+[748521] INFO host         unloaded phase_c
+[748521] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748521] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748521] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748521] INFO host         started phase_c
+[748521] INFO host         started phase_b
+[748521] INFO host         started phase_a
+[748521] INFO host         stopped phase_a
+[748521] INFO host         unloaded phase_a
+[748521] INFO host         stopped phase_b
+[748521] INFO host         unloaded phase_b
+[748521] INFO host         stopped phase_c
+[748521] INFO host         unloaded phase_c
+[748521] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748521] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748521] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748521] INFO host         started phase_c
+[748521] INFO host         started phase_b
+[748521] INFO host         started phase_a
+[748521] WARN host         phase_b: sleep-cycle restore failed (-7)
+[748521] ERR  host         phase_a: missing required service 'phase_b_service'
+[748521] WARN host         phase_a: sleep-cycle restore failed (-1)
+[748521] INFO host         stopped phase_a
+[748521] INFO host         unloaded phase_a
+[748521] INFO host         stopped phase_b
+[748521] INFO host         unloaded phase_b
+[748521] INFO host         stopped phase_c
+[748521] INFO host         unloaded phase_c
+[748521] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748521] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748521] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748521] INFO host         started phase_c
+[748521] INFO host         started phase_b
+[748521] INFO host         started phase_a
+[748521] INFO host         stopped phase_a
+[748521] INFO host         unloaded phase_a
+[748521] INFO host         stopped phase_b
+[748521] INFO host         unloaded phase_b
+[748521] INFO host         stopped phase_c
+[748521] INFO host         unloaded phase_c
+[748521] INFO host         loaded phase_a vtest (build/tests/mod_phase_no_suspend.so)
+[748521] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748521] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748521] INFO host         started phase_c
+[748521] INFO host         started phase_b
+[748521] INFO host         started phase_a
+[748521] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[748521] INFO host         stopped phase_a
+[748521] INFO host         unloaded phase_a
+[748521] INFO host         stopped phase_b
+[748521] INFO host         unloaded phase_b
+[748521] INFO host         stopped phase_c
+[748521] INFO host         unloaded phase_c
+[748521] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748521] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748521] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748521] INFO host         started phase_c
+[748521] INFO host         started phase_b
+[748521] INFO host         started phase_a
+[748521] INFO host         stopped phase_a
+[748521] INFO host         unloaded phase_a
+[748521] INFO host         stopped phase_b
+[748522] INFO host         unloaded phase_b
+[748522] INFO host         stopped phase_c
+[748522] INFO host         unloaded phase_c
+[748522] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748522] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748522] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748522] INFO host         started phase_c
+[748522] INFO host         started phase_b
+[748522] INFO host         started phase_a
+[748522] INFO host         stopped phase_a
+[748522] INFO host         unloaded phase_a
+[748522] INFO host         stopped phase_b
+[748522] INFO host         unloaded phase_b
+[748522] INFO host         stopped phase_c
+[748522] INFO host         unloaded phase_c
+[748522] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[748522] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[748522] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[748522] INFO host         started phase_c
+[748522] INFO host         started phase_b
+[748522] INFO host         started phase_a
+[748522] ERR  host         module dependency cycle; lifecycle transition canceled
+[748522] INFO host         stopped phase_a
+[748522] INFO host         unloaded phase_a
+[748522] INFO host         stopped phase_b
+[748522] INFO host         unloaded phase_b
+[748522] INFO host         stopped phase_c
+[748522] INFO host         unloaded phase_c
+  ok   declared service dependencies suspend consumers first and resume providers first
+  ok   declared dependencies protect active consumers during stop/unload/reload
+  ok   dependency snapshot survives service unpublication and deferred reload into a hole
+  ok   failed consumer suspend protects its providers and reports failure through CLI
+  ok   failed provider resume keeps consumers suspended; a later resume retries
+  ok   published interface alone cannot start/resume a consumer above a suspended provider
+  ok   runtime lookup holds join the dependency graph; cycles fail before callbacks
+  ok   consumer without a suspend hook cannot be left active above a sleeping provider
+  ok   dependency edges follow a republished service to its current provider
+  ok   sleep cycle enters last, restores automatically and pins modules/rejects nested cycles
+  ok   failed preparation skips entry and restores only successful transitions
+  ok   entry failure still restores modules and retains its distinct error
+  ok   restoration failure remains visible; dependent consumers stay suspended and retry works
+  ok   cycle ledger preserves modules already suspended before the request
+  ok   missing hooks refuse before callbacks rather than assuming quiescence
+  ok   pending shutdown and stale backend owner reject before preparation
+  ok   shutdown arriving during preparation cancels entry and still restores modules
+  ok   dependency cycles reject sleep before callbacks or backend entry
+[748523] ERR  power        RAM entry write returned -1
+[748523] ERR  power        RAM entry write returned 2
+[748523] ERR  power        open /sys/power/state failed
+[748523] ERR  host         phase_a: missing required service 'phase_b_service'
+[748524] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[748524] ERR  power        publish power: already published by module 0
+[748524] ERR  host         power: start() failed (-1)
+[748524] ERR  host         power: missing required service 'host.sleep'
+  ok   manual hooks never sleep; CLI/service enter last and notify ON only after restore
+  ok   preparation failure restores completed transitions without opening power state
+  ok   failed open/short/failed mem write still restore; failed writes never count as sleep
+  ok   restore failure reports error and RESUMING, never premature ON; hooks remain retryable
+  ok   disabled power and incomplete quiescence hooks refuse without I/O or state events
+  ok   service preserves preexisting suspended modules and restores prior state before ON
+  ok   failed publication retains peer service; missing coordinator refuses and releases holds
+[748525] ERR  ui_clock     timer table full
+[748525] ERR  host         ui_clock: missing required service 'clock'
+[748525] ERR  ui_clock     timer table full
+[748525] ERR  host         ui_clock: start() failed (-1)
+[748525] ERR  ui_clock     publish ui.clock: already published by module 0
+[748525] ERR  host         ui_clock: start() failed (-1)
+[748525] ERR  host         ticker: required by active module 'ui_clock'
+  ok   FROST quantum boundaries, correction carry and raw/corrected 90000000-ms rollover
+  ok   real DSO reload preserves clock state, replaces owned timer and rejects invalid snapshots atomically
+  ok   suspend removes timer; failed resume can retry without losing elapsed time/correction
+  ok   ARM raw 32-bit truncation and strict > period comparison are preserved
+  ok   missing raw clock, full timer table and publication collision clean up; start can retry
+  ok   real ticker/ui_clock dependency chain quiesces both timers and resumes in provider order
+  ok   owned one-second sampling advances idle clock state without a client query
+[748526] INFO host         loaded ui_anim v1 (build/modules/mod_ui_anim.so)
+[748526] INFO host         started ui_anim
+[748526] ERR  ui_anim      timer table full
+[748526] WARN host         ui_anim: resume failed (-1)
+[748526] INFO host         stopped ui_anim
+[748526] INFO host         unloaded ui_anim
+  ok   animation completion/finalise callbacks can replace their own slot
+  ok   real animation DSO restores its timer after suspend; timer allocation failure is retryable
+  ok   text-slide duration/margin match AnimationHelper (pause 800, speed 50, x1000)
+  ok   full-screen animation types 1..8 match the HAL vertex rules and clamp
+  ok   scene transform equals oa_fs_apply for affine types; keystone flagged
+  ok   full-screen portal follows remote frames; focus survives reload
+[748578] INFO host         loaded plat v0.1 (build/tests/ui-sources/modules/mod_plat.so)
+[748578] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[748578] INFO plat         plat: common init (vpltio/v4l2/sharemem/drm, DVIF)
+[748578] INFO plat         plat: VIN slot defaults (7 slots)
+[748578] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[748578] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[748578] INFO host         started plat
+[748579] INFO host         loaded nav_display v1 (build/tests/ui-sources/modules/mod_nav_display.so)
+[748579] INFO host         started nav_display
+[748579] INFO host         loaded ir v0.1 (build/tests/ui-sources/modules/mod_ir.so)
+[748579] INFO ir           remote parser ready; UART path empty
+[748579] INFO host         started ir
+[748579] INFO host         loaded ticker v1.0 (build/tests/ui-sources/modules/mod_ticker.so)
+[748579] INFO host         started ticker
+[748580] INFO host         loaded ui_clock v0.1 (build/tests/ui-sources/modules/mod_ui_clock.so)
+[748580] INFO host         started ui_clock
+[748580] INFO host         loaded ui_anim v1 (build/tests/ui-sources/modules/mod_ui_anim.so)
+[748580] INFO host         started ui_anim
+[748580] INFO host         loaded settings v0.2 (build/tests/ui-sources/modules/mod_settings.so)
+[748581] INFO settings     /home/ekollof/Work/tvhack/openaurora/build/tests/ui-sources/settings.db open (read-only)
+[748581] INFO host         started settings
+[748581] INFO host         loaded ui_engine v1 (build/tests/ui-sources/modules/mod_ui_engine.so)
+[748581] INFO ui_engine    ui_engine started
+[748581] INFO host         started ui_engine
+[748582] INFO host         loaded ui_vendor v0.2 (build/tests/ui-sources/modules/mod_ui_vendor.so)
+[748582] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 2 card 0
+[748582] INFO host         started ui_vendor
+[748582] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 1 card 0
+[748582] INFO ui_vendor    painted source selection: row 0
+[748582] INFO ui_vendor    painted source selection: row 1
+[748582] INFO ui_vendor    painted source selection: row 0
+[748582] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 1 card 0
+  ok   source selection: rail Select opens the 780x1080 panel, Up/Down moves the 748x66 bar, Exit returns
+[748587] ERR  host         ui_engine: refusing to unload, service 'ui.engine' still held (use --force)
+[748588] ERR  host         ui_engine: refusing to unload, service 'ui.engine' still held (use --force)
+[748588] ERR  host         ui_engine: start() failed (-1)
+  ok   engine rejects malformed or ambiguous asset names/sizes and keeps RGBA alpha
+  ok   ui.skin selects the engine's active skin; vendor and omarchy switch by reload, no rebuild
+  ok   queued input survives forced engine removal safely; Omarchy rebinds and pins its replacement
+  ok   queued-input skin unload/reload and suspend/resume leave no borrowed callbacks or heap posts
+  ok   vendor skin re-registers after forced engine replacement and receives keys again
+  ok   configured repaint timer allocation failures reject start/resume and remain retryable
+  ok   captured picture-settings state paints rail/top/category bands; rail-4 Select enters, Exit returns
+  ok   full settings panel paints at 0,0; Exit returns to quick tiles, Select reopens, Exit to portal
+  ok   Up/Down selects settings rows at the 70 px pitch, skips row 6 and clamps; Exit returns
+  ok   ui.text renders font7+16 labels/values/digits and the font18 title at composed origins with captured fallback
+  ok   missing font pack falls back to the captured settings panel
+  ok   title lab flag defaults off: rows live, captured title kept
+  ok   unusable title font retains live rows and captured title
+  ok   lab preset validates tokens and preserves enabled editing
+  ok   lab edit disabled ignores presets and key edits
+  ok   text slide clips to the box, follows AnimationHelper margins and repeats
+[748626] ERR  host         ui_engine: missing required service 'display'
+[748626] ERR  host         ui_anim: refusing to stop, service 'ui.anim' still held
+[748626] ERR  host         fake_clock: required by active module 'ui_anim'
+  ok   ui_vendor rebinds late providers, drops forced-unloaded ones and resumes
+  ok   rail highlight plays 11 frames at 30 ms in the vendor button window
+  ok   all 256 headers / 1..16-byte frame round trips, poll distinction and atomic bounds rejection
+  ok   all audio-status bytes: mute bit, 0..100 percent, unknown 127 and reserved rejection
+  ok   System Audio / key golden frames, operand counts, addressing and explicit unsupported scope
+  ok   all six ARC directions, broadcast rejection and physical-address tree rules
+  ok   spec overrides vendor filter: directed OSD name, all printable-ASCII boundaries, direct/broadcast System Audio Mode
+  ok   physical-address broadcast, CEC 1.4 device types, directed power-status values and explicit unsupported scope
+  ok   verified HAL request blocks, clamping, scalar failures and unchanged cached state on failure
+  ok   state handoff reapplies volume/mute; invalid snapshots reject atomically
+  ok   unknown volume/mute snapshot never applies guessed zero defaults
+  ok   publication collision preserves peer; failed platform and disabled audio never call HAL
+  ok   missing session I/O fails before a socket; enabled HAL refuses suspend; idle owner joins
+  ok   each audio-prelude failure gates later hardware stages; success calls prelude once before platform stages
+[748983] ERR  host         audio: cleanup pending; retry stop/unload
+  ok   suspend failed while the HAL is enabled; the module stayed started and the host stayed up
+[748990] ERR  host         cec: cleanup pending; retry stop/unload
+[748991] ERR  host         cec: cleanup pending; retry stop/unload
+[748991] ERR  host         audio: cleanup pending; retry stop/unload
+[748991] ERR  host         plat: required by active module 'audio'
+  ok   System Audio mutes local volume; ARC follows 1.4 direction; route survives reload
+  ok   all 256 headers / 1..16-byte frames through raw and VPL receive layouts; canaries intact
+  ok   VPL outgoing TV commands preserve operands; zero tail; foreign initiator and poll reject atomically
+  ok   mandatory 16-byte storage, empty NULL-buffer read, bad pointer/length/status never change output
+  ok   ioctl success cannot hide rejected driver status; malformed VPL metadata rejects atomically
+  ok   native fd zero, exact open/close parameters, TV frame/poll transmission and independent reopen
+  ok   failed open/init unwind once, preserve primary errno and retain failed hardware-close ownership for retry
+  ok   raw RX accepts spec-valid broadcast audio; empty/error atomicity; TX EINTR is not replayed; final close consumes fd
+  ok   blocked acquire is nonblocking; path/tables are copied; invalid I/O never touches authority
+  ok   send owns its frame; decoded/empty receives have distinct ticketed copied results
+  ok   failed hardware release retains fd and copied backend until an explicit successful retry
+  ok   shutdown drains blocked receive; failed-close generations retain session and untaken result until join
+[749012] ERR  host         cec: cleanup pending; retry stop/unload
+[749016] ERR  ticker       cec: refusing to unload, service 'cec.owner' still held (use --force)
+[749016] ERR  host         cec: cleanup pending; retry stop/unload
+[749017] ERR  host         cec: cleanup pending; retry stop/unload
+  ok   authority keeps an existing bit and writes 0xf011 low-byte|2 only when it is clear
+  ok   worker serializes authority, open and send; failed close stays owned until a later quiesce
+  ok   control reload/suspend/resume joins the idle worker; a held service stays loaded
+  ok   both 101-entry AQ tables: exact selection, unaligned little-endian loads and 32-to-16-bit narrowing
+  ok   every truncated length / oversized inputs reject atomically; null guards and unsigned volume clamping
+  ok   real DSO/CLI start and reload reread AQ; published snapshots and caller copies remain immutable
+  ok   real registry consumer hold blocks stop/unload/reload; release allows clean stop
+  ok   publication collision preserves peer service; the same module can retry start
+  ok   missing/invalid profile, absent/short/long file, directory and FIFO reject without publication; aggressive retry works
+  ok   standby retains immutable data; suspended reload defers I/O/publication, failed activation retries on resume
+  ok   failed replacement leaves no stale provider; explicit load recovers (host has no old-binary rollback)
+  ok   exact vendor netlink golden frames, packed unaligned binary parameters, all zero tails and canaries
+  ok   invalid port/device/table/pointer/count/capacity rejects without changing output
+  ok   complete kernel reply / optional alignment padding; malformed lengths, identity, command and NUL reject atomically
+  ok   fd zero, exact socket flags/process binding, stale-reply drain, matching reply and idempotent close
+  ok   socket/bind failure unwind and primary errno; invalid I/O table; final close error consumes fd and permits reopen
+  ok   table/selection dispatch with exact pointer/indices; invalid input never sends; short send rejects and EINTR never replays
+  ok   direct OPU-gain dispatch uses bounded channel units; invalid/short/EINTR/closed-session paths never replay or fabricate an ACK
+  ok   bounded drain, timeout/error recovery, no wait replay, kernel peer/truncation/device/shape rejection and atomic query output
+  ok   inherited child cannot query parent's session; child close leaves parent ownership usable
+  ok   CEC/audio in-flight opens stay worker-owned; quiesce returns before I/O completion
+  ok   async open returns during blocked I/O, owns callback-table copy and applies bounded backpressure
+  ok   results are ticketed, owned and collected once; worker errors survive and failed OS close consumes fd
+  ok   quiesce rejects new work, drains accepted open and closes before join; result survives shutdown
+[749037] ERR  host         audio_mixer: refusing to unload, service 'audio.mixer' still held (use --force)
+[749038] ERR  host         audio_mixer: refusing to unload, service 'audio.mixer' still held (use --force)
+[749040] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749042] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749042] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749101] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749101] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749163] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749163] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749203] ERR  host         audio_mixer: start() failed (-1)
+[749203] ERR  audio_mixer  timer table full
+[749203] ERR  host         audio_mixer: start() failed (-1)
+[749203] ERR  host         audio_mixer: start() failed (-1)
+[749203] ERR  host         audio_mixer: start() failed (-1)
+[749205] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749205] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749205] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749205] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749205] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[749207] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+  ok   real DSO owns watches/timer, bounds requests, cancels/drains, preserves holds across suspend and invalidates reload tickets
+  ok   mismatched/oversize/EOF/error replies, final buffered reply and shutdown during a hung request release every child
+  ok   spawn/timer/watch failures unwind without a child or stale service
+  ok   missing exec interpreter is safe for immediate or asynchronous libc spawn failure; child is reaped
+  ok   real control socket queries/collects and reloads the DSO while the host reactor stays responsive
+  ok   fixed endian/ticket protocol rejects malformed, reserved, short/long and inconsistent error packets atomically
+  ok   broker reuses one lazy session, echoes tickets/errors without replay and closes on IPC EOF
+  ok   truncated request and wrong IPC socket type fail before any mixer open/send
+  ok   posix_spawn child owns its session, drops unrelated inherited fds and exits cleanly after EOF
+  ok   audio worker rejects a real socket, runs gain off the caller, and closes on quiesce
+[749212] INFO host         control socket /tmp/oa-control-w0hHxN/control.sock
+  ok   full list/status replies reach a Unix socket client intact
+  ok   control replies stay bounded for full tables and tiny buffers
+  ok   short writes, EINTR/EAGAIN, split/pipelined requests and half-close drain
+  ok   stalled reader cannot block another client; queued replies drain in order
+  ok   EPIPE and disconnected readers do not raise SIGPIPE or kill host
+  ok   overlong/NUL lines rejected whole; next valid and 511-byte commands work
+  ok   repeated stop/start, failed watch registration and socket identity cleanup
+  ok   translucent canvas reaches premultiplied BGRA scanout at identity and during fade
+  ok   default current-frame presentation commits every time, including after resume
+  ok   single-buffer presentation also commits through FBIOPAN_DISPLAY
+  ok   sync/commit failures propagate and retry the same frame before rotation
+  ok   scene surface maps the recovered quad (x-slide, scale, keystone, clear)
+  ok   keystone samples both fan triangles; all completed transforms preserve the scene
+  ok   uniform-only fade preserves premultiplied BGRA and transparent-black endpoints
+  ok   optimized opaque slides/fade match the general filtered rasterizer within one byte
+/dev/fb1: 0x0 virt 0x0 bpp 0 offset 0,0
+primary mapping: physical=0 bytes=0 stride=0
+current MAU: 1 (alternate memory selected)
+region: [0]=0(0) [1]=0(0) [2]=0(0) [3]=0(0) [4]=0(0) [5]=0(0) [6]=0(0) [7]=0(0)
+  ok   fbregion opens read-only and submits only screeninfo/MAU/region GET requests
+  ok   BinSVG animation golden fields/sign extension; all truncated prefixes reject safely
+  ok   resource CRC32 vectors, ELF segment translation/BSS/EOF, bounded dynamic symbols
+  ok   SVGGrid: rows/column step truncate like __aeabi_idiv; button origins and sizes follow the firmware formula
+  ok   portal appsGrid (5 cols, 1554x720, row step 230) yields 3 rows and a 310 px column step; fresh-grid zero insets give 310x230 buttons
+  ok   gridFA margins reproduce mTopL/mBotL/mRowL; runtime +0x1fc/+0x200 are per-cell paint state, not tested as constants
+  ok   DialogFullScreenPortal chrome and the 5x3 cell grid (310x230) match the BinSVG rectangles
+  ok   valid module passes; constructors/startup do not run; no control socket
+  ok   ABI mismatch, legacy/no-note, missing entry and invalid ELF reject
+  ok   unresolved function rejects even when glibc trace exits zero
+  ok   real DT_NEEDED dependency passes with RPATH, rejects when missing
+  ok   present library with incompatible symbol version rejects
+  ok   empty/missing module directory rejects
+ok settings.hotel: readonly companion, SQL integer narrowing/NULL/text, reload and non-waiting busy error
+ok settings.hotel: either consumer hold pins provider; removal refuses cached reads; both publication collisions preserve peers
+ok settings.hotel: empty/schema errors preserve output, no schema creation/sync; first persisted row and cleanup
+ok ui.profile: immutable copied facts, exact-one values and CLI reload snapshot replacement
+ok ui.profile: consumer holds, removal callback unavailability, publication collision and retry
+ok ui.profile: standby keeps facts, suspended reload defers I/O, failed resume activation retries
+ok ui.profile: invalid/special/oversized/malformed inputs reject, service never reads deleted file
+ok navigation: CLI domains/validation, copied current selection at take, retained fields and pending reload
+ok navigation v2: independent setters preserve queue, signed32/raw byte domains, v1 prefix and OAN2 reload/take
+ok navigation: atomic full queue, shutdown gate, standby retention, suspended reload and publication-failure retry
+ok navigation: holds, OAN1 migration/OAN2 validation and1792 raw-state roundtrips, signed retained row and cleanup
+ok list: CLI domains/validation, verified key chain, suspend/resume, shutdown gate, OAL1 reload and unload
+ok launcher routing: ID bounds/holes, ordered settings plans, retained fields, atomic unsupported/invalid cases
+ok tab policy: availability/raw bytes, initial selection/fallback/empty group, requested focus and atomic invalid inputs
+ok tab events: exact reset/update ordering, dynamic state, existing/missing content, gate changes, full ICE codes and invalid callbacks
+ok tab pre-handler: focused forwarding, back/menu ordering, media guide, edge jump, original/synthetic identity and missing-child safety
+ok tab dispatch: original event, full-width type/id, menu consumption, ordered pre/fallback and failure gates
+ok tab leaves: showing-gated volume, signed rolling digits, menu/exit distinctions and owned repost ordering
+ok settings input: base-map distinctions, list/update order, mirror translation and dynamic description fallback
+ok settings navigation: active-ID cursor wrap/jumps, viewport updates, captured geometry and invalid-read bounds
+ok settings list: row-presence truth, original-row/new-record writeback, mirrored event identity and missing-record bounds
+ok SVG list bodies: seven key paths, signed page arithmetic, wrap/clamp, notify and group indices
+ok profile: nested/duplicate/type/default/exact-one semantics, truncated/escaping descendant spans and atomic errors
+ok SVG list moves: eight primitives, wrap arithmetic, no animation on shifts
+ok SVG list rows: manager field layout, focus switch/store and partial forward
+ok SVG list scrollbar: create/hide gating, literal rect math, show and position
+ok SVG list impl: rotate pairs/position swap, partial/full redraw, hide, empty, clamp/focus
+ok SVG scrollbar body: create forward, signed gate, store, background/bar
+ok SVG list rows/update: total/last-visible/item-row bounds and full refresh order
+ok SVG list widgets: numeric forward, created/none gates, table-walk id, slide and checked paths
+ok settings draw: 2048 type/style/value cases, owned temporaries/failure unwind and bounds
+ok settings model: 2048 real-provider draws, deep ownership, decimal limits, reentry and allocation unwind
+ok settings row type: ordered visibility, omitted child, unchanged/hidden/invalid gates and owned-model join
+ok settings row setters: type-selected children, created gates, percent/divide edges and always-stores
+ok settings row render: full type dispatch, gates and wrapping percentage edges
+ok launcher image id: 62-way mapping, state split and default
+ok svg image: create setId/supplier/resource gate and destroy order
+ok animation review: owned/context-bound strings, UTF-8/empty bounds, parse/free order, signed size and cleanup
+refusing process with unexpected executable
+ok UI object scanner: geometry/spans, mapped key bounds, snapshot translation, complete/escaped keys, raw UString retention, wrong executable
+ok BinSVG: all tags/truncations, signed rectangles, nested/first group and duplicate lookup, atomic errors
+  ok   CLI reload replaces snapshot; edits cannot mutate held views, copied geometry survives reload
+  ok   consumer hold pins views and blocks normal stop/unload/reload; publication collision preserves peer and retries
+  ok   standby retains snapshot; suspended reload defers load/publication and failed resume activation retries
+  ok   missing/special paths, numeric overflow, incomplete/trailing index, NUL and malformed records reject; no stale publication
+  ok   invalid later record rejects whole pack; duplicate CRC first wins; owned snapshot survives input deletion; failed load output preserved
+  ok   failed replacement removes provider without stale service; explicit load recovers (no host binary rollback)
+  ok   skin discovers late theme, pins provider, drops forced removal, preserves active mode and rebinds
+  ok   all8 modes, numeric priority over stream order, missing resource/markers and explicit overrides
+  ok   suspended replacement defers I/O/rebind; resume reacquires; failed skin start releases theme and callback without removing peer
+[750751] ERR  ui_vendor    ui_vendor: lifecycle subscription failed; refusing start
+[750751] ERR  host         ui_vendor: start() failed (-1)
+[750751] ERR  ui_vendor    ui_vendor: lifecycle subscription failed; refusing start
+[750751] ERR  host         ui_vendor: start() failed (-1)
+  ok   full/one-slot subscription table fails vendor start with no leaked holds/subs; retry starts
+ok widget windows: ordered mask discovery, pre-mask identity, first duplicate, nested/first group, offset/bounds, animation rejection
+ok textbox: full-height slices exclude caps, 48 alignment/type cases, regular priority, raw metadata and atomic errors
+ok font box:9 alignments with exact pixels/guards, defaults, center trim, atomic invalid text/font/dimensions
+ok font line: ink width, center bearing/trim, end paint order, atomic failures
+ok list metrics: theme slices, horizontal/title count, painted state, absence, bounds
+ok horizontal stretch: separate offset/width, double precision, retained ratio, missing mask, bounds
+ok text origin: vertical policies, clipping capacity, ratio phase/floor, zero step, bounds
+ok bitmap font: mapping, signed metrics, every truncation, corrupt bounds/order
+ok font finder: typed floor, global fallback, stable ties, division, bounds
+ok glyph draw: signed bearings, clipping/extremes, bounds, all alpha/coverage pairs
+ok font pack: index/offsets, whole-record reads, size/length/bounds rejection
+ok font text: UTF-8 keys, advances/spacing, clips, missing/invalid rejection, source-over
+ok text layout: mask alignments, vertical/horizontal/mirrored rows, truncation, bounds
+[750762] ERR  host         load 'ui_missing': not found in build/tests/ui-skin/modules
+[750817] ERR  host         load 'ui_missing': not found in build/tests/ui-skin/modules
+[750838] ERR  host         ui_startfail: start() failed (-1)
+[750861] ERR  ui_badenter  skin enter failed
+[751024] ERR  host         ui_busyfail: start() failed (-1)
+[751024] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[751032] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[751042] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[751052] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[751074] ERR  host         load 'build/tests/ui-skin/modules/mod_ui_initbusy.so': init() failed (-1)
+[751074] ERR  host         ui_initbusy: init cleanup pending; retry unload
+[751083] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+[751093] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+[751103] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+  ok   configured missing startup skin falls back to a committed vendor frame without a readiness file
+  ok   runtime control switches both real skins and an external ui_<name> module
+  ok   malformed commands and competing selections cannot mutate an accepted request
+  ok   start failure, deferred enter failure and first-frame timeout safely load the vendor fallback
+  ok   fallback waits for a failed candidate's nonblocking quiescence gate, including registered skin cleanup
+  ok   failed init returning NULL retains its busy candidate until cleanup completes
+  ok   suspended-engine requests reject and shutdown cancels selection without starting another module
+  ok   OGS1 endian/float records, reserved fields, atomic rejection and bounds
+  running transport
+  ok   immutable sealed images, CLOEXEC transfer, nonblocking reads and rejected-FD cleanup
+  running sessions
+  ok   upload/cached revisions and completion held until GPU finish; caller FD released safely
+  running failures
+  broker exit errno=12
+  broker exit errno=4
+  broker exit errno=5
+  broker exit errno=61
+  broker exit errno=71
+  broker exit errno=71
+  broker exit errno=16
+  broker exit errno=71
+  ok   partial open/render/finish failure retains owner and image across failed close; no replay
+  ok   bootstrap closes inherited fds before DSO init; constructor fd survives, close/EOF drain and reap
+  ok   missing renderer and wrong DSO ABI exit/reap without opening a renderer owner
+  ok   bounded pending/result slot, upload/cache revisions, scoped tickets, foreign-fork rejection and CLOSE
+  ok   executing finish and blocked close keep child owned; shutdown/poll/destroy never wait or signal it
+  ok   buffered completion survives exit; mismatched/descriptor replies fail and abnormal exit remains visible
+  ok   EAGAIN leaves request unaccepted/retryable; interrupted send breaks channel without replay
+  ok   loader failure rejected immediately or completed through EOF and child127 reap on target libc
+[752976] ERR  host         graphics: refusing to unload, service 'display.gpu' still held (use --force)
+[752978] ERR  host         graphics: refusing to unload, service 'display.gpu' still held (use --force)
+[752980] ERR  host         graphics: cleanup pending; retry stop/unload
+[752983] ERR  host         graphics: cleanup pending; retry stop/unload
+[752983] ERR  host         graphics: cleanup pending; retry stop/unload
+[753004] ERR  host         graphics: cleanup pending; retry stop/unload
+[753005] ERR  host         graphics: cleanup pending; retry stop/unload
+[753006] ERR  host         graphics: cleanup pending; retry stop/unload
+[753007] ERR  host         graphics: cleanup pending; retry stop/unload
+[753008] ERR  host         graphics: cleanup pending; retry stop/unload
+[753009] ERR  host         graphics: cleanup pending; retry stop/unload
+[753011] ERR  host         graphics: cleanup pending; retry stop/unload
+[753012] ERR  host         graphics: cleanup pending; retry stop/unload
+[753013] ERR  host         graphics: cleanup pending; retry stop/unload
+[753014] ERR  host         graphics: cleanup pending; retry stop/unload
+[753015] ERR  host         graphics: cleanup pending; retry stop/unload
+[753016] ERR  host         graphics: cleanup pending; retry stop/unload
+[753017] ERR  host         graphics: cleanup pending; retry stop/unload
+[753018] ERR  host         graphics: cleanup pending; retry stop/unload
+[753019] ERR  host         graphics: cleanup pending; retry stop/unload
+[753020] ERR  host         graphics: cleanup pending; retry stop/unload
+[753021] ERR  host         graphics: cleanup pending; retry stop/unload
+[753022] ERR  host         graphics: cleanup pending; retry stop/unload
+[753023] ERR  host         graphics: cleanup pending; retry stop/unload
+[753024] ERR  host         graphics: cleanup pending; retry stop/unload
+[753025] ERR  host         graphics: cleanup pending; retry stop/unload
+[753027] ERR  host         graphics: cleanup pending; retry stop/unload
+[753028] ERR  host         graphics: start() failed (-1)
+[753028] ERR  graphics     timer table full
+[753028] ERR  host         graphics: start() failed (-1)
+[753028] ERR  host         graphics: start() failed (-1)
+[753028] ERR  host         graphics: cleanup pending; retry stop/unload
+[753028] ERR  host         graphics: cleanup pending; retry stop/unload
+[753028] ERR  host         graphics: cleanup pending; retry stop/unload
+[753052] ERR  host         graphics: cleanup pending; retry stop/unload
+[753053] ERR  host         graphics: cleanup pending; retry stop/unload
+[753054] ERR  host         graphics: cleanup pending; retry stop/unload
+[753055] ERR  host         graphics: cleanup pending; retry stop/unload
+[753056] ERR  host         graphics: cleanup pending; retry stop/unload
+[753057] ERR  host         graphics: cleanup pending; retry stop/unload
+[753059] ERR  host         graphics: cleanup pending; retry stop/unload
+[753060] ERR  host         graphics: cleanup pending; retry stop/unload
+[753061] ERR  host         graphics: cleanup pending; retry stop/unload
+[753062] ERR  host         graphics: cleanup pending; retry stop/unload
+[753063] ERR  host         graphics: cleanup pending; retry stop/unload
+[753064] ERR  host         graphics: cleanup pending; retry stop/unload
+[753065] ERR  host         graphics: cleanup pending; retry stop/unload
+[753066] ERR  host         graphics: cleanup pending; retry stop/unload
+[753067] ERR  host         graphics: cleanup pending; retry stop/unload
+[753068] ERR  host         graphics: cleanup pending; retry stop/unload
+[753069] ERR  host         graphics: cleanup pending; retry stop/unload
+[753070] ERR  host         graphics: cleanup pending; retry stop/unload
+[753071] ERR  host         graphics: cleanup pending; retry stop/unload
+[753072] ERR  host         graphics: cleanup pending; retry stop/unload
+  ok   owned watch/timer, bounded submit/cancel, service holds, suspend/resume and reload-scoped tickets
+  ok   blocked child cleanup retains DSO/context/timer; --force cannot bypass quiescence
+  ok   config/spawn/timer/watch failure retains completion path and unwinds services/children
+  ok   abnormal peer death is reaped but retains a faulted module; it is not successful device cleanup
+[753074] ERR  host         scene_gpu_fixture: refusing to unload, service 'display.gpu' still held (use --force)
+  ok   RGBA canvas clipping/scaling/alpha and extreme coordinate bounds
+  ok   coalescing retains final frame, exact committed receipts, cached revisions and immutable replaced snapshots
+  ok   reload gets new revision/receipt namespace; suspend/resume reopens and uploads retained canvas
+  ok   consumer unload releases queued image while provider retains inflight data; GPU error never acknowledges a frame
+[753114] ERR  ui_engine    ui frame failed errno 5
+[753142] ERR  host         scene_display: refusing to unload, service 'display' still held (use --force)
+  ok   queue/OPEN/error never acknowledge; actual coalesced UI completion writes the PID/dimensions receipt
+  ok   engine reacquires a returning async companion while base display remains bound
+  ok   old receipts cannot acknowledge a reloaded UI; suspend/failed resume release both holds and timer
+  ok   forced provider removal clears aliases/callbacks; returning provider rebinds without stale service use
+  ok   dialog progress reuses immutable pixels; cubic midpoint and final identity/new screen are completed
+ok glyph quad: exact full/clipped UV geometry, integer-half odd sizes, no premature viewport clip, atomic invalid/overflow/cull
+starting build/openaurora
+1) both modules started
+  ok   ticker started
+  ok   ui_console listed
+2) panel degrades gracefully without the vendor HAL
+  ok   panel started
+  ok   warned about missing HAL
+3) power refuses to suspend on a non-TV host
+  ok   power service published
+  ok   standby disabled for safety
+4) settings reads the real database read-only
+  ok   settings service published
+  ok   opened read-only
+5) clock service published
+  ok   clock service present
+6) UI state survives a hot reload
+  ok   reload logged
+  ok   state handed over
+7) unload removes it from the table
+  ok   ui_console gone
+8) load + start again
+  ok   load ok
+  ok   start ok
+  ok   ui_console back
+9) stop/start a provider
+  ok   stop ticker
+  ok   start ticker
+10) missing module fails cleanly
+  ok   load fails
+11) a module that requires a service is refused without it
+  ok   display refused without plat
+12) cec and audio owners reload on the running host
+  ok   plat already started
+  ok   load audio
+  ok   start audio
+  ok   audio published
+  ok   load cec
+  ok   start cec
+  ok   cec started
+  ok   cec service
+  ok   reload cec
+  ok   cec still started
+  ok   reload audio
+  ok   audio still started
+  ok   host still lists power
+13) suspend/resume hooks
+  ok   manual quiescence hooks
+  ok   power is quiescent without entering RAM
+  ok   cec suspended
+  ok   audio suspended
+  ok   resume
+  ok   cec resumed
+  ok   audio resumed
+  ok   standby refuses disabled host power
+  ok   power reload keeps coordinated service available
+14) clean shutdown
+  ok   exit code 0
+all tests passed
+[766864] ERR  host         lookup capacity-test: hold table full, refusing unprotected pointer
+[766865] INFO host         loaded ticker v1.0 (build/modules/mod_ticker.so)
+[766865] INFO host         started ticker
+[766865] ERR  host         ticker: refusing to unload, service 'clock' still held (use --force)
+[766865] ERR  host         ticker: refusing to stop, service 'clock' still held
+[766865] ERR  host         ticker: refusing to unload, service 'clock' still held (use --force)
+[766865] INFO host         stopped ticker
+[766865] INFO host         unloaded ticker
+[766865] ERR  host         load 'build/tests/mod_failed_init.so': init() failed (-1)
+  ok   full hold table refuses a new pointer; repeat lookup reuses its hold
+  ok   stopping a held provider is refused until the consumer releases it
+  ok   failed init leaves no registered service or timer
+  ok   heartbeat advances; SIGTERM exits; fallback re-arms watchdog
+  ok   blocked module callback stops heartbeat and triggers fallback
+  ok   SIGSTOPped child is killed and reaped
+  ok   blocking module startup has a deadline
+  ok   failed present never acknowledges readiness
+  ok   old receipts cannot keep a new process alive
+  ok   three failures remove the opt-in marker
+  ok   safe marker bypasses takeover
+  ok   safe marker during takeover returns to vendor UI
+  ok   failed watchdog disable skips child and falls back
+  ok   idle event loop heartbeats and exits on SIGTERM
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

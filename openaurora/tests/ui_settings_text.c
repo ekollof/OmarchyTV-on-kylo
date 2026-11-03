@@ -61,18 +61,18 @@ static void write_file(const char *path, const void *data, size_t size)
     assert(fclose(f) == 0);
 }
 
-static void blob(const char *name)
+static void blob_size(const char *name, unsigned w, unsigned h)
 {
     char path[320];
     snprintf(path, sizeof path, "%s/%s.rgba", g_dir, name);
-    unsigned char file[12 + 4 * 4 * 4];
+    unsigned char file[12 + 24 * 24 * 4];
     memcpy(file, "OAI1", 4);
-    unsigned w = 4, h = 4;
     memcpy(file + 4, &w, 4);
     memcpy(file + 8, &h, 4);
-    memset(file + 12, 0, 4 * 4 * 4);
-    write_file(path, file, sizeof file);
+    memset(file + 12, 0, w * h * 4);
+    write_file(path, file, 12 + w * h * 4);
 }
+static void blob(const char *name) { blob_size(name, 4, 4); }
 
 /* One valid EF41 font: 95 ASCII glyphs, 1x1 coverage, advance 4. */
 static size_t build_font(unsigned char *b)
@@ -214,6 +214,10 @@ int main(int argc, char **argv)
         g_preset = "1=7,1=49junk,2=101,3=-1,4=9999999999999999999999";
     }
     blob("settings_panel");
+    blob_size("slidebarfa", 24, 24);
+    blob_size("slidebarufa", 24, 24);
+    blob_size("select_left", 18, 24);
+    blob_size("select_right", 18, 24);
     for (int i = 0; i < 9; i++) {
         char name[32];
         snprintf(name, sizeof name, "settings_focus_%d", i);
@@ -313,6 +317,13 @@ int main(int argc, char **argv)
      * artifacts and doubled numbers on the panel. */
     assert(has_fill_rgb(trace, 20, 256, 750, 66, 254, 148, 25));
     assert(last_blit(trace, 20, 256, 4, 4) == -1);
+    assert(has_fill_rgb(trace, 500, 286, 143, 6, 255, 0, 20));
+    assert(blit_at(trace, 621, 276, 24, 24)); /* 95%, PNG matrix offset(-1,+2) */
+    assert(no_fill(trace, 489, 274, 165, 49)); /* no orange spill below row bottom322 */
+    key(&host, 20); /* Modus: focus also restores the separate selection images. */
+    assert(blit_at(trace, 399, 208, 18, 24));
+    assert(blit_at(trace, 743, 208, 18, 24));
+    key(&host, 19);
     {
         int digits = last_blit(trace, 655, 246, 16, 72);
         int label = last_blit(trace, 75, 250, 40, 72);
@@ -324,8 +335,10 @@ int main(int argc, char **argv)
     assert(has_fill_rgb(trace, 40, 248, 446, 8, 190, 30, 45));
     for (int i = 0; i < 5; i++) key(&host, 22);  /* 95 -> 100 */
     assert(blit_at(trace, 655, 246, 20, 72));    /* "100": 3 digits */
+    assert(blit_at(trace, 629, 276, 24, 24));   /* same shadow value as digits */
     for (int i = 0; i < 200; i++) key(&host, 21);/* clamp at 0 */
     assert(blit_at(trace, 655, 246, 12, 72));    /* "0": 1 digit */
+    assert(blit_at(trace, 488, 276, 24, 24));
     /* Unfocused erases must not stomp the focused bar (row surfaces clip
      * to their own frames): row 2's erases are clipped below the bar. */
     assert(no_fill(trace, 648, 314, 90, 64));

@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "host.h"
 #include "openaurora/events.h"
+#include "openaurora/ui_engine.h"
 #include "scene-probe-client.h"
 struct scene_probe {
     oa_host host;
@@ -21,6 +22,8 @@ struct scene_probe {
     int initialized, error;
 };
 static const char *helper_path, *renderer_path;
+static int settings_preview(void)
+{ const char *v=getenv("OA_SCENE_PROBE_SETTINGS");return v && !strcmp(v,"1"); }
 static const char *config(void *ud, const char *key, const char *def)
 {
     (void)ud;
@@ -32,7 +35,12 @@ static const char *config(void *ud, const char *key, const char *def)
     }
     if (!strcmp(key, "ui.ok_file")) return "/tmp/oa-scene-helper-20261101/ui.ready";
     if (!strcmp(key, "ui.anim_enable")) return "1"; /* explicit lab bootstrap, not recovered vendor policy */
-    if (!strcmp(key, "ui.fps")) return "0";
+    if (!strcmp(key, "ui.fps")) return settings_preview()?"10":"0";
+    if (settings_preview()) {
+        if (!strcmp(key,"ui.screen")) return "settings_list";
+        if (!strcmp(key,"ui.text")) return "1";
+        if (!strcmp(key,"ui.sel")) return "-1";
+    }
     if (!strcmp(key, "ui.launch_anim")) {
         const char *lab = getenv("OA_SCENE_PROBE_LAUNCH_ANIM");
         return lab && !strcmp(lab, "1") ? "1" : "0";
@@ -244,10 +252,36 @@ int probe_ui(scene_probe *s)
     const char *ready = "/tmp/oa-scene-helper-20261101/ui.ready";
     if (!access(ready, F_OK)) { errno = EEXIST; return -1; }
     if (load_ui_module(s, "ticker") || load_ui_module(s, "ui_clock") ||
-        load_ui_module(s, "ui_anim") || load_ui_module(s, "ui_engine") ||
-        load_ui_module(s, "ui_vendor")) goto failure;
+        load_ui_module(s, "ui_anim") || load_ui_module(s, "ui_engine")) goto failure;
+    if(settings_preview()) {
+        const oa_ui_engine_iface *engine=s->host.api.lookup(&s->host,OA_SVC_UI_ENGINE,2);
+        const oa_ui_icon *panel=engine?engine->icon("settings_panel"):NULL;
+        if(!panel || panel->w!=780 || panel->h!=1080) { errno=ENODATA;goto failure; }
+        const char *widgets[]={"slidebarfa","slidebarufa","select_left","select_right"};
+        for(unsigned i=0;i<4;++i) {
+            const oa_ui_icon *widget=engine->icon(widgets[i]);
+            if(!widget || widget->w!=(i<2?24:18) || widget->h!=24) { errno=ENODATA;goto failure; }
+        }
+    }
+    if(load_ui_module(s,"ui_vendor"))goto failure;
     if (!access(ready, F_OK)) { errno = EPROTO; goto failure; } /* queue cannot acknowledge */
     if (ui_ready(s)) goto failure;
+    if (settings_preview()) {
+        oa_display_result result;
+        /* Keys target only this diagnostic host's UI engine, never vendor
+         * input. Holds leave time to stream framebuffer screenshots off-TV. */
+        const char *phases[]={"normal","focus0","focus1","focus2","focus3","focus4","focus7"};
+        const unsigned downs[]={0,1,1,1,1,1,2};
+        for(unsigned phase=0;phase<sizeof downs/sizeof *downs;++phase) {
+            for(unsigned n=0;n<downs[phase];++n)key(s,19);
+            run_for(s,300);
+            if(s->asynchronous->latest(&result)!=1 || result.error) { errno=EIO;goto failure; }
+            printf("SETTINGS phase=%s serial=%llu hold_ms=6000\n",phases[phase],(unsigned long long)result.serial);
+            fflush(stdout);run_for(s,6000);
+        }
+        if(unlink(ready))goto failure;
+        return 2;
+    }
     const oa_portal_iface *portal = s->host.api.lookup(&s->host, OA_SVC_PORTAL, 1);
     if (!portal || portal->screen() != 0) { errno = EPROTO; goto failure; }
     /* With real rail assets, require multiple completed image revisions. This

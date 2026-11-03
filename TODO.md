@@ -799,6 +799,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       artifacts/analysis/settings-focus-2026-11-01/.
       Historical183px fit superseded by186+70*N in subsequent implementation;
       UI-WORK-REVIEW records live row geometry and remaining FA parity limits.
+- [x] Fix missing focused sliders and choice chevrons in the captured-panel/
+      live-text preview. Firmware-derived track/PNG composition, shared shadow
+      digit/knob values; seven real-TV GPU states captured, independent stock
+      Contrast/Modus widget crops within2/255 and both buffers identical. Full
+      display restore and staging cleanup verified. UI-DISPLAY-REVIEW-2026-11-04.
+      Reconstruction only: native widgets/providers/focused-font parity remain open.
 - [ ] Exact focused-row/panel evidence and the interactive remainder: value
       changes, Beeld/Geluid tab switching, scrolling/overflow, localization,
       the title/tab/value labels and focused-label pixels. Firmware decode so
@@ -879,7 +885,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       firmware ctor default; adjust math and %d formatting verified); the
       row→slidebar range path is fully mapped (item +0x20/+0x24/+0x28 through
       row +0x2df0/+0x2df4), but live per-setting bounds need provider queries
-      (native ownership, out of scope), slider bars stay static,
+      (native ownership, out of scope for this lab path). UI-DISPLAY-REVIEW
+      now moves the reconstructed knob with the same shadow value as the digits;
       type-2 rows/Select sub-dialogs untouched, no settings-DB writes.
       Firmware (0xe0ad0d/0xe0aca1, decoded after this shipped) shows the
       vendor OPENS a per-setting sub-dialog on Left/Right instead of adjusting

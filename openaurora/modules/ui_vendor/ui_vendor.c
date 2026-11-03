@@ -153,7 +153,7 @@ struct ctx {
      * slider rows 1..4. Range 0..100 is an INVENTED placeholder (per-setting
      * bounds come from runtime provider virtuals, not decodable statically);
      * step 1 matches the slidebar ctor default and setSliderStep has no
-     * caller. Slider bar graphics stay static; only digits re-render. Never
+     * caller. Slider graphics follow these same shadow values. Never
      * touches the settings database; no set_int call exists on this path. */
     int edit_val[4];
     int screen;
@@ -737,11 +737,56 @@ static int settings_text_load(struct ctx *c)
     return 0;
 }
 
+/* Captured picture-panel reconstruction, NOT the general SVGSlideBar renderer.
+ * Firmware: rowItems460 slidebar(510,1,180,49), mask(0,-17,813,66),
+ * supplied row client749px -> window(489,rowY+18,165,49). SVGSlideBar ctor
+ * 10c4530 selects528FA/530UFA. renderBackground10c41ec leaves11px end
+ * masks and stretches the210px middle: track(500,rowY+30,143,6).
+ * renderSlider10c4af0 uses24px mSlider, hence141px travel. The PNG matrix
+ * (46,54) relative to mask(47,52) contributes(-1,+2). Position10c4a80
+ * divides travel by range before multiplying the offset (double, truncation).
+ * The explicit0..100 shadow range remains a lab/capture input, not a native
+ * settings-provider result. Both normal/focused states redraw, so editing
+ * cannot leave the captured knob at an obsolete position. */
+static void paint_settings_sliders(struct ctx *c, int focus_row,
+                                    const oa_ui_icon *fa, const oa_ui_icon *ufa)
+{
+    for (int row = 1; row <= 4; ++row) {
+        int y = settings_row_y(row);
+        int focused = row == focus_row;
+        const oa_ui_icon *knob = focused ? fa : ufa;
+        /* The child window extends one pixel below the66px focus bar.
+         * Keep that pixel in panel red: the focused background was already
+         * drawn by the parent, and must not be extended by this child. */
+        if (!focused) c->d->fill(489, y + 18, 165, 49, 190, 30, 45);
+        c->d->fill(500, y + 30, 143, 6, focused ? 255 : 155,
+                    focused ? 0 : 155, focused ? 20 : 155);
+        int position = (int)((141.0 / 100.0) * c->edit_val[row - 1]);
+        c->d->blit(488 + position, y + 20, knob->w, knob->h, knob->rgba);
+    }
+}
+
 static void paint_settings_list(struct ctx *c)
 {
-    const oa_ui_engine_iface *d = c->d;
-    if (!c || !d)
+    if (!c || !c->d)
         return;
+    const oa_ui_engine_iface *d = c->d;
+    const oa_ui_icon *slider_fa = NULL, *slider_ufa = NULL;
+    const oa_ui_icon *select_left = NULL, *select_right = NULL;
+    if (c->text_on) {
+        slider_fa = find_icon(c, "slidebarfa");
+        slider_ufa = find_icon(c, "slidebarufa");
+        select_left = find_icon(c, "select_left");
+        select_right = find_icon(c, "select_right");
+        if (!slider_fa || !slider_ufa || slider_fa->w != 24 || slider_fa->h != 24 ||
+            slider_ufa->w != 24 || slider_ufa->h != 24 ||
+            !select_left || !select_right || select_left->w != 18 || select_left->h != 24 ||
+            select_right->w != 18 || select_right->h != 24) {
+            c->api->log(c->api->priv, OA_LOG_ERROR,
+                        "live settings requires exported slider and selection assets");
+            return; /* Never acknowledge a panel with its focused widget missing. */
+        }
+    }
     /* Vertical picture-settings panel from shot-settings.png, R/B-corrected:
      * 780x1080 at 0,0. The dialog's full-screen "background" record is a named
      * description, not a painted rectangle (UI-TRANSPARENCY-2026-11-01); the
@@ -822,12 +867,25 @@ static void paint_settings_list(struct ctx *c)
             }
             d->fill(x, y, w, h, 190, 30, 45);
         }
+        paint_settings_sliders(c, focus_row, slider_fa, slider_ufa);
         for (size_t i = 0; i < SETTINGS_TEXT_COUNT; i++) {
             const struct settings_text_entry *entry = &SETTINGS_TEXT[i];
             const unsigned char *blob = entry->row == focus_row && c->text[i].rgba_focus
                                             ? c->text[i].rgba_focus
                                             : c->text[i].rgba;
             d->blit(c->text[i].x, c->text[i].y, c->text[i].w, c->text[i].h, blob);
+        }
+        /* SVGSelectionBox::renderBackground10b3798 creates images12/13
+         * (img index: select_left/right.png) from transformed iconL/iconR.
+         * rowItems460 selectionbox with the same explicit749px row gives
+         * (399,rowY+8,362,60). FA504's18px caps and icon Y121-mask107
+         * yield x399/743 and rowY+22. updateArrows10b4020 shows both for
+         * focused, enabled, wrapping choices. These captured choice rows are
+         * still reconstruction data; provider-specific arrow gating is open. */
+        if (focus_row == 0 || focus_row == 5 || focus_row == 7) {
+            int y = settings_row_y(focus_row) + 22;
+            d->blit(399, y, select_left->w, select_left->h, select_left->rgba);
+            d->blit(743, y, select_right->w, select_right->h, select_right->rgba);
         }
         if (c->title.rgba) {
             /* Live tab title over the captured title glyphs. The erase covers

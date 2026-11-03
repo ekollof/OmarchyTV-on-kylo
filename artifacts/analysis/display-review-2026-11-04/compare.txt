@@ -1,0 +1,10 @@
+{"name":"focused Contrast slider","pixels":8085,"changed":344,"over2":0,"max":2,"rmse":0.13268239372508173}
+{"name":"Modus left chevron","pixels":432,"changed":90,"over2":0,"max":2,"rmse":0.37371177908538084}
+{"name":"Modus right chevron","pixels":432,"changed":90,"over2":0,"max":2,"rmse":0.393817968854384}
+{"name":"normal buffer pair","pixels":2073600,"changed":0,"over2":0,"max":0,"rmse":0}
+{"name":"focus0 buffer pair","pixels":2073600,"changed":0,"over2":0,"max":0,"rmse":0}
+{"name":"focus1 buffer pair","pixels":2073600,"changed":0,"over2":0,"max":0,"rmse":0}
+{"name":"focus2 buffer pair","pixels":2073600,"changed":0,"over2":0,"max":0,"rmse":0}
+{"name":"focus3 buffer pair","pixels":2073600,"changed":0,"over2":0,"max":0,"rmse":0}
+{"name":"focus4 buffer pair","pixels":2073600,"changed":0,"over2":0,"max":0,"rmse":0}
+{"name":"focus7 buffer pair","pixels":2073600,"changed":0,"over2":0,"max":0,"rmse":0}

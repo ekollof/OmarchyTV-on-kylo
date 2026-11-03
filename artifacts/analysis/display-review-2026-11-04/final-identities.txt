@@ -1,0 +1,9 @@
+dced32954abe4ca03087f5e93a3c0225  openaurora/build-tv-v3/display-review/scene-module-probe
+3467dc0004bdf5b34360eb6f4c289c8e  openaurora/build-tv-v3/display-review/modules/mod_ui_vendor.so
+b4bf91765148681c32744d625ae01c35  artifacts/ui-assets/slidebarfa.png
+804b287c97159eebebf50ffdc14d8ce0  artifacts/ui-assets/slidebarufa.png
+c40792595e55c5b80774eb644efdc63d  artifacts/ui-assets/select_left.png
+c58167fa7ce65867158a4b9737d9edde  artifacts/ui-assets/select_right.png
+542560 openaurora/build-tv-v3/display-review/scene-module-probe
+188488 openaurora/build-tv-v3/display-review/modules/mod_ui_vendor.so
+731048 total

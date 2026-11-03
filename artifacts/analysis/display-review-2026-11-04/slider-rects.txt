@@ -1,0 +1,81 @@
+record 620: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='gRowL' eoff=38
+  tag=1 id='mRowL' eoff=45 rect=(95,121,106,150) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=82
+  tag=8 id='gRowR' eoff=83
+  tag=1 id='mRowR' eoff=90 rect=(539,122,550,151) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=127
+  tag=8 id='gRowM' eoff=128
+  tag=1 id='mRowM' eoff=135 rect=(213,146,434,176) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=172 rect=(217,155,434,162) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=9 id='(null)' eoff=200
+  tag=8 id='gSlider' eoff=201
+  tag=1 id='mSlider' eoff=210 rect=(291,118,314,141) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=2 id='' eoff=249
+  tag=9 id='(null)' eoff=316
+record 532: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='gRowL' eoff=38
+  tag=1 id='mRowL' eoff=45 rect=(5,-4,16,16) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=82
+  tag=8 id='gRowR' eoff=83
+  tag=1 id='mRowR' eoff=90 rect=(90,-3,101,17) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=127
+  tag=8 id='gRowM' eoff=128
+  tag=1 id='mRowM' eoff=135 rect=(0,20,210,50) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=172 rect=(103,20,106,50) stroke_w=0 opacity=9 stroke='' fill='#010101'
+  tag=1 id='' eoff=200 rect=(0,32,210,38) stroke_w=0 opacity=10 stroke='' fill='#FD0014'
+  tag=9 id='(null)' eoff=228
+  tag=8 id='gSlider' eoff=229
+  tag=1 id='mSlider' eoff=238 rect=(40,-28,64,-4) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=2 id='' eoff=277
+  tag=9 id='(null)' eoff=328
+record 534: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='gRowL' eoff=38
+  tag=1 id='mRowL' eoff=45 rect=(5,-4,16,16) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=82
+  tag=8 id='gRowR' eoff=83
+  tag=1 id='mRowR' eoff=90 rect=(90,-3,101,17) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=127
+  tag=8 id='gRowM' eoff=128
+  tag=1 id='mRowM' eoff=135 rect=(0,20,210,50) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=172 rect=(103,20,106,50) stroke_w=0 opacity=10 stroke='' fill='#9B9B9B'
+  tag=1 id='' eoff=200 rect=(0,32,210,38) stroke_w=0 opacity=10 stroke='' fill='#9B9B9B'
+  tag=9 id='(null)' eoff=228
+  tag=8 id='gSlider' eoff=229
+  tag=1 id='mSlider' eoff=238 rect=(40,-28,64,-4) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=2 id='' eoff=277
+  tag=9 id='(null)' eoff=329
+record 476: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='gTopL' eoff=38
+  tag=1 id='mTopL' eoff=45 rect=(225,153,235,169) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=82
+  tag=8 id='gTopR' eoff=83
+  tag=1 id='mTopR' eoff=90 rect=(329,154,358,170) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=127
+  tag=8 id='gTopM' eoff=128
+  tag=1 id='mTopM' eoff=135 rect=(256,154,318,170) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=172
+  tag=8 id='gRowL' eoff=173
+  tag=1 id='mRowL' eoff=180 rect=(235,176,235,246) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=217
+  tag=8 id='gRowR' eoff=218
+  tag=1 id='mRowR' eoff=225 rect=(328,178,329,248) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='scrollPos' eoff=262 rect=(325,177,332,247) stroke_w=2 opacity=10 stroke='#070606' fill='none'
+  tag=9 id='(null)' eoff=303
+  tag=8 id='gRowM' eoff=304
+  tag=1 id='mRowM' eoff=311 rect=(244,178,319,248) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='rowPos' eoff=348 rect=(244,178,319,248) stroke_w=1 opacity=10 stroke='#070606' fill='none'
+  tag=9 id='(null)' eoff=386
+  tag=8 id='gBotL' eoff=387
+  tag=1 id='mBotL' eoff=394 rect=(228,251,228,261) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=431
+  tag=8 id='gBotR' eoff=432
+  tag=1 id='mBotR' eoff=439 rect=(327,251,347,261) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=476
+  tag=8 id='gBotM' eoff=477
+  tag=1 id='mBotM' eoff=484 rect=(257,251,319,261) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=521

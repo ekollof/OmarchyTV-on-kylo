@@ -6,6 +6,17 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+UI-DISPLAY-REVIEW-2026-11-04: the preview's clean focus bar erased the captured
+slider/selection children; live text alone did not restore them. Skin now draws
+shipped sliderFA/UFA tracks/PNG knobs and focused choice chevrons, with explicit
+reconstruction row/range inputs. Firmware10c4530/10c41ec/10c4af0/10c4a80 and
+10b3798/10b4020 supply the composition rules. Seven real GPU states captured;
+independent stock Contrast/Modus widget regions agree within2/255 per channel,
+full framebuffer/region/MAU/pan restoration verified. Stock Contrast was in
+buffer0 while buffer1 retained Modus: never assume a fixed active buffer.
+This closes missing preview children only, not native settings, focused font,
+tabs, general SVG raster or independent startup. No persistent deployment.
+
 UI-REVIEW-2026-11-04 corrects the recent work: UIImageResource is32 bytes,
 not16 (supplier copies through1c); create now has aligned full-size storage and
 full-payload tests. Renderer percentage subtraction/division had UB; shared

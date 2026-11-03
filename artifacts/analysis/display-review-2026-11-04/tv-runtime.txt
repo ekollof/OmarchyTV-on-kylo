@@ -1,0 +1,37 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+saved bytes=16588800 original_yoffset=0 MAU=0 backup=/tmp/oa-scene-helper-20261101/framebuffer.backup
+scene display module id=4 service=display.async
+direction type4 top_rows identity=0 p0=45 p1=0 (starts lower, slides up)
+UI readiness after GPU completion serial=17179869188 revision=17179869235 pid=9579
+SETTINGS phase=normal serial=17179869189 hold_ms=6000
+SETTINGS phase=focus0 serial=17179869203 hold_ms=6000
+SETTINGS phase=focus1 serial=17179869216 hold_ms=6000
+SETTINGS phase=focus2 serial=17179869230 hold_ms=6000
+SETTINGS phase=focus3 serial=17179869244 hold_ms=6000
+SETTINGS phase=focus4 serial=17179869258 hold_ms=6000
+SETTINGS phase=focus7 serial=17179869272 hold_ms=6000
+[261035] ERR  host         graphics: cleanup pending; retry stop/unload
+[261036] ERR  host         graphics: cleanup pending; retry stop/unload
+[261036] ERR  host         graphics: cleanup pending; retry stop/unload
+[261036] ERR  host         graphics: cleanup pending; retry stop/unload
+[261047] ERR  host         graphics: cleanup pending; retry stop/unload
+[261047] ERR  host         graphics: cleanup pending; retry stop/unload
+[261067] ERR  host         graphics: cleanup pending; retry stop/unload
+[261068] ERR  host         graphics: cleanup pending; retry stop/unload
+[261087] ERR  host         graphics: cleanup pending; retry stop/unload
+[261087] ERR  host         graphics: cleanup pending; retry stop/unload
+[261107] ERR  host         graphics: cleanup pending; retry stop/unload
+[261107] ERR  host         graphics: cleanup pending; retry stop/unload
+[261127] ERR  host         graphics: cleanup pending; retry stop/unload
+[261127] ERR  host         graphics: cleanup pending; retry stop/unload
+[261147] ERR  host         graphics: cleanup pending; retry stop/unload
+[261147] ERR  host         graphics: cleanup pending; retry stop/unload
+[261167] ERR  host         graphics: cleanup pending; retry stop/unload
+[261168] ERR  host         graphics: cleanup pending; retry stop/unload
+scene display observed frame completions=3
+graphics host drained and unloaded provider
+restored bytes=16588800 yoffset=0 MAU=0 region_match=1 snapshot_match=1
