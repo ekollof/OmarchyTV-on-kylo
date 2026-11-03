@@ -97,9 +97,18 @@ combine keys in one command, never stage/run anything on the TV.
 
 ## Open links (do not guess)
 
-1. Which rail-Select path reaches TabDialog vs SubLauncherDialog (the
-   LauncherDialog +0x10 slot reads as pure-virtual stubs — dynamic type or
-   call-site unresolved).
+1. RESOLVED 2026-11-04 (instructions + vtable bytes, no TV): the +0x10
+    "pure-virtual stub" read was wrong. +0x4a8 is a SubLauncherDialog*
+    (constructed by showSubLauncher at ed99be, stored ed99c2; nulled by
+    initialiseFields edc5e4 and hideSubLauncher ed9774). Slot +0x10 =
+    SubLauncherDialog::setFocusEb (called with 0 at ed9a48), slot +0x18 =
+    isShowingEv (bool at ed9a54 gates hideSubLauncher vs
+    bringFocusedButtonToFront); vtable _ZTV17SubLauncherDialog @0x1500cfc.
+    Rail-Select (LauncherDialog::onSelectPress edde60) with no sublauncher
+    focus does NOT open TabDialog: it snapshots selection, unfocus+hide
+    sublauncher, convertOperationIdToIDME, SVGDialog::endDialog. The
+    launcher closes with an operation result; settings opens downstream
+    (OperationFinder result-to-nav-code routing still open).
 2. Whether the observed tab strip is TabDialog buttons (computed 378 px
    matches the focused white box; labels match updateTitles keys) or
    SubLauncher-owned widgets — needs a live widget-identity read or
