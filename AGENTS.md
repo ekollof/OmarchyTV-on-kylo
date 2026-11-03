@@ -205,8 +205,10 @@ was checked independently. Read the report before creating/swapping a window.
 
 Version control is the local git repository at the workspace root. Commit after
 each verified milestone with the evidence in the message (tests run, hashes,
-what remains unproven), so a broken experiment can be rolled back. There is no
-remote and none should be added. The firmware dump, vendor libraries, toolchain,
+what remains unproven), so a broken experiment can be rolled back. The existing
+origin remote is git@github.com:ekollof/OmarchyTV-on-kylo.git. The owner explicitly
+authorized pushing progress on 2026-11-03. Use that remote; do not add another.
+The firmware dump, vendor libraries, toolchain,
 Ghidra projects, build trees, partition images and third-party manuals stay out
 of history (`.gitignore`); the no-redistribution rule still applies to anything
 that is committed.
