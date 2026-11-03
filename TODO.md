@@ -321,6 +321,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement select animation via startSelectAnimation (disabled/missing-
+      row/unchanged-rect gates, rect snapshot, ordered name search, first-
+      match atof*1000.0f start with float-bit compare); 14 native/C
+      comparisons plus full host/focused sanitizer/ARM and prior groups pass.
+      SVG-LIST-ANIM. Parent refresh, scrollbar construction/rendering
+      internals, owned backend/context beyond words/counters, display/scanout/
+      startup and independent native visible acceptance remain open.
 - [x] Implement row editing via setSlideValue (progress vs slider/text routing,
       two flag bytes, type word, bar selection, empty-format text, stored
       word); 72 native/C comparisons plus full host/focused sanitizer/ARM and

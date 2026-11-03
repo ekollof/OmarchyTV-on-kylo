@@ -1,0 +1,1 @@
+ok SVG list anim: gates, rect snapshot, ordered search and first-match start

@@ -6,6 +6,20 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-ANIM-2026-11-03: startSelectAnimation gates/rect-snapshot/search/
+start passes 14 native/C comparisons with exact call order/args, snapshot
+words and started float bits, plus full strict host, focused ASan/UBSan,
+ARM/qemu and all previous reference groups. ARM unit 41568/
+55826924de76d0055dbd52381a71bcab; reference 742252/
+a954cefaa3c3435bd604a9b403faa213, build-tv-v3/tab-policy. Disabled/
+missing-row/unchanged-rect exits, the +0x24c/+0x25c archive/store, the +12
+name/+28 duration fields, the (1,length-1) substring args and the 1000.0f
+scale from the literal pool are asserted; both sides run the real atof on
+the same bytes with float-bit compare. No new module/service/UI consumer.
+Parent refresh, scrollbar construction/rendering internals, owned backend/
+context and visible acceptance stay open. No TV access/wake/staging/
+deployment or hardware mutation; no pending job/helper.
+
 SVG-LIST-SLIDE-2026-11-03: setSlideValue progress/slider/text routing passes
 72 native/C comparisons with exact call order/args, written values and stored
 words, plus full strict host, focused ASan/UBSan, ARM/qemu and all previous

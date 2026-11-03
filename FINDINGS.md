@@ -6,27 +6,35 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG list animation: SVG-LIST-ANIM implements startSelectAnimation gates,
+rect snapshot and first-match animation start; 14 native/C comparisons
+pass. Disabled/missing-row/unchanged-rect exits, the +0x24c/+0x25c
+archive/store, the +12 name/+28 duration fields and atof*1000.0f float bits
+are asserted. UString-deref, atof-PLT and ARM-trampoline slips were caught
+and fixed. Parent refresh, scrollbar construction/rendering,
+backend/visible gates remain open.
+
 SVG list slide: SVG-LIST-SLIDE implements setSlideValue progress/slider/text
 routing; 72 native/C comparisons pass. Two flag bytes and the type word
 select progress vs slider paths; +0x1498/+0x13c0 bar, +0x1ca8 box, empty
 UString format and +0x2df8 store are asserted; progress paths store nothing.
 Page-size, stub-convention and stale-store slips were caught and fixed.
-Parent refresh, scrollbar construction/rendering, startSelectAnimation,
+Parent refresh, scrollbar construction/rendering,
 backend/visible gates remain open.
 
 SVG list widgets: SVG-LIST-WIDGETS implements the numeric forward and the
 selected-id gates/walk; 21 native/C comparisons pass. The +0x28c cell holds
 the array address (two loads, not one); the +0x18d8 row offset is pure
 arithmetic. Row editing (slide/progress/text paths), parent refresh,
-scrollbar construction/rendering, startSelectAnimation, backend/visible
-gates remain open.
+scrollbar construction/rendering, backend/visible
+gates remain open (animation closed by SVG-LIST-ANIM).
 
 SVG list module: SVG-LIST-MODULE publishes ui.list v1 as the first consumer;
 host/sanitizer/ARM-qemu/actual-Unix-IPC pass. Owned 9/5/16 geometry with
 page aliases; verified chain with inert render counters; list-state/list-key
 over socket/CLI; OAL1 reload persistence; suspend/shutdown gates; clean exit.
 Widget getters/editing, parent refresh, scrollbar construction/rendering,
-startSelectAnimation, display/scanout/startup and visible parity remain open.
+display/scanout/startup and visible parity remain open (animation closed by SVG-LIST-ANIM).
 
 SVG list update: SVG-LIST-UPDATE implements the row-view getters
 (total/last/item) and the full refresh; 100+20 native/C comparisons pass.

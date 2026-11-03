@@ -42,7 +42,7 @@ assert.match(result.stdout, /SVG list impl: 6952 native\/C comparisons/);
 assert.match(result.stdout, /SVG list scrollbar bodies: 294 native\/C comparisons/);
 assert.match(result.stdout, /SVG list widgets: 21 native\/C comparisons/);
 assert.match(result.stdout, /SVG list slide: 72 native\/C comparisons/);
-assert.match(result.stdout, /SVG list slide: 72 native\/C comparisons/);
+assert.match(result.stdout, /SVG list anim: 14 native\/C comparisons/);
 assert.match(result.stdout, /SVG list rowview: 100 native\/C comparisons/);
 assert.match(result.stdout, /SVG list update: 20 native\/C comparisons/);
 assert.match(result.stdout, /row values: 68640 type\/raw-value cases/);

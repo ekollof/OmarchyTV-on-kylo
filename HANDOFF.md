@@ -24,7 +24,18 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SVG-LIST-SLIDE](artifacts/reports/SVG-LIST-SLIDE-2026-11-03.md)
+Latest: [SVG-LIST-ANIM](artifacts/reports/SVG-LIST-ANIM-2026-11-03.md)
+implements startSelectAnimation gates, rect snapshot and first-match
+animation start. 14 native/C comparisons pass with exact call order/args,
+snapshot words and started float bits, plus full strict host/focused
+sanitizer/ARM and every prior group. No new service/module, TV access/wake/
+staging/deployment or pending job. Hashes in MEMORY/report. Next implement
+parent refresh, scrollbar construction/rendering internals, and the owned
+backend/context/consumer with display/scanout binding, then independent
+startup and native visible parity. Animation start is not actual
+motion/rendering acceptance.
+
+Previous: [SVG-LIST-SLIDE](artifacts/reports/SVG-LIST-SLIDE-2026-11-03.md)
 implements setSlideValue progress/slider/text routing. 72 native/C
 comparisons pass with exact call order/args, written values and stored
 words, plus full strict host/focused sanitizer/ARM and every prior group.
