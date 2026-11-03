@@ -27,6 +27,11 @@ struct oa_svg_list_select_ops {
     uint32_t (*entry_id)(void *entry);
 };
 uint32_t oa_setting_list_selected_id(const struct oa_svg_list_select_ops *o,int *error);
+#define OA_SVG_ROW_TEXT_BYTES 64u
+/* Temporary text object storage is OA_SVG_ROW_TEXT_BYTES, aligned to
+ * max_align_t. Providers must fit that bound, initialize in text_new, consume
+ * synchronously in text_set and release in text_free; they must not retain
+ * the stack object's address. This is our provider bound, not vendor layout. */
 struct oa_svg_row_slide_ops {
     void *context;
     uint32_t (*flag_a)(void *row);

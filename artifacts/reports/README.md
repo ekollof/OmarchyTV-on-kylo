@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [ARM-HARNESS-REVIEW](ARM-HARNESS-REVIEW-2026-11-03.md) | current review:153 native animation cases, full host/IPC/sanitizer/ARM; fixes string lifetime/context/order/character bounds/signed size, wrong-page stub/bounds, restore validation and text alignment; GDB workflow verified; exact old SIGSEGV cause unproven |
 | [SVG-LIST-ANIM](SVG-LIST-ANIM-2026-11-03.md) | select animation via startSelectAnimation (gates, rect snapshot, ordered name search, first-match atof*1000.0f start);14 native/C comparisons plus strict host/sanitizer/ARM; proved +0x24c/+0x25c archive/store, +12/+28 fields and float-bit start; fixed UString deref, atof PLT and ARM-trampoline slips; parent/scroll-construction/backend/visible gates open |
 | [SVG-LIST-SLIDE](SVG-LIST-SLIDE-2026-11-03.md) | row editing via setSlideValue (progress vs slider/text, two flag bytes, type word, bar selection, empty-format text, stored word);72 native/C comparisons plus strict host/sanitizer/ARM; proved bar/text/store routing and no-store progress paths; parent/scroll-construction/backend/visible gates open |
 | [SVG-LIST-WIDGETS](SVG-LIST-WIDGETS-2026-11-03.md) | widget-level getters (numeric forward, selected-id gates/walk);21 native/C comparisons plus strict host/sanitizer/ARM; proved +0x18d8 entry forward and +0x28c cell-then-array walk; row editing/parent/construction/rendering/animation/backend/visible gates open |

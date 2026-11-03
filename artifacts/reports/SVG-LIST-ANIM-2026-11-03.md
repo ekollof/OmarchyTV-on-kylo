@@ -1,5 +1,13 @@
 # SVG-list select animation — 2026-11-03
 
+**Superseded acceptance:** [ARM-HARNESS-REVIEW](ARM-HARNESS-REVIEW-2026-11-03.md)
+replaces the14-case/string model below. Those cases did not prove full string
+ownership or parsing/destructor order. New opaque owned/context-bound callbacks
+and153 native cases cover those distinctions, signed sizes and bounded character
+slicing. NULL names construct empty strings. The historical crash explanations
+below were the earlier agent's diagnosis; no retained core proves the exact old
+fault in this review. Runtime/provider/rendering acceptance remains open.
+
 `common/svg_list_anim.c` gains SVGListBoxBase::startSelectAnimation. Runs
 after the selected row changes and after every handled key/move/update:
 returns silently when animation is disabled, when there is no selected row,

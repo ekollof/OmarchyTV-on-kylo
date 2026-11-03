@@ -6,6 +6,17 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+ARM-HARNESS-REVIEW supersedes the14-case animation acceptance below. Owned opaque
+strings/context, character-bounded slicing (NULL names are empty), parsing before
+destruction, comparison operand order and signed container counts now pass153
+native cases. Helpers are controlled valid-UTF8 fixtures, not full UString proof.
+Scrollbar stub10c3f50 previously wrote through the wrong mapping; installers now
+check allocation bounds. OAL1 payload checks previously hid behind publication;
+unpublished restore now rejects invalid geometry/handled values atomically. Text
+temporary is max-aligned. Old SIGSEGV has no retained core and didn't reproduce
+in the reviewed starting binary; don't claim a historical cause or TV fault.
+Use working host ARM GDB; bundled GDB's ncurses5 dependency is absent.
+
 SVG list animation: SVG-LIST-ANIM implements startSelectAnimation gates,
 rect snapshot and first-match animation start; 14 native/C comparisons
 pass. Disabled/missing-row/unchanged-rect exits, the +0x24c/+0x25c

@@ -1,0 +1,5 @@
+           PID: 1521148 (qemu-arm-static)
+        Signal: 11 (SEGV) si_code: SI_USER
+     Timestamp: Tue 2026-11-03 19:12:21 CET (19min ago)
+  Command Line: qemu-arm-static -L artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/arm-none-linux-gnueabihf/libc openaurora/build-tv-v3/tests/tab_policy_firmware artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf artifacts/profiles/mb230_swprofile.bin
+       Storage: none

@@ -53,7 +53,7 @@ static void le_slider(void *h,int v) { lemit(L_SLIDER,(uint32_t)(uintptr_t)h,(ui
 static void le_store(void *row,int v) { lemit(L_STORE,(uint32_t)(uintptr_t)row,(uint32_t)v);current_l->stored=v; }
 static void *le_box(void *row) { lemit(L_BOX,(uint32_t)(uintptr_t)row,0);return (unsigned char *)row+0x1ca8; }
 static const char *le_format(void *row) { (void)row;lemit(L_FORMAT,0,0);return ""; }
-static void le_new(void *buf,const char *fmt) { lemit(L_NEW,(uint32_t)(uintptr_t)buf,(uint32_t)(uintptr_t)fmt);(void)buf; }
+static void le_new(void *buf,const char *fmt) { assert((uintptr_t)buf%_Alignof(max_align_t)==0);lemit(L_NEW,(uint32_t)(uintptr_t)buf,(uint32_t)(uintptr_t)fmt); }
 static void le_append(void *buf,int v) { lemit(L_APPEND,(uint32_t)(uintptr_t)buf,(uint32_t)v); }
 static void le_set(void *box,const void *text) { lemit(L_SET,(uint32_t)(uintptr_t)box,(uint32_t)(uintptr_t)text); }
 static void le_free(void *buf) { lemit(L_FREE,(uint32_t)(uintptr_t)buf,0); }

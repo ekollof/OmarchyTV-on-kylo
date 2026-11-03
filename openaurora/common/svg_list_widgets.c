@@ -28,7 +28,8 @@ uint32_t oa_setting_list_selected_id(const struct oa_svg_list_select_ops *o,int 
 }
 int oa_setting_row_set_slide(const struct oa_svg_row_slide_ops *o,void *row,int value)
 {
-    uint32_t type,flagb;void *bar,*box;unsigned char textbuf[64];
+    uint32_t type,flagb;void *bar,*box;
+    _Alignas(max_align_t) unsigned char textbuf[OA_SVG_ROW_TEXT_BYTES];
     if(!o || !row || !o->flag_a || !o->flag_b || !o->row_type || !o->set_progress ||
        !o->slide_bar || !o->is_created || !o->set_slider || !o->store_value || !o->text_box ||
        !o->text_format || !o->text_new || !o->text_append || !o->text_set || !o->text_free)return EINVAL;

@@ -1,0 +1,16 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+ok animation review: owned/context-bound strings, UTF-8/empty bounds, parse/free order, signed size and cleanup
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-arm-review-sanitize/tests/svg_list_widgets tests/svg_list_widgets.c common/svg_list_widgets.c
+ok SVG list widgets: numeric forward, created/none gates, table-walk id and slide paths
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-arm-review-sanitize/core/check.o core/check.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-arm-review-sanitize/core/control.o core/control.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-arm-review-sanitize/core/host.o core/host.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-arm-review-sanitize/core/module.o core/module.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-arm-review-sanitize/core/skin.o core/skin.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-arm-review-sanitize/tests/ui_list tests/ui_list.c build-arm-review-sanitize/core/check.o build-arm-review-sanitize/core/control.o build-arm-review-sanitize/core/host.o build-arm-review-sanitize/core/module.o build-arm-review-sanitize/core/skin.o -ldl -pthread -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-arm-review-sanitize/modules/mod_ui_list.so modules/ui_list/ui_list.c common/svg_list_input.c common/svg_list_bodies.c common/svg_list_move.c common/svg_list_rows.c common/svg_list_impl.c -fsanitize=address,undefined
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fPIC -shared -MMD -MP -o build-arm-review-sanitize/modules/mod_ticker.so modules/ticker/ticker.c -fsanitize=address,undefined \
+   \
+
+ok list: CLI domains/validation, verified key chain, suspend/resume, shutdown gate, OAL1 reload and unload
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

@@ -16,7 +16,7 @@ exact call order/operands asserted by SVG-LIST-INPUT/BODIES/MOVE/ROWS/IMPL/
 SCROLLBAR/UPDATE: router precedence and aliases, zero-count/size unhandled
 paths, move/window receiver split, manager field layout, updateImpl
 writeback, scrollbar gating. Owned fixture geometry (documented, not
-firmware): 9-item list, 5-row window, 16 slots, horizontal layout with
+firmware): 9-item list, 5-row window, 16 slots, vertical layout with
 page-down 0x20c/page-up 0x20d widget fields. Animation/scrollbar/full-update
 render targets and the +0x48 group virtual stay open: render callbacks are
 inert counters, and go_group clamps selection to the synthesized 0/count-1
@@ -27,6 +27,12 @@ unknown keys consume nothing. `list-state` reports all words and counters.
 Suspend makes keys EBUSY while state stays queryable; shutdown gates keys
 while queries still answer. OAL1 persists the 4 words plus handled and the 5
 counters (44 bytes, exact-length, published-guard, magic-checked).
+
+ARM-HARNESS-REVIEW corrects the earlier horizontal-layout description (the
+router returns0) and adds actual unpublished OAL1 payload checks. Geometry,
+handle capacity, selection and handled values are validated atomically; larger
+virtual totals and empty states remain allowed. Earlier malformed-data tests
+ran only while published and therefore did not reach payload validation.
 
 ## Still open
 

@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SVG-LIST-ANIM](artifacts/reports/SVG-LIST-ANIM-2026-11-03.md)
+Latest: [ARM-HARNESS-REVIEW](artifacts/reports/ARM-HARNESS-REVIEW-2026-11-03.md)
+reviews0493f91 and preceding list work. Fresh ARM corpus153 + all prior groups,
+full strict host/Unix IPC, focused ASan/UBSan and ARM animation/widgets/ui.list
+tests pass. Corrected owned/context-bound UString handles, UTF8/empty/NULL name
+semantics, parse-before-free/equality order and signed counts. Every trampoline
+installer checks its recorded mapping; scrollbar10c3f50 now uses10c3000, not
+adjacent10c4000. OAL1 restore validates unpublished payloads atomically; temporary
+text storage is max-aligned. Module routing is vertical (old prose corrected).
+AGENTS has bounded first-fault/ABI/GDB guidance. Host /usr/bin/gdb reads ARM ELF;
+bundled GDB lacks ncurses5. Historical19:12 SIGSEGV has no retained core and did
+not reproduce in the starting14-case binary: no exact old cause is claimed.
+Do not resume crash loops or infer a TV fault. Evidence: arm-harness-review-
+2026-11-03; isolated binaries build-tv-v3/arm-review, hashes in MEMORY/report.
+Remaining work is actual providers/rendering/parent refresh/display binding/
+startup/native acceptance. No TV access/deployment or pending job/helper.
+
+Previous: [SVG-LIST-ANIM](artifacts/reports/SVG-LIST-ANIM-2026-11-03.md)
 implements startSelectAnimation gates, rect snapshot and first-match
 animation start. 14 native/C comparisons pass with exact call order/args,
 snapshot words and started float bits, plus full strict host/focused

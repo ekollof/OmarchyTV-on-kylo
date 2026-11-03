@@ -23,6 +23,7 @@
 #include "openaurora/svg_list_update.h"
 #include "openaurora/svg_list_widgets.h"
 #include "openaurora/svg_list_anim.h"
+#include "svg_list_anim_fixture.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -72,6 +73,23 @@ static size_t file_offset(const unsigned char *b,size_t n,uint32_t address,size_
     }
     fputs("unmapped source address\n",stderr);exit(1);
 }
+static struct {uint32_t base;size_t size;} mapped_regions[128];
+static int mapped_range(const void *mapped,uint32_t base,uint32_t address,size_t size)
+{
+    if((uintptr_t)mapped!=base || address<base)return 0;
+    for(unsigned i=0;i<128;++i)if(mapped_regions[i].size && mapped_regions[i].base==base) {
+        size_t delta=address-base;
+        return delta<=mapped_regions[i].size && size<=mapped_regions[i].size-delta;
+    }
+    return 0;
+}
+static unsigned char *stub_destination(void *mapped,uint32_t base,uint32_t address,size_t size)
+{
+    if(!mapped_range(mapped,base,address,size)) {
+        fprintf(stderr,"reference stub outside its mapping: base=%x address=%x bytes=%zu\n",base,address,size);exit(1);
+    }
+    return (unsigned char *)mapped+(address-base);
+}
 static void *page(uint32_t address,size_t length)
 {
     void *wanted=(void *)(uintptr_t)address;
@@ -83,13 +101,22 @@ static void *page(uint32_t address,size_t length)
         if(p!=MAP_FAILED)assert(!munmap(p,length));
         fputs("offline reference address unavailable; refusing fixed overwrite\n",stderr);exit(77);
     }
+    /* Calls unmap their regions directly. A successful non-replacing mmap
+     * proves any overlapping old registry entry has ceased to be live. */
+    unsigned slot=128;
+    for(unsigned i=0;i<128;++i) {
+        if(mapped_regions[i].size && (uint64_t)address+length>mapped_regions[i].base &&
+           (uint64_t)mapped_regions[i].base+mapped_regions[i].size>address)mapped_regions[i].size=0;
+        if(!mapped_regions[i].size)slot=i;
+    }
+    assert(slot<128);mapped_regions[slot].base=address;mapped_regions[slot].size=length;
     return p;
 }
 static void executable(void *p,size_t n)
 { __builtin___clear_cache(p,(char *)p+n);assert(!mprotect(p,n,PROT_READ|PROT_EXEC)); }
 static void thumb_stub(void *mapped,uint32_t base,uint32_t address,getter function)
 {
-    unsigned char *p=(unsigned char *)mapped+address-base;
+    unsigned char *p=stub_destination(mapped,base,address,8);
     const uint16_t insn[2]={0x4b00,0x4718}; /* ldr r3,[pc,#0]; bx r3 */
     assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=bits(function);memcpy(p+4,&target,4);
 }
@@ -346,7 +373,7 @@ static unsigned event_set_open(void *p,int32_t value) { (void)p;event_action(eve
 static unsigned event_group(void *p,int32_t message) { (void)p;event_action(event_fixture,OA_TAB_GROUP_KEY,event_fixture->key,(const void *)(uintptr_t)(uint32_t)message);return 0; }
 static void predicate_stub(void *mapped,uint32_t base,uint32_t address,predicate function)
 {
-    unsigned char *p=(unsigned char *)mapped+address-base;const uint16_t insn[]={0x4b00,0x4718};
+    unsigned char *p=stub_destination(mapped,base,address,8);const uint16_t insn[]={0x4b00,0x4718};
     assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=predicate_bits(function);memcpy(p+4,&target,4);
 }
 static void check_tab_events(const unsigned char *elf,size_t bytes)
@@ -1214,7 +1241,7 @@ static unsigned native_b_group(void *self,int32_t index)
 { assert(self==body_object);body_emit(native_body,B_GROUP,(uint32_t)index,0);native_body->grouped=(uint32_t)index;return 0; }
 static void ctor_stub(void *mapped,uint32_t base,uint32_t address,ctor_fn function)
 {
-    unsigned char *p=(unsigned char *)mapped+address-base;const uint16_t insn[]={0x4b00,0x4718};
+    unsigned char *p=stub_destination(mapped,base,address,8);const uint16_t insn[]={0x4b00,0x4718};
     assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target;memcpy(&target,&function,4);memcpy(p+4,&target,4);
 }
 static uint32_t body_q_aux(void *p) { return ((struct body_fixture *)p)->aux; }
@@ -1267,7 +1294,7 @@ static void native_r_impl(void *mgr,uint32_t index,int full)
 static void impl_stub(void *mapped,uint32_t base,uint32_t address,impl_fn function)
 {
     /* Preserving indirect branch, matching the other multi-arg installers. */
-    unsigned char *p=(unsigned char *)mapped+address-base;
+    unsigned char *p=stub_destination(mapped,base,address,16);
     const uint16_t insn[]={0xb40f,0x4b02,0x469c,0xbc0f,0x4760,0x46c0};
     assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target;memcpy(&target,&function,4);memcpy(p+12,&target,4);
 }
@@ -1575,7 +1602,7 @@ typedef void (*quad_fn)(void *,uint32_t,uint32_t,uint32_t);
 static void quad_stub(void *mapped,uint32_t base,uint32_t address,quad_fn function)
 {
     /* Preserving indirect branch: r3 carries the fourth argument. */
-    unsigned char *p=(unsigned char *)mapped+address-base;
+    unsigned char *p=stub_destination(mapped,base,address,16);
     const uint16_t insn[]={0xb40f,0x4b02,0x469c,0xbc0f,0x4760,0x46c0};
     assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target;memcpy(&target,&function,4);memcpy(p+12,&target,4);
 }
@@ -1593,7 +1620,7 @@ static void native_sb_rect(void *r,uint32_t x,uint32_t y,uint32_t w,uint32_t h)
 static void rect_stub(void *mapped,uint32_t base,uint32_t address,rect_fn function)
 {
     /* Preserving indirect branch: r3 carries the fourth argument. */
-    unsigned char *p=(unsigned char *)mapped+address-base;
+    unsigned char *p=stub_destination(mapped,base,address,16);
     const uint16_t insn[]={0xb40f,0x4b02,0x469c,0xbc0f,0x4760,0x46c0};
     assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target;memcpy(&target,&function,4);memcpy(p+12,&target,4);
 }
@@ -1619,7 +1646,7 @@ typedef void (*pair_fn)(void *,uint32_t);
 static uint32_t pair_bits(pair_fn f) { uint32_t v;_Static_assert(sizeof f==sizeof v,"fn width");memcpy(&v,&f,sizeof v);return v; }
 static void pair_stub(void *mapped,uint32_t base,uint32_t address,pair_fn function)
 {
-    unsigned char *p=(unsigned char *)mapped+address-base;const uint16_t insn[]={0x4b00,0x4718};
+    unsigned char *p=stub_destination(mapped,base,address,8);const uint16_t insn[]={0x4b00,0x4718};
     assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=pair_bits(function);memcpy(p+4,&target,4);
 }
 static void raw_stub(void *mapped,uint32_t base,uint32_t address,uint32_t target)
@@ -1627,7 +1654,7 @@ static void raw_stub(void *mapped,uint32_t base,uint32_t address,uint32_t target
     /* Untyped installer for callees no typed installer covers (float register
      * arguments, raw pointer pairs). Caller and stub honor the AAPCS; only
      * the entry address is installed here. */
-    unsigned char *p=(unsigned char *)mapped+address-base;const uint16_t insn[]={0x4b00,0x4718};
+    unsigned char *p=stub_destination(mapped,base,address,8);const uint16_t insn[]={0x4b00,0x4718};
     assert(!(address&3));memcpy(p,insn,sizeof insn);memcpy(p+4,&target,4);
 }
 typedef void (*scroll_fn)(void *);
@@ -1887,7 +1914,9 @@ static void check_svg_scrollbar(const unsigned char *elf,size_t bytes)
         if(!i)memcpy(&create,&entry,4);else memcpy(&setpos,&entry,4);
     }
     thumb_stub(win,0x1152000,0x1152a40,native_sb_created2);
-    quad_stub(bar,0x10c4000,0x10c3f50,native_sb_mkcreate);
+    assert(!mapped_range(bar,0x10c4000,0x10c3f50,16));
+    assert(!mapped_range(bar,0x10c4000,0x10c4ffc,8));
+    quad_stub(rows2,0x10c3000,0x10c3f50,native_sb_mkcreate);
     thumb_stub(rows2,0x10c3000,0x10c3658,native_sb_renderbg2);
     thumb_stub(rows2,0x10c3000,0x10c3bac,native_sb_renderbar2);
     executable(bar,4096);executable(win,4096);executable(rows2,4096);
@@ -2228,237 +2257,111 @@ static void check_svg_slide(const unsigned char *elf,size_t bytes)
     }
 }
 typedef unsigned (*eq_fn)(const void *,const void *);
-static uint32_t eq_bits(eq_fn f) { uint32_t v;_Static_assert(sizeof f==sizeof v,"fn width");memcpy(&v,&f,sizeof v);return v; }
-static void eq_stub(void *mapped,uint32_t base,uint32_t address,eq_fn function)
-{
-    unsigned char *p=(unsigned char *)mapped+address-base;const uint16_t insn[]={0x4b00,0x4718};
-    assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=eq_bits(function);memcpy(p+4,&target,4);
-}
+static uint32_t eq_bits(eq_fn f) { uint32_t v;memcpy(&v,&f,4);return v; }
 typedef void (*start_fn)(void *,void *,float);
-static uint32_t start_bits(start_fn f) { uint32_t v;_Static_assert(sizeof f==sizeof v,"fn width");memcpy(&v,&f,sizeof v);return v; }
+static uint32_t start_bits(start_fn f) { uint32_t v;memcpy(&v,&f,4);return v; }
 typedef double (*dtoa_fn)(const char *);
-static uint32_t dtoa_bits(dtoa_fn f) { uint32_t v;_Static_assert(sizeof f==sizeof v,"fn width");memcpy(&v,&f,sizeof v);return v; }
-static void dtoa_stub(void *mapped,uint32_t base,uint32_t address,dtoa_fn function)
-{
-    /* PLT redirect for double-returning libc calls (atof). The fragment
-     * reaches the PLT slot with BLX-immediate to an even address, which
-     * enters ARM state, so the trampoline must be ARM code (cf. step_stub);
-     * BX restores Thumb/ARM from the callee address bit. Caller and callee
-     * honor the AAPCS; d0 carries the double result. */
-    unsigned char *p=(unsigned char *)mapped+address-base;
-    const uint32_t insn[]={UINT32_C(0xe59fc000),UINT32_C(0xe12fff1c)};
-    assert(!(address&3));memcpy(p,insn,sizeof insn);
-    uint32_t target=dtoa_bits(function);memcpy(p+8,&target,4);
-}
-enum {A_EN,A_SEL,A_ROW,A_RECT,A_RCUR,A_WPREV,A_WCUR,A_STD,A_NAME,A_TEXT,A_COUNT,A_AT,A_NEW,A_LEN,A_SUB,A_EQ,A_FREE,A_OWNER,A_CONTAINER,A_TARGET,A_CTRL,A_START};
-struct anim_fixture {
-    int enabled;uint32_t selected;int has_row;uint32_t owner;
-    uint32_t rect[4],cur[4],prev[4];
-    const char *stdname;uint32_t nanims;
-    const char *names[4];const char *durs[4];int present[4];
-    uint32_t started_bits;int started;
-    unsigned count;struct {uint32_t id,a,b;} trace[64];
-};
+static uint32_t dtoa_bits(dtoa_fn f) { uint32_t v;memcpy(&v,&f,4);return v; }
 static struct anim_fixture *native_anim;
-static _Alignas(uint32_t) unsigned char anim_list[0x400],anim_row[16],anim_row_vtable[16*4];
-static _Alignas(uint32_t) unsigned char anim_handles[4][32];
-static void anim_emit(struct anim_fixture *f,uint32_t id,uint32_t a,uint32_t b)
-{ assert(f->count<64);f->trace[f->count].id=id;f->trace[f->count].a=a;f->trace[f->count].b=b;++f->count; }
-static unsigned native_a_enabled(void *list)
-{ assert(list==anim_list);anim_emit(native_anim,A_EN,0,0);return (unsigned)native_anim->enabled; }
-static unsigned native_a_sel(void *mgr)
-{ assert(mgr==anim_list+0xf8);anim_emit(native_anim,A_SEL,0,0);return native_anim->selected; }
-static unsigned native_a_itemrow(void *mgr,int32_t index)
-{ assert(mgr==anim_list+0xf8);anim_emit(native_anim,A_ROW,(uint32_t)index,0);
-  return native_anim->has_row?(uint32_t)(uintptr_t)anim_row:0; }
-static unsigned native_a_rect(void *buf,void *row)
-{ assert(row==anim_row);memcpy(buf,native_anim->rect,16);anim_emit(native_anim,A_RECT,0,0);return 0; }
-static void native_a_stdname(void *buf,uint32_t list,uint32_t id,uint32_t ignored)
-{ (void)ignored;assert(list==(uint32_t)(uintptr_t)anim_list && id==55);
-  *(const char **)buf=native_anim->stdname;anim_emit(native_anim,A_STD,id,0); }
-static unsigned native_a_count(void *container)
-{ assert(container==anim_list+0x280);anim_emit(native_anim,A_COUNT,0,0);return native_anim->nanims; }
-static unsigned native_a_at(void *container,int32_t index)
-{ assert(container==anim_list+0x280);assert(index>=0 && index<4);
-  anim_emit(native_anim,A_AT,(uint32_t)index,0);
-  return native_anim->present[index]?(uint32_t)(uintptr_t)anim_handles[index]:0; }
-static void native_a_new(void *buf,uint32_t str)
-{ *(const char **)buf=(const char *)str;anim_emit(native_anim,A_NEW,str,0); }
-static unsigned native_a_len(void *str)
-{ const char *s=*(const char *const *)str;unsigned n=(unsigned)strlen(s);anim_emit(native_anim,A_LEN,n,0);return n; }
-static void native_a_sub(void *dst,uint32_t src,uint32_t start,uint32_t len)
-{ const char *s=*(const char *const *)(uintptr_t)src;anim_emit(native_anim,A_SUB,start,len);*(const char **)dst=s+start; }
+static _Alignas(uint32_t) unsigned char anim_list[0x400],anim_row[16],anim_row_vtable[64],anim_handles[4][32];
+static unsigned native_a_enabled(void *l) { return (unsigned)af_enabled(native_anim,l); }
+static unsigned native_a_sel(void *m) { return af_selected(native_anim,m); }
+static unsigned native_a_itemrow(void *m,int32_t i) { return (uint32_t)(uintptr_t)af_row(native_anim,m,(uint32_t)i); }
+static unsigned native_a_rect(void *out,void *row) { af_rect(native_anim,row,out);return 0; }
+static void native_a_stdname(void *out,uint32_t list,uint32_t id,uint32_t ignored)
+{ (void)ignored;*(void **)out=af_std(native_anim,(void *)(uintptr_t)list,id);assert(*(void **)out); }
+static unsigned native_a_count(void *c) { return af_count(native_anim,c); }
+static unsigned native_a_at(void *c,int32_t i)
+{ return af_at(native_anim,c,(uint32_t)i)?(uint32_t)(uintptr_t)anim_handles[i]:0; }
+static void native_a_new(void *out,uint32_t str)
+{ *(void **)out=af_new(native_anim,(const char *)(uintptr_t)str);assert(*(void **)out); }
+static unsigned native_a_len(void *s) { return af_len(native_anim,*(void **)s); }
+static void native_a_sub(void *out,uint32_t src,uint32_t start,uint32_t length)
+{ *(void **)out=af_sub(native_anim,*(void **)(uintptr_t)src,start,length);assert(*(void **)out); }
 static unsigned native_a_eq(const void *a,const void *b)
-{ int match=!strcmp(*(const char *const *)a,*(const char *const *)b);anim_emit(native_anim,A_EQ,(uint32_t)match,0);return (unsigned)match; }
-static unsigned native_a_free(void *buf) { (void)buf;anim_emit(native_anim,A_FREE,0,0);return 0; }
-static unsigned native_a_ctrl(void *owner)
-{ anim_emit(native_anim,A_CTRL,(uint32_t)(uintptr_t)owner,0);return (unsigned)0x77aa; }
-static void native_a_start(void *ctrl,void *target,float value)
-{ (void)ctrl;(void)target;uint32_t bits;memcpy(&bits,&value,4);anim_emit(native_anim,A_START,bits,0);native_anim->started_bits=bits;native_anim->started=1; }
-static struct anim_fixture *ref_anim;
-static int anim_q_enabled(void *list) { (void)list;anim_emit(ref_anim,A_EN,0,0);return ref_anim->enabled; }
-static uint32_t anim_q_sel(void *mgr) { (void)mgr;anim_emit(ref_anim,A_SEL,0,0);return ref_anim->selected; }
-static void *anim_q_row(void *mgr,uint32_t index) { (void)mgr;anim_emit(ref_anim,A_ROW,index,0);return ref_anim->has_row?anim_row:NULL; }
-static void anim_q_rect(void *row,uint32_t out[4]) { (void)row;memcpy(out,ref_anim->rect,16);anim_emit(ref_anim,A_RECT,0,0); }
-static void anim_q_rcur(void *list,uint32_t out[4]) { (void)list;memcpy(out,ref_anim->cur,16); }
-static void anim_q_wprev(void *list,const uint32_t in[4]) { (void)list;memcpy(ref_anim->prev,in,16); }
-static void anim_q_wcur(void *list,const uint32_t in[4]) { (void)list;memcpy(ref_anim->cur,in,16); }
-static const char *anim_q_std(void *list,uint32_t id) { (void)list;anim_emit(ref_anim,A_STD,id,0);return ref_anim->stdname; }
-static uint32_t anim_q_count(void *container) { (void)container;anim_emit(ref_anim,A_COUNT,0,0);return ref_anim->nanims; }
-static void *anim_q_at(void *container,uint32_t index) { (void)container;anim_emit(ref_anim,A_AT,index,0);return ref_anim->present[index]?anim_handles[index]:NULL; }
-static const char *anim_q_name(void *anim) { return *(const char *const *)((const char *)anim+12); }
-static const char *anim_q_text(void *anim) { return *(const char *const *)((const char *)anim+28); }
-static void *anim_q_ctrl(void *owner) { anim_emit(ref_anim,A_CTRL,(uint32_t)(uintptr_t)owner,0);return (void *)0x77aa; }
-static void *anim_q_owner(void *list) { (void)list;return (void *)0x99aa; }
-static void *anim_q_container(void *list) { (void)list;return anim_list+0x280; }
-static void *anim_q_target(void *list) { (void)list;return anim_list+0x98; }
-static void anim_q_start(void *ctrl,void *target,float value)
-{ (void)ctrl;(void)target;uint32_t bits;memcpy(&bits,&value,4);anim_emit(ref_anim,A_START,bits,0);ref_anim->started_bits=bits;ref_anim->started=1; }
-static void anim_q_new(const char *s) { anim_emit(ref_anim,A_NEW,(uint32_t)(uintptr_t)s,0); }
-static uint32_t anim_q_len(const char *s) { uint32_t n=(uint32_t)strlen(s);anim_emit(ref_anim,A_LEN,n,0);return n; }
-static const char *anim_q_sub(const char *s,uint32_t start,uint32_t len) { (void)len;anim_emit(ref_anim,A_SUB,start,len);return s+start; }
-static int anim_q_eq(const char *a,const char *b) { int match=!strcmp(a,b);anim_emit(ref_anim,A_EQ,(uint32_t)match,0);return match; }
-static void anim_q_free(const char *t) { (void)t;anim_emit(ref_anim,A_FREE,0,0); }
-static struct oa_svg_list_anim_ops anim_ops(struct anim_fixture *f)
-{ return (struct oa_svg_list_anim_ops){f,anim_q_enabled,anim_q_sel,anim_q_row,anim_q_rect,anim_q_rcur,anim_q_wprev,anim_q_wcur,anim_q_std,anim_q_count,anim_q_at,anim_q_name,anim_q_text,anim_q_ctrl,anim_q_owner,anim_q_container,anim_q_target,anim_q_start,anim_q_new,anim_q_len,anim_q_sub,anim_q_eq,anim_q_free}; }
+{ return (unsigned)af_equal(native_anim,*(void *const *)a,*(void *const *)b); }
+static unsigned native_a_free(void *s) { af_free(native_anim,*(void **)s);return 0; }
+static unsigned native_a_ctrl(void *owner) { return (uint32_t)(uintptr_t)af_ctrl(native_anim,owner); }
+static void native_a_start(void *ctrl,void *target,float value) { af_start(native_anim,ctrl,target,value); }
+static double native_a_parse(const char *text) { return af_parse(native_anim,text); }
 typedef void (*anim_fn)(void *);
-static void compare_anim_traces(struct anim_fixture *vendor,struct anim_fixture *ref)
+static void compare_anim(anim_fn native,struct anim_fixture initial)
 {
-    unsigned rn=0;uint32_t ids[64],args[64],args2[64];
-    for(unsigned i=0;i<ref->count;++i) {
-        if(ref->trace[i].id==A_RCUR || ref->trace[i].id==A_WPREV || ref->trace[i].id==A_WCUR ||
-           ref->trace[i].id==A_OWNER || ref->trace[i].id==A_CONTAINER || ref->trace[i].id==A_TARGET ||
-           ref->trace[i].id==A_NAME || ref->trace[i].id==A_TEXT)continue;
-        assert(rn<64);ids[rn]=ref->trace[i].id;args[rn]=ref->trace[i].a;args2[rn]=ref->trace[i].b;++rn;
+    struct anim_fixture vendor=initial,ref=initial;
+    vendor.list=ref.list=anim_list;vendor.manager=ref.manager=anim_list+0xf8;vendor.row=ref.row=anim_row;
+    memcpy(anim_list+0x24c,vendor.prev,16);memcpy(anim_list+0x25c,vendor.cur,16);memcpy(anim_list+4,&vendor.owner,4);
+    for(unsigned i=0;i<4;++i) { memcpy(anim_handles[i]+12,&vendor.names[i],4);memcpy(anim_handles[i]+28,&vendor.durs[i],4); }
+    native_anim=&vendor;native(anim_list);
+    struct oa_svg_list_anim_ops ops=anim_ops(&ref);float output=-1.0f;
+    assert(!oa_svg_list_start_animation(&ops,anim_list,anim_list+0xf8,&output));
+    assert(vendor.started==ref.started && (!vendor.started || vendor.started_bits==ref.started_bits));
+    assert(!memcmp(anim_list+0x24c,ref.prev,16) && !memcmp(anim_list+0x25c,ref.cur,16));
+    if(vendor.started) { uint32_t bits;memcpy(&bits,&output,4);assert(bits==vendor.started_bits); }
+    else assert(output==-1.0f);
+    if(vendor.count!=ref.count) { fprintf(stderr,"animation trace count %u/%u\n",vendor.count,ref.count);exit(1); }
+    for(unsigned i=0;i<ref.count;++i)if(vendor.trace[i].id!=ref.trace[i].id || vendor.trace[i].a!=ref.trace[i].a || vendor.trace[i].b!=ref.trace[i].b) {
+        fprintf(stderr,"animation trace %u native=%u/%x/%x ours=%u/%x/%x\n",i,vendor.trace[i].id,vendor.trace[i].a,vendor.trace[i].b,ref.trace[i].id,ref.trace[i].a,ref.trace[i].b);exit(1);
     }
-    if(vendor->count!=rn) {
-        fprintf(stderr,"anim count native=%u ours=%u\n",vendor->count,rn);
-        for(unsigned i=0;i<vendor->count;++i)fprintf(stderr,"  native[%u]=%u/%x/%x\n",i,vendor->trace[i].id,vendor->trace[i].a,vendor->trace[i].b);
-        for(unsigned i=0;i<rn;++i)fprintf(stderr,"  ours[%u]=%u/%x/%x\n",i,ids[i],args[i],args2[i]);
-        exit(1);
-    }
-    for(unsigned i=0;i<vendor->count;++i)if(vendor->trace[i].id!=ids[i] || vendor->trace[i].a!=args[i] ||
-        vendor->trace[i].b!=args2[i]) {
-        fprintf(stderr,"anim trace %u native=%u/%x/%x ours=%u/%x/%x\n",i,vendor->trace[i].id,
-            vendor->trace[i].a,vendor->trace[i].b,ids[i],args[i],args2[i]);exit(1);
-    }
+    af_clean(&vendor);af_clean(&ref);
 }
-static void compare_anim(anim_fn native,int (*ours)(const struct oa_svg_list_anim_ops *,void *,void *,float *),
-    struct anim_fixture initial)
+static struct anim_fixture anim_initial(void)
 {
-    struct anim_fixture vendor=initial,ref=initial;struct oa_svg_list_anim_ops ops=anim_ops(&ref);
-    memcpy(anim_list+0x24c,vendor.prev,16);memcpy(anim_list+0x25c,vendor.cur,16);
-    memcpy(anim_list+4,&vendor.owner,4);
-    for(unsigned i=0;i<4;++i) {
-        memcpy(anim_handles[i]+12,&vendor.names[i],4);
-        memcpy(anim_handles[i]+28,&vendor.durs[i],4);
-    }
-    native_anim=&vendor;ref_anim=&ref;
-    float vours=-1.0f;
-    { volatile anim_fn call=native;call(anim_list); }
-    assert(!ours(&ops,anim_list,anim_list+0xf8,&vours));
-    if(vendor.started!=ref.started) {
-        fprintf(stderr,"anim started native=%d ours=%d\n",vendor.started,ref.started);exit(1);
-    }
-    if(vendor.started && vendor.started_bits!=ref.started_bits) {
-        fprintf(stderr,"anim value native=%x ours=%x\n",vendor.started_bits,ref.started_bits);exit(1);
-    }
-    if(memcmp(anim_list+0x24c,ref.prev,16) || memcmp(anim_list+0x25c,ref.cur,16)) {
-        fprintf(stderr,"anim snapshot mismatch\n");exit(1);
-    }
-    if(!vendor.started && vours!=(float)-1.0) {
-        fprintf(stderr,"anim wrote output without start\n");exit(1);
-    }
-    compare_anim_traces(&vendor,&ref);
+    struct anim_fixture f={.enabled=1,.has_row=1,.owner=0x99aa,.stdname="M",.nanims=1,
+        .present={1},.names={"xM"},.durs={"2.5"}};
+    f.rect[3]=1;return f;
 }
 static void check_svg_anim(const unsigned char *elf,size_t bytes)
 {
-    unsigned char *list=page(0x10ba000,16384),*rows=page(0x10be000,4096);
-    unsigned char *eepage=page(0xeee000,4096),*efpage=page(0xeef000,4096);
-    unsigned char *ctrlpage=page(0x1138000,4096),*ctrl2page=page(0x113b000,4096);
-    unsigned char *ctrl0page=page(0x1139000,4096);
-    unsigned char *pltpage=page(0x6b1000,4096);
-    unsigned char *ustrpage=page(0xc86000,8192);
-    size_t off=file_offset(elf,bytes,0x10bbedc,372);
-    assert(crc32(elf+off,372)==UINT32_C(0x10f1780d));
-    memcpy(list+0x1edc,elf+off,372);
-    uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(list+0x2048,&pointer,4);
-    thumb_stub(eepage,0xeee000,0xeeeb04,native_a_enabled);
-    quad_stub(eepage,0xeee000,0xeee798,native_a_stdname);
-    thumb_stub(efpage,0xeef000,0xeefa70,native_a_count);
-    predicate_stub(efpage,0xeef000,0xeefaac,native_a_at);
-    thumb_stub(rows,0x10be000,0x10be814,native_a_sel);
-    predicate_stub(rows,0x10be000,0x10be848,native_a_itemrow);
-    thumb_stub(ctrl2page,0x113b000,0x113b9f0,native_a_ctrl);
-    raw_stub(ctrl0page,0x1139000,0x1139898,start_bits(native_a_start));
-    pair_stub(ustrpage,0xc86000,0xc86744,native_a_new);
-    thumb_stub(ustrpage,0xc86000,0xc86b4c,native_a_len);
-    quad_stub(ustrpage,0xc86000,0xc8724c,native_a_sub);
-    eq_stub(ustrpage,0xc86000,0xc87e88,native_a_eq);
-    thumb_stub(ustrpage,0xc86000,0xc86554,native_a_free);
-    dtoa_stub(pltpage,0x6b1000,0x6b1274,atof);
-    { uint32_t rb=rect_bits(native_a_rect);memcpy(anim_row_vtable+0x28,&rb,4); }
-    { uint32_t vt=(uint32_t)(uintptr_t)anim_row_vtable;memcpy(anim_row,&vt,4); }
-    executable(list,16384);executable(rows,4096);executable(eepage,4096);executable(efpage,4096);
-    executable(ctrlpage,4096);executable(ctrl2page,4096);executable(ctrl0page,4096);executable(pltpage,4096);executable(ustrpage,8192);
-    {
-        unsigned compared=0;anim_fn start=0;
-        { uint32_t entry=0x10bbedd;memcpy(&start,&entry,4); }
-        {
-            struct anim_fixture initial={0};
-            compare_anim(start,oa_svg_list_start_animation,initial);++compared;
-        }
-        {
-            struct anim_fixture initial={0};
-            initial.enabled=0;
-            initial.cur[0]=9;
-            compare_anim(start,oa_svg_list_start_animation,initial);++compared;
-        }
-        {
-            struct anim_fixture initial={0};
-            initial.enabled=1;initial.has_row=0;initial.selected=4;
-            compare_anim(start,oa_svg_list_start_animation,initial);++compared;
-        }
-        {
-            struct anim_fixture initial={0};
-            initial.enabled=1;initial.has_row=1;initial.selected=2;
-            initial.rect[0]=1;initial.rect[1]=2;initial.rect[2]=3;initial.rect[3]=4;
-            initial.cur[0]=1;initial.cur[1]=2;initial.cur[2]=3;initial.cur[3]=4;
-            compare_anim(start,oa_svg_list_start_animation,initial);++compared;
-        }
-        {
-            struct {uint32_t n;const char *std;int present[3];const char *names[3];const char *durs[3];} cases[]={
-                {0,"M",{0,0,0},{0,0,0},{0,0,0}},
-                {1,"M",{0,0,0},{0,0,0},{0,0,0}},
-                {1,"M",{1,0,0},{"xM",0,0},{"2",0,0}},
-                {2,"M",{1,1,0},{"yNo","xM",0},{"1","0.5",0}},
-                {2,"M",{1,1,0},{"yNo","zNo",0},{"1","3",0}},
-                {1,"M",{1,0,0},{"S",0,0},{"9",0,0}},
-                {1,"M",{1,0,0},{"M",0,0},{"4",0,0}},
-                {1,"Q",{1,0,0},{"xQ",0,0},{"7",0,0}},
-                {1,"M",{1,0,0},{"xM",0,0},{"0",0,0}},
-                {1,"M",{1,0,0},{"xM",0,0},{"100",0,0}},
-            };
-            for(unsigned k=0;k<sizeof cases/sizeof cases[0];++k) {
-                struct anim_fixture initial={0};
-                initial.enabled=1;initial.has_row=1;initial.selected=1;
-                initial.rect[0]=5;initial.rect[1]=6;initial.rect[2]=7;initial.rect[3]=8;
-                initial.cur[0]=1;initial.cur[1]=2;initial.cur[2]=3;initial.cur[3]=4;
-                initial.stdname=cases[k].std;initial.nanims=cases[k].n;
-                initial.owner=0x99aa;
-                for(unsigned i=0;i<3;++i) {
-                    initial.present[i]=cases[k].present[i];
-                    initial.names[i]=cases[k].names[i];
-                    initial.durs[i]=cases[k].durs[i];
-                }
-                compare_anim(start,oa_svg_list_start_animation,initial);++compared;
-            }
-        }
-        native_anim=NULL;ref_anim=NULL;
-        assert(!munmap(list,16384) && !munmap(rows,4096) && !munmap(eepage,4096) && !munmap(efpage,4096));
-        assert(!munmap(ctrlpage,4096) && !munmap(ctrl2page,4096) && !munmap(ctrl0page,4096) && !munmap(pltpage,4096) && !munmap(ustrpage,8192));
-        printf("ok offline shipped ARM SVG list anim: %u native/C comparisons, gate/snapshot/search/start match\n",compared);
+    const uint32_t bases[]={0x10bb000,0x10be000,0xeee000,0xeef000,0x113b000,0x1139000,0x6b1000,0xc86000};
+    const size_t lengths[]={8192,4096,4096,4096,4096,4096,4096,8192};unsigned char *pages[8];
+    for(unsigned i=0;i<8;++i)pages[i]=page(bases[i],lengths[i]);
+    size_t off=file_offset(elf,bytes,0x10bbedc,372);assert(crc32(elf+off,372)==UINT32_C(0x10f1780d));
+    memcpy(pages[0]+0xedc,elf+off,372);uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(pages[0]+0x1048,&pointer,4);
+    thumb_stub(pages[2],bases[2],0xeeeb04,native_a_enabled);quad_stub(pages[2],bases[2],0xeee798,native_a_stdname);
+    thumb_stub(pages[3],bases[3],0xeefa70,native_a_count);predicate_stub(pages[3],bases[3],0xeefaac,native_a_at);
+    thumb_stub(pages[1],bases[1],0x10be814,native_a_sel);predicate_stub(pages[1],bases[1],0x10be848,native_a_itemrow);
+    thumb_stub(pages[4],bases[4],0x113b9f0,native_a_ctrl);raw_stub(pages[5],bases[5],0x1139898,start_bits(native_a_start));
+    pair_stub(pages[7],bases[7],0xc86744,native_a_new);thumb_stub(pages[7],bases[7],0xc86b4c,native_a_len);
+    quad_stub(pages[7],bases[7],0xc8724c,native_a_sub);raw_stub(pages[7],bases[7],0xc87e88,eq_bits(native_a_eq));
+    thumb_stub(pages[7],bases[7],0xc86554,native_a_free);
+    /* BLX at10bbfd4 enters ARM state; double returns in d0, start float in s0.
+     * Redirect with ARM instructions, not Thumb, preserving native PCS. */
+    const uint32_t arm[]={UINT32_C(0xe59fc000),UINT32_C(0xe12fff1c),dtoa_bits(native_a_parse)};
+    memcpy(pages[6]+0x274,arm,sizeof arm);
+    uint32_t rb=rect_bits(native_a_rect);memcpy(anim_row_vtable+0x28,&rb,4);
+    uint32_t vt=(uint32_t)(uintptr_t)anim_row_vtable;memcpy(anim_row,&vt,4);
+    for(unsigned i=0;i<8;++i)executable(pages[i],lengths[i]);
+    anim_fn native;pointer=0x10bbedd;memcpy(&native,&pointer,4);unsigned compared=0;
+    for(unsigned gate=0;gate<6;++gate) {
+        struct anim_fixture f=anim_initial();
+        if(gate==0)f.enabled=0;
+        else if(gate==1)f.has_row=0;
+        else if(gate==2)memcpy(f.cur,f.rect,16);
+        else if(gate==3)f.nanims=0;
+        else if(gate==4)f.nanims=UINT32_MAX;
+        else f.nanims=0x80000000;
+        compare_anim(native,f);++compared;
     }
+    const struct {const char *standard,*name;} names[]={
+        {"M","xM"},{"M","yNo"},{"M","M"},{"M",""},{"",""},{"M","éM"},
+        {"界","x界"},{"界","🚀界"},{"M","🚀M"},{"","x"},{"Q","xQ"},{"M",NULL},{"",NULL}
+    };
+    const char *durations[]={"0","-0","2.5","0.5","1.234567890123","1e-50","1e50","inf","nan","  -3.5junk","0x1.8p2"};
+    for(unsigned i=0;i<13;++i)for(unsigned d=0;d<11;++d) {
+        struct anim_fixture f=anim_initial();f.stdname=names[i].standard;f.names[0]=names[i].name;f.durs[0]=durations[d];
+        compare_anim(native,f);++compared;
+    }
+    for(unsigned variant=0;variant<4;++variant) {
+        struct anim_fixture f=anim_initial();f.nanims=3;f.present[1]=f.present[2]=1;
+        f.names[0]="zNo";f.names[1]="xM";f.names[2]="xM";f.durs[1]="0.5";f.durs[2]="7";
+        if(variant==0)f.present[0]=0;
+        if(variant==1)f.names[1]=f.names[2]="zNo";
+        if(variant==2)f.present[1]=0;
+        if(variant==3)f.names[0]="xM";
+        compare_anim(native,f);++compared;
+    }
+    native_anim=NULL;for(unsigned i=0;i<8;++i)assert(!munmap(pages[i],lengths[i]));
+    printf("ok offline shipped ARM SVG list anim: %u native/C comparisons, owned strings/parse-free order/signed count/start bits match\n",compared);
 }
 static void check_svg_widgets(const unsigned char *elf,size_t bytes)
 {
@@ -2651,6 +2554,8 @@ static void check_svg_scroll(const unsigned char *elf,size_t bytes)
 }
 int main(int argc,char **argv)
 {
+    /* Preserve the last completed group even if a later guest call faults. */
+    assert(!setvbuf(stdout,NULL,_IOLBF,0));
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
     size_t bytes;unsigned char *elf=read_regular(argv[1],&bytes);
     size_t off=file_offset(elf,bytes,0xd6ef80,168);

@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/svg_list_widgets tests/svg_list_widgets.c common/svg_list_widgets.c
+ok SVG list widgets: numeric forward, created/none gates, table-walk id and slide paths
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

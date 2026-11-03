@@ -1,5 +1,5 @@
 /* Owned SVG-list selection service. No display, input, hardware, threads,
- * callbacks or telemetry. Drives the firmware-verified key/body/move/row
+ * asynchronous callbacks or telemetry. Drives the firmware-verified key/body/move/row
  * layers over owned state words; animation/scrollbar/full-update targets and
  * the +0x48 group virtual are owned counting stubs (construction/rendering/
  * animation internals stay open). */
@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Owned widget fields: horizontal layout with non-colliding page aliases.
+/* Owned widget fields: vertical layout with non-colliding page aliases.
  * Per-widget key fields come from widget instances the module does not own;
  * these fixed values only route the verified router. Select0x20e/down0x20b/
  * up0x20a/first0x2db/last0x2dc are the router's fixed codes. */
@@ -230,10 +230,17 @@ static int m_restore(void *v,const void *buf,size_t len)
     if(c->published)return -1;
     if(!len)return 0;
     if(!p || len!=4+4*LIST_SAVE_WORDS || memcmp(p,LIST_SAVE_MAGIC,4))return -1;
-    c->state.w.aux=get32(p+4);c->state.w.first=get32(p+8);c->state.w.size=get32(p+12);
-    c->state.w.selected=get32(p+16);c->state.anim=get32(p+20);c->state.scroll=get32(p+24);
+    struct words w={get32(p+4),get32(p+8),get32(p+12),get32(p+16)};
+    uint32_t handled=get32(p+40);
+    /* OAL1 is our owned state format, not a vendor ABI. Reject bad geometry
+     * before mutating anything or allowing callback loops to trust its size.
+     * Total count may exceed the visible handle capacity (virtualized lists). */
+    if(w.size>LIST_SLOTS || w.first>w.aux || w.size>w.aux-w.first ||
+       (w.aux?(!w.size || w.selected>=w.size):w.selected!=0) ||
+       (handled!=UINT32_MAX && handled!=0 && handled!=1))return -1;
+    c->state.w=w;c->state.anim=get32(p+20);c->state.scroll=get32(p+24);
     c->state.partial=get32(p+28);c->state.focus=get32(p+32);c->state.group=get32(p+36);
-    c->state.handled=(int32_t)get32(p+40);
+    c->state.handled=handled==UINT32_MAX?-1:(int)handled;
     c->state.group_target=0;return 0;
 }
 static int m_init(const oa_host_api *api,void **out)

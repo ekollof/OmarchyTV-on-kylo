@@ -128,6 +128,17 @@ Row values distinguish widget IDs/numeric/check getters from two raw caches.
 Actual movement/select/page, primitive getters/editing/parent refresh, owned
 backend/context/consumer and native visible acceptance remain pending.
 
+ARM-HARNESS-REVIEW corrects the select-animation helper contract: opaque owned
+UString handles, explicit callback context, character-bounded substring behavior,
+NULL-name empty construction, signed size and parse-before-destruction order.
+The native corpus now requires153 cases; full native UString/provider behavior
+and actual motion remain unproven. Reference trampolines check mapping bounds;
+the verifier accepts/prints an explicit binary path/hash. ui.list OAL1 restore
+now validates unpublished geometry/handled payloads atomically; its owned sample
+routing is vertical. Temporary row text objects have explicit max-aligned
+64-byte provider storage. These are reviewed implementation bounds, not new
+firmware or hardware API rules.
+
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;
 EGL-WINDOW establishes direct display1 presentation with the retained4-byte

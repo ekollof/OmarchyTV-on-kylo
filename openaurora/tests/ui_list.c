@@ -7,6 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 static char reply[1024];
+static void put32(unsigned char *p,uint32_t value)
+{ for(unsigned i=0;i<4;++i)p[i]=(unsigned char)(value>>(8*i)); }
 static int command(oa_host *h,const char *text)
 {
     char line[256];snprintf(line,sizeof line,"%s",text);
@@ -83,6 +85,29 @@ int main(int argc,char **argv)
     assert(m->desc->restore(m->ctx,saved,n)==-1);
     memcpy(probe,saved,n);probe[0]='X';assert(m->desc->restore(m->ctx,probe,n)==-1);
     memcpy(probe,saved,n);assert(m->desc->restore(m->ctx,probe,n-1)==-1);
+    /* Exercise payload checks with the publication guard actually removed.
+     * Invalid data must not partly mutate the stopped instance. */
+    assert(!command(h,"stop ui_list"));
+    const struct {unsigned offset;uint32_t value;} corrupt[]={
+        {12,UINT32_MAX},{12,17},{16,UINT32_MAX},{8,UINT32_MAX},{4,8},{40,2},{40,0x80000000}
+    };
+    for(unsigned i=0;i<sizeof corrupt/sizeof *corrupt;++i) {
+        memcpy(probe,saved,n);put32(probe+corrupt[i].offset,corrupt[i].value);
+        if(m->desc->restore(m->ctx,probe,n)!=-1) {
+            fprintf(stderr,"invalid ui.list snapshot accepted: offset=%u value=%x\n",corrupt[i].offset,corrupt[i].value);
+            return 1;
+        }
+        unsigned char after[64];assert(m->desc->save(m->ctx,after,sizeof after)==n && !memcmp(after,saved,n));
+    }
+    memcpy(probe,saved,n);probe[0]='X';assert(m->desc->restore(m->ctx,probe,n)==-1);
+    assert(m->desc->restore(m->ctx,saved,n-1)==-1);
+    /* A larger total is legitimate; only the live window is capacity-bounded. */
+    memcpy(probe,saved,n);put32(probe+4,100);put32(probe+8,95);put32(probe+12,5);put32(probe+16,4);
+    assert(!m->desc->restore(m->ctx,probe,n));
+    memcpy(probe,saved,n);put32(probe+4,0);put32(probe+8,0);put32(probe+12,0);put32(probe+16,0);
+    assert(!m->desc->restore(m->ctx,probe,n));
+    assert(!m->desc->restore(m->ctx,saved,n));
+    assert(!command(h,"start ui_list"));
     key(h,"list-key 523",1);sense(h,0,9,1,9,1,7,2,2,8,2);
     assert(!command(h,"reload ui_list"));sense(h,0,9,1,9,1,7,2,2,8,2);
     /* unload removes the service; commands report ENODEV. */

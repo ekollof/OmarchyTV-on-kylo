@@ -6,9 +6,11 @@ const assert = require('node:assert/strict');
 const { spawnSync } = require('node:child_process');
 const root = path.resolve(__dirname, '../../..');
 const elf = path.join(root, 'artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf');
-const binary = path.join(root, 'openaurora/build-tv-v3/tab-policy/tests/tab_policy_firmware');
+// Optional explicit binary permits a fresh isolated build instead of stale trees.
+const binary = path.resolve(root, process.argv[2] || 'openaurora/build-tv-v3/tab-policy/tests/tab_policy_firmware');
 const libc = path.join(root, 'artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/arm-none-linux-gnueabihf/libc');
 const profile = path.join(root, 'artifacts/profiles/mb230_swprofile.bin');
+process.stdout.write(`reference executable: ${path.relative(root, binary)} sha256=${crypto.createHash('sha256').update(fs.readFileSync(binary)).digest('hex')}\n`);
 assert.equal(crypto.createHash('md5').update(fs.readFileSync(elf)).digest('hex'),
              '64c252340d3af6c5d66072611b7bad7a');
 assert.equal(crypto.createHash('md5').update(fs.readFileSync(profile)).digest('hex'),
@@ -42,7 +44,7 @@ assert.match(result.stdout, /SVG list impl: 6952 native\/C comparisons/);
 assert.match(result.stdout, /SVG list scrollbar bodies: 294 native\/C comparisons/);
 assert.match(result.stdout, /SVG list widgets: 21 native\/C comparisons/);
 assert.match(result.stdout, /SVG list slide: 72 native\/C comparisons/);
-assert.match(result.stdout, /SVG list anim: 14 native\/C comparisons/);
+assert.match(result.stdout, /SVG list anim: 153 native\/C comparisons/);
 assert.match(result.stdout, /SVG list rowview: 100 native\/C comparisons/);
 assert.match(result.stdout, /SVG list update: 20 native\/C comparisons/);
 assert.match(result.stdout, /row values: 68640 type\/raw-value cases/);

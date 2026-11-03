@@ -259,6 +259,42 @@ Use the explicit TARGET=tv BUILD=build-tv-v3 command in
 - Firmware/dumps/libraries and private keys stay local; do not redistribute.
   A hardware crash or lost UI is not automatically a permanently bricked TV.
 
+## Offline ARM crash diagnosis
+
+A qemu reference crash is a local harness/guest failure, not evidence of a TV
+fault or a reason to probe devices. Keep the exact executable path/hash, command,
+last completed group and first fault PC/registers before changing anything.
+Use a fresh isolated `BUILD=build-tv-v3/<review-name>`; the maintained
+`artifacts/analysis/tab-navigation-2026-11-03/verify.cjs` accepts an optional
+binary path and prints its SHA256. Do not mix a root build with tab-policy or
+keep rerunning stale binaries while guessing at calling conventions.
+
+Use GDB for a reproducible first fault: inspect PC, CPSR/instruction state,
+registers, nearby instructions and backtrace through qemu's gdbstub, then check
+the shipped ARM call site. `/usr/bin/gdb` accepts ARM and reads our ARM ELF here.
+The toolchain's arm-none-linux-gnueabihf-gdb exists but currently cannot launch
+because libncursesw.so.5 is missing; use the working host GDB rather than adding
+ABI-incompatible ncurses symlinks. Do not claim a historical crash cause when
+its core/binary is unavailable and the current build does not reproduce it.
+
+`BLX` to an even PLT slot enters ARM state; a Thumb trampoline there is wrong.
+Check hidden struct-return pointers and actual VFP argument/result registers
+from instructions; saved decompiler signatures are not ABI proof. The animation
+call at10bbfd4 returns double in d0; start at10bc002 takes float in s0. Preserve
+argument registers (including r3 for four-argument calls). Reference stub
+installers validate their own registered mapping: never use an adjacent mapped
+page as accidental spill space. Direct fragment copies still need explicit
+extent checks; a green harness is not a general memory-safety proof.
+
+Keep borrowed animation bytes separate from owned UString handles. Source
+length/substrings use UTF-8 character walks, not strlen/pointer+1; empty-name
+length-1 wraps and must remain bounded. NULL names construct empty strings in
+firmware. Parse duration before destroying substring/name, preserve comparison
+operand order and signed container-count semantics, and expose these operations
+in tests instead of hiding them inside shared stubs. A controlled string fixture
+does not validate the full native UString implementation or visible animation.
+See ARM-HARNESS-REVIEW-2026-11-03 for evidence and reproduction.
+
 ## Useful local tools
 
 qemu-arm-static, cross compilers, squashfs-tools, mtd-utils and ubireader are

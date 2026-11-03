@@ -1,0 +1,29 @@
+00c86700 <_ZN7UString6appendEPKc@@Base>:
+  c86700:	mov.w	r2, #16384	; 0x4000
+  c86704:	push	{r4, r5, r6, r7, lr}
+  c86706:	sub.w	ip, sp, r2
+  c8670a:	str.w	r0, [ip, #4064]	; 0xfe0
+  c8670e:	ldr	r4, [pc, #48]	; (c86740 <_ZN7UString6appendEPKc@@Base+0x40>)
+  c86710:	sub	sp, #12
+  c86712:	mov	r6, r0
+  c86714:	add	r7, sp, #0
+  c86716:	mov	r5, r1
+  c86718:	ldr	r0, [r4, #0]
+  c8671a:	str	r0, [r7, #4]
+  c8671c:	cbz	r1, c8672e <_ZN7UString6appendEPKc@@Base+0x2e>
+  c8671e:	mov	r0, r1
+  c86720:	blx	6b0a9c <strlen@plt>
+  c86724:	mov	r1, r5
+  c86726:	mov	r2, r0
+  c86728:	mov	r0, r6
+  c8672a:	bl	c8661c <_ZN7UString6appendEPKcj@@Base>
+  c8672e:	ldr	r1, [r7, #4]
+  c86730:	ldr	r3, [r4, #0]
+  c86732:	cmp	r1, r3
+  c86734:	beq.n	c8673a <_ZN7UString6appendEPKc@@Base+0x3a>
+  c86736:	blx	6af740 <__stack_chk_fail@plt>
+  c8673a:	adds	r7, #12
+  c8673c:	mov	sp, r7
+  c8673e:	pop	{r4, r5, r6, r7, pc}
+  c86740:	adds	r0, r5, #5
+  c86742:	lsls	r1, r7, #5

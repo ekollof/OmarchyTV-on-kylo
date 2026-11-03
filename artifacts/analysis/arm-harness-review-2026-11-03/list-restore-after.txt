@@ -1,0 +1,7 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build/tests/ui_list tests/ui_list.c build/core/check.o build/core/control.o build/core/host.o build/core/module.o build/core/skin.o -ldl -pthread -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build/modules/mod_ui_list.so modules/ui_list/ui_list.c common/svg_list_input.c common/svg_list_bodies.c common/svg_list_move.c common/svg_list_rows.c common/svg_list_impl.c
+ok list: CLI domains/validation, verified key chain, suspend/resume, shutdown gate, OAL1 reload and unload
+node tests/ui_list_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok actual Unix IPC: list keys/selection, reload handoff, standby gate and clean exit
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

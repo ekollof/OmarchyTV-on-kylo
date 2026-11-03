@@ -321,11 +321,19 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Review ARM animation harness/recent list work:153 native comparisons and
+      prior groups, full host/Unix IPC, focused ASan/UBSan and ARM tests pass.
+      ARM-HARNESS-REVIEW. Fix owned strings/context/order/character bounds/signed
+      count, wrong-page stub/bounds, unpublished restore validation/atomicity and
+      text alignment. AGENTS records first-fault/GDB/ABI workflow. Historical
+      SIGSEGV cause remains unproven; actual providers/rendering/startup and
+      full replacement/native acceptance remain open.
 - [x] Implement select animation via startSelectAnimation (disabled/missing-
       row/unchanged-rect gates, rect snapshot, ordered name search, first-
-      match atof*1000.0f start with float-bit compare); 14 native/C
+      match atof*1000.0f start with float-bit compare); earlier14 native/C
       comparisons plus full host/focused sanitizer/ARM and prior groups pass.
-      SVG-LIST-ANIM. Parent refresh, scrollbar construction/rendering
+      SVG-LIST-ANIM. ARM-HARNESS-REVIEW supersedes string/order assumptions with
+      153 cases. Parent refresh, scrollbar construction/rendering
       internals, owned backend/context beyond words/counters, display/scanout/
       startup and independent native visible acceptance remain open.
 - [x] Implement row editing via setSlideValue (progress vs slider/text routing,

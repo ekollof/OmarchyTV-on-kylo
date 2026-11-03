@@ -6,6 +6,21 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+ARM-HARNESS-REVIEW-2026-11-03: reviewed0493f91;153 native animation comparisons
+and every prior group pass from fresh build-tv-v3/arm-review. Full strict host/
+Unix IPC, focused ASan/UBSan and ARM animation/widgets/ui.list pass. Owned string
+handles/context, actual parse/free/equality order, signed counts, character bounds
+and NULL-name empty construction corrected. Wrong-page scrollbar stub fixed and
+all installers bounds-checked. Unpublished OAL1 payload checks are atomic; text
+temporary max-aligned; routing prose corrected to vertical. ARM unit68848/
+af5a22b097f815056718febb0ec0e1f0; reference727940/
+155459ad850f1846299b9d45c2e94390; ui.list79760/
+3cc7ac7bb20227ef76d0146571649fe2. Starting14-case binary passed; old SIGSEGV
+had no retained core, exact historical cause unproven. Host GDB ARM support
+verified; bundled GDB lacks ncurses5. AGENTS updated. No TV access/wake/
+deployment/hardware mutation; no pending test/Ghidra/helper job. Full replacement
+and native rendering/startup acceptance remain open.
+
 SVG-LIST-ANIM-2026-11-03: startSelectAnimation gates/rect-snapshot/search/
 start passes 14 native/C comparisons with exact call order/args, snapshot
 words and started float bits, plus full strict host, focused ASan/UBSan,

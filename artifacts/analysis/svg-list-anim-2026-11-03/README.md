@@ -1,5 +1,10 @@
 # SVG-list startSelectAnimation evidence
 
+Historical14-case evidence. [ARM-HARNESS-REVIEW](../../reports/ARM-HARNESS-REVIEW-2026-11-03.md)
+supersedes the old ASCII/pointer-slice model and adds153 cases. Use that report's
+fresh-build commands/current evidence; these logs do not prove current ownership
+or parse/destructor ordering.
+
 Interpretation: [SVG-LIST-ANIM](../../reports/SVG-LIST-ANIM-2026-11-03.md).
 The shipped body was read from the instruction cache
 (artifacts/workbench/aurora.dis); no new decompile or TV query was needed.

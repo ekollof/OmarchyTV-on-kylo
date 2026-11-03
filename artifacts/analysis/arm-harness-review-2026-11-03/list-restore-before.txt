@@ -1,0 +1,5 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build/tests/ui_list tests/ui_list.c build/core/check.o build/core/control.o build/core/host.o build/core/module.o build/core/skin.o -ldl -pthread -lm
+invalid ui.list snapshot accepted: offset=12 value=ffffffff
+make: *** [Makefile:126: check-ui-list] Error 1
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

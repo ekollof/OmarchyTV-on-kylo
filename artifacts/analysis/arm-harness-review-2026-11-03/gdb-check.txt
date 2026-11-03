@@ -1,0 +1,2 @@
+The target architecture is set to "arm".
+Symbol "native_a_parse" is a function at address 0x17bc8.
