@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 struct rrow {
-    uint32_t type;uint32_t words[20];uint32_t sel_img,sel_id;int flag,checked;const char *label,*blabel;
+    uint32_t type;uint32_t words[20];uint32_t sel_img,sel_id,num;int flag,checked;const char *label,*blabel;
     void *rects[6];uint32_t rwords[6][4];int32_t pt[2];
     int created;unsigned count;struct {uint32_t kind,off,a,b;char text[24];} trace[48];
 };
@@ -18,7 +18,7 @@ static void emit(uint32_t kind,uint32_t off,uint32_t a,uint32_t b,const char *te
     else t->trace[t->count].text[0]=0;
     ++t->count;
 }
-enum {R_BASE,R_GET,R_IS,R_NAME,R_FOCUS,R_ELIP,R_FONT,R_POINT,R_RECT,R_TEXT,R_CTEXT,R_CBTN,R_ALIGN,R_CHECK,R_CCB,R_SELID,R_CSEL,R_SELIMG};
+enum {R_BASE,R_GET,R_IS,R_NAME,R_FOCUS,R_ELIP,R_FONT,R_POINT,R_RECT,R_TEXT,R_CTEXT,R_CBTN,R_ALIGN,R_CHECK,R_CCB,R_SELID,R_CSEL,R_SELIMG,R_EMODE,R_MAXCH,R_CAUTO,R_NUM,R_CTE};
 static void q_base(void *r) { (void)r;emit(R_BASE,0,0,0,NULL); }
 static void *q_cont(void *r) { (void)r;return (void *)0x1000; }
 static void *q_rect(void *c,const char *k)
@@ -32,6 +32,7 @@ static uint32_t q_word(void *r,uint32_t o)
 { (void)r;
   if(o==0x2e54)return t->sel_img;
   if(o==0x2de8)return t->sel_id;
+  if(o==0x2e00)return t->num;
   assert(o>=0x2e8c && o<=0x2ed8 && !(o&3));return t->words[(o-0x2e8c)/4]; }
 static int q_flag(void *r,uint32_t o) { (void)r;assert(o==0x2e45||o==0x2e44);return o==0x2e44?t->checked:t->flag; }
 static const char *q_label(void *r) { (void)r;return t->label; }
@@ -60,11 +61,17 @@ static void q_selid(void *c,uint32_t id) { emit(R_SELID,(uint32_t)(uintptr_t)c-0
 static void q_csel(void *c,uint32_t z,uint32_t a,uint32_t b,const char *l,const uint32_t r[4],void *par)
 { (void)par;(void)r;emit(R_CSEL,(uint32_t)(uintptr_t)c-0x2000,z,a?(b<<16)|a:0,l); }
 static void q_selimg(void *r,uint32_t id) { emit(R_SELIMG,(uint32_t)(uintptr_t)r-0x2000,id,0,NULL); }
+static void q_emode(void *c,uint32_t m) { emit(R_EMODE,(uint32_t)(uintptr_t)c-0x2000,m,0,NULL); }
+static void q_maxch(void *c,uint32_t n) { emit(R_MAXCH,(uint32_t)(uintptr_t)c-0x2000,n,0,NULL); }
+static void q_cauto(void *c,int on) { emit(R_CAUTO,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)on,0,NULL); }
+static void q_num(void *c,uint32_t v) { emit(R_NUM,(uint32_t)(uintptr_t)c-0x2000,v,0,NULL); }
+static void q_cte(void *c,uint32_t z,uint32_t a,uint32_t b,const char *l,const uint32_t r[4],void *par)
+{ (void)par;(void)r;emit(R_CTE,(uint32_t)(uintptr_t)c-0x2000,z,a?(b<<16)|a:0,l); }
 static struct oa_setting_row_render_ops ops(void)
 {
     return (struct oa_setting_row_render_ops){t,q_base,q_cont,q_rect,q_words,q_type,q_word,
         q_flag,q_label,q_blabel,q_child,q_is,q_name,q_focus,q_elipes,q_font,q_point,
-        q_srect,q_text,q_ctext,q_cbtn,q_align,q_checked,q_ccb,q_selid,q_csel,q_selimg};
+        q_srect,q_text,q_ctext,q_cbtn,q_align,q_checked,q_ccb,q_selid,q_csel,q_selimg,q_emode,q_maxch,q_cauto,q_num,q_cte};
 }
 static void reset(struct rrow *r)
 {
@@ -219,9 +226,34 @@ int main(void)
     assert(r.trace[18].kind==R_NAME && r.trace[18].a==0 && r.trace[18].b==0x304);
     assert(r.trace[19].kind==R_NAME && r.trace[19].a==2 && r.trace[19].b==0x306);
     assert(r.trace[20].kind==R_CSEL);
+    /* Type 0xd: shared tail then the text-entry case body. Uncreated writes
+     * 0x2ebc/0x2ec0/0x2ec4/0x2ec8 names in slots 0/1/2/3 order 1/0/3/2,
+     * creates from an empty label, then mode0/max4/cursor-auto. */
+    reset(&r);o=ops();r.type=0xd;
+    for(int k=0;k<20;++k)r.words[k]=(uint32_t)(0x400+k);
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==23);
+    assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"selectionbox"));
+    assert(r.trace[14].kind==R_IS && r.trace[14].off==0x18d8);
+    assert(r.trace[15].kind==R_NAME && r.trace[15].a==1 && r.trace[15].b==0x40d);
+    assert(r.trace[16].kind==R_NAME && r.trace[16].a==0 && r.trace[16].b==0x40c);
+    assert(r.trace[17].kind==R_NAME && r.trace[17].a==3 && r.trace[17].b==0x40f);
+    assert(r.trace[18].kind==R_NAME && r.trace[18].a==2 && r.trace[18].b==0x40e);
+    assert(r.trace[19].kind==R_CTE && r.trace[19].a==0 && !strcmp(r.trace[19].text,""));
+    assert(r.trace[20].kind==R_EMODE && r.trace[20].a==0);
+    assert(r.trace[21].kind==R_MAXCH && r.trace[21].a==4);
+    assert(r.trace[22].kind==R_CAUTO && r.trace[22].a==1);
+    /* Type 0xd created: setNumericContents from row[0x2e00] then the setters. */
+    reset(&r);o=ops();r.type=0xd;r.created=1;r.num=0x99;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[8].kind==R_IS && r.trace[8].off==0x18d8);
+    assert(r.trace[9].kind==R_RECT);
+    assert(r.trace[10].kind==R_NUM && r.trace[10].a==0x99);
+    assert(r.trace[11].kind==R_EMODE && r.trace[11].a==0);
+    assert(r.trace[13].kind==R_CAUTO && r.trace[13].a==1);
     /* Invalid ops/args change nothing. */
     o=ops();o.set_name=NULL;
-    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==21);
+    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==14);
     assert(oa_setting_row_render(NULL,&o)==EINVAL);
     assert(oa_setting_row_render(&r,NULL)==EINVAL);
     puts("ok settings row render: 0/1/4 paths, shared tail, gates and open types");

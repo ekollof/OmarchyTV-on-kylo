@@ -6,6 +6,16 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-13 implements renderItems type 0xd (text-entry box): looks up
+"selectionbox", drives row+0x18d8, writes row[0x2ebc]/[0x2ec0]/[0x2ec4]/[0x2ec8]
+into slots 1/0/3/2, creates from an empty label with (0,0xc,0xd), then sets
+entry mode0, max chars4 and automatic cursor; created adds
+setNumericContents(row[0x2e00]). 24392 native/C cases pass. Two harness gaps
+were the per-case key literal (0xd55140) and the empty-label literal
+(0xd55144), both needing owned redirects. Cases 5..12, 0xe..0x15 and
+0x17..0x19, construction, child-visibility internals, live resources,
+scrollbar/skin/visible gates remain open.
+
 SETTINGS-ROW-SELECTION implements renderItems types 0x2/0x3: both look up
 "selectionbox" and drive row+0x1014; case 0x3 additionally calls the row's
 setSelectionBoxImageId with row[0x2e54], and the differential proved that call

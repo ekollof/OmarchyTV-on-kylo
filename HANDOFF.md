@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-SELECTION](artifacts/reports/SETTINGS-ROW-SELECTION-2026-11-03.md)
+Latest: [SETTINGS-ROW-13](artifacts/reports/SETTINGS-ROW-13-2026-11-03.md)
+implements renderItems type 0xd, the text-entry box: "selectionbox" lookup,
+row+0x18d8 child, names 1/0/3/2 from 0x2ebc/0x2ec0/0x2ec4/0x2ec8, empty-label
+seven-arg create, then entry-mode 0 / max-chars 4 / cursor-auto; created adds
+setNumericContents(row[0x2e00]). 24392 shipped ARM/C cases and prior groups
+pass, plus full host/Unix IPC, focused ASan/UBSan, ARM/qemu and focused real
+TV CPU. Two per-case literal redirects were needed (0xd55140 key, 0xd55144
+empty label). No screen/input/device/settings/network/service/boot/persistent
+change; staging removed, no helper. Next implement cases 0xe/0xf/0x10 (same
+widget, differing mode/max/text), then the remaining bodies 5..12 and
+0x17..0x19, then row construction/visibility internals/live resources, then
+scrollbar/skin/module/display/startup/independent visible parity. Bodies are
+not actual widget/rendering acceptance.
+
+Previous: [SETTINGS-ROW-SELECTION](artifacts/reports/SETTINGS-ROW-SELECTION-2026-11-03.md)
 implements renderItems types 0x2/0x3: both look up "selectionbox" and drive
 row+0x1014; case 0x3 also calls setSelectionBoxImageId(row[0x2e54]) between
 the lookup and the null check. Uncreated names use slot order 1/3/0/2
