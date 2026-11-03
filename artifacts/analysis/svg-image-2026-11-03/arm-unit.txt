@@ -1,0 +1,1 @@
+ok svg image: create setId/supplier/resource gate and destroy order

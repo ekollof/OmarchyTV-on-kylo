@@ -6,6 +6,20 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG-IMAGE implements SVGImage::create (0x10c9638) and SVGImage::destroy
+(0x10c8ef4) orchestration in common/svg_image.c. create: UIWindow::setId,
+SVGContext::getImageSupplier, the supplier's vtable slot2 resource lookup
+(which gates everything), a copy of the rectangle, an optional parent
+client-rect offset into words 0/2 (x) and 1/3 (y), then imageCreate. destroy:
+SVGWindow::destroy then SVGSurface::setCleanUISurface at this+0x9c. Verified by
+18 native/C cases against the verbatim bodies copied at their original
+addresses, with a fake supplier object/vtable and the shipped EASIRect::offset
+fragment. Boundary: imageCreate (0x10c9430, the SVGSurface/UISurface/
+drawImageResource raster and actor subsystem) remains an ops callback, as do
+SVGWindow::destroy, setCleanUISurface, setId, the supplier and getClientRect.
+Row construction, child visibility internals, live resources, scrollbar/skin
+and display gates remain open.
+
 SETTINGS-ROW-SELIMAGE implements the row-level setSelectionBoxImageId
 (0xd54374) instead of a stub: store the id at row+0x2e54, look up the "image"
 rectangle, destroy row+0x2cf0 unconditionally, then re-read the id and create

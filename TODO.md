@@ -374,8 +374,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       ASan/UBSan, ARM/qemu, verify.cjs and focused TV CPU.
       SETTINGS-ROW-SELIMAGE. The shipped body is copied verbatim; only its
       guard/key literals are redirected.
-- [ ] SVGImage::destroy/create internals themselves (vendor XML/SVG resource
-      machinery; still controlled stubs), and the adjacent
+- [x] SVGImage::create/destroy orchestration: `common/svg_image.c` matches
+      the verbatim shipped bodies over18 cases; host, ASan/UBSan, ARM/qemu,
+      full verify.cjs (35 ok) and a focused TV CPU run pass. SVG-IMAGE.
+- [ ] SVGImage::imageCreate internals (0x10c9430: SVGSurface/UISurface,
+      drawImageResource/drawImageResourceScaled, tiling/scaling,
+      UIWindow::create) — still an ops callback, and the adjacent
       LauncherHelper::convertOperationIdToIDM (0xe4ae0c).
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in

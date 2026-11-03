@@ -24,7 +24,25 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-SELIMAGE](artifacts/reports/SETTINGS-ROW-SELIMAGE-2026-11-03.md)
+Latest: [SVG-IMAGE](artifacts/reports/SVG-IMAGE-2026-11-03.md) implements
+SVGImage::create (0x10c9638) and SVGImage::destroy (0x10c8ef4) orchestration in
+common/svg_image.c. create does UIWindow::setId, the SVGContext image-supplier
+lookup, the supplier vtable slot2 resource gate, a rectangle copy, an optional
+parent getClientRect + EASIRect::offset (x into words 0/2, y into 1/3), then
+imageCreate. destroy does SVGWindow::destroy then
+SVGSurface::setCleanUISurface(this+0x9c). 18 native/C cases compare against
+the verbatim bytes copied at their original addresses, with a fake supplier
+object/vtable and the shipped offset fragment. Host, focused ASan/UBSan,
+ARM/qemu, full verify.cjs (35 ok lines) and full make check pass, plus a
+focused real-TV CPU run of the svg_image ARM unit (exit 0, staging
+hash-verified and removed). Boundary: imageCreate (0x10c9430, the
+SVGSurface/UISurface/drawImageResource raster and actor subsystem) is still an
+ops callback, as are the vendor calls behind the ops. No screen/input/device/
+settings/network/service/boot/persistent change. Next: imageCreate internals,
+then convertOperationIdToIDM, row construction, child visibility internals/
+live resources, then scrollbar/skin/module/display/startup and visible parity.
+
+Previous: [SETTINGS-ROW-SELIMAGE](artifacts/reports/SETTINGS-ROW-SELIMAGE-2026-11-03.md)
 implements the row-level setSelectionBoxImageId: store the id at row+0x2e54,
 look up the "image" rectangle, destroy row+0x2cf0 unconditionally, then
 re-read the id and create from rect+8 when non-zero. The shipped 140-byte body

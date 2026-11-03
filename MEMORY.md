@@ -6,6 +6,25 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-IMAGE-2026-11-03: SVGImage::create/destroy orchestration implemented in
+common/svg_image.c and verified by18 native/C cases. create0x10c9638:
+UIWindow::setId, SVGContext::getImageSupplier, supplier vtable slot2 resource
+gate, rect copy, optional parent getClientRect + EASIRect::offset (x to words
+0/2, y to1/3), imageCreate. destroy0x10c8ef4: SVGWindow::destroy +
+SVGSurface::setCleanUISurface(this+0x9c). The shipped bodies (CRCs
+0xbdf31b8d/0xcb48ce8f) are copied at their original addresses with a fake
+supplier object/vtable; the offset fragment is copied verbatim. imageCreate
+0x10c9430 (SVGSurface/UISurface/drawImageResource raster+actor subsystem)
+remains an ops callback, as do the vendor calls behind the ops. Host, focused
+ASan/UBSan, ARM/qemu, full verify.cjs (35 ok) and full make check pass;
+focused TV CPU of the svg_image ARM unit exit0 with staging hash-verified and
+removed. Build-tv-v3/settings-row-render unit27492/
+72cffb9a41550743f01580a9e804558e; reference1202736/
+55ee2b711faf21b61183479d03ed86c4. No screen/input/device/settings/network/
+service/boot/persistent change. No pending job/helper. imageCreate internals,
+row construction, child visibility internals, live resources, scrollbar/skin/
+module/display/startup/visible acceptance remain open.
+
 SETTINGS-ROW-SELIMAGE-2026-11-03: setSelectionBoxImageId internals implemented
 and verified by1770796 native/C comparisons. The shipped140-byte body at
 0xd54374 is copied verbatim (CRC0xcf7f04a2) and called from the copied
