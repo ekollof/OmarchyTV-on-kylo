@@ -321,6 +321,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement owned setting-list item/text/value/image snapshot and draw
+      providers;2048 real-provider calls plus allocation-failure/deep-copy/
+      reentry checks pass strict full host/Unix IPC, ASan/UBSan, ARM/qemu and
+      real TV CPU. SETTINGS-MODEL. Staging hash/size verified separately and
+      removed, no helper remains. Live item/resource acquisition, module/skin/
+      row widget/rendering/scrollbar/display/startup/visible integration stays
+      open; this is not a complete UString or hardware rendering milestone.
 - [x] Implement parent SettingItemsListBox::drawRow dispatcher:18441 shipped
       ARM/C cases and all prior groups pass, plus strict full host/Unix IPC,
       focused ASan/UBSan and fresh ARM/qemu units. SETTINGS-DRAW. Type writeback,

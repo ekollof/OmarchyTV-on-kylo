@@ -6,6 +6,15 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-MODEL replaces placeholder text/vector providers for an explicit owned
+decoded snapshot: all item strings/value texts/image bytes/default localization
+are copied, temporary capacities avoid hidden assignment/append allocation
+failure, and copied values have distinct lifetimes.2048 real-provider calls plus
+fault/reentry checks pass host/sanitizer/ARM-qemu/real-TV CPU. Row sink remains a
+recorder, not a widget renderer. Firmware operator<< uses %d; empty/equality
+results must be read from ARM clz/shift, not void-looking metadata. Full UString,
+live DB/resource/module/widget/rendering/startup/visible gates remain open.
+
 SETTINGS-DRAW implements the parent dispatcher previously saved by SVG-LIST-
 REFRESH:18441 native/C cases and prior groups pass. Progress/mixed modes mutate
 backing item types, not only local row type; image/button/selection/text/slider/

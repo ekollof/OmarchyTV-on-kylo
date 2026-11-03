@@ -1,5 +1,9 @@
 # Setting-list parent draw dispatcher — 2026-11-03
 
+Subsequent [SETTINGS-MODEL](SETTINGS-MODEL-2026-11-03.md) supplies real owned
+item/text/value/image providers for explicit decoded snapshots; live resource
+and widget/rendering integration remain open.
+
 `common/settings_draw.c` implements the complete
 SettingItemsListBox::drawRow control flow through typed row events and explicit
 owned text/value-copy providers. It is the parent virtual+0x60 reached by the

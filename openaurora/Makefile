@@ -288,6 +288,14 @@ check-settings-draw: $(BUILD)/tests/settings_draw
 	@$(BUILD)/tests/settings_draw
 check: check-settings-draw
 
+$(BUILD)/tests/settings_model: tests/settings_model.c common/settings_model.c common/settings_draw.c include/openaurora/settings_model.h include/openaurora/settings_draw.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-settings-model
+check-settings-model: $(BUILD)/tests/settings_model
+	@$(BUILD)/tests/settings_model
+check: check-settings-model
+
 $(BUILD)/tests/tab_policy_firmware: common/settings_draw.c include/openaurora/settings_draw.h tests/settings_draw_fixture.h tests/settings_draw_native.h
 
 $(BUILD)/tests/svg_list_anim: tests/svg_list_anim.c tests/svg_list_anim_fixture.h common/svg_list_anim.c include/openaurora/svg_list_anim.h

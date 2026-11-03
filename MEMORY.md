@@ -6,6 +6,18 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-MODEL-2026-11-03: owned item/text/value/image snapshot and draw providers
+pass2048 dispatch calls plus fault injection/deep-copy/reentry checks on strict
+host/full suite/actual Unix IPC, focused ASan/UBSan, ARM/qemu and real TV CPU.
+Model type writeback retained; default OK is explicit localized provider input;
+numeric endpoints use verified %d. Build-tv-v3/settings-model unit77080/
+f72781ca27b1d9e525b2e76d676c7684, GLIBC_2.4 only. TV already awake; no-reset
+flag/free space checked, staging size/hash separately verified, test exit0,
+staging removed and /proc/*/exe found no helper. /conf/coredumpnoreset retained.
+No display/input/device/settings/network/service/boot or persistent changes.
+No pending job/helper. Actual live item/resource acquisition, module/skin/row
+widget integration and rendering/startup/visible acceptance remain open.
+
 SETTINGS-DRAW-2026-11-03: complete parent SettingItemsListBox::drawRow dispatcher
 passes18441 shipped ARM/C comparisons plus all prior groups; full strict host/
 Unix IPC, focused ASan/UBSan and fresh ARM/qemu units pass.36 types/16 styles/

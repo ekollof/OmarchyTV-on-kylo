@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-settings-model-sanitize/tests/settings_model tests/settings_model.c common/settings_model.c common/settings_draw.c
+ok settings model: 2048 real-provider draws, deep ownership, decimal limits, reentry and allocation unwind
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

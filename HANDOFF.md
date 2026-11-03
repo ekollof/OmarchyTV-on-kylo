@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-DRAW](artifacts/reports/SETTINGS-DRAW-2026-11-03.md) implements
+Latest: [SETTINGS-MODEL](artifacts/reports/SETTINGS-MODEL-2026-11-03.md) adds
+owned item/text/value/image providers feeding the existing drawRow dispatcher.
+2048 real-provider dispatches, allocation-failure cleanup/retry, source-buffer
+overwrite, signed numeric limits, localized default and per-model reentry gates
+pass strict full host/Unix IPC, focused ASan/UBSan, ARM/qemu and real TV CPU.
+The row sink is a recorder; there was no drawing or device/control operation.
+Temporary TV staging size/hash verified separately, removed, no helper remains;
+/conf/coredumpnoreset retained. Build-tv-v3/settings-model binary identities in
+MEMORY/report. New common/settings_model.c exposes deep-owned decoded snapshots;
+no module/service or live DB/resource acquisition yet. Next connect these real
+providers to actual item/resource consumers, ui.list/skin and row widgets; finish
+scrollbar internals, display/scanout/startup and independent visible acceptance.
+No pending local test/Ghidra/helper job.
+
+Previous: [SETTINGS-DRAW](artifacts/reports/SETTINGS-DRAW-2026-11-03.md) implements
 the complete SettingItemsListBox::drawRow dispatcher behind parent virtual+0x60.
 18441 shipped ARM/C comparisons pass for36 types,16 styles,32 value/image/text
 variants and9 bounds exits, plus every prior group. Strict full host/Unix IPC,

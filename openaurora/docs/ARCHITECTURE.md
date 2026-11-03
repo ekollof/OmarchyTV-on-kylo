@@ -149,6 +149,16 @@ item/text/vector/widget provider or renderer. Compose those owned providers
 with the existing refresh/input chain before claiming actual widget/display
 integration or native visible/startup acceptance.
 
+`common/settings_model.c` now supplies owned decoded items, value snapshots,
+opaque image byte copies and actual text providers for that dispatcher.
+SETTINGS-MODEL records2048 real-provider dispatches and allocation/deep-copy/
+reentry checks on host/sanitizers/ARM-qemu/real TV CPU. Temporary text capacity
+is allocated before infallible assignment/numeric append. Localized OK text
+is required resource-provider input; no fallback is invented. The opaque model
+rejects nested draw/destroy while a sink holds its temporary event handles.
+No live DB/resource service, module/skin/row-widget renderer or display ownership
+is implied. Event data must be copied before asynchronous retention.
+
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;
 EGL-WINDOW establishes direct display1 presentation with the retained4-byte
