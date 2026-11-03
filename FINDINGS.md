@@ -6,6 +6,15 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Tab/settings leaves: TAB-LEAF implements volume/digits/removal and qualified
+base menu/quit/guide.238860 actual ARM cases include shipped signed division.
+Volume tests content+18 isShowing, not a capability or focus flag. Digit raw32
+wrap precedes signed remainder10000; store precedes direct SVG end at1104/4725.
+That qualified end differs from the others' virtual end. Exit210 ends29a,
+Menu22d/25b/251 resets picture selection then ends0. Guide pushes navigation0xb,
+not a key; Quit/removal synthesize owned keys. No callback is a permission or
+hardware-success proof. Remaining base map/list/mute and real backend/UI open.
+
 Tab fallback dispatch: TAB-DISPATCH implements d6fe14's type1004 map and the
 pre-first caller join.65600 shipped map/matcher routes and16384 caller joins
 pass; the latter uses the separately verified C pre-handler as a virtual method.

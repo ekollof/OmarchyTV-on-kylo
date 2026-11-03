@@ -9,6 +9,7 @@
 #include "openaurora/tab_events.h"
 #include "openaurora/tab_dispatch.h"
 #include "tab_prehandle_fixture.h"
+#include "tab_leaf_fixture.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -595,6 +596,126 @@ static void check_dispatch(const unsigned char *elf,size_t bytes)
     dispatch_fixture=NULL;for(unsigned i=0;i<5;++i)assert(!munmap(pages[i],lengths[i]));
     printf("ok offline shipped ARM tab dispatch: %u type/id/result routes, %u pre/fallback joins; original identity and handled truth match\n",compared,bridges);
 }
+static struct leaf_fixture *native_leaf_fixture;
+static enum oa_tab_leaf_kind native_leaf_kind;
+static _Alignas(uint32_t) unsigned char native_leaf_dialog[0x500];
+static uint32_t native_leaf_child,native_leaf_dummy,native_leaf_event,native_leaf_clone[23],native_leaf_nav;
+static uint32_t native_leaf_key_result;
+static unsigned native_leaf_showing(void *p) { (void)p;return native_leaf_fixture->q[OA_TL_CONTENT_SHOWING]; }
+static unsigned native_leaf_media(void *p) { (void)p;return native_leaf_fixture->q[OA_TL_IN_MEDIA]; }
+static void native_leaf_observe_digits(void)
+{
+    uint32_t digits;memcpy(&digits,native_leaf_dialog+0x4b0,4);
+    leaf_run(native_leaf_fixture,OA_TL_SET_DIGITS,digits,NULL);
+}
+static unsigned native_leaf_end(void *p,int32_t value)
+{
+    assert(p==native_leaf_dialog);
+    assert(native_leaf_kind!=OA_TL_DIGIT);
+    leaf_run(native_leaf_fixture,OA_TL_END_DIALOG,(uint32_t)value,NULL);return UINT32_MAX;
+}
+static unsigned native_leaf_svg_end(void *p,int32_t value)
+{
+    assert(p==native_leaf_dialog && native_leaf_kind==OA_TL_DIGIT);
+    native_leaf_observe_digits();
+    leaf_run(native_leaf_fixture,OA_TL_SVG_END_DIALOG,(uint32_t)value,NULL);return UINT32_MAX;
+}
+static unsigned native_leaf_reset(void *p)
+{ (void)p;leaf_run(native_leaf_fixture,OA_TL_RESET_PICTURE_INDEX,0,NULL);return UINT32_MAX; }
+static unsigned native_leaf_key(void *p) { return *(uint32_t *)p; }
+static unsigned native_leaf_content(void *p,int32_t event)
+{
+    (void)p;assert((uintptr_t)(uint32_t)event==(uintptr_t)&native_leaf_event);
+    leaf_run(native_leaf_fixture,OA_TL_CONTENT_KEY,native_leaf_event,&native_leaf_event);return native_leaf_key_result;
+}
+static unsigned native_leaf_allocate(void *size)
+{
+    assert((uintptr_t)size==(native_leaf_kind==OA_TL_GUIDE?0x5c:0x10));
+    return (uint32_t)(uintptr_t)native_leaf_clone;
+}
+static unsigned native_leaf_key_ctor(void *p,int32_t key)
+{ assert(p==native_leaf_clone);*(uint32_t *)p=(uint32_t)key;native_leaf_nav=0;return (uint32_t)(uintptr_t)p; }
+static unsigned native_leaf_nav_ctor(void *p,int32_t code)
+{ assert(p==native_leaf_clone);*(uint32_t *)p=(uint32_t)code;native_leaf_nav=1;return (uint32_t)(uintptr_t)p; }
+static unsigned native_leaf_push(void *p,int32_t event)
+{
+    (void)p;assert((uintptr_t)(uint32_t)event==(uintptr_t)native_leaf_clone);
+    leaf_run(native_leaf_fixture,native_leaf_nav?OA_TL_PUSH_NAVIGATION:OA_TL_PUSH_KEY,native_leaf_clone[0],NULL);return UINT32_MAX;
+}
+typedef unsigned (*leaf_handler)(void *,void *);
+static void compare_leaf(leaf_handler native,enum oa_tab_leaf_kind kind,uint32_t key,struct leaf_fixture initial)
+{
+    struct leaf_fixture vendor=initial,ours=initial;native_leaf_fixture=&vendor;native_leaf_kind=kind;native_leaf_event=key;
+    memcpy(native_leaf_dialog+0x4b0,&initial.q[OA_TL_DIGITS],4);
+    unsigned result=native(native_leaf_dialog,&native_leaf_event);
+    if(kind==OA_TL_DIGIT && !vendor.count)native_leaf_observe_digits();
+    struct oa_tab_leaf_ops ops={&ours,leaf_query,leaf_run,&native_leaf_event};int handled=-1;
+    assert(!oa_tab_leaf(&ops,kind,key,&handled));
+    if(handled!=(result!=0) || vendor.count!=ours.count || memcmp(vendor.q,ours.q,sizeof ours.q)) {
+        fprintf(stderr,"leaf mismatch kind=%u key=%x digits=%x result=%x handled=%d counts=%u/%u\n",
+                (unsigned)kind,key,initial.q[OA_TL_DIGITS],result,handled,vendor.count,ours.count);exit(1);
+    }
+    for(unsigned i=0;i<ours.count;++i)assert(vendor.trace[i].action==ours.trace[i].action && vendor.trace[i].argument==ours.trace[i].argument && vendor.trace[i].message==ours.trace[i].message);
+}
+static void check_leaf(const unsigned char *elf,size_t bytes)
+{
+    const uint32_t bases[]={0xd6e000,0xd56000,0x1285000,0x1148000,0x113b000,0xccc000,0xccb000,0x6b0000,0xd0e000,0x10c5000};
+    unsigned char *pages[10];for(unsigned i=0;i<10;++i)pages[i]=page(bases[i],4096);
+    const struct {unsigned page;uint32_t address,length,crc,literal;} fragments[]={
+        {0,0xd6edb4,76,UINT32_C(0x79a58c0c),0xd6edfc},
+        {0,0xd6ee68,108,UINT32_C(0x4a7036bc),0xd6eed0},
+        {0,0xd6ef0c,116,UINT32_C(0x8db6171a),0xd6ef7c},
+        {1,0xd56c94,108,UINT32_C(0x98417176),0xd56cfc},
+        {1,0xd56d38,132,UINT32_C(0x42e4691a),0xd56db8},
+        {1,0xd56e5c,96,UINT32_C(0x8d84d9bd),0xd56eb8},
+        {2,0x128547e,682,UINT32_C(0x4c973710),0}
+    };
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;
+    for(unsigned i=0;i<7;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(pages[fragments[i].page]+fragments[i].address-bases[fragments[i].page],elf+off,fragments[i].length);
+        if(fragments[i].literal)memcpy(pages[fragments[i].page]+fragments[i].literal-bases[fragments[i].page],&pointer,4);
+    }
+    thumb_stub(pages[3],bases[3],0x11489e0,native_leaf_key);
+    predicate_stub(pages[3],bases[3],0x114899c,native_leaf_key_ctor);
+    predicate_stub(pages[4],bases[4],0x113b7b8,native_leaf_push);
+    thumb_stub(pages[5],bases[5],0xccccb4,native_leaf_reset);
+    thumb_stub(pages[6],bases[6],0xccb754,native_leaf_media);
+    predicate_stub(pages[8],bases[8],0xd0e9b8,native_leaf_nav_ctor);
+    predicate_stub(pages[9],bases[9],0x10c5478,native_leaf_svg_end);
+    const uint32_t alloc[]={UINT32_C(0xe59fc000),UINT32_C(0xe12fff1c),bits(native_leaf_allocate)};
+    memcpy(pages[7]+0x13c,alloc,sizeof alloc);
+    for(unsigned i=0;i<10;++i)executable(pages[i],4096);
+    uint32_t child_vtable[9]={0},dialog_vtable[31]={0};
+    child_vtable[6]=bits(native_leaf_showing);child_vtable[8]=predicate_bits(native_leaf_content);
+    native_leaf_child=(uint32_t)(uintptr_t)child_vtable;
+    dialog_vtable[30]=predicate_bits(native_leaf_end);
+    pointer=(uint32_t)(uintptr_t)dialog_vtable;memcpy(native_leaf_dialog,&pointer,4);
+    pointer=(uint32_t)(uintptr_t)&native_leaf_child;memcpy(native_leaf_dialog+0x4c0,&pointer,4);
+    pointer=(uint32_t)(uintptr_t)&native_leaf_dummy;memcpy(native_leaf_dialog+4,&pointer,4);memcpy(native_leaf_dialog+0x484,&pointer,4);
+    const uint32_t entries[]={0xd6edb5,0xd6ee69,0xd56d39,0xd56c95,0xd56e5d,0xd6ef0d};leaf_handler native[6];
+    for(unsigned i=0;i<6;++i)memcpy(&native[i],&entries[i],4);
+    const uint32_t truth[]={0,1,255},results[]={0,1,UINT32_MAX},extra[]={0x10210,0x80000000,INT32_MAX,UINT32_MAX};
+    unsigned compared=0;
+    for(unsigned kind=0;kind<6;++kind)if(kind!=OA_TL_DIGIT)
+    for(unsigned s=0;s<3;++s)for(unsigned m=0;m<3;++m)for(unsigned r=0;r<3;++r)for(unsigned k=0;k<1028;++k) {
+        struct leaf_fixture initial={.q={1,truth[s],truth[m],0}};native_leaf_key_result=results[r];
+        compare_leaf(native[kind],(enum oa_tab_leaf_kind)kind,k<1024?k:extra[k-1024],initial);++compared;
+    }
+    for(unsigned previous=0;previous<10000;++previous)for(unsigned digit=0;digit<10;++digit) {
+        struct leaf_fixture initial={.q={1,0,0,previous}};
+        compare_leaf(native[OA_TL_DIGIT],OA_TL_DIGIT,0x200+digit,initial);++compared;
+    }
+    const uint32_t raw[]={0,UINT32_MAX,INT32_MAX,0x80000000,429496729,429496730,214748364,214748365,0x450,0x1275};
+    const uint32_t keys[]={0,0x1ff,0x200,0x209,0x20a,INT32_MAX,0x80000000,UINT32_MAX};
+    for(unsigned r=0;r<10;++r)for(unsigned k=0;k<8;++k) {
+        struct leaf_fixture initial={.q={1,0,0,raw[r]}};
+        compare_leaf(native[OA_TL_DIGIT],OA_TL_DIGIT,keys[k],initial);++compared;
+    }
+    native_leaf_fixture=NULL;for(unsigned i=0;i<10;++i)assert(!munmap(pages[i],4096));
+    printf("ok offline shipped ARM tab leaves: %u cases, six bodies and real signed division; logical writes/actions, message identity and handled truth match\n",compared);
+}
 int main(int argc,char **argv)
 {
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
@@ -641,7 +762,7 @@ int main(int argc,char **argv)
         }
     }
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
-    check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
+    check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
 }

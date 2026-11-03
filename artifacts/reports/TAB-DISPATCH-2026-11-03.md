@@ -1,5 +1,9 @@
 # Tab fallback dispatch and key delivery — 2026-11-03
 
+Subsequent [TAB-LEAF](TAB-LEAF-2026-11-03.md) implements six dispatched bodies.
+Remaining base settings map/list/mute and real backend/consumer are still open;
+its base.txt already contains the source map for continuation.
+
 `common/tab_dispatch.c` implements the shipped TabDialog fallback message map
 and joins it to the recovered pre-handler. It does not yet attach the owned
 content/renderer adapter, dequeue navigation requests, or provide the remaining

@@ -6,6 +6,17 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+TAB-LEAF-2026-11-03: six callback handler bodies pass238860 shipped ARM cases,
+including the actual signed-division helper, logical raw digit writes, action/
+event identity and handled truth. Full strict host suite, focused ASan/UBSan,
+ARM unit and all previous reference groups pass. ARM unit34024/
+88e3284f0522353e59df410462de86e9; reference239948/
+242d1b0f249cadfd4a8ade6487f97768, build-tv-v3/tab-policy. Volume uses isShowing;
+digit end is qualified SVG, others virtual. No new module/service or UI queue
+consumer. Remaining settings map/list/mute bodies, backend/context integration
+and visible acceptance remain open. No TV access/wake/staging/deployment or
+persistent mutation; no pending Ghidra/build/helper job.
+
 TAB-DISPATCH-2026-11-03: common fallback map and pre-first key join pass65600
 actual shipped ARM map/matcher cases and16384 caller joins, plus full host,
 focused ASan/UBSan, ARM/qemu unit and prior reference groups. The joins install

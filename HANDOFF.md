@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [TAB-DISPATCH](artifacts/reports/TAB-DISPATCH-2026-11-03.md) adds the
+Latest: [TAB-LEAF](artifacts/reports/TAB-LEAF-2026-11-03.md) implements six
+dispatched bodies: Tab volume/digits/removal and qualified Settings menu/quit/
+guide.238860 shipped ARM comparisons include real signed division, raw overflow,
+logical field-write/action order, event identity and handled truth. Full host,
+focused ASan/UBSan, ARM unit and prior groups pass. Volume tests isShowing;
+digit triggers1104/4725 store first then call qualified SVG end, distinct from
+the others' virtual end. Guide posts navigation0xb, not a key; reposts are owned.
+Next implement SettingsDialog fallback map and required list/mute callees.
+Its decompile/ARM is already in tab-leaf-2026-11-03/base.txt; inspect those
+callees rather than repeating the extraction. Then compose the owned backend/
+runtime context and queue consumer with modal/focus/permission/lifetime gates.
+No new module/service or wired UI consumer. Native hashes in MEMORY/report.
+No TV access/wake/deployment or pending Ghidra/build/helper job.
+
+Previous: [TAB-DISPATCH](artifacts/reports/TAB-DISPATCH-2026-11-03.md) adds the
 full TabDialog fallback map and pre-handler-first key join.65600 shipped ARM
 map/matcher cases and16384 shipped caller joins match route/original identity/
 handled truth and pre-action state. Full host/focused sanitizer/ARM and prior

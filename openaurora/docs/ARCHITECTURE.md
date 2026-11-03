@@ -91,6 +91,13 @@ and16384 caller joins (the latter using our separately verified C pre-handler).
 Remaining base/leaf methods, real backend/context and visible queue-consumer
 integration are still pending; the diagnostic UI is not parity.
 
+`common/tab_leaf.c` supplies Tab volume/digit/removal and qualified Settings
+menu/quit/guide bodies. TAB-LEAF records238860 shipped ARM comparisons, including
+real signed division. The adapter must preserve raw digit state across calls,
+isShowing volume gating, distinct virtual versus qualified SVG end actions and
+owned key versus navigation reposts. The remaining Settings fallback map/list/
+mute methods and real backend/consumer remain pending; these are not UI wiring.
+
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;
 EGL-WINDOW establishes direct display1 presentation with the retained4-byte

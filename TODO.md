@@ -321,6 +321,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement six dispatched leaf bodies (Tab volume/digit/removal, qualified
+      Settings menu/quit/guide).238860 shipped ARM comparisons include native
+      signed division and field-write/end ordering; host/sanitizer/ARM and prior
+      groups pass. TAB-LEAF. Settings fallback map/list/mute, owned backend/
+      context/consumer and visible acceptance remain open.
 - [x] Implement the concrete TabDialog fallback message map and pre-first key
       join.65600 shipped ARM map/matcher routes and16384 caller joins pass,
       with host/sanitizer/ARM and prior groups. TAB-DISPATCH. Remaining base/leaf

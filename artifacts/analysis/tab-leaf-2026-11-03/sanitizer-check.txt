@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-tab-policy-sanitize/tests/tab_leaf tests/tab_leaf.c common/tab_leaf.c
+ok tab leaves: showing-gated volume, signed rolling digits, menu/exit distinctions and owned repost ordering
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
