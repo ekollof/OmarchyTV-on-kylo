@@ -6,6 +6,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG list impl: SVG-LIST-IMPL implements updateImpl and rotateRows; 6952
+native/C comparisons pass. Rows +0x1C/+0x28/+0x2C/+0x34 are setFocus/(sret)
+getWindowRect/setWindowPosition/setVisible; owner +0x58/+0x5C/+0x60 are
+displayMessageIfListEmpty/drawRowWithListEmptyMessage/drawRow. A prior
++0x28/+0x1C slot reading is corrected here: decimal-28 is 0x1C setFocus,
+decimal-40 is 0x28 getWindowRect. Getters/editing/parent/construction/
+animation/backend/visible gates remain open.
+
 SVG list scrollbar: SVG-LIST-SCROLL implements updateScrollBar; 4320
 native/C comparisons pass. Create iff nonzero size with signed size below
 the signed +0x6c total or the +0x22c flag is set; rect from literal offsets

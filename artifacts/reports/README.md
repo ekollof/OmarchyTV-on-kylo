@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [SVG-LIST-IMPL](SVG-LIST-IMPL-2026-11-03.md) | updateImpl start/clamp/redraw/writeback/empty plus rotateRows pair-swap/position exchange;6952 native/C comparisons with exact call order/args/state plus strict host/sanitizer/ARM; proved row +0x1C setFocus identity and sret getWindowRect transport; getters/editing/parent/scroll-construction/animation/backend/visible gates open |
 | [SVG-LIST-SCROLL](SVG-LIST-SCROLL-2026-11-03.md) | updateScrollBar gating/rect/show/position;4320 native/C comparisons plus strict host/sanitizer/ARM; proved signed size-vs-total gate, literal x/y/w/h formula and hide path; fixed r3-clobbering stub convention; construction/position/animation/backend/visible gates open |
 | [SVG-LIST-ROWS](SVG-LIST-ROWS-2026-11-03.md) | RowManager field layout, focusItem body and updatePartial forward;324 native/C comparisons plus strict host/sanitizer/ARM; proved +12/+16/+20/+28 layout and rel-store semantics; updateImpl/row widgets/getters/editing/scrollbar/animation/backend/visible gates open |
 | [SVG-LIST-MOVE](SVG-LIST-MOVE-2026-11-03.md) | eight primitive list move/selection/window bodies;5040 native/C comparisons with exact call order/args plus strict host/sanitizer/ARM; proved no-animation shifts and list-vs-manager receiver split; move targets/RowManager/getters/editing/backend/visible gates open |

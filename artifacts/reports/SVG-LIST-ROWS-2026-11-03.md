@@ -39,12 +39,12 @@ callback returns EINVAL.
 
 ## Still open
 
-Subsequent [SVG-LIST-SCROLL](SVG-LIST-SCROLL-2026-11-03.md) implements
-updateScrollBar (gating, literal rect, show, position). updateImpl and row
-widget internals (the +28 focus target), row getters and editing, parent
-refresh, scrollbar construction/position bodies, startSelectAnimation, and
-the owned backend/context/consumer with permission/modal/focus/lifetime/
-visible gates remain open. Internals are not actual widget/rendering
-acceptance, and no visible parity is claimed.
+Subsequent [SVG-LIST-IMPL](SVG-LIST-IMPL-2026-11-03.md) implements
+updateImpl and rotateRows (start/clamp/redraw/writeback/empty plus pair-swap/
+position exchange). Row getters and editing, parent refresh, scrollbar
+construction/position bodies, startSelectAnimation, and the owned
+backend/context/consumer with permission/modal/focus/lifetime/visible gates
+remain open. Internals are not actual widget/rendering acceptance, and no
+visible parity is claimed.
 
 Evidence and reproduction: artifacts/analysis/svg-list-rows-2026-11-03/.

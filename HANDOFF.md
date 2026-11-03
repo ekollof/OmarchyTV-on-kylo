@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SVG-LIST-SCROLL](artifacts/reports/SVG-LIST-SCROLL-2026-11-03.md)
+Latest: [SVG-LIST-IMPL](artifacts/reports/SVG-LIST-IMPL-2026-11-03.md)
+implements updateImpl and rotateRows, the state core behind every list
+key/move/scroll body. 6952 native/C comparisons pass with exact call order/
+args and resulting manager/array/selection state, plus full strict host/
+focused sanitizer/ARM and every prior group. Start clamping, unfocus gating,
+full/partial distinction, per-row show/update/draw, hide sweeps, writeback/
+clamp/refocus and the empty-message path are asserted, as is the rotate
+pair-swap with full position exchange. Row +0x1C is setFocus and +0x28 is
+sret getWindowRect (decimal-28 is 0x1C, decimal-40 is 0x28). No new service/
+module/UI consumer, TV access/wake/staging/deployment or pending job.
+Hashes in MEMORY/report. Next implement row getters and editing, parent
+refresh, scrollbar construction/position bodies, startSelectAnimation, and
+the owned backend/context/consumer with permission/modal/focus/lifetime/
+visible gates, then demonstrate reloadable modules via IPC/socket/CLI.
+Bodies are not actual widget/rendering acceptance.
+
+Previous: [SVG-LIST-SCROLL](artifacts/reports/SVG-LIST-SCROLL-2026-11-03.md)
 implements SVGListBoxBase::updateScrollBar called by every move primitive.
 4320 native/C comparisons pass with exact gating, rect math, show and position
 sequencing, plus full strict host/focused sanitizer/ARM and every prior
@@ -34,11 +50,11 @@ shown iff the list is visible; hide path clears a created bar. The
 differential caught a stub-convention defect (r3-clobbering branch to 4-arg
 stubs); multi-arg installers now preserve every argument register. No new
 service/module/UI consumer, TV access/wake/staging/deployment or pending job.
-Hashes in MEMORY/report. Next implement updateImpl and row widget internals,
-then row getters and editing, parent refresh, scrollbar construction/position
-bodies, startSelectAnimation, and the owned backend/context/consumer with
-permission/modal/focus/lifetime/visible gates. Bodies are not actual
-widget/rendering acceptance.
+Hashes in MEMORY/report. SVG-LIST-IMPL implements updateImpl and rotateRows;
+row getters and editing, parent refresh, scrollbar construction/position
+bodies, startSelectAnimation and the owned backend/consumer remain open, then
+the reloadable-module demonstration. Bodies are not actual widget/rendering
+acceptance.
 
 Previous: [SVG-LIST-ROWS](artifacts/reports/SVG-LIST-ROWS-2026-11-03.md)
 implements the RowManager internals behind every list key/move body: the

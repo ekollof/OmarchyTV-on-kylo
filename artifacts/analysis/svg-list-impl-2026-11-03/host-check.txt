@@ -1,0 +1,1 @@
+ok SVG list impl: rotate pairs/position swap, partial/full redraw, hide, empty, clamp/focus

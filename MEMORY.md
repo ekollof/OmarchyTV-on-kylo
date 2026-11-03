@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-IMPL-2026-11-03: updateImpl and rotateRows pass6952 native/C
+comparisons with exact call order/args and resulting manager/array/selection
+state, plus full strict host, focused ASan/UBSan, ARM/qemu and all previous
+reference groups. ARM unit39636/bb24bb2f323f2132bdc1dc37d3db45f0;
+reference580456/5e7a254d0d315a088860cc206d03389e, build-tv-v3/tab-policy.
+Proved row +0x1C setFocus identity and sret getWindowRect transport; start
+clamping, unfocus gating, full/partial distinction, per-row show/update/draw,
+hide sweeps, writeback/clamp/refocus and the empty-message path are asserted.
+No new module/service/UI consumer. Row getters/editing, parent refresh,
+scrollbar construction/position bodies, startSelectAnimation, owned
+backend/context and visible acceptance stay open. No TV access/wake/staging/
+deployment or hardware mutation; no pending job/helper.
+
 SVG-LIST-SCROLL-2026-11-03: updateScrollBar gating/rect/show/position passes
 4320 native/C comparisons, plus full strict host, focused ASan/UBSan,
 ARM/qemu and all previous reference groups. ARM unit

@@ -321,12 +321,19 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
-- [x] Implement the SVG list scrollbar (gating, literal rect, show, position);
-      4320 native/C comparisons plus full host/focused sanitizer/ARM and prior
-      groups pass. SVG-LIST-SCROLL. updateImpl, row widget internals, row
-      getters/editing, parent refresh, scrollbar construction/position bodies,
+- [x] Implement the list update core (updateImpl start/clamp/redraw/writeback/
+      empty plus rotateRows pair-swap/position exchange); 6952 native/C
+      comparisons with exact call order/args/state plus full host/focused
+      sanitizer/ARM and prior groups pass. SVG-LIST-IMPL. Row getters/editing,
+      parent refresh, scrollbar construction/position bodies,
       startSelectAnimation, owned backend/context and independent native
       visible acceptance remain open.
+- [x] Implement the SVG list scrollbar (gating, literal rect, show, position);
+      4320 native/C comparisons plus full host/focused sanitizer/ARM and prior
+      groups pass. SVG-LIST-SCROLL. SVG-LIST-IMPL implements updateImpl and
+      rotateRows next; row getters/editing, parent refresh, scrollbar
+      construction/position bodies, startSelectAnimation, owned backend/context
+      and independent native visible acceptance remain open.
 - [x] Implement the RowManager internals (field layout, focusItem body,
       updatePartial forward); 324 native/C comparisons plus full host/focused
       sanitizer/ARM and prior groups pass. SVG-LIST-ROWS. updateImpl, row
