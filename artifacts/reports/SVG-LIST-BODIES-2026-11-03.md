@@ -55,9 +55,11 @@ startSelectAnimation. NULL ops/callback/handled returns EINVAL untouched.
 
 ## Still open
 
-Primitive move/selection/window/notify implementations, row getters and
-editing, parent refresh, and the owned backend/context/consumer with
-permission/modal/focus/lifetime/visible gates. Callback routing is not actual
-widget/rendering acceptance, and no visible parity is claimed.
+Subsequent [SVG-LIST-MOVE](SVG-LIST-MOVE-2026-11-03.md) implements the eight
+primitive move/selection/window bodies called by these key bodies. Primitive
+move targets, RowManager internals, row getters and editing, parent refresh,
+and the owned backend/context/consumer with permission/modal/focus/lifetime/
+visible gates remain open. Callback routing is not actual widget/rendering
+acceptance, and no visible parity is claimed.
 
 Evidence and reproduction: artifacts/analysis/svg-list-bodies-2026-11-03/.

@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-tv-v3/tab-policy/tests/svg_list_move tests/svg_list_move.c common/svg_list_move.c
+make: 'build-tv-v3/tab-policy/tests/tab_policy_firmware' is up to date.
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

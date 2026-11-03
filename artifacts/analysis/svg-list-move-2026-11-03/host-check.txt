@@ -1,0 +1,1 @@
+ok SVG list moves: eight primitives, wrap arithmetic, no animation on shifts

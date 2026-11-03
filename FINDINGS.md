@@ -6,6 +6,15 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG list moves: SVG-LIST-MOVE implements the eight primitive move/selection/
+window bodies; 5040 native/C comparisons pass with exact call order/args.
+Window to-top posts partial 0, to-bottom posts aux-size unchecked; up/down
+shift first-visible by n with no animation, selection up/down focus
+selected-item by n, of-window variants focus first-visible edges. Move/window/
+animation target the list box; only manager queries and focusItem target
+this+0xf8. Void bodies: errno only. Move targets/RowManager/getters/editing/
+backend/visible gates remain open.
+
 SVG list bodies: SVG-LIST-BODIES implements the seven lower key bodies;
 26048 native/C comparisons pass with exact call order/args and handled truth.
 Unhandled on zero +0x1ec count or zero size with no callbacks. Pure size reads

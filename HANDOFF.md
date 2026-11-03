@@ -24,7 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SVG-LIST-BODIES](artifacts/reports/SVG-LIST-BODIES-2026-11-03.md)
+Latest: [SVG-LIST-MOVE](artifacts/reports/SVG-LIST-MOVE-2026-11-03.md)
+implements the eight primitive list move/selection/window bodies called by
+the SVG-LIST-BODIES key bodies. 5040 native/C comparisons pass with exact
+call order and args, plus full strict host/focused sanitizer/ARM and every
+prior group. Window to-top posts partial 0, to-bottom posts unchecked
+aux-size; up/down shift first-visible by n with no animation while only the
+to-top/to-bottom moves animate; selection bodies focus by item/first-visible
+offsets. The list-box versus this+0xf8 receiver split is asserted. No new
+service/module/UI consumer, TV access/wake/staging/deployment or pending job.
+Hashes in MEMORY/report. Next implement the primitive move targets
+(updatePartial/updateScrollBar/startSelectAnimation bodies) and RowManager
+internals, then row getters and editing, parent refresh, and the owned
+backend/context/consumer with permission/modal/focus/lifetime/visible gates.
+Bodies are not actual widget/rendering acceptance.
+
+Previous: [SVG-LIST-BODIES](artifacts/reports/SVG-LIST-BODIES-2026-11-03.md)
 implements the seven lower SVGListBoxBase key bodies called by the
 SVG-LIST-INPUT router. 26048 native/C comparisons pass with exact call
 order/args and handled truth, plus full strict host/focused sanitizer/ARM and
@@ -34,10 +49,10 @@ page-down scroll/wrap inversion and proved move/window/animation primitives
 run on the list box while only manager queries and focusItem run on this+0xf8.
 Select consumes with or without a parent; first/last synthesize group indices
 0/count-1. No new service/module/UI consumer, TV access/wake/deployment or
-pending job. Hashes in MEMORY/report. Next implement the primitive
-move/selection/window/notify bodies, row getters and editing, and parent
-refresh, then the owned backend/context/consumer with permission/modal/focus/
-lifetime/visible gates. Bodies are not actual widget/rendering acceptance.
+pending job. Hashes in MEMORY/report. SVG-LIST-MOVE implements the eight
+primitive move/selection/window bodies; RowManager internals, row getters and
+editing, parent refresh and the owned backend/context/consumer remain open.
+Bodies are not actual widget/rendering acceptance.
 
 Previous: [SVG-LIST-INPUT](artifacts/reports/SVG-LIST-INPUT-2026-11-03.md) finishes
 SVGListBoxBase key/message routing and typed row-value dispatch.999216 native

@@ -6,6 +6,17 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-MOVE-2026-11-03: eight primitive list move/selection/window bodies
+pass5040 native/C comparisons with exact call order/args, plus full strict
+host, focused ASan/UBSan, ARM/qemu and all previous reference groups. ARM
+unit29592/633ac2af584f29dfde1f1796cc74404d; reference476308/
+84ac2e10c385693d50c8ea6d3d84f3f9, build-tv-v3/tab-policy. Window up/down
+shift without animating; only to-top/to-bottom animate, and the receiver
+split (list box versus this+0xf8 manager) is asserted. No new module/service/
+UI consumer. Primitive move targets, RowManager internals, row getters/editing,
+parent refresh, owned backend/context and visible acceptance stay open.
+No TV access/wake/staging/deployment or hardware mutation; no pending job/helper.
+
 SVG-LIST-BODIES-2026-11-03: seven lower SVGListBoxBase key bodies pass26048
 native/C comparisons with exact call order/args and handled truth, plus full
 strict host, focused ASan/UBSan, ARM/qemu and all previous reference groups.

@@ -1,0 +1,1 @@
+ok offline shipped ARM SVG list moves: 5040 native/C comparisons, exact call order/args match

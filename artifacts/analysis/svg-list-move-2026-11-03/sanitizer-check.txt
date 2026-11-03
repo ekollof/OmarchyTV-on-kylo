@@ -1,0 +1,3 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+ok SVG list moves: eight primitives, wrap arithmetic, no animation on shifts
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

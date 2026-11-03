@@ -15,6 +15,7 @@
 #include "settings_list_fixture.h"
 #include "openaurora/svg_list_input.h"
 #include "openaurora/svg_list_bodies.h"
+#include "openaurora/svg_list_move.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -1168,7 +1169,8 @@ static void check_row_values(const unsigned char *elf,size_t bytes)
     printf("ok offline shipped ARM row values: %u type/raw-value cases, widget getter selection, cache offsets and raw32 bits match\n",compared);
 }
 enum body_trace_id {B_SIZE,B_ROW,B_ITEM,B_FIRST,B_FOCUS,B_SEL_UP,B_SEL_DOWN,B_WIN_UP,B_WIN_DOWN,
-    B_WIN_TOP,B_WIN_BOTTOM,B_TO_TOP,B_TO_BOTTOM,B_ANIM,B_PARENT,B_ITEM_ID,B_WID,B_CTOR,B_POST,B_DTOR,B_GROUP};
+    B_WIN_TOP,B_WIN_BOTTOM,B_TO_TOP,B_TO_BOTTOM,B_ANIM,B_PARENT,B_ITEM_ID,B_WID,B_CTOR,B_POST,B_DTOR,B_GROUP,
+    B_PARTIAL,B_SCROLLBAR};
 struct body_fixture {
     uint32_t aux,size,row,item,first,item_id,wid;void *parent;uint32_t post_parent,ctor_item,ctor_wid,grouped;
     unsigned count;struct {uint32_t id,a,b;} trace[16];
@@ -1229,6 +1231,53 @@ static uint32_t body_e_wid(void *p) { struct body_fixture *f=p;body_emit(f,B_WID
 static uint32_t body_e_notify(void *p,void *parent,uint32_t item,uint32_t wid)
 { struct body_fixture *f=p;body_emit(f,B_CTOR,item,wid);body_emit(f,B_POST,(uint32_t)(uintptr_t)parent,item);body_emit(f,B_DTOR,(uint32_t)(uintptr_t)parent,item);return 0; }
 static void body_e_group(void *p,uint32_t index) { struct body_fixture *f=p;body_emit(f,B_GROUP,index,0);f->grouped=index; }
+static unsigned native_b_partial(void *p,int32_t index)
+{ assert(p==body_object+0xf8);body_emit(native_body,B_PARTIAL,(uint32_t)index,0);return 0; }
+static unsigned native_b_scrollbar(void *p)
+{ assert(p==body_object);body_emit(native_body,B_SCROLLBAR,0,0);return 0; }
+static uint32_t body_m_aux(void *p) { return ((struct body_fixture *)p)->aux; }
+static uint32_t body_m_size(void *p) { struct body_fixture *f=p;body_emit(f,B_SIZE,0,0);return f->size; }
+static uint32_t body_m_item(void *p) { struct body_fixture *f=p;body_emit(f,B_ITEM,0,0);return f->item; }
+static uint32_t body_m_first(void *p) { struct body_fixture *f=p;body_emit(f,B_FIRST,0,0);return f->first; }
+static void body_m_focus(void *p,uint32_t i) { body_emit(p,B_FOCUS,i,0); }
+static void body_m_partial(void *p,uint32_t i) { body_emit(p,B_PARTIAL,i,0); }
+static void body_m_scrollbar(void *p) { body_emit(p,B_SCROLLBAR,0,0); }
+static void body_m_anim(void *p) { body_emit(p,B_ANIM,0,0); }
+typedef void (*move0_fn)(void *);
+typedef void (*move1_fn)(void *,uint32_t);
+static void compare_move_traces(struct body_fixture *vendor,struct body_fixture *ref,unsigned body,
+    uint32_t n,struct body_fixture *initial)
+{
+    if(vendor->count!=ref->count) {
+        fprintf(stderr,"move %u count native=%u ours=%u n=%x aux=%x size=%x item=%x first=%x\n",
+            body,vendor->count,ref->count,n,initial->aux,initial->size,initial->item,initial->first);
+        for(unsigned i=0;i<vendor->count;++i)fprintf(stderr,"  native[%u]=%u/%x\n",i,vendor->trace[i].id,vendor->trace[i].a);
+        for(unsigned i=0;i<ref->count;++i)fprintf(stderr,"  ours[%u]=%u/%x\n",i,ref->trace[i].id,ref->trace[i].a);
+        exit(1);
+    }
+    for(unsigned i=0;i<vendor->count;++i)if(vendor->trace[i].id!=ref->trace[i].id || vendor->trace[i].a!=ref->trace[i].a) {
+        fprintf(stderr,"move %u trace %u native=%u/%x ours=%u/%x\n",body,i,vendor->trace[i].id,
+            vendor->trace[i].a,ref->trace[i].id,ref->trace[i].a);exit(1);
+    }
+}
+static void compare_move0(move0_fn native,int (*ours)(const struct oa_svg_list_move_ops *),
+    struct body_fixture initial,unsigned body)
+{
+    struct body_fixture vendor=initial,ref=initial;struct oa_svg_list_move_ops ops={&ref,body_m_aux,body_m_size,
+        body_m_item,body_m_first,body_m_focus,body_m_partial,body_m_scrollbar,body_m_anim};
+    memcpy(body_object+0x1ec,&vendor.aux,4);
+    native_body=&vendor;native(body_object);
+    assert(!ours(&ops));compare_move_traces(&vendor,&ref,body,0,&initial);
+}
+static void compare_move1(move1_fn native,int (*ours)(const struct oa_svg_list_move_ops *,uint32_t),
+    struct body_fixture initial,unsigned body,uint32_t n)
+{
+    struct body_fixture vendor=initial,ref=initial;struct oa_svg_list_move_ops ops={&ref,body_m_aux,body_m_size,
+        body_m_item,body_m_first,body_m_focus,body_m_partial,body_m_scrollbar,body_m_anim};
+    memcpy(body_object+0x1ec,&vendor.aux,4);
+    native_body=&vendor;native(body_object,n);
+    assert(!ours(&ops,n));compare_move_traces(&vendor,&ref,body,n,&initial);
+}
 typedef unsigned (*body_fn)(void *);
 typedef unsigned (*body_msg_fn)(void *,void *);
 static void compare_body(body_fn native,int (*ours)(const struct oa_svg_list_box_ops *,int *),
@@ -1327,6 +1376,54 @@ static void check_svg_bodies(const unsigned char *elf,size_t bytes)
     assert(!munmap(ctor,4096) && !munmap(parent,4096) && !munmap(dtor,8192));
     printf("ok offline shipped ARM SVG list bodies: %u native/C comparisons, exact call order/args and handled truth match\n",compared);
 }
+static void check_svg_moves(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *list=page(0x10bc000,8192),*rows=page(0x10be000,4096),*anim=page(0x10ba000,8192);
+    const struct {uint32_t address,length,crc,literal;} fragments[]={
+        {0x10bc2e0,68,UINT32_C(0x188ffe10),0x10bc320},
+        {0x10bc324,88,UINT32_C(0x7e9785c6),0x10bc378},
+        {0x10bc37c,64,UINT32_C(0x818828e6),0x10bc3b8},
+        {0x10bc3bc,76,UINT32_C(0x2c731f65),0x10bc404},
+        {0x10bc408,80,UINT32_C(0xbae06b9a),0x10bc454},
+        {0x10bc458,80,UINT32_C(0x915e414d),0x10bc4a4},
+        {0x10bc4a8,68,UINT32_C(0xd2fd2b9d),0x10bc4e8},
+        {0x10bc5bc,68,UINT32_C(0x2e6b9b7f),0x10bc5fc}
+    };
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;move0_fn plain[4];move1_fn step[4];
+    for(unsigned i=0;i<8;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(list+fragments[i].address-0x10bc000,elf+off,fragments[i].length);
+        memcpy(list+fragments[i].literal-0x10bc000,&pointer,4);
+        uint32_t entry=fragments[i].address|1;
+        if(i<4)memcpy(&plain[i],&entry,4);else memcpy(&step[i-4],&entry,4);
+    }
+    thumb_stub(rows,0x10be000,0x10be6e4,native_b_size);
+    thumb_stub(rows,0x10be000,0x10be814,native_b_item);
+    thumb_stub(rows,0x10be000,0x10be77c,native_b_first);
+    predicate_stub(rows,0x10be000,0x10be3cc,native_b_focus);
+    predicate_stub(rows,0x10be000,0x10be6b0,native_b_partial);
+    thumb_stub(anim,0x10ba000,0x10bbe04,native_b_scrollbar);
+    thumb_stub(anim,0x10ba000,0x10bbedc,native_b_anim);
+    executable(list,8192);executable(rows,4096);executable(anim,8192);
+    memset(body_object,0,sizeof body_object);
+    static int (*const zeroes[])(const struct oa_svg_list_move_ops *)={oa_svg_list_move_window_top,
+        oa_svg_list_move_window_bottom,oa_svg_list_move_selection_to_top,oa_svg_list_move_selection_to_bottom};
+    static int (*const steps[])(const struct oa_svg_list_move_ops *,uint32_t)={oa_svg_list_move_window_up,
+        oa_svg_list_move_window_down,oa_svg_list_move_selection_up,oa_svg_list_move_selection_down};
+    const uint32_t auxes[]={0,1,2,9,UINT32_MAX};
+    const uint32_t sizes[]={0,1,5},sels[]={0,1,7,UINT32_MAX},firsts[]={0,1,3};
+    const uint32_t ns[]={0,1,2,5,UINT32_C(0x80000000),UINT32_MAX};unsigned compared=0;
+    for(unsigned a=0;a<5;++a)for(unsigned s=0;s<3;++s)for(unsigned m=0;m<4;++m)for(unsigned q=0;q<3;++q) {
+        struct body_fixture initial={.aux=auxes[a],.size=sizes[s],.item=sels[m],.first=firsts[q]};
+        for(unsigned b=0;b<4;++b) { compare_move0(plain[b],zeroes[b],initial,b);++compared; }
+        for(unsigned n=0;n<6;++n)for(unsigned b=0;b<4;++b)
+            { compare_move1(step[b],steps[b],initial,b+4,ns[n]);++compared; }
+    }
+    native_body=NULL;
+    assert(!munmap(list,8192) && !munmap(rows,4096) && !munmap(anim,8192));
+    printf("ok offline shipped ARM SVG list moves: %u native/C comparisons, exact call order/args match\n",compared);
+}
 int main(int argc,char **argv)
 {
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
@@ -1375,7 +1472,7 @@ int main(int argc,char **argv)
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
     check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);
-    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_row_values(elf,bytes);
+    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_row_values(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
