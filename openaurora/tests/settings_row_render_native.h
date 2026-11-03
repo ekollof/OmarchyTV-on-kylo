@@ -76,7 +76,7 @@ enum {RR_BASE,RR_GET,RR_IS,RR_NAME,RR_FOCUS,RR_ELIP,RR_FONT,RR_RECT,RR_TEXT,RR_C
 struct rr_event { uint32_t kind,off,a,b;uint32_t w[4];char text[24]; };
 struct rr_result { struct rr_event events[64];unsigned count; };
 struct rr_fixture {
-    uint32_t type;int present[11];int created,checked;int32_t pt[2];
+    uint32_t type;int present[11];int created,checked,img_created;int32_t pt[2];
     uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,rebuild,slo,shi,sval;int flag;const char *l1,*l2,*vtext;uint32_t rwords[11][4];
     struct rr_result *trace;unsigned char *row;
 };
@@ -112,7 +112,14 @@ static void *rr_getrect(void *container,void *ustr)
     return rr_native->row+0x400+i*32;
 }
 static unsigned rr_created(void *child)
-{ rr_emit(rr_native->trace,RR_IS,rr_off(rr_row,child),0,0,NULL,NULL);return (unsigned)rr_native->created; }
+{
+    uint32_t off=rr_off(rr_row,child);
+    rr_emit(rr_native->trace,RR_IS,off,0,0,NULL,NULL);
+    /* The two launcher images can be created independently of the row's main
+     * child, and the shipped bodies fork on each image's own state. */
+    if(off==UINT32_C(0x2b28) || off==UINT32_C(0x2c0c))return (unsigned)rr_native->img_created;
+    return (unsigned)rr_native->created;
+}
 static void rr_setname(void *child,uint32_t slot,uint32_t id)
 { rr_emit(rr_native->trace,RR_NAME,rr_off(rr_row,child),slot,id,NULL,NULL); }
 static void rr_setfocus(void *child,uint32_t on)
@@ -253,7 +260,12 @@ static const char *rre_blabel(void *row) { (void)row;return *(const char *const 
 static const char *rre_vtext(void *row) { (void)row;return *(const char *const *)(rr_ref->row+0x2e04); }
 static void *rre_child(void *row,uint32_t off) { (void)row;return rr_ref->row+off; }
 static int rre_created(void *child)
-{ rr_emit(rr_ref->trace,RR_IS,rr_off(rr_ref->row,child),0,0,NULL,NULL);return rr_ref->created; }
+{
+    uint32_t off=rr_off(rr_ref->row,child);
+    rr_emit(rr_ref->trace,RR_IS,off,0,0,NULL,NULL);
+    if(off==UINT32_C(0x2b28) || off==UINT32_C(0x2c0c))return rr_ref->img_created;
+    return rr_ref->created;
+}
 static void rre_name(void *child,uint32_t slot,uint32_t id)
 { rr_emit(rr_ref->trace,RR_NAME,rr_off(rr_ref->row,child),slot,id,NULL,NULL); }
 static void rre_focus(void *child,int on)
@@ -371,7 +383,7 @@ static const char *rkcell[7];
 /* One differential case: builds both fixtures, runs the shipped body and the
  * owned C, compares the full ordered trace and the row image. */
 static void render_case(rr_fn render,uint32_t type,unsigned m,unsigned c,
-    unsigned p,unsigned w,unsigned l,unsigned g)
+    unsigned p,unsigned w,unsigned l,unsigned g,unsigned ic)
 {
     static const char *l1s[]={"","Aa"},*l2s[]={"","Bb"};
     static const int32_t pts[][2]={{0,0},{5,-3},{INT32_MAX,1}};
@@ -379,7 +391,7 @@ static void render_case(rr_fn render,uint32_t type,unsigned m,unsigned c,
     if((type==UINT32_C(5)||type==UINT32_C(6)) && g && !((m>>1)&1) && !c)return;
     if(type==UINT32_C(7) && g && !((m>>1)&1) && !c)return;
     struct rr_result native={0},ref={0};
-    struct rr_fixture n={.type=type,.created=(int)c,.checked=0,
+    struct rr_fixture n={.type=type,.created=(int)c,.checked=0,.img_created=(int)ic,
         .sel_img=0x66,.sel_id=0x55,.num=0x44,.op=0x42,.hi=0x43,.rebuild=0,
         .slo=10,.shi=90,.sval=42,.flag=(int)g,.l1=l1s[l],.l2=l2s[l],.vtext="VX",
         .trace=&native,.row=rr_row};
@@ -485,6 +497,12 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
           memcpy(stub_destination(row,0xd54000,0xd55a10,4),&k,4); }
         { uint32_t e=(uint32_t)(uintptr_t)rr_empty;
           memcpy(stub_destination(row,0xd54000,0xd55a14,4),&e,4); }
+        /* Case 0xb reuses 0xd55a0c for "slidebar" and carries its own
+         * image1/image2 literals at 0xd55a18/0xd55a1c. */
+        { uint32_t k=(uint32_t)(uintptr_t)&rkcell[5];
+          memcpy(stub_destination(row,0xd54000,0xd55a18,4),&k,4); }
+        { uint32_t k=(uint32_t)(uintptr_t)&rkcell[6];
+          memcpy(stub_destination(row,0xd54000,0xd55a1c,4),&k,4); }
     }
     blank_stub(base,0x10bf000,0x10bf06c,rr_base);
     pair_stub(ustr,0xc86000,0xc86744,rr_ctor);
@@ -555,14 +573,19 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         unsigned compared=0;rr_fn render=0;
         { uint32_t entry=0xd54401;memcpy(&render,&entry,4); }
         {
-            static const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,5,6,7,8,9,0xa};
+            static const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,5,6,7,8,9,0xa,0xb};
             /* Pass A: full 11-key presence coverage (p/w/l/g fixed at 0). */
-            for(unsigned a=0;a<17;++a)for(unsigned m=0;m<2048;++m)for(unsigned c=0;c<2;++c)
-                { render_case(render,types[a],m,c,0,0,0,0);++compared; }
+            for(unsigned a=0;a<18;++a)for(unsigned m=0;m<2048;++m)for(unsigned c=0;c<2;++c)
+                { render_case(render,types[a],m,c,0,0,0,0,c);++compared; }
             /* Pass B: point/word/label/flag coverage with every key present. */
-            for(unsigned a=0;a<17;++a)for(unsigned c=0;c<2;++c)for(unsigned p=0;p<3;++p)
+            for(unsigned a=0;a<18;++a)for(unsigned c=0;c<2;++c)for(unsigned p=0;p<3;++p)
             for(unsigned w=0;w<2;++w)for(unsigned l=0;l<2;++l)for(unsigned g=0;g<2;++g)
-                { render_case(render,types[a],2047,c,p,w,l,g);++compared; }
+                { render_case(render,types[a],2047,c,p,w,l,g,c);++compared; }
+            /* Pass C: type 0xb forks on each image's own created state; the
+             * mixed case re-creates image1 when only image2 exists. */
+            for(unsigned a=0;a<18;++a)if(types[a]==UINT32_C(0xb))
+                for(unsigned c=0;c<2;++c)for(unsigned ic=0;ic<2;++ic)
+                    { render_case(render,types[a],2047,c,0,0,0,0,ic);++compared; }
         }
         {
             const uint32_t types[]={0x1b,0x1c,0x100,UINT32_MAX};
@@ -592,6 +615,6 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         assert(!munmap(sel2,4096));
         assert(!munmap(te1,4096) && !munmap(te2,4096) && !munmap(te3,4096));
         assert(!munmap(img,4096) && !munmap(lh,4096) && !munmap(sb,4096) && !munmap(usop,4096));
-        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-0xa/0xd-0x10/0x1a/0x16 paths and defaults match\n",compared);
+        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-0xb/0xd-0x10/0x1a/0x16 paths and defaults match\n",compared);
     }
 }

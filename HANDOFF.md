@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-A](artifacts/reports/SETTINGS-ROW-A-2026-11-03.md)
+Latest: [SETTINGS-ROW-B](artifacts/reports/SETTINGS-ROW-B-2026-11-03.md)
+implements renderItems type 0xb, the slider bar with image1/image2: three
+lookups, both-image-rect gating, a fork on each image's own created state
+(plain no-offset setWindowRect refresh, or create from
+row[0x2e4c]/row[0x2e50]), the mixed-state quirk that re-creates image1, then
+the row+0x1498 slider with 0x214/0x216/0x215/0x217 names, range and
+setSliderValue(row[0x2df8]). 74604 shipped ARM/C cases and prior groups pass,
+plus full host/Unix IPC, focused ASan/UBSan, ARM/qemu and focused real TV CPU.
+A full callee audit preceded the sweep; the harness now separates the image
+children's created state with a dedicated pass. No screen/input/device/
+settings/network/service/boot/persistent change; staging removed, no helper.
+Next implement case 0xc, then 0x11..0x15 and 0x17..0x19, then getImageId's
+real mapping and image internals, then row construction/visibility/live
+resources, then scrollbar/skin/module/display/startup/independent visible
+parity.
+
+Previous: [SETTINGS-ROW-A](artifacts/reports/SETTINGS-ROW-A-2026-11-03.md)
 implements renderItems type 0xa, the second slider row: its own
 "slidebar"/"text2" literals, the fixed 0x1e8/0x1e9/0x1ea/0x1eb text-box names
 in slots 1/0/3/2 with no font, the formatted row[0x2df8] value, and the

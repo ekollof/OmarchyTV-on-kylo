@@ -6,6 +6,22 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-B-2026-11-03: renderItems type0xb (slider bar+image1/image2)
+passes74604 native/C comparisons (both-rect gating, image-state fork with
+plain setWindowRect refresh or0x2e4c/0x2e50 create, mixed-state image1
+re-create quirk, row+0x1498 slider with0x214/0x216/0x215/0x217 and
+setSliderValue) plus full strict host, focused ASan/UBSan, ARM/qemu, all
+prior groups and focused real-TV CPU. Harness now separates the image
+children's created state from the row child with a dedicated pass.
+Build-tv-v3/settings-row-render unit159736/
+0aa47f2ca5618763f1350abe5b52b9a0; reference1127136/
+6904c4fa5cfb7a46a542a6e470d810e7. TV already awake, no-reset flag kept,
+staging size/hash separately verified, test exit0, staging removed and no
+helper in /proc/*/exe. No screen/input/device/settings/network/service/boot/
+persistent change. No pending job/helper. Case0xc,0x11..0x15,0x17..0x19, row
+construction, child visibility internals, live resources, scrollbar/skin/
+module/display/startup/visible acceptance remain open.
+
 SETTINGS-ROW-A-2026-11-03: renderItems type0xa (second slider row) passes70456
 native/C comparisons (own slidebar/text2 literals, fixed0x1e8.. text-box
 names with no font, row+0x1498 slider with0x214/0x216/0x215/0x217,

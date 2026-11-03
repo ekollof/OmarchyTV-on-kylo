@@ -335,7 +335,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       row construction, child visibility internals, live resources,
       scrollbar/skin/module/display/startup/independent visible acceptance
       remain open.
-- [ ] Implement SettingItemsListBoxRow::renderItems types 0xb/0xc.
+- [x] Implement SettingItemsListBoxRow::renderItems type 0xb (slider bar +
+      images):74604 native/C comparisons and prior groups pass; full host/Unix
+      IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-B.
+      Both-rect gating, the image-state fork, the mixed-state image1
+      re-create quirk and the slider name/range/value tail are asserted; the
+      harness separates the image children's created state.
+- [ ] Implement SettingItemsListBoxRow::renderItems type 0xc.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

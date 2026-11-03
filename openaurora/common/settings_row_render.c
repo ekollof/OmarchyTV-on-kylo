@@ -451,6 +451,66 @@ static int case_slider2(void *row,const struct oa_setting_row_render_ops *o,void
     }
     return 0;
 }
+/* Case 0xb: slider bar with two images. Looks up "slidebar", "image1" and
+ * "image2". When both image rectangles exist it either refreshes both (both
+ * children created: plain setWindowRect with the rectangle words, no point
+ * offset) or creates each from its row[0x2e4c]/[0x2e50] scaling word. Note
+ * the shipped body falls through to the create block when only the first
+ * child is created, so it can re-create an existing image; that is
+ * reproduced. Then the row+0x1498 slide bar is refreshed (rect + range +
+ * value) or created from row[0x2df0]/[0x2df4] with the 0x214/0x216/0x215/
+ * 0x217 names. */
+static int case_0xb(void *row,const struct oa_setting_row_render_ops *o,void *box)
+{
+    void *sb=o->get_rect(box,key_for(9));
+    void *i1=o->get_rect(box,key_for(6));
+    void *i2=o->get_rect(box,key_for(7));
+    int done_images=0;
+    if(i1 && i2) {
+        void *im1=o->child_at(row,UINT32_C(0x2b28));
+        int c1=o->is_created(im1);
+        if(c1) {
+            void *im2=o->child_at(row,UINT32_C(0x2c0c));
+            if(o->is_created(im2)) {
+                uint32_t w1[4],w2[4];
+                o->rect_words(i1,w1);o->rect_words(i2,w2);
+                o->set_rect(im1,w1);o->set_rect(im2,w2);
+                done_images=1;
+            }
+        }
+        if(!done_images) {
+            void *im2=o->child_at(row,UINT32_C(0x2c0c));
+            uint32_t w1[4],w2[4],sc;
+            o->rect_words(i1,w1);o->rect_words(i2,w2);
+            sc=o->row_word(row,UINT32_C(0x2e4c));
+            if(sc)o->create_image(im1,sc,w1,row);
+            sc=o->row_word(row,UINT32_C(0x2e50));
+            if(sc)o->create_image(im2,sc,w2,row);
+        }
+    }
+    if(!sb)return 0;
+    {
+        void *sl=o->child_at(row,UINT32_C(0x1498));int created=o->is_created(sl);
+        uint32_t base[4];o->rect_words(sb,base);
+        if(created) {
+            uint32_t moved[4];int32_t pt[2];
+            o->get_point(row,pt);rect_math(moved,base,pt);
+            o->set_rect(sl,moved);
+            o->set_slider_range(sl,(int32_t)o->row_word(row,UINT32_C(0x2df0)),
+                (int32_t)o->row_word(row,UINT32_C(0x2df4)));
+        } else {
+            o->set_name(sl,UINT32_C(1),UINT32_C(0x214));
+            o->set_name(sl,(uint32_t)created,UINT32_C(0x216));
+            o->set_name(sl,UINT32_C(3),UINT32_C(0x215));
+            o->set_name(sl,UINT32_C(2),UINT32_C(0x217));
+            o->set_slider_focus(sl,0);
+            o->create_slider(sl,0,(int32_t)o->row_word(row,UINT32_C(0x2df0)),
+                (int32_t)o->row_word(row,UINT32_C(0x2df4)),base,row);
+        }
+        o->set_slider_value(sl,(int32_t)o->row_word(row,UINT32_C(0x2df8)));
+    }
+    return 0;
+}
 static int case_0x1a(void *row,const struct oa_setting_row_render_ops *o,void *box)
 {
     void *r=o->get_rect(box,key_for(3)),*button;int created;uint32_t base[4];
@@ -597,6 +657,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             case_btn8(row,o,box);
             return 0;
         }
+        if(type==UINT32_C(0xb)) {
+            case_0xb(row,o,box);
+            return 0;
+        }
         if(type==UINT32_C(0xa)) {
             void *sbrect=o->get_rect(box,key_for(9));
             void *t2rect=o->get_rect(box,key_for(10));
@@ -659,6 +723,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
         }
         if(type==UINT32_C(8)) {
             case_btn8(row,o,box);
+            return 0;
+        }
+        if(type==UINT32_C(0xb)) {
+            case_0xb(row,o,box);
             return 0;
         }
         if(type==UINT32_C(0xa)) {

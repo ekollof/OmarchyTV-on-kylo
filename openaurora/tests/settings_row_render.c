@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 struct rrow {
-    uint32_t type;uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,imgid,scale,slo,shi,sval;int flag,checked,rebuild;const char *label,*blabel,*vtext;
+    uint32_t type;uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,imgid,scale,slo,shi,sval;int flag,checked,rebuild,img_created;const char *label,*blabel,*vtext;
     void *rects[11];uint32_t rwords[11][4];int32_t pt[2];
     int created;unsigned count;struct {uint32_t kind,off,a,b;char text[24];} trace[48];
 };
@@ -46,7 +46,13 @@ static const char *q_label(void *r) { (void)r;return t->label; }
 static const char *q_blabel(void *r) { (void)r;return t->blabel; }
 static const char *q_vtext(void *r) { (void)r;return t->vtext; }
 static void *q_child(void *r,uint32_t o) { (void)r;return (void *)(uintptr_t)(0x2000+o); }
-static int q_is(void *c) { (void)c;emit(R_IS,(uint32_t)(uintptr_t)c-0x2000,0,0,NULL);return t->created; }
+static int q_is(void *c)
+{
+    uint32_t off=(uint32_t)((uintptr_t)c-0x2000);
+    emit(R_IS,off,0,0,NULL);
+    if(off==0x2b28||off==0x2c0c)return t->img_created;
+    return t->created;
+}
 static void q_name(void *c,uint32_t s,uint32_t id) { emit(R_NAME,(uint32_t)(uintptr_t)c-0x2000,s,id,NULL); }
 static void q_focus(void *c,int on) { emit(R_FOCUS,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)on,0,NULL); }
 static void q_elipes(void *c,int on) { emit(R_ELIP,(uint32_t)(uintptr_t)c-0x2000,(uint32_t)on,0,NULL); }
@@ -438,9 +444,53 @@ int main(void)
     assert(r.trace[13].kind==R_RECT);
     assert(r.trace[14].kind==R_SRANGE && r.trace[14].a==1 && r.trace[14].b==5);
     assert(r.trace[15].kind==R_SVAL && r.trace[15].a==7);
+    /* Type 0xb: slider bar with image1/image2. Uncreated images are created
+     * from the 0x2e4c/0x2e50 scaling words; the slider uses the 0x214.. names
+     * and create/value. */
+    reset(&r);o=ops();r.type=0xb;r.sval=42;wset(&r,0x2e4c,0x92);wset(&r,0x2e50,0x93);
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==27);
+    assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"slidebar"));
+    assert(r.trace[14].kind==R_GET && !strcmp(r.trace[14].text,"image1"));
+    assert(r.trace[15].kind==R_GET && !strcmp(r.trace[15].text,"image2"));
+    assert(r.trace[16].kind==R_IS && r.trace[16].off==0x2b28);
+    assert(r.trace[17].kind==R_CIMG && r.trace[17].off==0x2b28 && r.trace[17].a==0x92);
+    assert(r.trace[18].kind==R_CIMG && r.trace[18].off==0x2c0c && r.trace[18].a==0x93);
+    assert(r.trace[19].kind==R_IS && r.trace[19].off==0x1498);
+    assert(r.trace[20].kind==R_NAME && r.trace[20].a==1 && r.trace[20].b==0x214);
+    assert(r.trace[21].kind==R_NAME && r.trace[21].a==0 && r.trace[21].b==0x216);
+    assert(r.trace[22].kind==R_NAME && r.trace[22].a==3 && r.trace[22].b==0x215);
+    assert(r.trace[23].kind==R_NAME && r.trace[23].a==2 && r.trace[23].b==0x217);
+    assert(r.trace[24].kind==R_SFOCUS && r.trace[24].a==0);
+    assert(r.trace[25].kind==R_CSLIDER);
+    assert(r.trace[26].kind==R_SVAL && r.trace[26].a==42);
+    /* Both images created: plain setWindowRect with the rect words (no point
+     * offset) and no re-create; created slider gets range+value. */
+    reset(&r);o=ops();r.type=0xb;r.created=1;r.img_created=1;wset(&r,0x2e4c,0x92);wset(&r,0x2e50,0x93);
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==18);
+    assert(r.trace[7].kind==R_GET && !strcmp(r.trace[7].text,"slidebar"));
+    assert(r.trace[8].kind==R_GET && !strcmp(r.trace[8].text,"image1"));
+    assert(r.trace[9].kind==R_GET && !strcmp(r.trace[9].text,"image2"));
+    assert(r.trace[10].kind==R_IS && r.trace[10].off==0x2b28);
+    assert(r.trace[11].kind==R_IS && r.trace[11].off==0x2c0c);
+    assert(r.trace[12].kind==R_RECT && r.trace[12].off==0x2b28);
+    assert(r.trace[13].kind==R_RECT && r.trace[13].off==0x2c0c);
+    assert(r.trace[14].kind==R_IS && r.trace[14].off==0x1498);
+    assert(r.trace[15].kind==R_RECT && r.trace[15].off==0x1498);
+    assert(r.trace[16].kind==R_SRANGE);
+    assert(r.trace[17].kind==R_SVAL);
+    /* Mixed: image1 gone but image2 created still takes the create block, so
+     * image1 is re-created (firmware quirk reproduced). */
+    reset(&r);o=ops();r.type=0xb;r.created=1;r.img_created=0;
+    wset(&r,0x2e4c,0x92);wset(&r,0x2e50,0x93);
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[10].kind==R_IS && r.trace[10].off==0x2b28);
+    assert(r.trace[11].kind==R_CIMG && r.trace[11].off==0x2b28);
+    assert(r.trace[12].kind==R_CIMG && r.trace[12].off==0x2c0c);
     /* Invalid ops/args change nothing. */
     o=ops();o.set_name=NULL;
-    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==16);
+    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==17);
     assert(oa_setting_row_render(NULL,&o)==EINVAL);
     assert(oa_setting_row_render(&r,NULL)==EINVAL);
     puts("ok settings row render: 0/1/4 paths, shared tail, gates and open types");

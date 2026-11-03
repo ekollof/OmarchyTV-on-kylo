@@ -6,6 +6,18 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-B implements renderItems type 0xb: "slidebar" then its own
+"image1"/"image2" literals; the image block requires BOTH rectangles and
+forks on each image's own isCreated, refreshing with plain setWindowRect (no
+point offset) or re-creating from row[0x2e4c]/[0x2e50] — including the quirk
+that a created image1 plus an uncreated image2 re-creates image1. The
+row+0x1498 slider uses 0x214/0x216/0x215/0x217 and finishes with
+setSliderValue(row[0x2df8]). 74604 native/C cases pass. The harness now
+distinguishes the two image children's created state from the row child, with
+a dedicated type-0xb pass covering the mixed state. Case 0xc, 0x11..0x15 and
+0x17..0x19, construction, child-visibility internals, live resources,
+scrollbar/skin/visible gates remain open.
+
 SETTINGS-ROW-A implements renderItems type 0xa, the second slider row: its
 own "slidebar"/"text2" literals, the 0x1e8/0x1e9/0x1ea/0x1eb text-box names in
 slots 1/0/3/2 with no font, the formatted row[0x2df8] value, and the

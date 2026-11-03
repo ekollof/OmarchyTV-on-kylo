@@ -1,0 +1,1 @@
+ok settings row render: 0/1/4 paths, shared tail, gates and open types
