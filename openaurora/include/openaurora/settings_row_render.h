@@ -75,6 +75,12 @@ struct oa_setting_row_render_ops {
     void (*set_scaling)(void *child,uint32_t type);
     void (*create_image)(void *child,uint32_t id,const uint32_t rect[4],void *parent);
     void (*set_draw_on_top)(void *child,int on);
+    void (*create_textbox)(void *child,uint32_t zero,const char *label,
+        const uint32_t rect[4],uint32_t extra,void *parent);
+    void (*create_slider)(void *child,uint32_t zero,int32_t lo,int32_t hi,
+        const uint32_t rect[4],void *parent);
+    void (*set_slider_value)(void *child,int32_t value);
+    void (*set_slider_focus)(void *child,int on);
 };
 int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o);
 #endif

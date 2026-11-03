@@ -6,6 +6,20 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-SLIDER-2026-11-03: renderItems type0x9 (slider row) passes95624
+native/C comparisons ("slidebar"+"text2" lookups, empty-char* textbox create
+with formatted0x2df8 text, slidebar create from0x2df0/0x2df4 plus
+setSliderValue) plus full strict host, focused ASan/UBSan, ARM/qemu, all
+prior groups and focused real-TV CPU. Corrected two earlier readings: types
+5/6's rebuild fold reads text1 slot12 (not image1) and setScalingType gets
+the stale isCreated result while create gets0x92/0x93. Build-tv-v3/
+settings-row-render unit136416/12625ef29fda096965cb78d1c58d5b97;
+reference1112368/efe772995d71a2f1f264f0ec8694b2a2. TV already awake,
+no-reset flag kept, staging hash-verified, test exit0, staging removed, no
+helper. Cases0xa..0xc,0x11..0x15,0x17..0x19, row construction, child
+visibility internals, live resources, scrollbar/skin/module/display/startup/
+visible acceptance remain open.
+
 SETTINGS-ROW-BUTTON8-2026-11-03: renderItems type0x8 (plain button) passes43976
 native/C comparisons (0x2eac/0x2eb0/0x2eb4/0x2eb8 names in slots1/0/3/2,
 icon-0 create, created setText refresh, no images/glyphs/stores/draw-on-top)

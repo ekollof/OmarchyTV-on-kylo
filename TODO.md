@@ -321,6 +321,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement SettingItemsListBoxRow::renderItems type 0x9 (slider row):
+      95624 native/C comparisons and prior groups pass; full host/Unix IPC,
+      ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-SLIDER.
+      slidebar/text2 order, the empty-char* textbox create and the formatted
+      value, plus the slidebar range/value are asserted. Cases0xa..0xc,
+      0x11..0x15,0x17..0x19, row construction, child visibility internals,
+      live resources, scrollbar/skin/module/display/startup/independent
+      visible acceptance remain open.
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x8 (plain button):
       43976 native/C comparisons and prior groups pass; full host/Unix IPC,
       ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-BUTTON8.

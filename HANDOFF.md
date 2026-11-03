@@ -24,7 +24,22 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-BUTTON8](artifacts/reports/SETTINGS-ROW-BUTTON8-2026-11-03.md)
+Latest: [SETTINGS-ROW-SLIDER](artifacts/reports/SETTINGS-ROW-SLIDER-2026-11-03.md)
+implements renderItems type 0x9, the slider row: "slidebar" then "text2"
+lookups, a row+0x1ca8 text box created with the empty char* label and extra 1
+that always receives the %d-formatted row[0x2df8] value, and a row+0x13c0
+slide bar created from row[0x2df0]/[0x2df4] then setSliderValue from 0x2df8.
+95624 shipped ARM/C cases and prior groups pass, plus full host/Unix IPC,
+focused ASan/UBSan, ARM/qemu and focused real TV CPU. Two earlier readings
+were corrected: types 5/6's rebuild fold reads text1 (slot 12), not image1,
+and setScalingType receives the stale isCreated result. No screen/input/
+device/settings/network/service/boot/persistent change; staging removed, no
+helper. Next implement cases 0xa..0xc, then 0x11..0x15 and 0x17..0x19, then
+getImageId's real mapping and image internals, then row construction/
+visibility/live resources, then scrollbar/skin/module/display/startup/
+independent visible parity.
+
+Previous: [SETTINGS-ROW-BUTTON8](artifacts/reports/SETTINGS-ROW-BUTTON8-2026-11-03.md)
 implements renderItems type 0x8, the plain button: "button" lookup,
 row+0x684 child, 0x2eac/0x2eb0/0x2eb4/0x2eb8 names in slots 1/0/3/2, icon-0
 create and a created setWindowRect+setText refresh, with no images, glyphs,

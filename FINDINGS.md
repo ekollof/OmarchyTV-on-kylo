@@ -6,6 +6,16 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-SLIDER implements renderItems type 0x9: the "slidebar" then
+"text2" lookups (that order), a row+0x1ca8 text box created with the empty
+char* label and extra 1 that receives the %d-formatted row[0x2df8] value, and
+a row+0x13c0 slide bar created from row[0x2df0]/[0x2df4] then setSliderValue
+from 0x2df8. 95624 native/C cases pass. Corrections landed: types 5/6's
+rebuild fold reads text1 (slot 12), not image1, and setScalingType receives
+the stale isCreated result while only create gets 0x92/0x93. Cases 0xa..0xc,
+0x11..0x15, 0x17..0x19, construction, child-visibility internals, live
+resources, scrollbar/skin/visible gates remain open.
+
 SETTINGS-ROW-BUTTON8 implements renderItems type 0x8, the type-4
 key1-missing button branch as its own case: "button" lookup, row+0x684 child,
 0x2eac/0x2eb0/0x2eb4/0x2eb8 names in slots 1/0/3/2, icon-0 create and a

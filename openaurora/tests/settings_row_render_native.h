@@ -72,15 +72,16 @@ static void five_stub(void *mapped,uint32_t base,uint32_t address,five_fn functi
     const uint16_t insn[]={0xf8df,0xc004,0x4760,0xbf00};
     assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=five_bits(function);memcpy(p+8,&target,4);
 }
-enum {RR_BASE,RR_GET,RR_IS,RR_NAME,RR_FOCUS,RR_ELIP,RR_FONT,RR_RECT,RR_TEXT,RR_CTEXT,RR_CBTN,RR_ALIGN,RR_CHECK,RR_CCB,RR_SELID,RR_CSEL,RR_SELIMG,RR_EMODE,RR_MAXCH,RR_CAUTO,RR_NUM,RR_CTE,RR_STORE,RR_DESTROY,RR_RESETXML,RR_GLYPH,RR_HL,RR_SUBHL,RR_SHADOW,RR_VIS,RR_SCALE,RR_CIMG,RR_DRAWTOP};
+enum {RR_BASE,RR_GET,RR_IS,RR_NAME,RR_FOCUS,RR_ELIP,RR_FONT,RR_RECT,RR_TEXT,RR_CTEXT,RR_CBTN,RR_ALIGN,RR_CHECK,RR_CCB,RR_SELID,RR_CSEL,RR_SELIMG,RR_EMODE,RR_MAXCH,RR_CAUTO,RR_NUM,RR_CTE,RR_STORE,RR_DESTROY,RR_RESETXML,RR_GLYPH,RR_HL,RR_SUBHL,RR_SHADOW,RR_VIS,RR_SCALE,RR_CIMG,RR_DRAWTOP,RR_CTBOX,RR_CSLIDER,RR_SVAL,RR_SFOCUS};
 struct rr_event { uint32_t kind,off,a,b;uint32_t w[4];char text[24]; };
 struct rr_result { struct rr_event events[64];unsigned count; };
 struct rr_fixture {
-    uint32_t type;int present[9];int created,checked;int32_t pt[2];
-    uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,rebuild;int flag;const char *l1,*l2,*vtext;uint32_t rwords[8][4];
+    uint32_t type;int present[11];int created,checked;int32_t pt[2];
+    uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,rebuild,slo,shi,sval;int flag;const char *l1,*l2,*vtext;uint32_t rwords[11][4];
     struct rr_result *trace;unsigned char *row;
 };
 static const char rr_empty[]="";
+static const char *rk9slot,*rk10slot;
 static struct rr_fixture *rr_native;
 static _Alignas(uint32_t) unsigned char rr_row[0x3000],rr_refrow[0x3000];
 static uint32_t rr_vtable[16];
@@ -99,13 +100,13 @@ static void rr_base(void *row) { (void)row;rr_emit(rr_native->trace,RR_BASE,0,0,
 static void rr_ctor(void *buf,uint32_t str)
 { const char *s=(const char *)str;assert(strlen(s)<16);*(const char **)buf=s; }
 static unsigned rr_dtor(void *buf) { (void)buf;return 0; }
-static const char *rr_keys[9];
+static const char *rr_keys[11];
 static void *rr_getrect(void *container,void *ustr)
 {
     const char *key=*(const char *const *)ustr;unsigned i;
     (void)container;
-    for(i=0;i<9;++i)if(!strcmp(key,rr_keys[i]))break;
-    assert(i<9);
+    for(i=0;i<11;++i)if(!strcmp(key,rr_keys[i]))break;
+    assert(i<11);
     rr_emit(rr_native->trace,RR_GET,(uint32_t)i,0,0,NULL,key);
     if(!rr_native->present[i])return NULL;
     return rr_native->row+0x400+i*32;
@@ -169,6 +170,17 @@ static void rr_vis(void *c,uint32_t on) { rr_emit(rr_native->trace,RR_VIS,rr_off
 static void rr_scale(void *c,uint32_t ty) { rr_emit(rr_native->trace,RR_SCALE,rr_off(rr_row,c),ty,0,NULL,NULL); }
 static void rr_cimg(void *c,uint32_t id,uint32_t rect,uint32_t par)
 { (void)par;(void)rect;rr_emit(rr_native->trace,RR_CIMG,rr_off(rr_row,c),id,0,NULL,NULL); }
+static void rr_ctbox(void *c,uint32_t z,void *label,void *rect,uint32_t extra,void *parent)
+{ (void)z;(void)rect;(void)parent;
+  rr_emit(rr_native->trace,RR_CTBOX,rr_off(rr_row,c),extra,0,NULL,(const char *)label); }
+static void rr_cslider(void *c,uint32_t z,void *lo,void *hi,uint32_t rect,void *parent)
+{ (void)z;(void)rect;(void)parent;
+  rr_emit(rr_native->trace,RR_CSLIDER,rr_off(rr_row,c),(uint32_t)(uintptr_t)lo,(uint32_t)(uintptr_t)hi,NULL,NULL); }
+static void rr_sval(void *c,uint32_t v) { rr_emit(rr_native->trace,RR_SVAL,rr_off(rr_row,c),v,0,NULL,NULL); }
+static void rr_sfocus(void *c,uint32_t on) { rr_emit(rr_native->trace,RR_SFOCUS,rr_off(rr_row,c),on,0,NULL,NULL); }
+static char rr_numfmt[16];
+static void rr_appendint(void *ustr,uint32_t v)
+{ snprintf(rr_numfmt,sizeof rr_numfmt,"%d",(int)v);*(const char **)ustr=rr_numfmt; }
 static void rr_drawtop(void *c,uint32_t on) { rr_emit(rr_native->trace,RR_DRAWTOP,rr_off(rr_row,c),on,0,NULL,NULL); }
 static void rr_emode(void *c,uint32_t m) { rr_emit(rr_native->trace,RR_EMODE,rr_off(rr_row,c),m,0,NULL,NULL); }
 static void rr_maxch(void *c,uint32_t n) { rr_emit(rr_native->trace,RR_MAXCH,rr_off(rr_row,c),n,0,NULL,NULL); }
@@ -212,8 +224,8 @@ static void *rre_cont(void *row) { (void)row;return rr_ref->row+0xa8; }
 static void *rre_get(void *container,const char *key)
 {
     unsigned i;(void)container;
-    for(i=0;i<9;++i)if(!strcmp(key,rr_keys[i]))break;
-    assert(i<9);
+    for(i=0;i<11;++i)if(!strcmp(key,rr_keys[i]))break;
+    assert(i<11);
     rr_emit(rr_ref->trace,RR_GET,i,0,0,NULL,key);
     if(!rr_ref->present[i])return NULL;
     return rr_ref->row+0x400+i*32;
@@ -226,8 +238,12 @@ static uint32_t rre_word(void *row,uint32_t off)
   if(off==0x2de8)return rr_ref->sel_id;
   if(off==0x2e00)return rr_ref->num;
   if(off==0x2dd4)return rr_ref->op;
+  if(off==0x2df0)return rr_ref->slo;
+  if(off==0x2df4)return rr_ref->shi;
+  if(off==0x2df8)return rr_ref->sval;
   if(off==0x2e68)return rr_ref->hi;
-  assert(off>=0x2e4c && off<=0x2ed8 && !(off&3));return rr_ref->words[(off-0x2e4c)/4]; }
+  assert(off>=0x2e4c && off<=0x2ed8 && !(off&3));
+  { uint32_t v;memcpy(&v,rr_ref->row+off,4);return v; } }
 static int rre_flag(void *row,uint32_t off)
 { (void)row;assert(off==0x2e45||off==0x2e44||off==0x2e49);
   return off==0x2e44?rr_ref->checked:(off==0x2e49?(int)rr_ref->rebuild:rr_ref->flag); }
@@ -279,6 +295,12 @@ static void rre_vis(void *c,int on) { rr_emit(rr_ref->trace,RR_VIS,rr_off(rr_ref
 static void rre_scale(void *c,uint32_t ty) { rr_emit(rr_ref->trace,RR_SCALE,rr_off(rr_ref->row,c),ty,0,NULL,NULL); }
 static void rre_cimg(void *c,uint32_t id,const uint32_t rect[4],void *par)
 { (void)par;(void)rect;rr_emit(rr_ref->trace,RR_CIMG,rr_off(rr_ref->row,c),id,0,NULL,NULL); }
+static void rre_ctbox(void *c,uint32_t z,const char *label,const uint32_t rect[4],uint32_t extra,void *parent)
+{ (void)z;(void)rect;(void)parent;rr_emit(rr_ref->trace,RR_CTBOX,rr_off(rr_ref->row,c),extra,0,NULL,label); }
+static void rre_cslider(void *c,uint32_t z,int32_t lo,int32_t hi,const uint32_t rect[4],void *parent)
+{ (void)z;(void)rect;(void)parent;rr_emit(rr_ref->trace,RR_CSLIDER,rr_off(rr_ref->row,c),(uint32_t)lo,(uint32_t)hi,NULL,NULL); }
+static void rre_sval(void *c,int32_t v) { rr_emit(rr_ref->trace,RR_SVAL,rr_off(rr_ref->row,c),(uint32_t)v,0,NULL,NULL); }
+static void rre_sfocus(void *c,int on) { rr_emit(rr_ref->trace,RR_SFOCUS,rr_off(rr_ref->row,c),(uint32_t)on,0,NULL,NULL); }
 static void rre_drawtop(void *c,int on) { rr_emit(rr_ref->trace,RR_DRAWTOP,rr_off(rr_ref->row,c),(uint32_t)on,0,NULL,NULL); }
 static void rre_emode(void *c,uint32_t m) { rr_emit(rr_ref->trace,RR_EMODE,rr_off(rr_ref->row,c),m,0,NULL,NULL); }
 static void rre_maxch(void *c,uint32_t n) { rr_emit(rr_ref->trace,RR_MAXCH,rr_off(rr_ref->row,c),n,0,NULL,NULL); }
@@ -301,7 +323,7 @@ static struct oa_setting_row_render_ops rr_ops(struct rr_fixture *f)
         rre_elipses,rre_font,rre_point,rre_rect,rre_text,rre_ctext,rre_cbtn,
         rre_align,rre_checked,rre_ccb,rre_selid,rre_csel,rre_selimg,rre_emode,rre_maxch,rre_cauto,rre_num,rre_cte,
         rre_store,rre_destroy,rre_resetxml,rre_gid,rre_glyph,rre_hl,rre_subhl,
-        rre_shadow,rre_vis,rre_scale,rre_cimg,rre_drawtop};
+        rre_shadow,rre_vis,rre_scale,rre_cimg,rre_drawtop,rre_ctbox,rre_cslider,rre_sval,rre_sfocus};
 }
 typedef void (*rr_fn)(void *);
 static void rr_compare(struct rr_result *vendor,struct rr_result *ref)
@@ -333,14 +355,15 @@ static void rr_setup_row(unsigned char *row,struct rr_fixture *f)
     /* Row label slots are UString objects: first word is the char*. */
     { uint32_t p=(uint32_t)(uintptr_t)f->l1;memcpy(row+0x2dd8,&p,4); }
     { uint32_t p=(uint32_t)(uintptr_t)f->l2;memcpy(row+0x2de0,&p,4); }
-    for(unsigned i=0;i<4;++i)memcpy(row+0x400+i*32+8,f->rwords[i],16);
+    for(unsigned i=0;i<11;++i)memcpy(row+0x400+i*32+8,f->rwords[i],16);
     for(unsigned k=0;k<36;++k)memcpy(row+0x2e4c+k*4,&f->words[k],4);
     memcpy(row+0x2e54,&f->sel_img,4);memcpy(row+0x2de8,&f->sel_id,4);memcpy(row+0x2e00,&f->num,4);
     memcpy(row+0x2dd4,&f->op,4);memcpy(row+0x2e68,&f->hi,4);memcpy(row+0x2e49,&f->rebuild,1);
+    memcpy(row+0x2df0,&f->slo,4);memcpy(row+0x2df4,&f->shi,4);memcpy(row+0x2df8,&f->sval,4);
     { uint32_t p=(uint32_t)(uintptr_t)f->vtext;memcpy(row+0x2e04,&p,4); }
     row[0x2e45]=(unsigned char)f->flag;row[0x2e44]=(unsigned char)f->checked;
 }
-static const char rk0[]="alexa",rk1[]="text1",rk2[]="labelLong",rk3[]="button",rk4[]="checkbox",rk5[]="selectionbox",rk6[]="image1",rk7[]="image2",rk8[]="banner";
+static const char rk0[]="alexa",rk1[]="text1",rk2[]="labelLong",rk3[]="button",rk4[]="checkbox",rk5[]="selectionbox",rk6[]="image1",rk7[]="image2",rk8[]="banner",rk9[]="slidebar",rk10[]="text2";
 static const char *rkcell[7];
 static void check_settings_row_render(const unsigned char *elf,size_t bytes)
 {
@@ -351,8 +374,9 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
     unsigned char *zer=page(0x9a7000,4096),*btntext=page(0x10b0000,4096);
     unsigned char *cb=page(0x10b1000,8192),*sel=page(0x10b5000,4096),*sel2=page(0x10b4000,4096);
     unsigned char *te1=page(0x10b6000,4096),*te2=page(0x10b8000,4096),*te3=page(0x10bb000,4096);
-    unsigned char *img=page(0x10c9000,4096),*lh=page(0xe4a000,4096);
-    rr_keys[0]=rk0;rr_keys[1]=rk1;rr_keys[2]=rk2;rr_keys[3]=rk3;rr_keys[4]=rk4;rr_keys[5]=rk5;rr_keys[6]=rk6;rr_keys[7]=rk7;rr_keys[8]=rk8;
+    unsigned char *img=page(0x10c9000,4096),*lh=page(0xe4a000,4096),*sb=page(0x10c4000,4096);
+    unsigned char *usop=page(0xc88000,4096);
+    rr_keys[0]=rk0;rr_keys[1]=rk1;rr_keys[2]=rk2;rr_keys[3]=rk3;rr_keys[4]=rk4;rr_keys[5]=rk5;rr_keys[6]=rk6;rr_keys[7]=rk7;rr_keys[8]=rk8;rr_keys[9]=rk9;rr_keys[10]=rk10;rk9slot=rk9;rk10slot=rk10;
     rkcell[0]=rk1;rkcell[1]=rk2;rkcell[2]=rk3;rkcell[3]=rk4;rkcell[4]=rk5;rkcell[5]=rk6;rkcell[6]=rk7;
     {
         size_t off=file_offset(elf,bytes,0xd54400,8746);
@@ -412,6 +436,14 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         /* Case 0x7 reads "banner" as a direct string through 0xd54b30. */
         { uint32_t b=(uint32_t)(uintptr_t)rk8;
           memcpy(stub_destination(row,0xd54000,0xd54b30,4),&b,4); }
+        /* Case 0x9: slidebar (0xd55754), text2 (0xd55758) and the empty
+         * text-box label (0xd55750). */
+        { uint32_t k=(uint32_t)(uintptr_t)&rk9slot;
+          memcpy(stub_destination(row,0xd54000,0xd55754,4),&k,4); }
+        { uint32_t k=(uint32_t)(uintptr_t)&rk10slot;
+          memcpy(stub_destination(row,0xd54000,0xd55758,4),&k,4); }
+        { uint32_t e=(uint32_t)(uintptr_t)rr_empty;
+          memcpy(stub_destination(row,0xd54000,0xd55750,4),&e,4); }
     }
     blank_stub(base,0x10bf000,0x10bf06c,rr_base);
     pair_stub(ustr,0xc86000,0xc86744,rr_ctor);
@@ -460,6 +492,11 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
     quad_stub(img,0x10c9000,0x10c9638,rr_cimg);
     pair2_stub(img,0x10c9000,0x10c96c0,rr_setrect);
     gid_stub(lh,0xe4a000,0xe4aaf4,rr_gid);
+    six_stub(box,0x10c8000,0x10c89ac,rr_ctbox);
+    pair_stub(usop,0xc88000,0xc8865c,rr_appendint);
+    six_stub(sb,0x10c4000,0x10c4704,rr_cslider);
+    pair_stub(sb,0x10c4000,0x10c493c,rr_sval);
+    pair_stub(sb,0x10c4000,0x10c47e0,rr_sfocus);
     {
         uint32_t point=point_bits(rr_point);
         memcpy(rr_vtable+0x28/4,&point,4);
@@ -470,15 +507,15 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
     executable(zer,4096);executable(btntext,4096);executable(cb,8192);executable(sel,4096);
     executable(sel2,4096);
     executable(te1,4096);executable(te2,4096);executable(te3,4096);
-    executable(img,4096);executable(lh,4096);
+    executable(img,4096);executable(lh,4096);executable(sb,4096);executable(usop,4096);
     {
         unsigned compared=0;rr_fn render=0;
         { uint32_t entry=0xd54401;memcpy(&render,&entry,4); }
         {
-            const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,5,6,7,8};
+            const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,5,6,7,8,9};
             const char *l1s[]={"","Aa"},*l2s[]={"","Bb"};
             const int32_t pts[][2]={{0,0},{5,-3},{INT32_MAX,1}};
-            for(unsigned a=0;a<15;++a)for(unsigned m=0;m<64;++m)for(unsigned c=0;c<2;++c)
+            for(unsigned a=0;a<16;++a)for(unsigned m=0;m<128;++m)for(unsigned c=0;c<2;++c)
             for(unsigned p=0;p<3;++p)for(unsigned w=0;w<2;++w)for(unsigned l=0;l<2;++l)
             for(unsigned g=0;g<2;++g) {
                 /* Firmware crash input, verified by reading: type 4 with the
@@ -486,20 +523,21 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
                  * button dereferences the null shared slot (ldr r4,[r0,#8]
                  * at 0xd54726 with r0==0). Never executed on either side. */
                 if(types[a]==UINT32_C(4) && g && !((m>>2)&1) && ((m>>3)&1) && !c)continue;
-                /* Type 5/6 rebuild path reloads the image1 rectangle over the
-                 * button temp and dereferences it (ldr r0,[r0,#8] at 0xd564a0
-                 * with r0==0), so a null image1 with the 0x2e45 flag faults. */
+                /* Type 5/6 rebuild path folds the prologue's text1 rectangle
+                 * (slot 12) into the button temp and dereferences it
+                 * (ldr r0,[r0,#8] at 0xd564a0 with r0==0), so a null text1
+                 * with the 0x2e45 flag faults. */
                 if((types[a]==UINT32_C(5)||types[a]==UINT32_C(6)) && g &&
-                   !((m>>6)&1) && !c)continue;
+                   !((m>>1)&1) && !c)continue;
                 /* Type 7 rebuild folds the text1 rectangle (bit1) the same way. */
                 if(types[a]==UINT32_C(7) && g && !((m>>1)&1) && !c)continue;
                 struct rr_result native={0},ref={0};
                 struct rr_fixture n={.type=types[a],.created=c,.checked=0,
-                    .sel_img=0x66,.sel_id=0x55,.num=0x44,.op=0x42,.hi=0x43,.rebuild=0,.flag=(int)g,.l1=l1s[l],.l2=l2s[l],.vtext="VX",.trace=&native,.row=rr_row};
-                for(unsigned i=0;i<9;++i)n.present[i]=(m>>i)&1;
+                    .sel_img=0x66,.sel_id=0x55,.num=0x44,.op=0x42,.hi=0x43,.rebuild=0,.slo=10,.shi=90,.sval=42,.flag=(int)g,.l1=l1s[l],.l2=l2s[l],.vtext="VX",.trace=&native,.row=rr_row};
+                for(unsigned i=0;i<11;++i)n.present[i]=(m>>i)&1;
                 struct rr_fixture r=n;
                 n.pt[0]=pts[p][0];n.pt[1]=pts[p][1];
-                for(unsigned i=0;i<8;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
+                for(unsigned i=0;i<11;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
                 for(unsigned k=0;k<36;++k)n.words[k]=w?UINT32_C(0x11111111)*(k+1):0;
                 r=n;r.trace=&ref;r.row=rr_refrow;
                 struct oa_setting_row_render_ops ops=rr_ops(&r);
@@ -519,8 +557,8 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
                 struct rr_result native={0},ref={0};
                 struct rr_fixture n={.type=types[a],.created=(int)c,.checked=0,.flag=0,
                     .l1="Aa",.l2="Bb",.trace=&native,.row=rr_row},r=n;
-                for(unsigned i=0;i<9;++i)n.present[i]=1;
-                for(unsigned i=0;i<8;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
+                for(unsigned i=0;i<11;++i)n.present[i]=1;
+                for(unsigned i=0;i<11;++i)for(unsigned k=0;k<4;++k)n.rwords[i][k]=(uint32_t)(0x10*(i+1)+k+1);
                 r=n;r.trace=&ref;r.row=rr_refrow;
                 struct oa_setting_row_render_ops ops=rr_ops(&r);
                 rr_setup_row(rr_row,&n);rr_setup_row(rr_refrow,&r);
@@ -540,7 +578,7 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         assert(!munmap(zer,4096) && !munmap(btntext,4096) && !munmap(cb,8192) && !munmap(sel,4096));
         assert(!munmap(sel2,4096));
         assert(!munmap(te1,4096) && !munmap(te2,4096) && !munmap(te3,4096));
-        assert(!munmap(img,4096) && !munmap(lh,4096));
-        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-8/0xd-0x10/0x1a/0x16 paths and defaults match\n",compared);
+        assert(!munmap(img,4096) && !munmap(lh,4096) && !munmap(sb,4096) && !munmap(usop,4096));
+        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-9/0xd-0x10/0x1a/0x16 paths and defaults match\n",compared);
     }
 }

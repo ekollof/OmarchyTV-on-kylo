@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 /* Rectangle keys are shipped rodata ("alexa" at ELF 0x14be1b, "text1" at
  * 0x1543bbf, "labelLong" at 0x14df0f4, "button" at 0x151cfff); the native
@@ -22,7 +23,9 @@ static const char *key_for(int which)
     case 5:return "selectionbox";
     case 6:return "image1";
     case 7:return "image2";
-    default:return "banner";
+    case 8:return "banner";
+    case 9:return "slidebar";
+    default:return "text2";
     }
 }
 static int ready(const struct oa_setting_row_render_ops *o)
@@ -40,7 +43,8 @@ static int ready(const struct oa_setting_row_render_ops *o)
         !o->reset_cached_xml || !o->glyph_id || !o->set_glyph ||
         !o->set_highlight || !o->set_sublauncher_highlight || !o->set_shadow ||
         !o->set_visible || !o->set_scaling || !o->create_image ||
-        !o->set_draw_on_top)return EINVAL;
+        !o->set_draw_on_top || !o->create_textbox ||
+        !o->create_slider || !o->set_slider_value || !o->set_slider_focus)return EINVAL;
     return 0;
 }
 static void rect_math(uint32_t out[4],const uint32_t base[4],const int32_t pt[2])
@@ -242,28 +246,30 @@ static int case_btn56(void *row,const struct oa_setting_row_render_ops *o,void *
     o->store_row_word(row,UINT32_C(0x2e50),UINT32_C(0x93));
     if(image1) {
         void *im=o->child_at(row,UINT32_C(0x2b28));
-        uint32_t w[4];
+        uint32_t w[4];int imc=o->is_created(im);
         o->rect_words(image1,w);
-        if(o->is_created(im)) {
+        if(imc) {
             uint32_t moved[4];int32_t pt[2];
             o->get_point(row,pt);rect_math(moved,w,pt);
             o->set_rect(im,moved);o->set_visible(im,0);
         } else {
             uint32_t scale=o->row_word(row,UINT32_C(0x2e4c));
-            if(scale) { o->set_scaling(im,scale);o->create_image(im,scale,w,row); }
+            /* The shipped body passes the stale isCreated result (0 here) to
+             * setScalingType and the row word only to create (objdump). */
+            if(scale) { o->set_scaling(im,(uint32_t)imc);o->create_image(im,scale,w,row); }
         }
     }
     if(image2) {
         void *im=o->child_at(row,UINT32_C(0x2c0c));
-        uint32_t w[4];
+        uint32_t w[4];int imc=o->is_created(im);
         o->rect_words(image2,w);
-        if(o->is_created(im)) {
+        if(imc) {
             uint32_t moved[4];int32_t pt[2];
             o->get_point(row,pt);rect_math(moved,w,pt);
             o->set_rect(im,moved);o->set_visible(im,0);
         } else {
             uint32_t scale=o->row_word(row,UINT32_C(0x2e50));
-            if(scale) { o->set_scaling(im,scale);o->create_image(im,scale,w,row); }
+            if(scale) { o->set_scaling(im,(uint32_t)imc);o->create_image(im,scale,w,row); }
         }
     }
     o->set_draw_on_top(button,1);
@@ -328,6 +334,64 @@ static int case_btn8(void *row,const struct oa_setting_row_render_ops *o,void *b
     o->set_name(button,UINT32_C(3),o->row_word(row,UINT32_C(0x2eb8)));
     o->set_name(button,UINT32_C(2),o->row_word(row,UINT32_C(0x2eb4)));
     o->create_button(button,0,o->row_button_label(row),base,row);
+    return 0;
+}
+/* Case 0x9: slider row. Looks up an unnamed text rectangle and a slider
+ * rectangle. The row+0x1ca8 text box is created with the char* empty label and
+ * extra 1 (or refreshed via setWindowRect) and always receives the formatted
+ * row[0x2df8] value; uncreated texts use 0x26d (key1 present) or
+ * 0x1e8/0x1e9/0x1ea/0x1eb names and font 0x1e. The row+0x13c0 slider is
+ * created with row[0x2df0]/row[0x2df4] as range and then setSliderValue from
+ * row[0x2df8]; uncreated sliders use 0x26c names and setFocus(0). */
+static int case_slider(void *row,const struct oa_setting_row_render_ops *o,void *box,
+    void *text_rect,void *slider_rect,void *alexa)
+{
+    (void)box;
+    if(text_rect) {
+        void *tb=o->child_at(row,UINT32_C(0x1ca8));int created=o->is_created(tb);
+        uint32_t base[4];o->rect_words(text_rect,base);
+        if(created) {
+            uint32_t moved[4];int32_t pt[2];
+            o->get_point(row,pt);rect_math(moved,base,pt);
+            o->set_rect(tb,moved);
+        } else {
+            if(alexa) {
+                o->set_name(tb,UINT32_C(1),UINT32_C(0x26d));
+                o->set_name(tb,(uint32_t)created,UINT32_C(0x26d));
+                o->set_name(tb,UINT32_C(3),UINT32_C(0x26d));
+                o->set_name(tb,UINT32_C(2),UINT32_C(0x26d));
+                o->set_font(tb,UINT32_C(0x1e));
+            } else {
+                o->set_name(tb,UINT32_C(1),UINT32_C(0x1e8));
+                o->set_name(tb,(uint32_t)created,UINT32_C(0x1e9));
+                o->set_name(tb,UINT32_C(3),UINT32_C(0x1ea));
+                o->set_name(tb,UINT32_C(2),UINT32_C(0x1eb));
+            }
+            o->set_focus(tb,0);o->set_elipses(tb,0);
+            o->create_textbox(tb,0,"",base,UINT32_C(1),row);
+        }
+        { char text[16];int32_t v=(int32_t)o->row_word(row,UINT32_C(0x2df8));
+          snprintf(text,sizeof text,"%d",(int)v);o->set_text(tb,text); }
+    }
+    if(!slider_rect)return 0;
+    {
+        void *sb=o->child_at(row,UINT32_C(0x13c0));int created=o->is_created(sb);
+        uint32_t base[4];o->rect_words(slider_rect,base);
+        if(created) {
+            /* created slider path is d559ce; kept open */
+        } else {
+            if(alexa) {
+                o->set_name(sb,UINT32_C(1),UINT32_C(0x26c));
+                o->set_name(sb,(uint32_t)created,UINT32_C(0x26c));
+                o->set_name(sb,UINT32_C(3),UINT32_C(0x26c));
+                o->set_name(sb,UINT32_C(2),UINT32_C(0x26c));
+            }
+            o->set_slider_focus(sb,0);
+            o->create_slider(sb,0,(int32_t)o->row_word(row,UINT32_C(0x2df0)),
+                (int32_t)o->row_word(row,UINT32_C(0x2df4)),base,row);
+            o->set_slider_value(sb,(int32_t)o->row_word(row,UINT32_C(0x2df8)));
+        }
+    }
     return 0;
 }
 static int case_0x1a(void *row,const struct oa_setting_row_render_ops *o,void *box)
@@ -476,6 +540,14 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             case_btn8(row,o,box);
             return 0;
         }
+        if(type==UINT32_C(9)) {
+            /* Sequence the lookups: text first, then slider (argument
+             * evaluation order is unspecified). */
+            void *sbrect=o->get_rect(box,key_for(9));   /* "slidebar" first */
+            void *t2rect=o->get_rect(box,key_for(10));  /* then "text2" */
+            case_slider(row,o,box,t2rect,sbrect,r1);
+            return 0;
+        }
         return ENOTSUP;
     }
     if(type!=UINT32_C(1) && type!=UINT32_C(0)) {
@@ -524,6 +596,14 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
         }
         if(type==UINT32_C(8)) {
             case_btn8(row,o,box);
+            return 0;
+        }
+        if(type==UINT32_C(9)) {
+            /* Sequence the lookups: text first, then slider (argument
+             * evaluation order is unspecified). */
+            void *sbrect=o->get_rect(box,key_for(9));   /* "slidebar" first */
+            void *t2rect=o->get_rect(box,key_for(10));  /* then "text2" */
+            case_slider(row,o,box,t2rect,sbrect,r1);
             return 0;
         }
         return ENOTSUP;
