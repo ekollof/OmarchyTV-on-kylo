@@ -24,7 +24,19 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-SETTERS](artifacts/reports/SETTINGS-ROW-SETTERS-2026-11-03.md)
+Latest: [SETTINGS-ROW-RENDER](artifacts/reports/SETTINGS-ROW-RENDER-2026-11-03.md)
+implements renderItems prologue, shared 0x104 tail, type 0/1 label paths and
+the type-4 button body with fallthrough back into case 4. 2264 shipped ARM/C
+cases and prior groups pass, plus full host/Unix IPC, focused ASan/UBSan,
+ARM/qemu and focused real TV CPU. All call shapes and the jump table verified
+instruction-by-instruction against objdump/ELF (the Ghidra ASM dump lied).
+No screen/input/device/settings/network/service/boot/persistent change;
+staging removed, no helper. Next implement switch cases 2..26 (starting with
+the 0x1a tail branch), row construction/child visibility internals and live
+resources, then scrollbar/skin/module/display/startup/independent visible
+parity. Bodies are not actual widget/rendering acceptance.
+
+Previous: [SETTINGS-ROW-SETTERS](artifacts/reports/SETTINGS-ROW-SETTERS-2026-11-03.md)
 implements the saved setLabel/setProgressValue/setBarRangeValues bodies.
 324 shipped ARM/C cases and prior groups pass, plus full host/Unix IPC,
 focused ASan/UBSan, ARM/qemu and focused real TV CPU. Type-selected children,

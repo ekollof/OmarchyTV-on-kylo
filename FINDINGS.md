@@ -6,6 +6,19 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-RENDER implements renderItems for types 0, 1 and 4 plus the
+0x1b/default exits: prologue base render with three rectangle lookups, the
+shared 0x104 tail for every non-4 type with a key2 rect (type 1 uses
+row+0x3c4), type-4 button block with key4 lookup, and a switch whose table
+entry for type 4 was read from the ELF. 2264 native/C cases pass. The tail's
+create rejoins the switch; the button create passes key4rect directly (the
+fold temp is dead); the rebuild flag_store slot is key2rect, replaced by
+key3rect on the reconstruct path, and null with the flag set faults
+natively (excluded). Saved Ghidra ASM had phantom instructions past the
+switch head; objdump is the source of truth. Switch cases 2..26 (incl. the
+0x1a branch), row construction, child visibility internals, live resources,
+scrollbar/skin/visible gates remain open.
+
 SETTINGS-ROW-SETTERS implements the saved label/progress/range bodies: label
 selects +0x3c4 for type 1 else +0x104; progress drives +0x1570 for 0x17 else
 +0x1724 with wrapped ((value-lo)*100)/(hi-lo) and always formats the stored
@@ -13,8 +26,8 @@ value into +0x24e8; range drives +0x13c0 for type 9 else +0x1498. Widget calls
 run only when created; stores always run. 324 native/C cases pass. Fragments
 must include the final pop; the progress format literal points at the shipped
 empty string. __aeabi_idiv edges (INT_MAX/MIN on nonzero/zero, SIGFPE on 0/0)
-are replicated without UB. RenderItems/construction/visibility-internals/live
-resources/scrollbar/skin/visible gates remain open.
+are replicated without UB. Case bodies 2..26, construction/visibility-
+internals/live resources/scrollbar/skin/visible gates remain open.
 
 SETTINGS-ROW-TYPE implements setType: changed cache/rebuild stores precede
 renderItems, unchanged clears rebuild but still queries visibility, and the

@@ -299,6 +299,7 @@ check: check-settings-model
 $(BUILD)/tests/tab_policy_firmware: common/settings_draw.c include/openaurora/settings_draw.h tests/settings_draw_fixture.h tests/settings_draw_native.h
 $(BUILD)/tests/tab_policy_firmware: tests/settings_row_type_native.h common/settings_row_type.c include/openaurora/settings_row_type.h
 $(BUILD)/tests/tab_policy_firmware: tests/settings_row_setters_native.h common/settings_row_setters.c include/openaurora/settings_row_setters.h
+$(BUILD)/tests/tab_policy_firmware: tests/settings_row_render_native.h common/settings_row_render.c include/openaurora/settings_row_render.h
 
 $(BUILD)/tests/settings_row_type: tests/settings_row_type.c common/settings_row_type.c common/settings_model.c common/settings_draw.c include/openaurora/settings_row_type.h include/openaurora/settings_model.h include/openaurora/settings_draw.h
 	@mkdir -p $(dir $@)
@@ -315,6 +316,14 @@ $(BUILD)/tests/settings_row_setters: tests/settings_row_setters.c common/setting
 check-settings-row-setters: $(BUILD)/tests/settings_row_setters
 	@$(BUILD)/tests/settings_row_setters
 check: check-settings-row-setters
+
+$(BUILD)/tests/settings_row_render: tests/settings_row_render.c common/settings_row_render.c include/openaurora/settings_row_render.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-settings-row-render
+check-settings-row-render: $(BUILD)/tests/settings_row_render
+	@$(BUILD)/tests/settings_row_render
+check: check-settings-row-render
 
 $(BUILD)/tests/svg_list_anim: tests/svg_list_anim.c tests/svg_list_anim_fixture.h common/svg_list_anim.c include/openaurora/svg_list_anim.h
 	@mkdir -p $(dir $@)

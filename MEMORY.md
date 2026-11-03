@@ -6,6 +6,20 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-RENDER-2026-11-03: renderItems 0/1/4/shared-tail paths pass2264
+native/C comparisons (prologue/base/3 rects, type-selected children, created
+gates, always-create) plus full strict host, focused ASan/UBSan, ARM/qemu,
+all prior groups and focused real-TV CPU. Jump-table dispatch, reconstruct
+fallthrough into case 4, dead-temp button create and 0x2dec-label slot read
+from the ELF/objdump, not decompile. Build-tv-v3/settings-row-render
+unit49420/c2bf2da32e109d5914526814c13b98d0; reference1004372/
+f60da58c6f420ab9a6bffe4090e0d6b7. TV already awake, no-reset flag kept, staging
+size/hash separately verified, test exit0, staging removed and no helper in
+/proc/*/exe. No screen/input/device/settings/network/service/boot/persistent
+change. No pending job/helper. Switch cases 2..26, row construction, child
+visibility internals, live resources, scrollbar/skin/module/display/startup/
+visible acceptance remain open.
+
 SETTINGS-ROW-SETTERS-2026-11-03: label/progress/range setters pass324 native/C
 comparisons (child select/created gates/always-stores) plus full strict host,
 focused ASan/UBSan, ARM/qemu, all prior groups and focused real-TV CPU. Saved

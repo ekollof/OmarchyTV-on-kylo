@@ -1,0 +1,52 @@
+#ifndef OPENAURORA_SETTINGS_ROW_RENDER_H
+#define OPENAURORA_SETTINGS_ROW_RENDER_H
+#include <stdint.h>
+/* SettingItemsListBoxRow::renderItems for row types 0, 1 and 4, plus the
+ * immediate 0x1b default and the switch default for any other type outside
+ * 2..26. The prologue always runs the base render and three rectangle
+ * lookups ("alexa" at ELF 0x14be1b, "text1" at 0x1543bbf, "labelLong" at
+ * 0x14df0f4); type 4 additionally looks up "button" at 0x151cfff. With a
+ * key2 rectangle every non-4 type runs the shared row+0x104 tail (type 1
+ * uses row+0x3c4 instead); only 0x1b exits before it, and a missing key2
+ * skips straight to the switch head. The tail's create rejoins the switch:
+ * types 0/1/27+ hit the default no-op, while type 4 dispatches case 4
+ * (table[2] is 0xd544a4, read from the ELF). Uncreated children get
+ * setSVGName rows, created ones get EASIRect math (copy, point query,
+ * offset) plus setWindowRect, and every path ends in a create call. All
+ * three create sites pass the row label. The row stores are untouched.
+ * Widget calls run only on live children, and every store/create follows
+ * the shipped order. Offsets identify firmware-understood child bindings,
+ * not pointer arithmetic the consumer should apply to our objects. Callbacks
+ * are synchronous, pinned for the call and never retained. The 0x1a tail
+ * branch and the switch bodies for types 2..26 are open and return ENOTSUP
+ * (after the shared tail where it runs); NULL row/ops, any NULL callback
+ * or a short text buffer returns EINVAL before mutation. This does not
+ * implement renderItems for other types, real widgets, UString internals
+ * or any drawing. */
+struct oa_setting_row_render_ops {
+    void *context;
+    void (*base_render)(void *row);
+    void *(*container_of)(void *row);
+    void *(*get_rect)(void *container,const char *key);
+    void (*rect_words)(void *rect,uint32_t out[4]);
+    uint32_t (*row_type)(void *row);
+    uint32_t (*row_word)(void *row,uint32_t offset);
+    int (*row_flag)(void *row,uint32_t offset);
+    const char *(*row_label)(void *row);
+    const char *(*row_button_label)(void *row);
+    void *(*child_at)(void *row,uint32_t offset);
+    int (*is_created)(void *child);
+    void (*set_name)(void *child,uint32_t slot,uint32_t id);
+    void (*set_focus)(void *child,int on);
+    void (*set_elipses)(void *child,int on);
+    void (*set_font)(void *child,uint32_t id);
+    void (*get_point)(void *row,int32_t pt[2]);
+    void (*set_rect)(void *child,const uint32_t rect[4]);
+    void (*set_text)(void *child,const char *text);
+    void (*create_text)(void *child,uint32_t zero,const char *label,
+        const uint32_t rect[4],uint32_t extra,void *parent);
+    void (*create_button)(void *button,const char *label,
+        const uint32_t rect[4],void *parent);
+};
+int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o);
+#endif

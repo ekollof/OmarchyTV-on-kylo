@@ -321,6 +321,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement SettingItemsListBoxRow::renderItems for types 0/1/4 plus
+      0x1b/default exits: shared 0x104 tail, type-selected children, created
+      gates and always-create with 2264 native/C comparisons and prior groups
+      pass; full host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU
+      pass. SETTINGS-ROW-RENDER. Jump-table dispatch, reconstruct fallthrough
+      into case 4 and dead-temp button create verified against objdump/ELF.
+      Switch cases 2..26, row construction, child visibility internals, live
+      resources, scrollbar/skin/module/display/startup/independent visible
+      acceptance remain open.
 - [x] Implement SettingItemsListBoxRow label/progress/range setters with
       type-selected children, created gates and always-stores:324 native/C
       comparisons and prior groups pass; full host/Unix IPC, ASan/UBSan,

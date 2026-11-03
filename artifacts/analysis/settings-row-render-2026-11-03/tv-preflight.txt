@@ -1,0 +1,3 @@
+192.168.178.87 already awake
+/conf/coredumpnoreset present (rc=0), no-reset path retained
+/tmp: 36000K free

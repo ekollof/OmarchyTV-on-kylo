@@ -1660,6 +1660,7 @@ static void raw_stub(void *mapped,uint32_t base,uint32_t address,uint32_t target
 #include "settings_draw_native.h"
 #include "settings_row_type_native.h"
 #include "settings_row_setters_native.h"
+#include "settings_row_render_native.h"
 typedef void (*scroll_fn)(void *);
 static scroll_fn native_sb_update;
 enum {R_SET_FOCUS,R_SET_VISIBLE,R_GET_RECT,R_SET_POS,R_IS_VISIBLE,R_DRAW,R_DRAW_EMPTY,R_EMPTY_MSG,R_GOT_FOCUS};
@@ -2714,6 +2715,7 @@ int main(int argc,char **argv)
     check_settings_draw(elf,bytes);
     check_settings_row_type(elf,bytes);
     check_settings_row_setters(elf,bytes);
+    check_settings_row_render(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
