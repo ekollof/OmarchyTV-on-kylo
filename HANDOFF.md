@@ -24,7 +24,23 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-17-19](artifacts/reports/SETTINGS-ROW-17-19-2026-11-03.md)
+Latest: [LAUNCHER-IMAGEID](artifacts/reports/LAUNCHER-IMAGEID-2026-11-03.md)
+implements the real LauncherHelper::getImageId in
+common/launcher_image_id.c. It is a 62-entry tbh switch: op>61 returns -1,
+state==1 selects the alternate id and every other state takes the default;
+ops 30/31/36/37 share the -1 block, 42/56/57 ignore state, op52 is asymmetric
+(825/790). 469 native/C comparisons call the verbatim shipped body at 0xe4aaf4
+(copied to 0xe4a000, guard literal 0x01791d68 backed by page 0x1791000) and
+match exactly. Host structural checks, focused ASan/UBSan, ARM/qemu, full
+verify.cjs (34 ok lines) and full make check pass, plus a focused real-TV CPU
+run (exit 0, staging hash-verified and removed). The render ops glyph_id hook
+is proven to accept the real function (op2→733/734/734/734). No screen/input/
+device/settings/network/service/boot/persistent change. Next: the adjacent
+convertOperationIdToIDM (0xe4ae0c), then SVGImage/setSelectionBoxImageId
+internals, then row construction, child visibility internals/live resources,
+then scrollbar/skin/module/display/startup and independent visible parity.
+
+Previous: [SETTINGS-ROW-17-19](artifacts/reports/SETTINGS-ROW-17-19-2026-11-03.md)
 closes the renderItems switch: 0x17/0x18 are progressbar+text2 and 0x19 adds
 image1/image2 first. Percentage is
 100*(row[0x2dfc]-row[0x2df0])/(row[0x2df4]-row[0x2df0]) with 32-bit wrap and

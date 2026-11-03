@@ -1,0 +1,2 @@
+ok launcher image id: 62-way mapping, state split and default
+ok settings row render: 0/1/4 paths, shared tail, gates and open types

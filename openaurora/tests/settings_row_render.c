@@ -1,4 +1,5 @@
 #include "openaurora/settings_row_render.h"
+#include "openaurora/launcher_image_id.h"
 #include <assert.h>
 #include <errno.h>
 #include <limits.h>
@@ -97,6 +98,8 @@ static void q_store(void *r,uint32_t o,uint32_t v)
 static void q_destroy(void *c) { emit(R_DESTROY,(uint32_t)(uintptr_t)c-0x2000,0,0,NULL); }
 static void q_reset(void *c) { emit(R_RESETXML,(uint32_t)(uintptr_t)c-0x2000,0,0,NULL); }
 static uint32_t q_gid(uint32_t op,uint32_t st) { return (op<<8)|st; }
+static uint32_t q_gid_real(uint32_t op,uint32_t st)
+{ return (uint32_t)oa_launcher_get_image_id(op,st); }
 static void q_glyph(void *c,uint32_t id,uint32_t st) { emit(R_GLYPH,(uint32_t)(uintptr_t)c-0x2000,id,st,NULL); }
 static void q_hl(void *c,uint32_t id) { emit(R_HL,(uint32_t)(uintptr_t)c-0x2000,id,0,NULL); }
 static void q_subhl(void *c,uint32_t id) { emit(R_SUBHL,(uint32_t)(uintptr_t)c-0x2000,id,0,NULL); }
@@ -701,9 +704,18 @@ int main(void)
     assert(r.trace[19].kind==R_VIS && r.trace[19].a==1);
     assert(r.trace[20].kind==R_RECT && r.trace[20].off==0x2c0c);
     assert(r.trace[21].kind==R_VIS && r.trace[21].a==1);
+    /* The real LauncherHelper::getImageId mapping can be plugged straight
+     * into the ops hook: op 2 yields 733 for state 1 and 734 for the rest. */
+    reset(&r);o=ops();o.glyph_id=q_gid_real;r.type=5;r.op=2;
+    wset(&r,0x2e4c,0x92);wset(&r,0x2e50,0x93);
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[22].kind==R_GLYPH && r.trace[22].a==733 && r.trace[22].b==1);
+    assert(r.trace[23].kind==R_GLYPH && r.trace[23].a==734 && r.trace[23].b==0);
+    assert(r.trace[24].kind==R_GLYPH && r.trace[24].a==734 && r.trace[24].b==2);
+    assert(r.trace[25].kind==R_GLYPH && r.trace[25].a==734 && r.trace[25].b==3);
     /* Invalid ops/args change nothing. */
     o=ops();o.set_name=NULL;
-    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==30);
+    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==40);
     assert(oa_setting_row_render(NULL,&o)==EINVAL);
     assert(oa_setting_row_render(&r,NULL)==EINVAL);
     puts("ok settings row render: 0/1/4 paths, shared tail, gates and open types");

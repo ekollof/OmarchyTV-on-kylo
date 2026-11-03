@@ -6,6 +6,22 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+LAUNCHER-IMAGEID-2026-11-03: real LauncherHelper::getImageId implemented in
+common/launcher_image_id.c and verified by469 native/C comparisons against the
+verbatim shipped body0xe4aaf4 (copied to0xe4a000; guard literal0x01791d68
+backed by page0x1791000, canary written before mprotect). Mapping: op>61=-1,
+state==1 alternate else default, ops30/31/36/37=-1, 42/56/57 state-ignoring,
+op52=825/790 asymmetric. Host structural checks, ASan/UBSan, ARM/qemu, full
+verify.cjs (now34 ok lines) and full make check pass; focused TV CPU exit0 with
+staging hash-verified and removed. Render ops glyph_id can be wired straight to
+the real function (op2→733/734/734/734 tested). Build-tv-v3/settings-row-render
+unit224760/c389c67af6b879bcf931ef9269951408; reference1170852/
+380939250f9bac3df2084c267908ab44. No screen/input/device/settings/network/
+service/boot/persistent change. No pending job/helper.
+convertOperationIdToIDM, setSelectionBoxImageId/SVGImage internals, row
+construction, child visibility internals, live resources, scrollbar/skin/
+module/display/startup/visible acceptance remain open.
+
 SETTINGS-ROW-17-19-2026-11-03: renderItems types0x17..0x19 (progress-bar rows)
 pass886060 native/C comparisons; every renderItems switch case0..0x1a is now
 implemented. Percentage is100*(0x2dfc-0x2df0)/(0x2df4-0x2df0) with truncating

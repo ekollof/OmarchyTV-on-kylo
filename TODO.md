@@ -363,8 +363,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       trampoline, ball-image branches, double-directional bar, the alexa-
       dependent 0x17 names/font and 0x19's setVisible(1) refresh are asserted.
       **All renderItems switch cases 0..0x1a are now implemented.**
-- [ ] Real LauncherHelper::getImageId 62-way mapping; SVGImage/
-      setSelectionBoxImageId internals (still controlled stubs).
+- [x] Real LauncherHelper::getImageId 62-way mapping: `common/
+      launcher_image_id.c` matches the verbatim shipped body over469
+      op/state pairs; host structural checks, ASan/UBSan, ARM/qemu, full
+      verify.cjs and focused TV CPU pass. LAUNCHER-IMAGEID. The render ops
+      glyph_id hook is proven to accept the real function.
+- [ ] SVGImage/setSelectionBoxImageId internals (still controlled stubs), and
+      the adjacent LauncherHelper::convertOperationIdToIDM (0xe4ae0c).
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

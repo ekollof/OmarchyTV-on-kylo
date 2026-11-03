@@ -6,6 +6,18 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+LAUNCHER-IMAGEID implements the real LauncherHelper::getImageId
+(common/launcher_image_id.c): a 62-entry tbh switch where op>61 returns -1,
+state==1 selects the alternate id and every other state takes the default.
+Ops 30/31/36/37 share the -1 block, 42/56/57 ignore state, 20-23 and 43-44
+share 781/782, 32/50 share 799/800, 46/47 share 763/764, and op52 is
+asymmetric (825 vs 790). 469 native/C comparisons call the verbatim shipped
+body (guard literal 0x01791d68 backed by page 0x1791000) and match exactly;
+the render ops glyph_id hook is proven to accept the real function. The
+adjacent convertOperationIdToIDM (0xe4ae0c) is separate and still open, as are
+setSelectionBoxImageId/SVGImage internals, row construction, child visibility
+internals, live resources, scrollbar/skin and display gates.
+
 SETTINGS-ROW-17-19 closes the renderItems switch: types 0x17/0x18 are
 progressbar+text2 and 0x19 adds image1/image2 first. Percentage is
 100*(row[0x2dfc]-row[0x2df0])/(row[0x2df4]-row[0x2df0]) with 32-bit wrap and
