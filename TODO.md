@@ -321,6 +321,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Resolve initial unavailable/missing-tab fallback and raw-ID/created-index
+      selection; empty group has no focused tab but retains content0. Common
+      helper and9216 shipped group-code qemu comparisons pass; TAB-SELECTION.
+      This is initial construction, not later modal/key/state writeback.
 - [x] Recover TabDialog availability and initial content-focus request;
       common/tab_policy matches actual shipped ARM predicate in884736 offline
       qemu comparisons; host/sanitizer/ARM tests pass. TAB-NAVIGATION.
@@ -344,7 +348,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       initialization/selection writeback, drawing consumer and pressure behavior
       beyond the project16-request bound still require firmware/native acceptance.
       TAB-NAVIGATION supplies availability/focus predicates; acquire real hotel/
-      profile/app/entry inputs, resolve unavailable-tab fallback, description/
+      profile/app/entry inputs and description presence (initial unavailable-tab
+      fallback is now resolved by TAB-SELECTION), then handle
       content validity and password/network gates before consuming/drawing.
 - [x] Review ff89e27..e7e7333: scanner mapped/complete/escaped key reads,
       nonzero-base snapshots and retained UString metadata fixed; full strict

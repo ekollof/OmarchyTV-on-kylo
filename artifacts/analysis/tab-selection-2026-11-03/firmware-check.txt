@@ -1,0 +1,2 @@
+ok offline shipped ARM group selection: 9216 availability/description/request cases, rejected indices and empty focus
+ok offline shipped ARM availability: 884736 comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected

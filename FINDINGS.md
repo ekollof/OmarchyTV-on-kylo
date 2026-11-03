@@ -6,6 +6,13 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+Initial selection: TAB-SELECTION resolves missing/unavailable requested tabs to
+the first created tab (UIGroup selected index0); requested raw IDs map to
+creation-order indices. Empty group has no focused tab while initial content
+tab remains0. Common helper matches shipped group functions in9216 qemu cases,
+with stubbed vector/focus callbacks, not full native UI execution. Later key/
+modal/writeback/runtime context and consumer integration remain open.
+
 TabDialog prerequisites: TAB-NAVIGATION-2026-11-03 recovers hotel/profile/app/
 entry-dependent availability and signed item>0/open-submenu focus request.
 Predicate matches the actual shipped ARM function in884736 qemu cases; native

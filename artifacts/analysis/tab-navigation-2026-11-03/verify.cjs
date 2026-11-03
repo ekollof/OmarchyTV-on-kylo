@@ -17,3 +17,4 @@ process.stderr.write(result.stderr || '');
 assert.ifError(result.error);
 assert.equal(result.status, 0, `reference failed (77 means address unavailable), signal=${result.signal}`);
 assert.match(result.stdout, /884736 comparisons/);
+assert.match(result.stdout, /group selection: 9216 availability\/description\/request cases/);

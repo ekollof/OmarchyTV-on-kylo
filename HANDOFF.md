@@ -24,7 +24,18 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [TAB-NAVIGATION](artifacts/reports/TAB-NAVIGATION-2026-11-03.md) reviews
+Latest: [TAB-SELECTION](artifacts/reports/TAB-SELECTION-2026-11-03.md) closes
+initial unavailable-tab fallback: first created tab, at group index0. Requested
+raw tab IDs are translated to creation-order indices; empty group has no focus
+but retains initial content0. oa_tab_initial_selection and9216 actual shipped
+group-code qemu cases pass, with vector/focus callbacks stubbed. Availability
+corpus884736, full host suite and focused sanitizer/ARM tests pass. No TV
+access/wake, helper or job pending. Native build identities are in MEMORY/report.
+Next acquire actual context/description inputs and recover content permission/
+per-tab state/writeback before attaching the lifecycle-safe queue/UI consumer.
+Initial fallback is resolved; later key/modal/dynamic availability is not.
+
+Previous: [TAB-NAVIGATION](artifacts/reports/TAB-NAVIGATION-2026-11-03.md) reviews
 the pending consumer prerequisites. Availability now matches the actual shipped
 ARM function in884736 offline qemu cases; common/tab_policy also implements the
 signed item>0/open-submenu initial focus request. QuickMenu/launcher entry,
@@ -34,8 +45,8 @@ Correct key-handler address d700a0; d6faec is updateGlyphAndTitle, and old
 per-type Select summary belonged to other layers. Full host suite and focused
 sanitizer/ARM tests pass;
 no TV connection/wake/deployment. Evidence and reproduction live under analysis/
-tab-navigation-2026-11-03. Next acquire real context, resolve unavailable-tab
-fallback/content validity/per-tab state and integrate a lifecycle-safe consumer.
+tab-navigation-2026-11-03. TAB-SELECTION subsequently resolves initial unavailable
+fallback; real context/content validity/per-tab state and a safe consumer remain.
 The helper alone does not dispatch queued navigation or establish visible parity.
 
 Previous: [NAVIGATION-SERVICE](artifacts/reports/NAVIGATION-SERVICE-2026-11-03.md)

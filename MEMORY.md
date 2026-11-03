@@ -6,6 +6,15 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+TAB-SELECTION-2026-11-03: initial fallback/selection helper implemented from
+UIGroup and TabDialog ARM. Missing requested tab retains group index0 ->first
+created tab; empty group focused_tab=-1/content_tab=0.9216 actual group-code
+qemu cases pass in addition to884736 availability cases. Full host suite and
+focused sanitizer/ARM tests pass. Final ARM pure test25220/d797381250fd2b7955961b249bf27454;
+reference49624/47edeca6b311b14de6e6d8d842ca8e29, build-tv-v3/tab-policy.
+No TV connection/wake/deployment or current-state inference; no job/helper pending.
+Runtime context, content permission/writeback and queue/UI consumer remain open.
+
 TAB-NAVIGATION-2026-11-03: reviewed consumer prerequisites against fresh ARM.
 common/tab_policy availability matches actual shipped168-byte predicate under
 qemu in884736 cases, including raw byte XOR/default IDs. Initial focus request

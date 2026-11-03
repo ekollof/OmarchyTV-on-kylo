@@ -33,3 +33,20 @@ int oa_tab_available_mask(const struct oa_tab_context *c,uint8_t *out)
 }
 int oa_tab_requests_content_focus(uint8_t open_submenu,int32_t item)
 { return open_submenu!=0 || item>0; }
+int oa_tab_initial_selection(uint8_t available,uint8_t described,int32_t requested,
+                             struct oa_tab_selection *out)
+{
+    if(!out || (available&0xe0u) || (described&0xe0u))return EINVAL;
+    struct oa_tab_selection next={.created_mask=(uint8_t)(available&described),
+                                  .focused_tab=-1,.content_tab=0};
+    for(int32_t tab=0;tab<5;++tab)if(next.created_mask&(1u<<(unsigned)tab)) {
+        if(tab==requested)next.selected_index=next.count;
+        ++next.count;
+    }
+    uint8_t index=0;
+    for(int32_t tab=0;tab<5;++tab)if(next.created_mask&(1u<<(unsigned)tab)) {
+        if(index==next.selected_index) {next.focused_tab=tab;next.content_tab=tab;break;}
+        ++index;
+    }
+    *out=next;return 0;
+}

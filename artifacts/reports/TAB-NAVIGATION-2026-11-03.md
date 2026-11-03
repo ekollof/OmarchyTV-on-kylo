@@ -52,7 +52,9 @@ settings SQLite database or screenshots; no native context provider exists yet.
 init iterates five possible tabs, applies availability and requires each
 description before creating its button. Requested tab matches select the
 button's creation-order index, not the raw tab ID. Fallback if the requested
-tab is missing/unavailable remains unresolved; do not assume the first tab.
+tab is missing/unavailable was unresolved at this checkpoint. The subsequent
+[TAB-SELECTION](TAB-SELECTION-2026-11-03.md) resolves initial fallback to the
+first created tab, separately recording empty-group/content-tab behavior.
 The main title remains parent+140; an optional settingsTitle description can
 create an additional textbox. init activates tab buttons, focuses their group,
 updates title/glyph and calls showSubMenu.

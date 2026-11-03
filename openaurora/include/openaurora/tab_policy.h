@@ -20,4 +20,15 @@ int oa_tab_available_mask(const struct oa_tab_context *context,uint8_t *out);
 /* init requests focusSubMenu iff open_submenu is nonzero OR item>0. This is
  * a request, not permission to focus: content/password/privacy gates follow. */
 int oa_tab_requests_content_focus(uint8_t open_submenu,int32_t item);
+struct oa_tab_selection {
+    uint8_t created_mask,count,selected_index;
+    int32_t focused_tab,content_tab;
+};
+/* Initial, unmodified TabDialog group only: available/described bits0..4.
+ * Missing requested tab leaves group index0; no children means focused_tab=-1
+ * but content_tab retains constructor0. Does not authorize content creation or
+ * focus, and does not model a later key/modal transition. Invalid inputs leave
+ * out unchanged. */
+int oa_tab_initial_selection(uint8_t available_mask,uint8_t described_mask,
+                             int32_t requested_tab,struct oa_tab_selection *out);
 #endif

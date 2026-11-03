@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>
+#include <string.h>
 int main(void)
 {
     struct oa_tab_context c={0};uint8_t out=0xff;
@@ -31,6 +32,21 @@ int main(void)
     assert(!oa_tab_requests_content_focus(0,-1) && !oa_tab_requests_content_focus(0,0));
     assert(oa_tab_requests_content_focus(0,1) && oa_tab_requests_content_focus(0,INT32_MAX));
     assert(oa_tab_requests_content_focus(1,0) && oa_tab_requests_content_focus(255,-1));
-    puts("ok tab policy: entry/hotel/profile/app gates, raw byte XOR semantics, default IDs, requested focus and atomic invalid inputs");
+    struct oa_tab_selection selected;
+    assert(!oa_tab_initial_selection(31,31,4,&selected));
+    assert(selected.count==5 && selected.selected_index==4 && selected.focused_tab==4);
+    assert(!oa_tab_initial_selection(30,31,0,&selected));
+    assert(selected.count==4 && selected.selected_index==0 && selected.focused_tab==1);
+    assert(!oa_tab_initial_selection(31,18,4,&selected));
+    assert(selected.created_mask==18 && selected.count==2 && selected.selected_index==1 && selected.content_tab==4);
+    assert(!oa_tab_initial_selection(31,18,2,&selected));
+    assert(selected.selected_index==0 && selected.focused_tab==1 && selected.content_tab==1);
+    assert(!oa_tab_initial_selection(0,31,4,&selected));
+    assert(!selected.count && !selected.selected_index && selected.focused_tab==-1 && selected.content_tab==0);
+    struct oa_tab_selection saved=selected;
+    assert(oa_tab_initial_selection(32,31,0,&selected)==EINVAL && !memcmp(&selected,&saved,sizeof saved));
+    assert(oa_tab_initial_selection(31,128,0,&selected)==EINVAL && !memcmp(&selected,&saved,sizeof saved));
+    assert(oa_tab_initial_selection(31,31,0,NULL)==EINVAL);
+    puts("ok tab policy: availability/raw bytes, initial selection/fallback/empty group, requested focus and atomic invalid inputs");
     return 0;
 }

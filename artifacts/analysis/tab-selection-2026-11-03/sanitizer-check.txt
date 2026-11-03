@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-tab-policy-sanitize/tests/tab_policy tests/tab_policy.c common/tab_policy.c
+ok tab policy: availability/raw bytes, initial selection/fallback/empty group, requested focus and atomic invalid inputs
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

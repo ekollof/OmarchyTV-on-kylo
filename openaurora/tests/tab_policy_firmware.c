@@ -1,5 +1,5 @@
 /* OFFLINE ARM/qemu differential only. Reads the local ELF, executes its
- * isTabAvailable instructions in THIS process with synthetic getters. Never
+ * availability/group instructions in THIS process with synthetic getters. Never
  * attach to Aurora or run platform/HAL init. No vendor bytes are embedded. */
 #if !defined(__arm__)
 #error "Build this optional firmware differential for ARM and run under qemu-arm"
@@ -75,6 +75,77 @@ static void thumb_stub(void *mapped,uint32_t base,uint32_t address,getter functi
     const uint16_t insn[2]={0x4b00,0x4718}; /* ldr r3,[pc,#0]; bx r3 */
     assert(!(address&3));memcpy(p,insn,sizeof insn);uint32_t target=bits(function);memcpy(p+4,&target,4);
 }
+static uint32_t children[5];
+static unsigned child_count;
+static unsigned begin_children(void *p) { (void)p;return (uint32_t)(uintptr_t)children; }
+static unsigned end_children(void *p) { (void)p;return (uint32_t)(uintptr_t)(children+child_count); }
+static unsigned num_children(void *p) { (void)p;return child_count; }
+static unsigned child_focus(void *p,int32_t value)
+{ ((unsigned char *)p)[0x20]=(unsigned char)value;return 0; }
+static uint32_t predicate_bits(predicate p)
+{ uint32_t value;_Static_assert(sizeof p==sizeof value,"function pointer width");memcpy(&value,&p,sizeof value);return value; }
+static void check_selection(const unsigned char *elf,size_t bytes)
+{
+    const struct {uint32_t address,length,crc,guard_literal;} fragments[]={
+        {0x1148424,112,UINT32_C(0xbf9398eb),0x1148490},
+        {0x114854c,88,UINT32_C(0x8c289305),0x11485a0},
+        {0x11485d4,84,UINT32_C(0x3418dcb3),0x1148624},
+        {0x1149390,52,UINT32_C(0xd3c5e535),0x11493c0},
+    };
+    const uint32_t base=0x1148000;
+    unsigned char *mapped=page(base,8192);
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;
+    for(size_t i=0;i<sizeof fragments/sizeof *fragments;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(mapped+fragments[i].address-base,elf+off,fragments[i].length);
+        memcpy(mapped+fragments[i].guard_literal-base,&pointer,4);
+    }
+    thumb_stub(mapped,base,0x11492f8,begin_children);
+    thumb_stub(mapped,base,0x1149328,end_children);
+    thumb_stub(mapped,base,0x1149358,num_children);
+    executable(mapped,8192);
+    predicate select;pointer=0x11485d5;memcpy(&select,&pointer,sizeof select);
+    typedef void (*focus_fn)(void *,unsigned);
+    focus_fn focus;pointer=0x1148425;memcpy(&focus,&pointer,sizeof focus);
+    getter focused;pointer=0x114854d;memcpy(&focused,&pointer,sizeof focused);
+    uint32_t group_vtable[9]={0},child_vtable[8]={0};
+    group_vtable[8]=0x1148425;child_vtable[7]=predicate_bits(child_focus);
+    const int32_t requests[]={INT32_MIN,-1,0,1,2,3,4,5,INT32_MAX};
+    unsigned compared=0;
+    for(unsigned available=0;available<32;++available)
+    for(unsigned described=0;described<32;++described)
+    for(size_t r=0;r<sizeof requests/sizeof *requests;++r) {
+        _Alignas(uint32_t) unsigned char group[0x30]={0},child[5][0x24]={{0}};
+        pointer=(uint32_t)(uintptr_t)group_vtable;memcpy(group,&pointer,4);
+        uint32_t ids[5]={0};child_count=0;
+        for(unsigned tab=0;tab<5;++tab)if((available&described)&(1u<<tab)) {
+            pointer=(uint32_t)(uintptr_t)child_vtable;memcpy(child[child_count],&pointer,4);
+            ids[child_count]=tab;children[child_count]=(uint32_t)(uintptr_t)child[child_count];
+            ++child_count;
+            /* Attach's focus callback after append; no vector allocator needed. */
+            focus(group,group[0x20]);
+            if(requests[r]==(int32_t)tab)assert(select(group,(int32_t)child_count-1)==1);
+        }
+        /* init gives group focus, which focuses its selected child. */
+        focus(group,1);group[0x20]=1;
+        unsigned found=focused(group);int32_t focused_tab=-1;
+        for(unsigned i=0;i<child_count;++i)if(found==children[i])focused_tab=(int32_t)ids[i];
+        assert((found==0)==(child_count==0));
+        uint32_t selected_index;memcpy(&selected_index,group+0x2c,4);
+        struct oa_tab_selection ours;
+        assert(!oa_tab_initial_selection((uint8_t)available,(uint8_t)described,requests[r],&ours));
+        assert(ours.created_mask==(available&described) && ours.count==child_count &&
+               ours.selected_index==selected_index && ours.focused_tab==focused_tab &&
+               ours.content_tab==(focused_tab<0?0:focused_tab));
+        /* Rejected selection leaves state and focus unchanged. */
+        assert(select(group,-1)==0 && select(group,(int32_t)child_count)==0);
+        uint32_t after;memcpy(&after,group+0x2c,4);assert(after==selected_index && focused(group)==found);
+        ++compared;
+    }
+    assert(!munmap(mapped,8192));
+    printf("ok offline shipped ARM group selection: %u availability/description/request cases, rejected indices and empty focus\n",compared);
+}
 int main(int argc,char **argv)
 {
     assert(argc==2 && sysconf(_SC_PAGESIZE)==4096);
@@ -86,7 +157,7 @@ int main(int argc,char **argv)
     assert(crc32(elf+off,168)==UINT32_C(0x550b31ac));
     void *code=page(0xd6e000,8192),*media_page=page(0xccb000,4096);
     void *app_page=page(0xcd1000,4096),*fail_page=page(0x6af000,4096);
-    memcpy((unsigned char *)code+0xf80,elf+off,168);free(elf);
+    memcpy((unsigned char *)code+0xf80,elf+off,168);
     uint32_t guard_address=(uint32_t)(uintptr_t)&guard;
     memcpy((unsigned char *)code+0x1024,&guard_address,4); /* redirect only guard literal */
     thumb_stub(media_page,0xccb000,0xccb754,media);
@@ -95,6 +166,7 @@ int main(int argc,char **argv)
     const uint32_t arm[3]={UINT32_C(0xe59fc000),UINT32_C(0xe12fff1c),bits(failed)};
     memcpy((unsigned char *)fail_page+0x740,arm,sizeof arm);
     executable(code,8192);executable(media_page,4096);executable(app_page,4096);executable(fail_page,4096);
+    check_selection(elf,bytes);free(elf);
     _Alignas(uint32_t) unsigned char dialog[0x37a1]={0},demo[0x29c]={0};
     uint32_t vtable[21]={0};vtable[0x18/4]=bits(hotel);vtable[0x40/4]=bits(mode);vtable[0x50/4]=bits(picture);
     uint32_t hotel_object=(uint32_t)(uintptr_t)vtable;
