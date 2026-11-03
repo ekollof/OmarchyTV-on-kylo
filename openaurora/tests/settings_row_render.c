@@ -112,7 +112,7 @@ int main(void)
     assert(r.trace[4].kind==R_IS && r.trace[4].off==0x104);
     assert(r.trace[12].kind==R_CTEXT && !strcmp(r.trace[12].text,""));
     /* Types other than the implemented set stay open, after the shared tail. */
-    reset(&r);o=ops();r.type=8;
+    reset(&r);o=ops();r.type=9;
     assert(oa_setting_row_render(&r,&o)==ENOTSUP && r.count==13);
     /* Type 0 with missing key2: prologue then out. */
     reset(&r);o=ops();r.type=0;r.rects[1]=NULL;
@@ -363,6 +363,25 @@ int main(void)
     assert(r.trace[8].kind==R_IS && r.trace[8].off==0x684);
     assert(r.trace[9].kind==R_RECT);
     assert(r.trace[10].kind==R_DRAWTOP);
+    /* Type 8 plain button: names 1/0/3/2 from 0x2eb0/0x2eac/0x2eb8/0x2eb4,
+     * icon-0 create, created refresh with setText. */
+    reset(&r);o=ops();r.type=8;
+    wset(&r,0x2eac,0xa01);wset(&r,0x2eb0,0xa02);wset(&r,0x2eb4,0xa03);wset(&r,0x2eb8,0xa04);
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==20);
+    assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"button"));
+    assert(r.trace[14].kind==R_IS && r.trace[14].off==0x684);
+    assert(r.trace[15].kind==R_NAME && r.trace[15].a==1 && r.trace[15].b==0xa02);
+    assert(r.trace[16].kind==R_NAME && r.trace[16].a==0 && r.trace[16].b==0xa01);
+    assert(r.trace[17].kind==R_NAME && r.trace[17].a==3 && r.trace[17].b==0xa04);
+    assert(r.trace[18].kind==R_NAME && r.trace[18].a==2 && r.trace[18].b==0xa03);
+    assert(r.trace[19].kind==R_CBTN && r.trace[19].a==0);
+    reset(&r);o=ops();r.type=8;r.created=1;
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==11);
+    assert(r.trace[8].kind==R_IS && r.trace[8].off==0x684);
+    assert(r.trace[9].kind==R_RECT);
+    assert(r.trace[10].kind==R_TEXT);
     /* Invalid ops/args change nothing. */
     o=ops();o.set_name=NULL;
     assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==11);

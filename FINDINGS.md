@@ -6,6 +6,15 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-BUTTON8 implements renderItems type 0x8, the type-4
+key1-missing button branch as its own case: "button" lookup, row+0x684 child,
+0x2eac/0x2eb0/0x2eb4/0x2eb8 names in slots 1/0/3/2, icon-0 create and a
+created setWindowRect+setText refresh, with no images, glyphs, stores or
+draw-on-top and no rebuild branch (so no crash input). 43976 native/C cases
+pass; no new callbacks were needed. Cases 0x9..0xc, 0x11..0x15, 0x17..0x19,
+construction, child-visibility internals, live resources, scrollbar/skin/
+visible gates remain open.
+
 SETTINGS-ROW-BANNER implements renderItems type 0x7: a direct "banner"
 string lookup (0xd54b30 holds the char*, unlike the pointer-to-pointer keys),
 row+0x684 button, no destroy/images/stores, type-5 names, four glyph ids,

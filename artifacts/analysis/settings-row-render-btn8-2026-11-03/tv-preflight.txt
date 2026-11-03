@@ -1,0 +1,1 @@
+TV already awake; no-reset present (rc=0)

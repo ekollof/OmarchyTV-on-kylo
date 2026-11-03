@@ -306,6 +306,30 @@ static int case_btn7(void *row,const struct oa_setting_row_render_ops *o,void *b
     o->set_draw_on_top(button,1);
     return 0;
 }
+/* Case 0x8: the plain button. Looks up "button", drives the row+0x684
+ * child; created applies EASIRect math, setWindowRect and setText, otherwise
+ * writes row[0x2eb0]/[0x2eac]/[0x2eb8]/[0x2eb4] into name slots 1/0/3/2 and
+ * creates with icon 0. No images, glyphs, stores or draw-on-top. */
+static int case_btn8(void *row,const struct oa_setting_row_render_ops *o,void *box)
+{
+    void *r=o->get_rect(box,key_for(3)),*button;int created;uint32_t base[4];
+    if(!r)return 0;
+    button=o->child_at(row,UINT32_C(0x684));
+    created=o->is_created(button);
+    o->rect_words(r,base);
+    if(created) {
+        uint32_t moved[4];int32_t pt[2];
+        o->get_point(row,pt);rect_math(moved,base,pt);
+        o->set_rect(button,moved);o->set_text(button,o->row_button_label(row));
+        return 0;
+    }
+    o->set_name(button,UINT32_C(1),o->row_word(row,UINT32_C(0x2eb0)));
+    o->set_name(button,(uint32_t)created,o->row_word(row,UINT32_C(0x2eac)));
+    o->set_name(button,UINT32_C(3),o->row_word(row,UINT32_C(0x2eb8)));
+    o->set_name(button,UINT32_C(2),o->row_word(row,UINT32_C(0x2eb4)));
+    o->create_button(button,0,o->row_button_label(row),base,row);
+    return 0;
+}
 static int case_0x1a(void *row,const struct oa_setting_row_render_ops *o,void *box)
 {
     void *r=o->get_rect(box,key_for(3)),*button;int created;uint32_t base[4];
@@ -448,6 +472,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             case_btn7(row,o,box);
             return 0;
         }
+        if(type==UINT32_C(8)) {
+            case_btn8(row,o,box);
+            return 0;
+        }
         return ENOTSUP;
     }
     if(type!=UINT32_C(1) && type!=UINT32_C(0)) {
@@ -492,6 +520,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
         }
         if(type==UINT32_C(7)) {
             case_btn7(row,o,box);
+            return 0;
+        }
+        if(type==UINT32_C(8)) {
+            case_btn8(row,o,box);
             return 0;
         }
         return ENOTSUP;

@@ -321,6 +321,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement SettingItemsListBoxRow::renderItems type 0x8 (plain button):
+      43976 native/C comparisons and prior groups pass; full host/Unix IPC,
+      ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-BUTTON8.
+      Name order 1/0/3/2, icon-0 create and the created setText refresh are
+      asserted; no new callbacks and no crash input. Cases0x9..0xc,
+      0x11..0x15,0x17..0x19, row construction, child visibility internals,
+      live resources, scrollbar/skin/module/display/startup/independent
+      visible acceptance remain open.
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x7 (banner
       button):40904 native/C comparisons and prior groups pass; full
       host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.

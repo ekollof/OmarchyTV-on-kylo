@@ -475,10 +475,10 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         unsigned compared=0;rr_fn render=0;
         { uint32_t entry=0xd54401;memcpy(&render,&entry,4); }
         {
-            const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,5,6,7};
+            const uint32_t types[]={0,1,4,0x1a,0x16,2,3,0xd,0xe,0xf,0x10,5,6,7,8};
             const char *l1s[]={"","Aa"},*l2s[]={"","Bb"};
             const int32_t pts[][2]={{0,0},{5,-3},{INT32_MAX,1}};
-            for(unsigned a=0;a<14;++a)for(unsigned m=0;m<64;++m)for(unsigned c=0;c<2;++c)
+            for(unsigned a=0;a<15;++a)for(unsigned m=0;m<64;++m)for(unsigned c=0;c<2;++c)
             for(unsigned p=0;p<3;++p)for(unsigned w=0;w<2;++w)for(unsigned l=0;l<2;++l)
             for(unsigned g=0;g<2;++g) {
                 /* Firmware crash input, verified by reading: type 4 with the
@@ -541,6 +541,6 @@ static void check_settings_row_render(const unsigned char *elf,size_t bytes)
         assert(!munmap(sel2,4096));
         assert(!munmap(te1,4096) && !munmap(te2,4096) && !munmap(te3,4096));
         assert(!munmap(img,4096) && !munmap(lh,4096));
-        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-7/0xd-0x10/0x1a/0x16 paths and defaults match\n",compared);
+        printf("ok offline shipped ARM settings row render: %u native/C comparisons, 0-8/0xd-0x10/0x1a/0x16 paths and defaults match\n",compared);
     }
 }
