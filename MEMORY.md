@@ -6,6 +6,18 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-REFRESH-2026-11-03: base/manager updateRow join and row setChecked
+pass2880+24 native/C cases and all prior groups, strict full host/Unix IPC,
+focused ASan/UBSan and fresh ARM/qemu units. Refresh total+8/slots/wrapping
+upper bound and checkbox set-before-cache order established. Row-view fixture
+rv_slots[i*8] indexing corrected to rv_slots[i]. Parent virtual+0x60 resolves
+to SettingItemsListBox::drawRow (d50f60), saved but still unimplemented. Build
+build-tv-v3/list-refresh: update40576/74a98ddc619d6efc9864a8044e67ff41,
+widgets50976/920cbb14407eecd17e09f42ab261ac69,
+reference747480/7183f3a632fec0682e9ddf83fb016ede. No TV access/wake/staging/
+deployment/hardware changes; no pending job/helper. Parent/rendering/backend/
+startup/visible parity and full replacement remain open.
+
 ARM-HARNESS-REVIEW-2026-11-03: reviewed0493f91;153 native animation comparisons
 and every prior group pass from fresh build-tv-v3/arm-review. Full strict host/
 Unix IPC, focused ASan/UBSan and ARM animation/widgets/ui.list pass. Owned string

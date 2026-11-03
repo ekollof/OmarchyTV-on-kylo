@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [ARM-HARNESS-REVIEW](artifacts/reports/ARM-HARNESS-REVIEW-2026-11-03.md)
+Latest: [SVG-LIST-REFRESH](artifacts/reports/SVG-LIST-REFRESH-2026-11-03.md)
+implements base/manager single-row refresh and row setChecked. 2880+24 native/C
+comparisons plus all prior groups, strict full host/Unix IPC, focused ASan/UBSan
+and fresh ARM/qemu units pass. Refresh uses total+8 capped by array slots,
+unsigned wrapping upper bound, exact parent/index/row operands. Checkbox cache
+stores only after the created-gated setter. Also fixed row-view fixture's
+out-of-bounds rv_slots[i*8] pointer arithmetic. Fresh build-tv-v3/list-refresh;
+identities in MEMORY/report. No TV access/deployment or pending job/helper.
+Next implement the actual parent dispatcher: vtable+0x60 resolves to
+SettingItemsListBox::drawRow at d50f60, saved with ARM instructions in
+analysis/svg-list-refresh-2026-11-03/parent-source.txt. This callback body is
+still pending, alongside scrollbar construction/rendering and owned resource/
+widget backend/display binding/startup/independent visible acceptance.
+
+Previous: [ARM-HARNESS-REVIEW](artifacts/reports/ARM-HARNESS-REVIEW-2026-11-03.md)
 reviews0493f91 and preceding list work. Fresh ARM corpus153 + all prior groups,
 full strict host/Unix IPC, focused ASan/UBSan and ARM animation/widgets/ui.list
 tests pass. Corrected owned/context-bound UString handles, UTF8/empty/NULL name

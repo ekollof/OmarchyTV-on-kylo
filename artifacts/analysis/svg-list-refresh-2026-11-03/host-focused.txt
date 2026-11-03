@@ -1,0 +1,6 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/svg_list_update tests/svg_list_update.c common/svg_list_rows.c common/svg_list_update.c
+ok SVG list rows/update: total/last-visible/item-row bounds and full refresh order
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/svg_list_widgets tests/svg_list_widgets.c common/svg_list_widgets.c
+ok SVG list widgets: numeric forward, created/none gates, table-walk id, slide and checked paths
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

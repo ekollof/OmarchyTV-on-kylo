@@ -50,3 +50,14 @@ int oa_setting_row_set_slide(const struct oa_svg_row_slide_ops *o,void *row,int 
     }
     return 0;
 }
+int oa_setting_row_set_checked(const struct oa_svg_row_check_ops *o,void *row,bool checked)
+{
+    void *box;
+    if(!o || !row || !o->checkbox || !o->is_created || !o->set_checked || !o->store_checked)return EINVAL;
+    box=o->checkbox(o->context,row);
+    if(o->is_created(o->context,box)) {
+        o->set_checked(o->context,box,checked);
+        o->store_checked(o->context,row,checked);
+    }
+    return 0;
+}

@@ -1,5 +1,6 @@
 #ifndef OPENAURORA_SVG_LIST_WIDGETS_H
 #define OPENAURORA_SVG_LIST_WIDGETS_H
+#include <stdbool.h>
 #include <stdint.h>
 /* Widget-level row/list getters behind the typed row-value router.
  * SettingItemsListBoxRow::getNumericContents forwards to the embedded
@@ -60,4 +61,18 @@ struct oa_svg_row_slide_ops {
  * ops, NULL row or any NULL callback returns EINVAL. Editing targets beyond
  * setProgress/setSlider/setText stay open. */
 int oa_setting_row_set_slide(const struct oa_svg_row_slide_ops *o,void *row,int value);
+/* SettingItemsListBoxRow::setChecked(bool): query embedded checkbox+0x27a8;
+ * only when created, setChecked then store the row's cached byte+0x2e44.
+ * An uncreated checkbox does not update the cache. Checked has C bool
+ * semantics; raw noncanonical ARM register operands are outside the API.
+ * All callbacks receive context first and are pinned/synchronous/nonretaining.
+ * Invalid ops or NULL row returns EINVAL before any callback. */
+struct oa_svg_row_check_ops {
+    void *context;
+    void *(*checkbox)(void *,void *row);
+    int (*is_created)(void *,void *checkbox);
+    void (*set_checked)(void *,void *checkbox,bool checked);
+    void (*store_checked)(void *,void *row,bool checked);
+};
+int oa_setting_row_set_checked(const struct oa_svg_row_check_ops *o,void *row,bool checked);
 #endif

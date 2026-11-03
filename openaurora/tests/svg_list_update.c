@@ -32,6 +32,14 @@ static uint32_t uq_first(void *p) { struct ufixture *f=p;uemit(f,U_FIRST,0);retu
 static void u_full(void *p,uint32_t a,uint32_t b) { struct ufixture *f=p;uemit(f,U_FULL,a);(void)b; }
 static void u_scroll(void *p) { uemit((struct ufixture *)p,U_SCROLL,0); }
 static void u_anim(void *p) { uemit((struct ufixture *)p,U_ANIM,0); }
+struct refresh_fixture { uint32_t first,total,slots,index,relative;unsigned calls;void *row; };
+static uint32_t fq_first(void *p) { return ((struct refresh_fixture *)p)->first; }
+static uint32_t fq_total(void *p) { return ((struct refresh_fixture *)p)->total; }
+static uint32_t fq_slots(void *p) { return ((struct refresh_fixture *)p)->slots; }
+static void *fq_row(void *p,uint32_t rel)
+{ struct refresh_fixture *f=p;f->relative=rel;return f->row; }
+static void fq_refresh(void *p,uint32_t index,void *row)
+{ struct refresh_fixture *f=p;assert(row==f->row);f->index=index;++f->calls; }
 int main(void)
 {
     int error=42;struct rfixture f={0};
@@ -64,6 +72,22 @@ int main(void)
     assert(oa_svg_list_update(NULL)==EINVAL);
     struct oa_svg_list_update_ops ubad=uops;ubad.update_scrollbar=NULL;
     assert(oa_svg_list_update(&ubad)==EINVAL);
+    /* Single-row refresh uses total+8 capped by slots, not visible size.
+     * Overflowing first+count is an empty range even when rel<count. */
+    struct refresh_fixture rf={.first=3,.total=9,.slots=4,.row=&f};
+    struct oa_svg_list_refresh_ops refresh={&rf,fq_first,fq_total,fq_slots,fq_row,fq_refresh};
+    assert(!oa_svg_list_refresh_row(&refresh,2) && !rf.calls);
+    assert(!oa_svg_list_refresh_row(&refresh,6) && rf.calls==1 && rf.index==6 && rf.relative==3);
+    assert(!oa_svg_list_refresh_row(&refresh,7) && rf.calls==1);
+    rf.total=2;
+    assert(!oa_svg_list_refresh_row(&refresh,5) && rf.calls==1);
+    rf.first=UINT32_MAX-1;rf.total=3;
+    assert(!oa_svg_list_refresh_row(&refresh,UINT32_MAX-1) && rf.calls==1);
+    rf.first=0;rf.total=0;
+    assert(!oa_svg_list_refresh_row(&refresh,0) && rf.calls==1);
+    assert(oa_svg_list_refresh_row(NULL,0)==EINVAL);
+    refresh.refresh=NULL;
+    assert(oa_svg_list_refresh_row(&refresh,0)==EINVAL && rf.calls==1);
     puts("ok SVG list rows/update: total/last-visible/item-row bounds and full refresh order");
     return 0;
 }

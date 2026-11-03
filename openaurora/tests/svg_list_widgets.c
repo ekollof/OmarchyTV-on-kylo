@@ -59,6 +59,15 @@ static void le_set(void *box,const void *text) { lemit(L_SET,(uint32_t)(uintptr_
 static void le_free(void *buf) { lemit(L_FREE,(uint32_t)(uintptr_t)buf,0); }
 static struct oa_svg_row_slide_ops lops_for(struct lfixture *f)
 { return (struct oa_svg_row_slide_ops){f,lq_fa,lq_fb,lq_type,le_progress,le_bar,le_created,le_slider,le_store,le_box,le_format,le_new,le_append,le_set,le_free}; }
+struct check_fixture { void *row,*box;int created;bool cached;unsigned stage; };
+static void *cq_box(void *p,void *row)
+{ struct check_fixture *f=p;assert(row==f->row && f->stage++==0);return f->box; }
+static int cq_created(void *p,void *box)
+{ struct check_fixture *f=p;assert(box==f->box && f->stage++==1);return f->created; }
+static void cq_set(void *p,void *box,bool v)
+{ struct check_fixture *f=p;assert(box==f->box && f->stage++==2);assert(v!=f->cached); }
+static void cq_store(void *p,void *row,bool v)
+{ struct check_fixture *f=p;assert(row==f->row && f->stage++==3);f->cached=v; }
 int main(void)
 {
     int error=42;struct nfixture nf={0};
@@ -133,6 +142,18 @@ int main(void)
         lf.type=8;lf.count=0;
         assert(!oa_setting_row_set_slide(&lops,slrow,6) && lf.trace[0].id==L_BAR && lf.trace[0].b==0x1498);
     }
-    puts("ok SVG list widgets: numeric forward, created/none gates, table-walk id and slide paths");
+    struct check_fixture cf={.row=rowobj,.box=entryobj,.cached=true};
+    struct oa_svg_row_check_ops cops={&cf,cq_box,cq_created,cq_set,cq_store};
+    assert(!oa_setting_row_set_checked(&cops,rowobj,false) && cf.stage==2 && cf.cached);
+    cf.stage=0;cf.created=-1;
+    assert(!oa_setting_row_set_checked(&cops,rowobj,false) && cf.stage==4 && !cf.cached);
+    cf.stage=0;
+    assert(!oa_setting_row_set_checked(&cops,rowobj,true) && cf.stage==4 && cf.cached);
+    cf.stage=0;
+    assert(oa_setting_row_set_checked(NULL,rowobj,false)==EINVAL);
+    assert(oa_setting_row_set_checked(&cops,NULL,false)==EINVAL);
+    cops.store_checked=NULL;
+    assert(oa_setting_row_set_checked(&cops,rowobj,false)==EINVAL && !cf.stage);
+    puts("ok SVG list widgets: numeric forward, created/none gates, table-walk id, slide and checked paths");
     return 0;
 }

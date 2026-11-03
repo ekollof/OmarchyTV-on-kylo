@@ -2039,7 +2039,7 @@ static void check_svg_rowview(const unsigned char *elf,size_t bytes)
             uint32_t ns[]={0,1,4,16};
             struct rowview_fixture initial={.n=ns[n]};
             struct rowview_fixture ref=initial;struct oa_svg_list_manager_ops ops=rv_ops(&ref);
-            for(unsigned i=0;i<16;++i) { uint32_t slot=(uint32_t)(uintptr_t)&rv_slots[i*8];memcpy(rv_ptrs+i*4,&slot,4); }
+            for(unsigned i=0;i<16;++i) { uint32_t slot=(uint32_t)(uintptr_t)&rv_slots[i];memcpy(rv_ptrs+i*4,&slot,4); }
             for(unsigned i=0;i<16;++i)initial.addrs[i]=ref.addrs[i]=0x5000u+i;
             uint32_t array=(uint32_t)(uintptr_t)rv_ptrs;memcpy(rv_mgr+28,&array,4);
             uint32_t end=array+ns[n]*4u;memcpy(rv_mgr+32,&end,4);
@@ -2054,7 +2054,7 @@ static void check_svg_rowview(const unsigned char *elf,size_t bytes)
         for(unsigned a=0;a<4;++a)for(unsigned s=0;s<3;++s) {
             struct rowview_fixture initial={.first=firsts[a],.size=sizes[s],.n=16};
             struct rowview_fixture ref=initial;struct oa_svg_list_manager_ops ops=rv_ops(&ref);
-            for(unsigned i=0;i<16;++i) { uint32_t slot=(uint32_t)(uintptr_t)&rv_slots[i*8];memcpy(rv_ptrs+i*4,&slot,4); }
+            for(unsigned i=0;i<16;++i) { uint32_t slot=(uint32_t)(uintptr_t)&rv_slots[i];memcpy(rv_ptrs+i*4,&slot,4); }
             for(unsigned i=0;i<16;++i)initial.addrs[i]=ref.addrs[i]=0x5000u+i;
             uint32_t array=(uint32_t)(uintptr_t)rv_ptrs;memcpy(rv_mgr+28,&array,4);
             uint32_t end=array+16u*4u;memcpy(rv_mgr+32,&end,4);
@@ -2068,7 +2068,7 @@ static void check_svg_rowview(const unsigned char *elf,size_t bytes)
         for(unsigned a=0;a<4;++a)for(unsigned s=0;s<3;++s)for(unsigned k=0;k<7;++k) {
             struct rowview_fixture initial={.first=firsts[a],.size=sizes[s],.n=16};
             struct rowview_fixture ref=initial;struct oa_svg_list_manager_ops ops=rv_ops(&ref);
-            for(unsigned i=0;i<16;++i) { uint32_t slot=(uint32_t)(uintptr_t)&rv_slots[i*8];memcpy(rv_ptrs+i*4,&slot,4); }
+            for(unsigned i=0;i<16;++i) { uint32_t slot=(uint32_t)(uintptr_t)&rv_slots[i];memcpy(rv_ptrs+i*4,&slot,4); }
             for(unsigned i=0;i<16;++i) { uint32_t slot;memcpy(&slot,rv_ptrs+i*4,4);initial.addrs[i]=ref.addrs[i]=slot; }
             uint32_t array=(uint32_t)(uintptr_t)rv_ptrs;memcpy(rv_mgr+28,&array,4);
             uint32_t end=array+16u*4u;memcpy(rv_mgr+32,&end,4);
@@ -2418,6 +2418,111 @@ static void check_svg_widgets(const unsigned char *elf,size_t bytes)
         printf("ok offline shipped ARM SVG list widgets: %u native/C comparisons, numeric forward and selected-id gates/walk match\n",compared);
     }
 }
+struct refresh_result { unsigned calls;uint32_t index;void *row; };
+struct refresh_case { uint32_t first,total,slots;struct refresh_result result; };
+static _Alignas(uint32_t) unsigned char refresh_list[0x180];
+static uint32_t refresh_array[16],refresh_vtable[25];
+static struct refresh_result *native_refresh_result;
+static void native_refresh(void *parent,uint32_t index,void *row)
+{ assert(parent==refresh_list);++native_refresh_result->calls;native_refresh_result->index=index;native_refresh_result->row=row; }
+static uint32_t refresh_first(void *p) { return ((struct refresh_case *)p)->first; }
+static uint32_t refresh_total(void *p) { return ((struct refresh_case *)p)->total; }
+static uint32_t refresh_slots(void *p) { return ((struct refresh_case *)p)->slots; }
+static void *refresh_row(void *p,uint32_t rel)
+{ struct refresh_case *f=p;assert(rel<f->slots && rel<16);return (void *)(uintptr_t)refresh_array[rel]; }
+static void refresh_parent(void *p,uint32_t index,void *row)
+{ struct refresh_case *f=p;++f->result.calls;f->result.index=index;f->result.row=row; }
+static void check_svg_refresh(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *list=page(0x10bd000,4096),*rows=page(0x10be000,4096);
+    const struct {uint32_t address,length,crc,literal;} fragments[]={
+        {0x10bd0b4,52,UINT32_C(0xd995d3f6),0x10bd0e4},
+        {0x10be368,100,UINT32_C(0x4bbe4149),0x10be3c8}
+    };
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;
+    for(unsigned i=0;i<2;++i) {
+        unsigned char *mapping=i?rows:list;uint32_t base=i?0x10be000:0x10bd000;
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(stub_destination(mapping,base,fragments[i].address,fragments[i].length),elf+off,fragments[i].length);
+        memcpy(stub_destination(mapping,base,fragments[i].literal,4),&pointer,4);
+    }
+    void (*callback)(void *,uint32_t,void *)=native_refresh;
+    memcpy(refresh_vtable+0x60/4,&callback,4);
+    pointer=(uint32_t)(uintptr_t)refresh_vtable;memcpy(refresh_list,&pointer,4);
+    pointer=(uint32_t)(uintptr_t)refresh_list;memcpy(refresh_list+0xf8+4,&pointer,4);
+    pointer=(uint32_t)(uintptr_t)refresh_array;memcpy(refresh_list+0xf8+28,&pointer,4);
+    for(unsigned i=0;i<16;++i)refresh_array[i]=(uint32_t)(uintptr_t)&rv_slots[i];
+    executable(list,4096);executable(rows,4096);
+    const uint32_t firsts[]={0,1,3,UINT32_MAX-1,UINT32_MAX};
+    const uint32_t totals[]={0,1,3,9,UINT32_C(0x80000000),UINT32_MAX},slots[]={0,1,4,16};
+    const uint32_t indices[]={0,1,2,3,4,5,16,INT32_MAX,UINT32_C(0x80000000),UINT32_MAX-2,UINT32_MAX-1,UINT32_MAX};
+    unsigned compared=0;
+    for(unsigned entry=0;entry<2;++entry)for(unsigned a=0;a<5;++a)for(unsigned t=0;t<6;++t)
+    for(unsigned n=0;n<4;++n)for(unsigned k=0;k<12;++k) {
+        struct refresh_case ref={.first=firsts[a],.total=totals[t],.slots=slots[n]};
+        struct refresh_result vendor={0};native_refresh_result=&vendor;
+        struct oa_svg_list_refresh_ops ops={&ref,refresh_first,refresh_total,refresh_slots,refresh_row,refresh_parent};
+        memcpy(refresh_list+0xf8+12,&ref.first,4);memcpy(refresh_list+0xf8+8,&ref.total,4);
+        uint32_t end=(uint32_t)(uintptr_t)refresh_array+slots[n]*4;
+        memcpy(refresh_list+0xf8+32,&end,4);
+        /* Deliberately unrelated: refresh must not read visible size+0x10. */
+        memset(refresh_list+0xf8+16,0xa5,4);
+        void (*fn)(void *,uint32_t)=NULL;
+        uint32_t address=entry?0x10bd0b5:0x10be369;memcpy(&fn,&address,4);
+        { void (*volatile call)(void *,uint32_t)=fn;call(entry?refresh_list:refresh_list+0xf8,indices[k]); }
+        assert(!oa_svg_list_refresh_row(&ops,indices[k]));
+        assert(vendor.calls==ref.result.calls && vendor.index==ref.result.index && vendor.row==ref.result.row);
+        ++compared;
+    }
+    native_refresh_result=NULL;
+    assert(!munmap(list,4096) && !munmap(rows,4096));
+    printf("ok offline shipped ARM SVG list refresh: %u native/C comparisons, manager/base join and parent operands match\n",compared);
+}
+struct checked_result { uint32_t created,value;unsigned calls;unsigned char old;void *box; };
+static struct checked_result *native_checked;
+static _Alignas(uint32_t) unsigned char checked_row[0x3000];
+static unsigned native_checked_created(void *box)
+{ assert(box==checked_row+0x27a8);++native_checked->calls;return native_checked->created; }
+static void native_checked_set(void *box,uint32_t value)
+{ assert(native_checked->calls++==1);native_checked->box=box;native_checked->value=value;native_checked->old=checked_row[0x2e44]; }
+static void *checked_box(void *p,void *row) { (void)p;assert(row==checked_row);return checked_row+0x27a8; }
+static int checked_created(void *p,void *box)
+{ struct checked_result *f=p;assert(box==checked_row+0x27a8);++f->calls;return f->created!=0; }
+static void checked_set(void *p,void *box,bool value)
+{ struct checked_result *f=p;assert(f->calls++==1);f->box=box;f->value=value;f->old=checked_row[0x2e44]; }
+static void checked_store(void *p,void *row,bool value)
+{ (void)p;assert(row==checked_row);checked_row[0x2e44]=(unsigned char)value; }
+static void check_svg_checked(const unsigned char *elf,size_t bytes)
+{
+    unsigned char *row=page(0xd51000,4096),*win=page(0x1152000,4096),*check=page(0x10b1000,4096);
+    size_t off=file_offset(elf,bytes,0xd51cac,84);
+    assert(crc32(elf+off,84)==UINT32_C(0xd5ec3f94));
+    memcpy(stub_destination(row,0xd51000,0xd51cac,84),elf+off,84);
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(row+0xcfc,&pointer,4);
+    thumb_stub(win,0x1152000,0x1152a40,native_checked_created);
+    pair_stub(check,0x10b1000,0x10b1368,native_checked_set);
+    executable(row,4096);executable(win,4096);executable(check,4096);
+    const uint32_t created[]={0,1,255,UINT32_MAX};const unsigned char old[]={0,1,0xa5};
+    unsigned compared=0;void (*fn)(void *,uint32_t)=NULL;
+    pointer=0xd51cad;memcpy(&fn,&pointer,4);
+    for(unsigned c=0;c<4;++c)for(unsigned v=0;v<2;++v)for(unsigned k=0;k<3;++k) {
+        struct checked_result vendor={.created=created[c]},ref=vendor;
+        unsigned char saved[sizeof checked_row];
+        memset(checked_row,0x6d,sizeof checked_row);checked_row[0x2e44]=old[k];
+        native_checked=&vendor;
+        { void (*volatile call)(void *,uint32_t)=fn;call(checked_row,v); }
+        memcpy(saved,checked_row,sizeof saved);
+        memset(checked_row,0x6d,sizeof checked_row);checked_row[0x2e44]=old[k];
+        struct oa_svg_row_check_ops ops={&ref,checked_box,checked_created,checked_set,checked_store};
+        assert(!oa_setting_row_set_checked(&ops,checked_row,v!=0));
+        assert(vendor.calls==ref.calls && vendor.box==ref.box && vendor.value==ref.value && vendor.old==ref.old);
+        assert(!memcmp(saved,checked_row,sizeof saved));++compared;
+    }
+    native_checked=NULL;
+    assert(!munmap(row,4096) && !munmap(win,4096) && !munmap(check,4096));
+    printf("ok offline shipped ARM SVG list checked: %u native/C comparisons, created gate and set-before-cache match\n",compared);
+}
 static void check_svg_update(const unsigned char *elf,size_t bytes)
 {
     unsigned char *list=page(0x10bc000,4096),*rows=page(0x10be000,4096),*anim=page(0x10ba000,8192);
@@ -2602,7 +2707,7 @@ int main(int argc,char **argv)
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
     check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);
-    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_svg_scroll(elf,bytes);check_svg_impl(elf,bytes);check_svg_scrollbar(elf,bytes);check_svg_rowview(elf,bytes);check_svg_widgets(elf,bytes);check_svg_slide(elf,bytes);check_svg_anim(elf,bytes);check_svg_update(elf,bytes);check_row_values(elf,bytes);
+    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_svg_bodies(elf,bytes);check_svg_moves(elf,bytes);check_svg_rows(elf,bytes);check_svg_scroll(elf,bytes);check_svg_impl(elf,bytes);check_svg_scrollbar(elf,bytes);check_svg_rowview(elf,bytes);check_svg_widgets(elf,bytes);check_svg_slide(elf,bytes);check_svg_anim(elf,bytes);check_svg_update(elf,bytes);check_svg_refresh(elf,bytes);check_svg_checked(elf,bytes);check_row_values(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;

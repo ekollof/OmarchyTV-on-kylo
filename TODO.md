@@ -321,6 +321,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement base/manager single-row refresh and row setChecked:2880+24
+      native/C cases, all prior groups, strict host/Unix IPC, focused ASan/UBSan
+      and fresh ARM/qemu units pass. SVG-LIST-REFRESH. Uses total+8 capped by
+      slots and wrapping upper bound; checkbox setter precedes gated cache.
+      Row-view fixture out-of-bounds pointer arithmetic fixed. Actual parent
+      virtual+0x60 is SettingItemsListBox::drawRow (source saved), not yet
+      implemented; scrollbar construction/rendering, owned backend/display/
+      startup/independent visible acceptance remain open.
 - [x] Review ARM animation harness/recent list work:153 native comparisons and
       prior groups, full host/Unix IPC, focused ASan/UBSan and ARM tests pass.
       ARM-HARNESS-REVIEW. Fix owned strings/context/order/character bounds/signed

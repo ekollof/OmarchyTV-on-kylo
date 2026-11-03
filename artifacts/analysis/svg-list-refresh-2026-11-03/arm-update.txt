@@ -1,0 +1,1 @@
+ok SVG list rows/update: total/last-visible/item-row bounds and full refresh order

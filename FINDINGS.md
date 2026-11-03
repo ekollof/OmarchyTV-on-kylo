@@ -6,6 +6,15 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG-LIST-REFRESH implements single-row base/manager refresh and row setChecked;
+2880+24 native/C comparisons pass. Refresh uses total+8 capped by allocated
+slots, not visible size+0x10; unsigned first+count can wrap, unlike a relative
+bounds test. Parent+0x60 is SettingItemsListBox::drawRow, still unimplemented.
+Uncreated checkboxes do not update the row cache; created ones set then store.
+An additional row-view test bug formed out-of-bounds rv_slots[i*8] pointers;
+corrected indexing and all prior reference groups pass. This is not a proven
+historical crash cause. Concrete parent/provider/rendering gates remain open.
+
 ARM-HARNESS-REVIEW supersedes the14-case animation acceptance below. Owned opaque
 strings/context, character-bounded slicing (NULL names are empty), parsing before
 destruction, comparison operand order and signed container counts now pass153
