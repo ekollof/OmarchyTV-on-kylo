@@ -1087,3 +1087,19 @@ unverified per-instance draw inputs left are +0x1b0/+0x1b1/+0x22c/+0x2a8/
 +0x2b0 — exactly what the extended ui-object-scan dumps. Next: run it with
 settings open; if flags are identical across rows, read the text itself
 (+0xa4) live.
+
+## Slider-row label uses the same label path (2026-11-04)
+
+renderItems type-9 branch (0xd54401 case 9) only adds the value textbox
+(+0x1ca8, integer-formatted via `operator<<`) and the slidebar (+0x13c0); the
+label itself goes through the shared text1-based path to +0x104 like every
+other row type (setLabel routes type 1 to the caption box, else +0x104).
+Live heap confirms identical label geometry across types (row 0 type 2 and
+row 1 type 9 both: label_window=(30,row+1,381,row+51), label_text=(1,-5,350,61),
+font7/lines1/type0/align4). Yet vendor ink starts at x53 (text rows) vs
+x80-83 (slider rows): a type-9-specific +30 draw indent with no counterpart
+in rects, fonts, alignment, flag writers (`overrideTextAlignment` callers are
+unrelated classes), caption routing, icons, prefixes, slide direction,
+mirror, dialog client or fit-check (all verified). Remaining draws inputs
+(+0x1b0/+0x1b1/+0x22c/+0x2a8/+0x2b0) need the live extended scan with
+settings open; do not invent an indent constant.
