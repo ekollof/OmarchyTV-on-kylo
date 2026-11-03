@@ -5,14 +5,14 @@
 #include <stdio.h>
 #include <string.h>
 struct rrow {
-    uint32_t type;uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,imgid,scale,slo,shi,sval;int flag,checked,rebuild,img_created;const char *label,*blabel,*vtext;
-    void *rects[11];uint32_t rwords[11][4];int32_t pt[2];
-    int created;unsigned count;struct {uint32_t kind,off,a,b;char text[24];} trace[48];
+    uint32_t type;uint32_t words[36];uint32_t sel_img,sel_id,num,op,hi,imgid,scale,slo,shi,sval;int flag,checked,rebuild,img_created,tb_created;const char *label,*blabel,*vtext,*t3text,*t4text;
+    void *rects[13];uint32_t rwords[13][4];int32_t pt[2];
+    int created;unsigned count;struct {uint32_t kind,off,a,b;char text[24];} trace[64];
 };
 static struct rrow *t;
 static void emit(uint32_t kind,uint32_t off,uint32_t a,uint32_t b,const char *text)
 {
-    assert(t->count<48);t->trace[t->count].kind=kind;t->trace[t->count].off=off;
+    assert(t->count<64);t->trace[t->count].kind=kind;t->trace[t->count].off=off;
     t->trace[t->count].a=a;t->trace[t->count].b=b;
     if(text) { assert(strlen(text)<sizeof t->trace[0].text);strcpy(t->trace[t->count].text,text); }
     else t->trace[t->count].text[0]=0;
@@ -23,10 +23,10 @@ static void q_base(void *r) { (void)r;emit(R_BASE,0,0,0,NULL); }
 static void *q_cont(void *r) { (void)r;return (void *)0x1000; }
 static void *q_rect(void *c,const char *k)
 { (void)c;emit(R_GET,0,0,0,k);
-  for(int i=0;i<11;++i)if(!strcmp(k,((const char*[]){"alexa","text1","labelLong","button","checkbox","selectionbox","image1","image2","banner","slidebar","text2"})[i]))return t->rects[i];
+  for(int i=0;i<13;++i)if(!strcmp(k,((const char*[]){"alexa","text1","labelLong","button","checkbox","selectionbox","image1","image2","banner","slidebar","text2","text3","text4"})[i]))return t->rects[i];
   assert(0);return NULL; }
 static void q_words(void *r,uint32_t out[4])
-{ for(int i=0;i<11;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
+{ for(int i=0;i<13;++i)if(r==t->rects[i]) { memcpy(out,t->rwords[i],16);return; }assert(0); }
 static void wset(struct rrow *r,uint32_t off,uint32_t v) { assert(off>=0x2e4c && off<=0x2ed8);r->words[(off-0x2e4c)/4]=v; }
 static uint32_t q_type(void *r) { (void)r;return t->type; }
 static uint32_t q_word(void *r,uint32_t o)
@@ -45,12 +45,15 @@ static int q_flag(void *r,uint32_t o)
 static const char *q_label(void *r) { (void)r;return t->label; }
 static const char *q_blabel(void *r) { (void)r;return t->blabel; }
 static const char *q_vtext(void *r) { (void)r;return t->vtext; }
+static const char *q_ustring(void *r,uint32_t off)
+{ (void)r;assert(off==0x2e2c||off==0x2e34);return off==0x2e2c?t->t3text:t->t4text; }
 static void *q_child(void *r,uint32_t o) { (void)r;return (void *)(uintptr_t)(0x2000+o); }
 static int q_is(void *c)
 {
     uint32_t off=(uint32_t)((uintptr_t)c-0x2000);
     emit(R_IS,off,0,0,NULL);
     if(off==0x2b28||off==0x2c0c)return t->img_created;
+    if(off==0x1f68||off==0x2228)return t->tb_created;
     return t->created;
 }
 static void q_name(void *c,uint32_t s,uint32_t id) { emit(R_NAME,(uint32_t)(uintptr_t)c-0x2000,s,id,NULL); }
@@ -106,15 +109,15 @@ static void q_cte(void *c,uint32_t z,uint32_t a,uint32_t b,const char *l,const u
 static struct oa_setting_row_render_ops ops(void)
 {
     return (struct oa_setting_row_render_ops){t,q_base,q_cont,q_rect,q_words,q_type,q_word,
-        q_flag,q_label,q_blabel,q_vtext,q_child,q_is,q_name,q_focus,q_elipes,q_font,q_point,
+        q_flag,q_label,q_blabel,q_vtext,q_ustring,q_child,q_is,q_name,q_focus,q_elipes,q_font,q_point,
         q_srect,q_text,q_ctext,q_cbtn,q_align,q_checked,q_ccb,q_selid,q_csel,q_selimg,q_emode,q_maxch,q_cauto,q_num,q_cte,
         q_store,q_destroy,q_reset,q_gid,q_glyph,q_hl,q_subhl,q_shadow,q_vis,q_scale,q_cimg,q_drawtop,
         q_ctbox,q_cslider,q_sval,q_sfocus,q_srange};
 }
 static void reset(struct rrow *r)
 {
-    memset(r,0,sizeof *r);t=r;r->type=UINT32_MAX;r->label="";r->blabel="";r->vtext="";
-    for(int i=0;i<11;++i) { r->rects[i]=(void *)(uintptr_t)(0x3000+i*0x20); }
+    memset(r,0,sizeof *r);t=r;r->type=UINT32_MAX;r->label="";r->blabel="";r->vtext="";r->t3text="";r->t4text="";
+    for(int i=0;i<13;++i) { r->rects[i]=(void *)(uintptr_t)(0x3000+i*0x20); }
 }
 int main(void)
 {
@@ -130,7 +133,7 @@ int main(void)
     assert(r.trace[4].kind==R_IS && r.trace[4].off==0x104);
     assert(r.trace[12].kind==R_CTEXT && !strcmp(r.trace[12].text,""));
     /* Types other than the implemented set stay open, after the shared tail. */
-    reset(&r);o=ops();r.type=12;
+    reset(&r);o=ops();r.type=0x17;
     assert(oa_setting_row_render(&r,&o)==ENOTSUP && r.count==13);
     /* Type 0 with missing key2: prologue then out. */
     reset(&r);o=ops();r.type=0;r.rects[1]=NULL;
@@ -488,9 +491,71 @@ int main(void)
     assert(r.trace[10].kind==R_IS && r.trace[10].off==0x2b28);
     assert(r.trace[11].kind==R_CIMG && r.trace[11].off==0x2b28);
     assert(r.trace[12].kind==R_CIMG && r.trace[12].off==0x2c0c);
+    /* Type 0xc: text2 + text3 + text4 + the shared slidebar. Uncreated:
+     * text2 gets the formatted value; text3/text4 get the row UStrings, only
+     * text3 gets alignment 6, and its setText precedes the text4 names. The
+     * slider gets focus/create/value with no names at all. */
+    reset(&r);o=ops();r.type=0xc;r.sval=42;r.t3text="T3";r.t4text="T4";
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.count==47);
+    assert(r.trace[13].kind==R_GET && !strcmp(r.trace[13].text,"slidebar"));
+    assert(r.trace[14].kind==R_GET && !strcmp(r.trace[14].text,"text2"));
+    assert(r.trace[15].kind==R_GET && !strcmp(r.trace[15].text,"text3"));
+    assert(r.trace[16].kind==R_GET && !strcmp(r.trace[16].text,"text4"));
+    assert(r.trace[17].kind==R_IS && r.trace[17].off==0x1ca8);
+    assert(r.trace[18].kind==R_NAME && r.trace[18].a==1 && r.trace[18].b==0x1e8);
+    assert(r.trace[21].kind==R_NAME && r.trace[21].a==2 && r.trace[21].b==0x1eb);
+    assert(r.trace[22].kind==R_FOCUS && r.trace[22].a==0);
+    assert(r.trace[23].kind==R_ELIP && r.trace[23].a==0);
+    assert(r.trace[24].kind==R_CTBOX);
+    assert(r.trace[25].kind==R_TEXT && !strcmp(r.trace[25].text,"42"));
+    assert(r.trace[26].kind==R_IS && r.trace[26].off==0x1f68);
+    assert(r.trace[27].kind==R_NAME && r.trace[27].a==1 && r.trace[27].b==0x1e8);
+    assert(r.trace[31].kind==R_FOCUS && r.trace[31].a==0);
+    assert(r.trace[32].kind==R_ELIP && r.trace[32].a==0);
+    assert(r.trace[33].kind==R_ALIGN && r.trace[33].a==6);
+    assert(r.trace[34].kind==R_CTBOX);
+    assert(r.trace[35].kind==R_TEXT && !strcmp(r.trace[35].text,"T3"));
+    assert(r.trace[36].kind==R_NAME && r.trace[36].a==1 && r.trace[36].b==0x1e8);
+    assert(r.trace[40].kind==R_FOCUS && r.trace[40].a==0);
+    assert(r.trace[41].kind==R_CTBOX);
+    assert(r.trace[42].kind==R_TEXT && !strcmp(r.trace[42].text,"T4"));
+    assert(r.trace[43].kind==R_IS && r.trace[43].off==0x1498);
+    assert(r.trace[44].kind==R_SFOCUS && r.trace[44].a==0);
+    assert(r.trace[45].kind==R_CSLIDER);
+    assert(r.trace[46].kind==R_SVAL && r.trace[46].a==42);
+    /* Created: the tail and all three boxes refresh; text3/text4 share one
+     * point query and both setText calls come after both rects. */
+    reset(&r);o=ops();r.type=0xc;r.created=1;r.tb_created=1;r.sval=42;
+    r.t3text="T3";r.t4text="T4";
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[7].kind==R_GET && !strcmp(r.trace[7].text,"slidebar"));
+    assert(r.trace[11].kind==R_IS && r.trace[11].off==0x1ca8);
+    assert(r.trace[12].kind==R_RECT);
+    assert(r.trace[13].kind==R_TEXT && !strcmp(r.trace[13].text,"42"));
+    assert(r.trace[14].kind==R_IS && r.trace[14].off==0x1f68);
+    assert(r.trace[15].kind==R_RECT && r.trace[15].off==0x1f68);
+    assert(r.trace[16].kind==R_RECT && r.trace[16].off==0x2228);
+    assert(r.trace[17].kind==R_TEXT && !strcmp(r.trace[17].text,"T3"));
+    assert(r.trace[18].kind==R_TEXT && !strcmp(r.trace[18].text,"T4"));
+    assert(r.trace[19].kind==R_IS && r.trace[19].off==0x1498);
+    assert(r.trace[20].kind==R_RECT);
+    assert(r.trace[21].kind==R_SRANGE);
+    assert(r.trace[22].kind==R_SVAL);
+    /* Independent states: a row-created tail/slider with uncreated text3/
+     * text4 still takes the textbox create block (they are separate flags). */
+    reset(&r);o=ops();r.type=0xc;r.created=1;r.tb_created=0;r.sval=42;
+    r.t3text="T3";r.t4text="T4";
+    assert(!oa_setting_row_render(&r,&o));
+    assert(r.trace[14].kind==R_IS && r.trace[14].off==0x1f68);
+    assert(r.trace[15].kind==R_NAME && r.trace[15].a==1 && r.trace[15].b==0x1e8);
+    assert(r.trace[21].kind==R_ALIGN && r.trace[21].a==6);
+    assert(r.trace[22].kind==R_CTBOX);
+    assert(r.trace[23].kind==R_TEXT && !strcmp(r.trace[23].text,"T3"));
+    assert(r.trace[30].kind==R_TEXT && !strcmp(r.trace[30].text,"T4"));
     /* Invalid ops/args change nothing. */
     o=ops();o.set_name=NULL;
-    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==17);
+    assert(oa_setting_row_render(&r,&o)==EINVAL && r.count==35);
     assert(oa_setting_row_render(NULL,&o)==EINVAL);
     assert(oa_setting_row_render(&r,NULL)==EINVAL);
     puts("ok settings row render: 0/1/4 paths, shared tail, gates and open types");

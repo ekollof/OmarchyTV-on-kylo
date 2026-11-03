@@ -25,14 +25,16 @@ static const char *key_for(int which)
     case 7:return "image2";
     case 8:return "banner";
     case 9:return "slidebar";
-    default:return "text2";
+    case 10:return "text2";
+    case 11:return "text3";
+    default:return "text4";
     }
 }
 static int ready(const struct oa_setting_row_render_ops *o)
 {
     if(!o || !o->base_render || !o->container_of || !o->get_rect || !o->rect_words ||
         !o->row_type || !o->row_word || !o->row_flag || !o->row_label ||
-        !o->row_button_label || !o->row_value_text || !o->child_at || !o->is_created || !o->set_name ||
+        !o->row_button_label || !o->row_value_text || !o->row_ustring || !o->child_at || !o->is_created || !o->set_name ||
         !o->set_focus || !o->set_elipses || !o->set_font || !o->get_point ||
         !o->set_rect || !o->set_text || !o->create_text ||
         !o->create_button || !o->set_text_alignment || !o->set_checked ||
@@ -511,6 +513,87 @@ static int case_0xb(void *row,const struct oa_setting_row_render_ops *o,void *bo
     }
     return 0;
 }
+/* Case 0xc: text2/text3/text4 plus the shared slidebar. text2 drives the
+ * row+0x1ca8 box with the formatted row[0x2df8] value; text3 and text4 (both
+ * rectangles required) drive row+0x1f68 and row+0x2228 from the row UStrings
+ * at 0x2e2c/0x2e34, with text alignment 6 applied only to the 0x1f68 box.
+ * Only the 0x1f68 child's isCreated is consulted, so a created 0x1f68 with an
+ * uncreated 0x2228 still takes the refresh path (firmware quirk reproduced).
+ * The slidebar then refreshes (rect + range + value) or, uncreated, does
+ * setFocus(0) + create + value WITHOUT setting names. */
+static int case_0xc(void *row,const struct oa_setting_row_render_ops *o,void *box)
+{
+    void *sb=o->get_rect(box,key_for(9));
+    void *t2=o->get_rect(box,key_for(10));
+    void *t3=o->get_rect(box,key_for(11));
+    void *t4=o->get_rect(box,key_for(12));
+    if(t2) {
+        void *tb=o->child_at(row,UINT32_C(0x1ca8));int created=o->is_created(tb);
+        uint32_t base[4];o->rect_words(t2,base);
+        if(created) {
+            uint32_t moved[4];int32_t pt[2];
+            o->get_point(row,pt);rect_math(moved,base,pt);
+            o->set_rect(tb,moved);
+        } else {
+            o->set_name(tb,UINT32_C(1),UINT32_C(0x1e8));
+            o->set_name(tb,(uint32_t)created,UINT32_C(0x1e9));
+            o->set_name(tb,UINT32_C(3),UINT32_C(0x1ea));
+            o->set_name(tb,UINT32_C(2),UINT32_C(0x1eb));
+            o->set_focus(tb,0);o->set_elipses(tb,0);
+            o->create_textbox(tb,0,"",base,UINT32_C(1),row);
+        }
+        { char text[16];int32_t v=(int32_t)o->row_word(row,UINT32_C(0x2df8));
+          snprintf(text,sizeof text,"%d",(int)v);o->set_text(tb,text); }
+    }
+    if(t3 && t4) {
+        void *b2=o->child_at(row,UINT32_C(0x1f68)),*b3=o->child_at(row,UINT32_C(0x2228));
+        int created=o->is_created(b2);
+        uint32_t w3[4],w4[4];
+        o->rect_words(t3,w3);o->rect_words(t4,w4);
+        if(created) {
+            uint32_t m1[4],m2[4];int32_t pt[2];
+            o->get_point(row,pt);
+            rect_math(m1,w3,pt);o->set_rect(b2,m1);
+            rect_math(m2,w4,pt);o->set_rect(b3,m2);
+            o->set_text(b2,o->row_ustring(row,UINT32_C(0x2e2c)));
+            o->set_text(b3,o->row_ustring(row,UINT32_C(0x2e34)));
+        } else {
+            o->set_name(b2,UINT32_C(1),UINT32_C(0x1e8));
+            o->set_name(b2,(uint32_t)created,UINT32_C(0x1e9));
+            o->set_name(b2,UINT32_C(3),UINT32_C(0x1ea));
+            o->set_name(b2,UINT32_C(2),UINT32_C(0x1eb));
+            o->set_focus(b2,0);o->set_elipses(b2,0);
+            o->set_text_alignment(b2,UINT32_C(6));
+            o->create_textbox(b2,0,"",w3,UINT32_C(1),row);
+            o->set_text(b2,o->row_ustring(row,UINT32_C(0x2e2c)));
+            o->set_name(b3,UINT32_C(1),UINT32_C(0x1e8));
+            o->set_name(b3,(uint32_t)created,UINT32_C(0x1e9));
+            o->set_name(b3,UINT32_C(3),UINT32_C(0x1ea));
+            o->set_name(b3,UINT32_C(2),UINT32_C(0x1eb));
+            o->set_focus(b3,0);
+            o->create_textbox(b3,0,"",w4,UINT32_C(1),row);
+            o->set_text(b3,o->row_ustring(row,UINT32_C(0x2e34)));
+        }
+    }
+    if(!sb)return 0;
+    {
+        void *sl=o->child_at(row,UINT32_C(0x1498));int created=o->is_created(sl);
+        uint32_t base[4];o->rect_words(sb,base);
+        if(created) {
+            uint32_t moved[4];int32_t pt[2];
+            o->get_point(row,pt);rect_math(moved,base,pt);
+            o->set_rect(sl,moved);
+            o->set_slider_range(sl,(int32_t)o->row_word(row,UINT32_C(0x2df0)),
+                (int32_t)o->row_word(row,UINT32_C(0x2df4)));
+        } else {
+            o->set_slider_focus(sl,0);
+            o->create_slider(sl,0,(int32_t)o->row_word(row,UINT32_C(0x2df0)),
+                (int32_t)o->row_word(row,UINT32_C(0x2df4)),base,row);
+        }
+        o->set_slider_value(sl,(int32_t)o->row_word(row,UINT32_C(0x2df8)));
+    }
+    return 0;
+}
 static int case_0x1a(void *row,const struct oa_setting_row_render_ops *o,void *box)
 {
     void *r=o->get_rect(box,key_for(3)),*button;int created;uint32_t base[4];
@@ -657,6 +740,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
             case_btn8(row,o,box);
             return 0;
         }
+        if(type==UINT32_C(0xc)) {
+            case_0xc(row,o,box);
+            return 0;
+        }
         if(type==UINT32_C(0xb)) {
             case_0xb(row,o,box);
             return 0;
@@ -723,6 +810,10 @@ int oa_setting_row_render(void *row,const struct oa_setting_row_render_ops *o)
         }
         if(type==UINT32_C(8)) {
             case_btn8(row,o,box);
+            return 0;
+        }
+        if(type==UINT32_C(0xc)) {
+            case_0xc(row,o,box);
             return 0;
         }
         if(type==UINT32_C(0xb)) {

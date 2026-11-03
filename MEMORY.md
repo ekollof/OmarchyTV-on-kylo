@@ -6,6 +6,21 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SETTINGS-ROW-C-2026-11-03: renderItems type0xc (text2/text3/text4+slider)
+passes312224 native/C comparisons (four own literals, alignment6 on0x1f68
+only, row UStrings0x2e2c/0x2e34, nameless uncreated slider) plus full strict
+host, focused ASan/UBSan, ARM/qemu, all prior groups and focused real-TV CPU.
+The sweep now covers the full 13-key presence mask plus separate image
+(0xb) and textbox (0xc) state passes; the callee audit caught the missing
+SVGTextBox::setTextAlignment trampoline. Build-tv-v3/settings-row-render
+unit173688/581135cfd4492a0dacf8aac5bd2ec1bd; reference1133784/
+40ba362932bf993d0d87e06c1d0440fc. TV already awake, no-reset flag kept,
+staging size/hash separately verified, test exit0, staging removed and no
+helper in /proc/*/exe. No screen/input/device/settings/network/service/boot/
+persistent change. No pending job/helper. Cases0x11..0x15,0x17..0x19, row
+construction, child visibility internals, live resources, scrollbar/skin/
+module/display/startup/visible acceptance remain open.
+
 SETTINGS-ROW-B-2026-11-03: renderItems type0xb (slider bar+image1/image2)
 passes74604 native/C comparisons (both-rect gating, image-state fork with
 plain setWindowRect refresh or0x2e4c/0x2e50 create, mixed-state image1

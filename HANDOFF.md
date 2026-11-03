@@ -24,7 +24,21 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-B](artifacts/reports/SETTINGS-ROW-B-2026-11-03.md)
+Latest: [SETTINGS-ROW-C](artifacts/reports/SETTINGS-ROW-C-2026-11-03.md)
+implements renderItems type 0xc, the text2/text3/text4 row with the shared
+slide bar: four own key literals, the formatted value for text2, row UStrings
+0x2e2c/0x2e34 for text3/text4 with alignment 6 and setElipses only on the
+0x1f68 box, and a nameless uncreated slider tail at 0xd55872. 312224 shipped
+ARM/C cases and prior groups pass under the full 13-key presence mask plus
+separate image/textbox state passes, plus full host/Unix IPC, focused
+ASan/UBSan, ARM/qemu and focused real TV CPU. The callee audit caught the
+missing SVGTextBox::setTextAlignment trampoline. No screen/input/device/
+settings/network/service/boot/persistent change; staging removed, no helper.
+Next implement cases 0x11..0x15 and 0x17..0x19, then getImageId's real mapping
+and image internals, then row construction/visibility/live resources, then
+scrollbar/skin/module/display/startup/independent visible parity.
+
+Previous: [SETTINGS-ROW-B](artifacts/reports/SETTINGS-ROW-B-2026-11-03.md)
 implements renderItems type 0xb, the slider bar with image1/image2: three
 lookups, both-image-rect gating, a fork on each image's own created state
 (plain no-offset setWindowRect refresh, or create from

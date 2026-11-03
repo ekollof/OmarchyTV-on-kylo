@@ -341,7 +341,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       Both-rect gating, the image-state fork, the mixed-state image1
       re-create quirk and the slider name/range/value tail are asserted; the
       harness separates the image children's created state.
-- [ ] Implement SettingItemsListBoxRow::renderItems type 0xc.
+- [x] Implement SettingItemsListBoxRow::renderItems type 0xc (text2/text3/
+      text4 + slider):312224 native/C comparisons and prior groups pass; full
+      host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
+      SETTINGS-ROW-C. Four own literal redirects, alignment 6 on the 0x1f68 box
+      only, both row UStrings, and the nameless uncreated slider are asserted;
+      the new SVGTextBox::setTextAlignment trampoline was added after the
+      callee audit. Cases0x11..0x15,0x17..0x19, row construction, child
+      visibility internals, live resources, scrollbar/skin/module/display/
+      startup/independent visible acceptance remain open.
+- [ ] Implement SettingItemsListBoxRow::renderItems types 0x11..0x15 and
+      0x17..0x19.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

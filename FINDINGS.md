@@ -6,6 +6,18 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SETTINGS-ROW-C implements renderItems type 0xc: four lookups
+(slidebar/text2/text3/text4) through its own literals; text2 drives row+0x1ca8
+with the formatted row[0x2df8] value; text3+text4 (both rects required) drive
+row+0x1f68 and row+0x2228 from row UStrings 0x2e2c/0x2e34, with alignment 6
+and setElipses only on 0x1f68; the shared row+0x1498 slider, when uncreated,
+does setFocus(0)+create+value with NO name writes (0xd55872). 312224 native/C
+cases pass under the full 13-key presence mask and separate image/textbox
+state passes. The callee audit caught SVGTextBox::setTextAlignment
+(0x10c72a8) having no trampoline. Cases 0x11..0x15, 0x17..0x19, construction,
+child-visibility internals, live resources, scrollbar/skin/visible gates
+remain open.
+
 SETTINGS-ROW-B implements renderItems type 0xb: "slidebar" then its own
 "image1"/"image2" literals; the image block requires BOTH rectangles and
 forks on each image's own isCreated, refreshing with plain setWindowRect (no

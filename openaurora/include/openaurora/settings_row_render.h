@@ -36,6 +36,7 @@ struct oa_setting_row_render_ops {
     const char *(*row_label)(void *row);
     const char *(*row_button_label)(void *row);
     const char *(*row_value_text)(void *row);
+    const char *(*row_ustring)(void *row,uint32_t offset);
     void *(*child_at)(void *row,uint32_t offset);
     int (*is_created)(void *child);
     void (*set_name)(void *child,uint32_t slot,uint32_t id);
