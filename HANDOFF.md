@@ -22,6 +22,29 @@ strict host, ASan/UBSan and ARM/qemu. That core is not deployed.
 OWNER-WORKER-2026-11-01 adds offline CEC and audio workers. They accept injected
 I/O only. mod_cec does not open hardware.
 
+## Goal paused — 2026-11-04
+
+The owner paused the goal after the SVGImage create/destroy slice. Work stopped
+at a clean, fully verified state; nothing is running and no TV helper, staging
+file or background job remains.
+
+- Last commit: `15e8de8` (Implement SVGImage::create/destroy orchestration),
+  pushed to `git@github.com:ekollof/OmarchyTV-on-kylo.git`, working tree clean.
+- Verified at that commit: strict host units, focused ASan/UBSan, ARM/qemu
+  units, `node artifacts/analysis/tab-navigation-2026-11-03/verify.cjs`
+  (35 ok lines, exit 0) and `make -C openaurora check` (exit 0).
+- Focused TV run: `tests/svg_image` ARM unit, exit 0, staged hash
+  `72cffb9a41550743f01580a9e804558e`, staging removed, no helper in
+  `/proc/*/exe`, `/conf/coredumpnoreset` intact. The TV is in stock operation.
+- Evidence: `artifacts/analysis/svg-image-2026-11-03/` and
+  `artifacts/reports/SVG-IMAGE-2026-11-03.md`.
+
+Resume from the "Immediate continuation point" below. The next slice is
+`SVGImage::imageCreate` (0x10c9430); the larger remaining gates are
+`convertOperationIdToIDM`, row construction, child visibility internals/live
+resources, scrollbar/skin, then display/scanout binding and independent
+startup for visible parity. None of those is started.
+
 ## Immediate continuation point
 
 Latest: [SVG-IMAGE](artifacts/reports/SVG-IMAGE-2026-11-03.md) implements

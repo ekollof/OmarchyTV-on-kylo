@@ -6,6 +6,16 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+GOAL-PAUSED-2026-11-04: owner paused the goal after commit15e8de8
+(SVGImage::create/destroy orchestration), pushed, working tree clean. At that
+commit strict host/ASan/UBSan/ARM-qemu, verify.cjs (35 ok lines) and full make
+check pass; focused TV run of the svg_image ARM unit exited0 with staging
+hash-verified and removed, no helper, no-reset flag intact. Nothing is running,
+no pending job/helper/staging. Resume at imageCreate0x10c9430, then
+convertOperationIdToIDM, row construction, child visibility internals/live
+resources, scrollbar/skin, display/scanout and independent startup. No
+screen/input/device/settings/network/service/boot/persistent change.
+
 SVG-IMAGE-2026-11-03: SVGImage::create/destroy orchestration implemented in
 common/svg_image.c and verified by18 native/C cases. create0x10c9638:
 UIWindow::setId, SVGContext::getImageSupplier, supplier vtable slot2 resource
