@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-tab-policy-sanitize/tests/svg_list_input tests/svg_list_input.c common/svg_list_input.c
+ok SVG list input: routing precedence/aliases, message operands, no implicit fallback and raw typed row values
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

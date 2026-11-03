@@ -1,5 +1,9 @@
 # Settings list dispatch, row delivery and writeback — 2026-11-03
 
+Subsequent [SVG-LIST-INPUT](SVG-LIST-INPUT-2026-11-03.md) implements the three
+lower routing/value-dispatch methods called unimplemented in this report's
+dated next steps. Actual lower actions/getters/editing/backend/UI remain open.
+
 `common/settings_list_input.c` implements SettingItemsListBox's concrete map
 and Right/Left and Digit bodies. Lower SVG-list navigation, typed row editing/
 values, parent refresh and the owned display/runtime consumer remain open.

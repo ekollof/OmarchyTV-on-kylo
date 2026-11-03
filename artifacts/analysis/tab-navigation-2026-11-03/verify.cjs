@@ -33,3 +33,5 @@ assert.match(result.stdout, /settings input: 86400 cases, five bodies/);
 assert.match(result.stdout, /settings navigation: 101384 cases, active-ID wrap\/jumps/);
 assert.match(result.stdout, /settings list map: 65600 type\/id\/result cases/);
 assert.match(result.stdout, /settings list input: 138240 cases, row-presence truth/);
+assert.match(result.stdout, /SVG list input: 999216 key cases, 49344 message joins/);
+assert.match(result.stdout, /row values: 68640 type\/raw-value cases/);

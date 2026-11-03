@@ -6,6 +6,17 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+SVG-LIST-INPUT-2026-11-03: SVG key/message and typed row-value callback routing
+pass999216 native key cases,49344 message joins and68640 type/raw-value cases,
+full strict host, focused ASan/UBSan, ARM unit and all previous reference groups.
+ARM unit26824/9c01c0509bbedcf847a4ab550d2f3fc5; reference387540/
+3277a450de22e3949b2f19e1df75eee5, build-tv-v3/tab-policy. Full-width widget
+aliases/priority/original operands and separate raw row sources are preserved.
+No new module/service/UI consumer. Lower movement/select/page, primitive getters/
+editing, parent refresh, owned backend/context and visible acceptance stay open.
+No TV access/wake/staging/deployment or hardware mutation; no pending job/helper.
+Owner requested stopping after this item and its handoff/commit/push.
+
 SETTINGS-LIST-2026-11-03: list map/Right-Left/Digit callbacks pass65600 shipped
 map/matcher and138240 native method cases, full strict host, focused ASan/UBSan,
 ARM unit and all prior groups. ARM unit30512/175c832887165a55aa210d4e0dc33742;

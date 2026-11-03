@@ -6,14 +6,23 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+SVG list input: SVG-LIST-INPUT implements key/message/typed-value routing;
+999216 shipped key cases,49344 message joins and68640 row-value cases pass.
+Select/layout movement precedes page-down, page-up, then first/last; full-width
+aliases can collide. Only first/last/window take the original message. A false
+key result doesn't retry Window. Row type chooses selection ID/numeric/check
+getter or raw+2df8/+2dfc cache; unknown full-width types return0 without a getter.
+Lower action bodies/primitive editing/getters/backend/visible gates remain open.
+
 Settings list: SETTINGS-LIST implements map and Right/Left/Digit bodies;65600
 native map/matcher and138240 body cases pass. Select20e routes Right/Left. Digit
 returns row presence independently of child result. Vertical writeback captures
 row, dispatches key, resolves the record selected afterward, reads original-row
 value and stores it in that record. Pin both lifetimes. Horizontal mirror swaps
 fresh Left/Right events; don't reuse the parent's Up/Down conversion. Missing-
-record guard isn't native bad-tree parity. Typed rows/lower SVG/backend/visible
-gates stay open; next source is settings-list-2026-11-03/lower-list.txt.
+record guard isn't native bad-tree parity. SVG-LIST-INPUT later adds the saved
+lower routing/value dispatch; actual lower actions/getters/editing/backend/
+visible gates remain open.
 
 Settings navigation: SETTINGS-NAVIGATION implements d56a24;101384 native ARM
 logical-write/action/state matches plus strict host/sanitizer/ARM and prior

@@ -24,14 +24,29 @@ I/O only. mod_cec does not open hardware.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-LIST](artifacts/reports/SETTINGS-LIST-2026-11-03.md) adds the
+Latest: [SVG-LIST-INPUT](artifacts/reports/SVG-LIST-INPUT-2026-11-03.md) finishes
+SVGListBoxBase key/message routing and typed row-value dispatch.999216 native
+key cases,49344 message joins and68640 row-value cases pass, with full strict
+host/focused sanitizer/ARM and every prior group. Preserve Select/layout/page-
+down/page-up/first-last priority, full-width widget aliases and original-message
+operands only for first/last/window. Unhandled key never retries Window. Typed
+row values distinguish selection IDs/numeric/check getters from two raw caches.
+No new service/module/UI consumer, TV access/wake/deployment or pending job.
+Hashes in MEMORY/report; source reused from settings-list-2026-11-03/lower-list.txt.
+Owner requested finish, handoff, commit/push and stop; await owner resume before
+further implementation. Next recover the lower move/select/page/first-last
+bodies called by that router, then primitive row getters/editing/parent refresh
+and owned backend/context/consumer with permission/modal/focus/lifetime/visible
+gates. Callback routing is not actual widget/rendering acceptance.
+
+Previous: [SETTINGS-LIST](artifacts/reports/SETTINGS-LIST-2026-11-03.md) adds the
 SettingItemsListBox map and Right/Left/Digit bodies.65600 shipped map/matcher
 and138240 native body cases pass, plus full host/focused sanitizer/ARM and prior
 groups. Digit returns row presence, not child result; Select routes Right/Left.
 Vertical writeback reads original-row value into the record selected AFTER key
 delivery; both handles need lifetime pinning. Horizontal mirror swaps fresh
 Left/Right events, unlike the parent's Up/Down translation. Missing-record
-safety is explicit, outside native valid-tree acceptance. Next implement three
+safety is explicit, outside native valid-tree acceptance. SVG-LIST-INPUT later implements three
 lower methods saved in analysis/settings-list-2026-11-03/lower-list.txt: typed
 row getSelectedItemValue, SVGListBoxBase key routing and its message map. Lower
 move/select/page methods still need investigation. Then owned backend/context/

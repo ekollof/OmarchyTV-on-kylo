@@ -1,0 +1,1 @@
+ok SVG list input: routing precedence/aliases, message operands, no implicit fallback and raw typed row values

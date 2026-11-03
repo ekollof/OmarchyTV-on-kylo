@@ -13,6 +13,7 @@
 #include "settings_input_fixture.h"
 #include "settings_navigation_fixture.h"
 #include "settings_list_fixture.h"
+#include "openaurora/svg_list_input.h"
 #include <assert.h>
 #include <elf.h>
 #include <errno.h>
@@ -1057,6 +1058,114 @@ static void check_settings_list_input(const unsigned char *elf,size_t bytes)
     native_sl=NULL;for(unsigned i=0;i<7;++i)assert(!munmap(pages[i],lengths[i]));
     printf("ok offline shipped ARM settings list input: %u cases, row-presence truth, original-row/new-record stores and mirrored identity match\n",compared);
 }
+struct svg_fixture {uint32_t fields[3],result;unsigned count;enum oa_svg_list_action action;const void *message;};
+static struct svg_fixture *native_svg;
+static uint32_t svg_query(void *p,enum oa_svg_list_query query) { return ((struct svg_fixture *)p)->fields[query]; }
+static uint32_t svg_run(void *p,enum oa_svg_list_action action,const void *message)
+{ struct svg_fixture *f=p;f->action=action;f->message=message;++f->count;return f->result; }
+#define SVG_ACT(name,action) static unsigned name(void *p) { (void)p;return svg_run(native_svg,action,NULL); }
+#define SVG_MSG(name,action) static unsigned name(void *p,int32_t message) \
+{ (void)p;return svg_run(native_svg,action,(const void *)(uintptr_t)(uint32_t)message); }
+SVG_ACT(svg_select,OA_SVG_LIST_SELECT)
+SVG_ACT(svg_down,OA_SVG_LIST_DOWN)
+SVG_ACT(svg_up,OA_SVG_LIST_UP)
+SVG_ACT(svg_page_down,OA_SVG_LIST_PAGE_DOWN)
+SVG_ACT(svg_page_up,OA_SVG_LIST_PAGE_UP)
+SVG_MSG(svg_first,OA_SVG_LIST_FIRST)
+SVG_MSG(svg_last,OA_SVG_LIST_LAST)
+SVG_MSG(svg_window,OA_SVG_LIST_WINDOW)
+#undef SVG_ACT
+#undef SVG_MSG
+static unsigned svg_key(void *p) { return ((struct dispatch_message *)p)->id; }
+static void compare_svg(leaf_handler native,struct svg_fixture initial,struct dispatch_message *message,void *object,int outer)
+{
+    struct svg_fixture vendor=initial,ours=initial;native_svg=&vendor;
+    unsigned expected=native(object,message);
+    struct oa_svg_list_ops ops={&ours,svg_query,svg_run,message};int handled=-1;
+    assert(!(outer?oa_svg_list_handle(&ops,message->type,message->id,&handled):oa_svg_list_key(&ops,message->id,&handled)));
+    if(handled!=(expected!=0) || vendor.count!=ours.count || (ours.count && (vendor.action!=ours.action || vendor.message!=ours.message))) {
+        fprintf(stderr,"SVG mismatch outer=%d type=%x key=%x horizontal=%u down=%x up=%x result=%x native=%x handled=%d count=%u/%u action=%u/%u\n",
+                outer,message->type,message->id,initial.fields[0],initial.fields[1],initial.fields[2],initial.result,expected,handled,vendor.count,ours.count,(unsigned)vendor.action,(unsigned)ours.action);exit(1);
+    }
+}
+static void check_svg_input(const unsigned char *elf,size_t bytes)
+{
+    const uint32_t bases[]={0x10bc000,0x1148000,0x1152000};const size_t lengths[]={8192,4096,4096};unsigned char *pages[3];
+    for(unsigned i=0;i<3;++i)pages[i]=page(bases[i],lengths[i]);
+    const struct {uint32_t address,length,crc,literal;} fragments[]={
+        {0x10bcf4c,276,UINT32_C(0x5d13e755),0x10bd05c},
+        {0x10bd060,84,UINT32_C(0xb2f5e4c8),0x10bd0b0}
+    };
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;leaf_handler native[2];
+    for(unsigned i=0;i<2;++i) {
+        size_t off=file_offset(elf,bytes,fragments[i].address,fragments[i].length);
+        assert(crc32(elf+off,fragments[i].length)==fragments[i].crc);
+        memcpy(pages[0]+fragments[i].address-bases[0],elf+off,fragments[i].length);
+        memcpy(pages[0]+fragments[i].literal-bases[0],&pointer,4);uint32_t entry=fragments[i].address|1;memcpy(&native[i],&entry,4);
+    }
+    thumb_stub(pages[0],bases[0],0x10bcbe4,svg_select);thumb_stub(pages[0],bases[0],0x10bc9f8,svg_down);
+    thumb_stub(pages[0],bases[0],0x10bc964,svg_up);thumb_stub(pages[0],bases[0],0x10bcb40,svg_page_down);
+    thumb_stub(pages[0],bases[0],0x10bcaa8,svg_page_up);predicate_stub(pages[0],bases[0],0x10bce98,svg_first);
+    predicate_stub(pages[0],bases[0],0x10bcef4,svg_last);thumb_stub(pages[1],bases[1],0x11489e0,svg_key);
+    predicate_stub(pages[2],bases[2],0x1152f34,svg_window);
+    for(unsigned i=0;i<3;++i)executable(pages[i],lengths[i]);
+    uint32_t vtable[4]={0,0,bits(dispatch_type),bits(dispatch_id)};
+    struct dispatch_message message={(uint32_t)(uintptr_t)vtable,0x1004,0};
+    _Alignas(uint32_t) unsigned char object[0x22c]={0};
+    const uint32_t horizontal[]={0,1,255},aliases[]={0,0x20e,0x20a,0x20b,0x20c,0x20d,0x2db,0x2dc,UINT32_MAX};
+    const uint32_t results[]={0,1,255,UINT32_MAX},extra[]={0x1020e,INT32_MAX,0x80000000,UINT32_MAX};unsigned keys=0,messages=0;
+    for(unsigned h=0;h<3;++h)for(unsigned d=0;d<9;++d)for(unsigned u=0;u<9;++u)for(unsigned r=0;r<4;++r)for(unsigned k=0;k<1028;++k) {
+        struct svg_fixture initial={.fields={horizontal[h],aliases[d],aliases[u]},.result=results[r]};
+        object[0xe8]=(uint8_t)horizontal[h];memcpy(object+0x228,&aliases[d],4);memcpy(object+0x224,&aliases[u],4);
+        message.id=k<1024?k:extra[k-1024];compare_svg(native[0],initial,&message,object,0);++keys;
+    }
+    const uint32_t types[]={0,0x1004,0x11004,UINT32_MAX};
+    uint32_t down=0x2dc,up=0x2db;memcpy(object+0x228,&down,4);memcpy(object+0x224,&up,4);
+    for(unsigned h=0;h<3;++h)for(unsigned t=0;t<4;++t)for(unsigned r=0;r<4;++r)for(unsigned k=0;k<1028;++k) {
+        struct svg_fixture initial={.fields={horizontal[h],down,up},.result=results[r]};
+        object[0xe8]=(uint8_t)horizontal[h];message.type=types[t];message.id=k<1024?k:extra[k-1024];
+        compare_svg(native[1],initial,&message,object,1);++messages;
+    }
+    native_svg=NULL;for(unsigned i=0;i<3;++i)assert(!munmap(pages[i],lengths[i]));
+    printf("ok offline shipped ARM SVG list input: %u key cases, %u message joins, alias precedence/operands and handled truth match\n",keys,messages);
+}
+struct row_value_fixture {uint32_t values[5];unsigned calls;enum oa_settings_row_query query;};
+static struct row_value_fixture *native_row_value;
+static _Alignas(uint32_t) unsigned char value_row[0x2e00];
+static uint32_t row_value_query(void *p,enum oa_settings_row_query query)
+{ struct row_value_fixture *f=p;f->query=query;++f->calls;return f->values[query]; }
+static unsigned row_selection(void *p)
+{ assert(p==value_row+0x1014);return row_value_query(native_row_value,OA_ROW_SELECTION_ID); }
+static unsigned row_numeric(void *p)
+{ assert(p==value_row+0x18d8);return row_value_query(native_row_value,OA_ROW_NUMERIC); }
+static unsigned row_checked(void *p)
+{ assert(p==value_row+0x27a8);return row_value_query(native_row_value,OA_ROW_CHECKED); }
+static void check_row_values(const unsigned char *elf,size_t bytes)
+{
+    const uint32_t bases[]={0xd53000,0x10b4000,0x10b7000,0x10b1000};unsigned char *pages[4];
+    for(unsigned i=0;i<4;++i)pages[i]=page(bases[i],4096);
+    size_t off=file_offset(elf,bytes,0xd53494,144);assert(crc32(elf+off,144)==UINT32_C(0xe82eb084));memcpy(pages[0]+0x494,elf+off,144);
+    uint32_t pointer=(uint32_t)(uintptr_t)&guard;memcpy(pages[0]+0x520,&pointer,4);
+    thumb_stub(pages[1],bases[1],0x10b41b0,row_selection);thumb_stub(pages[2],bases[2],0x10b701c,row_numeric);thumb_stub(pages[3],bases[3],0x10b1298,row_checked);
+    for(unsigned i=0;i<4;++i)executable(pages[i],4096);
+    getter native;pointer=0xd53495;memcpy(&native,&pointer,4);
+    const uint32_t types[]={0x10002,INT32_MAX,0x80000000,UINT32_MAX};
+    const uint32_t edge[]={0,1,255,0x100,INT32_MAX,0x80000000,0xffffff00,UINT32_MAX};unsigned compared=0;
+    for(unsigned t=0;t<260;++t)for(unsigned raw=0;raw<264;++raw) {
+        uint32_t type=t<256?t:types[t-256],seed=raw<256?raw:edge[raw-256];struct row_value_fixture vendor={0},ours;
+        for(unsigned i=0;i<5;++i)vendor.values[i]=seed^((i+UINT32_C(1))*UINT32_C(0x11111111));
+        ours=vendor;
+        memcpy(value_row+0x2dec,&type,4);memcpy(value_row+0x2df8,&vendor.values[OA_ROW_CACHE_PRIMARY],4);memcpy(value_row+0x2dfc,&vendor.values[OA_ROW_CACHE_SECONDARY],4);
+        native_row_value=&vendor;uint32_t expected=native(value_row),value=42;
+        struct oa_settings_row_ops ops={&ours,row_value_query};assert(!oa_settings_row_value(&ops,type,&value));
+        assert(value==expected && vendor.calls<=1 && ours.calls<=1);
+        if(vendor.calls)assert(ours.calls==1 && vendor.query==ours.query);
+        else if(ours.calls)assert(ours.query==OA_ROW_CACHE_PRIMARY || ours.query==OA_ROW_CACHE_SECONDARY);
+        ++compared;
+    }
+    native_row_value=NULL;for(unsigned i=0;i<4;++i)assert(!munmap(pages[i],4096));
+    printf("ok offline shipped ARM row values: %u type/raw-value cases, widget getter selection, cache offsets and raw32 bits match\n",compared);
+}
 int main(int argc,char **argv)
 {
     assert(argc==3 && sysconf(_SC_PAGESIZE)==4096);
@@ -1105,7 +1214,8 @@ int main(int argc,char **argv)
     assert(!munmap(code,8192) && !munmap(media_page,4096) && !munmap(app_page,4096));
     check_tab_events(elf,bytes);check_prehandle(elf,bytes);check_dispatch(elf,bytes);check_leaf(elf,bytes);
     check_settings_map(elf,bytes);check_settings_input(elf,bytes);check_navigation(elf,bytes);
-    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);free(elf);assert(!munmap(fail_page,4096));
+    check_settings_list_map(elf,bytes);check_settings_list_input(elf,bytes);check_svg_input(elf,bytes);check_row_values(elf,bytes);
+    free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
 }

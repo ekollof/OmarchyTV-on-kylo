@@ -321,10 +321,16 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Implement SVGListBoxBase key/message routers and typed row-value dispatch;
+      999216 native key cases,49344 message joins and68640 row-value cases plus
+      full host/focused sanitizer/ARM and prior groups pass. SVG-LIST-INPUT.
+      Actual lower actions/getters/editing/parent refresh, owned backend/context/
+      consumer and independent native visible acceptance remain open.
 - [x] Implement SettingItemsListBox map/Right-Left/Digit callback bodies;
       65600 shipped map/matcher and138240 native body cases plus full host,
-      focused sanitizer/ARM and prior groups pass. SETTINGS-LIST. Typed rows/
-      lower SVG/parent refresh, owned backend/context/consumer and independent
+      focused sanitizer/ARM and prior groups pass. SETTINGS-LIST. SVG-LIST-INPUT
+      later adds lower routing/value dispatch; actual lower actions/getters/
+      editing/parent refresh, owned backend/context/consumer and independent
       native visible acceptance remain open.
 - [x] Implement navigateInList active-ID cursor and signed viewport algorithm
       via owned callbacks.101384 shipped ARM state/action matches, full host,

@@ -120,6 +120,14 @@ and mirrored events are fresh. Typed rows/lower SVG/parent refresh, owned backen
 context/consumer and native visible acceptance remain pending. No real event/
 widget/UI ownership is implied.
 
+`common/svg_list_input.c` supplies qualified SVG list key/message routing and
+typed row-value dispatch. SVG-LIST-INPUT records999216 native key cases,49344
+message joins and68640 row-value cases. Full-width per-widget page aliases and
+priority stay explicit; first/last/window preserve original event operands.
+Row values distinguish widget IDs/numeric/check getters from two raw caches.
+Actual movement/select/page, primitive getters/editing/parent refresh, owned
+backend/context/consumer and native visible acceptance remain pending.
+
 `common/scene_gles.c` is a lower synchronous owner, used by the separate native
 renderer and opt-in diagnostics. EGL-SCENE establishes its pbuffer/pixel lifecycle;
 EGL-WINDOW establishes direct display1 presentation with the retained4-byte
