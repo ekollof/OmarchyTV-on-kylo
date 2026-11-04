@@ -1,0 +1,2 @@
+192.168.178.87 reachable (tvssh; WoL if asleep)
+/conf/coredumpnoreset present (rc=0)

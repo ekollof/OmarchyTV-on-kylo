@@ -429,8 +429,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       12/9 dumped+live, offline capture and a visible TV capture with
       snapshot_match restore. UI-LIVE-CARDS. Rail still static; no visible
       live-DB capture (the live rows were rendered in the recorder test).
-- [ ] Scrollbar/skin; display/scanout binding; independent startup; live
-      refresh on launcher.db changes; real downloaded-PNG decoding.
+- [x] SVGScrollBar state/geometry: setScrollPosition0x10c4138 and
+      calculateBarSizeAndPosition0x10c3af0;3120 native/C cases plus host/ASan/
+      ARM-qemu/TV CPU and verify.cjs40 ok. SVG-SCROLLBAR. The apps-grid
+      scrollbar track is1750,180,8x720; the home portal has no scrollbar.
+- [ ] Scrollbar skin: calculateMinBarSize0x10c397c (IDs0x20/0x22/0x21/0x23),
+      background/bar rendering and the apps-grid screen; then display/scanout
+      binding and independent startup. Keep the live-DB visible run and real
+      downloaded-PNG decoding as explicit acceptance gates.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

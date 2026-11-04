@@ -1,5 +1,25 @@
 # Current project state — last verified 2026-11-04
 
+SVG-SCROLLBAR-2026-11-04: SVGScrollBar::setScrollPosition0x10c4138 (0x70
+bytes, CRC0x71cda0c0) and calculateBarSizeAndPosition0x10c3af0 (0xbc bytes,
+CRC0x37806af8) implemented in common/svg_scrollbar.c. Fields bar pos+0xb0, size
++0xb4, min+0xb8, total+0xbc, visible+0xc0, first+0xc4, background-hidden+0xc8.
+Track height=UIWindow::getWindowRect bottom-top (vtable slot0x28/0x1152649).
+Formulas: size=height*visible/total clamped to min/height; position by
+first/(total-visible) or bottom; full-height bar hidden; negative total
+preserves; setPosition rejects not-created/first>total and gates background.
+3120 native/C cases (2880 geometry+240 state; no writes outside fields), host,
+focused ASan/UBSan, ARM/qemu, full verify.cjs (40 ok), full make check (265 ok)
+and a focused TV CPU of the svg_scrollbar unit pass. Unit27208/
+e8714135611df38b9fa7fdcd08e37a57, reference tab_policy_firmware
+d8f340696db82ce7fb6df6efdad203a0. Apps-grid scrollbar is1750,180,8x720; the
+home portal has no scrollbar. calculateMinBarSize0x10c397c (skin IDs
+0x20/0x22/0x21/0x23 via supplier/renderer/RectangleContainer), render
+background/bar and the apps-grid screen remain open; display/scanout binding
+and independent startup are not done. Live-DB visible run and real PNG
+decoding remain acceptance gates. No device/screen/settings/network/boot
+change; TV CPU staging removed, no helper.
+
 UI-LIVE-CARDS-2026-11-04: ui_vendor reads the live parent-0 LauncherItem rows
 through the reloadable launcher.db service. launcher.db adds a borrowed row
 view/get; ui_vendor keeps item_type2 rows with a non-empty thumbnail name

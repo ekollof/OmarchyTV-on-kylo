@@ -48,6 +48,22 @@ reference groups. Raw checked bytes and independently varied paired child
 states close additional coverage gaps.1771396 renderer/276 setter/56 image
 cases plus host/IPC/sanitizer/ARM-qemu/TV CPU pass; real rendering/startup open.
 
+SVG-SCROLLBAR implements the shipped scrollbar state/geometry.
+setScrollPosition (0x10c4138) stores total+0xbc, visible+0xc0 and first+0xc4,
+rejects not-created or first>total without storing, calls renderBackground only
+when +0xc8 is clear, then renderBar, and returns1. calculateBarSizeAndPosition
+(0x10c3af0) gets the track height from UIWindow::getWindowRect (vtable slot
+0x28, rect bottom-top): total==0 -> size=height then hidden; total<=visible ->
+0/0; negative total preserves; otherwise size=height*visible/total clamped to
+min+0xb8 and height, position=(height-size)*first/(total-visible) when
+total>visible+first else height-size, and a size==height bar is stored as0.
+The apps-grid scrollbar is 1750,180,8x720. 3120 native/C cases compare fields
+and reject writes outside+0xb0..+0xc8; host/ASan/ARM-qemu/TV CPU and
+verify.cjs40 ok. The skin calculateMinBarSize (widget IDs0x20/0x22/0x21/0x23
+through the SVG supplier/renderer/RectangleContainer), background/bar drawing
+and the apps-grid screen remain unimplemented; the home portal has no
+scrollbar, so no visible scrollbar parity is claimed.
+
 UI-LIVE-CARDS wires the settingsDB rows into the portal. launcher.db now
 exposes a borrowed row view/get; ui_vendor reads parent0 with read_parent(0,0,0),
 keeps item_type2 rows with a non-empty thumbnail name (skipping slash names),

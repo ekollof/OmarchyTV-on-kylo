@@ -31,7 +31,25 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [UI-LIVE-CARDS](artifacts/reports/UI-LIVE-CARDS-2026-11-04.md) makes
+Latest: [SVG-SCROLLBAR](artifacts/reports/SVG-SCROLLBAR-2026-11-04.md)
+implements SVGScrollBar::setScrollPosition (0x10c4138) and
+calculateBarSizeAndPosition (0x10c3af0). The state stores total/visible/first
+at +0xbc/+0xc0/+0xc4, rejects not-created or first>total, gates the background
+call on +0xc8 and always renders the bar on acceptance. The geometry uses
+UIWindow::getWindowRect's bottom-top track height: size=height*visible/total
+clamped to min_bar and height, position by first/(total-visible) or the
+bottom, a full-height bar hidden, and the shipped negative-total preserve.
+3120 native/C cases (2880 geometry+240 state) pass with host/ASan/UBSan,
+ARM/qemu, full verify.cjs (40 ok), full make check (265 ok) and a focused TV CPU
+run. The apps-grid scrollbar is 1750,180,8x720; the home portal has no
+scrollbar. calculateMinBarSize0x10c397c (skin IDs 0x20/0x22/0x21/0x23 through
+the SVG supplier/renderer/RectangleContainer), the background/bar render
+bodies and the apps-grid screen remain open. Next: the scrollbar skin
+rendering/apps-grid, then display/scanout binding and independent startup. The
+live-DB visible run and real downloaded-PNG decoding remain explicit acceptance
+gates. No device/screen/settings/network/boot change; TV staging removed.
+
+Previous: [UI-LIVE-CARDS](artifacts/reports/UI-LIVE-CARDS-2026-11-04.md) makes
 ui_vendor draw the live parent-0 LauncherItem rows from the reloadable
 launcher.db service. Rows are filtered to item_type 2 with a non-empty
 thumbnail name, sorted by m_order_index then id, and each card is loaded by its
