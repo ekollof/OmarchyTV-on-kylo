@@ -1,5 +1,21 @@
 # Current project state — last verified 2026-11-04
 
+SVG-IMAGE-POINT-IDM-2026-11-04: SVGImage::create(int,EASIPoint const&,
+UIWindow*)0x10c9554 and LauncherHelper::convertOperationIdToIDM0xe4ae0c
+implemented. Point overload: setId, supplier gate, rect x/y from the point,
+three getClientRect calls for client origin and clamping of the resource size
+words (+8/+12) to client.w-x/client.h-y, then imageCreate. IDM: 62-entry
+signed16 table at0x14efd84, -1 default. svg-image differential now80 native/C
+cases (8 point); launcher536 comparisons (67 IDM). Bodies CRC
+0x09f01190/0xf2156f40 copied verbatim; the EASIRect ctor fragment is copied
+too. Host, focused ASan/UBSan, ARM/qemu, full verify.cjs (35 ok) and full make
+check pass; focused TV CPU of the svg_image ARM unit exit0 with staging
+hash-verified/removed. Build-tv-v3/settings-row-render unit49960/
+665dcdf16db3758f710b1f6503fe4569; reference1238032/
+0f09604f887a618ed332fffefc161658. Vendor callees remain stubs. No
+screen/input/device/settings/network/service/boot/persistent change. No
+pending job/helper.
+
 SVG-IMAGE-CREATE-2026-11-04: SVGImage::imageCreate0x10c9430 implemented in
 common/svg_image.c; svg-image differential now72 native/C cases (16 new:
 created/uncreated x0xb0 x field-set x parent). Created resizes+draws;

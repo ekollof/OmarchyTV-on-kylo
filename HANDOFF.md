@@ -31,7 +31,24 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [SVG-IMAGE-CREATE](artifacts/reports/SVG-IMAGE-CREATE-2026-11-04.md)
+Latest: [SVG-IMAGE-POINT-IDM](artifacts/reports/SVG-IMAGE-POINT-IDM-2026-11-04.md)
+implements the remaining SVGImage::create(int,EASIPoint const&,UIWindow*)
+overload (0x10c9554) and LauncherHelper::convertOperationIdToIDM (0xe4ae0c).
+The point overload does setId, the supplier resource gate, rect x/y from the
+point, then with a parent three getClientRect calls for the client origin and
+clamping of the resource size words (+8/+12) to client.w-x/client.h-y, or
+without a parent adds the sizes directly, then imageCreate. IDM is a 62-entry
+signed-16 table at 0x14efd84 with -1 for unknown operations. svg-image is now
+80 native/C cases (8 new) and the launcher group 536 comparisons (67 new); the
+bodies (CRCs 0x09f01190/0xf2156f40) are copied verbatim, and the EASIRect
+ctor fragment is copied too. Host, focused ASan/UBSan, ARM/qemu, full
+verify.cjs (35 ok) and full make check pass, plus a focused real-TV CPU run
+(exit 0, staging hash-verified and removed). Vendor callees remain stubs.
+Next: row construction, child visibility internals/live resources,
+scrollbar/skin, display/scanout binding and independent startup. No
+device/screen/settings/network/boot change.
+
+Previous: [SVG-IMAGE-CREATE](artifacts/reports/SVG-IMAGE-CREATE-2026-11-04.md)
 implements SVGImage::imageCreate (0x10c9430): set parent window/window rect;
 created resizes the UI surface, takes targetHandle, draws with field words
 0xa8/0xac/0xb4/0xb8/0xbc and releases; uncreated creates and sets the surface,

@@ -1,4 +1,5 @@
 #include "openaurora/svg_image.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include <stddef.h>
@@ -76,4 +77,39 @@ void oa_svg_image_image_create(void *img,const void *resource,
         o->release_target(img,target);
         o->create_window(img);
     }
+}
+
+/* SVGImage::create(int, EASIPoint const&, UIWindow*) (0x10c9554). The
+ * resource's words at +8/+12 carry its width/height. A parent adds the client
+ * origin and clamps the extent to the client area; three getClientRect calls
+ * are made because the shipped body re-queries it for each coordinate. */
+void oa_svg_image_create_point(void *img,uint32_t id,const int32_t point[2],
+    void *parent,const struct oa_svg_image_ops *o)
+{
+    _Alignas(max_align_t) uint8_t resource[OA_SVG_IMAGE_RESOURCE_BYTES];
+    uint32_t rect[4]={0,0,0,0};
+    int32_t rw,rh;
+    if(!img || !point || !o)return;
+    memset(resource,0,sizeof resource);
+    o->set_id(img,(int32_t)id);
+    {
+        void *supplier=o->get_image_supplier(img);
+        if(!o->supplier_get_resource(supplier,id,resource))return;
+    }
+    rect[0]=(uint32_t)point[0];rect[1]=(uint32_t)point[1];
+    memcpy(&rw,resource+8,4);memcpy(&rh,resource+12,4);
+    if(parent) {
+        uint32_t client[4];int32_t usable_w,usable_h;
+        o->get_client_rect(parent,client);
+        rect[0]+=client[0];rect[1]+=client[1];
+        o->get_client_rect(parent,client);
+        usable_w=(int32_t)(client[2]-client[0]);
+        o->get_client_rect(parent,client);
+        usable_h=(int32_t)(client[3]-client[1]);
+        rect[2]=rect[0]+(uint32_t)(rw<=usable_w?rw:usable_w);
+        rect[3]=rect[1]+(uint32_t)(rh<=usable_h?rh:usable_h);
+    } else {
+        rect[2]=rect[0]+(uint32_t)rw;rect[3]=rect[1]+(uint32_t)rh;
+    }
+    o->image_create(img,resource,rect,parent);
 }

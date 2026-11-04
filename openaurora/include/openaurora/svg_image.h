@@ -41,6 +41,16 @@ void oa_svg_image_create(void *img,uint32_t id,const uint32_t rect[4],
 void oa_svg_image_destroy(void *img,const struct oa_svg_image_ops *o);
 
 /*
+ * SVGImage::create(int, EASIPoint const&, UIWindow*) (0x10c9554): the point
+ * overload. Builds the rectangle from the point, adds the parent's client
+ * origin when present and clamps width/height to the client area using the
+ * resource size words at +8/+12; without a parent the size words are used
+ * directly. Then imageCreate.
+ */
+void oa_svg_image_create_point(void *img,uint32_t id,const int32_t point[2],
+    void *parent,const struct oa_svg_image_ops *o);
+
+/*
  * SVGImage::imageCreate(UIImageResource const&, EASIRect const&, UIWindow*)
  * (0x10c9430): set parent/window rect, then either resize+draw on the created
  * window or create the surface, draw and UIWindow::create. The vendor calls

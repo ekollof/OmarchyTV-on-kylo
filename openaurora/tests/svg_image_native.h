@@ -329,10 +329,48 @@ static void check_svg_image(const unsigned char *elf,size_t bytes)
         }
         assert(!munmap(dtor,4096));
     }
+    /* Point overload (0x10c9554): rectangle from a point, client offset and
+     * size clamping, then imageCreate. EASIRect::EASIRect() is copied too. */
+    {
+        unsigned char *ef=page(0x9a7000,4096);
+        size_t eo=file_offset(elf,bytes,0x9a7f94,52);
+        assert(crc32(elf+eo,52)==UINT32_C(0x2a2b3d80));
+        memcpy(stub_destination(ef,0x9a7000,0x9a7f94,52),elf+eo,52);
+        memcpy(stub_destination(ef,0x9a7000,0x9a7fc8,4),&pointer,4);
+        executable(ef,4096);
+        assert(!mprotect(cc,4096,PROT_READ|PROT_WRITE));
+        size_t po=file_offset(elf,bytes,0x10c9554,228);
+        assert(crc32(elf+po,228)==UINT32_C(0x09f01190));
+        memcpy(stub_destination(cc,0x10c9000,0x10c9554,228),elf+po,228);
+        memcpy(stub_destination(cc,0x10c9000,0x10c9634,4),&pointer,4);
+        quad_stub(cc,0x10c9000,0x10c9430,svn_img_create);
+        executable(cc,4096);
+        static const int32_t pts[2][2]={{10,20},{-5,7}};
+        void (*pf)(void *,uint32_t,uint32_t,uint32_t);
+        { uint32_t entry=0x10c9555;memcpy(&pf,&entry,4); }
+        for(unsigned sup=0;sup<2;++sup)for(unsigned par=0;par<2;++par)
+        for(unsigned pv=0;pv<2;++pv) {
+            struct oa_svg_image_ops po=sv_ops();
+            void *parent=par?(void *)(uintptr_t)0x2222:NULL;
+            sv_fix.sup=(int)sup;sv_fix.parent=(int)par;
+            memcpy(sv_fix.client,clients,16);
+            sv_tp=sv_evn;sv_tn=0;sv_last_out=0;
+            pf(sv_img_native,0x21,(uint32_t)(uintptr_t)pts[pv],(uint32_t)(uintptr_t)parent);
+            memcpy(sv_cmp,sv_evn,sv_tn*sizeof sv_evn[0]);unsigned n=sv_tn;
+            sv_tp=sv_evc;sv_tn=0;sv_last_out=0;
+            oa_svg_image_create_point(sv_img_ref,0x21,pts[pv],parent,&po);
+            if(n!=sv_tn || memcmp(sv_cmp,sv_evc,n*sizeof sv_evn[0])) {
+                fprintf(stderr,"point create mismatch sup=%u par=%u pv=%u n=%u/%u\n",sup,par,pv,n,sv_tn);
+                exit(1);
+            }
+            ++compared;
+        }
+        assert(!munmap(ef,4096));
+    }
     free(sv_img_native);free(sv_img_ref);
     assert(!munmap(cb,4096) && !munmap(cc,4096) && !munmap(off,4096));
     assert(!munmap(win,4096) && !munmap(ctx,4096) && !munmap(winx,4096) && !munmap(sup,4096));
-    printf("ok offline shipped ARM svg image: %u native/C cases, create/imageCreate/supplier gate/rect offset and destroy order match\n",compared);
+    printf("ok offline shipped ARM svg image: %u native/C cases, create/imageCreate/point/supplier gate/rect offset and destroy order match\n",compared);
 }
 
 #endif

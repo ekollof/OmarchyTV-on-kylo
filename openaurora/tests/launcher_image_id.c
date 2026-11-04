@@ -46,6 +46,21 @@ int main(void)
             assert(base>=1 && base<=UINT16_MAX);
         }
     }
-    puts("ok launcher image id: 62-way mapping, state split and default");
+    /* convertOperationIdToIDM: signed table, -1 for unknown operations. */
+    assert(oa_launcher_convert_operation_idm(0)==71);
+    assert(oa_launcher_convert_operation_idm(1)==74);
+    assert(oa_launcher_convert_operation_idm(8)==223);
+    assert(oa_launcher_convert_operation_idm(30)==-1);
+    assert(oa_launcher_convert_operation_idm(36)==-1);
+    assert(oa_launcher_convert_operation_idm(42)==123);
+    assert(oa_launcher_convert_operation_idm(48)==-1);
+    assert(oa_launcher_convert_operation_idm(61)==295);
+    assert(oa_launcher_convert_operation_idm(62)==-1);
+    assert(oa_launcher_convert_operation_idm(UINT32_MAX)==-1);
+    for(uint32_t op=0;op<62;++op) {
+        int32_t v=oa_launcher_convert_operation_idm(op);
+        assert(v==-1 || (v>=1 && v<=0x7fff));
+    }
+    puts("ok launcher image id: 62-way mapping, state split, IDM table and default");
     return 0;
 }

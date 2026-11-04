@@ -38,8 +38,34 @@ static void check_launcher_image_id(const unsigned char *elf,size_t bytes)
             }
             ++compared;
         }
+    /* convertOperationIdToIDM (0xe4ae0c): signed 16-bit table at 0x14efd84.
+     * The body reads its table through the literal at 0xe4ae4c, so the table
+     * page is mapped at the vendor address and copied from the ELF. */
+    {
+        unsigned char *table=page(0x14ef000,4096);
+        size_t to=file_offset(elf,bytes,0x14efd84,124);
+        memcpy(stub_destination(table,0x14ef000,0x14efd84,124),elf+to,124);
+        assert(!mprotect(body,4096,PROT_READ|PROT_WRITE));
+        size_t bo=file_offset(elf,bytes,0xe4ae0c,116);
+        assert(crc32(elf+bo,116)==UINT32_C(0xf2156f40));
+        memcpy(stub_destination(body,0xe4a000,0xe4ae0c,116),elf+bo,116);
+        executable(body,4096);
+        int32_t (*idmf)(uint32_t);
+        { uint32_t entry=0xe4ae0d;memcpy(&idmf,&entry,4); }
+        for(unsigned i=0;i<sizeof ops/sizeof ops[0];++i) {
+            int32_t native=idmf(ops[i]);
+            int32_t ours=oa_launcher_convert_operation_idm(ops[i]);
+            if(native!=ours) {
+                fprintf(stderr,"convertOperationIdToIDM op=%u native=%d ours=%d\n",
+                    (unsigned)ops[i],(int)native,(int)ours);
+                exit(1);
+            }
+            ++compared;
+        }
+        assert(!munmap(table,4096));
+    }
     assert(!munmap(body,4096) && !munmap(guard,4096));
-    printf("ok offline shipped ARM launcher image id: %u native/C comparisons, 62-way switch and default match\n",compared);
+    printf("ok offline shipped ARM launcher image id: %u native/C comparisons, 62-way switch and IDM table/default match\n",compared);
 }
 
 #endif

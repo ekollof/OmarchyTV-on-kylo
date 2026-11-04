@@ -48,6 +48,19 @@ reference groups. Raw checked bytes and independently varied paired child
 states close additional coverage gaps.1771396 renderer/276 setter/56 image
 cases plus host/IPC/sanitizer/ARM-qemu/TV CPU pass; real rendering/startup open.
 
+SVG-IMAGE-POINT-IDM implements SVGImage::create(int,EASIPoint const&,UIWindow*)
+(0x10c9554): setId, supplier resource gate, rectangle x/y from the point; with
+a parent, three getClientRect calls add the client origin and clamp
+width/height (resource words +8/+12) to client.w-x / client.h-y; without a
+parent the resource sizes are added directly; then imageCreate. Also implements
+LauncherHelper::convertOperationIdToIDM (0xe4ae0c): a 62-entry signed 16-bit
+table at 0x14efd84 with -1 for unknown operations. svg-image is now 80
+native/C cases and the launcher group 536 comparisons; the point body
+(CRC 0x09f01190) and IDM body (CRC 0xf2156f40) are copied verbatim. Vendor
+getClientRect/EASIRect ctor/imageCreate remain stubs. Row construction, child
+visibility internals, live resources, scrollbar/skin and display gates remain
+open.
+
 SVG-IMAGE-CREATE implements SVGImage::imageCreate (0x10c9430): set parent
 window and window rect; when created, resizeUISurface + targetHandle +
 drawImageResource(res,0,0,byte0xa8,target,word0xac,float0xb4,float0xb8,

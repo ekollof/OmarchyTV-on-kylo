@@ -25,3 +25,17 @@ int32_t oa_launcher_get_image_id(uint32_t operation,uint32_t state)
     if(operation>=sizeof launcher_ids/sizeof launcher_ids[0])return -1;
     return launcher_ids[operation][state==1?0:1];
 }
+
+/* Signed 16-bit table at 0x14efd84, read by the shipped body at 0xe4ae0c. */
+static const int16_t idm_ids[62]={
+    71,74,108,110,164,75,91,73,223,77,257,262,263,264,265,266,
+    258,259,260,261,267,268,269,270,273,274,126,137,250,131,-1,-1,
+    127,128,129,130,-1,-1,105,121,122,124,123,271,272,139,262,265,
+    -1,125,127,287,250,251,252,253,243,245,134,135,136,295
+};
+
+int32_t oa_launcher_convert_operation_idm(uint32_t operation)
+{
+    if(operation>=sizeof idm_ids/sizeof idm_ids[0])return -1;
+    return idm_ids[operation];
+}

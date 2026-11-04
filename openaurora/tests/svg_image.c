@@ -189,6 +189,32 @@ int main(void)
         assert(sev[7].kind==S_RELEASE && sev[7].a==0x7000);
         assert(sev[8].kind==S_CWIN);
     }
+    /* Point overload: rectangle from the point; without a parent the
+     * resource's size words at +8/+12 are added directly, with a parent the
+     * client origin is added and both extents clamp to the client area. */
+    {
+        static const int32_t pt[2]={10,20};
+        struct oa_svg_image_ops po=ops();
+        count=0;sup_ok=1;
+        oa_svg_image_create_point(img,0x21,pt,NULL,&po);
+        assert(count==4);
+        assert(ev[0].kind==E_ID && ev[0].id==0x21);
+        assert(ev[3].kind==E_IMG && ev[3].id==1);
+        assert(ev[3].rect[0]==10 && ev[3].rect[1]==20);
+        assert(ev[3].rect[2]==10u+UINT32_C(0x0b0a0908));
+        assert(ev[3].rect[3]==20u+UINT32_C(0x0f0e0d0c));
+        count=0;
+        oa_svg_image_create_point(img,0x22,pt,img,&po);
+        assert(count==7);
+        assert(ev[3].kind==E_CLIENT && ev[4].kind==E_CLIENT && ev[5].kind==E_CLIENT);
+        assert(ev[6].kind==E_IMG);
+        assert(ev[6].rect[0]==11 && ev[6].rect[1]==22);
+        assert(ev[6].rect[2]==17 && ev[6].rect[3]==28);
+        count=0;sup_ok=0;
+        oa_svg_image_create_point(img,0x23,pt,NULL,&po);
+        assert(count==3);
+        sup_ok=1;
+    }
     puts("ok svg image: create setId/supplier/resource gate and destroy order");
     return 0;
 }

@@ -18,6 +18,12 @@ extern "C" {
  */
 int32_t oa_launcher_get_image_id(uint32_t operation,uint32_t state);
 
+/*
+ * LauncherHelper::convertOperationIdToIDM(NovoLauncherOperationId op)
+ * (0xe4ae0c): signed 16-bit table lookup; -1 for unknown operations.
+ */
+int32_t oa_launcher_convert_operation_idm(uint32_t operation);
+
 #ifdef __cplusplus
 }
 #endif
