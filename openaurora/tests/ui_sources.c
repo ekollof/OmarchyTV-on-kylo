@@ -3,7 +3,9 @@
  * recorder display; no TV, no assets (the fills are checked, not the text). */
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "host.h"
 #include "openaurora/events.h"
@@ -53,6 +55,66 @@ static int has_panel(const oa_nav_trace *trace)
     return 0;
 }
 
+static void read_px(FILE *f, int x, int y, unsigned char px[4])
+{
+    assert(!fseek(f, ((long)y*1920+x)*4, SEEK_SET));
+    assert(fread(px, 1, 4, f) == 4);
+}
+static void check_alpha_capture(const oa_nav_trace *trace)
+{
+    char path[] = "/tmp/oa-src-alpha.XXXXXX";
+    unsigned char px[4];
+    FILE *f;
+    int fd = mkstemp(path);
+    assert(fd >= 0);
+    close(fd);
+    assert(!trace->capture(path));
+    f = fopen(path, "rb");
+    assert(f);
+    /* The 780x1080 panel is opaque; the rest of the OSD stays transparent. */
+    read_px(f, 1000, 500, px);
+    assert(px[0] == 0 && px[1] == 0 && px[2] == 0 && px[3] == 0);
+    read_px(f, 100, 500, px);
+    assert(px[0] == 190 && px[1] == 30 && px[2] == 45 && px[3] == 255);
+    assert(!fclose(f));
+    assert(!unlink(path));
+}
+static void check_alpha_composition(const oa_display_iface *disp,
+    const oa_display_alpha_iface *alpha, const oa_nav_trace *trace)
+{
+    static const unsigned char white_half[4] = {255, 255, 255, 128};
+    static const unsigned char green_half[4] = {0, 255, 0, 128};
+    char path[] = "/tmp/oa-alpha-mix.XXXXXX";
+    unsigned char px[4];
+    FILE *f;
+    int fd = mkstemp(path);
+    assert(fd >= 0);
+    close(fd);
+    assert(alpha->clear_rgba(0, 0, 0, 256) < 0);
+    assert(!alpha->clear_rgba(0, 0, 0, 0));
+    assert(!disp->fill(1000, 500, 1, 1, 0, 0, 255));
+    assert(!disp->fill(1001, 500, 1, 1, 0, 0, 255));
+    assert(!disp->blit(1001, 500, 1, 1, white_half));
+    assert(!disp->blit(1002, 500, 1, 1, green_half));
+    assert(!trace->capture(path));
+    f = fopen(path, "rb");
+    assert(f);
+    read_px(f, 1000, 500, px);
+    assert(px[0] == 0 && px[1] == 0 && px[2] == 255 && px[3] == 255);
+    /* Straight source-over: 50% white over opaque blue, 50% green over
+     * transparent keeps its colour and half alpha. */
+    read_px(f, 1001, 500, px);
+    if (!(px[0] == 128 && px[1] == 128 && px[2] == 255 && px[3] == 255)) {
+        fprintf(stderr, "white-over-blue pixel %u,%u,%u,%u\n", px[0], px[1], px[2], px[3]);
+        assert(0);
+    }
+    read_px(f, 1002, 500, px);
+    assert(px[0] == 0 && px[1] == 255 && px[2] == 0 && px[3] == 128);
+    read_px(f, 1003, 500, px);
+    assert(px[0] == 0 && px[1] == 0 && px[2] == 0 && px[3] == 0);
+    assert(!fclose(f));
+    assert(!unlink(path));
+}
 static int has_bar(const oa_nav_trace *trace, int y)
 {
     int n = trace->fill_count();
@@ -95,7 +157,9 @@ int main(int argc, char **argv)
     const oa_input_iface *input = host.api.lookup(&host, OA_SVC_INPUT, 1);
     const oa_nav_trace *trace = host.api.lookup(&host, OA_SVC_NAV_TRACE, 1);
     const oa_portal_iface *portal = host.api.lookup(&host, OA_SVC_PORTAL, 1);
-    assert(input && trace && portal && !input->device_open());
+    const oa_display_iface *disp = host.api.lookup(&host, OA_SVC_DISPLAY, 1);
+    const oa_display_alpha_iface *alpha = host.api.lookup(&host, OA_SVC_DISPLAY_ALPHA, 1);
+    assert(input && trace && portal && disp && alpha && !input->device_open());
     assert(portal->screen() == 0);
 
     press(input, 20); /* Up from the configured home rail (2) to rail 1, sources */
@@ -103,6 +167,8 @@ int main(int argc, char **argv)
     assert(portal->screen() == 2);
     assert(has_panel(trace));
     assert(has_bar(trace, 152));
+    check_alpha_capture(trace);
+    check_alpha_composition(disp, alpha, trace);
 
     press(input, 19); /* Down */
     assert(has_bar(trace, 227));

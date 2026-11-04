@@ -1,0 +1,33 @@
+[334003] INFO host         loaded plat v0.1 (build-alpha-san/tests/ui-sources/modules/mod_plat.so)
+[334003] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[334003] INFO plat         plat: common init (vpltio/v4l2/sharemem/drm, DVIF)
+[334003] INFO plat         plat: VIN slot defaults (7 slots)
+[334003] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[334003] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[334003] INFO host         started plat
+[334003] INFO host         loaded nav_display v1 (build-alpha-san/tests/ui-sources/modules/mod_nav_display.so)
+[334003] INFO host         started nav_display
+[334004] INFO host         loaded ir v0.1 (build-alpha-san/tests/ui-sources/modules/mod_ir.so)
+[334004] INFO ir           remote parser ready; UART path empty
+[334004] INFO host         started ir
+[334004] INFO host         loaded ticker v1.0 (build-alpha-san/tests/ui-sources/modules/mod_ticker.so)
+[334004] INFO host         started ticker
+[334004] INFO host         loaded ui_clock v0.1 (build-alpha-san/tests/ui-sources/modules/mod_ui_clock.so)
+[334004] INFO host         started ui_clock
+[334005] INFO host         loaded ui_anim v1 (build-alpha-san/tests/ui-sources/modules/mod_ui_anim.so)
+[334005] INFO host         started ui_anim
+[334006] INFO host         loaded settings v0.2 (build-alpha-san/tests/ui-sources/modules/mod_settings.so)
+[334006] INFO settings     /home/ekollof/Work/tvhack/openaurora/build-alpha-san/tests/ui-sources/settings.db open (read-only)
+[334006] INFO host         started settings
+[334007] INFO host         loaded ui_engine v1 (build-alpha-san/tests/ui-sources/modules/mod_ui_engine.so)
+[334007] INFO ui_engine    ui_engine started
+[334007] INFO host         started ui_engine
+[334009] INFO host         loaded ui_vendor v0.2 (build-alpha-san/tests/ui-sources/modules/mod_ui_vendor.so)
+[334020] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 2 card 0
+[334020] INFO host         started ui_vendor
+[334030] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 1 card 0
+[334046] INFO ui_vendor    painted source selection: row 0
+[334072] INFO ui_vendor    painted source selection: row 1
+[334087] INFO ui_vendor    painted source selection: row 0
+[334097] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 1 card 0
+  ok   source selection: rail Select opens the 780x1080 panel, Up/Down moves the 748x66 bar, Exit returns

@@ -27,6 +27,10 @@ queue of experiments to repeat.
 - HANDOFF supplies entry points. Do not append competing “latest state” sections.
 - Keep implementation, offline tests, on-TV reads and independent hardware
   acceptance distinct. A checkmark only closes the stated, evidenced milestone.
+- A TODO.md item can only be checked off when it is properly implemented,
+  tested, and, for parity work, compared against the firmware. An unverified
+  helper, harness or dated observation does not close the item; record the
+  evidence and the remaining limits in the entry.
 - Update canonical entries when evidence changes; mark superseded claims at
   their source. Do not silently generalize a failed experiment into an API rule.
 

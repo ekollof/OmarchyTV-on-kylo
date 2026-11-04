@@ -21,12 +21,17 @@ The preserved claim inventory and per-item locators are linked from the audit.
       Pixel-exact checks concern the test oracle, not complete frames versus
       vendor Mali or stock TV output.
 
-- [ ] Complete faithful offline RGBA layout capture. The recorder already
-      emits1920x1080 layout snapshots of ui_vendor draw calls, but cap_blend
-      forces alpha255 and the recorder lacks display.alpha/transparent clear.
-      Its opaque layout images are useful; they do not reproduce transparent
-      source-over or the production canvas. Reopened by TODO-AUDIT-2026-11-04;
-      tests/ui_nav_display.c and UI-FB-SIM preserve the narrower evidence.
+- [x] Complete faithful offline RGBA layout capture against the production
+      canvas: tests/ui_nav_display.c now composes with oa_canvas_over instead
+      of forcing alpha255 and publishes display.alpha, so clear_rgba keeps
+      transparent regions and partial source-over. check-ui-sources verifies
+      the transparent panel surround, the opaque panel, invalid clear alpha,
+      and half-alpha source over transparent/opaque destinations; full host
+      check273 ok, focused ASan/UBSan and the same test under ARM/qemu pass.
+      Evidence: artifacts/analysis/alpha-recorder-2026-11-04/ (frame2 mean
+      alpha0.40625 =780/1920, corner alpha0). This is production-canvas
+      fidelity, not vendor-Mali pixel or stock-scanout parity. Closes the
+      TODO-AUDIT-2026-11-04 reopened item.
 
 - [ ] Offline full settings preview: wire a real-asset ui.dir capture and
       Mesa renderer integration after recorder alpha fidelity is corrected.

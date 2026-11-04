@@ -1,5 +1,18 @@
 # Current project state — last verified 2026-11-04
 
+ALPHA-RECORDER-2026-11-04 closes the TODO-AUDIT reopened item:
+tests/ui_nav_display.c composes cap_blend with oa_canvas_over instead of
+forcing alpha255 and publishes display.alpha, so ui_engine's clear_rgba keeps
+transparent regions and partial source-over. check-ui-sources verifies a
+transparent panel surround, opaque panel, invalid clear alpha and half-alpha
+over transparent/opaque destinations; full host check273 ok, focused
+ASan/UBSan (ticker module leak suppressed, unrelated) and the same test under
+ARM/qemu pass. Frame2 mean alpha0.40625 =780/1920 with corner alpha0
+(artifacts/analysis/alpha-recorder-2026-11-04/). This is production-canvas
+fidelity, not vendor-Mali pixel/scanout parity. AGENTS.md now requires a TODO
+item to be implemented, tested and firmware-compared for parity work before
+it is checked. No TV access or hardware change.
+
 TODO-AUDIT-2026-11-04: all182 prior checked claims inventoried against source,
 tests and dated evidence. One reopened (recorder transparent RGBA fidelity);
 181 retained at bounded scope with66 descriptions corrected/narrowed.

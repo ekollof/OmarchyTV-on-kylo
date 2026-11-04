@@ -1,3 +1,12 @@
+ALPHA-RECORDER-2026-11-04 corrects the offline recorder: cap_blend now uses
+oa_canvas_over (straight source-over, destination alpha preserved) and the
+test display publishes display.alpha, so clear_rgba keeps transparent regions
+instead of ui_engine's opaque fallback. check-ui-sources verifies transparent
+and opaque panel regions, invalid clear alpha and half-alpha composition; host,
+focused ASan/UBSan and ARM/qemu pass. This is production-canvas fidelity, not
+vendor-Mali pixel or stock-scanout parity. It closes the TODO-AUDIT reopened
+item; the earlier opaque-only note below is superseded.
+
 UI-FB-SIM-2026-11-04 (addendum) adds offline layout capture: the host test
 display recorder rasterizes its draw calls into 1920x1080 RGBA frames under
 OA_NAV_CAPTURE, and check-ui-settings-panel writes a .panel snapshot. The

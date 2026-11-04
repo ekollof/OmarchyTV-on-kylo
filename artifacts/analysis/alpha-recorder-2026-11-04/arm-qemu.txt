@@ -1,0 +1,33 @@
+[385334] INFO host         loaded plat v0.1 (openaurora/build-tv-v3/alpha-review/ui-sources/modules/mod_plat.so)
+[385335] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[385335] INFO plat         plat: common init (vpltio/v4l2/sharemem/drm, DVIF)
+[385335] INFO plat         plat: VIN slot defaults (7 slots)
+[385335] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[385335] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[385335] INFO host         started plat
+[385337] INFO host         loaded nav_display v1 (openaurora/build-tv-v3/alpha-review/ui-sources/modules/mod_nav_display.so)
+[385337] INFO host         started nav_display
+[385337] INFO host         loaded ir v0.1 (openaurora/build-tv-v3/alpha-review/ui-sources/modules/mod_ir.so)
+[385338] INFO ir           remote parser ready; UART path empty
+[385338] INFO host         started ir
+[385338] INFO host         loaded ticker v1.0 (openaurora/build-tv-v3/alpha-review/ui-sources/modules/mod_ticker.so)
+[385338] INFO host         started ticker
+[385339] INFO host         loaded ui_clock v0.1 (openaurora/build-tv-v3/alpha-review/ui-sources/modules/mod_ui_clock.so)
+[385339] INFO host         started ui_clock
+[385340] INFO host         loaded ui_anim v1 (openaurora/build-tv-v3/alpha-review/ui-sources/modules/mod_ui_anim.so)
+[385340] INFO host         started ui_anim
+[385341] INFO host         loaded settings v0.2 (openaurora/build-tv-v3/alpha-review/ui-sources/modules/mod_settings.so)
+[385348] INFO settings     /home/ekollof/Work/tvhack/openaurora/build-tv-v3/alpha-review/ui-sources/settings.db open (read-only)
+[385368] INFO host         started settings
+[385369] INFO host         loaded ui_engine v1 (openaurora/build-tv-v3/alpha-review/ui-sources/modules/mod_ui_engine.so)
+[385369] INFO ui_engine    ui_engine started
+[385369] INFO host         started ui_engine
+[385370] INFO host         loaded ui_vendor v0.2 (openaurora/build-tv-v3/alpha-review/ui-sources/modules/mod_ui_vendor.so)
+[385415] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 2 card 0
+[385416] INFO host         started ui_vendor
+[385455] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 1 card 0
+[385580] INFO ui_vendor    painted source selection: row 0
+[385701] INFO ui_vendor    painted source selection: row 1
+[385815] INFO ui_vendor    painted source selection: row 0
+[385866] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 1 card 0
+  ok   source selection: rail Select opens the 780x1080 panel, Up/Down moves the 748x66 bar, Exit returns

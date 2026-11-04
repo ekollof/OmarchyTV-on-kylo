@@ -32,14 +32,21 @@ does not start the pending imageCreate subsystem or persistent replacement.
 ## Immediate continuation point
 
 Latest checklist audit: [TODO-AUDIT](artifacts/reports/TODO-AUDIT-2026-11-04.md)
-reviews all182 previously checked items. Recorder transparent RGBA fidelity is
-reopened; remaining checks are bounded research/helper/test/historical milestones,
-not complete TV features. Stale missing-helper/scanout/version/count claims were
-corrected. Full host,42 ARM firmware groups, host/ARM font/theme corpora and Mesa
-checks pass. No TV access or deployment in this audit. The claim inventory has
-per-item dispositions and source/test/evidence locators. Implementation next
-steps remain the native integration/visual/ownership gates below, plus the
-now-explicit recorder alpha task; do not repeat completed lower-helper recovery.
+reviews all182 previously checked items. Its one reopened item, recorder
+transparent RGBA fidelity, is now closed: tests/ui_nav_display.c uses
+oa_canvas_over and publishes display.alpha; check-ui-sources checks transparent
+clear, opaque panel and partial composition, with host273 ok, focused
+ASan/UBSan and ARM/qemu. Evidence is in
+artifacts/analysis/alpha-recorder-2026-11-04/. This is production-canvas
+fidelity, not vendor-Mali pixel/scanout parity. AGENTS.md now requires a TODO
+item to be implemented, tested and firmware-compared for parity work before it
+is checked. Remaining checks are bounded research/helper/test/historical
+milestones, not complete TV features; stale missing-helper/scanout/version/count
+claims were corrected. Full host,42 ARM firmware groups, host/ARM font/theme
+corpora and Mesa checks pass. No TV access or deployment in this audit. The
+claim inventory has per-item dispositions and source/test/evidence locators.
+Implementation next steps remain the native integration/visual/ownership gates
+below; do not repeat completed lower-helper recovery.
 
 Latest implementation review: [WORK-REVIEW](artifacts/reports/WORK-REVIEW-2026-11-04.md)
 checks cf78486..4ba1599. Fixed scrollbar signed overflow, first/second-window

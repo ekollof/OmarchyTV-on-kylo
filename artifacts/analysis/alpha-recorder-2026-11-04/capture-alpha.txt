@@ -1,0 +1,6 @@
+alpha-frames.0 opaque=False meanA=0.644112 cornerA=0.6
+alpha-frames.1 opaque=False meanA=0.644112 cornerA=0.6
+alpha-frames.2 opaque=False meanA=0.40625 cornerA=0
+alpha-frames.3 opaque=False meanA=0.40625 cornerA=0
+alpha-frames.4 opaque=False meanA=0.40625 cornerA=0
+alpha-frames.5 opaque=False meanA=0.644112 cornerA=0.6

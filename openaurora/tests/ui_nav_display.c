@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "openaurora/canvas.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "ui_nav_trace.h"
@@ -15,26 +16,22 @@ static unsigned char *g_cap;
 static int g_cap_w, g_cap_h;
 static unsigned g_cap_seq;
 static int g_w, g_h;
-static void cap_sync(void)
+static void cap_alloc(void)
 {
-    if (g_cap || !getenv("OA_NAV_CAPTURE")) return;
+    if (g_cap) return;
     g_cap_w = g_w > 0 ? g_w : 1920;
     g_cap_h = g_h > 0 ? g_h : 1080;
     g_cap = calloc((size_t)g_cap_w * g_cap_h, 4);
     assert(g_cap);
 }
+static void cap_sync(void) { cap_alloc(); }
 static void cap_blend(int x, int y, const unsigned char *s)
 {
-    unsigned a = s[3], ia;
-    unsigned char *p;
-    if (!a || x < 0 || y < 0 || x >= g_cap_w || y >= g_cap_h) return;
-    p = g_cap + ((size_t)y * g_cap_w + x) * 4;
-    if (a == 255) { p[0]=s[0]; p[1]=s[1]; p[2]=s[2]; p[3]=255; return; }
-    ia = 255 - a;
-    p[0]=(unsigned char)((s[0]*a + p[0]*ia + 127)/255);
-    p[1]=(unsigned char)((s[1]*a + p[1]*ia + 127)/255);
-    p[2]=(unsigned char)((s[2]*a + p[2]*ia + 127)/255);
-    p[3]=255;
+    if (!g_cap || !s || x < 0 || y < 0 || x >= g_cap_w || y >= g_cap_h) return;
+    /* Same top-down straight-RGBA source-over contract as the production
+     * canvas. The old recorder forced destination alpha to255, which hid the
+     * transparent panels and any partially transparent composition. */
+    oa_canvas_over(g_cap + ((size_t)y * g_cap_w + x) * 4, s);
 }
 static void cap_fill(int x, int y, int w, int h, int r, int g, int b)
 {
@@ -56,7 +53,7 @@ static int cap_write(const char *path)
     size_t n = fwrite(g_cap, 4, (size_t)g_cap_w*g_cap_h, f);
     return fclose(f) == 0 && n == (size_t)g_cap_w*g_cap_h ? 0 : -1;
 }
-static int t_capture(const char *path) { return cap_write(path); }
+static int t_capture(const char *path) { cap_alloc(); return cap_write(path); }
 static void cap_dump(void)
 {
     const char *path = getenv("OA_NAV_CAPTURE");
@@ -93,8 +90,11 @@ static int d_info(int *w, int *h, int *bpp, int *frames)
     if (frames) *frames = 1;
     return 0;
 }
-static int d_clear(int r, int g, int b)
+static int d_clear_rgba(int r, int g, int b, int a)
 {
+    if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255 ||
+        a < 0 || a > 255)
+        return -1;
     g_clears++;
     g_nf = 0;
     g_nb = 0;
@@ -102,14 +102,16 @@ static int d_clear(int r, int g, int b)
     cap_sync();
     if (g_cap) {
         for (size_t i = 0; i < (size_t)g_cap_w*g_cap_h; i++) {
-            g_cap[i*4+0] = (unsigned char)r;
-            g_cap[i*4+1] = (unsigned char)g;
-            g_cap[i*4+2] = (unsigned char)b;
-            g_cap[i*4+3] = 255;
+            /* Match oa_canvas_clear: a zero alpha clear carries no colour. */
+            g_cap[i*4+0] = a ? (unsigned char)r : 0;
+            g_cap[i*4+1] = a ? (unsigned char)g : 0;
+            g_cap[i*4+2] = a ? (unsigned char)b : 0;
+            g_cap[i*4+3] = (unsigned char)a;
         }
     }
     return 0;
 }
+static int d_clear(int r, int g, int b) { return d_clear_rgba(r, g, b, 255); }
 static int d_fill(int x, int y, int w, int h, int r, int g, int b)
 {
     if (g_nf < FILL_MAX) {
@@ -190,6 +192,10 @@ static const oa_display_iface g_disp = {
     .clear = d_clear, .fill = d_fill, .blit = d_blit, .blit_scaled = d_blit_scaled,
     .present = d_present, .info = d_info, .set_scene_transform = d_set_scene_transform,
 };
+/* The production canvas accepts straight-RGBA clears; publishing the
+ * companion service makes ui_engine use the same transparent clear instead
+ * of its legacy opaque fallback. */
+static const oa_display_alpha_iface g_alpha = { .clear_rgba = d_clear_rgba };
 static int t_accent(int *x, int *y, int *w, int *h)
 {
     if (!g_accent) return -1;
@@ -290,14 +296,22 @@ static int m_start(void *v)
     (void)v;
     if (g_api->publish(g_api->priv, OA_SVC_DISPLAY, 2, &g_disp) != 0)
         return -1;
-    if (g_api->publish(g_api->priv, OA_SVC_NAV_TRACE, 1, &g_trace) != 0)
+    if (g_api->publish(g_api->priv, OA_SVC_DISPLAY_ALPHA, 1, &g_alpha) != 0) {
+        g_api->unpublish(g_api->priv, OA_SVC_DISPLAY);
         return -1;
+    }
+    if (g_api->publish(g_api->priv, OA_SVC_NAV_TRACE, 1, &g_trace) != 0) {
+        g_api->unpublish(g_api->priv, OA_SVC_DISPLAY_ALPHA);
+        g_api->unpublish(g_api->priv, OA_SVC_DISPLAY);
+        return -1;
+    }
     return 0;
 }
 static void m_stop(void *v)
 {
     (void)v;
     g_api->unpublish(g_api->priv, OA_SVC_NAV_TRACE);
+    g_api->unpublish(g_api->priv, OA_SVC_DISPLAY_ALPHA);
     g_api->unpublish(g_api->priv, OA_SVC_DISPLAY);
 }
 static void m_destroy(void *v)
