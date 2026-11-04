@@ -5,6 +5,19 @@ all TV access, including view-only queries/WoL/staging/tests, is suspended until
 explicit owner reauthorization. This supersedes the earlier standing query
 permission and idle window. The audio-image work below accessed no TV.
 
+VISIBLE-IMAGES-2026-11-04: a supervised no-plat candidate (image_decode v2,
+display_fb, settings, ui_engine, ui_vendor) painted the live apps grid on
+vendor-initialized fb1 from an empty ui.dir and the real
+/buffer/downloaded_images. Log:18 items, first0, scrollbar0/600,51 paints.
+The visible capture has15 cards including two JPEG foxxum downloads
+(3753/1685,384x216; DAZN/DW) and13 PNGs; the two JPEG card crops match
+nearest-scaled originals within≈2.1%/1.1% AE. fb1 pixels/yoffset were saved
+and restored; candidate bundle/ready files removed, /proc scan0, vendor PIDs
+1967/1785 intact, coredumpnoreset present. This is supervised visible parity,
+not independent startup or full region/MAU/pan equality. The test completed
+before the current "Don't touch the TV" override; no TV command ran after it.
+Independent startup is blocked until explicit reauthorization.
+
 AUDIO-AMP-IMAGE-2026-11-04 recovers AD82587 lifecycle/return contracts and
 implements pure38-register profile conversion with caller-supplied retained
 image. Strict host, leak-enabled ASan/UBSan, fresh ARM/qemu and full host349

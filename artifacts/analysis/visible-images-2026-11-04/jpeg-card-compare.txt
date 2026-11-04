@@ -1,0 +1,15 @@
+downloaded JPEG files (read-only fetch after capture; local copies not committed):
+/tmp/opencode/foxxum_1685: JPEG image data, Exif standard: [TIFF image data, little-endian, direntries=0], baseline, precision 8, 384x216, components 3
+/tmp/opencode/foxxum_3753: JPEG image data, Exif standard: [TIFF image data, little-endian, direntries=0], baseline, precision 8, 384x216, components 3
+0ba9d70925465499cda2b8f13d3eec0aa1f3d5b0b0d1e945aa4272e36862eb9f  /tmp/opencode/foxxum_1685
+57e3951d32a8d1fcf5412a4b93f728ef445dd4bd63e4b8272623d473caada4ad  /tmp/opencode/foxxum_3753
+
+live DB orders 15/16:
+15|185|foxxum_thumb_3753
+16|141|foxxum_thumb_1685
+
+card crop vs nearest-scaled original:
+3753 (DAZN card) AE=837.965 (0.0205535)
+1685 (DW card) AE=452.06 (0.0110881)
+3753 RMSE=6173.14 (0.094196)
+1685 RMSE=4510.42 (0.0688246)

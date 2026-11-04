@@ -1,3 +1,13 @@
+VISIBLE-IMAGES-2026-11-04: the supervised no-plat candidate painted the live
+apps grid on vendor-initialized fb1 from an empty ui.dir and the real
+/buffer/downloaded_images (18 items,15 visible, scrollbar0/600). The capture
+contains two visible JPEG foxxum cards (3753/1685,384x216) and13 PNG cards;
+the two JPEG crops match nearest-scaled originals within≈2.1%/1.1% AE. fb1
+pixels/yoffset were snapshotted and restored; bundle removed, /proc scan0,
+vendor PIDs intact. Supervised only; no full region/MAU/pan equality or
+independent startup. The current owner override revoked TV access after this
+run; no TV command followed. See VISIBLE-IMAGES.
+
 AUDIO-AMP-IMAGE-2026-11-04 adds pure AD82587 profile-image conversion from
 decompiled ARM. Retain the preceding image between inits; state-control OR bits
 are persistent. Open/Close only return object!=NULL, ResumeDevice starts a task,

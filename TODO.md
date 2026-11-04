@@ -517,14 +517,25 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       corpus uses other real vendor JPEGs; no vendor-class differential,
       on-TV decode or stock parity.
 
+- [x] On-TV visible PNG/JPEG apps grid through the supervised fb1 binding:
+      the current image_decode v2/ui_vendor v0.2 candidate painted18 live DB
+      items (15 visible, scrollbar0/600) from an empty ui.dir and the real
+      /buffer/downloaded_images. The capture shows two visible JPEG cards
+      (foxxum_thumb_3753/1685, 384x216) plus13 PNG cards; the two visible JPEG
+      crops match nearest-scaled originals within≈2.1%/1.1% AE. fb1 pixels/
+      yoffset were snapshotted and restored, staging removed, /proc scan0,
+      vendor PIDs intact. VISIBLE-IMAGES. Limits: supervised only; full
+      region/MAU/pan ownership equality and independent startup not proven.
+
 - [ ] Complete image.decode acceptance: the classic-libpng PNG conversion
       sequence from Aurora's b30918 `setConversions` and the TurboJPEG path
       now pass the maintained corpus, malformed/truncated input, suspend/resume
-      and reload tests. Provider pixels are copied then released. Still need
-      grayscale/tRNS/16-bit/gamma corpus coverage, a vendor
-      PngImageDecoderImpl/JpegImageDecoder differential, APNG/CMYK policy,
-      worker scheduling/cancellation, on-TV decode and stock pixel parity.
-      Reopened by TODO-REAUDIT-2026-11-04; narrowed, not closed.
+      and reload tests, and the supervised on-TV grid above. Provider pixels
+      are copied then released. Still need grayscale/tRNS/16-bit/gamma corpus
+      coverage, a vendor PngImageDecoderImpl/JpegImageDecoder differential,
+      APNG/CMYK policy, worker scheduling/cancellation, off-page JPEG coverage
+      and stock pixel parity. Reopened by TODO-REAUDIT-2026-11-04; narrowed,
+      not closed.
 
 - [x] Scrollbar skin minimum helper: moving caps20+16 yield36px; recovered
       standard-name lookups and supplier cache behavior match32 native cases.
@@ -550,9 +561,10 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
 - [x] Historical supervised scanout test: OA-CANDIDATE captured18 live apps
       and the600px scrollbar on vendor-initialized fb1 with stock still owning
       the hardware. WORK-REVIEW hardens current display_fb to reject HAL init,
-      avoid mdev and link no HAL libraries; host and TV loader checks pass.
-      That revised binding has not drawn on the TV. The earlier stock screenshot
-      did not prove full backing/region/MAU/pan restoration.
+      avoid mdev and link no HAL libraries; host and TV loader checks pass. The
+      revised binding later drew the live PNG/JPEG grid on the TV
+      (VISIBLE-IMAGES). The earlier stock screenshot and the pixel/yoffset
+      restore did not prove full backing/region/MAU/pan restoration.
 
 - [ ] Pair temporary display binding with owned full backing/region/MAU/pan
       restoration and failure cleanup. Ordinary display_fb stop only closes
@@ -561,9 +573,10 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
 - [ ] Cold independent startup without vendor Aurora: establish MCU authority,
       watchdog/fallback and full display ownership/restoration from firmware.
       A historical FreshWDT return1 did not prove rejection or impossibility.
-      Vendor stop/watchdog disable remain unauthorized. On-TV decoding/display
-      of the real downloaded images and stock apps-grid pixel parity remain
-      acceptance gates.
+      On-TV PNG/JPEG display is now covered by the supervised VISIBLE-IMAGES
+      test; stock apps-grid pixel parity remains. This gate is blocked: the
+      owner's 2026-11-04 AGENTS override revokes all TV access until explicit
+      reauthorization. Do not connect, wake, stage or run on the set.
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x9 (slider row):
       95624 native/C comparisons and prior groups pass; full host/Unix IPC,
       ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-SLIDER.

@@ -35,6 +35,18 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
+Latest visible test: [VISIBLE-IMAGES](artifacts/reports/VISIBLE-IMAGES-2026-11-04.md)
+ran under the preceding TV-access authorization. The supervised no-plat
+candidate painted the live apps grid on vendor-initialized fb1 from an empty
+ui.dir and the real /buffer/downloaded_images:18 items,15 visible, scrollbar
+0/600, including two visible JPEG foxxum cards (384x216) and13 PNGs; JPEG
+crops match nearest-scaled originals within≈2.1%/1.1% AE. fb1 pixels/yoffset
+were saved/restored, bundle and ready files removed, /proc scan0, vendor PIDs
+1967/1785 intact. Supervised only; full region/MAU/pan ownership and
+independent startup not proven. The owner then revoked all TV access
+("Don't touch the TV"); no TV command ran after the override. Independent
+startup is blocked until explicit reauthorization.
+
 Audio prerequisite: [AUDIO-AMP-IMAGE](artifacts/reports/AUDIO-AMP-IMAGE-2026-11-04.md)
 adds pure AD82587 profile-to38-register conversion with retained-image semantics.
 Host/sanitizer/fresh ARM units and full host349 checks pass; comparison is static
