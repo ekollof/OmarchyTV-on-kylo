@@ -1069,6 +1069,17 @@ $(BUILD)/tests/ui_async: tests/ui_async.c tests/scene_gpu_trace.h core/host.h in
 check-ui-async: $(BUILD)/tests/ui_async $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_scene_display.so $(BUILD)/modules/mod_scene_gpu_fixture.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_anim.so
 	@$(BUILD)/tests/ui_async $(BUILD)/modules $(abspath $(BUILD)/tests/mod_fake_clock.so)
 
+# Offline GLES regression on host Mesa. The production scene code requests
+# vendor display 1; tests/egl_default_display.c redirects that contract to
+# EGL_DEFAULT_DISPLAY so the same GLES2 path runs on llvmpipe without a TV or
+# a window. Opt-in: requires host Mesa, so it is not part of make check.
+$(BUILD)/egl-scene-probe-mesa: tools/display/egl-scene-probe.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c tests/egl_default_display.c include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) -Wl,--wrap=eglGetDisplay -Wl,--wrap=glCreateProgram -Wl,--wrap=glGenTextures $(EGL_PROBE_LIBS) -pthread -lm
+.PHONY: scene-gles-mesa
+scene-gles-mesa: $(BUILD)/egl-scene-probe-mesa
+	@EGL_PLATFORM=surfaceless LIBGL_ALWAYS_SOFTWARE=1 $(BUILD)/egl-scene-probe-mesa
+
 $(BUILD)/egl-scene-probe: tools/display/egl-scene-probe.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm

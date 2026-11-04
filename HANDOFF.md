@@ -31,7 +31,22 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [UI-DISPLAY-REVIEW](artifacts/reports/UI-DISPLAY-REVIEW-2026-11-04.md)
+Latest: [UI-FB-SIM](artifacts/reports/UI-FB-SIM-2026-11-04.md) answers whether
+the TV framebuffer can be simulated offline. The real fbdev display module
+runs against a fake framebuffer on the host and as an ARM binary under
+qemu-arm-static (tests/display_present, eight groups, exit0). The same GLES
+scene code runs on host Mesa llvmpipe through the existing
+tests/egl_default_display.c adapter (`make scene-gles-mesa`): nine transition
+types are pixel-exact and reopen/cleanup pass. User-mode qemu cannot emulate
+Mali or the ntk /dev/mali ioctls, and the sysroot has no ARM EGL besides the
+vendor blob, so vendor rasterization and stock-vs-ours scanout comparison still
+need the set. Recommended use: scene-gles-mesa plus fake-fb transport tests
+per slice; batch TV runs for final visual acceptance. Next offline step is a
+1920x1080 fake-fb capture harness and a Mesa-wrapped renderer DSO for the full
+settings preview. The pending firmware feature remains SVGImage::imageCreate;
+no persistent/device change, TV untouched beyond prior authorized work.
+
+Previous: [UI-DISPLAY-REVIEW](artifacts/reports/UI-DISPLAY-REVIEW-2026-11-04.md)
 repairs the owner's missing focused sliders and Modus chevrons in the existing
 captured-panel/live-text preview. Firmware-derived FA/UFA track/PNG composition,
 shared shadow digit/knob values, separate selection images; no live setting writes.

@@ -6,6 +6,19 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-FB-SIM-2026-11-04: offline display simulation feasibility. `tests/
+display_present` runs the real fbdev display module with a fake framebuffer on
+host and as an ARM binary under qemu-arm-static (8 groups pass). The same
+GLES scene code runs on host Mesa llvmpipe via `make scene-gles-mesa` (adapter
+tests/egl_default_display.c maps eglGetDisplay(1) to EGL_DEFAULT_DISPLAY; 9
+transition types pixel-exact, reopen/cleanup pass). qemu-arm-static cannot
+emulate Mali//dev/mali and the sysroot has no ARM EGL besides the vendor blob,
+so vendor rasterization and stock-vs-ours scanout comparison still need the
+TV. Evidence: artifacts/analysis/fb-sim-2026-11-04/ and
+artifacts/reports/UI-FB-SIM-2026-11-04.md. No device/screen change; no
+staging or helper. Pending offline work: 1920x1080 fake-fb capture harness and
+a Mesa-wrapped renderer DSO for the full preview.
+
 UI-DISPLAY-REVIEW-2026-11-04: owner observed missing focused sliders/Modus
 chevrons during real display preview. Fixed the captured-panel/live-text skin
 to redraw shipped FA/UFA slider and selection PNG children after background

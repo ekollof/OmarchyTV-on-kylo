@@ -1,3 +1,15 @@
+UI-FB-SIM-2026-11-04 establishes what can replace a TV run. The real fbdev
+display module can run against a fake framebuffer (link-wrapped open/mmap/
+ioctl) on the host and as an ARM binary under qemu-arm-static: eight
+composition/pan/failure groups pass. The GLES scene code runs offline on host
+Mesa llvmpipe by redirecting the production `eglGetDisplay(1)` contract to
+EGL_DEFAULT_DISPLAY (`make scene-gles-mesa`); all nine transition types are
+pixel-exact. User-mode qemu cannot emulate Mali or the ntk `/dev/mali`
+ioctls, and the sysroot has no ARM EGL other than the vendor blob, so vendor
+rasterization and stock-vs-ours scanout comparison still require the set.
+Next offline step: a 1920x1080 fake-fb capture harness and a Mesa-wrapped
+renderer DSO so the full settings preview can render without the TV.
+
 # Current findings and correction map
 
 Initial offline audit:2026-10-31. Subsequent dated reports add implementation
