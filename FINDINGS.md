@@ -92,6 +92,22 @@ through the SVG supplier/renderer/RectangleContainer), background/bar drawing
 and the apps-grid screen remain unimplemented; the home portal has no
 scrollbar, so no visible scrollbar parity is claimed.
 
+OA-CANDIDATE builds modules/display/display.c with -DOA_DISPLAY_NO_PLAT
+(mod_display_fb.so), so a candidate host can bind to the vendor-initialized
+fb1 without OA_SVC_PLAT. Running settings,display_fb,ui_engine,ui_vendor with
+the live /conf/sqlite_db/settingsDB.db and ui.screen=apps painted
+"apps grid: 18 items, first 0, scrollbar 0/600"; candidate-apps_1.png is a
+real 1920x1080 fb1 capture of the grid/scrollbar. Vendor Aurora remained
+owner; the candidate was stopped, /buffer/oa_candidate and /tmp staging
+removed, and the stock no-signal screen verified. This verifies the supervised
+display/scanout binding to an existing vendor-initialized fb1, not a cold
+independent startup: a no-vendor run needs vendor stopped plus /buffer/wdtctl
+watchdog disable (or oa-supervise), which the standing constraints mark
+unauthorized; plat.c measured that openaurora cannot maintain the MCU watchdog
+(STBC kick refuses), and failure may need physical/USB recovery. That cold
+takeover was not executed. Real downloaded-PNG decoding, stock apps-grid pixel
+parity and the independent startup remain open.
+
 UI-APPS-GRID adds SCREEN_APPS5 to ui_vendor (ui.screen=apps): the live
 parent-0 type2 LauncherItem rows page through a 183,180,1554x720 grid of 5x3
 310x230 cells; the top strip is0,0,1921,162 #481730 and the scrollbar is

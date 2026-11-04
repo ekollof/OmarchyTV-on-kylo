@@ -1,5 +1,11 @@
 # Apps-grid screen and scrollbar rasterizer — 2026-11-04
 
+> **Update — OA-CANDIDATE:** a visible live-DB apps-grid scanout capture was
+> obtained through the no-plat supervised fb1 binding (`candidate-apps_1.png`,
+> 18 live items, scrollbar 600). The failed `scene-module-probe` capture below
+> remains recorded as the earlier attempt; the independent cold startup is
+> still blocked on the watchdog/recovery decision.
+
 `ui_vendor` now has a full-screen apps-grid screen (`SCREEN_APPS = 5`,
 `ui.screen=apps`) driven by the live parent-0 LauncherItem rows, with the
 recovered `SVGScrollBar` render ops feeding a rasterizer at the

@@ -31,7 +31,25 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [UI-APPS-GRID](artifacts/reports/UI-APPS-GRID-2026-11-04.md) adds
+Latest: [OA-CANDIDATE](artifacts/reports/OA-CANDIDATE-2026-11-04.md) adds
+mod_display_fb (display.c with -DOA_DISPLAY_NO_PLAT) and binds a candidate
+openaurora host to the vendor-initialized fb1 without plat. The host ran
+settings,display_fb,ui_engine,ui_vendor with the live
+/conf/sqlite_db/settingsDB.db and ui.screen=apps; it logged
+"painted apps grid: 18 items, first 0, scrollbar 0/600" repeatedly.
+candidate-apps_1.png is a real 1920x1080 fb1 capture of the apps grid and
+scrollbar. Vendor Aurora stayed owner; the candidate was stopped,
+/buffer/oa_candidate and /tmp staging removed, and the stock no-signal screen
+verified. This is the supervised display/scanout binding, not a cold
+independent startup. A no-vendor run needs the vendor stopped plus
+/buffer/wdtctl watchdog disable (or oa-supervise); the standing constraints
+mark that takeover unauthorized, plat.c measured that openaurora cannot
+maintain the MCU watchdog, and a failure may need physical/USB recovery. That
+step needs the owner's explicit go-ahead and recovery readiness and was not
+executed. Real downloaded-PNG decoding, stock apps-grid pixel parity and
+independent startup remain open. No persistent change.
+
+Previous: [UI-APPS-GRID](artifacts/reports/UI-APPS-GRID-2026-11-04.md) adds
 SCREEN_APPS (5, ui.screen=apps) to ui_vendor: the live parent-0 type-2
 LauncherItem rows page through the 183,180,1554x720 grid of 5x3 310x230
 cells; top strip 0,0,1921,162 #481730; scrollbar 1750,180,8x720.

@@ -446,9 +446,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       rows/15 cells/bar540 and dumped18/15/600 recorder tests, offline and
       TV-CPU rasters. UI-APPS-GRID. The visible probe reached screen5 but the
       scanout capture returned the vendor frame; no visible apps claim.
-- [ ] Supervised display/scanout binding and independent startup. Keep the
-      live-DB visible run and real downloaded-PNG decoding as explicit
-      acceptance gates.
+- [x] Supervised display/scanout binding: no-plat mod_display_fb binds the
+      candidate host to the vendor-initialized fb1; the live-DB apps grid was
+      captured (18 items/scrollbar 600) in candidate-apps_1.png; vendor
+      remained owner, staging removed. OA-CANDIDATE.
+- [ ] Cold independent startup without vendor Aurora: needs vendor stop plus
+      /buffer/wdtctl watchdog disable (or oa-supervise); currently unauthorized
+      and needs a recovery-ready owner decision. Real downloaded-PNG decoding
+      and stock apps-grid pixel parity remain acceptance gates.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

@@ -708,7 +708,13 @@ static const oa_module g_module = {
     .size = sizeof(oa_module),
     .name = "display",
     .version = "0.1",
+#ifndef OA_DISPLAY_NO_PLAT
     .requires = { OA_SVC_PLAT, "" },
+#else
+    /* Supervised binding to the vendor-initialized fb1: no platform bring-up.
+     * Only valid while the vendor has already initialized the OSD layer. */
+    .requires = { "", 0 },
+#endif
     .init = m_init,
     .start = m_start,
     .stop = m_stop,

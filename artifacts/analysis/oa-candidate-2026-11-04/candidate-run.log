@@ -1,0 +1,48 @@
+[344945] INFO host         openaurora starting, modules=/buffer/oa_candidate/modules
+[344948] INFO host         loaded settings v0.2 (/buffer/oa_candidate/modules/mod_settings.so)
+[344949] INFO settings     /conf/sqlite_db/settingsDB.db open (read-only)
+[344978] INFO settings     probe: m_cec_enabled=1
+[344978] INFO host         started settings
+[344993] INFO host         loaded display v0.1 (/buffer/oa_candidate/modules/mod_display_fb.so)
+[344994] INFO display      /dev/fb1: 1920x1080 32bpp, 2 frame(s), back=1
+[344994] INFO display      region -> 1920x1080 (ok)
+[344994] INFO host         started display
+[344994] INFO host         loaded ui_engine v1 (/buffer/oa_candidate/modules/mod_ui_engine.so)
+[344994] INFO ui_engine    ui_engine started
+[344994] INFO host         started ui_engine
+[344994] INFO host         loaded ui_vendor v0.2 (/buffer/oa_candidate/modules/mod_ui_vendor.so)
+[345680] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[345680] INFO host         started ui_vendor
+openaurora: 4 module(s) loaded, control on (stdin only)
+[346280] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[346879] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[347480] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[348096] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[348713] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[349313] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[349913] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[350513] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[351129] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[351730] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[352330] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[352930] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[353546] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[354146] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[354746] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[355346] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[355946] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[356563] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[357163] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[357763] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[358363] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[358947] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[359513] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[360080] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[360679] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[361263] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[361830] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[362413] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[363013] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[363613] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[364213] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600
+[364813] INFO ui_vendor    painted apps grid: 18 items, first 0, scrollbar 0/600

@@ -665,6 +665,11 @@ $(BUILD)/modules/mod_display.so: modules/display/display.c common/ui_anim.c comm
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
 	  $(VENDOR_LDFLAGS) -lm
 
+$(BUILD)/modules/mod_display_fb.so: modules/display/display.c common/ui_anim.c common/canvas.c include/openaurora/ui_anim.h include/openaurora/canvas.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_DISPLAY_NO_PLAT -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
+	  $(VENDOR_LDFLAGS) -lm
+
 $(BUILD)/modules/mod_settings.so: modules/settings/settings.c common/launcher_db.c include/openaurora/launcher_db.h include/openaurora/launcher_item.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \

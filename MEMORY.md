@@ -1,5 +1,20 @@
 # Current project state — last verified 2026-11-04
 
+OA-CANDIDATE-2026-11-04: mod_display_fb (modules/display/display.c with
+-DOA_DISPLAY_NO_PLAT) binds a candidate openaurora host to the
+vendor-initialized fb1 without plat. The host (settings,display_fb,ui_engine,
+ui_vendor; ui.screen=apps; live /conf/sqlite_db/settingsDB.db) logged
+"painted apps grid: 18 items, first 0, scrollbar 0/600"; candidate-apps_1.png
+is a real 1920x1080 fb1 scanout capture of the grid/scrollbar. Vendor Aurora
+stayed owner; candidate stopped, /buffer/oa_candidate and /tmp staging
+removed, stock no-signal screen verified. This is the supervised display/
+scanout binding, not a cold independent startup: no-vendor needs stopping
+vendor + /buffer/wdtctl watchdog disable (or oa-supervise), which the standing
+constraints mark unauthorized; plat.c says openaurora cannot maintain the MCU
+watchdog (STBC kick refuses) and failure may need physical/USB recovery. Not
+executed. Real downloaded-PNG decoding, stock apps-grid pixel parity and
+independent startup remain open. No persistent change.
+
 UI-APPS-GRID-2026-11-04: ui_vendor SCREEN_APPS5 (ui.screen=apps) uses the
 live parent-0 type2 LauncherItem rows, sorted by m_order_index/id; grid
 183,180,1554x720,5x3 cells310x230; top strip0,0,1921,162 #481730; scrollbar
