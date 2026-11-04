@@ -4,8 +4,9 @@
 /*
  * LauncherItem::LauncherItem(NovoLauncherItem const&) at 0xe4794c.
  *
- * Offsets are the shipped body's, not guesses: 17 scalar copies, 10 UString
- * copy-constructions, one default UString at +0x2c, the shared_ptr pair at
+ * Offsets are the shipped body's:17 scalar copies and10 source UString slots.
+ * Seven strings are copied; the3 advertising slots deliberately construct
+ * empty. The default image-path UString is at+0x2c, the shared_ptr pair at
  * +0x8c/+0x90 with a refcount increment on the control block at +4, the
  * -1/0 initialisers, and the empty-thumbnail default image path.
  */
@@ -55,12 +56,13 @@ void oa_launcher_item_from_novo(void *item,const void *novo,
     ops->ustr_copy((unsigned char *)item+0x34,(const unsigned char *)novo+0x34);
     ops->ustr_copy((unsigned char *)item+0x3c,(const unsigned char *)novo+0x3c);
 
-    /* +0x44/+0x48 from +0x44/+0x48, then UStrings from +0x78/+0x80/+0x88. */
+    /* +0x44/+0x48 from +0x44/+0x48. Advertising/tracking source UStrings
+     * at+78/+80/+88 are excluded; construct empty destination slots. */
     put32(item,0x44,get32(novo,0x44));
     put32(item,0x48,get32(novo,0x48));
-    ops->ustr_copy((unsigned char *)item+0x4c,(const unsigned char *)novo+0x78);
-    ops->ustr_copy((unsigned char *)item+0x54,(const unsigned char *)novo+0x80);
-    ops->ustr_copy((unsigned char *)item+0x5c,(const unsigned char *)novo+0x88);
+    ops->ustr_default((unsigned char *)item+0x4c);
+    ops->ustr_default((unsigned char *)item+0x54);
+    ops->ustr_default((unsigned char *)item+0x5c);
 
     /* +0x64 from +0x90, +0x68 from +0x08, then the three flag bytes. */
     put32(item,0x64,get32(novo,0x90));
@@ -140,9 +142,11 @@ void oa_launcher_info_to_item(void *item,const struct oa_launcher_info *info,
 
     ops->ustr_assign_literal((unsigned char *)item+0x58,info->fvp_application_id);
     ops->ustr_assign_literal((unsigned char *)item+0x60,info->recommendation_url);
-    ops->ustr_assign_literal((unsigned char *)item+0x78,info->ad_url);
-    ops->ustr_assign_literal((unsigned char *)item+0x80,info->ad_image_url);
-    ops->ustr_assign_literal((unsigned char *)item+0x88,info->ad_tracking_url);
+    /* Explicit owner-required deviation: initialise these slots empty even
+     * when the input record was not produced by our sanitized DB adapter. */
+    ops->ustr_assign_literal((unsigned char *)item+0x78,"");
+    ops->ustr_assign_literal((unsigned char *)item+0x80,"");
+    ops->ustr_assign_literal((unsigned char *)item+0x88,"");
 
     put32(item,0x90,(uint32_t)info->channel_handle);
 }

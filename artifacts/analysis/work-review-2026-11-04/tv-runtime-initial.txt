@@ -1,0 +1,16 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ok svg image: create setId/supplier/resource gate and destroy order
+ok svg scrollbar: position state, 720px apps track geometry and render gates
+ok svg scrollbar render: background/bar surface, mask caps and row geometry
+ok launcher item: novo-row conversion, 17 scalars, 11 UStrings and thumbnail path prefix
+ok live launcher db probe: all=54 parent0=27 parent1(incl-deleted)=24
+	libm.so.6 => /lib/libm.so.6 (0x766b8000)
+	libc.so.6 => /lib/libc.so.6 (0x765cb000)
+	/lib/ld-linux-armhf.so.3 (0x76745000)
+1967 (aurora.elf) Z 1785 1278 1278 0 -1 4227148 186 1271 0 0 0 0 0 0 20 0 1 0 491 0 0 4294967295 0 0 0 0 0 0 0 6 65536 1 0 0 17 3 0 0 0 0 0 0 0 0 0 0 0 0 0
+1785 (aurora.elf) S 1703 1278 1278 0 -1 1077936384 4931511 370072 345 372 479682 255266 400 2776 20 0 240 0 283 1306644480 67894 4294967295 65536 24386132 2114449984 0 0 0 0 4096 1256 0 0 0 17 2 0 0 0 0 0 27467476 32140168 57315328 2114450532 2114450564 2114450564 2114453468 0
+no-reset-retained

@@ -133,6 +133,16 @@ static void check_launcher_item(const unsigned char *elf,size_t bytes)
         li_base=n_out;li_tp=li_evn;li_tn=0;
         lictor(n_out,(uint32_t)(uintptr_t)novo);
         memcpy(li_cmp,li_evn,li_tn*sizeof li_evn[0]);unsigned n=li_tn;
+        /* Explicit privacy deviation, not native parity: the vendor copies
+         * three advertising slots; ours constructs them empty. Check the
+         * actual vendor operands before normalizing only these destinations
+         * in the expected trace/output. All ordinary bytes remain compared. */
+        for(unsigned i=6;i<=8;++i) {
+            assert(li_cmp[i].kind==LI_COPY && li_cmp[i].dst==0x4c+(i-6)*8 &&
+                   li_cmp[i].src==0x78+(i-6)*8);
+            memset(n_out+li_cmp[i].dst,0,8);
+            li_cmp[i].kind=LI_DEFAULT;li_cmp[i].src=0;
+        }
         uint32_t native_refs=has_control?refs[1]:0;
         refs[1]=7;
         memset(c_out,0xa5,256);
@@ -166,7 +176,7 @@ static void check_launcher_item(const unsigned char *elf,size_t bytes)
     free(novo);free(n_out);free(c_out);
     assert(!munmap(body,4096) && !munmap(ustr,4096));
     assert(!munmap(dtor,4096) && !munmap(ctrl,4096));
-    printf("ok offline shipped ARM launcher item: %u native/C cases, 17 scalars/11 UStrings/thumbnail path/refcount match\n",compared);
+    printf("ok offline shipped ARM launcher item: %u native/C cases, ordinary fields/path/refcount match; 3 advertising slots explicitly empty\n",compared);
 }
 
 #endif

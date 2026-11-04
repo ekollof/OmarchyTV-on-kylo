@@ -1,5 +1,10 @@
 # LauncherItem resource conversion — 2026-11-04
 
+> Scope correction — WORK-REVIEW-2026-11-04: the three advertising/tracking
+> UString copies are replaced by empty construction. Native tests explicitly
+> distinguish this privacy deviation from ordinary-field/path/refcount parity.
+> The original vendor copy mapping below remains research evidence only.
+
 `common/launcher_item.c` implements the shipped
 `LauncherItem::LauncherItem(NovoLauncherItem const&)` at `0xe4794c` (Thumb,
 500 bytes, CRC `0xd1bcb8c5`) — the settingsDB resource conversion used by

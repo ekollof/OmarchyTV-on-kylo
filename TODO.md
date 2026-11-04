@@ -31,6 +31,12 @@ remove vendor features from scope. Telemetry and advertising are excluded.
 
 ## Core and runtime
 
+- [x] Review later UI/launcher/display work (WORK-REVIEW-2026-11-04): ARM
+      scrollbar wrap/query ordering/four-state caches; explicit launcher ad/
+      tracking exclusion; image byte flag/guards; apps reload/restart/global
+      sorting/cache/hidden-track fixes. Full host, focused ASan/UBSan and42
+      ARM reference groups pass, plus TV CPU/read-only DB/loader checks.
+      These close the named bugs, not full rendering or independent startup.
 - [x] Review UI engine/skin lifetime: skin-owned posted trampolines, bounded
       queue, v2 registration, forced unload/rebind, failed receipts/readiness,
       companion return, timer failure and new-skin identity. Host242/focused
@@ -450,14 +456,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       candidate host to the vendor-initialized fb1; the live-DB apps grid was
       captured (18 items/scrollbar 600) in candidate-apps_1.png; vendor
       remained owner, staging removed. OA-CANDIDATE.
-- [ ] Cold independent startup without vendor Aurora: needs vendor stop plus
-      /buffer/wdtctl watchdog disable (or oa-supervise); currently unauthorized
-      and needs a recovery-ready owner decision. Real downloaded-PNG decoding
+- [ ] Pair temporary display binding with owned full backing/region/MAU/pan
+      restoration and failure cleanup. Ordinary display_fb stop only closes
+      resources; the prior stock screenshot was not state-equality evidence.
+      WORK-REVIEW hardens the no-HAL/no-mdev boundary, not this acceptance.
+- [ ] Cold independent startup without vendor Aurora: establish MCU authority,
+      watchdog/fallback and full display ownership/restoration from firmware.
+      A historical FreshWDT return1 did not prove rejection or impossibility.
+      Vendor stop/watchdog disable remain unauthorized. Real downloaded-PNG decoding
       and stock apps-grid pixel parity remain acceptance gates.
-      Type 0xa is partially mapped (uncreated text-box and slider paths;
-      created slider branch at 0xd559d0 still unrecovered) in
-      artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing
-      committed: the differential crashed on the un-stubbed created branch.
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x9 (slider row):
       95624 native/C comparisons and prior groups pass; full host/Unix IPC,
       ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-SLIDER.

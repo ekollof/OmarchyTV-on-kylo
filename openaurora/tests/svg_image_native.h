@@ -301,7 +301,7 @@ static void check_svg_image(const unsigned char *elf,size_t bytes)
             void *parent=par?(void *)(uintptr_t)0x2222:NULL;
             sv_created=(int)c;sv_parent=(int)par;
             sv_fields[0xa8/4]=fs[f][0];sv_fields[0xac/4]=fs[f][1];
-            sv_fields[0xb0/4]=b0?1:0;sv_fields[0xb4/4]=fs[f][2];
+            sv_fields[0xb0/4]=UINT32_C(0xffffff00)|(b0?255u:0u);sv_fields[0xb4/4]=fs[f][2];
             sv_fields[0xb8/4]=fs[f][3];sv_fields[0xbc/4]=fs[f][4];
             for(unsigned k=0;k<0x40;++k) {
                 if(k>=0xa8/4 && k<=0xbc/4) {

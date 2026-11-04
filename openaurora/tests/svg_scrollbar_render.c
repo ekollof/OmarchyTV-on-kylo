@@ -70,7 +70,7 @@ static void setup(struct oa_svg_scrollbar_render *r)
     memset(r,0,sizeof *r);
     r->skin.cached_image[0]=0x7001;
     r->skin.image_id[0]=0x1234;
-    r->skin.orientation=0;
+    r->skin.widget_state=0;
     r->state.min_bar=36;
 }
 static int rect_eq(const int32_t *a,const int32_t *b)

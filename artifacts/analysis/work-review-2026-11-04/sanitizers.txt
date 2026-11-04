@@ -1,0 +1,40 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+ok svg scrollbar: position state, 720px apps track geometry and render gates
+ok svg scrollbar skin: 36px cap minimum, four widget states, invalid-state rejection and trace order
+ok svg scrollbar render: background/bar surface, mask caps and row geometry
+ok svg image: create setId/supplier/resource gate and destroy order
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-work-review-san/tests/launcher_item tests/launcher_item.c common/launcher_item.c
+ok launcher item: novo-row conversion, 17 scalars, 11 UStrings and thumbnail path prefix
+ok launcher db: 50 rows, parent/deleted filter, truncation and read-only
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -MMD -MP -c -o build-work-review-san/core/control.o core/control.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Ithird_party -fsanitize=address,undefined -o build-work-review-san/tests/launcher_db_module tests/launcher_db_module.c common/launcher_db.c build-work-review-san/core/check.o build-work-review-san/core/control.o build-work-review-san/core/host.o build-work-review-san/core/module.o build-work-review-san/core/skin.o -ldl -pthread -lm \
+   -lsqlite3
+ok launcher db module: 50 rows via reloadable settings service, filters and CLI
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -Itests -Ithird_party -fsanitize=address,undefined -o build-work-review-san/tests/ui_live_cards tests/ui_live_cards.c build-work-review-san/core/check.o build-work-review-san/core/control.o build-work-review-san/core/host.o build-work-review-san/core/module.o build-work-review-san/core/skin.o -ldl -pthread -lm \
+   -lsqlite3
+ok ui apps grid: 20 rows, 15 visible cells, first 0, scrollbar 540
+ok ui apps lifecycle: selection survives reload, restart replaces rows and hides idle scrollbar
+ok ui apps grid: 64 rows, 15 visible cells, first 0, scrollbar 168
+ok ui apps cache: all64 globally ordered cards render after other screens
+  ok   translucent canvas reaches premultiplied BGRA scanout at identity and during fade
+  ok   default current-frame presentation commits every time, including after resume
+  ok   single-buffer presentation also commits through FBIOPAN_DISPLAY
+  ok   sync/commit failures propagate and retry the same frame before rotation
+  ok   scene surface maps the recovered quad (x-slide, scale, keystone, clear)
+  ok   keystone samples both fan triangles; all completed transforms preserve the scene
+  ok   uniform-only fade preserves premultiplied BGRA and transparent-black endpoints
+  ok   optimized opaque slides/fade match the general filtered rasterizer within one byte
+  ok   translucent canvas reaches premultiplied BGRA scanout at identity and during fade
+  ok   default current-frame presentation commits every time, including after resume
+  ok   single-buffer presentation also commits through FBIOPAN_DISPLAY
+  ok   sync/commit failures propagate and retry the same frame before rotation
+  ok   scene surface maps the recovered quad (x-slide, scale, keystone, clear)
+  ok   keystone samples both fan triangles; all completed transforms preserve the scene
+  ok   uniform-only fade preserves premultiplied BGRA and transparent-black endpoints
+  ok   optimized opaque slides/fade match the general filtered rasterizer within one byte
+/dev/fb1: 0x0 virt 0x0 bpp 0 offset 0,0
+primary mapping: physical=0 bytes=0 stride=0
+current MAU: 1 (alternate memory selected)
+region: [0]=0(0) [1]=0(0) [2]=0(0) [3]=0(0) [4]=0(0) [5]=0(0) [6]=0(0) [7]=0(0)
+  ok   fbregion opens read-only and submits only screeninfo/MAU/region GET requests
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

@@ -20,6 +20,16 @@ static struct sbr_ev sbr_evn[64],sbr_evc[64],sbr_cmp[64];
 static struct sbr_ev *sbr_tp;static unsigned sbr_tn;
 static uint32_t sbr_guard=UINT32_C(0x5e21b7c9);
 static int32_t sbr_window[4]={1750,180,1758,900};
+static unsigned sbr_window_calls;
+static int sbr_changing_window;
+static void sbr_get_window(int32_t out[4])
+{
+    memcpy(out,sbr_window,16);
+    if(sbr_changing_window && sbr_window_calls) {
+        out[0]=1700;out[1]=100;out[2]=1712;out[3]=1100;
+    }
+    ++sbr_window_calls;
+}
 static int32_t sbr_supplier_value;
 static int32_t sbr_top_height=20,sbr_bottom_height=16;
 static uint32_t sbr_render_base;
@@ -58,8 +68,8 @@ static uint32_t sbr_bits_draw(void (*f)(void*,void*,int32_t,void*,void*,void*))
 static void sbr_window_rect(void *out,void *self)
 {
     (void)self;
-    memcpy(out,sbr_window,16);
-    sbr_emit(SBR_WINDOW,0,0,0,0,sbr_window);
+    sbr_get_window(out);
+    sbr_emit(SBR_WINDOW,0,0,0,0,out);
 }
 static int32_t sbr_supplier(void *self,uint32_t image_id)
 {
@@ -76,18 +86,6 @@ static void sbr_draw(void *self,void *surface,int32_t image,void *name,
 static void sbr_name(void *out,uint32_t self,uint32_t id)
 {
     (void)self;((uint32_t *)out)[0]=id;((uint32_t *)out)[1]=0;
-}
-static int32_t sbr_div(int32_t numerator,int32_t divisor)
-{ assert(divisor!=0);return numerator/divisor; }
-typedef int32_t (*sbr_div_fn)(int32_t,int32_t);
-static void sbr_div_install(void *mapped,uint32_t base,uint32_t address,
-    sbr_div_fn fn)
-{
-    unsigned char *p=stub_destination(mapped,base,address,8);
-    const uint16_t insn[]={0x4b00,0x4718};
-    assert(!(address&3));memcpy(p,insn,sizeof insn);
-    uint32_t target;assert(sizeof fn==sizeof target);memcpy(&target,&fn,4);
-    memcpy(p+4,&target,4);
 }
 typedef void (*sbr_rect_fn5)(void *,int32_t,int32_t,int32_t,int32_t);
 static void sbr_rect_install(void *mapped,uint32_t base,uint32_t address,
@@ -177,7 +175,7 @@ static unsigned sbr_clear_fn(void *a)
 static int32_t sbro_supplier(struct oa_svg_scrollbar_render *r,int32_t id)
 { (void)r;sbr_emit(SBR_SUPPLIER,0,0,id,0,NULL);return sbr_supplier_value; }
 static void sbro_window(struct oa_svg_scrollbar_render *r,int32_t rect[4])
-{ (void)r;memcpy(rect,sbr_window,16);sbr_emit(SBR_WINDOW,0,0,0,0,rect); }
+{ (void)r;sbr_get_window(rect);sbr_emit(SBR_WINDOW,0,0,0,0,rect); }
 static void sbro_resize(struct oa_svg_scrollbar_render *r,int surface,
     const int32_t rect[4])
 { (void)r;sbr_emit(SBR_RESIZE,(uint32_t)surface,0,0,0,rect); }
@@ -269,7 +267,7 @@ static void check_svg_scrollbar_render(const unsigned char *elf,size_t bytes)
     pair_stub(ctx,0xeed000,0xeed030,sbr_vertical_rect_fn);
     tri_stub(namep,0xeee000,0xeee798,sbr_name);
     sbr_rect_install(rect,0x9a7000,0x9a7fcc,sbr_rect_new);
-    sbr_div_install(divp,0x1285000,0x1285478,sbr_div);
+    shipped_divide(divp,elf,bytes);
     blank_stub(ustr,0xc86000,0xc86554,sbr_blank);
     executable(body,4096);executable(ctx,4096);executable(mask,4096);
     executable(divp,4096);
@@ -279,11 +277,13 @@ static void check_svg_scrollbar_render(const unsigned char *elf,size_t bytes)
     void (*bar_body)(void *);
     { uint32_t entry=0x10c3bad;memcpy(&bar_body,&entry,4); }
     unsigned compared=0;
-    for(unsigned mode=0;mode<8;++mode) {
+    for(unsigned state=0;state<4;++state)
+    for(unsigned mode=0;mode<9;++mode) {
         struct oa_svg_scrollbar_render nr,cr;
         memset(&nr,0,sizeof nr);memset(&cr,0,sizeof cr);
-        nr.skin.cached_image[0]=mode==1||mode==5?0:0x7002;
-        nr.skin.image_id[0]=0x1234;
+        nr.skin.widget_state=state;
+        nr.skin.cached_image[state]=mode==1||mode==5?0:0x7002;
+        nr.skin.image_id[state]=0x1234+state;
         nr.state.min_bar=mode==6?600:36;
         nr.state.total=mode==3||mode==4||mode==5||mode==6?10:20;
         nr.state.visible=mode==3||mode==4||mode==5||mode==6?15:15;
@@ -295,28 +295,30 @@ static void check_svg_scrollbar_render(const unsigned char *elf,size_t bytes)
         assert(sbr_render_base);
         *(uint32_t *)(uintptr_t)sbr_render_base=(uint32_t)(uintptr_t)vtable;
         *(uint32_t *)(uintptr_t)(sbr_render_base+0x68)=0x1234;
-        *(uint32_t *)(uintptr_t)(sbr_render_base+0x6c)=0;
-        *(uint32_t *)(uintptr_t)(sbr_render_base+0x74)=nr.skin.cached_image[0];
-        *(uint32_t *)(uintptr_t)(sbr_render_base+0x84)=nr.skin.image_id[0];
+        *(uint32_t *)(uintptr_t)(sbr_render_base+0x6c)=state;
+        *(uint32_t *)(uintptr_t)(sbr_render_base+0x74+state*4)=nr.skin.cached_image[state];
+        *(uint32_t *)(uintptr_t)(sbr_render_base+0x84+state*4)=nr.skin.image_id[state];
         memcpy((void *)(uintptr_t)(sbr_render_base+0xb0),&nr.state,sizeof nr.state);
+        sbr_changing_window=mode==8;sbr_window_calls=0;
         sbr_tp=sbr_evn;sbr_tn=0;
         if(mode<=1)bg_body((void *)(uintptr_t)sbr_render_base);
         else bar_body((void *)(uintptr_t)sbr_render_base);
         unsigned native_n=sbr_tn;
         memcpy(sbr_cmp,sbr_evn,native_n*sizeof sbr_evn[0]);
         uint32_t native_flag=*(uint8_t *)(uintptr_t)(sbr_render_base+0xc8);
-        uint32_t native_cache=*(uint32_t *)(uintptr_t)(sbr_render_base+0x74);
+        uint32_t native_cache=*(uint32_t *)(uintptr_t)(sbr_render_base+0x74+state*4);
         struct oa_svg_scrollbar_render_ops ops=sbr_ops();
+        sbr_window_calls=0;
         sbr_tp=sbr_evc;sbr_tn=0;
         if(mode<=1)oa_svg_scrollbar_render_background(&cr,&ops);
         else oa_svg_scrollbar_render_bar(&cr,&ops);
         if(native_n!=sbr_tn ||
            memcmp(sbr_cmp,sbr_evc,native_n*sizeof sbr_evc[0]) ||
            native_flag!=cr.state.background_rendered ||
-           native_cache!=(uint32_t)cr.skin.cached_image[0]) {
+           native_cache!=(uint32_t)cr.skin.cached_image[state]) {
             fprintf(stderr,"scrollbar render mismatch mode=%u n=%u/%u flag=%u/%u cache=%x/%x\n",
                 mode,native_n,sbr_tn,native_flag,cr.state.background_rendered,
-                native_cache,cr.skin.cached_image[0]);
+                    native_cache,cr.skin.cached_image[state]);
             for(unsigned i=0;i<native_n||i<sbr_tn;++i)
                 fprintf(stderr,"  [%u] nat k=%u s=%u i=%u id=%u t=%u | ours k=%u s=%u i=%u id=%u t=%u\n",
                     i,i<native_n?sbr_cmp[i].kind:99,i<native_n?sbr_cmp[i].surface:99,
@@ -328,6 +330,7 @@ static void check_svg_scrollbar_render(const unsigned char *elf,size_t bytes)
             exit(1);
         }
         ++compared;
+        free((void *)(uintptr_t)sbr_render_base);
     }
     assert(!munmap(body,4096) && !munmap(ctx,4096) && !munmap(mask,4096));
     assert(!munmap(namep,4096) && !munmap(rect,4096) && !munmap(ustr,4096));

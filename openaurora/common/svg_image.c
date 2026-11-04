@@ -50,7 +50,11 @@ void oa_svg_image_image_create(void *img,const void *resource,
     const uint32_t rect[4],void *parent,
     const struct oa_svg_image_surface_ops *o)
 {
-    if(!img || !resource || !rect || !o)return;
+    if(!img || !resource || !rect || !o || !o->set_parent_window ||
+       !o->set_window_rect || !o->is_created || !o->resize_ui_surface ||
+       !o->target_handle || !o->release_target || !o->draw_image_resource ||
+       !o->draw_image_resource_scaled || !o->create_surface ||
+       !o->set_ui_surface || !o->create_window || !o->image_field)return;
     o->set_parent_window(img,parent);
     o->set_window_rect(img,rect);
     if(o->is_created(img)) {
@@ -68,7 +72,7 @@ void oa_svg_image_image_create(void *img,const void *resource,
         void *target;
         o->set_ui_surface(img,surface);
         target=o->target_handle(img);
-        if(o->image_field(img,0xb0))
+        if((uint8_t)o->image_field(img,0xb0))
             o->draw_image_resource_scaled(img,resource,0,0,target);
         else
             o->draw_image_resource(img,resource,0,0,o->image_field(img,0xa8),
@@ -89,7 +93,8 @@ void oa_svg_image_create_point(void *img,uint32_t id,const int32_t point[2],
     _Alignas(max_align_t) uint8_t resource[OA_SVG_IMAGE_RESOURCE_BYTES];
     uint32_t rect[4]={0,0,0,0};
     int32_t rw,rh;
-    if(!img || !point || !o)return;
+    if(!img || !point || !o || !o->set_id || !o->get_image_supplier ||
+       !o->supplier_get_resource || !o->image_create || (parent && !o->get_client_rect))return;
     memset(resource,0,sizeof resource);
     o->set_id(img,(int32_t)id);
     {

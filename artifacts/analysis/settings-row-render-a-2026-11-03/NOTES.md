@@ -1,5 +1,11 @@
 # renderItems type 0xa — partial recovery (not implemented)
 
+> Superseded: SETTINGS-ROW-A-2026-11-03.md in artifacts/reports records the
+> completed created/uncreated type0xa implementation and native comparisons.
+> This is an earlier failed fixture, not a pending task or a reason to retry
+> that crash. TODO's stale orphaned partial-recovery paragraph was removed by
+> WORK-REVIEW-2026-11-04.
+
 Status: **not implemented**. The not-created paths below were read from the
 ELF with objdump and are believed correct, but the created slider path
 (`0xd559d0`) is only partly recovered and the differential still crashed, so

@@ -148,12 +148,20 @@ int main(void)
     o=ops();o.set_clean_ui_surface=NULL;oa_svg_image_destroy(img,&o);
     assert(count==0);
 
+    { const int32_t pt[2]={1,2};
+      o=ops();o.set_id=NULL;oa_svg_image_create_point(img,1,pt,NULL,&o);
+      o=ops();o.get_client_rect=NULL;oa_svg_image_create_point(img,1,pt,img,&o);
+      assert(count==0); }
+
     /* imageCreate, created window: parent/window rect, surface resize, then a
      * full draw with the image's 0xa8/0xac/0xb4/0xb8/0xbc fields and the
      * target token released afterwards. */
     {
         static const uint32_t r[4]={10,20,30,40};
         struct oa_svg_image_surface_ops so=sops();
+        sn=0;so.release_target=NULL;
+        oa_svg_image_image_create((void *)0x1000,(void *)0x6000,r,NULL,&so);
+        assert(sn==0);so=sops();
         sn=0;s_created=1;
         s_fields[0xa8/4]=1;s_fields[0xac/4]=2;s_fields[0xb0/4]=0;
         s_fields[0xb4/4]=0x3f800000;s_fields[0xb8/4]=0x40000000;s_fields[0xbc/4]=5;
@@ -182,7 +190,7 @@ int main(void)
         assert(sev[7].kind==S_RELEASE && sev[7].a==0x7000);
         assert(sev[8].kind==S_CWIN);
         /* Uncreated without 0xb0: full draw instead of scaled, then create. */
-        sn=0;s_created=0;s_fields[0xb0/4]=0;
+        sn=0;s_created=0;s_fields[0xb0/4]=UINT32_C(0xffffff00); /* ldrb, not word truth */
         oa_svg_image_image_create((void *)0x1000,(void *)0x6000,r,NULL,&so);
         assert(sn==9);
         assert(sev[6].kind==S_DRAW && sev[6].a==1 && sev[6].c==2);

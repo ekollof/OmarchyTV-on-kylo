@@ -221,8 +221,8 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         int32_t parent=0;
         if(a1 && !strcmp(a1,"all"))all=1;
         else if(a1) {
-            char *end=NULL;long value=strtol(a1,&end,10);
-            if(!end || *end || value<INT32_MIN || value>INT32_MAX) {
+            char *end=NULL;errno=0;long value=strtol(a1,&end,10);
+            if(errno || end==a1 || !end || *end || value<INT32_MIN || value>INT32_MAX) {
                 h->api.release(h,OA_SVC_LAUNCHER_DB);
                 snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;
             }

@@ -169,7 +169,7 @@ int main(void)
     for(unsigned i=0;i<11;++i) {
         const char *got=text_of(item+dst_off[i]);
         if(map[i]<0)continue;   /* the built path is asserted separately */
-        const char *want=src_text[map[i]];
+        const char *want=i>=6 && i<=8?"":src_text[map[i]];
         if(strcmp(got,want)) {
             fprintf(stderr,"slot %x got %s want %s\n",dst_off[i],got,want);
             return 1;
@@ -188,9 +188,9 @@ int main(void)
     assert(trace[3].kind==K_DEFAULT && trace[3].dst==0x2c);
     assert(trace[4].kind==K_COPY && trace[4].dst==0x34);
     assert(trace[5].kind==K_COPY && trace[5].dst==0x3c);
-    assert(trace[6].kind==K_COPY && trace[6].dst==0x4c);
-    assert(trace[7].kind==K_COPY && trace[7].dst==0x54);
-    assert(trace[8].kind==K_COPY && trace[8].dst==0x5c);
+    assert(trace[6].kind==K_DEFAULT && trace[6].dst==0x4c);
+    assert(trace[7].kind==K_DEFAULT && trace[7].dst==0x54);
+    assert(trace[8].kind==K_DEFAULT && trace[8].dst==0x5c);
     assert(trace[9].kind==K_COPY && trace[9].dst==0x70);
     assert(trace[10].kind==K_COPY && trace[10].dst==0x78);
 
@@ -222,11 +222,9 @@ int main(void)
             {"app-url",offsetof(struct oa_launcher_info,application_url)},
             {"fvp-id",offsetof(struct oa_launcher_info,fvp_application_id)},
             {"recommendation",offsetof(struct oa_launcher_info,recommendation_url)},
-            {"ad-url",offsetof(struct oa_launcher_info,ad_url)},
-            {"ad-image",offsetof(struct oa_launcher_info,ad_image_url)},
-            {"ad-tracking",offsetof(struct oa_launcher_info,ad_tracking_url)},
         };
         memset(&info,0,sizeof info);
+        memset(info.excluded_vendor_fields,0xa5,sizeof info.excluded_vendor_fields);
         for(unsigned i=0;i<sizeof texts/sizeof texts[0];++i)
             snprintf((char *)&info+texts[i].off,64,"%s",texts[i].text);
         info.id=0x101;info.parent_id=0x102;info.order_index=0x103;
@@ -253,9 +251,6 @@ int main(void)
             {0x2c,offsetof(struct oa_launcher_info,application_url)},
             {0x58,offsetof(struct oa_launcher_info,fvp_application_id)},
             {0x60,offsetof(struct oa_launcher_info,recommendation_url)},
-            {0x78,offsetof(struct oa_launcher_info,ad_url)},
-            {0x80,offsetof(struct oa_launcher_info,ad_image_url)},
-            {0x88,offsetof(struct oa_launcher_info,ad_tracking_url)},
         };
         for(unsigned i=0;i<sizeof map/sizeof map[0];++i) {
             const char *got=text_of(item+map[i].dst);
@@ -267,6 +262,7 @@ int main(void)
             }
             assert(trace[i].kind==K_ASSIGN && trace[i].dst==map[i].dst);
         }
+        assert(!text_of(item+0x78)[0] && !text_of(item+0x80)[0] && !text_of(item+0x88)[0]);
         assert(trace_count==10);
     }
 

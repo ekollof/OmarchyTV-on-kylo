@@ -10,7 +10,7 @@
  *
  * The geometry body calls UIWindow::getWindowRect through vtable slot 0x28
  * (0x1152649); the fake object's vtable slot 10 writes {left,top,right,bottom}.
- * The division helper at 0x1285478 is stubbed with the same signed C division.
+ * The division helper at0x1285478 executes the shipped660-byte ARM body.
  * setScrollPosition's isCreated/renderBackground/renderBar calls are stubbed
  * and traced; the owned API takes the created result as an argument.
  */
@@ -27,11 +27,6 @@ static void sbg_emit(uint32_t kind,uint32_t value)
     assert(sbg_tn<32);
     sbg_tp[sbg_tn].kind=kind;sbg_tp[sbg_tn].value=value;++sbg_tn;
 }
-static int32_t sbg_div(int32_t numerator,int32_t divisor)
-{
-    assert(divisor!=0);
-    return numerator/divisor;
-}
 static void sbg_get_rect(void *out,uint32_t self)
 {
     (void)self;
@@ -40,15 +35,6 @@ static void sbg_get_rect(void *out,uint32_t self)
     ((int32_t *)out)[1]=sbg_rect[1];
     ((int32_t *)out)[2]=sbg_rect[2];
     ((int32_t *)out)[3]=sbg_rect[3];
-}
-typedef int32_t (*sbg_div_fn)(int32_t,int32_t);
-static void sbg_div_stub(void *mapped,uint32_t base,uint32_t address,sbg_div_fn fn)
-{
-    unsigned char *p=stub_destination(mapped,base,address,8);
-    const uint16_t insn[]={0x4b00,0x4718};
-    assert(!(address&3));memcpy(p,insn,sizeof insn);
-    uint32_t target;assert(sizeof fn==sizeof target);memcpy(&target,&fn,4);
-    memcpy(p+4,&target,4);
 }
 static unsigned sbg_created_stub(void *p)
 { (void)p;sbg_emit(1,(uint32_t)sbg_created);return (unsigned)sbg_created; }
@@ -98,7 +84,7 @@ static void check_svg_scrollbar_geom(const unsigned char *elf,size_t bytes)
     memcpy(stub_destination(setp,0x10c4000,0x10c4138,0x70),elf+o,0x70);
     { uint32_t gp=(uint32_t)(uintptr_t)&sbg_guard;
       memcpy(stub_destination(setp,0x10c4000,0x10c41a4,4),&gp,4); }
-    sbg_div_stub(divp,0x1285000,0x1285478,sbg_div);
+    shipped_divide(divp,elf,bytes);
     thumb_stub(win,0x1152000,0x1152a40,sbg_created_stub);
     blank_stub(calc,0x10c3000,0x10c3658,sbg_bg_stub);
     blank_stub(calc,0x10c3000,0x10c3bac,sbg_bar_stub);
@@ -112,11 +98,11 @@ static void check_svg_scrollbar_geom(const unsigned char *elf,size_t bytes)
     int (*set_body)(void *,int32_t,int32_t,int32_t);
     { uint32_t entry=0x10c4139;memcpy(&set_body,&entry,4); }
     unsigned compared=0;
-    static const int32_t totals[]={-5,0,1,10,20,100};
-    static const int32_t visibles[]={-10,0,1,10,20};
-    static const int32_t firsts[]={-5,0,1,5,10,15};
+    static const int32_t totals[]={INT32_MIN,-5,0,1,10,20,100,INT32_MAX};
+    static const int32_t visibles[]={INT32_MIN,-10,0,1,10,20,INT32_MAX-1,INT32_MAX};
+    static const int32_t firsts[]={INT32_MIN,-5,0,1,5,10,15,INT32_MAX};
     static const int32_t mins[]={0,1,50,1000};
-    static const int32_t heights[]={0,1,720,1080};
+    static const int32_t heights[]={INT32_MIN,-1,0,1,720,1080,INT32_MAX};
     for(unsigned a=0;a<sizeof totals/sizeof *totals;++a)
     for(unsigned b=0;b<sizeof visibles/sizeof *visibles;++b)
     for(unsigned c=0;c<sizeof firsts/sizeof *firsts;++c)
@@ -132,7 +118,7 @@ static void check_svg_scrollbar_geom(const unsigned char *elf,size_t bytes)
         sbg_write_state(obj,&state);
         memcpy(before,obj,0x100);
         sbg_rect[0]=1750;sbg_rect[1]=180;sbg_rect[2]=1758;
-        sbg_rect[3]=180+heights[e];
+        { uint32_t bottom=UINT32_C(180)+(uint32_t)heights[e];memcpy(&sbg_rect[3],&bottom,4); }
         sbg_rect_calls=0;
         calc_body(obj);
         struct oa_svg_scrollbar_state native;

@@ -1,0 +1,9 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/work-review/core/check.o core/check.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/work-review/core/control.o core/control.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/work-review/core/host.o core/host.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/work-review/core/module.o core/module.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/work-review/core/skin.o core/skin.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -Ithird_party  -o build-tv-v3/work-review/tests/launcher_db_module tests/launcher_db_module.c common/launcher_db.c build-tv-v3/work-review/core/check.o build-tv-v3/work-review/core/control.o build-tv-v3/work-review/core/host.o build-tv-v3/work-review/core/module.o build-tv-v3/work-review/core/skin.o -ldl -pthread -lm \
+  -Lvendor/lib -lsqlite3
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

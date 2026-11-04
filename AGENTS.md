@@ -303,6 +303,14 @@ in the shipped signed divider reaches unconditional raise(8). Nonzero-range
 reference tests now execute the real divider; zero-range replacement EDOM is
 an explicit error-policy deviation. Do not report that as firmware fault parity.
 
+WORK-REVIEW-2026-11-04: SVGWindow+6c (including scrollbar skin caches) is
+the four-state UFA/FA/UFI/FI index, not orientation. Use all four cache/name
+slots. Test changing getter results: renderBar calculates from the first
+window query and places from the second. Keep add/sub/mul wrap explicit and
+execute the real divider in reference tests. Image+0xb0 is read with ldrb;
+nonzero adjacent bytes must not change its truth. Exclude advertising data
+from SQL projection and object conversion, not merely network delivery.
+
 ## Useful local tools
 
 qemu-arm-static, cross compilers, squashfs-tools, mtd-utils and ubireader are

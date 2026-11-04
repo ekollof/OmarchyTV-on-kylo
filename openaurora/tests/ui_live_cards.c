@@ -4,6 +4,7 @@
 #include "host.h"
 #include "openaurora/events.h"
 #include "openaurora/services.h"
+#include "openaurora/ui_engine.h"
 #include "ui_nav_trace.h"
 #include <assert.h>
 #include <ftw.h>
@@ -19,6 +20,7 @@ struct card { int id,order; char name[64]; };
 static char g_ui_dir[256],g_db[512],g_modules[256],g_assets[256],g_tmp[256];
 static int g_apps;
 static char g_grid_sel[16]="0";
+static const char *g_override="";
 
 static const char *config(void *p,const char *key,const char *def)
 {
@@ -29,6 +31,7 @@ static const char *config(void *p,const char *key,const char *def)
     if(!strcmp(key,"ui.paint"))return "1";
     if(!strcmp(key,"ui.fps"))return "0";
     if(!strcmp(key,"ui.live_cards"))return "1";
+    if(!strcmp(key,"ui.cards"))return g_override;
     if(g_apps && !strcmp(key,"ui.screen"))return "apps";
     if(g_apps && !strcmp(key,"ui.grid_sel"))return g_grid_sel;
     return def;
@@ -125,14 +128,17 @@ static void synthetic_db(const char *path,int apps)
         "m_menu_string_id blob,m_recommendation_url blob,"
         "m_application_ad_tracking_url blob)");
     if (apps) {
-        /* 20 ordered apps for the 5x3 grid and its 15-item page. */
-        for (int i = 0; i < 20; i++) {
+        /* The larger corpus reverses insertion/order, so truncating to64
+         * before sorting must lose the globally earliest six items. */
+        int many=getenv("OA_TEST_MANY")!=NULL;
+        int items=many?70:20;
+        for (int i = 0; i < items; i++) {
             char name[32], sql[512];
             snprintf(name, sizeof name, "live_%02d", i);
             snprintf(sql, sizeof sql,
                 "INSERT INTO LauncherItem VALUES(0,0,0,-1,%d,0,0,1,0,0,2,-1,%d,0,0,0,"
                 "'','','App %d','%s','','','','','','')",
-                200 + i, i + 1, i, name);
+                200 + i, many?items-i:i+1, i, name);
             exec(db, sql);
         }
     } else {
@@ -156,7 +162,8 @@ static unsigned expected_cards(const char *path,struct card *cards)
     assert(sqlite3_open_v2(path,&db,SQLITE_OPEN_READONLY,NULL)==SQLITE_OK);
     assert(sqlite3_prepare_v2(db,
         "SELECT m_id,m_order_index,m_application_thumb_file_name FROM LauncherItem"
-        " WHERE m_parent_id=0 AND m_is_deleted=0 AND m_is_out_of_sync=0 AND m_item_type=2",-1,&st,NULL)==SQLITE_OK);
+        " WHERE m_parent_id=0 AND m_is_deleted=0 AND m_is_out_of_sync=0 AND m_item_type=2"
+        " ORDER BY m_order_index,m_id",-1,&st,NULL)==SQLITE_OK);
     unsigned n=0;
     while(sqlite3_step(st)==SQLITE_ROW && n<MAX_EXPECT) {
         const unsigned char *text=sqlite3_column_blob(st,2);
@@ -263,6 +270,17 @@ int main(int argc,char **argv)
         assert(!command(&host,"start settings",out,sizeof out));
         assert(!command(&host,"load ui_engine",out,sizeof out));
         assert(!command(&host,"start ui_engine",out,sizeof out));
+        if(g_apps && getenv("OA_TEST_MANY")) {
+            const oa_ui_engine_iface *engine=host.api.lookup(&host,OA_SVC_UI_ENGINE,2);
+            assert(engine);
+            for(int i=0;i<32;++i) {
+                char name[32];int w,h;
+                snprintf(name,sizeof name,"other_screen_%d",i);
+                ensure_blob(name,2,2,&w,&h);
+                assert(engine->icon(name));
+            }
+            host.api.release(&host,OA_SVC_UI_ENGINE);
+        }
         assert(!command(&host,"load ui_vendor",out,sizeof out));
         assert(!command(&host,"start ui_vendor",out,sizeof out));
         const oa_nav_trace *trace=host.api.lookup(&host,OA_SVC_NAV_TRACE,1);
@@ -310,6 +328,41 @@ int main(int argc,char **argv)
             }
             printf("ok ui apps grid: %u rows, %d visible cells, first %d, scrollbar %d\n",
                 total,visible,first,bar);
+            if(getenv("OA_TEST_MANY")) {
+                /* Browse every page with other-screen assets already cached. */
+                for(int page=1;page<5;++page) {
+                    for(int i=0;i<3;++i) {
+                        oa_key_event ev={.id=19,.kind=OA_KEY_PRESS};
+                        host.api.emit(&host,OA_TOPIC_KEY,&ev);oa_host_dispatch_posts(&host);
+                    }
+                    int at=page*15,w=270,h=w*expected_h[at]/expected_w[at];
+                    if(h>210){h=210;w=h*expected_w[at]/expected_h[at];}
+                    assert(find_card_blit(trace,183+(310-w)/2,180+(230-h)/2,
+                        w,h,expected_w[at],expected_h[at]));
+                }
+                puts("ok ui apps cache: all64 globally ordered cards render after other screens");
+            }
+            if(!strcmp(argv[2],"synthetic") && !getenv("OA_TEST_MANY") && atoi(g_grid_sel)==0) {
+                for(int i=0;i<3;++i) {
+                    oa_key_event ev={.id=19,.kind=OA_KEY_PRESS};
+                    host.api.emit(&host,OA_TOPIC_KEY,&ev);
+                    oa_host_dispatch_posts(&host);
+                }
+                assert(find_fill(trace,1750,360,8,20,255,255,255));
+                host.api.release(&host,OA_SVC_PORTAL);
+                assert(!command(&host,"reload ui_vendor",out,sizeof out));
+                oa_host_dispatch_posts(&host);
+                assert(find_fill(trace,1750,360,8,20,255,255,255));
+                /* Reuse the same context with a single explicit card: old
+                 * cached rows and the no-longer-needed track must disappear. */
+                g_override="live_00";
+                assert(!command(&host,"stop ui_vendor",out,sizeof out));
+                assert(!command(&host,"start ui_vendor",out,sizeof out));
+                oa_host_dispatch_posts(&host);
+                assert(trace->scaled_count()==1);
+                assert(!find_fill(trace,1750,180,8,20,129,25,36));
+                puts("ok ui apps lifecycle: selection survives reload, restart replaces rows and hides idle scrollbar");
+            }
         } else {
             int visible=visible_cards(total);
             for(int i=0;i<visible;++i) {

@@ -1,5 +1,11 @@
 # SVGScrollBar render bodies — 2026-11-04
 
+> Superseded in part by WORK-REVIEW-2026-11-04: +6c is a four-state widget
+> index, not orientation. Fixed two-entry caches, signed arithmetic and
+> first-window calculation/second-window placement. The expanded36-case
+> render corpus uses the real divider and a changing-window fixture.
+> The8-case results below are historical and did not cover those defects.
+
 `common/svg_scrollbar.c` now implements the shipped
 `SVGScrollBar::renderBackground` (`0x10c3658`) and `renderBar` (`0x10c3bac`)
 as ordered ops-driven sequences. The differential has **8** native/C cases;

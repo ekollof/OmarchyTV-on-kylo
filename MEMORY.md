@@ -1,5 +1,24 @@
 # Current project state — last verified 2026-11-04
 
+WORK-REVIEW-2026-11-04: reviewed cf78486..4ba1599. Fixed scrollbar ARM wrap
+and first-window geometry ordering, four SVGWindow-state caches (not two
+orientations), advertising/tracking-field exclusion, image byte flag/callback
+boundaries, apps reload/restart/sorted64-card cap/hidden track and shared
+128-image cache. Full strict host, focused ASan/UBSan,42 isolated ARM/qemu
+groups (14,576 scrollbar geometry/state,32 skin,36 render,80 image) pass.
+Native launcher fixtures explicitly normalize only the3 excluded advertising
+slots; ordinary fields compare unchanged. Build-tv-v3/work-review identities
+and TV upload/hash checks are in analysis/work-review-2026-11-04. Focused
+TV CPU units, read-only live DB54 rows and loader-only display_fb dependency
+listing pass. No-plat binding rejects HAL init, cannot run mdev and no longer
+links HAL libraries; no revised display draw claimed. tvssh used WoL for access
+and final cleanup reconnect; a stalled pre-auth local SSH was stopped and a
+bounded retry verified removal (tv-cleanup-final.txt).
+stock live PID1785/zombie1967 observed. Staging removed/no helper and no-reset
+retained. No settings/network/service/boot/persistent write. Full display
+snapshot restoration, native watchdog/ownership/fallback and cold startup stay
+open; earlier FreshWDT refusal/impossibility inference withdrawn at source.
+
 OA-CANDIDATE-2026-11-04: mod_display_fb (modules/display/display.c with
 -DOA_DISPLAY_NO_PLAT) binds a candidate openaurora host to the
 vendor-initialized fb1 without plat. The host (settings,display_fb,ui_engine,
@@ -8,11 +27,12 @@ ui_vendor; ui.screen=apps; live /conf/sqlite_db/settingsDB.db) logged
 is a real 1920x1080 fb1 scanout capture of the grid/scrollbar. Vendor Aurora
 stayed owner; candidate stopped, /buffer/oa_candidate and /tmp staging
 removed, stock no-signal screen verified. This is the supervised display/
-scanout binding, not a cold independent startup: no-vendor needs stopping
-vendor + /buffer/wdtctl watchdog disable (or oa-supervise), which the standing
-constraints mark unauthorized; plat.c says openaurora cannot maintain the MCU
-watchdog (STBC kick refuses) and failure may need physical/USB recovery. Not
-executed. Real downloaded-PNG decoding, stock apps-grid pixel parity and
+scanout binding, not a cold independent startup. WORK-REVIEW withdraws the
+unsupported inference that a historical FreshWDT return1 proves kick refusal
+or makes native watchdog maintenance impossible. Vendor stop/watchdog disable
+remain unauthorized; the native ownership/watchdog/fallback contract is still
+unverified. No cold takeover was executed. Stock screenshot acceptance did not
+prove full display-state restoration. Real downloaded-PNG decoding, stock apps-grid pixel parity and
 independent startup remain open. No persistent change.
 
 UI-APPS-GRID-2026-11-04: ui_vendor SCREEN_APPS5 (ui.screen=apps) uses the

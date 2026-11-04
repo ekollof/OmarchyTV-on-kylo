@@ -1,5 +1,10 @@
 # Scrollbar skin minimum — 2026-11-04
 
+> Correction — WORK-REVIEW-2026-11-04: +6c is SVGWindow's four-state
+> UFA/FA/UFI/FI index, not horizontal/vertical orientation. Four cache/name
+> slots and32 native cases now replace the two-slot/16-case implementation.
+> The cap geometry below remains evidence; the orientation interpretation does not.
+
 `common/svg_scrollbar.c` adds the shipped `SVGScrollBar::calculateMinBarSize`
 (`0x10c397c`, 0x174 bytes, CRC `0xd9fdda32`) as
 `oa_svg_scrollbar_min_bar`. The differential has **16** native/C cases; the

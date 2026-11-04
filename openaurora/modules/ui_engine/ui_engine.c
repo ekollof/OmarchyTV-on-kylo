@@ -19,7 +19,9 @@
 #include "openaurora/services.h"
 #include "openaurora/ui_engine.h"
 
-#define ENGINE_MAX_ICONS 64
+/* The64-item apps grid shares the cache with portal/settings/source assets.
+ * Keep a bounded cache, but leave room for those other screens as well. */
+#define ENGINE_MAX_ICONS 128
 #define ENGINE_MAX_EVENTS 64
 
 struct engine {

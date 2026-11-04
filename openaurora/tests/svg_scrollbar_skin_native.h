@@ -7,8 +7,9 @@
  * Differential for SVGScrollBar::calculateMinBarSize (0x10c397c, 0x174 bytes,
  * CRC 0xd9fdda32), Thumb.
  *
- * The body caches the supplier image at +0x74+orientation*4 (image id at
- * +0x84+orientation*4), then resolves standard names 0x20/0x22 and 0x21/0x23
+ * The body caches the supplier image at+0x74+state*4 (image id at
+ * +0x84+state*4), then resolves standard names0x20/0x22 and0x21/0x23.
+ * All four SVGWindow UFA/FA/UFI/FI states are covered, not orientation.
  * and adds the two moving-bar cap heights. The native stubs provide a fake
  * SVG supplier/renderer, getWidgetStandardName, RectangleContainer and
  * UString destructor; the owned ops trace the same supplier/name/background/
@@ -125,14 +126,14 @@ static void check_svg_scrollbar_skin(const unsigned char *elf,size_t bytes)
     void (*min_body)(void *);
     { uint32_t entry=0x10c397d;memcpy(&min_body,&entry,4); }
     unsigned compared=0;
-    for(unsigned orient=0;orient<2;++orient)
+    for(unsigned orient=0;orient<4;++orient)
     for(unsigned cache=0;cache<2;++cache)
     for(unsigned supplier=0;supplier<2;++supplier)
     for(unsigned rect23=0;rect23<2;++rect23) {
         struct oa_svg_scrollbar_skin state=(struct oa_svg_scrollbar_skin){
             .cached_image={0xAAAA,0xBBBB},
-            .image_id={0x1234,0x5678},
-            .min_bar=99,.orientation=(uint8_t)orient};
+            .image_id={0x1234,0x5678,0x9abc,0xdef0},
+            .min_bar=99,.widget_state=orient};
         state.cached_image[orient]=cache?0x7003:0;
         skin_supplier_value=supplier?0x7001:0;
         skin_rect23_present=(int)rect23;
@@ -164,7 +165,7 @@ static void check_svg_scrollbar_skin(const unsigned char *elf,size_t bytes)
     free(obj);
     assert(!munmap(body,4096) && !munmap(ctx,4096));
     assert(!munmap(namep,4096) && !munmap(ustr,4096));
-    printf("ok offline shipped ARM svg scrollbar skin: %u native/C cases, cap minimum/cache/orientation match\n",compared);
+    printf("ok offline shipped ARM svg scrollbar skin: %u native/C cases, cap minimum/cache/four widget states match\n",compared);
 }
 
 #endif

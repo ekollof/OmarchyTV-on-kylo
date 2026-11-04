@@ -1,0 +1,18 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+db9aff48fb62511aa6e011ed7e072177  svg_image
+4ee63acb8f693106664b29331149dcee  svg_scrollbar
+f2a4179c0312f82db2146eb55c0bccb2  svg_scrollbar_render
+81d02b9a2490a1917acea44be3494c7d  launcher_item
+82a953624f2459dc46b33ac6acc50e61  launcher_db
+1dad2f629c7abfc59825d19aa21f505d  mod_display_fb.so
+    50592 svg_image
+    37576 svg_scrollbar
+    59864 svg_scrollbar_render
+    54852 launcher_item
+    49652 launcher_db
+    90108 mod_display_fb.so
+   342644 total

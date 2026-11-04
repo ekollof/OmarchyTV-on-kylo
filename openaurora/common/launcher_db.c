@@ -5,16 +5,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Schema order, matching the vendor's MemberAccess table. */
+/* Ordinary launcher columns from the vendor's MemberAccess table.
+ * Advertising/tracking columns are deliberately never queried. */
 static const char query_text[]=
     "SELECT m_application_image_crc,m_application_thumb_update_time,"
     "m_application_update_time,m_channel_handle,m_id,m_is_delete_disabled,"
     "m_is_deleted,m_is_featured,m_is_moved_by_user,m_is_out_of_sync,"
     "m_item_type,m_menu_return_id,m_order_index,m_original_id,m_parent_id,"
-    "m_server_id,m_application_ad_image_url,m_application_ad_url,"
+    "m_server_id,"
     "m_application_name,m_application_thumb_file_name,m_application_thumb_url,"
     "m_application_url,m_fvp_application_id,m_menu_string_id,"
-    "m_recommendation_url,m_application_ad_tracking_url FROM LauncherItem";
+    "m_recommendation_url FROM LauncherItem";
 
 static void set_error(char *error,size_t cap,const char *text)
 {
@@ -95,16 +96,13 @@ static int read_rows(const char *path,int32_t parent_id,int use_parent,
         row.original_id=(int32_t)sqlite3_column_int(st,13);
         row.parent_id=(int32_t)sqlite3_column_int(st,14);
         row.server_id=(int32_t)sqlite3_column_int(st,15);
-        copy_text(row.ad_image_url,sizeof row.ad_image_url,st,16);
-        copy_text(row.ad_url,sizeof row.ad_url,st,17);
-        copy_text(row.application_name,sizeof row.application_name,st,18);
-        copy_text(row.thumb_file_name,sizeof row.thumb_file_name,st,19);
-        copy_text(row.thumb_url,sizeof row.thumb_url,st,20);
-        copy_text(row.application_url,sizeof row.application_url,st,21);
-        copy_text(row.fvp_application_id,sizeof row.fvp_application_id,st,22);
-        copy_text(row.menu_string_id,sizeof row.menu_string_id,st,23);
-        copy_text(row.recommendation_url,sizeof row.recommendation_url,st,24);
-        copy_text(row.ad_tracking_url,sizeof row.ad_tracking_url,st,25);
+        copy_text(row.application_name,sizeof row.application_name,st,16);
+        copy_text(row.thumb_file_name,sizeof row.thumb_file_name,st,17);
+        copy_text(row.thumb_url,sizeof row.thumb_url,st,18);
+        copy_text(row.application_url,sizeof row.application_url,st,19);
+        copy_text(row.fvp_application_id,sizeof row.fvp_application_id,st,20);
+        copy_text(row.menu_string_id,sizeof row.menu_string_id,st,21);
+        copy_text(row.recommendation_url,sizeof row.recommendation_url,st,22);
         if(use_parent && row.parent_id!=parent_id)continue;
         if(!include_deleted && row.is_deleted)continue;
         if(!include_out_of_sync && row.is_out_of_sync)continue;

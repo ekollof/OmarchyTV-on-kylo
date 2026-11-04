@@ -46,6 +46,8 @@ int main(void)
     calc(&s,-5,-10,0,0,720,0x1111,0x2222); /* negative branch keeps both */
     calc(&s,20,10,0,0,0,0,0);
     calc(&s,20,10,0,1000,0,0,0);
+    calc(&s,INT32_MAX,INT32_MAX-1,10,0,INT32_MAX,-10,0);
+    calc(&s,10,2,1,0,INT32_MAX,268435455,0);
 
     /* setScrollPosition: not created and first > total leave the fields. */
     struct oa_svg_scrollbar_state saved;

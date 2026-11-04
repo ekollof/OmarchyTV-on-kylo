@@ -42,24 +42,27 @@ initialized fb1. It is not a cold independent startup: the display plane,
 fb1 mapping and kernel state were initialized by the vendor boot/Aurora, and
 the vendor process remained the owner throughout.
 
-## Independent startup candidate — blocked on the watchdog/recovery decision
+## Independent startup — unverified, not authorized by this test
 
-An independent run without vendor Aurora is staged by the same bundle but
-requires:
+**Correction — WORK-REVIEW:** the historical FreshWDT return1 does not
+establish kick rejection or prove that native watchdog maintenance is impossible.
+The earlier inference from that scalar, and the claim that this bundle was
+ready for independent takeover, are withdrawn. The MCU authority/lifecycle and
+actual return contract need firmware investigation; do not repeat the cold
+probe, which previously reset the set.
 
-1. stopping the vendor `aurora.elf` owner;
-2. disabling the MCU watchdog with `/buffer/wdtctl` (or letting
-   `oa-supervise` do it) because `mod_plat` measured that
-   `NDAL_VideoExt_STBC_FreshWDT()` refuses a kick from a plain process, so
-   openaurora cannot maintain the watchdog;
-3. being ready to recover the set if the child fails (vendor fallback /
-   power cycle / USB recovery).
+No vendor stop/watchdog disable was executed. Those operations remain outside
+standing authorization. Any later independent-startup test needs an evidenced
+ownership/watchdog/fallback plan and the authorization specified in AGENTS.md.
+This shared-display run supplies neither cold-startup proof nor that plan.
+Ordinary module stop does not restore the whole framebuffer/region/MAU/pan:
+the stock screenshot recorded return to stock output, not full state equality.
+A future display test needs an explicit restoration owner.
 
-The standing project constraints mark the `wdtctl disable` takeover as
-currently unauthorized, and a failed takeover can leave the UI lost until
-recovery. This step needs the owner’s explicit go-ahead and physical recovery
-readiness; it was **not** executed. The no-`plat` binding and candidate
-bundle are ready for that run.
+The reviewed no-plat binding now rejects display.drm_init=1 before open, cannot
+run global mdev discovery and has no vendor-HAL dynamic dependencies. Its
+metadata name is display_fb. This hardening was checked offline plus a real-TV
+loader-only dependency listing; the revised binding has not drawn on the TV.
 
 ## Limits
 

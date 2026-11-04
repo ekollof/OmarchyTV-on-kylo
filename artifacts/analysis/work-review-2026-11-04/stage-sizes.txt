@@ -1,0 +1,8 @@
+ 49652 launcher_db
+ 54852 launcher_item
+ 90108 mod_display_fb.so
+ 50592 svg_image
+ 37424 svg_scrollbar
+ 59916 svg_scrollbar_render
+ 36052 svg_scrollbar_skin
+378596 total

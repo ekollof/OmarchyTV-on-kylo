@@ -39,6 +39,10 @@ int main(int argc,char **argv)
     oa_mod *m=oa_module_load(h,"settings");
     assert(m && !oa_module_start(h,m));
     char out[8192];
+    assert(command(h,"launcher-items 999999999999999999999999999999",out,sizeof out)==-1);
+    assert(contains(out,"failed errno 22"));
+    assert(command(h,"launcher-items -999999999999999999999999999999",out,sizeof out)==-1);
+    assert(contains(out,"failed errno 22"));
     assert(!command(h,"launcher-items all",out,sizeof out));
     assert(contains(out,"count 50"));
     assert(!command(h,"launcher-items 0",out,sizeof out));

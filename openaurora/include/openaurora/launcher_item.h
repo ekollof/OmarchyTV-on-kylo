@@ -23,7 +23,9 @@ extern "C" {
  *
  * The UString operations stay behind this ops table so the module has no
  * vendor object ABI dependency. Source offsets are read-only; the only write
- * outside the destination item is the shared_ptr control-block refcount at
+ * Advertising/tracking source slots+78/+80/+88 deliberately become empty
+ * UStrings at destination+4c/+54/+5c, overriding the vendor copy policy.
+ * The only write outside the destination item is the shared_ptr control-block refcount at
  * control+4 (the shipped body's atomic branch).
  */
 struct oa_launcher_item_ops {
@@ -72,9 +74,9 @@ struct oa_launcher_info {
     int32_t original_id;               /* +0x02c m_original_id */
     int32_t parent_id;                 /* +0x030 m_parent_id */
     int32_t server_id;                 /* +0x034 m_server_id */
-    char ad_image_url[300];            /* +0x038 */
-    char ad_tracking_url[300];         /* +0x164 */
-    char ad_url[300];                  /* +0x290 */
+    /* Keep recovered ordinary-column offsets, but never load or propagate
+     * the vendor's three advertising/tracking fields at+038/+164/+290. */
+    uint8_t excluded_vendor_fields[900]; /* +0x038, always zero from DB */
     char application_name[60];         /* +0x3bc */
     char thumb_file_name[300];         /* +0x3f8 */
     char thumb_url[300];               /* +0x524 */
@@ -88,6 +90,8 @@ struct oa_launcher_info {
  * SqliteLauncherDatabaseAdapter::copyLauncherInfoToItem (0xfac334): converts
  * one decoded record into the NovoLauncherItem intermediate. Text fields are
  * assigned with UString::operator=(char const*) through the same ops table.
+ * The three excluded vendor fields are never read; their destinations at
+ * +78/+80/+88 are explicitly assigned empty strings.
  */
 void oa_launcher_info_to_item(void *item,const struct oa_launcher_info *info,
     const struct oa_launcher_item_ops *ops);

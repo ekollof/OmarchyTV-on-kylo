@@ -62,7 +62,7 @@ static void make_truncation_db(const char *path)
     char sql[1024];
     snprintf(sql,sizeof sql,
         "INSERT INTO LauncherItem VALUES(1,2,3,-1,7,0,0,1,0,0,2,-1,0,0,0,0,"
-        "'','','%s','thumb','','','','','%s','')",name,recommendation);
+        "'excluded-image','excluded-url','%s','thumb','','','','','%s','excluded-tracker')",name,recommendation);
     if(sqlite3_exec(db,sql,NULL,NULL,&errmsg)!=SQLITE_OK) {
         fprintf(stderr,"truncation insert: %s\n",errmsg?errmsg:"?");
         sqlite3_free(errmsg);exit(1);
@@ -105,8 +105,9 @@ int main(int argc,char **argv)
     assert(!strcmp(row->application_url,
         "http://www.portaltv.tv/swf/netflix/netflix.swf"));
     assert(!row->menu_string_id[0] && !row->recommendation_url[0]);
-    assert(!row->fvp_application_id[0] && !row->ad_url[0]);
-    assert(!row->ad_image_url[0] && !row->ad_tracking_url[0]);
+    assert(!row->fvp_application_id[0]);
+    for(size_t i=0;i<sizeof row->excluded_vendor_fields;++i)
+        assert(row->excluded_vendor_fields[i]==0);
     assert(!strcmp(row->thumb_url,
         "https://s3-eu-west-1.amazonaws.com/orionportal/orion/applogos/netflix_61.png"));
 
@@ -150,6 +151,8 @@ int main(int argc,char **argv)
     assert(strlen(list.rows[0].recommendation_url)==299);
     assert(list.rows[0].application_name[0]=='A');
     assert(list.rows[0].recommendation_url[0]=='B');
+    for(size_t i=0;i<sizeof list.rows[0].excluded_vendor_fields;++i)
+        assert(!list.rows[0].excluded_vendor_fields[i]);
     oa_launcher_db_free(&list);
     remove(temp);
 

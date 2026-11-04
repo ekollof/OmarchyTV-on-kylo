@@ -668,7 +668,7 @@ $(BUILD)/modules/mod_display.so: modules/display/display.c common/ui_anim.c comm
 $(BUILD)/modules/mod_display_fb.so: modules/display/display.c common/ui_anim.c common/canvas.c include/openaurora/ui_anim.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_DISPLAY_NO_PLAT -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
-	  $(VENDOR_LDFLAGS) -lm
+	  -lm
 
 $(BUILD)/modules/mod_settings.so: modules/settings/settings.c common/launcher_db.c include/openaurora/launcher_db.h include/openaurora/launcher_item.h
 	@mkdir -p $(dir $@)
@@ -966,6 +966,7 @@ check-ui-live-dump: $(BUILD)/tests/ui_live_cards ui-live-stage
 .PHONY: check-ui-apps-grid
 check-ui-apps-grid: $(BUILD)/tests/ui_live_cards ui-live-stage
 	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "" apps
+	@OA_TEST_MANY=1 $(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "" apps
 check: check-ui-apps-grid
 
 $(BUILD)/tests/ui_nav_display.so: tests/ui_nav_display.c tests/ui_nav_trace.h include/openaurora/services.h
@@ -1081,6 +1082,11 @@ check-control: $(BUILD)/tests/control_reply $(BUILD)/tests/control_transport
 $(BUILD)/tests/display_present: tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c include/openaurora/canvas.h include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm \
+	  $(foreach call,open close system mmap munmap msync ioctl,-Wl,--wrap=$(call))
+
+$(BUILD)/tests/display_binding: tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c include/openaurora/canvas.h include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) -DOA_DISPLAY_NO_PLAT $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm \
 	  $(foreach call,open close system mmap munmap msync ioctl,-Wl,--wrap=$(call))
 
 $(BUILD)/fbregion: tools/mcu/fbregion.c
@@ -1283,8 +1289,9 @@ $(BUILD)/tests/fbregion_read: tests/fbregion_read.c tools/mcu/fbregion.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $< -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=ioctl
 
-check-display: $(BUILD)/tests/display_present $(BUILD)/tests/fbregion_read
+check-display: $(BUILD)/tests/display_present $(BUILD)/tests/display_binding $(BUILD)/tests/fbregion_read
 	@$(BUILD)/tests/display_present
+	@$(BUILD)/tests/display_binding
 	@$(BUILD)/tests/fbregion_read
 
 check-runtime: all

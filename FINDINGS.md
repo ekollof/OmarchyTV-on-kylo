@@ -27,6 +27,20 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+WORK-REVIEW-2026-11-04 corrects the later work: scrollbar+6c is SVGWindow's
+four states, not orientation; two-entry caches omitted inactive states.
+Calculate uses wrapped32-bit math and the first window query, while render
+places from the second. Both reference groups now use the real divider;
+14,576 geometry/state,32 skin and36 render cases pass. imageCreate+0xb0 is a
+byte, not word truth. Launcher ad/tracking columns and propagation are removed;
+the three deliberate privacy differences are explicit in native comparisons.
+Apps selection survives reload, new rows replace old rows on restart, sorting
+precedes the64-card cap, and hidden tracks/shared-cache exhaustion are fixed.
+Strict host/sanitizer/ARM and focused TV CPU/GET-only checks pass. Revised
+display_fb cannot initialize HAL or run mdev and has no HAL dependency, but
+full hardware restoration/ownership/startup remain open. A historical
+FreshWDT return1 did not prove refusal or native-watchdog impossibility.
+
 UI-DISPLAY-REVIEW-2026-11-04: the preview's clean focus bar erased the captured
 slider/selection children; live text alone did not restore them. Skin now draws
 shipped sliderFA/UFA tracks/PNG knobs and focused choice chevrons, with explicit
@@ -101,11 +115,11 @@ real 1920x1080 fb1 capture of the grid/scrollbar. Vendor Aurora remained
 owner; the candidate was stopped, /buffer/oa_candidate and /tmp staging
 removed, and the stock no-signal screen verified. This verifies the supervised
 display/scanout binding to an existing vendor-initialized fb1, not a cold
-independent startup: a no-vendor run needs vendor stopped plus /buffer/wdtctl
-watchdog disable (or oa-supervise), which the standing constraints mark
-unauthorized; plat.c measured that openaurora cannot maintain the MCU watchdog
-(STBC kick refuses), and failure may need physical/USB recovery. That cold
-takeover was not executed. Real downloaded-PNG decoding, stock apps-grid pixel
+independent startup. WORK-REVIEW withdraws the inference that a FreshWDT
+return1 proves kick refusal or makes native watchdog maintenance impossible.
+Ownership/watchdog/fallback remain unverified and vendor stop/watchdog disable
+remain unauthorized. The stock screenshot was not a full state-restore proof.
+That cold takeover was not executed. Real downloaded-PNG decoding, stock apps-grid pixel
 parity and the independent startup remain open.
 
 UI-APPS-GRID adds SCREEN_APPS5 to ui_vendor (ui.screen=apps): the live

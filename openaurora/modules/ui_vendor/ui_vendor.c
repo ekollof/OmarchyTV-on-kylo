@@ -1036,8 +1036,13 @@ static void paint_apps(struct ctx *c)
     memset(&sb,0,sizeof sb);
     sb.c=c;
     g_apps_sbar=&sb;
-    oa_svg_scrollbar_render_background(&sr,&apps_sbar_ops);
-    oa_svg_scrollbar_render_bar(&sr,&apps_sbar_ops);
+    /* This immediate raster adapter has no retained surface to clear.
+     * Suppress the whole scrollbar when the firmware geometry hides its
+     * bar, rather than leaving the track painted after a no-op clear. */
+    if (c->grid_count > APPS_VISIBLE) {
+        oa_svg_scrollbar_render_background(&sr,&apps_sbar_ops);
+        oa_svg_scrollbar_render_bar(&sr,&apps_sbar_ops);
+    }
     g_apps_sbar=NULL;
     if (d->present()!=0) {
         c->api->log(c->api->priv,OA_LOG_ERROR,"apps grid present failed");
@@ -1736,19 +1741,23 @@ static int load_live_cards(struct ctx *c)
     size_t count=db->count(list);
     struct live_card cards[64];
     unsigned n=0;
-    for(size_t i=0;i<count && n<sizeof cards/sizeof cards[0];++i) {
+    for(size_t i=0;i<count;++i) {
         struct oa_launcher_row_view row;
         if(db->get(list,i,&row) || row.item_type!=2 || !row.thumb_file_name[0] ||
-           strchr(row.thumb_file_name,'/'))
+           strchr(row.thumb_file_name,'/') || strlen(row.thumb_file_name)>=sizeof cards[0].name)
             continue;
-        cards[n].order=row.order_index;cards[n].id=row.id;
-        snprintf(cards[n].name,sizeof cards[n].name,"%s",row.thumb_file_name);
-        ++n;
+        struct live_card candidate={.order=row.order_index,.id=row.id};
+        snprintf(candidate.name,sizeof candidate.name,"%s",row.thumb_file_name);
+        unsigned at=0;
+        while(at<n && live_card_cmp(&cards[at],&candidate)<=0)++at;
+        if(at>=MAX_GRID)continue;
+        if(n<MAX_GRID)++n;
+        memmove(&cards[at+1],&cards[at],(n-at-1)*sizeof cards[0]);
+        cards[at]=candidate;
     }
     db->release(list);
     c->api->release(c->api->priv,OA_SVC_LAUNCHER_DB);
     if(!n)return 0;
-    qsort(cards,n,sizeof cards[0],live_card_cmp);
     c->grid_count=(int)n;
     for(unsigned i=0;i<n;++i)
         snprintf(c->grid_cards[i],sizeof c->grid_cards[0],"%s",cards[i].name);
@@ -1807,6 +1816,7 @@ static int m_start(void *v)
     c->scene_painted = 0;
 
     const char *spec = c->api->config_get(c->api->priv, "ui.cards", "");
+    c->grid_count = 0; /* stop/start may reuse this context with new DB/config */
     const char *live = c->api->config_get(c->api->priv, "ui.live_cards", "1");
     if (spec && spec[0]) {
         parse_cards(c, spec);
@@ -1819,7 +1829,7 @@ static int m_start(void *v)
     if (c->grid_count == 0 && c->nc > 0) {
         c->grid_count = c->nc;
         for (int i = 0; i < c->nc; i++)
-            snprintf(c->grid_cards[i], sizeof c->grid_cards[0], "%s", c->cards[i]);
+            memcpy(c->grid_cards[i],c->cards[i],sizeof c->cards[i]);
     }
 
     if (!c->restored) {
@@ -1843,8 +1853,10 @@ static int m_start(void *v)
         c->screen = SCREEN_SETTINGS_LIST;
     if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "apps")) {
         c->screen = SCREEN_APPS;
-        c->grid_sel = atoi(c->api->config_get(c->api->priv, "ui.grid_sel", "0"));
+        if (!c->restored)
+            c->grid_sel = atoi(c->api->config_get(c->api->priv, "ui.grid_sel", "0"));
         if (c->grid_sel < 0) c->grid_sel = 0;
+        if (c->grid_count == 0) c->grid_sel = 0;
         if (c->grid_count > 0 && c->grid_sel >= c->grid_count)
             c->grid_sel = c->grid_count - 1;
     }
@@ -2089,28 +2101,31 @@ static size_t m_save(void *v, void *buf, size_t cap)
     struct ctx *c = v;
     if (!c)
         return 0;
-    if (!buf || cap < 4)
-        return 4;
+    if (!buf || cap < 5)
+        return 5;
     unsigned char *bytes = buf;
     bytes[0] = (unsigned char)c->band;
     bytes[1] = (unsigned char)c->rail;
     bytes[2] = (unsigned char)c->card;
     bytes[3] = (unsigned char)c->screen;
-    return 4;
+    bytes[4] = (unsigned char)c->grid_sel;
+    return 5;
 }
 
 static int m_restore(void *v, const void *buf, size_t len)
 {
     struct ctx *c = v;
-    if (!c || !buf || len != 4)
+    if (!c || !buf || (len != 4 && len != 5))
         return -1;
     const unsigned char *bytes = buf;
-    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_APPS)
+    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_APPS ||
+        (len == 5 && bytes[4] >= MAX_GRID))
         return -1;
     c->band = bytes[0];
     c->rail = bytes[1];
     c->card = bytes[2];
     c->screen = bytes[3];
+    c->grid_sel = len == 5 ? bytes[4] : 0;
     c->restored = 1;
     return 0;
 }

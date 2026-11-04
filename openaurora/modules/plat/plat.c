@@ -192,10 +192,11 @@ static int m_start(void *v)
      * aurora feeds the MCU watchdog from a thread: ICE_HardwareInit does
      *     if (ICE_HardwareWatchdog(1) == 1) FROST_ThreadCreate(...)   - default timeout 10 s
      * and the kick itself is PLAT_SYS_KickWatchDog() -> NDAL_VideoExt_STBC_FreshWDT().
-     * Measured 2026-10-31 with this probe: after a full plat bring-up the call no longer resets the
-     * set (the cold call does), but it returns 1 - the STBC path refuses a kick from a plain process.
-     * So the MCU watchdog cannot be maintained by openaurora; a takeover keeps it disabled and relies
-     * on the hook's heartbeat/fallback instead. Kept as a probe for when that changes.
+     * Historical2026-10-31 probe returned1 after platform bring-up; a cold
+     * call reset the set. That scalar does not establish rejection, watchdog
+     * refresh or independent-process feasibility. The paired MCU authority,
+     * lifecycle and actual return contract need firmware analysis before any
+     * further hardware run. Default-off historical probe, not a takeover plan.
      */
     if (c->api->config_get(c->api->priv, "plat.wdt_probe", "0")[0] == '1') {
         int rc = NDAL_VideoExt_STBC_FreshWDT();

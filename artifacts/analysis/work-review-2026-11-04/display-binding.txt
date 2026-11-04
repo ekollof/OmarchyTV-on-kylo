@@ -1,0 +1,23 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/display_present tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c -lm \
+  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=system -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -DOA_DISPLAY_NO_PLAT -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/display_binding tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c -lm \
+  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=system -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl
+tests/display_present.c: In function ‘config’:
+tests/display_present.c:88:49: error: implicit declaration of function ‘getenv’ [-Wimplicit-function-declaration]
+   88 |     if (!strcmp(key,"display.drm_init")) return getenv("OA_TEST_BINDING_HAL")?"1":"0";
+      |                                                 ^~~~~~
+tests/display_present.c:15:1: note: ‘getenv’ is defined in header ‘<stdlib.h>’; this is probably fixable by adding ‘#include <stdlib.h>’
+   14 | #include "openaurora/services.h"
+  +++ |+#include <stdlib.h>
+   15 | 
+In file included from tests/display_present.c:4:
+tests/display_present.c: In function ‘main’:
+tests/display_present.c:144:13: error: implicit declaration of function ‘setenv’ [-Wimplicit-function-declaration]
+  144 |     assert(!setenv("OA_TEST_BINDING_HAL","1",1));
+      |             ^~~~~~
+tests/display_present.c:147:13: error: implicit declaration of function ‘unsetenv’ [-Wimplicit-function-declaration]
+  147 |     assert(!unsetenv("OA_TEST_BINDING_HAL"));
+      |             ^~~~~~~~
+make: *** [Makefile:1089: build/tests/display_binding] Error 1
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

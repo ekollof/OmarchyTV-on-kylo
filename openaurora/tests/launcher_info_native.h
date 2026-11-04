@@ -23,7 +23,10 @@ static void li2_emit(uint32_t kind,uint32_t dst,uint32_t src)
 static void li2_trace_assign(void *dst,const char *src)
 {
     uint32_t d=(uint32_t)((unsigned char *)dst-li2_base);
-    uint32_t s=(uint32_t)((const unsigned char *)src-(const unsigned char *)li2_info);
+    uint32_t s;
+    if(li2_tp==li2_evc && (d==0x78 || d==0x80 || d==0x88)) {
+        assert(src && !src[0]);s=UINT32_MAX;
+    } else s=(uint32_t)((uintptr_t)src-(uintptr_t)li2_info);
     ((uint32_t *)dst)[0]=s;((uint32_t *)dst)[1]=UINT32_C(0xa5a5a5a5);
     li2_emit(LI2_ASSIGN,d,s);
 }
@@ -88,6 +91,16 @@ static void check_launcher_info(const unsigned char *elf,size_t bytes)
         li2_base=n_out;li2_tp=li2_evn;li2_tn=0;
         decode((void *)(uintptr_t)0x5000,(uint32_t)(uintptr_t)info,n_out);
         memcpy(li2_cmp,li2_evn,li2_tn*sizeof li2_evn[0]);unsigned n=li2_tn;
+        /* Owner-required advertising exclusion: retain native operand
+         * evidence, but expect empty literal assignments in those3 slots.
+         * Ordinary fields/ordering/bytes continue to compare unmodified. */
+        static const uint32_t excluded_sources[]={0x290,0x38,0x164};
+        for(unsigned i=7;i<10;++i) {
+            assert(li2_cmp[i].dst==0x78+(i-7)*8 &&
+                   li2_cmp[i].src==excluded_sources[i-7]);
+            li2_cmp[i].src=UINT32_MAX;
+            ((uint32_t *)(n_out+li2_cmp[i].dst))[0]=UINT32_MAX;
+        }
         memset(c_out,0x5a,0xa0);
         li2_base=c_out;li2_tp=li2_evc;li2_tn=0;
         oa_launcher_info_to_item(c_out,info,&ops);
@@ -106,7 +119,7 @@ static void check_launcher_info(const unsigned char *elf,size_t bytes)
     }
     free(info);free(n_out);free(c_out);
     assert(!munmap(body,4096) && !munmap(ustr,4096));
-    printf("ok offline shipped ARM launcher info: %u native/C cases, row decode fields and 10 text assignments match\n",compared);
+    printf("ok offline shipped ARM launcher info: %u native/C cases, ordinary row fields match; 3 advertising slots explicitly empty\n",compared);
 }
 
 #endif

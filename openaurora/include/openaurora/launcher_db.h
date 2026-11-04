@@ -22,7 +22,9 @@ extern "C" {
  *
  * The column-to-record mapping comes from
  * NovoLauncherItemInfo::launcher_item_info_struct (0xfabf50): 16 scalar
- * columns and 10 fixed text columns. Text is stored as a fixed-size blob in
+ * columns and10 fixed text columns. Our runtime reads only the7 ordinary
+ * text columns; the3 advertising/tracking fields are excluded and their
+ * recovered record space is reserved/zero. Text is stored as a fixed-size blob in
  * the database and is truncated to the field size minus one here.
  */
 struct oa_launcher_list {

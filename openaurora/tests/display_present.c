@@ -7,6 +7,7 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -84,6 +85,9 @@ static void log_message(void *priv, int level, const char *fmt, ...)
 static const char *config(void *priv, const char *key, const char *def)
 {
     (void)priv;
+#ifdef OA_DISPLAY_NO_PLAT
+    if (!strcmp(key,"display.drm_init")) return getenv("OA_TEST_BINDING_HAL")?"1":"0";
+#endif
     if (!strcmp(key, "display.pan") && rotate) return rotate;
     if (!strcmp(key, "display.mirror")) return "0";
     return def;
@@ -133,6 +137,16 @@ static void finish(void *ctx)
 }
 int main(void)
 {
+#ifdef OA_DISPLAY_NO_PLAT
+    void *rejected=NULL;
+    assert(!strcmp(oa_module_entry()->name,"display_fb"));
+    assert(!oa_module_entry()->requires[0][0]);
+    assert(!oa_module_entry()->init(&api,&rejected));
+    assert(!setenv("OA_TEST_BINDING_HAL","1",1));
+    assert(oa_module_entry()->start(rejected)==-1 && opens==0);
+    oa_module_entry()->destroy(rejected);
+    assert(!unsetenv("OA_TEST_BINDING_HAL"));
+#endif
     void *ctx = start(1, 0, NULL);
     assert(alpha && !alpha->clear_rgba(36, 38, 40, 153));
     assert(!display->present());

@@ -1,0 +1,13 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/svg_scrollbar tests/svg_scrollbar.c common/svg_scrollbar.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/svg_scrollbar_skin tests/svg_scrollbar_skin.c common/svg_scrollbar.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/svg_scrollbar_render tests/svg_scrollbar_render.c common/svg_scrollbar.c
+ok svg scrollbar: position state, 720px apps track geometry and render gates
+ok svg scrollbar skin: 36px cap minimum, cache/orientation and trace order
+ok svg scrollbar render: background/bar surface, mask caps and row geometry
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/launcher_item tests/launcher_item.c common/launcher_item.c
+ok launcher item: novo-row conversion, 17 scalars, 11 UStrings and thumbnail path prefix
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Ithird_party  -o build/tests/launcher_db tests/launcher_db.c common/launcher_db.c \
+   -lsqlite3
+ok launcher db: 50 rows, parent/deleted filter, truncation and read-only
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

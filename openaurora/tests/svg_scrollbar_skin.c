@@ -44,7 +44,7 @@ int main(void)
      * name/bg 0x21, name/rect 0x23. Caps 20+16 -> 36. */
     reset();
     s=(struct oa_svg_scrollbar_skin){.cached_image={0,0},.image_id={0x1234,0x5678},
-        .min_bar=99,.orientation=0};
+        .min_bar=99,.widget_state=0};
     oa_svg_scrollbar_min_bar(&s,&ops);
     assert(s.min_bar==36 && s.cached_image[0]==0x7001);
     assert(trace_count==9);
@@ -62,7 +62,7 @@ int main(void)
     /* Cached image: no supplier call. */
     reset();trace_count=0;
     s=(struct oa_svg_scrollbar_skin){.cached_image={0x7003,0},.image_id={0x1234,0},
-        .min_bar=99,.orientation=0};
+        .min_bar=99,.widget_state=0};
     oa_svg_scrollbar_min_bar(&s,&ops);
     assert(s.min_bar==36 && trace[0].kind==2 && trace[0].id==0x20);
     assert(trace_count==8);
@@ -70,7 +70,7 @@ int main(void)
     /* No supplier image: min is left unchanged. */
     reset();supplier_value=0;trace_count=0;
     s=(struct oa_svg_scrollbar_skin){.cached_image={0,0},.image_id={0x1234,0},
-        .min_bar=99,.orientation=0};
+        .min_bar=99,.widget_state=0};
     oa_svg_scrollbar_min_bar(&s,&ops);
     assert(s.min_bar==99 && s.cached_image[0]==0 && trace_count==1);
     assert(trace[0].kind==1);
@@ -78,7 +78,7 @@ int main(void)
     /* Orientation 1 uses the second cache/image slot. */
     reset();trace_count=0;
     s=(struct oa_svg_scrollbar_skin){.cached_image={0xAAAA,0},.image_id={0x1234,0x5678},
-        .min_bar=99,.orientation=1};
+        .min_bar=99,.widget_state=1};
     oa_svg_scrollbar_min_bar(&s,&ops);
     assert(s.min_bar==36 && s.cached_image[1]==0x7001);
     assert(trace[0].kind==1 && trace[0].value==0x5678);
@@ -86,11 +86,16 @@ int main(void)
     /* Missing bottom cap pointer contributes 0. */
     reset();rect23_present=0;trace_count=0;
     s=(struct oa_svg_scrollbar_skin){.cached_image={0x7003,0},.image_id={0,0},
-        .min_bar=99,.orientation=0};
+        .min_bar=99,.widget_state=0};
     oa_svg_scrollbar_min_bar(&s,&ops);
     assert(s.min_bar==20);
     assert(trace_count==8 && trace[6].kind==2 && trace[6].id==0x23);
 
-    puts("ok svg scrollbar skin: 36px cap minimum, cache/orientation and trace order");
+    s.widget_state=3;s.image_id[3]=0x9abc;s.cached_image[3]=0;trace_count=0;
+    oa_svg_scrollbar_min_bar(&s,&ops);
+    assert(s.min_bar==20 && s.cached_image[3]==0x7001);
+    s.widget_state=4;trace_count=0;
+    oa_svg_scrollbar_min_bar(&s,&ops);assert(trace_count==0);
+    puts("ok svg scrollbar skin: 36px cap minimum, four widget states, invalid-state rejection and trace order");
     return 0;
 }

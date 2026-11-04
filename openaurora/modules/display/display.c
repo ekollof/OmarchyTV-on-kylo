@@ -452,7 +452,7 @@ static int set_region(struct ctx *c, unsigned w, unsigned h)
  * panel module links the PWM HAL (see VENDOR_MODULES in the Makefile). dlopen'ing NDAL3 without EX in
  * scope is what produced the earlier "undefined symbol" error.
  */
-#ifdef OA_NO_VENDOR
+#if defined(OA_NO_VENDOR) || defined(OA_DISPLAY_NO_PLAT)
 /* Host builds have no vendor HAL: keep the module loadable so the lifecycle tests still run. */
 static void Hal_Video_Vpltio_Init(void) {}
 static void Hal_Video_V4l2InfoInit(void) {}
@@ -515,6 +515,10 @@ static int fb_registered(const char *path)
 
 static int fb_make_node(struct ctx *c)
 {
+#ifdef OA_DISPLAY_NO_PLAT
+    /* An already-initialized binding must not run global device discovery. */
+    (void)c;errno=ENOENT;return -1;
+#else
     /* rc.local sets hotplug to /sbin/mdev but leaves `mdev -s` commented out, so a framebuffer
      * registered before the hotplug helper was installed ends up with sysfs entries and no /dev
      * node - exactly the state seen in a takeover boot. mdev is the vendor's own mechanism for
@@ -525,6 +529,7 @@ static int fb_make_node(struct ctx *c)
         return -1;
     c->api->log(c->api->priv, OA_LOG_INFO, "%s: created by mdev -s", c->path);
     return 0;
+#endif
 }
 
 static int open_layer(struct ctx *c)
@@ -636,6 +641,12 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct ctx *c = v;
+#ifdef OA_DISPLAY_NO_PLAT
+    if (c->api->config_get(c->api->priv,"display.drm_init","0")[0]=='1') {
+        c->api->log(c->api->priv,OA_LOG_ERROR,"display_fb cannot initialize platform HAL");
+        errno=ENOTSUP;return -1;
+    }
+#endif
     const char *dev = c->api->config_get(c->api->priv, "display.fb", "/dev/fb1");
     snprintf(c->path, sizeof c->path, "%s", dev);
 
@@ -706,7 +717,11 @@ static const oa_module g_module = {
     .magic = OA_MODULE_MAGIC,
     .abi = OA_ABI_VERSION,
     .size = sizeof(oa_module),
+#ifdef OA_DISPLAY_NO_PLAT
+    .name = "display_fb",
+#else
     .name = "display",
+#endif
     .version = "0.1",
 #ifndef OA_DISPLAY_NO_PLAT
     .requires = { OA_SVC_PLAT, "" },

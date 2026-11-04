@@ -31,7 +31,22 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [OA-CANDIDATE](artifacts/reports/OA-CANDIDATE-2026-11-04.md) adds
+Latest review: [WORK-REVIEW](artifacts/reports/WORK-REVIEW-2026-11-04.md)
+checks cf78486..4ba1599. Fixed scrollbar signed overflow, first/second-window
+query ordering and the mistaken two-orientation cache model: +6c is the four
+SVGWindow states, now32 skin/36 render native cases plus14,576 geometry/state.
+Real shipped division replaces both new arithmetic stubs. Removed advertising/
+tracking SQL fields and propagation; native comparisons explicitly separate
+that privacy deviation from ordinary-field parity. Fixed image+0xb0 byte truth,
+callback guards, apps reload/stop-start state, sorting before the64-card cap,
+hidden-scrollbar raster and insufficient shared icon cache. Full strict host,
+focused ASan/UBSan and42 ARM/qemu groups pass; focused TV CPU/read-only DB/loader
+checks pass, staging removed/no helper, no-reset retained. No new draw or
+takeover. See MEMORY and the report for limits. Next: native widget/PNG/live
+resources and stock visual/interaction acceptance; independent startup still
+needs an evidenced ownership/watchdog/fallback and restoration design.
+
+Previous: [OA-CANDIDATE](artifacts/reports/OA-CANDIDATE-2026-11-04.md) adds
 mod_display_fb (display.c with -DOA_DISPLAY_NO_PLAT) and binds a candidate
 openaurora host to the vendor-initialized fb1 without plat. The host ran
 settings,display_fb,ui_engine,ui_vendor with the live
@@ -41,12 +56,12 @@ candidate-apps_1.png is a real 1920x1080 fb1 capture of the apps grid and
 scrollbar. Vendor Aurora stayed owner; the candidate was stopped,
 /buffer/oa_candidate and /tmp staging removed, and the stock no-signal screen
 verified. This is the supervised display/scanout binding, not a cold
-independent startup. A no-vendor run needs the vendor stopped plus
-/buffer/wdtctl watchdog disable (or oa-supervise); the standing constraints
-mark that takeover unauthorized, plat.c measured that openaurora cannot
-maintain the MCU watchdog, and a failure may need physical/USB recovery. That
-step needs the owner's explicit go-ahead and recovery readiness and was not
-executed. Real downloaded-PNG decoding, stock apps-grid pixel parity and
+independent startup. WORK-REVIEW withdraws the inference that a historical
+FreshWDT return1 proves rejection or makes native watchdog maintenance
+impossible. Vendor stop/watchdog disable remain unauthorized; the native
+ownership/watchdog/fallback contract is unverified. The stock screenshot is
+not full state-restoration proof. No cold takeover was executed.
+Real downloaded-PNG decoding, stock apps-grid pixel parity and
 independent startup remain open. No persistent change.
 
 Previous: [UI-APPS-GRID](artifacts/reports/UI-APPS-GRID-2026-11-04.md) adds

@@ -1,5 +1,11 @@
 # settingsDB LauncherItem read path — 2026-11-04
 
+> Scope correction — WORK-REVIEW-2026-11-04: the runtime no longer queries
+> the three advertising/tracking columns. Their900-byte source region is
+> reserved/zero and both conversions explicitly initialize excluded slots
+> empty. Ordinary-field native comparisons remain; full ad-field parity is
+> deliberately excluded. The full vendor member map below is research evidence.
+
 `common/launcher_db.c` now reads the real `LauncherItem` table, and
 `mod_settings` publishes it as a reloadable `launcher.db` service with a
 `launcher-items` CLI command. The adapter's row decode
