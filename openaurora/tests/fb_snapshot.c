@@ -14,8 +14,8 @@ static struct fb_fix_screeninfo fix;
 static uint32_t region[8];
 static uint32_t mau;
 static unsigned char fb[4096];
-static unsigned writes, pans;
-static int fail_region, fail_pan, fail_sync;
+static unsigned writes, pans, maps;
+static int fail_region, fail_pan, fail_sync, fail_map;
 
 static void init_fake(void)
 {
@@ -32,8 +32,8 @@ static void init_fake(void)
     fix.line_length = 32;
     fix.smem_len = 128;
     mau = 1;
-    writes = pans = 0;
-    fail_region = fail_pan = fail_sync = 0;
+    writes = pans = maps = 0;
+    fail_region = fail_pan = fail_sync = fail_map = 0;
 }
 
 void *__wrap_mmap(void *addr, size_t len, int prot, int flags, int fd,
@@ -42,6 +42,8 @@ void *__wrap_mmap(void *addr, size_t len, int prot, int flags, int fd,
     assert(!addr && len == fix.smem_len && fd == 123 && offset == 0);
     assert(flags == MAP_SHARED);
     assert(prot == PROT_READ || prot == (PROT_READ | PROT_WRITE));
+    ++maps;
+    if (fail_map) { errno = ENOMEM; return MAP_FAILED; }
     return fb;
 }
 int __wrap_munmap(void *addr, size_t len)
@@ -101,6 +103,31 @@ int main(void)
     oa_fb_snapshot_free(&snap);
     assert(!snap.pixels);
 
+    /* A different allocation/layout must never receive the saved pixels,
+     * region or pan, even if the MAU index and byte capacity still match. */
+    for (unsigned which = 0; which < 12; ++which) {
+        init_fake();assert(!oa_fb_snapshot_save(123, &snap));
+        switch (which) {
+        case 0: fix.smem_start = 4096; break;
+        case 1: fix.smem_len *= 2; break;
+        case 2: fix.smem_len /= 2; break;
+        case 3: fix.line_length *= 2; break;
+        case 4: fix.type = FB_TYPE_PLANES; break;
+        case 5: fix.visual = FB_VISUAL_PSEUDOCOLOR; break;
+        case 6: ++var.xres; break;
+        case 7: ++var.yres; break;
+        case 8: ++var.yres_virtual; break;
+        case 9: var.bits_per_pixel = 16; break;
+        case 10: ++var.red.offset; break;
+        case 11: ++var.rotate; break;
+        }
+        memset(fb, 0, sizeof fb);
+        assert(oa_fb_snapshot_restore(123, &snap) == -ESTALE);
+        assert(!fb[0] && maps == 1 && !writes && !pans);
+        oa_fb_snapshot_free(&snap);
+    }
+    puts("  ok   fb snapshot: changed backing, capacity, stride, type, geometry and colour reject before writes");
+
     init_fake();
     assert(!oa_fb_snapshot_save(123, &snap));
     mau = 0;
@@ -126,6 +153,18 @@ int main(void)
     assert(fb[0] == 0xaa && region[0] == 0x100);
     fail_pan = 0;
     oa_fb_snapshot_free(&snap);
+
+    init_fake();assert(!oa_fb_snapshot_save(123, &snap));
+    fail_sync = 1;
+    assert(oa_fb_snapshot_restore(123, &snap) == -EIO && writes == 1 && pans == 1);
+    fail_sync = 0;
+    assert(!oa_fb_snapshot_restore(123, &snap)); /* snapshot remains retryable */
+    fail_map = 1;
+    assert(oa_fb_snapshot_restore(123, &snap) == -ENOMEM && writes == 3 && pans == 3);
+    fail_map = 0;
+    assert(!oa_fb_snapshot_restore(123, &snap));
+    oa_fb_snapshot_free(&snap);
+    puts("  ok   fb snapshot: mapping/sync failure still attempts region and pan; snapshot can be retried");
 
     init_fake();
     fix.smem_len = 0;

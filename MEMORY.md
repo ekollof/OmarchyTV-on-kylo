@@ -44,10 +44,11 @@ This supersedes static-only comparison for the image calculation. Native
 profile/image ownership, hardware lifecycle and audible acceptance remain open.
 No TV access; the owner's offline-only restriction remains in force.
 
-Current owner constraint,2026-11-04: "Don't touch the TV." Offline work only;
-all TV access, including view-only queries/WoL/staging/tests, is suspended until
-explicit owner reauthorization. This supersedes the earlier standing query
-permission and idle window. The audio-image work below accessed no TV.
+Current owner constraint,2026-11-04: "You can test on the TV, as long as you
+don't use the active display (fb1)." Non-display tests/view-only queries are
+reauthorized; fb1 and stock operation must stay untouched. This supersedes the
+earlier "Don't touch the TV" restriction. No persistent replacement or boot
+changes. The historical offline-only entries describe their original runs.
 
 FB-SNAPSHOT-COLD-BUNDLE-2026-11-04 (offline): common/fb_snapshot saves
 pixels/var/fix,8 region words (RD0x8020c86c/WR0x4020c86b), read-only MAU and
@@ -58,7 +59,14 @@ tool-file and actual display-module tests pass; host354 ok, focused
 ASan/UBSan clean. `make cold-bundle` builds an ARM bundle with25 modules,
 oa-supervise, fb-restore and cold config; manifest.sha256 verifies29 entries.
 Not executed on TV; full live-driver equality and independent startup remain
-open. TV access is revoked by the owner override.
+open. FB-RESTORE-REVIEW now fixes stale backing/layout acceptance, skipped
+region/pan cleanup after mmap failure and false file-save success on close
+error. Focused strict host/leak-enabled sanitizer/fresh ARM-qemu and full
+host372 checks pass. Var/fix
+are saved metadata, not restored modes. Module restore-failure retention and
+exclusive ownership remain open. No TV access for this review; active fb1 is
+excluded by current permission. The existing cold-bundle is historical and
+must be rebuilt to include the fixes; it is not ready for authorized execution.
 
 VISIBLE-IMAGES-2026-11-04: a supervised no-plat candidate (image_decode v2,
 display_fb, settings, ui_engine, ui_vendor) painted the live apps grid on

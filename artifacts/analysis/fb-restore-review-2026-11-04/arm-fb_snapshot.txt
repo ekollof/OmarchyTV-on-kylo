@@ -1,0 +1,3 @@
+  ok   fb snapshot: changed backing, capacity, stride, type, geometry and colour reject before writes
+  ok   fb snapshot: mapping/sync failure still attempts region and pan; snapshot can be retried
+  ok   fb snapshot: pixels/var/region/MAU save; restore verifies MAU and failures

@@ -97,6 +97,11 @@ int main(void)
     assert(!fb_restore_main(4, save_args));
     assert(opens == 1);
 
+    /* Buffered stdio can accept every fwrite and fail only on fclose. */
+    char *full_args[] = { "fb-restore", "save", "/dev/fb1", "/dev/full" };
+    assert(fb_restore_main(4, full_args) == 1);
+    assert(opens == 2);
+
     memset(fb, 0, sizeof fb);
     memset(region, 0, sizeof region);
     var.yoffset = 0;

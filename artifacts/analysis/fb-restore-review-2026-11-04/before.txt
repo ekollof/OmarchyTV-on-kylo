@@ -1,0 +1,8 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-fb-restore-review/tests/fb_snapshot tests/fb_snapshot.c common/fb_snapshot.c \
+  -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-fb-restore-review/tests/fb_restore_tool tests/fb_restore_tool.c common/fb_snapshot.c \
+  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl
+fb_snapshot: tests/fb_snapshot.c:125: main: Assertion `oa_fb_snapshot_restore(123, &snap) == -ESTALE' failed.
+make: *** [Makefile:1146: check-fb-snapshot] Aborted (core dumped)
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

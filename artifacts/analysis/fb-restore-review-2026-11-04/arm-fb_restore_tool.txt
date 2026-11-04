@@ -1,0 +1,4 @@
+/dev/full: flush/close failed: No space left on device
+saved /dev/fb1: 8x2 virt 0x4 32bpp offset 0,2 bytes 128 mau 1 region[0..1] 0x200/0x201
+restored /dev/fb1: bytes 128 offset 0,2 mau 1
+  ok   fb-restore tool saves/restores pixels, region and pan through the v2 file

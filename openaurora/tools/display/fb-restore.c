@@ -51,7 +51,12 @@ static int save(const char *dev, const char *path)
         close(fd);
         return 1;
     }
-    fclose(out);
+    if (fclose(out) != 0) {
+        fprintf(stderr, "%s: flush/close failed: %s\n", path, strerror(errno));
+        oa_fb_snapshot_free(&snap);
+        close(fd);
+        return 1;
+    }
     printf("saved %s: %ux%u virt %ux%u %ubpp offset %u,%u bytes %u "
            "mau %u region[0..1] %#x/%#x\n",
            dev, snap.var.xres, snap.var.yres, snap.var.xres_virtual,

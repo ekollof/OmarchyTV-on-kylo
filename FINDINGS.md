@@ -7,7 +7,13 @@ library/tool/actual-display tests pass, host354 ok, focused ASan/UBSan clean.
 `make cold-bundle` builds an ARM bundle (25 modules, oa-supervise, fb-restore,
 cold config) and manifest-verifies29 entries. No TV execution; live-driver
 equality, cold startup and MCU/watchdog authority remain unverified. TV
-access is revoked.
+access was revoked for that original run. FB-RESTORE-REVIEW corrects "full"
+restoration: var/fix are saved metadata; changed backing/layout/mode/MAU now
+rejects before writes, mmap failure still attempts region/pan and failed file
+close cannot report successful backup. Strict host/sanitizer/fresh ARM-qemu
+library/tool/both-display tests pass. Module still discards snapshots after
+restore failure; retained recovery/exclusive ownership/native equality remain
+open. No TV access for this review; current permission excludes active fb1.
 
 VISIBLE-IMAGES-2026-11-04: the supervised no-plat candidate painted the live
 apps grid on vendor-initialized fb1 from an empty ui.dir and the real

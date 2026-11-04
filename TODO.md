@@ -581,7 +581,7 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       (VISIBLE-IMAGES). The earlier stock screenshot and the pixel/yoffset
       restore did not prove full backing/region/MAU/pan restoration.
 
-- [x] Full fb1 snapshot/restore implementation: common/fb_snapshot saves
+- [x] Offline framebuffer pixel/region/pan snapshot helper: common/fb_snapshot saves
       pixels/var/fix, all8 region words (RD0x8020c86c/WR0x4020c86b), MAU
       (read-only, verified) and pan; display_fb.display.restore_snapshot=1
       snapshots before region change and restores on stop/suspend, with
@@ -589,13 +589,20 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       save/restore, MAU mismatch, region/pan failures, the tool file, and the
       actual display module. Host354 ok, focused ASan/UBSan clean,
       FB-SNAPSHOT-COLD-BUNDLE. This is offline implementation, not live-driver
-      equality.
+      equality. FB-RESTORE-REVIEW corrects the broad "full" label: var/fix are
+      saved metadata, not a restored mode. Changed backing/layout/mode/MAU
+      now rejects before writes; mmap/sync errors still attempt region/pan;
+      failed backup-file close reports failure. Regression/focused sanitizer/
+      ARM-qemu tests pass. No new native restoration acceptance.
 
 - [ ] Pair temporary display binding with owned full backing/region/MAU/pan
       restoration and failure cleanup on the real driver. The offline
       snapshot/restore and display_fb restore path exist; live equality,
-      suspend/resume ordering and failure cleanup remain unverified because
-      TV access is revoked.
+      suspend/resume ordering and failure cleanup remain unverified. The module
+      currently logs restore failure and frees the snapshot; implement retained
+      recovery state and completion/quiescence handling before claiming safe
+      suspend/unload/fallback. FBR2 native-struct ABI portability and file
+      validation remain open. Current TV permission excludes active fb1.
 - [ ] Cold independent startup without vendor Aurora: establish MCU authority,
       watchdog/fallback and full display ownership/restoration from firmware.
       A historical FreshWDT return1 did not prove rejection or impossibility.
@@ -603,9 +610,9 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       test; stock apps-grid pixel parity remains. An ARM cold-start bundle
       (openaurora,25 modules, oa-supervise, fb-restore, cold config) is built
       and manifest-verified offline by `make cold-bundle`
-      (FB-SNAPSHOT-COLD-BUNDLE), but not executed. This gate is blocked: the
-      owner's 2026-11-04 AGENTS override revokes all TV access until explicit
-      reauthorization. Do not connect, wake, stage or run on the set.
+      (FB-SNAPSHOT-COLD-BUNDLE), but not executed. The owner's current permission
+      allows non-display tests only: active fb1, cold takeover and stock
+      interruption remain outside this test window.
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x9 (slider row):
       95624 native/C comparisons and prior groups pass; full host/Unix IPC,
       ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-SLIDER.

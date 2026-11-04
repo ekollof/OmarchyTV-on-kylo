@@ -82,13 +82,22 @@ fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
 Latest offline implementation: [FB-SNAPSHOT-COLD-BUNDLE](artifacts/reports/FB-SNAPSHOT-COLD-BUNDLE-2026-11-04.md)
-adds full fb1 snapshot/restore (pixels/var/fix, 8-word region, read-only MAU,
+adds fb1 snapshot/restore (pixels/var/fix metadata, 8-word region, read-only MAU,
 pan) and wires `display.restore_snapshot=1` into display_fb; fb-restore uses
 an FBR2 file. Fake-fb library/tool/actual-display tests pass, host354 ok,
 focused ASan/UBSan clean. `make cold-bundle` builds and manifest-verifies an
 ARM bundle with25 modules, oa-supervise, fb-restore and a cold config. Nothing
 was executed on the TV; live driver equality, cold startup and MCU/watchdog
-authority remain unverified. TV access is revoked by the owner override.
+authority remain unverified. [FB-RESTORE-REVIEW](artifacts/reports/FB-RESTORE-REVIEW-2026-11-04.md)
+now fixes changed backing/layout acceptance, skipped region/pan after mmap
+failure and false backup-file save success on close failure. Strict host,
+leak-enabled sanitizer and fresh ARM-qemu library/tool/both-display tests pass;
+full strict host372 passes.
+No TV access in this review; fb1 remains excluded. Mode/allocation/MAU are not
+restored. Next retain failures across module suspend/unload and wire an owning
+completion/quiescence path; current module logs failure then frees its snapshot.
+Do not put blocking restore in the ABI3 gate. The historical cold bundle needs
+rebuilding before any future authorized experiment and has no native acceptance.
 
 Latest visible test: [VISIBLE-IMAGES](artifacts/reports/VISIBLE-IMAGES-2026-11-04.md)
 ran under the preceding TV-access authorization. The supervised no-plat

@@ -1,5 +1,13 @@
 # Full fb1 snapshot/restore and cold-start bundle — 2026-11-04
 
+Correction: [FB-RESTORE-REVIEW](FB-RESTORE-REVIEW-2026-11-04.md) fixes changed
+backing/layout acceptance, skipped cleanup after mmap failure and false backup
+success after fclose failure. "Full" below describes the old milestone label:
+var/fix are saved metadata; only pixels/region/pan are restored, under unchanged
+backing/layout/mode/MAU. Module-level restore-failure retention is still open.
+The historical access prohibition below was later replaced by non-fb1 test
+permission; active fb1/cold takeover remain outside that permission.
+
 Offline implementation only; the owner's "Don't touch the TV" override was in
 force throughout. No device was opened, woken or staged on the set.
 

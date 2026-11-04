@@ -1,0 +1,9 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-fb-restore-review/tests/fb_restore_tool tests/fb_restore_tool.c common/fb_snapshot.c \
+  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl
+  ok   fb snapshot: changed backing, capacity, stride, type, geometry and colour reject before writes
+  ok   fb snapshot: mapping/sync failure still attempts region and pan; snapshot can be retried
+  ok   fb snapshot: pixels/var/region/MAU save; restore verifies MAU and failures
+fb_restore_tool: tests/fb_restore_tool.c:102: main: Assertion `fb_restore_main(4, full_args) == 1' failed.
+make: *** [Makefile:1147: check-fb-snapshot] Aborted (core dumped)
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

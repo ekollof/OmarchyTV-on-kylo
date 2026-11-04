@@ -1137,9 +1137,9 @@ $(BUILD)/tests/fb_snapshot: tests/fb_snapshot.c common/fb_snapshot.c include/ope
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) \
 	  $(foreach call,mmap munmap msync ioctl,-Wl,--wrap=$(call))
 
-$(BUILD)/tests/fb_restore_tool: tests/fb_restore_tool.c common/fb_snapshot.c include/openaurora/fb_snapshot.h
+$(BUILD)/tests/fb_restore_tool: tests/fb_restore_tool.c tools/display/fb-restore.c common/fb_snapshot.c include/openaurora/fb_snapshot.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) \
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ tests/fb_restore_tool.c common/fb_snapshot.c \
 	  $(foreach call,open close mmap munmap msync ioctl,-Wl,--wrap=$(call))
 .PHONY: check-fb-snapshot
 check-fb-snapshot: $(BUILD)/tests/fb_snapshot $(BUILD)/tests/fb_restore_tool
