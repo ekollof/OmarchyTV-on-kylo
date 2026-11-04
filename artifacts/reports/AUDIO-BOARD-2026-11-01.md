@@ -11,6 +11,13 @@ stat. Fresh firmware write-path review and a new native read pass are recorded
 there; the executable hash/size and inline implementation below are historical.
 No native write/amp lifecycle acceptance is implied by either read test.
 
+[AMP-GPIO-QUERY](AMP-GPIO-QUERY-2026-11-04.md) subsequently establishes direct
+reset114 GETs and corrects a diagnostic assumption: HAL GetDirection marks the
+pin open first, and normal HAL Read exports through sysfs. Those wrappers are not
+view-only. The profile's output enum2 below differs from DEV direction1 and
+kernel GET direction0; keep each code space explicit. MCU/native GPIO control
+and ownership remain open; the direct query reports cached direction/latch.
+
 ## Device resources
 
 The verified live Aurora still has one AD82587_D instance, index 0, id 1.

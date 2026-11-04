@@ -1,0 +1,79 @@
+
+artifacts/workbench/rootfs/vendor/lib/libNDAL_EX.so:     file format elf32-littlearm
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .text:
+
+4db5a458 <NDAL_VideoExt_STBC_GetStbcGpio>:
+4db5a458:	f44f 4c80 	mov.w	ip, #16384	; 0x4000
+4db5a45c:	e92d 43f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, lr}
+4db5a460:	ebad 0c0c 	sub.w	ip, sp, ip
+4db5a464:	f8cc 0f80 	str.w	r0, [ip, #3968]	; 0xf80
+4db5a468:	4b2c      	ldr	r3, [pc, #176]	; (4db5a51c <NDAL_VideoExt_STBC_GetStbcGpio+0xc4>)
+4db5a46a:	b099      	sub	sp, #100	; 0x64
+4db5a46c:	4d2c      	ldr	r5, [pc, #176]	; (4db5a520 <NDAL_VideoExt_STBC_GetStbcGpio+0xc8>)
+4db5a46e:	af00      	add	r7, sp, #0
+4db5a470:	4688      	mov	r8, r1
+4db5a472:	447b      	add	r3, pc
+4db5a474:	71f8      	strb	r0, [r7, #7]
+4db5a476:	f853 9005 	ldr.w	r9, [r3, r5]
+4db5a47a:	f107 040c 	add.w	r4, r7, #12
+4db5a47e:	f44f 6071 	mov.w	r0, #3856	; 0xf10
+4db5a482:	2500      	movs	r5, #0
+4db5a484:	4616      	mov	r6, r2
+4db5a486:	4621      	mov	r1, r4
+4db5a488:	f8d9 e000 	ldr.w	lr, [r9]
+4db5a48c:	461a      	mov	r2, r3
+4db5a48e:	f6c0 7017 	movt	r0, #3863	; 0xf17
+4db5a492:	2301      	movs	r3, #1
+4db5a494:	f107 0209 	add.w	r2, r7, #9
+4db5a498:	727d      	strb	r5, [r7, #9]
+4db5a49a:	f8c7 e05c 	str.w	lr, [r7, #92]	; 0x5c
+4db5a49e:	72bd      	strb	r5, [r7, #10]
+4db5a4a0:	72fd      	strb	r5, [r7, #11]
+4db5a4a2:	f7fc eb82 	blx	4db56ba8 <ndcommon_v4l2_config_ctrl@plt>
+4db5a4a6:	f44f 6071 	mov.w	r0, #3856	; 0xf10
+4db5a4aa:	2301      	movs	r3, #1
+4db5a4ac:	f6c0 7017 	movt	r0, #3863	; 0xf17
+4db5a4b0:	1dfa      	adds	r2, r7, #7
+4db5a4b2:	f107 0120 	add.w	r1, r7, #32
+4db5a4b6:	f7fc eb78 	blx	4db56ba8 <ndcommon_v4l2_config_ctrl@plt>
+4db5a4ba:	f44f 6071 	mov.w	r0, #3856	; 0xf10
+4db5a4be:	2301      	movs	r3, #1
+4db5a4c0:	f6c0 7017 	movt	r0, #3863	; 0xf17
+4db5a4c4:	f107 020a 	add.w	r2, r7, #10
+4db5a4c8:	f107 0134 	add.w	r1, r7, #52	; 0x34
+4db5a4cc:	f7fc eb6c 	blx	4db56ba8 <ndcommon_v4l2_config_ctrl@plt>
+4db5a4d0:	f44f 6071 	mov.w	r0, #3856	; 0xf10
+4db5a4d4:	2301      	movs	r3, #1
+4db5a4d6:	f6c0 7017 	movt	r0, #3863	; 0xf17
+4db5a4da:	f107 020b 	add.w	r2, r7, #11
+4db5a4de:	f107 0148 	add.w	r1, r7, #72	; 0x48
+4db5a4e2:	f7fc eb62 	blx	4db56ba8 <ndcommon_v4l2_config_ctrl@plt>
+4db5a4e6:	f245 6148 	movw	r1, #22088	; 0x5648
+4db5a4ea:	4628      	mov	r0, r5
+4db5a4ec:	4622      	mov	r2, r4
+4db5a4ee:	f2cc 0118 	movt	r1, #49176	; 0xc018
+4db5a4f2:	2304      	movs	r3, #4
+4db5a4f4:	f6c0 7017 	movt	r0, #3863	; 0xf17
+4db5a4f8:	f7fe f8de 	bl	4db586b8 <_ZL18_send_v4l2_commandjjP16v4l2_ext_controlj>
+4db5a4fc:	7afb      	ldrb	r3, [r7, #11]
+4db5a4fe:	7ab9      	ldrb	r1, [r7, #10]
+4db5a500:	6dfa      	ldr	r2, [r7, #92]	; 0x5c
+4db5a502:	f8c8 1000 	str.w	r1, [r8]
+4db5a506:	6033      	str	r3, [r6, #0]
+4db5a508:	f8d9 3000 	ldr.w	r3, [r9]
+4db5a50c:	429a      	cmp	r2, r3
+4db5a50e:	d103      	bne.n	4db5a518 <NDAL_VideoExt_STBC_GetStbcGpio+0xc0>
+4db5a510:	3764      	adds	r7, #100	; 0x64
+4db5a512:	46bd      	mov	sp, r7
+4db5a514:	e8bd 83f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, pc}
+4db5a518:	f7fc e936 	blx	4db56788 <__stack_chk_fail@plt>
+4db5a51c:	0002709a 	.word	0x0002709a
+4db5a520:	00000350 	.word	0x00000350
+
+Disassembly of section .fini:

@@ -64,6 +64,16 @@ removed/no helper, boot/vendor PIDs unchanged; no fb1 or audio write. Writes
 are injection-tested only. Fd ownership is not exclusive amp authority, and
 GPIO/MCU/module/image/paired lifetime acceptance remain open.
 
+AMP-GPIO-QUERY-2026-11-04 corrects a getter trap: Hal_Gpio_GetDirection issues
+mutating670a before GET670f; normal Hal_Gpio_Read exports through sysfs. Direct
+kernel670d/670f for114 do not claim/change pins; an8-byte packet contains a
+one-byte reply at+4. The new helper/probe passes two host/sanitizer/ARM groups,
+full host392 and native level1/cached direction0(output). Staging removed/no
+helper, boot/vendor PIDs unchanged, no fb1/config/level/MCU call. The GPIO
+fd's fops has no open/release callbacks; fd close is not global ioctl6702.
+Cached direction/output latch are not independent voltage or ownership proof.
+Do not repair missing pin context by claiming it under stock Aurora.
+
 AMP-PROFILE-MODULE-2026-11-04 adds reloadable audio.amp_profile v1 and the
 amp-profile query over actual local Unix IPC. Caller-owned copies/names and
 provider holds/removal/failure/fd/suspend/reload lifecycle pass host/sanitizer/

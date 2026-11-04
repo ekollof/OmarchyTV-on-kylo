@@ -1,0 +1,12 @@
+
+Version symbols section '.gnu.version' contains 15 entries:
+ Addr: 0x00000000000103c0  Offset: 0x000003c0  Link: 5 (.dynsym)
+  000:   0 (*local*)       0 (*local*)       2 (GLIBC_2.4)     2 (GLIBC_2.4)  
+  004:   2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)  
+  008:   2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)  
+  00c:   2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)  
+
+Version needs section '.gnu.version_r' contains 1 entry:
+ Addr: 0x00000000000103e0  Offset: 0x000003e0  Link: 6 (.dynstr)
+  000000: Version: 1  File: libc.so.6  Cnt: 1
+  0x0010:   Name: GLIBC_2.4  Flags: none  Version: 2

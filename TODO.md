@@ -301,7 +301,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       (1b/05/05, staging removed, no fb1 access). Writes remain injection-tested;
       exact-message-count rejection is stricter than the vendor false-success
       policy and not claimed as bug-for-bug error parity. Fd ownership is not
-      amplifier authority. Finish audio consumer/provider holds and module integration,
+      amplifier authority. AMP-GPIO-QUERY recovers HAL getter side effects and
+      supplies fixed direct114 GET670d/670f, with no pin claim/export/config.
+      Two host/sanitizer/ARM groups and native query pass: level1, cached kernel
+      direction0(output), staging removed/no fb1 use. Cached direction/latch
+      are not voltage or ownership evidence; reset/mute/MCU writes remain open.
+      Finish audio consumer/provider holds and module integration,
       retained image acquisition, coordinated GPIO/MCU/I2C/worker
       ownership and hardware lifecycle acceptance; wrapper results and controlled
       callbacks do not establish native bring-up.

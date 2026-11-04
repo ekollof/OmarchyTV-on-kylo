@@ -1,0 +1,1 @@
+reset GPIO114: /dev/ntgpio GET670d/670f only; direction0=output/1=input; no HAL/export/claim/STBC

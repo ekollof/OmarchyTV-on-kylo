@@ -31,6 +31,18 @@ write acceptance, GPIO/MCU/board authority, worker/module hookup and complete
 amp lifecycle remain open. Strict completion counts intentionally differ from
 the HAL's nonnegative false-success policy; do not claim failure parity.
 
+AMP-GPIO-QUERY-2026-11-04 recovers unsafe HAL getter side effects before adding
+fixed direct reset114 GET670d/670f. Hal_Gpio_GetDirection first marks a pin open
+via670a; ordinary Hal_Gpio_Read writes sysfs export. The maintained direct
+query has neither effect. Two host/leak-enabled sanitizer/ARM-qemu groups and
+full host392 pass. Native probe21812 bytes, SHA256
+19517981e612e04eef2c0fc2502cc7963ed7eab739ac1f3e9ac40405769f669d,
+returned level1/cached direction0(output) after separate staging verification.
+Staging removed/no helper; same boot/vendor PIDs1967/1785/no-reset retained;
+no fb1, claim/config/level/reset/mute write or MCU call. This is cached state/
+latch observation, not voltage/ownership/rollback acceptance. GPIO/MCU native
+control, paired lifetime and consumer/module integration remain open.
+
 AMP-PROFILE-MODULE-2026-11-04 adds audio_amp_profile/audio.amp_profile v1 and
 amp-profile CLI/actual Unix IPC. Copied profile/name snapshots, holds/removal,
 failure cleanup/fd counts, suspend/deferred reload/resume and replacement

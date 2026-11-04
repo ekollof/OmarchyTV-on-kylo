@@ -86,6 +86,16 @@ rejection is an explicit stricter error policy than vendor HAL. Next recover
 coordinated GPIO/MCU/device/image lifetime and wire the owning consumer/module;
 fd ownership alone is not amplifier authority or paired shutdown.
 
+[AMP-GPIO-QUERY](artifacts/reports/AMP-GPIO-QUERY-2026-11-04.md) recovers a
+getter hazard before implementing direct114 GET670d/670f: HAL GetDirection
+marks the pin open, and ordinary HAL Read exports via sysfs. Use the maintained
+query instead; no claims/setters/global GPIO init/close or MCU access. Two
+host/sanitizer/ARM groups and full host392 pass; native query returned level1/
+cached kernel direction0(output), verified staging removed/no helper and boot/
+vendor PIDs unchanged. No fb1 use. Direction/latch are cached/selected values,
+not voltage or exclusive ownership. Next establish coordinated GPIO/MCU and
+paired lifetime before mutators/native amp bring-up. AGENTS records the trap.
+
 [AMP-PROFILE-MODULE](artifacts/reports/AMP-PROFILE-MODULE-2026-11-04.md) now
 exposes the recovered amp inputs through reloadable audio.amp_profile v1 and
 amp-profile CLI/Unix query. DSO holds/removal/failure/fd/suspend/reload cases

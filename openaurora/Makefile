@@ -1474,4 +1474,15 @@ check-amp-i2c: $(BUILD)/tests/amp_i2c
 	@$(BUILD)/tests/amp_i2c
 check: check-amp-i2c
 
+$(BUILD)/tests/amp_gpio_query: tests/amp_gpio_query.c common/amp_gpio_query.c include/openaurora/amp_gpio_query.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+$(BUILD)/amp-gpio-probe: tools/audio/amp-gpio-probe.c common/amp_gpio_query.c include/openaurora/amp_gpio_query.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-amp-gpio-query
+check-amp-gpio-query: $(BUILD)/tests/amp_gpio_query
+	@$(BUILD)/tests/amp_gpio_query
+check: check-amp-gpio-query
+
 .PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-display check-svg check-runtime clean install arm tv vendor

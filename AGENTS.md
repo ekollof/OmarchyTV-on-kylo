@@ -160,6 +160,15 @@ I2C bus3/address34; its fixed register03..05 read passed on real hardware.
 Board metadata/read access is established; reset/mute/writes, complete init and
 standby are not. Inspect /proc/PID/fd targets with readlink or ls, **never cat**:
 reading a descriptor can consume input/device data and is not a view-only listing.
+AMP-GPIO-QUERY-2026-11-04 establishes direct GET670d/670f on already-open
+GPIO114. Do not substitute Hal_Gpio_GetDirection: it first issues670a, which
+marks/records the global pin open. Ordinary-pin Hal_Gpio_Read writes sysfs
+export first. These wrappers are not view-only. The maintained query validates
+char132:0, never claims/exports/configures and passed on TV; direction is cached
+(kernel0 output/1 input), level may be the output latch. This is not independent
+voltage, ownership or exact rollback evidence. Do not initialize GPIO, issue
+global6701/6702, or fall back to pin claim after a failed GET under stock Aurora.
+No MCU/STBC getter or reset/mute write was tested by that query.
 AUDIO-VOLUME-2026-11-01 traces UI level through speaker gain and AQ DSP tables;
 common/audio_curve.c is tested against all101 live entries and on the TV. It is
 not yet integrated with the audio module. Do not confuse decoder opcode33,

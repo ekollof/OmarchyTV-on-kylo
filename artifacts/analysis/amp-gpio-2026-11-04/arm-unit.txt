@@ -1,0 +1,2 @@
+ok amp GPIO query: exact114/8-byte GET-only sequence, all levels/directions and byte-width replies
+ok amp GPIO query: errors and malformed pin/boolean/status replies reject atomically without retry or setters

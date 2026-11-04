@@ -1,0 +1,5 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-amp-gpio-query-san/tests/amp_gpio_query tests/amp_gpio_query.c common/amp_gpio_query.c
+ok amp GPIO query: exact114/8-byte GET-only sequence, all levels/directions and byte-width replies
+ok amp GPIO query: errors and malformed pin/boolean/status replies reject atomically without retry or setters
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

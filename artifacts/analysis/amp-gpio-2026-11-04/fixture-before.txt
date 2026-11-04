@@ -1,0 +1,5 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-amp-gpio-query/tests/amp_gpio_query tests/amp_gpio_query.c common/amp_gpio_query.c
+amp_gpio_query: tests/amp_gpio_query.c:37: main: Assertion `oa_amp_reset_query(17,&out,request,&calls)==-EINTR && calls==fail_at' failed.
+make: *** [Makefile:1485: check-amp-gpio-query] Aborted (core dumped)
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
