@@ -415,8 +415,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       SVGTextBox setFocus/setElipses overrides):36 native/C cases plus host,
       ASan/UBSan, ARM/qemu, verify.cjs37 ok and focused TV CPU.
       SVG-WIDGET-STATE. Vendor redraw calls remain stubs.
-- [ ] Live settings resources; scrollbar/skin; display/scanout binding;
-      independent startup.
+- [x] LauncherItem resource conversion (0xe4794c): the settingsDB row to UI
+      object path used by LauncherDialog::getLauncherItemsList, with the
+      thumbnail path prefix;8 native/C cases plus host/ASan/UBSan/ARM-qemu/
+      verify.cjs38 ok/TV CPU (32-bit refcount asserted). LAUNCHER-ITEM.
+- [ ] settingsDB adapter/query and NovoLauncherDataProvider (the read half of
+      live resources); scrollbar/skin; display/scanout binding; independent
+      startup.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

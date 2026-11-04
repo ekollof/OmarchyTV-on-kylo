@@ -48,6 +48,21 @@ reference groups. Raw checked bytes and independently varied paired child
 states close additional coverage gaps.1771396 renderer/276 setter/56 image
 cases plus host/IPC/sanitizer/ARM-qemu/TV CPU pass; real rendering/startup open.
 
+LAUNCHER-ITEM implements LauncherItem::LauncherItem(NovoLauncherItem const&)
+(0xe4794c, Thumb, 500 bytes): the settingsDB resource conversion used by
+LauncherDialog::getLauncherItemsList (calls at0xedb2ac/0xedb40a) after
+NovoLauncherDataProvider::getLauncherItems reads the 26-column LauncherItem
+table. It copies17 word fields and4 bytes, constructs10 UStrings plus one
+default at+0x2c, copies the shared_ptr control/raw pair at+0x8c/+0x90 with a
+control+4 refcount increment, initialises+0x94=-1 and+0x98..+0xa0=0, and when
+the thumbnail-name UString at source+0x3c is non-empty builds
+"/buffer/downloaded_images"+"/"+name at+0x2c. The body does cbz on isEmpty, so
+the path block runs for non-empty names; an initial inverted reading was caught
+by the differential. 8 native/C cases compare trace,164-byte output and
+refcount; host/ASan/ARM-qemu/TV CPU and verify.cjs38 ok. The SQLite
+adapter/provider is not implemented; UString ops and the shared_count
+destructor remain stubs. The C side always takes the atomic refcount branch.
+
 SVG-WIDGET-STATE implements the widget-state qualification renderItems uses:
 SVGWindow::setFocus (0xeeebd4) remaps 0->1/2->3 when focused and 1->0/3->2 when
 unfocused at +0x6c; SVGWindow::setActive (0xeee4ec) has an inverted argument

@@ -31,7 +31,25 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [SVG-WIDGET-STATE](artifacts/reports/SVG-WIDGET-STATE-2026-11-04.md)
+Latest: [LAUNCHER-ITEM](artifacts/reports/LAUNCHER-ITEM-2026-11-04.md)
+implements LauncherItem::LauncherItem(NovoLauncherItem const&) (0xe4794c,
+Thumb, 500 bytes), the settingsDB row to UI object conversion used by
+LauncherDialog::getLauncherItemsList. It copies 17 word fields and 4 bytes,
+constructs 10 UStrings plus one default, copies the shared_ptr pair with a
+control+4 refcount increment, initialises +0x94=-1 and +0x98..+0xa0=0, and when
+the thumbnail name at source +0x3c is non-empty builds
+"/buffer/downloaded_images/" + name at +0x2c. The body does cbz on isEmpty, so
+the path block runs for non-empty names; the differential caught an inverted
+first reading. 8 native/C cases compare trace, 164-byte output and refcount;
+host, focused ASan/UBSan, ARM/qemu, full verify.cjs (38 ok) and full make check
+pass, plus a focused real-TV CPU run (exit 0, staging hash-verified and
+removed; the 32-bit refcount branch is asserted there). The settingsDB
+adapter/query and NovoLauncherDataProvider are still unimplemented, so this is
+the conversion half of live resource loading. Next: the DB adapter/provider,
+then scrollbar/skin, display/scanout binding and independent startup. No
+device/screen/settings/network/boot change.
+
+Previous: [SVG-WIDGET-STATE](artifacts/reports/SVG-WIDGET-STATE-2026-11-04.md)
 implements the widget-state qualification renderItems uses on every child:
 SVGWindow::setFocus (0xeeebd4, state at +0x6c: 0->1/2->3 on, 1->0/3->2 off),
 SVGWindow::setActive (0xeee4ec, inverted argument: 0 activates 0->2/1->3,

@@ -1,0 +1,3 @@
+ok launcher item: novo-row conversion, 17 scalars, 11 UStrings and thumbnail path prefix
+TV_EXIT=0
+ARM 32-bit refcount path asserted (not skipped as on 64-bit hosts)

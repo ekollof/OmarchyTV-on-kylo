@@ -1,5 +1,25 @@
 # Current project state — last verified 2026-11-04
 
+LAUNCHER-ITEM-2026-11-04: LauncherItem::LauncherItem(NovoLauncherItem const&)
+0xe4794c (Thumb, 500 bytes, CRC0xd1bcb8c5) implemented in
+common/launcher_item.c. This is the settingsDB row to UI object conversion used
+by LauncherDialog::getLauncherItemsList; it copies17 word fields+4 bytes,
+10 UString copies+1 default, the shared_ptr pair at+0x8c/+0x90 with a control+4
+refcount increment, sets+0x94=-1 and+0x98..+0xa0=0, and when the thumbnail name
+at source+0x3c is non-empty builds "/buffer/downloaded_images/"+name at+0x2c.
+The cbz-on-isEmpty branch direction was inverted in the first reading and
+caught by the differential. 8 native/C cases (pattern x empty x control) compare
+trace,164-byte output and refcount; host, focused ASan/UBSan, ARM/qemu, full
+verify.cjs (38 ok) and full make check pass; focused TV CPU of the launcher_item
+ARM unit exit0 with staging hash-verified/removed and the 32-bit refcount path
+asserted. Build-tv-v3/settings-row-render unit42596/
+d5ec4b2a4bd6d58e7194787f2792191c; reference1331260/
+c661b4c5d0167eec8658ce66bed80330. The settingsDB adapter/query and
+NovoLauncherDataProvider are still unimplemented; UString ops/shared_count dtor
+remain stubs; the C side always uses the atomic refcount branch. No
+screen/input/device/settings/network/service/boot/persistent change. No pending
+job/helper.
+
 SVG-WIDGET-STATE-2026-11-04: widget-state qualification from renderItems
 implemented in common/svg_widget_state.c. SVGWindow::setFocus0xeeebd4
 (0->1/2->3 on,1->0/3->2 off at +0x6c); SVGWindow::setActive0xeee4ec (inverted
