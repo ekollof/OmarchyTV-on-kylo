@@ -54,6 +54,7 @@ def run_probe(qemu, sysroot, aurora, probe, libdirs, fmt, path):
     env["LD_LIBRARY_PATH"] = ":".join(libdirs)
     env["LD_PRELOAD"] = str(probe)
     env["OA_VENDOR_FORMAT"] = fmt
+    env["OA_VENDOR_MODEL"] = "3"  # requested RGBA ImageProperties
     env["OA_VENDOR_INPUT"] = str(path)
     env["OA_VENDOR_OUTPUT"] = out
     try:
@@ -78,52 +79,63 @@ def run_probe(qemu, sysroot, aurora, probe, libdirs, fmt, path):
     return width, height, rowlen, pixels
 
 
-def bgra_to_rgba(pixels, width, height, rowlen):
-    if rowlen != width * 4:
-        fail(f"unexpected rgba row length {rowlen} for {width}")
-    out = bytearray(width * height * 4)
-    for y in range(height):
-        src = y * rowlen
-        dst = y * width * 4
-        for x in range(width):
-            b, g, r, a = pixels[src + x*4:src + x*4 + 4]
-            out[dst + x*4:dst + x*4 + 4] = bytes((r, g, b, a))
-    return bytes(out)
-
-
-def palette_indices(pixels, width, height, rowlen):
-    if rowlen != width:
-        fail(f"unexpected palette row length {rowlen} for {width}")
-    return bytes(pixels[:width * height])
-
-
-def check_png(name, root, probe, common):
-    path = root / "artifacts/workbench/thumbs" / name
+def check_png_path(name, path, common):
     width, height, rowlen, pixels = run_probe(*common, "png", path)
     im = Image.open(path)
     if im.size != (width, height):
         fail(f"{name}: vendor size {width}x{height} != {im.size}")
-    if im.mode == "P":
-        ref = im.tobytes()
-        got = palette_indices(pixels, width, height, rowlen)
-        if got != ref:
-            fail(f"{name}: palette indices differ")
-        return "palette-index exact"
+    if rowlen != width * 4:
+        fail(f"{name}: requested-RGBA row length {rowlen} != {width*4}")
     ref = im.convert("RGBA").tobytes()
-    got = bgra_to_rgba(pixels, width, height, rowlen)
+    got = pixels[:width * height * 4]
     if got != ref:
         diff = sum(a != b for a, b in zip(got, ref))
-        fail(f"{name}: PNG BGRA differs from RGBA reference ({diff} bytes)")
-    return "BGRA->RGBA exact"
+        fail(f"{name}: PNG RGBA differs from reference ({diff} bytes)")
+    return "RGBA exact"
 
 
-def check_jpeg(name, root, probe, common, magick, tolerance):
+def check_png(name, root, common):
+    return check_png_path(name, root / "artifacts/workbench/thumbs" / name,
+        common)
+
+
+def make_variants(source, directory, magick):
+    variants = [
+        ("gray1", ["-colorspace", "Gray", "-depth", "1",
+                   "-define", "png:bit-depth=1"]),
+        ("gray2", ["-colorspace", "Gray", "-depth", "2",
+                   "-define", "png:bit-depth=2"]),
+        ("gray4", ["-colorspace", "Gray", "-depth", "4",
+                   "-define", "png:bit-depth=4"]),
+        ("gray8", ["-colorspace", "Gray", "-depth", "8",
+                   "-define", "png:color-type=0"]),
+        ("graya8", ["-colorspace", "Gray", "-alpha", "set", "-depth", "8",
+                    "-define", "png:color-type=4"]),
+        ("palette", ["-colors", "16"]),
+        ("palette_trns", ["-colors", "16", "-transparent", "white"]),
+        ("rgb16", ["-depth", "16", "-define", "png:bit-depth=16",
+                   "-define", "png:color-type=2"]),
+        ("rgba16", ["-depth", "16", "-define", "png:bit-depth=16",
+                    "-define", "png:color-type=6"]),
+        ("interlaced", ["-colors", "16", "-interlace", "PNG"]),
+        ("gamma", ["-set", "gamma", "0.45455"]),
+    ]
+    out = []
+    for name, args in variants:
+        path = directory / f"{name}.png"
+        subprocess.run([magick, str(source), *args, str(path)],
+            check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        out.append((name, path))
+    return out
+
+
+def check_jpeg(name, root, common, magick, tolerance):
     path = root / "artifacts/dumps/apdat_files/dlna-dmr/xml/icon" / name
     width, height, rowlen, pixels = run_probe(*common, "jpeg", path)
     ref = subprocess.check_output([magick, str(path), "-depth", "8", "RGBA:-"])
-    if len(ref) != width * height * 4:
-        fail(f"{name}: reference size {len(ref)} != {width*height*4}")
-    got = bgra_to_rgba(pixels, width, height, rowlen)
+    if rowlen != width * 4 or len(ref) != width * height * 4:
+        fail(f"{name}: unexpected row/reference size")
+    got = pixels[:width * height * 4]
     max_delta = 0
     total = 0
     for i in range(0, len(got), 4):
@@ -167,10 +179,14 @@ def main():
         fail("missing ImageMagick")
     common = (qemu, sysroot, aurora, probe, vendor_libdirs(root))
     for name in PNG_OK:
-        print(f"ok vendor png {name}: {check_png(name, root, probe, common)}")
+        print(f"ok vendor png {name}: {check_png(name, root, common)}")
+    base = root / "artifacts/workbench/thumbs/launcher_app_thumb61"
+    with tempfile.TemporaryDirectory(prefix="oa-png-variants-") as tmp:
+        for name, path in make_variants(base, Path(tmp), magick):
+            print(f"ok vendor png variant {name}: {check_png_path(name, path, common)}")
     for name in JPEG_OK:
-        print(f"ok vendor jpeg {name}: {check_jpeg(name, root, probe, common, magick, args.tolerance)}")
-    print(f"ok vendor decoder differential: {len(PNG_OK)} PNG, {len(JPEG_OK)} JPEG")
+        print(f"ok vendor jpeg {name}: {check_jpeg(name, root, common, magick, args.tolerance)}")
+    print(f"ok vendor decoder differential: {len(PNG_OK)} PNG + variants, {len(JPEG_OK)} JPEG")
 
 
 if __name__ == "__main__":

@@ -2,14 +2,14 @@
 
 Interpretation: [VENDOR-DECODER-DIFF](../../reports/VENDOR-DECODER-DIFF-2026-11-04.md).
 
-- `check.txt`: ARM/qemu vendor class probe over nine PNGs and two JPEGs.
+- `check.txt`: ARM/qemu vendor class probe over nine PNGs, eleven generated PNG
+  variants and two JPEGs.
 - `identities.txt`: SHA256 of the probe and `aurora.elf`.
 
-The probe is an ARM `LD_PRELOAD` constructor that runs before the vendor main.
-It constructs the vendor `PngImageDecoderImpl`/`JpegImageDecoder` with vendor
-`MemoryBufferSource`/`MutableImage`, decodes one file, and writes the raw
-`width,height,rowlen` result. No TV, framebuffer, HAL device or vendor UI is
-opened.
+The probe is an ARM `LD_PRELOAD` constructor that runs before vendor main. It
+constructs the vendor `PngImageDecoderImpl`/`JpegImageDecoder` with vendor
+`MemoryBufferSource`/`MutableImage` and requested RGBA `ImageProperties`, then
+decodes one file. No TV, framebuffer, HAL device or vendor UI is opened.
 
 Run:
 
@@ -19,5 +19,6 @@ make -C openaurora TARGET=tv BUILD=build-tv-v3/vendor-decoder \
   check-vendor-decoder
 ```
 
-PNG is byte-exact after BGRA→RGBA (or palette-index) normalization. JPEG is
-within max channel delta8/mean1.3–1.7, so exact JPEG class parity remains open.
+PNG is byte-exact with requested RGBA, including low-depth grayscale, palette,
+tRNS, 16-bit, interlaced and gAMA variants. JPEG is within max channel delta8 /
+mean1.3–1.7, so exact JPEG class parity remains open.

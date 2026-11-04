@@ -575,22 +575,23 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
 
 - [x] Vendor decoder-class differential: an ARM LD_PRELOAD probe executes the
       shipped PngImageDecoderImpl and JpegImageDecoder under qemu before vendor
-      main, using vendor MemoryBufferSource/MutableImage. Nine PNGs are exact
-      after vendor BGRA->RGBA (or palette-index) normalization; DMR-small/large
-      JPEG differ by max8/mean≈1.3-1.7, a real class conversion/rounding gap.
-      VENDOR-DECODER-DIFF. No TV/HAL/UI. Limits: grayscale/tRNS/16-bit/gamma
-      variants, actual foxxum JPEGs, APNG/CMYK, worker/frame lifetime and
-      on-TV/stock parity remain.
+      main, using vendor MemoryBufferSource/MutableImage and requested RGBA
+      ImageProperties (model3; model2 is BGRA). Nine corpus PNGs plus
+      gray1/2/4/8, gray+alpha, palette, palette+tRNS, RGB16, RGBA16, interlaced
+      and gAMA variants are byte-exact requested RGBA. DMR-small/large JPEG
+      differ by max8/mean≈1.3-1.7, a real class conversion/rounding gap.
+      VENDOR-DECODER-DIFF. No TV/HAL/UI. Limits: actual foxxum JPEGs,
+      APNG/CMYK, worker/frame lifetime and on-TV/stock parity remain.
 
 - [ ] Complete image.decode acceptance: the classic-libpng PNG conversion
       sequence from Aurora's b30918 `setConversions`, the TurboJPEG path and
       the vendor-class differential above now pass the maintained corpus,
-      malformed/truncated input, suspend/resume and reload tests, and the
-      supervised on-TV grid. Provider pixels are copied then released. Still
-      need grayscale/tRNS/16-bit/gamma corpus coverage, exact JPEG-class
-      agreement (current max8), actual downloaded foxxum assets, APNG/CMYK
-      policy, worker scheduling/cancellation and stock pixel parity.
-      Reopened by TODO-REAUDIT-2026-11-04; narrowed, not closed.
+      format variants, malformed/truncated input, suspend/resume and reload
+      tests, and the supervised on-TV grid. Provider pixels are copied then
+      released. Still need exact JPEG-class agreement (current max8), actual
+      downloaded foxxum assets, APNG/CMYK policy, worker scheduling/
+      cancellation and stock pixel parity. Reopened by
+      TODO-REAUDIT-2026-11-04; narrowed, not closed.
 
 - [x] Stock-capture parity analysis: the old `shot-launcher-right.png` is an
       R/B-swapped pre-correction capture; after channel correction it matches

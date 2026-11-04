@@ -85,6 +85,19 @@ static int fn_int1(void *sym, void *a)
     memcpy(&fn, &sym, sizeof fn);
     return fn(a);
 }
+static void fn_colour(void *sym, void *a, int model)
+{
+    void (*fn)(void *, int);
+    memcpy(&fn, &sym, sizeof fn);
+    fn(a, model);
+}
+static void fn_props(void *sym, void *a, int w, int h, int xr, int yr,
+    void *model, int transparent)
+{
+    void (*fn)(void *, int, int, int, int, void *, int);
+    memcpy(&fn, &sym, sizeof fn);
+    fn(a, w, h, xr, yr, model, transparent);
+}
 static void *fn_getpix(void *sym, void *a, int x, int y)
 {
     void *(*fn)(void *, int, int);
@@ -113,14 +126,21 @@ __attribute__((constructor)) static void probe(void)
     void *source = calloc(1, 0x20);
     void *image = calloc(1, 0x100);
     void *decoder = calloc(1, 0x200);
-    if (!source || !image || !decoder) _exit(8);
+    void *colour = calloc(1, 8);
+    void *properties = calloc(1, 0x80);
+    if (!source || !image || !decoder || !colour || !properties) _exit(8);
+    const char *model_text = getenv("OA_VENDOR_MODEL");
+    int model = model_text && *model_text ? atoi(model_text) : 3;
+    fn_colour(need("_ZN4lynx11ColourModelC1ENS0_5ModelE"), colour, model);
+    fn_props(need("_ZN3hal15ImagePropertiesC1EiiiiN4lynx11ColourModelEb"),
+        properties, 0, 0, 0, 0, colour, 0);
     fn_mbs(need("_ZN3hal18MemoryBufferSourceC1EPKvj"), source, data,
         (unsigned)input_len);
     fn_void1(need("_ZN3hal12MutableImageC1Ev"), image);
     fn_void1(need(ctor), decoder);
     fn_void1(need(init), decoder);
-    int rc = fn_decode(need(decode), decoder, source, image, NULL, NULL,
-        NULL, NULL);
+    int rc = fn_decode(need(decode), decoder, source, image, properties,
+        NULL, NULL, NULL);
 
     void **vtable = *(void ***)image;
     int width = fn_int1(vtable[0x08 / 4], image);

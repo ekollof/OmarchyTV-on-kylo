@@ -15,11 +15,13 @@ ui_vendor/display reload or cold startup.
 
 VENDOR-DECODER-DIFF-2026-11-04: an ARM LD_PRELOAD probe runs the shipped
 PngImageDecoderImpl/JpegImageDecoder under qemu before vendor main, using
-vendor MemoryBufferSource/MutableImage. Nine PNGs are exact after BGRA->RGBA
-or palette-index normalization; DMR-small/large JPEG differ by max8/mean1.3-1.7
-from the ImageMagick/TurboJPEG reference. This is a real class conversion gap,
-not channel order. No TV/HAL/UI. Grayscale/tRNS/16-bit/gamma, actual foxxum
-JPEGs, APNG/CMYK, worker/frame lifetime and stock parity remain.
+vendor MemoryBufferSource/MutableImage and requested RGBA ImageProperties
+(model3; model2 is BGRA). Nine corpus PNGs plus gray1/2/4/8, gray+alpha,
+palette, palette+tRNS, RGB16, RGBA16, interlaced and gAMA variants are
+byte-exact RGBA. DMR-small/large JPEG differ by max8/mean1.3-1.7 from the
+ImageMagick/TurboJPEG reference; this is a real class conversion gap, not
+channel order. No TV/HAL/UI. Actual foxxum JPEGs, APNG/CMYK, worker/frame
+lifetime and stock parity remain.
 
 STOCK-PARITY-2026-11-04: old shot-launcher-right.png is an R/B-swapped
 pre-correction capture; after RGB swap its Prime/Canal colors match the

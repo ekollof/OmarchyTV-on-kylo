@@ -103,11 +103,12 @@ reload, held-provider rejection and cold startup remain separate.
 
 VENDOR-DECODER-DIFF-2026-11-04 (offline/qemu): an ARM LD_PRELOAD constructor
 executes the shipped PngImageDecoderImpl and JpegImageDecoder before vendor
-main, using vendor MemoryBufferSource/MutableImage. Nine PNGs are exact after
-vendor BGRA->RGBA swap (palette PNGs exact by index); DMR-small/large JPEG differ
-from the ImageMagick/TurboJPEG reference by max8 per channel, mean≈1.3-1.7.
-Probe03da65ac…, aurora7d6e4ca5…. No TV/HAL/UI. Grayscale/tRNS/16-bit/gamma,
-actual foxxum JPEGs, APNG/CMYK, worker/frame lifetime and on-TV/stock parity
+main, using vendor MemoryBufferSource/MutableImage and requested RGBA
+ImageProperties (model3; model2 is BGRA). Nine corpus PNGs plus gray1/2/4/8,
+gray+alpha, palette, palette+tRNS, RGB16, RGBA16, interlaced and gAMA variants
+are byte-exact RGBA. DMR-small/large JPEG differ by max8/mean≈1.3-1.7, a real
+class conversion/rounding gap. Probe2d5aff61…, aurora7d6e4ca5…. No TV/HAL/UI.
+Actual foxxum JPEGs, APNG/CMYK, worker/frame lifetime and on-TV/stock parity
 remain open.
 
 STOCK-PARITY-2026-11-04 (offline analysis): the saved
