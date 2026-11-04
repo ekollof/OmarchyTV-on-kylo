@@ -46,27 +46,47 @@ static int find(const unsigned char *b,size_t n,size_t parent,uint32_t id,int se
     }
     return ENOENT;
 }
-int oa_profile_u32(const void *data,size_t size,const char *section,const char *key,
-                   uint32_t default_value,uint32_t *out,int *present)
+static int locate(const void *data,size_t size,const char *section,const char *key,size_t *entry)
 {
-    if(!data || !section || !key || !out || !present)return EINVAL;
+    if(!data || !section || !key)return EINVAL;
     const unsigned char *b=data;
     if(size<0x44 || memcmp(b,"EFSL",4))return EBADMSG;
     size_t parent=0x30;
     if(word(b+parent+8)>(size-0x44)/20)return EBADMSG;
     const char *p=section;
-    int found=0;uint32_t value=default_value;
     while(*p) {
         if(*p=='/'){++p;continue;}
         const char *end=strchr(p,'/');size_t length=end?(size_t)(end-p):strlen(p);
         size_t next;int rc=find(b,size,parent,hash(p,length),1,&next);
-        if(rc==ENOENT)goto done;
         if(rc)return rc;
         parent=next;p+=length;
     }
-    size_t entry;int rc=find(b,size,parent,oa_profile_hash(key),0,&entry);
+    return find(b,size,parent,oa_profile_hash(key),0,entry);
+}
+int oa_profile_u32(const void *data,size_t size,const char *section,const char *key,
+                   uint32_t default_value,uint32_t *out,int *present)
+{
+    if(!out || !present)return EINVAL;
+    size_t entry;int rc=locate(data,size,section,key,&entry);
     if(rc!=ENOENT && rc)return rc;
+    const unsigned char *b=data;
+    int found=0;uint32_t value=default_value;
     if(!rc && b[entry+4]==5){value=word(b+entry+12);found=1;}
-done:
     *out=value;*present=found;return 0;
+}
+int oa_profile_data(const void *data,size_t size,const char *section,const char *key,
+                    const void **out,size_t *length,int *present)
+{
+    if(!out || !length || !present)return EINVAL;
+    size_t entry;int rc=locate(data,size,section,key,&entry);
+    if(rc!=ENOENT && rc)return rc;
+    const unsigned char *b=data;
+    const void *value=NULL;size_t n=0;int found=0;
+    if(!rc && b[entry+4]>=2 && b[entry+4]<=4) {
+        if(word(b+0x20))return ENOTSUP;
+        size_t start=word(b+entry+12);n=word(b+entry+8);
+        if(start>size || n>size-start)return EBADMSG;
+        value=b+start;found=1;
+    }
+    *out=value;*length=n;*present=found;return 0;
 }

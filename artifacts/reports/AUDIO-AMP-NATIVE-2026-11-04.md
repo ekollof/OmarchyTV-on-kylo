@@ -1,5 +1,10 @@
 # AD82587 register-image comparison against native Init — 2026-11-04
 
+Follow-up [AUDIO-AMP-PROFILE](AUDIO-AMP-PROFILE-2026-11-04.md) now supplies
+bounded fresh hwprofile inputs and native-tested byte-payload reads. The
+actual-profile-lookup limit below is narrowed to provider/cache/ownership
+integration. Hardware lifecycle and audible acceptance remain open.
+
 The new `tests/audio_amp_native.h`, included in the maintained ARM firmware
 harness, executes the complete shipped AMP_AD82587_Init body and compares its
 retained38-byte image and write bytes against `oa_ad82587_configure`.

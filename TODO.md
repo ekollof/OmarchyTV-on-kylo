@@ -282,7 +282,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       plus all38 write-failure/retained-image cases. GPIO descriptions are
       absent and hardware callees controlled in that differential. Open/Close
       only return object!=NULL; ResumeDevice only starts a task and its task
-      ignores the init result. Finish actual profile/image state acquisition,
+      ignores the init result. AUDIO-AMP-PROFILE supplies bounded hwprofile
+      input snapshots with the recovered power/default rules;2312 native
+      byte-payload cases and44 total reference groups pass. Finish reloadable
+      profile provider/consumer integration and retained image acquisition,
       GPIO/MCU/I2C/worker ownership and hardware lifecycle acceptance; do not
       substitute these wrapper returns or the pure helper for native bring-up.
 - [x] Traced UI volume through speaker gain and recovered both AQ101-entry table

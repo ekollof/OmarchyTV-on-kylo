@@ -19,6 +19,14 @@ vendor PIDs intact. Supervised only; no full region/MAU/pan equality or
 independent startup. The current owner override revoked TV access after this
 run; no TV command followed. See VISIBLE-IMAGES.
 
+AUDIO-AMP-PROFILE-2026-11-04 adds bounded hwprofile inputs for the amp image:
+power string/legacy enum, empty-name8Watt lookup, scalar defaultc0/DRC default-1.
+The saved profile selects12Watt with1b/05/05/fine80. Host/sanitizer/ARM and full
+host356 pass;2312 native payload comparisons make44 total reference groups.
+Values and name bytes copy into caller storage; the struct borrows that name
+buffer. No vendor getter cache or hardware ownership is claimed. Offline only;
+TV restriction remains in force.
+
 AUDIO-AMP-NATIVE-2026-11-04 supersedes static-only image verification:6000
 profile/current-image cases and all38 write failures match the complete shipped
 Init body under ARM/qemu (controlled hardware callees, absent GPIO descriptions).

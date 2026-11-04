@@ -35,6 +35,14 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
+[AUDIO-AMP-PROFILE](artifacts/reports/AUDIO-AMP-PROFILE-2026-11-04.md) now
+decodes actual hwprofile inputs into caller-owned amp snapshots; defaults,
+string/legacy power and malformed-input policies come from firmware. Host/
+sanitizer/ARM corpus units and full host356 pass;44 reference groups include
+2312 native payload cases. The verifier defaults to build-tv-v3/amp-profile.
+Next connect a reloadable data provider/consumer and retained image ownership
+before worker/GPIO/MCU/I2C lifecycle. All work remains offline; no TV access.
+
 [AUDIO-AMP-NATIVE](artifacts/reports/AUDIO-AMP-NATIVE-2026-11-04.md) now compares
 the image helper against the complete shipped Init body:6000 profiles and all38
 write failures match under ARM/qemu;43 total reference groups pass. Hardware

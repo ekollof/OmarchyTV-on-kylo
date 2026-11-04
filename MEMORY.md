@@ -1,5 +1,13 @@
 # Current project state — last verified 2026-11-04
 
+AUDIO-AMP-PROFILE-2026-11-04 adds bounded hwprofile-to-amp input snapshots and
+borrowed profile payload reads. Saved profile selects12Watt,1b/05/05/fine80;
+all four scalar defaults arec0, DRC defaults-1. Host/leak-enabled sanitizer/
+fresh ARM units and full host356 checks pass;2312 native payload comparisons
+bring the reference harness to44 groups, all passing. Provider/cache/retained
+image ownership and hardware lifecycle/audible acceptance remain open. No TV
+access; owner offline-only restriction remains in force.
+
 AUDIO-AMP-NATIVE-2026-11-04:6000 register-image profiles and38 write failures
 match the complete shipped Init body under ARM/qemu, with controlled hardware
 callees/absent GPIO descriptions. All43 maintained reference groups pass in a

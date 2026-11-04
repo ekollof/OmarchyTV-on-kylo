@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, '../../..');
 const elf = path.join(root, 'artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf');
 // Default follows the latest isolated reference build. Historical binaries
 // intentionally fail the new-group assertion rather than silently omitting it.
-const binary = path.resolve(root, process.argv[2] || 'openaurora/build-tv-v3/audio-amp-native/tests/tab_policy_firmware');
+const binary = path.resolve(root, process.argv[2] || 'openaurora/build-tv-v3/amp-profile/tests/tab_policy_firmware');
 const libc = path.join(root, 'artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/arm-none-linux-gnueabihf/libc');
 const profile = path.join(root, 'artifacts/profiles/mb230_swprofile.bin');
 process.stdout.write(`reference executable: ${path.relative(root, binary)} sha256=${crypto.createHash('sha256').update(fs.readFileSync(binary)).digest('hex')}\n`);
@@ -65,3 +65,4 @@ assert.match(result.stdout, /svg scrollbar skin: 32 native\/C cases/);
 assert.match(result.stdout, /svg scrollbar render: 36 native\/C cases/);
 assert.match(result.stdout, /row values: 68640 type\/raw-value cases/);
 assert.match(result.stdout, /amp image: 6000 native\/C profiles, 38 write-failure\/retained-image cases; hardware callees controlled/);
+assert.match(result.stdout, /profile data: 2312 type\/length\/capacity cases, exact payload bytes and untouched guards/);

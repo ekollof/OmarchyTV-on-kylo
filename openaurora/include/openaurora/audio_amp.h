@@ -3,6 +3,7 @@
 #ifndef OPENAURORA_AUDIO_AMP_H
 #define OPENAURORA_AUDIO_AMP_H
 #include <stdint.h>
+#include <stddef.h>
 #define OA_AD82587_REGISTERS 38u
 typedef struct {
     const char *speaker_power;
@@ -20,4 +21,12 @@ typedef struct {
  * hardware initialization routine or a UI-volume-to-amplifier conversion. */
 int oa_ad82587_configure(uint8_t out[OA_AD82587_REGISTERS],
     const uint8_t baseline[OA_AD82587_REGISTERS], const oa_ad82587_profile *profile);
+/* Fresh immutable hwprofile snapshot using recovered power/section/default
+ * rules. out->speaker_power borrows the caller's32-byte power buffer, never
+ * input data or temporary stack storage. Both outputs unchanged on error.
+ * Returns positive errno, like profile readers. No vendor global getter cache
+ * is shared; retain this snapshot until explicit reload. Malformed/nonterminated
+ * power data and out-of-range legacy enums reject instead of vendor OOB reads. */
+int oa_ad82587_profile_from_hw(const void *data,size_t size,
+    oa_ad82587_profile *out,char power[32]);
 #endif

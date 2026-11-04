@@ -1,0 +1,7 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-tv-v3/amp-profile/tests/audio_amp_profile tests/audio_amp_profile.c common/audio_amp_profile.c common/audio_amp.c common/profile.c
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+amp hwprofile: power='12Watt' prescale=1b ch1=5 ch2=5 fine=80 clip=630e8 drc=18000 state=ffffffff attack=ffffffff release=ffffffff
+ok amp profile: string/legacy enum/empty power, exact sections/defaults and register-image join
+ok amp profile: bounded payloads, invalid enum/nontermination/external-base rejection and atomic errors
+ok profile data: borrowed type2/3/4 payloads and wrong-type absence

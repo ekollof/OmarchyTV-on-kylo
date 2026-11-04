@@ -1,0 +1,17 @@
+Aurora MD5 64c252340d3af6c5d66072611b7bad7a
+c5e94c -> 14be6d2 "AudioSettings/Prescales/"
+c5e950 -> 1290796 "hwprofile"
+c5e954 -> 14be6eb "DefaultSpeaker"
+c5f134 -> 14c10b0 "8Watt"
+c5f138 -> 14be699 "AudioSettings/Prescales/%s"
+c5f140 -> 14bd9e6 "Amp_Prescale"
+c5f2a8 -> 14bd9c8 "Amp_Ch1_Volume"
+c5f35c -> 14bd9d7 "Amp_Ch2_Volume"
+c5f1f4 -> 14bd9f3 "AmpVolumeFineTune"
+c5f7a0 -> 14bdde5 "AudioSettings/Prescales/%s/DRC"
+legacy enum 0 "8Watt"
+legacy enum 1 "6Watt"
+legacy enum 2 "2.5Watt"
+legacy enum 3 "12Watt"
+legacy enum 4 "SoundBox4R12Watt"
+hwprofile bytes 24514 MD5 1b063b2cc7faa8b92c0f843921e561c7

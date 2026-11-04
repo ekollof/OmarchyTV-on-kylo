@@ -1,0 +1,8 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-amp-profile-san/tests/audio_amp_profile tests/audio_amp_profile.c common/audio_amp_profile.c common/audio_amp.c common/profile.c
+ok amp profile: string/legacy enum/empty power, exact sections/defaults and register-image join
+ok amp profile: bounded payloads, invalid enum/nontermination/external-base rejection and atomic errors
+ok profile data: borrowed type2/3/4 payloads and wrong-type absence
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-amp-profile-san/tests/profile tests/profile.c common/profile.c common/tab_policy.c
+ok profile: nested/duplicate/type/default/exact-one semantics, truncated/escaping descendant spans and atomic errors
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

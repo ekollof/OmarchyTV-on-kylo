@@ -277,10 +277,11 @@ Use a fresh isolated `BUILD=build-tv-v3/<review-name>`; the maintained
 `artifacts/analysis/tab-navigation-2026-11-03/verify.cjs` accepts an optional
 binary path and prints its SHA256. Do not mix a root build with tab-policy or
 keep rerunning stale binaries while guessing at calling conventions.
-Its current default is build-tv-v3/audio-amp-native/tests/tab_policy_firmware
-and it requires43 groups, including6000 AD82587 profile images/38 write failures.
-Build that target first or pass an explicitly rebuilt path. Old42-group binaries
-cannot certify the added amp group. AUDIO-AMP-NATIVE records the command/scope.
+Its current default is build-tv-v3/amp-profile/tests/tab_policy_firmware
+and it requires44 groups, including6000 AD82587 profile images/38 write failures
+and2312 profile payload comparisons. Build that target first or pass an explicitly
+rebuilt path. Older binaries cannot certify newly added groups. AUDIO-AMP-PROFILE
+and AUDIO-AMP-NATIVE record the commands/scopes.
 
 Use GDB for a reproducible first fault: inspect PC, CPSR/instruction state,
 registers, nearby instructions and backtrace through qemu's gdbstub, then check
