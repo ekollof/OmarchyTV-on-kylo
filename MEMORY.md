@@ -1,5 +1,15 @@
 # Current project state — last verified 2026-11-04
 
+TODO-AUDIT-2026-11-04: all182 prior checked claims inventoried against source,
+tests and dated evidence. One reopened (recorder transparent RGBA fidelity);
+181 retained at bounded scope with66 descriptions corrected/narrowed.
+Fresh full host,42 ARM firmware-reference groups, host vendor corpora, eight
+new build-tv-v3/todo-audit ARM layout/font units and host Mesa checks pass.
+Recovery script/current image/pristine revert hashes match local artifact map.
+No TV access, hardware change or deployment. Historical root build-tv-v3 is
+the preserved16-module production stage, not the latest whole source build.
+The runtime/deployment state recorded by WORK-REVIEW below is unchanged.
+
 WORK-REVIEW-2026-11-04: reviewed cf78486..4ba1599. Fixed scrollbar ARM wrap
 and first-window geometry ordering, four SVGWindow-state caches (not two
 orientations), advertising/tracking-field exclusion, image byte flag/callback

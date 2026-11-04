@@ -31,7 +31,17 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest review: [WORK-REVIEW](artifacts/reports/WORK-REVIEW-2026-11-04.md)
+Latest checklist audit: [TODO-AUDIT](artifacts/reports/TODO-AUDIT-2026-11-04.md)
+reviews all182 previously checked items. Recorder transparent RGBA fidelity is
+reopened; remaining checks are bounded research/helper/test/historical milestones,
+not complete TV features. Stale missing-helper/scanout/version/count claims were
+corrected. Full host,42 ARM firmware groups, host/ARM font/theme corpora and Mesa
+checks pass. No TV access or deployment in this audit. The claim inventory has
+per-item dispositions and source/test/evidence locators. Implementation next
+steps remain the native integration/visual/ownership gates below, plus the
+now-explicit recorder alpha task; do not repeat completed lower-helper recovery.
+
+Latest implementation review: [WORK-REVIEW](artifacts/reports/WORK-REVIEW-2026-11-04.md)
 checks cf78486..4ba1599. Fixed scrollbar signed overflow, first/second-window
 query ordering and the mistaken two-orientation cache model: +6c is the four
 SVGWindow states, now32 skin/36 render native cases plus14,576 geometry/state.

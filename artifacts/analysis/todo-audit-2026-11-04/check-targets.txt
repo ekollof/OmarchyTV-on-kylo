@@ -1,0 +1,168 @@
+82:check-settings-hotel: $(BUILD)/tests/settings_hotel $(BUILD)/modules/mod_settings.so $(BUILD)/modules/mod_ticker.so
+84:check: check-settings-hotel
+86:check-settings-hotel-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_settings.so
+97:check-ui-profile: $(BUILD)/tests/ui_profile $(BUILD)/modules/mod_ui_profile.so $(BUILD)/modules/mod_ticker.so
+99:check: check-ui-profile
+109:check-ui-navigation: $(BUILD)/tests/ui_navigation $(BUILD)/modules/mod_ui_navigation.so $(BUILD)/modules/mod_ticker.so
+111:check: check-ui-navigation
+114:check-ui-navigation-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_navigation.so
+125:check-ui-list: $(BUILD)/tests/ui_list $(BUILD)/modules/mod_ui_list.so $(BUILD)/modules/mod_ticker.so
+127:check: check-ui-list
+130:check-ui-list-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_list.so
+137:check-launcher-route: $(BUILD)/tests/launcher_route
+139:check: check-launcher-route
+145:check-tab-policy: $(BUILD)/tests/tab_policy
+147:check: check-tab-policy
+153:check-tab-events: $(BUILD)/tests/tab_events
+155:check: check-tab-events
+161:check-tab-prehandle: $(BUILD)/tests/tab_prehandle
+163:check: check-tab-prehandle
+169:check-tab-dispatch: $(BUILD)/tests/tab_dispatch
+171:check: check-tab-dispatch
+177:check-tab-leaf: $(BUILD)/tests/tab_leaf
+179:check: check-tab-leaf
+185:check-settings-input: $(BUILD)/tests/settings_input
+187:check: check-settings-input
+193:check-settings-navigation: $(BUILD)/tests/settings_navigation
+195:check: check-settings-navigation
+201:check-settings-list: $(BUILD)/tests/settings_list_input
+203:check: check-settings-list
+209:check-svg-list-input: $(BUILD)/tests/svg_list_input
+215:check-svg-list-bodies: $(BUILD)/tests/svg_list_bodies
+217:check: check-svg-list-bodies
+223:check-profile: $(BUILD)/tests/profile
+225:check: check-profile
+231:check-svg-list-move: $(BUILD)/tests/svg_list_move
+233:check: check-svg-list-move
+239:check-svg-list-rows: $(BUILD)/tests/svg_list_rows
+241:check: check-svg-list-rows
+247:check-svg-list-scroll: $(BUILD)/tests/svg_list_scroll
+249:check: check-svg-list-scroll
+255:check-svg-list-impl: $(BUILD)/tests/svg_list_impl
+257:check: check-svg-list-impl
+263:check-svg-list-scrollbar: $(BUILD)/tests/svg_list_scrollbar
+265:check: check-svg-list-scrollbar
+271:check-svg-list-update: $(BUILD)/tests/svg_list_update
+273:check: check-svg-list-update
+279:check-svg-list-widgets: $(BUILD)/tests/svg_list_widgets
+281:check: check-svg-list-widgets
+287:check-settings-draw: $(BUILD)/tests/settings_draw
+289:check: check-settings-draw
+295:check-settings-model: $(BUILD)/tests/settings_model
+297:check: check-settings-model
+317:check-settings-row-type: $(BUILD)/tests/settings_row_type
+319:check: check-settings-row-type
+325:check-settings-row-setters: $(BUILD)/tests/settings_row_setters
+327:check: check-settings-row-setters
+333:check-settings-row-render: $(BUILD)/tests/settings_row_render
+335:check: check-settings-row-render
+341:check-launcher-image-id: $(BUILD)/tests/launcher_image_id
+343:check: check-launcher-image-id
+355:check-svg-scrollbar: $(BUILD)/tests/svg_scrollbar $(BUILD)/tests/svg_scrollbar_skin $(BUILD)/tests/svg_scrollbar_render
+359:check: check-svg-scrollbar
+365:check-launcher-item: $(BUILD)/tests/launcher_item
+367:check: check-launcher-item
+374:check-launcher-db: $(BUILD)/tests/launcher_db
+375:	@$(BUILD)/tests/launcher_db $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
+376:check: check-launcher-db
+383:check-launcher-db-module: $(BUILD)/tests/launcher_db_module $(BUILD)/modules/mod_settings.so
+384:	@$(BUILD)/tests/launcher_db_module $(BUILD)/modules $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
+385:check: check-launcher-db-module
+391:check-svg-widget-state: $(BUILD)/tests/svg_widget_state
+393:check: check-svg-widget-state
+399:check-settings-row-construct: $(BUILD)/tests/settings_row_construct
+401:check: check-settings-row-construct
+407:check-svg-image: $(BUILD)/tests/svg_image
+409:check: check-svg-image
+415:check-svg-list-anim: $(BUILD)/tests/svg_list_anim
+417:check: check-svg-list-anim
+432:check-ui-object-scan: $(BUILD)/tests/ui_object_scan
+435:check: check-ui-object-scan
+446:check-binsvg: $(BUILD)/tests/binsvg
+449:check: check-binsvg
+456:check-ui-theme: $(BUILD)/tests/ui_theme $(BUILD)/modules/mod_ui_theme.so $(BUILD)/modules/mod_ticker.so
+459:check: check-ui-theme
+466:check-ui-theme-skin: $(BUILD)/tests/ui_theme_skin $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_theme.so
+472:check: check-ui-theme-skin
+479:check-ui-vendor-subs: $(BUILD)/tests/ui_vendor_subs $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so
+485:check: check-ui-vendor-subs
+492:check-widget-layout: $(BUILD)/tests/widget_layout
+495:check: check-widget-layout
+502:check-textbox-layout: $(BUILD)/tests/textbox_layout
+505:check: check-textbox-layout
+512:check-font-box: $(BUILD)/tests/font_box
+515:check: check-font-box
+522:check-font-bitmap: $(BUILD)/tests/font_bitmap
+530:check-font-finder: $(BUILD)/tests/font_finder
+538:check-font-draw: $(BUILD)/tests/font_draw
+546:check-font-pack: $(BUILD)/tests/font_pack
+554:check-font-text: $(BUILD)/tests/font_text
+562:check-font-line: $(BUILD)/tests/font_line
+565:check: check-font-line
+572:check-text-layout: $(BUILD)/tests/text_layout
+580:check-list-metrics: $(BUILD)/tests/list_metrics
+583:check: check-list-metrics
+590:check-slice-stretch: $(BUILD)/tests/slice_stretch
+593:check: check-slice-stretch
+600:check-text-origin: $(BUILD)/tests/text_origin
+603:check: check-text-origin
+605:check: check-font-bitmap check-font-finder check-font-draw check-font-pack check-font-text check-text-layout
+732:check-safety: all check-quiesce $(BUILD)/tests/module_safety $(addprefix $(BUILD)/tests/,$(addsuffix .so,$(SAFETY_FIXTURES)))
+744:check-quiesce: $(BUILD)/tests/quiesce $(BUILD)/tests/mod_quiesce_fixture.so
+763:check-reload: $(BUILD)/tests/reload $(BUILD)/tests/mod_reload_fixture.so $(BUILD)/tests/mod_reload_no_restore.so $(BUILD)/tests/mod_reload_renamed.so
+777:check-phases: $(BUILD)/tests/phases $(addprefix $(BUILD)/tests/mod_phase_,$(addsuffix .so,$(PHASE_FIXTURES)))
+785:check-power: $(BUILD)/tests/power_cycle $(addprefix $(BUILD)/tests/mod_phase_,$(addsuffix .so,$(PHASE_FIXTURES)))
+792:check-ui-clock: $(BUILD)/tests/ui_clock $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ticker.so
+803:check-cec-packet: $(BUILD)/tests/cec_packet
+810:check-cec-device: $(BUILD)/tests/cec_device
+817:check-cec-owner: check-cec-async $(BUILD)/tests/cec_owner $(BUILD)/modules/mod_cec.so $(BUILD)/modules/mod_ticker.so
+825:check-cec-async: $(BUILD)/tests/cec_async
+832:check-audio-owner: check-owner-races check-audio-async check-audio-broker $(BUILD)/tests/audio_owner
+840:check-audio-async: $(BUILD)/tests/audio_async
+848:check-audio-broker: check-mixer-module $(BUILD)/tests/audio_broker $(BUILD)/oa-audio-broker
+865:check-mixer-module: $(BUILD)/tests/mixer_module $(BUILD)/tests/mixer_peer $(BUILD)/tests/mixer_bad_exec $(BUILD)/modules/mod_audio_mixer.so $(BUILD)/modules/mod_ticker.so
+873:check-owner-races: $(BUILD)/tests/owner_races
+880:check-ui-anim-review: $(BUILD)/tests/ui_anim_review $(BUILD)/modules/mod_ui_anim.so
+887:check-audio-curve: $(BUILD)/tests/audio_curve
+894:check-audio-netlink: $(BUILD)/tests/audio_netlink
+901:check-audio-client: $(BUILD)/tests/audio_client
+908:check-audio-curve-module: $(BUILD)/tests/audio_curve_module $(BUILD)/modules/mod_audio_curve.so $(BUILD)/modules/mod_ticker.so
+919:check-cec-audio: $(BUILD)/tests/cec $(BUILD)/tests/audio $(BUILD)/tests/plat_audio
+932:check-audio-session: $(BUILD)/tests/audio_session $(BUILD)/tests/audio-mods/mod_audio.so $(BUILD)/modules/mod_plat.so
+943:check-cec-audio-policy: $(BUILD)/tests/cec_audio_policy $(BUILD)/modules/mod_cec.so $(BUILD)/modules/mod_plat.so $(BUILD)/tests/audio-mods/mod_audio.so
+961:check-ui-live-cards: $(BUILD)/tests/ui_live_cards ui-live-stage
+963:check: check-ui-live-cards
+964:check-ui-live-dump: $(BUILD)/tests/ui_live_cards ui-live-stage
+965:	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
+967:check-ui-apps-grid: $(BUILD)/tests/ui_live_cards ui-live-stage
+970:check: check-ui-apps-grid
+984:check-ui-sources: $(BUILD)/tests/ui_sources $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so
+996:check-ui-skin: $(BUILD)/tests/ui_skin $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so
+1011:check-skin-selection: check-ui-skin $(BUILD)/tests/skin_selection $(BUILD)/tests/mod_ui_custom.so $(BUILD)/tests/mod_ui_startfail.so $(BUILD)/tests/mod_ui_badenter.so $(BUILD)/tests/mod_ui_silent.so $(BUILD)/tests/mod_ui_busyfail.so $(BUILD)/tests/mod_ui_initbusy.so
+1015:check: check-skin-selection
+1021:check-ui-settings: $(BUILD)/tests/ui_settings $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so
+1031:check-ui-settings-panel: $(BUILD)/tests/ui_settings_panel $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so
+1041:check-ui-settings-rows: $(BUILD)/tests/ui_settings_rows $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so
+1051:check-ui-settings-text: $(BUILD)/tests/ui_settings_text $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so
+1062:check-ui-nav: check-ui-anim-review $(BUILD)/tests/ui_nav $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_settings.so
+1078:check-control: $(BUILD)/tests/control_reply $(BUILD)/tests/control_transport
+1118:check: check-scene-broker check-scene-spawn check-scene-client check-graphics-module check-scene-display check-ui-async
+1119:check-scene-broker: $(BUILD)/tests/scene_broker
+1135:check-scene-spawn: $(BUILD)/tests/scene_spawn $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so $(BUILD)/tests/scene-renderer-bad.so
+1143:check-scene-client: $(BUILD)/tests/scene_client $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so
+1151:check-graphics-module: $(BUILD)/tests/graphics_module $(BUILD)/modules/mod_graphics.so $(BUILD)/modules/mod_ticker.so $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so
+1163:check-scene-display: $(BUILD)/tests/scene_display $(BUILD)/modules/mod_scene_display.so $(BUILD)/modules/mod_scene_gpu_fixture.so
+1171:check-ui-async: $(BUILD)/tests/ui_async $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_scene_display.so $(BUILD)/modules/mod_scene_gpu_fixture.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_anim.so
+1181:.PHONY: scene-gles-mesa
+1182:scene-gles-mesa: $(BUILD)/egl-scene-probe-mesa
+1201:check-glyph-gles: $(BUILD)/tests/glyph_gles
+1208:check-glyph-quad: $(BUILD)/tests/glyph_quad
+1210:check: check-glyph-quad
+1277:check-svg: $(BUILD)/svg-animations $(BUILD)/svg-names $(BUILD)/tests/svg_animations $(BUILD)/tests/svg_names
+1285:check-vgrid: $(BUILD)/tests/vendor_grid
+1292:check-display: $(BUILD)/tests/display_present $(BUILD)/tests/display_binding $(BUILD)/tests/fbregion_read
+1297:check-runtime: all
+1300:check-ui-slide: $(BUILD)/tests/ui_slide $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/tests/ui_nav_display.so
+1310:check-ui-rebind: $(BUILD)/tests/ui_rebind $(BUILD)/tests/mod_fake_clock.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ticker.so
+1320:check-ui-rail-hl: $(BUILD)/tests/ui_rail_hl $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/tests/ui_nav_display.so
+1334:check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-sources check-ui-skin check-ui-settings check-ui-settings-panel check-ui-settings-rows check-ui-settings-text check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-vgrid check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry

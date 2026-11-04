@@ -1355,8 +1355,9 @@ static void on_slide_tick(void *ud)
     paint(c);
 }
 
-/* Main-launcher highlight: the vendor image player loops the 11 frames at their APNG delay while
- * the portal rail is shown. The playhead is reset when the focused item changes. */
+/* Project rail prototype plays11 frames once and holds the last. The lower
+ * vendor decoder does not rearm; complete higher widget/image lifetime is
+ * still unverified. Reset the project playhead when focused item changes. */
 static void rail_hl_sync(struct ctx *c)
 {
     int want = c->rail_hl_n > 0 && c->d && c->screen == SCREEN_PORTAL &&

@@ -6,8 +6,10 @@ did not change the TV or any firmware/recovery/binary artifacts.
 
 ## Find the right source
 
-Current ABI3 build is openaurora/build-tv-v3: core08f549d4026cfb626c1ffc93b2e02fc6,
-16 modules, broker and supervisor, with stage.md5. Matching complete preflight
+The preserved November1 ABI3 production stage is openaurora/build-tv-v3:
+core08f549d4026cfb626c1ffc93b2e02fc6,16 modules, broker/supervisor and stage.md5.
+It is not the latest whole source build: current development uses separately
+named ABI3 subdirectories; MEMORY owns their verified state. Matching stage preflight
 and audio_mixer query/reload tests are recorded in MIXER-MODULE-2026-11-01.
 The previous ABI3 stage is preserved in archive/build-tv-v3-before-mixer-20261101.tar
 with its SHA256. Installed/recovery ABI1 and historical ABI2 were not changed.

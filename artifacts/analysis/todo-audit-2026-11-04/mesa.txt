@@ -1,0 +1,14 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+keystone filtered green upper=27 lower=33; CPU golden27/33
+small GPU identity/orientation, triangle/filter, fade, cached texture, bounds and thread ownership passed
+GPU type=0 five uploads/renders/readbacks elapsed_ms=25.90
+GPU type=1 five uploads/renders/readbacks elapsed_ms=17.08
+GPU type=2 five uploads/renders/readbacks elapsed_ms=20.07
+GPU type=3 five uploads/renders/readbacks elapsed_ms=33.18
+GPU type=4 five uploads/renders/readbacks elapsed_ms=18.60
+GPU type=5 five uploads/renders/readbacks elapsed_ms=18.68
+GPU type=6 five uploads/renders/readbacks elapsed_ms=19.06
+GPU type=7 five uploads/renders/readbacks elapsed_ms=15.51
+GPU type=8 five uploads/renders/readbacks elapsed_ms=17.89
+GPU scene/reopen/cleanup passed
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

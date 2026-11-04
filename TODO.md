@@ -1,4 +1,4 @@
-# TODO — active work, 2026-11-01
+# TODO — audited current checklist, 2026-11-04
 
 Read AGENTS.md for constraints and MEMORY.md for last verified state.
 The full previous checklist is preserved in
@@ -6,18 +6,32 @@ The full previous checklist is preserved in
 close specific milestones, not whole subsystems. Tiers order work; they do not
 remove vendor features from scope. Telemetry and advertising are excluded.
 
+Audit: [TODO-AUDIT-2026-11-04](artifacts/reports/TODO-AUDIT-2026-11-04.md)
+checks all182 previously checked entries against source, tests and saved evidence.
+A check closes the stated bounded milestone: research, helpers, controlled tests
+and dated hardware observations are not interchangeable. Historical test counts
+and module counts/TV samples identify their original run, not the current whole source build.
+The preserved claim inventory and per-item locators are linked from the audit.
+
 ## Current acceptance gates
 
-- [x] Offline display simulation feasibility: real fbdev display module on a
-      fake framebuffer (host and ARM qemu,8 groups), scene_gles on host Mesa
-      llvmpipe (`make scene-gles-mesa`,9 pixel-exact transitions). UI-FB-SIM.
-- [x] Offline layout capture: the host test recorder rasterizes clear/fill/
-      blit/blit_scaled into 1920x1080 RGBA frames (`OA_NAV_CAPTURE`), capturing
-      the real ui_vendor draw calls without a TV; portal frame evidence in
-      artifacts/analysis/fb-sim-2026-11-04/. UI-FB-SIM.
-- [ ] Offline full settings preview: export the captured panel to OAI1 and
-      run a real-asset ui.dir capture (the synthetic panel test paints no
-      background), plus the Mesa-wrapped renderer DSO for GPU composition.
+- [x] Offline display simulation feasibility: actual fbdev module with wrapped
+      device calls on host/ARM qemu, and actual scene_gles with the host Mesa
+      adapter. UI-FB-SIM; this audit reran all nine transform/orientation checks.
+      Pixel-exact checks concern the test oracle, not complete frames versus
+      vendor Mali or stock TV output.
+
+- [ ] Complete faithful offline RGBA layout capture. The recorder already
+      emits1920x1080 layout snapshots of ui_vendor draw calls, but cap_blend
+      forces alpha255 and the recorder lacks display.alpha/transparent clear.
+      Its opaque layout images are useful; they do not reproduce transparent
+      source-over or the production canvas. Reopened by TODO-AUDIT-2026-11-04;
+      tests/ui_nav_display.c and UI-FB-SIM preserve the narrower evidence.
+
+- [ ] Offline full settings preview: wire a real-asset ui.dir capture and
+      Mesa renderer integration after recorder alpha fidelity is corrected.
+      The settings_panel OAI1 and slider/selection exporter already exist;
+      the synthetic panel test's4x4 stand-ins are not a real-content preview.
       Vendor Mali rasterization/scanout comparison still requires the set.
 
 
@@ -105,8 +119,10 @@ remove vendor features from scope. Telemetry and advertising are excluded.
       ARM/qemu and actual TV. Staging removed; no live bus/device access. CEC-ASYNC.
 - [ ] Make queued animation timer-allocation failure observable to the initiating
       consumer; the owned kick currently logs failure. No visual acceptance claim.
-- [x] ABI 2 descriptor-size validation and module-owned worker posts implemented;
-      host/sanitizer/ARM-qemu coverage recorded in MODULE-SAFETY-2026-10-31.
+- [x] Descriptor-size validation and module-owned worker posts were introduced
+      in ABI2 and are retained in current ABI3. Historical ABI1/2 artifacts
+      are preserved, not accepted as ABI3 modules. Host/sanitizer/ARM coverage
+      is recorded in MODULE-SAFETY; current host safety checks pass.
 - [x] Registry full-hold rejection, held-provider stop/unload protection and
       failed-init cleanup fixed and regression-tested (TODO-AUDIT plus MODULE-SAFETY).
 - [x] Socket/stdin list/status/load/start/stop/unload/reload/suspend/resume/loglevel/
@@ -120,9 +136,13 @@ remove vendor features from scope. Telemetry and advertising are excluded.
       groups pass host, ASan/UBSan and ARM/qemu. MODULE-SAFETY.
 - [ ] Console stdin/stdout delivery remains synchronous; blocked/broken stdout
       can still disrupt the host. Complete console output lifecycle and acceptance.
-- [x] --check validates ELF/ABI note/entry and library/symbol/version closure without
-      starting modules. Current matching ABI3 core + all16 modules pass on TV;
-      temporary staging removed. MIXER-MODULE supersedes earlier11-module snapshot.
+- [x] --check validates ELF/ABI metadata and library/symbol/version closure
+      without module start. core/check.c and runtime_check.sh are implemented
+      and pass this audit's host checks. The matching ABI3 core +16-module
+      TV preflight in MIXER-MODULE was a dated production-stage test, not
+      preflight of every module now present in source. ABI1 recovery remains
+      installed; latest development builds are separate ABI3 subdirectories.
+
 - [ ] Add runtime resource/environment validation alongside loader preflight.
       Real ALSA use also needs the stock ALSA_CONFIG_PATH; a loader-only pass
       cannot certify that configuration or hardware health. AUDIO-GAIN-TRANSPORT.
@@ -340,6 +360,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+The callback-driven common/ helpers below are implemented and independently
+tested at their stated boundary. They are not all connected to ui_vendor or
+a native widget backend. Current shared integration gates are live item/style/
+resource acquisition, child rendering/visibility, complete SVG/PNG raster,
+settings/navigation consumers, scanout ownership, startup and visual/interaction
+acceptance. Dated case counts identify development milestones; current aggregate
+ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
+14576 scrollbar geometry/state,32 skin and36 scrollbar render cases.
+
 - [x] Review recent row/image work (UI-REVIEW-2026-11-04): fix32-byte image
       resource capacity/alignment, renderer arithmetic UB, zero-divide claim,
       raw checked byte and independent paired-child test coverage. Actual
@@ -353,15 +382,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       comparisons plus host/sanitizer/ARM-qemu/TV CPU pass.
       SETTINGS-ROW-COVERAGE. A third NUL-sled (SVGSlideBar::setWindowRect)
       was caught; enumerate every callee before sweeping a new case.
+      This is the dated11-key milestone; current render coverage uses15 keys,
+      including independent paired-image states (UI-REVIEW).
 - [x] Implement SettingItemsListBoxRow::renderItems type 0xa (second slider
-      row):70456 native/C comparisons and prior groups pass; full host/Unix
-      IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
-      SETTINGS-ROW-A. Full callee audit preceded the sweep; 0x1e8.. text-box
-      names, the row+0x1498 slider names and the created
-      setSliderRangeValues are asserted. Cases0xb/0xc,0x11..0x15,0x17..0x19,
-      row construction, child visibility internals, live resources,
-      scrollbar/skin/module/display/startup/independent visible acceptance
-      remain open.
+      row):70456 native/C comparisons and prior groups pass; full host/Unix IPC,
+      ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-A. Full
+      callee audit preceded the sweep; 0x1e8.. text-box names, the row+0x1498
+      slider names and the created setSliderRangeValues are asserted.
+
 - [x] Implement SettingItemsListBoxRow::renderItems type 0xb (slider bar +
       images):74604 native/C comparisons and prior groups pass; full host/Unix
       IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-B.
@@ -373,23 +401,23 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
       SETTINGS-ROW-C. Four own literal redirects, alignment 6 on the 0x1f68 box
       only, both row UStrings, and the nameless uncreated slider are asserted;
-      the new SVGTextBox::setTextAlignment trampoline was added after the
-      callee audit. Cases0x11..0x15,0x17..0x19, row construction, child
-      visibility internals, live resources, scrollbar/skin/module/display/
-      startup/independent visible acceptance remain open.
+      the new SVGTextBox::setTextAlignment trampoline was added after the callee
+      audit.
+
 - [x] Implement SettingItemsListBoxRow::renderItems text-entry variants
       0x11..0x15:394384 native/C comparisons and prior groups pass; full
       host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
       SETTINGS-ROW-11-15. Mode/max pairs, 0x13's omitted max/cursor, the four
       new UString offsets and 0x15's numeric source are asserted; all
       row-side UString reads now go through row_ustring.
-- [x] Implement SettingItemsListBoxRow::renderItems types 0x17..0x19
-      (progress-bar rows):886060 native/C comparisons and prior groups pass;
-      full host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
-      SETTINGS-ROW-17-19. Percentage math via a silent __aeabi_idiv
-      trampoline, ball-image branches, double-directional bar, the alexa-
-      dependent 0x17 names/font and 0x19's setVisible(1) refresh are asserted.
-      **All renderItems switch cases 0..0x1a are now implemented.**
+- [x] Implement renderItems types0x17..0x19 (progress rows), including ball,
+      double-directional, alexa-style and type0x19 visibility branches.
+      SETTINGS-ROW-17-19 records the original886060-case run. Current aggregate
+      render coverage is1771396 comparisons and uses the shipped divider,
+      superseding the old C arithmetic trampoline. UI-REVIEW explicitly
+      retains EDOM as a zero-divisor policy difference. All cases0..0x1a
+      exist as callback-driven code; real child drawing is a separate gate.
+
 - [x] Real LauncherHelper::getImageId 62-way mapping: `common/
       launcher_image_id.c` matches the verbatim shipped body over469
       op/state pairs; host structural checks, ASan/UBSan, ARM/qemu, full
@@ -421,41 +449,60 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       SVGTextBox setFocus/setElipses overrides):36 native/C cases plus host,
       ASan/UBSan, ARM/qemu, verify.cjs37 ok and focused TV CPU.
       SVG-WIDGET-STATE. Vendor redraw calls remain stubs.
-- [x] LauncherItem resource conversion (0xe4794c): the settingsDB row to UI
-      object path used by LauncherDialog::getLauncherItemsList, with the
-      thumbnail path prefix;8 native/C cases plus host/ASan/UBSan/ARM-qemu/
-      verify.cjs38 ok/TV CPU (32-bit refcount asserted). LAUNCHER-ITEM.
-- [x] settingsDB LauncherItem read half: shipped row decode
-      (copyLauncherInfoToItem0xfac334) differentially verified, read-only
-      sqlite adapter with the getAll/by-parent filters, live TV probe (54
-      rows) and a reloadable launcher.db service/CLI in mod_settings.
-      LAUNCHER-DB. SequentialQuery itself not ported.
-- [x] Feed the read rows into ui_vendor: live parent-0 type-2 rows ordered by
-      m_order_index, named thumbnails, DEFAULT_CARDS fallback; recorder 3/3 and
-      12/9 dumped+live, offline capture and a visible TV capture with
-      snapshot_match restore. UI-LIVE-CARDS. Rail still static; no visible
-      live-DB capture (the live rows were rendered in the recorder test).
-- [x] SVGScrollBar state/geometry: setScrollPosition0x10c4138 and
-      calculateBarSizeAndPosition0x10c3af0;3120 native/C cases plus host/ASan/
-      ARM-qemu/TV CPU and verify.cjs40 ok. SVG-SCROLLBAR. The apps-grid
-      scrollbar track is1750,180,8x720; the home portal has no scrollbar.
-- [x] Scrollbar skin minimum: calculateMinBarSize0x10c397c, IDs0x20/0x22/
-      0x21/0x23 -> bar_gTopM/bar_mTopM + bar_gBotM/bar_mBotM, cap heights20+16
-      ->36px;16 native/C cases plus host/ASan/ARM-qemu/TV CPU and
-      verify.cjs41 ok. SVG-SCROLLBAR-SKIN.
-- [x] Scrollbar renderBackground/renderBar bodies: ops-driven sequence,8
-      native/C cases plus host/ASan/ARM-qemu/TV CPU and verify.cjs42 ok.
-      SVG-SCROLLBAR-RENDER. Vendor mask/surface/renderer calls remain stubs;
-      no pixels yet.
-- [x] Apps-grid screen and scrollbar rasterizer: SCREEN_APPS5, live grid,
-      1750,180,8x720 scrollbar via the recovered render ops; synthetic20
-      rows/15 cells/bar540 and dumped18/15/600 recorder tests, offline and
-      TV-CPU rasters. UI-APPS-GRID. The visible probe reached screen5 but the
-      scanout capture returned the vendor frame; no visible apps claim.
-- [x] Supervised display/scanout binding: no-plat mod_display_fb binds the
-      candidate host to the vendor-initialized fb1; the live-DB apps grid was
-      captured (18 items/scrollbar 600) in candidate-apps_1.png; vendor
-      remained owner, staging removed. OA-CANDIDATE.
+- [x] LauncherItem resource conversion: ordinary row fields, thumbnail-path
+      prefix and shared refcount match shipped0xe4794c over8 native cases.
+      WORK-REVIEW deliberately replaces the3 advertising/tracking copies
+      with empty UStrings. The fixture identifies those policy differences;
+      it does not claim complete vendor-object byte parity. LAUNCHER-ITEM.
+
+- [x] settingsDB LauncherItem read adapter and reloadable launcher.db/CLI:
+      read-only all/by-parent filters and ordinary fields are implemented.
+      WORK-REVIEW excludes the3 advertising/tracking SQL columns and clears
+      their conversion destinations. Current source does not port those fields.
+      Host/service/ARM tests pass; dated live TV query returned54 rows.
+      LAUNCHER-DB. Vendor SequentialQuery/cache/default semantics are not ported.
+
+- [x] ui_vendor consumes ordinary parent0/type2 launcher rows, orders globally
+      by order/id and uses named local OAI1 thumbnails. WORK-REVIEW fixes
+      cap-before-sort, restart/reload state and shared cache exhaustion; the
+      70-row corpus retains the earliest64 and browses all pages with other
+      assets cached. UI-LIVE-CARDS preserves the earlier dumped-DB portal test;
+      OA-CANDIDATE subsequently captured the live-DB apps grid. Dynamic DB
+      refresh, downloaded-PNG decoding and stock layout parity remain open.
+
+- [x] SVGScrollBar setScrollPosition/calculateBarSizeAndPosition helpers.
+      WORK-REVIEW supersedes SVG-SCROLLBAR's3120-case baseline with14576
+      native comparisons, explicit32-bit wrap and the shipped signed divider.
+      Apps track1750,180,8x720 is reconstructed from the resource; this lower
+      geometry/state milestone is not complete native widget rendering.
+
+- [x] Scrollbar skin minimum helper: moving caps20+16 yield36px; recovered
+      standard-name lookups and supplier cache behavior match32 native cases.
+      WORK-REVIEW corrects the old two-orientation interpretation: +6c is
+      the four SVGWindow UFA/FA/UFI/FI states, with4 cache/name entries.
+      SVG-SCROLLBAR-SKIN retains the dated16-case baseline.
+
+- [x] Scrollbar renderBackground/renderBar call sequence and geometry match
+      36 native cases across all4 widget states, including changing window
+      getters. Geometry comes from the first query; placement uses the second.
+      WORK-REVIEW supersedes SVG-SCROLLBAR-RENDER's8-case baseline. Vendor
+      renderer callbacks remain controlled stubs here; paint_apps separately
+      supplies an immediate raster adapter, not a general SVG renderer.
+
+- [x] Apps-grid prototype and immediate scrollbar raster adapter exist:
+      SCREEN_APPS5, reconstructed5x3 grid and1750,180,8x720 track. Current
+      host tests cover20/70 rows, hidden non-overflow tracks, sorted64-card
+      retention, asset-cache pressure and reload/restart state. UI-APPS-GRID's
+      first GPU capture failed; OA-CANDIDATE later obtained a live-DB scanout
+      image. Neither proves stock appearance, full native apps or PNG loading.
+
+- [x] Historical supervised scanout test: OA-CANDIDATE captured18 live apps
+      and the600px scrollbar on vendor-initialized fb1 with stock still owning
+      the hardware. WORK-REVIEW hardens current display_fb to reject HAL init,
+      avoid mdev and link no HAL libraries; host and TV loader checks pass.
+      That revised binding has not drawn on the TV. The earlier stock screenshot
+      did not prove full backing/region/MAU/pan restoration.
+
 - [ ] Pair temporary display binding with owned full backing/region/MAU/pan
       restoration and failure cleanup. Ordinary display_fb stop only closes
       resources; the prior stock screenshot was not state-equality evidence.
@@ -469,100 +516,79 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       95624 native/C comparisons and prior groups pass; full host/Unix IPC,
       ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-SLIDER.
       slidebar/text2 order, the empty-char* textbox create and the formatted
-      value, plus the slidebar range/value are asserted. Cases0xa..0xc,
-      0x11..0x15,0x17..0x19, row construction, child visibility internals,
-      live resources, scrollbar/skin/module/display/startup/independent
-      visible acceptance remain open.
+      value, plus the slidebar range/value are asserted.
+
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x8 (plain button):
       43976 native/C comparisons and prior groups pass; full host/Unix IPC,
       ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-BUTTON8.
       Name order 1/0/3/2, icon-0 create and the created setText refresh are
-      asserted; no new callbacks and no crash input. Cases0x9..0xc,
-      0x11..0x15,0x17..0x19, row construction, child visibility internals,
-      live resources, scrollbar/skin/module/display/startup/independent
-      visible acceptance remain open.
+      asserted; no new callbacks and no crash input.
+
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x7 (banner
-      button):40904 native/C comparisons and prior groups pass; full
-      host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
-      SETTINGS-ROW-BANNER. Direct-string key, no destroy/images, created
-      refresh without setText and setDrawOnTop are asserted. Cases0x8..0xc,
-      0x11..0x15,0x17..0x19, row construction, child visibility internals,
-      live resources, scrollbar/skin/module/display/startup/independent
-      visible acceptance remain open.
+      button):40904 native/C comparisons and prior groups pass; full host/Unix
+      IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
+      SETTINGS-ROW-BANNER. Direct-string key, no destroy/images, created refresh
+      without setText and setDrawOnTop are asserted.
+
 - [x] Implement SettingItemsListBoxRow::renderItems types 0x5/0x6 (launcher
-      button + image1/image2):38216 native/C comparisons and prior groups
-      pass; full host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU
-      pass. SETTINGS-ROW-BUTTON. Two ABI corrections (two-arg getImageId,
+      button + image1/image2):38216 native/C comparisons and prior groups pass;
+      full host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
+      SETTINGS-ROW-BUTTON. Two ABI corrections (two-arg getImageId,
       icon-carrying create) and the null-image1 rebuild crash exclusion are
-      asserted; getImageId's real mapping stays a stub. Cases0x7..0xc,
-      0x11..0x15,0x17..0x19, row construction, child visibility internals,
-      live resources, scrollbar/skin/module/display/startup/independent
-      visible acceptance remain open.
+      asserted. LAUNCHER-IMAGEID now supplies the real mapping behind that callback.
+
 - [x] Implement SettingItemsListBoxRow::renderItems text-entry family
       0xd/0xe/0xf/0x10:33608 native/C comparisons and prior groups pass; full
       host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
       SETTINGS-ROW-TEXTENTRY. Mode/max pairs, the two created sources and the
-      1/0/3/2 name order are asserted; an un-stubbed setText callee was
-      caught and all twelve family callees are audited. Cases5..12,
-      0x11..0x15,0x17..0x19, row construction, child visibility internals,
-      live resources, scrollbar/skin/module/display/startup/independent
-      visible acceptance remain open.
+      1/0/3/2 name order are asserted; an un-stubbed setText callee was caught
+      and all twelve family callees are audited.
+
 - [x] Implement SettingItemsListBoxRow::renderItems type 0xd (text-entry
-      box):24392 native/C comparisons and prior groups pass; full host/Unix
-      IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
-      SETTINGS-ROW-13. Name order1/0/3/2, entry-mode0/max-chars4/cursor-auto
-      and the created numeric-contents source are asserted. Cases5..12,
-      0xe..0x15,0x17..0x19, row construction, child visibility internals,
-      live resources, scrollbar/skin/module/display/startup/independent
-      visible acceptance remain open.
+      box):24392 native/C comparisons and prior groups pass; full host/Unix IPC,
+      ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-13. Name
+      order1/0/3/2, entry-mode0/max-chars4/cursor-auto and the created
+      numeric-contents source are asserted.
+
 - [x] Implement SettingItemsListBoxRow::renderItems types 0x2/0x3 (selection
-      box):21320 native/C comparisons and prior groups pass; full host/Unix
-      IPC, ASan/UBSan, ARM/qemu and focused real TV CPU pass.
-      SETTINGS-ROW-SELECTION. Slot order 1/3/0/2 and the lookup-before-imageid
-      ordering are asserted; setSelectionBoxImageId internals stay a stub.
-      Cases 5..21,23..25, row construction, child visibility internals, live
-      resources, scrollbar/skin/module/display/startup/independent visible
-      acceptance remain open.
+      box):21320 native/C comparisons and prior groups pass; full host/Unix IPC,
+      ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-SELECTION.
+      Slot order 1/3/0/2 and the lookup-before-imageid ordering are asserted;
+      SETTINGS-ROW-SELIMAGE now supplies that helper.
+
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x16 (checkbox):
       7592 native/C comparisons and prior groups pass; full host/Unix IPC,
       ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-16.
       UString row-slot deref and the seven-arg preserving trampoline are
-      asserted; the presence grid is five keys. Cases 2..25 except0x16, row
-      construction, child visibility internals, live resources, scrollbar/
-      skin/module/display/startup/independent visible acceptance remain open.
+      asserted; the presence grid is five keys.
+
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x1a (shared-tail
-      0x2e8c name branch + button case body):3032 native/C comparisons and
-      prior groups pass; full host/Unix IPC, ASan/UBSan, ARM/qemu and focused
-      real TV CPU pass. SETTINGS-ROW-1A. The case body's own "button" literal
-      needed an owned-string redirect; null key2rect still runs the case body
-      with no tail. Switch cases 2..25, row construction, child visibility
-      internals, live resources, scrollbar/skin/module/display/startup/
-      independent visible acceptance remain open.
+      0x2e8c name branch + button case body):3032 native/C comparisons and prior
+      groups pass; full host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV
+      CPU pass. SETTINGS-ROW-1A. The case body's own "button" literal needed an
+      owned-string redirect; null key2rect still runs the case body with no
+      tail.
+
 - [x] Implement SettingItemsListBoxRow::renderItems for types 0/1/4 plus
       0x1b/default exits: shared 0x104 tail, type-selected children, created
       gates and always-create with 2264 native/C comparisons and prior groups
       pass; full host/Unix IPC, ASan/UBSan, ARM/qemu and focused real TV CPU
       pass. SETTINGS-ROW-RENDER. Jump-table dispatch, reconstruct fallthrough
       into case 4 and dead-temp button create verified against objdump/ELF.
-      Switch cases 2..26, row construction, child visibility internals, live
-      resources, scrollbar/skin/module/display/startup/independent visible
-      acceptance remain open.
-- [x] Implement SettingItemsListBoxRow label/progress/range setters with
-      type-selected children, created gates and always-stores:324 native/C
-      comparisons and prior groups pass; full host/Unix IPC, ASan/UBSan,
-      ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-SETTERS. Wrapped
-      percent with __aeabi_idiv edges, empty-format decimal text and store
-      order are exact. Actual renderItems/row construction/child visibility
-      internals, live resources, scrollbar/skin/module/display/startup/
-      independent visible acceptance remain open.
+
+- [x] SettingItemsListBoxRow label/progress/range setters: type-selected child,
+      created gates, stores and wrapped percentage calculation. Current native
+      group has276 comparisons, using the shipped signed divider. UI-REVIEW
+      supersedes SETTINGS-ROW-SETTERS' earlier324 cases and saturated-zero
+      assumption. Zero-range EDOM is an explicit replacement policy; native
+      fault parity remains open. Real setters exist behind the renderer ops.
+
 - [x] Implement SettingItemsListBoxRow::setType cache/rebuild/render/visibility
       controller and bounded owned-model type-event join:12480 shipped ARM/C
       cases and prior groups pass; full host/Unix IPC, ASan/UBSan, ARM/qemu and
       focused real TV CPU pass. SETTINGS-ROW-TYPE. Preserve exact qualified
       child order, omitted1ca8 for type24 and unknown-type label-only behavior.
-      Full renderItems/label/progress/range source saved; actual row construction,
-      remaining setters, live resources, renderer/skin/module/display/startup/
-      independent visible acceptance remain open.
+
 - [x] Implement owned setting-list item/text/value/image snapshot and draw
       providers;2048 real-provider calls plus allocation-failure/deep-copy/
       reentry checks pass strict full host/Unix IPC, ASan/UBSan, ARM/qemu and
@@ -572,19 +598,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       open; this is not a complete UString or hardware rendering milestone.
 - [x] Implement parent SettingItemsListBox::drawRow dispatcher:18441 shipped
       ARM/C cases and all prior groups pass, plus strict full host/Unix IPC,
-      focused ASan/UBSan and fresh ARM/qemu units. SETTINGS-DRAW. Type writeback,
-      all setter/image priorities and owned temporary string/vector order are
-      explicit. Actual item/text/vector/widget providers and complete row
-      rendering, scrollbar internals, display/scanout/startup and independent
-      native visible acceptance remain open.
+      focused ASan/UBSan and fresh ARM/qemu units. SETTINGS-DRAW. Type
+      writeback, all setter/image priorities and owned temporary string/vector
+      order are explicit.
+
 - [x] Implement base/manager single-row refresh and row setChecked:2880+24
       native/C cases, all prior groups, strict host/Unix IPC, focused ASan/UBSan
       and fresh ARM/qemu units pass. SVG-LIST-REFRESH. Uses total+8 capped by
       slots and wrapping upper bound; checkbox setter precedes gated cache.
       Row-view fixture out-of-bounds pointer arithmetic fixed. Actual parent
-      virtual+0x60 is SettingItemsListBox::drawRow (now SETTINGS-DRAW);
-      scrollbar construction/rendering, owned backend/display/
-      startup/independent visible acceptance remain open.
+      virtual+0x60 is SettingItemsListBox::drawRow (now SETTINGS-DRAW).
+
 - [x] Review ARM animation harness/recent list work:153 native comparisons and
       prior groups, full host/Unix IPC, focused ASan/UBSan and ARM tests pass.
       ARM-HARNESS-REVIEW. Fix owned strings/context/order/character bounds/signed
@@ -593,117 +617,86 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       SIGSEGV cause remains unproven; actual providers/rendering/startup and
       full replacement/native acceptance remain open.
 - [x] Implement select animation via startSelectAnimation (disabled/missing-
-      row/unchanged-rect gates, rect snapshot, ordered name search, first-
-      match atof*1000.0f start with float-bit compare); earlier14 native/C
-      comparisons plus full host/focused sanitizer/ARM and prior groups pass.
-      SVG-LIST-ANIM. ARM-HARNESS-REVIEW supersedes string/order assumptions with
-      153 cases. Parent refresh, scrollbar construction/rendering
-      internals, owned backend/context beyond words/counters, display/scanout/
-      startup and independent native visible acceptance remain open.
+      row/unchanged-rect gates, rect snapshot, ordered name search, first- match
+      atof*1000.0f start with float-bit compare); earlier14 native/C comparisons
+      plus full host/focused sanitizer/ARM and prior groups pass. SVG-LIST-ANIM.
+      ARM-HARNESS-REVIEW supersedes string/order assumptions with 153 cases.
+
 - [x] Implement row editing via setSlideValue (progress vs slider/text routing,
-      two flag bytes, type word, bar selection, empty-format text, stored
-      word); 72 native/C comparisons plus full host/focused sanitizer/ARM and
-      prior groups pass. SVG-LIST-SLIDE. Parent refresh, scrollbar
-      construction/rendering internals, startSelectAnimation, owned backend/
-      context beyond words/counters, display/scanout/startup and independent
-      native visible acceptance remain open.
+      two flag bytes, type word, bar selection, empty-format text, stored word);
+      72 native/C comparisons plus full host/focused sanitizer/ARM and prior
+      groups pass. SVG-LIST-SLIDE.
+
 - [x] Implement the widget-level getters (numeric forward, selected-id gates/
-      table walk); 21 native/C comparisons plus full host/focused sanitizer/
-      ARM and prior groups pass. SVG-LIST-WIDGETS. Row editing, parent
-      refresh, scrollbar construction/rendering internals, startSelectAnimation,
-      owned backend/context beyond words/counters, display/scanout/startup and
-      independent native visible acceptance remain open.
+      table walk); 21 native/C comparisons plus full host/focused sanitizer/ ARM
+      and prior groups pass. SVG-LIST-WIDGETS.
+
 - [x] Implement the first consumer module (ui.list v1 over the verified key/
-      body/move/row/impl chain, list-state/list-key over socket/CLI, OAL1
-      reload handoff); host, focused sanitizer, ARM/qemu and actual Unix IPC
-      pass. SVG-LIST-MODULE. Widget-level row getters/editing, parent refresh,
-      scrollbar construction/rendering internals, startSelectAnimation, owned
-      backend/context beyond words/counters, display/scanout/startup and
-      independent native visible acceptance remain open.
+      body/move/row/impl chain, list-state/list-key over socket/CLI, OAL1 reload
+      handoff); host, focused sanitizer, ARM/qemu and actual Unix IPC pass.
+      SVG-LIST-MODULE.
+
 - [x] Implement the row-view getters and full list refresh (total/last/item
       bounds, virtual total, stored count, refresh order); 100+20 native/C
       comparisons plus full host/focused sanitizer/ARM and prior groups pass.
-      SVG-LIST-UPDATE. Widget-level row getters/editing, parent refresh,
-      scrollbar construction/rendering internals, startSelectAnimation, owned
-      backend/context and independent native visible acceptance remain open.
+      SVG-LIST-UPDATE.
+
 - [x] Implement the list scrollbar bodies (create forward, signed setpos gate,
       conditional background, bar draw); 294 native/C comparisons plus full
       host/focused sanitizer/ARM and prior groups pass. SVG-LIST-SCROLLBAR.
-      Row getters/editing, parent refresh, scrollbar construction/rendering
-      internals, startSelectAnimation, owned backend/context and independent
-      native visible acceptance remain open.
+
 - [x] Implement the list update core (updateImpl start/clamp/redraw/writeback/
       empty plus rotateRows pair-swap/position exchange); 6952 native/C
       comparisons with exact call order/args/state plus full host/focused
-      sanitizer/ARM and prior groups pass. SVG-LIST-IMPL. Row getters/editing,
-      parent refresh, scrollbar construction/position bodies,
-      startSelectAnimation, owned backend/context and independent native
-      visible acceptance remain open.
+      sanitizer/ARM and prior groups pass. SVG-LIST-IMPL.
+
 - [x] Implement the SVG list scrollbar (gating, literal rect, show, position);
       4320 native/C comparisons plus full host/focused sanitizer/ARM and prior
-      groups pass. SVG-LIST-SCROLL. SVG-LIST-IMPL implements updateImpl and
-      rotateRows next; row getters/editing, parent refresh, scrollbar
-      construction/position bodies, startSelectAnimation, owned backend/context
-      and independent native visible acceptance remain open.
+      groups pass. SVG-LIST-SCROLL.
+
 - [x] Implement the RowManager internals (field layout, focusItem body,
       updatePartial forward); 324 native/C comparisons plus full host/focused
-      sanitizer/ARM and prior groups pass. SVG-LIST-ROWS. updateImpl, row
-      widget internals, row getters/editing, parent refresh, scrollbar/
-      animation bodies, owned backend/context and independent native visible
-      acceptance remain open.
+      sanitizer/ARM and prior groups pass. SVG-LIST-ROWS.
+
 - [x] Implement the eight primitive list move/selection/window bodies; 5040
       native/C comparisons with exact call order/args plus full host/focused
-      sanitizer/ARM and prior groups pass. SVG-LIST-MOVE. Primitive move
-      targets, RowManager internals, row getters/editing, parent refresh,
-      owned backend/context and independent native visible acceptance remain open.
+      sanitizer/ARM and prior groups pass. SVG-LIST-MOVE.
+
 - [x] Implement the seven lower SVGListBoxBase key bodies; 26048 native/C
       comparisons with exact call order/args/handled truth plus full host/
-      focused sanitizer/ARM and prior groups pass. SVG-LIST-BODIES. Primitive
-      SVG-LIST-MOVE implements the eight primitive move/selection/window bodies.
-      Move targets, RowManager internals, row getters/editing implementations,
-      parent refresh, owned backend/context/consumer and independent native
-      visible acceptance remain open.
+      focused sanitizer/ARM and prior groups pass. SVG-LIST-BODIES.
+
 - [x] Implement SVGListBoxBase key/message routers and typed row-value dispatch;
       999216 native key cases,49344 message joins and68640 row-value cases plus
       full host/focused sanitizer/ARM and prior groups pass. SVG-LIST-INPUT.
-      SVG-LIST-BODIES implements the seven lower bodies; primitive move/
-      getter/editing implementations, parent refresh, owned backend/context/
-      consumer and independent native visible acceptance remain open.
+
 - [x] Implement SettingItemsListBox map/Right-Left/Digit callback bodies;
       65600 shipped map/matcher and138240 native body cases plus full host,
-      focused sanitizer/ARM and prior groups pass. SETTINGS-LIST. SVG-LIST-INPUT
-      later adds lower routing/value dispatch; actual lower actions/getters/
-      editing/parent refresh, owned backend/context/consumer and independent
-      native visible acceptance remain open.
+      focused sanitizer/ARM and prior groups pass. SETTINGS-LIST.
+
 - [x] Implement navigateInList active-ID cursor and signed viewport algorithm
       via owned callbacks.101384 shipped ARM state/action matches, full host,
       focused sanitizer/ARM and prior groups pass. SETTINGS-NAVIGATION.
-      SETTINGS-LIST later adds list map/two bodies. Lower SVG/row, parent
-      refresh, owned backend/context/consumer
-      and independent native visible acceptance remain open.
+
 - [x] Implement concrete qualified SettingsDialog map and Up/Down, Select, Digit,
       Left/Right and Mute callback bodies.65600 shipped map/matcher and86400
       native body cases pass; full host/sanitizer/ARM/metadata and prior groups.
-      SETTINGS-INPUT. SETTINGS-NAVIGATION later adds navigateInList. List widget,
-      parent refresh, owned
-      context/backend/consumer and native visible acceptance remain open.
+      SETTINGS-INPUT.
+
 - [x] Implement six dispatched leaf bodies (Tab volume/digit/removal, qualified
       Settings menu/quit/guide).238860 shipped ARM comparisons include native
       signed division and field-write/end ordering; host/sanitizer/ARM and prior
-      groups pass. TAB-LEAF. SETTINGS-INPUT subsequently adds the base map and
-      five input bodies; real list/backend/context/consumer and visible
-      acceptance remain open.
+      groups pass. TAB-LEAF.
+
 - [x] Implement the concrete TabDialog fallback message map and pre-first key
-      join.65600 shipped ARM map/matcher routes and16384 caller joins pass,
-      with host/sanitizer/ARM and prior groups. TAB-DISPATCH. Remaining base/leaf
-      methods, owned renderer/content/context, queue consumer and native visible
-      acceptance remain open; no module consumer was silently attached.
+      join.65600 shipped ARM map/matcher routes and16384 caller joins pass, with
+      host/sanitizer/ARM and prior groups. TAB-DISPATCH.
+
 - [x] Implement the outer TabDialog pre-handler body behind callbacks, including
       layout/circular/edge/back/close/repost logic.65664 valid-tree shipped ARM
       action/message/state/handled-truth matches, host/sanitizer/ARM tests pass.
-      TAB-PREHANDLE. Missing-child safety is explicit; TAB-DISPATCH later adds
-      the fallback map. Actual adapter/queue consumer and native visible
-      acceptance remain open.
+      TAB-PREHANDLE. Missing-child safety is explicit.
+
 - [x] Implement ordered Up/Down and Left/Right controller bodies behind backend
       callbacks;1008 shipped ARM action/state comparisons and host/sanitizer/ARM
       checks pass. TAB-EVENTS. This is not the outer pre-handler or a wired UI
@@ -734,10 +727,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       common/tab_policy matches actual shipped ARM predicate in884736 offline
       qemu comparisons; host/sanitizer/ARM tests pass. TAB-NAVIGATION.
       This does not close native context acquisition or content/key/UI acceptance.
-- [x] Reloadable ui.navigation v1 uses recovered route plans, retained selection
-      and deferred route-ID queue; nav-* CLI/actual Unix IPC, OAN1 pending-state
-      reload, lifecycle/failure/standby tests pass host/sanitizers/ARM-qemu.
-      NAVIGATION-SERVICE. No consumer drawing, modal handling or native TV run.
+- [x] Reloadable ui.navigation provider implements route plans, retained
+      selection and a deferred route-ID queue. Current version isv2/OAN2,
+      with the v1 prefix and OAN1 migration tested (TAB-WRITEBACK); the initial
+      NAVIGATION-SERVICE milestone usedv1/OAN1. Host/sanitizer/ARM and actual
+      Unix IPC tests pass. No drawing consumer or full native modal pipeline.
 - [x] Recover full62 launcher operation results and28 unconditional ordered
       settings plans, including retained fields and queue-front order; common/
       launcher_route and firmware differential pass host/sanitizers/ARM-qemu.
@@ -814,7 +808,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       Exact/truncated scanner buffers, invalid/disabled presets, default-off
       title and partial-subscription cleanup pass full host/focused sanitizer/
       ARM-qemu checks. UI-WORK-REVIEW-2026-11-02. No TV operation in this review;
-      actual FA font/widgets, title layout and settings interaction remain open.
+      native FA font/widget integration and settings interaction remain open;
+      title origin/viewport helpers are subsequently recovered but raster parity is not.
 - [x] Theme/index/layout files and 964 PNGs extracted; initial OAI1 conversion and
       ui_vendor rendering pipeline exist. Source and provenance: UI-ASSETS report.
 - [x] BGRA capture bug fixed; selected portal-frame comparison ~1.62/255 recorded.
@@ -824,16 +819,19 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       BGRA, checked in memory under strict C flags. Stale report claims corrected.
       No TV capture, deployment or legacy/recovery binary rebuild occurred.
 - [x] String inventory extracted (56,715 lines); it is not an aligned localized table.
-- [ ] Decode layout property IDs/records and original language IDs/grouping, including
-      Dutch selection; do not guess slot numbers from the flattened string inventory.
-- [x] Portal rail/card navigation on mod_ui_vendor from mod_ir frames. Profile RC
-      Up/Down/Left/Right/Select/Exit and NEC OK 0x8a. Focus chrome is observed
-      through the display service. The reload snapshot is now 4 bytes (band, rail,
-      card, screen); a 3-byte blob no longer restores. Host make check, one
+- [ ] Integrate original localization selection/fallback/shaping with live
+      widgets. UI-ROW-LABELS already decodes the stored41-locale/2435-record
+      dictionary, including Dutch slot10/dut; do not repeat that decoding or
+      infer runtime selection policy from the flattened string inventory.
+- [x] Project-local portal rail/card navigation in mod_ui_vendor accepts profile
+      RC Up/Down/Left/Right/Select/Exit IDs and NEC OK0x8a in injected events.
+      Current reload snapshot is5 bytes (band, rail, card, screen, grid selection),
+      with legacy4-byte read compatibility;3-byte snapshots reject. Host, one
       ASan/UBSan run and one ARM/qemu run pass. No ttyS2, fbdev, CEC or amp open.
       The live UART code byte is still unconfirmed. UI-PARITY.
-- [x] Tile hit testing uses the same rectangles as paint. Select opens the focused
-      tile, Menu and Exit return to the portal, and Aux emits source with the
+- [x] Portal hit testing uses the paint rectangles. Select changes the local
+      screen/emits an action; it does not launch a real application or tune a
+      source. Menu/Exit return to the portal, and Aux emits source with the
       index read from settings m_current_source. Hit still resolves tiles hidden
       by the open screen. Proven by tests/ui_nav.c on host make check, one
       ASan/UBSan run and one ARM/qemu run. The test database is not the live
@@ -861,16 +859,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       tests/ui_settings_panel.c covers the flow; a real fb1 run is
       pixel-identical to the corrected capture (0/2,073,600 pixels). Evidence:
       artifacts/analysis/settings-panel-2026-11-01/.
-- [x] Picture-settings row selection: SCREEN_SETTINGS_LIST tracks a row and
-      Up/Down moves the FA overlay (750x66 at 20,183+70*N) over the captured
-      panel, skipping the disabled row 6 and clamping at both ends. FA
-      resources 479 (stretched #FE9419 row), 488/496/504 (#7E000A textPos)
-      back the reconstruction; sliders stay as captured. Host test
-      tests/ui_settings_rows.c passes and an fb1 run matches the reconstructed
-      reference exactly (0/2,073,600, sha256 86b66c00...). Evidence:
-      artifacts/analysis/settings-focus-2026-11-01/.
-      Historical183px fit superseded by186+70*N in subsequent implementation;
-      UI-WORK-REVIEW records live row geometry and remaining FA parity limits.
+- [x] Captured-panel row-selection prototype: Up/Down follows the186+70*N
+      row positions, skips the capture's disabled row6 and clamps. With live
+      text it paints750x66 focus backgrounds; UI-DISPLAY-REVIEW separately
+      restores sliders/chevrons. The old183px fitted overlay and its bitwise
+      reconstructed-reference result are historical, not current vendor parity.
+      tests/ui_settings_rows.c and ui_settings_text.c cover this local flow.
+
 - [x] Fix missing focused sliders and choice chevrons in the captured-panel/
       live-text preview. Firmware-derived track/PNG composition, shared shadow
       digit/knob values; seven real-TV GPU states captured, independent stock
@@ -986,10 +981,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       261 ok.
       UI-MASK-LAYOUT
       now recovers mask positioning and row arithmetic; runtime field
-      population, slice composition, text origin and FA animation geometry are still
-      undecoded, so title/tab/slider-graphics/focused text must not
-      be built from the capture fits. Do not guess FA/FI slider/button
-      graphics.
+      population and full native integration remain open. Slice/text-origin
+      helpers and FA resource geometry were subsequently recovered; the
+      fixed-panel slider/chevron preview is now UI-DISPLAY-REVIEW. General
+      widget rendering must still use actual instance/style/ratio state.
+      Do not guess FA/FI slider/button graphics.
 - [x] Recover the single-line textPos draw source, EASIRect axes and manual
       height rescale, with bounded common/text_layout.c. Strict host, sanitizer,
       full suite and49,728 ARM VFP comparisons on qemu/TV pass. This is a lower
@@ -1005,8 +1001,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       including visible-count-before-paint ordering and missing-resource state.
       UI-LIST-METRICS-2026-11-02; strict full host/sanitizer/ARM-qemu/native TV
       arithmetic tests pass. Raw475/477 slices explain step70/top16/bottom10.
-      Runtime resource parsing/transforms/window allocation and text-origin
-      integration remain open; these helpers do not replace fitted UI positions.
+      Resource parsing/provider helpers now exist; native runtime field population,
+      window allocation and text-origin integration remain open.
 - [x] Recover double-ratio horizontal stretch and compose actual477 slices
       through raw measurement, middle destination, transformed rowPos and row
       placement.49,538 independent ARM VFP cases pass qemu/TV; strict full host
@@ -1031,9 +1027,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       records/11888 elements/6733 rectangles/39 animations pass strict host,
       focused sanitizers/ARM-qemu/native TV; full host suite passes. Actual477
       resource slices compose through existing geometry helpers for an explicit
-      test window. UI-BINSVG-VIEW-2026-11-02. Indexed resource loading/ownership,
-      reloadable immutable theme provider and actual widget/text integration
-      remain open; current fitted UI positions/captured panels are unchanged.
+      test window. UI-BINSVG-VIEW-2026-11-02. Indexed loading/ownership and the reloadable provider are now implemented
+      (UI-THEME-PROVIDER); native widget/text integration remains open.
 - [x] Load indexed BinSVG into an owned immutable snapshot and expose reloadable
       ui.theme v1, with explicit paths, first-CRC/index lookup and held borrowed
       views. UI-THEME-PROVIDER-2026-11-02: strict full host/focused sanitizers/
@@ -1069,11 +1064,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       acceptance remain open. Conditional X31 does not prove fitted49: no guessed
       padding from zero dialog margins/list ctor insets. Correction: font offset
       was misclassified as zero; FONT-X-OFFSET implements its per-font value.
-- [x] Add bounded read-only UI vptr-candidate inventory with chunk lookahead,
-      executable/map checks and signed field decoding. UI-LIVE-OBJECTS-2026-11-02:
-      strict full host/focused sanitizers/ARM-qemu tests and native heap scan pass.
-      Only6 uncreated textbox candidates in selected heaps; actual settings
-      instance/window/text/ratio evidence is still pending, not closed by absence.
+- [x] Bounded read-only UI object-candidate scanner exists with chunk
+      lookahead, map/executable checks, signed fields and current bounds fixes.
+      ui_object_scan tests pass. UI-LIVE-OBJECTS' six uncreated candidates
+      were an earlier sample; UI-TITLE-LIVE-GRAPH later observed a created
+      title/render graph. Neither a failed search nor a non-atomic snapshot
+      proves absence, current text ownership or complete native UI state.
+
 - [ ] Repair/test historical tools/wspoll.c before reuse: 127-frame read overruns
       ext[4], short/header-coalesced reads and uninitialized/stale state need
       handling. UI-LIVE-OBJECTS records using host WebSocket API instead; old
@@ -1109,30 +1106,27 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       labels change type/geometry as well as color. String layout, actual row
       setup/baseline, font-data provider and UI-engine text integration remain
       open. Recoloring captured labels is not focused-text parity.
-- [x] Font-data provider and one-line renderer: bounded indexed pack reader
-      (font7 and font16 records from the live pack), packed-UTF8 LTR advances,
-      spacing, clipping and coverage compositing, whole-line validation;
-      ui_vendor ui.text=1 draws 17 settings text items: row labels font7 at
-      (49|79,184+70*row), text values font7 (centered near x=577), slider
-      digits font16 at (659,250+70*(row-1)), and the disabled grey
-      "Beeld zoomen"/"Auto". Erases only the captured text strips and falls
-      back to the capture on any font failure. Host tests incl. fallback pass;
-      real fb1 vs the corrected panel: 1.184% any-channel, 22 px >8 (max 11),
-      RMSE0.106%, rows0-4/6 no >8 diff. Title/tabs/slider graphics and focus
-      overlays stay captured. Evidence:
-      artifacts/analysis/ui-font-live-2026-11-01/.
+- [x] Bounded font pack provider and one-line LTR renderer are wired to the
+     17-item live settings-label/value preview. This audit reran the local
+      font7/16 corpus and current ui_settings_text tests. Fitted origins,
+      captured tabs/panel and default-off title remain explicit prototype inputs.
+      UI-FONT-LIVE's pixel metrics describe its dated capture only.
+      UI-DISPLAY-REVIEW now draws focused sliders/chevrons separately; ui.text
+      requires exported slider/selection assets and refuses an incomplete bundle.
+      Native focused type/size, runtime settings/localization and full parity stay open.
+
 - [ ] Complete the remaining vendor screens and labels. The injected portal
       above is not all-screen parity or a confirmed live remote capture. The
       source-selection panel (DialogSourceSelection.svg 185), the captured
       Beeld state and the captured full picture panel are implemented; none is
       the full interactive screen.
-- [x] UI engine first slice: mod_ui_engine owns display/alpha discovery and
-      rebinding, lazy OAI1 assets, draw/present/async receipts and the readiness
-      receipt; it publishes ui.engine v1 and the ui/ready event. mod_ui_vendor (the
-      vendor skin) holds only the engine, keeps the portal/source screens and
-      OA_SVC_PORTAL, and repaints on ui/ready in its own owner context. Every UI
-      test and tests/recovery.py load engine+vendor; make check 232 ok. The
-      vendor skin is the working fallback.
+- [x] ui_engine owns display/alpha discovery, lazy OAI1 assets, receipts,
+      readiness and rebinding; ui_vendor holds the engine and owns its skin
+      callbacks/screens/OA_SVC_PORTAL. Current service is ui.engine v2 with
+      owner-safe register_skin_dispatch; the unsafe v1 registration entry
+      returns ENOTSUP. UI-ENGINE-REVIEW supersedes the initial v1 milestone.
+      Fresh host lifetime/fallback tests pass; full vendor content is separate.
+
 - [x] Skin seam: ui.engine now owns the key topic and the ui.fps repaint timer,
       posts skin enter/paint/key back to the skin's owner token, and selects the
       active skin by `ui.skin`. The vendor module is renamed ui_vendor; a
@@ -1187,13 +1181,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       90,000,000-ms period, 12,343 correction quantum and strict boundaries.
       Seven real-DSO host/sanitizer/ARM-qemu groups cover arithmetic, reload,
       failure cleanup and paired ticker/ui_clock lifecycle. Not deployed.
-- [x] mod_ui_anim publishes ui.anim v1 on ui.clock. Enablement starts off and
-      set_enabled only stores 0 or 1. Start rejects a duration below 1, replaces
-      the same id, and keeps four slots. Cancel drops an entry; finalise applies
-      the end state first. List coordinates truncate; dialog progress uses
-      min(1, 1+(p-1)^3) and the 1000 ms select path. sample(now) is the 0 ms then
-      10 ms update. tests/ui_nav.c passed host make check, one ASan/UBSan run and
-      one ARM/qemu run. UI-ANIMATIONS.
+- [x] Bounded ui.anim prototype exists: enablement defaults off, four slots,
+      integer durations>=1, same-id replacement, cancel/finalise and recovered
+      list/dialog arithmetic. Host tests pass. Initial scheduling uses an owned
+      0ms kick and10ms timer; accepted starts while that timer runs retain its
+      phase, unlike the vendor's restart-on-every-start behavior. Dynamic
+      float-duration/controller and exact start/timer parity remain open below.
+
 - [x] Text-slide math from AnimationHelper instructions: `oa_anim_slide_duration` (1600 +
       trunc(distance/50)×1000) and `oa_anim_slide_margin` (pause 800 ms, clamp above only; forward ends
       at distance, reverse at zero). Published as `ui.anim` v2 and asserted with exact vectors for
@@ -1216,11 +1210,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       restart at +6557 ms (= 4554 + 2000, the 0.99 arm), clean exit. No fb1, vendor module, key,
       settings or network access; staging removed and vendor PIDs unchanged. This is not visual
       scanout or pixel parity evidence. UI-ANIMATIONS.
-- [x] Rail focus highlight: placement recovered (DialogMainMenu.svg button windows (6,y,160,160);
-      capture-derived offsets); implemented in mod_ui_vendor as 11 vendor frames at 30 ms played once per
-      focus (the last frame is held; decodeNextFrame does not rearm) in the 160x160 window, playhead reset on focus change. tests/ui_rail_hl asserts order/wrap/timer/window;
-      host 198 ok, ASan 198 ok; live probe 166 blits at 29.98 ms mean, x=6 y=461. Visible-panel
-      appearance still unverified. UI-ANIMATIONS.
+- [x] Rail-highlight prototype:11 exported vendor frames, one-shot playhead
+      and final-frame hold in the160x160 window, reset on focus change.
+      The lower decoder's non-rearm behavior is recovered; complete higher
+      widget/image lifetime semantics remain unverified. Current code uses a
+      10ms poll, a30ms target interval and async completion backpressure.
+      The dated29.98ms recorder measurement is not physical scanout cadence.
+      Frame order/cadence/vendor appearance acceptance remains open.
+
 - [x] Full-screen transform consumer: display v2 publishes `set_scene_transform`; all draws render
       to an offscreen RGBA scene and present() maps it through the recovered four-vertex clip-space
       quad (x-slide, y-slide, scale, type-1 keystone). mod_ui_vendor pushes `ui.fs_type` with the eased
@@ -1254,16 +1251,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       ASan/UBSan, ARM/qemu and actual TV without rendering/hardware calls.
       Target shared sealed mapping EPERM resolved using kernel ARM instructions;
       use private read-only mapping with all seals retained. Helper/GPU acceptance
-      is the subsequent SCENE-HELPER milestone; host service/readiness and module
-      lifecycle remain open.
+      is in SCENE-HELPER; the provider/receipts/UI layers are subsequently
+      implemented in GRAPHICS-MODULE, SCENE-DISPLAY and UI-ASYNC. Full native
+      ownership/visual acceptance remains open.
       SCENE-BROKER-2026-11-01.
 - [x] Separate graphics bootstrap/renderer: close inherited descriptors before
       Mali loads; keep renderer loaded until child exit. Two process groups pass
       strict host/sanitizers/TV. Actual native helper completes410 GPU frames
       (identity plus eight effects), child exits/reaps, full16588800-byte backing,
       region/MAU/pan restored and independently hashed. Full host209 checks pass.
-      Blocking diagnostic client only; async host service/module lifecycle and
-      first-frame readiness remain pending. SCENE-HELPER-2026-11-01.
+      This milestone used a blocking diagnostic client; subsequent provider/
+      readiness layers are implemented below. SCENE-HELPER-2026-11-01.
 - [x] Lower nonblocking graphics parent: one pending/result slot, generated
       instance tickets, revision validation, MSG_DONTWAIT I/O, copied completion,
       EOF shutdown and WNOHANG reap/destroy gate. Five strict host/sanitizer/TV
@@ -1271,16 +1269,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       Maintained client also completes410 actual GPU frames through the full
       snapshot diagnostic, with child exit0/restoration/independent hash match.
       Full host214 checks pass at that milestone. GRAPHICS-MODULE subsequently
-      adds the provider/watch/timer; coalescing/readiness and UI integration remain
-      pending. SCENE-CLIENT-2026-11-01.
+      adds the provider/watch/timer; SCENE-DISPLAY and UI-ASYNC now supply the
+      coalescing/readiness/UI layers. SCENE-CLIENT-2026-11-01.
 - [x] Reloadable graphics provider: display.gpu v1 with owned completion watch,
       reap timer, retained failed-start cleanup and nonblocking quiescence.
       Public tickets use host module ids across reload. Four host/sanitizer/TV
       lifecycle groups pass (holds, suspend/resume, failures, blocked close and
       abnormal-peer fault latch). Actual service completes410 GPU frames; host
       reactor drains/unloads before full snapshot restoration/hash match.
-      Full host218 checks pass. Source17 modules; preserved production stage16.
-      UI coalescing/readiness and actual UI reload/power behavior still open.
+      At that milestone, host218/source17 modules/preserved production16 passed.
+      Coalescing/readiness and UI module-cycle coverage now exist below;
+      actual TV standby and independent ownership remain open.
       GRAPHICS-MODULE-2026-11-01.
 - [ ] Recover native GPU abnormal-process release/recovery semantics from
       firmware/driver before adding automatic recovery or clearing the graphics
@@ -1291,7 +1290,7 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       consumer reload. Four host/sanitizer/TV groups pass. Actual101-request
       burst drains its final identity receipt; full run observes412 GPU frame
       completions, host drain/unload and full restoration/hash match. Host222
-      checks pass. Source18 modules; matching production16 unchanged.
+      checks passed at that milestone (source18/preserved production16).
       Subsequent UI-ASYNC supplies ui_vendor integration; full visual/cold acceptance
       remains separate.
       SCENE-DISPLAY-2026-11-01.
@@ -1322,8 +1321,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       APNG scheduling/frame order, focus reset, interruption/finalise and render
       sampling against firmware. Separate offline formula matches from actual
       vendor/native frame sequences; rail cadence and complete screens remain open.
-      Fresh decoder audit contradicts our inferred endless rail loop; finish
-      higher-level image/focus lifetime verification before changing playback.
+      The lower decoder is one-shot and the current prototype already holds
+      its last frame. Higher-level image/focus lifetime remains unverified;
+      do not reapply an endless-loop fix or equate prototype timing with parity.
       Vendor start also resets its immediate timer on every accepted start,
       unlike our retained phase; dynamic list/float duration versus four-slot/
       uint32 controller remains another gap. HANDOFF indexes raw ARM evidence.
@@ -1372,9 +1372,13 @@ TV mutation is required now. The following are parked, not default next steps.
       privacy blocks, settings/network and keeper verified afterward.
 - [x] Documentation consolidated, correction/report/artifact indexes added; original
       chronology retained. See DOCUMENTATION-AUDIT-2026-10-31.
-- [x] Required /tmp/opencode firmware extracts, analysed Ghidra projects,
-      toolchains, Python tools and research assets moved to artifacts/workbench;
-      active build/extractor paths updated and checked with empty /tmp.
+- [x] Required firmware/toolchains/Ghidra/research inputs were migrated to
+      artifacts/workbench and maintained build/extractor inputs use durable
+      paths. Historical migration/empty-tmp checks are in its manifest.
+      This does not mean every old helper is tmp-free: tvshot/tvsim defaults
+      and rebuild_payload scratch output still use /tmp/opencode. New durable
+      evidence must use artifacts/analysis; payload maintenance stays deferred.
+
 - [ ] If payload maintenance is needed, budget /conf space, preserve keys/numeric
       owners and backups, verify extracted contents, script and image identities.
       Raw mtd13/chunk artifacts are older. Do not run write tests just to update docs.

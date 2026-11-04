@@ -27,6 +27,14 @@ topic reports retain detailed provenance. See [report index](artifacts/reports/R
 
 ## Evidence rules
 
+TODO-AUDIT-2026-11-04 reviewed all182 checked milestones. Reopened recorder
+RGBA fidelity: cap_blend forces alpha255 and no display.alpha service is
+published, so captures are opaque layout approximations.181 checks remain
+as bounded research/helper/test/historical milestones;66 descriptions remove
+stale missing-helper, timing, version, snapshot or hardware-acceptance claims.
+The full source/font/theme/ARM/Mesa checks pass; no new TV observation or
+complete native-feature acceptance is inferred. See the per-item audit ledger.
+
 WORK-REVIEW-2026-11-04 corrects the later work: scrollbar+6c is SVGWindow's
 four states, not orientation; two-entry caches omitted inactive states.
 Calculate uses wrapped32-bit math and the first window query, while render
