@@ -48,6 +48,19 @@ reference groups. Raw checked bytes and independently varied paired child
 states close additional coverage gaps.1771396 renderer/276 setter/56 image
 cases plus host/IPC/sanitizer/ARM-qemu/TV CPU pass; real rendering/startup open.
 
+SETTINGS-ROW-CONSTRUCT implements SettingItemsListBoxRow's constructor
+(0xd53d0c, Thumb, 0x4cd bytes): base SVGListBoxRow plus 17 children at fixed
+offsets (textboxes 0x104/0x3c4/0x1ca8/0x1f68/0x2228/0x24e8, button0x684,
+selection0x1014, slidebars0x13c0/0x1498, progressbars0x1570/0x1724,
+textentry0x18d8, checkbox0x27a8, images0x2b28/0x2c0c/0x2cf0), 10 UStrings
+(0x2dd8..0x2e3c, 0x2e24 default), and 47 default fields including per-child
+name-id defaults and 0x2dec=27/0x2df0=-1/0x2df4=1/0x2e49=1/0x2e68=0x234. The
+mirror probe rewrites 0x2e4c/0x2e50 to120/119. 96 native/C checks (2 mirror
+states x48) and the ordered call trace pass; host/ASan/ARM-qemu/TV CPU and
+verify.cjs36 ok. Child ctor internals/vtables remain outside the differential.
+Visibility internals, live resources, scrollbar/skin and display gates remain
+open.
+
 SVG-IMAGE-POINT-IDM implements SVGImage::create(int,EASIPoint const&,UIWindow*)
 (0x10c9554): setId, supplier resource gate, rectangle x/y from the point; with
 a parent, three getClientRect calls add the client origin and clamp

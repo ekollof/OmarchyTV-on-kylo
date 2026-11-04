@@ -302,6 +302,7 @@ $(BUILD)/tests/tab_policy_firmware: tests/settings_row_setters_native.h common/s
 $(BUILD)/tests/tab_policy_firmware: tests/settings_row_render_native.h common/settings_row_render.c include/openaurora/settings_row_render.h
 $(BUILD)/tests/tab_policy_firmware: tests/launcher_image_id_native.h common/launcher_image_id.c include/openaurora/launcher_image_id.h
 $(BUILD)/tests/tab_policy_firmware: tests/svg_image_native.h common/svg_image.c include/openaurora/svg_image.h
+$(BUILD)/tests/tab_policy_firmware: tests/settings_row_construct_native.h common/settings_row_construct.c include/openaurora/settings_row_construct.h
 
 $(BUILD)/tests/settings_row_type: tests/settings_row_type.c common/settings_row_type.c common/settings_model.c common/settings_draw.c include/openaurora/settings_row_type.h include/openaurora/settings_model.h include/openaurora/settings_draw.h
 	@mkdir -p $(dir $@)
@@ -334,6 +335,14 @@ $(BUILD)/tests/launcher_image_id: tests/launcher_image_id.c common/launcher_imag
 check-launcher-image-id: $(BUILD)/tests/launcher_image_id
 	@$(BUILD)/tests/launcher_image_id
 check: check-launcher-image-id
+
+$(BUILD)/tests/settings_row_construct: tests/settings_row_construct.c common/settings_row_construct.c include/openaurora/settings_row_construct.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-settings-row-construct
+check-settings-row-construct: $(BUILD)/tests/settings_row_construct
+	@$(BUILD)/tests/settings_row_construct
+check: check-settings-row-construct
 
 $(BUILD)/tests/svg_image: tests/svg_image.c common/svg_image.c include/openaurora/svg_image.h
 	@mkdir -p $(dir $@)

@@ -1,5 +1,21 @@
 # Current project state — last verified 2026-11-04
 
+SETTINGS-ROW-CONSTRUCT-2026-11-04: SettingItemsListBoxRow constructor0xd53d0c
+(Thumb, 0x4cd bytes, CRC0xe68cf4e1) implemented in
+common/settings_row_construct.c: base +17 children at fixed offsets,10
+UStrings,47 default fields/name-id defaults, mirror probe rewriting0x2e4c/
+0x2e50 to120/119. 96 native/C checks (2 mirror states x(47 words+1 byte)) and
+the ordered call trace pass; host, focused ASan/UBSan, ARM/qemu, full
+verify.cjs (36 ok) and full make check pass; focused TV CPU of the
+settings_row_construct ARM unit exit0 with staging hash-verified/removed.
+Build-tv-v3/settings-row-render unit41296/
+fe301c0f647461920972441c40236c63; reference1284356/
+9ec46aa90b38c839baa037ab648d5d71. The ctor is Thumb (objdump needs
+force-thumb). Child ctor internals/vtables remain stubs; visibility internals,
+live resources, scrollbar/skin, display/scanout and startup remain open. No
+screen/input/device/settings/network/service/boot/persistent change. No
+pending job/helper.
+
 SVG-IMAGE-POINT-IDM-2026-11-04: SVGImage::create(int,EASIPoint const&,
 UIWindow*)0x10c9554 and LauncherHelper::convertOperationIdToIDM0xe4ae0c
 implemented. Point overload: setId, supplier gate, rect x/y from the point,

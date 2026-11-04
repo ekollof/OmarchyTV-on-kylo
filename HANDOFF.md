@@ -31,7 +31,20 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [SVG-IMAGE-POINT-IDM](artifacts/reports/SVG-IMAGE-POINT-IDM-2026-11-04.md)
+Latest: [SETTINGS-ROW-CONSTRUCT](artifacts/reports/SETTINGS-ROW-CONSTRUCT-2026-11-04.md)
+implements SettingItemsListBoxRow's constructor (0xd53d0c, Thumb, 0x4cd
+bytes): base SVGListBoxRow +17 children at fixed offsets, 10 UStrings, and 47
+default fields/name-id defaults; the OSD-mirror probe rewrites 0x2e4c/0x2e50
+to120/119. 96 native/C checks (2 mirror states x48) compare the ordered
+call trace and the default field bytes against the verbatim body; child
+constructor internals remain stubs. Host, focused ASan/UBSan, ARM/qemu, full
+verify.cjs (36 ok) and full make check pass, plus a focused real-TV CPU run
+(exit 0, staging hash-verified and removed). The constructor is Thumb, so
+objdump needs force-thumb. Next: child visibility internals and live settings
+resources, then scrollbar/skin, display/scanout binding and independent
+startup. No device/screen/settings/network/boot change.
+
+Previous: [SVG-IMAGE-POINT-IDM](artifacts/reports/SVG-IMAGE-POINT-IDM-2026-11-04.md)
 implements the remaining SVGImage::create(int,EASIPoint const&,UIWindow*)
 overload (0x10c9554) and LauncherHelper::convertOperationIdToIDM (0xe4ae0c).
 The point overload does setId, the supplier resource gate, rect x/y from the

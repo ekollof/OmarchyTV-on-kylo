@@ -1,0 +1,1 @@
+ok settings row construct: base/17 children/10 strings/mirror and defaults

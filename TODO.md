@@ -407,8 +407,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       native/C cases and launcher536 comparisons pass, with host, ASan/UBSan,
       ARM/qemu, verify.cjs and focused TV CPU. SVG-IMAGE-POINT-IDM. Vendor
       callees remain stubs.
-- [ ] Row construction; child visibility internals and live resources;
-      scrollbar/skin; display/scanout binding; independent startup.
+- [x] SettingItemsListBoxRow construction (0xd53d0c): base+17 children,
+      10 UStrings, 47 default fields and the mirror branch;96 native/C checks
+      plus host/ASan/ARM-qemu/verify.cjs/TV CPU. SETTINGS-ROW-CONSTRUCT.
+      Child constructor internals remain vendor stubs.
+- [ ] Child visibility internals and live settings resources; scrollbar/skin;
+      display/scanout binding; independent startup.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing
