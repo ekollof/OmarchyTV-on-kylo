@@ -1,0 +1,2 @@
+ok amp profile Unix IPC: saved target hwprofile passes through the real module
+ok amp profile Unix IPC: query validation, immutable snapshot, reload/suspend/resume, failed replacement recovery and clean exit

@@ -1,5 +1,10 @@
 # Amplifier inputs from the shipped hardware profile — 2026-11-04
 
+Follow-up [AMP-PROFILE-MODULE](AMP-PROFILE-MODULE-2026-11-04.md) implements
+the reloadable data provider and CLI/actual Unix IPC, with host/sanitizer/ARM
+lifecycle tests. Provider absence below describes this decoder's earlier
+milestone; audio consumer and native image/hardware ownership remain open.
+
 `common/audio_amp_profile.c` now supplies a fresh, caller-owned AD82587 input
 snapshot from bounded hwprofile bytes. This connects the actual profile data
 to the register-image helper. It does not operate hardware or supply a module/

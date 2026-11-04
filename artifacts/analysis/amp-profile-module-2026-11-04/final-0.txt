@@ -1,0 +1,4 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+node tests/amp_profile_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build-amp-provider
+ok amp profile Unix IPC: query validation, immutable snapshot, reload/suspend/resume, failed replacement recovery and clean exit
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

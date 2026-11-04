@@ -35,6 +35,14 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
+[AMP-PROFILE-MODULE](artifacts/reports/AMP-PROFILE-MODULE-2026-11-04.md) now
+exposes the recovered amp inputs through reloadable audio.amp_profile v1 and
+amp-profile CLI/Unix query. DSO holds/removal/failure/fd/suspend/reload cases
+pass host/sanitizer/ARM; real host/ARM socket tests include the saved profile;
+full host361 passes. Next wire the audio consumer and retained image owner,
+then coordinated worker/GPIO/MCU/I2C lifecycle. Provider performs no hardware
+operations; no TV access or deployment. Owner offline-only restriction remains.
+
 [AUDIO-AMP-PROFILE](artifacts/reports/AUDIO-AMP-PROFILE-2026-11-04.md) now
 decodes actual hwprofile inputs into caller-owned amp snapshots; defaults,
 string/legacy power and malformed-input policies come from firmware. Host/

@@ -1,0 +1,5 @@
+ok amp provider: DSO/query/reload, file snapshot and caller-owned name/value lifetime
+ok amp provider: holds block lifecycle and removal callbacks cannot read a stopped snapshot
+ok amp provider: publication collision, invalid/FIFO/oversized/malformed files and retry cleanup
+ok amp provider: suspend snapshot, deferred reload/resume retry and failed replacement recovery
+ok amp profile Unix IPC: query validation, immutable snapshot, reload/suspend/resume, failed replacement recovery and clean exit

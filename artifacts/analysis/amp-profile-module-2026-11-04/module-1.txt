@@ -1,0 +1,7 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -Icore -fsanitize=address,undefined -o build-amp-provider-san/tests/amp_profile_module tests/amp_profile_module.c common/profile.c build-amp-provider-san/core/check.o build-amp-provider-san/core/control.o build-amp-provider-san/core/host.o build-amp-provider-san/core/module.o build-amp-provider-san/core/skin.o -ldl -pthread -lm
+ok amp provider: DSO/query/reload, file snapshot and caller-owned name/value lifetime
+ok amp provider: holds block lifecycle and removal callbacks cannot read a stopped snapshot
+ok amp provider: publication collision, invalid/FIFO/oversized/malformed files and retry cleanup
+ok amp provider: suspend snapshot, deferred reload/resume retry and failed replacement recovery
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

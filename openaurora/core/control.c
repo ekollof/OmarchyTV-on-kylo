@@ -197,6 +197,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  list-state               query owned SVG-list selection state\n"
                  "  list-key <code>          feed a full-width list key code\n"
                  "  hotel-state             read persisted hotel tab inputs\n"
+                 "  amp-profile             read immutable amplifier profile inputs\n"
                  "  launcher-items <parent|all> [deleted] [outofsync]\n"
                  "                           settingsDB LauncherItem rows\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
@@ -255,6 +256,20 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         }
         db->release(list);
         h->api.release(h,OA_SVC_LAUNCHER_DB);
+        return 0;
+    }
+    if(!strcmp(cmd,"amp-profile")) {
+        if(a1 || force){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_audio_amp_profile_iface *s=h->api.lookup(h,OA_SVC_AUDIO_AMP_PROFILE,1);
+        if(!s){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        oa_ad82587_profile p;char power[32];int rc=s->copy(&p,power);
+        h->api.release(h,OA_SVC_AUDIO_AMP_PROFILE);
+        if(rc){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
+        snprintf(outbuf,outlen,"power '%s' prescale %" PRIu32 " ch1 %" PRIu32
+            " ch2 %" PRIu32 " fine %" PRIu32 " clip %" PRIu32 " drc %" PRIu32
+            " state %" PRId32 " attack %" PRId32 " release %" PRId32 "\n",
+            power,p.prescale,p.channel1,p.channel2,p.fine_tune,p.power_clip,p.speaker_drc,
+            p.state_control4,p.limiter_attack,p.release_threshold);
         return 0;
     }
     if(!strcmp(cmd,"hotel-state")) {

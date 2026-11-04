@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode
+MODULES  := plat ticker ir ui_console panel power display audio settings source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -1416,5 +1416,22 @@ $(BUILD)/tests/audio_amp_profile: tests/audio_amp_profile.c common/audio_amp_pro
 check-audio-amp-profile: $(BUILD)/tests/audio_amp_profile
 	@$(BUILD)/tests/audio_amp_profile
 check: check-audio-amp-profile
+
+$(BUILD)/modules/mod_audio_amp_profile.so: modules/audio_amp_profile/audio_amp_profile.c common/audio_amp_profile.c common/profile.c include/openaurora/audio_amp.h include/openaurora/profile.h include/openaurora/services.h include/openaurora/module.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $(filter %.c,$^) $(LDFLAGS)
+
+$(BUILD)/tests/amp_profile_module: tests/amp_profile_module.c common/profile.c core/host.h include/openaurora/services.h include/openaurora/audio_amp.h include/openaurora/profile.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+.PHONY: check-amp-profile-module
+check-amp-profile-module: $(BUILD)/tests/amp_profile_module $(BUILD)/modules/mod_audio_amp_profile.so $(BUILD)/modules/mod_ticker.so
+	@$(BUILD)/tests/amp_profile_module $(BUILD)/modules
+check: check-amp-profile-module
+
+.PHONY: check-amp-profile-ipc
+check-amp-profile-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_audio_amp_profile.so
+	node tests/amp_profile_ipc.cjs $(abspath $(BUILD))
+check: check-amp-profile-ipc
 
 .PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-display check-svg check-runtime clean install arm tv vendor

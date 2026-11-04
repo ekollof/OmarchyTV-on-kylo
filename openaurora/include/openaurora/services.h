@@ -8,6 +8,7 @@
 #define OPENAURORA_SERVICES_H
 
 #include "openaurora/audio_curve.h"
+#include "openaurora/audio_amp.h"
 #include "openaurora/audio_broker.h"
 #include "openaurora/scene_broker.h"
 #include "openaurora/cec_policy.h"
@@ -277,6 +278,16 @@ typedef struct {
     int (*copy)(oa_audio_curve *out);
     int (*value)(unsigned volume, uint16_t *out);
 } oa_audio_curve_iface;
+
+/* Immutable amp inputs; no register writes, device init or gain application.
+ * Hold the provider during copy(). Both outputs are caller-owned; the returned
+ * struct's speaker_power points into the caller's32-byte power buffer. Errors
+ * are negative errno and preserve both outputs. Data survives ordinary suspend;
+ * reload rereads the explicitly configured local hwprofile. */
+#define OA_SVC_AUDIO_AMP_PROFILE "audio.amp_profile"
+typedef struct {
+    int (*copy)(oa_ad82587_profile *out,char power[32]);
+} oa_audio_amp_profile_iface;
 
 /* audio — volume/mute. Published by mod_audio.
  * bind_session is reserved and returns ENOTSUP for every argument until an

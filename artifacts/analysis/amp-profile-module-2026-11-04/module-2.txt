@@ -1,0 +1,7 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-tv-v3/amp-provider/tests/amp_profile_module tests/amp_profile_module.c common/profile.c build-tv-v3/amp-provider/core/check.o build-tv-v3/amp-provider/core/control.o build-tv-v3/amp-provider/core/host.o build-tv-v3/amp-provider/core/module.o build-tv-v3/amp-provider/core/skin.o -ldl -pthread -lm
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+ok amp provider: DSO/query/reload, file snapshot and caller-owned name/value lifetime
+ok amp provider: holds block lifecycle and removal callbacks cannot read a stopped snapshot
+ok amp provider: publication collision, invalid/FIFO/oversized/malformed files and retry cleanup
+ok amp provider: suspend snapshot, deferred reload/resume retry and failed replacement recovery

@@ -9,6 +9,15 @@ corrections to older design reports.
 
 ## Current status
 
+`audio_amp_profile` provides data-only `audio.amp_profile` v1. Configure the
+explicit `amp_profile.hwprofile` path; `amp-profile` queries copied inputs via
+CLI/socket. The copy method fills a caller-owned struct and32-byte name buffer;
+the struct borrows that caller buffer. Consumers hold the provider during use.
+Reload refreshes the file snapshot; ordinary suspend retains it, while suspended
+replacement defers I/O/publication until resume. Failed replacement has no
+binary rollback. No audio consumer/hardware ownership or writes are added.
+AMP-PROFILE-MODULE-2026-11-04 records DSO and real Unix IPC tests on host/ARM.
+
 Host configuration is a per-host initialization snapshot. `config_get` borrows
 strings from that host's fixed48-entry table; first duplicate wins. Another
 host's initialization or configuration file changes cannot alter those strings.

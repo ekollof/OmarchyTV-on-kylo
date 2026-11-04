@@ -1,5 +1,14 @@
 # Current project state — last verified 2026-11-04
 
+AMP-PROFILE-MODULE-2026-11-04 adds audio_amp_profile/audio.amp_profile v1 and
+amp-profile CLI/actual Unix IPC. Copied profile/name snapshots, holds/removal,
+failure cleanup/fd counts, suspend/deferred reload/resume and replacement
+recovery pass strict host, leak-enabled ASan/UBSan and fresh ARM/qemu. Actual
+socket tests include the saved hwprofile; full host361 checks pass. Source now
+builds26 modules; installed ABI1/recovery and preserved stages are unchanged.
+No TV access/deployment/hardware calls; offline-only restriction remains.
+Audio consumer, retained image ownership and native lifecycle remain open.
+
 AUDIO-AMP-PROFILE-2026-11-04 adds bounded hwprofile-to-amp input snapshots and
 borrowed profile payload reads. Saved profile selects12Watt,1b/05/05/fine80;
 all four scalar defaults arec0, DRC defaults-1. Host/leak-enabled sanitizer/

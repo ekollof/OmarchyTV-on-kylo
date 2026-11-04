@@ -284,8 +284,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       only return object!=NULL; ResumeDevice only starts a task and its task
       ignores the init result. AUDIO-AMP-PROFILE supplies bounded hwprofile
       input snapshots with the recovered power/default rules;2312 native
-      byte-payload cases and44 total reference groups pass. Finish reloadable
-      profile provider/consumer integration and retained image acquisition,
+      byte-payload cases and44 total reference groups pass. AMP-PROFILE-MODULE
+      now publishes reloadable audio.amp_profile v1 plus amp-profile CLI/Unix
+      query; real DSO holds/failures/removal/suspend/reload and actual socket
+      tests pass host/sanitizer/ARM, including the saved profile. Finish audio
+      consumer integration and retained image acquisition,
       GPIO/MCU/I2C/worker ownership and hardware lifecycle acceptance; do not
       substitute these wrapper returns or the pure helper for native bring-up.
 - [x] Traced UI volume through speaker gain and recovered both AQ101-entry table

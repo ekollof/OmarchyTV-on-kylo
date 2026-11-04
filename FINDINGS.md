@@ -19,6 +19,13 @@ vendor PIDs intact. Supervised only; no full region/MAU/pan equality or
 independent startup. The current owner override revoked TV access after this
 run; no TV command followed. See VISIBLE-IMAGES.
 
+AMP-PROFILE-MODULE-2026-11-04 adds reloadable audio.amp_profile v1 and the
+amp-profile query over actual local Unix IPC. Caller-owned copies/names and
+provider holds/removal/failure/fd/suspend/reload lifecycle pass host/sanitizer/
+ARM; socket tests include the saved target profile. Full host361 passes.
+Audio consumer/retained image/worker/hardware lifecycle still open. No TV
+access, deployment or hardware operations; offline-only restriction remains.
+
 AUDIO-AMP-PROFILE-2026-11-04 adds bounded hwprofile inputs for the amp image:
 power string/legacy enum, empty-name8Watt lookup, scalar defaultc0/DRC default-1.
 The saved profile selects12Watt with1b/05/05/fine80. Host/sanitizer/ARM and full
