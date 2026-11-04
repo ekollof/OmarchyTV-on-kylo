@@ -5,7 +5,12 @@ AMP-INIT-2026-11-04 adds blocking injection-only AD82587 Init orchestration.
 return;45 total reference groups pass in build-tv-v3/amp-init. Strict host,
 leak-enabled sanitizer, ARM units and full host366 checks pass. GPIO failures
 are ignored by native Init, and1 only means the write loop completed. No native
-backend/module/worker hookup, paired shutdown or hardware acceptance. No TV
+backend/module hookup, paired shutdown or hardware acceptance. AMP-OWNER adds
+an injected owning worker with copied inputs/completions, retained state,
+draining quiesce and actual nonblocking join through TLS destructors. Four
+groups pass strict host/leak-enabled sanitizer/fresh ARM-qemu; full host370
+passes. Target glibc2.23 exports the required GLIBC_2.4 tryjoin symbol; this
+does not connect a native backend or integrate module completion/holds. No TV
 access; the offline-only owner restriction remains in force.
 
 AMP-PROFILE-MODULE-2026-11-04 adds audio_amp_profile/audio.amp_profile v1 and

@@ -1,0 +1,49 @@
+46f065dc g    DF .text	000000f0  GLIBC_2.4   pthread_join
+46f059f8 g    DF .text	00000b18  GLIBC_2.4   pthread_create
+46f066cc g    DF .text	00000064  GLIBC_2.4   pthread_tryjoin_np
+
+artifacts/workbench/rootfs/root/lib/libpthread-2.23.so:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+46f066cc <pthread_tryjoin_np@@GLIBC_2.4>:
+46f066cc:	f8d0 321c 	ldr.w	r3, [r0, #540]	; 0x21c
+46f066d0:	4298      	cmp	r0, r3
+46f066d2:	d00f      	beq.n	46f066f4 <pthread_tryjoin_np@@GLIBC_2.4+0x28>
+46f066d4:	ee1d 3f70 	mrc	15, 0, r3, cr13, cr0, {3}
+46f066d8:	f5a3 6398 	sub.w	r3, r3, #1216	; 0x4c0
+46f066dc:	4298      	cmp	r0, r3
+46f066de:	d007      	beq.n	46f066f0 <pthread_tryjoin_np@@GLIBC_2.4+0x24>
+46f066e0:	f8d3 221c 	ldr.w	r2, [r3, #540]	; 0x21c
+46f066e4:	4290      	cmp	r0, r2
+46f066e6:	d003      	beq.n	46f066f0 <pthread_tryjoin_np@@GLIBC_2.4+0x24>
+46f066e8:	6e82      	ldr	r2, [r0, #104]	; 0x68
+46f066ea:	b12a      	cbz	r2, 46f066f8 <pthread_tryjoin_np@@GLIBC_2.4+0x2c>
+46f066ec:	2010      	movs	r0, #16
+46f066ee:	4770      	bx	lr
+46f066f0:	2023      	movs	r0, #35	; 0x23
+46f066f2:	4770      	bx	lr
+46f066f4:	2016      	movs	r0, #22
+46f066f6:	4770      	bx	lr
+46f066f8:	b510      	push	{r4, lr}
+46f066fa:	b082      	sub	sp, #8
+46f066fc:	9201      	str	r2, [sp, #4]
+46f066fe:	f500 7207 	add.w	r2, r0, #540	; 0x21c
+46f06702:	e852 4f00 	ldrex	r4, [r2]
+46f06706:	2c00      	cmp	r4, #0
+46f06708:	d106      	bne.n	46f06718 <pthread_tryjoin_np@@GLIBC_2.4+0x4c>
+46f0670a:	e842 3e00 	strex	lr, r3, [r2]
+46f0670e:	f1be 0f00 	cmp.w	lr, #0
+46f06712:	d1f6      	bne.n	46f06702 <pthread_tryjoin_np@@GLIBC_2.4+0x36>
+46f06714:	f3bf 8f5b 	dmb	ish
+46f06718:	bf18      	it	ne
+46f0671a:	2016      	movne	r0, #22
+46f0671c:	d106      	bne.n	46f0672c <pthread_tryjoin_np@@GLIBC_2.4+0x60>
+46f0671e:	b111      	cbz	r1, 46f06726 <pthread_tryjoin_np@@GLIBC_2.4+0x5a>
+46f06720:	f8d0 3220 	ldr.w	r3, [r0, #544]	; 0x220
+46f06724:	600b      	str	r3, [r1, #0]
+46f06726:	f7fe ff63 	bl	46f055f0 <__pthread_get_minstack@@GLIBC_PRIVATE+0xe7c>
+46f0672a:	2000      	movs	r0, #0
+46f0672c:	b002      	add	sp, #8
+46f0672e:	bd10      	pop	{r4, pc}

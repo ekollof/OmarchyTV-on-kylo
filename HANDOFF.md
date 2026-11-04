@@ -39,8 +39,13 @@ does not start the pending imageCreate subsystem or persistent replacement.
 AD82587 Init sequencer.29952 cases match actual Init/Reset/Mute instructions,
 including present/absent/changing GPIO resources, combined errors, delay args,
 cache writes and every I2C failure.45 total reference groups and host/sanitizer/
-ARM/full host366 pass. Verifier defaults to build-tv-v3/amp-init. Next establish
-native resource/image ownership and wire the audio consumer/worker/backends;
+ARM/full host366 pass. Verifier defaults to build-tv-v3/amp-init.
+[AMP-OWNER](artifacts/reports/AMP-OWNER-2026-11-04.md) now supplies the injected
+owning thread: copied inputs/value completions, retained state, bounded slot,
+drain and actual nonblocking join through TLS destructors. Four strict host/
+sanitizer/ARM groups and full host370 pass; target tryjoin export/instructions
+checked offline. Next establish native resource/image ownership and wire the
+audio consumer/provider holds, completion polling, module gate and backends;
 there is no module hookup or paired shutdown yet. Never run the blocking helper
 in the host loop. No TV access or deployment; offline-only restriction remains.
 

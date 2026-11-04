@@ -1443,4 +1443,12 @@ check-amp-init: $(BUILD)/tests/amp_init
 	@$(BUILD)/tests/amp_init
 check: check-amp-init
 
+$(BUILD)/tests/amp_owner: tests/amp_owner.c common/amp_owner.c common/amp_init.c common/audio_amp.c include/openaurora/amp_owner.h include/openaurora/amp_init.h include/openaurora/audio_amp.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread -Wl,--wrap=pthread_cond_wait -Wl,--wrap=pthread_tryjoin_np
+.PHONY: check-amp-owner
+check-amp-owner: $(BUILD)/tests/amp_owner
+	@$(BUILD)/tests/amp_owner
+check: check-amp-owner
+
 .PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-display check-svg check-runtime clean install arm tv vendor

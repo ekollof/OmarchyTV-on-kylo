@@ -1,0 +1,7 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-amp-owner-san/tests/amp_owner tests/amp_owner.c common/amp_owner.c common/amp_init.c common/audio_amp.c -pthread -Wl,--wrap=pthread_cond_wait -Wl,--wrap=pthread_tryjoin_np
+ok amp owner: worker-only callbacks, copied table/state/profile/name, pending/result backpressure and value completion
+ok amp owner: failed writes retain worker state across requests and caller copies cannot mutate it
+ok amp owner: quiesce drains, inherited handles reject, TLS destructors and join errors retain owner until actual join
+ok amp owner: idle shutdown executes no I/O and frees only after join; native ownership/shutdown remain external
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

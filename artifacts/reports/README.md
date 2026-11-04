@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [AMP-OWNER](AMP-OWNER-2026-11-04.md) | injected owning thread, copied inputs/value results, retained image, bounded slot and draining nonblocking join through actual TLS destructors; four host/sanitizer/ARM groups and full host370 pass, target tryjoin export/instructions checked offline; no native backend/module hookup or paired physical shutdown |
 | [AMP-INIT](AMP-INIT-2026-11-04.md) | injected blocking Init sequencer;29952 native Init/Reset/Mute control/image/cache/return cases,45 total reference groups and host/sanitizer/ARM/full host366 pass; exact GPIO/getter/error/delay policy, no native backend/ownership/module/worker hookup or paired shutdown; offline only |
 | [AMP-PROFILE-MODULE](AMP-PROFILE-MODULE-2026-11-04.md) | reloadable audio.amp_profile v1 and amp-profile CLI/actual Unix IPC; immutable copied inputs, holds/removal, failure/fd cleanup and suspend/deferred reload/retry pass host/sanitizer/ARM; saved profile through host/ARM sockets, full host361 pass; data-only, consumer/native ownership/audio acceptance open; offline only |
 | [AUDIO-AMP-PROFILE](AUDIO-AMP-PROFILE-2026-11-04.md) | bounded hwprofile amp snapshots, recovered power enum/string/default rules; actual saved12Watt/1b/05/05/fine80; host/sanitizer/ARM/full host356 pass;2312 native payload cases/44 total reference groups; provider/retained image/worker/hardware acceptance remain open; offline only |

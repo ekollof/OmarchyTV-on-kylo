@@ -290,8 +290,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       tests pass host/sanitizer/ARM, including the saved profile. AMP-INIT
       adds a blocking injection-only Init sequencer:29952 native
       Init/Reset/Mute trace/image/cache cases and45 total reference groups pass.
-      This is not a native backend or paired shutdown. Finish audio consumer
-      integration, retained image acquisition, coordinated GPIO/MCU/I2C/worker
+      AMP-OWNER adds an injected owning thread with copied inputs/completions,
+      retained image and draining/nonblocking join, including TLS destructors;
+      four host/sanitizer/ARM groups pass. This is not a native backend or paired
+      shutdown. Finish audio consumer/provider holds and module integration,
+      retained image acquisition, coordinated GPIO/MCU/I2C/worker
       ownership and hardware lifecycle acceptance; wrapper results and controlled
       callbacks do not establish native bring-up.
 - [x] Traced UI volume through speaker gain and recovered both AQ101-entry table

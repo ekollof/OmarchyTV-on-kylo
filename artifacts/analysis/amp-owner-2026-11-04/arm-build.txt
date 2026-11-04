@@ -1,0 +1,3 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-tv-v3/amp-owner/tests/amp_owner tests/amp_owner.c common/amp_owner.c common/amp_init.c common/audio_amp.c -pthread -Wl,--wrap=pthread_cond_wait -Wl,--wrap=pthread_tryjoin_np
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

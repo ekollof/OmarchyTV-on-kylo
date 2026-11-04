@@ -24,7 +24,13 @@ match complete native Init/Reset/Mute traces/image/cache/return;45 total native
 groups and host/sanitizer/ARM/full host366 pass. Raw reset-pin operations leave
 the reset cache untouched; GPIO failures do not stop Init; only nonzero level
 returns update cache bytes. No default native I/O, ownership, module/worker
-hookup, paired shutdown or audible acceptance. TV access remains forbidden.
+hookup, paired shutdown or audible acceptance in that milestone. AMP-OWNER
+now supplies an injected owning thread, copied input/value completion and
+retained state; shutdown drains and nonblockingly joins through real TLS
+destructors. Four host/sanitizer/ARM groups and full host370 pass. Backend
+context/code stays borrowed until join, not just a published completion;
+joining alone performs no physical shutdown. Module/consumer/native backend
+integration remains open. TV access remains forbidden.
 
 AMP-PROFILE-MODULE-2026-11-04 adds reloadable audio.amp_profile v1 and the
 amp-profile query over actual local Unix IPC. Caller-owned copies/names and
