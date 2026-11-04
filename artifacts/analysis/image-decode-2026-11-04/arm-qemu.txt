@@ -1,0 +1,1 @@
+  ok   image decode: nine downloaded PNGs match libpng RGBA, errors reject and service reloads

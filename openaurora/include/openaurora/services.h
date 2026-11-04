@@ -96,6 +96,17 @@ typedef struct {
     int (*key)(uint32_t code,int *handled);
 } oa_ui_list_iface;
 
+/* image.decode v1 — decode a vendor-downloaded PNG into a new straight-RGBA
+ * buffer (top-down, w*h*4 bytes). No scaling, caching or scanout is implied.
+ * The vendor ships libpng 1.6 and hal::PngImageDecoderImpl; this service uses
+ * the same library through its simplified file API. Callers own the returned
+ * buffer and must call release() with the matching provider still held. */
+#define OA_SVC_IMAGE_DECODE "image.decode"
+typedef struct {
+    int (*decode_png)(const char *path, int *w, int *h, unsigned char **rgba);
+    void (*release)(void *rgba);
+} oa_image_decode_iface;
+
 /* ui.theme v1 — immutable validated BinSVG snapshot, published by ui_theme.
  * Loop-thread only. Hold lookup(OA_SVC_UI_THEME,1) through every use of ALL
  * returned views/strings; drop those before release/stop. Do not retain them

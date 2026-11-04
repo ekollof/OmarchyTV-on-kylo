@@ -1,3 +1,15 @@
+IMAGE-DECODE-2026-11-04 adds image.decode v1: modules/image_decode uses the
+shipped libpng1.6 simplified API (vendor lib is1.6.28; aurora also embeds
+hal::PngImageDecoderImpl) to decode extensionless downloaded PNGs into straight
+RGBA. Nine real RGB/RGBA/colormap files match independent ImageMagick output
+exactly; errors reject and the service reloads. ui_engine keeps OAI1 assets
+first, then decodes <ui.download_dir>/<name> (default /buffer/downloaded_images)
+through the service; check-ui-png-cards proves the nine cards use400x225
+decoded sources and first-pixel values. Host344 ok, focused ASan/UBSan and
+decoder/UI ARM-qemu pass. No TV access. Limits: PNG only (downloaded JPEGs
+remain), no vendor PngImageDecoderImpl differential, no on-TV decode/stock
+pixel parity.
+
 ALPHA-RECORDER-2026-11-04 corrects the offline recorder: cap_blend now uses
 oa_canvas_over (straight source-over, destination alpha preserved) and the
 test display publishes display.alpha, so clear_rgba keeps transparent regions

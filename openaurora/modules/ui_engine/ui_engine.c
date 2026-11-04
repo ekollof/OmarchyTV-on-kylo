@@ -36,6 +36,7 @@ struct engine {
     int paint_w, paint_h, scene_painted;
     int acknowledged;
     char dir[128];
+    char download_dir[128];
     oa_ui_icon icons[ENGINE_MAX_ICONS];
     int n;
     uint32_t mod_key, svc_key;
@@ -71,6 +72,46 @@ static void engine_log(struct engine *c, int level, const char *msg)
 
 /* ---------------------------------------------------------------- assets */
 
+static const oa_ui_icon *accept_icon(struct engine *c, const char *name,
+    int w, int h, unsigned char *rgba)
+{
+    if (!c || !name || !rgba || w <= 0 || h <= 0 || w > 8192 || h > 8192 ||
+        c->n >= ENGINE_MAX_ICONS) {
+        free(rgba);
+        return NULL;
+    }
+    oa_ui_icon *ic = &c->icons[c->n++];
+    snprintf(ic->name, sizeof ic->name, "%s", name);
+    ic->w = w;
+    ic->h = h;
+    ic->rgba = rgba;
+    return ic;
+}
+
+static const oa_ui_icon *find_downloaded_icon(struct engine *c, const char *name)
+{
+    const oa_image_decode_iface *dec;
+    unsigned char *rgba = NULL;
+    char path[320];
+    int w = 0, h = 0, rc;
+    if (!c->download_dir[0]) return NULL;
+    dec = c->api->lookup(c->api->priv, OA_SVC_IMAGE_DECODE, 1);
+    if (!dec) return NULL;
+    if (snprintf(path, sizeof path, "%s/%s", c->download_dir, name) >=
+        (int)sizeof path) {
+        c->api->release(c->api->priv, OA_SVC_IMAGE_DECODE);
+        return NULL;
+    }
+    rc = dec->decode_png(path, &w, &h, &rgba);
+    if (rc) {
+        c->api->release(c->api->priv, OA_SVC_IMAGE_DECODE);
+        return NULL;
+    }
+    const oa_ui_icon *ic = accept_icon(c, name, w, h, rgba);
+    c->api->release(c->api->priv, OA_SVC_IMAGE_DECODE);
+    return ic;
+}
+
 static const oa_ui_icon *find_icon(const char *name)
 {
     struct engine *c = g_engine;
@@ -86,11 +127,11 @@ static const oa_ui_icon *find_icon(const char *name)
     snprintf(path, sizeof path, "%s/%s.rgba", c->dir, name);
     int fd = open(path, O_RDONLY | O_CLOEXEC);
     if (fd < 0)
-        return NULL;
+        return find_downloaded_icon(c, name);
     unsigned char hdr[12];
     if (read(fd, hdr, sizeof hdr) != (ssize_t)sizeof hdr || memcmp(hdr, "OAI1", 4) != 0) {
         close(fd);
-        return NULL;
+        return find_downloaded_icon(c, name);
     }
     uint32_t w = (uint32_t)hdr[4] | (uint32_t)hdr[5] << 8 | (uint32_t)hdr[6] << 16 |
                  (uint32_t)hdr[7] << 24;
@@ -117,12 +158,7 @@ static const oa_ui_icon *find_icon(const char *name)
         free(buf);
         return NULL;
     }
-    oa_ui_icon *ic = &c->icons[c->n++];
-    snprintf(ic->name, sizeof ic->name, "%s", name);
-    ic->w = (int)w;
-    ic->h = (int)h;
-    ic->rgba = buf;
-    return ic;
+    return accept_icon(c, name, (int)w, (int)h, buf);
 }
 
 /* --------------------------------------------------------- present/ack */
@@ -520,6 +556,9 @@ static int m_start(void *v)
     c->draining = 0;
     snprintf(c->dir, sizeof c->dir, "%s",
              c->api->config_get(c->api->priv, "ui.dir", "/buffer/openaurora/ui"));
+    snprintf(c->download_dir, sizeof c->download_dir, "%s",
+             c->api->config_get(c->api->priv, "ui.download_dir",
+                 "/buffer/downloaded_images"));
     if (bind_display(c) != 0) {
         engine_log(c, OA_LOG_ERROR, "ui_engine: no display service");
         drop_display(c, 1);

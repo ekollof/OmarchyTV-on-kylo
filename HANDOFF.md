@@ -31,6 +31,18 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
+Latest implementation: [IMAGE-DECODE](artifacts/reports/IMAGE-DECODE-2026-11-04.md)
+adds reloadable image.decode v1. It uses the vendor libpng1.6 simplified API to
+decode extensionless downloaded PNGs into straight RGBA; nine real
+RGB/RGBA/colormap400x225 files match independent ImageMagick SHA256/FNV exactly,
+errors reject and stop/start republishes. ui_engine keeps OAI1 first and falls
+back to ui.download_dir (default /buffer/downloaded_images); check-ui-png-cards
+renders all nine at400x225 with source-pixel checks. Host344 ok, focused
+ASan/UBSan clean, decoder/UI ARM-qemu pass with vendor libpng/zlib. Tools/boot
+now autoloads image_decode. Limits: downloaded JPEG/APNG, a vendor
+PngImageDecoderImpl differential, on-TV decode/display and stock pixel parity
+remain. No TV access this step.
+
 Latest checklist audit: [TODO-AUDIT](artifacts/reports/TODO-AUDIT-2026-11-04.md)
 reviews all182 previously checked items. Its one reopened item, recorder
 transparent RGBA fidelity, is now closed: tests/ui_nav_display.c uses

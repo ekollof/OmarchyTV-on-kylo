@@ -18,7 +18,8 @@
 #define MAX_EXPECT 64
 struct card { int id,order; char name[64]; };
 static char g_ui_dir[256],g_db[512],g_modules[256],g_assets[256],g_tmp[256];
-static int g_apps;
+static char g_png_dir[512];
+static int g_apps,g_png;
 static char g_grid_sel[16]="0";
 static const char *g_override="";
 
@@ -34,6 +35,7 @@ static const char *config(void *p,const char *key,const char *def)
     if(!strcmp(key,"ui.cards"))return g_override;
     if(g_apps && !strcmp(key,"ui.screen"))return "apps";
     if(g_apps && !strcmp(key,"ui.grid_sel"))return g_grid_sel;
+    if(g_png && !strcmp(key,"ui.download_dir"))return g_png_dir;
     return def;
 }
 static int command(oa_host *h,const char *text,char *out,size_t cap)
@@ -110,7 +112,7 @@ static void exec(sqlite3 *db,const char *sql)
         fprintf(stderr,"sql: %s\n",error?error:"?");exit(1);
     }
 }
-static void synthetic_db(const char *path,int apps)
+static void synthetic_db(const char *path,int apps,int png)
 {
     sqlite3 *db=NULL;
     assert(sqlite3_open(path,&db)==SQLITE_OK);
@@ -127,7 +129,23 @@ static void synthetic_db(const char *path,int apps)
         "m_application_url blob,m_fvp_application_id blob,"
         "m_menu_string_id blob,m_recommendation_url blob,"
         "m_application_ad_tracking_url blob)");
-    if (apps) {
+    if (png) {
+        static const char *names[] = {
+            "launcher_app_thumb61", "launcher_app_thumb336",
+            "launcher_app_thumb368", "launcher_app_thumb495",
+            "launcher_app_thumb356", "launcher_app_thumb355",
+            "launcher_app_thumb354", "launcher_app_thumb385",
+            "launcher_app_thumb476",
+        };
+        for (int i = 0; i < 9; i++) {
+            char sql[512];
+            snprintf(sql, sizeof sql,
+                "INSERT INTO LauncherItem VALUES(0,0,0,-1,%d,0,0,1,0,0,2,-1,%d,0,0,0,"
+                "'','','App %d','%s','','','','','','')",
+                300 + i, i + 1, i, names[i]);
+            exec(db, sql);
+        }
+    } else if (apps) {
         /* The larger corpus reverses insertion/order, so truncating to64
          * before sorting must lose the globally earliest six items. */
         int many=getenv("OA_TEST_MANY")!=NULL;
@@ -216,12 +234,49 @@ static int find_card_blit(const oa_nav_trace *trace,int x,int y,int w,int h,
     }
     return 0;
 }
+static int png_first_px(const char *name,int *r,int *g,int *b,int *a)
+{
+    static const struct { const char *name; int r,g,b,a; } px[] = {
+        {"launcher_app_thumb336",26,152,255,255},
+        {"launcher_app_thumb354",224,0,0,255},
+        {"launcher_app_thumb355",224,0,0,255},
+        {"launcher_app_thumb356",224,0,0,255},
+        {"launcher_app_thumb368",255,255,255,255},
+        {"launcher_app_thumb385",31,9,44,255},
+        {"launcher_app_thumb476",0,0,0,255},
+        {"launcher_app_thumb495",0,0,0,255},
+        {"launcher_app_thumb61",255,255,255,255},
+    };
+    for(size_t i=0;i<sizeof px/sizeof px[0];++i)
+        if(!strcmp(px[i].name,name)) {
+            *r=px[i].r;*g=px[i].g;*b=px[i].b;*a=px[i].a;
+            return 1;
+        }
+    return 0;
+}
+static int card_blit_first(const oa_nav_trace *trace,int x,int y,int w,int h,
+    const char *name)
+{
+    int er,eg,eb,ea;
+    if(!png_first_px(name,&er,&eg,&eb,&ea))return 1;
+    int count=trace->scaled_count();
+    for(int i=0;i<count;++i) {
+        int bx,by,bw,bh,bsw,bsh;
+        if(trace->scaled_at(i,&bx,&by,&bw,&bh,&bsw,&bsh))continue;
+        if(bx!=x || by!=y || bw!=w || bh!=h)continue;
+        int r,g,b,a;
+        if(trace->scaled_first(i,&r,&g,&b,&a))continue;
+        return r==er && g==eg && b==eb && a==ea;
+    }
+    return 0;
+}
 
 int main(int argc,char **argv)
 {
     assert(argc>=3 && argc<=5);
     snprintf(g_modules,sizeof g_modules,"%s",argv[1]);
     g_apps=(argc==5 && !strcmp(argv[4],"apps")) || getenv("OA_TEST_APPS")!=NULL;
+    g_png=argc==5 && !strcmp(argv[4],"png");
     const char *sel=getenv("OA_TEST_GRID_SEL");
     if(sel)snprintf(g_grid_sel,sizeof g_grid_sel,"%s",sel);
     char dir[]="/tmp/oa-live-cards.XXXXXX";
@@ -232,7 +287,7 @@ int main(int argc,char **argv)
     assert(!mkdir(g_ui_dir,0755));
     if(!strcmp(argv[2],"synthetic")) {
         snprintf(g_db,sizeof g_db,"%s/settings.db",dir);
-        synthetic_db(g_db,g_apps);
+        synthetic_db(g_db,g_apps,g_png);
     } else {
         snprintf(g_db,sizeof g_db,"%s",argv[2]);
         struct stat st;
@@ -241,7 +296,9 @@ int main(int argc,char **argv)
             return 77;
         }
     }
-    if(argc>=4 && argv[3][0])
+    if(g_png)
+        snprintf(g_png_dir,sizeof g_png_dir,"%s",argv[3]);
+    else if(argc>=4 && argv[3][0])
         snprintf(g_assets,sizeof g_assets,"%s",argv[3]);
     struct card expected[MAX_EXPECT];
     int expected_w[MAX_EXPECT],expected_h[MAX_EXPECT];
@@ -252,13 +309,21 @@ int main(int argc,char **argv)
      * with one, the real OAI1 dimensions are read and verified instead.
      * Excluded names get a distinctive 200x200 so an accidental hit is
      * unmistakable. */
-    for(unsigned i=0;i<total;++i)
-        ensure_blob(expected[i].name,8+(int)i,4+(int)i,
-            &expected_w[i],&expected_h[i]);
-    int e1,e2;
-    ensure_blob("live_deleted",200,200,&e1,&e2);
-    ensure_blob("live_other",200,200,&e1,&e2);
-    ensure_blob("live_menu",200,200,&e1,&e2);
+    for(unsigned i=0;i<total;++i) {
+        if(g_png) {
+            expected_w[i]=400;
+            expected_h[i]=225;
+        } else {
+            ensure_blob(expected[i].name,8+(int)i,4+(int)i,
+                &expected_w[i],&expected_h[i]);
+        }
+    }
+    if(!g_png) {
+        int e1,e2;
+        ensure_blob("live_deleted",200,200,&e1,&e2);
+        ensure_blob("live_other",200,200,&e1,&e2);
+        ensure_blob("live_menu",200,200,&e1,&e2);
+    }
     if(total>0) {
         oa_host host;
         assert(!oa_host_init(&host,g_modules,NULL));
@@ -268,6 +333,10 @@ int main(int argc,char **argv)
         assert(!command(&host,"start nav_display",out,sizeof out));
         assert(!command(&host,"load settings",out,sizeof out));
         assert(!command(&host,"start settings",out,sizeof out));
+        if(g_png) {
+            assert(!command(&host,"load image_decode",out,sizeof out));
+            assert(!command(&host,"start image_decode",out,sizeof out));
+        }
         assert(!command(&host,"load ui_engine",out,sizeof out));
         assert(!command(&host,"start ui_engine",out,sizeof out));
         if(g_apps && getenv("OA_TEST_MANY")) {
@@ -301,6 +370,11 @@ int main(int argc,char **argv)
                 if(!find_card_blit(trace,dx,dy,cw,ch,ew,eh)) {
                     fprintf(stderr,"missing apps cell %d at %d,%d src %dx%d\n",
                         i,dx,dy,ew,eh);
+                    return 1;
+                }
+                if(g_png && !card_blit_first(trace,dx,dy,cw,ch,
+                        expected[first+i].name)) {
+                    fprintf(stderr,"wrong PNG pixels in apps cell %d\n",i);
                     return 1;
                 }
             }
@@ -373,6 +447,10 @@ int main(int argc,char **argv)
                         i,x,y,sw,sh);
                     return 1;
                 }
+                if(g_png && !card_blit_first(trace,x,y,w,h,expected[i].name)) {
+                    fprintf(stderr,"wrong PNG pixels in live card %d\n",i);
+                    return 1;
+                }
             }
             if(!find_card_blit(trace,209,478,171,95,200,200))
                 puts("ok live cards: excluded rows not painted");
@@ -385,8 +463,12 @@ int main(int argc,char **argv)
                 snprintf(path,sizeof path,"%s.portal",cap);
                 assert(!trace->capture(path));
             }
-            printf("ok ui live cards: %u rows, %d visible cards ordered by m_order_index\n",
-                total,visible);
+            if (g_png)
+                printf("ok ui png cards: %u downloaded PNGs decoded at 400x225 with source pixels\n",
+                    total);
+            else
+                printf("ok ui live cards: %u rows, %d visible cards ordered by m_order_index\n",
+                    total,visible);
         }
     }
     return 0;

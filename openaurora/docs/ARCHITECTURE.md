@@ -194,8 +194,8 @@ cannot prevent reload aliases. Owned watch/reap timer keep ABI3 cleanup
 nonblocking; abnormal child death retains a faulted provider until native release/
 recovery is understood. Four host/sanitizer/TV lifecycle groups and actual GPU
 service frames pass; see [GRAPHICS-MODULE](../../artifacts/reports/GRAPHICS-MODULE-2026-11-01.md).
-Source now builds23 modules, including ui_navigation and ui_profile; the preserved matching
-historical production ARM stage remains16. See MEMORY for stage identities.
+Source now builds24 modules, including ui_navigation, ui_profile and image_decode; the
+preserved matching historical production ARM stage remains16. See MEMORY for stage identities.
 
 `ui_profile` publishes immutable copied software-profile facts as `ui.profile` v1.
 Explicit ui_profile.swprofile selects the EFSL snapshot. Start/reload reads a
@@ -291,7 +291,8 @@ reverse-engineered vendor screens and a later OmarchyTV skin share one engine.
 
 | piece | owns |
 |---|---|
-| ui.engine | display/alpha discovery and rebinding, OAI1 asset loading from `ui.dir` (lazy, bounded cache), clear/fill/blit/blit_scaled, present/completion receipts and the readiness receipt, the key topic, the `ui.fps` repaint timer, skin registration/`ui.skin` |
+| ui.engine | display/alpha discovery and rebinding, OAI1 asset loading from `ui.dir` and the `image.decode` fallback for `/buffer/downloaded_images` (lazy, bounded cache), clear/fill/blit/blit_scaled, present/completion receipts and the readiness receipt, the key topic, the `ui.fps` repaint timer, skin registration/`ui.skin` |
+| image_decode | reloadable `image.decode` v1 service: libpng 1.6 simplified file API for vendor-downloaded PNGs, straight-RGBA output, no hardware or scaling |
 | ui.engine service v2 | v1 drawing prefix plus `register_skin_dispatch`/`dispatch_skin`; legacy `register_skin` rejects with ENOTSUP |
 | ui_vendor | the renamed vendor skin: portal rail/cards, source selection, dialogs, animations, its own screen state and `OA_SVC_PORTAL` |
 | ui_omarchy | the OmarchyTV skeleton over the same engine: dark shell, accent rail and placeholder tiles, with its own key semantics; no vendor assets and no published service yet |

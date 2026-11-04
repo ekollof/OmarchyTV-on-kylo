@@ -1,0 +1,5 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+  ok   image decode: nine downloaded PNGs match libpng RGBA, errors reject and service reloads
+ok live cards: excluded rows not painted
+ok ui png cards: 9 downloaded PNGs decoded at 400x225 with source pixels
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

@@ -1,5 +1,20 @@
 # Current project state — last verified 2026-11-04
 
+IMAGE-DECODE-2026-11-04 adds reloadable image.decode v1
+(modules/image_decode): the vendor ships libpng1.6.28 and
+hal::PngImageDecoderImpl; the module loads libpng's simplified file API
+(host name first, then /vendor/lib/libs with vendor libz) and returns
+straight RGBA. Nine real downloaded PNGs (RGB, RGBA, colormap,400x225) from
+artifacts/workbench/thumbs match independent ImageMagick RGBA SHA256/FNV
+exactly; missing/non-PNG/empty inputs reject; stop/start republishes.
+ui_engine keeps OAI1 first and falls back to ui.download_dir (default
+/buffer/downloaded_images); check-ui-png-cards renders all nine at400x225
+with source-pixel checks. Full host344 ok, focused ASan/UBSan clean, decoder
+and UI tests pass ARM/qemu with the vendor libpng/zlib. tools/boot config
+autoloads image_decode. Limits: no JPEG/APNG, not a vendor
+PngImageDecoderImpl differential, no on-TV decode or stock parity; no TV
+access this step.
+
 ALPHA-RECORDER-2026-11-04 closes the TODO-AUDIT reopened item:
 tests/ui_nav_display.c composes cap_blend with oa_canvas_over instead of
 forcing alpha255 and publishes display.alpha, so ui_engine's clear_rgba keeps

@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list
+MODULES  := plat ticker ir ui_console panel power display audio settings source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -117,6 +117,10 @@ check-ui-navigation-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_navigation.
 $(BUILD)/modules/mod_ui_list.so: modules/ui_list/ui_list.c common/svg_list_input.c common/svg_list_bodies.c common/svg_list_move.c common/svg_list_rows.c common/svg_list_impl.c include/openaurora/svg_list_input.h include/openaurora/svg_list_bodies.h include/openaurora/svg_list_move.h include/openaurora/svg_list_rows.h include/openaurora/svg_list_impl.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+
+$(BUILD)/modules/mod_image_decode.so: modules/image_decode/image_decode.c include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -ldl
 
 $(BUILD)/tests/ui_list: tests/ui_list.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -947,15 +951,24 @@ check-cec-audio-policy: $(BUILD)/tests/cec_audio_policy $(BUILD)/modules/mod_cec
 	@printf 'audio.enable = 1\n' > $(BUILD)/tests/cec-route/audio.cfg
 	@$(BUILD)/tests/cec_audio_policy $(BUILD)/tests/cec-route/modules $(BUILD)/tests/cec-route/audio.cfg
 
+$(BUILD)/tests/image_decode: tests/image_decode.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+
+.PHONY: check-image-decode
+check-image-decode: $(BUILD)/tests/image_decode $(BUILD)/modules/mod_image_decode.so
+	@$(BUILD)/tests/image_decode $(BUILD)/modules $(CURDIR)/../artifacts/workbench/thumbs || test $$? -eq 77
+check: check-image-decode
+
 $(BUILD)/tests/ui_live_cards: tests/ui_live_cards.c tests/ui_nav_trace.h core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests -Ithird_party $(LDFLAGS) -o $@ tests/ui_live_cards.c $(filter %.o,$^) $(LDLIBS) \
 	  $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
 
 ui-live-modules = $(BUILD)/tests/ui-live-cards/modules
-ui-live-stage: $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_settings.so
+ui-live-stage: $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_settings.so $(BUILD)/modules/mod_image_decode.so
 	@mkdir -p $(ui-live-modules)
-	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_settings.so $(ui-live-modules)/
+	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_settings.so $(BUILD)/modules/mod_image_decode.so $(ui-live-modules)/
 	@cp $(BUILD)/tests/ui_nav_display.so $(ui-live-modules)/mod_nav_display.so
 .PHONY: check-ui-live-cards check-ui-live-dump
 check-ui-live-cards: $(BUILD)/tests/ui_live_cards ui-live-stage
@@ -968,6 +981,10 @@ check-ui-apps-grid: $(BUILD)/tests/ui_live_cards ui-live-stage
 	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "" apps
 	@OA_TEST_MANY=1 $(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "" apps
 check: check-ui-apps-grid
+.PHONY: check-ui-png-cards
+check-ui-png-cards: $(BUILD)/tests/ui_live_cards ui-live-stage
+	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "$(CURDIR)/../artifacts/workbench/thumbs" png || test $$? -eq 77
+check: check-ui-png-cards
 
 $(BUILD)/tests/ui_nav_display.so: tests/ui_nav_display.c tests/ui_nav_trace.h include/openaurora/services.h
 	@mkdir -p $(dir $@)

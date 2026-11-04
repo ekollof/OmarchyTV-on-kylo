@@ -473,13 +473,25 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       70-row corpus retains the earliest64 and browses all pages with other
       assets cached. UI-LIVE-CARDS preserves the earlier dumped-DB portal test;
       OA-CANDIDATE subsequently captured the live-DB apps grid. Dynamic DB
-      refresh, downloaded-PNG decoding and stock layout parity remain open.
+      refresh and stock layout parity remain open; downloaded PNGs are handled
+      by the separate image.decode service below.
 
 - [x] SVGScrollBar setScrollPosition/calculateBarSizeAndPosition helpers.
       WORK-REVIEW supersedes SVG-SCROLLBAR's3120-case baseline with14576
       native comparisons, explicit32-bit wrap and the shipped signed divider.
       Apps track1750,180,8x720 is reconstructed from the resource; this lower
       geometry/state milestone is not complete native widget rendering.
+
+- [x] Reloadable image.decode module: image_decode publishes image.decode v1
+      and decodes vendor-downloaded PNGs with the vendor libpng1.6 simplified
+      API. Nine real downloaded files (RGB/RGBA/colormap,400x225) match
+      independent ImageMagick RGBA SHA256/FNV exactly; errors reject and
+      stop/start republishes. ui_engine keeps OAI1 first and falls back to
+      ui.download_dir (default /buffer/downloaded_images); check-ui-png-cards
+      renders all nine at400x225 with source-pixel checks. Host344 ok, focused
+      ASan/UBSan and decoder/UI ARM-qemu pass. IMAGE-DECODE. Limits: not the
+      vendor PngImageDecoderImpl differential, no JPEG/APNG, no on-TV decode
+      or stock parity yet.
 
 - [x] Scrollbar skin minimum helper: moving caps20+16 yield36px; recovered
       standard-name lookups and supplier cache behavior match32 native cases.
@@ -499,7 +511,8 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       host tests cover20/70 rows, hidden non-overflow tracks, sorted64-card
       retention, asset-cache pressure and reload/restart state. UI-APPS-GRID's
       first GPU capture failed; OA-CANDIDATE later obtained a live-DB scanout
-      image. Neither proves stock appearance, full native apps or PNG loading.
+      image. Neither proves stock appearance or full native apps; downloaded
+      PNG loading is covered separately by IMAGE-DECODE.
 
 - [x] Historical supervised scanout test: OA-CANDIDATE captured18 live apps
       and the600px scrollbar on vendor-initialized fb1 with stock still owning
@@ -515,8 +528,9 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
 - [ ] Cold independent startup without vendor Aurora: establish MCU authority,
       watchdog/fallback and full display ownership/restoration from firmware.
       A historical FreshWDT return1 did not prove rejection or impossibility.
-      Vendor stop/watchdog disable remain unauthorized. Real downloaded-PNG decoding
-      and stock apps-grid pixel parity remain acceptance gates.
+      Vendor stop/watchdog disable remain unauthorized. On-TV decoding/display
+      of the real downloaded images and stock apps-grid pixel parity remain
+      acceptance gates.
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x9 (slider row):
       95624 native/C comparisons and prior groups pass; full host/Unix IPC,
       ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-SLIDER.
