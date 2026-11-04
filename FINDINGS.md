@@ -1,3 +1,11 @@
+TODO-REAUDIT-2026-11-04 supersedes PNG acceptance below: all183 checks at172cd57
+reviewed,182 retained at bounded scope and PNG reopened. Shared-libpng corpus
+matches are not an Aurora Cabot-decoder comparison; the error fixture is a
+missing file and stop/start is not reload. Recorder alpha composition passes,
+but scene transforms are only metadata in its captures. Full isolated committed
+host and42 maintained ARM reference groups pass; separate unfinished source
+edits are not certified. No TV access or deployment.
+
 IMAGE-DECODE-2026-11-04 adds image.decode v1: modules/image_decode uses the
 shipped libpng1.6 simplified API (vendor lib is1.6.28; aurora also embeds
 hal::PngImageDecoderImpl) to decode extensionless downloaded PNGs into straight

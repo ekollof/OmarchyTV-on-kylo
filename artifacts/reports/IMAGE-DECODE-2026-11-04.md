@@ -1,5 +1,12 @@
 # Downloaded PNG decoding — 2026-11-04
 
+**Acceptance correction:** [TODO-REAUDIT](TODO-REAUDIT-2026-11-04.md) reopens
+the checked PNG milestone. The results below describe the committed simplified
+API prototype at172cd57; separate classic-API edits are unfinished. Stop/start
+does not verify reload, and the alleged non-PNG fixture is a missing path.
+Aurora's built-in Cabot decoder is a distinct implementation from the shared
+libpng module; these nine-image results do not establish vendor decoder parity.
+
 `image_decode` is a reloadable module publishing `image.decode` v1. It decodes
 the vendor-downloaded PNG assets in `/buffer/downloaded_images` into straight
 RGBA, and `ui_engine` falls back to it when `<ui.dir>/<name>.rgba` is absent.
@@ -21,8 +28,9 @@ showed extensionless PNG and JPEG files; offline copies of nine PNGs are in
 The module uses libpng's simplified file API (`png_image_begin_read_from_file`,
 `png_image_finish_read`, `png_image_free`) through `dlopen`, with the vendor
 absolute path fallback and a preloaded vendor `libz.so`. It does not call the
-vendor `PngImageDecoderImpl`, so this is the same codec library and output
-contract, not a differential against that vendor class.
+vendor `PngImageDecoderImpl`. The shared libpng library is not the codec
+implementation Aurora itself calls; equivalence of transforms/gamma/16-bit
+handling still needs verification. This is not a vendor-class differential.
 
 ## Implementation
 

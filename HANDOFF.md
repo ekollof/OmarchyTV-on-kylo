@@ -31,6 +31,16 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
+Read [TODO-REAUDIT](artifacts/reports/TODO-REAUDIT-2026-11-04.md) first:
+PNG acceptance below is reopened, not complete. All183 prior checks are
+accounted for;182 retain bounded acceptance. The committed172cd57 host suite
+and42 ARM reference groups pass. Separate unfinished classic-API source edits
+were present and changing during the audit; do not conflate their build state
+with the committed results. Complete firmware conversion comparison, actual
+malformed-input/lifecycle/reload tests and provider buffer ownership before
+checking PNG acceptance again. Recorder alpha is verified, but its captures
+do not apply scene transforms. The audit changes documentation only.
+
 Latest implementation: [IMAGE-DECODE](artifacts/reports/IMAGE-DECODE-2026-11-04.md)
 adds reloadable image.decode v1. It uses the vendor libpng1.6 simplified API to
 decode extensionless downloaded PNGs into straight RGBA; nine real

@@ -1,5 +1,14 @@
 # Current project state — last verified 2026-11-04
 
+TODO-REAUDIT-2026-11-04 supersedes checklist acceptance below: all183 checks
+at172cd57 reviewed;182 retained as bounded milestones, PNG acceptance reopened.
+Recorder alpha works, but its scene transforms are metadata only. Fresh full
+host suite at isolated committed172cd57 and all42 maintained ARM reference
+groups pass. These runs do not validate the separate uncommitted classic-PNG
+rewrite in the shared checkout; its initial focused build failed Werror and
+edits continued during the audit. No TV access or deployment. See the follow-up
+report and per-item ledger for scope and exact provenance.
+
 IMAGE-DECODE-2026-11-04 adds reloadable image.decode v1
 (modules/image_decode): the vendor ships libpng1.6.28 and
 hal::PngImageDecoderImpl; the module loads libpng's simplified file API

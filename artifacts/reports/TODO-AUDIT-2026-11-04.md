@@ -1,5 +1,10 @@
 # TODO accuracy audit — 2026-11-04
 
+Subsequent state: [TODO-REAUDIT](TODO-REAUDIT-2026-11-04.md) accounts for the
+later recorder fix and added PNG entry. Recorder alpha composition is closed
+at its narrow boundary; PNG acceptance is reopened. The counts and decisions
+below remain the historical review of432c71f, not the current checklist tally.
+
 Audited the182 checked entries at432c71f against the current source,
 maintained tests, firmware-reference results and saved topic evidence.
 **One entry is reopened;181 remain checked as bounded milestones.66 retained

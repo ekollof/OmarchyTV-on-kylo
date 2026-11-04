@@ -13,6 +13,13 @@ and dated hardware observations are not interchangeable. Historical test counts
 and module counts/TV samples identify their original run, not the current whole source build.
 The preserved claim inventory and per-item locators are linked from the audit.
 
+Follow-up: [TODO-REAUDIT-2026-11-04](artifacts/reports/TODO-REAUDIT-2026-11-04.md)
+accounts for all183 checks present at172cd57.182 remain checked at their stated
+boundaries; the added PNG milestone is reopened pending firmware comparison
+and lifecycle/error acceptance. Recorder alpha composition is verified, but
+its captures do not apply scene transforms. The report distinguishes the
+passing committed build from the separate unfinished source edits.
+
 ## Current acceptance gates
 
 - [x] Offline display simulation feasibility: actual fbdev module with wrapped
@@ -21,7 +28,7 @@ The preserved claim inventory and per-item locators are linked from the audit.
       Pixel-exact checks concern the test oracle, not complete frames versus
       vendor Mali or stock TV output.
 
-- [x] Complete faithful offline RGBA layout capture against the production
+- [x] Offline RGBA primitive composition using the production
       canvas: tests/ui_nav_display.c now composes with oa_canvas_over instead
       of forcing alpha255 and publishes display.alpha, so clear_rgba keeps
       transparent regions and partial source-over. check-ui-sources verifies
@@ -31,10 +38,12 @@ The preserved claim inventory and per-item locators are linked from the audit.
       Evidence: artifacts/analysis/alpha-recorder-2026-11-04/ (frame2 mean
       alpha0.40625 =780/1920, corner alpha0). This is production-canvas
       fidelity, not vendor-Mali pixel or stock-scanout parity. Closes the
-      TODO-AUDIT-2026-11-04 reopened item.
+      TODO-AUDIT-2026-11-04 alpha defect. Scene transforms are recorded as
+      metadata only; the recorder does not apply them to captured pixels.
 
 - [ ] Offline full settings preview: wire a real-asset ui.dir capture and
-      Mesa renderer integration after recorder alpha fidelity is corrected.
+      Mesa renderer integration, including transformed frames. Recorder alpha
+      composition is corrected; its set_scene_transform only records arguments.
       The settings_panel OAI1 and slider/selection exporter already exist;
       the synthetic panel test's4x4 stand-ins are not a real-content preview.
       Vendor Mali rasterization/scanout comparison still requires the set.
@@ -320,7 +329,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       ownership acceptance. Temporary staging removed; stock boot unchanged.
 - [x] Spec-based CEC framing/System Audio status and ARC-direction helpers,
       with explicit unsupported scope, tested offline on host/sanitizer/ARM-qemu.
-      No CEC transport/module or hardware integration yet. CEC-AUDIO-CONTRACT.
+      Later mod_cec routes injected frames; these helpers do not establish
+      native transport integration or hardware acceptance. CEC-AUDIO-CONTRACT.
 - [x] Recovered private V4L2/kernel CEC transport and raw/VPL packet layouts;
       bounded marshalling passes four host/sanitizer/ARM-qemu groups. Found
       16-byte receive copy, lost driver-result byte, spec-incompatible driver
@@ -474,7 +484,7 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       assets cached. UI-LIVE-CARDS preserves the earlier dumped-DB portal test;
       OA-CANDIDATE subsequently captured the live-DB apps grid. Dynamic DB
       refresh and stock layout parity remain open; downloaded PNGs are handled
-      by the separate image.decode service below.
+      by the image.decode prototype below, whose acceptance remains open.
 
 - [x] SVGScrollBar setScrollPosition/calculateBarSizeAndPosition helpers.
       WORK-REVIEW supersedes SVG-SCROLLBAR's3120-case baseline with14576
@@ -482,16 +492,18 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       Apps track1750,180,8x720 is reconstructed from the resource; this lower
       geometry/state milestone is not complete native widget rendering.
 
-- [x] Reloadable image.decode module: image_decode publishes image.decode v1
-      and decodes vendor-downloaded PNGs with the vendor libpng1.6 simplified
-      API. Nine real downloaded files (RGB/RGBA/colormap,400x225) match
-      independent ImageMagick RGBA SHA256/FNV exactly; errors reject and
-      stop/start republishes. ui_engine keeps OAI1 first and falls back to
-      ui.download_dir (default /buffer/downloaded_images); check-ui-png-cards
-      renders all nine at400x225 with source-pixel checks. Host344 ok, focused
-      ASan/UBSan and decoder/UI ARM-qemu pass. IMAGE-DECODE. Limits: not the
-      vendor PngImageDecoderImpl differential, no JPEG/APNG, no on-TV decode
-      or stock parity yet.
+- [ ] Complete image.decode acceptance: the committed simplified-libpng
+      prototype decodes nine downloaded PNGs and feeds ui_engine's OAI1 fallback;
+      host and ARM/qemu corpus results are recorded in IMAGE-DECODE. Aurora
+      uses its built-in cabot_png decoder; shared libpng output is not a
+      vendor-class comparison. Verify the recovered conversion sequence,
+      grayscale/tRNS/16-bit/gamma behavior, malformed real files, provider-owned
+      buffer release and actual module reload/holds/suspend/failure cleanup.
+      The existing error test's image_decode.c path is missing, not corrupt PNG
+      input; stop/start does not test reload. Separate classic-API source edits
+      are unfinished and are not covered by committed-build results.
+      JPEG/APNG, worker scheduling/cancellation, on-TV decode and stock pixel
+      parity remain open. Reopened by TODO-REAUDIT-2026-11-04.
 
 - [x] Scrollbar skin minimum helper: moving caps20+16 yield36px; recovered
       standard-name lookups and supplier cache behavior match32 native cases.
