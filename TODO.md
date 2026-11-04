@@ -564,6 +564,15 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       vendor PIDs intact. VISIBLE-IMAGES. Limits: supervised only; full
       region/MAU/pan ownership equality and independent startup not proven.
 
+- [x] Real socket/CLI image.decode lifecycle: a host started with an empty
+      autoload config is driven through the actual `--sock` control plane and
+      stdin: load/start, PNG and JPEG CLI decode hashes, invalid-file errors,
+      status, suspend/EAGAIN/resume, stop/ENODEV/start reuse, reload, and
+      unload/reload. `image-decode` is a real control command; no display/HAL/
+      TV module is loaded. Full host395 ok, verify.cjs45. IMAGE-DECODE-IPC.
+      Limits: host-only; ui_vendor/display reload, held-provider rejection and
+      cold startup remain separate.
+
 - [x] Vendor decoder-class differential: an ARM LD_PRELOAD probe executes the
       shipped PngImageDecoderImpl and JpegImageDecoder under qemu before vendor
       main, using vendor MemoryBufferSource/MutableImage. Nine PNGs are exact

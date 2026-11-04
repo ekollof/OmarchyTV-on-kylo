@@ -93,6 +93,14 @@ reauthorized; fb1 and stock operation must stay untouched. This supersedes the
 earlier "Don't touch the TV" restriction. No persistent replacement or boot
 changes. The historical offline-only entries describe their original runs.
 
+IMAGE-DECODE-IPC-2026-11-04 (host-only): a real `openaurora --sock` control
+plane with an empty autoload config now drives image.decode through the
+`image-decode <path>` command and stdin: load/start, PNG/JPEG FNV, invalid-file
+errors, status, suspend/EAGAIN/resume, stop/ENODEV/start reuse, reload and
+unload/reload all pass. No display/HAL/TV module is loaded. Host suite395 ok,
+verify.cjs45. Host binary d65b35b2…, module eb102138…. Limits: ui_vendor/display
+reload, held-provider rejection and cold startup remain separate.
+
 VENDOR-DECODER-DIFF-2026-11-04 (offline/qemu): an ARM LD_PRELOAD constructor
 executes the shipped PngImageDecoderImpl and JpegImageDecoder before vendor
 main, using vendor MemoryBufferSource/MutableImage. Nine PNGs are exact after

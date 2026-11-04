@@ -144,6 +144,13 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
+Latest host lifecycle: [IMAGE-DECODE-IPC](artifacts/reports/IMAGE-DECODE-IPC-2026-11-04.md)
+drives image.decode through the real `--sock` control plane and stdin with an
+empty autoload config: load/start, PNG/JPEG FNV, invalid errors, status,
+suspend/EAGAIN/resume, stop/ENODEV/start reuse, reload and unload/reload all
+pass. No display/HAL/TV module. Host395 ok, verify45. Limits:
+ui_vendor/display reload, held-provider rejection and cold startup remain.
+
 Latest offline differential: [VENDOR-DECODER-DIFF](artifacts/reports/VENDOR-DECODER-DIFF-2026-11-04.md)
 runs the shipped PngImageDecoderImpl/JpegImageDecoder under qemu through an ARM
 LD_PRELOAD probe before vendor main. Nine PNGs are byte-exact after BGRA→RGBA

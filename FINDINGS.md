@@ -6,6 +6,13 @@ Private controls forward to EX_PLAT; successful ioctl still does not prove
 MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
+IMAGE-DECODE-IPC-2026-11-04: the real host `--sock` control plane (plus stdin)
+runs image.decode through `image-decode <path>`: load/start, PNG/JPEG FNV,
+invalid-file errors, status, suspend/EAGAIN/resume, stop/ENODEV/start reuse,
+reload and unload/reload. Empty autoload, no display/HAL/TV. Host395 ok and
+verify45. This closes the host socket/CLI lifecycle milestone, not
+ui_vendor/display reload or cold startup.
+
 VENDOR-DECODER-DIFF-2026-11-04: an ARM LD_PRELOAD probe runs the shipped
 PngImageDecoderImpl/JpegImageDecoder under qemu before vendor main, using
 vendor MemoryBufferSource/MutableImage. Nine PNGs are exact after BGRA->RGBA

@@ -155,6 +155,16 @@ static void cmd_status(oa_host *h, const char *name, char *outbuf, size_t outlen
     append(&reply, "\n");
 }
 
+static uint64_t fnv1a64(const unsigned char *data, size_t len)
+{
+    uint64_t h = 0xcbf29ce484222325ULL;
+    for (size_t i = 0; i < len; i++) {
+        h ^= data[i];
+        h *= 0x100000001b3ULL;
+    }
+    return h;
+}
+
 /*
  * returns 0 ok, -1 error, 1 = quit
  */
@@ -200,6 +210,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  amp-profile             read immutable amplifier profile inputs\n"
                  "  launcher-items <parent|all> [deleted] [outofsync]\n"
                  "                           settingsDB LauncherItem rows\n"
+                 "  image-decode <path>      decode PNG/JPEG through image.decode\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -212,6 +223,40 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         if (!a1) { oa_skin_status(h, outbuf, outlen); return 0; }
         if (oa_skin_request(h, a1)) { snprintf(outbuf, outlen, "failed errno %d\n", errno); return -1; }
         snprintf(outbuf, outlen, "pending %s\n", a1);
+        return 0;
+    }
+    if (!strcmp(cmd, "image-decode")) {
+        if (force || a2 || !a1) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_image_decode_iface *dec =
+            h->api.lookup(h, OA_SVC_IMAGE_DECODE, 2);
+        if (!dec) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int w = 0, hgt = 0, rc;
+        unsigned char *rgba = NULL;
+        rc = dec->decode_png(a1, &w, &hgt, &rgba);
+        if (rc && dec->decode_jpeg) {
+            int png_rc = rc;
+            int jpeg_rc = dec->decode_jpeg(a1, &w, &hgt, &rgba);
+            /* A non-image file should report EINVAL, not the JPEG-only
+             * "unsupported" status from the second attempt. */
+            rc = jpeg_rc ? (png_rc == -EINVAL ? -EINVAL : jpeg_rc) : 0;
+        }
+        if (rc || w <= 0 || hgt <= 0 || !rgba) {
+            if (rgba) dec->release(rgba);
+            h->api.release(h, OA_SVC_IMAGE_DECODE);
+            snprintf(outbuf, outlen, "failed errno %d\n", rc ? -rc : EINVAL);
+            return -1;
+        }
+        uint64_t hash = fnv1a64(rgba, (size_t)w * (size_t)hgt * 4u);
+        dec->release(rgba);
+        h->api.release(h, OA_SVC_IMAGE_DECODE);
+        snprintf(outbuf, outlen, "image %dx%d fnv %016" PRIx64 "\n",
+                 w, hgt, hash);
         return 0;
     }
     if(!strcmp(cmd,"launcher-items")) {

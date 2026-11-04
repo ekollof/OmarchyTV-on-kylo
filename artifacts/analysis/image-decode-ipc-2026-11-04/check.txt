@@ -1,0 +1,2 @@
+node tests/image_decode_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok actual image.decode Unix IPC: load/start/CLI use/stop/start/reload/unload/reload lifecycle

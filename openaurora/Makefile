@@ -1135,6 +1135,11 @@ cold-bundle: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/fb-res
 $(BUILD)/tests/vendor_decoder_probe.so: tests/vendor_decoder_probe.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $< -ldl
+.PHONY: check-image-decode-ipc
+check-image-decode-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_image_decode.so
+	node tests/image_decode_ipc.cjs $(abspath $(BUILD))
+check: check-image-decode-ipc
+
 .PHONY: check-vendor-decoder
 check-vendor-decoder: $(BUILD)/tests/vendor_decoder_probe.so
 	@test "$(TARGET)" = tv || { echo "check-vendor-decoder requires TARGET=tv"; exit 2; }
