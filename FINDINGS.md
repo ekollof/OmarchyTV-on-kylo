@@ -30,7 +30,11 @@ retained state; shutdown drains and nonblockingly joins through real TLS
 destructors. Four host/sanitizer/ARM groups and full host370 pass. Backend
 context/code stays borrowed until join, not just a published completion;
 joining alone performs no physical shutdown. Module/consumer/native backend
-integration remains open. TV access remains forbidden.
+integration remains open. The worker's four injected-I/O groups subsequently
+passed on actual TV glibc/pthread under the owner's non-fb1 test permission;
+temporary staging removed/no helper and boot/vendor PIDs unchanged. No devices
+or framebuffer opened. Create seeds private reset/mute cache0/1 and does not
+reset the global image; a fresh ELF image is not a running-state snapshot.
 
 AMP-PROFILE-MODULE-2026-11-04 adds reloadable audio.amp_profile v1 and the
 amp-profile query over actual local Unix IPC. Caller-owned copies/names and

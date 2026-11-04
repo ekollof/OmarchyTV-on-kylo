@@ -1,0 +1,7 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+60756 /tmp/oa-amp-owner-fb4a1c1
+d579fdfa7c2f242399fb272847e57c6d67d8fa423fcf3f86c37a0e0651ca38a4  /tmp/oa-amp-owner-fb4a1c1

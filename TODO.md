@@ -292,7 +292,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       Init/Reset/Mute trace/image/cache cases and45 total reference groups pass.
       AMP-OWNER adds an injected owning thread with copied inputs/completions,
       retained image and draining/nonblocking join, including TLS destructors;
-      four host/sanitizer/ARM groups pass. This is not a native backend or paired
+      four host/sanitizer/ARM groups and the same injected-I/O groups on the TV
+      pass (no device/fb1 access; staging removed). This is not a native backend or paired
       shutdown. Finish audio consumer/provider holds and module integration,
       retained image acquisition, coordinated GPIO/MCU/I2C/worker
       ownership and hardware lifecycle acceptance; wrapper results and controlled

@@ -1,0 +1,9 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ok amp owner: worker-only callbacks, copied table/state/profile/name, pending/result backpressure and value completion
+ok amp owner: failed writes retain worker state across requests and caller copies cannot mutate it
+ok amp owner: quiesce drains, inherited handles reject, TLS destructors and join errors retain owner until actual join
+ok amp owner: idle shutdown executes no I/O and frees only after join; native ownership/shutdown remain external

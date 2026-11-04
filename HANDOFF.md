@@ -8,9 +8,11 @@ authorized live checks are recorded below and in MEMORY.md.
 
 ## Current objective and safety
 
-Latest owner instruction,2026-11-04: "Don't touch the TV." Work offline only
-until explicit reauthorization, including no view-only queries, WoL or staging.
-This overrides the earlier TV permissions described below; AGENTS.md records it.
+Latest owner instruction,2026-11-04: "You can test on the TV, as long as you
+don't use the active display (fb1)." Non-display tests/read-only interrogation
+are reauthorized; keep fb1 and stock operation untouched. This supersedes the
+earlier offline-only override; historical offline-only entries below describe
+their original runs. No persistent replacement or boot-hook changes.
 
 Full vendor parity except telemetry/advertising, with reloadable modules and
 eventually native OmarchyTV. Replacement is incomplete. November 1 owner
@@ -44,10 +46,16 @@ ARM/full host366 pass. Verifier defaults to build-tv-v3/amp-init.
 owning thread: copied inputs/value completions, retained state, bounded slot,
 drain and actual nonblocking join through TLS destructors. Four strict host/
 sanitizer/ARM groups and full host370 pass; target tryjoin export/instructions
-checked offline. Next establish native resource/image ownership and wire the
+checked offline. The exact unit now also passed all four groups on the TV's
+actual pthread/glibc after non-fb1 test authorization; staging removed, no helper,
+boot/vendor PIDs unchanged. All I/O remains injected and no device/fb1 was
+opened. Next establish native resource/image ownership and wire the
 audio consumer/provider holds, completion polling, module gate and backends;
 there is no module hookup or paired shutdown yet. Never run the blocking helper
-in the host loop. No TV access or deployment; offline-only restriction remains.
+in the host loop. No native amplifier bring-up or persistent deployment.
+Create's private reset/mute cache seeds are0/1; its image is process-global
+and not reset by Create. Preserve retained image across reload, rather than
+assuming a fresh ELF baseline represents the running hardware/owner state.
 
 [AMP-PROFILE-MODULE](artifacts/reports/AMP-PROFILE-MODULE-2026-11-04.md) now
 exposes the recovered amp inputs through reloadable audio.amp_profile v1 and

@@ -1,0 +1,20 @@
+
+Version symbols section '.gnu.version' contains 36 entries:
+ Addr: 0x00000000000107d0  Offset: 0x000007d0  Link: 5 (.dynsym)
+  000:   0 (*local*)       0 (*local*)       0 (*local*)       0 (*local*)    
+  004:   2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)  
+  008:   4 (GLIBC_2.17)    3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)  
+  00c:   3 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)  
+  010:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)     2 (GLIBC_2.4)  
+  014:   2 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)  
+  018:   3 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)  
+  01c:   3 (GLIBC_2.4)     2 (GLIBC_2.4)     3 (GLIBC_2.4)     2 (GLIBC_2.4)  
+  020:   2 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)     3 (GLIBC_2.4)  
+
+Version needs section '.gnu.version_r' contains 2 entries:
+ Addr: 0x0000000000010818  Offset: 0x00000818  Link: 6 (.dynstr)
+  000000: Version: 1  File: libc.so.6  Cnt: 2
+  0x0010:   Name: GLIBC_2.17  Flags: none  Version: 4
+  0x0020:   Name: GLIBC_2.4  Flags: none  Version: 3
+  0x0030: Version: 1  File: libpthread.so.0  Cnt: 1
+  0x0040:   Name: GLIBC_2.4  Flags: none  Version: 2

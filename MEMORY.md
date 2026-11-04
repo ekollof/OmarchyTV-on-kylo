@@ -10,8 +10,14 @@ an injected owning worker with copied inputs/completions, retained state,
 draining quiesce and actual nonblocking join through TLS destructors. Four
 groups pass strict host/leak-enabled sanitizer/fresh ARM-qemu; full host370
 passes. Target glibc2.23 exports the required GLIBC_2.4 tryjoin symbol; this
-does not connect a native backend or integrate module completion/holds. No TV
-access; the offline-only owner restriction remains in force.
+does not connect a native backend or integrate module completion/holds.
+After the owner reauthorized tests excluding active fb1, the exact60756-byte
+ARM worker unit passed all four groups on the TV's actual glibc/pthread.
+Hash checked before execution; staging removed/no helper; boot ID and vendor
+PIDs1967/1785 unchanged, no-reset retained. No device or framebuffer was opened.
+Evidence: amp-owner-tv-2026-11-04. Current permission allows non-display tests
+and view-only interrogation; fb1 and stock operation must remain untouched.
+This supersedes historical offline-only restrictions in older entries below.
 
 AMP-PROFILE-MODULE-2026-11-04 adds audio_amp_profile/audio.amp_profile v1 and
 amp-profile CLI/actual Unix IPC. Copied profile/name snapshots, holds/removal,
