@@ -36,6 +36,11 @@ queue of experiments to repeat.
 
 ## TV access: standing owner authorization
 
+**Current owner override, 2026-11-04: "Don't touch the TV." Work offline only
+until the owner explicitly reauthorizes TV access. Do not connect, wake, stage,
+query or run tests on the set. This temporarily supersedes both the standing
+view-only permission and the idle hardware test window documented below.**
+
 **Using the TV to interrogate it is always allowed when the operation is
 view-only. No additional confirmation is needed**, including while it is in use.
 This includes files, processes, logs, existing state and firmware-understood

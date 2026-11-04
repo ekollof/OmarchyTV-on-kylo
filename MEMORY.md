@@ -1,5 +1,10 @@
 # Current project state — last verified 2026-11-04
 
+Current owner constraint,2026-11-04: "Don't touch the TV." Offline work only;
+all TV access, including view-only queries/WoL/staging/tests, is suspended until
+explicit owner reauthorization. This supersedes the earlier standing query
+permission and idle window. The audio-image work below accessed no TV.
+
 AUDIO-AMP-IMAGE-2026-11-04 recovers AD82587 lifecycle/return contracts and
 implements pure38-register profile conversion with caller-supplied retained
 image. Strict host, leak-enabled ASan/UBSan, fresh ARM/qemu and full host349

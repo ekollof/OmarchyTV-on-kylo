@@ -8,6 +8,10 @@ authorized live checks are recorded below and in MEMORY.md.
 
 ## Current objective and safety
 
+Latest owner instruction,2026-11-04: "Don't touch the TV." Work offline only
+until explicit reauthorization, including no view-only queries, WoL or staging.
+This overrides the earlier TV permissions described below; AGENTS.md records it.
+
 Full vendor parity except telemetry/advertising, with reloadable modules and
 eventually native OmarchyTV. Replacement is incomplete. November 1 owner
 authorization permits temporary idle hardware/CEC/audio tests; see AGENTS.md.
