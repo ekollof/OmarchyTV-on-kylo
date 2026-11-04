@@ -1,5 +1,21 @@
 # Current project state — last verified 2026-11-04
 
+SVG-IMAGE-CREATE-2026-11-04: SVGImage::imageCreate0x10c9430 implemented in
+common/svg_image.c; svg-image differential now72 native/C cases (16 new:
+created/uncreated x0xb0 x field-set x parent). Created resizes+draws;
+uncreated creates/sets the surface, chooses scaled draw by byte0xb0, then
+UIWindow::create; field words0xa8/0xac/0xb4/0xb8/0xbc. Shipped body CRC
+0x5c029f6e copied at its original address; guard literal0x10c9550; three
+targetHandle BLs retargeted into the body page because0x1149000 is occupied.
+Host, focused ASan/UBSan, ARM/qemu, full verify.cjs (35 ok) and full make check
+pass; focused TV CPU of the svg_image ARM unit exit0 with staging
+hash-verified/removed. Build-tv-v3/settings-row-render unit47624/
+393ae80d6fe9578884d193ec56b3cf47; reference1232196/
+3c1081844a190c3e2ef1d63a0756aa41. Vendor surface/draw calls remain stubs; the
+EASIPoint create overload0x10c9554 (CRC0x09f01190) is unimplemented. No
+screen/input/device/settings/network/service/boot/persistent change. No
+pending job/helper.
+
 This is the canonical state summary. Latest narrow verification is recorded
 in the dated entries below; the earlier CEC session is historical. Notes are preserved in
 [the archive](artifacts/archive/README.md); they contain superseded claims.

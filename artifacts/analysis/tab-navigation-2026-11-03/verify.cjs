@@ -54,5 +54,5 @@ assert.match(result.stdout, /settings row type: 12480 native\/C comparisons/);
 assert.match(result.stdout, /settings row setters: 276 native\/C comparisons/);
 assert.match(result.stdout, /settings row render: 1771396 native\/C comparisons/);
 assert.match(result.stdout, /launcher image id: 469 native\/C comparisons/);
-assert.match(result.stdout, /svg image: 56 native\/C cases/);
+assert.match(result.stdout, /svg image: 72 native\/C cases/);
 assert.match(result.stdout, /row values: 68640 type\/raw-value cases/);

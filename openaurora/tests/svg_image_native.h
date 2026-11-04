@@ -15,13 +15,17 @@ typedef void (*sv_create_fn)(void *,uint32_t,uint32_t,uint32_t);
 typedef void (*sv_destroy_fn)(void *);
 typedef uint32_t (*sv_ret3_fn)(void *,uint32_t,void *);
 
-enum {SV_ID,SV_GETSUP,SV_SUP,SV_CLIENT,SV_IMG,SV_WD,SV_CLEAN};
+enum {SV_ID,SV_GETSUP,SV_SUP,SV_CLIENT,SV_IMG,SV_WD,SV_CLEAN,
+      SV_PW,SV_WR,SV_IC,SV_RES,SV_TH,SV_REL,SV_DRAW,SV_SCALED,SV_CS,SV_SU,SV_CW};
 
 struct sv_ev { uint32_t kind,a,b,w[4]; };
 static struct sv_ev sv_evn[24],sv_evc[24],sv_cmp[24];
 static struct sv_ev *sv_tp;static unsigned sv_tn;
 static unsigned char *sv_img_native,*sv_img_ref;
 static uint32_t sv_last_out;
+static uint32_t sv_token;
+static int sv_created,sv_parent;
+static uint32_t sv_fields[0x40];
 static struct { uint32_t id,rect[4],client[4];int sup,parent; } sv_fix;
 
 static void sv_emit(uint32_t kind,uint32_t a,uint32_t b,const uint32_t *w)
@@ -31,14 +35,27 @@ static void sv_emit(uint32_t kind,uint32_t a,uint32_t b,const uint32_t *w)
     if(w)memcpy(sv_tp[sv_tn].w,w,16);else memset(sv_tp[sv_tn].w,0,16);
     ++sv_tn;
 }
-static void sv_stub3(void *mapped,uint32_t base,uint32_t address,sv_ret3_fn function)
+static void sv_patch_bl(unsigned char *body,uint32_t base,uint32_t at,uint32_t target)
+{
+    int32_t off=(int32_t)(target-(at+4));
+    uint32_t s=((uint32_t)off>>24)&1u,i1=((uint32_t)off>>23)&1u,i2=((uint32_t)off>>22)&1u;
+    uint32_t imm10=((uint32_t)off>>12)&0x3ffu,imm11=((uint32_t)off>>1)&0x7ffu;
+    uint32_t j1=(~(i1^s))&1u,j2=(~(i2^s))&1u;
+    uint16_t hw1=(uint16_t)(0xf000u|(s<<10)|imm10);
+    uint16_t hw2=(uint16_t)(0xd000u|(j1<<13)|(j2<<11)|imm11);
+    unsigned char *p=stub_destination(body,base,at,4);
+    memcpy(p,&hw1,2);memcpy(p+2,&hw2,2);
+}
+static void sv_stub12(void *mapped,uint32_t base,uint32_t address,uint32_t target)
 {
     unsigned char *p=stub_destination(mapped,base,address,12);
     const uint16_t insn[]={0xf8df,0xc004,0x4760,0xbf00};
-    assert(!(address&3));memcpy(p,insn,sizeof insn);
-    uint32_t target;assert(sizeof function==sizeof target);
-    memcpy(&target,&function,sizeof target);memcpy(p+8,&target,4);
+    assert(!(address&3));memcpy(p,insn,sizeof insn);memcpy(p+8,&target,4);
 }
+static uint32_t sv_bits(const void *f,size_t n)
+{ uint32_t v=0;assert(n==sizeof v);memcpy(&v,f,n);return v; }
+static void sv_stub3(void *mapped,uint32_t base,uint32_t address,sv_ret3_fn function)
+{ sv_stub12(mapped,base,address,sv_bits(&function,sizeof function)); }
 
 /* Native-side stubs (called by the shipped bodies). */
 static void svn_set_id(void *img,uint32_t id)
@@ -94,6 +111,82 @@ static struct oa_svg_image_ops sv_ops(void)
 {
     return (struct oa_svg_image_ops){svc_set_id,svc_get_sup,svc_sup_res,svc_client,
         svc_img_create,svc_wdestroy,svc_clean};
+}
+
+/* imageCreate stubs (1-10 argument preserving trampolines). */
+typedef uint32_t (*sv_ret4_fn)(void *,uint32_t,uint32_t,uint32_t);
+typedef void (*sv_draw_fn)(void *,uint32_t,uint32_t,uint32_t,uint32_t,uint32_t,uint32_t,float,float,uint32_t);
+typedef void (*sv_scaled_fn)(void *,uint32_t,uint32_t,uint32_t,uint32_t);
+static uint32_t sv_bits_draw(sv_draw_fn f) { uint32_t v;assert(sizeof f==sizeof v);memcpy(&v,&f,4);return v; }
+static uint32_t sv_bits_scaled(sv_scaled_fn f) { uint32_t v;assert(sizeof f==sizeof v);memcpy(&v,&f,4);return v; }
+static uint32_t sv_bits_ret4(sv_ret4_fn f) { uint32_t v;assert(sizeof f==sizeof v);memcpy(&v,&f,4);return v; }
+static void svn_pw(void *img,uint32_t parent)
+{ sv_emit(SV_PW,(uint32_t)((uintptr_t)img-(uintptr_t)sv_img_native),parent,NULL); }
+static void svn_wr(void *img,uint32_t rectp)
+{ uint32_t w[4];(void)img;memcpy(w,(void *)(uintptr_t)rectp,16);sv_emit(SV_WR,0,0,w); }
+static uint32_t svn_ic(void *img) { (void)img;sv_emit(SV_IC,0,0,NULL);return (uint32_t)sv_created; }
+static void svn_resize(void *img,uint32_t rectp)
+{ uint32_t w[4];(void)img;memcpy(w,(void *)(uintptr_t)rectp,16);sv_emit(SV_RES,0,0,w); }
+static void svn_target(void *out,uint32_t self)
+{
+    (void)self;sv_token=UINT32_C(0x7000);
+    ((uint32_t *)out)[0]=sv_token;((uint32_t *)out)[1]=0;
+    sv_emit(SV_TH,0,0,NULL);
+}
+static void svn_release(void *ctrl) { (void)ctrl;sv_emit(SV_REL,sv_token,0,NULL); }
+static void svn_draw(void *img,uint32_t res,uint32_t x,uint32_t y,uint32_t flag,
+    uint32_t target,uint32_t tiling,float f0,float f1,uint32_t scaling)
+{
+    uint32_t b0,b1,w[4];
+    (void)img;memcpy(&b0,&f0,4);memcpy(&b1,&f1,4);
+    assert(res==UINT32_C(0x6000) && !x && !y);
+    { uint32_t tok=0;memcpy(&tok,(void *)(uintptr_t)target,4);target=tok; }
+    w[0]=flag;w[1]=target;w[2]=tiling;w[3]=scaling;
+    sv_emit(SV_DRAW,b0,b1,w);
+}
+static void svn_scaled(void *img,uint32_t res,uint32_t x,uint32_t y,uint32_t target)
+{ uint32_t tok=0;(void)img;assert(res==UINT32_C(0x6000) && !x && !y);
+  memcpy(&tok,(void *)(uintptr_t)target,4);sv_emit(SV_SCALED,tok,0,NULL); }
+static uint32_t svn_csurf(void *img,uint32_t rectp,uint32_t a,uint32_t b)
+{ uint32_t w[4];(void)img;memcpy(w,(void *)(uintptr_t)rectp,16);sv_emit(SV_CS,a,b,w);return UINT32_C(0x8000); }
+static void svn_suis(void *img,uint32_t surface)
+{ (void)img;sv_emit(SV_SU,surface,0,NULL); }
+static void svn_cwin(void *img) { (void)img;sv_emit(SV_CW,0,0,NULL); }
+
+/* Owned-side imageCreate callbacks. */
+static void svc_pw(void *img,void *parent)
+{ sv_emit(SV_PW,(uint32_t)((uintptr_t)img-(uintptr_t)sv_img_ref),(uint32_t)(uintptr_t)parent,NULL); }
+static void svc_wr(void *img,const uint32_t rect[4])
+{ (void)img;sv_emit(SV_WR,0,0,rect); }
+static int svc_ic(void *img) { (void)img;sv_emit(SV_IC,0,0,NULL);return sv_created; }
+static void svc_resize(void *img,const uint32_t rect[4])
+{ (void)img;sv_emit(SV_RES,0,0,rect); }
+static void *svc_target(void *img) { (void)img;sv_token=UINT32_C(0x7000);sv_emit(SV_TH,0,0,NULL);return (void *)(uintptr_t)sv_token; }
+static void svc_release(void *img,void *target)
+{ (void)img;sv_emit(SV_REL,(uint32_t)(uintptr_t)target,0,NULL); }
+static void svc_draw(void *img,const void *res,uint32_t x,uint32_t y,uint32_t flag,
+    void *target,uint32_t tiling,int32_t f0,int32_t f1,uint32_t scaling)
+{
+    uint32_t w[4];(void)img;
+    assert((uint32_t)(uintptr_t)res==UINT32_C(0x6000) && !x && !y);
+    w[0]=flag;w[1]=(uint32_t)(uintptr_t)target;w[2]=tiling;w[3]=scaling;
+    sv_emit(SV_DRAW,(uint32_t)f0,(uint32_t)f1,w);
+}
+static void svc_scaled(void *img,const void *res,uint32_t x,uint32_t y,void *target)
+{ (void)img;assert((uint32_t)(uintptr_t)res==UINT32_C(0x6000) && !x && !y);
+  sv_emit(SV_SCALED,(uint32_t)(uintptr_t)target,0,NULL); }
+static void *svc_csurf(void *img,const uint32_t rect[4],int a,int b)
+{ (void)img;sv_emit(SV_CS,(uint32_t)a,(uint32_t)b,rect);return (void *)(uintptr_t)UINT32_C(0x8000); }
+static void svc_suis(void *img,void *surface)
+{ (void)img;sv_emit(SV_SU,(uint32_t)(uintptr_t)surface,0,NULL); }
+static void svc_cwin(void *img) { (void)img;sv_emit(SV_CW,0,0,NULL); }
+static uint32_t svc_field(void *img,uint32_t off)
+{ (void)img;assert(off>=0xa8 && off<=0xbc && !(off&3));return sv_fields[off/4]; }
+static struct oa_svg_image_surface_ops sv_sops(void)
+{
+    return (struct oa_svg_image_surface_ops){svc_pw,svc_wr,svc_ic,svc_resize,
+        svc_target,svc_release,svc_draw,svc_scaled,svc_csurf,svc_suis,svc_cwin,
+        svc_field};
 }
 
 static void check_svg_image(const unsigned char *elf,size_t bytes)
@@ -170,10 +263,76 @@ static void check_svg_image(const unsigned char *elf,size_t bytes)
         }
         ++compared;
     }
+    /* imageCreate (0x10c9430): copy the body over the create stub and run a
+     * created/uncreated, 0xb0, field-set and parent grid. */
+    {
+        unsigned char *dtor=page(0x95a000,4096);
+        assert(!mprotect(cc,4096,PROT_READ|PROT_WRITE));
+        size_t o2=file_offset(elf,bytes,0x10c9430,288);
+        assert(crc32(elf+o2,288)==UINT32_C(0x5c029f6e));
+        memcpy(stub_destination(cc,0x10c9000,0x10c9430,288),elf+o2,288);
+        memcpy(stub_destination(cc,0x10c9000,0x10c9550,4),&pointer,4);
+        pair_stub(cc,0x10c9000,0x10c9580,svn_target);
+        sv_patch_bl(cc,0x10c9000,0x10c9480,0x10c9580);
+        sv_patch_bl(cc,0x10c9000,0x10c94e2,0x10c9580);
+        sv_patch_bl(cc,0x10c9000,0x10c94fe,0x10c9580);
+        executable(cc,4096);
+        assert(!mprotect(win,4096,PROT_READ|PROT_WRITE));
+        assert(!mprotect(ctx,4096,PROT_READ|PROT_WRITE));
+        assert(!mprotect(winx,4096,PROT_READ|PROT_WRITE));
+        pair_stub(win,0x1152000,0x1152870,svn_pw);
+        thumb_stub(win,0x1152000,0x1152a40,(getter)svn_ic);
+        sv_stub12(win,0x1152000,0x1152ce8,sv_bits_ret4(svn_csurf));
+        blank_stub(win,0x1152000,0x1152e5c,svn_cwin);
+        pair_stub(ctx,0xeed000,0xeede60,svn_suis);
+        pair_stub(ctx,0xeed000,0xeedf38,svn_resize);
+        pair_stub(winx,0xeee000,0xeeeb6c,svn_wr);
+        sv_stub12(winx,0xeee000,0xeee384,sv_bits_draw(svn_draw));
+        sv_stub12(winx,0xeee000,0xeee430,sv_bits_scaled(svn_scaled));
+        blank_stub(dtor,0x95a000,0x95a990,svn_release);
+        executable(dtor,4096);executable(win,4096);executable(ctx,4096);executable(winx,4096);
+        static const uint32_t r[4]={10,20,30,40};
+        static const uint32_t fs[2][5]={{1,2,3,4,5},{0,7,8,9,10}};
+        void (*icf)(void *,uint32_t,uint32_t,uint32_t);
+        { uint32_t entry=0x10c9431;memcpy(&icf,&entry,4); }
+        for(unsigned c=0;c<2;++c)for(unsigned b0=0;b0<2;++b0)
+        for(unsigned f=0;f<2;++f)for(unsigned par=0;par<2;++par) {
+            struct oa_svg_image_surface_ops so=sv_sops();
+            void *parent=par?(void *)(uintptr_t)0x2222:NULL;
+            sv_created=(int)c;sv_parent=(int)par;
+            sv_fields[0xa8/4]=fs[f][0];sv_fields[0xac/4]=fs[f][1];
+            sv_fields[0xb0/4]=b0?1:0;sv_fields[0xb4/4]=fs[f][2];
+            sv_fields[0xb8/4]=fs[f][3];sv_fields[0xbc/4]=fs[f][4];
+            for(unsigned k=0;k<0x40;++k) {
+                if(k>=0xa8/4 && k<=0xbc/4) {
+                    memcpy(sv_img_native+k*4,&sv_fields[k],4);
+                    memcpy(sv_img_ref+k*4,&sv_fields[k],4);
+                }
+            }
+            sv_tp=sv_evn;sv_tn=0;sv_token=0;
+            icf(sv_img_native,0x6000,(uint32_t)(uintptr_t)r,(uint32_t)(uintptr_t)parent);
+            memcpy(sv_cmp,sv_evn,sv_tn*sizeof sv_evn[0]);unsigned n=sv_tn;
+            sv_tp=sv_evc;sv_tn=0;sv_token=0;
+            oa_svg_image_image_create(sv_img_ref,(void *)(uintptr_t)0x6000,r,parent,&so);
+            if(n!=sv_tn || memcmp(sv_cmp,sv_evc,n*sizeof sv_evn[0])) {
+                fprintf(stderr,"imageCreate mismatch c=%u b0=%u f=%u par=%u n=%u/%u\n",c,b0,f,par,n,sv_tn);
+                for(unsigned k=0;k<(n>sv_tn?n:sv_tn);++k) {
+                    fprintf(stderr,"  [%u] nat k=%u a=%x b=%x w=%x/%x/%x/%x  ours k=%u a=%x b=%x w=%x/%x/%x/%x\n",
+                        k,k<n?sv_cmp[k].kind:0xffff,k<n?sv_cmp[k].a:0,k<n?sv_cmp[k].b:0,
+                        k<n?sv_cmp[k].w[0]:0,k<n?sv_cmp[k].w[1]:0,k<n?sv_cmp[k].w[2]:0,k<n?sv_cmp[k].w[3]:0,
+                        k<sv_tn?sv_evc[k].kind:0xffff,k<sv_tn?sv_evc[k].a:0,k<sv_tn?sv_evc[k].b:0,
+                        k<sv_tn?sv_evc[k].w[0]:0,k<sv_tn?sv_evc[k].w[1]:0,k<sv_tn?sv_evc[k].w[2]:0,k<sv_tn?sv_evc[k].w[3]:0);
+                }
+                exit(1);
+            }
+            ++compared;
+        }
+        assert(!munmap(dtor,4096));
+    }
     free(sv_img_native);free(sv_img_ref);
     assert(!munmap(cb,4096) && !munmap(cc,4096) && !munmap(off,4096));
     assert(!munmap(win,4096) && !munmap(ctx,4096) && !munmap(winx,4096) && !munmap(sup,4096));
-    printf("ok offline shipped ARM svg image: %u native/C cases, create/supplier gate/rect offset and destroy order match\n",compared);
+    printf("ok offline shipped ARM svg image: %u native/C cases, create/imageCreate/supplier gate/rect offset and destroy order match\n",compared);
 }
 
 #endif

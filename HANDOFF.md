@@ -31,7 +31,24 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [UI-FB-SIM](artifacts/reports/UI-FB-SIM-2026-11-04.md) now also covers
+Latest: [SVG-IMAGE-CREATE](artifacts/reports/SVG-IMAGE-CREATE-2026-11-04.md)
+implements SVGImage::imageCreate (0x10c9430): set parent window/window rect;
+created resizes the UI surface, takes targetHandle, draws with field words
+0xa8/0xac/0xb4/0xb8/0xbc and releases; uncreated creates and sets the surface,
+takes targetHandle, chooses the scaled draw by byte 0xb0 or the full draw,
+releases and calls UIWindow::create. The svg-image differential is now72
+native/C cases (16 new) against the verbatim body copied at its original
+address; three targetHandle BLs are retargeted into the body page because
+0x1149000 is held by an earlier group. Host, focused ASan/UBSan, ARM/qemu,
+full verify.cjs (35 ok) and full make check pass, plus a focused real-TV CPU
+run (exit 0, staging hash-verified and removed). Vendor surface/draw calls
+remain stubs. Also found: the EASIPoint create overload at 0x10c9554
+(CRC 0x09f01190) is unimplemented. Next: that overload, then
+convertOperationIdToIDM, row construction, child visibility/live resources,
+scrollbar/skin, display/scanout and independent startup. No device/screen/
+settings/network/boot change.
+
+Previous: [UI-FB-SIM](artifacts/reports/UI-FB-SIM-2026-11-04.md) now also covers
 offline layout capture. The host test display recorder rasterizes its
 clear/fill/blit calls into 1920x1080 RGBA frames when `OA_NAV_CAPTURE` is set,
 writing numbered present frames; `check-ui-settings-panel` additionally writes

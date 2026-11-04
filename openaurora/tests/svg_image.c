@@ -55,6 +55,48 @@ static struct oa_svg_image_ops ops(void)
         sv_get_client,sv_image_create,sv_window_destroy,sv_clean};
 }
 
+/* Second ops table: SVGImage::imageCreate. */
+enum {S_PARENT,S_WRECT,S_IS,S_RESIZE,S_TARGET,S_RELEASE,S_DRAW,S_SCALED,
+      S_CSURF,S_SUIS,S_CWIN};
+static struct { uint32_t kind,a,b,c,d,e,f;uint32_t w[4]; } sev[32];
+static unsigned sn;
+static int s_created, s_b0;
+static uint32_t s_fields[0x40];
+static void spush(uint32_t kind)
+{ assert(sn<32);memset(&sev[sn],0,sizeof sev[sn]);sev[sn].kind=kind;sn++; }
+static void s_set_parent(void *img,void *parent)
+{ (void)img;spush(S_PARENT);sev[sn-1].a=(uint32_t)(uintptr_t)parent; }
+static void s_set_wrect(void *img,const uint32_t rect[4])
+{ (void)img;spush(S_WRECT);memcpy(sev[sn-1].w,rect,16); }
+static int s_is_created(void *img) { (void)img;spush(S_IS);return s_created; }
+static void s_resize(void *img,const uint32_t rect[4])
+{ (void)img;spush(S_RESIZE);memcpy(sev[sn-1].w,rect,16); }
+static void *s_target(void *img) { (void)img;spush(S_TARGET);return (void *)0x7000; }
+static void s_release(void *img,void *target)
+{ (void)img;spush(S_RELEASE);sev[sn-1].a=(uint32_t)(uintptr_t)target; }
+static void s_draw(void *img,const void *res,uint32_t x,uint32_t y,uint32_t flag,
+    void *target,uint32_t tiling,int32_t f0,int32_t f1,uint32_t scaling)
+{
+    (void)img;spush(S_DRAW);
+    sev[sn-1].a=flag;sev[sn-1].b=(uint32_t)(uintptr_t)target;
+    sev[sn-1].c=tiling;sev[sn-1].d=(uint32_t)f0;sev[sn-1].e=(uint32_t)f1;
+    sev[sn-1].f=scaling;
+    assert((uint32_t)(uintptr_t)res==0x6000 && x==0 && y==0);
+}
+static void s_scaled(void *img,const void *res,uint32_t x,uint32_t y,void *target)
+{ (void)img;spush(S_SCALED);sev[sn-1].a=(uint32_t)(uintptr_t)target;
+  assert((uint32_t)(uintptr_t)res==0x6000 && x==0 && y==0); }
+static void *s_csurf(void *img,const uint32_t rect[4],int a,int b)
+{ (void)img;spush(S_CSURF);memcpy(sev[sn-1].w,rect,16);sev[sn-1].a=(uint32_t)a;sev[sn-1].b=(uint32_t)b;return (void *)0x8000; }
+static void s_suis(void *img,void *surface)
+{ (void)img;spush(S_SUIS);sev[sn-1].a=(uint32_t)(uintptr_t)surface; }
+static void s_cwin(void *img) { (void)img;spush(S_CWIN); }
+static uint32_t s_field(void *img,uint32_t off)
+{ (void)img;assert(off>=0xa8 && off<=0xbc && !(off&3));return s_fields[off/4]; }
+static struct oa_svg_image_surface_ops sops(void)
+{ return (struct oa_svg_image_surface_ops){s_set_parent,s_set_wrect,s_is_created,
+    s_resize,s_target,s_release,s_draw,s_scaled,s_csurf,s_suis,s_cwin,s_field}; }
+
 int main(void)
 {
     static const uint32_t rect[4]={10,20,30,40};
@@ -106,6 +148,47 @@ int main(void)
     o=ops();o.set_clean_ui_surface=NULL;oa_svg_image_destroy(img,&o);
     assert(count==0);
 
+    /* imageCreate, created window: parent/window rect, surface resize, then a
+     * full draw with the image's 0xa8/0xac/0xb4/0xb8/0xbc fields and the
+     * target token released afterwards. */
+    {
+        static const uint32_t r[4]={10,20,30,40};
+        struct oa_svg_image_surface_ops so=sops();
+        sn=0;s_created=1;
+        s_fields[0xa8/4]=1;s_fields[0xac/4]=2;s_fields[0xb0/4]=0;
+        s_fields[0xb4/4]=0x3f800000;s_fields[0xb8/4]=0x40000000;s_fields[0xbc/4]=5;
+        oa_svg_image_image_create((void *)0x1000,(void *)0x6000,r,(void *)0x2000,&so);
+        assert(sn==7);
+        assert(sev[0].kind==S_PARENT && sev[0].a==0x2000);
+        assert(sev[1].kind==S_WRECT && sev[1].w[0]==10 && sev[1].w[3]==40);
+        assert(sev[2].kind==S_IS);
+        assert(sev[3].kind==S_RESIZE && sev[3].w[1]==20);
+        assert(sev[4].kind==S_TARGET);
+        assert(sev[5].kind==S_DRAW);
+        assert(sev[5].a==1 && sev[5].b==0x7000 && sev[5].c==2);
+        assert(sev[5].d==0x3f800000 && sev[5].e==0x40000000 && sev[5].f==5);
+        assert(sev[6].kind==S_RELEASE && sev[6].a==0x7000);
+        /* Uncreated with 0xb0 set: surface create/set, scaled draw, release,
+         * then UIWindow::create. */
+        sn=0;s_created=0;s_b0=1;s_fields[0xb0/4]=1;
+        oa_svg_image_image_create((void *)0x1000,(void *)0x6000,r,NULL,&so);
+        assert(sn==9);
+        assert(sev[0].kind==S_PARENT && sev[0].a==0);
+        assert(sev[3].kind==S_CSURF && sev[3].a==1 && sev[3].b==0);
+        assert(sev[3].w[2]==30);
+        assert(sev[4].kind==S_SUIS && sev[4].a==0x8000);
+        assert(sev[5].kind==S_TARGET);
+        assert(sev[6].kind==S_SCALED && sev[6].a==0x7000);
+        assert(sev[7].kind==S_RELEASE && sev[7].a==0x7000);
+        assert(sev[8].kind==S_CWIN);
+        /* Uncreated without 0xb0: full draw instead of scaled, then create. */
+        sn=0;s_created=0;s_fields[0xb0/4]=0;
+        oa_svg_image_image_create((void *)0x1000,(void *)0x6000,r,NULL,&so);
+        assert(sn==9);
+        assert(sev[6].kind==S_DRAW && sev[6].a==1 && sev[6].c==2);
+        assert(sev[7].kind==S_RELEASE && sev[7].a==0x7000);
+        assert(sev[8].kind==S_CWIN);
+    }
     puts("ok svg image: create setId/supplier/resource gate and destroy order");
     return 0;
 }

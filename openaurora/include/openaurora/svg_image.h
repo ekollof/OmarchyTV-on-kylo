@@ -40,6 +40,34 @@ void oa_svg_image_create(void *img,uint32_t id,const uint32_t rect[4],
     void *parent,const struct oa_svg_image_ops *o);
 void oa_svg_image_destroy(void *img,const struct oa_svg_image_ops *o);
 
+/*
+ * SVGImage::imageCreate(UIImageResource const&, EASIRect const&, UIWindow*)
+ * (0x10c9430): set parent/window rect, then either resize+draw on the created
+ * window or create the surface, draw and UIWindow::create. The vendor calls
+ * are behind this second ops table; floats are raw IEEE words so the module
+ * has no float ABI dependency at its own boundary.
+ */
+struct oa_svg_image_surface_ops {
+    void (*set_parent_window)(void *img,void *parent);
+    void (*set_window_rect)(void *img,const uint32_t rect[4]);
+    int (*is_created)(void *img);
+    void (*resize_ui_surface)(void *img,const uint32_t rect[4]);
+    void *(*target_handle)(void *img);
+    void (*release_target)(void *img,void *target);
+    void (*draw_image_resource)(void *img,const void *resource,uint32_t x,
+        uint32_t y,uint32_t flag,void *target,uint32_t tiling,int32_t f0,
+        int32_t f1,uint32_t scaling);
+    void (*draw_image_resource_scaled)(void *img,const void *resource,
+        uint32_t x,uint32_t y,void *target);
+    void *(*create_surface)(void *img,const uint32_t rect[4],int a,int b);
+    void (*set_ui_surface)(void *img,void *surface);
+    void (*create_window)(void *img);
+    uint32_t (*image_field)(void *img,uint32_t offset);
+};
+void oa_svg_image_image_create(void *img,const void *resource,
+    const uint32_t rect[4],void *parent,
+    const struct oa_svg_image_surface_ops *o);
+
 #ifdef __cplusplus
 }
 #endif

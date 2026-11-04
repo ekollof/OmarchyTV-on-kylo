@@ -48,6 +48,18 @@ reference groups. Raw checked bytes and independently varied paired child
 states close additional coverage gaps.1771396 renderer/276 setter/56 image
 cases plus host/IPC/sanitizer/ARM-qemu/TV CPU pass; real rendering/startup open.
 
+SVG-IMAGE-CREATE implements SVGImage::imageCreate (0x10c9430): set parent
+window and window rect; when created, resizeUISurface + targetHandle +
+drawImageResource(res,0,0,byte0xa8,target,word0xac,float0xb4,float0xb8,
+word0xbc) + release; when uncreated, createSurface(this,rect,1,0) +
+setUISurface, targetHandle and either drawImageResourceScaled (byte0xb0 set)
+or the full draw, release, then UIWindow::create. 72 svg-image native/C cases
+(16 new) pass. The differential retargets three targetHandle BLs into the
+body page because 0x1149000 is held by an earlier group, and dereferences the
+shared_ptr pointer so both sides compare the token. Vendor surface/draw calls
+remain stubs. A second overload, SVGImage::create(int,EASIPoint const&,
+UIWindow*) at 0x10c9554, is recovered but unimplemented.
+
 SVG-IMAGE implements SVGImage::create (0x10c9638) and SVGImage::destroy
 (0x10c8ef4) orchestration in common/svg_image.c. create: UIWindow::setId,
 SVGContext::getImageSupplier, the supplier's vtable slot2 resource lookup

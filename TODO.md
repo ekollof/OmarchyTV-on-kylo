@@ -398,10 +398,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 - [x] SVGImage::create/destroy orchestration: `common/svg_image.c` matches
       the verbatim shipped bodies over18 cases; host, ASan/UBSan, ARM/qemu,
       full verify.cjs (35 ok) and a focused TV CPU run pass. SVG-IMAGE.
-- [ ] SVGImage::imageCreate internals (0x10c9430: SVGSurface/UISurface,
-      drawImageResource/drawImageResourceScaled, tiling/scaling,
-      UIWindow::create) — still an ops callback, and the adjacent
-      LauncherHelper::convertOperationIdToIDM (0xe4ae0c).
+- [x] SVGImage::imageCreate branching/arguments (0x10c9430):72 svg-image
+      native/C cases and prior groups pass; host, ASan/UBSan, ARM/qemu,
+      verify.cjs and focused TV CPU pass. SVG-IMAGE-CREATE. Vendor surface/
+      draw calls remain stubs.
+- [ ] SVGImage::create(int,EASIPoint const&,UIWindow*) overload (0x10c9554)
+      and the adjacent LauncherHelper::convertOperationIdToIDM (0xe4ae0c).
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

@@ -99,7 +99,7 @@ static void *page(uint32_t address,size_t length)
         p=mmap(wanted,length,PROT_READ|PROT_WRITE,MAP_PRIVATE|MAP_ANONYMOUS,-1,0);
     if(p==MAP_FAILED || p!=wanted) {
         if(p!=MAP_FAILED)assert(!munmap(p,length));
-        fputs("offline reference address unavailable; refusing fixed overwrite\n",stderr);exit(77);
+        fprintf(stderr,"offline reference address unavailable: 0x%x+0x%zx; refusing fixed overwrite\n",address,length);exit(77);
     }
     /* Calls unmap their regions directly. A successful non-replacing mmap
      * proves any overlapping old registry entry has ceased to be live. */
