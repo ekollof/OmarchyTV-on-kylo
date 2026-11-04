@@ -96,6 +96,16 @@ vendor PIDs unchanged. No fb1 use. Direction/latch are cached/selected values,
 not voltage or exclusive ownership. Next establish coordinated GPIO/MCU and
 paired lifetime before mutators/native amp bring-up. AGENTS records the trap.
 
+[AMP-STBC](artifacts/reports/AMP-STBC-2026-11-04.md) now traces the MCU side
+through NDAL_EX helpers and kernel EX_PLAT/DRV_STBC calls. Getter has three
+arguments and two raw output bytes, distinct from its device-success status.
+Injected fixed-MCU8 codec passes two host/sanitizer/ARM groups/full host394;
+no native fallback, MCU/TV/fb1 call or ownership claim. Next recover video24
+open/close and coherent authority before connecting a native transport: the
+vendor OpenDevice(type10) maps video24 and uses mutable process-global state.
+The new NDAL_EX Ghidra project is durable/catalogued. Do not infer prior reset
+causes from ABI recovery or call the getter with only one output pointer.
+
 [AMP-PROFILE-MODULE](artifacts/reports/AMP-PROFILE-MODULE-2026-11-04.md) now
 exposes the recovered amp inputs through reloadable audio.amp_profile v1 and
 amp-profile CLI/Unix query. DSO holds/removal/failure/fd/suspend/reload cases

@@ -74,6 +74,16 @@ fd's fops has no open/release callbacks; fd close is not global ioctl6702.
 Cached direction/output latch are not independent voltage or ownership proof.
 Do not repair missing pin context by claiming it under stock Aurora.
 
+AMP-STBC-2026-11-04 establishes a different GPIO domain: MCU getter has three
+arguments, pin plus TWO uint32 output pointers; no historical reset cause is
+inferred from that fact. Driver replies are raw bits23..16/15..8; Aurora's
+GetLevel consumes the first, not a proved direction/level tuple. Separate
+control0 device status can be0 even with successful ioctl/NDAL transport bool.
+The injected codec checks it and returns stricter errors; no failure-parity
+claim. Two host/sanitizer/ARM groups/full host394 pass, no TV/MCU operation or
+native fallback. OpenDevice type10 resolves video24/process-global fd state;
+that helper alone does not establish native acquisition/release/MCU authority.
+
 AMP-PROFILE-MODULE-2026-11-04 adds reloadable audio.amp_profile v1 and the
 amp-profile query over actual local Unix IPC. Caller-owned copies/names and
 provider holds/removal/failure/fd/suspend/reload lifecycle pass host/sanitizer/

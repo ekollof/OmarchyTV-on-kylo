@@ -97,6 +97,7 @@ serves instruction-level greps without re-disassembling. Other scripts are in
 |---|---|
 | ghidra_proj | Aurora / aurora.elf |
 | ghidra_ndal3 | ndal3 / libNDAL3.so |
+| ghidra_ndal_ex | ndal_ex / libNDAL_EX.so |
 | ghidra_ntk | ntk / ntkndpdrm.ko |
 | ghidra_nondovi | nondovi / ntkdriver_nondovi.ko |
 | ghidra_tdga | Tdga / libdirectfb_tdga.so |
@@ -169,6 +170,15 @@ char132:0, never claims/exports/configures and passed on TV; direction is cached
 voltage, ownership or exact rollback evidence. Do not initialize GPIO, issue
 global6701/6702, or fall back to pin claim after a failed GET under stock Aurora.
 No MCU/STBC getter or reset/mute write was tested by that query.
+AMP-STBC-2026-11-04 recovers the separate MCU GPIO codec. The NDAL getter
+takes pin plus TWO uint32 output pointers (three arguments); its transport
+boolean ignores the kernel's separate device-result byte. Raw outputs are
+reply bits23..16/15..8, not a proved direction/level pair. The new helper requires
+an explicit transport callback and validates device status; no native fallback
+or MCU operation is tested. OpenDevice(0,10) maps video24 and installs a
+process-global fd, not a per-module lease; its lower open/close/cold authority
+remain unresolved. Preserve the cold-call warning and do not infer historical
+reset causes from the recovered signature alone.
 AUDIO-VOLUME-2026-11-01 traces UI level through speaker gain and AQ DSP tables;
 common/audio_curve.c is tested against all101 live entries and on the TV. It is
 not yet integrated with the audio module. Do not confuse decoder opcode33,

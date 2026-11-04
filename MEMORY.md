@@ -43,6 +43,15 @@ no fb1, claim/config/level/reset/mute write or MCU call. This is cached state/
 latch observation, not voltage/ownership/rollback acceptance. GPIO/MCU native
 control, paired lifetime and consumer/module integration remain open.
 
+AMP-STBC-2026-11-04 adds an injected fixed-MCU8 V4L2 codec after fresh NDAL_EX/
+kernel instructions. Getter takes pin and TWO uint32 output pointers; driver
+status byte is separate from ioctl return. Expose raw reply byte16/byte8, not a
+guessed direction/level pair. Two host/leak-enabled sanitizer/ARM-qemu groups
+and full host394 pass. No native fallback or TV/MCU/fb1 operation. OpenDevice
+type10 maps video24 and installs process-global fd only in its fresh-open
+branch; lower open/close/MCU authority and paired lifecycle remain unverified.
+Native/physical/audible acceptance is open. New durable project: ghidra_ndal_ex.
+
 AMP-PROFILE-MODULE-2026-11-04 adds audio_amp_profile/audio.amp_profile v1 and
 amp-profile CLI/actual Unix IPC. Copied profile/name snapshots, holds/removal,
 failure cleanup/fd counts, suspend/deferred reload/resume and replacement

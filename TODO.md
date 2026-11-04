@@ -306,6 +306,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       Two host/sanitizer/ARM groups and native query pass: level1, cached kernel
       direction0(output), staging removed/no fb1 use. Cached direction/latch
       are not voltage or ownership evidence; reset/mute/MCU writes remain open.
+      AMP-STBC recovers the three-argument MCU getter, separate device status
+      and default video24/process-global fd mapping. Injected fixed-MCU8 GET/
+      level-command codec passes two host/sanitizer/ARM groups/full host394;
+      byte16/byte8 remain raw, device failure is stricter than vendor transport-
+      only success. No native fallback, fd authority or MCU operation tested.
       Finish audio consumer/provider holds and module integration,
       retained image acquisition, coordinated GPIO/MCU/I2C/worker
       ownership and hardware lifecycle acceptance; wrapper results and controlled

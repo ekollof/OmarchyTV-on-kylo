@@ -1,0 +1,5 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-amp-stbc/tests/amp_stbc tests/amp_stbc.c common/amp_stbc.c
+ok amp STBC: exact class/ID/control/payload layout, 256 raw query replies, separate device status and atomic/no-replay failure
+ok amp STBC: fixed MCU8 level0/1 -> command3/2, explicit injection only, failure/error/shape checks and no replay
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

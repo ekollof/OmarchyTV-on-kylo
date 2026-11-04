@@ -1,0 +1,2 @@
+ok amp STBC: exact class/ID/control/payload layout, 256 raw query replies, separate device status and atomic/no-replay failure
+ok amp STBC: fixed MCU8 level0/1 -> command3/2, explicit injection only, failure/error/shape checks and no replay
