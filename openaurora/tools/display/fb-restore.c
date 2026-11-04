@@ -1,5 +1,6 @@
-/* Save/restore a framebuffer's pixels and pan offset for a temporary fb1 test.
- * This is a local hardware helper, not part of the module runtime.
+/* Save/restore a framebuffer's full temporary-test state: pixels, var/fix,
+ * the 32-byte OSD region and the current MAU. This is a local hardware helper,
+ * not part of the module runtime.
  *
  *   fb-restore save /dev/fb1 FILE
  *   fb-restore restore /dev/fb1 FILE
@@ -16,50 +17,49 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#define MAGIC 0x31524246u /* "FBR1" */
+#include "openaurora/fb_snapshot.h"
+
+#define MAGIC 0x32524246u /* "FBR2" */
 
 struct header {
     uint32_t magic;
-    uint32_t xres, yres, xres_virtual, yres_virtual;
-    uint32_t bits_per_pixel, xoffset, yoffset;
-    uint32_t smem_len;
+    struct fb_var_screeninfo var;
+    struct fb_fix_screeninfo fix;
+    uint32_t region[8];
+    uint32_t mau;
 };
-
-static int get_var(int fd, struct fb_var_screeninfo *v, struct fb_fix_screeninfo *f)
-{
-    memset(v, 0, sizeof *v);
-    memset(f, 0, sizeof *f);
-    return ioctl(fd, FBIOGET_VSCREENINFO, v) == 0 && ioctl(fd, FBIOGET_FSCREENINFO, f) == 0 ? 0 : -1;
-}
 
 static int save(const char *dev, const char *path)
 {
     int fd = open(dev, O_RDONLY);
     if (fd < 0) { perror(dev); return 1; }
-    struct fb_var_screeninfo v;
-    struct fb_fix_screeninfo f;
-    if (get_var(fd, &v, &f) != 0 || f.smem_len == 0) {
-        fprintf(stderr, "%s: no framebuffer info\n", dev);
+    struct oa_fb_snapshot snap;
+    int rc = oa_fb_snapshot_save(fd, &snap);
+    if (rc) {
+        fprintf(stderr, "%s: snapshot failed: %s\n", dev, strerror(-rc));
         close(fd);
         return 1;
     }
-    unsigned char *map = mmap(NULL, f.smem_len, PROT_READ, MAP_SHARED, fd, 0);
-    if (map == MAP_FAILED) { perror("mmap"); close(fd); return 1; }
-    struct header h = { MAGIC, v.xres, v.yres, v.xres_virtual, v.yres_virtual,
-                        v.bits_per_pixel, v.xoffset, v.yoffset, f.smem_len };
+    struct header h = { MAGIC, snap.var, snap.fix, {0}, snap.mau };
+    memcpy(h.region, snap.region, sizeof h.region);
     FILE *out = fopen(path, "wb");
-    if (!out || fwrite(&h, sizeof h, 1, out) != 1 || fwrite(map, 1, f.smem_len, out) != f.smem_len) {
+    if (!out || fwrite(&h, sizeof h, 1, out) != 1 ||
+        fwrite(snap.pixels, 1, snap.fix.smem_len, out) != snap.fix.smem_len) {
         fprintf(stderr, "%s: short write\n", path);
         if (out) fclose(out);
-        munmap(map, f.smem_len);
+        oa_fb_snapshot_free(&snap);
         close(fd);
         return 1;
     }
     fclose(out);
-    munmap(map, f.smem_len);
+    printf("saved %s: %ux%u virt %ux%u %ubpp offset %u,%u bytes %u "
+           "mau %u region[0..1] %#x/%#x\n",
+           dev, snap.var.xres, snap.var.yres, snap.var.xres_virtual,
+           snap.var.yres_virtual, snap.var.bits_per_pixel, snap.var.xoffset,
+           snap.var.yoffset, snap.fix.smem_len, snap.mau,
+           snap.region[0], snap.region[1]);
+    oa_fb_snapshot_free(&snap);
     close(fd);
-    printf("saved %s: %ux%u virt %ux%u %ubpp offset %u,%u bytes %u\n", dev, v.xres, v.yres,
-           v.xres_virtual, v.yres_virtual, v.bits_per_pixel, v.xoffset, v.yoffset, f.smem_len);
     return 0;
 }
 
@@ -68,40 +68,33 @@ static int restore(const char *dev, const char *path)
     FILE *in = fopen(path, "rb");
     if (!in) { perror(path); return 1; }
     struct header h;
-    if (fread(&h, sizeof h, 1, in) != 1 || h.magic != MAGIC || h.smem_len == 0) {
+    if (fread(&h, sizeof h, 1, in) != 1 || h.magic != MAGIC ||
+        h.fix.smem_len == 0) {
         fprintf(stderr, "%s: bad header\n", path);
         fclose(in);
         return 1;
     }
-    int fd = open(dev, O_RDWR);
-    if (fd < 0) { perror(dev); fclose(in); return 1; }
-    struct fb_var_screeninfo v;
-    struct fb_fix_screeninfo f;
-    if (get_var(fd, &v, &f) != 0 || f.smem_len < h.smem_len) {
-        fprintf(stderr, "%s: framebuffer shrank\n", dev);
-        close(fd);
-        fclose(in);
-        return 1;
-    }
-    unsigned char *map = mmap(NULL, f.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (map == MAP_FAILED) { perror("mmap"); close(fd); fclose(in); return 1; }
-    if (fread(map, 1, h.smem_len, in) != h.smem_len) {
+    unsigned char *pixels = malloc(h.fix.smem_len);
+    if (!pixels || fread(pixels, 1, h.fix.smem_len, in) != h.fix.smem_len) {
         fprintf(stderr, "%s: short read\n", path);
-        munmap(map, f.smem_len);
-        close(fd);
+        free(pixels);
         fclose(in);
         return 1;
     }
-    msync(map, h.smem_len, MS_SYNC);
-    munmap(map, f.smem_len);
-    v.xoffset = h.xoffset;
-    v.yoffset = h.yoffset;
-    if (ioctl(fd, FBIOPAN_DISPLAY, &v) != 0)
-        perror("FBIOPAN_DISPLAY");
-    close(fd);
     fclose(in);
-    printf("restored %s: bytes %u offset %u,%u\n", dev, h.smem_len, h.xoffset, h.yoffset);
-    return 0;
+    struct oa_fb_snapshot snap = { h.var, h.fix, {0}, h.mau, pixels };
+    memcpy(snap.region, h.region, sizeof snap.region);
+    int fd = open(dev, O_RDWR);
+    if (fd < 0) { perror(dev); free(pixels); return 1; }
+    int rc = oa_fb_snapshot_restore(fd, &snap);
+    if (rc)
+        fprintf(stderr, "%s: restore failed: %s\n", dev, strerror(-rc));
+    else
+        printf("restored %s: bytes %u offset %u,%u mau %u\n", dev,
+               h.fix.smem_len, h.var.xoffset, h.var.yoffset, h.mau);
+    close(fd);
+    free(pixels);
+    return rc ? 1 : 0;
 }
 
 static int pan(const char *dev, const char *arg)
@@ -109,11 +102,12 @@ static int pan(const char *dev, const char *arg)
     int fd = open(dev, O_RDWR);
     if (fd < 0) { perror(dev); return 1; }
     struct fb_var_screeninfo v;
-    struct fb_fix_screeninfo f;
-    if (get_var(fd, &v, &f) != 0) { close(fd); return 1; }
+    memset(&v, 0, sizeof v);
+    if (ioctl(fd, FBIOGET_VSCREENINFO, &v) != 0) { close(fd); return 1; }
     v.yoffset = (uint32_t)strtoul(arg, NULL, 0);
     int rc = ioctl(fd, FBIOPAN_DISPLAY, &v);
-    printf("pan %s: yoffset %u %s\n", dev, v.yoffset, rc == 0 ? "ok" : strerror(errno));
+    printf("pan %s: yoffset %u %s\n", dev, v.yoffset,
+           rc == 0 ? "ok" : strerror(errno));
     close(fd);
     return rc == 0 ? 0 : 1;
 }

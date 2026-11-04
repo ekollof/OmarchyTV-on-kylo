@@ -13,6 +13,17 @@ all TV access, including view-only queries/WoL/staging/tests, is suspended until
 explicit owner reauthorization. This supersedes the earlier standing query
 permission and idle window. The audio-image work below accessed no TV.
 
+FB-SNAPSHOT-COLD-BUNDLE-2026-11-04 (offline): common/fb_snapshot saves
+pixels/var/fix,8 region words (RD0x8020c86c/WR0x4020c86b), read-only MAU and
+pan; restore verifies MAU and restores pixels/region/pan. display_fb with
+display.restore_snapshot=1 snapshots before region change, restores on stop/
+suspend and re-snapshots on resume. fb-restore uses FBR2. Fake-fb library,
+tool-file and actual display-module tests pass; host354 ok, focused
+ASan/UBSan clean. `make cold-bundle` builds an ARM bundle with25 modules,
+oa-supervise, fb-restore and cold config; manifest.sha256 verifies29 entries.
+Not executed on TV; full live-driver equality and independent startup remain
+open. TV access is revoked by the owner override.
+
 VISIBLE-IMAGES-2026-11-04: a supervised no-plat candidate (image_decode v2,
 display_fb, settings, ui_engine, ui_vendor) painted the live apps grid on
 vendor-initialized fb1 from an empty ui.dir and the real

@@ -33,6 +33,7 @@
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/canvas.h"
+#include "openaurora/fb_snapshot.h"
 #include "openaurora/ui_anim.h"
 
 #define OSD_REG_RD 0x8020c86cu /* IOR(0xc8,108,32) */
@@ -51,6 +52,8 @@ struct ctx {
     unsigned frames;
     unsigned back;    /* frame we render into; 1 - displayed */
     int pan;          /* rotate frames after commit; off = commit the current frame */
+    struct oa_fb_snapshot snapshot;
+    int snapshot_active;
     int mirror;       /* copy the painted frame into the other frames (fights DFB's flip) */
 
     /* Offscreen RGBA scene: every draw renders here, present() copies it to the visible frame or
@@ -606,6 +609,16 @@ static int open_layer(struct ctx *c)
     return 0;
 }
 
+static void restore_snapshot(struct ctx *c)
+{
+    if (!c->snapshot_active) return;
+    int rc = oa_fb_snapshot_restore(c->fd, &c->snapshot);
+    c->api->log(c->api->priv, rc ? OA_LOG_ERROR : OA_LOG_INFO,
+        "%s: full restore %s", c->path, rc ? strerror(-rc) : "ok");
+    oa_fb_snapshot_free(&c->snapshot);
+    c->snapshot_active = 0;
+}
+
 static void close_layer(struct ctx *c)
 {
     free(c->scene);
@@ -663,6 +676,20 @@ static int m_start(void *v)
     c->api->log(c->api->priv, OA_LOG_INFO, "%s: %ux%u %ubpp, %u frame(s), back=%u", c->path,
                 c->var.xres, c->var.yres, c->var.bits_per_pixel, c->frames, c->back);
 
+    if (c->api->config_get(c->api->priv, "display.restore_snapshot", "0")[0] == '1') {
+        int rc = oa_fb_snapshot_save(c->fd, &c->snapshot);
+        if (rc) {
+            c->api->log(c->api->priv, OA_LOG_ERROR,
+                "%s: full snapshot failed: %s", c->path, strerror(-rc));
+            close_layer(c);
+            return -1;
+        }
+        c->snapshot_active = 1;
+        c->api->log(c->api->priv, OA_LOG_INFO,
+            "%s: full snapshot saved (%u bytes, mau %u)", c->path,
+            c->snapshot.fix.smem_len, c->snapshot.mau);
+    }
+
     /* Rotation is configurable; present() still commits with the vendor ioctl
      * when rotation is disabled. Region words 0/1 retain the current source origin. */
     if (want_region) {
@@ -671,8 +698,17 @@ static int m_start(void *v)
                     "region -> %ux%u (%s)", c->var.xres, c->var.yres, rc == 0 ? "ok" : "refused");
     }
 
-    c->api->publish(c->api->priv, OA_SVC_DISPLAY, 2, &g_iface);
-    if (c->api->publish(c->api->priv, OA_SVC_DISPLAY_ALPHA, 1, &alpha_iface)) return -1;
+    if (c->api->publish(c->api->priv, OA_SVC_DISPLAY, 2, &g_iface)) {
+        restore_snapshot(c);
+        close_layer(c);
+        return -1;
+    }
+    if (c->api->publish(c->api->priv, OA_SVC_DISPLAY_ALPHA, 1, &alpha_iface)) {
+        c->api->unpublish(c->api->priv, OA_SVC_DISPLAY);
+        restore_snapshot(c);
+        close_layer(c);
+        return -1;
+    }
 
     /* optional self-test: a colour band, so "does the layer actually show" is one command away */
     const char *test = c->api->config_get(c->api->priv, "display.test", "0");
@@ -690,27 +726,46 @@ static void m_stop(void *v)
     c->api->release(c->api->priv, OA_SVC_DISPLAY);
     c->api->unpublish(c->api->priv, OA_SVC_DISPLAY);
     c->api->unpublish(c->api->priv, OA_SVC_DISPLAY_ALPHA);
+    restore_snapshot(c);
     if (c->map)
         close_layer(c);
 }
 
 static void m_destroy(void *v)
 {
-    if (g_ctx == v)
+    struct ctx *c = v;
+    if (c->snapshot_active) {
+        oa_fb_snapshot_free(&c->snapshot);
+        c->snapshot_active = 0;
+    }
+    if (g_ctx == c)
         g_ctx = NULL;
-    free(v);
+    free(c);
 }
 
 static int m_suspend(void *v)
 {
-    close_layer(v);
+    struct ctx *c = v;
+    restore_snapshot(c);
+    close_layer(c);
     return 0;
 }
 
 static int m_resume(void *v)
 {
     struct ctx *c = v;
-    return open_layer(c) == 0 ? 0 : -1;
+    if (open_layer(c) != 0) return -1;
+    if (c->api->config_get(c->api->priv, "display.restore_snapshot", "0")[0] == '1') {
+        int rc = oa_fb_snapshot_save(c->fd, &c->snapshot);
+        if (rc) {
+            c->api->log(c->api->priv, OA_LOG_ERROR,
+                "%s: resume snapshot failed: %s", c->path, strerror(-rc));
+            close_layer(c);
+            return -1;
+        }
+        c->snapshot_active = 1;
+    }
+    return 0;
 }
 
 static const oa_module g_module = {

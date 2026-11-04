@@ -1,3 +1,14 @@
+FB-SNAPSHOT-COLD-BUNDLE-2026-11-04: common/fb_snapshot snapshots pixels,
+var/fix, the8-word OSD region (RD0x8020c86c/WR0x4020c86b), read-only MAU and
+pan; restore verifies MAU and restores pixels/region/pan. display_fb config
+`display.restore_snapshot=1` snapshots before region change and restores on
+stop/suspend, with resume re-snapshot. fb-restore stores FBR2. Fake-fb
+library/tool/actual-display tests pass, host354 ok, focused ASan/UBSan clean.
+`make cold-bundle` builds an ARM bundle (25 modules, oa-supervise, fb-restore,
+cold config) and manifest-verifies29 entries. No TV execution; live-driver
+equality, cold startup and MCU/watchdog authority remain unverified. TV
+access is revoked.
+
 VISIBLE-IMAGES-2026-11-04: the supervised no-plat candidate painted the live
 apps grid on vendor-initialized fb1 from an empty ui.dir and the real
 /buffer/downloaded_images (18 items,15 visible, scrollbar0/600). The capture

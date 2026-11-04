@@ -43,6 +43,15 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
+Latest offline implementation: [FB-SNAPSHOT-COLD-BUNDLE](artifacts/reports/FB-SNAPSHOT-COLD-BUNDLE-2026-11-04.md)
+adds full fb1 snapshot/restore (pixels/var/fix, 8-word region, read-only MAU,
+pan) and wires `display.restore_snapshot=1` into display_fb; fb-restore uses
+an FBR2 file. Fake-fb library/tool/actual-display tests pass, host354 ok,
+focused ASan/UBSan clean. `make cold-bundle` builds and manifest-verifies an
+ARM bundle with25 modules, oa-supervise, fb-restore and a cold config. Nothing
+was executed on the TV; live driver equality, cold startup and MCU/watchdog
+authority remain unverified. TV access is revoked by the owner override.
+
 Latest visible test: [VISIBLE-IMAGES](artifacts/reports/VISIBLE-IMAGES-2026-11-04.md)
 ran under the preceding TV-access authorization. The supervised no-plat
 candidate painted the live apps grid on vendor-initialized fb1 from an empty

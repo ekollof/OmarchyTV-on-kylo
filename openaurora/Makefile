@@ -73,7 +73,7 @@ CORE_DEP := $(CORE_OBJ:.o=.d)
 MOD_SO   := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).so)
 MOD_DEP  := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).d)
 
-all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker
+all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker $(BUILD)/fb-restore
 
 $(BUILD)/tests/settings_hotel: tests/settings_hotel.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -665,12 +665,12 @@ $(BUILD)/modules/mod_audio.so: modules/audio/audio.c common/audio_owner.c common
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) \
 	  $(if $(filter $(VENDOR_MODULES),audio),$(VENDOR_LDFLAGS),)
 
-$(BUILD)/modules/mod_display.so: modules/display/display.c common/ui_anim.c common/canvas.c include/openaurora/ui_anim.h include/openaurora/canvas.h
+$(BUILD)/modules/mod_display.so: modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
 	  $(VENDOR_LDFLAGS) -lm
 
-$(BUILD)/modules/mod_display_fb.so: modules/display/display.c common/ui_anim.c common/canvas.c include/openaurora/ui_anim.h include/openaurora/canvas.h
+$(BUILD)/modules/mod_display_fb.so: modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_DISPLAY_NO_PLAT -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
 	  -lm
@@ -1102,12 +1102,12 @@ check-control: $(BUILD)/tests/control_reply $(BUILD)/tests/control_transport
 	@$(BUILD)/tests/control_reply
 	@$(BUILD)/tests/control_transport
 
-$(BUILD)/tests/display_present: tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c include/openaurora/canvas.h include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
+$(BUILD)/tests/display_present: tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/canvas.h include/openaurora/fb_snapshot.h include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm \
 	  $(foreach call,open close system mmap munmap msync ioctl,-Wl,--wrap=$(call))
 
-$(BUILD)/tests/display_binding: tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c include/openaurora/canvas.h include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
+$(BUILD)/tests/display_binding: tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/canvas.h include/openaurora/fb_snapshot.h include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -DOA_DISPLAY_NO_PLAT $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm \
 	  $(foreach call,open close system mmap munmap msync ioctl,-Wl,--wrap=$(call))
@@ -1116,8 +1116,37 @@ $(BUILD)/fbregion: tools/mcu/fbregion.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
+$(BUILD)/fb-restore: tools/display/fb-restore.c common/fb_snapshot.c include/openaurora/fb_snapshot.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: cold-bundle
+cold-bundle: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/fb-restore
+	@rm -rf $(BUILD)/cold-bundle
+	@mkdir -p $(BUILD)/cold-bundle/modules
+	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/cold-bundle/
+	@cp $(MOD_SO) $(BUILD)/cold-bundle/modules/
+	@cp tools/boot/openaurora-cold.conf $(BUILD)/cold-bundle/openaurora.conf
+	@cd $(BUILD)/cold-bundle && sha256sum openaurora oa-supervise fb-restore openaurora.conf modules/*.so > manifest.sha256
+	@echo "cold bundle: $(BUILD)/cold-bundle ($(words $(MOD_SO)) modules)"
+
+$(BUILD)/tests/fb_snapshot: tests/fb_snapshot.c common/fb_snapshot.c include/openaurora/fb_snapshot.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) \
+	  $(foreach call,mmap munmap msync ioctl,-Wl,--wrap=$(call))
+
+$(BUILD)/tests/fb_restore_tool: tests/fb_restore_tool.c common/fb_snapshot.c include/openaurora/fb_snapshot.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) \
+	  $(foreach call,open close mmap munmap msync ioctl,-Wl,--wrap=$(call))
+.PHONY: check-fb-snapshot
+check-fb-snapshot: $(BUILD)/tests/fb_snapshot $(BUILD)/tests/fb_restore_tool
+	@$(BUILD)/tests/fb_snapshot
+	@$(BUILD)/tests/fb_restore_tool
+check: check-fb-snapshot
+
 # Explicit opt-in live fbdev diagnostic; never run by make check. No HAL setup.
-$(BUILD)/scene-probe: tools/display/scene-probe.c modules/display/display.c common/canvas.c common/ui_anim.c include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h include/openaurora/canvas.h
+$(BUILD)/scene-probe: tools/display/scene-probe.c modules/display/display.c common/canvas.c common/ui_anim.c common/fb_snapshot.c include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
 

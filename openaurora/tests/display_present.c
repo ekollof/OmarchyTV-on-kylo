@@ -11,6 +11,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/types.h>
+#include "openaurora/fb_snapshot.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 
@@ -19,6 +20,7 @@ static const oa_display_iface *display;
 static const oa_display_alpha_iface *alpha;
 static struct fb_var_screeninfo var;
 static unsigned char pixels[1024];
+static uint32_t region[8], mau;
 static const char *rotate;
 static unsigned commits, last_yoffset, syncs, opens, closes;
 static int fail_sync, fail_commit;
@@ -35,7 +37,8 @@ int __wrap_close(int fd) { assert(fd == 123); closes++; return 0; }
 int __wrap_system(const char *command) { (void)command; assert(!"unexpected system call"); return -1; }
 void *__wrap_mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset)
 {
-    assert(!addr && len <= sizeof pixels && prot == (PROT_READ | PROT_WRITE));
+    assert(!addr && len <= sizeof pixels &&
+        (prot == PROT_READ || prot == (PROT_READ | PROT_WRITE)));
     assert(flags == MAP_SHARED && fd == 123 && offset == 0);
     return pixels;
 }
@@ -64,8 +67,9 @@ int __wrap_ioctl(int fd, unsigned long request, ...)
         fix->smem_len = fix->line_length * var.yres_virtual;
         return 0;
     }
-    case 0x8020c86cu: memset(arg, 0, 32); return 0;
-    case 0x4020c86bu: return 0;
+    case 0x8020c86cu: memcpy(arg, region, 32); return 0;
+    case 0x4020c86bu: memcpy(region, arg, 32); return 0;
+    case OA_FB_MAU_RD: *(uint32_t *)arg = mau; return 0;
     case FBIOPAN_DISPLAY: {
         const struct fb_var_screeninfo *commit = arg;
         assert(syncs > commits); /* sync precedes every attempted commit */
@@ -90,6 +94,7 @@ static const char *config(void *priv, const char *key, const char *def)
 #endif
     if (!strcmp(key, "display.pan") && rotate) return rotate;
     if (!strcmp(key, "display.mirror")) return "0";
+    if (!strcmp(key, "display.restore_snapshot")) return getenv("OA_TEST_RESTORE") ? "1" : "0";
     return def;
 }
 static int publish(void *priv, const char *name, uint32_t version, const void *iface)
@@ -116,6 +121,8 @@ static void *start(unsigned frames, unsigned yoffset, const char *rotation)
 {
     memset(&var, 0, sizeof var);
     memset(pixels, 0, sizeof pixels);
+    memset(region, 0, sizeof region);
+    mau = 0;
     var.xres = var.xres_virtual = 8;
     var.yres = height;
     var.yres_virtual = frames * var.yres;
@@ -288,5 +295,22 @@ int main(void)
         }
     finish(ctx);
     puts("  ok   optimized opaque slides/fade match the general filtered rasterizer within one byte");
+
+    assert(!setenv("OA_TEST_RESTORE", "1", 1));
+    height = 2;
+    ctx = start(2, 2, NULL); /* snapshot offset2, zero pixels/region/MAU */
+    if (!(pixels[0] == 0 && region[2] == 8 && region[3] == 2)) {
+        fprintf(stderr, "restore-start pix0=%u region2=%u region3=%u yoff=%u\n",
+            pixels[0], region[2], region[3], var.yoffset);
+        assert(0);
+    }
+    var.yoffset = 0;
+    assert(!display->clear(10, 20, 30) && !display->present());
+    assert(pixels[64] == 30);
+    finish(ctx);
+    assert(pixels[64] == 0 && var.yoffset == 2);
+    assert(region[0] == 0 && region[2] == 0 && region[3] == 0);
+    assert(!unsetenv("OA_TEST_RESTORE"));
+    puts("  ok   display restore snapshots/restores pixels, region and pan; MAU verified");
     return 0;
 }

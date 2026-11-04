@@ -1,0 +1,63 @@
+cold bundle:
+fb-restore
+manifest.sha256
+modules/mod_audio_curve.so
+modules/mod_audio_mixer.so
+modules/mod_audio.so
+modules/mod_cec.so
+modules/mod_display.so
+modules/mod_graphics.so
+modules/mod_image_decode.so
+modules/mod_ir.so
+modules/mod_panel.so
+modules/mod_plat.so
+modules/mod_power.so
+modules/mod_scene_display.so
+modules/mod_settings.so
+modules/mod_source.so
+modules/mod_ticker.so
+modules/mod_ui_anim.so
+modules/mod_ui_clock.so
+modules/mod_ui_console.so
+modules/mod_ui_engine.so
+modules/mod_ui_list.so
+modules/mod_ui_navigation.so
+modules/mod_ui_omarchy.so
+modules/mod_ui_profile.so
+modules/mod_ui_theme.so
+modules/mod_ui_vendor.so
+oa-supervise
+openaurora
+openaurora.conf
+
+010a3757f6796f82a27b58283b0e29d5f30c7f23f5b1715c089228628330cece  openaurora
+bcdc4fe6dd248090f70b7b7b39db47af6f2bfcdcda45bdbacac0850a879f3c67  oa-supervise
+5f4188a889c3e2ff0d369574077e9c034f3144461c455de0398ad0b42d61e3a1  fb-restore
+d31aa2b5729d1889c01df8084434b2ef698d625b382730bbfc64605e6b3bc108  openaurora.conf
+
+modules:
+mod_audio_curve.so
+mod_audio_mixer.so
+mod_audio.so
+mod_cec.so
+mod_display.so
+mod_graphics.so
+mod_image_decode.so
+mod_ir.so
+mod_panel.so
+mod_plat.so
+mod_power.so
+mod_scene_display.so
+mod_settings.so
+mod_source.so
+mod_ticker.so
+mod_ui_anim.so
+mod_ui_clock.so
+mod_ui_console.so
+mod_ui_engine.so
+mod_ui_list.so
+mod_ui_navigation.so
+mod_ui_omarchy.so
+mod_ui_profile.so
+mod_ui_theme.so
+mod_ui_vendor.so
