@@ -31,7 +31,26 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [SVG-SCROLLBAR-RENDER](artifacts/reports/SVG-SCROLLBAR-RENDER-2026-11-04.md)
+Latest: [UI-APPS-GRID](artifacts/reports/UI-APPS-GRID-2026-11-04.md) adds
+SCREEN_APPS (5, ui.screen=apps) to ui_vendor: the live parent-0 type-2
+LauncherItem rows page through the 183,180,1554x720 grid of 5x3 310x230
+cells; top strip 0,0,1921,162 #481730; scrollbar 1750,180,8x720.
+paint_apps feeds the recovered oa_svg_scrollbar_render_background/render_bar
+ops into a rasterizer (track #811924, bar #FFFFFF, 20/16 caps, min 36;
+geometry from oa_svg_scrollbar_calculate). Recorder tests: synthetic 20 rows
+-> 15 cells/bar 540; dumped 18 rows -> 15 cells/bar 600; offline and TV-CPU
+(ARM) rasters are in artifacts/analysis/ui-apps-grid-2026-11-04/. The visible
+scene-module-probe apps mode confirmed `PORTAL hold 6s screen=5 apps=1`, but
+the layer-1 capture returned the vendor "Geen signaal" frame and the probe
+restore refused after the vendor region changed; the stock screen was verified
+and the stale backup removed, so no visible apps scanout is claimed. There is
+no stock apps-grid capture; the chrome/cell fitting/scrollbar colors are a
+geometry/resource reconstruction. Display/scanout binding, independent
+startup, the live-DB visible run and real downloaded-PNG decoding remain open.
+Host check 265 ok, verify.cjs 42 ok; all /buffer and /tmp staging removed, no
+helper, no persistent change.
+
+Previous: [SVG-SCROLLBAR-RENDER](artifacts/reports/SVG-SCROLLBAR-RENDER-2026-11-04.md)
 implements renderBackground (0x10c3658) and renderBar (0x10c3bac) as
 ops-driven sequences. Both cache the supplier image per orientation, resize
 the background (this+0x98) or bar (this+0xa4) surface, configure the

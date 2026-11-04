@@ -627,7 +627,7 @@ $(BUILD)/modules/mod_ui_anim.so: modules/ui_anim/ui_anim.c common/ui_anim.c incl
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
-$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h
+$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
@@ -958,6 +958,10 @@ check-ui-live-cards: $(BUILD)/tests/ui_live_cards ui-live-stage
 check: check-ui-live-cards
 check-ui-live-dump: $(BUILD)/tests/ui_live_cards ui-live-stage
 	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
+.PHONY: check-ui-apps-grid
+check-ui-apps-grid: $(BUILD)/tests/ui_live_cards ui-live-stage
+	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "" apps
+check: check-ui-apps-grid
 
 $(BUILD)/tests/ui_nav_display.so: tests/ui_nav_display.c tests/ui_nav_trace.h include/openaurora/services.h
 	@mkdir -p $(dir $@)

@@ -44,6 +44,7 @@
 #include "openaurora/ui_engine.h"
 #include "openaurora/ui_time.h"
 #include "openaurora/canvas.h"
+#include "openaurora/svg_scrollbar.h"
 #include "openaurora/font_bitmap.h"
 #include "openaurora/font_draw.h"
 #include "openaurora/font_pack.h"
@@ -51,6 +52,22 @@
 #include "openaurora/font_box.h"
 
 #define MAX_CARDS 12
+#define MAX_GRID 64
+/* Full-screen apps grid: DialogFullScreenPortal.svg appsGrid 183,180,1554x720,
+ * 5x3 cells of 310x230, scrollbar 1750,180,8x720 (APPS-GRID). */
+#define APPS_X 183
+#define APPS_Y 180
+#define APPS_COLS 5
+#define APPS_ROWS 3
+#define APPS_CELL_W 310
+#define APPS_CELL_H 230
+#define APPS_TRACK_X 1750
+#define APPS_TRACK_Y 180
+#define APPS_TRACK_W 8
+#define APPS_TRACK_H 720
+#define APPS_CAP_TOP 20
+#define APPS_CAP_BOTTOM 16
+#define APPS_VISIBLE (APPS_COLS * APPS_ROWS)
 
 /* Nine picture-settings rows; row 6 is disabled in the capture. Defined here
  * because ctx stores per-row live-text canvases. */
@@ -130,6 +147,9 @@ struct ctx {
     int scene_painted;
     char cards[MAX_CARDS][48];
     int nc;
+    char grid_cards[MAX_GRID][48];
+    int grid_count;
+    int grid_sel;
     int band;
     int rail;
     int card;
@@ -260,7 +280,7 @@ static const oa_ui_icon *find_icon(struct ctx *c, const char *name)
 /* ------------------------------------------------------------------ geometry */
 
 enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, SCREEN_SETTINGS = 3,
-       SCREEN_SETTINGS_LIST = 4, ANIM_DIALOG = 1 };
+       SCREEN_SETTINGS_LIST = 4, SCREEN_APPS = 5, ANIM_DIALOG = 1 };
 
 /* Picture-settings rows: 66 px FA bar content on the 70 px pitch, text
  * centered (row 4 centre 496). Row 6 ("Beeld zoomen") is disabled in the
@@ -905,6 +925,129 @@ static void paint_settings_list(struct ctx *c)
     c->api->log(c->api->priv, OA_LOG_INFO, "painted captured picture-settings panel");
 }
 
+/* Apps-grid scrollbar rasterizer. The recovered render ops drive this:
+ * surface 0 is the #811924 track, surface 1 the #FFFFFF bar; the top/bottom
+ * caps are 20/16 px and the row fills the remainder. */
+struct apps_sbar_ctx {
+    struct ctx *c;
+    int surface[2][4];
+    int row[4];
+};
+static struct apps_sbar_ctx *g_apps_sbar;
+
+static int32_t apps_supplier(struct oa_svg_scrollbar_render *r,int32_t id)
+{ (void)r;(void)id;return 1; }
+static void apps_window(struct oa_svg_scrollbar_render *r,int32_t rect[4])
+{
+    (void)r;
+    rect[0]=APPS_TRACK_X;rect[1]=APPS_TRACK_Y;
+    rect[2]=APPS_TRACK_X+APPS_TRACK_W;
+    rect[3]=APPS_TRACK_Y+APPS_TRACK_H;
+}
+static void apps_resize(struct oa_svg_scrollbar_render *r,int surface,
+    const int32_t rect[4])
+{ (void)r;memcpy(g_apps_sbar->surface[surface],rect,16); }
+static void apps_clear(struct oa_svg_scrollbar_render *r,int surface)
+{ (void)r;(void)surface; }
+static void apps_rect(struct oa_svg_scrollbar_render *r,int32_t rect[4],
+    int32_t left,int32_t top,int32_t right,int32_t bottom)
+{
+    (void)r;
+    rect[0]=left;rect[1]=top;rect[2]=right;rect[3]=bottom;
+}
+static void apps_reset(struct oa_svg_scrollbar_render *r) { (void)r; }
+static void apps_align(struct oa_svg_scrollbar_render *r,int align)
+{ (void)r;(void)align; }
+static void apps_mask_surface(struct oa_svg_scrollbar_render *r,
+    const int32_t rect[4])
+{ (void)r;(void)rect; }
+static void apps_mask_name(struct oa_svg_scrollbar_render *r,int32_t id)
+{ (void)r;(void)id; }
+static void apps_mask_container(struct oa_svg_scrollbar_render *r) { (void)r; }
+static void apps_draw(struct oa_svg_scrollbar_render *r,int surface,
+    int32_t image,int32_t id,int transform)
+{
+    (void)r;(void)image;
+    int *s=g_apps_sbar->surface[surface];
+    int x=s[0],y=s[1],w=s[2]-s[0],h=s[3]-s[1];
+    int cr=surface==0?129:255,cg=surface==0?25:255,cb=surface==0?36:255;
+    if (transform==0) {
+        if (id==3 || id==32)
+            g_apps_sbar->c->d->fill(x,y,w,APPS_CAP_TOP,cr,cg,cb);
+        else if (id==12 || id==33)
+            g_apps_sbar->c->d->fill(x,y+h-APPS_CAP_BOTTOM,w,APPS_CAP_BOTTOM,cr,cg,cb);
+    } else {
+        int *rr=g_apps_sbar->row;
+        g_apps_sbar->c->d->fill(x+rr[0],y+rr[1],rr[2]-rr[0],rr[3]-rr[1],cr,cg,cb);
+    }
+}
+static int32_t apps_rect_height(struct oa_svg_scrollbar_render *r,int32_t id)
+{
+    (void)r;
+    if(id==15||id==34)return APPS_CAP_TOP;
+    if(id==24||id==35)return APPS_CAP_BOTTOM;
+    return 0;
+}
+static void apps_vertical_rect(struct oa_svg_scrollbar_render *r,
+    const int32_t rect[4])
+{ (void)r;memcpy(g_apps_sbar->row,rect,16); }
+static void apps_vertical_name(struct oa_svg_scrollbar_render *r,int32_t id)
+{ (void)r;(void)id; }
+static void apps_vertical_container(struct oa_svg_scrollbar_render *r) { (void)r; }
+static const struct oa_svg_scrollbar_render_ops apps_sbar_ops={
+    apps_supplier,apps_window,apps_resize,apps_clear,apps_rect,apps_reset,
+    apps_align,apps_mask_surface,apps_mask_name,apps_mask_container,apps_draw,
+    apps_rect_height,apps_vertical_rect,apps_vertical_name,
+    apps_vertical_container};
+
+static void paint_apps(struct ctx *c)
+{
+    const oa_ui_engine_iface *d=c->d;
+    int W=0,H=0;
+    if (!d) return;
+    if (d->info(&W,&H,NULL,NULL) != 0 || W<=0 || H<=0) return;
+    if (d->clear_rgba(36,38,40,153)) return;
+    /* DialogFullScreenPortal.svg top strip 0,0,1921,162 #481730. */
+    d->fill(0,0,1921,162,0x48,0x17,0x30);
+    int first=(c->grid_sel/APPS_VISIBLE)*APPS_VISIBLE;
+    for (int row=0;row<APPS_ROWS;row++) for (int col=0;col<APPS_COLS;col++) {
+        int idx=first+row*APPS_COLS+col;
+        if (idx>=c->grid_count) continue;
+        int x=APPS_X+col*APPS_CELL_W,y=APPS_Y+row*APPS_CELL_H;
+        if (idx==c->grid_sel)
+            d->fill(x-4,y-4,APPS_CELL_W+8,APPS_CELL_H+8,247,148,30);
+        d->fill(x,y,APPS_CELL_W,APPS_CELL_H,20,20,20);
+        const oa_ui_icon *icon=find_icon(c,c->grid_cards[idx]);
+        if (icon && icon->w>0 && icon->h>0) {
+            int w=APPS_CELL_W-40,h=w*icon->h/icon->w;
+            if (h>APPS_CELL_H-20) { h=APPS_CELL_H-20;w=h*icon->w/icon->h; }
+            d->blit_scaled(x+(APPS_CELL_W-w)/2,y+(APPS_CELL_H-h)/2,w,h,
+                icon->w,icon->h,icon->rgba);
+        }
+    }
+    struct oa_svg_scrollbar_render sr;
+    memset(&sr,0,sizeof sr);
+    sr.skin.cached_image[0]=1;
+    sr.state.min_bar=APPS_CAP_TOP+APPS_CAP_BOTTOM;
+    sr.state.total=c->grid_count;
+    sr.state.visible=APPS_VISIBLE;
+    sr.state.first=first;
+    struct apps_sbar_ctx sb;
+    memset(&sb,0,sizeof sb);
+    sb.c=c;
+    g_apps_sbar=&sb;
+    oa_svg_scrollbar_render_background(&sr,&apps_sbar_ops);
+    oa_svg_scrollbar_render_bar(&sr,&apps_sbar_ops);
+    g_apps_sbar=NULL;
+    if (d->present()!=0) {
+        c->api->log(c->api->priv,OA_LOG_ERROR,"apps grid present failed");
+        return;
+    }
+    c->api->log(c->api->priv,OA_LOG_INFO,
+        "painted apps grid: %d items, first %d, scrollbar %d/%d",
+        c->grid_count,first,sr.state.bar_pos,sr.state.bar_size);
+}
+
 static void paint(struct ctx *c)
 {
     const oa_ui_engine_iface *d;
@@ -921,6 +1064,10 @@ static void paint(struct ctx *c)
     }
     if (c->screen == SCREEN_SOURCES) {
         paint_sources(c);
+        return;
+    }
+    if (c->screen == SCREEN_APPS) {
+        paint_apps(c);
         return;
     }
     rail_hl_sync(c);              /* keeps the 30 ms highlight timer in step with the screen */
@@ -1388,6 +1535,37 @@ static void cancel_dialog(struct ctx *c)
 
 static void move_key(struct ctx *c, uint8_t id)
 {
+    if (c->screen == SCREEN_APPS) {
+        int sel = c->grid_sel;
+        if (id == 21 || id == 22)
+            sel += id == 22 ? 1 : -1;
+        else if (id == 19 || id == 20)
+            sel += id == 19 ? APPS_COLS : -APPS_COLS;
+        else if (id == 53 || id == 0x8a) {
+            if (c->grid_count > 0) {
+                oa_action_event act;
+                memset(&act, 0, sizeof act);
+                act.kind = OA_ACTION_SELECT;
+                act.index = (uint8_t)sel;
+                act.name = c->grid_cards[sel];
+                c->api->emit(c->api->priv, OA_TOPIC_ACTION, &act);
+            }
+            return;
+        } else if (id == 10 || id == 48) {
+            c->screen = SCREEN_PORTAL;
+            if (c->d) paint(c);
+            return;
+        } else {
+            return;
+        }
+        if (c->grid_count <= 0)
+            return;
+        if (sel < 0) sel = 0;
+        if (sel >= c->grid_count) sel = c->grid_count - 1;
+        c->grid_sel = sel;
+        if (c->d) paint(c);
+        return;
+    }
     if (c->screen == SCREEN_SETTINGS_LIST) {
         if (id == 19 || id == 20) {        /* Down / Up: row selection */
             c->sel = settings_row_next(c->sel, id == 19 ? 1 : -1);
@@ -1571,6 +1749,9 @@ static int load_live_cards(struct ctx *c)
     c->api->release(c->api->priv,OA_SVC_LAUNCHER_DB);
     if(!n)return 0;
     qsort(cards,n,sizeof cards[0],live_card_cmp);
+    c->grid_count=(int)n;
+    for(unsigned i=0;i<n;++i)
+        snprintf(c->grid_cards[i],sizeof c->grid_cards[0],"%s",cards[i].name);
     if(n>MAX_CARDS)n=MAX_CARDS;
     c->nc=(int)n;
     for(unsigned i=0;i<n;++i)
@@ -1635,6 +1816,11 @@ static int m_start(void *v)
         for (c->nc = 0; DEFAULT_CARDS[c->nc]; c->nc++)
             snprintf(c->cards[c->nc], sizeof c->cards[0], "%s", DEFAULT_CARDS[c->nc]);
     }
+    if (c->grid_count == 0 && c->nc > 0) {
+        c->grid_count = c->nc;
+        for (int i = 0; i < c->nc; i++)
+            snprintf(c->grid_cards[i], sizeof c->grid_cards[0], "%s", c->cards[i]);
+    }
 
     if (!c->restored) {
         c->band = BAND_RAIL;
@@ -1655,6 +1841,13 @@ static int m_start(void *v)
         c->screen = SCREEN_SETTINGS;
     if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "settings_list"))
         c->screen = SCREEN_SETTINGS_LIST;
+    if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "apps")) {
+        c->screen = SCREEN_APPS;
+        c->grid_sel = atoi(c->api->config_get(c->api->priv, "ui.grid_sel", "0"));
+        if (c->grid_sel < 0) c->grid_sel = 0;
+        if (c->grid_count > 0 && c->grid_sel >= c->grid_count)
+            c->grid_sel = c->grid_count - 1;
+    }
     /* Lab/test preselection for a focused-row capture; -1 starts unfocused
      * like the vendor capture. The disabled row is never preselected. */
     c->sel = atoi(c->api->config_get(c->api->priv, "ui.sel", "-1"));
@@ -1912,7 +2105,7 @@ static int m_restore(void *v, const void *buf, size_t len)
     if (!c || !buf || len != 4)
         return -1;
     const unsigned char *bytes = buf;
-    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_SETTINGS_LIST)
+    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_APPS)
         return -1;
     c->band = bytes[0];
     c->rail = bytes[1];

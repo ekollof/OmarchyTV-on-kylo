@@ -92,6 +92,21 @@ through the SVG supplier/renderer/RectangleContainer), background/bar drawing
 and the apps-grid screen remain unimplemented; the home portal has no
 scrollbar, so no visible scrollbar parity is claimed.
 
+UI-APPS-GRID adds SCREEN_APPS5 to ui_vendor (ui.screen=apps): the live
+parent-0 type2 LauncherItem rows page through a 183,180,1554x720 grid of 5x3
+310x230 cells; the top strip is0,0,1921,162 #481730 and the scrollbar is
+1750,180,8x720. paint_apps feeds the recovered
+oa_svg_scrollbar_render_background/render_bar ops into a rasterizer: track
+surface0 #811924, bar surface1 #FFFFFF, caps20/16, row from the shipped
+formula, min36; the bar size/position use oa_svg_scrollbar_calculate. Synthetic
+20 rows ->15 cells/bar540; dumped18 rows ->15/bar600; offline and TV-CPU
+recorder rasters exist. The visible probe confirmed screen=5 and held, but the
+layer-1 capture returned the vendor "Geen signaal" frame and the probe restore
+refused after the vendor region changed, so no visible apps scanout is claimed.
+There is no stock apps-grid capture: grid chrome/cell fitting/scrollbar colors
+are a geometry/resource reconstruction, not pixel parity. Display/scanout
+binding, independent startup, live-DB visible and real PNG decoding remain open.
+
 UI-LIVE-CARDS wires the settingsDB rows into the portal. launcher.db now
 exposes a borrowed row view/get; ui_vendor reads parent0 with read_parent(0,0,0),
 keeps item_type2 rows with a non-empty thumbnail name (skipping slash names),

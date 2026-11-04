@@ -26,6 +26,8 @@ static int settings_preview(void)
 { const char *v=getenv("OA_SCENE_PROBE_SETTINGS");return v && !strcmp(v,"1"); }
 static int portal_hold(void)
 { const char *v=getenv("OA_SCENE_PROBE_PORTAL_HOLD");return v && !strcmp(v,"1"); }
+static int apps_preview(void)
+{ const char *v=getenv("OA_SCENE_PROBE_APPS");return v && !strcmp(v,"1"); }
 static const char *config(void *ud, const char *key, const char *def)
 {
     (void)ud;
@@ -37,7 +39,8 @@ static const char *config(void *ud, const char *key, const char *def)
     }
     if (!strcmp(key, "ui.ok_file")) return "/tmp/oa-scene-helper-20261101/ui.ready";
     if (!strcmp(key, "ui.anim_enable")) return "1"; /* explicit lab bootstrap, not recovered vendor policy */
-    if (!strcmp(key, "ui.fps")) return (settings_preview()||portal_hold())?"10":"0";
+    if (!strcmp(key, "ui.fps")) return (settings_preview()||portal_hold()||apps_preview())?"10":"0";
+    if (apps_preview() && !strcmp(key, "ui.screen")) return "apps";
     if (!strcmp(key, "settings.readonly")) return "1";
     if (!strcmp(key, "settings.db")) {
         const char *db = getenv("OA_SCENE_PROBE_SETTINGS_DB");
@@ -261,7 +264,7 @@ int probe_ui(scene_probe *s)
     if (load_ui_module(s, "ticker") || load_ui_module(s, "ui_clock") ||
         load_ui_module(s, "ui_anim") || load_ui_module(s, "ui_engine")) goto failure;
     const char *live_cards = getenv("OA_SCENE_PROBE_LIVE_CARDS");
-    if(live_cards && !strcmp(live_cards,"1")) {
+    if((live_cards && !strcmp(live_cards,"1")) || apps_preview()) {
         if (load_ui_module(s, "settings")) goto failure;
     }
     if(settings_preview()) {
@@ -294,11 +297,14 @@ int probe_ui(scene_probe *s)
         return 2;
     }
     const oa_portal_iface *portal = s->host.api.lookup(&s->host, OA_SVC_PORTAL, 1);
-    if (!portal || portal->screen() != 0) { errno = EPROTO; goto failure; }
+    if (!portal || (portal->screen() != 0 && !(apps_preview() && portal->screen() == 5))) {
+        errno = EPROTO; goto failure;
+    }
     if (portal_hold()) {
         /* Live-card portal preview: the UI repaints at 10 fps so the frame
          * stays visible while the panel is captured. No key is injected. */
-        printf("PORTAL hold 6s\n"); fflush(stdout);
+        printf("PORTAL hold 6s screen=%d apps=%d\n", portal->screen(),
+            apps_preview()); fflush(stdout);
         run_for(s, 6000);
         if (unlink(ready)) goto failure;
         return 2;

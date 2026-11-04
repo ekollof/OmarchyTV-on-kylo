@@ -441,9 +441,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       native/C cases plus host/ASan/ARM-qemu/TV CPU and verify.cjs42 ok.
       SVG-SCROLLBAR-RENDER. Vendor mask/surface/renderer calls remain stubs;
       no pixels yet.
-- [ ] Apps-grid screen and scrollbar rasterizer using the1750,180,8x720
-      scrollbar, then display/scanout binding and independent startup. Keep
-      the live-DB visible run and real downloaded-PNG decoding as explicit
+- [x] Apps-grid screen and scrollbar rasterizer: SCREEN_APPS5, live grid,
+      1750,180,8x720 scrollbar via the recovered render ops; synthetic20
+      rows/15 cells/bar540 and dumped18/15/600 recorder tests, offline and
+      TV-CPU rasters. UI-APPS-GRID. The visible probe reached screen5 but the
+      scanout capture returned the vendor frame; no visible apps claim.
+- [ ] Supervised display/scanout binding and independent startup. Keep the
+      live-DB visible run and real downloaded-PNG decoding as explicit
       acceptance gates.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in

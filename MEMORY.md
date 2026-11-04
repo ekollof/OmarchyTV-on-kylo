@@ -1,5 +1,22 @@
 # Current project state — last verified 2026-11-04
 
+UI-APPS-GRID-2026-11-04: ui_vendor SCREEN_APPS5 (ui.screen=apps) uses the
+live parent-0 type2 LauncherItem rows, sorted by m_order_index/id; grid
+183,180,1554x720,5x3 cells310x230; top strip0,0,1921,162 #481730; scrollbar
+1750,180,8x720. paint_apps feeds the recovered
+oa_svg_scrollbar_render_background/render_bar ops into a rasterizer (track
+#811924, bar #FFFFFF, caps20/16, min36; geometry via
+oa_svg_scrollbar_calculate). Synthetic20 rows->15 cells/bar540; dumped18
+rows->15/bar600; offline-apps-grid.png and tv-apps-recorder.png (TV CPU
+recorder, ARM) exist. The visible scene-module-probe apps mode confirmed
+PORTAL hold screen=5 apps=1, but the layer-1 capture returned the vendor
+"Geen signaal" frame and restore refused after the vendor region changed; the
+stock screen was verified and the stale backup removed, so no visible apps
+scanout is claimed. No stock apps-grid capture: chrome/cell fitting/colors are
+a geometry/resource reconstruction. Display/scanout binding, independent
+startup, live-DB visible and real PNG decoding remain open. Host check265 ok,
+verify.cjs42 ok; /buffer and /tmp staging removed, no helper.
+
 SVG-SCROLLBAR-RENDER-2026-11-04: renderBackground0x10c3658 and
 renderBar0x10c3bac implemented as ops-driven sequences. Both cache the supplier
 image per orientation, resize the background (this+0x98)/bar (this+0xa4)
