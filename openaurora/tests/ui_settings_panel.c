@@ -4,6 +4,7 @@
  * 4x4 blobs stand in for the real assets; the recorder checks blit positions. */
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "host.h"
@@ -91,6 +92,15 @@ int main(int argc, char **argv)
     assert(trace && portal);
     assert(portal->screen() == 4);
     assert(blit_at(trace, 0, 0));
+    {
+        /* Offline layout snapshot while the panel is on screen. */
+        const char *cap = getenv("OA_NAV_CAPTURE");
+        if (cap) {
+            char path[512];
+            snprintf(path, sizeof path, "%s.panel", cap);
+            assert(!trace->capture(path));
+        }
+    }
 
     key(&host, 10);                     /* Exit: back to the quick tiles */
     assert(portal->screen() == 3);

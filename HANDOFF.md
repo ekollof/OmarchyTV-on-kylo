@@ -31,7 +31,19 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [UI-FB-SIM](artifacts/reports/UI-FB-SIM-2026-11-04.md) answers whether
+Latest: [UI-FB-SIM](artifacts/reports/UI-FB-SIM-2026-11-04.md) now also covers
+offline layout capture. The host test display recorder rasterizes its
+clear/fill/blit calls into 1920x1080 RGBA frames when `OA_NAV_CAPTURE` is set,
+writing numbered present frames; `check-ui-settings-panel` additionally writes
+a `.panel` snapshot. `artifacts/analysis/fb-sim-2026-11-04/ui-layout-portal.png`
+is the captured portal from the real ui_vendor draw calls, no TV or GPU. The
+synthetic panel test paints no background fill, so its panel snapshot is black;
+a real-asset preview needs the captured panel exported as OAI1 plus a real
+ui.dir, and GPU composition still needs the Mesa-wrapped renderer DSO. This is
+layout evidence, not scanout or vendor-render parity. The pending firmware
+feature remains SVGImage::imageCreate; no device/screen change, TV untouched.
+
+Previous: [UI-FB-SIM-2026-11-04 original offline GPU/fbdev assessment](artifacts/reports/UI-FB-SIM-2026-11-04.md) answers whether
 the TV framebuffer can be simulated offline. The real fbdev display module
 runs against a fake framebuffer on the host and as an ARM binary under
 qemu-arm-static (tests/display_present, eight groups, exit0). The same GLES

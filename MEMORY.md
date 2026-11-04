@@ -6,6 +6,15 @@ in the dated entries below; the earlier CEC session is historical. Notes are pre
 
 ## TV and persistent recovery
 
+UI-FB-SIM-2026-11-04 (layout capture addendum): the host test display recorder
+rasterizes clear/fill/blit/blit_scaled into 1920x1080 RGBA frames when
+OA_NAV_CAPTURE is set (numbered present frames plus a .panel snapshot in
+check-ui-settings-panel). ui-layout-portal.png captures the real ui_vendor
+portal draw calls without TV/GPU. Synthetic panel assets paint no background,
+so a real-asset preview needs OAI1 export + real ui.dir; the Mesa-wrapped
+renderer DSO is still needed for GPU composition. Layout evidence only, not
+scanout/vendor parity. make check passes 265 ok. No device/screen change.
+
 UI-FB-SIM-2026-11-04: offline display simulation feasibility. `tests/
 display_present` runs the real fbdev display module with a fake framebuffer on
 host and as an ARM binary under qemu-arm-static (8 groups pass). The same

@@ -19,5 +19,8 @@ typedef struct {
     int (*scaled_first)(int i, int *r, int *g, int *b, int *a);
     /* Last full-screen scene transform (display v2): type, progress, call count. */
     int (*transform)(int *type, float *progress, int *calls);
+    /* Rasterize the current draw calls to an RGBA file (offline layout
+     * snapshot; no scanout/vendor-render claim). Additive. */
+    int (*capture)(const char *path);
 } oa_nav_trace;
 #endif

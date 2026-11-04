@@ -11,9 +11,14 @@ remove vendor features from scope. Telemetry and advertising are excluded.
 - [x] Offline display simulation feasibility: real fbdev display module on a
       fake framebuffer (host and ARM qemu,8 groups), scene_gles on host Mesa
       llvmpipe (`make scene-gles-mesa`,9 pixel-exact transitions). UI-FB-SIM.
-- [ ] Offline capture harness: 1920x1080 fake-fb dump to BGRA/PNG, and a
-      Mesa-wrapped renderer DSO so the full settings preview runs without the
-      TV. Vendor Mali rasterization/scanout comparison still requires the set.
+- [x] Offline layout capture: the host test recorder rasterizes clear/fill/
+      blit/blit_scaled into 1920x1080 RGBA frames (`OA_NAV_CAPTURE`), capturing
+      the real ui_vendor draw calls without a TV; portal frame evidence in
+      artifacts/analysis/fb-sim-2026-11-04/. UI-FB-SIM.
+- [ ] Offline full settings preview: export the captured panel to OAI1 and
+      run a real-asset ui.dir capture (the synthetic panel test paints no
+      background), plus the Mesa-wrapped renderer DSO for GPU composition.
+      Vendor Mali rasterization/scanout comparison still requires the set.
 
 
 - [ ] Independent startup: boot into openaurora without starting vendor Aurora;

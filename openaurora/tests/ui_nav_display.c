@@ -1,9 +1,77 @@
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "ui_nav_trace.h"
 
-static int g_clears, g_presents, g_w, g_h;
+/* Optional offline raster. OA_NAV_CAPTURE=<path> composes the recorded
+ * clear/fill/blit calls into an RGBA canvas and writes it on every present, so
+ * layout changes can be inspected without a TV. This is a recorder raster, not
+ * scanout or vendor-render proof; image content stays whatever the caller
+ * supplied. */
+static unsigned char *g_cap;
+static int g_cap_w, g_cap_h;
+static unsigned g_cap_seq;
+static int g_w, g_h;
+static void cap_sync(void)
+{
+    if (g_cap || !getenv("OA_NAV_CAPTURE")) return;
+    g_cap_w = g_w > 0 ? g_w : 1920;
+    g_cap_h = g_h > 0 ? g_h : 1080;
+    g_cap = calloc((size_t)g_cap_w * g_cap_h, 4);
+    assert(g_cap);
+}
+static void cap_blend(int x, int y, const unsigned char *s)
+{
+    unsigned a = s[3], ia;
+    unsigned char *p;
+    if (!a || x < 0 || y < 0 || x >= g_cap_w || y >= g_cap_h) return;
+    p = g_cap + ((size_t)y * g_cap_w + x) * 4;
+    if (a == 255) { p[0]=s[0]; p[1]=s[1]; p[2]=s[2]; p[3]=255; return; }
+    ia = 255 - a;
+    p[0]=(unsigned char)((s[0]*a + p[0]*ia + 127)/255);
+    p[1]=(unsigned char)((s[1]*a + p[1]*ia + 127)/255);
+    p[2]=(unsigned char)((s[2]*a + p[2]*ia + 127)/255);
+    p[3]=255;
+}
+static void cap_fill(int x, int y, int w, int h, int r, int g, int b)
+{
+    if (!g_cap) return;
+    for (int yy = y; yy < y+h; yy++)
+        for (int xx = x; xx < x+w; xx++) {
+            unsigned char s[4] = {(unsigned char)r,(unsigned char)g,(unsigned char)b,255};
+            cap_blend(xx, yy, s);
+        }
+}
+static int cap_write(const char *path)
+{
+    FILE *f;
+    if (!path) return -1;
+    cap_sync();
+    if (!g_cap) return -1;
+    f = fopen(path, "wb");
+    if (!f) return -1;
+    size_t n = fwrite(g_cap, 4, (size_t)g_cap_w*g_cap_h, f);
+    return fclose(f) == 0 && n == (size_t)g_cap_w*g_cap_h ? 0 : -1;
+}
+static int t_capture(const char *path) { return cap_write(path); }
+static void cap_dump(void)
+{
+    const char *path = getenv("OA_NAV_CAPTURE");
+    char out[512];
+    FILE *f;
+    if (!g_cap || !path) return;
+    /* Numbered frames: the path is a prefix, so intermediate screens stay
+     * available instead of only the last present. */
+    if (snprintf(out, sizeof out, "%s.%u", path, g_cap_seq++) >= (int)sizeof out) return;
+    f = fopen(out, "wb");
+    if (!f) return;
+    (void)fwrite(g_cap, 4, (size_t)g_cap_w*g_cap_h, f);
+    (void)fclose(f);
+}
+static int g_clears, g_presents;
 static int g_ax, g_ay, g_aw, g_ah, g_accent;
 enum { FILL_MAX = 32 };
 static struct { int x, y, w, h, r, g, b; } g_fill[FILL_MAX];
@@ -27,11 +95,19 @@ static int d_info(int *w, int *h, int *bpp, int *frames)
 }
 static int d_clear(int r, int g, int b)
 {
-    (void)r; (void)g; (void)b;
     g_clears++;
     g_nf = 0;
     g_nb = 0;
     g_ns = 0;
+    cap_sync();
+    if (g_cap) {
+        for (size_t i = 0; i < (size_t)g_cap_w*g_cap_h; i++) {
+            g_cap[i*4+0] = (unsigned char)r;
+            g_cap[i*4+1] = (unsigned char)g;
+            g_cap[i*4+2] = (unsigned char)b;
+            g_cap[i*4+3] = 255;
+        }
+    }
     return 0;
 }
 static int d_fill(int x, int y, int w, int h, int r, int g, int b)
@@ -53,6 +129,8 @@ static int d_fill(int x, int y, int w, int h, int r, int g, int b)
         g_ah = h;
         g_accent++;
     }
+    cap_sync();
+    cap_fill(x, y, w, h, r, g, b);
     return 0;
 }
 static int d_blit(int x, int y, int w, int h, const unsigned char *rgba)
@@ -65,6 +143,11 @@ static int d_blit(int x, int y, int w, int h, const unsigned char *rgba)
         g_blit[g_nb].a = rgba ? rgba[3] : -1;
         g_nb++;
     }
+    cap_sync();
+    if (g_cap && rgba)
+        for (int yy = 0; yy < h; yy++)
+            for (int xx = 0; xx < w; xx++)
+                cap_blend(x+xx, y+yy, rgba + ((size_t)yy*w+xx)*4);
     return 0;
 }
 static int d_blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigned char *rgba)
@@ -78,11 +161,19 @@ static int d_blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsig
         g_scaled[g_ns].a = rgba ? rgba[3] : -1;
         g_ns++;
     }
+    cap_sync();
+    if (g_cap && rgba && sw > 0 && sh > 0 && w > 0 && h > 0)
+        for (int yy = 0; yy < h; yy++)
+            for (int xx = 0; xx < w; xx++) {
+                int sx = xx * sw / w, sy = yy * sh / h;
+                cap_blend(x+xx, y+yy, rgba + ((size_t)sy*sw+sx)*4);
+            }
     return 0;
 }
 static int d_present(void)
 {
     g_presents++;
+    cap_dump();
     return 0;
 }
 static int g_fs_type;
@@ -181,6 +272,7 @@ static const oa_nav_trace g_trace = {
     .blit_count = t_blit_count, .blit_at = t_blit_at, .blit_first = t_blit_first,
     .scaled_count = t_scaled_count, .scaled_at = t_scaled_at, .scaled_first = t_scaled_first,
     .transform = t_transform,
+    .capture = t_capture,
 };
 
 static const oa_host_api *g_api;

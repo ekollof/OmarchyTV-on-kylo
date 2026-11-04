@@ -1,3 +1,12 @@
+UI-FB-SIM-2026-11-04 (addendum) adds offline layout capture: the host test
+display recorder rasterizes its draw calls into 1920x1080 RGBA frames under
+OA_NAV_CAPTURE, and check-ui-settings-panel writes a .panel snapshot. The
+captured portal (ui-layout-portal.png) comes from the real ui_vendor draw
+calls, no TV or GPU. The synthetic panel test paints only 4x4 stand-ins and no
+background, so a real-asset preview needs the captured panel as OAI1 and a
+real ui.dir; GPU composition still needs the Mesa-wrapped renderer DSO. This
+is layout evidence, not scanout/vendor-render parity.
+
 UI-FB-SIM-2026-11-04 establishes what can replace a TV run. The real fbdev
 display module can run against a fake framebuffer (link-wrapped open/mmap/
 ioctl) on the host and as an ARM binary under qemu-arm-static: eight

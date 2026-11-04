@@ -1,0 +1,3 @@
+OA_NAV_CAPTURE=/tmp/opencode/lay make check-ui-settings-panel
+frame 4 -> ui-layout-portal.png (1920x1080 RGBA from recorder raster)
+panel frame is black because the synthetic panel test only blits 4x4 stand-ins, no background fill
