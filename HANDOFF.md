@@ -37,6 +37,19 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
+Owner requested finish/handoff/commit/push/stop. This stop closes only the
+video24 static lifetime trace, not the full replacement goal. Resume from
+[AMP-VIDEO-OWNER](artifacts/reports/AMP-VIDEO-OWNER-2026-11-04.md): extin's
+actual fd open/close callbacks are simple; the mutating release_func is reached
+through input selection. ELF .rodata relocations prove the callback binding
+despite absent Ghidra refs. Private controls forward to EX_PLAT. Next trace
+shipped libv4l2_fd_open before choosing a native backend, then coherent board/
+fd/retained-image/worker/module lifetime. Do not retry cold MCU calls or infer
+exclusive authority from static callbacks. New ghidra_extin project is durable.
+This item changes docs/evidence only, so no new runtime suite or TODO gate was
+closed. tvssh sent WoL before the endpoint metadata read; no device open,
+MCU call, staging or fb1 access. No boot/PID continuity sample this time.
+
 [DISPLAY-CLEANUP](artifacts/reports/DISPLAY-CLEANUP-2026-11-04.md) fixes display
 snapshot failure discard. Suspend remains synchronous but returns errors and
 retains state; stop/unload restore/unmap/close runs on an owning thread, with
@@ -100,8 +113,9 @@ paired lifetime before mutators/native amp bring-up. AGENTS records the trap.
 through NDAL_EX helpers and kernel EX_PLAT/DRV_STBC calls. Getter has three
 arguments and two raw output bytes, distinct from its device-success status.
 Injected fixed-MCU8 codec passes two host/sanitizer/ARM groups/full host394;
-no native fallback, MCU/TV/fb1 call or ownership claim. Next recover video24
-open/close and coherent authority before connecting a native transport: the
+no native fallback, MCU/TV/fb1 call or ownership claim in that milestone.
+AMP-VIDEO-OWNER above now recovers driver callbacks; full wrapper behavior and
+coherent authority remain open before connecting a native transport: the
 vendor OpenDevice(type10) maps video24 and uses mutable process-global state.
 The new NDAL_EX Ghidra project is durable/catalogued. Do not infer prior reset
 causes from ABI recovery or call the getter with only one output pointer.

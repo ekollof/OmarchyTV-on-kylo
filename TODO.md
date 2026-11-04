@@ -311,6 +311,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       level-command codec passes two host/sanitizer/ARM groups/full host394;
       byte16/byte8 remain raw, device failure is stricter than vendor transport-
       only success. No native fallback, fd authority or MCU operation tested.
+      AMP-VIDEO-OWNER identifies extin's simple actual open/close callbacks
+      through relocations, distinct from mutating input-selection cleanup.
+      Metadata-only endpoint read followed helper WoL; no video24 open/MCU/fb1
+      operation. Trace libv4l2_fd_open before choosing a native backend; static
+      callbacks do not establish coherent authority or cold readiness.
       Finish audio consumer/provider holds and module integration,
       retained image acquisition, coordinated GPIO/MCU/I2C/worker
       ownership and hardware lifecycle acceptance; wrapper results and controlled

@@ -1,3 +1,11 @@
+AMP-VIDEO-OWNER-2026-11-04 corrects the remaining endpoint ambiguity: video24
+is extin, not established VPLT ownership. Its simple comp_release fd callback
+is distinct from comp_release_func, which can disconnect input through s_input.
+Use section-specific ELF relocations when Ghidra lacks callback data refs.
+Private controls forward to EX_PLAT; successful ioctl still does not prove
+MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
+device open or MCU call, metadata read only after tvssh WoL. See report.
+
 FB-SNAPSHOT-COLD-BUNDLE-2026-11-04: common/fb_snapshot snapshots pixels,
 var/fix, the8-word OSD region (RD0x8020c86c/WR0x4020c86b), read-only MAU and
 pan; restore verifies MAU and restores pixels/region/pan. display_fb config

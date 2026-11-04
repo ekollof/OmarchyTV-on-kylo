@@ -1,5 +1,15 @@
 # Current project state — last verified 2026-11-04
 
+AMP-VIDEO-OWNER-2026-11-04 adds firmware/relocation evidence only: video24 is
+extin, whose actual open/close callbacks have no input teardown; the similarly
+named release_func belongs to input selection. Private controls forward to
+EX_PLAT. Full libv4l2_fd_open behavior/coherent authority remain unresolved;
+no native backend, MCU call or new acceptance claim. The metadata-only TV
+query used tvssh, which sent WoL after its initial reachability failure.
+Observed char81:1, ndp_comp_extin, ndp-extin/ntkndpextin. No device open, fb1
+access, staging or boot/PID continuity sample. Existing deployment unchanged
+by these commands; this is not a current health/ownership test.
+
 AMP-INIT-2026-11-04 adds blocking injection-only AD82587 Init orchestration.
 29952 cases match complete native Init/Reset/Mute control traces/image/cache/
 return;45 total reference groups pass in build-tv-v3/amp-init. Strict host,

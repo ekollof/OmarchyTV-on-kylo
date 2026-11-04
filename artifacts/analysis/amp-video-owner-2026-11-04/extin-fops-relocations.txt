@@ -1,0 +1,5 @@
+RELOCATION RECORDS FOR [.rodata]:
+00001978 R_ARM_ABS32       __this_module
+00001988 R_ARM_ABS32       video_ioctl2
+00001994 R_ARM_ABS32       _ndp_extin_drv_comp_open
+00001998 R_ARM_ABS32       _ndp_extin_drv_comp_release

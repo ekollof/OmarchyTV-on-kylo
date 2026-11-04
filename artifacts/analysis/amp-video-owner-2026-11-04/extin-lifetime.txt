@@ -1,0 +1,279 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (601 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1244 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Creating project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_extin/Extin (HeadlessAnalyzer)  
+INFO  Creating project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_extin/Extin (DefaultProject)  
+INFO  REPORT: Processing input files:  (HeadlessAnalyzer)  
+INFO       project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_extin/Extin (HeadlessAnalyzer)  
+INFO  IMPORTING: file:///home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/ntkndpextin.ko (HeadlessAnalyzer)  
+INFO  Using Loader: Executable and Linking Format (ELF) (ProgramLoader)  
+INFO  Using Language/Compiler: ARM:LE:32:v8:default (ProgramLoader)  
+INFO  Using Library Search Path: [., /bin, /lib, /lib64, /lib/x86_64-linux-gnu, /lib/aarch64-linux-gnu, /usr/bin, /usr/lib, /usr/X11R6/bin, /usr/X11R6/lib, /usr/java/packages/lib, /usr/lib64] (ProgramLoader)  
+INFO  Additional info:
+Loading file:///home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/ntkndpextin.ko?MD5=cb0689e9e1c425a27e670168e51cc32f...
+Skipping section [.note.GNU-stack] with invalid size 0x0
+Unable to place symbol due to non-loaded section: .note.GNU-stack - value=0x0, section=.note.GNU-stack
+------------------------------------------------
+
+ (ProgramLoader)  
+INFO  IMPORTING: Loaded 0 additional files (HeadlessAnalyzer)  
+INFO  ANALYZING all memory and code: file:///home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/ntkndpextin.ko (HeadlessAnalyzer)  
+INFO  DWARF external debug information found: ExternalDebugInfo [filename=null, crc=0, hash=7f752da78f1ef5496e1fc4670b46f06e76ab929f, objectType=DEBUGINFO, extra=null] (ExternalDebugFileSectionProvider)  
+INFO  Unable to find DWARF information, skipping DWARF analysis (DWARFAnalyzer)  
+INFO  Packed database cache: /home/ekollof/.cache/ghidra/packed-db-cache (PackedDatabaseCache)  
+INFO  Applied data type archive: generic_clib (ApplyDataArchiveAnalyzer)  
+INFO  -----------------------------------------------------
+    ARM Constant Reference Analyzer            0.198 secs
+    ARM Symbol                                 0.002 secs
+    ASCII Strings                              0.215 secs
+    Apply Data Archives                        0.212 secs
+    Call Convention ID                         0.260 secs
+    Call-Fixup Installer                       0.001 secs
+    Create Address Tables                      0.009 secs
+    Create Address Tables - One Time           0.100 secs
+    Create Function                            0.010 secs
+    DWARF                                      0.005 secs
+    Data Reference                             0.013 secs
+    Decompiler Switch Analysis                 1.117 secs
+    Demangler GNU                              0.054 secs
+    Disassemble Entry Points                   0.219 secs
+    Embedded Media                             0.002 secs
+    External Entry References                  0.001 secs
+    Function ID                                0.009 secs
+    Function Start Pre Search                  0.006 secs
+    Function Start Search                      0.039 secs
+    Function Start Search After Code           0.011 secs
+    Function Start Search After Data           0.012 secs
+    Non-Returning Functions - Discovered       0.008 secs
+    Non-Returning Functions - Known            0.008 secs
+    Reference                                  0.028 secs
+    Shared Return Calls                        0.013 secs
+    Stack                                      0.108 secs
+    Subroutine References                      0.020 secs
+-----------------------------------------------------
+     Total Time   2 secs
+-----------------------------------------------------
+ (AutoAnalysisManager)  
+INFO  REPORT: Analysis succeeded for file: file:///home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/ntkndpextin.ko (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFirmware.java '--asm' '_ndp_extin_drv_comp_open' '_ndp_extin_drv_comp_release' '_ndp_extin_drv_comp_release_func'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)  
+INFO  DumpFirmware.java> PROGRAM ntkndpextin.ko MD5 cb0689e9e1c425a27e670168e51cc32f (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== _ndp_extin_drv_comp_open -> _ndp_extin_drv_comp_open @ 0001604c (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined _ndp_extin_drv_comp_open() (GhidraScript)  
+INFO  DumpFirmware.java> 
+undefined4 _ndp_extin_drv_comp_open(void)
+
+{
+  __gnu_mcount_nc();
+  return 0;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> DISASSEMBLY 0001604c (GhidraScript)  
+INFO  DumpFirmware.java> 0001604c  cpy r12,sp (GhidraScript)  
+INFO  DumpFirmware.java> 00016050  stmdb sp!,{r4,r5,r6,r11,r12,lr,pc} (GhidraScript)  
+INFO  DumpFirmware.java> 00016054  sub r11,r12,#0x4 (GhidraScript)  
+INFO  DumpFirmware.java> 00016058  sub sp,sp,#0x1c (GhidraScript)  
+INFO  DumpFirmware.java> 0001605c  str lr,[sp,#-0x4]! (GhidraScript)  
+INFO  DumpFirmware.java> 00016060  bl 0x000280dc (GhidraScript)  
+INFO  DumpFirmware.java> 00016064  movw r4,#0x8028 (GhidraScript)  
+INFO  DumpFirmware.java> 00016068  movt r4,#0x2 (GhidraScript)  
+INFO  DumpFirmware.java> 0001606c  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 00016070  tst r3,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 00016074  beq 0x000160a4 (GhidraScript)  
+INFO  DumpFirmware.java> 00016078  nop (GhidraScript)  
+INFO  DumpFirmware.java> 0001607c  tst r3,#0x2 (GhidraScript)  
+INFO  DumpFirmware.java> 00016080  beq 0x00016094 (GhidraScript)  
+INFO  DumpFirmware.java> 00016084  nop (GhidraScript)  
+INFO  DumpFirmware.java> 00016088  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 0001608c  tst r3,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 00016090  beq 0x00016098 (GhidraScript)  
+INFO  DumpFirmware.java> 00016094  nop (GhidraScript)  
+INFO  DumpFirmware.java> 00016098  mov r0,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 0001609c  sub sp,r11,#0x18 (GhidraScript)  
+INFO  DumpFirmware.java> 000160a0  ldmia sp,{r4,r5,r6,r11,sp,pc} (GhidraScript)  
+INFO  DumpFirmware.java> 000160a4  tst r3,#0x2 (GhidraScript)  
+INFO  DumpFirmware.java> 000160a8  beq 0x00016098 (GhidraScript)  
+INFO  DumpFirmware.java> 000160ac  nop (GhidraScript)  
+INFO  DumpFirmware.java> 000160b0  b 0x00016088 (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== _ndp_extin_drv_comp_release -> _ndp_extin_drv_comp_release @ 00017688 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined _ndp_extin_drv_comp_release() (GhidraScript)  
+INFO  DumpFirmware.java> 
+undefined4 _ndp_extin_drv_comp_release(void)
+
+{
+  undefined4 uVar1;
+  
+  uVar1 = __gnu_mcount_nc();
+  video_devdata(uVar1);
+  return 0;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> DISASSEMBLY 00017688 (GhidraScript)  
+INFO  DumpFirmware.java> 00017688  cpy r12,sp (GhidraScript)  
+INFO  DumpFirmware.java> 0001768c  stmdb sp!,{r4,r5,r6,r11,r12,lr,pc} (GhidraScript)  
+INFO  DumpFirmware.java> 00017690  sub r11,r12,#0x4 (GhidraScript)  
+INFO  DumpFirmware.java> 00017694  sub sp,sp,#0x1c (GhidraScript)  
+INFO  DumpFirmware.java> 00017698  str lr,[sp,#-0x4]! (GhidraScript)  
+INFO  DumpFirmware.java> 0001769c  bl 0x000280dc (GhidraScript)  
+INFO  DumpFirmware.java> 000176a0  movw r4,#0x8028 (GhidraScript)  
+INFO  DumpFirmware.java> 000176a4  cpy r5,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 000176a8  movt r4,#0x2 (GhidraScript)  
+INFO  DumpFirmware.java> 000176ac  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 000176b0  tst r3,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 000176b4  beq 0x000176bc (GhidraScript)  
+INFO  DumpFirmware.java> 000176b8  nop (GhidraScript)  
+INFO  DumpFirmware.java> 000176bc  cpy r0,r5 (GhidraScript)  
+INFO  DumpFirmware.java> 000176c0  bl 0x00028064 (GhidraScript)  
+INFO  DumpFirmware.java> 000176c4  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 000176c8  tst r3,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 000176cc  beq 0x000176d4 (GhidraScript)  
+INFO  DumpFirmware.java> 000176d0  nop (GhidraScript)  
+INFO  DumpFirmware.java> 000176d4  mov r0,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 000176d8  sub sp,r11,#0x18 (GhidraScript)  
+INFO  DumpFirmware.java> 000176dc  ldmia sp,{r4,r5,r6,r11,sp,pc} (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== _ndp_extin_drv_comp_release_func -> _ndp_extin_drv_comp_release_func @ 00019774 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined _ndp_extin_drv_comp_release_func() (GhidraScript)  
+INFO  DumpFirmware.java> 
+undefined4 _ndp_extin_drv_comp_release_func(void)
+
+{
+  void *pvVar1;
+  int iVar2;
+  undefined1 auStack_94 [12];
+  char local_88;
+  undefined1 local_84;
+  
+  __gnu_mcount_nc();
+  pvVar1 = (void *)NDP_ExtSrc_GetConnectInfo();
+  memcpy(auStack_94,pvVar1,0x74);
+  if (local_88 != '\0') {
+    iVar2 = NDP_ExtSrc_IsSourceTheSame(local_84,0);
+    if (iVar2 != 0) {
+      NDP_ExtSrc_ChangeInput(local_84,0x16);
+    }
+    pvVar1 = (void *)NDP_ExtSrc_GetConnectInfo();
+    memcpy(auStack_94,pvVar1,0x74);
+    local_88 = 0;
+    NDP_ExtSrc_SetConnectInfo(auStack_94);
+    g_comp_connect_tid = 0xffffffff;
+  }
+  return 0;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> DISASSEMBLY 00019774 (GhidraScript)  
+INFO  DumpFirmware.java> 00019774  cpy r12,sp (GhidraScript)  
+INFO  DumpFirmware.java> 00019778  stmdb sp!,{r4,r5,r6,r11,r12,lr,pc} (GhidraScript)  
+INFO  DumpFirmware.java> 0001977c  sub r11,r12,#0x4 (GhidraScript)  
+INFO  DumpFirmware.java> 00019780  sub sp,sp,#0x9c (GhidraScript)  
+INFO  DumpFirmware.java> 00019784  str lr,[sp,#-0x4]! (GhidraScript)  
+INFO  DumpFirmware.java> 00019788  bl 0x000280dc (GhidraScript)  
+INFO  DumpFirmware.java> 0001978c  movw r4,#0x8028 (GhidraScript)  
+INFO  DumpFirmware.java> 00019790  movt r4,#0x2 (GhidraScript)  
+INFO  DumpFirmware.java> 00019794  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 00019798  tst r3,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 0001979c  beq 0x000197a4 (GhidraScript)  
+INFO  DumpFirmware.java> 000197a0  nop (GhidraScript)  
+INFO  DumpFirmware.java> 000197a4  bl 0x00028074 (GhidraScript)  
+INFO  DumpFirmware.java> 000197a8  mov r2,#0x74 (GhidraScript)  
+INFO  DumpFirmware.java> 000197ac  cpy r1,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 000197b0  sub r0,r11,#0x90 (GhidraScript)  
+INFO  DumpFirmware.java> 000197b4  bl 0x00028030 (GhidraScript)  
+INFO  DumpFirmware.java> 000197b8  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 000197bc  tst r3,#0x2 (GhidraScript)  
+INFO  DumpFirmware.java> 000197c0  beq 0x000197ec (GhidraScript)  
+INFO  DumpFirmware.java> 000197c4  nop (GhidraScript)  
+INFO  DumpFirmware.java> 000197c8  ldrb r2,[r11,#-0x84] (GhidraScript)  
+INFO  DumpFirmware.java> 000197cc  cmp r2,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 000197d0  bne 0x000199d0 (GhidraScript)  
+INFO  DumpFirmware.java> 000197d4  tst r3,#0x1 (GhidraScript)  
+INFO  DumpFirmware.java> 000197d8  beq 0x000197e0 (GhidraScript)  
+INFO  DumpFirmware.java> 000197dc  nop (GhidraScript)  
+INFO  DumpFirmware.java> 000197e0  mov r0,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 000197e4  sub sp,r11,#0x18 (GhidraScript)  
+INFO  DumpFirmware.java> 000197e8  ldmia sp,{r4,r5,r6,r11,sp,pc} (GhidraScript)  
+INFO  DumpFirmware.java> 000197ec  ldrb r2,[r11,#-0x84] (GhidraScript)  
+INFO  DumpFirmware.java> 000197f0  cmp r2,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 000197f4  movwne r5,#0x4068 (GhidraScript)  
+INFO  DumpFirmware.java> 000197f8  movtne r5,#0x2 (GhidraScript)  
+INFO  DumpFirmware.java> 000197fc  beq 0x000197d4 (GhidraScript)  
+INFO  DumpFirmware.java> 00019800  mov r1,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 00019804  ldrb r0,[r11,#-0x80] (GhidraScript)  
+INFO  DumpFirmware.java> 00019808  bl 0x0002802c (GhidraScript)  
+INFO  DumpFirmware.java> 0001980c  cmp r0,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 00019810  beq 0x00019824 (GhidraScript)  
+INFO  DumpFirmware.java> 00019814  nop (GhidraScript)  
+INFO  DumpFirmware.java> 00019818  mov r1,#0x16 (GhidraScript)  
+INFO  DumpFirmware.java> 0001981c  ldrb r0,[r11,#-0x80] (GhidraScript)  
+INFO  DumpFirmware.java> 00019820  bl 0x0002806c (GhidraScript)  
+INFO  DumpFirmware.java> 00019824  bl 0x00028074 (GhidraScript)  
+INFO  DumpFirmware.java> 00019828  mov r2,#0x74 (GhidraScript)  
+INFO  DumpFirmware.java> 0001982c  cpy r1,r0 (GhidraScript)  
+INFO  DumpFirmware.java> 00019830  sub r0,r11,#0x90 (GhidraScript)  
+INFO  DumpFirmware.java> 00019834  bl 0x00028030 (GhidraScript)  
+INFO  DumpFirmware.java> 00019838  mov r3,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 0001983c  sub r0,r11,#0x90 (GhidraScript)  
+INFO  DumpFirmware.java> 00019840  strb r3,[r11,#-0x84] (GhidraScript)  
+INFO  DumpFirmware.java> 00019844  bl 0x00028050 (GhidraScript)  
+INFO  DumpFirmware.java> 00019848  mvn r2,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 0001984c  ldr r3,[r4,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 00019850  str r2,[r5,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 00019854  b 0x000197d4 (GhidraScript)  
+INFO  DumpFirmware.java> 00019960  nop (GhidraScript)  
+INFO  DumpFirmware.java> 00019964  b 0x00019800 (GhidraScript)  
+INFO  DumpFirmware.java> 000199d0  movw r5,#0x4068 (GhidraScript)  
+INFO  DumpFirmware.java> 000199d4  movt r5,#0x2 (GhidraScript)  
+INFO  DumpFirmware.java> 000199d8  b 0x00019960 (GhidraScript)  
+INFO  ANALYZING changes made by post scripts: file:///home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/ntkndpextin.ko (HeadlessAnalyzer)  
+INFO  REPORT: Post-analysis succeeded for file: file:///home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/ntkndpextin.ko (HeadlessAnalyzer)  
+INFO  /ntkndpextin.ko: file created (ekollof) (LocalFileSystem)  
+INFO  REPORT: Save succeeded for: /ntkndpextin.ko (Extin:/ntkndpextin.ko) (HeadlessAnalyzer)  
+INFO  REPORT: Import succeeded (HeadlessAnalyzer)  

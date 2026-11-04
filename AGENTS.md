@@ -98,6 +98,7 @@ serves instruction-level greps without re-disassembling. Other scripts are in
 | ghidra_proj | Aurora / aurora.elf |
 | ghidra_ndal3 | ndal3 / libNDAL3.so |
 | ghidra_ndal_ex | ndal_ex / libNDAL_EX.so |
+| ghidra_extin | Extin / ntkndpextin.ko |
 | ghidra_ntk | ntk / ntkndpdrm.ko |
 | ghidra_nondovi | nondovi / ntkdriver_nondovi.ko |
 | ghidra_tdga | Tdga / libdirectfb_tdga.so |
@@ -176,9 +177,12 @@ boolean ignores the kernel's separate device-result byte. Raw outputs are
 reply bits23..16/15..8, not a proved direction/level pair. The new helper requires
 an explicit transport callback and validates device status; no native fallback
 or MCU operation is tested. OpenDevice(0,10) maps video24 and installs a
-process-global fd, not a per-module lease; its lower open/close/cold authority
-remain unresolved. Preserve the cold-call warning and do not infer historical
-reset causes from the recovered signature alone.
+process-global fd, not a per-module lease. AMP-VIDEO-OWNER ties video24 to
+extin's simple comp_open/comp_release using section-specific .rodata relocations;
+Ghidra's missing data refs do not mean unused callbacks. The mutating
+comp_release_func belongs to input selection, not fd close. Full libv4l2 wrapper
+behavior and coherent/cold authority remain unresolved. Preserve the cold-call
+warning and do not infer historical reset causes from the recovered signature alone.
 AUDIO-VOLUME-2026-11-01 traces UI level through speaker gain and AQ DSP tables;
 common/audio_curve.c is tested against all101 live entries and on the TV. It is
 not yet integrated with the audio module. Do not confuse decoder opcode33,

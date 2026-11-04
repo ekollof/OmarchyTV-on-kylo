@@ -1,0 +1,165 @@
+
+artifacts/workbench/rootfs/vendor/lib/libv4l2.so.0:     file format elf32-littlearm
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .text:
+
+4e982810 <v4l2_close>:
+4e982810:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
+4e982814:	1c42      	adds	r2, r0, #1
+4e982816:	4e5e      	ldr	r6, [pc, #376]	; (4e982990 <v4l2_close+0x180>)
+4e982818:	447e      	add	r6, pc
+4e98281a:	d015      	beq.n	4e982848 <v4l2_close+0x38>
+4e98281c:	4b5d      	ldr	r3, [pc, #372]	; (4e982994 <v4l2_close+0x184>)
+4e98281e:	447b      	add	r3, pc
+4e982820:	6999      	ldr	r1, [r3, #24]
+4e982822:	2900      	cmp	r1, #0
+4e982824:	f340 80a3 	ble.w	4e98296e <v4l2_close+0x15e>
+4e982828:	4b5b      	ldr	r3, [pc, #364]	; (4e982998 <v4l2_close+0x188>)
+4e98282a:	447b      	add	r3, pc
+4e98282c:	681a      	ldr	r2, [r3, #0]
+4e98282e:	4290      	cmp	r0, r2
+4e982830:	bf18      	it	ne
+4e982832:	2400      	movne	r4, #0
+4e982834:	d103      	bne.n	4e98283e <v4l2_close+0x2e>
+4e982836:	e09c      	b.n	4e982972 <v4l2_close+0x162>
+4e982838:	681a      	ldr	r2, [r3, #0]
+4e98283a:	4290      	cmp	r0, r2
+4e98283c:	d00a      	beq.n	4e982854 <v4l2_close+0x44>
+4e98283e:	3401      	adds	r4, #1
+4e982840:	f503 7343 	add.w	r3, r3, #780	; 0x30c
+4e982844:	428c      	cmp	r4, r1
+4e982846:	d1f7      	bne.n	4e982838 <v4l2_close+0x28>
+4e982848:	4601      	mov	r1, r0
+4e98284a:	e8bd 41f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, lr}
+4e98284e:	2006      	movs	r0, #6
+4e982850:	f7fe bcaa 	b.w	4e9811a8 <syscall@plt>
+4e982854:	f44f 7743 	mov.w	r7, #780	; 0x30c
+4e982858:	fb07 f704 	mul.w	r7, r7, r4
+4e98285c:	f507 77d2 	add.w	r7, r7, #420	; 0x1a4
+4e982860:	f8df 8138 	ldr.w	r8, [pc, #312]	; 4e98299c <v4l2_close+0x18c>
+4e982864:	4605      	mov	r5, r0
+4e982866:	44f8      	add	r8, pc
+4e982868:	4447      	add	r7, r8
+4e98286a:	4638      	mov	r0, r7
+4e98286c:	f7fe ec34 	blx	4e9810d8 <pthread_mutex_lock@plt>
+4e982870:	f44f 7343 	mov.w	r3, #780	; 0x30c
+4e982874:	4638      	mov	r0, r7
+4e982876:	fb03 8704 	mla	r7, r3, r4, r8
+4e98287a:	68bb      	ldr	r3, [r7, #8]
+4e98287c:	f103 38ff 	add.w	r8, r3, #4294967295	; 0xffffffff
+4e982880:	f8c7 8008 	str.w	r8, [r7, #8]
+4e982884:	f7fe ebf2 	blx	4e98106c <pthread_mutex_unlock@plt>
+4e982888:	f1b8 0f00 	cmp.w	r8, #0
+4e98288c:	d003      	beq.n	4e982896 <v4l2_close+0x86>
+4e98288e:	2400      	movs	r4, #0
+4e982890:	4620      	mov	r0, r4
+4e982892:	e8bd 81f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, pc}
+4e982896:	f507 7040 	add.w	r0, r7, #768	; 0x300
+4e98289a:	c807      	ldmia	r0, {r0, r1, r2}
+4e98289c:	f001 ff40 	bl	4e984720 <v4l2_plugin_cleanup>
+4e9828a0:	4620      	mov	r0, r4
+4e9828a2:	f7fe fda9 	bl	4e9813f8 <v4l2_unmap_buffers>
+4e9828a6:	f8d7 31d0 	ldr.w	r3, [r7, #464]	; 0x1d0
+4e9828aa:	3301      	adds	r3, #1
+4e9828ac:	d05c      	beq.n	4e982968 <v4l2_close+0x158>
+4e9828ae:	4620      	mov	r0, r4
+4e9828b0:	f7fe ffc8 	bl	4e981844 <v4l2_buffers_mapped>
+4e9828b4:	2800      	cmp	r0, #0
+4e9828b6:	d04c      	beq.n	4e982952 <v4l2_close+0x142>
+4e9828b8:	4b39      	ldr	r3, [pc, #228]	; (4e9829a0 <v4l2_close+0x190>)
+4e9828ba:	58f7      	ldr	r7, [r6, r3]
+4e9828bc:	683b      	ldr	r3, [r7, #0]
+4e9828be:	2b00      	cmp	r3, #0
+4e9828c0:	d05b      	beq.n	4e98297a <v4l2_close+0x16a>
+4e9828c2:	4838      	ldr	r0, [pc, #224]	; (4e9829a4 <v4l2_close+0x194>)
+4e9828c4:	223b      	movs	r2, #59	; 0x3b
+4e9828c6:	2101      	movs	r1, #1
+4e9828c8:	4478      	add	r0, pc
+4e9828ca:	f7fe ec50 	blx	4e98116c <fwrite@plt>
+4e9828ce:	6838      	ldr	r0, [r7, #0]
+4e9828d0:	f7fe ebf0 	blx	4e9810b4 <fflush@plt>
+4e9828d4:	4b34      	ldr	r3, [pc, #208]	; (4e9829a8 <v4l2_close+0x198>)
+4e9828d6:	f44f 7243 	mov.w	r2, #780	; 0x30c
+4e9828da:	f04f 31ff 	mov.w	r1, #4294967295	; 0xffffffff
+4e9828de:	447b      	add	r3, pc
+4e9828e0:	fb02 3304 	mla	r3, r2, r4, r3
+4e9828e4:	f8c3 11d0 	str.w	r1, [r3, #464]	; 0x1d0
+4e9828e8:	f44f 7343 	mov.w	r3, #780	; 0x30c
+4e9828ec:	f8df 80bc 	ldr.w	r8, [pc, #188]	; 4e9829ac <v4l2_close+0x19c>
+4e9828f0:	fb03 f404 	mul.w	r4, r3, r4
+4e9828f4:	44f8      	add	r8, pc
+4e9828f6:	eb08 0604 	add.w	r6, r8, r4
+4e9828fa:	f8d6 01cc 	ldr.w	r0, [r6, #460]	; 0x1cc
+4e9828fe:	f7fe ec80 	blx	4e981200 <v4lconvert_destroy@plt>
+4e982902:	f8d6 02fc 	ldr.w	r0, [r6, #764]	; 0x2fc
+4e982906:	f7fe ebe2 	blx	4e9810cc <free@plt>
+4e98290a:	2300      	movs	r3, #0
+4e98290c:	f04f 32ff 	mov.w	r2, #4294967295	; 0xffffffff
+4e982910:	f848 2004 	str.w	r2, [r8, r4]
+4e982914:	f8c6 32fc 	str.w	r3, [r6, #764]	; 0x2fc
+4e982918:	f8c6 32f8 	str.w	r3, [r6, #760]	; 0x2f8
+4e98291c:	e004      	b.n	4e982928 <v4l2_close+0x118>
+4e98291e:	f7fe ec58 	blx	4e9811d0 <__errno_location@plt>
+4e982922:	6803      	ldr	r3, [r0, #0]
+4e982924:	2b04      	cmp	r3, #4
+4e982926:	d106      	bne.n	4e982936 <v4l2_close+0x126>
+4e982928:	4629      	mov	r1, r5
+4e98292a:	2006      	movs	r0, #6
+4e98292c:	f7fe ec3e 	blx	4e9811ac <syscall@plt+0x4>
+4e982930:	1c43      	adds	r3, r0, #1
+4e982932:	4604      	mov	r4, r0
+4e982934:	d0f3      	beq.n	4e98291e <v4l2_close+0x10e>
+4e982936:	6838      	ldr	r0, [r7, #0]
+4e982938:	2800      	cmp	r0, #0
+4e98293a:	d0a9      	beq.n	4e982890 <v4l2_close+0x80>
+4e98293c:	491c      	ldr	r1, [pc, #112]	; (4e9829b0 <v4l2_close+0x1a0>)
+4e98293e:	462a      	mov	r2, r5
+4e982940:	4479      	add	r1, pc
+4e982942:	f7fe ec3a 	blx	4e9811b8 <fprintf@plt>
+4e982946:	6838      	ldr	r0, [r7, #0]
+4e982948:	f7fe ebb4 	blx	4e9810b4 <fflush@plt>
+4e98294c:	4620      	mov	r0, r4
+4e98294e:	e8bd 81f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, pc}
+4e982952:	f8d7 21bc 	ldr.w	r2, [r7, #444]	; 0x1bc
+4e982956:	205b      	movs	r0, #91	; 0x5b
+4e982958:	f8d7 11d0 	ldr.w	r1, [r7, #464]	; 0x1d0
+4e98295c:	0612      	lsls	r2, r2, #24
+4e98295e:	f7fe ec26 	blx	4e9811ac <syscall@plt+0x4>
+4e982962:	4b0f      	ldr	r3, [pc, #60]	; (4e9829a0 <v4l2_close+0x190>)
+4e982964:	58f7      	ldr	r7, [r6, r3]
+4e982966:	e7b5      	b.n	4e9828d4 <v4l2_close+0xc4>
+4e982968:	4b0d      	ldr	r3, [pc, #52]	; (4e9829a0 <v4l2_close+0x190>)
+4e98296a:	58f7      	ldr	r7, [r6, r3]
+4e98296c:	e7bc      	b.n	4e9828e8 <v4l2_close+0xd8>
+4e98296e:	f43f af6b 	beq.w	4e982848 <v4l2_close+0x38>
+4e982972:	f44f 77d2 	mov.w	r7, #420	; 0x1a4
+4e982976:	2400      	movs	r4, #0
+4e982978:	e772      	b.n	4e982860 <v4l2_close+0x50>
+4e98297a:	4b0e      	ldr	r3, [pc, #56]	; (4e9829b4 <v4l2_close+0x1a4>)
+4e98297c:	223b      	movs	r2, #59	; 0x3b
+4e98297e:	480e      	ldr	r0, [pc, #56]	; (4e9829b8 <v4l2_close+0x1a8>)
+4e982980:	2101      	movs	r1, #1
+4e982982:	58f3      	ldr	r3, [r6, r3]
+4e982984:	4478      	add	r0, pc
+4e982986:	681b      	ldr	r3, [r3, #0]
+4e982988:	f7fe ebf0 	blx	4e98116c <fwrite@plt>
+4e98298c:	e7a2      	b.n	4e9828d4 <v4l2_close+0xc4>
+4e98298e:	bf00      	nop
+4e982990:	00013974 	.word	0x00013974
+4e982994:	00016ca2 	.word	0x00016ca2
+4e982998:	00013a3a 	.word	0x00013a3a
+4e98299c:	000139fe 	.word	0x000139fe
+4e9829a0:	000000bc 	.word	0x000000bc
+4e9829a4:	00002b28 	.word	0x00002b28
+4e9829a8:	00013986 	.word	0x00013986
+4e9829ac:	00013970 	.word	0x00013970
+4e9829b0:	00002aec 	.word	0x00002aec
+4e9829b4:	000000c0 	.word	0x000000c0
+4e9829b8:	00002a6c 	.word	0x00002a6c
+
+Disassembly of section .fini:

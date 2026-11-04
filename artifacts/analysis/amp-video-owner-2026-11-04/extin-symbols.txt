@@ -1,0 +1,5 @@
+00005e24 t _ndp_extin_drv_comp_open
+00007460 t _ndp_extin_drv_comp_release
+0000954c t _ndp_extin_drv_comp_release_func
+0000dd9c t _ndp_extin_drv_probe
+00001978 r ndp_comp_fops

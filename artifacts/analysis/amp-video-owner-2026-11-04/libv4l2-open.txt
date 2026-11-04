@@ -1,0 +1,54 @@
+
+artifacts/workbench/rootfs/vendor/lib/libv4l2.so.0:     file format elf32-littlearm
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .text:
+
+4e9827a8 <v4l2_open>:
+4e9827a8:	b40e      	push	{r1, r2, r3}
+4e9827aa:	4602      	mov	r2, r0
+4e9827ac:	b5f0      	push	{r4, r5, r6, r7, lr}
+4e9827ae:	b084      	sub	sp, #16
+4e9827b0:	9b09      	ldr	r3, [sp, #36]	; 0x24
+4e9827b2:	f013 0140 	ands.w	r1, r3, #64	; 0x40
+4e9827b6:	bf1b      	ittet	ne
+4e9827b8:	9d0a      	ldrne	r5, [sp, #40]	; 0x28
+4e9827ba:	ac0a      	addne	r4, sp, #40	; 0x28
+4e9827bc:	9100      	streq	r1, [sp, #0]
+4e9827be:	f06f 0163 	mvnne.w	r1, #99	; 0x63
+4e9827c2:	bf15      	itete	ne
+4e9827c4:	f44f 70a1 	movne.w	r0, #322	; 0x142
+4e9827c8:	f06f 0163 	mvneq.w	r1, #99	; 0x63
+4e9827cc:	9500      	strne	r5, [sp, #0]
+4e9827ce:	f44f 70a1 	moveq.w	r0, #322	; 0x142
+4e9827d2:	bf18      	it	ne
+4e9827d4:	9403      	strne	r4, [sp, #12]
+4e9827d6:	f7fe ecea 	blx	4e9811ac <syscall@plt+0x4>
+4e9827da:	1c42      	adds	r2, r0, #1
+4e9827dc:	4604      	mov	r4, r0
+4e9827de:	d005      	beq.n	4e9827ec <v4l2_open+0x44>
+4e9827e0:	2100      	movs	r1, #0
+4e9827e2:	f7fe ec8c 	blx	4e9810fc <v4l2_fd_open@plt>
+4e9827e6:	1c43      	adds	r3, r0, #1
+4e9827e8:	4605      	mov	r5, r0
+4e9827ea:	d005      	beq.n	4e9827f8 <v4l2_open+0x50>
+4e9827ec:	4620      	mov	r0, r4
+4e9827ee:	b004      	add	sp, #16
+4e9827f0:	e8bd 40f0 	ldmia.w	sp!, {r4, r5, r6, r7, lr}
+4e9827f4:	b003      	add	sp, #12
+4e9827f6:	4770      	bx	lr
+4e9827f8:	f7fe ecea 	blx	4e9811d0 <__errno_location@plt>
+4e9827fc:	4606      	mov	r6, r0
+4e9827fe:	4621      	mov	r1, r4
+4e982800:	6837      	ldr	r7, [r6, #0]
+4e982802:	2006      	movs	r0, #6
+4e982804:	f7fe ecd2 	blx	4e9811ac <syscall@plt+0x4>
+4e982808:	462c      	mov	r4, r5
+4e98280a:	6037      	str	r7, [r6, #0]
+4e98280c:	e7ee      	b.n	4e9827ec <v4l2_open+0x44>
+
+Disassembly of section .fini:
