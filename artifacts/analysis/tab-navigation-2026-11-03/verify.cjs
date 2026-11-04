@@ -61,4 +61,5 @@ assert.match(result.stdout, /launcher item: 8 native\/C cases/);
 assert.match(result.stdout, /launcher info: 8 native\/C cases/);
 assert.match(result.stdout, /svg scrollbar: 3120 native\/C cases/);
 assert.match(result.stdout, /svg scrollbar skin: 16 native\/C cases/);
+assert.match(result.stdout, /svg scrollbar render: 8 native\/C cases/);
 assert.match(result.stdout, /row values: 68640 type\/raw-value cases/);

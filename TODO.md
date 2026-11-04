@@ -437,11 +437,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       0x21/0x23 -> bar_gTopM/bar_mTopM + bar_gBotM/bar_mBotM, cap heights20+16
       ->36px;16 native/C cases plus host/ASan/ARM-qemu/TV CPU and
       verify.cjs41 ok. SVG-SCROLLBAR-SKIN.
-- [ ] Scrollbar renderBackground/renderBar bodies (mask transforms/SVGSurface)
-      and the apps-grid screen with the1750,180,8x720 scrollbar; then
-      display/scanout binding and independent startup. Keep the live-DB
-      visible run and real downloaded-PNG decoding as explicit acceptance
-      gates.
+- [x] Scrollbar renderBackground/renderBar bodies: ops-driven sequence,8
+      native/C cases plus host/ASan/ARM-qemu/TV CPU and verify.cjs42 ok.
+      SVG-SCROLLBAR-RENDER. Vendor mask/surface/renderer calls remain stubs;
+      no pixels yet.
+- [ ] Apps-grid screen and scrollbar rasterizer using the1750,180,8x720
+      scrollbar, then display/scanout binding and independent startup. Keep
+      the live-DB visible run and real downloaded-PNG decoding as explicit
+      acceptance gates.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

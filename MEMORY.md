@@ -1,5 +1,23 @@
 # Current project state — last verified 2026-11-04
 
+SVG-SCROLLBAR-RENDER-2026-11-04: renderBackground0x10c3658 and
+renderBar0x10c3bac implemented as ops-driven sequences. Both cache the supplier
+image per orientation, resize the background (this+0x98)/bar (this+0xa4)
+surface, configure top/bottom masks with align3/4, draw gTopM/gBotM/gRowM (or
+bar_gTopM/bar_gBotM/bar_gRowM) under mTopM/mBotM/mRowM (bar_m*), and stretch
+the row rect {0,top_cap,width,height-bottom_cap}. renderBar calls
+calculateBarSizeAndPosition first (two window-rect queries); an empty bar
+clears both surfaces and clears +0xc8. The +0xc8 byte is background_rendered
+(renamed from background_hidden): renderBackground sets it, setScrollPosition
+calls background only when clear.8 native/C cases compare sequence/cache/flag;
+host, ASan/UBSan, ARM/qemu, full verify.cjs (42 ok), full make check (265 ok)
+and a focused TV CPU of the render unit pass. Unit55752/
+5cc5a6a259bf1f69bb80c893da620742, reference tab-policy from native-final.txt.
+Vendor mask/surface/renderer calls remain stubs; no pixels/apps-grid
+screen/rasterizer, so the 1750,180,8x720 scrollbar is not visible. Display/
+scanout binding, independent startup, live-DB visible and real PNG decoding
+remain open. No device/screen/settings/network/boot change; TV staging removed.
+
 SVG-SCROLLBAR-SKIN-2026-11-04: calculateMinBarSize0x10c397c (0x174 bytes,
 CRC0xd9fdda32) implemented as oa_svg_scrollbar_min_bar. Widget standard names:
 0x20 bar_gTopM,0x21 bar_gBotM,0x22 bar_mTopM,0x23 bar_mBotM; scrollbar

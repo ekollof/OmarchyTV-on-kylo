@@ -67,7 +67,7 @@ static void sbg_read_state(const unsigned char *obj,struct oa_svg_scrollbar_stat
     memcpy(&s->total,obj+0xbc,4);
     memcpy(&s->visible,obj+0xc0,4);
     memcpy(&s->first,obj+0xc4,4);
-    s->background_hidden=obj[0xc8];
+    s->background_rendered=obj[0xc8];
 }
 static void sbg_write_state(unsigned char *obj,const struct oa_svg_scrollbar_state *s)
 {
@@ -77,7 +77,7 @@ static void sbg_write_state(unsigned char *obj,const struct oa_svg_scrollbar_sta
     memcpy(obj+0xbc,&s->total,4);
     memcpy(obj+0xc0,&s->visible,4);
     memcpy(obj+0xc4,&s->first,4);
-    obj[0xc8]=s->background_hidden;
+    obj[0xc8]=s->background_rendered;
 }
 
 static void check_svg_scrollbar_geom(const unsigned char *elf,size_t bytes)
@@ -126,7 +126,7 @@ static void check_svg_scrollbar_geom(const unsigned char *elf,size_t bytes)
             .bar_pos=INT32_C(0x11110000)+(int32_t)a,
             .bar_size=INT32_C(0x22220000)+(int32_t)b,
             .min_bar=mins[d],.total=totals[a],.visible=visibles[b],
-            .first=firsts[c],.background_hidden=(uint8_t)((a+b)&1)};
+            .first=firsts[c],.background_rendered=(uint8_t)((a+b)&1)};
         memset(obj,0xa5,0x100);
         *(uint32_t *)obj=(uint32_t)(uintptr_t)vtable;
         sbg_write_state(obj,&state);
@@ -142,7 +142,7 @@ static void check_svg_scrollbar_geom(const unsigned char *elf,size_t bytes)
         if(native.bar_pos!=state.bar_pos || native.bar_size!=state.bar_size ||
            native.min_bar!=state.min_bar || native.total!=state.total ||
            native.visible!=state.visible || native.first!=state.first ||
-           native.background_hidden!=state.background_hidden) {
+           native.background_rendered!=state.background_rendered) {
             fprintf(stderr,"scrollbar calc mismatch t=%d v=%d f=%d m=%d h=%d nat=%d/%d ours=%d/%d\n",
                 totals[a],visibles[b],firsts[c],mins[d],heights[e],
                 native.bar_pos,native.bar_size,state.bar_pos,state.bar_size);
@@ -166,7 +166,7 @@ static void check_svg_scrollbar_geom(const unsigned char *elf,size_t bytes)
         struct oa_svg_scrollbar_state state={
             .bar_pos=0x33,.bar_size=0x44,.min_bar=0x55,
             .total=7,.visible=8,.first=9,
-            .background_hidden=(uint8_t)bg};
+            .background_rendered=(uint8_t)bg};
         int created=(int)cr;
         memset(obj,0xa5,0x100);
         *(uint32_t *)obj=(uint32_t)(uintptr_t)vtable;
@@ -196,7 +196,7 @@ static void check_svg_scrollbar_geom(const unsigned char *elf,size_t bytes)
            native.bar_pos!=state.bar_pos || native.bar_size!=state.bar_size ||
            native.min_bar!=state.min_bar || native.total!=state.total ||
            native.visible!=state.visible || native.first!=state.first ||
-           native.background_hidden!=state.background_hidden) {
+           native.background_rendered!=state.background_rendered) {
             fprintf(stderr,"scrollbar setpos mismatch cr=%d t=%d v=%d f=%d bg=%d ret=%d/%d\n",
                 created,st_totals[a],st_visibles[b],st_firsts[c],bg,
                 native_ret,ours_ret);

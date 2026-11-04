@@ -31,7 +31,27 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [SVG-SCROLLBAR-SKIN](artifacts/reports/SVG-SCROLLBAR-SKIN-2026-11-04.md)
+Latest: [SVG-SCROLLBAR-RENDER](artifacts/reports/SVG-SCROLLBAR-RENDER-2026-11-04.md)
+implements renderBackground (0x10c3658) and renderBar (0x10c3bac) as
+ops-driven sequences. Both cache the supplier image per orientation, resize
+the background (this+0x98) or bar (this+0xa4) surface, configure the
+top/bottom masks with align3/4, draw gTopM/gBotM/gRowM (or
+bar_gTopM/bar_gBotM/bar_gRowM) under the mTopM/mBotM/mRowM (bar_m*) masks,
+and stretch the row rect {0,top_cap,width,height-bottom_cap}. renderBar calls
+calculateBarSizeAndPosition first (two window-rect queries); an empty bar
+clears both surfaces and clears +0xc8. The +0xc8 byte is background_rendered
+(renamed from background_hidden): renderBackground sets it and
+setScrollPosition renders the background only when clear. 8 native/C cases
+compare sequence/cache/flag; host/ASan/UBSan, ARM/qemu, full verify.cjs
+(42 ok), full make check (265 ok) and a focused TV CPU run pass. The vendor
+mask/surface/renderer calls remain stubs, so this is a call/geometry
+differential, not pixels: no apps-grid screen or scrollbar rasterizer is
+wired and the 1750,180,8x720 scrollbar is not visible in ui_vendor.
+Display/scanout binding, independent startup, the live-DB visible run and
+real downloaded-PNG decoding remain open. No device/screen/settings/network/
+boot change; TV staging removed.
+
+Previous: [SVG-SCROLLBAR-SKIN](artifacts/reports/SVG-SCROLLBAR-SKIN-2026-11-04.md)
 implements SVGScrollBar::calculateMinBarSize (0x10c397c). The standard widget
 names are bar_gTopM/bar_gBotM (0x20/0x21) and bar_mTopM/bar_mBotM (0x22/0x23);
 their BinSVG cap heights are 20 and 16, so the apps-grid minimum is 36 px. The

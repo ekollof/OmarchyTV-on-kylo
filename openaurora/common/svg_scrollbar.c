@@ -41,7 +41,7 @@ int oa_svg_scrollbar_set_position(struct oa_svg_scrollbar_state *s,
     s->total=total;
     s->visible=visible;
     s->first=first;
-    if(!s->background_hidden && ops->render_background)
+    if(!s->background_rendered && ops->render_background)
         ops->render_background(s);
     if(ops->render_bar)ops->render_bar(s);
     return 1;
@@ -71,4 +71,94 @@ void oa_svg_scrollbar_min_bar(struct oa_svg_scrollbar_skin *s,
     name=ops->widget_name(s,0x23);
     min+=ops->rect_height(s,name);
     s->min_bar=min;
+}
+
+static int32_t render_image(struct oa_svg_scrollbar_render *r,
+    const struct oa_svg_scrollbar_render_ops *o)
+{
+    int32_t image=r->skin.cached_image[r->skin.orientation];
+    if(!image) {
+        image=o->supplier_image(r,r->skin.image_id[r->skin.orientation]);
+        r->skin.cached_image[r->skin.orientation]=image;
+    }
+    return image;
+}
+
+static void render_caps(struct oa_svg_scrollbar_render *r,
+    const struct oa_svg_scrollbar_render_ops *o,int surface,int32_t image,
+    const int32_t surface_rect[4],int top_name,int top_image,
+    int bottom_name,int bottom_image,int *top_height,int *bottom_height)
+{
+    o->mask_align(r,3);
+    o->mask_surface_rect(r,surface_rect);
+    o->mask_name(r,top_name);
+    o->mask_container(r);
+    o->renderer_draw(r,surface,image,top_image,0);
+    *top_height=o->mask_rect_height(r,top_name);
+    o->mask_reset(r);
+    o->mask_name(r,bottom_name);
+    o->mask_align(r,4);
+    o->renderer_draw(r,surface,image,bottom_image,0);
+    *bottom_height=o->mask_rect_height(r,bottom_name);
+}
+
+static void render_row(struct oa_svg_scrollbar_render *r,
+    const struct oa_svg_scrollbar_render_ops *o,int surface,int32_t image,
+    const int32_t surface_rect[4],int top_height,int bottom_height,
+    int row_name,int row_image)
+{
+    int32_t row[4];
+    o->rect_new(r,row,0,top_height,surface_rect[2],
+        surface_rect[3]-bottom_height);
+    o->vertical_surface_rect(r,row);
+    o->vertical_name(r,row_name);
+    o->vertical_container(r);
+    o->renderer_draw(r,surface,image,row_image,1);
+    (void)o->mask_rect_height(r,row_name);
+}
+
+void oa_svg_scrollbar_render_background(struct oa_svg_scrollbar_render *r,
+    const struct oa_svg_scrollbar_render_ops *ops)
+{
+    int32_t image,top,bottom;
+    int32_t rect[4],surface_rect[4];
+    if(!r || !ops)return;
+    image=render_image(r,ops);
+    if(!image)return;
+    ops->window_rect(r,rect);
+    ops->surface_resize(r,0,rect);
+    ops->rect_new(r,surface_rect,0,0,rect[2]-rect[0],rect[3]-rect[1]);
+    render_caps(r,ops,0,image,surface_rect,15,3,24,12,&top,&bottom);
+    render_row(r,ops,0,image,surface_rect,top,bottom,18,6);
+    r->state.background_rendered=1;
+}
+
+void oa_svg_scrollbar_render_bar(struct oa_svg_scrollbar_render *r,
+    const struct oa_svg_scrollbar_render_ops *ops)
+{
+    int32_t image,top=0,bottom=0;
+    int32_t rect[4],bar_rect[4],surface_rect[4];
+    if(!r || !ops)return;
+    image=render_image(r,ops);
+    if(!image)return;
+    /* The shipped body queries the rect once inside
+     * calculateBarSizeAndPosition and again for the bar surface. */
+    ops->window_rect(r,rect);
+    ops->window_rect(r,rect);
+    oa_svg_scrollbar_calculate(&r->state,rect[3]-rect[1]);
+    bar_rect[0]=rect[0];
+    bar_rect[1]=rect[1]+r->state.bar_pos;
+    bar_rect[2]=rect[2];
+    bar_rect[3]=bar_rect[1]+r->state.bar_size;
+    ops->surface_resize(r,1,bar_rect);
+    ops->rect_new(r,surface_rect,0,0,rect[2]-rect[0],r->state.bar_size);
+    if(r->state.bar_size==0) {
+        ops->surface_clear(r,1);
+        ops->surface_clear(r,0);
+        r->state.background_rendered=0;
+        return;
+    }
+    render_caps(r,ops,1,image,surface_rect,34,32,35,33,&top,&bottom);
+    if(r->state.min_bar<r->state.bar_size)
+        render_row(r,ops,1,image,surface_rect,top,bottom,30,27);
 }

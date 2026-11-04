@@ -48,6 +48,21 @@ reference groups. Raw checked bytes and independently varied paired child
 states close additional coverage gaps.1771396 renderer/276 setter/56 image
 cases plus host/IPC/sanitizer/ARM-qemu/TV CPU pass; real rendering/startup open.
 
+SVG-SCROLLBAR-RENDER implements renderBackground (0x10c3658) and renderBar
+(0x10c3bac) as ops-driven sequences. Both cache the supplier image per
+orientation, resize the background (this+0x98) or bar (this+0xa4) surface,
+configure the top/bottom masks with align3/4, draw gTopM/gBotM/gRowM (or
+bar_gTopM/bar_gBotM/bar_gRowM) under the mTopM/mBotM/mRowM (bar_m*) masks, and
+stretch the middle row rect {0,top_cap,width,height-bottom_cap}. renderBar
+calls calculateBarSizeAndPosition first, so it queries the window rect twice;
+an empty bar clears both surfaces and clears +0xc8. The +0xc8 byte is a
+background-rendered flag (renderBackground sets it; setScrollPosition renders
+the background only when clear), not a hide flag; the API name is corrected
+from background_hidden to background_rendered. 8 native/C cases compare the
+full sequence, cache and flag with host/ASan/ARM-qemu/TV CPU and verify.cjs42
+ok. The vendor mask/surface/renderer calls remain stubbed; no pixels, apps-grid
+screen or rasterizer are wired, so no visible scrollbar parity is claimed.
+
 SVG-SCROLLBAR-SKIN implements SVGScrollBar::calculateMinBarSize (0x10c397c,
 CRC0xd9fdda32). Widget IDs0x20/0x21/0x22/0x23 resolve bar_gTopM/bar_gBotM/
 bar_mTopM/bar_mBotM; the BinSVG elements give cap heights20 and16, so the

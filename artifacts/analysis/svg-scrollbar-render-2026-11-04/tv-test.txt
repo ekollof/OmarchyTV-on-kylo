@@ -1,0 +1,2 @@
+ok svg scrollbar render: background/bar surface, mask caps and row geometry
+TV_EXIT=0

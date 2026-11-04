@@ -308,6 +308,7 @@ $(BUILD)/tests/tab_policy_firmware: tests/launcher_item_native.h common/launcher
 $(BUILD)/tests/tab_policy_firmware: tests/launcher_info_native.h
 $(BUILD)/tests/tab_policy_firmware: tests/svg_scrollbar_native.h common/svg_scrollbar.c include/openaurora/svg_scrollbar.h
 $(BUILD)/tests/tab_policy_firmware: tests/svg_scrollbar_skin_native.h
+$(BUILD)/tests/tab_policy_firmware: tests/svg_scrollbar_render_native.h
 
 $(BUILD)/tests/settings_row_type: tests/settings_row_type.c common/settings_row_type.c common/settings_model.c common/settings_draw.c include/openaurora/settings_row_type.h include/openaurora/settings_model.h include/openaurora/settings_draw.h
 	@mkdir -p $(dir $@)
@@ -347,10 +348,14 @@ $(BUILD)/tests/svg_scrollbar: tests/svg_scrollbar.c common/svg_scrollbar.c inclu
 $(BUILD)/tests/svg_scrollbar_skin: tests/svg_scrollbar_skin.c common/svg_scrollbar.c include/openaurora/svg_scrollbar.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+$(BUILD)/tests/svg_scrollbar_render: tests/svg_scrollbar_render.c common/svg_scrollbar.c include/openaurora/svg_scrollbar.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 .PHONY: check-svg-scrollbar
-check-svg-scrollbar: $(BUILD)/tests/svg_scrollbar $(BUILD)/tests/svg_scrollbar_skin
+check-svg-scrollbar: $(BUILD)/tests/svg_scrollbar $(BUILD)/tests/svg_scrollbar_skin $(BUILD)/tests/svg_scrollbar_render
 	@$(BUILD)/tests/svg_scrollbar
 	@$(BUILD)/tests/svg_scrollbar_skin
+	@$(BUILD)/tests/svg_scrollbar_render
 check: check-svg-scrollbar
 
 $(BUILD)/tests/launcher_item: tests/launcher_item.c common/launcher_item.c include/openaurora/launcher_item.h

@@ -29,7 +29,7 @@ struct oa_svg_scrollbar_state {
     int32_t total;
     int32_t visible;
     int32_t first;
-    uint8_t background_hidden;
+    uint8_t background_rendered;
 };
 
 struct oa_svg_scrollbar_ops {
@@ -43,7 +43,7 @@ void oa_svg_scrollbar_calculate(struct oa_svg_scrollbar_state *state,
 
 /* Returns 1 when the position is accepted and rendered, 0 when the window is
  * not created or first > total. Background rendering is skipped when
- * background_hidden is set; renderBar always runs on the accepted path. */
+ * background_rendered is clear; renderBar always runs on the accepted path. */
 int oa_svg_scrollbar_set_position(struct oa_svg_scrollbar_state *state,
     int32_t total,int32_t visible,int32_t first,int created,
     const struct oa_svg_scrollbar_ops *ops);
@@ -62,6 +62,51 @@ struct oa_svg_scrollbar_skin {
     int32_t min_bar;
     uint8_t orientation;
 };
+
+/*
+ * SVGScrollBar::renderBackground (0x10c3658, 0x324 bytes, CRC 0x? ) and
+ * renderBar (0x10c3bac, 0x35c bytes). The bodies resize the background/bar
+ * SVGSurfaces, configure the top/bottom MaskPositioningTransforms with
+ * alignment 3/4, draw the g* images under the m* masks, then stretch the row
+ * image with a VerticalMaskScaleTransform. The standard names are
+ * gTopM/mTopM, gBotM/mBotM, gRowM/mRowM for the background and
+ * bar_gTopM/bar_mTopM, bar_gBotM/bar_mBotM, bar_gRowM/bar_mRowM for the bar.
+ * Surface 0 is the background (this+0x98), surface 1 the bar (this+0xa4).
+ * +0xc8 is the background-rendered flag (set by renderBackground, cleared by
+ * an empty renderBar), not a hide flag.
+ */
+struct oa_svg_scrollbar_render {
+    struct oa_svg_scrollbar_state state;
+    struct oa_svg_scrollbar_skin skin;
+};
+struct oa_svg_scrollbar_render_ops {
+    int32_t (*supplier_image)(struct oa_svg_scrollbar_render *r,
+        int32_t image_id);
+    void (*window_rect)(struct oa_svg_scrollbar_render *r,int32_t rect[4]);
+    void (*surface_resize)(struct oa_svg_scrollbar_render *r,int surface,
+        const int32_t rect[4]);
+    void (*surface_clear)(struct oa_svg_scrollbar_render *r,int surface);
+    void (*rect_new)(struct oa_svg_scrollbar_render *r,int32_t rect[4],
+        int32_t left,int32_t top,int32_t right,int32_t bottom);
+    void (*mask_reset)(struct oa_svg_scrollbar_render *r);
+    void (*mask_align)(struct oa_svg_scrollbar_render *r,int align);
+    void (*mask_surface_rect)(struct oa_svg_scrollbar_render *r,
+        const int32_t rect[4]);
+    void (*mask_name)(struct oa_svg_scrollbar_render *r,int32_t widget_id);
+    void (*mask_container)(struct oa_svg_scrollbar_render *r);
+    void (*renderer_draw)(struct oa_svg_scrollbar_render *r,int surface,
+        int32_t image,int32_t widget_id,int transform);
+    int32_t (*mask_rect_height)(struct oa_svg_scrollbar_render *r,
+        int32_t widget_id);
+    void (*vertical_surface_rect)(struct oa_svg_scrollbar_render *r,
+        const int32_t rect[4]);
+    void (*vertical_name)(struct oa_svg_scrollbar_render *r,int32_t widget_id);
+    void (*vertical_container)(struct oa_svg_scrollbar_render *r);
+};
+void oa_svg_scrollbar_render_background(struct oa_svg_scrollbar_render *r,
+    const struct oa_svg_scrollbar_render_ops *ops);
+void oa_svg_scrollbar_render_bar(struct oa_svg_scrollbar_render *r,
+    const struct oa_svg_scrollbar_render_ops *ops);
 struct oa_svg_scrollbar_skin_ops {
     int32_t (*supplier_image)(struct oa_svg_scrollbar_skin *skin,
         int32_t image_id);
