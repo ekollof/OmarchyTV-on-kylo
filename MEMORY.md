@@ -93,6 +93,15 @@ reauthorized; fb1 and stock operation must stay untouched. This supersedes the
 earlier "Don't touch the TV" restriction. No persistent replacement or boot
 changes. The historical offline-only entries describe their original runs.
 
+VENDOR-DECODER-DIFF-2026-11-04 (offline/qemu): an ARM LD_PRELOAD constructor
+executes the shipped PngImageDecoderImpl and JpegImageDecoder before vendor
+main, using vendor MemoryBufferSource/MutableImage. Nine PNGs are exact after
+vendor BGRA->RGBA swap (palette PNGs exact by index); DMR-small/large JPEG differ
+from the ImageMagick/TurboJPEG reference by max8 per channel, mean≈1.3-1.7.
+Probe03da65ac…, aurora7d6e4ca5…. No TV/HAL/UI. Grayscale/tRNS/16-bit/gamma,
+actual foxxum JPEGs, APNG/CMYK, worker/frame lifetime and on-TV/stock parity
+remain open.
+
 STOCK-PARITY-2026-11-04 (offline analysis): the saved
 artifacts/protocol/shot-launcher-right.png is a pre-correction R/B-swapped
 capture. After RGB swap, Prime reads (25,148,249) and Canal (254,33,0),

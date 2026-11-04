@@ -144,6 +144,14 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
+Latest offline differential: [VENDOR-DECODER-DIFF](artifacts/reports/VENDOR-DECODER-DIFF-2026-11-04.md)
+runs the shipped PngImageDecoderImpl/JpegImageDecoder under qemu through an ARM
+LD_PRELOAD probe before vendor main. Nine PNGs are byte-exact after BGRA→RGBA
+or palette-index normalization; DMR JPEG differ by max8 per channel
+(mean1.3-1.7). The probe is tests/vendor_decoder_probe.c and the checker is
+tests/vendor_decoder.py. No TV/HAL/UI. Grayscale/tRNS/16-bit/gamma, actual
+foxxum JPEGs, APNG/CMYK, worker/frame lifetime and stock parity remain.
+
 Latest offline analysis: [STOCK-PARITY](artifacts/reports/STOCK-PARITY-2026-11-04.md)
 confirms the old `shot-launcher-right.png` is R/B-swapped; the corrected copy
 matches the current Prime/Canal color orientation. Same-geometry portal cards

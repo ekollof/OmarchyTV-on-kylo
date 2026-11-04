@@ -1132,6 +1132,14 @@ cold-bundle: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/fb-res
 	@cd $(BUILD)/cold-bundle && sha256sum openaurora oa-supervise fb-restore openaurora.conf modules/*.so > manifest.sha256
 	@echo "cold bundle: $(BUILD)/cold-bundle ($(words $(MOD_SO)) modules)"
 
+$(BUILD)/tests/vendor_decoder_probe.so: tests/vendor_decoder_probe.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $< -ldl
+.PHONY: check-vendor-decoder
+check-vendor-decoder: $(BUILD)/tests/vendor_decoder_probe.so
+	@test "$(TARGET)" = tv || { echo "check-vendor-decoder requires TARGET=tv"; exit 2; }
+	@BUILD=$(BUILD) python3 tests/vendor_decoder.py --build $(BUILD)
+
 $(BUILD)/tests/fb_snapshot: tests/fb_snapshot.c common/fb_snapshot.c include/openaurora/fb_snapshot.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) \

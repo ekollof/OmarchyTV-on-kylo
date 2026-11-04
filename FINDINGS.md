@@ -6,6 +6,14 @@ Private controls forward to EX_PLAT; successful ioctl still does not prove
 MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
+VENDOR-DECODER-DIFF-2026-11-04: an ARM LD_PRELOAD probe runs the shipped
+PngImageDecoderImpl/JpegImageDecoder under qemu before vendor main, using
+vendor MemoryBufferSource/MutableImage. Nine PNGs are exact after BGRA->RGBA
+or palette-index normalization; DMR-small/large JPEG differ by max8/mean1.3-1.7
+from the ImageMagick/TurboJPEG reference. This is a real class conversion gap,
+not channel order. No TV/HAL/UI. Grayscale/tRNS/16-bit/gamma, actual foxxum
+JPEGs, APNG/CMYK, worker/frame lifetime and stock parity remain.
+
 STOCK-PARITY-2026-11-04: old shot-launcher-right.png is an R/B-swapped
 pre-correction capture; after RGB swap its Prime/Canal colors match the
 current downloaded sources. The corrected stock portal and offline portal

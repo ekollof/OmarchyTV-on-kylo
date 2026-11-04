@@ -1,0 +1,13 @@
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -o build-tv-v3/vendor-decoder/tests/vendor_decoder_probe.so tests/vendor_decoder_probe.c -ldl
+ok vendor png launcher_app_thumb336: BGRA->RGBA exact
+ok vendor png launcher_app_thumb354: BGRA->RGBA exact
+ok vendor png launcher_app_thumb355: BGRA->RGBA exact
+ok vendor png launcher_app_thumb356: BGRA->RGBA exact
+ok vendor png launcher_app_thumb368: BGRA->RGBA exact
+ok vendor png launcher_app_thumb385: BGRA->RGBA exact
+ok vendor png launcher_app_thumb476: palette-index exact
+ok vendor png launcher_app_thumb495: palette-index exact
+ok vendor png launcher_app_thumb61: BGRA->RGBA exact
+ok vendor jpeg DMR-small.jpg: max channel delta 8, mean 1.698
+ok vendor jpeg DMR-large.jpg: max channel delta 8, mean 1.302
+ok vendor decoder differential: 9 PNG, 2 JPEG
