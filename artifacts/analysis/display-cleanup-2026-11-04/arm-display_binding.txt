@@ -1,0 +1,14 @@
+  ok   translucent canvas reaches premultiplied BGRA scanout at identity and during fade
+  ok   default current-frame presentation commits every time, including after resume
+  ok   single-buffer presentation also commits through FBIOPAN_DISPLAY
+  ok   sync/commit failures propagate and retry the same frame before rotation
+  ok   scene surface maps the recovered quad (x-slide, scale, keystone, clear)
+  ok   keystone samples both fan triangles; all completed transforms preserve the scene
+  ok   uniform-only fade preserves premultiplied BGRA and transparent-black endpoints
+  ok   optimized opaque slides/fade match the general filtered rasterizer within one byte
+  ok   display restore snapshots/restores pixels, region and pan; MAU verified
+  ok   display failed suspend retains original snapshot/fd, reports failure and permits retry/resume
+  ok   firmware suspended-pan EFAULT retains module snapshot/fd until the kernel permits retry
+  ok   display cleanup gate stays nonblocking during driver wait, retains create/join failures and rejects drawing/restart
+  ok   display failed worker restore retains snapshot/fd for throttled retry before stop/destroy
+  ok   display cleanup retains a failed unmap for retry and never replays a consumed close descriptor

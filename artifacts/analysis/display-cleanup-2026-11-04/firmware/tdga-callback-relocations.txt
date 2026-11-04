@@ -1,0 +1,7 @@
+0001a95c  00006215 R_ARM_GLOB_DAT         00000000   NDALex_GPU_Open
+0001a964  00006615 R_ARM_GLOB_DAT         00000000   NDALex_GPU_Close
+
+artifacts/workbench/rootfs/vendor/lib/dfb/directfb-1.7-1/gfxdrivers/libdirectfb_tdga.so:     file format elf32-littlearm
+
+Contents of section .text:
+ 6128 d64d0100 84010000 8c010000           .M..........    

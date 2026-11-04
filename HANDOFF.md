@@ -37,6 +37,18 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
+[DISPLAY-CLEANUP](artifacts/reports/DISPLAY-CLEANUP-2026-11-04.md) fixes display
+snapshot failure discard. Suspend remains synchronous but returns errors and
+retains state; stop/unload restore/unmap/close runs on an owning thread, with
+nonblocking actual join in ABI3 quiesce. New failure and blocked-driver tests
+pass both display variants on host/leak-enabled sanitizer/fresh ARM-qemu; full
+host382 passes. TDGA teardown, NDAL_EX GPU close and kernel mapping/pan/PMI
+wrappers were decompiled/checked against instructions: recovery/retry is project
+policy, not a cloned vendor lifecycle. No TV access/fb1 use. Next add actual
+host/DSO reload/failure integration, then exclusive authority and native state
+equality when authorized. This does not provide kernel power parity or move
+ordinary start/draw/suspend off the loop. Read the report before more changes.
+
 [AMP-INIT](artifacts/reports/AMP-INIT-2026-11-04.md) adds an injected blocking
 AD82587 Init sequencer.29952 cases match actual Init/Reset/Mute instructions,
 including present/absent/changing GPIO resources, combined errors, delay args,
@@ -94,8 +106,8 @@ failure and false backup-file save success on close failure. Strict host,
 leak-enabled sanitizer and fresh ARM-qemu library/tool/both-display tests pass;
 full strict host372 passes.
 No TV access in this review; fb1 remains excluded. Mode/allocation/MAU are not
-restored. Next retain failures across module suspend/unload and wire an owning
-completion/quiescence path; current module logs failure then frees its snapshot.
+restored. DISPLAY-CLEANUP above supplies retained failures and owning cleanup
+for stop/unload; actual host/DSO integration and native acceptance remain open.
 Do not put blocking restore in the ABI3 gate. The historical cold bundle needs
 rebuilding before any future authorized experiment and has no native acceptance.
 

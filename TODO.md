@@ -599,9 +599,15 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       restoration and failure cleanup on the real driver. The offline
       snapshot/restore and display_fb restore path exist; live equality,
       suspend/resume ordering and failure cleanup remain unverified. The module
-      currently logs restore failure and frees the snapshot; implement retained
-      recovery state and completion/quiescence handling before claiming safe
-      suspend/unload/fallback. FBR2 native-struct ABI portability and file
+      originally logged restore failure and freed the snapshot; DISPLAY-CLEANUP
+      now retains failed restore/fd state, returns suspend errors, and moves
+      stop/unload restore/unmap/close onto a worker with nonblocking actual join.
+      Both variants pass host/sanitizer/ARM-qemu failure/blocked-driver tests;
+      firmware release/PMI paths were decompiled and compared, with the retry
+      layer explicitly identified as project policy. Still need real host/DSO
+      reload acceptance, exclusive authority and native equality. Start/draw/
+      suspend remain synchronous; this is not kernel power parity or complete
+      fallback. FBR2 native-struct ABI portability and file
       validation remain open. Current TV permission excludes active fb1.
 - [ ] Cold independent startup without vendor Aurora: establish MCU authority,
       watchdog/fallback and full display ownership/restoration from firmware.

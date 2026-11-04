@@ -670,12 +670,12 @@ $(BUILD)/modules/mod_audio.so: modules/audio/audio.c common/audio_owner.c common
 $(BUILD)/modules/mod_display.so: modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
-	  $(VENDOR_LDFLAGS) -lm
+	  $(VENDOR_LDFLAGS) -lm -pthread
 
 $(BUILD)/modules/mod_display_fb.so: modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_DISPLAY_NO_PLAT -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
-	  -lm
+	  -lm -pthread
 
 $(BUILD)/modules/mod_settings.so: modules/settings/settings.c common/launcher_db.c include/openaurora/launcher_db.h include/openaurora/launcher_item.h
 	@mkdir -p $(dir $@)
@@ -1106,13 +1106,13 @@ check-control: $(BUILD)/tests/control_reply $(BUILD)/tests/control_transport
 
 $(BUILD)/tests/display_present: tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/canvas.h include/openaurora/fb_snapshot.h include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm \
-	  $(foreach call,open close system mmap munmap msync ioctl,-Wl,--wrap=$(call))
+	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm -pthread \
+	  $(foreach call,open close system mmap munmap msync ioctl pthread_create pthread_tryjoin_np,-Wl,--wrap=$(call))
 
 $(BUILD)/tests/display_binding: tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/canvas.h include/openaurora/fb_snapshot.h include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) -DOA_DISPLAY_NO_PLAT $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm \
-	  $(foreach call,open close system mmap munmap msync ioctl,-Wl,--wrap=$(call))
+	$(CC) $(CPPFLAGS) -DOA_DISPLAY_NO_PLAT $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm -pthread \
+	  $(foreach call,open close system mmap munmap msync ioctl pthread_create pthread_tryjoin_np,-Wl,--wrap=$(call))
 
 $(BUILD)/fbregion: tools/mcu/fbregion.c
 	@mkdir -p $(dir $@)
@@ -1150,7 +1150,7 @@ check: check-fb-snapshot
 # Explicit opt-in live fbdev diagnostic; never run by make check. No HAL setup.
 $(BUILD)/scene-probe: tools/display/scene-probe.c modules/display/display.c common/canvas.c common/ui_anim.c common/fb_snapshot.c include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
+	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm -pthread
 
 # Optional GPU diagnostic. Headers are installed Khronos EGL/GLES2 declarations;
 # use them after the cross toolchain's own standard headers, never its host libc.

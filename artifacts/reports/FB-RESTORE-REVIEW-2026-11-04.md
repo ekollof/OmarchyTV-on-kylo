@@ -63,10 +63,12 @@ These GET checks cannot exclude another owner racing them or detect a recycled
 allocation at the same physical address. The caller must hold exclusive device
 authority through the whole transaction. No real-driver equality is proved.
 
-`mod_display` currently logs restoration failure and frees its snapshot while
-closing/suspending, so the library's retry capability does not yet provide a
-module recovery protocol. Add retained failure state and an owning completion/
-quiescence path before claiming failure-safe suspend, unload or fallback. Do
+At9dbb04f, `mod_display` logged restoration failure and freed its snapshot while
+closing/suspending, so the library's retry capability did not provide a module
+recovery protocol at that milestone. [DISPLAY-CLEANUP](DISPLAY-CLEANUP-2026-11-04.md)
+subsequently adds retained failure state and an owning stop/unload worker with
+nonblocking join; synchronous suspend now reports failure/retains its snapshot.
+Actual host/DSO integration and native restoration acceptance remain open. Do
 not put blocking restore operations in an ABI3 quiescence hook. File-format
 portability across host/ARM ABI and untrusted-file validation also remain open;
 FBR2 currently stores native fb structs. No live restore/cold startup is tested

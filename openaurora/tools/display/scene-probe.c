@@ -126,6 +126,10 @@ int main(void)
     }
     result = interrupted ? 128 + interrupted : 0;
 cleanup:
+    /* Direct ABI3 caller: retain module/context until asynchronous device
+     * cleanup has actually joined, just as the host's stop/unload gate does. */
+    if (ctx && module->quiesce)
+        while (module->quiesce(ctx)) usleep(10000);
     if (started) module->stop(ctx);
     if (ctx) module->destroy(ctx);
     if (dirty) {

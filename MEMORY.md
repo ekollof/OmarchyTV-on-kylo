@@ -63,8 +63,13 @@ open. FB-RESTORE-REVIEW now fixes stale backing/layout acceptance, skipped
 region/pan cleanup after mmap failure and false file-save success on close
 error. Focused strict host/leak-enabled sanitizer/fresh ARM-qemu and full
 host372 checks pass. Var/fix
-are saved metadata, not restored modes. Module restore-failure retention and
-exclusive ownership remain open. No TV access for this review; active fb1 is
+are saved metadata, not restored modes. DISPLAY-CLEANUP now retains restore
+failures/fd, reports failed synchronous suspend and runs stop/unload cleanup
+on a joined worker; blocked-driver/create/join/restore/unmap/close tests pass
+both variants on host/leak-enabled sanitizers/fresh ARM-qemu, full host382.
+Direct firmware teardown/PMI instructions compared; snapshot retry is project
+policy, not vendor lifecycle parity. Real host/DSO reload acceptance, exclusive
+ownership and native equality remain open. No TV access; active fb1 is
 excluded by current permission. The existing cold-bundle is historical and
 must be rebuilt to include the fixes; it is not ready for authorized execution.
 

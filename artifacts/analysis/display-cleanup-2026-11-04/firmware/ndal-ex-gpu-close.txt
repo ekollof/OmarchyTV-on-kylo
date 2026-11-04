@@ -1,0 +1,76 @@
+
+artifacts/workbench/rootfs/vendor/lib/libNDAL_EX.so:     file format elf32-littlearm
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .text:
+
+4db5b2a4 <NDALex_GPU_Close>:
+4db5b2a4:	f44f 5c00 	mov.w	ip, #8192	; 0x2000
+4db5b2a8:	b5f0      	push	{r4, r5, r6, r7, lr}
+4db5b2aa:	ebad 0c0c 	sub.w	ip, sp, ip
+4db5b2ae:	f8cc 0fe0 	str.w	r0, [ip, #4064]	; 0xfe0
+4db5b2b2:	4a23      	ldr	r2, [pc, #140]	; (4db5b340 <NDALex_GPU_Close+0x9c>)
+4db5b2b4:	b083      	sub	sp, #12
+4db5b2b6:	4b23      	ldr	r3, [pc, #140]	; (4db5b344 <NDALex_GPU_Close+0xa0>)
+4db5b2b8:	4823      	ldr	r0, [pc, #140]	; (4db5b348 <NDALex_GPU_Close+0xa4>)
+4db5b2ba:	af00      	add	r7, sp, #0
+4db5b2bc:	447a      	add	r2, pc
+4db5b2be:	58d5      	ldr	r5, [r2, r3]
+4db5b2c0:	4478      	add	r0, pc
+4db5b2c2:	682b      	ldr	r3, [r5, #0]
+4db5b2c4:	607b      	str	r3, [r7, #4]
+4db5b2c6:	f7fb e808 	blx	4db562d8 <pthread_mutex_lock@plt>
+4db5b2ca:	4b20      	ldr	r3, [pc, #128]	; (4db5b34c <NDALex_GPU_Close+0xa8>)
+4db5b2cc:	447b      	add	r3, pc
+4db5b2ce:	681c      	ldr	r4, [r3, #0]
+4db5b2d0:	b114      	cbz	r4, 4db5b2d8 <NDALex_GPU_Close+0x34>
+4db5b2d2:	3c01      	subs	r4, #1
+4db5b2d4:	601c      	str	r4, [r3, #0]
+4db5b2d6:	b154      	cbz	r4, 4db5b2ee <NDALex_GPU_Close+0x4a>
+4db5b2d8:	481d      	ldr	r0, [pc, #116]	; (4db5b350 <NDALex_GPU_Close+0xac>)
+4db5b2da:	4478      	add	r0, pc
+4db5b2dc:	f7fb ec88 	blx	4db56bf0 <pthread_mutex_unlock@plt>
+4db5b2e0:	687a      	ldr	r2, [r7, #4]
+4db5b2e2:	682b      	ldr	r3, [r5, #0]
+4db5b2e4:	429a      	cmp	r2, r3
+4db5b2e6:	d129      	bne.n	4db5b33c <NDALex_GPU_Close+0x98>
+4db5b2e8:	370c      	adds	r7, #12
+4db5b2ea:	46bd      	mov	sp, r7
+4db5b2ec:	bdf0      	pop	{r4, r5, r6, r7, pc}
+4db5b2ee:	4e19      	ldr	r6, [pc, #100]	; (4db5b354 <NDALex_GPU_Close+0xb0>)
+4db5b2f0:	447e      	add	r6, pc
+4db5b2f2:	f8d6 1214 	ldr.w	r1, [r6, #532]	; 0x214
+4db5b2f6:	6830      	ldr	r0, [r6, #0]
+4db5b2f8:	f7fb e9bc 	blx	4db56674 <GPU_CMD_Seq_Close@plt>
+4db5b2fc:	f506 7006 	add.w	r0, r6, #536	; 0x218
+4db5b300:	f7fb ea18 	blx	4db56734 <pthread_mutex_destroy@plt>
+4db5b304:	f8d6 0210 	ldr.w	r0, [r6, #528]	; 0x210
+4db5b308:	f7fb ebf4 	blx	4db56af4 <GPU_SYS_Named_Semaphore_Close@plt>
+4db5b30c:	f8d6 1230 	ldr.w	r1, [r6, #560]	; 0x230
+4db5b310:	6830      	ldr	r0, [r6, #0]
+4db5b312:	f7fb e9aa 	blx	4db56668 <GPU_CMD_Q_Close@plt>
+4db5b316:	f44f 5180 	mov.w	r1, #4096	; 0x1000
+4db5b31a:	f8d6 020c 	ldr.w	r0, [r6, #524]	; 0x20c
+4db5b31e:	f7fb e9e0 	blx	4db566e0 <GPU_SYS_Munmap@plt>
+4db5b322:	6830      	ldr	r0, [r6, #0]
+4db5b324:	f7fb eb20 	blx	4db56968 <GPU_SYS_Linux_Close@plt>
+4db5b328:	4621      	mov	r1, r4
+4db5b32a:	4630      	mov	r0, r6
+4db5b32c:	f44f 720d 	mov.w	r2, #564	; 0x234
+4db5b330:	f7fb e92e 	blx	4db56590 <memset@plt>
+4db5b334:	f04f 33ff 	mov.w	r3, #4294967295	; 0xffffffff
+4db5b338:	6033      	str	r3, [r6, #0]
+4db5b33a:	e7cd      	b.n	4db5b2d8 <NDALex_GPU_Close+0x34>
+4db5b33c:	f7fb ea24 	blx	4db56788 <__stack_chk_fail@plt>
+4db5b340:	00026250 	.word	0x00026250
+4db5b344:	00000350 	.word	0x00000350
+4db5b348:	000278d4 	.word	0x000278d4
+4db5b34c:	000278c4 	.word	0x000278c4
+4db5b350:	000278ba 	.word	0x000278ba
+4db5b354:	000265f4 	.word	0x000265f4
+
+Disassembly of section .fini:

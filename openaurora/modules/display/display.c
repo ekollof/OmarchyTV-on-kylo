@@ -28,6 +28,8 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <pthread.h>
+#include <time.h>
 
 #include "openaurora/events.h"
 #include "openaurora/module.h"
@@ -54,6 +56,9 @@ struct ctx {
     int pan;          /* rotate frames after commit; off = commit the current frame */
     struct oa_fb_snapshot snapshot;
     int snapshot_active;
+    int closing, cleanup_running, cleanup_result;
+    pthread_t cleanup_thread;
+    uint64_t retry_after;
     int mirror;       /* copy the painted frame into the other frames (fights DFB's flip) */
 
     /* Offscreen RGBA scene: every draw renders here, present() copies it to the visible frame or
@@ -86,7 +91,7 @@ static void put_px(struct ctx *c, uint8_t *row, unsigned x, int r, int g, int b,
 
 static int fill_rect(struct ctx *c, int x, int y, int w, int h, int r, int g, int b)
 {
-    if (!c->scene)
+    if (c->closing || !c->scene)
         return -1;
     int fx = c->scene_w, fy = c->scene_h;
     int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
@@ -117,7 +122,7 @@ static int clear(int r, int g, int b)
 static int clear_rgba(int r, int g, int b, int a)
 {
     struct ctx *c = g_ctx;
-    if (!c || !c->scene) return -1;
+    if (!c || c->closing || !c->scene) return -1;
     oa_canvas canvas = {c->scene, c->scene_w, c->scene_h};
     if (oa_canvas_clear(&canvas, r, g, b, a)) return -1;
     c->scene_opaque = a == 255;
@@ -132,7 +137,7 @@ static int fill(int x, int y, int w, int h, int r, int g, int b)
 static int blit(int x, int y, int w, int h, const unsigned char *rgba)
 {
     struct ctx *c = g_ctx;
-    if (!c || !c->scene || !rgba)
+    if (!c || c->closing || !c->scene || !rgba)
         return -1;
 
     int W = c->scene_w, H = c->scene_h;
@@ -156,7 +161,7 @@ static int blit(int x, int y, int w, int h, const unsigned char *rgba)
 static int blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigned char *rgba)
 {
     struct ctx *c = g_ctx;
-    if (!c || !c->scene || !rgba || sw <= 0 || sh <= 0 || w <= 0 || h <= 0)
+    if (!c || c->closing || !c->scene || !rgba || sw <= 0 || sh <= 0 || w <= 0 || h <= 0)
         return -1;
 
     int W = c->scene_w, H = c->scene_h;
@@ -341,7 +346,7 @@ static void warp_scene(struct ctx *c)
 static int set_scene_transform(int type, float progress)
 {
     struct ctx *c = g_ctx;
-    if (!c)
+    if (!c || c->closing)
         return -1;
     if (type < 0 || type > 8)
         return -1;
@@ -357,7 +362,7 @@ static int set_scene_transform(int type, float progress)
 
 static int present(void){
     struct ctx *c = g_ctx;
-    if (!c || !c->map || !c->scene)
+    if (!c || c->closing || !c->map || !c->scene)
         return -1;
 
     if (c->fs_type > 0 && c->fs_p == 0.0f)
@@ -403,7 +408,7 @@ static int present(void){
 
 static int info(int *w, int *h, int *bpp, int *frames)
 {
-    if (!g_ctx)
+    if (!g_ctx || g_ctx->closing)
         return -1;
     if (w) *w = (int)g_ctx->var.xres;
     if (h) *h = (int)g_ctx->var.yres;
@@ -609,29 +614,77 @@ static int open_layer(struct ctx *c)
     return 0;
 }
 
-static void restore_snapshot(struct ctx *c)
+static int restore_snapshot(struct ctx *c)
 {
-    if (!c->snapshot_active) return;
+    if (!c->snapshot_active) return 0;
     int rc = oa_fb_snapshot_restore(c->fd, &c->snapshot);
-    c->api->log(c->api->priv, rc ? OA_LOG_ERROR : OA_LOG_INFO,
-        "%s: full restore %s", c->path, rc ? strerror(-rc) : "ok");
+    if (rc) return rc; /* retain snapshot and fd for a later attempt */
     oa_fb_snapshot_free(&c->snapshot);
     c->snapshot_active = 0;
+    return 0;
 }
 
-static void close_layer(struct ctx *c)
+static int close_layer(struct ctx *c)
 {
     free(c->scene);
     c->scene = NULL;
     c->scene_w = c->scene_h = 0;
     if (c->map) {
-        munmap(c->map, c->maplen);
+        if (munmap(c->map, c->maplen)) return -(errno ? errno : EIO);
         c->map = NULL;
     }
     if (c->fd >= 0) {
-        close(c->fd);
+        int fd = c->fd;
         c->fd = -1;
+        /* Linux close consumes the descriptor even on a final-close error. */
+        if (close(fd)) return -(errno ? errno : EIO);
     }
+    return 0;
+}
+
+/* Snapshot restore/retry is openaurora's temporary-binding/reload policy,
+ * not the vendor TDGA RemoveRegion (a no-op), pool unmap or kernel PMI resume.
+ * Only this worker accesses mutable layer/snapshot state while closing.
+ * The loop reads it again only after actual join (including TLS destruction).
+ * No host API is called from the worker. */
+static void *cleanup_worker(void *v)
+{
+    struct ctx *c = v;
+    c->cleanup_result = restore_snapshot(c);
+    if (!c->cleanup_result) c->cleanup_result = close_layer(c);
+    return NULL;
+}
+
+static uint64_t monotonic_ms(void)
+{
+    struct timespec t;
+    if (clock_gettime(CLOCK_MONOTONIC, &t)) return 0;
+    return (uint64_t)t.tv_sec * 1000 + (uint64_t)t.tv_nsec / 1000000;
+}
+
+static int m_quiesce(void *v)
+{
+    struct ctx *c = v;
+    if (!c) return 0;
+    c->closing = 1;
+    /* Check running before inspecting fields that the worker may modify. */
+    if (c->cleanup_running) {
+        int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+        if (rc) return -rc; /* retain code, ctx, fd and snapshot on join error */
+        c->cleanup_running = 0;
+        if (c->cleanup_result) {
+            c->api->log(c->api->priv, OA_LOG_ERROR, "%s: cleanup pending: %s",
+                c->path, strerror(-c->cleanup_result));
+            c->retry_after = monotonic_ms() + 250;
+            return c->cleanup_result;
+        }
+    }
+    if (c->fd < 0 && !c->map && !c->scene && !c->snapshot_active) return 0;
+    if (monotonic_ms() < c->retry_after) return -EAGAIN;
+    int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+    if (rc) return -rc;
+    c->cleanup_running = 1;
+    return -EAGAIN;
 }
 
 /* ---------------------------------------------------------------- module */
@@ -654,6 +707,8 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    if (c->cleanup_running || (c->closing && c->fd >= 0)) return -EBUSY;
+    c->closing = 0;
 #ifdef OA_DISPLAY_NO_PLAT
     if (c->api->config_get(c->api->priv,"display.drm_init","0")[0]=='1') {
         c->api->log(c->api->priv,OA_LOG_ERROR,"display_fb cannot initialize platform HAL");
@@ -699,14 +754,10 @@ static int m_start(void *v)
     }
 
     if (c->api->publish(c->api->priv, OA_SVC_DISPLAY, 2, &g_iface)) {
-        restore_snapshot(c);
-        close_layer(c);
         return -1;
     }
     if (c->api->publish(c->api->priv, OA_SVC_DISPLAY_ALPHA, 1, &alpha_iface)) {
         c->api->unpublish(c->api->priv, OA_SVC_DISPLAY);
-        restore_snapshot(c);
-        close_layer(c);
         return -1;
     }
 
@@ -726,9 +777,7 @@ static void m_stop(void *v)
     c->api->release(c->api->priv, OA_SVC_DISPLAY);
     c->api->unpublish(c->api->priv, OA_SVC_DISPLAY);
     c->api->unpublish(c->api->priv, OA_SVC_DISPLAY_ALPHA);
-    restore_snapshot(c);
-    if (c->map)
-        close_layer(c);
+    /* ABI3 quiesce completed restoration and close on its owning thread. */
 }
 
 static void m_destroy(void *v)
@@ -746,14 +795,19 @@ static void m_destroy(void *v)
 static int m_suspend(void *v)
 {
     struct ctx *c = v;
-    restore_snapshot(c);
-    close_layer(c);
-    return 0;
+    if (c->closing || c->cleanup_running) return -EBUSY;
+    /* The host's suspend transaction is synchronous; unlike quiesce it has
+     * no asynchronous retry protocol. Preserve the existing sync path but
+     * propagate failure and retain the snapshot/fd instead of discarding it. */
+    int rc = restore_snapshot(c);
+    if (rc) return rc;
+    return close_layer(c);
 }
 
 static int m_resume(void *v)
 {
     struct ctx *c = v;
+    if (c->cleanup_running || c->fd >= 0 || c->snapshot_active) return -EBUSY;
     if (open_layer(c) != 0) return -1;
     if (c->api->config_get(c->api->priv, "display.restore_snapshot", "0")[0] == '1') {
         int rc = oa_fb_snapshot_save(c->fd, &c->snapshot);
@@ -765,6 +819,7 @@ static int m_resume(void *v)
         }
         c->snapshot_active = 1;
     }
+    c->closing = 0;
     return 0;
 }
 
@@ -791,6 +846,7 @@ static const oa_module g_module = {
     .destroy = m_destroy,
     .suspend = m_suspend,
     .resume = m_resume,
+    .quiesce = m_quiesce,
 };
 
 OA_MODULE_EXPORT(g_module)

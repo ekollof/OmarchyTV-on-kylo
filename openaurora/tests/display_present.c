@@ -11,6 +11,8 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/types.h>
+#include <pthread.h>
+#include <time.h>
 #include "openaurora/fb_snapshot.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
@@ -23,8 +25,24 @@ static unsigned char pixels[1024];
 static uint32_t region[8], mau;
 static const char *rotate;
 static unsigned commits, last_yoffset, syncs, opens, closes;
-static int fail_sync, fail_commit;
+static int fail_sync, fail_commit, kernel_suspended, fail_unmap, fail_close;
 static unsigned height = 2;
+static pthread_t main_thread;
+static pthread_mutex_t gate_mu = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t gate_cv = PTHREAD_COND_INITIALIZER;
+static int block_worker, worker_entered, release_worker, join_error, create_error;
+int __real_pthread_tryjoin_np(pthread_t, void **);
+int __wrap_pthread_tryjoin_np(pthread_t thread, void **value)
+{
+    if (join_error) { int rc = join_error; join_error = 0; return rc; }
+    return __real_pthread_tryjoin_np(thread, value);
+}
+int __real_pthread_create(pthread_t *, const pthread_attr_t *, void *(*)(void *), void *);
+int __wrap_pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*fn)(void *), void *ud)
+{
+    if (create_error) { int rc = create_error; create_error = 0; return rc; }
+    return __real_pthread_create(thread, attr, fn, ud);
+}
 
 int __wrap_open(const char *path, int flags, ...)
 {
@@ -33,7 +51,12 @@ int __wrap_open(const char *path, int flags, ...)
     opens++;
     return 123;
 }
-int __wrap_close(int fd) { assert(fd == 123); closes++; return 0; }
+int __wrap_close(int fd)
+{
+    assert(fd == 123);closes++;
+    if (fail_close) { --fail_close;errno = EIO;return -1; }
+    return 0;
+}
 int __wrap_system(const char *command) { (void)command; assert(!"unexpected system call"); return -1; }
 void *__wrap_mmap(void *addr, size_t len, int prot, int flags, int fd, off_t offset)
 {
@@ -43,7 +66,11 @@ void *__wrap_mmap(void *addr, size_t len, int prot, int flags, int fd, off_t off
     return pixels;
 }
 int __wrap_munmap(void *addr, size_t len)
-{ assert(addr == pixels && len <= sizeof pixels); return 0; }
+{
+    assert(addr == pixels && len <= sizeof pixels);
+    if (fail_unmap) { --fail_unmap;errno = EIO;return -1; }
+    return 0;
+}
 int __wrap_msync(void *addr, size_t len, int flags)
 {
     assert(addr == pixels && len <= sizeof pixels && flags == MS_SYNC);
@@ -54,6 +81,11 @@ int __wrap_msync(void *addr, size_t len, int flags)
 int __wrap_ioctl(int fd, unsigned long request, ...)
 {
     assert(fd == 123);
+    if (block_worker && !pthread_equal(main_thread, pthread_self())) {
+        pthread_mutex_lock(&gate_mu);worker_entered = 1;pthread_cond_broadcast(&gate_cv);
+        while (!release_worker) pthread_cond_wait(&gate_cv, &gate_mu);
+        pthread_mutex_unlock(&gate_mu);
+    }
     va_list args;
     va_start(args, request);
     void *arg = va_arg(args, void *);
@@ -72,6 +104,8 @@ int __wrap_ioctl(int fd, unsigned long request, ...)
     case OA_FB_MAU_RD: *(uint32_t *)arg = mau; return 0;
     case FBIOPAN_DISPLAY: {
         const struct fb_var_screeninfo *commit = arg;
+        /* _ker_osd_fb_PanDisplay rejects fb-private+3c4 before its lock. */
+        if (kernel_suspended) { errno = EFAULT; return -1; }
         assert(syncs > commits); /* sync precedes every attempted commit */
         assert(commit->xres == var.xres && commit->yres == var.yres);
         assert(commit->yoffset + var.yres <= var.yres_virtual);
@@ -138,12 +172,30 @@ static void *start(unsigned frames, unsigned yoffset, const char *rotation)
 }
 static void finish(void *ctx)
 {
+    for (unsigned i = 0;; ++i) {
+        int rc = oa_module_entry()->quiesce(ctx);
+        if (!rc) break;
+        assert(i < 10000);
+        const struct timespec pause = {.tv_nsec = 1000000};nanosleep(&pause, NULL);
+    }
     oa_module_entry()->stop(ctx);
     oa_module_entry()->destroy(ctx);
     assert(!display && opens == closes);
 }
+static void cleanup_error(void *ctx, int error)
+{
+    assert(oa_module_entry()->quiesce(ctx) == -EAGAIN);
+    for (unsigned i = 0;; ++i) {
+        assert(i < 10000);
+        const struct timespec pause = {.tv_nsec = 1000000};nanosleep(&pause, NULL);
+        int rc = oa_module_entry()->quiesce(ctx);
+        if (rc == error) return;
+        assert(rc == -EBUSY);
+    }
+}
 int main(void)
 {
+    main_thread = pthread_self();
 #ifdef OA_DISPLAY_NO_PLAT
     void *rejected=NULL;
     assert(!strcmp(oa_module_entry()->name,"display_fb"));
@@ -310,7 +362,64 @@ int main(void)
     finish(ctx);
     assert(pixels[64] == 0 && var.yoffset == 2);
     assert(region[0] == 0 && region[2] == 0 && region[3] == 0);
-    assert(!unsetenv("OA_TEST_RESTORE"));
     puts("  ok   display restore snapshots/restores pixels, region and pan; MAU verified");
+
+    ctx = start(2, 2, NULL);
+    unsigned was_closed = closes;
+    assert(!display->clear(10, 20, 30) && !display->present());
+    fail_sync = 1;
+    assert(oa_module_entry()->suspend(ctx) == -EIO && closes == was_closed);
+    assert(!display->clear(40, 50, 60)); /* failed sync suspend leaves live scene */
+    fail_sync = 0;
+    assert(!oa_module_entry()->suspend(ctx) && closes == was_closed + 1);
+    assert(pixels[64] == 0 && var.yoffset == 2);
+    assert(!oa_module_entry()->resume(ctx));finish(ctx);
+    puts("  ok   display failed suspend retains original snapshot/fd, reports failure and permits retry/resume");
+
+    ctx = start(2, 2, NULL);was_closed = closes;kernel_suspended = 1;
+    assert(oa_module_entry()->suspend(ctx) == -EFAULT && closes == was_closed);
+    kernel_suspended = 0;
+    assert(!oa_module_entry()->suspend(ctx) && var.yoffset == 2);
+    finish(ctx);
+    puts("  ok   firmware suspended-pan EFAULT retains module snapshot/fd until the kernel permits retry");
+
+    ctx = start(2, 2, NULL);was_closed = closes;
+    assert(!display->clear(10, 20, 30) && !display->present());
+    create_error = EAGAIN;
+    assert(oa_module_entry()->quiesce(ctx) == -EAGAIN && closes == was_closed);
+    block_worker = 1;
+    assert(oa_module_entry()->quiesce(ctx) == -EAGAIN);
+    struct timespec until;assert(!clock_gettime(CLOCK_REALTIME, &until));until.tv_sec += 5;
+    pthread_mutex_lock(&gate_mu);
+    while (!worker_entered) assert(!pthread_cond_timedwait(&gate_cv, &gate_mu, &until));
+    pthread_mutex_unlock(&gate_mu);
+    assert(oa_module_entry()->quiesce(ctx) == -EBUSY && closes == was_closed);
+    assert(display->clear(0, 0, 0) == -1 && alpha->clear_rgba(0, 0, 0, 0) == -1);
+    assert(display->present() == -1 && display->info(NULL, NULL, NULL, NULL) == -1);
+    assert(oa_module_entry()->start(ctx) == -EBUSY && oa_module_entry()->resume(ctx) == -EBUSY);
+    assert(oa_module_entry()->suspend(ctx) == -EBUSY);
+    join_error = EINVAL;
+    assert(oa_module_entry()->quiesce(ctx) == -EINVAL && closes == was_closed);
+    pthread_mutex_lock(&gate_mu);release_worker = 1;pthread_cond_broadcast(&gate_cv);pthread_mutex_unlock(&gate_mu);
+    finish(ctx);block_worker = 0;
+    assert(pixels[64] == 0 && var.yoffset == 2);
+    puts("  ok   display cleanup gate stays nonblocking during driver wait, retains create/join failures and rejects drawing/restart");
+
+    ctx = start(2, 2, NULL);was_closed = closes;
+    assert(!display->clear(10, 20, 30) && !display->present());fail_sync = 1;
+    cleanup_error(ctx, -EIO);
+    assert(closes == was_closed && display->present() == -1);
+    fail_sync = 0;finish(ctx);
+    assert(pixels[64] == 0 && var.yoffset == 2);
+    puts("  ok   display failed worker restore retains snapshot/fd for throttled retry before stop/destroy");
+    assert(!unsetenv("OA_TEST_RESTORE"));
+
+    ctx = start(2, 2, NULL);was_closed = closes;fail_unmap = 1;
+    cleanup_error(ctx, -EIO);assert(closes == was_closed && !fail_unmap);
+    finish(ctx);assert(closes == was_closed + 1);
+    ctx = start(2, 2, NULL);was_closed = closes;fail_close = 1;
+    cleanup_error(ctx, -EIO);assert(closes == was_closed + 1 && !fail_close);
+    finish(ctx);assert(closes == was_closed + 1); /* never replay consumed fd */
+    puts("  ok   display cleanup retains a failed unmap for retry and never replays a consumed close descriptor");
     return 0;
 }

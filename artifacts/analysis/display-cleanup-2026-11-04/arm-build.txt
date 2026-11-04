@@ -1,0 +1,8 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-tv-v3/display-cleanup/tests/display_present tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c -lm -pthread \
+  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=system -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl -Wl,--wrap=pthread_create -Wl,--wrap=pthread_tryjoin_np
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -DOA_DISPLAY_NO_PLAT -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-tv-v3/display-cleanup/tests/display_binding tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c -lm -pthread \
+  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=system -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl -Wl,--wrap=pthread_create -Wl,--wrap=pthread_tryjoin_np
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DOA_DISPLAY_NO_PLAT -fPIC -shared -MMD -MP -o build-tv-v3/display-cleanup/modules/mod_display_fb.so modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c  \
+  -lm -pthread
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

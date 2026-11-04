@@ -11,9 +11,15 @@ access was revoked for that original run. FB-RESTORE-REVIEW corrects "full"
 restoration: var/fix are saved metadata; changed backing/layout/mode/MAU now
 rejects before writes, mmap failure still attempts region/pan and failed file
 close cannot report successful backup. Strict host/sanitizer/fresh ARM-qemu
-library/tool/both-display tests pass. Module still discards snapshots after
-restore failure; retained recovery/exclusive ownership/native equality remain
-open. No TV access for this review; current permission excludes active fb1.
+library/tool/both-display tests pass. DISPLAY-CLEANUP subsequently fixes the
+module's snapshot discard: failed synchronous suspend retains state and returns
+error; stop/unload cleanup uses an owning worker and actual nonblocking join.
+Both variants pass host/sanitizer/ARM and full host382. Vendor TDGA RemoveRegion
+is a no-op; pool destruction unmaps and driver close releases GPU/fds, while
+kernel PMI restores registers separately. New snapshot/retry behavior is
+project reload policy, not vendor lifecycle parity. Actual host/DSO reload,
+exclusive authority/native equality remain open. No TV access for this review;
+current permission excludes active fb1.
 
 VISIBLE-IMAGES-2026-11-04: the supervised no-plat candidate painted the live
 apps grid on vendor-initialized fb1 from an empty ui.dir and the real
