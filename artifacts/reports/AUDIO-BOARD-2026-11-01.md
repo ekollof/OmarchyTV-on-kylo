@@ -5,6 +5,12 @@ native register-read diagnostic passed on the TV. Complete native audio
 initialization, UI-volume conversion, mute/routing and standby remain unfinished.
 This follows [AUDIO-ROUTING](AUDIO-ROUTING-2026-11-01.md).
 
+Follow-up [AMP-I2C](AMP-I2C-2026-11-04.md) refactors the maintained probe onto
+an owned reusable transport and validates the opened fd instead of a preceding
+stat. Fresh firmware write-path review and a new native read pass are recorded
+there; the executable hash/size and inline implementation below are historical.
+No native write/amp lifecycle acceptance is implied by either read test.
+
 ## Device resources
 
 The verified live Aurora still has one AD82587_D instance, index 0, id 1.

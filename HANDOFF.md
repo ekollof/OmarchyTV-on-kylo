@@ -75,6 +75,17 @@ Create's private reset/mute cache seeds are0/1; its image is process-global
 and not reset by Create. Preserve retained image across reload, rather than
 assuming a fresh ELF baseline represents the running hardware/owner state.
 
+[AMP-I2C](artifacts/reports/AMP-I2C-2026-11-04.md) now supplies the fixed MB230
+bus3/address34 fd session and refactors amp-probe onto its read-only mode.
+Fresh Aurora/NDAL3/PreInit decompilation/instructions preceded implementation.
+Writes are explicit/injection-tested, including their lower10ms delay and
+Init boolean adapter. Three host/sanitizer/ARM groups and full host390 pass;
+native read03..05 returned1b/05/05 after verified staging. File removed/no
+helper, boot/vendor PIDs unchanged, no fb1 access or audio writes. Exact-count
+rejection is an explicit stricter error policy than vendor HAL. Next recover
+coordinated GPIO/MCU/device/image lifetime and wire the owning consumer/module;
+fd ownership alone is not amplifier authority or paired shutdown.
+
 [AMP-PROFILE-MODULE](artifacts/reports/AMP-PROFILE-MODULE-2026-11-04.md) now
 exposes the recovered amp inputs through reloadable audio.amp_profile v1 and
 amp-profile CLI/Unix query. DSO holds/removal/failure/fd/suspend/reload cases

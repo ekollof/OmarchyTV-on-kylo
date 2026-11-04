@@ -1293,9 +1293,9 @@ $(BUILD)/audio-state: tools/audio/audio-state.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
-$(BUILD)/amp-probe: tools/audio/amp-probe.c
+$(BUILD)/amp-probe: tools/audio/amp-probe.c common/amp_i2c.c include/openaurora/amp_i2c.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
 $(BUILD)/audio-netlink-probe: tools/audio/audio-netlink-probe.c common/audio_client.c common/audio_netlink.c include/openaurora/audio_netlink.h include/openaurora/audio_client.h
 	@mkdir -p $(dir $@)
@@ -1465,5 +1465,13 @@ $(BUILD)/tests/amp_owner: tests/amp_owner.c common/amp_owner.c common/amp_init.c
 check-amp-owner: $(BUILD)/tests/amp_owner
 	@$(BUILD)/tests/amp_owner
 check: check-amp-owner
+
+$(BUILD)/tests/amp_i2c: tests/amp_i2c.c common/amp_i2c.c include/openaurora/amp_i2c.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-amp-i2c
+check-amp-i2c: $(BUILD)/tests/amp_i2c
+	@$(BUILD)/tests/amp_i2c
+check: check-amp-i2c
 
 .PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-display check-svg check-runtime clean install arm tv vendor

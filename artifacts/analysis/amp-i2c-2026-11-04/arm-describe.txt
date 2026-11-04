@@ -1,0 +1,1 @@
+AD82587_D: /dev/i2c-3, slave 0x34 (vendor 0x68), registers 0x03..0x05 read only

@@ -294,7 +294,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       retained image and draining/nonblocking join, including TLS destructors;
       four host/sanitizer/ARM groups and the same injected-I/O groups on the TV
       pass (no device/fb1 access; staging removed). This is not a native backend or paired
-      shutdown. Finish audio consumer/provider holds and module integration,
+      shutdown. AMP-I2C adds an owned blocking bus3/address34 session with
+      explicit write permission and Init boolean adapter. Fresh Aurora/NDAL3/
+      PreInit instruction review establishes packets and10ms post-write delay;
+      three host/sanitizer/ARM groups and the refactored native read03..05 pass
+      (1b/05/05, staging removed, no fb1 access). Writes remain injection-tested;
+      exact-message-count rejection is stricter than the vendor false-success
+      policy and not claimed as bug-for-bug error parity. Fd ownership is not
+      amplifier authority. Finish audio consumer/provider holds and module integration,
       retained image acquisition, coordinated GPIO/MCU/I2C/worker
       ownership and hardware lifecycle acceptance; wrapper results and controlled
       callbacks do not establish native bring-up.

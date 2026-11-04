@@ -53,6 +53,17 @@ temporary staging removed/no helper and boot/vendor PIDs unchanged. No devices
 or framebuffer opened. Create seeds private reset/mute cache0/1 and does not
 reset the global image; a fresh ELF image is not a running-state snapshot.
 
+AMP-I2C-2026-11-04 supplies an owned blocking bus3/address34 fd session,
+explicit write permission and correct errno-to-Init-boolean adaptation. Fresh
+default-write/NDAL3/PreInit instructions establish two-message packets and10ms
+lower post-write delay; no duplicate delay belongs in the orchestration loop.
+Exact-count checking deliberately rejects the HAL's false-success cases and
+does not claim vendor failure parity. Three host/sanitizer/ARM groups and full
+host390 pass; the refactored native read03..05 returned1b/05/05 on TV. Staging
+removed/no helper, boot/vendor PIDs unchanged; no fb1 or audio write. Writes
+are injection-tested only. Fd ownership is not exclusive amp authority, and
+GPIO/MCU/module/image/paired lifetime acceptance remain open.
+
 AMP-PROFILE-MODULE-2026-11-04 adds reloadable audio.amp_profile v1 and the
 amp-profile query over actual local Unix IPC. Caller-owned copies/names and
 provider holds/removal/failure/fd/suspend/reload lifecycle pass host/sanitizer/

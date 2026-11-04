@@ -1,0 +1,3 @@
+ok amp I2C: opened-device identity, copied callbacks, cleanup and explicit read-only permission
+ok amp I2C: 38 single-byte writes and post-write delay; short/error/EINTR reject without replay or partial read publication
+ok amp I2C: inherited handles refuse I/O; final-close failure consumes handle and never replays fd

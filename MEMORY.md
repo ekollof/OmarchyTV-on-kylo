@@ -19,6 +19,18 @@ Evidence: amp-owner-tv-2026-11-04. Current permission allows non-display tests
 and view-only interrogation; fb1 and stock operation must remain untouched.
 This supersedes historical offline-only restrictions in older entries below.
 
+AMP-I2C-2026-11-04 adds owned fixed-endpoint bus3/address34 transport, native
+ARM32 syscalls and explicit write permission/Init boolean adapter. Fresh
+Aurora/NDAL3/PreInit instructions compared before implementation;10ms lower
+post-write delay is distinct from Init orchestration waits. Three host/leak-
+enabled sanitizer/ARM-qemu groups and full host390 pass. Refactored native
+amp-probe (28328 bytes, SHA256 d9870fe2ab7e6f24fa257c3c0f17d0e51a5439aa3cdb7baa5bcd993fcbf1e4fb)
+read03..05=1b/05/05 with completed2 on TV. Staging removed/no helper; boot ID/
+vendor PIDs1967/1785 unchanged, no-reset retained; no fb1/audio write. Native
+write acceptance, GPIO/MCU/board authority, worker/module hookup and complete
+amp lifecycle remain open. Strict completion counts intentionally differ from
+the HAL's nonnegative false-success policy; do not claim failure parity.
+
 AMP-PROFILE-MODULE-2026-11-04 adds audio_amp_profile/audio.amp_profile v1 and
 amp-profile CLI/actual Unix IPC. Copied profile/name snapshots, holds/removal,
 failure cleanup/fd counts, suspend/deferred reload/resume and replacement
