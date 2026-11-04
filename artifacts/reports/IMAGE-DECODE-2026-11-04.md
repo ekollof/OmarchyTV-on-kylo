@@ -5,7 +5,8 @@ the vendor-downloaded PNG assets in `/buffer/downloaded_images` into straight
 RGBA, and `ui_engine` falls back to it when `<ui.dir>/<name>.rgba` is absent.
 Nine real downloaded files — RGB, RGBA and colormap PNGs — decode byte-exactly
 to an independent libpng/ImageMagick reference and render through the UI
-recorder. No TV access or hardware change was made in this step.
+recorder. No TV access was made after the owner's stop instruction; the nine
+sources are the existing offline copies in `artifacts/workbench/thumbs/`.
 
 ## Firmware basis
 

@@ -41,7 +41,7 @@ renders all nine at400x225 with source-pixel checks. Host344 ok, focused
 ASan/UBSan clean, decoder/UI ARM-qemu pass with vendor libpng/zlib. Tools/boot
 now autoloads image_decode. Limits: downloaded JPEG/APNG, a vendor
 PngImageDecoderImpl differential, on-TV decode/display and stock pixel parity
-remain. No TV access this step.
+remain. No TV access after the owner stop instruction; all decode/UI evidence is offline.
 
 Latest checklist audit: [TODO-AUDIT](artifacts/reports/TODO-AUDIT-2026-11-04.md)
 reviews all182 previously checked items. Its one reopened item, recorder

@@ -6,7 +6,7 @@ exactly; errors reject and the service reloads. ui_engine keeps OAI1 assets
 first, then decodes <ui.download_dir>/<name> (default /buffer/downloaded_images)
 through the service; check-ui-png-cards proves the nine cards use400x225
 decoded sources and first-pixel values. Host344 ok, focused ASan/UBSan and
-decoder/UI ARM-qemu pass. No TV access. Limits: PNG only (downloaded JPEGs
+decoder/UI ARM-qemu pass. No TV access after the owner stop instruction. Limits: PNG only (downloaded JPEGs
 remain), no vendor PngImageDecoderImpl differential, no on-TV decode/stock
 pixel parity.
 

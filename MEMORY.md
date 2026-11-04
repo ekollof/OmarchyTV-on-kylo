@@ -13,7 +13,7 @@ with source-pixel checks. Full host344 ok, focused ASan/UBSan clean, decoder
 and UI tests pass ARM/qemu with the vendor libpng/zlib. tools/boot config
 autoloads image_decode. Limits: no JPEG/APNG, not a vendor
 PngImageDecoderImpl differential, no on-TV decode or stock parity; no TV
-access this step.
+access after the owner stop instruction, all decode/UI evidence is offline.
 
 ALPHA-RECORDER-2026-11-04 closes the TODO-AUDIT reopened item:
 tests/ui_nav_display.c composes cap_blend with oa_canvas_over instead of
