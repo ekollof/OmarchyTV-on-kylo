@@ -1,0 +1,5 @@
+ok display DSO: actual registry hold refuses reload before cleanup and keeps rendering usable
+ok display DSO: control/force keeps code and fd alive during blocked worker; join permits actual dlclose/reload
+ok display DSO: firmware suspended-pan error propagates; suspend/reload defers hardware until resume
+ok display DSO: failed publication retains partial-start module and backup through asynchronous cleanup
+ok display DSO: real shutdown dispatches heartbeat while driver is blocked and only unloads after join

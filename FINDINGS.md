@@ -17,8 +17,13 @@ error; stop/unload cleanup uses an owning worker and actual nonblocking join.
 Both variants pass host/sanitizer/ARM and full host382. Vendor TDGA RemoveRegion
 is a no-op; pool destruction unmaps and driver close releases GPU/fds, while
 kernel PMI restores registers separately. New snapshot/retry behavior is
-project reload policy, not vendor lifecycle parity. Actual host/DSO reload,
-exclusive authority/native equality remain open. No TV access for this review;
+project reload policy, not vendor lifecycle parity. DISPLAY-DSO now verifies
+actual display_fb host/loader/control-dispatch hold, blocked/forced reload,
+deferred resume, failed start and shutdown: five host/sanitizer/ARM groups and
+full host387 pass. It reproduced a completed-worker poll(-1) shutdown hang
+after the last timer disappeared; GDB evidence drove a20ms shutdown poll cap.
+Quiescence is now retried without a later notification; permanent failure still
+retains the module. Exclusive authority/native equality remain open. No TV access;
 current permission excludes active fb1.
 
 VISIBLE-IMAGES-2026-11-04: the supervised no-plat candidate painted the live

@@ -81,7 +81,9 @@ in AMP-OWNER, not a new live display test here.
 Full strict host check on the final source:382 ok, exit0; scene-probe also
 builds successfully. Full log is full-host.txt in that evidence directory.
 
-Next: actual host/DSO reload/failure integration for this display gate,
+Follow-up [DISPLAY-DSO](DISPLAY-DSO-2026-11-04.md) closes the controlled actual
+host/DSO reload/failure gap and fixes a newly reproduced no-notification
+shutdown poll hang. Five host/sanitizer/ARM-qemu groups pass. Still open:
 exclusive layer authority, real-driver state equality, complete native
 power/standby/resume and fallback. Ordinary start, drawing/present and suspend
 still issue synchronous operations; this worker only moves stop/unload cleanup

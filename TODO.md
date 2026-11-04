@@ -604,8 +604,13 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       stop/unload restore/unmap/close onto a worker with nonblocking actual join.
       Both variants pass host/sanitizer/ARM-qemu failure/blocked-driver tests;
       firmware release/PMI paths were decompiled and compared, with the retry
-      layer explicitly identified as project policy. Still need real host/DSO
-      reload acceptance, exclusive authority and native equality. Start/draw/
+      layer explicitly identified as project policy. DISPLAY-DSO adds actual
+      display_fb host/loader/control-dispatch hold, blocked/force reload,
+      deferred resume, failed start and shutdown tests: five groups pass host/
+      sanitizer/ARM-qemu. GDB confirmed a completed-worker shutdown poll(-1)
+      hang after the last timer disappeared; shutdown poll now caps at20ms.
+      Still need exclusive authority, native equality and external socket-client
+      display integration. Start/draw/
       suspend remain synchronous; this is not kernel power parity or complete
       fallback. FBR2 native-struct ABI portability and file
       validation remain open. Current TV permission excludes active fb1.

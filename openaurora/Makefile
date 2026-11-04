@@ -1348,6 +1348,21 @@ check-display: $(BUILD)/tests/display_present $(BUILD)/tests/display_binding $(B
 	@$(BUILD)/tests/display_binding
 	@$(BUILD)/tests/fbregion_read
 
+# Production display code through the real loader; only fixture DSOs wrap I/O.
+$(BUILD)/display-fixture/mod_display_fb.so: modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c tests/display_dso_observer.c include/openaurora/module.h include/openaurora/services.h include/openaurora/fb_snapshot.h include/openaurora/ui_anim.h include/openaurora/canvas.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_DISPLAY_NO_PLAT -fPIC -shared $(LDFLAGS) -o $@ $(filter %.c,$^) -lm -pthread \
+	  $(foreach call,open close system mmap munmap msync ioctl,-Wl,--wrap=$(call))
+
+$(BUILD)/tests/display_lifecycle: tests/display_lifecycle.c core/host.h include/openaurora/fb_snapshot.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -Wl,--export-dynamic -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+
+.PHONY: check-display-lifecycle
+check-display-lifecycle: $(BUILD)/tests/display_lifecycle $(BUILD)/display-fixture/mod_display_fb.so $(BUILD)/modules/mod_ticker.so
+	@$(BUILD)/tests/display_lifecycle $(abspath $(BUILD)/display-fixture) $(abspath $(BUILD)/modules/mod_ticker.so)
+check: check-display-lifecycle
+
 check-runtime: all
 	@BUILD=$(BUILD) CC='$(CC)' CFLAGS='$(CFLAGS)' sh tests/runtime_check.sh
 

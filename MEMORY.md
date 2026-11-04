@@ -68,8 +68,13 @@ failures/fd, reports failed synchronous suspend and runs stop/unload cleanup
 on a joined worker; blocked-driver/create/join/restore/unmap/close tests pass
 both variants on host/leak-enabled sanitizers/fresh ARM-qemu, full host382.
 Direct firmware teardown/PMI instructions compared; snapshot retry is project
-policy, not vendor lifecycle parity. Real host/DSO reload acceptance, exclusive
-ownership and native equality remain open. No TV access; active fb1 is
+policy, not vendor lifecycle parity. DISPLAY-DSO now passes actual display_fb
+host/loader/control-dispatch hold, busy/force reload, deferred resume, failed
+start and shutdown tests on host/leak-enabled sanitizer/fresh ARM-qemu; full
+host387 passes. GDB confirmed a completed worker could leave shutdown in
+poll(-1) after the last timer vanished; a20ms shutdown poll cap fixes gate
+retry without later notifications. Exclusive ownership/native equality and
+external socket-client/display integration remain open. No TV access; active fb1 is
 excluded by current permission. The existing cold-bundle is historical and
 must be rebuilt to include the fixes; it is not ready for authorized execution.
 

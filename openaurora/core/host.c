@@ -604,6 +604,11 @@ static int poll_once(oa_host *h)
         if (timeout < 0 || hb_timeout < timeout)
             timeout = hb_timeout;
     }
+    /* A quiescence worker may finish without posting to the loop. Shutdown
+     * promises to retry its gate, even after its last timer/watch disappears.
+     * Preserve earlier timer/readiness deadlines, but never wait forever (or
+     * until an unrelated long timer) before checking release progress again. */
+    if (h->shutting_down && (timeout < 0 || timeout > 20)) timeout = 20;
     int r = poll(pfds, (nfds_t)n, timeout);
     if (r < 0)
         return errno == EINTR ? 0 : -1;

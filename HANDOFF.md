@@ -44,9 +44,15 @@ nonblocking actual join in ABI3 quiesce. New failure and blocked-driver tests
 pass both display variants on host/leak-enabled sanitizer/fresh ARM-qemu; full
 host382 passes. TDGA teardown, NDAL_EX GPU close and kernel mapping/pan/PMI
 wrappers were decompiled/checked against instructions: recovery/retry is project
-policy, not a cloned vendor lifecycle. No TV access/fb1 use. Next add actual
-host/DSO reload/failure integration, then exclusive authority and native state
-equality when authorized. This does not provide kernel power parity or move
+policy, not a cloned vendor lifecycle. [DISPLAY-DSO](artifacts/reports/DISPLAY-DSO-2026-11-04.md)
+now adds actual host/loader/control-dispatch hold, blocked/forced reload,
+deferred resume, partial-start failure and shutdown tests for display_fb. Five
+groups pass host/leak-enabled sanitizer/fresh ARM-qemu; full host387 passes.
+GDB reproduced a completed-worker shutdown poll(-1) hang; shutdown now caps
+poll at20ms so join gates retry without a later notification. No TV/fb1 use.
+Next establish exclusive authority and native state equality when authorized;
+external socket-client/display integration remains untested by this fixture.
+This does not provide kernel power parity or move
 ordinary start/draw/suspend off the loop. Read the report before more changes.
 
 [AMP-INIT](artifacts/reports/AMP-INIT-2026-11-04.md) adds an injected blocking
@@ -107,7 +113,8 @@ leak-enabled sanitizer and fresh ARM-qemu library/tool/both-display tests pass;
 full strict host372 passes.
 No TV access in this review; fb1 remains excluded. Mode/allocation/MAU are not
 restored. DISPLAY-CLEANUP above supplies retained failures and owning cleanup
-for stop/unload; actual host/DSO integration and native acceptance remain open.
+for stop/unload; DISPLAY-DSO covers controlled host/loader cases, while native
+acceptance remains open.
 Do not put blocking restore in the ABI3 gate. The historical cold bundle needs
 rebuilding before any future authorized experiment and has no native acceptance.
 

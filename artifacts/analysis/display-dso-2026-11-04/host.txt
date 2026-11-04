@@ -1,0 +1,9 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-display-dso/core/host.o core/host.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -Wl,--export-dynamic -o build-display-dso/tests/display_lifecycle tests/display_lifecycle.c build-display-dso/core/check.o build-display-dso/core/control.o build-display-dso/core/host.o build-display-dso/core/module.o build-display-dso/core/skin.o -ldl -pthread -lm
+ok display DSO: actual registry hold refuses reload before cleanup and keeps rendering usable
+ok display DSO: control/force keeps code and fd alive during blocked worker; join permits actual dlclose/reload
+ok display DSO: firmware suspended-pan error propagates; suspend/reload defers hardware until resume
+ok display DSO: failed publication retains partial-start module and backup through asynchronous cleanup
+ok display DSO: real shutdown dispatches heartbeat while driver is blocked and only unloads after join
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

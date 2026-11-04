@@ -1,0 +1,29 @@
+Breakpoint 1 at 0x9954: file core/host.c, line 607.
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.archlinux.org>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/libthread_db.so.1".
+[New Thread 0x7ffff7bc16c0 (LWP 1581811) (id 2)]
+[Thread 0x7ffff7bc16c0 (LWP 1581811) (id 2) exited]
+[New Thread 0x7ffff7bc16c0 (LWP 1581812) (id 3)]
+[Thread 0x7ffff7bc16c0 (LWP 1581812) (id 3) exited]
+[New Thread 0x7ffff7bc16c0 (LWP 1581813) (id 4)]
+[Thread 0x7ffff7bc16c0 (LWP 1581813) (id 4) exited]
+[New Thread 0x7ffff7bc16c0 (LWP 1581814) (id 5)]
+[Thread 0x7ffff7bc16c0 (LWP 1581814) (id 5) exited]
+
+Thread 1 "display_lifecyc" hit Breakpoint 1, poll_once (h=h@entry=0x7ffff7bc2010) at core/host.c:607
+607	    int r = poll(pfds, (nfds_t)n, timeout);
+$1 = 1
+$2 = -1
+$3 = 1
+$4 = 1
+$5 = 1
+#0  poll_once (h=h@entry=0x7ffff7bc2010) at core/host.c:607
+#1  0x000055555555e8f0 in shutdown_modules (h=0x7ffff7bc2010) at core/host.c:736
+#2  oa_host_run (h=h@entry=0x7ffff7bc2010) at core/host.c:759
+#3  0x0000555555558316 in main (argc=<optimized out>, argv=<optimized out>) at tests/display_lifecycle.c:162

@@ -68,7 +68,8 @@ closing/suspending, so the library's retry capability did not provide a module
 recovery protocol at that milestone. [DISPLAY-CLEANUP](DISPLAY-CLEANUP-2026-11-04.md)
 subsequently adds retained failure state and an owning stop/unload worker with
 nonblocking join; synchronous suspend now reports failure/retains its snapshot.
-Actual host/DSO integration and native restoration acceptance remain open. Do
+[DISPLAY-DSO](DISPLAY-DSO-2026-11-04.md) subsequently covers the controlled
+actual-host/loader cases. Native restoration acceptance remains open. Do
 not put blocking restore operations in an ABI3 quiescence hook. File-format
 portability across host/ARM ABI and untrusted-file validation also remain open;
 FBR2 currently stores native fb structs. No live restore/cold startup is tested

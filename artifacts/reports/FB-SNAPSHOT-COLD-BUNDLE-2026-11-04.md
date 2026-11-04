@@ -5,8 +5,8 @@ backing/layout acceptance, skipped cleanup after mmap failure and false backup
 success after fclose failure. "Full" below describes the old milestone label:
 var/fix are saved metadata; only pixels/region/pan are restored, under unchanged
 backing/layout/mode/MAU. [DISPLAY-CLEANUP](DISPLAY-CLEANUP-2026-11-04.md)
-later adds module failure retention and worker cleanup; actual host/DSO and
-native restoration acceptance remain open.
+later adds module failure retention and worker cleanup; DISPLAY-DSO covers
+controlled actual-host/loader cases. Native restoration acceptance remains open.
 The historical access prohibition below was later replaced by non-fb1 test
 permission; active fb1/cold takeover remain outside that permission.
 
