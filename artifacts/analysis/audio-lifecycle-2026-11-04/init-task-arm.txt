@@ -1,0 +1,480 @@
+  84ebf0:	mov.w	ip, #8192	; 0x2000
+  84ebf4:	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+  84ebf8:	sub.w	ip, sp, ip
+  84ebfc:	str.w	r0, [ip, #3976]	; 0xf88
+  84ec00:	movw	r9, #7528	; 0x1d68
+  84ec04:	sub	sp, #84	; 0x54
+  84ec06:	movt	r9, #377	; 0x179
+  84ec0a:	ldr.w	r3, [r9]
+  84ec0e:	add	r7, sp, #8
+  84ec10:	add.w	r0, r7, #36	; 0x24
+  84ec14:	movw	r4, #64092	; 0xfa5c
+  84ec18:	movt	r4, #402	; 0x192
+  84ec1c:	str	r3, [r7, #68]	; 0x44
+  84ec1e:	bl	c5e858 <Profile_GetMainSpeakerPower@@Base>
+  84ec22:	movw	r0, #27312	; 0x6ab0
+  84ec26:	movs	r3, #1
+  84ec28:	movt	r0, #309	; 0x135
+  84ec2c:	str	r3, [r4, #0]
+  84ec2e:	bl	c5f6f0 <Profile_GetDRC@@Base>
+  84ec32:	movw	r1, #27324	; 0x6abc
+  84ec36:	mov	r6, r0
+  84ec38:	movt	r1, #309	; 0x135
+  84ec3c:	add.w	r0, r7, #36	; 0x24
+  84ec40:	blx	6b4c48 <strcmp@plt+0x4>
+  84ec44:	cbz	r0, 84ec5c <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x109c>
+  84ec46:	movw	r1, #27332	; 0x6ac4
+  84ec4a:	add.w	r0, r7, #36	; 0x24
+  84ec4e:	movt	r1, #309	; 0x135
+  84ec52:	blx	6b4c48 <strcmp@plt+0x4>
+  84ec56:	cmp	r0, #0
+  84ec58:	bne.w	84ef12 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1352>
+  84ec5c:	movs	r5, #12
+  84ec5e:	mov	r0, r5
+  84ec60:	blx	6b0c1c <malloc@plt>
+  84ec64:	str	r0, [r7, #16]
+  84ec66:	cmp	r0, #0
+  84ec68:	beq.w	84f13a <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x157a>
+  84ec6c:	movw	r1, #27324	; 0x6abc
+  84ec70:	add.w	r0, r7, #36	; 0x24
+  84ec74:	movt	r1, #309	; 0x135
+  84ec78:	blx	6b4c48 <strcmp@plt+0x4>
+  84ec7c:	cbz	r0, 84ec94 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x10d4>
+  84ec7e:	movw	r1, #27332	; 0x6ac4
+  84ec82:	add.w	r0, r7, #36	; 0x24
+  84ec86:	movt	r1, #309	; 0x135
+  84ec8a:	blx	6b4c48 <strcmp@plt+0x4>
+  84ec8e:	cmp	r0, #0
+  84ec90:	bne.w	84eec8 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1308>
+  84ec94:	movw	r2, #27388	; 0x6afc
+  84ec98:	mov	r1, r5
+  84ec9a:	movt	r2, #309	; 0x135
+  84ec9e:	ldr	r0, [r7, #16]
+  84eca0:	blx	6b4a58 <snprintf@plt>
+  84eca4:	ldr	r5, [r4, #0]
+  84eca6:	sub.w	r2, sp, #4096	; 0x1000
+  84ecaa:	lsls	r3, r5, #2
+  84ecac:	adds	r3, #10
+  84ecae:	bic.w	r3, r3, #7
+  84ecb2:	bic.w	r1, r3, #4080	; 0xff0
+  84ecb6:	bic.w	r1, r1, #15
+  84ecba:	subs	r0, r2, r1
+  84ecbc:	cmp	r2, r0
+  84ecbe:	beq.n	84ecca <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x110a>
+  84ecc0:	sub.w	r2, r2, #4096	; 0x1000
+  84ecc4:	cmp	r2, r0
+  84ecc6:	str	r0, [r2, #0]
+  84ecc8:	bne.n	84ecc0 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1100>
+  84ecca:	subs	r1, r3, r1
+  84eccc:	subs	r2, r2, r1
+  84ecce:	str	r0, [r2, #0]
+  84ecd0:	sub.w	sp, sp, r3
+  84ecd4:	add	r3, sp, #8
+  84ecd6:	str	r3, [r7, #20]
+  84ecd8:	cbz	r5, 84ecec <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x112c>
+  84ecda:	ldr	r2, [r7, #20]
+  84ecdc:	movs	r3, #0
+  84ecde:	subs	r1, r2, #4
+  84ece0:	mov	r2, r3
+  84ece2:	adds	r3, #1
+  84ece4:	str.w	r2, [r1, #4]!
+  84ece8:	cmp	r5, r3
+  84ecea:	bne.n	84ece2 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1122>
+  84ecec:	movs	r0, #2
+  84ecee:	blx	6b0c1c <malloc@plt>
+  84ecf2:	mov	r8, r0
+  84ecf4:	cmp	r0, #0
+  84ecf6:	beq.w	84f02c <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x146c>
+  84ecfa:	movs	r3, #49	; 0x31
+  84ecfc:	mov	r2, r5
+  84ecfe:	strh	r3, [r0, #0]
+  84ed00:	ldr	r1, [r7, #20]
+  84ed02:	bl	84dcd8 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x118>
+  84ed06:	cbz	r0, 84ed5c <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x119c>
+  84ed08:	ldr	r2, [r7, #20]
+  84ed0a:	movw	fp, #27432	; 0x6b28
+  84ed0e:	movt	fp, #309	; 0x135
+  84ed12:	movw	r5, #64196	; 0xfac4
+  84ed16:	str.w	fp, [r7, #12]
+  84ed1a:	movt	r5, #402	; 0x192
+  84ed1e:	sub.w	sl, r2, #4
+  84ed22:	movs	r6, #0
+  84ed24:	mov	fp, r0
+  84ed26:	ldr.w	r0, [sl, #4]!
+  84ed2a:	movs	r3, #13
+  84ed2c:	str	r3, [r7, #32]
+  84ed2e:	cmp	r0, #0
+  84ed30:	beq.w	84ef7c <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x13bc>
+  84ed34:	ldrsb.w	r2, [r0]
+  84ed38:	cmp	r2, #45	; 0x2d
+  84ed3a:	beq.w	84ef7c <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x13bc>
+  84ed3e:	add.w	r2, r7, #32
+  84ed42:	movs	r1, #255	; 0xff
+  84ed44:	bl	91e6a8 <TD_DBG_StrToNum@@Base>
+  84ed48:	cmp	r0, #0
+  84ed4a:	bne.w	84f0f2 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1532>
+  84ed4e:	ldr	r2, [r7, #32]
+  84ed50:	adds	r6, #1
+  84ed52:	str	r2, [r5, #12]
+  84ed54:	cmp	fp, r6
+  84ed56:	add.w	r5, r5, #36	; 0x24
+  84ed5a:	bne.n	84ed26 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1166>
+  84ed5c:	mov	r0, r8
+  84ed5e:	blx	6b0204 <free@plt+0x4>
+  84ed62:	movs	r0, #5
+  84ed64:	blx	6b0c1c <malloc@plt>
+  84ed68:	mov	r5, r0
+  84ed6a:	cmp	r0, #0
+  84ed6c:	beq.w	84f02c <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x146c>
+  84ed70:	movw	r3, #27480	; 0x6b58
+  84ed74:	ldr	r2, [r4, #0]
+  84ed76:	movt	r3, #309	; 0x135
+  84ed7a:	ldmia.w	r3, {r0, r1}
+  84ed7e:	str	r0, [r5, #0]
+  84ed80:	mov	r0, r5
+  84ed82:	strb	r1, [r5, #4]
+  84ed84:	ldr	r1, [r7, #20]
+  84ed86:	bl	84dcd8 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x118>
+  84ed8a:	cbz	r0, 84ede2 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1222>
+  84ed8c:	ldr	r2, [r7, #20]
+  84ed8e:	movw	fp, #27488	; 0x6b60
+  84ed92:	movt	fp, #309	; 0x135
+  84ed96:	movw	r6, #64196	; 0xfac4
+  84ed9a:	str.w	fp, [r7, #12]
+  84ed9e:	mov.w	r8, #0
+  84eda2:	movt	r6, #402	; 0x192
+  84eda6:	sub.w	sl, r2, #4
+  84edaa:	mov	fp, r0
+  84edac:	ldr.w	r0, [sl, #4]!
+  84edb0:	movs	r3, #0
+  84edb2:	str	r3, [r7, #32]
+  84edb4:	cbz	r0, 84edd4 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1214>
+  84edb6:	ldrsb.w	r2, [r0]
+  84edba:	cmp	r2, #45	; 0x2d
+  84edbc:	it	eq
+  84edbe:	moveq	r0, #0
+  84edc0:	beq.n	84edd4 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1214>
+  84edc2:	add.w	r2, r7, #32
+  84edc6:	movs	r1, #255	; 0xff
+  84edc8:	bl	91e6a8 <TD_DBG_StrToNum@@Base>
+  84edcc:	cmp	r0, #0
+  84edce:	bne.w	84f0fe <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x153e>
+  84edd2:	ldr	r0, [r7, #32]
+  84edd4:	add.w	r8, r8, #1
+  84edd8:	str	r0, [r6, #24]
+  84edda:	cmp	fp, r8
+  84eddc:	add.w	r6, r6, #36	; 0x24
+  84ede0:	bne.n	84edac <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x11ec>
+  84ede2:	mov	r0, r5
+  84ede4:	blx	6b0204 <free@plt+0x4>
+  84ede8:	ldr	r2, [r4, #0]
+  84edea:	ldr	r1, [r7, #20]
+  84edec:	ldr	r0, [r7, #16]
+  84edee:	bl	84dcd8 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x118>
+  84edf2:	str	r0, [r7, #12]
+  84edf4:	cmp	r0, #0
+  84edf6:	beq.n	84eea0 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12e0>
+  84edf8:	movw	sl, #64092	; 0xfa5c
+  84edfc:	movw	r3, #64100	; 0xfa64
+  84ee00:	movw	r2, #64196	; 0xfac4
+  84ee04:	movt	sl, #402	; 0x192
+  84ee08:	mov.w	fp, #0
+  84ee0c:	movt	r3, #402	; 0x192
+  84ee10:	movt	r2, #402	; 0x192
+  84ee14:	str	r3, [r7, #4]
+  84ee16:	str	r2, [r7, #8]
+  84ee18:	cmp.w	fp, #0
+  84ee1c:	beq.w	84ef80 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x13c0>
+  84ee20:	ldr.w	r5, [sl, #4]
+  84ee24:	movs	r6, #0
+  84ee26:	str	r6, [r7, #28]
+  84ee28:	str	r6, [r7, #32]
+  84ee2a:	cbz	r5, 84ee92 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12d2>
+  84ee2c:	ldr.w	r3, [r5, #192]	; 0xc0
+  84ee30:	cbz	r3, 84ee8a <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12ca>
+  84ee32:	ldr.w	r3, [r5, #196]	; 0xc4
+  84ee36:	cbz	r3, 84ee8a <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12ca>
+  84ee38:	movw	r8, #64088	; 0xfa58
+  84ee3c:	movt	r8, #402	; 0x192
+  84ee40:	ldr.w	r3, [r8]
+  84ee44:	cmp	r3, #0
+  84ee46:	beq.w	84f10a <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x154a>
+  84ee4a:	add.w	r1, r7, #32
+  84ee4e:	add.w	r0, r7, #28
+  84ee52:	mov	r2, r6
+  84ee54:	blx	r3
+  84ee56:	cmp	r0, #0
+  84ee58:	beq.w	84f0d4 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1514>
+  84ee5c:	movw	r1, #26032	; 0x65b0
+  84ee60:	movw	r0, #27572	; 0x6bb4
+  84ee64:	movt	r1, #309	; 0x135
+  84ee68:	ldr	r2, [r7, #32]
+  84ee6a:	movt	r0, #309	; 0x135
+  84ee6e:	blx	6b2abc <printf@plt>
+  84ee72:	ldr.w	r3, [r5, #192]	; 0xc0
+  84ee76:	mov	r0, r5
+  84ee78:	ldr	r2, [r7, #32]
+  84ee7a:	ldr	r1, [r7, #28]
+  84ee7c:	blx	r3
+  84ee7e:	cmp	r0, #0
+  84ee80:	bne.w	84f03e <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x147e>
+  84ee84:	ldr.w	r5, [sl, #4]
+  84ee88:	cbz	r5, 84ee92 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12d2>
+  84ee8a:	ldr	r3, [r5, #68]	; 0x44
+  84ee8c:	cbz	r3, 84ee92 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12d2>
+  84ee8e:	mov	r0, r5
+  84ee90:	blx	r3
+  84ee92:	ldr	r3, [r7, #12]
+  84ee94:	add.w	fp, fp, #1
+  84ee98:	add.w	sl, sl, #4
+  84ee9c:	cmp	r3, fp
+  84ee9e:	bne.n	84ee18 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1258>
+  84eea0:	ldr	r0, [r7, #16]
+  84eea2:	blx	6b0204 <free@plt+0x4>
+  84eea6:	ldr	r3, [r4, #0]
+  84eea8:	cbz	r3, 84eeb4 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12f4>
+  84eeaa:	ldr	r3, [r4, #4]
+  84eeac:	ldr.w	r3, [r3, #188]	; 0xbc
+  84eeb0:	cmp	r3, #0
+  84eeb2:	bne.n	84ef48 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1388>
+  84eeb4:	ldr	r2, [r7, #68]	; 0x44
+  84eeb6:	ldr.w	r3, [r9]
+  84eeba:	cmp	r2, r3
+  84eebc:	bne.w	84f166 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x15a6>
+  84eec0:	adds	r7, #76	; 0x4c
+  84eec2:	mov	sp, r7
+  84eec4:	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+  84eec8:	movw	r1, #27344	; 0x6ad0
+  84eecc:	add.w	r0, r7, #36	; 0x24
+  84eed0:	movt	r1, #309	; 0x135
+  84eed4:	blx	6b4c48 <strcmp@plt+0x4>
+  84eed8:	cmp	r0, #0
+  84eeda:	beq.w	84ec94 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x10d4>
+  84eede:	movw	r1, #27896	; 0x6cf8
+  84eee2:	add.w	r0, r7, #36	; 0x24
+  84eee6:	movt	r1, #309	; 0x135
+  84eeea:	blx	6b4c48 <strcmp@plt+0x4>
+  84eeee:	cmp	r0, #0
+  84eef0:	beq.w	84f128 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1568>
+  84eef4:	adds	r3, r6, #1
+  84eef6:	beq.w	84ec94 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x10d4>
+  84eefa:	cmp	r6, #0
+  84eefc:	bne.w	84ec94 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x10d4>
+  84ef00:	movw	r2, #27412	; 0x6b14
+  84ef04:	mov	r1, r5
+  84ef06:	movt	r2, #309	; 0x135
+  84ef0a:	ldr	r0, [r7, #16]
+  84ef0c:	blx	6b4a58 <snprintf@plt>
+  84ef10:	b.n	84eca4 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x10e4>
+  84ef12:	movw	r1, #27344	; 0x6ad0
+  84ef16:	add.w	r0, r7, #36	; 0x24
+  84ef1a:	movt	r1, #309	; 0x135
+  84ef1e:	blx	6b4c48 <strcmp@plt+0x4>
+  84ef22:	cmp	r0, #0
+  84ef24:	beq.w	84ec5c <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x109c>
+  84ef28:	movw	r1, #27896	; 0x6cf8
+  84ef2c:	add.w	r0, r7, #36	; 0x24
+  84ef30:	movt	r1, #309	; 0x135
+  84ef34:	blx	6b4c48 <strcmp@plt+0x4>
+  84ef38:	cmp	r0, #0
+  84ef3a:	beq.w	84f124 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1564>
+  84ef3e:	cmp	r6, #0
+  84ef40:	ite	eq
+  84ef42:	moveq	r5, #20
+  84ef44:	movne	r5, #12
+  84ef46:	b.n	84ec5e <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x109e>
+  84ef48:	movw	r3, #27848	; 0x6cc8
+  84ef4c:	movw	r0, #57617	; 0xe111
+  84ef50:	movt	r3, #309	; 0x135
+  84ef54:	movt	r0, #132	; 0x84
+  84ef58:	str	r3, [sp, #0]
+  84ef5a:	mov.w	r2, #4096	; 0x1000
+  84ef5e:	movs	r3, #10
+  84ef60:	movs	r1, #0
+  84ef62:	bl	91b1dc <TD_OS_TaskCreate@@Base>
+  84ef66:	cmp	r0, #0
+  84ef68:	bne.n	84eeb4 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12f4>
+  84ef6a:	movw	r1, #27864	; 0x6cd8
+  84ef6e:	mov.w	r0, #520	; 0x208
+  84ef72:	movt	r1, #309	; 0x135
+  84ef76:	bl	8be754 <PLAT_SP_DebugWrite@@Base>
+  84ef7a:	b.n	84eeb4 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12f4>
+  84ef7c:	movs	r2, #13
+  84ef7e:	b.n	84ed50 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1190>
+  84ef80:	ldr	r3, [r7, #20]
+  84ef82:	ldr	r0, [pc, #488]	; (84f16c <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x15ac>)
+  84ef84:	ldr	r1, [r3, #0]
+  84ef86:	bl	874b84 <DEV_AMP_FACT_Create@@Base>
+  84ef8a:	cmp	r0, #0
+  84ef8c:	beq.w	84ee20 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1260>
+  84ef90:	ldr	r3, [r4, #4]
+  84ef92:	str.w	fp, [r3, #4]
+  84ef96:	ldr	r3, [r4, #4]
+  84ef98:	ldr	r5, [r3, #8]
+  84ef9a:	mov	r0, r5
+  84ef9c:	bl	874b10 <DEV_AMP_FACT_GetDefaultResource@@Base>
+  84efa0:	mov	r6, r0
+  84efa2:	cmp	r0, #0
+  84efa4:	beq.w	84f14c <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x158c>
+  84efa8:	ldr	r1, [r7, #8]
+  84efaa:	ldr	r2, [r0, #20]
+  84efac:	ldr	r3, [r0, #24]
+  84efae:	ldr.w	lr, [r0, #4]
+  84efb2:	ldr	r5, [r0, #8]
+  84efb4:	ldr	r0, [r0, #12]
+  84efb6:	str	r3, [r1, #24]
+  84efb8:	str	r2, [r1, #20]
+  84efba:	ldr	r3, [r6, #28]
+  84efbc:	ldr	r2, [r6, #16]
+  84efbe:	ldr	r6, [r6, #32]
+  84efc0:	str.w	lr, [r1, #4]
+  84efc4:	str	r5, [r1, #8]
+  84efc6:	str	r0, [r1, #12]
+  84efc8:	str	r2, [r1, #16]
+  84efca:	str	r3, [r1, #28]
+  84efcc:	str	r6, [r1, #32]
+  84efce:	ldr	r2, [r7, #4]
+  84efd0:	movw	r3, #283	; 0x11b
+  84efd4:	mov	r0, lr
+  84efd6:	str	r3, [r2, #4]
+  84efd8:	bl	850c38 <DEV_GPIO_GetDescription@@Base>
+  84efdc:	mov	r6, r0
+  84efde:	cbz	r0, 84effc <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x143c>
+  84efe0:	ldr	r0, [r0, #0]
+  84efe2:	movw	r5, #64100	; 0xfa64
+  84efe6:	ldr	r1, [r6, #4]
+  84efe8:	movt	r5, #402	; 0x192
+  84efec:	ldr	r2, [r6, #8]
+  84efee:	ldr	r3, [r6, #12]
+  84eff0:	stmia	r5!, {r0, r1, r2, r3}
+  84eff2:	ldr	r0, [r6, #16]
+  84eff4:	ldr	r1, [r6, #20]
+  84eff6:	ldr	r2, [r6, #24]
+  84eff8:	ldr	r3, [r6, #28]
+  84effa:	stmia	r5!, {r0, r1, r2, r3}
+  84effc:	ldr	r2, [r7, #8]
+  84effe:	movw	r3, #283	; 0x11b
+  84f002:	ldr	r0, [r2, #8]
+  84f004:	ldr	r2, [r7, #4]
+  84f006:	str	r3, [r2, #36]	; 0x24
+  84f008:	bl	850c38 <DEV_GPIO_GetDescription@@Base>
+  84f00c:	mov	r6, r0
+  84f00e:	cmp	r0, #0
+  84f010:	beq.w	84ee20 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1260>
+  84f014:	ldr	r0, [r0, #0]
+  84f016:	ldr	r1, [r6, #4]
+  84f018:	ldr	r2, [r6, #8]
+  84f01a:	ldr	r3, [r6, #12]
+  84f01c:	ldr	r5, [pc, #336]	; (84f170 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x15b0>)
+  84f01e:	stmia	r5!, {r0, r1, r2, r3}
+  84f020:	ldr	r0, [r6, #16]
+  84f022:	ldr	r1, [r6, #20]
+  84f024:	ldr	r2, [r6, #24]
+  84f026:	ldr	r3, [r6, #28]
+  84f028:	stmia	r5!, {r0, r1, r2, r3}
+  84f02a:	b.n	84ee20 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1260>
+  84f02c:	movw	r1, #27352	; 0x6ad8
+  84f030:	mov.w	r0, #520	; 0x208
+  84f034:	movt	r1, #309	; 0x135
+  84f038:	bl	8be754 <PLAT_SP_DebugWrite@@Base>
+  84f03c:	b.n	84eea0 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12e0>
+  84f03e:	str	r6, [r7, #28]
+  84f040:	add.w	r1, r7, #32
+  84f044:	str	r6, [r7, #32]
+  84f046:	add.w	r0, r7, #28
+  84f04a:	ldr.w	r3, [r8]
+  84f04e:	movs	r2, #1
+  84f050:	blx	r3
+  84f052:	cmp	r0, #0
+  84f054:	beq.w	84ee84 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12c4>
+  84f058:	movw	r1, #26032	; 0x65b0
+  84f05c:	movw	r0, #27604	; 0x6bd4
+  84f060:	movt	r1, #309	; 0x135
+  84f064:	ldr	r2, [r7, #32]
+  84f066:	movt	r0, #309	; 0x135
+  84f06a:	blx	6b2abc <printf@plt>
+  84f06e:	ldr	r0, [r7, #32]
+  84f070:	movw	r1, #27640	; 0x6bf8
+  84f074:	movw	r2, #1517	; 0x5ed
+  84f078:	movt	r1, #309	; 0x135
+  84f07c:	ldr.w	r8, [r7, #28]
+  84f080:	lsls	r0, r0, #3
+  84f082:	bl	8a0c18 <_PLAT_MEM_Alloc@@Base>
+  84f086:	ldr	r2, [r7, #32]
+  84f088:	mov	r3, r0
+  84f08a:	cbz	r2, 84f0a8 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x14e8>
+  84f08c:	adds	r1, r0, #4
+  84f08e:	ldr.w	r0, [r8, r6, lsl #3]
+  84f092:	subs	r2, r1, r3
+  84f094:	adds	r6, #1
+  84f096:	strb.w	r0, [r1, #-4]
+  84f09a:	ldr.w	r2, [r2, r8]
+  84f09e:	str.w	r2, [r1], #8
+  84f0a2:	ldr	r2, [r7, #32]
+  84f0a4:	cmp	r6, r2
+  84f0a6:	bcc.n	84f08e <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x14ce>
+  84f0a8:	cmp	r3, #0
+  84f0aa:	beq.w	84ee84 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12c4>
+  84f0ae:	mov	r1, r3
+  84f0b0:	ldr.w	r6, [r5, #196]	; 0xc4
+  84f0b4:	mov	r0, r5
+  84f0b6:	str	r3, [r7, #0]
+  84f0b8:	blx	r6
+  84f0ba:	ldr	r3, [r7, #0]
+  84f0bc:	movw	r1, #27640	; 0x6bf8
+  84f0c0:	movt	r1, #309	; 0x135
+  84f0c4:	movw	r2, #1526	; 0x5f6
+  84f0c8:	mov	r0, r3
+  84f0ca:	bl	8a0d28 <_PLAT_MEM_Free@@Base>
+  84f0ce:	ldr.w	r5, [sl, #4]
+  84f0d2:	b.n	84ee88 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12c8>
+  84f0d4:	movw	r2, #26032	; 0x65b0
+  84f0d8:	movw	r1, #27744	; 0x6c60
+  84f0dc:	movt	r2, #309	; 0x135
+  84f0e0:	movt	r1, #309	; 0x135
+  84f0e4:	mov.w	r0, #520	; 0x208
+  84f0e8:	bl	8be754 <PLAT_SP_DebugWrite@@Base>
+  84f0ec:	ldr.w	r5, [sl, #4]
+  84f0f0:	b.n	84ee88 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12c8>
+  84f0f2:	ldr	r1, [r7, #12]
+  84f0f4:	mov.w	r0, #520	; 0x208
+  84f0f8:	bl	8be754 <PLAT_SP_DebugWrite@@Base>
+  84f0fc:	b.n	84ed4e <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x118e>
+  84f0fe:	ldr	r1, [r7, #12]
+  84f100:	mov.w	r0, #520	; 0x208
+  84f104:	bl	8be754 <PLAT_SP_DebugWrite@@Base>
+  84f108:	b.n	84edd2 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x1212>
+  84f10a:	movw	r2, #26032	; 0x65b0
+  84f10e:	movw	r1, #27796	; 0x6c94
+  84f112:	movt	r2, #309	; 0x135
+  84f116:	movt	r1, #309	; 0x135
+  84f11a:	mov.w	r0, #520	; 0x208
+  84f11e:	bl	8be754 <PLAT_SP_DebugWrite@@Base>
+  84f122:	b.n	84ee84 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12c4>
+  84f124:	movs	r5, #11
+  84f126:	b.n	84ec5e <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x109e>
+  84f128:	movw	r2, #27400	; 0x6b08
+  84f12c:	mov	r1, r5
+  84f12e:	movt	r2, #309	; 0x135
+  84f132:	ldr	r0, [r7, #16]
+  84f134:	blx	6b4a58 <snprintf@plt>
+  84f138:	b.n	84eca4 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x10e4>
+  84f13a:	movw	r1, #27352	; 0x6ad8
+  84f13e:	mov.w	r0, #520	; 0x208
+  84f142:	movt	r1, #309	; 0x135
+  84f146:	bl	8be754 <PLAT_SP_DebugWrite@@Base>
+  84f14a:	b.n	84eeb4 <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x12f4>
+  84f14c:	movw	r1, #27540	; 0x6b94
+  84f150:	mov	r2, r5
+  84f152:	movt	r1, #309	; 0x135
+  84f156:	mov.w	r0, #520	; 0x208
+  84f15a:	bl	8be754 <PLAT_SP_DebugWrite@@Base>
+  84f15e:	ldr	r3, [r7, #8]
+  84f160:	ldr.w	lr, [r3, #4]
+  84f164:	b.n	84efce <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x140e>
+  84f166:	blx	6af740 <__stack_chk_fail@plt>
+  84f16a:	nop
+  84f16c:			; <UNDEFINED> instruction: 0xfa600192
+  84f170:			; <UNDEFINED> instruction: 0xfa840192
+
+0084f174 <DEV_AMP_AutoTest@@Base>:

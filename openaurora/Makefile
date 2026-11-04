@@ -1370,4 +1370,12 @@ install: all
 
 -include $(CORE_DEP) $(MOD_DEP)
 
+$(BUILD)/tests/audio_amp: tests/audio_amp.c common/audio_amp.c include/openaurora/audio_amp.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-audio-amp
+check-audio-amp: $(BUILD)/tests/audio_amp
+	@$(BUILD)/tests/audio_amp
+check: check-audio-amp
+
 .PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-display check-svg check-runtime clean install arm tv vendor

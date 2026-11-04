@@ -1,5 +1,13 @@
 # Current project state — last verified 2026-11-04
 
+AUDIO-AMP-IMAGE-2026-11-04 recovers AD82587 lifecycle/return contracts and
+implements pure38-register profile conversion with caller-supplied retained
+image. Strict host, leak-enabled ASan/UBSan, fresh ARM/qemu and full host349
+checks pass. Compared statically against decompiled ARM; native Init execution
+comparison and hardware ownership/init/resume/audible acceptance remain open.
+Open/Close only return object!=NULL; ResumeDevice returns task-create status,
+and the task ignores init's result. No TV access or deployment in this work.
+
 HOST-CONFIG-2026-11-04 fixes global configuration leakage: entries/count now
 belong to each host's immutable init snapshot. Old implementation fails the
 new cross-host regression; strict host, leak-enabled ASan/UBSan and fresh ARM/

@@ -1,0 +1,6 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build-tv-v3/audio-amp/tests/audio_amp tests/audio_amp.c common/audio_amp.c
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+ok amp image: profile byte narrowing, default DRC, exact untouched registers and guards
+ok amp image: exact power exceptions, unsigned DRC boundary and signed override sentinels
+ok amp image: in-place output and atomic invalid-input rejection; no hardware access

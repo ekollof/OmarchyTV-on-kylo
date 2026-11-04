@@ -13,6 +13,7 @@ establishes completion of the full replacement.
 
 | report | status / use |
 |---|---|
+| [AUDIO-AMP-IMAGE](AUDIO-AMP-IMAGE-2026-11-04.md) | pure retained38-register AD82587 profile conversion from decompiled ARM; host/sanitizer/fresh ARM units and full host349 pass; Open/Close are object!=NULL no-ops, ResumeDevice reports task creation and task ignores Init result; native differential/profile/image/backend/worker/ownership/audible/standby gates remain open; no TV access |
 | [HOST-CONFIG](HOST-CONFIG-2026-11-04.md) | fixes process-global configuration leakage/capacity with per-host immutable snapshots; regression reproduces old bug; strict host, leak-enabled ASan/UBSan, fresh ARM/qemu and54 core checks pass; no runtime config reload, new teardown API, TV access or vendor settings parity claim |
 | [TODO-REAUDIT](TODO-REAUDIT-2026-11-04.md) | all183 checks at172cd57 accounted for;182 retained at bounded scope, PNG acceptance reopened for missing firmware/lifecycle/error comparison; recorder alpha retained but transforms are metadata only; fresh isolated committed host and42 ARM reference groups pass; unfinished source edits remain separate |
 | [TODO-AUDIT](TODO-AUDIT-2026-11-04.md) | all182 prior checks audited; recorder RGBA fidelity reopened,181 retained as bounded milestones and66 wording/scope corrections; per-item source/test/evidence ledger; fresh full host/42 ARM groups/font-theme corpora/Mesa; no TV access or new native feature acceptance |

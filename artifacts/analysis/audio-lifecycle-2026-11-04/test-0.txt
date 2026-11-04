@@ -1,0 +1,5 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+ok amp image: profile byte narrowing, default DRC, exact untouched registers and guards
+ok amp image: exact power exceptions, unsigned DRC boundary and signed override sentinels
+ok amp image: in-place output and atomic invalid-input rejection; no hardware access
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

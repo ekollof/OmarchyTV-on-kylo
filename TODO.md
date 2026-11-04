@@ -277,6 +277,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       and paired init/close/resume. Cached routes, a successful register read and
       registered speaker 0 do not prove native audible output or complete amp
       mute; do not initialize AD82586C or call the MCU GPIO path cold.
+      AUDIO-AMP-IMAGE now supplies the data-only38-register profile conversion,
+      with host/sanitizer/ARM tests and static firmware comparison. Open/Close
+      only return object!=NULL; ResumeDevice only starts a task and its task
+      ignores the init result. Finish native differential, profile/image state,
+      GPIO/MCU/I2C/worker ownership and hardware lifecycle acceptance; do not
+      substitute these wrapper returns or the pure helper for native bring-up.
 - [x] Traced UI volume through speaker gain and recovered both AQ101-entry table
       layouts/word-to-halfword narrowing. New pure audio_curve decoder and tests
       match all101 entries captured from live Aurora; strict host/sanitizer/

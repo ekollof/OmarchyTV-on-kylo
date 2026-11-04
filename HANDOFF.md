@@ -31,6 +31,14 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
+Audio prerequisite: [AUDIO-AMP-IMAGE](artifacts/reports/AUDIO-AMP-IMAGE-2026-11-04.md)
+adds pure AD82587 profile-to38-register conversion with retained-image semantics.
+Host/sanitizer/fresh ARM units and full host349 checks pass; comparison is static
+ARM evidence, not execution of vendor Init. Continue with native differential,
+actual profile/image acquisition and worker/GPIO/MCU/I2C ownership. Open/Close
+are object!=NULL no-ops; ResumeDevice task creation/flag clearing do not prove
+amp init succeeded. No TV operation or audio/amp lifecycle gate closed.
+
 [HOST-CONFIG](artifacts/reports/HOST-CONFIG-2026-11-04.md) fixes the unchecked
 global-config bug independently of the ongoing PNG/JPEG edits. Configuration
 now belongs to each host, with existing first-wins/snapshot policy. Reproduced

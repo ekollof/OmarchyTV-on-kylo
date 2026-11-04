@@ -1,3 +1,10 @@
+AUDIO-AMP-IMAGE-2026-11-04 adds pure AD82587 profile-image conversion from
+decompiled ARM. Retain the preceding image between inits; state-control OR bits
+are persistent. Open/Close only return object!=NULL, ResumeDevice starts a task,
+and its completion flag does not carry init success. Strict host/sanitizer/ARM
+units and full host349 checks pass; no native Init differential, hardware
+ownership or audible/standby acceptance yet. No TV access or deployment.
+
 HOST-CONFIG-2026-11-04 fixes the process-global append-only configuration table:
 snapshot entries/count now belong to each host. Cross-host isolation and caller-
 torn-down reinitialization pass strict host, leak-enabled ASan/UBSan and fresh

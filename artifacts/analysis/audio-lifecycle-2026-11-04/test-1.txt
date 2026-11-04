@@ -1,0 +1,6 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-audio-amp-san/tests/audio_amp tests/audio_amp.c common/audio_amp.c
+ok amp image: profile byte narrowing, default DRC, exact untouched registers and guards
+ok amp image: exact power exceptions, unsigned DRC boundary and signed override sentinels
+ok amp image: in-place output and atomic invalid-input rejection; no hardware access
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
