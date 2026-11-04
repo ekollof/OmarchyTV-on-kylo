@@ -31,7 +31,24 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [LAUNCHER-ITEM](artifacts/reports/LAUNCHER-ITEM-2026-11-04.md)
+Latest: [LAUNCHER-DB](artifacts/reports/LAUNCHER-DB-2026-11-04.md) implements
+the settingsDB LauncherItem read half. The member map
+(launcher_item_info_struct0xfabf50) gives 16 scalar and 10 text columns
+(300/60/150); the shipped copyLauncherInfoToItem0xfac334 decode is implemented
+and differentially verified (8 cases). common/launcher_db.c reads the table
+read-only with the getAll/by-parent plus deleted/out-of-sync semantics;
+NovoLauncherDataProvider::getLauncherItems0x107a0c4 is only a vtable forward.
+mod_settings publishes a reloadable launcher.db service and the
+launcher-items CLI. The dumped DB has50 rows; the live TV probe read-only
+reported54 rows. Host, ASan/UBSan, ARM/qemu, verify.cjs39 ok, full make check
+(265 ok) and four focused TV runs pass; staging hash-verified/removed. The
+shipped SequentialQuery/MemberAccess engine is not ported, and ui_vendor still
+draws static DEFAULT_CARDS. Next: feed these rows into ui_vendor, then
+scrollbar/skin, display/scanout binding and independent startup. The TV was
+asleep and tvssh.sh sent WoL for the read-only runs; no
+device/screen/settings/network/boot change.
+
+Previous: [LAUNCHER-ITEM](artifacts/reports/LAUNCHER-ITEM-2026-11-04.md)
 implements LauncherItem::LauncherItem(NovoLauncherItem const&) (0xe4794c,
 Thumb, 500 bytes), the settingsDB row to UI object conversion used by
 LauncherDialog::getLauncherItemsList. It copies 17 word fields and 4 bytes,

@@ -48,6 +48,23 @@ reference groups. Raw checked bytes and independently varied paired child
 states close additional coverage gaps.1771396 renderer/276 setter/56 image
 cases plus host/IPC/sanitizer/ARM-qemu/TV CPU pass; real rendering/startup open.
 
+LAUNCHER-DB implements the settingsDB LauncherItem read half. The member map
+from NovoLauncherItemInfo::launcher_item_info_struct (0xfabf50) has16 scalar
+columns at+4..+0x34 and10 fixed text columns at+0x38..+0x93e with sizes
+300/60/150; the DB blobs are exactly those sizes. copyLauncherInfoToItem
+(0xfac334, 0xf4 bytes, CRC0xa089d47e) decodes one record: id/parent/order/
+type/original/server/menu-return into item+0/+4/+8/+0x14/+0xc/+0x10/+0x18,
+ten UString assignments in a fixed order, update times/image CRC at+0x44/
++0x48/+0x4c, five flag bytes at+0x50..+0x54 and channel at+0x90. 8 native/C
+cases pass. getAllLauncherItems (0xfacff1) reads every row; 
+getLauncherItemsByParentId (0xfacef9) keeps the requested parent and skips
+m_is_deleted/m_is_out_of_sync unless requested; NovoLauncherDataProvider::
+getLauncherItems (0x107a0c4) is only a vtable forward. common/launcher_db.c
+reads the real table read-only (dumped50 rows, live TV54 rows) and mod_settings
+publishes a reloadable launcher.db service plus the launcher-items CLI. The
+shipped SequentialQuery/MemberAccess engine is not ported and no UI consumes
+the rows yet.
+
 LAUNCHER-ITEM implements LauncherItem::LauncherItem(NovoLauncherItem const&)
 (0xe4794c, Thumb, 500 bytes): the settingsDB resource conversion used by
 LauncherDialog::getLauncherItemsList (calls at0xedb2ac/0xedb40a) after

@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include "openaurora/events.h"
+#include "openaurora/launcher_db.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 
@@ -27,7 +28,7 @@ struct ctx {
     const oa_host_api *api;
     sqlite3 *db;
     int readonly;
-    int published,hotel_published;
+    int published,hotel_published,launcher_published;
     char path[128];
     char err[160];
 };
@@ -120,6 +121,51 @@ static int hotel_read(struct oa_tab_hotel *out)
 
 static const oa_settings_iface g_iface = { get_int, set_int, is_writable };
 static const oa_settings_hotel_iface hotel_iface={hotel_read};
+
+static int launcher_read_all(struct oa_launcher_list **out)
+{
+    struct ctx *c=g_ctx;
+    if(!c)return -ENODEV;
+    if(!out)return -EINVAL;
+    struct oa_launcher_list *list=calloc(1,sizeof *list);
+    if(!list)return -ENOMEM;
+    int rc=oa_launcher_db_read_all(c->path,list,c->err,sizeof c->err);
+    if(rc){free(list);return rc;}
+    *out=list;return 0;
+}
+static int launcher_read_parent(int32_t parent_id,int include_deleted,
+    int include_out_of_sync,struct oa_launcher_list **out)
+{
+    struct ctx *c=g_ctx;
+    if(!c)return -ENODEV;
+    if(!out)return -EINVAL;
+    struct oa_launcher_list *list=calloc(1,sizeof *list);
+    if(!list)return -ENOMEM;
+    int rc=oa_launcher_db_read_parent(c->path,parent_id,include_deleted,
+        include_out_of_sync,list,c->err,sizeof c->err);
+    if(rc){free(list);return rc;}
+    *out=list;return 0;
+}
+static size_t launcher_count(const struct oa_launcher_list *list)
+{ return list?list->count:0; }
+static int launcher_format(const struct oa_launcher_list *list,size_t index,
+    char *buf,size_t cap)
+{
+    if(!list || index>=list->count || !buf || !cap)return -EINVAL;
+    const struct oa_launcher_info *row=&list->rows[index];
+    return snprintf(buf,cap,
+        "id=%d parent=%d order=%d type=%d name=%s thumb=%s menu=%s\n",
+        row->id,row->parent_id,row->order_index,row->item_type,
+        row->application_name,row->thumb_file_name,row->menu_string_id);
+}
+static void launcher_release(struct oa_launcher_list *list)
+{
+    if(!list)return;
+    oa_launcher_db_free(list);
+    free(list);
+}
+static const oa_launcher_db_iface launcher_iface={launcher_read_all,
+    launcher_read_parent,launcher_count,launcher_format,launcher_release};
 static void m_stop(void *v);
 
 static int m_init(const oa_host_api *api, void **out)
@@ -167,6 +213,10 @@ static int m_start(void *v)
         m_stop(c);return -1;
     }
     c->hotel_published=1;
+    if(c->api->publish(c->api->priv,OA_SVC_LAUNCHER_DB,1,&launcher_iface)) {
+        m_stop(c);return -1;
+    }
+    c->launcher_published=1;
     int cec = -1;
     if (get_int("m_cec_enabled", &cec) == 0)
         c->api->log(c->api->priv, OA_LOG_INFO, "probe: m_cec_enabled=%d", cec);
@@ -178,7 +228,10 @@ static void m_stop(void *v)
 {
     struct ctx *c = v;
     int published=c->published,hotel_published=c->hotel_published;
-    sqlite3 *db=c->db;c->db=NULL;c->published=c->hotel_published=0;
+    int launcher_published=c->launcher_published;
+    sqlite3 *db=c->db;c->db=NULL;
+    c->published=c->hotel_published=c->launcher_published=0;
+    if(launcher_published)c->api->unpublish(c->api->priv,OA_SVC_LAUNCHER_DB);
     if(hotel_published)c->api->unpublish(c->api->priv,OA_SVC_SETTINGS_HOTEL);
     if(published)c->api->unpublish(c->api->priv,OA_SVC_SETTINGS);
     if(db)sqlite3_close(db);

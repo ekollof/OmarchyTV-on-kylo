@@ -106,3 +106,43 @@ void oa_launcher_item_from_novo(void *item,const void *novo,
             (const unsigned char *)novo+0x3c);
     }
 }
+
+/* SqliteLauncherDatabaseAdapter::copyLauncherInfoToItem (0xfac334). The field
+ * order and the UString assignment order follow the shipped body exactly. */
+void oa_launcher_info_to_item(void *item,const struct oa_launcher_info *info,
+    const struct oa_launcher_item_ops *ops)
+{
+    if(!item || !info || !ops)return;
+
+    put32(item,0x00,(uint32_t)info->id);
+    put32(item,0x04,(uint32_t)info->parent_id);
+    put32(item,0x08,(uint32_t)info->order_index);
+    put32(item,0x14,(uint32_t)info->item_type);
+    put32(item,0x0c,(uint32_t)info->original_id);
+    put32(item,0x10,(uint32_t)info->server_id);
+    put32(item,0x18,(uint32_t)info->menu_return_id);
+
+    ops->ustr_assign_literal((unsigned char *)item+0x1c,info->menu_string_id);
+    ops->ustr_assign_literal((unsigned char *)item+0x24,info->application_name);
+    ops->ustr_assign_literal((unsigned char *)item+0x34,info->thumb_url);
+    ops->ustr_assign_literal((unsigned char *)item+0x3c,info->thumb_file_name);
+    ops->ustr_assign_literal((unsigned char *)item+0x2c,info->application_url);
+
+    put32(item,0x44,info->application_update_time);
+    put32(item,0x48,info->thumb_update_time);
+    put32(item,0x4c,info->image_crc);
+
+    put8(item,0x51,info->is_featured);
+    put8(item,0x50,info->is_deleted);
+    put8(item,0x52,info->is_out_of_sync);
+    put8(item,0x53,info->is_moved_by_user);
+    put8(item,0x54,info->is_delete_disabled);
+
+    ops->ustr_assign_literal((unsigned char *)item+0x58,info->fvp_application_id);
+    ops->ustr_assign_literal((unsigned char *)item+0x60,info->recommendation_url);
+    ops->ustr_assign_literal((unsigned char *)item+0x78,info->ad_url);
+    ops->ustr_assign_literal((unsigned char *)item+0x80,info->ad_image_url);
+    ops->ustr_assign_literal((unsigned char *)item+0x88,info->ad_tracking_url);
+
+    put32(item,0x90,(uint32_t)info->channel_handle);
+}

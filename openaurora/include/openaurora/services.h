@@ -297,6 +297,24 @@ typedef struct {
     int (*is_writable)(void);
 } oa_settings_iface;
 
+/* launcher.db — settingsDB LauncherItem read adapter. Published by
+ * mod_settings. The list must be released with oa_launcher_db_free; the
+ * service owns the database path. Parent filtering and the deleted/out-of-sync
+ * gates match SqliteLauncherDatabaseAdapter::getLauncherItemsByParentId. */
+#define OA_SVC_LAUNCHER_DB "launcher.db"
+struct oa_launcher_list;
+typedef struct {
+    /* The list stays opaque to the control plane; the module allocates it and
+     * release() frees it. format() writes one "id=... name=..." line. */
+    int (*read_all)(struct oa_launcher_list **out);
+    int (*read_parent)(int32_t parent_id,int include_deleted,
+        int include_out_of_sync,struct oa_launcher_list **out);
+    size_t (*count)(const struct oa_launcher_list *list);
+    int (*format)(const struct oa_launcher_list *list,size_t index,
+        char *buf,size_t cap);
+    void (*release)(struct oa_launcher_list *list);
+} oa_launcher_db_iface;
+
 /* ui.anim — recovered list/dialog animation. Published by mod_ui_anim.
  * set_enabled only writes the flag. start() reads ui.clock and rejects a
  * duration below 1. sample() is the timer update and accepts an explicit now. */

@@ -1,5 +1,23 @@
 # Current project state — last verified 2026-11-04
 
+LAUNCHER-DB-2026-11-04: settingsDB LauncherItem read half implemented.
+Member map recovered from launcher_item_info_struct0xfabf50 (16 scalar
+columns,10 text columns at+0x38..+0x93e sizes300/60/150; DB blobs match).
+copyLauncherInfoToItem0xfac334 (0xf4 bytes, CRC0xa089d47e) implemented as
+oa_launcher_info_to_item;8 native/C cases compare the0xa0 item and ten UString
+assignments. common/launcher_db.c reads the table read-only with the
+getAllLauncherItems (no filter) and getLauncherItemsByParentId (parent match,
+skip m_is_deleted/m_is_out_of_sync unless flagged) semantics; the provider
+0x107a0c4 is only a vtable forward. mod_settings publishes the reloadable
+launcher.db service; launcher-items <parent|all> [deleted] [outofsync] prints
+count+rows. Dumped DB=50 rows; live TV probe read-only all=54 parent0=27
+parent1(incl-deleted)=24. Host, ASan/UBSan, ARM/qemu, verify.cjs (39 ok), full
+make check (265 ok) and four TV runs pass (launcher_item 32-bit refcount,
+launcher_db strict, live probe, module load/reload/stop); staging
+hash-verified/removed. The shipped SequentialQuery/MemberAccess engine is not
+ported and no UI consumes the rows yet. TV was asleep; tvssh.sh WoL woke it.
+No screen/input/settings/network/service/boot/persistent change.
+
 LAUNCHER-ITEM-2026-11-04: LauncherItem::LauncherItem(NovoLauncherItem const&)
 0xe4794c (Thumb, 500 bytes, CRC0xd1bcb8c5) implemented in
 common/launcher_item.c. This is the settingsDB row to UI object conversion used

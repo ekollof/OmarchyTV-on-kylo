@@ -46,6 +46,52 @@ struct oa_launcher_item_ops {
 void oa_launcher_item_from_novo(void *item,const void *novo,
     const struct oa_launcher_item_ops *ops);
 
+/*
+ * NovoLauncherItemInfo — the fixed record the settingsDB adapter fills from
+ * one LauncherItem row. Offsets and text sizes are recovered from
+ * NovoLauncherItemInfo::launcher_item_info_struct (0xfabf50), which builds the
+ * member map used by SQLiteDB::SequentialQuery: 16 scalar columns and 10 text
+ * columns. The DB blobs are stored at exactly these sizes (300/60/150 bytes).
+ */
+struct oa_launcher_info {
+    uint32_t reserved;                 /* +0x000 */
+    uint32_t image_crc;                /* +0x004 m_application_image_crc */
+    uint32_t thumb_update_time;        /* +0x008 m_application_thumb_update_time */
+    uint32_t application_update_time;  /* +0x00c m_application_update_time */
+    int32_t channel_handle;            /* +0x010 m_channel_handle */
+    int32_t id;                        /* +0x014 m_id */
+    uint8_t is_delete_disabled;        /* +0x018 m_is_delete_disabled */
+    uint8_t is_deleted;                /* +0x019 m_is_deleted */
+    uint8_t is_featured;               /* +0x01a m_is_featured */
+    uint8_t is_moved_by_user;          /* +0x01b m_is_moved_by_user */
+    uint8_t is_out_of_sync;            /* +0x01c m_is_out_of_sync */
+    uint8_t reserved_flags[3];         /* +0x01d */
+    int32_t item_type;                 /* +0x020 m_item_type */
+    int32_t menu_return_id;            /* +0x024 m_menu_return_id */
+    int32_t order_index;               /* +0x028 m_order_index */
+    int32_t original_id;               /* +0x02c m_original_id */
+    int32_t parent_id;                 /* +0x030 m_parent_id */
+    int32_t server_id;                 /* +0x034 m_server_id */
+    char ad_image_url[300];            /* +0x038 */
+    char ad_tracking_url[300];         /* +0x164 */
+    char ad_url[300];                  /* +0x290 */
+    char application_name[60];         /* +0x3bc */
+    char thumb_file_name[300];         /* +0x3f8 */
+    char thumb_url[300];               /* +0x524 */
+    char application_url[300];         /* +0x650 */
+    char fvp_application_id[300];      /* +0x77c */
+    char menu_string_id[150];          /* +0x8a8 */
+    char recommendation_url[300];      /* +0x93e */
+};
+
+/*
+ * SqliteLauncherDatabaseAdapter::copyLauncherInfoToItem (0xfac334): converts
+ * one decoded record into the NovoLauncherItem intermediate. Text fields are
+ * assigned with UString::operator=(char const*) through the same ops table.
+ */
+void oa_launcher_info_to_item(void *item,const struct oa_launcher_info *info,
+    const struct oa_launcher_item_ops *ops);
+
 #ifdef __cplusplus
 }
 #endif

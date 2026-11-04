@@ -1,0 +1,1 @@
+ok launcher db: 50 rows, parent/deleted filter, truncation and read-only

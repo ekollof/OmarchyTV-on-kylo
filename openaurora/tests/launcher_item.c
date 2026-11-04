@@ -1,5 +1,6 @@
 #include "openaurora/launcher_item.h"
 #include <assert.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -208,6 +209,66 @@ int main(void)
     /* The last word store is +0xa0..+0xa3; the next byte is untouched. */
     assert(item[0xa0]==0 && item[0xa1]==0 && item[0xa2]==0 && item[0xa3]==0);
     assert(item[OA_LAUNCHER_ITEM_BYTES]==0xa5);
+
+    /* NovoLauncherItemInfo -> NovoLauncherItem (copyLauncherInfoToItem): the
+     * fixed-record decode. Field and string assignments follow the body. */
+    {
+        static struct oa_launcher_info info;
+        static const struct { const char *text; size_t off; } texts[]={
+            {"menu-string-id",offsetof(struct oa_launcher_info,menu_string_id)},
+            {"app-name",offsetof(struct oa_launcher_info,application_name)},
+            {"thumb-url",offsetof(struct oa_launcher_info,thumb_url)},
+            {"thumb-file",offsetof(struct oa_launcher_info,thumb_file_name)},
+            {"app-url",offsetof(struct oa_launcher_info,application_url)},
+            {"fvp-id",offsetof(struct oa_launcher_info,fvp_application_id)},
+            {"recommendation",offsetof(struct oa_launcher_info,recommendation_url)},
+            {"ad-url",offsetof(struct oa_launcher_info,ad_url)},
+            {"ad-image",offsetof(struct oa_launcher_info,ad_image_url)},
+            {"ad-tracking",offsetof(struct oa_launcher_info,ad_tracking_url)},
+        };
+        memset(&info,0,sizeof info);
+        for(unsigned i=0;i<sizeof texts/sizeof texts[0];++i)
+            snprintf((char *)&info+texts[i].off,64,"%s",texts[i].text);
+        info.id=0x101;info.parent_id=0x102;info.order_index=0x103;
+        info.item_type=0x104;info.original_id=0x105;info.server_id=0x106;
+        info.menu_return_id=0x107;info.application_update_time=0x108;
+        info.thumb_update_time=0x109;info.image_crc=0x10a;
+        info.is_featured=1;info.is_deleted=0;info.is_out_of_sync=1;
+        info.is_moved_by_user=0;info.is_delete_disabled=1;info.channel_handle=0x10b;
+        slot_count=0;trace_count=0;memset(item,0xa5,sizeof item);
+        oa_launcher_info_to_item(item,&info,&o);
+        assert(rd32(item,0x00)==0x101 && rd32(item,0x04)==0x102);
+        assert(rd32(item,0x08)==0x103 && rd32(item,0x14)==0x104);
+        assert(rd32(item,0x0c)==0x105 && rd32(item,0x10)==0x106);
+        assert(rd32(item,0x18)==0x107);
+        assert(rd32(item,0x44)==0x108 && rd32(item,0x48)==0x109 && rd32(item,0x4c)==0x10a);
+        assert(item[0x51]==1 && item[0x50]==0 && item[0x52]==1 &&
+               item[0x53]==0 && item[0x54]==1);
+        assert(rd32(item,0x90)==0x10b);
+        static const struct { uint32_t dst;size_t src; } map[]={
+            {0x1c,offsetof(struct oa_launcher_info,menu_string_id)},
+            {0x24,offsetof(struct oa_launcher_info,application_name)},
+            {0x34,offsetof(struct oa_launcher_info,thumb_url)},
+            {0x3c,offsetof(struct oa_launcher_info,thumb_file_name)},
+            {0x2c,offsetof(struct oa_launcher_info,application_url)},
+            {0x58,offsetof(struct oa_launcher_info,fvp_application_id)},
+            {0x60,offsetof(struct oa_launcher_info,recommendation_url)},
+            {0x78,offsetof(struct oa_launcher_info,ad_url)},
+            {0x80,offsetof(struct oa_launcher_info,ad_image_url)},
+            {0x88,offsetof(struct oa_launcher_info,ad_tracking_url)},
+        };
+        for(unsigned i=0;i<sizeof map/sizeof map[0];++i) {
+            const char *got=text_of(item+map[i].dst);
+            const char *want=(const char *)&info+map[i].src;
+            if(strcmp(got,want)) {
+                fprintf(stderr,"info->item slot %x got %s want %s\n",
+                    map[i].dst,got,want);
+                return 1;
+            }
+            assert(trace[i].kind==K_ASSIGN && trace[i].dst==map[i].dst);
+        }
+        assert(trace_count==10);
+    }
 
     /* Null control block: no refcount write. */
     wr32(novo,0x70,0);

@@ -305,6 +305,7 @@ $(BUILD)/tests/tab_policy_firmware: tests/svg_image_native.h common/svg_image.c 
 $(BUILD)/tests/tab_policy_firmware: tests/settings_row_construct_native.h common/settings_row_construct.c include/openaurora/settings_row_construct.h
 $(BUILD)/tests/tab_policy_firmware: tests/svg_widget_state_native.h common/svg_widget_state.c include/openaurora/svg_widget_state.h
 $(BUILD)/tests/tab_policy_firmware: tests/launcher_item_native.h common/launcher_item.c include/openaurora/launcher_item.h
+$(BUILD)/tests/tab_policy_firmware: tests/launcher_info_native.h
 
 $(BUILD)/tests/settings_row_type: tests/settings_row_type.c common/settings_row_type.c common/settings_model.c common/settings_draw.c include/openaurora/settings_row_type.h include/openaurora/settings_model.h include/openaurora/settings_draw.h
 	@mkdir -p $(dir $@)
@@ -345,6 +346,24 @@ $(BUILD)/tests/launcher_item: tests/launcher_item.c common/launcher_item.c inclu
 check-launcher-item: $(BUILD)/tests/launcher_item
 	@$(BUILD)/tests/launcher_item
 check: check-launcher-item
+
+$(BUILD)/tests/launcher_db: tests/launcher_db.c common/launcher_db.c include/openaurora/launcher_db.h include/openaurora/launcher_item.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Ithird_party $(LDFLAGS) -o $@ $(filter %.c,$^) \
+	  $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
+.PHONY: check-launcher-db
+check-launcher-db: $(BUILD)/tests/launcher_db
+	@$(BUILD)/tests/launcher_db $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
+check: check-launcher-db
+
+$(BUILD)/tests/launcher_db_module: tests/launcher_db_module.c common/launcher_db.c core/host.h include/openaurora/services.h include/openaurora/launcher_db.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Ithird_party $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS) \
+	  $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
+.PHONY: check-launcher-db-module
+check-launcher-db-module: $(BUILD)/tests/launcher_db_module $(BUILD)/modules/mod_settings.so
+	@$(BUILD)/tests/launcher_db_module $(BUILD)/modules $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
+check: check-launcher-db-module
 
 $(BUILD)/tests/svg_widget_state: tests/svg_widget_state.c common/svg_widget_state.c include/openaurora/svg_widget_state.h
 	@mkdir -p $(dir $@)
@@ -626,6 +645,11 @@ $(BUILD)/modules/mod_display.so: modules/display/display.c common/ui_anim.c comm
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
 	  $(VENDOR_LDFLAGS) -lm
+
+$(BUILD)/modules/mod_settings.so: modules/settings/settings.c common/launcher_db.c include/openaurora/launcher_db.h include/openaurora/launcher_item.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
+	  -Ithird_party -L$(VENDOR_LIB) $(SQLITE_LIBS)
 
 $(BUILD)/modules/mod_%.so: modules/%/*.c
 	@mkdir -p $(dir $@)

@@ -419,9 +419,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       object path used by LauncherDialog::getLauncherItemsList, with the
       thumbnail path prefix;8 native/C cases plus host/ASan/UBSan/ARM-qemu/
       verify.cjs38 ok/TV CPU (32-bit refcount asserted). LAUNCHER-ITEM.
-- [ ] settingsDB adapter/query and NovoLauncherDataProvider (the read half of
-      live resources); scrollbar/skin; display/scanout binding; independent
-      startup.
+- [x] settingsDB LauncherItem read half: shipped row decode
+      (copyLauncherInfoToItem0xfac334) differentially verified, read-only
+      sqlite adapter with the getAll/by-parent filters, live TV probe (54
+      rows) and a reloadable launcher.db service/CLI in mod_settings.
+      LAUNCHER-DB. SequentialQuery itself not ported.
+- [ ] Feed the read rows into ui_vendor (replace DEFAULT_CARDS); scrollbar/
+      skin; display/scanout binding; independent startup.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

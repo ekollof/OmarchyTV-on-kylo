@@ -58,4 +58,5 @@ assert.match(result.stdout, /svg image: 80 native\/C cases/);
 assert.match(result.stdout, /settings row construct: 96 native\/C cases/);
 assert.match(result.stdout, /svg widget state: 36 native\/C cases/);
 assert.match(result.stdout, /launcher item: 8 native\/C cases/);
+assert.match(result.stdout, /launcher info: 8 native\/C cases/);
 assert.match(result.stdout, /row values: 68640 type\/raw-value cases/);

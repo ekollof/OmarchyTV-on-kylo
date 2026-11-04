@@ -1,0 +1,1 @@
+ok launcher db module: 50 rows via reloadable settings service, filters and CLI

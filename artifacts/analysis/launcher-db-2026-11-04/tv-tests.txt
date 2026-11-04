@@ -1,0 +1,4 @@
+launcher_item exit0: novo-row conversion OK (32-bit refcount path)
+launcher_db strict exit0: 50 rows, filters, truncation, read-only
+launcher_db live probe exit0: all=54 parent0=27 parent1(incl-deleted)=24
+launcher_db_module exit0: 50 rows via reloadable settings service, reload and stop

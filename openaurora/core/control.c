@@ -167,6 +167,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         return 0;
     char *a1 = strtok_r(NULL, " \t\r\n", &save);
     char *a2 = strtok_r(NULL, " \t\r\n", &save);
+    char *a3 = strtok_r(NULL, " \t\r\n", &save);
     int force = a2 && (!strcmp(a2, "--force") || !strcmp(a1 ? a1 : "", "--force"));
     if (a1 && !strcmp(a1, "--force")) {
         a1 = a2;
@@ -196,6 +197,8 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  list-state               query owned SVG-list selection state\n"
                  "  list-key <code>          feed a full-width list key code\n"
                  "  hotel-state             read persisted hotel tab inputs\n"
+                 "  launcher-items <parent|all> [deleted] [outofsync]\n"
+                 "                           settingsDB LauncherItem rows\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -208,6 +211,50 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         if (!a1) { oa_skin_status(h, outbuf, outlen); return 0; }
         if (oa_skin_request(h, a1)) { snprintf(outbuf, outlen, "failed errno %d\n", errno); return -1; }
         snprintf(outbuf, outlen, "pending %s\n", a1);
+        return 0;
+    }
+    if(!strcmp(cmd,"launcher-items")) {
+        if(force){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_launcher_db_iface *db=h->api.lookup(h,OA_SVC_LAUNCHER_DB,1);
+        if(!db){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        int deleted=0,outofsync=0,all=0,error=0;
+        int32_t parent=0;
+        if(a1 && !strcmp(a1,"all"))all=1;
+        else if(a1) {
+            char *end=NULL;long value=strtol(a1,&end,10);
+            if(!end || *end || value<INT32_MIN || value>INT32_MAX) {
+                h->api.release(h,OA_SVC_LAUNCHER_DB);
+                snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;
+            }
+            parent=(int32_t)value;
+        }
+        char *args[2]={a2,a3};
+        for(unsigned i=0;i<2;++i) {
+            if(!args[i])continue;
+            if(!strcmp(args[i],"deleted"))deleted=1;
+            else if(!strcmp(args[i],"outofsync"))outofsync=1;
+            else {error=EINVAL;break;}
+        }
+        struct oa_launcher_list *list=NULL;
+        if(!error) {
+            error=all?db->read_all(&list)
+                     :db->read_parent(parent,deleted,outofsync,&list);
+        }
+        if(error) {
+            if(list)db->release(list);
+            h->api.release(h,OA_SVC_LAUNCHER_DB);
+            snprintf(outbuf,outlen,"failed errno %d\n",error<0?-error:error);
+            return -1;
+        }
+        struct reply r={outbuf,outlen,0};
+        append(&r,"count %zu\n",db->count(list));
+        size_t rows=db->count(list);
+        for(size_t i=0;i<rows;++i) {
+            char row[256];
+            if(db->format(list,i,row,sizeof row)>=0)append(&r,"%s",row);
+        }
+        db->release(list);
+        h->api.release(h,OA_SVC_LAUNCHER_DB);
         return 0;
     }
     if(!strcmp(cmd,"hotel-state")) {

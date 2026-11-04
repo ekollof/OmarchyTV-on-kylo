@@ -1,0 +1,5 @@
+launcher_item 54140 dc5b8bf48c48fabea6c0629dca5a1fe4
+launcher_db 56276 4f7d9d2b5da32253dc7a6650fd6373e0
+launcher_db_module 502064 52d854a4543e25d6c3379d60577f97de
+mod_settings 47036 3d0520f4d1dfef779d7a8b7fc411c2c3
+settingsDB 962560 150e2be30e5948571860a8c60c9da525

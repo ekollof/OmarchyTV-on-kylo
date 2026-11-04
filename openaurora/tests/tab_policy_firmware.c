@@ -1666,6 +1666,7 @@ static void raw_stub(void *mapped,uint32_t base,uint32_t address,uint32_t target
 #include "settings_row_construct_native.h"
 #include "svg_widget_state_native.h"
 #include "launcher_item_native.h"
+#include "launcher_info_native.h"
 typedef void (*scroll_fn)(void *);
 static scroll_fn native_sb_update;
 enum {R_SET_FOCUS,R_SET_VISIBLE,R_GET_RECT,R_SET_POS,R_IS_VISIBLE,R_DRAW,R_DRAW_EMPTY,R_EMPTY_MSG,R_GOT_FOCUS};
@@ -2726,6 +2727,7 @@ int main(int argc,char **argv)
     check_settings_row_construct(elf,bytes);
     check_svg_widget_state(elf,bytes);
     check_launcher_item(elf,bytes);
+    check_launcher_info(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;
