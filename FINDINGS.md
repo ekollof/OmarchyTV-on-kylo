@@ -8,6 +8,13 @@ vendor PIDs intact. Supervised only; no full region/MAU/pan equality or
 independent startup. The current owner override revoked TV access after this
 run; no TV command followed. See VISIBLE-IMAGES.
 
+AUDIO-AMP-NATIVE-2026-11-04 supersedes static-only image verification:6000
+profile/current-image cases and all38 write failures match the complete shipped
+Init body under ARM/qemu (controlled hardware callees, absent GPIO descriptions).
+All43 reference groups pass in a fresh identified binary. Real profile/image
+ownership, GPIO/MCU/I2C/worker lifecycle and audible/standby acceptance remain
+open. No TV access; owner offline-only restriction remains in force.
+
 AUDIO-AMP-IMAGE-2026-11-04 adds pure AD82587 profile-image conversion from
 decompiled ARM. Retain the preceding image between inits; state-control OR bits
 are persistent. Open/Close only return object!=NULL, ResumeDevice starts a task,

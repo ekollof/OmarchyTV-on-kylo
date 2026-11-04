@@ -1,5 +1,11 @@
 # AD82587 profile image and lifecycle contract — 2026-11-04
 
+Follow-up [AUDIO-AMP-NATIVE](AUDIO-AMP-NATIVE-2026-11-04.md) closes the native
+instruction comparison limit for the register image:6000 cases plus38 write
+failures match the complete shipped Init body with controlled hardware callees
+and absent GPIO descriptions. The static-only scope below describes the earlier
+milestone; actual hardware ownership/bring-up remains unimplemented/unaccepted.
+
 Recovered the selected AD82587_D's init/open/close/mute/device wrappers from
 Aurora MD5 `64c252340d3af6c5d66072611b7bad7a`, with ARM instructions. Added
 `common/audio_amp.c` to convert explicit profile values into the38-byte register

@@ -1,5 +1,13 @@
 # Current project state — last verified 2026-11-04
 
+AUDIO-AMP-NATIVE-2026-11-04:6000 register-image profiles and38 write failures
+match the complete shipped Init body under ARM/qemu, with controlled hardware
+callees/absent GPIO descriptions. All43 maintained reference groups pass in a
+fresh build-tv-v3/audio-amp-native binary; no production-helper fix required.
+This supersedes static-only comparison for the image calculation. Native
+profile/image ownership, hardware lifecycle and audible acceptance remain open.
+No TV access; the owner's offline-only restriction remains in force.
+
 Current owner constraint,2026-11-04: "Don't touch the TV." Offline work only;
 all TV access, including view-only queries/WoL/staging/tests, is suspended until
 explicit owner reauthorization. This supersedes the earlier standing query

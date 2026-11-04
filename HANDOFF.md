@@ -35,6 +35,14 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
+[AUDIO-AMP-NATIVE](artifacts/reports/AUDIO-AMP-NATIVE-2026-11-04.md) now compares
+the image helper against the complete shipped Init body:6000 profiles and all38
+write failures match under ARM/qemu;43 total reference groups pass. Hardware
+callees are controlled and GPIO descriptions absent. No helper correction or
+TV operation. The maintained verifier requires this group and defaults to the
+fresh audio-amp-native build. Continue with actual profile/retained-image
+acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
+
 Latest visible test: [VISIBLE-IMAGES](artifacts/reports/VISIBLE-IMAGES-2026-11-04.md)
 ran under the preceding TV-access authorization. The supervised no-plat
 candidate painted the live apps grid on vendor-initialized fb1 from an empty

@@ -1670,6 +1670,7 @@ static void raw_stub(void *mapped,uint32_t base,uint32_t address,uint32_t target
 #include "svg_scrollbar_native.h"
 #include "svg_scrollbar_skin_native.h"
 #include "svg_scrollbar_render_native.h"
+#include "audio_amp_native.h"
 typedef void (*scroll_fn)(void *);
 static scroll_fn native_sb_update;
 enum {R_SET_FOCUS,R_SET_VISIBLE,R_GET_RECT,R_SET_POS,R_IS_VISIBLE,R_DRAW,R_DRAW_EMPTY,R_EMPTY_MSG,R_GOT_FOCUS};
@@ -2734,6 +2735,7 @@ int main(int argc,char **argv)
     check_svg_scrollbar_geom(elf,bytes);
     check_svg_scrollbar_skin(elf,bytes);
     check_svg_scrollbar_render(elf,bytes);
+    check_audio_amp(elf,bytes);
     free(elf);assert(!munmap(fail_page,4096));
     printf("ok offline shipped ARM availability: %" PRIu64 " comparisons, raw XOR bytes/default IDs, only stack-guard literal redirected\n",compared);
     return 0;

@@ -278,9 +278,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       registered speaker 0 do not prove native audible output or complete amp
       mute; do not initialize AD82586C or call the MCU GPIO path cold.
       AUDIO-AMP-IMAGE now supplies the data-only38-register profile conversion,
-      with host/sanitizer/ARM tests and static firmware comparison. Open/Close
+      with host/sanitizer/ARM tests and6000 native Init/C profile comparisons,
+      plus all38 write-failure/retained-image cases. GPIO descriptions are
+      absent and hardware callees controlled in that differential. Open/Close
       only return object!=NULL; ResumeDevice only starts a task and its task
-      ignores the init result. Finish native differential, profile/image state,
+      ignores the init result. Finish actual profile/image state acquisition,
       GPIO/MCU/I2C/worker ownership and hardware lifecycle acceptance; do not
       substitute these wrapper returns or the pure helper for native bring-up.
 - [x] Traced UI volume through speaker gain and recovered both AQ101-entry table

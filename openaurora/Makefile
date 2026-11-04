@@ -313,6 +313,7 @@ $(BUILD)/tests/tab_policy_firmware: tests/launcher_info_native.h
 $(BUILD)/tests/tab_policy_firmware: tests/svg_scrollbar_native.h common/svg_scrollbar.c include/openaurora/svg_scrollbar.h
 $(BUILD)/tests/tab_policy_firmware: tests/svg_scrollbar_skin_native.h
 $(BUILD)/tests/tab_policy_firmware: tests/svg_scrollbar_render_native.h
+$(BUILD)/tests/tab_policy_firmware: tests/audio_amp_native.h common/audio_amp.c include/openaurora/audio_amp.h
 
 $(BUILD)/tests/settings_row_type: tests/settings_row_type.c common/settings_row_type.c common/settings_model.c common/settings_draw.c include/openaurora/settings_row_type.h include/openaurora/settings_model.h include/openaurora/settings_draw.h
 	@mkdir -p $(dir $@)
