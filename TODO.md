@@ -574,6 +574,15 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       and stock pixel parity. Reopened by TODO-REAUDIT-2026-11-04; narrowed,
       not closed.
 
+- [x] Stock-capture parity analysis: the old `shot-launcher-right.png` is an
+      R/B-swapped pre-correction capture; after channel correction it matches
+      the current Prime/Canal color orientation. Same-geometry portal cards
+      still differ in artwork/crop (Netflix RMSE0.376, Prime0.216, others
+      0.066..0.104), background is13,14,14 vs36,38,40, and stock status chrome
+      is absent. The old capture is not an apps-grid or pixel oracle.
+      STOCK-PARITY. A fresh same-session corrected stock apps-grid capture is
+      still required; no TV operation in this analysis.
+
 - [x] Scrollbar skin minimum helper: moving caps20+16 yield36px; recovered
       standard-name lookups and supplier cache behavior match32 native cases.
       WORK-REVIEW corrects the old two-orientation interpretation: +6c is

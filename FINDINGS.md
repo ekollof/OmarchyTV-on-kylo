@@ -6,6 +6,15 @@ Private controls forward to EX_PLAT; successful ioctl still does not prove
 MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
+STOCK-PARITY-2026-11-04: old shot-launcher-right.png is an R/B-swapped
+pre-correction capture; after RGB swap its Prime/Canal colors match the
+current downloaded sources. The corrected stock portal and offline portal
+share 171x95 card geometry and rail focus color, but card artwork/crop differs
+(Netflix RMSE0.376, Prime0.216, others0.066..0.104), background differs
+(13,14,14 vs36,38,40) and stock status chrome is absent. It is not an apps-grid
+or pixel oracle; a fresh corrected same-session stock apps-grid capture is
+still required. No TV access.
+
 FB-SNAPSHOT-COLD-BUNDLE-2026-11-04: common/fb_snapshot snapshots pixels,
 var/fix, the8-word OSD region (RD0x8020c86c/WR0x4020c86b), read-only MAU and
 pan; restore verifies MAU and restores pixels/region/pan. display_fb config

@@ -1,0 +1,12 @@
+source capture: artifacts/protocol/shot-launcher-right.png
+swap RGB channels with: magick in -channel RGB -separate -swap 0,2 -combine out
+
+samples:
+stock before prime=srgb(249,148,25) canal=srgb(0,33,254)
+stock after  prime=srgb(25,148,249) canal=srgb(254,33,0)
+current prime src=srgb(26,152,255)
+current canal src=srgba(224,0,0,1)
+
+background/rail:
+stock bg=srgb(13,14,14) rail=srgb(247,148,30)
+offline bg=srgba(36,38,40,1) rail=srgba(247,148,30,1)

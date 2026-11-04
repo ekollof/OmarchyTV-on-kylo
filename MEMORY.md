@@ -93,6 +93,16 @@ reauthorized; fb1 and stock operation must stay untouched. This supersedes the
 earlier "Don't touch the TV" restriction. No persistent replacement or boot
 changes. The historical offline-only entries describe their original runs.
 
+STOCK-PARITY-2026-11-04 (offline analysis): the saved
+artifacts/protocol/shot-launcher-right.png is a pre-correction R/B-swapped
+capture. After RGB swap, Prime reads (25,148,249) and Canal (254,33,0),
+matching the current source orientation. The corrected stock portal and the
+offline portal share 171x95 card geometry at209+190i,478 and rail focus color,
+but card artwork/crop differs (Netflix RMSE0.376, Prime0.216, others
+0.066..0.104), background is13,14,14 vs36,38,40 and stock status/gear/refresh
+chrome is absent. The old capture is not an apps-grid or pixel oracle; a fresh
+same-session corrected stock apps-grid capture is still needed. No TV access.
+
 FB-SNAPSHOT-COLD-BUNDLE-2026-11-04 (offline): common/fb_snapshot saves
 pixels/var/fix,8 region words (RD0x8020c86c/WR0x4020c86b), read-only MAU and
 pan; restore verifies MAU and restores pixels/region/pan. display_fb with

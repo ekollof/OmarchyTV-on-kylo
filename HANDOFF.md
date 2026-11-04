@@ -144,6 +144,13 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
+Latest offline analysis: [STOCK-PARITY](artifacts/reports/STOCK-PARITY-2026-11-04.md)
+confirms the old `shot-launcher-right.png` is R/B-swapped; the corrected copy
+matches the current Prime/Canal color orientation. Same-geometry portal cards
+still differ in artwork/crop, background color and missing status chrome, so
+the old capture cannot certify stock apps-grid pixel parity. A fresh
+same-session corrected stock apps-grid capture remains required. No TV access.
+
 Latest offline implementation: [FB-SNAPSHOT-COLD-BUNDLE](artifacts/reports/FB-SNAPSHOT-COLD-BUNDLE-2026-11-04.md)
 adds fb1 snapshot/restore (pixels/var/fix metadata, 8-word region, read-only MAU,
 pan) and wires `display.restore_snapshot=1` into display_fb; fb-restore uses
