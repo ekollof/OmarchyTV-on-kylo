@@ -9,6 +9,14 @@ corrections to older design reports.
 
 ## Current status
 
+Host configuration is a per-host initialization snapshot. `config_get` borrows
+strings from that host's fixed48-entry table; first duplicate wins. Another
+host's initialization or configuration file changes cannot alter those strings.
+Module reload does not reread the host file. Reinitializing host storage clears
+the snapshot, so callers must first release modules, workers, the self-pipe and
+mutex; this change does not add a host teardown API. HOST-CONFIG-2026-11-04
+records the reproduced global-table bug and host/sanitizer/ARM-qemu regression.
+
 The installed TV/recovery build is ABI 1, native boot disabled, vendor UI running.
 Development uses ABI 3 in build-tv-v3; historical ABI 2 build-tv-v2 is preserved.
 Do not mix them. Cold independent scanout,

@@ -13,7 +13,9 @@ function entries(text) {
     return out;
 }
 const git=revision=>entries(cp.execFileSync("git",["show",revision+":TODO.md"],{cwd:root,encoding:"utf8"}));
-const before=git("172cd57"),current=entries(fs.readFileSync(path.join(root,"TODO.md"),"utf8"));
+/* Freeze the reviewed snapshot: later implemented milestones must not silently
+ * change historical audit dispositions or break reproduction of the ledger. */
+const before=git("172cd57"),current=git("15824f2");
 const original=JSON.parse(fs.readFileSync(path.join(root,"artifacts/analysis/todo-audit-2026-11-04/claims.json"),"utf8"));
 const inserted=before.findIndex(e=>e.title.startsWith("Reloadable image.decode module:"));
 if(inserted<0 || current.length!==before.length || before.filter(e=>e.checked).length!==183)
@@ -44,8 +46,8 @@ if(rows.length!==183 || rows.filter(r=>r.checked).length!==182 || rows.find(r=>!
 const md=["# Follow-up checked-claim ledger","",
     "All183 checks at172cd57. C001..C182 retain the prior audit IDs; C183 is the added PNG item.",
     "Locators are not proof. See TODO-REAUDIT-2026-11-04 for source review, tests and limits.","",
-    "| ID | Current TODO line | Original heading | Disposition | Evidence anchors |",
+    "| ID | TODO line at15824f2 | Original heading | Disposition | Evidence anchors |",
     "|---|---|---|---|---|"];
 for(const r of rows)md.push(`| ${r.id} | ${r.currentLine} | ${r.title.replaceAll("|","\\|")} | ${r.disposition} | ${r.anchors.join("; ")} |`);
 fs.writeFileSync(path.join(__dirname,"checked-claims.md"),md.join("\n")+"\n");
-console.log(JSON.stringify({checkedBefore:rows.length,checkedNow:rows.filter(r=>r.checked).length,reopened:rows.filter(r=>!r.checked).map(r=>r.id)}));
+console.log(JSON.stringify({checkedBefore:rows.length,checkedAtAudit:rows.filter(r=>r.checked).length,reopened:rows.filter(r=>!r.checked).map(r=>r.id)}));

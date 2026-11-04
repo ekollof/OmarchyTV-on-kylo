@@ -1,0 +1,466 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-host-config/tests/reload tests/reload.c build-host-config/core/check.o build-host-config/core/control.o build-host-config/core/host.o build-host-config/core/module.o build-host-config/core/skin.o -ldl -pthread -lm -Wl,--wrap=malloc
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -o build-host-config/tests/mod_reload_fixture.so tests/reload_fixture.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DRELOAD_WITHOUT_RESTORE -fPIC -shared -o build-host-config/tests/mod_reload_no_restore.so tests/reload_fixture.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DRELOAD_RENAMED -fPIC -shared -o build-host-config/tests/mod_reload_renamed.so tests/reload_fixture.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-host-config/tests/phases tests/phases.c build-host-config/core/check.o build-host-config/core/control.o build-host-config/core/host.o build-host-config/core/module.o build-host-config/core/skin.o -ldl -pthread -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=0 \
+    \
+  -fPIC -shared -o build-host-config/tests/mod_phase_a.so tests/phases_fixture.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=1 \
+    \
+  -fPIC -shared -o build-host-config/tests/mod_phase_b.so tests/phases_fixture.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=2 \
+    \
+  -fPIC -shared -o build-host-config/tests/mod_phase_c.so tests/phases_fixture.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=0 \
+  -DNO_PHASE_HOOKS  \
+  -fPIC -shared -o build-host-config/tests/mod_phase_no_suspend.so tests/phases_fixture.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DPHASE_ID=2 \
+   -DPHASE_REPLACEMENT \
+  -fPIC -shared -o build-host-config/tests/mod_phase_replacement.so tests/phases_fixture.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-host-config/tests/power_cycle tests/power_cycle.c modules/power/power.c build-host-config/core/check.o build-host-config/core/control.o build-host-config/core/host.o build-host-config/core/module.o build-host-config/core/skin.o -ldl -pthread -lm \
+  -Wl,--wrap=open -Wl,--wrap=write -Wl,--wrap=close -Wl,--wrap=sync
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-host-config/tests/control_reply tests/control_reply.c build-host-config/core/check.o build-host-config/core/control.o build-host-config/core/host.o build-host-config/core/module.o build-host-config/core/skin.o -ldl -pthread -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-host-config/tests/control_transport tests/control_transport.c build-host-config/core/check.o build-host-config/core/control.o build-host-config/core/host.o build-host-config/core/module.o build-host-config/core/skin.o -ldl -pthread -lm -Wl,--wrap=send -Wl,--wrap=accept4
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -Itests  -o build-host-config/tests/ui_skin tests/ui_skin.c build-host-config/core/check.o build-host-config/core/control.o build-host-config/core/host.o build-host-config/core/module.o build-host-config/core/skin.o -ldl -pthread -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Itests -fPIC -shared -o build-host-config/tests/ui_nav_display.so tests/ui_nav_display.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-host-config/modules/mod_ui_engine.so modules/ui_engine/ui_engine.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-host-config/modules/mod_ui_vendor.so modules/ui_vendor/ui_vendor.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c  -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-host-config/modules/mod_ui_omarchy.so modules/ui_omarchy/ui_omarchy.c 
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-host-config/tests/skin_selection tests/skin_selection.c build-host-config/core/check.o build-host-config/core/control.o build-host-config/core/host.o build-host-config/core/module.o build-host-config/core/skin.o -ldl -pthread -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared  -DSKIN_NAME='"custom"'      -o build-host-config/tests/mod_ui_custom.so tests/skin_candidate.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared  -DSKIN_NAME='"startfail"' -DFAIL_START=1     -o build-host-config/tests/mod_ui_startfail.so tests/skin_candidate.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared  -DSKIN_NAME='"badenter"'   -DFAIL_ENTER=1   -o build-host-config/tests/mod_ui_badenter.so tests/skin_candidate.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared  -DSKIN_NAME='"silent"'    -DSILENT=1  -o build-host-config/tests/mod_ui_silent.so tests/skin_candidate.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared  -DSKIN_NAME='"busyfail"' -DFAIL_START=1 -DBUSY=1    -o build-host-config/tests/mod_ui_busyfail.so tests/skin_candidate.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared  -DSKIN_NAME='"initbusy"'     -DFAIL_INIT=1 -o build-host-config/tests/mod_ui_initbusy.so tests/skin_candidate.c
+[817227] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817227] INFO host         unloaded reload_fixture
+[817227] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817227] INFO host         reload_fixture: restored 4 bytes of state
+[817227] INFO host         reload_fixture: reloaded (loaded)
+[817227] INFO host         started reload_fixture
+[817227] INFO host         stopped reload_fixture
+[817227] INFO host         unloaded reload_fixture
+[817227] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817227] INFO host         reload_fixture: restored 4 bytes of state
+[817227] INFO host         reload_fixture: reloaded (loaded)
+[817227] INFO host         unloaded reload_fixture
+[817227] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817227] INFO host         started reload_fixture
+[817227] INFO host         stopped reload_fixture
+[817227] INFO host         unloaded reload_fixture
+[817227] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817227] INFO host         reload_fixture: restored 4 bytes of state
+[817227] INFO host         started reload_fixture
+[817227] INFO host         reload_fixture: reloaded (started)
+[817227] INFO host         stopped reload_fixture
+[817227] INFO host         unloaded reload_fixture
+[817227] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817227] INFO host         started reload_fixture
+[817227] INFO host         stopped reload_fixture
+[817227] INFO host         unloaded reload_fixture
+[817227] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817227] INFO host         reload_fixture: restored 4 bytes of state
+[817227] INFO host         reload_fixture: reloaded (suspended)
+[817227] INFO host         started reload_fixture
+[817227] INFO host         stopped reload_fixture
+[817227] INFO host         unloaded reload_fixture
+[817227] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817227] INFO host         started reload_fixture
+[817227] INFO host         stopped reload_fixture
+[817227] INFO host         unloaded reload_fixture
+[817227] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817227] INFO host         reload_fixture: restored 4 bytes of state
+[817227] INFO host         reload_fixture: reloaded (suspended)
+[817227] ERR  host         reload_fixture: start() failed (-1)
+[817227] WARN host         reload_fixture: resume failed (-1)
+[817227] INFO host         started reload_fixture
+[817227] INFO host         stopped reload_fixture
+[817227] INFO host         unloaded reload_fixture
+[817227] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817227] INFO host         reload_fixture: restored 4 bytes of state
+[817227] INFO host         reload_fixture: reloaded (suspended)
+[817227] INFO host         stopped reload_fixture
+[817227] INFO host         started reload_fixture
+[817227] INFO host         stopped reload_fixture
+[817227] INFO host         unloaded reload_fixture
+[817227] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817227] INFO host         started reload_fixture
+[817227] INFO host         stopped reload_fixture
+[817227] INFO host         unloaded reload_fixture
+[817227] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817228] INFO host         reload_fixture: restored 4 bytes of state
+[817228] INFO host         reload_fixture: reloaded (suspended)
+[817228] INFO host         stopped reload_fixture
+[817228] INFO host         unloaded reload_fixture
+[817228] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817228] INFO host         reload_fixture: restored 4 bytes of state
+[817228] INFO host         reload_fixture: reloaded (suspended)
+[817228] INFO host         stopped reload_fixture
+[817228] INFO host         unloaded reload_fixture
+[817228] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817228] INFO host         started reload_fixture
+[817228] ERR  host         reload_fixture: cannot allocate saved state; reload canceled
+[817228] ERR  host         reload_fixture: state size 65537 exceeds 65536; reload canceled
+[817228] ERR  host         reload_fixture: saved state grew beyond capacity; reload canceled
+[817228] INFO host         stopped reload_fixture
+[817228] INFO host         unloaded reload_fixture
+[817228] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817228] INFO host         started reload_fixture
+[817228] INFO host         stopped reload_fixture
+[817228] INFO host         unloaded reload_fixture
+[817228] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817228] ERR  host         reload_fixture: restore() failed or absent (-7)
+[817228] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[817228] INFO host         unloaded reload_fixture
+[817228] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817228] INFO host         started reload_fixture
+[817228] INFO host         stopped reload_fixture
+[817228] INFO host         unloaded reload_fixture
+[817228] INFO host         loaded reload_fixture vtest (build-host-config/tests/mod_reload_fixture.so)
+[817228] INFO host         reload_fixture: restored 4 bytes of state
+[817228] ERR  host         reload_fixture: start() failed (-1)
+[817228] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[817228] INFO host         unloaded reload_fixture
+[817228] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-etNNxm/module.so)
+[817228] INFO host         started reload_fixture
+[817228] INFO host         stopped reload_fixture
+[817228] INFO host         unloaded reload_fixture
+[817228] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-etNNxm/module.so)
+[817228] ERR  host         reload_fixture: restore() failed or absent (-1)
+[817228] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[817228] INFO host         unloaded reload_fixture
+[817228] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-etNNxm/module.so)
+[817228] INFO host         started reload_fixture
+[817228] INFO host         stopped reload_fixture
+[817228] INFO host         unloaded reload_fixture
+[817228] INFO host         loaded reload_renamed vtest (/tmp/openaurora-reload-etNNxm/module.so)
+[817228] ERR  host         reload_fixture: replacement name 'reload_renamed' differs
+[817228] WARN host         reload_renamed: force unload, consumers may hold stale pointers
+[817228] INFO host         unloaded reload_renamed
+  ok   never-started and stopped reload preserve loaded state without activation
+  ok   running reload restores state and starts the new instance
+  ok   suspended reload defers start until wake; start on suspended resumes once
+  ok   deferred start can fail/retry or be stopped before touching hardware
+  ok   repeated suspended reload purges posts; unload skips stop on never-started candidate
+  ok   allocation/oversized/growing state failures preserve the working module
+  ok   restore failure is reported and candidate registrations/posts are swept
+  ok   replacement start failure cleans the candidate instead of leaving partial state
+  ok   changed binary without restore or with a new identity is rejected and cleaned
+[817229] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817229] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817229] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817229] INFO host         started phase_c
+[817229] INFO host         started phase_b
+[817229] INFO host         started phase_a
+[817229] INFO host         stopped phase_a
+[817229] INFO host         unloaded phase_a
+[817229] INFO host         stopped phase_b
+[817229] INFO host         unloaded phase_b
+[817229] INFO host         stopped phase_c
+[817229] INFO host         unloaded phase_c
+[817229] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817229] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817229] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817229] INFO host         started phase_c
+[817229] INFO host         started phase_b
+[817229] INFO host         started phase_a
+[817229] ERR  host         phase_b: required by active module 'phase_a'
+[817229] ERR  host         phase_b: required by active module 'phase_a'
+[817229] ERR  host         phase_b: required by active module 'phase_a'
+[817229] INFO host         stopped phase_a
+[817229] INFO host         unloaded phase_a
+[817229] INFO host         stopped phase_b
+[817229] INFO host         unloaded phase_b
+[817229] INFO host         stopped phase_c
+[817229] INFO host         unloaded phase_c
+[817229] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817229] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817229] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817229] INFO host         started phase_c
+[817229] INFO host         started phase_b
+[817229] INFO host         started phase_a
+[817229] INFO host         stopped phase_a
+[817229] INFO host         unloaded phase_a
+[817229] INFO host         stopped phase_b
+[817229] INFO host         unloaded phase_b
+[817229] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817229] INFO host         phase_b: reloaded (suspended)
+[817229] INFO host         started phase_b
+[817229] INFO host         stopped phase_b
+[817229] INFO host         unloaded phase_b
+[817229] INFO host         stopped phase_c
+[817229] INFO host         unloaded phase_c
+[817229] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817229] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817229] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817229] INFO host         started phase_c
+[817229] INFO host         started phase_b
+[817229] INFO host         started phase_a
+[817229] WARN host         phase_b: suspend failed (-7)
+[817229] INFO host         stopped phase_a
+[817229] INFO host         unloaded phase_a
+[817229] INFO host         stopped phase_b
+[817229] INFO host         unloaded phase_b
+[817229] INFO host         stopped phase_c
+[817229] INFO host         unloaded phase_c
+[817229] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817229] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817229] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817229] INFO host         started phase_c
+[817229] INFO host         started phase_b
+[817229] INFO host         started phase_a
+[817229] WARN host         phase_c: resume failed (-7)
+[817229] INFO host         stopped phase_a
+[817229] INFO host         unloaded phase_a
+[817229] INFO host         stopped phase_b
+[817229] INFO host         unloaded phase_b
+[817229] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817230] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817230] INFO host         started phase_c
+[817230] INFO host         started phase_b
+[817230] INFO host         started phase_a
+[817230] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[817230] INFO host         stopped phase_b
+[817230] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[817230] INFO host         started phase_b
+[817230] INFO host         stopped phase_a
+[817230] INFO host         unloaded phase_a
+[817230] INFO host         stopped phase_b
+[817230] INFO host         unloaded phase_b
+[817230] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817230] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817230] INFO host         started phase_c
+[817230] INFO host         started phase_b
+[817230] INFO host         started phase_a
+[817230] ERR  host         module dependency cycle; lifecycle transition canceled
+[817230] INFO host         stopped phase_a
+[817230] INFO host         unloaded phase_a
+[817230] INFO host         stopped phase_b
+[817230] INFO host         unloaded phase_b
+[817230] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_no_suspend.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817230] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817230] INFO host         started phase_c
+[817230] INFO host         started phase_b
+[817230] INFO host         started phase_a
+[817230] ERR  host         phase_b: consumer 'phase_a' is still active
+[817230] INFO host         stopped phase_a
+[817230] INFO host         unloaded phase_a
+[817230] INFO host         stopped phase_b
+[817230] INFO host         unloaded phase_b
+[817230] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817230] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817230] INFO host         started phase_c
+[817230] INFO host         started phase_b
+[817230] INFO host         started phase_a
+[817230] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_c_new vtest (build-host-config/tests/mod_phase_replacement.so)
+[817230] INFO host         started phase_c_new
+[817230] INFO host         stopped phase_a
+[817230] INFO host         unloaded phase_a
+[817230] INFO host         stopped phase_b
+[817230] INFO host         unloaded phase_b
+[817230] INFO host         stopped phase_c_new
+[817230] INFO host         unloaded phase_c_new
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817230] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817230] INFO host         started phase_c
+[817230] INFO host         started phase_b
+[817230] INFO host         started phase_a
+[817230] ERR  phase_c      load 'phase_b': host is not accepting modules
+[817230] INFO host         stopped phase_a
+[817230] INFO host         unloaded phase_a
+[817230] INFO host         stopped phase_b
+[817230] INFO host         unloaded phase_b
+[817230] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817230] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817230] INFO host         started phase_c
+[817230] INFO host         started phase_b
+[817230] INFO host         started phase_a
+[817230] WARN host         phase_b: suspend failed (-7)
+[817230] INFO host         stopped phase_a
+[817230] INFO host         unloaded phase_a
+[817230] INFO host         stopped phase_b
+[817230] INFO host         unloaded phase_b
+[817230] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817230] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817230] INFO host         started phase_c
+[817230] INFO host         started phase_b
+[817230] INFO host         started phase_a
+[817230] INFO host         stopped phase_a
+[817230] INFO host         unloaded phase_a
+[817230] INFO host         stopped phase_b
+[817230] INFO host         unloaded phase_b
+[817230] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817230] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817230] INFO host         started phase_c
+[817230] INFO host         started phase_b
+[817230] INFO host         started phase_a
+[817230] WARN host         phase_b: sleep-cycle restore failed (-7)
+[817230] ERR  host         phase_a: missing required service 'phase_b_service'
+[817230] WARN host         phase_a: sleep-cycle restore failed (-1)
+[817230] INFO host         stopped phase_a
+[817230] INFO host         unloaded phase_a
+[817230] INFO host         stopped phase_b
+[817230] INFO host         unloaded phase_b
+[817230] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817230] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817230] INFO host         started phase_c
+[817230] INFO host         started phase_b
+[817230] INFO host         started phase_a
+[817230] INFO host         stopped phase_a
+[817230] INFO host         unloaded phase_a
+[817230] INFO host         stopped phase_b
+[817230] INFO host         unloaded phase_b
+[817230] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_no_suspend.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817230] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817230] INFO host         started phase_c
+[817230] INFO host         started phase_b
+[817230] INFO host         started phase_a
+[817230] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[817230] INFO host         stopped phase_a
+[817230] INFO host         unloaded phase_a
+[817230] INFO host         stopped phase_b
+[817230] INFO host         unloaded phase_b
+[817230] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817230] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817230] INFO host         started phase_c
+[817230] INFO host         started phase_b
+[817230] INFO host         started phase_a
+[817230] INFO host         stopped phase_a
+[817230] INFO host         unloaded phase_a
+[817230] INFO host         stopped phase_b
+[817230] INFO host         unloaded phase_b
+[817230] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817230] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817230] INFO host         started phase_c
+[817230] INFO host         started phase_b
+[817230] INFO host         started phase_a
+[817230] INFO host         stopped phase_a
+[817230] INFO host         unloaded phase_a
+[817230] INFO host         stopped phase_b
+[817230] INFO host         unloaded phase_b
+[817230] INFO host         stopped phase_c
+[817230] INFO host         unloaded phase_c
+[817230] INFO host         loaded phase_a vtest (build-host-config/tests/mod_phase_a.so)
+[817230] INFO host         loaded phase_b vtest (build-host-config/tests/mod_phase_b.so)
+[817231] INFO host         loaded phase_c vtest (build-host-config/tests/mod_phase_c.so)
+[817231] INFO host         started phase_c
+[817231] INFO host         started phase_b
+[817231] INFO host         started phase_a
+[817231] ERR  host         module dependency cycle; lifecycle transition canceled
+[817231] INFO host         stopped phase_a
+[817231] INFO host         unloaded phase_a
+[817231] INFO host         stopped phase_b
+[817231] INFO host         unloaded phase_b
+[817231] INFO host         stopped phase_c
+[817231] INFO host         unloaded phase_c
+  ok   declared service dependencies suspend consumers first and resume providers first
+  ok   declared dependencies protect active consumers during stop/unload/reload
+  ok   dependency snapshot survives service unpublication and deferred reload into a hole
+  ok   failed consumer suspend protects its providers and reports failure through CLI
+  ok   failed provider resume keeps consumers suspended; a later resume retries
+  ok   published interface alone cannot start/resume a consumer above a suspended provider
+  ok   runtime lookup holds join the dependency graph; cycles fail before callbacks
+  ok   consumer without a suspend hook cannot be left active above a sleeping provider
+  ok   dependency edges follow a republished service to its current provider
+  ok   sleep cycle enters last, restores automatically and pins modules/rejects nested cycles
+  ok   failed preparation skips entry and restores only successful transitions
+  ok   entry failure still restores modules and retains its distinct error
+  ok   restoration failure remains visible; dependent consumers stay suspended and retry works
+  ok   cycle ledger preserves modules already suspended before the request
+  ok   missing hooks refuse before callbacks rather than assuming quiescence
+  ok   pending shutdown and stale backend owner reject before preparation
+  ok   shutdown arriving during preparation cancels entry and still restores modules
+  ok   dependency cycles reject sleep before callbacks or backend entry
+[817232] ERR  power        RAM entry write returned -1
+[817232] ERR  power        RAM entry write returned 2
+[817232] ERR  power        open /sys/power/state failed
+[817232] ERR  host         phase_a: missing required service 'phase_b_service'
+[817232] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[817232] ERR  power        publish power: already published by module 0
+[817232] ERR  host         power: start() failed (-1)
+[817232] ERR  host         power: missing required service 'host.sleep'
+  ok   manual hooks never sleep; CLI/service enter last and notify ON only after restore
+  ok   preparation failure restores completed transitions without opening power state
+  ok   failed open/short/failed mem write still restore; failed writes never count as sleep
+  ok   restore failure reports error and RESUMING, never premature ON; hooks remain retryable
+  ok   disabled power and incomplete quiescence hooks refuse without I/O or state events
+  ok   service preserves preexisting suspended modules and restores prior state before ON
+  ok   failed publication retains peer service; missing coordinator refuses and releases holds
+[817233] INFO host         control socket /tmp/oa-control-X24vfy/control.sock
+  ok   full list/status replies reach a Unix socket client intact
+  ok   control replies stay bounded for full tables and tiny buffers
+  ok   short writes, EINTR/EAGAIN, split/pipelined requests and half-close drain
+  ok   stalled reader cannot block another client; queued replies drain in order
+  ok   EPIPE and disconnected readers do not raise SIGPIPE or kill host
+  ok   overlong/NUL lines rejected whole; next valid and 511-byte commands work
+  ok   repeated stop/start, failed watch registration and socket identity cleanup
+[818242] ERR  host         ui_engine: refusing to unload, service 'ui.engine' still held (use --force)
+[818283] ERR  host         ui_engine: refusing to unload, service 'ui.engine' still held (use --force)
+[818284] ERR  host         ui_engine: start() failed (-1)
+  ok   engine rejects malformed or ambiguous asset names/sizes and keeps RGBA alpha
+  ok   ui.skin selects the engine's active skin; vendor and omarchy switch by reload, no rebuild
+  ok   queued input survives forced engine removal safely; Omarchy rebinds and pins its replacement
+  ok   queued-input skin unload/reload and suspend/resume leave no borrowed callbacks or heap posts
+  ok   vendor skin re-registers after forced engine replacement and receives keys again
+  ok   configured repaint timer allocation failures reject start/resume and remain retryable
+[818292] ERR  host         load 'ui_missing': not found in build-host-config/tests/ui-skin/modules
+[818346] ERR  host         load 'ui_missing': not found in build-host-config/tests/ui-skin/modules
+[818368] ERR  host         ui_startfail: start() failed (-1)
+[818397] ERR  ui_badenter  skin enter failed
+[818550] ERR  host         ui_busyfail: start() failed (-1)
+[818550] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[818558] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[818569] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[818579] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[818601] ERR  host         load 'build-host-config/tests/ui-skin/modules/mod_ui_initbusy.so': init() failed (-1)
+[818601] ERR  host         ui_initbusy: init cleanup pending; retry unload
+[818610] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+[818620] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+[818630] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+  ok   configured missing startup skin falls back to a committed vendor frame without a readiness file
+  ok   runtime control switches both real skins and an external ui_<name> module
+  ok   malformed commands and competing selections cannot mutate an accepted request
+  ok   start failure, deferred enter failure and first-frame timeout safely load the vendor fallback
+  ok   fallback waits for a failed candidate's nonblocking quiescence gate, including registered skin cleanup
+  ok   failed init returning NULL retains its busy candidate until cleanup completes
+  ok   suspended-engine requests reject and shutdown cancels selection without starting another module
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

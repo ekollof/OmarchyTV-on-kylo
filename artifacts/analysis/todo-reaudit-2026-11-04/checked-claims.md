@@ -3,7 +3,7 @@
 All183 checks at172cd57. C001..C182 retain the prior audit IDs; C183 is the added PNG item.
 Locators are not proof. See TODO-REAUDIT-2026-11-04 for source review, tests and limits.
 
-| ID | Current TODO line | Original heading | Disposition | Evidence anchors |
+| ID | TODO line at15824f2 | Original heading | Disposition | Evidence anchors |
 |---|---|---|---|---|
 | C001 | 25 | Offline display simulation feasibility: actual fbdev module with wrapped | retained: bounded milestone; prior audit + unchanged source / fresh suite | openaurora/common/scene_gles.c; openaurora/modules/display/display.c; openaurora/tests/display_present.c; openaurora/tests/egl_default_display.c; artifacts/reports/UI-FB-SIM-2026-11-04.md |
 | C002 | 31 | Complete faithful offline RGBA layout capture against the production | retained: alpha composition only; no scene transforms | openaurora/common/scene_gles.c; openaurora/modules/display/display.c; openaurora/tests/display_present.c; openaurora/tests/egl_default_display.c; artifacts/reports/UI-FB-SIM-2026-11-04.md |

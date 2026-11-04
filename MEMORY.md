@@ -1,5 +1,13 @@
 # Current project state — last verified 2026-11-04
 
+HOST-CONFIG-2026-11-04 fixes global configuration leakage: entries/count now
+belong to each host's immutable init snapshot. Old implementation fails the
+new cross-host regression; strict host, leak-enabled ASan/UBSan and fresh ARM/
+qemu registry tests pass, plus54 core lifecycle/power/control/skin checks.
+Module reload still does not reread config; reinit requires prior caller
+teardown. No TV access/deployment. Separate PNG/JPEG edits remain outside this
+milestone; the full Aurora replacement is still incomplete.
+
 TODO-REAUDIT-2026-11-04 supersedes checklist acceptance below: all183 checks
 at172cd57 reviewed;182 retained as bounded milestones, PNG acceptance reopened.
 Recorder alpha works, but its scene transforms are metadata only. Fresh full
@@ -2364,3 +2372,4 @@ Use -Werror -pedantic; edit with apply_patch; use tools/tvssh.sh for authorized 
 Document cleanup changed local documentation and explanatory source comments;
 no executable behavior, binaries or TV state changed. Raw logs were preserved,
 with six previously temporary DRM traces copied into the analysis directory.
+

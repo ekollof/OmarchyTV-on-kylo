@@ -14,7 +14,7 @@ and module counts/TV samples identify their original run, not the current whole 
 The preserved claim inventory and per-item locators are linked from the audit.
 
 Follow-up: [TODO-REAUDIT-2026-11-04](artifacts/reports/TODO-REAUDIT-2026-11-04.md)
-accounts for all183 checks present at172cd57.182 remain checked at their stated
+accounts for all183 checks present at172cd57.182 were retained at their stated
 boundaries; the added PNG milestone is reopened pending firmware comparison
 and lifecycle/error acceptance. Recorder alpha composition is verified, but
 its captures do not apply scene transforms. The report distinguishes the
@@ -181,9 +181,15 @@ passing committed build from the separate unfinished source edits.
 - [ ] Finish broader lifecycle acceptance and UI selections; native device
       preparation/wake ownership and transactional binary rollback remain incomplete. Workers
       must still stop/join and reclaim undelivered userdata.
-- [ ] Configuration is currently a global append-only table: repeated host init
-      can retain earlier values. Define per-host/reinitialization semantics;
-      multi-case power fixtures supply config through their test API override.
+- [x] Host configuration is an immutable per-host initialization snapshot;
+      initializing another host cannot leak settings, exhaust the first host's
+      capacity or invalidate borrowed values. Reinitialization after caller
+      teardown clears prior values, including NULL/missing-file config. Existing
+      48-entry bounds, first-duplicate-wins and module-reload snapshot behavior
+      are retained. Regression fails against the old global table; strict host,
+      ASan/UBSan with leak detection and ARM/qemu pass, plus54 core lifecycle/
+      power/control/skin checks. HOST-CONFIG-2026-11-04. Internal host policy,
+      not vendor-setting persistence parity or a new host teardown API.
 - [ ] Future authorized deployment: move a complete matching ABI 3 build, not
       individual modules. Older installed audio/panel/source standalone checks fail
       on unresolved V4L2 imports; rebuilt closure passes. Preserve ABI 1 recovery.
@@ -1430,3 +1436,4 @@ TV mutation is required now. The following are parked, not default next steps.
       questions remain separate research, not a reason to trigger an update now.
 - [ ] Optional no-signal timeout overlay if owner wants it; current ~3-minute suspend
       is known behavior, not evidence of networking failure.
+

@@ -31,6 +31,14 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
+[HOST-CONFIG](artifacts/reports/HOST-CONFIG-2026-11-04.md) fixes the unchecked
+global-config bug independently of the ongoing PNG/JPEG edits. Configuration
+now belongs to each host, with existing first-wins/snapshot policy. Reproduced
+before-fix assertion; strict host, leak-enabled sanitizers, fresh ARM/qemu and
+54 core checks pass. No TV operation. Runtime config reload and a complete
+host teardown API are not added. Continue PNG acceptance from its current
+worktree/evidence rather than assuming the separate edits are already tested.
+
 Read [TODO-REAUDIT](artifacts/reports/TODO-REAUDIT-2026-11-04.md) first:
 PNG acceptance below is reopened, not complete. All183 prior checks are
 accounted for;182 retain bounded acceptance. The committed172cd57 host suite

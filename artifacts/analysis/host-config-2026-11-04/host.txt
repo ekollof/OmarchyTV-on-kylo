@@ -1,0 +1,16 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-host-config/tests/registry tests/registry.c build-host-config/core/check.o build-host-config/core/control.o build-host-config/core/host.o build-host-config/core/module.o build-host-config/core/skin.o -ldl -pthread -lm
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'
+[869958] ERR  host         lookup capacity-test: hold table full, refusing unprotected pointer
+[869958] INFO host         loaded ticker v1.0 (openaurora/build-host-config/modules/mod_ticker.so)
+[869958] INFO host         started ticker
+[869958] ERR  host         ticker: refusing to unload, service 'clock' still held (use --force)
+[869958] ERR  host         ticker: refusing to stop, service 'clock' still held
+[869958] ERR  host         ticker: refusing to unload, service 'clock' still held (use --force)
+[869958] INFO host         stopped ticker
+[869958] INFO host         unloaded ticker
+[869958] ERR  host         load 'openaurora/build-host-config/tests/mod_failed_init.so': init() failed (-1)
+  ok   configuration isolates hosts, capacity and borrowed values; reinit clears stale settings
+  ok   full hold table refuses a new pointer; repeat lookup reuses its hold
+  ok   stopping a held provider is refused until the consumer releases it
+  ok   failed init leaves no registered service or timer

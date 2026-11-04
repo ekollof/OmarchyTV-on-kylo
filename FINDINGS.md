@@ -1,3 +1,9 @@
+HOST-CONFIG-2026-11-04 fixes the process-global append-only configuration table:
+snapshot entries/count now belong to each host. Cross-host isolation and caller-
+torn-down reinitialization pass strict host, leak-enabled ASan/UBSan and fresh
+ARM/qemu tests;54 core checks pass. First duplicate still wins, and module
+reload does not reread config. No TV access or vendor persistence parity claim.
+
 TODO-REAUDIT-2026-11-04 supersedes PNG acceptance below: all183 checks at172cd57
 reviewed,182 retained at bounded scope and PNG reopened. Shared-libpng corpus
 matches are not an Aurora Cabot-decoder comparison; the error fixture is a
@@ -1118,3 +1124,4 @@ acceptance tasks, not the “next experiment” paragraphs in historical reports
 - Firmware/assets/recovery identities: artifacts/README.md.
 - The original chronology is preserved under artifacts/archive. Its confident
   prose and old checkmarks do not override this correction map.
+

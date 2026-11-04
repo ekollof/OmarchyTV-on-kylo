@@ -352,20 +352,14 @@ void oa_host_dispatch_posts(oa_host *h)
 
 /* ---------------------------------------------------------------- config */
 
-struct kv {
-    char k[64];
-    char v[192];
-};
-static struct kv g_cfg[48];
-static int g_cfgn;
-
-static void config_load(const char *path)
+static void config_load(oa_host *h, const char *path)
 {
     FILE *f = fopen(path, "r");
     if (!f)
         return;
     char line[256];
-    while (fgets(line, sizeof line, f) && g_cfgn < 48) {
+    while (fgets(line, sizeof line, f) &&
+           h->config_count < (int)(sizeof h->config / sizeof h->config[0])) {
         char *s = line;
         while (*s == ' ' || *s == '\t')
             s++;
@@ -387,9 +381,11 @@ static void config_load(const char *path)
         e = k + strlen(k);
         while (e > k && (e[-1] == ' ' || e[-1] == '\t'))
             *--e = 0;
-        snprintf(g_cfg[g_cfgn].k, sizeof g_cfg[0].k, "%.*s", (int)sizeof g_cfg[0].k - 1, k);
-        snprintf(g_cfg[g_cfgn].v, sizeof g_cfg[0].v, "%.*s", (int)sizeof g_cfg[0].v - 1, v);
-        g_cfgn++;
+        int slot = h->config_count++;
+        snprintf(h->config[slot].k, sizeof h->config[slot].k, "%.*s",
+                 (int)sizeof h->config[slot].k - 1, k);
+        snprintf(h->config[slot].v, sizeof h->config[slot].v, "%.*s",
+                 (int)sizeof h->config[slot].v - 1, v);
     }
     fclose(f);
 }
@@ -397,10 +393,11 @@ static void config_load(const char *path)
 static const char *api_config_get(void *priv, const char *key, const char *def)
 {
     oa_host *h = priv;
-    if (h && !strcmp(key, "ui.skin") && h->skin_selected[0]) return h->skin_selected;
-    for (int i = 0; i < g_cfgn; i++)
-        if (!strcmp(g_cfg[i].k, key))
-            return g_cfg[i].v;
+    if (!h || !key) return def;
+    if (!strcmp(key, "ui.skin") && h->skin_selected[0]) return h->skin_selected;
+    for (int i = 0; i < h->config_count; i++)
+        if (!strcmp(h->config[i].k, key))
+            return h->config[i].v;
     return def;
 }
 
@@ -443,7 +440,7 @@ int oa_host_init(oa_host *h, const char *modules_dir, const char *config)
     snprintf(h->modules_dir, sizeof h->modules_dir, "%s", modules_dir ? modules_dir : "modules");
     if (config) {
         snprintf(h->config_path, sizeof h->config_path, "%s", config);
-        config_load(config);
+        config_load(h, config);
     }
     /* pipe2 rather than pipe+fcntl: fcntl is versioned GLIBC_2.28 and the TV has 2.23 */
     if (pipe2(h->selfpipe, O_NONBLOCK | O_CLOEXEC) != 0)

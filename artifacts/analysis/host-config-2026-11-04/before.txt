@@ -1,0 +1,1 @@
+registry-before: openaurora/tests/registry.c:41: config_isolation: Assertion `!second->api.config_get(second, "sample", NULL)' failed.
