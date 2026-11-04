@@ -315,6 +315,7 @@ $(BUILD)/tests/tab_policy_firmware: tests/svg_scrollbar_skin_native.h
 $(BUILD)/tests/tab_policy_firmware: tests/svg_scrollbar_render_native.h
 $(BUILD)/tests/tab_policy_firmware: tests/audio_amp_native.h common/audio_amp.c include/openaurora/audio_amp.h
 $(BUILD)/tests/tab_policy_firmware: tests/profile_data_native.h
+$(BUILD)/tests/tab_policy_firmware: tests/amp_init_native.h common/amp_init.c include/openaurora/amp_init.h
 
 $(BUILD)/tests/settings_row_type: tests/settings_row_type.c common/settings_row_type.c common/settings_model.c common/settings_draw.c include/openaurora/settings_row_type.h include/openaurora/settings_model.h include/openaurora/settings_draw.h
 	@mkdir -p $(dir $@)
@@ -1433,5 +1434,13 @@ check: check-amp-profile-module
 check-amp-profile-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_audio_amp_profile.so
 	node tests/amp_profile_ipc.cjs $(abspath $(BUILD))
 check: check-amp-profile-ipc
+
+$(BUILD)/tests/amp_init: tests/amp_init.c common/amp_init.c common/audio_amp.c include/openaurora/amp_init.h include/openaurora/audio_amp.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-amp-init
+check-amp-init: $(BUILD)/tests/amp_init
+	@$(BUILD)/tests/amp_init
+check: check-amp-init
 
 .PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-display check-svg check-runtime clean install arm tv vendor

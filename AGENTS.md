@@ -192,6 +192,14 @@ the broker/service still exposes queries only. GetOPUGain remaps cached100 to
 0x8000, so it cannot provide an exact rollback snapshot. No live gain write was
 performed; do not use that query to restore a guessed raw-gain experiment.
 
+AMP-INIT-2026-11-04 records the injected AD82587 Init sequencer and29952
+native Init/Reset/Mute comparisons. Its return1 means the vendor write loop
+completed,0 means a write failed; negative EINVAL rejects bad arguments. GPIO
+failures are ignored by native Init and caches update only on nonzero GPIO
+returns. Adapt errno-returning transports to that boolean contract; never call
+this blocking sequencer on the host loop or equate its return with hardware
+ownership/audible acceptance. No native backend or paired shutdown is supplied.
+
 All measured 32bpp OSD framebuffer layers use **BGRA** bytes (B,G,R,A), including
 fb1. Raw framebuffer captures must not be decoded as RGBA. Old tvshot captures
 before the correction have red/blue swapped; see UI-PARITY. Keep formats explicit
@@ -277,11 +285,11 @@ Use a fresh isolated `BUILD=build-tv-v3/<review-name>`; the maintained
 `artifacts/analysis/tab-navigation-2026-11-03/verify.cjs` accepts an optional
 binary path and prints its SHA256. Do not mix a root build with tab-policy or
 keep rerunning stale binaries while guessing at calling conventions.
-Its current default is build-tv-v3/amp-profile/tests/tab_policy_firmware
-and it requires44 groups, including6000 AD82587 profile images/38 write failures
-and2312 profile payload comparisons. Build that target first or pass an explicitly
+Its current default is build-tv-v3/amp-init/tests/tab_policy_firmware
+and it requires45 groups, including6000 AD82587 profile images/38 write failures,
+2312 profile payload and29952 Init control comparisons. Build that target first or pass an explicitly
 rebuilt path. Older binaries cannot certify newly added groups. AUDIO-AMP-PROFILE
-and AUDIO-AMP-NATIVE record the commands/scopes.
+and AUDIO-AMP-NATIVE/AMP-INIT record the commands/scopes.
 
 Use GDB for a reproducible first fault: inspect PC, CPSR/instruction state,
 registers, nearby instructions and backtrace through qemu's gdbstub, then check

@@ -19,6 +19,13 @@ vendor PIDs intact. Supervised only; no full region/MAU/pan equality or
 independent startup. The current owner override revoked TV access after this
 run; no TV command followed. See VISIBLE-IMAGES.
 
+AMP-INIT-2026-11-04 adds injected blocking Init control policy.29952 cases
+match complete native Init/Reset/Mute traces/image/cache/return;45 total native
+groups and host/sanitizer/ARM/full host366 pass. Raw reset-pin operations leave
+the reset cache untouched; GPIO failures do not stop Init; only nonzero level
+returns update cache bytes. No default native I/O, ownership, module/worker
+hookup, paired shutdown or audible acceptance. TV access remains forbidden.
+
 AMP-PROFILE-MODULE-2026-11-04 adds reloadable audio.amp_profile v1 and the
 amp-profile query over actual local Unix IPC. Caller-owned copies/names and
 provider holds/removal/failure/fd/suspend/reload lifecycle pass host/sanitizer/

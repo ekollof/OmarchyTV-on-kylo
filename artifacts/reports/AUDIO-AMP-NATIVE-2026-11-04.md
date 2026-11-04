@@ -1,5 +1,10 @@
 # AD82587 register-image comparison against native Init — 2026-11-04
 
+[AMP-INIT](AMP-INIT-2026-11-04.md) extends comparison to present GPIOs and
+real native Reset/Mute:29952 control/image/cache/return cases pass. The absent-
+GPIO scope below remains the earlier register-image milestone. Lower hardware
+I/O is still controlled; native backend/ownership acceptance remains open.
+
 Follow-up [AUDIO-AMP-PROFILE](AUDIO-AMP-PROFILE-2026-11-04.md) now supplies
 bounded fresh hwprofile inputs and native-tested byte-payload reads. The
 actual-profile-lookup limit below is narrowed to provider/cache/ownership

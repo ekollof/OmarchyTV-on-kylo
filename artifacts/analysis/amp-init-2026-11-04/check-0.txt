@@ -1,0 +1,6 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build-amp-init-san/tests/amp_init tests/amp_init.c common/amp_init.c common/audio_amp.c
+ok amp init: present GPIO sequence, millisecond delays, image/write/subwoofer and cached flags
+ok amp init: all write failures retain image/cache, ignored GPIO failure and absent-resource branches
+ok amp init: invalid arguments perform no callbacks or state mutation; injection only
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

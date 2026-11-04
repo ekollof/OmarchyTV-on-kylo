@@ -287,10 +287,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       byte-payload cases and44 total reference groups pass. AMP-PROFILE-MODULE
       now publishes reloadable audio.amp_profile v1 plus amp-profile CLI/Unix
       query; real DSO holds/failures/removal/suspend/reload and actual socket
-      tests pass host/sanitizer/ARM, including the saved profile. Finish audio
-      consumer integration and retained image acquisition,
-      GPIO/MCU/I2C/worker ownership and hardware lifecycle acceptance; do not
-      substitute these wrapper returns or the pure helper for native bring-up.
+      tests pass host/sanitizer/ARM, including the saved profile. AMP-INIT
+      adds a blocking injection-only Init sequencer:29952 native
+      Init/Reset/Mute trace/image/cache cases and45 total reference groups pass.
+      This is not a native backend or paired shutdown. Finish audio consumer
+      integration, retained image acquisition, coordinated GPIO/MCU/I2C/worker
+      ownership and hardware lifecycle acceptance; wrapper results and controlled
+      callbacks do not establish native bring-up.
 - [x] Traced UI volume through speaker gain and recovered both AQ101-entry table
       layouts/word-to-halfword narrowing. New pure audio_curve decoder and tests
       match all101 entries captured from live Aurora; strict host/sanitizer/

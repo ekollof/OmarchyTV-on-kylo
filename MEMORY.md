@@ -1,5 +1,13 @@
 # Current project state — last verified 2026-11-04
 
+AMP-INIT-2026-11-04 adds blocking injection-only AD82587 Init orchestration.
+29952 cases match complete native Init/Reset/Mute control traces/image/cache/
+return;45 total reference groups pass in build-tv-v3/amp-init. Strict host,
+leak-enabled sanitizer, ARM units and full host366 checks pass. GPIO failures
+are ignored by native Init, and1 only means the write loop completed. No native
+backend/module/worker hookup, paired shutdown or hardware acceptance. No TV
+access; the offline-only owner restriction remains in force.
+
 AMP-PROFILE-MODULE-2026-11-04 adds audio_amp_profile/audio.amp_profile v1 and
 amp-profile CLI/actual Unix IPC. Copied profile/name snapshots, holds/removal,
 failure cleanup/fd counts, suspend/deferred reload/resume and replacement
