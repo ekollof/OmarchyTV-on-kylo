@@ -31,7 +31,24 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [SVG-SCROLLBAR](artifacts/reports/SVG-SCROLLBAR-2026-11-04.md)
+Latest: [SVG-SCROLLBAR-SKIN](artifacts/reports/SVG-SCROLLBAR-SKIN-2026-11-04.md)
+implements SVGScrollBar::calculateMinBarSize (0x10c397c). The standard widget
+names are bar_gTopM/bar_gBotM (0x20/0x21) and bar_mTopM/bar_mBotM (0x22/0x23);
+their BinSVG cap heights are 20 and 16, so the apps-grid minimum is 36 px. The
+body caches the supplier image per orientation, leaves +0xb8 unchanged without
+an image, and adds the two moving-cap heights through the renderer vtable
+slot +0x14 and RectangleContainer. 16 native/C cases pass with host/ASan/
+UBSan, ARM/qemu, full verify.cjs (41 ok), full make check (265 ok) and a
+focused TV CPU run (unit 26996/94e26f39...). The geometry test now uses the
+36 px minimum for the 20-item/15-visible apps-grid cases. The
+renderBackground (0x10c3658)/renderBar (0x10c3bac) bodies, the apps-grid
+screen with the 1750,180,8x720 scrollbar, display/scanout binding and
+independent startup remain open; the home portal has no scrollbar and there is
+no stock apps-grid capture. Live-DB visible and real PNG decoding remain
+acceptance gates. No device/screen/settings/network/boot change; TV staging
+removed.
+
+Previous: [SVG-SCROLLBAR](artifacts/reports/SVG-SCROLLBAR-2026-11-04.md)
 implements SVGScrollBar::setScrollPosition (0x10c4138) and
 calculateBarSizeAndPosition (0x10c3af0). The state stores total/visible/first
 at +0xbc/+0xc0/+0xc4, rejects not-created or first>total, gates the background

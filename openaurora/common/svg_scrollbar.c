@@ -46,3 +46,29 @@ int oa_svg_scrollbar_set_position(struct oa_svg_scrollbar_state *s,
     if(ops->render_bar)ops->render_bar(s);
     return 1;
 }
+
+/* SVGScrollBar::calculateMinBarSize (0x10c397c). The supplier image is cached
+ * per orientation; without one the min stays unchanged. The body resets the min
+ * only after that check, then adds the two moving-bar cap heights. */
+void oa_svg_scrollbar_min_bar(struct oa_svg_scrollbar_skin *s,
+    const struct oa_svg_scrollbar_skin_ops *ops)
+{
+    int32_t image,name,min;
+    if(!s || !ops)return;
+    image=s->cached_image[s->orientation];
+    if(!image) {
+        image=ops->supplier_image(s,s->image_id[s->orientation]);
+        s->cached_image[s->orientation]=image;
+        if(!image)return;
+    }
+    min=0;
+    name=ops->widget_name(s,0x20);
+    ops->renderer_background(s,image,name);
+    name=ops->widget_name(s,0x22);
+    min+=ops->rect_height(s,name);
+    name=ops->widget_name(s,0x21);
+    ops->renderer_background(s,image,name);
+    name=ops->widget_name(s,0x23);
+    min+=ops->rect_height(s,name);
+    s->min_bar=min;
+}

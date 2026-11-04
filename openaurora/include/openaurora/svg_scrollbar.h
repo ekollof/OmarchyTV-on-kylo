@@ -48,6 +48,33 @@ int oa_svg_scrollbar_set_position(struct oa_svg_scrollbar_state *state,
     int32_t total,int32_t visible,int32_t first,int created,
     const struct oa_svg_scrollbar_ops *ops);
 
+/*
+ * SVGScrollBar::calculateMinBarSize (0x10c397c, 0x174 bytes, CRC 0xd9fdda32).
+ * The skin looks up the cached scrollbar image at +0x74+orientation*4 (image
+ * id at +0x84+orientation*4), then resolves the standard widget names
+ * 0x20/0x22 and 0x21/0x23 and adds the two moving-bar cap heights. The
+ * recovered names are bar_gTopM/bar_mTopM and bar_gBotM/bar_mBotM; the
+ * apps-grid caps are 20 and 16 px, so min_bar is 36 for its theme.
+ */
+struct oa_svg_scrollbar_skin {
+    int32_t cached_image[2];
+    int32_t image_id[2];
+    int32_t min_bar;
+    uint8_t orientation;
+};
+struct oa_svg_scrollbar_skin_ops {
+    int32_t (*supplier_image)(struct oa_svg_scrollbar_skin *skin,
+        int32_t image_id);
+    int32_t (*widget_name)(struct oa_svg_scrollbar_skin *skin,
+        int32_t widget_id);
+    void (*renderer_background)(struct oa_svg_scrollbar_skin *skin,
+        int32_t image,int32_t name);
+    int32_t (*rect_height)(struct oa_svg_scrollbar_skin *skin,
+        int32_t name);
+};
+void oa_svg_scrollbar_min_bar(struct oa_svg_scrollbar_skin *skin,
+    const struct oa_svg_scrollbar_skin_ops *ops);
+
 #ifdef __cplusplus
 }
 #endif

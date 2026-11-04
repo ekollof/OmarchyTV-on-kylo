@@ -1,5 +1,24 @@
 # Current project state — last verified 2026-11-04
 
+SVG-SCROLLBAR-SKIN-2026-11-04: calculateMinBarSize0x10c397c (0x174 bytes,
+CRC0xd9fdda32) implemented as oa_svg_scrollbar_min_bar. Widget standard names:
+0x20 bar_gTopM,0x21 bar_gBotM,0x22 bar_mTopM,0x23 bar_mBotM; scrollbar
+resources scrollbarFA/UFA/FI/UFI (IDs61-64); BinSVG cap heights20+16 ->
+apps-grid minimum36px. The body caches the supplier image per orientation
+(+0x74/+0x84), leaves +0xb8 unchanged without an image, then resets and adds
+the two moving-cap heights via the renderer vtable slot+0x14 and
+RectangleContainer.16 native/C cases (orientation x cache x supplier x
+bottom-cap) compare min/cache/trace; host, ASan/UBSan, ARM/qemu, full
+verify.cjs (41 ok), full make check (265 ok) and a focused TV CPU of the skin
+unit pass. Unit26996/94e26f3959cb13ace4ef905a10d44af3. Geometry now uses the
+36px min with the 20-item/15-visible apps-grid cases. renderBackground
+0x10c3658/renderBar0x10c3bac bodies (MaskPositioningTransform/
+VerticalMaskScaleTransform/SVGSurface), the apps-grid screen, display/scanout
+binding and independent startup remain open. The home portal has no card-row
+scrollbar and there is no stock apps-grid capture. Live-DB visible and real
+PNG decoding remain acceptance gates. No device/screen/settings/network/boot
+change; TV staging removed, no helper.
+
 SVG-SCROLLBAR-2026-11-04: SVGScrollBar::setScrollPosition0x10c4138 (0x70
 bytes, CRC0x71cda0c0) and calculateBarSizeAndPosition0x10c3af0 (0xbc bytes,
 CRC0x37806af8) implemented in common/svg_scrollbar.c. Fields bar pos+0xb0, size

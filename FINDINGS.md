@@ -48,6 +48,19 @@ reference groups. Raw checked bytes and independently varied paired child
 states close additional coverage gaps.1771396 renderer/276 setter/56 image
 cases plus host/IPC/sanitizer/ARM-qemu/TV CPU pass; real rendering/startup open.
 
+SVG-SCROLLBAR-SKIN implements SVGScrollBar::calculateMinBarSize (0x10c397c,
+CRC0xd9fdda32). Widget IDs0x20/0x21/0x22/0x23 resolve bar_gTopM/bar_gBotM/
+bar_mTopM/bar_mBotM; the BinSVG elements give cap heights20 and16, so the
+apps-grid scrollbar minimum is36px. The body caches the supplier image per
+orientation (+0x74/+0x84), leaves +0xb8 unchanged if there is no image, resets
+it otherwise, calls the renderer vtable slot+0x14 for the two background names
+and adds the two moving-cap heights.16 native/C cases compare min/cache/trace
+with fake supplier/renderer/RectangleContainer/name stubs; host/ASan/ARM-qemu/
+TV CPU and verify.cjs41 ok. The renderBackground0x10c3658/renderBar0x10c3bac
+bodies (mask transforms/SVGSurface), the apps-grid screen, display/scanout
+binding and independent startup remain open; the home portal has no scrollbar
+and there is no stock apps-grid capture.
+
 SVG-SCROLLBAR implements the shipped scrollbar state/geometry.
 setScrollPosition (0x10c4138) stores total+0xbc, visible+0xc0 and first+0xc4,
 rejects not-created or first>total without storing, calls renderBackground only

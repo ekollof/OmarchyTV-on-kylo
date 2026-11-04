@@ -1,0 +1,3 @@
+staging-removed (/tmp/oa_skin absent)
+/proc/*/exe scan: no tmp/ helper (count 0)
+/conf/coredumpnoreset still present (rc=0)
