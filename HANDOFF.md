@@ -31,7 +31,22 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [SETTINGS-ROW-CONSTRUCT](artifacts/reports/SETTINGS-ROW-CONSTRUCT-2026-11-04.md)
+Latest: [SVG-WIDGET-STATE](artifacts/reports/SVG-WIDGET-STATE-2026-11-04.md)
+implements the widget-state qualification renderItems uses on every child:
+SVGWindow::setFocus (0xeeebd4, state at +0x6c: 0->1/2->3 on, 1->0/3->2 off),
+SVGWindow::setActive (0xeee4ec, inverted argument: 0 activates 0->2/1->3,
+non-zero deactivates 2->0/3->1), SVGTextBox::setFocus (0x10c8a28, redraw and
+text-slide only on a state change when UIWindow::isCreated) and
+setElipses (0x10c6f48, mode 5 ignores switching on but off still stores at
++0x1b1). 36 native/C cases compare ordered call traces and the resulting state
+after 0xAA poisoning against the four verbatim Thumb bodies; vendor
+redraw/slide/isCreated calls remain stubs. Host, focused ASan/UBSan, ARM/qemu,
+full verify.cjs (37 ok) and full make check pass, plus a focused real-TV CPU
+run (exit 0, staging hash-verified and removed). Next: live settings resources,
+scrollbar/skin, display/scanout binding and independent startup. No
+device/screen/settings/network/boot change.
+
+Previous: [SETTINGS-ROW-CONSTRUCT](artifacts/reports/SETTINGS-ROW-CONSTRUCT-2026-11-04.md)
 implements SettingItemsListBoxRow's constructor (0xd53d0c, Thumb, 0x4cd
 bytes): base SVGListBoxRow +17 children at fixed offsets, 10 UStrings, and 47
 default fields/name-id defaults; the OSD-mirror probe rewrites 0x2e4c/0x2e50

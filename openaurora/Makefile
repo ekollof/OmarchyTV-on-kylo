@@ -303,6 +303,7 @@ $(BUILD)/tests/tab_policy_firmware: tests/settings_row_render_native.h common/se
 $(BUILD)/tests/tab_policy_firmware: tests/launcher_image_id_native.h common/launcher_image_id.c include/openaurora/launcher_image_id.h
 $(BUILD)/tests/tab_policy_firmware: tests/svg_image_native.h common/svg_image.c include/openaurora/svg_image.h
 $(BUILD)/tests/tab_policy_firmware: tests/settings_row_construct_native.h common/settings_row_construct.c include/openaurora/settings_row_construct.h
+$(BUILD)/tests/tab_policy_firmware: tests/svg_widget_state_native.h common/svg_widget_state.c include/openaurora/svg_widget_state.h
 
 $(BUILD)/tests/settings_row_type: tests/settings_row_type.c common/settings_row_type.c common/settings_model.c common/settings_draw.c include/openaurora/settings_row_type.h include/openaurora/settings_model.h include/openaurora/settings_draw.h
 	@mkdir -p $(dir $@)
@@ -335,6 +336,14 @@ $(BUILD)/tests/launcher_image_id: tests/launcher_image_id.c common/launcher_imag
 check-launcher-image-id: $(BUILD)/tests/launcher_image_id
 	@$(BUILD)/tests/launcher_image_id
 check: check-launcher-image-id
+
+$(BUILD)/tests/svg_widget_state: tests/svg_widget_state.c common/svg_widget_state.c include/openaurora/svg_widget_state.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-svg-widget-state
+check-svg-widget-state: $(BUILD)/tests/svg_widget_state
+	@$(BUILD)/tests/svg_widget_state
+check: check-svg-widget-state
 
 $(BUILD)/tests/settings_row_construct: tests/settings_row_construct.c common/settings_row_construct.c include/openaurora/settings_row_construct.h
 	@mkdir -p $(dir $@)

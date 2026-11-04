@@ -48,6 +48,18 @@ reference groups. Raw checked bytes and independently varied paired child
 states close additional coverage gaps.1771396 renderer/276 setter/56 image
 cases plus host/IPC/sanitizer/ARM-qemu/TV CPU pass; real rendering/startup open.
 
+SVG-WIDGET-STATE implements the widget-state qualification renderItems uses:
+SVGWindow::setFocus (0xeeebd4) remaps 0->1/2->3 when focused and 1->0/3->2 when
+unfocused at +0x6c; SVGWindow::setActive (0xeee4ec) has an inverted argument
+(zero activates 0->2/1->3, non-zero deactivates 2->0/3->1); SVGTextBox::setFocus
+(0x10c8a28) saves the state, forwards, and only on a state change with
+UIWindow::isCreated calls drawTextBox then performTextSlideAnimation;
+SVGTextBox::setElipses (0x10c6f48) ignores switching on when the +0x220 mode
+word is5 but still stores off at +0x1b1. 36 native/C cases compare traces and
+resulting state after 0xAA poisoning; host/ASan/ARM-qemu/TV CPU and verify.cjs37
+ok. All four bodies are Thumb (force-thumb required). Vendor redraw/slide calls
+remain stubs; live resources, scrollbar/skin and display gates remain open.
+
 SETTINGS-ROW-CONSTRUCT implements SettingItemsListBoxRow's constructor
 (0xd53d0c, Thumb, 0x4cd bytes): base SVGListBoxRow plus 17 children at fixed
 offsets (textboxes 0x104/0x3c4/0x1ca8/0x1f68/0x2228/0x24e8, button0x684,

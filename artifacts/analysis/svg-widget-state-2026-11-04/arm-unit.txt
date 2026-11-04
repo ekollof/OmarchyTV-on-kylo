@@ -1,0 +1,1 @@
+ok svg widget state: focus/active qualification and textbox elipses mode

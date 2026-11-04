@@ -1,0 +1,2 @@
+ok svg widget state: focus/active qualification and textbox elipses mode
+TV_EXIT=0

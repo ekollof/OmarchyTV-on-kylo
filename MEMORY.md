@@ -1,5 +1,23 @@
 # Current project state — last verified 2026-11-04
 
+SVG-WIDGET-STATE-2026-11-04: widget-state qualification from renderItems
+implemented in common/svg_widget_state.c. SVGWindow::setFocus0xeeebd4
+(0->1/2->3 on,1->0/3->2 off at +0x6c); SVGWindow::setActive0xeee4ec (inverted
+argument:0 activates0->2/1->3, non-zero deactivates2->0/3->1);
+SVGTextBox::setFocus0x10c8a28 (redraw+text-slide only when the state changes and
+UIWindow::isCreated); setElipses0x10c6f48 (mode5 at +0x220 ignores switching on,
+off still stores at +0x1b1). 36 native/C cases (16 window, 16 textbox, 4
+elipses) compare ordered traces and state after 0xAA poisoning; the bodies
+(CRCs0x085d6c76/0x7b1ef395/0x117744b9/0x1606bd56) are copied verbatim. Host,
+focused ASan/UBSan, ARM/qemu, full verify.cjs (37 ok) and full make check pass;
+focused TV CPU of the svg_widget_state ARM unit exit0 with staging
+hash-verified/removed. Build-tv-v3/settings-row-render unit23336/
+417eef21aa10f02356edc929cddb7210; reference1300760/
+21eb58423f8efa60054322648091d4b3. Vendor redraw/slide/isCreated calls remain
+stubs. Live resources, scrollbar/skin, display/scanout and startup remain open.
+No screen/input/device/settings/network/service/boot/persistent change. No
+pending job/helper.
+
 SETTINGS-ROW-CONSTRUCT-2026-11-04: SettingItemsListBoxRow constructor0xd53d0c
 (Thumb, 0x4cd bytes, CRC0xe68cf4e1) implemented in
 common/settings_row_construct.c: base +17 children at fixed offsets,10
