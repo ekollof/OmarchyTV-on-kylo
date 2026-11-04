@@ -923,6 +923,23 @@ check-cec-audio-policy: $(BUILD)/tests/cec_audio_policy $(BUILD)/modules/mod_cec
 	@printf 'audio.enable = 1\n' > $(BUILD)/tests/cec-route/audio.cfg
 	@$(BUILD)/tests/cec_audio_policy $(BUILD)/tests/cec-route/modules $(BUILD)/tests/cec-route/audio.cfg
 
+$(BUILD)/tests/ui_live_cards: tests/ui_live_cards.c tests/ui_nav_trace.h core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests -Ithird_party $(LDFLAGS) -o $@ tests/ui_live_cards.c $(filter %.o,$^) $(LDLIBS) \
+	  $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
+
+ui-live-modules = $(BUILD)/tests/ui-live-cards/modules
+ui-live-stage: $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_settings.so
+	@mkdir -p $(ui-live-modules)
+	@cp $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_settings.so $(ui-live-modules)/
+	@cp $(BUILD)/tests/ui_nav_display.so $(ui-live-modules)/mod_nav_display.so
+.PHONY: check-ui-live-cards check-ui-live-dump
+check-ui-live-cards: $(BUILD)/tests/ui_live_cards ui-live-stage
+	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic
+check: check-ui-live-cards
+check-ui-live-dump: $(BUILD)/tests/ui_live_cards ui-live-stage
+	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
+
 $(BUILD)/tests/ui_nav_display.so: tests/ui_nav_display.c tests/ui_nav_trace.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Itests -fPIC -shared -o $@ tests/ui_nav_display.c $(LDFLAGS)

@@ -31,7 +31,26 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Latest: [LAUNCHER-DB](artifacts/reports/LAUNCHER-DB-2026-11-04.md) implements
+Latest: [UI-LIVE-CARDS](artifacts/reports/UI-LIVE-CARDS-2026-11-04.md) makes
+ui_vendor draw the live parent-0 LauncherItem rows from the reloadable
+launcher.db service. Rows are filtered to item_type 2 with a non-empty
+thumbnail name, sorted by m_order_index then id, and each card is loaded by its
+named OAI1 asset. ui.cards still overrides; ui.live_cards=0 restores
+DEFAULT_CARDS; missing service/DB/rows fall back. Recorder tests: synthetic
+3 rows/3 visible, dumped and live 12 selected/9 visible on the TV (the dump has
+20 parent-0 type-2 rows). The offline portal capture and a visible TV layer-1
+capture show the stock nine-card order. The visible dumped-DB probe restored
+bytes=16588800 yoffset=1080 MAU=0 region_match=1 snapshot_match=1. A live-DB
+visible attempt reached the 6 s hold but captured the stock frame and the probe
+refused restore after the vendor region changed; the stock no-signal screen was
+verified and the stale backup removed, so no visible live capture is claimed
+(the live rows were rendered in the recorder test). Staging used
+/buffer/oa_portal_20261104 and /buffer/oa_recorder (owner suggestion) and /tmp;
+all removed, no helper process, no-reset flag intact. The TV was asleep and
+tvssh.sh woke it. Next: scrollbar/skin, display/scanout binding, independent
+startup, live refresh and real PNG decoding. Host check 265 ok, verify.cjs 39 ok.
+
+Previous: [LAUNCHER-DB](artifacts/reports/LAUNCHER-DB-2026-11-04.md) implements
 the settingsDB LauncherItem read half. The member map
 (launcher_item_info_struct0xfabf50) gives 16 scalar and 10 text columns
 (300/60/150); the shipped copyLauncherInfoToItem0xfac334 decode is implemented

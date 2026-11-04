@@ -1537,6 +1537,47 @@ static void move_key(struct ctx *c, uint8_t id)
         paint(c);
 }
 
+/* Live LauncherItem home row: parent 0, non-deleted, type 2 with a thumbnail
+ * name, ordered by m_order_index (the stock portal's card order). Falls back to
+ * DEFAULT_CARDS when the launcher.db service or its rows are unavailable. */
+struct live_card { int32_t order,id; char name[48]; };
+static int live_card_cmp(const void *a,const void *b)
+{
+    const struct live_card *x=a,*y=b;
+    if(x->order!=y->order)return x->order<y->order?-1:1;
+    return x->id<y->id?-1:x->id>y->id?1:0;
+}
+static int load_live_cards(struct ctx *c)
+{
+    const oa_launcher_db_iface *db=c->api->lookup(c->api->priv,
+        OA_SVC_LAUNCHER_DB,1);
+    if(!db)return 0;
+    struct oa_launcher_list *list=NULL;
+    int rc=db->read_parent(0,0,0,&list);
+    if(rc){db->release(list);c->api->release(c->api->priv,OA_SVC_LAUNCHER_DB);return 0;}
+    size_t count=db->count(list);
+    struct live_card cards[64];
+    unsigned n=0;
+    for(size_t i=0;i<count && n<sizeof cards/sizeof cards[0];++i) {
+        struct oa_launcher_row_view row;
+        if(db->get(list,i,&row) || row.item_type!=2 || !row.thumb_file_name[0] ||
+           strchr(row.thumb_file_name,'/'))
+            continue;
+        cards[n].order=row.order_index;cards[n].id=row.id;
+        snprintf(cards[n].name,sizeof cards[n].name,"%s",row.thumb_file_name);
+        ++n;
+    }
+    db->release(list);
+    c->api->release(c->api->priv,OA_SVC_LAUNCHER_DB);
+    if(!n)return 0;
+    qsort(cards,n,sizeof cards[0],live_card_cmp);
+    if(n>MAX_CARDS)n=MAX_CARDS;
+    c->nc=(int)n;
+    for(unsigned i=0;i<n;++i)
+        snprintf(c->cards[i],sizeof c->cards[0],"%s",cards[i].name);
+    return 1;
+}
+
 static void parse_cards(struct ctx *c, const char *spec)
 {
     c->nc = 0;
@@ -1585,8 +1626,11 @@ static int m_start(void *v)
     c->scene_painted = 0;
 
     const char *spec = c->api->config_get(c->api->priv, "ui.cards", "");
+    const char *live = c->api->config_get(c->api->priv, "ui.live_cards", "1");
     if (spec && spec[0]) {
         parse_cards(c, spec);
+    } else if (atoi(live) && load_live_cards(c)) {
+        /* live parent-0 rows, sorted by m_order_index */
     } else {
         for (c->nc = 0; DEFAULT_CARDS[c->nc]; c->nc++)
             snprintf(c->cards[c->nc], sizeof c->cards[0], "%s", DEFAULT_CARDS[c->nc]);

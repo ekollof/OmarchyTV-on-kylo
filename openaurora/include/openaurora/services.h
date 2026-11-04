@@ -303,6 +303,13 @@ typedef struct {
  * gates match SqliteLauncherDatabaseAdapter::getLauncherItemsByParentId. */
 #define OA_SVC_LAUNCHER_DB "launcher.db"
 struct oa_launcher_list;
+/* Borrowed view; strings point into the list and last until release(). */
+struct oa_launcher_row_view {
+    int32_t id,parent_id,order_index,item_type;
+    uint8_t is_deleted,is_featured,is_out_of_sync,is_delete_disabled;
+    const char *application_name,*thumb_file_name,*menu_string_id;
+    const char *application_url,*thumb_url;
+};
 typedef struct {
     /* The list stays opaque to the control plane; the module allocates it and
      * release() frees it. format() writes one "id=... name=..." line. */
@@ -310,6 +317,8 @@ typedef struct {
     int (*read_parent)(int32_t parent_id,int include_deleted,
         int include_out_of_sync,struct oa_launcher_list **out);
     size_t (*count)(const struct oa_launcher_list *list);
+    int (*get)(const struct oa_launcher_list *list,size_t index,
+        struct oa_launcher_row_view *out);
     int (*format)(const struct oa_launcher_list *list,size_t index,
         char *buf,size_t cap);
     void (*release)(struct oa_launcher_list *list);

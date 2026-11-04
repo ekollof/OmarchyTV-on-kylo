@@ -1,0 +1,22 @@
+saved bytes=16588800 original_yoffset=1080 MAU=0 backup=/tmp/oa-scene-helper-20261101/framebuffer.backup
+scene display module id=4 service=display.async
+direction type4 top_rows identity=440 p0=452 p1=0 (starts lower, slides up)
+UI readiness after GPU completion serial=17179869188 revision=17179869203 pid=26954
+PORTAL hold 6s
+[683019] ERR  host         graphics: cleanup pending; retry stop/unload
+[683020] ERR  host         graphics: cleanup pending; retry stop/unload
+[683020] ERR  host         graphics: cleanup pending; retry stop/unload
+[683020] ERR  host         graphics: cleanup pending; retry stop/unload
+[683030] ERR  host         graphics: cleanup pending; retry stop/unload
+[683031] ERR  host         graphics: cleanup pending; retry stop/unload
+[683050] ERR  host         graphics: cleanup pending; retry stop/unload
+[683050] ERR  host         graphics: cleanup pending; retry stop/unload
+[683070] ERR  host         graphics: cleanup pending; retry stop/unload
+[683070] ERR  host         graphics: cleanup pending; retry stop/unload
+[683090] ERR  host         graphics: cleanup pending; retry stop/unload
+[683090] ERR  host         graphics: cleanup pending; retry stop/unload
+[683110] ERR  host         graphics: cleanup pending; retry stop/unload
+[683110] ERR  host         graphics: cleanup pending; retry stop/unload
+scene display observed frame completions=3
+graphics host drained and unloaded provider
+restored bytes=16588800 yoffset=1080 MAU=0 region_match=1 snapshot_match=1

@@ -1,0 +1,2 @@
+ok live cards: excluded rows not painted
+ok ui live cards: 3 rows, 3 visible cards ordered by m_order_index

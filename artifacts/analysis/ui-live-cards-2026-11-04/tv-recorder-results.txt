@@ -1,0 +1,9 @@
+ok live cards: excluded rows not painted
+ok ui live cards: 3 rows, 3 visible cards ordered by m_order_index
+synthetic_exit=0
+ok live cards: excluded rows not painted
+ok ui live cards: 12 rows, 9 visible cards ordered by m_order_index
+dump_exit=0
+ok live cards: excluded rows not painted
+ok ui live cards: 12 rows, 9 visible cards ordered by m_order_index
+live_exit=0

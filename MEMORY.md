@@ -1,5 +1,25 @@
 # Current project state — last verified 2026-11-04
 
+UI-LIVE-CARDS-2026-11-04: ui_vendor reads the live parent-0 LauncherItem rows
+through the reloadable launcher.db service. launcher.db adds a borrowed row
+view/get; ui_vendor keeps item_type2 rows with a non-empty thumbnail name
+(skips slash names), sorts by m_order_index then id, caps at MAX_CARDS and loads
+each named OAI1 asset. ui.cards override wins; ui.live_cards=0 restores
+DEFAULT_CARDS; missing service/DB/rows fall back. Recorder tests: synthetic3/3,
+dumped and live12 selected/9 visible on the TV (the dump has20 parent0 type2
+rows). Offline capture offline-portal.png and visible TV capture
+tv-portal-live_1.png show the stock nine-card order. The visible dumped-DB
+probe restored bytes=16588800 yoffset=1080 MAU=0 region_match=1
+snapshot_match=1. The live-DB visible attempt reached the hold but captured the
+stock frame and the probe refused restore after the vendor region changed; the
+stock no-signal screen was verified intact and the stale backup removed, so no
+visible live capture is claimed (live rows were rendered in the recorder test).
+Staging used /buffer/oa_portal_20261104 and /buffer/oa_recorder (owner
+suggestion), then /tmp; all removed, no helper process, coredumpnoreset present.
+The TV was asleep; tvssh.sh woke it. Rail remains static; PNG decoding, live
+refresh, scrollbar/skin, scanout binding and independent startup remain open.
+Host check265 ok, verify.cjs39 ok.
+
 LAUNCHER-DB-2026-11-04: settingsDB LauncherItem read half implemented.
 Member map recovered from launcher_item_info_struct0xfabf50 (16 scalar
 columns,10 text columns at+0x38..+0x93e sizes300/60/150; DB blobs match).

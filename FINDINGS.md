@@ -48,6 +48,23 @@ reference groups. Raw checked bytes and independently varied paired child
 states close additional coverage gaps.1771396 renderer/276 setter/56 image
 cases plus host/IPC/sanitizer/ARM-qemu/TV CPU pass; real rendering/startup open.
 
+UI-LIVE-CARDS wires the settingsDB rows into the portal. launcher.db now
+exposes a borrowed row view/get; ui_vendor reads parent0 with read_parent(0,0,0),
+keeps item_type2 rows with a non-empty thumbnail name (skipping slash names),
+sorts by m_order_index then id and loads each named OAI1 asset. The explicit
+ui.cards override wins and ui.live_cards=0 restores DEFAULT_CARDS; missing
+service/DB/rows also fall back. Recorder tests: synthetic3 rows/3 visible;
+dumped and live DB12 selected/9 visible (the dump has20 parent0 type2 rows, the
+first12 selected and the first9 fit the row). Offline portal capture and a
+visible TV layer-1 capture show the stock order (Netflix, Prime, YouTube, tabii,
+Canal Digitaal, TV VLAANDEREN, TELESAT, Digiturk, GAIN). The visible probe
+restored bytes=16588800 yoffset=1080 MAU=0 region_match=1 snapshot_match=1 on the
+dumped-DB run; a live-DB visible attempt reached the hold but captured the stock
+frame and refused restore after the vendor region changed, so it is not claimed
+as a visible live capture (the live rows were rendered in the recorder test).
+The rail is still static; PNG decoding, live refresh, scrollbar/skin and scanout
+remain open.
+
 LAUNCHER-DB implements the settingsDB LauncherItem read half. The member map
 from NovoLauncherItemInfo::launcher_item_info_struct (0xfabf50) has16 scalar
 columns at+4..+0x34 and10 fixed text columns at+0x38..+0x93e with sizes

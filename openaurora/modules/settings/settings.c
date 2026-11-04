@@ -148,6 +148,22 @@ static int launcher_read_parent(int32_t parent_id,int include_deleted,
 }
 static size_t launcher_count(const struct oa_launcher_list *list)
 { return list?list->count:0; }
+static int launcher_get(const struct oa_launcher_list *list,size_t index,
+    struct oa_launcher_row_view *out)
+{
+    if(!list || index>=list->count || !out)return -EINVAL;
+    const struct oa_launcher_info *row=&list->rows[index];
+    *out=(struct oa_launcher_row_view){
+        .id=row->id,.parent_id=row->parent_id,.order_index=row->order_index,
+        .item_type=row->item_type,.is_deleted=row->is_deleted,
+        .is_featured=row->is_featured,.is_out_of_sync=row->is_out_of_sync,
+        .is_delete_disabled=row->is_delete_disabled,
+        .application_name=row->application_name,
+        .thumb_file_name=row->thumb_file_name,
+        .menu_string_id=row->menu_string_id,
+        .application_url=row->application_url,.thumb_url=row->thumb_url};
+    return 0;
+}
 static int launcher_format(const struct oa_launcher_list *list,size_t index,
     char *buf,size_t cap)
 {
@@ -165,7 +181,8 @@ static void launcher_release(struct oa_launcher_list *list)
     free(list);
 }
 static const oa_launcher_db_iface launcher_iface={launcher_read_all,
-    launcher_read_parent,launcher_count,launcher_format,launcher_release};
+    launcher_read_parent,launcher_count,launcher_get,launcher_format,
+    launcher_release};
 static void m_stop(void *v);
 
 static int m_init(const oa_host_api *api, void **out)

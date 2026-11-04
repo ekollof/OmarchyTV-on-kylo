@@ -424,8 +424,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       sqlite adapter with the getAll/by-parent filters, live TV probe (54
       rows) and a reloadable launcher.db service/CLI in mod_settings.
       LAUNCHER-DB. SequentialQuery itself not ported.
-- [ ] Feed the read rows into ui_vendor (replace DEFAULT_CARDS); scrollbar/
-      skin; display/scanout binding; independent startup.
+- [x] Feed the read rows into ui_vendor: live parent-0 type-2 rows ordered by
+      m_order_index, named thumbnails, DEFAULT_CARDS fallback; recorder 3/3 and
+      12/9 dumped+live, offline capture and a visible TV capture with
+      snapshot_match restore. UI-LIVE-CARDS. Rail still static; no visible
+      live-DB capture (the live rows were rendered in the recorder test).
+- [ ] Scrollbar/skin; display/scanout binding; independent startup; live
+      refresh on launcher.db changes; real downloaded-PNG decoding.
       Type 0xa is partially mapped (uncreated text-box and slider paths;
       created slider branch at 0xd559d0 still unrecovered) in
       artifacts/analysis/settings-row-render-a-2026-11-03/NOTES.md. Nothing

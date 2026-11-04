@@ -1,0 +1,28 @@
+saved bytes=16588800 original_yoffset=0 MAU=0 backup=/tmp/oa-scene-helper-20261101/framebuffer.backup
+scene display module id=4 service=display.async
+direction type4 top_rows identity=699 p0=679 p1=0 (starts lower, slides up)
+UI readiness after GPU completion serial=17179869188 revision=17179869203 pid=27442
+PORTAL hold 6s
+[734559] ERR  host         graphics: cleanup pending; retry stop/unload
+[734560] ERR  host         graphics: cleanup pending; retry stop/unload
+[734560] ERR  host         graphics: cleanup pending; retry stop/unload
+[734561] ERR  host         graphics: cleanup pending; retry stop/unload
+[734571] ERR  host         graphics: cleanup pending; retry stop/unload
+[734571] ERR  host         graphics: cleanup pending; retry stop/unload
+[734591] ERR  host         graphics: cleanup pending; retry stop/unload
+[734591] ERR  host         graphics: cleanup pending; retry stop/unload
+[734611] ERR  host         graphics: cleanup pending; retry stop/unload
+[734611] ERR  host         graphics: cleanup pending; retry stop/unload
+[734631] ERR  host         graphics: cleanup pending; retry stop/unload
+[734632] ERR  host         graphics: cleanup pending; retry stop/unload
+[734651] ERR  host         graphics: cleanup pending; retry stop/unload
+[734651] ERR  host         graphics: cleanup pending; retry stop/unload
+[734671] ERR  host         graphics: cleanup pending; retry stop/unload
+[734671] ERR  host         graphics: cleanup pending; retry stop/unload
+[734691] ERR  host         graphics: cleanup pending; retry stop/unload
+[734691] ERR  host         graphics: cleanup pending; retry stop/unload
+[734711] ERR  host         graphics: cleanup pending; retry stop/unload
+[734711] ERR  host         graphics: cleanup pending; retry stop/unload
+restore failed; retain backup and use --restore after probe exits: Input/output error
+scene display observed frame completions=3
+graphics host drained and unloaded provider
