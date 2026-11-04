@@ -1,1 +1,1 @@
-  ok   image decode: nine downloaded PNGs match libpng RGBA, errors reject and service reloads
+  ok   image decode: PNG and JPEG RGBA match references, errors reject and service reloads

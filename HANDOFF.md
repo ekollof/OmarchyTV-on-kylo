@@ -39,27 +39,28 @@ before-fix assertion; strict host, leak-enabled sanitizers, fresh ARM/qemu and
 host teardown API are not added. Continue PNG acceptance from its current
 worktree/evidence rather than assuming the separate edits are already tested.
 
-Read [TODO-REAUDIT](artifacts/reports/TODO-REAUDIT-2026-11-04.md) first:
-PNG acceptance below is reopened, not complete. All183 prior checks are
-accounted for;182 retain bounded acceptance. The committed172cd57 host suite
-and42 ARM reference groups pass. Separate unfinished classic-API source edits
-were present and changing during the audit; do not conflate their build state
-with the committed results. Complete firmware conversion comparison, actual
-malformed-input/lifecycle/reload tests and provider buffer ownership before
-checking PNG acceptance again. Recorder alpha is verified, but its captures
-do not apply scene transforms. The audit changes documentation only.
+Read [TODO-REAUDIT](artifacts/reports/TODO-REAUDIT-2026-11-04.md) for the
+history: PNG acceptance was reopened at172cd57. The current follow-up below
+fixes the non-image/truncated/reload/suspend tests and provider-copy ownership
+and moves PNG to the classic libpng conversion sequence. A vendor-class
+differential, APNG/CMYK policy, worker scheduling and on-TV decode remain open.
+Recorder alpha is verified, but its captures do not apply scene transforms.
 
 Latest implementation: [IMAGE-DECODE](artifacts/reports/IMAGE-DECODE-2026-11-04.md)
-adds reloadable image.decode v1. It uses the vendor libpng1.6 simplified API to
-decode extensionless downloaded PNGs into straight RGBA; nine real
-RGB/RGBA/colormap400x225 files match independent ImageMagick SHA256/FNV exactly,
-errors reject and stop/start republishes. ui_engine keeps OAI1 first and falls
-back to ui.download_dir (default /buffer/downloaded_images); check-ui-png-cards
-renders all nine at400x225 with source-pixel checks. Host344 ok, focused
-ASan/UBSan clean, decoder/UI ARM-qemu pass with vendor libpng/zlib. Tools/boot
-now autoloads image_decode. Limits: downloaded JPEG/APNG, a vendor
-PngImageDecoderImpl differential, on-TV decode/display and stock pixel parity
-remain. No TV access after the owner stop instruction; all decode/UI evidence is offline.
+now publishes image.decode v2. PNG uses the shipped libpng1.6 classic API with
+Aurora b30918 setConversions; JPEG uses the vendor libjpeg-turbo2.0.1 TurboJPEG
+API. Nine real RGB/RGBA/colormap400x225 PNGs and two real vendor JPEGs (48/120)
+match independent ImageMagick SHA256/FNV exactly; truncated/non-image inputs
+reject, suspend returns EAGAIN and reload republishes. ui_engine keeps OAI1
+first, tries PNG then JPEG in ui.download_dir (default
+/buffer/downloaded_images), copies decoded pixels then releases the provider
+under hold. check-ui-png/jpeg-cards verify source dimensions and first pixels.
+Host347 ok, focused decoder/UI ASan/UBSan clean, decoder/UI ARM-qemu pass with
+vendor libpng/zlib and libjpeg-turbo. Tools/boot autoloads image_decode.
+Limits: actual foxxum downloaded JPEGs were not copied offline; APNG/CMYK/YCCK
+reject; no vendor-class differential, worker, on-TV decode/display or stock
+pixel parity. No TV access after the owner stop instruction; all decode/UI
+evidence is offline.
 
 Latest checklist audit: [TODO-AUDIT](artifacts/reports/TODO-AUDIT-2026-11-04.md)
 reviews all182 previously checked items. Its one reopened item, recorder

@@ -2,11 +2,13 @@
  * must decode to the same straight-RGBA bytes as libpng/ImageMagick, and the
  * service must survive stop/start. Offline only; no TV or display access. */
 #include <assert.h>
+#include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include "host.h"
 #include "openaurora/services.h"
@@ -27,6 +29,10 @@ static const struct expected EXPECTED[] = {
     { "launcher_app_thumb495", 400, 225, 0x8bc67b81c16e809fULL },
     { "launcher_app_thumb61",  400, 225, 0x12815d59be310b91ULL },
 };
+static const struct expected EXPECTED_JPEG[] = {
+    { "DMR-small.jpg", 48, 48, 0x954e7afda49f66c6ULL },
+    { "DMR-large.jpg", 120, 120, 0xbb245f359444882aULL },
+};
 
 static uint64_t fnv1a(const unsigned char *data, size_t len)
 {
@@ -45,12 +51,40 @@ static int command(oa_host *host, const char *text, char *out, size_t cap)
     return oa_control_command(host, line, out, cap);
 }
 
+static void truncated_input(const oa_image_decode_iface *dec, const char *src,
+    int jpeg)
+{
+    char tmp[] = "/tmp/oa-image-XXXXXX";
+    unsigned char buf[128];
+    FILE *in = fopen(src, "rb");
+    assert(in);
+    size_t n = fread(buf, 1, sizeof buf, in);
+    assert(n == sizeof buf);
+    assert(!fclose(in));
+    int fd = mkstemp(tmp);
+    assert(fd >= 0);
+    assert(write(fd, buf, n) == (ssize_t)n);
+    assert(!close(fd));
+    int w = -1, h = -1;
+    unsigned char *rgba = (unsigned char *)1;
+    if (jpeg)
+        assert(dec->decode_jpeg(tmp, &w, &h, &rgba) < 0);
+    else
+        assert(dec->decode_png(tmp, &w, &h, &rgba) < 0);
+    assert(w == 0 && h == 0 && !rgba);
+    assert(!unlink(tmp));
+}
+
 int main(int argc, char **argv)
 {
-    assert(argc == 3);
+    assert(argc == 3 || argc == 4);
     struct stat st;
     if (stat(argv[2], &st) || !S_ISDIR(st.st_mode)) {
         fprintf(stderr, "skipping: %s unavailable\n", argv[2]);
+        return 77;
+    }
+    if (argc == 4 && (stat(argv[3], &st) || !S_ISDIR(st.st_mode))) {
+        fprintf(stderr, "skipping: %s unavailable\n", argv[3]);
         return 77;
     }
     oa_host host;
@@ -60,8 +94,8 @@ int main(int argc, char **argv)
     assert(!command(&host, "load image_decode", out, sizeof out));
     assert(!command(&host, "start image_decode", out, sizeof out));
     const oa_image_decode_iface *dec =
-        host.api.lookup(&host, OA_SVC_IMAGE_DECODE, 1);
-    assert(dec && dec->decode_png && dec->release);
+        host.api.lookup(&host, OA_SVC_IMAGE_DECODE, 2);
+    assert(dec && dec->decode_png && dec->decode_jpeg && dec->release);
 
     char path[512];
     for (size_t i = 0; i < sizeof EXPECTED / sizeof EXPECTED[0]; i++) {
@@ -79,27 +113,74 @@ int main(int argc, char **argv)
         dec->release(rgba);
     }
 
+    if (argc == 4) {
+        for (size_t i = 0; i < sizeof EXPECTED_JPEG / sizeof EXPECTED_JPEG[0]; i++) {
+            int jw = -1, jh = -1;
+            unsigned char *jpg = (unsigned char *)1;
+            snprintf(path, sizeof path, "%s/%s", argv[3], EXPECTED_JPEG[i].name);
+            assert(!dec->decode_jpeg(path, &jw, &jh, &jpg));
+            assert(jw == EXPECTED_JPEG[i].w && jh == EXPECTED_JPEG[i].h && jpg);
+            size_t jlen = (size_t)jw * (size_t)jh * 4u;
+            assert(fnv1a(jpg, jlen) == EXPECTED_JPEG[i].fnv);
+            if (!strcmp(EXPECTED_JPEG[i].name, "DMR-small.jpg"))
+                assert(jpg[0] == 255 && jpg[1] == 252 && jpg[2] == 237 && jpg[3] == 255);
+            dec->release(jpg);
+        }
+    }
+
     int w = -1, h = -1;
     unsigned char *rgba = (unsigned char *)1;
     assert(dec->decode_png("/nonexistent/oa-image.png", &w, &h, &rgba) < 0);
     assert(w == 0 && h == 0 && !rgba);
-    snprintf(path, sizeof path, "%s/image_decode.c", argv[2]);
+    /* A real non-PNG regular file, not a second missing path. */
+    snprintf(path, sizeof path, "%s/mod_image_decode.so", argv[1]);
     assert(dec->decode_png(path, &w, &h, &rgba) < 0);
     assert(w == 0 && h == 0 && !rgba);
     assert(dec->decode_png("", &w, &h, &rgba) < 0);
     assert(dec->decode_png(NULL, &w, &h, &rgba) < 0);
+    snprintf(path, sizeof path, "%s/launcher_app_thumb61", argv[2]);
+    truncated_input(dec, path, 0);
+    assert(dec->decode_jpeg(path, &w, &h, &rgba) < 0);
+    assert(w == 0 && h == 0 && !rgba);
+    assert(dec->decode_jpeg("/nonexistent/oa-image.jpg", &w, &h, &rgba) < 0);
+    assert(dec->decode_jpeg("", &w, &h, &rgba) < 0);
+    if (argc == 4) {
+        snprintf(path, sizeof path, "%s/DMR-small.jpg", argv[3]);
+        truncated_input(dec, path, 1);
+    }
     host.api.release(&host, OA_SVC_IMAGE_DECODE);
 
-    assert(!command(&host, "stop image_decode", out, sizeof out));
-    assert(!host.api.lookup(&host, OA_SVC_IMAGE_DECODE, 1));
-    assert(!command(&host, "start image_decode", out, sizeof out));
-    dec = host.api.lookup(&host, OA_SVC_IMAGE_DECODE, 1);
-    assert(dec);
+    assert(!command(&host, "reload image_decode", out, sizeof out));
+    dec = host.api.lookup(&host, OA_SVC_IMAGE_DECODE, 2);
+    assert(dec && dec->decode_jpeg);
+    /* Suspension returns EAGAIN without dropping the published service;
+     * resume restores decoding. */
+    assert(!command(&host, "suspend", out, sizeof out));
     snprintf(path, sizeof path, "%s/launcher_app_thumb61", argv[2]);
+    assert(dec->decode_png(path, &w, &h, &rgba) == -EAGAIN);
+    assert(w == 0 && h == 0 && !rgba);
+    assert(!command(&host, "resume", out, sizeof out));
     assert(!dec->decode_png(path, &w, &h, &rgba));
     assert(w == 400 && h == 225 && rgba);
     dec->release(rgba);
     host.api.release(&host, OA_SVC_IMAGE_DECODE);
-    puts("  ok   image decode: nine downloaded PNGs match libpng RGBA, errors reject and service reloads");
+
+    assert(!command(&host, "stop image_decode", out, sizeof out));
+    assert(!host.api.lookup(&host, OA_SVC_IMAGE_DECODE, 2));
+    assert(!command(&host, "start image_decode", out, sizeof out));
+    dec = host.api.lookup(&host, OA_SVC_IMAGE_DECODE, 2);
+    assert(dec && dec->decode_jpeg);
+    snprintf(path, sizeof path, "%s/launcher_app_thumb61", argv[2]);
+    assert(!dec->decode_png(path, &w, &h, &rgba));
+    assert(w == 400 && h == 225 && rgba);
+    dec->release(rgba);
+    if (argc == 4) {
+        snprintf(path, sizeof path, "%s/DMR-small.jpg", argv[3]);
+        assert(!dec->decode_jpeg(path, &w, &h, &rgba));
+        assert(w == 48 && h == 48 && rgba);
+        dec->release(rgba);
+    }
+    host.api.release(&host, OA_SVC_IMAGE_DECODE);
+    puts("  ok   image decode: PNG and JPEG RGBA match references, errors reject and service reloads");
     return 0;
 }

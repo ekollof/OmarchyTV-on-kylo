@@ -96,15 +96,21 @@ typedef struct {
     int (*key)(uint32_t code,int *handled);
 } oa_ui_list_iface;
 
-/* image.decode v1 — decode a vendor-downloaded PNG into a new straight-RGBA
- * buffer (top-down, w*h*4 bytes). No scaling, caching or scanout is implied.
- * The vendor ships libpng 1.6 and hal::PngImageDecoderImpl; this service uses
- * the same library through its simplified file API. Callers own the returned
- * buffer and must call release() with the matching provider still held. */
+/* image.decode v2 — decode a vendor-downloaded PNG or JPEG into a new
+ * straight-RGBA buffer (top-down, w*h*4 bytes). No scaling, caching or scanout
+ * is implied. Aurora uses built-in cabot_png/cabot_jpeg; this service uses the
+ * shipped libpng1.6 classic API with the recovered PNG conversion sequence,
+ * and the vendor libjpeg-turbo TurboJPEG API for baseline JPEG. PNG has no
+ * gamma conversion; project bounds16MiB input/64MiB output/8192px axes.
+ * Synchronous loop-thread-only API; worker scheduling/cancellation is pending.
+ * Regular files only. v2 appends decode_jpeg after the v1 decode_png prefix.
+ * Callers own the returned buffer and must call release() with the matching
+ * provider still held. */
 #define OA_SVC_IMAGE_DECODE "image.decode"
 typedef struct {
     int (*decode_png)(const char *path, int *w, int *h, unsigned char **rgba);
     void (*release)(void *rgba);
+    int (*decode_jpeg)(const char *path, int *w, int *h, unsigned char **rgba);
 } oa_image_decode_iface;
 
 /* ui.theme v1 — immutable validated BinSVG snapshot, published by ui_theme.

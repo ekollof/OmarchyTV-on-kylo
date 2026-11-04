@@ -498,18 +498,27 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       Apps track1750,180,8x720 is reconstructed from the resource; this lower
       geometry/state milestone is not complete native widget rendering.
 
-- [ ] Complete image.decode acceptance: the committed simplified-libpng
-      prototype decodes nine downloaded PNGs and feeds ui_engine's OAI1 fallback;
-      host and ARM/qemu corpus results are recorded in IMAGE-DECODE. Aurora
-      uses its built-in cabot_png decoder; shared libpng output is not a
-      vendor-class comparison. Verify the recovered conversion sequence,
-      grayscale/tRNS/16-bit/gamma behavior, malformed real files, provider-owned
-      buffer release and actual module reload/holds/suspend/failure cleanup.
-      The existing error test's image_decode.c path is missing, not corrupt PNG
-      input; stop/start does not test reload. Separate classic-API source edits
-      are unfinished and are not covered by committed-build results.
-      JPEG/APNG, worker scheduling/cancellation, on-TV decode and stock pixel
-      parity remain open. Reopened by TODO-REAUDIT-2026-11-04.
+- [x] image.decode JPEG extension: the module now also uses the vendor
+      libjpeg-turbo TurboJPEG API (2.0.1 on the TV) after the classic-libpng
+      PNG path. Two real JPEGs (DMR-small 48x48, DMR-large 120x120) match
+      independent ImageMagick RGBA hashes exactly; truncated/missing/non-image
+      inputs reject; ui_engine tries PNG then JPEG and copies decoded pixels
+      before provider release. check-ui-jpeg-cards renders both 48/120 px
+      sources with first-pixel checks; host check347 ok, focused ASan/UBSan
+      clean, decoder/UI tests pass ARM/qemu with the vendor libpng/zlib and
+      libjpeg-turbo2.0.1. IMAGE-DECODE. Limits: CMYK/YCCK and APNG reject; the
+      actual downloaded foxxum JPEG files were not available offline, so the
+      corpus uses other real vendor JPEGs; no vendor-class differential,
+      on-TV decode or stock parity.
+
+- [ ] Complete image.decode acceptance: the classic-libpng PNG conversion
+      sequence from Aurora's b30918 `setConversions` and the TurboJPEG path
+      now pass the maintained corpus, malformed/truncated input, suspend/resume
+      and reload tests. Provider pixels are copied then released. Still need
+      grayscale/tRNS/16-bit/gamma corpus coverage, a vendor
+      PngImageDecoderImpl/JpegImageDecoder differential, APNG/CMYK policy,
+      worker scheduling/cancellation, on-TV decode and stock pixel parity.
+      Reopened by TODO-REAUDIT-2026-11-04; narrowed, not closed.
 
 - [x] Scrollbar skin minimum helper: moving caps20+16 yield36px; recovered
       standard-name lookups and supplier cache behavior match32 native cases.
@@ -1436,4 +1445,3 @@ TV mutation is required now. The following are parked, not default next steps.
       questions remain separate research, not a reason to trigger an update now.
 - [ ] Optional no-signal timeout overlay if owner wants it; current ~3-minute suspend
       is known behavior, not evidence of networking failure.
-

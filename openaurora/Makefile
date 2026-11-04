@@ -957,7 +957,8 @@ $(BUILD)/tests/image_decode: tests/image_decode.c core/host.h include/openaurora
 
 .PHONY: check-image-decode
 check-image-decode: $(BUILD)/tests/image_decode $(BUILD)/modules/mod_image_decode.so
-	@$(BUILD)/tests/image_decode $(BUILD)/modules $(CURDIR)/../artifacts/workbench/thumbs || test $$? -eq 77
+	@$(BUILD)/tests/image_decode $(BUILD)/modules $(CURDIR)/../artifacts/workbench/thumbs \
+	  $(wildcard $(CURDIR)/../artifacts/dumps/apdat_files/dlna-dmr/xml/icon) || test $$? -eq 77
 check: check-image-decode
 
 $(BUILD)/tests/ui_live_cards: tests/ui_live_cards.c tests/ui_nav_trace.h core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
@@ -985,6 +986,10 @@ check: check-ui-apps-grid
 check-ui-png-cards: $(BUILD)/tests/ui_live_cards ui-live-stage
 	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "$(CURDIR)/../artifacts/workbench/thumbs" png || test $$? -eq 77
 check: check-ui-png-cards
+.PHONY: check-ui-jpeg-cards
+check-ui-jpeg-cards: $(BUILD)/tests/ui_live_cards ui-live-stage
+	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "$(CURDIR)/../artifacts/dumps/apdat_files/dlna-dmr/xml/icon" jpeg || test $$? -eq 77
+check: check-ui-jpeg-cards
 
 $(BUILD)/tests/ui_nav_display.so: tests/ui_nav_display.c tests/ui_nav_trace.h include/openaurora/services.h
 	@mkdir -p $(dir $@)

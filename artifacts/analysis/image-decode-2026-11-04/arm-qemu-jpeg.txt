@@ -1,0 +1,1 @@
+  ok   image decode: PNG and JPEG RGBA match references, errors reject and service reloads

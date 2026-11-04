@@ -95,7 +95,7 @@ static const oa_ui_icon *find_downloaded_icon(struct engine *c, const char *name
     char path[320];
     int w = 0, h = 0, rc;
     if (!c->download_dir[0]) return NULL;
-    dec = c->api->lookup(c->api->priv, OA_SVC_IMAGE_DECODE, 1);
+    dec = c->api->lookup(c->api->priv, OA_SVC_IMAGE_DECODE, 2);
     if (!dec) return NULL;
     if (snprintf(path, sizeof path, "%s/%s", c->download_dir, name) >=
         (int)sizeof path) {
@@ -103,11 +103,23 @@ static const oa_ui_icon *find_downloaded_icon(struct engine *c, const char *name
         return NULL;
     }
     rc = dec->decode_png(path, &w, &h, &rgba);
+    if (rc)
+        rc = dec->decode_jpeg(path, &w, &h, &rgba);
     if (rc) {
         c->api->release(c->api->priv, OA_SVC_IMAGE_DECODE);
         return NULL;
     }
-    const oa_ui_icon *ic = accept_icon(c, name, w, h, rgba);
+    /* Provider owns decoded storage until release; retain only an engine-
+     * owned copy so provider stop/reload cannot invalidate cached icons. */
+    unsigned char *copy=NULL;
+    if(rgba && w>0 && h>0 && w<=8192 && h<=8192 &&
+       (uint64_t)(unsigned)w*(unsigned)h*4<=64u*1024u*1024u) {
+        size_t bytes=(size_t)w*(size_t)h*4;
+        copy=malloc(bytes);
+        if(copy)memcpy(copy,rgba,bytes);
+    }
+    dec->release(rgba);
+    const oa_ui_icon *ic = copy?accept_icon(c, name, w, h, copy):NULL;
     c->api->release(c->api->priv, OA_SVC_IMAGE_DECODE);
     return ic;
 }

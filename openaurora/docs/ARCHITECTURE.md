@@ -300,7 +300,7 @@ reverse-engineered vendor screens and a later OmarchyTV skin share one engine.
 | piece | owns |
 |---|---|
 | ui.engine | display/alpha discovery and rebinding, OAI1 asset loading from `ui.dir` and the `image.decode` fallback for `/buffer/downloaded_images` (lazy, bounded cache), clear/fill/blit/blit_scaled, present/completion receipts and the readiness receipt, the key topic, the `ui.fps` repaint timer, skin registration/`ui.skin` |
-| image_decode | reloadable `image.decode` v1 service: libpng 1.6 simplified file API for vendor-downloaded PNGs, straight-RGBA output, no hardware or scaling |
+| image_decode | reloadable `image.decode` v2 service: classic libpng 1.6 conversion sequence for PNG and vendor libjpeg-turbo TurboJPEG for JPEG, straight-RGBA output, bounded regular files, no hardware or scaling |
 | ui.engine service v2 | v1 drawing prefix plus `register_skin_dispatch`/`dispatch_skin`; legacy `register_skin` rejects with ENOTSUP |
 | ui_vendor | the renamed vendor skin: portal rail/cards, source selection, dialogs, animations, its own screen state and `OA_SVC_PORTAL` |
 | ui_omarchy | the OmarchyTV skeleton over the same engine: dark shell, accent rail and placeholder tiles, with its own key semantics; no vendor assets and no published service yet |

@@ -1,0 +1,2 @@
+ok live cards: excluded rows not painted
+ok ui jpeg cards: 2 downloaded JPEGs decoded with source pixels

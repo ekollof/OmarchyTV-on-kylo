@@ -8,29 +8,31 @@ Module reload still does not reread config; reinit requires prior caller
 teardown. No TV access/deployment. Separate PNG/JPEG edits remain outside this
 milestone; the full Aurora replacement is still incomplete.
 
-TODO-REAUDIT-2026-11-04 supersedes checklist acceptance below: all183 checks
-at172cd57 reviewed;182 retained as bounded milestones, PNG acceptance reopened.
-Recorder alpha works, but its scene transforms are metadata only. Fresh full
-host suite at isolated committed172cd57 and all42 maintained ARM reference
-groups pass. These runs do not validate the separate uncommitted classic-PNG
-rewrite in the shared checkout; its initial focused build failed Werror and
-edits continued during the audit. No TV access or deployment. See the follow-up
-report and per-item ledger for scope and exact provenance.
+TODO-REAUDIT-2026-11-04 reviewed all183 checks at172cd57;182 were retained as
+bounded milestones and PNG acceptance was reopened at that snapshot. The
+reopened item is now narrowed by the classic-libpng/JPEG follow-up below: the
+non-PNG/truncated/lifecycle tests and provider-copy ownership are fixed, but a
+vendor-class differential, APNG/CMYK policy, worker scheduling and on-TV
+decode remain open. Recorder alpha works; its scene transforms are metadata
+only. Fresh full host and all42 maintained ARM reference groups pass. No TV
+access or deployment. See the follow-up report and per-item ledger.
 
-IMAGE-DECODE-2026-11-04 adds reloadable image.decode v1
-(modules/image_decode): the vendor ships libpng1.6.28 and
-hal::PngImageDecoderImpl; the module loads libpng's simplified file API
-(host name first, then /vendor/lib/libs with vendor libz) and returns
-straight RGBA. Nine real downloaded PNGs (RGB, RGBA, colormap,400x225) from
-artifacts/workbench/thumbs match independent ImageMagick RGBA SHA256/FNV
-exactly; missing/non-PNG/empty inputs reject; stop/start republishes.
-ui_engine keeps OAI1 first and falls back to ui.download_dir (default
-/buffer/downloaded_images); check-ui-png-cards renders all nine at400x225
-with source-pixel checks. Full host344 ok, focused ASan/UBSan clean, decoder
-and UI tests pass ARM/qemu with the vendor libpng/zlib. tools/boot config
-autoloads image_decode. Limits: no JPEG/APNG, not a vendor
-PngImageDecoderImpl differential, no on-TV decode or stock parity; no TV
-access after the owner stop instruction, all decode/UI evidence is offline.
+IMAGE-DECODE-JPEG-2026-11-04: modules/image_decode publishes image.decode v2.
+PNG uses the shipped libpng1.6 classic API with Aurora b30918 setConversions
+(expand/pack, strip16, gray/palette, tRNS/filler, no gamma); JPEG uses the
+vendor libjpeg-turbo2.0.1 TurboJPEG API. Nine real downloaded PNGs
+(RGB/RGBA/colormap,400x225) and two real vendor JPEGs (48/120) match
+independent ImageMagick SHA256/FNV exactly; truncated/non-image inputs reject,
+suspend returns EAGAIN and reload republishes. ui_engine keeps OAI1 first,
+tries PNG then JPEG in ui.download_dir (default /buffer/downloaded_images),
+copies decoded pixels then calls provider release under hold. check-ui-png/jpeg
+cards verify 400x225 and48/120 sources plus first pixels. Full host347 ok,
+focused decoder/UI ASan/UBSan clean, decoder and UI tests pass ARM/qemu with
+vendor libpng/zlib and libjpeg-turbo. tools/boot autoloads image_decode.
+Limits: actual foxxum downloaded JPEGs were not copied offline; APNG/CMYK/YCCK
+reject; no vendor PngImageDecoderImpl/JpegImageDecoder differential, worker,
+on-TV decode or stock parity. No TV access after the owner stop instruction;
+all decode/UI evidence is offline.
 
 ALPHA-RECORDER-2026-11-04 closes the TODO-AUDIT reopened item:
 tests/ui_nav_display.c composes cap_blend with oa_canvas_over instead of
@@ -2372,4 +2374,3 @@ Use -Werror -pedantic; edit with apply_patch; use tools/tvssh.sh for authorized 
 Document cleanup changed local documentation and explanatory source comments;
 no executable behavior, binaries or TV state changed. Raw logs were preserved,
 with six previously temporary DRM traces copied into the analysis directory.
-

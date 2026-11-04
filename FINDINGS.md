@@ -4,25 +4,28 @@ torn-down reinitialization pass strict host, leak-enabled ASan/UBSan and fresh
 ARM/qemu tests;54 core checks pass. First duplicate still wins, and module
 reload does not reread config. No TV access or vendor persistence parity claim.
 
-TODO-REAUDIT-2026-11-04 supersedes PNG acceptance below: all183 checks at172cd57
-reviewed,182 retained at bounded scope and PNG reopened. Shared-libpng corpus
-matches are not an Aurora Cabot-decoder comparison; the error fixture is a
-missing file and stop/start is not reload. Recorder alpha composition passes,
-but scene transforms are only metadata in its captures. Full isolated committed
-host and42 maintained ARM reference groups pass; separate unfinished source
-edits are not certified. No TV access or deployment.
+TODO-REAUDIT-2026-11-04 reviewed all183 checks at172cd57;182 were retained at
+bounded scope and PNG was reopened at that snapshot. The reopened item is now
+narrowed by the classic-libpng/JPEG follow-up: non-image/truncated inputs,
+suspend/resume/reload and provider-copy release are covered; a vendor-class
+differential, APNG/CMYK policy, worker scheduling and on-TV decode remain open.
+Recorder alpha composition passes; scene transforms are only metadata in its
+captures. Full host and42 maintained ARM reference groups pass. No TV access
+or deployment.
 
-IMAGE-DECODE-2026-11-04 adds image.decode v1: modules/image_decode uses the
-shipped libpng1.6 simplified API (vendor lib is1.6.28; aurora also embeds
-hal::PngImageDecoderImpl) to decode extensionless downloaded PNGs into straight
-RGBA. Nine real RGB/RGBA/colormap files match independent ImageMagick output
-exactly; errors reject and the service reloads. ui_engine keeps OAI1 assets
-first, then decodes <ui.download_dir>/<name> (default /buffer/downloaded_images)
-through the service; check-ui-png-cards proves the nine cards use400x225
-decoded sources and first-pixel values. Host344 ok, focused ASan/UBSan and
-decoder/UI ARM-qemu pass. No TV access after the owner stop instruction. Limits: PNG only (downloaded JPEGs
-remain), no vendor PngImageDecoderImpl differential, no on-TV decode/stock
-pixel parity.
+IMAGE-DECODE-JPEG-2026-11-04: image.decode v2 uses the shipped libpng1.6
+classic API with Aurora b30918 setConversions for PNG and the vendor
+libjpeg-turbo2.0.1 TurboJPEG API for JPEG, returning straight RGBA. Nine real
+downloaded PNGs (RGB/RGBA/colormap,400x225) and two real vendor JPEGs (48/120)
+match independent ImageMagick SHA256/FNV exactly; truncated/non-image inputs
+reject, suspend returns EAGAIN and reload republishes. ui_engine tries PNG then
+JPEG in ui.download_dir (default /buffer/downloaded_images), copies pixels then
+releases the provider under hold. check-ui-png/jpeg-cards prove the source
+dimensions/first pixels. Host347 ok, focused decoder/UI ASan/UBSan clean and
+ARM/qemu passes with vendor libpng/zlib and libjpeg-turbo. Limits: actual
+foxxum JPEGs were not copied offline; APNG/CMYK/YCCK reject; no vendor-class
+differential, worker, on-TV decode or stock pixel parity. No TV access after
+the owner stop instruction.
 
 ALPHA-RECORDER-2026-11-04 corrects the offline recorder: cap_blend now uses
 oa_canvas_over (straight source-over, destination alpha preserved) and the
@@ -1124,4 +1127,3 @@ acceptance tasks, not the “next experiment” paragraphs in historical reports
 - Firmware/assets/recovery identities: artifacts/README.md.
 - The original chronology is preserved under artifacts/archive. Its confident
   prose and old checkmarks do not override this correction map.
-

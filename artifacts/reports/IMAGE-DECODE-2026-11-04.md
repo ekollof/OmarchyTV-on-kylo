@@ -1,73 +1,75 @@
-# Downloaded PNG decoding — 2026-11-04
+# Downloaded PNG and JPEG decoding — 2026-11-04
 
-**Acceptance correction:** [TODO-REAUDIT](TODO-REAUDIT-2026-11-04.md) reopens
-the checked PNG milestone. The results below describe the committed simplified
-API prototype at172cd57; separate classic-API edits are unfinished. Stop/start
-does not verify reload, and the alleged non-PNG fixture is a missing path.
-Aurora's built-in Cabot decoder is a distinct implementation from the shared
-libpng module; these nine-image results do not establish vendor decoder parity.
+**Follow-up after TODO-REAUDIT-2026-11-04:** the reopened PNG item was
+narrowed by moving the decoder to libpng's classic API with Aurora's recovered
+`PngImageDecoderImpl::setConversions` sequence (b30918), and the service is now
+`image.decode` v2 with a vendor-libjpeg-turbo JPEG path. The earlier
+simplified-API prototype results are historical; the tests below exercise the
+classic build. Vendor-class differential, APNG/CMYK policy, on-TV decode and
+stock pixel parity remain open.
 
-`image_decode` is a reloadable module publishing `image.decode` v1. It decodes
-the vendor-downloaded PNG assets in `/buffer/downloaded_images` into straight
-RGBA, and `ui_engine` falls back to it when `<ui.dir>/<name>.rgba` is absent.
-Nine real downloaded files — RGB, RGBA and colormap PNGs — decode byte-exactly
-to an independent libpng/ImageMagick reference and render through the UI
-recorder. No TV access was made after the owner's stop instruction; the nine
-sources are the existing offline copies in `artifacts/workbench/thumbs/`.
+`image_decode` is a reloadable module publishing `image.decode` v2. It decodes
+the vendor-downloaded PNG and JPEG assets in `/buffer/downloaded_images` into
+straight RGBA, and `ui_engine` falls back to it when `<ui.dir>/<name>.rgba` is
+absent. No TV access was made after the owner's stop instruction; all evidence
+is offline.
 
 ## Firmware basis
 
-`aurora.elf` contains `hal::PngImageDecoderImpl` (`0xb2f6a0` region, including
-`createDecodingStructures`, `readHeader`, `decodeImage`, `isPng`) and a
-statically linked `cabot_png_*` libpng. The shipped rootfs also carries
-`/vendor/lib/libs/libpng16.so.16` (libpng 1.6.28, `PNG16_0` ABI) and
-`libz.so`. The earlier read-only TV listing of `/buffer/downloaded_images`
-showed extensionless PNG and JPEG files; offline copies of nine PNGs are in
-`artifacts/workbench/thumbs/`.
+`aurora.elf` contains `hal::PngImageDecoderImpl` (`0xb2f6a0` region) with
+`setConversions` at `0xb30918`: packing/low-depth expansion, strip16 (not
+scale16), gray/palette to RGB, tRNS to alpha or opaque filler, and no gamma
+conversion request. It also contains `hal::JpegImageDecoder` and a statically
+linked `cabot_jpeg`/`cabot_png`. The rootfs carries
+`/vendor/lib/libs/libpng16.so.16` (1.6.28), `libz.so`, and
+`/vendor/com.nvt.nflx/lib/libturbojpeg.so.0` (libjpeg-turbo 2.0.1); Aurora
+itself also links `libjpeg.so.9`.
 
-The module uses libpng's simplified file API (`png_image_begin_read_from_file`,
-`png_image_finish_read`, `png_image_free`) through `dlopen`, with the vendor
-absolute path fallback and a preloaded vendor `libz.so`. It does not call the
-vendor `PngImageDecoderImpl`. The shared libpng library is not the codec
-implementation Aurora itself calls; equivalence of transforms/gamma/16-bit
-handling still needs verification. This is not a vendor-class differential.
+The module uses the shared libpng classic API and the vendor TurboJPEG API
+(`tjInitDecompress`, `tjDecompressHeader3`, `tjDecompress2`, `tjDestroy`).
+This matches the shipped conversion sequence and codec family, but is still not
+a differential against the vendor decoder classes.
 
 ## Implementation
 
-- `modules/image_decode/image_decode.c`: `image.decode` v1, straight top-down
-  RGBA, 8192-pixel dimension bound, overflow-checked `w*h*4`, invalid file/
-  error rejection, and no retained file or hardware state. Stop/start reloads
-  the library and republishes the service.
+- `modules/image_decode/image_decode.c`: `image.decode` v2 with
+  `decode_png` and `decode_jpeg`, straight top-down RGBA, 16 MiB input,
+  8192-pixel axis and 64 MiB output bounds. Regular files only. PNG animated
+  chunks (`acTL`) are rejected; JPEG CMYK/YCCK is rejected instead of being
+  converted through an invented color-managed path. Input is bounded/read into
+  memory; libpng errors longjmp and all buffers/libraries are released.
+  Suspend returns `-EAGAIN`; stop/start and `reload` republish the library.
 - `ui_engine`: OAI1 `<ui.dir>/<name>.rgba` remains first; on a miss it looks
-  up `image.decode`, decodes `<ui.download_dir>/<name>` (default
-  `/buffer/downloaded_images`), caches the RGBA icon and releases the service
-  hold. Missing decoder or bad file leaves the icon absent, as before.
+  up version 2, tries PNG then JPEG, copies the decoded pixels into the engine
+  cache, then calls the provider release while the hold is still active.
 - `tools/boot/openaurora.conf` autoloads `image_decode` before `ui_engine`.
 
 ## Verification
 
-- `check-image-decode`: nine real files (400x225) match independent
-  ImageMagick/libpng RGBA SHA256 and FNV-1a hashes exactly; RGB expands to
-  alpha255, colormap and RGBA inputs decode unchanged. Missing file, a
-  non-PNG file and empty/NULL arguments reject with zeroed outputs; stop/start
-  republishes and decodes again.
-- `check-ui-png-cards`: with no `.rgba` assets, a synthetic DB of the nine real
-  names drives `ui_vendor`; the recorder sees `scaled` blits with source
-  `400x225` and the first decoded source pixel for every card.
-  `artifacts/analysis/image-decode-2026-11-04/pngcards.png` is the resulting
-  1920x1080 recorder raster (flattened for viewing).
-- Full host `make check` passes (344 ok lines); focused ASan/UBSan
-  `check-image-decode` is clean; the decoder test and the UI PNG-card test both
-  pass under ARM/qemu using the vendor libpng/zlib files.
+- `check-image-decode`: nine real downloaded PNGs (RGB, RGBA, colormap,
+  400x225) match independent ImageMagick/libpng RGBA SHA256 and FNV-1a exactly;
+  two real vendor JPEGs (`DMR-small.jpg` 48x48, `DMR-large.jpg` 120x120) match
+  independent ImageMagick RGBA hashes exactly. Missing paths, a real non-PNG
+  ELF file, truncated PNG/JPEG prefixes and empty/NULL arguments reject with
+  zeroed outputs. A `reload` succeeds after release; suspend returns `-EAGAIN`
+  and resume restores decoding.
+- `check-ui-png-cards` / `check-ui-jpeg-cards`: with no `.rgba` assets, a
+  synthetic DB drives `ui_vendor`; the recorder sees scaled blits with the
+  decoded source dimensions and first source pixels.
+  `artifacts/analysis/image-decode-2026-11-04/pngcards.png` and
+  `jpegcards.png` are the flattened 1920x1080 recorder rasters.
+- Full host `make check` passes (347 ok lines); focused ASan/UBSan for the
+  decoder and JPEG-card path is clean; decoder and UI tests pass under
+  ARM/qemu with the vendor libpng/zlib and libjpeg-turbo 2.0.1.
 
 ## Limits
 
-- Not run on the TV or through the supervised fb1 binding in this step; the
-  visible apps-grid gate still needs a live/scanout run with these assets.
-- JPEG (`foxxum_thumb_*` and the launcher thumbnails that are JPEG) is not
-  decoded; the module name is PNG-specific for now.
-- The vendor `hal::PngImageDecoderImpl` transform/limits are not independently
-  compared. The output matches libpng 1.6 and the production straight-RGBA
-  canvas, not a vendor class differential or stock pixel parity.
-- No dynamic DB refresh, scaling policy, APNG or image-decoder error UI is
-  added; `ui_engine` still uses nearest-neighbour cell scaling.
+- The actual `/buffer/downloaded_images/foxxum_thumb_*` JPEGs were not copied
+  offline before TV access stopped. The JPEG corpus uses other real vendor JPEG
+  files from the dump/rootfs; actual downloaded JPEGs still need an offline
+  copy or an allowed on-TV read.
+- No vendor `PngImageDecoderImpl`/`JpegImageDecoder` output differential,
+  complete grayscale/tRNS/16-bit/gamma corpus, worker scheduling/cancellation,
+  on-TV decode or stock pixel parity.
+- APNG is rejected; JPEG CMYK/YCCK is rejected. `ui_engine` still uses
+  nearest-neighbour cell scaling.
