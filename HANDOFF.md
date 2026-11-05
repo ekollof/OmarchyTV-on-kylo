@@ -175,12 +175,13 @@ Latest offline differential: [VENDOR-DECODER-DIFF](artifacts/reports/VENDOR-DECO
 runs the shipped PngImageDecoderImpl/JpegImageDecoder under qemu through an ARM
 LD_PRELOAD probe before vendor main, with requested RGBA ImageProperties.
 Nine corpus PNGs plus gray1/2/4/8, gray+alpha, palette, palette+tRNS, RGB16,
-RGBA16, interlaced and gAMA variants are byte-exact RGBA; DMR JPEG are
-byte-exact against TurboJPEG `TJFLAG_FASTDCT`, now used by image.decode.
-ImageMagick accurate DCT differed by up to8. The probe is
-tests/vendor_decoder_probe.c and the checker is tests/vendor_decoder.py. No
-TV/HAL/UI. Actual foxxum JPEGs, progressive/CMYK, APNG, worker/frame lifetime
-and stock parity remain.
+RGBA16, interlaced and gAMA variants are byte-exact RGBA; DMR JPEG and a
+progressive JPEG are byte-exact against TurboJPEG `TJFLAG_FASTDCT`, now used by
+image.decode. ImageMagick accurate DCT differed by up to8. A generated CMYK
+JPEG is rejected by both classes; two available real foxxum JPEGs are exact.
+The probe is tests/vendor_decoder_probe.c and the checker is
+tests/vendor_decoder.py. No TV/HAL/UI. Remaining two foxxum files, YCCK/APNG,
+worker/frame lifetime and stock parity remain.
 
 Latest offline analysis: [STOCK-PARITY](artifacts/reports/STOCK-PARITY-2026-11-04.md)
 confirms the old `shot-launcher-right.png` is R/B-swapped; the corrected copy

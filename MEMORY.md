@@ -132,8 +132,10 @@ ImageProperties (model3; model2 is BGRA). Nine corpus PNGs plus gray1/2/4/8,
 gray+alpha, palette, palette+tRNS, RGB16, RGBA16, interlaced and gAMA variants
 are byte-exact RGBA. DMR-small/large JPEG are byte-exact against TurboJPEG
 `TJFLAG_FASTDCT`, now used by image.decode; ImageMagick accurate DCT differed
-by up to8. Probe2d5aff61…, aurora7d6e4ca5…. No TV/HAL/UI. Actual foxxum JPEGs,
-progressive/CMYK, APNG, worker/frame lifetime and on-TV/stock parity remain
+by up to8. A progressive JPEG is exact and a generated CMYK JPEG is rejected
+by both classes. Two available real foxxum JPEGs are exact; the other two were
+not offline. Probe2d5aff61…, aurora7d6e4ca5…. No TV/HAL/UI. Remaining two
+foxxum files, YCCK/APNG, worker/frame lifetime and on-TV/stock parity remain
 open.
 
 STOCK-PARITY-2026-11-04 (offline analysis): the saved

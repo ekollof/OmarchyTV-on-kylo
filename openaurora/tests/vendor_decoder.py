@@ -47,7 +47,7 @@ def vendor_libdirs(root):
     return sorted(dirs)
 
 
-def run_probe(qemu, sysroot, aurora, probe, libdirs, fmt, path):
+def probe_raw(qemu, sysroot, aurora, probe, libdirs, fmt, path):
     with tempfile.NamedTemporaryFile(prefix="oa-vdec-", delete=False) as f:
         out = f.name
     env = os.environ.copy()
@@ -71,11 +71,17 @@ def run_probe(qemu, sysroot, aurora, probe, libdirs, fmt, path):
     magic, rc, width, height, rowlen, _ = struct.unpack("<6I", data[:24])
     if magic != MAGIC:
         fail(f"{path.name}: bad vendor result magic")
-    if rc != 0 or width <= 0 or height <= 0 or rowlen <= 0:
-        fail(f"{path.name}: vendor decode failed rc={rc} {width}x{height} row={rowlen}")
     pixels = data[24:]
+    return rc, width, height, rowlen, pixels
+
+
+def run_probe(*args):
+    rc, width, height, rowlen, pixels = probe_raw(*args)
+    if rc != 0 or width <= 0 or height <= 0 or rowlen <= 0:
+        fail(f"{args[-1].name}: vendor decode failed rc={rc} "
+             f"{width}x{height} row={rowlen}")
     if len(pixels) < rowlen * height:
-        fail(f"{path.name}: vendor pixels truncated")
+        fail(f"{args[-1].name}: vendor pixels truncated")
     return width, height, rowlen, pixels
 
 
@@ -129,7 +135,7 @@ def make_variants(source, directory, magick):
     return out
 
 
-def turbojpeg_fast_rgba(path):
+def turbojpeg_fast_rgba(path, required=True):
     import ctypes
     lib = ctypes.CDLL("libturbojpeg.so.0")
     lib.tjInitDecompress.restype = ctypes.c_void_p
@@ -146,24 +152,28 @@ def turbojpeg_fast_rgba(path):
     jpeg = (ctypes.c_ubyte * len(data)).from_buffer_copy(data)
     handle = lib.tjInitDecompress()
     if not handle:
-        fail("TurboJPEG init failed")
+        if required: fail("TurboJPEG init failed")
+        return None
     w = ctypes.c_int(0); h = ctypes.c_int(0)
     sub = ctypes.c_int(0); colorspace = ctypes.c_int(0)
     if lib.tjDecompressHeader3(handle, jpeg, ctypes.c_ulong(len(data)),
             ctypes.byref(w), ctypes.byref(h), ctypes.byref(sub),
             ctypes.byref(colorspace)):
-        fail(f"{path.name}: TurboJPEG header failed")
+        lib.tjDestroy(handle)
+        if required: fail(f"{path.name}: TurboJPEG header failed")
+        return None
     out = (ctypes.c_ubyte * (w.value * h.value * 4))()
     # TJPF_RGBA=7, TJFLAG_FASTDCT=2048.
     if lib.tjDecompress2(handle, jpeg, ctypes.c_ulong(len(data)), out,
             w.value, w.value * 4, h.value, 7, 2048):
-        fail(f"{path.name}: TurboJPEG fast decode failed")
+        lib.tjDestroy(handle)
+        if required: fail(f"{path.name}: TurboJPEG fast decode failed")
+        return None
     lib.tjDestroy(handle)
     return w.value, h.value, bytes(out)
 
 
-def check_jpeg(name, root, common, tolerance):
-    path = root / "artifacts/dumps/apdat_files/dlna-dmr/xml/icon" / name
+def check_jpeg_path(name, path, common, tolerance):
     width, height, rowlen, pixels = run_probe(*common, "jpeg", path)
     ref_w, ref_h, ref = turbojpeg_fast_rgba(path)
     if (width, height) != (ref_w, ref_h):
@@ -186,11 +196,37 @@ def check_jpeg(name, root, common, tolerance):
     return f"max channel delta {max_delta}, mean {mean:.3f}"
 
 
+def check_jpeg(name, root, common, tolerance):
+    path = root / "artifacts/dumps/apdat_files/dlna-dmr/xml/icon" / name
+    return check_jpeg_path(name, path, common, tolerance)
+
+
+def check_jpeg_cmyk(name, path, common):
+    rc, width, height, rowlen, _ = probe_raw(*common, "jpeg", path)
+    if rc == 0:
+        fail(f"{name}: vendor class accepted CMYK")
+    if turbojpeg_fast_rgba(path, required=False) is not None:
+        fail(f"{name}: TurboJPEG accepted CMYK unexpectedly")
+    return f"vendor rc={rc}, TurboJPEG rejects"
+
+
+def make_jpeg_variants(source, directory, magick):
+    progressive = directory / "progressive.jpg"
+    subprocess.run([magick, str(source), "-interlace", "JPEG", str(progressive)],
+        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    cmyk = directory / "cmyk.jpg"
+    subprocess.run([magick, str(source), "-colorspace", "CMYK", str(cmyk)],
+        check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return progressive, cmyk
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--build", default=os.environ.get("BUILD", "build"))
     parser.add_argument("--qemu", default="qemu-arm-static")
     parser.add_argument("--tolerance", type=int, default=0)
+    parser.add_argument("--extra-jpeg", action="append", default=[],
+        help="optional additional real JPEG files to compare")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     build = Path(args.build)
@@ -221,7 +257,21 @@ def main():
             print(f"ok vendor png variant {name}: {check_png_path(name, path, common)}")
     for name in JPEG_OK:
         print(f"ok vendor jpeg {name}: {check_jpeg(name, root, common, args.tolerance)}")
-    print(f"ok vendor decoder differential: {len(PNG_OK)} PNG + variants, {len(JPEG_OK)} JPEG")
+    with tempfile.TemporaryDirectory(prefix="oa-jpeg-variants-") as tmp:
+        progressive, cmyk = make_jpeg_variants(
+            root / "artifacts/dumps/apdat_files/dlna-dmr/xml/icon/DMR-small.jpg",
+            Path(tmp), magick)
+        print(f"ok vendor jpeg variant progressive: "
+              f"{check_jpeg_path('progressive', progressive, common, 0)}")
+        print(f"ok vendor jpeg variant cmyk: "
+              f"{check_jpeg_cmyk('cmyk', cmyk, common)}")
+    for extra in args.extra_jpeg:
+        path = Path(extra)
+        if path.exists():
+            print(f"ok vendor jpeg extra {path.name}: "
+                  f"{check_jpeg_path(path.name, path, common, 0)}")
+    print(f"ok vendor decoder differential: {len(PNG_OK)} PNG + variants, "
+          f"{len(JPEG_OK)} JPEG + progressive/CMYK")
 
 
 if __name__ == "__main__":

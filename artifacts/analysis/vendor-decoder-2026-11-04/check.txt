@@ -20,4 +20,8 @@ ok vendor png variant interlaced: RGBA exact
 ok vendor png variant gamma: RGBA exact
 ok vendor jpeg DMR-small.jpg: max channel delta 0, mean 0.000
 ok vendor jpeg DMR-large.jpg: max channel delta 0, mean 0.000
-ok vendor decoder differential: 9 PNG + variants, 2 JPEG
+ok vendor jpeg variant progressive: max channel delta 0, mean 0.000
+ok vendor jpeg variant cmyk: vendor rc=6, TurboJPEG rejects
+ok vendor jpeg extra foxxum_1685: max channel delta 0, mean 0.000
+ok vendor jpeg extra foxxum_3753: max channel delta 0, mean 0.000
+ok vendor decoder differential: 9 PNG + variants, 2 JPEG + progressive/CMYK

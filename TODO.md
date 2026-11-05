@@ -604,19 +604,20 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       and gAMA variants are byte-exact requested RGBA. DMR-small/large JPEG
       are byte-exact against TurboJPEG `TJFLAG_FASTDCT`, the mode now used by
       image.decode; ImageMagick's default accurate DCT differed by up to8.
-      VENDOR-DECODER-DIFF. No TV/HAL/UI. Limits: actual foxxum JPEGs,
-      progressive/CMYK variants, APNG, worker/frame lifetime and on-TV/stock
-      parity remain.
+      A progressive JPEG is byte-exact and a generated CMYK JPEG is rejected
+      by both classes. Two available real foxxum JPEGs are byte-exact; the
+      other two were not offline. VENDOR-DECODER-DIFF. No TV/HAL/UI. Limits:
+      remaining two foxxum files, YCCK, APNG, worker/frame lifetime and
+      on-TV/stock parity remain.
 
 - [ ] Complete image.decode acceptance: the classic-libpng PNG conversion
       sequence from Aurora's b30918 `setConversions`, the fast-DCT TurboJPEG
       path and the vendor-class differential above now pass the maintained
       corpus, format variants, malformed/truncated input, suspend/resume and
       reload tests, and the supervised on-TV grid. Provider pixels are copied
-      then released. Still need actual downloaded foxxum assets,
-      progressive/CMYK JPEG, APNG policy, worker scheduling/cancellation and
-      stock pixel parity. Reopened by TODO-REAUDIT-2026-11-04; narrowed, not
-      closed.
+      then released. Still need the two uncopied foxxum files, YCCK/APNG
+      policy, worker scheduling/cancellation and stock pixel parity.
+      Reopened by TODO-REAUDIT-2026-11-04; narrowed, not closed.
 
 - [x] Stock-capture parity analysis: the old `shot-launcher-right.png` is an
       R/B-swapped pre-correction capture; after channel correction it matches

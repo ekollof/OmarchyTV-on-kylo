@@ -26,7 +26,11 @@ generated PNG format variants:
   BGRA and model 3 requests RGBA.)
 - JPEG output is requested RGBA; it is compared against TurboJPEG
   `TJFLAG_FASTDCT`, the mode used by `image.decode`. This is byte-exact on the
-  DMR corpus. ImageMagick's default accurate-DCT output differs by up to 8.
+  DMR corpus, the two available real foxxum downloads, and a progressive
+  variant. A CMYK variant is rejected by both the vendor class and TurboJPEG.
+  ImageMagick's default accurate-DCT output differs by up to 8.
+- Optional `--extra-jpeg` inputs cover real foxxum files without committing
+  vendor assets to the repository.
 
 Command:
 
@@ -61,7 +65,11 @@ ok vendor png variant interlaced: RGBA exact
 ok vendor png variant gamma: RGBA exact
 ok vendor jpeg DMR-small.jpg: max channel delta 0, mean 0.000
 ok vendor jpeg DMR-large.jpg: max channel delta 0, mean 0.000
-ok vendor decoder differential: 9 PNG + variants, 2 JPEG
+ok vendor jpeg variant progressive: max channel delta 0, mean 0.000
+ok vendor jpeg variant cmyk: vendor rc=6, TurboJPEG rejects
+ok vendor jpeg extra foxxum_1685: max channel delta 0, mean 0.000
+ok vendor jpeg extra foxxum_3753: max channel delta 0, mean 0.000
+ok vendor decoder differential: 9 PNG + variants, 2 JPEG + progressive/CMYK
 ```
 
 The PNG result now covers the nine-file corpus plus 1/2/4/8-bit grayscale,
@@ -83,8 +91,11 @@ Identities:
 - QEMU executes the vendor classes, but vendor global constructors/UI were not
   run; the class calls are controlled (requested RGBA properties, no-op
   callback).
-- The actual downloaded `foxxum_thumb_*` JPEGs are not offline. The JPEG corpus
-  uses DMR-small/large.
-- APNG/CMYK/YCCK behavior, worker scheduling/cancellation, vendor UI
+- Two of the four actual downloaded `foxxum_thumb_*` JPEGs were available in
+  the local scratch corpus and are byte-exact; the other two were not copied
+  offline. The JPEG corpus otherwise uses DMR-small/large and generated
+  progressive/CMYK variants.
+- APNG/YCCK behavior, worker scheduling/cancellation, vendor UI
   animation/frame lifetime, on-TV execution and stock pixel parity remain open.
+  CMYK is a rejection-policy match on the tested file.
 - No TV access or hardware ownership is claimed.

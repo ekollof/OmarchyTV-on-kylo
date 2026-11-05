@@ -20,6 +20,8 @@ make -C openaurora TARGET=tv BUILD=build-tv-v3/vendor-decoder \
 ```
 
 PNG is byte-exact with requested RGBA, including low-depth grayscale, palette,
-tRNS, 16-bit, interlaced and gAMA variants. JPEG is byte-exact against
-TurboJPEG `TJFLAG_FASTDCT`; ImageMagick's default accurate DCT differs by up to
-8. Other JPEG variants remain open.
+tRNS, 16-bit, interlaced and gAMA variants. DMR JPEG, progressive JPEG and the
+two available real foxxum JPEGs are byte-exact against TurboJPEG
+`TJFLAG_FASTDCT`; ImageMagick's default accurate DCT differs by up to 8. A
+generated CMYK JPEG is rejected by both the vendor class and TurboJPEG. Two
+foxxum files were not available offline.
