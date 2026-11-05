@@ -63,6 +63,14 @@ recorder snapshot is byte-identical to the on-TV fb1 quick-settings capture
 (AE=0, max=0, 0/2,073,600 changed). Full settings panel, live text/focus,
 Mesa/transformed frames and scanout remain open.
 
+Full settings panel capture, 2026-11-05: `tests/ui_settings_panel.c` with
+`OA_SETTINGS_REAL=1` uses the real workbench UI dir; `make
+capture-settings-panel-real` clears transparent, blits the 780x1080 OAI1 panel
+at 0,0 with no focus row, and compares the recorder crop to
+`settings_panel.rgba` (AE=0, max=0, 0/842,400 changed). Navigation panel ->
+quick tiles -> panel -> portal still passes. Live text/focus, slider/selection,
+Mesa/transforms and scanout remain open.
+
 Startpagina offline capture, 2026-11-05: `tests/ui_portal_quick.c` plus
 `make capture-portal-real` paint the workbench title/rail/card assets with
 focus rail2 and the default nine-card row. The recorder snapshot, composited

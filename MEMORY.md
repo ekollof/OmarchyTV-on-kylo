@@ -41,6 +41,15 @@ byte-identical to the on-TV fb1 quick-settings capture (`capture_compare.py`
 AE=0, max=0, 0/2,073,600 changed). Full `settings_list` panel, live
 text/focus, Mesa/transformed frames and scanout remain open.
 
+SETTINGS-PANEL-CAPTURE-2026-11-05 (host, no TV): `tests/ui_settings_panel.c`
+now accepts `OA_SETTINGS_REAL=1` and uses the real workbench UI dir;
+`make capture-settings-panel-real` clears transparent, blits the 780x1080
+OAI1 panel at 0,0 with no focus row, and compares the recorder crop to
+`settings_panel.rgba` via `tools/panel-source-compare.py`: AE=0, max=0,
+0/842,400 changed. Panel -> quick tiles -> panel -> portal navigation still
+passes. Live text/focus, slider/selection, Mesa/transformed frames and
+scanout remain open.
+
 PORTAL-CAPTURE-2026-11-05 (host, no TV): added `tests/ui_portal_quick.c` and
 `make capture-portal-real`. The shipped portal path paints the workbench
 `title`/`rail1..5`/`card_*` assets with focus rail2 and the default nine-card

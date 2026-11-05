@@ -13,6 +13,7 @@
 #include "ui_nav_trace.h"
 
 static char g_dir[256];
+static int g_real;
 
 static const char *config(void *ud, const char *key, const char *def)
 {
@@ -52,7 +53,8 @@ static int blit_at(const oa_nav_trace *trace, int x, int y)
     int n = trace->blit_count();
     for (int i = 0; i < n; i++) {
         int bx, by, bw, bh;
-        if (trace->blit_at(i, &bx, &by, &bw, &bh) == 0 && bx == x && by == y && bw == 4 && bh == 4)
+        if (trace->blit_at(i, &bx, &by, &bw, &bh) == 0 && bx == x && by == y &&
+            (g_real ? bw > 0 && bh > 0 : bw == 4 && bh == 4))
             return 1;
     }
     return 0;
@@ -68,11 +70,14 @@ static void key(oa_host *host, int id)
 int main(int argc, char **argv)
 {
     assert(argc == 3);
+    g_real = getenv("OA_SETTINGS_REAL") != NULL;
     snprintf(g_dir, sizeof g_dir, "%s", argv[2]);
-    blob("settings_panel");
-    blob("settings_top");
-    blob("settings_cat");
-    blob("settings_rail");
+    if (!g_real) {
+        blob("settings_panel");
+        blob("settings_top");
+        blob("settings_cat");
+        blob("settings_rail");
+    }
 
     oa_host host;
     assert(!oa_host_init(&host, argv[1], NULL));

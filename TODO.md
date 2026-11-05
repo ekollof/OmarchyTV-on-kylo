@@ -66,15 +66,22 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       Limits: default card row, not live extra cards; rail-highlight/title-
       slide animation states and GPU/scanout remain open.
 
-- [ ] Offline full settings preview: wire a real-asset ui.dir capture and
-      Mesa renderer integration, including transformed frames. Recorder alpha
-      composition is corrected; its set_scene_transform only records arguments.
-      The quick picture-settings state is now exact offline; the full
-      `settings_list` 780x1080 panel, live text/focus and Mesa/transformed-frame
-      paths remain open. The settings_panel OAI1 and slider/selection exporter
-      already exist; the synthetic panel test's4x4 stand-ins are not a
-      real-content preview. Vendor Mali rasterization/scanout comparison still
-      requires the set.
+- [x] Full settings_list 780x1080 real-asset offline capture: added
+      `OA_SETTINGS_REAL=1` to `tests/ui_settings_panel.c` and
+      `make capture-settings-panel-real`. The shipped path clears transparent,
+      blits the OAI1 panel at 0,0 and presents; the recorder crop matches the
+      captured `settings_panel.rgba` source exactly (`panel-source-compare.py`:
+      AE=0, max=0, 0/842,400 changed). Navigation panel -> quick tiles ->
+      panel -> portal still passes. SETTINGS-PANEL-CAPTURE.
+
+- [ ] Offline full settings preview: complete the live focused-row/text,
+      slider/selection and Mesa renderer integration, including transformed
+      frames. Recorder alpha composition is corrected; its set_scene_transform
+      only records arguments. The quick picture-settings state and the base
+      `settings_list` 780x1080 panel are now exact offline; focused/live text
+      and Mesa/transformed-frame paths remain open. The settings_panel OAI1 and
+      slider/selection exporter already exist. Vendor Mali rasterization/
+      scanout comparison still requires the set.
 
 
 - [x] Temporary staged fb1/display binding and on-TV ABI 3 modules: with the
