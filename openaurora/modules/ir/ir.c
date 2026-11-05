@@ -14,6 +14,7 @@
  * The port is exclusive: whoever has it open consumes the bytes. When our UI is
  * in front that is us; when the stock UI runs, this module must not be started.
  */
+#include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -37,6 +38,12 @@ struct ctx {
     int n;
     uint8_t last_cmd;
     char dev[64];
+    void *blast;
+    int (*blast_set)(unsigned);
+    int (*blast_rx)(uint32_t *, uint8_t *, uint8_t *);
+    uint64_t blast_timer;
+    int blast_on;
+    unsigned rc_protocol, rc_sweep, rc_tick;
 };
 
 static struct ctx *g_ctx;
@@ -194,6 +201,89 @@ static void on_readable(void *ud, int fd, unsigned rev)
     (void)rev;
 }
 
+/* The stock parser has two sources: the MCU UART frames above and the vendor
+ * NDAL BLAST V4L2 receiver. DEV_Ir_GetKey polls BLAST_RX and synthesizes the
+ * same 9-byte frame: FF FF 50/5E A1 A2 CC ~CC FF FF. Use the same path when the
+ * UART is silent (the MCU only forwards frames after _HW_MCU_RcInit). */
+static void blast_poll(void *ud)
+{
+    struct ctx *c = ud;
+    if (!c || !c->blast_on || !c->blast_rx)
+        return;
+    if (c->rc_sweep && ++c->rc_tick >= 40) {
+        static const unsigned next[] = { 4, 5, 6, 0xc };
+        c->rc_tick = 0;
+        for (unsigned i = 0; i < 4; i++)
+            if (next[i] == c->rc_protocol) {
+                c->rc_protocol = next[(i + 1) & 3u];
+                break;
+            }
+        (void)c->blast_set(c->rc_protocol);
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "ir: BLAST protocol sweep -> %u", c->rc_protocol);
+    }
+    uint32_t code = 0;
+    uint8_t aux = 0, flag = 0;
+    if (!c->blast_rx(&code, &aux, &flag))
+        return;
+    unsigned char f[9] = {
+        0xff, 0xff, (unsigned char)(flag ? 0x5e : 0x50),
+        (unsigned char)(code >> 24), (unsigned char)(code >> 16),
+        (unsigned char)(code >> 8), (unsigned char)code, 0xff, 0xff
+    };
+    (void)aux;
+    consume(c, f, sizeof f);
+}
+
+static void blast_close(struct ctx *c)
+{
+    if (c->blast_timer) {
+        c->api->timer_del(c->api->priv, c->blast_timer);
+        c->blast_timer = 0;
+    }
+    c->blast_on = 0;
+    if (c->blast) {
+        dlclose(c->blast);
+        c->blast = NULL;
+    }
+    c->blast_set = NULL;
+    c->blast_rx = NULL;
+}
+
+static int blast_open(struct ctx *c)
+{
+    c->blast = dlopen("libNDAL_EX.so", RTLD_NOW | RTLD_LOCAL);
+    if (!c->blast) {
+        c->api->log(c->api->priv, OA_LOG_WARN, "ir: BLAST unavailable: %s", dlerror());
+        return -1;
+    }
+    void *set = dlsym(c->blast, "NDAL_VideoExt_BLAST_SetRcProtocol");
+    void *rx = dlsym(c->blast, "NDAL_VideoExt_BLAST_RX");
+    if (!set || !rx) {
+        c->api->log(c->api->priv, OA_LOG_WARN, "ir: BLAST symbols missing");
+        blast_close(c);
+        return -1;
+    }
+    memcpy(&c->blast_set, &set, sizeof set);
+    memcpy(&c->blast_rx, &rx, sizeof rx);
+    c->rc_sweep = 0;
+    c->rc_tick = 0;
+    int proto = atoi(c->api->config_get(c->api->priv, "ir.rc_protocol", "4"));
+    if (proto == 0) {
+        c->rc_sweep = 1;
+        proto = 4;
+    }
+    c->rc_protocol = (unsigned)proto;
+    int rc = c->blast_set(c->rc_protocol);
+    c->blast_on = 1;
+    c->blast_timer = c->api->timer_add(c->api->priv, 0, 50, blast_poll, c);
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "ir: BLAST receiver protocol %u%s (set rc=%d, poll %s)",
+                c->rc_protocol, c->rc_sweep ? " sweep" : "", rc,
+                c->blast_timer ? "on" : "unavailable");
+    return c->blast_timer ? 0 : -1;
+}
+
 static int input_feed(const uint8_t *bytes, size_t n)
 {
     if (!g_ctx || (!bytes && n))
@@ -234,6 +324,8 @@ static int m_start(void *v)
     if (c->api->publish(c->api->priv, OA_SVC_INPUT, 1, &g_input) != 0)
         return -1;
     c->published = 1;
+    if (atoi(c->api->config_get(c->api->priv, "ir.blast", "0")) == 1)
+        (void)blast_open(c);
     /* Empty ir.device keeps the UART closed. The same parser still accepts feed(). */
     snprintf(c->dev, sizeof c->dev, "%s", c->api->config_get(c->api->priv, "ir.device", IR_DEV));
     if (!c->dev[0]) {
@@ -260,6 +352,7 @@ static int m_start(void *v)
 static void m_stop(void *v)
 {
     struct ctx *c = v;
+    blast_close(c);
     if (c->watch) {
         c->api->watch_del(c->api->priv, c->watch);
         c->watch = 0;

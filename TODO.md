@@ -281,6 +281,16 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       Confirm the actual UART fields, repeat/release/long-press behavior and native
       navigation. Current f[3]/0x5e assumptions are unverified. Reading ttyS2 steals
       stock input; live capture requires an authorized idle/takeover session.
+      TAKEOVER-IR-2026-11-05 tested this on BACK AV with stock Aurora stopped:
+      real `mod_plat` ran, `/dev/ttyS2` opened but stayed `rx:0`, and the opt-in
+      `NDAL_VideoExt_BLAST_SetRcProtocol`/`BLAST_RX` backend (protocols 4/5/6/0xc)
+      saw no keys. The stock remote did work on BACK AV. Stock `ICE_RemoteInit` ->
+      `_HW_MCU_RcInit` (`_HW_MCU_SetRcType`/OK/wakeup keys, `DEV_Ir_init`,
+      `_HW_RWDB_WriteBlock` -> `PLAT_STBC_Data_Write`) is the missing MCU handshake;
+      repeated BLAST protocol changes leaked kernel opens until reboot. Next:
+      recover the STBC/RWDB contract offline and implement it, or retain stock
+      Aurora as the IR front-end. Do not call STBC cold without the ownership and
+      recovery plan.
 - [ ] Power: complete native device preparation/wake/resume ownership and actual
       hardware acceptance. Service/CLI coordination is implemented offline;
       manual suspend/resume are hook-only commands and never enter RAM. Use

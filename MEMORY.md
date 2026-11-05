@@ -10,6 +10,20 @@ reboot the set. Stock boot is back (aurora PIDs 2328 and 1775, fb1
 1920×2160, pan 0,0). The owner confirmed it is in control. `/buffer/oa-takeover`
 removed. `/conf/oa_boot` still absent. Not cold startup. TAKEOVER-2026-11-05.
 
+BACK AV IR follow-up, 2026-11-05: owner set BACK AV and confirmed the physical
+remote works there under stock Aurora. A second takeover ran real `mod_plat`
+(audio prelude, DRM/v4l2, GPIO/IIC, `NDAL_VideoExt_OpenDevice(0,10)`) and the
+vendor portal. `/dev/ttyS2` opened but stayed `rx:0`; an opt-in BLAST backend
+(`ir.blast=1`, `NDAL_VideoExt_BLAST_SetRcProtocol`/`RX`) set protocols
+4/5/6/0xc and saw no keys. Repeated protocol changes hit the kernel BLAST
+driver limit (`DRV_BLAST_Close: over limit`), cleared by reboot. Stock
+`_HW_MCU_RcInit` (`_HW_MCU_SetRcType`/OK/wakeup keys, `DEV_Ir_init`,
+`_HW_RWDB_WriteBlock` -> `PLAT_STBC_Data_Write`) is not implemented in
+openaurora, so the MCU does not forward IR after Aurora stops. `wdtctl set 10`
+restored stock (PIDs 1927/1776, appmgr 1617); source came back HDMI1 and was
+set to BACK AV manually (`m_current_source=1`). Staging removed. Not physical-
+IR acceptance; TAKEOVER-IR-2026-11-05.
+
 Lua screen flash, 2026-11-05: staged `/buffer/oa-lua-screen` (hashes matched
 before exec) started `display_fb`, `ui_engine`, `lua` and `ui_omarchy` with
 `ui.omarchy.lua=1`. Skin status was `active omarchy`, fallback 0. The owner

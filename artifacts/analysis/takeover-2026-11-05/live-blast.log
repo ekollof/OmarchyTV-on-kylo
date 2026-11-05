@@ -1,0 +1,174 @@
+[165060] INFO host         openaurora starting, modules=./modules
+[165061] INFO host         control socket ./control
+openaurora: 0 module(s) loaded, control on ./control
+[166061] INFO host         loaded display_fb v0.1 (./modules/mod_display_fb.so)
+[166061] INFO display_fb   /dev/fb1: 1920x1080 32bpp, 2 frame(s), back=0
+[166451] INFO display_fb   /dev/fb1: full snapshot saved (16588800 bytes, mau 0)
+[166451] DBG  display_fb   service up: display v2
+[166451] DBG  display_fb   service up: display.alpha v1
+[166451] INFO host         started display_fb
+[166451] INFO host         loaded ui_engine v1 (./modules/mod_ui_engine.so)
+[166452] DBG  ui_engine    service up: ui.engine v2
+[166452] INFO ui_engine    ui_engine started
+[166452] DBG  ui_engine    service up: ui.skin v1
+[166452] INFO host         started ui_engine
+[166453] INFO host         loaded settings v0.2 (./modules/mod_settings.so)
+[166453] INFO settings     /conf/sqlite_db/settingsDB.db open (read-only)
+[166454] DBG  settings     service up: settings v1
+[166454] DBG  settings     service up: settings.hotel v1
+[166454] DBG  settings     service up: launcher.db v1
+[166480] INFO settings     probe: m_cec_enabled=1
+[166480] INFO host         started settings
+[166481] INFO host         loaded service_db v1 (./modules/mod_service_db.so)
+[166511] DBG  service_db   service up: service.list v1
+[166511] INFO service_db   service_db: 134 rows (54 dvb, 67 easi, 13 analog) from /conf/sqlite_db/settingsDB.db
+[166511] INFO host         started service_db
+[166512] INFO host         loaded image_decode v2 (./modules/mod_image_decode.so)
+[166513] DBG  image_decode service up: image.decode v2
+[166513] INFO host         started image_decode
+[166513] INFO host         loaded plat_stub v1 (./modules/mod_plat_stub.so)
+[166514] DBG  plat_stub    service up: plat v1
+[166514] INFO host         started plat_stub
+[166514] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[166514] DBG  ir           service up: input v1
+[166514] INFO ir           /dev/ttyS2 open @115200 8N1
+[166514] INFO host         started ir
+[166514] INFO host         loaded ui_vendor v0.2 (./modules/mod_ui_vendor.so)
+[166545] DBG  ui_vendor    service up: ui.portal v1
+[167003] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[167003] INFO host         started ui_vendor
+[167403] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[167804] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[168204] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[168603] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[169004] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[169404] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[169804] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[170203] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[170604] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[171004] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[186111] DBG  host         key rc=22 Right (nec 0x16)
+[186112] DBG  host         release 0x16
+[186470] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 0
+[264597] INFO ir           /dev/ttyS2 closed
+[264597] DBG  ir           service down: input
+[264597] INFO host         stopped ir
+[264597] DBG  plat_stub    service down: plat
+[264597] INFO host         stopped plat_stub
+[264597] INFO host         unloaded plat_stub
+[264613] INFO host         loaded plat v0.1 (./modules/mod_plat.so)
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:0
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:1
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:2
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:3
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:4
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:5
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:6
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:7
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:8
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:9
+[264615] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[DRM Init] : drmModeGetEncoder= PASS 
+[264618] INFO plat         plat: common init (vpltio/v4l2/sharemem/drm, DVIF)
+[264618] INFO plat         plat: VIN slot defaults (7 slots)
+[264622] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[264622] DBG  plat         service up: plat v1
+[264622] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[264622] INFO host         started plat
+[265003] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 0
+[272514] ERR  host         load './modules/mod_ir.so': 'ir' already loaded
+[272514] DBG  ir           service up: input v1
+[272514] INFO ir           /dev/ttyS2 open @115200 8N1
+[272514] INFO host         started ir
+[272887] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 0
+[501321] INFO ir           /dev/ttyS2 closed
+[501321] DBG  ir           service down: input
+[501321] INFO host         stopped ir
+[501321] INFO host         unloaded ir
+[501720] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 0
+[505706] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[505707] DBG  ir           service up: input v1
+[505707] INFO ir           ir: BLAST receiver protocol 4 (set rc=0, poll on)
+[505707] INFO ir           /dev/ttyS2 open @115200 8N1
+[505707] INFO host         started ir
+[506104] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 0
+[606282] INFO ir           /dev/ttyS2 closed
+[606282] DBG  ir           service down: input
+[606282] INFO host         stopped ir
+[606282] INFO host         unloaded ir
+[606282] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[606283] DBG  ir           service up: input v1
+[606283] INFO ir           ir: BLAST receiver protocol 4 sweep (set rc=0, poll on)
+[606283] INFO ir           /dev/ttyS2 open @115200 8N1
+[606283] INFO host         started ir
+[606687] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 0
+[611972] INFO ir           ir: BLAST protocol sweep -> 5
+[617948] INFO ir           ir: BLAST protocol sweep -> 6
+[622706] INFO ir           ir: BLAST protocol sweep -> 12
+[639495] INFO ir           ir: BLAST protocol sweep -> 4
+[757208] INFO ir           /dev/ttyS2 closed
+[757208] DBG  ir           service down: input
+[757208] INFO host         stopped ir
+[757208] DBG  ui_vendor    service down: ui.portal
+[757208] INFO host         stopped ui_vendor
+[757208] DBG  image_decode service down: image.decode
+[757209] INFO host         stopped image_decode
+[757209] DBG  service_db   service down: service.list
+[757209] INFO host         stopped service_db
+[757209] DBG  settings     service down: launcher.db
+[757209] DBG  settings     service down: settings.hotel
+[757209] DBG  settings     service down: settings
+[757210] INFO host         stopped settings
+[757210] DBG  ui_engine    service down: ui.skin
+[757210] DBG  ui_engine    service down: ui.engine
+[757210] INFO host         stopped ui_engine
+[757210] DBG  plat         service down: plat
+[757210] INFO host         stopped plat
+[757213] ERR  host         display_fb: cleanup pending; retry stop/unload
+[758221] DBG  display_fb   service down: display
+[758222] DBG  display_fb   service down: display.alpha
+[758222] INFO host         stopped display_fb
+[762248] INFO host         unloaded ir
+[762248] INFO host         unloaded ui_vendor
+[762248] INFO host         unloaded image_decode
+[762248] INFO host         unloaded service_db
+[762249] INFO host         unloaded settings
+[762249] INFO host         unloaded ui_engine
+[762250] INFO host         unloaded plat
+[762250] INFO host         unloaded display_fb
+[771418] INFO host         openaurora stopped
+Hal_IfCmd_SockFd_Get@139 iSockFd=9
+Can not open /dev/nvt/ntkvplt
+ERR:[8676:8676]ClientDrmAuthentically(193) fail(-1)
+
+[DRM Init] : Step 1 : Open DRM Device : drm_card_id = 13 
+[DRM Init] : open drm pass 
+
+[DRM Init] : Step 2 : Create Frame Buffer - Start 
+[DRM Init] : fb_id = 103 
+[DRM Init] : Step 2 : Create Frame Buffer - End 
+
+[DRM Init] : Step 3 : Init Kernel Mode Setting - Start 
+[DRM Init] : crtc_id = 26 
+[DRM Init] : plane_id[7] = 40 
+[DRM Init] : plane_id[6] = 54 
+[DRM Init] : plane_id[5] = 55 
+[DRM Init] : plane_id[2] = 56 
+[DRM Init] : plane_id[1] = 59 
+[DRM Init] : plane_id[0] = 60 
+[DRM Init] : plane_id[3] = 61 
+[DRM Init] : plane_id[4] = 62 
+[DRM Init] : Step 3 : Init Kernel Mode Setting - End 
+
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1

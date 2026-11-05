@@ -38,6 +38,16 @@ the watchdog reboot. Stock boot returned (fb1 1920×2160). The owner confirmed
 the set is in control. Staging `/buffer/oa-takeover` was removed. Not cold
 startup. TAKEOVER-2026-11-05.
 
+BACK AV IR follow-up, 2026-11-05: owner set BACK AV and confirmed the stock
+remote works there. A second takeover ran the real `mod_plat` (audio prelude,
+DRM/v4l2, GPIO/IIC, video open) and the vendor portal. `/dev/ttyS2` stayed
+`rx:0`; the new opt-in BLAST backend set protocols 4/5/6/0xc and saw no keys.
+The kernel BLAST driver hit its open limit and needed a reboot. Stock
+`_HW_MCU_RcInit`/STBC RWDB handshake is missing from openaurora, so the MCU
+does not forward IR after stock Aurora stops. Watchdog reboot restored stock
+(PIDs 1927/1776, appmgr 1617); source was set back to BACK AV manually.
+Staging removed. No physical-IR acceptance. TAKEOVER-IR-2026-11-05.
+
 Latest live acceptance: [LIVE-TV-ACCEPTANCE](artifacts/reports/LIVE-TV-ACCEPTANCE-2026-11-05.md)
 staged the ABI 3 tree under `/buffer`, ran epg/tuner/pvr/lua, and loaded
 `display_fb` on vendor-initialized fb1. It saved a 16,588,800-byte snapshot,
