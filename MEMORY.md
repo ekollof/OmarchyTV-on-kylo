@@ -19,12 +19,21 @@ error cases; two foxxum results match qemu SHA256 exactly. Verified15-file/
 vendor pair1967(zombie)/1785(live) and no-reset marker unchanged. tvssh sent
 WoL initially. No framebuffer/device operation or persistent deployment change.
 
+BROADCAST-IPC-2026-11-05 (host-only): control-plane coverage for the fixture
+contracts. control.c serves tuner-state/scan/cancel/select, epg-query and
+pvr-list/add/cancel with pre-lookup validation, bounded multi-line replies and
+handle release. tests/broadcast_ipc.cjs drives the real binary and fixture over
+the Unix socket through scan/select/cancel, EPG windows/caps, PVR ID/cancel/
+repeat, reload reset, stop->ENODEV and clean shutdown. Host413 ok, verify45.
+Fixture backend only: no tuner/EIT/PVR hardware, vendor backend, UI or
+persistence; no TV access.
+
 BROADCAST-FOUNDATION-2026-11-05 (host-only): project-internal tuner/epg/pvr
 v1 contracts plus a fixture backend. The fixture exercises a deterministic
 scan state machine (12 services, 25% steps, cancel), overlapping EPG queries
 with caps/bounds, and PVR add/list/cancel/reload/teardown. Host412 ok, verify45.
-No hardware, EIT/EPG semantics, recording engine, production module, CLI/
-socket/UI or persistence; no TV access. BROADCAST-FOUNDATION.
+No hardware, EIT/EPG semantics, recording engine, production module or
+persistence; CLI/socket coverage was added later in BROADCAST-IPC. No TV access.
 
 EASI-PROBE-2026-11-05 (host-only probe + read-only TV checks): recovered
 testtool TCP1986, GETCHANNELLIST RSN/name and ACTIVECHANNELLIST XML. Added

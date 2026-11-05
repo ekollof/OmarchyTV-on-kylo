@@ -404,6 +404,11 @@ check-broadcast-services: $(BUILD)/tests/broadcast_services $(BUILD)/tests/mod_b
 	@$(BUILD)/tests/broadcast_services $(BUILD)/tests
 check: check-broadcast-services
 
+.PHONY: check-broadcast-ipc
+check-broadcast-ipc: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_broadcast_fixture.so
+	node tests/broadcast_ipc.cjs $(abspath $(BUILD))
+check: check-broadcast-ipc
+
 $(BUILD)/easi-probe: tools/probe/easi-probe.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<

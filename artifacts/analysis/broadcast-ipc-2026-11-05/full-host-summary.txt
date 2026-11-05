@@ -1,0 +1,4 @@
+full host make check: 413 ok
+ok broadcast fixture: tuner scan state machine, EPG query bounds and PVR reservations
+ok broadcast IPC: tuner scan/select, EPG query and PVR add/list/cancel over the control socket
+verify.cjs: 45 groups

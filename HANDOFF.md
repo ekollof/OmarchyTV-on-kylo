@@ -35,11 +35,19 @@ The owner then requested a review and fixes on2026-11-04. The review below
 supersedes the old clean/verified snapshot where it identifies defects; it
 does not start the pending imageCreate subsystem or persistent replacement.
 
+Latest broadcast CLI/socket: [BROADCAST-IPC](artifacts/reports/BROADCAST-IPC-2026-11-05.md)
+exposes the fixture tuner/epg/pvr contracts over the control socket and tests
+them end-to-end with the real binary: scan/select/cancel, EPG windows/caps,
+PVR add/list/cancel/repeat, reload, stop->ENODEV and shutdown. Host413 ok,
+verify45. Fixture backend only; no tuner/EIT/PVR hardware, vendor backend, UI
+or persistence.
+
 Latest broadcast foundation: [BROADCAST-FOUNDATION](artifacts/reports/BROADCAST-FOUNDATION-2026-11-05.md)
 adds project-internal tuner/epg/pvr v1 contracts and a host fixture: scan state
 machine, EPG overlap/bounds/caps, PVR add/list/cancel, reload/teardown. Host412
 ok, verify45. Fixture only; no tuner hardware/scan, EIT/EPG semantics,
-recording engine, production module/CLI/socket/UI or persistence.
+recording engine, production module, UI or persistence (CLI/socket added later
+in BROADCAST-IPC).
 
 Latest runtime probe: [EASI-PROBE](artifacts/reports/EASI-PROBE-2026-11-05.md)
 implements the read-only testtool client (TCP1986, GETCHANNELLIST/

@@ -54,6 +54,9 @@ This is scaffolding, not tuner/EPG/PVR parity:
 - no EIT/EITp/filter/schedule persistence or vendor EPG semantics;
 - no recording engine, timeshift, storage, conflicts, retention or playback;
 - no production module, CLI/socket query, UI integration or persistence;
+  **superseded in part:** [BROADCAST-IPC](BROADCAST-IPC-2026-11-05.md) adds
+  CLI/socket query coverage for this fixture. Production module, UI and
+  persistence remain absent.
 - no validation against vendor code because these are project contracts.
 
 The testtool probe remains blocked by the disabled TCP 1986 server and the

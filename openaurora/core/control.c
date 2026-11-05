@@ -90,6 +90,20 @@ static int decimal(const char *text, uint64_t *out)
     *out = (uint64_t)value;
     return 0;
 }
+static int signed_decimal64(const char *text, int64_t *out)
+{
+    if (!text || !*text) return -1;
+    const char *p = text;
+    if (*p == '-') ++p;
+    if (!*p) return -1;
+    for (; *p; ++p) if (*p < '0' || *p > '9') return -1;
+    char *end;
+    errno = 0;
+    long long value = strtoll(text, &end, 10);
+    if (errno || *end) return -1;
+    *out = (int64_t)value;
+    return 0;
+}
 static int signed_decimal(const char *text,int32_t *out)
 {
     if(!text || !*text)return -1;
@@ -210,6 +224,14 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  amp-profile             read immutable amplifier profile inputs\n"
                  "  launcher-items <parent|all> [deleted] [outofsync]\n"
                  "                           settingsDB LauncherItem rows\n"
+                 "  tuner-state             tuner scan/selection state\n"
+                 "  tuner-scan <network>    start fixture scan (1=T,2=C,3=S,4=analog,5=IP)\n"
+                 "  tuner-cancel            cancel a running scan\n"
+                 "  tuner-select <handle>   select a completed service handle\n"
+                 "  epg-query <svc> <from> <to>  bounded EPG events\n"
+                 "  pvr-list                PVR reservations\n"
+                 "  pvr-add <svc> <from> <to>   add reservation\n"
+                 "  pvr-cancel <id>         cancel reservation\n"
                  "  service-list             broadcast-service inventory count\n"
                  "  service-list stats       inventory flags/source totals\n"
                  "  service-list name <index>    stored-name sorted row\n"
@@ -287,6 +309,116 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         snprintf(outbuf, outlen, "image %dx%d fnv %016" PRIx64 "\n",
                  w, hgt, hash);
         return 0;
+    }
+    if(!strcmp(cmd,"tuner-state")) {
+        if(force || a1 || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_tuner_iface *tuner=h->api.lookup(h,OA_SVC_TUNER,1);
+        if(!tuner){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        struct oa_tuner_status st;
+        int rc=tuner->status(&st);
+        h->api.release(h,OA_SVC_TUNER);
+        if(rc){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
+        snprintf(outbuf,outlen,
+            "network %u state %u progress %u services %u selected %u error %d\n",
+            st.network,st.scan_state,st.progress,st.services_found,
+            st.selected_handle,st.error);
+        return 0;
+    }
+    if(!strcmp(cmd,"tuner-scan")) {
+        if(force || !a1 || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        uint64_t network=0;
+        if(decimal(a1,&network) || network<1 || network>5){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_tuner_iface *tuner=h->api.lookup(h,OA_SVC_TUNER,1);
+        if(!tuner){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        int rc=tuner->scan_start((uint8_t)network,1);
+        h->api.release(h,OA_SVC_TUNER);
+        snprintf(outbuf,outlen,rc?"failed errno %d\n":"ok\n",rc?-rc:0);
+        return rc? -1:0;
+    }
+    if(!strcmp(cmd,"tuner-cancel")) {
+        if(force || a1 || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_tuner_iface *tuner=h->api.lookup(h,OA_SVC_TUNER,1);
+        if(!tuner){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        int rc=tuner->scan_cancel();
+        h->api.release(h,OA_SVC_TUNER);
+        snprintf(outbuf,outlen,rc?"failed errno %d\n":"ok\n",rc?-rc:0);
+        return rc? -1:0;
+    }
+    if(!strcmp(cmd,"tuner-select")) {
+        if(force || !a1 || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        uint64_t handle=0;
+        if(decimal(a1,&handle) || handle>UINT32_MAX){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_tuner_iface *tuner=h->api.lookup(h,OA_SVC_TUNER,1);
+        if(!tuner){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        int rc=tuner->select((uint32_t)handle);
+        h->api.release(h,OA_SVC_TUNER);
+        snprintf(outbuf,outlen,rc?"failed errno %d\n":"ok\n",rc?-rc:0);
+        return rc? -1:0;
+    }
+    if(!strcmp(cmd,"epg-query")) {
+        if(force || !a1 || !a2 || !a3){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        uint64_t service=0;int64_t from=0,to=0;
+        if(decimal(a1,&service) || service>UINT32_MAX ||
+           signed_decimal64(a2,&from) || signed_decimal64(a3,&to) || from>=to){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_epg_iface *epg=h->api.lookup(h,OA_SVC_EPG,1);
+        if(!epg){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        struct oa_epg_event events[16];size_t count=0;
+        int rc=epg->query((uint32_t)service,from,to,events,16,&count);
+        h->api.release(h,OA_SVC_EPG);
+        if(rc){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
+        struct reply r={outbuf,outlen,0};
+        append(&r,"count %zu\n",count);
+        for(size_t i=0;i<count && i<16;i++)
+            append(&r,"event id=%u service=%u start=%" PRId64 " end=%" PRId64
+                " name=%s\n",events[i].event_id,events[i].service_handle,
+                events[i].start_ms,events[i].end_ms,events[i].name);
+        return 0;
+    }
+    if(!strcmp(cmd,"pvr-list")) {
+        if(force || a1 || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_pvr_iface *pvr=h->api.lookup(h,OA_SVC_PVR,1);
+        if(!pvr){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        struct oa_pvr_job jobs[16];size_t count=0;
+        int rc=pvr->list(jobs,16,&count);
+        h->api.release(h,OA_SVC_PVR);
+        if(rc){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
+        struct reply r={outbuf,outlen,0};
+        append(&r,"count %zu\n",count);
+        for(size_t i=0;i<count && i<16;i++)
+            append(&r,"job id=%u service=%u state=%u start=%" PRId64
+                " end=%" PRId64 " name=%s\n",jobs[i].id,jobs[i].service_handle,
+                jobs[i].state,jobs[i].start_ms,jobs[i].end_ms,jobs[i].name);
+        return 0;
+    }
+    if(!strcmp(cmd,"pvr-add")) {
+        if(force || !a1 || !a2 || !a3){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        uint64_t service=0;int64_t start=0,end=0;
+        if(decimal(a1,&service) || service>UINT32_MAX ||
+           signed_decimal64(a2,&start) || signed_decimal64(a3,&end) || start>=end){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_pvr_iface *pvr=h->api.lookup(h,OA_SVC_PVR,1);
+        if(!pvr){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        uint32_t id=0;
+        int rc=pvr->add((uint32_t)service,start,end,"cli reservation",&id);
+        h->api.release(h,OA_SVC_PVR);
+        if(rc){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
+        snprintf(outbuf,outlen,"id %u\n",id);
+        return 0;
+    }
+    if(!strcmp(cmd,"pvr-cancel")) {
+        if(force || !a1 || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        uint64_t id=0;
+        if(decimal(a1,&id) || id>UINT32_MAX){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_pvr_iface *pvr=h->api.lookup(h,OA_SVC_PVR,1);
+        if(!pvr){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        int rc=pvr->cancel((uint32_t)id);
+        h->api.release(h,OA_SVC_PVR);
+        snprintf(outbuf,outlen,rc?"failed errno %d\n":"ok\n",rc?-rc:0);
+        return rc? -1:0;
     }
     if(!strcmp(cmd,"service-list")) {
         if(force){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}

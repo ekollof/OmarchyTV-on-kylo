@@ -38,12 +38,21 @@ reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
 first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
 capture remain open.
 
+BROADCAST-IPC-2026-11-05: the tuner/epg/pvr fixture contracts are now exposed
+through the control socket as tuner-state/scan/cancel/select, epg-query and
+pvr-list/add/cancel. Argument validation happens before service lookup and
+handles are released per call. tests/broadcast_ipc.cjs drives the real binary
+and fixture through scan/select/cancel, EPG windows/caps, PVR ID/cancel/repeat,
+reload reset, stop->ENODEV and shutdown; host413 ok, verify45. Fixture backend
+only: no tuner/EIT/PVR hardware, vendor backend, UI or persistence. No TV
+access.
+
 BROADCAST-FOUNDATION-2026-11-05: added project-internal tuner/epg/pvr v1
 contracts and a host fixture. Tuner scan state machine, EPG overlap/bounds/
 caps, PVR add/list/cancel and reload/teardown pass; host412 ok, verify45. These
 are fixture contracts, not vendor ABI or hardware parity: no tuner scan, EIT/
-EPG semantics, recording engine, production module/CLI/socket/UI or
-persistence. No TV access.
+EPG semantics, recording engine, production module, UI or persistence;
+CLI/socket coverage was added later in BROADCAST-IPC. No TV access.
 
 EASI-PROBE-2026-11-05: testtool TCP1986 exposes read-only GETCHANNELLIST
 (RSN/name) and ACTIVECHANNELLIST XML (RSN/name/handle/ONID/TSID/SID/type). A
