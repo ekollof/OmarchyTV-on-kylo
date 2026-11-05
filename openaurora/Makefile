@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner
+MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -441,6 +441,14 @@ check-nim-stub: $(BUILD)/tests/nim_stub
 	@$(BUILD)/tests/nim_stub
 check: check-nim-stub
 
+$(BUILD)/tests/pvr_stub: tests/pvr_stub.c common/pvr_stub.c include/openaurora/pvr.h include/openaurora/broadcast.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-pvr-stub
+check-pvr-stub: $(BUILD)/tests/pvr_stub
+	@$(BUILD)/tests/pvr_stub
+check: check-pvr-stub
+
 .PHONY: check-epg-ipc
 check-epg-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_epg.so
 	node tests/epg_ipc.cjs $(abspath $(BUILD))
@@ -450,6 +458,11 @@ check: check-epg-ipc
 check-tuner-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_epg.so $(BUILD)/modules/mod_tuner.so
 	node tests/tuner_ipc.cjs $(abspath $(BUILD))
 check: check-tuner-ipc
+
+.PHONY: check-pvr-ipc
+check-pvr-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_pvr.so
+	node tests/pvr_ipc.cjs $(abspath $(BUILD))
+check: check-pvr-ipc
 
 $(BUILD)/easi-probe: tools/probe/easi-probe.c
 	@mkdir -p $(dir $@)
@@ -792,6 +805,10 @@ $(BUILD)/modules/mod_epg.so: modules/epg/epg.c common/eit_section.c common/eit_c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
 $(BUILD)/modules/mod_tuner.so: modules/tuner/tuner.c common/nim_stub.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_section.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+
+$(BUILD)/modules/mod_pvr.so: modules/pvr/pvr.c common/pvr_stub.c include/openaurora/pvr.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 

@@ -1,0 +1,9 @@
+full host make check: 421 ok
+ok eit cache: keyed schedule events, duration query and now/next
+ok eit section: EIT header/CRC, BCD times, descriptors and skips
+ok nim stub: tune/monitor/signal defaults and synthetic EIT source
+ok pvr stub: id/index semantics, validation and file persistence
+ok epg IPC: EIT ingest, key replacement, query/clear and reload over the control socket
+ok tuner IPC: NIM stub scan/signal, EIT handoff to epg, cancel/reload over the socket
+ok pvr IPC: add/list/cancel, reload and cross-process persistence
+verify.cjs: 45 groups

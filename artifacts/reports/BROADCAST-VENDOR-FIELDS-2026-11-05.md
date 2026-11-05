@@ -89,6 +89,9 @@ Evidence:
 
 - Still a fixture and project contracts, not a vendor-backed tuner/EPG/PVR
   backend. No tuner lock, signal, EIT section, recording or scheduler hardware.
+  **partly superseded:** offline `mod_tuner`/`mod_epg`/`mod_pvr` modules now
+  exist (TUNER-NIM-MODULE, EPG-EIT-MODULE, PVR-MODULE); no live vendor
+  hardware backend exists.
 - `repeat_days` bits and the now/next tie policy are project-defined; vendor
   getters exist but their full domain/ordering semantics were not recovered.
 - No schedule persistence, CRID resolution (string CRIDs live in the separate

@@ -1,0 +1,2 @@
+$ qemu-arm-static -L <toolchain-libc> openaurora/build-tv-v3/tests/pvr_stub
+ok pvr stub: id/index semantics, validation and file persistence

@@ -35,6 +35,14 @@ The owner then requested a review and fixes on2026-11-04. The review below
 supersedes the old clean/verified snapshot where it identifies defects; it
 does not start the pending imageCreate subsystem or persistent replacement.
 
+Latest PVR module: [PVR-MODULE](artifacts/reports/PVR-MODULE-2026-11-05.md)
+adds a vendor-shaped PVR boundary (recording id, start/stop, index query) with
+a persistent offline stub. mod_pvr stores up to 256 jobs atomically at
+pvr.path, assigns monotonic ids, cancels only scheduled jobs and fails closed
+on corrupt files; unit and socket tests cover reload and cross-process
+persistence. Host421 ok, verify45; ARM/qemu passes. Stub only: no active
+recording, timeshift/playback, storage/conflict engine or vendor metadata.
+
 Latest live acceptance:
 [LIVE-MODULE-ACCEPTANCE](artifacts/reports/LIVE-MODULE-ACCEPTANCE-2026-11-05.md)
 is the first on-TV run of the ABI 3 ARM build: staged core/mod_epg/mod_tuner

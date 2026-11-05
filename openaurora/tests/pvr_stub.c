@@ -1,0 +1,160 @@
+/* Offline PVR stub tests: vendor-shaped start/stop/index-query plus persistent
+ * file semantics. No hardware or vendor code. */
+#include "openaurora/pvr.h"
+#include "openaurora/broadcast.h"
+
+#include <assert.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+static struct oa_pvr_request request(uint32_t service, int64_t start,
+    int64_t end, uint32_t repeat, int32_t padding, const char *name)
+{
+    struct oa_pvr_request r;
+    memset(&r, 0, sizeof r);
+    r.service_handle = service;
+    r.start_ms = start;
+    r.end_ms = end;
+    r.repeat_days = repeat;
+    r.start_padding = padding;
+    r.end_padding = -padding;
+    snprintf(r.name, sizeof r.name, "%s", name);
+    return r;
+}
+
+static void test_persist(const char *dir)
+{
+    const struct oa_pvr_backend *backend = oa_pvr_stub_backend();
+    assert(backend && !strcmp(backend->name, "pvr-stub"));
+    char path[OA_PVR_PATH_MAX], tmp[OA_PVR_PATH_MAX + 8];
+    snprintf(path, sizeof path, "%s/pvr.db", dir);
+    snprintf(tmp, sizeof tmp, "%s.tmp", path);
+    assert(strlen(path) < OA_PVR_PATH_MAX - 8);
+
+    assert(backend->open(path) == 0);
+    assert(backend->count() == 0);
+
+    uint32_t id1 = 0, id2 = 0;
+    struct oa_pvr_request r = request(1, 1000, 2000, 0, 0, "One");
+    assert(backend->start(&r, &id1) == 0 && id1 == 1);
+    r = request(2, 3000, 4000, 0x7f, 30, "Two");
+    assert(backend->start(&r, &id2) == 0 && id2 == 2);
+    assert(backend->count() == 2);
+
+    struct oa_pvr_job job;
+    assert(backend->query(0, &job) == 0);
+    assert(job.id == 1 && job.service_handle == 1 && job.state ==
+        OA_PVR_SCHEDULED && !strcmp(job.name, "One"));
+    assert(backend->query(1, &job) == 0);
+    assert(job.repeat_days == 0x7f && job.start_padding == 30 &&
+        job.end_padding == -30);
+    assert(backend->query(2, &job) == -ENOENT);
+    assert(backend->query(0, NULL) == -EINVAL);
+
+    assert(backend->stop(1) == 0);
+    assert(backend->stop(1) == -EALREADY);
+    assert(backend->stop(99) == -ENOENT);
+    assert(backend->query(0, &job) == 0 && job.state == OA_PVR_CANCELED);
+    assert(access(tmp, F_OK) != 0);
+
+    backend->close();
+    assert(backend->count() == 0);
+    assert(backend->open(path) == 0);
+    assert(backend->count() == 2);
+    assert(backend->query(0, &job) == 0 && job.id == 1 &&
+        job.state == OA_PVR_CANCELED);
+    assert(backend->query(1, &job) == 0 && job.id == 2 &&
+        job.state == OA_PVR_SCHEDULED);
+    r = request(1, 5000, 6000, 0, 0, "Three");
+    uint32_t id3 = 0;
+    assert(backend->start(&r, &id3) == 0 && id3 == 3);
+    backend->close();
+
+    FILE *file = fopen(path, "rb");
+    assert(file);
+    char line[64];
+    assert(fgets(line, sizeof line, file));
+    assert(!strcmp(line, "OAPVR1\n"));
+    fclose(file);
+
+    /* Invalid persistent data fails closed and leaves the file untouched. */
+    snprintf(path, sizeof path, "%s/bad.db", dir);
+    file = fopen(path, "wb");
+    assert(file);
+    fputs("OAPVR1\nnot-a-record\n", file);
+    fclose(file);
+    assert(backend->open(path) == -EINVAL);
+    assert(backend->count() == 0);
+    file = fopen(path, "rb");
+    assert(file);
+    assert(fgets(line, sizeof line, file) && !strcmp(line, "OAPVR1\n"));
+    fclose(file);
+
+    /* A directory path is rejected. */
+    assert(backend->open(dir) == -EISDIR);
+}
+
+static void test_validation(const char *dir)
+{
+    const struct oa_pvr_backend *backend = oa_pvr_stub_backend();
+    char path[OA_PVR_PATH_MAX];
+    snprintf(path, sizeof path, "%s/validation.db", dir);
+    assert(backend->open(path) == 0);
+    uint32_t id = 0;
+    struct oa_pvr_request r = request(0, 1, 2, 0, 0, "bad");
+    assert(backend->start(&r, &id) == -EINVAL);
+    r = request(1, 2, 1, 0, 0, "bad");
+    assert(backend->start(&r, &id) == -EINVAL);
+    r = request(1, 1, 2, 0, 0, "");
+    assert(backend->start(&r, &id) == -EINVAL);
+    r = request(1, 1, 2, 0, 0, "bad\tname");
+    assert(backend->start(&r, &id) == -EINVAL);
+    r = request(1, 1, 2, 0, 0, "ok");
+    assert(backend->start(&r, &id) == 0 && id == 1);
+    backend->close();
+}
+
+static void test_capacity(const char *dir)
+{
+    const struct oa_pvr_backend *backend = oa_pvr_stub_backend();
+    char path[OA_PVR_PATH_MAX];
+    snprintf(path, sizeof path, "%s/full.db", dir);
+    assert(backend->open(path) == 0);
+    for (unsigned i = 0; i < OA_PVR_MAX_JOBS; i++) {
+        char name[32];
+        snprintf(name, sizeof name, "Job %u", i);
+        struct oa_pvr_request r = request(1, 1000 + i * 10, 2000 + i * 10,
+            0, 0, name);
+        uint32_t id = 0;
+        assert(backend->start(&r, &id) == 0 && id == i + 1);
+    }
+    struct oa_pvr_request extra = request(1, 999999, 1000000, 0, 0, "Full");
+    assert(backend->start(&extra, NULL) == -ENOSPC);
+    backend->close();
+    assert(backend->open(path) == 0);
+    assert(backend->count() == OA_PVR_MAX_JOBS);
+    backend->close();
+}
+
+int main(void)
+{
+    char dir[] = "/tmp/oa-pvr-test-XXXXXX";
+    assert(mkdtemp(dir));
+    test_persist(dir);
+    test_validation(dir);
+    test_capacity(dir);
+    unlink("/tmp/oa-pvr-test-unused");
+    char path[OA_PVR_PATH_MAX];
+    const char *files[] = { "pvr.db", "bad.db", "validation.db", "full.db" };
+    for (size_t i = 0; i < sizeof files / sizeof files[0]; i++) {
+        snprintf(path, sizeof path, "%s/%s", dir, files[i]);
+        unlink(path);
+    }
+    assert(rmdir(dir) == 0);
+    puts("ok pvr stub: id/index semantics, validation and file persistence");
+    return 0;
+}

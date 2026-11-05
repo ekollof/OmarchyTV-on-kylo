@@ -442,6 +442,23 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `posix_spawn("/sbin/mdev", "-s")` plus `waitpid`; the channel-list test
       uses `nftw` cleanup instead of a shell command. The display test wrappers
       remain as no-system regression guards. Host410 ok, verify45. No TV access.
+- [x] Vendor-grounded PVR module: added an `oa_pvr_backend` boundary shaped
+      after `DvrController::startRecording/recordingQuery/stopRecording` and
+      the SDK scheduler getters (integer recording id, index enumeration).
+      `mod_pvr` publishes `pvr`; the offline `pvr-stub` persists up to 256 jobs
+      atomically in `pvr.path`, validates requests, assigns monotonic ids,
+      cancels only scheduled jobs and fails closed on corrupt files. Unit and
+      real Unix-socket tests cover add/list/cancel/reload and cross-process
+      persistence. Host421 ok, verify45; ARM mod_pvr and qemu test pass.
+      PVR-MODULE. Limits: no active recording/timeshift/playback/storage/
+      conflict/series engine, project file store (not vendor SQLite metadata),
+      repeat days stored not expanded. No TV access.
+
+- [ ] Vendor-backed PVR engine: replace the persistent stub with real
+      stream/PMT capture, vendor/SQLite recording metadata, timeshift/
+      playback, storage management and conflict handling once a live tuner/
+      storage integration window is owner-approved.
+
 - [x] Live CPU-only module acceptance on the TV: staged the ABI 3 ARM core,
       `mod_epg` and `mod_tuner` in /tmp, verified all hashes on-device before
       execution, and drove load/start/scan/reload/stop/unload over the real

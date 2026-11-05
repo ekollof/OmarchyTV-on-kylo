@@ -80,6 +80,9 @@ This proves the control-plane plumbing, not broadcast parity:
   implemented; filters, schedules and persistence remain absent;
 - no recording engine, timeshift, storage, conflict handling or playback;
 - the fixture is the only backend; no vendor-grounded tuner/EIT/PVR backend;
+  **superseded:** real offline `mod_tuner`/`mod_epg`/`mod_pvr` backends now
+  exist (TUNER-NIM-MODULE, EPG-EIT-MODULE, PVR-MODULE), still without live
+  vendor hardware;
 - no UI integration and no TV access.
 
 Runtime EASI remains blocked: testtool TCP 1986 is disabled and enabling it

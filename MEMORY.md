@@ -19,6 +19,16 @@ error cases; two foxxum results match qemu SHA256 exactly. Verified15-file/
 vendor pair1967(zombie)/1785(live) and no-reset marker unchanged. tvssh sent
 WoL initially. No framebuffer/device operation or persistent deployment change.
 
+PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary
+(integer recording id, start/stop, index query) with a persistent offline stub.
+mod_pvr reads pvr.path, atomically stores up to 256 jobs, assigns monotonic ids,
+cancels only scheduled jobs and fails closed on corrupt files. Unit and real
+Unix-socket tests cover add/list/cancel/reload and cross-process persistence.
+Host421 ok, verify45; ARM mod_pvr and qemu test pass. Stub only: no active
+recording/timeshift/playback/storage/conflict/series engine, project file store
+rather than vendor SQLite metadata, repeat days stored not expanded. No TV
+access.
+
 LIVE-MODULE-ACCEPTANCE-2026-11-05: first live TV run of the ABI 3 ARM build
 under stock Aurora. Staged core/mod_epg/mod_tuner in /tmp, verified hashes on
 the TV before execution, and drove load/start/scan/reload/stop/unload over the

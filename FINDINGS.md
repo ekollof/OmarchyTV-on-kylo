@@ -38,6 +38,15 @@ reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
 first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
 capture remain open.
 
+PVR-MODULE-2026-11-05: the PVR service is now a real mod_pvr with a
+vendor-shaped backend boundary (integer recording id, start/stop, index query)
+and a persistent offline stub. pvr.path stores up to 256 jobs atomically with
+monotonic ids; cancel only moves scheduled jobs; corrupt files fail closed.
+Unit and real socket tests cover add/list/cancel/reload and cross-process
+persistence; host421 ok, verify45; ARM/qemu passes. Stub only: no active
+recording, timeshift/playback, storage/conflict/series engine, vendor SQLite
+metadata or repeat-day expansion. No TV access.
+
 LIVE-MODULE-ACCEPTANCE-2026-11-05: the ABI 3 ARM core, mod_epg and mod_tuner
 were executed on the TV from /tmp under stock Aurora after on-device hash
 verification. Real-socket load/start/scan/reload/stop/unload passed; the tuner
