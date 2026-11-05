@@ -1,0 +1,38 @@
+# pre-takeover 2026-11-05T21:59:32Z
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ 22:59:31 up  1:11,  0 users,  load average: 15.11, 15.14, 15.02
+pids
+pid=2186 exe=
+pid=1782 exe=/vendor/com.nvt.idtv/aurora.elf
+appmgr=1580
+fb
+/sys/class/graphics/fb0/name OSD_NORMAL1
+/sys/class/graphics/fb1/name OSD_NORMAL2
+/sys/class/graphics/fb2/name OSD_NORMAL3
+/sys/class/graphics/fb3/name OSD_CURSOR1
+/sys/class/graphics/fb4/name OSD_CURSOR2
+/sys/class/graphics/fb0/virtual_size 1920,3240
+/sys/class/graphics/fb1/virtual_size 1920,2160
+/sys/class/graphics/fb2/virtual_size 1280,1440
+/sys/class/graphics/fb3/virtual_size 256,512
+/sys/class/graphics/fb4/virtual_size 32,64
+/sys/class/graphics/fb0/pan 0,1080
+/sys/class/graphics/fb1/pan 0,1080
+/sys/class/graphics/fb2/pan 0,0
+/sys/class/graphics/fb3/pan 0,0
+/sys/class/graphics/fb4/pan 0,0
+conf
+ls: /conf/oa_boot: No such file or directory
+ls: /conf/oa_fail: No such file or directory
+-rw-------    1 root     root             0 Oct 31 11:56 /conf/coredumpnoreset
+buffer
+Filesystem                Size      Used Available Use% Mounted on
+ubi14_0                 232.5M     45.9M    186.6M  20% /buffer
+staging
+-rwxr-xr-x    1 1000     1000        538100 Nov  5 22:58 /buffer/oa-takeover-20261105/openaurora
+oa
+21490 sh -c uptime; echo pids; for p in $(pidof aurora.elf); do echo "pid=$p exe=$(readlink /proc/$p/exe)"; done; echo appmgr=$(pidof com.nvt.appmgr); echo fb; for f in /sys/class/graphics/fb*/name /sys/class/graphics/fb*/virtual_size /sys/class/graphics/fb*/pan; do echo "$f $(cat $f 2>/dev/null)"; done; echo conf; ls -l /conf/oa_boot /conf/oa_fail /conf/coredumpnoreset 2>&1; echo buffer; df -h /buffer; echo staging; ls -l /buffer/oa-takeover-20261105/openaurora; echo oa; pgrep -af openaurora || true

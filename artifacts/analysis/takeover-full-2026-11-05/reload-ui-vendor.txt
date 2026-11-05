@@ -1,0 +1,35 @@
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+--- before
+[531987] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 3
+[531988] DBG  ir           ir: BLAST code=00003855 aux=00 flag=00 -> rc=21 Left
+[532537] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 2
+[532537] DBG  ir           ir: BLAST code=00003855 aux=00 flag=01 -> rc=21 Left
+ok
+portal screen 0
+name    ui_vendor
+state   started
+version 0.2
+path    ./modules/mod_ui_vendor.so
+requires ui.engine
+cleanup_pending 0
+activation_rejected 0
+services ui.portal:v1
+rc=0
+--- after
+[538798] DBG  ir           ir: BLAST code=00003055 aux=00 flag=00 -> rc=21 Left
+[539354] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 1
+[539354] DBG  ir           ir: BLAST code=00003055 aux=00 flag=01 -> rc=21 Left
+[539354] DBG  ui_vendor    service down: ui.portal
+[539354] INFO host         stopped ui_vendor
+[539354] INFO host         unloaded ui_vendor
+[539355] INFO host         loaded ui_vendor v0.2 (./modules/mod_ui_vendor.so)
+[539355] INFO host         ui_vendor: restored 5 bytes of state
+[539386] DBG  ui_vendor    service up: ui.portal v1
+[539937] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 1
+[539937] INFO host         started ui_vendor
+[539937] INFO host         ui_vendor: reloaded (started)
+[540487] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 1
+[540487] DBG  ir           ir: BLAST code=00003855 aux=00 flag=00 -> rc=21 Left

@@ -1,0 +1,8 @@
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+watchdog disable -> sent
+--- after term
+appmgr=1580
+21538 sh -c sync; /buffer/wdtctl disable; sleep 1; kill -TERM 1782; sleep 3; echo "--- after term"; for p in $(pidof aurora.elf); do echo "pid=$p exe=$(readlink /proc/$p/exe 2>/dev/null) cmd=$(tr "\0" " " </proc/$p/cmdline 2>/dev/null)"; done; echo appmgr=$(pidof com.nvt.appmgr); pgrep -af openaurora || true

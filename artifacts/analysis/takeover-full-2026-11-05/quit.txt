@@ -1,0 +1,14 @@
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+bye
+client=0
+22845 sh -c cd /buffer/oa-takeover-20261105 && ./oa-client ./control "quit" 2>&1; echo client=$?; sleep 2; pgrep -af openaurora || true; ls -l control 2>&1; tail -6 run.log
+ls: control: No such file or directory
+[626090] INFO host         unloaded service_db
+[626090] INFO host         unloaded settings
+[626090] INFO host         unloaded ui_engine
+[626090] INFO host         unloaded display_fb
+[626091] INFO host         unloaded plat_stub
+[626091] INFO host         openaurora stopped

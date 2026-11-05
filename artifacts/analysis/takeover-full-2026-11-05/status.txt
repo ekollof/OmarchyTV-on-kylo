@@ -1,0 +1,30 @@
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+portal screen 0
+name    ir
+state   started
+version 0.1
+path    ./modules/mod_ir.so
+requires plat
+cleanup_pending 0
+activation_rejected 0
+services input:v1
+name    ui_vendor
+state   started
+version 0.2
+path    ./modules/mod_ui_vendor.so
+requires ui.engine
+cleanup_pending 0
+activation_rejected 0
+services ui.portal:v1
+name    display_fb
+state   started
+version 0.1
+path    ./modules/mod_display_fb.so
+requires
+cleanup_pending 0
+activation_rejected 0
+services display:v2 display.alpha:v1
+client=0

@@ -1,0 +1,21 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ 23:06:18 up 1 min,  0 users,  load average: 12.13, 3.86, 1.35
+--- pids
+pid=2206 exe=
+pid=1769 exe=/vendor/com.nvt.idtv/aurora.elf
+appmgr=1569
+--- fb
+/sys/class/graphics/fb1/virtual_size 1920,2160
+/sys/class/graphics/fb1/pan 0,0
+--- conf
+ls: /conf/oa_boot: No such file or directory
+ls: /conf/oa_fail: No such file or directory
+--- staging
+ls: /buffer/oa-takeover-20261105: No such file or directory
+--- buffer
+Filesystem                Size      Used Available Use% Mounted on
+ubi14_0                 232.5M     41.4M    191.2M  18% /buffer

@@ -1,5 +1,17 @@
 # Current project state — last verified 2026-11-05
 
+Full portal takeover with the physical remote, 2026-11-05: staged ABI 3
+`plat_stub/display_fb/ui_engine/settings/service_db/image_decode/ir/ui_vendor`
+under `/buffer`, stopped stock and painted the vendor Startpagina portal on
+fb1. The real remote produced 29 BLAST presses (Right22/Left21/Down19/Up20)
+and moved card/rail focus. TV-side `reload ir` closed/reopened `/dev/video28`
+without hang; `reload ui_vendor` restored state, republished `ui.portal`,
+repainted and kept decoding keys. Display stop needed the known retry; quit
+was clean and fb1 returned blank. Staging removed and watchdog reboot restored
+stock (aurora 1769, appmgr 1569, pan0,0, source5 unchanged). **Open defect:
+median portal repaint 617 ms**, so the 11-frame/30 ms rail highlight takes
+~6.8 s; performance work is pending. TAKEOVER-FULL-2026-11-05.
+
 Temporary takeover, 2026-11-05: openaurora owned fb1 while `aurora.elf` was
 stopped. Vendor Startpagina was the live skin. Right through the shipped IR
 parser focused Netflix after the Lua script was unloaded. `skin absent` fell
@@ -21,9 +33,10 @@ and `plat_stub` + `mod_ir`, the physical Right/Down/Up/Left keys decoded as
 profile RC **22/19/20/21**; `0x800` is the RC5 toggle and `flag` is
 0=press/1=release. `mod_ir` now defaults to `ir.blast=1`,
 `ir.blast_video=/dev/video28`, protocol 4 and emits the RC code directly; ttyS2
-stays a fallback. The full portal UI remote takeover was not run. `wdtctl set
-10` restored stock (PIDs 2186/1782, appmgr 1580, BACK AV `m_current_source=1`);
-staging removed. TAKEOVER-IR-2026-11-05.
+stays a fallback. `wdtctl set 10` restored stock (PIDs 2186/1782, appmgr 1580,
+BACK AV `m_current_source=1`); staging removed. The later full portal run
+accepted the physical-remote path and both reloads; see TAKEOVER-FULL.
+TAKEOVER-IR-2026-11-05.
 
 IR-IPC-2026-11-05 (host, no TV): `tests/ir_ipc.cjs` drives the real
 `openaurora` Unix socket with plat/recorder/ui_engine/ui_vendor fixtures and

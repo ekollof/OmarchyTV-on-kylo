@@ -1,0 +1,32 @@
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+--- before
+[529831] DBG  ir           ir: BLAST code=00003856 aux=00 flag=00 -> rc=22 Right
+[530387] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 2
+[530387] DBG  ir           ir: BLAST code=00003856 aux=00 flag=01 -> rc=22 Right
+ok
+name    ir
+state   started
+version 0.1
+path    ./modules/mod_ir.so
+requires plat
+cleanup_pending 0
+activation_rejected 0
+services input:v1
+portal screen 0
+rc=0
+--- after
+[531422] DBG  ir           service down: input
+[531422] INFO host         stopped ir
+[531422] INFO host         unloaded ir
+[531422] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[531422] DBG  ir           service up: input v1
+[531427] INFO ir           ir: BLAST v4l2 fd 9 from /dev/video28
+[531427] INFO ir           ir: BLAST receiver protocol 4 (set rc=0, poll on)
+[531427] INFO ir           remote parser ready; UART path empty
+[531427] INFO host         started ir
+[531427] INFO host         ir: reloaded (started)
+[531987] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 3
+[531988] DBG  ir           ir: BLAST code=00003855 aux=00 flag=00 -> rc=21 Left

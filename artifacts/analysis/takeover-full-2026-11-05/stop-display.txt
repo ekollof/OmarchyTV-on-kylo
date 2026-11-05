@@ -1,0 +1,30 @@
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ok
+ok
+plat_stub      loaded    id=4   ./modules/mod_plat_stub.so
+display_fb     loaded    id=5   ./modules/mod_display_fb.so
+ui_engine      loaded    id=6   ./modules/mod_ui_engine.so
+settings       loaded    id=10  ./modules/mod_settings.so
+service_db     loaded    id=12  ./modules/mod_service_db.so
+image_decode   loaded    id=13  ./modules/mod_image_decode.so
+ir             loaded    id=24  ./modules/mod_ir.so
+ui_vendor      loaded    id=28  ./modules/mod_ui_vendor.so
+rc=0
+[590858] DBG  service_db   service down: service.list
+[590858] INFO host         stopped service_db
+[590858] DBG  settings     service down: launcher.db
+[590858] DBG  settings     service down: settings.hotel
+[590858] DBG  settings     service down: settings
+[590859] INFO host         stopped settings
+[590860] ERR  host         display_fb: cleanup pending; retry stop/unload
+[590860] DBG  plat_stub    service down: plat
+[590860] INFO host         stopped plat_stub
+[619705] DBG  display_fb   service down: display
+[619705] DBG  display_fb   service down: display.alpha
+[619705] INFO host         stopped display_fb
+--- fb
+0,1080
+1920,2160

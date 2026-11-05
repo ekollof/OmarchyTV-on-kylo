@@ -44,9 +44,20 @@ keys; the live stock process then showed the BLAST common fd **222 =
 `/dev/video28`** and RC type **1** (protocol 4). `BLAST_RX` returns **0 on a
 key** and needs a `v4l2_open` fd. A clean IR-only takeover decoded the physical
 Right/Down/Up/Left keys as profile RC **22/19/20/21**; `mod_ir` now defaults to
-BLAST/video28 and emits the RC code directly. The full portal UI remote
-takeover was not run. Watchdog reboot restored stock (PIDs 2186/1782, appmgr
-1580), BACK AV (`m_current_source=1`); staging removed. TAKEOVER-IR-2026-11-05.
+BLAST/video28 and emits the RC code directly. Watchdog reboot restored stock
+(PIDs 2186/1782, appmgr 1580), BACK AV (`m_current_source=1`); staging removed.
+TAKEOVER-IR-2026-11-05.
+
+Full portal physical-remote takeover, 2026-11-05: staged
+`plat_stub/display_fb/ui_engine/settings/service_db/image_decode/ir/ui_vendor`
+under `/buffer`, stopped stock and painted Startpagina on fb1. The physical
+remote moved card/rail focus with 29 BLAST presses; TV-side `reload ir`
+reopened `/dev/video28` without hang; `reload ui_vendor` restored state and
+kept decoding keys. Display stop needed the known retry; clean quit, staging
+removed, watchdog reboot restored stock (aurora 1769, appmgr 1569, pan0,0,
+source5 unchanged). **Open defect: median full-portal repaint 617 ms**, making
+the 11×30 ms rail highlight take ~6.8 s. TAKEOVER-FULL-2026-11-05; not cold
+startup/scanout/animation parity.
 
 Offline IR IPC, 2026-11-05: `tests/ir_ipc.cjs` now drives `mod_ir` over the
 real Unix control socket with plat/recorder/ui_engine/ui_vendor fixtures

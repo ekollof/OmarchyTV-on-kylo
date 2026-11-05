@@ -1,0 +1,5 @@
+The load/start batch was sent in one oa-client connection; the local tool call
+was interrupted before it printed the replies. The remote host completed the
+batch: see run.log lines for plat_stub, display_fb, ui_engine, settings,
+service_db, image_decode, ir, ui_vendor and "painted portal: 5 rail items, 12
+cards, band 0 rail 2 card 0".

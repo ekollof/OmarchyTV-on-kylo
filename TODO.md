@@ -119,6 +119,27 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       stock UI, no cold startup/native scanout, no live EIT signal, PVR DVR
       sink not wired.
 
+- [x] Full portal takeover with the physical remote: staged
+      plat_stub/display_fb/ui_engine/settings/service_db/image_decode/ir/
+      ui_vendor under `/buffer`, stopped stock and painted Startpagina on
+      fb1. The physical remote produced 29 BLAST presses
+      (Right22/Left21/Down19/Up20) and moved card/rail focus; `reload ir`
+      reopened `/dev/video28` without hang; `reload ui_vendor` restored state,
+      republished `ui.portal`, repainted and kept decoding keys. Display stop
+      needed the known retry; quit was clean and fb1 restored blank. Staging
+      removed and watchdog reboot restored stock (aurora 1769, appmgr 1569,
+      pan0,0, source5 unchanged). TAKEOVER-FULL. Limits: portal only, no
+      settings/apps/source physical run, no cold startup/scanout/animation
+      parity.
+
+- [ ] Portal repaint/animation cost: the full 1920x1080 portal repaint takes
+      a median 617 ms on the TV, so the 11-frame/30 ms rail highlight stretches
+      to ~6.8 s and remote steps feel delayed. Profile display_fb present
+      (scene-to-BGRA, mirror, msync, pan) and the portal paint path, then
+      reduce or coalesce the redraw without changing the captured static
+      frames. TAKEOVER-FULL records the measured defect. No animation parity
+      claim until fixed.
+
 - [ ] Runtime EASI/testtool: testtool TCP1986 remains disabled. The 2026-11-05
       full-control authorization covered temporary staged modules/display, not
       enabling testtool or persistent replacement. Reopen with an explicit
@@ -335,9 +356,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       load/start, `input:v1`, key navigation, stop→ENODEV, start, `reload ir`,
       live `reload ui_vendor`, stop/start ui_vendor, unload/load ir and clean
       exit with plat/recorder fixtures. `make -j24 check-ir-ipc`,
-      `check-ui-vendor-ipc` and `check-ui-nav` pass. Remaining: full portal UI
-      takeover with the physical remote, repeat/long-press and complete key
-      mapping, and clean vendor-library reload on the TV. The MCU
+      `check-ui-vendor-ipc` and `check-ui-nav` pass. TAKEOVER-FULL-2026-11-05
+      accepted the full portal UI takeover with the physical remote and both
+      TV-side reloads. Remaining: repeat/long-press and complete key mapping,
+      and clean vendor-library reload on the TV. The MCU
       `_HW_MCU_RcInit`/STBC RWDB path is not required for this remote; do not
       call STBC cold without the ownership/recovery plan.
 - [ ] Power: complete native device preparation/wake/resume ownership and actual
