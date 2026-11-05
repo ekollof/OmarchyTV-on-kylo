@@ -1160,6 +1160,14 @@ check-fixture-modules-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_theme.so 
 	node tests/fixture_modules_ipc.cjs $(abspath $(BUILD))
 check: check-fixture-modules-ipc
 
+$(BUILD)/tests/fake_fb_preload.so: tests/fake_fb_preload.c include/openaurora/fb_snapshot.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $< -ldl
+.PHONY: check-fake-fb-socket
+check-fake-fb-socket: $(BUILD)/$(PROJECT) $(BUILD)/tests/fake_fb_preload.so $(BUILD)/modules/mod_display_fb.so
+	node tests/fake_fb_socket.cjs $(abspath $(BUILD))
+check: check-fake-fb-socket
+
 ui-skin-socket-modules = $(BUILD)/tests/ui-skin-socket/modules
 .PHONY: check-ui-skin-socket
 check-ui-skin-socket: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/tests/ui_nav_display.so

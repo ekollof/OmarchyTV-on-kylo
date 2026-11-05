@@ -93,6 +93,13 @@ reauthorized; fb1 and stock operation must stay untouched. This supersedes the
 earlier "Don't touch the TV" restriction. No persistent replacement or boot
 changes. The historical offline-only entries describe their original runs.
 
+FAKE-FB-SOCKET-2026-11-05 (host-only): an LD_PRELOAD fake /dev/fb1 with the
+recovered region/MAU/pan ioctls runs the real mod_display_fb over the socket.
+A self-test paint changes yoffset/region/pixel FNV; suspend, stop, start/reload
+and unload/load/start all restore the initial yoffset, MAU, eight region words
+and pixel hash. Host401 ok, verify45. User-space fake only; real kernel/TDGA,
+physical fb1, vendor coexistence and cold startup remain.
+
 FIXTURE-MODULES-IPC-2026-11-05 (host-only): a real `--sock` host runs
 ui_theme (synthetic BinSVG), ui_profile (synthetic EFSL), audio_amp_profile
 (extracted hwprofile), audio_curve (synthetic 1668-byte AQ/profile0) and

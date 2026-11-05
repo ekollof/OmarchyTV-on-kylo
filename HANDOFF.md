@@ -144,6 +144,14 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
+Latest fake fb: [FAKE-FB-SOCKET](artifacts/reports/FAKE-FB-SOCKET-2026-11-05.md)
+runs the real mod_display_fb over the socket with an LD_PRELOAD fake /dev/fb1
+and recovered region/MAU/pan ioctls. A self-test paint changes yoffset/region/
+pixel FNV; suspend, stop, start/reload and unload/load/start all restore the
+initial yoffset, MAU, eight region words and pixel hash. Host401 ok, verify45.
+User-space fake; real kernel/TDGA, physical fb1, vendor coexistence and cold
+startup remain.
+
 Latest fixtures: [FIXTURE-MODULES-IPC](artifacts/reports/FIXTURE-MODULES-IPC-2026-11-05.md)
 runs ui_theme, ui_profile, audio_amp_profile, audio_curve and audio_mixer over
 the real socket with synthetic BinSVG/EFSL/AQ fixtures, extracted hwprofile and

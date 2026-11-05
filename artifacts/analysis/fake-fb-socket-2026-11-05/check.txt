@@ -1,0 +1,2 @@
+node tests/fake_fb_socket.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok actual fake-fbdev display_fb IPC: start/suspend/resume/reload/stop/reuse and full snapshot restoration

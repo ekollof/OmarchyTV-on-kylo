@@ -590,6 +590,14 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       UI-STACK-IPC. Limits: non-HAL modules only; physical fb1, full hardware
       module set, holds under all consumers and cold startup remain.
 
+- [x] Fake-fbdev display_fb socket lifecycle: an LD_PRELOAD fake /dev/fb1 and
+      recovered region/MAU/pan ioctls run the real mod_display_fb over the
+      socket. Self-test paint changes yoffset/region/pixel FNV; suspend, stop,
+      start/reload/stop and unload/load/start/stop all restore the initial
+      yoffset, MAU, eight region words and pixel hash. Host401 ok, verify45.
+      FAKE-FB-SOCKET. Limits: user-space fake; real kernel/driver behavior,
+      physical fb1/TDGA, vendor coexistence and cold startup remain.
+
 - [x] Fixture-backed module socket lifecycle: ui_theme (synthetic BinSVG),
       ui_profile (synthetic EFSL), audio_amp_profile (extracted hwprofile),
       audio_curve (synthetic 1668-byte AQ/profile0) and audio_mixer (real host

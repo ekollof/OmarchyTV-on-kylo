@@ -6,6 +6,13 @@ Private controls forward to EX_PLAT; successful ioctl still does not prove
 MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
+FAKE-FB-SOCKET-2026-11-05: an LD_PRELOAD fake /dev/fb1 with the recovered
+region/MAU/pan ioctls runs the real mod_display_fb over the socket. A self-test
+paint changes yoffset/region/pixel FNV; suspend, stop, start/reload and
+unload/load/start all restore the initial yoffset, MAU, eight region words and
+pixel hash. Host401 ok, verify45. User-space fake only; real kernel/TDGA,
+physical fb1, vendor coexistence and cold startup remain.
+
 FIXTURE-MODULES-IPC-2026-11-05: a real `--sock` host runs ui_theme (synthetic
 BinSVG), ui_profile (synthetic EFSL), audio_amp_profile (extracted hwprofile),
 audio_curve (synthetic 1668-byte AQ/profile0) and audio_mixer (host broker).
