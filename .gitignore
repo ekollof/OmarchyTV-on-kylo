@@ -32,3 +32,6 @@
 *.swp
 *~
 .DS_Store
+
+# Raw recorder intermediates; PNG captures are the maintained evidence.
+artifacts/analysis/**/offline-apps-grid-*.rgba
