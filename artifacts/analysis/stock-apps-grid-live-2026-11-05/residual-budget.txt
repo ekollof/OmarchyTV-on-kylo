@@ -1,0 +1,34 @@
+Per-cell MAE8 (stock vs firmware-dump render), focus-corrected:
+cell_r0c0 MAE8=0.185334
+cell_r0c1 MAE8=0.573993
+cell_r0c2 MAE8=0.465012
+cell_r0c3 MAE8=0.646115
+cell_r0c4 MAE8=0.443516
+cell_r1c0 MAE8=0.627793
+cell_r1c1 MAE8=0.572043
+cell_r1c2 MAE8=0.472445
+cell_r1c3 MAE8=0.764222
+cell_r1c4 MAE8=0.702595
+cell_r2c0 MAE8=0.824797
+cell_r2c1 MAE8=0.633025
+cell_r2c2 MAE8=0.681828
+cell_r2c3 MAE8=0.259677
+cell_r2c4 MAE8=1.64659
+
+Focused-tile geometry oracle: stock cell_r0c0 non-orange bbox is
+x 7..300, y 7..171 inside the 310x230 cell (294x165), the same as
+non-focused tiles. The earlier 300x166 at +5,+7 model was wrong.
+
+Dominant residual cells:
+- cell_r2c4: 1.647, DAZN: Sport Live Stream, source foxxum_thumb_3753
+  is a 384x216 baseline JPEG; the vendor decoder and libjpeg differ.
+- Markt animation: 0.185 after the geometry fix, down from 3.343.
+- Remaining PNG tiles: 0.26..0.82, source-decode/sampling noise.
+
+Background outside the grid/top/scrollbar is exact: bottom 0.0029,
+left margin 0.0386, right margin 0.0179, gap strip 0.0128 MAE8.
+
+Sampling colour space: a linear-light (sRGB->linear->sRGB) bilinear variant
+measured worse than sRGB-space bilinear on the same corpus (0.199% vs 0.173%
+AE before the focus fix), so the recorder keeps sRGB-space interpolation.
+The linear-light experiment was reverted and is not committed.

@@ -11,11 +11,13 @@ Interpretation:
   fonts and a bilinear tile scaler.
 - `offline-apps-grid-end.png`: final corpus page (four tiles + empty cell).
 - `page-order.txt`, `font-metrics.txt`: verified order and exact font records.
+- `residual-budget.txt`: per-cell MAE8 and the remaining error sources.
 - `compare-live.txt`: full/region metrics.
 - `check.txt`, `full-host-summary.txt`: host suite and verifier.
 - `identities.txt`: DB/oracle/candidate hashes.
 - `inputs.txt`: parent-1 row and asset counts.
 
-Result: full AE 3583.62 (0.17%), MAE8 0.441, changed 7.65%; top strip
-0.0035%, grid 0.316%, scrollbar 0.0168%. The stock catalog is 23 parent-1 rows
-plus Markt, 24 entries; there is no OmarchyTV tile.
+Result: full AE 2700.71 (0.130%), MAE8 0.332, changed 7.04%; top strip
+0.0035%, grid 0.605%, scrollbar 0.0168%. The stock catalog is 23 parent-1 rows
+plus Markt, 24 entries; there is no OmarchyTV tile. The focused tile is also
+294x165 at cell+7,+7; the earlier full-width focus model was wrong.

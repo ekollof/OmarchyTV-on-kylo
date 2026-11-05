@@ -20,9 +20,10 @@ navigation and supplied the remote photo for key identification.
 
 The captured page shows: solid `#481730` top strip with "Apps", the
 `background_fullscreen` theme gradient with decorative shapes, 5 columns of
-294x166 tiles on a 310px horizontal pitch / 230px row pitch, a focused
-"Markt" tile expanded to the full 310x230 cell with an orange label strip, and
-a 4px white scrollbar over a `#811924` track at x=1750.
+294x165 tiles on a 310px horizontal pitch / 230px row pitch, and a 4px white
+scrollbar over a `#811924` track at x=1750. The focused "Markt" cell is the
+only cell painted with the orange backdrop; its image is still 294x165 at
+cell+7,+7, and the label sits at (308,369) below it.
 
 ## Renderer changes
 
@@ -31,8 +32,8 @@ blob is present:
 
 - blit the theme background and repaint the solid `#481730` top strip;
 - blit the "Apps" title at (81,68) from vendor bitmap font **18**;
-- draw non-focused tiles at cell+7,+7 with 294×166 and the focused tile at
-  cell+5,+7 with the orange cell backdrop, using a bilinear recorder scaler;
+- draw every tile, focused or not, at cell+7,+7 with 294x165 using a bilinear
+  recorder scaler; focus only paints the 310x230 orange cell backdrop;
 - blit the "Markt" label from vendor bitmap font **4** in `(38,23,25)` at
   (308,369);
 - draw the scrollbar as a white bar over a `#811924` track at x=1750,
@@ -77,24 +78,39 @@ Firmware parent-1 catalog + original downloaded icons vs the byte-identical
 fresh oracle:
 
 ```
-full: AE=3583.62 (0.001728) RMSE16=1025.16 MAE8=0.440694 changed=7.65%
-top strip 0.0035%, grid 0.316%, scrollbar 0.0168%
+full: AE=2700.71 (0.001302) RMSE16=558.418 MAE8=0.332119 changed=7.04%
+top strip 0.0035%, grid 0.605%, scrollbar 0.0168%
 ```
 
-Title and label are now exact vendor bitmap-font rasters (font18/font4),
-including the label colour. Tiles use cell+7,+7 at 294×166 and the recorder
-now samples bilinearly, matching the stock scaler. The scrollbar is a 688px
-track with bar `688*visible/total - 16` = 414px. Earlier parent-0,
-stock-cropped, TTF-title and inferred-OmarchyTV results are superseded.
+Title and label are exact vendor bitmap-font rasters (font18/font4),
+including the label colour. The focused tile measurement is corrected: the
+stock cell's non-orange bbox is x 7..300, y 7..171 (294x165), identical to a
+non-focused tile, so focus only changes the cell backdrop. That fix alone took
+the Markt cell from MAE8 3.343 to 0.185 and the full image from 0.173% to
+0.130%. Tiles use 294x165 at cell+7,+7 with a bilinear recorder scaler. The
+scrollbar is a 688px track with bar `688*visible/total - 16` = 414px. Earlier
+parent-0, stock-cropped, TTF-title, full-width-focus and inferred-OmarchyTV
+results are superseded.
+
+## Residual budget
+
+Per-cell MAE8 is 0.26..0.82 for the PNG tiles and 0.185 for Markt. The one
+remaining outlier is `cell_r2c4` (1.647): DAZN: Sport Live Stream uses
+`foxxum_thumb_3753`, a 384x216 baseline JPEG, and the vendor decoder differs
+from libjpeg (mainly chroma/R-B on the high-contrast logo). Everything outside
+the grid is essentially exact: bottom 0.0029, left margin 0.0386, right margin
+0.0179 and gap strip 0.0128 MAE8. A Gaussian prefilter or trilinear-mip model
+would lower the PNG-tile residual further, but neither is firmware-proven, so
+the recorder keeps plain bilinear rather than fitting the oracle.
 
 ## Limits
 
 - The corpus is the firmware-dump parent-1 catalog plus Markt, not the live
   SQLite state; its purpose is renderer comparison.
-- Third-row icons come from the oracle; those cells cannot prove independent
-  downloaded-image parity.
-- The title/label are rendered/cropped from stock sources, not a recovered
-  vendor text rasterizer.
+- All 23 parent-1 rows use the downloaded thumbnail bytes; the fixed-corpus
+  path still stages its synthetic corpus separately.
+- The title/label are exact vendor bitmap font rasters, but the full vendor
+  text layout engine (kerning/fallback) is not exercised by two short strings.
 - Capture is stock fb1, not HDMI/cold-start scanout; DIAL navigation changed
   the stock UI screen (no settings, source or persistent state).
 - No testtool, no display takeover, no native scanout.

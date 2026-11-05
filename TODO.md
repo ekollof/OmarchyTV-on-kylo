@@ -853,23 +853,26 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       tile, OKs) and read-only fb1, saved it as
       `artifacts/protocol/stock-apps-grid.png`. Added a stock-layout renderer
       mode using `background_fullscreen`, solid `#481730` top strip, "Apps"
-      title, 294x166 tiles on a 310/230 pitch, full-cell focus, font-rendered
-      Markt label and white-on-#811924 scrollbar. Added `stage-apps-grid.py`,
+      title, 294x165 tiles at cell+7,+7 on a 310/230 pitch, focus painting only
+      the orange cell backdrop, font-rendered Markt label and
+      white-on-#811924 scrollbar. Added `stage-apps-grid.py`,
       `apps_grid_stock` and live-DB capture; all 23 firmware-dump parent-1 catalog rows and the original downloaded
       thumbnails are used, plus Markt (24 total), with no oracle tile crops.
       Manifest comparison improved from AE 29.56% / MAE8 75.38 to
-      **AE 0.17% / MAE8 0.44** (top 0.0035%, grid 0.316%, scrollbar 0.017%),
+      **AE 0.13% / MAE8 0.33** (top 0.0035%, grid 0.605%, scrollbar 0.017%),
       with exact vendor bitmap font18/4 title/label rasters and a bilinear
-      tile scaler.
+      tile scaler. The focused-tile bbox oracle is 294x165; the earlier
+      full-cell model took Markt MAE8 3.343 to 0.185.
       Host423 ok, verify45. STOCK-APPS-GRID-PARITY. Limits: fb1 capture, not
-      HDMI/cold-start scanout; residual per-cell edge/content error remains.
+      HDMI/cold-start scanout; residual per-cell source-decode/sampling
+      remains, largest is the 384x216 JPEG tile.
 
 - [x] Apps-grid residual font/scaling parity: recovered the exact EF41 bitmap
       fonts from the firmware pack (title font18, label font4 in `(38,23,25)`),
       replaced the TTF approximation and switched the recorder to bilinear
       tile scaling. The 24-entry order and empty final cell are verified from
-      the dump and scrolled capture. Manifest AE 0.17%, MAE8 0.44; top
-      0.0035%, grid 0.316%, scrollbar 0.017%. STOCK-APPS-GRID-PARITY.
+      the dump and scrolled capture. Manifest AE 0.13%, MAE8 0.33; top
+      0.0035%, grid 0.605%, scrollbar 0.017%. STOCK-APPS-GRID-PARITY.
 
 - [x] Stock-capture parity analysis: the old `shot-launcher-right.png` is an
       R/B-swapped pre-correction capture; after channel correction it matches

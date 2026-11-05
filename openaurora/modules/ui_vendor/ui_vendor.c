@@ -1047,14 +1047,12 @@ static void paint_apps(struct ctx *c)
         const oa_ui_icon *icon=find_icon(c,c->grid_cards[idx]);
         if (icon && icon->w>0 && icon->h>0) {
             if (stock) {
-                /* Stock non-focused tiles are 294x169 inside the 310x230
-                 * cell; the focused tile expands to the full cell width. */
-                int tw=idx==c->grid_sel?300:294;
-                int w=tw,h=w*icon->h/icon->w;
+                /* Every stock tile, focused or not, is 294x165 at cell+7,+7;
+                 * the focus state only paints the orange cell backdrop. The
+                 * earlier full-width focused tile was a measurement error. */
+                int w=294,h=w*icon->h/icon->w;
                 if (h>166) { h=166;w=h*icon->w/icon->h; }
-                int ox=idx==c->grid_sel?5:7;
-                int oy=idx==c->grid_sel?7:7;
-                d->blit_scaled(x+ox,y+oy,w,h,
+                d->blit_scaled(x+7,y+7,w,h,
                     icon->w,icon->h,icon->rgba);
             } else {
                 int w=APPS_CELL_W-40,h=w*icon->h/icon->w;
