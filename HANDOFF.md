@@ -39,14 +39,14 @@ the set is in control. Staging `/buffer/oa-takeover` was removed. Not cold
 startup. TAKEOVER-2026-11-05.
 
 BACK AV IR follow-up, 2026-11-05: owner set BACK AV and confirmed the stock
-remote works there. A second takeover ran the real `mod_plat` (audio prelude,
-DRM/v4l2, GPIO/IIC, video open) and the vendor portal. `/dev/ttyS2` stayed
-`rx:0`; the new opt-in BLAST backend set protocols 4/5/6/0xc and saw no keys.
-The kernel BLAST driver hit its open limit and needed a reboot. Stock
-`_HW_MCU_RcInit`/STBC RWDB handshake is missing from openaurora, so the MCU
-does not forward IR after stock Aurora stops. Watchdog reboot restored stock
-(PIDs 1927/1776, appmgr 1617); source was set back to BACK AV manually.
-Staging removed. No physical-IR acceptance. TAKEOVER-IR-2026-11-05.
+remote works there. The first takeover found `/dev/ttyS2` `rx:0` and no BLAST
+keys; the live stock process then showed the BLAST common fd **222 =
+`/dev/video28`** and RC type **1** (protocol 4). `BLAST_RX` returns **0 on a
+key** and needs a `v4l2_open` fd. A clean IR-only takeover decoded the physical
+Right/Down/Up/Left keys as profile RC **22/19/20/21**; `mod_ir` now defaults to
+BLAST/video28 and emits the RC code directly. The full portal UI remote
+takeover was not run. Watchdog reboot restored stock (PIDs 2186/1782, appmgr
+1580), BACK AV (`m_current_source=1`); staging removed. TAKEOVER-IR-2026-11-05.
 
 Latest live acceptance: [LIVE-TV-ACCEPTANCE](artifacts/reports/LIVE-TV-ACCEPTANCE-2026-11-05.md)
 staged the ABI 3 tree under `/buffer`, ran epg/tuner/pvr/lua, and loaded

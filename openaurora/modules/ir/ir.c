@@ -41,6 +41,9 @@ struct ctx {
     void *blast;
     int (*blast_set)(unsigned);
     int (*blast_rx)(uint32_t *, uint8_t *, uint8_t *);
+    void (*blast_v4l2_fd)(int);
+    int (*blast_v4l2_close)(int);
+    int blast_fd;
     uint64_t blast_timer;
     int blast_on;
     unsigned rc_protocol, rc_sweep, rc_tick;
@@ -224,15 +227,20 @@ static void blast_poll(void *ud)
     }
     uint32_t code = 0;
     uint8_t aux = 0, flag = 0;
-    if (!c->blast_rx(&code, &aux, &flag))
+    /* DEV_Ir_GetKey returns 0 when a key is present; a nonzero value is the
+     * no-key/debug path that delays and retries. */
+    if (c->blast_rx(&code, &aux, &flag))
         return;
-    unsigned char f[9] = {
-        0xff, 0xff, (unsigned char)(flag ? 0x5e : 0x50),
-        (unsigned char)(code >> 24), (unsigned char)(code >> 16),
-        (unsigned char)(code >> 8), (unsigned char)code, 0xff, 0xff
-    };
-    (void)aux;
-    consume(c, f, sizeof f);
+    /* The BLAST hardware decoder returns the profile RC code in the low six
+     * bits (Right = 22 -> 0x16, seen as 0x3056/0x3856 with the RC5 toggle);
+     * flag is 0 on press and 1 on release. Do not feed this through the NEC
+     * frame parser: that parser expects the 0x66/0x11 A1/A2/complement frame. */
+    uint8_t rc = (uint8_t)(code & 0x3f);
+    const char *name = rc_name(rc);
+    c->api->log(c->api->priv, OA_LOG_DEBUG,
+                "ir: BLAST code=%08x aux=%02x flag=%02x -> rc=%u %s",
+                code, aux, flag, rc, name ? name : "?");
+    emit_key(c, rc, flag ? OA_KEY_RELEASE : OA_KEY_PRESS);
 }
 
 static void blast_close(struct ctx *c)
@@ -242,16 +250,40 @@ static void blast_close(struct ctx *c)
         c->blast_timer = 0;
     }
     c->blast_on = 0;
+    if (c->blast_fd >= 0) {
+        if (c->blast_v4l2_close)
+            c->blast_v4l2_close(c->blast_fd);
+        else
+            close(c->blast_fd);
+        c->blast_fd = -1;
+    }
     if (c->blast) {
         dlclose(c->blast);
         c->blast = NULL;
     }
     c->blast_set = NULL;
     c->blast_rx = NULL;
+    c->blast_v4l2_fd = NULL;
+    c->blast_v4l2_close = NULL;
 }
 
 static int blast_open(struct ctx *c)
 {
+    /* libNDAL3/EX reference ALSA control and libv4l2 wrapper symbols. mod_plat
+     * normally brings both in; make the IR module self-contained when loaded alone. */
+    (void)dlopen("libasound.so.2", RTLD_NOW | RTLD_GLOBAL);
+    void *v4l2 = dlopen("libv4l2.so.0", RTLD_NOW | RTLD_GLOBAL);
+    int (*v4l2_open_fn)(const char *, int, ...) = NULL;
+    int (*v4l2_close_fn)(int) = NULL;
+    if (v4l2) {
+        void *sym = dlsym(v4l2, "v4l2_open");
+        if (sym)
+            memcpy(&v4l2_open_fn, &sym, sizeof sym);
+        sym = dlsym(v4l2, "v4l2_close");
+        if (sym)
+            memcpy(&v4l2_close_fn, &sym, sizeof sym);
+    }
+    c->blast_v4l2_close = v4l2_close_fn;
     c->blast = dlopen("libNDAL_EX.so", RTLD_NOW | RTLD_LOCAL);
     if (!c->blast) {
         c->api->log(c->api->priv, OA_LOG_WARN, "ir: BLAST unavailable: %s", dlerror());
@@ -266,6 +298,29 @@ static int blast_open(struct ctx *c)
     }
     memcpy(&c->blast_set, &set, sizeof set);
     memcpy(&c->blast_rx, &rx, sizeof rx);
+    void *setfd = dlsym(c->blast, "ndcommon_v4l2_set_fd");
+    if (setfd)
+        memcpy(&c->blast_v4l2_fd, &setfd, sizeof setfd);
+    const char *video = c->api->config_get(c->api->priv, "ir.blast_video", "/dev/video28");
+    if (video[0]) {
+        if (!c->blast_v4l2_fd) {
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "ir: no ndcommon_v4l2_set_fd for %s", video);
+        } else {
+            int fd = v4l2_open_fn
+                ? v4l2_open_fn(video, O_RDWR | O_NONBLOCK)
+                : open(video, O_RDWR | O_NONBLOCK);
+            if (fd < 0) {
+                c->api->log(c->api->priv, OA_LOG_WARN,
+                            "ir: %s: %s", video, strerror(errno));
+            } else {
+                c->blast_fd = fd;
+                c->blast_v4l2_fd(fd);
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "ir: BLAST v4l2 fd %d from %s", fd, video);
+            }
+        }
+    }
     c->rc_sweep = 0;
     c->rc_tick = 0;
     int proto = atoi(c->api->config_get(c->api->priv, "ir.rc_protocol", "4"));
@@ -274,7 +329,9 @@ static int blast_open(struct ctx *c)
         proto = 4;
     }
     c->rc_protocol = (unsigned)proto;
-    int rc = c->blast_set(c->rc_protocol);
+    int rc = 0;
+    if (atoi(c->api->config_get(c->api->priv, "ir.blast_set", "1")) == 1)
+        rc = c->blast_set(c->rc_protocol);
     c->blast_on = 1;
     c->blast_timer = c->api->timer_add(c->api->priv, 0, 50, blast_poll, c);
     c->api->log(c->api->priv, OA_LOG_INFO,
@@ -312,6 +369,7 @@ static int m_init(const oa_host_api *api, void **out)
         return -1;
     c->api = api;
     c->fd = -1;
+    c->blast_fd = -1;
     g_ctx = c;
     *out = c;
     return 0;
@@ -324,7 +382,7 @@ static int m_start(void *v)
     if (c->api->publish(c->api->priv, OA_SVC_INPUT, 1, &g_input) != 0)
         return -1;
     c->published = 1;
-    if (atoi(c->api->config_get(c->api->priv, "ir.blast", "0")) == 1)
+    if (atoi(c->api->config_get(c->api->priv, "ir.blast", "1")) == 1)
         (void)blast_open(c);
     /* Empty ir.device keeps the UART closed. The same parser still accepts feed(). */
     snprintf(c->dev, sizeof c->dev, "%s", c->api->config_get(c->api->priv, "ir.device", IR_DEV));

@@ -1,0 +1,36 @@
+[938012] INFO host         openaurora starting, modules=./modules
+[938014] INFO host         control socket ./control
+openaurora: 0 module(s) loaded, control on ./control
+[944475] INFO host         loaded plat_stub v1 (./modules/mod_plat_stub.so)
+[944475] DBG  plat_stub    service up: plat v1
+[944475] INFO host         started plat_stub
+[944476] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[944476] DBG  ir           service up: input v1
+[944501] INFO ir           ir: BLAST v4l2 fd 7 from /dev/video28
+[944501] INFO ir           ir: BLAST receiver protocol 4 (set rc=0, poll on)
+[944502] INFO ir           remote parser ready; UART path empty
+[944502] INFO host         started ir
+[952727] DBG  ir           ir: BLAST code=00003056 aux=00 flag=00 -> rc=22 Right
+[952992] DBG  ir           ir: BLAST code=00003056 aux=00 flag=01 -> rc=22 Right
+[953102] DBG  ir           ir: BLAST code=00003856 aux=00 flag=00 -> rc=22 Right
+[953368] DBG  ir           ir: BLAST code=00003856 aux=00 flag=01 -> rc=22 Right
+[953439] DBG  ir           ir: BLAST code=00003056 aux=00 flag=00 -> rc=22 Right
+[953708] DBG  ir           ir: BLAST code=00003056 aux=00 flag=01 -> rc=22 Right
+[954086] DBG  ir           ir: BLAST code=00003856 aux=00 flag=00 -> rc=22 Right
+[954352] DBG  ir           ir: BLAST code=00003856 aux=00 flag=01 -> rc=22 Right
+[954760] DBG  ir           ir: BLAST code=00003056 aux=00 flag=00 -> rc=22 Right
+[955024] DBG  ir           ir: BLAST code=00003056 aux=00 flag=01 -> rc=22 Right
+[955537] DBG  ir           ir: BLAST code=00003856 aux=00 flag=00 -> rc=22 Right
+[955800] DBG  ir           ir: BLAST code=00003856 aux=00 flag=01 -> rc=22 Right
+[957084] DBG  ir           ir: BLAST code=00003054 aux=00 flag=00 -> rc=20 Up
+[957348] DBG  ir           ir: BLAST code=00003054 aux=00 flag=01 -> rc=20 Up
+[957647] DBG  ir           ir: BLAST code=00003854 aux=00 flag=00 -> rc=20 Up
+[957912] DBG  ir           ir: BLAST code=00003854 aux=00 flag=01 -> rc=20 Up
+[958115] DBG  ir           ir: BLAST code=00003055 aux=00 flag=00 -> rc=21 Left
+[958380] DBG  ir           ir: BLAST code=00003055 aux=00 flag=01 -> rc=21 Left
+[958565] DBG  ir           ir: BLAST code=00003853 aux=00 flag=00 -> rc=19 Down
+[958828] DBG  ir           ir: BLAST code=00003853 aux=00 flag=01 -> rc=19 Down
+[958956] DBG  ir           ir: BLAST code=00003056 aux=00 flag=00 -> rc=22 Right
+[959220] DBG  ir           ir: BLAST code=00003056 aux=00 flag=01 -> rc=22 Right
+[959396] DBG  ir           ir: BLAST code=00003854 aux=00 flag=00 -> rc=20 Up
+[959660] DBG  ir           ir: BLAST code=00003854 aux=00 flag=01 -> rc=20 Up

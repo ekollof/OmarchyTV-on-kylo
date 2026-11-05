@@ -20,17 +20,18 @@ MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR
-under a replacement. The stock parser polls both `DEV_Ir_GetKey`
-(`NDAL_VideoExt_BLAST_RX`, V4L2 control 0xf25) and the ttyS2 frames, but its
-MCU forwarding depends on `ICE_RemoteInit` -> `_HW_MCU_RcInit`
-(`_HW_MCU_SetRcType`/`_HW_MCU_SetRcOkKey`/`_HW_MCU_SetRcWakeupKey`,
-`DEV_Ir_init`, then `_HW_RWDB_WriteBlock` -> `PLAT_STBC_Data_Write`). With stock
-Aurora stopped and real `mod_plat` running, ttyS2 stayed `rx:0` and BLAST
-protocols 4/5/6/0xc returned no keys, while the same remote worked on BACK AV
-under stock. BLAST protocol changes also leaked kernel opens
-(`DRV_BLAST_Close: over limit`) until reboot. Treat the MCU RC init/STBC
-handshake as a separate contract; do not infer physical-IR readiness from a
-successful UART open or from injected frames.
+under a replacement. The stock parser also polls `DEV_Ir_GetKey`
+(`NDAL_VideoExt_BLAST_RX`, V4L2 control 0xf25). The BLAST common fd in the live
+stock process is **222 = `/dev/video28`**, the RC type is **1** (protocol 4),
+and `BLAST_RX` returns **0 when a key is present** (nonzero is the no-key/debug
+path). A raw `open()` fd is not enough; use `v4l2_open`/`v4l2_close`. The BLAST
+code carries the profile RC code in its low six bits (Right 22, Down 19, Up 20,
+Left 21), bit `0x800` is the RC5 toggle and `flag` is press/release. Earlier
+"no BLAST keys" and "MCU handshake missing" conclusions were implementation
+errors, not hardware limits. Repeated protocol changes still leak kernel
+opens (`DRV_BLAST_Close: over limit`) until reboot; a clean single open works.
+The ttyS2/MCU `_HW_MCU_RcInit`/STBC path is a separate fallback, not required
+for this remote.
 
 STOCK-PARITY-2026-11-05: P1 stock portal is another pre-correction BGRA
 capture and is blue-shifted; the corrected copy is recorded with raw/corrected

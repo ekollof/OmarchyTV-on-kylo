@@ -11,18 +11,19 @@ reboot the set. Stock boot is back (aurora PIDs 2328 and 1775, fb1
 removed. `/conf/oa_boot` still absent. Not cold startup. TAKEOVER-2026-11-05.
 
 BACK AV IR follow-up, 2026-11-05: owner set BACK AV and confirmed the physical
-remote works there under stock Aurora. A second takeover ran real `mod_plat`
-(audio prelude, DRM/v4l2, GPIO/IIC, `NDAL_VideoExt_OpenDevice(0,10)`) and the
-vendor portal. `/dev/ttyS2` opened but stayed `rx:0`; an opt-in BLAST backend
-(`ir.blast=1`, `NDAL_VideoExt_BLAST_SetRcProtocol`/`RX`) set protocols
-4/5/6/0xc and saw no keys. Repeated protocol changes hit the kernel BLAST
-driver limit (`DRV_BLAST_Close: over limit`), cleared by reboot. Stock
-`_HW_MCU_RcInit` (`_HW_MCU_SetRcType`/OK/wakeup keys, `DEV_Ir_init`,
-`_HW_RWDB_WriteBlock` -> `PLAT_STBC_Data_Write`) is not implemented in
-openaurora, so the MCU does not forward IR after Aurora stops. `wdtctl set 10`
-restored stock (PIDs 1927/1776, appmgr 1617); source came back HDMI1 and was
-set to BACK AV manually (`m_current_source=1`). Staging removed. Not physical-
-IR acceptance; TAKEOVER-IR-2026-11-05.
+remote works there under stock Aurora. A first takeover with real `mod_plat`
+showed `/dev/ttyS2` `rx:0` and no BLAST keys; repeated protocol changes hit the
+kernel BLAST open limit. That was not an MCU-only path: reading the live stock
+process showed the BLAST common fd **222 = `/dev/video28`** and RC type **1**
+(protocol 4). `NDAL_VideoExt_BLAST_RX` returns **0 when a key is present**
+(nonzero is the no-key path) and needs a `v4l2_open` fd. With a clean takeover
+and `plat_stub` + `mod_ir`, the physical Right/Down/Up/Left keys decoded as
+profile RC **22/19/20/21**; `0x800` is the RC5 toggle and `flag` is
+0=press/1=release. `mod_ir` now defaults to `ir.blast=1`,
+`ir.blast_video=/dev/video28`, protocol 4 and emits the RC code directly; ttyS2
+stays a fallback. The full portal UI remote takeover was not run. `wdtctl set
+10` restored stock (PIDs 2186/1782, appmgr 1580, BACK AV `m_current_source=1`);
+staging removed. TAKEOVER-IR-2026-11-05.
 
 Lua screen flash, 2026-11-05: staged `/buffer/oa-lua-screen` (hashes matched
 before exec) started `display_fb`, `ui_engine`, `lua` and `ui_omarchy` with
