@@ -20,6 +20,13 @@ window is granted; do not open TV devices or wake the set. Hardware acceptance
 is closed until a new owner instruction resumes the project. Offline docs and
 committed state remain the handoff.
 
+Offline scripting entry point: [openaurora/docs/LUA.md](openaurora/docs/LUA.md).
+Module `lua` publishes `ui.lua` v1, one Lua 5.4.9 state shared by every skin.
+It is not a skin. Host `check-ui-lua` and `check-ui-skin` pass, and the
+leak-enabled ASan/UBSan `check-ui-lua` passes. ARM/qemu `tests/ui_lua` passes
+on the TV glibc; the http body itself is proven on the host, because qemu-user
+does not exec host python or curl. This does not accept on-set startup.
+
 Full vendor parity except telemetry/advertising, with reloadable modules and
 eventually native OmarchyTV. Replacement is incomplete. November 1 owner
 authorization permits temporary idle hardware/CEC/audio tests; see AGENTS.md.

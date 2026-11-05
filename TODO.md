@@ -1654,17 +1654,23 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       retry starts. Fixed 2026-11-02; full make check 261 ok.
       (Found by independent adversarial review 2026-11-02; narrow path:
       exhausted subscription table + forced unload + ui.launch_anim Select.)
-- [ ] Add an optional embedded Lua skin/scripting module after shared UI primitives
-      stabilize and before implementing the full OmarchyTV skin. Expose a small,
-      versioned API for layouts, navigation, themes, key bindings and animation
-      configuration; keep rendering execution, blocking I/O and hardware ownership
-      in C services. Support script reload through existing IPC/socket/CLI with
-      candidate validation, explicit state migration, owned timer/subscription/
-      service-hold cleanup and stale-callback rejection. Bound script memory and
-      execution, report errors and recover to the vendor skin; test failed loads,
-      callback errors, reload/suspend/unload and target runtime compatibility.
-      Instruction hooks do not bound blocking C calls. Scripts must not bypass
-      device ownership or reintroduce excluded telemetry/advertising functionality.
+- [x] Optional embedded Lua service `ui.lua` (module `lua`, not a skin) for every
+      skin, before the full OmarchyTV skin. Versioned API for layouts, navigation,
+      themes, key bindings and animation configuration; rendering, blocking
+      transfers and hardware ownership stay in C. Script reload through the
+      existing IPC/socket/CLI validates the candidate, migrates state, and drops
+      timers and fetches. Memory and instruction limits are reported; a required
+      script that is not loaded falls back to the vendor skin. Failed loads,
+      callback errors, reload/suspend/unload and the target ABI are tested.
+      Instruction hooks do not bound blocking C calls such as `file:read("*a")`.
+      Scripts cannot take device ownership or add telemetry/advertising.
+      Evidence 2026-11-05: `make check-ui-lua` and `make check-ui-skin` exit 0;
+      `BUILD=build-lua-san` ASan/UBSan `check-ui-lua` exit 0; ARM glibc
+      `build-lua-arm/tests/ui_lua` under qemu-arm-static and bwrap exit 0.
+      The http success path is the host run. qemu-user cannot exec host python
+      or curl, so the ARM run takes the failed-transfer callback. Vendor pixels
+      are unchanged. This is not television startup or scanout; criterion 4
+      stays unmet. See openaurora/docs/LUA.md.
 - [ ] Real OmarchyTV screens replacing the skeleton after vendor parity. Keep
       OA_SVC_PORTAL on vendor and preserve engine draw/asset/present contracts.
 - [ ] Split module/test compile+link rules into .o + link so ccache can cache

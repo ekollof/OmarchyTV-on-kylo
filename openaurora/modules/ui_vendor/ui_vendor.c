@@ -40,6 +40,7 @@
 #include <unistd.h>
 
 #include "openaurora/events.h"
+#include "openaurora/lua_skin.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/channels.h"
@@ -192,6 +193,7 @@ struct ctx {
     int restored;
     const oa_settings_iface *settings;
     const oa_ui_theme_iface *theme; /* held; resolve/copy policy, never retain borrowed views */
+    const oa_lua_iface *lua;        /* optional ui.lua; hooks only, pixels stay vendor */
     const oa_ui_anim_iface *anim;
     const oa_ui_anim_iface *anim2;   /* v2 lookup: adds the text-slide helpers */
     int fs_type;                     /* full-screen transition type, ui.fs_type (0 = off) */
@@ -1228,6 +1230,9 @@ static void paint(struct ctx *c)
     const oa_ui_engine_iface *d;
     int W = 0, H = 0;
     if (!c || !c->d) return;   /* a suspended/stopped skin has no engine hold */
+    /* A script may record state. It does not choose vendor pixels. */
+    if (c->lua)
+        (void)c->lua->call("paint", "vendor", 0, NULL);
     d = c->d;
     if (c->screen == SCREEN_SETTINGS_LIST) {
         paint_settings_list(c);
@@ -1618,6 +1623,9 @@ static void on_service_removed(const void *evp, void *ud)
         c->clock = NULL;
     } else if (!strcmp(ev->name, OA_SVC_UI_THEME)) {
         c->theme = NULL; /* active dialog uses only its copied numeric mode */
+    } else if (!strcmp(ev->name, OA_SVC_UI_LUA)) {
+        c->lua = NULL; /* host already dropped the hold; do not repaint for this */
+        return;
     } else {
         return;
     }
@@ -1649,6 +1657,7 @@ static void rebind_now(struct ctx *c)
     c->anim2 = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 2);
     if (!c->clock) c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
     if (!c->theme) c->theme = c->api->lookup(c->api->priv, OA_SVC_UI_THEME, 1);
+    if (!c->lua) c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
     if (!slide_allowed(c)) {
         /* a provider went away or animation is off: stop timing and hold the drawn state */
         slide_stop_sampler(c);
@@ -2016,8 +2025,11 @@ static void skin_paint(void *ud)
 static int skin_key(void *ud, int id)
 {
     struct ctx *c = ud;
+    int handled = 0;
     if (!c)
         return 1;
+    if (c->lua && c->lua->call("key", "vendor", id, &handled) == 0 && handled)
+        return 0;
     move_key(c, (uint8_t)id);
     return 0;
 }
@@ -2189,6 +2201,7 @@ static int m_start(void *v)
     }
     if (atoi(c->api->config_get(c->api->priv, "ui.text", "0")) == 1)
         (void)settings_text_load(c);
+    c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
     if (c->api->config_get(c->api->priv, "ui.paint", "1")[0] == '1')
         paint(c);
     return 0;
@@ -2241,6 +2254,10 @@ static void m_stop(void *v)
     if (c->theme) {
         c->api->release(c->api->priv, OA_SVC_UI_THEME);
         c->theme = NULL;
+    }
+    if (c->lua) {
+        c->api->release(c->api->priv, OA_SVC_UI_LUA);
+        c->lua = NULL;
     }
     if (c->settings) {
         c->api->release(c->api->priv, OA_SVC_SETTINGS);

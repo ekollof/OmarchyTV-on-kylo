@@ -318,6 +318,12 @@ static void m_stop(void *v)
 static void m_destroy(void *v)
 {
     (void)v;
+    /* The raster is process-lifetime state in this .so. Host shutdown
+     * dlcloses the module, so the pointer has to be released here or the
+     * 1920x1080 recorder is a direct leak. */
+    free(g_cap);
+    g_cap = NULL;
+    g_cap_w = g_cap_h = 0;
 }
 static const oa_module g_module = {
     .magic = OA_MODULE_MAGIC, .abi = OA_ABI_VERSION, .size = sizeof(oa_module),

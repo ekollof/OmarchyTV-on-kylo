@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels
+MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels lua
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -65,6 +65,17 @@ else
   VENDOR_LDFLAGS  :=
 endif
 CPPFLAGS += $(VENDOR_CPPFLAGS)
+
+# The Arm GNU 10.2 libm defaults log/pow/exp/log2/log2f to GLIBC_2.27/2.29.
+# The TV is glibc 2.23 and provides those symbols at GLIBC_2.4. Link that
+# libm when this compiler is the glibc hard-float cross compiler.
+TV_LIBM := $(abspath ../artifacts/workbench/rootfs/root/lib/libm.so.6)
+ifneq ($(findstring gnueabihf,$(CC)),)
+  ifneq ($(wildcard $(TV_LIBM)),)
+    LIBM := $(TV_LIBM)
+  endif
+endif
+LIBM ?= -lm
 
 CORE_SRC := $(wildcard core/*.c)
 CORE_OBJ := $(CORE_SRC:core/%.c=$(BUILD)/core/%.o)
@@ -842,6 +853,21 @@ $(BUILD)/modules/mod_channels.so: modules/channels/channels.c common/channels.c 
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
+LUA_SRC := $(sort $(wildcard third_party/lua/*.c))
+LUA_OBJ := $(patsubst third_party/lua/%.c,$(BUILD)/third_party/lua/%.o,$(LUA_SRC))
+
+$(BUILD)/third_party/lua/%.o: third_party/lua/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(filter-out -Werror -pedantic,$(CFLAGS)) $(CPPFLAGS) -fPIC -w -Ithird_party/lua -c -o $@ $<
+
+$(BUILD)/modules/lua_skin.o: common/lua_skin.c include/openaurora/lua_skin.h include/openaurora/module.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -Ithird_party/lua -c -o $@ $<
+
+$(BUILD)/modules/mod_lua.so: modules/lua/lua.c $(BUILD)/modules/lua_skin.o $(LUA_OBJ) include/openaurora/lua_skin.h include/openaurora/module.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -Ithird_party/lua -o $@ modules/lua/lua.c $(BUILD)/modules/lua_skin.o $(LUA_OBJ) $(LDFLAGS) $(LIBM)
+
 $(BUILD)/modules/mod_%.so: modules/%/*.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $< $(LDFLAGS) \
@@ -1170,7 +1196,7 @@ check: check-ui-jpeg-cards
 
 $(BUILD)/tests/ui_nav_display.so: tests/ui_nav_display.c tests/ui_nav_trace.h common/canvas.c include/openaurora/canvas.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -Itests -fPIC -shared -o $@ tests/ui_nav_display.c common/canvas.c $(LDFLAGS) -lm
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Itests -fPIC -shared -o $@ tests/ui_nav_display.c common/canvas.c $(LDFLAGS) $(LIBM)
 
 $(BUILD)/tests/ui_nav: tests/ui_nav.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -1197,6 +1223,18 @@ check-ui-skin: $(BUILD)/tests/ui_skin $(BUILD)/tests/ui_nav_display.so $(BUILD)/
 	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/tests/ui-skin/modules/
 	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-skin/modules/mod_nav_display.so
 	@$(BUILD)/tests/ui_skin $(BUILD)/tests/ui-skin/modules
+
+$(BUILD)/tests/ui_lua: tests/ui_lua.c tests/ui_nav_trace.h include/openaurora/lua_skin.h include/openaurora/ui_engine.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_lua.c $(filter %.o,$^) $(LDLIBS)
+
+check-ui-lua: $(BUILD)/tests/ui_lua $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/modules/mod_lua.so
+	@mkdir -p $(BUILD)/tests/ui-lua/modules
+	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/modules/mod_lua.so $(BUILD)/tests/ui-lua/modules/
+	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-lua/modules/mod_nav_display.so
+	@$(BUILD)/tests/ui_lua $(BUILD)/tests/ui-lua/modules
+
+check: check-ui-lua
 
 $(BUILD)/tests/skin_selection: tests/skin_selection.c core/host.h include/openaurora/ui_engine.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)

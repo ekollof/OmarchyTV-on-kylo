@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "openaurora/events.h"
+#include "openaurora/lua_skin.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/ui_engine.h"
@@ -17,7 +18,12 @@
 struct ctx {
     const oa_host_api *api;
     const oa_ui_engine_iface *d;
+    const oa_lua_iface *lua;
     int suspended;
+    int have_colors;
+    int have_layout;
+    int br, bg, bb, ba, ar, ag, ab;
+    int lx, ly, lw, lh;
     uint32_t removed, changed;
     uint64_t rebind;
 };
@@ -28,17 +34,67 @@ static void dispatch(void *ud)
     if (c->d && !c->suspended) c->d->dispatch_skin();
 }
 
+static void take_lua_paint(struct ctx *c, int *br, int *bg, int *bb, int *ba,
+                           int *ar, int *ag, int *ab, int *x, int *y, int *w, int *h)
+{
+    int bgc[4], acc[4];
+    oa_lua_layout lay;
+    if (!c->lua || c->lua->call("paint", "omarchy", 0, NULL) != 0)
+        return;
+    if (c->lua->theme(bgc, acc) == 0) {
+        *br = bgc[0];
+        *bg = bgc[1];
+        *bb = bgc[2];
+        *ba = bgc[3];
+        *ar = acc[0];
+        *ag = acc[1];
+        *ab = acc[2];
+        c->br = *br;
+        c->bg = *bg;
+        c->bb = *bb;
+        c->ba = *ba;
+        c->ar = *ar;
+        c->ag = *ag;
+        c->ab = *ab;
+        c->have_colors = 1;
+    }
+    if (c->lua->layout_at(0, &lay) == 0 && lay.w > 0 && lay.h > 0) {
+        *x = lay.x;
+        *y = lay.y;
+        *w = lay.w;
+        *h = lay.h;
+        c->lx = lay.x;
+        c->ly = lay.y;
+        c->lw = lay.w;
+        c->lh = lay.h;
+        c->have_layout = 1;
+    }
+}
+
 static void paint(struct ctx *c)
 {
     const oa_ui_engine_iface *d = c ? c->d : NULL;
     int W = 0, H = 0;
+    int br, bg, bb, ba, ar, ag, ab, x, y, w, h;
     if (!c || !d || c->suspended)
         return;
     if (d->info(&W, &H, NULL, NULL) != 0 || W <= 0 || H <= 0)
         return;
-    d->clear_rgba(12, 14, 18, 255);
-    d->fill(0, 0, 14, H, 0, 122, 204);
-    d->fill(40, 40, W - 80, 8, 0, 122, 204);
+    br = c->have_colors ? c->br : 12;
+    bg = c->have_colors ? c->bg : 14;
+    bb = c->have_colors ? c->bb : 18;
+    ba = c->have_colors ? c->ba : 255;
+    ar = c->have_colors ? c->ar : 0;
+    ag = c->have_colors ? c->ag : 122;
+    ab = c->have_colors ? c->ab : 204;
+    x = c->have_layout ? c->lx : 0;
+    y = c->have_layout ? c->ly : 0;
+    w = c->have_layout ? c->lw : 14;
+    h = c->have_layout ? c->lh : H;
+    take_lua_paint(c, &br, &bg, &bb, &ba, &ar, &ag, &ab, &x, &y, &w, &h);
+    d->clear_rgba(br, bg, bb, ba);
+    d->fill(x, y, w, h, ar, ag, ab);
+    d->fill(40, 40, W - 80, 8, ar, ag, ab);
     d->fill(40, 88, 300, 180, 24, 28, 36);
     d->fill(360, 88, 300, 180, 24, 28, 36);
     d->fill(40, 288, 620, 80, 24, 28, 36);
@@ -47,13 +103,18 @@ static void paint(struct ctx *c)
 
 static int enter(void *ud)
 {
+    struct ctx *c = ud;
+    if (c && c->lua)
+        (void)c->lua->call("enter", "omarchy", 0, NULL);
     paint(ud);
     return 0;
 }
 
 static void leave(void *ud)
 {
-    (void)ud;
+    struct ctx *c = ud;
+    if (c && c->lua)
+        (void)c->lua->call("leave", "omarchy", 0, NULL);
 }
 
 static void skin_paint(void *ud)
@@ -64,12 +125,15 @@ static void skin_paint(void *ud)
 static int skin_key(void *ud, int id)
 {
     struct ctx *c = ud;
+    int handled = 0;
     if (!c)
         return 1;
     /* The skeleton has no navigation yet; every press repaints so the seam is
-     * observable. Exit/Menu are ignored for now. */
-    (void)id;
-    paint(c);
+     * observable. A loaded script may claim the key. Exit/Menu are ignored. */
+    if (c->lua && c->lua->call("key", "omarchy", id, &handled) == 0 && handled)
+        paint(c);
+    else
+        paint(c);
     return 0;
 }
 
@@ -85,7 +149,10 @@ static void rebind(void *ud)
     if (c->d->register_skin_dispatch(&g_skin, c, dispatch)) {
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
         c->d = NULL;
+        return;
     }
+    if (!c->lua)
+        c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
 }
 static void changed(const void *ev, void *ud)
 {
@@ -98,7 +165,13 @@ static void removed(const void *ev, void *ud)
 {
     const oa_service_removed_event *e = ev;
     struct ctx *c = ud;
-    if (e && e->name && !strcmp(e->name, OA_SVC_UI_ENGINE)) {
+    if (!e || !e->name)
+        return;
+    if (!strcmp(e->name, OA_SVC_UI_LUA)) {
+        c->lua = NULL;
+        return;
+    }
+    if (!strcmp(e->name, OA_SVC_UI_ENGINE)) {
         c->d = NULL;
         changed(NULL, c);
     }
@@ -130,6 +203,12 @@ static int m_start(void *v)
     c->removed = c->api->subscribe(c->api->priv, OA_TOPIC_SERVICE_REMOVED, removed, c);
     c->changed = c->api->subscribe(c->api->priv, OA_TOPIC_MODULE_CHANGED, changed, c);
     if (!c->removed || !c->changed) return -1;
+    c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
+    if (atoi(c->api->config_get(c->api->priv, "ui.omarchy.lua", "0")) == 1) {
+        oa_lua_status st;
+        if (!c->lua || c->lua->status(&st) != 0 || !st.loaded)
+            return -1;
+    }
     if (c->api->config_get(c->api->priv, "ui.paint", "1")[0] == '1')
         paint(c);
     return 0;
@@ -147,6 +226,10 @@ static void m_stop(void *v)
         c->d->unregister_skin(&g_skin);
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
         c->d = NULL;
+    }
+    if (c->lua) {
+        c->api->release(c->api->priv, OA_SVC_UI_LUA);
+        c->lua = NULL;
     }
     c->suspended = 0;
 }
