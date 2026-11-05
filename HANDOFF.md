@@ -2564,6 +2564,10 @@ adds the reloadable audio.curve v1 data provider and local example configuration
 Real DSO lifecycle/holds/failure/suspend tests pass including on TV; no hardware
 gain or native audio lifecycle integration yet. Core config is not reread by
 module reload; AQ contents are. Do not promise rollback after failed replacement.
+AUDIO-CURVE-IPC-2026-11-05 adds read-only `audio-curve <volume>` and
+`audio-curve-dump` control queries over the real socket (values 110/200,
+reload 210, 101-entry dump). It remains data-only: no gain/amp/ALSA write,
+mute/routing/balance, profile/default fallback or audible acceptance.
 Read [AUDIO-GAIN-TRANSPORT](artifacts/reports/AUDIO-GAIN-TRANSPORT-2026-11-01.md)
 before gain integration: scalar returns are real, but message-backed HAL0 hides
 send failure and the paired ALSA getter only sees a request cache. The receiver

@@ -134,6 +134,8 @@ async function main() {
         await statusService('audio_curve', 'audio.curve:v1');
         await statusService('audio_mixer', 'audio.mixer:v1');
 
+        assert.equal(await command('audio-curve 10'), 'curve 110');
+        assert.match(await command('audio-curve-dump'), /^curve 101 100 101 102 /);
         assert.match(await command('amp-profile'), /^power '12Watt' prescale 27 /);
 
         assert.equal(await command('reload ui_theme'), 'ok');
@@ -164,7 +166,7 @@ async function main() {
         const exit = await bounded(closed, 8000);
         assert.equal(exit.code, 0, stderr);
         assert(!fs.existsSync(socket), 'socket not removed');
-        console.log('ok actual fixture-backed module IPC: theme/profile/amp/curve/mixer start, services, reload and reuse');
+        console.log('ok actual fixture-backed module IPC: theme/profile/amp/curve/mixer start, curve queries, reload and reuse');
     } finally {
         if (child.exitCode === null && !child.signalCode) child.kill('SIGTERM');
         try { await bounded(closed, 8000); } catch { child.kill('SIGKILL'); await closed; }

@@ -2637,6 +2637,11 @@ lifecycle/CLI/hold/collision/file/FIFO/suspended-reload groups pass host,
 sanitizer, ARM/qemu and on the TV. Full host suite passes. Three temporary staged
 test/module files and fixtures removed; stock boot/UI/access/privacy/hook/keeper
 unchanged. This data provider is not yet connected to mod_audio gain application.
+AUDIO-CURVE-IPC-2026-11-05 adds read-only `audio-curve <volume>` and
+`audio-curve-dump` control queries over the real socket: curve values 110/200,
+reload 210 and the 101-entry dump; focused decoder/module/fixture-IPC tests
+pass. Still data-only: no speaker gain, ALSA/amp write, mute/routing/balance,
+profile/default fallback or audible acceptance.
 Latest [AUDIO-GAIN-TRANSPORT](artifacts/reports/AUDIO-GAIN-TRANSPORT-2026-11-01.md)
 finds that message-backed Hal_Audio_Ctrl0 can hide sendmsg failure, while the
 speaker ALSA setter updates a request cache and ignores lower failure results.

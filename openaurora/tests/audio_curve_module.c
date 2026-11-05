@@ -47,6 +47,12 @@ static int command(oa_host *h, const char *text)
     int rc = oa_control_command(h, line, reply, sizeof reply);
     assert(strstr(reply, rc ? "failed" : "ok")); return rc;
 }
+static int command_text(oa_host *h, const char *text, char *out, size_t cap)
+{
+    char line[80];
+    snprintf(line, sizeof line, "%s", text);
+    return oa_control_command(h, line, out, cap);
+}
 int main(int argc, char **argv)
 {
     assert(argc == 2);
@@ -68,13 +74,23 @@ int main(int argc, char **argv)
     assert(!s->copy(&copy) && copy.points[10] == 110);
     assert(s->copy(NULL) == -1 && s->value(0, NULL) == -1);
     value(s, UINT_MAX, 200);
+    char reply[2048];
+    assert(!command_text(h, "audio-curve 10", reply, sizeof reply) &&
+        !strcmp(reply, "curve 110\n"));
+    assert(!command_text(h, "audio-curve 101", reply, sizeof reply) &&
+        !strcmp(reply, "curve 200\n"));
+    assert(!command_text(h, "audio-curve-dump", reply, sizeof reply) &&
+        !strncmp(reply, "curve 101 100 101 102", 21));
     write_aq(file, 200, OA_AUDIO_AQ_SIZE);
     value(s, 10, 110); /* Input-file edits never mutate a published snapshot. */
     uint32_t old = m->id;
     assert(!command(h, "reload audio_curve"));
     m = oa_host_find_module(h, "audio_curve"); assert(m && m->id != old);
     s = service(h); value(s, 10, 210);
+    assert(!command_text(h, "audio-curve 10", reply, sizeof reply) &&
+        !strcmp(reply, "curve 210\n"));
     assert(copy.points[10] == 110); /* Caller data survives DSO replacement. */
+    puts("  ok   audio-curve 10/101 and audio-curve-dump return the published AQ table over the control command");
     puts("  ok   real DSO/CLI start and reload reread AQ; published snapshots and caller copies remain immutable");
 
     oa_mod *consumer = oa_module_load(h, "ticker"); assert(consumer);

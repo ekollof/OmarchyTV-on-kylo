@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
+#include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -250,6 +251,8 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  key <code>               feed an IR key frame (RC/NEC code)\n"
                  "  hotel-state             read persisted hotel tab inputs\n"
                  "  amp-profile             read immutable amplifier profile inputs\n"
+                 "  audio-curve <volume>    read published AQ curve value\n"
+                 "  audio-curve-dump        dump 101 published AQ curve values\n"
                  "  launcher-items <parent|all> [deleted] [outofsync]\n"
                  "                           settingsDB LauncherItem rows\n"
                  "  tuner-state             scan/lock/signal state\n"
@@ -736,6 +739,36 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
             " state %" PRId32 " attack %" PRId32 " release %" PRId32 "\n",
             power,p.prescale,p.channel1,p.channel2,p.fine_tune,p.power_clip,p.speaker_drc,
             p.state_control4,p.limiter_attack,p.release_threshold);
+        return 0;
+    }
+    if(!strcmp(cmd,"audio-curve") || !strcmp(cmd,"audio-curve-dump")) {
+        int dump=!strcmp(cmd,"audio-curve-dump");
+        if(force || (dump ? a1!=NULL : (!a1 || a2))){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_audio_curve_iface *curve=
+            h->api.lookup(h,OA_SVC_AUDIO_CURVE,1);
+        if(!curve){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        if(dump){
+            oa_audio_curve c;
+            int rc=curve->copy(&c);
+            h->api.release(h,OA_SVC_AUDIO_CURVE);
+            if(rc){snprintf(outbuf,outlen,"failed errno %d\n",EIO);return -1;}
+            struct reply r={outbuf,outlen,0};
+            append(&r,"curve %u",(unsigned)OA_AUDIO_CURVE_POINTS);
+            for(unsigned i=0;i<OA_AUDIO_CURVE_POINTS;i++)
+                append(&r," %u",(unsigned)c.points[i]);
+            append(&r,"\n");
+            return 0;
+        }
+        uint64_t volume=0;
+        if(decimal(a1,&volume) || volume>UINT_MAX){
+            h->api.release(h,OA_SVC_AUDIO_CURVE);
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        uint16_t value=0;
+        int rc=curve->value((unsigned)volume,&value);
+        h->api.release(h,OA_SVC_AUDIO_CURVE);
+        if(rc){snprintf(outbuf,outlen,"failed errno %d\n",EIO);return -1;}
+        snprintf(outbuf,outlen,"curve %u\n",(unsigned)value);
         return 0;
     }
     if(!strcmp(cmd,"hotel-state")) {

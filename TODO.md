@@ -414,6 +414,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       audio.curve v1. Six real-DSO/CLI, hold/collision, malformed-file/FIFO and
       suspend/reload/retry groups pass host/sanitizer/ARM-qemu and on the TV;
       full host suite passes. No HAL/gain application. AUDIO-CURVE-MODULE.
+- [x] Audio curve control queries: `audio-curve <volume>` returns the
+      published 16-bit AQ entry and `audio-curve-dump` returns all 101 entries
+      over the real socket. Module/real-socket tests cover values 110/200,
+      reload 210, unsigned clamp and the dump; missing provider/argument errors
+      are bounded. AUDIO-CURVE-IPC. Still read-only data: no speaker/amp/ALSA
+      write, mute/routing/balance, profile/default fallback or audible test.
 - [ ] Integrate AQ/profile/default handling, speaker gain/table application,
       balance/output/DAP policy and amp lifecycle into native audio. Existing
       decoder-volume opcode33 is not full UI volume parity; do not invent an
