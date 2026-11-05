@@ -54,6 +54,16 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       (`capture_compare.py`: AE=0, max=0, 0/2,073,600 changed).
       SETTINGS-QUICK-CAPTURE.
 
+- [x] Startpagina portal real-asset offline capture: added
+      `tests/ui_portal_quick.c` and `make capture-portal-real`; the workbench
+      `title`/`rail1..5`/`card_*` assets, focus rail2 and the default nine-card
+      row are painted by the shipped portal path. The recorder snapshot,
+      composited over black (`rawrgba-to-png.py --over-black`), is
+      byte-identical to the on-TV fb1 portal capture (`capture_compare.py`:
+      AE=0, max=0, 0/2,073,600 changed). PORTAL-CAPTURE. Limits: default card
+      row, not live extra cards; focus/animation/title-slide states and
+      GPU/scanout remain open.
+
 - [ ] Offline full settings preview: wire a real-asset ui.dir capture and
       Mesa renderer integration, including transformed frames. Recorder alpha
       composition is corrected; its set_scene_transform only records arguments.

@@ -1280,6 +1280,25 @@ $(BUILD)/tests/ui_settings_quick: tests/ui_settings_quick.c tests/ui_nav_trace.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
 
+$(BUILD)/tests/ui_portal_quick: tests/ui_portal_quick.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+
+PORTAL_REAL_UI ?= ../artifacts/workbench/source-stage-20261101/ui
+.PHONY: capture-portal-real
+capture-portal-real: $(BUILD)/tests/ui_portal_quick $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so
+	@test -f $(PORTAL_REAL_UI)/title.rgba || { echo "missing $(PORTAL_REAL_UI); stage the workbench UI assets first"; exit 2; }
+	@mkdir -p $(BUILD)/tests/ui-portal-real/modules
+	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui-portal-real/modules/
+	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-portal-real/modules/mod_nav_display.so
+	@OA_NAV_CAPTURE=$(abspath $(BUILD)/tests/ui-portal-real/portal) \
+		$(BUILD)/tests/ui_portal_quick $(abspath $(BUILD)/tests/ui-portal-real/modules) \
+		$(abspath $(PORTAL_REAL_UI))
+	python3 tools/rawrgba-to-png.py --over-black \
+		$(BUILD)/tests/ui-portal-real/portal.portal \
+		1920 1080 \
+		$(BUILD)/tests/ui-portal-real/portal.png
+
 SETTINGS_REAL_UI ?= ../artifacts/workbench/source-stage-20261101/ui
 .PHONY: capture-settings-quick-real
 capture-settings-quick-real: $(BUILD)/tests/ui_settings_quick $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so

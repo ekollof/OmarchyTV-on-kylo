@@ -63,6 +63,13 @@ recorder snapshot is byte-identical to the on-TV fb1 quick-settings capture
 (AE=0, max=0, 0/2,073,600 changed). Full settings panel, live text/focus,
 Mesa/transformed frames and scanout remain open.
 
+Startpagina offline capture, 2026-11-05: `tests/ui_portal_quick.c` plus
+`make capture-portal-real` paint the workbench title/rail/card assets with
+focus rail2 and the default nine-card row. The recorder snapshot, composited
+over black, is byte-identical to the on-TV fb1 portal capture (AE=0, max=0,
+0/2,073,600 changed). Live extra cards, focus/animation/title-slide states and
+GPU/scanout remain open.
+
 Latest live acceptance: [LIVE-TV-ACCEPTANCE](artifacts/reports/LIVE-TV-ACCEPTANCE-2026-11-05.md)
 staged the ABI 3 tree under `/buffer`, ran epg/tuner/pvr/lua, and loaded
 `display_fb` on vendor-initialized fb1. It saved a 16,588,800-byte snapshot,

@@ -41,6 +41,15 @@ byte-identical to the on-TV fb1 quick-settings capture (`capture_compare.py`
 AE=0, max=0, 0/2,073,600 changed). Full `settings_list` panel, live
 text/focus, Mesa/transformed frames and scanout remain open.
 
+PORTAL-CAPTURE-2026-11-05 (host, no TV): added `tests/ui_portal_quick.c` and
+`make capture-portal-real`. The shipped portal path paints the workbench
+`title`/`rail1..5`/`card_*` assets with focus rail2 and the default nine-card
+row. The recorder snapshot, composited over black with
+`rawrgba-to-png.py --over-black`, is byte-identical to the on-TV fb1 portal
+capture (`capture_compare.py` AE=0, max=0, 0/2,073,600 changed). Live extra
+cards, focused-card/rail-highlight/title-slide states and GPU/scanout remain
+open.
+
 Lua screen flash, 2026-11-05: staged `/buffer/oa-lua-screen` (hashes matched
 before exec) started `display_fb`, `ui_engine`, `lua` and `ui_omarchy` with
 `ui.omarchy.lua=1`. Skin status was `active omarchy`, fallback 0. The owner

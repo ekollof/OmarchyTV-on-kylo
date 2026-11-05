@@ -1,0 +1,1 @@
+full: AE=0 (0.000000) RMSE16=0 MAE8=0 RMSE8=0 max=0 changed=0/2073600 (0.000000)
