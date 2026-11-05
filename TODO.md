@@ -537,6 +537,18 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       EIT/demux or PVR stream, no hardware lock/signal/scan acceptance; cold
       start/display owner-gated. No TV access.
 
+- [x] DVB section-filter EIT source and DVR sink: added `oa_eit_dvb_ops`
+      (open demux, PID section filter, read/close) with default
+      `Hal_Demux_Dvb_*` resolution and mock tests; `nim-ndal` attaches it via
+      `tuner.eit_demux=adapter:index[:pid]`, opens lazily and closes on stop.
+      Added `oa_dvr_ops`/`oa_dvr_sink_open/write/flush/close` with partial-write
+      handling and mock tests; the PVR scheduling store remains separate.
+      Added a real Unix-socket `mod_tuner` reload/re-scan test over the TS
+      fixture. Host424 ok, verify45; ARM/qemu nim_stub and pvr_stub pass.
+      EIT-DVB-DVR. Limits: mock only, PID-only filter, DVB-T tune only, DVR
+      sink not scheduler-driven, no hardware acceptance; cold start/display
+      owner-gated. No TV access.
+
 - [x] Vendor broadcast contract fields + EIT schedule cache: extended
       `oa_tuner_status` with lock/strength/quality/BER/SNR/UNC,
       `oa_epg_event` with CRID/first-showing/running-status/state/version/

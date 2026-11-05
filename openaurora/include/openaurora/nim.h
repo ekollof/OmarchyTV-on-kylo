@@ -106,6 +106,13 @@ const struct oa_tuner_backend *oa_nim_ndal_backend(const char *frontend_path);
 /* Test/embedding hook; NULL restores the default Linux/NDAL ops. */
 void oa_nim_ndal_set_ops(const struct oa_ndal_nim_ops *ops, void *ctx);
 
+/* Attach a DVB section-filter EIT source to nim-ndal. The source opens lazily
+ * on the first next_eit() call. ops NULL selects the shipped NDAL/Linux ops;
+ * tests pass mock ops. */
+struct oa_eit_dvb_ops;
+int oa_nim_ndal_enable_eit(int adapter, int index, uint16_t pid,
+    const struct oa_eit_dvb_ops *ops, void *ctx);
+
 #ifdef __cplusplus
 }
 #endif

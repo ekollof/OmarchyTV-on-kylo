@@ -1,0 +1,1 @@
+ok pvr stub: id/index semantics, persistence and DVR sink

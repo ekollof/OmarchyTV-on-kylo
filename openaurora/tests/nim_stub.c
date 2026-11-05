@@ -9,6 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "openaurora/eit_dvb.h"
 #include "openaurora/eit_section.h"
 
 struct capture {
@@ -226,7 +227,7 @@ static void test_ndal_mock(void)
     const struct oa_tuner_backend *backend =
         oa_nim_ndal_backend("/mock/frontend0");
     assert(backend && !strcmp(backend->name, "nim-ndal"));
-    assert(backend->nim && !backend->next_eit);
+    assert(backend->nim && backend->next_eit);
 
     struct oa_nim_tune_result result;
     const uint32_t params[2] = { 0, 482000 };
@@ -345,12 +346,137 @@ static void test_ts_replay(void)
     assert(unlink(path) == 0);
 }
 
+struct eit_mock {
+    int opens, filters, reads, closes;
+    int fail_open, fail_filter, fail_read;
+    int fd;
+    int fed;
+    uint16_t pid;
+    uint8_t section[512];
+    size_t section_len;
+};
+
+static int eit_open(void *ctx, int adapter, int index)
+{
+    struct eit_mock *m = ctx;
+    assert(adapter == 0 && index == 0);
+    m->opens++;
+    return m->fail_open ? -EACCES : m->fd;
+}
+
+static int eit_filter(void *ctx, int fd, uint16_t pid)
+{
+    struct eit_mock *m = ctx;
+    assert(fd == m->fd);
+    m->filters++;
+    m->pid = pid;
+    return m->fail_filter ? -EIO : 0;
+}
+
+static long eit_read(void *ctx, int fd, uint8_t *buf, size_t cap)
+{
+    struct eit_mock *m = ctx;
+    assert(fd == m->fd);
+    m->reads++;
+    if (m->fail_read) return -EIO;
+    if (m->fed) return 0;
+    if (m->section_len > cap) return -E2BIG;
+    memcpy(buf, m->section, m->section_len);
+    m->fed = 1;
+    return (long)m->section_len;
+}
+
+static int eit_close(void *ctx, int fd)
+{
+    struct eit_mock *m = ctx;
+    assert(fd == m->fd);
+    m->closes++;
+    return 0;
+}
+
+static void test_eit_dvb(void)
+{
+    const struct oa_eit_build_event event = {
+        .event_id = 51,
+        .start = { 0xea, 0x60, 0x12, 0x00, 0x00 },
+        .duration = { 0x00, 0x30, 0x00 },
+        .running_status = 4,
+        .name = "DVB section",
+        .text = "Filtered"
+    };
+    struct eit_mock eit;
+    memset(&eit, 0, sizeof eit);
+    eit.fd = 77;
+    assert(oa_eit_build_section(0x4e, 501, 2, 1, &event, 1, eit.section,
+        sizeof eit.section, &eit.section_len) == 0);
+    const struct oa_eit_dvb_ops ops = {
+        eit_open, eit_filter, eit_read, eit_close
+    };
+
+    uint8_t section[512];
+    size_t len = 0;
+    assert(oa_eit_dvb_next(section, sizeof section, &len) == 0);
+    assert(oa_eit_dvb_open(0, 0, 0x12, &ops, &eit) == 0);
+    assert(eit.opens == 1 && eit.filters == 1 && eit.pid == 0x12);
+    assert(oa_eit_dvb_next(section, sizeof section, &len) == 1);
+    assert(len == eit.section_len &&
+        !memcmp(section, eit.section, len));
+    struct capture capture;
+    memset(&capture, 0, sizeof capture);
+    assert(oa_eit_parse_section(section, len, capture_event, &capture) == 1);
+    assert(capture.last.service_id == 501 && capture.last.event_id == 51);
+    assert(oa_eit_dvb_next(section, sizeof section, &len) == 0);
+    oa_eit_dvb_close();
+    assert(eit.closes == 1);
+
+    eit.fail_filter = 1;
+    assert(oa_eit_dvb_open(0, 0, 0x12, &ops, &eit) == -EIO);
+    assert(eit.closes == 2);
+    eit.fail_filter = 0;
+    eit.fail_open = 1;
+    assert(oa_eit_dvb_open(0, 0, 0x12, &ops, &eit) == -EACCES);
+    eit.fail_open = 0;
+    eit.fail_read = 1;
+    assert(oa_eit_dvb_open(0, 0, 0x12, &ops, &eit) == 0);
+    assert(oa_eit_dvb_next(section, sizeof section, &len) == -EIO);
+    oa_eit_dvb_close();
+    eit.fail_read = 0;
+
+    /* Integrated next_eit path on nim-ndal. */
+    struct ndal_mock nim;
+    memset(&nim, 0, sizeof nim);
+    nim.fd = 42;
+    const struct oa_ndal_nim_ops nim_ops = {
+        mock_open, mock_close, mock_tune, mock_scan, mock_frequency,
+        mock_delivery, mock_symbol, mock_status, mock_metrics, mock_set_one,
+        mock_set_standby
+    };
+    oa_nim_ndal_set_ops(&nim_ops, &nim);
+    const struct oa_tuner_backend *backend =
+        oa_nim_ndal_backend("/mock/frontend0");
+    assert(backend && backend->next_eit);
+    assert(oa_nim_ndal_enable_eit(0, 0, 0x12, &ops, &eit) == 0);
+    const uint32_t params[2] = { 0, 474000 };
+    struct oa_nim_tune_result result;
+    assert(backend->nim->start(OA_NIM_PATH_TERRESTRIAL, params, 2, &result) ==
+        0);
+    eit.fed = 0;
+    assert(backend->next_eit(section, sizeof section, &len) == 1);
+    assert(len == eit.section_len &&
+        !memcmp(section, eit.section, len));
+    assert(backend->next_eit(section, sizeof section, &len) == 0);
+    assert(backend->nim->stop(OA_NIM_PATH_TERRESTRIAL) == 0);
+    assert(eit.closes >= 3);
+    oa_nim_ndal_set_ops(NULL, NULL);
+}
+
 int main(void)
 {
     test_tune_signal();
     test_eit_source();
     test_ts_replay();
     test_ndal_mock();
-    puts("ok nim stub: stub/replay/NDAL-mock tune, signal and EIT sources");
+    test_eit_dvb();
+    puts("ok nim stub: stub/replay/NDAL/EIT-DVB mock backends");
     return 0;
 }

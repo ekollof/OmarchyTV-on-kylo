@@ -129,6 +129,17 @@ cover open/tune/scan/frequency/status/metrics/close and error cleanup; host423
 ok, verify45, ARM/qemu. Limits: mock only; DVB-T tune only; no live EIT/demux
 or PVR stream; hardware lock/signal/scan and cold start/display remain
 owner-gated.
+
+EIT-DVB-DVR-2026-11-05: the tuner now has a DVB section-filter EIT source
+(oa_eit_dvb_ops: demux open, PID 0x12 filter, section read/close) attached to
+nim-ndal via `tuner.eit_demux=adapter:index[:pid]`, lazily opened and closed
+on stop. The PVR side has a mockable DVR sink (oa_dvr_ops/open/write/flush/
+close) with partial-write handling. Mock tests cover EIT filter/section/error/
+lifecycle and DVR lifecycle; a new Unix-socket mod_tuner reload/re-scan test
+keeps the TS EIT replay and EPG state. Host424 ok, verify45, ARM/qemu. Limits:
+mock only; PID-only filter; DVB-T tune only; DVR sink not scheduler-driven;
+hardware acceptance and cold start/display remain owner-gated.
+
 BROADCAST-VENDOR-FIELDS-2026-11-05: the broadcast contracts now carry the
 recovered vendor fields. oa_tuner_status has lock/strength/quality/unc and
 float BER/SNR (unc 0xffffffff unknown), oa_epg_event has

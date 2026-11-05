@@ -1,0 +1,9 @@
+full host make check: 424 ok
+ok eit section: header/CRC, BCD times, descriptors, skips and TS demux
+ok nim stub: stub/replay/NDAL/EIT-DVB mock backends
+ok pvr stub: id/index semantics, persistence and DVR sink
+ok tuner IPC: NIM stub scan/signal, EIT handoff to epg, cancel/reload over the socket
+ok tuner TS reload IPC: scan/reload/re-scan keep EIT replay and EPG state
+verify.cjs: 45 groups
+ARM/qemu nim_stub: ok nim stub: stub/replay/NDAL/EIT-DVB mock backends
+ARM/qemu pvr_stub: ok pvr stub: id/index semantics, persistence and DVR sink

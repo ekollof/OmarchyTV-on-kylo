@@ -16,6 +16,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+#include "openaurora/eit_dvb.h"
 #include "openaurora/nim.h"
 
 typedef void (*ndal_set_one)(int, uint32_t);
@@ -219,6 +220,12 @@ static struct {
     int open;
     uint8_t path;
     uint32_t frequency;
+    const struct oa_eit_dvb_ops *eit_ops;
+    void *eit_ctx;
+    int eit_adapter, eit_index;
+    uint16_t eit_pid;
+    int eit_configured;
+    int eit_open;
 } g_ndal_state = { .ops = &linux_ops, .fd = -1 };
 
 void oa_nim_ndal_set_ops(const struct oa_ndal_nim_ops *ops, void *ctx)
@@ -226,6 +233,38 @@ void oa_nim_ndal_set_ops(const struct oa_ndal_nim_ops *ops, void *ctx)
     if (g_ndal_state.open) return;
     g_ndal_state.ops = ops ? ops : &linux_ops;
     g_ndal_state.ops_ctx = ops ? ctx : NULL;
+    if (!g_ndal_state.open && !g_ndal_state.eit_open) {
+        g_ndal_state.eit_configured = 0;
+        g_ndal_state.eit_ops = NULL;
+        g_ndal_state.eit_ctx = NULL;
+    }
+}
+
+int oa_nim_ndal_enable_eit(int adapter, int index, uint16_t pid,
+    const struct oa_eit_dvb_ops *ops, void *ctx)
+{
+    if (g_ndal_state.open || g_ndal_state.eit_open) return -EBUSY;
+    if (adapter < 0 || index < 0 || !pid) return -EINVAL;
+    g_ndal_state.eit_ops = ops ? ops : oa_eit_dvb_linux_ops();
+    g_ndal_state.eit_ctx = ctx;
+    g_ndal_state.eit_adapter = adapter;
+    g_ndal_state.eit_index = index;
+    g_ndal_state.eit_pid = pid;
+    g_ndal_state.eit_configured = 1;
+    return 0;
+}
+
+static int ndal_next_eit(uint8_t *buf, size_t cap, size_t *len)
+{
+    if (!g_ndal_state.eit_configured) return 0;
+    if (!g_ndal_state.eit_open) {
+        int rc = oa_eit_dvb_open(g_ndal_state.eit_adapter,
+            g_ndal_state.eit_index, g_ndal_state.eit_pid,
+            g_ndal_state.eit_ops, g_ndal_state.eit_ctx);
+        if (rc < 0) return rc;
+        g_ndal_state.eit_open = 1;
+    }
+    return oa_eit_dvb_next(buf, cap, len);
 }
 
 static int ndal_start(uint8_t path, const uint32_t *params, size_t count,
@@ -296,6 +335,10 @@ static int ndal_stop(uint8_t path)
         g_ndal_state.fd);
     g_ndal_state.fd = -1;
     g_ndal_state.open = 0;
+    if (g_ndal_state.eit_open) {
+        oa_eit_dvb_close();
+        g_ndal_state.eit_open = 0;
+    }
     return rc;
 }
 
@@ -326,6 +369,6 @@ const struct oa_tuner_backend *oa_nim_ndal_backend(const char *frontend_path)
     }
     backend.name = "nim-ndal";
     backend.nim = &ndal_ops;
-    backend.next_eit = NULL;
+    backend.next_eit = ndal_next_eit;
     return &backend;
 }

@@ -120,6 +120,18 @@ ARM/qemu passes. Limits: mock only, DVB-T tune path only, no live EIT/demux or
 PVR stream, no hardware acceptance; cold start/display owner-gated. No TV
 access.
 
+EIT-DVB-DVR-2026-11-05 (host/qemu, mock only): added a DVB section-filter EIT
+source (oa_eit_dvb_ops: open demux, PID filter, read/close; default
+Hal_Demux_Dvb_* resolution) attached to nim-ndal via
+tuner.eit_demux=adapter:index[:pid], opened lazily and closed on stop. Added
+oa_dvr_ops/oa_dvr_sink_open/write/flush/close with partial-write handling for
+the DVR boundary. Mock tests cover EIT filter/section/error/lifecycle and DVR
+open/write/flush/close; a new Unix-socket mod_tuner reload/re-scan test keeps
+the TS EIT replay and EPG state. Host424 ok, verify45; ARM/qemu nim_stub and
+pvr_stub pass. Limits: mock only, PID-only filter, DVB-T tune only, DVR sink
+not scheduler-driven, no hardware acceptance; cold start/display owner-gated.
+No TV access.
+
 Owner decision 2026-11-05 (NDAL/hardware acceptance): "Keep offline for now."
 No cold-start, display/fb1, NDAL frontend/demux or PVR hardware window is
 granted. Do not open TV devices, wake the set or change stock state; the

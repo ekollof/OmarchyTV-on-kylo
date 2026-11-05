@@ -111,6 +111,15 @@ DVB-T tune, `FE_READ_*` status/metrics, and `Nd_NIM_*` getters/setters from
 verify45, ARM/qemu. Hardware lock/signal/scan, live EIT/PVR and cold start/
 display remain owner-gated.
 
+Latest DVB EIT/DVR boundaries:
+[EIT-DVB-DVR](artifacts/reports/EIT-DVB-DVR-2026-11-05.md) adds a section-
+filter EIT source (`oa_eit_dvb_ops`, `/dev/dvb/.../demuxN`, PID 0x12) attached
+to `nim-ndal` via `tuner.eit_demux`, plus a mockable DVR sink
+(`oa_dvr_ops`, open/write/flush/close). Mock tests, ARM/qemu and a new
+Unix-socket `mod_tuner` reload/re-scan test pass; host424 ok, verify45. Limits:
+mock only, PID-only filter, DVB-T tune only, DVR sink not scheduler-driven;
+hardware acceptance/cold start/display remain owner-gated.
+
 Latest vendor-field contracts:
 [BROADCAST-VENDOR-FIELDS](artifacts/reports/BROADCAST-VENDOR-FIELDS-2026-11-05.md)
 extends tuner/EPG/PVR records with lock/strength/quality/BER/SNR/UNC,

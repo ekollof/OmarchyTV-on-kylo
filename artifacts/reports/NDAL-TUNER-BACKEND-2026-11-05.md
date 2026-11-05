@@ -6,6 +6,11 @@ with mock contract tests only: no TV, frontend device or vendor function was
 executed. The default module backend remains the offline stub; `tuner.ts_path`
 still selects the TS replay source.
 
+> **Update 2026-11-05:** the adjacent DVB section-filter EIT source and DVR sink
+> are in [EIT-DVB-DVR](EIT-DVB-DVR-2026-11-05.md). The EIT source attaches to
+> `nim-ndal` through `tuner.eit_demux`; a new TS reload socket test raises the
+> current suite to424 ok. Hardware acceptance remains owner-gated.
+
 ## Grounding
 
 - `libNDAL_EX.so` exports `Nd_NIM_SetScanMode`, `Nd_NIM_GetFrequency`,

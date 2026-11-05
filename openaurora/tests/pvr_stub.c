@@ -2,6 +2,7 @@
  * file semantics. No hardware or vendor code. */
 #include "openaurora/pvr.h"
 #include "openaurora/broadcast.h"
+#include "openaurora/dvr.h"
 
 #include <assert.h>
 #include <errno.h>
@@ -140,6 +141,88 @@ static void test_capacity(const char *dir)
     backend->close();
 }
 
+struct dvr_mock {
+    int opens, writes, flushes, closes;
+    int fd;
+    int fail_open, fail_write, zero_write, partial;
+    size_t written;
+};
+
+static int dvr_open(void *ctx, int adapter, int index)
+{
+    struct dvr_mock *m = ctx;
+    assert(adapter == 0 && index == 0);
+    m->opens++;
+    return m->fail_open ? -EACCES : m->fd;
+}
+
+static long dvr_write(void *ctx, int fd, const void *data, size_t len)
+{
+    struct dvr_mock *m = ctx;
+    assert(fd == m->fd && data && len);
+    m->writes++;
+    if (m->fail_write) return -EIO;
+    if (m->zero_write) return 0;
+    if (m->partial && len > 60) len = 60;
+    m->written += len;
+    return (long)len;
+}
+
+static int dvr_flush(void *ctx, int fd)
+{
+    struct dvr_mock *m = ctx;
+    assert(fd == m->fd);
+    m->flushes++;
+    return 0;
+}
+
+static int dvr_close(void *ctx, int fd)
+{
+    struct dvr_mock *m = ctx;
+    assert(fd == m->fd);
+    m->closes++;
+    return 0;
+}
+
+static void test_dvr_sink(void)
+{
+    assert(oa_dvr_linux_ops());
+    uint8_t data[200];
+    memset(data, 0xa5, sizeof data);
+    struct dvr_mock mock;
+    memset(&mock, 0, sizeof mock);
+    mock.fd = 88;
+    mock.partial = 1;
+    const struct oa_dvr_ops ops = { dvr_open, dvr_write, dvr_flush,
+        dvr_close };
+
+    assert(oa_dvr_sink_write(data, sizeof data) == -ENODEV);
+    assert(oa_dvr_sink_flush() == -ENODEV);
+    assert(oa_dvr_sink_open(0, 0, &ops, &mock) == 0);
+    assert(oa_dvr_sink_is_open());
+    assert(oa_dvr_sink_write(data, sizeof data) == (long)sizeof data);
+    assert(mock.writes == 4 && mock.written == sizeof data);
+    assert(oa_dvr_sink_flush() == 0 && mock.flushes == 1);
+    oa_dvr_sink_close();
+    assert(mock.closes == 1 && !oa_dvr_sink_is_open());
+    oa_dvr_sink_close();
+
+    mock.fail_open = 1;
+    assert(oa_dvr_sink_open(0, 0, &ops, &mock) == -EACCES);
+    mock.fail_open = 0;
+    mock.fail_write = 1;
+    assert(oa_dvr_sink_open(0, 0, &ops, &mock) == 0);
+    assert(oa_dvr_sink_write(data, 10) == -EIO);
+    oa_dvr_sink_close();
+    mock.fail_write = 0;
+    mock.zero_write = 1;
+    assert(oa_dvr_sink_open(0, 0, &ops, &mock) == 0);
+    assert(oa_dvr_sink_write(data, 10) == -EIO);
+    oa_dvr_sink_close();
+    mock.zero_write = 0;
+    assert(oa_dvr_sink_open(0, 0, NULL, NULL) == -EINVAL);
+}
+
 int main(void)
 {
     char dir[] = "/tmp/oa-pvr-test-XXXXXX";
@@ -147,6 +230,7 @@ int main(void)
     test_persist(dir);
     test_validation(dir);
     test_capacity(dir);
+    test_dvr_sink();
     unlink("/tmp/oa-pvr-test-unused");
     char path[OA_PVR_PATH_MAX];
     const char *files[] = { "pvr.db", "bad.db", "validation.db", "full.db" };
@@ -155,6 +239,6 @@ int main(void)
         unlink(path);
     }
     assert(rmdir(dir) == 0);
-    puts("ok pvr stub: id/index semantics, validation and file persistence");
+    puts("ok pvr stub: id/index semantics, persistence and DVR sink");
     return 0;
 }

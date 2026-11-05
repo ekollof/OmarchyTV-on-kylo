@@ -1,14 +1,17 @@
 /*
- * mod_tuner — vendor-shaped tuner service with an offline NIM stub.
+ * mod_tuner — vendor-shaped tuner service with selectable offline/live-capable
+ * sources.
  *
  * The scan state machine and status fields follow the recovered
- * DEV_NIM_DTV_StartTune/MonitorTune/signal contracts, but only the offline
- * backend exists. The stub also emits synthetic EIT sections which are pushed
- * to `epg.ingest` when that service is present, exercising module composition
- * without hardware.
+ * DEV_NIM_DTV_StartTune/MonitorTune/signal contracts. The default backend is
+ * the offline stub; tuner.ts_path selects the TS replay EIT source and
+ * tuner.backend=ndal selects the NDAL frontend adapter (optionally with
+ * tuner.eit_demux for the DVB section-filter EIT source). Hardware acceptance
+ * remains owner-gated.
  */
 #include <errno.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -230,6 +233,18 @@ static int m_init(const oa_host_api *api, void **out)
             "tuner.frontend", "/dev/dvb/adapter0/frontend0");
         c->backend = oa_nim_ndal_backend(frontend);
         if (!c->backend) { free(c); return -1; }
+        const char *eit = api->config_get(api->priv, "tuner.eit_demux", "");
+        if (eit && *eit) {
+            int adapter = -1, index = -1;
+            unsigned pid = 0x12;
+            int fields = sscanf(eit, "%d:%d:%x", &adapter, &index, &pid);
+            if (fields < 2 || adapter < 0 || index < 0 ||
+                oa_nim_ndal_enable_eit(adapter, index, (uint16_t)pid,
+                    NULL, NULL)) {
+                free(c);
+                return -1;
+            }
+        }
     } else {
         c->backend = oa_nim_stub_backend();
     }
