@@ -425,7 +425,7 @@ check-eit-cache: $(BUILD)/tests/eit_cache
 	@$(BUILD)/tests/eit_cache
 check: check-eit-cache
 
-$(BUILD)/tests/eit_section: tests/eit_section.c common/eit_section.c common/eit_time.c include/openaurora/eit_section.h include/openaurora/eit_time.h
+$(BUILD)/tests/eit_section: tests/eit_section.c common/eit_section.c common/eit_time.c common/eit_ts.c include/openaurora/eit_section.h include/openaurora/eit_time.h include/openaurora/eit_ts.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 .PHONY: check-eit-section
@@ -433,7 +433,11 @@ check-eit-section: $(BUILD)/tests/eit_section
 	@$(BUILD)/tests/eit_section
 check: check-eit-section
 
-$(BUILD)/tests/nim_stub: tests/nim_stub.c common/nim_stub.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_section.h include/openaurora/eit_time.h
+$(BUILD)/tests/eit_ts_fixture: tests/eit_ts_fixture.c common/eit_section.c common/eit_time.c include/openaurora/eit_section.h include/openaurora/eit_time.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+$(BUILD)/tests/nim_stub: tests/nim_stub.c common/nim_stub.c common/nim_ts.c common/eit_ts.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_section.h include/openaurora/eit_ts.h include/openaurora/eit_time.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 .PHONY: check-nim-stub
@@ -821,7 +825,7 @@ $(BUILD)/modules/mod_epg.so: modules/epg/epg.c common/eit_section.c common/eit_c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
-$(BUILD)/modules/mod_tuner.so: modules/tuner/tuner.c common/nim_stub.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_section.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_tuner.so: modules/tuner/tuner.c common/nim_stub.c common/nim_ts.c common/eit_ts.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_section.h include/openaurora/eit_ts.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 

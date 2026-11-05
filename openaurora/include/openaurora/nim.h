@@ -71,6 +71,15 @@ struct oa_tuner_backend {
 };
 
 const struct oa_tuner_backend *oa_nim_stub_backend(void);
+/* Shared stub NIM ops for replay/alternative EIT sources. */
+const struct oa_nim_ops *oa_nim_stub_ops(void);
+
+/* Offline TS replay source: opens a bounded 188-byte-packet transport stream,
+ * filters PID 0x12 and returns assembled EIT sections through next_eit. The
+ * NIM side stays the stub until a live tuner backend is accepted. */
+int oa_nim_ts_open(const char *path);
+void oa_nim_ts_close(void);
+const struct oa_tuner_backend *oa_nim_ts_backend(void);
 
 #ifdef __cplusplus
 }

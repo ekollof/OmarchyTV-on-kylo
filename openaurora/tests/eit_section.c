@@ -1,6 +1,7 @@
 /* DVB EIT section parser tests. Sections are built locally with a correct
  * MPEG-2 CRC; no vendor code or TV data is used. */
 #include "openaurora/eit_section.h"
+#include "openaurora/eit_ts.h"
 
 #include <assert.h>
 #include <errno.h>
@@ -287,6 +288,223 @@ static void test_builder_roundtrip(void)
         &len) == -ENOSPC);
 }
 
+struct ts_capture {
+    int count;
+    uint8_t section[4096];
+    size_t length;
+};
+
+static int ts_capture_section(const uint8_t *section, size_t len, void *user)
+{
+    struct ts_capture *c = user;
+    if (len > sizeof c->section) return -E2BIG;
+    memcpy(c->section, section, len);
+    c->length = len;
+    c->count++;
+    return 0;
+}
+
+static void ts_packet(uint8_t out[188], uint16_t pid, uint8_t cc, int pusi,
+    const uint8_t *payload, size_t len, unsigned pointer)
+{
+    memset(out, 0xff, 188);
+    out[0] = 0x47;
+    out[1] = (uint8_t)((pusi ? 0x40 : 0) | ((pid >> 8) & 0x1f));
+    out[2] = (uint8_t)pid;
+    out[3] = (uint8_t)(0x10 | (cc & 0x0f));
+    size_t offset = 4;
+    if (pusi) {
+        assert(pointer <= 183);
+        out[offset++] = (uint8_t)pointer;
+        offset += pointer;
+    }
+    assert(offset + len <= 188);
+    memcpy(out + offset, payload, len);
+}
+
+static void ts_packet_adaptation(uint8_t out[188], uint16_t pid, uint8_t cc,
+    int pusi, const uint8_t *payload, size_t len)
+{
+    memset(out, 0xff, 188);
+    out[0] = 0x47;
+    out[1] = (uint8_t)((pusi ? 0x40 : 0) | ((pid >> 8) & 0x1f));
+    out[2] = (uint8_t)pid;
+    out[3] = (uint8_t)(0x30 | (cc & 0x0f));
+    out[4] = 3;
+    out[5] = 0;
+    out[6] = 0;
+    out[7] = 0;
+    size_t offset = 8;
+    if (pusi) out[offset++] = 0;
+    assert(offset + len <= 188);
+    memcpy(out + offset, payload, len);
+}
+
+static void test_ts_demux(void)
+{
+    const struct oa_eit_build_event events[2] = {
+        {
+            .event_id = 21,
+            .start = { 0xea, 0x60, 0x08, 0x30, 0x00 },
+            .duration = { 0x00, 0x30, 0x00 },
+            .running_status = 1,
+            .name = "TS one",
+            .text = "First"
+        },
+        {
+            .event_id = 22,
+            .start = { 0xea, 0x60, 0x09, 0x00, 0x00 },
+            .duration = { 0x00, 0x45, 0x00 },
+            .running_status = 2,
+            .name = "TS two",
+            .text = "Second"
+        }
+    };
+    uint8_t section[512], second[512], both[1024];
+    size_t section_len = 0, second_len = 0;
+    assert(oa_eit_build_section(0x4e, 301, 3, 1, &events[0], 1, section,
+        sizeof section, &section_len) == 0);
+    assert(oa_eit_build_section(0x4f, 302, 4, 0, &events[1], 1, second,
+        sizeof second, &second_len) == 0);
+
+    uint8_t packet[188];
+    struct oa_eit_ts ts;
+    struct ts_capture capture;
+
+    oa_eit_ts_init(&ts, 0x12);
+    memset(&capture, 0, sizeof capture);
+    ts_packet(packet, 0x12, 0, 1, section, section_len, 0);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 1);
+    assert(capture.count == 1 && capture.length == section_len &&
+        !memcmp(capture.section, section, section_len));
+
+    /* A section larger than one packet, split at full 184-byte payloads. */
+    char long_name[200], long_text[200];
+    memset(long_name, 'N', sizeof long_name - 1);
+    long_name[sizeof long_name - 1] = 0;
+    memset(long_text, 'T', sizeof long_text - 1);
+    long_text[sizeof long_text - 1] = 0;
+    const struct oa_eit_build_event big_event = {
+        .event_id = 31,
+        .start = { 0xea, 0x60, 0x0a, 0x00, 0x00 },
+        .duration = { 0x00, 0x30, 0x00 },
+        .running_status = 1,
+        .name = long_name,
+        .text = long_text
+    };
+    uint8_t big[512];
+    size_t big_len = 0;
+    assert(oa_eit_build_section(0x4e, 303, 5, 1, &big_event, 1, big,
+        sizeof big, &big_len) == 0);
+    assert(big_len > 184 && big_len < sizeof big);
+    oa_eit_ts_reset(&ts);
+    memset(&capture, 0, sizeof capture);
+    size_t offset = 0;
+    uint8_t cc = 0;
+    while (offset < big_len) {
+        size_t chunk = offset == 0 ? 183 : 184;
+        size_t n = big_len - offset;
+        if (n > chunk) n = chunk;
+        ts_packet(packet, 0x12, cc++, offset == 0, big + offset, n, 0);
+        int emitted = oa_eit_ts_feed(&ts, packet, 188, ts_capture_section,
+            &capture);
+        assert(emitted == (offset + n == big_len ? 1 : 0));
+        offset += n;
+    }
+    assert(capture.count == 1 && capture.length == big_len &&
+        !memcmp(capture.section, big, big_len));
+
+    /* Pointer field before a section. */
+    oa_eit_ts_reset(&ts);
+    memset(&capture, 0, sizeof capture);
+    ts_packet(packet, 0x12, 0, 1, section, section_len, 4);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 1);
+    assert(capture.count == 1 && capture.length == section_len);
+
+    /* Two complete sections in one packet. */
+    assert(section_len + second_len <= 183);
+    memcpy(both, section, section_len);
+    memcpy(both + section_len, second, second_len);
+    oa_eit_ts_reset(&ts);
+    memset(&capture, 0, sizeof capture);
+    ts_packet(packet, 0x12, 0, 1, both, section_len + second_len, 0);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 2);
+    assert(capture.count == 2 && capture.length == second_len &&
+        !memcmp(capture.section, second, second_len));
+
+    /* Wrong PID is ignored. */
+    oa_eit_ts_reset(&ts);
+    memset(&capture, 0, sizeof capture);
+    ts_packet(packet, 0x11, 0, 1, section, section_len, 0);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 0);
+    assert(capture.count == 0);
+
+    /* Duplicate packet is ignored. */
+    oa_eit_ts_reset(&ts);
+    memset(&capture, 0, sizeof capture);
+    ts_packet(packet, 0x12, 0, 1, section, section_len, 0);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 1);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 0);
+    assert(capture.count == 1);
+
+    /* Continuity error drops the partial section; a new PUSI recovers. */
+    oa_eit_ts_reset(&ts);
+    memset(&capture, 0, sizeof capture);
+    ts_packet(packet, 0x12, 0, 1, big, 183, 0);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 0);
+    ts_packet(packet, 0x12, 2, 0, big + 183, 184, 0);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 0);
+    ts_packet(packet, 0x12, 3, 1, section, section_len, 0);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 1);
+    assert(capture.count == 1 && capture.length == section_len);
+
+    /* Transport error drops the partial section. */
+    oa_eit_ts_reset(&ts);
+    memset(&capture, 0, sizeof capture);
+    ts_packet(packet, 0x12, 0, 1, big, 183, 0);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 0);
+    ts_packet(packet, 0x12, 1, 0, big + 183, 184, 0);
+    packet[1] |= 0x80;
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 0);
+    ts_packet(packet, 0x12, 2, 1, section, section_len, 0);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 1);
+
+    /* Adaptation field plus payload. */
+    oa_eit_ts_reset(&ts);
+    memset(&capture, 0, sizeof capture);
+    ts_packet_adaptation(packet, 0x12, 0, 1, section, section_len);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 1);
+
+    /* Non-EIT table is assembled but not delivered. */
+    memcpy(both, section, section_len);
+    both[0] = 0x00;
+    oa_eit_ts_reset(&ts);
+    memset(&capture, 0, sizeof capture);
+    ts_packet(packet, 0x12, 0, 1, both, section_len, 0);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 0);
+    ts_packet(packet, 0x12, 1, 1, section, section_len, 0);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 1);
+
+    /* Malformed packets and impossible section lengths. */
+    oa_eit_ts_reset(&ts);
+    assert(oa_eit_ts_feed(&ts, packet, 187, ts_capture_section, &capture) ==
+        -EINVAL);
+    ts_packet(packet, 0x12, 0, 1, section, section_len, 0);
+    packet[0] = 0x46;
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) ==
+        -EINVAL);
+    packet[0] = 0x47;
+    packet[3] = 0x00;
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) ==
+        -EINVAL);
+    const uint8_t huge[3] = { 0x4e, 0xbf, 0xff };
+    oa_eit_ts_reset(&ts);
+    memset(&capture, 0, sizeof capture);
+    ts_packet(packet, 0x12, 0, 1, huge, sizeof huge, 0);
+    assert(oa_eit_ts_feed(&ts, packet, 188, ts_capture_section, &capture) == 0);
+    assert(capture.count == 0);
+}
+
 int main(void)
 {
     test_valid_section();
@@ -295,6 +513,7 @@ int main(void)
     test_skips();
     test_bounded_text_and_abort();
     test_builder_roundtrip();
-    puts("ok eit section: EIT header/CRC, BCD times, descriptors and skips");
+    test_ts_demux();
+    puts("ok eit section: header/CRC, BCD times, descriptors, skips and TS demux");
     return 0;
 }

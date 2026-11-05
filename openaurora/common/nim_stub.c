@@ -129,3 +129,8 @@ const struct oa_tuner_backend *oa_nim_stub_backend(void)
 {
     return &stub_backend;
 }
+
+const struct oa_nim_ops *oa_nim_stub_ops(void)
+{
+    return &stub_nim;
+}

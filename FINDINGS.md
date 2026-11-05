@@ -108,6 +108,16 @@ parser run pass. Limits: complete pre-assembled sections only, no PID/EIT
 filters, section merging, CRID/first-showing, persistence or live tuner source.
 No TV access.
 
+EIT-TS-DEMUX-2026-11-05: the tuner now has a real MPEG-2 TS EIT source
+(`nim-ts-replay`, `tuner.ts_path`) instead of synthetic sections only. The
+demux filters PID 0x12, validates 188-byte packets, handles adaptation fields,
+continuity duplicates/discontinuities, PUSI pointer fields, split/back-to-back
+sections and 0xff stuffing, and caps sections at 4096 bytes. mod_tuner opens it
+on start and feeds epg.ingest during scans. Unit demux/replay tests and a real
+Unix-socket replay produced epg-count 2 with both events; host423 ok, verify45,
+ARM/qemu passes. Limits: replay file only; NIM tune/signal still stub; fixed
+PID; no live demux/hardware, CRID or persistence; no TV access.
+
 BROADCAST-VENDOR-FIELDS-2026-11-05: the broadcast contracts now carry the
 recovered vendor fields. oa_tuner_status has lock/strength/quality/unc and
 float BER/SNR (unc 0xffffffff unknown), oa_epg_event has

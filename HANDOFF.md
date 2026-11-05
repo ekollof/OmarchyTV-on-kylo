@@ -91,6 +91,14 @@ the Unix socket including key replacement, bad CRC, stale sections, reload and
 stop. Host417 ok, verify45; ARM/qemu passes. Still no PID/EIT filters, section
 merging, CRID/first-showing, persistence or live tuner source.
 
+Latest EIT demux: [EIT-TS-DEMUX](artifacts/reports/EIT-TS-DEMUX-2026-11-05.md)
+adds a real MPEG-2 TS EIT demux (PID 0x12, continuity, PUSI pointer, split/
+back-to-back sections, stuffing) and the `nim-ts-replay` backend selected by
+`tuner.ts_path`. mod_tuner opens/closes the replay source and feeds
+`epg.ingest`; unit and real-socket replay tests pass (epg-count 2), host423 ok,
+verify45, ARM/qemu. Limits: replay file only; NIM tune/signal remains stub; no
+live demux/hardware, CRID or persistence; TV work owner-gated.
+
 Latest vendor-field contracts:
 [BROADCAST-VENDOR-FIELDS](artifacts/reports/BROADCAST-VENDOR-FIELDS-2026-11-05.md)
 extends tuner/EPG/PVR records with lock/strength/quality/BER/SNR/UNC,

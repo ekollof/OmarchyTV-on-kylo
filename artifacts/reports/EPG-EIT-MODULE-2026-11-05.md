@@ -1,5 +1,8 @@
 # EIT section parser and EPG module — 2026-11-05
 
+> **Update 2026-11-05:** complete EIT sections can now be produced by the real
+> TS demux/replay backend; see [EIT-TS-DEMUX](EIT-TS-DEMUX-2026-11-05.md). The
+> parser/cache and live-source limits below are otherwise unchanged.
 Adds a DVB EIT section parser feeding `common/eit_cache.c`, publishes it as a
 real `epg` module, and covers ingest/query/reload over the Unix control socket.
 Host and ARM/qemu only; no TV, tuner or vendor execution.

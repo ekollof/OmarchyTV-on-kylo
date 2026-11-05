@@ -37,6 +37,8 @@ struct ctx {
     int error;
     int active;
     int published;
+    int ts_source;
+    char ts_path[512];
 };
 
 static struct ctx *g_ctx;
@@ -216,7 +218,15 @@ static int m_init(const oa_host_api *api, void **out)
     struct ctx *c = calloc(1, sizeof *c);
     if (!c) return -1;
     c->api = api;
-    c->backend = oa_nim_stub_backend();
+    const char *ts_path = api->config_get(api->priv, "tuner.ts_path", "");
+    if (ts_path && *ts_path) {
+        if (strlen(ts_path) >= sizeof c->ts_path) { free(c); return -1; }
+        memcpy(c->ts_path, ts_path, strlen(ts_path) + 1);
+        c->backend = oa_nim_ts_backend();
+        c->ts_source = 1;
+    } else {
+        c->backend = oa_nim_stub_backend();
+    }
     metrics_default(c);
     *out = c;
     g_ctx = c;
@@ -235,8 +245,14 @@ static int m_start(void *v)
     c->selected_handle = 0;
     c->error = 0;
     metrics_default(c);
-    if (c->api->publish(c->api->priv, OA_SVC_TUNER, 1, &tuner_iface))
+    if (c->ts_source) {
+        int rc = oa_nim_ts_open(c->ts_path);
+        if (rc) return rc;
+    }
+    if (c->api->publish(c->api->priv, OA_SVC_TUNER, 1, &tuner_iface)) {
+        if (c->ts_source) oa_nim_ts_close();
         return -1;
+    }
     c->published = 1;
     return 0;
 }
@@ -250,6 +266,7 @@ static void m_stop(void *v)
     }
     if (c->published) c->api->unpublish(c->api->priv, OA_SVC_TUNER);
     c->published = 0;
+    if (c->ts_source) oa_nim_ts_close();
 }
 
 static int m_suspend(void *v) { (void)v; return 0; }
@@ -257,6 +274,8 @@ static int m_resume(void *v) { (void)v; return 0; }
 
 static void m_destroy(void *v)
 {
+    struct ctx *c = v;
+    if (c && c->ts_source) oa_nim_ts_close();
     if (g_ctx == v) g_ctx = NULL;
     free(v);
 }

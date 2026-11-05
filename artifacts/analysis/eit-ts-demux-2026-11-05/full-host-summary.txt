@@ -1,0 +1,5 @@
+full host make check: 423 ok
+ok eit section: header/CRC, BCD times, descriptors, skips and TS demux
+ok nim stub: tune/signal defaults, synthetic EIT and TS replay demux
+verify.cjs: 45 groups
+ARM/qemu: ok nim stub: tune/signal defaults, synthetic EIT and TS replay demux

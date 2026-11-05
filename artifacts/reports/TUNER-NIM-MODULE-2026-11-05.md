@@ -1,5 +1,9 @@
 # Vendor-grounded tuner module and EIT handoff — 2026-11-05
 
+> **Update 2026-11-05:** the synthetic-only EIT source now has a real MPEG-2
+> TS replay path (PID filter, continuity, split/back-to-back sections) selected
+> by `tuner.ts_path`; see [EIT-TS-DEMUX](EIT-TS-DEMUX-2026-11-05.md). The NIM
+> tune/signal side remains the stub described below.
 Adds a `tuner` module shaped after the recovered `DEV_NIM_DTV_*` calls, with an
 offline NIM stub and synthetic EIT output that is pushed into `mod_epg`. Host
 and ARM/qemu only; no TV, tuner hardware or vendor execution.

@@ -513,6 +513,18 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       filters, section merging, CRID/first-showing, persistence or live tuner
       source. No TV access.
 
+- [x] EIT TS demux and replay backend: added `common/eit_ts.c` (PID 0x12,
+      188-byte validation, transport-error/scrambled drops, adaptation fields,
+      continuity duplicates/discontinuities, PUSI pointer, split/back-to-back
+      sections, 0xff stuffing, 4096-byte cap) and `common/nim_ts.c`
+      (`nim-ts-replay`, 8-section queue). `mod_tuner` reads `tuner.ts_path`,
+      opens on start, closes on stop/destroy and feeds assembled sections into
+      `epg.ingest`. Tests cover the demux and replay backend; a real Unix-socket
+      replay produced `epg-count 2` with both events and metadata. Host423 ok,
+      verify45; ARM/qemu passes. EIT-TS-DEMUX. Limits: replay file only, NIM
+      tune/signal remains the stub, fixed PID, no live demux/hardware, CRID or
+      persistence. No TV access.
+
 - [x] Vendor broadcast contract fields + EIT schedule cache: extended
       `oa_tuner_status` with lock/strength/quality/BER/SNR/UNC,
       `oa_epg_event` with CRID/first-showing/running-status/state/version/

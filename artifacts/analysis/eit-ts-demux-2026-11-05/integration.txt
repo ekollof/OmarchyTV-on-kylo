@@ -1,0 +1,33 @@
+$ load epg
+ok epg
+$ start epg
+ok
+$ load tuner
+ok tuner
+$ start tuner
+ok
+$ tuner-scan 1
+ok
+$ tuner-state
+network 1 state 1 progress 25 lock 0 services 3 selected 0 error 0 strength 30 quality 10 ber 0.00 snr 0.00 unc 4294967295
+$ tuner-state
+network 1 state 1 progress 50 lock 1 services 6 selected 0 error 0 strength 80 quality 75 ber 0.00 snr 20.50 unc 0
+$ tuner-state
+network 1 state 1 progress 75 lock 1 services 9 selected 0 error 0 strength 80 quality 75 ber 0.00 snr 20.50 unc 0
+$ tuner-state
+network 1 state 1 progress 100 lock 1 services 12 selected 0 error 0 strength 80 quality 75 ber 0.00 snr 20.50 unc 0
+$ tuner-state
+network 1 state 2 progress 100 lock 1 services 12 selected 0 error 0 strength 80 quality 75 ber 0.00 snr 20.50 unc 0
+$ tuner-state
+network 1 state 2 progress 100 lock 1 services 12 selected 0 error 0 strength 80 quality 75 ber 0.00 snr 20.50 unc 0
+$ epg-count
+count 2
+$ epg-query 777 1677326400000 1677333600000
+count 2
+event id=7001 service=777 start=1677326400000 end=1677328200000 crid=0 first=0 state=0 version=7 actual=1 running=4 name=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+event id=7002 service=777 start=1677330000000 end=1677332700000 crid=0 first=0 state=0 version=7 actual=1 running=1 name=BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+
+$ stop tuner
+ok
+$ stop epg
+ok

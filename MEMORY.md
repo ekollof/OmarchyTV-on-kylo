@@ -98,6 +98,17 @@ qemu parser run pass. Limits: complete pre-assembled sections, no PID/EIT
 filters or section merging, no CRID/first-showing or persistence, no live
 tuner source. No vendor execution or TV access.
 
+EIT-TS-DEMUX-2026-11-05 (host/qemu + real socket): added a real MPEG-2 TS EIT
+demux (PID 0x12, 188-byte validation, transport-error/scrambled drops,
+adaptation fields, continuity duplicate/discontinuity, PUSI pointer, split/
+back-to-back sections, 0xff stuffing, 4096-byte cap) plus the nim-ts-replay
+backend selected by tuner.ts_path. mod_tuner opens the replay source on start,
+closes it on stop/destroy and feeds assembled sections into epg.ingest. Unit demux/
+replay tests and a real-socket replay show epg-count 2 with both events;
+host423 ok, verify45; ARM/qemu passes. Limits: replay file only, NIM tune/
+signal remains the stub, fixed PID, no live demux/hardware, CRID or
+persistence; TV work remains owner-gated. No TV access.
+
 BROADCAST-VENDOR-FIELDS-2026-11-05 (host/qemu): extended the broadcast
 contracts with the recovered vendor fields: tuner lock/strength/quality/BER/
 SNR/UNC, EPG CRID/first-showing/running-status/state/version/actual, and PVR
