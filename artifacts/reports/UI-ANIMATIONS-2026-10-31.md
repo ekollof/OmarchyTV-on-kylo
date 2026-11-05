@@ -1,5 +1,13 @@
 # Vendor UI animation contracts — 2026-10-31
 
+> **Correction 2026-11-06:** the bootstrap is recovered. `DemoApp::checkUIDesign`
+> enables `UIAnimationController` from `SVGDesignChecker::checkUsabilityStyle`,
+> which checks for a rectangle named `animation` in `DesignStyle.svg` (resource
+> 79). This TV's resource contains `animation -480 -270 1920 1080`, so the
+> controller is enabled in stock. See ANIM-BOOTSTRAP-2026-11-06. The 300 ms
+> launcher records and 1000 ms dialog path are active; our widget graph/300 ms
+> rendering is still not ported.
+
 Status: **firmware and implementation evidence with dated follow-ups**. The
 later sections recover text-slide, full-screen modes and rail timing and record
 native scheduling probes. [UI-SCENE-REVIEW](UI-SCENE-REVIEW-2026-11-01.md)

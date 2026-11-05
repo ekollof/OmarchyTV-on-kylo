@@ -1895,6 +1895,17 @@ check-ui-rail-hl: $(BUILD)/tests/ui_rail_hl $(BUILD)/modules/mod_ui_vendor.so $(
 $(BUILD)/tests/ui_rail_hl: tests/ui_rail_hl.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_rail_hl.c $(filter %.o,$^) $(LDLIBS)
 
+$(BUILD)/tests/ui_anim_bootstrap: tests/ui_anim_bootstrap.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_anim_bootstrap.c $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-ui-anim-bootstrap
+check-ui-anim-bootstrap: $(BUILD)/tests/ui_anim_bootstrap $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_ui_theme.so $(BUILD)/tests/mod_fake_clock.so
+	@mkdir -p $(BUILD)/tests/ui-anim-bootstrap/modules
+	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_ui_theme.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/tests/ui-anim-bootstrap/modules/
+	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-anim-bootstrap/modules/mod_nav_display.so
+	@$(BUILD)/tests/ui_anim_bootstrap $(BUILD)/tests/ui-anim-bootstrap/modules
+check: check-ui-anim-bootstrap
+
 $(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_fake_clock.c $(LDFLAGS) $(LDLIBS)

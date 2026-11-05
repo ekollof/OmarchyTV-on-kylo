@@ -39,6 +39,16 @@ uploaded only `0,211 209x670`, ~20 ms request-to-done and ~50 ms cadence.
 Not the exact 30 ms vendor cadence; CPU canvas, graceful teardown and cold
 startup remain. GPU-PARTIAL-2026-11-06.
 
+Animation bootstrap, 2026-11-06: the unrecovered caller is closed.
+`DemoApp::checkUIDesign` (0xcc5e64) constructs `SVGDesignChecker` and passes
+`checkAnimation()` to `UIFramework::setAnimationEnable`. `checkUsabilityStyle`
+sets that flag when resource79 `DesignStyle.svg` contains a rectangle named
+`animation`; this TV's record contains `animation -480 -270 1920 1080`, so the
+vendor controller is enabled. `ui_vendor` now derives enablement from
+`ui.theme` DesignStyle plus the explicit `ui.anim_enable` override; synthetic
+with/without-marker tests pass. The 300 ms SVGButton/sub-launcher rendering and
+sub-launcher grid/transform origin remain unported. ANIM-BOOTSTRAP.
+
 Control client, 2026-11-05: `oa-client` now defaults to a 5 s bounded timeout
 and supports `--no-wait`; the silent-server test covers 1.02 s timeout and
 0.00 s no-wait. `mod_ir` keeps `/dev/ttyS2` closed when BLAST succeeds unless

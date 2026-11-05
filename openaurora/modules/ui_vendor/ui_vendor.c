@@ -254,6 +254,42 @@ static uint64_t now_ms(void)
  * DialogLauncher.svg (resource 129, as DialogMainMenu3/4/Tall) declares only
  * animation_slide_up_fade_in, so the first-present rule selects mode 60 = HAL type 4
  * (y -= (1-p)/6, a slide up). */
+/* DemoApp::checkUIDesign constructs SVGDesignChecker and calls
+ * UIFramework::setAnimationEnable(checkAnimation()). checkAnimation returns the
+ * flag set by checkUsabilityStyle when DesignStyle.svg (resource 79) contains a
+ * rectangle named "animation"; this TV's resource 79 does. The explicit
+ * ui.anim_enable lever remains for tests/other themes. */
+static int theme_has_animation(struct ctx *c)
+{
+    struct oa_binsvg resource;
+    struct oa_binsvg_rect rect;
+    return c->theme && !c->theme->named("DesignStyle.svg", &resource) &&
+           !oa_binsvg_find_rect(&resource, NULL, "animation", &rect);
+}
+
+static void apply_anim_policy(struct ctx *c)
+{
+    if (!c || !c->anim) return;
+    const char *override = c->api->config_get(c->api->priv, "ui.anim_enable", "");
+    if (override[0]) {
+        int enabled = atoi(override) == 1;
+        (void)c->anim->set_enabled(enabled);
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "animations %s (ui.anim_enable override)",
+                    enabled ? "enabled" : "disabled");
+        return;
+    }
+    /* No theme is not a policy source: leave the controller state untouched
+     * for tests/consumers that enabled it directly. */
+    if (!c->theme) return;
+    int enabled = theme_has_animation(c);
+    (void)c->anim->set_enabled(enabled);
+    c->api->log(c->api->priv, OA_LOG_INFO, "animations %s (%s)",
+                enabled ? "enabled" : "disabled",
+                enabled ? "DesignStyle.svg animation marker" :
+                "no DesignStyle animation marker");
+}
+
 static int dialog_fs_type(struct ctx *c)
 {
     const char *override = c->api->config_get(c->api->priv, "ui.fs_type", "");
@@ -1800,6 +1836,7 @@ static void on_service_removed(const void *evp, void *ud)
         c->clock = NULL;
     } else if (!strcmp(ev->name, OA_SVC_UI_THEME)) {
         c->theme = NULL; /* active dialog uses only its copied numeric mode */
+        apply_anim_policy(c);
     } else if (!strcmp(ev->name, OA_SVC_UI_LUA)) {
         c->lua = NULL; /* host already dropped the hold; do not repaint for this */
         return;
@@ -1834,6 +1871,7 @@ static void rebind_now(struct ctx *c)
     c->anim2 = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 2);
     if (!c->clock) c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
     if (!c->theme) c->theme = c->api->lookup(c->api->priv, OA_SVC_UI_THEME, 1);
+    apply_anim_policy(c);
     if (!c->lua) c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
     if (!slide_allowed(c)) {
         /* a provider went away or animation is off: stop timing and hold the drawn state */
@@ -2321,10 +2359,7 @@ static int m_start(void *v)
     c->theme = c->api->lookup(c->api->priv, OA_SVC_UI_THEME, 1);
     c->fs_type = dialog_fs_type(c);
     c->slide_box = atoi(c->api->config_get(c->api->priv, "ui.slide_box", "0"));
-    /* Vendor UIAnimationController starts disabled and its bootstrap caller is not recovered yet.
-     * This default-off switch is an explicit bootstrap/test lever, not a chosen native policy. */
-    if (c->anim && atoi(c->api->config_get(c->api->priv, "ui.anim_enable", "0")) == 1)
-        c->anim->set_enabled(1);
+    apply_anim_policy(c);
     /* React to providers that appear later, and drop cached pointers when one is removed. */
     c->mod_key = c->api->subscribe(c->api->priv, OA_TOPIC_MODULE_CHANGED, on_module_changed, c);
     c->svc_key = c->api->subscribe(c->api->priv, OA_TOPIC_SERVICE_REMOVED, on_service_removed, c);

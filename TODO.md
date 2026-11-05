@@ -191,6 +191,20 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       Exact 30 ms cadence, CPU canvas reduction, graceful teardown and cold
       startup remain separate.
 
+- [x] Vendor animation bootstrap: recovered `DemoApp::checkUIDesign` →
+      `SVGDesignChecker::checkUsabilityStyle` → `DesignStyle.svg` (resource79)
+      rectangle `animation` → `UIFramework/UIAnimationController::
+      setAnimationEnable`. This TV contains `animation -480 -270 1920 1080`,
+      so stock animations are enabled. `ui_vendor` applies the policy from
+      `ui.theme` with `ui.anim_enable` override; synthetic marker/no-marker
+      host tests pass. ANIM-BOOTSTRAP.
+
+- [ ] 300 ms widget animation rendering: the enablement predicate is known,
+      but our custom rasterizer has no vendor SVGButton graph. Decode the
+      sub-launcher grid/transform origin (SUBL AUNCHER-LAYOUT-2) before
+      applying `#scalerect` 1→1.32/1.35 and `#glyph` offsets; do not copy the
+      300 ms records onto the category rail or invented card layout.
+
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
       the vendor 30 ms APNG/10 ms controller cadence. Tighten the compositor
       pipeline and measure frame-to-frame timing on the TV. GPU-PARTIAL,

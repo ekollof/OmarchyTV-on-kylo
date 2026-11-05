@@ -76,6 +76,14 @@ scene3-5 ms/pan5-8 ms, ~50 ms cadence (~450 ms total) versus 617 ms full
 repaint; key full paint scene52 ms/pan11 ms. Static/full path unchanged;
 GPU partial upload and exact 30 ms cadence remain. RAIL-PARTIAL.
 
+Animation bootstrap, 2026-11-06: `DemoApp::checkUIDesign` →
+`SVGDesignChecker::checkUsabilityStyle` finds the `animation` rectangle in
+`DesignStyle.svg` (resource79; this TV: `animation -480 -270 1920 1080`) and
+enables `UIAnimationController`. `ui_vendor` now applies that policy from
+`ui.theme` with `ui.anim_enable` override; synthetic marker/no-marker host tests
+pass. ANIM-BOOTSTRAP. The 300 ms SVGButton/sub-launcher rendering and grid/
+transform origin remain unported.
+
 Partial GPU scene uploads, 2026-11-06: OGS1 FRAME rects + renderer ABI2 +
 `display.gpu` v2 `frame_rect`; `scene_display` sends only dirty images. Host
 protocol/patch/UI tests pass. TV: full upload 73 ms; ten rail frames uploaded
