@@ -1,5 +1,11 @@
 # Stock-parity analysis — corrected old capture — 2026-11-04
 
+> **Correction 2026-11-05:** `artifacts/protocol/p1/04-apps-stock-portal.png`
+> is also a pre-correction BGRA capture and is red/blue swapped. Its corrected
+> copy and a reusable capture comparator are in
+> [STOCK-PARITY-2026-11-05](STOCK-PARITY-2026-11-05.md). The corrected
+> `stock-corrected.png` used below was already correct.
+
 Offline analysis only. No TV operation.
 
 ## The old capture is channel-swapped

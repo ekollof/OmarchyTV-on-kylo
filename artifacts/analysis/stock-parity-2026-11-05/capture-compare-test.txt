@@ -1,0 +1,2 @@
+python3 tests/capture_compare_test.py
+ok stock capture compare: exact/changed metrics, BGR correction, regions, bounds/size errors and STOCK-PARITY regression

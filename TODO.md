@@ -598,6 +598,16 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       FAKE-FB-SOCKET. Limits: user-space fake; real kernel/driver behavior,
       physical fb1/TDGA, vendor coexistence and cold startup remain.
 
+- [x] Corrected-capture comparator and P1 blue-shift correction: the P1
+      stock portal is another pre-correction BGRA capture; its corrected copy
+      is recorded with raw/corrected samples and geometry. capture_compare.py
+      supports explicit BGR correction, named regions and JSON output, and
+      reproduces the earlier portal AE/RMSE values exactly. A fresh
+      apps-grid comparison is prepared via apps-grid-regions.json and
+      `make compare-stock-apps-grid`, which refuses until the stock capture
+      exists. Host404 ok, verify45. STOCK-PARITY-2026-11-05. Limits: no stock
+      apps-grid capture, pixel parity or TV access.
+
 - [x] Plat-consumer socket lifecycle with a host-only plat fixture: audio
       (audio.enable=0), source (source.enable=0), ir (empty ir.device) and
       panel load/start and publish audio/source/input/panel services. Reload

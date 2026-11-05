@@ -1,0 +1,4 @@
+b58ad64e34b3ae3bcc6153ee7bccfa9727306a1d432e9793ade52e6116b7e220  openaurora/tools/capture_compare.py
+d68f29e947c7b980f29600b930a9c90d75e3201726616137d27d4e193e181c2e  openaurora/tests/capture_compare_test.py
+9bb1a8712906f664f0c1cb7252f7eda7e861d9565dcafa1e1beff60c7f5d8454  artifacts/analysis/stock-parity-2026-11-05/p1-portal-corrected.png
+f60467be3612bbe1a07ff64fe34288f6fedc13d1ac699d1e73979fd992e132d7  artifacts/analysis/stock-parity-2026-11-04/stock-corrected.png

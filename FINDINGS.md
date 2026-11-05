@@ -6,6 +6,15 @@ Private controls forward to EX_PLAT; successful ioctl still does not prove
 MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
+STOCK-PARITY-2026-11-05: P1 stock portal is another pre-correction BGRA
+capture and is blue-shifted; the corrected copy is recorded with raw/corrected
+samples and geometry. capture_compare.py supports explicit BGR correction,
+named regions and JSON, and exactly reproduces the prior portal AE/RMSE
+measurements. A fresh apps-grid comparison is prepared with
+apps-grid-regions.json and `make compare-stock-apps-grid`, which refuses until
+the stock capture exists. Host404 ok, verify45. No stock apps-grid capture,
+pixel parity or TV access; candidate geometry is not a proven stock layout.
+
 PLAT-CONSUMERS-SOCKET-2026-11-05: a fake plat service provider starts the real
 host-build audio/source/ir/panel modules over the socket with hardware paths
 disabled. Services publish, plat reload is refused while they are active,

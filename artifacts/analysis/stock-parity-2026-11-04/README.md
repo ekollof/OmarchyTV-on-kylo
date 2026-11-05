@@ -2,6 +2,11 @@
 
 Interpretation: [STOCK-PARITY](../../reports/STOCK-PARITY-2026-11-04.md).
 
+> **Correction 2026-11-05:** the P1 portal capture is also pre-correction and
+> blue-shifted. See
+> [stock-parity-2026-11-05](../stock-parity-2026-11-05/README.md) for its
+> corrected copy and the reusable comparator.
+
 - `stock-corrected.png`: `shot-launcher-right.png` with RGB channels swapped
   to correct the old BGRA/RGBA capture defect.
 - `channel-swap.txt`: before/after sample pixels versus current downloaded

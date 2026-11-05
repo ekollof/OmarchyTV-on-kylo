@@ -1,0 +1,14 @@
+source: artifacts/protocol/p1/04-apps-stock-portal.png
+status: another pre-correction BGRA capture; stored PNG is red/blue swapped
+correction: magick ... -channel RGB -separate -swap 0,2 -combine
+corrected copy: artifacts/analysis/stock-parity-2026-11-05/p1-portal-corrected.png
+
+samples (raw -> corrected):
+  Prime card       (128, 77, 14) -> (14, 77, 128)   blue, matches Prime orientation
+  Canal card       ( 28, 47,128) -> (128, 47, 28)   red, matches Canal orientation
+  header strip     ( 38, 26,140) -> (140, 26, 38)   red
+  background       ( 13, 12, 12) -> (12, 12, 13)    neutral
+
+The corrected copy is used below. Do not use the raw P1 capture for colour
+parity. `artifacts/analysis/stock-parity-2026-11-04/stock-corrected.png` was
+already corrected and remains unchanged.

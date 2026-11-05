@@ -93,6 +93,16 @@ reauthorized; fb1 and stock operation must stay untouched. This supersedes the
 earlier "Don't touch the TV" restriction. No persistent replacement or boot
 changes. The historical offline-only entries describe their original runs.
 
+STOCK-PARITY-2026-11-05 (offline): P1 stock portal is another pre-correction
+BGRA capture and is blue-shifted; the corrected copy is in
+artifacts/analysis/stock-parity-2026-11-05. capture_compare.py supports
+explicit BGR correction, named regions and JSON, and reproduces the earlier
+portal AE/RMSE values exactly. A fresh apps-grid comparison is prepared with
+apps-grid-regions.json and `make compare-stock-apps-grid`, which refuses until
+artifacts/protocol/stock-apps-grid.png exists. Host404 ok, verify45. No stock
+apps-grid capture, pixel parity or TV access; the candidate geometry is not a
+proven stock layout.
+
 PLAT-CONSUMERS-SOCKET-2026-11-05 (host-only): a fake plat service provider
 starts the real host-build audio (audio.enable=0), source (source.enable=0),
 ir (empty ir.device) and panel modules over the socket. They publish

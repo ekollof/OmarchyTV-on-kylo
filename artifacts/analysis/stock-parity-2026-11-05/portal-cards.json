@@ -1,0 +1,14 @@
+{
+  "description": "Nine portal cards at the shared 209+190*i,478 171x95 geometry.",
+  "regions": [
+    {"name": "netflix", "x": 209, "y": 478, "w": 171, "h": 95},
+    {"name": "prime", "x": 399, "y": 478, "w": 171, "h": 95},
+    {"name": "youtube", "x": 589, "y": 478, "w": 171, "h": 95},
+    {"name": "tabii", "x": 779, "y": 478, "w": 171, "h": 95},
+    {"name": "canal", "x": 969, "y": 478, "w": 171, "h": 95},
+    {"name": "tvv", "x": 1159, "y": 478, "w": 171, "h": 95},
+    {"name": "telesat", "x": 1349, "y": 478, "w": 171, "h": 95},
+    {"name": "digiturk", "x": 1539, "y": 478, "w": 171, "h": 95},
+    {"name": "gain", "x": 1729, "y": 478, "w": 171, "h": 95}
+  ]
+}

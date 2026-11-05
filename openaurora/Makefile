@@ -1182,6 +1182,19 @@ check-plat-consumers-socket: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_plat_fixture
 	node tests/plat_consumers_socket.cjs $(abspath $(BUILD))
 check: check-plat-consumers-socket
 
+.PHONY: check-capture-compare
+check-capture-compare:
+	python3 tests/capture_compare_test.py
+check: check-capture-compare
+
+STOCK_APPS ?= ../artifacts/protocol/stock-apps-grid.png
+.PHONY: compare-stock-apps-grid
+compare-stock-apps-grid:
+	@test -f $(STOCK_APPS) || { echo "missing $(STOCK_APPS); capture the stock apps grid first"; exit 2; }
+	python3 tools/capture_compare.py --reference $(STOCK_APPS) \
+		--candidate ../artifacts/analysis/ui-apps-grid-2026-11-04/offline-apps-grid.png \
+		--manifest ../artifacts/analysis/stock-parity-2026-11-05/apps-grid-regions.json
+
 ui-skin-socket-modules = $(BUILD)/tests/ui-skin-socket/modules
 .PHONY: check-ui-skin-socket
 check-ui-skin-socket: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/tests/ui_nav_display.so

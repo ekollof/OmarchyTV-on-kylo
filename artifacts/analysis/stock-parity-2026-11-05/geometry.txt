@@ -1,0 +1,22 @@
+image: 1920x1080 RGB, corrected copy
+
+header:
+  rows 0..279 are the stock header strip
+  boundary row 280 is background
+  sample (900,100) = (140,26,38)
+  gradient observed from about (132,27,40) at top to (189,30,45) at y=279
+
+background:
+  (1500,800) = (12,12,13)
+
+card row:
+  y=478..572, 95 px high at x=250,470,1040,1500
+  y=520 solid-card runs: 210..379, 400..569, 590..759 (YouTube content
+  fragments inside this extent), 780..949, 970..1139, 1160..1329,
+  1350..1519, 1540..1709, 1730..1899
+  spacing=190 px, card width=170..171 px by threshold
+
+The earlier corrected capture used cards at x=209+190*i, y=478, 171x95.
+The P1 corrected copy agrees within the 1 px threshold/edge difference, but
+shows a 280 px header and left rail state that the earlier capture does not.
+It is a second stock portal state, not a full-screen apps-grid oracle.

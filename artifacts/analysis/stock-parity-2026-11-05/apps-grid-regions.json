@@ -1,0 +1,23 @@
+{
+  "description": "Candidate apps-grid geometry from DialogFullScreenPortal.svg and UI-APPS-GRID. A fresh stock capture must confirm or correct these rectangles before parity is claimed.",
+  "regions": [
+    {"name": "top_strip", "x": 0, "y": 0, "w": 1920, "h": 162},
+    {"name": "grid", "x": 183, "y": 180, "w": 1554, "h": 720},
+    {"name": "scrollbar", "x": 1750, "y": 180, "w": 8, "h": 720},
+    {"name": "cell_r0c0", "x": 183, "y": 180, "w": 310, "h": 230},
+    {"name": "cell_r0c1", "x": 493, "y": 180, "w": 310, "h": 230},
+    {"name": "cell_r0c2", "x": 803, "y": 180, "w": 310, "h": 230},
+    {"name": "cell_r0c3", "x": 1113, "y": 180, "w": 310, "h": 230},
+    {"name": "cell_r0c4", "x": 1423, "y": 180, "w": 310, "h": 230},
+    {"name": "cell_r1c0", "x": 183, "y": 410, "w": 310, "h": 230},
+    {"name": "cell_r1c1", "x": 493, "y": 410, "w": 310, "h": 230},
+    {"name": "cell_r1c2", "x": 803, "y": 410, "w": 310, "h": 230},
+    {"name": "cell_r1c3", "x": 1113, "y": 410, "w": 310, "h": 230},
+    {"name": "cell_r1c4", "x": 1423, "y": 410, "w": 310, "h": 230},
+    {"name": "cell_r2c0", "x": 183, "y": 640, "w": 310, "h": 230},
+    {"name": "cell_r2c1", "x": 493, "y": 640, "w": 310, "h": 230},
+    {"name": "cell_r2c2", "x": 803, "y": 640, "w": 310, "h": 230},
+    {"name": "cell_r2c3", "x": 1113, "y": 640, "w": 310, "h": 230},
+    {"name": "cell_r2c4", "x": 1423, "y": 640, "w": 310, "h": 230}
+  ]
+}

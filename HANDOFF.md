@@ -144,6 +144,14 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
+Latest stock parity: [STOCK-PARITY-2026-11-05](artifacts/reports/STOCK-PARITY-2026-11-05.md)
+corrects the blue-shifted P1 stock portal and adds
+openaurora/tools/capture_compare.py (explicit BGR correction, regions, JSON;
+reproduces prior AE/RMSE exactly). A fresh apps-grid comparison is prepared
+with apps-grid-regions.json and `make compare-stock-apps-grid`, which refuses
+until artifacts/protocol/stock-apps-grid.png exists. Host404 ok, verify45. No
+stock apps-grid capture, pixel parity or TV access.
+
 Latest plat consumers: [PLAT-CONSUMERS-SOCKET](artifacts/reports/PLAT-CONSUMERS-SOCKET-2026-11-05.md)
 starts audio/source/ir/panel under a host-only plat fixture with hardware paths
 disabled. Services, plat hold refusal, dependency-ordered provider reload,
