@@ -10,7 +10,10 @@ Interpretation: [LIVE-TV-ACCEPTANCE](../../reports/LIVE-TV-ACCEPTANCE-2026-11-05
 - `display-buffer.log`: snapshot, self-test, cleanup retry and stop.
 - `ui-vendor-live.png`, `ui-vendor-reload.png`, `ui-vendor-restored.png`:
   vendor-shaped portal before/after hot reload and the restored fb1.
-- `ui-vendor.log`: portal paint, state restore and repaint.
+- `ui-card-focus.png`, `ui-sources.png`, `ui-settings.png`: injected-NEC
+  navigation, source dialog and picture-settings screen with full assets.
+- `ui-assets-restored.png`: fb1 after the second stack shutdown.
+- `ui-vendor.log`, `ui-assets.log`: paint/reload/navigation logs.
 - `buffer-modules.txt`: PVR add/list/reload and Lua lifecycle over the socket.
 - `ndal-tuner.txt`, `ndal.log`: explicit NDAL frontend scan result (EBUSY).
 - `dvb-status.txt`: read-only frontend inventory (`frequency=0`, no lock).

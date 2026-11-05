@@ -52,6 +52,29 @@ stopped/unloaded the module, restored its 5-byte state, reacquired
 The stack then stopped in dependency order and the fb1 snapshot restored to
 the blank pre-test frame (`ui-vendor-restored.png`).
 
+## Input/navigation and screens
+
+With `plat_stub` + `ir.device=` (parser live, UART not claimed), the new
+control command feeds real NEC frames through `mod_ir`:
+
+```
+key 22 -> key rc=22 Right (nec 0x16)
+painted portal ... band 1 rail 2 card 0
+key 22 -> ... band 1 rail 2 card 1
+```
+
+`ui-card-focus.png` shows the Prime Video card focused. `key 20`/`key 53`
+opened the rail source dialog; `ui-sources.png` shows the full **Bronlijst**
+with TV, BACK AV, HDMI1–3, YPbPr, VGA/PC, Wireless Display and
+Audio video delen. `key 10` returned to the portal.
+
+The first run used only `/buffer/openaurora/ui`: the source screen painted
+the red/orange shell and rail4 settings painted blank because
+`settings_top`/`settings_cat`/`settings_rail` were absent. Staging the full
+workbench asset set (`assets/ui`) made `ui-settings.png` render the Beeld
+panel and restored the source labels. This is an asset-dependency/parity gap,
+not a code crash.
+
 ## NDAL / DVB hardware
 
 - Read-only frontend inventory: `name=internal_fe`, `status=0x20` (no lock),
@@ -109,6 +132,8 @@ zombie. `/tmp` and `/buffer` staging were removed, and no helper remains.
 - `display-active-buffer.png`, `display-restored-buffer.png`
 - `ui-vendor-live.png`, `ui-vendor-reload.png`, `ui-vendor-restored.png`,
   `ui-vendor.log`
+- `ui-card-focus.png`, `ui-sources.png`, `ui-settings.png`,
+  `ui-assets-restored.png`, `ui-assets.log`
 - `display-buffer.log`
 - `buffer-modules.txt` (PVR/Lua)
 - `ndal-tuner.txt`, `ndal.log`
@@ -123,6 +148,9 @@ zombie. `/tmp` and `/buffer` staging were removed, and no helper remains.
 - PVR DVR recording, timeshift and playback remain unwired.
 - The display test was a temporary module on vendor-initialized fb1, not a
   replacement UI or HDMI/cold-boot proof.
-- The vendor UI render used existing `/buffer/openaurora/ui` assets and the
-  settings DB. It did not exercise live remote input, every screen/dialog,
-  exact vendor animation or stock pixel parity.
+- The vendor UI render used staged assets and the settings DB. Source/settings
+  screens require the full asset set; without it they are shell/blank. Remote
+  input was injected as real NEC frames through `mod_ir`, not from the physical
+  remote (stock owns the UART).
+- It did not exercise every screen/dialog, every animation frame or stock pixel
+  parity.

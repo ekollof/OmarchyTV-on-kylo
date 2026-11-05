@@ -247,6 +247,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  nav-set-submenu <0-255>  set retained submenu byte only\n"
                  "  list-state               query owned SVG-list selection state\n"
                  "  list-key <code>          feed a full-width list key code\n"
+                 "  key <code>               feed an IR key frame (RC/NEC code)\n"
                  "  hotel-state             read persisted hotel tab inputs\n"
                  "  amp-profile             read immutable amplifier profile inputs\n"
                  "  launcher-items <parent|all> [deleted] [outofsync]\n"
@@ -771,6 +772,39 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         h->api.release(h,OA_SVC_UI_NAVIGATION);
         if(error)snprintf(outbuf,outlen,"failed errno %d\n",error);
         return error?-1:0;
+    }
+    if (!strcmp(cmd, "key")) {
+        uint64_t code = 0;
+        if (force || !a1 || a2 || decimal(a1, &code) || code > 255) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_input_iface *input = h->api.lookup(h, OA_SVC_INPUT, 1);
+        if (!input) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        unsigned char frames[18];
+        for (int i = 0; i < 2; i++) {
+            unsigned char *f = frames + i * 9;
+            f[0] = 0xff;
+            f[1] = 0xff;
+            f[2] = i ? 0x5e : 0x50;
+            f[3] = (unsigned char)code;
+            f[4] = 0x11;
+            f[5] = (unsigned char)code;
+            f[6] = (unsigned char)~code;
+            f[7] = 0xb7;
+            f[8] = 0xb8;
+        }
+        int rc = input->feed(frames, sizeof frames);
+        h->api.release(h, OA_SVC_INPUT);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EIO);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "ok\n");
+        return 0;
     }
     if(!strcmp(cmd,"list-state") || !strcmp(cmd,"list-key")) {
         int query=!strcmp(cmd,"list-state");

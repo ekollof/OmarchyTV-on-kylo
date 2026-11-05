@@ -27,7 +27,10 @@ painted a magenta self-test band, and restored the blank pre-test frame after
 the async cleanup retry. The full display_fb/ui_engine/settings/service_db/
 image_decode/ui_vendor stack painted the "Startpagina" portal (5 rail items,
 12 cards), hot-reloaded `ui_vendor` with state restore/repaint, and restored
-fb1 on shutdown. NDAL tuning returned EBUSY against stock; direct DVB
+fb1 on shutdown. The new `key` command fed real NEC frames through mod_ir
+(UART empty), moving card focus, opening the Bronlijst source list and the
+Beeld settings screen (full asset set); Exit returned home. NDAL tuning
+returned EBUSY against stock; direct DVB
 EIT opened but saw no tuned sections. Staging removed; stock PIDs 1967/1785
 intact. Limits: temporary display binding, no cold startup/native scanout,
 live EIT or DVR recording.

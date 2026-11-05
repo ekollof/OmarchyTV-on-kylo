@@ -1,0 +1,266 @@
+[634477] INFO host         openaurora starting, modules=./modules
+[634478] INFO host         control socket ./control
+openaurora: 0 module(s) loaded, control on ./control
+[635479] INFO host         loaded display_fb v0.1 (./modules/mod_display_fb.so)
+[635480] INFO display_fb   /dev/fb1: 1920x1080 32bpp, 2 frame(s), back=0
+[635892] INFO display_fb   /dev/fb1: full snapshot saved (16588800 bytes, mau 0)
+[635892] DBG  display_fb   service up: display v2
+[635892] DBG  display_fb   service up: display.alpha v1
+[635892] INFO host         started display_fb
+[635893] INFO host         loaded ui_engine v1 (./modules/mod_ui_engine.so)
+[635893] DBG  ui_engine    service up: ui.engine v2
+[635893] INFO ui_engine    ui_engine started
+[635893] DBG  ui_engine    service up: ui.skin v1
+[635893] INFO host         started ui_engine
+[635894] INFO host         loaded settings v0.2 (./modules/mod_settings.so)
+[635895] INFO settings     /conf/sqlite_db/settingsDB.db open (read-only)
+[635895] DBG  settings     service up: settings v1
+[635895] DBG  settings     service up: settings.hotel v1
+[635895] DBG  settings     service up: launcher.db v1
+[635924] INFO settings     probe: m_cec_enabled=1
+[635924] INFO host         started settings
+[635924] INFO host         loaded service_db v1 (./modules/mod_service_db.so)
+[635958] DBG  service_db   service up: service.list v1
+[635958] INFO service_db   service_db: 134 rows (54 dvb, 67 easi, 13 analog) from /conf/sqlite_db/settingsDB.db
+[635958] INFO host         started service_db
+[635959] INFO host         loaded image_decode v2 (./modules/mod_image_decode.so)
+[635960] DBG  image_decode service up: image.decode v2
+[635960] INFO host         started image_decode
+[635960] INFO host         loaded plat_stub v1 (./modules/mod_plat_stub.so)
+[635961] DBG  plat_stub    service up: plat v1
+[635961] INFO host         started plat_stub
+[635962] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[635962] DBG  ir           service up: input v1
+[635962] INFO ir           remote parser ready; UART path empty
+[635962] INFO host         started ir
+[635962] INFO host         loaded ui_vendor v0.2 (./modules/mod_ui_vendor.so)
+[635996] DBG  ui_vendor    service up: ui.portal v1
+[636496] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[636496] INFO host         started ui_vendor
+[636929] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[637362] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[637796] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[638229] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[638695] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[638695] DBG  host         key rc=19 Down (nec 0x13)
+[638696] DBG  host         release 0x13
+[638696] DBG  host         key rc=19 Down (nec 0x13)
+[638696] DBG  host         release 0x13
+[638696] DBG  host         key rc=19 Down (nec 0x13)
+[638696] DBG  host         release 0x13
+[638696] DBG  host         key rc=53 Select (nec 0x35)
+[638696] DBG  host         release 0x35
+[639162] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[639629] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 4 card 0
+[640079] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 4 card 0
+[640429] INFO ui_vendor    painted captured picture-settings state
+[640729] INFO ui_vendor    painted captured picture-settings state
+[641046] INFO ui_vendor    painted captured picture-settings state
+[641345] INFO ui_vendor    painted captured picture-settings state
+[641645] INFO ui_vendor    painted captured picture-settings state
+[641945] INFO ui_vendor    painted captured picture-settings state
+[642262] INFO ui_vendor    painted captured picture-settings state
+[642579] INFO ui_vendor    painted captured picture-settings state
+[642896] INFO ui_vendor    painted captured picture-settings state
+[643212] INFO ui_vendor    painted captured picture-settings state
+[643529] INFO ui_vendor    painted captured picture-settings state
+[643845] INFO ui_vendor    painted captured picture-settings state
+[644162] INFO ui_vendor    painted captured picture-settings state
+[644478] INFO ui_vendor    painted captured picture-settings state
+[644795] INFO ui_vendor    painted captured picture-settings state
+[645129] INFO ui_vendor    painted captured picture-settings state
+[645445] INFO ui_vendor    painted captured picture-settings state
+[645762] INFO ui_vendor    painted captured picture-settings state
+[646078] INFO ui_vendor    painted captured picture-settings state
+[646395] INFO ui_vendor    painted captured picture-settings state
+[646712] INFO ui_vendor    painted captured picture-settings state
+[647029] INFO ui_vendor    painted captured picture-settings state
+[647345] INFO ui_vendor    painted captured picture-settings state
+[647662] INFO ui_vendor    painted captured picture-settings state
+[647979] INFO ui_vendor    painted captured picture-settings state
+[648295] INFO ui_vendor    painted captured picture-settings state
+[648612] INFO ui_vendor    painted captured picture-settings state
+[648929] INFO ui_vendor    painted captured picture-settings state
+[649245] INFO ui_vendor    painted captured picture-settings state
+[649562] INFO ui_vendor    painted captured picture-settings state
+[649895] INFO ui_vendor    painted captured picture-settings state
+[650212] INFO ui_vendor    painted captured picture-settings state
+[650512] INFO ui_vendor    painted captured picture-settings state
+[650812] INFO ui_vendor    painted captured picture-settings state
+[651112] INFO ui_vendor    painted captured picture-settings state
+[651412] INFO ui_vendor    painted captured picture-settings state
+[651712] INFO ui_vendor    painted captured picture-settings state
+[652012] INFO ui_vendor    painted captured picture-settings state
+[652312] INFO ui_vendor    painted captured picture-settings state
+[652612] INFO ui_vendor    painted captured picture-settings state
+[652912] INFO ui_vendor    painted captured picture-settings state
+[653212] INFO ui_vendor    painted captured picture-settings state
+[653512] INFO ui_vendor    painted captured picture-settings state
+[653812] INFO ui_vendor    painted captured picture-settings state
+[654112] INFO ui_vendor    painted captured picture-settings state
+[654112] DBG  host         key rc=10 Exit (nec 0x0a)
+[654112] DBG  host         release 0x0a
+[654112] DBG  host         key rc=20 Up (nec 0x14)
+[654112] DBG  host         release 0x14
+[654112] DBG  host         key rc=20 Up (nec 0x14)
+[654112] DBG  host         release 0x14
+[654112] DBG  host         key rc=20 Up (nec 0x14)
+[654112] DBG  host         release 0x14
+[654112] DBG  host         key rc=53 Select (nec 0x35)
+[654113] DBG  host         release 0x35
+[654512] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 4 card 0
+[654912] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[655329] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[655729] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+[655845] INFO ui_vendor    painted source selection: row 0
+[655962] INFO ui_vendor    painted source selection: row 0
+[656079] INFO ui_vendor    painted source selection: row 0
+[656212] INFO ui_vendor    painted source selection: row 0
+[656329] INFO ui_vendor    painted source selection: row 0
+[656445] INFO ui_vendor    painted source selection: row 0
+[656562] INFO ui_vendor    painted source selection: row 0
+[656679] INFO ui_vendor    painted source selection: row 0
+[656795] INFO ui_vendor    painted source selection: row 0
+[656912] INFO ui_vendor    painted source selection: row 0
+[657028] INFO ui_vendor    painted source selection: row 0
+[657145] INFO ui_vendor    painted source selection: row 0
+[657262] INFO ui_vendor    painted source selection: row 0
+[657379] INFO ui_vendor    painted source selection: row 0
+[657495] INFO ui_vendor    painted source selection: row 0
+[657612] INFO ui_vendor    painted source selection: row 0
+[657728] INFO ui_vendor    painted source selection: row 0
+[657845] INFO ui_vendor    painted source selection: row 0
+[657962] INFO ui_vendor    painted source selection: row 0
+[658079] INFO ui_vendor    painted source selection: row 0
+[658196] INFO ui_vendor    painted source selection: row 0
+[658312] INFO ui_vendor    painted source selection: row 0
+[658429] INFO ui_vendor    painted source selection: row 0
+[658545] INFO ui_vendor    painted source selection: row 0
+[658662] INFO ui_vendor    painted source selection: row 0
+[658779] INFO ui_vendor    painted source selection: row 0
+[658895] INFO ui_vendor    painted source selection: row 0
+[659012] INFO ui_vendor    painted source selection: row 0
+[659129] INFO ui_vendor    painted source selection: row 0
+[659245] INFO ui_vendor    painted source selection: row 0
+[659362] INFO ui_vendor    painted source selection: row 0
+[659479] INFO ui_vendor    painted source selection: row 0
+[659596] INFO ui_vendor    painted source selection: row 0
+[659712] INFO ui_vendor    painted source selection: row 0
+[659829] INFO ui_vendor    painted source selection: row 0
+[659946] INFO ui_vendor    painted source selection: row 0
+[660062] INFO ui_vendor    painted source selection: row 0
+[660196] INFO ui_vendor    painted source selection: row 0
+[660329] INFO ui_vendor    painted source selection: row 0
+[660445] INFO ui_vendor    painted source selection: row 0
+[660562] INFO ui_vendor    painted source selection: row 0
+[660679] INFO ui_vendor    painted source selection: row 0
+[660795] INFO ui_vendor    painted source selection: row 0
+[660912] INFO ui_vendor    painted source selection: row 0
+[661029] INFO ui_vendor    painted source selection: row 0
+[661145] INFO ui_vendor    painted source selection: row 0
+[661262] INFO ui_vendor    painted source selection: row 0
+[661379] INFO ui_vendor    painted source selection: row 0
+[661495] INFO ui_vendor    painted source selection: row 0
+[661612] INFO ui_vendor    painted source selection: row 0
+[661729] INFO ui_vendor    painted source selection: row 0
+[661845] INFO ui_vendor    painted source selection: row 0
+[661962] INFO ui_vendor    painted source selection: row 0
+[662079] INFO ui_vendor    painted source selection: row 0
+[662195] INFO ui_vendor    painted source selection: row 0
+[662312] INFO ui_vendor    painted source selection: row 0
+[662428] INFO ui_vendor    painted source selection: row 0
+[662545] INFO ui_vendor    painted source selection: row 0
+[662662] INFO ui_vendor    painted source selection: row 0
+[662778] INFO ui_vendor    painted source selection: row 0
+[662895] INFO ui_vendor    painted source selection: row 0
+[663012] INFO ui_vendor    painted source selection: row 0
+[663129] INFO ui_vendor    painted source selection: row 0
+[663245] INFO ui_vendor    painted source selection: row 0
+[663362] INFO ui_vendor    painted source selection: row 0
+[663478] INFO ui_vendor    painted source selection: row 0
+[663595] INFO ui_vendor    painted source selection: row 0
+[663711] INFO ui_vendor    painted source selection: row 0
+[663829] INFO ui_vendor    painted source selection: row 0
+[663945] INFO ui_vendor    painted source selection: row 0
+[664062] INFO ui_vendor    painted source selection: row 0
+[664178] INFO ui_vendor    painted source selection: row 0
+[664311] INFO ui_vendor    painted source selection: row 0
+[664445] INFO ui_vendor    painted source selection: row 0
+[664579] INFO ui_vendor    painted source selection: row 0
+[664695] INFO ui_vendor    painted source selection: row 0
+[664812] INFO ui_vendor    painted source selection: row 0
+[664928] INFO ui_vendor    painted source selection: row 0
+[665045] INFO ui_vendor    painted source selection: row 0
+[665162] INFO ui_vendor    painted source selection: row 0
+[665279] INFO ui_vendor    painted source selection: row 0
+[665395] INFO ui_vendor    painted source selection: row 0
+[665512] INFO ui_vendor    painted source selection: row 0
+[665628] INFO ui_vendor    painted source selection: row 0
+[665745] INFO ui_vendor    painted source selection: row 0
+[665862] INFO ui_vendor    painted source selection: row 0
+[665979] INFO ui_vendor    painted source selection: row 0
+[666095] INFO ui_vendor    painted source selection: row 0
+[666212] INFO ui_vendor    painted source selection: row 0
+[666329] INFO ui_vendor    painted source selection: row 0
+[666445] INFO ui_vendor    painted source selection: row 0
+[666562] INFO ui_vendor    painted source selection: row 0
+[666679] INFO ui_vendor    painted source selection: row 0
+[666795] INFO ui_vendor    painted source selection: row 0
+[666912] INFO ui_vendor    painted source selection: row 0
+[667028] INFO ui_vendor    painted source selection: row 0
+[667145] INFO ui_vendor    painted source selection: row 0
+[667262] INFO ui_vendor    painted source selection: row 0
+[667378] INFO ui_vendor    painted source selection: row 0
+[667495] INFO ui_vendor    painted source selection: row 0
+[667612] INFO ui_vendor    painted source selection: row 0
+[667728] INFO ui_vendor    painted source selection: row 0
+[667845] INFO ui_vendor    painted source selection: row 0
+[667962] INFO ui_vendor    painted source selection: row 0
+[668079] INFO ui_vendor    painted source selection: row 0
+[668196] INFO ui_vendor    painted source selection: row 0
+[668312] INFO ui_vendor    painted source selection: row 0
+[668429] INFO ui_vendor    painted source selection: row 0
+[668545] INFO ui_vendor    painted source selection: row 0
+[668662] INFO ui_vendor    painted source selection: row 0
+[668778] INFO ui_vendor    painted source selection: row 0
+[668895] INFO ui_vendor    painted source selection: row 0
+[669012] INFO ui_vendor    painted source selection: row 0
+[669129] INFO ui_vendor    painted source selection: row 0
+[669245] INFO ui_vendor    painted source selection: row 0
+[669362] INFO ui_vendor    painted source selection: row 0
+[669478] INFO ui_vendor    painted source selection: row 0
+[669595] INFO ui_vendor    painted source selection: row 0
+[669711] INFO ui_vendor    painted source selection: row 0
+[669828] INFO ui_vendor    painted source selection: row 0
+[669945] INFO ui_vendor    painted source selection: row 0
+[670062] INFO ui_vendor    painted source selection: row 0
+[670178] INFO ui_vendor    painted source selection: row 0
+[670295] INFO ui_vendor    painted source selection: row 0
+[670429] INFO ui_vendor    painted source selection: row 0
+[670562] INFO ui_vendor    painted source selection: row 0
+[670695] INFO ui_vendor    painted source selection: row 0
+[670829] INFO ui_vendor    painted source selection: row 0
+[670962] INFO ui_vendor    painted source selection: row 0
+[671095] INFO ui_vendor    painted source selection: row 0
+[671230] INFO ui_vendor    painted source selection: row 0
+[671362] INFO ui_vendor    painted source selection: row 0
+[671495] INFO ui_vendor    painted source selection: row 0
+[671629] INFO ui_vendor    painted source selection: row 0
+[671762] INFO ui_vendor    painted source selection: row 0
+[671895] INFO ui_vendor    painted source selection: row 0
+[672028] INFO ui_vendor    painted source selection: row 0
+[672162] INFO ui_vendor    painted source selection: row 0
+[672295] INFO ui_vendor    painted source selection: row 0
+[672428] INFO ui_vendor    painted source selection: row 0
+[672562] INFO ui_vendor    painted source selection: row 0
+[672695] INFO ui_vendor    painted source selection: row 0
+[672829] INFO ui_vendor    painted source selection: row 0
+[672962] INFO ui_vendor    painted source selection: row 0
+[673095] INFO ui_vendor    painted source selection: row 0
+[673228] INFO ui_vendor    painted source selection: row 0
+[673362] INFO ui_vendor    painted source selection: row 0
+[673478] INFO ui_vendor    painted source selection: row 0
+[673595] INFO ui_vendor    painted source selection: row 0
+[673595] DBG  host         key rc=10 Exit (nec 0x0a)
+[673595] DBG  host         release 0x0a
+[674045] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0

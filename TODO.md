@@ -66,8 +66,11 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       but saw no sections while `frequency=0`. The full staged
       display_fb/ui_engine/settings/service_db/image_decode/ui_vendor stack
       painted "Startpagina" with 5 rail items and 12 cards; `reload ui_vendor`
-      restored state and repainted, then the stack stopped and fb1 restored.
-      Staging was removed; stock
+      restored state and repainted. The new `key` control command fed real NEC
+      frames through `mod_ir` (UART empty), moving card focus, opening the
+      Bronlijst source dialog and the Beeld settings screen after staging the
+      full asset set; Exit returned home. The stack then stopped and fb1
+      restored. Staging was removed; stock
       Aurora PIDs 1967/1785 and `/vendor/com.nvt.idtv/aurora.elf` survived.
       LIVE-TV-ACCEPTANCE. Limits: temporary vendor-initialized binding, blank
       stock UI, no cold startup/native scanout, no live EIT signal, PVR DVR
