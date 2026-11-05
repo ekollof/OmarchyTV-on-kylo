@@ -68,8 +68,13 @@ Evidence:
 This proves the control-plane plumbing, not broadcast parity:
 
 - still no real tuner/transponder scan, signal/lock/quality, hardware ownership
-  or vendor tuner ABI;
+  or vendor tuner ABI; **partly superseded:** the static vendor tuner
+  interface is recovered in [VENDOR-BROADCAST-ABI](VENDOR-BROADCAST-ABI-2026-11-05.md),
+  but no backend uses it;
 - no EIT/EITp filters, schedules, vendor EPG semantics or persistence;
+  **partly superseded:** EIT time/query semantics are recovered in
+  [VENDOR-BROADCAST-ABI](VENDOR-BROADCAST-ABI-2026-11-05.md) and the codec is
+  implemented; filters, schedules and persistence remain absent;
 - no recording engine, timeshift, storage, conflict handling or playback;
 - the fixture is the only backend; no vendor-grounded tuner/EIT/PVR backend;
 - no UI integration and no TV access.

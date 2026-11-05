@@ -436,6 +436,18 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `posix_spawn("/sbin/mdev", "-s")` plus `waitpid`; the channel-list test
       uses `nftw` cleanup instead of a shell command. The display test wrappers
       remain as no-system regression guards. Host410 ok, verify45. No TV access.
+- [x] Vendor broadcast ABI grounding: reversed `EITEventTimeRange` (MJD/BCD
+      -> Unix seconds, duration, sentinels, merge/grow/shift/clip/moveInto),
+      `EITEventKey`, `ScheduleEvent` schema, `EASIControlTask::querySchedule`/
+      `ScheduleCache` index+duration queries, `DEV_NIM_DTV_StartTune`/signal/
+      lock paths, and `DvrController`/`NebulaPvrRecordingScheduler` recording
+      APIs. Added a firmware-faithful EIT codec/range module
+      (`eit_time.c` + tests) and documented contract deltas. Host414 ok,
+      verify45; ARM build/run also passes under qemu. VENDOR-BROADCAST-ABI.
+      Limits: static RE only, no vendor execution; tuner paths 6/8 unnamed;
+      contracts not yet extended with signal/CRID/PVR scheduler fields; no
+      tuner/recording hardware or TV access.
+
 - [x] Broadcast CLI/socket coverage: `control.c` now serves `tuner-state`,
       `tuner-scan`, `tuner-cancel`, `tuner-select`, `epg-query`, `pvr-list`,
       `pvr-add` and `pvr-cancel`, with pre-lookup argument validation, bounded
@@ -450,9 +462,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       contracts and a host-only fixture. Tuner scan state machine, EPG overlap
       queries with bounds/caps, PVR add/list/cancel, reload and teardown are
       host-tested. Host412 ok, verify45. BROADCAST-FOUNDATION. Limits: fixture
-      only; no tuner hardware/scan, EIT/EPG semantics, recording engine,
-      production module, UI or persistence (CLI/socket added later in
-      BROADCAST-IPC). No TV access.
+      only; no tuner hardware/scan, recording engine, production module, UI or
+      persistence (CLI/socket added later in BROADCAST-IPC; static EIT/tuner/
+      PVR semantics recovered later in VENDOR-BROADCAST-ABI). No TV access.
 
 - [x] Read-only testtool/EASI probe client: recovered testtool TCP1986,
       `GETCHANNELLIST` RSN/name format and `ACTIVECHANNELLIST` XML; added a

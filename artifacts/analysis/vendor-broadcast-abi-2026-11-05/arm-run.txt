@@ -1,0 +1,2 @@
+$ qemu-arm-static -L <toolchain-libc> build-tv-v3/tests/eit_time
+Error while loading build-tv-v3/tests/eit_time: No such file or directory

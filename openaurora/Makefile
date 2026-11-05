@@ -409,6 +409,14 @@ check-broadcast-ipc: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_broadcast_fixture.so
 	node tests/broadcast_ipc.cjs $(abspath $(BUILD))
 check: check-broadcast-ipc
 
+$(BUILD)/tests/eit_time: tests/eit_time.c common/eit_time.c include/openaurora/eit_time.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-eit-time
+check-eit-time: $(BUILD)/tests/eit_time
+	@$(BUILD)/tests/eit_time
+check: check-eit-time
+
 $(BUILD)/easi-probe: tools/probe/easi-probe.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<

@@ -19,6 +19,17 @@ error cases; two foxxum results match qemu SHA256 exactly. Verified15-file/
 vendor pair1967(zombie)/1785(live) and no-reset marker unchanged. tvssh sent
 WoL initially. No framebuffer/device operation or persistent deployment change.
 
+VENDOR-BROADCAST-ABI-2026-11-05 (offline RE + host/qemu tests): reversed the
+vendor EIT time codec (MJD>=40587, BCD hh/mm/ss->Unix seconds, duration,
+0/0 empty and 0/0xffffffff infinite, merge/grow/shift/clip/moveInto edges),
+EITEventKey (21-byte serialised key), ScheduleEvent/ProgramInformation schema,
+querySchedule/ScheduleCache index+duration queries, DEV_NIM_DTV_StartTune and
+signal/lock paths, and DvrController/NebulaPvrRecordingScheduler recording
+APIs. Added common/eit_time.c with host tests (host414 ok, verify45) and an
+ARM build/qemu run. Static evidence only: no vendor execution, tuner paths 6/8
+unnamed, and the tuner/EPG/PVR contracts still lack signal/CRID/scheduler
+fields. No TV access.
+
 BROADCAST-IPC-2026-11-05 (host-only): control-plane coverage for the fixture
 contracts. control.c serves tuner-state/scan/cancel/select, epg-query and
 pvr-list/add/cancel with pre-lookup validation, bounded multi-line replies and

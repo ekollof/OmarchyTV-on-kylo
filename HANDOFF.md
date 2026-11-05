@@ -35,6 +35,14 @@ The owner then requested a review and fixes on2026-11-04. The review below
 supersedes the old clean/verified snapshot where it identifies defects; it
 does not start the pending imageCreate subsystem or persistent replacement.
 
+Latest vendor ABI grounding:
+[VENDOR-BROADCAST-ABI](artifacts/reports/VENDOR-BROADCAST-ABI-2026-11-05.md)
+recovers the EIT time codec/range algebra, event key, ScheduleEvent schema,
+querySchedule/ScheduleCache shape, DEV_NIM_DTV tuner paths and signal getters,
+and DvrController/NebulaPvrRecordingScheduler recording APIs. Adds
+common/eit_time.c with host and ARM/qemu tests; host414 ok, verify45. Static RE
+only; contracts still need signal/CRID/scheduler fields. No TV access.
+
 Latest broadcast CLI/socket: [BROADCAST-IPC](artifacts/reports/BROADCAST-IPC-2026-11-05.md)
 exposes the fixture tuner/epg/pvr contracts over the control socket and tests
 them end-to-end with the real binary: scan/select/cancel, EPG windows/caps,

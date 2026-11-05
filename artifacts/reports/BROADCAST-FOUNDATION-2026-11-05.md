@@ -52,12 +52,18 @@ This is scaffolding, not tuner/EPG/PVR parity:
 - no DVB-T/C/S/analog tuner, transponder scan, signal/lock/quality or hardware
   ownership;
 - no EIT/EITp/filter/schedule persistence or vendor EPG semantics;
+  **partly superseded:** [VENDOR-BROADCAST-ABI](VENDOR-BROADCAST-ABI-2026-11-05.md)
+  recovers the vendor EIT time/query semantics and reimplements the codec, but
+  no schedule persistence or backend is wired up;
 - no recording engine, timeshift, storage, conflicts, retention or playback;
 - no production module, CLI/socket query, UI integration or persistence;
   **superseded in part:** [BROADCAST-IPC](BROADCAST-IPC-2026-11-05.md) adds
   CLI/socket query coverage for this fixture. Production module, UI and
   persistence remain absent.
-- no validation against vendor code because these are project contracts.
+- no validation against vendor code because these are project contracts;
+  **superseded in part:** [VENDOR-BROADCAST-ABI](VENDOR-BROADCAST-ABI-2026-11-05.md)
+  maps the contracts to decompiled vendor interfaces and records the deltas.
+  No differential execution against vendor code was performed.
 
 The testtool probe remains blocked by the disabled TCP 1986 server and the
 unagreed watchdog/recovery procedure. The channel UI remains explicitly

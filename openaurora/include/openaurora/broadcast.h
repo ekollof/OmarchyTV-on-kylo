@@ -13,6 +13,20 @@ extern "C" {
  * a vendor object ABI; they establish the boundaries that a future vendor-
  * backed tuner, EIT/EPG and PVR module must satisfy. The only implementation
  * currently shipped is the host fixture in openaurora/tests.
+ *
+ * Firmware mapping and deltas are documented in
+ * artifacts/reports/VENDOR-BROADCAST-ABI-2026-11-05.md. Key facts:
+ *   - vendor EIT ranges are uint32 seconds; this contract uses int64 ms and
+ *     converts at the service boundary (common/eit_time.c implements the exact
+ *     MJD/BCD decode and range algebra);
+ *   - vendor EPG identity is (service id, EIT event id) plus CRID/first-showing
+ *     and running-status/state/version flags that this v1 struct does not yet
+ *     carry;
+ *   - vendor tuner status additionally exposes per-path lock, strength,
+ *     quality, BER/SNR floats and a 0xffffffff UNC sentinel;
+ *   - vendor PVR scheduling is EASIReminder + explicit start/end + stream list,
+ *     enumeration is index-based and cancellation is by recording id; this
+ *     contract's add-by-window is a project abstraction, not a vendor ABI.
  */
 
 enum oa_tuner_network {

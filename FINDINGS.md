@@ -38,6 +38,21 @@ reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
 first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
 capture remain open.
 
+VENDOR-BROADCAST-ABI-2026-11-05: aurora.elf grounds the broadcast contracts.
+EIT ranges are uint32 Unix seconds decoded from MJD (>=40587) + BCD hh/mm/ss,
+with duration appended; 0/0 is empty, 0/0xffffffff infinite. Range algebra
+(merge/grow/shift/clip/moveInto) has vendor-specific sentinel and clip-edge
+behaviour. Vendor EPG queries take (DateTime seconds, duration seconds, service
+index), identity is (service id, EIT event id), and ScheduleEvent persists
+StartTime/EndTime/FirstShowing/ProgramCridId. ScheduleEvent text is joined from
+ProgramInformation. Tuning goes through DEV_NIM_DTV_StartTune(path, params,
+status) with lock/strength/quality/BER/SNR/UNC getters; PVR uses
+DvrController recording ids, index-based queries and EASIReminder+
+explicit start/end scheduling, plus NebulaPvrRecordingScheduler handles with
+repeat/padding. common/eit_time.c reimplements the recovered codec; host414 ok,
+verify45; ARM/qemu passes. Static RE only, no vendor execution or TV access;
+contracts not yet extended with the missing fields.
+
 BROADCAST-IPC-2026-11-05: the tuner/epg/pvr fixture contracts are now exposed
 through the control socket as tuner-state/scan/cancel/select, epg-query and
 pvr-list/add/cancel. Argument validation happens before service lookup and
