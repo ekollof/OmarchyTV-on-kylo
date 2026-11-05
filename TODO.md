@@ -590,6 +590,12 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       UI-STACK-IPC. Limits: non-HAL modules only; physical fb1, full hardware
       module set, holds under all consumers and cold startup remain.
 
+- [x] Hardware-free module matrix over the real socket: ticker -> ui_clock ->
+      ui_anim, plus ui_navigation, ui_list, power and cec load/start and are
+      reloaded in dependency-safe order; nav/list queries and CEC's async
+      cleanup retry pass. No display/HAL. Host398 ok, verify45.
+      MODULE-MATRIX-IPC. Limits: hardware modules and cold startup remain.
+
 - [x] Vendor decoder-class differential: an ARM LD_PRELOAD probe executes the
       shipped PngImageDecoderImpl and JpegImageDecoder under qemu before vendor
       main, using vendor MemoryBufferSource/MutableImage and requested RGBA

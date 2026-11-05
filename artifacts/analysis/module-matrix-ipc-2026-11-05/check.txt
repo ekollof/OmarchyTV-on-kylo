@@ -1,0 +1,2 @@
+node tests/module_matrix_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok actual hardware-free module matrix IPC: clock chain, navigation/list, power/cec reloads

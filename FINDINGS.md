@@ -6,6 +6,12 @@ Private controls forward to EX_PLAT; successful ioctl still does not prove
 MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
+MODULE-MATRIX-IPC-2026-11-05: a real `--sock` host runs ticker ->
+ui_clock -> ui_anim, plus ui_navigation, ui_list, power and cec with no
+display/HAL. All load/start; nav/list queries and dependency-ordered reloads
+pass, including CEC's asynchronous cleanup retry. Host398 ok, verify45.
+Hardware modules, physical fb1 and cold startup remain open.
+
 UI-STACK-IPC-2026-11-05: a real `--sock`/stdin non-HAL stack runs
 settings/launcher.db + image.decode + recorder display + ui_engine + ui_vendor.
 Launcher rows, decode hash, ui-state and dependency-safe reloads of all five

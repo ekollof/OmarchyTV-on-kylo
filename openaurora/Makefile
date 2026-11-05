@@ -1150,6 +1150,11 @@ check-ui-stack-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_settings.so $(BUILD
 	node tests/ui_stack_ipc.cjs $(abspath $(BUILD))
 check: check-ui-stack-ipc
 
+.PHONY: check-module-matrix-ipc
+check-module-matrix-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_ui_navigation.so $(BUILD)/modules/mod_ui_list.so $(BUILD)/modules/mod_power.so $(BUILD)/modules/mod_cec.so
+	node tests/module_matrix_ipc.cjs $(abspath $(BUILD))
+check: check-module-matrix-ipc
+
 .PHONY: check-vendor-decoder
 check-vendor-decoder: $(BUILD)/tests/vendor_decoder_probe.so
 	@test "$(TARGET)" = tv || { echo "check-vendor-decoder requires TARGET=tv"; exit 2; }

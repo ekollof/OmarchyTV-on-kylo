@@ -93,6 +93,13 @@ reauthorized; fb1 and stock operation must stay untouched. This supersedes the
 earlier "Don't touch the TV" restriction. No persistent replacement or boot
 changes. The historical offline-only entries describe their original runs.
 
+MODULE-MATRIX-IPC-2026-11-05 (host-only): a real `--sock` host runs ticker ->
+ui_clock -> ui_anim, plus ui_navigation, ui_list, power and cec with no
+display/HAL. All load/start; nav/list queries and dependency-ordered reloads
+pass, including CEC's asynchronous cleanup retry. Host398 ok, verify45.
+Host e8c84812…/matrix module hashes in the evidence. Hardware modules,
+physical fb1 and cold startup remain open.
+
 UI-STACK-IPC-2026-11-05 (host-only): a real `--sock`/stdin stack runs
 settings/launcher.db + image.decode + recorder display + ui_engine + ui_vendor.
 Launcher rows, decode hash, ui-state and dependency-safe reloads of

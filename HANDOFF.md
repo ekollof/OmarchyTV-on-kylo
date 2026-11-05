@@ -144,6 +144,12 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
+Latest matrix: [MODULE-MATRIX-IPC](artifacts/reports/MODULE-MATRIX-IPC-2026-11-05.md)
+runs ticker -> ui_clock -> ui_anim plus ui_navigation, ui_list, power and cec
+over the real socket with no display/HAL. Nav/list queries and dependency-
+ordered reloads pass, including CEC's async cleanup retry. Host398 ok,
+verify45. Hardware modules, physical fb1 and cold startup remain.
+
 Latest host stack: [UI-STACK-IPC](artifacts/reports/UI-STACK-IPC-2026-11-05.md)
 runs settings/launcher.db + image.decode + recorder display + ui_engine +
 ui_vendor over the real `--sock`/stdin control plane. Launcher rows, decode
