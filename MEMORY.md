@@ -26,9 +26,8 @@ layout mode to paint_apps using background_fullscreen, solid #481730 top strip,
 Apps title, 294x166 tiles on 310/230 pitch, full-cell focus, Markt label and
 white-on-#811924 scrollbar. stage-apps-grid.py and apps_grid_stock produce a
 fixed 25-item offline candidate. Manifest comparison improved from AE29.56%/
-MAE8 75.38 to AE0.52%/MAE8 1.33 (top strip0.36%, grid0.87%, scrollbar0.12%).
-Host423 ok, verify45. Limits: OmarchyTV parent-1 placement is inferred from the 25-entry scrollbar;
-title/label fonts approximated; fb1 not HDMI/cold-start scanout. DIAL navigation changed only the stock UI screen; no settings/source
+MAE8 75.38 to AE0.52%/MAE8 1.33 (top strip0.36%, grid0.87%, scrollbar0.02%).
+Host423 ok, verify45. Limits: title/label fonts approximated; fb1 not HDMI/cold-start scanout. DIAL navigation changed only the stock UI screen; no settings/source
 change. Staging removed.
 
 CHANNEL-RUNTIME-ORDER-2026-11-05 (host/qemu + read-only fb1): added a

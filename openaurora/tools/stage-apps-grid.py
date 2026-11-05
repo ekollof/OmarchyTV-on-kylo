@@ -53,9 +53,6 @@ def live_rows(db: Path):
         "SELECT m_application_thumb_file_name FROM LauncherItem"
         " WHERE m_parent_id=1 AND m_is_deleted=0 AND m_is_out_of_sync=0"
         " AND m_item_type=2 ORDER BY m_order_index,m_id").fetchall()
-    rows += con.execute(
-        "SELECT m_application_thumb_file_name FROM LauncherItem"
-        " WHERE m_id=203 AND length(m_application_thumb_file_name)>0").fetchall()
     con.close()
     names = []
     for (blob,) in rows:
@@ -72,7 +69,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     ap.add_argument("--db")
-    ap.add_argument("--thumbs", default="/tmp/opencode/live-thumbs")
+    ap.add_argument("--thumbs", default=str(root / "artifacts/workbench/thumbs"))
     ap.add_argument("--ui-assets", default=str(root / "artifacts/ui-assets"))
     ap.add_argument("--font", default=str(root / "artifacts/workbench/rootfs/vendor/fonts/DefaultProportional.ttf"))
     args = ap.parse_args()

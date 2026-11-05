@@ -1371,11 +1371,11 @@ capture-stock-apps-grid: $(BUILD)/tests/apps_grid_stock ui-live-stage
 		1920 1080 \
 		../artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.png
 
-LIVE_DB ?= /tmp/opencode/live-settings.db
-LIVE_THUMBS ?= /tmp/opencode/live-thumbs
+LIVE_DB ?= ../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db
+LIVE_THUMBS ?= ../artifacts/workbench/thumbs
 apps-grid-live-ui = $(BUILD)/tests/apps-grid-live/ui
-.PHONY: capture-live-apps-grid
-capture-live-apps-grid: $(BUILD)/tests/apps_grid_stock ui-live-stage
+.PHONY: capture-firmware-apps-grid
+capture-firmware-apps-grid: $(BUILD)/tests/apps_grid_stock ui-live-stage
 	@test -f $(LIVE_DB) || { echo "missing $(LIVE_DB); copy the live settingsDB first"; exit 2; }
 	@test -d $(LIVE_THUMBS) || { echo "missing $(LIVE_THUMBS); copy the downloaded images first"; exit 2; }
 	python3 tools/stage-apps-grid.py --out $(abspath $(apps-grid-live-ui)) \

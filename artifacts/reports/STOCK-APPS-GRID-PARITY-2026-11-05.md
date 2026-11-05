@@ -50,18 +50,19 @@ existing UI tests still cover the provisional dark reconstruction.
 - one blob per live LauncherItem thumbnail name under its original filename;
 - no stock-derived tile crops.
 
-`tests/apps_grid_stock.c` copies the live settingsDB and renders through the
-real host/UI modules. The stock Apps page uses **parent-1** LauncherItem rows,
-not the parent-0 home row: `ui.cards_parent=1` selects them. The live DB has 23
-parent-1 app rows; the capture adds the special `Markt` row and the
-`OmarchyTV` tile (thumb900, present as a parent-0 row and inferred as the 25th
-visible/catalog entry). Total = 25, matching the stock scrollbar.
+`tests/apps_grid_stock.c` copies the firmware-dump settingsDB and renders
+through the real host/UI modules. The stock Apps page uses **parent-1**
+LauncherItem rows, not the parent-0 home row: `ui.cards_parent=1` selects them.
+The dump has 23 parent-1 app rows; the capture adds the special `Markt` row.
+Total = 24. Scrolling the stock page to the end confirmed the final row is
+YouTube Music, Facebook, Twitter, TV Games and an **empty fifth cell**. There
+is no OmarchyTV tile; the earlier inferred 25th row was wrong.
 
 Commands:
 
 ```
-make -C openaurora capture-live-apps-grid      # LIVE_DB=/tmp/opencode/live-settings.db
-make -C openaurora capture-stock-apps-grid     # fixed-corpus regression path
+make -C openaurora capture-firmware-apps-grid   # dump DB + workbench thumbs
+make -C openaurora capture-stock-apps-grid      # fixed-corpus regression path
 ```
 
 `compare-stock-apps-grid` compares against the saved oracle manifest.
@@ -70,18 +71,18 @@ make -C openaurora capture-stock-apps-grid     # fixed-corpus regression path
 
 Manifest: `artifacts/analysis/stock-parity-2026-11-05/apps-grid-regions.json`.
 
-Live parent-1 catalog + original downloaded icons vs the byte-identical fresh
-oracle:
+Firmware parent-1 catalog + original downloaded icons vs the byte-identical
+fresh oracle:
 
 ```
-full: AE=10852.4 (0.005234) RMSE16=2945.48 MAE8=1.33457 changed=9.14%
-top strip 0.36%, grid 0.87%, scrollbar 0.12%
+full: AE=10846.4 (0.005231) RMSE16=2943.79 MAE8=1.33383 changed=9.14%
+top strip 0.36%, grid 0.87%, scrollbar 0.02%
 ```
 
 Title position/size was corrected to the measured stock bbox (80,68 at size
-56) and tiles to cell+7,+7 at 294 wide. The parent-1 catalog plus Markt and
-OmarchyTV produces the stock 25-entry scrollbar length. The earlier 1.02%
-parent-0 result and the 0.99% stock-cropped fixed corpus are superseded.
+56) and tiles to cell+7,+7 at 294 wide. The scrollbar is a 688px track with
+bar `688*visible/total - 16` = 414px. The earlier 1.02% parent-0, 0.99%
+stock-cropped fixed corpus and inferred OmarchyTV results are superseded.
 
 ## Limits
 

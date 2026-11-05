@@ -1,2 +1,2 @@
-parent1 app rows: 23;
-downloaded thumbnails staged: 22
+parent1 app rows (firmware dump): 23;
+downloaded thumbnails available: 24

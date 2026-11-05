@@ -1,0 +1,28 @@
+Verified stock Apps page order (2026-11-05, read-only fb1 captures):
+0  Markt (first tile, orange focus/label)
+1  Netflix
+2  Prime Video
+3  YouTube
+4  tabii
+5  Canal Digitaal
+6  TV Vlaanderen
+7  Télésat
+8  Digiturk Play
+9  GAIN
+10 DAZN
+11 SS IPTV
+12 Rakuten TV
+13 CANAL+ (currently +APP artwork)
+14 DAZN: Sport Live Stream
+15 Deutsche Welle
+16 Deezer
+17 MUBI
+18 Internet Browser
+19 YouTube Kids
+20 YouTube Music
+21 Facebook
+22 Twitter
+23 TV Games
+
+24 entries total. The final 5-column row holds four tiles; its fifth cell is
+empty. There is no OmarchyTV tile (the earlier inferred 25th row was wrong).

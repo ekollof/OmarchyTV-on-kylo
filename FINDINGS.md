@@ -45,8 +45,7 @@ on 310/230 pitch, focused Markt tile expanded to 310x230 with orange label
 strip, and a white scrollbar over #811924 at x1750,180..868. paint_apps now
 renders this stock mode when background_fullscreen is present. Fixed-corpus
 comparison improved from AE29.56%/MAE8 75.38 to AE0.52%/MAE8 1.33. Host423 ok,
-verify45. Limits: OmarchyTV parent-1 placement inferred from the 25-entry scrollbar;
-title/label fonts approximated; fb1 not HDMI/cold-start scanout.
+verify45. Limits: title/label fonts approximated; fb1 not HDMI/cold-start scanout.
 
 CHANNEL-RUNTIME-ORDER-2026-11-05: the channel UI now has a runtime-order
 path. A channels module parses the recovered ACTIVECHANNELLIST XML into an

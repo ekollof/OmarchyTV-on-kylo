@@ -855,18 +855,16 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       mode using `background_fullscreen`, solid `#481730` top strip, "Apps"
       title, 294x166 tiles on a 310/230 pitch, full-cell focus, font-rendered
       Markt label and white-on-#811924 scrollbar. Added `stage-apps-grid.py`,
-      `apps_grid_stock` and live-DB capture; all 23 parent-1 catalog rows and
-      the original downloaded thumbnails are used, plus Markt and OmarchyTV
-      (25 total, matching the stock scrollbar), with no oracle tile crops.
+      `apps_grid_stock` and live-DB capture; all 23 firmware-dump parent-1 catalog rows and the original downloaded
+      thumbnails are used, plus Markt (24 total), with no oracle tile crops.
       Manifest comparison improved from AE 29.56% / MAE8 75.38 to
-      **AE 0.52% / MAE8 1.33** (top 0.36%, grid 0.87%, scrollbar 0.12%).
-      Host423 ok, verify45. STOCK-APPS-GRID-PARITY. Limits: `OmarchyTV`
-      parent-1 placement is inferred from the 25-entry scrollbar; title/label
-      fonts approximated; fb1 capture, not HDMI/cold-start scanout.
+      **AE 0.52% / MAE8 1.33** (top 0.36%, grid 0.87%, scrollbar 0.02%).
+      Host423 ok, verify45. STOCK-APPS-GRID-PARITY. Limits: title/label fonts approximated; fb1
+      capture, not HDMI/cold-start scanout.
 
-- [ ] Apps-grid residual parity: verify the inferred OmarchyTV row placement
-      against a stock page scrolled to the end, then close the remaining
-      title/label font and per-tile scaling error.
+- [ ] Apps-grid residual parity: close the remaining title/label font and
+      per-tile scaling error; the 24-entry order and empty final cell are now
+      verified from the firmware dump and scrolled capture.
 
 - [x] Stock-capture parity analysis: the old `shot-launcher-right.png` is an
       R/B-swapped pre-correction capture; after channel correction it matches

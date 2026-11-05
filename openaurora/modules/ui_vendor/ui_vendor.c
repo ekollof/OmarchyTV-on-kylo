@@ -1075,7 +1075,7 @@ static void paint_apps(struct ctx *c)
          * gradient rather than the dark themed track. */
         d->fill(1750,180,4,688,129,25,36);
         if (c->grid_count > APPS_VISIBLE) {
-            int bar=688*APPS_VISIBLE/(int)c->grid_count;
+            int bar=688*APPS_VISIBLE/(int)c->grid_count-APPS_CAP_BOTTOM;
             if (bar<36)bar=36;
             if (bar>688)bar=688;
             int pos=(int)c->grid_count>APPS_VISIBLE
