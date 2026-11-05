@@ -540,10 +540,19 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       conflict/series engine, project file store (not vendor SQLite metadata),
       repeat days stored not expanded. No TV access.
 
+- [x] PVR fixture conflict and recording states: publish `pvr` v2 with
+      `record`/`finish` and `pvr-record`/`pvr-stop`. One scheduled/recording
+      padded window per service; overlapping add returns EBUSY; state changes
+      persist through the OAPVR1 store and reject repeats/unknown ids.
+      Real-socket tests cover conflict add, record/stop, completed cancel,
+      reload and cross-process states; ARM/qemu pvr_stub passes.
+      PVR-CONFLICT-STATE. Limits: fixture policy only; no tuner-count/vendor
+      conflict callback, media capture, timeshift, repeat-day expansion or TV.
+
 - [ ] Vendor-backed PVR engine: replace the persistent stub with real
       stream/PMT capture, vendor/SQLite recording metadata, timeshift/
-      playback, storage management and conflict handling once a live tuner/
-      storage integration window is owner-approved.
+      playback, storage management and vendor conflict semantics once a live
+      tuner/storage integration window is owner-approved.
 
 - [x] Live CPU-only module acceptance on the TV: staged the ABI 3 ARM core,
       `mod_epg` and `mod_tuner` in /tmp, verified all hashes on-device before

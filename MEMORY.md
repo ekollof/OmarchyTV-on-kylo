@@ -172,6 +172,16 @@ recording/timeshift/playback/storage/conflict/series engine, project file store
 rather than vendor SQLite metadata, repeat days stored not expanded. No TV
 access.
 
+PVR-CONFLICT-STATE-2026-11-05 (host/qemu): the PVR service is now **v2** with
+a fixture-only conflict rule (one scheduled/recording padded window per
+service; overlap returns EBUSY) and `SCHEDULED -> RECORDING -> COMPLETED`
+transitions via `pvr-record`/`pvr-stop`. States persist in the OAPVR1 store;
+repeat/unknown transitions return EALREADY/ENOENT. PVR socket test covers
+conflict add, record/stop repeats, completed cancel rejection, reload and
+cross-process states; ARM mod_pvr and qemu pvr_stub pass. Limits: fixture
+policy only, no tuner-count/vendor conflict callback, media capture, timeshift,
+repeat expansion or TV access; PVR-MODULE's v1 statements are historical.
+
 LIVE-MODULE-ACCEPTANCE-2026-11-05: first live TV run of the ABI 3 ARM build
 under stock Aurora. Staged core/mod_epg/mod_tuner in /tmp, verified hashes on
 the TV before execution, and drove load/start/scan/reload/stop/unload over the

@@ -267,7 +267,9 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  pvr-list                PVR reservations\n"
                  "  pvr-add <svc> <from> <to> [repeat start_pad end_pad]\n"
                  "                           add reservation\n"
-                 "  pvr-cancel <id>         cancel reservation\n"
+                 "  pvr-cancel <id>         cancel scheduled reservation\n"
+                 "  pvr-record <id>         start scheduled recording\n"
+                 "  pvr-stop <id>           complete active recording\n"
                  "  service-list             broadcast-service inventory count\n"
                  "  service-list stats       inventory flags/source totals\n"
                  "  service-list name <index>    stored-name sorted row\n"
@@ -518,7 +520,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
     }
     if(!strcmp(cmd,"pvr-list")) {
         if(force || a1 || a2 || a3 || a4){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
-        const oa_pvr_iface *pvr=h->api.lookup(h,OA_SVC_PVR,1);
+        const oa_pvr_iface *pvr=h->api.lookup(h,OA_SVC_PVR,2);
         if(!pvr){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
         struct oa_pvr_job jobs[16];size_t count=0;
         int rc=pvr->list(jobs,16,&count);
@@ -554,7 +556,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                 snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
             req.repeat_days=(uint32_t)repeat;
         }
-        const oa_pvr_iface *pvr=h->api.lookup(h,OA_SVC_PVR,1);
+        const oa_pvr_iface *pvr=h->api.lookup(h,OA_SVC_PVR,2);
         if(!pvr){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
         uint32_t id=0;
         int rc=pvr->add(&req,&id);
@@ -568,9 +570,22 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         uint64_t id=0;
         if(decimal(a1,&id) || id>UINT32_MAX){
             snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
-        const oa_pvr_iface *pvr=h->api.lookup(h,OA_SVC_PVR,1);
+        const oa_pvr_iface *pvr=h->api.lookup(h,OA_SVC_PVR,2);
         if(!pvr){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
         int rc=pvr->cancel((uint32_t)id);
+        h->api.release(h,OA_SVC_PVR);
+        snprintf(outbuf,outlen,rc?"failed errno %d\n":"ok\n",rc?-rc:0);
+        return rc? -1:0;
+    }
+    if(!strcmp(cmd,"pvr-record") || !strcmp(cmd,"pvr-stop")) {
+        if(force || !a1 || a2 || a3 || a4){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        uint64_t id=0;
+        if(decimal(a1,&id) || id>UINT32_MAX){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_pvr_iface *pvr=h->api.lookup(h,OA_SVC_PVR,2);
+        if(!pvr){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        int rc=!strcmp(cmd,"pvr-record") ? pvr->record((uint32_t)id)
+                                         : pvr->finish((uint32_t)id);
         h->api.release(h,OA_SVC_PVR);
         snprintf(outbuf,outlen,rc?"failed errno %d\n":"ok\n",rc?-rc:0);
         return rc? -1:0;

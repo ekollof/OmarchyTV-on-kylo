@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
     const oa_tuner_iface *tuner = host.api.lookup(&host, OA_SVC_TUNER, 1);
     const oa_epg_iface *epg = host.api.lookup(&host, OA_SVC_EPG, 1);
-    const oa_pvr_iface *pvr = host.api.lookup(&host, OA_SVC_PVR, 1);
+    const oa_pvr_iface *pvr = host.api.lookup(&host, OA_SVC_PVR, 2);
     assert(tuner && epg && pvr);
 
     struct oa_tuner_status status;
@@ -103,6 +103,12 @@ int main(int argc, char **argv)
     assert(jobs[0].id == 1 && jobs[0].state == OA_PVR_SCHEDULED);
     assert(jobs[1].repeat_days == 0x7f && jobs[1].start_padding == 30 &&
         jobs[1].end_padding == -15);
+    assert(pvr->record(2) == 0);
+    assert(pvr->record(2) == -EALREADY);
+    assert(pvr->finish(2) == 0);
+    assert(pvr->finish(2) == -EALREADY);
+    assert(pvr->list(jobs, 4, &count) == 0 && count == 2 &&
+        jobs[1].state == OA_PVR_COMPLETED);
     assert(pvr->cancel(1) == 0);
     assert(pvr->cancel(1) == -EALREADY);
     assert(pvr->cancel(99) == -ENOENT);
@@ -111,7 +117,7 @@ int main(int argc, char **argv)
 
     assert(!command(&host, "reload broadcast_fixture", out, sizeof out));
     tuner = host.api.lookup(&host, OA_SVC_TUNER, 1);
-    pvr = host.api.lookup(&host, OA_SVC_PVR, 1);
+    pvr = host.api.lookup(&host, OA_SVC_PVR, 2);
     assert(tuner && pvr);
     assert(!tuner->status(&status));
     assert(status.scan_state == OA_TUNER_IDLE);
@@ -123,6 +129,6 @@ int main(int argc, char **argv)
     assert(!command(&host, "stop broadcast_fixture", out, sizeof out));
     assert(!host.api.lookup(&host, OA_SVC_TUNER, 1));
     assert(!command(&host, "unload broadcast_fixture", out, sizeof out));
-    puts("ok broadcast fixture: tuner scan state machine, EPG query bounds and PVR reservations");
+    puts("ok broadcast fixture: tuner scan, EPG bounds and PVR reservation/record states");
     return 0;
 }

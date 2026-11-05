@@ -47,7 +47,21 @@ static int pvr_cancel(uint32_t id)
     return g_ctx->backend->stop(id);
 }
 
-static const oa_pvr_iface pvr_iface = { pvr_list, pvr_add, pvr_cancel };
+static int pvr_record(uint32_t id)
+{
+    if (!g_ctx || !g_ctx->published) return -EINVAL;
+    return g_ctx->backend->record(id);
+}
+
+static int pvr_finish(uint32_t id)
+{
+    if (!g_ctx || !g_ctx->published) return -EINVAL;
+    return g_ctx->backend->finish(id);
+}
+
+static const oa_pvr_iface pvr_iface = {
+    pvr_list, pvr_add, pvr_cancel, pvr_record, pvr_finish
+};
 
 static int m_init(const oa_host_api *api, void **out)
 {
@@ -70,7 +84,7 @@ static int m_start(void *v)
         "/tmp/openaurora-pvr.db");
     int rc = c->backend->open(path);
     if (rc) return -1;
-    if (c->api->publish(c->api->priv, OA_SVC_PVR, 1, &pvr_iface)) {
+    if (c->api->publish(c->api->priv, OA_SVC_PVR, 2, &pvr_iface)) {
         c->backend->close();
         return -1;
     }

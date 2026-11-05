@@ -206,6 +206,60 @@ static void stub_close(void)
     g_stub.open = 0;
 }
 
+static int add_padding(int64_t value, int64_t padding, int64_t *out)
+{
+    if ((padding > 0 && value > INT64_MAX - padding) ||
+        (padding < 0 && value < INT64_MIN - padding))
+        return -ERANGE;
+    *out = value + padding;
+    return 0;
+}
+
+/* Fixture policy: padding extends/shrinks the effective window in seconds. */
+static int padded_window(const struct oa_pvr_job *job, int64_t *start,
+    int64_t *end)
+{
+    int64_t start_pad = (int64_t)job->start_padding * 1000;
+    int64_t end_pad = (int64_t)job->end_padding * 1000;
+    int rc = add_padding(job->start_ms, -start_pad, start);
+    if (!rc) rc = add_padding(job->end_ms, end_pad, end);
+    if (!rc && *start >= *end) rc = -EINVAL;
+    return rc;
+}
+
+static int overlaps(const struct oa_pvr_job *a, const struct oa_pvr_job *b)
+{
+    int64_t as, ae, bs, be;
+    if (padded_window(a, &as, &ae) || padded_window(b, &bs, &be))
+        return 0;
+    return as < be && bs < ae;
+}
+
+/* One scheduled/recording window per service. Different services may overlap;
+ * tuner-count conflicts and repeat-day expansion are outside this fixture. */
+static int conflicts(const struct oa_pvr_request *request)
+{
+    struct oa_pvr_job candidate;
+    memset(&candidate, 0, sizeof candidate);
+    candidate.service_handle = request->service_handle;
+    candidate.start_ms = request->start_ms;
+    candidate.end_ms = request->end_ms;
+    candidate.start_padding = request->start_padding;
+    candidate.end_padding = request->end_padding;
+    int64_t start, end;
+    if (padded_window(&candidate, &start, &end)) return -EINVAL;
+    for (size_t i = 0; i < g_stub.count; i++) {
+        const struct oa_pvr_job *job = &g_stub.jobs[i];
+        if (job->service_handle != request->service_handle)
+            continue;
+        if (job->state != OA_PVR_SCHEDULED && job->state != OA_PVR_RECORDING)
+            continue;
+        if (overlaps(&candidate, job))
+            return -EBUSY;
+    }
+    return 0;
+}
+
 static int stub_start(const struct oa_pvr_request *request,
     uint32_t *recording_id)
 {
@@ -213,6 +267,8 @@ static int stub_start(const struct oa_pvr_request *request,
         request->start_ms >= request->end_ms ||
         !valid_name(request->name))
         return -EINVAL;
+    int conflict = conflicts(request);
+    if (conflict) return conflict;
     if (g_stub.count >= OA_PVR_MAX_JOBS) return -ENOSPC;
     uint32_t old_next = g_stub.next_id;
     struct oa_pvr_job *job = &g_stub.jobs[g_stub.count++];
@@ -252,6 +308,46 @@ static int stub_stop(uint32_t recording_id)
     return -ENOENT;
 }
 
+static int stub_record(uint32_t recording_id)
+{
+    if (!g_stub.open || !recording_id) return -EINVAL;
+    size_t found = g_stub.count;
+    for (size_t i = 0; i < g_stub.count; i++) {
+        if (g_stub.jobs[i].id == recording_id) {
+            found = i;
+            break;
+        }
+    }
+    if (found == g_stub.count) return -ENOENT;
+    struct oa_pvr_job *job = &g_stub.jobs[found];
+    if (job->state != OA_PVR_SCHEDULED) return -EALREADY;
+    for (size_t i = 0; i < g_stub.count; i++)
+        if (i != found && g_stub.jobs[i].state == OA_PVR_RECORDING &&
+            g_stub.jobs[i].service_handle == job->service_handle)
+            return -EBUSY;
+    uint8_t previous = job->state;
+    job->state = OA_PVR_RECORDING;
+    int rc = save();
+    if (rc) job->state = previous;
+    return rc;
+}
+
+static int stub_finish(uint32_t recording_id)
+{
+    if (!g_stub.open || !recording_id) return -EINVAL;
+    for (size_t i = 0; i < g_stub.count; i++) {
+        struct oa_pvr_job *job = &g_stub.jobs[i];
+        if (job->id != recording_id) continue;
+        if (job->state != OA_PVR_RECORDING) return -EALREADY;
+        uint8_t previous = job->state;
+        job->state = OA_PVR_COMPLETED;
+        int rc = save();
+        if (rc) job->state = previous;
+        return rc;
+    }
+    return -ENOENT;
+}
+
 static size_t stub_count(void)
 {
     return g_stub.open ? g_stub.count : 0;
@@ -266,8 +362,8 @@ static int stub_query(size_t index, struct oa_pvr_job *out)
 }
 
 static const struct oa_pvr_backend stub_backend = {
-    "pvr-stub", stub_open, stub_close, stub_start, stub_stop, stub_count,
-    stub_query
+    "pvr-stub", stub_open, stub_close, stub_start, stub_stop, stub_record,
+    stub_finish, stub_count, stub_query
 };
 
 const struct oa_pvr_backend *oa_pvr_stub_backend(void)

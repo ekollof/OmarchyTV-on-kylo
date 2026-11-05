@@ -87,6 +87,7 @@ async function main() {
         assert.equal(await run.command('pvr-list'), 'count 0');
 
         assert.equal(await run.command('pvr-add 1 1000 2000'), 'id 1');
+        assert.equal(await run.command('pvr-add 1 1500 2500'), 'failed errno 16');
         assert.equal(await run.command('pvr-add 2 3000 4000 127 30 -15'), 'id 2');
         assert.equal(await run.command('pvr-add 0 1000 2000'), 'failed errno 22');
         assert.equal(await run.command('pvr-add 1 2000 1000'), 'failed errno 22');
@@ -94,6 +95,15 @@ async function main() {
         assert.match(reply, /^count 2\n/);
         assert.match(reply, /job id=1 service=1 state=0 start=1000 end=2000 repeat=0 pad=0\/0 name=cli reservation/);
         assert.match(reply, /job id=2 service=2 state=0 start=3000 end=4000 repeat=127 pad=30\/-15 name=cli reservation/);
+
+        assert.equal(await run.command('pvr-record 2'), 'ok');
+        assert.equal(await run.command('pvr-record 2'), 'failed errno 114');
+        assert.equal(await run.command('pvr-stop 2'), 'ok');
+        assert.equal(await run.command('pvr-stop 2'), 'failed errno 114');
+        assert.equal(await run.command('pvr-cancel 2'), 'failed errno 114');
+        assert.equal(await run.command('pvr-record 99'), 'failed errno 2');
+        assert.match(await run.commandAll('pvr-list'),
+            /job id=2 service=2 state=2 start=3000/);
 
         assert.equal(await run.command('pvr-cancel 1'), 'ok');
         assert.equal(await run.command('pvr-cancel 1'), 'failed errno 114');
@@ -105,7 +115,7 @@ async function main() {
         reply = await run.commandAll('pvr-list');
         assert.match(reply, /^count 2\n/);
         assert.match(reply, /job id=1 .*state=3 /);
-        assert.match(reply, /job id=2 .*state=0 /);
+        assert.match(reply, /job id=2 .*state=2 /);
 
         assert.equal(await run.command('stop pvr'), 'ok');
         assert.equal(await run.command('pvr-list'), 'failed errno 19');
@@ -125,7 +135,7 @@ async function main() {
         let reply = await run.commandAll('pvr-list');
         assert.match(reply, /^count 2\n/);
         assert.match(reply, /job id=1 service=1 state=3 start=1000 end=2000/);
-        assert.match(reply, /job id=2 service=2 state=0 start=3000 end=4000 repeat=127 pad=30\/-15/);
+        assert.match(reply, /job id=2 service=2 state=2 start=3000 end=4000 repeat=127 pad=30\/-15/);
         assert.equal(await run.command('pvr-add 1 5000 6000'), 'id 3');
         assert.match(await run.commandAll('pvr-list'), /^count 3\n/);
         await run.stop();
@@ -139,6 +149,6 @@ async function main() {
     assert.match(file, /^OAPVR1\n/);
     assert.match(file, /\t3\tcli reservation\n/);
     fs.rmSync(dir, { recursive: true, force: true });
-    console.log('ok pvr IPC: add/list/cancel, reload and cross-process persistence');
+    console.log('ok pvr IPC: conflict add, record/stop states, reload and cross-process persistence');
 }
 main().catch(e => { console.error(e); process.exitCode = 1; });

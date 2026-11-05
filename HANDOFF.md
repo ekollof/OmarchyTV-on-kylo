@@ -158,6 +158,11 @@ pvr.path, assigns monotonic ids, cancels only scheduled jobs and fails closed
 on corrupt files; unit and socket tests cover reload and cross-process
 persistence. Host421 ok, verify45; ARM/qemu passes. Stub only: no active
 recording, timeshift/playback, storage/conflict engine or vendor metadata.
+PVR follow-up: **v2** adds a fixture-only one-window-per-service padded
+conflict rule (`EBUSY`), `pvr-record`/`pvr-stop` scheduled→recording→completed
+transitions and persisted states; socket and ARM/qemu tests pass
+(PVR-CONFLICT-STATE). Tuner-count/vendor conflict semantics and the real
+recording engine remain open.
 
 Latest live acceptance:
 [LIVE-MODULE-ACCEPTANCE](artifacts/reports/LIVE-MODULE-ACCEPTANCE-2026-11-05.md)

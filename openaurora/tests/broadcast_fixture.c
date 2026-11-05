@@ -190,7 +190,33 @@ static int pvr_cancel(uint32_t id)
     return -ENOENT;
 }
 
-static const oa_pvr_iface pvr_iface = { pvr_list, pvr_add, pvr_cancel };
+static int pvr_record(uint32_t id)
+{
+    if (!g_ctx || !id) return -EINVAL;
+    for (size_t i = 0; i < g_ctx->job_count; i++) {
+        if (g_ctx->jobs[i].id != id) continue;
+        if (g_ctx->jobs[i].state != OA_PVR_SCHEDULED) return -EALREADY;
+        g_ctx->jobs[i].state = OA_PVR_RECORDING;
+        return 0;
+    }
+    return -ENOENT;
+}
+
+static int pvr_finish(uint32_t id)
+{
+    if (!g_ctx || !id) return -EINVAL;
+    for (size_t i = 0; i < g_ctx->job_count; i++) {
+        if (g_ctx->jobs[i].id != id) continue;
+        if (g_ctx->jobs[i].state != OA_PVR_RECORDING) return -EALREADY;
+        g_ctx->jobs[i].state = OA_PVR_COMPLETED;
+        return 0;
+    }
+    return -ENOENT;
+}
+
+static const oa_pvr_iface pvr_iface = {
+    pvr_list, pvr_add, pvr_cancel, pvr_record, pvr_finish
+};
 
 static int m_init(const oa_host_api *api, void **out)
 {
@@ -219,7 +245,7 @@ static int m_start(void *v)
         c->api->unpublish(c->api->priv, OA_SVC_TUNER);
         return -1;
     }
-    if (c->api->publish(c->api->priv, OA_SVC_PVR, 1, &pvr_iface)) {
+    if (c->api->publish(c->api->priv, OA_SVC_PVR, 2, &pvr_iface)) {
         c->api->unpublish(c->api->priv, OA_SVC_EPG);
         c->api->unpublish(c->api->priv, OA_SVC_TUNER);
         return -1;

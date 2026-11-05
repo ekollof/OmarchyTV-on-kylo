@@ -119,6 +119,55 @@ static void test_validation(const char *dir)
     backend->close();
 }
 
+static void test_conflict_states(const char *dir)
+{
+    const struct oa_pvr_backend *backend = oa_pvr_stub_backend();
+    char path[OA_PVR_PATH_MAX];
+    snprintf(path, sizeof path, "%s/states.db", dir);
+    assert(backend->open(path) == 0);
+    uint32_t id1 = 0, id2 = 0, id3 = 0, id4 = 0;
+    struct oa_pvr_request r = request(1, 1000, 2000, 0, 0, "One");
+    assert(backend->start(&r, &id1) == 0 && id1 == 1);
+    r = request(1, 1500, 2500, 0, 0, "Overlap");
+    assert(backend->start(&r, NULL) == -EBUSY);
+    r = request(2, 1500, 2500, 0, 0, "Other service");
+    assert(backend->start(&r, &id2) == 0 && id2 == 2);
+    r = request(1, 2000, 3000, 0, 0, "Touching");
+    assert(backend->start(&r, &id3) == 0 && id3 == 3);
+    r = request(1, 2000, 3000, 0, 0, "Padded overlap");
+    r.start_padding = 30;
+    assert(backend->start(&r, NULL) == -EBUSY);
+
+    assert(backend->record(id1) == 0);
+    assert(backend->record(id1) == -EALREADY);
+    assert(backend->finish(id1) == 0);
+    assert(backend->finish(id1) == -EALREADY);
+    assert(backend->stop(id1) == -EALREADY);
+
+    assert(backend->record(id3) == 0);
+    r = request(1, 4000, 5000, 0, 0, "Later");
+    assert(backend->start(&r, &id4) == 0 && id4 == 4);
+    assert(backend->record(id4) == -EBUSY);
+    assert(backend->finish(id3) == 0);
+    assert(backend->record(id4) == 0);
+    assert(backend->finish(id4) == 0);
+    assert(backend->record(id2) == 0);
+    assert(backend->finish(id2) == 0);
+
+    struct oa_pvr_job job;
+    for (uint32_t id = 1; id <= 4; id++) {
+        assert(backend->query(id - 1, &job) == 0 && job.id == id &&
+            job.state == OA_PVR_COMPLETED);
+    }
+    backend->close();
+    assert(backend->open(path) == 0);
+    for (uint32_t id = 1; id <= 4; id++) {
+        assert(backend->query(id - 1, &job) == 0 && job.id == id &&
+            job.state == OA_PVR_COMPLETED);
+    }
+    backend->close();
+}
+
 static void test_capacity(const char *dir)
 {
     const struct oa_pvr_backend *backend = oa_pvr_stub_backend();
@@ -128,8 +177,8 @@ static void test_capacity(const char *dir)
     for (unsigned i = 0; i < OA_PVR_MAX_JOBS; i++) {
         char name[32];
         snprintf(name, sizeof name, "Job %u", i);
-        struct oa_pvr_request r = request(1, 1000 + i * 10, 2000 + i * 10,
-            0, 0, name);
+        struct oa_pvr_request r = request(1, 1000 + i * 100,
+            1050 + i * 100, 0, 0, name);
         uint32_t id = 0;
         assert(backend->start(&r, &id) == 0 && id == i + 1);
     }
@@ -297,17 +346,19 @@ int main(void)
     assert(mkdtemp(dir));
     test_persist(dir);
     test_validation(dir);
+    test_conflict_states(dir);
     test_capacity(dir);
     test_dvr_sink();
     test_dvr_linux_hal();
     unlink("/tmp/oa-pvr-test-unused");
     char path[OA_PVR_PATH_MAX];
-    const char *files[] = { "pvr.db", "bad.db", "validation.db", "full.db" };
+    const char *files[] = { "pvr.db", "bad.db", "validation.db", "states.db",
+        "full.db" };
     for (size_t i = 0; i < sizeof files / sizeof files[0]; i++) {
         snprintf(path, sizeof path, "%s/%s", dir, files[i]);
         unlink(path);
     }
     assert(rmdir(dir) == 0);
-    puts("ok pvr stub: id/index semantics, persistence and DVR sink");
+    puts("ok pvr stub: conflict/state transitions, persistence and DVR sink");
     return 0;
 }

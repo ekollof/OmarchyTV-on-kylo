@@ -25,8 +25,10 @@ extern "C" {
  *
  * Identity is an integer recording id; enumeration is index-based. The stub
  * below is a project file store, not the vendor SQLite metadata store: it
- * persists the request/job fields atomically and has no active recording,
- * timeshift, playback, storage-manager or conflict engine.
+ * persists request/job/state fields atomically and has a fixture-only
+ * one-window-per-service conflict rule plus scheduled->recording->completed
+ * transitions. It has no media capture, timeshift, playback, storage manager,
+ * tuner-count conflict model or repeat-day expansion.
  */
 
 #define OA_PVR_MAX_JOBS 256
@@ -38,6 +40,8 @@ struct oa_pvr_backend {
     void (*close)(void);
     int (*start)(const struct oa_pvr_request *request, uint32_t *recording_id);
     int (*stop)(uint32_t recording_id);
+    int (*record)(uint32_t recording_id);
+    int (*finish)(uint32_t recording_id);
     size_t (*count)(void);
     int (*query)(size_t index, struct oa_pvr_job *out);
 };

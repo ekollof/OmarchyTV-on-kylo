@@ -1,5 +1,10 @@
 # Vendor-grounded PVR module with persistent stub — 2026-11-05
 
+> **Update 2026-11-05:** the service is now **v2** with fixture-only conflict
+> and `SCHEDULED -> RECORDING -> COMPLETED` transitions; see
+> [PVR-CONFLICT-STATE](PVR-CONFLICT-STATE-2026-11-05.md). The v1
+> add/list/cancel statements below are historical.
+>
 > **Update 2026-11-05:** the vendor content/URI metadata schema was recovered
 > from `aurora.elf` (`recordings(key,id,program_num,cicam_id,cc_version,digest)`,
 > `uris(recording_key,offset,uri,license,expiry,first_playback)` and

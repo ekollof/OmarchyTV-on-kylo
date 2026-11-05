@@ -145,7 +145,9 @@ struct oa_pvr_job {
 typedef struct {
     int (*list)(struct oa_pvr_job *jobs, size_t cap, size_t *count);
     int (*add)(const struct oa_pvr_request *request, uint32_t *id);
-    int (*cancel)(uint32_t id);
+    int (*cancel)(uint32_t id);       /* scheduled -> canceled */
+    int (*record)(uint32_t id);       /* scheduled -> recording */
+    int (*finish)(uint32_t id);       /* recording -> completed */
 } oa_pvr_iface;
 
 #ifdef __cplusplus
