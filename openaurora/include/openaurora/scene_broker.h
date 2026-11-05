@@ -14,6 +14,9 @@ enum { OA_SCENE_OPEN = 1, OA_SCENE_FRAME = 2, OA_SCENE_CLOSE = 3 };
 typedef struct {
     uint64_t ticket, revision;
     unsigned operation, width, height, type, upload;
+    /* FRAME upload rectangle in the fixed 1920x1080 scene. A full upload uses
+     * 0,0,1920,1080; cached frames carry all four as zero. */
+    unsigned x, y, w, h;
     float progress;
 } oa_scene_request;
 typedef struct {
@@ -35,13 +38,17 @@ int oa_scene_decode_reply(oa_scene_reply *out, const void *bytes, size_t size);
  * CLOEXEC image descriptor on success (*image=-1 when absent). */
 int oa_scene_packet_send(int socket, const uint8_t bytes[OA_SCENE_PACKET_SIZE], int image, int nonblocking);
 int oa_scene_packet_receive(int socket, uint8_t bytes[OA_SCENE_PACKET_SIZE], int *image, int nonblocking);
-/* Immutable anonymous file: exact top-down RGBA bytes, seals preventing writes,
- * resize and seal changes. Linux syscall avoids newer glibc symbol requirements.
- * Caller owns returned fd; -1/errno if unsupported. No unsealed fallback. */
+/* Immutable anonymous file: 1..OA_SCENE_IMAGE_BYTES of top-down RGBA, seals
+ * preventing writes, resize and seal changes. A partial frame is w*h*4 bytes;
+ * the FRAME rectangle in the protocol carries its placement. Linux syscall
+ * avoids newer glibc symbol requirements. Caller owns returned fd; -1/errno if
+ * unsupported. No unsealed fallback. */
 int oa_scene_image_create(const void *rgba, size_t size);
 typedef struct {
     int (*open)(void **owner, unsigned width, unsigned height);
-    int (*render)(void *owner, const uint8_t *rgba, size_t size, unsigned type, float progress);
+    int (*render)(void *owner, const uint8_t *rgba, size_t size,
+                  unsigned x, unsigned y, unsigned w, unsigned h,
+                  unsigned type, float progress);
     int (*finish)(void *owner); /* completed GPU reads before releasing image memory/reply */
     int (*close)(void **owner); /* failure retains unfinished owner; success sets NULL */
 } oa_scene_backend;

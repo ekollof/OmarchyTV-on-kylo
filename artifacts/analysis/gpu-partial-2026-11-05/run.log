@@ -1,0 +1,64 @@
+[696039] INFO host         openaurora starting, modules=./modules
+[696040] INFO host         control socket ./control
+openaurora: 0 module(s) loaded, control on ./control
+[700966] INFO host         loaded plat_stub v1 (./modules/mod_plat_stub.so)
+[700966] DBG  plat_stub    service up: plat v1
+[700966] INFO host         started plat_stub
+[700967] INFO host         loaded graphics v1 (./modules/mod_graphics.so)
+[700967] DBG  graphics     service up: display.gpu v2
+[700967] INFO host         started graphics
+[700967] INFO host         loaded scene_display v1 (./modules/mod_scene_display.so)
+[700968] DBG  scene_display service up: display v2
+[700968] DBG  scene_display service up: display.alpha v1
+[700968] DBG  scene_display service up: display.patch v1
+[700968] DBG  scene_display service up: display.async v1
+[700968] INFO host         started scene_display
+[700969] INFO host         loaded settings v0.2 (./modules/mod_settings.so)
+[700970] INFO settings     /buffer/oa-gpu-partial-20261105/settingsDB.db open (read-only)
+[700970] DBG  settings     service up: settings v1
+[700970] DBG  settings     service up: settings.hotel v1
+[700970] DBG  settings     service up: launcher.db v1
+[700999] INFO settings     probe: m_cec_enabled=1
+[700999] INFO host         started settings
+[700999] INFO host         loaded service_db v1 (./modules/mod_service_db.so)
+[701033] DBG  service_db   service up: service.list v1
+[701033] INFO service_db   service_db: 134 rows (54 dvb, 67 easi, 13 analog) from /buffer/oa-gpu-partial-20261105/settingsDB.db
+[701033] INFO host         started service_db
+[701033] INFO host         loaded image_decode v2 (./modules/mod_image_decode.so)
+[701035] DBG  image_decode service up: image.decode v2
+[701035] INFO host         started image_decode
+[701035] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[701035] DBG  ir           service up: input v1
+[701035] INFO ir           remote parser ready; BLAST only, UART path empty
+[701036] INFO host         started ir
+[701036] INFO host         loaded ui_engine v1 (./modules/mod_ui_engine.so)
+[701036] DBG  ui_engine    service up: ui.engine v2
+[701036] INFO ui_engine    ui_engine started
+[701036] DBG  ui_engine    service up: ui.skin v1
+[701036] INFO host         started ui_engine
+[701036] INFO host         loaded ui_vendor v0.2 (./modules/mod_ui_vendor.so)
+[701069] DBG  ui_vendor    service up: ui.portal v1
+[701511] INFO ui_vendor    scene request rev=34359738392 rect=0,0 1920x1080 upload=1
+[701512] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[701512] INFO host         started ui_vendor
+[701584] INFO scene_display scene done rev=34359738392 serial=34359738369
+[701632] INFO ui_vendor    scene request rev=34359738404 rect=0,211 209x670 upload=1
+[701663] INFO scene_display scene done rev=34359738404 serial=34359738370
+[701713] INFO ui_vendor    scene request rev=34359738416 rect=0,211 209x670 upload=1
+[701733] INFO scene_display scene done rev=34359738416 serial=34359738371
+[701783] INFO ui_vendor    scene request rev=34359738428 rect=0,211 209x670 upload=1
+[701803] INFO scene_display scene done rev=34359738428 serial=34359738372
+[701853] INFO ui_vendor    scene request rev=34359738440 rect=0,211 209x670 upload=1
+[701874] INFO scene_display scene done rev=34359738440 serial=34359738373
+[701924] INFO ui_vendor    scene request rev=34359738452 rect=0,211 209x670 upload=1
+[701944] INFO scene_display scene done rev=34359738452 serial=34359738374
+[701994] INFO ui_vendor    scene request rev=34359738464 rect=0,211 209x670 upload=1
+[702014] INFO scene_display scene done rev=34359738464 serial=34359738375
+[702064] INFO ui_vendor    scene request rev=34359738476 rect=0,211 209x670 upload=1
+[702085] INFO scene_display scene done rev=34359738476 serial=34359738376
+[702133] INFO ui_vendor    scene request rev=34359738488 rect=0,211 209x670 upload=1
+[702154] INFO scene_display scene done rev=34359738488 serial=34359738377
+[702202] INFO ui_vendor    scene request rev=34359738500 rect=0,211 209x670 upload=1
+[702223] INFO scene_display scene done rev=34359738500 serial=34359738378
+[702273] INFO ui_vendor    scene request rev=34359738512 rect=0,211 209x670 upload=1
+[702293] INFO scene_display scene done rev=34359738512 serial=34359738379

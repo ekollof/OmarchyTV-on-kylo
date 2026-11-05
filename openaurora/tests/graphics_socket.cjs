@@ -91,7 +91,7 @@ async function main() {
         await waitFor(() => fs.existsSync(socket), 'socket');
         assert.equal(await command('load graphics'), 'ok graphics');
         assert.equal(await command('start graphics'), 'ok');
-        await status('graphics', 'state   started', 'display.gpu:v1');
+        await status('graphics', 'state   started', 'display.gpu:v2');
 
         assert.equal(await command('load scene_display'), 'ok scene_display');
         assert.equal(await command('start scene_display'), 'ok');
@@ -103,13 +103,13 @@ async function main() {
 
         /* A live scene_display holds display.gpu: graphics must refuse to unload. */
         assert.equal(await command('reload graphics'), 'failed');
-        await status('graphics', 'state   started', 'display.gpu:v1');
+        await status('graphics', 'state   started', 'display.gpu:v2');
 
         assert.equal(await command('stop scene_display'), 'ok');
         const oldBroker = hostChildren();
         assert.match(oldBroker, /^\d+$/, 'expected one graphics broker child');
         assert.equal(await retryCommand('reload graphics'), 'ok');
-        await status('graphics', 'state   started', 'display.gpu:v1');
+        await status('graphics', 'state   started', 'display.gpu:v2');
         await waitFor(() => {
             const now = hostChildren();
             return /^\d+$/.test(now) && now !== oldBroker;

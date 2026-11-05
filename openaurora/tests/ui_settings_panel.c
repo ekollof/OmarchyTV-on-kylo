@@ -27,6 +27,19 @@ static const char *config(void *ud, const char *key, const char *def)
         const char *sel = getenv("OA_SETTINGS_SEL");
         return sel && *sel ? sel : "-1";
     }
+    if (!strcmp(key, "ui.text") && getenv("OA_SETTINGS_TEXT"))
+        return "1";
+    if (getenv("OA_SETTINGS_TEXT")) {
+        static char font_index[320], font_pack[320];
+        if (!strcmp(key, "ui.font_index")) {
+            snprintf(font_index, sizeof font_index, "%s/telefunken18_font_byte_data.txt", g_dir);
+            return font_index;
+        }
+        if (!strcmp(key, "ui.font_pack")) {
+            snprintf(font_pack, sizeof font_pack, "%s/telefunken18_font_byte_data.bin", g_dir);
+            return font_pack;
+        }
+    }
     return def;
 }
 

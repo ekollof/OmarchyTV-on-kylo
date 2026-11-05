@@ -258,6 +258,10 @@ typedef struct {
     int (*take)(uint64_t ticket, oa_scene_reply *reply); /*1 ready/0 pending/-1 errno*/
     int (*cancel)(uint64_t ticket);
     int (*is_open)(void); /*1 initialized/0 not initialized/-1 fault; no I/O*/
+    /* v2: upload only x,y,w,h of the fixed scene. image is w*h*4 bytes; a
+     * cached frame uses image=-1 and all four zero. */
+    int (*frame_rect)(uint64_t revision, unsigned type, float progress, int image,
+                      unsigned x, unsigned y, unsigned w, unsigned h, uint64_t *ticket);
 } oa_display_gpu_iface;
 
 /* display.async v1 accompanies the drawing-only display v2 from scene_display.

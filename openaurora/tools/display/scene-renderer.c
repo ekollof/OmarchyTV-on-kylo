@@ -34,8 +34,13 @@ static int open_scene(void **owner, unsigned width, unsigned height)
     *owner = scene;
     return result;
 }
-static int render(void *owner, const uint8_t *rgba, size_t size, unsigned type, float progress)
-{ return oa_scene_gles_render(owner, rgba, size, (int)type, progress, NULL, 0); }
+static int render(void *owner, const uint8_t *rgba, size_t size,
+                  unsigned x, unsigned y, unsigned w, unsigned h,
+                  unsigned type, float progress)
+{
+    if (rgba && oa_scene_gles_upload(owner, rgba, size, x, y, w, h)) return -1;
+    return oa_scene_gles_render(owner, NULL, 0, (int)type, progress, NULL, 0);
+}
 static int finish(void *owner) { return oa_scene_gles_finish(owner); }
 static int close_scene(void **owner)
 {

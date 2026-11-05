@@ -43,8 +43,22 @@ the panel and compares the `20,186` 750x66 row region against
 panel: AE=0.000000 MAE8=0.000000 max=0 changed=0/49500
 ```
 
-The captured focused-row composition is exact. The live-text path
-(`ui.text=1`) and focus/animation behavior remain separate.
+The captured focused-row composition is exact.
+
+## Live-text follow-up
+
+`OA_SETTINGS_TEXT=1` enables `ui.text=1` with the real workbench font pack;
+`make capture-settings-text-real` renders the panel through the live-label/
+value path and compares the full 780x1080 region to `settings_panel.rgba`:
+
+```
+panel: AE=0.000000 MAE8=0.000000 max=0 changed=0/842400
+```
+
+The live text composition (labels, slider digits, disabled row, title, slider
+and selection widgets) is byte-identical to the captured vendor panel. This
+covers the captured static values; live settings acquisition, other focused
+rows, editing, animation and Mesa/transformed frames remain separate.
 
 ## Limits
 

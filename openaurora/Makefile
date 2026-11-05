@@ -1379,6 +1379,20 @@ capture-settings-panel-real: $(BUILD)/tests/ui_settings_panel $(BUILD)/tests/ui_
 		$(SETTINGS_REAL_UI)/settings_panel.rgba \
 		$(BUILD)/tests/ui-settings-panel-real/settings-panel.png
 
+.PHONY: capture-settings-text-real
+capture-settings-text-real: $(BUILD)/tests/ui_settings_panel $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so
+	@test -f $(SETTINGS_REAL_UI)/settings_panel.rgba || { echo "missing $(SETTINGS_REAL_UI); stage the workbench UI assets first"; exit 2; }
+	@mkdir -p $(BUILD)/tests/ui-settings-text-real/modules
+	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui-settings-text-real/modules/
+	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-settings-text-real/modules/mod_nav_display.so
+	@OA_SETTINGS_REAL=1 OA_SETTINGS_TEXT=1 OA_NAV_CAPTURE=$(abspath $(BUILD)/tests/ui-settings-text-real/settings-text) \
+		$(BUILD)/tests/ui_settings_panel $(abspath $(BUILD)/tests/ui-settings-text-real/modules) \
+		$(abspath $(SETTINGS_REAL_UI))
+	python3 tools/panel-source-compare.py \
+		$(BUILD)/tests/ui-settings-text-real/settings-text.panel 1920 1080 \
+		$(SETTINGS_REAL_UI)/settings_panel.rgba \
+		$(BUILD)/tests/ui-settings-text-real/settings-text.png
+
 $(BUILD)/tests/ui_sources_quick: tests/ui_sources_quick.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)

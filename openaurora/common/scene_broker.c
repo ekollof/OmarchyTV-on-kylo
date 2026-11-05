@@ -28,6 +28,7 @@ int oa_scene_broker_serve(int fd, const oa_scene_backend *backend)
         getpeername(fd, (struct sockaddr *)&peer, &peer_length)) return -1;
     if (type != SOCK_SEQPACKET || peer.ss_family != AF_UNIX) { errno = EPROTOTYPE; return -1; }
     void *owner = NULL, *mapping = MAP_FAILED;
+    size_t mapping_len = 0;
     uint64_t last_ticket = 0, revision = 0;
     int opened = 0, closing = 0, primary = 0;
     for (;;) {
@@ -60,12 +61,15 @@ int oa_scene_broker_serve(int fd, const oa_scene_backend *backend)
         } else if (!opened || closing || !owner) {
             reply.error = EPROTO; terminal = 1;
         } else {
+            size_t upload_bytes = 0;
             if (request.upload) {
                 struct stat st;
+                upload_bytes = (size_t)request.w * (size_t)request.h * 4u;
                 int seals = image < 0 ? -1 : (int)syscall(SYS_fcntl, image, F_GET_SEALS);
                 const int required = F_SEAL_WRITE | F_SEAL_GROW | F_SEAL_SHRINK | F_SEAL_SEAL;
-                if (image < 0 || request.revision <= revision || fstat(image, &st) ||
-                    !S_ISREG(st.st_mode) || st.st_size != (off_t)OA_SCENE_IMAGE_BYTES ||
+                if (image < 0 || request.revision <= revision || !upload_bytes ||
+                    fstat(image, &st) || !S_ISREG(st.st_mode) ||
+                    st.st_size != (off_t)upload_bytes ||
                     seals < 0 || (seals & required) != required) {
                     reply.error = EPROTO; terminal = 1;
                 } else {
@@ -73,15 +77,17 @@ int oa_scene_broker_serve(int fd, const oa_scene_backend *backend)
                      * seal made i_mmap_writable negative, even for PROT_READ.
                      * Private read-only pages still reference the sealed file;
                      * no write or resize is possible and no eager copy occurs. */
-                    mapping = mmap(NULL, OA_SCENE_IMAGE_BYTES, PROT_READ, MAP_PRIVATE, image, 0);
+                    mapping = mmap(NULL, upload_bytes, PROT_READ, MAP_PRIVATE, image, 0);
                     if (mapping == MAP_FAILED) { reply.error = failure(); terminal = 1; }
+                    else mapping_len = upload_bytes;
                 }
             } else if (request.revision != revision) { reply.error = ENODATA; terminal = 1; }
             if (image >= 0) { (void)close(image); image = -1; }
             if (!terminal) {
                 const uint8_t *rgba = request.upload ? mapping : NULL;
                 errno = 0;
-                if (backend->render(owner, rgba, rgba ? OA_SCENE_IMAGE_BYTES : 0,
+                if (backend->render(owner, rgba, rgba ? upload_bytes : 0,
+                                    request.x, request.y, request.w, request.h,
                                     request.type, request.progress)) {
                     reply.error = failure(); terminal = 1;
                 } else {
@@ -90,7 +96,8 @@ int oa_scene_broker_serve(int fd, const oa_scene_backend *backend)
                     else {
                         revision = request.revision;
                         if (mapping != MAP_FAILED) {
-                            (void)munmap(mapping, OA_SCENE_IMAGE_BYTES); mapping = MAP_FAILED;
+                            (void)munmap(mapping, mapping_len);
+                            mapping = MAP_FAILED; mapping_len = 0;
                         }
                     }
                 }
@@ -109,7 +116,7 @@ int oa_scene_broker_serve(int fd, const oa_scene_backend *backend)
         struct timespec delay = {.tv_nsec = 100000000};
         (void)nanosleep(&delay, NULL);
     }
-    if (mapping != MAP_FAILED) (void)munmap(mapping, OA_SCENE_IMAGE_BYTES);
+    if (mapping != MAP_FAILED) (void)munmap(mapping, mapping_len);
     if (primary) { errno = primary; return -1; }
     return 0;
 }

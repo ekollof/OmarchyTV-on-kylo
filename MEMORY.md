@@ -31,6 +31,14 @@ the TV, 10 highlight frames measured scene3-5 ms/pan5-8 ms at ~50 ms cadence
 scene52 ms/pan11 ms. Full-paint pixels are unchanged; GPU partial upload and
 exact 30 ms cadence remain open. RAIL-PARTIAL-2026-11-05.
 
+Partial GPU scene uploads, 2026-11-06: OGS1 FRAME now carries `x,y,w,h`,
+sealed images may be `w*h*4`, renderer ABI 2 uploads a rectangle, `display.gpu`
+v2 exposes `frame_rect`, and `scene_display` tracks dirty rects. Host
+broker/patch/UI tests pass. TV: initial full upload 73 ms; ten rail frames
+uploaded only `0,211 209x670`, ~20 ms request-to-done and ~50 ms cadence.
+Not the exact 30 ms vendor cadence; CPU canvas, graceful teardown and cold
+startup remain. GPU-PARTIAL-2026-11-06.
+
 Control client, 2026-11-05: `oa-client` now defaults to a 5 s bounded timeout
 and supports `--no-wait`; the silent-server test covers 1.02 s timeout and
 0.00 s no-wait. `mod_ir` keeps `/dev/ttyS2` closed when BLAST succeeds unless
@@ -91,9 +99,12 @@ OAI1 panel at 0,0 with no focus row, and compares the recorder crop to
 0/842,400 changed. Setting `OA_SETTINGS_SEL=0` and running
 `make capture-settings-focus-real` captures the focused panel and compares
 the 20,186 750x66 row region to `settings_focus_0.rgba`: AE=0, max=0,
-0/49,500 changed. Panel -> quick tiles -> panel -> portal navigation still
-passes. Live text, slider/selection, other focused rows, animation,
-Mesa/transformed frames and scanout remain open.
+0/49,500 changed. `OA_SETTINGS_TEXT=1` plus
+`make capture-settings-text-real` enables the live labels/values/fonts and
+matches the full vendor `settings_panel.rgba`: AE=0, max=0, 0/842,400 changed.
+Panel -> quick tiles -> panel -> portal navigation still passes. Settings
+acquisition/editing, other focused rows, animation, Mesa/transformed frames
+and scanout remain open.
 
 PORTAL-CAPTURE-2026-11-05 (host, no TV): added `tests/ui_portal_quick.c` and
 `make capture-portal-real`. The shipped portal path paints the workbench

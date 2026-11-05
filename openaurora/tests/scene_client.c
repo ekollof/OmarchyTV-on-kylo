@@ -27,7 +27,11 @@ static void pause_tick(void)
 static oa_scene_request opening(void)
 { return (oa_scene_request){.operation = OA_SCENE_OPEN, .width = OA_SCENE_WIDTH, .height = OA_SCENE_HEIGHT}; }
 static oa_scene_request frame(int upload)
-{ return (oa_scene_request){.operation = OA_SCENE_FRAME, .revision = 7, .type = 4, .progress = 0.5f, .upload = (unsigned)upload}; }
+{
+    return (oa_scene_request){.operation = OA_SCENE_FRAME, .revision = 7, .type = 4,
+        .progress = 0.5f, .upload = (unsigned)upload,
+        .w = upload ? OA_SCENE_WIDTH : 0u, .h = upload ? OA_SCENE_HEIGHT : 0u};
+}
 static oa_scene_reply completed(oa_scene_client *c, uint64_t ticket)
 {
     oa_scene_reply reply;

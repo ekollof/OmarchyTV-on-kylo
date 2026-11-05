@@ -56,7 +56,8 @@ int main(int argc, char **argv)
             uint8_t *pixels = calloc(1, OA_SCENE_IMAGE_BYTES); require(pixels); pixels[0] = 42;
             int image = oa_scene_image_create(pixels, OA_SCENE_IMAGE_BYTES); require(image >= 0); free(pixels);
             exchange(fds[0], (oa_scene_request){.operation = OA_SCENE_FRAME, .ticket = 2,
-                .revision = 1, .type = 4, .progress = 0.5f, .upload = 1}, image);
+                .revision = 1, .type = 4, .progress = 0.5f, .upload = 1,
+                .w = OA_SCENE_WIDTH, .h = OA_SCENE_HEIGHT}, image);
             exchange(fds[0], (oa_scene_request){.operation = OA_SCENE_FRAME, .ticket = 3,
                 .revision = 1, .type = 4, .progress = 0.5f}, -1);
             if (!mode) exchange(fds[0], (oa_scene_request){.operation = OA_SCENE_CLOSE, .ticket = 4}, -1);

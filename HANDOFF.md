@@ -76,6 +76,12 @@ scene3-5 ms/pan5-8 ms, ~50 ms cadence (~450 ms total) versus 617 ms full
 repaint; key full paint scene52 ms/pan11 ms. Static/full path unchanged;
 GPU partial upload and exact 30 ms cadence remain. RAIL-PARTIAL.
 
+Partial GPU scene uploads, 2026-11-06: OGS1 FRAME rects + renderer ABI2 +
+`display.gpu` v2 `frame_rect`; `scene_display` sends only dirty images. Host
+protocol/patch/UI tests pass. TV: full upload 73 ms; ten rail frames uploaded
+only `0,211 209x670`, ~20 ms request-to-done, ~50 ms cadence. Exact 30 ms,
+CPU canvas, graceful teardown and cold startup remain. GPU-PARTIAL.
+
 Control client, 2026-11-05: `oa-client` has a default 5 s timeout and
 `--no-wait`; `mod_ir` keeps the UART closed when BLAST succeeds unless
 `ir.device` is explicit. Silent-server test passes 1.02 s timeout / 0.00 s
@@ -106,9 +112,11 @@ at 0,0 with no focus row, and compares the recorder crop to
 `settings_panel.rgba` (AE=0, max=0, 0/842,400 changed). `OA_SETTINGS_SEL=0`
 plus `make capture-settings-focus-real` compares the focused 20,186 750x66
 row region to `settings_focus_0.rgba`: AE=0, max=0, 0/49,500 changed.
-Navigation panel ->
-quick tiles -> panel -> portal still passes. Live text/focus, slider/selection,
-Mesa/transforms and scanout remain open.
+`OA_SETTINGS_TEXT=1` plus `make capture-settings-text-real` enables the live
+labels/values/fonts and matches the full `settings_panel.rgba`: AE=0, max=0,
+0/842,400 changed. Navigation panel ->
+quick tiles -> panel -> portal still passes. Settings acquisition/editing,
+other focused rows, animation, Mesa/transforms and scanout remain open.
 
 Startpagina offline capture, 2026-11-05: `tests/ui_portal_quick.c` plus
 `make capture-portal-real` paint the workbench title/rail/card assets with

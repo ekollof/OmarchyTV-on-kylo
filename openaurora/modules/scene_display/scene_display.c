@@ -3,11 +3,16 @@
 #include <errno.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/canvas.h"
-struct desired { oa_display_result value; int image, valid; };
+struct desired {
+    oa_display_result value;
+    int image, valid;
+    unsigned x, y, w, h;
+};
 struct ctx {
     const oa_host_api *api;
     const oa_display_gpu_iface *gpu;
@@ -18,12 +23,41 @@ struct ctx {
     float progress;
     int active, pending, opened, fault, result_valid;
     int display_published, async_published, alpha_published, patch_published;
+    int gpu_v2, profile;
+    int dirty, dirty_x0, dirty_y0, dirty_x1, dirty_y1;
     struct desired queued;
     oa_display_result inflight, result;
 };
 static struct ctx *g_ctx;
 static void discard(struct ctx *c)
 { if (c->queued.image >= 0) (void)close(c->queued.image); c->queued = (struct desired){.image = -1}; }
+
+static void mark_dirty(struct ctx *c, int x, int y, int w, int h)
+{
+    if (!c || w <= 0 || h <= 0) return;
+    int64_t right = (int64_t)x + w, bottom = (int64_t)y + h;
+    int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
+    int x1 = right > c->canvas.width ? c->canvas.width : (int)right;
+    int y1 = bottom > c->canvas.height ? c->canvas.height : (int)bottom;
+    if (x0 >= x1 || y0 >= y1) return;
+    if (!c->dirty) {
+        c->dirty = 1;
+        c->dirty_x0 = x0; c->dirty_y0 = y0;
+        c->dirty_x1 = x1; c->dirty_y1 = y1;
+        return;
+    }
+    if (x0 < c->dirty_x0) c->dirty_x0 = x0;
+    if (y0 < c->dirty_y0) c->dirty_y0 = y0;
+    if (x1 > c->dirty_x1) c->dirty_x1 = x1;
+    if (y1 > c->dirty_y1) c->dirty_y1 = y1;
+}
+
+static void mark_all(struct ctx *c)
+{
+    c->dirty = 1;
+    c->dirty_x0 = 0; c->dirty_y0 = 0;
+    c->dirty_x1 = c->canvas.width; c->dirty_y1 = c->canvas.height;
+}
 static void failed(struct ctx *c, int error)
 {
     c->fault = error > 0 ? error : EIO;
@@ -50,6 +84,10 @@ static void drive(void *ud)
         else {
             c->cached_revision = c->inflight.revision;
             c->result = c->inflight; c->result_valid = 1;
+            if (c->profile)
+                c->api->log(c->api->priv, OA_LOG_INFO, "scene done rev=%llu serial=%llu",
+                            (unsigned long long)c->inflight.revision,
+                            (unsigned long long)c->inflight.serial);
         }
     }
     if (!c->opened) {
@@ -65,12 +103,39 @@ static void drive(void *ud)
     }
     if (!c->queued.valid) return;
     const oa_display_result *q = &c->queued.value;
-    if (c->gpu->frame(q->revision, q->type, q->progress, c->queued.image, &c->ticket)) {
+    int rc = c->gpu_v2
+        ? c->gpu->frame_rect(q->revision, q->type, q->progress, c->queued.image,
+                             c->queued.x, c->queued.y, c->queued.w, c->queued.h,
+                             &c->ticket)
+        : c->gpu->frame(q->revision, q->type, q->progress, c->queued.image, &c->ticket);
+    if (rc) {
         if (errno != EBUSY && errno != EAGAIN && errno != EWOULDBLOCK) failed(c, errno);
         return;
     }
     c->inflight = *q; c->pending = 1; discard(c);
 }
+static int image_from_rect(struct ctx *c, unsigned x, unsigned y, unsigned w, unsigned h)
+{
+    if (!c->canvas.pixels || !w || !h || x >= (unsigned)c->canvas.width ||
+        y >= (unsigned)c->canvas.height || w > (unsigned)c->canvas.width - x ||
+        h > (unsigned)c->canvas.height - y) {
+        errno = EINVAL; return -1;
+    }
+    if (x == 0 && y == 0 && w == (unsigned)c->canvas.width &&
+        h == (unsigned)c->canvas.height)
+        return oa_scene_image_create(c->canvas.pixels, OA_SCENE_IMAGE_BYTES);
+    size_t size = (size_t)w * (size_t)h * 4u;
+    unsigned char *buf = malloc(size);
+    if (!buf) { errno = ENOMEM; return -1; }
+    for (unsigned row = 0; row < h; row++)
+        memcpy(buf + (size_t)row * w * 4u,
+               c->canvas.pixels + ((size_t)(y + row) * (size_t)c->canvas.width +
+                                   (size_t)x) * 4u, (size_t)w * 4u);
+    int image = oa_scene_image_create(buf, size);
+    free(buf);
+    return image;
+}
+
 static int request(uint64_t *serial)
 {
     struct ctx *c = g_ctx;
@@ -79,17 +144,35 @@ static int request(uint64_t *serial)
     if (c->fault) { errno = c->fault; return -1; }
     if (c->sequence == UINT32_MAX) { errno = EOVERFLOW; return -1; }
     int image = -1;
+    unsigned x = 0, y = 0, w = 0, h = 0;
     int can_reuse = c->queued.valid && c->queued.value.revision == c->revision;
-    if (can_reuse) image = c->queued.image;
-    else if (c->revision != c->cached_revision && (!c->pending || c->inflight.revision != c->revision)) {
-        image = oa_scene_image_create(c->canvas.pixels, OA_SCENE_IMAGE_BYTES);
-        if (image < 0) return -1;
+    if (can_reuse) {
+        image = c->queued.image;
+        x = c->queued.x; y = c->queued.y; w = c->queued.w; h = c->queued.h;
+    } else if (c->revision != c->cached_revision &&
+               (!c->pending || c->inflight.revision != c->revision)) {
+        if (c->dirty) {
+            if (c->gpu_v2) {
+                x = (unsigned)c->dirty_x0; y = (unsigned)c->dirty_y0;
+                w = (unsigned)(c->dirty_x1 - c->dirty_x0);
+                h = (unsigned)(c->dirty_y1 - c->dirty_y0);
+            } else {
+                x = y = 0; w = OA_SCENE_WIDTH; h = OA_SCENE_HEIGHT;
+            }
+            image = image_from_rect(c, x, y, w, h);
+            if (image < 0) return -1;
+            c->dirty = 0;
+        }
     }
     if (can_reuse) c->queued.image = -1;
     discard(c);
     uint64_t next = (uint64_t)c->id << 32 | (uint64_t)++c->sequence;
-    c->queued = (struct desired){.valid = 1, .image = image,
+    c->queued = (struct desired){.valid = 1, .image = image, .x = x, .y = y, .w = w, .h = h,
         .value = {.serial = next, .revision = c->revision, .type = c->type, .progress = c->progress}};
+    if (c->profile)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "scene request rev=%llu rect=%u,%u %ux%u upload=%d",
+                    (unsigned long long)c->revision, x, y, w, h, image >= 0);
     *serial = next; drive(c); return 0;
 }
 static int latest(oa_display_result *out)
@@ -110,6 +193,7 @@ static int fill(int x, int y, int w, int h, int r, int g, int b)
 {
     struct ctx *c = g_ctx; if (drawing(c)) return -1;
     if (oa_canvas_fill(&c->canvas, x, y, w, h, r, g, b)) return -1;
+    mark_dirty(c, x, y, w, h);
     c->revision++; return 0;
 }
 static int clear(int r, int g, int b) { return fill(0, 0, OA_SCENE_WIDTH, OA_SCENE_HEIGHT, r, g, b); }
@@ -117,6 +201,7 @@ static int clear_rgba(int r, int g, int b, int a)
 {
     struct ctx *c = g_ctx; if (drawing(c)) return -1;
     if (oa_canvas_clear(&c->canvas, r, g, b, a)) return -1;
+    mark_all(c);
     c->revision++; return 0;
 }
 static int blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigned char *rgba)
@@ -126,6 +211,7 @@ static int blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigne
      * display_fb; nearest sampling loses the exact applications-grid and
      * portal card pixels. */
     if (oa_canvas_blit_mipmap(&c->canvas, x, y, w, h, sw, sh, rgba)) return -1;
+    mark_dirty(c, x, y, w, h);
     c->revision++; return 0;
 }
 static int blit(int x, int y, int w, int h, const unsigned char *rgba)
@@ -152,6 +238,7 @@ static int patch_fill_rgba(int x, int y, int w, int h, int r, int g, int b, int 
             p[2] = (uint8_t)b; p[3] = (uint8_t)a;
         }
     }
+    mark_dirty(c, x0, y0, x1 - x0, y1 - y0);
     c->revision++;
     return 0;
 }
@@ -192,12 +279,20 @@ static int activate(struct ctx *c)
     if (!c->timer) c->timer = c->api->timer_add(c->api->priv, 10, 10, drive, c);
     if (!c->timer) return -1;
     c->fault = c->opened = c->result_valid = 0; c->cached_revision = 0;
+    mark_all(c);   /* a new GPU session has no texture contents yet */
     c->active = 1; drive(c); return 0;
 }
 static int start(void *ud)
 {
     struct ctx *c = ud;
-    c->gpu = c->api->lookup(c->api->priv, OA_SVC_DISPLAY_GPU, 1); if (!c->gpu) return -1;
+    c->gpu = c->api->lookup(c->api->priv, OA_SVC_DISPLAY_GPU, 2);
+    if (c->gpu) c->gpu_v2 = 1;
+    else {
+        c->gpu = c->api->lookup(c->api->priv, OA_SVC_DISPLAY_GPU, 1);
+        c->gpu_v2 = 0;
+    }
+    if (!c->gpu) return -1;
+    c->profile = c->api->config_get(c->api->priv, "scene.profile", "0")[0] == '1';
     c->canvas = (oa_canvas){.width = OA_SCENE_WIDTH, .height = OA_SCENE_HEIGHT,
         .pixels = calloc(1, OA_SCENE_IMAGE_BYTES)};
     if (!c->canvas.pixels || activate(c)) return -1;

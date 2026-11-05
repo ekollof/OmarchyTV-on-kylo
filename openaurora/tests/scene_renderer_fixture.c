@@ -22,11 +22,15 @@ static int open_scene(void **owner, unsigned width, unsigned height)
         width != OA_SCENE_WIDTH || height != OA_SCENE_HEIGHT) { errno = EIO; return -1; }
     *owner = &descriptor; return 0;
 }
-static int render(void *owner, const uint8_t *rgba, size_t size, unsigned type, float progress)
+static int render(void *owner, const uint8_t *rgba, size_t size,
+                  unsigned x, unsigned y, unsigned w, unsigned h,
+                  unsigned type, float progress)
 {
     if (owner != &descriptor || syscall(SYS_fcntl, descriptor, F_GETFD) < 0 ||
         type != 4 || progress != 0.5f ||
-        (frames == 0 ? !rgba || size != OA_SCENE_IMAGE_BYTES || rgba[0] != 42 : rgba || size)) {
+        (frames == 0 ? !rgba || size != OA_SCENE_IMAGE_BYTES || rgba[0] != 42 ||
+                       x || y || w != OA_SCENE_WIDTH || h != OA_SCENE_HEIGHT
+                     : rgba || size || x || y || w || h)) {
         errno = EIO; return -1;
     }
     frames++; return 0;

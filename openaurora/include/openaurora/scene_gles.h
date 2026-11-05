@@ -25,6 +25,11 @@ int oa_scene_gles_open_window(oa_scene_gles **scene, unsigned width, unsigned he
  * by progress0..1. A return0 proves readback, not scanout or audible/TV parity. */
 int oa_scene_gles_render(oa_scene_gles *scene, const uint8_t *rgba, size_t input_size,
                          int type, float progress, uint8_t *bottom_up, size_t output_size);
+/* Upload a full or partial top-down RGBA region into the retained scene
+ * texture. A partial region requires a prior full upload; the first upload
+ * must cover 0,0,width,height. Does not draw or swap. */
+int oa_scene_gles_upload(oa_scene_gles *scene, const uint8_t *rgba, size_t input_size,
+                         unsigned x, unsigned y, unsigned width, unsigned height);
 /* Direct coverage textures, not CPU-precomposited glyph RGBA. Input is borrowed
  * through the synchronous render/readback/swap. Caller owns text layout and
  * supplies absolute top-down glyph rectangles (bearings already included).

@@ -299,6 +299,28 @@ failed:
     s->text_framebuffer=s->text_texture=s->text_buffer=s->text_program=0;
     scene_state(s);return fail(s,"allocate text framebuffer");
 }
+int oa_scene_gles_upload(oa_scene_gles *s, const uint8_t *rgba, size_t input_size,
+                         unsigned x, unsigned y, unsigned width, unsigned height)
+{
+    if (owned(s)) return -1;
+    if (!rgba || !width || !height || x >= s->width || y >= s->height ||
+        width > s->width - x || height > s->height - y ||
+        input_size != (size_t)width * (size_t)height * 4u) {
+        errno = EINVAL; return -1;
+    }
+    if (!s->ready) { errno = ENODEV; return -1; }
+    if (eglGetCurrentContext() != s->context) { errno = EBUSY; return -1; }
+    if (!s->uploaded && (x || y || width != s->width || height != s->height)) {
+        errno = ENODATA; return -1;
+    }
+    scene_state(s);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, (GLint)x, (GLint)y, (GLsizei)width,
+                    (GLsizei)height, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+    if (gl_ok(s, "upload scene region")) return -1;
+    s->uploaded = 1;
+    return 0;
+}
+
 static int render(oa_scene_gles *s, const uint8_t *rgba, size_t input_size,
                    int type, float progress, uint8_t *pixels, size_t output_size,
                    const struct oa_scene_glyph *glyphs,size_t count,int text_pipeline)

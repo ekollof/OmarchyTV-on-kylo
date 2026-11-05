@@ -6,7 +6,7 @@
 #define OPENAURORA_SCENE_RENDERER_H
 #include <stdint.h>
 #include "openaurora/scene_broker.h"
-#define OA_SCENE_RENDERER_ABI 1u
+#define OA_SCENE_RENDERER_ABI 2u
 typedef struct {
     uint32_t abi, size;
     oa_scene_backend backend;

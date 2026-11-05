@@ -62,7 +62,7 @@ int oa_scene_packet_receive(int fd, uint8_t bytes[OA_SCENE_PACKET_SIZE], int *im
 }
 int oa_scene_image_create(const void *rgba, size_t size)
 {
-    if (!rgba || size != OA_SCENE_IMAGE_BYTES) { errno = EINVAL; return -1; }
+    if (!rgba || !size || size > OA_SCENE_IMAGE_BYTES) { errno = EINVAL; return -1; }
 #ifndef SYS_memfd_create
     errno = ENOSYS; return -1;
 #else

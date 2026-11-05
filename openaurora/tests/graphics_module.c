@@ -48,7 +48,7 @@ static const oa_display_gpu_iface *load(oa_host *h)
     for (int i = 0; i < MAX_WATCHES; i++) watches += h->watches[i].active && h->watches[i].owner == m->id;
     for (int i = 0; i < MAX_TIMERS; i++) timers += h->timers[i].active && h->timers[i].owner == m->id;
     require(watches == 1 && timers == 1);
-    const oa_display_gpu_iface *s = h->api.lookup(h, OA_SVC_DISPLAY_GPU, 1); require(s); return s;
+    const oa_display_gpu_iface *s = h->api.lookup(h, OA_SVC_DISPLAY_GPU, 2); require(s); return s;
 }
 static oa_scene_reply completed(oa_host *h, const oa_display_gpu_iface *s, uint64_t ticket)
 {
@@ -82,7 +82,7 @@ static void basic(const char *directory)
     require(accepted && !completed(&h, s, untouched).error);
     require(s->take(ticket, &reply) == -1 && errno == ENOENT);
     oa_mod *consumer = oa_module_load(&h, "ticker"); require(consumer && !oa_module_start(&h, consumer));
-    h.cur_module = consumer->id; require(h.api.lookup(&h, OA_SVC_DISPLAY_GPU, 1) == s); h.cur_module = 0;
+    h.cur_module = consumer->id; require(h.api.lookup(&h, OA_SVC_DISPLAY_GPU, 2) == s); h.cur_module = 0;
     require(oa_module_unload(&h, "graphics", 0) == -1);
     int suspended = 0;
     for (unsigned i = 0; i < 5000 && !suspended; i++) { suspended = !oa_module_suspend_all(&h); if (!suspended) pump(&h); }
@@ -96,7 +96,7 @@ static void basic(const char *directory)
     uint64_t old_ticket = ticket;
     int reloaded = 0;
     for (unsigned i = 0; i < 5000 && !reloaded; i++) { reloaded = !oa_module_reload(&h, "graphics", 0); if (!reloaded) pump(&h); }
-    require(reloaded); s = h.api.lookup(&h, OA_SVC_DISPLAY_GPU, 1); require(s);
+    require(reloaded); s = h.api.lookup(&h, OA_SVC_DISPLAY_GPU, 2); require(s);
     require(!s->open(&ticket) && (ticket >> 32) != (old_ticket >> 32));
     require(s->take(old_ticket, &reply) == -1 && errno == ENOENT);
     require(!completed(&h, s, ticket).error); done(&h);

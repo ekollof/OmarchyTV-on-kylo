@@ -33,19 +33,29 @@ static void codecs(void)
 {
     uint8_t bytes[65], original[65]; memset(bytes, 0xa5, sizeof bytes);
     oa_scene_request r = {.operation = OA_SCENE_FRAME, .ticket = UINT64_C(0x123456789abcdef0),
-        .revision = 9, .type = 8, .progress = 0.5f, .upload = 1}, out;
+        .revision = 9, .type = 8, .progress = 0.5f, .upload = 1,
+        .w = OA_SCENE_WIDTH, .h = OA_SCENE_HEIGHT}, out;
     assert(!oa_scene_encode_request(bytes, 64, &r));
     assert(!memcmp(bytes, "OGS1\2\0\0\0\xf0\xde\xbc\x9a\x78\x56\x34\x12", 16));
     assert(bytes[16] == 9 && bytes[24] == 8 && bytes[30] == 0 && bytes[31] == 0x3f && bytes[32] == 1);
+    assert(bytes[36] == 0 && bytes[37] == 0 && bytes[38] == 0 && bytes[39] == 0);
+    assert(bytes[44] == 0x80 && bytes[45] == 0x07 && bytes[46] == 0 && bytes[47] == 0);
+    assert(bytes[48] == 0x38 && bytes[49] == 0x04 && bytes[50] == 0 && bytes[51] == 0);
     assert(bytes[64] == 0xa5);
-    assert(!oa_scene_decode_request(&out, bytes, 64) && out.progress == 0.5f && out.ticket == r.ticket);
+    assert(!oa_scene_decode_request(&out, bytes, 64) && out.progress == 0.5f && out.ticket == r.ticket &&
+           out.w == OA_SCENE_WIDTH && out.h == OA_SCENE_HEIGHT);
     memcpy(original, bytes, sizeof bytes);
-    for (unsigned i = 36; i < 64; i++) {
+    for (unsigned i = 52; i < 64; i++) {
         memcpy(bytes, original, sizeof bytes); bytes[i] = 1;
         oa_scene_request before = out;
         assert(oa_scene_decode_request(&out, bytes, 64) == -1 && !memcmp(&before, &out, sizeof out));
     }
     memcpy(bytes, original, sizeof bytes);
+    r.w = 0;
+    assert(oa_scene_encode_request(bytes, 64, &r) == -1);
+    r.w = OA_SCENE_WIDTH; r.x = 1;
+    assert(oa_scene_encode_request(bytes, 64, &r) == -1);
+    r.x = 0;
     assert(oa_scene_decode_request(&out, bytes, 63) == -1);
     assert(oa_scene_decode_request(&out, bytes, 65) == -1);
     const float invalid[] = {NAN, INFINITY, -INFINITY, -0.1f, 1.01f};
@@ -112,6 +122,7 @@ static struct {
     int opens, renders, finishes, closes, fail_open, fail_render, fail_finish, fail_close;
     int block, entered, release;
     const uint8_t *failed_image, *current_image;
+    size_t current_size;
 } hw;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t condition = PTHREAD_COND_INITIALIZER;
@@ -122,15 +133,24 @@ static int open_scene(void **owner, unsigned w, unsigned h)
     if (hw.fail_open) { errno = ENOMEM; return -1; }
     return 0;
 }
-static int render(void *owner, const uint8_t *rgba, size_t size, unsigned type, float progress)
+static int render(void *owner, const uint8_t *rgba, size_t size,
+                  unsigned x, unsigned y, unsigned w, unsigned h,
+                  unsigned type, float progress)
 {
     assert(owner == &hw && type <= 8 && progress >= 0 && progress <= 1);
     hw.renders++;
     hw.current_image = rgba;
+    hw.current_size = size;
     if (rgba) {
-        assert(size == OA_SCENE_IMAGE_BYTES && rgba[0] == 0x12 && rgba[size-1] == 0x34);
-        if (hw.fail_render || hw.fail_finish) hw.failed_image = rgba;
-    } else assert(!size);
+        if (x == 0 && y == 0 && w == OA_SCENE_WIDTH && h == OA_SCENE_HEIGHT) {
+            assert(size == OA_SCENE_IMAGE_BYTES);
+            assert(rgba[0] == 0x12 && rgba[size-1] == 0x34);
+            if (hw.fail_render || hw.fail_finish) hw.failed_image = rgba;
+        } else {
+            assert(x == 1 && y == 1 && w == 2 && h == 2 && size == 16);
+            assert(rgba[0] == 0x5a && rgba[15] == 0x5a);
+        }
+    } else assert(!size && !x && !y && !w && !h);
     if (hw.fail_render) { errno = EINTR; return -1; }
     return 0;
 }
@@ -141,7 +161,10 @@ static int finish(void *owner)
     assert(!pthread_cond_broadcast(&condition));
     while (hw.block && !hw.release) assert(!pthread_cond_wait(&condition, &mutex));
     if (hw.current_image) {
-        assert(hw.current_image[0] == 0x12 && hw.current_image[OA_SCENE_IMAGE_BYTES-1] == 0x34);
+        if (hw.current_size == OA_SCENE_IMAGE_BYTES)
+            assert(hw.current_image[0] == 0x12 && hw.current_image[OA_SCENE_IMAGE_BYTES-1] == 0x34);
+        else
+            assert(hw.current_size == 16 && hw.current_image[0] == 0x5a);
     }
     assert(!pthread_mutex_unlock(&mutex));
     if (hw.fail_finish) { errno = EIO; return -1; }
@@ -170,6 +193,18 @@ static void submit(int fd, unsigned op, uint64_t ticket, uint64_t revision, int 
     oa_scene_request r = {.operation = op, .ticket = ticket, .revision = revision,
         .upload = image >= 0};
     if (op == OA_SCENE_OPEN) { r.width = OA_SCENE_WIDTH; r.height = OA_SCENE_HEIGHT; }
+    if (op == OA_SCENE_FRAME && image >= 0) {
+        r.w = OA_SCENE_WIDTH; r.h = OA_SCENE_HEIGHT;
+    }
+    uint8_t bytes[64]; assert(!oa_scene_encode_request(bytes, sizeof bytes, &r));
+    assert(!oa_scene_packet_send(fd, bytes, image, 0));
+}
+
+static void submit_rect(int fd, uint64_t ticket, uint64_t revision, int image,
+                        unsigned x, unsigned y, unsigned w, unsigned h)
+{
+    oa_scene_request r = {.operation = OA_SCENE_FRAME, .ticket = ticket, .revision = revision,
+        .upload = 1, .x = x, .y = y, .w = w, .h = h};
     uint8_t bytes[64]; assert(!oa_scene_encode_request(bytes, sizeof bytes, &r));
     assert(!oa_scene_packet_send(fd, bytes, image, 0));
 }
@@ -198,9 +233,14 @@ static void sessions(void)
     hw.release = 1; assert(!pthread_cond_broadcast(&condition)); assert(!pthread_mutex_unlock(&mutex));
     assert(!reply(fds[0], OA_SCENE_FRAME, 2, 7)); pixels[0] = 0x12;
     submit(fds[0], OA_SCENE_FRAME, 3, 7, -1); assert(!reply(fds[0], OA_SCENE_FRAME, 3, 7));
-    submit(fds[0], OA_SCENE_CLOSE, 4, 0, -1); assert(!reply(fds[0], OA_SCENE_CLOSE, 4, 0));
+    unsigned char part[16];
+    memset(part, 0x5a, sizeof part);
+    int partial = oa_scene_image_create(part, sizeof part); assert(partial >= 0);
+    submit_rect(fds[0], 4, 8, partial, 1, 1, 2, 2); assert(!close(partial));
+    assert(!reply(fds[0], OA_SCENE_FRAME, 4, 8));
+    submit(fds[0], OA_SCENE_CLOSE, 5, 0, -1); assert(!reply(fds[0], OA_SCENE_CLOSE, 5, 0));
     assert(!close(fds[0])); assert(!pthread_join(thread, NULL) && !s.result);
-    assert(hw.opens == 1 && hw.renders == 2 && hw.finishes == 2 && hw.closes == 1);
+    assert(hw.opens == 1 && hw.renders == 3 && hw.finishes == 3 && hw.closes == 1);
     assert(fd_count() == baseline);
     puts("  ok   upload/cached revisions and completion held until GPU finish; caller FD released safely");
 }

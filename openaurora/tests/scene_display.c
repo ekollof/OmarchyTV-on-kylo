@@ -131,9 +131,37 @@ static void sessions(const char *directory)
     puts("  ok   reload gets new revision/receipt namespace; suspend/resume reopens and uploads retained canvas");
     puts("  ok   consumer unload releases queued image while provider retains inflight data; GPU error never acknowledges a frame");
 }
+static void partial(const char *directory)
+{
+    oa_host h; require(!oa_host_init(&h, directory, NULL)); h.log_level = OA_LOG_ERROR;
+    (void)load(&h, "scene_gpu_fixture"); (void)load(&h, "scene_display");
+    const scene_gpu_trace *t = h.api.lookup(&h, SCENE_GPU_TRACE, 1);
+    const oa_display_iface *d = h.api.lookup(&h, OA_SVC_DISPLAY, 2);
+    const oa_display_async_iface *a = h.api.lookup(&h, OA_SVC_DISPLAY_ASYNC, 1);
+    const oa_display_patch_iface *p = h.api.lookup(&h, OA_SVC_DISPLAY_PATCH, 1);
+    require(t && d && a && p);
+    require(!d->clear(10, 20, 30));
+    uint64_t serial;
+    require(!a->request(&serial) && !t->settle(0)); pump(&h);
+    require(!t->settle(0)); pump(&h);
+    unsigned uploads = 0, frames = 0;
+    oa_display_result last;
+    require(!t->stats(&last, &uploads, &frames) && uploads == 1);
+    unsigned char px[4];
+    require(!t->pixel(0, 0, px) && px[0] == 10 && px[1] == 20 && px[2] == 30 && px[3] == 255);
+    require(!p->fill_rgba(1, 1, 1, 1, 200, 100, 50, 255));
+    require(!a->request(&serial) && !t->settle(0)); pump(&h);
+    require(!t->stats(&last, &uploads, &frames) && uploads == 2);
+    require(!t->pixel(1, 1, px) && px[0] == 200 && px[1] == 100 && px[2] == 50 && px[3] == 255);
+    require(!t->pixel(0, 0, px) && px[0] == 10 && px[1] == 20 && px[2] == 30);
+    require(!t->pixel(2, 2, px) && px[0] == 10 && px[1] == 20 && px[2] == 30);
+    done(&h);
+    puts("  ok   scene_display uploads only the patch rectangle; the GPU fixture keeps the surrounding scene");
+}
+
 static void timeout_handler(int sig) { (void)sig; _exit(124); }
 int main(int argc, char **argv)
 {
     require(argc == 2 && signal(SIGALRM, timeout_handler) != SIG_ERR); alarm(20);
-    canvas(); sessions(argv[1]); return 0;
+    canvas(); sessions(argv[1]); partial(argv[1]); return 0;
 }

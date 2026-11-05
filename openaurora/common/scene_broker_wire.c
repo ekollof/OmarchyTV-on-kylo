@@ -16,12 +16,19 @@ static int request_valid(const oa_scene_request *r)
     if (!r || !r->ticket) return 0;
     if (r->operation == OA_SCENE_OPEN)
         return r->width == OA_SCENE_WIDTH && r->height == OA_SCENE_HEIGHT &&
-            !r->revision && !r->type && !r->upload && r->progress == 0;
-    if (r->operation == OA_SCENE_FRAME)
-        return !r->width && !r->height && r->revision && r->type <= 8 && r->upload <= 1 &&
-            isfinite(r->progress) && r->progress >= 0 && r->progress <= 1;
+            !r->revision && !r->type && !r->upload && !r->x && !r->y && !r->w && !r->h &&
+            r->progress == 0;
+    if (r->operation == OA_SCENE_FRAME) {
+        if (r->width || r->height || !r->revision || r->type > 8 || r->upload > 1 ||
+            !isfinite(r->progress) || r->progress < 0 || r->progress > 1)
+            return 0;
+        if (!r->upload)
+            return !r->x && !r->y && !r->w && !r->h;
+        return r->w && r->h && r->x < OA_SCENE_WIDTH && r->y < OA_SCENE_HEIGHT &&
+            r->w <= OA_SCENE_WIDTH - r->x && r->h <= OA_SCENE_HEIGHT - r->y;
+    }
     return r->operation == OA_SCENE_CLOSE && !r->width && !r->height && !r->revision &&
-        !r->type && !r->upload && r->progress == 0;
+        !r->type && !r->upload && !r->x && !r->y && !r->w && !r->h && r->progress == 0;
 }
 static void header(uint8_t *p, unsigned operation, uint64_t ticket)
 { memcpy(p, "OGS1", 4); put32(p+4, operation); put64(p+8, ticket); }
@@ -34,6 +41,7 @@ int oa_scene_encode_request(void *out, size_t size, const oa_scene_request *r)
     else if (r->operation == OA_SCENE_FRAME) {
         uint32_t bits; memcpy(&bits, &r->progress, 4);
         put64(p+16, r->revision); put32(p+24, r->type); put32(p+28, bits); put32(p+32, r->upload);
+        put32(p+36, r->x); put32(p+40, r->y); put32(p+44, r->w); put32(p+48, r->h);
     }
     memcpy(out, p, sizeof p);
     return 0;
@@ -50,8 +58,9 @@ int oa_scene_decode_request(oa_scene_request *out, const void *bytes, size_t siz
     } else if (r.operation == OA_SCENE_FRAME) {
         uint32_t bits = get32(p+28);
         r.revision = get64(p+16); r.type = get32(p+24); r.upload = get32(p+32);
+        r.x = get32(p+36); r.y = get32(p+40); r.w = get32(p+44); r.h = get32(p+48);
         memcpy(&r.progress, &bits, 4);
-        if (!zero(p+36, 28)) return -1;
+        if (!zero(p+52, 12)) return -1;
     } else if (!zero(p+16, 48)) return -1;
     if (!request_valid(&r)) return -1;
     *out = r;

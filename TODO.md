@@ -86,15 +86,23 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       (20,186 750x66) to `settings_focus_0.rgba`: AE=0, max=0, 0/49,500
       changed. SETTINGS-PANEL-CAPTURE.
 
-- [ ] Offline full settings preview: complete the live text, remaining
-      focused rows/slider/selection and Mesa renderer integration, including
-      transformed frames. Recorder alpha composition is corrected; its
-      set_scene_transform only records arguments. The quick picture-settings
-      state, base `settings_list` 780x1080 panel and focused row 0 are now
-      exact offline; live text, other focused rows, animation and
-      Mesa/transformed-frame paths remain open. The settings_panel OAI1 and
-      slider/selection exporter already exist. Vendor Mali rasterization/
-      scanout comparison still requires the set.
+- [x] Live settings full-panel text: `OA_SETTINGS_TEXT=1` enables
+      `ui.text=1` with the workbench font pack, and
+      `make capture-settings-text-real` compares the complete 780x1080 live
+      labels/values/title/slider/selection composition to the captured
+      `settings_panel.rgba`: AE=0, max=0, 0/842,400 changed. This closes the
+      captured static-value text path; settings acquisition/editing, other
+      focused rows and animation remain.
+
+- [ ] Offline full settings preview: complete live settings-value acquisition,
+      remaining focused rows/slider/selection and Mesa renderer integration,
+      including transformed frames. Recorder alpha composition is corrected;
+      its set_scene_transform only records arguments. The quick
+      picture-settings state, base `settings_list` 780x1080 panel, focused row
+      0 and the live-text composition are exact offline; acquisition, other
+      focused rows, animation and Mesa/transformed-frame paths remain open.
+      The settings_panel OAI1 and slider/selection exporter already exist.
+      Vendor Mali rasterization/scanout comparison still requires the set.
 
 
 - [x] Temporary staged fb1/display binding and on-TV ABI 3 modules: with the
@@ -175,13 +183,18 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       repaint; key full paint scene52 ms/pan11 ms. RAIL-PARTIAL. Static and
       full-paint pixels are unchanged.
 
-- [ ] GPU partial upload and exact animation cadence: the GPU scene path
-      still uploads the whole 1920x1080 canvas per paint (~129-260 ms), and
-      the CPU partial rail measured ~50 ms rather than the vendor 30 ms.
-      Add partial scene uploads / widget surfaces and tighten the recovered
-      10 ms controller/30 ms APNG cadence, then measure on the TV.
-      GPU-SCENE-PROBE, RAIL-PARTIAL and UI-ANIMATIONS are the starting
-      evidence.
+- [x] Partial GPU scene uploads: OGS1 FRAME carries x/y/w/h, sealed images
+      may be w*h*4, renderer ABI2 uploads a subrect, display.gpu v2 exposes
+      `frame_rect`, and scene_display tracks dirty rects. Host broker/patch/UI
+      tests pass. TV: initial full upload 73 ms; ten rail frames uploaded only
+      `0,211 209x670`, ~20 ms request-to-done, ~50 ms cadence. GPU-PARTIAL.
+      Exact 30 ms cadence, CPU canvas reduction, graceful teardown and cold
+      startup remain separate.
+
+- [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
+      the vendor 30 ms APNG/10 ms controller cadence. Tighten the compositor
+      pipeline and measure frame-to-frame timing on the TV. GPU-PARTIAL,
+      RAIL-PARTIAL and UI-ANIMATIONS are the starting evidence.
 
 - [x] Portal repaint/animation cost: the old full 1920x1080 repaint measured a
       median 617 ms on the TV, stretching the 11-frame/30 ms highlight to

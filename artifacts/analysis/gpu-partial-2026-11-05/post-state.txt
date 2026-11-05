@@ -1,0 +1,6 @@
+23:59:23 up 1 min, 0 users, load average: 12.14, 3.94, 1.38
+pid=2204 exe=
+pid=1781 exe=/vendor/com.nvt.idtv/aurora.elf
+appmgr=1579
+fb1 pan 0,0
+staging /buffer/oa-gpu-partial-20261105 absent

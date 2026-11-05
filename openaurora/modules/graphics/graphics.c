@@ -79,11 +79,27 @@ static int open_scene(uint64_t *ticket)
     const oa_scene_request r = {.operation = OA_SCENE_OPEN, .width = OA_SCENE_WIDTH, .height = OA_SCENE_HEIGHT};
     return submit(&r, -1, ticket);
 }
+static int frame_rect(uint64_t revision, unsigned type, float progress, int image,
+                      unsigned x, unsigned y, unsigned w, unsigned h, uint64_t *ticket)
+{
+    if (image >= 0) {
+        if (!w || !h || x >= OA_SCENE_WIDTH || y >= OA_SCENE_HEIGHT ||
+            w > OA_SCENE_WIDTH - x || h > OA_SCENE_HEIGHT - y) {
+            errno = EINVAL; return -1;
+        }
+    } else if (x || y || w || h) {
+        errno = EINVAL; return -1;
+    }
+    const oa_scene_request r = {.operation = OA_SCENE_FRAME, .revision = revision,
+        .type = type, .progress = progress, .upload = image >= 0,
+        .x = x, .y = y, .w = w, .h = h};
+    return submit(&r, image, ticket);
+}
 static int frame(uint64_t revision, unsigned type, float progress, int image, uint64_t *ticket)
 {
-    const oa_scene_request r = {.operation = OA_SCENE_FRAME, .revision = revision,
-        .type = type, .progress = progress, .upload = image >= 0};
-    return submit(&r, image, ticket);
+    return frame_rect(revision, type, progress, image, 0, 0,
+                      image >= 0 ? OA_SCENE_WIDTH : 0u,
+                      image >= 0 ? OA_SCENE_HEIGHT : 0u, ticket);
 }
 static int take(uint64_t ticket, oa_scene_reply *out)
 {
@@ -108,7 +124,7 @@ static int is_open(void)
     if (c->fault) { errno = c->fault; return -1; }
     return c->active && !c->closing && c->opened;
 }
-static const oa_display_gpu_iface service = {open_scene, frame, take, cancel, is_open};
+static const oa_display_gpu_iface service = {open_scene, frame, take, cancel, is_open, frame_rect};
 static int init(const oa_host_api *api, void **out)
 {
     if (!api || api->abi != OA_ABI_VERSION || api->size < sizeof *api) return -1;
@@ -123,7 +139,7 @@ static int start(void *ud)
     const char *renderer = c->api->config_get(c->api->priv, "graphics.renderer", NULL);
     if (!helper || !renderer) { errno = EINVAL; return -1; }
     if (!c->published) {
-        if (c->api->publish(c->api->priv, OA_SVC_DISPLAY_GPU, 1, &service)) return -1;
+        if (c->api->publish(c->api->priv, OA_SVC_DISPLAY_GPU, 2, &service)) return -1;
         c->published = 1;
     }
     /* Timer remains owned/alive on watch-registration and partial-start failure. */
