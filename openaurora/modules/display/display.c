@@ -167,25 +167,8 @@ static int blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigne
     struct ctx *c = g_ctx;
     if (!c || c->closing || !c->scene || !rgba || sw <= 0 || sh <= 0 || w <= 0 || h <= 0)
         return -1;
-
-    int W = c->scene_w, H = c->scene_h;
-    for (int dy = 0; dy < h; dy++) {
-        int py = y + dy;
-        if (py < 0 || py >= H)
-            continue;
-        int sy = (int)((int64_t)dy * sh / h);
-        uint8_t *row = c->scene + (size_t)py * (size_t)W * 4;
-        for (int dx = 0; dx < w; dx++) {
-            int px = x + dx;
-            if (px < 0 || px >= W)
-                continue;
-            int sx = (int)((int64_t)dx * sw / w);
-            const unsigned char *p = rgba + ((size_t)sy * (size_t)sw + (size_t)sx) * 4;
-            uint8_t *d = row + (size_t)px * 4;
-            oa_canvas_over(d, p);
-        }
-    }
-    return 0;
+    oa_canvas canvas = {c->scene, c->scene_w, c->scene_h};
+    return oa_canvas_blit_mipmap(&canvas, x, y, w, h, sw, sh, rgba);
 }
 
 /* ------------------------------------------------------- scene presentation */

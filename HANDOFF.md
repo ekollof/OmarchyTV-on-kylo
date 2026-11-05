@@ -39,10 +39,12 @@ Latest apps-grid parity:
 [STOCK-APPS-GRID-PARITY](artifacts/reports/STOCK-APPS-GRID-PARITY-2026-11-05.md)
 captures the real stock Apps page via DIAL navigation + read-only fb1 and adds
 a stock-layout renderer mode. Manifest comparison improved from AE29.56% to
-0.1185% (MAE8 75.38 -> 0.302; top 0.0035%, grid0.2156%, scrollbar0.0168%).
-Host423 ok, verify45. Limits: exact vendor bitmap fonts; JPEG staging uses the
-vendor-matching TurboJPEG FASTDCT; residual per-cell sampling/source
-differences; fb1 not HDMI/cold-start.
+0.0629% (MAE8 75.38 -> 0.160; top 0.0035%, grid0.1125%, scrollbar0.0168%).
+The tile scaler is the recovered GL_LINEAR_MIPMAP_LINEAR path (createTexture
+0xb32eb0, setApplicationImage scaling type 1), implemented in common/canvas.c.
+Host423 ok, verify45. Limits: exact vendor bitmap fonts; JPEG staging uses
+TurboJPEG FASTDCT; Mali's mip kernel is box-assumed; residual per-cell
+sampling/source differences; fb1 not HDMI/cold-start.
 
 Latest channel runtime order:
 [CHANNEL-RUNTIME-ORDER](artifacts/reports/CHANNEL-RUNTIME-ORDER-2026-11-05.md)

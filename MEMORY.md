@@ -30,10 +30,13 @@ candidate. The focused tile measurement is 294x165, not full-cell: that fix
 took Markt MAE8 3.343 to 0.185. JPEG thumbnails are now staged with TurboJPEG
 TJFLAG_FASTDCT, matching the shipped hal::JpegImageDecoder (VENDOR-DECODER-DIFF);
 that took the 384x216 DAZN cell from 1.647 to 0.776. Manifest comparison
-improved from AE29.56%/MAE8 75.38 to AE0.1185%/MAE8 0.302 (top 0.0035%,
-grid0.2156%, scrollbar0.0168%). Host423 ok, verify45. Limits: exact vendor
-bitmap fonts; residual per-cell sampling/source differences; fb1 not
-HDMI/cold-start scanout.
+improved from AE29.56%/MAE8 75.38 to AE0.0629%/MAE8 0.160 (top 0.0035%,
+grid0.1125%, scrollbar0.0168%). The tile scaler is the recovered vendor
+GL_LINEAR_MIPMAP_LINEAR path (createTexture 0xb32eb0, UIImageScalingType 1,
+glGenerateMipmap), implemented in common/canvas.c and used by mod_display and
+the recorder. Host423 ok, verify45. Limits: exact vendor bitmap fonts; Mali's
+exact mip-generation kernel is implementation-defined (box assumed); residual
+per-cell sampling/source differences; fb1 not HDMI/cold-start scanout.
 DIAL navigation changed only the stock UI screen; no settings/source change.
 Staging removed.
 

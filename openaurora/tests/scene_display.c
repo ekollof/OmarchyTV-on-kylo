@@ -43,7 +43,30 @@ static void canvas(void)
     require(!oa_canvas_clear(&c, 10, 20, 30, 128));
     require(!oa_canvas_blit(&c, 0, 0, 1, 1, 2, 1, source));
     require(pixels[0] == 76 && pixels[1] == 86 && pixels[2] == 96 && pixels[3] == 191);
-    puts("  ok   RGBA canvas clipping/scaling/alpha and extreme coordinate bounds");
+    /* Vendor mipmapped sampler: 2x2 -> 1x1 box average, identity, alpha, and
+     * the same extreme-coordinate contract as oa_canvas_blit. */
+    uint8_t square[] = {
+        10, 0, 100, 255, 20, 4, 100, 255,
+        30, 8, 200, 255, 40, 12, 200, 255
+    };
+    uint8_t one[4] = {0, 0, 0, 0};
+    oa_canvas small = {one, 1, 1};
+    require(!oa_canvas_blit_mipmap(&small, 0, 0, 1, 1, 2, 2, square));
+    require(one[0] == 25 && one[1] == 6 && one[2] == 150 && one[3] == 255);
+    uint8_t ident[sizeof square] = {0};
+    oa_canvas copy = {ident, 2, 2};
+    require(!oa_canvas_blit_mipmap(&copy, 0, 0, 2, 2, 2, 2, square));
+    require(!memcmp(ident, square, sizeof square));
+    uint8_t red[] = {255, 0, 0, 128};
+    uint8_t blend[4] = {0, 0, 255, 255};
+    oa_canvas dest = {blend, 1, 1};
+    require(!oa_canvas_blit_mipmap(&dest, 0, 0, 1, 1, 1, 1, red));
+    require(blend[0] == 128 && blend[1] == 0 && blend[2] == 127 && blend[3] == 255);
+    uint8_t keep[4]; memcpy(keep, blend, sizeof keep);
+    require(!oa_canvas_blit_mipmap(&dest, INT_MIN, INT_MAX, INT_MAX, INT_MAX, 1, 1, red));
+    require(!memcmp(keep, blend, sizeof keep));
+    require(oa_canvas_blit_mipmap(&dest, 0, 0, 0, 1, 1, 1, red) == -1);
+    puts("  ok   RGBA canvas clipping/scaling/alpha/extreme bounds and vendor mipmap sampler");
 }
 static void sessions(const char *directory)
 {

@@ -17,8 +17,9 @@ Interpretation:
 - `identities.txt`: DB/oracle/candidate hashes.
 - `inputs.txt`: parent-1 row and asset counts.
 
-Result: full AE 2457.26 (0.1185%), MAE8 0.302, changed 5.27%; top strip
-0.0035%, grid 0.2156%, scrollbar 0.0168%. The stock catalog is 23 parent-1 rows
+Result: full AE 1303.5 (0.0629%), MAE8 0.160, changed 4.73%; top strip
+0.0035%, grid 0.1125%, scrollbar 0.0168%. The stock catalog is 23 parent-1 rows
 plus Markt, 24 entries; there is no OmarchyTV tile. The focused tile is also
 294x165 at cell+7,+7; the earlier full-width focus model was wrong. JPEG
-thumbnails are decoded with TurboJPEG FASTDCT to match the vendor class.
+thumbnails are decoded with TurboJPEG FASTDCT, and tiles are scaled through
+the recovered vendor GL_LINEAR_MIPMAP_LINEAR sampler.

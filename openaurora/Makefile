@@ -653,7 +653,7 @@ check: check-font-box
 
 $(BUILD)/tests/font_bitmap: tests/font_bitmap.c common/font_bitmap.c common/font_finder.c common/font_draw.c common/canvas.c include/openaurora/font_bitmap.h include/openaurora/font_finder.h include/openaurora/font_draw.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
 
 .PHONY: check-font-bitmap
 check-font-bitmap: $(BUILD)/tests/font_bitmap
@@ -669,7 +669,7 @@ check-font-finder: $(BUILD)/tests/font_finder
 
 $(BUILD)/tests/font_draw: tests/font_draw.c common/font_draw.c common/font_bitmap.c common/canvas.c include/openaurora/font_draw.h include/openaurora/font_bitmap.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
 
 .PHONY: check-font-draw
 check-font-draw: $(BUILD)/tests/font_draw
@@ -685,7 +685,7 @@ check-font-pack: $(BUILD)/tests/font_pack
 
 $(BUILD)/tests/font_text: tests/font_text.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
 
 .PHONY: check-font-text
 check-font-text: $(BUILD)/tests/font_text
@@ -693,7 +693,7 @@ check-font-text: $(BUILD)/tests/font_text
 
 $(BUILD)/tests/font_line: tests/font_line.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
 
 .PHONY: check-font-line
 check-font-line: $(BUILD)/tests/font_line
@@ -786,7 +786,7 @@ $(BUILD)/modules/mod_graphics.so: modules/graphics/graphics.c common/scene_clien
 
 $(BUILD)/modules/mod_scene_display.so: modules/scene_display/scene_display.c common/canvas.c common/scene_broker_transport.c include/openaurora/canvas.h include/openaurora/module.h include/openaurora/services.h include/openaurora/scene_broker.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
 $(BUILD)/modules/mod_cec.so: modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c
 	@mkdir -p $(dir $@)
@@ -1159,9 +1159,9 @@ check-ui-jpeg-cards: $(BUILD)/tests/ui_live_cards ui-live-stage
 	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "$(CURDIR)/../artifacts/dumps/apdat_files/dlna-dmr/xml/icon" jpeg || test $$? -eq 77
 check: check-ui-jpeg-cards
 
-$(BUILD)/tests/ui_nav_display.so: tests/ui_nav_display.c tests/ui_nav_trace.h include/openaurora/services.h
+$(BUILD)/tests/ui_nav_display.so: tests/ui_nav_display.c tests/ui_nav_trace.h common/canvas.c include/openaurora/canvas.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -Itests -fPIC -shared -o $@ tests/ui_nav_display.c $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Itests -fPIC -shared -o $@ tests/ui_nav_display.c common/canvas.c $(LDFLAGS) -lm
 
 $(BUILD)/tests/ui_nav: tests/ui_nav.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)

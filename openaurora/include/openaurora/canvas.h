@@ -18,4 +18,12 @@ static inline void oa_canvas_over(uint8_t *d, const uint8_t *s)
 int oa_canvas_fill(oa_canvas *canvas, int x, int y, int width, int height, int r, int g, int b);
 int oa_canvas_blit(oa_canvas *canvas, int x, int y, int width, int height,
                    int source_width, int source_height, const uint8_t *rgba);
+/* Vendor UI image sampler. OpenGLGraphicsContext::createTexture selects
+ * GL_LINEAR magnification and, when the image's UIImageScalingType enables
+ * mipmaps (apps-grid setApplicationImage uses type 1), GL_LINEAR_MIPMAP_LINEAR
+ * with glGenerateMipmap. This is a box-filtered mip chain, normalized bilinear
+ * sampling per level, and linear interpolation between levels. Straight RGBA,
+ * sRGB-space interpolation; composited with oa_canvas_over. */
+int oa_canvas_blit_mipmap(oa_canvas *canvas, int x, int y, int width, int height,
+                          int source_width, int source_height, const uint8_t *rgba);
 #endif

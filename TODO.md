@@ -859,12 +859,12 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       `apps_grid_stock` and live-DB capture; all 23 firmware-dump parent-1 catalog rows and the original downloaded
       thumbnails are used, plus Markt (24 total), with no oracle tile crops.
       Manifest comparison improved from AE 29.56% / MAE8 75.38 to
-      **AE 0.1185% / MAE8 0.302** (top 0.0035%, grid 0.2156%, scrollbar 0.0168%),
-      with exact vendor bitmap font18/4 title/label rasters and a bilinear
-      tile scaler. The focused-tile bbox oracle is 294x165; the earlier
-      full-cell model took Markt MAE8 3.343 to 0.185. JPEG staging now uses
-      TurboJPEG FASTDCT to match hal::JpegImageDecoder, taking the 384x216
-      DAZN cell from 1.647 to 0.776.
+      **AE 0.0629% / MAE8 0.160** (top 0.0035%, grid 0.1125%, scrollbar 0.0168%),
+      with exact vendor bitmap font18/4 title/label rasters and the recovered
+      GL_LINEAR_MIPMAP_LINEAR tile sampler. The focused-tile bbox oracle is
+      294x165; the earlier full-cell model took Markt MAE8 3.343 to 0.185.
+      JPEG staging now uses TurboJPEG FASTDCT to match hal::JpegImageDecoder,
+      taking the 384x216 DAZN cell from 1.647 to 0.776.
       Host423 ok, verify45. STOCK-APPS-GRID-PARITY. Limits: fb1 capture, not
       HDMI/cold-start scanout; residual per-cell sampling/source differences.
 
@@ -872,8 +872,22 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       fonts from the firmware pack (title font18, label font4 in `(38,23,25)`),
       replaced the TTF approximation and switched the recorder to bilinear
       tile scaling. The 24-entry order and empty final cell are verified from
-      the dump and scrolled capture. Manifest AE 0.1185%, MAE8 0.302; top
-      0.0035%, grid 0.2156%, scrollbar 0.0168%. STOCK-APPS-GRID-PARITY.
+      the dump and scrolled capture. Manifest AE 0.0629%, MAE8 0.160; top
+      0.0035%, grid 0.1125%, scrollbar 0.0168%. STOCK-APPS-GRID-PARITY.
+
+- [x] Vendor image-scaler parity: recovered the stock UI texture path from
+      aurora.elf. hal::OpenGLGraphicsContext::createTexture 0xb32eb0 sets
+      MAG_FILTER=GL_LINEAR and, for its mipmap bool, MIN_FILTER=
+      GL_LINEAR_MIPMAP_LINEAR (0x2703) plus glGenerateMipmap;
+      UISurfaceImpl::drawImage 0x1161ef8 enables it for UIImageScalingType
+      1..3 and FullScreenGridButton::setApplicationImage 0xd21000 uses type 1.
+      Added common/canvas.c oa_canvas_blit_mipmap (box mip chain, normalized
+      bilinear per level, trilinear blend in sRGB) and wired mod_display and
+      the recorder to it. Manifest AE 0.1185% -> 0.0629%, MAE8 0.302 -> 0.160,
+      grid 0.2156% -> 0.1125%, per-cell MAE8 0.083..0.445. Host423 ok,
+      verify45. STOCK-APPS-GRID-PARITY. Limits: Mali's exact mip-generation
+      kernel is implementation-defined (box assumed); CPU emulation, not GPU
+      execution or live scanout.
 
 - [x] Stock-capture parity analysis: the old `shot-launcher-right.png` is an
       R/B-swapped pre-correction capture; after channel correction it matches

@@ -1,83 +1,85 @@
-[942885] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
-[942885] INFO host         started quiesce_fixture
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] INFO host         stopped quiesce_fixture
-[942885] INFO host         unloaded quiesce_fixture
-[942885] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] INFO host         stopped quiesce_fixture
-[942885] INFO host         unloaded quiesce_fixture
-[942885] ERR  host         load 'build/tests/mod_quiesce_fixture.so': init() failed (-1)
-[942885] ERR  host         quiesce_fixture: init cleanup pending; retry unload
-[942885] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] INFO host         stopped quiesce_fixture
-[942885] INFO host         unloaded quiesce_fixture
-[942885] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
-[942885] ERR  host         quiesce_fixture: start() failed (-1)
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] INFO host         stopped quiesce_fixture
-[942885] INFO host         unloaded quiesce_fixture
-[942885] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
-[942885] INFO host         started quiesce_fixture
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] INFO host         stopped quiesce_fixture
-[942885] INFO host         unloaded quiesce_fixture
-[942885] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
-[942885] INFO host         started quiesce_fixture
-[942885] INFO host         stopped quiesce_fixture
-[942885] INFO host         unloaded quiesce_fixture
-[942885] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
-[942885] INFO host         quiesce_fixture: reloaded (suspended)
-[942885] ERR  host         quiesce_fixture: start() failed (-1)
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] WARN host         quiesce_fixture: resume failed (-1)
-[942885] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] INFO host         stopped quiesce_fixture
-[942885] INFO host         unloaded quiesce_fixture
-[942885] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
-[942885] INFO host         started quiesce_fixture
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] INFO host         stopped quiesce_fixture
-[942885] INFO host         unloaded quiesce_fixture
-[942885] ERR  host         load 'quiesce_fixture': host is not accepting modules
-[942885] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
-[942885] INFO host         started quiesce_fixture
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942885] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942886] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942886] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942906] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942906] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
-[942916] INFO host         stopped quiesce_fixture
-[942916] INFO host         unloaded quiesce_fixture
-[942916] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
-[942916] INFO host         started quiesce_fixture
-[942916] ERR  host         quiesce_fixture: refusing to stop, service 'test.quiesce.instance' still held
-[942916] ERR  host         quiesce_fixture: refusing to unload, service 'test.quiesce.instance' still held (use --force)
-[942916] ERR  host         quiesce_fixture: shutdown left module loaded (state started, cleanup_pending 0)
-[942916] INFO host         stopped quiesce_fixture
-[942916] INFO host         unloaded quiesce_fixture
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build/modules/mod_display.so modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c  \
+   -lm -pthread
+[818291] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[818291] INFO host         started quiesce_fixture
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] INFO host         stopped quiesce_fixture
+[818291] INFO host         unloaded quiesce_fixture
+[818291] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] INFO host         stopped quiesce_fixture
+[818291] INFO host         unloaded quiesce_fixture
+[818291] ERR  host         load 'build/tests/mod_quiesce_fixture.so': init() failed (-1)
+[818291] ERR  host         quiesce_fixture: init cleanup pending; retry unload
+[818291] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] INFO host         stopped quiesce_fixture
+[818291] INFO host         unloaded quiesce_fixture
+[818291] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[818291] ERR  host         quiesce_fixture: start() failed (-1)
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] INFO host         stopped quiesce_fixture
+[818291] INFO host         unloaded quiesce_fixture
+[818291] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[818291] INFO host         started quiesce_fixture
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] INFO host         stopped quiesce_fixture
+[818291] INFO host         unloaded quiesce_fixture
+[818291] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[818291] INFO host         started quiesce_fixture
+[818291] INFO host         stopped quiesce_fixture
+[818291] INFO host         unloaded quiesce_fixture
+[818291] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[818291] INFO host         quiesce_fixture: reloaded (suspended)
+[818291] ERR  host         quiesce_fixture: start() failed (-1)
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] WARN host         quiesce_fixture: resume failed (-1)
+[818291] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] WARN host         quiesce_fixture: force unload, consumers may hold stale pointers
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] INFO host         stopped quiesce_fixture
+[818291] INFO host         unloaded quiesce_fixture
+[818291] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[818291] INFO host         started quiesce_fixture
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818291] INFO host         stopped quiesce_fixture
+[818291] INFO host         unloaded quiesce_fixture
+[818291] ERR  host         load 'quiesce_fixture': host is not accepting modules
+[818291] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[818291] INFO host         started quiesce_fixture
+[818292] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818292] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818292] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818292] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818312] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818312] ERR  host         quiesce_fixture: cleanup pending; retry stop/unload
+[818322] INFO host         stopped quiesce_fixture
+[818322] INFO host         unloaded quiesce_fixture
+[818322] INFO host         loaded quiesce_fixture v1 (build/tests/mod_quiesce_fixture.so)
+[818322] INFO host         started quiesce_fixture
+[818322] ERR  host         quiesce_fixture: refusing to stop, service 'test.quiesce.instance' still held
+[818322] ERR  host         quiesce_fixture: refusing to unload, service 'test.quiesce.instance' still held (use --force)
+[818322] ERR  host         quiesce_fixture: shutdown left module loaded (state started, cleanup_pending 0)
+[818322] INFO host         stopped quiesce_fixture
+[818322] INFO host         unloaded quiesce_fixture
   ok   running veto retains DSO/posts/services; force cannot bypass; completion permits unload
   ok   never-started init resources protected by gate
   ok   failed init retained and discoverable for cleanup, never activated
@@ -87,144 +89,144 @@
   ok   shutdown dispatches the gate completion and retries unload before return
   ok   shutdown waits for a worker completion post before unload
   ok   shutdown reports a held module and does not dlclose it
-[942917] ERR  host         load 'build/tests/mod_abi_v1.so': abi 1 != 3
-[942917] ERR  host         load 'build/tests/mod_abi_v2.so': abi 2 != 3
-[942917] ERR  host         load 'build/tests/mod_abi_short.so': descriptor size 16 < 168
-[942917] INFO host         loaded abi_extended v? (build/tests/mod_abi_extended.so)
-[942917] INFO host         started abi_extended
-[942917] INFO host         stopped abi_extended
-[942917] INFO host         unloaded abi_extended
-[942917] INFO host         loaded post_worker vtest (build/tests/mod_post_worker.so)
-[942917] INFO host         started post_worker
-[942917] INFO host         stopped post_worker
-[942917] INFO host         unloaded post_worker
-[942917] INFO host         loaded post_worker vtest (build/tests/mod_post_worker.so)
-[942917] INFO host         post_worker: restored 4 bytes of state
-[942917] INFO host         started post_worker
-[942917] INFO host         post_worker: reloaded (started)
-[942918] INFO host         stopped post_worker
-[942918] INFO host         started post_worker
-[942919] INFO host         loaded ticker v1.0 (build/modules/mod_ticker.so)
-[942919] INFO host         started ticker
-[942919] INFO ticker       stopped post_worker
-[942919] INFO ticker       unloaded post_worker
-[942919] INFO host         stopped ticker
-[942919] INFO host         unloaded ticker
-[942919] ERR  host         load 'build/tests/mod_post_fail_init.so': init() failed (-1)
-[942919] INFO host         loaded post_worker vtest (build/tests/mod_post_fail_start.so)
-[942919] ERR  host         post_worker: start() failed (-1)
-[942919] INFO host         unloaded post_worker
+[818323] ERR  host         load 'build/tests/mod_abi_v1.so': abi 1 != 3
+[818323] ERR  host         load 'build/tests/mod_abi_v2.so': abi 2 != 3
+[818323] ERR  host         load 'build/tests/mod_abi_short.so': descriptor size 16 < 168
+[818323] INFO host         loaded abi_extended v? (build/tests/mod_abi_extended.so)
+[818323] INFO host         started abi_extended
+[818323] INFO host         stopped abi_extended
+[818323] INFO host         unloaded abi_extended
+[818323] INFO host         loaded post_worker vtest (build/tests/mod_post_worker.so)
+[818323] INFO host         started post_worker
+[818323] INFO host         stopped post_worker
+[818323] INFO host         unloaded post_worker
+[818323] INFO host         loaded post_worker vtest (build/tests/mod_post_worker.so)
+[818323] INFO host         post_worker: restored 4 bytes of state
+[818323] INFO host         started post_worker
+[818323] INFO host         post_worker: reloaded (started)
+[818324] INFO host         stopped post_worker
+[818324] INFO host         started post_worker
+[818324] INFO host         loaded ticker v1.0 (build/modules/mod_ticker.so)
+[818324] INFO host         started ticker
+[818324] INFO ticker       stopped post_worker
+[818324] INFO ticker       unloaded post_worker
+[818324] INFO host         stopped ticker
+[818324] INFO host         unloaded ticker
+[818324] ERR  host         load 'build/tests/mod_post_fail_init.so': init() failed (-1)
+[818324] INFO host         loaded post_worker vtest (build/tests/mod_post_fail_start.so)
+[818324] ERR  host         post_worker: start() failed (-1)
+[818324] INFO host         unloaded post_worker
   ok   old/short descriptors rejected before guard page; extended prefix accepted
   ok   real worker post dispatches under its owner; registrations inherit ownership
   ok   socket/CLI dispatcher reload preserves state, cancels old work, rejects old token
   ok   queue saturation, stop-time worker post rejection, cleanup and restart
   ok   an earlier post can unload another owner without dispatching its stale callback
   ok   failed init/start cancel queued module code and close post acceptance
-[942919] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942919] INFO host         unloaded reload_fixture
-[942919] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942919] INFO host         reload_fixture: restored 4 bytes of state
-[942919] INFO host         reload_fixture: reloaded (loaded)
-[942919] INFO host         started reload_fixture
-[942919] INFO host         stopped reload_fixture
-[942919] INFO host         unloaded reload_fixture
-[942919] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942919] INFO host         reload_fixture: restored 4 bytes of state
-[942919] INFO host         reload_fixture: reloaded (loaded)
-[942919] INFO host         unloaded reload_fixture
-[942919] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942919] INFO host         started reload_fixture
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         reload_fixture: restored 4 bytes of state
-[942920] INFO host         started reload_fixture
-[942920] INFO host         reload_fixture: reloaded (started)
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         started reload_fixture
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         reload_fixture: restored 4 bytes of state
-[942920] INFO host         reload_fixture: reloaded (suspended)
-[942920] INFO host         started reload_fixture
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         started reload_fixture
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         reload_fixture: restored 4 bytes of state
-[942920] INFO host         reload_fixture: reloaded (suspended)
-[942920] ERR  host         reload_fixture: start() failed (-1)
-[942920] WARN host         reload_fixture: resume failed (-1)
-[942920] INFO host         started reload_fixture
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         reload_fixture: restored 4 bytes of state
-[942920] INFO host         reload_fixture: reloaded (suspended)
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         started reload_fixture
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         started reload_fixture
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         reload_fixture: restored 4 bytes of state
-[942920] INFO host         reload_fixture: reloaded (suspended)
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         reload_fixture: restored 4 bytes of state
-[942920] INFO host         reload_fixture: reloaded (suspended)
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         started reload_fixture
-[942920] ERR  host         reload_fixture: cannot allocate saved state; reload canceled
-[942920] ERR  host         reload_fixture: state size 65537 exceeds 65536; reload canceled
-[942920] ERR  host         reload_fixture: saved state grew beyond capacity; reload canceled
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         started reload_fixture
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] ERR  host         reload_fixture: restore() failed or absent (-7)
-[942920] WARN host         reload_fixture: force unload, consumers may hold stale pointers
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         started reload_fixture
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
-[942920] INFO host         reload_fixture: restored 4 bytes of state
-[942920] ERR  host         reload_fixture: start() failed (-1)
-[942920] WARN host         reload_fixture: force unload, consumers may hold stale pointers
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-0TA3H9/module.so)
-[942920] INFO host         started reload_fixture
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-0TA3H9/module.so)
-[942920] ERR  host         reload_fixture: restore() failed or absent (-1)
-[942920] WARN host         reload_fixture: force unload, consumers may hold stale pointers
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-0TA3H9/module.so)
-[942920] INFO host         started reload_fixture
-[942920] INFO host         stopped reload_fixture
-[942920] INFO host         unloaded reload_fixture
-[942920] INFO host         loaded reload_renamed vtest (/tmp/openaurora-reload-0TA3H9/module.so)
-[942920] ERR  host         reload_fixture: replacement name 'reload_renamed' differs
-[942920] WARN host         reload_renamed: force unload, consumers may hold stale pointers
-[942920] INFO host         unloaded reload_renamed
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         reload_fixture: restored 4 bytes of state
+[818325] INFO host         reload_fixture: reloaded (loaded)
+[818325] INFO host         started reload_fixture
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         reload_fixture: restored 4 bytes of state
+[818325] INFO host         reload_fixture: reloaded (loaded)
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         started reload_fixture
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         reload_fixture: restored 4 bytes of state
+[818325] INFO host         started reload_fixture
+[818325] INFO host         reload_fixture: reloaded (started)
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         started reload_fixture
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         reload_fixture: restored 4 bytes of state
+[818325] INFO host         reload_fixture: reloaded (suspended)
+[818325] INFO host         started reload_fixture
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         started reload_fixture
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         reload_fixture: restored 4 bytes of state
+[818325] INFO host         reload_fixture: reloaded (suspended)
+[818325] ERR  host         reload_fixture: start() failed (-1)
+[818325] WARN host         reload_fixture: resume failed (-1)
+[818325] INFO host         started reload_fixture
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         reload_fixture: restored 4 bytes of state
+[818325] INFO host         reload_fixture: reloaded (suspended)
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         started reload_fixture
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         started reload_fixture
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         reload_fixture: restored 4 bytes of state
+[818325] INFO host         reload_fixture: reloaded (suspended)
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         reload_fixture: restored 4 bytes of state
+[818325] INFO host         reload_fixture: reloaded (suspended)
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         started reload_fixture
+[818325] ERR  host         reload_fixture: cannot allocate saved state; reload canceled
+[818325] ERR  host         reload_fixture: state size 65537 exceeds 65536; reload canceled
+[818325] ERR  host         reload_fixture: saved state grew beyond capacity; reload canceled
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         started reload_fixture
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] ERR  host         reload_fixture: restore() failed or absent (-7)
+[818325] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         started reload_fixture
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (build/tests/mod_reload_fixture.so)
+[818325] INFO host         reload_fixture: restored 4 bytes of state
+[818325] ERR  host         reload_fixture: start() failed (-1)
+[818325] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-sdO7Ot/module.so)
+[818325] INFO host         started reload_fixture
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-sdO7Ot/module.so)
+[818325] ERR  host         reload_fixture: restore() failed or absent (-1)
+[818325] WARN host         reload_fixture: force unload, consumers may hold stale pointers
+[818325] INFO host         unloaded reload_fixture
+[818325] INFO host         loaded reload_fixture vtest (/tmp/openaurora-reload-sdO7Ot/module.so)
+[818325] INFO host         started reload_fixture
+[818325] INFO host         stopped reload_fixture
+[818325] INFO host         unloaded reload_fixture
+[818326] INFO host         loaded reload_renamed vtest (/tmp/openaurora-reload-sdO7Ot/module.so)
+[818326] ERR  host         reload_fixture: replacement name 'reload_renamed' differs
+[818326] WARN host         reload_renamed: force unload, consumers may hold stale pointers
+[818326] INFO host         unloaded reload_renamed
   ok   never-started and stopped reload preserve loaded state without activation
   ok   running reload restores state and starts the new instance
   ok   suspended reload defers start until wake; start on suspended resumes once
@@ -234,249 +236,249 @@
   ok   restore failure is reported and candidate registrations/posts are swept
   ok   replacement start failure cleans the candidate instead of leaving partial state
   ok   changed binary without restore or with a new identity is rejected and cleaned
-[942921] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942921] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942921] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942921] INFO host         started phase_c
-[942921] INFO host         started phase_b
-[942921] INFO host         started phase_a
-[942921] INFO host         stopped phase_a
-[942921] INFO host         unloaded phase_a
-[942921] INFO host         stopped phase_b
-[942921] INFO host         unloaded phase_b
-[942921] INFO host         stopped phase_c
-[942921] INFO host         unloaded phase_c
-[942921] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942921] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942921] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942921] INFO host         started phase_c
-[942921] INFO host         started phase_b
-[942921] INFO host         started phase_a
-[942921] ERR  host         phase_b: required by active module 'phase_a'
-[942921] ERR  host         phase_b: required by active module 'phase_a'
-[942921] ERR  host         phase_b: required by active module 'phase_a'
-[942921] INFO host         stopped phase_a
-[942921] INFO host         unloaded phase_a
-[942921] INFO host         stopped phase_b
-[942921] INFO host         unloaded phase_b
-[942921] INFO host         stopped phase_c
-[942921] INFO host         unloaded phase_c
-[942921] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942921] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942921] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942921] INFO host         started phase_c
-[942921] INFO host         started phase_b
-[942921] INFO host         started phase_a
-[942921] INFO host         stopped phase_a
-[942921] INFO host         unloaded phase_a
-[942921] INFO host         stopped phase_b
-[942921] INFO host         unloaded phase_b
-[942921] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942921] INFO host         phase_b: reloaded (suspended)
-[942921] INFO host         started phase_b
-[942921] INFO host         stopped phase_b
-[942921] INFO host         unloaded phase_b
-[942921] INFO host         stopped phase_c
-[942921] INFO host         unloaded phase_c
-[942921] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942921] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942921] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942921] INFO host         started phase_c
-[942921] INFO host         started phase_b
-[942921] INFO host         started phase_a
-[942921] WARN host         phase_b: suspend failed (-7)
-[942921] INFO host         stopped phase_a
-[942921] INFO host         unloaded phase_a
-[942921] INFO host         stopped phase_b
-[942921] INFO host         unloaded phase_b
-[942921] INFO host         stopped phase_c
-[942921] INFO host         unloaded phase_c
-[942921] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942921] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942921] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942921] INFO host         started phase_c
-[942921] INFO host         started phase_b
-[942921] INFO host         started phase_a
-[942921] WARN host         phase_c: resume failed (-7)
-[942921] INFO host         stopped phase_a
-[942921] INFO host         unloaded phase_a
-[942921] INFO host         stopped phase_b
-[942921] INFO host         unloaded phase_b
-[942921] INFO host         stopped phase_c
-[942921] INFO host         unloaded phase_c
-[942921] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942921] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942921] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942921] INFO host         started phase_c
-[942921] INFO host         started phase_b
-[942921] INFO host         started phase_a
-[942921] ERR  host         phase_b: required service 'phase_c_service' is not ready
-[942921] INFO host         stopped phase_b
-[942921] ERR  host         phase_b: required service 'phase_c_service' is not ready
-[942921] INFO host         started phase_b
-[942921] INFO host         stopped phase_a
-[942921] INFO host         unloaded phase_a
-[942921] INFO host         stopped phase_b
-[942921] INFO host         unloaded phase_b
-[942921] INFO host         stopped phase_c
-[942921] INFO host         unloaded phase_c
-[942921] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942921] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942921] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942921] INFO host         started phase_c
-[942921] INFO host         started phase_b
-[942921] INFO host         started phase_a
-[942921] ERR  host         module dependency cycle; lifecycle transition canceled
-[942921] INFO host         stopped phase_a
-[942921] INFO host         unloaded phase_a
-[942921] INFO host         stopped phase_b
-[942921] INFO host         unloaded phase_b
-[942921] INFO host         stopped phase_c
-[942921] INFO host         unloaded phase_c
-[942921] INFO host         loaded phase_a vtest (build/tests/mod_phase_no_suspend.so)
-[942921] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942921] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942921] INFO host         started phase_c
-[942921] INFO host         started phase_b
-[942921] INFO host         started phase_a
-[942921] ERR  host         phase_b: consumer 'phase_a' is still active
-[942921] INFO host         stopped phase_a
-[942921] INFO host         unloaded phase_a
-[942921] INFO host         stopped phase_b
-[942921] INFO host         unloaded phase_b
-[942921] INFO host         stopped phase_c
-[942921] INFO host         unloaded phase_c
-[942921] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942921] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942921] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942921] INFO host         started phase_c
-[942921] INFO host         started phase_b
-[942921] INFO host         started phase_a
-[942921] INFO host         stopped phase_c
-[942921] INFO host         unloaded phase_c
-[942921] INFO host         loaded phase_c_new vtest (build/tests/mod_phase_replacement.so)
-[942921] INFO host         started phase_c_new
-[942921] INFO host         stopped phase_a
-[942921] INFO host         unloaded phase_a
-[942921] INFO host         stopped phase_b
-[942921] INFO host         unloaded phase_b
-[942921] INFO host         stopped phase_c_new
-[942921] INFO host         unloaded phase_c_new
-[942921] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942921] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942921] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942921] INFO host         started phase_c
-[942921] INFO host         started phase_b
-[942921] INFO host         started phase_a
-[942921] ERR  phase_c      load 'phase_b': host is not accepting modules
-[942921] INFO host         stopped phase_a
-[942921] INFO host         unloaded phase_a
-[942921] INFO host         stopped phase_b
-[942922] INFO host         unloaded phase_b
-[942922] INFO host         stopped phase_c
-[942922] INFO host         unloaded phase_c
-[942922] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942922] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942922] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942922] INFO host         started phase_c
-[942922] INFO host         started phase_b
-[942922] INFO host         started phase_a
-[942922] WARN host         phase_b: suspend failed (-7)
-[942922] INFO host         stopped phase_a
-[942922] INFO host         unloaded phase_a
-[942922] INFO host         stopped phase_b
-[942922] INFO host         unloaded phase_b
-[942922] INFO host         stopped phase_c
-[942922] INFO host         unloaded phase_c
-[942922] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942922] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942922] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942922] INFO host         started phase_c
-[942922] INFO host         started phase_b
-[942922] INFO host         started phase_a
-[942922] INFO host         stopped phase_a
-[942922] INFO host         unloaded phase_a
-[942922] INFO host         stopped phase_b
-[942922] INFO host         unloaded phase_b
-[942922] INFO host         stopped phase_c
-[942922] INFO host         unloaded phase_c
-[942922] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942922] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942922] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942922] INFO host         started phase_c
-[942922] INFO host         started phase_b
-[942922] INFO host         started phase_a
-[942922] WARN host         phase_b: sleep-cycle restore failed (-7)
-[942922] ERR  host         phase_a: missing required service 'phase_b_service'
-[942922] WARN host         phase_a: sleep-cycle restore failed (-1)
-[942922] INFO host         stopped phase_a
-[942922] INFO host         unloaded phase_a
-[942922] INFO host         stopped phase_b
-[942922] INFO host         unloaded phase_b
-[942922] INFO host         stopped phase_c
-[942922] INFO host         unloaded phase_c
-[942922] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942922] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942922] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942922] INFO host         started phase_c
-[942922] INFO host         started phase_b
-[942922] INFO host         started phase_a
-[942922] INFO host         stopped phase_a
-[942922] INFO host         unloaded phase_a
-[942922] INFO host         stopped phase_b
-[942922] INFO host         unloaded phase_b
-[942922] INFO host         stopped phase_c
-[942922] INFO host         unloaded phase_c
-[942922] INFO host         loaded phase_a vtest (build/tests/mod_phase_no_suspend.so)
-[942922] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942922] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942922] INFO host         started phase_c
-[942922] INFO host         started phase_b
-[942922] INFO host         started phase_a
-[942922] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
-[942922] INFO host         stopped phase_a
-[942922] INFO host         unloaded phase_a
-[942922] INFO host         stopped phase_b
-[942922] INFO host         unloaded phase_b
-[942922] INFO host         stopped phase_c
-[942922] INFO host         unloaded phase_c
-[942922] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942922] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942922] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942922] INFO host         started phase_c
-[942922] INFO host         started phase_b
-[942922] INFO host         started phase_a
-[942922] INFO host         stopped phase_a
-[942922] INFO host         unloaded phase_a
-[942922] INFO host         stopped phase_b
-[942922] INFO host         unloaded phase_b
-[942922] INFO host         stopped phase_c
-[942922] INFO host         unloaded phase_c
-[942922] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942922] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942922] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942922] INFO host         started phase_c
-[942922] INFO host         started phase_b
-[942922] INFO host         started phase_a
-[942922] INFO host         stopped phase_a
-[942922] INFO host         unloaded phase_a
-[942922] INFO host         stopped phase_b
-[942922] INFO host         unloaded phase_b
-[942922] INFO host         stopped phase_c
-[942922] INFO host         unloaded phase_c
-[942922] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
-[942922] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
-[942922] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
-[942922] INFO host         started phase_c
-[942922] INFO host         started phase_b
-[942922] INFO host         started phase_a
-[942922] ERR  host         module dependency cycle; lifecycle transition canceled
-[942922] INFO host         stopped phase_a
-[942922] INFO host         unloaded phase_a
-[942922] INFO host         stopped phase_b
-[942922] INFO host         unloaded phase_b
-[942922] INFO host         stopped phase_c
-[942922] INFO host         unloaded phase_c
+[818326] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818326] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818326] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818326] INFO host         started phase_c
+[818326] INFO host         started phase_b
+[818326] INFO host         started phase_a
+[818326] INFO host         stopped phase_a
+[818326] INFO host         unloaded phase_a
+[818326] INFO host         stopped phase_b
+[818326] INFO host         unloaded phase_b
+[818326] INFO host         stopped phase_c
+[818326] INFO host         unloaded phase_c
+[818326] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818326] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818326] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818326] INFO host         started phase_c
+[818326] INFO host         started phase_b
+[818326] INFO host         started phase_a
+[818326] ERR  host         phase_b: required by active module 'phase_a'
+[818326] ERR  host         phase_b: required by active module 'phase_a'
+[818326] ERR  host         phase_b: required by active module 'phase_a'
+[818326] INFO host         stopped phase_a
+[818326] INFO host         unloaded phase_a
+[818326] INFO host         stopped phase_b
+[818326] INFO host         unloaded phase_b
+[818326] INFO host         stopped phase_c
+[818326] INFO host         unloaded phase_c
+[818326] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818326] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818326] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818326] INFO host         started phase_c
+[818326] INFO host         started phase_b
+[818326] INFO host         started phase_a
+[818326] INFO host         stopped phase_a
+[818326] INFO host         unloaded phase_a
+[818326] INFO host         stopped phase_b
+[818326] INFO host         unloaded phase_b
+[818326] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818326] INFO host         phase_b: reloaded (suspended)
+[818326] INFO host         started phase_b
+[818326] INFO host         stopped phase_b
+[818326] INFO host         unloaded phase_b
+[818326] INFO host         stopped phase_c
+[818326] INFO host         unloaded phase_c
+[818326] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818326] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818326] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818326] INFO host         started phase_c
+[818326] INFO host         started phase_b
+[818326] INFO host         started phase_a
+[818326] WARN host         phase_b: suspend failed (-7)
+[818326] INFO host         stopped phase_a
+[818326] INFO host         unloaded phase_a
+[818326] INFO host         stopped phase_b
+[818326] INFO host         unloaded phase_b
+[818326] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] WARN host         phase_c: resume failed (-7)
+[818327] INFO host         stopped phase_a
+[818327] INFO host         unloaded phase_a
+[818327] INFO host         stopped phase_b
+[818327] INFO host         unloaded phase_b
+[818327] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[818327] INFO host         stopped phase_b
+[818327] ERR  host         phase_b: required service 'phase_c_service' is not ready
+[818327] INFO host         started phase_b
+[818327] INFO host         stopped phase_a
+[818327] INFO host         unloaded phase_a
+[818327] INFO host         stopped phase_b
+[818327] INFO host         unloaded phase_b
+[818327] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] ERR  host         module dependency cycle; lifecycle transition canceled
+[818327] INFO host         stopped phase_a
+[818327] INFO host         unloaded phase_a
+[818327] INFO host         stopped phase_b
+[818327] INFO host         unloaded phase_b
+[818327] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_no_suspend.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] ERR  host         phase_b: consumer 'phase_a' is still active
+[818327] INFO host         stopped phase_a
+[818327] INFO host         unloaded phase_a
+[818327] INFO host         stopped phase_b
+[818327] INFO host         unloaded phase_b
+[818327] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_c_new vtest (build/tests/mod_phase_replacement.so)
+[818327] INFO host         started phase_c_new
+[818327] INFO host         stopped phase_a
+[818327] INFO host         unloaded phase_a
+[818327] INFO host         stopped phase_b
+[818327] INFO host         unloaded phase_b
+[818327] INFO host         stopped phase_c_new
+[818327] INFO host         unloaded phase_c_new
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] ERR  phase_c      load 'phase_b': host is not accepting modules
+[818327] INFO host         stopped phase_a
+[818327] INFO host         unloaded phase_a
+[818327] INFO host         stopped phase_b
+[818327] INFO host         unloaded phase_b
+[818327] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] WARN host         phase_b: suspend failed (-7)
+[818327] INFO host         stopped phase_a
+[818327] INFO host         unloaded phase_a
+[818327] INFO host         stopped phase_b
+[818327] INFO host         unloaded phase_b
+[818327] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] INFO host         stopped phase_a
+[818327] INFO host         unloaded phase_a
+[818327] INFO host         stopped phase_b
+[818327] INFO host         unloaded phase_b
+[818327] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] WARN host         phase_b: sleep-cycle restore failed (-7)
+[818327] ERR  host         phase_a: missing required service 'phase_b_service'
+[818327] WARN host         phase_a: sleep-cycle restore failed (-1)
+[818327] INFO host         stopped phase_a
+[818327] INFO host         unloaded phase_a
+[818327] INFO host         stopped phase_b
+[818327] INFO host         unloaded phase_b
+[818327] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] INFO host         stopped phase_a
+[818327] INFO host         unloaded phase_a
+[818327] INFO host         stopped phase_b
+[818327] INFO host         unloaded phase_b
+[818327] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_no_suspend.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[818327] INFO host         stopped phase_a
+[818327] INFO host         unloaded phase_a
+[818327] INFO host         stopped phase_b
+[818327] INFO host         unloaded phase_b
+[818327] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] INFO host         stopped phase_a
+[818327] INFO host         unloaded phase_a
+[818327] INFO host         stopped phase_b
+[818327] INFO host         unloaded phase_b
+[818327] INFO host         stopped phase_c
+[818327] INFO host         unloaded phase_c
+[818327] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818327] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818327] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818327] INFO host         started phase_c
+[818327] INFO host         started phase_b
+[818327] INFO host         started phase_a
+[818327] INFO host         stopped phase_a
+[818328] INFO host         unloaded phase_a
+[818328] INFO host         stopped phase_b
+[818328] INFO host         unloaded phase_b
+[818328] INFO host         stopped phase_c
+[818328] INFO host         unloaded phase_c
+[818328] INFO host         loaded phase_a vtest (build/tests/mod_phase_a.so)
+[818328] INFO host         loaded phase_b vtest (build/tests/mod_phase_b.so)
+[818328] INFO host         loaded phase_c vtest (build/tests/mod_phase_c.so)
+[818328] INFO host         started phase_c
+[818328] INFO host         started phase_b
+[818328] INFO host         started phase_a
+[818328] ERR  host         module dependency cycle; lifecycle transition canceled
+[818328] INFO host         stopped phase_a
+[818328] INFO host         unloaded phase_a
+[818328] INFO host         stopped phase_b
+[818328] INFO host         unloaded phase_b
+[818328] INFO host         stopped phase_c
+[818328] INFO host         unloaded phase_c
   ok   declared service dependencies suspend consumers first and resume providers first
   ok   declared dependencies protect active consumers during stop/unload/reload
   ok   dependency snapshot survives service unpublication and deferred reload into a hole
@@ -495,14 +497,14 @@
   ok   pending shutdown and stale backend owner reject before preparation
   ok   shutdown arriving during preparation cancels entry and still restores modules
   ok   dependency cycles reject sleep before callbacks or backend entry
-[942923] ERR  power        RAM entry write returned -1
-[942923] ERR  power        RAM entry write returned 2
-[942923] ERR  power        open /sys/power/state failed
-[942923] ERR  host         phase_a: missing required service 'phase_b_service'
-[942923] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
-[942923] ERR  power        publish power: already published by module 0
-[942923] ERR  host         power: start() failed (-1)
-[942923] ERR  host         power: missing required service 'host.sleep'
+[818328] ERR  power        RAM entry write returned -1
+[818328] ERR  power        RAM entry write returned 2
+[818329] ERR  power        open /sys/power/state failed
+[818329] ERR  host         phase_a: missing required service 'phase_b_service'
+[818329] ERR  host         phase_a: sleep cycle requires suspend and resume hooks
+[818329] ERR  power        publish power: already published by module 0
+[818329] ERR  host         power: start() failed (-1)
+[818329] ERR  host         power: missing required service 'host.sleep'
   ok   manual hooks never sleep; CLI/service enter last and notify ON only after restore
   ok   preparation failure restores completed transitions without opening power state
   ok   failed open/short/failed mem write still restore; failed writes never count as sleep
@@ -510,13 +512,13 @@
   ok   disabled power and incomplete quiescence hooks refuse without I/O or state events
   ok   service preserves preexisting suspended modules and restores prior state before ON
   ok   failed publication retains peer service; missing coordinator refuses and releases holds
-[942924] ERR  ui_clock     timer table full
-[942925] ERR  host         ui_clock: missing required service 'clock'
-[942925] ERR  ui_clock     timer table full
-[942925] ERR  host         ui_clock: start() failed (-1)
-[942925] ERR  ui_clock     publish ui.clock: already published by module 0
-[942925] ERR  host         ui_clock: start() failed (-1)
-[942925] ERR  host         ticker: required by active module 'ui_clock'
+[818329] ERR  ui_clock     timer table full
+[818330] ERR  host         ui_clock: missing required service 'clock'
+[818330] ERR  ui_clock     timer table full
+[818330] ERR  host         ui_clock: start() failed (-1)
+[818330] ERR  ui_clock     publish ui.clock: already published by module 0
+[818330] ERR  host         ui_clock: start() failed (-1)
+[818330] ERR  host         ticker: required by active module 'ui_clock'
   ok   FROST quantum boundaries, correction carry and raw/corrected 90000000-ms rollover
   ok   real DSO reload preserves clock state, replaces owned timer and rejects invalid snapshots atomically
   ok   suspend removes timer; failed resume can retry without losing elapsed time/correction
@@ -524,54 +526,54 @@
   ok   missing raw clock, full timer table and publication collision clean up; start can retry
   ok   real ticker/ui_clock dependency chain quiesces both timers and resumes in provider order
   ok   owned one-second sampling advances idle clock state without a client query
-[942926] INFO host         loaded ui_anim v1 (build/modules/mod_ui_anim.so)
-[942926] INFO host         started ui_anim
-[942926] ERR  ui_anim      timer table full
-[942926] WARN host         ui_anim: resume failed (-1)
-[942926] INFO host         stopped ui_anim
-[942926] INFO host         unloaded ui_anim
+[818330] INFO host         loaded ui_anim v1 (build/modules/mod_ui_anim.so)
+[818330] INFO host         started ui_anim
+[818330] ERR  ui_anim      timer table full
+[818330] WARN host         ui_anim: resume failed (-1)
+[818330] INFO host         stopped ui_anim
+[818330] INFO host         unloaded ui_anim
   ok   animation completion/finalise callbacks can replace their own slot
   ok   real animation DSO restores its timer after suspend; timer allocation failure is retryable
   ok   text-slide duration/margin match AnimationHelper (pause 800, speed 50, x1000)
   ok   full-screen animation types 1..8 match the HAL vertex rules and clamp
   ok   scene transform equals oa_fs_apply for affine types; keystone flagged
   ok   full-screen portal follows remote frames; focus survives reload
-[943130] INFO host         loaded plat v0.1 (build/tests/ui-sources/modules/mod_plat.so)
-[943130] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
-[943130] INFO plat         plat: common init (vpltio/v4l2/sharemem/drm, DVIF)
-[943130] INFO plat         plat: VIN slot defaults (7 slots)
-[943130] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
-[943130] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
-[943130] INFO host         started plat
-[943130] INFO host         loaded nav_display v1 (build/tests/ui-sources/modules/mod_nav_display.so)
-[943130] INFO host         started nav_display
-[943130] INFO host         loaded ir v0.1 (build/tests/ui-sources/modules/mod_ir.so)
-[943130] INFO ir           remote parser ready; UART path empty
-[943130] INFO host         started ir
-[943130] INFO host         loaded ticker v1.0 (build/tests/ui-sources/modules/mod_ticker.so)
-[943130] INFO host         started ticker
-[943130] INFO host         loaded ui_clock v0.1 (build/tests/ui-sources/modules/mod_ui_clock.so)
-[943130] INFO host         started ui_clock
-[943131] INFO host         loaded ui_anim v1 (build/tests/ui-sources/modules/mod_ui_anim.so)
-[943131] INFO host         started ui_anim
-[943131] INFO host         loaded settings v0.2 (build/tests/ui-sources/modules/mod_settings.so)
-[943131] INFO settings     /home/ekollof/Work/tvhack/openaurora/build/tests/ui-sources/settings.db open (read-only)
-[943131] INFO host         started settings
-[943131] INFO host         loaded ui_engine v1 (build/tests/ui-sources/modules/mod_ui_engine.so)
-[943131] INFO ui_engine    ui_engine started
-[943131] INFO host         started ui_engine
-[943132] INFO host         loaded ui_vendor v0.2 (build/tests/ui-sources/modules/mod_ui_vendor.so)
-[943134] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 2 card 0
-[943134] INFO host         started ui_vendor
-[943136] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 1 card 0
-[943141] INFO ui_vendor    painted source selection: row 0
-[943152] INFO ui_vendor    painted source selection: row 1
-[943155] INFO ui_vendor    painted source selection: row 0
-[943158] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 1 card 0
+[818415] INFO host         loaded plat v0.1 (build/tests/ui-sources/modules/mod_plat.so)
+[818415] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[818415] INFO plat         plat: common init (vpltio/v4l2/sharemem/drm, DVIF)
+[818415] INFO plat         plat: VIN slot defaults (7 slots)
+[818415] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[818415] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[818415] INFO host         started plat
+[818415] INFO host         loaded nav_display v1 (build/tests/ui-sources/modules/mod_nav_display.so)
+[818415] INFO host         started nav_display
+[818415] INFO host         loaded ir v0.1 (build/tests/ui-sources/modules/mod_ir.so)
+[818415] INFO ir           remote parser ready; UART path empty
+[818415] INFO host         started ir
+[818415] INFO host         loaded ticker v1.0 (build/tests/ui-sources/modules/mod_ticker.so)
+[818415] INFO host         started ticker
+[818416] INFO host         loaded ui_clock v0.1 (build/tests/ui-sources/modules/mod_ui_clock.so)
+[818416] INFO host         started ui_clock
+[818416] INFO host         loaded ui_anim v1 (build/tests/ui-sources/modules/mod_ui_anim.so)
+[818416] INFO host         started ui_anim
+[818416] INFO host         loaded settings v0.2 (build/tests/ui-sources/modules/mod_settings.so)
+[818416] INFO settings     /home/ekollof/Work/tvhack/openaurora/build/tests/ui-sources/settings.db open (read-only)
+[818416] INFO host         started settings
+[818417] INFO host         loaded ui_engine v1 (build/tests/ui-sources/modules/mod_ui_engine.so)
+[818417] INFO ui_engine    ui_engine started
+[818417] INFO host         started ui_engine
+[818417] INFO host         loaded ui_vendor v0.2 (build/tests/ui-sources/modules/mod_ui_vendor.so)
+[818419] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 2 card 0
+[818420] INFO host         started ui_vendor
+[818421] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 1 card 0
+[818424] INFO ui_vendor    painted source selection: row 0
+[818432] INFO ui_vendor    painted source selection: row 1
+[818435] INFO ui_vendor    painted source selection: row 0
+[818436] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 1 card 0
   ok   source selection: rail Select opens the 780x1080 panel, Up/Down moves the 748x66 bar, Exit returns
-[943168] ERR  host         ui_engine: refusing to unload, service 'ui.engine' still held (use --force)
-[943227] ERR  host         ui_engine: refusing to unload, service 'ui.engine' still held (use --force)
-[943228] ERR  host         ui_engine: start() failed (-1)
+[818448] ERR  host         ui_engine: refusing to unload, service 'ui.engine' still held (use --force)
+[818486] ERR  host         ui_engine: refusing to unload, service 'ui.engine' still held (use --force)
+[818487] ERR  host         ui_engine: start() failed (-1)
   ok   engine rejects malformed or ambiguous asset names/sizes and keeps RGBA alpha
   ok   ui.skin selects the engine's active skin; vendor and omarchy switch by reload, no rebuild
   ok   queued input survives forced engine removal safely; Omarchy rebinds and pins its replacement
@@ -588,9 +590,9 @@
   ok   lab preset validates tokens and preserves enabled editing
   ok   lab edit disabled ignores presets and key edits
   ok   text slide clips to the box, follows AnimationHelper margins and repeats
-[943817] ERR  host         ui_engine: missing required service 'display'
-[943818] ERR  host         ui_anim: refusing to stop, service 'ui.anim' still held
-[943818] ERR  host         fake_clock: required by active module 'ui_anim'
+[818990] ERR  host         ui_engine: missing required service 'display'
+[818991] ERR  host         ui_anim: refusing to stop, service 'ui.anim' still held
+[818991] ERR  host         fake_clock: required by active module 'ui_anim'
   ok   ui_vendor rebinds late providers, drops forced-unloaded ones and resumes
   ok   rail highlight plays 11 frames at 30 ms in the vendor button window
   ok   all 256 headers / 1..16-byte frame round trips, poll distinction and atomic bounds rejection
@@ -605,21 +607,17 @@
   ok   publication collision preserves peer; failed platform and disabled audio never call HAL
   ok   missing session I/O fails before a socket; enabled HAL refuses suspend; idle owner joins
   ok   each audio-prelude failure gates later hardware stages; success calls prelude once before platform stages
-[944218] ERR  host         audio: cleanup pending; retry stop/unload
+[819411] ERR  host         audio: cleanup pending; retry stop/unload
   ok   suspend failed while the HAL is enabled; the module stayed started and the host stayed up
-[944224] ERR  host         cec: cleanup pending; retry stop/unload
-[944225] ERR  host         cec: cleanup pending; retry stop/unload
-[944225] ERR  host         audio: cleanup pending; retry stop/unload
-[944225] ERR  host         plat: required by active module 'audio'
-[944225] ERR  host         cec: cleanup pending; retry stop/unload
-[944225] ERR  host         audio: cleanup pending; retry stop/unload
-[944225] ERR  host         plat: refusing to unload, service 'plat' still held (use --force)
-[944225] ERR  host         cec: cleanup pending; retry stop/unload
-[944225] ERR  host         audio: cleanup pending; retry stop/unload
-[944225] ERR  host         plat: required by active module 'audio'
-[944225] ERR  host         cec: cleanup pending; retry stop/unload
-[944225] ERR  host         audio: cleanup pending; retry stop/unload
-[944225] ERR  host         plat: refusing to unload, service 'plat' still held (use --force)
+[819417] ERR  host         cec: cleanup pending; retry stop/unload
+[819418] ERR  host         cec: cleanup pending; retry stop/unload
+[819418] ERR  host         audio: cleanup pending; retry stop/unload
+[819418] ERR  host         plat: required by active module 'audio'
+[819418] ERR  host         cec: cleanup pending; retry stop/unload
+[819418] ERR  host         audio: cleanup pending; retry stop/unload
+[819418] ERR  host         plat: refusing to unload, service 'plat' still held (use --force)
+[819418] ERR  host         audio: cleanup pending; retry stop/unload
+[819418] ERR  host         plat: required by active module 'audio'
   ok   System Audio mutes local volume; ARC follows 1.4 direction; route survives reload
   ok   all 256 headers / 1..16-byte frames through raw and VPL receive layouts; canaries intact
   ok   VPL outgoing TV commands preserve operands; zero tail; foreign initiator and poll reject atomically
@@ -632,11 +630,11 @@
   ok   send owns its frame; decoded/empty receives have distinct ticketed copied results
   ok   failed hardware release retains fd and copied backend until an explicit successful retry
   ok   shutdown drains blocked receive; failed-close generations retain session and untaken result until join
-[944245] ERR  host         cec: cleanup pending; retry stop/unload
-[944248] ERR  ticker       cec: refusing to unload, service 'cec.owner' still held (use --force)
-[944248] ERR  host         cec: cleanup pending; retry stop/unload
-[944249] ERR  host         cec: cleanup pending; retry stop/unload
-[944249] ERR  host         cec: cleanup pending; retry stop/unload
+[819438] ERR  host         cec: cleanup pending; retry stop/unload
+[819441] ERR  ticker       cec: refusing to unload, service 'cec.owner' still held (use --force)
+[819441] ERR  host         cec: cleanup pending; retry stop/unload
+[819442] ERR  host         cec: cleanup pending; retry stop/unload
+[819442] ERR  host         cec: cleanup pending; retry stop/unload
   ok   authority keeps an existing bit and writes 0xf011 low-byte|2 only when it is clear
   ok   worker serializes authority, open and send; failed close stays owned until a later quiesce
   ok   control reload/suspend/resume joins the idle worker; a held service stays loaded
@@ -661,50 +659,51 @@
   ok   async open returns during blocked I/O, owns callback-table copy and applies bounded backpressure
   ok   results are ticketed, owned and collected once; worker errors survive and failed OS close consumes fd
   ok   quiesce rejects new work, drains accepted open and closes before join; result survives shutdown
-[944269] ERR  host         audio_mixer: refusing to unload, service 'audio.mixer' still held (use --force)
-[944271] ERR  host         audio_mixer: refusing to unload, service 'audio.mixer' still held (use --force)
-[944273] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944274] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944274] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944303] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944303] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944336] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944336] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944356] ERR  host         audio_mixer: start() failed (-1)
-[944356] ERR  audio_mixer  timer table full
-[944356] ERR  host         audio_mixer: start() failed (-1)
-[944356] ERR  host         audio_mixer: start() failed (-1)
-[944356] ERR  host         audio_mixer: start() failed (-1)
-[944358] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944358] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944358] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944358] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944358] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944358] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944358] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944358] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944359] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944359] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944359] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944359] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944359] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944359] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944359] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944359] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944359] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944359] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944360] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944360] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944360] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944360] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944360] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944360] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944360] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944360] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944360] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944360] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944360] ERR  host         audio_mixer: cleanup pending; retry stop/unload
-[944360] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819462] ERR  host         audio_mixer: refusing to unload, service 'audio.mixer' still held (use --force)
+[819463] ERR  host         audio_mixer: refusing to unload, service 'audio.mixer' still held (use --force)
+[819465] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819466] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819466] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819495] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819495] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819528] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819528] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819549] ERR  host         audio_mixer: start() failed (-1)
+[819549] ERR  audio_mixer  timer table full
+[819549] ERR  host         audio_mixer: start() failed (-1)
+[819549] ERR  host         audio_mixer: start() failed (-1)
+[819549] ERR  host         audio_mixer: start() failed (-1)
+[819551] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819551] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819551] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819551] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819551] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819551] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819551] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819551] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819551] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819551] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819552] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819553] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819553] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819553] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819553] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819553] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819553] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819553] ERR  host         audio_mixer: cleanup pending; retry stop/unload
+[819553] ERR  host         audio_mixer: cleanup pending; retry stop/unload
   ok   real DSO owns watches/timer, bounds requests, cancels/drains, preserves holds across suspend and invalidates reload tickets
   ok   mismatched/oversize/EOF/error replies, final buffered reply and shutdown during a hung request release every child
   ok   spawn/timer/watch failures unwind without a child or stale service
@@ -715,7 +714,7 @@
   ok   truncated request and wrong IPC socket type fail before any mixer open/send
   ok   posix_spawn child owns its session, drops unrelated inherited fds and exits cleanly after EOF
   ok   audio worker rejects a real socket, runs gain off the caller, and closes on quiesce
-[944364] INFO host         control socket /tmp/oa-control-RnwsOB/control.sock
+[819557] INFO host         control socket /tmp/oa-control-npFRjW/control.sock
   ok   image CLI bounds provider axes/bytes before hashing and releases under hold
   ok   full list/status replies reach a Unix socket client intact
   ok   control replies stay bounded for full tables and tiny buffers
@@ -724,6 +723,10 @@
   ok   EPIPE and disconnected readers do not raise SIGPIPE or kill host
   ok   overlong/NUL lines rejected whole; next valid and 511-byte commands work
   ok   repeated stop/start, failed watch registration and socket identity cleanup
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/display_present tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c -lm -pthread \
+  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=system -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl -Wl,--wrap=pthread_create -Wl,--wrap=pthread_tryjoin_np
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -DOA_DISPLAY_NO_PLAT -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/display_binding tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c -lm -pthread \
+  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=system -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl -Wl,--wrap=pthread_create -Wl,--wrap=pthread_tryjoin_np
   ok   translucent canvas reaches premultiplied BGRA scanout at identity and during fade
   ok   default current-frame presentation commits every time, including after resume
   ok   single-buffer presentation also commits through FBIOPAN_DISPLAY
@@ -850,22 +853,27 @@ ok BinSVG: all tags/truncations, signed rectangles, nested/first group and dupli
   ok   skin discovers late theme, pins provider, drops forced removal, preserves active mode and rebinds
   ok   all8 modes, numeric priority over stream order, missing resource/markers and explicit overrides
   ok   suspended replacement defers I/O/rebind; resume reacquires; failed skin start releases theme and callback without removing peer
-[977700] ERR  ui_vendor    ui_vendor: lifecycle subscription failed; refusing start
-[977700] ERR  host         ui_vendor: start() failed (-1)
-[977700] ERR  ui_vendor    ui_vendor: lifecycle subscription failed; refusing start
-[977700] ERR  host         ui_vendor: start() failed (-1)
+[854376] ERR  ui_vendor    ui_vendor: lifecycle subscription failed; refusing start
+[854376] ERR  host         ui_vendor: start() failed (-1)
+[854376] ERR  ui_vendor    ui_vendor: lifecycle subscription failed; refusing start
+[854376] ERR  host         ui_vendor: start() failed (-1)
   ok   full/one-slot subscription table fails vendor start with no leaked holds/subs; retry starts
 ok widget windows: ordered mask discovery, pre-mask identity, first duplicate, nested/first group, offset/bounds, animation rejection
 ok textbox: full-height slices exclude caps, 48 alignment/type cases, regular priority, raw metadata and atomic errors
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/font_box tests/font_box.c common/font_box.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c common/text_origin.c common/widget_layout.c common/binsvg.c common/svg_pack.c common/text_layout.c -lm
 ok font box:9 alignments with exact pixels/guards, defaults, center trim, atomic invalid text/font/dimensions
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/font_line tests/font_line.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c -lm
 ok font line: ink width, center bearing/trim, end paint order, atomic failures
 ok list metrics: theme slices, horizontal/title count, painted state, absence, bounds
 ok horizontal stretch: separate offset/width, double precision, retained ratio, missing mask, bounds
 ok text origin: vertical policies, clipping capacity, ratio phase/floor, zero step, bounds
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/font_bitmap tests/font_bitmap.c common/font_bitmap.c common/font_finder.c common/font_draw.c common/canvas.c -lm
 ok bitmap font: mapping, signed metrics, every truncation, corrupt bounds/order
 ok font finder: typed floor, global fallback, stable ties, division, bounds
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/font_draw tests/font_draw.c common/font_draw.c common/font_bitmap.c common/canvas.c -lm
 ok glyph draw: signed bearings, clipping/extremes, bounds, all alpha/coverage pairs
 ok font pack: index/offsets, whole-record reads, size/length/bounds rejection
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/font_text tests/font_text.c common/font_text.c common/font_draw.c common/font_bitmap.c common/font_pack.c common/canvas.c -lm
 ok font text: UTF-8 keys, advances/spacing, clips, missing/invalid rejection, source-over
 ok text layout: mask alignments, vertical/horizontal/mirrored rows, truncation, bounds
   ok   image decode: PNG and JPEG RGBA match references, errors reject and service reloads
@@ -880,20 +888,20 @@ ok live cards: excluded rows not painted
 ok ui png cards: 9 downloaded PNGs decoded at 400x225 with source pixels
 ok live cards: excluded rows not painted
 ok ui jpeg cards: 2 downloaded JPEGs decoded with source pixels
-[978059] ERR  host         load 'ui_missing': not found in build/tests/ui-skin/modules
-[978113] ERR  host         load 'ui_missing': not found in build/tests/ui-skin/modules
-[978134] ERR  host         ui_startfail: start() failed (-1)
-[978157] ERR  ui_badenter  skin enter failed
-[978310] ERR  host         ui_busyfail: start() failed (-1)
-[978310] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
-[978319] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
-[978329] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
-[978339] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
-[978361] ERR  host         load 'build/tests/ui-skin/modules/mod_ui_initbusy.so': init() failed (-1)
-[978361] ERR  host         ui_initbusy: init cleanup pending; retry unload
-[978370] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
-[978380] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
-[978390] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+[857295] ERR  host         load 'ui_missing': not found in build/tests/ui-skin/modules
+[857349] ERR  host         load 'ui_missing': not found in build/tests/ui-skin/modules
+[857371] ERR  host         ui_startfail: start() failed (-1)
+[857403] ERR  ui_badenter  skin enter failed
+[857554] ERR  host         ui_busyfail: start() failed (-1)
+[857554] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[857563] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[857573] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[857583] ERR  host         ui_busyfail: cleanup pending; retry stop/unload
+[857605] ERR  host         load 'build/tests/ui-skin/modules/mod_ui_initbusy.so': init() failed (-1)
+[857605] ERR  host         ui_initbusy: init cleanup pending; retry unload
+[857614] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+[857624] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
+[857634] ERR  host         ui_initbusy: cleanup pending; retry stop/unload
   ok   configured missing startup skin falls back to a committed vendor frame without a readiness file
   ok   runtime control switches both real skins and an external ui_<name> module
   ok   malformed commands and competing selections cannot mutate an accepted request
@@ -911,6 +919,8 @@ node tests/module_matrix_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
 ok actual hardware-free module matrix IPC: clock chain, navigation/list, power/cec reloads
 node tests/fixture_modules_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
 ok actual fixture-backed module IPC: theme/profile/amp/curve/mixer start, services, reload and reuse
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DOA_DISPLAY_NO_PLAT -fPIC -shared -MMD -MP -o build/modules/mod_display_fb.so modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c  \
+  -lm -pthread
 node tests/fake_fb_socket.cjs /home/ekollof/Work/tvhack/openaurora/build
 ok actual fake-fbdev display_fb IPC: start/suspend/resume/reload/stop/reuse and full snapshot restoration
 node tests/graphics_socket.cjs /home/ekollof/Work/tvhack/openaurora/build
@@ -965,77 +975,79 @@ restored /dev/fb1: bytes 128 offset 0,2 mau 1
   ok   buffered completion survives exit; mismatched/descriptor replies fail and abnormal exit remains visible
   ok   EAGAIN leaves request unaccepted/retryable; interrupted send breaks channel without replay
   ok   loader failure rejected immediately or completed through EOF and child127 reap on target libc
-[ 22566] ERR  host         graphics: refusing to unload, service 'display.gpu' still held (use --force)
-[ 22567] ERR  host         graphics: refusing to unload, service 'display.gpu' still held (use --force)
-[ 22569] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22572] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22572] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22593] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22594] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22595] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22596] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22597] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22598] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22599] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22600] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22601] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22602] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22603] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22605] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22606] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22607] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22608] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22609] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22610] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22611] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22612] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22613] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22614] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22615] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22616] ERR  host         graphics: start() failed (-1)
-[ 22616] ERR  graphics     timer table full
-[ 22616] ERR  host         graphics: start() failed (-1)
-[ 22617] ERR  host         graphics: start() failed (-1)
-[ 22617] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22617] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22617] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22641] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22642] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22643] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22644] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22645] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22646] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22647] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22649] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22650] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22651] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22652] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22653] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22654] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22656] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22657] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22658] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22659] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22660] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22661] ERR  host         graphics: cleanup pending; retry stop/unload
-[ 22662] ERR  host         graphics: cleanup pending; retry stop/unload
+[902377] ERR  host         graphics: refusing to unload, service 'display.gpu' still held (use --force)
+[902378] ERR  host         graphics: refusing to unload, service 'display.gpu' still held (use --force)
+[902381] ERR  host         graphics: cleanup pending; retry stop/unload
+[902384] ERR  host         graphics: cleanup pending; retry stop/unload
+[902384] ERR  host         graphics: cleanup pending; retry stop/unload
+[902404] ERR  host         graphics: cleanup pending; retry stop/unload
+[902404] ERR  host         graphics: cleanup pending; retry stop/unload
+[902405] ERR  host         graphics: cleanup pending; retry stop/unload
+[902407] ERR  host         graphics: cleanup pending; retry stop/unload
+[902408] ERR  host         graphics: cleanup pending; retry stop/unload
+[902409] ERR  host         graphics: cleanup pending; retry stop/unload
+[902410] ERR  host         graphics: cleanup pending; retry stop/unload
+[902411] ERR  host         graphics: cleanup pending; retry stop/unload
+[902412] ERR  host         graphics: cleanup pending; retry stop/unload
+[902413] ERR  host         graphics: cleanup pending; retry stop/unload
+[902414] ERR  host         graphics: cleanup pending; retry stop/unload
+[902415] ERR  host         graphics: cleanup pending; retry stop/unload
+[902416] ERR  host         graphics: cleanup pending; retry stop/unload
+[902417] ERR  host         graphics: cleanup pending; retry stop/unload
+[902418] ERR  host         graphics: cleanup pending; retry stop/unload
+[902419] ERR  host         graphics: cleanup pending; retry stop/unload
+[902420] ERR  host         graphics: cleanup pending; retry stop/unload
+[902421] ERR  host         graphics: cleanup pending; retry stop/unload
+[902422] ERR  host         graphics: cleanup pending; retry stop/unload
+[902423] ERR  host         graphics: cleanup pending; retry stop/unload
+[902424] ERR  host         graphics: cleanup pending; retry stop/unload
+[902425] ERR  host         graphics: cleanup pending; retry stop/unload
+[902427] ERR  host         graphics: start() failed (-1)
+[902427] ERR  graphics     timer table full
+[902427] ERR  host         graphics: start() failed (-1)
+[902427] ERR  host         graphics: start() failed (-1)
+[902427] ERR  host         graphics: cleanup pending; retry stop/unload
+[902427] ERR  host         graphics: cleanup pending; retry stop/unload
+[902427] ERR  host         graphics: cleanup pending; retry stop/unload
+[902451] ERR  host         graphics: cleanup pending; retry stop/unload
+[902452] ERR  host         graphics: cleanup pending; retry stop/unload
+[902453] ERR  host         graphics: cleanup pending; retry stop/unload
+[902454] ERR  host         graphics: cleanup pending; retry stop/unload
+[902455] ERR  host         graphics: cleanup pending; retry stop/unload
+[902456] ERR  host         graphics: cleanup pending; retry stop/unload
+[902457] ERR  host         graphics: cleanup pending; retry stop/unload
+[902458] ERR  host         graphics: cleanup pending; retry stop/unload
+[902459] ERR  host         graphics: cleanup pending; retry stop/unload
+[902460] ERR  host         graphics: cleanup pending; retry stop/unload
+[902461] ERR  host         graphics: cleanup pending; retry stop/unload
+[902462] ERR  host         graphics: cleanup pending; retry stop/unload
+[902463] ERR  host         graphics: cleanup pending; retry stop/unload
+[902465] ERR  host         graphics: cleanup pending; retry stop/unload
+[902466] ERR  host         graphics: cleanup pending; retry stop/unload
+[902467] ERR  host         graphics: cleanup pending; retry stop/unload
+[902468] ERR  host         graphics: cleanup pending; retry stop/unload
+[902469] ERR  host         graphics: cleanup pending; retry stop/unload
+[902470] ERR  host         graphics: cleanup pending; retry stop/unload
+[902471] ERR  host         graphics: cleanup pending; retry stop/unload
   ok   owned watch/timer, bounded submit/cancel, service holds, suspend/resume and reload-scoped tickets
   ok   blocked child cleanup retains DSO/context/timer; --force cannot bypass quiescence
   ok   config/spawn/timer/watch failure retains completion path and unwinds services/children
   ok   abnormal peer death is reaped but retains a faulted module; it is not successful device cleanup
-[ 22665] ERR  host         scene_gpu_fixture: refusing to unload, service 'display.gpu' still held (use --force)
-  ok   RGBA canvas clipping/scaling/alpha and extreme coordinate bounds
+[902472] ERR  host         scene_gpu_fixture: refusing to unload, service 'display.gpu' still held (use --force)
+  ok   RGBA canvas clipping/scaling/alpha/extreme bounds and vendor mipmap sampler
   ok   coalescing retains final frame, exact committed receipts, cached revisions and immutable replaced snapshots
   ok   reload gets new revision/receipt namespace; suspend/resume reopens and uploads retained canvas
   ok   consumer unload releases queued image while provider retains inflight data; GPU error never acknowledges a frame
-[ 22691] ERR  ui_engine    ui frame failed errno 5
-[ 22706] ERR  host         scene_display: refusing to unload, service 'display' still held (use --force)
+[902497] ERR  ui_engine    ui frame failed errno 5
+[902513] ERR  host         scene_display: refusing to unload, service 'display' still held (use --force)
   ok   queue/OPEN/error never acknowledge; actual coalesced UI completion writes the PID/dimensions receipt
   ok   engine reacquires a returning async companion while base display remains bound
   ok   old receipts cannot acknowledge a reloaded UI; suspend/failed resume release both holds and timer
   ok   forced provider removal clears aliases/callbacks; returning provider rebinds without stale service use
   ok   dialog progress reuses immutable pixels; cubic midpoint and final identity/new screen are completed
 ok glyph quad: exact full/clipped UV geometry, integer-half odd sizes, no premature viewport clip, atomic invalid/overflow/cull
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -DOA_DISPLAY_NO_PLAT -fPIC -shared  -o build/display-fixture/mod_display_fb.so modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c tests/display_dso_observer.c -lm -pthread \
+  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=system -Wl,--wrap=mmap -Wl,--wrap=munmap -Wl,--wrap=msync -Wl,--wrap=ioctl
 ok display DSO: actual registry hold refuses reload before cleanup and keeps rendering usable
 ok display DSO: control/force keeps code and fd alive during blocked worker; join permits actual dlclose/reload
 ok display DSO: firmware suspended-pan error propagates; suspend/reload defers hardware until resume
@@ -1126,15 +1138,15 @@ starting build/openaurora
 14) clean shutdown
   ok   exit code 0
 all tests passed
-[ 36291] ERR  host         lookup capacity-test: hold table full, refusing unprotected pointer
-[ 36291] INFO host         loaded ticker v1.0 (build/modules/mod_ticker.so)
-[ 36291] INFO host         started ticker
-[ 36291] ERR  host         ticker: refusing to unload, service 'clock' still held (use --force)
-[ 36291] ERR  host         ticker: refusing to stop, service 'clock' still held
-[ 36291] ERR  host         ticker: refusing to unload, service 'clock' still held (use --force)
-[ 36291] INFO host         stopped ticker
-[ 36291] INFO host         unloaded ticker
-[ 36291] ERR  host         load 'build/tests/mod_failed_init.so': init() failed (-1)
+[916692] ERR  host         lookup capacity-test: hold table full, refusing unprotected pointer
+[916692] INFO host         loaded ticker v1.0 (build/modules/mod_ticker.so)
+[916692] INFO host         started ticker
+[916692] ERR  host         ticker: refusing to unload, service 'clock' still held (use --force)
+[916692] ERR  host         ticker: refusing to stop, service 'clock' still held
+[916692] ERR  host         ticker: refusing to unload, service 'clock' still held (use --force)
+[916692] INFO host         stopped ticker
+[916692] INFO host         unloaded ticker
+[916692] ERR  host         load 'build/tests/mod_failed_init.so': init() failed (-1)
   ok   configuration isolates hosts, capacity and borrowed values; reinit clears stale settings
   ok   full hold table refuses a new pointer; repeat lookup reuses its hold
   ok   stopping a held provider is refused until the consumer releases it

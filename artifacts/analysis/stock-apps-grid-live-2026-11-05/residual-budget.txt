@@ -1,37 +1,52 @@
-Per-cell MAE8 (stock vs firmware-dump render), focus-corrected and with the
-vendor FASTDCT JPEG decode:
-cell_r0c0 MAE8=0.185334
-cell_r0c1 MAE8=0.573993
-cell_r0c2 MAE8=0.465012
-cell_r0c3 MAE8=0.646115
-cell_r0c4 MAE8=0.443516
-cell_r1c0 MAE8=0.627793
-cell_r1c1 MAE8=0.572043
-cell_r1c2 MAE8=0.472445
-cell_r1c3 MAE8=0.764222
-cell_r1c4 MAE8=0.702595
-cell_r2c0 MAE8=0.824797
-cell_r2c1 MAE8=0.633025
-cell_r2c2 MAE8=0.681828
-cell_r2c3 MAE8=0.259677
-cell_r2c4 MAE8=0.775895
+Per-cell MAE8 (stock vs firmware-dump render), focus-corrected, vendor
+FASTDCT JPEG decode and the recovered mipmapped image sampler:
+cell_r0c0 MAE8=0.083011
+cell_r0c1 MAE8=0.229603
+cell_r0c2 MAE8=0.354418
+cell_r0c3 MAE8=0.290781
+cell_r0c4 MAE8=0.228373
+cell_r1c0 MAE8=0.417929
+cell_r1c1 MAE8=0.376971
+cell_r1c2 MAE8=0.309350
+cell_r1c3 MAE8=0.316826
+cell_r1c4 MAE8=0.348682
+cell_r2c0 MAE8=0.443319
+cell_r2c1 MAE8=0.444974
+cell_r2c2 MAE8=0.364427
+cell_r2c3 MAE8=0.179243
+cell_r2c4 MAE8=0.114049
 
-Focused-tile geometry oracle: stock cell_r0c0 non-orange bbox is
-x 7..300, y 7..171 inside the 310x230 cell (294x165), the same as
-non-focused tiles. The earlier 300x166 at +5,+7 model was wrong.
+Vendor image sampler, recovered from aurora.elf MD5
+64c252340d3af6c5d66072611b7bad7a:
+- hal::OpenGLGraphicsContext::createTexture 0xb32eb0 sets
+  GL_TEXTURE_MAG_FILTER=GL_LINEAR and GL_TEXTURE_MIN_FILTER=GL_LINEAR (0x2601)
+  by default. When its fifth bool is set it installs
+  GL_LINEAR_MIPMAP_LINEAR (0x2703) and calls glGenerateMipmap; wrap modes are
+  GL_CLAMP_TO_EDGE.
+- UISurfaceImpl::drawImage 0x1161ef8 sets that mipmap bool for
+  UIImageScalingType values 1..3 (type-1 <= 2 test before storeHalBitmap).
+- FullScreenGridButton::setApplicationImage 0xd21000 calls
+  SVGImage::setScalingType(1), so every apps-grid application tile takes the
+  mipmapped path. generateImageHandle 0x1161cfc forwards the bool through
+  OpenGLGraphicsContext::createImageHandle 0xb32fb0 to createTexture.
+- No sRGB texture/internal format is requested; filtering is in sRGB space.
+- The mipmap filter kernel is implementation-defined. This implementation
+  assumes Mali's box downsample and GLES floor(w/2) level dimensions.
 
-JPEG decode oracle: stage-apps-grid.py decodes JPEG thumbnails through
-TurboJPEG TJFLAG_FASTDCT, the mode the shipped hal::JpegImageDecoder matches
-byte-exactly (VENDOR-DECODER-DIFF-2026-11-04). Pillow's accurate-DCT output
-did not match. The DAZN tile (foxxum_thumb_3753, 384x216 baseline JPEG) went
-from 2.413 to 1.134 tile-only MAE, cell_r2c4 from 1.647 to 0.776, and full AE
-from 2700.71 to 2457.26 (0.130% -> 0.1185%). No tile is now an outlier; the
-remaining per-cell range is 0.19..0.82.
+Implementation: common/canvas.c oa_canvas_blit_mipmap does a box mip chain,
+normalized bilinear sampling per level and linear blending between levels;
+modules/display/display.c blit_scaled and tests/ui_nav_display.c use it.
+Manifest result: full AE=1303.5 (0.0629%), MAE8 0.1603, changed 4.73%;
+top 0.0035%, grid 0.1125%, scrollbar 0.0168%. Per-cell MAE8 is 0.083..0.445.
+
+The earlier plain-bilinear result (AE 2457.26, 0.1185%, MAE8 0.302; grid
+0.2156%) is superseded. The focused-tile bbox fix (Markt MAE8 3.343 -> 0.185)
+and the FASTDCT JPEG staging fix (DAZN cell 1.647 -> 0.776) remain part of
+this result.
 
 Background outside the grid/top/scrollbar is exact: bottom 0.0029,
 left margin 0.0386, right margin 0.0179, gap strip 0.0128 MAE8.
 
 Sampling colour space: a linear-light (sRGB->linear->sRGB) bilinear variant
 measured worse than sRGB-space bilinear on the same corpus (0.199% vs 0.173%
-AE before the focus fix), so the recorder keeps sRGB-space interpolation.
-The linear-light experiment was reverted and is not committed.
+AE before the focus fix), so the sampler keeps sRGB-space interpolation.
