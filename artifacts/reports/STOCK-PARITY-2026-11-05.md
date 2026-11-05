@@ -97,6 +97,12 @@ grid first`. The manifest now encodes the firmware-resolved geometry, but it is
 not an observed stock layout. A real parity claim still requires the corrected
 capture and confirmation that the stock screen uses this geometry.
 
+**Superseded 2026-11-05:** the stock Apps page was captured and measured in
+[STOCK-APPS-GRID-PARITY](STOCK-APPS-GRID-PARITY-2026-11-05.md). The manifest
+geometry was confirmed (294x169 tiles, 310/230 pitch, scrollbar at x1750), and
+the fixed-corpus comparison reached AE 0.99%. Content-independent/live-DB
+parity remains open.
+
 ## Evidence
 
 - `artifacts/analysis/stock-parity-2026-11-05/channel-check.txt`

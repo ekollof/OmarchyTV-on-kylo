@@ -1,0 +1,12 @@
+python3 tools/stage-apps-grid.py --out /home/ekollof/Work/tvhack/openaurora/build/tests/apps-grid-stock/ui \
+	--stock /home/ekollof/Work/tvhack/artifacts/protocol/stock-apps-grid.png
+staged 23 blobs -> /home/ekollof/Work/tvhack/openaurora/build/tests/apps-grid-stock/ui
+build/tests/apps_grid_stock /home/ekollof/Work/tvhack/openaurora/build/tests/ui-live-cards/modules \
+	/home/ekollof/Work/tvhack/openaurora/build/tests/apps-grid-stock/ui \
+	/home/ekollof/Work/tvhack/artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.rgba
+ok apps grid stock capture: rendered offline candidate
+python3 tools/rawrgba-to-png.py \
+	../artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.rgba \
+	1920 1080 \
+	../artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.png
+../artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.png 1920x1080

@@ -1,0 +1,6 @@
+full host make check: 423 ok
+ok ui apps grid: 20 rows, 15 visible cells, first 0, scrollbar 540
+ok ui apps lifecycle: selection survives reload, restart replaces rows and hides idle scrollbar
+ok ui apps grid: 64 rows, 15 visible cells, first 0, scrollbar 168
+ok ui apps cache: all64 globally ordered cards render after other screens
+verify.cjs: 45 groups

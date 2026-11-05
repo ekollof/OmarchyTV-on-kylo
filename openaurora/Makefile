@@ -485,6 +485,10 @@ $(BUILD)/oa-client: tools/probe/oa-client.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
+$(BUILD)/dfbkey: tools/probe/dfbkey.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
 $(BUILD)/tests/easi_probe: tests/easi_probe.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
@@ -1349,11 +1353,29 @@ check-capture-compare:
 check: check-capture-compare
 
 STOCK_APPS ?= ../artifacts/protocol/stock-apps-grid.png
+$(BUILD)/tests/apps_grid_stock: tests/apps_grid_stock.c tests/ui_nav_trace.h core/host.h include/openaurora/services.h include/openaurora/ui_engine.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS) $(SQLITE_LIBS)
+
+apps-grid-stock-ui = $(BUILD)/tests/apps-grid-stock/ui
+.PHONY: capture-stock-apps-grid
+capture-stock-apps-grid: $(BUILD)/tests/apps_grid_stock ui-live-stage
+	@test -f $(STOCK_APPS) || { echo "missing $(STOCK_APPS); capture the stock apps grid first"; exit 2; }
+	python3 tools/stage-apps-grid.py --out $(abspath $(apps-grid-stock-ui)) \
+		--stock $(abspath $(STOCK_APPS))
+	$(BUILD)/tests/apps_grid_stock $(abspath $(ui-live-modules)) \
+		$(abspath $(apps-grid-stock-ui)) \
+		$(abspath ../artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.rgba)
+	python3 tools/rawrgba-to-png.py \
+		../artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.rgba \
+		1920 1080 \
+		../artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.png
+
 .PHONY: compare-stock-apps-grid
 compare-stock-apps-grid:
 	@test -f $(STOCK_APPS) || { echo "missing $(STOCK_APPS); capture the stock apps grid first"; exit 2; }
 	python3 tools/capture_compare.py --reference $(STOCK_APPS) \
-		--candidate ../artifacts/analysis/ui-apps-grid-2026-11-04/offline-apps-grid.png \
+		--candidate ../artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.png \
 		--manifest ../artifacts/analysis/stock-parity-2026-11-05/apps-grid-regions.json
 
 ui-skin-socket-modules = $(BUILD)/tests/ui-skin-socket/modules

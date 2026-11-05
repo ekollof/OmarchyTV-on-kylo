@@ -35,6 +35,15 @@ The owner then requested a review and fixes on2026-11-04. The review below
 supersedes the old clean/verified snapshot where it identifies defects; it
 does not start the pending imageCreate subsystem or persistent replacement.
 
+Latest apps-grid parity:
+[STOCK-APPS-GRID-PARITY](artifacts/reports/STOCK-APPS-GRID-PARITY-2026-11-05.md)
+captures the real stock Apps page via DIAL navigation + read-only fb1 and adds
+a stock-layout renderer mode. Manifest comparison improved from AE29.56% to
+0.99% (MAE8 75.38 -> 2.52; top strip0.57%, grid1.67%, scrollbar0.12%). Host423
+ok, verify45. Limits: fixed 25-item corpus with stock-derived third-row icons,
+approximated title/label fonts, fb1 not HDMI/cold-start; content-independent
+live-DB parity remains.
+
 Latest channel runtime order:
 [CHANNEL-RUNTIME-ORDER](artifacts/reports/CHANNEL-RUNTIME-ORDER-2026-11-05.md)
 adds an ACTIVECHANNELLIST XML parser/module and makes ui_vendor prefer a

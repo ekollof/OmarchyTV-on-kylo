@@ -1019,51 +1019,95 @@ static void paint_apps(struct ctx *c)
     int W=0,H=0;
     if (!d) return;
     if (d->info(&W,&H,NULL,NULL) != 0 || W<=0 || H<=0) return;
-    if (d->clear_rgba(36,38,40,153)) return;
-    /* DialogFullScreenPortal.svg top strip 0,0,1921,162 #481730. */
-    d->fill(0,0,1921,162,0x48,0x17,0x30);
+    const oa_ui_icon *background=find_icon(c,"background_fullscreen");
+    int stock=background && background->w>0 && background->h>0;
+    if (stock) {
+        d->blit(0,0,background->w,background->h,background->rgba);
+        /* DialogFullScreenPortal.svg top strip 0,0,1921,162 #481730 is
+         * opaque over the theme background. */
+        d->fill(0,0,1921,162,0x48,0x17,0x30);
+    } else {
+        if (d->clear_rgba(36,38,40,153)) return;
+        /* DialogFullScreenPortal.svg top strip 0,0,1921,162 #481730. */
+        d->fill(0,0,1921,162,0x48,0x17,0x30);
+    }
+    const oa_ui_icon *title=find_icon(c,"apps_title");
+    if (stock && title && title->w>0 && title->h>0)
+        d->blit(80,58,title->w,title->h,title->rgba);
     int first=(c->grid_sel/APPS_VISIBLE)*APPS_VISIBLE;
     for (int row=0;row<APPS_ROWS;row++) for (int col=0;col<APPS_COLS;col++) {
         int idx=first+row*APPS_COLS+col;
         if (idx>=c->grid_count) continue;
         int x=APPS_X+col*APPS_CELL_W,y=APPS_Y+row*APPS_CELL_H;
-        if (idx==c->grid_sel)
-            d->fill(x-4,y-4,APPS_CELL_W+8,APPS_CELL_H+8,247,148,30);
-        d->fill(x,y,APPS_CELL_W,APPS_CELL_H,20,20,20);
+        if (idx==c->grid_sel) {
+            if (stock) d->fill(x,y,APPS_CELL_W,APPS_CELL_H,247,148,30);
+            else d->fill(x-4,y-4,APPS_CELL_W+8,APPS_CELL_H+8,247,148,30);
+        }
+        if (!stock) d->fill(x,y,APPS_CELL_W,APPS_CELL_H,20,20,20);
         const oa_ui_icon *icon=find_icon(c,c->grid_cards[idx]);
         if (icon && icon->w>0 && icon->h>0) {
-            int w=APPS_CELL_W-40,h=w*icon->h/icon->w;
-            if (h>APPS_CELL_H-20) { h=APPS_CELL_H-20;w=h*icon->w/icon->h; }
-            d->blit_scaled(x+(APPS_CELL_W-w)/2,y+(APPS_CELL_H-h)/2,w,h,
-                icon->w,icon->h,icon->rgba);
+            if (stock) {
+                /* Stock non-focused tiles are 294x169 inside the 310x230
+                 * cell; the focused tile expands to the full cell width. */
+                int tw=idx==c->grid_sel?300:294;
+                int w=tw,h=w*icon->h/icon->w;
+                if (h>169) { h=169;w=h*icon->w/icon->h; }
+                d->blit_scaled(x+(APPS_CELL_W-w)/2,y+6,w,h,
+                    icon->w,icon->h,icon->rgba);
+            } else {
+                int w=APPS_CELL_W-40,h=w*icon->h/icon->w;
+                if (h>APPS_CELL_H-20) { h=APPS_CELL_H-20;w=h*icon->w/icon->h; }
+                d->blit_scaled(x+(APPS_CELL_W-w)/2,y+(APPS_CELL_H-h)/2,w,h,
+                    icon->w,icon->h,icon->rgba);
+            }
+        }
+        if (stock && idx==0) {
+            const oa_ui_icon *label=find_icon(c,"markt_label");
+            if (label && label->w>0 && label->h>0)
+                d->blit_scaled(x,y+174,APPS_CELL_W,56,
+                    label->w,label->h,label->rgba);
         }
     }
-    struct oa_svg_scrollbar_render sr;
-    memset(&sr,0,sizeof sr);
-    sr.skin.cached_image[0]=1;
-    sr.state.min_bar=APPS_CAP_TOP+APPS_CAP_BOTTOM;
-    sr.state.total=c->grid_count;
-    sr.state.visible=APPS_VISIBLE;
-    sr.state.first=first;
-    struct apps_sbar_ctx sb;
-    memset(&sb,0,sizeof sb);
-    sb.c=c;
-    g_apps_sbar=&sb;
-    /* This immediate raster adapter has no retained surface to clear.
-     * Suppress the whole scrollbar when the firmware geometry hides its
-     * bar, rather than leaving the track painted after a no-op clear. */
-    if (c->grid_count > APPS_VISIBLE) {
-        oa_svg_scrollbar_render_background(&sr,&apps_sbar_ops);
-        oa_svg_scrollbar_render_bar(&sr,&apps_sbar_ops);
+    if (stock) {
+        /* The stock apps page draws a thin white scrollbar over the
+         * gradient rather than the dark themed track. */
+        d->fill(1750,180,4,688,129,25,36);
+        if (c->grid_count > APPS_VISIBLE) {
+            int bar=688*APPS_VISIBLE/(int)c->grid_count;
+            if (bar<36)bar=36;
+            if (bar>688)bar=688;
+            int pos=(int)c->grid_count>APPS_VISIBLE
+                ? (688-bar)*first/((int)c->grid_count-APPS_VISIBLE) : 688-bar;
+            if (bar<688) d->fill(1750,180+pos,4,bar,255,255,255);
+        }
+    } else {
+        struct oa_svg_scrollbar_render sr;
+        memset(&sr,0,sizeof sr);
+        sr.skin.cached_image[0]=1;
+        sr.state.min_bar=APPS_CAP_TOP+APPS_CAP_BOTTOM;
+        sr.state.total=c->grid_count;
+        sr.state.visible=APPS_VISIBLE;
+        sr.state.first=first;
+        struct apps_sbar_ctx sb;
+        memset(&sb,0,sizeof sb);
+        sb.c=c;
+        g_apps_sbar=&sb;
+        /* This immediate raster adapter has no retained surface to clear.
+         * Suppress the whole scrollbar when the firmware geometry hides its
+         * bar, rather than leaving the track painted after a no-op clear. */
+        if (c->grid_count > APPS_VISIBLE) {
+            oa_svg_scrollbar_render_background(&sr,&apps_sbar_ops);
+            oa_svg_scrollbar_render_bar(&sr,&apps_sbar_ops);
+        }
+        g_apps_sbar=NULL;
     }
-    g_apps_sbar=NULL;
     if (d->present()!=0) {
         c->api->log(c->api->priv,OA_LOG_ERROR,"apps grid present failed");
         return;
     }
     c->api->log(c->api->priv,OA_LOG_INFO,
-        "painted apps grid: %d items, first %d, scrollbar %d/%d",
-        c->grid_count,first,sr.state.bar_pos,sr.state.bar_size);
+        "painted %s apps grid: %d items, first %d",
+        stock?"stock":"synthetic",c->grid_count,first);
 }
 
 static void channel_text_blit(struct ctx *c, const char *text, int x, int y,

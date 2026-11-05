@@ -848,6 +848,24 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       policy, worker scheduling/cancellation and stock pixel parity.
       Reopened by TODO-REAUDIT-2026-11-04; narrowed, not closed.
 
+- [x] Stock apps-grid oracle and renderer parity: captured the real stock
+      full-screen Apps page via DIAL virtual-remote navigation (MENU 1048, Apps
+      tile, OKs) and read-only fb1, saved it as
+      `artifacts/protocol/stock-apps-grid.png`. Added a stock-layout renderer
+      mode using `background_fullscreen`, solid `#481730` top strip, "Apps"
+      title, 294x169 tiles on a 310/230 pitch, full-cell focus, Markt label and
+      white-on-#811924 scrollbar. Added `stage-apps-grid.py` and
+      `apps_grid_stock` capture. Manifest comparison improved from AE 29.56% /
+      MAE8 75.38 to **AE 0.99% / MAE8 2.52** (top strip 0.57%, grid 1.67%,
+      scrollbar 0.12%). Host423 ok, verify45. STOCK-APPS-GRID-PARITY. Limits:
+      fixed 25-item synthetic corpus with stock-derived third-row icons, not
+      the live DB; title/label fonts approximated; fb1 capture, not HDMI/
+      cold-start scanout; no testtool/display takeover.
+
+- [ ] Content-independent apps-grid parity: rerun the comparison with the live
+      LauncherItem DB and independently downloaded icons, remove stock-derived
+      tile crops, and resolve the remaining title/label/font and scaling error.
+
 - [x] Stock-capture parity analysis: the old `shot-launcher-right.png` is an
       R/B-swapped pre-correction capture; after channel correction it matches
       the current Prime/Canal color orientation. Same-geometry portal cards
@@ -855,7 +873,9 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       0.066..0.104), background is13,14,14 vs36,38,40, and stock status chrome
       is absent. The old capture is not an apps-grid or pixel oracle.
       STOCK-PARITY. A fresh same-session corrected stock apps-grid capture is
-      still required; no TV operation in this analysis.
+      still required; no TV operation in this analysis. **Superseded
+      2026-11-05:** the stock Apps page was captured and compared in
+      STOCK-APPS-GRID-PARITY (AE 0.99%, fixed corpus).
 
 - [x] Scrollbar skin minimum helper: moving caps20+16 yield36px; recovered
       standard-name lookups and supplier cache behavior match32 native cases.
@@ -923,7 +943,9 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       watchdog/fallback and full display ownership/restoration from firmware.
       A historical FreshWDT return1 did not prove rejection or impossibility.
       On-TV PNG/JPEG display is now covered by the supervised VISIBLE-IMAGES
-      test; stock apps-grid pixel parity remains. An ARM cold-start bundle
+      test; stock apps-grid layout/chrome comparison now exists at AE 0.99%
+      (STOCK-APPS-GRID-PARITY) but content-independent/live-DB parity remains.
+      An ARM cold-start bundle
       (openaurora,25 modules, oa-supervise, fb-restore, cold config) is built
       and manifest-verified offline by `make cold-bundle`
       (FB-SNAPSHOT-COLD-BUNDLE), but not executed. The owner's current permission

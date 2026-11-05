@@ -38,6 +38,17 @@ reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
 first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
 capture remain open.
 
+STOCK-APPS-GRID-PARITY-2026-11-05: the stock full-screen Apps page was
+captured read-only after DIAL MENU/Apps navigation. Its layout is a solid
+#481730 top strip, background_fullscreen gradient, 5 columns of 294x169 tiles
+on 310/230 pitch, focused Markt tile expanded to 310x230 with orange label
+strip, and a white scrollbar over #811924 at x1750,180..868. paint_apps now
+renders this stock mode when background_fullscreen is present. Fixed-corpus
+comparison improved from AE29.56%/MAE8 75.38 to AE0.99%/MAE8 2.52. Host423 ok,
+verify45. Limits: synthetic corpus, stock-derived third-row icons, approximated
+title/label fonts, fb1 not HDMI/cold-start scanout; live-DB/content-independent
+parity remains.
+
 CHANNEL-RUNTIME-ORDER-2026-11-05: the channel UI now has a runtime-order
 path. A channels module parses the recovered ACTIVECHANNELLIST XML into an
 order-preserving, bounded list (transactional replacement, entity decode) and

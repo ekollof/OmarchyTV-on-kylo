@@ -1,0 +1,3 @@
+c7dbac7fe50b1fc36d35a72f8dddac9c650f536008fdac8d8d4f22b7e9a8304d  artifacts/protocol/stock-apps-grid.png
+debbdd6cc72d47782fc374502392ddb53064914f534211f7a0d997da7304810e  artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.png
+dafa06bfaaea00cdfd3032a2711ae625a3106ee8fa270e4a5798e70c2cfb876a  openaurora/build/modules/mod_ui_vendor.so
