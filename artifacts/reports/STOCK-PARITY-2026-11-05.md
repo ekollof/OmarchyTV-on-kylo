@@ -26,6 +26,22 @@ capture has the same card row geometry but no header. They are different stock
 portal states (the card rectangles differ by up to about 0.48 normalized MAE),
 so P1 is not a full-screen apps-grid oracle either.
 
+## Apps-grid reachability correction
+
+The earlier APPS-GRID report suspected the full-screen portal might be dead on
+this model. A firmware reachability audit now shows that navigation code
+`0x80` constructs `FullScreenPortalDialog`; two shipped paths emit it:
+
+- `DialogNavigator::doNavigateFullScreenMarket` at `0xd1aa2c`, only after
+  `FullScreenMarketDialog::doModal` returns `0x29a`;
+- `OperationFinder::handleOperation` case `0x79` at `0xd3e6a0`, after its
+  launcher-item and internet checks.
+
+The screen is therefore reachable, not proven dead. This does **not** resolve
+the `+0x1fc/+0x200` grid runtime-inset contradiction, and no stock capture of
+the screen exists. The candidate `183,180,1554x720` / 5x3 `310x230` rectangles
+still assume left=right=0 and remain unconfirmed.
+
 ## Reusable comparator
 
 `openaurora/tools/capture_compare.py` compares a stock capture with a candidate
@@ -80,6 +96,7 @@ that its geometry matches.
 - `portal-compare.txt`
 - `p1-vs-old-portal.txt`
 - `apps-grid-regions.json`, `portal-cards.json`
+- `apps-grid-reachability.txt` (nav code 0x80 senders and unresolved insets)
 - `capture-compare-test.txt`, `full-host-check.txt`, `identities.txt`
 
 ## Limits

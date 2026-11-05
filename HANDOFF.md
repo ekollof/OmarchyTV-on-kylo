@@ -150,7 +150,12 @@ openaurora/tools/capture_compare.py (explicit BGR correction, regions, JSON;
 reproduces prior AE/RMSE exactly). A fresh apps-grid comparison is prepared
 with apps-grid-regions.json and `make compare-stock-apps-grid`, which refuses
 until artifacts/protocol/stock-apps-grid.png exists. Host404 ok, verify45. No
-stock apps-grid capture, pixel parity or TV access.
+stock apps-grid capture, pixel parity or TV access. Reachability audit:
+navigation code 0x80 constructs FullScreenPortalDialog; senders are
+doNavigateFullScreenMarket (0xd1aa2c, market return 0x29a) and
+OperationFinder::handleOperation case 0x79 (0xd3e6a0), so the screen is
+reachable, not proven dead. The +0x1fc/+0x200 runtime-inset contradiction and
+operation-0x79 UI mapping remain open.
 
 Latest plat consumers: [PLAT-CONSUMERS-SOCKET](artifacts/reports/PLAT-CONSUMERS-SOCKET-2026-11-05.md)
 starts audio/source/ir/panel under a host-only plat fixture with hardware paths

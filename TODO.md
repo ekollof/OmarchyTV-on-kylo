@@ -598,6 +598,15 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       FAKE-FB-SOCKET. Limits: user-space fake; real kernel/driver behavior,
       physical fb1/TDGA, vendor coexistence and cold startup remain.
 
+- [x] Apps-grid reachability audit: navigation code 0x80 constructs
+      FullScreenPortalDialog; senders are doNavigateFullScreenMarket
+      (0xd1aa2c, market return 0x29a) and OperationFinder::handleOperation
+      case 0x79 (0xd3e6a0). The screen is reachable, not proven dead. The
+      +0x1fc/+0x200 runtime-inset contradiction and the operation-0x79 UI
+      mapping remain open; the candidate 183,180,1554x720 / 5x3 310x230
+      geometry is still unconfirmed. APPS-GRID correction.
+      STOCK-PARITY-2026-11-05. No TV access.
+
 - [x] Corrected-capture comparator and P1 blue-shift correction: the P1
       stock portal is another pre-correction BGRA capture; its corrected copy
       is recorded with raw/corrected samples and geometry. capture_compare.py

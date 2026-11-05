@@ -27,6 +27,18 @@ The tool is covered by `openaurora/tests/capture_compare_test.py` in
 `make check` (404 ok). Tests cover identical/changed images, BGR correction,
 region bounds, size errors and the real stock-portal regression.
 
+## Apps-grid reachability
+
+`apps-grid-reachability.txt` records the firmware paths that emit navigation
+code `0x80`: `doNavigateFullScreenMarket` at `0xd1aa2c` (market return
+`0x29a`) and `OperationFinder::handleOperation` case `0x79` at `0xd3e6a0`.
+`0x80` constructs `FullScreenPortalDialog`, so the screen is reachable and not
+proven dead.
+
+This does not resolve the `+0x1fc/+0x200` runtime-inset contradiction. The
+prepared `apps-grid-regions.json` therefore remains candidate geometry with
+left=right=0, not a stock-confirmed layout.
+
 ## Prepared fresh apps-grid comparison
 
 - `apps-grid-regions.json`: candidate geometry from

@@ -1,0 +1,43 @@
+source: artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf
+MD5: 64c252340d3af6c5d66072611b7bad7a
+Ghidra project: artifacts/workbench/ghidra_proj/Aurora, program aurora.elf
+
+## Navigation path
+
+DialogNavigator::handleNavigationMessage case 0x80 calls
+doNavigateFullScreenPortal(this, true). Call site: 0xd1b7b0.
+
+DialogNavigator::doNavigateFullScreenPortal @0xd1a890 constructs
+FullScreenPortalDialog, runs it modally and logs the selected item. This is
+the DialogFullScreenPortal screen (resource 114, appsGrid).
+
+## Senders of navigation code 0x80
+
+1. DialogNavigator::doNavigateFullScreenMarket @0xd1a97c
+   Site 0xd1aa2c: movs r1,#128; bl DialogNavigationMessage ctor
+   Only after FullScreenMarketDialog::doModal returns 0x29a.
+
+2. OperationFinder::handleOperation @0xd3dc54, case 0x79
+   Site 0xd3e698: movs r1,#128; bl DialogNavigationMessage ctor
+   Reached after the launcher-item type check at [this+0x260] and an internet
+   monitor availability check; the type-0xd branch instead shows a message.
+
+## What this establishes
+
+The full-screen portal is reachable in shipped firmware paths; it is not
+proven dead. The earlier APPS-GRID conclusion that the screen may never be
+used is therefore too strong.
+
+## What this does not establish
+
+- No stock capture of DialogFullScreenPortal/appsGrid exists.
+- The +0x1fc/+0x200 runtime inset contradiction in SVGGrid::renderBackground
+  and getButtonPosition is still unresolved. The candidate 183,180,1554x720,
+  5x3 310x230 geometry assumes left=right=0 and is not stock-confirmed.
+- No LauncherItem row in the dumped settingsDB has m_menu_return_id 0x79, so
+  the operation-0x79 UI mapping and the exact stock key path remain open.
+- The screen may still be broken at runtime because of the negative inset
+  values; reachability does not prove usable layout.
+
+The prepared apps-grid manifest remains a candidate-geometry manifest pending
+a corrected stock capture.
