@@ -69,8 +69,11 @@ async function main() {
         await waitFor(() => stdout.includes('service.list:v1') && stdout.includes('state   started'),
             'service.list published');
         assert.equal(await command('service-list'), 'count 525');
+        assert.match(await command('service-list stats'),
+            /^count 525 dvb 445 easi 67 analog 13 /);
         const row = await command('service-list 0');
         assert.match(row, /^source=dvb /);
+        assert.match(row, / visible=/);
         assert.match(row, / name=/);
 
         assert.equal(await command('reload service_db'), 'ok');

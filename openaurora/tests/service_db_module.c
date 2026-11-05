@@ -44,8 +44,11 @@ int main(int argc, char **argv)
     char out[8192];
     assert(!command(h, "service-list", out, sizeof out));
     assert(!strcmp(out, "count 525\n"));
+    assert(!command(h, "service-list stats", out, sizeof out));
+    assert(strstr(out, "count 525 dvb 445 easi 67 analog 13"));
     assert(!command(h, "service-list 0", out, sizeof out));
     assert(strstr(out, "source=dvb"));
+    assert(strstr(out, "visible="));
     assert(strstr(out, "name="));
     assert(command(h, "service-list 525", out, sizeof out) == -1);
     assert(strstr(out, "failed errno 22"));

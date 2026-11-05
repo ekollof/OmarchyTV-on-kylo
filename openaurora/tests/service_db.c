@@ -72,6 +72,12 @@ static void synthetic(void)
     assert(list.rows[0].network_type == 1 && list.rows[0].country == 31);
     assert(!strcmp(list.rows[0].name, "DVB One"));
     assert(!strcmp(list.rows[0].provider, "Provider"));
+    assert(oa_service_visible(&list.rows[0]) == 0);
+    assert(oa_service_available(&list.rows[0]) == 1);
+    assert(oa_service_encrypted(&list.rows[0]) == 0);
+    assert(oa_service_numeric_selection(&list.rows[0]) == 0);
+    assert(oa_service_not_found(&list.rows[0]) == 0);
+    assert(oa_service_visible(&list.rows[3]) == 1); /* EASI flags 1 */
 
     assert(strlen(list.rows[1].name) == OA_SERVICE_NAME_MAX - 1);
     assert(strlen(list.rows[1].provider) == OA_SERVICE_PROVIDER_MAX - 1);

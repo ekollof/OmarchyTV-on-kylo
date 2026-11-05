@@ -1,0 +1,7 @@
+full host make check: 409 ok
+  ok   service DB inventory: DVB/EASI/analog rows, bounded text, table order, missing-table failure
+ok service DB dump: 525 rows (445 dvb, 67 easi, 13 analog)
+ok service_db module: 525 DVB/EASI/analog rows via reloadable service.list and CLI
+node tests/service_db_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok service_db IPC: 525-row inventory, service publication, reload, stop/unload
+verify.cjs: 45 groups

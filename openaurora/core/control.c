@@ -211,6 +211,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  launcher-items <parent|all> [deleted] [outofsync]\n"
                  "                           settingsDB LauncherItem rows\n"
                  "  service-list             broadcast-service inventory count\n"
+                 "  service-list stats       inventory flags/source totals\n"
                  "  service-list <index>     one DVB/EASI/analog inventory row\n"
                  "  image-decode <path>      decode PNG/JPEG through image.decode\n"
                  "  ui-state                query ui.portal screen\n"
@@ -297,6 +298,28 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
             size_t count=list->count;
             h->api.release(h,OA_SVC_SERVICE_LIST);
             snprintf(outbuf,outlen,"count %zu\n",count);
+            return 0;
+        }
+        if(!strcmp(a1,"stats")) {
+            size_t total=list->count;
+            size_t dvb=0,easi=0,analog=0,visible=0,available=0,encrypted=0;
+            size_t numeric=0,missing=0;
+            for(size_t i=0;i<total;i++) {
+                const struct oa_service_row *row=&list->rows[i];
+                if(row->source==OA_SERVICE_SOURCE_DVB)dvb++;
+                else if(row->source==OA_SERVICE_SOURCE_EASI)easi++;
+                else if(row->source==OA_SERVICE_SOURCE_ANALOG)analog++;
+                visible+=(size_t)oa_service_visible(row);
+                available+=(size_t)oa_service_available(row);
+                encrypted+=(size_t)oa_service_encrypted(row);
+                numeric+=(size_t)oa_service_numeric_selection(row);
+                missing+=(size_t)oa_service_not_found(row);
+            }
+            h->api.release(h,OA_SVC_SERVICE_LIST);
+            snprintf(outbuf,outlen,
+                "count %zu dvb %zu easi %zu analog %zu visible %zu available %zu encrypted %zu numeric %zu missing %zu\n",
+                total,dvb,easi,analog,visible,available,encrypted,
+                numeric,missing);
             return 0;
         }
         char *end=NULL;

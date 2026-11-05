@@ -39,9 +39,12 @@ Latest core-TV data: [SERVICE-DB](artifacts/reports/SERVICE-DB-2026-11-05.md)
 adds a read-only settingsDB broadcast inventory (`service.list` v1) over
 DVBSerTable/EASISerTable/AnalogSerTable: 525 dumped rows (445 DVB/67 EASI/13
 analog), bounded text, table order, missing-table failure, CLI and real socket
-lifecycle. Host409 ok, verify45. This is the data foundation only; service-list
-filtering/LCN sorting, tuner acquisition, EPG/PVR, channel-list UI and stock
-parity remain open. No TV access; cold bundle not rebuilt.
+lifecycle. Exact StoredDvbServiceData stored-flag predicates and
+service-list stats are exposed (dump totals visible67/available338/encrypted67/
+numeric0/missing0). Host409 ok, verify45. This is the stored-data foundation
+only; runtime EASI active-list filtering/LCN sorting, tuner acquisition, EPG/
+PVR, channel-list UI and stock parity remain open. No TV access; cold bundle
+not rebuilt.
 
 ## Immediate continuation point
 

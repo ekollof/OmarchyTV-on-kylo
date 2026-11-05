@@ -41,10 +41,13 @@ capture remain open.
 SERVICE-DB-2026-11-05: firmware SQLiteStreamStorage maps service table types
 0xc9/0xca/0xcb to DVBSerTable/EASISerTable/AnalogSerTable. A new read-only
 adapter and mod_service_db expose service.list v1 with 525 dumped rows
-(445 DVB/67 EASI/13 analog), bounded text and missing-table failure. Synthetic,
-real-dump, reload/stop and real socket lifecycles pass; host409 ok, verify45.
-This is raw inventory only; filtering/LCN sorting, tuner selection, EPG/PVR, UI
-and stock parity remain open. No TV access; cold bundle not rebuilt.
+(445 DVB/67 EASI/13 analog), bounded text and missing-table failure. Exact
+StoredDvbServiceData stored-flag predicates (visible/available/encrypted/
+numeric/missing) and service-list stats are included; the dump totals
+67/338/67/0/0. Synthetic, real-dump, reload/stop and real socket lifecycles
+pass; host409 ok, verify45. Stored inventory only: runtime EASI active-list
+filtering/LCN sorting, tuner selection, EPG/PVR, UI and stock parity remain
+open. No TV access; cold bundle not rebuilt.
 
 PLAT-CONSUMERS-SOCKET-2026-11-05: a fake plat service provider starts the real
 host-build audio/source/ir/panel modules over the socket with hardware paths

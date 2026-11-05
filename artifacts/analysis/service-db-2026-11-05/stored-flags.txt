@@ -1,0 +1,15 @@
+StoredDvbServiceData flag predicates, from aurora.elf:
+  visibleService()     @0xabd274  ((flags ^ 2) & 3) >> 1
+  availableService()   @0xabd2e4  ((flags ^ 8) & 0xf) >> 3
+  encryptedService()   @0xabd2ac  ((flags ^ 4) & 7) >> 2
+  numericSelection()   @0xabd23c  (~flags) & 1
+  notFoundInLastScan() @0xabd31c  (flags & 0x1f) >> 4
+
+Dumped settingsDB.db, 525 rows (445 DVB / 67 EASI / 13 analog):
+  flags distribution: 7 x258, 15 x187, 1 x67, 135 x13
+  raw stored totals: visible 67, available 338, encrypted 67, numeric 0, missing 0
+
+These are stored-DB predicates. The vendor active service list additionally
+consults runtime EASI visibility and HD-simulcast state
+(ApplicationServiceList::isHiddenService @0xefba80), so this is not a complete
+channel-list filter.

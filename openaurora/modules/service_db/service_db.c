@@ -37,9 +37,13 @@ static int format(const struct oa_service_list *list, size_t index,
     const struct oa_service_row *row = &list->rows[index];
     return snprintf(buf, cap,
         "source=%s id=%" PRId64 " handle=%" PRId64 " lcn=%" PRId64
-        " type=%" PRId64 " flags=%" PRId64 " name=%s provider=%s\n",
+        " type=%" PRId64 " flags=%" PRId64 " visible=%d available=%d"
+        " encrypted=%d numeric=%d missing=%d name=%s provider=%s\n",
         oa_service_source_name(row->source), row->id, row->handle, row->lcn,
-        row->type, row->flags, row->name, row->provider);
+        row->type, row->flags, oa_service_visible(row),
+        oa_service_available(row), oa_service_encrypted(row),
+        oa_service_numeric_selection(row), oa_service_not_found(row),
+        row->name, row->provider);
 }
 
 static const oa_service_list_iface service = { snapshot, format };

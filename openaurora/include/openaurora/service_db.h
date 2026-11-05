@@ -71,6 +71,44 @@ int oa_service_db_read_all(const char *path, struct oa_service_list *out,
 void oa_service_db_free(struct oa_service_list *list);
 const char *oa_service_source_name(unsigned source);
 
+/* Exact raw predicates from StoredDvbServiceData (flags word at +0x14):
+ *   visibleService     ((flags ^ 2) & 3) >> 1
+ *   availableService   ((flags ^ 8) & 0xf) >> 3
+ *   encryptedService   ((flags ^ 4) & 7) >> 2
+ *   numericSelection   (~flags) & 1
+ *   notFoundInLastScan (flags & 0x1f) >> 4
+ * These are stored-DB predicates. The vendor's active service list additionally
+ * consults runtime EASI visibility/HD-simulcast state, so do not call these a
+ * complete channel-list filter. Inline so the sqlite-free host core can evaluate
+ * them without linking the database adapter. */
+static inline uint16_t oa_service_flags(const struct oa_service_row *row)
+{
+    return row ? (uint16_t)row->flags : 0;
+}
+static inline int oa_service_visible(const struct oa_service_row *row)
+{
+    uint16_t flags = oa_service_flags(row);
+    return ((flags ^ 2u) & 3u) >> 1;
+}
+static inline int oa_service_available(const struct oa_service_row *row)
+{
+    uint16_t flags = oa_service_flags(row);
+    return ((flags ^ 8u) & 0xfu) >> 3;
+}
+static inline int oa_service_encrypted(const struct oa_service_row *row)
+{
+    uint16_t flags = oa_service_flags(row);
+    return ((flags ^ 4u) & 7u) >> 2;
+}
+static inline int oa_service_numeric_selection(const struct oa_service_row *row)
+{
+    return (~oa_service_flags(row)) & 1u;
+}
+static inline int oa_service_not_found(const struct oa_service_row *row)
+{
+    return (oa_service_flags(row) & 0x1fu) >> 4;
+}
+
 #ifdef __cplusplus
 }
 #endif

@@ -42,6 +42,26 @@ service-list <index>      -> source=dvb id=... handle=... lcn=... type=... flags
 `service.list` is a borrowed immutable snapshot for the service hold lifetime;
 suspend/resume retains it. Stop/unload removes the service.
 
+## Stored flags
+
+The ordinary `m_flags` word has five recovered `StoredDvbServiceData`
+predicates:
+
+```
+visible             ((flags ^ 2) & 3) >> 1
+available           ((flags ^ 8) & 0xf) >> 3
+encrypted           ((flags ^ 4) & 7) >> 2
+numeric selection   (~flags) & 1
+not found in scan   (flags & 0x1f) >> 4
+```
+
+`service-list <index>` prints these values; `service-list stats` totals them.
+On the dumped 525 rows the raw stored counts are: visible 67, available 338,
+encrypted 67, numeric 0, missing 0. These are **stored-DB** predicates, not the
+vendor's complete active-list filter: `ApplicationServiceList::isHiddenService`
+also consults runtime EASI visibility and HD-simulcast state, which this
+offline provider does not have.
+
 ## Verification
 
 ```
@@ -63,9 +83,16 @@ test uses the dumped database and checks reload, stop and ENODEV after stop.
 The IPC test uses the real Unix socket and verifies the published
 `service.list:v1` lifecycle.
 
+## Evidence
+
+- `artifacts/analysis/service-db-2026-11-05/full-host-summary.txt`
+- `focused.txt`, `ipc.txt`, `verify.txt`
+- `arm-build.txt`, `arm-test-build.txt`, `arm-test.txt`
+- `stored-flags.txt`, `identities.txt`
+
 ## Limits
 
-This is a raw inventory provider, not a complete channel list. Still open:
+This is a stored-data inventory provider, not a complete channel list. Still open:
 
 - vendor service-list filtering, visibility, LCN sorting, duplicate/simulcast
   handling and active-list selection;
