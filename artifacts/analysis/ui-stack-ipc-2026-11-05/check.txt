@@ -1,0 +1,2 @@
+node tests/ui_stack_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok actual non-HAL UI stack IPC: settings/launcher rows, image.decode, recorder display and ui_vendor reloads

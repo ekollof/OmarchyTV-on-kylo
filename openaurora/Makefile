@@ -1145,6 +1145,11 @@ check-ui-vendor-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUI
 	node tests/ui_vendor_ipc.cjs $(abspath $(BUILD))
 check: check-ui-vendor-ipc
 
+.PHONY: check-ui-stack-ipc
+check-ui-stack-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_settings.so $(BUILD)/modules/mod_image_decode.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui_nav_display.so
+	node tests/ui_stack_ipc.cjs $(abspath $(BUILD))
+check: check-ui-stack-ipc
+
 .PHONY: check-vendor-decoder
 check-vendor-decoder: $(BUILD)/tests/vendor_decoder_probe.so
 	@test "$(TARGET)" = tv || { echo "check-vendor-decoder requires TARGET=tv"; exit 2; }

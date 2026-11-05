@@ -6,6 +6,12 @@ Private controls forward to EX_PLAT; successful ioctl still does not prove
 MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
+UI-STACK-IPC-2026-11-05: a real `--sock`/stdin non-HAL stack runs
+settings/launcher.db + image.decode + recorder display + ui_engine + ui_vendor.
+Launcher rows, decode hash, ui-state and dependency-safe reloads of all five
+providers pass. Host397 ok, verify45. Non-HAL only; physical fb1, full hardware
+module set, all-consumer holds and cold startup remain.
+
 UI-VENDOR-IPC-2026-11-05: `ui-state` queries the real ui.portal screen; a
 host with mod_nav_display (recorder display), ui_engine and ui_vendor is driven
 over `--sock` and stdin through start/use/stop/start/reload/unload/reload,

@@ -93,6 +93,14 @@ reauthorized; fb1 and stock operation must stay untouched. This supersedes the
 earlier "Don't touch the TV" restriction. No persistent replacement or boot
 changes. The historical offline-only entries describe their original runs.
 
+UI-STACK-IPC-2026-11-05 (host-only): a real `--sock`/stdin stack runs
+settings/launcher.db + image.decode + recorder display + ui_engine + ui_vendor.
+Launcher rows, decode hash, ui-state and dependency-safe reloads of
+image_decode/settings/ui_engine/nav_display/ui_vendor pass. Host397 ok,
+verify45. Host aa6ccb50…, settings f771e777…, image_decode b4a12158…,
+engine3783189c…, vendor1419e99c…, recorder9daf8c5e…. Non-HAL only; physical
+fb1, full hardware module set, all-consumer holds and cold startup remain.
+
 UI-VENDOR-IPC-2026-11-05 (host-only): `ui-state` exposes `ui.portal screen`;
 a real `--sock` host with mod_nav_display (recorder display), ui_engine and
 ui_vendor is driven through start/use/stop/start/reload/unload/reload,

@@ -144,6 +144,13 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
+Latest host stack: [UI-STACK-IPC](artifacts/reports/UI-STACK-IPC-2026-11-05.md)
+runs settings/launcher.db + image.decode + recorder display + ui_engine +
+ui_vendor over the real `--sock`/stdin control plane. Launcher rows, decode
+hash, ui-state and dependency-safe reloads of all five providers pass. Host397
+ok, verify45. Non-HAL only; physical fb1/full hardware module set/all-consumer
+holds/cold startup remain.
+
 Latest host lifecycle: [UI-VENDOR-IPC](artifacts/reports/UI-VENDOR-IPC-2026-11-05.md)
 adds `ui-state` and drives mod_nav_display (recorder display), ui_engine and
 ui_vendor over the real `--sock` control plane and stdin through

@@ -582,6 +582,14 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       UI-VENDOR-IPC. Limits: recorder display, not physical fb1; full module
       set/holds and cold startup remain.
 
+- [x] Real non-HAL UI stack socket lifecycle: settings/launcher.db,
+      image.decode, recorder display, ui_engine and ui_vendor run as a real
+      dependency chain over `--sock` and stdin. Launcher rows, decode hashes,
+      ui-state, and reloads of image_decode/settings/ui_engine/nav_display/
+      ui_vendor pass in dependency-safe order. Host397 ok, verify45.
+      UI-STACK-IPC. Limits: non-HAL modules only; physical fb1, full hardware
+      module set, holds under all consumers and cold startup remain.
+
 - [x] Vendor decoder-class differential: an ARM LD_PRELOAD probe executes the
       shipped PngImageDecoderImpl and JpegImageDecoder under qemu before vendor
       main, using vendor MemoryBufferSource/MutableImage and requested RGBA
