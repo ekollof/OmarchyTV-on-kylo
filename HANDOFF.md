@@ -104,7 +104,10 @@ The tile scaler is the recovered GL_LINEAR_MIPMAP_LINEAR path (createTexture
 0xb32eb0, setApplicationImage scaling type 1), implemented in common/canvas.c.
 Host423 ok, verify45. Limits: exact vendor bitmap fonts; JPEG staging uses
 TurboJPEG FASTDCT; Mali's mip kernel is box-assumed; residual per-cell
-sampling/source differences; fb1 not HDMI/cold-start.
+sampling/source differences; fb1 not HDMI/cold-start. Follow-up: a BACK AV
+stock Twitter oracle, firmware one-row scroll (`first=10` for selection 22),
+Markt insertion and EF41 font-4 focused labels; live-DB AE0.0619%/MAE8 0.158;
+both focused labels are 2px left of stock (residual).
 
 Latest channel runtime order:
 [CHANNEL-RUNTIME-ORDER](artifacts/reports/CHANNEL-RUNTIME-ORDER-2026-11-05.md)

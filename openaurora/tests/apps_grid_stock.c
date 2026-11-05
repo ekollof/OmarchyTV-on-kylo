@@ -30,6 +30,10 @@ static const char *config(void *p, const char *key, const char *def)
         const char *sel = getenv("OA_APPS_GRID_SEL");
         return sel && *sel ? sel : "0";
     }
+    if (!strcmp(key, "ui.font_index"))
+        return getenv("OA_FONT_INDEX");
+    if (!strcmp(key, "ui.font_pack"))
+        return getenv("OA_FONT_PACK");
     return def;
 }
 

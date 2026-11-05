@@ -951,6 +951,17 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       the dump and scrolled capture. Manifest AE 0.0629%, MAE8 0.160; top
       0.0035%, grid 0.1125%, scrollbar 0.0168%. STOCK-APPS-GRID-PARITY.
 
+- [x] Apps-grid live-DB focus/label and one-row scroll: captured the stock
+      Twitter-focused page on BACK AV and matched it with the live database
+      and original thumbnails. `SVGGrid::onDownKey` 0x10cb938 and
+      `FullScreenGrid::onNextKey` 0xd20530 move the window by one row
+      (`columns=5`), so selection 22 has `first=10`, not the old page-15
+      `first=15`. `ui_vendor` inserts Markt ahead of the 23 parent-1 rows when
+      absent and renders focused non-Markt labels with EF41 font 4 in
+      `#261719`. Full-image AE0.0619%/MAE8 0.158; focused `make -j24
+      check-ui-apps-grid` passes. Limits: recorder/offline render, not a
+      post-fix fb1 capture; both focused labels remain 2px left of stock.
+
 - [x] Vendor image-scaler parity: recovered the stock UI texture path from
       aurora.elf. hal::OpenGLGraphicsContext::createTexture 0xb32eb0 sets
       MAG_FILTER=GL_LINEAR and, for its mipmap bool, MIN_FILTER=

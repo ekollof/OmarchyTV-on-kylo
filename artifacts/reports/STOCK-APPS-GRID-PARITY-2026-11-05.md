@@ -135,6 +135,34 @@ left margin 0.0386, right margin 0.0179 and gap strip 0.0128 MAE8. A
 linear-light sampler was measured worse (0.199% vs 0.173% before the focus
 fix), which supports the non-sRGB texture path recovered from `createTexture`.
 
+## Live-DB focused label and one-row window (follow-up)
+
+The stock page was re-captured on BACK AV with **Twitter** focused
+(`artifacts/analysis/live-tv-2026-11-05/stock-apps-twitter-label.png`). The
+offline live-DB render at `ui.grid_sel=22` now matches the same rows
+(`offline-apps-twitter-label.png`):
+
+```
+full: AE=1283.19 (0.000619) MAE8=0.157799 changed=5.13%
+```
+
+The previous window was a 15-item page (`first=15` for selection 22), which
+showed the DW/Deezer row at the top. The firmware `SVGGrid::onDownKey`
+(`0x10cb938`) advances the window by one row (`columns=5`) when the focused
+row reaches the last visible row, and `FullScreenGrid::onNextKey`
+(`0xd20530`) does the same at the last column. With the row-aligned window,
+selection 22 has `first=10`, exactly the stock rows (DAZN row, DW row,
+YouTube Music/Twitter row). `ui_vendor` also inserts the special Markt tile
+ahead of the 23 parent-1 rows when the database does not already carry it,
+and draws every focused non-Markt label with EF41 font 4 in `#261719`.
+
+The label glyph raster matches exactly (81x22 ink bbox for Twitter, 318 dark
+pixels), but both the Twitter and YouTube Music ink bboxes are **2px left** of
+stock; a 2px shift reduces the label-strip AE from 3.14 to 0.41 per pixel.
+That is recorded as a residual, not patched to the capture. Focused
+`make -j24 check-ui-apps-grid` passes; the scroll fix is verified offline
+against the on-TV oracle, not by a post-fix fb1 capture.
+
 ## Limits
 
 - The corpus is the firmware-dump parent-1 catalog plus Markt, not the live

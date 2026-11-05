@@ -103,6 +103,19 @@ per-cell sampling/source differences; fb1 not HDMI/cold-start scanout.
 DIAL navigation changed only the stock UI screen; no settings/source change.
 Staging removed.
 
+STOCK-APPS-GRID-TWITTER-2026-11-05: a new BACK AV stock oracle focused
+Twitter on the live page. The firmware window moves by one row, not a 15-item
+page: `SVGGrid::onDownKey` 0x10cb938 calls `moveWindowDown(columns)` when the
+focused row reaches the last visible row, and `FullScreenGrid::onNextKey`
+0xd20530 does the same at the last column. Selection 22 therefore has
+`first=10` (DAZN/DW/YouTubeMusic rows), matching stock; the old `first=15` was
+a full-page assumption. `ui_vendor` inserts the Markt tile ahead of the 23
+parent-1 rows when absent and draws focused non-Markt labels with EF41 font 4
+in `#261719`. Live-DB full-image AE0.0619%/MAE8 0.158 against the stock
+Twitter capture; label glyphs match exactly but both Twitter and YouTube
+Music are 2px left (residual, not patched to the capture). Focused
+`make -j24 check-ui-apps-grid` passes. STOCK-APPS-GRID-PARITY follow-up.
+
 CHANNEL-RUNTIME-ORDER-2026-11-05 (host/qemu + read-only fb1): added a
 channels module/parser for the recovered ACTIVECHANNELLIST XML (order-preserving,
 512-row bound, entity decode, transactional replacement) with

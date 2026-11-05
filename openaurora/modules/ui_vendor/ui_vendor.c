@@ -174,6 +174,10 @@ struct ctx {
     struct oa_bitmap_font font;      /* font7: row labels and text values */
     struct oa_bitmap_font font_num;  /* font16: slider digits and disabled label */
     int font_num_on;
+    struct oa_bitmap_font app_font;  /* font4: focused apps-grid label */
+    unsigned char *app_font_data;
+    int app_font_on;
+    char grid_labels[MAX_GRID][64];
     struct oa_bitmap_font font_title; /* font18: tab title */
     unsigned char *font_title_data;
     struct settings_text_canvas {
@@ -525,6 +529,9 @@ static void settings_text_free(struct ctx *c)
     free(c->font_data);
     free(c->font_num_data);
     c->font_data = c->font_num_data = NULL;
+    free(c->app_font_data);
+    c->app_font_data = NULL;
+    c->app_font_on = 0;
     free(c->title.rgba);
     free(c->font_title_data);
     c->title.rgba = NULL;
@@ -547,6 +554,27 @@ static int settings_font_open(struct oa_font_pack *pack, int id,
         return rc;
     }
     *data = buf;
+    return 0;
+}
+
+/* The stock apps grid draws the focused application name in the orange strip
+ * with the same EF41 font as the Markt label (record 4 in this theme pack). */
+static int app_label_open(struct ctx *c)
+{
+    if (!c || c->app_font_on) return 0;
+    if (!c->font_pack.count) {
+        const char *index_path = c->api->config_get(c->api->priv, "ui.font_index",
+            "/vendor2/dynamic_ui/telefunken18_font_byte_data.txt");
+        const char *pack_path = c->api->config_get(c->api->priv, "ui.font_pack",
+            "/vendor2/dynamic_ui/telefunken18_font_byte_data.bin");
+        int rc = oa_font_pack_init(&c->font_pack, index_path, pack_path);
+        if (rc) return rc;
+    }
+    int id = atoi(c->api->config_get(c->api->priv, "ui.app_font_id", "4"));
+    int rc = settings_font_open(&c->font_pack, id, &c->app_font,
+        &c->app_font_data);
+    if (rc) return rc;
+    c->app_font_on = 1;
     return 0;
 }
 
@@ -1015,6 +1043,76 @@ static const struct oa_svg_scrollbar_render_ops apps_sbar_ops={
     apps_rect_height,apps_vertical_rect,apps_vertical_name,
     apps_vertical_container};
 
+static void paint_app_label(struct ctx *c, int x, int y, int idx)
+{
+    if (!c || !c->d || !c->app_font_on || idx < 0 || idx >= MAX_GRID)
+        return;
+    const char *text = c->grid_labels[idx];
+    if (!text[0])
+        return;
+    int advance = 0, font_height = 0;
+    if (oa_font_text_measure(&c->app_font, text, 0, &advance) != 0 ||
+        advance < 1 || advance > APPS_CELL_W - 16 ||
+        oa_bitmap_font_height(&c->app_font, &font_height) != 0 ||
+        font_height < 1 || font_height > 128)
+        return;
+    const int margin = 8;
+    int width = advance + 2 * margin, height = font_height + 2 * margin;
+    unsigned char *buf = calloc((size_t)width * (size_t)height * 4u, 1);
+    if (!buf) return;
+    oa_canvas canvas = { buf, width, height };
+    static const uint8_t ink[4] = { 38, 23, 25, 255 };
+    if (oa_font_text_draw(&canvas, &c->app_font, text, margin, margin, ink,
+            0, NULL) != 0) {
+        free(buf);
+        return;
+    }
+    int minx = width, miny = height, maxx = -1, maxy = -1;
+    for (int py = 0; py < height; py++)
+        for (int px = 0; px < width; px++)
+            if (buf[((size_t)py * (size_t)width + (size_t)px) * 4u + 3u]) {
+                if (px < minx) minx = px;
+                if (px > maxx) maxx = px;
+                if (py < miny) miny = py;
+                if (py > maxy) maxy = py;
+            }
+    if (maxx < minx || maxy < miny) {
+        free(buf);
+        return;
+    }
+    int cw = maxx - minx + 1, ch = maxy - miny + 1;
+    unsigned char *crop = calloc((size_t)cw * (size_t)ch * 4u, 1);
+    if (!crop) {
+        free(buf);
+        return;
+    }
+    for (int py = 0; py < ch; py++)
+        memcpy(crop + (size_t)py * (size_t)cw * 4u,
+            buf + ((size_t)(miny + py) * (size_t)width + (size_t)minx) * 4u,
+            (size_t)cw * 4u);
+    c->d->blit(x + (APPS_CELL_W - cw) / 2, y + 189, cw, ch, crop);
+    free(crop);
+    free(buf);
+}
+
+/* SVGGrid::onDownKey moves the window by one row (columns) when the focused
+ * row reaches the last visible row; FullScreenGrid::onNextKey does the same
+ * when wrapping past the last column. The window is therefore row-aligned and
+ * first is at most (total_rows - APPS_ROWS) * APPS_COLS. */
+static int apps_first_row(const struct ctx *c)
+{
+    int total_rows=(c->grid_count+APPS_COLS-1)/APPS_COLS;
+    int row=c->grid_sel/APPS_COLS;
+    int first=row>=APPS_ROWS?row-APPS_ROWS+1:0;
+    int max_first=total_rows>APPS_ROWS?total_rows-APPS_ROWS:0;
+    return first>max_first?max_first:first;
+}
+
+static int apps_first_visible(const struct ctx *c)
+{
+    return apps_first_row(c)*APPS_COLS;
+}
+
 static void paint_apps(struct ctx *c)
 {
     const oa_ui_engine_iface *d=c->d;
@@ -1036,7 +1134,7 @@ static void paint_apps(struct ctx *c)
     const oa_ui_icon *title=find_icon(c,"apps_title");
     if (stock && title && title->w>0 && title->h>0)
         d->blit(81,68,title->w,title->h,title->rgba);
-    int first=(c->grid_sel/APPS_VISIBLE)*APPS_VISIBLE;
+    int first=apps_first_visible(c);
     for (int row=0;row<APPS_ROWS;row++) for (int col=0;col<APPS_COLS;col++) {
         int idx=first+row*APPS_COLS+col;
         if (idx>=c->grid_count) continue;
@@ -1063,10 +1161,14 @@ static void paint_apps(struct ctx *c)
                     icon->w,icon->h,icon->rgba);
             }
         }
-        if (stock && idx==0) {
-            const oa_ui_icon *label=find_icon(c,"markt_label");
-            if (label && label->w>0 && label->h>0)
-                d->blit(x+125,y+189,label->w,label->h,label->rgba);
+        if (stock && idx==c->grid_sel) {
+            if (idx==0) {
+                const oa_ui_icon *label=find_icon(c,"markt_label");
+                if (label && label->w>0 && label->h>0)
+                    d->blit(x+125,y+189,label->w,label->h,label->rgba);
+            } else {
+                paint_app_label(c,x,y,idx);
+            }
         }
     }
     if (stock) {
@@ -1077,8 +1179,12 @@ static void paint_apps(struct ctx *c)
             int bar=688*APPS_VISIBLE/(int)c->grid_count-APPS_CAP_BOTTOM;
             if (bar<36)bar=36;
             if (bar>688)bar=688;
-            int pos=(int)c->grid_count>APPS_VISIBLE
-                ? (688-bar)*first/((int)c->grid_count-APPS_VISIBLE) : 688-bar;
+            int total_rows=(c->grid_count+APPS_COLS-1)/APPS_COLS;
+            int max_first=total_rows>APPS_ROWS
+                ? (total_rows-APPS_ROWS)*APPS_COLS : 0;
+            int pos=max_first>0 ? (688-bar)*first/max_first : 688-bar;
+            if (pos<0) pos=0;
+            if (pos>688-bar) pos=688-bar;
             if (bar<688) d->fill(1750,180+pos,4,bar,255,255,255);
         }
     } else {
@@ -1946,7 +2052,7 @@ static void move_key(struct ctx *c, uint8_t id)
 /* Live LauncherItem home row: parent 0, non-deleted, type 2 with a thumbnail
  * name, ordered by m_order_index (the stock portal's card order). Falls back to
  * DEFAULT_CARDS when the launcher.db service or its rows are unavailable. */
-struct live_card { int32_t order,id; char name[48]; };
+struct live_card { int32_t order,id; char name[48]; char label[64]; };
 static int live_card_cmp(const void *a,const void *b)
 {
     const struct live_card *x=a,*y=b;
@@ -1975,6 +2081,8 @@ static int load_live_cards(struct ctx *c)
             continue;
         struct live_card candidate={.order=row.order_index,.id=row.id};
         snprintf(candidate.name,sizeof candidate.name,"%s",row.thumb_file_name);
+        snprintf(candidate.label,sizeof candidate.label,"%s",
+            row.application_name ? row.application_name : "");
         unsigned at=0;
         while(at<n && live_card_cmp(&cards[at],&candidate)<=0)++at;
         if(at>=MAX_GRID)continue;
@@ -1986,8 +2094,32 @@ static int load_live_cards(struct ctx *c)
     c->api->release(c->api->priv,OA_SVC_LAUNCHER_DB);
     if(!n)return 0;
     c->grid_count=(int)n;
-    for(unsigned i=0;i<n;++i)
+    for(unsigned i=0;i<n;++i) {
         snprintf(c->grid_cards[i],sizeof c->grid_cards[0],"%s",cards[i].name);
+        snprintf(c->grid_labels[i],sizeof c->grid_labels[0],"%s",
+            cards[i].label);
+    }
+    /* The stock full-screen Apps catalog starts with the special Markt tile,
+     * then the 23 parent-1 LauncherItem rows. The Markt row is not a
+     * LauncherItem, so insert it explicitly for the apps grid unless the
+     * supplied database already carries one. */
+    int has_markt = 0;
+    for (unsigned i = 0; i < n; i++)
+        if (!strcmp(cards[i].name, "markt")) has_markt = 1;
+    if(parent==1 && !has_markt && n<MAX_GRID) {
+        memmove(&c->grid_cards[1],&c->grid_cards[0],
+            n*sizeof c->grid_cards[0]);
+        memmove(&c->grid_labels[1],&c->grid_labels[0],
+            n*sizeof c->grid_labels[0]);
+        snprintf(c->grid_cards[0],sizeof c->grid_cards[0],"%s","markt");
+        snprintf(c->grid_labels[0],sizeof c->grid_labels[0],"%s","Markt");
+        c->grid_count=(int)n+1;
+    } else if (has_markt) {
+        for (unsigned i = 0; i < n; i++)
+            if (!strcmp(cards[i].name, "markt"))
+                snprintf(c->grid_labels[i],sizeof c->grid_labels[0],"%s",
+                    "Markt");
+    }
     if(n>MAX_CARDS)n=MAX_CARDS;
     c->nc=(int)n;
     for(unsigned i=0;i<n;++i)
@@ -2201,6 +2333,8 @@ static int m_start(void *v)
     }
     if (atoi(c->api->config_get(c->api->priv, "ui.text", "0")) == 1)
         (void)settings_text_load(c);
+    if (c->screen == SCREEN_APPS)
+        (void)app_label_open(c);
     c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
     if (c->api->config_get(c->api->priv, "ui.paint", "1")[0] == '1')
         paint(c);

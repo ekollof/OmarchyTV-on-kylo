@@ -23,6 +23,19 @@ static int g_apps,g_png,g_jpeg;
 static char g_grid_sel[16]="0";
 static const char *g_override="";
 
+/* SVGGrid scrolls one row at a time: keep the focused row inside the 3-row
+ * window and clamp the first row to the last full window. */
+static int apps_first_for(int sel,int total)
+{
+    const int cols=5,rows=3;
+    int total_rows=(total+cols-1)/cols;
+    int row=sel/cols;
+    int first=row>=rows?row-rows+1:0;
+    int max_first=total_rows>rows?total_rows-rows:0;
+    if(first>max_first)first=max_first;
+    return first*cols;
+}
+
 static const char *config(void *p,const char *key,const char *def)
 {
     (void)p;
@@ -375,7 +388,7 @@ int main(int argc,char **argv)
         assert(trace && portal);
         assert(portal->screen()==(g_apps?5:0));
         if(g_apps) {
-            int first=(atoi(g_grid_sel)/15)*15;
+            int first=apps_first_for(atoi(g_grid_sel),(int)total);
             if(first>=(int)total)first=0;
             int visible=(int)total-first;
             if(visible>15)visible=15;
@@ -429,7 +442,9 @@ int main(int argc,char **argv)
                     }
                     int at=page*15,w=270,h=w*expected_h[at]/expected_w[at];
                     if(h>210){h=210;w=h*expected_w[at]/expected_h[at];}
-                    assert(find_card_blit(trace,183+(310-w)/2,180+(230-h)/2,
+                    int first=apps_first_for(at,(int)total);
+                    int row=at/5-first/5;
+                    assert(find_card_blit(trace,183+(310-w)/2,180+row*230+(230-h)/2,
                         w,h,expected_w[at],expected_h[at]));
                 }
                 puts("ok ui apps cache: all64 globally ordered cards render after other screens");
