@@ -14,6 +14,11 @@ state/access restored afterward. Historical offline/fb1 exclusions below describ
 their original runs. No persistent replacement, boot-hook changes or stock
 Aurora/watchdog takeover is authorized.
 
+Owner decision 2026-11-05 (NDAL/hardware acceptance): "Keep offline for now."
+No cold-start, display/fb1, NDAL frontend/demux or PVR hardware window is
+granted; do not open TV devices or wake the set. Continue mock/offline
+contracts; ask again only after a new owner instruction.
+
 Full vendor parity except telemetry/advertising, with reloadable modules and
 eventually native OmarchyTV. Replacement is incomplete. November 1 owner
 authorization permits temporary idle hardware/CEC/audio tests; see AGENTS.md.

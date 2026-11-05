@@ -120,6 +120,11 @@ ARM/qemu passes. Limits: mock only, DVB-T tune path only, no live EIT/demux or
 PVR stream, no hardware acceptance; cold start/display owner-gated. No TV
 access.
 
+Owner decision 2026-11-05 (NDAL/hardware acceptance): "Keep offline for now."
+No cold-start, display/fb1, NDAL frontend/demux or PVR hardware window is
+granted. Do not open TV devices, wake the set or change stock state; the
+offline mock/contract work remains the active path.
+
 BROADCAST-VENDOR-FIELDS-2026-11-05 (host/qemu): extended the broadcast
 contracts with the recovered vendor fields: tuner lock/strength/quality/BER/
 SNR/UNC, EPG CRID/first-showing/running-status/state/version/actual, and PVR
