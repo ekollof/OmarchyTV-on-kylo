@@ -109,6 +109,31 @@ static inline int oa_service_not_found(const struct oa_service_row *row)
     return (oa_service_flags(row) & 0x1fu) >> 4;
 }
 
+enum oa_service_sort {
+    OA_SERVICE_SORT_TABLE = 0,
+    OA_SERVICE_SORT_NAME = 1,
+    OA_SERVICE_SORT_CHANNEL_NO = 2
+};
+
+struct oa_service_query {
+    uint8_t source_mask;        /* bit0 DVB, bit1 EASI, bit2 analog */
+    uint8_t visible_only;
+    uint8_t available_only;
+    uint8_t exclude_encrypted;
+    uint8_t exclude_missing;
+    uint8_t sort;               /* enum oa_service_sort */
+    uint8_t descending;
+};
+
+/* Filters/sorts a borrowed snapshot without mutating it. Fills up to cap
+ * indexes and reports the full match count. NAME is ASCII case-insensitive;
+ * CHANNEL_NO is the stored m_channel_no, not runtime EASI LCN/RSN. Only the
+ * stored predicates are applied; runtime EASI visibility is still required for
+ * the vendor's active-list filtering. Returns 0, or -errno. */
+int oa_service_list_query(const struct oa_service_list *list,
+    const struct oa_service_query *query, size_t *indexes, size_t cap,
+    size_t *matched);
+
 #ifdef __cplusplus
 }
 #endif

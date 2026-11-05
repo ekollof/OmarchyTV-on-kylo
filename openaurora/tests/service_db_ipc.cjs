@@ -75,6 +75,8 @@ async function main() {
         assert.match(row, /^source=dvb /);
         assert.match(row, / visible=/);
         assert.match(row, / name=/);
+        assert.match(await command('service-list name 0'), /^source=.* name=/);
+        assert.match(await command('service-list channel 0'), /^source=.* name=/);
 
         assert.equal(await command('reload service_db'), 'ok');
         assert.equal(await command('service-list'), 'count 525');

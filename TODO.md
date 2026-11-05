@@ -426,10 +426,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `service.list` v1 and `service-list` CLI; 525-row dump (445 DVB/67 EASI/
       13 analog), synthetic edge cases, reload/stop and real socket lifecycle.
       Exact stored flags predicates (visible/available/encrypted/numeric/
-      missing) and `service-list stats` are included. Host409 ok, verify45.
-      SERVICE-DB. Limits: stored inventory only; runtime EASI active-list
-      filtering/LCN sorting, tuner selection, EPG/PVR, UI and stock parity
-      remain open.
+      missing), `service-list stats`, and name/channel_no query ordering with
+      source/predicate filters are included. Host409 ok, verify45. SERVICE-DB.
+      Limits: the live DB's m_lcn is 0x....ffff sentinels; getLcn and
+      isHiddenService use runtime EASI, so active-list LCN/filter parity
+      requires a runtime probe or an explicit provisional-order decision.
+      Tuner, EPG/PVR, channel-list UI and stock parity remain open.
 - [ ] Apps/browser/media integration, picture quality/FRC, network and Bluetooth.
 - [ ] Tuner/DVB-T/DVB-S, EPG/service lists, teletext/MHEG/interactive TV, PVR/
       timeshift/playback, CI+/conditional access and associated persistence.

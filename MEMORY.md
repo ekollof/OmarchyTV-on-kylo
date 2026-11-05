@@ -25,11 +25,16 @@ AnalogSerTable. A read-only adapter reads the dumped 445 DVB/67 EASI/13 analog
 rows with bounded text and missing-table failure; mod_service_db publishes
 service.list v1 and the CLI serves count/stats/one-row queries. Exact
 StoredDvbServiceData stored-flag predicates (visible/available/encrypted/
-numeric/missing) are exposed; the dump totals 67/338/67/0/0. Synthetic edge
-cases, real-dump probe, reload/stop and a real Unix-socket lifecycle pass.
-Host409 ok, verify45. Stored inventory only: runtime EASI active-list
-filtering/LCN sorting, tuner selection, EPG/PVR, UI and stock parity remain
-open. No TV access; cold bundle not rebuilt.
+numeric/missing) are exposed; the dump totals 67/338/67/0/0. A stored
+name/channel_no query with source/predicate filters is also implemented.
+Synthetic edge cases, real-dump probe, reload/stop and a real Unix-socket
+lifecycle pass. Host409 ok, verify45. A read-only live DB fetch found
+54 DVB/67 EASI/13 analog and m_lcn values with low16=0xffff; getLcn
+(0xefce65) and isHiddenService (0xefba80) use runtime EASI, so active-list
+LCN/filter parity needs a runtime probe or an explicit provisional-order
+decision. Tuner, EPG/PVR, channel-list UI and stock parity remain open.
+No persistent TV write; tvssh sent WoL for the read-only fetch. Cold bundle
+not rebuilt.
 
 AMP-VIDEO-OWNER-2026-11-04 adds firmware/relocation evidence only: video24 is
 extin, whose actual open/close callbacks have no input teardown; the similarly

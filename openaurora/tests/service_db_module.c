@@ -50,6 +50,14 @@ int main(int argc, char **argv)
     assert(strstr(out, "source=dvb"));
     assert(strstr(out, "visible="));
     assert(strstr(out, "name="));
+    assert(!command(h, "service-list name 0", out, sizeof out));
+    assert(strstr(out, "source=") && strstr(out, "name="));
+    assert(!command(h, "service-list channel 0", out, sizeof out));
+    assert(strstr(out, "source=") && strstr(out, "name="));
+    assert(command(h, "service-list name", out, sizeof out) == -1);
+    assert(strstr(out, "failed errno 22"));
+    assert(command(h, "service-list channel 999999", out, sizeof out) == -1);
+    assert(strstr(out, "failed errno 22"));
     assert(command(h, "service-list 525", out, sizeof out) == -1);
     assert(strstr(out, "failed errno 22"));
     assert(command(h, "service-list -1", out, sizeof out) == -1);

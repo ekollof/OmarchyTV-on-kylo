@@ -1,0 +1,27 @@
+source: read-only `cat /conf/sqlite_db/settingsDB.db` over tools/tvssh.sh
+TV: 192.168.178.87, 2026-11-05. tvssh reported the set asleep and sent WoL.
+No write, setting, service, fb1, HAL or persistent operation was performed.
+Live file SHA256: 35cc971a45933a8dfd1babcadafc4e1f70947fc681e2f378034fab6edaea6813
+Size: 962560 bytes
+
+Rows:
+  DVBSerTable    54
+  EASISerTable   67
+  AnalogSerTable 13
+
+The live DB differs from the dumped DB (445/67/13, SHA256
+7c34292b524439edd6210ff5983580e2831cb19cbd8ad4f8cdd3cba21a4d8edf).
+
+Stored m_lcn examples from live DVB rows:
+  570490879  0x2200ffff
+  285278207  0x1100ffff
+  536936447  0x2000ffff
+   67174399  0x0400ffff
+  268500991  0x1000ffff
+
+The low 16 bits are 0xffff in these groups. The live DB does not carry the
+runtime EASI LCN. `ApplicationServiceList::getLcn` @0xefce65 queries
+EASIControlInterface::queryServiceLogicalChannelNumber / queryLcnFromServiceList;
+`ApplicationServiceList::isHiddenService` @0xefba80 queries runtime EASI
+visibility and HD-simulcast state. Therefore DB-only reads cannot reproduce the
+vendor's active-list LCN ordering/visibility.

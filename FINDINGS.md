@@ -43,11 +43,15 @@ SERVICE-DB-2026-11-05: firmware SQLiteStreamStorage maps service table types
 adapter and mod_service_db expose service.list v1 with 525 dumped rows
 (445 DVB/67 EASI/13 analog), bounded text and missing-table failure. Exact
 StoredDvbServiceData stored-flag predicates (visible/available/encrypted/
-numeric/missing) and service-list stats are included; the dump totals
-67/338/67/0/0. Synthetic, real-dump, reload/stop and real socket lifecycles
-pass; host409 ok, verify45. Stored inventory only: runtime EASI active-list
-filtering/LCN sorting, tuner selection, EPG/PVR, UI and stock parity remain
-open. No TV access; cold bundle not rebuilt.
+numeric/missing), stats, and name/channel_no query ordering with filters are
+included; the dump totals 67/338/67/0/0. A read-only live DB fetch found
+54 DVB/67 EASI/13 analog and m_lcn low16=0xffff sentinels. getLcn (0xefce65)
+and isHiddenService (0xefba80) use runtime EASI, so active-list LCN/filter
+parity needs a runtime probe or an explicit provisional-order decision.
+Synthetic, real-dump, reload/stop and real socket lifecycles pass; host409 ok,
+verify45. Tuner, EPG/PVR, channel-list UI and stock parity remain open. No
+persistent TV write; tvssh sent WoL for the read-only fetch. Cold bundle not
+rebuilt.
 
 PLAT-CONSUMERS-SOCKET-2026-11-05: a fake plat service provider starts the real
 host-build audio/source/ir/panel modules over the socket with hardware paths

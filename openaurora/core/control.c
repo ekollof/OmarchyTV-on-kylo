@@ -212,6 +212,8 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "                           settingsDB LauncherItem rows\n"
                  "  service-list             broadcast-service inventory count\n"
                  "  service-list stats       inventory flags/source totals\n"
+                 "  service-list name <index>    stored-name sorted row\n"
+                 "  service-list channel <index> stored-channel_no sorted row\n"
                  "  service-list <index>     one DVB/EASI/analog inventory row\n"
                  "  image-decode <path>      decode PNG/JPEG through image.decode\n"
                  "  ui-state                query ui.portal screen\n"
@@ -287,7 +289,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         return 0;
     }
     if(!strcmp(cmd,"service-list")) {
-        if(force || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        if(force){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
         const oa_service_list_iface *svc=
             h->api.lookup(h,OA_SVC_SERVICE_LIST,1);
         if(!svc){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
@@ -300,7 +302,41 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
             snprintf(outbuf,outlen,"count %zu\n",count);
             return 0;
         }
+        if(!strcmp(a1,"name") || !strcmp(a1,"channel")) {
+            if(!a2 || a3){h->api.release(h,OA_SVC_SERVICE_LIST);
+                snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+            char *end=NULL;
+            errno=0;
+            unsigned long long value=strtoull(a2,&end,10);
+            if(errno || end==a2 || !end || *end){h->api.release(h,OA_SVC_SERVICE_LIST);
+                snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+            struct oa_service_query q;
+            memset(&q,0,sizeof q);
+            q.source_mask=0x7;
+            q.sort=(uint8_t)(!strcmp(a1,"name")?OA_SERVICE_SORT_NAME:
+                OA_SERVICE_SORT_CHANNEL_NO);
+            size_t *order=malloc(list->count*sizeof *order);
+            size_t matched=0;
+            if(!order){h->api.release(h,OA_SVC_SERVICE_LIST);
+                snprintf(outbuf,outlen,"failed errno %d\n",ENOMEM);return -1;}
+            int qrc=oa_service_list_query(list,&q,order,list->count,&matched);
+            if(qrc || value>=matched) {
+                free(order);h->api.release(h,OA_SVC_SERVICE_LIST);
+                snprintf(outbuf,outlen,"failed errno %d\n",qrc?-qrc:EINVAL);
+                return -1;
+            }
+            char line[512];
+            int written=svc->format(list,order[value],line,sizeof line);
+            free(order);h->api.release(h,OA_SVC_SERVICE_LIST);
+            if(written<0 || (size_t)written>=sizeof line) {
+                snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;
+            }
+            snprintf(outbuf,outlen,"%s",line);
+            return 0;
+        }
         if(!strcmp(a1,"stats")) {
+            if(a2 || a3){h->api.release(h,OA_SVC_SERVICE_LIST);
+                snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
             size_t total=list->count;
             size_t dvb=0,easi=0,analog=0,visible=0,available=0,encrypted=0;
             size_t numeric=0,missing=0;
@@ -322,6 +358,8 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                 numeric,missing);
             return 0;
         }
+        if(a2 || a3){h->api.release(h,OA_SVC_SERVICE_LIST);
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
         char *end=NULL;
         errno=0;
         unsigned long long value=strtoull(a1,&end,10);

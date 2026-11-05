@@ -391,7 +391,7 @@ check-launcher-db-module: $(BUILD)/tests/launcher_db_module $(BUILD)/modules/mod
 	@$(BUILD)/tests/launcher_db_module $(BUILD)/modules $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
 check: check-launcher-db-module
 
-$(BUILD)/tests/service_db: tests/service_db.c common/service_db.c include/openaurora/service_db.h
+$(BUILD)/tests/service_db: tests/service_db.c common/service_db.c core/service_query.c include/openaurora/service_db.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Ithird_party $(LDFLAGS) -o $@ $(filter %.c,$^) \
 	  $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)

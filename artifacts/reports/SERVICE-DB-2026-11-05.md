@@ -42,6 +42,23 @@ service-list <index>      -> source=dvb id=... handle=... lcn=... type=... flags
 `service.list` is a borrowed immutable snapshot for the service hold lifetime;
 suspend/resume retains it. Stop/unload removes the service.
 
+## Stored query and runtime gate
+
+The stored query supports `name` and `channel_no` ordering plus source/stored-
+predicate filters. CLI examples are `service-list name <index>` and
+`service-list channel <index>`; the underlying call is
+`oa_service_list_query`.
+
+This is **not** the vendor active service list. A read-only live DB fetch
+(54 DVB/67 EASI/13 analog, SHA256
+`35cc971a…`) shows `m_lcn` values such as `0x2200ffff` with low-16 `0xffff`.
+`ApplicationServiceList::getLcn` (`0xefce65`) gets the LCN from runtime EASI
+(`queryServiceLogicalChannelNumber`/`queryLcnFromServiceList`), and
+`isHiddenService` (`0xefba80`) queries runtime EASI visibility/HD-simulcast
+state. The offline DB cannot reproduce that. Runtime EASI probing or a
+provisional ordering decision is therefore required before claiming channel-list
+parity.
+
 ## Stored flags
 
 The ordinary `m_flags` word has five recovered `StoredDvbServiceData`
@@ -71,6 +88,9 @@ ok service_db module: 525 DVB/EASI/analog rows via reloadable service.list and C
 ok service_db IPC: 525-row inventory, service publication, reload, stop/unload
 ```
 
+The adapter test also covers name/channel ordering, source/stored-predicate
+filters, descending/cap behavior and the reported full match count.
+
 Full host `make check`: **409 ok**. `verify.cjs`: **45 groups**.
 
 A fresh ARM/TV build of `mod_service_db.so` and the adapter test also passes
@@ -88,7 +108,7 @@ The IPC test uses the real Unix socket and verifies the published
 - `artifacts/analysis/service-db-2026-11-05/full-host-summary.txt`
 - `focused.txt`, `ipc.txt`, `verify.txt`
 - `arm-build.txt`, `arm-test-build.txt`, `arm-test.txt`
-- `stored-flags.txt`, `identities.txt`
+- `stored-flags.txt`, `live-db-check.txt`, `identities.txt`
 
 ## Limits
 

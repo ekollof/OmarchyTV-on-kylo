@@ -1,11 +1,13 @@
-/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Ithird_party  -o build/tests/service_db tests/service_db.c common/service_db.c \
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Ithird_party  -o build/tests/service_db tests/service_db.c common/service_db.c core/service_query.c \
    -lsqlite3
   ok   service DB inventory: DVB/EASI/analog rows, bounded text, table order, missing-table failure
 ok service DB dump: 525 rows (445 dvb, 67 easi, 13 analog)
-/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -Ithird_party  -o build/tests/service_db_module tests/service_db_module.c common/service_db.c build/core/check.o build/core/control.o build/core/host.o build/core/module.o build/core/skin.o -ldl -pthread -lm \
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build/core/service_query.o core/service_query.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -Ithird_party  -o build/tests/service_db_module tests/service_db_module.c common/service_db.c build/core/check.o build/core/control.o build/core/host.o build/core/module.o build/core/service_query.o build/core/skin.o -ldl -pthread -lm \
    -lsqlite3
 /usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build/modules/mod_service_db.so modules/service_db/service_db.c common/service_db.c  \
   -Ithird_party  -lsqlite3
 ok service_db module: 525 DVB/EASI/analog rows via reloadable service.list and CLI
+/usr/bin/ccache cc  -o build/openaurora build/core/check.o build/core/control.o build/core/host.o build/core/main.o build/core/module.o build/core/service_query.o build/core/skin.o -ldl -pthread -lm
 node tests/service_db_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
 ok service_db IPC: 525-row inventory, service publication, reload, stop/unload

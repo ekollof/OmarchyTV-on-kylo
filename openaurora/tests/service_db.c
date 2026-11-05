@@ -79,6 +79,42 @@ static void synthetic(void)
     assert(oa_service_not_found(&list.rows[0]) == 0);
     assert(oa_service_visible(&list.rows[3]) == 1); /* EASI flags 1 */
 
+    struct oa_service_query query;
+    size_t order[5], matched = 0;
+    memset(&query, 0, sizeof query);
+    query.source_mask = 0x7;
+    query.sort = OA_SERVICE_SORT_NAME;
+    assert(!oa_service_list_query(&list, &query, order, 5, &matched));
+    assert(matched == 5 && !strcmp(list.rows[order[0]].name, "A"));
+    assert(!strcmp(list.rows[order[1]].name, "Analog One"));
+    assert(!strcmp(list.rows[order[2]].name, "DVB One"));
+
+    query.sort = OA_SERVICE_SORT_CHANNEL_NO;
+    assert(!oa_service_list_query(&list, &query, order, 5, &matched));
+    assert(matched == 5 && list.rows[order[0]].source == OA_SERVICE_SOURCE_EASI);
+    assert(list.rows[order[0]].channel_no == 0);
+    assert(list.rows[order[1]].channel_no == 1);
+    assert(list.rows[order[4]].channel_no == 42);
+
+    query.source_mask = 1u << OA_SERVICE_SOURCE_DVB;
+    query.available_only = 1;
+    assert(!oa_service_list_query(&list, &query, order, 5, &matched));
+    assert(matched == 2 && list.rows[order[0]].flags == 7 &&
+        list.rows[order[1]].flags == 7);
+
+    query.source_mask = 1u << OA_SERVICE_SOURCE_EASI;
+    query.visible_only = 1;
+    assert(!oa_service_list_query(&list, &query, order, 5, &matched));
+    assert(matched == 1 && order[0] == 3);
+
+    query.source_mask = 0x7;
+    query.visible_only = query.available_only = 0;
+    query.exclude_encrypted = 1;
+    assert(!oa_service_list_query(&list, &query, order, 5, &matched));
+    assert(matched == 4);
+    assert(!oa_service_list_query(&list, &query, order, 1, &matched));
+    assert(matched == 4); /* cap limits output, not the reported match count */
+
     assert(strlen(list.rows[1].name) == OA_SERVICE_NAME_MAX - 1);
     assert(strlen(list.rows[1].provider) == OA_SERVICE_PROVIDER_MAX - 1);
     assert(!strcmp(list.rows[2].name, "A"));
@@ -133,6 +169,16 @@ static void probe(const char *path)
         if (list.rows[i].source < 3) counts[list.rows[i].source]++;
     printf("ok service DB dump: %zu rows (%zu dvb, %zu easi, %zu analog)\n",
         list.count, counts[0], counts[1], counts[2]);
+    struct oa_service_query q;
+    memset(&q, 0, sizeof q);
+    q.source_mask = 0x7;
+    q.sort = OA_SERVICE_SORT_NAME;
+    size_t *order = malloc(list.count * sizeof *order);
+    assert(order);
+    size_t matched = 0;
+    assert(!oa_service_list_query(&list, &q, order, list.count, &matched));
+    assert(matched == list.count && list.rows[order[0]].name[0]);
+    free(order);
     assert(list.count == 525);
     assert(counts[0] == 445 && counts[1] == 67 && counts[2] == 13);
     oa_service_db_free(&list);
