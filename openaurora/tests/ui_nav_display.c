@@ -167,8 +167,31 @@ static int d_blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsig
     if (g_cap && rgba && sw > 0 && sh > 0 && w > 0 && h > 0)
         for (int yy = 0; yy < h; yy++)
             for (int xx = 0; xx < w; xx++) {
-                int sx = xx * sw / w, sy = yy * sh / h;
-                cap_blend(x+xx, y+yy, rgba + ((size_t)sy*sw+sx)*4);
+                /* Bilinear source sampling, matching the stock image scaler
+                 * more closely than nearest-neighbour. */
+                float fx = ((xx + 0.5f) * sw / w) - 0.5f;
+                float fy = ((yy + 0.5f) * sh / h) - 0.5f;
+                int x0 = (int)fx, y0 = (int)fy;
+                if (x0 < 0) x0 = 0;
+                if (y0 < 0) y0 = 0;
+                if (x0 > sw - 1) x0 = sw - 1;
+                if (y0 > sh - 1) y0 = sh - 1;
+                int x1 = x0 + 1 < sw ? x0 + 1 : x0;
+                int y1 = y0 + 1 < sh ? y0 + 1 : y0;
+                float ax = fx - (int)fx, ay = fy - (int)fy;
+                if (ax < 0) ax = 0;
+                if (ay < 0) ay = 0;
+                unsigned char px[4];
+                for (int c = 0; c < 4; c++) {
+                    const unsigned char *p00 = rgba + ((size_t)y0*sw+x0)*4;
+                    const unsigned char *p10 = rgba + ((size_t)y0*sw+x1)*4;
+                    const unsigned char *p01 = rgba + ((size_t)y1*sw+x0)*4;
+                    const unsigned char *p11 = rgba + ((size_t)y1*sw+x1)*4;
+                    float top = p00[c] + (p10[c] - p00[c]) * ax;
+                    float bot = p01[c] + (p11[c] - p01[c]) * ax;
+                    px[c] = (unsigned char)(top + (bot - top) * ay + 0.5f);
+                }
+                cap_blend(x+xx, y+yy, px);
             }
     return 0;
 }

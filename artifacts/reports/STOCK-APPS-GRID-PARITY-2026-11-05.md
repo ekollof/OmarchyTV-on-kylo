@@ -30,10 +30,11 @@ a 4px white scrollbar over a `#811924` track at x=1750.
 blob is present:
 
 - blit the theme background and repaint the solid `#481730` top strip;
-- blit the "Apps" title at (80,58);
-- draw non-focused tiles at cell+7,+7 with 294x166, and the focused tile full
-  cell width (300x166/169) with the orange cell backdrop;
-- blit a stock-sourced `markt_label` strip for the first tile;
+- blit the "Apps" title at (81,68) from vendor bitmap font **18**;
+- draw non-focused tiles at cell+7,+7 with 294×166 and the focused tile at
+  cell+5,+7 with the orange cell backdrop, using a bilinear recorder scaler;
+- blit the "Markt" label from vendor bitmap font **4** in `(38,23,25)` at
+  (308,369);
 - draw the scrollbar as a white bar over a `#811924` track at x=1750,
   180..868.
 
@@ -45,7 +46,8 @@ existing UI tests still cover the provisional dark reconstruction.
 `tools/stage-apps-grid.py` stages OAI1 blobs from the theme assets and the
 **live database + original downloaded thumbnails**:
 
-- `background_fullscreen` and font-rendered `apps_title`/`markt_label`;
+- `background_fullscreen`, and `apps_title`/`markt_label` rasterized from the
+  vendor EF41 bitmap pack (font IDs 18 and 4);
 - `markt.rgba` from `market_animated.png`;
 - one blob per live LauncherItem thumbnail name under its original filename;
 - no stock-derived tile crops.
@@ -75,19 +77,20 @@ Firmware parent-1 catalog + original downloaded icons vs the byte-identical
 fresh oracle:
 
 ```
-full: AE=10846.4 (0.005231) RMSE16=2943.79 MAE8=1.33383 changed=9.14%
-top strip 0.36%, grid 0.87%, scrollbar 0.02%
+full: AE=3583.62 (0.001728) RMSE16=1025.16 MAE8=0.440694 changed=7.65%
+top strip 0.0035%, grid 0.316%, scrollbar 0.0168%
 ```
 
-Title position/size was corrected to the measured stock bbox (80,68 at size
-56) and tiles to cell+7,+7 at 294 wide. The scrollbar is a 688px track with
-bar `688*visible/total - 16` = 414px. The earlier 1.02% parent-0, 0.99%
-stock-cropped fixed corpus and inferred OmarchyTV results are superseded.
+Title and label are now exact vendor bitmap-font rasters (font18/font4),
+including the label colour. Tiles use cell+7,+7 at 294×166 and the recorder
+now samples bilinearly, matching the stock scaler. The scrollbar is a 688px
+track with bar `688*visible/total - 16` = 414px. Earlier parent-0,
+stock-cropped, TTF-title and inferred-OmarchyTV results are superseded.
 
 ## Limits
 
-- The candidate corpus is synthetic 25 items, not the live LauncherItem DB;
-  its purpose is fixed-corpus renderer comparison.
+- The corpus is the firmware-dump parent-1 catalog plus Markt, not the live
+  SQLite state; its purpose is renderer comparison.
 - Third-row icons come from the oracle; those cells cannot prove independent
   downloaded-image parity.
 - The title/label are rendered/cropped from stock sources, not a recovered

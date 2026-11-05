@@ -1,0 +1,6 @@
+Vendor EF41 bitmap font recovery (telefunken18_font_byte_data.bin):
+- apps title: record 18, maximum height 80, render "Apps" 114x52,
+  positioned at (81,68), white; coverage MAE vs stock 0.00127.
+- Markt label: record 4, maximum height 43, render "Markt" 65x22,
+  positioned at (308,369), colour (38,23,25); coverage MAE 0.00190.
+The earlier PIL/DefaultProportional approximation (size 56/28) is superseded.

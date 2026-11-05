@@ -39,8 +39,8 @@ Latest apps-grid parity:
 [STOCK-APPS-GRID-PARITY](artifacts/reports/STOCK-APPS-GRID-PARITY-2026-11-05.md)
 captures the real stock Apps page via DIAL navigation + read-only fb1 and adds
 a stock-layout renderer mode. Manifest comparison improved from AE29.56% to
-0.52% (MAE8 75.38 -> 1.33; top strip0.36%, grid0.87%, scrollbar0.02%). Host423
-ok, verify45. Limits: title/label fonts approximated; fb1 not HDMI/cold-start.
+0.17% (MAE8 75.38 -> 0.44; top 0.0035%, grid0.316%, scrollbar0.017%). Host423
+ok, verify45. Limits: title/label are exact vendor bitmap fonts; fb1 not HDMI/cold-start.
 
 Latest channel runtime order:
 [CHANNEL-RUNTIME-ORDER](artifacts/reports/CHANNEL-RUNTIME-ORDER-2026-11-05.md)

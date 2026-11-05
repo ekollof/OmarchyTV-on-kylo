@@ -1033,7 +1033,7 @@ static void paint_apps(struct ctx *c)
     }
     const oa_ui_icon *title=find_icon(c,"apps_title");
     if (stock && title && title->w>0 && title->h>0)
-        d->blit(80,68,title->w,title->h,title->rgba);
+        d->blit(81,68,title->w,title->h,title->rgba);
     int first=(c->grid_sel/APPS_VISIBLE)*APPS_VISIBLE;
     for (int row=0;row<APPS_ROWS;row++) for (int col=0;col<APPS_COLS;col++) {
         int idx=first+row*APPS_COLS+col;
@@ -1066,8 +1066,7 @@ static void paint_apps(struct ctx *c)
         if (stock && idx==0) {
             const oa_ui_icon *label=find_icon(c,"markt_label");
             if (label && label->w>0 && label->h>0)
-                d->blit_scaled(x,y+174,APPS_CELL_W,56,
-                    label->w,label->h,label->rgba);
+                d->blit(x+125,y+189,label->w,label->h,label->rgba);
         }
     }
     if (stock) {
