@@ -75,7 +75,7 @@ async function main() {
         assert.equal(await command('load image_decode'), 'ok image_decode');
         assert.equal(await command('start image_decode'), 'ok');
         assert.equal(await command('image-decode ' + png), 'image 400x225 fnv 12815d59be310b91');
-        assert.equal(await command('image-decode ' + jpeg), 'image 48x48 fnv 954e7afda49f66c6');
+        assert.equal(await command('image-decode ' + jpeg), 'image 48x48 fnv 6a68973021c5893b');
         assert.equal(await command('image-decode ' + config), 'failed errno ' + os.constants.errno.EINVAL);
         assert.equal(await command('image-decode'), 'failed errno ' + os.constants.errno.EINVAL);
         assert.equal(await command('image-decode ' + png + ' extra'), 'failed errno ' + os.constants.errno.EINVAL);
@@ -95,7 +95,7 @@ async function main() {
         assert.equal(await command('image-decode ' + png), 'image 400x225 fnv 12815d59be310b91');
 
         assert.equal(await command('reload image_decode'), 'ok');
-        assert.equal(await command('image-decode ' + jpeg), 'image 48x48 fnv 954e7afda49f66c6');
+        assert.equal(await command('image-decode ' + jpeg), 'image 48x48 fnv 6a68973021c5893b');
 
         assert.equal(await command('stop image_decode'), 'ok');
         assert.equal(await command('unload image_decode'), 'ok');

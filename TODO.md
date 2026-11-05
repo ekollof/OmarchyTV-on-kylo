@@ -543,13 +543,14 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
 
 - [x] image.decode JPEG extension: the module now also uses the vendor
       libjpeg-turbo TurboJPEG API (2.0.1 on the TV) after the classic-libpng
-      PNG path. Two real JPEGs (DMR-small 48x48, DMR-large 120x120) match
-      independent ImageMagick RGBA hashes exactly; truncated/missing/non-image
-      inputs reject; ui_engine tries PNG then JPEG and copies decoded pixels
-      before provider release. check-ui-jpeg-cards renders both 48/120 px
-      sources with first-pixel checks; host check347 ok, focused ASan/UBSan
-      clean, decoder/UI tests pass ARM/qemu with the vendor libpng/zlib and
-      libjpeg-turbo2.0.1. IMAGE-DECODE. Limits: CMYK/YCCK and APNG reject; the
+      PNG path. Two real JPEGs (DMR-small 48x48, DMR-large 120x120) match the
+      shipped JpegImageDecoder class exactly under TJFLAG_FASTDCT; ImageMagick
+      accurate-DCT hashes differ by up to8. Truncated/missing/non-image inputs
+      reject; ui_engine tries PNG then JPEG and copies decoded pixels before
+      provider release. check-ui-jpeg-cards renders both 48/120 px sources with
+      first-pixel checks; host395 ok, focused ASan/UBSan clean, decoder/UI tests
+      pass ARM/qemu with the vendor libpng/zlib and libjpeg-turbo2.0.1.
+      IMAGE-DECODE. Limits: CMYK/YCCK and APNG reject; the
       actual downloaded foxxum JPEG files were not available offline, so the
       corpus uses other real vendor JPEGs; no vendor-class differential,
       on-TV decode or stock parity.
@@ -579,19 +580,21 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       ImageProperties (model3; model2 is BGRA). Nine corpus PNGs plus
       gray1/2/4/8, gray+alpha, palette, palette+tRNS, RGB16, RGBA16, interlaced
       and gAMA variants are byte-exact requested RGBA. DMR-small/large JPEG
-      differ by max8/mean≈1.3-1.7, a real class conversion/rounding gap.
+      are byte-exact against TurboJPEG `TJFLAG_FASTDCT`, the mode now used by
+      image.decode; ImageMagick's default accurate DCT differed by up to8.
       VENDOR-DECODER-DIFF. No TV/HAL/UI. Limits: actual foxxum JPEGs,
-      APNG/CMYK, worker/frame lifetime and on-TV/stock parity remain.
+      progressive/CMYK variants, APNG, worker/frame lifetime and on-TV/stock
+      parity remain.
 
 - [ ] Complete image.decode acceptance: the classic-libpng PNG conversion
-      sequence from Aurora's b30918 `setConversions`, the TurboJPEG path and
-      the vendor-class differential above now pass the maintained corpus,
-      format variants, malformed/truncated input, suspend/resume and reload
-      tests, and the supervised on-TV grid. Provider pixels are copied then
-      released. Still need exact JPEG-class agreement (current max8), actual
-      downloaded foxxum assets, APNG/CMYK policy, worker scheduling/
-      cancellation and stock pixel parity. Reopened by
-      TODO-REAUDIT-2026-11-04; narrowed, not closed.
+      sequence from Aurora's b30918 `setConversions`, the fast-DCT TurboJPEG
+      path and the vendor-class differential above now pass the maintained
+      corpus, format variants, malformed/truncated input, suspend/resume and
+      reload tests, and the supervised on-TV grid. Provider pixels are copied
+      then released. Still need actual downloaded foxxum assets,
+      progressive/CMYK JPEG, APNG policy, worker scheduling/cancellation and
+      stock pixel parity. Reopened by TODO-REAUDIT-2026-11-04; narrowed, not
+      closed.
 
 - [x] Stock-capture parity analysis: the old `shot-launcher-right.png` is an
       R/B-swapped pre-correction capture; after channel correction it matches

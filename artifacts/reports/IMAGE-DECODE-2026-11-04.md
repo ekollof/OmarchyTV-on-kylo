@@ -47,20 +47,25 @@ a differential against the vendor decoder classes.
 ## Verification
 
 - `check-image-decode`: nine real downloaded PNGs (RGB, RGBA, colormap,
-  400x225) match independent ImageMagick/libpng RGBA SHA256 and FNV-1a exactly;
-  two real vendor JPEGs (`DMR-small.jpg` 48x48, `DMR-large.jpg` 120x120) match
-  independent ImageMagick RGBA hashes exactly. Missing paths, a real non-PNG
-  ELF file, truncated PNG/JPEG prefixes and empty/NULL arguments reject with
-  zeroed outputs. A `reload` succeeds after release; suspend returns `-EAGAIN`
-  and resume restores decoding.
+  400x225) match independent ImageMagick/libpng RGBA SHA256 and FNV-1a exactly.
+  The two DMR JPEGs use `TJFLAG_FASTDCT`; this matches the shipped
+  `JpegImageDecoder` class exactly (max channel delta 0), while ImageMagick's
+  accurate-DCT output differs by up to 8. Missing paths, a real non-PNG ELF
+  file, truncated PNG/JPEG prefixes and empty/NULL arguments reject with zeroed
+  outputs. A `reload` succeeds after release; suspend returns `-EAGAIN` and
+  resume restores decoding.
 - `check-ui-png-cards` / `check-ui-jpeg-cards`: with no `.rgba` assets, a
   synthetic DB drives `ui_vendor`; the recorder sees scaled blits with the
   decoded source dimensions and first source pixels.
   `artifacts/analysis/image-decode-2026-11-04/pngcards.png` and
   `jpegcards.png` are the flattened 1920x1080 recorder rasters.
-- Full host `make check` passes (347 ok lines); focused ASan/UBSan for the
+- Full host `make check` passes (395 ok lines); focused ASan/UBSan for the
   decoder and JPEG-card path is clean; decoder and UI tests pass under
   ARM/qemu with the vendor libpng/zlib and libjpeg-turbo 2.0.1.
+- `check-vendor-decoder`: the shipped `PngImageDecoderImpl` and
+  `JpegImageDecoder` classes were executed under qemu; all nine PNGs plus
+  grayscale/palette/tRNS/16-bit/interlaced/gAMA variants are exact, and the
+  DMR JPEGs are exact under fast DCT. See VENDOR-DECODER-DIFF.
 
 ## Limits
 
@@ -68,8 +73,8 @@ a differential against the vendor decoder classes.
   offline before TV access stopped. The JPEG corpus uses other real vendor JPEG
   files from the dump/rootfs; actual downloaded JPEGs still need an offline
   copy or an allowed on-TV read.
-- No vendor `PngImageDecoderImpl`/`JpegImageDecoder` output differential,
-  complete grayscale/tRNS/16-bit/gamma corpus, worker scheduling/cancellation,
-  on-TV decode or stock pixel parity.
+- Vendor classes are controlled-call probes (no vendor UI/global constructors),
+  not full image-player worker/frame-lifetime execution. On-TV decode and stock
+  pixel parity remain open.
 - APNG is rejected; JPEG CMYK/YCCK is rejected. `ui_engine` still uses
   nearest-neighbour cell scaling.

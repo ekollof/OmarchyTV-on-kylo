@@ -30,8 +30,10 @@ static const struct expected EXPECTED[] = {
     { "launcher_app_thumb61",  400, 225, 0x12815d59be310b91ULL },
 };
 static const struct expected EXPECTED_JPEG[] = {
-    { "DMR-small.jpg", 48, 48, 0x954e7afda49f66c6ULL },
-    { "DMR-large.jpg", 120, 120, 0xbb245f359444882aULL },
+    /* Vendor JpegImageDecoder uses libjpeg v9 fast IDCT; TurboJPEG's
+     * TJFLAG_FASTDCT matches it exactly on this corpus. */
+    { "DMR-small.jpg", 48, 48, 0x6a68973021c5893bULL },
+    { "DMR-large.jpg", 120, 120, 0xa4c2e450aad6b245ULL },
 };
 
 static uint64_t fnv1a(const unsigned char *data, size_t len)
@@ -123,7 +125,7 @@ int main(int argc, char **argv)
             size_t jlen = (size_t)jw * (size_t)jh * 4u;
             assert(fnv1a(jpg, jlen) == EXPECTED_JPEG[i].fnv);
             if (!strcmp(EXPECTED_JPEG[i].name, "DMR-small.jpg"))
-                assert(jpg[0] == 255 && jpg[1] == 252 && jpg[2] == 237 && jpg[3] == 255);
+                assert(jpg[0] == 255 && jpg[1] == 250 && jpg[2] == 235 && jpg[3] == 255);
             dec->release(jpg);
         }
     }

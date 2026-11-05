@@ -4,7 +4,9 @@ Interpretation: [IMAGE-DECODE](../../reports/IMAGE-DECODE-2026-11-04.md).
 
 Nine real files from `artifacts/workbench/thumbs/` (RGB, RGBA and colormap PNGs)
 and two real vendor JPEGs from the DLNA/DMR dump are decoded by
-`mod_image_decode` and compared with independent ImageMagick/libpng RGBA output.
+`mod_image_decode`. PNG is compared with ImageMagick/libpng; JPEG uses
+TurboJPEG `TJFLAG_FASTDCT`, which matches the shipped vendor JPEG class
+exactly (ImageMagick's accurate DCT differs by up to8).
 
 - `host-image-decode.txt`: final `check-image-decode` result, including the
   non-PNG, truncated PNG/JPEG, suspend/resume and reload cases.
@@ -22,10 +24,10 @@ and two real vendor JPEGs from the DLNA/DMR dump are decoded by
   flattened recorder raster with the nine real app images.
 - `ui-jpeg-cards.txt`: host `check-ui-jpeg-cards`; `jpegcards.png` is the
   flattened raster with the two real JPEG cards.
-- `reference-hashes.txt`, `jpeg-reference-hashes.txt`: independent ImageMagick
-  RGBA SHA256/FNV-1a values and first pixels.
+- `reference-hashes.txt`: independent ImageMagick PNG RGBA values.
+  `jpeg-reference-hashes.txt`: fast-DCT/vendor-class SHA256/FNV-1a values.
 - `full-make-check.txt`, `full-make-check-jpeg.txt`: full strict host
-  `make check` logs (344 ok at the PNG step; 347 after the JPEG extension).
+  `make check` logs (344 at the original PNG step; current 395).
 
 ```sh
 make -C openaurora check-image-decode check-ui-png-cards check-ui-jpeg-cards

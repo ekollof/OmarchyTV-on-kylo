@@ -24,9 +24,9 @@ generated PNG format variants:
 - PNG output is requested RGBA; it must equal the source RGBA bytes exactly.
   (Without requested properties the class produces BGRA; model 2 requests
   BGRA and model 3 requests RGBA.)
-- JPEG output is requested RGBA; channel deltas against ImageMagick RGBA are
-  measured. The current DMR corpus requires max delta ≤8 (codec rounding), not
-  byte-exact parity.
+- JPEG output is requested RGBA; it is compared against TurboJPEG
+  `TJFLAG_FASTDCT`, the mode used by `image.decode`. This is byte-exact on the
+  DMR corpus. ImageMagick's default accurate-DCT output differs by up to 8.
 
 Command:
 
@@ -59,16 +59,17 @@ ok vendor png variant rgb16: RGBA exact
 ok vendor png variant rgba16: RGBA exact
 ok vendor png variant interlaced: RGBA exact
 ok vendor png variant gamma: RGBA exact
-ok vendor jpeg DMR-small.jpg: max channel delta 8, mean 1.698
-ok vendor jpeg DMR-large.jpg: max channel delta 8, mean 1.302
+ok vendor jpeg DMR-small.jpg: max channel delta 0, mean 0.000
+ok vendor jpeg DMR-large.jpg: max channel delta 0, mean 0.000
 ok vendor decoder differential: 9 PNG + variants, 2 JPEG
 ```
 
 The PNG result now covers the nine-file corpus plus 1/2/4/8-bit grayscale,
 gray+alpha, palette, palette+tRNS, RGB16, RGBA16, interlaced and gAMA variants.
-The JPEG result remains a real class conversion/rounding difference: after
-requested-RGBA normalization it differs by at most 8 per channel (mean
-≈1.3–1.7). An exact JPEG-class claim remains open.
+The JPEG result is byte-exact with TurboJPEG `TJFLAG_FASTDCT`. ImageMagick's
+default accurate-DCT decoder differs by up to 8; `image.decode` now uses the
+fast-DCT mode to match the vendor class. Other JPEG variants (progressive,
+CMYK, actual foxxum downloads) remain open.
 
 Identities:
 

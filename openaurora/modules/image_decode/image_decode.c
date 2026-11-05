@@ -175,6 +175,7 @@ done:
     return result;
 }
 #define TJ_PF_RGBA 7
+#define TJ_FLAG_FASTDCT 2048
 #define TJ_CS_CMYK 3
 #define TJ_CS_YCCK 4
 static int decode_jpeg(const char *path,int *w,int *h,unsigned char **out)
@@ -204,7 +205,7 @@ static int decode_jpeg(const char *path,int *w,int *h,unsigned char **out)
     unsigned char *pixels=malloc(bytes);
     if(!pixels){c->tj_destroy(tj);free(input);return -ENOMEM;}
     if(c->tj_decompress(tj,input,(unsigned long)len,pixels,width,width*4,
-            height,TJ_PF_RGBA,0)) {
+            height,TJ_PF_RGBA,TJ_FLAG_FASTDCT)) {
         c->tj_destroy(tj);free(input);free(pixels);return -EINVAL;
     }
     c->tj_destroy(tj);free(input);

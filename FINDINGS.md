@@ -18,10 +18,10 @@ PngImageDecoderImpl/JpegImageDecoder under qemu before vendor main, using
 vendor MemoryBufferSource/MutableImage and requested RGBA ImageProperties
 (model3; model2 is BGRA). Nine corpus PNGs plus gray1/2/4/8, gray+alpha,
 palette, palette+tRNS, RGB16, RGBA16, interlaced and gAMA variants are
-byte-exact RGBA. DMR-small/large JPEG differ by max8/mean1.3-1.7 from the
-ImageMagick/TurboJPEG reference; this is a real class conversion gap, not
-channel order. No TV/HAL/UI. Actual foxxum JPEGs, APNG/CMYK, worker/frame
-lifetime and stock parity remain.
+byte-exact RGBA. DMR-small/large JPEG are byte-exact against TurboJPEG
+`TJFLAG_FASTDCT`, now used by image.decode; ImageMagick accurate DCT differed
+by up to8. No TV/HAL/UI. Actual foxxum JPEGs, progressive/CMYK, APNG,
+worker/frame lifetime and stock parity remain.
 
 STOCK-PARITY-2026-11-04: old shot-launcher-right.png is an R/B-swapped
 pre-correction capture; after RGB swap its Prime/Canal colors match the
@@ -170,11 +170,12 @@ match independent ImageMagick SHA256/FNV exactly; truncated/non-image inputs
 reject, suspend returns EAGAIN and reload republishes. ui_engine tries PNG then
 JPEG in ui.download_dir (default /buffer/downloaded_images), copies pixels then
 releases the provider under hold. check-ui-png/jpeg-cards prove the source
-dimensions/first pixels. Host347 ok, focused decoder/UI ASan/UBSan clean and
+dimensions/first pixels. Host395 ok, focused decoder/UI ASan/UBSan clean and
 ARM/qemu passes with vendor libpng/zlib and libjpeg-turbo. Limits: actual
-foxxum JPEGs were not copied offline; APNG/CMYK/YCCK reject; no vendor-class
-differential, worker, on-TV decode or stock pixel parity. No TV access after
-the owner stop instruction.
+foxxum JPEGs were not copied offline; APNG/CMYK/YCCK reject; the vendor-class
+differential is separate and covers PNG variants/JPEG fast-DCT; worker, on-TV
+decode and stock pixel parity remain. No TV access after the owner stop
+instruction.
 
 ALPHA-RECORDER-2026-11-04 corrects the offline recorder: cap_blend now uses
 oa_canvas_over (straight source-over, destination alpha preserved) and the

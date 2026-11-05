@@ -106,10 +106,11 @@ executes the shipped PngImageDecoderImpl and JpegImageDecoder before vendor
 main, using vendor MemoryBufferSource/MutableImage and requested RGBA
 ImageProperties (model3; model2 is BGRA). Nine corpus PNGs plus gray1/2/4/8,
 gray+alpha, palette, palette+tRNS, RGB16, RGBA16, interlaced and gAMA variants
-are byte-exact RGBA. DMR-small/large JPEG differ by max8/mean≈1.3-1.7, a real
-class conversion/rounding gap. Probe2d5aff61…, aurora7d6e4ca5…. No TV/HAL/UI.
-Actual foxxum JPEGs, APNG/CMYK, worker/frame lifetime and on-TV/stock parity
-remain open.
+are byte-exact RGBA. DMR-small/large JPEG are byte-exact against TurboJPEG
+`TJFLAG_FASTDCT`, now used by image.decode; ImageMagick accurate DCT differed
+by up to8. Probe2d5aff61…, aurora7d6e4ca5…. No TV/HAL/UI. Actual foxxum JPEGs,
+progressive/CMYK, APNG, worker/frame lifetime and on-TV/stock parity remain
+open.
 
 STOCK-PARITY-2026-11-04 (offline analysis): the saved
 artifacts/protocol/shot-launcher-right.png is a pre-correction R/B-swapped
@@ -190,19 +191,20 @@ access or deployment. See the follow-up report and per-item ledger.
 IMAGE-DECODE-JPEG-2026-11-04: modules/image_decode publishes image.decode v2.
 PNG uses the shipped libpng1.6 classic API with Aurora b30918 setConversions
 (expand/pack, strip16, gray/palette, tRNS/filler, no gamma); JPEG uses the
-vendor libjpeg-turbo2.0.1 TurboJPEG API. Nine real downloaded PNGs
-(RGB/RGBA/colormap,400x225) and two real vendor JPEGs (48/120) match
-independent ImageMagick SHA256/FNV exactly; truncated/non-image inputs reject,
-suspend returns EAGAIN and reload republishes. ui_engine keeps OAI1 first,
+vendor libjpeg-turbo2.0.1 TurboJPEG API with TJFLAG_FASTDCT. Nine real
+downloaded PNGs (RGB/RGBA/colormap,400x225) match ImageMagick; two DMR JPEGs
+match the shipped JpegImageDecoder class exactly (ImageMagick accurate DCT
+differs by up to8). Truncated/non-image inputs reject, suspend returns EAGAIN
+and reload republishes. ui_engine keeps OAI1 first,
 tries PNG then JPEG in ui.download_dir (default /buffer/downloaded_images),
 copies decoded pixels then calls provider release under hold. check-ui-png/jpeg
 cards verify 400x225 and48/120 sources plus first pixels. Full host347 ok,
 focused decoder/UI ASan/UBSan clean, decoder and UI tests pass ARM/qemu with
-vendor libpng/zlib and libjpeg-turbo. tools/boot autoloads image_decode.
-Limits: actual foxxum downloaded JPEGs were not copied offline; APNG/CMYK/YCCK
-reject; no vendor PngImageDecoderImpl/JpegImageDecoder differential, worker,
-on-TV decode or stock parity. No TV access after the owner stop instruction;
-all decode/UI evidence is offline.
+vendor libpng/zlib and libjpeg-turbo. Host395 ok. tools/boot autoloads
+image_decode. Limits: actual foxxum downloaded JPEGs were not copied offline;
+APNG/CMYK/YCCK reject; vendor-class differential is separate and covers PNG
+variants/JPEG fast-DCT; worker, on-TV decode and stock parity remain. No TV
+access after the owner stop instruction; all decode/UI evidence is offline.
 
 ALPHA-RECORDER-2026-11-04 closes the TODO-AUDIT reopened item:
 tests/ui_nav_display.c composes cap_blend with oa_canvas_over instead of

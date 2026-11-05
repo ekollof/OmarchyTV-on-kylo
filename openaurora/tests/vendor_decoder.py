@@ -129,10 +129,45 @@ def make_variants(source, directory, magick):
     return out
 
 
-def check_jpeg(name, root, common, magick, tolerance):
+def turbojpeg_fast_rgba(path):
+    import ctypes
+    lib = ctypes.CDLL("libturbojpeg.so.0")
+    lib.tjInitDecompress.restype = ctypes.c_void_p
+    lib.tjDecompressHeader3.argtypes = [ctypes.c_void_p,
+        ctypes.POINTER(ctypes.c_ubyte), ctypes.c_ulong,
+        ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int),
+        ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+    lib.tjDecompress2.argtypes = [ctypes.c_void_p,
+        ctypes.POINTER(ctypes.c_ubyte), ctypes.c_ulong,
+        ctypes.POINTER(ctypes.c_ubyte), ctypes.c_int, ctypes.c_int,
+        ctypes.c_int, ctypes.c_int, ctypes.c_int]
+    lib.tjDestroy.argtypes = [ctypes.c_void_p]
+    data = path.read_bytes()
+    jpeg = (ctypes.c_ubyte * len(data)).from_buffer_copy(data)
+    handle = lib.tjInitDecompress()
+    if not handle:
+        fail("TurboJPEG init failed")
+    w = ctypes.c_int(0); h = ctypes.c_int(0)
+    sub = ctypes.c_int(0); colorspace = ctypes.c_int(0)
+    if lib.tjDecompressHeader3(handle, jpeg, ctypes.c_ulong(len(data)),
+            ctypes.byref(w), ctypes.byref(h), ctypes.byref(sub),
+            ctypes.byref(colorspace)):
+        fail(f"{path.name}: TurboJPEG header failed")
+    out = (ctypes.c_ubyte * (w.value * h.value * 4))()
+    # TJPF_RGBA=7, TJFLAG_FASTDCT=2048.
+    if lib.tjDecompress2(handle, jpeg, ctypes.c_ulong(len(data)), out,
+            w.value, w.value * 4, h.value, 7, 2048):
+        fail(f"{path.name}: TurboJPEG fast decode failed")
+    lib.tjDestroy(handle)
+    return w.value, h.value, bytes(out)
+
+
+def check_jpeg(name, root, common, tolerance):
     path = root / "artifacts/dumps/apdat_files/dlna-dmr/xml/icon" / name
     width, height, rowlen, pixels = run_probe(*common, "jpeg", path)
-    ref = subprocess.check_output([magick, str(path), "-depth", "8", "RGBA:-"])
+    ref_w, ref_h, ref = turbojpeg_fast_rgba(path)
+    if (width, height) != (ref_w, ref_h):
+        fail(f"{name}: vendor size != TurboJPEG reference")
     if rowlen != width * 4 or len(ref) != width * height * 4:
         fail(f"{name}: unexpected row/reference size")
     got = pixels[:width * height * 4]
@@ -155,7 +190,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--build", default=os.environ.get("BUILD", "build"))
     parser.add_argument("--qemu", default="qemu-arm-static")
-    parser.add_argument("--tolerance", type=int, default=8)
+    parser.add_argument("--tolerance", type=int, default=0)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     build = Path(args.build)
@@ -185,7 +220,7 @@ def main():
         for name, path in make_variants(base, Path(tmp), magick):
             print(f"ok vendor png variant {name}: {check_png_path(name, path, common)}")
     for name in JPEG_OK:
-        print(f"ok vendor jpeg {name}: {check_jpeg(name, root, common, magick, args.tolerance)}")
+        print(f"ok vendor jpeg {name}: {check_jpeg(name, root, common, args.tolerance)}")
     print(f"ok vendor decoder differential: {len(PNG_OK)} PNG + variants, {len(JPEG_OK)} JPEG")
 
 

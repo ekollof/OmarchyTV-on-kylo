@@ -256,8 +256,8 @@ static int png_first_px(const char *name,int *r,int *g,int *b,int *a)
         {"launcher_app_thumb476",0,0,0,255},
         {"launcher_app_thumb495",0,0,0,255},
         {"launcher_app_thumb61",255,255,255,255},
-        {"DMR-small.jpg",255,252,237,255},
-        {"DMR-large.jpg",255,251,239,255},
+        {"DMR-small.jpg",255,250,235,255},
+        {"DMR-large.jpg",255,250,236,255},
     };
     for(size_t i=0;i<sizeof px/sizeof px[0];++i)
         if(!strcmp(px[i].name,name)) {

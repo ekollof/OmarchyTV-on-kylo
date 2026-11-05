@@ -20,5 +20,6 @@ make -C openaurora TARGET=tv BUILD=build-tv-v3/vendor-decoder \
 ```
 
 PNG is byte-exact with requested RGBA, including low-depth grayscale, palette,
-tRNS, 16-bit, interlaced and gAMA variants. JPEG is within max channel delta8 /
-mean1.3–1.7, so exact JPEG class parity remains open.
+tRNS, 16-bit, interlaced and gAMA variants. JPEG is byte-exact against
+TurboJPEG `TJFLAG_FASTDCT`; ImageMagick's default accurate DCT differs by up to
+8. Other JPEG variants remain open.

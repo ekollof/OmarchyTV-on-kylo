@@ -18,6 +18,6 @@ ok vendor png variant rgb16: RGBA exact
 ok vendor png variant rgba16: RGBA exact
 ok vendor png variant interlaced: RGBA exact
 ok vendor png variant gamma: RGBA exact
-ok vendor jpeg DMR-small.jpg: max channel delta 8, mean 1.698
-ok vendor jpeg DMR-large.jpg: max channel delta 8, mean 1.302
+ok vendor jpeg DMR-small.jpg: max channel delta 0, mean 0.000
+ok vendor jpeg DMR-large.jpg: max channel delta 0, mean 0.000
 ok vendor decoder differential: 9 PNG + variants, 2 JPEG

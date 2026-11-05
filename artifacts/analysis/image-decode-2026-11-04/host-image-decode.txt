@@ -1,1 +1,3 @@
   ok   image decode: PNG and JPEG RGBA match references, errors reject and service reloads
+ok live cards: excluded rows not painted
+ok ui jpeg cards: 2 downloaded JPEGs decoded with source pixels

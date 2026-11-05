@@ -19,7 +19,7 @@ image-decode (before load)            failed errno 19
 load image_decode                     ok image_decode
 start image_decode                    ok
 image-decode thumb61                  image 400x225 fnv 12815d59be310b91
-image-decode DMR-small.jpg            image 48x48 fnv 954e7afda49f66c6
+image-decode DMR-small.jpg            image 48x48 fnv 6a68973021c5893b
 image-decode non-image                failed errno 22
 image-decode (missing/extra arg)      failed errno 22
 status via stdin                      name image_decode, state started

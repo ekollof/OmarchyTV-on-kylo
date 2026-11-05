@@ -155,11 +155,12 @@ Latest offline differential: [VENDOR-DECODER-DIFF](artifacts/reports/VENDOR-DECO
 runs the shipped PngImageDecoderImpl/JpegImageDecoder under qemu through an ARM
 LD_PRELOAD probe before vendor main, with requested RGBA ImageProperties.
 Nine corpus PNGs plus gray1/2/4/8, gray+alpha, palette, palette+tRNS, RGB16,
-RGBA16, interlaced and gAMA variants are byte-exact RGBA; DMR JPEG differ by
-max8 per channel (mean1.3-1.7). The probe is
+RGBA16, interlaced and gAMA variants are byte-exact RGBA; DMR JPEG are
+byte-exact against TurboJPEG `TJFLAG_FASTDCT`, now used by image.decode.
+ImageMagick accurate DCT differed by up to8. The probe is
 tests/vendor_decoder_probe.c and the checker is tests/vendor_decoder.py. No
-TV/HAL/UI. Actual foxxum JPEGs, APNG/CMYK, worker/frame lifetime and stock
-parity remain.
+TV/HAL/UI. Actual foxxum JPEGs, progressive/CMYK, APNG, worker/frame lifetime
+and stock parity remain.
 
 Latest offline analysis: [STOCK-PARITY](artifacts/reports/STOCK-PARITY-2026-11-04.md)
 confirms the old `shot-launcher-right.png` is R/B-swapped; the corrected copy
@@ -231,12 +232,12 @@ reject, suspend returns EAGAIN and reload republishes. ui_engine keeps OAI1
 first, tries PNG then JPEG in ui.download_dir (default
 /buffer/downloaded_images), copies decoded pixels then releases the provider
 under hold. check-ui-png/jpeg-cards verify source dimensions and first pixels.
-Host347 ok, focused decoder/UI ASan/UBSan clean, decoder/UI ARM-qemu pass with
+Host395 ok, focused decoder/UI ASan/UBSan clean, decoder/UI ARM-qemu pass with
 vendor libpng/zlib and libjpeg-turbo. Tools/boot autoloads image_decode.
 Limits: actual foxxum downloaded JPEGs were not copied offline; APNG/CMYK/YCCK
-reject; no vendor-class differential, worker, on-TV decode/display or stock
-pixel parity. No TV access after the owner stop instruction; all decode/UI
-evidence is offline.
+reject; the vendor-class differential is separate and covers PNG variants/JPEG
+fast-DCT; worker, on-TV decode/display and stock pixel parity remain. No TV
+access after the owner stop instruction; all decode/UI evidence is offline.
 
 Latest checklist audit: [TODO-AUDIT](artifacts/reports/TODO-AUDIT-2026-11-04.md)
 reviews all182 previously checked items. Its one reopened item, recorder
