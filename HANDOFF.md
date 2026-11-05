@@ -24,7 +24,10 @@ Latest live acceptance: [LIVE-TV-ACCEPTANCE](artifacts/reports/LIVE-TV-ACCEPTANC
 staged the ABI 3 tree under `/buffer`, ran epg/tuner/pvr/lua, and loaded
 `display_fb` on vendor-initialized fb1. It saved a 16,588,800-byte snapshot,
 painted a magenta self-test band, and restored the blank pre-test frame after
-the async cleanup retry. NDAL tuning returned EBUSY against stock; direct DVB
+the async cleanup retry. The full display_fb/ui_engine/settings/service_db/
+image_decode/ui_vendor stack painted the "Startpagina" portal (5 rail items,
+12 cards), hot-reloaded `ui_vendor` with state restore/repaint, and restored
+fb1 on shutdown. NDAL tuning returned EBUSY against stock; direct DVB
 EIT opened but saw no tuned sections. Staging removed; stock PIDs 1967/1785
 intact. Limits: temporary display binding, no cold startup/native scanout,
 live EIT or DVR recording.

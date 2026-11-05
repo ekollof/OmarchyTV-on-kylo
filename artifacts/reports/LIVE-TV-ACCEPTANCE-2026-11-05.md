@@ -35,6 +35,23 @@ lua load/start/reload/stop/unload -> ok
 The PVR scheduling backend is still the offline store; the DVR sink is not
 wired into it.
 
+## Vendor UI stack on fb1
+
+The staged `display_fb` + `ui_engine` + `settings` + `service_db` +
+`image_decode` + `ui_vendor` stack started successfully and painted the
+vendor-shaped portal:
+
+```
+ui_vendor painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+```
+
+`ui-vendor-live.png` is the fb1 capture: "Startpagina", five rail glyphs,
+twelve launcher cards from the on-TV assets/settings DB. `reload ui_vendor`
+stopped/unloaded the module, restored its 5-byte state, reacquired
+`ui.portal` and repainted; `ui-vendor-reload.png` is the post-reload frame.
+The stack then stopped in dependency order and the fb1 snapshot restored to
+the blank pre-test frame (`ui-vendor-restored.png`).
+
 ## NDAL / DVB hardware
 
 - Read-only frontend inventory: `name=internal_fe`, `status=0x20` (no lock),
@@ -90,6 +107,8 @@ zombie. `/tmp` and `/buffer` staging were removed, and no helper remains.
 
 - `buffer-hashes.txt`, `staged-hashes.txt`
 - `display-active-buffer.png`, `display-restored-buffer.png`
+- `ui-vendor-live.png`, `ui-vendor-reload.png`, `ui-vendor-restored.png`,
+  `ui-vendor.log`
 - `display-buffer.log`
 - `buffer-modules.txt` (PVR/Lua)
 - `ndal-tuner.txt`, `ndal.log`
@@ -104,3 +123,6 @@ zombie. `/tmp` and `/buffer` staging were removed, and no helper remains.
 - PVR DVR recording, timeshift and playback remain unwired.
 - The display test was a temporary module on vendor-initialized fb1, not a
   replacement UI or HDMI/cold-boot proof.
+- The vendor UI render used existing `/buffer/openaurora/ui` assets and the
+  settings DB. It did not exercise live remote input, every screen/dialog,
+  exact vendor animation or stock pixel parity.

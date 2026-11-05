@@ -8,6 +8,9 @@ Interpretation: [LIVE-TV-ACCEPTANCE](../../reports/LIVE-TV-ACCEPTANCE-2026-11-05
 - `display-restored-buffer.png`: fb1 after stop/unload; blank, same as the
   pre-test frame.
 - `display-buffer.log`: snapshot, self-test, cleanup retry and stop.
+- `ui-vendor-live.png`, `ui-vendor-reload.png`, `ui-vendor-restored.png`:
+  vendor-shaped portal before/after hot reload and the restored fb1.
+- `ui-vendor.log`: portal paint, state restore and repaint.
 - `buffer-modules.txt`: PVR add/list/reload and Lua lifecycle over the socket.
 - `ndal-tuner.txt`, `ndal.log`: explicit NDAL frontend scan result (EBUSY).
 - `dvb-status.txt`: read-only frontend inventory (`frequency=0`, no lock).

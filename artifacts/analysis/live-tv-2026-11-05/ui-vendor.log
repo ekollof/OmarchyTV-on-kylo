@@ -1,0 +1,64 @@
+[283527] INFO host         openaurora starting, modules=./modules
+[283528] INFO host         control socket ./control
+openaurora: 0 module(s) loaded, control on ./control
+[284528] INFO host         loaded display_fb v0.1 (./modules/mod_display_fb.so)
+[284529] INFO display_fb   /dev/fb1: 1920x1080 32bpp, 2 frame(s), back=0
+[284911] INFO display_fb   /dev/fb1: full snapshot saved (16588800 bytes, mau 0)
+[284911] DBG  display_fb   service up: display v2
+[284911] DBG  display_fb   service up: display.alpha v1
+[284911] INFO host         started display_fb
+[284911] INFO host         loaded ui_engine v1 (./modules/mod_ui_engine.so)
+[284912] DBG  ui_engine    service up: ui.engine v2
+[284912] INFO ui_engine    ui_engine started
+[284912] DBG  ui_engine    service up: ui.skin v1
+[284912] INFO host         started ui_engine
+[284913] INFO host         loaded settings v0.2 (./modules/mod_settings.so)
+[284914] INFO settings     /conf/sqlite_db/settingsDB.db open (read-only)
+[284914] DBG  settings     service up: settings v1
+[284914] DBG  settings     service up: settings.hotel v1
+[284914] DBG  settings     service up: launcher.db v1
+[284941] INFO settings     probe: m_cec_enabled=1
+[284941] INFO host         started settings
+[284941] INFO host         loaded service_db v1 (./modules/mod_service_db.so)
+[284973] DBG  service_db   service up: service.list v1
+[284973] INFO service_db   service_db: 134 rows (54 dvb, 67 easi, 13 analog) from /conf/sqlite_db/settingsDB.db
+[284973] INFO host         started service_db
+[284973] INFO host         loaded image_decode v2 (./modules/mod_image_decode.so)
+[284974] DBG  image_decode service up: image.decode v2
+[284974] INFO host         started image_decode
+[284975] INFO host         loaded ui_vendor v0.2 (./modules/mod_ui_vendor.so)
+[285006] DBG  ui_vendor    service up: ui.portal v1
+[285431] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[285431] INFO host         started ui_vendor
+[299515] DBG  ui_vendor    service down: ui.portal
+[299515] INFO host         stopped ui_vendor
+[299516] INFO host         unloaded ui_vendor
+[299516] INFO host         loaded ui_vendor v0.2 (./modules/mod_ui_vendor.so)
+[299516] INFO host         ui_vendor: restored 5 bytes of state
+[299548] DBG  ui_vendor    service up: ui.portal v1
+[299931] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[299931] INFO host         started ui_vendor
+[299931] INFO host         ui_vendor: reloaded (started)
+[308473] DBG  ui_vendor    service down: ui.portal
+[308473] INFO host         stopped ui_vendor
+[309482] DBG  image_decode service down: image.decode
+[309483] INFO host         stopped image_decode
+[310490] DBG  service_db   service down: service.list
+[310490] INFO host         stopped service_db
+[311499] DBG  settings     service down: launcher.db
+[311499] DBG  settings     service down: settings.hotel
+[311500] DBG  settings     service down: settings
+[311501] INFO host         stopped settings
+[312509] DBG  ui_engine    service down: ui.skin
+[312509] DBG  ui_engine    service down: ui.engine
+[312510] INFO host         stopped ui_engine
+[313517] ERR  host         display_fb: cleanup pending; retry stop/unload
+[314524] DBG  display_fb   service down: display
+[314524] DBG  display_fb   service down: display.alpha
+[314524] INFO host         stopped display_fb
+[318552] INFO host         unloaded ui_vendor
+[318553] INFO host         unloaded image_decode
+[318553] INFO host         unloaded service_db
+[318553] INFO host         unloaded settings
+[318553] INFO host         unloaded ui_engine
+[318554] INFO host         unloaded display_fb

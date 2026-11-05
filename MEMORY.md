@@ -6,6 +6,9 @@ matched) ran from `/buffer`; epg/tuner/pvr/lua loaded/started/reloaded, PVR
 add/list survived reload, Lua lifecycle passed. `display_fb` bound the
 vendor-initialized fb1, saved a 16,588,800-byte snapshot, painted the magenta
 self-test band, and restored the blank pre-test frame after async stop retry.
+The full display_fb/ui_engine/settings/service_db/image_decode/ui_vendor stack
+then painted the "Startpagina" portal (5 rail items, 12 cards), survived a
+`reload ui_vendor` with state restore/repaint, and restored fb1 on shutdown.
 NDAL `tuner-scan` returned EBUSY against the stock-owned frontend0; the direct
 Linux DVB EIT filter opened but saw 0 sections with frequency=0. Found/fixed
 GLIBC_2.27 libm linkage in display modules (now ≤2.17). Staging removed; stock

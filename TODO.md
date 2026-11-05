@@ -63,7 +63,11 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       (`display-restored-buffer.png`, blank like the pre-test state). PVR
       add/list/reload and Lua load/start/reload passed; NDAL tuning returned
       EBUSY against stock-owned frontend0, and the direct DVB EIT demux opened
-      but saw no sections while `frequency=0`. Staging was removed; stock
+      but saw no sections while `frequency=0`. The full staged
+      display_fb/ui_engine/settings/service_db/image_decode/ui_vendor stack
+      painted "Startpagina" with 5 rail items and 12 cards; `reload ui_vendor`
+      restored state and repainted, then the stack stopped and fb1 restored.
+      Staging was removed; stock
       Aurora PIDs 1967/1785 and `/vendor/com.nvt.idtv/aurora.elf` survived.
       LIVE-TV-ACCEPTANCE. Limits: temporary vendor-initialized binding, blank
       stock UI, no cold startup/native scanout, no live EIT signal, PVR DVR
