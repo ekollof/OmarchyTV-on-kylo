@@ -2,13 +2,15 @@
 
 Optional ui.lua, offline, 2026-11-05: shared Lua 5.4.9 service (`mod_lua.so`,
 not a skin) for every UI skin. Host `check-ui-lua` and `check-ui-skin` pass;
-full host `make check` is 433 ok and `verify.cjs` 45 groups. Leak-enabled
+full host `make check` is 434 ok and `verify.cjs` 45 groups. Leak-enabled
 ASan/UBSan `check-ui-lua` passes. ARM/qemu `tests/ui_lua` passes
 on glibc 2.23; `oa.fetch` success is host-only because qemu-user cannot exec
 host python or curl. The glibc hard-float link uses the TV libm (math symbols
 stay at GLIBC_2.4) and the curl pipe is `pipe2`, so the module does not
-reference `fcntl@GLIBC_2.28`. Not television startup or scanout. See
-openaurora/docs/LUA.md.
+reference `fcntl@GLIBC_2.28`. `oa.aurora` adds an opt-in, gated
+`ui.lua.control` bridge (read-only queries or deferred socket/CLI commands;
+no raw shell/device access, no MCP listener). Not television startup or
+scanout. See openaurora/docs/LUA.md.
 
 Current review: AGENT-REVIEW-2026-11-05 audits8ebacd2..40f2f66 and its changed
 TODO checks. The actual production decoder DSO now runs on every vendor-class

@@ -87,6 +87,11 @@ struct oa_host_api {
 
     /* Loop-thread only. Capture during init(), never read from a worker. */
     uint32_t (*owner_id)(void *priv);
+
+    /* Optional loop-thread control-plane dispatch (same commands as the
+     * socket/CLI). line is copied and bounded; reply is NUL-terminated. A
+     * module may use this to expose gated automation; NULL on older cores. */
+    int (*control)(void *priv, const char *line, char *out, size_t cap);
 };
 
 typedef struct oa_module {

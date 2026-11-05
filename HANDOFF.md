@@ -24,9 +24,12 @@ Offline scripting entry point: [openaurora/docs/LUA.md](openaurora/docs/LUA.md).
 Module `lua` publishes `ui.lua` v1, one Lua 5.4.9 state shared by every skin.
 It is not a skin. Host `check-ui-lua` and `check-ui-skin` pass, and the
 leak-enabled ASan/UBSan `check-ui-lua` passes; full host `make check` is
-433 ok and `verify.cjs` 45 groups. ARM/qemu `tests/ui_lua` passes
+434 ok and `verify.cjs` 45 groups. ARM/qemu `tests/ui_lua` passes
 on the TV glibc; the http body itself is proven on the host, because qemu-user
-does not exec host python or curl. This does not accept on-set startup.
+does not exec host python or curl. `oa.aurora` is an opt-in, gated
+`ui.lua.control` bridge for read-only queries or deferred control commands; no
+raw shell/device access and no MCP listener. This does not accept on-set
+startup.
 
 Full vendor parity except telemetry/advertising, with reloadable modules and
 eventually native OmarchyTV. Replacement is incomplete. November 1 owner

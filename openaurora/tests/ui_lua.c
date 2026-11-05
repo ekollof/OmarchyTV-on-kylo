@@ -43,6 +43,8 @@ static const char *config(void *ud, const char *key, const char *def)
         return g_script;
     if (!strcmp(key, "ui.lua.data"))
         return g_data;
+    if (!strcmp(key, "ui.lua.control"))
+        return "2";
     if (!strcmp(key, "ui.omarchy.lua"))
         return g_require_lua ? "1" : "0";
     if (!strcmp(key, "ui.paint"))
@@ -406,6 +408,42 @@ int main(int argc, char **argv)
     if (server > 0) {
         kill(server, SIGTERM);
         waitpid(server, NULL, 0);
+    }
+    {
+        char aurora_path[320];
+        snprintf(aurora_path, sizeof aurora_path, "%s/aurora.lua", g_root);
+        write_file(aurora_path,
+            "function oa_paint(skin)\n"
+            "  local reply, ok = aurora.query('list')\n"
+            "  if ok and reply:find('lua', 1, true) then oa.nav(8, 1) end\n"
+            "  if oa.state.req == nil then\n"
+            "    oa.state.req = aurora.request('status lua')\n"
+            "  end\n"
+            "  local result = aurora.result()\n"
+            "  if result and result.ok and result.reply:find('lua', 1, true) then\n"
+            "    oa.nav(9, 2)\n"
+            "  end\n"
+            "  if not pcall(function() aurora.request('stop lua') end) then\n"
+            "    oa.nav(10, 3)\n"
+            "  end\n"
+            "  if not pcall(function() aurora.request('load /tmp/evil.so') end) then\n"
+            "    oa.nav(11, 4)\n"
+            "  end\n"
+            "end\n");
+        lua = hold(&host);
+        assert(lua->reload_script(aurora_path) == 0);
+        drop(&host);
+        lua = hold(&host);
+        int handled = 0;
+        assert(lua->call("paint", "omarchy", 0, &handled) == 0);
+        drop(&host);
+        oa_host_dispatch_posts(&host);
+        lua = hold(&host);
+        assert(lua->call("paint", "omarchy", 0, &handled) == 0);
+        assert(lua->nav(&band, &index) == 0 && band == 11 && index == 4);
+        drop(&host);
+        puts("  ok   aurora query/request bridges a read-only and deferred control command");
+        unlink(aurora_path);
     }
     assert(!command(&host, "stop ui_omarchy", out, sizeof out));
     assert(!command(&host, "unload ui_omarchy", out, sizeof out));

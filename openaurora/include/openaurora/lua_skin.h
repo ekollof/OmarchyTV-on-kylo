@@ -12,6 +12,13 @@
  * oa.fetch (http/https only, size and time capped, nonblocking). No
  * debug/package/coroutine, no binary chunks, no telemetry or advertising.
  *
+ * oa.aurora is an optional control-plane bridge. ui.lua.control=0 disables it
+ * (default), 1 permits read-only control queries, and 2 permits deferred
+ * commands through the same loop-thread dispatcher as the socket/CLI. It does
+ * not expose pointers or grant device ownership; exit/quit/standby and
+ * lifecycle commands targeting the lua module are refused. The bridge is a
+ * suitable MCP tool surface, but no MCP server is started here.
+ *
  * reload_script() validates a candidate and keeps the running state if the
  * candidate fails. Module reload (CLI `reload lua`) does the same check in
  * save(), so a bad file cancels before the host unloads the module. A consumer

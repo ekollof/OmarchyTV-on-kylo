@@ -35,16 +35,28 @@ the selector falls back to the vendor skin.
   service refuses `reload lua` and uses `reload_script` instead.
 - No telemetry, advertising, ACR, analytics or device ownership.
 
+## Internal control bridge (`oa.aurora`)
+
+`ui.lua.control` gates a bridge to the same control dispatcher as the Unix
+socket/CLI: `0` off (default), `1` read-only queries, `2` deferred commands.
+`aurora.query` is a synchronous allowlist of read-only commands;
+`aurora.request` queues a command through the `lua` host post queue and
+`aurora.result` returns `{id, ok, reply}`. Commands are bounded printable
+ASCII; `exit`, `quit`, `standby`, `load`/`reload` paths, and lifecycle
+operations targeting `lua` itself are refused. Target modules still enforce
+their own start/stop, service-hold and device rules. The existing control
+socket is the MCP transport; no JSON-RPC listener is started.
+
 ## Verification
 
 ```
-full host make check: 433 ok
+full host make check: 434 ok
 verify.cjs: 45 groups
-check-ui-lua: 8 ok groups
+check-ui-lua: 9 ok groups
 check-ui-skin: 6 ok groups
 lua IPC: load/start/reload keeps a good script and rejects a bad candidate
-leak-enabled ASan/UBSan check-ui-lua: 8 ok groups
-ARM/qemu tests/ui_lua: 8 ok groups
+leak-enabled ASan/UBSan check-ui-lua: 9 ok groups
+ARM/qemu tests/ui_lua: 9 ok groups
 ```
 
 The sanitizer run used `ASAN_OPTIONS=detect_leaks=1:halt_on_error=1` and
@@ -52,7 +64,10 @@ The sanitizer run used `ASAN_OPTIONS=detect_leaks=1:halt_on_error=1` and
 http success path is host-only because qemu-user cannot execute the host curl,
 so ARM takes the failed-transfer callback. The socket test loads and starts
 `lua`, reloads a valid and an invalid script over the real control socket, and
-verifies the bad candidate leaves the service started.
+verifies the bad candidate leaves the service started. The `ui_lua` group
+exercises `aurora.query("list")`, a deferred `aurora.request("status lua")`
+after the hook returns, result delivery, and rejection of forbidden
+`stop lua` and `load /tmp/evil.so` requests.
 
 Evidence: `artifacts/analysis/lua-service-2026-11-05/`.
 
@@ -66,4 +81,6 @@ Evidence: `artifacts/analysis/lua-service-2026-11-05/`.
   time.
 - `oa.fetch` requires `/usr/bin/curl`; the success body is proven only on the
   host.
+- `oa.aurora` is disabled by default and is a control-command bridge, not a
+  raw shell, process or device API. No MCP/JSON-RPC server is started.
 - Vendor pixels are unchanged and the native OmarchyTV screens remain pending.

@@ -1,10 +1,10 @@
-[157306] ERR  host         lua: refusing to unload, service 'ui.lua' still held (use --force)
-[157311] ERR  host         ui.lua: [string "ui.lua"]:1: <name> expected near '('
-[157312] ERR  host         ui.lua: not enough memory
-[157314] ERR  host         ui.lua: instruction limit
-[157314] ERR  host         ui.lua: [string "ui.lua"]:1: fetch url
-[157315] ERR  host         ui.lua: [string "ui.lua"]:3: boom
-[159058] ERR  host         ui_omarchy: start() failed (-1)
+[195975] ERR  host         lua: refusing to unload, service 'ui.lua' still held (use --force)
+[195980] ERR  host         ui.lua: [string "ui.lua"]:1: <name> expected near '('
+[195980] ERR  host         ui.lua: not enough memory
+[195982] ERR  host         ui.lua: instruction limit
+[195983] ERR  host         ui.lua: [string "ui.lua"]:1: fetch url
+[195983] ERR  host         ui.lua: [string "ui.lua"]:3: boom
+[197733] ERR  host         ui_omarchy: start() failed (-1)
   ok   sandbox keeps io/os for regular files and the clock, and rejects shell and device opens
   ok   omarchy paints the script theme and layout, and a key updates them
   ok   suspend drops script timers and resume still paints the script
@@ -12,4 +12,5 @@
   ok   a paint hook that errors restores the previous theme
   ok   vendor runs the paint hook and does not draw the script colours
   ok   oa.fetch reads a local http body without blocking the host loop
+  ok   aurora query/request bridges a read-only and deferred control command
   ok   ui.omarchy.lua without a loaded script falls back to the vendor skin

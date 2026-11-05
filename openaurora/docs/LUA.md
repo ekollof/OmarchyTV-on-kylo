@@ -24,6 +24,7 @@ can use while that UI is still the skeleton in `ui_omarchy`.
 | `ui.lua.instructions` | 100000 | Instruction budget for one load or one callback, clamped to 1000..1000000. The hook counts in batches of at most 1000. |
 | `ui.lua.max_bytes` | 32768 | Maximum script file size, clamped to 256..49152. The saved blob must stay under the host's 64 KiB reload cap. |
 | `ui.lua.data` | empty | Directory for `io.open` writes. Empty means `io.open` is read-only. |
+| `ui.lua.control` | 0 | Internal control bridge: 0 off, 1 read-only queries, 2 deferred socket/CLI commands. See `oa.aurora` below. |
 | `ui.omarchy.lua` | 0 | When `1`, `ui_omarchy` start fails unless `ui.lua` is up and a script is loaded. The skin selector then falls back to the vendor skin. |
 
 Load and start `lua` before the skin if the skin should see the service at
@@ -130,6 +131,46 @@ large regular file still runs inside the hook and can stall the host loop
 until the read returns or the Lua memory cap refuses the resulting string.
 Do not read large files from a paint or key hook. `/proc` stats are small
 enough for this.
+
+## `oa.aurora` internal control bridge
+
+`ui.lua.control` is **0** (off) by default. It gates an optional bridge to the
+same loop-thread control dispatcher used by the Unix socket and CLI:
+
+| value | capability |
+|---|---|
+| `0` | disabled; `oa.aurora.query`/`request` raise `aurora control is disabled` |
+| `1` | read-only queries only |
+| `2` | read-only queries plus deferred control commands |
+
+The table is available as both `oa.aurora` and the global `aurora`.
+
+| call | result |
+|---|---|
+| `aurora.query(command)` | synchronous read-only command; returns `reply, ok` |
+| `aurora.request(command)` | queues one command for after the current hook; returns an integer request id |
+| `aurora.result()` | returns and clears `{ id, ok, reply }`, or nil |
+| `aurora.mode()` | current `ui.lua.control` value |
+
+Read-only queries are an explicit allowlist (`list`, `status`, `service-list`,
+`channel-list`, `channel-state`, `epg-count`, `epg-query`, `tuner-state`,
+`pvr-list`, `ui-state`, `nav-state`, `list-state`, `list-key`,
+`mixer-query`, `mixer-result`, `hotel-state`, `launcher-items`). They run only
+in the live state, never while a candidate is being validated.
+
+`request` is deferred through the `lua` module's host post queue (four slots),
+so a load/start/stop/reload cannot re-enter the skin hook that called it.
+Commands are bounded to 191 printable ASCII bytes. `exit`, `quit`, `standby`,
+lifecycle commands targeting `lua` itself, and `load`/`reload` paths (only
+module names are allowed) are refused. The target module's own
+start/stop/permission checks still apply; this does not grant device ownership
+or bypass the skin/service hold rules. A command that stops the `lua` module is
+not permitted, so the result slot cannot outlive its runtime.
+
+An MCP server can expose `aurora.query` and `aurora.request` as tools, or use
+the existing Unix control socket directly. This module does not start a
+JSON-RPC listener, and `os.execute`/`io.popen` remain removed: the bridge is
+the controlled automation path, not a shell.
 
 ## `io` and `os`
 

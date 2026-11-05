@@ -1665,13 +1665,22 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       Instruction hooks do not bound blocking C calls such as `file:read("*a")`.
       Scripts cannot take device ownership or add telemetry/advertising.
       Evidence 2026-11-05: `make check-ui-lua` and `make check-ui-skin` exit 0;
-      full host `make check` 433 ok, verify45; `BUILD=build-lua-san` ASan/UBSan
+      full host `make check` 434 ok, verify45; `BUILD=build-lua-san` ASan/UBSan
       `check-ui-lua` exit 0; ARM glibc
       `build-lua-arm/tests/ui_lua` under qemu-arm-static and bwrap exit 0.
       The http success path is the host run. qemu-user cannot exec host python
       or curl, so the ARM run takes the failed-transfer callback. Vendor pixels
       are unchanged. This is not television startup or scanout; criterion 4
       stays unmet. See openaurora/docs/LUA.md.
+- [x] Gated `oa.aurora` Lua control bridge: `ui.lua.control` defaults off;
+      1 allows synchronous read-only control queries, 2 allows deferred
+      control commands through the host post queue. `aurora.query`,
+      `aurora.request` and `aurora.result` are bounded; lifecycle commands
+      targeting `lua`, plus exit/quit/standby, are refused. The existing
+      control socket is the MCP/automation transport; no JSON-RPC listener or
+      raw shell/device API was added. The ui_lua group covers query, deferred
+      request/result, and forbidden-command rejection; host434 ok, verify45,
+      sanitizer and ARM/qemu pass. LUA-SERVICE. No TV access.
 - [ ] Real OmarchyTV screens replacing the skeleton after vendor parity. Keep
       OA_SVC_PORTAL on vendor and preserve engine draw/asset/present contracts.
 - [ ] Split module/test compile+link rules into .o + link so ccache can cache

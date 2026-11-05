@@ -84,6 +84,16 @@ struct slot {
     struct runtime *rt;
 };
 
+struct runtime;
+
+#define CONTROL_SLOTS 4
+struct control_slot {
+    struct runtime *rt;
+    uint32_t id;
+    int used;
+    char text[192];
+};
+
 struct session;
 
 struct fetch {
@@ -135,6 +145,16 @@ struct runtime {
     char message[160];
     unsigned char *snap;
     size_t snap_len;
+    uint32_t owner;
+    int control_mode;
+    uint32_t control_seq;
+    struct control_slot control_slots[CONTROL_SLOTS];
+    struct {
+        int valid;
+        uint32_t id;
+        int rc;
+        char reply[512];
+    } control_last;
 };
 
 static struct runtime *g_rt;
@@ -866,6 +886,178 @@ static const luaL_Reg oa_funcs[] = {
     {NULL, NULL}
 };
 
+static int control_text_ok(const char *text, size_t len)
+{
+    if (!text || len == 0 || len >= 192)
+        return 0;
+    for (size_t i = 0; i < len; i++)
+        if ((unsigned char)text[i] < 32 || (unsigned char)text[i] > 126)
+            return 0;
+    return 1;
+}
+
+static void next_word(const char **cursor, char *out, size_t cap)
+{
+    const char *p = *cursor;
+    size_t n = 0;
+    while (*p == ' ' || *p == '\t') p++;
+    while (*p && *p != ' ' && *p != '\t' && n + 1 < cap)
+        out[n++] = *p++;
+    out[n] = 0;
+    while (*p && *p != ' ' && *p != '\t') p++;
+    *cursor = p;
+}
+
+static int query_allowed(const char *text)
+{
+    static const char *allowed[] = {
+        "list", "status", "help", "service-list", "channel-list",
+        "channel-state", "epg-count", "epg-query", "tuner-state",
+        "pvr-list", "ui-state", "nav-state", "list-state", "list-key",
+        "mixer-query", "mixer-result", "hotel-state", "launcher-items",
+        NULL
+    };
+    const char *p = text;
+    char first[32];
+    next_word(&p, first, sizeof first);
+    for (int i = 0; allowed[i]; i++)
+        if (!strcmp(first, allowed[i]))
+            return 1;
+    return 0;
+}
+
+static int control_forbidden(const char *text)
+{
+    const char *p = text;
+    char first[32], second[32];
+    next_word(&p, first, sizeof first);
+    if (!strcmp(first, "exit") || !strcmp(first, "quit") ||
+        !strcmp(first, "standby"))
+        return 1;
+    if (!strcmp(first, "load") || !strcmp(first, "start") ||
+        !strcmp(first, "stop") || !strcmp(first, "unload") ||
+        !strcmp(first, "reload") || !strcmp(first, "suspend") ||
+        !strcmp(first, "resume")) {
+        next_word(&p, second, sizeof second);
+        if (!strcmp(second, "--force"))
+            next_word(&p, second, sizeof second);
+        if (!strcmp(second, "lua"))
+            return 1;
+        if ((!strcmp(first, "load") || !strcmp(first, "reload")) &&
+            (strchr(second, '/') || strstr(second, "..") ||
+             strstr(second, ".so")))
+            return 1;
+    }
+    return 0;
+}
+
+static void run_control(void *ud)
+{
+    struct control_slot *slot = ud;
+    struct runtime *rt = slot ? slot->rt : NULL;
+    char reply[512];
+    if (!rt || !rt->api || !rt->api->control) {
+        if (slot) slot->used = 0;
+        return;
+    }
+    memset(reply, 0, sizeof reply);
+    int rc = rt->api->control(rt->api->priv, slot->text, reply, sizeof reply);
+    rt->control_last.valid = 1;
+    rt->control_last.id = slot->id;
+    rt->control_last.rc = rc;
+    snprintf(rt->control_last.reply, sizeof rt->control_last.reply, "%s", reply);
+    slot->used = 0;
+}
+
+static int l_aurora_query(lua_State *L)
+{
+    struct runtime *rt = rt_of(L);
+    size_t len = 0;
+    const char *text = luaL_checklstring(L, 1, &len);
+    if (!rt || !rt->live || rt->live->L != L)
+        return luaL_error(L, "aurora query is not available during validation");
+    if (rt->control_mode < 1 || !rt->api->control)
+        return luaL_error(L, "aurora control is disabled");
+    if (!control_text_ok(text, len))
+        return luaL_error(L, "aurora command length or characters");
+    if (!query_allowed(text))
+        return luaL_error(L, "not a read-only aurora command");
+    char reply[512];
+    memset(reply, 0, sizeof reply);
+    int rc = rt->api->control(rt->api->priv, text, reply, sizeof reply);
+    lua_pushstring(L, reply);
+    lua_pushboolean(L, rc == 0);
+    return 2;
+}
+
+static int l_aurora_request(lua_State *L)
+{
+    struct runtime *rt = rt_of(L);
+    size_t len = 0;
+    const char *text = luaL_checklstring(L, 1, &len);
+    if (!rt || !rt->live || rt->live->L != L)
+        return luaL_error(L, "aurora request is not available during validation");
+    if (rt->control_mode < 2 || !rt->api->control || !rt->api->post)
+        return luaL_error(L, "aurora control is disabled");
+    if (!control_text_ok(text, len))
+        return luaL_error(L, "aurora command length or characters");
+    if (control_forbidden(text))
+        return luaL_error(L, "aurora command is not permitted");
+    if (!rt->owner)
+        return luaL_error(L, "aurora control owner unavailable");
+    for (int i = 0; i < CONTROL_SLOTS; i++) {
+        struct control_slot *slot = &rt->control_slots[i];
+        if (slot->used)
+            continue;
+        memset(slot, 0, sizeof *slot);
+        slot->rt = rt;
+        slot->id = ++rt->control_seq;
+        slot->used = 1;
+        memcpy(slot->text, text, len);
+        slot->text[len] = 0;
+        if (rt->api->post(rt->api->priv, rt->owner, run_control, slot) != 0) {
+            slot->used = 0;
+            return luaL_error(L, "aurora control queue is full");
+        }
+        lua_pushinteger(L, slot->id);
+        return 1;
+    }
+    return luaL_error(L, "aurora control queue is full");
+}
+
+static int l_aurora_result(lua_State *L)
+{
+    struct runtime *rt = rt_of(L);
+    if (!rt || !rt->control_last.valid) {
+        lua_pushnil(L);
+        return 1;
+    }
+    lua_newtable(L);
+    lua_pushinteger(L, rt->control_last.id);
+    lua_setfield(L, -2, "id");
+    lua_pushboolean(L, rt->control_last.rc == 0);
+    lua_setfield(L, -2, "ok");
+    lua_pushstring(L, rt->control_last.reply);
+    lua_setfield(L, -2, "reply");
+    rt->control_last.valid = 0;
+    return 1;
+}
+
+static int l_aurora_mode(lua_State *L)
+{
+    struct runtime *rt = rt_of(L);
+    lua_pushinteger(L, rt ? rt->control_mode : 0);
+    return 1;
+}
+
+static const luaL_Reg aurora_funcs[] = {
+    {"query", l_aurora_query},
+    {"request", l_aurora_request},
+    {"result", l_aurora_result},
+    {"mode", l_aurora_mode},
+    {NULL, NULL}
+};
+
 static void nil_field(lua_State *L, const char *table, const char *field)
 {
     lua_getglobal(L, table);
@@ -942,6 +1134,13 @@ static int install_api(lua_State *L, struct session *s, struct runtime *rt)
     lua_setfield(L, -2, "api");
     lua_newtable(L);
     lua_setfield(L, -2, "state");
+    lua_newtable(L);
+    luaL_setfuncs(L, aurora_funcs, 0);
+    lua_pushinteger(L, rt ? rt->control_mode : 0);
+    lua_setfield(L, -2, "mode");
+    lua_pushvalue(L, -1);
+    lua_setfield(L, -3, "aurora");
+    lua_setglobal(L, "aurora");
     lua_setglobal(L, "oa");
     return 0;
 }
@@ -1647,6 +1846,9 @@ static struct runtime *rt_create(const oa_host_api *api)
     if (!rt)
         return NULL;
     rt->api = api;
+    rt->owner = api->owner_id(api->priv);
+    const char *control = api->config_get(api->priv, "ui.lua.control", "0");
+    rt->control_mode = (int)clamp_u(control, 0, 0, 2);
     path = api->config_get(api->priv, "ui.lua.script", "");
     snprintf(rt->path, sizeof rt->path, "%s", path ? path : "");
     data = api->config_get(api->priv, "ui.lua.data", "");

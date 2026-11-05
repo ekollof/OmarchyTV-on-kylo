@@ -313,7 +313,7 @@ reverse-engineered vendor screens and a later OmarchyTV skin share one engine.
 | ui.engine service v2 | v1 drawing prefix plus `register_skin_dispatch`/`dispatch_skin`; legacy `register_skin` rejects with ENOTSUP |
 | ui_vendor | the renamed vendor skin: portal rail/cards, source selection, dialogs, animations, its own screen state and `OA_SVC_PORTAL` |
 | ui_omarchy | the OmarchyTV skeleton over the same engine: dark shell, accent rail and placeholder tiles, with its own key semantics; no vendor assets and no published service yet. When `ui.lua` is up and a script is loaded, paint uses that script's theme and first layout rect. `ui.omarchy.lua=1` refuses to start unless a script is loaded, so the skin selector falls back to vendor |
-| lua (`ui.lua`) | one process-wide Lua 5.4 state shared by every skin. Not a skin. Scripts configure layout, navigation, theme, keys and animation, and may read regular files or fetch http(s). Rendering, device ownership and blocking transfers stay in C. See [LUA.md](LUA.md) |
+| lua (`ui.lua`) | one process-wide Lua 5.4 state shared by every skin. Not a skin. Scripts configure layout, navigation, theme, keys and animation, may read regular files or fetch http(s), and can use the opt-in `oa.aurora` control bridge. Rendering, device ownership and blocking transfers stay in C. See [LUA.md](LUA.md) |
 
 Implemented in the 2026-11-01 split: the engine holds display/display.async/
 display.alpha, writes the readiness receipt, subscribes the key topic and owns

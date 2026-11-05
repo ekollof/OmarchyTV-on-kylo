@@ -409,6 +409,19 @@ static int api_sleep_cycle(void *context, uint32_t owner, int (*enter)(void *),
     return oa_module_standby_cycle(context, owner, enter, ud, result);
 }
 
+static int api_control(void *context, const char *line, char *out, size_t cap)
+{
+    oa_host *h = context;
+    if (!h || !line || !*line || !out || cap == 0)
+        return -1;
+    size_t len = strlen(line);
+    if (len >= 512)
+        return -1;
+    char copy[512];
+    memcpy(copy, line, len + 1);
+    return oa_control_command(h, copy, out, cap);
+}
+
 static const oa_host_api g_api_template = {
     .size = sizeof(oa_host_api),
     .abi = OA_ABI_VERSION,
@@ -428,6 +441,7 @@ static const oa_host_api g_api_template = {
     .post = api_post,
     .config_get = api_config_get,
     .owner_id = api_owner_id,
+    .control = api_control,
 };
 
 int oa_host_init(oa_host *h, const char *modules_dir, const char *config)
