@@ -1,0 +1,33 @@
+dialog SubLauncherDialog (DialogSubLauncher.svg)
+  rect background [0, 0, 1920, 1080]
+  rect main_rectangle [0, 0, 1920, 1080]
+  rect listBox [189, 255, 1774, 222]
+  item anim #scalerect transform scale begin=0 duration=0.3 from=1 1 to=1.35 1.35
+  item anim #glyph y  begin=0 duration=0.3 from=0 to=-24
+  item anim #glyph x  begin=0 duration=0.3 from=0 to=-42
+branch 2 picture (initialisePictureSettingsShortcuts)
+  item 0 MODE -> picture_modes
+  item 1 ENERGY_SAVING -> OFF, MINIMUM_STR, MEDIUM, MAXIMUM_STR, AUTO, SCREEN_OFF, CUSTOM
+  item 2 PICTURE_ZOOM -> ZOOM_MODE_AUTO, ZOOM_MODE_16_9, ZOOM_MODE_SUBTITLE, ZOOM_MODE_14_9, ZOOM_MODE_14_9_ZOOM, ZOOM_MODE_4_3, 21:9, ZOOM_MODE_CINEMA, ZOOM_MODE_FULL
+branch 3 sound (initialiseSoundSettingsShortcuts)
+  item 0 EQUALIZER -> MUSIC, MOVIE, SPEECH, FLAT_EQ, CLASSIC, USER
+  item 1 CEC_SPEAKERS -> DISPLAY, TV, CEC_AMPLIFIER
+  item 2 DOLBY_AUDIO_OR_MODE [dynamic: uVar3: DAT_00ee1de0 'Dolby Audio' or DAT_00ee1de4 'MODE'] -> OFF, SMART, MOVIE, MUSIC, GENRE_CODE_NEWS
+  item 3 SOUND_OUTPUT -> DISPLAY, TV, SPDIF, HDMI_ARC, HEADPHONE_ONLY, LINEOUT
+  item 4 AVL -> OFF, NORMAL, NIGHT, AUTO
+  item 5 AVL -> OFF, ON
+branch 7 system (initialiseSystemSettingsShortcuts)
+  item 0 SLEEP_TIMER [dynamic: uVar8: DAT_00ee239c 'SLEEP_TIMER_STR' or DAT_00ee2398 'OFF_TIMER'] -> sleep_timer_values
+  item 1 AUTO_TV_OFF [dynamic: UString from DAT_00ee26cc 'AUTO_TV_OFF' or DAT_00ee26d0 'AUTO_TV_OFF_NO_TUNER'] -> auto_tv_off_values
+  item 2 SUBTITLE -> OFF, ON
+  item 3 AUDIO_LANG -> languages
+branch 0 channel_list (initialiseChannelListShortcuts)
+  item 0 FILTER_FAVOURITES_LABEL -> favourite_lists
+branch 52 fvp (initialiseFVPShortcuts)
+  item None DYNAMIC -> fvp_apps
+branch 61 ai (initialiseAIMenuShortcuts)
+  item 0 AI_TXT -> OFF, ON
+branch default recommendations (initialiseRecommendationShortcuts)
+  item None DYNAMIC -> recommendations
+branch default advertisement (initialiseAdvertisementBanner)
+  item 0 DYNAMIC -> dynamic

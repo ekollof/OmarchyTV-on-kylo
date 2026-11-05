@@ -131,6 +131,24 @@ typedef struct {
     unsigned (*count)(void);
 } oa_ui_theme_iface;
 
+/* ui.menu v1 — firmware-derived, JSON-loaded menu tree. Published by
+ * mod_ui_menu. Loop-thread only. The provider owns the document and every
+ * returned view/string; hold lookup(OA_SVC_UI_MENU,1) through use and drop it
+ * before reload. A reload replaces the whole document, so consumers must not
+ * retain pointers across provider replacement. Missing/unsupported branches
+ * return NULL; callers must not invent one. Actions are plain strings for a
+ * module-selected dispatcher, not a network protocol. */
+struct oa_menu_doc;
+struct oa_menu_dialog;
+struct oa_menu_branch;
+#define OA_SVC_UI_MENU "ui.menu"
+typedef struct {
+    const struct oa_menu_doc *(*document)(void);
+    const struct oa_menu_dialog *(*dialog)(const char *id);
+    const struct oa_menu_branch *(*branch)(const struct oa_menu_dialog *dialog,
+                                           int launcher_type);
+} oa_ui_menu_iface;
+
 /* Host-owned sleep coordinator. Loop-thread only. The owner pins the entry
  * callback's module through prepare/entry/restore; 0 denotes host code. */
 #define OA_SVC_SLEEP "host.sleep"

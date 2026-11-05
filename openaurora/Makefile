@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels lua
+MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_menu ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels lua
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -597,6 +597,10 @@ check-ui-object-scan: $(BUILD)/tests/ui_object_scan
 check: check-ui-object-scan
 
 $(BUILD)/modules/mod_ui_theme.so: modules/ui_theme/ui_theme.c common/svg_pack.c common/binsvg.c include/openaurora/svg_pack.h include/openaurora/binsvg.h include/openaurora/text_layout.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+
+$(BUILD)/modules/mod_ui_menu.so: modules/ui_menu/ui_menu.c common/menu_model.c common/json.c common/launcher_anim.c include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
@@ -1918,6 +1922,26 @@ $(BUILD)/tests/launcher_anim: tests/launcher_anim.c common/launcher_anim.c inclu
 check-launcher-anim: $(BUILD)/tests/launcher_anim
 	@$(BUILD)/tests/launcher_anim
 check: check-launcher-anim
+
+$(BUILD)/tests/menu_model: tests/menu_model.c common/menu_model.c common/launcher_anim.c common/json.c menus/sub_launcher.json include/openaurora/menu_model.h include/openaurora/launcher_anim.h include/openaurora/json.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ tests/menu_model.c common/menu_model.c common/launcher_anim.c common/json.c
+
+.PHONY: check-menu-model
+check-menu-model: $(BUILD)/tests/menu_model
+	@$(BUILD)/tests/menu_model $(CURDIR)/menus/sub_launcher.json
+check: check-menu-model
+
+$(BUILD)/tests/ui_menu_service: tests/ui_menu_service.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_menu_service.c $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-ui-menu-service
+check-ui-menu-service: $(BUILD)/tests/ui_menu_service $(BUILD)/modules/mod_ui_menu.so
+	@mkdir -p $(BUILD)/tests/ui-menu/modules
+	@cp $(BUILD)/modules/mod_ui_menu.so $(BUILD)/tests/ui-menu/modules/
+	@$(BUILD)/tests/ui_menu_service $(BUILD)/tests/ui-menu/modules $(CURDIR)/menus/sub_launcher.json
+check: check-ui-menu-service
 
 $(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)

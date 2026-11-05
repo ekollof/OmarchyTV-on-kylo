@@ -59,6 +59,20 @@ Added pure `launcher_anim` helpers and tests for sublauncher 240x140/1→1.35
 and glyph 0→-42/-24. Screen integration and a real vendor transition capture
 remain open. SUBLAUNCHER-GRID-ANIM.
 
+Sub-launcher menu tree, 2026-11-06: `LauncherDialog::showSubLauncher` opens
+`SubLauncherDialog` after the 750 ms `setSubLauncherOpenTimer` or on Down.
+`SubLauncherDialog::initialiseFields` dispatches on launcher type: 2 picture
+(MODE, ENERGY_SAVING, PICTURE_ZOOM), 3 sound (EQUALIZER, CEC_SPEAKERS,
+Dolby/Mode, SOUND_OUTPUT, AVL, AVL), 7 system (sleep timer, auto TV off,
+SUBTITLE, AUDIO_LANG), 0 channel list, 61 AI; 52 FVP, recommendations and
+advertising are excluded. `DialogSubLauncher.svg` listBox 189,255 1774x222;
+items 240x140; `sublauncheritemFA` 300 ms scale 1→1.35 and glyph 0→−42/−24;
+`SettingSubLauncherListBoxFA` selectionIndicator y 0→100. Runtime model is
+`openaurora/menus/sub_launcher.json`; bounded JSON loader, action strings,
+and reloadable `ui.menu` v1 service; host tree/action/service tests pass, ARM
+GLIBC 2.4. `ui_vendor` does not consume it yet; horizontal row-origin fields
++0x204/+0x208/+0x210 remain untraced. SUBLAUNCHER-MENU-TREE.
+
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
 Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,
 one redraw at t=53ms (bbox 33,30 620x230, 45,745 px), then 16 identical post

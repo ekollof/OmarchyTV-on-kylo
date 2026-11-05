@@ -92,6 +92,16 @@ from→to, and a top-left window anchor with the named #scalerect size. Pure
 0→-42/-24. Screen integration/vendor transition capture remain open.
 SUBLAUNCHER-GRID-ANIM.
 
+Sub-launcher menu tree, 2026-11-06: `LauncherDialog` opens
+`SubLauncherDialog` after 750 ms or Down; `initialiseFields` dispatches by
+launcher type to picture/sound/system/channel/AI branches. `DialogSubLauncher`
+listBox 189,255 1774x222, item 240x140, 300 ms 1→1.35 + glyph −42/−24.
+Runtime `menus/sub_launcher.json`; `tools/re/menu-tree.py` regenerates it from
+the ELF/decompile/BinSVG; bounded JSON loader + action strings; reloadable
+`ui.menu` v1 service. Host tree/action/service tests pass; ARM GLIBC 2.4.
+`ui_vendor` consumption and row-origin +0x204/+0x208/+0x210 remain.
+SUBLAUNCHER-MENU-TREE.
+
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over
 Markt/Netflix (700x280, ~37ms effective) captured one redraw at t=53ms
 (bbox 33,30 620x230) and 16 identical post frames through 621ms. Apps focus is

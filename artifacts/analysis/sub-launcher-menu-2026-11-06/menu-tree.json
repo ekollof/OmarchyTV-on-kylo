@@ -1,0 +1,678 @@
+{
+  "branches": [
+    {
+      "function": "initialisePictureSettingsShortcuts",
+      "items": [
+        {
+          "id": 0,
+          "key": "MODE",
+          "values": [
+            {
+              "id": 0,
+              "key": "picture_modes"
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "key": "ENERGY_SAVING",
+          "values": [
+            {
+              "id": "0",
+              "key": "OFF"
+            },
+            {
+              "id": "1",
+              "key": "MINIMUM_STR"
+            },
+            {
+              "id": "2",
+              "key": "MEDIUM"
+            },
+            {
+              "id": "3",
+              "key": "MAXIMUM_STR"
+            },
+            {
+              "id": "4",
+              "key": "AUTO"
+            },
+            {
+              "id": "6",
+              "key": "SCREEN_OFF"
+            },
+            {
+              "id": "5",
+              "key": "CUSTOM"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "key": "PICTURE_ZOOM",
+          "values": [
+            {
+              "id": "1",
+              "key": "ZOOM_MODE_AUTO"
+            },
+            {
+              "id": "5",
+              "key": "ZOOM_MODE_16_9"
+            },
+            {
+              "id": "6",
+              "key": "ZOOM_MODE_SUBTITLE"
+            },
+            {
+              "id": "3",
+              "key": "ZOOM_MODE_14_9"
+            },
+            {
+              "id": "4",
+              "key": "ZOOM_MODE_14_9_ZOOM"
+            },
+            {
+              "id": "2",
+              "key": "ZOOM_MODE_4_3"
+            },
+            {
+              "id": "0xb",
+              "key": "21:9"
+            },
+            {
+              "id": "8",
+              "key": "ZOOM_MODE_CINEMA"
+            },
+            {
+              "id": "9",
+              "key": "ZOOM_MODE_FULL"
+            }
+          ]
+        }
+      ],
+      "launcher_type": 2,
+      "name": "picture"
+    },
+    {
+      "function": "initialiseSoundSettingsShortcuts",
+      "items": [
+        {
+          "id": 0,
+          "key": "EQUALIZER",
+          "values": [
+            {
+              "id": "0",
+              "key": "MUSIC"
+            },
+            {
+              "id": "1",
+              "key": "MOVIE"
+            },
+            {
+              "id": "2",
+              "key": "SPEECH"
+            },
+            {
+              "id": "3",
+              "key": "FLAT_EQ"
+            },
+            {
+              "id": "4",
+              "key": "CLASSIC"
+            },
+            {
+              "id": "5",
+              "key": "USER"
+            }
+          ]
+        },
+        {
+          "id": 1,
+          "key": "CEC_SPEAKERS",
+          "values": [
+            {
+              "id": "0",
+              "key": "DISPLAY"
+            },
+            {
+              "id": "0",
+              "key": "TV"
+            },
+            {
+              "id": "1",
+              "key": "CEC_AMPLIFIER"
+            }
+          ]
+        },
+        {
+          "dynamic": "uVar3: DAT_00ee1de0 'Dolby Audio' or DAT_00ee1de4 'MODE'",
+          "id": 2,
+          "key": "DOLBY_AUDIO_OR_MODE",
+          "values": [
+            {
+              "id": "0",
+              "key": "OFF"
+            },
+            {
+              "id": "1",
+              "key": "SMART"
+            },
+            {
+              "id": "2",
+              "key": "MOVIE"
+            },
+            {
+              "id": "3",
+              "key": "MUSIC"
+            },
+            {
+              "id": "4",
+              "key": "GENRE_CODE_NEWS"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "key": "SOUND_OUTPUT",
+          "values": [
+            {
+              "id": "0",
+              "key": "DISPLAY"
+            },
+            {
+              "id": "0",
+              "key": "TV"
+            },
+            {
+              "id": "1",
+              "key": "SPDIF"
+            },
+            {
+              "id": "2",
+              "key": "HDMI_ARC"
+            },
+            {
+              "id": "3",
+              "key": "HEADPHONE_ONLY"
+            },
+            {
+              "id": "4",
+              "key": "LINEOUT"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "key": "AVL",
+          "values": [
+            {
+              "id": "0",
+              "key": "OFF"
+            },
+            {
+              "id": "1",
+              "key": "NORMAL"
+            },
+            {
+              "id": "2",
+              "key": "NIGHT"
+            },
+            {
+              "id": "3",
+              "key": "AUTO"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "key": "AVL",
+          "values": [
+            {
+              "id": "0",
+              "key": "OFF"
+            },
+            {
+              "id": "1",
+              "key": "ON"
+            }
+          ]
+        }
+      ],
+      "launcher_type": 3,
+      "name": "sound"
+    },
+    {
+      "function": "initialiseSystemSettingsShortcuts",
+      "items": [
+        {
+          "dynamic": "uVar8: DAT_00ee239c 'SLEEP_TIMER_STR' or DAT_00ee2398 'OFF_TIMER'",
+          "id": 0,
+          "key": "SLEEP_TIMER",
+          "values": [
+            {
+              "id": 0,
+              "key": "sleep_timer_values"
+            }
+          ]
+        },
+        {
+          "dynamic": "UString from DAT_00ee26cc 'AUTO_TV_OFF' or DAT_00ee26d0 'AUTO_TV_OFF_NO_TUNER'",
+          "id": 1,
+          "key": "AUTO_TV_OFF",
+          "values": [
+            {
+              "id": 0,
+              "key": "auto_tv_off_values"
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "key": "SUBTITLE",
+          "values": [
+            {
+              "id": "0",
+              "key": "OFF"
+            },
+            {
+              "id": "1",
+              "key": "ON"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "key": "AUDIO_LANG",
+          "values": [
+            {
+              "id": 0,
+              "key": "languages"
+            }
+          ]
+        }
+      ],
+      "launcher_type": 7,
+      "name": "system"
+    },
+    {
+      "function": "initialiseChannelListShortcuts",
+      "items": [
+        {
+          "id": 0,
+          "key": "FILTER_FAVOURITES_LABEL",
+          "values": [
+            {
+              "id": 0,
+              "key": "favourite_lists"
+            }
+          ]
+        }
+      ],
+      "launcher_type": 0,
+      "name": "channel_list"
+    },
+    {
+      "function": "initialiseFVPShortcuts",
+      "items": [
+        {
+          "id": null,
+          "key": "DYNAMIC",
+          "values": [
+            {
+              "id": 0,
+              "key": "fvp_apps"
+            }
+          ]
+        }
+      ],
+      "launcher_type": 52,
+      "name": "fvp"
+    },
+    {
+      "function": "initialiseAIMenuShortcuts",
+      "items": [
+        {
+          "id": 0,
+          "key": "AI_TXT",
+          "values": [
+            {
+              "id": "0",
+              "key": "OFF"
+            },
+            {
+              "id": "1",
+              "key": "ON"
+            }
+          ]
+        }
+      ],
+      "launcher_type": 61,
+      "name": "ai"
+    },
+    {
+      "function": "initialiseRecommendationShortcuts",
+      "items": [
+        {
+          "id": null,
+          "key": "DYNAMIC",
+          "values": [
+            {
+              "id": 0,
+              "key": "recommendations"
+            }
+          ]
+        }
+      ],
+      "launcher_type": null,
+      "name": "recommendations"
+    },
+    {
+      "function": "initialiseAdvertisementBanner",
+      "items": [
+        {
+          "id": 0,
+          "key": "DYNAMIC",
+          "values": [
+            {
+              "id": 0,
+              "key": "dynamic"
+            }
+          ]
+        }
+      ],
+      "launcher_type": null,
+      "name": "advertisement"
+    }
+  ],
+  "dialog": {
+    "animations": [],
+    "class": "SubLauncherDialog",
+    "name": "SubLauncher",
+    "rects": {
+      "background": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "listBox": [
+        189,
+        255,
+        1774,
+        222
+      ],
+      "main_rectangle": [
+        0,
+        0,
+        1920,
+        1080
+      ]
+    },
+    "svg": "DialogSubLauncher.svg"
+  },
+  "excluded": [
+    "fvp",
+    "recommendations",
+    "advertisement"
+  ],
+  "item": {
+    "animations": [
+      {
+        "attribute": "transform",
+        "begin": 0,
+        "calc_mode": "linear",
+        "duration": "0.3",
+        "fill": "0",
+        "from": "1 1",
+        "key_splines": "",
+        "target": "#scalerect",
+        "to": "1.35 1.35",
+        "transform": "scale"
+      },
+      {
+        "attribute": "y",
+        "begin": 0,
+        "calc_mode": "linear",
+        "duration": "0.3",
+        "fill": "0",
+        "from": "0",
+        "key_splines": "",
+        "target": "#glyph",
+        "to": "-24",
+        "transform": ""
+      },
+      {
+        "attribute": "x",
+        "begin": 0,
+        "calc_mode": "linear",
+        "duration": "0.3",
+        "fill": "0",
+        "from": "0",
+        "key_splines": "",
+        "target": "#glyph",
+        "to": "-42",
+        "transform": ""
+      }
+    ],
+    "rects": {
+      "alignment": [
+        152,
+        635,
+        22,
+        18
+      ],
+      "background": [
+        -2,
+        0,
+        1920,
+        1080
+      ],
+      "glyph": [
+        121,
+        253,
+        240,
+        138
+      ],
+      "mRowL": [
+        75,
+        253,
+        0,
+        405
+      ],
+      "mRowM": [
+        121,
+        251,
+        240,
+        140
+      ],
+      "mRowR": [
+        455,
+        253,
+        0,
+        405
+      ],
+      "scalerect": [
+        121,
+        251,
+        240,
+        140
+      ],
+      "textPos": [
+        79,
+        374,
+        323,
+        39
+      ]
+    },
+    "svg": "sublauncheritemFA.svg"
+  },
+  "listbox": {
+    "animations": [
+      {
+        "attribute": "y",
+        "begin": 0,
+        "calc_mode": "linear",
+        "duration": "0.3",
+        "fill": "0",
+        "from": "0",
+        "key_splines": "",
+        "target": "#selectionIndicator",
+        "to": "100",
+        "transform": ""
+      }
+    ],
+    "rects": {
+      "background": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "mBotL": [
+        228,
+        251,
+        0,
+        10
+      ],
+      "mBotM": [
+        257,
+        251,
+        62,
+        10
+      ],
+      "mBotR": [
+        327,
+        251,
+        20,
+        10
+      ],
+      "mRowL": [
+        225,
+        90,
+        10,
+        140
+      ],
+      "mRowM": [
+        243,
+        90,
+        240,
+        140
+      ],
+      "mTopL": [
+        225,
+        104,
+        10,
+        16
+      ],
+      "mTopM": [
+        256,
+        104,
+        62,
+        16
+      ],
+      "mTopR": [
+        329,
+        104,
+        29,
+        16
+      ],
+      "rowPos": [
+        243,
+        90,
+        240,
+        140
+      ],
+      "selectionIndicator": [
+        0,
+        0,
+        240,
+        140
+      ]
+    },
+    "row_items_rects": {
+      "banner": [
+        10,
+        -170,
+        960,
+        180
+      ],
+      "button": [
+        10,
+        -140,
+        246,
+        140
+      ],
+      "mRowM": [
+        10,
+        -140,
+        240,
+        140
+      ],
+      "selectionbox": [
+        22,
+        -74,
+        212,
+        50
+      ],
+      "slidebar": [
+        10,
+        -58,
+        239,
+        60
+      ],
+      "text1": [
+        10,
+        -134,
+        240,
+        54
+      ],
+      "text2": [
+        194,
+        -48,
+        40,
+        40
+      ],
+      "text3": [
+        5,
+        -48,
+        40,
+        40
+      ],
+      "text4": [
+        194,
+        -48,
+        40,
+        40
+      ]
+    },
+    "row_items_svg": "SettingItemsListBoxRowItems_sublauncher.svg",
+    "row_rects": {
+      "background": [
+        0,
+        0,
+        1280,
+        720
+      ],
+      "mRowL": [
+        48,
+        42,
+        50,
+        155
+      ],
+      "mRowM": [
+        98,
+        42,
+        151,
+        155
+      ],
+      "mRowR": [
+        250,
+        42,
+        50,
+        155
+      ]
+    },
+    "row_svg": "SettingSubLauncherListBoxRowFA.svg",
+    "svg": "SettingSubLauncherListBoxFA.svg"
+  }
+}

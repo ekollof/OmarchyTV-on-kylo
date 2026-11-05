@@ -214,11 +214,20 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       and hashes in APPS-PULSE; do not apply the sublauncher records to this
       screen.
 
-- [ ] 300 ms sub-launcher playback and vendor comparison: capture
-      `SubLauncherDialog`/`sublauncheritemFA` with the same read-only sampler
-      while a settings submenu selection changes, then wire the recovered
-      scalerect/glyph pulse only into that proved screen. Do not apply it to
-      the category rail or invented portal card row.
+- [x] Firmware sub-launcher menu tree and JSON model: decoded
+      `LauncherDialog` → `SubLauncherDialog` (750 ms timer/Down), the
+      launcher-type dispatch, picture/sound/system/channel/AI item and value
+      lists, the `DialogSubLauncher.svg` listBox 189,255 1774x222, 240x140
+      items and the 300 ms 1→1.35 + glyph −42/−24 animation. Added the
+      bounded JSON loader, action strings, `menus/sub_launcher.json` and the
+      reloadable `ui.menu` v1 service; host tree/action/service tests pass,
+      ARM GLIBC 2.4. SUBLAUNCHER-MENU-TREE.
+
+- [ ] Sub-launcher screen integration: make `ui_vendor` consume the JSON
+      tree, resolve the `SVGListBoxBase` horizontal row origin
+      (+0x204/+0x208/+0x210), then compare the 300 ms item animation against
+      a real vendor transition. Do not apply it to the category rail or an
+      invented portal card row.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
       the vendor 30 ms APNG/10 ms controller cadence. Tighten the compositor
