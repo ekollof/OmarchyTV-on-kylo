@@ -455,6 +455,10 @@ $(BUILD)/easi-probe: tools/probe/easi-probe.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
+$(BUILD)/oa-client: tools/probe/oa-client.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
 $(BUILD)/tests/easi_probe: tests/easi_probe.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<

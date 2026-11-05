@@ -1,0 +1,10 @@
+local:
+6ac2d547da5f0cc9b8b7cf58d0769d2d90b97b92075ce3890eabd9cefcb342b7  openaurora/build-tv-v3/openaurora
+b2d830683a66d66e1fa9905064715a5796627e043bff2fd399c44b89884bb436  openaurora/build-tv-v3/oa-client
+753ee883b74ad0c5651605d1231b3f641a28392b0763c584110f9c70e74276c1  openaurora/build-tv-v3/modules/mod_epg.so
+9fd684b80b9431d5ec7294d94fb5a3ffe6a9217e6edb4b625aa8c73a8084b0b9  openaurora/build-tv-v3/modules/mod_tuner.so
+tv (same bytes, verified before execution):
+6ac2d547da5f0cc9b8b7cf58d0769d2d90b97b92075ce3890eabd9cefcb342b7  openaurora
+b2d830683a66d66e1fa9905064715a5796627e043bff2fd399c44b89884bb436  oa-client
+753ee883b74ad0c5651605d1231b3f641a28392b0763c584110f9c70e74276c1  modules/mod_epg.so
+9fd684b80b9431d5ec7294d94fb5a3ffe6a9217e6edb4b625aa8c73a8084b0b9  modules/mod_tuner.so

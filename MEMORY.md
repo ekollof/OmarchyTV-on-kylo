@@ -19,6 +19,17 @@ error cases; two foxxum results match qemu SHA256 exactly. Verified15-file/
 vendor pair1967(zombie)/1785(live) and no-reset marker unchanged. tvssh sent
 WoL initially. No framebuffer/device operation or persistent deployment change.
 
+LIVE-MODULE-ACCEPTANCE-2026-11-05: first live TV run of the ABI 3 ARM build
+under stock Aurora. Staged core/mod_epg/mod_tuner in /tmp, verified hashes on
+the TV before execution, and drove load/start/scan/reload/stop/unload over the
+real Unix socket with the new oa-client. Tuner scan reached 12 services with
+lock/strength/quality/SNR/UNC transitions, fed 12 synthetic EIT events into
+mod_epg, and epg-query returned the expected event/metadata. Exact-PID SIGTERM,
+socket/staging removal and unchanged stock pids (1967 1785) verified. CPU-only:
+no fb1/display/HAL/device paths, no testtool, no vendor backend or cold
+startup. Testtool TCP1986 remains disabled; enabling needs the owner's
+watchdog-safe/recovery-ready decision.
+
 TUNER-NIM-MODULE-2026-11-05 (host/qemu): added an NIM boundary shaped after
 DEV_NIM_DTV_StartTune/MonitorTune/signal (paths 1/2/3/5/7, status 3 unlocked/
 4 locked, frequency status[3], strength/quality uint32, float BER/SNR, UNC

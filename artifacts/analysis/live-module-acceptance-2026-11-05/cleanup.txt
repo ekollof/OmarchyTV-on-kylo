@@ -1,0 +1,12 @@
+Cleanup verification (2026-11-05)
+- exact staged cmdline confirmed from /proc/24665/cmdline
+- SIGTERM sent to 24665 only
+- 24665 stopped; control socket removed
+- stock aurora.elf pids before=1967 1785 after=1967 1785
+- staging directory /tmp/oa-live-20261105 removed
+- pgrep -af matched only its own shell command; no staged openaurora remained
+
+Read-only testtool state before the run:
+- is_testtool_socket_enabled @0x1796350 (pid 1785) = 00 00 00 00
+- no TCP 1986 listener
+- /conf/coredumpnoreset present

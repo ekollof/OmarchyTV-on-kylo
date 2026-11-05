@@ -35,6 +35,16 @@ The owner then requested a review and fixes on2026-11-04. The review below
 supersedes the old clean/verified snapshot where it identifies defects; it
 does not start the pending imageCreate subsystem or persistent replacement.
 
+Latest live acceptance:
+[LIVE-MODULE-ACCEPTANCE](artifacts/reports/LIVE-MODULE-ACCEPTANCE-2026-11-05.md)
+is the first on-TV run of the ABI 3 ARM build: staged core/mod_epg/mod_tuner
+with on-device hash verification, then real-socket load/start/scan/reload/
+stop/unload. Tuner scan fed 12 EIT events into mod_epg and queries matched;
+exact-PID shutdown/staging removal and unchanged stock pids were verified.
+CPU-only: no fb1/display/HAL/device access, no testtool or cold startup.
+Testtool TCP1986 remains disabled pending the owner's watchdog-safe/recovery
+decision.
+
 Latest tuner module: [TUNER-NIM-MODULE](artifacts/reports/TUNER-NIM-MODULE-2026-11-05.md)
 adds a vendor-shaped NIM boundary (DEV_NIM_DTV_StartTune/MonitorTune/signal)
 with an offline stub backend. mod_tuner publishes `tuner`, runs the 25% scan

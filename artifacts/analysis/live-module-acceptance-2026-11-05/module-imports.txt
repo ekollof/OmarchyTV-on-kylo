@@ -1,0 +1,12 @@
+== openaurora/build-tv-v3/modules/mod_epg.so
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+no device path strings
+== openaurora/build-tv-v3/modules/mod_tuner.so
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+no device path strings
+== openaurora/build-tv-v3/openaurora
+ 0x00000001 (NEEDED)                     Shared library: [libdl.so.2]
+ 0x00000001 (NEEDED)                     Shared library: [libm.so.6]
+ 0x00000001 (NEEDED)                     Shared library: [libpthread.so.0]
+ 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
+no device path strings

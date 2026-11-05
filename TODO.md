@@ -436,6 +436,16 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `posix_spawn("/sbin/mdev", "-s")` plus `waitpid`; the channel-list test
       uses `nftw` cleanup instead of a shell command. The display test wrappers
       remain as no-system regression guards. Host410 ok, verify45. No TV access.
+- [x] Live CPU-only module acceptance on the TV: staged the ABI 3 ARM core,
+      `mod_epg` and `mod_tuner` in /tmp, verified all hashes on-device before
+      execution, and drove load/start/scan/reload/stop/unload over the real
+      Unix socket. Tuner scan reached 12 services with lock/signal transitions
+      and fed 12 EIT events into mod_epg; query metadata matched. Exact-PID
+      SIGTERM, socket/staging removal and unchanged stock PIDs (1967 1785)
+      were verified. LIVE-MODULE-ACCEPTANCE. Limits: CPU-only; no fb1/display/
+      HAL, no device paths opened, no testtool, no vendor backend or cold
+      startup. LIVE-MODULE-ACCEPTANCE.
+
 - [x] Vendor-grounded tuner module: added an `oa_nim_ops` boundary mirroring
       the recovered `DEV_NIM_DTV_StartTune`/`MonitorTune`/signal calls, with an
       offline stub backend (path enum, 3/4 lock words, frequency, float

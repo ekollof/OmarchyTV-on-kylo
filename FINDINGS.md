@@ -38,6 +38,16 @@ reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
 first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
 capture remain open.
 
+LIVE-MODULE-ACCEPTANCE-2026-11-05: the ABI 3 ARM core, mod_epg and mod_tuner
+were executed on the TV from /tmp under stock Aurora after on-device hash
+verification. Real-socket load/start/scan/reload/stop/unload passed; the tuner
+scan reached 12 services with lock/signal transitions and fed 12 EIT events
+into mod_epg, whose query returned the expected event/metadata. Exact-PID
+shutdown, socket/staging removal and unchanged stock pids (1967 1785) were
+verified. This is CPU-only: no fb1/display/HAL/device access, no testtool, no
+vendor backend or cold startup. Testtool TCP1986 is still disabled; enabling
+requires the owner's watchdog-safe/recovery-ready decision.
+
 TUNER-NIM-MODULE-2026-11-05: the tuner contract now has a vendor-shaped NIM
 boundary (oa_nim_ops) mirroring DEV_NIM_DTV_StartTune(path,params,status),
 MonitorTune, StopTune and the signal getters. Only an offline stub backend
