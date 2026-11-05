@@ -38,6 +38,14 @@ reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
 first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
 capture remain open.
 
+SERVICE-DB-2026-11-05: firmware SQLiteStreamStorage maps service table types
+0xc9/0xca/0xcb to DVBSerTable/EASISerTable/AnalogSerTable. A new read-only
+adapter and mod_service_db expose service.list v1 with 525 dumped rows
+(445 DVB/67 EASI/13 analog), bounded text and missing-table failure. Synthetic,
+real-dump, reload/stop and real socket lifecycles pass; host409 ok, verify45.
+This is raw inventory only; filtering/LCN sorting, tuner selection, EPG/PVR, UI
+and stock parity remain open. No TV access; cold bundle not rebuilt.
+
 PLAT-CONSUMERS-SOCKET-2026-11-05: a fake plat service provider starts the real
 host-build audio/source/ir/panel modules over the socket with hardware paths
 disabled. Services publish, plat reload is refused while they are active,

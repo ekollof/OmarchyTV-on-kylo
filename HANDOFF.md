@@ -35,6 +35,14 @@ The owner then requested a review and fixes on2026-11-04. The review below
 supersedes the old clean/verified snapshot where it identifies defects; it
 does not start the pending imageCreate subsystem or persistent replacement.
 
+Latest core-TV data: [SERVICE-DB](artifacts/reports/SERVICE-DB-2026-11-05.md)
+adds a read-only settingsDB broadcast inventory (`service.list` v1) over
+DVBSerTable/EASISerTable/AnalogSerTable: 525 dumped rows (445 DVB/67 EASI/13
+analog), bounded text, table order, missing-table failure, CLI and real socket
+lifecycle. Host409 ok, verify45. This is the data foundation only; service-list
+filtering/LCN sorting, tuner acquisition, EPG/PVR, channel-list UI and stock
+parity remain open. No TV access; cold bundle not rebuilt.
+
 ## Immediate continuation point
 
 Current owner requested review/fixes and TODO verification after40f2f66. Read

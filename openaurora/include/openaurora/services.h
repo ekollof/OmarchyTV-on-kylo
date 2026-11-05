@@ -15,6 +15,7 @@
 #include "openaurora/ui_anim.h"
 #include "openaurora/binsvg.h"
 #include "openaurora/tab_policy.h"
+#include "openaurora/service_db.h"
 
 #include <stdint.h>
 
@@ -351,6 +352,17 @@ typedef struct {
         char *buf,size_t cap);
     void (*release)(struct oa_launcher_list *list);
 } oa_launcher_db_iface;
+
+/* service.list v1 — read-only settingsDB broadcast-service inventory.
+ * Published by mod_service_db. The snapshot is immutable while the service is
+ * held; it preserves the vendor tables' row order and raw fields, not the
+ * later service-list filters, LCN sorting, tuner or EPG state. */
+#define OA_SVC_SERVICE_LIST "service.list"
+typedef struct {
+    const struct oa_service_list *(*snapshot)(void);
+    int (*format)(const struct oa_service_list *list,size_t index,
+        char *buf,size_t cap);
+} oa_service_list_iface;
 
 /* ui.anim — recovered list/dialog animation. Published by mod_ui_anim.
  * set_enabled only writes the flag. start() reads ui.clock and rejects a

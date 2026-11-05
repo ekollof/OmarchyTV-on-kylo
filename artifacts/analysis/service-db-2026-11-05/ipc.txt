@@ -1,0 +1,4 @@
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build/modules/mod_service_db.so modules/service_db/service_db.c common/service_db.c  \
+  -Ithird_party  -lsqlite3
+node tests/service_db_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok service_db IPC: 525-row inventory, service publication, reload, stop/unload

@@ -33,11 +33,11 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile
+MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
-SETTINGS_MODULES := settings
+SETTINGS_MODULES := settings service_db
 SQLITE_LIBS := -lsqlite3
 
 # --- vendor HAL ------------------------------------------------------------
@@ -391,6 +391,29 @@ check-launcher-db-module: $(BUILD)/tests/launcher_db_module $(BUILD)/modules/mod
 	@$(BUILD)/tests/launcher_db_module $(BUILD)/modules $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
 check: check-launcher-db-module
 
+$(BUILD)/tests/service_db: tests/service_db.c common/service_db.c include/openaurora/service_db.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Ithird_party $(LDFLAGS) -o $@ $(filter %.c,$^) \
+	  $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
+.PHONY: check-service-db
+check-service-db: $(BUILD)/tests/service_db
+	@$(BUILD)/tests/service_db $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db probe || test $$? -eq 77
+check: check-service-db
+
+$(BUILD)/tests/service_db_module: tests/service_db_module.c common/service_db.c core/host.h include/openaurora/services.h include/openaurora/service_db.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Ithird_party $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS) \
+	  $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
+.PHONY: check-service-db-module
+check-service-db-module: $(BUILD)/tests/service_db_module $(BUILD)/modules/mod_service_db.so
+	@$(BUILD)/tests/service_db_module $(BUILD)/modules $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
+check: check-service-db-module
+
+.PHONY: check-service-db-ipc
+check-service-db-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_service_db.so
+	node tests/service_db_ipc.cjs $(abspath $(BUILD))
+check: check-service-db-ipc
+
 $(BUILD)/tests/svg_widget_state: tests/svg_widget_state.c common/svg_widget_state.c include/openaurora/svg_widget_state.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
@@ -681,6 +704,11 @@ $(BUILD)/modules/mod_settings.so: modules/settings/settings.c common/launcher_db
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
 	  -Ithird_party -L$(VENDOR_LIB) $(SQLITE_LIBS)
+
+$(BUILD)/modules/mod_service_db.so: modules/service_db/service_db.c common/service_db.c include/openaurora/service_db.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
+	  -Ithird_party $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
 
 $(BUILD)/modules/mod_%.so: modules/%/*.c
 	@mkdir -p $(dir $@)

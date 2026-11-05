@@ -210,6 +210,8 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  amp-profile             read immutable amplifier profile inputs\n"
                  "  launcher-items <parent|all> [deleted] [outofsync]\n"
                  "                           settingsDB LauncherItem rows\n"
+                 "  service-list             broadcast-service inventory count\n"
+                 "  service-list <index>     one DVB/EASI/analog inventory row\n"
                  "  image-decode <path>      decode PNG/JPEG through image.decode\n"
                  "  ui-state                query ui.portal screen\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
@@ -281,6 +283,38 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         h->api.release(h, OA_SVC_IMAGE_DECODE);
         snprintf(outbuf, outlen, "image %dx%d fnv %016" PRIx64 "\n",
                  w, hgt, hash);
+        return 0;
+    }
+    if(!strcmp(cmd,"service-list")) {
+        if(force || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_service_list_iface *svc=
+            h->api.lookup(h,OA_SVC_SERVICE_LIST,1);
+        if(!svc){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        const struct oa_service_list *list=svc->snapshot();
+        if(!list){h->api.release(h,OA_SVC_SERVICE_LIST);
+            snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        if(!a1) {
+            size_t count=list->count;
+            h->api.release(h,OA_SVC_SERVICE_LIST);
+            snprintf(outbuf,outlen,"count %zu\n",count);
+            return 0;
+        }
+        char *end=NULL;
+        errno=0;
+        unsigned long long value=strtoull(a1,&end,10);
+        if(errno || end==a1 || !end || *end || value>=(unsigned long long)list->count) {
+            h->api.release(h,OA_SVC_SERVICE_LIST);
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);
+            return -1;
+        }
+        char line[512];
+        int written=svc->format(list,(size_t)value,line,sizeof line);
+        h->api.release(h,OA_SVC_SERVICE_LIST);
+        if(written<0 || (size_t)written>=sizeof line) {
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);
+            return -1;
+        }
+        snprintf(outbuf,outlen,"%s",line);
         return 0;
     }
     if(!strcmp(cmd,"launcher-items")) {

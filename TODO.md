@@ -420,6 +420,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       releases the device. Keep failed-close retention. Native-node tests remain
       open. Do not use NDAL Init/Init(NULL) for reload or strict VPL acceptance
       as end-to-end specification validation.
+- [x] Broadcast service DB inventory: firmware table mapping from
+      SQLiteStreamStorage, read-only adapter for DVBSerTable/EASISerTable/
+      AnalogSerTable, bounded text, table-order rows, missing-table failure;
+      `service.list` v1 and `service-list` CLI; 525-row dump (445 DVB/67 EASI/
+      13 analog), synthetic edge cases, reload/stop and real socket lifecycle.
+      Host409 ok, verify45. SERVICE-DB. Limits: raw inventory only; filtering/
+      LCN sorting, tuner selection, EPG/PVR, UI and stock parity remain open.
 - [ ] Apps/browser/media integration, picture quality/FRC, network and Bluetooth.
 - [ ] Tuner/DVB-T/DVB-S, EPG/service lists, teletext/MHEG/interactive TV, PVR/
       timeshift/playback, CI+/conditional access and associated persistence.

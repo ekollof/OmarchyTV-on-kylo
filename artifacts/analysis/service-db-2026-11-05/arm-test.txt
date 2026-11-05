@@ -1,0 +1,2 @@
+  ok   service DB inventory: DVB/EASI/analog rows, bounded text, table order, missing-table failure
+ok service DB dump: 525 rows (445 dvb, 67 easi, 13 analog)

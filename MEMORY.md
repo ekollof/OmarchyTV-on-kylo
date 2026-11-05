@@ -19,6 +19,15 @@ error cases; two foxxum results match qemu SHA256 exactly. Verified15-file/
 vendor pair1967(zombie)/1785(live) and no-reset marker unchanged. tvssh sent
 WoL initially. No framebuffer/device operation or persistent deployment change.
 
+SERVICE-DB-2026-11-05 (host-only): first core-TV data slice. Firmware
+SQLiteStreamStorage maps table types0xc9/0xca/0xcb to DVBSerTable/EASISerTable/
+AnalogSerTable. A read-only adapter reads the dumped 445 DVB/67 EASI/13 analog
+rows with bounded text and missing-table failure; mod_service_db publishes
+service.list v1 and the CLI serves count/one-row queries. Synthetic edge cases,
+real-dump probe, reload/stop and a real Unix-socket lifecycle pass. Host409 ok,
+verify45. Raw inventory only: filtering/LCN sorting, tuner selection, EPG/PVR,
+UI and stock parity remain open. No TV access; cold bundle not rebuilt.
+
 AMP-VIDEO-OWNER-2026-11-04 adds firmware/relocation evidence only: video24 is
 extin, whose actual open/close callbacks have no input teardown; the similarly
 named release_func belongs to input selection. Private controls forward to
