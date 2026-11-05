@@ -482,6 +482,11 @@ check-epg-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_epg.so
 	node tests/epg_ipc.cjs $(abspath $(BUILD))
 check: check-epg-ipc
 
+.PHONY: check-epg-persist-ipc
+check-epg-persist-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_epg.so
+	node tests/epg_persist_ipc.cjs $(abspath $(BUILD))
+check: check-epg-persist-ipc
+
 .PHONY: check-tuner-ipc
 check-tuner-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_epg.so $(BUILD)/modules/mod_tuner.so
 	node tests/tuner_ipc.cjs $(abspath $(BUILD))

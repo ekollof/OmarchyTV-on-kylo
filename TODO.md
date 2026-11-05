@@ -604,6 +604,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       filters, section merging, CRID/first-showing, persistence or live tuner
       source. No TV access.
 
+- [x] Persistent EIT schedule cache: opt-in `epg.path` loads/saves an atomic
+      `OAEPG1` store on start/ingest/clear/stop; malformed records, missing
+      header, directory path and read errors refuse module start. Added the
+      project `oa_eit_cache_get_at` sorted accessor. Real-socket tests cover
+      reload, fresh-process restart, clear and corrupt-file fail-closed;
+      `eit_cache` passes host and qemu. EPG-PERSISTENCE. Limits: project text
+      store, not vendor persistence; no EIT filtering/CRID/retention or
+      incremental merge, save per section, 512-record cap, no TV/hardware.
+
 - [x] EIT TS demux and replay backend: added `common/eit_ts.c` (PID 0x12,
       188-byte validation, transport-error/scrambled drops, adaptation fields,
       continuity duplicates/discontinuities, PUSI pointer, split/back-to-back

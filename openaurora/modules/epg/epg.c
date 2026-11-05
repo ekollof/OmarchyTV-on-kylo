@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "openaurora/broadcast.h"
 #include "openaurora/eit_cache.h"
@@ -18,14 +20,153 @@
 #include "openaurora/services.h"
 
 #define EPG_CAPACITY 512
+#define EPG_PATH_MAX 512
 
 struct ctx {
     const oa_host_api *api;
     struct oa_eit_cache *cache;
     int published;
+    int persist;
+    char path[EPG_PATH_MAX];
 };
 
 static struct ctx *g_ctx;
+
+static int parse_u32(const char *text, uint32_t *out)
+{
+    if (!text || !*text) return -1;
+    char *end;
+    errno = 0;
+    unsigned long value = strtoul(text, &end, 10);
+    if (errno || *end || value > UINT32_MAX) return -1;
+    *out = (uint32_t)value;
+    return 0;
+}
+
+static int save_cache(struct ctx *c)
+{
+    if (!c->persist) return 0;
+    char tmp[EPG_PATH_MAX + 8];
+    if ((size_t)snprintf(tmp, sizeof tmp, "%s.tmp", c->path) >= sizeof tmp)
+        return -ENAMETOOLONG;
+    FILE *file = fopen(tmp, "wb");
+    if (!file) return -errno;
+    int rc = 0;
+    if (fprintf(file, "OAEPG1\n") < 0) rc = -EIO;
+    size_t count = oa_eit_cache_count(c->cache);
+    for (size_t i = 0; i < count && !rc; i++) {
+        struct oa_eit_record record;
+        if (oa_eit_cache_get_at(c->cache, i, &record)) {
+            rc = -EIO;
+            break;
+        }
+        char title[OA_EIT_TITLE_MAX];
+        size_t n = 0;
+        for (; record.title[n] && n + 1 < sizeof title; n++) {
+            unsigned char ch = (unsigned char)record.title[n];
+            title[n] = ch < 0x20 || ch == 0x7f || ch == '\t' ? '?' : (char)ch;
+        }
+        title[n] = 0;
+        if (fprintf(file, "%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%u\t%s\n",
+            record.service_id, record.event_id, record.range.begin,
+            record.range.end, record.program_crid_id, record.running_status,
+            record.first_showing, record.state, record.version, record.actual,
+            title) < 0)
+            rc = -EIO;
+    }
+    if (!rc && fflush(file) != 0) rc = -EIO;
+    if (!rc && fsync(fileno(file)) != 0) rc = -errno;
+    if (fclose(file) != 0 && !rc) rc = -errno;
+    if (rc) {
+        unlink(tmp);
+        return rc;
+    }
+    if (rename(tmp, c->path) != 0) {
+        rc = -errno;
+        unlink(tmp);
+    }
+    return rc;
+}
+
+static int parse_cache_line(char *line)
+{
+    char *fields[11];
+    int n = 0;
+    char *cursor = line;
+    for (int i = 0; i < 10; i++) {
+        char *tab = strchr(cursor, '\t');
+        if (!tab) return -1;
+        *tab = 0;
+        fields[n++] = cursor;
+        cursor = tab + 1;
+    }
+    fields[n++] = cursor;
+    if (strchr(cursor, '\t')) return -1;
+    uint32_t values[10];
+    for (int i = 0; i < 10; i++)
+        if (parse_u32(fields[i], &values[i])) return -1;
+    if (!values[0] || values[3] < values[2] || values[5] > 7 ||
+        values[6] > 1 || values[8] > 31 || values[9] > 1)
+        return -1;
+    struct oa_eit_record record;
+    memset(&record, 0, sizeof record);
+    record.service_id = values[0];
+    record.event_id = values[1];
+    record.range.begin = values[2];
+    record.range.end = values[3];
+    record.program_crid_id = values[4];
+    record.running_status = values[5];
+    record.first_showing = (uint8_t)values[6];
+    record.state = (uint8_t)values[7];
+    record.version = (uint8_t)values[8];
+    record.actual = (uint8_t)values[9];
+    snprintf(record.title, sizeof record.title, "%s", fields[10]);
+    return oa_eit_cache_put(g_ctx->cache, &record);
+}
+
+static int load_cache(struct ctx *c)
+{
+    oa_eit_cache_clear(c->cache);
+    struct stat st;
+    if (stat(c->path, &st) == 0 && S_ISDIR(st.st_mode)) return -EISDIR;
+    FILE *file = fopen(c->path, "rb");
+    if (!file) return errno == ENOENT ? 0 : -errno;
+    char line[1024];
+    if (!fgets(line, sizeof line, file)) {
+        fclose(file);
+        return -EINVAL;
+    }
+    size_t len = strlen(line);
+    while (len && (line[len - 1] == '\n' || line[len - 1] == '\r'))
+        line[--len] = 0;
+    if (strcmp(line, "OAEPG1") != 0) {
+        fclose(file);
+        return -EINVAL;
+    }
+    while (fgets(line, sizeof line, file)) {
+        len = strlen(line);
+        if (len && line[len - 1] != '\n' && !feof(file)) {
+            fclose(file);
+            return -EINVAL;
+        }
+        while (len && (line[len - 1] == '\n' || line[len - 1] == '\r'))
+            line[--len] = 0;
+        if (!len) continue;
+        int rc = parse_cache_line(line);
+        if (rc) {
+            fclose(file);
+            oa_eit_cache_clear(c->cache);
+            return rc;
+        }
+    }
+    if (ferror(file)) {
+        fclose(file);
+        oa_eit_cache_clear(c->cache);
+        return -EIO;
+    }
+    fclose(file);
+    return 0;
+}
 
 static int epg_query(uint32_t service_handle, int64_t from_ms, int64_t to_ms,
     struct oa_epg_event *events, size_t cap, size_t *count)
@@ -108,12 +249,20 @@ static int epg_feed_section(const uint8_t *data, size_t len)
     struct ingest state = { 0, 0 };
     int rc = oa_eit_parse_section(data, len, ingest_event, &state);
     if (rc < 0) return state.error ? state.error : rc;
+    if (state.stored) {
+        int saved = save_cache(g_ctx);
+        if (saved) return saved;
+    }
     return state.stored;
 }
 
 static void epg_clear(void)
 {
-    if (g_ctx && g_ctx->cache) oa_eit_cache_clear(g_ctx->cache);
+    if (!g_ctx || !g_ctx->cache) return;
+    oa_eit_cache_clear(g_ctx->cache);
+    if (save_cache(g_ctx) && g_ctx->persist)
+        g_ctx->api->log(g_ctx->api->priv, OA_LOG_ERROR,
+                        "epg: clear could not persist %s", g_ctx->path);
 }
 
 static size_t epg_count(void)
@@ -146,7 +295,20 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct ctx *c = v;
-    oa_eit_cache_clear(c->cache);
+    const char *path = c->api->config_get(c->api->priv, "epg.path", "");
+    c->persist = path && *path;
+    if (c->persist) {
+        if (strlen(path) >= sizeof c->path) return -1;
+        snprintf(c->path, sizeof c->path, "%s", path);
+        int rc = load_cache(c);
+        if (rc) {
+            c->api->log(c->api->priv, OA_LOG_ERROR,
+                        "epg: cannot load %s (%d); refusing start", c->path, rc);
+            return -1;
+        }
+    } else {
+        oa_eit_cache_clear(c->cache);
+    }
     if (c->api->publish(c->api->priv, OA_SVC_EPG, 1, &epg_iface))
         return -1;
     if (c->api->publish(c->api->priv, OA_SVC_EPG_INGEST, 1, &ingest_iface)) {
@@ -161,6 +323,7 @@ static void m_stop(void *v)
 {
     struct ctx *c = v;
     if (c->published) {
+        if (c->persist) (void)save_cache(c);
         c->api->unpublish(c->api->priv, OA_SVC_EPG_INGEST);
         c->api->unpublish(c->api->priv, OA_SVC_EPG);
     }

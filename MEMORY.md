@@ -226,6 +226,16 @@ qemu parser run pass. Limits: complete pre-assembled sections, no PID/EIT
 filters or section merging, no CRID/first-showing or persistence, no live
 tuner source. No vendor execution or TV access.
 
+EPG-PERSISTENCE-2026-11-05 (host/qemu): added opt-in `epg.path` persistence
+for the EIT schedule cache. `OAEPG1` text records are loaded on start, saved
+atomically after ingest/clear/stop, and malformed records, a missing header,
+a directory path or a read error refuse module start. `oa_eit_cache_get_at`
+is a project sorted enumeration accessor. A real-socket test covers reload,
+fresh-process restart, clear, malformed fail-closed and no `.tmp` left;
+`eit_cache` passes host and qemu. Limits: project store, not vendor EIT
+persistence; no filtering/CRID/retention/incremental merge, save per section,
+512-record cap, no TV/hardware.
+
 EIT-TS-DEMUX-2026-11-05 (host/qemu + real socket): added a real MPEG-2 TS EIT
 demux (PID 0x12, 188-byte validation, transport-error/scrambled drops,
 adaptation fields, continuity duplicate/discontinuity, PUSI pointer, split/

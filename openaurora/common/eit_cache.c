@@ -123,6 +123,15 @@ int oa_eit_cache_get(const struct oa_eit_cache *cache, uint32_t service_id,
     return -ENOENT;
 }
 
+int oa_eit_cache_get_at(const struct oa_eit_cache *cache, size_t index,
+    struct oa_eit_record *out)
+{
+    if (!cache || !out) return -EINVAL;
+    if (index >= cache->count) return -ENOENT;
+    copy_record(out, &cache->records[index]);
+    return 0;
+}
+
 int oa_eit_cache_query(const struct oa_eit_cache *cache, uint32_t service_id,
     uint32_t start_sec, uint32_t duration_sec, struct oa_eit_record *out,
     size_t cap, size_t *count)

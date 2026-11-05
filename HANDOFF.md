@@ -196,7 +196,11 @@ descriptors) feeding the EIT cache through a real mod_epg. It publishes
 `epg`/`epg.ingest`; control adds epg-ingest/epg-clear/epg-count, covered over
 the Unix socket including key replacement, bad CRC, stale sections, reload and
 stop. Host417 ok, verify45; ARM/qemu passes. Still no PID/EIT filters, section
-merging, CRID/first-showing, persistence or live tuner source.
+merging, CRID/first-showing or live tuner source.
+EPG-PERSISTENCE-2026-11-05 adds opt-in `epg.path` with atomic `OAEPG1`
+load/save, `oa_eit_cache_get_at`, and corrupt-file fail-closed. Real-socket
+reload/process-restart/clear tests and qemu `eit_cache` pass. Project store,
+not vendor persistence; no filtering/CRID/retention, save per section, no TV.
 
 Latest EIT demux: [EIT-TS-DEMUX](artifacts/reports/EIT-TS-DEMUX-2026-11-05.md)
 adds a real MPEG-2 TS EIT demux (PID 0x12, continuity, PUSI pointer, split/

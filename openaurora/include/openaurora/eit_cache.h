@@ -59,6 +59,11 @@ int oa_eit_cache_put(struct oa_eit_cache *cache,
 int oa_eit_cache_get(const struct oa_eit_cache *cache, uint32_t service_id,
     uint32_t event_id, struct oa_eit_record *out);
 
+/* Project enumeration for persistence/tests, not a recovered vendor API.
+ * Records are in the cache's service/begin/event sorted order. */
+int oa_eit_cache_get_at(const struct oa_eit_cache *cache, size_t index,
+    struct oa_eit_record *out);
+
 /* ScheduleCache::getEvents shape: [start, start + duration) in seconds. A
  * zero service id matches all services; duration 0 matches nothing. Returns 0
  * and the full match count, copying at most cap records. */

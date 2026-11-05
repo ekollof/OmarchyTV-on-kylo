@@ -58,6 +58,12 @@ static void test_put_get(void)
     assert(oa_eit_cache_get(cache, 0, 100, &out) == -EINVAL);
     assert(oa_eit_cache_get(NULL, 1, 100, &out) == -EINVAL);
     assert(oa_eit_cache_get(cache, 1, 100, NULL) == -EINVAL);
+    assert(oa_eit_cache_get_at(cache, 0, &out) == 0 && out.event_id == 100);
+    assert(oa_eit_cache_get_at(cache, 1, &out) == 0 && out.event_id == 101);
+    assert(oa_eit_cache_get_at(cache, 2, &out) == 0 && out.service_id == 2);
+    assert(oa_eit_cache_get_at(cache, 3, &out) == -ENOENT);
+    assert(oa_eit_cache_get_at(NULL, 0, &out) == -EINVAL);
+    assert(oa_eit_cache_get_at(cache, 0, NULL) == -EINVAL);
 
     struct oa_eit_record invalid = record(0, 1, 1, 2, 0, "bad");
     assert(oa_eit_cache_put(cache, &invalid) == -EINVAL);
