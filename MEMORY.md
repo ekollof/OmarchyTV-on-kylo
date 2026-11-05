@@ -49,6 +49,16 @@ vendor controller is enabled. `ui_vendor` now derives enablement from
 with/without-marker tests pass. The 300 ms SVGButton/sub-launcher rendering and
 sub-launcher grid/transform origin remain unported. ANIM-BOOTSTRAP.
 
+Sub-launcher grid/animation decode, 2026-11-06: `SVGGrid::renderBackground`
+counts are `rows=(area_h-y_off-(h-row_pitch))/row_pitch` and
+`cols=(area_w-x_off-(w-col_pitch))/col_pitch`; +0x1e4/+0x1e8 are pitches,
++0x1f4/+0x1fc offsets, +0x1f8/+0x200 button-minus-pitch. `SVGButton::
+animRectDecode` uses elapsed_ms/(duration*1000), linear scale/glyph from→to,
+and a **top-left window** anchor with the named #scalerect width/height.
+Added pure `launcher_anim` helpers and tests for sublauncher 240x140/1→1.35
+and glyph 0→-42/-24. Screen integration and a real vendor transition capture
+remain open. SUBLAUNCHER-GRID-ANIM.
+
 Control client, 2026-11-05: `oa-client` now defaults to a 5 s bounded timeout
 and supports `--no-wait`; the silent-server test covers 1.02 s timeout and
 0.00 s no-wait. `mod_ir` keeps `/dev/ttyS2` closed when BLAST succeeds unless

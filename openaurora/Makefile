@@ -1906,6 +1906,15 @@ check-ui-anim-bootstrap: $(BUILD)/tests/ui_anim_bootstrap $(BUILD)/tests/ui_nav_
 	@$(BUILD)/tests/ui_anim_bootstrap $(BUILD)/tests/ui-anim-bootstrap/modules
 check: check-ui-anim-bootstrap
 
+$(BUILD)/tests/launcher_anim: tests/launcher_anim.c common/launcher_anim.c include/openaurora/launcher_anim.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ tests/launcher_anim.c common/launcher_anim.c
+
+.PHONY: check-launcher-anim
+check-launcher-anim: $(BUILD)/tests/launcher_anim
+	@$(BUILD)/tests/launcher_anim
+check: check-launcher-anim
+
 $(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_fake_clock.c $(LDFLAGS) $(LDLIBS)

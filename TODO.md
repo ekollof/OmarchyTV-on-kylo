@@ -199,11 +199,19 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       `ui.theme` with `ui.anim_enable` override; synthetic marker/no-marker
       host tests pass. ANIM-BOOTSTRAP.
 
-- [ ] 300 ms widget animation rendering: the enablement predicate is known,
-      but our custom rasterizer has no vendor SVGButton graph. Decode the
-      sub-launcher grid/transform origin (SUBL AUNCHER-LAYOUT-2) before
-      applying `#scalerect` 1→1.32/1.35 and `#glyph` offsets; do not copy the
-      300 ms records onto the category rail or invented card layout.
+- [x] Sub-launcher grid and 300 ms animation geometry: decoded
+      `SVGGrid::renderBackground` counts `(area-offset-(button-pitch))/pitch`,
+      the +0x1e4/+0x1e8 pitches and +0x1f4/+0x1fc offsets, and
+      `SVGButton::animRectDecode`: elapsed_ms/(duration*1000), linear scale/
+      glyph from→to, top-left button-window anchor, named #scalerect size.
+      Added pure `launcher_anim` helpers and tests for sublauncher 240x140/
+      1→1.35 and glyph 0→-42/-24. SUBLAUNCHER-GRID-ANIM.
+
+- [ ] 300 ms screen playback and vendor comparison: wire the recovered
+      scalerect/glyph pulse into a real sub-launcher/apps screen only after
+      its content/window rects are proved; do not apply it to the category
+      rail or invented portal card row. A high-cadence fb1/HDMI capture (or
+      owner video) of a real focus transition is the acceptance gate.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
       the vendor 30 ms APNG/10 ms controller cadence. Tighten the compositor

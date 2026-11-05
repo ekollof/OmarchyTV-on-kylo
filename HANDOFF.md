@@ -84,6 +84,14 @@ enables `UIAnimationController`. `ui_vendor` now applies that policy from
 pass. ANIM-BOOTSTRAP. The 300 ms SVGButton/sub-launcher rendering and grid/
 transform origin remain unported.
 
+Sub-launcher grid/animation decode, 2026-11-06: SVGGrid counts are
+`(area - offset - (button - pitch))/pitch` with +0x1e4/+0x1e8 pitches and
++0x1f4/+0x1fc offsets; SVGButton uses elapsed/duration, linear scale/glyph
+from→to, and a top-left window anchor with the named #scalerect size. Pure
+`launcher_anim` helpers/tests cover sublauncher 240x140/1→1.35 and glyph
+0→-42/-24. Screen integration/vendor transition capture remain open.
+SUBLAUNCHER-GRID-ANIM.
+
 Partial GPU scene uploads, 2026-11-06: OGS1 FRAME rects + renderer ABI2 +
 `display.gpu` v2 `frame_rect`; `scene_display` sends only dirty images. Host
 protocol/patch/UI tests pass. TV: full upload 73 ms; ten rail frames uploaded
