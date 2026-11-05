@@ -1451,6 +1451,10 @@ check-control: $(BUILD)/tests/control_reply $(BUILD)/tests/control_transport
 	@$(BUILD)/tests/control_reply
 	@$(BUILD)/tests/control_transport
 
+.PHONY: check-oa-client
+check-oa-client: $(BUILD)/oa-client
+	node tests/oa_client.cjs $(abspath $(BUILD)/oa-client)
+
 $(BUILD)/tests/display_present: tests/display_present.c modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/canvas.h include/openaurora/fb_snapshot.h include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm -pthread \
@@ -1871,7 +1875,7 @@ $(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/modu
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_fake_clock.c $(LDFLAGS) $(LDLIBS)
 
-check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-sources check-ui-skin check-ui-settings check-ui-settings-panel check-ui-settings-rows check-ui-settings-text check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-display check-svg check-vgrid check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
+check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-sources check-ui-skin check-ui-settings check-ui-settings-panel check-ui-settings-rows check-ui-settings-text check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-oa-client check-display check-svg check-vgrid check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
 	@BUILD=$(BUILD) sh tests/run.sh
 	@$(BUILD)/tests/registry $(BUILD)/modules $(BUILD)/tests/mod_failed_init.so
 	@BUILD=$(BUILD) python3 tests/recovery.py
@@ -1964,4 +1968,4 @@ check-amp-stbc: $(BUILD)/tests/amp_stbc
 	@$(BUILD)/tests/amp_stbc
 check: check-amp-stbc
 
-.PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-display check-svg check-runtime clean install arm tv vendor
+.PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-oa-client check-display check-svg check-runtime clean install arm tv vendor

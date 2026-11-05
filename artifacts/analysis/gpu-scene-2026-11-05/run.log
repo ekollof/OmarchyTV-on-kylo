@@ -1,0 +1,109 @@
+[754828] INFO host         openaurora starting, modules=./modules
+[754829] INFO host         control socket ./control
+openaurora: 0 module(s) loaded, control on ./control
+[762975] INFO host         loaded plat_stub v1 (./modules/mod_plat_stub.so)
+[762975] DBG  plat_stub    service up: plat v1
+[762975] INFO host         started plat_stub
+[762975] INFO host         loaded graphics v1 (./modules/mod_graphics.so)
+[762975] DBG  graphics     service up: display.gpu v1
+[762976] INFO host         started graphics
+[762976] INFO host         loaded scene_display v1 (./modules/mod_scene_display.so)
+[762977] DBG  scene_display service up: display v2
+[762977] DBG  scene_display service up: display.alpha v1
+[762977] DBG  scene_display service up: display.async v1
+[762977] INFO host         started scene_display
+[769471] INFO host         loaded settings v0.2 (./modules/mod_settings.so)
+[769472] INFO settings     /buffer/oa-gpu-20261105/settingsDB.db open (read-only)
+[769472] DBG  settings     service up: settings v1
+[769472] DBG  settings     service up: settings.hotel v1
+[769472] DBG  settings     service up: launcher.db v1
+[769498] INFO settings     probe: m_cec_enabled=1
+[769498] INFO host         started settings
+[769499] INFO host         loaded service_db v1 (./modules/mod_service_db.so)
+[769531] DBG  service_db   service up: service.list v1
+[769531] INFO service_db   service_db: 134 rows (54 dvb, 67 easi, 13 analog) from /buffer/oa-gpu-20261105/settingsDB.db
+[769531] INFO host         started service_db
+[769532] INFO host         loaded image_decode v2 (./modules/mod_image_decode.so)
+[769534] DBG  image_decode service up: image.decode v2
+[769534] INFO host         started image_decode
+[769534] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[769534] DBG  ir           service up: input v1
+[769559] INFO ir           ir: BLAST v4l2 fd 9 from /dev/video28
+[769559] INFO ir           ir: BLAST receiver protocol 4 (set rc=0, poll on)
+[769560] INFO ir           /dev/ttyS2 open @115200 8N1
+[769560] INFO host         started ir
+[769560] INFO host         loaded ui_engine v1 (./modules/mod_ui_engine.so)
+[769560] DBG  ui_engine    service up: ui.engine v2
+[769560] INFO ui_engine    ui_engine started
+[769560] DBG  ui_engine    service up: ui.skin v1
+[769560] INFO host         started ui_engine
+[769560] INFO host         loaded ui_vendor v0.2 (./modules/mod_ui_vendor.so)
+[769593] DBG  ui_vendor    service up: ui.portal v1
+[769785] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[769785] INFO host         started ui_vendor
+[833401] DBG  ir           ir: BLAST code=00003856 aux=00 flag=00 -> rc=22 Right
+[833525] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 0
+[833664] DBG  ir           ir: BLAST code=00003856 aux=00 flag=01 -> rc=22 Right
+[834970] DBG  ir           ir: BLAST code=00003055 aux=00 flag=00 -> rc=21 Left
+[835095] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 0
+[835233] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[835236] DBG  ir           ir: BLAST code=00003055 aux=00 flag=01 -> rc=21 Left
+[835394] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[837739] DBG  ir           ir: BLAST code=00003853 aux=00 flag=00 -> rc=19 Down
+[837867] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[838004] DBG  ir           ir: BLAST code=00003853 aux=00 flag=01 -> rc=19 Down
+[839177] DBG  ir           ir: BLAST code=00003054 aux=00 flag=00 -> rc=20 Up
+[839306] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[839435] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[839440] DBG  ir           ir: BLAST code=00003054 aux=00 flag=01 -> rc=20 Up
+[839593] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[842373] DBG  ir           ir: BLAST code=00003854 aux=00 flag=00 -> rc=20 Up
+[842501] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+[842524] DBG  ir           ir: BLAST code=00003854 aux=00 flag=01 -> rc=20 Up
+[842661] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+[843040] DBG  ir           ir: BLAST code=00003054 aux=00 flag=00 -> rc=20 Up
+[843167] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 0 card 0
+[843308] DBG  ir           ir: BLAST code=00003054 aux=00 flag=01 -> rc=20 Up
+[844192] DBG  ir           ir: BLAST code=00003853 aux=00 flag=00 -> rc=19 Down
+[844321] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 0 card 0
+[844450] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+[844450] DBG  ir           ir: BLAST code=00003853 aux=00 flag=01 -> rc=19 Down
+[844608] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+[845061] DBG  ir           ir: BLAST code=00003075 aux=00 flag=00 -> rc=53 Select
+[845143] INFO ui_vendor    painted source selection: row 0
+[845212] DBG  ir           ir: BLAST code=00003075 aux=00 flag=01 -> rc=53 Select
+[846920] DBG  ir           ir: BLAST code=0000384a aux=00 flag=00 -> rc=10 Exit
+[847033] INFO ui_vendor    painted source selection: row 0
+[847225] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+[847225] DBG  ir           ir: BLAST code=0000384a aux=00 flag=01 -> rc=10 Exit
+[848471] DBG  ir           ir: BLAST code=00003053 aux=00 flag=00 -> rc=19 Down
+[848599] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[848620] DBG  ir           ir: BLAST code=00003053 aux=00 flag=01 -> rc=19 Down
+[848772] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[849087] DBG  ir           ir: BLAST code=00003853 aux=00 flag=00 -> rc=19 Down
+[849215] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[849352] DBG  ir           ir: BLAST code=00003853 aux=00 flag=01 -> rc=19 Down
+[851882] DBG  ir           ir: BLAST code=00003054 aux=00 flag=00 -> rc=20 Up
+[852010] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[852139] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[852140] DBG  ir           ir: BLAST code=00003054 aux=00 flag=01 -> rc=20 Up
+[852312] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[916603] DBG  ir           ir: BLAST code=00003856 aux=00 flag=00 -> rc=22 Right
+[916726] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 0
+[916756] DBG  ir           ir: BLAST code=00003856 aux=00 flag=01 -> rc=22 Right
+[916756] INFO ir           /dev/ttyS2 closed
+[916756] DBG  ir           service down: input
+[916756] INFO host         stopped ir
+[916756] INFO host         unloaded ir
+[916757] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[916757] DBG  ir           service up: input v1
+[916762] INFO ir           ir: BLAST v4l2 fd 9 from /dev/video28
+[916762] INFO ir           ir: BLAST receiver protocol 4 (set rc=0, poll on)
+[916762] INFO ir           /dev/ttyS2 open @115200 8N1
+[916762] INFO host         started ir
+[916762] INFO host         ir: reloaded (started)
+[916885] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 0
+[918551] DBG  ir           ir: BLAST code=00003056 aux=00 flag=00 -> rc=22 Right
+[918680] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 1
+[918816] DBG  ir           ir: BLAST code=00003056 aux=00 flag=01 -> rc=22 Right
+[918940] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 1

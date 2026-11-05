@@ -12,6 +12,23 @@ stock (aurora 1769, appmgr 1569, pan0,0, source5 unchanged). **Open defect:
 median portal repaint 617 ms**, so the 11-frame/30 ms rail highlight takes
 ~6.8 s; performance work is pending. TAKEOVER-FULL-2026-11-05.
 
+GPU scene probe, 2026-11-05: first production graphics/scene_display run on
+real fb1 with oa-scene-broker + scene-renderer.so and the 5-rail/12-card
+portal. Physical remote produced 14 BLAST presses; non-reload paint intervals
+median260 ms, min129 ms, 11/23 <=200 ms, versus 617 ms for display_fb.
+scene_display now uses the vendor mipmap sampler. The dual-open `reload ir`
+stalled the host loop ~64 s; the run was killed, fb1 restored from a full
+snapshot, staging removed and watchdog reboot returned stock (1777/1572,
+pan0,0). GPU path is materially faster but still above the 30 ms widget
+cadence and not gracefully torn down. GPU-SCENE-PROBE-2026-11-05.
+
+Control client, 2026-11-05: `oa-client` now defaults to a 5 s bounded timeout
+and supports `--no-wait`; the silent-server test covers 1.02 s timeout and
+0.00 s no-wait. `mod_ir` keeps `/dev/ttyS2` closed when BLAST succeeds unless
+`ir.device` is explicit, removing the common dual-open reload stall. Host
+reload is still synchronous; true async module lifecycle remains open.
+OA-CLIENT-ASYNC-2026-11-05.
+
 Temporary takeover, 2026-11-05: openaurora owned fb1 while `aurora.elf` was
 stopped. Vendor Startpagina was the live skin. Right through the shipped IR
 parser focused Netflix after the Lua script was unloaded. `skin absent` fell

@@ -122,7 +122,10 @@ static int clear_rgba(int r, int g, int b, int a)
 static int blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigned char *rgba)
 {
     struct ctx *c = g_ctx; if (drawing(c)) return -1;
-    if (oa_canvas_blit(&c->canvas, x, y, w, h, sw, sh, rgba)) return -1;
+    /* Match the vendor card/rail sampler (GL_LINEAR_MIPMAP_LINEAR) used by
+     * display_fb; nearest sampling loses the exact applications-grid and
+     * portal card pixels. */
+    if (oa_canvas_blit_mipmap(&c->canvas, x, y, w, h, sw, sh, rgba)) return -1;
     c->revision++; return 0;
 }
 static int blit(int x, int y, int w, int h, const unsigned char *rgba)

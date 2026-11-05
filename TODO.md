@@ -132,6 +132,39 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       settings/apps/source physical run, no cold startup/scanout/animation
       parity.
 
+- [x] Control client timeout and fire-and-forget: `oa-client` defaults to a
+      bounded 5 s wait, accepts `--timeout SECONDS`, reports a clear timeout
+      error, and supports `--no-wait` for a reload the host may finish later.
+      The silent-server test covers 1.02 s timeout and 0.00 s no-wait.
+      `mod_ir` now keeps `/dev/ttyS2` closed when BLAST succeeds unless
+      `ir.device` is explicit, removing the common dual-open reload stall
+      (observed host stall ~64 s). OA-CLIENT-ASYNC. The host reload itself is
+      still synchronous; polling/async lifecycle is next.
+
+- [x] First production GPU scene-path probe on fb1: staged
+      graphics/scene_display + oa-scene-broker/scene-renderer.so, painted the
+      5-rail/12-card portal and handled 14 physical BLAST presses. Non-reload
+      paint intervals median260 ms/min129 ms, 11/23 <=200 ms versus 617 ms for
+      display_fb; scene_display now uses the vendor mipmap sampler. The
+      dual-open reload stalled ~64 s; killed, fb1 snapshot restored and
+      watchdog reboot returned stock (1777/1572, pan0,0). GPU-SCENE-PROBE.
+      Limits: SIGKILL rather than graceful GPU teardown, no timed animation,
+      AE, cold startup or scanout.
+
+- [ ] Asynchronous host module lifecycle: `reload` still runs synchronously
+      and can block the event loop for tens of seconds in a slow module stop.
+      Add a queued reload/stop state machine or a module-owned nonblocking
+      cleanup gate (display_fb is the existing model), with a completion query
+      and bounded client behavior. Do not call `dlclose`/module callbacks from
+      an unowned worker. OA-CLIENT-ASYNC records the 64 s dual-open stall.
+
+- [ ] GPU/widget-surface animation parity: the current scene path uploads the
+      whole 1920x1080 canvas per paint (~129-260 ms), while the vendor animates
+      a 160x160 APNG/surface and composites on the GPU. Add dirty widget
+      surfaces or partial scene uploads driven by the recovered 10 ms
+      controller/30 ms APNG cadence, then measure on the TV. GPU-SCENE-PROBE
+      and UI-ANIMATIONS are the starting evidence.
+
 - [ ] Portal repaint/animation cost: the full 1920x1080 portal repaint takes
       a median 617 ms on the TV, so the 11-frame/30 ms rail highlight stretches
       to ~6.8 s and remote steps feel delayed. Profile display_fb present
@@ -359,7 +392,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `check-ui-vendor-ipc` and `check-ui-nav` pass. TAKEOVER-FULL-2026-11-05
       accepted the full portal UI takeover with the physical remote and both
       TV-side reloads. Remaining: repeat/long-press and complete key mapping,
-      and clean vendor-library reload on the TV. The MCU
+      and clean vendor-library reload on the TV. OA-CLIENT-ASYNC keeps the
+      UART closed when BLAST succeeds unless `ir.device` is explicit, avoiding
+      the observed dual-open reload stall in the normal path. The MCU
       `_HW_MCU_RcInit`/STBC RWDB path is not required for this remote; do not
       call STBC cold without the ownership/recovery plan.
 - [ ] Power: complete native device preparation/wake/resume ownership and actual

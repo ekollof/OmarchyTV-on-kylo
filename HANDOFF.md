@@ -59,6 +59,20 @@ source5 unchanged). **Open defect: median full-portal repaint 617 ms**, making
 the 11×30 ms rail highlight take ~6.8 s. TAKEOVER-FULL-2026-11-05; not cold
 startup/scanout/animation parity.
 
+GPU scene probe, 2026-11-05: first production `graphics`/`scene_display` run
+on real fb1 with `oa-scene-broker` + `scene-renderer.so`; the 5-rail/12-card
+portal painted and the physical remote produced 14 BLAST presses. Non-reload
+paint intervals: median260 ms, min129 ms, 11/23 ≤200 ms (display_fb: 617 ms).
+`scene_display` now uses the vendor mipmap sampler. Dual-open `reload ir`
+stalled the host ~64 s; the run was killed, fb1 restored from a full snapshot
+and watchdog reboot returned stock (1777/1572, pan0,0). GPU-SCENE-PROBE;
+graceful GPU teardown, timed animation and 30 ms cadence remain open.
+
+Control client, 2026-11-05: `oa-client` has a default 5 s timeout and
+`--no-wait`; `mod_ir` keeps the UART closed when BLAST succeeds unless
+`ir.device` is explicit. Silent-server test passes 1.02 s timeout / 0.00 s
+no-wait. Host reload is still synchronous. OA-CLIENT-ASYNC.
+
 Offline IR IPC, 2026-11-05: `tests/ir_ipc.cjs` now drives `mod_ir` over the
 real Unix control socket with plat/recorder/ui_engine/ui_vendor fixtures
 (`ir.device=`, `ir.blast=0`). It verifies `input:v1`, key navigation, stop

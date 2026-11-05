@@ -382,12 +382,20 @@ static int m_start(void *v)
     if (c->api->publish(c->api->priv, OA_SVC_INPUT, 1, &g_input) != 0)
         return -1;
     c->published = 1;
+    int blast_ok = 0;
     if (atoi(c->api->config_get(c->api->priv, "ir.blast", "1")) == 1)
-        (void)blast_open(c);
-    /* Empty ir.device keeps the UART closed. The same parser still accepts feed(). */
-    snprintf(c->dev, sizeof c->dev, "%s", c->api->config_get(c->api->priv, "ir.device", IR_DEV));
+        blast_ok = blast_open(c) == 0;
+    /* BLAST is the verified physical path. Do not also claim the MCU UART
+     * unless the caller asks for it explicitly or BLAST is unavailable: the
+     * dual-open reload path can stall for tens of seconds in the vendor
+     * driver. An explicit ir.device still enables the UART fallback. */
+    const char *dev = c->api->config_get(c->api->priv, "ir.device", "");
+    if (!dev[0] && !blast_ok)
+        dev = IR_DEV;
+    snprintf(c->dev, sizeof c->dev, "%s", dev);
     if (!c->dev[0]) {
-        c->api->log(c->api->priv, OA_LOG_INFO, "remote parser ready; UART path empty");
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "remote parser ready; BLAST only, UART path empty");
         return 0;
     }
     if (open_port(c) != 0) {
