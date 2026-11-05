@@ -48,6 +48,14 @@ BLAST/video28 and emits the RC code directly. The full portal UI remote
 takeover was not run. Watchdog reboot restored stock (PIDs 2186/1782, appmgr
 1580), BACK AV (`m_current_source=1`); staging removed. TAKEOVER-IR-2026-11-05.
 
+Offline IR IPC, 2026-11-05: `tests/ir_ipc.cjs` now drives `mod_ir` over the
+real Unix control socket with plat/recorder/ui_engine/ui_vendor fixtures
+(`ir.device=`, `ir.blast=0`). It verifies `input:v1`, key navigation, stop
+→ENODEV, start, `reload ir`, live `reload ui_vendor`, ui_vendor stop/start,
+unload/load ir and clean exit. `make -j24 check-ir-ipc`,
+`check-ui-vendor-ipc` and `check-ui-nav` pass; no TV/HAL device was opened.
+The BLAST/v4l2 physical path remains TV-only.
+
 Latest live acceptance: [LIVE-TV-ACCEPTANCE](artifacts/reports/LIVE-TV-ACCEPTANCE-2026-11-05.md)
 staged the ABI 3 tree under `/buffer`, ran epg/tuner/pvr/lua, and loaded
 `display_fb` on vendor-initialized fb1. It saved a 16,588,800-byte snapshot,

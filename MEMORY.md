@@ -25,6 +25,14 @@ stays a fallback. The full portal UI remote takeover was not run. `wdtctl set
 10` restored stock (PIDs 2186/1782, appmgr 1580, BACK AV `m_current_source=1`);
 staging removed. TAKEOVER-IR-2026-11-05.
 
+IR-IPC-2026-11-05 (host, no TV): `tests/ir_ipc.cjs` drives the real
+`openaurora` Unix socket with plat/recorder/ui_engine/ui_vendor fixtures and
+`ir.device=`/`ir.blast=0`. It covers `input:v1`, `key 22` navigation, stop
+→ENODEV, start, `reload ir`, live `reload ui_vendor`, ui_vendor stop/start,
+unload/load ir and clean exit. `make -j24 check-ir-ipc`,
+`check-ui-vendor-ipc` and `check-ui-nav` pass. The BLAST/v4l2 backend and
+physical IR remain TV-only; no HAL device was opened.
+
 Lua screen flash, 2026-11-05: staged `/buffer/oa-lua-screen` (hashes matched
 before exec) started `display_fb`, `ui_engine`, `lua` and `ui_omarchy` with
 `ui.omarchy.lua=1`. Skin status was `active omarchy`, fallback 0. The owner

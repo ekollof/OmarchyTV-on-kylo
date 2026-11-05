@@ -288,10 +288,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       physical Right/Down/Up/Left keys as profile RC **22/19/20/21**; `0x800` is
       the RC5 toggle and `flag` is press/release. `mod_ir` now defaults to
       BLAST/video28 and emits the RC code directly, with ttyS2 as fallback.
-      Remaining: full portal UI takeover with the physical remote, repeat/long-
-      press and complete key mapping, and clean vendor-library reload on
-      stop/unload. The MCU `_HW_MCU_RcInit`/STBC RWDB path is not required for
-      this remote; do not call STBC cold without the ownership/recovery plan.
+      IR-IPC-2026-11-05 adds `tests/ir_ipc.cjs`: real Unix-socket
+      load/start, `input:v1`, key navigation, stop→ENODEV, start, `reload ir`,
+      live `reload ui_vendor`, stop/start ui_vendor, unload/load ir and clean
+      exit with plat/recorder fixtures. `make -j24 check-ir-ipc`,
+      `check-ui-vendor-ipc` and `check-ui-nav` pass. Remaining: full portal UI
+      takeover with the physical remote, repeat/long-press and complete key
+      mapping, and clean vendor-library reload on the TV. The MCU
+      `_HW_MCU_RcInit`/STBC RWDB path is not required for this remote; do not
+      call STBC cold without the ownership/recovery plan.
 - [ ] Power: complete native device preparation/wake/resume ownership and actual
       hardware acceptance. Service/CLI coordination is implemented offline;
       manual suspend/resume are hook-only commands and never enter RAM. Use

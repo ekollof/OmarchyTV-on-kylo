@@ -1357,6 +1357,11 @@ check-image-decode-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_image_decode.so
 	node tests/image_decode_ipc.cjs $(abspath $(BUILD))
 check: check-image-decode-ipc
 
+.PHONY: check-ir-ipc
+check-ir-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui_nav_display.so
+	node tests/ir_ipc.cjs $(abspath $(BUILD))
+check: check-ir-ipc
+
 .PHONY: check-ui-vendor-ipc
 check-ui-vendor-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui_nav_display.so
 	node tests/ui_vendor_ipc.cjs $(abspath $(BUILD))
