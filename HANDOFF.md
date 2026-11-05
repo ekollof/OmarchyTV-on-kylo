@@ -80,6 +80,13 @@ matches the on-TV Prime Video focused-card capture (accent fill 394,473,
 AE=0). Live extra cards, rail-highlight/title-slide animation and GPU/scanout
 remain open.
 
+Bronlijst offline capture, 2026-11-05: `tests/ui_sources_quick.c` plus
+`make capture-sources-real` paint the 780x1080 source panel, focused row 0 at
+18,152 and the workbench `src_*` assets. The composited recorder frame is
+byte-identical to the on-TV `ui-sources.png` (AE=0, max=0, 0/2,073,600
+changed). Row 0 only; other rows, animation/interaction and GPU/scanout remain
+open.
+
 Latest live acceptance: [LIVE-TV-ACCEPTANCE](artifacts/reports/LIVE-TV-ACCEPTANCE-2026-11-05.md)
 staged the ABI 3 tree under `/buffer`, ran epg/tuner/pvr/lua, and loaded
 `display_fb` on vendor-initialized fb1. It saved a 16,588,800-byte snapshot,

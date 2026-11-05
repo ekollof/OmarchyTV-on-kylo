@@ -60,6 +60,13 @@ capture (`capture_compare.py` AE=0, max=0, 0/2,073,600 changed).
 Video focused-card capture at the accent fill 394,473 with AE=0. Live extra
 cards, rail-highlight/title-slide animation and GPU/scanout remain open.
 
+SOURCES-CAPTURE-2026-11-05 (host, no TV): `tests/ui_sources_quick.c` and
+`make capture-sources-real` paint the Bronlijst 780x1080 `#BE1E2D` panel,
+focused row 0 at 18,152 and the workbench `src_*` assets. The composited
+recorder frame is byte-identical to the on-TV `ui-sources.png` (AE=0, max=0,
+0/2,073,600 changed). Row 0 only; other rows, animation/interaction and
+GPU/scanout remain open.
+
 Lua screen flash, 2026-11-05: staged `/buffer/oa-lua-screen` (hashes matched
 before exec) started `display_fb`, `ui_engine`, `lua` and `ui_omarchy` with
 `ui.omarchy.lua=1`. Skin status was `active omarchy`, fallback 0. The owner

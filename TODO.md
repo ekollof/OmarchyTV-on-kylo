@@ -66,6 +66,15 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       Limits: default card row, not live extra cards; rail-highlight/title-
       slide animation states and GPU/scanout remain open.
 
+- [x] Bronlijst source-dialog real-asset offline capture: added
+      `tests/ui_sources_quick.c` and `make capture-sources-real`; the
+      workbench `src_title`/`src_0..8`/`src_*_f` assets and the 780x1080
+      `#BE1E2D` panel with focused row 0 at 18,152 are painted by the shipped
+      `paint_sources` path. The composited recorder frame is byte-identical to
+      the on-TV `ui-sources.png` (`capture_compare.py`: AE=0, max=0,
+      0/2,073,600 changed). SOURCES-CAPTURE. Limits: row 0 only; other rows,
+      animation/interaction and GPU/scanout remain open.
+
 - [x] Full settings_list 780x1080 real-asset offline capture: added
       `OA_SETTINGS_REAL=1` to `tests/ui_settings_panel.c` and
       `make capture-settings-panel-real`. The shipped path clears transparent,
