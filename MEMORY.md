@@ -236,6 +236,13 @@ fresh-process restart, clear, malformed fail-closed and no `.tmp` left;
 persistence; no filtering/CRID/retention/incremental merge, save per section,
 512-record cap, no TV/hardware.
 
+EPG-NOWNEXT-2026-11-05: added `epg-nownext <svc> <now_ms>` over the existing
+epg v1 query. It returns the earliest current (`start<=now<end`) and earliest
+next (`start>now`), with `-` for missing, using the 512-event cache window.
+Real-socket tests cover 12:30, exact start/end boundaries, before/after,
+invalid args, clear and stop; ARM core links. Project control query, not a
+new vendor ABI; no CRID/full schedule or TV.
+
 EIT-TS-DEMUX-2026-11-05 (host/qemu + real socket): added a real MPEG-2 TS EIT
 demux (PID 0x12, 188-byte validation, transport-error/scrambled drops,
 adaptation fields, continuity duplicate/discontinuity, PUSI pointer, split/

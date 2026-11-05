@@ -161,6 +161,21 @@ async function main() {
         assert.equal((await commandAll('epg-query 8 0 2000000000000')).split('\n')[0], 'count 0');
         assert.equal((await commandAll('epg-query 7 0 1677326400000')).split('\n')[0], 'count 0');
 
+        assert.match(await command('epg-nownext 7 1677328200000'),
+            /^now id=100 name='Hello' next id=101 name='Second'/);
+        assert.match(await command('epg-nownext 7 1677326400000'),
+            /^now id=100 name='Hello' next id=101 /);
+        assert.match(await command('epg-nownext 7 1677330900000'),
+            /^now id=101 name='Second' next -/);
+        assert.match(await command('epg-nownext 7 1677322800000'),
+            /^now - next id=100 name='Hello'/);
+        assert.match(await command('epg-nownext 7 1677331800000'),
+            /^now - next -/);
+        assert.equal(await command('epg-nownext 7'), 'failed errno 22');
+        assert.equal(await command('epg-nownext 0 1'), 'failed errno 22');
+        assert.equal(await command('epg-nownext 7 -1'), 'failed errno 22');
+        assert.equal(await command('epg-nownext 7 1 x'), 'failed errno 22');
+
         /* Same (service,event) keys replace rather than duplicate. */
         const replaced = section({ version: 4, events: [
             { id: 100, start: startBytes(60000, 12, 0, 0),
@@ -190,6 +205,8 @@ async function main() {
         assert.equal(await command('epg-ingest zz'), 'failed errno 22');
         assert.equal(await command('epg-clear'), 'ok');
         assert.equal(await command('epg-count'), 'count 0');
+        assert.match(await command('epg-nownext 7 1677328200000'),
+            /^now - next -/);
 
         /* Reload restarts the module and clears the in-memory schedule. */
         assert.equal(await command('reload epg'), 'ok');
@@ -198,6 +215,7 @@ async function main() {
         assert.equal(await command('stop epg'), 'ok');
         assert.equal(await command('epg-query 7 0 2000000000'), 'failed errno 19');
         assert.equal(await command('epg-count'), 'failed errno 19');
+        assert.equal(await command('epg-nownext 7 1677328200000'), 'failed errno 19');
         assert.equal(await command('unload epg'), 'ok');
 
         child.kill('SIGTERM');

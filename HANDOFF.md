@@ -201,6 +201,10 @@ EPG-PERSISTENCE-2026-11-05 adds opt-in `epg.path` with atomic `OAEPG1`
 load/save, `oa_eit_cache_get_at`, and corrupt-file fail-closed. Real-socket
 reload/process-restart/clear tests and qemu `eit_cache` pass. Project store,
 not vendor persistence; no filtering/CRID/retention, save per section, no TV.
+EPG-NOWNEXT-2026-11-05 adds `epg-nownext <svc> <now_ms>` over the existing epg
+v1 query: earliest current (`start<=now<end`) and earliest next (`start>now`),
+`-` for missing. Real-socket boundary/clear/stop/invalid cases pass; ARM core
+links. Project query over the 512-event cache; no new vendor ABI or TV.
 
 Latest EIT demux: [EIT-TS-DEMUX](artifacts/reports/EIT-TS-DEMUX-2026-11-05.md)
 adds a real MPEG-2 TS EIT demux (PID 0x12, continuity, PUSI pointer, split/

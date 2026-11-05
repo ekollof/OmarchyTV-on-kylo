@@ -620,6 +620,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       store, not vendor persistence; no EIT filtering/CRID/retention or
       incremental merge, save per section, 512-record cap, no TV/hardware.
 
+- [x] EPG now/next control query: `epg-nownext <svc> <now_ms>` returns the
+      earliest current (`start<=now<end`) and earliest next (`start>now`),
+      with `-` for missing, over the existing epg v1 query/cache. Real-socket
+      tests cover boundaries (exact start/end), before/after, clear, stop and
+      invalid args; ARM core links. EPG-NOWNEXT. Project query over the
+      512-event cache; no new vendor ABI, CRID/full schedule or TV.
+
 - [x] EIT TS demux and replay backend: added `common/eit_ts.c` (PID 0x12,
       188-byte validation, transport-error/scrambled drops, adaptation fields,
       continuity duplicates/discontinuities, PUSI pointer, split/back-to-back

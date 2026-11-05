@@ -265,6 +265,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  epg-ingest <hex>        feed one complete EIT section\n"
                  "  epg-clear               drop cached EPG events\n"
                  "  epg-count               cached EPG event count\n"
+                 "  epg-nownext <svc> <now_ms>  current/next EPG event\n"
                  "  channel-ingest <hex>    feed ACTIVECHANNELLIST XML (runtime order)\n"
                  "  channel-clear           drop the runtime active list\n"
                  "  channel-state           runtime/stored list source and counts\n"
@@ -457,6 +458,43 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         size_t count=ingest->count();
         h->api.release(h,OA_SVC_EPG_INGEST);
         snprintf(outbuf,outlen,"count %zu\n",count);
+        return 0;
+    }
+    if(!strcmp(cmd,"epg-nownext")) {
+        if(force || !a1 || !a2 || a3){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        uint64_t service=0;int64_t now=0;
+        if(decimal(a1,&service) || !service || service>UINT32_MAX ||
+           signed_decimal64(a2,&now) || now<0 ||
+           now>(int64_t)UINT32_MAX*1000){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_epg_iface *epg=h->api.lookup(h,OA_SVC_EPG,1);
+        if(!epg){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        enum { NEXT_CAP = 512 };
+        struct oa_epg_event *events=calloc(NEXT_CAP,sizeof *events);
+        size_t count=0;
+        int rc=events?epg->query((uint32_t)service,0,
+            (int64_t)UINT32_MAX*1000,events,NEXT_CAP,&count):-ENOMEM;
+        h->api.release(h,OA_SVC_EPG);
+        if(rc){free(events);snprintf(outbuf,outlen,"failed errno %d\n",-rc);
+            return -1;}
+        const struct oa_epg_event *current=NULL,*next=NULL;
+        size_t copy=count<NEXT_CAP?count:NEXT_CAP;
+        for(size_t i=0;i<copy;i++){
+            const struct oa_epg_event *e=&events[i];
+            if(e->start_ms<=now && now<e->end_ms){
+                if(!current || e->start_ms<current->start_ms)current=e;
+            }else if(e->start_ms>now){
+                if(!next || e->start_ms<next->start_ms)next=e;
+            }
+        }
+        struct reply r={outbuf,outlen,0};
+        if(current)append(&r,"now id=%u name='%s'",current->event_id,
+            current->name);
+        else append(&r,"now -");
+        if(next)append(&r," next id=%u name='%s'\n",next->event_id,next->name);
+        else append(&r," next -\n");
+        free(events);
         return 0;
     }
     if(!strcmp(cmd,"channel-ingest")) {
