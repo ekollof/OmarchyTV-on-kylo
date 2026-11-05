@@ -27,8 +27,10 @@ lock/strength/quality/SNR/UNC transitions, fed 12 synthetic EIT events into
 mod_epg, and epg-query returned the expected event/metadata. Exact-PID SIGTERM,
 socket/staging removal and unchanged stock pids (1967 1785) verified. CPU-only:
 no fb1/display/HAL/device paths, no testtool, no vendor backend or cold
-startup. Testtool TCP1986 remains disabled; enabling needs the owner's
-watchdog-safe/recovery-ready decision.
+startup. Testtool TCP1986 remains disabled; on 2026-11-05 the owner chose
+"do not enable now" and "skip fb1/display until an ownership window". No
+profile/process/watchdog/display state was changed; reopening either item
+needs a new explicit watchdog-safe, recovery-ready instruction.
 
 TUNER-NIM-MODULE-2026-11-05 (host/qemu): added an NIM boundary shaped after
 DEV_NIM_DTV_StartTune/MonitorTune/signal (paths 1/2/3/5/7, status 3 unlocked/

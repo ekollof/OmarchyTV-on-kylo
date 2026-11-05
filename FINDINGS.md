@@ -45,8 +45,9 @@ scan reached 12 services with lock/signal transitions and fed 12 EIT events
 into mod_epg, whose query returned the expected event/metadata. Exact-PID
 shutdown, socket/staging removal and unchanged stock pids (1967 1785) were
 verified. This is CPU-only: no fb1/display/HAL/device access, no testtool, no
-vendor backend or cold startup. Testtool TCP1986 is still disabled; enabling
-requires the owner's watchdog-safe/recovery-ready decision.
+vendor backend or cold startup. Testtool TCP1986 is still disabled; the owner
+decided on 2026-11-05 not to enable it now and to skip fb1/display until an
+ownership window. No profile/process/watchdog/display state was changed.
 
 TUNER-NIM-MODULE-2026-11-05: the tuner contract now has a vendor-shaped NIM
 boundary (oa_nim_ops) mirroring DEV_NIM_DTV_StartTune(path,params,status),

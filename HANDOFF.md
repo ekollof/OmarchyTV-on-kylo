@@ -42,8 +42,9 @@ with on-device hash verification, then real-socket load/start/scan/reload/
 stop/unload. Tuner scan fed 12 EIT events into mod_epg and queries matched;
 exact-PID shutdown/staging removal and unchanged stock pids were verified.
 CPU-only: no fb1/display/HAL/device access, no testtool or cold startup.
-Testtool TCP1986 remains disabled pending the owner's watchdog-safe/recovery
-decision.
+Testtool TCP1986 remains disabled: the owner chose on 2026-11-05 not to enable
+it now and to skip fb1/display until an ownership window. No profile/process/
+watchdog/display state was changed.
 
 Latest tuner module: [TUNER-NIM-MODULE](artifacts/reports/TUNER-NIM-MODULE-2026-11-05.md)
 adds a vendor-shaped NIM boundary (DEV_NIM_DTV_StartTune/MonitorTune/signal)

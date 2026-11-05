@@ -58,12 +58,12 @@ bug-for-bug parity. The run loaded no display or vendor-HAL module.
 
 ## Blocked owner decisions
 
-1. **Testtool TCP 1986** is still disabled. Enabling it requires either a
-   profile change plus a stock-Aurora restart or an in-process pause/call
-   (gdbserver) while the vendor MCU watchdog is active. Both can perturb/stop
-   stock Aurora and physical USB recovery is not currently available.
-2. **fb1/display ownership and restoration** against stock Aurora requires
-   either a coordinated stop of stock rendering or an agreed temporary
-   display window; only temporary display tests are authorized, not a takeover.
+1. **Testtool TCP 1986**: the owner decided on 2026-11-05 **not to enable it
+   now** (no profile change, no restart, no gdbserver pause). Enabling still
+   requires a watchdog-safe, recovery-ready procedure.
+2. **fb1/display ownership and restoration**: the owner chose to **skip it
+   until an ownership window**. Only temporary display tests are authorized in
+   principle, not a takeover or concurrent-rendering acceptance run.
 
 No TV state was changed beyond the isolated staged process, which was removed.
+Reopen either item only with a new explicit owner instruction.

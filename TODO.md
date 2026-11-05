@@ -54,6 +54,12 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       Vendor Mali rasterization/scanout comparison still requires the set.
 
 
+- [ ] Runtime EASI/testtool and fb1/display ownership: the owner decided on
+      2026-11-05 to **not enable testtool now** and to **skip fb1/display
+      acceptance until an ownership window**. No profile, process, watchdog or
+      display state was changed. Reopen only with a new explicit
+      watchdog-safe, recovery-ready instruction.
+
 - [ ] Independent startup: boot into openaurora without starting vendor Aurora;
       full-screen scanout, input, fallback and resume all verified. Owner authorized
       an idle hardware/CEC/audio test window on November 1; see AGENTS.md.
