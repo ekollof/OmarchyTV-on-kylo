@@ -28,7 +28,7 @@ orange cell backdrop, Markt label and white-on-#811924 scrollbar.
 stage-apps-grid.py and apps_grid_stock produce a fixed firmware-dump offline
 candidate. The focused tile measurement is 294x165, not full-cell: that fix
 took Markt MAE8 3.343 to 0.185. Manifest comparison improved from AE29.56%/
-MAE8 75.38 to AE0.13%/MAE8 0.33 (top 0.0035%, grid0.605%, scrollbar0.017%).
+MAE8 75.38 to AE0.13%/MAE8 0.33 (top 0.0035%, grid0.237%, scrollbar0.017%).
 Host423 ok, verify45. Limits: exact vendor bitmap fonts; residual per-cell
 source-decode/sampling, 384x216 JPEG outlier; fb1 not HDMI/cold-start scanout.
 DIAL navigation changed only the stock UI screen; no settings/source change.

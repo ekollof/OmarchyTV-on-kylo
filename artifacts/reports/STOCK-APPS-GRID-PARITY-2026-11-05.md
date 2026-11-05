@@ -75,11 +75,12 @@ make -C openaurora capture-stock-apps-grid      # fixed-corpus regression path
 Manifest: `artifacts/analysis/stock-parity-2026-11-05/apps-grid-regions.json`.
 
 Firmware parent-1 catalog + original downloaded icons vs the byte-identical
-fresh oracle:
+fresh oracle. Percentages below are normalized AE (mean absolute error / 255),
+matching the full/region AE column; MAE8 is the 0..255 per-channel value:
 
 ```
 full: AE=2700.71 (0.001302) RMSE16=558.418 MAE8=0.332119 changed=7.04%
-top strip 0.0035%, grid 0.605%, scrollbar 0.0168%
+top strip 0.0035%, grid 0.237%, scrollbar 0.0168%
 ```
 
 Title and label are exact vendor bitmap-font rasters (font18/font4),

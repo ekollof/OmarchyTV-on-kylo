@@ -859,7 +859,7 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       `apps_grid_stock` and live-DB capture; all 23 firmware-dump parent-1 catalog rows and the original downloaded
       thumbnails are used, plus Markt (24 total), with no oracle tile crops.
       Manifest comparison improved from AE 29.56% / MAE8 75.38 to
-      **AE 0.13% / MAE8 0.33** (top 0.0035%, grid 0.605%, scrollbar 0.017%),
+      **AE 0.13% / MAE8 0.33** (top 0.0035%, grid 0.237%, scrollbar 0.017%),
       with exact vendor bitmap font18/4 title/label rasters and a bilinear
       tile scaler. The focused-tile bbox oracle is 294x165; the earlier
       full-cell model took Markt MAE8 3.343 to 0.185.
@@ -872,7 +872,7 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       replaced the TTF approximation and switched the recorder to bilinear
       tile scaling. The 24-entry order and empty final cell are verified from
       the dump and scrolled capture. Manifest AE 0.13%, MAE8 0.33; top
-      0.0035%, grid 0.605%, scrollbar 0.017%. STOCK-APPS-GRID-PARITY.
+      0.0035%, grid 0.237%, scrollbar 0.017%. STOCK-APPS-GRID-PARITY.
 
 - [x] Stock-capture parity analysis: the old `shot-launcher-right.png` is an
       R/B-swapped pre-correction capture; after channel correction it matches

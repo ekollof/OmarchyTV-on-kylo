@@ -18,6 +18,6 @@ Interpretation:
 - `inputs.txt`: parent-1 row and asset counts.
 
 Result: full AE 2700.71 (0.130%), MAE8 0.332, changed 7.04%; top strip
-0.0035%, grid 0.605%, scrollbar 0.0168%. The stock catalog is 23 parent-1 rows
+0.0035%, grid 0.237%, scrollbar 0.0168%. The stock catalog is 23 parent-1 rows
 plus Markt, 24 entries; there is no OmarchyTV tile. The focused tile is also
 294x165 at cell+7,+7; the earlier full-width focus model was wrong.
