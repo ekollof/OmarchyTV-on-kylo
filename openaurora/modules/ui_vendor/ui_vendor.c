@@ -31,6 +31,7 @@
  */
 #include <errno.h>
 #include <fcntl.h>
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -68,6 +69,15 @@
 #define APPS_CAP_TOP 20
 #define APPS_CAP_BOTTOM 16
 #define APPS_VISIBLE (APPS_COLS * APPS_ROWS)
+/* Provisional channel list over the stored service inventory. The order is
+ * stored channel_no/name only; runtime EASI LCN/visibility is not available
+ * offline. The red strip and its label make that non-parity state visible. */
+#define CH_ROW_Y 236
+#define CH_ROW_H 64
+#define CH_ROWS 10
+#define CH_X 80
+#define CH_W 1760
+#define CH_MARKER_H 60
 
 /* Nine picture-settings rows; row 6 is disabled in the capture. Defined here
  * because ctx stores per-row live-text canvases. */
@@ -155,6 +165,7 @@ struct ctx {
     int card;
     int src;                         /* source-selection row, 0..MAX_SOURCES-1 */
     int sel;                         /* picture-settings row, -1 = none */
+    int chan_sel;                    /* provisional channel-list selection */
     int text_on;                     /* live labels/values loaded (ui.text=1) */
     struct oa_font_pack font_pack;
     unsigned char *font_data, *font_num_data;
@@ -280,7 +291,8 @@ static const oa_ui_icon *find_icon(struct ctx *c, const char *name)
 /* ------------------------------------------------------------------ geometry */
 
 enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, SCREEN_SETTINGS = 3,
-       SCREEN_SETTINGS_LIST = 4, SCREEN_APPS = 5, ANIM_DIALOG = 1 };
+       SCREEN_SETTINGS_LIST = 4, SCREEN_APPS = 5, SCREEN_CHANNELS = 6,
+       ANIM_DIALOG = 1 };
 
 /* Picture-settings rows: 66 px FA bar content on the 70 px pitch, text
  * centered (row 4 centre 496). Row 6 ("Beeld zoomen") is disabled in the
@@ -1053,6 +1065,91 @@ static void paint_apps(struct ctx *c)
         c->grid_count,first,sr.state.bar_pos,sr.state.bar_size);
 }
 
+static void channel_text_blit(struct ctx *c, const char *text, int x, int y,
+    int width, int height, int focused)
+{
+    if (!c || !c->d || !c->text_on || !text || !*text || width <= 0 || height <= 0)
+        return;
+    int advance = 0;
+    if (oa_font_text_measure(&c->font, text, 0, &advance) || advance <= 0)
+        return;
+    int w = advance < width ? advance : width;
+    unsigned char *rgba = calloc((size_t)w * (size_t)height * 4u, 1);
+    if (!rgba) return;
+    oa_canvas canvas = { rgba, w, height };
+    const uint8_t ink[4] = {
+        (uint8_t)(focused ? 126 : 255),
+        (uint8_t)(focused ? 0 : 255),
+        (uint8_t)(focused ? 10 : 255), 255
+    };
+    struct oa_font_clip clip = { 0, 0, w, height };
+    if (!oa_font_text_draw(&canvas, &c->font, text, 0, 0, ink, 0, &clip))
+        c->d->blit(x, y, w, height, rgba);
+    free(rgba);
+}
+
+static void paint_channels(struct ctx *c)
+{
+    const oa_ui_engine_iface *d = c->d;
+    int W = 0, H = 0;
+    if (!c || !d || d->info(&W, &H, NULL, NULL) || W <= 0 || H <= 0)
+        return;
+    if (d->clear_rgba(36, 38, 40, 153)) return;
+    d->fill(0, 0, 1921, 162, 72, 23, 48);
+    d->fill(0, 162, 1921, CH_MARKER_H, 190, 30, 45);
+    channel_text_blit(c, "PROVISIONAL STORED ORDER - NOT RUNTIME EASI",
+                      20, 166, 1800, CH_MARKER_H, 0);
+
+    const oa_service_list_iface *svc =
+        c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
+    const struct oa_service_list *list = svc ? svc->snapshot() : NULL;
+    size_t *order = NULL, matched = 0;
+    if (list) {
+        struct oa_service_query q;
+        memset(&q, 0, sizeof q);
+        q.source_mask = 0x7;
+        q.sort = OA_SERVICE_SORT_CHANNEL_NO;
+        order = malloc(list->count * sizeof *order);
+        if (!order || oa_service_list_query(list, &q, order, list->count,
+                &matched))
+            matched = 0;
+    }
+    if (matched == 0)
+        c->chan_sel = 0;
+    else if (c->chan_sel >= (int)matched)
+        c->chan_sel = (int)matched - 1;
+    int first = c->chan_sel >= CH_ROWS ? c->chan_sel - CH_ROWS + 1 : 0;
+    for (int row = 0; row < CH_ROWS && first + row < (int)matched; row++) {
+        const struct oa_service_row *service =
+            &list->rows[order[first + row]];
+        int focused = first + row == c->chan_sel;
+        int y = CH_ROW_Y + row * CH_ROW_H;
+        d->fill(CH_X, y, CH_W, CH_ROW_H - 4,
+                focused ? 247 : 20, focused ? 148 : 20,
+                focused ? 30 : 20);
+        char name[OA_SERVICE_NAME_MAX + 1];
+        size_t n = 0;
+        for (; service->name[n] && n < OA_SERVICE_NAME_MAX; n++)
+            name[n] = (unsigned char)service->name[n] < 32
+                ? '?' : service->name[n];
+        name[n] = '\0';
+        char line[OA_SERVICE_NAME_MAX + 64];
+        snprintf(line, sizeof line, "%" PRId64 "  %s",
+                 service->channel_no, name);
+        channel_text_blit(c, line, CH_X + 20, y + 2, CH_W - 40,
+                          CH_ROW_H - 6, focused);
+    }
+    if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
+    free(order);
+    c->scene_painted = 1;
+    if (d->present() != 0) {
+        c->api->log(c->api->priv, OA_LOG_ERROR, "channel list present failed");
+        return;
+    }
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "painted provisional channel list: %zu stored rows", matched);
+}
+
 static void paint(struct ctx *c)
 {
     const oa_ui_engine_iface *d;
@@ -1073,6 +1170,10 @@ static void paint(struct ctx *c)
     }
     if (c->screen == SCREEN_APPS) {
         paint_apps(c);
+        return;
+    }
+    if (c->screen == SCREEN_CHANNELS) {
+        paint_channels(c);
         return;
     }
     rail_hl_sync(c);              /* keeps the 30 ms highlight timer in step with the screen */
@@ -1541,6 +1642,45 @@ static void cancel_dialog(struct ctx *c)
 
 static void move_key(struct ctx *c, uint8_t id)
 {
+    if (c->screen == SCREEN_CHANNELS) {
+        if (id == 10 || id == 48) {
+            c->screen = SCREEN_PORTAL;
+            if (c->d) paint(c);
+            return;
+        }
+        const oa_service_list_iface *svc =
+            c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
+        const struct oa_service_list *list = svc ? svc->snapshot() : NULL;
+        size_t *order = NULL, matched = 0;
+        if (list) {
+            struct oa_service_query q;
+            memset(&q, 0, sizeof q);
+            q.source_mask = 0x7;
+            q.sort = OA_SERVICE_SORT_CHANNEL_NO;
+            order = malloc(list->count * sizeof *order);
+            if (!order || oa_service_list_query(list, &q, order,
+                    list->count, &matched))
+                matched = 0;
+        }
+        if (id == 20 || id == 19) {
+            if (matched) {
+                c->chan_sel += id == 19 ? 1 : -1;
+                if (c->chan_sel < 0) c->chan_sel = 0;
+                if (c->chan_sel >= (int)matched) c->chan_sel = (int)matched - 1;
+            }
+            if (c->d) paint(c);
+        } else if ((id == 53 || id == 0x8a) && matched) {
+            oa_action_event act;
+            memset(&act, 0, sizeof act);
+            act.kind = OA_ACTION_SELECT;
+            act.index = (uint8_t)c->chan_sel;
+            act.name = list->rows[order[c->chan_sel]].name;
+            c->api->emit(c->api->priv, OA_TOPIC_ACTION, &act);
+        }
+        free(order);
+        if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
+        return;
+    }
     if (c->screen == SCREEN_APPS) {
         int sel = c->grid_sel;
         if (id == 21 || id == 22)
@@ -1861,6 +2001,13 @@ static int m_start(void *v)
         if (c->grid_count > 0 && c->grid_sel >= c->grid_count)
             c->grid_sel = c->grid_count - 1;
     }
+    if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "channels")) {
+        c->screen = SCREEN_CHANNELS;
+        if (!c->restored)
+            c->chan_sel = atoi(c->api->config_get(c->api->priv,
+                "ui.channel_sel", "0"));
+        if (c->chan_sel < 0) c->chan_sel = 0;
+    }
     /* Lab/test preselection for a focused-row capture; -1 starts unfocused
      * like the vendor capture. The disabled row is never preselected. */
     c->sel = atoi(c->api->config_get(c->api->priv, "ui.sel", "-1"));
@@ -2119,7 +2266,7 @@ static int m_restore(void *v, const void *buf, size_t len)
     if (!c || !buf || (len != 4 && len != 5))
         return -1;
     const unsigned char *bytes = buf;
-    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_APPS ||
+    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_CHANNELS ||
         (len == 5 && bytes[4] >= MAX_GRID))
         return -1;
     c->band = bytes[0];

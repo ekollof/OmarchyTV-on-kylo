@@ -44,9 +44,15 @@ name/channel_no stored query with filters are exposed (dump totals visible67/
 available338/encrypted67/numeric0/missing0). A read-only live DB fetch found
 54 DVB/67 EASI/13 analog and m_lcn low16=0xffff; getLcn/isHiddenService use
 runtime EASI, so active-list LCN/filter parity needs a runtime probe or an
-explicit provisional-order decision. Host409 ok, verify45. Tuner acquisition,
-EPG/PVR, channel-list UI and stock parity remain open. No persistent TV write;
-tvssh sent WoL for the read-only fetch. Cold bundle not rebuilt.
+explicit provisional-order decision. A provisional `ui_vendor`
+`SCREEN_CHANNELS` (`ui.screen=channels`) now shows stored channel_no/name rows
+with a visible "NOT RUNTIME EASI" marker; recorder tests with synthetic/real
+font packs pass. Host410 ok, verify45. Production `system()` calls are removed
+(display mdev uses posix_spawn/waitpid; test cleanup uses nftw). Runtime EASI
+LCN/visibility, stock
+channel-list key path/geometry/typography/scrolling, tuner, EPG/PVR and stock
+parity remain open. No persistent TV write; tvssh sent WoL for the read-only
+fetch. Cold bundle not rebuilt.
 
 ## Immediate continuation point
 

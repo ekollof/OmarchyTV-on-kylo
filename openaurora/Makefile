@@ -657,7 +657,7 @@ $(BUILD)/modules/mod_ui_anim.so: modules/ui_anim/ui_anim.c common/ui_anim.c incl
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
-$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h
+$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
@@ -997,6 +997,11 @@ $(BUILD)/tests/ui_live_cards: tests/ui_live_cards.c tests/ui_nav_trace.h core/ho
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests -Ithird_party $(LDFLAGS) -o $@ tests/ui_live_cards.c $(filter %.o,$^) $(LDLIBS) \
 	  $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
 
+$(BUILD)/tests/ui_channels: tests/ui_channels.c tests/ui_nav_trace.h core/host.h include/openaurora/services.h include/openaurora/ui_engine.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests -Ithird_party $(LDFLAGS) -o $@ tests/ui_channels.c $(filter %.o,$^) $(LDLIBS) \
+	  $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
+
 ui-live-modules = $(BUILD)/tests/ui-live-cards/modules
 ui-live-stage: $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_settings.so $(BUILD)/modules/mod_image_decode.so
 	@mkdir -p $(ui-live-modules)
@@ -1013,6 +1018,15 @@ check-ui-apps-grid: $(BUILD)/tests/ui_live_cards ui-live-stage
 	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "" apps
 	@OA_TEST_MANY=1 $(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "" apps
 check: check-ui-apps-grid
+
+ui-channels-modules = $(BUILD)/tests/ui-channels/modules
+.PHONY: check-ui-channels
+check-ui-channels: $(BUILD)/tests/ui_channels $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so
+	@mkdir -p $(ui-channels-modules)
+	@cp $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(ui-channels-modules)/
+	@cp $(BUILD)/tests/ui_nav_display.so $(ui-channels-modules)/mod_nav_display.so
+	@$(BUILD)/tests/ui_channels $(ui-channels-modules)
+check: check-ui-channels
 .PHONY: check-ui-png-cards
 check-ui-png-cards: $(BUILD)/tests/ui_live_cards ui-live-stage
 	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "$(CURDIR)/../artifacts/workbench/thumbs" png || test $$? -eq 77

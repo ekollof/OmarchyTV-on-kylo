@@ -1,0 +1,4 @@
+production system() calls: none
+test wrappers:
+openaurora/tests/display_present.c:60:int __wrap_system(const char *command) { (void)command; assert(!"unexpected system call"); return -1; }
+openaurora/tests/display_lifecycle.c:31:int __wrap_system(const char *s) { (void)s;assert(!"unexpected system call");return -1; }

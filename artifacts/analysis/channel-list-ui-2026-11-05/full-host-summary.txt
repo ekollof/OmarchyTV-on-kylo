@@ -1,0 +1,7 @@
+full host make check: 410 ok
+  ok   display restore snapshots/restores pixels, region and pan; MAU verified
+  ok   display restore snapshots/restores pixels, region and pan; MAU verified
+  ok   service DB inventory: DVB/EASI/analog rows, bounded text, table order, missing-table failure
+ok service DB dump: 525 rows (445 dvb, 67 easi, 13 analog)
+ok provisional channel list: stored channel order, non-parity marker, selection and exit
+verify.cjs: 45 groups

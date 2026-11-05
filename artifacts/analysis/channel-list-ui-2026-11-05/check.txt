@@ -1,0 +1,1 @@
+ok provisional channel list: stored channel order, non-parity marker, selection and exit

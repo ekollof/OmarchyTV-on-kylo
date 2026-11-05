@@ -1,0 +1,3 @@
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore -Itests -Ithird_party  -o build/tests/ui_channels tests/ui_channels.c build/core/check.o build/core/control.o build/core/host.o build/core/module.o build/core/service_query.o build/core/skin.o -ldl -pthread -lm \
+   -lsqlite3
+ok provisional channel list: stored channel order, non-parity marker, selection and exit

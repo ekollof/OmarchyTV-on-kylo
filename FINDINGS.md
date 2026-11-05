@@ -49,9 +49,14 @@ included; the dump totals 67/338/67/0/0. A read-only live DB fetch found
 and isHiddenService (0xefba80) use runtime EASI, so active-list LCN/filter
 parity needs a runtime probe or an explicit provisional-order decision.
 Synthetic, real-dump, reload/stop and real socket lifecycles pass; host409 ok,
-verify45. Tuner, EPG/PVR, channel-list UI and stock parity remain open. No
-persistent TV write; tvssh sent WoL for the read-only fetch. Cold bundle not
-rebuilt.
+verify45. A provisional `ui_vendor` channel-list screen over the stored
+channel_no/name query is recorder-tested, with an explicit "NOT RUNTIME EASI"
+marker; host410 ok, verify45. Production `system()` calls are removed (display
+mdev uses posix_spawn/waitpid; test cleanup uses nftw). Runtime EASI LCN/
+visibility, stock channel-list
+key path/geometry/typography/scrolling, tuner, EPG/PVR and stock parity remain
+open. No persistent TV write; tvssh sent WoL for the read-only fetch. Cold
+bundle not rebuilt.
 
 PLAT-CONSUMERS-SOCKET-2026-11-05: a fake plat service provider starts the real
 host-build audio/source/ir/panel modules over the socket with hardware paths

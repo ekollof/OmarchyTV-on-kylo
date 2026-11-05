@@ -32,9 +32,14 @@ lifecycle pass. Host409 ok, verify45. A read-only live DB fetch found
 54 DVB/67 EASI/13 analog and m_lcn values with low16=0xffff; getLcn
 (0xefce65) and isHiddenService (0xefba80) use runtime EASI, so active-list
 LCN/filter parity needs a runtime probe or an explicit provisional-order
-decision. Tuner, EPG/PVR, channel-list UI and stock parity remain open.
-No persistent TV write; tvssh sent WoL for the read-only fetch. Cold bundle
-not rebuilt.
+decision. A provisional `ui_vendor` channel-list screen
+(`ui.screen=channels`) now consumes the stored channel_no/name query, marks
+itself "NOT RUNTIME EASI", and passes recorder tests with synthetic and real
+font packs. Production `system()` calls were removed: display mdev repair uses
+posix_spawn/waitpid and the channel test uses nftw cleanup. Tuner, EPG/PVR,
+stock channel-list geometry/key path and stock parity remain open. No
+persistent TV write; tvssh sent WoL for the read-only fetch. Cold bundle not
+rebuilt.
 
 AMP-VIDEO-OWNER-2026-11-04 adds firmware/relocation evidence only: video24 is
 extin, whose actual open/close callbacks have no input teardown; the similarly

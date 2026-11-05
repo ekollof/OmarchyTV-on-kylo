@@ -432,6 +432,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       isHiddenService use runtime EASI, so active-list LCN/filter parity
       requires a runtime probe or an explicit provisional-order decision.
       Tuner, EPG/PVR, channel-list UI and stock parity remain open.
+- [x] Remove production `system()` calls: display mdev node repair now uses
+      `posix_spawn("/sbin/mdev", "-s")` plus `waitpid`; the channel-list test
+      uses `nftw` cleanup instead of a shell command. The display test wrappers
+      remain as no-system regression guards. Host410 ok, verify45. No TV access.
+- [x] Provisional channel-list UI: `ui_vendor` `SCREEN_CHANNELS`
+      (`ui.screen=channels`) consumes the stored `service.list` channel_no/name
+      query, shows a visible "PROVISIONAL STORED ORDER - NOT RUNTIME EASI"
+      marker, supports Up/Down/Select/Exit and is recorder-tested with
+      synthetic and real font packs. Host410 ok, verify45. CHANNEL-LIST-UI.
+      Limits: no runtime EASI LCN/visibility, stock channel-list key path,
+      measured stock geometry/typography/scrolling, tuner/EPG/PVR or scanout.
 - [ ] Apps/browser/media integration, picture quality/FRC, network and Bluetooth.
 - [ ] Tuner/DVB-T/DVB-S, EPG/service lists, teletext/MHEG/interactive TV, PVR/
       timeshift/playback, CI+/conditional access and associated persistence.

@@ -19,11 +19,13 @@
 #include <fcntl.h>
 #include <linux/fb.h>
 #include <math.h>
+#include <spawn.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -37,6 +39,8 @@
 #include "openaurora/canvas.h"
 #include "openaurora/fb_snapshot.h"
 #include "openaurora/ui_anim.h"
+
+extern char **environ;
 
 #define OSD_REG_RD 0x8020c86cu /* IOR(0xc8,108,32) */
 #define OSD_REG_WR 0x4020c86bu /* IOW(0xc8,107,32) */
@@ -521,6 +525,25 @@ static int fb_registered(const char *path)
     return access(name, R_OK) == 0;
 }
 
+#ifndef OA_DISPLAY_NO_PLAT
+static int run_mdev_scan(void)
+{
+    char *const argv[] = { (char *)"/sbin/mdev", (char *)"-s", NULL };
+    pid_t pid = -1;
+    int rc = posix_spawn(&pid, "/sbin/mdev", NULL, NULL, argv, environ);
+    if (rc) {
+        errno = rc;
+        return -1;
+    }
+    int status = 0;
+    while (waitpid(pid, &status, 0) < 0) {
+        if (errno != EINTR)
+            return -1;
+    }
+    return WIFEXITED(status) && WEXITSTATUS(status) == 0 ? 0 : -1;
+}
+#endif
+
 static int fb_make_node(struct ctx *c)
 {
 #ifdef OA_DISPLAY_NO_PLAT
@@ -531,7 +554,7 @@ static int fb_make_node(struct ctx *c)
      * registered before the hotplug helper was installed ends up with sysfs entries and no /dev
      * node - exactly the state seen in a takeover boot. mdev is the vendor's own mechanism for
      * populating /dev from sysfs, so use it instead of hand-rolling mknod. */
-    if (system("/sbin/mdev -s") != 0)
+    if (run_mdev_scan() != 0)
         return -1;
     if (access(c->path, F_OK) != 0)
         return -1;

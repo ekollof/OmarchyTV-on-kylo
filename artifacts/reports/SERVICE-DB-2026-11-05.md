@@ -57,7 +57,9 @@ This is **not** the vendor active service list. A read-only live DB fetch
 `isHiddenService` (`0xefba80`) queries runtime EASI visibility/HD-simulcast
 state. The offline DB cannot reproduce that. Runtime EASI probing or a
 provisional ordering decision is therefore required before claiming channel-list
-parity.
+parity. A provisional `ui_vendor` screen now consumes this query and marks
+itself "NOT RUNTIME EASI"; see
+[CHANNEL-LIST-UI](CHANNEL-LIST-UI-2026-11-05.md).
 
 ## Stored flags
 
