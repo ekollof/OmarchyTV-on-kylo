@@ -1,3 +1,3 @@
 f521d6770238fa58d9364e24463c09105d70b3511ba1693d90fff54ffac360b0  /tmp/opencode/live-settings.db
 c7dbac7fe50b1fc36d35a72f8dddac9c650f536008fdac8d8d4f22b7e9a8304d  artifacts/analysis/stock-apps-grid-live-2026-11-05/stock-apps-grid-live.png
-5d32c8f94d4c86ce81dc477a59695b15e1322323df2e65a76295f4805f1814c1  artifacts/analysis/stock-apps-grid-live-2026-11-05/offline-apps-grid-live.png
+a54022752a363020845cc2e0a256ee29f717d25fc404fd556dabd8557c5f3dd3  artifacts/analysis/stock-apps-grid-live-2026-11-05/offline-apps-grid-live.png

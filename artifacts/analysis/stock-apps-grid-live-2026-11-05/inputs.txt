@@ -1,4 +1,2 @@
-live DB launcher rows (parent0,type2,thumb):
-19
-downloaded thumbnails used:
-18
+parent1 app rows: 23;
+downloaded thumbnails staged: 22

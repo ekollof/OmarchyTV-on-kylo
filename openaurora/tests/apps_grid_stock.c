@@ -25,6 +25,7 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "ui.fps")) return "0";
     if (!strcmp(key, "ui.live_cards")) return "1";
     if (!strcmp(key, "ui.screen")) return "apps";
+    if (!strcmp(key, "ui.cards_parent")) return "1";
     if (!strcmp(key, "ui.grid_sel")) return "0";
     return def;
 }
@@ -63,8 +64,10 @@ static void use_live_db(const char *source)
     sqlite3 *db = NULL;
     assert(sqlite3_open(g_db, &db) == SQLITE_OK);
     exec(db,
-        "INSERT INTO LauncherItem VALUES(0,0,0,-1,9900,0,0,1,0,0,2,-1,0,0,0,0,"
-        "'','','Markt','markt','','','','','','')");
+        "INSERT INTO LauncherItem VALUES(0,0,0,-1,9900,0,0,1,0,0,2,-1,0,0,1,0,"
+        "'','','Markt','markt','','','','','','');"
+        "INSERT INTO LauncherItem VALUES(0,0,0,-1,9901,0,0,1,0,0,2,-1,25,0,1,0,"
+        "'','','OmarchyTV','launcher_app_thumb900','','','','','','');");
     assert(sqlite3_close(db) == SQLITE_OK);
 }
 

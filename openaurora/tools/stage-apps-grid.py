@@ -51,8 +51,11 @@ def live_rows(db: Path):
     con = sqlite3.connect(db)
     rows = con.execute(
         "SELECT m_application_thumb_file_name FROM LauncherItem"
-        " WHERE m_parent_id=0 AND m_is_deleted=0 AND m_is_out_of_sync=0"
+        " WHERE m_parent_id=1 AND m_is_deleted=0 AND m_is_out_of_sync=0"
         " AND m_item_type=2 ORDER BY m_order_index,m_id").fetchall()
+    rows += con.execute(
+        "SELECT m_application_thumb_file_name FROM LauncherItem"
+        " WHERE m_id=203 AND length(m_application_thumb_file_name)>0").fetchall()
     con.close()
     names = []
     for (blob,) in rows:
@@ -81,7 +84,7 @@ def main() -> int:
     write_oai1(out / "background_fullscreen.rgba",
                Image.open(ui / "background_fullscreen.png"))
     write_oai1(out / "apps_title.rgba",
-               render_text(Path(args.font), "Apps", 54))
+               render_text(Path(args.font), "Apps", 56))
     write_oai1(out / "markt.rgba", Image.open(ui / "market_animated.png"))
     write_oai1(out / "markt_label.rgba",
                label_strip(Path(args.font), "Markt"))

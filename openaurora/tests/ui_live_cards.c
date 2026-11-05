@@ -34,6 +34,7 @@ static const char *config(void *p,const char *key,const char *def)
     if(!strcmp(key,"ui.live_cards"))return "1";
     if(!strcmp(key,"ui.cards"))return g_override;
     if(g_apps && !strcmp(key,"ui.screen"))return "apps";
+    if(g_apps && !strcmp(key,"ui.cards_parent"))return "0";
     if(g_apps && !strcmp(key,"ui.grid_sel"))return g_grid_sel;
     if((g_png||g_jpeg) && !strcmp(key,"ui.download_dir"))return g_png_dir;
     return def;

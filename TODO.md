@@ -855,18 +855,18 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       mode using `background_fullscreen`, solid `#481730` top strip, "Apps"
       title, 294x166 tiles on a 310/230 pitch, full-cell focus, font-rendered
       Markt label and white-on-#811924 scrollbar. Added `stage-apps-grid.py`,
-      `apps_grid_stock` and live-DB capture; all 18 original downloaded
-      thumbnails are used, with no oracle tile crops. Manifest comparison
-      improved from AE 29.56% / MAE8 75.38 to **AE 1.02% / MAE8 2.60** (top
-      strip 0.57%, grid 1.69%, scrollbar 6.75%). Host423 ok, verify45.
-      STOCK-APPS-GRID-PARITY. Limits: the live `OmarchyTV` row has no
-      thumbnail and is filtered; the stock scrollbar implies market-catalog
-      rows not in LauncherItem; title/label fonts approximated; fb1 capture,
-      not HDMI/cold-start scanout.
+      `apps_grid_stock` and live-DB capture; all 23 parent-1 catalog rows and
+      the original downloaded thumbnails are used, plus Markt and OmarchyTV
+      (25 total, matching the stock scrollbar), with no oracle tile crops.
+      Manifest comparison improved from AE 29.56% / MAE8 75.38 to
+      **AE 0.52% / MAE8 1.33** (top 0.36%, grid 0.87%, scrollbar 0.12%).
+      Host423 ok, verify45. STOCK-APPS-GRID-PARITY. Limits: `OmarchyTV`
+      parent-1 placement is inferred from the 25-entry scrollbar; title/label
+      fonts approximated; fb1 capture, not HDMI/cold-start scanout.
 
-- [ ] Apps-grid residual parity: recover the market-catalog row set behind the
-      stock scrollbar/bar length, refine title/label font rasterization and
-      tile scaling, and verify against a live-DB oracle without synthetic rows.
+- [ ] Apps-grid residual parity: verify the inferred OmarchyTV row placement
+      against a stock page scrolled to the end, then close the remaining
+      title/label font and per-tile scaling error.
 
 - [x] Stock-capture parity analysis: the old `shot-launcher-right.png` is an
       R/B-swapped pre-correction capture; after channel correction it matches

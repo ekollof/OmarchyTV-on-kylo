@@ -1033,7 +1033,7 @@ static void paint_apps(struct ctx *c)
     }
     const oa_ui_icon *title=find_icon(c,"apps_title");
     if (stock && title && title->w>0 && title->h>0)
-        d->blit(80,58,title->w,title->h,title->rgba);
+        d->blit(80,68,title->w,title->h,title->rgba);
     int first=(c->grid_sel/APPS_VISIBLE)*APPS_VISIBLE;
     for (int row=0;row<APPS_ROWS;row++) for (int col=0;col<APPS_COLS;col++) {
         int idx=first+row*APPS_COLS+col;
@@ -1052,7 +1052,9 @@ static void paint_apps(struct ctx *c)
                 int tw=idx==c->grid_sel?300:294;
                 int w=tw,h=w*icon->h/icon->w;
                 if (h>166) { h=166;w=h*icon->w/icon->h; }
-                d->blit_scaled(x+(APPS_CELL_W-w)/2,y+7,w,h,
+                int ox=idx==c->grid_sel?5:7;
+                int oy=idx==c->grid_sel?7:7;
+                d->blit_scaled(x+ox,y+oy,w,h,
                     icon->w,icon->h,icon->rgba);
             } else {
                 int w=APPS_CELL_W-40,h=w*icon->h/icon->w;
@@ -1951,7 +1953,11 @@ static int load_live_cards(struct ctx *c)
         OA_SVC_LAUNCHER_DB,1);
     if(!db)return 0;
     struct oa_launcher_list *list=NULL;
-    int rc=db->read_parent(0,0,0,&list);
+    int parent=0;
+    const char *override=c->api->config_get(c->api->priv,"ui.cards_parent","");
+    if(override && *override) parent=atoi(override);
+    else if(!strcmp(c->api->config_get(c->api->priv,"ui.screen",""),"apps")) parent=1;
+    int rc=db->read_parent(parent,0,0,&list);
     if(rc){db->release(list);c->api->release(c->api->priv,OA_SVC_LAUNCHER_DB);return 0;}
     size_t count=db->count(list);
     struct live_card cards[64];

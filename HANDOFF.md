@@ -39,10 +39,9 @@ Latest apps-grid parity:
 [STOCK-APPS-GRID-PARITY](artifacts/reports/STOCK-APPS-GRID-PARITY-2026-11-05.md)
 captures the real stock Apps page via DIAL navigation + read-only fb1 and adds
 a stock-layout renderer mode. Manifest comparison improved from AE29.56% to
-1.02% (MAE8 75.38 -> 2.60; top strip0.57%, grid1.69%, scrollbar6.75%). Host423
-ok, verify45. Limits: live OmarchyTV has no thumbnail (filtered), the stock scrollbar
-implies market-catalog rows absent from LauncherItem, title/label fonts
-approximated; fb1 not HDMI/cold-start.
+0.52% (MAE8 75.38 -> 1.33; top strip0.36%, grid0.87%, scrollbar0.12%). Host423
+ok, verify45. Limits: OmarchyTV parent-1 placement inferred from the 25-entry scrollbar;
+title/label fonts approximated; fb1 not HDMI/cold-start.
 
 Latest channel runtime order:
 [CHANNEL-RUNTIME-ORDER](artifacts/reports/CHANNEL-RUNTIME-ORDER-2026-11-05.md)

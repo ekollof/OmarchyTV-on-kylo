@@ -50,10 +50,12 @@ existing UI tests still cover the provisional dark reconstruction.
 - one blob per live LauncherItem thumbnail name under its original filename;
 - no stock-derived tile crops.
 
-`tests/apps_grid_stock.c` copies the live settingsDB, inserts the special
-`Markt` row and renders through the real host/UI modules. The current live DB
-has 19 parent-0/type-2 rows; `OmarchyTV` has no thumbnail and is filtered like
-the stock selector, leaving 18 real thumbnails plus Markt.
+`tests/apps_grid_stock.c` copies the live settingsDB and renders through the
+real host/UI modules. The stock Apps page uses **parent-1** LauncherItem rows,
+not the parent-0 home row: `ui.cards_parent=1` selects them. The live DB has 23
+parent-1 app rows; the capture adds the special `Markt` row and the
+`OmarchyTV` tile (thumb900, present as a parent-0 row and inferred as the 25th
+visible/catalog entry). Total = 25, matching the stock scrollbar.
 
 Commands:
 
@@ -68,18 +70,18 @@ make -C openaurora capture-stock-apps-grid     # fixed-corpus regression path
 
 Manifest: `artifacts/analysis/stock-parity-2026-11-05/apps-grid-regions.json`.
 
-Live DB + independent downloaded icons vs the byte-identical fresh oracle:
+Live parent-1 catalog + original downloaded icons vs the byte-identical fresh
+oracle:
 
 ```
-full: AE=21177.1 (0.010213) RMSE16=4972.76 MAE8=2.60425 changed=11.03%
-top strip 0.57%, grid 1.69%, scrollbar 6.75%
+full: AE=10852.4 (0.005234) RMSE16=2945.48 MAE8=1.33457 changed=9.14%
+top strip 0.36%, grid 0.87%, scrollbar 0.12%
 ```
 
-The earlier 0.99%/8.64% result used a fixed corpus with stock-derived third-row
-tile crops and is **superseded** by this independent live-DB render. The
-remaining error is mostly title/label font rasterization, tile scaling and the
-scrollbar total: the stock page's bar implies more market-catalog entries than
-the LauncherItem table exposes.
+Title position/size was corrected to the measured stock bbox (80,68 at size
+56) and tiles to cell+7,+7 at 294 wide. The parent-1 catalog plus Markt and
+OmarchyTV produces the stock 25-entry scrollbar length. The earlier 1.02%
+parent-0 result and the 0.99% stock-cropped fixed corpus are superseded.
 
 ## Limits
 
