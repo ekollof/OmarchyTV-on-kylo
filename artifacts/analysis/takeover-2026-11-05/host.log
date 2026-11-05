@@ -1,0 +1,43 @@
+[359043] INFO host         openaurora starting, modules=./modules
+[359043] INFO host         control socket ./control
+[359044] INFO host         loaded display_fb v0.1 (./modules/mod_display_fb.so)
+[359044] INFO display_fb   /dev/fb1: 1920x1080 32bpp, 2 frame(s), back=1
+[359439] INFO display_fb   /dev/fb1: full snapshot saved (16588800 bytes, mau 0)
+[359439] INFO display_fb   region -> 1920x1080 (ok)
+[359439] INFO host         started display_fb
+[359439] INFO host         loaded ui_engine v1 (./modules/mod_ui_engine.so)
+[359440] INFO ui_engine    ui_engine started
+[359440] INFO host         started ui_engine
+[359440] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[359440] ERR  host         ir: missing required service 'plat'
+[359440] INFO host         loaded lua v1 (./modules/mod_lua.so)
+[359441] INFO host         started lua
+openaurora: 4 module(s) loaded, control on ./control
+[359441] INFO host         loaded ui_omarchy v0.1 (./modules/mod_ui_omarchy.so)
+[359732] INFO host         started ui_omarchy
+[687530] INFO host         stopped ui_omarchy
+[687530] INFO host         unloaded ui_omarchy
+[687530] INFO host         loaded ui_vendor v0.2 (./modules/mod_ui_vendor.so)
+[688104] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 2 card 0
+[688104] INFO host         started ui_vendor
+[719399] INFO host         loaded plat_stub v1 (./modules/mod_plat_stub.so)
+[719403] INFO host         started plat_stub
+[719954] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 2 card 0
+[719954] INFO ir           /dev/ttyS2 open @115200 8N1
+[719954] INFO host         started ir
+[720504] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 2 card 0
+[788124] INFO host         stopped ui_vendor
+[788129] INFO host         stopped lua
+[788129] INFO host         unloaded lua
+[788687] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 2 card 0
+[788687] INFO host         started ui_vendor
+[789704] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 1 rail 2 card 0
+[908196] INFO host         stopped ui_vendor
+[908196] INFO host         unloaded ui_vendor
+[908197] ERR  host         load 'ui_absent': not found in ./modules
+[908206] INFO host         loaded ui_vendor v0.2 (./modules/mod_ui_vendor.so)
+[908771] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 2 card 0
+[908771] INFO host         started ui_vendor
+[916819] INFO ir           /dev/ttyS2 closed
+[917837] INFO ui_vendor    painted portal: 5 rail items, 9 cards, band 0 rail 2 card 0
+[917837] INFO ir           /dev/ttyS2 open @115200 8N1

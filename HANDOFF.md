@@ -11,8 +11,9 @@ authorized live checks are recorded below and in MEMORY.md.
 Latest owner instructions,2026-11-05: "You can test on the TV if you need to"
 and "You can also use fb1." Temporary display tests are reauthorized with stock
 state/access restored afterward. Historical offline/fb1 exclusions below describe
-their original runs. No persistent replacement, boot-hook changes or stock
-Aurora/watchdog takeover is authorized.
+their original runs. Persistent replacement and boot-hook changes stay forbidden.
+A temporary Aurora stop and, after a failed direct relaunch, a watchdog reboot
+were authorized the same day. See TAKEOVER-2026-11-05.
 
 Owner authorization 2026-11-05: "I have full control of the TV now. You can
 test things and draw things on the screen." Temporary staged tests and display
@@ -26,6 +27,16 @@ The owner saw one green flash. A later fb1 capture was stock "Geen signaal"
 with no green samples, so Aurora repainted the layer. `display_fb` stop stayed
 `cleanup pending` and quit did not finish the snapshot restore. Staging was
 removed. Stock PIDs 1967/1785 remained. This is not independent startup.
+
+Temporary takeover, 2026-11-05: openaurora owned fb1 with stock Aurora stopped.
+`skin vendor` showed Startpagina. After a publish-only plat service, `ir` opened
+`/dev/ttyS2` and Right moved focus to Netflix. `skin absent` fell back to vendor
+(`fallback 1`, error 5). Suspend and resume repainted that portal. A direct
+relaunch of `aurora.elf` came up without the appmgr environment, left fb1 at
+1280×1440, and the remote did not work. The owner asked to kill Aurora and let
+the watchdog reboot. Stock boot returned (fb1 1920×2160). The owner confirmed
+the set is in control. Staging `/buffer/oa-takeover` was removed. Not cold
+startup. TAKEOVER-2026-11-05.
 
 Latest live acceptance: [LIVE-TV-ACCEPTANCE](artifacts/reports/LIVE-TV-ACCEPTANCE-2026-11-05.md)
 staged the ABI 3 tree under `/buffer`, ran epg/tuner/pvr/lua, and loaded

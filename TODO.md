@@ -1036,9 +1036,11 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       An ARM cold-start bundle
       (openaurora,25 modules, oa-supervise, fb-restore, cold config) is built
       and manifest-verified offline by `make cold-bundle`
-      (FB-SNAPSHOT-COLD-BUNDLE), but not executed. The owner's current permission
-      allows non-display tests only: active fb1, cold takeover and stock
-      interruption remain outside this test window.
+      (FB-SNAPSHOT-COLD-BUNDLE), but not executed. A temporary fb1 takeover on
+      2026-11-05 showed scanout, injected IR, vendor fallback and resume, then
+      a failed direct relaunch; the owner had the watchdog reboot stock Aurora
+      (TAKEOVER-2026-11-05). Cold boot without the vendor process, MCU authority
+      and a clean handback are still open.
 - [x] Implement SettingItemsListBoxRow::renderItems type 0x9 (slider row):
       95624 native/C comparisons and prior groups pass; full host/Unix IPC,
       ASan/UBSan, ARM/qemu and focused real TV CPU pass. SETTINGS-ROW-SLIDER.

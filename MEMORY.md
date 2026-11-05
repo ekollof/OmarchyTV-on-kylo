@@ -1,5 +1,15 @@
 # Current project state — last verified 2026-11-05
 
+Temporary takeover, 2026-11-05: openaurora owned fb1 while `aurora.elf` was
+stopped. Vendor Startpagina was the live skin. Right through the shipped IR
+parser focused Netflix after the Lua script was unloaded. `skin absent` fell
+back to vendor (`fallback 1`, error 5). Suspend and resume repainted the
+portal. A direct relaunch of `aurora.elf` missed the appmgr environment, left
+fb1 at 1280×1440, and the remote did not work. The owner had the watchdog
+reboot the set. Stock boot is back (aurora PIDs 2328 and 1775, fb1
+1920×2160, pan 0,0). The owner confirmed it is in control. `/buffer/oa-takeover`
+removed. `/conf/oa_boot` still absent. Not cold startup. TAKEOVER-2026-11-05.
+
 Lua screen flash, 2026-11-05: staged `/buffer/oa-lua-screen` (hashes matched
 before exec) started `display_fb`, `ui_engine`, `lua` and `ui_omarchy` with
 `ui.omarchy.lua=1`. Skin status was `active omarchy`, fallback 0. The owner
