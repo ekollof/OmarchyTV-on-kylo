@@ -144,6 +144,13 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
+Latest skin socket: [SKIN-SOCKET](artifacts/reports/SKIN-SOCKET-2026-11-05.md)
+wires the existing skin_socket.sh test into make check with recorder display,
+ui_engine, ui_vendor and ui_omarchy. Missing/invalid startup skins fall back to
+vendor; runtime omarchy/vendor switching, enter-failure fallback and clean quit
+pass. Host399 ok, verify45. Recorder-only; physical fb1 and cold startup
+remain.
+
 Latest matrix: [MODULE-MATRIX-IPC](artifacts/reports/MODULE-MATRIX-IPC-2026-11-05.md)
 runs ticker -> ui_clock -> ui_anim plus ui_navigation, ui_list, power and cec
 over the real socket with no display/HAL. Nav/list queries and dependency-

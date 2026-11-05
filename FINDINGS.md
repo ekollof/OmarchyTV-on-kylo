@@ -6,6 +6,12 @@ Private controls forward to EX_PLAT; successful ioctl still does not prove
 MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
+SKIN-SOCKET-2026-11-05: the existing skin_socket.sh test is wired into make
+check with recorder display, ui_engine, ui_vendor and ui_omarchy. Missing/
+invalid startup skins fall back to vendor; runtime omarchy/vendor switching,
+enter-failure fallback and clean quit pass. Host399 ok, verify45. Recorder-only;
+physical fb1 and cold startup remain.
+
 MODULE-MATRIX-IPC-2026-11-05: a real `--sock` host runs ticker ->
 ui_clock -> ui_anim, plus ui_navigation, ui_list, power and cec with no
 display/HAL. All load/start; nav/list queries and dependency-ordered reloads

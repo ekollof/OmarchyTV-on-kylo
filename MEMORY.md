@@ -93,6 +93,12 @@ reauthorized; fb1 and stock operation must stay untouched. This supersedes the
 earlier "Don't touch the TV" restriction. No persistent replacement or boot
 changes. The historical offline-only entries describe their original runs.
 
+SKIN-SOCKET-2026-11-05 (host-only): wired the existing skin_socket.sh test
+into make check with recorder display, ui_engine, ui_vendor and ui_omarchy.
+Missing/invalid startup skins fall back to vendor; skin omarchy/vendor switch
+to ready; enter failure keeps vendor fallback1/error5; quit is clean. Host399
+ok, verify45. Recorder-only; physical fb1 and cold startup remain.
+
 MODULE-MATRIX-IPC-2026-11-05 (host-only): a real `--sock` host runs ticker ->
 ui_clock -> ui_anim, plus ui_navigation, ui_list, power and cec with no
 display/HAL. All load/start; nav/list queries and dependency-ordered reloads

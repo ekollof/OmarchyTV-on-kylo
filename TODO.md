@@ -596,6 +596,13 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       cleanup retry pass. No display/HAL. Host398 ok, verify45.
       MODULE-MATRIX-IPC. Limits: hardware modules and cold startup remain.
 
+- [x] Real ui_omarchy/skin socket lifecycle: the existing `skin_socket.sh`
+      test is now wired into `make check` with recorder display, ui_engine,
+      ui_vendor and ui_omarchy. Missing/invalid configured skins fall back to
+      vendor; `skin omarchy`/`skin vendor` switch to ready; enter failure keeps
+      vendor with fallback1/error5; quit exits cleanly. Host399 ok, verify45.
+      SKIN-SOCKET. Recorder-only; physical fb1 and cold startup remain.
+
 - [x] Vendor decoder-class differential: an ARM LD_PRELOAD probe executes the
       shipped PngImageDecoderImpl and JpegImageDecoder under qemu before vendor
       main, using vendor MemoryBufferSource/MutableImage and requested RGBA

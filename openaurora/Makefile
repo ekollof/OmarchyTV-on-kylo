@@ -1155,6 +1155,16 @@ check-module-matrix-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ticker.so $(BU
 	node tests/module_matrix_ipc.cjs $(abspath $(BUILD))
 check: check-module-matrix-ipc
 
+ui-skin-socket-modules = $(BUILD)/tests/ui-skin-socket/modules
+.PHONY: check-ui-skin-socket
+check-ui-skin-socket: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/tests/ui_nav_display.so
+	@mkdir -p $(ui-skin-socket-modules)
+	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(ui-skin-socket-modules)/
+	@cp $(BUILD)/tests/ui_nav_display.so $(ui-skin-socket-modules)/mod_nav_display.so
+	@command -v socat >/dev/null || { echo "  skip ui skin socket: socat unavailable"; exit 0; }
+	@sh tests/skin_socket.sh $(abspath $(BUILD)/$(PROJECT)) $(abspath $(ui-skin-socket-modules))
+check: check-ui-skin-socket
+
 .PHONY: check-vendor-decoder
 check-vendor-decoder: $(BUILD)/tests/vendor_decoder_probe.so
 	@test "$(TARGET)" = tv || { echo "check-vendor-decoder requires TARGET=tv"; exit 2; }
