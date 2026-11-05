@@ -38,6 +38,18 @@ reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
 first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
 capture remain open.
 
+EPG-EIT-MODULE-2026-11-05: DVB EIT sections are now parsed (0x4e..0x6f,
+section-syntax/length/MPEG-2 CRC checks, MJD/BCD time validity, short-event
+descriptor name/text, actual/running/version) and fed into the EIT schedule
+cache by a real mod_epg. It publishes `epg` (query) and `epg.ingest`
+(feed/clear/count), clears on start/reload and replaces matching
+(service,event) keys. Control exposes epg-ingest/epg-clear/epg-count, and a
+real socket test covers ingest, replacement, bad CRC, non-current sections,
+clear, reload and stop/unload. Host417 ok, verify45; ARM mod_epg and qemu
+parser run pass. Limits: complete pre-assembled sections only, no PID/EIT
+filters, section merging, CRID/first-showing, persistence or live tuner source.
+No TV access.
+
 BROADCAST-VENDOR-FIELDS-2026-11-05: the broadcast contracts now carry the
 recovered vendor fields. oa_tuner_status has lock/strength/quality/unc and
 float BER/SNR (unc 0xffffffff unknown), oa_epg_event has

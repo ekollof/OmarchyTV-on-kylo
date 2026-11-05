@@ -101,6 +101,16 @@ typedef struct {
         struct oa_epg_event *events, size_t cap, size_t *count);
 } oa_epg_iface;
 
+/* Ingest side of the EIT-backed EPG module. feed_section accepts one complete
+ * DVB EIT section (header + CRC) and returns the number of stored/replaced
+ * events or a negative errno; clear drops all cached events. This is a project
+ * boundary for a future tuner/EIT source, not a vendor ABI. */
+typedef struct {
+    int (*feed_section)(const uint8_t *data, size_t len);
+    void (*clear)(void);
+    size_t (*count)(void);
+} oa_epg_ingest_iface;
+
 enum oa_pvr_state {
     OA_PVR_SCHEDULED = 0,
     OA_PVR_RECORDING = 1,

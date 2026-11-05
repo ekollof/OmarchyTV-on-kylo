@@ -87,6 +87,11 @@ static void test_put_get(void)
     assert(oa_eit_cache_put(cache, &full) == 0);
     struct oa_eit_record extra = record(5, 500, 9000, 10000, 5005, "Fifth");
     assert(oa_eit_cache_put(cache, &extra) == -ENOSPC);
+    oa_eit_cache_clear(cache);
+    assert(oa_eit_cache_count(cache) == 0);
+    assert(oa_eit_cache_get(cache, 1, 100, &out) == -ENOENT);
+    assert(oa_eit_cache_put(cache, &extra) == 0);
+    assert(oa_eit_cache_count(cache) == 1);
     oa_eit_cache_destroy(cache);
 }
 

@@ -35,6 +35,14 @@ The owner then requested a review and fixes on2026-11-04. The review below
 supersedes the old clean/verified snapshot where it identifies defects; it
 does not start the pending imageCreate subsystem or persistent replacement.
 
+Latest EIT/EPG module: [EPG-EIT-MODULE](artifacts/reports/EPG-EIT-MODULE-2026-11-05.md)
+adds a DVB EIT section parser (CRC/structure/time validation, short-event
+descriptors) feeding the EIT cache through a real mod_epg. It publishes
+`epg`/`epg.ingest`; control adds epg-ingest/epg-clear/epg-count, covered over
+the Unix socket including key replacement, bad CRC, stale sections, reload and
+stop. Host417 ok, verify45; ARM/qemu passes. Still no PID/EIT filters, section
+merging, CRID/first-showing, persistence or live tuner source.
+
 Latest vendor-field contracts:
 [BROADCAST-VENDOR-FIELDS](artifacts/reports/BROADCAST-VENDOR-FIELDS-2026-11-05.md)
 extends tuner/EPG/PVR records with lock/strength/quality/BER/SNR/UNC,

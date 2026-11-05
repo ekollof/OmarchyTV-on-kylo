@@ -48,6 +48,7 @@ struct oa_eit_cache *oa_eit_cache_create(size_t capacity);
 void oa_eit_cache_destroy(struct oa_eit_cache *cache);
 size_t oa_eit_cache_count(const struct oa_eit_cache *cache);
 size_t oa_eit_cache_capacity(const struct oa_eit_cache *cache);
+void oa_eit_cache_clear(struct oa_eit_cache *cache);
 
 /* Insert or replace by (service_id, event_id). Returns -ENOSPC when the cache
  * is full and the key is new; -EINVAL for a zero service id or begin > end. */

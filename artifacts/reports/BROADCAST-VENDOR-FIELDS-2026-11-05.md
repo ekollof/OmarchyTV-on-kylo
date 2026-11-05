@@ -93,6 +93,9 @@ Evidence:
   getters exist but their full domain/ordering semantics were not recovered.
 - No schedule persistence, CRID resolution (string CRIDs live in the separate
   `ProgramCrid` table), EIT filtering, series recording or conflict handling.
+  **partly superseded:** [EPG-EIT-MODULE](EPG-EIT-MODULE-2026-11-05.md) adds
+  EIT section parsing and an `epg` module, but section filters/PID assembly and
+  persistence remain absent.
 - Static vendor evidence only; no vendor function was executed. Runtime EASI
   remains blocked by disabled testtool TCP 1986 pending an agreed
   watchdog-safe/recovery-ready procedure.

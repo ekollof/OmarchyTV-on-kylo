@@ -369,6 +369,7 @@ typedef struct {
  * backend is shipped yet; the host fixture exercises the interfaces. */
 #define OA_SVC_TUNER "tuner"
 #define OA_SVC_EPG "epg"
+#define OA_SVC_EPG_INGEST "epg.ingest"
 #define OA_SVC_PVR "pvr"
 
 /* ui.anim — recovered list/dialog animation. Published by mod_ui_anim.

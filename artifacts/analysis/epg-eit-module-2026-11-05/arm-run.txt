@@ -1,0 +1,2 @@
+$ qemu-arm-static -L <toolchain-libc> openaurora/build-tv-v3/tests/eit_section
+ok eit section: EIT header/CRC, BCD times, descriptors and skips

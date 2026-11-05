@@ -19,6 +19,18 @@ error cases; two foxxum results match qemu SHA256 exactly. Verified15-file/
 vendor pair1967(zombie)/1785(live) and no-reset marker unchanged. tvssh sent
 WoL initially. No framebuffer/device operation or persistent deployment change.
 
+EPG-EIT-MODULE-2026-11-05 (host/qemu): added a DVB EIT section parser with
+table-id 0x4e..0x6f support, section-syntax/length/MPEG-2 CRC validation,
+firmware MJD/BCD validity gating, short-event name/text extraction and
+actual/running/version metadata. It feeds common/eit_cache.c through a real
+mod_epg that publishes `epg` and `epg.ingest`, clears on start/reload and
+replaces matching event keys. Control adds epg-ingest/epg-clear/epg-count; a
+real Unix-socket test covers ingest, key replacement, bad CRC/stale sections,
+clear, reload and stop/unload. Host417 ok, verify45; ARM mod_epg build and
+qemu parser run pass. Limits: complete pre-assembled sections, no PID/EIT
+filters or section merging, no CRID/first-showing or persistence, no live
+tuner source. No vendor execution or TV access.
+
 BROADCAST-VENDOR-FIELDS-2026-11-05 (host/qemu): extended the broadcast
 contracts with the recovered vendor fields: tuner lock/strength/quality/BER/
 SNR/UNC, EPG CRID/first-showing/running-status/state/version/actual, and PVR

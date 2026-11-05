@@ -115,6 +115,28 @@ static int signed_decimal(const char *text,int32_t *out)
     *out=(int32_t)value;return 0;
 }
 
+static int hex_nibble(char c)
+{
+    if(c>='0' && c<='9')return c-'0';
+    if(c>='a' && c<='f')return c-'a'+10;
+    if(c>='A' && c<='F')return c-'A'+10;
+    return -1;
+}
+
+static int hex_decode(const char *text,uint8_t *out,size_t cap,size_t *len)
+{
+    if(!text || !out || !len)return -1;
+    size_t n=strlen(text);
+    if(!n || (n&1u) || n/2u>cap)return -1;
+    for(size_t i=0;i<n;i+=2){
+        int hi=hex_nibble(text[i]),lo=hex_nibble(text[i+1]);
+        if(hi<0 || lo<0)return -1;
+        out[i/2]=(uint8_t)((hi<<4)|lo);
+    }
+    *len=n/2u;
+    return 0;
+}
+
 /* snprintf returns the length it wanted, which must never become a cursor or
  * be subtracted from capacity after truncation. Keep only bytes actually stored. */
 static void append(struct reply *r, const char *fmt, ...)
@@ -233,6 +255,9 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  tuner-cancel            cancel a running scan\n"
                  "  tuner-select <handle>   select a completed service handle\n"
                  "  epg-query <svc> <from> <to>  bounded EPG events\n"
+                 "  epg-ingest <hex>        feed one complete EIT section\n"
+                 "  epg-clear               drop cached EPG events\n"
+                 "  epg-count               cached EPG event count\n"
                  "  pvr-list                PVR reservations\n"
                  "  pvr-add <svc> <from> <to> [repeat start_pad end_pad]\n"
                  "                           add reservation\n"
@@ -385,6 +410,40 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                 events[i].start_ms,events[i].end_ms,events[i].program_crid_id,
                 events[i].first_showing,events[i].state,events[i].version,
                 events[i].actual,events[i].running_status,events[i].name);
+        return 0;
+    }
+    if(!strcmp(cmd,"epg-ingest")) {
+        if(force || !a1 || a2 || a3 || a4){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        uint8_t section[4096];size_t len=0;
+        if(hex_decode(a1,section,sizeof section,&len)){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_epg_ingest_iface *ingest=
+            h->api.lookup(h,OA_SVC_EPG_INGEST,1);
+        if(!ingest){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        int rc=ingest->feed_section(section,len);
+        h->api.release(h,OA_SVC_EPG_INGEST);
+        if(rc<0){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
+        snprintf(outbuf,outlen,"ok events %d\n",rc);
+        return 0;
+    }
+    if(!strcmp(cmd,"epg-clear")) {
+        if(force || a1 || a2 || a3 || a4){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_epg_ingest_iface *ingest=
+            h->api.lookup(h,OA_SVC_EPG_INGEST,1);
+        if(!ingest){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        ingest->clear();
+        h->api.release(h,OA_SVC_EPG_INGEST);
+        snprintf(outbuf,outlen,"ok\n");
+        return 0;
+    }
+    if(!strcmp(cmd,"epg-count")) {
+        if(force || a1 || a2 || a3 || a4){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_epg_ingest_iface *ingest=
+            h->api.lookup(h,OA_SVC_EPG_INGEST,1);
+        if(!ingest){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        size_t count=ingest->count();
+        h->api.release(h,OA_SVC_EPG_INGEST);
+        snprintf(outbuf,outlen,"count %zu\n",count);
         return 0;
     }
     if(!strcmp(cmd,"pvr-list")) {

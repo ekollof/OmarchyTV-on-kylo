@@ -1,0 +1,8 @@
+full host make check: 417 ok
+ok broadcast fixture: tuner scan state machine, EPG query bounds and PVR reservations
+ok broadcast IPC: tuner scan/select, EPG query and PVR add/list/cancel over the control socket
+ok eit time: firmware BCD/MJD decode, range algebra and sentinel edges
+ok eit cache: keyed schedule events, duration query and now/next
+ok eit section: EIT header/CRC, BCD times, descriptors and skips
+ok epg IPC: EIT ingest, key replacement, query/clear and reload over the control socket
+verify.cjs: 45 groups

@@ -84,6 +84,12 @@ size_t oa_eit_cache_capacity(const struct oa_eit_cache *cache)
     return cache ? cache->capacity : 0;
 }
 
+void oa_eit_cache_clear(struct oa_eit_cache *cache)
+{
+    if (!cache) return;
+    cache->count = 0;
+}
+
 int oa_eit_cache_put(struct oa_eit_cache *cache,
     const struct oa_eit_record *record)
 {

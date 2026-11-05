@@ -436,6 +436,18 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `posix_spawn("/sbin/mdev", "-s")` plus `waitpid`; the channel-list test
       uses `nftw` cleanup instead of a shell command. The display test wrappers
       remain as no-system regression guards. Host410 ok, verify45. No TV access.
+- [x] EIT section parser + real EPG module: added a DVB EIT parser (table ids
+      0x4e..0x6f, section/CRC validation, MJD/BCD time gate, short-event
+      descriptor, actual/running/version metadata, invalid-time skips) feeding
+      `eit_cache.c`. `mod_epg` publishes `epg`/`epg.ingest`, clears on
+      start/reload and replaces matching event keys. Control adds
+      `epg-ingest <hex>`, `epg-clear`, `epg-count`; a real Unix-socket test
+      covers ingest, replacement, bad CRC/stale sections, clear, reload and
+      stop/unload. Host417 ok, verify45; ARM build and qemu parser run pass.
+      EPG-EIT-MODULE. Limits: complete pre-assembled sections only; no PID/EIT
+      filters, section merging, CRID/first-showing, persistence or live tuner
+      source. No TV access.
+
 - [x] Vendor broadcast contract fields + EIT schedule cache: extended
       `oa_tuner_status` with lock/strength/quality/BER/SNR/UNC,
       `oa_epg_event` with CRID/first-showing/running-status/state/version/
