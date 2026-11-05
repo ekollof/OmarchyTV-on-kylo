@@ -50,11 +50,32 @@ opens when:
 This removes the dual-open stall from the normal physical-remote configuration.
 The BLAST-only and UART-only host tests still pass.
 
+## Host async cleanup gate
+
+`mod_ir` now follows the `display_fb` model. `m_quiesce` cancels its timer and
+watch, transfers the UART fd, BLAST v4l2 fd, `libNDAL_EX` handle and close
+function to a worker, and returns `-EAGAIN` while that worker runs. The host
+keeps the module in `cleanup_pending`; the first `reload`/`stop` fails fast and
+a later retry joins the worker and completes the unload.
+
+`tests/ir_quiesce.cjs` uses a real pty as `ir.device` and a diagnostic
+`ir.cleanup_delay_ms=400` to hold the worker open:
+
+```
+ok ir quiesce: reload fails fast, stays responsive, retry completes
+```
+
+The test asserts that the first reload returns `failed` in under 1.5 s, that a
+`status ir` command still answers in under 1 s while the worker runs, and that a
+600 ms retry plus the subsequent stop/unload complete. `check-ir-ipc`,
+`check-full-stack-ipc` and the ARM `mod_ir.so` (libpthread, max GLIBC 2.4)
+still pass.
+
 ## Limits
 
-- The host `reload` command is still synchronous: it replies only after the
-  module stop/load finishes. `--no-wait` prevents client-side wedging but does
-  not stop the host loop from stalling during a slow module stop.
-- A generic asynchronous module lifecycle needs worker/ownership rules for
-  `stop`/`dlclose`; not implemented here.
-- The exact 64 s driver stall was not reproduced in an isolated harness.
+- Only `mod_ir` has the nonblocking cleanup gate. A slow stop in another module
+  can still occupy the event loop; the generic lifecycle remains synchronous.
+- `--no-wait` returns before the host completes; callers must poll
+  `status <name>` / retry the stop or reload.
+- The exact 64 s vendor-driver stall was not reproduced in isolation; the gate
+  is validated with a controlled 400 ms worker delay.

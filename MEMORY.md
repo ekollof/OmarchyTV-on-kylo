@@ -25,8 +25,11 @@ cadence and not gracefully torn down. GPU-SCENE-PROBE-2026-11-05.
 Control client, 2026-11-05: `oa-client` now defaults to a 5 s bounded timeout
 and supports `--no-wait`; the silent-server test covers 1.02 s timeout and
 0.00 s no-wait. `mod_ir` keeps `/dev/ttyS2` closed when BLAST succeeds unless
-`ir.device` is explicit, removing the common dual-open reload stall. Host
-reload is still synchronous; true async module lifecycle remains open.
+`ir.device` is explicit, removing the common dual-open reload stall. `mod_ir`
+now has the ABI 3 worker cleanup gate: `m_quiesce` transfers UART/BLAST fds and
+libdl handles, returns EAGAIN while closing, and a later retry completes. The
+pty + 400 ms-delay test shows fail-fast reload, responsive status and successful
+retry; host/ARM builds pass. Other modules still stop synchronously.
 OA-CLIENT-ASYNC-2026-11-05.
 
 Temporary takeover, 2026-11-05: openaurora owned fb1 while `aurora.elf` was

@@ -17,10 +17,12 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "openaurora/events.h"
@@ -47,6 +49,16 @@ struct ctx {
     uint64_t blast_timer;
     int blast_on;
     unsigned rc_protocol, rc_sweep, rc_tick;
+
+    /* ABI 3 quiesce: a BLAST/UART dual close can stall the vendor driver for
+     * tens of seconds. The loop hands the fds/libs to this worker and retries
+     * the join later, as display_fb does for its snapshot restore. */
+    pthread_t cleanup_thread;
+    int cleanup_running;
+    int cleanup_fd, cleanup_blast_fd;
+    void *cleanup_blast;
+    int (*cleanup_v4l2_close)(int);
+    unsigned cleanup_delay_ms; /* diagnostic: exercise the async cleanup gate */
 };
 
 static struct ctx *g_ctx;
@@ -343,7 +355,7 @@ static int blast_open(struct ctx *c)
 
 static int input_feed(const uint8_t *bytes, size_t n)
 {
-    if (!g_ctx || (!bytes && n))
+    if (!g_ctx || g_ctx->cleanup_running || (!bytes && n))
         return -1;
     if (n)
         consume(g_ctx, bytes, n);
@@ -370,6 +382,8 @@ static int m_init(const oa_host_api *api, void **out)
     c->api = api;
     c->fd = -1;
     c->blast_fd = -1;
+    c->cleanup_fd = -1;
+    c->cleanup_blast_fd = -1;
     g_ctx = c;
     *out = c;
     return 0;
@@ -378,6 +392,9 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    if (c->cleanup_running || c->cleanup_fd >= 0 || c->cleanup_blast_fd >= 0 ||
+        c->cleanup_blast)
+        return -EBUSY;
     g_ctx = c;
     if (c->api->publish(c->api->priv, OA_SVC_INPUT, 1, &g_input) != 0)
         return -1;
@@ -389,6 +406,10 @@ static int m_start(void *v)
      * unless the caller asks for it explicitly or BLAST is unavailable: the
      * dual-open reload path can stall for tens of seconds in the vendor
      * driver. An explicit ir.device still enables the UART fallback. */
+    long delay = atol(c->api->config_get(c->api->priv, "ir.cleanup_delay_ms", "0"));
+    if (delay < 0) delay = 0;
+    if (delay > 5000) delay = 5000;
+    c->cleanup_delay_ms = (unsigned)delay;
     const char *dev = c->api->config_get(c->api->priv, "ir.device", "");
     if (!dev[0] && !blast_ok)
         dev = IR_DEV;
@@ -415,9 +436,8 @@ static int m_start(void *v)
     return 0;
 }
 
-static void m_stop(void *v)
+static void ir_close_sync(struct ctx *c)
 {
-    struct ctx *c = v;
     blast_close(c);
     if (c->watch) {
         c->api->watch_del(c->api->priv, c->watch);
@@ -428,23 +448,156 @@ static void m_stop(void *v)
         c->fd = -1;
         c->api->log(c->api->priv, OA_LOG_INFO, "%s closed", c->dev);
     }
+}
+
+/* No host API calls and no access to the module after this returns. */
+static void *cleanup_worker(void *v)
+{
+    struct ctx *c = v;
+    if (c->cleanup_delay_ms) {
+        const struct timespec pause = {
+            .tv_sec = c->cleanup_delay_ms / 1000u,
+            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
+        };
+        (void)nanosleep(&pause, NULL);
+    }
+    if (c->cleanup_blast_fd >= 0) {
+        int fd = c->cleanup_blast_fd;
+        c->cleanup_blast_fd = -1;
+        if (c->cleanup_v4l2_close) (void)c->cleanup_v4l2_close(fd);
+        else (void)close(fd);
+    }
+    if (c->cleanup_blast) {
+        (void)dlclose(c->cleanup_blast);
+        c->cleanup_blast = NULL;
+    }
+    if (c->cleanup_fd >= 0) {
+        int fd = c->cleanup_fd;
+        c->cleanup_fd = -1;
+        (void)close(fd);
+    }
+    return NULL;
+}
+
+static void m_stop(void *v)
+{
+    struct ctx *c = v;
     if (c->published) {
         c->api->unpublish(c->api->priv, OA_SVC_INPUT);
         c->published = 0;
     }
 }
 
+/* Called before m_stop for stop/unload/reload and after a failed init. The
+ * close may take tens of seconds with both BLAST and the UART open, so it runs
+ * on a worker; the host retries stop/unload until cleanup_pending clears. */
+static int m_quiesce(void *v)
+{
+    struct ctx *c = v;
+    if (c->cleanup_running) {
+        for (int i = 0; i < 10; i++) {
+            int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+            if (rc == 0) {
+                c->cleanup_running = 0;
+                return 0;
+            }
+            if (rc != EBUSY) {
+                c->cleanup_running = 0;
+                return -EIO;
+            }
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
+        }
+        return -EAGAIN;
+    }
+
+    if (c->blast_timer) {
+        c->api->timer_del(c->api->priv, c->blast_timer);
+        c->blast_timer = 0;
+    }
+    c->blast_on = 0;
+    if (c->watch) {
+        c->api->watch_del(c->api->priv, c->watch);
+        c->watch = 0;
+    }
+    if (c->fd < 0 && c->blast_fd < 0 && !c->blast)
+        return 0;
+
+    c->cleanup_fd = c->fd;
+    c->cleanup_blast_fd = c->blast_fd;
+    c->cleanup_blast = c->blast;
+    c->cleanup_v4l2_close = c->blast_v4l2_close;
+    c->fd = -1;
+    c->blast_fd = -1;
+    c->blast = NULL;
+    c->blast_v4l2_close = NULL;
+    c->blast_set = NULL;
+    c->blast_rx = NULL;
+    c->blast_v4l2_fd = NULL;
+
+    int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+    if (rc) {
+        /* Rare fallback: close on the loop rather than leaking the fds. */
+        if (c->cleanup_blast_fd >= 0) {
+            if (c->cleanup_v4l2_close) (void)c->cleanup_v4l2_close(c->cleanup_blast_fd);
+            else (void)close(c->cleanup_blast_fd);
+            c->cleanup_blast_fd = -1;
+        }
+        if (c->cleanup_blast) {
+            (void)dlclose(c->cleanup_blast);
+            c->cleanup_blast = NULL;
+        }
+        if (c->cleanup_fd >= 0) {
+            (void)close(c->cleanup_fd);
+            c->cleanup_fd = -1;
+        }
+        c->cleanup_v4l2_close = NULL;
+        return -EIO;
+    }
+    c->cleanup_running = 1;
+    return -EAGAIN;
+}
+
 static void m_destroy(void *v)
 {
-    if (g_ctx == v)
+    struct ctx *c = v;
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->cleanup_blast_fd >= 0) {
+        if (c->cleanup_v4l2_close) (void)c->cleanup_v4l2_close(c->cleanup_blast_fd);
+        else (void)close(c->cleanup_blast_fd);
+        c->cleanup_blast_fd = -1;
+    }
+    if (c->cleanup_blast) {
+        (void)dlclose(c->cleanup_blast);
+        c->cleanup_blast = NULL;
+    }
+    if (c->cleanup_fd >= 0) {
+        (void)close(c->cleanup_fd);
+        c->cleanup_fd = -1;
+    }
+    ir_close_sync(c);
+    if (c->published) {
+        c->api->unpublish(c->api->priv, OA_SVC_INPUT);
+        c->published = 0;
+    }
+    if (g_ctx == c)
         g_ctx = NULL;
-    free(v);
+    free(c);
 }
 
 /* standby: give the port up, and take it back on resume */
 static int m_suspend(void *v)
 {
-    m_stop(v);
+    struct ctx *c = v;
+    if (c->cleanup_running) return -EBUSY;
+    ir_close_sync(c);
+    if (c->published) {
+        c->api->unpublish(c->api->priv, OA_SVC_INPUT);
+        c->published = 0;
+    }
     return 0;
 }
 
@@ -463,6 +616,7 @@ static const oa_module g_module = {
     .init = m_init,
     .start = m_start,
     .stop = m_stop,
+    .quiesce = m_quiesce,
     .destroy = m_destroy,
     .suspend = m_suspend,
     .resume = m_resume,

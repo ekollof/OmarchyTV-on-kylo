@@ -71,7 +71,10 @@ graceful GPU teardown, timed animation and 30 ms cadence remain open.
 Control client, 2026-11-05: `oa-client` has a default 5 s timeout and
 `--no-wait`; `mod_ir` keeps the UART closed when BLAST succeeds unless
 `ir.device` is explicit. Silent-server test passes 1.02 s timeout / 0.00 s
-no-wait. Host reload is still synchronous. OA-CLIENT-ASYNC.
+no-wait. `mod_ir` also has the ABI 3 worker cleanup gate: a slow UART/BLAST
+close returns EAGAIN, the first reload fails fast, and a retry completes; the
+pty + 400 ms-delay test passes. Other modules still stop synchronously.
+OA-CLIENT-ASYNC.
 
 Offline IR IPC, 2026-11-05: `tests/ir_ipc.cjs` now drives `mod_ir` over the
 real Unix control socket with plat/recorder/ui_engine/ui_vendor fixtures

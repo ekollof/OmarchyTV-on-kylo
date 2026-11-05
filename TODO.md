@@ -138,8 +138,8 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       The silent-server test covers 1.02 s timeout and 0.00 s no-wait.
       `mod_ir` now keeps `/dev/ttyS2` closed when BLAST succeeds unless
       `ir.device` is explicit, removing the common dual-open reload stall
-      (observed host stall ~64 s). OA-CLIENT-ASYNC. The host reload itself is
-      still synchronous; polling/async lifecycle is next.
+      (observed host stall ~64 s). OA-CLIENT-ASYNC. `mod_ir` also has the async
+      cleanup gate below; other modules still stop synchronously.
 
 - [x] First production GPU scene-path probe on fb1: staged
       graphics/scene_display + oa-scene-broker/scene-renderer.so, painted the
@@ -151,12 +151,20 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       Limits: SIGKILL rather than graceful GPU teardown, no timed animation,
       AE, cold startup or scanout.
 
-- [ ] Asynchronous host module lifecycle: `reload` still runs synchronously
-      and can block the event loop for tens of seconds in a slow module stop.
-      Add a queued reload/stop state machine or a module-owned nonblocking
-      cleanup gate (display_fb is the existing model), with a completion query
-      and bounded client behavior. Do not call `dlclose`/module callbacks from
-      an unowned worker. OA-CLIENT-ASYNC records the 64 s dual-open stall.
+- [x] Asynchronous cleanup gate for `mod_ir`: `m_quiesce` cancels the timer/
+      watch, transfers the UART/BLAST fds and libdl handles to a worker, and
+      returns EAGAIN while it runs. The first reload/stop fails fast with
+      `cleanup pending`; the loop stays responsive and a retry completes.
+      `tests/ir_quiesce.cjs` uses a pty plus a 400 ms diagnostic close delay
+      and asserts fail-fast, responsive status and successful retry; host
+      `check-ir-ipc`, full-stack IPC and ARM/libpthread builds pass.
+      OA-CLIENT-ASYNC. Only `ir` has this gate; the generic lifecycle remains
+      synchronous.
+
+- [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
+      stop/reload model beyond `ir`, with a completion query and bounded client
+      behavior. Do not call `dlclose`/module callbacks from an unowned worker.
+      `display_fb` and `ir` are the existing models.
 
 - [ ] GPU/widget-surface animation parity: the current scene path uploads the
       whole 1920x1080 canvas per paint (~129-260 ms), while the vendor animates

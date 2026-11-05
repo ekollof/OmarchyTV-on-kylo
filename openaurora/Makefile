@@ -801,6 +801,10 @@ $(BUILD)/modules/mod_ui_engine.so: modules/ui_engine/ui_engine.c include/openaur
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
+$(BUILD)/modules/mod_ir.so: modules/ir/ir.c include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+
 $(BUILD)/modules/mod_ui_omarchy.so: modules/ui_omarchy/ui_omarchy.c include/openaurora/ui_engine.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
@@ -1495,6 +1499,12 @@ check: check-image-decode-ipc
 check-ir-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui_nav_display.so
 	node tests/ir_ipc.cjs $(abspath $(BUILD))
 check: check-ir-ipc
+
+.PHONY: check-ir-quiesce
+check-ir-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so
+	@command -v socat >/dev/null || { echo "  skip ir quiesce: socat unavailable"; exit 0; }
+	node tests/ir_quiesce.cjs $(abspath $(BUILD))
+check: check-ir-quiesce
 
 .PHONY: check-ui-vendor-ipc
 check-ui-vendor-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui_nav_display.so
