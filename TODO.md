@@ -436,6 +436,19 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `posix_spawn("/sbin/mdev", "-s")` plus `waitpid`; the channel-list test
       uses `nftw` cleanup instead of a shell command. The display test wrappers
       remain as no-system regression guards. Host410 ok, verify45. No TV access.
+- [x] Vendor broadcast contract fields + EIT schedule cache: extended
+      `oa_tuner_status` with lock/strength/quality/BER/SNR/UNC,
+      `oa_epg_event` with CRID/first-showing/running-status/state/version/
+      actual, and PVR request/job with repeat days and start/end padding.
+      Fixture, control-socket and CLI tests cover the new fields and the
+      optional `pvr-add` arguments. Added an in-memory, firmware-grounded EIT
+      schedule cache (`eit_cache.c`: keyed put/get, seconds start+duration
+      query, now/next) on `common/eit_time.c`. Host415 ok, verify45; ARM/qemu
+      passes. BROADCAST-VENDOR-FIELDS. Limits: fixture/project code only, no
+      vendor execution or hardware; CRID string resolution, EIT filters,
+      persistence, series/conflict handling and `EITEventRecordList`
+      find/remove semantics remain absent. No TV access.
+
 - [x] Vendor broadcast ABI grounding: reversed `EITEventTimeRange` (MJD/BCD
       -> Unix seconds, duration, sentinels, merge/grow/shift/clip/moveInto),
       `EITEventKey`, `ScheduleEvent` schema, `EASIControlTask::querySchedule`/

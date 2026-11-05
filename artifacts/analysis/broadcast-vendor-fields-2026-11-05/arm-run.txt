@@ -1,0 +1,4 @@
+$ qemu-arm-static -L <toolchain-libc> openaurora/build-tv-v3/tests/eit_time
+ok eit time: firmware BCD/MJD decode, range algebra and sentinel edges
+$ qemu-arm-static -L <toolchain-libc> openaurora/build-tv-v3/tests/eit_cache
+ok eit cache: keyed schedule events, duration query and now/next

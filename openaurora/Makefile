@@ -417,6 +417,14 @@ check-eit-time: $(BUILD)/tests/eit_time
 	@$(BUILD)/tests/eit_time
 check: check-eit-time
 
+$(BUILD)/tests/eit_cache: tests/eit_cache.c common/eit_cache.c common/eit_time.c include/openaurora/eit_cache.h include/openaurora/eit_time.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-eit-cache
+check-eit-cache: $(BUILD)/tests/eit_cache
+	@$(BUILD)/tests/eit_cache
+check: check-eit-cache
+
 $(BUILD)/easi-probe: tools/probe/easi-probe.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<

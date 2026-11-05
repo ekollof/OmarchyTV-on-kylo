@@ -38,6 +38,19 @@ reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
 first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
 capture remain open.
 
+BROADCAST-VENDOR-FIELDS-2026-11-05: the broadcast contracts now carry the
+recovered vendor fields. oa_tuner_status has lock/strength/quality/unc and
+float BER/SNR (unc 0xffffffff unknown), oa_epg_event has
+program_crid_id/running_status/first_showing/state/version/actual, and the PVR
+request/job carry repeat days and start/end padding. The fixture and control
+socket/CLI expose them, and pvr-add accepts an optional
+`repeat start_pad end_pad` group. Added an in-memory EIT schedule cache keyed by
+(service,event): seconds start+duration query, exact get, now/next, capacity and
+bounded titles, built on common/eit_time.c. Host415 ok, verify45; ARM/qemu
+passes. Fixture/project code only: no vendor execution or hardware, no CRID
+string resolution, EIT filters, persistence, series/conflict handling, and no
+EITEventRecordList find/remove semantics. No TV access.
+
 VENDOR-BROADCAST-ABI-2026-11-05: aurora.elf grounds the broadcast contracts.
 EIT ranges are uint32 Unix seconds decoded from MJD (>=40587) + BCD hh/mm/ss,
 with duration appended; 0/0 is empty, 0/0xffffffff infinite. Range algebra

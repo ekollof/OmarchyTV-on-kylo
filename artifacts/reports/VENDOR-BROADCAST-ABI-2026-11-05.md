@@ -270,7 +270,10 @@ add-by-window call:
 - cancellation is by recording id, and removal only drops monitoring;
 - listing is index-based, with separate info/params/stats out-structs;
 - the scheduler exposes repeat days, padding, CRID/series, save days,
-  guidance, bookmarks and channel ids that our job struct does not carry.
+  guidance, bookmarks and channel ids; the later
+  [BROADCAST-VENDOR-FIELDS](BROADCAST-VENDOR-FIELDS-2026-11-05.md) adds
+  repeat/padding to `oa_pvr_request`/`oa_pvr_job`, while CRID/series, save
+  days, guidance and bookmarks remain absent.
 
 The fixture contract is therefore a UI/session abstraction, not a vendor ABI.
 It must be labelled as such until a vendor-backed module maps these calls.

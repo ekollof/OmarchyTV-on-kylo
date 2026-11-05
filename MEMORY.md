@@ -19,6 +19,17 @@ error cases; two foxxum results match qemu SHA256 exactly. Verified15-file/
 vendor pair1967(zombie)/1785(live) and no-reset marker unchanged. tvssh sent
 WoL initially. No framebuffer/device operation or persistent deployment change.
 
+BROADCAST-VENDOR-FIELDS-2026-11-05 (host/qemu): extended the broadcast
+contracts with the recovered vendor fields: tuner lock/strength/quality/BER/
+SNR/UNC, EPG CRID/first-showing/running-status/state/version/actual, and PVR
+repeat days plus start/end padding. Fixture, CLI and Unix-socket tests cover
+them, including optional pvr-add arguments. Added a firmware-grounded EIT
+schedule cache (keyed by service+event, seconds start+duration query, now/next)
+on common/eit_time.c. Host415 ok, verify45; ARM/qemu passes. Fixture/project
+code only: no vendor execution/hardware, CRID string resolution, EIT filters,
+persistence, series/conflict handling or EITEventRecordList find/remove
+semantics. No TV access.
+
 VENDOR-BROADCAST-ABI-2026-11-05 (offline RE + host/qemu tests): reversed the
 vendor EIT time codec (MJD>=40587, BCD hh/mm/ss->Unix seconds, duration,
 0/0 empty and 0/0xffffffff infinite, merge/grow/shift/clip/moveInto edges),

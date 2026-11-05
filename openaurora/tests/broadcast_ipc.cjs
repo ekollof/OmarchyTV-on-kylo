@@ -81,36 +81,43 @@ async function main() {
         assert.equal(await command('start broadcast_fixture'), 'ok');
 
         assert.equal(await command('tuner-state'),
-            'network 0 state 0 progress 0 services 0 selected 0 error 0');
+            'network 0 state 0 progress 0 lock 0 services 0 selected 0 error 0 ' +
+            'strength 0 quality 0 ber 0.00 snr 0.00 unc 4294967295');
         assert.equal(await command('tuner-scan 0'), 'failed errno 22');
         assert.equal(await command('tuner-scan 6'), 'failed errno 22');
         assert.equal(await command('tuner-scan 1'), 'ok');
         assert.equal(await command('tuner-state'),
-            'network 1 state 1 progress 25 services 3 selected 0 error 0');
+            'network 1 state 1 progress 25 lock 0 services 3 selected 0 error 0 ' +
+            'strength 25 quality 12 ber 0.00 snr 0.00 unc 4294967295');
         assert.equal(await command('tuner-state'),
-            'network 1 state 1 progress 50 services 6 selected 0 error 0');
+            'network 1 state 1 progress 50 lock 0 services 6 selected 0 error 0 ' +
+            'strength 50 quality 25 ber 0.00 snr 0.00 unc 4294967295');
         assert.equal(await command('tuner-state'),
-            'network 1 state 1 progress 75 services 9 selected 0 error 0');
+            'network 1 state 1 progress 75 lock 0 services 9 selected 0 error 0 ' +
+            'strength 75 quality 37 ber 0.00 snr 0.00 unc 4294967295');
         assert.equal(await command('tuner-state'),
-            'network 1 state 1 progress 100 services 12 selected 0 error 0');
+            'network 1 state 1 progress 100 lock 0 services 12 selected 0 error 0 ' +
+            'strength 100 quality 50 ber 0.00 snr 0.00 unc 4294967295');
         assert.equal(await command('tuner-state'),
-            'network 1 state 2 progress 100 services 12 selected 0 error 0');
+            'network 1 state 2 progress 100 lock 1 services 12 selected 0 error 0 ' +
+            'strength 100 quality 80 ber 0.00 snr 20.50 unc 0');
         assert.equal(await command('tuner-select 13'), 'failed errno 22');
         assert.equal(await command('tuner-select 0'), 'failed errno 22');
         assert.equal(await command('tuner-select 5'), 'ok');
-        assert.match(await command('tuner-state'), / selected 5 error 0$/);
+        assert.match(await command('tuner-state'), / selected 5 error 0 /);
 
         assert.equal(await command('tuner-scan 2'), 'ok');
-        assert.match(await command('tuner-state'), / selected 0 error 0$/);
+        assert.match(await command('tuner-state'), / selected 0 error 0 /);
         assert.equal(await command('tuner-cancel'), 'ok');
         assert.equal(await command('tuner-state'),
-            'network 2 state 3 progress 25 services 3 selected 0 error 0');
+            'network 2 state 3 progress 25 lock 0 services 3 selected 0 error 0 ' +
+            'strength 25 quality 12 ber 0.00 snr 0.00 unc 4294967295');
         assert.equal(await command('tuner-cancel'), 'failed errno 22');
 
         let reply = await commandAll('epg-query 1 0 4000');
         assert.match(reply, /^count 2\n/);
-        assert.match(reply, /event id=100 service=1 start=1000 end=2000 name=Alpha News/);
-        assert.match(reply, /event id=101 service=1 start=2000 end=3000 name=Alpha Movie/);
+        assert.match(reply, /event id=100 service=1 start=1000 end=2000 crid=5001 first=1 state=1 version=0 actual=1 running=0 name=Alpha News/);
+        assert.match(reply, /event id=101 service=1 start=2000 end=3000 crid=5001 first=0 state=2 version=1 actual=1 running=0 name=Alpha Movie/);
         assert.equal((await commandAll('epg-query 0 0 10000')).split('\n')[0], 'count 4');
         assert.equal((await commandAll('epg-query 99 0 10000')).split('\n')[0], 'count 0');
         assert.equal(await command('epg-query 1 4000 4000'), 'failed errno 22');
@@ -118,13 +125,16 @@ async function main() {
 
         assert.equal(await command('pvr-list'), 'count 0');
         assert.equal(await command('pvr-add 1 1000 2000'), 'id 1');
-        assert.equal(await command('pvr-add 2 3000 4000'), 'id 2');
+        assert.equal(await command('pvr-add 2 3000 4000 127 30 -15'), 'id 2');
         assert.equal(await command('pvr-add 0 1000 2000'), 'failed errno 22');
         assert.equal(await command('pvr-add 1 2000 1000'), 'failed errno 22');
+        assert.equal(await command('pvr-add 1 1000 2000 1 2'), 'failed errno 22');
+        assert.equal(await command('pvr-add 1 1000 2000 1 2 3 4'), 'failed errno 22');
+        assert.equal(await command('pvr-add 1 1000 2000 4294967296 0 0'), 'failed errno 22');
         reply = await commandAll('pvr-list');
         assert.match(reply, /^count 2\n/);
-        assert.match(reply, /job id=1 service=1 state=0 start=1000 end=2000 name=cli reservation/);
-        assert.match(reply, /job id=2 service=2 state=0 start=3000 end=4000 name=cli reservation/);
+        assert.match(reply, /job id=1 service=1 state=0 start=1000 end=2000 repeat=0 pad=0\/0 name=cli reservation/);
+        assert.match(reply, /job id=2 service=2 state=0 start=3000 end=4000 repeat=127 pad=30\/-15 name=cli reservation/);
         assert.equal(await command('pvr-cancel 1'), 'ok');
         assert.equal(await command('pvr-cancel 1'), 'failed errno 114');
         assert.equal(await command('pvr-cancel 99'), 'failed errno 2');
@@ -137,7 +147,8 @@ async function main() {
 
         assert.equal(await command('reload broadcast_fixture'), 'ok');
         assert.equal(await command('tuner-state'),
-            'network 0 state 0 progress 0 services 0 selected 0 error 0');
+            'network 0 state 0 progress 0 lock 0 services 0 selected 0 error 0 ' +
+            'strength 0 quality 0 ber 0.00 snr 0.00 unc 4294967295');
         assert.equal(await command('pvr-list'), 'count 0');
 
         assert.equal(await command('stop broadcast_fixture'), 'ok');

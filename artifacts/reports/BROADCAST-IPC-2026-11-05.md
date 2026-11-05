@@ -24,7 +24,10 @@ only 1..5, handles/IDs must fit `uint32_t`, EPG/PVR windows must be ordered
 `from < to`, and missing/extra arguments return `failed errno 22`. A service
 that is not published returns `failed errno 19` (`ENODEV`).
 
-`epg-query` and `pvr-list` emit a `count N` line followed by one record per
+> Later note: [BROADCAST-VENDOR-FIELDS](BROADCAST-VENDOR-FIELDS-2026-11-05.md)
+> extends `tuner-state`, `epg-query` and `pvr-list` with lock/signal, event
+> metadata and repeat/padding fields, so the exact reply strings in this
+> report describe the earlier output.`epg-query` and `pvr-list` emit a `count N` line followed by one record per
 line, capped to the reply buffer and the 16-entry caller arrays. Service
 handles are released after every call.
 

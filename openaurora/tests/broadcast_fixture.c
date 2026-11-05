@@ -19,6 +19,18 @@ struct ctx {
 
 static struct ctx *g_ctx;
 
+/* Vendor defaults: no lock, zero strength/quality, float BER/SNR 0.0 and UNC
+ * unavailable (0xffffffff). */
+static void tuner_clear_metrics(struct oa_tuner_status *status)
+{
+    status->locked = 0;
+    status->signal_strength = 0;
+    status->signal_quality = 0;
+    status->unc = OA_TUNER_UNC_UNKNOWN;
+    status->ber = 0.0f;
+    status->snr = 0.0f;
+}
+
 static int tuner_status(struct oa_tuner_status *out)
 {
     if (!g_ctx || !out) return -EINVAL;
@@ -27,10 +39,23 @@ static int tuner_status(struct oa_tuner_status *out)
             g_ctx->tuner.progress = 100;
             g_ctx->tuner.scan_state = OA_TUNER_DONE;
             g_ctx->tuner.services_found = 12;
+            g_ctx->tuner.locked = 1;
+            g_ctx->tuner.signal_strength = 100;
+            g_ctx->tuner.signal_quality = 80;
+            g_ctx->tuner.unc = 0;
+            g_ctx->tuner.ber = 0.0f;
+            g_ctx->tuner.snr = 20.5f;
         } else {
             g_ctx->tuner.progress = (uint8_t)(g_ctx->tuner.progress + 25);
             g_ctx->tuner.services_found =
                 (uint32_t)g_ctx->tuner.progress * 12u / 100u;
+            g_ctx->tuner.locked = 0;
+            g_ctx->tuner.signal_strength = g_ctx->tuner.progress;
+            g_ctx->tuner.signal_quality =
+                (uint32_t)g_ctx->tuner.progress / 2u;
+            g_ctx->tuner.unc = OA_TUNER_UNC_UNKNOWN;
+            g_ctx->tuner.ber = 0.0f;
+            g_ctx->tuner.snr = 0.0f;
         }
     }
     *out = g_ctx->tuner;
@@ -49,6 +74,7 @@ static int tuner_scan_start(uint8_t network, int clear_existing)
     g_ctx->tuner.progress = 0;
     g_ctx->tuner.services_found = 0;
     g_ctx->tuner.error = 0;
+    tuner_clear_metrics(&g_ctx->tuner);
     return 0;
 }
 
@@ -56,6 +82,8 @@ static int tuner_scan_cancel(void)
 {
     if (!g_ctx || g_ctx->tuner.scan_state != OA_TUNER_SCANNING) return -EINVAL;
     g_ctx->tuner.scan_state = OA_TUNER_CANCELED;
+    g_ctx->tuner.locked = 0;
+    g_ctx->tuner.unc = OA_TUNER_UNC_UNKNOWN;
     return 0;
 }
 
@@ -78,10 +106,22 @@ static const oa_tuner_iface tuner_iface = {
 };
 
 static const struct oa_epg_event epg_events[] = {
-    { 1, 100, 1000, 2000, "Alpha News", "Fixture news" },
-    { 1, 101, 2000, 3000, "Alpha Movie", "Fixture movie" },
-    { 2, 200, 1500, 2500, "Beta Show", "Fixture show" },
-    { 3, 300, 5000, 6000, "Gamma Sport", "Fixture sport" }
+    { .service_handle = 1, .event_id = 100, .start_ms = 1000, .end_ms = 2000,
+      .program_crid_id = 5001, .running_status = 0, .first_showing = 1,
+      .state = 1, .version = 0, .actual = 1,
+      .name = "Alpha News", .description = "Fixture news" },
+    { .service_handle = 1, .event_id = 101, .start_ms = 2000, .end_ms = 3000,
+      .program_crid_id = 5001, .running_status = 0, .first_showing = 0,
+      .state = 2, .version = 1, .actual = 1,
+      .name = "Alpha Movie", .description = "Fixture movie" },
+    { .service_handle = 2, .event_id = 200, .start_ms = 1500, .end_ms = 2500,
+      .program_crid_id = 5002, .running_status = 0, .first_showing = 1,
+      .state = 0, .version = 2, .actual = 0,
+      .name = "Beta Show", .description = "Fixture show" },
+    { .service_handle = 3, .event_id = 300, .start_ms = 5000, .end_ms = 6000,
+      .program_crid_id = 5003, .running_status = 0, .first_showing = 1,
+      .state = 3, .version = 3, .actual = 1,
+      .name = "Gamma Sport", .description = "Fixture sport" }
 };
 
 static int epg_query(uint32_t service_handle, int64_t from_ms, int64_t to_ms,
@@ -114,21 +154,25 @@ static int pvr_list(struct oa_pvr_job *jobs, size_t cap, size_t *count)
     return 0;
 }
 
-static int pvr_add(uint32_t service_handle, int64_t start_ms, int64_t end_ms,
-    const char *name, uint32_t *id)
+static int pvr_add(const struct oa_pvr_request *request, uint32_t *id)
 {
-    if (!g_ctx || !service_handle || start_ms >= end_ms || !name || !*name)
+    if (!g_ctx || !request || !request->service_handle ||
+        request->start_ms >= request->end_ms || !request->name[0])
         return -EINVAL;
     if (g_ctx->job_count >= sizeof g_ctx->jobs / sizeof g_ctx->jobs[0])
         return -ENOSPC;
-    if (strlen(name) >= sizeof g_ctx->jobs[0].name) return -ENAMETOOLONG;
+    if (strlen(request->name) >= sizeof g_ctx->jobs[0].name)
+        return -ENAMETOOLONG;
     struct oa_pvr_job *job = &g_ctx->jobs[g_ctx->job_count++];
     memset(job, 0, sizeof *job);
     job->id = ++g_ctx->next_job;
-    job->service_handle = service_handle;
-    job->start_ms = start_ms;
-    job->end_ms = end_ms;
-    snprintf(job->name, sizeof job->name, "%s", name);
+    job->service_handle = request->service_handle;
+    job->start_ms = request->start_ms;
+    job->end_ms = request->end_ms;
+    job->repeat_days = request->repeat_days;
+    job->start_padding = request->start_padding;
+    job->end_padding = request->end_padding;
+    snprintf(job->name, sizeof job->name, "%s", request->name);
     job->state = OA_PVR_SCHEDULED;
     if (id) *id = job->id;
     return 0;
@@ -165,6 +209,7 @@ static int m_start(void *v)
 {
     struct ctx *c = v;
     memset(&c->tuner, 0, sizeof c->tuner);
+    tuner_clear_metrics(&c->tuner);
     memset(c->jobs, 0, sizeof c->jobs);
     c->job_count = 0;
     c->next_job = 0;

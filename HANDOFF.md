@@ -35,6 +35,16 @@ The owner then requested a review and fixes on2026-11-04. The review below
 supersedes the old clean/verified snapshot where it identifies defects; it
 does not start the pending imageCreate subsystem or persistent replacement.
 
+Latest vendor-field contracts:
+[BROADCAST-VENDOR-FIELDS](artifacts/reports/BROADCAST-VENDOR-FIELDS-2026-11-05.md)
+extends tuner/EPG/PVR records with lock/strength/quality/BER/SNR/UNC,
+CRID/first-showing/state/version/actual and repeat/padding; the fixture and
+control socket expose them. Adds an in-memory EIT schedule cache keyed by
+service+event with seconds start+duration query and now/next, built on
+common/eit_time.c. Host415 ok, verify45; ARM/qemu passes. Still fixture/project
+code: no vendor execution/hardware, CRID resolution, filters, persistence,
+series/conflict handling or find/remove semantics.
+
 Latest vendor ABI grounding:
 [VENDOR-BROADCAST-ABI](artifacts/reports/VENDOR-BROADCAST-ABI-2026-11-05.md)
 recovers the EIT time codec/range algebra, event key, ScheduleEvent schema,
