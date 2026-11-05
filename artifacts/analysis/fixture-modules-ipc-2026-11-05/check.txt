@@ -1,0 +1,2 @@
+node tests/fixture_modules_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok actual fixture-backed module IPC: theme/profile/amp/curve/mixer start, services, reload and reuse

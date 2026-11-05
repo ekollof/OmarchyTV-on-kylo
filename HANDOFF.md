@@ -144,6 +144,13 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
+Latest fixtures: [FIXTURE-MODULES-IPC](artifacts/reports/FIXTURE-MODULES-IPC-2026-11-05.md)
+runs ui_theme, ui_profile, audio_amp_profile, audio_curve and audio_mixer over
+the real socket with synthetic BinSVG/EFSL/AQ fixtures, extracted hwprofile and
+host broker. Services, reloads, stop/start or unload/load and clean exit pass.
+Host400 ok, verify45. Host fixtures only; hardware modules, physical fb1 and
+cold startup remain.
+
 Latest skin socket: [SKIN-SOCKET](artifacts/reports/SKIN-SOCKET-2026-11-05.md)
 wires the existing skin_socket.sh test into make check with recorder display,
 ui_engine, ui_vendor and ui_omarchy. Missing/invalid startup skins fall back to

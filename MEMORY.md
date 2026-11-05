@@ -93,6 +93,13 @@ reauthorized; fb1 and stock operation must stay untouched. This supersedes the
 earlier "Don't touch the TV" restriction. No persistent replacement or boot
 changes. The historical offline-only entries describe their original runs.
 
+FIXTURE-MODULES-IPC-2026-11-05 (host-only): a real `--sock` host runs
+ui_theme (synthetic BinSVG), ui_profile (synthetic EFSL), audio_amp_profile
+(extracted hwprofile), audio_curve (synthetic 1668-byte AQ/profile0) and
+audio_mixer (host broker). All publish services, reload, stop/start or
+unload/load, and exit cleanly. Host400 ok, verify45. Host fixtures only;
+hardware modules, physical fb1 and cold startup remain.
+
 SKIN-SOCKET-2026-11-05 (host-only): wired the existing skin_socket.sh test
 into make check with recorder display, ui_engine, ui_vendor and ui_omarchy.
 Missing/invalid startup skins fall back to vendor; skin omarchy/vendor switch

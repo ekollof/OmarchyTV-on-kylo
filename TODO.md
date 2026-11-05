@@ -590,6 +590,14 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       UI-STACK-IPC. Limits: non-HAL modules only; physical fb1, full hardware
       module set, holds under all consumers and cold startup remain.
 
+- [x] Fixture-backed module socket lifecycle: ui_theme (synthetic BinSVG),
+      ui_profile (synthetic EFSL), audio_amp_profile (extracted hwprofile),
+      audio_curve (synthetic 1668-byte AQ/profile0) and audio_mixer (real host
+      broker) load/start, publish their services, reload, stop/start or
+      unload/load, and exit cleanly. Host400 ok, verify45.
+      FIXTURE-MODULES-IPC. Limits: host fixtures; hardware modules/stock/cold
+      startup remain.
+
 - [x] Hardware-free module matrix over the real socket: ticker -> ui_clock ->
       ui_anim, plus ui_navigation, ui_list, power and cec load/start and are
       reloaded in dependency-safe order; nav/list queries and CEC's async

@@ -1155,6 +1155,11 @@ check-module-matrix-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ticker.so $(BU
 	node tests/module_matrix_ipc.cjs $(abspath $(BUILD))
 check: check-module-matrix-ipc
 
+.PHONY: check-fixture-modules-ipc
+check-fixture-modules-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_theme.so $(BUILD)/modules/mod_ui_profile.so $(BUILD)/modules/mod_audio_amp_profile.so $(BUILD)/modules/mod_audio_curve.so $(BUILD)/modules/mod_audio_mixer.so $(BUILD)/oa-audio-broker
+	node tests/fixture_modules_ipc.cjs $(abspath $(BUILD))
+check: check-fixture-modules-ipc
+
 ui-skin-socket-modules = $(BUILD)/tests/ui-skin-socket/modules
 .PHONY: check-ui-skin-socket
 check-ui-skin-socket: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/tests/ui_nav_display.so
