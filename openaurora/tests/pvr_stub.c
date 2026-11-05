@@ -223,6 +223,74 @@ static void test_dvr_sink(void)
     assert(oa_dvr_sink_open(0, 0, NULL, NULL) == -EINVAL);
 }
 
+struct dvr_hal_seen {
+    int opens, writes, closes;
+    int mode;
+    int fail;
+};
+
+static struct dvr_hal_seen dvr_hal;
+
+static int dvr_hal_open(int adapter, int index, int mode)
+{
+    assert(adapter == 0 && index == 2);
+    dvr_hal.opens++;
+    dvr_hal.mode = mode;
+    if (dvr_hal.fail == 1) {
+        errno = 0;
+        return -1;
+    }
+    if (dvr_hal.fail == 2) {
+        errno = EACCES;
+        return -1;
+    }
+    return 91;
+}
+
+static long dvr_hal_write(int fd, const void *data, size_t len)
+{
+    assert(fd == 91 && data && len == 1);
+    dvr_hal.writes++;
+    errno = 0;
+    return -1;
+}
+
+static int dvr_hal_flush(int fd)
+{
+    (void)fd;
+    return 0;
+}
+
+static int dvr_hal_close(int fd)
+{
+    assert(fd == 91);
+    dvr_hal.closes++;
+    return 0;
+}
+
+static void test_dvr_linux_hal(void)
+{
+    memset(&dvr_hal, 0, sizeof dvr_hal);
+    const struct oa_dvr_hal hal = {
+        dvr_hal_open, dvr_hal_write, dvr_hal_flush, dvr_hal_close
+    };
+    oa_dvr_set_hal(&hal);
+    const struct oa_dvr_ops *ops = oa_dvr_linux_ops();
+    dvr_hal.fail = 1;
+    assert(oa_dvr_sink_open(0, 2, ops, NULL) == -EIO);
+    assert(dvr_hal.opens == 1 && dvr_hal.mode == 0 && dvr_hal.closes == 0);
+    dvr_hal.fail = 2;
+    assert(oa_dvr_sink_open(0, 2, ops, NULL) == -EACCES);
+    dvr_hal.fail = 0;
+    assert(oa_dvr_sink_open(0, 2, ops, NULL) == 0);
+    uint8_t packet = 0x47;
+    assert(oa_dvr_sink_write(&packet, 1) == -EIO);
+    assert(dvr_hal.writes == 1);
+    oa_dvr_sink_close();
+    assert(dvr_hal.closes == 1 && !oa_dvr_sink_is_open());
+    oa_dvr_set_hal(NULL);
+}
+
 int main(void)
 {
     char dir[] = "/tmp/oa-pvr-test-XXXXXX";
@@ -231,6 +299,7 @@ int main(void)
     test_validation(dir);
     test_capacity(dir);
     test_dvr_sink();
+    test_dvr_linux_hal();
     unlink("/tmp/oa-pvr-test-unused");
     char path[OA_PVR_PATH_MAX];
     const char *files[] = { "pvr.db", "bad.db", "validation.db", "full.db" };

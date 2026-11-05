@@ -394,6 +394,57 @@ static int eit_close(void *ctx, int fd)
     return 0;
 }
 
+struct eit_hal_seen {
+    int opens, filters, closes;
+    int adapter, index;
+    int fd;
+    uint16_t pid;
+    size_t filter_len;
+    void *filter, *mask, *mode_ptr;
+    int flags;
+    int open_mode;
+    int fail_filter;
+};
+
+static struct eit_hal_seen eit_hal;
+
+static int eit_hal_open(int adapter, int index)
+{
+    eit_hal.opens++;
+    eit_hal.adapter = adapter;
+    eit_hal.index = index;
+    if (eit_hal.open_mode == 1) {
+        errno = 0;
+        return -1;
+    }
+    if (eit_hal.open_mode == 2) {
+        errno = EACCES;
+        return -1;
+    }
+    return 81;
+}
+
+static int eit_hal_filter(int fd, uint16_t pid, size_t filter_len, void *filter,
+    void *mask, void *mode, char flags)
+{
+    eit_hal.filters++;
+    eit_hal.fd = fd;
+    eit_hal.pid = pid;
+    eit_hal.filter_len = filter_len;
+    eit_hal.filter = filter;
+    eit_hal.mask = mask;
+    eit_hal.mode_ptr = mode;
+    eit_hal.flags = flags;
+    return eit_hal.fail_filter ? -1 : 0;
+}
+
+static int eit_hal_close(int fd)
+{
+    assert(fd == 81);
+    eit_hal.closes++;
+    return 0;
+}
+
 static void test_eit_dvb(void)
 {
     const struct oa_eit_build_event event = {
@@ -442,6 +493,46 @@ static void test_eit_dvb(void)
     oa_eit_dvb_close();
     eit.fail_read = 0;
 
+    /* A positive read is one section only when the length field matches and
+     * is inside the same bounds the TS demux uses. */
+    uint8_t saved[512];
+    size_t full_len = eit.section_len;
+    assert(full_len > 4 && full_len + 1 <= sizeof saved);
+    memcpy(saved, eit.section, full_len);
+    eit.fed = 0;
+    eit.section_len = full_len - 1;
+    assert(oa_eit_dvb_open(0, 0, 0x12, &ops, &eit) == 0);
+    len = 99;
+    assert(oa_eit_dvb_next(section, sizeof section, &len) == -EINVAL);
+    assert(len == 0);
+    oa_eit_dvb_close();
+    eit.fed = 0;
+    eit.section_len = 2;
+    assert(oa_eit_dvb_open(0, 0, 0x12, &ops, &eit) == 0);
+    assert(oa_eit_dvb_next(section, sizeof section, &len) == -EINVAL);
+    assert(len == 0);
+    oa_eit_dvb_close();
+    eit.fed = 0;
+    eit.section_len = full_len + 1;
+    eit.section[full_len] = 0;
+    assert(oa_eit_dvb_open(0, 0, 0x12, &ops, &eit) == 0);
+    assert(oa_eit_dvb_next(section, sizeof section, &len) == -EINVAL);
+    assert(len == 0);
+    oa_eit_dvb_close();
+    memset(eit.section, 0, 8);
+    eit.section[0] = 0x4e;
+    eit.section[1] = 0x00;
+    eit.section[2] = 0x03;
+    eit.section_len = 6;
+    eit.fed = 0;
+    assert(oa_eit_dvb_open(0, 0, 0x12, &ops, &eit) == 0);
+    assert(oa_eit_dvb_next(section, sizeof section, &len) == -EINVAL);
+    assert(len == 0);
+    oa_eit_dvb_close();
+    memcpy(eit.section, saved, full_len);
+    eit.section_len = full_len;
+    eit.fed = 0;
+
     /* Integrated next_eit path on nim-ndal. */
     struct ndal_mock nim;
     memset(&nim, 0, sizeof nim);
@@ -467,7 +558,46 @@ static void test_eit_dvb(void)
     assert(backend->next_eit(section, sizeof section, &len) == 0);
     assert(backend->nim->stop(OA_NIM_PATH_TERRESTRIAL) == 0);
     assert(eit.closes >= 3);
+
+    /* next_eit can open the filter before the frontend. stop still closes it. */
+    eit.fed = 0;
+    int closes = eit.closes;
+    int frontend_opens = nim.opens;
+    assert(backend->next_eit(section, sizeof section, &len) == 1);
+    assert(nim.opens == frontend_opens);
+    assert(backend->nim->stop(OA_NIM_PATH_TERRESTRIAL) == 0);
+    assert(eit.closes == closes + 1);
+    assert(backend->nim->stop(OA_NIM_PATH_TERRESTRIAL) == -EINVAL);
     oa_nim_ndal_set_ops(NULL, NULL);
+
+    /* Default linux ops call the resolved HAL close, including after a
+     * failed filter, and a -1 open with errno 0 is not a live fd. */
+    memset(&eit_hal, 0, sizeof eit_hal);
+    const struct oa_eit_dvb_hal hal = {
+        eit_hal_open, eit_hal_filter, eit_hal_close
+    };
+    oa_eit_dvb_set_hal(&hal);
+    const struct oa_eit_dvb_ops *linux_ops = oa_eit_dvb_linux_ops();
+    eit_hal.open_mode = 1;
+    assert(oa_eit_dvb_open(0, 1, 0x12, linux_ops, NULL) == -EIO);
+    assert(eit_hal.opens == 1 && eit_hal.index == 1 && eit_hal.closes == 0);
+    eit_hal.open_mode = 2;
+    assert(oa_eit_dvb_open(0, 1, 0x12, linux_ops, NULL) == -EACCES);
+    assert(eit_hal.closes == 0);
+    eit_hal.open_mode = 0;
+    eit_hal.fail_filter = 1;
+    assert(oa_eit_dvb_open(0, 1, 0x12, linux_ops, NULL) == -EIO);
+    assert(eit_hal.closes == 1 && eit_hal.fd == 81 && eit_hal.pid == 0x12 &&
+        eit_hal.filter_len == 0 && eit_hal.filter == NULL &&
+        eit_hal.mask == NULL && eit_hal.mode_ptr == NULL &&
+        eit_hal.flags == 1);
+    eit_hal.fail_filter = 0;
+    assert(oa_eit_dvb_open(0, 1, 0x12, linux_ops, NULL) == 0);
+    oa_eit_dvb_close();
+    assert(eit_hal.closes == 2);
+    assert(linux_ops->close_demux(NULL, -1) == -EBADF);
+    assert(eit_hal.closes == 2);
+    oa_eit_dvb_set_hal(NULL);
 }
 
 int main(void)

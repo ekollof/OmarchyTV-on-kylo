@@ -18,11 +18,33 @@ static struct {
     dvr_flush_fn flush_dvr;
     dvr_close_fn close_dvr;
     int loaded;
+    int installed;
 } g_hal;
+
+void oa_dvr_set_hal(const struct oa_dvr_hal *hal)
+{
+    if (g_hal.handle) {
+        dlclose(g_hal.handle);
+        g_hal.handle = NULL;
+    }
+    if (!hal) {
+        memset(&g_hal, 0, sizeof g_hal);
+        return;
+    }
+    g_hal.open_dvr = hal->open_dvr;
+    g_hal.write_dvr = hal->write_dvr;
+    g_hal.flush_dvr = hal->flush_dvr;
+    g_hal.close_dvr = hal->close_dvr;
+    g_hal.loaded = 1;
+    g_hal.installed = 1;
+}
 
 static int hal_load(void)
 {
-    if (g_hal.loaded) return g_hal.handle ? 0 : -ENOSYS;
+    if (g_hal.loaded) {
+        if (g_hal.installed) return 0;
+        return g_hal.handle ? 0 : -ENOSYS;
+    }
     g_hal.loaded = 1;
     g_hal.handle = dlopen("libNDAL3.so", RTLD_NOW | RTLD_LOCAL);
     if (!g_hal.handle) return -ENOSYS;
@@ -44,8 +66,10 @@ static int linux_open(void *ctx, int adapter, int index)
     if (adapter < 0 || index < 0) return -EINVAL;
     if (hal_load()) return -ENOSYS;
     if (!g_hal.open_dvr) return -ENOSYS;
+    errno = 0;
     int fd = g_hal.open_dvr(adapter, index, 0);
-    return fd < 0 ? -errno : fd;
+    if (fd < 0) return errno ? -errno : -EIO;
+    return fd;
 }
 
 static long linux_write(void *ctx, int fd, const void *data, size_t len)
@@ -54,8 +78,10 @@ static long linux_write(void *ctx, int fd, const void *data, size_t len)
     if (fd < 0 || !data || !len) return -EINVAL;
     if (hal_load()) return -ENOSYS;
     if (!g_hal.write_dvr) return -ENOSYS;
+    errno = 0;
     long written = g_hal.write_dvr(fd, data, len);
-    return written < 0 ? -errno : written;
+    if (written < 0) return errno ? -errno : -EIO;
+    return written;
 }
 
 static int linux_flush(void *ctx, int fd)

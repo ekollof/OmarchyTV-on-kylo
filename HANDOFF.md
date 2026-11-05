@@ -117,9 +117,14 @@ Latest DVB EIT/DVR boundaries:
 filter EIT source (`oa_eit_dvb_ops`, `/dev/dvb/.../demuxN`, PID 0x12) attached
 to `nim-ndal` via `tuner.eit_demux`, plus a mockable DVR sink
 (`oa_dvr_ops`, open/write/flush/close). Mock tests, ARM/qemu and a new
-Unix-socket `mod_tuner` reload/re-scan test pass; host424 ok, verify45. Limits:
-mock only, PID-only filter, DVB-T tune only, DVR sink not scheduler-driven;
-hardware acceptance/cold start/display remain owner-gated.
+Unix-socket `mod_tuner` reload/re-scan test pass; host424 ok, verify45. The
+review of that commit, checked against the Ghidra listing of `libNDAL3.so`,
+routes demux close through `Hal_Demux_Dvb_Close`, rejects a read that is not
+one complete section, and closes a lazy EIT filter from `nim->stop` when the
+frontend is not open. `nim_stub` and `pvr_stub` were re-run on host,
+ASan/UBSan and ARM/qemu. Limits: mock only, PID-only filter, DVB-T tune only,
+DVR sink not scheduler-driven; hardware acceptance/cold start/display remain
+owner-gated.
 
 Latest vendor-field contracts:
 [BROADCAST-VENDOR-FIELDS](artifacts/reports/BROADCAST-VENDOR-FIELDS-2026-11-05.md)

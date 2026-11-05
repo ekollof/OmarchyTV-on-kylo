@@ -136,9 +136,19 @@ nim-ndal via `tuner.eit_demux=adapter:index[:pid]`, lazily opened and closed
 on stop. The PVR side has a mockable DVR sink (oa_dvr_ops/open/write/flush/
 close) with partial-write handling. Mock tests cover EIT filter/section/error/
 lifecycle and DVR lifecycle; a new Unix-socket mod_tuner reload/re-scan test
-keeps the TS EIT replay and EPG state. Host424 ok, verify45, ARM/qemu. Limits:
-mock only; PID-only filter; DVB-T tune only; DVR sink not scheduler-driven;
-hardware acceptance and cold start/display remain owner-gated.
+keeps the TS EIT replay and EPG state. Host424 ok, verify45, ARM/qemu. The
+first close path called POSIX close and skipped Hal_Demux_Dvb_Close; that
+claim is superseded. The Ghidra ARM listing of libNDAL3.so (MD5
+c842bad804302ec822076c3d9d3ce31d) shows Close at 4e7b9c48 does ioctl 0x6f2a
+then close and returns close's r0, Set_Sectionfilter at 4e7ba12c takes the
+PID-only seven-argument call (flag byte selects flags 5) and returns 0 or -1,
+and Dvr_Open at 4e7b9f44 uses mode 0 as O_WRONLY. next now requires one
+section (length field 4..4093, byte count 3+length). stop closes a lazy EIT
+fd when the frontend is closed. HAL -1 with errno 0 is -EIO. nim_stub and
+pvr_stub passed again on host, ASan/UBSan and ARM/qemu. Full host424/verify45
+was not re-run. Limits: mock only; PID-only filter; DVB-T tune only; DVR
+sink not scheduler-driven; hardware acceptance and cold start/display remain
+owner-gated.
 
 BROADCAST-VENDOR-FIELDS-2026-11-05: the broadcast contracts now carry the
 recovered vendor fields. oa_tuner_status has lock/strength/quality/unc and

@@ -128,9 +128,15 @@ oa_dvr_ops/oa_dvr_sink_open/write/flush/close with partial-write handling for
 the DVR boundary. Mock tests cover EIT filter/section/error/lifecycle and DVR
 open/write/flush/close; a new Unix-socket mod_tuner reload/re-scan test keeps
 the TS EIT replay and EPG state. Host424 ok, verify45; ARM/qemu nim_stub and
-pvr_stub pass. Limits: mock only, PID-only filter, DVB-T tune only, DVR sink
-not scheduler-driven, no hardware acceptance; cold start/display owner-gated.
-No TV access.
+pvr_stub pass. Review the same day, from the Ghidra listing of libNDAL3.so
+(MD5 c842bad804302ec822076c3d9d3ce31d): demux close calls Hal_Demux_Dvb_Close
+(DMX_STOP 0x6f2a then close), next rejects a read that is not one complete
+section, and nim->stop closes that filter when the frontend is not open. A
+HAL -1 with errno 0 maps to -EIO. DVR open mode stays 0 (O_WRONLY). nim_stub
+and pvr_stub were re-run on the host, ASan/UBSan and ARM/qemu. The full
+host424/verify45 suite was not re-run. Limits: mock only, PID-only filter,
+DVB-T tune only, DVR sink not scheduler-driven, no hardware acceptance; cold
+start/display owner-gated. No TV access.
 
 Owner decision 2026-11-05 (NDAL/hardware acceptance): "Keep offline, pause
 project." No cold-start, display/fb1, NDAL frontend/demux or PVR hardware

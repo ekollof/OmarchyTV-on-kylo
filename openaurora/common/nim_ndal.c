@@ -330,11 +330,14 @@ static int ndal_monitor(uint8_t path, struct oa_nim_tune_result *result)
 static int ndal_stop(uint8_t path)
 {
     (void)path;
-    if (!g_ndal_state.open) return -EINVAL;
-    int rc = g_ndal_state.ops->close_frontend(g_ndal_state.ops_ctx,
-        g_ndal_state.fd);
-    g_ndal_state.fd = -1;
-    g_ndal_state.open = 0;
+    if (!g_ndal_state.open && !g_ndal_state.eit_open) return -EINVAL;
+    int rc = 0;
+    if (g_ndal_state.open) {
+        rc = g_ndal_state.ops->close_frontend(g_ndal_state.ops_ctx,
+            g_ndal_state.fd);
+        g_ndal_state.fd = -1;
+        g_ndal_state.open = 0;
+    }
     if (g_ndal_state.eit_open) {
         oa_eit_dvb_close();
         g_ndal_state.eit_open = 0;

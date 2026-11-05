@@ -545,9 +545,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       handling and mock tests; the PVR scheduling store remains separate.
       Added a real Unix-socket `mod_tuner` reload/re-scan test over the TS
       fixture. Host424 ok, verify45; ARM/qemu nim_stub and pvr_stub pass.
-      EIT-DVB-DVR. Limits: mock only, PID-only filter, DVB-T tune only, DVR
-      sink not scheduler-driven, no hardware acceptance; cold start/display
-      owner-gated. No TV access.
+      EIT-DVB-DVR. A later review against the Ghidra listing of `libNDAL3.so`
+      (MD5 c842bad804302ec822076c3d9d3ce31d) fixed three offline gaps: demux
+      close now calls `Hal_Demux_Dvb_Close` (`DMX_STOP` 0x6f2a, then `close`),
+      `next` accepts a read only when it is one section whose length field
+      matches the TS demux bounds, and `nim->stop` closes a lazy EIT filter
+      when the frontend was never opened. A `-1` HAL open/write with errno 0
+      is `-EIO`. DVR open mode remains 0 (`O_WRONLY`). Re-ran `nim_stub` and
+      `pvr_stub` on the host, under ASan/UBSan, and on ARM/qemu. The earlier
+      full host424/verify45 run was not repeated. Limits: mock only, PID-only
+      filter, DVB-T tune only, DVR sink not scheduler-driven, no hardware
+      acceptance; cold start/display owner-gated. No TV access.
 
 - [x] Vendor broadcast contract fields + EIT schedule cache: extended
       `oa_tuner_status` with lock/strength/quality/BER/SNR/UNC,

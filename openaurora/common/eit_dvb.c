@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include "openaurora/eit_dvb.h"
+#include "openaurora/eit_ts.h"
 
 typedef int (*hal_open_fn)(int, int);
 typedef int (*hal_filter_fn)(int, uint16_t, size_t, void *, void *, void *,
@@ -17,11 +18,32 @@ static struct {
     hal_filter_fn set_filter;
     hal_close_fn close_demux;
     int loaded;
+    int installed;
 } g_hal;
+
+void oa_eit_dvb_set_hal(const struct oa_eit_dvb_hal *hal)
+{
+    if (g_hal.handle) {
+        dlclose(g_hal.handle);
+        g_hal.handle = NULL;
+    }
+    if (!hal) {
+        memset(&g_hal, 0, sizeof g_hal);
+        return;
+    }
+    g_hal.open_demux = hal->open_demux;
+    g_hal.set_filter = hal->set_section_filter;
+    g_hal.close_demux = hal->close_demux;
+    g_hal.loaded = 1;
+    g_hal.installed = 1;
+}
 
 static int hal_load(void)
 {
-    if (g_hal.loaded) return g_hal.handle ? 0 : -ENOSYS;
+    if (g_hal.loaded) {
+        if (g_hal.installed) return 0;
+        return g_hal.handle ? 0 : -ENOSYS;
+    }
     g_hal.loaded = 1;
     g_hal.handle = dlopen("libNDAL3.so", RTLD_NOW | RTLD_LOCAL);
     if (!g_hal.handle) return -ENOSYS;
@@ -42,8 +64,10 @@ static int linux_open(void *ctx, int adapter, int index)
     if (adapter < 0 || index < 0) return -EINVAL;
     if (hal_load()) return -ENOSYS;
     if (!g_hal.open_demux) return -ENOSYS;
+    errno = 0;
     int fd = g_hal.open_demux(adapter, index);
-    return fd < 0 ? -errno : fd;
+    if (fd < 0) return errno ? -errno : -EIO;
+    return fd;
 }
 
 static int linux_filter(void *ctx, int fd, uint16_t pid)
@@ -72,6 +96,11 @@ static int linux_close(void *ctx, int fd)
 {
     (void)ctx;
     if (fd < 0) return -EBADF;
+    if (!g_hal.loaded) (void)hal_load();
+    /* Hal_Demux_Dvb_Close issues DMX_STOP (0x6f2a) and then close, and
+     * returns close's result. A missing symbol falls back to close only. */
+    if (g_hal.close_demux)
+        return g_hal.close_demux(fd) < 0 ? -EIO : 0;
     return close(fd) == 0 ? 0 : -errno;
 }
 
@@ -129,6 +158,12 @@ int oa_eit_dvb_next(uint8_t *buf, size_t cap, size_t *len)
     if (got < 0) return (int)got;
     if (got == 0) return 0;
     if ((size_t)got > cap) return -E2BIG;
-    *len = (size_t)got;
+    if ((size_t)got < 3) return -EINVAL;
+    size_t section_length = ((size_t)(buf[1] & 0x0fu) << 8) | buf[2];
+    if (section_length < 4 || section_length > OA_EIT_TS_SECTION_MAX - 3)
+        return -EINVAL;
+    size_t total = 3 + section_length;
+    if ((size_t)got != total) return -EINVAL;
+    *len = total;
     return 1;
 }

@@ -13,8 +13,9 @@ extern "C" {
  *
  * The default ops open /dev/dvb/adapterN/demuxN through the shipped
  * Hal_Demux_Dvb_* wrappers, install a PID-only section filter and read one
- * complete section per call. Tests inject the same ops table; no device is
- * opened unless a backend explicitly enables this source.
+ * complete section per call. Close goes through Hal_Demux_Dvb_Close, which
+ * issues DMX_STOP before close. Tests inject the same ops table, or resolved
+ * HAL entry points; no device is opened unless a backend enables this source.
  */
 
 struct oa_eit_dvb_ops {
@@ -24,7 +25,17 @@ struct oa_eit_dvb_ops {
     int (*close_demux)(void *ctx, int fd);
 };
 
+/* Already-resolved Hal_Demux_Dvb_Open / Set_Sectionfilter / Close. */
+struct oa_eit_dvb_hal {
+    int (*open_demux)(int adapter, int index);
+    int (*set_section_filter)(int fd, uint16_t pid, size_t filter_len,
+        void *filter, void *mask, void *mode, char flags);
+    int (*close_demux)(int fd);
+};
+
 const struct oa_eit_dvb_ops *oa_eit_dvb_linux_ops(void);
+/* Install resolved wrappers. NULL clears them. Does not dlopen or open a device. */
+void oa_eit_dvb_set_hal(const struct oa_eit_dvb_hal *hal);
 
 int oa_eit_dvb_open(int adapter, int index, uint16_t pid,
     const struct oa_eit_dvb_ops *ops, void *ctx);

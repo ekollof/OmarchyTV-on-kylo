@@ -23,7 +23,17 @@ struct oa_dvr_ops {
     int (*close_dvr)(void *ctx, int fd);
 };
 
+/* Already-resolved Hal_Demux_Dvb_Dvr_Open / Write / Flush / Close. */
+struct oa_dvr_hal {
+    int (*open_dvr)(int adapter, int index, int mode);
+    long (*write_dvr)(int fd, const void *data, size_t len);
+    int (*flush_dvr)(int fd);
+    int (*close_dvr)(int fd);
+};
+
 const struct oa_dvr_ops *oa_dvr_linux_ops(void);
+/* Install resolved wrappers. NULL clears them. Does not dlopen or open a device. */
+void oa_dvr_set_hal(const struct oa_dvr_hal *hal);
 
 int oa_dvr_sink_open(int adapter, int index, const struct oa_dvr_ops *ops,
     void *ctx);
