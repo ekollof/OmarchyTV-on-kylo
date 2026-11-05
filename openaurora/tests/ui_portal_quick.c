@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "host.h"
+#include "openaurora/events.h"
 #include "openaurora/services.h"
 #include "ui_nav_trace.h"
 
@@ -54,6 +55,13 @@ static int fill_at(const oa_nav_trace *trace, int x, int y)
     return 0;
 }
 
+static void key(oa_host *host, int id)
+{
+    oa_key_event ev = { .id = (uint8_t)id, .kind = OA_KEY_PRESS };
+    host->api.emit(host, OA_TOPIC_KEY, &ev);
+    oa_host_dispatch_posts(host);
+}
+
 int main(int argc, char **argv)
 {
     assert(argc == 3);
@@ -76,12 +84,19 @@ int main(int argc, char **argv)
     assert(trace && portal && portal->screen() == 0);
     assert(blit_at(trace, 29, 80));   /* title */
     assert(fill_at(trace, 24, 211));  /* first rail slot */
+    if (getenv("OA_PORTAL_CARD")) {
+        key(&host, 22);               /* rail -> cards */
+        key(&host, 22);               /* Netflix -> Prime Video */
+        assert(fill_at(trace, 394, 473)); /* focused-card accent */
+    }
     const char *cap = getenv("OA_NAV_CAPTURE");
     if (cap) {
         char path[512];
         snprintf(path, sizeof path, "%s.portal", cap);
         assert(!trace->capture(path));
     }
-    puts("ok Startpagina real-asset capture: title at 29,80 and rail at 0,211");
+    puts(getenv("OA_PORTAL_CARD")
+         ? "ok Startpagina focused-card capture: title 29,80 rail 24,211 accent 394,473"
+         : "ok Startpagina real-asset capture: title 29,80 rail 24,211");
     return 0;
 }

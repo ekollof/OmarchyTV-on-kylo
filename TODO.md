@@ -60,9 +60,11 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       row are painted by the shipped portal path. The recorder snapshot,
       composited over black (`rawrgba-to-png.py --over-black`), is
       byte-identical to the on-TV fb1 portal capture (`capture_compare.py`:
-      AE=0, max=0, 0/2,073,600 changed). PORTAL-CAPTURE. Limits: default card
-      row, not live extra cards; focus/animation/title-slide states and
-      GPU/scanout remain open.
+      AE=0, max=0, 0/2,073,600 changed). `capture-portal-card-real` adds the
+      Prime Video focused-card state via two Right keys and the accent fill at
+      394,473; it is also AE=0 against `ui-card-focus.png`. PORTAL-CAPTURE.
+      Limits: default card row, not live extra cards; rail-highlight/title-
+      slide animation states and GPU/scanout remain open.
 
 - [ ] Offline full settings preview: wire a real-asset ui.dir capture and
       Mesa renderer integration, including transformed frames. Recorder alpha

@@ -32,19 +32,37 @@ Before compositing, the only difference was the background: every asset pixel,
 rail, title and card was already identical. The recorder's straight-alpha
 `(36,38,40,153)` over black yields `(22,23,24)`, exactly the TV frame.
 
+## Focused-card state
+
+`make capture-portal-card-real` sets `OA_PORTAL_CARD=1`, sends two Right key
+events through the shipped portal path (rail -> cards -> Prime Video) and
+asserts the focused-card accent fill at `394,473`. Compared with the on-TV
+`ui-card-focus.png`:
+
+```
+full: AE=0 (0.000000) RMSE16=0 MAE8=0 RMSE8=0 max=0
+changed=0/2073600 (0.000000)
+```
+
+Evidence: `artifacts/analysis/live-tv-2026-11-05/offline-portal-card.png` and
+`offline-portal-card-compare.txt`.
+
 ## Limits
 
-- Default nine-card row only; the live parent-0 database with extra
-  off-screen cards is not part of this capture.
-- Focused-card state, rail-highlight animation frames, title slide/animation,
-  live text and the other portal overlays are not covered.
+- Default nine-card row and the Prime Video focused-card state only; the live
+  parent-0 database with extra off-screen cards is not part of this capture.
+- Rail-highlight animation frames, title slide/animation, live text and the
+  other portal overlays are not covered.
 - Host recorder, not GPU/Mali or HDMI/cold-start scanout.
-- No TV access was used for this capture; the reference is an earlier fb1
-  oracle.
+- No TV access was used for this capture; the references are earlier fb1
+  oracles.
 
-## Command
+## Commands
 
 ```
 make -j24 capture-portal-real
-ok Startpagina real-asset capture: title at 29,80 and rail at 24,211
+ok Startpagina real-asset capture: title 29,80 rail 24,211
+
+make -j24 capture-portal-card-real
+ok Startpagina focused-card capture: title 29,80 rail 24,211 accent 394,473
 ```
