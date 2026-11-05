@@ -1,0 +1,3 @@
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/tests/easi_probe tests/easi_probe.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic  -o build/easi-probe tools/probe/easi-probe.c
+ok easi probe: read-only ACTIVECHANNELLIST fixture and setter refusal

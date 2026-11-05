@@ -391,6 +391,19 @@ check-launcher-db-module: $(BUILD)/tests/launcher_db_module $(BUILD)/modules/mod
 	@$(BUILD)/tests/launcher_db_module $(BUILD)/modules $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
 check: check-launcher-db-module
 
+$(BUILD)/easi-probe: tools/probe/easi-probe.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
+$(BUILD)/tests/easi_probe: tests/easi_probe.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
+.PHONY: check-easi-probe
+check-easi-probe: $(BUILD)/tests/easi_probe $(BUILD)/easi-probe
+	@$(BUILD)/tests/easi_probe $(abspath $(BUILD)/easi-probe)
+check: check-easi-probe
+
 $(BUILD)/tests/service_db: tests/service_db.c common/service_db.c core/service_query.c include/openaurora/service_db.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Ithird_party $(LDFLAGS) -o $@ $(filter %.c,$^) \

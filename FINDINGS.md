@@ -38,6 +38,15 @@ reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
 first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
 capture remain open.
 
+EASI-PROBE-2026-11-05: testtool TCP1986 exposes read-only GETCHANNELLIST
+(RSN/name) and ACTIVECHANNELLIST XML (RSN/name/handle/ONID/TSID/SID/type). A
+whitelist-only probe client with bounded parsing, host fixture and ARM build
+passes; host411 ok, verify45. The TV testtool server is disabled
+(is_testtool_socket_enabled=0, TCP1986 refused). Enabling requires
+profile+restart or a live-process pause, deferred without physical recovery.
+Active LCN/visibility still need a runtime call path; no vendor process was
+paused/restarted.
+
 SERVICE-DB-2026-11-05: firmware SQLiteStreamStorage maps service table types
 0xc9/0xca/0xcb to DVBSerTable/EASISerTable/AnalogSerTable. A new read-only
 adapter and mod_service_db expose service.list v1 with 525 dumped rows

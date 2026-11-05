@@ -1,0 +1,6 @@
+full host make check: 411 ok
+ok easi probe: read-only ACTIVECHANNELLIST fixture and setter refusal
+  ok   service DB inventory: DVB/EASI/analog rows, bounded text, table order, missing-table failure
+ok service DB dump: 525 rows (445 dvb, 67 easi, 13 analog)
+ok provisional channel list: stored channel order, non-parity marker, selection and exit
+verify.cjs: 45 groups

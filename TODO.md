@@ -436,6 +436,16 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `posix_spawn("/sbin/mdev", "-s")` plus `waitpid`; the channel-list test
       uses `nftw` cleanup instead of a shell command. The display test wrappers
       remain as no-system regression guards. Host410 ok, verify45. No TV access.
+- [x] Read-only testtool/EASI probe client: recovered testtool TCP1986,
+      `GETCHANNELLIST` RSN/name format and `ACTIVECHANNELLIST` XML; added a
+      whitelist-only probe (ACTIVECHANNELLIST/GETCHANNELLIST) with bounded XML
+      parsing and setter rejection, plus host fixture and ARM build. Host411
+      ok, verify45. EASI-PROBE. Blocker: TV testtool server is disabled
+      (`is_testtool_socket_enabled=0`, TCP1986 refused). Enabling it requires a
+      profile change plus vendor restart or a live-process pause; both are
+      deferred without physical recovery. Active LCN/visibility still need a
+      runtime call path; provisional UI remains.
+
 - [x] Provisional channel-list UI: `ui_vendor` `SCREEN_CHANNELS`
       (`ui.screen=channels`) consumes the stored `service.list` channel_no/name
       query, shows a visible "PROVISIONAL STORED ORDER - NOT RUNTIME EASI"

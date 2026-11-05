@@ -19,6 +19,15 @@ error cases; two foxxum results match qemu SHA256 exactly. Verified15-file/
 vendor pair1967(zombie)/1785(live) and no-reset marker unchanged. tvssh sent
 WoL initially. No framebuffer/device operation or persistent deployment change.
 
+EASI-PROBE-2026-11-05 (host-only probe + read-only TV checks): recovered
+testtool TCP1986, GETCHANNELLIST RSN/name and ACTIVECHANNELLIST XML. Added
+tools/probe/easi-probe.c with a read-only command whitelist, bounded XML
+parsing, host fixture and ARM build; host411 ok, verify45. The TV testtool
+server is disabled (is_testtool_socket_enabled=0, TCP1986 refused). Enabling
+requires profile+restart or pausing the live vendor process, deferred without
+physical recovery. Active LCN/visibility and provisional UI replacement
+remain open; no vendor process was paused/restarted.
+
 SERVICE-DB-2026-11-05 (host-only): first core-TV data slice. Firmware
 SQLiteStreamStorage maps table types0xc9/0xca/0xcb to DVBSerTable/EASISerTable/
 AnalogSerTable. A read-only adapter reads the dumped 445 DVB/67 EASI/13 analog

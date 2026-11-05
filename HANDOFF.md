@@ -35,6 +35,13 @@ The owner then requested a review and fixes on2026-11-04. The review below
 supersedes the old clean/verified snapshot where it identifies defects; it
 does not start the pending imageCreate subsystem or persistent replacement.
 
+Latest runtime probe: [EASI-PROBE](artifacts/reports/EASI-PROBE-2026-11-05.md)
+implements the read-only testtool client (TCP1986, GETCHANNELLIST/
+ACTIVECHANNELLIST XML) with fixture/ARM coverage. The TV testtool server is
+disabled (`is_testtool_socket_enabled=0`, TCP1986 refused); enabling requires
+profile+restart or pausing the live vendor process, deferred without physical
+recovery. Active LCN/visibility and provisional UI replacement remain open.
+
 Latest core-TV data: [SERVICE-DB](artifacts/reports/SERVICE-DB-2026-11-05.md)
 adds a read-only settingsDB broadcast inventory (`service.list` v1) over
 DVBSerTable/EASISerTable/AnalogSerTable: 525 dumped rows (445 DVB/67 EASI/13
