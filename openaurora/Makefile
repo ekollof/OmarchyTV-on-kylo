@@ -78,7 +78,7 @@ endif
 LIBM ?= -lm
 
 CORE_SRC := $(wildcard core/*.c)
-CORE_OBJ := $(CORE_SRC:core/%.c=$(BUILD)/core/%.o)
+CORE_OBJ := $(CORE_SRC:core/%.c=$(BUILD)/core/%.o) $(BUILD)/common/audio_speaker.o
 CORE_DEP := $(CORE_OBJ:.o=.d)
 
 MOD_SO   := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).so)
@@ -781,6 +781,10 @@ $(BUILD)/oa-supervise: tools/boot/oa-supervise.c
 $(BUILD)/$(PROJECT): $(CORE_OBJ)
 	$(CC) $(LDFLAGS) -o $@ $(CORE_OBJ) $(LDLIBS)
 
+$(BUILD)/common/audio_speaker.o: common/audio_speaker.c include/openaurora/audio_speaker.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c -o $@ $<
+
 $(BUILD)/core/%.o: core/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c -o $@ $<
@@ -1077,6 +1081,14 @@ $(BUILD)/tests/ui_anim_review: tests/ui_anim_review.c common/ui_anim.c include/o
 
 check-ui-anim-review: $(BUILD)/tests/ui_anim_review $(BUILD)/modules/mod_ui_anim.so
 	@$(BUILD)/tests/ui_anim_review $(BUILD)/modules
+
+$(BUILD)/tests/audio_speaker: tests/audio_speaker.c common/audio_speaker.c include/openaurora/audio_speaker.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $(filter %.c,$^) $(LDLIBS)
+.PHONY: check-audio-speaker
+check-audio-speaker: $(BUILD)/tests/audio_speaker
+	@$(BUILD)/tests/audio_speaker
+check: check-audio-speaker
 
 $(BUILD)/tests/audio_curve: tests/audio_curve.c common/audio_curve.c include/openaurora/audio_curve.h
 	@mkdir -p $(dir $@)

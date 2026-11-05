@@ -18,6 +18,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 
+#include "openaurora/audio_speaker.h"
 #include "openaurora/channels.h"
 #include "openaurora/events.h"
 #include "openaurora/module.h"
@@ -253,6 +254,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  amp-profile             read immutable amplifier profile inputs\n"
                  "  audio-curve <volume>    read published AQ curve value\n"
                  "  audio-curve-dump        dump 101 published AQ curve values\n"
+                 "  audio-speaker <level> <balance>  speaker clamp/HAL balance map\n"
                  "  launcher-items <parent|all> [deleted] [outofsync]\n"
                  "                           settingsDB LauncherItem rows\n"
                  "  tuner-state             scan/lock/signal state\n"
@@ -769,6 +771,21 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         h->api.release(h,OA_SVC_AUDIO_CURVE);
         if(rc){snprintf(outbuf,outlen,"failed errno %d\n",EIO);return -1;}
         snprintf(outbuf,outlen,"curve %u\n",(unsigned)value);
+        return 0;
+    }
+    if(!strcmp(cmd,"audio-speaker")) {
+        if(force || !a1 || !a2 || a3){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        uint64_t level=0;int64_t balance=0;
+        if(decimal(a1,&level) || level>UINT_MAX ||
+           signed_decimal64(a2,&balance) ||
+           balance<INT_MIN || balance>INT_MAX){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        struct oa_audio_speaker_state state;
+        if(oa_audio_speaker_map((unsigned)level,(int)balance,&state)){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        snprintf(outbuf,outlen,"speaker level %u left %u right %u balance %u\n",
+            state.level,state.left,state.right,state.balance);
         return 0;
     }
     if(!strcmp(cmd,"hotel-state")) {

@@ -2659,6 +2659,12 @@ AUDIO-CURVE-IPC-2026-11-05 adds read-only `audio-curve <volume>` and
 reload 210 and the 101-entry dump; focused decoder/module/fixture-IPC tests
 pass. Still data-only: no speaker gain, ALSA/amp write, mute/routing/balance,
 profile/default fallback or audible acceptance.
+AUDIO-SPEAKER-MAP-2026-11-05 adds the pure
+`PLAT_VAUD_SetSpeakerVolumeBalance` mapping (level clamp100, balance clamp
+±50, HAL balance balance+50, equal left/right) and a read-only
+`audio-speaker <level> <balance>` query. Unit and real-socket assertions pass;
+the ARM core links. No speaker-id validation, HAL/ALSA/amp write, cached-volume
+short-circuit, mute/routing or audible acceptance.
 Latest [AUDIO-GAIN-TRANSPORT](artifacts/reports/AUDIO-GAIN-TRANSPORT-2026-11-01.md)
 finds that message-backed Hal_Audio_Ctrl0 can hide sendmsg failure, while the
 speaker ALSA setter updates a request cache and ignores lower failure results.

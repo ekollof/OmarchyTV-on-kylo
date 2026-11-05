@@ -429,6 +429,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       reload 210, unsigned clamp and the dump; missing provider/argument errors
       are bounded. AUDIO-CURVE-IPC. Still read-only data: no speaker/amp/ALSA
       write, mute/routing/balance, profile/default fallback or audible test.
+- [x] Speaker level/balance clamp mapping: recovered
+      `PLAT_VAUD_SetSpeakerVolumeBalance` 0x8d1c3c and added
+      `oa_audio_speaker_map`/`audio-speaker <level> <balance>`: level clamps
+      to100, balance to±50, HAL balance balance+50, equal left/right. Unit and
+      real-socket cases pass; ARM core links. AUDIO-SPEAKER-MAP. No speaker-id
+      validation, HAL/ALSA/amp write, cached-volume short-circuit or audible
+      test.
 - [ ] Integrate AQ/profile/default handling, speaker gain/table application,
       balance/output/DAP policy and amp lifecycle into native audio. Existing
       decoder-volume opcode33 is not full UI volume parity; do not invent an

@@ -136,6 +136,10 @@ async function main() {
 
         assert.equal(await command('audio-curve 10'), 'curve 110');
         assert.match(await command('audio-curve-dump'), /^curve 101 100 101 102 /);
+        assert.equal(await command('audio-speaker 50 -50'),
+            'speaker level 50 left 50 right 50 balance 0');
+        assert.equal(await command('audio-speaker 150 100'),
+            'speaker level 100 left 100 right 100 balance 100');
         assert.match(await command('amp-profile'), /^power '12Watt' prescale 27 /);
 
         assert.equal(await command('reload ui_theme'), 'ok');

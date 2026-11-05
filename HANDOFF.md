@@ -2579,6 +2579,12 @@ AUDIO-CURVE-IPC-2026-11-05 adds read-only `audio-curve <volume>` and
 `audio-curve-dump` control queries over the real socket (values 110/200,
 reload 210, 101-entry dump). It remains data-only: no gain/amp/ALSA write,
 mute/routing/balance, profile/default fallback or audible acceptance.
+AUDIO-SPEAKER-MAP-2026-11-05 adds the pure
+`PLAT_VAUD_SetSpeakerVolumeBalance` clamp/state mapping (level 100, balance
+±50, HAL balance balance+50, equal left/right) and the read-only
+`audio-speaker <level> <balance>` query. Unit and real-socket assertions pass;
+the ARM core links. No speaker-id/HAL/ALSA/amp write, mute/routing or audible
+acceptance.
 Read [AUDIO-GAIN-TRANSPORT](artifacts/reports/AUDIO-GAIN-TRANSPORT-2026-11-01.md)
 before gain integration: scalar returns are real, but message-backed HAL0 hides
 send failure and the paired ALSA getter only sees a request cache. The receiver
