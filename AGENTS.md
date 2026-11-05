@@ -269,6 +269,44 @@ Use the explicit TARGET=tv BUILD=build-tv-v3 command in
 [openaurora/docs/ARCHITECTURE.md](openaurora/docs/ARCHITECTURE.md);
 `make tv` hardcodes build-tv and `make clean` also removes build-tv.
 
+## Review and acceptance lessons
+
+- Review the fix, not only its report. Reproduce the failing case, then run the
+  corrected path at the reviewed commit/build. Stale counts or logs from before
+  the fix are not evidence. Keep focused sanitizer runs and the full suite
+  distinct; neither substitutes for the other.
+- A regression must distinguish the defect. If a zero-valued input hides the
+  bug, add a nonzero case; never rewrite expectations just to make the model
+  match. Decompiler output and resource coordinates can invert a subtraction or
+  hide a repeated term; verify the actual instructions and a contrasting case
+  (for example, `SVGGrid` repeats the left inset in the right edge, which a
+  zero-inset portal cannot detect).
+- When a layout path both consumes and mutates state, record which values are
+  captured before the mutation and which are read after it. Do not derive a
+  column step and the insets it later overwrites from the same post-update
+  struct; model first-paint and settled/redraw states separately where they
+  differ.
+- Resource coordinates are not runtime coordinates. Before deriving insets from
+  SVG/rectangle data, verify the renderer's transform-before-storage path. A
+  negative or absurd offset is a prompt to inspect transform/container
+  semantics, not to accept the arithmetic or declare the screen dead.
+- Control-plane consumers must validate provider-reported axes and byte counts
+  against the service contract before any multiplication, allocation, hash walk
+  or copy. Test oversized, zero, negative and `INT_MAX` values, and release the
+  provider buffer on every error path. This protects against replacement
+  providers, not just the shipped one.
+- A differential that only compares the vendor to a host library is incomplete.
+  Execute the real module/service on the same corpus under the target ABI
+  (ARM/qemu or TV), including rejection, empty-output and release/reload
+  invariants. External oracles are supplementary.
+- An explicitly requested test input that is missing is a failure, not a skip.
+  Keep explicit inputs separate from optional auto-discovered corpora; private
+  assets stay ignored and hash-verified.
+- A CPU-only on-TV run is not display/HAL acceptance. Record which device paths
+  were opened or avoided, verify staging removal and before/after identity, and
+  do not infer fb1/region/MAU/scanout ownership from a successful file test.
+  fb1 authorization does not turn a CPU test into display acceptance.
+
 ## Recovery and process safety
 
 - Never patch signed fs0/ap0/ap1, kernel, xboot, U-Boot or SPI. apdat0 (/conf)
