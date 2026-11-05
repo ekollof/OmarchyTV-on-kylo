@@ -166,20 +166,30 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       behavior. Do not call `dlclose`/module callbacks from an unowned worker.
       `display_fb` and `ir` are the existing models.
 
-- [ ] GPU/widget-surface animation parity: the current scene path uploads the
-      whole 1920x1080 canvas per paint (~129-260 ms), while the vendor animates
-      a 160x160 APNG/surface and composites on the GPU. Add dirty widget
-      surfaces or partial scene uploads driven by the recovered 10 ms
-      controller/30 ms APNG cadence, then measure on the TV. GPU-SCENE-PROBE
-      and UI-ANIMATIONS are the starting evidence.
+- [x] Firmware-shaped partial rail animation: added `display.patch` v1
+      replacement RGBA fill, dirty-rect conversion and page-rounded sync in
+      display_fb, and a `paint_rail_hl` path that patches the portal rail
+      strip `0,211 209x670` and redraws only the five rail slots/highlight.
+      Host patch + rail tests pass. TV: 10 highlight frames at scene3-5 ms/
+      pan5-8 ms, ~50 ms cadence (~450 ms total) versus 617 ms per full
+      repaint; key full paint scene52 ms/pan11 ms. RAIL-PARTIAL. Static and
+      full-paint pixels are unchanged.
 
-- [ ] Portal repaint/animation cost: the full 1920x1080 portal repaint takes
-      a median 617 ms on the TV, so the 11-frame/30 ms rail highlight stretches
-      to ~6.8 s and remote steps feel delayed. Profile display_fb present
-      (scene-to-BGRA, mirror, msync, pan) and the portal paint path, then
-      reduce or coalesce the redraw without changing the captured static
-      frames. TAKEOVER-FULL records the measured defect. No animation parity
-      claim until fixed.
+- [ ] GPU partial upload and exact animation cadence: the GPU scene path
+      still uploads the whole 1920x1080 canvas per paint (~129-260 ms), and
+      the CPU partial rail measured ~50 ms rather than the vendor 30 ms.
+      Add partial scene uploads / widget surfaces and tighten the recovered
+      10 ms controller/30 ms APNG cadence, then measure on the TV.
+      GPU-SCENE-PROBE, RAIL-PARTIAL and UI-ANIMATIONS are the starting
+      evidence.
+
+- [x] Portal repaint/animation cost: the old full 1920x1080 repaint measured a
+      median 617 ms on the TV, stretching the 11-frame/30 ms highlight to
+      ~6.8 s. The firmware-shaped rail patch now measures 3-5 ms scene +
+      5-8 ms pan per highlight frame (~50 ms cadence, ~450 ms total); a
+      key-driven full paint is 52 ms scene + 11 ms pan. TAKEOVER-FULL and
+      RAIL-PARTIAL record before/after. Exact 30 ms and GPU partial upload
+      remain separate items.
 
 - [ ] Runtime EASI/testtool: testtool TCP1986 remains disabled. The 2026-11-05
       full-control authorization covered temporary staged modules/display, not

@@ -17,7 +17,7 @@ struct ctx {
     unsigned type;
     float progress;
     int active, pending, opened, fault, result_valid;
-    int display_published, async_published, alpha_published;
+    int display_published, async_published, alpha_published, patch_published;
     struct desired queued;
     oa_display_result inflight, result;
 };
@@ -130,6 +130,31 @@ static int blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigne
 }
 static int blit(int x, int y, int w, int h, const unsigned char *rgba)
 { return blit_scaled(x, y, w, h, w, h, rgba); }
+
+static int patch_fill_rgba(int x, int y, int w, int h, int r, int g, int b, int a)
+{
+    struct ctx *c = g_ctx;
+    if (drawing(c) || w <= 0 || h <= 0 ||
+        r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255 ||
+        a < 0 || a > 255)
+        return -1;
+    int64_t right = (int64_t)x + w, bottom = (int64_t)y + h;
+    int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
+    int x1 = right > c->canvas.width ? c->canvas.width : (int)right;
+    int y1 = bottom > c->canvas.height ? c->canvas.height : (int)bottom;
+    if (x0 >= x1 || y0 >= y1) return 0;
+    for (int yy = y0; yy < y1; yy++) {
+        uint8_t *row = c->canvas.pixels +
+                       (size_t)yy * (size_t)c->canvas.width * 4u;
+        for (int xx = x0; xx < x1; xx++) {
+            uint8_t *p = row + (size_t)xx * 4u;
+            p[0] = (uint8_t)r; p[1] = (uint8_t)g;
+            p[2] = (uint8_t)b; p[3] = (uint8_t)a;
+        }
+    }
+    c->revision++;
+    return 0;
+}
 static int present(void) { errno = ENOTSUP; return -1; }
 static int info(int *w, int *h, int *bpp, int *frames)
 {
@@ -149,6 +174,7 @@ static int transform(int type, float progress)
 static const oa_display_iface display = {clear, fill, blit, blit_scaled, present, info, transform};
 static const oa_display_async_iface asynchronous = {request, latest};
 static const oa_display_alpha_iface alpha = {clear_rgba};
+static const oa_display_patch_iface patch = {patch_fill_rgba};
 static int init(const oa_host_api *api, void **out)
 {
     if (!api || api->abi != OA_ABI_VERSION || api->size < sizeof *api) return -1;
@@ -179,6 +205,8 @@ static int start(void *ud)
     c->display_published = 1;
     if (c->api->publish(c->api->priv, OA_SVC_DISPLAY_ALPHA, 1, &alpha)) return -1;
     c->alpha_published = 1;
+    if (c->api->publish(c->api->priv, OA_SVC_DISPLAY_PATCH, 1, &patch)) return -1;
+    c->patch_published = 1;
     if (c->api->publish(c->api->priv, OA_SVC_DISPLAY_ASYNC, 1, &asynchronous)) return -1;
     c->async_published = 1; return 0;
 }
@@ -197,9 +225,10 @@ static void stop(void *ud)
     struct ctx *c = ud; if (!c) return;
     (void)suspend(c);
     if (c->async_published) c->api->unpublish(c->api->priv, OA_SVC_DISPLAY_ASYNC);
+    if (c->patch_published) c->api->unpublish(c->api->priv, OA_SVC_DISPLAY_PATCH);
     if (c->alpha_published) c->api->unpublish(c->api->priv, OA_SVC_DISPLAY_ALPHA);
     if (c->display_published) c->api->unpublish(c->api->priv, OA_SVC_DISPLAY);
-    c->async_published = c->display_published = c->alpha_published = 0;
+    c->async_published = c->display_published = c->alpha_published = c->patch_published = 0;
     if (c->gpu) c->api->release(c->api->priv, OA_SVC_DISPLAY_GPU);
     c->gpu = NULL; free(c->canvas.pixels); c->canvas.pixels = NULL;
 }

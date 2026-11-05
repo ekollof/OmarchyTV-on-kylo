@@ -233,6 +233,15 @@ typedef struct {
 #define OA_SVC_DISPLAY_ALPHA "display.alpha"
 typedef struct { int (*clear_rgba)(int r, int g, int b, int a); } oa_display_alpha_iface;
 
+/* Optional widget-surface patch. Writes straight RGBA with replacement (not
+ * source-over), so a caller can restore the uniform dialog background behind
+ * an animated 160x160 rail highlight. Providers may use the changed rectangle
+ * to present only that region. */
+#define OA_SVC_DISPLAY_PATCH "display.patch"
+typedef struct {
+    int (*fill_rgba)(int x, int y, int w, int h, int r, int g, int b, int a);
+} oa_display_patch_iface;
+
 /* display.gpu v1 — explicit separate-process native scene session. Loop thread
  * only; hold provider until abandoned tickets are canceled. One pending request
  * or uncollected copied result. image fd remains caller-owned after submit;

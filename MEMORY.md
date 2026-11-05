@@ -22,6 +22,15 @@ snapshot, staging removed and watchdog reboot returned stock (1777/1572,
 pan0,0). GPU path is materially faster but still above the 30 ms widget
 cadence and not gracefully torn down. GPU-SCENE-PROBE-2026-11-05.
 
+Firmware-shaped partial rail animation, 2026-11-05: added `display.patch` v1
+replacement RGBA fill, dirty-rect conversion/page-rounded sync in display_fb,
+and a `paint_rail_hl` path that patches the portal rail strip `0,211 209x670`
+and redraws only the five rail slots/highlight. Host patch/rail tests pass. On
+the TV, 10 highlight frames measured scene3-5 ms/pan5-8 ms at ~50 ms cadence
+(~450 ms total) versus 617 ms per full repaint; a key full paint was
+scene52 ms/pan11 ms. Full-paint pixels are unchanged; GPU partial upload and
+exact 30 ms cadence remain open. RAIL-PARTIAL-2026-11-05.
+
 Control client, 2026-11-05: `oa-client` now defaults to a 5 s bounded timeout
 and supports `--no-wait`; the silent-server test covers 1.02 s timeout and
 0.00 s no-wait. `mod_ir` keeps `/dev/ttyS2` closed when BLAST succeeds unless

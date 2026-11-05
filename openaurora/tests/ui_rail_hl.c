@@ -48,7 +48,7 @@ static int timer_fire(oa_host *h, uint32_t owner, uint32_t repeat_ms)
 /* The rail highlight is the 160x160 scaled blit; returns its frame index (red channel - 1). */
 static int hl_find(const oa_nav_trace *t, int *x, int *y, int *w, int *h, int *sw, int *sh)
 {
-    int n = t->scaled_count();
+    int n = t->scaled_count(), found = -999;
     for (int i = 0; i < n; i++) {
         int rx = 0, ry = 0, rw = 0, rh = 0, rsw = 0, rsh = 0, r = -1, g = 0, b = 0, a = 0;
         if (t->scaled_at(i, &rx, &ry, &rw, &rh, &rsw, &rsh) != 0) continue;
@@ -60,9 +60,11 @@ static int hl_find(const oa_nav_trace *t, int *x, int *y, int *w, int *h, int *s
         if (h) *h = rh;
         if (sw) *sw = rsw;
         if (sh) *sh = rsh;
-        return r - 1;
+        /* The partial path does not clear the recorder trace, so the newest
+         * 160x160 highlight is the last matching blit. */
+        found = r - 1;
     }
-    return -999;
+    return found;
 }
 
 int main(int argc, char **argv)
@@ -122,10 +124,31 @@ int main(int argc, char **argv)
     assert(x == 6 && y == 461);                              /* 160x160 button window */
     assert(w == 160 && h == 160 && sw == 210 && sh == 210);
 
+    int clears0 = 0, presents0 = 0, surface_w = 0, surface_h = 0;
+    assert(!trace->counts(&clears0, &presents0, &surface_w, &surface_h));
+    assert(!command(&host, "load patch_fixture", out, sizeof out) && strstr(out, "ok"));
+    assert(!command(&host, "start patch_fixture", out, sizeof out) && !strcmp(out, "ok\n"));
+
     assert(timer_count(&host, fb->id, 10) == 1);             /* 10 ms decoder poll */
     usleep(40000);                                           /* first frame due after 30 ms */
     assert(timer_fire(&host, fb->id, 10));
     assert(hl_find(trace, NULL, NULL, NULL, NULL, NULL, NULL) == 1);  /* frame 2 */
+    int clears1 = 0, presents1 = 0;
+    assert(!trace->counts(&clears1, &presents1, &surface_w, &surface_h));
+    assert(clears1 == clears0);                               /* no full-screen clear */
+    assert(presents1 > presents0);
+    const void *patch = host.api.lookup(&host, "test.patch", 1);
+    assert(patch);
+    struct test_patch_iface {
+        unsigned (*calls)(void);
+        int (*last)(int *, int *, int *, int *);
+    };
+    const struct test_patch_iface *tp = patch;
+    assert(tp->calls() >= 1);
+    int px = 0, py = 0, pw = 0, ph = 0;
+    assert(!tp->last(&px, &py, &pw, &ph));
+    assert(px == 0 && py == 211 && pw == 209 && ph == 670);
+    host.api.release(&host, "test.patch");
 
     for (int i = 2; i < 11; i++) {
         usleep(32000);                                       /* >= the 30 ms fcTL delay */

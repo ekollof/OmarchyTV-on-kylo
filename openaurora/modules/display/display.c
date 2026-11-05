@@ -73,6 +73,10 @@ struct ctx {
     int scene_opaque; /* a full opaque fill; subsequent draws cannot reduce alpha */
     int fs_type;      /* 0 = no transition */
     float fs_p;
+
+    /* Changed scene rectangle since the last successful present. */
+    int dirty;
+    int dirty_x0, dirty_y0, dirty_x1, dirty_y1;
 };
 
 static struct ctx *g_ctx;
@@ -94,6 +98,28 @@ static void put_px(struct ctx *c, uint8_t *row, unsigned x, int r, int g, int b,
     }
 }
 
+static void mark_dirty(struct ctx *c, int x, int y, int w, int h)
+{
+    if (!c || !c->scene || w <= 0 || h <= 0)
+        return;
+    int64_t right = (int64_t)x + w, bottom = (int64_t)y + h;
+    int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
+    int x1 = right > c->scene_w ? c->scene_w : (int)right;
+    int y1 = bottom > c->scene_h ? c->scene_h : (int)bottom;
+    if (x0 >= x1 || y0 >= y1)
+        return;
+    if (!c->dirty) {
+        c->dirty = 1;
+        c->dirty_x0 = x0; c->dirty_y0 = y0;
+        c->dirty_x1 = x1; c->dirty_y1 = y1;
+        return;
+    }
+    if (x0 < c->dirty_x0) c->dirty_x0 = x0;
+    if (y0 < c->dirty_y0) c->dirty_y0 = y0;
+    if (x1 > c->dirty_x1) c->dirty_x1 = x1;
+    if (y1 > c->dirty_y1) c->dirty_y1 = y1;
+}
+
 static int fill_rect(struct ctx *c, int x, int y, int w, int h, int r, int g, int b)
 {
     if (c->closing || !c->scene)
@@ -102,7 +128,10 @@ static int fill_rect(struct ctx *c, int x, int y, int w, int h, int r, int g, in
     int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
     int x1 = (x + w) > fx ? fx : x + w;
     int y1 = (y + h) > fy ? fy : y + h;
+    if (x0 >= x1 || y0 >= y1)
+        return 0;
     if (x0 == 0 && y0 == 0 && x1 == fx && y1 == fy) c->scene_opaque = 1;
+    mark_dirty(c, x0, y0, x1 - x0, y1 - y0);
 
     for (int yy = y0; yy < y1; yy++) {
         uint8_t *row = c->scene + (size_t)yy * (size_t)fx * 4;
@@ -131,6 +160,7 @@ static int clear_rgba(int r, int g, int b, int a)
     oa_canvas canvas = {c->scene, c->scene_w, c->scene_h};
     if (oa_canvas_clear(&canvas, r, g, b, a)) return -1;
     c->scene_opaque = a == 255;
+    mark_dirty(c, 0, 0, c->scene_w, c->scene_h);
     return 0;
 }
 
@@ -145,6 +175,7 @@ static int blit(int x, int y, int w, int h, const unsigned char *rgba)
     if (!c || c->closing || !c->scene || !rgba)
         return -1;
 
+    mark_dirty(c, x, y, w, h);
     int W = c->scene_w, H = c->scene_h;
     for (int sy = 0; sy < h; sy++) {
         int dy = y + sy;
@@ -169,22 +200,54 @@ static int blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigne
     if (!c || c->closing || !c->scene || !rgba || sw <= 0 || sh <= 0 || w <= 0 || h <= 0)
         return -1;
     oa_canvas canvas = {c->scene, c->scene_w, c->scene_h};
-    return oa_canvas_blit_mipmap(&canvas, x, y, w, h, sw, sh, rgba);
+    int rc = oa_canvas_blit_mipmap(&canvas, x, y, w, h, sw, sh, rgba);
+    if (!rc) mark_dirty(c, x, y, w, h);
+    return rc;
+}
+
+static int patch_fill_rgba(int x, int y, int w, int h, int r, int g, int b, int a)
+{
+    struct ctx *c = g_ctx;
+    if (!c || c->closing || !c->scene || w <= 0 || h <= 0 ||
+        r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255 ||
+        a < 0 || a > 255)
+        return -1;
+    int64_t right = (int64_t)x + w, bottom = (int64_t)y + h;
+    int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
+    int x1 = right > c->scene_w ? c->scene_w : (int)right;
+    int y1 = bottom > c->scene_h ? c->scene_h : (int)bottom;
+    if (x0 >= x1 || y0 >= y1)
+        return 0;
+    for (int yy = y0; yy < y1; yy++) {
+        uint8_t *row = c->scene + (size_t)yy * (size_t)c->scene_w * 4;
+        for (int xx = x0; xx < x1; xx++) {
+            uint8_t *p = row + (size_t)xx * 4;
+            p[0] = (uint8_t)r; p[1] = (uint8_t)g;
+            p[2] = (uint8_t)b; p[3] = (uint8_t)a;
+        }
+    }
+    mark_dirty(c, x0, y0, x1 - x0, y1 - y0);
+    return 0;
 }
 
 /* ------------------------------------------------------- scene presentation */
 
-static void scene_to_fb(struct ctx *c)
+static void scene_to_fb_rect(struct ctx *c, int x0, int y0, int x1, int y1)
 {
     unsigned w = c->var.xres, h = c->var.yres;
+    if (x0 < 0) x0 = 0;
+    if (y0 < 0) y0 = 0;
+    if (x1 > (int)w) x1 = (int)w;
+    if (y1 > (int)h) y1 = (int)h;
+    if (x0 >= x1 || y0 >= y1) return;
     if (c->var.bits_per_pixel == 32) {
         /* The common opaque case needs no per-channel multiply. A 32-bit store
          * is also materially cheaper than four byte stores on the TV's ARM. */
-        for (unsigned y = 0; y < h; y++) {
-            uint8_t *row = c->map + (size_t)(c->back * h + y) * c->fix.line_length;
+        for (int y = y0; y < y1; y++) {
+            uint8_t *row = c->map + (size_t)(c->back * h + (unsigned)y) * c->fix.line_length;
             uint32_t *dst = (uint32_t *)row;
             const uint8_t *srow = c->scene + (size_t)y * (size_t)w * 4;
-            for (unsigned x = 0; x < w; x++) {
+            for (int x = x0; x < x1; x++) {
                 const uint8_t *p = srow + (size_t)x * 4;
                 unsigned a = p[3];
                 if (a == 255) {
@@ -199,12 +262,12 @@ static void scene_to_fb(struct ctx *c)
         }
         return;
     }
-    for (unsigned y = 0; y < h; y++) {
-        uint8_t *row = c->map + (size_t)(c->back * h + y) * c->fix.line_length;
+    for (int y = y0; y < y1; y++) {
+        uint8_t *row = c->map + (size_t)(c->back * h + (unsigned)y) * c->fix.line_length;
         const uint8_t *srow = c->scene + (size_t)y * (size_t)w * 4;
-        for (unsigned x = 0; x < w; x++) {
+        for (int x = x0; x < x1; x++) {
             const uint8_t *p = srow + (size_t)x * 4;
-            put_px(c, row, x, (p[0]*p[3]+127)/255, (p[1]*p[3]+127)/255,
+            put_px(c, row, (unsigned)x, (p[0]*p[3]+127)/255, (p[1]*p[3]+127)/255,
                    (p[2]*p[3]+127)/255, p[3]);
         }
     }
@@ -364,10 +427,12 @@ static int set_scene_transform(int type, float progress)
     if (type == 0 || progress < 0.0f || progress > 1.0f || progress != progress) {
         c->fs_type = 0;
         c->fs_p = 0.0f;
+        mark_dirty(c, 0, 0, c->scene_w, c->scene_h);
         return 0;
     }
     c->fs_type = type;
     c->fs_p = progress;
+    mark_dirty(c, 0, 0, c->scene_w, c->scene_h);
     return 0;
 }
 
@@ -378,39 +443,68 @@ static int present(void){
     if (!c || c->closing || !c->map || !c->scene)
         return -1;
 
+    int full = c->fs_type > 0;
+    /* Rotating frames without mirroring would show stale pixels outside a
+     * partial dirty rectangle, so force a full render in that mode. */
+    if (c->pan && c->frames > 1 && !c->mirror)
+        full = 1;
+    int noop = !full && !c->dirty;
+    int x0 = full ? 0 : noop ? 0 : c->dirty_x0;
+    int y0 = full ? 0 : noop ? 0 : c->dirty_y0;
+    int x1 = full ? (int)c->var.xres : noop ? (int)c->var.xres : c->dirty_x1;
+    int y1 = full ? (int)c->var.yres : noop ? (int)c->var.yres : c->dirty_y1;
+    size_t frame_bytes = (size_t)c->fix.line_length * c->var.yres;
+
     uint64_t t0 = c->profile ? monotonic_ms() : 0;
-    if (c->fs_type > 0 && c->fs_p == 0.0f)
-        memset(c->map + (size_t)c->back * c->var.yres * c->fix.line_length,
-               0, (size_t)c->var.yres * c->fix.line_length);
-    else if (c->fs_type > 0 && c->fs_p > 0.0f && c->fs_p < 1.0f)
-        warp_scene(c);
-    else
-        scene_to_fb(c);
+    if (!noop) {
+        if (c->fs_type > 0 && c->fs_p == 0.0f)
+            memset(c->map + (size_t)c->back * c->var.yres * c->fix.line_length,
+                   0, (size_t)c->var.yres * c->fix.line_length);
+        else if (c->fs_type > 0 && c->fs_p > 0.0f && c->fs_p < 1.0f)
+            warp_scene(c);
+        else
+            scene_to_fb_rect(c, x0, y0, x1, y1);
+    }
     uint64_t t1 = c->profile ? monotonic_ms() : 0;
 
-    /* Mirror the rendered frame into every frame of the layer.
+    /* Mirror the rendered rectangle into every frame of the layer.
      *
      * The vendor's DirectFB also owns this layer and flips its own two buffers, so a single
      * frame of ours alternates with a frame of theirs — visible as a one-frame flash. Filling
      * both halves means whichever frame gets scanned out is ours, and the image stays put
      * until aurora repaints. A takeover with stock stopped sets display.mirror=0; the active
-     * frame and its msync are then the only work.
+     * frame and its dirty rows are then the only work.
      */
-    size_t frame_bytes = (size_t)c->fix.line_length * c->var.yres;
-    if (c->mirror && c->frames > 1) {
-        uint8_t *src = c->map + (size_t)c->back * frame_bytes;
-        for (unsigned f = 0; f < c->frames; f++)
-            if (f != c->back)
-                memcpy(c->map + (size_t)f * frame_bytes, src, frame_bytes);
+    if (!noop && c->mirror && c->frames > 1) {
+        size_t span = (size_t)(x1 - x0) * 4u;
+        for (int y = y0; y < y1; y++) {
+            uint8_t *src = c->map + (size_t)c->back * frame_bytes +
+                           (size_t)y * c->fix.line_length + (size_t)x0 * 4u;
+            for (unsigned f = 0; f < c->frames; f++)
+                if (f != c->back)
+                    memcpy(c->map + (size_t)f * frame_bytes +
+                           (size_t)y * c->fix.line_length + (size_t)x0 * 4u, src, span);
+        }
     }
     uint64_t t2 = c->profile ? monotonic_ms() : 0;
 
-    /* Push the rendered frame out before flipping. With mirroring off the
-     * inactive frame is stale by design, so only the active frame needs sync. */
-    void *sync_base = c->mirror ? (void *)c->map : (void *)(c->map + (size_t)c->back * frame_bytes);
-    size_t sync_len = c->mirror ? c->maplen : frame_bytes;
-    if (msync(sync_base, sync_len, MS_SYNC) != 0)
-        return -1;
+    /* Push the rendered rows out before flipping. Sync only page-rounded dirty
+     * ranges (and every mirrored frame), not the whole 16.5 MB mapping. */
+    long ps = sysconf(_SC_PAGESIZE);
+    size_t page = ps > 0 ? (size_t)ps : 4096u;
+    unsigned first_frame = noop ? c->back : c->mirror ? 0 : c->back;
+    unsigned last_frame = noop ? c->back : c->mirror ? c->frames - 1 : c->back;
+    for (unsigned f = first_frame; f <= last_frame; f++) {
+        size_t start = (size_t)f * frame_bytes + (size_t)y0 * c->fix.line_length +
+                       (size_t)x0 * 4u;
+        size_t end = (size_t)f * frame_bytes + (size_t)(y1 - 1) * c->fix.line_length +
+                     (size_t)x1 * 4u;
+        start &= ~(page - 1u);
+        end = (end + page - 1u) & ~(page - 1u);
+        if (end > c->maplen) end = c->maplen;
+        if (msync(c->map + start, end - start, MS_SYNC) != 0)
+            return -1;
+    }
     uint64_t t3 = c->profile ? monotonic_ms() : 0;
 
     /* NVTGA_OSD_UpdateRegion/FlipRegion always commit through FBIOPAN_DISPLAY.
@@ -424,13 +518,14 @@ static int present(void){
     c->var.yoffset = v.yoffset;
     if (c->pan && c->frames > 1)
         c->back = (c->back + 1) % c->frames;
+    c->dirty = 0;
     if (c->profile) {
         uint64_t t4 = monotonic_ms();
         c->api->log(c->api->priv, OA_LOG_INFO,
-                    "present: scene=%llums mirror=%llums sync=%llums pan=%llums mirror=%d",
+                    "present: scene=%llums mirror=%llums sync=%llums pan=%llums mirror=%d rect=%d,%d %dx%d",
                     (unsigned long long)(t1-t0), (unsigned long long)(t2-t1),
                     (unsigned long long)(t3-t2), (unsigned long long)(t4-t3),
-                    c->mirror);
+                    c->mirror, x0, y0, x1 - x0, y1 - y0);
     }
     return 0;
 }
@@ -451,6 +546,7 @@ static const oa_display_iface g_iface = {
     .present = present, .info = info, .set_scene_transform = set_scene_transform,
 };
 static const oa_display_alpha_iface alpha_iface = {clear_rgba};
+static const oa_display_patch_iface patch_iface = {patch_fill_rgba};
 
 /* ------------------------------------------------------------------- layer */
 
@@ -652,6 +748,7 @@ static int open_layer(struct ctx *c)
     c->scene_h = (int)c->var.yres;
     c->scene = calloc((size_t)c->scene_w * (size_t)c->scene_h, 4);
     c->scene_opaque = 0;
+    c->dirty = 0;
     if (!c->scene) {
         munmap(c->map, c->maplen);
         c->map = NULL;
@@ -809,6 +906,11 @@ static int m_start(void *v)
         c->api->unpublish(c->api->priv, OA_SVC_DISPLAY);
         return -1;
     }
+    if (c->api->publish(c->api->priv, OA_SVC_DISPLAY_PATCH, 1, &patch_iface)) {
+        c->api->unpublish(c->api->priv, OA_SVC_DISPLAY_ALPHA);
+        c->api->unpublish(c->api->priv, OA_SVC_DISPLAY);
+        return -1;
+    }
 
     /* optional self-test: a colour band, so "does the layer actually show" is one command away */
     const char *test = c->api->config_get(c->api->priv, "display.test", "0");
@@ -826,6 +928,7 @@ static void m_stop(void *v)
     c->api->release(c->api->priv, OA_SVC_DISPLAY);
     c->api->unpublish(c->api->priv, OA_SVC_DISPLAY);
     c->api->unpublish(c->api->priv, OA_SVC_DISPLAY_ALPHA);
+    c->api->unpublish(c->api->priv, OA_SVC_DISPLAY_PATCH);
     /* ABI3 quiesce completed restoration and close on its owning thread. */
 }
 

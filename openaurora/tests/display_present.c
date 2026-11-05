@@ -20,8 +20,8 @@
 const oa_module *oa_module_entry(void);
 static const oa_display_iface *display;
 static const oa_display_alpha_iface *alpha;
+static const oa_display_patch_iface *patch;
 static struct fb_var_screeninfo var;
-static size_t fb_smem_len;
 static unsigned char pixels[1024];
 static uint32_t region[8], mau;
 static const char *rotate;
@@ -74,13 +74,10 @@ int __wrap_munmap(void *addr, size_t len)
 }
 int __wrap_msync(void *addr, size_t len, int flags)
 {
-    /* display.mirror=0 syncs only the active frame; mirror=1 syncs the map. */
-    size_t frame = (size_t)var.xres * 4u * var.yres;
-    assert(flags == MS_SYNC && len <= sizeof pixels);
-    /* Snapshot restore syncs the mapped fb region; present syncs either the
-     * whole map (mirror=1) or the active frame (mirror=0). */
-    assert((addr == pixels && (len == sizeof pixels || len == fb_smem_len)) ||
-           ((addr == pixels || addr == pixels + frame) && len == frame));
+    /* Snapshot restore and present sync page-rounded ranges inside the map. */
+    const unsigned char *p = addr;
+    assert(flags == MS_SYNC && len > 0);
+    assert(p >= pixels && p + len <= pixels + sizeof pixels);
     syncs++;
     if (fail_sync) { errno = EIO; return -1; }
     return 0;
@@ -104,7 +101,6 @@ int __wrap_ioctl(int fd, unsigned long request, ...)
         memset(fix, 0, sizeof *fix);
         fix->line_length = var.xres * 4;
         fix->smem_len = fix->line_length * var.yres_virtual;
-        fb_smem_len = fix->smem_len;
         return 0;
     }
     case 0x8020c86cu: memcpy(arg, region, 32); return 0;
@@ -143,6 +139,7 @@ static int publish(void *priv, const char *name, uint32_t version, const void *i
 {
     (void)priv;
     if (!strcmp(name, OA_SVC_DISPLAY_ALPHA)) { assert(version == 1); alpha = iface; return 0; }
+    if (!strcmp(name, OA_SVC_DISPLAY_PATCH)) { assert(version == 1); patch = iface; return 0; }
     assert(!strcmp(name, OA_SVC_DISPLAY) && version == 2);
     display = iface;
     return 0;
@@ -151,6 +148,7 @@ static int unpublish(void *priv, const char *name)
 {
     (void)priv;
     if (!strcmp(name, OA_SVC_DISPLAY_ALPHA)) alpha = NULL;
+    else if (!strcmp(name, OA_SVC_DISPLAY_PATCH)) patch = NULL;
     else { assert(!strcmp(name, OA_SVC_DISPLAY)); display = NULL; }
     return 0;
 }
@@ -226,6 +224,18 @@ int main(void)
     assert(pixels[0] == 13 && pixels[1] == 25 && pixels[2] == 50 && pixels[3] == 64);
     finish(ctx);
     puts("  ok   translucent canvas reaches premultiplied BGRA scanout at identity and during fade");
+
+    ctx = start(2, 2, NULL);
+    assert(alpha && patch);
+    assert(!alpha->clear_rgba(0, 0, 0, 255) && !display->present());
+    unsigned char outside[4];
+    memcpy(outside, pixels + 68, sizeof outside);
+    assert(!patch->fill_rgba(0, 0, 1, 1, 10, 20, 30, 255));
+    assert(!display->present());
+    assert(pixels[64] == 30 && pixels[65] == 20 && pixels[66] == 10 && pixels[67] == 255);
+    assert(!memcmp(outside, pixels + 68, sizeof outside));
+    finish(ctx);
+    puts("  ok   display.patch replaces a widget rectangle and presents only the dirty range");
 
     ctx = start(2, 2, NULL); /* default rotation off, second frame current */
     assert(display->clear(0x12, 0x34, 0x56) == 0);

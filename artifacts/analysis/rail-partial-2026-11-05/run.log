@@ -1,0 +1,56 @@
+[383306] INFO host         openaurora starting, modules=./modules
+[383307] INFO host         control socket ./control
+openaurora: 0 module(s) loaded, control on ./control
+[391737] INFO host         loaded plat_stub v1 (./modules/mod_plat_stub.so)
+[391737] DBG  plat_stub    service up: plat v1
+[391737] INFO host         started plat_stub
+[391737] INFO host         loaded display_fb v0.1 (./modules/mod_display_fb.so)
+[391738] INFO display_fb   /dev/fb1: 1920x1080 32bpp, 2 frame(s), back=0
+[392166] INFO display_fb   /dev/fb1: full snapshot saved (16588800 bytes, mau 0)
+[392166] INFO display_fb   region -> 1920x1080 (ok)
+[392166] DBG  display_fb   service up: display v2
+[392166] DBG  display_fb   service up: display.alpha v1
+[392166] DBG  display_fb   service up: display.patch v1
+[392166] INFO host         started display_fb
+[392166] INFO host         loaded ui_engine v1 (./modules/mod_ui_engine.so)
+[392167] DBG  ui_engine    service up: ui.engine v2
+[392167] INFO ui_engine    ui_engine started
+[392167] DBG  ui_engine    service up: ui.skin v1
+[392167] INFO host         started ui_engine
+[392168] INFO host         loaded settings v0.2 (./modules/mod_settings.so)
+[392169] INFO settings     /buffer/oa-rail-20261105/settingsDB.db open (read-only)
+[392169] DBG  settings     service up: settings v1
+[392169] DBG  settings     service up: settings.hotel v1
+[392169] DBG  settings     service up: launcher.db v1
+[392199] INFO settings     probe: m_cec_enabled=1
+[392199] INFO host         started settings
+[392199] INFO host         loaded service_db v1 (./modules/mod_service_db.so)
+[392235] DBG  service_db   service up: service.list v1
+[392235] INFO service_db   service_db: 134 rows (54 dvb, 67 easi, 13 analog) from /buffer/oa-rail-20261105/settingsDB.db
+[392235] INFO host         started service_db
+[392235] INFO host         loaded image_decode v2 (./modules/mod_image_decode.so)
+[392237] DBG  image_decode service up: image.decode v2
+[392237] INFO host         started image_decode
+[392237] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[392237] DBG  ir           service up: input v1
+[392237] INFO ir           /dev/ttyS2 open @115200 8N1
+[392237] INFO host         started ir
+[392238] INFO host         loaded ui_vendor v0.2 (./modules/mod_ui_vendor.so)
+[392273] DBG  ui_vendor    service up: ui.portal v1
+[392781] INFO ui_vendor    present: scene=56ms mirror=0ms sync=0ms pan=7ms mirror=0 rect=0,0 1920x1080
+[392781] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[392781] INFO host         started ui_vendor
+[392830] INFO ui_vendor    present: scene=4ms mirror=0ms sync=0ms pan=6ms mirror=0 rect=0,211 209x670
+[392880] INFO ui_vendor    present: scene=4ms mirror=0ms sync=0ms pan=5ms mirror=0 rect=0,211 209x670
+[392931] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=8ms mirror=0 rect=0,211 209x670
+[392981] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=7ms mirror=0 rect=0,211 209x670
+[393031] INFO ui_vendor    present: scene=4ms mirror=0ms sync=0ms pan=7ms mirror=0 rect=0,211 209x670
+[393080] INFO ui_vendor    present: scene=4ms mirror=0ms sync=0ms pan=6ms mirror=0 rect=0,211 209x670
+[393130] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=7ms mirror=0 rect=0,211 209x670
+[393181] INFO ui_vendor    present: scene=5ms mirror=0ms sync=0ms pan=7ms mirror=0 rect=0,211 209x670
+[393231] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=8ms mirror=0 rect=0,211 209x670
+[393280] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=6ms mirror=0 rect=0,211 209x670
+[407358] DBG  host         key rc=22 Right (nec 0x16)
+[407358] DBG  host         release 0x16
+[407764] INFO ui_vendor    present: scene=52ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,0 1920x1080
+[407764] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 1 rail 2 card 0

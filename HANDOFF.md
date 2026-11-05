@@ -68,6 +68,14 @@ stalled the host ~64 s; the run was killed, fb1 restored from a full snapshot
 and watchdog reboot returned stock (1777/1572, pan0,0). GPU-SCENE-PROBE;
 graceful GPU teardown, timed animation and 30 ms cadence remain open.
 
+Firmware-shaped partial rail animation, 2026-11-05: `display.patch` v1
+replacement RGBA fill, display_fb dirty-rect/page-rounded sync and a
+`paint_rail_hl` path patch the portal rail strip `0,211 209x670` and redraw
+only rail slots/highlight. Host tests pass. TV: 10 highlight frames at
+scene3-5 ms/pan5-8 ms, ~50 ms cadence (~450 ms total) versus 617 ms full
+repaint; key full paint scene52 ms/pan11 ms. Static/full path unchanged;
+GPU partial upload and exact 30 ms cadence remain. RAIL-PARTIAL.
+
 Control client, 2026-11-05: `oa-client` has a default 5 s timeout and
 `--no-wait`; `mod_ir` keeps the UART closed when BLAST succeeds unless
 `ir.device` is explicit. Silent-server test passes 1.02 s timeout / 0.00 s

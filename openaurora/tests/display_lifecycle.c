@@ -37,11 +37,9 @@ void *__wrap_mmap(void *p,size_t n,int prot,int flags,int fd,off_t offset)
 int __wrap_munmap(void *p,size_t n) { assert(p==pixels && n==sizeof pixels);return 0; }
 int __wrap_msync(void *p,size_t n,int flags)
 {
-    /* display.mirror=0 syncs only the active frame; mirror=1 syncs the map. */
-    size_t frame=(size_t)var.xres*4u*var.yres;
-    assert(flags==MS_SYNC);
-    assert((p==pixels && n==sizeof pixels) ||
-           ((p==pixels || p==pixels+frame) && n==frame));
+    const unsigned char *a=p;
+    assert(flags==MS_SYNC && n>0);
+    assert(a>=pixels && a+n<=pixels+sizeof pixels);
     return 0;
 }
 int __wrap_ioctl(int fd,unsigned long request,...)

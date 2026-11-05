@@ -1,0 +1,11 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ 23:47:02 up 1 min,  0 users,  load average: 11.78, 3.72, 1.30
+pid=1909 exe=
+pid=1768 exe=/vendor/com.nvt.idtv/aurora.elf
+appmgr=1568
+0,0
+ls: /buffer/oa-rail-20261105: No such file or directory

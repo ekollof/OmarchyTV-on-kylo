@@ -410,9 +410,11 @@ static int m_start(void *v)
     if (delay < 0) delay = 0;
     if (delay > 5000) delay = 5000;
     c->cleanup_delay_ms = (unsigned)delay;
-    const char *dev = c->api->config_get(c->api->priv, "ir.device", "");
-    if (!dev[0] && !blast_ok)
-        dev = IR_DEV;
+    static const char absent[] = "\1";
+    const char *dev = c->api->config_get(c->api->priv, "ir.device", absent);
+    if (dev[0] == '\1' && dev[1] == '\0')
+        dev = blast_ok ? "" : IR_DEV;   /* absent: fall back only without BLAST */
+    /* Explicit ir.device= (empty) always keeps the UART closed. */
     snprintf(c->dev, sizeof c->dev, "%s", dev);
     if (!c->dev[0]) {
         c->api->log(c->api->priv, OA_LOG_INFO,

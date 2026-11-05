@@ -184,6 +184,9 @@ int munmap(void *addr, size_t len)
 
 int msync(void *addr, size_t len, int flags)
 {
-    if (addr == pixels) return 0;
+    const unsigned char *p = addr;
+    if (p >= pixels && len <= fix.smem_len &&
+        (size_t)(p - pixels) <= fix.smem_len - len)
+        return 0;
     return real_msync(addr, len, flags);
 }

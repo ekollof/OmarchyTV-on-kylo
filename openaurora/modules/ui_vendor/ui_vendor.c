@@ -288,6 +288,7 @@ static void rebind_tick_cb(void *ud);
 static void on_anim(int id, int kind, const oa_anim_rect *rect, float eased, int done, void *ud);
 static void rail_hl_sync(struct ctx *c);
 static void rail_hl_tick_cb(void *ud);
+static void paint_rail_hl(struct ctx *c);
 
 /* ---------------------------------------------------------------- loading */
 
@@ -1332,6 +1333,51 @@ static void paint_channels(struct ctx *c)
         have_runtime ? "runtime" : "stored", total);
 }
 
+/* The five rail slots are a separate surface: the portal background behind
+ * them is uniform, so the 30 ms highlight only needs this strip repainted. */
+#define PORTAL_BG_R 36
+#define PORTAL_BG_G 38
+#define PORTAL_BG_B 40
+#define PORTAL_BG_A 153
+#define RAIL_STRIP_X 0
+#define RAIL_STRIP_W 209
+#define RAIL_STRIP_Y 211
+#define RAIL_STRIP_H 670
+
+static void paint_rail(struct ctx *c, int focus, int H)
+{
+    const oa_ui_engine_iface *d = c->d;
+    int y = 211;
+    for (int i = 0; i < 5; i++) {
+        if (c->screen == SCREEN_OPEN && (c->band != BAND_RAIL || i != c->rail))
+            continue;
+        int x = 0, w = 0, h = 0;
+        rail_slot(focus, i, &x, &y, &w, &h);
+        if (y + h > H)
+            break;
+        int focused = focus == i;
+        if (focused) {
+            const oa_ui_icon *hl = NULL;
+            if (c->rail_hl_n > 0) {
+                char name[32];
+                snprintf(name, sizeof name, "rail_hl%02d", c->rail_hl_frame + 1);
+                hl = find_icon(c, name);
+            }
+            if (hl)
+                /* vendor renderForeground: the highlight image is created at the button window */
+                d->blit_scaled(x - 5, y + 10, OA_RAIL_HL_W, OA_RAIL_HL_H, hl->w, hl->h, hl->rgba);
+            else
+                d->fill(x - 5, y - 5, w + 10, h + 10, 247, 148, 30);
+        }
+        d->fill(x, y, w, h, RAIL[i].r, RAIL[i].g, RAIL[i].b);
+
+        const oa_ui_icon *g = find_icon(c, RAIL[i].glyph);
+        if (g)
+            d->blit(x + (w - g->w) / 2, y + (h - g->h) / 2, g->w, g->h, g->rgba);
+        y += h;
+    }
+}
+
 static void paint(struct ctx *c)
 {
     const oa_ui_engine_iface *d;
@@ -1400,35 +1446,7 @@ static void paint(struct ctx *c)
      * move down by the difference) and gets a 5 px accent frame in the portal's orange.
      */
     int focus = c->screen == SCREEN_OPEN && c->band == BAND_RAIL ? c->rail : focus_rail(c);
-    int y = 211;
-    for (int i = 0; i < 5; i++) {
-        if (c->screen == SCREEN_OPEN && (c->band != BAND_RAIL || i != c->rail))
-            continue;
-        int x = 0, w = 0, h = 0;
-        rail_slot(focus, i, &x, &y, &w, &h);
-        if (y + h > H)
-            break;
-        int focused = focus == i;
-        if (focused) {
-            const oa_ui_icon *hl = NULL;
-            if (c->rail_hl_n > 0) {
-                char name[32];
-                snprintf(name, sizeof name, "rail_hl%02d", c->rail_hl_frame + 1);
-                hl = find_icon(c, name);
-            }
-            if (hl)
-                /* vendor renderForeground: the highlight image is created at the button window */
-                d->blit_scaled(x - 5, y + 10, OA_RAIL_HL_W, OA_RAIL_HL_H, hl->w, hl->h, hl->rgba);
-            else
-                d->fill(x - 5, y - 5, w + 10, h + 10, 247, 148, 30);
-        }
-        d->fill(x, y, w, h, RAIL[i].r, RAIL[i].g, RAIL[i].b);
-
-        const oa_ui_icon *g = find_icon(c, RAIL[i].glyph);
-        if (g)
-            d->blit(x + (w - g->w) / 2, y + (h - g->h) / 2, g->w, g->h, g->rgba);
-        y += h;
-    }
+    paint_rail(c, focus, H);
 
     for (int i = 0; i < c->nc; i++) {
         if (c->screen == SCREEN_OPEN && (c->band != BAND_CARDS || i != c->card))
@@ -1460,6 +1478,40 @@ static void paint(struct ctx *c)
 
     /* CPU commit acknowledges above; async completion acknowledges in the owned
      * sampler. Neither is liveness or independent physical scanout proof. */
+}
+
+/* A firmware-shaped partial update for the one-shot rail highlight. The
+ * vendor APNG only changes the 160x160 button window; repainting the whole
+ * 1920x1080 portal for each 30 ms frame is a software-only cost. The patch
+ * restores the uniform dialog background in the rail strip and the display
+ * provider presents only that rectangle. */
+static void paint_rail_hl(struct ctx *c)
+{
+    if (!c || !c->d || c->screen != SCREEN_PORTAL) {
+        if (c) paint(c);
+        return;
+    }
+    rail_hl_sync(c);
+    const oa_display_patch_iface *p =
+        c->api->lookup(c->api->priv, OA_SVC_DISPLAY_PATCH, 1);
+    if (!p) {
+        paint(c);
+        return;
+    }
+    int W = 0, H = 0;
+    if (c->d->info(&W, &H, NULL, NULL) || W <= 0 || H <= 0 ||
+        p->fill_rgba(RAIL_STRIP_X, RAIL_STRIP_Y, RAIL_STRIP_W, RAIL_STRIP_H,
+                     PORTAL_BG_R, PORTAL_BG_G, PORTAL_BG_B, PORTAL_BG_A)) {
+        c->api->release(c->api->priv, OA_SVC_DISPLAY_PATCH);
+        paint(c);
+        return;
+    }
+    c->api->release(c->api->priv, OA_SVC_DISPLAY_PATCH);
+    int focus = c->band == BAND_RAIL ? c->rail : -1;
+    paint_rail(c, focus, H);
+    c->scene_painted = 1;
+    if (c->d->present() != 0)
+        c->api->log(c->api->priv, OA_LOG_ERROR, "rail highlight present failed");
 }
 
 /* ----------------------------------------------------------------- module */
@@ -1692,7 +1744,7 @@ static void rail_hl_tick_cb(void *ud)
     if (c->rail_hl_frame + 1 >= c->rail_hl_n)
         c->rail_hl_play = 0;                 /* finite sequence: hold the last frame */
     uint64_t started = now_ms();
-    paint(c);
+    paint_rail_hl(c);
     if (now_ms() - started > OA_RAIL_HL_MS * 2u)
         c->rail_hl_late = 1;                 /* next tick catches up */
 }
