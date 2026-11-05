@@ -67,6 +67,8 @@ void oa_portal_plan_init(oa_portal_plan *p)
     p->paging = (oa_vrect){ 893, 984, 223, 60 };
     p->portal_mode = (oa_vrect){ 1474, 984, 250, 60 };
     /* FullScreenGridFA.svg: mRowL height 230, rowPos height 230, no mTopL/mBotL
-     * rectangles; SVGGrid::create arg 5 is the column count. */
+     * rectangles; SVGGrid::create arg 5 is the column count. The named-rectangle
+     * transform maps rowPos onto each cell surface, so the runtime left/right
+     * fields reduce to the zero-width horizontal masks. */
     p->grid = (oa_vgrid){ 1554, 720, 5, 0, 0, 230, 230, 0, 0 };
 }

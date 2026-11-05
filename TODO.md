@@ -602,10 +602,12 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       FullScreenPortalDialog; senders are doNavigateFullScreenMarket
       (0xd1aa2c, market return 0x29a) and OperationFinder::handleOperation
       case 0x79 (0xd3e6a0). The screen is reachable, not proven dead. The
-      +0x1fc/+0x200 runtime-inset contradiction and the operation-0x79 UI
-      mapping remain open; the candidate 183,180,1554x720 / 5x3 310x230
-      geometry is still unconfirmed. APPS-GRID correction.
-      STOCK-PARITY-2026-11-05. No TV access.
+      +0x1fc/+0x200 contradiction is resolved: RectHandler transforms named
+      rectangles before storage, rowPos is the transform's own mask, and the
+      stored rowPos is the cell surface, so the fields reduce to zero-width
+      horizontal masks rather than -1015/+1005. check-vgrid models first/last
+      cells and a nonzero mask. The operation-0x79 UI mapping and stock capture
+      remain open. APPS-GRID correction. STOCK-PARITY-2026-11-05. No TV access.
 
 - [x] Corrected-capture comparator and P1 blue-shift correction: the P1
       stock portal is another pre-correction BGRA capture; its corrected copy

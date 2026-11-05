@@ -154,8 +154,12 @@ stock apps-grid capture, pixel parity or TV access. Reachability audit:
 navigation code 0x80 constructs FullScreenPortalDialog; senders are
 doNavigateFullScreenMarket (0xd1aa2c, market return 0x29a) and
 OperationFinder::handleOperation case 0x79 (0xd3e6a0), so the screen is
-reachable, not proven dead. The +0x1fc/+0x200 runtime-inset contradiction and
-operation-0x79 UI mapping remain open.
+reachable, not proven dead. The +0x1fc/+0x200 contradiction is resolved:
+RectHandler transforms named rectangles before storage; rowPos is the
+transform's own mask, so stored rowPos is the cell surface and the fields
+reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
+first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
+capture remain open.
 
 Latest plat consumers: [PLAT-CONSUMERS-SOCKET](artifacts/reports/PLAT-CONSUMERS-SOCKET-2026-11-05.md)
 starts audio/source/ir/panel under a host-only plat fixture with hardware paths

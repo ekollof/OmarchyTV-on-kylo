@@ -22,13 +22,17 @@
  *       x2 = x + column step + right
  *       y2 = y + item height
  *
- * left (+0x1fc) and right (+0x200) are runtime fields, not description constants:
- * renderBackground rewrites them inside its per-cell loop from the rowPos
- * rectangle and the horizontal mask rectangles, and createListButtons calls
- * getButtonPosition afterwards. Their value therefore depends on the cell that
- * was painted last. This module applies the formula only; caller-supplied values
- * must be the ones the firmware has at that moment (a freshly constructed grid
- * has zeroes). Do not assume zero for a painted grid.
+ * left (+0x1fc) and right (+0x200) are written inside renderBackground's
+ * per-cell loop, then read by getButtonPosition. The subtraction is not
+ * rowPos-minus-cell: RectHandler applies the active HorizontalMaskScaleTransform
+ * to every named rectangle before adding it to the RectangleContainer. The
+ * transform's mask name is rowPos itself, so the stored rowPos rectangle is
+ * mapped onto the cell surface. The subtractions therefore reduce to the
+ * horizontal mask widths. For this portal the relevant horizontal masks are
+ * zero-width (mTopL/mBotL are path/polyline elements with no rectangle;
+ * mRowL/mRowR rectangles are zero-width), so the painted grid's insets are
+ * zero, not the -1015/+1005 raw rowPos-minus-cell values. A nonzero mask width
+ * is still a valid caller-supplied state; this module applies the formula only.
  */
 #ifndef OPENAURORA_VENDOR_GRID_H
 #define OPENAURORA_VENDOR_GRID_H

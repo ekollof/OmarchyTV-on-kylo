@@ -37,10 +37,16 @@ this model. A firmware reachability audit now shows that navigation code
 - `OperationFinder::handleOperation` case `0x79` at `0xd3e6a0`, after its
   launcher-item and internet checks.
 
-The screen is therefore reachable, not proven dead. This does **not** resolve
-the `+0x1fc/+0x200` grid runtime-inset contradiction, and no stock capture of
-the screen exists. The candidate `183,180,1554x720` / 5x3 `310x230` rectangles
-still assume left=right=0 and remain unconfirmed.
+The screen is therefore reachable, not proven dead. The `+0x1fc/+0x200`
+runtime-inset contradiction is now resolved: `RectHandler` applies
+`HorizontalMaskScaleTransform` to named rectangles before storing them, and
+`rowPos` is the transform's own mask. The stored `rowPos` therefore maps onto
+the cell surface, so the fields reduce to the horizontal mask widths (zero for
+this portal's path/polyline masks). The raw last-cell values `-1015/+1005` were
+an artifact of comparing untransformed `rowPos` with cell coordinates.
+
+The `183,180,1554x720` / 5x3 `310x230` geometry is now firmware-grounded, but
+no stock capture exists, so stock pixel/layout parity is still unconfirmed.
 
 ## Reusable comparator
 
@@ -72,9 +78,10 @@ Full host `make check`: **404 ok**. `verify.cjs`: **45 groups**.
 Two manifests are ready:
 
 - `portal-cards.json` — nine shared portal cards.
-- `apps-grid-regions.json` — candidate apps-grid geometry from
+- `apps-grid-regions.json` — firmware-grounded apps-grid geometry from
   `DialogFullScreenPortal.svg`: top strip `0,0,1920,162`, grid
   `183,180,1554x720`, scrollbar `1750,180,8x720`, and 5x3 `310x230` cells.
+  The rowPos mask transform resolves the runtime insets to zero-width masks.
 
 When a corrected stock apps-grid capture exists at
 `artifacts/protocol/stock-apps-grid.png`, run:
@@ -85,9 +92,9 @@ make -C openaurora compare-stock-apps-grid
 
 The target deliberately refuses to run while the file is absent; it prints
 `missing ../artifacts/protocol/stock-apps-grid.png; capture the stock apps
-grid first`. The manifest encodes our candidate geometry, not a proven stock
-layout. A real parity claim still requires the stock capture and confirmation
-that its geometry matches.
+grid first`. The manifest now encodes the firmware-resolved geometry, but it is
+not an observed stock layout. A real parity claim still requires the corrected
+capture and confirmation that the stock screen uses this geometry.
 
 ## Evidence
 
@@ -96,7 +103,8 @@ that its geometry matches.
 - `portal-compare.txt`
 - `p1-vs-old-portal.txt`
 - `apps-grid-regions.json`, `portal-cards.json`
-- `apps-grid-reachability.txt` (nav code 0x80 senders and unresolved insets)
+- `apps-grid-reachability.txt` (nav code 0x80 senders)
+- `vgrid-inset-resolution.txt`, `vgrid-inset-test.txt` (mask-transform proof)
 - `capture-compare-test.txt`, `full-host-check.txt`, `identities.txt`
 
 ## Limits

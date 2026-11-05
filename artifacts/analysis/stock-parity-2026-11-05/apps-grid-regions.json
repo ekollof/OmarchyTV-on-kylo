@@ -1,7 +1,7 @@
 {
-  "description": "Candidate apps-grid geometry from DialogFullScreenPortal.svg and UI-APPS-GRID. A fresh stock capture must confirm or correct these rectangles before parity is claimed.",
+  "description": "Firmware-grounded apps-grid geometry from DialogFullScreenPortal.svg and UI-APPS-GRID. The runtime mask transform resolves the cell insets, but a corrected stock capture is still required for pixel/layout parity.",
   "reachability": "DialogNavigator navigation code 0x80 constructs FullScreenPortalDialog. Senders: doNavigateFullScreenMarket at 0xd1aa2c (market return 0x29a) and OperationFinder::handleOperation case 0x79 at 0xd3e6a0. See apps-grid-reachability.txt.",
-  "runtime_insets": "unresolved: SVGGrid::renderBackground/getButtonPosition +0x1fc/+0x200 may place cells at negative x; these rectangles assume left=right=0 and are not stock-confirmed.",
+  "runtime_insets": "resolved: RectHandler applies HorizontalMaskScaleTransform to named rects, so rowPos maps onto the cell surface and +0x1fc/+0x200 reduce to horizontal mask widths. For this portal those masks are zero. See vgrid-inset-resolution.txt and vgrid-inset-test.txt.",
   "regions": [
     {"name": "top_strip", "x": 0, "y": 0, "w": 1920, "h": 162},
     {"name": "grid", "x": 183, "y": 180, "w": 1554, "h": 720},

@@ -2,12 +2,37 @@
  * Inputs are the rectangles dumped from the BinSVG pack:
  *   FullScreenGridFA.svg (375): mRowL (156,122,0,230), rowPos (225,121,320,230)
  *   gridFA.svg (18):           mTopL 16 high, mBotL 10 high, mRowL 69 high
- * The portal window (appsGrid) is (183,180,1554,720) in DialogFullScreenPortal.svg. */
+ * The portal window (appsGrid) is (183,180,1554,720) in DialogFullScreenPortal.svg.
+ * RectHandler transforms named rectangles before storing them, and rowPos is the
+ * HorizontalMaskScaleTransform's own mask, so the painted last-cell fields are
+ * the horizontal mask widths (zero here), not raw rowPos-minus-cell offsets. */
 #include <assert.h>
 #include <stddef.h>
 #include <stdio.h>
 
 #include "openaurora/vendor_grid.h"
+
+/* HorizontalMaskScaleTransform::transformRect maps a named rectangle by
+ * subtracting the mask origin, scaling x by surface_width/mask_width, then
+ * adding the surface origin. RectHandler stores that transformed rectangle. */
+static int mask_scale_x(int value, int mask_x, int mask_w, int surface_x, int surface_w)
+{
+    if (mask_w <= 0)
+        return value;
+    return surface_x + (value - mask_x) * surface_w / mask_w;
+}
+
+/* renderBackground stores (mask_width + transformed_rowPos_x) - surface_x.
+ * Because rowPos is the transform's own mask, transformed_rowPos_x is the
+ * surface x, so the result is the horizontal mask width. */
+static void resolved_insets(int cell_x, int cell_w, int mask_left, int mask_right,
+                            int rowpos_x, int rowpos_w, int *left, int *right)
+{
+    int tx = mask_scale_x(rowpos_x, rowpos_x, rowpos_w, cell_x, cell_w);
+    int tx1 = mask_scale_x(rowpos_x + rowpos_w, rowpos_x, rowpos_w, cell_x, cell_w);
+    *left = mask_left + tx - cell_x;
+    *right = mask_right + (cell_x + cell_w) - tx1;
+}
 
 int main(void)
 {
@@ -22,6 +47,35 @@ int main(void)
     assert(x == 0 && y == 0 && w == 310 && h == 230);
     oa_vgrid_button(&portal, 2, 4, &x, &y, &w, &h);
     assert(x == 1240 && y == 460 && w == 1550 && h == 690);
+
+    /* The raw rowPos-minus-cell values look like -1015/+1005 for the last
+     * cell, but RectHandler transforms rowPos through its own mask first.
+     * The transformed rectangle is the cell surface, so the runtime fields
+     * collapse to the zero-width horizontal masks. */
+    int left, right;
+    assert(225 - 1240 == -1015 && 1550 - 545 == 1005);
+    resolved_insets(0, 310, 0, 0, 225, 320, &left, &right);
+    assert(left == 0 && right == 0);
+    portal.left = left;
+    portal.right = right;
+    oa_vgrid_button(&portal, 0, 0, &x, &y, &w, &h);
+    assert(x == 0 && y == 0 && w == 310 && h == 230);
+
+    resolved_insets(1240, 310, 0, 0, 225, 320, &left, &right);
+    assert(left == 0 && right == 0);
+    portal.left = left;
+    portal.right = right;
+    oa_vgrid_button(&portal, 2, 4, &x, &y, &w, &h);
+    assert(x == 1240 && y == 460 && w == 1550 && h == 690);
+
+    /* A nonzero horizontal mask is preserved as an inset, not subtracted as
+     * a cell offset. (The button's step was computed before these fields were
+     * updated, so this test checks the resolved insets directly.) */
+    resolved_insets(620, 310, 5, 7, 225, 320, &left, &right);
+    assert(left == 5 && right == 7);
+
+    /* Restore the portal's real zero-mask state for the remaining checks. */
+    portal.left = portal.right = 0;
 
     /* gridFA margins: rows = (720 - 16 - 10) / 69 = 694 / 69 = 10 (truncating),
      * column step = (1280 - 8 - 8) / 3 = 1264 / 3 = 421. */
@@ -71,7 +125,7 @@ int main(void)
 
     puts("  ok   SVGGrid: rows/column step truncate like __aeabi_idiv; button origins and sizes follow the firmware formula");
     puts("  ok   portal appsGrid (5 cols, 1554x720, row step 230) yields 3 rows and a 310 px column step; fresh-grid zero insets give 310x230 buttons");
-    puts("  ok   gridFA margins reproduce mTopL/mBotL/mRowL; runtime +0x1fc/+0x200 are per-cell paint state, not tested as constants");
+    puts("  ok   gridFA margins reproduce mTopL/mBotL/mRowL; the rowPos mask transform collapses last-cell +0x1fc/+0x200 to the zero-width horizontal masks, not -1015/+1005");
     puts("  ok   DialogFullScreenPortal chrome and the 5x3 cell grid (310x230) match the BinSVG rectangles");
     return 0;
 }

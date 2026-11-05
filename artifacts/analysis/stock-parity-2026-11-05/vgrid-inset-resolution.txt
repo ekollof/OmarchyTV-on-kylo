@@ -1,0 +1,57 @@
+source: aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a
+Ghidra: artifacts/workbench/ghidra_proj/Aurora, program aurora.elf
+
+## Resolved path
+
+RectHandler::handleSVGElement @0xef6128 builds each element's EASIRect, then
+calls the active Transform virtual +0xc before RectangleContainer::addRectangle.
+For the grid cell render that virtual is
+HorizontalMaskScaleTransform::transformRect @0xeecda8.
+
+transformRect:
+  - subtracts the mask origin (transformPointRelativeToMask @0xeecd0c)
+  - scales x by surface_width / mask_width (getMask @0xeecc24)
+  - adds the surface UI rect origin
+The transformed rectangle is what RectangleContainer::getRectangle later
+returns.
+
+The HorizontalMaskScaleTransform's mask name is rowPos (the string is
+0x153ae4e, referenced through the global at 0x178df30). Therefore the stored
+rowPos rectangle is already mapped onto the cell surface:
+  transformed_rowPos.x  = cell.x
+  transformed_rowPos.x1 = cell.x1
+
+SVGGrid::renderBackground then computes:
+  +0x1fc = (horizontal_mask_width_left + transformed_rowPos.x) - cell.x
+         = horizontal_mask_width_left
+  +0x200 = (horizontal_mask_width_right + transformed_rowPos.x1) - cell.x1
+         = horizontal_mask_width_right
+
+It is not raw rowPos.x - cell.x. For DialogFullScreenPortal, the mTopL/mBotL
+horizontal masks are path/polyline elements with no rectangle and the
+FullScreenGridFA mRowL/mRowR rectangles are zero-width, so the portal's
+resolved horizontal mask widths are zero.
+
+The previously suspected last-cell values (-1015, +1005) are the raw
+rowPos-minus-cell differences and are not the painted runtime fields.
+
+## Regression
+
+openaurora/tests/vendor_grid.c now models transformRect and the renderBackground
+subtraction:
+
+- first cell (0..310): transformed rowPos 0..310, insets 0/0, button 0x0..310x230;
+- last cell (1240..1550): transformed rowPos 1240..1550, insets 0/0,
+  button 1240,460..1550,690;
+- nonzero mask (5/7): resolved insets are 5/7, not cell offsets.
+
+`make check-vgrid` passes:
+  ok rowPos mask transform collapses last-cell +0x1fc/+0x200 to the zero-width
+  horizontal masks, not -1015/+1005
+
+## Still open
+
+- The operation-0x79 UI mapping to a concrete stock key path is unresolved.
+- No stock capture of DialogFullScreenPortal/appsGrid exists.
+- The apps-grid manifest geometry is now firmware-grounded for the zero-mask
+  portal, but stock pixel/layout parity still requires the corrected capture.
