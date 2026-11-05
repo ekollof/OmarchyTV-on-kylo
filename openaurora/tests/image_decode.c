@@ -77,8 +77,48 @@ static void truncated_input(const oa_image_decode_iface *dec, const char *src,
     assert(!unlink(tmp));
 }
 
+/* Direct differential entry point: run the real DSO against exactly the input
+ * used by the vendor class probe, including generated format variants. */
+static int decode_file(char **argv)
+{
+    oa_host host;
+    assert(!oa_host_init(&host, argv[1], NULL));
+    host.log_level = -1;
+    char reply[256];
+    assert(!command(&host, "load image_decode", reply, sizeof reply));
+    assert(!command(&host, "start image_decode", reply, sizeof reply));
+    const oa_image_decode_iface *dec =
+        host.api.lookup(&host, OA_SVC_IMAGE_DECODE, 2);
+    assert(dec && dec->decode_png && dec->decode_jpeg && dec->release);
+    int w = 0, h = 0;
+    unsigned char *rgba = NULL;
+    assert(!strcmp(argv[3], "png") || !strcmp(argv[3], "jpeg"));
+    int rc = !strcmp(argv[3], "png")
+        ? dec->decode_png(argv[4], &w, &h, &rgba)
+        : dec->decode_jpeg(argv[4], &w, &h, &rgba);
+    if (rc) assert(w == 0 && h == 0 && !rgba);
+    else assert(w > 0 && h > 0 && w <= 8192 && h <= 8192 && rgba);
+    FILE *output = fopen(argv[5], "wb");
+    assert(output);
+    /* Same ARM little-endian result format as vendor_decoder_probe.c. */
+    uint32_t header[6] = { 0x56444543u, (uint32_t)rc, (uint32_t)w,
+        (uint32_t)h, (uint32_t)w * 4u, 0 };
+    assert(fwrite(header, sizeof header, 1, output) == 1);
+    if (!rc) {
+        size_t bytes = (size_t)w * (size_t)h * 4u;
+        assert(fwrite(rgba, 1, bytes, output) == bytes);
+    }
+    assert(!fclose(output));
+    if (rgba) dec->release(rgba);
+    host.api.release(&host, OA_SVC_IMAGE_DECODE);
+    assert(!command(&host, "stop image_decode", reply, sizeof reply));
+    assert(!command(&host, "unload image_decode", reply, sizeof reply));
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
+    if (argc == 6 && !strcmp(argv[2], "--decode")) return decode_file(argv);
     assert(argc == 3 || argc == 4);
     struct stat st;
     if (stat(argv[2], &st) || !S_ISDIR(st.st_mode)) {

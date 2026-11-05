@@ -101,7 +101,7 @@ typedef struct {
  * straight-RGBA buffer (top-down, w*h*4 bytes). No scaling, caching or scanout
  * is implied. Aurora uses built-in cabot_png/cabot_jpeg; this service uses the
  * shipped libpng1.6 classic API with the recovered PNG conversion sequence,
- * and the vendor libjpeg-turbo TurboJPEG API for baseline JPEG. PNG has no
+ * and the vendor libjpeg-turbo TurboJPEG API for baseline/progressive JPEG. PNG has no
  * gamma conversion; project bounds16MiB input/64MiB output/8192px axes.
  * Synchronous loop-thread-only API; worker scheduling/cancellation is pending.
  * Regular files only. v2 appends decode_jpeg after the v1 decode_png prefix.

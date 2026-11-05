@@ -1,0 +1,18 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build/agent-review-2026-11-05/core/check.o core/check.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build/agent-review-2026-11-05/core/control.o core/control.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build/agent-review-2026-11-05/core/host.o core/host.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build/agent-review-2026-11-05/core/module.o core/module.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build/agent-review-2026-11-05/core/skin.o core/skin.c
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build/agent-review-2026-11-05/tests/control_reply tests/control_reply.c build/agent-review-2026-11-05/core/check.o build/agent-review-2026-11-05/core/control.o build/agent-review-2026-11-05/core/host.o build/agent-review-2026-11-05/core/module.o build/agent-review-2026-11-05/core/skin.o -ldl -pthread -lm
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build/agent-review-2026-11-05/tests/control_transport tests/control_transport.c build/agent-review-2026-11-05/core/check.o build/agent-review-2026-11-05/core/control.o build/agent-review-2026-11-05/core/host.o build/agent-review-2026-11-05/core/module.o build/agent-review-2026-11-05/core/skin.o -ldl -pthread -lm -Wl,--wrap=send -Wl,--wrap=accept4
+[855687] INFO host         control socket /tmp/oa-control-efhRqk/control.sock
+  ok   image CLI bounds provider axes/bytes before hashing and releases under hold
+  ok   full list/status replies reach a Unix socket client intact
+  ok   control replies stay bounded for full tables and tiny buffers
+  ok   short writes, EINTR/EAGAIN, split/pipelined requests and half-close drain
+  ok   stalled reader cannot block another client; queued replies drain in order
+  ok   EPIPE and disconnected readers do not raise SIGPIPE or kill host
+  ok   overlong/NUL lines rejected whole; next valid and 511-byte commands work
+  ok   repeated stop/start, failed watch registration and socket identity cleanup
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

@@ -1,0 +1,38 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ce42813a464ade9b34229a6af08bb362ba191c515ad339fecff4430d4450f4d4  manifest.sha256
+1a1a3dcd71f78258c746db254465cf396010db7fba7b4a7bf2fb914a0ce44160  sizes.txt
+image_decode: OK
+modules/mod_image_decode.so: OK
+thumbs/launcher_app_thumb336: OK
+thumbs/launcher_app_thumb354: OK
+thumbs/launcher_app_thumb355: OK
+thumbs/launcher_app_thumb356: OK
+thumbs/launcher_app_thumb368: OK
+thumbs/launcher_app_thumb385: OK
+thumbs/launcher_app_thumb476: OK
+thumbs/launcher_app_thumb495: OK
+thumbs/launcher_app_thumb61: OK
+jpeg/DMR-large.jpg: OK
+jpeg/DMR-small.jpg: OK
+jpeg/foxxum_1685: OK
+jpeg/foxxum_3753: OK
+   499216 image_decode
+    40076 modules/mod_image_decode.so
+    14453 thumbs/launcher_app_thumb336
+    13474 thumbs/launcher_app_thumb354
+    14981 thumbs/launcher_app_thumb355
+    16075 thumbs/launcher_app_thumb356
+     3636 thumbs/launcher_app_thumb368
+    16596 thumbs/launcher_app_thumb385
+     4456 thumbs/launcher_app_thumb476
+     1703 thumbs/launcher_app_thumb495
+     3571 thumbs/launcher_app_thumb61
+     7816 jpeg/DMR-large.jpg
+     2294 jpeg/DMR-small.jpg
+    12329 jpeg/foxxum_1685
+     8887 jpeg/foxxum_3753
+   659563 total

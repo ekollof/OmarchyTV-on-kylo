@@ -1206,7 +1206,7 @@ check-ui-skin-socket: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BU
 check: check-ui-skin-socket
 
 .PHONY: check-vendor-decoder
-check-vendor-decoder: $(BUILD)/tests/vendor_decoder_probe.so
+check-vendor-decoder: $(BUILD)/tests/vendor_decoder_probe.so $(BUILD)/tests/image_decode $(BUILD)/modules/mod_image_decode.so
 	@test "$(TARGET)" = tv || { echo "check-vendor-decoder requires TARGET=tv"; exit 2; }
 	@BUILD=$(BUILD) python3 tests/vendor_decoder.py --build $(BUILD)
 

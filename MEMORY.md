@@ -1,4 +1,23 @@
-# Current project state — last verified 2026-11-04
+# Current project state — last verified 2026-11-05
+
+Current review: AGENT-REVIEW-2026-11-05 audits8ebacd2..40f2f66 and its changed
+TODO checks. The actual production decoder DSO now runs on every vendor-class
+comparison input under ARM/qemu; external library oracles alone did not establish
+that before. All maintained variants and the two durable foxxum JPEGs match.
+CLI image-decode now rejects provider dimensions beyond the documented axes/
+byte limits before hashing, including ARM32 overflow cases; buffer/service
+cleanup under hold is tested. Grid firmware was independently decompiled;
+the zero-mask result stands, with the supporting right-edge subtraction fixed.
+Fresh10ca8ac instructions also expose a missing second left inset in the actual
+button right edge; helper and nonzero-inset tests are corrected. Portal zero-
+inset geometry is unchanged; no native-getter execution/visual parity claimed.
+See the review report for current test/TV evidence and remaining acceptance.
+Fresh strict host make check, focused leak-enabled ASan/UBSan and ARM/qemu
+decoder/control checks pass. On TV the9 PNG/2 DMR image unit passes lifecycle/
+error cases; two foxxum results match qemu SHA256 exactly. Verified15-file/
+659563-byte staging removed/no helper; boot71f7eb63-727f-4b9a-a9c7-2b04dc3f9197,
+vendor pair1967(zombie)/1785(live) and no-reset marker unchanged. tvssh sent
+WoL initially. No framebuffer/device operation or persistent deployment change.
 
 AMP-VIDEO-OWNER-2026-11-04 adds firmware/relocation evidence only: video24 is
 extin, whose actual open/close callbacks have no input teardown; the similarly
@@ -26,8 +45,9 @@ ARM worker unit passed all four groups on the TV's actual glibc/pthread.
 Hash checked before execution; staging removed/no helper; boot ID and vendor
 PIDs1967/1785 unchanged, no-reset retained. No device or framebuffer was opened.
 Evidence: amp-owner-tv-2026-11-04. Current permission allows non-display tests
-and view-only interrogation; fb1 and stock operation must remain untouched.
-This supersedes historical offline-only restrictions in older entries below.
+and view-only interrogation in that milestone. On2026-11-05 the owner also
+reauthorized temporary fb1 tests, with stock state/access restored afterward;
+this supersedes those historical fb1/offline restrictions, not takeover limits.
 
 AMP-I2C-2026-11-04 adds owned fixed-endpoint bus3/address34 transport, native
 ARM32 syscalls and explicit write permission/Init boolean adapter. Fresh
@@ -87,11 +107,10 @@ This supersedes static-only comparison for the image calculation. Native
 profile/image ownership, hardware lifecycle and audible acceptance remain open.
 No TV access; the owner's offline-only restriction remains in force.
 
-Current owner constraint,2026-11-04: "You can test on the TV, as long as you
-don't use the active display (fb1)." Non-display tests/view-only queries are
-reauthorized; fb1 and stock operation must stay untouched. This supersedes the
-earlier "Don't touch the TV" restriction. No persistent replacement or boot
-changes. The historical offline-only entries describe their original runs.
+Current owner constraint,2026-11-05: TV tests including fb1 are reauthorized.
+Preserve/restore stock display/operation/access. This supersedes the earlier
+fb1 exclusion and offline-only restriction. No persistent replacement, boot
+changes or vendor/watchdog takeover. Older restrictions describe original runs.
 
 STOCK-PARITY-2026-11-05 (offline): P1 stock portal is another pre-correction
 BGRA capture and is blue-shifted; the corrected copy is in
@@ -104,7 +123,8 @@ apps-grid capture, pixel parity or TV access; the geometry is firmware-grounded
 but not an observed stock layout. Reachability audit: navigation code 0x80 constructs
 FullScreenPortalDialog; senders are doNavigateFullScreenMarket (0xd1aa2c,
 market return 0x29a) and OperationFinder::handleOperation case 0x79
-(0xd3e6a0), so the screen is reachable, not proven dead. The +0x1fc/+0x200
+(0xd3e6a0), proving conditional compiled entry paths; a working stock key path
+on this model remains unverified. The +0x1fc/+0x200
 contradiction is resolved: RectHandler transforms named rectangles before
 storage; rowPos is the transform's own mask, so stored rowPos is the cell
 surface and the fields reduce to zero-width horizontal masks, not -1015/+1005.

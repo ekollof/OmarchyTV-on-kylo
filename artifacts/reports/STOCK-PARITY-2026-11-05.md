@@ -37,7 +37,8 @@ this model. A firmware reachability audit now shows that navigation code
 - `OperationFinder::handleOperation` case `0x79` at `0xd3e6a0`, after its
   launcher-item and internet checks.
 
-The screen is therefore reachable, not proven dead. The `+0x1fc/+0x200`
+These are conditional compiled entry paths, not proof of a working stock key
+path on this model (2026-11-05 review correction). The `+0x1fc/+0x200`
 runtime-inset contradiction is now resolved: `RectHandler` applies
 `HorizontalMaskScaleTransform` to named rectangles before storing them, and
 `rowPos` is the transform's own mask. The stored `rowPos` therefore maps onto

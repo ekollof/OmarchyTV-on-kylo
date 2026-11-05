@@ -8,11 +8,11 @@ authorized live checks are recorded below and in MEMORY.md.
 
 ## Current objective and safety
 
-Latest owner instruction,2026-11-04: "You can test on the TV, as long as you
-don't use the active display (fb1)." Non-display tests/read-only interrogation
-are reauthorized; keep fb1 and stock operation untouched. This supersedes the
-earlier offline-only override; historical offline-only entries below describe
-their original runs. No persistent replacement or boot-hook changes.
+Latest owner instructions,2026-11-05: "You can test on the TV if you need to"
+and "You can also use fb1." Temporary display tests are reauthorized with stock
+state/access restored afterward. Historical offline/fb1 exclusions below describe
+their original runs. No persistent replacement, boot-hook changes or stock
+Aurora/watchdog takeover is authorized.
 
 Full vendor parity except telemetry/advertising, with reloadable modules and
 eventually native OmarchyTV. Replacement is incomplete. November 1 owner
@@ -37,8 +37,12 @@ does not start the pending imageCreate subsystem or persistent replacement.
 
 ## Immediate continuation point
 
-Owner requested finish/handoff/commit/push/stop. This stop closes only the
-video24 static lifetime trace, not the full replacement goal. Resume from
+Current owner requested review/fixes and TODO verification after40f2f66. Read
+[AGENT-REVIEW](artifacts/reports/AGENT-REVIEW-2026-11-05.md) for the direct
+production/vendor decoder comparison, CLI dimension guard, missing second left
+inset in grid button right edges and checked-milestone
+audit. The prior stop below is superseded by that review request. It closed only
+the video24 static trace, not the replacement goal. Audio continuation remains
 [AMP-VIDEO-OWNER](artifacts/reports/AMP-VIDEO-OWNER-2026-11-04.md): extin's
 actual fd open/close callbacks are simple; the mutating release_func is reached
 through input selection. ELF .rodata relocations prove the callback binding
@@ -46,9 +50,11 @@ despite absent Ghidra refs. Private controls forward to EX_PLAT. Next trace
 shipped libv4l2_fd_open before choosing a native backend, then coherent board/
 fd/retained-image/worker/module lifetime. Do not retry cold MCU calls or infer
 exclusive authority from static callbacks. New ghidra_extin project is durable.
-This item changes docs/evidence only, so no new runtime suite or TODO gate was
-closed. tvssh sent WoL before the endpoint metadata read; no device open,
-MCU call, staging or fb1 access. No boot/PID continuity sample this time.
+That earlier video24 item changed docs/evidence only and had no runtime suite;
+its metadata read followed WoL with no device/MCU/fb1 access or continuity sample.
+The current review does include decoder CPU/lifecycle tests on TV and fresh
+host/sanitizer/ARM checks; staging removed/no helper, boot/vendor pair/no-reset
+retained. No framebuffer was used. See AGENT-REVIEW for identities and limits.
 
 [DISPLAY-CLEANUP](artifacts/reports/DISPLAY-CLEANUP-2026-11-04.md) fixes display
 snapshot failure discard. Suspend remains synchronous but returns errors and
@@ -154,7 +160,8 @@ stock apps-grid capture, pixel parity or TV access. Reachability audit:
 navigation code 0x80 constructs FullScreenPortalDialog; senders are
 doNavigateFullScreenMarket (0xd1aa2c, market return 0x29a) and
 OperationFinder::handleOperation case 0x79 (0xd3e6a0), so the screen is
-reachable, not proven dead. The +0x1fc/+0x200 contradiction is resolved:
+compiled with conditional entry paths; a working stock key path remains
+unverified on this model. The +0x1fc/+0x200 contradiction is resolved:
 RectHandler transforms named rectangles before storage; rowPos is the
 transform's own mask, so stored rowPos is the cell surface and the fields
 reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers

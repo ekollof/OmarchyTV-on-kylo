@@ -19,7 +19,7 @@
  *   SVGGrid::getButtonPosition(row, col, EASIRect&)  0x10ca8ac
  *       x = col * column step + left
  *       y = row * row step    + top
- *       x2 = x + column step + right
+ *       x2 = x + left + column step + right
  *       y2 = y + item height
  *
  * left (+0x1fc) and right (+0x200) are written inside renderBackground's

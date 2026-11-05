@@ -1,4 +1,6 @@
 #include <assert.h>
+#include <errno.h>
+#include <limits.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +10,63 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include "host.h"
+
+static int image_w, image_h, image_held, image_freed;
+/* Large enough for the old missing-axis-guard case too: its regression fails
+ * by return value without deliberately reading outside a fixture allocation. */
+static unsigned char image_pixels[8193u * 4u];
+static int image_decode(const char *path, int *w, int *h, unsigned char **rgba)
+{
+    assert(path && image_held);
+    *w = image_w; *h = image_h; *rgba = image_pixels;
+    return 0;
+}
+static void image_release(void *rgba)
+{
+    assert(image_held && rgba == image_pixels);
+    image_freed++;
+}
+static const oa_image_decode_iface image_iface = {
+    image_decode, image_release, image_decode
+};
+static const void *image_lookup(void *priv, const char *name, uint32_t version)
+{
+    (void)priv;
+    assert(!strcmp(name, OA_SVC_IMAGE_DECODE) && version == 2 && !image_held);
+    image_held = 1;
+    return &image_iface;
+}
+static void image_unhold(void *priv, const char *name)
+{
+    (void)priv;
+    assert(image_held && !strcmp(name, OA_SVC_IMAGE_DECODE));
+    image_held = 0;
+}
+static void image_bounds(oa_host *h)
+{
+    oa_host_api saved = h->api;
+    h->api.lookup = image_lookup;
+    h->api.release = image_unhold;
+    const int sizes[][2] = {
+        {8193, 1}, {1, 8193}, {8192, 2049}, {INT_MAX, INT_MAX}, {0, 1}, {1, 1}
+    };
+    for (unsigned i = 0; i < sizeof sizes / sizeof sizes[0]; i++) {
+        image_w = sizes[i][0]; image_h = sizes[i][1]; image_freed = 0;
+        char line[] = "image-decode fixture", reply[128], expected[128];
+        int rc = oa_control_command(h, line, reply, sizeof reply);
+        if (i < 5) {
+            assert(rc == -1);
+            snprintf(expected, sizeof expected, "failed errno %d\n",
+                     i < 4 ? EOVERFLOW : EINVAL);
+            assert(!strcmp(reply, expected));
+        } else {
+            assert(!rc && !strncmp(reply, "image 1x1 fnv ", 14));
+        }
+        assert(image_freed == 1 && !image_held);
+    }
+    h->api = saved;
+    puts("  ok   image CLI bounds provider axes/bytes before hashing and releases under hold");
+}
 
 static void query(oa_host *h, const char *text, size_t cap, const char *expected)
 {
@@ -87,6 +146,7 @@ int main(void)
     oa_host *h = calloc(1, sizeof *h);
     assert(h);
     assert(oa_host_init(h, ".", NULL) == 0);
+    image_bounds(h);
     static const char long_name[] = "dependency_or_service_with_a_long_distinct_name";
     oa_module desc = { .version = "test" };
     for (int i = 0; i < OA_REQUIRES_MAX; i++) desc.requires[i] = long_name;

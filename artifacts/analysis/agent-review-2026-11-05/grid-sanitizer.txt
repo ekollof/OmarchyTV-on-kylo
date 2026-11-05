@@ -1,0 +1,7 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer -fsanitize=address,undefined -o build/agent-review-sanitize-2026-11-05/tests/vendor_grid tests/vendor_grid.c common/vendor_grid.c
+  ok   SVGGrid: rows/column step truncate like __aeabi_idiv; button origins and sizes follow the firmware formula
+  ok   portal appsGrid (5 cols, 1554x720, row step 230) yields 3 rows and a 310 px column step; fresh-grid zero insets give 310x230 buttons
+  ok   gridFA margins reproduce mTopL/mBotL/mRowL; the rowPos mask transform collapses last-cell +0x1fc/+0x200 to the zero-width horizontal masks, not -1015/+1005
+  ok   DialogFullScreenPortal chrome and the 5x3 cell grid (310x230) match the BinSVG rectangles
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

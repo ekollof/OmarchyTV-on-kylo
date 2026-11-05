@@ -1,0 +1,8 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+  ok   image decode: PNG and JPEG RGBA match references, errors reject and service reloads
+a74cd871912032d59ffc5a7e2f9418df4b5c0b288180476a57be86ec14b2154a  foxxum_1685.raw
+b62d700d366a0f8ed082c6cb72532c060fc68585ad29869bd973984dc3681877  foxxum_3753.raw

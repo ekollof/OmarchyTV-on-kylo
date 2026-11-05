@@ -1,3 +1,16 @@
+AGENT-REVIEW-2026-11-05: the original vendor-decoder harness compared shipped
+classes with Pillow/host TurboJPEG, not directly with our DSO on generated
+variants. The maintained differential now runs both ARM implementations on all
+same inputs, including CMYK rejection and the two durable foxxum JPEGs. All
+match. Missing explicit extra inputs fail instead of silently skipping. The
+new CLI lacked the service's axis/byte checks before hashing; bounded-provider
+regressions now cover host/sanitizer/ARM. Grid firmware independently supports
+zero side-mask insets; corrected a reversed right-edge formula in its evidence.
+The actual getButtonPosition right edge includes the left inset a second time:
+fresh10ca8ac ARM proves it; oa_vgrid_button and two wrong test oracles now agree.
+Zero-inset portal appearance is unchanged; no native-getter execution claimed.
+No complete decoder/frame/worker/display or native authority claim follows.
+
 AMP-VIDEO-OWNER-2026-11-04 corrects the remaining endpoint ambiguity: video24
 is extin, not established VPLT ownership. Its simple comp_release fd callback
 is distinct from comp_release_func, which can disconnect input through s_input.
@@ -16,8 +29,9 @@ the stock capture exists. Host404 ok, verify45. No stock apps-grid capture,
 pixel parity or TV access; the geometry is firmware-grounded but not an
 observed stock layout. Reachability audit: navigation code 0x80 constructs FullScreenPortalDialog;
 senders are doNavigateFullScreenMarket (0xd1aa2c, market return 0x29a) and
-OperationFinder::handleOperation case 0x79 (0xd3e6a0), so the screen is
-reachable, not proven dead. The +0x1fc/+0x200 contradiction is resolved:
+OperationFinder::handleOperation case 0x79 (0xd3e6a0), proving conditional
+compiled entry paths; a stock key path on this model is unverified. The
++0x1fc/+0x200 contradiction is resolved:
 RectHandler transforms named rectangles before storage; rowPos is the
 transform's own mask, so stored rowPos is the cell surface and the fields
 reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers

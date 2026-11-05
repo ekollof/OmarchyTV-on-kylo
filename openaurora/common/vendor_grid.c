@@ -49,7 +49,8 @@ void oa_vgrid_button(const oa_vgrid *g, int row, int col, int *x, int *y, int *x
     step = oa_vgrid_col_step(g);
     if (x) *x = col * step + g->left;
     if (y) *y = row * g->row_step + g->top;
-    if (x2) *x2 = col * step + g->left + step + g->right;
+    /* The shipped getter adds +0x1fc both to x and again to x2. */
+    if (x2) *x2 = col * step + g->left + g->left + step + g->right;
     if (y2) *y2 = row * g->row_step + g->top + g->item_h;
 }
 

@@ -263,6 +263,13 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
              * "unsupported" status from the second attempt. */
             rc = jpeg_rc ? (png_rc == -EINVAL ? -EINVAL : jpeg_rc) : 0;
         }
+        /* Match the service's documented bounds and the ui_engine consumer.
+         * A replacement provider's dimensions must not overflow the ARM32
+         * byte count or make the control-plane hash walk unbounded memory. */
+        if (!rc && (w > 8192 || hgt > 8192 ||
+            (w > 0 && hgt > 0 &&
+             (uint64_t)(unsigned)w * (unsigned)hgt * 4u > 64u * 1024u * 1024u)))
+            rc = -EOVERFLOW;
         if (rc || w <= 0 || hgt <= 0 || !rgba) {
             if (rgba) dec->release(rgba);
             h->api.release(h, OA_SVC_IMAGE_DECODE);

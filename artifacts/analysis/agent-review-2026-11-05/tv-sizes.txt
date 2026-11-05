@@ -1,0 +1,16 @@
+499216 image_decode
+ 40076 modules/mod_image_decode.so
+ 14453 thumbs/launcher_app_thumb336
+ 13474 thumbs/launcher_app_thumb354
+ 14981 thumbs/launcher_app_thumb355
+ 16075 thumbs/launcher_app_thumb356
+  3636 thumbs/launcher_app_thumb368
+ 16596 thumbs/launcher_app_thumb385
+  4456 thumbs/launcher_app_thumb476
+  1703 thumbs/launcher_app_thumb495
+  3571 thumbs/launcher_app_thumb61
+  7816 jpeg/DMR-large.jpg
+  2294 jpeg/DMR-small.jpg
+ 12329 jpeg/foxxum_1685
+  8887 jpeg/foxxum_3753
+659563 total

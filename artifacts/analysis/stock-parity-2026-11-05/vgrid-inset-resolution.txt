@@ -17,15 +17,23 @@ returns.
 
 The HorizontalMaskScaleTransform's mask name is rowPos (the string is
 0x153ae4e, referenced through the global at 0x178df30). Therefore the stored
-rowPos rectangle is already mapped onto the cell surface:
-  transformed_rowPos.x  = cell.x
-  transformed_rowPos.x1 = cell.x1
+rowPos rectangle is already mapped onto the inner surface (equal to the cell
+for this portal's zero masks):
+  transformed_rowPos.x  = surface.x
+  transformed_rowPos.x1 = surface.x1
 
 SVGGrid::renderBackground then computes:
-  +0x1fc = (horizontal_mask_width_left + transformed_rowPos.x) - cell.x
+  +0x1fc = (horizontal_mask_width_left + transformed_rowPos.x) - surface.x
          = horizontal_mask_width_left
-  +0x200 = (horizontal_mask_width_right + transformed_rowPos.x1) - cell.x1
+  +0x200 = (horizontal_mask_width_right + surface.x1) - transformed_rowPos.x1
          = horizontal_mask_width_right
+
+2026-11-05 review correction: the earlier right-edge subtraction was reversed.
+Here surface is the inner cell rectangle after subtracting the side-mask widths,
+as passed to HorizontalMaskScaleTransform::setSurfaceUIRect. The left expression
+also subtracts surface.x. With zero side masks surface equals cell; with nonzero
+masks the self-mask transform still cancels to the mask widths. Fresh complete
+decompilation/ARM evidence: ../agent-review-2026-11-05/grid-firmware.txt.
 
 It is not raw rowPos.x - cell.x. For DialogFullScreenPortal, the mTopL/mBotL
 horizontal masks are path/polyline elements with no rectangle and the

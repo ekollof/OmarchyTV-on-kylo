@@ -4,6 +4,15 @@ Offline only. The shipped `PngImageDecoderImpl` and `JpegImageDecoder` classes
 were executed under qemu through an ARM LD_PRELOAD probe. The probe runs before
 the vendor `main`, so no vendor UI, HAL device, framebuffer or TV is touched.
 
+2026-11-05 review: the original harness compared those classes with Pillow/host
+TurboJPEG only. It did not run our service on generated inputs. The maintained
+command now also builds/runs tests/image_decode --decode with the real ARM DSO
+on every same input, comparing raw pixels/dimensions or rejection invariants
+directly. All26 inputs pass, including two durable foxxum files now automatically
+selected from workbench/decoder-corpus. Explicit missing extras fail instead of
+silently skipping. See AGENT-REVIEW-2026-11-05 for current logs and separate TV
+CPU confirmation; this report's original run/results remain offline evidence.
+
 ## Method
 
 `tests/vendor_decoder_probe.c` is loaded with `LD_PRELOAD` into

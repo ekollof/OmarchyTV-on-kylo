@@ -1,0 +1,37 @@
+make: Entering directory '/home/ekollof/Work/tvhack/openaurora'
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -o build-tv-v3/agent-review-2026-11-05/tests/vendor_decoder_probe.so tests/vendor_decoder_probe.c -ldl
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/agent-review-2026-11-05/core/check.o core/check.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/agent-review-2026-11-05/core/control.o core/control.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/agent-review-2026-11-05/core/host.o core/host.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/agent-review-2026-11-05/core/module.o core/module.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -MMD -MP -c -o build-tv-v3/agent-review-2026-11-05/core/skin.o core/skin.c
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -Icore  -o build-tv-v3/agent-review-2026-11-05/tests/image_decode tests/image_decode.c build-tv-v3/agent-review-2026-11-05/core/check.o build-tv-v3/agent-review-2026-11-05/core/control.o build-tv-v3/agent-review-2026-11-05/core/host.o build-tv-v3/agent-review-2026-11-05/core/module.o build-tv-v3/agent-review-2026-11-05/core/skin.o -ldl -pthread -lm
+../artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc -Iinclude -D_GNU_SOURCE  -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared -MMD -MP -o build-tv-v3/agent-review-2026-11-05/modules/mod_image_decode.so modules/image_decode/image_decode.c  -ldl
+ok vendor png launcher_app_thumb336: RGBA exact
+ok vendor png launcher_app_thumb354: RGBA exact
+ok vendor png launcher_app_thumb355: RGBA exact
+ok vendor png launcher_app_thumb356: RGBA exact
+ok vendor png launcher_app_thumb368: RGBA exact
+ok vendor png launcher_app_thumb385: RGBA exact
+ok vendor png launcher_app_thumb476: RGBA exact
+ok vendor png launcher_app_thumb495: RGBA exact
+ok vendor png launcher_app_thumb61: RGBA exact
+ok vendor png variant gray1: RGBA exact
+ok vendor png variant gray2: RGBA exact
+ok vendor png variant gray4: RGBA exact
+ok vendor png variant gray8: RGBA exact
+ok vendor png variant graya8: RGBA exact
+ok vendor png variant palette: RGBA exact
+ok vendor png variant palette_trns: RGBA exact
+ok vendor png variant rgb16: RGBA exact
+ok vendor png variant rgba16: RGBA exact
+ok vendor png variant interlaced: RGBA exact
+ok vendor png variant gamma: RGBA exact
+ok vendor jpeg DMR-small.jpg: max channel delta 0, mean 0.000
+ok vendor jpeg DMR-large.jpg: max channel delta 0, mean 0.000
+ok vendor jpeg variant progressive: max channel delta 0, mean 0.000
+ok vendor jpeg variant cmyk: vendor rc=6, TurboJPEG rejects
+ok vendor jpeg extra foxxum_1685: max channel delta 0, mean 0.000
+ok vendor jpeg extra foxxum_3753: max channel delta 0, mean 0.000
+ok production/vendor decoder differential: 9 PNG + variants, 2 JPEG + progressive/CMYK
+make: Leaving directory '/home/ekollof/Work/tvhack/openaurora'

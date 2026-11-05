@@ -20,6 +20,11 @@ and lifecycle/error acceptance. Recorder alpha composition is verified, but
 its captures do not apply scene transforms. The report distinguishes the
 passing committed build from the separate unfinished source edits.
 
+2026-11-05 follow-up review covers all added/changed checks since8ebacd2,
+including the socket fixtures, decoder comparison and grid/capture research.
+See AGENT-REVIEW-2026-11-05 for corrections and current verification. Earlier
+test counts remain dated evidence; no full decoder/display/ownership gate closes.
+
 ## Current acceptance gates
 
 - [x] Offline display simulation feasibility: actual fbdev module with wrapped
@@ -551,9 +556,9 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       first-pixel checks; host395 ok, focused ASan/UBSan clean, decoder/UI tests
       pass ARM/qemu with the vendor libpng/zlib and libjpeg-turbo2.0.1.
       IMAGE-DECODE. Limits: CMYK/YCCK and APNG reject; the
-      actual downloaded foxxum JPEG files were not available offline, so the
-      corpus uses other real vendor JPEGs; no vendor-class differential,
-      on-TV decode or stock parity.
+      later direct vendor/production differential includes two durable foxxum
+      JPEGs as well as the DMR files. Two other foxxum files, YCCK/APNG policy,
+      worker/frame lifetime and stock parity remain separate acceptance work.
 
 - [x] On-TV visible PNG/JPEG apps grid through the supervised fb1 binding:
       the current image_decode v2/ui_vendor v0.2 candidate painted18 live DB
@@ -598,16 +603,20 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       FAKE-FB-SOCKET. Limits: user-space fake; real kernel/driver behavior,
       physical fb1/TDGA, vendor coexistence and cold startup remain.
 
-- [x] Apps-grid reachability audit: navigation code 0x80 constructs
+- [x] Apps-grid compiled-path audit: navigation code 0x80 constructs
       FullScreenPortalDialog; senders are doNavigateFullScreenMarket
       (0xd1aa2c, market return 0x29a) and OperationFinder::handleOperation
-      case 0x79 (0xd3e6a0). The screen is reachable, not proven dead. The
+      case 0x79 (0xd3e6a0). Conditional compiled entry paths exist; a working
+      stock key path on this model is unverified. The
       +0x1fc/+0x200 contradiction is resolved: RectHandler transforms named
       rectangles before storage, rowPos is the transform's own mask, and the
       stored rowPos is the cell surface, so the fields reduce to zero-width
       horizontal masks rather than -1015/+1005. check-vgrid models first/last
       cells and a nonzero mask. The operation-0x79 UI mapping and stock capture
       remain open. APPS-GRID correction. STOCK-PARITY-2026-11-05. No TV access.
+      AGENT-REVIEW subsequently fixes the missing second left inset in the
+      production button right edge and two wrong nonzero-inset test oracles,
+      compared with fresh10ca8ac instructions; zero-inset portal is unchanged.
 
 - [x] Corrected-capture comparator and P1 blue-shift correction: the P1
       stock portal is another pre-correction BGRA capture; its corrected copy
@@ -668,7 +677,12 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       image.decode; ImageMagick's default accurate DCT differed by up to8.
       A progressive JPEG is byte-exact and a generated CMYK JPEG is rejected
       by both classes. Two available real foxxum JPEGs are byte-exact; the
-      other two were not offline. VENDOR-DECODER-DIFF. No TV/HAL/UI. Limits:
+      other two were not offline. The2026-11-05 review now runs the actual
+      image.decode DSO on every same input under ARM/qemu, including rejection;
+      the original harness compared vendor output with external libraries only.
+      Available foxxum inputs are durable under workbench/decoder-corpus and
+      included by default; explicitly requested missing inputs now fail.
+      VENDOR-DECODER-DIFF / AGENT-REVIEW. This differential uses no TV/HAL/UI. Limits:
       remaining two foxxum files, YCCK, APNG, worker/frame lifetime and
       on-TV/stock parity remain.
 

@@ -36,12 +36,11 @@ queue of experiments to repeat.
 
 ## TV access: standing owner authorization
 
-**Current owner override, 2026-11-04: "You can test on the TV, as long as you
-don't use the active display (fb1)." This supersedes the earlier "Don't touch
-the TV" restriction. Keep fb1 untouched: no draw, ownership, region/pan/mode
-change or display test. Non-display tests and view-only interrogation are
-allowed; preserve stock operation and access. This does not authorize persistent
-replacement, boot-hook changes or interrupting stock operation.**
+**Current owner override, 2026-11-05: "You can test on the TV if you need to"
+and "You can also use fb1." Temporary display tests are reauthorized, superseding
+the earlier fb1 exclusion and offline-only restriction. Preserve/restore stock
+operation, display state and access. This does not authorize persistent
+replacement, boot-hook changes, stopping stock Aurora or watchdog takeover.**
 
 **Using the TV to interrogate it is always allowed when the operation is
 view-only. No additional confirmation is needed**, including while it is in use.

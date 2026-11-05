@@ -8,8 +8,8 @@
  *   OA_VENDOR_FORMAT=png|jpeg OA_VENDOR_INPUT=FILE OA_VENDOR_OUTPUT=FILE
  *
  * Result: magic, rc, width, height, rowlen, input_size, then rowlen*height
- * bytes. PNG/JPEG vendor output is BGRA or palette indices; the host test
- * normalizes it.
+ * bytes. Requested ImageProperties model3 produces RGBA; model2 requests
+ * BGRA. The maintained differential requests model3 explicitly.
  */
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE

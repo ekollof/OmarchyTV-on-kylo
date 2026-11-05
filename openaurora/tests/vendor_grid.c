@@ -14,7 +14,8 @@
 
 /* HorizontalMaskScaleTransform::transformRect maps a named rectangle by
  * subtracting the mask origin, scaling x by surface_width/mask_width, then
- * adding the surface origin. RectHandler stores that transformed rectangle. */
+ * adding the surface origin. RectHandler stores that transformed rectangle.
+ * This is an algebraic fixture, not execution of the shipped transform. */
 static int mask_scale_x(int value, int mask_x, int mask_w, int surface_x, int surface_w)
 {
     if (mask_w <= 0)
@@ -28,10 +29,13 @@ static int mask_scale_x(int value, int mask_x, int mask_w, int surface_x, int su
 static void resolved_insets(int cell_x, int cell_w, int mask_left, int mask_right,
                             int rowpos_x, int rowpos_w, int *left, int *right)
 {
-    int tx = mask_scale_x(rowpos_x, rowpos_x, rowpos_w, cell_x, cell_w);
-    int tx1 = mask_scale_x(rowpos_x + rowpos_w, rowpos_x, rowpos_w, cell_x, cell_w);
-    *left = mask_left + tx - cell_x;
-    *right = mask_right + (cell_x + cell_w) - tx1;
+    /* renderBackground shrinks the transform's surface by the side masks. */
+    int surface_x = cell_x + mask_left;
+    int surface_w = cell_w - mask_left - mask_right;
+    int tx = mask_scale_x(rowpos_x, rowpos_x, rowpos_w, surface_x, surface_w);
+    int tx1 = mask_scale_x(rowpos_x + rowpos_w, rowpos_x, rowpos_w, surface_x, surface_w);
+    *left = mask_left + tx - surface_x;
+    *right = mask_right + surface_x + surface_w - tx1;
 }
 
 int main(void)
@@ -83,7 +87,9 @@ int main(void)
     assert(oa_vgrid_visible_rows(&grid) == 10);
     assert(oa_vgrid_col_step(&grid) == 421);
     oa_vgrid_button(&grid, 2, 2, &x, &y, &w, &h);
-    assert(x == 850 && y == 154 && w == 1279 && h == 223);
+    /* ARM10ca8d6 forms x=col*step+left;10ca8da/ea/ee then adds
+     * left+step+right again to form x2. A zero-inset portal cannot catch this. */
+    assert(x == 850 && y == 154 && w == 1287 && h == 223);
 
     /* Truncation is per-cell, not accumulated from the unrounded pitch:
      * step = 94 / 4 = 23, so column 3 starts at 3 * 23 + 3 = 72. */
@@ -91,7 +97,7 @@ int main(void)
     assert(oa_vgrid_visible_rows(&trunc) == 4);
     assert(oa_vgrid_col_step(&trunc) == 23);
     oa_vgrid_button(&trunc, 3, 3, &x, &y, &w, &h);
-    assert(x == 72 && y == 70 && w == 98 && h == 95);
+    assert(x == 72 && y == 70 && w == 101 && h == 95);
 
     /* Cell rects (the background paint) do not add left to the origin:
      * gridFA col 2/row 2 = 2*421, 2*69+16 to +421/+69. */

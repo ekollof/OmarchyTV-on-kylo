@@ -1,0 +1,4 @@
+[923423] INFO host         control socket /tmp/oa-control-euL1M5/control.sock
+  ok   image CLI bounds provider axes/bytes before hashing and releases under hold
+  ok   full list/status replies reach a Unix socket client intact
+  ok   control replies stay bounded for full tables and tiny buffers

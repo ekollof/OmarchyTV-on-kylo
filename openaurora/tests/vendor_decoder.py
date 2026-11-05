@@ -2,10 +2,9 @@
 """Offline vendor PngImageDecoderImpl/JpegImageDecoder differential.
 
 Runs the shipped ARM decoder classes inside qemu via an LD_PRELOAD probe.
-No TV or HAL device is opened. PNG output must be byte-exact after BGRA->RGBA
-(or palette-index) normalization; JPEG is checked with a small codec-rounding
-tolerance because the vendor class uses libjpeg's scanline conversion rather
-than TurboJPEG's exact path.
+No TV or HAL device is opened. Requested RGBA pixels are compared directly with
+the production image.decode DSO under ARM/qemu on the same files. Independent
+Pillow/TurboJPEG references provide additional checks, not replacement coverage.
 """
 import argparse
 import os
@@ -31,6 +30,7 @@ PNG_OK = [
     "launcher_app_thumb61",
 ]
 JPEG_OK = ["DMR-small.jpg", "DMR-large.jpg"]
+CANDIDATE = None
 
 
 def fail(message):
@@ -85,8 +85,36 @@ def run_probe(*args):
     return width, height, rowlen, pixels
 
 
+def check_candidate(common, fmt, path, vendor):
+    """Compare actual service output, including rejection and error invariants."""
+    qemu, sysroot, _, _, libdirs = common
+    with tempfile.TemporaryDirectory(prefix="oa-candidate-decode-") as tmp:
+        out = Path(tmp) / "result"
+        env = os.environ.copy()
+        env.pop("LD_PRELOAD", None)
+        env["LD_LIBRARY_PATH"] = ":".join(libdirs)
+        subprocess.run([qemu, "-L", str(sysroot), str(CANDIDATE),
+                        str(CANDIDATE.parent.parent / "modules"), "--decode",
+                        fmt, str(path), str(out)], env=env, check=True,
+                       stdout=subprocess.DEVNULL, timeout=60)
+        data = out.read_bytes()
+    if len(data) < 24:
+        fail(f"{path.name}: short production result")
+    magic, rc, width, height, rowlen, _ = struct.unpack("<6I", data[:24])
+    if magic != MAGIC:
+        fail(f"{path.name}: bad production result magic")
+    vrc, vw, vh, vr, vp = vendor
+    if vrc:
+        if not rc or width or height or rowlen or len(data) != 24:
+            fail(f"{path.name}: production rejection differs from vendor")
+    elif rc or (width, height, rowlen) != (vw, vh, vr) or data[24:] != vp:
+        fail(f"{path.name}: production image.decode differs from vendor "
+             f"rc={rc} size={width}x{height} row={rowlen}")
+
+
 def check_png_path(name, path, common):
     width, height, rowlen, pixels = run_probe(*common, "png", path)
+    check_candidate(common, "png", path, (0, width, height, rowlen, pixels))
     im = Image.open(path)
     if im.size != (width, height):
         fail(f"{name}: vendor size {width}x{height} != {im.size}")
@@ -175,6 +203,7 @@ def turbojpeg_fast_rgba(path, required=True):
 
 def check_jpeg_path(name, path, common, tolerance):
     width, height, rowlen, pixels = run_probe(*common, "jpeg", path)
+    check_candidate(common, "jpeg", path, (0, width, height, rowlen, pixels))
     ref_w, ref_h, ref = turbojpeg_fast_rgba(path)
     if (width, height) != (ref_w, ref_h):
         fail(f"{name}: vendor size != TurboJPEG reference")
@@ -202,9 +231,11 @@ def check_jpeg(name, root, common, tolerance):
 
 
 def check_jpeg_cmyk(name, path, common):
-    rc, width, height, rowlen, _ = probe_raw(*common, "jpeg", path)
+    vendor = probe_raw(*common, "jpeg", path)
+    rc, width, height, rowlen, _ = vendor
     if rc == 0:
         fail(f"{name}: vendor class accepted CMYK")
+    check_candidate(common, "jpeg", path, vendor)
     if turbojpeg_fast_rgba(path, required=False) is not None:
         fail(f"{name}: TurboJPEG accepted CMYK unexpectedly")
     return f"vendor rc={rc}, TurboJPEG rejects"
@@ -221,6 +252,7 @@ def make_jpeg_variants(source, directory, magick):
 
 
 def main():
+    global CANDIDATE
     parser = argparse.ArgumentParser()
     parser.add_argument("--build", default=os.environ.get("BUILD", "build"))
     parser.add_argument("--qemu", default="qemu-arm-static")
@@ -228,11 +260,17 @@ def main():
     parser.add_argument("--extra-jpeg", action="append", default=[],
         help="optional additional real JPEG files to compare")
     args = parser.parse_args()
+    for extra in args.extra_jpeg:
+        if not Path(extra).is_file():
+            fail(f"requested JPEG unavailable: {extra}")
     root = Path(__file__).resolve().parents[2]
     build = Path(args.build)
     if not build.is_absolute():
         build = root / "openaurora" / build
     probe = build / "tests/vendor_decoder_probe.so"
+    CANDIDATE = build / "tests/image_decode"
+    if not CANDIDATE.exists():
+        fail(f"missing production probe {CANDIDATE}; build it first")
     if not probe.exists():
         fail(f"missing probe {probe}; build it first")
     qemu = shutil.which(args.qemu)
@@ -265,12 +303,15 @@ def main():
               f"{check_jpeg_path('progressive', progressive, common, 0)}")
         print(f"ok vendor jpeg variant cmyk: "
               f"{check_jpeg_cmyk('cmyk', cmyk, common)}")
-    for extra in args.extra_jpeg:
+    extras = args.extra_jpeg or sorted(
+        str(p) for p in (root / "artifacts/workbench/decoder-corpus").glob("foxxum_*"))
+    for extra in extras:
         path = Path(extra)
-        if path.exists():
-            print(f"ok vendor jpeg extra {path.name}: "
-                  f"{check_jpeg_path(path.name, path, common, 0)}")
-    print(f"ok vendor decoder differential: {len(PNG_OK)} PNG + variants, "
+        if not path.is_file():
+            fail(f"requested JPEG unavailable: {path}")
+        print(f"ok vendor jpeg extra {path.name}: "
+              f"{check_jpeg_path(path.name, path, common, 0)}")
+    print(f"ok production/vendor decoder differential: {len(PNG_OK)} PNG + variants, "
           f"{len(JPEG_OK)} JPEG + progressive/CMYK")
 
 

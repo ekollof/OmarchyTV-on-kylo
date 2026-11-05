@@ -1,4 +1,4 @@
-/* Static PNG and baseline JPEG decoding into top-down straight RGBA.
+/* Static PNG and baseline/progressive JPEG decoding into top-down straight RGBA.
  *
  * PNG conversion follows Aurora b30918: expand/pack low depths, strip16 (not
  * scale16), gray/palette -> RGB, tRNS -> alpha or opaque filler. No gamma
