@@ -1665,7 +1665,8 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       Instruction hooks do not bound blocking C calls such as `file:read("*a")`.
       Scripts cannot take device ownership or add telemetry/advertising.
       Evidence 2026-11-05: `make check-ui-lua` and `make check-ui-skin` exit 0;
-      `BUILD=build-lua-san` ASan/UBSan `check-ui-lua` exit 0; ARM glibc
+      full host `make check` 433 ok, verify45; `BUILD=build-lua-san` ASan/UBSan
+      `check-ui-lua` exit 0; ARM glibc
       `build-lua-arm/tests/ui_lua` under qemu-arm-static and bwrap exit 0.
       The http success path is the host run. qemu-user cannot exec host python
       or curl, so the ARM run takes the failed-transfer callback. Vendor pixels

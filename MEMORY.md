@@ -1,8 +1,9 @@
 # Current project state — last verified 2026-11-05
 
 Optional ui.lua, offline, 2026-11-05: shared Lua 5.4.9 service (`mod_lua.so`,
-not a skin) for every UI skin. Host `check-ui-lua` and `check-ui-skin` pass.
-Leak-enabled ASan/UBSan `check-ui-lua` passes. ARM/qemu `tests/ui_lua` passes
+not a skin) for every UI skin. Host `check-ui-lua` and `check-ui-skin` pass;
+full host `make check` is 433 ok and `verify.cjs` 45 groups. Leak-enabled
+ASan/UBSan `check-ui-lua` passes. ARM/qemu `tests/ui_lua` passes
 on glibc 2.23; `oa.fetch` success is host-only because qemu-user cannot exec
 host python or curl. The glibc hard-float link uses the TV libm (math symbols
 stay at GLIBC_2.4) and the curl pipe is `pipe2`, so the module does not

@@ -1,0 +1,15 @@
+[199742] ERR  host         lua: refusing to unload, service 'ui.lua' still held (use --force)
+[199743] ERR  host         ui.lua: [string "ui.lua"]:1: <name> expected near '('
+[199743] ERR  host         ui.lua: not enough memory
+[199743] ERR  host         ui.lua: instruction limit
+[199743] ERR  host         ui.lua: [string "ui.lua"]:1: fetch url
+[199743] ERR  host         ui.lua: [string "ui.lua"]:3: boom
+[201440] ERR  host         ui_omarchy: start() failed (-1)
+  ok   sandbox keeps io/os for regular files and the clock, and rejects shell and device opens
+  ok   omarchy paints the script theme and layout, and a key updates them
+  ok   suspend drops script timers and resume still paints the script
+  ok   a held service refuses module reload; a bad candidate keeps the running script
+  ok   a paint hook that errors restores the previous theme
+  ok   vendor runs the paint hook and does not draw the script colours
+  ok   oa.fetch reads a local http body without blocking the host loop
+  ok   ui.omarchy.lua without a loaded script falls back to the vendor skin

@@ -1,0 +1,2 @@
+node tests/lua_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok lua IPC: socket load/start/reload keeps a good script and rejects a bad candidate

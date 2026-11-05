@@ -1236,6 +1236,11 @@ check-ui-lua: $(BUILD)/tests/ui_lua $(BUILD)/tests/ui_nav_display.so $(BUILD)/mo
 
 check: check-ui-lua
 
+.PHONY: check-lua-ipc
+check-lua-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_lua.so
+	node tests/lua_ipc.cjs $(abspath $(BUILD))
+check: check-lua-ipc
+
 $(BUILD)/tests/skin_selection: tests/skin_selection.c core/host.h include/openaurora/ui_engine.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
