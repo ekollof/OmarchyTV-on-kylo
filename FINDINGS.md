@@ -6,6 +6,12 @@ Private controls forward to EX_PLAT; successful ioctl still does not prove
 MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
+UI-VENDOR-IPC-2026-11-05: `ui-state` queries the real ui.portal screen; a
+host with mod_nav_display (recorder display), ui_engine and ui_vendor is driven
+over `--sock` and stdin through start/use/stop/start/reload/unload/reload,
+including display-provider reload and consumer restart. No TV/HAL/framebuffer;
+host396 ok, verify45. Recorder-only, not physical fb1/cold startup.
+
 IMAGE-DECODE-IPC-2026-11-04: the real host `--sock` control plane (plus stdin)
 runs image.decode through `image-decode <path>`: load/start, PNG/JPEG FNV,
 invalid-file errors, status, suspend/EAGAIN/resume, stop/ENODEV/start reuse,

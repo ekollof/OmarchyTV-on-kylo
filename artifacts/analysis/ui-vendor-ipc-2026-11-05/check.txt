@@ -1,0 +1,2 @@
+node tests/ui_vendor_ipc.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok actual ui_vendor/display Unix IPC: start/use/stop/reload/display-provider reload/unload lifecycle

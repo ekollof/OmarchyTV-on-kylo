@@ -211,6 +211,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  launcher-items <parent|all> [deleted] [outofsync]\n"
                  "                           settingsDB LauncherItem rows\n"
                  "  image-decode <path>      decode PNG/JPEG through image.decode\n"
+                 "  ui-state                query ui.portal screen\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -223,6 +224,22 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         if (!a1) { oa_skin_status(h, outbuf, outlen); return 0; }
         if (oa_skin_request(h, a1)) { snprintf(outbuf, outlen, "failed errno %d\n", errno); return -1; }
         snprintf(outbuf, outlen, "pending %s\n", a1);
+        return 0;
+    }
+    if (!strcmp(cmd, "ui-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_portal_iface *p =
+            h->api.lookup(h, OA_SVC_PORTAL, 1);
+        if (!p) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int screen = p->screen();
+        h->api.release(h, OA_SVC_PORTAL);
+        snprintf(outbuf, outlen, "portal screen %d\n", screen);
         return 0;
     }
     if (!strcmp(cmd, "image-decode")) {

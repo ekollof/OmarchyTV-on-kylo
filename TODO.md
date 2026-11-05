@@ -571,8 +571,16 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       status, suspend/EAGAIN/resume, stop/ENODEV/start reuse, reload, and
       unload/reload. `image-decode` is a real control command; no display/HAL/
       TV module is loaded. Full host395 ok, verify.cjs45. IMAGE-DECODE-IPC.
-      Limits: host-only; ui_vendor/display reload, held-provider rejection and
-      cold startup remain separate.
+      Limits: host-only; held-provider rejection and cold startup remain
+      separate.
+
+- [x] Real ui_vendor/recorder-display socket lifecycle: `ui-state` exposes
+      `ui.portal screen`, and a host with mod_nav_display + ui_engine +
+      ui_vendor is driven over `--sock` and stdin through start/use/stop/start/
+      reload/unload/reload, including a display-provider reload and consumer
+      restart. No TV/HAL/framebuffer. Full host396 ok, verify45.
+      UI-VENDOR-IPC. Limits: recorder display, not physical fb1; full module
+      set/holds and cold startup remain.
 
 - [x] Vendor decoder-class differential: an ARM LD_PRELOAD probe executes the
       shipped PngImageDecoderImpl and JpegImageDecoder under qemu before vendor

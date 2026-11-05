@@ -144,7 +144,14 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
-Latest host lifecycle: [IMAGE-DECODE-IPC](artifacts/reports/IMAGE-DECODE-IPC-2026-11-04.md)
+Latest host lifecycle: [UI-VENDOR-IPC](artifacts/reports/UI-VENDOR-IPC-2026-11-05.md)
+adds `ui-state` and drives mod_nav_display (recorder display), ui_engine and
+ui_vendor over the real `--sock` control plane and stdin through
+start/use/stop/start/reload/unload/reload, including a display-provider reload
+and consumer restart. No TV/HAL/framebuffer; host396 ok, verify45.
+Recorder-only; physical fb1, full module set/holds and cold startup remain.
+
+Latest image lifecycle: [IMAGE-DECODE-IPC](artifacts/reports/IMAGE-DECODE-IPC-2026-11-04.md)
 drives image.decode through the real `--sock` control plane and stdin with an
 empty autoload config: load/start, PNG/JPEG FNV, invalid errors, status,
 suspend/EAGAIN/resume, stop/ENODEV/start reuse, reload and unload/reload all

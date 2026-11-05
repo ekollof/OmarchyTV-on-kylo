@@ -93,6 +93,15 @@ reauthorized; fb1 and stock operation must stay untouched. This supersedes the
 earlier "Don't touch the TV" restriction. No persistent replacement or boot
 changes. The historical offline-only entries describe their original runs.
 
+UI-VENDOR-IPC-2026-11-05 (host-only): `ui-state` exposes `ui.portal screen`;
+a real `--sock` host with mod_nav_display (recorder display), ui_engine and
+ui_vendor is driven through start/use/stop/start/reload/unload/reload,
+including a display-provider reload and consumer restart. `status ui_vendor`
+via stdin reports started/ui.portal:v1. No TV/HAL/framebuffer. Full host396 ok,
+verify45. Host aa6ccb50…, ui_vendor1419e99c…, ui_engine3783189c…,
+recorder9daf8c5e…. Recorder-only; physical fb1, full module set/holds and cold
+startup remain.
+
 IMAGE-DECODE-IPC-2026-11-04 (host-only): a real `openaurora --sock` control
 plane with an empty autoload config now drives image.decode through the
 `image-decode <path>` command and stdin: load/start, PNG/JPEG FNV, invalid-file

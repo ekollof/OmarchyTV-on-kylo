@@ -1140,6 +1140,11 @@ check-image-decode-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_image_decode.so
 	node tests/image_decode_ipc.cjs $(abspath $(BUILD))
 check: check-image-decode-ipc
 
+.PHONY: check-ui-vendor-ipc
+check-ui-vendor-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui_nav_display.so
+	node tests/ui_vendor_ipc.cjs $(abspath $(BUILD))
+check: check-ui-vendor-ipc
+
 .PHONY: check-vendor-decoder
 check-vendor-decoder: $(BUILD)/tests/vendor_decoder_probe.so
 	@test "$(TARGET)" = tv || { echo "check-vendor-decoder requires TARGET=tv"; exit 2; }
