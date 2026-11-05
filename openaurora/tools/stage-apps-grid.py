@@ -97,6 +97,56 @@ class BitmapPack:
         return im
 
 
+def turbojpeg_fast_rgba(path: Path) -> Image.Image:
+    """Decode a JPEG with TurboJPEG TJFLAG_FASTDCT, the vendor mode.
+
+    VENDOR-DECODER-DIFF-2026-11-04: the shipped hal::JpegImageDecoder matches
+    TurboJPEG TJFLAG_FASTDCT byte-exactly, while libjpeg's accurate DCT does
+    not. Pillow uses the accurate path, so JPEG thumbnails must not go through
+    Image.open for the stock comparison.
+    """
+    import ctypes
+    lib = ctypes.CDLL("libturbojpeg.so.0")
+    lib.tjInitDecompress.restype = ctypes.c_void_p
+    lib.tjDecompressHeader3.argtypes = [ctypes.c_void_p,
+        ctypes.POINTER(ctypes.c_ubyte), ctypes.c_ulong,
+        ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int),
+        ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+    lib.tjDecompress2.argtypes = [ctypes.c_void_p,
+        ctypes.POINTER(ctypes.c_ubyte), ctypes.c_ulong,
+        ctypes.POINTER(ctypes.c_ubyte), ctypes.c_int, ctypes.c_int,
+        ctypes.c_int, ctypes.c_int, ctypes.c_int]
+    lib.tjDestroy.argtypes = [ctypes.c_void_p]
+    data = path.read_bytes()
+    jpeg = (ctypes.c_ubyte * len(data)).from_buffer_copy(data)
+    handle = lib.tjInitDecompress()
+    if not handle:
+        raise RuntimeError(f"{path}: TurboJPEG init failed")
+    width = ctypes.c_int(0)
+    height = ctypes.c_int(0)
+    subsamp = ctypes.c_int(0)
+    colorspace = ctypes.c_int(0)
+    if lib.tjDecompressHeader3(handle, jpeg, ctypes.c_ulong(len(data)),
+            ctypes.byref(width), ctypes.byref(height),
+            ctypes.byref(subsamp), ctypes.byref(colorspace)):
+        lib.tjDestroy(handle)
+        raise RuntimeError(f"{path}: TurboJPEG header failed")
+    out = (ctypes.c_ubyte * (width.value * height.value * 4))()
+    # TJPF_RGBA=7, TJFLAG_FASTDCT=2048.
+    if lib.tjDecompress2(handle, jpeg, ctypes.c_ulong(len(data)), out,
+            width.value, width.value * 4, height.value, 7, 2048):
+        lib.tjDestroy(handle)
+        raise RuntimeError(f"{path}: TurboJPEG fast decode failed")
+    lib.tjDestroy(handle)
+    return Image.frombytes("RGBA", (width.value, height.value), bytes(out))
+
+
+def load_thumbnail(path: Path) -> Image.Image:
+    if path.read_bytes()[:2] == b"\xff\xd8":
+        return turbojpeg_fast_rgba(path)
+    return Image.open(path)
+
+
 def live_rows(db: Path):
     con = sqlite3.connect(db)
     rows = con.execute(
@@ -145,7 +195,7 @@ def main() -> int:
             if not src.exists():
                 print(f"missing live thumbnail {src}", flush=True)
                 continue
-            write_oai1(out / (name + ".rgba"), Image.open(src))
+            write_oai1(out / (name + ".rgba"), load_thumbnail(src))
         print(f"staged {len(names)} live thumbnails -> {out}")
     else:
         for i, name in enumerate(THUMBS, start=1):
@@ -153,7 +203,7 @@ def main() -> int:
             if not src.exists():
                 print(f"missing thumbnail {src}", flush=True)
                 return 1
-            write_oai1(out / f"live_{i:02d}.rgba", Image.open(src))
+            write_oai1(out / f"live_{i:02d}.rgba", load_thumbnail(src))
         for i in range(10, 20):
             write_oai1(out / f"live_{i:02d}.rgba",
                        Image.new("RGBA", (310, 174), (32, 32, 32, 255)))

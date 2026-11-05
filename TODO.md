@@ -859,20 +859,21 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       `apps_grid_stock` and live-DB capture; all 23 firmware-dump parent-1 catalog rows and the original downloaded
       thumbnails are used, plus Markt (24 total), with no oracle tile crops.
       Manifest comparison improved from AE 29.56% / MAE8 75.38 to
-      **AE 0.13% / MAE8 0.33** (top 0.0035%, grid 0.237%, scrollbar 0.017%),
+      **AE 0.1185% / MAE8 0.302** (top 0.0035%, grid 0.2156%, scrollbar 0.0168%),
       with exact vendor bitmap font18/4 title/label rasters and a bilinear
       tile scaler. The focused-tile bbox oracle is 294x165; the earlier
-      full-cell model took Markt MAE8 3.343 to 0.185.
+      full-cell model took Markt MAE8 3.343 to 0.185. JPEG staging now uses
+      TurboJPEG FASTDCT to match hal::JpegImageDecoder, taking the 384x216
+      DAZN cell from 1.647 to 0.776.
       Host423 ok, verify45. STOCK-APPS-GRID-PARITY. Limits: fb1 capture, not
-      HDMI/cold-start scanout; residual per-cell source-decode/sampling
-      remains, largest is the 384x216 JPEG tile.
+      HDMI/cold-start scanout; residual per-cell sampling/source differences.
 
 - [x] Apps-grid residual font/scaling parity: recovered the exact EF41 bitmap
       fonts from the firmware pack (title font18, label font4 in `(38,23,25)`),
       replaced the TTF approximation and switched the recorder to bilinear
       tile scaling. The 24-entry order and empty final cell are verified from
-      the dump and scrolled capture. Manifest AE 0.13%, MAE8 0.33; top
-      0.0035%, grid 0.237%, scrollbar 0.017%. STOCK-APPS-GRID-PARITY.
+      the dump and scrolled capture. Manifest AE 0.1185%, MAE8 0.302; top
+      0.0035%, grid 0.2156%, scrollbar 0.0168%. STOCK-APPS-GRID-PARITY.
 
 - [x] Stock-capture parity analysis: the old `shot-launcher-right.png` is an
       R/B-swapped pre-correction capture; after channel correction it matches

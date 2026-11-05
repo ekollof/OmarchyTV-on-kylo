@@ -1,3 +1,3 @@
 7c34292b524439edd6210ff5983580e2831cb19cbd8ad4f8cdd3cba21a4d8edf  artifacts/dumps/apdat_files/sqlite_db/settingsDB.db
 c7dbac7fe50b1fc36d35a72f8dddac9c650f536008fdac8d8d4f22b7e9a8304d  artifacts/analysis/stock-apps-grid-live-2026-11-05/stock-apps-grid-live.png
-a9a07b472245e1d2d450f63decc6c09dc52350d1fbbae18af3196d6b43e8fcee  artifacts/analysis/stock-apps-grid-live-2026-11-05/offline-apps-grid-live.png
+dbc8667a5fbd31bbc942a98f1c92dbe55e68f23d8679b9c9256e9ebd12db7c8c  artifacts/analysis/stock-apps-grid-live-2026-11-05/offline-apps-grid-live.png

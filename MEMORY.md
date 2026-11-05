@@ -27,10 +27,13 @@ Apps title, 294x165 tiles at cell+7,+7 on 310/230 pitch, focus painting only the
 orange cell backdrop, Markt label and white-on-#811924 scrollbar.
 stage-apps-grid.py and apps_grid_stock produce a fixed firmware-dump offline
 candidate. The focused tile measurement is 294x165, not full-cell: that fix
-took Markt MAE8 3.343 to 0.185. Manifest comparison improved from AE29.56%/
-MAE8 75.38 to AE0.13%/MAE8 0.33 (top 0.0035%, grid0.237%, scrollbar0.017%).
-Host423 ok, verify45. Limits: exact vendor bitmap fonts; residual per-cell
-source-decode/sampling, 384x216 JPEG outlier; fb1 not HDMI/cold-start scanout.
+took Markt MAE8 3.343 to 0.185. JPEG thumbnails are now staged with TurboJPEG
+TJFLAG_FASTDCT, matching the shipped hal::JpegImageDecoder (VENDOR-DECODER-DIFF);
+that took the 384x216 DAZN cell from 1.647 to 0.776. Manifest comparison
+improved from AE29.56%/MAE8 75.38 to AE0.1185%/MAE8 0.302 (top 0.0035%,
+grid0.2156%, scrollbar0.0168%). Host423 ok, verify45. Limits: exact vendor
+bitmap fonts; residual per-cell sampling/source differences; fb1 not
+HDMI/cold-start scanout.
 DIAL navigation changed only the stock UI screen; no settings/source change.
 Staging removed.
 

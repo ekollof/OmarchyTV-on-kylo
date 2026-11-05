@@ -45,9 +45,10 @@ at cell+7,+7 on 310/230 pitch, focus painting only the 310x230 orange cell
 backdrop (the image does not expand), and a white scrollbar over #811924 at
 x1750,180..868. paint_apps now renders this stock mode when
 background_fullscreen is present. Firmware-dump corpus comparison improved from
-AE29.56%/MAE8 75.38 to AE0.13%/MAE8 0.33. Host423 ok, verify45. Limits:
-title/label are exact vendor bitmap fonts; residual per-cell
-source-decode/sampling, 384x216 JPEG outlier; fb1 not HDMI/cold-start scanout.
+AE29.56%/MAE8 75.38 to AE0.1185%/MAE8 0.302. Host423 ok, verify45. Limits:
+title/label are exact vendor bitmap fonts; JPEG staging uses the
+vendor-matching TurboJPEG FASTDCT; residual per-cell sampling/source
+differences; fb1 not HDMI/cold-start scanout.
 
 CHANNEL-RUNTIME-ORDER-2026-11-05: the channel UI now has a runtime-order
 path. A channels module parses the recovered ACTIVECHANNELLIST XML into an

@@ -1,4 +1,5 @@
-Per-cell MAE8 (stock vs firmware-dump render), focus-corrected:
+Per-cell MAE8 (stock vs firmware-dump render), focus-corrected and with the
+vendor FASTDCT JPEG decode:
 cell_r0c0 MAE8=0.185334
 cell_r0c1 MAE8=0.573993
 cell_r0c2 MAE8=0.465012
@@ -13,17 +14,19 @@ cell_r2c0 MAE8=0.824797
 cell_r2c1 MAE8=0.633025
 cell_r2c2 MAE8=0.681828
 cell_r2c3 MAE8=0.259677
-cell_r2c4 MAE8=1.64659
+cell_r2c4 MAE8=0.775895
 
 Focused-tile geometry oracle: stock cell_r0c0 non-orange bbox is
 x 7..300, y 7..171 inside the 310x230 cell (294x165), the same as
 non-focused tiles. The earlier 300x166 at +5,+7 model was wrong.
 
-Dominant residual cells:
-- cell_r2c4: 1.647, DAZN: Sport Live Stream, source foxxum_thumb_3753
-  is a 384x216 baseline JPEG; the vendor decoder and libjpeg differ.
-- Markt animation: 0.185 after the geometry fix, down from 3.343.
-- Remaining PNG tiles: 0.26..0.82, source-decode/sampling noise.
+JPEG decode oracle: stage-apps-grid.py decodes JPEG thumbnails through
+TurboJPEG TJFLAG_FASTDCT, the mode the shipped hal::JpegImageDecoder matches
+byte-exactly (VENDOR-DECODER-DIFF-2026-11-04). Pillow's accurate-DCT output
+did not match. The DAZN tile (foxxum_thumb_3753, 384x216 baseline JPEG) went
+from 2.413 to 1.134 tile-only MAE, cell_r2c4 from 1.647 to 0.776, and full AE
+from 2700.71 to 2457.26 (0.130% -> 0.1185%). No tile is now an outlier; the
+remaining per-cell range is 0.19..0.82.
 
 Background outside the grid/top/scrollbar is exact: bottom 0.0029,
 left margin 0.0386, right margin 0.0179, gap strip 0.0128 MAE8.

@@ -51,6 +51,10 @@ existing UI tests still cover the provisional dark reconstruction.
   vendor EF41 bitmap pack (font IDs 18 and 4);
 - `markt.rgba` from `market_animated.png`;
 - one blob per live LauncherItem thumbnail name under its original filename;
+  JPEGs decode through TurboJPEG `TJFLAG_FASTDCT`, the mode the shipped
+  `hal::JpegImageDecoder` matches byte-exactly (VENDOR-DECODER-DIFF); staging
+  therefore needs `libturbojpeg.so.0`, the same library the decoder
+  differential already uses;
 - no stock-derived tile crops.
 
 `tests/apps_grid_stock.c` copies the firmware-dump settingsDB and renders
@@ -79,30 +83,34 @@ fresh oracle. Percentages below are normalized AE (mean absolute error / 255),
 matching the full/region AE column; MAE8 is the 0..255 per-channel value:
 
 ```
-full: AE=2700.71 (0.001302) RMSE16=558.418 MAE8=0.332119 changed=7.04%
-top strip 0.0035%, grid 0.237%, scrollbar 0.0168%
+full: AE=2457.26 (0.001185) RMSE16=553.404 MAE8=0.30218 changed=5.27%
+top strip 0.0035%, grid 0.2156%, scrollbar 0.0168%
 ```
 
 Title and label are exact vendor bitmap-font rasters (font18/font4),
 including the label colour. The focused tile measurement is corrected: the
 stock cell's non-orange bbox is x 7..300, y 7..171 (294x165), identical to a
-non-focused tile, so focus only changes the cell backdrop. That fix alone took
-the Markt cell from MAE8 3.343 to 0.185 and the full image from 0.173% to
-0.130%. Tiles use 294x165 at cell+7,+7 with a bilinear recorder scaler. The
+non-focused tile, so focus only changes the cell backdrop. That fix took the
+Markt cell from MAE8 3.343 to 0.185 and the full image from 0.173% to 0.130%.
+Switching JPEG staging to the vendor-matching FASTDCT mode then took the full
+image to 0.1185% and the DAZN cell from 1.647 to 0.776. Tiles use 294x165 at
+cell+7,+7 with a bilinear recorder scaler. The
 scrollbar is a 688px track with bar `688*visible/total - 16` = 414px. Earlier
 parent-0, stock-cropped, TTF-title, full-width-focus and inferred-OmarchyTV
 results are superseded.
 
 ## Residual budget
 
-Per-cell MAE8 is 0.26..0.82 for the PNG tiles and 0.185 for Markt. The one
-remaining outlier is `cell_r2c4` (1.647): DAZN: Sport Live Stream uses
-`foxxum_thumb_3753`, a 384x216 baseline JPEG, and the vendor decoder differs
-from libjpeg (mainly chroma/R-B on the high-contrast logo). Everything outside
-the grid is essentially exact: bottom 0.0029, left margin 0.0386, right margin
-0.0179 and gap strip 0.0128 MAE8. A Gaussian prefilter or trilinear-mip model
-would lower the PNG-tile residual further, but neither is firmware-proven, so
-the recorder keeps plain bilinear rather than fitting the oracle.
+Per-cell MAE8 is now 0.19..0.82, with no outlier. The 384x216 DAZN JPEG tile
+(`foxxum_thumb_3753`) had been the largest at 1.647 because staging decoded it
+with Pillow's accurate DCT. The shipped `hal::JpegImageDecoder` matches
+TurboJPEG `TJFLAG_FASTDCT` byte-exactly (VENDOR-DECODER-DIFF), so staging now
+uses the same mode: the tile fell to 0.776 and the full comparison from
+0.130% to 0.1185%. Everything outside the grid is essentially exact: bottom
+0.0029, left margin 0.0386, right margin 0.0179 and gap strip 0.0128 MAE8.
+A Gaussian prefilter or trilinear-mip model would lower the remaining tile
+residual further, but neither is firmware-proven, so the recorder keeps plain
+bilinear rather than fitting the oracle.
 
 ## Limits
 
@@ -112,6 +120,8 @@ the recorder keeps plain bilinear rather than fitting the oracle.
   path still stages its synthetic corpus separately.
 - The title/label are exact vendor bitmap font rasters, but the full vendor
   text layout engine (kerning/fallback) is not exercised by two short strings.
+- JPEG staging now matches the vendor decoder mode, but only this corpus
+  proves it; other JPEG sampling/colour variants remain unmeasured.
 - Capture is stock fb1, not HDMI/cold-start scanout; DIAL navigation changed
   the stock UI screen (no settings, source or persistent state).
 - No testtool, no display takeover, no native scanout.
