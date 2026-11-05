@@ -83,6 +83,8 @@ Evidence:
   `ScheduleEvent`/`ProgramCrid` database is not wired.
 - No persistence, series linking, conflict handling or vendor EIT hub/section
   handler ABI.
-- Ingest is explicit (`epg-ingest`/module API); no tuner or live EIT source is
-  connected. Static firmware grounding only; runtime EASI/testtool TCP 1986
+- Ingest is explicit (`epg-ingest`/module API); no live EIT source is
+  connected. **partly superseded:** the offline `mod_tuner` in
+  [TUNER-NIM-MODULE](TUNER-NIM-MODULE-2026-11-05.md) pushes synthetic EIT
+  sections into `epg.ingest`; a live demux/tuner source remains absent. Static firmware grounding only; runtime EASI/testtool TCP 1986
   remains blocked pending the owner's watchdog-safe/recovery decision.

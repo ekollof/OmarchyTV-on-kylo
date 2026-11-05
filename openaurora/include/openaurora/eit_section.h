@@ -46,6 +46,22 @@ typedef int (*oa_eit_event_cb)(const struct oa_eit_event_info *event, void *user
 int oa_eit_parse_section(const uint8_t *data, size_t len,
     oa_eit_event_cb cb, void *user);
 
+/* Test/stub helper: build one complete EIT section with a correct CRC.
+ * Names/text are limited to 255 bytes by the descriptor format. */
+struct oa_eit_build_event {
+    uint16_t event_id;
+    uint8_t start[5];
+    uint8_t duration[3];
+    uint8_t running_status;
+    uint8_t free_ca_mode;
+    const char *name;
+    const char *text;
+};
+
+int oa_eit_build_section(uint8_t table_id, uint16_t service_id,
+    uint8_t version, int current, const struct oa_eit_build_event *events,
+    size_t count, uint8_t *out, size_t cap, size_t *len);
+
 #ifdef __cplusplus
 }
 #endif

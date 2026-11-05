@@ -35,6 +35,14 @@ The owner then requested a review and fixes on2026-11-04. The review below
 supersedes the old clean/verified snapshot where it identifies defects; it
 does not start the pending imageCreate subsystem or persistent replacement.
 
+Latest tuner module: [TUNER-NIM-MODULE](artifacts/reports/TUNER-NIM-MODULE-2026-11-05.md)
+adds a vendor-shaped NIM boundary (DEV_NIM_DTV_StartTune/MonitorTune/signal)
+with an offline stub backend. mod_tuner publishes `tuner`, runs the 25% scan
+state machine with lock/signal metrics, maps DVB-T/C/S/IP (analog ENOTSUP) and
+pushes synthetic EIT sections into `epg.ingest`. Host419 ok, verify45;
+ARM/qemu passes. Stub only: no tuner hardware, transponder scan, demux/PID
+assembly, real service discovery or live backend.
+
 Latest EIT/EPG module: [EPG-EIT-MODULE](artifacts/reports/EPG-EIT-MODULE-2026-11-05.md)
 adds a DVB EIT section parser (CRC/structure/time validation, short-event
 descriptors) feeding the EIT cache through a real mod_epg. It publishes

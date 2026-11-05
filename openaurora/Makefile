@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile epg
+MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -433,10 +433,23 @@ check-eit-section: $(BUILD)/tests/eit_section
 	@$(BUILD)/tests/eit_section
 check: check-eit-section
 
+$(BUILD)/tests/nim_stub: tests/nim_stub.c common/nim_stub.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_section.h include/openaurora/eit_time.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-nim-stub
+check-nim-stub: $(BUILD)/tests/nim_stub
+	@$(BUILD)/tests/nim_stub
+check: check-nim-stub
+
 .PHONY: check-epg-ipc
 check-epg-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_epg.so
 	node tests/epg_ipc.cjs $(abspath $(BUILD))
 check: check-epg-ipc
+
+.PHONY: check-tuner-ipc
+check-tuner-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_epg.so $(BUILD)/modules/mod_tuner.so
+	node tests/tuner_ipc.cjs $(abspath $(BUILD))
+check: check-tuner-ipc
 
 $(BUILD)/easi-probe: tools/probe/easi-probe.c
 	@mkdir -p $(dir $@)
@@ -771,6 +784,10 @@ $(BUILD)/modules/mod_service_db.so: modules/service_db/service_db.c common/servi
 	  -Ithird_party $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
 
 $(BUILD)/modules/mod_epg.so: modules/epg/epg.c common/eit_section.c common/eit_cache.c common/eit_time.c include/openaurora/eit_section.h include/openaurora/eit_cache.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+
+$(BUILD)/modules/mod_tuner.so: modules/tuner/tuner.c common/nim_stub.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_section.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 

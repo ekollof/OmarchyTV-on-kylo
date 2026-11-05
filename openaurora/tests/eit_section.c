@@ -258,6 +258,35 @@ static void test_bounded_text_and_abort(void)
         -ENOSPC);
 }
 
+static void test_builder_roundtrip(void)
+{
+    const struct oa_eit_build_event event = {
+        .event_id = 77,
+        .start = { 0xea, 0x60, 0x08, 0x30, 0x00 },
+        .duration = { 0x00, 0x45, 0x00 },
+        .running_status = 2,
+        .free_ca_mode = 1,
+        .name = "Builder",
+        .text = "Roundtrip"
+    };
+    uint8_t section[512];
+    size_t len = 0;
+    assert(oa_eit_build_section(0x4e, 9, 5, 1, &event, 1, section,
+        sizeof section, &len) == 0);
+    struct capture c = { .abort_after = -1 };
+    assert(oa_eit_parse_section(section, len, capture_event, &c) == 1);
+    assert(c.events[0].service_id == 9 && c.events[0].event_id == 77);
+    assert(c.events[0].range.begin == 1677283200u + 8u * 3600u + 30u * 60u);
+    assert(c.events[0].range.end == c.events[0].range.begin + 45u * 60u);
+    assert(c.events[0].running_status == 2 && c.events[0].free_ca_mode == 1);
+    assert(c.events[0].version == 5 && !strcmp(c.events[0].name, "Builder") &&
+        !strcmp(c.events[0].text, "Roundtrip"));
+    assert(oa_eit_build_section(0x40, 9, 0, 1, &event, 1, section,
+        sizeof section, &len) == -EINVAL);
+    assert(oa_eit_build_section(0x4e, 9, 0, 1, &event, 1, section, 8,
+        &len) == -ENOSPC);
+}
+
 int main(void)
 {
     test_valid_section();
@@ -265,6 +294,7 @@ int main(void)
     test_validation();
     test_skips();
     test_bounded_text_and_abort();
+    test_builder_roundtrip();
     puts("ok eit section: EIT header/CRC, BCD times, descriptors and skips");
     return 0;
 }

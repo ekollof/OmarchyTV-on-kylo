@@ -19,6 +19,18 @@ error cases; two foxxum results match qemu SHA256 exactly. Verified15-file/
 vendor pair1967(zombie)/1785(live) and no-reset marker unchanged. tvssh sent
 WoL initially. No framebuffer/device operation or persistent deployment change.
 
+TUNER-NIM-MODULE-2026-11-05 (host/qemu): added an NIM boundary shaped after
+DEV_NIM_DTV_StartTune/MonitorTune/signal (paths 1/2/3/5/7, status 3 unlocked/
+4 locked, frequency status[3], strength/quality uint32, float BER/SNR, UNC
+0xffffffff), with an offline stub backend. mod_tuner publishes `tuner`, maps
+DVB-T/C/S and IP (analog ENOTSUP), runs a 25% scan state machine with lock and
+signal metrics, and pushes synthetic EIT sections into `epg.ingest` when the
+module is present. NIM unit test and real socket test cover scan/signal/cancel/
+reload and EPG query results; host419 ok, verify45; ARM mod_tuner/mod_epg and
+qemu NIM run pass. Stub only: no tuner hardware/transponder scan, demux/PID
+assembly, real service discovery, vendor execution or live backend. No TV
+access.
+
 EPG-EIT-MODULE-2026-11-05 (host/qemu): added a DVB EIT section parser with
 table-id 0x4e..0x6f support, section-syntax/length/MPEG-2 CRC validation,
 firmware MJD/BCD validity gating, short-event name/text extraction and

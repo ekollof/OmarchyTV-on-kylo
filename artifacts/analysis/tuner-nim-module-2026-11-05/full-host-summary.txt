@@ -1,0 +1,8 @@
+full host make check: 419 ok
+ok eit time: firmware BCD/MJD decode, range algebra and sentinel edges
+ok eit cache: keyed schedule events, duration query and now/next
+ok eit section: EIT header/CRC, BCD times, descriptors and skips
+ok nim stub: tune/monitor/signal defaults and synthetic EIT source
+ok epg IPC: EIT ingest, key replacement, query/clear and reload over the control socket
+ok tuner IPC: NIM stub scan/signal, EIT handoff to epg, cancel/reload over the socket
+verify.cjs: 45 groups

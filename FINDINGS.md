@@ -38,6 +38,18 @@ reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
 first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
 capture remain open.
 
+TUNER-NIM-MODULE-2026-11-05: the tuner contract now has a vendor-shaped NIM
+boundary (oa_nim_ops) mirroring DEV_NIM_DTV_StartTune(path,params,status),
+MonitorTune, StopTune and the signal getters. Only an offline stub backend
+exists: paths 1/2/3/5/7, status 3/4 lock words, frequency in kHz,
+strength/quality uint32, float BER/SNR and UNC 0xffffffff. mod_tuner publishes
+`tuner`, maps DVB-T/C/S/IP (analog ENOTSUP), advances 25% per status poll while
+calling monitor/signal, and pushes synthetic EIT sections into `epg.ingest`
+when present. A NIM unit test and real socket test cover metrics, scan,
+cancel, reload and EPG query results; host419 ok, verify45; ARM/qemu passes.
+Stub only: no tuner hardware, transponder scan, demux/PID assembly, real
+service discovery, vendor execution or live backend. No TV access.
+
 EPG-EIT-MODULE-2026-11-05: DVB EIT sections are now parsed (0x4e..0x6f,
 section-syntax/length/MPEG-2 CRC checks, MJD/BCD time validity, short-event
 descriptor name/text, actual/running/version) and fed into the EIT schedule

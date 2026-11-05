@@ -1,0 +1,2 @@
+$ qemu-arm-static -L <toolchain-libc> openaurora/build-tv-v3/tests/nim_stub
+ok nim stub: tune/monitor/signal defaults and synthetic EIT source

@@ -436,6 +436,19 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `posix_spawn("/sbin/mdev", "-s")` plus `waitpid`; the channel-list test
       uses `nftw` cleanup instead of a shell command. The display test wrappers
       remain as no-system regression guards. Host410 ok, verify45. No TV access.
+- [x] Vendor-grounded tuner module: added an `oa_nim_ops` boundary mirroring
+      the recovered `DEV_NIM_DTV_StartTune`/`MonitorTune`/signal calls, with an
+      offline stub backend (path enum, 3/4 lock words, frequency, float
+      BER/SNR, UNC sentinel). `mod_tuner` publishes `tuner`, maps DVB-T/C/S and
+      IP (analog `ENOTSUP`), advances a 25% scan state machine with live
+      signal/lock metrics, and pushes synthetic EIT sections into
+      `epg.ingest` when present. Unit NIM test and real Unix-socket test cover
+      scan/signal/cancel/reload plus EPG query results. Host419 ok, verify45;
+      ARM mod_tuner/mod_epg build and qemu NIM run pass. TUNER-NIM-MODULE.
+      Limits: stub only, no tuner hardware/transponder scan or demux/PID
+      assembly, synthetic EIT/service data, project handle state machine, no
+      vendor execution or live backend. No TV access.
+
 - [x] EIT section parser + real EPG module: added a DVB EIT parser (table ids
       0x4e..0x6f, section/CRC validation, MJD/BCD time gate, short-event
       descriptor, actual/running/version metadata, invalid-time skips) feeding

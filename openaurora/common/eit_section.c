@@ -97,3 +97,93 @@ int oa_eit_parse_section(const uint8_t *data, size_t len,
     }
     return delivered;
 }
+
+struct writer {
+    uint8_t *data;
+    size_t len;
+    size_t cap;
+    int error;
+};
+
+static void put8(struct writer *w, uint8_t value)
+{
+    if (w->error || w->len >= w->cap) {
+        w->error = 1;
+        return;
+    }
+    w->data[w->len++] = value;
+}
+
+static void put16(struct writer *w, uint16_t value)
+{
+    put8(w, (uint8_t)(value >> 8));
+    put8(w, (uint8_t)value);
+}
+
+static void put_bytes(struct writer *w, const uint8_t *data, size_t len)
+{
+    if (w->error || w->len + len > w->cap) {
+        w->error = 1;
+        return;
+    }
+    memcpy(w->data + w->len, data, len);
+    w->len += len;
+}
+
+int oa_eit_build_section(uint8_t table_id, uint16_t service_id,
+    uint8_t version, int current, const struct oa_eit_build_event *events,
+    size_t count, uint8_t *out, size_t cap, size_t *len)
+{
+    if (!out || !len || table_id < 0x4e || table_id > 0x6f ||
+        count > 64 || (count && !events))
+        return -EINVAL;
+    struct writer w = { out, 0, cap < 4096 ? cap : 4096, 0 };
+    put8(&w, table_id);
+    put8(&w, 0xb0);
+    put8(&w, 0);
+    put16(&w, service_id);
+    put8(&w, (uint8_t)(((version & 0x1f) << 1) | (current ? 1 : 0)));
+    put8(&w, 0);
+    put8(&w, 0);
+    put16(&w, 0x1234);
+    put16(&w, 0x5678);
+    put8(&w, 0);
+    put8(&w, table_id);
+    for (size_t i = 0; i < count && !w.error; i++) {
+        const struct oa_eit_build_event *event = &events[i];
+        size_t name_len = event->name ? strlen(event->name) : 0;
+        size_t text_len = event->text ? strlen(event->text) : 0;
+        if (name_len > 255 || text_len > 255) return -EINVAL;
+        size_t descriptor_length = 7 + name_len + text_len;
+        if (descriptor_length > 0xfffu) return -EINVAL;
+        put16(&w, event->event_id);
+        put_bytes(&w, event->start, 5);
+        put_bytes(&w, event->duration, 3);
+        put8(&w, (uint8_t)(((event->running_status & 7) << 5) |
+            ((event->free_ca_mode & 1) << 4) |
+            ((descriptor_length >> 8) & 0x0fu)));
+        put8(&w, (uint8_t)descriptor_length);
+        put8(&w, 0x4d);
+        put8(&w, (uint8_t)(3 + 1 + name_len + 1 + text_len));
+        put8(&w, 'e'); put8(&w, 'n'); put8(&w, 'g');
+        put8(&w, (uint8_t)name_len);
+        put_bytes(&w, (const uint8_t *)(event->name ? event->name : ""),
+            name_len);
+        put8(&w, (uint8_t)text_len);
+        put_bytes(&w, (const uint8_t *)(event->text ? event->text : ""),
+            text_len);
+    }
+    if (w.error) return -ENOSPC;
+    size_t section_length = w.len - 3 + 4;
+    if (section_length > 4093) return -ENOSPC;
+    out[1] = (uint8_t)(0xb0 | ((section_length >> 8) & 0x0fu));
+    out[2] = (uint8_t)section_length;
+    uint32_t crc = crc32_mpeg(out, w.len);
+    put8(&w, (uint8_t)(crc >> 24));
+    put8(&w, (uint8_t)(crc >> 16));
+    put8(&w, (uint8_t)(crc >> 8));
+    put8(&w, (uint8_t)crc);
+    if (w.error) return -ENOSPC;
+    *len = w.len;
+    return 0;
+}
