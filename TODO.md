@@ -853,18 +853,20 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       tile, OKs) and read-only fb1, saved it as
       `artifacts/protocol/stock-apps-grid.png`. Added a stock-layout renderer
       mode using `background_fullscreen`, solid `#481730` top strip, "Apps"
-      title, 294x169 tiles on a 310/230 pitch, full-cell focus, Markt label and
-      white-on-#811924 scrollbar. Added `stage-apps-grid.py` and
-      `apps_grid_stock` capture. Manifest comparison improved from AE 29.56% /
-      MAE8 75.38 to **AE 0.99% / MAE8 2.52** (top strip 0.57%, grid 1.67%,
-      scrollbar 0.12%). Host423 ok, verify45. STOCK-APPS-GRID-PARITY. Limits:
-      fixed 25-item synthetic corpus with stock-derived third-row icons, not
-      the live DB; title/label fonts approximated; fb1 capture, not HDMI/
-      cold-start scanout; no testtool/display takeover.
+      title, 294x166 tiles on a 310/230 pitch, full-cell focus, font-rendered
+      Markt label and white-on-#811924 scrollbar. Added `stage-apps-grid.py`,
+      `apps_grid_stock` and live-DB capture; all 18 original downloaded
+      thumbnails are used, with no oracle tile crops. Manifest comparison
+      improved from AE 29.56% / MAE8 75.38 to **AE 1.02% / MAE8 2.60** (top
+      strip 0.57%, grid 1.69%, scrollbar 6.75%). Host423 ok, verify45.
+      STOCK-APPS-GRID-PARITY. Limits: the live `OmarchyTV` row has no
+      thumbnail and is filtered; the stock scrollbar implies market-catalog
+      rows not in LauncherItem; title/label fonts approximated; fb1 capture,
+      not HDMI/cold-start scanout.
 
-- [ ] Content-independent apps-grid parity: rerun the comparison with the live
-      LauncherItem DB and independently downloaded icons, remove stock-derived
-      tile crops, and resolve the remaining title/label/font and scaling error.
+- [ ] Apps-grid residual parity: recover the market-catalog row set behind the
+      stock scrollbar/bar length, refine title/label font rasterization and
+      tile scaling, and verify against a live-DB oracle without synthetic rows.
 
 - [x] Stock-capture parity analysis: the old `shot-launcher-right.png` is an
       R/B-swapped pre-correction capture; after channel correction it matches
@@ -875,7 +877,7 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       STOCK-PARITY. A fresh same-session corrected stock apps-grid capture is
       still required; no TV operation in this analysis. **Superseded
       2026-11-05:** the stock Apps page was captured and compared in
-      STOCK-APPS-GRID-PARITY (AE 0.99%, fixed corpus).
+      STOCK-APPS-GRID-PARITY (live DB AE 1.02%; old fixed-corpus 0.99% superseded).
 
 - [x] Scrollbar skin minimum helper: moving caps20+16 yield36px; recovered
       standard-name lookups and supplier cache behavior match32 native cases.
@@ -943,7 +945,7 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       watchdog/fallback and full display ownership/restoration from firmware.
       A historical FreshWDT return1 did not prove rejection or impossibility.
       On-TV PNG/JPEG display is now covered by the supervised VISIBLE-IMAGES
-      test; stock apps-grid layout/chrome comparison now exists at AE 0.99%
+      test; stock apps-grid layout/chrome comparison now exists at AE 1.02% on the live DB
       (STOCK-APPS-GRID-PARITY) but content-independent/live-DB parity remains.
       An ARM cold-start bundle
       (openaurora,25 modules, oa-supervise, fb-restore, cold config) is built

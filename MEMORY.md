@@ -23,13 +23,13 @@ STOCK-APPS-GRID-PARITY-2026-11-05 (host/offline + read-only fb1): captured
 the real stock full-screen Apps page via DIAL virtual-remote navigation and a
 read-only fb1 shot (artifacts/protocol/stock-apps-grid.png). Added a stock
 layout mode to paint_apps using background_fullscreen, solid #481730 top strip,
-Apps title, 294x169 tiles on 310/230 pitch, full-cell focus, Markt label and
+Apps title, 294x166 tiles on 310/230 pitch, full-cell focus, Markt label and
 white-on-#811924 scrollbar. stage-apps-grid.py and apps_grid_stock produce a
 fixed 25-item offline candidate. Manifest comparison improved from AE29.56%/
-MAE8 75.38 to AE0.99%/MAE8 2.52 (top strip0.57%, grid1.67%, scrollbar0.12%).
-Host423 ok, verify45. Limits: fixed synthetic corpus with stock-derived third
-row, not live DB; title/label fonts approximated; fb1 not HDMI/cold-start
-scanout. DIAL navigation changed only the stock UI screen; no settings/source
+MAE8 75.38 to AE1.02%/MAE8 2.60 (top strip0.57%, grid1.69%, scrollbar6.75%).
+Host423 ok, verify45. Limits: live DB has no thumbnail for OmarchyTV (filtered); the
+stock scrollbar implies market-catalog rows not in LauncherItem; title/label
+fonts approximated; fb1 not HDMI/cold-start scanout. DIAL navigation changed only the stock UI screen; no settings/source
 change. Staging removed.
 
 CHANNEL-RUNTIME-ORDER-2026-11-05 (host/qemu + read-only fb1): added a

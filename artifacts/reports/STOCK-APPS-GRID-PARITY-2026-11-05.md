@@ -20,7 +20,7 @@ navigation and supplied the remote photo for key identification.
 
 The captured page shows: solid `#481730` top strip with "Apps", the
 `background_fullscreen` theme gradient with decorative shapes, 5 columns of
-294x169 tiles on a 310px horizontal pitch / 230px row pitch, a focused
+294x166 tiles on a 310px horizontal pitch / 230px row pitch, a focused
 "Markt" tile expanded to the full 310x230 cell with an orange label strip, and
 a 4px white scrollbar over a `#811924` track at x=1750.
 
@@ -31,7 +31,7 @@ blob is present:
 
 - blit the theme background and repaint the solid `#481730` top strip;
 - blit the "Apps" title at (80,58);
-- draw non-focused tiles at cell+7,+6 with 294x169, and the focused tile full
+- draw non-focused tiles at cell+7,+7 with 294x166, and the focused tile full
   cell width (300x166/169) with the orange cell backdrop;
 - blit a stock-sourced `markt_label` strip for the first tile;
 - draw the scrollbar as a white bar over a `#811924` track at x=1750,
@@ -42,38 +42,44 @@ existing UI tests still cover the provisional dark reconstruction.
 
 ## Candidate generation
 
-`tools/stage-apps-grid.py` stages OAI1 blobs:
+`tools/stage-apps-grid.py` stages OAI1 blobs from the theme assets and the
+**live database + original downloaded thumbnails**:
 
-- `background_fullscreen`, `apps_title` and `markt_label` from the theme
-  assets/stock capture;
-- `live_00` from `market_animated.png`;
-- `live_01..09` from the downloaded launcher thumbnails
-  (Netflix/Prime/YouTube/tabii/Canal/TV Vlaanderen/Télésat/Digiturk/GAIN);
-- `live_10..14` cropped from the stock capture because those third-party tile
-  images are absent from the extracted assets (DAZN/SSIPTV/Rakuten/+APP/DAZN);
-- placeholders off the visible page.
+- `background_fullscreen` and font-rendered `apps_title`/`markt_label`;
+- `markt.rgba` from `market_animated.png`;
+- one blob per live LauncherItem thumbnail name under its original filename;
+- no stock-derived tile crops.
 
-`tests/apps_grid_stock.c` creates a fixed 25-item corpus, renders through the
-real host/UI modules and captures `offline-apps-grid-stock.png`.
-`make -C openaurora capture-stock-apps-grid` regenerates both the assets and
-the capture; `compare-stock-apps-grid` runs the manifest comparison.
+`tests/apps_grid_stock.c` copies the live settingsDB, inserts the special
+`Markt` row and renders through the real host/UI modules. The current live DB
+has 19 parent-0/type-2 rows; `OmarchyTV` has no thumbnail and is filtered like
+the stock selector, leaving 18 real thumbnails plus Markt.
+
+Commands:
+
+```
+make -C openaurora capture-live-apps-grid      # LIVE_DB=/tmp/opencode/live-settings.db
+make -C openaurora capture-stock-apps-grid     # fixed-corpus regression path
+```
+
+`compare-stock-apps-grid` compares against the saved oracle manifest.
 
 ## Measured result
 
 Manifest: `artifacts/analysis/stock-parity-2026-11-05/apps-grid-regions.json`.
 
+Live DB + independent downloaded icons vs the byte-identical fresh oracle:
+
 ```
-before: AE=612938 (0.295591) RMSE16=28736.3 MAE8=75.3758 changed=83.55%
-after:  AE=20506.8 (0.009889) RMSE16=4834.15 MAE8=2.52181 changed=8.64%
+full: AE=21177.1 (0.010213) RMSE16=4972.76 MAE8=2.60425 changed=11.03%
+top strip 0.57%, grid 1.69%, scrollbar 6.75%
 ```
 
-Region after: top strip 0.57% AE, grid 1.67%, scrollbar 0.12%. Markt cell
-2.30%, first-row tiles 1.6–3.1%, second-row 1.3–2.6%, third row 0.46–1.3%.
-
-This is a layout/chrome parity result, not a content-independent pixel claim:
-the candidate uses the stock theme assets and the visible tile images are
-partly stock-derived. The remaining error is mostly font/title antialiasing,
-tile-image scaling/cropping and the Markt label, not geometry.
+The earlier 0.99%/8.64% result used a fixed corpus with stock-derived third-row
+tile crops and is **superseded** by this independent live-DB render. The
+remaining error is mostly title/label font rasterization, tile scaling and the
+scrollbar total: the stock page's bar implies more market-catalog entries than
+the LauncherItem table exposes.
 
 ## Limits
 

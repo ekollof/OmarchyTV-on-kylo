@@ -1051,8 +1051,8 @@ static void paint_apps(struct ctx *c)
                  * cell; the focused tile expands to the full cell width. */
                 int tw=idx==c->grid_sel?300:294;
                 int w=tw,h=w*icon->h/icon->w;
-                if (h>169) { h=169;w=h*icon->w/icon->h; }
-                d->blit_scaled(x+(APPS_CELL_W-w)/2,y+6,w,h,
+                if (h>166) { h=166;w=h*icon->w/icon->h; }
+                d->blit_scaled(x+(APPS_CELL_W-w)/2,y+7,w,h,
                     icon->w,icon->h,icon->rgba);
             } else {
                 int w=APPS_CELL_W-40,h=w*icon->h/icon->w;

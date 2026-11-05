@@ -45,6 +45,29 @@ static void exec(sqlite3 *db, const char *sql)
     }
 }
 
+static void copy_file(const char *src, const char *dst)
+{
+    FILE *in = fopen(src, "rb");
+    FILE *out = fopen(dst, "wb");
+    assert(in && out);
+    unsigned char buf[4096];
+    size_t n;
+    while ((n = fread(buf, 1, sizeof buf, in)) > 0)
+        assert(fwrite(buf, 1, n, out) == n);
+    assert(fclose(in) == 0 && fclose(out) == 0);
+}
+
+static void use_live_db(const char *source)
+{
+    copy_file(source, g_db);
+    sqlite3 *db = NULL;
+    assert(sqlite3_open(g_db, &db) == SQLITE_OK);
+    exec(db,
+        "INSERT INTO LauncherItem VALUES(0,0,0,-1,9900,0,0,1,0,0,2,-1,0,0,0,0,"
+        "'','','Markt','markt','','','','','','')");
+    assert(sqlite3_close(db) == SQLITE_OK);
+}
+
 static void make_db(void)
 {
     sqlite3 *db = NULL;
@@ -75,13 +98,14 @@ static void make_db(void)
 
 int main(int argc, char **argv)
 {
-    assert(argc == 4);
+    assert(argc == 4 || argc == 5);
     snprintf(g_modules, sizeof g_modules, "%s", argv[1]);
     snprintf(g_ui_dir, sizeof g_ui_dir, "%s", argv[2]);
     char tmp[] = "/tmp/oa-apps-stock.XXXXXX";
     assert(mkdtemp(tmp));
     snprintf(g_db, sizeof g_db, "%s/settings.db", tmp);
-    make_db();
+    if (argc == 5) use_live_db(argv[4]);
+    else make_db();
 
     oa_host host;
     assert(!oa_host_init(&host, g_modules, NULL));

@@ -1362,7 +1362,7 @@ apps-grid-stock-ui = $(BUILD)/tests/apps-grid-stock/ui
 capture-stock-apps-grid: $(BUILD)/tests/apps_grid_stock ui-live-stage
 	@test -f $(STOCK_APPS) || { echo "missing $(STOCK_APPS); capture the stock apps grid first"; exit 2; }
 	python3 tools/stage-apps-grid.py --out $(abspath $(apps-grid-stock-ui)) \
-		--stock $(abspath $(STOCK_APPS))
+		--thumbs $(abspath ../artifacts/workbench/thumbs)
 	$(BUILD)/tests/apps_grid_stock $(abspath $(ui-live-modules)) \
 		$(abspath $(apps-grid-stock-ui)) \
 		$(abspath ../artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.rgba)
@@ -1370,6 +1370,24 @@ capture-stock-apps-grid: $(BUILD)/tests/apps_grid_stock ui-live-stage
 		../artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.rgba \
 		1920 1080 \
 		../artifacts/analysis/stock-apps-grid-oracle-2026-11-05/offline-apps-grid-stock.png
+
+LIVE_DB ?= /tmp/opencode/live-settings.db
+LIVE_THUMBS ?= /tmp/opencode/live-thumbs
+apps-grid-live-ui = $(BUILD)/tests/apps-grid-live/ui
+.PHONY: capture-live-apps-grid
+capture-live-apps-grid: $(BUILD)/tests/apps_grid_stock ui-live-stage
+	@test -f $(LIVE_DB) || { echo "missing $(LIVE_DB); copy the live settingsDB first"; exit 2; }
+	@test -d $(LIVE_THUMBS) || { echo "missing $(LIVE_THUMBS); copy the downloaded images first"; exit 2; }
+	python3 tools/stage-apps-grid.py --out $(abspath $(apps-grid-live-ui)) \
+		--db $(abspath $(LIVE_DB)) --thumbs $(abspath $(LIVE_THUMBS))
+	$(BUILD)/tests/apps_grid_stock $(abspath $(ui-live-modules)) \
+		$(abspath $(apps-grid-live-ui)) \
+		$(abspath ../artifacts/analysis/stock-apps-grid-live-2026-11-05/offline-apps-grid-live.rgba) \
+		$(abspath $(LIVE_DB))
+	python3 tools/rawrgba-to-png.py \
+		../artifacts/analysis/stock-apps-grid-live-2026-11-05/offline-apps-grid-live.rgba \
+		1920 1080 \
+		../artifacts/analysis/stock-apps-grid-live-2026-11-05/offline-apps-grid-live.png
 
 .PHONY: compare-stock-apps-grid
 compare-stock-apps-grid:
