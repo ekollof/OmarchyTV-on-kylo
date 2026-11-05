@@ -144,6 +144,13 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
+Latest graphics: [GRAPHICS-SOCKET](artifacts/reports/GRAPHICS-SOCKET-2026-11-05.md)
+runs real graphics + scene_display over the socket with oa-scene-broker and the
+fixture renderer. display.gpu/display/alpha/async services, reload,
+hold-refusal, dependency-ordered reload, broker child replacement/reap and
+unload/load reuse pass. Host402 ok, verify45. Fixture renderer only; real
+EGL/Mali, physical fb1 and cold startup remain.
+
 Latest fake fb: [FAKE-FB-SOCKET](artifacts/reports/FAKE-FB-SOCKET-2026-11-05.md)
 runs the real mod_display_fb over the socket with an LD_PRELOAD fake /dev/fb1
 and recovered region/MAU/pan ioctls. A self-test paint changes yoffset/region/

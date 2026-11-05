@@ -1168,6 +1168,11 @@ check-fake-fb-socket: $(BUILD)/$(PROJECT) $(BUILD)/tests/fake_fb_preload.so $(BU
 	node tests/fake_fb_socket.cjs $(abspath $(BUILD))
 check: check-fake-fb-socket
 
+.PHONY: check-graphics-socket
+check-graphics-socket: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_graphics.so $(BUILD)/modules/mod_scene_display.so $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so
+	node tests/graphics_socket.cjs $(abspath $(BUILD))
+check: check-graphics-socket
+
 ui-skin-socket-modules = $(BUILD)/tests/ui-skin-socket/modules
 .PHONY: check-ui-skin-socket
 check-ui-skin-socket: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/tests/ui_nav_display.so

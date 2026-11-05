@@ -93,6 +93,15 @@ reauthorized; fb1 and stock operation must stay untouched. This supersedes the
 earlier "Don't touch the TV" restriction. No persistent replacement or boot
 changes. The historical offline-only entries describe their original runs.
 
+GRAPHICS-SOCKET-2026-11-05 (host-only): real graphics + scene_display over the
+Unix socket with oa-scene-broker and tests/scene-renderer-fixture.so. graphics
+publishes display.gpu:v1; scene_display requires it and publishes display:v2,
+display.alpha:v1 and display.async:v1. Reload and dependency-ordered reload
+pass; a graphics reload is refused while scene_display holds display.gpu; the
+broker child is replaced then reaped, and unload/load/start reuse works. Host402
+ok, verify45. Fixture renderer only; real EGL/Mali, physical fb1 and cold
+startup remain.
+
 FAKE-FB-SOCKET-2026-11-05 (host-only): an LD_PRELOAD fake /dev/fb1 with the
 recovered region/MAU/pan ioctls runs the real mod_display_fb over the socket.
 A self-test paint changes yoffset/region/pixel FNV; suspend, stop, start/reload

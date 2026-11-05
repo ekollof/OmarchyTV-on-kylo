@@ -6,6 +6,14 @@ Private controls forward to EX_PLAT; successful ioctl still does not prove
 MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
+GRAPHICS-SOCKET-2026-11-05: real graphics + scene_display over the Unix socket
+with oa-scene-broker and the fixture renderer. graphics publishes display.gpu;
+scene_display publishes display/alpha/async. Reload and dependency-ordered
+reload pass; graphics reload is refused while display.gpu is held; the broker
+child is replaced then reaped; unload/load/start reuse works. Host402 ok,
+verify45. Fixture renderer only; real EGL/Mali, physical fb1 and cold startup
+remain.
+
 FAKE-FB-SOCKET-2026-11-05: an LD_PRELOAD fake /dev/fb1 with the recovered
 region/MAU/pan ioctls runs the real mod_display_fb over the socket. A self-test
 paint changes yoffset/region/pixel FNV; suspend, stop, start/reload and

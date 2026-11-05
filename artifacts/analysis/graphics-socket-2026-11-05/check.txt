@@ -1,0 +1,2 @@
+node tests/graphics_socket.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok actual graphics/scene_display IPC: gpu/display services, hold refusal, dependency-ordered reload, child reap and reuse

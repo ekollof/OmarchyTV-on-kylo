@@ -598,6 +598,15 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       FAKE-FB-SOCKET. Limits: user-space fake; real kernel/driver behavior,
       physical fb1/TDGA, vendor coexistence and cold startup remain.
 
+- [x] Graphics/scene_display socket lifecycle with the fixture renderer:
+      graphics publishes display.gpu:v1 via oa-scene-broker; scene_display
+      requires it and publishes display:v2/alpha/async. Reload and
+      dependency-ordered reload pass, a graphics reload is refused while the
+      GPU service is held, the broker child is replaced then reaped, and a
+      fresh unload/load/start cycle works. Host402 ok, verify45.
+      GRAPHICS-SOCKET. Limits: fixture renderer; real EGL/Mali, physical fb1
+      and cold startup remain.
+
 - [x] Fixture-backed module socket lifecycle: ui_theme (synthetic BinSVG),
       ui_profile (synthetic EFSL), audio_amp_profile (extracted hwprofile),
       audio_curve (synthetic 1668-byte AQ/profile0) and audio_mixer (real host
