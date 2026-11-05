@@ -20,6 +20,13 @@ drawing are authorized; preserve stock Aurora/access and remove staging.
 Staging now goes under `/buffer` per owner request. Cold startup, boot-hook
 changes and persistent replacement remain separate gates.
 
+Lua skin on the panel, 2026-11-05: a temporary `/buffer/oa-lua-screen` stack
+(`display_fb`, `ui_engine`, `lua`, `ui_omarchy`) painted the script theme.
+The owner saw one green flash. A later fb1 capture was stock "Geen signaal"
+with no green samples, so Aurora repainted the layer. `display_fb` stop stayed
+`cleanup pending` and quit did not finish the snapshot restore. Staging was
+removed. Stock PIDs 1967/1785 remained. This is not independent startup.
+
 Latest live acceptance: [LIVE-TV-ACCEPTANCE](artifacts/reports/LIVE-TV-ACCEPTANCE-2026-11-05.md)
 staged the ABI 3 tree under `/buffer`, ran epg/tuner/pvr/lua, and loaded
 `display_fb` on vendor-initialized fb1. It saved a 16,588,800-byte snapshot,

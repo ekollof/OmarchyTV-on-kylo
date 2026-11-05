@@ -1,5 +1,13 @@
 # Current project state — last verified 2026-11-05
 
+Lua screen flash, 2026-11-05: staged `/buffer/oa-lua-screen` (hashes matched
+before exec) started `display_fb`, `ui_engine`, `lua` and `ui_omarchy` with
+`ui.omarchy.lua=1`. Skin status was `active omarchy`, fallback 0. The owner
+saw one green flash, the script theme 20,180,40. The following fb1 frame was
+stock "Geen signaal" and contained no green samples. `stop display_fb` stayed
+cleanup-pending; quit exited before that restore finished. Staging removed;
+no `openaurora` left; stock PIDs 1967/1785. Not cold startup or owned scanout.
+
 LIVE-TV-ACCEPTANCE-2026-11-05 (on TV, temporary `/buffer` staging): owner
 authorized full control. Current ABI 3 core/modules (38 staged files, hashes
 matched) ran from `/buffer`; epg/tuner/pvr/lua loaded/started/reloaded, PVR
