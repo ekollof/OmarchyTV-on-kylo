@@ -81,14 +81,18 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       blits the OAI1 panel at 0,0 and presents; the recorder crop matches the
       captured `settings_panel.rgba` source exactly (`panel-source-compare.py`:
       AE=0, max=0, 0/842,400 changed). Navigation panel -> quick tiles ->
-      panel -> portal still passes. SETTINGS-PANEL-CAPTURE.
+      panel -> portal still passes. `OA_SETTINGS_SEL=0` plus
+      `make capture-settings-focus-real` compares the focused row 0 region
+      (20,186 750x66) to `settings_focus_0.rgba`: AE=0, max=0, 0/49,500
+      changed. SETTINGS-PANEL-CAPTURE.
 
-- [ ] Offline full settings preview: complete the live focused-row/text,
-      slider/selection and Mesa renderer integration, including transformed
-      frames. Recorder alpha composition is corrected; its set_scene_transform
-      only records arguments. The quick picture-settings state and the base
-      `settings_list` 780x1080 panel are now exact offline; focused/live text
-      and Mesa/transformed-frame paths remain open. The settings_panel OAI1 and
+- [ ] Offline full settings preview: complete the live text, remaining
+      focused rows/slider/selection and Mesa renderer integration, including
+      transformed frames. Recorder alpha composition is corrected; its
+      set_scene_transform only records arguments. The quick picture-settings
+      state, base `settings_list` 780x1080 panel and focused row 0 are now
+      exact offline; live text, other focused rows, animation and
+      Mesa/transformed-frame paths remain open. The settings_panel OAI1 and
       slider/selection exporter already exist. Vendor Mali rasterization/
       scanout comparison still requires the set.
 

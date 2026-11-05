@@ -33,6 +33,19 @@ pixel. Evidence:
 - `artifacts/analysis/live-tv-2026-11-05/offline-settings-panel.png`
 - `artifacts/analysis/live-tv-2026-11-05/offline-settings-panel-compare.txt`
 
+## Focused-row follow-up
+
+`OA_SETTINGS_SEL=0` selects row 0; `make capture-settings-focus-real` captures
+the panel and compares the `20,186` 750x66 row region against
+`settings_focus_0.rgba`:
+
+```
+panel: AE=0.000000 MAE8=0.000000 max=0 changed=0/49500
+```
+
+The captured focused-row composition is exact. The live-text path
+(`ui.text=1`) and focus/animation behavior remain separate.
+
 ## Limits
 
 - This compares against the captured panel source, not a new full-panel fb1

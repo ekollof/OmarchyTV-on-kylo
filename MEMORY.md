@@ -46,9 +46,12 @@ now accepts `OA_SETTINGS_REAL=1` and uses the real workbench UI dir;
 `make capture-settings-panel-real` clears transparent, blits the 780x1080
 OAI1 panel at 0,0 with no focus row, and compares the recorder crop to
 `settings_panel.rgba` via `tools/panel-source-compare.py`: AE=0, max=0,
-0/842,400 changed. Panel -> quick tiles -> panel -> portal navigation still
-passes. Live text/focus, slider/selection, Mesa/transformed frames and
-scanout remain open.
+0/842,400 changed. Setting `OA_SETTINGS_SEL=0` and running
+`make capture-settings-focus-real` captures the focused panel and compares
+the 20,186 750x66 row region to `settings_focus_0.rgba`: AE=0, max=0,
+0/49,500 changed. Panel -> quick tiles -> panel -> portal navigation still
+passes. Live text, slider/selection, other focused rows, animation,
+Mesa/transformed frames and scanout remain open.
 
 PORTAL-CAPTURE-2026-11-05 (host, no TV): added `tests/ui_portal_quick.c` and
 `make capture-portal-real`. The shipped portal path paints the workbench

@@ -67,7 +67,10 @@ Full settings panel capture, 2026-11-05: `tests/ui_settings_panel.c` with
 `OA_SETTINGS_REAL=1` uses the real workbench UI dir; `make
 capture-settings-panel-real` clears transparent, blits the 780x1080 OAI1 panel
 at 0,0 with no focus row, and compares the recorder crop to
-`settings_panel.rgba` (AE=0, max=0, 0/842,400 changed). Navigation panel ->
+`settings_panel.rgba` (AE=0, max=0, 0/842,400 changed). `OA_SETTINGS_SEL=0`
+plus `make capture-settings-focus-real` compares the focused 20,186 750x66
+row region to `settings_focus_0.rgba`: AE=0, max=0, 0/49,500 changed.
+Navigation panel ->
 quick tiles -> panel -> portal still passes. Live text/focus, slider/selection,
 Mesa/transforms and scanout remain open.
 

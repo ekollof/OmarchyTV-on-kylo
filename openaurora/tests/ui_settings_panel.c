@@ -23,6 +23,10 @@ static const char *config(void *ud, const char *key, const char *def)
     if (!strcmp(key, "ui.ok_file")) return "";
     if (!strcmp(key, "ui.fps")) return "0";
     if (!strcmp(key, "ui.rail_hl")) return "0";
+    if (!strcmp(key, "ui.sel")) {
+        const char *sel = getenv("OA_SETTINGS_SEL");
+        return sel && *sel ? sel : "-1";
+    }
     return def;
 }
 

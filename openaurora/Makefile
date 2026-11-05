@@ -1392,6 +1392,20 @@ capture-sources-real: $(BUILD)/tests/ui_sources_quick $(BUILD)/tests/ui_nav_disp
 		$(BUILD)/tests/ui-sources-real/sources.sources 1920 1080 \
 		$(BUILD)/tests/ui-sources-real/sources.png
 
+.PHONY: capture-settings-focus-real
+capture-settings-focus-real: $(BUILD)/tests/ui_settings_panel $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so
+	@test -f $(SETTINGS_REAL_UI)/settings_focus_0.rgba || { echo "missing $(SETTINGS_REAL_UI); stage the workbench UI assets first"; exit 2; }
+	@mkdir -p $(BUILD)/tests/ui-settings-focus-real/modules
+	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui-settings-focus-real/modules/
+	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-settings-focus-real/modules/mod_nav_display.so
+	@OA_SETTINGS_REAL=1 OA_SETTINGS_SEL=0 OA_NAV_CAPTURE=$(abspath $(BUILD)/tests/ui-settings-focus-real/settings-focus) \
+		$(BUILD)/tests/ui_settings_panel $(abspath $(BUILD)/tests/ui-settings-focus-real/modules) \
+		$(abspath $(SETTINGS_REAL_UI))
+	python3 tools/panel-source-compare.py \
+		$(BUILD)/tests/ui-settings-focus-real/settings-focus.panel 1920 1080 \
+		$(SETTINGS_REAL_UI)/settings_focus_0.rgba \
+		$(BUILD)/tests/ui-settings-focus-real/settings-focus.png 20 186
+
 $(BUILD)/tests/ui_settings_rows: tests/ui_settings_rows.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_settings_rows.c $(filter %.o,$^) $(LDLIBS)

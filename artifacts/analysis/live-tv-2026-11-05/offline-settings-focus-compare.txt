@@ -1,0 +1,2 @@
+  ok   full settings panel paints at 0,0; Exit returns to quick tiles, Select reopens, Exit to portal
+panel: AE=0.000000 MAE8=0.000000 max=0 changed=0/49500
