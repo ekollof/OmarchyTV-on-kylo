@@ -16,6 +16,7 @@
 #include "openaurora/binsvg.h"
 #include "openaurora/tab_policy.h"
 #include "openaurora/service_db.h"
+#include "openaurora/broadcast.h"
 
 #include <stdint.h>
 
@@ -363,6 +364,12 @@ typedef struct {
     int (*format)(const struct oa_service_list *list,size_t index,
         char *buf,size_t cap);
 } oa_service_list_iface;
+
+/* tuner/epg/pvr v1 — project-internal broadcast contracts. No production
+ * backend is shipped yet; the host fixture exercises the interfaces. */
+#define OA_SVC_TUNER "tuner"
+#define OA_SVC_EPG "epg"
+#define OA_SVC_PVR "pvr"
 
 /* ui.anim — recovered list/dialog animation. Published by mod_ui_anim.
  * set_enabled only writes the flag. start() reads ui.clock and rejects a

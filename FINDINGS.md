@@ -38,6 +38,13 @@ reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
 first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
 capture remain open.
 
+BROADCAST-FOUNDATION-2026-11-05: added project-internal tuner/epg/pvr v1
+contracts and a host fixture. Tuner scan state machine, EPG overlap/bounds/
+caps, PVR add/list/cancel and reload/teardown pass; host412 ok, verify45. These
+are fixture contracts, not vendor ABI or hardware parity: no tuner scan, EIT/
+EPG semantics, recording engine, production module/CLI/socket/UI or
+persistence. No TV access.
+
 EASI-PROBE-2026-11-05: testtool TCP1986 exposes read-only GETCHANNELLIST
 (RSN/name) and ACTIVECHANNELLIST XML (RSN/name/handle/ONID/TSID/SID/type). A
 whitelist-only probe client with bounded parsing, host fixture and ARM build

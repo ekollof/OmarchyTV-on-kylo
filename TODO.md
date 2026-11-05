@@ -436,6 +436,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `posix_spawn("/sbin/mdev", "-s")` plus `waitpid`; the channel-list test
       uses `nftw` cleanup instead of a shell command. The display test wrappers
       remain as no-system regression guards. Host410 ok, verify45. No TV access.
+- [x] Broadcast service foundations: project-internal tuner/epg/pvr v1
+      contracts and a host-only fixture. Tuner scan state machine, EPG overlap
+      queries with bounds/caps, PVR add/list/cancel, reload and teardown are
+      host-tested. Host412 ok, verify45. BROADCAST-FOUNDATION. Limits: fixture
+      only; no tuner hardware/scan, EIT/EPG semantics, recording engine,
+      production module, CLI/socket/UI or persistence. No TV access.
+
 - [x] Read-only testtool/EASI probe client: recovered testtool TCP1986,
       `GETCHANNELLIST` RSN/name format and `ACTIVECHANNELLIST` XML; added a
       whitelist-only probe (ACTIVECHANNELLIST/GETCHANNELLIST) with bounded XML

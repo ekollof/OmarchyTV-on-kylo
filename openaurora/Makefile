@@ -391,6 +391,19 @@ check-launcher-db-module: $(BUILD)/tests/launcher_db_module $(BUILD)/modules/mod
 	@$(BUILD)/tests/launcher_db_module $(BUILD)/modules $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
 check: check-launcher-db-module
 
+$(BUILD)/tests/mod_broadcast_fixture.so: tests/broadcast_fixture.c include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $<
+
+$(BUILD)/tests/broadcast_services: tests/broadcast_services.c core/host.h include/openaurora/services.h include/openaurora/broadcast.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+
+.PHONY: check-broadcast-services
+check-broadcast-services: $(BUILD)/tests/broadcast_services $(BUILD)/tests/mod_broadcast_fixture.so
+	@$(BUILD)/tests/broadcast_services $(BUILD)/tests
+check: check-broadcast-services
+
 $(BUILD)/easi-probe: tools/probe/easi-probe.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<

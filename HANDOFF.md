@@ -35,6 +35,12 @@ The owner then requested a review and fixes on2026-11-04. The review below
 supersedes the old clean/verified snapshot where it identifies defects; it
 does not start the pending imageCreate subsystem or persistent replacement.
 
+Latest broadcast foundation: [BROADCAST-FOUNDATION](artifacts/reports/BROADCAST-FOUNDATION-2026-11-05.md)
+adds project-internal tuner/epg/pvr v1 contracts and a host fixture: scan state
+machine, EPG overlap/bounds/caps, PVR add/list/cancel, reload/teardown. Host412
+ok, verify45. Fixture only; no tuner hardware/scan, EIT/EPG semantics,
+recording engine, production module/CLI/socket/UI or persistence.
+
 Latest runtime probe: [EASI-PROBE](artifacts/reports/EASI-PROBE-2026-11-05.md)
 implements the read-only testtool client (TCP1986, GETCHANNELLIST/
 ACTIVECHANNELLIST XML) with fixture/ARM coverage. The TV testtool server is

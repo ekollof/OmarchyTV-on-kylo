@@ -19,6 +19,13 @@ error cases; two foxxum results match qemu SHA256 exactly. Verified15-file/
 vendor pair1967(zombie)/1785(live) and no-reset marker unchanged. tvssh sent
 WoL initially. No framebuffer/device operation or persistent deployment change.
 
+BROADCAST-FOUNDATION-2026-11-05 (host-only): project-internal tuner/epg/pvr
+v1 contracts plus a fixture backend. The fixture exercises a deterministic
+scan state machine (12 services, 25% steps, cancel), overlapping EPG queries
+with caps/bounds, and PVR add/list/cancel/reload/teardown. Host412 ok, verify45.
+No hardware, EIT/EPG semantics, recording engine, production module, CLI/
+socket/UI or persistence; no TV access. BROADCAST-FOUNDATION.
+
 EASI-PROBE-2026-11-05 (host-only probe + read-only TV checks): recovered
 testtool TCP1986, GETCHANNELLIST RSN/name and ACTIVECHANNELLIST XML. Added
 tools/probe/easi-probe.c with a read-only command whitelist, bounded XML
