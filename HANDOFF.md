@@ -92,6 +92,13 @@ from→to, and a top-left window anchor with the named #scalerect size. Pure
 0→-42/-24. Screen integration/vendor transition capture remain open.
 SUBLAUNCHER-GRID-ANIM.
 
+Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over
+Markt/Netflix (700x280, ~37ms effective) captured one redraw at t=53ms
+(bbox 33,30 620x230) and 16 identical post frames through 621ms. Apps focus is
+an instant redraw, not a 300ms scale/glyph pulse; do not wire the sublauncher
+records there. Corrected BGRA→RGB PNGs; sublauncher/settings screen capture
+remains. APPS-PULSE.
+
 Partial GPU scene uploads, 2026-11-06: OGS1 FRAME rects + renderer ABI2 +
 `display.gpu` v2 `frame_rect`; `scene_display` sends only dirty images. Host
 protocol/patch/UI tests pass. TV: full upload 73 ms; ten rail frames uploaded

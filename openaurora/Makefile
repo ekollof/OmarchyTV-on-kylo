@@ -1491,6 +1491,10 @@ $(BUILD)/fb-restore: tools/display/fb-restore.c common/fb_snapshot.c include/ope
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
+$(BUILD)/fb-region-sampler: tools/display/fb-region-sampler.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
 .PHONY: cold-bundle
 cold-bundle: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/fb-restore
 	@rm -rf $(BUILD)/cold-bundle

@@ -59,6 +59,14 @@ Added pure `launcher_anim` helpers and tests for sublauncher 240x140/1→1.35
 and glyph 0→-42/-24. Screen integration and a real vendor transition capture
 remain open. SUBLAUNCHER-GRID-ANIM.
 
+Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
+Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,
+one redraw at t=53ms (bbox 33,30 620x230, 45,745 px), then 16 identical post
+frames through 621ms. The full-screen Apps grid focus change is an instant
+redraw, not a 300ms scale/glyph pulse; do not apply the sublauncher records
+there. Initial BGRA-as-RGBA PNGs were blue-shifted and were corrected; the
+hash analysis is unaffected. SubLauncherDialog capture remains. APPS-PULSE.
+
 Control client, 2026-11-05: `oa-client` now defaults to a 5 s bounded timeout
 and supports `--no-wait`; the silent-server test covers 1.02 s timeout and
 0.00 s no-wait. `mod_ir` keeps `/dev/ttyS2` closed when BLAST succeeds unless

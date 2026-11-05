@@ -207,11 +207,18 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       Added pure `launcher_anim` helpers and tests for sublauncher 240x140/
       1→1.35 and glyph 0→-42/-24. SUBLAUNCHER-GRID-ANIM.
 
-- [ ] 300 ms screen playback and vendor comparison: wire the recovered
-      scalerect/glyph pulse into a real sub-launcher/apps screen only after
-      its content/window rects are proved; do not apply it to the category
-      rail or invented portal card row. A high-cadence fb1/HDMI capture (or
-      owner video) of a real focus transition is the acceptance gate.
+- [x] Stock Apps-grid pulse capture: read-only fb1 sampler over
+      Markt/Netflix (700x280) captured one redraw at t=53 ms and 16 identical
+      post frames through 621 ms. The full-screen Apps grid focus is an
+      instant redraw, not a 300 ms scale/glyph pulse. Corrected BGRA→RGB PNGs
+      and hashes in APPS-PULSE; do not apply the sublauncher records to this
+      screen.
+
+- [ ] 300 ms sub-launcher playback and vendor comparison: capture
+      `SubLauncherDialog`/`sublauncheritemFA` with the same read-only sampler
+      while a settings submenu selection changes, then wire the recovered
+      scalerect/glyph pulse only into that proved screen. Do not apply it to
+      the category rail or invented portal card row.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
       the vendor 30 ms APNG/10 ms controller cadence. Tighten the compositor

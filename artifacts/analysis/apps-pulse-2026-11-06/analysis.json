@@ -1,0 +1,316 @@
+[
+  {
+    "bbox": null,
+    "changed": 0,
+    "hash": "43b053b860530a6a",
+    "index": 0,
+    "mean_abs": 0.0,
+    "t_ms": -366,
+    "yoffset": 0
+  },
+  {
+    "bbox": null,
+    "changed": 0,
+    "hash": "43b053b860530a6a",
+    "index": 1,
+    "mean_abs": 0.0,
+    "t_ms": -330,
+    "yoffset": 0
+  },
+  {
+    "bbox": null,
+    "changed": 0,
+    "hash": "43b053b860530a6a",
+    "index": 2,
+    "mean_abs": 0.0,
+    "t_ms": -292,
+    "yoffset": 0
+  },
+  {
+    "bbox": null,
+    "changed": 0,
+    "hash": "43b053b860530a6a",
+    "index": 3,
+    "mean_abs": 0.0,
+    "t_ms": -256,
+    "yoffset": 0
+  },
+  {
+    "bbox": null,
+    "changed": 0,
+    "hash": "43b053b860530a6a",
+    "index": 4,
+    "mean_abs": 0.0,
+    "t_ms": -220,
+    "yoffset": 0
+  },
+  {
+    "bbox": null,
+    "changed": 0,
+    "hash": "43b053b860530a6a",
+    "index": 5,
+    "mean_abs": 0.0,
+    "t_ms": -183,
+    "yoffset": 0
+  },
+  {
+    "bbox": null,
+    "changed": 0,
+    "hash": "43b053b860530a6a",
+    "index": 6,
+    "mean_abs": 0.0,
+    "t_ms": -147,
+    "yoffset": 0
+  },
+  {
+    "bbox": null,
+    "changed": 0,
+    "hash": "43b053b860530a6a",
+    "index": 7,
+    "mean_abs": 0.0,
+    "t_ms": -111,
+    "yoffset": 0
+  },
+  {
+    "bbox": null,
+    "changed": 0,
+    "hash": "43b053b860530a6a",
+    "index": 8,
+    "mean_abs": 0.0,
+    "t_ms": -75,
+    "yoffset": 0
+  },
+  {
+    "bbox": null,
+    "changed": 0,
+    "hash": "43b053b860530a6a",
+    "index": 9,
+    "mean_abs": 0.0,
+    "t_ms": -36,
+    "yoffset": 0
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 10,
+    "mean_abs": 19.5232,
+    "t_ms": 53,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 11,
+    "mean_abs": 19.5232,
+    "t_ms": 90,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 12,
+    "mean_abs": 19.5232,
+    "t_ms": 128,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 13,
+    "mean_abs": 19.5232,
+    "t_ms": 165,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 14,
+    "mean_abs": 19.5232,
+    "t_ms": 203,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 15,
+    "mean_abs": 19.5232,
+    "t_ms": 241,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 16,
+    "mean_abs": 19.5232,
+    "t_ms": 280,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 17,
+    "mean_abs": 19.5232,
+    "t_ms": 318,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 18,
+    "mean_abs": 19.5232,
+    "t_ms": 356,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 19,
+    "mean_abs": 19.5232,
+    "t_ms": 393,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 20,
+    "mean_abs": 19.5232,
+    "t_ms": 431,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 21,
+    "mean_abs": 19.5232,
+    "t_ms": 469,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 22,
+    "mean_abs": 19.5232,
+    "t_ms": 507,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 23,
+    "mean_abs": 19.5232,
+    "t_ms": 545,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 24,
+    "mean_abs": 19.5232,
+    "t_ms": 583,
+    "yoffset": 1080
+  },
+  {
+    "bbox": [
+      33,
+      30,
+      653,
+      260
+    ],
+    "changed": 45745,
+    "hash": "4e3b84ed5a114c62",
+    "index": 25,
+    "mean_abs": 19.5232,
+    "t_ms": 621,
+    "yoffset": 1080
+  }
+]
