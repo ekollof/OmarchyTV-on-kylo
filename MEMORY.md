@@ -2011,6 +2011,14 @@ selection, reload and teardown; skin_socket switches omarchy→diag→vendor ove
 the real socket. ARM module builds. Fixed probe list, recorder-only; no
 TV/HAL/cold acceptance.
 
+FULL-STACK-REHEARSAL-2026-11-05: `tests/full_stack_ipc.cjs` exercises the
+deferred TV takeover sequence offline with the same module order
+(plat/nav_display/settings/service_db/image_decode/ir/ui_engine/ui_vendor),
+the firmware-dump DB and workbench UI. It verifies portal state, `input:v1`,
+key 22/21, `reload ir`, `reload ui_vendor`, reverse stop/unload and clean exit
+over the real socket. `make -j24 check-full-stack-ipc` passes. Recorder
+display/host plat and injected keys only; no UART/BLAST/fb1/HAL/TV.
+
 UI-ENGINE-REVIEW-2026-11-01 supersedes the split's v1 dispatch contract below.
 ui.engine v2 uses skin-owned trampolines and a bounded event queue; legacy
 register_skin fails ENOTSUP. Forced unload/rebind, both skins' re-registration,

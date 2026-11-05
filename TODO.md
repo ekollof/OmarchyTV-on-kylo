@@ -979,6 +979,14 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       omarchy→diag→vendor; the ARM module builds. UI-DIAG. Fixed probe list,
       recorder-only; no TV/HAL/cold/visual parity.
 
+- [x] Offline full-stack takeover rehearsal: `tests/full_stack_ipc.cjs` runs
+      the deferred TV module order over the real socket with the live dump DB
+      and workbench UI: plat, recorder display, settings, service_db,
+      image_decode, ir, ui_engine, ui_vendor; `key 22`/`21`, `reload ir`,
+      `reload ui_vendor`, reverse stop/unload, clean exit. `make -j24
+      check-full-stack-ipc` passes. FULL-STACK-REHEARSAL. Recorder display,
+      host plat and injected keys only; no UART/BLAST/fb1/HAL/TV.
+
 - [x] Vendor decoder-class differential: an ARM LD_PRELOAD probe executes the
       shipped PngImageDecoderImpl and JpegImageDecoder under qemu before vendor
       main, using vendor MemoryBufferSource/MutableImage and requested RGBA

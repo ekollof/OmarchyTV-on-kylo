@@ -1488,6 +1488,11 @@ check-ui-stack-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_settings.so $(BUILD
 	node tests/ui_stack_ipc.cjs $(abspath $(BUILD))
 check: check-ui-stack-ipc
 
+.PHONY: check-full-stack-ipc
+check-full-stack-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_settings.so $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_image_decode.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui_nav_display.so
+	node tests/full_stack_ipc.cjs $(abspath $(BUILD))
+check: check-full-stack-ipc
+
 .PHONY: check-module-matrix-ipc
 check-module-matrix-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_ui_navigation.so $(BUILD)/modules/mod_ui_list.so $(BUILD)/modules/mod_power.so $(BUILD)/modules/mod_cec.so
 	node tests/module_matrix_ipc.cjs $(abspath $(BUILD))

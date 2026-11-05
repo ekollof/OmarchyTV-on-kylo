@@ -466,6 +466,13 @@ rows/selection/reload/teardown pass; `skin_socket.sh` switches
 omarchy→diag→vendor; ARM module builds. Fixed probe list, recorder-only; no
 TV/HAL/cold acceptance.
 
+Full-stack rehearsal: [FULL-STACK-REHEARSAL](artifacts/reports/FULL-STACK-REHEARSAL-2026-11-05.md)
+runs the exact deferred takeover module order offline: plat, recorder display,
+settings, service_db, image_decode, ir, ui_engine, ui_vendor; live dump DB and
+workbench UI; key 22/21, `reload ir`, `reload ui_vendor`, reverse teardown.
+`make -j24 check-full-stack-ipc` passes. No UART/BLAST/fb1/HAL/TV; the TV run
+still needs explicit authorization.
+
 Latest matrix: [MODULE-MATRIX-IPC](artifacts/reports/MODULE-MATRIX-IPC-2026-11-05.md)
 runs ticker -> ui_clock -> ui_anim plus ui_navigation, ui_list, power and cec
 over the real socket with no display/HAL. Nav/list queries and dependency-
