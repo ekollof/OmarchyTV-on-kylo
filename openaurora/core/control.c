@@ -17,6 +17,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 
+#include "openaurora/channels.h"
 #include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "host.h"
@@ -258,6 +259,10 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  epg-ingest <hex>        feed one complete EIT section\n"
                  "  epg-clear               drop cached EPG events\n"
                  "  epg-count               cached EPG event count\n"
+                 "  channel-ingest <hex>    feed ACTIVECHANNELLIST XML (runtime order)\n"
+                 "  channel-clear           drop the runtime active list\n"
+                 "  channel-state           runtime/stored list source and counts\n"
+                 "  channel-list            runtime active-list rows\n"
                  "  pvr-list                PVR reservations\n"
                  "  pvr-add <svc> <from> <to> [repeat start_pad end_pad]\n"
                  "                           add reservation\n"
@@ -444,6 +449,70 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         size_t count=ingest->count();
         h->api.release(h,OA_SVC_EPG_INGEST);
         snprintf(outbuf,outlen,"count %zu\n",count);
+        return 0;
+    }
+    if(!strcmp(cmd,"channel-ingest")) {
+        if(force || !a1 || a2 || a3 || a4){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        char xml[8192];size_t len=0;
+        if(hex_decode(a1,(uint8_t *)xml,sizeof xml - 1,&len)){
+            snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        xml[len]=0;
+        const oa_channel_iface *channels=
+            h->api.lookup(h,OA_SVC_CHANNELS,1);
+        if(!channels){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        int rc=channels->ingest_xml(xml,len);
+        h->api.release(h,OA_SVC_CHANNELS);
+        if(rc<0){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
+        snprintf(outbuf,outlen,"ok channels %d\n",rc);
+        return 0;
+    }
+    if(!strcmp(cmd,"channel-clear")) {
+        if(force || a1 || a2 || a3 || a4){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_channel_iface *channels=
+            h->api.lookup(h,OA_SVC_CHANNELS,1);
+        if(!channels){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        channels->clear();
+        h->api.release(h,OA_SVC_CHANNELS);
+        snprintf(outbuf,outlen,"ok\n");
+        return 0;
+    }
+    if(!strcmp(cmd,"channel-state")) {
+        if(force || a1 || a2 || a3 || a4){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_channel_iface *channels=
+            h->api.lookup(h,OA_SVC_CHANNELS,1);
+        if(!channels){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        const struct oa_channel_snapshot *snap=channels->snapshot();
+        if(snap)
+            snprintf(outbuf,outlen,
+                "mode runtime count %zu lcn %s visibility %s\n",snap->count,
+                snap->lcn_known?"known":"unknown",
+                snap->visibility_known?"known":"unknown");
+        else
+            snprintf(outbuf,outlen,
+                "mode stored count 0 lcn unknown visibility unknown\n");
+        h->api.release(h,OA_SVC_CHANNELS);
+        return 0;
+    }
+    if(!strcmp(cmd,"channel-list")) {
+        if(force || a1 || a2 || a3 || a4){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_channel_iface *channels=
+            h->api.lookup(h,OA_SVC_CHANNELS,1);
+        if(!channels){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        const struct oa_channel_snapshot *snap=channels->snapshot();
+        struct reply r={outbuf,outlen,0};
+        if(!snap){
+            append(&r,"source stored count 0\n");
+        }else{
+            append(&r,"source runtime count %zu lcn unknown visibility unknown\n",
+                snap->count);
+            for(size_t i=0;i<snap->count;i++)
+                append(&r,"row rsn=%u handle=%u name=%s onid=%u tsid=%u "
+                    "sid=%u type=%u\n",snap->entries[i].rsn,
+                    snap->entries[i].handle,snap->entries[i].name,
+                    snap->entries[i].onid,snap->entries[i].tsid,
+                    snap->entries[i].sid,snap->entries[i].type);
+        }
+        h->api.release(h,OA_SVC_CHANNELS);
         return 0;
     }
     if(!strcmp(cmd,"pvr-list")) {

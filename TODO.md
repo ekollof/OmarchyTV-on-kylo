@@ -60,6 +60,14 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       display state was changed. Reopen only with a new explicit
       watchdog-safe, recovery-ready instruction.
 
+- [ ] Stock apps-grid pixel parity: needs a pixel-correct full-screen apps-grid
+      oracle. The TV currently shows the no-signal frame, no HDMI capture device
+      is attached and no keys were sent. Owner must leave the TV on the stock
+      apps grid for a read-only fb1 capture, authorize navigation keys, or
+      provide an HDMI capture. Then run `tools/tvshot.py` and
+      `make -C openaurora compare-stock-apps-grid` against the firmware-grounded
+      region manifest.
+
 - [ ] Independent startup: boot into openaurora without starting vendor Aurora;
       full-screen scanout, input, fallback and resume all verified. Owner authorized
       an idle hardware/CEC/audio test window on November 1; see AGENTS.md.
@@ -442,6 +450,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `posix_spawn("/sbin/mdev", "-s")` plus `waitpid`; the channel-list test
       uses `nftw` cleanup instead of a shell command. The display test wrappers
       remain as no-system regression guards. Host410 ok, verify45. No TV access.
+- [x] Runtime channel-order ingestion: added a `channels` module and parser
+      for the recovered ACTIVECHANNELLIST XML (order-preserving, bounded,
+      entity decoding, transactional replacement) with
+      channel-ingest/clear/state/list CLI. `ui_vendor` now prefers a runtime
+      snapshot with an amber "RUNTIME ACTIVE LIST - LCN/VISIBILITY
+      UNAVAILABLE" marker and keeps the stored red provisional fallback.
+      Unit, socket and recorder-UI tests pass. Host423 ok, verify45; ARM/qemu
+      passes. CHANNEL-RUNTIME-ORDER. Limits: no live EASI feed (testtool still
+      disabled by owner), no LCN/visibility fields in ACTIVECHANNELLIST and no
+      stock channel-list geometry capture.
+
 - [x] Vendor-grounded PVR module: added an `oa_pvr_backend` boundary shaped
       after `DvrController::startRecording/recordingQuery/stopRecording` and
       the SDK scheduler getters (integer recording id, index enumeration).

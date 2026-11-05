@@ -35,6 +35,16 @@ The owner then requested a review and fixes on2026-11-04. The review below
 supersedes the old clean/verified snapshot where it identifies defects; it
 does not start the pending imageCreate subsystem or persistent replacement.
 
+Latest channel runtime order:
+[CHANNEL-RUNTIME-ORDER](artifacts/reports/CHANNEL-RUNTIME-ORDER-2026-11-05.md)
+adds an ACTIVECHANNELLIST XML parser/module and makes ui_vendor prefer a
+runtime snapshot with an amber LCN/visibility caveat, falling back to stored
+order. channel-ingest/clear/state/list are socket-tested; host423 ok, verify45,
+ARM/qemu passes. No live EASI feed (testtool still disabled) and no LCN/
+visibility in the XML. Stock apps-grid pixel parity is blocked on an
+owner-provided apps-grid screen or HDMI capture; the TV showed no-signal and
+no keys were sent.
+
 Latest PVR module: [PVR-MODULE](artifacts/reports/PVR-MODULE-2026-11-05.md)
 adds a vendor-shaped PVR boundary (recording id, start/stop, index query) with
 a persistent offline stub. mod_pvr stores up to 256 jobs atomically at

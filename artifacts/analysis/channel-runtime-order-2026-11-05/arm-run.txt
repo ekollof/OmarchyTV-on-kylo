@@ -1,0 +1,2 @@
+$ qemu-arm-static -L <toolchain-libc> openaurora/build-tv-v3/tests/channels
+ok channels: runtime active-list XML order, fields and rejection

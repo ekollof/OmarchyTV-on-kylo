@@ -50,6 +50,9 @@ three-row service DB and the recorder display, not scanout.
 This is an explicit provisional UI, not vendor parity:
 
 - runtime EASI LCN/ordering and visibility/HD-simulcast filtering are missing;
+  **partly superseded:** [CHANNEL-RUNTIME-ORDER](CHANNEL-RUNTIME-ORDER-2026-11-05.md)
+  adds an ACTIVECHANNELLIST ingest/order path and a runtime UI mode, but no
+  live feed, LCN or visibility fields;
 - the normal stock remote entry path is not recovered;
 - channel-list geometry, typography, scrolling, paging and labels are not
   measured from a stock channel-list capture;

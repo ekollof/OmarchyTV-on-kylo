@@ -1,7 +1,8 @@
-/* Provisional channel-list screen over the stored service query. The screen
- * deliberately uses stored channel_no/name order, not runtime EASI LCN. The
- * recorder is not scanout evidence. */
+/* Channel-list screen: stored channel_no/name fallback and ingested runtime
+ * active-list order. Neither mode has runtime LCN/visibility. The recorder is
+ * not scanout evidence. */
 #include "host.h"
+#include "openaurora/channels.h"
 #include "openaurora/events.h"
 #include "openaurora/services.h"
 #include "openaurora/ui_engine.h"
@@ -208,13 +209,40 @@ int main(int argc, char **argv)
     oa_host_dispatch_posts(&host);
     assert(portal->screen() == 0);
 
+    /* Runtime active-list mode: the same screen prefers the ingested order,
+     * uses the amber marker and keeps the LCN/visibility caveat visible. */
+    assert(!command(&host, "stop ui_vendor", out, sizeof out));
+    assert(!command(&host, "load channels", out, sizeof out));
+    assert(!command(&host, "start channels", out, sizeof out));
+    const oa_channel_iface *channels =
+        host.api.lookup(&host, OA_SVC_CHANNELS, 1);
+    assert(channels);
+    const char *runtime_xml =
+        "<active_list network='Cable' count='2' total_size='2'>"
+        "<service rsn='7' name='Runtime A' handle='7' onid='1' tsid='2' sid='3' type='1'/>"
+        "<service rsn='9' name='Runtime B' handle='9' onid='1' tsid='2' sid='4' type='1'/>"
+        "</active_list>";
+    assert(channels->ingest_xml(runtime_xml, strlen(runtime_xml)) == 2);
+    host.api.release(&host, OA_SVC_CHANNELS);
+    assert(!command(&host, "start ui_vendor", out, sizeof out));
+    assert(portal->screen() == 6);
+    assert(find_fill(trace, 0, 162, 1921, 60, 190, 120, 30));
+    assert(trace->blit_count() >= 3);
+    host.api.emit(&host, OA_TOPIC_KEY, &down);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 80, 300, 1760, 60, 247, 148, 30));
+    host.api.emit(&host, OA_TOPIC_KEY, &exit);
+    oa_host_dispatch_posts(&host);
+    assert(portal->screen() == 0);
+
     host.api.release(&host, OA_SVC_PORTAL);
     host.api.release(&host, OA_SVC_NAV_TRACE);
     assert(!command(&host, "stop ui_vendor", out, sizeof out));
+    assert(!command(&host, "stop channels", out, sizeof out));
     assert(!command(&host, "stop service_db", out, sizeof out));
     assert(!command(&host, "stop ui_engine", out, sizeof out));
     assert(!command(&host, "stop nav_display", out, sizeof out));
-    puts("ok provisional channel list: stored channel order, non-parity marker, selection and exit");
+    puts("ok channel list: stored fallback and runtime order markers/selection");
     cleanup();
     return 0;
 }

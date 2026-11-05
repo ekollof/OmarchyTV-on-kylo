@@ -371,6 +371,7 @@ typedef struct {
 #define OA_SVC_EPG "epg"
 #define OA_SVC_EPG_INGEST "epg.ingest"
 #define OA_SVC_PVR "pvr"
+#define OA_SVC_CHANNELS "channels"
 
 /* ui.anim — recovered list/dialog animation. Published by mod_ui_anim.
  * set_enabled only writes the flag. start() reads ui.clock and rejects a

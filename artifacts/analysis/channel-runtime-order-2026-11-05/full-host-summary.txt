@@ -1,0 +1,8 @@
+full host make check: 423 ok
+ok channels: runtime active-list XML order, fields and rejection
+ok channels IPC: runtime XML order, replacement guards, clear and reload
+ok epg IPC: EIT ingest, key replacement, query/clear and reload over the control socket
+ok tuner IPC: NIM stub scan/signal, EIT handoff to epg, cancel/reload over the socket
+ok pvr IPC: add/list/cancel, reload and cross-process persistence
+ok channel list: stored fallback and runtime order markers/selection
+verify.cjs: 45 groups

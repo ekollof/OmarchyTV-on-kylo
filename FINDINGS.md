@@ -38,6 +38,18 @@ reduce to zero-width horizontal masks, not -1015/+1005. check-vgrid covers
 first/last cells and a nonzero mask. Operation-0x79 UI mapping and stock
 capture remain open.
 
+CHANNEL-RUNTIME-ORDER-2026-11-05: the channel UI now has a runtime-order
+path. A channels module parses the recovered ACTIVECHANNELLIST XML into an
+order-preserving, bounded list (transactional replacement, entity decode) and
+publishes it; ui_vendor prefers it with an amber marker naming the missing LCN/
+visibility data, falling back to stored order with the red provisional marker.
+channel-ingest/clear/state/list expose the mode over the socket. Host423 ok,
+verify45; ARM/qemu passes. This is the ingest path, not live EASI: testtool is
+still disabled, ACTIVECHANNELLIST lacks LCN/visibility, and no stock
+channel-list geometry capture exists. The read-only fb1 check showed the stock
+no-signal frame; stock apps-grid pixel parity still needs an owner-provided
+apps-grid screen or HDMI capture.
+
 PVR-MODULE-2026-11-05: the PVR service is now a real mod_pvr with a
 vendor-shaped backend boundary (integer recording id, start/stop, index query)
 and a persistent offline stub. pvr.path stores up to 256 jobs atomically with

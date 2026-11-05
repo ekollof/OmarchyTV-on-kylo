@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr
+MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -449,6 +449,19 @@ check-pvr-stub: $(BUILD)/tests/pvr_stub
 	@$(BUILD)/tests/pvr_stub
 check: check-pvr-stub
 
+$(BUILD)/tests/channels: tests/channels.c common/channels.c include/openaurora/channels.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-channels
+check-channels: $(BUILD)/tests/channels
+	@$(BUILD)/tests/channels
+check: check-channels
+
+.PHONY: check-channels-ipc
+check-channels-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_channels.so
+	node tests/channels_ipc.cjs $(abspath $(BUILD))
+check: check-channels-ipc
+
 .PHONY: check-epg-ipc
 check-epg-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_epg.so
 	node tests/epg_ipc.cjs $(abspath $(BUILD))
@@ -812,6 +825,10 @@ $(BUILD)/modules/mod_pvr.so: modules/pvr/pvr.c common/pvr_stub.c include/openaur
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
+$(BUILD)/modules/mod_channels.so: modules/channels/channels.c common/channels.c include/openaurora/channels.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+
 $(BUILD)/modules/mod_%.so: modules/%/*.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $< $(LDFLAGS) \
@@ -1123,9 +1140,9 @@ check: check-ui-apps-grid
 
 ui-channels-modules = $(BUILD)/tests/ui-channels/modules
 .PHONY: check-ui-channels
-check-ui-channels: $(BUILD)/tests/ui_channels $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so
+check-ui-channels: $(BUILD)/tests/ui_channels $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_channels.so
 	@mkdir -p $(ui-channels-modules)
-	@cp $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(ui-channels-modules)/
+	@cp $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_channels.so $(ui-channels-modules)/
 	@cp $(BUILD)/tests/ui_nav_display.so $(ui-channels-modules)/mod_nav_display.so
 	@$(BUILD)/tests/ui_channels $(ui-channels-modules)
 check: check-ui-channels

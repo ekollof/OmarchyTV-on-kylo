@@ -19,6 +19,17 @@ error cases; two foxxum results match qemu SHA256 exactly. Verified15-file/
 vendor pair1967(zombie)/1785(live) and no-reset marker unchanged. tvssh sent
 WoL initially. No framebuffer/device operation or persistent deployment change.
 
+CHANNEL-RUNTIME-ORDER-2026-11-05 (host/qemu + read-only fb1): added a
+channels module/parser for the recovered ACTIVECHANNELLIST XML (order-preserving,
+512-row bound, entity decode, transactional replacement) with
+channel-ingest/clear/state/list. ui_vendor prefers a runtime snapshot with an
+amber "RUNTIME ACTIVE LIST - LCN/VISIBILITY UNAVAILABLE" marker and keeps the
+stored red fallback. Unit/socket/recorder tests pass; host423 ok, verify45;
+ARM/qemu passes. ACTIVECHANNELLIST still has no LCN/visibility and no live feed
+exists (testtool disabled). Stock apps-grid capture remains absent: the TV was
+on the no-signal frame, no HDMI capture device is attached and no keys were
+sent; owner must leave the TV on the apps grid or authorize navigation.
+
 PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary
 (integer recording id, start/stop, index query) with a persistent offline stub.
 mod_pvr reads pvr.path, atomically stores up to 256 jobs, assigns monotonic ids,

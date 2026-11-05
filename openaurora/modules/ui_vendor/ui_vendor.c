@@ -42,6 +42,7 @@
 #include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
+#include "openaurora/channels.h"
 #include "openaurora/ui_engine.h"
 #include "openaurora/ui_time.h"
 #include "openaurora/canvas.h"
@@ -1095,51 +1096,79 @@ static void paint_channels(struct ctx *c)
     if (!c || !d || d->info(&W, &H, NULL, NULL) || W <= 0 || H <= 0)
         return;
     if (d->clear_rgba(36, 38, 40, 153)) return;
-    d->fill(0, 0, 1921, 162, 72, 23, 48);
-    d->fill(0, 162, 1921, CH_MARKER_H, 190, 30, 45);
-    channel_text_blit(c, "PROVISIONAL STORED ORDER - NOT RUNTIME EASI",
-                      20, 166, 1800, CH_MARKER_H, 0);
 
-    const oa_service_list_iface *svc =
-        c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
-    const struct oa_service_list *list = svc ? svc->snapshot() : NULL;
-    size_t *order = NULL, matched = 0;
-    if (list) {
-        struct oa_service_query q;
-        memset(&q, 0, sizeof q);
-        q.source_mask = 0x7;
-        q.sort = OA_SERVICE_SORT_CHANNEL_NO;
-        order = malloc(list->count * sizeof *order);
-        if (!order || oa_service_list_query(list, &q, order, list->count,
-                &matched))
-            matched = 0;
+    const oa_channel_iface *channels =
+        c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1);
+    const struct oa_channel_snapshot *runtime =
+        channels ? channels->snapshot() : NULL;
+    int have_runtime = runtime && runtime->count > 0;
+
+    d->fill(0, 0, 1921, 162, 72, 23, 48);
+    d->fill(0, 162, 1921, CH_MARKER_H,
+        have_runtime ? 190 : 190, have_runtime ? 120 : 30,
+        have_runtime ? 30 : 45);
+    channel_text_blit(c,
+        have_runtime ? "RUNTIME ACTIVE LIST - LCN/VISIBILITY UNAVAILABLE"
+                     : "PROVISIONAL STORED ORDER - NOT RUNTIME EASI",
+        20, 166, 1800, CH_MARKER_H, 0);
+
+    const oa_service_list_iface *svc = NULL;
+    const struct oa_service_list *list = NULL;
+    size_t *order = NULL;
+    size_t total = 0;
+    if (have_runtime) {
+        total = runtime->count;
+    } else {
+        svc = c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
+        list = svc ? svc->snapshot() : NULL;
+        if (list) {
+            struct oa_service_query q;
+            memset(&q, 0, sizeof q);
+            q.source_mask = 0x7;
+            q.sort = OA_SERVICE_SORT_CHANNEL_NO;
+            order = malloc(list->count * sizeof *order);
+            if (!order || oa_service_list_query(list, &q, order, list->count,
+                    &total))
+                total = 0;
+        }
     }
-    if (matched == 0)
+
+    if (total == 0)
         c->chan_sel = 0;
-    else if (c->chan_sel >= (int)matched)
-        c->chan_sel = (int)matched - 1;
+    else if (c->chan_sel >= (int)total)
+        c->chan_sel = (int)total - 1;
     int first = c->chan_sel >= CH_ROWS ? c->chan_sel - CH_ROWS + 1 : 0;
-    for (int row = 0; row < CH_ROWS && first + row < (int)matched; row++) {
-        const struct oa_service_row *service =
-            &list->rows[order[first + row]];
-        int focused = first + row == c->chan_sel;
+    for (int row = 0; row < CH_ROWS && first + row < (int)total; row++) {
+        int index = first + row;
+        int focused = index == c->chan_sel;
         int y = CH_ROW_Y + row * CH_ROW_H;
         d->fill(CH_X, y, CH_W, CH_ROW_H - 4,
                 focused ? 247 : 20, focused ? 148 : 20,
                 focused ? 30 : 20);
         char name[OA_SERVICE_NAME_MAX + 1];
+        const char *source = "";
+        int64_t number = 0;
+        if (have_runtime) {
+            const struct oa_channel_entry *entry = &runtime->entries[index];
+            source = entry->name;
+            number = entry->rsn;
+        } else {
+            const struct oa_service_row *service =
+                &list->rows[order[index]];
+            source = service->name;
+            number = service->channel_no;
+        }
         size_t n = 0;
-        for (; service->name[n] && n < OA_SERVICE_NAME_MAX; n++)
-            name[n] = (unsigned char)service->name[n] < 32
-                ? '?' : service->name[n];
+        for (; source[n] && n < OA_SERVICE_NAME_MAX; n++)
+            name[n] = (unsigned char)source[n] < 32 ? '?' : source[n];
         name[n] = '\0';
         char line[OA_SERVICE_NAME_MAX + 64];
-        snprintf(line, sizeof line, "%" PRId64 "  %s",
-                 service->channel_no, name);
+        snprintf(line, sizeof line, "%" PRId64 "  %s", number, name);
         channel_text_blit(c, line, CH_X + 20, y + 2, CH_W - 40,
                           CH_ROW_H - 6, focused);
     }
     if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
+    if (channels) c->api->release(c->api->priv, OA_SVC_CHANNELS);
     free(order);
     c->scene_painted = 1;
     if (d->present() != 0) {
@@ -1147,7 +1176,8 @@ static void paint_channels(struct ctx *c)
         return;
     }
     c->api->log(c->api->priv, OA_LOG_INFO,
-                "painted provisional channel list: %zu stored rows", matched);
+        "painted %s channel list: %zu rows",
+        have_runtime ? "runtime" : "stored", total);
 }
 
 static void paint(struct ctx *c)
