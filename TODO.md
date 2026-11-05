@@ -46,12 +46,23 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       TODO-AUDIT-2026-11-04 alpha defect. Scene transforms are recorded as
       metadata only; the recorder does not apply them to captured pixels.
 
+- [x] Quick picture-settings real-asset offline capture: added
+      `tests/ui_settings_quick.c` and `make capture-settings-quick-real`; the
+      shipped `paint_settings` path paints the workbench `settings_rail/top/cat`
+      at 0,180/0,240/0,440 over (13,14,14). The recorder snapshot is
+      byte-identical to the on-TV fb1 quick-settings capture
+      (`capture_compare.py`: AE=0, max=0, 0/2,073,600 changed).
+      SETTINGS-QUICK-CAPTURE.
+
 - [ ] Offline full settings preview: wire a real-asset ui.dir capture and
       Mesa renderer integration, including transformed frames. Recorder alpha
       composition is corrected; its set_scene_transform only records arguments.
-      The settings_panel OAI1 and slider/selection exporter already exist;
-      the synthetic panel test's4x4 stand-ins are not a real-content preview.
-      Vendor Mali rasterization/scanout comparison still requires the set.
+      The quick picture-settings state is now exact offline; the full
+      `settings_list` 780x1080 panel, live text/focus and Mesa/transformed-frame
+      paths remain open. The settings_panel OAI1 and slider/selection exporter
+      already exist; the synthetic panel test's4x4 stand-ins are not a
+      real-content preview. Vendor Mali rasterization/scanout comparison still
+      requires the set.
 
 
 - [x] Temporary staged fb1/display binding and on-TV ABI 3 modules: with the

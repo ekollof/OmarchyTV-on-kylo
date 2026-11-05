@@ -33,6 +33,14 @@ unload/load ir and clean exit. `make -j24 check-ir-ipc`,
 `check-ui-vendor-ipc` and `check-ui-nav` pass. The BLAST/v4l2 backend and
 physical IR remain TV-only; no HAL device was opened.
 
+SETTINGS-QUICK-CAPTURE-2026-11-05 (host, no TV): added
+`tests/ui_settings_quick.c` and `make capture-settings-quick-real`. The
+shipped `paint_settings` path paints the workbench `settings_rail/top/cat`
+assets at 0,180/0,240/0,440 over (13,14,14); the recorder snapshot is
+byte-identical to the on-TV fb1 quick-settings capture (`capture_compare.py`
+AE=0, max=0, 0/2,073,600 changed). Full `settings_list` panel, live
+text/focus, Mesa/transformed frames and scanout remain open.
+
 Lua screen flash, 2026-11-05: staged `/buffer/oa-lua-screen` (hashes matched
 before exec) started `display_fb`, `ui_engine`, `lua` and `ui_omarchy` with
 `ui.omarchy.lua=1`. Skin status was `active omarchy`, fallback 0. The owner

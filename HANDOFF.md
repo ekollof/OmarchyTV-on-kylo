@@ -56,6 +56,13 @@ unload/load ir and clean exit. `make -j24 check-ir-ipc`,
 `check-ui-vendor-ipc` and `check-ui-nav` pass; no TV/HAL device was opened.
 The BLAST/v4l2 physical path remains TV-only.
 
+Quick picture-settings offline capture, 2026-11-05:
+`tests/ui_settings_quick.c` plus `make capture-settings-quick-real` paint the
+workbench `settings_rail/top/cat` at 0,180/0,240/0,440 over (13,14,14). The
+recorder snapshot is byte-identical to the on-TV fb1 quick-settings capture
+(AE=0, max=0, 0/2,073,600 changed). Full settings panel, live text/focus,
+Mesa/transformed frames and scanout remain open.
+
 Latest live acceptance: [LIVE-TV-ACCEPTANCE](artifacts/reports/LIVE-TV-ACCEPTANCE-2026-11-05.md)
 staged the ABI 3 tree under `/buffer`, ran epg/tuner/pvr/lua, and loaded
 `display_fb` on vendor-initialized fb1. It saved a 16,588,800-byte snapshot,
