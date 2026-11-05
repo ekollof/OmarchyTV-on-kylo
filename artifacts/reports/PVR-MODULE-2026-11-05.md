@@ -1,5 +1,12 @@
 # Vendor-grounded PVR module with persistent stub — 2026-11-05
 
+> **Update 2026-11-05:** the vendor content/URI metadata schema was recovered
+> from `aurora.elf` (`recordings(key,id,program_num,cicam_id,cc_version,digest)`,
+> `uris(recording_key,offset,uri,license,expiry,first_playback)` and
+> `pinEvents(recording_key,offset,rating,data)`). It stores recording
+> content/URI/licence state, not the scheduled-job list, so this module's
+> `pvr.path` scheduler store is not a drop-in replacement for it. A vendor
+> metadata backend and the live recording engine remain open.
 Adds a real `pvr` module with a vendor-shaped backend boundary, an offline
 persistent recording store, and Unix-socket tests including a full process
 restart. Host and ARM/qemu only; no TV or vendor execution.
