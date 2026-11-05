@@ -132,10 +132,11 @@ pvr_stub pass. Limits: mock only, PID-only filter, DVB-T tune only, DVR sink
 not scheduler-driven, no hardware acceptance; cold start/display owner-gated.
 No TV access.
 
-Owner decision 2026-11-05 (NDAL/hardware acceptance): "Keep offline for now."
-No cold-start, display/fb1, NDAL frontend/demux or PVR hardware window is
-granted. Do not open TV devices, wake the set or change stock state; the
-offline mock/contract work remains the active path.
+Owner decision 2026-11-05 (NDAL/hardware acceptance): "Keep offline, pause
+project." No cold-start, display/fb1, NDAL frontend/demux or PVR hardware
+window is granted. Do not open TV devices, wake the set or resume hardware
+work; the project is paused until a new owner instruction. Offline mocks and
+committed state are the handoff.
 
 BROADCAST-VENDOR-FIELDS-2026-11-05 (host/qemu): extended the broadcast
 contracts with the recovered vendor fields: tuner lock/strength/quality/BER/
