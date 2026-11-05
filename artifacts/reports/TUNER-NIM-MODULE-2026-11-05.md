@@ -2,8 +2,10 @@
 
 > **Update 2026-11-05:** the synthetic-only EIT source now has a real MPEG-2
 > TS replay path (PID filter, continuity, split/back-to-back sections) selected
-> by `tuner.ts_path`; see [EIT-TS-DEMUX](EIT-TS-DEMUX-2026-11-05.md). The NIM
-> tune/signal side remains the stub described below.
+> by `tuner.ts_path`; see [EIT-TS-DEMUX](EIT-TS-DEMUX-2026-11-05.md). A
+> selectable `nim-ndal` frontend adapter with mock contract tests is in
+> [NDAL-TUNER-BACKEND](NDAL-TUNER-BACKEND-2026-11-05.md); it is not hardware-
+> accepted. The default NIM tune/signal side remains the stub described below.
 Adds a `tuner` module shaped after the recovered `DEV_NIM_DTV_*` calls, with an
 offline NIM stub and synthetic EIT output that is pushed into `mod_epg`. Host
 and ARM/qemu only; no TV, tuner hardware or vendor execution.

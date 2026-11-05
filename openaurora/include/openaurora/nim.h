@@ -81,6 +81,31 @@ int oa_nim_ts_open(const char *path);
 void oa_nim_ts_close(void);
 const struct oa_tuner_backend *oa_nim_ts_backend(void);
 
+/*
+ * Live-capable NDAL/DVB frontend backend. The default ops open
+ * /dev/dvb/adapterN/frontendN, use FE_SET_FRONTEND/FE_READ_* for DVB-T and
+ * call the shipped Nd_NIM_* setters/getters (libNDAL_EX.so) for the frontend
+ * parameters they own. Tests inject the same ops table; no device is touched
+ * unless the module is configured with tuner.backend=ndal.
+ */
+struct oa_ndal_nim_ops {
+    int (*open_frontend)(void *ctx, const char *path);
+    int (*close_frontend)(void *ctx, int fd);
+    int (*tune)(void *ctx, int fd, uint8_t nim_path, uint32_t frequency_khz);
+    int (*scan_mode)(void *ctx, int fd, uint32_t mode);
+    int (*frequency)(void *ctx, int fd, uint32_t *khz);
+    int (*delivery_system)(void *ctx, int fd, uint8_t *system);
+    int (*symbol_rate)(void *ctx, int fd, uint32_t *ksym);
+    int (*status)(void *ctx, int fd, uint32_t *status);
+    int (*metrics)(void *ctx, int fd, struct oa_nim_signal *signal);
+    int (*set_ts_output)(void *ctx, int fd, uint32_t value);
+    int (*set_standby)(void *ctx, int fd, int on);
+};
+
+const struct oa_tuner_backend *oa_nim_ndal_backend(const char *frontend_path);
+/* Test/embedding hook; NULL restores the default Linux/NDAL ops. */
+void oa_nim_ndal_set_ops(const struct oa_ndal_nim_ops *ops, void *ctx);
+
 #ifdef __cplusplus
 }
 #endif

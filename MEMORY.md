@@ -109,6 +109,17 @@ host423 ok, verify45; ARM/qemu passes. Limits: replay file only, NIM tune/
 signal remains the stub, fixed PID, no live demux/hardware, CRID or
 persistence; TV work remains owner-gated. No TV access.
 
+NDAL-TUNER-BACKEND-2026-11-05 (host/qemu, mock only): added a selectable
+nim-ndal frontend adapter behind oa_nim_ops. Default ops open the configured
+/dev/dvb/adapterN/frontendN, tune DVB-T with FE_SET_FRONTEND, read lock/
+strength/SNR/BER/UNC with FE_READ_*, and resolve Nd_NIM_SetScanMode/
+GetFrequency/GetDeliverySystem/GetSymbolRate/SetTsOutput/SetStandy from
+libNDAL_EX.so. tuner.backend=ndal selects it; stub remains the default.
+Mock contract tests cover call/ownership/error mapping; host423 ok, verify45;
+ARM/qemu passes. Limits: mock only, DVB-T tune path only, no live EIT/demux or
+PVR stream, no hardware acceptance; cold start/display owner-gated. No TV
+access.
+
 BROADCAST-VENDOR-FIELDS-2026-11-05 (host/qemu): extended the broadcast
 contracts with the recovered vendor fields: tuner lock/strength/quality/BER/
 SNR/UNC, EPG CRID/first-showing/running-status/state/version/actual, and PVR

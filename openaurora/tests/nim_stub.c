@@ -99,6 +99,179 @@ static void test_eit_source(void)
     assert(backend->nim->stop(OA_NIM_PATH_QPSK) == 0);
 }
 
+struct ndal_mock {
+    int opens, closes, tunes, scans, frequencies, status_calls, metrics_calls;
+    int fail_open, fail_tune, fail_status, fail_metrics;
+    int fd;
+    int locked;
+    uint8_t path;
+    uint32_t frequency;
+    struct oa_nim_signal signal;
+};
+
+static int mock_open(void *ctx, const char *path)
+{
+    struct ndal_mock *m = ctx;
+    (void)path;
+    m->opens++;
+    return m->fail_open ? -EACCES : m->fd;
+}
+
+static int mock_close(void *ctx, int fd)
+{
+    struct ndal_mock *m = ctx;
+    assert(fd == m->fd);
+    m->closes++;
+    return 0;
+}
+
+static int mock_tune(void *ctx, int fd, uint8_t path, uint32_t frequency)
+{
+    struct ndal_mock *m = ctx;
+    assert(fd == m->fd);
+    m->tunes++;
+    m->path = path;
+    m->frequency = frequency;
+    return m->fail_tune ? -EIO : 0;
+}
+
+static int mock_scan(void *ctx, int fd, uint32_t mode)
+{
+    struct ndal_mock *m = ctx;
+    assert(fd == m->fd);
+    assert(mode == OA_NIM_PATH_TERRESTRIAL);
+    m->scans++;
+    return 0;
+}
+
+static int mock_frequency(void *ctx, int fd, uint32_t *khz)
+{
+    struct ndal_mock *m = ctx;
+    assert(fd == m->fd);
+    m->frequencies++;
+    *khz = 474000;
+    return 0;
+}
+
+static int mock_delivery(void *ctx, int fd, uint8_t *system)
+{
+    struct ndal_mock *m = ctx;
+    assert(fd == m->fd);
+    *system = 1;
+    return 0;
+}
+
+static int mock_symbol(void *ctx, int fd, uint32_t *ksym)
+{
+    struct ndal_mock *m = ctx;
+    assert(fd == m->fd);
+    *ksym = 6900;
+    return 0;
+}
+
+static int mock_status(void *ctx, int fd, uint32_t *status)
+{
+    struct ndal_mock *m = ctx;
+    assert(fd == m->fd);
+    m->status_calls++;
+    if (m->fail_status) return -EIO;
+    *status = m->locked ? 0x10 : 0;
+    return 0;
+}
+
+static int mock_metrics(void *ctx, int fd, struct oa_nim_signal *out)
+{
+    struct ndal_mock *m = ctx;
+    assert(fd == m->fd);
+    m->metrics_calls++;
+    if (m->fail_metrics) return -EIO;
+    *out = m->signal;
+    return 0;
+}
+
+static int mock_set_one(void *ctx, int fd, uint32_t value)
+{
+    struct ndal_mock *m = ctx;
+    assert(fd == m->fd);
+    (void)value;
+    return 0;
+}
+
+static int mock_set_standby(void *ctx, int fd, int on)
+{
+    struct ndal_mock *m = ctx;
+    assert(fd == m->fd);
+    (void)on;
+    return 0;
+}
+
+static void test_ndal_mock(void)
+{
+    struct ndal_mock mock;
+    memset(&mock, 0, sizeof mock);
+    mock.fd = 42;
+    mock.locked = 1;
+    mock.signal.locked = 1;
+    mock.signal.strength = 80;
+    mock.signal.quality = 75;
+    mock.signal.ber = 1.5f;
+    mock.signal.snr = 20.5f;
+    mock.signal.unc = 0;
+    const struct oa_ndal_nim_ops ops = {
+        mock_open, mock_close, mock_tune, mock_scan, mock_frequency,
+        mock_delivery, mock_symbol, mock_status, mock_metrics, mock_set_one,
+        mock_set_standby
+    };
+    oa_nim_ndal_set_ops(&ops, &mock);
+    const struct oa_tuner_backend *backend =
+        oa_nim_ndal_backend("/mock/frontend0");
+    assert(backend && !strcmp(backend->name, "nim-ndal"));
+    assert(backend->nim && !backend->next_eit);
+
+    struct oa_nim_tune_result result;
+    const uint32_t params[2] = { 0, 482000 };
+    assert(backend->nim->start(OA_NIM_PATH_TERRESTRIAL, NULL, 0, &result) ==
+        -EINVAL);
+    assert(backend->nim->start(OA_NIM_PATH_TERRESTRIAL, params, 2, &result) ==
+        0);
+    assert(mock.opens == 1 && mock.tunes == 1 && mock.scans == 1);
+    assert(mock.path == OA_NIM_PATH_TERRESTRIAL && mock.frequency == 482000);
+    assert(result.state == OA_NIM_TUNE_UNLOCKED &&
+        result.frequency_khz == 474000);
+
+    assert(backend->nim->monitor(OA_NIM_PATH_TERRESTRIAL, &result) == 0);
+    assert(result.state == OA_NIM_TUNE_LOCKED &&
+        result.frequency_khz == 474000);
+    struct oa_nim_signal signal;
+    assert(backend->nim->signal(OA_NIM_PATH_TERRESTRIAL, &signal) == 0);
+    assert(signal.strength == 80 && signal.quality == 75 &&
+        signal.snr == 20.5f && signal.unc == 0);
+    assert(backend->nim->stop(OA_NIM_PATH_TERRESTRIAL) == 0);
+    assert(mock.closes == 1);
+
+    mock.fail_tune = 1;
+    assert(backend->nim->start(OA_NIM_PATH_TERRESTRIAL, params, 2, &result) ==
+        -EIO);
+    assert(mock.opens == 2 && mock.closes == 2);
+    mock.fail_tune = 0;
+    mock.fail_status = 1;
+    assert(backend->nim->start(OA_NIM_PATH_TERRESTRIAL, params, 2, &result) ==
+        0);
+    assert(backend->nim->monitor(OA_NIM_PATH_TERRESTRIAL, &result) == -EIO);
+    assert(backend->nim->stop(OA_NIM_PATH_TERRESTRIAL) == 0);
+    mock.fail_status = 0;
+    mock.fail_metrics = 1;
+    assert(backend->nim->start(OA_NIM_PATH_TERRESTRIAL, params, 2, &result) ==
+        0);
+    assert(backend->nim->signal(OA_NIM_PATH_TERRESTRIAL, &signal) == -EIO);
+    assert(backend->nim->stop(OA_NIM_PATH_TERRESTRIAL) == 0);
+    mock.fail_metrics = 0;
+    mock.fail_open = 1;
+    assert(backend->nim->start(OA_NIM_PATH_TERRESTRIAL, params, 2, &result) ==
+        -EACCES);
+    oa_nim_ndal_set_ops(NULL, NULL);
+}
+
 static void ts_packet(uint8_t out[188], uint16_t pid, uint8_t cc, int pusi,
     const uint8_t *payload, size_t len)
 {
@@ -177,6 +350,7 @@ int main(void)
     test_tune_signal();
     test_eit_source();
     test_ts_replay();
-    puts("ok nim stub: tune/signal defaults, synthetic EIT and TS replay demux");
+    test_ndal_mock();
+    puts("ok nim stub: stub/replay/NDAL-mock tune, signal and EIT sources");
     return 0;
 }

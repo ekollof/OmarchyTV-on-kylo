@@ -1,0 +1,4 @@
+full host make check: 423 ok
+ok nim stub: stub/replay/NDAL-mock tune, signal and EIT sources
+verify.cjs: 45 groups
+ARM/qemu: ok nim stub: stub/replay/NDAL-mock tune, signal and EIT sources

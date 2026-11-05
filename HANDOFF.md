@@ -99,6 +99,13 @@ back-to-back sections, stuffing) and the `nim-ts-replay` backend selected by
 verify45, ARM/qemu. Limits: replay file only; NIM tune/signal remains stub; no
 live demux/hardware, CRID or persistence; TV work owner-gated.
 
+Latest NDAL tuner backend: [NDAL-TUNER-BACKEND](artifacts/reports/NDAL-TUNER-BACKEND-2026-11-05.md)
+adds a selectable `nim-ndal` frontend adapter: `/dev/dvb/...`,`FE_SET_FRONTEND`
+DVB-T tune, `FE_READ_*` status/metrics, and `Nd_NIM_*` getters/setters from
+`libNDAL_EX.so`; `tuner.backend=ndal`. Mock contract tests only; host423 ok,
+verify45, ARM/qemu. Hardware lock/signal/scan, live EIT/PVR and cold start/
+display remain owner-gated.
+
 Latest vendor-field contracts:
 [BROADCAST-VENDOR-FIELDS](artifacts/reports/BROADCAST-VENDOR-FIELDS-2026-11-05.md)
 extends tuner/EPG/PVR records with lock/strength/quality/BER/SNR/UNC,

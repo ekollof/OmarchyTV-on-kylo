@@ -437,9 +437,9 @@ $(BUILD)/tests/eit_ts_fixture: tests/eit_ts_fixture.c common/eit_section.c commo
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
-$(BUILD)/tests/nim_stub: tests/nim_stub.c common/nim_stub.c common/nim_ts.c common/eit_ts.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_section.h include/openaurora/eit_ts.h include/openaurora/eit_time.h
+$(BUILD)/tests/nim_stub: tests/nim_stub.c common/nim_stub.c common/nim_ts.c common/nim_ndal.c common/eit_ts.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_section.h include/openaurora/eit_ts.h include/openaurora/eit_time.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) $(LDLIBS)
 .PHONY: check-nim-stub
 check-nim-stub: $(BUILD)/tests/nim_stub
 	@$(BUILD)/tests/nim_stub
@@ -825,9 +825,9 @@ $(BUILD)/modules/mod_epg.so: modules/epg/epg.c common/eit_section.c common/eit_c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
-$(BUILD)/modules/mod_tuner.so: modules/tuner/tuner.c common/nim_stub.c common/nim_ts.c common/eit_ts.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_section.h include/openaurora/eit_ts.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_tuner.so: modules/tuner/tuner.c common/nim_stub.c common/nim_ts.c common/nim_ndal.c common/eit_ts.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_section.h include/openaurora/eit_ts.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -ldl
 
 $(BUILD)/modules/mod_pvr.so: modules/pvr/pvr.c common/pvr_stub.c include/openaurora/pvr.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)

@@ -525,6 +525,18 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       tune/signal remains the stub, fixed PID, no live demux/hardware, CRID or
       persistence. No TV access.
 
+- [x] Live-capable NDAL tuner backend: added `oa_ndal_nim_ops` and the
+      selectable `nim-ndal` frontend adapter. Default ops open the configured
+      `/dev/dvb/adapterN/frontendN`, tune DVB-T with `FE_SET_FRONTEND`, read
+      lock/strength/SNR/BER/UNC with `FE_READ_*`, and resolve
+      `Nd_NIM_SetScanMode/GetFrequency/GetDeliverySystem/GetSymbolRate/
+      SetTsOutput/SetStandy` from `libNDAL_EX.so`. `tuner.backend=ndal` selects
+      it; mock ops validate open/tune/scan/frequency/status/metrics/close and
+      failure cleanup. Host423 ok, verify45; ARM/qemu passes.
+      NDAL-TUNER-BACKEND. Limits: mock only, DVB-T tune path only, no live
+      EIT/demux or PVR stream, no hardware lock/signal/scan acceptance; cold
+      start/display owner-gated. No TV access.
+
 - [x] Vendor broadcast contract fields + EIT schedule cache: extended
       `oa_tuner_status` with lock/strength/quality/BER/SNR/UNC,
       `oa_epg_event` with CRID/first-showing/running-status/state/version/

@@ -219,11 +219,17 @@ static int m_init(const oa_host_api *api, void **out)
     if (!c) return -1;
     c->api = api;
     const char *ts_path = api->config_get(api->priv, "tuner.ts_path", "");
+    const char *backend = api->config_get(api->priv, "tuner.backend", "");
     if (ts_path && *ts_path) {
         if (strlen(ts_path) >= sizeof c->ts_path) { free(c); return -1; }
         memcpy(c->ts_path, ts_path, strlen(ts_path) + 1);
         c->backend = oa_nim_ts_backend();
         c->ts_source = 1;
+    } else if (backend && !strcmp(backend, "ndal")) {
+        const char *frontend = api->config_get(api->priv,
+            "tuner.frontend", "/dev/dvb/adapter0/frontend0");
+        c->backend = oa_nim_ndal_backend(frontend);
+        if (!c->backend) { free(c); return -1; }
     } else {
         c->backend = oa_nim_stub_backend();
     }

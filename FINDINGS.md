@@ -118,6 +118,17 @@ Unix-socket replay produced epg-count 2 with both events; host423 ok, verify45,
 ARM/qemu passes. Limits: replay file only; NIM tune/signal still stub; fixed
 PID; no live demux/hardware, CRID or persistence; no TV access.
 
+
+NDAL-TUNER-BACKEND-2026-11-05: the tuner boundary now has a selectable
+live-capable NDAL adapter. It opens `/dev/dvb/adapterN/frontendN`, tunes DVB-T
+with `FE_SET_FRONTEND`, reads lock/strength/SNR/BER/UNC with `FE_READ_*`, and
+resolves the shipped `Nd_NIM_SetScanMode/GetFrequency/GetDeliverySystem/
+GetSymbolRate/SetTsOutput/SetStandy` symbols from `libNDAL_EX.so` via dlopen.
+`tuner.backend=ndal` selects it; the default remains the stub. Mock ops tests
+cover open/tune/scan/frequency/status/metrics/close and error cleanup; host423
+ok, verify45, ARM/qemu. Limits: mock only; DVB-T tune only; no live EIT/demux
+or PVR stream; hardware lock/signal/scan and cold start/display remain
+owner-gated.
 BROADCAST-VENDOR-FIELDS-2026-11-05: the broadcast contracts now carry the
 recovered vendor fields. oa_tuner_status has lock/strength/quality/unc and
 float BER/SNR (unc 0xffffffff unknown), oa_epg_event has
