@@ -1,0 +1,67 @@
+[550129] INFO host         openaurora starting, modules=./modules
+[550129] INFO host         control socket ./control
+openaurora: 0 module(s) loaded, control on ./control
+[551131] INFO host         loaded display_fb v0.1 (./modules/mod_display_fb.so)
+[551131] INFO display_fb   /dev/fb1: 1920x1080 32bpp, 2 frame(s), back=0
+[551522] INFO display_fb   /dev/fb1: full snapshot saved (16588800 bytes, mau 0)
+[551522] DBG  display_fb   service up: display v2
+[551522] DBG  display_fb   service up: display.alpha v1
+[551602] INFO display_fb   self-test: magenta band painted
+[551602] INFO host         started display_fb
+[553609] ERR  host         display_fb: cleanup pending; retry stop/unload
+[553609] ERR  host         display_fb: cleanup pending; retry stop/unload
+[559540] DBG  display_fb   service down: display
+[559540] DBG  display_fb   service down: display.alpha
+[559540] INFO host         stopped display_fb
+[573063] INFO host         unloaded display_fb
+[596606] INFO host         loaded display_fb v0.1 (./modules/mod_display_fb.so)
+[596606] INFO display_fb   /dev/fb1: 1920x1080 32bpp, 2 frame(s), back=0
+[596998] INFO display_fb   /dev/fb1: full snapshot saved (16588800 bytes, mau 0)
+[596998] DBG  display_fb   service up: display v2
+[596998] DBG  display_fb   service up: display.alpha v1
+[597068] INFO display_fb   self-test: magenta band painted
+[597069] INFO host         started display_fb
+[607176] ERR  host         display_fb: cleanup pending; retry stop/unload
+[608184] DBG  display_fb   service down: display
+[608184] DBG  display_fb   service down: display.alpha
+[608184] INFO host         stopped display_fb
+[612210] INFO host         unloaded display_fb
+[623655] INFO host         loaded pvr v1 (./modules/mod_pvr.so)
+[623656] DBG  pvr          service up: pvr v1
+[623656] INFO host         started pvr
+[623656] DBG  pvr          service down: pvr
+[623656] INFO host         stopped pvr
+[623657] INFO host         unloaded pvr
+[623657] INFO host         loaded pvr v1 (./modules/mod_pvr.so)
+[623657] DBG  pvr          service up: pvr v1
+[623657] INFO host         started pvr
+[623657] INFO host         pvr: reloaded (started)
+[623657] DBG  pvr          service down: pvr
+[623657] INFO host         stopped pvr
+[623657] INFO host         unloaded pvr
+[623658] INFO host         loaded lua v1 (./modules/mod_lua.so)
+[623658] DBG  lua          service up: ui.lua v1
+[623658] INFO host         started lua
+[623658] DBG  lua          service down: ui.lua
+[623658] INFO host         stopped lua
+[623658] INFO host         unloaded lua
+[623658] INFO host         loaded lua v1 (./modules/mod_lua.so)
+[623658] DBG  lua          service up: ui.lua v1
+[623659] INFO host         started lua
+[623659] INFO host         lua: reloaded (started)
+[623659] DBG  lua          service down: ui.lua
+[623659] INFO host         stopped lua
+[623659] INFO host         unloaded lua
+[630480] INFO host         loaded pvr v1 (./modules/mod_pvr.so)
+[630480] DBG  pvr          service up: pvr v1
+[630480] INFO host         started pvr
+[630480] DBG  pvr          service down: pvr
+[630480] INFO host         stopped pvr
+[630480] INFO host         unloaded pvr
+[630481] INFO host         loaded pvr v1 (./modules/mod_pvr.so)
+[630481] DBG  pvr          service up: pvr v1
+[630481] INFO host         started pvr
+[630481] INFO host         pvr: reloaded (started)
+[630481] DBG  pvr          service down: pvr
+[630481] INFO host         stopped pvr
+[630481] INFO host         unloaded pvr

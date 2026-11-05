@@ -1,0 +1,6 @@
+pids=1967 1785
+/vendor/com.nvt.idtv/aurora.elf
+crw-rw-rw-    1 root     root       29,   1 Jan  1  1970 /dev/fb1
+staging-absent
+no-oa-process
+1785 (aurora.elf) S 283 1314177024

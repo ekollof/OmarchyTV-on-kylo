@@ -11,11 +11,11 @@ extern "C" {
 /*
  * DVB demux section-filter EIT source.
  *
- * The default ops open /dev/dvb/adapterN/demuxN through the shipped
- * Hal_Demux_Dvb_* wrappers, install a PID-only section filter and read one
- * complete section per call. Close goes through Hal_Demux_Dvb_Close, which
- * issues DMX_STOP before close. Tests inject the same ops table, or resolved
- * HAL entry points; no device is opened unless a backend enables this source.
+ * The default ops open /dev/dvb/adapterN/demuxN and install a PID-only
+ * filter through the standard Linux DVB API; if resolved Hal_Demux_Dvb_*
+ * wrappers are available they are used instead. Close issues DMX_STOP before
+ * close. Tests inject the same ops table, or resolved HAL entry points; no
+ * device is opened unless a backend enables this source.
  */
 
 struct oa_eit_dvb_ops {

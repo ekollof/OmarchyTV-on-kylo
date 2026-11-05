@@ -1,0 +1,5 @@
+pids=1967 1785
+/vendor/com.nvt.idtv/aurora.elf
+staging-absent
+no-oa-process
+ubi14_0                 232.5M     41.1M    191.4M  18% /buffer

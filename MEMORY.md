@@ -1,5 +1,18 @@
 # Current project state — last verified 2026-11-05
 
+LIVE-TV-ACCEPTANCE-2026-11-05 (on TV, temporary `/buffer` staging): owner
+authorized full control. Current ABI 3 core/modules (38 staged files, hashes
+matched) ran from `/buffer`; epg/tuner/pvr/lua loaded/started/reloaded, PVR
+add/list survived reload, Lua lifecycle passed. `display_fb` bound the
+vendor-initialized fb1, saved a 16,588,800-byte snapshot, painted the magenta
+self-test band, and restored the blank pre-test frame after async stop retry.
+NDAL `tuner-scan` returned EBUSY against the stock-owned frontend0; the direct
+Linux DVB EIT filter opened but saw 0 sections with frequency=0. Found/fixed
+GLIBC_2.27 libm linkage in display modules (now ≤2.17). Staging removed; stock
+PIDs 1967/1785 and vendor aurora.elf intact. LIVE-TV-ACCEPTANCE. Limits:
+temporary vendor-initialized fb1, blank stock UI, no cold startup/native
+scanout/live EIT/DVR recording.
+
 Optional ui.lua, offline, 2026-11-05: shared Lua 5.4.9 service (`mod_lua.so`,
 not a skin) for every UI skin. Host `check-ui-lua` and `check-ui-skin` pass;
 full host `make check` is 434 ok and `verify.cjs` 45 groups. Leak-enabled
@@ -150,11 +163,11 @@ host424/verify45 suite was not re-run. Limits: mock only, PID-only filter,
 DVB-T tune only, DVR sink not scheduler-driven, no hardware acceptance; cold
 start/display owner-gated. No TV access.
 
-Owner decision 2026-11-05 (NDAL/hardware acceptance): "Keep offline, pause
-project." No cold-start, display/fb1, NDAL frontend/demux or PVR hardware
-window is granted. Do not open TV devices, wake the set or resume hardware
-work; the project is paused until a new owner instruction. Offline mocks and
-committed state are the handoff.
+Owner authorization 2026-11-05: "I have full control of the TV now. You can
+test things and draw things on the screen." Temporary staged tests/display are
+authorized; preserve stock Aurora/access and remove staging. Staging now goes
+under `/buffer` per owner request. Cold startup, boot hooks and persistent
+replacement remain separate gates.
 
 BROADCAST-VENDOR-FIELDS-2026-11-05 (host/qemu): extended the broadcast
 contracts with the recovered vendor fields: tuner lock/strength/quality/BER/

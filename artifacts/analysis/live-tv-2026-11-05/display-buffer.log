@@ -1,0 +1,41 @@
+[896666] INFO host         openaurora starting, modules=./modules
+[896667] INFO host         control socket ./control
+openaurora: 0 module(s) loaded, control on ./control
+[897668] INFO host         loaded display_fb v0.1 (./modules/mod_display_fb.so)
+[897668] INFO display_fb   /dev/fb1: 1920x1080 32bpp, 2 frame(s), back=0
+[898077] INFO display_fb   /dev/fb1: full snapshot saved (16588800 bytes, mau 0)
+[898077] DBG  display_fb   service up: display v2
+[898077] DBG  display_fb   service up: display.alpha v1
+[898166] INFO display_fb   self-test: magenta band painted
+[898166] INFO host         started display_fb
+[905353] ERR  host         display_fb: cleanup pending; retry stop/unload
+[906360] DBG  display_fb   service down: display
+[906360] DBG  display_fb   service down: display.alpha
+[906360] INFO host         stopped display_fb
+[910389] INFO host         unloaded display_fb
+[918291] INFO host         loaded pvr v1 (./modules/mod_pvr.so)
+[918291] DBG  pvr          service up: pvr v1
+[918292] INFO host         started pvr
+[918292] DBG  pvr          service down: pvr
+[918292] INFO host         stopped pvr
+[918292] INFO host         unloaded pvr
+[918292] INFO host         loaded pvr v1 (./modules/mod_pvr.so)
+[918292] DBG  pvr          service up: pvr v1
+[918292] INFO host         started pvr
+[918292] INFO host         pvr: reloaded (started)
+[918292] DBG  pvr          service down: pvr
+[918293] INFO host         stopped pvr
+[918293] INFO host         unloaded pvr
+[918293] INFO host         loaded lua v1 (./modules/mod_lua.so)
+[918293] DBG  lua          service up: ui.lua v1
+[918293] INFO host         started lua
+[918293] DBG  lua          service down: ui.lua
+[918293] INFO host         stopped lua
+[918293] INFO host         unloaded lua
+[918294] INFO host         loaded lua v1 (./modules/mod_lua.so)
+[918294] DBG  lua          service up: ui.lua v1
+[918294] INFO host         started lua
+[918294] INFO host         lua: reloaded (started)
+[918294] DBG  lua          service down: ui.lua
+[918294] INFO host         stopped lua
+[918294] INFO host         unloaded lua

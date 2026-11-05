@@ -1,7 +1,11 @@
 #include <dlfcn.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <linux/dvb/dmx.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 
 #include "openaurora/eit_dvb.h"
@@ -62,21 +66,33 @@ static int linux_open(void *ctx, int adapter, int index)
 {
     (void)ctx;
     if (adapter < 0 || index < 0) return -EINVAL;
-    if (hal_load()) return -ENOSYS;
-    if (!g_hal.open_demux) return -ENOSYS;
-    errno = 0;
-    int fd = g_hal.open_demux(adapter, index);
-    if (fd < 0) return errno ? -errno : -EIO;
-    return fd;
+    if (hal_load() == 0 && g_hal.open_demux) {
+        errno = 0;
+        int fd = g_hal.open_demux(adapter, index);
+        if (fd < 0) return errno ? -errno : -EIO;
+        return fd;
+    }
+    char path[64];
+    snprintf(path, sizeof path, "/dev/dvb/adapter%d/demux%d", adapter, index);
+    int fd = open(path, O_RDWR | O_NONBLOCK | O_CLOEXEC);
+    return fd < 0 ? -errno : fd;
 }
 
 static int linux_filter(void *ctx, int fd, uint16_t pid)
 {
     (void)ctx;
     if (fd < 0) return -EBADF;
-    if (hal_load()) return -ENOSYS;
-    if (!g_hal.set_filter) return -ENOSYS;
-    if (g_hal.set_filter(fd, pid, 0, NULL, NULL, NULL, 1) < 0) return -EIO;
+    if (hal_load() == 0 && g_hal.set_filter) {
+        if (g_hal.set_filter(fd, pid, 0, NULL, NULL, NULL, 1) < 0)
+            return -EIO;
+        return 0;
+    }
+    struct dmx_sct_filter_params params;
+    memset(&params, 0, sizeof params);
+    params.pid = pid;
+    params.flags = DMX_CHECK_CRC;
+    if (ioctl(fd, DMX_SET_FILTER, &params) < 0) return -errno;
+    (void)ioctl(fd, DMX_START, 0);
     return 0;
 }
 
@@ -96,11 +112,9 @@ static int linux_close(void *ctx, int fd)
 {
     (void)ctx;
     if (fd < 0) return -EBADF;
-    if (!g_hal.loaded) (void)hal_load();
-    /* Hal_Demux_Dvb_Close issues DMX_STOP (0x6f2a) and then close, and
-     * returns close's result. A missing symbol falls back to close only. */
-    if (g_hal.close_demux)
+    if (hal_load() == 0 && g_hal.close_demux)
         return g_hal.close_demux(fd) < 0 ? -EIO : 0;
+    (void)ioctl(fd, DMX_STOP, 0);
     return close(fd) == 0 ? 0 : -errno;
 }
 

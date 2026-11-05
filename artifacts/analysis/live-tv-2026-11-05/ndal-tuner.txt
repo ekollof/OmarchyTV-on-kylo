@@ -1,0 +1,6 @@
+ok tuner
+ok
+failed errno 16
+network 0 state 0 progress 0 lock 0 services 0 selected 0 error 0 strength 0 quality 0 ber 0.00 snr 0.00 unc 4294967295
+ok
+ok

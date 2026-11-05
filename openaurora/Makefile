@@ -806,7 +806,7 @@ $(BUILD)/modules/mod_graphics.so: modules/graphics/graphics.c common/scene_clien
 
 $(BUILD)/modules/mod_scene_display.so: modules/scene_display/scene_display.c common/canvas.c common/scene_broker_transport.c include/openaurora/canvas.h include/openaurora/module.h include/openaurora/services.h include/openaurora/scene_broker.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) $(LIBM)
 
 $(BUILD)/modules/mod_cec.so: modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c
 	@mkdir -p $(dir $@)
@@ -820,12 +820,12 @@ $(BUILD)/modules/mod_audio.so: modules/audio/audio.c common/audio_owner.c common
 $(BUILD)/modules/mod_display.so: modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
-	  $(VENDOR_LDFLAGS) -lm -pthread
+	  $(VENDOR_LDFLAGS) $(LIBM) -pthread
 
 $(BUILD)/modules/mod_display_fb.so: modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_DISPLAY_NO_PLAT -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
-	  -lm -pthread
+	  $(LIBM) -pthread
 
 $(BUILD)/modules/mod_settings.so: modules/settings/settings.c common/launcher_db.c include/openaurora/launcher_db.h include/openaurora/launcher_item.h
 	@mkdir -p $(dir $@)

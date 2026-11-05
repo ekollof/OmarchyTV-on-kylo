@@ -1,0 +1,15 @@
+[647264] INFO host         openaurora starting, modules=./modules
+[647265] INFO host         control socket ./nd.sock
+openaurora: 0 module(s) loaded, control on ./nd.sock
+[648265] INFO host         loaded tuner v1 (./modules/mod_tuner.so)
+[648265] DBG  tuner        service up: tuner v1
+[648265] INFO host         started tuner
+[648265] DBG  tuner        service down: tuner
+[648265] INFO host         stopped tuner
+[648265] INFO host         unloaded tuner
+[657713] INFO host         loaded tuner v1 (./modules/mod_tuner.so)
+[657713] DBG  tuner        service up: tuner v1
+[657713] INFO host         started tuner
+[657713] DBG  tuner        service down: tuner
+[657713] INFO host         stopped tuner
+[657713] INFO host         unloaded tuner

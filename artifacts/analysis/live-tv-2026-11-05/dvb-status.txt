@@ -1,0 +1,3 @@
+name=internal_fe type=1 freq_min=40000000 freq_max=2147000000 symbol_min=0 symbol_max=0
+status=0x20 lock=0 signal=0 carr=0 viterbi=0 sync=0
+frequency=0 bandwidth=0 inversion=0

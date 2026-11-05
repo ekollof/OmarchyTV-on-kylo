@@ -14,11 +14,20 @@ state/access restored afterward. Historical offline/fb1 exclusions below describ
 their original runs. No persistent replacement, boot-hook changes or stock
 Aurora/watchdog takeover is authorized.
 
-Owner decision 2026-11-05 (NDAL/hardware acceptance): "Keep offline, pause
-project." No cold-start, display/fb1, NDAL frontend/demux or PVR hardware
-window is granted; do not open TV devices or wake the set. Hardware acceptance
-is closed until a new owner instruction resumes the project. Offline docs and
-committed state remain the handoff.
+Owner authorization 2026-11-05: "I have full control of the TV now. You can
+test things and draw things on the screen." Temporary staged tests and display
+drawing are authorized; preserve stock Aurora/access and remove staging.
+Staging now goes under `/buffer` per owner request. Cold startup, boot-hook
+changes and persistent replacement remain separate gates.
+
+Latest live acceptance: [LIVE-TV-ACCEPTANCE](artifacts/reports/LIVE-TV-ACCEPTANCE-2026-11-05.md)
+staged the ABI 3 tree under `/buffer`, ran epg/tuner/pvr/lua, and loaded
+`display_fb` on vendor-initialized fb1. It saved a 16,588,800-byte snapshot,
+painted a magenta self-test band, and restored the blank pre-test frame after
+the async cleanup retry. NDAL tuning returned EBUSY against stock; direct DVB
+EIT opened but saw no tuned sections. Staging removed; stock PIDs 1967/1785
+intact. Limits: temporary display binding, no cold startup/native scanout,
+live EIT or DVR recording.
 
 Offline scripting entry point: [openaurora/docs/LUA.md](openaurora/docs/LUA.md).
 Module `lua` publishes `ui.lua` v1, one Lua 5.4.9 state shared by every skin.

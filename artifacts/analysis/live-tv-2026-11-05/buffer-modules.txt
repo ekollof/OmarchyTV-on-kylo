@@ -1,0 +1,18 @@
+ok pvr
+ok
+count 3
+job id=1 service=1 state=0 start=1000 end=2000 repeat=0 pad=0/0 name=cli reservation
+job id=2 service=2 state=0 start=3000 end=4000 repeat=0 pad=0/0 name=cli reservation
+job id=3 service=3 state=0 start=5000 end=6000 repeat=0 pad=0/0 name=cli reservation
+ok
+count 3
+job id=1 service=1 state=0 start=1000 end=2000 repeat=0 pad=0/0 name=cli reservation
+job id=2 service=2 state=0 start=3000 end=4000 repeat=0 pad=0/0 name=cli reservation
+job id=3 service=3 state=0 start=5000 end=6000 repeat=0 pad=0/0 name=cli reservation
+ok
+ok
+ok lua
+ok
+ok
+ok
+ok

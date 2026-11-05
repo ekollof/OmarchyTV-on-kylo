@@ -54,11 +54,25 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       Vendor Mali rasterization/scanout comparison still requires the set.
 
 
-- [ ] Runtime EASI/testtool and fb1/display ownership: the owner decided on
-      2026-11-05 to **not enable testtool now** and to **skip fb1/display
-      acceptance until an ownership window**. No profile, process, watchdog or
-      display state was changed. Reopen only with a new explicit
-      watchdog-safe, recovery-ready instruction.
+- [x] Temporary staged fb1/display binding and on-TV ABI 3 modules: with the
+      owner's 2026-11-05 "full control" authorization, staged the current ABI 3
+      core/modules in `/buffer`, loaded/started/reloaded epg/tuner/pvr/lua,
+      and ran `display_fb` against the vendor-initialized fb1. It saved a
+      16,588,800-byte snapshot, painted the magenta self-test band
+      (`display-active-buffer.png`), then stop/unload restored fb1
+      (`display-restored-buffer.png`, blank like the pre-test state). PVR
+      add/list/reload and Lua load/start/reload passed; NDAL tuning returned
+      EBUSY against stock-owned frontend0, and the direct DVB EIT demux opened
+      but saw no sections while `frequency=0`. Staging was removed; stock
+      Aurora PIDs 1967/1785 and `/vendor/com.nvt.idtv/aurora.elf` survived.
+      LIVE-TV-ACCEPTANCE. Limits: temporary vendor-initialized binding, blank
+      stock UI, no cold startup/native scanout, no live EIT signal, PVR DVR
+      sink not wired.
+
+- [ ] Runtime EASI/testtool: testtool TCP1986 remains disabled. The 2026-11-05
+      full-control authorization covered temporary staged modules/display, not
+      enabling testtool or persistent replacement. Reopen with an explicit
+      watchdog-safe instruction.
 
 - [ ] Stock apps-grid pixel parity: needs a pixel-correct full-screen apps-grid
       oracle. The TV currently shows the no-signal frame, no HDMI capture device
