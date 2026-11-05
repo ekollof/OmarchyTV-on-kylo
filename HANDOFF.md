@@ -144,6 +144,13 @@ TV operation. The maintained verifier requires this group and defaults to the
 fresh audio-amp-native build. Continue with actual profile/retained-image
 acquisition and worker/backend lifecycle; audio hardware acceptance stays open.
 
+Latest plat consumers: [PLAT-CONSUMERS-SOCKET](artifacts/reports/PLAT-CONSUMERS-SOCKET-2026-11-05.md)
+starts audio/source/ir/panel under a host-only plat fixture with hardware paths
+disabled. Services, plat hold refusal, dependency-ordered provider reload,
+consumer reloads and unload/load reuse pass in five consecutive runs. Host403
+ok, verify45. Fake plat only; real HAL/devices, hardware-module reload and cold
+startup remain.
+
 Latest graphics: [GRAPHICS-SOCKET](artifacts/reports/GRAPHICS-SOCKET-2026-11-05.md)
 runs real graphics + scene_display over the socket with oa-scene-broker and the
 fixture renderer. display.gpu/display/alpha/async services, reload,

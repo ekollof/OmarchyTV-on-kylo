@@ -93,6 +93,15 @@ reauthorized; fb1 and stock operation must stay untouched. This supersedes the
 earlier "Don't touch the TV" restriction. No persistent replacement or boot
 changes. The historical offline-only entries describe their original runs.
 
+PLAT-CONSUMERS-SOCKET-2026-11-05 (host-only): a fake plat service provider
+starts the real host-build audio (audio.enable=0), source (source.enable=0),
+ir (empty ir.device) and panel modules over the socket. They publish
+audio/source/input/panel services; plat reload is refused while they are
+active; after dependency-ordered stops the provider reloads, all four consumers
+reload, and a fresh unload/load/start cycle passes. Five consecutive runs; host
+403 ok, verify45. Fake plat only; real HAL/devices, hardware-module reload and
+cold startup remain.
+
 GRAPHICS-SOCKET-2026-11-05 (host-only): real graphics + scene_display over the
 Unix socket with oa-scene-broker and tests/scene-renderer-fixture.so. graphics
 publishes display.gpu:v1; scene_display requires it and publishes display:v2,

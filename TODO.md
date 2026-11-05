@@ -598,6 +598,15 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       FAKE-FB-SOCKET. Limits: user-space fake; real kernel/driver behavior,
       physical fb1/TDGA, vendor coexistence and cold startup remain.
 
+- [x] Plat-consumer socket lifecycle with a host-only plat fixture: audio
+      (audio.enable=0), source (source.enable=0), ir (empty ir.device) and
+      panel load/start and publish audio/source/input/panel services. Reload
+      plat is refused while they are active; after dependency-ordered stops
+      the provider reloads, all four consumers reload, and a fresh
+      unload/load/start cycle passes. Five consecutive runs. Host403 ok,
+      verify45. PLAT-CONSUMERS-SOCKET. Limits: fake plat; real HAL, devices,
+      hardware-module reload and cold startup remain.
+
 - [x] Graphics/scene_display socket lifecycle with the fixture renderer:
       graphics publishes display.gpu:v1 via oa-scene-broker; scene_display
       requires it and publishes display:v2/alpha/async. Reload and

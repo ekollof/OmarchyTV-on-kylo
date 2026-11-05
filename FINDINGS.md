@@ -6,6 +6,14 @@ Private controls forward to EX_PLAT; successful ioctl still does not prove
 MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
+PLAT-CONSUMERS-SOCKET-2026-11-05: a fake plat service provider starts the real
+host-build audio/source/ir/panel modules over the socket with hardware paths
+disabled. Services publish, plat reload is refused while they are active,
+dependency-ordered provider reload and consumer reloads pass, and a fresh
+unload/load/start cycle works. Five consecutive runs; host403 ok, verify45.
+Fake plat only; real HAL/devices, hardware-module reload and cold startup
+remain.
+
 GRAPHICS-SOCKET-2026-11-05: real graphics + scene_display over the Unix socket
 with oa-scene-broker and the fixture renderer. graphics publishes display.gpu;
 scene_display publishes display/alpha/async. Reload and dependency-ordered

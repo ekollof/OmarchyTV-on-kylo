@@ -1,0 +1,5 @@
+run1: ok actual plat-consumer IPC: audio/source/ir/panel services, plat hold refusal, dependency-ordered reload and reuse
+run2: ok actual plat-consumer IPC: audio/source/ir/panel services, plat hold refusal, dependency-ordered reload and reuse
+run3: ok actual plat-consumer IPC: audio/source/ir/panel services, plat hold refusal, dependency-ordered reload and reuse
+run4: ok actual plat-consumer IPC: audio/source/ir/panel services, plat hold refusal, dependency-ordered reload and reuse
+run5: ok actual plat-consumer IPC: audio/source/ir/panel services, plat hold refusal, dependency-ordered reload and reuse

@@ -1173,6 +1173,15 @@ check-graphics-socket: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_graphics.so $(BU
 	node tests/graphics_socket.cjs $(abspath $(BUILD))
 check: check-graphics-socket
 
+$(BUILD)/tests/mod_plat_fixture.so: tests/plat_fixture.c include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared $(LDFLAGS) -o $@ $<
+
+.PHONY: check-plat-consumers-socket
+check-plat-consumers-socket: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_plat_fixture.so $(BUILD)/modules/mod_audio.so $(BUILD)/modules/mod_source.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_panel.so
+	node tests/plat_consumers_socket.cjs $(abspath $(BUILD))
+check: check-plat-consumers-socket
+
 ui-skin-socket-modules = $(BUILD)/tests/ui-skin-socket/modules
 .PHONY: check-ui-skin-socket
 check-ui-skin-socket: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/tests/ui_nav_display.so

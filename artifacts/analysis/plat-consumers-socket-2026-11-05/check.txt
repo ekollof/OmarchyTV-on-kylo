@@ -1,0 +1,3 @@
+/usr/bin/ccache cc -Iinclude -D_GNU_SOURCE -DOA_NO_VENDOR -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared  -o build/tests/mod_plat_fixture.so tests/plat_fixture.c
+node tests/plat_consumers_socket.cjs /home/ekollof/Work/tvhack/openaurora/build
+ok actual plat-consumer IPC: audio/source/ir/panel services, plat hold refusal, dependency-ordered reload and reuse
