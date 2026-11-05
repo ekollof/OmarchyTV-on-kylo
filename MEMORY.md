@@ -2002,6 +2002,15 @@ staging removed. Native build-tv-v3/skin-selection, exact final-tested.md5 and
 stage.md5 in analysis identify artifacts. Production16/installed ABI1 unchanged.
 Real OmarchyTV/content/exact visual/cold parity and crash recovery remain open.
 
+UI-DIAG-2026-11-05: added the reloadable `ui_diag` skin over ui.engine. It
+probes 12 project services (engine/display/settings/launcher/service/EPG/
+tuner/PVR/curve/input/portal/lua), paints green/red rows with details where
+exposed, supports Up/Down and Select refresh, repaints on module changes, and
+loads optional EF41 text with bar fallback. Recorder test covers rows,
+selection, reload and teardown; skin_socket switches omarchy→diag→vendor over
+the real socket. ARM module builds. Fixed probe list, recorder-only; no
+TV/HAL/cold acceptance.
+
 UI-ENGINE-REVIEW-2026-11-01 supersedes the split's v1 dispatch contract below.
 ui.engine v2 uses skin-owned trampolines and a bounded event queue; legacy
 register_skin fails ENOTSUP. Forced unload/rebind, both skins' re-registration,

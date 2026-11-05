@@ -458,6 +458,14 @@ vendor; runtime omarchy/vendor switching, enter-failure fallback and clean quit
 pass. Host399 ok, verify45. Recorder-only; physical fb1 and cold startup
 remain.
 
+Diagnostic skin: [UI-DIAG](artifacts/reports/UI-DIAG-2026-11-05.md) adds the
+reloadable `ui_diag` skin over ui.engine. It probes 12 project services,
+paints green/red rows with details, supports Up/Down/Select refresh and
+module-change repaint, and uses optional EF41 text with bar fallback. Recorder
+rows/selection/reload/teardown pass; `skin_socket.sh` switches
+omarchy→diag→vendor; ARM module builds. Fixed probe list, recorder-only; no
+TV/HAL/cold acceptance.
+
 Latest matrix: [MODULE-MATRIX-IPC](artifacts/reports/MODULE-MATRIX-IPC-2026-11-05.md)
 runs ticker -> ui_clock -> ui_anim plus ui_navigation, ui_list, power and cec
 over the real socket with no display/HAL. Nav/list queries and dependency-

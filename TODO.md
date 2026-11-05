@@ -971,6 +971,14 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       vendor with fallback1/error5; quit exits cleanly. Host399 ok, verify45.
       SKIN-SOCKET. Recorder-only; physical fb1 and cold startup remain.
 
+- [x] Diagnostic skin `ui_diag`: a reloadable ui.engine skin probes 12
+      project services, paints green/red status rows with details where
+      exposed, supports Up/Down/Select refresh and module-change repaint, and
+      loads optional EF41 text with bar fallback. Recorder test covers rows,
+      selection, reload and teardown; the real socket switches
+      omarchy→diag→vendor; the ARM module builds. UI-DIAG. Fixed probe list,
+      recorder-only; no TV/HAL/cold/visual parity.
+
 - [x] Vendor decoder-class differential: an ARM LD_PRELOAD probe executes the
       shipped PngImageDecoderImpl and JpegImageDecoder under qemu before vendor
       main, using vendor MemoryBufferSource/MutableImage and requested RGBA

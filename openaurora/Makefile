@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels lua
+MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels lua
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -805,6 +805,10 @@ $(BUILD)/modules/mod_ui_omarchy.so: modules/ui_omarchy/ui_omarchy.c include/open
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
+$(BUILD)/modules/mod_ui_diag.so: modules/ui_diag/ui_diag.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c include/openaurora/ui_engine.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h include/openaurora/lua_skin.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/canvas.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
+
 $(BUILD)/modules/mod_audio_mixer.so: modules/audio_mixer/audio_mixer.c common/audio_broker_wire.c include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_broker.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
@@ -1241,6 +1245,18 @@ check-ui-skin: $(BUILD)/tests/ui_skin $(BUILD)/tests/ui_nav_display.so $(BUILD)/
 	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-skin/modules/mod_nav_display.so
 	@$(BUILD)/tests/ui_skin $(BUILD)/tests/ui-skin/modules
 
+$(BUILD)/tests/ui_diag: tests/ui_diag.c tests/ui_nav_trace.h include/openaurora/ui_engine.h include/openaurora/services.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+
+.PHONY: check-ui-diag
+check-ui-diag: $(BUILD)/tests/ui_diag $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_diag.so
+	@mkdir -p $(BUILD)/tests/ui-diag/modules
+	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_diag.so $(BUILD)/tests/ui-diag/modules/
+	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-diag/modules/mod_nav_display.so
+	@$(BUILD)/tests/ui_diag $(BUILD)/tests/ui-diag/modules
+check: check-ui-diag
+
 $(BUILD)/tests/ui_lua: tests/ui_lua.c tests/ui_nav_trace.h include/openaurora/lua_skin.h include/openaurora/ui_engine.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_lua.c $(filter %.o,$^) $(LDLIBS)
@@ -1555,9 +1571,9 @@ compare-stock-apps-grid:
 
 ui-skin-socket-modules = $(BUILD)/tests/ui-skin-socket/modules
 .PHONY: check-ui-skin-socket
-check-ui-skin-socket: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/tests/ui_nav_display.so
+check-ui-skin-socket: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/modules/mod_ui_diag.so $(BUILD)/tests/ui_nav_display.so
 	@mkdir -p $(ui-skin-socket-modules)
-	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(ui-skin-socket-modules)/
+	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/modules/mod_ui_diag.so $(ui-skin-socket-modules)/
 	@cp $(BUILD)/tests/ui_nav_display.so $(ui-skin-socket-modules)/mod_nav_display.so
 	@command -v socat >/dev/null || { echo "  skip ui skin socket: socat unavailable"; exit 0; }
 	@sh tests/skin_socket.sh $(abspath $(BUILD)/$(PROJECT)) $(abspath $(ui-skin-socket-modules))

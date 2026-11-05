@@ -33,6 +33,7 @@ for configured in missing ../invalid; do
     done
     await_ready vendor 1
     request 'skin omarchy'; await_ready omarchy 0
+    request 'skin diag'; await_ready diag 0
     request 'skin vendor'; await_ready vendor 0
     request 'skin badenter'; await_ready vendor 1
     request quit
