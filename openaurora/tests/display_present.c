@@ -21,6 +21,7 @@ const oa_module *oa_module_entry(void);
 static const oa_display_iface *display;
 static const oa_display_alpha_iface *alpha;
 static struct fb_var_screeninfo var;
+static size_t fb_smem_len;
 static unsigned char pixels[1024];
 static uint32_t region[8], mau;
 static const char *rotate;
@@ -73,7 +74,13 @@ int __wrap_munmap(void *addr, size_t len)
 }
 int __wrap_msync(void *addr, size_t len, int flags)
 {
-    assert(addr == pixels && len <= sizeof pixels && flags == MS_SYNC);
+    /* display.mirror=0 syncs only the active frame; mirror=1 syncs the map. */
+    size_t frame = (size_t)var.xres * 4u * var.yres;
+    assert(flags == MS_SYNC && len <= sizeof pixels);
+    /* Snapshot restore syncs the mapped fb region; present syncs either the
+     * whole map (mirror=1) or the active frame (mirror=0). */
+    assert((addr == pixels && (len == sizeof pixels || len == fb_smem_len)) ||
+           ((addr == pixels || addr == pixels + frame) && len == frame));
     syncs++;
     if (fail_sync) { errno = EIO; return -1; }
     return 0;
@@ -97,6 +104,7 @@ int __wrap_ioctl(int fd, unsigned long request, ...)
         memset(fix, 0, sizeof *fix);
         fix->line_length = var.xres * 4;
         fix->smem_len = fix->line_length * var.yres_virtual;
+        fb_smem_len = fix->smem_len;
         return 0;
     }
     case 0x8020c86cu: memcpy(arg, region, 32); return 0;

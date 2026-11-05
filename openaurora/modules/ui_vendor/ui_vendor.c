@@ -218,6 +218,7 @@ struct ctx {
     int rail_hl_n;
     int rail_hl_frame;
     int rail_hl_play;                /* one-shot per focus; the last frame is held */
+    int rail_hl_late;                /* previous paint overran its 30 ms slot */
     uint64_t rail_hl_next;           /* next frame due, host monotonic ms */
     uint64_t rail_hl_tick;
     int portal_on;
@@ -1648,6 +1649,7 @@ static void rail_hl_sync(struct ctx *c)
     int want = c->rail_hl_n > 0 && c->d && c->screen == SCREEN_PORTAL &&
                c->rail_hl_play && c->rail_hl_frame + 1 < c->rail_hl_n;
     if (want && !c->rail_hl_tick) {
+        c->rail_hl_late = 0;
         c->rail_hl_tick = c->api->timer_add(c->api->priv, OA_RAIL_HL_POLL_MS,
                                             OA_RAIL_HL_POLL_MS, rail_hl_tick_cb, c);
         if (!c->rail_hl_tick)
@@ -1670,12 +1672,29 @@ static void rail_hl_tick_cb(void *ud)
     if (c->d && c->d->present_pending()) return;
     now = now_ms();
     if (now < c->rail_hl_next) return;   /* 10 ms poll; the 30 ms frame is not due yet */
-    if (c->rail_hl_frame + 1 < c->rail_hl_n)
-        c->rail_hl_frame++;
-    c->rail_hl_next = now + OA_RAIL_HL_MS;   /* vendor stamps last = now at decode */
+    /* A software-rendered portal can take much longer than the vendor's 30 ms
+     * frame. After a slow paint, skip the frames that are already overdue so
+     * the 11-frame highlight still finishes on schedule and holds its last
+     * frame. Normal 30 ms ticks (including a slightly late host test tick)
+     * still advance exactly one frame. */
+    if (c->rail_hl_late) {
+        c->rail_hl_late = 0;
+        unsigned step = 1 + (unsigned)((now - c->rail_hl_next) / OA_RAIL_HL_MS);
+        unsigned left = (unsigned)(c->rail_hl_n - 1 - c->rail_hl_frame);
+        if (step > left) step = left;
+        c->rail_hl_frame += (int)step;
+        c->rail_hl_next += (uint64_t)step * OA_RAIL_HL_MS;
+    } else {
+        if (c->rail_hl_frame + 1 < c->rail_hl_n)
+            c->rail_hl_frame++;
+        c->rail_hl_next = now + OA_RAIL_HL_MS;
+    }
     if (c->rail_hl_frame + 1 >= c->rail_hl_n)
         c->rail_hl_play = 0;                 /* finite sequence: hold the last frame */
+    uint64_t started = now_ms();
     paint(c);
+    if (now_ms() - started > OA_RAIL_HL_MS * 2u)
+        c->rail_hl_late = 1;                 /* next tick catches up */
 }
 
 /* A provider can be started after this module, or force-unloaded while we still hold a pointer to

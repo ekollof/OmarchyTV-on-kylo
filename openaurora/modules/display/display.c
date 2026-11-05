@@ -64,6 +64,7 @@ struct ctx {
     pthread_t cleanup_thread;
     uint64_t retry_after;
     int mirror;       /* copy the painted frame into the other frames (fights DFB's flip) */
+    int profile;      /* log per-stage present timings when display.profile=1 */
 
     /* Offscreen RGBA scene: every draw renders here, present() copies it to the visible frame or
      * maps it through the recovered full-screen transition quad. */
@@ -175,10 +176,33 @@ static int blit_scaled(int x, int y, int w, int h, int sw, int sh, const unsigne
 
 static void scene_to_fb(struct ctx *c)
 {
-    for (unsigned y = 0; y < c->var.yres; y++) {
-        uint8_t *row = c->map + (size_t)(c->back * c->var.yres + y) * c->fix.line_length;
-        const uint8_t *srow = c->scene + (size_t)y * (size_t)c->scene_w * 4;
-        for (unsigned x = 0; x < c->var.xres; x++) {
+    unsigned w = c->var.xres, h = c->var.yres;
+    if (c->var.bits_per_pixel == 32) {
+        /* The common opaque case needs no per-channel multiply. A 32-bit store
+         * is also materially cheaper than four byte stores on the TV's ARM. */
+        for (unsigned y = 0; y < h; y++) {
+            uint8_t *row = c->map + (size_t)(c->back * h + y) * c->fix.line_length;
+            uint32_t *dst = (uint32_t *)row;
+            const uint8_t *srow = c->scene + (size_t)y * (size_t)w * 4;
+            for (unsigned x = 0; x < w; x++) {
+                const uint8_t *p = srow + (size_t)x * 4;
+                unsigned a = p[3];
+                if (a == 255) {
+                    dst[x] = (uint32_t)p[2] | ((uint32_t)p[1] << 8) |
+                             ((uint32_t)p[0] << 16) | 0xff000000u;
+                } else {
+                    unsigned r = (p[0]*a+127)/255, g = (p[1]*a+127)/255;
+                    unsigned b = (p[2]*a+127)/255;
+                    dst[x] = b | (g << 8) | (r << 16) | (a << 24);
+                }
+            }
+        }
+        return;
+    }
+    for (unsigned y = 0; y < h; y++) {
+        uint8_t *row = c->map + (size_t)(c->back * h + y) * c->fix.line_length;
+        const uint8_t *srow = c->scene + (size_t)y * (size_t)w * 4;
+        for (unsigned x = 0; x < w; x++) {
             const uint8_t *p = srow + (size_t)x * 4;
             put_px(c, row, x, (p[0]*p[3]+127)/255, (p[1]*p[3]+127)/255,
                    (p[2]*p[3]+127)/255, p[3]);
@@ -347,11 +371,14 @@ static int set_scene_transform(int type, float progress)
     return 0;
 }
 
+static uint64_t monotonic_ms(void);
+
 static int present(void){
     struct ctx *c = g_ctx;
     if (!c || c->closing || !c->map || !c->scene)
         return -1;
 
+    uint64_t t0 = c->profile ? monotonic_ms() : 0;
     if (c->fs_type > 0 && c->fs_p == 0.0f)
         memset(c->map + (size_t)c->back * c->var.yres * c->fix.line_length,
                0, (size_t)c->var.yres * c->fix.line_length);
@@ -359,25 +386,32 @@ static int present(void){
         warp_scene(c);
     else
         scene_to_fb(c);
+    uint64_t t1 = c->profile ? monotonic_ms() : 0;
 
     /* Mirror the rendered frame into every frame of the layer.
      *
      * The vendor's DirectFB also owns this layer and flips its own two buffers, so a single
      * frame of ours alternates with a frame of theirs — visible as a one-frame flash. Filling
      * both halves means whichever frame gets scanned out is ours, and the image stays put
-     * until aurora repaints.
+     * until aurora repaints. A takeover with stock stopped sets display.mirror=0; the active
+     * frame and its msync are then the only work.
      */
+    size_t frame_bytes = (size_t)c->fix.line_length * c->var.yres;
     if (c->mirror && c->frames > 1) {
-        size_t bytes = (size_t)c->fix.line_length * c->var.yres;
-        uint8_t *src = c->map + (size_t)c->back * bytes;
+        uint8_t *src = c->map + (size_t)c->back * frame_bytes;
         for (unsigned f = 0; f < c->frames; f++)
             if (f != c->back)
-                memcpy(c->map + (size_t)f * bytes, src, bytes);
+                memcpy(c->map + (size_t)f * frame_bytes, src, frame_bytes);
     }
+    uint64_t t2 = c->profile ? monotonic_ms() : 0;
 
-    /* push the rendered frame out before flipping */
-    if (msync(c->map, c->maplen, MS_SYNC) != 0)
+    /* Push the rendered frame out before flipping. With mirroring off the
+     * inactive frame is stale by design, so only the active frame needs sync. */
+    void *sync_base = c->mirror ? (void *)c->map : (void *)(c->map + (size_t)c->back * frame_bytes);
+    size_t sync_len = c->mirror ? c->maplen : frame_bytes;
+    if (msync(sync_base, sync_len, MS_SYNC) != 0)
         return -1;
+    uint64_t t3 = c->profile ? monotonic_ms() : 0;
 
     /* NVTGA_OSD_UpdateRegion/FlipRegion always commit through FBIOPAN_DISPLAY.
      * The kernel's _ker_osd_fb_PanDisplay binds the physical buffer and calls
@@ -390,6 +424,14 @@ static int present(void){
     c->var.yoffset = v.yoffset;
     if (c->pan && c->frames > 1)
         c->back = (c->back + 1) % c->frames;
+    if (c->profile) {
+        uint64_t t4 = monotonic_ms();
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "present: scene=%llums mirror=%llums sync=%llums pan=%llums mirror=%d",
+                    (unsigned long long)(t1-t0), (unsigned long long)(t2-t1),
+                    (unsigned long long)(t3-t2), (unsigned long long)(t4-t3),
+                    c->mirror);
+    }
     return 0;
 }
 
@@ -726,6 +768,7 @@ static int m_start(void *v)
 
     int want_region = c->api->config_get(c->api->priv, "display.set_region", "1")[0] == '1';
     c->mirror = c->api->config_get(c->api->priv, "display.mirror", "1")[0] == '1';
+    c->profile = c->api->config_get(c->api->priv, "display.profile", "0")[0] == '1';
     c->pan = c->api->config_get(c->api->priv, "display.pan", want_region ? "0" : "1")[0] == '1';
 
     drm_bringup(c);
