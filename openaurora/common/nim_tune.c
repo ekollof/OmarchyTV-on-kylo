@@ -3,6 +3,8 @@
 #include <errno.h>
 #include <string.h>
 
+#include "openaurora/mxl661_tune.h"
+
 int oa_nim_tune_path_index(const struct oa_nim_tune_state *state)
 {
     if (!state)
@@ -170,6 +172,49 @@ int oa_nim_tune_get_channel_status(const struct oa_nim_tune_ops *ops, void *ud,
     if (!oa_nim_tune_get_quality(ops, ud, state, &out->quality))
         return 0;
     return 1;
+}
+
+static uint32_t rd32(const uint8_t *p)
+{
+    return (uint32_t)p[0] | ((uint32_t)p[1] << 8) | ((uint32_t)p[2] << 16) |
+           ((uint32_t)p[3] << 24);
+}
+
+int oa_nim_raw_channel_parse(const uint8_t raw[0x5c], int path,
+                             struct oa_nim_tune_channel *out)
+{
+    if (!raw || !out)
+        return 0;
+    uint32_t standard = oa_mxl661_standard_from_index(rd32(raw + 0x1c));
+    if (!standard)
+        return 0;
+    uint32_t freq = rd32(raw + 0);
+    uint32_t bandwidth = rd32(raw + 8);
+    uint32_t p4 = rd32(raw + 0x10);
+    uint32_t override = rd32(raw + 0x58);
+    if (path == 1) {
+        if (override)
+            freq = override;
+        if (bandwidth == 0 || p4 == 3)
+            bandwidth = 40000;
+    }
+    out->freq_hz = freq * 1000u;
+    out->standard = standard;
+    out->bandwidth = bandwidth;
+    out->if_khz = 0;
+    return 1;
+}
+
+int oa_nim_tune_set_channel_raw(const struct oa_nim_tune_ops *ops, void *ud,
+                                struct oa_nim_tune_state *state,
+                                const struct oa_nim_raw_channel *channel)
+{
+    if (!state || !channel)
+        return 0;
+    struct oa_nim_tune_channel parsed;
+    if (!oa_nim_raw_channel_parse(channel->raw, state->path, &parsed))
+        return 0;
+    return oa_nim_tune_set_channel(ops, ud, state, &parsed);
 }
 
 int oa_nim_tune_hal_open(void *v)

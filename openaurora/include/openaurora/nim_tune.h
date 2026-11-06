@@ -36,6 +36,13 @@ struct oa_nim_tune_status {
     uint32_t quality;
 };
 
+/* Raw 0x5c channel record from HAL_Demod_User_SetChannel.
+ * Fields recovered from FUN_0086aab0: +0 freq (kHz), +4 p1, +8 bandwidth,
+ * +0x10 p4, +0x1c standard index, +0x58 frequency override. */
+struct oa_nim_raw_channel {
+    uint8_t raw[0x5c];
+};
+
 struct oa_nim_tune_ops {
     int (*switch_tuner_type)(void *ud, int type); /* 0 = success */
     int (*get_tuner_type)(void *ud);
@@ -80,6 +87,13 @@ int oa_nim_tune_get_channel_status(const struct oa_nim_tune_ops *ops,
                                    void *ud,
                                    struct oa_nim_tune_state *state,
                                    struct oa_nim_tune_status *out);
+
+/* Parse the raw 0x5c record into the typed channel. Returns 1 on success. */
+int oa_nim_raw_channel_parse(const uint8_t raw[0x5c], int path,
+                             struct oa_nim_tune_channel *out);
+int oa_nim_tune_set_channel_raw(const struct oa_nim_tune_ops *ops, void *ud,
+                                struct oa_nim_tune_state *state,
+                                const struct oa_nim_raw_channel *channel);
 
 /* Adapter to the NIM-DTV typed HAL table. The channel calls stay -ENOTSUP
  * because the vendor table passes no channel/status pointer. */

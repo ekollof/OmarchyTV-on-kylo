@@ -244,6 +244,50 @@ static void test_channel_mapping(void)
     assert(oa_nim_tune_close(NULL, &f, &s) == 0);
 }
 
+static void put32(uint8_t *p, uint32_t v)
+{
+    p[0] = (uint8_t)v;
+    p[1] = (uint8_t)(v >> 8);
+    p[2] = (uint8_t)(v >> 16);
+    p[3] = (uint8_t)(v >> 24);
+}
+
+static void test_raw_channel(void)
+{
+    uint8_t raw[0x5c];
+    memset(raw, 0, sizeof raw);
+    put32(raw + 0, 666000);
+    put32(raw + 8, 0x20);
+    put32(raw + 0x1c, 1); /* standard index 1 -> DVB-T 8 */
+    struct oa_nim_tune_channel ch;
+    assert(oa_nim_raw_channel_parse(raw, 1, &ch) == 1);
+    assert(ch.freq_hz == 666000000u && ch.standard == 8 &&
+           ch.bandwidth == 0x20);
+
+    put32(raw + 0x58, 700000);
+    assert(oa_nim_raw_channel_parse(raw, 1, &ch) == 1);
+    assert(ch.freq_hz == 700000000u);
+
+    put32(raw + 8, 0);
+    assert(oa_nim_raw_channel_parse(raw, 1, &ch) == 1);
+    assert(ch.bandwidth == 40000);
+
+    put32(raw + 0x1c, 8);
+    assert(oa_nim_raw_channel_parse(raw, 1, &ch) == 0);
+
+    memset(raw, 0, sizeof raw);
+    put32(raw + 0, 666000);
+    put32(raw + 8, 0x20);
+    put32(raw + 0x1c, 1);
+    struct oa_nim_raw_channel rc;
+    memcpy(rc.raw, raw, sizeof raw);
+    struct fake f = { 0 };
+    struct oa_nim_tune_state s = { .path = 1, .tuner_type = 0xd };
+    assert(oa_nim_tune_set_channel_raw(&ops, &f, &s, &rc) == 1);
+    assert(f.program_calls == 1 && f.program_ch.freq_hz == 666000000u &&
+           f.program_ch.standard == 8 && f.program_ch.bandwidth == 0x20);
+}
+
 static void test_binding(void)
 {
     struct fake f = { .tuner_type = 0xd };
@@ -278,6 +322,7 @@ int main(void)
     test_close_monitor();
     test_lock_strength_quality();
     test_channel_mapping();
+    test_raw_channel();
     test_binding();
     puts("ok nim tune: path/index map, open/close, lock/strength/quality "
          "masks and unresolved channel mappings");

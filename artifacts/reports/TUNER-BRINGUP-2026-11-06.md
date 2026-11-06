@@ -195,6 +195,14 @@ status array mappings, and hardware acceptance.
 Fake tests cover start/monitor/signal/stop, the channel fields and the
 terrestrial gate.
 
+The raw 0x5c `SetChannel` record is parsed in `oa_nim_raw_channel_parse`:
+`+0` frequency (kHz), `+4` p1, `+8` bandwidth, `+0x10` p4, `+0x1c` standard
+index (mapped through the SAL map) and `+0x58` frequency override; the
+path-1 override and zero-bandwidth 40000 rule are applied.
+`oa_nim_tune_set_channel_raw` feeds it to the `program_tuner` op. The fake
+tests cover the offsets, override, zero-bandwidth default and invalid
+standard index. The raw 0x180 status array mapping remains.
+
 ## SI2151 blocker
 
 `SI2151_L3_Init` @ `0x0086f130` calls `L0_Init`, `Si2151_L1_API_Init`, then
@@ -269,7 +277,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 fc0c669bc02433194de3a3297ceb8897ff284b8c75243e618788940202e82c3a
+sha256 def8cd7c86e6b1f91363e3987cea16f1bd7e6213edf6e441aa86305b9d8a92d7
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,

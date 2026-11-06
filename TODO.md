@@ -1079,9 +1079,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       SetChannel/GetChannelStatus mapping are implemented
       (`common/mxl661_rf.c`, `common/nim_tune.c`); a real `tuner.backend=hal`
       NIM backend (`common/nim_hal.c`, requires `tuner.hw_init=1`, terrestrial
-      only) wires start/monitor/signal/stop to the ops. Analog/cable RF tails,
-      the raw 0x5c/0x180 mappings and the module's pointer-less raw table slots
-      remain.
+      only) wires start/monitor/signal/stop to the ops. The raw 0x5c channel
+      record is parsed into the typed channel (offsets +0/+4/+8/+0x10/+0x1c/
+      +0x58, SAL standard map, path-1 override/40000 rule). Analog/cable RF
+      tails and the raw 0x180 status mapping remain.
       SI2151 is the full Silicon Labs L1/L2/L3 `PowerUpWithPatch` + property
       driver, not this profile's path (hwprofile selects SAL 0xd/MxL661).
       Hardware acceptance is blocked by the owner's read-only/no-takeover
