@@ -1050,6 +1050,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       Focused ASan/UBSan clean, full suite `all tests passed`, ARM mod_panel
       builds. No panel/tuner hardware; curve default off.
       PANEL-CURVE-NIM-DTV.
+- [ ] EFSL/SAL demod-tuner backend: decode the EFSL `swprofile` hash table enough
+      to read `TunerTypes`/`TunerType` (or otherwise identify the fitted tuner)
+      and select Si2151 (8) vs MxL661 (0xd). Recover the ARM ABI of
+      `SAL_DEMOD_TUN_Initialize`'s classes (Si2151/MxL661, AV2018,
+      `HAL_TUNER_Init` bus IDs, `HAL_dvif_open`,
+      `HAL_DEMOD_EXT_DVIF_SetTunerType`, RT5047 LNB) and implement a real backend
+      with fake-device tests. Then wire the NIM-DTV chain opt-in into
+      `mod_tuner`; do not fake tuner init or touch IIC before it. The EFSL
+      header is not plain key/value (`EFSL` + hashed entries; CRC32 of the key
+      did not match), and the live DT exposes only an unbound `tuner` I2C node,
+      so this needs a dedicated parser/RE step.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff
       tests pass host/sanitizer/ARM-qemu. CEC-AUDIO-CONTRACT.
