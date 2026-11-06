@@ -70,6 +70,7 @@ ui.sub_sel=-1
 ui.sub_progress=0
 ui.font_index=$FONT.txt
 ui.font_pack=$FONT.bin
+ui.state_file=$STAGE/state.conf
 i18n.profile=$PROFILE
 i18n.language=$LANG_CODE
 plat.enable=1

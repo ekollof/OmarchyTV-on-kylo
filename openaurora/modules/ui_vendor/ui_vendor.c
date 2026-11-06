@@ -202,6 +202,13 @@ struct ctx {
     struct { unsigned char *rgba; int w, h; } sub_text[3];
     int sub_text_ready;
     char sub_text_locale[8];
+    /* Selected value index per SUB_CARDS item, in branch item order. -1 means
+     * the item has no decoded value list yet (MODE -> picture_modes). The
+     * initial values reproduce the p0/03 capture (MAXIMUM_STR, ZOOM_MODE_16_9).
+     * ui.state_file persists KEY=index across module reload/process restart;
+     * default /tmp is boot-scoped, a /conf path survives reboot. */
+    int sub_value[3];
+    char sub_state_file[128];
     /* Lab value editing (ui.edit=1): per-process shadow values for the four
      * slider rows 1..4. Range 0..100 is an INVENTED placeholder (per-setting
      * bounds come from runtime provider virtuals, not decodable statically);
@@ -586,14 +593,109 @@ static const struct {
     { "PICTURE_ZOOM", "sublauncher_card_2", "sublauncher_card_2_bg" },
 };
 
-/* The p0/03 picture-shortcut state. Live settings acquisition is separate;
- * these are the vendor values visible in the oracle capture. */
-static const char *sub_value_key(const char *item_key)
+/* The p0/03 picture-shortcut state is also the fallback when the persisted
+ * state has no valid index. Vendor values visible in the oracle capture. */
+static int sub_card_for_item(const char *key)
 {
-    if (!strcmp(item_key, "MODE")) return "NATURAL";
-    if (!strcmp(item_key, "ENERGY_SAVING")) return "MAXIMUM_STR";
-    if (!strcmp(item_key, "PICTURE_ZOOM")) return "ZOOM_MODE_16_9";
+    for (unsigned i = 0; i < sizeof SUB_CARDS / sizeof SUB_CARDS[0]; i++)
+        if (!strcmp(SUB_CARDS[i].key, key)) return (int)i;
+    return -1;
+}
+
+/* A string-valued "values" field is a firmware source marker, not a value
+ * list: MODE -> picture_modes, system rows -> sleep_timer_values etc. Those
+ * lists are decoded elsewhere; do not render or cycle the marker itself. */
+static int sub_values_dynamic(const struct oa_menu_item *item)
+{
+    if (item->dynamic) return 1;
+    if (item->value_count != 1) return 0;
+    const char *v = item->values[0].key;
+    return !strcmp(v, "picture_modes") || !strcmp(v, "sleep_timer_values") ||
+           !strcmp(v, "auto_tv_off_values") || !strcmp(v, "languages") ||
+           !strcmp(v, "favourite_lists");
+}
+
+static int sub_default_value_index(const struct oa_menu_item *item)
+{
+    const char *want = NULL;
+    if (!strcmp(item->key, "ENERGY_SAVING")) want = "MAXIMUM_STR";
+    else if (!strcmp(item->key, "PICTURE_ZOOM")) want = "ZOOM_MODE_16_9";
+    if (!want) return -1;
+    for (unsigned i = 0; i < item->value_count; i++)
+        if (!strcmp(item->values[i].key, want)) return (int)i;
+    return item->value_count ? 0 : -1;
+}
+
+static int sub_value_index(struct ctx *c, const struct oa_menu_item *item,
+                           int card)
+{
+    if (!item || !item->value_count || card < 0 ||
+        sub_values_dynamic(item))
+        return -1;
+    int index = c->sub_value[card];
+    if (index < 0 || (unsigned)index >= item->value_count) {
+        index = sub_default_value_index(item);
+        if (index < 0) index = 0;
+        c->sub_value[card] = index;
+    }
+    return index;
+}
+
+static const char *sub_value_key(struct ctx *c,
+                                 const struct oa_menu_item *item, int card)
+{
+    int index = sub_value_index(c, item, card);
+    if (index >= 0) return item->values[index].key;
+    /* MODE's picture_modes list is a profile list, not a JSON array; the
+     * p0/03 capture value remains the fallback until it is decoded. */
+    if (!strcmp(item->key, "MODE")) return "NATURAL";
     return NULL;
+}
+
+static void sub_state_defaults(struct ctx *c)
+{
+    c->sub_value[0] = -1; /* MODE: values come from dynamic picture_modes */
+    c->sub_value[1] = 3;  /* MAXIMUM_STR */
+    c->sub_value[2] = 1;  /* ZOOM_MODE_16_9 */
+}
+
+static void sub_state_load(struct ctx *c)
+{
+    const char *path = c->api->config_get(c->api->priv, "ui.state_file",
+        "/tmp/openaurora-sub-launcher.state");
+    snprintf(c->sub_state_file, sizeof c->sub_state_file, "%s", path);
+    if (!c->sub_state_file[0]) return;
+    FILE *f = fopen(c->sub_state_file, "r");
+    if (!f) return;
+    char line[128];
+    while (fgets(line, sizeof line, f)) {
+        char *eq = strchr(line, '=');
+        if (!eq) continue;
+        *eq = '\0';
+        char *end = NULL;
+        long index = strtol(eq + 1, &end, 10);
+        if (!end || (*end != '\0' && *end != '\n')) continue;
+        int card = sub_card_for_item(line);
+        if (card >= 0 && index >= -1 && index <= 64)
+            c->sub_value[card] = (int)index;
+    }
+    fclose(f);
+}
+
+static void sub_state_save(struct ctx *c)
+{
+    if (!c->sub_state_file[0]) return;
+    char tmp[160];
+    if (snprintf(tmp, sizeof tmp, "%s.tmp", c->sub_state_file) >=
+        (int)sizeof tmp)
+        return;
+    FILE *f = fopen(tmp, "w");
+    if (!f) return;
+    for (unsigned i = 0; i < sizeof SUB_CARDS / sizeof SUB_CARDS[0]; i++)
+        if (c->sub_value[i] >= 0)
+            fprintf(f, "%s=%d\n", SUB_CARDS[i].key, c->sub_value[i]);
+    if (fclose(f) != 0 || rename(tmp, c->sub_state_file) != 0)
+        remove(tmp);
 }
 
 static const uint8_t sub_white[4] = { 255, 255, 255, 255 };
@@ -685,7 +787,9 @@ static int sub_text_build(struct ctx *c, const struct oa_menu_branch *b)
     unsigned char *blobs[3] = { NULL, NULL, NULL };
     for (unsigned i = 0; i < 3; i++) {
         const char *key = b->items[i].key;
-        const char *value_key = sub_value_key(key);
+        int card = sub_card_for_item(key);
+        if (card < 0) goto fail;
+        const char *value_key = sub_value_key(c, &b->items[i], card);
         if (!value_key) goto fail;
         unsigned char *rgba = calloc(240u * 130u, 4);
         if (!rgba) goto fail;
@@ -1929,20 +2033,77 @@ static int portal_screen(void)
 static int portal_menu_action(const char *action)
 {
     if (!g_ctx || !action) return EINVAL;
-    if (strncmp(action, "open:", 5)) return ENOTSUP;
-    const char *name = action + 5;
-    int screen;
-    if (!strcmp(name, "portal")) screen = SCREEN_PORTAL;
-    else if (!strcmp(name, "sources")) screen = SCREEN_SOURCES;
-    else if (!strcmp(name, "settings")) screen = SCREEN_SETTINGS;
-    else if (!strcmp(name, "settings_list")) screen = SCREEN_SETTINGS_LIST;
-    else if (!strcmp(name, "sub_launcher")) screen = SCREEN_SUBLAUNCHER;
-    else if (!strcmp(name, "apps")) screen = SCREEN_APPS;
-    else if (!strcmp(name, "channels")) screen = SCREEN_CHANNELS;
-    else return ENOENT;
-    g_ctx->screen = screen;
-    if (g_ctx->d) paint(g_ctx);
-    return 0;
+    if (!strncmp(action, "open:", 5)) {
+        const char *name = action + 5;
+        int screen;
+        if (!strcmp(name, "portal")) screen = SCREEN_PORTAL;
+        else if (!strcmp(name, "sources")) screen = SCREEN_SOURCES;
+        else if (!strcmp(name, "settings")) screen = SCREEN_SETTINGS;
+        else if (!strcmp(name, "settings_list")) screen = SCREEN_SETTINGS_LIST;
+        else if (!strcmp(name, "sub_launcher")) screen = SCREEN_SUBLAUNCHER;
+        else if (!strcmp(name, "apps")) screen = SCREEN_APPS;
+        else if (!strcmp(name, "channels")) screen = SCREEN_CHANNELS;
+        else return ENOENT;
+        g_ctx->screen = screen;
+        if (g_ctx->d) paint(g_ctx);
+        return 0;
+    }
+    if (strncmp(action, "setting:", 8) && strncmp(action, "set:", 4))
+        return ENOTSUP;
+    const oa_ui_menu_iface *menu =
+        g_ctx->api->lookup(g_ctx->api->priv, OA_SVC_UI_MENU, 1);
+    if (!menu) return ENODEV;
+    const struct oa_menu_dialog *md = menu->dialog("sub_launcher");
+    const struct oa_menu_branch *b = md ? menu->branch(md, 2) : NULL;
+    int rc = ENOENT;
+    if (b && !strncmp(action, "setting:", 8)) {
+        const char *key = action + 8;
+        for (unsigned i = 0; i < b->item_count; i++) {
+            if (strcmp(b->items[i].key, key)) continue;
+            /* Focus the card and play the vendor 300 ms selection animation. */
+            g_ctx->screen = SCREEN_SUBLAUNCHER;
+            g_ctx->sub_sel = (int)i;
+            g_ctx->sub_progress = 0;
+            g_ctx->sub_anim_live = 1;
+            g_ctx->sub_anim_start = sub_now(g_ctx);
+            sub_tick_start(g_ctx);
+            if (g_ctx->d) paint(g_ctx);
+            rc = 0;
+            break;
+        }
+    } else if (b) {
+        const char *spec = action + 4;
+        const char *eq = strchr(spec, '=');
+        if (!eq || eq == spec || !eq[1]) {
+            rc = EINVAL;
+        } else {
+            for (unsigned i = 0; i < b->item_count && rc == ENOENT; i++) {
+                const struct oa_menu_item *item = &b->items[i];
+                size_t klen = (size_t)(eq - spec);
+                if (strlen(item->key) != klen ||
+                    strncmp(item->key, spec, klen))
+                    continue;
+                int card = sub_card_for_item(item->key);
+                if (card < 0 || !item->value_count ||
+                    sub_values_dynamic(item)) {
+                    rc = ENOTSUP; /* dynamic list (MODE) not decoded yet */
+                    break;
+                }
+                for (unsigned v = 0; v < item->value_count; v++) {
+                    if (strcmp(item->values[v].key, eq + 1)) continue;
+                    g_ctx->sub_value[card] = (int)v;
+                    sub_text_free(g_ctx);
+                    sub_state_save(g_ctx);
+                    if (g_ctx->screen == SCREEN_SUBLAUNCHER && g_ctx->d)
+                        paint(g_ctx);
+                    rc = 0;
+                    break;
+                }
+            }
+        }
+    }
+    g_ctx->api->release(g_ctx->api->priv, OA_SVC_UI_MENU);
+    return rc;
 }
 static const oa_portal_iface g_portal = {
     portal_hit, portal_activate, portal_screen, portal_menu_action
@@ -1958,6 +2119,7 @@ static int m_init(const oa_host_api *api, void **out)
     c->api = api;
     *out = c;
     g_ctx = c;
+    sub_state_defaults(c);
     return 0;
 }
 
@@ -2313,14 +2475,45 @@ static void cancel_dialog(struct ctx *c)
         c->d->set_scene_transform(0, 0.0f);
 }
 
+/* Vendor SVGSelectionBox::onKeyLeft/onKeyRight default to cyclic navigation
+ * (constructor writes 0x1 at +0x2f4), so the value list wraps. The setting
+ * backend is NovoPictureSettings through UserPreferences; this UI state store
+ * is the replacement's persisted shadow until the PQ/video backend is wired. */
+static int sub_value_step(struct ctx *c, int dir)
+{
+    if (c->sub_sel < 0 || !c->d) return 0;
+    const oa_ui_menu_iface *menu =
+        c->api->lookup(c->api->priv, OA_SVC_UI_MENU, 1);
+    if (!menu) return 0;
+    const struct oa_menu_dialog *md = menu->dialog("sub_launcher");
+    const struct oa_menu_branch *b = md ? menu->branch(md, 2) : NULL;
+    int changed = 0;
+    if (b && (unsigned)c->sub_sel < b->item_count) {
+        const struct oa_menu_item *item = &b->items[c->sub_sel];
+        int card = sub_card_for_item(item->key);
+        if (card >= 0 && item->value_count && !sub_values_dynamic(item)) {
+            int index = sub_value_index(c, item, card);
+            int next = (index + dir + (int)item->value_count) %
+                       (int)item->value_count;
+            if (next != index) {
+                c->sub_value[card] = next;
+                sub_text_free(c);
+                sub_state_save(c);
+                paint(c);
+                changed = 1;
+            }
+        }
+    }
+    c->api->release(c->api->priv, OA_SVC_UI_MENU);
+    return changed;
+}
+
 static void move_key(struct ctx *c, uint8_t id)
 {
-    if (c->screen == SCREEN_SUBLAUNCHER) {
-        /* SVGListBoxBase::onKeyPress maps Up/Down (ICE 0x20a/0x20b) to
+    if (c->screen == SCREEN_SUBLAUNCHER) {        /* SVGListBoxBase::onKeyPress maps Up/Down (ICE 0x20a/0x20b) to
          * onUpKey/onDownKey; both move the selected row and call
          * startSelectAnimation (the 300 ms scale). Left/Right (0x20c/0x20d)
-         * are forwarded to the row's selection box, i.e. value changes, not
-         * focus. Value cycling is not implemented yet. */
+         * are forwarded to the row's selection box, i.e. value changes. */
         if (id == 19 || id == 20) {
             int next = c->sub_sel;
             if (next < 0) next = 0;
@@ -2334,6 +2527,8 @@ static void move_key(struct ctx *c, uint8_t id)
                 sub_tick_start(c);
                 if (c->d) paint(c);
             }
+        } else if (id == 21 || id == 22) {
+            (void)sub_value_step(c, id == 22 ? 1 : -1);
         } else if (id == 10 || id == 48) {
             c->sub_anim_live = 0;
             if (c->sub_tick) {
@@ -2685,6 +2880,8 @@ static const oa_ui_skin g_skin = { "vendor", skin_enter, NULL, skin_paint, skin_
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    sub_state_defaults(c);
+    sub_state_load(c);
     c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 2);
     if (!c->d) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "no ui.engine service — load mod_ui_engine first");

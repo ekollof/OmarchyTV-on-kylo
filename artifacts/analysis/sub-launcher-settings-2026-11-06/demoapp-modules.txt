@@ -1,0 +1,814 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (684 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1667 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '_ZN7DemoApp24createApplicationModulesEv'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN7DemoApp24createApplicationModulesEv -> DemoApp::createApplicationModules @ 00cd5a98 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined createApplicationModules(void) (GhidraScript)
+INFO  DumpFirmware.java>
+/* DemoApp::createApplicationModules() */
+
+void __thiscall DemoApp::createApplicationModules(DemoApp *this)
+
+{
+  DemoApp DVar1;
+  SvgAppExternalAVSourceHandler *this_00;
+  AppDtvServiceStatusMessageTarget *this_01;
+  SvgAppBootUpImageSupplier *this_02;
+  SvgAppCAEventListener *this_03;
+  SvgAppRemovableDeviceStatusListener *this_04;
+  SvgAppNetworkSettingsEventsListener *this_05;
+  SvgAppInternetStatusUpdateEventListener *this_06;
+  SvgAppVideoEventsListener *this_07;
+  SvgAppFrontPanelPreferences *this_08;
+  SvgAppOperatorProfileEventListener *this_09;
+  EASIControlInterface *pEVar2;
+  SvgAppLoggingManager *this_10;
+  undefined4 uVar3;
+  NovoOperatorProfileHandler *this_11;
+  SvgAppWiDiEventsListener *this_12;
+  int *piVar4;
+  NovoSupportedOperator *this_13;
+  PictureModeNameProvider *this_14;
+  SvgAppServiceListPreferences *this_15;
+  SvgAppSgtQueryEventsListener *this_16;
+  SvgAppSgtServiceListUpdateEventsListener *this_17;
+  SvgAppCECEventsListener *this_18;
+  SvgAppNetflixEventListener *this_19;
+  SvgAppTkgsQueryEventsListener *pSVar5;
+  SvgAppExternalSourceStatusListener *this_20;
+  SvgAppDsmartServiceScanEventsListener *this_21;
+  SvgAppDigiturkServiceScanEventsListener *this_22;
+  SvgAppFransatServiceScanEventsListener *this_23;
+  SvgAppFransatServiceScanPreferences *this_24;
+  SvgAppTivibuServiceScanEventsListener *this_25;
+  SvgAppSimpliTvServiceScanEventsListener *this_26;
+  SvgAppServiceScanEventsListener *this_27;
+  SvgAppSoundSystemChangeListener *this_28;
+  SvgAppSignalStrengthStatusEventsListener *this_29;
+  UIFrameworkControlInterface *pUVar6;
+  SvgAppServiceStatusListener *this_30;
+  SvgAppScreenViewEventsListener *this_31;
+  SvgAppTunerErrorStatusEventsListener *this_32;
+  NovoRemovableDeviceController *this_33;
+  NovoSatcoDXController *this_34;
+  SatcoDXHelper *this_35;
+  SvgAppThreeDStatusEventsListener *this_36;
+  SvgAppFeatureOSDStatusEventsListener *this_37;
+  undefined4 *puVar7;
+  SvgAppParentalRatingEventsListener *this_38;
+  SvgAppAutoTvOffEventsListener *this_39;
+  SvgAppWakeupPreferences *this_40;
+  SvgAppStandbyStatusListener *this_41;
+  NovoStandbyControlInterface *this_42;
+  DynamicUIConfiguration *this_43;
+  SvgAppTargetRegionPreferences *this_44;
+  SvgAppDvrEventListener *this_45;
+  SvgAppDvrPreferences *this_46;
+  SvgAppDvrHelper *this_47;
+  HybridUIAvailability *this_48;
+  DialogNavigator *this_49;
+  NovoCACicamStateMonitor *pNVar8;
+  NovoCAInformative *this_50;
+  SVGAppKeyPressClient *this_51;
+  PasswordAuthorisationMethod *this_52;
+  SvgAppWebUpdatePreferences *this_53;
+  SvgAppDynamicServiceListUpdatePreferences *this_54;
+  OperationFinder *this_55;
+  NovoLoggingManager *this_56;
+  NovoControlledPopupManager *this_57;
+  SvgAppSmartCenterEventsListener *this_58;
+  SvgAppDictionaryHelper *this_59;
+  SVGAppRemoteDiagnosticListener *this_60;
+  NovoRemoteDiagnosticClient *this_61;
+  RemoteDiagnosticCommandHandler *this_62;
+  SvgAppAIManagerEventsListener *this_63;
+  SvgAppSambaDPNUpdateListener *this_64;
+  NovoAIManager *this_65;
+  int iVar9;
+  undefined4 *puVar10;
+  uint uVar11;
+  SVGContext *pSVar12;
+  uint uVar13;
+  NovoSystemInitialiser *pNVar14;
+  undefined1 auStack_2c [4];
+  __shared_count<(__gnu_cxx::_Lock_policy)2> a_Stack_28 [4];
+  int local_24;
+
+  local_24 = *DAT_00cd5d50;
+  this_00 = operator_new(0x1c);
+  SvgAppExternalAVSourceHandler::SvgAppExternalAVSourceHandler
+            (this_00,this,*(UIFramework **)(this + 4));
+  *(SvgAppExternalAVSourceHandler **)(this + 0x1b8) = this_00;
+  this_01 = operator_new(0xc);
+  AppDtvServiceStatusMessageTarget::AppDtvServiceStatusMessageTarget
+            (this_01,*(UIFramework **)(this + 4),this);
+  *(AppDtvServiceStatusMessageTarget **)(this + 0x168) = this_01;
+  this_02 = operator_new(0x20);
+  SvgAppBootUpImageSupplier::SvgAppBootUpImageSupplier
+            (this_02,*(UIFramework **)(this + 4),*(SVGContext **)(this + 0xf88),this);
+  *(SvgAppBootUpImageSupplier **)(this + 0x188) = this_02;
+  this_03 = operator_new(8);
+  SvgAppCAEventListener::SvgAppCAEventListener(this_03,*(UIFramework **)(this + 4));
+  *(SvgAppCAEventListener **)(this + 0x1c0) = this_03;
+  this_04 = operator_new(8);
+  SvgAppRemovableDeviceStatusListener::SvgAppRemovableDeviceStatusListener
+            (this_04,*(UIFramework **)(this + 4));
+  *(SvgAppRemovableDeviceStatusListener **)(this + 0x1c4) = this_04;
+  this_05 = operator_new(8);
+  SvgAppNetworkSettingsEventsListener::SvgAppNetworkSettingsEventsListener
+            (this_05,*(UIFramework **)(this + 4));
+  *(SvgAppNetworkSettingsEventsListener **)(this + 0x1c8) = this_05;
+  this_06 = operator_new(8);
+  SvgAppInternetStatusUpdateEventListener::SvgAppInternetStatusUpdateEventListener
+            (this_06,*(UIFramework **)(this + 4));
+  *(SvgAppInternetStatusUpdateEventListener **)(this + 0x1cc) = this_06;
+  this_07 = operator_new(8);
+  SvgAppVideoEventsListener::SvgAppVideoEventsListener(this_07,*(UIFramework **)(this + 4));
+  *(SvgAppVideoEventsListener **)(this + 0x1d0) = this_07;
+  this_08 = operator_new(0xc);
+  SvgAppFrontPanelPreferences::SvgAppFrontPanelPreferences(this_08,this,*(UIFramework **)(this + 4))
+  ;
+  *(SvgAppFrontPanelPreferences **)(this + 0x1d4) = this_08;
+  this_09 = operator_new(0xc);
+  SvgAppOperatorProfileEventListener::SvgAppOperatorProfileEventListener
+            (this_09,this,*(UIFramework **)(this + 4));
+  *(SvgAppOperatorProfileEventListener **)(this + 0x1d8) = this_09;
+  pEVar2 = (EASIControlInterface *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+  this_10 = operator_new(0x148);
+  SvgAppLoggingManager::SvgAppLoggingManager(this_10,this,pEVar2);
+  *(SvgAppLoggingManager **)(this + 0x1f0) = this_10;
+  pEVar2 = (EASIControlInterface *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+  uVar3 = EASIControlInterface::getNumberOfTuners(pEVar2);
+  *(undefined4 *)(this + 0x1194) = uVar3;
+  pEVar2 = (EASIControlInterface *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+  uVar3 = EASIControlInterface::tvInterface(pEVar2);
+  *(undefined4 *)(this + 0x600) = uVar3;
+  uVar3 = NovoSystemInitialiser::removableDeviceInterface(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x10a0) = uVar3;
+  this_11 = (NovoOperatorProfileHandler *)
+            NovoSystemInitialiser::operatorProfileHandler(*(NovoSystemInitialiser **)(this + 0x44));
+  *(NovoOperatorProfileHandler **)(this + 0x12b8) = this_11;
+  NovoOperatorProfileHandler::registerOperatorProfileEventListener
+            (this_11,*(AnyNovoOperatorProfileEventListener **)(this + 0x1d8));
+  this_12 = operator_new(0xc);
+  SvgAppWiDiEventsListener::SvgAppWiDiEventsListener(this_12,this,*(UIFramework **)(this + 4));
+  *(SvgAppWiDiEventsListener **)(this + 0x1dc) = this_12;
+  piVar4 = (int *)NovoSystemInitialiser::widiHelper(*(NovoSystemInitialiser **)(this + 0x44));
+  *(int **)(this + 0x1220) = piVar4;
+  (**(code **)(*piVar4 + 0x10))(piVar4,*(undefined4 *)(this + 0x1dc));
+  uVar3 = NovoSystemInitialiser::mediaBrowserProfileConfiguration
+                    (*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x310) = uVar3;
+  uVar3 = NovoSystemInitialiser::portalInformationProvider(*(NovoSystemInitialiser **)(this + 0x44))
+  ;
+  *(undefined4 *)(this + 0x39c) = uVar3;
+  this_13 = (NovoSupportedOperator *)
+            NovoSystemInitialiser::supportedOperator(*(NovoSystemInitialiser **)(this + 0x44));
+  *(NovoSupportedOperator **)(this + 0x398) = this_13;
+  DVar1 = (DemoApp)NovoSupportedOperator::isDigiturkSupported(this_13);
+  this[0x1026] = DVar1;
+  DVar1 = (DemoApp)NovoSupportedOperator::isDsmartSupported
+                             (*(NovoSupportedOperator **)(this + 0x398));
+  this[0x1027] = DVar1;
+  DVar1 = (DemoApp)NovoSupportedOperator::isAstraHDPlusSupported
+                             (*(NovoSupportedOperator **)(this + 0x398));
+  this[0x1025] = DVar1;
+  DVar1 = (DemoApp)NovoSupportedOperator::isTkgsSupported(*(NovoSupportedOperator **)(this + 0x398))
+  ;
+  this[0x1028] = DVar1;
+  if (this[0x12c9] != (DemoApp)0x0) {
+    pEVar2 = (EASIControlInterface *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+    uVar3 = EASIControlInterface::dvr(pEVar2);
+    *(undefined4 *)(this + 0x70) = uVar3;
+  }
+  pEVar2 = (EASIControlInterface *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+  EASIControlInterface::reminderManager(pEVar2,(EASIReminderManager **)(this + 0x74));
+  uVar3 = NovoSystemInitialiser::tvLifetimeChecker(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x2d8) = uVar3;
+  uVar3 = NovoSystemInitialiser::mediaBrowserConfiguration(*(NovoSystemInitialiser **)(this + 0x44))
+  ;
+  *(undefined4 *)(this + 0x294) = uVar3;
+  uVar3 = NovoSystemInitialiser::favouriteNetworkConfiguration
+                    (*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x2a0) = uVar3;
+  uVar3 = NovoSystemInitialiser::userPreferences(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x200) = uVar3;
+  uVar3 = NovoSystemInitialiser::dateTimeConfiguration(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 800) = uVar3;
+  this_14 = operator_new(1);
+  PictureModeNameProvider::PictureModeNameProvider(this_14);
+  *(PictureModeNameProvider **)(this + 0x18c) = this_14;
+  uVar3 = NovoSystemInitialiser::remoteControl(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x390) = uVar3;
+  uVar3 = NovoSystemInitialiser::service(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x334) = uVar3;
+  uVar3 = NovoSystemInitialiser::appServiceList(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x1e8) = uVar3;
+  this_15 = operator_new(0x10);
+  SvgAppServiceListPreferences::SvgAppServiceListPreferences
+            (this_15,*(UIFramework **)(this + 4),this);
+  *(SvgAppServiceListPreferences **)(this + 0x174) = this_15;
+  ApplicationServiceList::registerServiceListPreferences
+            (*(ApplicationServiceList **)(this + 0x1e8),(AnyNovoServiceListPreferences *)this_15);
+  uVar3 = NovoSystemInitialiser::satelliteHelper(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x278) = uVar3;
+  uVar3 = NovoSystemInitialiser::astraHdChannelScanController
+                    (*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x2a4) = uVar3;
+  this_16 = operator_new(0x10);
+  SvgAppSgtQueryEventsListener::SvgAppSgtQueryEventsListener(this_16,*(UIFramework **)(this + 4));
+  *(SvgAppSgtQueryEventsListener **)(this + 0x2a8) = this_16;
+  this_17 = operator_new(8);
+  SvgAppSgtServiceListUpdateEventsListener::SvgAppSgtServiceListUpdateEventsListener
+            (this_17,*(UIFramework **)(this + 4));
+  *(SvgAppSgtServiceListUpdateEventsListener **)(this + 0x2ac) = this_17;
+  if (*(int *)(this + 0x2a8) != 0) {
+    (**(code **)(**(int **)(this + 0x2a4) + 0xc))();
+  }
+  if (*(int *)(this + 0x2ac) != 0) {
+    (**(code **)(**(int **)(this + 0x2a4) + 0x24))();
+  }
+  uVar3 = NovoSystemInitialiser::CECController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x2b0) = uVar3;
+  this_18 = operator_new(0xc);
+  SvgAppCECEventsListener::SvgAppCECEventsListener(this_18,this,*(UIFramework **)(this + 4));
+  *(SvgAppCECEventsListener **)(this + 0x2b4) = this_18;
+  (**(code **)(**(int **)(this + 0x2b0) + 0x24))(*(int **)(this + 0x2b0),this_18);
+  uVar3 = NovoSystemInitialiser::APMController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x2b8) = uVar3;
+  this_19 = operator_new(8);
+  SvgAppNetflixEventListener::SvgAppNetflixEventListener(this_19,*(UIFramework **)(this + 4));
+  *(SvgAppNetflixEventListener **)(this + 700) = this_19;
+  (**(code **)(**(int **)(this + 0x2b8) + 0xa8))(*(int **)(this + 0x2b8),this_19);
+  uVar3 = NovoSystemInitialiser::tkgsChannelScanController(*(NovoSystemInitialiser **)(this + 0x44))
+  ;
+  *(undefined4 *)(this + 0x2c0) = uVar3;
+  pSVar5 = operator_new(0x18);
+  SvgAppTkgsQueryEventsListener::SvgAppTkgsQueryEventsListener(pSVar5,*(UIFramework **)(this + 4));
+  *(SvgAppTkgsQueryEventsListener **)(this + 0x2c4) = pSVar5;
+  NovoTkgsChannelScanController::registerTkgsQueryEventsListener
+            (*(NovoTkgsChannelScanController **)(this + 0x2c0),
+             (AnyNovoTkgsQueryEventsListener *)pSVar5);
+  NovoTkgsChannelScanController::registerForTkgsDynamicUpdateEvents
+            (*(NovoTkgsChannelScanController **)(this + 0x2c0),
+             *(AnyNovoTkgsQueryEventsListener **)(this + 0x2c4));
+  pSVar5 = *(SvgAppTkgsQueryEventsListener **)(this + 0x2c4);
+  (**(code **)(*(int *)this + 0x3c))(auStack_2c,this);
+  SvgAppTkgsQueryEventsListener::setDynamicUpdateMessageTarget(pSVar5,auStack_2c);
+  std::__shared_count<(__gnu_cxx::_Lock_policy)2>::~__shared_count(a_Stack_28);
+  uVar3 = NovoSystemInitialiser::sourceStates(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x2f4) = uVar3;
+  uVar3 = NovoSystemInitialiser::dvrPresentationHelper(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x1e4) = uVar3;
+  this_20 = operator_new(0xc);
+  SvgAppExternalSourceStatusListener::SvgAppExternalSourceStatusListener
+            (this_20,this,*(UIFramework **)(this + 4));
+  *(SvgAppExternalSourceStatusListener **)(this + 0x1b0) = this_20;
+  piVar4 = (int *)NovoSystemInitialiser::externalAvSourceNavigator
+                            (*(NovoSystemInitialiser **)(this + 0x44));
+  *(int **)(this + 0x260) = piVar4;
+  (**(code **)(*piVar4 + 0xd0))(piVar4,*(undefined4 *)(this + 0x1b0));
+  uVar3 = NovoSystemInitialiser::serviceViewController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x1fc) = uVar3;
+  uVar3 = NovoSystemInitialiser::dsmartChannelScanController
+                    (*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x22c) = uVar3;
+  this_21 = operator_new(8);
+  SvgAppDsmartServiceScanEventsListener::SvgAppDsmartServiceScanEventsListener
+            (this_21,*(UIFramework **)(this + 4));
+  *(SvgAppDsmartServiceScanEventsListener **)(this + 0x230) = this_21;
+  NovoDsmartChannelScanController::registerForDsmartServiceScanEvents
+            (*(NovoDsmartChannelScanController **)(this + 0x22c),
+             (AnyNovoDsmartServiceScanListener *)this_21);
+  uVar3 = NovoSystemInitialiser::digiturkChannelScanController
+                    (*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x234) = uVar3;
+  this_22 = operator_new(8);
+  SvgAppDigiturkServiceScanEventsListener::SvgAppDigiturkServiceScanEventsListener
+            (this_22,*(UIFramework **)(this + 4));
+  *(SvgAppDigiturkServiceScanEventsListener **)(this + 0x238) = this_22;
+  NovoDigiturkChannelScanController::registerForScanStatusMessages
+            (*(NovoDigiturkChannelScanController **)(this + 0x234),
+             (AnyNovoDigiturkServiceScanListener *)this_22);
+  uVar3 = NovoSystemInitialiser::fransatChannelScanController
+                    (*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x3c8) = uVar3;
+  this_23 = operator_new(8);
+  SvgAppFransatServiceScanEventsListener::SvgAppFransatServiceScanEventsListener
+            (this_23,*(UIFramework **)(this + 4));
+  *(SvgAppFransatServiceScanEventsListener **)(this + 0x3cc) = this_23;
+  this_24 = operator_new(0x14);
+  SvgAppFransatServiceScanPreferences::SvgAppFransatServiceScanPreferences
+            (this_24,*(UIFramework **)(this + 4),this);
+  *(SvgAppFransatServiceScanPreferences **)(this + 0x3d0) = this_24;
+  if (*(AnyNovoFransatServiceScanListener **)(this + 0x3cc) !=
+      (AnyNovoFransatServiceScanListener *)0x0) {
+    NovoFransatChannelScanController::registerForScanStatusMessages
+              (*(NovoFransatChannelScanController **)(this + 0x3c8),
+               *(AnyNovoFransatServiceScanListener **)(this + 0x3cc));
+  }
+  if (*(AnyNovoFransatServiceScanPreferences **)(this + 0x3d0) !=
+      (AnyNovoFransatServiceScanPreferences *)0x0) {
+    NovoFransatChannelScanController::registerFransatServiceScanPreferences
+              (*(NovoFransatChannelScanController **)(this + 0x3c8),
+               *(AnyNovoFransatServiceScanPreferences **)(this + 0x3d0));
+  }
+  uVar3 = NovoSystemInitialiser::tivibuChannelScanController
+                    (*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x3d4) = uVar3;
+  this_25 = operator_new(8);
+  SvgAppTivibuServiceScanEventsListener::SvgAppTivibuServiceScanEventsListener
+            (this_25,*(UIFramework **)(this + 4));
+  *(SvgAppTivibuServiceScanEventsListener **)(this + 0x3d8) = this_25;
+  NovoTivibuChannelScanController::registerForScanStatusMessages
+            (*(NovoTivibuChannelScanController **)(this + 0x3d4),
+             (AnyNovoTivibuServiceScanListener *)this_25);
+  uVar3 = NovoSystemInitialiser::simpliTvChannelScanController
+                    (*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x21c) = uVar3;
+  this_26 = operator_new(8);
+  SvgAppSimpliTvServiceScanEventsListener::SvgAppSimpliTvServiceScanEventsListener
+            (this_26,*(UIFramework **)(this + 4));
+  *(SvgAppSimpliTvServiceScanEventsListener **)(this + 0x220) = this_26;
+  NovoSimpliTvChannelScanController::registerForScanStatusMessages
+            (*(NovoSimpliTvChannelScanController **)(this + 0x21c),
+             (AnyNovoSimpliTvServiceScanListener *)this_26);
+  uVar3 = NovoSystemInitialiser::canalDigitalScanController
+                    (*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x23c) = uVar3;
+  uVar3 = NovoSystemInitialiser::channelScanConfiguration(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x240) = uVar3;
+  uVar3 = NovoSystemInitialiser::channelScanController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x20c) = uVar3;
+  uVar3 = NovoSystemInitialiser::fastScanController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x210) = uVar3;
+  uVar3 = NovoSystemInitialiser::polsatChannelScanController
+                    (*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x214) = uVar3;
+  uVar3 = NovoSystemInitialiser::tivusatChannelScanController
+                    (*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x218) = uVar3;
+  this_27 = operator_new(8);
+  SvgAppServiceScanEventsListener::SvgAppServiceScanEventsListener
+            (this_27,*(UIFramework **)(this + 4));
+  *(SvgAppServiceScanEventsListener **)(this + 0x224) = this_27;
+  uVar3 = NovoSystemInitialiser::simpliTvChannelScanController
+                    (*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x21c) = uVar3;
+  uVar3 = NovoSystemInitialiser::soundModeChecker(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x264) = uVar3;
+  this_28 = operator_new(8);
+  SvgAppSoundSystemChangeListener::SvgAppSoundSystemChangeListener
+            (this_28,*(UIFramework **)(this + 4));
+  *(SvgAppSoundSystemChangeListener **)(this + 0x1b4) = this_28;
+  NovoSoundModeChecker::registerForSoundModeChanges
+            (*(NovoSoundModeChecker **)(this + 0x264),(AnyNovoSoundSystemChangeListener *)this_28);
+  uVar3 = NovoSystemInitialiser::signalController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x300) = uVar3;
+  this_29 = operator_new(0xc);
+  SvgAppSignalStrengthStatusEventsListener::SvgAppSignalStrengthStatusEventsListener
+            (this_29,*(UIFramework **)(this + 4),this);
+  *(SvgAppSignalStrengthStatusEventsListener **)(this + 0x1ac) = this_29;
+  (**(code **)(**(int **)(this + 0x300) + 0x10))(*(int **)(this + 0x300),this_29);
+  uVar3 = NovoSystemInitialiser::dvbComponentSelector(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x338) = uVar3;
+  uVar3 = NovoSystemInitialiser::avComponentSelector(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x33c) = uVar3;
+  uVar3 = NovoSystemInitialiser::componentSelector(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x340) = uVar3;
+  pUVar6 = (UIFrameworkControlInterface *)
+           UIFramework::uiFrameworkControlInterface(*(UIFramework **)(this + 4));
+  this_30 = operator_new(8);
+  SvgAppServiceStatusListener::SvgAppServiceStatusListener(this_30,pUVar6);
+  *(SvgAppServiceStatusListener **)(this + 0x228) = this_30;
+  piVar4 = (int *)NovoSystemInitialiser::serviceStatusPublisher
+                            (*(NovoSystemInitialiser **)(this + 0x44));
+  (**(code **)(*piVar4 + 8))(piVar4,*(undefined4 *)(this + 0x228));
+  piVar4 = (int *)NovoSystemInitialiser::applicationCapabilityProvider
+                            (*(NovoSystemInitialiser **)(this + 0x44));
+  *(int **)(this + 0x314) = piVar4;
+  (**(code **)(*piVar4 + 0x1c))(piVar4,this + 0x344);
+  (**(code **)(**(int **)(this + 0x314) + 0x24))(*(int **)(this + 0x314),this + 0x370);
+  uVar3 = NovoSystemInitialiser::pictureSettings(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x318) = uVar3;
+  uVar3 = NovoSystemInitialiser::screenViewController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x3b0) = uVar3;
+  uVar3 = NovoSystemInitialiser::serviceEventProvider(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x3b8) = uVar3;
+  uVar3 = NovoSystemInitialiser::serviceEventFactory(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x3b4) = uVar3;
+  uVar3 = NovoSystemInitialiser::onDemandProgramProvider(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x3bc) = uVar3;
+  uVar3 = NovoSystemInitialiser::categoryProvider(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x3c0) = uVar3;
+  uVar3 = NovoSystemInitialiser::onDemandBoxSetProvider(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x3c4) = uVar3;
+  this_31 = operator_new(8);
+  SvgAppScreenViewEventsListener::SvgAppScreenViewEventsListener
+            (this_31,*(UIFramework **)(this + 4));
+  *(SvgAppScreenViewEventsListener **)(this + 0x1a4) = this_31;
+  (**(code **)(**(int **)(this + 0x3b0) + 8))(*(int **)(this + 0x3b0),this_31);
+  uVar3 = NovoSystemInitialiser::tunerConfiguration(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x2f0) = uVar3;
+  this_32 = operator_new(0x10);
+  SvgAppTunerErrorStatusEventsListener::SvgAppTunerErrorStatusEventsListener
+            (this_32,*(UIFramework **)(this + 4));
+  *(SvgAppTunerErrorStatusEventsListener **)(this + 0x1bc) = this_32;
+  NovoTunerConfiguration::registerTunerErrorStatusEventsListener
+            (*(NovoTunerConfiguration **)(this + 0x2f0),
+             (AnyNovoTunerErrorStatusEventsListener *)this_32);
+  uVar3 = NovoSystemInitialiser::hotelModeSettings(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x298) = uVar3;
+  this_33 = (NovoRemovableDeviceController *)
+            NovoSystemInitialiser::removableDeviceController
+                      (*(NovoSystemInitialiser **)(this + 0x44));
+  *(NovoRemovableDeviceController **)(this + 0x308) = this_33;
+  NovoRemovableDeviceController::registerRemovableDeviceStatusListener
+            (this_33,*(AnyNovoRemovableDeviceStatusListener **)(this + 0x1c4));
+  uVar3 = NovoSystemInitialiser::soundSettings(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x31c) = uVar3;
+  uVar3 = NovoSystemInitialiser::frontPanelController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x290) = uVar3;
+  uVar3 = NovoSystemInitialiser::platformSpecificSettings(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x29c) = uVar3;
+  uVar3 = NovoSystemInitialiser::systemInformationProvider(*(NovoSystemInitialiser **)(this + 0x44))
+  ;
+  *(undefined4 *)(this + 0x26c) = uVar3;
+  uVar3 = NovoSystemInitialiser::systemConfiguration(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x270) = uVar3;
+  piVar4 = (int *)NovoSystemInitialiser::serviceNavigator(*(NovoSystemInitialiser **)(this + 0x44));
+  *(int **)(this + 0x2ec) = piVar4;
+  (**(code **)(*piVar4 + 0x60))(piVar4,*(undefined4 *)(this + 0x168));
+  this_34 = (NovoSatcoDXController *)
+            NovoSystemInitialiser::satcoDXController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(NovoSatcoDXController **)(this + 0x27c) = this_34;
+  NovoSatcoDXController::registerForServiceScanEvents
+            (this_34,*(AnyNovoServiceScanListener **)(this + 0x224));
+  this_35 = operator_new(0x30);
+  SatcoDXHelper::SatcoDXHelper
+            (this_35,*(UIFramework **)(this + 4),*(SVGContext **)(this + 0xf88),this);
+  *(SatcoDXHelper **)(this + 0x280) = this_35;
+  uVar3 = NovoSystemInitialiser::diagnostics(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x268) = uVar3;
+  uVar3 = NovoSystemInitialiser::threeDStatusChecker(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x248) = uVar3;
+  this_36 = operator_new(8);
+  SvgAppThreeDStatusEventsListener::SvgAppThreeDStatusEventsListener
+            (this_36,*(UIFramework **)(this + 4));
+  *(SvgAppThreeDStatusEventsListener **)(this + 0x1a0) = this_36;
+  NovoThreeDStatusChecker::registerForThreeDStatusEvents
+            (*(NovoThreeDStatusChecker **)(this + 0x248),
+             (AnyNovoThreeDStatusEventsListener *)this_36);
+  uVar3 = NovoSystemInitialiser::featureOSDStatusChecker(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x24c) = uVar3;
+  this_37 = operator_new(0xc);
+  SvgAppFeatureOSDStatusEventsListener::SvgAppFeatureOSDStatusEventsListener
+            (this_37,*(UIFramework **)(this + 4));
+  *(SvgAppFeatureOSDStatusEventsListener **)(this + 0x1a8) = this_37;
+  NovoThreeDStatusChecker::registerForThreeDStatusEvents
+            (*(NovoThreeDStatusChecker **)(this + 0x248),
+             (AnyNovoThreeDStatusEventsListener *)(this_37 + 4));
+  NovoFeatureOSDStatusChecker::registerFeatureOSDStatusEventsListener
+            (*(NovoFeatureOSDStatusChecker **)(this + 0x24c),
+             *(AnyNovoFeatureOSDStatusEventsListener **)(this + 0x1a8));
+  uVar13 = *(uint *)(this + 0x1194);
+  if (uVar13 < 0x8000000) {
+    puVar7 = operator_new__(uVar13 << 4);
+    puVar10 = puVar7;
+    for (uVar11 = 0; uVar13 != uVar11; uVar11 = uVar11 + 1) {
+      *puVar10 = 0;
+      puVar10[1] = 2;
+      puVar10[3] = 3;
+      puVar10[2] = 2;
+      puVar10 = puVar10 + 4;
+    }
+  }
+  else {
+    puVar7 = (undefined4 *)__cxa_throw_bad_array_new_length();
+  }
+  *(undefined4 **)(this + 0x1358) = puVar7;
+  uVar3 = NovoSystemInitialiser::parentalRatingChecker(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x244) = uVar3;
+  this_38 = operator_new(0xc);
+  SvgAppParentalRatingEventsListener::SvgAppParentalRatingEventsListener
+            (this_38,*(UIFramework **)(this + 4));
+  *(SvgAppParentalRatingEventsListener **)(this + 0x19c) = this_38;
+  (**(code **)(**(int **)(this + 0x244) + 8))(*(int **)(this + 0x244),this_38);
+  iVar9 = *(int *)(this + 0x19c);
+  if (iVar9 != 0) {
+    iVar9 = iVar9 + 4;
+  }
+  (**(code **)(**(int **)(this + 0x244) + 0xc))(*(int **)(this + 0x244),iVar9);
+  (**(code **)(**(int **)(this + 0x244) + 0x10))();
+  uVar3 = NovoSystemInitialiser::generalSettings(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x328) = uVar3;
+  this_39 = operator_new(8);
+  SvgAppAutoTvOffEventsListener::SvgAppAutoTvOffEventsListener(this_39,*(UIFramework **)(this + 4));
+  *(SvgAppAutoTvOffEventsListener **)(this + 0x194) = this_39;
+  (**(code **)(**(int **)(this + 0x328) + 8))(*(int **)(this + 0x328),this_39);
+  piVar4 = (int *)NovoSystemInitialiser::networkSettings(*(NovoSystemInitialiser **)(this + 0x44));
+  *(int **)(this + 0x32c) = piVar4;
+  (**(code **)(*piVar4 + 8))(piVar4,*(undefined4 *)(this + 0x1c8));
+  (**(code **)(**(int **)(this + 0x32c) + 0x10))
+            (*(int **)(this + 0x32c),*(undefined4 *)(this + 0x1cc));
+  this_40 = operator_new(0x70);
+  SvgAppWakeupPreferences::SvgAppWakeupPreferences(this_40,*(UIFramework **)(this + 4),this);
+  *(SvgAppWakeupPreferences **)(this + 0x178) = this_40;
+  NovoSystemInitialiser::registerWakeupPreferences
+            (*(NovoSystemInitialiser **)(this + 0x44),(AnyNovoWakeupPreferences *)this_40);
+  this_41 = operator_new(0xc);
+  SvgAppStandbyStatusListener::SvgAppStandbyStatusListener(this_41,*(UIFramework **)(this + 4),this)
+  ;
+  *(SvgAppStandbyStatusListener **)(this + 0x17c) = this_41;
+  NovoSystemInitialiser::registerStandbyStatusListener
+            (*(NovoSystemInitialiser **)(this + 0x44),(AnyNovoStandbyStatusListener *)this_41);
+  uVar3 = NovoSystemInitialiser::dvrController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x284) = uVar3;
+  this_42 = (NovoStandbyControlInterface *)
+            NovoSystemInitialiser::standbyControlInterface(*(NovoSystemInitialiser **)(this + 0x44))
+  ;
+  *(NovoStandbyControlInterface **)(this + 0x2dc) = this_42;
+  NovoStandbyControlInterface::registerBootUpImageSupplier
+            (this_42,*(AnyNovoBootUpImageSupplier **)(this + 0x188));
+  (**(code **)(**(int **)(this + 0x314) + 0x1c))(*(int **)(this + 0x314),this + 0x344);
+  (**(code **)(**(int **)(this + 0x314) + 0x24))(*(int **)(this + 0x314),this + 0x370);
+  uVar3 = NovoSystemInitialiser::nvramInterface(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x38c) = uVar3;
+  uVar3 = NovoSystemInitialiser::fileInterface(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x3a8) = uVar3;
+  this_43 = operator_new(0x290);
+  DynamicUIConfiguration::DynamicUIConfiguration
+            (this_43,*(NovoSystemInformationProvider **)(this + 0x26c),
+             *(NovoNvramInterface **)(this + 0x38c),*(NovoFileInterface **)(this + 0x3a8));
+  *(DynamicUIConfiguration **)(this + 0xf8c) = this_43;
+  piVar4 = (int *)NovoSystemInitialiser::videoController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(int **)(this + 0x204) = piVar4;
+  (**(code **)(*piVar4 + 8))(piVar4,*(undefined4 *)(this + 0x1d0));
+  uVar3 = NovoSystemInitialiser::dictionary(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x250) = uVar3;
+  uVar3 = NovoSystemInitialiser::languageSetting(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x25c) = uVar3;
+  uVar3 = NovoSystemInitialiser::countrySetting(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x254) = uVar3;
+  uVar3 = NovoSystemInitialiser::targetRegionController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x3ac) = uVar3;
+  this_44 = operator_new(0x18);
+  SvgAppTargetRegionPreferences::SvgAppTargetRegionPreferences
+            (this_44,*(UIFramework **)(this + 4),this);
+  *(SvgAppTargetRegionPreferences **)(this + 0x2c8) = this_44;
+  NovoTargetRegionController::registerTargetRegionPreferences
+            (*(NovoTargetRegionController **)(this + 0x3ac),
+             (AnyNovoTargetRegionPreferences *)this_44);
+  uVar3 = NovoSystemInitialiser::connectivityConfiguration(*(NovoSystemInitialiser **)(this + 0x44))
+  ;
+  *(undefined4 *)(this + 600) = uVar3;
+  uVar3 = NovoSystemInitialiser::subtitleSettings(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x324) = uVar3;
+  uVar3 = NovoSystemInitialiser::dvrReminderManager(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x288) = uVar3;
+  uVar3 = NovoSystemInitialiser::dvrDiskController(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x28c) = uVar3;
+  pSVar12 = *(SVGContext **)(this + 0xf88);
+  this_45 = operator_new(0x48);
+  SvgAppDvrEventListener::SvgAppDvrEventListener
+            (this_45,this,*(UIFramework **)(this + 4),pSVar12,
+             *(AnyNovoServiceViewController **)(this + 0x1fc));
+  *(SvgAppDvrEventListener **)(this + 0x16c) = this_45;
+  (**(code **)(**(int **)(this + 0x284) + 0x10))(*(int **)(this + 0x284),this_45 + 0x24);
+  iVar9 = *(int *)(this + 0x16c);
+  if (iVar9 != 0) {
+    iVar9 = iVar9 + 0x28;
+  }
+  (**(code **)(**(int **)(this + 0x2ec) + 0x54))(*(int **)(this + 0x2ec),iVar9);
+  this_46 = operator_new(0x10);
+  SvgAppDvrPreferences::SvgAppDvrPreferences(this_46,*(UIFramework **)(this + 4),this);
+  *(SvgAppDvrPreferences **)(this + 0x170) = this_46;
+  (**(code **)(**(int **)(this + 0x284) + 0x14))(*(int **)(this + 0x284),this_46);
+  this_47 = operator_new(0x24);
+  SvgAppDvrHelper::SvgAppDvrHelper
+            (this_47,*(AnyNovoDvrController **)(this + 0x284),this,*(UIFramework **)(this + 4));
+  *(SvgAppDvrHelper **)(this + 400) = this_47;
+  uVar3 = NovoSystemInitialiser::filterView(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x208) = uVar3;
+  uVar3 = NovoSystemInitialiser::serviceList(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x2e4) = uVar3;
+  uVar3 = NovoSystemInitialiser::serviceListEditor(*(NovoSystemInitialiser **)(this + 0x44));
+  *(undefined4 *)(this + 0x2e8) = uVar3;
+  this_48 = operator_new(0xc);
+  HybridUIAvailability::HybridUIAvailability
+            (this_48,*(NovoSystemInformationProvider **)(this + 0x26c));
+  *(HybridUIAvailability **)(this + 0x2fc) = this_48;
+  this_49 = (DialogNavigator *)(**(code **)(*(int *)this + 100))(this);
+  *(DialogNavigator **)(this + 0x15c) = this_49;
+  if (this_49 == (DialogNavigator *)0x0) {
+    uVar3 = 0;
+  }
+  else {
+    pNVar8 = (NovoCACicamStateMonitor *)
+             NovoSystemInitialiser::caCicamStateMonitor(*(NovoSystemInitialiser **)(this + 0x44));
+    DialogNavigator::setCACicamStateMonitor(this_49,pNVar8);
+    uVar3 = NovoSystemInitialiser::eitProvider(*(NovoSystemInitialiser **)(this + 0x44));
+    *(undefined4 *)(this + 0x2f8) = uVar3;
+    this_50 = (NovoCAInformative *)
+              NovoSystemInitialiser::caInformative(*(NovoSystemInitialiser **)(this + 0x44));
+    *(NovoCAInformative **)(this + 0x304) = this_50;
+    NovoCAInformative::registerCAEventListener(this_50,*(AnyNovoCAEventListener **)(this + 0x1c0));
+    this_51 = operator_new(8);
+    SVGAppKeyPressClient::SVGAppKeyPressClient(this_51,*(UIFramework **)(this + 4));
+    *(SVGAppKeyPressClient **)(this + 0x160) = this_51;
+    NovoRemoteControl::registerKeyPressClient
+              (*(NovoRemoteControl **)(this + 0x390),(AnyNovoKeyPressClient *)this_51);
+    NovoFrontPanelController::registerFrontPanelPreferences
+              (*(NovoFrontPanelController **)(this + 0x290),
+               *(AnyNovoFrontPanelPreferences **)(this + 0x1d4));
+    NovoFrontPanelController::registerKeyPressClient
+              (*(NovoFrontPanelController **)(this + 0x290),
+               *(AnyNovoKeyPressClient **)(this + 0x160));
+    uVar3 = NovoSystemInitialiser::serviceLockAuthorisor(*(NovoSystemInitialiser **)(this + 0x44));
+    *(undefined4 *)(this + 0x2e0) = uVar3;
+    this_52 = operator_new(0x40);
+    PasswordAuthorisationMethod::PasswordAuthorisationMethod
+              (this_52,*(UIFramework **)(this + 4),this);
+    *(PasswordAuthorisationMethod **)(this + 0x158) = this_52;
+    (**(code **)(**(int **)(this + 0x1fc) + 0xd0))(*(int **)(this + 0x1fc),this_52 + 0x24);
+    (**(code **)(**(int **)(this + 0x1fc) + 0xcc))
+              (*(int **)(this + 0x1fc),*(undefined4 *)(this + 0x2e0));
+    uVar3 = NovoSystemInitialiser::testtool(*(NovoSystemInitialiser **)(this + 0x44));
+    *(undefined4 *)(this + 0x274) = uVar3;
+    uVar3 = NovoSystemInitialiser::followTvRtspController(*(NovoSystemInitialiser **)(this + 0x44));
+    *(undefined4 *)(this + 0x1238) = uVar3;
+    uVar3 = NovoSystemInitialiser::portalAPIConnector(*(NovoSystemInitialiser **)(this + 0x44));
+    *(undefined4 *)(this + 0x3a0) = uVar3;
+    this_53 = operator_new(0x28);
+    SvgAppWebUpdatePreferences::SvgAppWebUpdatePreferences(this_53,*(UIFramework **)(this + 4),this)
+    ;
+    *(SvgAppWebUpdatePreferences **)(this + 0x180) = this_53;
+    NovoSystemInitialiser::registerWebUpdatePreferences
+              (*(NovoSystemInitialiser **)(this + 0x44),(AnyNovoWebUpdatePreferences *)this_53);
+    uVar3 = NovoSystemInitialiser::softwareUpdateController
+                      (*(NovoSystemInitialiser **)(this + 0x44));
+    *(undefined4 *)(this + 0x394) = uVar3;
+    this_54 = operator_new(0x10);
+    SvgAppDynamicServiceListUpdatePreferences::SvgAppDynamicServiceListUpdatePreferences
+              (this_54,*(UIFramework **)(this + 4),this);
+    *(SvgAppDynamicServiceListUpdatePreferences **)(this + 0x184) = this_54;
+    NovoSystemInitialiser::registerDynamicServiceListUpdatePreferences
+              (*(NovoSystemInitialiser **)(this + 0x44),
+               (AnyNovoDynamicServiceListUpdatePreferences *)this_54);
+    this_55 = operator_new(0x10);
+    OperationFinder::OperationFinder(this_55,*(UIFramework **)(this + 4),this);
+    *(OperationFinder **)(this + 0x1ec) = this_55;
+    uVar3 = NovoSystemInitialiser::featureOsdInformationProvider
+                      (*(NovoSystemInitialiser **)(this + 0x44));
+    *(undefined4 *)(this + 0x3a4) = uVar3;
+    this_56 = (NovoLoggingManager *)
+              NovoSystemInitialiser::novoLoggingManager(*(NovoSystemInitialiser **)(this + 0x44));
+    *(NovoLoggingManager **)(this + 500) = this_56;
+    if ((*(AnyNovoLoggingPreferences **)(this + 0x1f0) != (AnyNovoLoggingPreferences *)0x0) &&
+       (this_56 != (NovoLoggingManager *)0x0)) {
+      NovoLoggingManager::registerLoggingPreferences
+                (this_56,*(AnyNovoLoggingPreferences **)(this + 0x1f0));
+    }
+    this_57 = (NovoControlledPopupManager *)
+              NovoSystemInitialiser::novoControlledPopupManager
+                        (*(NovoSystemInitialiser **)(this + 0x44));
+    *(NovoControlledPopupManager **)(this + 0x1f8) = this_57;
+    if ((*(AnyNovoWakeupPreferences **)(this + 0x178) != (AnyNovoWakeupPreferences *)0x0) &&
+       (this_57 != (NovoControlledPopupManager *)0x0)) {
+      NovoControlledPopupManager::registerSvgAppWakeupPreferences
+                (this_57,*(AnyNovoWakeupPreferences **)(this + 0x178));
+    }
+    uVar3 = NovoSystemInitialiser::getOperatorLockPreferences
+                      (*(NovoSystemInitialiser **)(this + 0x44));
+    *(undefined4 *)(this + 0x3e4) = uVar3;
+    this_58 = operator_new(0xc);
+    SvgAppSmartCenterEventsListener::SvgAppSmartCenterEventsListener
+              (this_58,this,*(UIFramework **)(this + 4));
+    *(SvgAppSmartCenterEventsListener **)(this + 0x1068) = this_58;
+    piVar4 = (int *)NovoSystemInitialiser::smartCenterHelper
+                              (*(NovoSystemInitialiser **)(this + 0x44));
+    *(int **)(this + 0x1468) = piVar4;
+    (**(code **)(*piVar4 + 8))(piVar4,*(undefined4 *)(this + 0x1068));
+    uVar3 = NovoSystemInitialiser::enhancedMetadataProvider
+                      (*(NovoSystemInitialiser **)(this + 0x44));
+    *(undefined4 *)(this + 1000) = uVar3;
+    this_59 = operator_new(8);
+    SvgAppDictionaryHelper::SvgAppDictionaryHelper(this_59,*(UIFramework **)(this + 4));
+    *(SvgAppDictionaryHelper **)(this + 0x2cc) = this_59;
+    uVar3 = NovoSystemInitialiser::avsClient(*(NovoSystemInitialiser **)(this + 0x44));
+    *(undefined4 *)(this + 0x14ac) = uVar3;
+    uVar3 = NovoSystemInitialiser::iotManager(*(NovoSystemInitialiser **)(this + 0x44));
+    *(undefined4 *)(this + 0x14e4) = uVar3;
+    this_60 = operator_new(0x14);
+    SVGAppRemoteDiagnosticListener::SVGAppRemoteDiagnosticListener
+              (this_60,this,*(UIFramework **)(this + 4),*(SVGContext **)(this + 0xf88),
+               *(UserPreferences **)(this + 0x200));
+    *(SVGAppRemoteDiagnosticListener **)(this + 0x106c) = this_60;
+    iVar9 = NovoConnectivityConfiguration::getRemoteDiagnosticAvailability();
+    if (iVar9 != 0) {
+      this_61 = (NovoRemoteDiagnosticClient *)
+                NovoRemoteDiagnosticClient::getNovoRemoteDiagnosticClient();
+      *(NovoRemoteDiagnosticClient **)(this + 0x1070) = this_61;
+      if (this_61 != (NovoRemoteDiagnosticClient *)0x0) {
+        pNVar14 = *(NovoSystemInitialiser **)(this + 0x44);
+        pEVar2 = (EASIControlInterface *)
+                 UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+        NovoRemoteDiagnosticClient::initialise
+                  (this_61,pNVar14,pEVar2,*(UserPreferences **)(this + 0x200));
+        NovoRemoteDiagnosticClient::registerListener
+                  (*(NovoRemoteDiagnosticClient **)(this + 0x1070),
+                   *(AnyNovoRemoteDiagnosticListener **)(this + 0x106c));
+        this_62 = operator_new(0x28);
+        RemoteDiagnosticCommandHandler::RemoteDiagnosticCommandHandler
+                  (this_62,this,*(UIFramework **)(this + 4));
+        *(RemoteDiagnosticCommandHandler **)(this + 0x1074) = this_62;
+        RemoteDiagnosticCommandHandler::initialise(this_62);
+      }
+    }
+    this_63 = operator_new(8);
+    SvgAppAIManagerEventsListener::SvgAppAIManagerEventsListener
+              (this_63,*(UIFramework **)(this + 4));
+    *(SvgAppAIManagerEventsListener **)(this + 0x1e0) = this_63;
+    if ((this[0x1135] != (DemoApp)0x0) &&
+       (iVar9 = NovoSystemInitialiser::aiManager(*(NovoSystemInitialiser **)(this + 0x44)),
+       iVar9 != 0)) {
+      this_65 = (NovoAIManager *)
+                NovoSystemInitialiser::aiManager(*(NovoSystemInitialiser **)(this + 0x44));
+      NovoAIManager::registerAIManagerEvents
+                (this_65,*(AnyNovoAIManagerEventsListener **)(this + 0x1e0));
+    }
+    NovoStandbyControlInterface::registerSleepTimerUpdatedListener
+              (*(NovoStandbyControlInterface **)(this + 0x2dc),
+               *(AnyNovoSleepTimerEventListener **)(this + 0x198));
+    iVar9 = NovoSystemInitialiser::sambaACRController(*(NovoSystemInitialiser **)(this + 0x44));
+    *(int *)(this + 0x3dc) = iVar9;
+    if (iVar9 != 0) {
+      this_64 = operator_new(8);
+      SvgAppSambaDPNUpdateListener::SvgAppSambaDPNUpdateListener
+                (this_64,*(UIFramework **)(this + 4));
+      *(SvgAppSambaDPNUpdateListener **)(this + 0x3e0) = this_64;
+      NovoSambaACRController::registerForSambaDPNUpdates
+                (*(NovoSambaACRController **)(this + 0x3dc),
+                 (AnyNovoSambaDPNUpdateMessageListener *)this_64);
+    }
+    uVar3 = NovoSystemInitialiser::tvModelInfo(*(NovoSystemInitialiser **)(this + 0x44));
+    *(undefined4 *)(this + 0x3ec) = uVar3;
+    uVar3 = 1;
+  }
+  if (local_24 != *DAT_00cd67d0) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar3);
+  }
+  return;
+}
+
+ (GhidraScript)

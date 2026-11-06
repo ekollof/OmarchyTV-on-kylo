@@ -259,10 +259,24 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       runs and mixed Hebrew/Latin BiDi remain. Capture focused vendor cards and
       multilingual oracle frames before claiming full visual parity.
 
-- [ ] Live setting values and `setting:`/`set:`: the live cards use the p0/03
-      values (NATURAL/MAXIMUM_STR/ZOOM_MODE_16_9), not live settings
-      acquisition. Route `setting:`/`set:` to the value selector. Do not apply
-      the row to the category rail or an invented portal card row.
+- [x] `setting:`/`set:` dispatch and card value cycling: `DemoApp+0x318` is
+      `NovoPictureSettings*` (vptr `_ZTV19NovoPictureSettings`+8); the vtable
+      slots resolve to picture-mode/apply/zoom/index/energy methods. ui_vendor
+      cycles ENERGY_SAVING/PICTURE_ZOOM from the JSON value arrays (cyclic,
+      per SVGSelectionBox), wires `setting:`/`set:`, saves `KEY=index` in
+      `ui.state_file` and adds control `ui-action`.
+      `tools/qemu-sub-value-check.sh`: 16:9 width54→Ondertitels155 after
+      `set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE`, same after restart;
+      `setting:ENERGY_SAVING` focus bottom450; Down,Down,Right gives AUTO176
+      and ENERGY_SAVING4. SUBLAUNCHER-VALUES.
+
+- [ ] Vendor settings backend and MODE: the persisted state is a replacement
+      shadow, not `NovoPictureSettings`/`UserPreferences`/PQ or the settingsDB
+      serialization (`m_picture_setting_configuration`, `m_last_zoom_mode`).
+      MODE's `picture_modes` list is a runtime-filled 5-entry
+      PictureModeNameProvider table and is not decoded; `set:MODE=...` returns
+      ENOTSUP and the card keeps the p0/03 NATURAL. Do not apply the row to the
+      category rail or an invented portal card row.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
       the vendor 30 ms APNG/10 ms controller cadence. Tighten the compositor

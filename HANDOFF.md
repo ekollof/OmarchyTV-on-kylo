@@ -126,8 +126,22 @@ reorder targets the vendor RTL engine); QEMU heb shows מצב/חסכון בחש�
 +10 ms timer for300 ms; QEMU `key 20` through the real IR parser card0
 bottom405→450. `mod_i18n` has the ABI3 async quiesce gate; `ir`/`i18n` are the
 async modules. Arabic/Persian run order is now handled by
-`common/rtl_order.c` (QEMU ara/per verified); bracket mirroring, live values,
-other async modules and scanout remain. LIVE-SUBLAUNCHER-I18N.
+`common/rtl_order.c` (QEMU ara/per verified); bracket mirroring, MODE
+picture_modes, the real PQ/UserPreferences write, other async modules and
+scanout remain. LIVE-SUBLAUNCHER-I18N.
+
+Sub-launcher values, 2026-11-06: `DemoApp+0x318` is `NovoPictureSettings*`;
+vptr=`_ZTV19NovoPictureSettings`+8 (slots9c/a4/b0/b4/d0/e8/194/198/19c =
+picture-mode/apply/zoom/index/energy). UserPreferences holds the per-source
+0x240 picture config and energy array; settingsDB blob serialization is not
+executed. SVGSelectionBox is cyclic, so Left/Right cycle the focused card and
+Up/Down move focus. ui_vendor cycles ENERGY_SAVING/PICTURE_ZOOM from the JSON
+arrays, wires `setting:`/`set:`, persists `KEY=index` in `ui.state_file`
+(default /tmp, boot-scoped) and adds control `ui-action`. QEMU: 16:9 width54→
+Ondertitels155 after set, same after restart; setting: focus bottom450;
+Down,Down,Right gives AUTO176 and ENERGY_SAVING4. This is a replacement
+shadow, not the vendor PQ write; MODE picture_modes remain.
+SUBLAUNCHER-VALUES.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over
 Markt/Netflix (700x280, ~37ms effective) captured one redraw at t=53ms

@@ -449,9 +449,11 @@ typedef struct {
     int (*hit)(int x, int y, int *band, int *index);
     int (*activate_at)(int x, int y);
     int (*screen)(void);
-    /* Apply a JSON menu action. The current vendor skin implements
-     * open:<screen>; other verbs return ENOTSUP until their dispatcher is
-     * wired. The action string is data, not a remote protocol. */
+    /* Apply a JSON menu action. The vendor skin implements open:<screen>,
+     * setting:<key> (focus the sub-launcher card) and set:<key>=<value>.
+     * Unknown verbs return ENOTSUP; dynamic value lists return ENOTSUP until
+     * their firmware source is decoded. The action string is data, not a
+     * remote protocol. */
     int (*menu_action)(const char *action);
 } oa_portal_iface;
 

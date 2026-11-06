@@ -1,0 +1,646 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (626 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1609 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '_ZN7DemoAppC1Ev'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN7DemoAppC1Ev -> DemoApp::DemoApp @ 00ce0f40 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined DemoApp(void) (GhidraScript)
+INFO  DumpFirmware.java>
+/* DemoApp::DemoApp() */
+
+void __thiscall DemoApp::DemoApp(DemoApp *this)
+
+{
+  int iVar1;
+  char *pcVar2;
+  int *piVar3;
+  bool bVar4;
+  undefined4 uVar5;
+  int iVar6;
+  DemoApp *__s;
+  UIFramework *pUVar7;
+
+  iVar6 = *DAT_00ce1318;
+  UIApp::UIApp((UIApp *)this);
+  iVar1 = DAT_00ce131c;
+  this[0x56] = (DemoApp)0x0;
+  *(int *)this = iVar1;
+  *(int *)(this + 0x24) = iVar1 + 0x78;
+  *(int *)(this + 0x2c) = iVar1 + 0x94;
+  *(undefined4 *)(this + 0x58) = 0;
+  *(undefined4 *)(this + 0x5c) = 0;
+  this[0x60] = (DemoApp)0x0;
+  this[0x61] = (DemoApp)0x0;
+  *(undefined4 *)(this + 100) = 0;
+  this[0x6c] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x70) = 0;
+  *(undefined4 *)(this + 0x74) = 0;
+  *(undefined4 *)(this + 0x78) = 0;
+  this[0x7c] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x80) = 0x12;
+  *(undefined4 *)(this + 0x88) = 0;
+  *(undefined4 *)(this + 0x90) = 0;
+  *(undefined4 *)(this + 0x94) = 0;
+  *(undefined4 *)(this + 0x98) = 0;
+  *(undefined4 *)(this + 0x9c) = 0;
+  *(undefined4 *)(this + 0xa0) = 0;
+  *(undefined4 *)(this + 0xa4) = 0;
+  *(undefined4 *)(this + 0xa8) = 0;
+  *(undefined4 *)(this + 0xac) = 0;
+  *(undefined4 *)(this + 0xb0) = 0;
+  *(undefined4 *)(this + 0xb4) = 0;
+  *(undefined4 *)(this + 0xb8) = 0;
+  *(undefined4 *)(this + 0xc0) = 0;
+  *(undefined4 *)(this + 0xc4) = 0;
+  *(undefined4 *)(this + 200) = 0;
+  *(undefined4 *)(this + 0xcc) = 0;
+  *(undefined4 *)(this + 0xd0) = 0;
+  this[0xd8] = (DemoApp)0x0;
+  this[0xd9] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0xdc) = 0;
+  *(undefined4 *)(this + 0xe0) = 0;
+  *(undefined4 *)(this + 0xe4) = 0;
+  *(undefined4 *)(this + 0xe8) = 0;
+  this[0xec] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0xf0) = 0;
+  this[0xf8] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0xfc) = 0;
+  *(undefined4 *)(this + 0x100) = 0;
+  *(undefined4 *)(this + 0x104) = 0;
+  this[0x108] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x10c) = 9;
+  this[0x110] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x114) = 0;
+  this[0x118] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x11c) = 0x18;
+  this[0x124] = (DemoApp)0x0;
+  this[0x125] = (DemoApp)0x0;
+  this[0x126] = (DemoApp)0x0;
+  DemoResourceTable::DemoResourceTable((DemoResourceTable *)(this + 0x128));
+  LanguageCode::LanguageCode((LanguageCode *)(this + 0x130),DAT_00ce1320);
+  *(undefined4 *)(this + 0x134) = 0xffffffff;
+  this[0x138] = (DemoApp)0x0;
+  this[0x139] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x13c) = 0xffffffff;
+  *(undefined4 *)(this + 0x140) = 0;
+  this[0x144] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x148) = 0;
+  *(undefined4 *)(this + 0x14c) = 0;
+  *(undefined4 *)(this + 0x150) = 0;
+  *(undefined4 *)(this + 0x154) = 0;
+  *(undefined4 *)(this + 0x158) = 0;
+  *(undefined4 *)(this + 0x15c) = 0;
+  *(undefined4 *)(this + 0x160) = 0;
+  *(undefined4 *)(this + 0x164) = 0;
+  *(undefined4 *)(this + 0x168) = 0;
+  *(undefined4 *)(this + 0x16c) = 0;
+  *(undefined4 *)(this + 0x170) = 0;
+  *(undefined4 *)(this + 0x174) = 0;
+  *(undefined4 *)(this + 0x178) = 0;
+  *(undefined4 *)(this + 0x184) = 0;
+  *(undefined4 *)(this + 400) = 0;
+  *(undefined4 *)(this + 0x19c) = 0;
+  *(undefined4 *)(this + 0x1a0) = 0;
+  *(undefined4 *)(this + 0x1a4) = 0;
+  *(undefined4 *)(this + 0x1a8) = 0;
+  *(undefined4 *)(this + 0x1b0) = 0;
+  *(undefined4 *)(this + 0x1b4) = 0;
+  *(undefined4 *)(this + 0x1b8) = 0;
+  *(undefined4 *)(this + 0x1bc) = 0;
+  *(undefined4 *)(this + 0x1c0) = 0;
+  *(undefined4 *)(this + 0x1c4) = 0;
+  *(undefined4 *)(this + 0x1c8) = 0;
+  *(undefined4 *)(this + 0x1cc) = 0;
+  *(undefined4 *)(this + 0x1d0) = 0;
+  *(undefined4 *)(this + 0x1d4) = 0;
+  *(undefined4 *)(this + 0x1d8) = 0;
+  *(undefined4 *)(this + 0x1dc) = 0;
+  *(undefined4 *)(this + 0x1e0) = 0;
+  *(undefined4 *)(this + 0x1e4) = 0;
+  *(undefined4 *)(this + 0x1e8) = 0;
+  *(undefined4 *)(this + 0x1f0) = 0;
+  *(undefined4 *)(this + 500) = 0;
+  *(undefined4 *)(this + 0x1fc) = 0;
+  *(undefined4 *)(this + 0x20c) = 0;
+  *(undefined4 *)(this + 0x210) = 0;
+  *(undefined4 *)(this + 0x21c) = 0;
+  *(undefined4 *)(this + 0x220) = 0;
+  *(undefined4 *)(this + 0x224) = 0;
+  *(undefined4 *)(this + 0x228) = 0;
+  *(undefined4 *)(this + 0x22c) = 0;
+  *(undefined4 *)(this + 0x230) = 0;
+  *(undefined4 *)(this + 0x234) = 0;
+  *(undefined4 *)(this + 0x238) = 0;
+  *(undefined4 *)(this + 0x23c) = 0;
+  *(undefined4 *)(this + 0x240) = 0;
+  *(undefined4 *)(this + 0x244) = 0;
+  *(undefined4 *)(this + 0x250) = 0;
+  *(undefined4 *)(this + 0x260) = 0;
+  *(undefined4 *)(this + 0x264) = 0;
+  *(undefined4 *)(this + 0x268) = 0;
+  *(undefined4 *)(this + 0x274) = 0;
+  *(undefined4 *)(this + 0x278) = 0;
+  *(undefined4 *)(this + 0x27c) = 0;
+  *(undefined4 *)(this + 0x284) = 0;
+  *(undefined4 *)(this + 0x288) = 0;
+  *(undefined4 *)(this + 0x28c) = 0;
+  *(undefined4 *)(this + 0x29c) = 0;
+  *(undefined4 *)(this + 0x2a4) = 0;
+  *(undefined4 *)(this + 0x2a8) = 0;
+  *(undefined4 *)(this + 0x2ac) = 0;
+  *(undefined4 *)(this + 0x2b0) = 0;
+  *(undefined4 *)(this + 0x2b4) = 0;
+  *(undefined4 *)(this + 0x2b8) = 0;
+  *(undefined4 *)(this + 0x2c0) = 0;
+  *(undefined4 *)(this + 0x2c4) = 0;
+  *(undefined4 *)(this + 0x2c8) = 0;
+  *(undefined4 *)(this + 0x2cc) = 0;
+  *(undefined4 *)(this + 0x2d4) = 0;
+  *(undefined4 *)(this + 0x2e0) = 0;
+  *(undefined4 *)(this + 0x2e4) = 0;
+  *(undefined4 *)(this + 0x2e8) = 0;
+  *(undefined4 *)(this + 0x2ec) = 0;
+  *(undefined4 *)(this + 0x2f0) = 0;
+  *(undefined4 *)(this + 0x2f4) = 0;
+  *(undefined4 *)(this + 0x2f8) = 0;
+  *(undefined4 *)(this + 0x2fc) = 0;
+  *(undefined4 *)(this + 0x300) = 0;
+  *(undefined4 *)(this + 0x304) = 0;
+  *(undefined4 *)(this + 0x308) = 0;
+  *(undefined4 *)(this + 0x318) = 0;
+  *(undefined4 *)(this + 0x31c) = 0;
+  *(undefined4 *)(this + 800) = 0;
+  *(undefined4 *)(this + 0x334) = 0;
+  *(undefined4 *)(this + 0x398) = 0;
+  *(undefined4 *)(this + 0x39c) = 0;
+  *(undefined4 *)(this + 0x3a0) = 0;
+  *(undefined4 *)(this + 0x3ac) = 0;
+  *(undefined4 *)(this + 0x3b0) = 0;
+  *(undefined4 *)(this + 0x3b4) = 0;
+  *(undefined4 *)(this + 0x3b8) = 0;
+  *(undefined4 *)(this + 0x3c8) = 0;
+  *(undefined4 *)(this + 0x3cc) = 0;
+  *(undefined4 *)(this + 0x3d0) = 0;
+  *(undefined4 *)(this + 0x3d4) = 0;
+  *(undefined4 *)(this + 0x3d8) = 0;
+  *(undefined4 *)(this + 0x3dc) = 0;
+  *(undefined4 *)(this + 0x3f0) = 0xa8;
+  this[0x3f4] = (DemoApp)0x0;
+  this[0x3f5] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x3f8) = 0;
+  *(undefined4 *)(this + 0x3fc) = 0;
+  *(undefined4 *)(this + 0x400) = 0;
+  this[0x404] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x408) = 0;
+  *(undefined4 *)(this + 0x40c) = 0xfffffffe;
+  EASIReminder::EASIReminder((EASIReminder *)(this + 0x410));
+  uVar5 = DAT_00ce1324;
+  this[0x584] = (DemoApp)0x0;
+  this[0x586] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x588) = 0;
+  *(undefined4 *)(this + 0x58c) = uVar5;
+  *(undefined4 *)(this + 0x590) = 0;
+  *(undefined4 *)(this + 0x594) = 0;
+  this[0x598] = (DemoApp)0x0;
+  this[0x599] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x59c) = 0;
+  *(undefined4 *)(this + 0x5a0) = 0;
+  *(undefined4 *)(this + 0x5a8) = 0;
+  *(undefined4 *)(this + 0x5ac) = 0;
+  *(undefined4 *)(this + 0x5b0) = 0;
+  *(undefined4 *)(this + 0x5b4) = 0;
+  this[0x5bc] = (DemoApp)0x0;
+  this[0x5cc] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x5d0) = 0;
+  this[0x5d4] = (DemoApp)0x0;
+  this[0x5d5] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x5d8) = 0;
+  *(undefined4 *)(this + 0x5dc) = 0;
+  *(undefined4 *)(this + 0x5e4) = 0;
+  this[0x5e8] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x5ec) = 0;
+  *(undefined4 *)(this + 0x5f0) = 0;
+  *(undefined4 *)(this + 0x5f4) = 0;
+  *(undefined4 *)(this + 0x5f8) = 0;
+  *(undefined4 *)(this + 0x5fc) = 0;
+  *(undefined4 *)(this + 0x600) = 0;
+  this[0x604] = (DemoApp)0x0;
+  BasicTextEditHelper::BasicTextEditHelper((BasicTextEditHelper *)(this + 0x608));
+  AnimationHelper::AnimationHelper((AnimationHelper *)(this + 0x614));
+  pUVar7 = (UIFramework *)(this + 0x30);
+  UIFrameworkFontFinder::UIFrameworkFontFinder((UIFrameworkFontFinder *)(this + 0x61c),pUVar7);
+  bVar4 = (bool)NovoPatentProfileConfiguration::isTextTransparencyPatentEnabled();
+  uVar5 = SVGContextFactory::getSVGContext
+                    (pUVar7,(UIResourceTable *)(this + 0x128),(FontFinder *)(this + 0x61c),
+                     (TextEditHelper *)(this + 0x608),(AnimationHelper *)(this + 0x614),bVar4);
+  *(undefined4 *)(this + 0xf88) = uVar5;
+  *(undefined4 *)(this + 0xf90) = 0;
+  *(undefined4 *)(this + 0xf94) = 0;
+  this[0xf98] = (DemoApp)0x0;
+  this[0xf99] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0xfac) = 10;
+  *(undefined4 *)(this + 0xfb0) = 0;
+  this[0xfb4] = (DemoApp)0x0;
+  this[0xfb5] = (DemoApp)0x0;
+  this[0xfb6] = (DemoApp)0x0;
+  this[0xfb7] = (DemoApp)0x0;
+  this[0xfb8] = (DemoApp)0x0;
+  this[0xfb9] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0xfbc) = 0;
+  this[0xfc0] = (DemoApp)0x0;
+  this[0xfc1] = (DemoApp)0x0;
+  this[0xfc2] = (DemoApp)0x0;
+  this[0xfc3] = (DemoApp)0x0;
+  this[0xfc4] = (DemoApp)0x1;
+  this[0xfc5] = (DemoApp)0x1;
+  *(undefined4 *)(this + 0xfc8) = 0xffffffff;
+  *(undefined4 *)(this + 0xfcc) = 0xffffffff;
+  *(undefined4 *)(this + 0xfd0) = 0;
+  *(undefined4 *)(this + 0xfd4) = 0;
+  *(undefined4 *)(this + 0xfd8) = 0;
+  *(undefined4 *)(this + 0xfdc) = 0;
+  *(undefined4 *)(this + 0xfe0) = 0;
+  *(undefined4 *)(this + 0xfe4) = 0;
+  *(undefined4 *)(this + 0xfe8) = 0;
+  *(undefined4 *)(this + 0xfec) = 0;
+  this[0xff0] = (DemoApp)0x1;
+  this[0xff1] = (DemoApp)0x0;
+  DateTime::DateTime((DateTime *)(this + 0xff8));
+  this[0xffc] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1000) = 0;
+  *(undefined4 *)(this + 0x1004) = 0;
+  *(undefined4 *)(this + 0x1008) = 0;
+  *(undefined4 *)(this + 0x100c) = 0;
+  this[0x1010] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1014) = 0xffffffff;
+  *(undefined4 *)(this + 0x1018) = 0;
+  *(undefined4 *)(this + 0x101c) = 0;
+  *(undefined4 *)(this + 0x1020) = 0;
+  this[0x1025] = (DemoApp)0x0;
+  this[0x1026] = (DemoApp)0x0;
+  this[0x1027] = (DemoApp)0x0;
+  this[0x1028] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x102c) = 0;
+  this[0x1030] = (DemoApp)0x0;
+  EASIRect::EASIRect((EASIRect *)(this + 0x1034),0,0,0x2d0,0x240);
+  EASIRect::EASIRect((EASIRect *)(this + 0x1044),0,0,0x2d0,0x240);
+  this[0x1054] = (DemoApp)0x0;
+  this[0x1055] = (DemoApp)0x0;
+  this[0x1056] = (DemoApp)0x0;
+  this[0x1057] = (DemoApp)0x0;
+  this[0x1058] = (DemoApp)0x1;
+  this[0x1059] = (DemoApp)0x0;
+  this[0x105a] = (DemoApp)0x0;
+  this[0x105b] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x105c) = 0;
+  *(undefined4 *)(this + 0x1060) = 0;
+  this[0x1064] = (DemoApp)0x0;
+  this[0x1065] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1068) = 0;
+  *(undefined4 *)(this + 0x106c) = 0;
+  *(undefined4 *)(this + 0x1070) = 0;
+  *(undefined4 *)(this + 0x1074) = 0;
+  *(undefined4 *)(this + 0x1078) = 0;
+  *(undefined4 *)(this + 0x107c) = 0;
+  *(undefined4 *)(this + 0x1080) = 0;
+  this[0x1084] = (DemoApp)0x0;
+  this[0x1085] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1088) = 0;
+  *(undefined4 *)(this + 0x108c) = 0;
+  *(undefined4 *)(this + 0x1090) = 0;
+  *(undefined4 *)(this + 0x1094) = 0;
+  *(undefined4 *)(this + 0x1098) = 0;
+  *(undefined4 *)(this + 0x109c) = 0;
+  *(undefined4 *)(this + 0x10a0) = 0;
+  this[0x10a4] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x10a8) = 5000;
+  *(undefined4 *)(this + 0x10ac) = 0xffffffff;
+  UString::UString((UString *)(this + 0x10e4));
+  this[0x10ec] = (DemoApp)0x0;
+  this[0x10ed] = (DemoApp)0x0;
+  pcVar2 = DAT_00ce18e8;
+  *(undefined4 *)(this + 0x10f0) = 1;
+  UString::UString((UString *)(this + 0x10f4),pcVar2);
+  *(undefined4 *)(this + 0x10fc) = 0xffffffff;
+  this[0x1100] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1104) = 0xffffffff;
+  *(undefined4 *)(this + 0x1108) = 8;
+  UString::UString((UString *)(this + 0x110c),DAT_00ce18e8);
+  *(undefined4 *)(this + 0x1114) = 0;
+  this[0x1118] = (DemoApp)0x0;
+  UString::UString((UString *)(this + 0x111c),DAT_00ce18e8);
+  UString::UString((UString *)(this + 0x1124),DAT_00ce18e8);
+  UString::UString((UString *)(this + 0x112c),DAT_00ce18e8);
+  this[0x1134] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1138) = 0;
+  this[0x113c] = (DemoApp)0x1;
+  this[0x113d] = (DemoApp)0x0;
+  this[0x113e] = (DemoApp)0x0;
+  this[0x113f] = (DemoApp)0x0;
+  CASessionHandler::CASessionHandler((CASessionHandler *)(this + 0x1140),pUVar7);
+  *(undefined4 *)(this + 0x1164) = 0;
+  *(undefined4 *)(this + 0x1168) = 0;
+  *(undefined4 *)(this + 0x116c) = 0;
+  this[0x1170] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1174) = 0;
+  *(undefined4 *)(this + 0x1178) = 0;
+  this[0x117c] = (DemoApp)0x0;
+  this[0x117d] = (DemoApp)0x0;
+  this[0x117e] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1180) = 0;
+  *(undefined4 *)(this + 0x1184) = 0;
+  this[0x1188] = (DemoApp)0x0;
+  this[0x1189] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x118c) = 0;
+  *(undefined4 *)(this + 0x1190) = 0;
+  this[0x1198] = (DemoApp)0x0;
+  this[0x1199] = (DemoApp)0x0;
+  this[0x119a] = (DemoApp)0x0;
+  this[0x119b] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x119c) = 0;
+  *(undefined4 *)(this + 0x11a0) = 0;
+  RFChannelDetails::RFChannelDetails((RFChannelDetails *)(this + 0x11a8));
+  *(undefined4 *)(this + 0x11f8) = 0;
+  *(undefined4 *)(this + 0x11fc) = 0;
+  *(undefined4 *)(this + 0x1204) = 0;
+  *(undefined4 *)(this + 0x1208) = 0;
+  *(undefined4 *)(this + 0x120c) = 0;
+  this[0x1218] = (DemoApp)0x0;
+  this[0x1219] = (DemoApp)0x0;
+  this[0x121a] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x121c) = 0;
+  *(undefined4 *)(this + 0x1220) = 0;
+  *(undefined4 *)(this + 0x1224) = 0;
+  *(undefined4 *)(this + 0x1228) = 0;
+  this[0x122c] = (DemoApp)0x1;
+  *(undefined4 *)(this + 0x1230) = 0;
+  this[0x1234] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1238) = 0;
+  *(undefined4 *)(this + 0x123c) = 0;
+  *(undefined4 *)(this + 0x1240) = 0;
+  *(undefined4 *)(this + 0x1244) = 0;
+  *(undefined4 *)(this + 0x1248) = 0;
+  this[0x124c] = (DemoApp)0x0;
+  this[0x124d] = (DemoApp)0x0;
+  this[0x124e] = (DemoApp)0x0;
+  this[0x124f] = (DemoApp)0x0;
+  this[0x1250] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1254) = 0x2f2;
+  this[0x1258] = (DemoApp)0x0;
+  this[0x1259] = (DemoApp)0x0;
+  this[0x125a] = (DemoApp)0x0;
+  this[0x125b] = (DemoApp)0x0;
+  this[0x125c] = (DemoApp)0x0;
+  this[0x125d] = (DemoApp)0x0;
+  this[0x125e] = (DemoApp)0x0;
+  this[0x125f] = (DemoApp)0x0;
+  this[0x1260] = (DemoApp)0x0;
+  this[0x1261] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1264) = 0;
+  *(undefined4 *)(this + 0x1268) = 0;
+  *(undefined4 *)(this + 0x126c) = 0;
+  *(undefined4 *)(this + 0x1270) = 0;
+  this[0x1274] = (DemoApp)0x0;
+  this[0x1275] = (DemoApp)0x0;
+  this[0x1276] = (DemoApp)0x1;
+  this[0x1277] = (DemoApp)0x0;
+  this[0x1278] = (DemoApp)0x0;
+  this[0x1279] = (DemoApp)0x0;
+  this[0x127a] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x127c) = 0;
+  this[0x1280] = (DemoApp)0x0;
+  this[0x1281] = (DemoApp)0x0;
+  UString::UString((UString *)(this + 0x1288),DAT_00ce18e8);
+  this[0x1290] = (DemoApp)0x0;
+  this[0x1291] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1294) = 0xffffffff;
+  *(undefined4 *)(this + 0x1298) = 0;
+  *(undefined4 *)(this + 0x12a0) = 0;
+  this[0x12a5] = (DemoApp)0x0;
+  this[0x12a6] = (DemoApp)0x0;
+  this[0x12a7] = (DemoApp)0x0;
+  this[0x12a8] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x12ac) = 0;
+  *(undefined4 *)(this + 0x12b0) = 0;
+  this[0x12b4] = (DemoApp)0x1;
+  *(undefined4 *)(this + 0x12b8) = 0;
+  this[0x12bc] = (DemoApp)0x0;
+  this[0x12bd] = (DemoApp)0x0;
+  this[0x12c8] = (DemoApp)0x0;
+  this[0x12c9] = (DemoApp)0x0;
+  this[0x12ca] = (DemoApp)0x0;
+  this[0x12cb] = (DemoApp)0x0;
+  this[0x12cc] = (DemoApp)0x0;
+  this[0x12cd] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x12d0) = 0;
+  this[0x12d4] = (DemoApp)0x0;
+  this[0x12d5] = (DemoApp)0x0;
+  this[0x12d6] = (DemoApp)0x0;
+  this[0x12d7] = (DemoApp)0x0;
+  this[0x12d8] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x12dc) = 0;
+  *(undefined4 *)(this + 0x12e0) = 0;
+  this[0x12e4] = (DemoApp)0x0;
+  this[0x12e5] = (DemoApp)0x0;
+  this[0x12e6] = (DemoApp)0x0;
+  this[0x12e7] = (DemoApp)0x0;
+  this[0x12e8] = (DemoApp)0x0;
+  this[0x12e9] = (DemoApp)0x1;
+  this[0x12ea] = (DemoApp)0x1;
+  this[0x12f0] = (DemoApp)0x0;
+  this[0x12f1] = (DemoApp)0x0;
+  this[0x12f2] = (DemoApp)0x1;
+  this[0x12f4] = (DemoApp)0x0;
+  pcVar2 = DAT_00ce1cbc;
+  this[0x12f5] = (DemoApp)0x0;
+  UString::UString((UString *)(this + 0x12f8),pcVar2);
+  *(undefined4 *)(this + 0x1308) = 0;
+  this[0x130c] = (DemoApp)0x0;
+  this[0x130d] = (DemoApp)0x0;
+  this[0x130e] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1310) = 0;
+  this[0x1314] = (DemoApp)0x0;
+  this[0x1316] = (DemoApp)0x0;
+  this[0x1317] = (DemoApp)0x0;
+  this[0x1318] = (DemoApp)0x0;
+  this[0x1319] = (DemoApp)0x0;
+  DateTime::DateTime((DateTime *)(this + 0x131c),0);
+  DateTime::DateTime((DateTime *)(this + 0x1320),0);
+  *(undefined4 *)(this + 0x1324) = 0;
+  this[0x1328] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x132c) = 0;
+  *(undefined4 *)(this + 0x1330) = 0;
+  *(undefined4 *)(this + 0x1334) = 0;
+  *(undefined4 *)(this + 0x1338) = 0;
+  *(undefined4 *)(this + 0x133c) = 1;
+  *(undefined4 *)(this + 0x1340) = 0xffffffff;
+  this[0x1344] = (DemoApp)0x1;
+  *(undefined4 *)(this + 0x1348) = 0;
+  *(undefined4 *)(this + 0x134c) = 0xffffffff;
+  *(undefined4 *)(this + 0x1350) = 0xffffffff;
+  this[0x1354] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x135c) = 0;
+  *(undefined4 *)(this + 0x1360) = 0;
+  this[0x1364] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1368) = 0;
+  this[0x136c] = (DemoApp)0x0;
+  this[0x136d] = (DemoApp)0x0;
+  this[0x136e] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1370) = 0xffffffff;
+  *(undefined4 *)(this + 0x1374) = 0;
+  UString::UString((UString *)(this + 0x1378));
+  UString::UString((UString *)(this + 0x1380));
+  UString::UString((UString *)(this + 5000));
+  UString::UString((UString *)(this + 0x1390));
+  this[0x1398] = (DemoApp)0x0;
+  this[0x1399] = (DemoApp)0x0;
+  this[0x139a] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x139c) = 0;
+  *(undefined4 *)(this + 0x13a0) = 0;
+  *(undefined4 *)(this + 0x13a4) = 0;
+  *(undefined4 *)(this + 0x13a8) = 0xffffffff;
+  *(undefined4 *)(this + 0x13ac) = 0;
+  UString::UString((UString *)(this + 0x13b0),DAT_00ce1cbc);
+  this[0x13b8] = (DemoApp)0x0;
+  this[0x13b9] = (DemoApp)0x0;
+  BoxSetListContext::BoxSetListContext((BoxSetListContext *)(this + 0x13bc));
+  BoxSetContentContext::BoxSetContentContext((BoxSetContentContext *)(this + 0x13f4));
+  this[0x140c] = (DemoApp)0x0;
+  this[0x140d] = (DemoApp)0x0;
+  this[0x140e] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1410) = 0;
+  *(undefined4 *)(this + 0x1414) = 0xffffffff;
+  this[0x1418] = (DemoApp)0x0;
+  pcVar2 = DAT_00ce1cbc;
+  this[0x1419] = (DemoApp)0x0;
+  UString::UString((UString *)(this + 0x141c),pcVar2);
+  *(undefined4 *)(this + 0x1424) = 0;
+  *(undefined4 *)(this + 0x1428) = 0;
+  *(undefined4 *)(this + 0x142c) = 2;
+  *(undefined4 *)(this + 0x1430) = 0;
+  *(undefined4 *)(this + 0x1434) = 0;
+  *(undefined4 *)(this + 0x1438) = 0;
+  *(undefined4 *)(this + 0x143c) = 0;
+  this[0x1440] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1444) = 0;
+  this[0x1449] = (DemoApp)0x0;
+  this[0x144a] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x144c) = 0;
+  this[0x1454] = (DemoApp)0x1;
+  this[0x1455] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1458) = 5;
+  this[0x145c] = (DemoApp)0x0;
+  this[0x145d] = (DemoApp)0x0;
+  this[0x145f] = (DemoApp)0x1;
+  this[0x1460] = (DemoApp)0x1;
+  this[0x1461] = (DemoApp)0x1;
+  this[0x1462] = (DemoApp)0x0;
+  this[0x1463] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1464) = 0;
+  *(undefined4 *)(this + 0x1468) = 0;
+  *(undefined4 *)(this + 0x146c) = 0;
+  *(undefined4 *)(this + 0x1470) = 0;
+  *(undefined4 *)(this + 0x1474) = 0;
+  this[0x1478] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x147c) = 0;
+  *(undefined4 *)(this + 0x1480) = 6;
+  *(undefined4 *)(this + 0x1484) = 0;
+  *(undefined4 *)(this + 0x1488) = 0;
+  *(undefined4 *)(this + 0x148c) = 0;
+  this[0x1490] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x1494) = 0;
+  *(undefined4 *)(this + 0x1498) = 0;
+  *(undefined4 *)(this + 0x149c) = 0;
+  *(undefined4 *)(this + 0x14a0) = 0;
+  this[0x14a4] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x14a8) = 0;
+  *(undefined4 *)(this + 0x14ac) = 0;
+  *(undefined4 *)(this + 0x14b0) = 0;
+  *(undefined4 *)(this + 0x14b8) = 5;
+  this[0x14bc] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x14c0) = 0;
+  *(undefined4 *)(this + 0x14c4) = 0;
+  this[0x14c8] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x14cc) = 0;
+  UString::UString((UString *)(this + 0x14d0),DAT_00ce1cbc);
+  this[0x14d8] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x14dc) = 3;
+  *(undefined4 *)(this + 0x14e0) = 0;
+  *(undefined4 *)(this + 0x14e4) = 0;
+  *(undefined4 *)(this + 0x14e8) = 0;
+  __s = this + 0x1500;
+  *(undefined4 *)(this + 0x14ec) = 0;
+  *(undefined4 *)(this + 0x14f0) = 0;
+  *(undefined4 *)(this + 0x14f4) = 0;
+  *(undefined4 *)(this + 0x14f8) = 0;
+  memset(__s,0,0x10);
+  *(undefined4 *)(this + 0x1510) = 0;
+  *(DemoApp **)(this + 0x1508) = __s;
+  *(DemoApp **)(this + 0x150c) = __s;
+  this[0x1514] = (DemoApp)0x0;
+  UString::UString((UString *)(this + 0x1518),DAT_00ce1e1c);
+  UString::UString((UString *)(this + 0x152c));
+  piVar3 = DAT_00ce1e20;
+  this[0x1214] = (DemoApp)0x0;
+  this[0x1217] = (DemoApp)0x0;
+  this[0x1215] = (DemoApp)0x0;
+  this[0x1216] = (DemoApp)0x0;
+  this[0x145e] = (DemoApp)0x0;
+  this[0x12f3] = (DemoApp)0x0;
+  *(undefined4 *)(this + 0x12ec) = 0;
+  if (iVar6 != *piVar3) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(this);
+  }
+  return;
+}
+
+ (GhidraScript)

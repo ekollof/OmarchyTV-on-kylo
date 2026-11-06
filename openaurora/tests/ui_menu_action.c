@@ -12,12 +12,15 @@
 #include "openaurora/services.h"
 
 static const char *g_menu_path;
+static const char *g_state_path;
 
 static const char *config(void *ud, const char *key, const char *def)
 {
     (void)ud;
     if (!strcmp(key, "ui_menu.file")) return g_menu_path;
+    if (!strcmp(key, "ui.state_file")) return g_state_path;
     if (!strcmp(key, "ui.paint")) return "0";
+    if (!strcmp(key, "ui.text")) return "0";
     if (!strcmp(key, "ui.ok_file")) return "";
     if (!strcmp(key, "ui.fps")) return "0";
     if (!strcmp(key, "ui.screen")) return "portal";
@@ -29,8 +32,9 @@ int main(int argc, char **argv)
     assert(argc == 2);
     char dir[] = "/tmp/oa-menu-action-XXXXXX";
     assert(mkdtemp(dir));
-    char path[256];
+    char path[256], state[256];
     snprintf(path, sizeof path, "%s/menu.json", dir);
+    snprintf(state, sizeof state, "%s/state.conf", dir);
     FILE *f = fopen(path, "w");
     assert(f);
     const char *json =
@@ -38,9 +42,26 @@ int main(int argc, char **argv)
         "\"name\":\"Test\",\"svg\":\"\",\"list\":[0,0,1,1],"
         "\"item\":{\"w\":1,\"h\":1},\"branches\":[{\"launcher_type\":99,"
         "\"name\":\"test\",\"items\":[{\"id\":0,\"key\":\"OPEN_SETTINGS\","
-        "\"action\":\"open:settings\",\"values\":[]}]}]}]}";
+        "\"action\":\"open:settings\",\"values\":[]}]}]},"
+        "{\"id\":\"sub_launcher\",\"class\":\"SubLauncherDialog\","
+        "\"name\":\"SubLauncher\",\"svg\":\"\",\"list\":[189,255,1774,222],"
+        "\"item\":{\"w\":240,\"h\":140},\"branches\":[{\"launcher_type\":2,"
+        "\"name\":\"picture\",\"items\":["
+        "{\"id\":0,\"key\":\"MODE\",\"action\":\"setting:MODE\","
+        "\"values\":\"picture_modes\"},"
+        "{\"id\":1,\"key\":\"ENERGY_SAVING\","
+        "\"action\":\"setting:ENERGY_SAVING\",\"values\":["
+        "{\"key\":\"OFF\",\"action\":\"set:ENERGY_SAVING=OFF\"},"
+        "{\"key\":\"MAXIMUM_STR\",\"action\":\"set:ENERGY_SAVING=MAXIMUM_STR\"}]},"
+        "{\"id\":2,\"key\":\"PICTURE_ZOOM\","
+        "\"action\":\"setting:PICTURE_ZOOM\",\"values\":["
+        "{\"key\":\"ZOOM_MODE_AUTO\",\"action\":\"set:PICTURE_ZOOM=ZOOM_MODE_AUTO\"},"
+        "{\"key\":\"ZOOM_MODE_16_9\",\"action\":\"set:PICTURE_ZOOM=ZOOM_MODE_16_9\"},"
+        "{\"key\":\"ZOOM_MODE_SUBTITLE\",\"action\":\"set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE\"}]}"
+        "]}]}]}";
     assert(fwrite(json, 1, strlen(json), f) == strlen(json) && !fclose(f));
     g_menu_path = path;
+    g_state_path = state;
 
     oa_host h;
     assert(!oa_host_init(&h, argv[1], NULL));
@@ -72,15 +93,31 @@ int main(int argc, char **argv)
     assert(portal->menu_action("open:apps") == 0 && portal->screen() == 5);
     assert(portal->menu_action("open:channels") == 0 && portal->screen() == 6);
     assert(portal->menu_action("open:nope") == ENOENT);
-    assert(portal->menu_action("setting:MODE") == ENOTSUP);
+    assert(portal->menu_action("setting:MODE") == 0);
+    assert(portal->screen() == 7); /* SCREEN_SUBLAUNCHER */
+    assert(portal->menu_action("setting:ENERGY_SAVING") == 0);
+    assert(portal->menu_action("set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE") == 0);
+    assert(portal->menu_action("set:PICTURE_ZOOM=nope") == ENOENT);
+    assert(portal->menu_action("set:MODE=NATURAL") == ENOTSUP);
+    assert(portal->menu_action("setting:NOPE") == ENOENT);
+    assert(portal->menu_action("set:nope") == EINVAL);
     assert(portal->menu_action(NULL) == EINVAL);
+
+    char saved[256] = { 0 };
+    f = fopen(state, "r");
+    assert(f);
+    size_t got = fread(saved, 1, sizeof saved - 1, f);
+    assert(!fclose(f));
+    saved[got] = '\0';
+    assert(strstr(saved, "PICTURE_ZOOM=2\n"));
+    assert(strstr(saved, "ENERGY_SAVING=3\n"));
 
     h.stop_requested = 1;
     assert(!oa_host_run(&h));
     close(h.selfpipe[0]);
     close(h.selfpipe[1]);
     pthread_mutex_destroy(&h.post_mu);
-    assert(!unlink(path) && !rmdir(dir));
-    puts("ok ui.menu action: JSON entry invokes the vendor screen dispatcher");
+    assert(!unlink(state) && !unlink(path) && !rmdir(dir));
+    puts("ok ui.menu action: JSON entry invokes open/setting/set and persists the value");
     return 0;
 }

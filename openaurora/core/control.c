@@ -283,6 +283,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  service-list <index>     one DVB/EASI/analog inventory row\n"
                  "  image-decode <path>      decode PNG/JPEG through image.decode\n"
                  "  ui-state                query ui.portal screen\n"
+                 "  ui-action <action>      apply a JSON menu action (open:/setting:/set:)\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -311,6 +312,26 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         int screen = p->screen();
         h->api.release(h, OA_SVC_PORTAL);
         snprintf(outbuf, outlen, "portal screen %d\n", screen);
+        return 0;
+    }
+    if (!strcmp(cmd, "ui-action")) {
+        if (force || !a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_portal_iface *p =
+            h->api.lookup(h, OA_SVC_PORTAL, 1);
+        if (!p) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int rc = p->menu_action(a1);
+        h->api.release(h, OA_SVC_PORTAL);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", rc);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "ok\n");
         return 0;
     }
     if (!strcmp(cmd, "image-decode")) {

@@ -1,0 +1,238 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (702 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1702 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '_ZNK15UserPreferences30getPictureSettingConfigurationEi' '_ZN15UserPreferences30setPictureSettingConfigurationERK27PictureSettingConfigurationi' '_ZNK15UserPreferences19getEnergySavingModeEi15NovoPictureMode16NovoDevice3DMode' '_ZN15UserPreferences19setEnergySavingModeEi15NovoPictureMode16NovoDevice3DMode20NovoEnergySavingMode' '_ZNK15UserPreferences18getDefaultZoomModeEv' '_ZN15UserPreferences18setDefaultZoomModeE19NovoVideoTVZoomMode'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZNK15UserPreferences30getPictureSettingConfigurationEi -> UserPreferences::getPictureSettingConfiguration @ 00f7e1b0 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined getPictureSettingConfiguration(int param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* UserPreferences::getPictureSettingConfiguration(int) const */
+
+void __thiscall UserPreferences::getPictureSettingConfiguration(UserPreferences *this,int param_1)
+
+{
+  if (*DAT_00f7e1e8 != *DAT_00f7e1e8) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(this + param_1 * 0x240 + 0x43f0);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN15UserPreferences30setPictureSettingConfigurationERK27PictureSettingConfigurationi -> UserPreferences::setPictureSettingConfiguration @ 00f7e1ec (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined setPictureSettingConfiguration(PictureSettingConfiguration * param_1, int param_2) (GhidraScript)
+INFO  DumpFirmware.java>
+/* UserPreferences::setPictureSettingConfiguration(PictureSettingConfiguration const&, int) */
+
+void __thiscall
+UserPreferences::setPictureSettingConfiguration
+          (UserPreferences *this,PictureSettingConfiguration *param_1,int param_2)
+
+{
+  int *piVar1;
+  int iVar2;
+  int local_28;
+  int local_24;
+
+  piVar1 = DAT_00f7e25c;
+  local_24 = *DAT_00f7e25c;
+  memcpy(this + param_2 * 0x240 + 0x43f0,param_1,0x240);
+  local_28 = -1;
+  iVar2 = getTwinSourceIndex(this,param_2,&local_28);
+  if (iVar2 != -1) {
+    memcpy(this + local_28 * 0x240 + 0x43f0,param_1,0x240);
+  }
+  if (local_24 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZNK15UserPreferences19getEnergySavingModeEi15NovoPictureMode16NovoDevice3DMode -> UserPreferences::getEnergySavingMode @ 00f7e8e4 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined getEnergySavingMode(int param_1, NovoPictureMode param_2, NovoDevice3DMode param_3) (GhidraScript)
+INFO  DumpFirmware.java>
+/* UserPreferences::getEnergySavingMode(int, NovoPictureMode, NovoDevice3DMode) const */
+
+void __thiscall
+UserPreferences::getEnergySavingMode(UserPreferences *this,int param_1,int param_3,int param_4)
+
+{
+  int *piVar1;
+  int iVar2;
+  undefined4 uVar3;
+  int iVar4;
+  int iVar5;
+
+  piVar1 = DAT_00f7e9e0;
+  iVar4 = *DAT_00f7e9e0;
+  iVar2 = ProfileConfiguration::isHDRPictureModesEnabled();
+  if ((iVar2 == 0) || (iVar2 = EASIControlInterface::getHDRType(), iVar2 != 1)) {
+    iVar2 = ProfileConfiguration::isHDRPictureModesEnabled();
+    if ((iVar2 != 0) &&
+       ((iVar2 = EASIControlInterface::getHDRType(), iVar2 == 2 ||
+        (iVar2 = EASIControlInterface::getHDRType(), iVar2 == 5)))) {
+      uVar3 = *(undefined4 *)(this + param_3 * 0x70 + param_1 * 0x240 + 0xa10);
+      goto LAB_00f7e978;
+    }
+    iVar2 = ProfileConfiguration::isHDRPictureModesEnabled();
+    if ((iVar2 != 0) && (iVar2 = EASIControlInterface::getHDRType(), iVar2 == 4)) {
+      uVar3 = *(undefined4 *)(this + param_3 * 0x70 + param_1 * 0x240 + 0xa48);
+      goto LAB_00f7e978;
+    }
+    iVar5 = 0x4434;
+    iVar2 = param_3 * 0x70 + param_4 * 0x38 + param_1 * 0x240;
+  }
+  else {
+    iVar2 = param_3 * 0x70 + param_1 * 0x240;
+    iVar5 = 0x446c;
+  }
+  uVar3 = *(undefined4 *)(this + iVar5 + iVar2);
+LAB_00f7e978:
+  if (iVar4 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar3);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN15UserPreferences19setEnergySavingModeEi15NovoPictureMode16NovoDevice3DMode20NovoEnergySavingMode -> UserPreferences::setEnergySavingMode @ 00f7e9e4 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined setEnergySavingMode(int param_1, NovoPictureMode param_2, NovoDevice3DMode param_3, NovoEnergySavingMode param_4) (GhidraScript)
+INFO  DumpFirmware.java>
+/* UserPreferences::setEnergySavingMode(int, NovoPictureMode, NovoDevice3DMode,
+   NovoEnergySavingMode) */
+
+void __thiscall
+UserPreferences::setEnergySavingMode
+          (UserPreferences *this,int param_1,int param_3,int param_4,undefined4 param_5)
+
+{
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  int iVar4;
+
+  piVar1 = DAT_00f7eae4;
+  iVar3 = *DAT_00f7eae4;
+  iVar2 = ProfileConfiguration::isHDRPictureModesEnabled();
+  if ((iVar2 == 0) || (iVar2 = EASIControlInterface::getHDRType(), iVar2 != 1)) {
+    iVar2 = ProfileConfiguration::isHDRPictureModesEnabled();
+    if ((iVar2 != 0) &&
+       ((iVar2 = EASIControlInterface::getHDRType(), iVar2 == 2 ||
+        (iVar2 = EASIControlInterface::getHDRType(), iVar2 == 5)))) {
+      *(undefined4 *)(this + param_3 * 0x70 + param_1 * 0x240 + 0xa10) = param_5;
+      goto LAB_00f7ea7c;
+    }
+    iVar2 = ProfileConfiguration::isHDRPictureModesEnabled();
+    if ((iVar2 != 0) && (iVar2 = EASIControlInterface::getHDRType(), iVar2 == 4)) {
+      *(undefined4 *)(this + param_3 * 0x70 + param_1 * 0x240 + 0xa48) = param_5;
+      goto LAB_00f7ea7c;
+    }
+    iVar4 = 0x4434;
+    iVar2 = param_3 * 0x70 + param_4 * 0x38 + param_1 * 0x240;
+  }
+  else {
+    iVar2 = param_3 * 0x70 + param_1 * 0x240;
+    iVar4 = 0x446c;
+  }
+  *(undefined4 *)(this + iVar4 + iVar2) = param_5;
+LAB_00f7ea7c:
+  if (iVar3 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZNK15UserPreferences18getDefaultZoomModeEv -> UserPreferences::getDefaultZoomMode @ 00f7bf50 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined getDefaultZoomMode(void) (GhidraScript)
+INFO  DumpFirmware.java>
+/* UserPreferences::getDefaultZoomMode() const */
+
+void __thiscall UserPreferences::getDefaultZoomMode(UserPreferences *this)
+
+{
+  if (*DAT_00f7bf80 != *DAT_00f7bf80) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(*(undefined4 *)(this + 0x108));
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN15UserPreferences18setDefaultZoomModeE19NovoVideoTVZoomMode -> UserPreferences::setDefaultZoomMode @ 00f7bf84 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined setDefaultZoomMode(NovoVideoTVZoomMode param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* UserPreferences::setDefaultZoomMode(NovoVideoTVZoomMode) */
+
+void __thiscall UserPreferences::setDefaultZoomMode(UserPreferences *this,undefined4 param_2)
+
+{
+  int *piVar1;
+
+  piVar1 = DAT_00f7bfb4;
+  *(undefined4 *)(this + 0x108) = param_2;
+  if (*piVar1 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
