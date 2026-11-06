@@ -120,11 +120,37 @@ static void test_high_if_and_failure(void)
     assert(oa_mxl661_tune_dvbt(&ops, &f, 0xc0, NULL) == -1);
 }
 
+static void test_dvbc(void)
+{
+    struct fake f;
+    memset(&f, 0, sizeof f);
+    const struct oa_mxl661_rf_params p = {
+        .freq_hz = 666000000u,
+        .standard = 6,
+        .bandwidth = 0,
+        .if_khz = 5000,
+        .start = 0
+    };
+    assert(oa_mxl661_tune_dvbc(&ops, &f, 0xc0, &p) == 0);
+    assert(f.regs[0x0c] == 0x00 && f.regs[0x13] == 0x05);
+    assert(f.regs[0x53] == 0x7e && f.regs[0x62] == 0xf2);
+    assert(f.regs[0x6e] == 0x03 && f.regs[0x87] == 0x77);
+    assert(f.regs[0x5a] == 0xfe && f.regs[0x5b] == 0x10);
+    assert(f.regs[0x8a] == 0x00 && f.regs[0xea] == 0x00);
+    assert(f.regs[0x7c] == 0x1f && f.regs[0x31] == 0xc1);
+    assert(f.regs[0x0f] == 0x00 && f.regs[0x0d] == 0x00);
+    assert(f.regs[0x10] == 0x80 && f.regs[0x11] == 0xa6);
+    assert(f.regs[0x12] == 0x01 && f.regs[0x14] == 0x20);
+    assert(f.regs[0x84] == 0x83);
+    assert(f.sleep_total == 120);
+}
+
 int main(void)
 {
     test_dvbt_666mhz();
     test_high_if_and_failure();
-    puts("ok mxl661 rf: DVB-T case 9/0xd/0xb order, DigitalDvbt table, "
+    test_dvbc();
+    puts("ok mxl661 rf: DVB-T/DVB-C case 9/0xd/0xb order, property tables, "
          "spur registers, divider and lock sequence");
     return 0;
 }

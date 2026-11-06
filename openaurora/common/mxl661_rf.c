@@ -12,6 +12,16 @@ static const uint8_t dvbt_props[] = {
     0xd9, 0xff, 0x04, 0x00, 0x00, 0x00
 };
 
+static const uint8_t dvbc_props[] = {
+    0x0c, 0xff, 0x00, 0x13, 0xff, 0x04, 0x53, 0xff, 0x7e, 0x57, 0xff, 0x91,
+    0x5c, 0xff, 0xb1, 0x62, 0xff, 0xf2, 0x6e, 0xff, 0x03, 0x6f, 0xff, 0xd1,
+    0x87, 0xff, 0x77, 0x88, 0xff, 0x55, 0x93, 0xff, 0x33, 0x97, 0xff, 0x03,
+    0xba, 0xff, 0x40, 0x98, 0xff, 0xaf, 0x9b, 0xff, 0x20, 0x9c, 0xff, 0x1e,
+    0xa0, 0xff, 0x18, 0xa5, 0xff, 0x09, 0xc2, 0xff, 0xa9, 0xcd, 0xff, 0x64,
+    0xce, 0xff, 0x7c, 0xc5, 0xff, 0x7c, 0xd5, 0xff, 0x05, 0xd9, 0xff, 0x00,
+    0xea, 0xff, 0x00, 0xdc, 0xff, 0x1c, 0x00, 0x00, 0x00
+};
+
 static int wr(const oa_mxl661_ops *ops, void *ud, uint8_t addr, uint8_t reg,
               uint8_t value)
 {
@@ -74,6 +84,28 @@ static int set_if_dvbt(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
     fail |= wr(ops, ud, addr, 0x8a, 0x00);
     if (fail)
         return -1; /* the vendor breaks out before the common tail */
+    fail |= wr(ops, ud, addr, 0x6d, 0x0a);
+    fail |= wr(ops, ud, addr, 0x03, 0x00);
+    fail |= wr(ops, ud, addr, 0x03, 0x01);
+    msleep(ops, ud, 50);
+    return fail ? -1 : 0;
+}
+
+static int set_if_dvbc(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
+                       uint32_t if_khz)
+{
+    int fail = program_registers(ops, ud, addr, dvbc_props);
+    if (if_khz < 0x89b2u) {
+        fail |= wr(ops, ud, addr, 0x5a, 0xfe);
+        fail |= wr(ops, ud, addr, 0x5b, 0x10);
+    } else {
+        fail |= wr(ops, ud, addr, 0x5a, 0xd9);
+        fail |= wr(ops, ud, addr, 0x5b, 0x16);
+    }
+    fail |= wr(ops, ud, addr, 0x8a, 0x00);
+    fail |= wr(ops, ud, addr, 0xea, 0x0d);
+    if (fail)
+        return -1;
     fail |= wr(ops, ud, addr, 0x6d, 0x0a);
     fail |= wr(ops, ud, addr, 0x03, 0x00);
     fail |= wr(ops, ud, addr, 0x03, 0x01);
@@ -157,6 +189,41 @@ int oa_mxl661_tune_dvbt(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
         return -1;
     int fail = set_if_dvbt(ops, ud, addr, params->if_khz);
     fail |= start_tune_dvbt(ops, ud, addr, params);
+    fail |= channel_tune(ops, ud, addr);
+    return fail ? -1 : 0;
+}
+
+int oa_mxl661_tune_dvbc(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
+                        const struct oa_mxl661_rf_params *params)
+{
+    if (!ops || !ops->write_reg || !ops->read_reg || !params)
+        return -1;
+    int fail = set_if_dvbc(ops, ud, addr, params->if_khz);
+    /* The cable start-tune path does not rewrite 0x5b/0x5c/0x8a. */
+    struct oa_mxl661_rf_params p = *params;
+    p.standard = 9; /* keep 0x31=0xc1 and the cable LUT branch */
+    if (!p.start) {
+        fail |= wr(ops, ud, addr, 0x7c,
+                   p.freq_hz < 700000000u ? 0x1f : 0x9f);
+        fail |= wr(ops, ud, addr, 0x00, 0x01);
+        fail |= wr(ops, ud, addr, 0x31, 0xc1);
+        fail |= wr(ops, ud, addr, 0x00, 0x00);
+    }
+    fail |= wr(ops, ud, addr, 0x49, 0x1c);
+    fail |= wr(ops, ud, addr, 0xdb, 0x17);
+    fail |= wr(ops, ud, addr, 0xea, 0x00);
+    fail |= wr(ops, ud, addr, 0xeb, 0xd8);
+    uint8_t v = 0;
+    fail |= rd(ops, ud, addr, 0x0d, &v);
+    fail |= wr(ops, ud, addr, 0x0d,
+               (uint8_t)((v & 0xfe) | (p.start ? 1 : 0)));
+    fail |= wr(ops, ud, addr, 0x0f, (uint8_t)p.bandwidth);
+    uint32_t t = (uint32_t)(((uint64_t)p.freq_hz * 0x10624dd3u) >> 32);
+    t &= 0xffffffc0u;
+    t = (uint32_t)(((uint64_t)(t + 500u) * 0x10624dd3u) >> 32);
+    fail |= wr(ops, ud, addr, 0x10, (uint8_t)((t & 0x3fff) >> 6));
+    fail |= wr(ops, ud, addr, 0x11, (uint8_t)((t & 0x3fffff) >> 14));
+    msleep(ops, ud, 30);
     fail |= channel_tune(ops, ud, addr);
     return fail ? -1 : 0;
 }

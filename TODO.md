@@ -1075,7 +1075,7 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       quality) is implemented and installed in the module's NIM vtable.
       `set_channel`/`get_channel_status` need `SAL_DEMOD_TUN_ProgramTuner`
       (MxL661 RF/IF) and the 0x180-byte status mapping and return -ENOTSUP.
-      The MxL661 DVB-T case 9/0xd/0xb RF/IF sequence and the typed
+      The MxL661 DVB-T/DVB-C case 9/0xd/0xb RF/IF sequence and the typed
       SetChannel/GetChannelStatus mapping are implemented
       (`common/mxl661_rf.c`, `common/nim_tune.c`); a real `tuner.backend=hal`
       NIM backend (`common/nim_hal.c`, requires `tuner.hw_init=1`, terrestrial

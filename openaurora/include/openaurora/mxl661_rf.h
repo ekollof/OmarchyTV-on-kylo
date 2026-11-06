@@ -33,4 +33,8 @@ struct oa_mxl661_rf_params {
 int oa_mxl661_tune_dvbt(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
                         const struct oa_mxl661_rf_params *params);
 
+/* Cable variant (standard 6/9, DigitalDvbc table). */
+int oa_mxl661_tune_dvbc(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
+                        const struct oa_mxl661_rf_params *params);
+
 #endif

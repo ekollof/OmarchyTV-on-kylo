@@ -171,6 +171,10 @@ spur write is therefore `0x49=0x1c, 0xdb=0x17, 0xea=0x00, 0xeb=0xd8`.
   registers, `0xd` RMW, `0xf=bandwidth`, `0x10/0x11` divider, 30 ms.
 - case 0xb: `0x12=0`, `0x6e|=0x80`, `0x14&=~0x20`, `0x12=1`, 10 ms,
   `0x6e&=~0x80`, `0x14|=0x20`, `0x84=0x83`, `0x13` RMW, 30 ms.
+- DVB-C (standard 6/9, `DigitalDvbc` 26 triples): case 9 writes
+  `0x5a=0xfe/0xd9`, `0x5b=0x10/0x16`, `0x8a=0`, `0xea=0x0d`; case 0xd uses
+  `0x31=0xc1`, the same spur registers and divider; case 0xb is shared.
+  The fake tests assert the table, key registers, divider and lock sequence.
 
 The typed `oa_nim_tune_set_channel` calls the `program_tuner` op (the vendor
 binding runs `oa_mxl661_tune_dvbt`); `oa_nim_tune_get_channel_status` fills
@@ -303,7 +307,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 62effc87efcae7d244c71af8190f642a2f144a8d61c1c092bbc953bda3b61cc8
+sha256 87abbc1b64af25bfaf9f28c3b39b300112aba65651e96a9cb3a0ad3d110860c3
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,
