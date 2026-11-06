@@ -228,6 +228,38 @@ int oa_nim_raw_status_parse(const uint8_t raw[0x180],
     return 1;
 }
 
+int oa_nim_status_type6(const struct oa_nim_core_status *core, uint32_t out[4])
+{
+    if (!core || !out)
+        return 0;
+    out[0] = core->word[1] * 1000u;
+    out[1] = core->word[12];
+    out[2] = core->word[13];
+    out[3] = 0;
+    return 1;
+}
+
+int oa_nim_status_type8(const struct oa_nim_core_status *core, uint32_t out[4])
+{
+    if (!core || !out)
+        return 0;
+    out[0] = core->word[1] * 1000u;
+    out[1] = core->word[12];
+    out[2] = core->word[13];
+    switch (core->word[3]) {
+    case 9:
+        out[3] = 1;
+        break;
+    case 11:
+        out[3] = 2;
+        break;
+    default:
+        out[3] = 0xff;
+        break;
+    }
+    return 1;
+}
+
 int oa_nim_tune_hal_open(void *v)
 {
     struct oa_nim_tune_binding *b = v;

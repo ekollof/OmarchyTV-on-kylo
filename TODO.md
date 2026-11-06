@@ -1083,8 +1083,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       record is parsed into the typed channel (offsets +0/+4/+8/+0x10/+0x1c/
       +0x58, SAL standard map, path-1 override/40000 rule); the verified 0x180
       lock/strength/quality fields are parsed, and the 0x180 `tbb` dispatch
-      (types 1/2,7/3/4,5/6/8) with case targets is recovered. The per-case
-      enum mapping and analog/cable RF tails remain.
+      (types 1/2,7/3/4,5/6/8) with case targets is recovered; types 6/8 are
+      decoded and implemented. Types 1/2,7/3 and analog RF tails remain.
       SI2151 is the full Silicon Labs L1/L2/L3 `PowerUpWithPatch` + property
       driver, not this profile's path (hwprofile selects SAL 0xd/MxL661).
       Hardware acceptance is blocked by the owner's read-only/no-takeover

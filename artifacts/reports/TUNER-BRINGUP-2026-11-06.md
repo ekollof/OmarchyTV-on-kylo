@@ -230,8 +230,16 @@ type 8   -> 0x86bbba
 
 The common output copy is at `0x86bbe8`: four words from the core status are
 written to the caller's array, with the frequency field multiplied by 1000.
-The per-case enum/field mappings remain to be decoded; the decompiler output
-has duplicate/garbled case labels, so it was not used to guess them.
+Cases 6 and 8 are decoded and implemented:
+
+```text
+type 6: out[0]=core[1]*1000, out[1]=core[12], out[2]=core[13], out[3]=0
+type 8: same, out[3]=word[3]==9 -> 1, ==11 -> 2, else 0xff
+```
+
+`oa_nim_status_type6`/`type8` carry fake tests. Types 1, 2/7 and 3 have
+different output sizes and larger enum maps and remain to be decoded; the
+per-case values are not guessed.
 
 ## SI2151 blocker
 
@@ -307,7 +315,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 87abbc1b64af25bfaf9f28c3b39b300112aba65651e96a9cb3a0ad3d110860c3
+sha256 ec36928a69e37f76ef135899f8e2b43cdc964220d60adc1df1ec8d5ac1b4b9a7
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,

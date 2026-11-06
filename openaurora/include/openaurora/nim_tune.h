@@ -50,6 +50,21 @@ struct oa_nim_raw_status {
     uint8_t raw[0x180];
 };
 
+/* Core channel-status words produced by FUN_0086a4dc. Only the words used by
+ * the decoded output cases are named here. */
+struct oa_nim_core_status {
+    uint32_t word[16];
+};
+
+/* Decoded HAL_Demod_User_GetChannelStatus output cases 6 and 8:
+ *   out[0] = word[1] * 1000
+ *   out[1] = word[12]
+ *   out[2] = word[13]
+ *   out[3] = case 6: 0; case 8: word[3]==9 -> 1, ==11 -> 2, else 0xff
+ */
+int oa_nim_status_type6(const struct oa_nim_core_status *core, uint32_t out[4]);
+int oa_nim_status_type8(const struct oa_nim_core_status *core, uint32_t out[4]);
+
 struct oa_nim_tune_ops {
     int (*switch_tuner_type)(void *ud, int type); /* 0 = success */
     int (*get_tuner_type)(void *ud);
