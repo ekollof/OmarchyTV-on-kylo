@@ -273,6 +273,19 @@ Full/QEMU pass. Stub close is only an in-memory flag, not a slow storage
 close. ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer/tuner/epg/pvr are async. PVR-QUIESCE.
 
+mod_channels quiesce, 2026-11-06: runtime active list moved from process-global
+arrays to a heap-owned oa_channel_list per module instance (shared
+oa_channel_runtime_iface stays for direct tests). Quiesce clears publication,
+unpublishes channels synchronously, detaches the list, then destroys it
+synchronously or on a worker after channels.cleanup_delay_ms. Stale iface fails
+closed; m_stop/m_destroy join/free; m_start refuses if live and starts empty.
+Control test: ingest two rows, reload fails fast, channel-state ENODEV, status
+responsive, retry starts empty and ingests again, stop gate. Direct/IPC/UI
+channel tests pass; ARM links libpthread. Full/QEMU pass. Project
+ACTIVECHANNELLIST model, not vendor EASI; no LCN/visibility.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg/pvr/channels are async. CHANNELS-QUIESCE.
+
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so
 Hal_Vin wrappers and the real mod_source.so under qemu against an LD_PRELOAD
 fake /dev/video20. Hal_Vin_Open(0) opens /dev/video20 (not /dev/ntkdvif);

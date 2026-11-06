@@ -7,8 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-static struct oa_channel_entry g_entries[OA_CHANNELS_MAX];
-static struct oa_channel_snapshot g_snapshot;
+struct oa_channel_list {
+    struct oa_channel_entry entries[OA_CHANNELS_MAX];
+    struct oa_channel_snapshot snapshot;
+};
+
+static struct oa_channel_list g_default;
 
 static const char *element_end(const char *start)
 {
@@ -160,36 +164,63 @@ static int parse_xml(const char *xml, size_t len, struct oa_channel_entry *out,
     return 0;
 }
 
-static const struct oa_channel_snapshot *channel_snapshot(void)
+struct oa_channel_list *oa_channel_list_create(void)
 {
-    if (!g_snapshot.count) return NULL;
-    return &g_snapshot;
+    return calloc(1, sizeof(struct oa_channel_list));
 }
 
-static int channel_ingest_xml(const char *xml, size_t len)
+void oa_channel_list_destroy(struct oa_channel_list *list)
 {
-    struct oa_channel_entry *parsed =
-        malloc(sizeof g_entries);
+    free(list);
+}
+
+const struct oa_channel_snapshot *oa_channel_list_snapshot(
+    const struct oa_channel_list *list)
+{
+    if (!list || !list->snapshot.count) return NULL;
+    return &list->snapshot;
+}
+
+int oa_channel_list_ingest_xml(struct oa_channel_list *list, const char *xml,
+    size_t len)
+{
+    if (!list) return -EINVAL;
+    struct oa_channel_entry *parsed = malloc(sizeof list->entries);
     if (!parsed) return -ENOMEM;
     size_t count = 0;
     int rc = parse_xml(xml, len, parsed, &count);
     if (!rc) {
-        if (count) memcpy(g_entries, parsed, count * sizeof *parsed);
-        g_snapshot.entries = count ? g_entries : NULL;
-        g_snapshot.count = count;
-        g_snapshot.source = 1;
-        g_snapshot.lcn_known = 0;
-        g_snapshot.visibility_known = 0;
+        if (count) memcpy(list->entries, parsed, count * sizeof *parsed);
+        list->snapshot.entries = count ? list->entries : NULL;
+        list->snapshot.count = count;
+        list->snapshot.source = 1;
+        list->snapshot.lcn_known = 0;
+        list->snapshot.visibility_known = 0;
     }
     free(parsed);
     return rc ? rc : (int)count;
 }
 
-static void channel_clear(void)
+void oa_channel_list_clear(struct oa_channel_list *list)
 {
-    memset(&g_snapshot, 0, sizeof g_snapshot);
+    if (list) memset(&list->snapshot, 0, sizeof list->snapshot);
+}
+
+static const struct oa_channel_snapshot *default_snapshot(void)
+{
+    return oa_channel_list_snapshot(&g_default);
+}
+
+static int default_ingest_xml(const char *xml, size_t len)
+{
+    return oa_channel_list_ingest_xml(&g_default, xml, len);
+}
+
+static void default_clear(void)
+{
+    oa_channel_list_clear(&g_default);
 }
 
 const oa_channel_iface oa_channel_runtime_iface = {
-    channel_snapshot, channel_ingest_xml, channel_clear
+    default_snapshot, default_ingest_xml, default_clear
 };

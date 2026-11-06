@@ -55,7 +55,18 @@ typedef struct {
     void (*clear)(void);
 } oa_channel_iface;
 
-/* Shared in-process implementation used by mod_channels and tests. */
+/* Per-instance runtime list. mod_channels owns one; the shared global iface
+ * below keeps the direct unit-test/test-fixture path. */
+struct oa_channel_list;
+struct oa_channel_list *oa_channel_list_create(void);
+void oa_channel_list_destroy(struct oa_channel_list *list);
+const struct oa_channel_snapshot *oa_channel_list_snapshot(
+    const struct oa_channel_list *list);
+int oa_channel_list_ingest_xml(struct oa_channel_list *list, const char *xml,
+    size_t len);
+void oa_channel_list_clear(struct oa_channel_list *list);
+
+/* Shared in-process implementation used by direct tests. */
 extern const oa_channel_iface oa_channel_runtime_iface;
 
 #ifdef __cplusplus

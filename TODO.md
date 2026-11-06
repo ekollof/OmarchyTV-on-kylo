@@ -287,14 +287,26 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       reload/cross-process test passes; ARM links libpthread. Full/QEMU pass.
       PVR-QUIESCE.
 
+- [x] Asynchronous gate for `mod_channels`: move the runtime active list from
+      process-global arrays to a heap-owned `oa_channel_list` per module
+      instance (the shared `oa_channel_runtime_iface` stays for direct tests).
+      Quiesce clears publication, unpublishes `channels` synchronously, detaches
+      the list, then destroys it synchronously or on a worker after
+      `channels.cleanup_delay_ms`. A stale iface fails closed;
+      `m_stop`/`m_destroy` join/free; `m_start` refuses if live and starts with
+      an empty list. Control-socket test: ingest two rows, reload fails fast,
+      `channel-state` ENODEV, status responsive, retry starts empty and ingests
+      again, stop uses the gate. Direct/IPC/UI channel tests pass; ARM links
+      libpthread. Full/QEMU pass. CHANNELS-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
-      `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg` and `pvr` are
-      the existing models.
+      `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr` and
+      `channels` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

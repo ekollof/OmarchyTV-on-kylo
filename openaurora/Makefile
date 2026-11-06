@@ -472,6 +472,11 @@ check-channels: $(BUILD)/tests/channels
 	@$(BUILD)/tests/channels
 check: check-channels
 
+.PHONY: check-channels-quiesce
+check-channels-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_channels.so
+	node tests/channels_quiesce.cjs $(abspath $(BUILD))
+check: check-channels-quiesce
+
 .PHONY: check-channels-ipc
 check-channels-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_channels.so
 	node tests/channels_ipc.cjs $(abspath $(BUILD))
@@ -896,7 +901,7 @@ $(BUILD)/modules/mod_pvr.so: modules/pvr/pvr.c common/pvr_stub.c include/openaur
 
 $(BUILD)/modules/mod_channels.so: modules/channels/channels.c common/channels.c include/openaurora/channels.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
 
 LUA_SRC := $(sort $(wildcard third_party/lua/*.c))
 LUA_OBJ := $(patsubst third_party/lua/%.c,$(BUILD)/third_party/lua/%.o,$(LUA_SRC))
