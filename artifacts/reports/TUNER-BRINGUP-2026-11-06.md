@@ -230,7 +230,7 @@ ok   mxl661 atv corpus: loader CRC + real NTSC/PAL/PAL-D sequences
 `check-mxl661-atv-corpus` is explicit, requires the private
 `AURORA_ELF`, and is never part of the default suite. Focused ASan/UBSan and
 ARM/qemu pass with both synthetic and real tables; TV `mod_tuner.so` sha256
-`1837da76...`. The module loads the tables under the hardware gate and
+`596cbda...`. The module loads the tables under the hardware gate and
 `tuner.analog=1` feeds them to the NIM HAL backend; nothing has run on the TV.
 
 The typed `oa_nim_tune_set_channel` calls the `program_tuner` op (the vendor
@@ -340,7 +340,7 @@ also not claimed: only the translations above are recovered.
 ok nim tune: path/index map, open/close, lock/strength/quality masks and unresolved channel mappings
 ```
 
-Focused ASan/UBSan and ARM/qemu pass; TV `mod_tuner.so` sha256 `1837da76...`.
+Focused ASan/UBSan and ARM/qemu pass; TV `mod_tuner.so` sha256 `596cbda...`.
 
 ### Analog NIM backend wiring
 
@@ -358,13 +358,21 @@ The analog path is consumed by the NIM HAL backend:
   pointer on destroy so a reload cannot leave a dangling table set.
 
 ```text
-ok nim hal: backend start/monitor/signal/stop, DVB-T default and analog table path
+ok mxl661 atv: GetATVStatus lock decode
+ok nim hal: backend start/monitor/signal/stop, DVB-T default, analog table path and ATV lock status
 ```
 
-TV `mod_tuner.so` sha256 `1837da76...`. Limits: `monitor`/`signal` still use
-the DVB status ops (vendor `GetATVStatus` is not wired); the scan uses one
-fixed default frequency rather than analog channel steps; the case-9
-per-address calibration remains. No hardware has run.
+The analog lock status follows `SAL_TUNER_MxL661_GetATVStatus`: path 1/2 reads
+MxL661 register `0x2b` and locks on `((v&3)>>1) & (v&1)`; path 3 reads `0x2c`
+and locks on `((v&0xf)>>3) & 1`. `oa_mxl661_atv_status_lock` carries the
+decode with fake tests; `tuner_vendor` performs the IIC read and `oa_nim_hal`
+uses it for analog monitor/signal instead of the DVB status ops. Strength and
+quality are not part of that SAL ATV contract, so analog reports 0 and UNC
+unknown.
+
+TV `mod_tuner.so` sha256 `596cbda...`. Limits: analog scan still uses one
+fixed default frequency rather than channel steps; the case-9 per-address
+calibration remains. No hardware has run.
 
 ## SI2151 blocker
 
@@ -440,7 +448,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 1837da76febc0a44a08bfafa10480c1965f070cfe759e4a0ba363be587077d59
+sha256 596cbdabd2e0a3c44a1121261fb1a5fb8851174e01b5870df0fab3c2a47e0e79
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,

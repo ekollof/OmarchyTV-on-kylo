@@ -64,8 +64,8 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
 - [ ] Analog ATV only if an analog source exists: verify `tuner.atv_tables`
       loads the on-TV aurora.elf CRC and run a PAL/NTSC tune; otherwise record
       "not tested". The analog tuning backend exists (`tuner.analog=1`,
-      `tuner.analog_standard=0..5`); verify the tune and record the analog
-      status/scan-step limits.
+      `tuner.analog_standard=0..5`); verify the tune and the recovered ATV
+      lock bit, and record the strength/quality/scan-step limits.
 - [ ] NIM `InitNimFunc`/`Connect2HAL`: 0x29-word state clear, table install,
       IIC codes 0x15/0x11/0x40, checked/ignored returns and the no-IIC-after-
       failed-MxL661-init guard.
@@ -1211,9 +1211,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       table is embedded or distributed. Synthetic `check-mxl661-atv` and an
       explicit private `check-mxl661-atv-corpus` pass, including ASan and
       ARM/qemu. The analog tuning path is wired into the NIM HAL backend
-      (`oa_nim_hal_set_atv` -> `program_atv` -> `oa_mxl661_tune_analog`).
-      Still open: the case-9 per-address analog calibration, analog status and
-      multi-channel scan stepping.
+      (`oa_nim_hal_set_atv` -> `program_atv` -> `oa_mxl661_tune_analog`), and
+      monitor/signal use the recovered SAL_TUNER_MxL661_GetATVStatus
+      0x2b/0x2c lock decode (`oa_mxl661_atv_status_lock`, fake-tested).
+      Strength/quality are not part of that SAL contract and report 0.
+      Still open: analog scan stepping and the case-9 per-address calibration.
       SI2151 is the full Silicon Labs L1/L2/L3 `PowerUpWithPatch` + property
       driver, not this profile's path (hwprofile selects SAL 0xd/MxL661).
       Hardware acceptance awaits the scheduled owner takeover window and has
@@ -1224,8 +1226,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       vendor tables read at runtime from the TV's own aurora.elf (CRC32
       `0x93a05fff`) instead of embedded. Synthetic `check-mxl661-atv` and the
       explicit private `check-mxl661-atv-corpus` pass, as do focused
-      ASan/UBSan and ARM/qemu. Limits: per-address case-9 calibration,
-      analog status/scan stepping and hardware acceptance remain.
+      ASan/UBSan and ARM/qemu. Limits: analog strength/quality availability,
+      scan stepping, per-address case-9 calibration and hardware acceptance
+      remain.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff
       tests pass host/sanitizer/ARM-qemu. CEC-AUDIO-CONTRACT.

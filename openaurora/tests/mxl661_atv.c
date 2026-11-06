@@ -205,6 +205,22 @@ static void test_xtal_and_pal_1a(void)
     assert(f.regs[0x0c] == 0x0a);
 }
 
+static void test_atv_status_lock(void)
+{
+    uint8_t locked = 0xff;
+    assert(oa_mxl661_atv_status_lock(1, 0x03, &locked) && locked == 1);
+    assert(oa_mxl661_atv_status_lock(2, 0x03, &locked) && locked == 1);
+    assert(oa_mxl661_atv_status_lock(1, 0x02, &locked) && locked == 0);
+    assert(oa_mxl661_atv_status_lock(1, 0x01, &locked) && locked == 0);
+    assert(oa_mxl661_atv_status_lock(1, 0x00, &locked) && locked == 0);
+    assert(oa_mxl661_atv_status_lock(3, 0x08, &locked) && locked == 1);
+    assert(oa_mxl661_atv_status_lock(3, 0x0f, &locked) && locked == 1);
+    assert(oa_mxl661_atv_status_lock(3, 0x07, &locked) && locked == 0);
+    assert(!oa_mxl661_atv_status_lock(4, 0x08, &locked));
+    assert(!oa_mxl661_atv_status_lock(1, 0x03, NULL));
+    puts("  ok   mxl661 atv: GetATVStatus lock decode");
+}
+
 static void test_failures(void)
 {
     struct fake f;
@@ -266,6 +282,7 @@ int main(int argc, char **argv)
     test_pal_d();
     test_pal_i_and_secam();
     test_xtal_and_pal_1a();
+    test_atv_status_lock();
     test_failures();
     if (argc > 1)
         test_corpus(argv[1]);

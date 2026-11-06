@@ -683,7 +683,7 @@ error; HAL_dvif_open returns cached handle; SetTunerType ioctl0xc0044485 maps
 unbound (/dev/ntgpio owned). Corrected Hal IIC ctx to 24 bytes
 {bus,addr,subaddr_len,0,timeout,0} (100 type0/400 type4), added MxL661 DEV
 adapter (0xfb pointer), sequence layer and default-off tuner.hw_init gate
-(host -ENOTSUP; TV builds mod_tuner.so sha256 1837da76... linking libNDAL3).
+(host -ENOTSUP; TV builds mod_tuner.so sha256 596cbda... linking libNDAL3).
 Host/ASan/full/ARM-qemu pass. NIM state/Connect2HAL equivalents and RT5047
 LNB_EN descriptor+Hal_Gpio adapter are wired behind the gate; the NIM tuning
 subset (path map, open/close, lock/strength/quality) is wired into the
@@ -700,8 +700,10 @@ case 9/0xd/0xb tails are implemented too (common/mxl661_atv.c); the vendor
 tables are loaded at runtime from the TV's own aurora.elf, CRC32-checked, never
 embedded or distributed. The analog tuning path is wired into the NIM HAL backend
 (oa_nim_hal_set_atv -> program_atv -> oa_mxl661_tune_analog; module
-config tuner.analog=1 with standard/if/xtal). Analog status/scan
-stepping and the case-9 per-address calibration remain. SI2151 is the full Silicon Labs
+config tuner.analog=1 with standard/if/xtal), and analog monitor/
+signal use the recovered SAL_TUNER_MxL661_GetATVStatus 0x2b/0x2c
+lock decode (strength/quality are not in that contract). Analog
+scan stepping and the case-9 per-address calibration remain. SI2151 is the full Silicon Labs
 patch/property driver, not this profile's path. Hardware acceptance remains
 pending the scheduled owner takeover window (the gate has never run). TUNER-BRINGUP.
 

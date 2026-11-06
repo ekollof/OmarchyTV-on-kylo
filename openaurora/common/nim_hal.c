@@ -101,8 +101,15 @@ static int hal_monitor(uint8_t path, struct oa_nim_tune_result *result)
     if (!result || !g_hal.active || path != g_hal.path)
         return -EINVAL;
     uint8_t locked = 0;
-    if (!oa_nim_tune_check_lock(g_hal.ops, g_hal.ud, &g_hal.tune, &locked))
+    if (g_atv_tables) {
+        if (!g_ops->get_atv_status)
+            return -ENOTSUP;
+        if (g_ops->get_atv_status(g_ud, path, &locked) != 0)
+            return -EIO;
+    } else if (!oa_nim_tune_check_lock(g_hal.ops, g_hal.ud, &g_hal.tune,
+                                       &locked)) {
         return -EIO;
+    }
     result->state = locked ? OA_NIM_TUNE_LOCKED : OA_NIM_TUNE_UNLOCKED;
     result->frequency_khz = g_hal.frequency_khz;
     return 0;
@@ -125,6 +132,17 @@ static int hal_signal(uint8_t path, struct oa_nim_signal *out)
     out->unc = OA_NIM_UNC_UNKNOWN;
     if (!g_hal.active || path != g_hal.path)
         return 0;
+    if (g_atv_tables) {
+        uint8_t locked = 0;
+        if (!g_ops->get_atv_status)
+            return -ENOTSUP;
+        if (g_ops->get_atv_status(g_ud, path, &locked) != 0)
+            return -EIO;
+        out->locked = locked;
+        /* SAL_TUNER_MxL661_GetATVStatus returns lock only; strength/quality
+         * are not part of that contract. */
+        return 0;
+    }
     struct oa_nim_tune_status status;
     if (!oa_nim_tune_get_channel_status(g_hal.ops, g_hal.ud, &g_hal.tune,
                                         &status))

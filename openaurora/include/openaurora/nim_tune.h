@@ -98,6 +98,8 @@ struct oa_nim_tune_ops {
     int (*program_atv)(void *ud,
                        const struct oa_mxl661_analog_params *params,
                        const struct oa_mxl661_atv_tables *tables);
+    /* Optional analog lock status. Path 1/2/3 matches the vendor ATV path. */
+    int (*get_atv_status)(void *ud, int path, uint8_t *locked);
 };
 
 struct oa_nim_tune_state {

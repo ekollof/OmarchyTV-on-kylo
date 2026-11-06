@@ -352,6 +352,23 @@ static int start_tune_analog(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
     return fail ? -1 : 0;
 }
 
+int oa_mxl661_atv_status_lock(int path, uint8_t value, uint8_t *locked)
+{
+    if (!locked)
+        return 0;
+    switch (path) {
+    case 1:
+    case 2:
+        *locked = (uint8_t)(((value & 3) >> 1) & (value & 1));
+        return 1;
+    case 3:
+        *locked = (uint8_t)(((value & 0xf) >> 3) & 1);
+        return 1;
+    default:
+        return 0;
+    }
+}
+
 int oa_mxl661_tune_analog(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
                           const struct oa_mxl661_analog_params *params,
                           const struct oa_mxl661_atv_tables *tables)

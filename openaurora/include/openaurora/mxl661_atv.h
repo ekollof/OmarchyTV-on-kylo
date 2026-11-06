@@ -82,4 +82,9 @@ int oa_mxl661_tune_analog(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
                           const struct oa_mxl661_analog_params *params,
                           const struct oa_mxl661_atv_tables *tables);
 
+/* SAL_TUNER_MxL661_GetATVStatus lock decode. Path 1/2 uses 0x2b:
+ * ((v & 3) >> 1) & (v & 1); path 3 uses 0x2c: ((v & 0xf) >> 3) & 1.
+ * Returns 1 for a recognized path (and sets *locked), 0 otherwise. */
+int oa_mxl661_atv_status_lock(int path, uint8_t value, uint8_t *locked);
+
 #endif

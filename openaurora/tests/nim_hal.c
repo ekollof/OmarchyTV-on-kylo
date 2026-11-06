@@ -13,6 +13,9 @@ struct fake {
     int closes;
     int programs;
     int atv_programs;
+    int atv_status_calls;
+    int atv_path;
+    uint8_t atv_locked;
     struct oa_nim_tune_channel channel;
     struct oa_mxl661_analog_params atv_params;
     const struct oa_mxl661_atv_tables *atv_tables;
@@ -89,13 +92,21 @@ static int f_program_atv(void *ud,
     f->atv_tables = tables;
     return 0;
 }
+static int f_atv_status(void *ud, int path, uint8_t *locked)
+{
+    struct fake *f = ud;
+    f->atv_status_calls++;
+    f->atv_path = path;
+    *locked = f->atv_locked;
+    return 0;
+}
 
 int main(void)
 {
     struct fake f = { .locked = 1, .strength = 0x1234, .quality = 0x5678 };
     const struct oa_nim_tune_ops ops = {
         f_switch, f_type, f_deliver, f_open, f_close, f_standby, f_status,
-        f_rssi, f_program, f_program_atv
+        f_rssi, f_program, f_program_atv, f_atv_status
     };
     oa_nim_hal_set_ops(&ops, &f);
     const struct oa_tuner_backend *b = oa_nim_hal_backend();
@@ -131,11 +142,30 @@ int main(void)
            f.atv_params.standard == OA_MXL661_ATV_PAL &&
            f.atv_params.bandwidth == 2 && f.atv_params.start == 0 &&
            f.atv_params.xtal_24mhz == 1);
+
+    f.atv_locked = 1;
     assert(b->nim->monitor(OA_NIM_PATH_TERRESTRIAL, &tr) == 0);
+    assert(tr.state == OA_NIM_TUNE_LOCKED);
+    assert(f.atv_status_calls == 1 && f.atv_path == OA_NIM_PATH_TERRESTRIAL);
+    assert(b->nim->signal(OA_NIM_PATH_TERRESTRIAL, &sig) == 0);
+    assert(sig.locked == 1 && sig.strength == 0 && sig.quality == 0 &&
+           sig.unc == OA_NIM_UNC_UNKNOWN);
+    f.atv_locked = 0;
+    assert(b->nim->monitor(OA_NIM_PATH_TERRESTRIAL, &tr) == 0);
+    assert(tr.state == OA_NIM_TUNE_UNLOCKED);
     assert(b->nim->stop(OA_NIM_PATH_TERRESTRIAL) == 0);
     assert(oa_nim_hal_set_atv(&atv, 6, 5000, 0) == -EINVAL);
     assert(oa_nim_hal_set_atv(&atv, OA_MXL661_ATV_NTSC, 0, 0) == -EINVAL);
     assert(oa_nim_hal_set_atv(NULL, 0, 0, 0) == 0);
+
+    /* Clearing analog restores the DVB-T program/status path. */
+    assert(b->nim->start(OA_NIM_PATH_TERRESTRIAL, params, 2, &tr) == 0);
+    assert(f.programs == 2 && f.atv_programs == 1);
+    assert(b->nim->monitor(OA_NIM_PATH_TERRESTRIAL, &tr) == 0);
+    assert(tr.state == OA_NIM_TUNE_LOCKED);
+    assert(b->nim->signal(OA_NIM_PATH_TERRESTRIAL, &sig) == 0);
+    assert(sig.strength == 0x1234 && sig.quality == 0x5678);
+    assert(b->nim->stop(OA_NIM_PATH_TERRESTRIAL) == 0);
 
     assert(b->nim->start(OA_NIM_PATH_CABLE, params, 2, &tr) == -ENOTSUP);
     assert(b->nim->start(OA_NIM_PATH_TERRESTRIAL, params, 1, &tr) == -EINVAL);
@@ -146,7 +176,7 @@ int main(void)
     params[1] = 666000;
     assert(b->nim->start(OA_NIM_PATH_TERRESTRIAL, params, 2, &tr) == -EINVAL);
 
-    puts("ok nim hal: backend start/monitor/signal/stop, DVB-T default and "
-         "analog table path");
+    puts("ok nim hal: backend start/monitor/signal/stop, DVB-T default, "
+         "analog table path and ATV lock status");
     return 0;
 }

@@ -246,9 +246,22 @@ static int tune_program_atv(void *ud,
                                  tables) == 0 ? 0 : -1;
 }
 
+static int tune_atv_status(void *ud, int path, uint8_t *locked)
+{
+    (void)ud;
+    if (!locked || (path != 1 && path != 2 && path != 3))
+        return -1;
+    uint8_t reg = path == 3 ? 0x2c : 0x2b;
+    uint8_t value = 0;
+    if (oa_mxl661_dev_read((void *)&hal_ops, 0xc0, reg, &value) != 0)
+        return -1;
+    return oa_mxl661_atv_status_lock(path, value, locked) ? 0 : -1;
+}
+
 static const struct oa_nim_tune_ops vendor_tune_ops = {
     tune_switch, tune_type, tune_deliver, tune_fe_open, tune_fe_close,
-    tune_standby, tune_status, tune_rssi, tune_program, tune_program_atv
+    tune_standby, tune_status, tune_rssi, tune_program, tune_program_atv,
+    tune_atv_status
 };
 
 const struct oa_nim_tune_ops *oa_tuner_vendor_tune_ops(void)
