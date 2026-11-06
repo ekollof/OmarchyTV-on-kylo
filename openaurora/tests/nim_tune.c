@@ -30,6 +30,9 @@ struct fake {
     int rssi_rc;
     uint8_t rssi;
     int last_tuner;
+    int program_calls;
+    int program_rc;
+    struct oa_nim_tune_channel program_ch;
 };
 
 static int switch_type(void *ud, int type)
@@ -101,9 +104,17 @@ static int get_rssi(void *ud, int tuner_type, uint8_t *rssi)
     return f->rssi_rc;
 }
 
+static int program_tune(void *ud, const struct oa_nim_tune_channel *ch)
+{
+    struct fake *f = ud;
+    f->program_calls++;
+    f->program_ch = *ch;
+    return f->program_rc;
+}
+
 static const struct oa_nim_tune_ops ops = {
     switch_type, get_tuner_type, deliver_config, fe_open, fe_close,
-    set_standby, get_status, get_rssi
+    set_standby, get_status, get_rssi, program_tune
 };
 
 static void test_path_index(void)
@@ -207,12 +218,28 @@ static void test_lock_strength_quality(void)
     assert(oa_nim_tune_get_quality(&ops, &f, &s, NULL) == 0);
 }
 
-static void test_unresolved(void)
+static void test_channel_mapping(void)
 {
     struct fake f = { 0 };
-    struct oa_nim_tune_state s = { 0 };
-    assert(oa_nim_tune_set_channel(&ops, &f, &s, NULL) == -ENOTSUP);
-    assert(oa_nim_tune_get_channel_status(&ops, &f, &s, NULL) == -ENOTSUP);
+    struct oa_nim_tune_state s = { .handle = 9, .path = 1, .tuner_type = 0xd };
+    const struct oa_nim_tune_channel ch = { 666000000u, 8, 0x20, 5000 };
+    assert(oa_nim_tune_set_channel(&ops, &f, &s, &ch) == 1);
+    assert(f.program_calls == 1 && f.program_ch.freq_hz == 666000000u &&
+           f.program_ch.standard == 8 && f.program_ch.bandwidth == 0x20 &&
+           f.program_ch.if_khz == 5000);
+    f.program_rc = -1;
+    assert(oa_nim_tune_set_channel(&ops, &f, &s, &ch) == 0);
+    assert(oa_nim_tune_set_channel(&ops, &f, &s, NULL) == 0);
+
+    f.status[0] = 1;
+    uint32_t value = 0x1234;
+    memcpy(f.status + 0x18, &value, sizeof value);
+    value = 0x5678;
+    memcpy(f.status + 0x24, &value, sizeof value);
+    struct oa_nim_tune_status st;
+    assert(oa_nim_tune_get_channel_status(&ops, &f, &s, &st) == 1);
+    assert(st.locked == 1 && st.strength == 0x1234 && st.quality == 0x5678);
+
     assert(oa_nim_tune_open(NULL, &f, &s) == 0);
     assert(oa_nim_tune_close(NULL, &f, &s) == 0);
 }
@@ -250,7 +277,7 @@ int main(void)
     test_open();
     test_close_monitor();
     test_lock_strength_quality();
-    test_unresolved();
+    test_channel_mapping();
     test_binding();
     puts("ok nim tune: path/index map, open/close, lock/strength/quality "
          "masks and unresolved channel mappings");

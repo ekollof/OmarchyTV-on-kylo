@@ -35,6 +35,8 @@ typedef struct {
     /* 0 = success. */
     int (*write_reg)(void *ud, uint8_t addr, uint8_t reg, uint8_t value);
     int (*read_reg)(void *ud, uint8_t addr, uint8_t reg, uint8_t *value);
+    /* Optional; may be NULL. */
+    void (*sleep_ms)(void *ud, unsigned ms);
 } oa_mxl661_ops;
 
 typedef struct {

@@ -150,23 +150,26 @@ int oa_nim_tune_get_quality(const struct oa_nim_tune_ops *ops, void *ud,
 
 int oa_nim_tune_set_channel(const struct oa_nim_tune_ops *ops, void *ud,
                             struct oa_nim_tune_state *state,
-                            const void *channel)
+                            const struct oa_nim_tune_channel *channel)
 {
-    (void)ops;
-    (void)ud;
-    (void)state;
-    (void)channel;
-    return -ENOTSUP;
+    if (!ops || !ops->program_tuner || !state || !channel)
+        return 0;
+    return ops->program_tuner(ud, channel) == 0 ? 1 : 0;
 }
 
 int oa_nim_tune_get_channel_status(const struct oa_nim_tune_ops *ops, void *ud,
-                                   struct oa_nim_tune_state *state, void *out)
+                                   struct oa_nim_tune_state *state,
+                                   struct oa_nim_tune_status *out)
 {
-    (void)ops;
-    (void)ud;
-    (void)state;
-    (void)out;
-    return -ENOTSUP;
+    if (!ops || !state || !out)
+        return 0;
+    if (!oa_nim_tune_check_lock(ops, ud, state, &out->locked))
+        return 0;
+    if (!oa_nim_tune_get_strength(ops, ud, state, &out->strength))
+        return 0;
+    if (!oa_nim_tune_get_quality(ops, ud, state, &out->quality))
+        return 0;
+    return 1;
 }
 
 int oa_nim_tune_hal_open(void *v)

@@ -146,7 +146,7 @@ struct per signal type. Implementing these faithfully needs the RF/IF tuning
 sequence and the status layout, not only a field copy; both stay `-ENOTSUP`
 rather than guessed.
 
-## MxL661 RF/IF recovery (partial)
+## MxL661 RF/IF (DVB-T implemented)
 
 `SAL_DEMOD_TUN_ProgramTuner` @ `0x0084b0c8` maps standard index `0..7` to
 `7,8,6,10,9,0xc,0xd,0xb`, applies the 17-entry IF table at `0x01367d38`
@@ -161,16 +161,25 @@ standard property tables are extracted: `DigitalDvbt` 21,
 `DigitalIsdbtAtsc` 23, `DigitalDvbc` 26, `AnalogNtsc` 26, `AnalogPal` 28,
 `AnalogSecam` 36 triples.
 
-`common/mxl661_tune.c` carries the verified standard-index and IF table
-mapping with tests. The `ConfigTuner` case 9/0xd/0xb register port and the
-SetChannel/GetChannelStatus tails are not guessed and remain open.
+The five `DIG_*_FREQ_LUT` tables are constant `{1, 0xd800171c}`; the digital
+spur write is therefore `0x49=0x1c, 0xdb=0x17, 0xea=0x00, 0xeb=0xd8`.
+`common/mxl661_rf.c` implements the DVB-T path:
 
-The start-tune path (case 0xd) also depends on per-standard RF frequency LUTs
-and `Ctrl_SetRfFreqLutReg` @ `0x008823f8`: it selects a LUT entry within
-±500 kHz and writes the spur registers from `MxL601_SPUR_REGISTER` @
-`0x01768578` (count byte 4; registers `0x49/0xdb/0xea/0xeb`). The LUTs are
-large, frequency-dependent data tables. Porting them and the case 9/0xd/0xb
-register sequences is the remaining RF/IF work; no values were guessed.
+- case 9: program `DigitalDvbt` (21 triples), `0x5a/0x5b/0x5c/0x8a`, then
+  `0x6d=10`, `3=0`, `3=1`, 50 ms; a failure skips the tail (vendor break).
+- case 0xd: `0x5b/0x5c/0x8a`, `0x7c=0x1f/0x9f`, `0x31=0x81/0xc1`, spur
+  registers, `0xd` RMW, `0xf=bandwidth`, `0x10/0x11` divider, 30 ms.
+- case 0xb: `0x12=0`, `0x6e|=0x80`, `0x14&=~0x20`, `0x12=1`, 10 ms,
+  `0x6e&=~0x80`, `0x14|=0x20`, `0x84=0x83`, `0x13` RMW, 30 ms.
+
+The typed `oa_nim_tune_set_channel` calls the `program_tuner` op (the vendor
+binding runs `oa_mxl661_tune_dvbt`); `oa_nim_tune_get_channel_status` fills
+locked/strength/quality from the lock/status ops. The module's raw
+`set_channel(void*)`/`get_channel_status(void*)` table slots remain
+`-ENOTSUP` because they carry no channel/status pointer.
+
+Still open: analog/cable RF tails, the exact 0x5c channel record and 0x180
+status array mappings, and hardware acceptance.
 
 ## SI2151 blocker
 
@@ -231,6 +240,8 @@ ok rt5047: LNB_EN present/absent/error flow and level write
 ok nim tune: path/index map, open/close, lock/strength/quality masks and
              unresolved channel mappings
 ok mxl661 tune: standard index map and 17-entry IF table
+ok mxl661 rf: DVB-T case 9/0xd/0xb order, DigitalDvbt table, spur registers,
+              divider and lock sequence
 ok tuner hal: four bus IDs from description+0x19, 0xff-only resolution, ...
 ok mxl661: default/custom init order, RMW masks, defaults table and failure behavior
 ok nim dtv hal: DEV_IIC bus/reg/address packing and Hal success inversion
@@ -242,7 +253,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 519053e68854419e985c0448bd3fd7f359f816e6fb49aa04d0b22f1b1a2fc827
+sha256 f934d96f68830fe01af855115785a2f23611d118b6d67ab39f5e6d06f9293db2
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,
@@ -254,13 +265,12 @@ undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
 1. SI2151 tuner backend: the Silicon Labs L1/L2/L3 driver with
    `PowerUpWithPatch` and property download is a separate large port; this
    TV's profile selects MxL661 and does not use it.
-2. MxL661 RF/IF register port: `ConfigTuner` cases 9/0xd/0xb, the
-   SetIF/SetRF packing, per-standard RF frequency LUTs and the
-   `MxL601_SPUR_REGISTER` table (count 4; regs 0x49/0xdb/0xea/0xeb). The
-   standard/IF mapping is recovered in `common/mxl661_tune.c`.
-   SetChannel/GetChannelStatus depend on this.
-3. The module's NIM vtable now carries the implemented tuning ops, but no
-   tuning backend consumes the table yet.
+2. Analog/cable RF tails and the exact raw 0x5c channel / 0x180 status
+   mappings (the DVB-T RF/IF sequence and typed SetChannel/GetChannelStatus
+   are implemented in `common/mxl661_rf.c` / `common/nim_tune.c`).
+3. The module's NIM vtable carries the implemented tuning ops, but the raw
+   `set_channel(void*)`/`get_channel_status(void*)` slots remain -ENOTSUP
+   because the vendor table passes no data pointer.
 4. Hardware acceptance is **not done**. The owner's standing instruction is
    read-only, no takeovers; running the gate requires explicit authorization
    to stop stock Aurora, claim `/dev/ntkiic0`, `/dev/ntgpio`, `/dev/ntkdvif`

@@ -23,6 +23,19 @@
 #define OPENAURORA_NIM_TUNE_H
 #include <stdint.h>
 
+struct oa_nim_tune_channel {
+    uint32_t freq_hz;
+    uint32_t standard;
+    uint32_t bandwidth;
+    uint32_t if_khz;
+};
+
+struct oa_nim_tune_status {
+    uint8_t locked;
+    uint32_t strength;
+    uint32_t quality;
+};
+
 struct oa_nim_tune_ops {
     int (*switch_tuner_type)(void *ud, int type); /* 0 = success */
     int (*get_tuner_type)(void *ud);
@@ -32,6 +45,7 @@ struct oa_nim_tune_ops {
     int (*set_standby)(void *ud, int fe, int on); /* 0 = success */
     int (*get_status)(void *ud, int handle, int index, uint32_t mask, void *buf);
     int (*get_rssi)(void *ud, int tuner_type, uint8_t *rssi); /* 1 = success */
+    int (*program_tuner)(void *ud, const struct oa_nim_tune_channel *ch);
 };
 
 struct oa_nim_tune_state {
@@ -56,14 +70,16 @@ int oa_nim_tune_get_strength(const struct oa_nim_tune_ops *ops, void *ud,
 int oa_nim_tune_get_quality(const struct oa_nim_tune_ops *ops, void *ud,
                             struct oa_nim_tune_state *state, uint32_t *quality);
 
-/* Unresolved NDAL struct mappings. */
+/* The channel calls use the typed NIM channel/status records recovered from
+ * the SetChannel/GetChannelStatus first stages. The vendor's raw 0x5c channel
+ * record and 0x180 status array are not exposed here. */
 int oa_nim_tune_set_channel(const struct oa_nim_tune_ops *ops, void *ud,
                             struct oa_nim_tune_state *state,
-                            const void *channel);
+                            const struct oa_nim_tune_channel *channel);
 int oa_nim_tune_get_channel_status(const struct oa_nim_tune_ops *ops,
                                    void *ud,
                                    struct oa_nim_tune_state *state,
-                                   void *out);
+                                   struct oa_nim_tune_status *out);
 
 /* Adapter to the NIM-DTV typed HAL table. The channel calls stay -ENOTSUP
  * because the vendor table passes no channel/status pointer. */

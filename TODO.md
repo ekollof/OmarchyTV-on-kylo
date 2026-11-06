@@ -1075,10 +1075,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       quality) is implemented and installed in the module's NIM vtable.
       `set_channel`/`get_channel_status` need `SAL_DEMOD_TUN_ProgramTuner`
       (MxL661 RF/IF) and the 0x180-byte status mapping and return -ENOTSUP.
-      The RF/IF standard-index/IF table mapping is recovered in
-      `common/mxl661_tune.c`; the `ConfigTuner` case 9/0xd/0xb register port,
-      per-standard frequency LUTs and the `MxL601_SPUR_REGISTER` table
-      (0x49/0xdb/0xea/0xeb) remain.
+      The MxL661 DVB-T case 9/0xd/0xb RF/IF sequence and the typed
+      SetChannel/GetChannelStatus mapping are implemented
+      (`common/mxl661_rf.c`, `common/nim_tune.c`); analog/cable RF tails, the
+      raw 0x5c/0x180 mappings and the module's pointer-less raw table slots
+      remain.
       SI2151 is the full Silicon Labs L1/L2/L3 `PowerUpWithPatch` + property
       driver, not this profile's path (hwprofile selects SAL 0xd/MxL661).
       Hardware acceptance is blocked by the owner's read-only/no-takeover

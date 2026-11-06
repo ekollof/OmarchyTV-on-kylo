@@ -10,6 +10,7 @@
 
 #include "openaurora/lnb_rt5047.h"
 #include "openaurora/mxl661_dev.h"
+#include "openaurora/mxl661_rf.h"
 #include "openaurora/nim_tune.h"
 
 /* libNDAL3 exports. Hal_Iic_Read/Write return 0 on success;
@@ -40,7 +41,7 @@ static const oa_mxl661_hal_ops hal_ops = { hal_write, hal_read, NULL };
 
 int oa_tuner_vendor_mxl661_init(uint8_t addr, const oa_mxl661_config *cfg)
 {
-    oa_mxl661_ops ops = { oa_mxl661_dev_write, oa_mxl661_dev_read };
+    oa_mxl661_ops ops = { oa_mxl661_dev_write, oa_mxl661_dev_read, NULL };
     return oa_mxl661_init(&ops, (void *)&hal_ops, addr, cfg);
 }
 
@@ -212,9 +213,25 @@ static int tune_rssi(void *ud, int type, uint8_t *rssi)
     return 0; /* MxL661 tuner RSSI sequence is not recovered */
 }
 
+static void tune_sleep(void *ud, unsigned ms)
+{
+    (void)ud;
+    usleep((useconds_t)ms * 1000u);
+}
+
+static int tune_program(void *ud, const struct oa_nim_tune_channel *ch)
+{
+    (void)ud;
+    oa_mxl661_ops mops = { oa_mxl661_dev_write, oa_mxl661_dev_read, tune_sleep };
+    struct oa_mxl661_rf_params p = {
+        ch->freq_hz, ch->standard, ch->bandwidth, ch->if_khz, 0
+    };
+    return oa_mxl661_tune_dvbt(&mops, (void *)&hal_ops, 0xc0, &p) == 0 ? 0 : -1;
+}
+
 static const struct oa_nim_tune_ops vendor_tune_ops = {
     tune_switch, tune_type, tune_deliver, tune_fe_open, tune_fe_close,
-    tune_standby, tune_status, tune_rssi
+    tune_standby, tune_status, tune_rssi, tune_program
 };
 
 const struct oa_nim_tune_ops *oa_tuner_vendor_tune_ops(void)

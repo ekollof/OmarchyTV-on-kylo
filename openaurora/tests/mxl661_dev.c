@@ -118,7 +118,7 @@ static void test_with_init(void)
 {
     struct fake f = { 0 };
     oa_mxl661_hal_ops h = { hal_write, hal_read, &f };
-    oa_mxl661_ops ops = { oa_mxl661_dev_write, oa_mxl661_dev_read };
+    oa_mxl661_ops ops = { oa_mxl661_dev_write, oa_mxl661_dev_read, NULL };
     assert(oa_mxl661_init(&ops, &h, 0xc0, &oa_mxl661_default_config) == 0);
     assert(f.regs[0x31] == 0xd0);
     assert(f.regs[0x04] == 0x06);

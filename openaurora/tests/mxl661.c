@@ -48,7 +48,7 @@ static int fake_read(void *ud, uint8_t addr, uint8_t reg, uint8_t *value)
     return 0;
 }
 
-static const oa_mxl661_ops fake_ops = { fake_write, fake_read };
+static const oa_mxl661_ops fake_ops = { fake_write, fake_read, NULL };
 
 static void init_nonzero_regs(struct fake *f)
 {
