@@ -1062,10 +1062,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       stale-`cfg[3]` IF-out branch) in `common/mxl661.c`, and
       `HAL_TUNER_Init` bus IDs plus `HAL_TUNER_ReadBase/WriteBase` in
       `common/tuner_hal.c`; host, focused ASan/UBSan, full suite and ARM/qemu
-      pass (TUNER-MXL661). Still open: AV2018 construction/GetTunerResponse,
-      `HAL_Demod_Init(0)`, `HAL_dvif_open`/`HAL_DEMOD_EXT_DVIF_SetTunerType`
-      (`0xd -> 0xc`), `SAL_LNB_Initialize`/RT5047, the TV DEV_IIC adapter, and
-      then the NIM-DTV/mod_tuner opt-in wiring; do not touch IIC before it.
+      pass (TUNER-MXL661). Also done (TUNER-BRINGUP): AV2018 `GetTunerResponse`
+      = return1, `HAL_Demod_Init(0)`, `HAL_dvif_open`,
+      `HAL_DEMOD_EXT_DVIF_SetTunerType` (`0xd->0xc`), the 24-byte Hal IIC
+      context, the MxL661 DEV adapter (0xfb pointer), the ordered sequence
+      (`common/tuner_sequence.c`) and the default-off `tuner.hw_init=1` gate in
+      `mod_tuner` (host refuses with -ENOTSUP; ARM `mod_tuner.so` builds with
+      libNDAL3). Still open: LNB_EN GPIO/RT5047 (stock aurora owns
+      `/dev/ntgpio`, index5=LNB_EN), `_dev_nim_dtv_InitNimFunc`/
+      `Connect2HAL` equivalents, the SI2151 backend, and real hardware
+      acceptance after a controlled ownership handover. Do not touch IIC/GPIO
+      while stock owns the devices.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff
       tests pass host/sanitizer/ARM-qemu. CEC-AUDIO-CONTRACT.

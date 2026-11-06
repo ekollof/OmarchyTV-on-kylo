@@ -18,9 +18,18 @@
 #include <time.h>
 
 #include "openaurora/broadcast.h"
+#include "openaurora/efsl_profile.h"
 #include "openaurora/module.h"
+#include "openaurora/mxl661.h"
 #include "openaurora/nim.h"
+#include "openaurora/nim_dtv.h"
+#include "openaurora/nim_dtv_hal.h"
 #include "openaurora/services.h"
+#include "openaurora/tuner_identity.h"
+#include "openaurora/tuner_sequence.h"
+#ifndef OA_NO_VENDOR
+#include "openaurora/tuner_vendor.h"
+#endif
 
 #define SCAN_SERVICES 12
 
@@ -44,6 +53,9 @@ struct ctx {
     int published;
     int ts_source;
     int ts_open;
+    int hw_init;   /* tuner.hw_init=1: explicit hardware gate */
+    int hw_done;
+    uint32_t hw_sal_type;
     char ts_path[512];
     /* ABI 3 quiesce: the TS FILE* is detached and closed on a worker. */
     pthread_t cleanup_thread;
@@ -220,6 +232,126 @@ static const oa_tuner_iface tuner_iface = {
     tuner_selected
 };
 
+/* tuner.hw_init=1 is the explicit hardware gate. The host build refuses it
+ * at load; the TV build runs the recovered HAL_Demod_User_Initialize order and
+ * the NIM-DTV task after the start request, before publishing the service. */
+struct hw_bind {
+    const oa_mxl661_config *cfg;
+    uint8_t addr;
+    int sal_type;
+    int sequence_ran;
+    int sequence_rc;
+    int tuner_ok;
+    oa_nim_dtv_hal nim_hal;
+};
+
+#ifndef OA_NO_VENDOR
+static const oa_nim_dtv_iic_ops hw_iic_ops = {
+    oa_tuner_vendor_hal_iic_read, oa_tuner_vendor_hal_iic_write
+};
+
+static int hw_tuner_init(void *v)
+{
+    struct hw_bind *b = v;
+    int rc = oa_tuner_vendor_mxl661_init(b->addr, b->cfg);
+    b->tuner_ok = rc == 0;
+    return rc;
+}
+
+static int hw_hal_sequence(void *v)
+{
+    struct hw_bind *b = v;
+    oa_tuner_sequence_ops ops = {
+        .demod_init = oa_tuner_vendor_demod_init,
+        .tuner_init = hw_tuner_init,
+        .av2018_response = oa_tuner_vendor_av2018_response,
+        .dvif_open = oa_tuner_vendor_dvif_open,
+        .set_tuner_type = oa_tuner_vendor_set_tuner_type,
+        .lnb_init = NULL /* LNB_EN GPIO is owned by stock Aurora */
+    };
+    oa_tuner_sequence_result result;
+    b->sequence_ran = 1;
+    b->sequence_rc = oa_tuner_sequence_run(&ops, b, (uint32_t)b->sal_type,
+                                           &result);
+    return b->sequence_rc;
+}
+
+static int hw_ir_read(int bus, int code, uint8_t *value, void *v)
+{
+    struct hw_bind *b = v;
+    /* Safety deviation: do not touch the NIM IIC path after a failed tuner
+     * init. The vendor task cannot observe that failure. */
+    if (!b->tuner_ok) return 0;
+    return oa_nim_dtv_hal_read(bus, code, value, &b->nim_hal);
+}
+
+static int hw_ir_write(int bus, int code, uint8_t value, void *v)
+{
+    struct hw_bind *b = v;
+    if (!b->tuner_ok) return 0;
+    return oa_nim_dtv_hal_write(bus, code, value, &b->nim_hal);
+}
+
+static int tuner_hw_bringup(struct ctx *c)
+{
+    const char *path = c->api->config_get(c->api->priv, "tuner.hwprofile",
+                                          "/conf/mb230_hwprofile.bin");
+    FILE *f = fopen(path, "rb");
+    if (!f) return -ENOENT;
+    if (fseek(f, 0, SEEK_END) != 0) { fclose(f); return -EIO; }
+    long n = ftell(f);
+    if (n <= 0 || n > (1 << 20)) { fclose(f); return -EINVAL; }
+    rewind(f);
+    uint8_t *buf = malloc((size_t)n);
+    if (!buf) { fclose(f); return -ENOMEM; }
+    size_t got = fread(buf, 1, (size_t)n, f);
+    fclose(f);
+    if (got != (size_t)n) { free(buf); return -EIO; }
+
+    oa_efsl_profile profile;
+    int rc = oa_efsl_open(&profile, buf, (size_t)n);
+    if (rc != 0) { free(buf); return -EINVAL; }
+    long layout = atol(c->api->config_get(c->api->priv,
+                                          "tuner.pcb_layout", "14"));
+    int sal_type = oa_tuner_sal_type((uint32_t)layout, &profile);
+    free(buf);
+    if (sal_type != OA_TUNER_SAL_MXL661)
+        return -ENOTSUP; /* only the MxL661 backend is recovered */
+    c->hw_sal_type = (uint32_t)sal_type;
+
+    struct hw_bind b = {
+        .cfg = &oa_mxl661_default_config,
+        .addr = 0xc0,
+        .sal_type = sal_type,
+        .nim_hal = { &hw_iic_ops, NULL }
+    };
+    oa_nim_dtv_ops nim = {
+        .module_buf_info = oa_nim_dtv_module_buf_info,
+        .init_nim_func = NULL, /* _dev_nim_dtv_InitNimFunc unresolved */
+        .hal_demod_initialize = hw_hal_sequence,
+        .connect_hal = NULL,   /* _dev_nim_dtv_Connect2HAL unresolved */
+        .ir_read = hw_ir_read,
+        .ir_write = hw_ir_write,
+        .signal_done = NULL,
+        .step = NULL
+    };
+    long model = atol(c->api->config_get(c->api->priv,
+                                         "tuner.nim_model", "0"));
+    oa_nim_dtv_result result;
+    rc = oa_nim_dtv_task_run((int)model, 1, &nim, &b, &result);
+    if (rc != 0) return -EIO;
+    if (!b.tuner_ok || !b.sequence_ran || b.sequence_rc != 0) return -EIO;
+    if (result.failed_step >= 0) return -EIO;
+    return 0;
+}
+#else
+static int tuner_hw_bringup(struct ctx *c)
+{
+    (void)c;
+    return -ENOTSUP;
+}
+#endif
+
 static int m_init(const oa_host_api *api, void **out)
 {
     if (!api || api->size < sizeof(oa_host_api) || api->abi != OA_ABI_VERSION ||
@@ -255,6 +387,15 @@ static int m_init(const oa_host_api *api, void **out)
     } else {
         c->backend = oa_nim_stub_backend();
     }
+    const char *hw = api->config_get(api->priv, "tuner.hw_init", "0");
+    if (hw && (!strcmp(hw, "1") || !strcmp(hw, "true"))) {
+#ifdef OA_NO_VENDOR
+        free(c);
+        return -ENOTSUP;
+#else
+        c->hw_init = 1;
+#endif
+    }
     metrics_default(c);
     *out = c;
     g_ctx = c;
@@ -286,6 +427,11 @@ static int m_start(void *v)
     long delay = atol(c->api->config_get(c->api->priv,
                                          "tuner.cleanup_delay_ms", "0"));
     c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
+    if (c->hw_init && !c->hw_done) {
+        int rc = tuner_hw_bringup(c);
+        if (rc) return rc;
+        c->hw_done = 1;
+    }
     if (c->active) c->backend->nim->stop(c->path);
     c->active = 0;
     c->state = OA_TUNER_IDLE;

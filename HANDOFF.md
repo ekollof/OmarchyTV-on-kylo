@@ -674,6 +674,19 @@ common/mxl661.c + common/tuner_hal.c (bus IDs from desc+0x19, Hal ctx
 ARM/qemu pass. mod_tuner still unwired: AV2018/dvif/LNB + NIM chain remain.
 TUNER-MXL661.
 
+Tuner bring-up/ownership, 2026-11-06: read-only TV fds show stock aurora
+PID1774 owns /dev/i2c-0..5, /dev/ntkiic0, /dev/ntgpio, /dev/ntkdvif,
+frontend0; appmgr owns /dev/ntkgpu. AV2018 constructor data-only and
+GetTunerResponse=return1; HAL_Demod_Init(0) opens/caches dvif, 0 normal/1
+error; HAL_dvif_open returns cached handle; SetTunerType ioctl0xc0044485 maps
+0xc->0xc,5/7->5,6->6,default8; RT5047=LNB_EN (GPIO index5) SetLevel, left
+unbound (/dev/ntgpio owned). Corrected Hal IIC ctx to 24 bytes
+{bus,addr,subaddr_len,0,timeout,0} (100 type0/400 type4), added MxL661 DEV
+adapter (0xfb pointer), sequence layer and default-off tuner.hw_init gate
+(host -ENOTSUP; TV builds mod_tuner.so sha256 50b27429... linking libNDAL3).
+Host/ASan/full/ARM-qemu pass. LNB GPIO + NIM init/connect + hardware
+acceptance remain. TUNER-BRINGUP.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

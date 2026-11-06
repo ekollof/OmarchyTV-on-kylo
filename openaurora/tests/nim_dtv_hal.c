@@ -1,10 +1,10 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "openaurora/hal_iic.h"
 #include "openaurora/nim_dtv.h"
 #include "openaurora/nim_dtv_hal.h"
 
-struct iic_bus { uint32_t bus, reg; };
 static int fail_read, fail_write;
 static int read_calls, write_calls;
 static uint32_t seen_addr;
@@ -14,8 +14,10 @@ static int fake_read(const void *busp, const void *value, unsigned len,
                      void *buf, void *ud)
 {
     (void)ud;
-    const struct iic_bus *bus = busp;
-    assert(bus->bus == 0 && bus->reg == 0x80);
+    const oa_hal_iic_ctx *bus = busp;
+    assert(bus->bus == 0 && bus->addr == 0x80);
+    assert(bus->subaddr_len == 1 && bus->timeout == OA_HAL_IIC_TIMEOUT_NIM);
+    assert(bus->reserved0 == 0 && bus->reserved1 == 0);
     assert(len == 1 && value && buf);
     read_calls++;
     seen_addr = *(const uint32_t *)value;
@@ -27,8 +29,10 @@ static int fake_write(const void *busp, const void *value, unsigned len,
                       void *buf, void *ud)
 {
     (void)ud;
-    const struct iic_bus *bus = busp;
-    assert(bus->bus == 0 && bus->reg == 0x80);
+    const oa_hal_iic_ctx *bus = busp;
+    assert(bus->bus == 0 && bus->addr == 0x80);
+    assert(bus->subaddr_len == 1 && bus->timeout == OA_HAL_IIC_TIMEOUT_NIM);
+    assert(bus->reserved0 == 0 && bus->reserved1 == 0);
     assert(len == 1 && value && buf);
     write_calls++;
     seen_addr = *(const uint32_t *)value;

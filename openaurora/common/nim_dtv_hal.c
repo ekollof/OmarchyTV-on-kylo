@@ -2,21 +2,17 @@
 
 #include <stddef.h>
 
+#include "openaurora/hal_iic.h"
 #include "openaurora/nim_dtv.h"
-
-struct iic_bus {
-    uint32_t bus;
-    uint32_t reg;
-};
 
 int oa_nim_dtv_iic_read(const oa_nim_dtv_iic_ops *ops, int code,
                         uint8_t *value, void *ud)
 {
     if (!ops || !ops->iic_read || !value) return 0;
-    struct iic_bus bus = { 0, 0x80 };
+    oa_hal_iic_ctx ctx = { 0, 0x80, 1, 0, OA_HAL_IIC_TIMEOUT_NIM, 0 };
     uint32_t addr = (uint32_t)code;
     uint8_t byte = 0;
-    int rc = ops->iic_read(&bus, &addr, 1, &byte, ud);
+    int rc = ops->iic_read(&ctx, &addr, 1, &byte, ud);
     if (rc == 0) *value = byte;
     return rc == 0 ? 1 : 0;
 }
@@ -25,10 +21,10 @@ int oa_nim_dtv_iic_write(const oa_nim_dtv_iic_ops *ops, int code,
                          uint8_t value, void *ud)
 {
     if (!ops || !ops->iic_write) return 0;
-    struct iic_bus bus = { 0, 0x80 };
+    oa_hal_iic_ctx ctx = { 0, 0x80, 1, 0, OA_HAL_IIC_TIMEOUT_NIM, 0 };
     uint32_t addr = (uint32_t)code;
     uint8_t byte = value;
-    int rc = ops->iic_write(&bus, &addr, 1, &byte, ud);
+    int rc = ops->iic_write(&ctx, &addr, 1, &byte, ud);
     return rc == 0 ? 1 : 0;
 }
 

@@ -52,10 +52,14 @@ typedef const uint8_t *(*oa_tuner_desc_fn)(int index, void *ud);
  * bus 0, like the vendor's explicit default branch). */
 int oa_tuner_bus_ids(oa_tuner_buses *buses, oa_tuner_desc_fn get, void *ud);
 
-/* Vendor bool convention: 1 = Hal rc 0, 0 = failure. */
+/* Vendor bool convention: 1 = Hal rc 0, 0 = failure.
+ *
+ * HAL_TUNER_Read/Write take the 8-bit I2C address (e.g. 0xc0) and a byte
+ * buffer, not a register: SI2151 called HAL_TUNER_Write(0xc0, {reg, value}, 2)
+ * then HAL_TUNER_Read(0xc0, buf, 4). The context has no subaddress. */
 int oa_tuner_read_base(const oa_tuner_iic_ops *ops, void *ud, uint8_t bus,
-                       uint8_t reg, uint8_t *buf, uint8_t len);
+                       uint8_t i2c_addr, uint8_t *buf, uint8_t len);
 int oa_tuner_write_base(const oa_tuner_iic_ops *ops, void *ud, uint8_t bus,
-                        uint8_t reg, const uint8_t *buf, uint8_t len);
+                        uint8_t i2c_addr, const uint8_t *buf, uint8_t len);
 
 #endif
