@@ -97,17 +97,13 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
       limit. 2026-11-06: LNB init returned success (`lnb=1`); no LNB signal or
       independent voltage check.
 - [ ] Typed/raw 0x5c channel and the verified 0x180 status fields; record the
-      unimplemented per-case maps as still open. 2026-11-07: the service
-      started and `tuner-scan 1`/`tuner-scan 4` plus `tuner-state` ran, but
-      with no RF the typed/raw channel and the 0x180 lock/strength/quality
-      fields are not independently validated; keep open. New gap:
-      `_dev_nim_dtv_TerrTuneTo` calls `HAL_Demod_User_SetChannel`
-      (`[0x01937004+8]`) before WaitLock/CheckLock; that function calls
-      `FUN_0086aab0(&DAT_019370cc, channel)` -> `SAL_DEMOD_TUN_ProgramTuner`
-      + `HAL_Demod_Set`. The current `tuner.backend=hal` start only runs
-      `program_tuner`, so the demod is never given the channel and the
-      reported `lock 1` is not valid. Implement the 0x5c record build and
-      entry-2 call from firmware, then re-test with RF.
+      unimplemented per-case maps as still open. 2026-11-07: implemented the
+      recovered 0x5c DVB-T record builder/parser and the linkable body of the
+      Aurora-only `HAL_Demod_User_SetChannel` (MxL661 program + `HAL_Demod_Set`)
+      behind `tuner.vendor_channel=1`; host tests and a no-RF TV scan pass.
+      Remaining: FTA RF tune/lock and the 0x180 lock/strength/quality
+      acceptance; the 6/7 MHz and platform IF-mode-2 variants are not
+      hardware-validated. The Aurora-only symbol itself is not executed.
 
 2026-11-06 tuner subgroup: staging/preflight/claim and the MxL661 init/sequence
 passed; the NIM task saw a NIM-DTV IIC code-21 NACK, so no tune/lock (also no
@@ -135,6 +131,18 @@ stock 1779 stopped, watchdog disabled. The service started (`status started`,
 `lock 1` is not independent acceptance. Restored by `wdtctl set 10` (appmgr
 1570, aurora 1770, stage/socket absent, profile unchanged). An FTA RF source
 is still required for tune/lock/scan acceptance.
+
+2026-11-07 vendor-channel run: added the recovered 0x5c DVB-T record and the
+linkable `HAL_Demod_User_SetChannel` body (MxL661 program + `HAL_Demod_Set`)
+behind `tuner.vendor_channel=1` (host tests pass; ARM module `7828b42f...`).
+Staged `/buffer/oa-tuner-20261107b` (tar `b9b9dc30...`, manifest/preflight
+verified); service started, `tuner-scan 1` returned ok and advanced
+25/50/75. A first `tuner-scan 4` correctly returned `-EBUSY` while the DVB-T
+scan was SCANNING; the retry after state DONE returned ok and advanced
+0/50/50. No RF, so lock is not acceptance. Restored by `wdtctl set 10`
+(appmgr 1562, aurora 1765, stage/socket absent, profile/fb unchanged). Next:
+FTA RF compare of `vendor_channel=0/1`; 6/7 MHz and IF-mode-2 variants remain
+unvalidated.
 
 ### Display / panel
 

@@ -208,6 +208,19 @@ are fixture contracts, not vendor ABI or hardware parity: no tuner scan, EIT/
 EPG semantics, recording engine, production module, UI or persistence;
 CLI/socket coverage was added later in BROADCAST-IPC. No TV access.
 
+TUNER-VENDOR-CHANNEL-2026-11-07: `HAL_Demod_User_Initialize` and
+`HAL_Demod_User_SetChannel` are exported by **aurora.elf only**, not
+libNDAL3/EX; `HAL_Demod_Set` is the linkable NDAL tail. A replacement cannot
+call the Aurora-only symbols, so the DVB-T SetChannel body is reproduced:
+build the recovered 0x5c record (freq kHz `+0`, bandwidth MHz `+4`, IF mode
+`+0x10`, p4 `+0x14`, signal type 2 `+0x1c`, `ff ff ff 00` `+0x24`), run the
+MxL661 DVB-T program sequence, then `HAL_Demod_Set` with
+`demod[0]=0x12`, `[1]=bandwidth_MHz`, `[4]=p4`, `[5]=1`, `[0x14]=freq_kHz`.
+`tuner.vendor_channel=1` selects it; no duplicate `program_tuner`. Host tests
+and one no-RF TV run pass. No RF tune/lock acceptance, no execution of the
+Aurora-only symbol, and the 6/7 MHz/platform-IF-mode variants remain
+unvalidated. Report: TUNER-VENDOR-CHANNEL-2026-11-07.
+
 EASI-PROBE-2026-11-05: testtool TCP1986 exposes read-only GETCHANNELLIST
 (RSN/name) and ACTIVECHANNELLIST XML (RSN/name/handle/ONID/TSID/SID/type). A
 whitelist-only probe client with bounded parsing, host fixture and ARM build

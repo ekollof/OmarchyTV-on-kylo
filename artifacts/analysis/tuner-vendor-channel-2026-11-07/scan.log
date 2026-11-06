@@ -1,0 +1,36 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+== scan
+ok
+scan_rc=0
+== state1
+network 1 state 1 progress 25 lock 1 services 3 selected 0 error 0 strength 0 quality 0 ber 0.00 snr 0.00 unc 4294967295
+== state2
+network 1 state 1 progress 50 lock 1 services 6 selected 0 error 0 strength 0 quality 0 ber 0.00 snr 0.00 unc 4294967295
+== state3
+network 1 state 1 progress 75 lock 1 services 9 selected 0 error 0 strength 0 quality 0 ber 0.00 snr 0.00 unc 4294967295
+== log
+[215899] INFO host         openaurora starting, modules=./modules
+[215899] INFO host         control socket /tmp/oa-tuner.sock
+[215916] INFO host         loaded tuner v1 (./modules/mod_tuner.so)
+[215922] INFO tuner        tuner hw: rc=0 failed_step=5 nim=1 hal=1 tuner=1 seq=1 seq_rc=0 lnb=1 ir_code=21 ir_write=0 errno=1
+[215922] DBG  tuner        service up: tuner v1
+[215922] INFO host         started tuner
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+setDVIFTunerType DVIF ==> KER_DVIF_IO_PLAT_SET_SALTunerType = PASS, status[0], fd: [13] 
+openaurora: 1 module(s) loaded, control on /tmp/oa-tuner.sock
+== dmesg
+[0-1209.678034] nvt-stbc-ipc: error: ipc_send_and_wait_reply: please fix nvt_err error
+[0-1209.686009] nvt-stbc-ipc: [1;34mIPC (S 0xAE000003), (R 0xF1AE0000)
+[0-1209.692567] nvt-stbc-ipc: error: ipc_send_and_wait_reply: please fix nvt_err error
+[0-1209.700493] nvt-stbc-ipc: 0xfc040000=0xAE000003, 0xfc040004=0xF1AE0000
+[0-1209.707311] nvt-stbc-ipc: error: ipc_send_and_wait_reply: please fix nvt_err error
+[0-1209.715098] nvt-stbc-ipc: Expect cmd=0xAE (1[0:ack, 1:data])[0m
+[0-1209.721570] nvt-stbc-ipc: error: ipc_send_and_wait_reply: please fix nvt_err error
+[0-1209.729421] [nvtstbcipc_write]ipc ret error(-3)
+[0-1215.935404] kdvif: [_KER_DVIF_Open][2562] END
+[0-1215.941002] ki2c: [i2c-0] Dev NACK 

@@ -717,12 +717,15 @@ Second run 2026-11-07 with mod_tuner sha256 cf361243...: service started
 (status started, services tuner:v1), kernel logged ki2c [i2c-0] Dev NACK,
 tuner-scan 1 (DVB-T) and tuner-scan 4 (analog) returned ok and tuner-state
 advanced. No RF source: progress/services are the synthetic scan state
-machine and lock 1 is not independent acceptance; the current hal start only
-runs program_tuner and never HAL_Demod_User_SetChannel, so the demod was not
-given the 0x5c channel. Restored by wdtctl set 10;
-latest stock appmgr 1570/aurora 1770, staging/socket absent, profile
-unchanged. TUNER-TAKEOVER. SI2151 is the full Silicon Labs patch/property
-driver, not this profile's path.
+machine and lock 1 is not independent acceptance. Vendor-channel path
+2026-11-07: HAL_Demod_User_Initialize/SetChannel are Aurora-only, so their
+DVB-T body was reproduced with the recovered 0x5c record, MxL661 program and
+libNDAL3 HAL_Demod_Set behind tuner.vendor_channel=1; host tests and a no-RF
+TV run pass (tuner-scan 1 ok/25-50-75; analog retry ok after the DVB-T scan
+reached DONE; the first analog request correctly returned -EBUSY). Restored
+by wdtctl set 10; latest stock appmgr 1562/aurora 1765, staging/socket absent,
+profile unchanged. TUNER-TAKEOVER/TUNER-VENDOR-CHANNEL. SI2151 is the full
+Silicon Labs patch/property driver, not this profile's path.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
