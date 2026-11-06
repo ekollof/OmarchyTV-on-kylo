@@ -237,6 +237,18 @@ libpthread. Full/QEMU pass. Test broker only; no real mixer/ALSA.
 ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer are async. AUDIO-MIXER-QUIESCE.
 
+mod_tuner quiesce, 2026-11-06: stop an active scan and unpublish tuner
+synchronously, then close the TS replay FILE* synchronously or on a worker
+after tuner.cleanup_delay_ms. ts_open prevents the stop+unload double-quiesce
+from spawning a second worker after the close. m_stop/m_destroy join and close
+leftovers; m_start refuses if published or a worker is live. Control-socket
+test with the generated EIT TS fixture: reload fails fast, tuner-state
+ENODEV, status responsive, old /proc/<pid>/fd TS entry disappears, reload
+reopens it, scan works, stop closes the second fd. Existing stub/TS tuner IPC
+tests pass; ARM links libpthread. Full/QEMU pass. No NIM/frontend/demux or
+PVR hardware. ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/
+audio/cec/audio_mixer/tuner are async. TUNER-QUIESCE.
+
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so
 Hal_Vin wrappers and the real mod_source.so under qemu against an LD_PRELOAD
 fake /dev/video20. Hal_Vin_Open(0) opens /dev/video20 (not /dev/ntkdvif);

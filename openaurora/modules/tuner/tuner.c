@@ -10,10 +10,12 @@
  * remains owner-gated.
  */
 #include <errno.h>
+#include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "openaurora/broadcast.h"
 #include "openaurora/module.h"
@@ -41,7 +43,12 @@ struct ctx {
     int active;
     int published;
     int ts_source;
+    int ts_open;
     char ts_path[512];
+    /* ABI 3 quiesce: the TS FILE* is detached and closed on a worker. */
+    pthread_t cleanup_thread;
+    int cleanup_running;
+    unsigned cleanup_delay_ms;
 };
 
 static struct ctx *g_ctx;
@@ -254,9 +261,31 @@ static int m_init(const oa_host_api *api, void **out)
     return 0;
 }
 
+/* No host API calls after this returns. oa_nim_ts_close owns the global TS
+ * FILE*; the host serializes the new start until this worker has joined. */
+static void *cleanup_worker(void *v)
+{
+    struct ctx *c = v;
+    if (c->cleanup_delay_ms) {
+        const struct timespec pause = {
+            .tv_sec = c->cleanup_delay_ms / 1000u,
+            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
+        };
+        (void)nanosleep(&pause, NULL);
+    }
+    oa_nim_ts_close();
+    c->ts_open = 0;
+    return NULL;
+}
+
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    if (c->published || c->cleanup_running) return -EBUSY;
+    c->cleanup_running = 0;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "tuner.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
     if (c->active) c->backend->nim->stop(c->path);
     c->active = 0;
     c->state = OA_TUNER_IDLE;
@@ -269,6 +298,7 @@ static int m_start(void *v)
     if (c->ts_source) {
         int rc = oa_nim_ts_open(c->ts_path);
         if (rc) return rc;
+        c->ts_open = 1;
     }
     if (c->api->publish(c->api->priv, OA_SVC_TUNER, 1, &tuner_iface)) {
         if (c->ts_source) oa_nim_ts_close();
@@ -276,6 +306,52 @@ static int m_start(void *v)
     }
     c->published = 1;
     return 0;
+}
+
+/* ABI 3 gate: unpublish tuner synchronously and stop any scan, then close the
+ * TS FILE* synchronously or on a worker after tuner.cleanup_delay_ms. */
+static int m_quiesce(void *v)
+{
+    struct ctx *c = v;
+    if (!c) return 0;
+    if (c->cleanup_running) {
+        for (int i = 0; i < 10; i++) {
+            int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+            if (rc == 0) {
+                c->cleanup_running = 0;
+                return 0;
+            }
+            if (rc != EBUSY) {
+                c->cleanup_running = 0;
+                return -EIO;
+            }
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
+        }
+        return -EAGAIN;
+    }
+    if (c->active) {
+        c->backend->nim->stop(c->path);
+        c->active = 0;
+    }
+    if (c->published) {
+        c->api->unpublish(c->api->priv, OA_SVC_TUNER);
+        c->published = 0;
+    }
+    if (!c->ts_open) return 0;
+    if (!c->cleanup_delay_ms) {
+        oa_nim_ts_close();
+        c->ts_open = 0;
+        return 0;
+    }
+    int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+    if (rc) {
+        oa_nim_ts_close();
+        c->ts_open = 0;
+        return -EIO;
+    }
+    c->cleanup_running = 1;
+    return -EAGAIN;
 }
 
 static void m_stop(void *v)
@@ -287,7 +363,14 @@ static void m_stop(void *v)
     }
     if (c->published) c->api->unpublish(c->api->priv, OA_SVC_TUNER);
     c->published = 0;
-    if (c->ts_source) oa_nim_ts_close();
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->ts_open) {
+        oa_nim_ts_close();
+        c->ts_open = 0;
+    }
 }
 
 static int m_suspend(void *v) { (void)v; return 0; }
@@ -296,7 +379,11 @@ static int m_resume(void *v) { (void)v; return 0; }
 static void m_destroy(void *v)
 {
     struct ctx *c = v;
-    if (c && c->ts_source) oa_nim_ts_close();
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->ts_open) oa_nim_ts_close();
     if (g_ctx == v) g_ctx = NULL;
     free(v);
 }
@@ -306,7 +393,7 @@ static const oa_module descriptor = {
     .name = "tuner", .version = "1",
     .requires = { "", 0 }, .init = m_init, .start = m_start,
     .stop = m_stop, .destroy = m_destroy, .suspend = m_suspend,
-    .resume = m_resume
+    .resume = m_resume, .quiesce = m_quiesce
 };
 
 OA_MODULE_EXPORT(descriptor)

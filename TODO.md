@@ -251,13 +251,26 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       reaped before quit, stop gate. Existing watch/timer/suspend/reload tests
       pass; ARM links libpthread. Full/QEMU pass. AUDIO-MIXER-QUIESCE.
 
+- [x] Asynchronous gate for `mod_tuner`: stop an active scan and unpublish
+      `tuner` synchronously, then close the TS replay `FILE*` synchronously or
+      on a worker after `tuner.cleanup_delay_ms`. The `ts_open` flag prevents
+      the stop+unload double-quiesce from spawning a second worker after the
+      close. `m_stop`/`m_destroy` join and close leftovers; `m_start` refuses
+      if published or a worker is live. Control-socket test with the generated
+      EIT TS fixture: reload fails fast, `tuner-state` ENODEV, status
+      responsive, the old `/proc/<pid>/fd` TS entry disappears, the reload
+      reopens it, scan still works, stop closes the second fd. Existing
+      stub/TS tuner IPC tests pass; ARM links libpthread. Full/QEMU pass.
+      TUNER-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
-      `ui_menu`, `audio`, `cec` and `audio_mixer` are the existing models.
+      `ui_menu`, `audio`, `cec`, `audio_mixer` and `tuner` are the existing
+      models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in
