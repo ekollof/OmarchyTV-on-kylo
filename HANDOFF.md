@@ -149,6 +149,15 @@ re-syncs the cards, but the video HAL is not switched; HDR/full-mode zoom
 open; TV DB write needs settings.readonly=0.
 SUBLAUNCHER-VALUES.
 
+ui_vendor quiesce, 2026-11-06: ABI3 gate cancels timers/dialog/slide,
+unsubscribes, releases providers, unpublishes ui.portal and unregisters the
+engine skin synchronously; font pack + settings/sub-launcher text caches are
+detached and freed on a worker (`ui_vendor.cleanup_delay_ms`). The gate is
+idempotent for reload/unload; restore now accepts screen7. Control test:
+reload fails fast, portal republishes, retry completes, stop/unload clean.
+QEMU text/value/static and full suite pass. ir/i18n/settings/ui_vendor are the
+async modules. UI-VENDOR-QUIESCE.
+
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over
 Markt/Netflix (700x280, ~37ms effective) captured one redraw at t=53ms
 (bbox 33,30 620x230) and 16 identical post frames through 621ms. Apps focus is

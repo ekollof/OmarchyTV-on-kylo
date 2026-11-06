@@ -799,11 +799,11 @@ $(BUILD)/core/%.o: core/%.c
 
 $(BUILD)/modules/mod_ui_anim.so: modules/ui_anim/ui_anim.c common/ui_anim.c include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) -lm
 
 $(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/langprofile.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
+	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) -lm
 
 $(BUILD)/modules/mod_ui_engine.so: modules/ui_engine/ui_engine.c include/openaurora/ui_engine.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
@@ -819,7 +819,7 @@ $(BUILD)/modules/mod_ui_omarchy.so: modules/ui_omarchy/ui_omarchy.c include/open
 
 $(BUILD)/modules/mod_ui_diag.so: modules/ui_diag/ui_diag.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c include/openaurora/ui_engine.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h include/openaurora/lua_skin.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/canvas.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) -lm
 
 $(BUILD)/modules/mod_audio_mixer.so: modules/audio_mixer/audio_mixer.c common/audio_broker_wire.c include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_broker.h
 	@mkdir -p $(dir $@)
@@ -2020,6 +2020,11 @@ check: check-ui-menu-service
 $(BUILD)/tests/ui_menu_action: tests/ui_menu_action.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_menu_action.c $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-ui-vendor-quiesce
+check-ui-vendor-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_ui_menu.so $(BUILD)/modules/mod_i18n.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/tests/ui_nav_display.so
+	node tests/ui_vendor_quiesce.cjs $(abspath $(BUILD)) $(abspath $(CURDIR)/..)
+check: check-ui-vendor-quiesce
 
 .PHONY: check-ui-menu-action
 check-ui-menu-action: $(BUILD)/tests/ui_menu_action $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_ui_menu.so $(BUILD)/tests/mod_fake_clock.so

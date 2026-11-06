@@ -32,6 +32,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
+#include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -163,6 +164,27 @@ enum { BAND_RAIL = 0, BAND_CARDS = 1 };
  * the source title and two focus variants for each of the nine source labels. */
 #define MAX_ICONS (1 + 5 + MAX_CARDS + OA_RAIL_HL_FRAMES + 1 + 2 * MAX_SOURCES)
 
+struct text_canvas {
+    unsigned char *rgba;
+    unsigned char *rgba_focus;   /* same glyphs in focused-row ink (#7E000A) */
+    int w, h, x, y;
+};
+
+struct sub_text_canvas {
+    unsigned char *rgba;
+    int w, h;
+};
+
+struct vendor_cleanup {
+    struct oa_font_pack pack;
+    struct text_canvas text[SETTINGS_TEXT_MAX];
+    struct text_canvas title;
+    struct sub_text_canvas sub_text[3];
+    unsigned char *font_data, *font_num_data, *app_font_data, *font_title_data;
+    unsigned char *sub_font_data, *sub_value_data;
+    unsigned char *slide_buf;
+};
+
 struct ctx {
     const oa_host_api *api;
     const oa_ui_engine_iface *d;     /* ui.engine: display/assets/present/ack */
@@ -195,19 +217,15 @@ struct ctx {
     char grid_labels[MAX_GRID][64];
     struct oa_bitmap_font font_title; /* font18: tab title */
     unsigned char *font_title_data;
-    struct settings_text_canvas {
-        unsigned char *rgba;
-        unsigned char *rgba_focus;   /* same glyphs in focused-row ink (#7E000A) */
-        int w, h, x, y;
-    } text[SETTINGS_TEXT_MAX];
-    struct settings_text_canvas title; /* live tab title blob (no focus variant) */
+    struct text_canvas text[SETTINGS_TEXT_MAX];
+    struct text_canvas title; /* live tab title blob (no focus variant) */
     /* Sub-launcher live text: font3 labels + font12 values, localized through
      * ui.i18n. Each blob is one card-sized transparent text surface. */
     const oa_i18n_iface *i18n;
     struct oa_bitmap_font sub_font, sub_value_font;
     unsigned char *sub_font_data, *sub_value_data;
     int sub_fonts_on;
-    struct { unsigned char *rgba; int w, h; } sub_text[3];
+    struct sub_text_canvas sub_text[3];
     int sub_text_ready;
     char sub_text_locale[8];
     /* Selected value index per SUB_CARDS item, in branch item order. -1 means
@@ -260,6 +278,12 @@ struct ctx {
     uint32_t sub_key;
     uint32_t ready_key;              /* ui.engine bound the display: repaint */
     uint64_t tick;    /* repaint timer, when ui.fps > 0 */
+    /* ABI 3 quiesce: logical teardown is synchronous; the large font/text
+     * buffers are detached and freed on a worker. */
+    pthread_t cleanup_thread;
+    int cleanup_running;
+    unsigned cleanup_delay_ms;
+    struct vendor_cleanup *cleanup_heavy;
 };
 
 static struct ctx *g_ctx;
@@ -2941,6 +2965,9 @@ static const oa_ui_skin g_skin = { "vendor", skin_enter, NULL, skin_paint, skin_
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "ui_vendor.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
     sub_values_default(c);
     c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 2);
     if (!c->d) {
@@ -3123,16 +3150,104 @@ static int m_start(void *v)
     return 0;
 }
 
-static void m_stop(void *v)
+static void heavy_detach(struct ctx *c, struct vendor_cleanup *h)
+{
+    memset(h, 0, sizeof *h);
+    h->pack = c->font_pack;
+    memset(&c->font_pack, 0, sizeof c->font_pack);
+    for (int i = 0; i < SETTINGS_TEXT_MAX; i++) {
+        h->text[i] = c->text[i];
+        memset(&c->text[i], 0, sizeof c->text[i]);
+    }
+    h->title = c->title;
+    memset(&c->title, 0, sizeof c->title);
+    h->font_data = c->font_data;
+    h->font_num_data = c->font_num_data;
+    h->app_font_data = c->app_font_data;
+    h->font_title_data = c->font_title_data;
+    h->sub_font_data = c->sub_font_data;
+    h->sub_value_data = c->sub_value_data;
+    c->font_data = c->font_num_data = c->app_font_data = NULL;
+    c->font_title_data = c->sub_font_data = c->sub_value_data = NULL;
+    for (int i = 0; i < 3; i++) {
+        h->sub_text[i] = c->sub_text[i];
+        memset(&c->sub_text[i], 0, sizeof c->sub_text[i]);
+    }
+    h->slide_buf = c->slide_buf;
+    c->slide_buf = NULL;
+    c->text_on = 0;
+    c->font_num_on = 0;
+    c->app_font_on = 0;
+    c->sub_fonts_on = 0;
+    c->sub_text_ready = 0;
+    c->sub_text_locale[0] = '\0';
+    c->title_w = 0;
+    c->slide_box = 0;
+}
+
+static int heavy_has_data(const struct vendor_cleanup *h)
+{
+    if (!h) return 0;
+    if (h->pack.lengths || h->pack.offsets || h->pack.pack_path) return 1;
+    if (h->font_data || h->font_num_data || h->app_font_data ||
+        h->font_title_data || h->sub_font_data || h->sub_value_data ||
+        h->slide_buf)
+        return 1;
+    if (h->title.rgba) return 1;
+    for (int i = 0; i < SETTINGS_TEXT_MAX; i++)
+        if (h->text[i].rgba || h->text[i].rgba_focus) return 1;
+    for (int i = 0; i < 3; i++)
+        if (h->sub_text[i].rgba) return 1;
+    return 0;
+}
+
+static void heavy_free(struct vendor_cleanup *h)
+{
+    if (!h) return;
+    for (int i = 0; i < SETTINGS_TEXT_MAX; i++) {
+        free(h->text[i].rgba);
+        free(h->text[i].rgba_focus);
+    }
+    free(h->title.rgba);
+    free(h->font_data);
+    free(h->font_num_data);
+    free(h->app_font_data);
+    free(h->font_title_data);
+    free(h->sub_font_data);
+    free(h->sub_value_data);
+    oa_font_pack_free(&h->pack);
+    for (int i = 0; i < 3; i++) free(h->sub_text[i].rgba);
+    free(h->slide_buf);
+    free(h);
+}
+
+/* No host API calls and no ctx/paint access after this returns. */
+static void *cleanup_worker(void *v)
 {
     struct ctx *c = v;
+    if (c->cleanup_delay_ms) {
+        const struct timespec pause = {
+            .tv_sec = c->cleanup_delay_ms / 1000u,
+            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
+        };
+        (void)nanosleep(&pause, NULL);
+    }
+    struct vendor_cleanup *h = c->cleanup_heavy;
+    c->cleanup_heavy = NULL;
+    heavy_free(h);
+    return NULL;
+}
+
+/* Idempotent logical teardown: timers, subscriptions, providers, portal and
+ * skin registration. Large buffers stay for heavy_detach(). */
+static void ui_vendor_teardown(struct ctx *c)
+{
     cancel_dialog(c);
     c->sub_anim_live = 0;
     if (c->sub_tick) {
         c->api->timer_del(c->api->priv, c->sub_tick);
         c->sub_tick = 0;
     }
-    settings_text_free(c);
     c->scene_painted = 0;
     if (c->mod_key) {
         c->api->unsubscribe(c->api->priv, c->mod_key);
@@ -3161,8 +3276,7 @@ static void m_stop(void *v)
         c->slide_repeat = 0;
     }
     memset(&c->slide, 0, sizeof c->slide);
-    if (c->anim)
-        c->anim->bind(NULL, NULL);
+    if (c->anim) c->anim->bind(NULL, NULL);
     if (c->anim || c->anim2) {
         c->api->release(c->api->priv, OA_SVC_UI_ANIM);
         c->anim = NULL;
@@ -3201,17 +3315,87 @@ static void m_stop(void *v)
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
         c->d = NULL;
     }
+}
+
+/* ABI 3 gate: tear down synchronously, then free the font/text caches on a
+ * worker. The host retries stop/reload until cleanup_pending clears. */
+static int m_quiesce(void *v)
+{
+    struct ctx *c = v;
+    if (c->cleanup_running) {
+        for (int i = 0; i < 10; i++) {
+            int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+            if (rc == 0) {
+                c->cleanup_running = 0;
+                return 0;
+            }
+            if (rc != EBUSY) {
+                c->cleanup_running = 0;
+                return -EIO;
+            }
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
+        }
+        return -EAGAIN;
+    }
+    ui_vendor_teardown(c);
+    if (!c->cleanup_heavy) {
+        c->cleanup_heavy = calloc(1, sizeof *c->cleanup_heavy);
+        if (!c->cleanup_heavy) return -ENOMEM;
+        heavy_detach(c, c->cleanup_heavy);
+    }
+    if (!heavy_has_data(c->cleanup_heavy)) {
+        heavy_free(c->cleanup_heavy);
+        c->cleanup_heavy = NULL;
+        return 0;
+    }
+    if (!c->cleanup_delay_ms) {
+        heavy_free(c->cleanup_heavy);
+        c->cleanup_heavy = NULL;
+        return 0;
+    }
+    int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+    if (rc) {
+        heavy_free(c->cleanup_heavy);
+        c->cleanup_heavy = NULL;
+        return -EIO;
+    }
+    c->cleanup_running = 1;
+    return -EAGAIN;
+}
+
+static void m_stop(void *v)
+{
+    struct ctx *c = v;
+    ui_vendor_teardown(c);
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->cleanup_heavy) {
+        heavy_free(c->cleanup_heavy);
+        c->cleanup_heavy = NULL;
+    }
     free(c->slide_buf);
     c->slide_buf = NULL;
-    c->title_w = 0;
-    c->slide_box = 0;
+    settings_text_free(c);
+    sub_text_free(c);
 }
 
 static void m_destroy(void *v)
 {
+    struct ctx *c = v;
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    heavy_free(c->cleanup_heavy);
+    c->cleanup_heavy = NULL;
     if (g_ctx == v)
         g_ctx = NULL;
-    settings_text_free(v);
+    free(c->slide_buf);
+    settings_text_free(c);
+    sub_text_free(c);
     free(v);
 }
 
@@ -3289,8 +3473,8 @@ static int m_restore(void *v, const void *buf, size_t len)
     if (!c || !buf || (len != 4 && len != 5))
         return -1;
     const unsigned char *bytes = buf;
-    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS || bytes[3] > SCREEN_CHANNELS ||
-        (len == 5 && bytes[4] >= MAX_GRID))
+    if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS ||
+        bytes[3] > SCREEN_SUBLAUNCHER || (len == 5 && bytes[4] >= MAX_GRID))
         return -1;
     c->band = bytes[0];
     c->rail = bytes[1];
@@ -3314,6 +3498,7 @@ static const oa_module g_module = {
     .destroy = m_destroy,
     .suspend = m_suspend,
     .resume = m_resume,
+    .quiesce = m_quiesce,
     .save = m_save,
     .restore = m_restore,
 };

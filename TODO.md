@@ -172,14 +172,19 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       now has the gate too (SETTINGS-QUIESCE): detach the SQLite handle and
       clear publication flags before unpublishing, close on a worker; the
       control test asserts fast-fail reload, responsive status, retry and the
-      republished `picture-state 1` values. Other modules still stop
-      synchronously.
+      republished `picture-state 1` values. `mod_ui_vendor` now has the gate
+      too (UI-VENDOR-QUIESCE): synchronous timer/subscription/provider/portal/
+      skin teardown, then the font pack and text caches are detached and freed
+      on a worker; idempotent for reload/unload. The control test asserts
+      fast-fail reload, responsive status, retry, republished portal screen7
+      and clean stop/unload. It also fixed restore rejecting screen7. Other
+      modules still stop synchronously.
 
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
-      stop/reload model beyond `ir`/`i18n`/`settings`, with a completion query
-      and bounded client behavior. Do not call `dlclose`/module callbacks from
-      an unowned worker. `display_fb`, `ir`, `i18n` and `settings` are the
-      existing models.
+      stop/reload model beyond `ir`/`i18n`/`settings`/`ui_vendor`, with a
+      completion query and bounded client behavior. Do not call
+      `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
+      `i18n`, `settings` and `ui_vendor` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

@@ -155,6 +155,19 @@ blob, not the live UserPreferences object; video HAL/source switching not
 called; HDR energy variants/full-mode zoom not implemented; TV DB write needs
 settings.readonly=0. SUBLAUNCHER-VALUES and SETTINGS-QUIESCE.
 
+ui_vendor async quiesce, 2026-11-06: the highest-state skin now has the ABI3
+gate. Teardown cancels every timer/slide/dialog, unsubscribes module/service
+events, releases all providers, unpublishes ui.portal and unregisters the
+ui.engine skin synchronously; the font pack and settings/sub-launcher text
+caches are detached and freed on a worker with
+`ui_vendor.cleanup_delay_ms`. A second gate call with an empty cleanup object
+returns0 without another delay, which reload/unload requires. Restore now
+accepts screen7 (sub-launcher) instead of rejecting it >SCREEN_CHANNELS.
+Control test: reload fails fast, status responsive, retry reloads, ui-state
+portal7, stop/retry/unload clean. QEMU text/value/static checks pass; full
+suite passes. ir/i18n/settings/ui_vendor are the async modules; the rest still
+stop synchronously. UI-VENDOR-QUIESCE.
+
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
 Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,
 one redraw at t=53ms (bbox 33,30 620x230, 45,745 px), then 16 identical post
