@@ -1070,6 +1070,15 @@ $(BUILD)/tests/ui_clock: tests/ui_clock.c core/host.h include/openaurora/ui_time
 check-ui-clock: $(BUILD)/tests/ui_clock $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ticker.so
 	@$(BUILD)/tests/ui_clock $(BUILD)/modules
 
+$(BUILD)/tests/sched: tests/sched.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $< $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-sched
+check-sched: $(BUILD)/tests/sched
+	@$(BUILD)/tests/sched
+check: check-sched
+
 $(BUILD)/tests/cec: tests/cec.c common/cec.c include/openaurora/cec.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)

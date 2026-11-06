@@ -18,6 +18,12 @@ replacement defers I/O/publication until resume. Failed replacement has no
 binary rollback. No audio consumer/hardware ownership or writes are added.
 AMP-PROFILE-MODULE-2026-11-04 records DSO and real Unix IPC tests on host/ARM.
 
+The host publishes `sched` for every module. A task is one nonblocking slice
+per loop turn, owned by the module that submitted it, and dropped on unload
+without calling the step. Standby does not slice tasks. `mod_lua` uses it for
+`oa.spawn` / `oa.yield`. The `coroutine` library stays closed. `check-sched`
+covers the host service. No device ownership is added.
+
 Host configuration is a per-host initialization snapshot. `config_get` borrows
 strings from that host's fixed48-entry table; first duplicate wins. Another
 host's initialization or configuration file changes cannot alter those strings.

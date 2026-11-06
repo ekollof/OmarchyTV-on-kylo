@@ -62,6 +62,100 @@ static void api_log(void *priv, int level, const char *fmt, ...)
 
 static void api_emit(void *priv, const char *topic, const void *ev);
 
+/* ------------------------------------------------------------ scheduler */
+
+static oa_sched_task *sched_slot(oa_host *h, uint32_t id)
+{
+    int i;
+    if (!h || !id)
+        return NULL;
+    for (i = 0; i < OA_SCHED_SLOTS; i++)
+        if (h->tasks[i].active && h->tasks[i].id == id)
+            return &h->tasks[i];
+    return NULL;
+}
+
+static int api_sched_submit(void *context, oa_sched_step step, void *ud,
+                            uint32_t delay_ms, uint32_t *id)
+{
+    oa_host *h = context;
+    int i;
+    if (!h || !step)
+        return -1;
+    if (delay_ms > OA_SCHED_DELAY_MAX)
+        delay_ms = OA_SCHED_DELAY_MAX;
+    for (i = 0; i < OA_SCHED_SLOTS; i++) {
+        if (h->tasks[i].active)
+            continue;
+        h->tasks[i].id = next_id(h);
+        h->tasks[i].owner = h->cur_module;
+        h->tasks[i].due = oa_now_ms() + delay_ms;
+        h->tasks[i].step = step;
+        h->tasks[i].ud = ud;
+        h->tasks[i].active = 1;
+        if (id)
+            *id = h->tasks[i].id;
+        return 0;
+    }
+    api_log(h, OA_LOG_ERROR, "sched table full");
+    return -1;
+}
+
+static int api_sched_cancel(void *context, uint32_t id)
+{
+    oa_sched_task *t = sched_slot(context, id);
+    if (!t)
+        return -1;
+    t->active = 0;
+    return 0;
+}
+
+static int api_sched_wake(void *context, uint32_t id)
+{
+    oa_sched_task *t = sched_slot(context, id);
+    if (!t)
+        return -1;
+    t->due = oa_now_ms();
+    return 0;
+}
+
+static int api_sched_live(void *context, uint32_t id)
+{
+    return sched_slot(context, id) != NULL;
+}
+
+void oa_host_sched_pump(oa_host *h)
+{
+    int i, ran = 0;
+    if (!h || h->sched_depth || h->sleep_cycle)
+        return;
+    h->sched_depth++;
+    for (i = 0; i < OA_SCHED_SLOTS && ran < 8; i++) {
+        oa_sched_task *t = &h->tasks[i];
+        uint32_t delay = 0;
+        uint32_t id, prev;
+        int rc;
+        if (!t->active || t->due > oa_now_ms())
+            continue;
+        id = t->id;
+        prev = h->cur_module;
+        h->cur_module = t->owner;
+        rc = t->step(t->ud, &delay);
+        h->cur_module = prev;
+        ran++;
+        if (!t->active || t->id != id)
+            continue;
+        if (rc == OA_SCHED_AGAIN) {
+            if (delay > OA_SCHED_DELAY_MAX)
+                delay = OA_SCHED_DELAY_MAX;
+            t->due = oa_now_ms() + delay;
+        } else {
+            t->active = 0;
+        }
+    }
+    h->sched_depth--;
+}
+
 /* -------------------------------------------------------------- services */
 
 static int api_publish(void *priv, const char *name, uint32_t version, const void *iface)
@@ -466,6 +560,8 @@ int oa_host_init(oa_host *h, const char *modules_dir, const char *config)
     snprintf(h->heartbeat_path, sizeof h->heartbeat_path, "%s", heartbeat);
     h->sleep_iface = (oa_sleep_iface){ h, api_sleep_cycle };
     if (api_publish(h, OA_SVC_SLEEP, 1, &h->sleep_iface) != 0) return -1;
+    h->sched_iface = (oa_sched_iface){ h, api_sched_submit, api_sched_cancel, api_sched_wake, api_sched_live };
+    if (api_publish(h, OA_SVC_SCHED, 1, &h->sched_iface) != 0) return -1;
     return 0;
 }
 
@@ -521,6 +617,9 @@ void oa_host_cleanup_owned(oa_host *h, uint32_t module_id)
     for (int i = 0; i < MAX_HOLDS; i++)
         if (h->holds[i].used && h->holds[i].holder == module_id)
             h->holds[i].used = 0;
+    for (int i = 0; i < OA_SCHED_SLOTS; i++)
+        if (h->tasks[i].active && h->tasks[i].owner == module_id)
+            h->tasks[i].active = 0;
 }
 
 /* ------------------------------------------------------------------- loop */
@@ -555,6 +654,14 @@ static int next_timeout_ms(oa_host *h)
     for (int i = 0; i < MAX_TIMERS; i++)
         if (h->timers[i].active) {
             uint64_t d = h->timers[i].due;
+            if (!have || d < best) {
+                best = d;
+                have = 1;
+            }
+        }
+    for (int i = 0; i < OA_SCHED_SLOTS; i++)
+        if (h->tasks[i].active) {
+            uint64_t d = h->tasks[i].due;
             if (!have || d < best) {
                 best = d;
                 have = 1;
@@ -689,6 +796,9 @@ static int module_has_loop_work(const oa_host *h)
     for (int i = 0; i < MAX_WATCHES; i++)
         if (h->watches[i].active && h->watches[i].owner)
             return 1;
+    for (int i = 0; i < OA_SCHED_SLOTS; i++)
+        if (h->tasks[i].active && h->tasks[i].owner)
+            return 1;
     return 0;
 }
 
@@ -734,6 +844,7 @@ static int shutdown_modules(oa_host *h)
     h->shutting_down = 1;
     for (;;) {
         oa_host_dispatch_posts(h);
+        oa_host_sched_pump(h);
         fire_due_timers(h);
         if (!modules_loaded(h))
             return 0;
@@ -762,6 +873,7 @@ int oa_host_run(oa_host *h)
     int rc = 0;
     while (h->running && !h->stop_requested) {
         oa_host_dispatch_posts(h);
+        oa_host_sched_pump(h);
         fire_due_timers(h);
         if (!h->running || h->stop_requested)
             break;

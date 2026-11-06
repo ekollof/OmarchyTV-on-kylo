@@ -99,6 +99,8 @@ are rejected.
 | `oa.bound(key)` | Action string, or nil. |
 | `oa.anim_ms(id)` | Duration, or nil. |
 | `oa.after(ms, fn)` | One-shot. `ms` is 0..60000. At most 4 armed at once. Not available while a candidate is being validated. The host timer is owned by the skin that invoked the hook, because the host stamps the caller. This module also deletes the timer by id before the state is closed or suspended, so a stale callback cannot run. |
+| `oa.spawn(fn)` | Queue `fn` on the host `sched` service. At most 4 tasks. Returns the task id. The function does not run inside the hook that called `spawn`. Not available while a candidate is being validated. |
+| `oa.yield(ms)` | Pause the running task for `ms` milliseconds (`0`..`60000`). `0` continues on the next host turn. Illegal outside a spawned task. |
 | `oa.fetch(url, fn)` | See below. At most 2 queued or in flight per state. |
 | `oa.state` | A table the host persists. Keys are strings of length 1..32. Values are booleans, integers, or strings of length 0..64. At most 32 keys. Any other value makes save, migrate, or reload fail. |
 
@@ -198,7 +200,7 @@ Removed, each set to nil:
 | `io.tmpfile`, `io.stdin`, `io.stdout`, `io.stderr` | No process stdio. The control socket and logs stay with the host. |
 | `io.input`, `io.output`, `io.read`, `io.write`, `io.lines`, `io.flush`, `io.close` | Those operate on the default process files. Use the handle returned by `io.open`. |
 | `dofile`, `loadfile`, `load`, `require` | No second source of code. The only loaded chunk is the configured script, as text. |
-| `debug`, `package`, `coroutine` | No debugger, no module search path, no yields the host loop does not schedule. |
+| `debug`, `package`, `coroutine` | No debugger, no module search path, and no coroutine library. Background work is `oa.spawn` / `oa.yield` on the host scheduler, which is what resumes the task. |
 
 `io.open(path, mode)`:
 
@@ -278,10 +280,21 @@ it counts against the Lua memory cap when it is pushed.
 
 `suspend` / `resume` of the `lua` module keep the state. Timers are zero
 across suspend. Resume does not replay them; the script arms them again from
-a later hook. In-flight fetches are cancelled, not paused. Resume stays
+a later hook. In-flight fetches are cancelled, not paused. Spawned tasks are
+dropped the same way and are not resumed. Resume stays
 suspended when the 50 ms fetch pump cannot be allocated, and start fails
 the same way. Queued `oa.fetch` work is started by that pump, so the service
 is not left published without it.
+
+`oa.spawn` is the background path for script work. The host `sched` service
+runs one slice of the task on the loop thread, and only when no hook is in
+progress. `oa.yield` returns to that scheduler. A task error restores the
+layout, theme, and nav from the start of that slice and drops the task.
+`oa.fetch` stays a callback; call it from the task or from a hook, and the
+callback runs later on the main state. Spawn does not open `coroutine`, does
+not create a thread, and does not make `file:read` asynchronous. Quiesce,
+stop, reload, and suspend drop every task. A task that yields `0` forever
+keeps the loop turning without sleeping; wait with a positive delay.
 
 `stop` / `unload` leave no script timers and no watches. Unload is refused
 while a skin still holds the service, unless the operator forces it. Do not
@@ -298,7 +311,8 @@ the hold is there to prevent.
 - It does not bound every C call. A hostile or accidental `file:read("*a")`
   of a huge regular file can block the loop. The memory cap limits the
   string that results, not the time spent in `read`.
-- It does not provide `debug`, coroutines, `require`, or binary chunks.
+- It does not provide `debug`, the `coroutine` library, `require`, or binary chunks.
+  `oa.spawn` is a host task, not `coroutine.create`.
 - It does not provide shell, process stdio, or device files.
 - It does not implement telemetry, advertising, ACR, analytics, tracking,
   profiling, or ad delivery. Do not script those.

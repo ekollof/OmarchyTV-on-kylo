@@ -97,8 +97,20 @@ typedef struct {
 } oa_post;
 
 typedef struct {
+    uint32_t id;
+    uint32_t owner;
+    uint64_t due;
+    oa_sched_step step;
+    void *ud;
+    int active;
+} oa_sched_task;
+
+typedef struct {
     oa_host_api api;
     oa_sleep_iface sleep_iface;
+    oa_sched_iface sched_iface;
+    oa_sched_task tasks[OA_SCHED_SLOTS];
+    int sched_depth;
 
     oa_mod mods[MAX_MODULES];
     oa_timer timers[MAX_TIMERS];
@@ -157,6 +169,9 @@ void oa_host_cleanup_owned(oa_host *h, uint32_t module_id);
 int oa_host_enable_posts(oa_host *h, uint32_t module_id);
 void oa_host_disable_posts(oa_host *h, uint32_t module_id);
 void oa_host_dispatch_posts(oa_host *h);
+/* One slice of each due task, at most eight tasks. Nested calls do nothing.
+ * Standby (sleep_cycle) does not slice. */
+void oa_host_sched_pump(oa_host *h);
 int oa_host_service_held_by_others(oa_host *h, const char *name, uint32_t owner);
 int oa_host_service_exists(oa_host *h, const char *name);
 oa_mod *oa_host_find_module(oa_host *h, const char *name);

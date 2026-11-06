@@ -178,6 +178,27 @@ typedef struct {
                   oa_sleep_result *result);
 } oa_sleep_iface;
 
+/* Host-owned cooperative scheduler. Loop-thread only. A step runs on the
+ * host loop under the module that submitted it, one slice per turn, and
+ * must not block, re-enter the loop, or call module lifecycle. Return
+ * OA_SCHED_DONE when finished, OA_SCHED_AGAIN to run after *delay_ms
+ * (0 is the next turn, values above 60000 are capped), or a negative
+ * value to drop the task. cancel does not call the step. Stop and unload
+ * drop that owner's tasks and leave userdata with the caller. Standby
+ * does not slice tasks; a due task waits until the cycle ends. */
+#define OA_SVC_SCHED "sched"
+#define OA_SCHED_SLOTS 32
+#define OA_SCHED_DELAY_MAX 60000u
+enum { OA_SCHED_DONE = 0, OA_SCHED_AGAIN = 1 };
+typedef int (*oa_sched_step)(void *ud, uint32_t *delay_ms);
+typedef struct {
+    void *context;
+    int (*submit)(void *context, oa_sched_step step, void *ud, uint32_t delay_ms, uint32_t *id);
+    int (*cancel)(void *context, uint32_t id);
+    int (*wake)(void *context, uint32_t id);
+    int (*live)(void *context, uint32_t id);
+} oa_sched_iface;
+
 /* cec.owner — worker lifecycle only. hardware_open_supported is 0 until a
  * firmware-backed authority and exclusive-open backend is explicitly installed. */
 #define OA_SVC_CEC_OWNER "cec.owner"

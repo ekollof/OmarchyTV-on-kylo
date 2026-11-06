@@ -12,9 +12,10 @@
  *   2. Do not cache pointers from lookup() across a stop(); drop them with release()
  *      in stop(). The host refuses to unload a module whose services are still held,
  *      so a well-behaved module is never unloaded underneath its consumers.
- *   3. Anything you register (timer, fd watch, subscription, service) is owned by the
- *      host and is destroyed automatically when your module unloads. Do not rely on
- *      stop() having run.
+ *   3. Anything you register (timer, fd watch, subscription, service, scheduler
+ *      task) is owned by the host and is destroyed automatically when your module
+ *      unloads. Do not rely on stop() having run. A scheduler step is not called
+ *      when the task is dropped; free its userdata from stop().
  *   4. No C++ across this boundary: no std::string, no exceptions, no virtuals.
  */
 #ifndef OPENAURORA_MODULE_H

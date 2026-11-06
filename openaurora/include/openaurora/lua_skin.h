@@ -11,6 +11,9 @@
  * loop or seize the framebuffer, CEC or the amplifier. Weather and RSS use
  * oa.fetch (http/https only, size and time capped, nonblocking). No
  * debug/package/coroutine, no binary chunks, no telemetry or advertising.
+ * oa.spawn runs a function as a host scheduler task. oa.yield pauses that
+ * task until a later loop turn. The coroutine library stays closed, and a
+ * task does not run while a hook holds the state.
  *
  * oa.aurora is an optional control-plane bridge. ui.lua.control=0 disables it
  * (default), 1 permits read-only control queries, and 2 permits deferred

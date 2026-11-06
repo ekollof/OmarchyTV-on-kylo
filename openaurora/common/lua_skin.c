@@ -1,5 +1,6 @@
 #include "openaurora/lua_skin.h"
 #include "openaurora/module.h"
+#include "openaurora/services.h"
 
 #include <errno.h>
 #include <stdint.h>
@@ -38,6 +39,7 @@ extern char **environ;
 #define FETCHES 2
 #define FETCH_BODY (64 * 1024)
 #define URL_MAX 480
+#define TASKS 4
 
 struct box {
     size_t used;
@@ -114,6 +116,17 @@ struct fetch {
     struct runtime *rt;
 };
 
+struct task {
+    int used;
+    int ref;
+    lua_State *co;
+    uint32_t sched_id;
+    uint32_t delay_ms;
+    uint32_t generation;
+    struct session *session;
+    struct runtime *rt;
+};
+
 struct session {
     struct box box;
     struct model model;
@@ -122,6 +135,7 @@ struct session {
     size_t source_len;
     struct slot slots[TIMERS];
     struct fetch fetches[FETCHES];
+    struct task tasks[TASKS];
 };
 
 struct runtime {
@@ -142,6 +156,7 @@ struct runtime {
     uint32_t timer_gen;
     uint32_t fetch_gen;
     uint64_t pump_id;
+    const oa_sched_iface *sched;
     char message[160];
     unsigned char *snap;
     size_t snap_len;
@@ -795,6 +810,9 @@ static void on_fetch_watch(void *ud, int fd, unsigned revents)
         finish_fetch(f->rt, f->rt->live, f);
 }
 
+static void drop_task(struct runtime *rt, struct session *s, struct task *t);
+static void sweep_tasks(struct runtime *rt);
+
 static void on_pump(void *ud)
 {
     struct runtime *rt = ud;
@@ -802,6 +820,7 @@ static void on_pump(void *ud)
     int i;
     if (!rt || rt->quiescing || rt->suspended)
         return;
+    sweep_tasks(rt);
     s = rt->live;
     if (!s)
         return;
@@ -871,6 +890,116 @@ static int l_fetch(lua_State *L)
     return 0;
 }
 
+static struct task *task_of(lua_State *L)
+{
+    struct session *s = session_of(L);
+    int i;
+    if (!s)
+        return NULL;
+    for (i = 0; i < TASKS; i++)
+        if (s->tasks[i].used && s->tasks[i].co == L)
+            return &s->tasks[i];
+    return NULL;
+}
+
+static int task_step(void *ud, uint32_t *delay_ms)
+{
+    struct task *t = ud;
+    struct runtime *rt;
+    struct session *s;
+    struct model saved;
+    int nres = 0;
+    int rc;
+    (void)nres;
+    if (!t || !t->used)
+        return -1;
+    rt = t->rt;
+    s = t->session;
+    if (!rt || !s || !s->L || s != rt->live || t->generation != rt->generation ||
+        rt->suspended || rt->quiescing) {
+        return -1;
+    }
+    /* A hook owns the state until it returns. Slice this task on a later turn. */
+    if (rt->in_call) {
+        if (delay_ms)
+            *delay_ms = 0;
+        return OA_SCHED_AGAIN;
+    }
+    saved = s->model;
+    s->box.steps = 0;
+    t->delay_ms = 0;
+    lua_sethook(t->co, hook, LUA_MASKCOUNT, s->box.interval);
+    rc = lua_resume(t->co, NULL, 0, &nres);
+    lua_sethook(t->co, NULL, 0, 0);
+    if (rc == LUA_YIELD) {
+        if (delay_ms)
+            *delay_ms = t->delay_ms;
+        return OA_SCHED_AGAIN;
+    }
+    if (rc != LUA_OK) {
+        const char *msg = lua_tostring(t->co, -1);
+        s->model = saved;
+        map_msg(rt, msg);
+        lua_pop(t->co, 1);
+    }
+    drop_task(rt, s, t);
+    return rc == LUA_OK ? OA_SCHED_DONE : -1;
+}
+
+static int l_yield(lua_State *L)
+{
+    struct task *t = task_of(L);
+    int ms = 0;
+    if (!t)
+        return luaL_error(L, "yield outside task");
+    if (range_int(L, 1, 0, (int)OA_SCHED_DELAY_MAX, &ms) != 0)
+        return luaL_error(L, "yield delay");
+    t->delay_ms = (uint32_t)ms;
+    return lua_yield(L, 0);
+}
+
+static int l_spawn(lua_State *L)
+{
+    struct runtime *rt = rt_of(L);
+    struct session *s;
+    struct task *t = NULL;
+    lua_State *co;
+    int i, ref;
+    uint32_t id = 0;
+    if (!rt || !rt->live || rt->live->L != L)
+        return luaL_error(L, "tasks are not available during validation");
+    if (rt->quiescing || rt->suspended || !rt->sched)
+        return luaL_error(L, "tasks are not available");
+    s = rt->live;
+    luaL_checktype(L, 1, LUA_TFUNCTION);
+    for (i = 0; i < TASKS; i++)
+        if (!s->tasks[i].used) {
+            t = &s->tasks[i];
+            break;
+        }
+    if (!t)
+        return luaL_error(L, "task table full");
+    co = lua_newthread(L);
+    lua_pushvalue(L, 1);
+    lua_xmove(L, co, 1);
+    ref = luaL_ref(L, LUA_REGISTRYINDEX);
+    t->used = 1;
+    t->ref = ref;
+    t->co = co;
+    t->sched_id = 0;
+    t->delay_ms = 0;
+    t->generation = rt->generation;
+    t->session = s;
+    t->rt = rt;
+    if (rt->sched->submit(rt->sched->context, task_step, t, 0, &id) != 0) {
+        drop_task(rt, s, t);
+        return luaL_error(L, "scheduler rejected the task");
+    }
+    t->sched_id = id;
+    lua_pushinteger(L, (lua_Integer)id);
+    return 1;
+}
+
 static const luaL_Reg oa_funcs[] = {
     {"layout", l_layout},
     {"nav", l_nav},
@@ -883,6 +1012,8 @@ static const luaL_Reg oa_funcs[] = {
     {"anim_ms", l_anim_ms},
     {"after", l_after},
     {"fetch", l_fetch},
+    {"spawn", l_spawn},
+    {"yield", l_yield},
     {NULL, NULL}
 };
 
@@ -1161,11 +1292,49 @@ static int protected(struct runtime *rt, struct session *s, int nargs, int nres)
     return -1;
 }
 
+static void drop_task(struct runtime *rt, struct session *s, struct task *t)
+{
+    if (!t || !t->used)
+        return;
+    if (t->sched_id && rt && rt->sched)
+        rt->sched->cancel(rt->sched->context, t->sched_id);
+    t->sched_id = 0;
+    if (s && s->L && t->ref != LUA_NOREF)
+        luaL_unref(s->L, LUA_REGISTRYINDEX, t->ref);
+    t->ref = LUA_NOREF;
+    t->co = NULL;
+    t->used = 0;
+}
+
+static void drop_tasks(struct runtime *rt, struct session *s)
+{
+    int i;
+    if (!s)
+        return;
+    for (i = 0; i < TASKS; i++)
+        drop_task(rt, s, &s->tasks[i]);
+}
+
+static void sweep_tasks(struct runtime *rt)
+{
+    struct session *s;
+    int i;
+    if (!rt || !rt->sched || !rt->live)
+        return;
+    s = rt->live;
+    for (i = 0; i < TASKS; i++) {
+        struct task *t = &s->tasks[i];
+        if (t->used && t->sched_id && !rt->sched->live(rt->sched->context, t->sched_id))
+            drop_task(rt, s, t);
+    }
+}
+
 static void close_session(struct runtime *rt, struct session *s)
 {
     int i;
     if (!s)
         return;
+    drop_tasks(rt, s);
     if (rt)
         cancel_session_fetches(rt, s);
     if (rt)
@@ -1199,6 +1368,8 @@ static struct session *new_session(struct runtime *rt)
         s->fetches[i].fd = -1;
         s->fetches[i].ref = LUA_NOREF;
     }
+    for (i = 0; i < TASKS; i++)
+        s->tasks[i].ref = LUA_NOREF;
     s->L = lua_newstate(alloc_lua, &s->box);
     if (!s->L) {
         free(s);
@@ -1824,6 +1995,7 @@ static int rt_quiesce(struct runtime *rt)
      * cannot look it up and swap or hook the session under the child. */
     unpublish_service(rt);
     drop_pump(rt);
+    drop_tasks(rt, rt->live);
     if (!rt->live)
         return 0;
     for (i = 0; i < FETCHES; i++) {
@@ -1874,8 +2046,21 @@ static struct runtime *rt_create(const oa_host_api *api)
     rt->memory_limit = (size_t)clamp_u(mem, 1024, 128, 4096) * 1024u;
     rt->max_steps = clamp_u(steps, 100000, 1000, 1000000);
     rt->max_bytes = clamp_u(bytes, 32768, 256, SCRIPT_MAX);
+    rt->sched = api->lookup(api->priv, OA_SVC_SCHED, 1);
+    if (!rt->sched) {
+        free(rt);
+        return NULL;
+    }
     g_rt = rt;
     return rt;
+}
+
+static void release_sched(struct runtime *rt)
+{
+    if (!rt || !rt->sched || !rt->api)
+        return;
+    rt->api->release(rt->api->priv, OA_SVC_SCHED);
+    rt->sched = NULL;
 }
 
 static void rt_destroy(struct runtime *rt)
@@ -1885,9 +2070,11 @@ static void rt_destroy(struct runtime *rt)
     drop_pump(rt);
     if (rt->live) {
         drop_timers(rt, rt->live);
+        drop_tasks(rt, rt->live);
         close_session(rt, rt->live);
         rt->live = NULL;
     }
+    release_sched(rt);
     free(rt->snap);
     if (g_rt == rt)
         g_rt = NULL;
@@ -1946,9 +2133,11 @@ static void rt_stop(struct runtime *rt)
     unpublish_service(rt);
     if (rt->live) {
         drop_timers(rt, rt->live);
+        drop_tasks(rt, rt->live);
         close_session(rt, rt->live);
         rt->live = NULL;
     }
+    release_sched(rt);
     rt->generation++;
     rt->fetch_gen++;
 }
@@ -1960,6 +2149,7 @@ static int rt_suspend(struct runtime *rt)
     drop_pump(rt);
     if (rt->live)
         cancel_session_fetches(rt, rt->live);
+    drop_tasks(rt, rt->live);
     drop_timers(rt, rt->live);
     rt->fetch_gen++;
     rt->suspended = 1;

@@ -2279,6 +2279,16 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       (`check-ui-lua`); that path was not re-run under ASan/UBSan or ARM.
       This is not television startup or scanout; criterion 4 stays unmet.
       See openaurora/docs/LUA.md.
+- [x] Host `sched` service for cooperative background work, shared by Lua and
+      other modules. At most 32 tasks. Each due task runs one nonblocking slice
+      per loop turn (at most eight slices a turn). Delay 0 continues on the
+      next turn; longer delays are capped at 60 s. `wake` makes a task due.
+      `cancel`, stop, and unload drop the owner's tasks without calling the
+      step. Standby defers slicing. `oa.spawn` / `oa.yield` use it; the
+      `coroutine` library stays closed, and a task does not run during a hook.
+      Suspend, reload, stop, and quiesce drop Lua tasks. `check-sched` and the
+      spawn case in `check-ui-lua` pass on the host. No ASan/UBSan, ARM, or
+      television run. See openaurora/docs/LUA.md.
 - [x] Gated `oa.aurora` Lua control bridge: `ui.lua.control` defaults off;
       1 allows synchronous read-only control queries, 2 allows deferred
       control commands through the host post queue. `aurora.query`,

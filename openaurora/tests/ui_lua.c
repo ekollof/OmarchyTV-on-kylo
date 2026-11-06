@@ -125,6 +125,7 @@ static void drive(oa_host *h, int rounds)
         }
         fire_due(h);
         oa_host_dispatch_posts(h);
+        oa_host_sched_pump(h);
     }
 }
 
@@ -538,6 +539,36 @@ int main(int argc, char **argv)
         drop(&host);
         puts("  ok   aurora query/request bridges a read-only and deferred control command");
         unlink(aurora_path);
+    }
+    {
+        char spawn_path[320];
+        int handled = 0;
+        snprintf(spawn_path, sizeof spawn_path, "%s/spawn.lua", g_root);
+        write_file(spawn_path,
+            "function oa_paint(skin)\n"
+            "  assert(coroutine == nil)\n"
+            "  oa.spawn(function()\n"
+            "    oa.yield(0)\n"
+            "    oa.nav(6, 2)\n"
+            "  end)\n"
+            "  oa.nav(6, 1)\n"
+            "  return 1\n"
+            "end\n");
+        lua = hold(&host);
+        assert(lua->reload_script(spawn_path) == 0);
+        assert(lua->call("paint", "omarchy", 0, &handled) == 0 && handled == 1);
+        assert(lua->nav(&band, &index) == 0 && band == 6 && index == 1);
+        drop(&host);
+        oa_host_sched_pump(&host);
+        lua = hold(&host);
+        assert(lua->nav(&band, &index) == 0 && band == 6 && index == 1);
+        drop(&host);
+        oa_host_sched_pump(&host);
+        lua = hold(&host);
+        assert(lua->nav(&band, &index) == 0 && band == 6 && index == 2);
+        drop(&host);
+        unlink(spawn_path);
+        puts("  ok   a spawned task yields and resumes on the host scheduler");
     }
     assert(!command(&host, "stop ui_omarchy", out, sizeof out));
     assert(!command(&host, "unload ui_omarchy", out, sizeof out));
