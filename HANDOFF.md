@@ -181,7 +181,26 @@ display quiesce, 2026-11-06: existing restore/close worker now has
 rejects draw/present/info, m_stop unpublishes after join, errors are throttled.
 Fake fb1 memfd; suspend/resume/stop/reload/reuse snapshot equality still
 passes. Not a real driver/GPU/scanout teardown. Full suite/QEMU pass.
-ir/i18n/settings/ui_vendor/ui_engine/display are async. DISPLAY-QUIESCE.
+DISPLAY-QUIESCE.
+
+mod_source quiesce, 2026-11-06: unpublish `source` and detach the VIN fd
+synchronously, then close on a worker after `source.cleanup_delay_ms`;
+tryjoin/idempotent for stop+unload, m_stop/m_destroy join. Fake-VIN control
+test: reload fails fast, source-state ENODEV, status responsive, retry reopens
+VIN (close before open), stop gate closes the second fd, source.enable holds.
+ARM mod_source links libpthread+vendor libs. Full/QEMU pass. The fixture close
+is log-only; VIN-DEVICE-SIM below executes the real Hal_Vin_Close. Real
+kernel-driver/V4L2/HDMI/HAL thread safety unproven.
+ir/i18n/settings/ui_vendor/ui_engine/display/source are async.
+SOURCE-QUIESCE.
+
+Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so
+Hal_Vin wrappers and the real mod_source.so under qemu against an LD_PRELOAD
+fake /dev/video20. Hal_Vin_Open(0) opens /dev/video20 (not /dev/ntkdvif);
+SelectInput ioctl0xc0045627 (id3/id66), SetStreamStart ioctl0x40045612 (on1),
+Close close. The real module's reload/stop gate closes before reopening.
+libNDAL_EX supplies gs32Ndp_PQ_fd; vendor libs staged. check-vin-real. Not the
+kernel driver, V4L2/HDMI routing or TV acceptance. VIN-DEVICE-SIM.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over
 Markt/Netflix (700x280, ~37ms effective) captured one redraw at t=53ms
@@ -201,8 +220,8 @@ Control client, 2026-11-05: `oa-client` has a default 5 s timeout and
 `ir.device` is explicit. Silent-server test passes 1.02 s timeout / 0.00 s
 no-wait. `mod_ir` also has the ABI 3 worker cleanup gate: a slow UART/BLAST
 close returns EAGAIN, the first reload fails fast, and a retry completes; the
-pty + 400 ms-delay test passes. Other modules still stop synchronously.
-OA-CLIENT-ASYNC.
+pty + 400 ms-delay test passes. Later gates: i18n, settings, ui_vendor,
+ui_engine, display, source. OA-CLIENT-ASYNC.
 
 Offline IR IPC, 2026-11-05: `tests/ir_ipc.cjs` now drives `mod_ir` over the
 real Unix control socket with plat/recorder/ui_engine/ui_vendor fixtures

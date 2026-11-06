@@ -195,8 +195,28 @@ closing (draw/present/info return-1), the worker restores the snapshot and
 closes the layer, m_stop unpublishes after join; retry is throttled on error.
 Fake fb1 memfd1920x1080 32bpp2 frames; existing suspend/resume/stop/reload/reuse
 snapshot equality still passes. Full suite/QEMU pass. This is not a real
-driver/GPU/scanout teardown. ir/i18n/settings/ui_vendor/ui_engine/display are
-the async modules. DISPLAY-QUIESCE.
+driver/GPU/scanout teardown. DISPLAY-QUIESCE.
+
+mod_source async gate, 2026-11-06: unpublish `source` and detach the VIN fd
+synchronously (stale iface sees fd<0/unavailable), then `Hal_Vin_Close` on a
+worker after `source.cleanup_delay_ms`; tryjoin/idempotent for stop+unload,
+m_stop/m_destroy join and close leftovers. Fake-VIN control test: reload fails
+fast, source-state already ENODEV, status responsive, retry reopens VIN with
+the worker close before the new open; stop gate closes the second fd;
+source.enable=0 still refuses. ARM mod_source links libpthread+vendor libs.
+Full suite/QEMU pass. The fixture close is log-only; the real Hal_Vin_Close
+path is exercised by VIN-DEVICE-SIM below. Real kernel-driver/V4L2/HDMI and
+HAL thread safety unproven. ir/i18n/settings/ui_vendor/ui_engine/display/
+source are the async modules. SOURCE-QUIESCE.
+
+Real VIN HAL device simulation, 2026-11-06: the shipped ARM libNDAL3.so
+Hal_Vin wrappers and the real ARM mod_source.so run under qemu against an
+LD_PRELOAD fake /dev/video20. Hal_Vin_Open(0) opens /dev/video20 (not
+/dev/ntkdvif), SelectInput is ioctl0xc0045627 (id3 HDMI1, id66 HDMI3),
+SetStreamStart is ioctl0x40045612 (on1), Close is close. The real module's
+reload/stop async gate closes on the worker before reopening. libNDAL_EX.so
+supplies gs32Ndp_PQ_fd; ALSA/V4L2/nteec/mhash libs are staged. check-vin-real.
+Not the kernel driver, V4L2/HDMI routing or TV acceptance. VIN-DEVICE-SIM.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
 Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,
@@ -213,8 +233,8 @@ and supports `--no-wait`; the silent-server test covers 1.02 s timeout and
 now has the ABI 3 worker cleanup gate: `m_quiesce` transfers UART/BLAST fds and
 libdl handles, returns EAGAIN while closing, and a later retry completes. The
 pty + 400 ms-delay test shows fail-fast reload, responsive status and successful
-retry; host/ARM builds pass. Other modules still stop synchronously.
-OA-CLIENT-ASYNC-2026-11-05.
+retry; host/ARM builds pass. Later gates: i18n, settings, ui_vendor,
+ui_engine, display, source. OA-CLIENT-ASYNC-2026-11-05.
 
 Temporary takeover, 2026-11-05: openaurora owned fb1 while `aurora.elf` was
 stopped. Vendor Startpagina was the live skin. Right through the shipped IR

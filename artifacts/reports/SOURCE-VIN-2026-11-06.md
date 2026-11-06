@@ -29,6 +29,16 @@ The Bronlijst rows map to:
 `mod_source` still enforces `source.enable`; a disabled module returns -2 and
 the UI does not claim a switch.
 
+Later evidence (VIN-DEVICE-SIM-2026-11-06) executed the shipped ARM
+`libNDAL3.so` wrappers and the real `mod_source.so` under qemu against a
+preload fake device. Correction: `Hal_Vin_Open(0)` builds and opens
+**`/dev/video20`** (the VIN V4L2 node), not `/dev/ntkdvif`; `/dev/ntkdvif` is
+a separate global device string. The observed sequence was
+`open /dev/video20`, `select id=3`, `start on=1`, and for HDMI3
+`select id=66`; the real module's async reload/stop gate closed the fd on the
+worker before reopening. The fake device returns success for the two known
+ioctls and is not the kernel driver.
+
 ## UI transition
 
 `ui_vendor` Bronlijst Select now performs one ordered transition:
@@ -83,9 +93,11 @@ ok qemu sub-launcher: static AE=0
 
 ## Limits
 
-- The VIN fixture is a log-only fake; real `/dev/ntkdvif` select/stream-start
-  and TV hardware acceptance remain a separate gate. The owner has not
-  authorized hardware switching.
+- The original fixture test is log-only. The later VIN-DEVICE-SIM executes the
+  real `libNDAL3.so` Hal_Vin wrappers against a fake `/dev/video20`, but the
+  real kernel driver, V4L2 registration, HDMI signal/routing and TV hardware
+  acceptance remain a separate gate. The owner has not authorized hardware
+  switching.
 - The `m_current_source`/picture write is atomic in the UI state; the vendor
   in-memory `UserPreferences`/PQ object is still not executed.
 - WiDi/APM (types 29/30) have no decoded VIN slot; only the picture index is

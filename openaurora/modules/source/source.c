@@ -16,10 +16,13 @@
  * Switching changes what is on screen, so it is **disabled by default**: the module opens the device and
  * publishes the service, but only acts when `source.enable=1`.
  */
+#include <errno.h>
 #include <fcntl.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "openaurora/events.h"
@@ -72,6 +75,12 @@ struct ctx {
     int fd;
     int enabled;
     int current; /* -1 = unknown */
+    /* ABI 3 quiesce: Hal_Vin_Close is handed to a worker after the service
+     * is unpublished and the fd is detached. */
+    pthread_t cleanup_thread;
+    int cleanup_running;
+    int close_fd;
+    unsigned cleanup_delay_ms;
 };
 
 static struct ctx *g_ctx;
@@ -115,6 +124,7 @@ static int m_init(const oa_host_api *api, void **out)
         return -1;
     c->api = api;
     c->fd = -1;
+    c->close_fd = -1;
     c->current = -1;
     *out = c;
     g_ctx = c;
@@ -124,6 +134,13 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "source.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
+    c->cleanup_running = 0;
+    c->close_fd = -1;
+    c->current = -1;
+    c->fd = -1;
     const char *en = c->api->config_get(c->api->priv, "source.enable", "0");
     c->enabled = atoi(en) != 0 && have_hal();
 
@@ -143,19 +160,97 @@ static int m_start(void *v)
     return 0;
 }
 
+/* No host API calls and no ctx access except the fd/delay fields captured
+ * before the thread starts. */
+static void *cleanup_worker(void *v)
+{
+    struct ctx *c = v;
+    if (c->cleanup_delay_ms) {
+        const struct timespec pause = {
+            .tv_sec = c->cleanup_delay_ms / 1000u,
+            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
+        };
+        (void)nanosleep(&pause, NULL);
+    }
+    int fd = c->close_fd;
+    c->close_fd = -1;
+    if (fd >= 0) Hal_Vin_Close(fd);
+    return NULL;
+}
+
+/* ABI 3 gate: unpublish the source service and detach the fd synchronously,
+ * then close it on a worker. A stale iface call sees fd < 0 and returns -1. */
+static int m_quiesce(void *v)
+{
+    struct ctx *c = v;
+    if (c->cleanup_running) {
+        for (int i = 0; i < 10; i++) {
+            int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+            if (rc == 0) {
+                c->cleanup_running = 0;
+                return 0;
+            }
+            if (rc != EBUSY) {
+                c->cleanup_running = 0;
+                return -EIO;
+            }
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
+        }
+        return -EAGAIN;
+    }
+
+    c->api->release(c->api->priv, OA_SVC_SOURCE);
+    c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
+    if (c->fd < 0) return 0;
+
+    int fd = c->fd;
+    c->fd = -1;
+    c->current = -1;
+    if (!c->cleanup_delay_ms) {
+        Hal_Vin_Close(fd);
+        return 0;
+    }
+    c->close_fd = fd;
+    int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+    if (rc) {
+        Hal_Vin_Close(c->close_fd);
+        c->close_fd = -1;
+        return -EIO;
+    }
+    c->cleanup_running = 1;
+    return -EAGAIN;
+}
+
 static void m_stop(void *v)
 {
     struct ctx *c = v;
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->close_fd >= 0) {
+        Hal_Vin_Close(c->close_fd);
+        c->close_fd = -1;
+    }
     if (c->fd >= 0) {
         Hal_Vin_Close(c->fd);
         c->fd = -1;
     }
+    c->current = -1;
 }
 
 static void m_destroy(void *v)
 {
+    struct ctx *c = v;
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->close_fd >= 0) Hal_Vin_Close(c->close_fd);
+    if (c->fd >= 0) Hal_Vin_Close(c->fd);
     if (g_ctx == v)
         g_ctx = NULL;
     free(v);
@@ -172,6 +267,7 @@ static const oa_module g_module = {
     .start = m_start,
     .stop = m_stop,
     .destroy = m_destroy,
+    .quiesce = m_quiesce,
 };
 
 OA_MODULE_EXPORT(g_module)

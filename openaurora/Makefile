@@ -847,6 +847,11 @@ $(BUILD)/modules/mod_display.so: modules/display/display.c common/ui_anim.c comm
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
 	  $(VENDOR_LDFLAGS) $(LIBM) -pthread
 
+$(BUILD)/modules/mod_source.so: modules/source/source.c include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $< -pthread $(LDFLAGS) \
+	  $(if $(filter $(VENDOR_MODULES),source),$(VENDOR_LDFLAGS),)
+
 $(BUILD)/modules/mod_display_fb.so: modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_DISPLAY_NO_PLAT -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
@@ -2033,6 +2038,11 @@ $(BUILD)/tests/ui_menu_action: tests/ui_menu_action.c core/host.h $(filter-out $
 $(BUILD)/tests/mod_source_fake.so: modules/source/source.c tests/source_fake.c include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(filter-out -DOA_NO_VENDOR,$(CPPFLAGS)) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -ldl -pthread
+
+.PHONY: check-vin-real
+check-vin-real:
+	tools/qemu-vin-real-check.sh
+check: check-vin-real
 
 .PHONY: check-source-fake-ipc
 check-source-fake-ipc: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_source_fake.so $(BUILD)/modules/mod_plat.so

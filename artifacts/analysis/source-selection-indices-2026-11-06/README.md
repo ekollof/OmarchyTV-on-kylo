@@ -69,3 +69,15 @@ APM 30, DVD 32. `plat_vin_slot_connect` accepts source types
 `FUN_0092e8ac` maps the type through the 26-entry table at 0x013b9e78:
 0→1, 15→1, 16→2, 17/18/20→3, 19→66, 25→255, default 0. `ui_vendor` uses
 these video devices and `mod_source`'s `select_type`.
+
+## Device path correction
+
+The shipped `libNDAL3.so` `Hal_Vin_Open(0)` builds and opens the VIN V4L2
+node **`/dev/video20`** with `open64(O_RDWR|O_NONBLOCK)` and
+`fcntl(F_SETFD,FD_CLOEXEC)`. `/dev/ntkdvif` is a separate global device string
+in the library, not the path this call used. The real ARM `mod_source.so` and
+the real `libNDAL3.so` wrappers were executed under qemu against a preload
+fake `/dev/video20`; see
+[VIN-DEVICE-SIM-2026-11-06](../../reports/VIN-DEVICE-SIM-2026-11-06.md).
+That test observed `select id=3` (HDMI1), `select id=66` (HDMI3) and
+`start on=1`, but it is a device-boundary mock, not the kernel driver.

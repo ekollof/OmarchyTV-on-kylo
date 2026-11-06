@@ -29,7 +29,8 @@ async function main() {
     fs.copyFileSync(path.join(build, 'tests', 'mod_source_fake.so'),
         path.join(modules, 'mod_source.so'));
     const write_config = enable => fs.writeFileSync(config,
-        `autoload=\nplat.enable=1\nsource.enable=${enable ? 1 : 0}\n`);
+        `autoload=\nplat.enable=1\nsource.enable=${enable ? 1 : 0}\n` +
+        'source.cleanup_delay_ms=400\n');
     write_config(true);
 
     let child = spawn(path.join(build, 'openaurora'),
@@ -69,6 +70,11 @@ async function main() {
         }), 4000);
     }
     const log = () => fs.existsSync(vin) ? fs.readFileSync(vin, 'utf8') : '';
+    async function timed(text) {
+        const started = Date.now();
+        const reply = await command(text);
+        return { reply, elapsed: Date.now() - started };
+    }
 
     try {
         await bounded(new Promise((resolve, reject) => {
@@ -104,6 +110,37 @@ async function main() {
                 `missing VIN id ${id} for type ${type}`);
         }
         assert.equal(await command('source-select 99'), 'failed errno 22');
+
+        /* ABI 3 gate: the diagnostic delay keeps Hal_Vin_Close on a worker.
+         * The first reload fails fast; the service is already unpublished,
+         * status stays responsive, and a retry completes and reopens VIN. */
+        const first = await timed('reload source');
+        assert.match(first.reply, /^failed/, 'first reload must fail fast');
+        assert.ok(first.elapsed < 1500, `first reload took ${first.elapsed}ms`);
+        const status = await timed('status source');
+        assert.ok(status.elapsed < 1000, `status took ${status.elapsed}ms`);
+        assert.equal(await command('source-state'), 'failed errno 19');
+        await new Promise(r => setTimeout(r, 600));
+        assert.equal(await command('reload source'), 'ok',
+            'retry must complete the reload');
+        assert.equal(await command('source-state'),
+            'source type -1 available 1');
+        assert.equal(await command('source-select 17'), 'ok');
+        const after_reload = log();
+        const opens = [...after_reload.matchAll(/open idx=0/g)];
+        const close_at = after_reload.indexOf('close fd=100');
+        assert.equal(opens.length, 2, 'reload must reopen VIN once');
+        assert.ok(close_at >= 0 && close_at < opens[1].index,
+            'worker close must precede the reopened VIN fd');
+
+        const stop = await timed('stop source');
+        assert.match(stop.reply, /^failed/, 'stop must use the same gate');
+        assert.equal(await command('source-state'), 'failed errno 19');
+        await new Promise(r => setTimeout(r, 600));
+        assert.equal(await command('stop source'), 'ok');
+        assert.equal((log().match(/close fd=100/g) || []).length, 2,
+            'stop retry must close the second VIN fd');
+        assert.equal(await command('unload source'), 'ok');
 
         child.kill('SIGTERM');
         const exit = await bounded(closed, 8000);
@@ -147,7 +184,7 @@ async function main() {
         assert.ok((text.match(/open idx=0/g) || []).length >= 2,
             'source must reopen the VIN device after reload');
         assert.ok(text.includes('close fd=100'));
-        console.log('ok source fake-VIN IPC: decoded ids, state query and source.enable gate');
+        console.log(`ok source fake-VIN IPC: reload fails fast (${first.elapsed}ms), worker closes fd before VIN reopen, stop uses the gate, source.enable holds`);
     } finally {
         cleanup();
     }

@@ -190,13 +190,32 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       fake-fb socket test asserts fast-fail reload, responsive status, retry,
       `display-info` 1920x1080 32bpp2, then the snapshot equality checks.
 
+- [x] Asynchronous gate for `mod_source`: unpublish `source` and detach the
+      VIN fd synchronously (stale iface sees fd<0/unavailable), then
+      `Hal_Vin_Close` on a worker after `source.cleanup_delay_ms`; tryjoin and
+      idempotent for stop+unload, `m_stop`/`m_destroy` join. Fake-VIN control
+      test: reload fails fast, `source-state` already ENODEV, status
+      responsive, retry reopens VIN with the worker close before the new
+      open; stop gate closes the second fd; `source.enable=0` still refuses.
+      ARM mod_source links libpthread+vendor libs. Full suite/QEMU pass.
+      SOURCE-QUIESCE.
+
+- [x] Real VIN HAL device-boundary simulation: run the shipped ARM
+      `libNDAL3.so` `Hal_Vin_*` wrappers and the real `mod_source.so` under
+      qemu against an `LD_PRELOAD` fake `/dev/video20`. `Hal_Vin_Open(0)`
+      opens `/dev/video20` (not `/dev/ntkdvif`), `SelectInput` is ioctl
+      `0xc0045627` (id3/id66), `SetStreamStart` is `0x40045612` (on1), `Close`
+      is `close`. The real module's reload/stop gate closes before reopening;
+      `libNDAL_EX` supplies `gs32Ndp_PQ_fd`. `check-vin-real`.
+      VIN-DEVICE-SIM.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`, with a
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`, with a
       completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
-      `i18n`, `settings`, `ui_vendor`, `ui_engine` and `display` are the
-      existing models.
+      `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display` and `source` are
+      the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in
@@ -320,9 +339,10 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       `NovoPictureSettings::setZoomMode` need the live EASI/InputManager graph.
       `picture.full_mode` is an explicit replacement input, not derived from
       the panel/decode state. The source screen calls
-      `mod_source`/`Hal_Vin_SelectInput` behind `source.enable`; real
-      `/dev/ntkdvif` and TV hardware switching are still unaccepted. Writing
-      the TV's DB requires `settings.readonly=0`. Do not apply the row to the
+      `mod_source`/`Hal_Vin_SelectInput` behind `source.enable`; the real
+      wrappers are executed against a fake `/dev/video20`, but the real kernel
+      driver/V4L2/HDMI path and TV hardware switching are still unaccepted.
+      Writing the TV's DB requires `settings.readonly=0`. Do not apply the row to the
       category rail or an invented portal card row.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
