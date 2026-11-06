@@ -287,6 +287,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  ui-state                query ui.portal screen\n"
                  "  theme-state             query ui.theme pack count\n"
                  "  profile-state           query ui.profile facts\n"
+                 "  panel-state             query panel requested percent\n"
                  "  menu-state <dialog>     query ui.menu dialogs/branches\n"
                  "  ui-action <action>      apply a JSON menu action (open:/setting:/set:)\n"
                  "  picture-state <source>  read picture mode/zoom/energy 0-19\n"
@@ -309,6 +310,21 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         if (!a1) { oa_skin_status(h, outbuf, outlen); return 0; }
         if (oa_skin_request(h, a1)) { snprintf(outbuf, outlen, "failed errno %d\n", errno); return -1; }
         snprintf(outbuf, outlen, "pending %s\n", a1);
+        return 0;
+    }
+    if (!strcmp(cmd, "panel-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_panel_iface *p = h->api.lookup(h, OA_SVC_PANEL, 1);
+        if (!p) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int percent = p->get_backlight_percent();
+        h->api.release(h, OA_SVC_PANEL);
+        snprintf(outbuf, outlen, "panel percent %d\n", percent);
         return 0;
     }
     if (!strcmp(cmd, "profile-state")) {

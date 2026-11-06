@@ -407,6 +407,21 @@ audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list/
 ui_navigation/ui_profile/audio_curve/audio_amp_profile are async.
 AUDIO-AMP-PROFILE-QUIESCE.
 
+panel quiesce, 2026-11-06: unpublish panel synchronously; one needs_cleanup arm
+per start cycle; vendor Hal_Pwm_Close runs on a worker after
+panel.cleanup_delay_ms (host stubs still honor the diagnostic delay). New
+panel-state probe. Control test: percent40, reload fails fast, panel-state
+ENODEV, status responsive, retry republishes40; stop gate. needs_cleanup fixes
+the stop+unload double-quiesce that armed a second worker. Existing
+plat-consumer IPC passes; ARM links vendor libs+libpthread. Full/QEMU pass. No
+PWM/backlight hardware run; real close unaccepted. 27/35 descriptors now have
+quiesce; 8 remain: plat/power/ticker/ui_anim/ui_clock/ui_console/ui_diag/
+ui_omarchy.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list/
+ui_navigation/ui_profile/audio_curve/audio_amp_profile/panel are async.
+PANEL-QUIESCE.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

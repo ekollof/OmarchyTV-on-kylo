@@ -943,6 +943,11 @@ $(BUILD)/modules/mod_lua.so: modules/lua/lua.c $(BUILD)/modules/lua_skin.o $(LUA
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -Ithird_party/lua -o $@ modules/lua/lua.c $(BUILD)/modules/lua_skin.o $(LUA_OBJ) $(LDFLAGS) $(LIBM)
 
+$(BUILD)/modules/mod_panel.so: modules/panel/panel.c include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h include/openaurora/vendor_pwm.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $< -pthread $(LDFLAGS) \
+	  $(if $(filter $(VENDOR_MODULES),panel),$(VENDOR_LDFLAGS),)
+
 $(BUILD)/modules/mod_%.so: modules/%/*.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $< $(LDFLAGS) \
@@ -1049,6 +1054,11 @@ $(BUILD)/tests/power_cycle: tests/power_cycle.c tests/phases.h core/host.h modul
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS) \
 	  -Wl,--wrap=open -Wl,--wrap=write -Wl,--wrap=close -Wl,--wrap=sync
+
+.PHONY: check-panel-quiesce
+check-panel-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_panel.so $(BUILD)/modules/mod_plat.so
+	node tests/panel_quiesce.cjs $(abspath $(BUILD))
+check: check-panel-quiesce
 
 check-power: $(BUILD)/tests/power_cycle $(addprefix $(BUILD)/tests/mod_phase_,$(addsuffix .so,$(PHASE_FIXTURES)))
 	@$(BUILD)/tests/power_cycle $(BUILD)/tests

@@ -399,16 +399,26 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       retry/stop, unload clean, staging removed, stock Aurora PID unchanged.
       Amplifier hardware/audible acceptance still open.
 
+- [x] Asynchronous gate for `mod_panel`: unpublish `panel` synchronously, arm
+      one `needs_cleanup` cycle per start, then run `Hal_Pwm_Close` on a worker
+      after `panel.cleanup_delay_ms`. Host stubs still honor the diagnostic
+      delay. New `panel-state` probe. Control-socket test: percent40, reload
+      fails fast, `panel-state` ENODEV, status responsive, retry republishes40;
+      stop uses the gate. `needs_cleanup` prevents the stop+unload double
+      quiesce from arming a second worker. Existing plat-consumer IPC passes;
+      ARM links vendor libs + libpthread. Full/QEMU pass. PANEL-QUIESCE. No
+      PWM/backlight hardware run; real close remains unaccepted.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
       `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr`,
       `channels`, `service_db`, `image_decode`, `ui_theme`, `ui_list`,
-      `ui_navigation`, `ui_profile`, `audio_curve` and `audio_amp_profile`
-      are the existing models.
+      `ui_navigation`, `ui_profile`, `audio_curve`, `audio_amp_profile` and
+      `panel` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

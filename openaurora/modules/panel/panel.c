@@ -20,9 +20,12 @@
  * Host builds define OA_NO_VENDOR and get no-op stubs, so the module still loads and
  * the lifecycle tests keep running on a laptop.
  */
+#include <errno.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "openaurora/events.h"
 #include "openaurora/module.h"
@@ -66,6 +69,12 @@ struct ctx {
     int percent; /* what we asked for, 0..100 */
     int raw;     /* optional: pass this duty verbatim, ignoring percent */
     int opened;
+    int published;
+    int needs_cleanup; /* one start cycle is cleaned exactly once */
+    /* ABI 3 quiesce: the vendor PWM close runs on a worker. */
+    pthread_t cleanup_thread;
+    int cleanup_running;
+    unsigned cleanup_delay_ms;
 };
 
 static struct ctx *g_ctx;
@@ -138,9 +147,33 @@ static int m_init(const oa_host_api *api, void **out)
     return 0;
 }
 
+/* No host API calls after this returns. */
+static void *cleanup_worker(void *v)
+{
+    struct ctx *c = v;
+    if (c->cleanup_delay_ms) {
+        const struct timespec pause = {
+            .tv_sec = c->cleanup_delay_ms / 1000u,
+            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
+        };
+        (void)nanosleep(&pause, NULL);
+    }
+    if (hal_ready() && c->opened) {
+        Hal_Pwm_Close();
+        c->opened = 0;
+    }
+    return NULL;
+}
+
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    if (c->published || c->cleanup_running) return -EBUSY;
+    c->cleanup_running = 0;
+    c->needs_cleanup = 1;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "panel.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
     c->channel = atoi(c->api->config_get(c->api->priv, "panel.channel", "0"));
     c->freq = atoi(c->api->config_get(c->api->priv, "panel.freq", "20000"));
     c->percent = atoi(c->api->config_get(c->api->priv, "panel.start", "100"));
@@ -155,16 +188,60 @@ static int m_start(void *v)
         apply(c, c->percent);
     }
 
-    if (c->api->publish(c->api->priv, OA_SVC_PANEL, 1, &g_iface) != 0)
+    if (c->api->publish(c->api->priv, OA_SVC_PANEL, 1, &g_iface) != 0) {
         c->api->log(c->api->priv, OA_LOG_WARN, "panel service already published");
+    } else {
+        c->published = 1;
+    }
     return 0;
+}
+
+/* ABI 3 gate: unpublish panel synchronously, then close the vendor PWM on a
+ * worker after panel.cleanup_delay_ms. The diagnostic delay is honored even
+ * when the host build has no vendor HAL, so the lifecycle is testable. */
+static int m_quiesce(void *v)
+{
+    struct ctx *c = v;
+    if (!c) return 0;
+    if (c->cleanup_running) {
+        for (int i = 0; i < 10; i++) {
+            int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+            if (rc == 0) { c->cleanup_running = 0; return 0; }
+            if (rc != EBUSY) { c->cleanup_running = 0; return -EIO; }
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
+        }
+        return -EAGAIN;
+    }
+    int published = c->published;
+    c->published = 0;
+    if (published) c->api->unpublish(c->api->priv, OA_SVC_PANEL);
+    if (!c->needs_cleanup) return 0;
+    c->needs_cleanup = 0;
+    if (!c->cleanup_delay_ms) {
+        if (hal_ready() && c->opened) {
+            Hal_Pwm_Close();
+            c->opened = 0;
+        }
+        return 0;
+    }
+    int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+    if (rc) return -EIO;
+    c->cleanup_running = 1;
+    return -EAGAIN;
 }
 
 static void m_stop(void *v)
 {
     struct ctx *c = v;
-    c->api->release(c->api->priv, OA_SVC_PANEL);
-    c->api->unpublish(c->api->priv, OA_SVC_PANEL);
+    int published = c->published;
+    c->published = 0;
+    c->needs_cleanup = 0;
+    if (published) c->api->unpublish(c->api->priv, OA_SVC_PANEL);
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
     /* deliberately no restore: the driver rejects Set_ByChannel(4095) after a lower
      * level ("Not Support Mode 0"), and the level persists until something sets it. */
     if (hal_ready() && c->opened) {
@@ -175,9 +252,14 @@ static void m_stop(void *v)
 
 static void m_destroy(void *v)
 {
-    if (g_ctx == v)
-        g_ctx = NULL;
-    free(v);
+    struct ctx *c = v;
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (hal_ready() && c->opened) Hal_Pwm_Close();
+    if (g_ctx == c) g_ctx = NULL;
+    free(c);
 }
 
 static int m_suspend(void *v)
@@ -230,6 +312,7 @@ static const oa_module g_module = {
     .destroy = m_destroy,
     .suspend = m_suspend,
     .resume = m_resume,
+    .quiesce = m_quiesce,
     .save = m_save,
     .restore = m_restore,
 };
