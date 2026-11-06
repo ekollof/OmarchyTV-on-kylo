@@ -487,22 +487,38 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       fb/DVB/alsa/GPIO paths. Text UI only; not scanout or real input.
       UI-CONSOLE-QUIESCE.
 
+- [x] Asynchronous gate for `mod_ui_omarchy`: clear `active`, remove the rebind
+      timer/subscriptions, unregister the engine skin and release engine/Lua
+      synchronously; snapshot/detach the heap colors/layout/screen state, then
+      free it from one `sched` slice after `ui_omarchy.cleanup_delay_ms`.
+      `save()` uses the snapshot; the 72-byte magic/versioned blob is restored
+      on reload; start refuses while pending. New `omarchy-state` probe.
+      Control test with nav_display/lua/ui_engine: script theme 9/8/7,
+      layout 0,0,40,100, screen 1920x1080; reload fails fast, engine reports
+      `active -`, status responsive, retry restores 72 bytes and re-registers,
+      stop uses the gate. Focused ASan/UBSan clean, skin/Lua suites pass, full
+      suite `all tests passed`, QEMU pass. ARM base glibc only. On-TV CPU-only
+      `/buffer/oa-omarchy-verify` run with hash-verified host+modules
+      reproduced it (`restored 72 bytes`), staging removed, stock Aurora
+      PID1781 unchanged; no fb/DVB/alsa/GPIO paths. Recorder display only; not
+      scanout or real input. UI-OMARCHY-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`/`ui_diag`/`ui_anim`/`ui_clock`/`ticker`/`ui_console`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`/`ui_diag`/`ui_anim`/`ui_clock`/`ticker`/`ui_console`/`ui_omarchy`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
       `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr`,
       `channels`, `service_db`, `image_decode`, `ui_theme`, `ui_list`,
       `ui_navigation`, `ui_profile`, `audio_curve`, `audio_amp_profile`,
-      `panel`, `ui_diag`, `ui_anim`, `ui_clock`, `ticker` and `ui_console`
-      are the gate models. `ui_theme`, `channels`, `ui_diag`, `ui_anim`,
-      `ui_clock`, `ticker` and `ui_console` use the host `sched`; the others
-      use workers. `lua` unpublishes
+      `panel`, `ui_diag`, `ui_anim`, `ui_clock`, `ticker`, `ui_console` and
+      `ui_omarchy` are the gate models. `ui_theme`, `channels`, `ui_diag`,
+      `ui_anim`, `ui_clock`, `ticker`, `ui_console` and `ui_omarchy` use the
+      host `sched`; the others use workers. `lua` unpublishes
       `ui.lua` and rejects hook/reload while a fetch child is unreaped.
-      `graphics` and `scene_display` have their own non-pthread gates. `plat`,
-      `power` and `ui_omarchy` still stop synchronously.
+      `graphics` and `scene_display` have their own non-pthread gates. `plat`
+      and `power` still stop synchronously.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

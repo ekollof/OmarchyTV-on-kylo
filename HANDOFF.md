@@ -498,6 +498,21 @@ sequence (restored1 byte), staging removed, stock Aurora PID1781 unchanged; no
 fb/DVB/alsa/GPIO paths. Text UI only; 32/35 descriptors now have quiesce; 3
 remain: plat/power/ui_omarchy. UI-CONSOLE-QUIESCE.
 
+ui_omarchy async gate, 2026-11-06: clear active, remove the rebind timer and
+subscriptions, unregister the engine skin and release engine/Lua synchronously,
+snapshot/detach the cached colors/layout/screen state, then free from one sched
+slice after ui_omarchy.cleanup_delay_ms. save uses the snapshot; a72-byte
+magic/versioned blob restores it; start refuses while pending. New
+omarchy-state probe. 400ms control test (nav_display+lua+ui_engine): script
+theme9/8/7+6/5/4, layout0,0,40,100, screen1920x1080; reload fails fast, engine
+reports active -, status responsive, retry restores72B and re-registers, stop
+gate. Focused ASan/UBSan clean, skin/Lua suites pass, full suite all tests
+passed, QEMU pass. ARM base glibc only. On-TV CPU-only
+/buffer/oa-omarchy-verify run with hash-verified host+modules reproduced it,
+staging removed, stock Aurora PID1781 unchanged; no fb/DVB/alsa/GPIO paths.
+Recorder display only; 33/35 descriptors now have quiesce; 2 remain:
+plat/power. UI-OMARCHY-QUIESCE.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

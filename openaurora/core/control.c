@@ -24,6 +24,7 @@
 #include "openaurora/menu_model.h"
 #include "openaurora/module.h"
 #include "openaurora/ui_engine.h"
+#include "openaurora/ui_omarchy.h"
 #include "host.h"
 
 /* Full module/service tables fit without truncating normal diagnostics. */
@@ -252,7 +253,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  list-state               query owned SVG-list selection state\n"
                  "  list-key <code>          feed a full-width list key code\n"
                  "  key <code>               feed an IR key frame (RC/NEC code)\n"
-                 "  hotel-state             read persisted hotel tab inputs\n"
+                 "  hotel-state             persisted hotel tab inputs\n"
                  "  amp-profile             read immutable amplifier profile inputs\n"
                  "  audio-curve <volume>    read published AQ curve value\n"
                  "  audio-curve-dump        dump 101 published AQ curve values\n"
@@ -260,7 +261,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  launcher-items <parent|all> [deleted] [outofsync]\n"
                  "                           settingsDB LauncherItem rows\n"
                  "  tuner-state             scan/lock/signal state\n"
-                 "  tuner-scan <network>    start fixture scan (1=T,2=C,3=S,4=analog,5=IP)\n"
+                 "  tuner-scan <net>        start fixture scan 1-5\n"
                  "  tuner-cancel            cancel a running scan\n"
                  "  tuner-select <handle>   select a completed service handle\n"
                  "  epg-query <svc> <from> <to>  bounded EPG events\n"
@@ -278,7 +279,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  pvr-cancel <id>         cancel scheduled reservation\n"
                  "  pvr-record <id>         start scheduled recording\n"
                  "  pvr-stop <id>           complete active recording\n"
-                 "  service-list [stats|name|channel] [index]  inventory/rows\n"
+                 "  service-list [stats|name|channel] [i]  inventory rows\n"
                  "  image-decode <path>      decode PNG/JPEG through image.decode\n"
                  "  ui-state                query ui.portal screen\n"
                  "  theme-state             query ui.theme pack count\n"
@@ -287,8 +288,9 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  anim-state              query ui.anim enabled/fault\n"
                  "  clock-state             query ui.clock current ms\n"
                  "  ticker-state            query ticker saved tick count\n"
-                 "  console-state           query ui_console saved selection\n"
-                 "  emit-key <id>           emit a KEY press on the host bus\n"
+                 "  console-state           ui_console saved selection\n"
+                 "  omarchy-state           ui_omarchy saved skin state\n"
+                 "  emit-key <id>           emit a host KEY press\n"
                  "  menu-state <dialog>     query ui.menu dialogs/branches\n"
                  "  ui-action <action>      apply a JSON menu action (open:/setting:/set:)\n"
                  "  picture-state <source>  read picture mode/zoom/energy 0-19\n"
@@ -333,6 +335,38 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
             return -1;
         }
         snprintf(outbuf, outlen, "console selection %u\n", (unsigned)sel);
+        return 0;
+    }
+    if (!strcmp(cmd, "omarchy-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        oa_mod *m = oa_host_find_module(h, "ui_omarchy");
+        if (!m || !m->ctx || !m->desc->save) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EIO);
+            return -1;
+        }
+        oa_omarchy_state st;
+        memset(&st, 0, sizeof st);
+        uint32_t prev = h->cur_module;
+        h->cur_module = m->id;
+        size_t n = m->desc->save(m->ctx, &st, sizeof st);
+        h->cur_module = prev;
+        if (n != sizeof st || st.magic != OA_OMARCHY_STATE_MAGIC ||
+            st.version != OA_OMARCHY_STATE_VERSION) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EIO);
+            return -1;
+        }
+        snprintf(outbuf, outlen,
+                 "omarchy colors %d bg %d %d %d %d accent %d %d %d "
+                 "layout %d %d %d %d %d screen %d %d %d\n",
+                 (int)st.have_colors, (int)st.bg[0], (int)st.bg[1],
+                 (int)st.bg[2], (int)st.bg[3], (int)st.accent[0],
+                 (int)st.accent[1], (int)st.accent[2], (int)st.have_layout,
+                 (int)st.layout[0], (int)st.layout[1], (int)st.layout[2],
+                 (int)st.layout[3], (int)st.have_screen, (int)st.screen[0],
+                 (int)st.screen[1]);
         return 0;
     }
     if (!strcmp(cmd, "emit-key")) {

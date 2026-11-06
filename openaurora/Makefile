@@ -1169,6 +1169,11 @@ check-ui-console-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_console.so
 	node tests/ui_console_quiesce.cjs $(abspath $(BUILD))
 check: check-ui-console-quiesce
 
+.PHONY: check-ui-omarchy-quiesce
+check-ui-omarchy-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_omarchy.so $(BUILD)/modules/mod_lua.so $(BUILD)/tests/ui_nav_display.so
+	node tests/ui_omarchy_quiesce.cjs $(abspath $(BUILD))
+check: check-ui-omarchy-quiesce
+
 $(BUILD)/tests/sched: tests/sched.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $< $(filter %.o,$^) $(LDLIBS)
