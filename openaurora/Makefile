@@ -111,7 +111,7 @@ check: check-ui-profile
 
 $(BUILD)/modules/mod_ui_navigation.so: modules/ui_navigation/ui_navigation.c common/launcher_route.c include/openaurora/launcher_route.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
 
 $(BUILD)/tests/ui_navigation: tests/ui_navigation.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -120,6 +120,11 @@ $(BUILD)/tests/ui_navigation: tests/ui_navigation.c core/host.h include/openauro
 check-ui-navigation: $(BUILD)/tests/ui_navigation $(BUILD)/modules/mod_ui_navigation.so $(BUILD)/modules/mod_ticker.so
 	@$(BUILD)/tests/ui_navigation $(BUILD)/modules
 check: check-ui-navigation
+
+.PHONY: check-ui-navigation-quiesce
+check-ui-navigation-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_navigation.so
+	node tests/ui_navigation_quiesce.cjs $(abspath $(BUILD))
+check: check-ui-navigation-quiesce
 
 .PHONY: check-ui-navigation-ipc
 check-ui-navigation-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_navigation.so

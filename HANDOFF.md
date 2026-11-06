@@ -341,6 +341,23 @@ ui_console/ui_diag/ui_navigation/ui_omarchy/ui_profile.
 ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list
 are async. UI-LIST-QUIESCE.
+
+ui_navigation quiesce, 2026-11-06: selection/queue state moved to heap.
+Quiesce clears publication, unpublishes ui.navigation synchronously, snapshots
+the OAN2 handoff blob, detaches state, then frees synchronously or on a worker
+after ui_navigation.cleanup_delay_ms. Retry save() uses the snapshot after
+detach; a failed start/resume that triggers quiesce restores from the snapshot
+on the next start. m_stop/m_destroy join/free; m_start refuses if live. Control
+test: queue 2 requests, reload fails fast, nav-state ENODEV, status responsive,
+retry preserves selection/queue and still delivers a request; stop gate.
+Existing unit/IPC/matrix tests pass, including 1792 OAN roundtrips and
+failed-resume retry; ARM links libpthread. Full/QEMU pass. Project navigation
+model, not vendor DemoApp/EASI. 23/35 descriptors now have quiesce; 12 remain:
+audio_amp_profile/audio_curve/panel/plat/power/ticker/ui_anim/ui_clock/
+ui_console/ui_diag/ui_omarchy/ui_profile.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list/
+ui_navigation are async. UI-NAVIGATION-QUIESCE.
 SERVICE-DB-QUIESCE.
 
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so

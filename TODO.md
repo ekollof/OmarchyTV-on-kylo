@@ -344,15 +344,29 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       Direct/IPC list tests pass; ARM links libpthread. Full/QEMU pass.
       UI-LIST-QUIESCE.
 
+- [x] Asynchronous gate for `mod_ui_navigation`: move selection/queue state to
+      the heap. Quiesce clears publication, unpublishes `ui.navigation`
+      synchronously, snapshots the OAN2 handoff blob, detaches state, then
+      frees it synchronously or on a worker after
+      `ui_navigation.cleanup_delay_ms`. Retry `save()` uses the snapshot after
+      detach; a failed start/resume that triggers quiesce restores from that
+      snapshot on the next start. `m_stop`/`m_destroy` join/free; `m_start`
+      refuses if live. Control-socket test: queue two requests, reload fails
+      fast, `nav-state` ENODEV, status responsive, retry preserves the
+      selection/queue and still delivers a request; stop uses the gate.
+      Existing unit/IPC/matrix tests pass, including 1792 OAN roundtrips and
+      failed-resume retry; ARM links libpthread. Full/QEMU pass.
+      UI-NAVIGATION-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
       `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr`,
-      `channels`, `service_db`, `image_decode`, `ui_theme` and `ui_list` are
-      the existing models.
+      `channels`, `service_db`, `image_decode`, `ui_theme`, `ui_list` and
+      `ui_navigation` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in
