@@ -298,22 +298,25 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       energy0 (Cinema/Uit); m_current_source5 selects config5 and renders
       DYNAMIC/OFF151/36. SUBLAUNCHER-VALUES.
 
-- [x] Bronlijst source selection writes the picture index and re-syncs:
-      the ICE descriptor table at0x0175de8c gives CVBS2, HDMI1-3 4-6, YPbPr8,
-      PC9, WiDi11, APM12; m_current_source=index+1 (TV0). ui_vendor's
-      `SRC_PICTURE_INDEX={0,3,5,6,7,9,10,12,13}`; source-screen Select writes
-      `m_current_source` through settings and calls `picture_sync_index`.
-      QEMU: HDMI1 row2 → m_current_source5 and DYNAMIC/OFF (151/36) in the
-      same process. SUBLAUNCHER-VALUES.
+- [x] Bronlijst source selection writes the picture index, calls the VIN path
+      and re-syncs: the ICE descriptor table at0x0175de8c gives CVBS2,
+      HDMI1-3 4-6, YPbPr8, PC9, WiDi11, APM12; m_current_source=index+1 (TV0).
+      ui_vendor's `SRC_PICTURE_INDEX={0,3,5,6,7,9,10,12,13}` and
+      `SRC_SOURCE_TYPE` (CVBS15, HDMI1/2/3 17/18/19, YPbPr20, VGA16, TV0).
+      Select calls source.select_type first; only success writes
+      m_current_source and calls picture_sync_index.
+      Host check-source-fake-ipc asserts VIN ids3/3/66/3/2/1, state and
+      source.enable; QEMU HDMI1 row2 logs VIN id3, writes5 and shows
+      DYNAMIC/OFF151/36 in-process. SOURCE-VIN.
 
-- [ ] Live picture backend details: the service uses the serialized settingsDB
-      blob, not the live `NovoPictureSettings`/`UserPreferences` object, and
-      the source screen does not call the video HAL
-      (`Hal_Vin_*`/`EASITVControlInterface`) to switch the input. HDR energy
-      variants (+0x446c/+0xa10/+0xa48) and the format-0
-      `isFullModeApplicable` zoom choice are open. Writing the TV's DB requires
-      `settings.readonly=0`. Do not apply the row to the category rail or an
-      invented portal card row.
+- [ ] Live picture/VIN backend details: the service uses the serialized
+      settingsDB blob, not the live `NovoPictureSettings`/`UserPreferences`
+      object. The source screen now calls `mod_source`/`Hal_Vin_SelectInput`
+      behind `source.enable`, but real `/dev/ntkdvif` and TV hardware switching
+      are a separate unaccepted gate. HDR energy variants
+      (+0x446c/+0xa10/+0xa48) and the format-0 `isFullModeApplicable` zoom
+      choice are open. Writing the TV's DB requires `settings.readonly=0`. Do
+      not apply the row to the category rail or an invented portal card row.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
       the vendor 30 ms APNG/10 ms controller cadence. Tighten the compositor

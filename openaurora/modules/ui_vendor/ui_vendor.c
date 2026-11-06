@@ -134,6 +134,14 @@ static const int SRC_PICTURE_INDEX[MAX_SOURCES] = {
     0, 3, 5, 6, 7, 9, 10, 12, 13
 };
 
+/* Bronlijst row -> ICE video device used by plat_vin_slot_connect /
+ * Hal_Vin_SelectInput. Descriptor video-device IDs: CVBS 15, HDMI1 17,
+ * HDMI2 18, HDMI3 19, YPbPr 20, VGA 16; TV is 0. WiDi/APM (29/30) have no
+ * VIN slot in the decoded switch and are marked -1. */
+static const int SRC_SOURCE_TYPE[MAX_SOURCES] = {
+    0, 15, 17, 18, 19, 20, 16, -1, -1
+};
+
 enum { BAND_RAIL = 0, BAND_CARDS = 1 };
 
 /* Vendor source-selection panel (DialogSourceSelection.svg 185) and the nine
@@ -2744,6 +2752,33 @@ static void move_key(struct ctx *c, uint8_t id)
         } else if (id == 10 || id == 48) {
             c->screen = SCREEN_PORTAL;
         } else if (id == 53 || id == 0x8a) {
+            int type = SRC_SOURCE_TYPE[c->src];
+            if (type >= 0) {
+                const oa_source_iface *src =
+                    c->api->lookup(c->api->priv, OA_SVC_SOURCE, 1);
+                if (!src) {
+                    c->api->log(c->api->priv, OA_LOG_WARN,
+                                "source: no VIN service; selection refused");
+                    return;
+                }
+                int rc = src->select_type(type);
+                c->api->release(c->api->priv, OA_SVC_SOURCE);
+                if (rc == -2) {
+                    c->api->log(c->api->priv, OA_LOG_INFO,
+                                "source: VIN switching disabled (source.enable)");
+                    return;
+                }
+                if (rc) {
+                    c->api->log(c->api->priv, OA_LOG_WARN,
+                                "source: VIN select type %d failed (%d)",
+                                type, rc);
+                    return;
+                }
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "source: VIN select type %d", type);
+            }
+            /* The video path accepted the selection; commit the persisted
+             * picture index and its card values as one UI transition. */
             int index = SRC_PICTURE_INDEX[c->src];
             int rc = c->settings ?
                 c->settings->set_int("m_current_source", index) : -1;

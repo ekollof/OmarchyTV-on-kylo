@@ -148,12 +148,16 @@ asserts source1 values against the shipped DB and reload. mod_settings now has
 the ABI3 async quiesce gate (detach DB/flags, close on worker); control
 picture-state + reload proof. ir/i18n/settings are the async modules.
 The Bronlijst rows map to ICE descriptor indices2/4/5/6/8/9/11/12 (CVBS,
-HDMI1-3, YPbPr, PC, WiDi, APM), so m_current_source = 0,3,5,6,7,9,10,12,13;
-source-screen Select writes it through settings and re-syncs the cards
-(QEMU HDMI1 row2 →5, DYNAMIC/OFF151/36 in-process). Limits: serialized DB
-blob, not the live UserPreferences object; video HAL/source switching not
-called; HDR energy variants/full-mode zoom not implemented; TV DB write needs
-settings.readonly=0. SUBLAUNCHER-VALUES and SETTINGS-QUIESCE.
+HDMI1-3, YPbPr, PC, WiDi, APM), so m_current_source = 0,3,5,6,7,9,10,12,13.
+Source-screen Select now calls source.select_type with the descriptor video
+device (CVBS15, HDMI1/2/3 17/18/19, YPbPr20, VGA16, TV0; WiDi/APM no VIN slot)
+first; only on success it writes m_current_source and resyncs the cards
+(QEMU HDMI1 row2 logs VIN id3, writes5, shows DYNAMIC/OFF151/36 in-process).
+Host fake-VIN IPC asserts exact ids and source.enable. Limits: serialized DB
+blob, not the live UserPreferences object; real /dev/ntkdvif/TV hardware
+select is a separate unaccepted gate; HDR energy variants/full-mode zoom not
+implemented; TV DB write needs settings.readonly=0. SUBLAUNCHER-VALUES,
+SETTINGS-QUIESCE and SOURCE-VIN.
 
 ui_vendor async quiesce, 2026-11-06: the highest-state skin now has the ABI3
 gate. Teardown cancels every timer/slide/dialog, unsubscribes module/service

@@ -143,11 +143,14 @@ quiesce gate (detach DB/flags, close on worker) and a control `picture-state`. Q
 Ondertitels155 and blob+0xc=2, survives restart; setting focus450;
 Down,Down,Right AUTO176/energy4; set:MODE=CINEMA writes mode2 and applies
 energy0 (Cinema/Uit); m_current_source5 selects config5 (DYNAMIC/OFF151/36).
-Host test checks the shipped DB values and reload. Limits: serialized blob,
-not the live UserPreferences object; Bronlijst row2 (HDMI1) now writes 5 and
-re-syncs the cards, but the video HAL is not switched; HDR/full-mode zoom
-open; TV DB write needs settings.readonly=0.
-SUBLAUNCHER-VALUES.
+Host test checks the shipped DB values and reload. Bronlijst Select now calls
+source.select_type first (CVBS15, HDMI1/2/3 17/18/19, YPbPr20, VGA16, TV0;
+WiDi/APM no VIN slot) and only on success writes m_current_source and resyncs
+the cards; host fake-VIN IPC asserts ids3/3/66/3/2/1 and source.enable, QEMU
+HDMI1 row2 logs VIN id3 and shows DYNAMIC/OFF151/36. Limits: serialized blob,
+not the live UserPreferences object; real TV VIN/hardware select unaccepted;
+HDR/full-mode zoom open; TV DB write needs settings.readonly=0.
+SUBLAUNCHER-VALUES and SOURCE-VIN.
 
 ui_vendor quiesce, 2026-11-06: ABI3 gate cancels timers/dialog/slide,
 unsubscribes, releases providers, unpublishes ui.portal and unregisters the

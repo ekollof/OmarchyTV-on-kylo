@@ -15,7 +15,7 @@ TEST=$ROOT/openaurora/build-tv-v3/tests
 HOST=$ROOT/openaurora/build-tv-v3/openaurora
 SETTINGSDB=$ROOT/artifacts/dumps/apdat_files/sqlite_db/settingsDB.db
 SQLITE_LIB=$ROOT/artifacts/workbench/rootfs/vendor/lib/libs/libsqlite3.so.0
-MODULES="sim_display ui_engine ticker ui_clock plat ir ui_menu i18n settings ui_vendor"
+MODULES="sim_display ui_engine ticker ui_clock plat source ir ui_menu i18n settings ui_vendor"
 
 if [ "${OA_QEMU_SKIP_BUILD:-0}" != 1 ]; then
     make -C "$ROOT/openaurora" -j"${JOBS:-4}" TARGET=tv BUILD=build-tv-v3 CC="$ARM" \
@@ -37,10 +37,19 @@ if [ "${OA_QEMU_SKIP_BUILD:-0}" != 1 ] || [ ! -f "$TEST/mod_plat_stub.so" ]; the
         -o "$TEST/mod_plat_stub.so" "$ROOT/openaurora/modules/plat/plat.c"
 fi
 
+if [ "${OA_QEMU_SKIP_BUILD:-0}" != 1 ] || [ ! -f "$TEST/mod_source_fake_arm.so" ]; then
+    "$ARM" -I"$ROOT/openaurora/include" -D_GNU_SOURCE \
+        -std=c11 -O2 -g -Wall -Wextra -Werror -pedantic -fPIC -shared \
+        -o "$TEST/mod_source_fake_arm.so" \
+        "$ROOT/openaurora/modules/source/source.c" \
+        "$ROOT/openaurora/tests/source_fake.c" -ldl -pthread
+fi
+
 for f in "$HOST" "$TEST/mod_sim_display.so" "$MOD/mod_ui_engine.so" \
          "$MOD/mod_ui_menu.so" "$MOD/mod_i18n.so" "$MOD/mod_ticker.so" \
          "$MOD/mod_ui_clock.so" "$MOD/mod_ir.so" "$TEST/mod_plat_stub.so" \
-         "$MOD/mod_settings.so" "$MOD/mod_ui_vendor.so" "$SETTINGSDB" \
+         "$TEST/mod_source_fake_arm.so" "$MOD/mod_settings.so" \
+         "$MOD/mod_ui_vendor.so" "$SETTINGSDB" \
          "$SQLITE_LIB" "$UI/settings_top.rgba" \
          "$UI/settings_cat.rgba" "$UI/settings_rail.rgba" "$FONT.txt" \
          "$FONT.bin" "$PROFILE" \
@@ -60,6 +69,7 @@ cp "$TEST/mod_sim_display.so" "$MOD/mod_ui_engine.so" "$MOD/mod_ui_menu.so" \
    "$MOD/mod_ir.so" "$MOD/mod_settings.so" "$MOD/mod_ui_vendor.so" \
    "$STAGE/modules/"
 cp "$TEST/mod_plat_stub.so" "$STAGE/modules/mod_plat.so"
+cp "$TEST/mod_source_fake_arm.so" "$STAGE/modules/mod_source.so"
 cp "$SQLITE_LIB" "$STAGE/libsqlite3.so.0"
 cp "$SETTINGSDB" "$STAGE/picture.db"
 python3 - "$STAGE/picture.db" <<'PY'
@@ -87,6 +97,7 @@ ui.font_index=$FONT.txt
 ui.font_pack=$FONT.bin
 settings.db=$STAGE/picture.db
 settings.readonly=0
+source.enable=1
 i18n.profile=$PROFILE
 i18n.language=dut
 plat.enable=1
@@ -96,6 +107,7 @@ ui_menu.file=$STAGE/menus/sub_launcher.json
 EOF
 
 export LD_LIBRARY_PATH="$STAGE${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export FAKE_VIN_LOG="$STAGE/vin.log"
 
 last_frame() {
     ls "$STAGE"/frame.* 2>/dev/null | sed 's/.*\.//' | sort -n | tail -1
@@ -200,6 +212,8 @@ value = sqlite3.connect(sys.argv[1]).execute(
     "select m_current_source from Settings").fetchone()[0]
 assert value == 5, f"source screen wrote {value}, expected 5"
 PY
+grep -q 'select fd=100 id=3' "$STAGE/vin.log" || {
+    echo "fake VIN did not receive HDMI1 id=3" >&2; cat "$STAGE/vin.log" >&2; exit 6; }
 
 python3 - "$STAGE" <<'PY'
 import sys

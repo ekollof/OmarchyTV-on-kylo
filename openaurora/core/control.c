@@ -288,6 +288,8 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  picture-state <source>  read picture mode/zoom/energy 0-19\n"
                  "  ui-icon <name>          load/report a ui.engine asset\n"
                  "  display-info            query display dimensions/bpp/frames\n"
+                 "  source-select <type>    select a VIN source type 0-25\n"
+                 "  source-state            query current source type/availability\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -389,6 +391,52 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
             return -1;
         }
         snprintf(outbuf, outlen, "icon %s %dx%d\n", ic->name, ic->w, ic->h);
+        return 0;
+    }
+    if (!strcmp(cmd, "source-select")) {
+        if (force || !a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        char *end = NULL;
+        long type = strtol(a1, &end, 0);
+        if (*a1 == '\0' || !end || *end != '\0' || type < 0 || type > 25) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_source_iface *src = h->api.lookup(h, OA_SVC_SOURCE, 1);
+        if (!src) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int rc = src->select_type((int)type);
+        h->api.release(h, OA_SVC_SOURCE);
+        if (rc == -2) {
+            snprintf(outbuf, outlen, "failed disabled\n");
+            return -1;
+        }
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EIO);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "ok\n");
+        return 0;
+    }
+    if (!strcmp(cmd, "source-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_source_iface *src = h->api.lookup(h, OA_SVC_SOURCE, 1);
+        if (!src) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int type = src->current_type();
+        int available = src->is_available();
+        h->api.release(h, OA_SVC_SOURCE);
+        snprintf(outbuf, outlen, "source type %d available %d\n", type,
+                 available);
         return 0;
     }
     if (!strcmp(cmd, "display-info")) {

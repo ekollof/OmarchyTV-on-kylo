@@ -1,0 +1,188 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (688 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1659 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java 'plat_vin_slot_connect'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== plat_vin_slot_connect -> plat_vin_slot_connect @ 0092ee24 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined plat_vin_slot_connect() (GhidraScript)
+INFO  DumpFirmware.java>
+void plat_vin_slot_connect(int param_1,undefined4 param_2)
+
+{
+  int iVar1;
+  undefined4 uVar2;
+  int local_60;
+  int local_5c;
+  int local_58;
+  int local_54;
+  int local_50;
+  undefined4 uStack_4c;
+  undefined4 uStack_48;
+  undefined4 uStack_44;
+  undefined4 local_40;
+  int local_3c;
+  int local_38;
+  int local_34;
+  undefined4 local_30;
+  int local_2c;
+
+  local_2c = __stack_chk_guard;
+  pthread_mutex_lock((pthread_mutex_t *)&DAT_019e82a0);
+  FUN_0092e93c(param_2,1);
+  if ((&DAT_019e8530)[param_1 * 3] == 1) {
+    pthread_mutex_unlock((pthread_mutex_t *)&DAT_019e82a0);
+    uVar2 = 0;
+    goto LAB_0092ef5e;
+  }
+  switch(param_2) {
+  case 0:
+  case 4:
+  case 5:
+  case 0x14:
+  case 0x15:
+    pthread_mutex_unlock((pthread_mutex_t *)&DAT_019e82b8);
+    iVar1 = Hal_Vin_Open(0);
+    if (iVar1 < 0) break;
+    FUN_0092e8ac(iVar1,param_2);
+    Hal_Vin_SetStreamStart(iVar1);
+    Hal_Video_Get_V4l2Info(param_1,&local_3c);
+    local_3c = param_1;
+    local_38 = iVar1;
+    local_30 = param_2;
+    Hal_Video_Set_V4l2Info(param_1,param_1,iVar1,local_34,param_2);
+    Hal_Video_Get_V4l2FdCommon(&local_60);
+    local_60 = iVar1;
+LAB_0092ef24:
+    uVar2 = 0;
+    Hal_Video_Set_V4l2FdCommon
+              (local_60,local_5c,local_58,local_54,local_50,uStack_4c,uStack_48,uStack_44,local_40);
+    pthread_mutex_unlock((pthread_mutex_t *)&DAT_019e82b8);
+    goto LAB_0092ef38;
+  default:
+    pthread_mutex_unlock((pthread_mutex_t *)&DAT_019e82a0);
+    uVar2 = 0xffffffff;
+    goto LAB_0092ef5e;
+  case 10:
+    pthread_mutex_unlock((pthread_mutex_t *)&DAT_019e82b8);
+    iVar1 = Hal_Vin_Open(1);
+    if (-1 < iVar1) {
+      FUN_0092e8ac(iVar1,10);
+      Hal_Vin_SetStreamStart(iVar1);
+      Hal_Video_Get_V4l2Info(param_1,&local_3c);
+      local_30 = 10;
+      local_3c = param_1;
+      local_38 = iVar1;
+      Hal_Video_Set_V4l2Info(param_1,param_1,iVar1,local_34,10);
+      Hal_Video_Get_V4l2FdCommon(&local_60);
+      local_5c = iVar1;
+      goto LAB_0092ef24;
+    }
+    break;
+  case 0xe:
+  case 0xf:
+  case 0x10:
+  case 0x11:
+  case 0x12:
+    pthread_mutex_unlock((pthread_mutex_t *)&DAT_019e82b8);
+    iVar1 = Hal_Vin_Open(3);
+    if (-1 < iVar1) {
+      FUN_0092e8ac(iVar1,param_2);
+      Hal_Video_Get_V4l2Info(param_1,&local_3c);
+      local_3c = param_1;
+      local_34 = iVar1;
+      Hal_Video_Get_V4l2FdCommon(&local_60);
+      local_50 = iVar1;
+      iVar1 = Hal_Vin_Open(2);
+      if (-1 < iVar1) {
+        Hal_Vin_SelectInput();
+        Hal_Vin_SetStreamStart(iVar1);
+        local_38 = iVar1;
+        local_30 = param_2;
+        Hal_Video_Set_V4l2Info(param_1,local_3c,iVar1,local_34,param_2);
+        local_54 = iVar1;
+        goto LAB_0092ef24;
+      }
+    }
+    break;
+  case 0x13:
+    pthread_mutex_unlock((pthread_mutex_t *)&DAT_019e82b8);
+    iVar1 = Hal_Vin_Open(4);
+    if (-1 < iVar1) {
+      FUN_0092e8ac(iVar1,0x13);
+      Hal_Vin_SetStreamStart(iVar1);
+      Hal_Video_Get_V4l2Info(param_1,&local_3c);
+      local_30 = 0x13;
+      local_3c = param_1;
+      local_38 = iVar1;
+      Hal_Video_Set_V4l2Info(param_1,param_1,iVar1,local_34,0x13);
+      Hal_Video_Get_V4l2FdCommon(&local_60);
+      local_58 = iVar1;
+      goto LAB_0092ef24;
+    }
+  }
+  uVar2 = 0xffffffff;
+  pthread_mutex_unlock((pthread_mutex_t *)&DAT_019e82b8);
+LAB_0092ef38:
+  if (param_1 < 7) {
+    (&DAT_019e852c)[param_1 * 0xc] = (char)param_1;
+    (&DAT_019e8534)[param_1 * 3] = param_2;
+    (&DAT_019e8530)[param_1 * 3] = 1;
+  }
+  pthread_mutex_unlock((pthread_mutex_t *)&DAT_019e82a0);
+LAB_0092ef5e:
+  if (local_2c == __stack_chk_guard) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(uVar2);
+}
+
+ (GhidraScript)

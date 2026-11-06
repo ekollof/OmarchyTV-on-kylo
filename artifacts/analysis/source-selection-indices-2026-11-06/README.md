@@ -59,3 +59,13 @@ index is the descriptor index + 1. The Bronlijst rows map to:
 
 The dump's `m_current_source=5` is therefore HDMI1, consistent with the Steam
 Deck source and `ui_vendor`'s `SRC_PICTURE_INDEX`.
+
+## VIN path
+
+`ICE_ExternalGetVideoDevice(index)` is the descriptor field at +0x00:
+CVBS 15, HDMI1..3 17/18/19, YPbPr 20, VGA 16, EXT1 14/21, Svhs 23, WiDi 29,
+APM 30, DVD 32. `plat_vin_slot_connect` accepts source types
+0/4/5/0x14/0x15 on VIN0, 10 on VIN1, 14..18 on VIN3+2 and 0x13 on VIN4.
+`FUN_0092e8ac` maps the type through the 26-entry table at 0x013b9e78:
+0→1, 15→1, 16→2, 17/18/20→3, 19→66, 25→255, default 0. `ui_vendor` uses
+these video devices and `mod_source`'s `select_type`.

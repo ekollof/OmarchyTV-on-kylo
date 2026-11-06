@@ -2021,6 +2021,15 @@ $(BUILD)/tests/ui_menu_action: tests/ui_menu_action.c core/host.h $(filter-out $
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_menu_action.c $(filter %.o,$^) $(LDLIBS)
 
+$(BUILD)/tests/mod_source_fake.so: modules/source/source.c tests/source_fake.c include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(filter-out -DOA_NO_VENDOR,$(CPPFLAGS)) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -ldl -pthread
+
+.PHONY: check-source-fake-ipc
+check-source-fake-ipc: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_source_fake.so $(BUILD)/modules/mod_plat.so
+	node tests/source_fake_ipc.cjs $(abspath $(BUILD))
+check: check-source-fake-ipc
+
 .PHONY: check-ui-engine-quiesce
 check-ui-engine-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/tests/ui_nav_display.so
 	node tests/ui_engine_quiesce.cjs $(abspath $(BUILD)) $(abspath $(CURDIR)/..)
