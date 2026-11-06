@@ -1974,6 +1974,18 @@ $(BUILD)/tests/i18n_service: tests/i18n_service.c core/host.h $(filter-out $(BUI
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/i18n_service.c $(filter %.o,$^) $(LDLIBS)
 
+SETTINGSDB ?= ../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db
+
+$(BUILD)/tests/picture_settings: tests/picture_settings.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/picture_settings.c $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-picture-settings
+check-picture-settings: $(BUILD)/tests/picture_settings $(BUILD)/modules/mod_settings.so
+	@test -f $(SETTINGSDB) || { echo "missing $(SETTINGSDB); the real settingsDB is required" >&2; exit 2; }
+	@$(BUILD)/tests/picture_settings $(SETTINGSDB) $(abspath $(BUILD)/modules)
+check: check-picture-settings
+
 .PHONY: check-i18n-service
 check-i18n-service: $(BUILD)/tests/i18n_service $(BUILD)/modules/mod_i18n.so
 	@test -f $(LANGPROFILE) || { echo "missing $(LANGPROFILE); the real langprofile is required" >&2; exit 2; }

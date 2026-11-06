@@ -372,6 +372,25 @@ typedef struct {
     int (*is_writable)(void);
 } oa_settings_iface;
 
+/* picture.settings v1 — the firmware's per-source PictureSettingConfiguration
+ * array, serialized in settingsDB.m_picture_setting_configuration. Stride is
+ * 0x240 bytes; field offsets recovered from UserPreferences/NovoPictureSettings:
+ *   +0x04 picture mode (0 DYNAMIC, 1 NATURAL, 2 CINEMA, 3 GAME, 4 SPORT)
+ *   +0x0c zoom mode (16:9/format field; +0x08 is the full-mode field)
+ *   +0x44 + picture_mode*0x70 + device3d*0x38 energy saving
+ * Getters return 0 and write *out, or an errno value. Setters return 0 or an
+ * errno value (EROFS while settings.readonly=1). source is 0..19. */
+#define OA_SVC_PICTURE_SETTINGS "picture.settings"
+typedef struct {
+    int (*get_mode)(int source, int *out);
+    int (*set_mode)(int source, int mode);
+    int (*get_zoom)(int source, int *out);
+    int (*set_zoom)(int source, int zoom);
+    int (*get_energy)(int source, int mode, int device3d, int *out);
+    int (*set_energy)(int source, int mode, int device3d, int value);
+    int (*is_writable)(void);
+} oa_picture_settings_iface;
+
 /* launcher.db — settingsDB LauncherItem read adapter. Published by
  * mod_settings. The list must be released with oa_launcher_db_free; the
  * service owns the database path. Parent filtering and the deleted/out-of-sync

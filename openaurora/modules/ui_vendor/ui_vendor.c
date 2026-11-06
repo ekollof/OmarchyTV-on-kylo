@@ -203,12 +203,14 @@ struct ctx {
     int sub_text_ready;
     char sub_text_locale[8];
     /* Selected value index per SUB_CARDS item, in branch item order. -1 means
-     * the item has no decoded value list yet (MODE -> picture_modes). The
-     * initial values reproduce the p0/03 capture (MAXIMUM_STR, ZOOM_MODE_16_9).
-     * ui.state_file persists KEY=index across module reload/process restart;
-     * default /tmp is boot-scoped, a /conf path survives reboot. */
+     * an item may still use a firmware source marker instead of a list. The
+     * defaults reproduce the p0/03 capture. picture.settings reads/writes the
+     * firmware's per-source PictureSettingConfiguration (0x240 bytes) from
+     * settingsDB.m_picture_setting_configuration; picture.source selects the
+     * source index (default 1 = HDMI1, the capture's configuration). */
     int sub_value[3];
-    char sub_state_file[128];
+    const oa_picture_settings_iface *picture;
+    int picture_source;
     /* Lab value editing (ui.edit=1): per-process shadow values for the four
      * slider rows 1..4. Range 0..100 is an INVENTED placeholder (per-setting
      * bounds come from runtime provider virtuals, not decodable statically);
@@ -603,8 +605,10 @@ static int sub_card_for_item(const char *key)
 }
 
 /* A string-valued "values" field is a firmware source marker, not a value
- * list: MODE -> picture_modes, system rows -> sleep_timer_values etc. Those
- * lists are decoded elsewhere; do not render or cycle the marker itself. */
+ * list: system rows -> sleep_timer_values etc. Those lists are decoded
+ * elsewhere; do not render or cycle the marker itself. MODE's list is now
+ * explicit (the PictureModeNameProvider table), but old documents may still
+ * carry the picture_modes marker. */
 static int sub_values_dynamic(const struct oa_menu_item *item)
 {
     if (item->dynamic) return 1;
@@ -646,60 +650,66 @@ static const char *sub_value_key(struct ctx *c,
 {
     int index = sub_value_index(c, item, card);
     if (index >= 0) return item->values[index].key;
-    /* MODE's picture_modes list is a profile list, not a JSON array; the
-     * p0/03 capture value remains the fallback until it is decoded. */
+    /* An old document may still carry the picture_modes marker; the p0/03
+     * capture value remains the fallback. */
     if (!strcmp(item->key, "MODE")) return "NATURAL";
     return NULL;
 }
 
-static void sub_state_defaults(struct ctx *c)
+static void sub_values_default(struct ctx *c)
 {
-    c->sub_value[0] = -1; /* MODE: values come from dynamic picture_modes */
+    c->sub_value[0] = 1;  /* NATURAL, picture_modes index 1 */
     c->sub_value[1] = 3;  /* MAXIMUM_STR */
     c->sub_value[2] = 1;  /* ZOOM_MODE_16_9 */
 }
 
-static void sub_state_load(struct ctx *c)
+static void sub_text_free(struct ctx *c);
+
+/* Refresh the card values from the firmware's serialized
+ * PictureSettingConfiguration. source defaults to HDMI1 (1), which is the
+ * configuration matching the p0/03 capture; see picture.source. */
+static void picture_sync(struct ctx *c)
 {
-    const char *path = c->api->config_get(c->api->priv, "ui.state_file",
-        "/tmp/openaurora-sub-launcher.state");
-    snprintf(c->sub_state_file, sizeof c->sub_state_file, "%s", path);
-    if (!c->sub_state_file[0]) return;
-    FILE *f = fopen(c->sub_state_file, "r");
-    if (!f) return;
-    char line[128];
-    while (fgets(line, sizeof line, f)) {
-        char *eq = strchr(line, '=');
-        if (!eq) continue;
-        *eq = '\0';
-        char *end = NULL;
-        long index = strtol(eq + 1, &end, 10);
-        if (!end || (*end != '\0' && *end != '\n')) continue;
-        int card = sub_card_for_item(line);
-        if (card >= 0 && index >= -1 && index <= 64)
-            c->sub_value[card] = (int)index;
-    }
-    fclose(f);
+    if (!c->picture) return;
+    int v;
+    if (c->picture->get_mode(c->picture_source, &v) == 0 &&
+        v >= 0 && v <= 4)
+        c->sub_value[0] = v;
+    if (c->picture->get_zoom(c->picture_source, &v) == 0 &&
+        v >= 0 && v <= 8)
+        c->sub_value[2] = v;
+    int mode = c->sub_value[0] >= 0 ? c->sub_value[0] : 1;
+    if (c->picture->get_energy(c->picture_source, mode, 0, &v) == 0 &&
+        v >= 0 && v <= 6)
+        c->sub_value[1] = v;
+    sub_text_free(c);
 }
 
-static void sub_state_save(struct ctx *c)
+/* Persist one card value through NovoPictureSettings' UserPreferences
+ * picture-configuration store. The UI keeps the new value even when the
+ * database is read-only; the write failure is logged. */
+static void picture_commit(struct ctx *c, int card, int index)
 {
-    if (!c->sub_state_file[0]) return;
-    char tmp[160];
-    if (snprintf(tmp, sizeof tmp, "%s.tmp", c->sub_state_file) >=
-        (int)sizeof tmp)
+    if (!c->picture) return;
+    int rc;
+    if (card == 0) {
+        rc = c->picture->set_mode(c->picture_source, index);
+        if (rc == 0) picture_sync(c); /* energy is per picture mode */
+    } else if (card == 1) {
+        int mode = c->sub_value[0] >= 0 ? c->sub_value[0] : 1;
+        rc = c->picture->set_energy(c->picture_source, mode, 0, index);
+    } else if (card == 2) {
+        rc = c->picture->set_zoom(c->picture_source, index);
+    } else {
         return;
-    FILE *f = fopen(tmp, "w");
-    if (!f) return;
-    for (unsigned i = 0; i < sizeof SUB_CARDS / sizeof SUB_CARDS[0]; i++)
-        if (c->sub_value[i] >= 0)
-            fprintf(f, "%s=%d\n", SUB_CARDS[i].key, c->sub_value[i]);
-    if (fclose(f) != 0 || rename(tmp, c->sub_state_file) != 0)
-        remove(tmp);
+    }
+    if (rc)
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "picture: write card %d index %d failed (%d)",
+                    card, index, rc);
 }
 
 static const uint8_t sub_white[4] = { 255, 255, 255, 255 };
-static void sub_text_free(struct ctx *c);
 
 /* Ink bounds relative to the pen, with a margin so negative bearings do not
  * clip. Font3/font12 are the vendor card fonts (ink boxes match p0/03). */
@@ -2093,7 +2103,7 @@ static int portal_menu_action(const char *action)
                     if (strcmp(item->values[v].key, eq + 1)) continue;
                     g_ctx->sub_value[card] = (int)v;
                     sub_text_free(g_ctx);
-                    sub_state_save(g_ctx);
+                    picture_commit(g_ctx, card, (int)v);
                     if (g_ctx->screen == SCREEN_SUBLAUNCHER && g_ctx->d)
                         paint(g_ctx);
                     rc = 0;
@@ -2119,7 +2129,7 @@ static int m_init(const oa_host_api *api, void **out)
     c->api = api;
     *out = c;
     g_ctx = c;
-    sub_state_defaults(c);
+    sub_values_default(c);
     return 0;
 }
 
@@ -2374,6 +2384,8 @@ static void on_service_removed(const void *evp, void *ud)
     } else if (!strcmp(ev->name, OA_SVC_I18N)) {
         c->i18n = NULL;
         sub_text_free(c);
+    } else if (!strcmp(ev->name, OA_SVC_PICTURE_SETTINGS)) {
+        c->picture = NULL;
     } else if (!strcmp(ev->name, OA_SVC_UI_LUA)) {
         c->lua = NULL; /* host already dropped the hold; do not repaint for this */
         return;
@@ -2409,6 +2421,10 @@ static void rebind_now(struct ctx *c)
     if (!c->clock) c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
     if (!c->theme) c->theme = c->api->lookup(c->api->priv, OA_SVC_UI_THEME, 1);
     if (!c->i18n) c->i18n = c->api->lookup(c->api->priv, OA_SVC_I18N, 1);
+    if (!c->picture) {
+        c->picture = c->api->lookup(c->api->priv, OA_SVC_PICTURE_SETTINGS, 1);
+        if (c->picture) picture_sync(c);
+    }
     apply_anim_policy(c);
     if (!c->lua) c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
     if (!slide_allowed(c)) {
@@ -2498,7 +2514,7 @@ static int sub_value_step(struct ctx *c, int dir)
             if (next != index) {
                 c->sub_value[card] = next;
                 sub_text_free(c);
-                sub_state_save(c);
+                picture_commit(c, card, next);
                 paint(c);
                 changed = 1;
             }
@@ -2880,8 +2896,13 @@ static const oa_ui_skin g_skin = { "vendor", skin_enter, NULL, skin_paint, skin_
 static int m_start(void *v)
 {
     struct ctx *c = v;
-    sub_state_defaults(c);
-    sub_state_load(c);
+    sub_values_default(c);
+    c->picture_source = atoi(c->api->config_get(c->api->priv,
+                                               "picture.source", "1"));
+    if (c->picture_source < 0 || c->picture_source > 19)
+        c->picture_source = 1;
+    c->picture = c->api->lookup(c->api->priv, OA_SVC_PICTURE_SETTINGS, 1);
+    if (c->picture) picture_sync(c);
     c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 2);
     if (!c->d) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "no ui.engine service — load mod_ui_engine first");
@@ -3117,6 +3138,10 @@ static void m_stop(void *v)
     if (c->i18n) {
         c->api->release(c->api->priv, OA_SVC_I18N);
         c->i18n = NULL;
+    }
+    if (c->picture) {
+        c->api->release(c->api->priv, OA_SVC_PICTURE_SETTINGS);
+        c->picture = NULL;
     }
     if (c->lua) {
         c->api->release(c->api->priv, OA_SVC_UI_LUA);

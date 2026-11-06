@@ -24,13 +24,26 @@
 
 #define DEFAULT_DB "/conf/sqlite_db/settingsDB.db"
 
+/* UserPreferences PictureSettingConfiguration array, serialized in
+ * Settings.m_picture_setting_configuration. 20 sources x 0x240 bytes. */
+#define PICTURE_SOURCES 20
+#define PICTURE_STRIDE 0x240
+#define PICTURE_BYTES (PICTURE_SOURCES * PICTURE_STRIDE)
+#define PIC_MODE_OFF 0x04
+#define PIC_ZOOM_OFF 0x0c
+#define PIC_ENERGY_OFF 0x44
+#define PIC_ENERGY_MODE_STRIDE 0x70
+#define PIC_ENERGY_3D_STRIDE 0x38
+
 struct ctx {
     const oa_host_api *api;
     sqlite3 *db;
     int readonly;
-    int published,hotel_published,launcher_published;
+    int published,hotel_published,launcher_published,picture_published;
     char path[128];
     char err[160];
+    unsigned char picture[PICTURE_BYTES];
+    int picture_on;
 };
 
 static struct ctx *g_ctx;
@@ -99,6 +112,138 @@ static int sql_error(int rc)
     rc&=255;
     return rc==SQLITE_BUSY || rc==SQLITE_LOCKED?EBUSY:rc==SQLITE_NOMEM?ENOMEM:EIO;
 }
+
+/* --- picture.settings: the firmware's serialized picture configuration --- */
+
+static int picture_load(struct ctx *c)
+{
+    if (!c || !c->db) return ENODEV;
+    sqlite3_stmt *st = NULL;
+    int rc = sqlite3_prepare_v2(c->db,
+        "SELECT m_picture_setting_configuration FROM Settings LIMIT 1;",
+        -1, &st, NULL);
+    if (rc != SQLITE_OK) {
+        snprintf(c->err, sizeof c->err, "%s", sqlite3_errmsg(c->db));
+        if (st) sqlite3_finalize(st);
+        return sql_error(rc);
+    }
+    rc = sqlite3_step(st);
+    int error = 0;
+    if (rc == SQLITE_ROW) {
+        const void *blob = sqlite3_column_blob(st, 0);
+        int n = sqlite3_column_bytes(st, 0);
+        if (blob && n == PICTURE_BYTES) {
+            memcpy(c->picture, blob, PICTURE_BYTES);
+            c->picture_on = 1;
+        } else {
+            error = ENODATA;
+        }
+    } else {
+        error = rc == SQLITE_DONE ? ENODATA : sql_error(rc);
+    }
+    if (sqlite3_finalize(st) != SQLITE_OK && !error) error = EIO;
+    return error;
+}
+
+static int pic_range(int source)
+{
+    return source >= 0 && source < PICTURE_SOURCES;
+}
+
+static int pic_get_abs(const struct ctx *c, int off, int *out)
+{
+    if (!c || !c->picture_on) return ENODEV;
+    if (off < 0 || off + (int)sizeof *out > PICTURE_BYTES || !out)
+        return EINVAL;
+    memcpy(out, c->picture + off, sizeof *out);
+    return 0;
+}
+
+static int picture_save(struct ctx *c)
+{
+    if (!c || !c->db) return ENODEV;
+    if (c->readonly) return EROFS;
+    sqlite3_stmt *st = NULL;
+    int rc = sqlite3_prepare_v2(c->db,
+        "UPDATE Settings SET m_picture_setting_configuration=?;",
+        -1, &st, NULL);
+    if (rc != SQLITE_OK) {
+        snprintf(c->err, sizeof c->err, "%s", sqlite3_errmsg(c->db));
+        if (st) sqlite3_finalize(st);
+        return sql_error(rc);
+    }
+    rc = sqlite3_bind_blob(st, 1, c->picture, PICTURE_BYTES, SQLITE_TRANSIENT);
+    if (rc == SQLITE_OK) rc = sqlite3_step(st);
+    int error = rc == SQLITE_DONE ? 0 : sql_error(rc);
+    if (sqlite3_finalize(st) != SQLITE_OK && !error) error = EIO;
+    return error;
+}
+
+static int pic_store_abs(struct ctx *c, int off, int value)
+{
+    if (!c || !c->picture_on) return ENODEV;
+    if (off < 0 || off + (int)sizeof value > PICTURE_BYTES) return EINVAL;
+    if (c->readonly) return EROFS;
+    unsigned char *at = c->picture + off;
+    int old;
+    memcpy(&old, at, sizeof old);
+    memcpy(at, &value, sizeof value);
+    int rc = picture_save(c);
+    if (rc) memcpy(at, &old, sizeof old);
+    return rc;
+}
+
+static int picture_get_mode(int source, int *out)
+{
+    if (!pic_range(source)) return EINVAL;
+    return pic_get_abs(g_ctx, source * PICTURE_STRIDE + PIC_MODE_OFF, out);
+}
+
+static int picture_set_mode(int source, int mode)
+{
+    if (!pic_range(source) || mode < 0 || mode > 4) return EINVAL;
+    return pic_store_abs(g_ctx, source * PICTURE_STRIDE + PIC_MODE_OFF, mode);
+}
+
+static int picture_get_zoom(int source, int *out)
+{
+    if (!pic_range(source)) return EINVAL;
+    return pic_get_abs(g_ctx, source * PICTURE_STRIDE + PIC_ZOOM_OFF, out);
+}
+
+static int picture_set_zoom(int source, int zoom)
+{
+    if (!pic_range(source) || zoom < 0 || zoom > 0x7f) return EINVAL;
+    return pic_store_abs(g_ctx, source * PICTURE_STRIDE + PIC_ZOOM_OFF, zoom);
+}
+
+static int energy_offset(int source, int mode, int device3d)
+{
+    if (!pic_range(source) || mode < 0 || mode > 4 ||
+        device3d < 0 || device3d > 1)
+        return -1;
+    return source * PICTURE_STRIDE + PIC_ENERGY_OFF +
+           mode * PIC_ENERGY_MODE_STRIDE + device3d * PIC_ENERGY_3D_STRIDE;
+}
+
+static int picture_get_energy(int source, int mode, int device3d, int *out)
+{
+    int off = energy_offset(source, mode, device3d);
+    if (off < 0) return EINVAL;
+    return pic_get_abs(g_ctx, off, out);
+}
+
+static int picture_set_energy(int source, int mode, int device3d, int value)
+{
+    int off = energy_offset(source, mode, device3d);
+    if (off < 0 || value < 0 || value > 0xff) return EINVAL;
+    return pic_store_abs(g_ctx, off, value);
+}
+
+static const oa_picture_settings_iface picture_iface = {
+    picture_get_mode, picture_set_mode, picture_get_zoom, picture_set_zoom,
+    picture_get_energy, picture_set_energy, is_writable
+};
 static int hotel_read(struct oa_tab_hotel *out)
 {
     if(!out)return EINVAL;
@@ -234,6 +379,24 @@ static int m_start(void *v)
         m_stop(c);return -1;
     }
     c->launcher_published=1;
+    if (picture_load(c) == 0) {
+        if (c->api->publish(c->api->priv, OA_SVC_PICTURE_SETTINGS, 1,
+                            &picture_iface)) {
+            m_stop(c);
+            return -1;
+        }
+        c->picture_published = 1;
+        int mode = -1, zoom = -1, energy = -1;
+        if (picture_get_mode(1, &mode) == 0 &&
+            picture_get_zoom(1, &zoom) == 0 &&
+            picture_get_energy(1, 1, 0, &energy) == 0)
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "picture: 20 configs; source1 mode=%d zoom=%d energy=%d",
+                        mode, zoom, energy);
+    } else {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "picture: no m_picture_setting_configuration blob");
+    }
     int cec = -1;
     if (get_int("m_cec_enabled", &cec) == 0)
         c->api->log(c->api->priv, OA_LOG_INFO, "probe: m_cec_enabled=%d", cec);
@@ -246,8 +409,12 @@ static void m_stop(void *v)
     struct ctx *c = v;
     int published=c->published,hotel_published=c->hotel_published;
     int launcher_published=c->launcher_published;
+    int picture_published=c->picture_published;
     sqlite3 *db=c->db;c->db=NULL;
     c->published=c->hotel_published=c->launcher_published=0;
+    c->picture_published=0;
+    c->picture_on=0;
+    if(picture_published)c->api->unpublish(c->api->priv,OA_SVC_PICTURE_SETTINGS);
     if(launcher_published)c->api->unpublish(c->api->priv,OA_SVC_LAUNCHER_DB);
     if(hotel_published)c->api->unpublish(c->api->priv,OA_SVC_SETTINGS_HOTEL);
     if(published)c->api->unpublish(c->api->priv,OA_SVC_SETTINGS);

@@ -259,23 +259,27 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       runs and mixed Hebrew/Latin BiDi remain. Capture focused vendor cards and
       multilingual oracle frames before claiming full visual parity.
 
-- [x] `setting:`/`set:` dispatch and card value cycling: `DemoApp+0x318` is
-      `NovoPictureSettings*` (vptr `_ZTV19NovoPictureSettings`+8); the vtable
-      slots resolve to picture-mode/apply/zoom/index/energy methods. ui_vendor
-      cycles ENERGY_SAVING/PICTURE_ZOOM from the JSON value arrays (cyclic,
-      per SVGSelectionBox), wires `setting:`/`set:`, saves `KEY=index` in
-      `ui.state_file` and adds control `ui-action`.
-      `tools/qemu-sub-value-check.sh`: 16:9 width54→Ondertitels155 after
-      `set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE`, same after restart;
-      `setting:ENERGY_SAVING` focus bottom450; Down,Down,Right gives AUTO176
-      and ENERGY_SAVING4. SUBLAUNCHER-VALUES.
+- [x] `setting:`/`set:` dispatch, MODE and the picture store:
+      `DemoApp+0x318` is `NovoPictureSettings*` (vptr
+      `_ZTV19NovoPictureSettings`+8); the per-source UserPreferences config is
+      0x240 bytes (mode+0x04, zoom+0x0c, energy+0x44+mode*0x70). The runtime
+      PictureModeNameProvider table is 0 DYNAMIC/1 NATURAL/2 CINEMA/3 GAME/
+      4 SPORT; the JSON now carries it. `mod_settings` publishes
+      `picture.settings` over `Settings.m_picture_setting_configuration`
+      (20×0x240, whole-blob update, EROFS while read-only); ui_vendor reads and
+      writes it (picture.source=1) and the old `ui.state_file` shadow is gone.
+      Host test checks source1 NATURAL/16:9/MAXIMUM against the shipped DB and
+      reload. QEMU: Ondertitels155/blob+0xc=2, survives restart; focus450;
+      Down,Down,Right AUTO176/energy4; set:MODE=CINEMA writes mode2 and applies
+      energy0 (Cinema/Uit). SUBLAUNCHER-VALUES.
 
-- [ ] Vendor settings backend and MODE: the persisted state is a replacement
-      shadow, not `NovoPictureSettings`/`UserPreferences`/PQ or the settingsDB
-      serialization (`m_picture_setting_configuration`, `m_last_zoom_mode`).
-      MODE's `picture_modes` list is a runtime-filled 5-entry
-      PictureModeNameProvider table and is not decoded; `set:MODE=...` returns
-      ENOTSUP and the card keeps the p0/03 NATURAL. Do not apply the row to the
+- [ ] Live picture backend details: the service uses the serialized settingsDB
+      blob, not the live `NovoPictureSettings`/`UserPreferences` object.
+      `picture.source` is fixed to 1 (HDMI1); deriving it from
+      InputManager/EASITVControlInterface is not implemented. HDR energy
+      variants (+0x446c/+0xa10/+0xa48) and the format-0 `isFullModeApplicable`
+      zoom choice are open. Writing the TV's DB requires `settings.readonly=0`
+      and is a deliberate deployment decision. Do not apply the row to the
       category rail or an invented portal card row.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus

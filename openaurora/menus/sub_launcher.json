@@ -69,7 +69,28 @@
               "id": 0,
               "key": "MODE",
               "action": "setting:MODE",
-              "values": "picture_modes"
+              "values": [
+                {
+                  "key": "DYNAMIC",
+                  "action": "set:MODE=DYNAMIC"
+                },
+                {
+                  "key": "NATURAL",
+                  "action": "set:MODE=NATURAL"
+                },
+                {
+                  "key": "CINEMA",
+                  "action": "set:MODE=CINEMA"
+                },
+                {
+                  "key": "GAME",
+                  "action": "set:MODE=GAME"
+                },
+                {
+                  "key": "SPORT",
+                  "action": "set:MODE=SPORT"
+                }
+              ]
             },
             {
               "id": 1,

@@ -121,25 +121,29 @@ now reverses run order for the LTR renderer (Arabic RTL, Latin/digits LTR,
 neutral runs take RTL; no Arabic → unchanged). QEMU ara renders
 وضع/توفير الطاقة/تكبير تصغير الصورة/طبيعي/حد أقصى/16:9 and per renders
 حالت/صرفه جویی در مصرف انرژی/ابعاد تصویر/طبیعی/حداکثر. Bracket mirroring,
-MODE picture_modes, the real PQ/UserPreferences write, other async modules and
-scanout remain. LIVE-SUBLAUNCHER-I18N.
+the live PQ/UserPreferences object, other async modules and scanout remain.
+LIVE-SUBLAUNCHER-I18N.
 
-Sub-launcher value flow, 2026-11-06: `DemoApp+0x318` is `NovoPictureSettings*`
-(createApplicationModules0xcd5a98, initialise0xf28268). The object vptr is
-`_ZTV19NovoPictureSettings`+8; slots9c/a4/b0/b4/d0/e8/194/198/19c resolve to
-setPictureModeForCurrentSource/applyPictureSettings/get-setZoomMode/index/
-getPictureModeForCurrentSource/energy get-default-set. UserPreferences keeps
-the per-source0x240 picture config at+0x43f0 and energy at+0x4434 (HDR
-variants446c/a10/a48); settingsDB blobs are the likely serialization but were
-not executed. `SVGSelectionBox` defaults cyclic (constructor writes1 at+0x2f4),
-so Left/Right cycle the focused card and Up/Down move focus. ui_vendor now
-cycles ENERGY_SAVING/PICTURE_ZOOM via the JSON value arrays, wires
-`setting:`/`set:`, saves `KEY=index` in `ui.state_file` (default /tmp,
-boot-scoped) and adds control `ui-action`. QEMU: 16:9 width54→Ondertitels155
-after `set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE`, same after restart;
-`setting:ENERGY_SAVING` focus bottom450; Down,Down,Right gives AUTO176 and
-ENERGY_SAVING4. This is a replacement shadow, not the vendor PQ/UserPreferences
-write; MODE picture_modes and the real backend remain. SUBLAUNCHER-VALUES.
+Sub-launcher values/picture store, 2026-11-06: `DemoApp+0x318` is
+`NovoPictureSettings*` (createApplicationModules0xcd5a98, initialise0xf28268);
+vptr=`_ZTV19NovoPictureSettings`+8 (slots9c/a4/b0/b4/d0/e8/194/198/19c =
+picture-mode/apply/zoom/index/energy). UserPreferences keeps the per-source
+0x240 picture config at+0x43f0: mode+0x04, zoom+0x0c, energy+0x44+mode*0x70+
+device3d*0x38. `Settings.m_picture_setting_configuration` is20×0x240 bytes;
+source1 (HDMI1) has mode1 NATURAL, zoom1 16:9, energy3 MAXIMUM — exactly
+p0/03. PictureModeNameProvider's initializer at0x6eee50 fills
+0x178d64c with0 DYNAMIC/1 NATURAL/2 CINEMA/3 GAME/4 SPORT, now explicit in
+the JSON. `SVGSelectionBox` is cyclic; Up/Down move focus, Left/Right change
+values. mod_settings publishes `picture.settings` v1 (get/set mode, zoom,
+energy; whole-blob UPDATE; EROFS when settings.readonly=1). ui_vendor reads/
+writes it, default picture.source1; the ui.state_file shadow is removed.
+QEMU: default16:9 width54→Ondertitels155 after set, blob+0xc=2, survives
+restart; setting focus bottom450; Down,Down,Right energy4/AUTO176;
+set:MODE=CINEMA writes mode2 and applies energy0 (Cinema105/Uit36).
+Host test asserts source1 values against the shipped DB and reload.
+Limits: serialized DB blob, not the live UserPreferences object; source index
+fixed to1; HDR energy variants/full-mode zoom not implemented; TV DB write
+needs settings.readonly=0. SUBLAUNCHER-VALUES.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
 Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,

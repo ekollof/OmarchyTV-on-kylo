@@ -333,8 +333,12 @@ DYNAMIC_KEYS = {
     },
 }
 
+# PictureModeNameProvider's runtime table, filled by the initializer at
+# 0x6eee50: {0 DYNAMIC, 1 NATURAL, 2 CINEMA, 3 GAME, 4 SPORT}. The firmware
+# names are resolved from the literals at 0x6eee98..0x6eeea8.
+PICTURE_MODES = ["DYNAMIC", "NATURAL", "CINEMA", "GAME", "SPORT"]
+
 DYNAMIC_VALUES = {
-    ("initialisePictureSettingsShortcuts", 0): "picture_modes",
     ("initialiseSystemSettingsShortcuts", 0): "sleep_timer_values",
     ("initialiseSystemSettingsShortcuts", 1): "auto_tv_off_values",
     ("initialiseSystemSettingsShortcuts", 3): "languages",
@@ -395,6 +399,11 @@ def build_tree(elf, decompile_path):
             if dynamic:
                 item["key"] = dynamic[0]
                 item["dynamic"] = dynamic[1]
+            if suffix == "initialisePictureSettingsShortcuts" and item["id"] == 0:
+                item["values"] = [
+                    {"id": i, "key": key}
+                    for i, key in enumerate(PICTURE_MODES)
+                ]
             vdyn = DYNAMIC_VALUES.get((suffix, item["id"]))
             if vdyn:
                 item["values"] = [{"id": 0, "key": vdyn}]
@@ -521,7 +530,7 @@ def emit_c(model, path):
 
 
 DYNAMIC_MARKERS = {
-    "picture_modes", "sleep_timer_values", "auto_tv_off_values", "languages",
+    "sleep_timer_values", "auto_tv_off_values", "languages",
     "favourite_lists", "fvp_apps", "recommendations", "advertising", "dynamic",
 }
 

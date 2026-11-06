@@ -12,13 +12,11 @@
 #include "openaurora/services.h"
 
 static const char *g_menu_path;
-static const char *g_state_path;
 
 static const char *config(void *ud, const char *key, const char *def)
 {
     (void)ud;
     if (!strcmp(key, "ui_menu.file")) return g_menu_path;
-    if (!strcmp(key, "ui.state_file")) return g_state_path;
     if (!strcmp(key, "ui.paint")) return "0";
     if (!strcmp(key, "ui.text")) return "0";
     if (!strcmp(key, "ui.ok_file")) return "";
@@ -32,9 +30,8 @@ int main(int argc, char **argv)
     assert(argc == 2);
     char dir[] = "/tmp/oa-menu-action-XXXXXX";
     assert(mkdtemp(dir));
-    char path[256], state[256];
+    char path[256];
     snprintf(path, sizeof path, "%s/menu.json", dir);
-    snprintf(state, sizeof state, "%s/state.conf", dir);
     FILE *f = fopen(path, "w");
     assert(f);
     const char *json =
@@ -48,7 +45,9 @@ int main(int argc, char **argv)
         "\"item\":{\"w\":240,\"h\":140},\"branches\":[{\"launcher_type\":2,"
         "\"name\":\"picture\",\"items\":["
         "{\"id\":0,\"key\":\"MODE\",\"action\":\"setting:MODE\","
-        "\"values\":\"picture_modes\"},"
+        "\"values\":["
+        "{\"key\":\"DYNAMIC\"},{\"key\":\"NATURAL\"},"
+        "{\"key\":\"CINEMA\"},{\"key\":\"GAME\"},{\"key\":\"SPORT\"}]},"
         "{\"id\":1,\"key\":\"ENERGY_SAVING\","
         "\"action\":\"setting:ENERGY_SAVING\",\"values\":["
         "{\"key\":\"OFF\",\"action\":\"set:ENERGY_SAVING=OFF\"},"
@@ -61,7 +60,6 @@ int main(int argc, char **argv)
         "]}]}]}";
     assert(fwrite(json, 1, strlen(json), f) == strlen(json) && !fclose(f));
     g_menu_path = path;
-    g_state_path = state;
 
     oa_host h;
     assert(!oa_host_init(&h, argv[1], NULL));
@@ -98,26 +96,18 @@ int main(int argc, char **argv)
     assert(portal->menu_action("setting:ENERGY_SAVING") == 0);
     assert(portal->menu_action("set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE") == 0);
     assert(portal->menu_action("set:PICTURE_ZOOM=nope") == ENOENT);
-    assert(portal->menu_action("set:MODE=NATURAL") == ENOTSUP);
+    assert(portal->menu_action("set:MODE=NATURAL") == 0);
+    assert(portal->menu_action("set:MODE=NOPE") == ENOENT);
     assert(portal->menu_action("setting:NOPE") == ENOENT);
     assert(portal->menu_action("set:nope") == EINVAL);
     assert(portal->menu_action(NULL) == EINVAL);
-
-    char saved[256] = { 0 };
-    f = fopen(state, "r");
-    assert(f);
-    size_t got = fread(saved, 1, sizeof saved - 1, f);
-    assert(!fclose(f));
-    saved[got] = '\0';
-    assert(strstr(saved, "PICTURE_ZOOM=2\n"));
-    assert(strstr(saved, "ENERGY_SAVING=3\n"));
 
     h.stop_requested = 1;
     assert(!oa_host_run(&h));
     close(h.selfpipe[0]);
     close(h.selfpipe[1]);
     pthread_mutex_destroy(&h.post_mu);
-    assert(!unlink(state) && !unlink(path) && !rmdir(dir));
-    puts("ok ui.menu action: JSON entry invokes open/setting/set and persists the value");
+    assert(!unlink(path) && !rmdir(dir));
+    puts("ok ui.menu action: JSON entry invokes open/setting/set");
     return 0;
 }

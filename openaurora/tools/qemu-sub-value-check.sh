@@ -1,7 +1,8 @@
 #!/bin/sh
-# Offline QEMU check for the sub-launcher value action and persistence:
-# set:PICTURE_ZOOM changes the live card value, ui.state_file records the
-# index, and a fresh process loads it again. No TV or fbdev access.
+# Offline QEMU check for the sub-launcher value actions and the firmware
+# picture store: set: updates the card, settingsDB's 0x240-byte
+# PictureSettingConfiguration changes, and a fresh process reads it back.
+# No TV or fbdev access.
 set -eu
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 ARM=${ARM:-$ROOT/artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc}
@@ -12,7 +13,9 @@ PROFILE=$ROOT/artifacts/workbench/rootfs/vendor2/mb230_langprofile.bin
 MOD=$ROOT/openaurora/build-tv-v3/modules
 TEST=$ROOT/openaurora/build-tv-v3/tests
 HOST=$ROOT/openaurora/build-tv-v3/openaurora
-MODULES="sim_display ui_engine ticker ui_clock plat ir ui_menu i18n ui_vendor"
+SETTINGSDB=$ROOT/artifacts/dumps/apdat_files/sqlite_db/settingsDB.db
+SQLITE_LIB=$ROOT/artifacts/workbench/rootfs/vendor/lib/libs/libsqlite3.so.0
+MODULES="sim_display ui_engine ticker ui_clock plat ir ui_menu i18n settings ui_vendor"
 
 if [ "${OA_QEMU_SKIP_BUILD:-0}" != 1 ]; then
     make -C "$ROOT/openaurora" -j"${JOBS:-4}" TARGET=tv BUILD=build-tv-v3 CC="$ARM" \
@@ -24,6 +27,7 @@ if [ "${OA_QEMU_SKIP_BUILD:-0}" != 1 ]; then
         build-tv-v3/modules/mod_ticker.so \
         build-tv-v3/modules/mod_ui_clock.so \
         build-tv-v3/modules/mod_ir.so \
+        build-tv-v3/modules/mod_settings.so \
         build-tv-v3/modules/mod_ui_vendor.so >/dev/null
 fi
 
@@ -36,7 +40,8 @@ fi
 for f in "$HOST" "$TEST/mod_sim_display.so" "$MOD/mod_ui_engine.so" \
          "$MOD/mod_ui_menu.so" "$MOD/mod_i18n.so" "$MOD/mod_ticker.so" \
          "$MOD/mod_ui_clock.so" "$MOD/mod_ir.so" "$TEST/mod_plat_stub.so" \
-         "$MOD/mod_ui_vendor.so" "$UI/settings_top.rgba" \
+         "$MOD/mod_settings.so" "$MOD/mod_ui_vendor.so" "$SETTINGSDB" \
+         "$SQLITE_LIB" "$UI/settings_top.rgba" \
          "$UI/settings_cat.rgba" "$UI/settings_rail.rgba" "$FONT.txt" \
          "$FONT.bin" "$PROFILE" \
          "$ROOT/openaurora/menus/sub_launcher.json"; do
@@ -52,8 +57,11 @@ rm -rf "$STAGE"
 mkdir -p "$STAGE/modules" "$STAGE/ui" "$STAGE/menus"
 cp "$TEST/mod_sim_display.so" "$MOD/mod_ui_engine.so" "$MOD/mod_ui_menu.so" \
    "$MOD/mod_i18n.so" "$MOD/mod_ticker.so" "$MOD/mod_ui_clock.so" \
-   "$MOD/mod_ir.so" "$MOD/mod_ui_vendor.so" "$STAGE/modules/"
+   "$MOD/mod_ir.so" "$MOD/mod_settings.so" "$MOD/mod_ui_vendor.so" \
+   "$STAGE/modules/"
 cp "$TEST/mod_plat_stub.so" "$STAGE/modules/mod_plat.so"
+cp "$SQLITE_LIB" "$STAGE/libsqlite3.so.0"
+cp "$SETTINGSDB" "$STAGE/picture.db"
 cp "$UI/settings_top.rgba" "$UI/settings_cat.rgba" "$UI/settings_rail.rgba" \
    "$UI/sublauncher_card_0.rgba" "$UI/sublauncher_card_1.rgba" \
    "$UI/sublauncher_card_2.rgba" "$UI/sublauncher_card_0_bg.rgba" \
@@ -71,7 +79,9 @@ ui.sub_sel=-1
 ui.sub_progress=0
 ui.font_index=$FONT.txt
 ui.font_pack=$FONT.bin
-ui.state_file=$STAGE/state.conf
+settings.db=$STAGE/picture.db
+settings.readonly=0
+picture.source=1
 i18n.profile=$PROFILE
 i18n.language=dut
 plat.enable=1
@@ -80,26 +90,33 @@ ir.blast=0
 ui_menu.file=$STAGE/menus/sub_launcher.json
 EOF
 
+export LD_LIBRARY_PATH="$STAGE${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
 last_frame() {
     ls "$STAGE"/frame.* 2>/dev/null | sed 's/.*\.//' | sort -n | tail -1
 }
 
-# 1. Default p0/03 value (16:9) in a fresh state.
+# 1. Default p0/03 values from the firmware DB: source1 NATURAL/MAXIMUM/16:9.
 OA_QEMU_MODULES="$MODULES" \
     "$ROOT/openaurora/tools/qemu-ui-layout.sh" "$STAGE" >/dev/null
 cp "$STAGE/frame.0" "$STAGE/base.rgba"
 
-# 2. Control-socket set: action; the later frames carry the new value.
+# 2. Control-socket set: action; the later frames carry the new value and the
+#    blob's zoom field must change.
 OA_QEMU_MODULES="$MODULES" OA_QEMU_HOLD_MS=500 \
 OA_QEMU_ACTION="set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE" \
     "$ROOT/openaurora/tools/qemu-ui-layout.sh" "$STAGE" >/dev/null
 n=$(last_frame)
 test -n "$n" || { echo "no action frame" >&2; exit 3; }
 cp "$STAGE/frame.$n" "$STAGE/changed.rgba"
-grep -q '^PICTURE_ZOOM=2$' "$STAGE/state.conf" || {
-    echo "state file did not record PICTURE_ZOOM=2" >&2; cat "$STAGE/state.conf" >&2; exit 4; }
+python3 - "$STAGE/picture.db" <<'PY'
+import sqlite3, struct, sys
+b = sqlite3.connect(sys.argv[1]).execute(
+    "select m_picture_setting_configuration from Settings").fetchone()[0]
+assert struct.unpack_from("<i", b, 0x240 + 0x0c)[0] == 2, "zoom field not 2"
+PY
 
-# 3. Fresh process must load the saved index.
+# 3. Fresh process must load the saved blob.
 OA_QEMU_MODULES="$MODULES" \
     "$ROOT/openaurora/tools/qemu-ui-layout.sh" "$STAGE" >/dev/null
 cp "$STAGE/frame.0" "$STAGE/restart.rgba"
@@ -114,16 +131,35 @@ cp "$STAGE/frame.$n" "$STAGE/focus.rgba"
 # 5. Up/Down focus the card; Right cycles the focused value (vendor
 #    SVGSelectionBox cyclic default). Down,Down -> ENERGY_SAVING, Right ->
 #    MAXIMUM_STR(3) -> AUTO(4).
-rm -f "$STAGE/state.conf"
 OA_QEMU_MODULES="$MODULES" OA_QEMU_HOLD_MS=400 OA_QEMU_KEYS="20,20,22" \
     "$ROOT/openaurora/tools/qemu-ui-layout.sh" "$STAGE" >/dev/null
 n=$(last_frame)
 cp "$STAGE/frame.$n" "$STAGE/cycle.rgba"
-grep -q '^ENERGY_SAVING=4$' "$STAGE/state.conf" || {
-    echo "Right did not cycle MAXIMUM_STR to AUTO" >&2; cat "$STAGE/state.conf" >&2; exit 5; }
+python3 - "$STAGE/picture.db" <<'PY'
+import sqlite3, struct, sys
+b = sqlite3.connect(sys.argv[1]).execute(
+    "select m_picture_setting_configuration from Settings").fetchone()[0]
+off = 0x240 + 0x44 + 1 * 0x70
+assert struct.unpack_from("<i", b, off)[0] == 4, "mode1 energy not AUTO"
+PY
+
+# 6. set:MODE=CINEMA writes the mode field and applies that mode's stored
+#    energy (mode 2 -> OFF in the firmware DB).
+OA_QEMU_MODULES="$MODULES" OA_QEMU_HOLD_MS=400 \
+OA_QEMU_ACTION="set:MODE=CINEMA" \
+    "$ROOT/openaurora/tools/qemu-ui-layout.sh" "$STAGE" >/dev/null
+n=$(last_frame)
+cp "$STAGE/frame.$n" "$STAGE/mode.rgba"
+python3 - "$STAGE/picture.db" <<'PY'
+import sqlite3, struct, sys
+b = sqlite3.connect(sys.argv[1]).execute(
+    "select m_picture_setting_configuration from Settings").fetchone()[0]
+assert struct.unpack_from("<i", b, 0x240 + 0x04)[0] == 2, "mode field not CINEMA"
+off = 0x240 + 0x44 + 2 * 0x70
+assert struct.unpack_from("<i", b, off)[0] == 0, "mode2 energy not OFF"
+PY
 
 python3 - "$STAGE" <<'PY'
-import glob
 import sys
 from PIL import Image
 
@@ -142,13 +178,13 @@ def ink(px, x0, x1, y0, y1):
                 ys.append(y)
     return (min(xs), min(ys), max(xs) + 1, max(ys) + 1) if xs else None
 
-def value_box(px):
-    x0 = 199 + 2 * 250
+def value_box(px, card):
+    x0 = 199 + card * 250
     return ink(px, x0, x0 + 240, 345, 400)
 
-base = value_box(load(f"{stage}/base.rgba"))
-changed = value_box(load(f"{stage}/changed.rgba"))
-restart = value_box(load(f"{stage}/restart.rgba"))
+base = value_box(load(f"{stage}/base.rgba"), 2)
+changed = value_box(load(f"{stage}/changed.rgba"), 2)
+restart = value_box(load(f"{stage}/restart.rgba"), 2)
 if not base or not changed or not restart:
     raise SystemExit("missing card 2 value text")
 bw = base[2] - base[0]
@@ -180,8 +216,16 @@ cycle = load(f"{stage}/cycle.rgba")
 ebox = ink(cycle, 199 + 250, 199 + 250 + 240, 345, 400)
 if not ebox or ebox[2] - ebox[0] < 160:
     raise SystemExit(f"Right did not render the long AUTO value: {ebox}")
-print(f"ok qemu sub-launcher value: 16:9 width {bw} -> {cw}, "
-      f"PICTURE_ZOOM=2 persisted across restart; setting: focus bottom {bottom}; "
-      f"Right AUTO width {ebox[2] - ebox[0]}")
 
+mode = load(f"{stage}/mode.rgba")
+m0 = ink(mode, 199, 199 + 240, 345, 400)
+m1 = ink(mode, 199 + 250, 199 + 250 + 240, 345, 400)
+if not m0 or not (95 <= m0[2] - m0[0] <= 120):
+    raise SystemExit(f"set:MODE did not render Cinema: {m0}")
+if not m1 or not (25 <= m1[2] - m1[0] <= 55):
+    raise SystemExit(f"mode2 energy did not render OFF: {m1}")
+print(f"ok qemu sub-launcher value: 16:9 width {bw} -> {cw} (DB field 2), "
+      f"survives restart; setting: focus bottom {bottom}; Right AUTO width "
+      f"{ebox[2] - ebox[0]}; MODE Cinema width {m0[2] - m0[0]}, energy OFF "
+      f"width {m1[2] - m1[0]}")
 PY

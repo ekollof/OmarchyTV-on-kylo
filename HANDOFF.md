@@ -130,17 +130,19 @@ async modules. Arabic/Persian run order is now handled by
 picture_modes, the real PQ/UserPreferences write, other async modules and
 scanout remain. LIVE-SUBLAUNCHER-I18N.
 
-Sub-launcher values, 2026-11-06: `DemoApp+0x318` is `NovoPictureSettings*`;
-vptr=`_ZTV19NovoPictureSettings`+8 (slots9c/a4/b0/b4/d0/e8/194/198/19c =
-picture-mode/apply/zoom/index/energy). UserPreferences holds the per-source
-0x240 picture config and energy array; settingsDB blob serialization is not
-executed. SVGSelectionBox is cyclic, so Left/Right cycle the focused card and
-Up/Down move focus. ui_vendor cycles ENERGY_SAVING/PICTURE_ZOOM from the JSON
-arrays, wires `setting:`/`set:`, persists `KEY=index` in `ui.state_file`
-(default /tmp, boot-scoped) and adds control `ui-action`. QEMU: 16:9 width54→
-Ondertitels155 after set, same after restart; setting: focus bottom450;
-Down,Down,Right gives AUTO176 and ENERGY_SAVING4. This is a replacement
-shadow, not the vendor PQ write; MODE picture_modes remain.
+Sub-launcher values/picture store, 2026-11-06: `DemoApp+0x318` is
+`NovoPictureSettings*`; vptr=`_ZTV19NovoPictureSettings`+8 (mode/apply/zoom/
+index/energy). The per-source 0x240 UserPreferences config has mode+0x04,
+zoom+0x0c, energy+0x44+mode*0x70; `Settings.m_picture_setting_configuration`
+is20×0x240 and source1 has NATURAL/16:9/MAXIMUM (p0/03). The runtime
+PictureModeNameProvider table is0 DYNAMIC/1 NATURAL/2 CINEMA/3 GAME/4 SPORT.
+mod_settings publishes `picture.settings` and ui_vendor reads/writes it
+(picture.source1); the ui.state_file shadow is removed. QEMU: set zoom →
+Ondertitels155 and blob+0xc=2, survives restart; setting focus450;
+Down,Down,Right AUTO176/energy4; set:MODE=CINEMA writes mode2 and applies
+energy0 (Cinema/Uit). Host test checks the shipped DB values and reload.
+Limits: serialized blob, not the live UserPreferences object; source fixed to
+1; HDR/full-mode zoom open; TV DB write needs settings.readonly=0.
 SUBLAUNCHER-VALUES.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over

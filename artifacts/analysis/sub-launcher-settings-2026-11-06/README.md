@@ -11,7 +11,9 @@ TV-offline Ghidra evidence for the object behind `SubLauncherDialog`'s
 | `easi-tv-ctor.txt` | `EASITVControlInterface` constructor; it is a data holder, not the `+0x318` object |
 | `settings-methods-decompile.txt` | `NovoPictureSettings` get/set picture mode, zoom and energy methods |
 | `preferences-decompile.txt` | `UserPreferences` picture configuration array and energy-saving fields |
-| `picture-mode-names.txt` | `PictureModeNameProvider`: 5 modes, name table filled at runtime |
+| `picture-mode-names.txt` | `PictureModeNameProvider`: 5 modes; the table is filled by the initializer at 0x006eee50 |
+| `picturemode-fields.txt` | `UserPreferences::get/setPictureMode`: config +0x04 |
+| `picture-config-fields.txt` | `NovoPictureSettings::get/setPictureMode`; config/energy callers |
 | `demoapp-ctor.txt` | `DemoApp` constructor: `+0x318` starts zeroed |
 
 ## Object and vtable
@@ -64,10 +66,14 @@ The picture methods do not touch SQLite directly. They read/write
 - `ENERGY_SAVING` and `PICTURE_ZOOM` have explicit JSON arrays decoded from
   `initialisePictureSettingsShortcuts`; the selection-box item IDs are the
   picture/zoom enum indices.
-- `MODE` is dynamic. `PictureModeNameProvider::getNumberOfPictureModes`
-  returns 5 and `getNameStrIdOfPictureMode(i)` returns the fourth byte of a
-  runtime-filled 8-byte table entry; the JSON carries the `picture_modes`
-  marker instead of a list.
+- `MODE` comes from the runtime table. `getNumberOfPictureModes` returns 5;
+  the initializer at 0x006eee50 fills 0x0178d64c with
+  `[0] DYNAMIC, [1] NATURAL, [2] CINEMA, [3] GAME, [4] SPORT` from the
+  literals at 0x6eee98..0x6eeea8. The JSON now carries that list; `set:MODE`
+  maps the value index directly to `NovoPictureMode`.
+- `m_picture_setting_configuration` is 20 x 0x240 bytes. Source 1 (HDMI1) has
+  mode 1 (NATURAL) at +0x04, zoom 1 (16:9) at +0x0c, and energy 3 (MAXIMUM)
+  for picture mode 1 at +0x44 + 1*0x70, matching the p0/03 capture.
 
 `SVGSelectionBox`'s constructor writes 0x1 at `+0x2f4`, so `onKeyLeft`/
 `onKeyRight` wrap (cyclic navigation) rather than clamp.

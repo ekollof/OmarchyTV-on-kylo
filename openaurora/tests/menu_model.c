@@ -61,8 +61,12 @@ int main(int argc, char **argv)
     assert(picture->item_count == 3);
     assert(picture->items[0].id == 0 && !strcmp(picture->items[0].key, "MODE"));
     assert(!strcmp(picture->items[0].action, "setting:MODE"));
-    assert(picture->items[0].value_count == 1);
-    assert(!strcmp(picture->items[0].values[0].key, "picture_modes"));
+    assert(picture->items[0].value_count == 5);
+    assert(!strcmp(picture->items[0].values[0].key, "DYNAMIC"));
+    assert(!strcmp(picture->items[0].values[1].key, "NATURAL"));
+    assert(!strcmp(picture->items[0].values[2].key, "CINEMA"));
+    assert(!strcmp(picture->items[0].values[3].key, "GAME"));
+    assert(!strcmp(picture->items[0].values[4].key, "SPORT"));
     assert(!strcmp(picture->items[1].key, "ENERGY_SAVING"));
     assert(picture->items[1].value_count == 7);
     assert(has_value(&picture->items[1], "OFF", "set:ENERGY_SAVING=OFF"));
