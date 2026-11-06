@@ -278,11 +278,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  pvr-cancel <id>         cancel scheduled reservation\n"
                  "  pvr-record <id>         start scheduled recording\n"
                  "  pvr-stop <id>           complete active recording\n"
-                 "  service-list             broadcast-service inventory count\n"
-                 "  service-list stats       inventory flags/source totals\n"
-                 "  service-list name <index>    stored-name sorted row\n"
-                 "  service-list channel <index> stored-channel_no sorted row\n"
-                 "  service-list <index>     one DVB/EASI/analog inventory row\n"
+                 "  service-list [stats|name|channel] [index]  inventory/rows\n"
                  "  image-decode <path>      decode PNG/JPEG through image.decode\n"
                  "  ui-state                query ui.portal screen\n"
                  "  theme-state             query ui.theme pack count\n"
@@ -291,6 +287,8 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  anim-state              query ui.anim enabled/fault\n"
                  "  clock-state             query ui.clock current ms\n"
                  "  ticker-state            query ticker saved tick count\n"
+                 "  console-state           query ui_console saved selection\n"
+                 "  emit-key <id>           emit a KEY press on the host bus\n"
                  "  menu-state <dialog>     query ui.menu dialogs/branches\n"
                  "  ui-action <action>      apply a JSON menu action (open:/setting:/set:)\n"
                  "  picture-state <source>  read picture mode/zoom/energy 0-19\n"
@@ -313,6 +311,41 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         if (!a1) { oa_skin_status(h, outbuf, outlen); return 0; }
         if (oa_skin_request(h, a1)) { snprintf(outbuf, outlen, "failed errno %d\n", errno); return -1; }
         snprintf(outbuf, outlen, "pending %s\n", a1);
+        return 0;
+    }
+    if (!strcmp(cmd, "console-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        oa_mod *m = oa_host_find_module(h, "ui_console");
+        if (!m || !m->ctx || !m->desc->save) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EIO);
+            return -1;
+        }
+        unsigned char sel = 0;
+        uint32_t prev = h->cur_module;
+        h->cur_module = m->id;
+        size_t n = m->desc->save(m->ctx, &sel, sizeof sel);
+        h->cur_module = prev;
+        if (n != sizeof sel) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EIO);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "console selection %u\n", (unsigned)sel);
+        return 0;
+    }
+    if (!strcmp(cmd, "emit-key")) {
+        uint64_t code = 0;
+        if (force || !a1 || a2 || decimal(a1, &code) || code > 255) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        oa_key_event ev = {0};
+        ev.id = (uint8_t)code;
+        ev.kind = OA_KEY_PRESS;
+        h->api.emit(h, OA_TOPIC_KEY, &ev);
+        snprintf(outbuf, outlen, "ok\n");
         return 0;
     }
     if (!strcmp(cmd, "ticker-state")) {

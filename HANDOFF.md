@@ -474,8 +474,8 @@ stop/destroy cancel/free. New ticker-state probe (published clock + saved
 ticks). Control test waits 1.1s for tick1, reload fails fast, ticker-state
 ENODEV, status responsive, retry preserves tick1; stop gate. Clock/animation
 dependencies, full suite all tests passed, QEMU pass. ARM links libc only.
-Project diagnostic probe; no TV run. 31/35 descriptors now have quiesce; 4
-remain: plat/power/ui_console/ui_omarchy. TICKER-QUIESCE.
+Project diagnostic probe; on-TV follow-up below. 31/35 descriptors now have
+quiesce; 4 remain: plat/power/ui_console/ui_omarchy. TICKER-QUIESCE.
 
 ticker/clock/anim on-TV CPU-only check, 2026-11-06: staged under
 /buffer/oa-sched-verify with hash-verified ARM host+mod_ticker/mod_ui_clock/
@@ -484,6 +484,19 @@ ticker each failed fast with ENODEV then completed after0.7s; tick2 restored;
 unload clean. Staging removed, no helper left, stock Aurora PID1781 unchanged.
 Only DSOs/socket/stdin opened; no fb/DVB/alsa/GPIO paths. CPU-only run, not
 display/HAL/scanout/audio/tuner acceptance. /tmp staging removed separately.
+
+ui_console async gate, 2026-11-06: clear active and unsubscribe KEY/TICK
+synchronously, snapshot/detach the heap selection, then free from one sched
+slice after ui_console.cleanup_delay_ms. Save uses the snapshot; start refuses
+while pending and restores the selection; stop/destroy cancel/free. New
+console-state and diagnostic emit-key probes. 400ms control test: selection
+0->1, reload fails fast, status responsive, key during gate ignored, retry
+preserves1 and a new key gives2, stop uses the gate. Focused ASan/UBSan clean,
+full suite all tests passed, QEMU pass. ARM links libc only. On-TV CPU-only
+/buffer/oa-console-verify run with hash-verified host+module reproduced the
+sequence (restored1 byte), staging removed, stock Aurora PID1781 unchanged; no
+fb/DVB/alsa/GPIO paths. Text UI only; 32/35 descriptors now have quiesce; 3
+remain: plat/power/ui_omarchy. UI-CONSOLE-QUIESCE.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
