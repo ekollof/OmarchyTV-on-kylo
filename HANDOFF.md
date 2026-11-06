@@ -122,8 +122,8 @@ U+202C etc. are stripped. The row box is the vendor 240x54 `text1` at
 glyphs; at240 px only bul253 and ukr264 clip (lit239 fits), values max183.
 Profile Hebrew is stored visual order, so draw it as stored (Dictionary's
 reorder targets the vendor RTL engine); QEMU heb shows מצב/חסכון בחשמל/
-קירוב והרחקה של תמונה/טבעי/מקסימום/16:9. Runtime Left/Right uses `ui.clock`
-+10 ms timer for300 ms; QEMU `key 22` through the real IR parser card0
+קירוב והרחקה של תמונה/טבעי/מקסימום/16:9. Runtime Up/Down uses `ui.clock`
++10 ms timer for300 ms; QEMU `key 20` through the real IR parser card0
 bottom405→450. `mod_i18n` has the ABI3 async quiesce gate; `ir`/`i18n` are the
 async modules. Arabic/Persian run order is now handled by
 `common/rtl_order.c` (QEMU ara/per verified); bracket mirroring, live values,

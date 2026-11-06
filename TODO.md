@@ -244,8 +244,8 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
 - [x] Sub-launcher live text/runtime: font3 labels + font12 values on clean
       captured backgrounds; Dutch live text within4 px of p0/03 (most≤2 px).
       `mod_i18n` resolves all41 langprofile locales with current→eng→key
-      fallback; U+202C-style controls are stripped. Runtime Left/Right uses
-      `ui.clock` + a10 ms timer for300 ms; QEMU `key 22` through the real IR
+      fallback; U+202C-style controls are stripped. Runtime Up/Down uses
+      `ui.clock` + a10 ms timer for300 ms; QEMU `key 20` through the real IR
       parser drives card0 bottom405→450. `qemu-sub-live-check.sh` repeats it.
       LIVE-SUBLAUNCHER-I18N.
 

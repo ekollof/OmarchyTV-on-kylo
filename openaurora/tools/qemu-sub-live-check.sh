@@ -79,7 +79,7 @@ ui_menu.file=$STAGE/menus/sub_launcher.json
 EOF
 
 OA_QEMU_MODULES="sim_display ui_engine ticker ui_clock plat ir ui_menu i18n ui_vendor" \
-OA_QEMU_KEY=22 OA_QEMU_HOLD_MS=700 \
+OA_QEMU_KEY=20 OA_QEMU_HOLD_MS=700 \
     "$ROOT/openaurora/tools/qemu-ui-layout.sh" "$STAGE" >/dev/null
 
 python3 - "$STAGE" "$UI/settings_top.rgba" "$LANG_CODE" <<'PY'
@@ -157,5 +157,5 @@ if len(set(seq)) < 6:
     raise SystemExit(f"too few animation steps: {seq}")
 detail = "Dutch text within 4 px of p0/03" if lang == "dut" else f"{lang} text inside the 240 px box"
 print(f"ok qemu sub-launcher live: {detail}; "
-      f"key 22 timer card bottom {seq[0]} -> {seq[-1]} over {len(seq)} frames")
+      f"key 20 timer card bottom {seq[0]} -> {seq[-1]} over {len(seq)} frames")
 PY

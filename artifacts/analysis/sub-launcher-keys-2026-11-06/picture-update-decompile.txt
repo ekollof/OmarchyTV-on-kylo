@@ -1,0 +1,685 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (621 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1593 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '_ZN17SubLauncherDialog17updatePictureModeEv' '_ZN17SubLauncherDialog18updateEnergySavingEb' '_ZN17SubLauncherDialog14updateZoomModeEv' '_ZN17SubLauncherDialog34initialisePictureSettingsShortcutsEv'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN17SubLauncherDialog17updatePictureModeEv -> SubLauncherDialog::updatePictureMode @ 00ee3bc8 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined updatePictureMode(void) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SubLauncherDialog::updatePictureMode() */
+
+void __thiscall SubLauncherDialog::updatePictureMode(SubLauncherDialog *this)
+
+{
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  undefined4 uVar4;
+  int iVar5;
+  int iVar6;
+  SettingItemsListBoxRow *this_00;
+  NovoAIManager *this_01;
+  int *piVar7;
+  SettingsDialog *this_02;
+  SettingItemsListBox *this_03;
+  code *pcVar8;
+  undefined1 auStack_30 [4];
+  int local_2c;
+
+  piVar1 = DAT_00ee3d08;
+  this_03 = (SettingItemsListBox *)(this + 0x180);
+  local_2c = *DAT_00ee3d08;
+  iVar2 = SettingItemsListBox::getSelectedItemValue(this_03);
+  iVar3 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x318) + 0xe8))();
+  (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x318) + 0x9c))
+            (*(int **)(*(int *)(this + 0x4a8) + 0x318),iVar2);
+  piVar7 = *(int **)(*(int *)(this + 0x4a8) + 0x318);
+  pcVar8 = *(code **)(*piVar7 + 0xa4);
+  uVar4 = (**(code **)(*piVar7 + 0xd0))(piVar7);
+  (*pcVar8)(piVar7,uVar4,0);
+  (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x314) + 0x20))
+            (*(int **)(*(int *)(this + 0x4a8) + 0x314),auStack_30,iVar2);
+  iVar5 = SettingItemsListBox::getItemIndex(this_03,0);
+  iVar6 = iVar5;
+  if (iVar5 != -1) {
+    iVar6 = *(int *)(*(int *)(this + 0x478) + iVar5 * 4);
+  }
+  if (iVar5 != -1) {
+    *(int *)(iVar6 + 0x20) = iVar2;
+  }
+  if (this[0x4be] != (SubLauncherDialog)0x0) {
+    this_02 = (SettingsDialog *)(this + 4);
+    clearLauncherItems(this);
+    initialisePictureSettingsShortcuts(this);
+    insertEmptyItem(this);
+    SettingsDialog::updateActiveList(this_02);
+    SettingsDialog::updateSettingsList(this_02);
+    this_00 = (SettingItemsListBoxRow *)SVGListBoxBase::getItem((SVGListBoxBase *)this_03,iVar5);
+    if (this_00 != (SettingItemsListBoxRow *)0x0) {
+      SettingItemsListBoxRow::setSelectionDisabled(this_00,false);
+      SVGListBoxRow::setRowSVGName((SVGListBoxRow *)this_00,0x1e3,0x1e3,0x1e3,0x1e3);
+    }
+    this[0x4bf] = (SubLauncherDialog)0x1;
+    SettingsDialog::setListBoxHorizontal(this_02,false);
+  }
+  if (iVar2 != iVar3) {
+    NovoLoggingManager::setPictureSettingChange
+              (*(NovoLoggingManager **)(*(int *)(this + 0x4a8) + 500),true);
+  }
+  if ((this[0x551] != (SubLauncherDialog)0x0) &&
+     (iVar6 = NovoSystemInitialiser::aiManager
+                        (*(NovoSystemInitialiser **)(*(int *)(this + 0x4a8) + 0x44)), iVar6 != 0)) {
+    this_01 = (NovoAIManager *)
+              NovoSystemInitialiser::aiManager
+                        (*(NovoSystemInitialiser **)(*(int *)(this + 0x4a8) + 0x44));
+    NovoAIManager::applyMenuChanges(this_01,true,false,false);
+  }
+  if (local_2c == *piVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail();
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN17SubLauncherDialog18updateEnergySavingEb -> SubLauncherDialog::updateEnergySaving @ 00ee4020 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined updateEnergySaving(bool param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SubLauncherDialog::updateEnergySaving(bool) */
+
+void __thiscall SubLauncherDialog::updateEnergySaving(SubLauncherDialog *this,bool param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+  EASITVControlInterface *this_00;
+  NovoSambaACRController *pNVar3;
+  undefined4 uVar4;
+  undefined4 uVar5;
+  undefined4 uVar6;
+  undefined4 uVar7;
+  int iVar8;
+  int *piVar9;
+  SettingItemsListBox *this_01;
+  code *pcVar10;
+  int local_286c;
+  AutoMessagePrompt aAStack_2868 [10300];
+  int local_2c;
+
+  piVar1 = DAT_00ee42ec;
+  local_2c = *DAT_00ee42ec;
+  iVar8 = *(int *)(this + 0x4cc);
+  this_01 = (SettingItemsListBox *)(this + 0x180);
+  local_286c = SettingItemsListBox::getSelectedItemValue(this_01);
+  piVar9 = *(int **)(*(int *)(this + 0x4a8) + 0x318);
+  if (param_1) {
+    pcVar10 = *(code **)(*piVar9 + 0x198);
+    uVar4 = (**(code **)(*piVar9 + 0xd0))(piVar9);
+    uVar5 = (**(code **)(*piVar9 + 0xe8))(piVar9);
+    uVar6 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x204) + 0x68))();
+    local_286c = (*pcVar10)(piVar9,uVar4,uVar5,uVar6);
+  }
+  uVar4 = DAT_00ee42f0;
+  if (local_286c == 6) {
+    (**(code **)(*(int *)(this + 4) + 0x6c))(this + 4,0);
+    AutoMessagePrompt::AutoMessagePrompt
+              (aAStack_2868,*(undefined4 *)(this + 8),*(undefined4 *)(this + 0x4a8),
+               *(undefined4 *)(this + 0x6c),uVar4,1,0x57,1);
+    AutoMessagePrompt::setWidth(aAStack_2868,0x35c);
+    AutoMessagePrompt::setButtonStringId(aAStack_2868,DAT_00ee42f8,DAT_00ee42f4,(char *)0x0);
+    AutoMessagePrompt::setTimeout(aAStack_2868,0xf);
+    iVar2 = SVGDialog::doModal((SVGDialog *)aAStack_2868);
+    if (iVar2 == 0x28) {
+      (**(code **)(*(int *)(this + 4) + 0x6c))(this + 4,1);
+      this_00 = (EASITVControlInterface *)DemoApp::tvInterface(*(DemoApp **)(this + 0x4a8));
+      EASITVControlInterface::setBacklightPinEnable(this_00,false);
+      DemoApp::setModuleStateVariable(*(DemoApp **)(this + 0x4a8),0x13);
+      pNVar3 = (NovoSambaACRController *)
+               DemoApp::getNovoSambaACRController(*(DemoApp **)(this + 0x4a8));
+      NovoSambaACRController::SetPowerModeSambaACR(pNVar3,4,0);
+    }
+    else {
+      iVar2 = SettingItemsListBox::getItemIndex(this_01,1);
+      if (iVar2 != -1) {
+        local_286c = iVar8;
+      }
+    }
+    AutoMessagePrompt::~AutoMessagePrompt(aAStack_2868);
+  }
+  *(int *)(this + 0x4cc) = local_286c;
+  iVar2 = (**(code **)(*piVar9 + 0xe8))(piVar9);
+  if (iVar2 == 3) {
+    if ((*(uint *)(this + 0x4cc) == 5) || (*(uint *)(this + 0x4cc) < 3)) goto LAB_00ee418c;
+  }
+  else {
+    iVar2 = (**(code **)(*piVar9 + 0xe8))(piVar9);
+    if ((iVar2 != 0) || (*(int *)(this + 0x4cc) != 3)) goto LAB_00ee418c;
+  }
+  *(undefined4 *)(this + 0x4cc) = 0;
+LAB_00ee418c:
+  if (local_286c != 6) {
+    pcVar10 = *(code **)(*piVar9 + 0x19c);
+    uVar4 = (**(code **)(*piVar9 + 0xd0))(piVar9);
+    uVar5 = (**(code **)(*piVar9 + 0xe8))(piVar9);
+    uVar6 = (**(code **)(*piVar9 + 0x68))(piVar9);
+    (*pcVar10)(piVar9,uVar4,uVar5,uVar6,*(undefined4 *)(this + 0x4cc),1);
+    if (local_286c == 5) {
+      pcVar10 = *(code **)(*piVar9 + 0x100);
+      uVar4 = (**(code **)(*piVar9 + 0xd0))(piVar9);
+      uVar5 = (**(code **)(*piVar9 + 0xe8))(piVar9);
+      uVar6 = (**(code **)(*piVar9 + 0x68))(piVar9);
+      uVar4 = (*pcVar10)(piVar9,uVar4,uVar5,uVar6);
+      pcVar10 = *(code **)(*piVar9 + 0x104);
+      uVar5 = (**(code **)(*piVar9 + 0xd0))(piVar9);
+      uVar6 = (**(code **)(*piVar9 + 0xe8))(piVar9);
+      uVar7 = (**(code **)(*piVar9 + 0x68))(piVar9);
+      (*pcVar10)(piVar9,uVar5,uVar6,uVar7,uVar4,1);
+    }
+  }
+  iVar2 = SettingItemsListBox::getItemIndex(this_01,1);
+  if (iVar2 != -1) {
+    *(undefined1 *)(*(int *)(*(int *)(this + 0x478) + iVar2 * 4) + 0x2c) = 1;
+    iVar2 = *(int *)(*(int *)(this + 0x478) + iVar2 * 4);
+    pcVar10 = *(code **)(*piVar9 + 0x194);
+    uVar4 = (**(code **)(*piVar9 + 0xd0))(piVar9);
+    uVar5 = (**(code **)(*piVar9 + 0xe8))(piVar9);
+    uVar6 = (**(code **)(*piVar9 + 0x68))(piVar9);
+    uVar4 = (*pcVar10)(piVar9,uVar4,uVar5,uVar6);
+    *(undefined4 *)(iVar2 + 0x20) = uVar4;
+  }
+  if (local_286c != iVar8) {
+    NovoLoggingManager::setPictureSettingChange
+              (*(NovoLoggingManager **)(*(int *)(this + 0x4a8) + 500),true);
+  }
+  if (local_2c == *piVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail();
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN17SubLauncherDialog14updateZoomModeEv -> SubLauncherDialog::updateZoomMode @ 00edf688 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined updateZoomMode(void) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SubLauncherDialog::updateZoomMode() */
+
+void __thiscall SubLauncherDialog::updateZoomMode(SubLauncherDialog *this)
+
+{
+  int *piVar1;
+  int iVar2;
+  undefined4 uVar3;
+  int iVar4;
+  int iVar5;
+  int iVar6;
+  int iVar7;
+
+  piVar1 = DAT_00edf72c;
+  iVar7 = *DAT_00edf72c;
+  iVar2 = SettingItemsListBox::getSelectedItemValue((SettingItemsListBox *)(this + 0x180));
+  uVar3 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x318) + 0xd0))();
+  iVar4 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x318) + 0xb0))
+                    (*(int **)(*(int *)(this + 0x4a8) + 0x318),uVar3,0);
+  (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x318) + 0xb4))
+            (*(int **)(*(int *)(this + 0x4a8) + 0x318),uVar3,iVar2,0);
+  iVar5 = SettingItemsListBox::getItemIndex((SettingItemsListBox *)(this + 0x180),2);
+  iVar6 = 0;
+  if (iVar5 != -1) {
+    iVar6 = *(int *)(*(int *)(this + 0x478) + iVar5 * 4);
+  }
+  if (iVar5 != -1) {
+    *(int *)(iVar6 + 0x20) = iVar2;
+  }
+  if (iVar2 != iVar4) {
+    NovoLoggingManager::setPictureSettingChange
+              (*(NovoLoggingManager **)(*(int *)(this + 0x4a8) + 500),true);
+  }
+  if (iVar7 == *piVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail();
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN17SubLauncherDialog34initialisePictureSettingsShortcutsEv -> SubLauncherDialog::initialisePictureSettingsShortcuts @ 00ee0ed0 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined initialisePictureSettingsShortcuts(void) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SubLauncherDialog::initialisePictureSettingsShortcuts() */
+
+void __thiscall SubLauncherDialog::initialisePictureSettingsShortcuts(SubLauncherDialog *this)
+
+{
+  char cVar1;
+  undefined4 uVar2;
+  undefined4 uVar3;
+  undefined4 uVar4;
+  undefined4 uVar5;
+  int iVar6;
+  int iVar7;
+  int iVar8;
+  int iVar9;
+  int iVar10;
+  char *pcVar11;
+  UIResourceManager *this_00;
+  int iVar12;
+  UString *pUVar13;
+  SettingItem *pSVar14;
+  PipPapNavigator *this_01;
+  SettingItemsListBoxRow *this_02;
+  int iVar15;
+  int *piVar16;
+  int iVar17;
+  code *pcVar18;
+  char *pcVar19;
+  vector<SettingValue,std::allocator<SettingValue>> *this_03;
+  undefined1 auStack_1a0 [2];
+  char local_19e;
+  SettingItem *local_19c;
+  UString aUStack_198 [8];
+  UString aUStack_190 [8];
+  UString aUStack_188 [8];
+  UString aUStack_180 [8];
+  int local_178;
+  int local_174;
+  undefined4 local_170;
+  int local_16c;
+  UString aUStack_168 [8];
+  vector<SettingValue,std::allocator<SettingValue>> avStack_160 [12];
+  SettingValue aSStack_154 [4];
+  UString aUStack_150 [8];
+  SettingValue aSStack_148 [4];
+  UString aUStack_144 [8];
+  SettingValue aSStack_13c [4];
+  UString aUStack_138 [8];
+  SettingValue aSStack_130 [4];
+  UString aUStack_12c [8];
+  SettingValue aSStack_124 [4];
+  UString aUStack_120 [8];
+  SettingValue aSStack_118 [4];
+  UString aUStack_114 [8];
+  SettingValue aSStack_10c [4];
+  UString aUStack_108 [8];
+  vector<SettingValue,std::allocator<SettingValue>> avStack_100 [12];
+  SettingValue aSStack_f4 [4];
+  UString aUStack_f0 [8];
+  SettingValue aSStack_e8 [4];
+  UString aUStack_e4 [8];
+  SettingValue aSStack_dc [4];
+  UString aUStack_d8 [8];
+  SettingValue aSStack_d0 [4];
+  UString aUStack_cc [8];
+  SettingValue aSStack_c4 [4];
+  UString aUStack_c0 [8];
+  SettingValue aSStack_b8 [4];
+  UString aUStack_b4 [8];
+  SettingValue aSStack_ac [4];
+  UString aUStack_a8 [8];
+  SettingValue aSStack_a0 [4];
+  UString aUStack_9c [8];
+  SettingValue aSStack_94 [4];
+  UString aUStack_90 [8];
+  SettingValue aSStack_88 [4];
+  UString aUStack_84 [8];
+  SettingValue aSStack_7c [4];
+  UString aUStack_78 [8];
+  SettingValue aSStack_70 [4];
+  UString aUStack_6c [8];
+  UString aUStack_64 [12];
+  undefined1 uStack_58;
+  char local_57;
+  char local_56;
+  char local_55;
+  char local_4b;
+  char local_4a;
+  char local_43;
+  char local_3c;
+  char local_2d;
+  int local_2c;
+
+  local_2c = *DAT_00ee11c8;
+  uVar2 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x318) + 0xd0))();
+  (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x314) + 0x1c))
+            (*(int **)(*(int *)(this + 0x4a8) + 0x314),&uStack_58);
+  uVar3 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x318) + 0xe8))();
+  (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x314) + 0x20))
+            (*(int **)(*(int *)(this + 0x4a8) + 0x314),auStack_1a0,uVar3);
+  piVar16 = *(int **)(*(int *)(this + 0x4a8) + 0x318);
+  pcVar18 = *(code **)(*piVar16 + 0x194);
+  uVar4 = (**(code **)(*piVar16 + 0xe8))(piVar16);
+  uVar5 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x318) + 0x68))();
+  uVar4 = (*pcVar18)(piVar16,uVar2,uVar4,uVar5);
+  *(undefined4 *)(this + 0x4cc) = uVar4;
+  uVar2 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x318) + 0xb0))
+                    (*(int **)(*(int *)(this + 0x4a8) + 0x318),uVar2,0);
+  uVar4 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x260) + 0x24))
+                    (*(int **)(*(int *)(this + 0x4a8) + 0x260),0);
+  iVar6 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x260) + 0x18))
+                    (*(int **)(*(int *)(this + 0x4a8) + 0x260),uVar4);
+  if (iVar6 == 8) {
+    iVar6 = 0;
+  }
+  else {
+    piVar16 = *(int **)(*(int *)(this + 0x4a8) + 0x318);
+    pcVar18 = *(code **)(*piVar16 + 0x4c);
+    uVar4 = (**(code **)(*piVar16 + 0xd0))(piVar16);
+    iVar6 = (*pcVar18)(piVar16,uVar4);
+  }
+  uVar4 = 1;
+  iVar7 = DemoApp::isDolbyMediaPlaying(*(DemoApp **)(this + 0x4a8));
+  iVar15 = 0;
+  iVar8 = DemoApp::isHDRMediaPlaying(*(DemoApp **)(this + 0x4a8));
+  iVar9 = DemoApp::isHLGMediaPlaying(*(DemoApp **)(this + 0x4a8));
+  local_178 = 0;
+  local_174 = 0;
+  local_170 = 0;
+  do {
+    local_19c = (SettingItem *)0x0;
+    std::vector<SettingValue,std::allocator<SettingValue>>::clear
+              ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178);
+    if (iVar15 == 1) {
+      if (local_57 != '\0') {
+        iVar10 = DemoApp::isDolbyMediaPlaying(*(DemoApp **)(this + 0x4a8));
+        if (iVar10 != 0) goto LAB_00ee1610;
+        if (local_174 == local_178) {
+          SettingValue::SettingValue(aSStack_154,*(UIFramework **)(this + 8),0,DAT_00ee155c);
+          std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                    ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_154);
+          UString::~UString(aUStack_150);
+          SettingValue::SettingValue(aSStack_148,*(UIFramework **)(this + 8),1,DAT_00ee1560);
+          std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                    ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_148);
+          UString::~UString(aUStack_144);
+          SettingValue::SettingValue(aSStack_13c,*(UIFramework **)(this + 8),2,DAT_00ee1564);
+          std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                    ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_13c);
+          UString::~UString(aUStack_138);
+          iVar10 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x318) + 0xe8))();
+          if (iVar10 != 3) {
+            if (local_3c == '\0') {
+              iVar10 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x318) + 0xe8))();
+              if (iVar10 != 0) {
+                SettingValue::SettingValue(aSStack_130,*(UIFramework **)(this + 8),3,DAT_00ee1568);
+                std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                          ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,
+                           aSStack_130);
+                UString::~UString(aUStack_12c);
+              }
+              SettingValue::SettingValue(aSStack_124,*(UIFramework **)(this + 8),4,DAT_00ee156c);
+              std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                        ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_124
+                        );
+              UString::~UString(aUStack_120);
+            }
+            SettingValue::SettingValue(aSStack_118,*(UIFramework **)(this + 8),6,DAT_00ee1570);
+            std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                      ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_118);
+            UString::~UString(aUStack_114);
+          }
+          SettingValue::SettingValue(aSStack_10c,*(UIFramework **)(this + 8),5,DAT_00ee1574);
+          std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                    ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_10c);
+          UString::~UString(aUStack_108);
+        }
+        std::vector<SettingValue,std::allocator<SettingValue>>::vector
+                  (avStack_100,(vector *)&local_178);
+        pSVar14 = operator_new(0xa4);
+        this_03 = avStack_100;
+        SettingItem::SettingItem
+                  (pSVar14,*(undefined4 *)(this + 8),1,DAT_00ee1578,2,this_03,
+                   *(undefined4 *)(this + 0x4cc),0,0,uVar4,0);
+        goto LAB_00ee15e8;
+      }
+LAB_00ee11b0:
+      if (local_19c != (SettingItem *)0x0) {
+        std::vector<SettingItem*,std::allocator<SettingItem*>>::push_back
+                  ((vector<SettingItem*,std::allocator<SettingItem*>> *)(this + 0x478),&local_19c);
+        iVar10 = SettingItemsListBox::getItemIndex((SettingItemsListBox *)(this + 0x180),iVar15);
+        this_02 = (SettingItemsListBoxRow *)
+                  SVGListBoxBase::getItem((SVGListBoxBase *)(this + 0x180),iVar10);
+        if (this_02 != (SettingItemsListBoxRow *)0x0) {
+          SettingItemsListBoxRow::setSelectionDisabled(this_02,true);
+        }
+      }
+    }
+    else {
+      if (iVar15 == 2) {
+        if (local_174 == local_178) {
+          if (local_55 == '\0') {
+            if (local_4b == '\0') {
+              SettingValue::SettingValue(aSStack_70,*(UIFramework **)(this + 8),1,DAT_00ee1598);
+              std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                        ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_70)
+              ;
+              pUVar13 = aUStack_6c;
+            }
+            else {
+              SettingValue::SettingValue(aSStack_dc,*(UIFramework **)(this + 8),5,DAT_00ee157c);
+              std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                        ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_dc)
+              ;
+              UString::~UString(aUStack_d8);
+              SettingValue::SettingValue(aSStack_d0,*(UIFramework **)(this + 8),6,DAT_00ee1584);
+              std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                        ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_d0)
+              ;
+              UString::~UString(aUStack_cc);
+              SettingValue::SettingValue(aSStack_c4,*(UIFramework **)(this + 8),3,DAT_00ee1588);
+              std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                        ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_c4)
+              ;
+              UString::~UString(aUStack_c0);
+              SettingValue::SettingValue(aSStack_b8,*(UIFramework **)(this + 8),4,DAT_00ee158c);
+              std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                        ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_b8)
+              ;
+              UString::~UString(aUStack_b4);
+              SettingValue::SettingValue(aSStack_ac,*(UIFramework **)(this + 8),2,DAT_00ee1580);
+              std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                        ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_ac)
+              ;
+              UString::~UString(aUStack_a8);
+              if (local_4a != '\0') {
+                SettingValue::SettingValue(aSStack_a0,*(UIFramework **)(this + 8),0xb,DAT_00ee1590);
+                std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                          ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,
+                           aSStack_a0);
+                UString::~UString(aUStack_9c);
+              }
+              SettingValue::SettingValue(aSStack_94,*(UIFramework **)(this + 8),8,DAT_00ee1594);
+              std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                        ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_94)
+              ;
+              UString::~UString(aUStack_90);
+              if (local_43 != '\0') {
+                SettingValue::SettingValue(aSStack_88,*(UIFramework **)(this + 8),1,DAT_00ee1598);
+                std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                          ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,
+                           aSStack_88);
+                UString::~UString(aUStack_84);
+              }
+              if (iVar6 == 0) goto LAB_00ee13b4;
+              SettingValue::SettingValue(aSStack_7c,*(UIFramework **)(this + 8),9,DAT_00ee159c);
+              std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                        ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_7c)
+              ;
+              pUVar13 = aUStack_78;
+            }
+          }
+          else {
+            SettingValue::SettingValue(aSStack_f4,*(UIFramework **)(this + 8),5,DAT_00ee157c);
+            std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                      ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_f4);
+            UString::~UString(aUStack_f0);
+            SettingValue::SettingValue(aSStack_e8,*(UIFramework **)(this + 8),2,DAT_00ee1580);
+            std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                      ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,aSStack_e8);
+            pUVar13 = aUStack_e4;
+          }
+          UString::~UString(pUVar13);
+        }
+LAB_00ee13b4:
+        iVar10 = DemoApp::getModuleState(*(DemoApp **)(this + 0x4a8));
+        this_01 = (PipPapNavigator *)DemoApp::getPipPapNavigator(*(DemoApp **)(this + 0x4a8));
+        iVar17 = PipPapNavigator::isZoomModeChangeDisabled(this_01);
+        if (iVar17 == 0) {
+          uVar4 = 0;
+          if (iVar10 != 0x14) {
+            uVar4 = 1;
+          }
+        }
+        else {
+          uVar4 = 0;
+        }
+        iVar10 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x260) + 0x34))
+                           (*(int **)(*(int *)(this + 0x4a8) + 0x260),0);
+        if ((iVar10 == 5) &&
+           (iVar10 = DemoApp::getMBPlaybackMode(*(DemoApp **)(this + 0x4a8)), iVar10 == 0)) {
+          uVar4 = 0;
+        }
+        std::vector<SettingValue,std::allocator<SettingValue>>::vector
+                  ((vector<SettingValue,std::allocator<SettingValue>> *)aUStack_64,
+                   (vector *)&local_178);
+        pSVar14 = operator_new(0xa4);
+        this_03 = (vector<SettingValue,std::allocator<SettingValue>> *)aUStack_64;
+        SettingItem::SettingItem
+                  (pSVar14,*(undefined4 *)(this + 8),2,DAT_00ee171c,2,this_03,uVar2,0,0,uVar4,0);
+LAB_00ee15e8:
+        local_19c = pSVar14;
+        std::vector<SettingValue,std::allocator<SettingValue>>::~vector(this_03);
+        goto LAB_00ee11b0;
+      }
+      if (local_55 == '\0') {
+        iVar10 = PictureModeNameProvider::getNumberOfPictureModes();
+        if (local_174 == local_178) {
+          for (iVar17 = 0; iVar17 < iVar10; iVar17 = iVar17 + 1) {
+            (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x314) + 0x20))
+                      (*(int **)(*(int *)(this + 0x4a8) + 0x314),auStack_1a0,iVar17);
+            cVar1 = local_19e;
+            if (((iVar17 != 4) && (cVar1 = local_56, iVar17 != 3)) || (cVar1 != '\0')) {
+              pcVar11 = (char *)PictureModeNameProvider::getNameStrIdOfPictureMode
+                                          (*(PictureModeNameProvider **)
+                                            (*(int *)(this + 0x4a8) + 0x18c),iVar17);
+              pcVar19 = pcVar11;
+              if (((iVar7 != 0) && (pcVar19 = DAT_00ee11e8, pcVar11 != DAT_00ee11cc)) &&
+                 (pcVar19 = pcVar11, pcVar11 == DAT_00ee11d4)) {
+                pcVar19 = DAT_00ee11d0;
+              }
+              UString::UString(aUStack_64);
+              this_00 = (UIResourceManager *)
+                        UIFramework::resourceManager(*(UIFramework **)(this + 8));
+              UIResourceManager::lookupString(this_00,pcVar19,aUStack_64);
+              if (local_2d != '\0') {
+                if (iVar8 == 0) {
+                  if (iVar9 == 0) goto LAB_00ee10e4;
+                  operator+(aUStack_188,(char *)aUStack_64);
+                  UString::operator=(aUStack_64,aUStack_188);
+                  pUVar13 = aUStack_188;
+                }
+                else {
+                  iVar12 = (**(code **)(**(int **)(*(int *)(this + 0x4a8) + 0x204) + 0x68))();
+                  if (iVar12 == 5) {
+                    operator+(aUStack_198,(char *)aUStack_64);
+                    UString::operator=(aUStack_64,aUStack_198);
+                    pUVar13 = aUStack_198;
+                  }
+                  else {
+                    operator+(aUStack_190,(char *)aUStack_64);
+                    UString::operator=(aUStack_64,aUStack_190);
+                    pUVar13 = aUStack_190;
+                  }
+                }
+                UString::~UString(pUVar13);
+              }
+LAB_00ee10e4:
+              UString::UString(aUStack_180,aUStack_64);
+              local_16c = iVar17;
+              UString::UString(aUStack_168,aUStack_180);
+              std::vector<SettingValue,std::allocator<SettingValue>>::emplace_back<SettingValue>
+                        ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178,
+                         (SettingValue *)&local_16c);
+              UString::~UString(aUStack_168);
+              UString::~UString(aUStack_180);
+              UString::~UString(aUStack_64);
+            }
+          }
+        }
+        std::vector<SettingValue,std::allocator<SettingValue>>::vector
+                  (avStack_160,(vector *)&local_178);
+        pSVar14 = operator_new(0xa4);
+        SettingItem::SettingItem
+                  (pSVar14,*(undefined4 *)(this + 8),0,DAT_00ee11e4,2,avStack_160,uVar3,0,0,1,0);
+        uVar4 = 1;
+        local_19c = pSVar14;
+        std::vector<SettingValue,std::allocator<SettingValue>>::~vector(avStack_160);
+        goto LAB_00ee11b0;
+      }
+    }
+LAB_00ee1610:
+    piVar16 = DAT_00ee1720;
+    iVar15 = iVar15 + 1;
+    if (iVar15 == 3) {
+      std::vector<SettingValue,std::allocator<SettingValue>>::~vector
+                ((vector<SettingValue,std::allocator<SettingValue>> *)&local_178);
+      if (local_2c == *piVar16) {
+        return;
+      }
+                    /* WARNING: Subroutine does not return */
+      __stack_chk_fail();
+    }
+  } while( true );
+}
+
+ (GhidraScript)

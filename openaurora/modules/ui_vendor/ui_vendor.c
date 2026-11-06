@@ -2316,11 +2316,16 @@ static void cancel_dialog(struct ctx *c)
 static void move_key(struct ctx *c, uint8_t id)
 {
     if (c->screen == SCREEN_SUBLAUNCHER) {
-        if (id == 21 || id == 22) {
+        /* SVGListBoxBase::onKeyPress maps Up/Down (ICE 0x20a/0x20b) to
+         * onUpKey/onDownKey; both move the selected row and call
+         * startSelectAnimation (the 300 ms scale). Left/Right (0x20c/0x20d)
+         * are forwarded to the row's selection box, i.e. value changes, not
+         * focus. Value cycling is not implemented yet. */
+        if (id == 19 || id == 20) {
             int next = c->sub_sel;
             if (next < 0) next = 0;
-            else if (id == 21 && next > 0) next--;
-            else if (id == 22 && next < 2) next++;
+            else if (id == 19 && next > 0) next--;
+            else if (id == 20 && next < 2) next++;
             if (next != c->sub_sel) {
                 c->sub_sel = next;
                 c->sub_progress = 0;

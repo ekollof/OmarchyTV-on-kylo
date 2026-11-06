@@ -112,7 +112,7 @@ fits). Profile Hebrew is stored **visual** (`MODE`='בצמ'); Dictionary convert
 it to logical for the vendor RTL engine, so the LTR renderer must use the
 stored order and must not reverse it. QEMU heb renders `מצב`/`חסכון בחשמל`/
 `קירוב והרחקה של תמונה`/`טבעי`/`מקסימום`/`16:9`. The runtime path uses
-Left/Right, `ui.clock` and a10 ms timer for300 ms; QEMU `key 22` through the
+Up/Down, `ui.clock` and a10 ms timer for300 ms; QEMU `key 20` through the
 real IR parser (plat no-vendor stub, ir no UART) moves card0 bottom405→450.
 `mod_i18n` now has the ABI3 async quiesce gate (unpublish, detach/free5 MB
 profile on a worker; reload fails fast and retries); `ir` and `i18n` are the

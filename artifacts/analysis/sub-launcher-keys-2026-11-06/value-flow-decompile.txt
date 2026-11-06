@@ -1,0 +1,358 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (682 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1656 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '_ZN19SettingItemsListBox16onRightLeftPressERK17UIKeyPressMessage' '_ZN22SettingItemsListBoxRow16onRightLeftPressERK17UIKeyPressMessage' '_ZN22SettingItemsListBoxRow13onSelectPressERK17UIKeyPressMessage' '_ZN19SettingItemsListBox12onDigitPressERK17UIKeyPressMessage' '_ZN22SettingItemsListBoxRow20getSelectedItemValueEv'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN19SettingItemsListBox16onRightLeftPressERK17UIKeyPressMessage -> SettingItemsListBox::onRightLeftPress @ 00d508b8 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined onRightLeftPress(UIKeyPressMessage * param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SettingItemsListBox::onRightLeftPress(UIKeyPressMessage const&) */
+
+void __thiscall
+SettingItemsListBox::onRightLeftPress(SettingItemsListBox *this,UIKeyPressMessage *param_1)
+
+{
+  int *piVar1;
+  EASIControlInterface *this_00;
+  int iVar2;
+  UIMessageTarget *this_01;
+  undefined4 uVar3;
+  int *piVar4;
+  undefined4 local_2c [4];
+  int local_1c;
+
+  piVar1 = DAT_00d50998;
+  local_1c = *DAT_00d50998;
+  if (this[0xe8] == (SettingItemsListBox)0x0) {
+    iVar2 = SVGListBoxBase::getSelectedItem((SVGListBoxBase *)this);
+    this_01 = (UIMessageTarget *)SVGListBoxBase::getItem((SVGListBoxBase *)this,iVar2);
+    if (this_01 != (UIMessageTarget *)0x0) {
+      UIMessageTarget::handleKeyPressMessage(this_01,param_1);
+      piVar4 = *(int **)(this + 0x28c);
+      iVar2 = SVGListBoxBase::getSelectedItem((SVGListBoxBase *)this);
+      iVar2 = *(int *)(*piVar4 + iVar2 * 4);
+      uVar3 = SettingItemsListBoxRow::getSelectedItemValue((SettingItemsListBoxRow *)this_01);
+      *(undefined4 *)(iVar2 + 0x20) = uVar3;
+    }
+    goto LAB_00d50912;
+  }
+  this_00 = (EASIControlInterface *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+  iVar2 = EASIControlInterface::getOSDHorizontalMirror(this_00);
+  if (iVar2 == 0) {
+LAB_00d50960:
+    SVGListBoxBase::onKeyPress((SVGListBoxBase *)this,param_1);
+  }
+  else {
+    iVar2 = UIKeyPressMessage::key(param_1);
+    if (iVar2 == 0x20c) {
+      UIKeyPressMessage::UIKeyPressMessage((UIKeyPressMessage *)local_2c,0x20d);
+      uVar3 = DAT_00d5099c;
+      SVGListBoxBase::onKeyPress((SVGListBoxBase *)this,(UIKeyPressMessage *)local_2c);
+    }
+    else {
+      iVar2 = UIKeyPressMessage::key(param_1);
+      if (iVar2 != 0x20d) goto LAB_00d50960;
+      UIKeyPressMessage::UIKeyPressMessage((UIKeyPressMessage *)local_2c,0x20c);
+      uVar3 = DAT_00d5099c;
+      SVGListBoxBase::onKeyPress((SVGListBoxBase *)this,(UIKeyPressMessage *)local_2c);
+    }
+    local_2c[0] = uVar3;
+    UIAnyMessage::~UIAnyMessage((UIAnyMessage *)local_2c);
+  }
+LAB_00d50912:
+  if (local_1c != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(1);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN22SettingItemsListBoxRow16onRightLeftPressERK17UIKeyPressMessage -> SettingItemsListBoxRow::onRightLeftPress @ 00d53580 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined onRightLeftPress(UIKeyPressMessage * param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SettingItemsListBoxRow::onRightLeftPress(UIKeyPressMessage const&) */
+
+void __thiscall
+SettingItemsListBoxRow::onRightLeftPress(SettingItemsListBoxRow *this,UIKeyPressMessage *param_1)
+
+{
+  int *piVar1;
+  char *pcVar2;
+  SettingItemsListBoxRow SVar3;
+  undefined4 uVar4;
+  UString *pUVar5;
+  UString *this_00;
+  int iVar6;
+  UString aUStack_24 [8];
+  int local_1c;
+
+  piVar1 = DAT_00d53814;
+  local_1c = *DAT_00d53814;
+  iVar6 = *(int *)(this + 0x2dec);
+  if (iVar6 - 2U < 2) {
+    UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x1014),param_1);
+    uVar4 = SVGSelectionBox::getSelectedItemId((SVGSelectionBox *)(this + 0x1014));
+    *(undefined4 *)(this + 0x2de8) = uVar4;
+    goto LAB_00d535c2;
+  }
+  if (iVar6 == 0x16) {
+    UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x27a8),param_1);
+    SVar3 = (SettingItemsListBoxRow)SVGCheckBox::getChecked((SVGCheckBox *)(this + 0x27a8));
+    this[0x2e44] = SVar3;
+    goto LAB_00d535c2;
+  }
+  if (iVar6 - 0xdU < 3) {
+    UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x18d8),param_1);
+    uVar4 = SVGTextEntryBox::getNumericContents((SVGTextEntryBox *)(this + 0x18d8));
+    *(undefined4 *)(this + 0x2e00) = uVar4;
+    goto LAB_00d535c2;
+  }
+  if (iVar6 == 0x10) {
+    UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x18d8),param_1);
+    pUVar5 = (UString *)SVGTextEntryBox::getText((SVGTextEntryBox *)(this + 0x18d8));
+    this_00 = (UString *)(this + 0x2e04);
+  }
+  else if (iVar6 == 0x11) {
+    UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x18d8),param_1);
+    pUVar5 = (UString *)SVGTextEntryBox::getText((SVGTextEntryBox *)(this + 0x18d8));
+    this_00 = (UString *)(this + 0x2e0c);
+  }
+  else if (iVar6 == 0x12) {
+    UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x18d8),param_1);
+    pUVar5 = (UString *)SVGTextEntryBox::getText((SVGTextEntryBox *)(this + 0x18d8));
+    this_00 = (UString *)(this + 0x2e14);
+  }
+  else {
+    if (iVar6 != 0x13) {
+      if (iVar6 == 0x14) {
+        UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x18d8),param_1);
+        SVGTextEntryBox::getFormattedText();
+        UString::operator=((UString *)(this + 0x2e24),aUStack_24);
+      }
+      else if (iVar6 == 9) {
+        UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x13c0),param_1);
+        uVar4 = SVGSlideBar::getSliderValue((SVGSlideBar *)(this + 0x13c0));
+        pcVar2 = DAT_00d53818;
+        *(undefined4 *)(this + 0x2df8) = uVar4;
+        UString::UString(aUStack_24,pcVar2);
+        ::operator<<(aUStack_24,*(int *)(this + 0x2df8));
+        SVGTextBox::setText((SVGTextBox *)(this + 0x1ca8),aUStack_24);
+      }
+      else if (iVar6 - 10U < 2) {
+        UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x1498),param_1);
+        uVar4 = SVGSlideBar::getSliderValue((SVGSlideBar *)(this + 0x1498));
+        pcVar2 = DAT_00d53818;
+        *(undefined4 *)(this + 0x2df8) = uVar4;
+        UString::UString(aUStack_24,pcVar2);
+        ::operator<<(aUStack_24,*(int *)(this + 0x2df8));
+        SVGTextBox::setText((SVGTextBox *)(this + 0x1ca8),aUStack_24);
+      }
+      else {
+        if (iVar6 != 0xc) {
+          if (iVar6 != 0x15) {
+            if (iVar6 - 0x17U < 3) {
+              iVar6 = UIKeyPressMessage::key(param_1);
+              if ((iVar6 == 0x20c) && (*(int *)(this + 0x2df0) < *(int *)(this + 0x2dfc))) {
+                iVar6 = *(int *)(this + 0x2dfc) + -1;
+              }
+              else {
+                iVar6 = UIKeyPressMessage::key(param_1);
+                if ((iVar6 != 0x20d) || (*(int *)(this + 0x2df4) <= *(int *)(this + 0x2dfc)))
+                goto LAB_00d535c2;
+                iVar6 = *(int *)(this + 0x2dfc) + 1;
+              }
+              *(int *)(this + 0x2dfc) = iVar6;
+              setProgressValue(this,iVar6);
+            }
+            goto LAB_00d535c2;
+          }
+          UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x18d8),param_1);
+          pUVar5 = (UString *)SVGTextEntryBox::getText((SVGTextEntryBox *)(this + 0x18d8));
+          this_00 = (UString *)(this + 0x2e3c);
+          goto LAB_00d53630;
+        }
+        UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x1498),param_1);
+        uVar4 = SVGSlideBar::getSliderValue((SVGSlideBar *)(this + 0x1498));
+        pcVar2 = DAT_00d53818;
+        *(undefined4 *)(this + 0x2df8) = uVar4;
+        UString::UString(aUStack_24,pcVar2);
+        ::operator<<(aUStack_24,*(int *)(this + 0x2df8));
+        SVGTextBox::setText((SVGTextBox *)(this + 0x1ca8),aUStack_24);
+      }
+      UString::~UString(aUStack_24);
+      goto LAB_00d535c2;
+    }
+    UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x18d8),param_1);
+    pUVar5 = (UString *)SVGTextEntryBox::getText((SVGTextEntryBox *)(this + 0x18d8));
+    this_00 = (UString *)(this + 0x2e1c);
+  }
+LAB_00d53630:
+  UString::operator=(this_00,pUVar5);
+LAB_00d535c2:
+  if (local_1c != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(1);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN22SettingItemsListBoxRow13onSelectPressERK17UIKeyPressMessage -> SettingItemsListBoxRow::onSelectPress @ 00d5381c (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined onSelectPress(UIKeyPressMessage * param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SettingItemsListBoxRow::onSelectPress(UIKeyPressMessage const&) */
+
+void __thiscall
+SettingItemsListBoxRow::onSelectPress(SettingItemsListBoxRow *this,UIKeyPressMessage *param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+
+  piVar1 = DAT_00d5385c;
+  iVar2 = *DAT_00d5385c;
+  if (*(int *)(this + 0x2dec) == 0x16) {
+    UIMessageTarget::handleKeyPressMessage((UIMessageTarget *)(this + 0x27a8),param_1);
+  }
+  if (iVar2 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(1);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN19SettingItemsListBox12onDigitPressERK17UIKeyPressMessage -> SettingItemsListBox::onDigitPress @ 00d509a0 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined onDigitPress(UIKeyPressMessage * param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SettingItemsListBox::onDigitPress(UIKeyPressMessage const&) */
+
+void __thiscall
+SettingItemsListBox::onDigitPress(SettingItemsListBox *this,UIKeyPressMessage *param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+  UIMessageTarget *this_00;
+  int iVar3;
+
+  piVar1 = DAT_00d509ec;
+  iVar3 = *DAT_00d509ec;
+  iVar2 = SVGListBoxBase::getSelectedItem((SVGListBoxBase *)this);
+  this_00 = (UIMessageTarget *)SVGListBoxBase::getItem((SVGListBoxBase *)this,iVar2);
+  if (this_00 != (UIMessageTarget *)0x0) {
+    UIMessageTarget::handleKeyPressMessage(this_00,param_1);
+  }
+  if (iVar3 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(this_00 != (UIMessageTarget *)0x0);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN22SettingItemsListBoxRow20getSelectedItemValueEv -> SettingItemsListBoxRow::getSelectedItemValue @ 00d53494 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined getSelectedItemValue(void) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SettingItemsListBoxRow::getSelectedItemValue() */
+
+void __thiscall SettingItemsListBoxRow::getSelectedItemValue(SettingItemsListBoxRow *this)
+
+{
+  int *piVar1;
+  undefined4 uVar2;
+  int iVar3;
+  int iVar4;
+
+  piVar1 = DAT_00d53520;
+  iVar3 = *DAT_00d53520;
+  switch(*(undefined4 *)(this + 0x2dec)) {
+  case 2:
+  case 3:
+    uVar2 = SVGSelectionBox::getSelectedItemId((SVGSelectionBox *)(this + 0x1014));
+    break;
+  default:
+    uVar2 = 0;
+    break;
+  case 9:
+  case 10:
+  case 0xb:
+  case 0xc:
+    iVar4 = 0x2df8;
+    goto LAB_00d5350a;
+  case 0xd:
+  case 0xe:
+  case 0xf:
+    uVar2 = SVGTextEntryBox::getNumericContents((SVGTextEntryBox *)(this + 0x18d8));
+    break;
+  case 0x16:
+    uVar2 = SVGCheckBox::getChecked((SVGCheckBox *)(this + 0x27a8));
+    break;
+  case 0x17:
+  case 0x18:
+  case 0x19:
+    iVar4 = 0x2dfc;
+LAB_00d5350a:
+    uVar2 = *(undefined4 *)(this + iVar4);
+  }
+  if (iVar3 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar2);
+  }
+  return;
+}
+
+ (GhidraScript)

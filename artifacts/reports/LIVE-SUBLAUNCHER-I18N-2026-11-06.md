@@ -110,15 +110,22 @@ max 183 px, so the vendor value ellipsis path is not exercised.
 
 ## Runtime 300 ms animation
 
-`SCREEN_SUBLAUNCHER` now handles Left/Right (key ids 21/22): the selected card
+`SCREEN_SUBLAUNCHER` now handles Up/Down (key ids 19/20): the selected card
 index changes, `sub_anim_start` is taken from `ui.clock`, and a 10 ms timer
 repaints until elapsed ≥ 300 ms. `paint_sub_launcher` uses the elapsed time (or
 the `ui.sub_progress` lab value when not live) for the card scale.
 
+The key choice is from the firmware, not preference. `SVGListBoxBase::onKeyPress`
+maps ICE Up/Down (0x20a/0x20b) to `onUpKey`/`onDownKey`; both move the selected
+row and call `startSelectAnimation`, the 300 ms selection animation.
+`SettingItemsListBox::onRightLeftPress` forwards Left/Right (0x20c/0x20d) to the
+selected row instead, i.e. value changes rather than focus. Value cycling is not
+implemented yet, so Left/Right are currently a no-op on this screen.
+
 The QEMU stack loads `plat` (no-vendor stub), `ir` with no UART and BLAST
 disabled, `ui_engine`, `ui_menu`, `i18n`, `ui_clock`/`ticker` and `ui_vendor`.
-The existing control `key 22` command feeds the real IR parser; the parser
-emits the key event. Captured card 0 bottom edge:
+The existing control `key 20` command feeds the real IR parser (Down); the
+parser emits the key event. Captured card 0 bottom edge:
 
 ```text
 static 405; frames grow 407, 411, 415, 420, 424, 428, 432, 436, 442, 447, 450
@@ -130,9 +137,9 @@ text stays inside the 240 px box and the same key/timer path runs:
 
 ```text
 ok qemu sub-launcher live: Dutch text within 4 px of p0/03;
-key 22 timer card bottom 405 -> 450 over 14 frames
+key 20 timer card bottom 405 -> 450 over 16 frames
 ok qemu sub-launcher live: heb text inside the 240 px box;
-key 22 timer card bottom 405 -> 450 over 27 frames
+key 20 timer card bottom 405 -> 450 over 27 frames
 ```
 
 ## Asynchronous i18n quiesce
@@ -158,10 +165,10 @@ ok i18n service: 41 locales, Dutch/English reload and failed-load isolation
 ok i18n quiesce: reload fails fast, stays responsive, retry completes
 ok sub text locales: 41 locales; max label 264 px, max value 183 px; 2 label/0 value overflow, 0 missing glyphs
 ok rtl order: Arabic/Persian run visual order and LTR fallbacks
-ok qemu sub-launcher live: Dutch text within 4 px of p0/03; key 22 timer card bottom 405 -> 450 over 14 frames
-ok qemu sub-launcher live: heb text inside the 240 px box; key 22 timer card bottom 405 -> 450 over 27 frames
-ok qemu sub-launcher live: ara text inside the 240 px box; key 22 timer card bottom 405 -> 450 over 28 frames
-ok qemu sub-launcher live: per text inside the 240 px box; key 22 timer card bottom 405 -> 450 over 14 frames
+ok qemu sub-launcher live: Dutch text within 4 px of p0/03; key 20 timer card bottom 405 -> 450 over 16 frames
+ok qemu sub-launcher live: heb text inside the 240 px box; key 20 timer card bottom 405 -> 450 over 27 frames
+ok qemu sub-launcher live: ara text inside the 240 px box; key 20 timer card bottom 405 -> 450 over 28 frames
+ok qemu sub-launcher live: per text inside the 240 px box; key 20 timer card bottom 405 -> 450 over 27 frames
 full_check=0
 ```
 
