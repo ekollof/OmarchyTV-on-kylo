@@ -65,7 +65,8 @@ struct oa_nim_core_status {
  * instruction level. The vendor copies stack slots it never writes in some
  * cases; this model zeroes every such slot deterministically. The exception
  * is type 2/7 out[14], which the vendor explicitly preserves from the
- * caller's buffer (ldr [r9,#56] at 0x86bc1c). */
+ * caller's buffer (ldr [r9,#56] at 0x86bc1c): out[14] is an in/out slot and
+ * the caller must pass an initialized 16-word array. */
 int oa_nim_status_type1(const struct oa_nim_core_status *core, uint32_t out[11]);
 int oa_nim_status_type2(const struct oa_nim_core_status *core, uint32_t out[16]);
 int oa_nim_status_type3(const struct oa_nim_core_status *core, uint32_t out[4]);

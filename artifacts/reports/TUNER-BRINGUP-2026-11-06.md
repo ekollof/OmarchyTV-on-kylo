@@ -261,7 +261,8 @@ type 2/7 (16 words):
   out[8]=word9 1->1 2->2 3->3 else 0xff
   out[9]=word8 and out[10]=word7: 0->1 1->0 2->2 3->6 4->7 5->3 6->4 else 0xff
   out[11]=word5 1->1 2->0 3->3 4->2 5->8 6->9 7->7 else 0xff
-  out[14] is explicitly preserved from the caller's buffer (0x86bc1c)
+  out[14] is explicitly preserved from the caller's buffer (0x86bc1c); it is
+  an in/out slot, so type 2/7 callers must pass an initialized array
 type 6 (4 words): out[0]=word0*1000, out[3]=0
 type 8 (4 words): out[0]=word0*1000, out[3]=word3==9 -> 1, ==11 -> 2, else 0xff
 ```
