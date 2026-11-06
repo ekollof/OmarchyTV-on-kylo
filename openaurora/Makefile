@@ -99,11 +99,16 @@ check-settings-hotel-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_settings.so
 
 $(BUILD)/modules/mod_ui_profile.so: modules/ui_profile/ui_profile.c common/profile.c common/tab_policy.c include/openaurora/profile.h include/openaurora/tab_policy.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
 
 $(BUILD)/tests/ui_profile: tests/ui_profile.c core/host.h include/openaurora/services.h include/openaurora/tab_policy.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+.PHONY: check-ui-profile-quiesce
+check-ui-profile-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_profile.so
+	node tests/ui_profile_quiesce.cjs $(abspath $(BUILD))
+check: check-ui-profile-quiesce
+
 .PHONY: check-ui-profile
 check-ui-profile: $(BUILD)/tests/ui_profile $(BUILD)/modules/mod_ui_profile.so $(BUILD)/modules/mod_ticker.so
 	@$(BUILD)/tests/ui_profile $(BUILD)/modules

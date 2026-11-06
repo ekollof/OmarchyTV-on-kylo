@@ -358,15 +358,28 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       failed-resume retry; ARM links libpthread. Full/QEMU pass.
       UI-NAVIGATION-QUIESCE.
 
+- [x] Asynchronous gate for `mod_ui_profile`: move the copied profile to the
+      heap. Quiesce clears publication, unpublishes `ui.profile`
+      synchronously, detaches the profile, then frees it synchronously or on a
+      worker after `ui_profile.cleanup_delay_ms`. New `profile-state` probe.
+      Control-socket test: connectivity1/hotel0, reload fails fast,
+      `profile-state` ENODEV, status responsive, fixture changed to
+      connectivity2/hotel1, retry reports the new facts; stop uses the gate.
+      Audit/fix `ui_list` failed-start: start rebuilds from the OAL1 snapshot
+      after a publish-collision quiesce, and fresh-state restore
+      reinitializes fixture handles; new suspend/reload/peer/resume regression.
+      Unit/fixture tests pass; ARM links libpthread. Full/QEMU pass.
+      UI-PROFILE-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
       `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr`,
-      `channels`, `service_db`, `image_decode`, `ui_theme`, `ui_list` and
-      `ui_navigation` are the existing models.
+      `channels`, `service_db`, `image_decode`, `ui_theme`, `ui_list`,
+      `ui_navigation` and `ui_profile` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

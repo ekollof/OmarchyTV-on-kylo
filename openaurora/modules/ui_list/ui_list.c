@@ -318,9 +318,14 @@ static int m_start(void *v)
         "ui_list.cleanup_delay_ms","0"));
     c->cleanup_delay_ms=delay>0?(unsigned)delay:0;
     if(!c->state) {
-        c->state=calloc(1,sizeof *c->state);
-        if(!c->state)return -1;
-        state_defaults(c->state);
+        /* A failed start/resume quiesces after the publish collision. Rebuild
+         * the OAL1 snapshot on the retry instead of silently starting empty. */
+        int restored=c->have_saved && m_restore(c,c->saved,sizeof c->saved)==0;
+        if(!restored) {
+            c->state=calloc(1,sizeof *c->state);
+            if(!c->state)return -1;
+            state_defaults(c->state);
+        }
     }
     int rc=c->api->publish(c->api->priv,OA_SVC_UI_LIST,1,&iface);
     if(rc)return rc;

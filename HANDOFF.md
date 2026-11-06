@@ -358,6 +358,23 @@ ui_console/ui_diag/ui_omarchy/ui_profile.
 ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list/
 ui_navigation are async. UI-NAVIGATION-QUIESCE.
+
+ui_profile quiesce, 2026-11-06: copied profile moved to heap. Quiesce clears
+publication, unpublishes ui.profile synchronously, detaches the profile, then
+frees synchronously or on a worker after ui_profile.cleanup_delay_ms. New
+profile-state probe. Control test: connectivity1/hotel0, reload fails fast,
+profile-state ENODEV, status responsive, fixture changed to connectivity2/
+hotel1, retry reports new facts; stop gate. Also audited ui_list failed-start:
+start rebuilds from the OAL1 snapshot after a publish-collision quiesce, and
+fresh-state restore reinitializes fixture handles; new suspend/reload/peer/
+resume regression in tests/ui_list.c. Unit/fixture tests pass; ARM links
+libpthread. Full/QEMU pass. Project EFSL profile, not vendor UserPreferences/
+PQ. 24/35 descriptors now have quiesce; 11 remain: audio_amp_profile/
+audio_curve/panel/plat/power/ticker/ui_anim/ui_clock/ui_console/ui_diag/
+ui_omarchy.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list/
+ui_navigation/ui_profile are async. UI-PROFILE-QUIESCE.
 SERVICE-DB-QUIESCE.
 
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so

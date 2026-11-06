@@ -286,6 +286,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  image-decode <path>      decode PNG/JPEG through image.decode\n"
                  "  ui-state                query ui.portal screen\n"
                  "  theme-state             query ui.theme pack count\n"
+                 "  profile-state           query ui.profile facts\n"
                  "  menu-state <dialog>     query ui.menu dialogs/branches\n"
                  "  ui-action <action>      apply a JSON menu action (open:/setting:/set:)\n"
                  "  picture-state <source>  read picture mode/zoom/energy 0-19\n"
@@ -308,6 +309,31 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         if (!a1) { oa_skin_status(h, outbuf, outlen); return 0; }
         if (oa_skin_request(h, a1)) { snprintf(outbuf, outlen, "failed errno %d\n", errno); return -1; }
         snprintf(outbuf, outlen, "pending %s\n", a1);
+        return 0;
+    }
+    if (!strcmp(cmd, "profile-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_ui_profile_iface *p =
+            h->api.lookup(h, OA_SVC_UI_PROFILE, 1);
+        if (!p) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        struct oa_tab_profile profile;
+        int error = p->copy(&profile);
+        h->api.release(h, OA_SVC_UI_PROFILE);
+        if (error) {
+            snprintf(outbuf, outlen, "failed errno %d\n", error);
+            return -1;
+        }
+        snprintf(outbuf, outlen,
+                 "profile connectivity %u enabled %u hotel %u enabled %u present %u/%u\n",
+                 profile.connectivity_raw, profile.connectivity_enabled,
+                 profile.hotel_raw, profile.hotel_enabled,
+                 profile.connectivity_present, profile.hotel_present);
         return 0;
     }
     if (!strcmp(cmd, "theme-state")) {

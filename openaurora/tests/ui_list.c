@@ -75,6 +75,15 @@ int main(int argc,char **argv)
     m=oa_host_find_module(h,"ui_list");assert(m && m->id!=old);
     assert(m->state==OA_ST_SUSPENDED);failure(h,"list-state",ENODEV);
     assert(!oa_module_resume_all(h));sense(h,0,9,0,9,1,6,2,2,6,2);
+    /* A failed resume start quiesces the restored state; the retry rebuilds
+     * from the OAL1 snapshot instead of dropping the selection. */
+    assert(!oa_module_suspend_all(h));
+    assert(!command(h,"reload ui_list"));
+    m=oa_host_find_module(h,"ui_list");assert(m && m->state==OA_ST_SUSPENDED);
+    int peer=42;assert(!h->api.publish(h,OA_SVC_UI_LIST,1,&peer));
+    assert(oa_module_resume_all(h)==-1 && m->state==OA_ST_SUSPENDED);
+    assert(!h->api.unpublish(h,OA_SVC_UI_LIST) && !oa_module_resume_all(h));
+    sense(h,0,9,0,9,1,6,2,2,6,2);
     /* shutdown gates keys, queries still answer. */
     h->stop_requested=1;failure(h,"list-key 523",ESHUTDOWN);
     assert(!command(h,"list-state"));h->stop_requested=0;
