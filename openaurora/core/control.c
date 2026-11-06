@@ -21,6 +21,7 @@
 #include "openaurora/audio_speaker.h"
 #include "openaurora/channels.h"
 #include "openaurora/events.h"
+#include "openaurora/menu_model.h"
 #include "openaurora/module.h"
 #include "openaurora/ui_engine.h"
 #include "host.h"
@@ -284,6 +285,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  service-list <index>     one DVB/EASI/analog inventory row\n"
                  "  image-decode <path>      decode PNG/JPEG through image.decode\n"
                  "  ui-state                query ui.portal screen\n"
+                 "  menu-state <dialog>     query ui.menu dialogs/branches\n"
                  "  ui-action <action>      apply a JSON menu action (open:/setting:/set:)\n"
                  "  picture-state <source>  read picture mode/zoom/energy 0-19\n"
                  "  ui-icon <name>          load/report a ui.engine asset\n"
@@ -318,6 +320,29 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         int screen = p->screen();
         h->api.release(h, OA_SVC_PORTAL);
         snprintf(outbuf, outlen, "portal screen %d\n", screen);
+        return 0;
+    }
+    if (!strcmp(cmd, "menu-state")) {
+        if (force || !a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_ui_menu_iface *m = h->api.lookup(h, OA_SVC_UI_MENU, 1);
+        if (!m) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        const struct oa_menu_doc *doc = m->document();
+        const struct oa_menu_dialog *d = doc ? m->dialog(a1) : NULL;
+        unsigned dialogs = doc ? doc->dialog_count : 0;
+        unsigned branches = d ? d->branch_count : 0;
+        h->api.release(h, OA_SVC_UI_MENU);
+        if (!d) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENOENT);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "menu %s dialogs %u branches %u\n",
+                 a1, dialogs, branches);
         return 0;
     }
     if (!strcmp(cmd, "ui-action")) {

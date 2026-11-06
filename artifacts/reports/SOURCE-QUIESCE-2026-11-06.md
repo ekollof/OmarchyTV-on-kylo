@@ -96,7 +96,7 @@ ok qemu sub-launcher: static AE=0
 - The test does not reload during an active select or a real HDMI signal.
 - Service calls are assumed to stay on the host loop thread; a future caller
   from another thread would need explicit locking.
-- `ir`, `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display` and now
-  `source` have the async gate; the remaining modules still stop
+- `ir`, `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source` and
+  now `ui_menu` have the async gate; the remaining modules still stop
   synchronously.
 - No TV or stock-Aurora coexistence test was performed.

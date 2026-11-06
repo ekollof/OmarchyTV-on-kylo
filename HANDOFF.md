@@ -194,6 +194,15 @@ kernel-driver/V4L2/HDMI/HAL thread safety unproven.
 ir/i18n/settings/ui_vendor/ui_engine/display/source are async.
 SOURCE-QUIESCE.
 
+ui_menu quiesce, 2026-11-06: unpublish ui.menu and detach the parsed JSON
+document (document/dialog/branch return NULL), then free it on a worker after
+ui_menu.cleanup_delay_ms; tryjoin/idempotent, m_stop/m_destroy join. Control
+`menu-state <dialog>` returns dialogs/branches. Test: reload fails fast,
+menu-state ENODEV while pending, status responsive, retry republishes the
+tree; stop uses the gate. ARM module links libpthread. Full/QEMU pass.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu are async.
+UI-MENU-QUIESCE.
+
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so
 Hal_Vin wrappers and the real mod_source.so under qemu against an LD_PRELOAD
 fake /dev/video20. Hal_Vin_Open(0) opens /dev/video20 (not /dev/ntkdvif);

@@ -602,7 +602,7 @@ $(BUILD)/modules/mod_ui_theme.so: modules/ui_theme/ui_theme.c common/svg_pack.c 
 
 $(BUILD)/modules/mod_ui_menu.so: modules/ui_menu/ui_menu.c common/menu_model.c common/json.c common/launcher_anim.c include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
 
 $(BUILD)/modules/mod_i18n.so: modules/i18n/i18n.c common/langprofile.c include/openaurora/langprofile.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
@@ -2023,6 +2023,11 @@ check: check-i18n-quiesce
 $(BUILD)/tests/ui_menu_service: tests/ui_menu_service.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_menu_service.c $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-ui-menu-quiesce
+check-ui-menu-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_menu.so
+	node tests/ui_menu_quiesce.cjs $(abspath $(BUILD)) $(abspath $(CURDIR)/menus/sub_launcher.json)
+check: check-ui-menu-quiesce
 
 .PHONY: check-ui-menu-service
 check-ui-menu-service: $(BUILD)/tests/ui_menu_service $(BUILD)/modules/mod_ui_menu.so

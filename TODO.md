@@ -209,13 +209,23 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       `libNDAL_EX` supplies `gs32Ndp_PQ_fd`. `check-vin-real`.
       VIN-DEVICE-SIM.
 
+- [x] Asynchronous gate for `ui_menu`: set publication false, unpublish
+      `ui.menu` (document/dialog/branch return NULL), detach the parsed JSON
+      document, then free it on a worker after `ui_menu.cleanup_delay_ms`;
+      tryjoin/idempotent for stop+unload, `m_stop`/`m_destroy` join. New
+      control `menu-state <dialog>` returns `menu sub_launcher dialogs 1
+      branches 5`. Test: reload fails fast, `menu-state` ENODEV while the
+      worker runs, status responsive, retry republishes the same tree; stop
+      uses the gate. ARM module links libpthread. Full suite/QEMU pass.
+      UI-MENU-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`, with a
-      completion query and bounded client behavior. Do not call
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`,
+      with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
-      `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display` and `source` are
-      the existing models.
+      `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source` and
+      `ui_menu` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

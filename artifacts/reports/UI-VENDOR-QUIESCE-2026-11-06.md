@@ -73,8 +73,8 @@ ok qemu sub-launcher: static AE=0
 
 ## Limits
 
-- Only `ir`, `i18n`, `settings` and now `ui_vendor` have the asynchronous gate;
-  other modules still stop synchronously.
+- `ir`, `i18n`, `settings` and now `ui_vendor` have the asynchronous gate;
+  later gates add ui_engine, display, source and ui_menu.
 - The diagnostic delay exercises the gate; the default is a synchronous free.
 - The host control test uses no display paint; it does not prove a live
   scanout/GPU teardown or stock-Aurora coexistence.

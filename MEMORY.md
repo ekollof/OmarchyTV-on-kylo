@@ -209,6 +209,17 @@ path is exercised by VIN-DEVICE-SIM below. Real kernel-driver/V4L2/HDMI and
 HAL thread safety unproven. ir/i18n/settings/ui_vendor/ui_engine/display/
 source are the async modules. SOURCE-QUIESCE.
 
+ui_menu async gate, 2026-11-06: clear publication and unpublish ui.menu
+(document/dialog/branch return NULL), detach the parsed JSON doc, then
+oa_menu_free on a worker after ui_menu.cleanup_delay_ms; tryjoin/idempotent,
+m_stop/m_destroy join. New control menu-state <dialog> returns
+`menu sub_launcher dialogs 1 branches 5`. Test: reload fails fast,
+menu-state ENODEV during the pending free, status responsive, retry
+republishes the same tree; stop uses the gate. ARM module links libpthread.
+Full/QEMU pass. Free-on-worker only; live display-consumer teardown and the
+running vendor UI unproven. ir/i18n/settings/ui_vendor/ui_engine/display/
+source/ui_menu are the async modules. UI-MENU-QUIESCE.
+
 Real VIN HAL device simulation, 2026-11-06: the shipped ARM libNDAL3.so
 Hal_Vin wrappers and the real ARM mod_source.so run under qemu against an
 LD_PRELOAD fake /dev/video20. Hal_Vin_Open(0) opens /dev/video20 (not

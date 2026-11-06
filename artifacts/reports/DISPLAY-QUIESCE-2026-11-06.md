@@ -61,4 +61,4 @@ ok qemu sub-launcher value: ... source-screen HDMI1 writes 5 and resyncs (151/36
 - The worker retention/throttle behavior is unit-tested with the fixture; the
   diagnostic delay is not a production timing guarantee.
 - `ir`, `i18n`, `settings`, `ui_vendor`, `ui_engine` and `display` now have the
-  async gate; other modules still stop synchronously.
+  async gate; later gates add source and ui_menu.

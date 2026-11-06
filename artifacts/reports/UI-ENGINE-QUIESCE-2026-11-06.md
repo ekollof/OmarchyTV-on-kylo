@@ -72,7 +72,7 @@ ok qemu sub-launcher value: ... source-screen HDMI1 writes 5 and resyncs (151/36
 ## Limits
 
 - `ir`, `i18n`, `settings`, `ui_vendor` and now `ui_engine` have the async gate;
-  the remaining modules still stop synchronously.
+  later gates add display, source and ui_menu.
 - The test uses the host recorder, not a GPU/scanout or Mali teardown. A live
   display close during scanout is still unproven.
 - No TV reload or stock-Aurora coexistence was tested.
