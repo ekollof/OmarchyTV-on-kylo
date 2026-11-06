@@ -245,7 +245,10 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
       reload or ABI behavior moved. Leaf merges (`ticker`+`ui_clock`,
       `ui_theme`+`ui_profile`, `audio_curve`+`audio_amp_profile`) are an
       explicit product decision because each removes a currently tested
-      reload boundary. MODULE-CONSOLIDATION.
+      reload boundary. Additive stages on top of core are buildable with
+      `stage-bundle STAGE=tv|av|ui|script|diag|full` (cumulative; 13/20/30/31/
+      34/36 modules) and installable with `install-stage`; the staged config
+      still autoloads only core. MODULE-CONSOLIDATION.
 
 - [x] First production GPU scene-path probe on fb1: staged
       graphics/scene_display + oa-scene-broker/scene-renderer.so, painted the

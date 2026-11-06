@@ -36,11 +36,30 @@ BUILD    ?= build
 MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_menu i18n ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels lua spi
 # Four-way inventory. CORE_MODULES is exactly tools/boot/openaurora-cold.conf.
 CORE_MODULES := plat settings image_decode display panel ir ui_engine ui_vendor
-EXTRA_MODULES := $(filter-out $(CORE_MODULES),$(MODULES))
 HW_MODULES := plat panel display graphics scene_display audio cec ir source tuner spi power
 MW_MODULES := settings service_db channels epg pvr image_decode i18n audio_curve audio_mixer audio_amp_profile lua
 UTIL_MODULES := ticker ui_clock
 UI_MODULES := ui_engine ui_vendor ui_omarchy ui_theme ui_profile ui_menu ui_list ui_navigation ui_anim ui_console ui_diag
+# Additive deployment layers. Each stage is cumulative; STAGE= full keeps all.
+TV_MODULES := tuner epg pvr channels service_db
+AV_MODULES := audio audio_curve audio_mixer audio_amp_profile cec source power
+UI_TIER_MODULES := ticker ui_clock ui_anim i18n ui_theme ui_profile ui_menu ui_list ui_navigation ui_omarchy
+SCRIPT_MODULES := lua
+DIAG_MODULES := ui_console ui_diag spi
+GPU_MODULES := graphics scene_display
+STAGE ?= core
+STAGE_core := $(CORE_MODULES)
+STAGE_tv := $(STAGE_core) $(TV_MODULES)
+STAGE_av := $(STAGE_tv) $(AV_MODULES)
+STAGE_ui := $(STAGE_av) $(UI_TIER_MODULES)
+STAGE_script := $(STAGE_ui) $(SCRIPT_MODULES)
+STAGE_diag := $(STAGE_script) $(DIAG_MODULES)
+STAGE_full := $(MODULES)
+STAGE_MODULES := $(STAGE_$(STAGE))
+ifeq ($(strip $(STAGE_MODULES)),)
+$(error unknown STAGE '$(STAGE)'; use core, tv, av, ui, script, diag or full)
+endif
+EXTRA_MODULES := $(filter-out $(CORE_MODULES),$(MODULES))
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -115,6 +134,7 @@ CORE_DEP := $(CORE_OBJ:.o=.d)
 
 MOD_SO   := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).so)
 CORE_SO  := $(foreach m,$(CORE_MODULES),$(BUILD)/modules/mod_$(m).so)
+STAGE_SO := $(foreach m,$(STAGE_MODULES),$(BUILD)/modules/mod_$(m).so)
 
 all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker $(BUILD)/fb-restore
 
@@ -1920,12 +1940,38 @@ cold-bundle-core: all-core $(BUILD)/oa-supervise $(BUILD)/fb-restore
 	@cd $(BUILD)/cold-bundle-core && sha256sum openaurora oa-supervise fb-restore openaurora.conf modules/*.so > manifest.sha256
 	@echo "core cold bundle: $(BUILD)/cold-bundle-core ($(words $(CORE_SO)) modules)"
 
+# Additive layers on the core: STAGE=core|tv|av|ui|script|diag|full.
+.PHONY: all-stage stage-bundle install-stage
+all-stage: $(BUILD)/$(PROJECT) $(STAGE_SO)
+
+stage-bundle: all-stage $(BUILD)/oa-supervise $(BUILD)/fb-restore
+	@rm -rf $(BUILD)/stage-$(STAGE)
+	@mkdir -p $(BUILD)/stage-$(STAGE)/modules
+	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/stage-$(STAGE)/
+	@cp $(STAGE_SO) $(BUILD)/stage-$(STAGE)/modules/
+	@cp tools/boot/openaurora-cold.conf $(BUILD)/stage-$(STAGE)/openaurora.conf
+	@cd $(BUILD)/stage-$(STAGE) && sha256sum openaurora oa-supervise fb-restore openaurora.conf modules/*.so > manifest.sha256
+	@echo "stage $(STAGE) bundle: $(BUILD)/stage-$(STAGE) ($(words $(STAGE_SO)) modules)"
+
+install-stage: all-stage
+	install -d $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR)
+	install -m 755 $(BUILD)/$(PROJECT) $(DESTDIR)$(BINDIR)/$(PROJECT)
+	install -m 755 $(BUILD)/oa-supervise $(DESTDIR)$(BINDIR)/oa-supervise
+	install -m 755 $(BUILD)/oa-audio-broker $(DESTDIR)$(BINDIR)/oa-audio-broker
+	install -m 755 $(STAGE_SO) $(DESTDIR)$(LIBDIR)/
+
 module-categories:
 	@echo "hardware ($(words $(HW_MODULES))): $(HW_MODULES)"
 	@echo "middleware ($(words $(MW_MODULES))): $(MW_MODULES)"
 	@echo "utilities ($(words $(UTIL_MODULES))): $(UTIL_MODULES)"
 	@echo "ui/ux ($(words $(UI_MODULES))): $(UI_MODULES)"
 	@echo "core ($(words $(CORE_MODULES))): $(CORE_MODULES)"
+	@echo "stage tv ($(words $(STAGE_tv))): $(STAGE_tv)"
+	@echo "stage av ($(words $(STAGE_av))): $(STAGE_av)"
+	@echo "stage ui ($(words $(STAGE_ui))): $(STAGE_ui)"
+	@echo "stage script ($(words $(STAGE_script))): $(STAGE_script)"
+	@echo "stage diag ($(words $(STAGE_diag))): $(STAGE_diag)"
+	@echo "stage full ($(words $(STAGE_full))): $(STAGE_full)"
 
 $(BUILD)/tests/vendor_decoder_probe.so: $(call pic_objs,tests__vendor_decoder_probe,tests/vendor_decoder_probe.c)
 	@mkdir -p $(dir $@)
