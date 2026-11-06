@@ -547,7 +547,13 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       first frame read back at start and on 4 consecutive samples across resume
       in the panned frame (yoffset 1080); stock repaints over it, so panel
       scanout/cold acceptance remains open. Staging removed, stock PIDs
-      1711/1781 unchanged. DISPLAY-RESUME-FRAME.
+      1711/1781 unchanged. DISPLAY-RESUME-FRAME. Follow-up: opt-in
+      `display.verify_scanout` re-reads yoffset/region/MAU after start/resume
+      first frames and rejects a mismatch; the fake one-shot wrong-yoffset test
+      proves restore/close and retry. On-TV `/buffer/oa-display-verify` logged
+      `scanout verified` at start and resume (yoffset 0, region 1920x1080 at
+      0,0, mau 0). This is driver state, not panel scanout; stable acceptance
+      needs authorized controlled ownership plus independent observation.
 
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond

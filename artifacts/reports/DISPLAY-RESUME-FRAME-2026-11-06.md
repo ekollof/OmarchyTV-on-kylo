@@ -52,12 +52,31 @@ The resume snapshot ordering fixed a real regression found by the existing
 fake-fb socket test: saving after `set_region` had captured our window and stop
 then restored our region instead of the stock one.
 
+## Driver-state verification
+
+A successful `FBIOPAN_DISPLAY` return is not proof the driver accepted the
+frame. New opt-in `display.verify_scanout=1` re-reads the live state after a
+first frame (start self-test and resume) and requires:
+
+- `FBIOGET_VSCREENINFO` yoffset == the frame just committed;
+- `OSD_REG_RD` region words 2/3 == our window size and 4/5 == 0,0 when
+  `display.set_region` is enabled;
+- `OA_FB_MAU_RD` still equals the pre-ownership snapshot MAU.
+
+A mismatch logs `scanout mismatch` with both values and rejects that first
+frame; the resume path restores the snapshot, closes and keeps the scene for a
+retry. Success logs
+`scanout verified at start|resume: yoffset N region WxH at X,Y mau M`.
+This is a driver-state check, not panel scanout proof.
+
 ## Verification
 
 New `check-display-resume-frame` uses a fake driver that **clears its mapping on
 every open**, proving the resume frame comes from the retained scene rather
 than stale storage. It asserts region re-application, a new pan commit, yoffset,
-pixel content, failure restore/close, and retry:
+pixel content, failure restore/close, and retry. A one-shot wrong yoffset after
+a successful pan also proves `display.verify_scanout` rejects the frame,
+restores/closes and retries cleanly:
 
 ```text
 ok display resume frame: reopen clears the map, retained scene recommits, region reapplied, failure retries
@@ -104,6 +123,27 @@ Stock before/after captures differ by ~459k channel values, but two captures of
 the untouched stock screen 2 s apart differ by ~470k — the stock screen is
 dynamic, so visual equality cannot prove snapshot restoration here. Staging was
 removed; no helper remained; stock PIDs stayed 1711/1781 (zombie 2204).
+
+### Start/resume driver-state verification — 2026-11-06
+
+A second staged run (`/buffer/oa-display-verify`, ARM `mod_display_fb.so`
+`fc4780db…`, `display.verify_scanout=1`) checked the live driver state:
+
+```text
+start:  self-test band painted
+        /dev/fb1: scanout verified at start: yoffset 0 region 1920x1080 at 0,0 mau 0
+suspend -> resume:
+        resume region -> 1920x1080 (ok)
+        present rect 0,0 1920x1080 pan=32ms
+        /dev/fb1: scanout verified at resume: yoffset 0 region 1920x1080 at 0,0 mau 0
+        resume: first frame committed (yoffset 0)
+```
+
+So the driver reported the committed pan, our window size/origin and an
+unchanged MAU on the real device for both first frames. This is still a
+driver-state check under the stock owner, not an independent panel-scanout
+observation. Staging was removed, no helper remained, stock PIDs stayed
+1711/1781.
 
 ## Limits
 

@@ -24,7 +24,8 @@ static struct fb_var_screeninfo var;
 static unsigned char pixels[128];
 static uint32_t region[8], mau;
 static unsigned opens, closes, commits, region_writes, last_yoffset;
-static int fail_commit, kernel_suspended;
+static unsigned scanout_ok, scanout_bad;
+static int fail_commit, kernel_suspended, bad_verify, arm_bad_get;
 static char last_log[256];
 
 int __wrap_open(const char *path, int flags, ...)
@@ -62,7 +63,16 @@ int __wrap_ioctl(int fd, unsigned long request, ...)
     void *arg = va_arg(args, void *);
     va_end(args);
     switch (request) {
-    case FBIOGET_VSCREENINFO: memcpy(arg, &var, sizeof var); return 0;
+    case FBIOGET_VSCREENINFO:
+        memcpy(arg, &var, sizeof var);
+        if (arm_bad_get) {
+            /* One-shot mismatch for the post-pan verification read; the next
+             * reopen/retry reads the real state again. */
+            ((struct fb_var_screeninfo *)arg)->yoffset =
+                var.yoffset ? 0 : var.yres;
+            arm_bad_get = 0;
+        }
+        return 0;
     case FBIOGET_FSCREENINFO: {
         struct fb_fix_screeninfo *fix = arg;
         memset(fix, 0, sizeof *fix);
@@ -81,6 +91,7 @@ int __wrap_ioctl(int fd, unsigned long request, ...)
         if (fail_commit) { fail_commit = 0; errno = EIO; return -1; }
         last_yoffset = commit->yoffset;
         var.yoffset = commit->yoffset;
+        if (bad_verify) { arm_bad_get = 1; bad_verify = 0; }
         return 0;
     }
     default: assert(!"unexpected framebuffer ioctl"); return -1;
@@ -92,6 +103,8 @@ static void log_message(void *priv, int level, const char *fmt, ...)
     va_list ap; va_start(ap, fmt);
     vsnprintf(last_log, sizeof last_log, fmt, ap);
     va_end(ap);
+    if (strstr(last_log, "scanout verified")) scanout_ok++;
+    if (strstr(last_log, "scanout mismatch")) scanout_bad++;
 }
 static const char *config(void *priv, const char *key, const char *def)
 {
@@ -99,6 +112,7 @@ static const char *config(void *priv, const char *key, const char *def)
     if (!strcmp(key, "display.fb")) return "/dev/fb1";
     if (!strcmp(key, "display.restore_snapshot")) return "1";
     if (!strcmp(key, "display.mirror")) return "0";
+    if (!strcmp(key, "display.verify_scanout")) return "1";
     return def;
 }
 static int publish(void *priv, const char *name, uint32_t version, const void *iface)
@@ -155,6 +169,7 @@ int main(void)
     assert(opens == 2 && closes == 1);
     assert(region_writes == writes + 1);
     assert(commits == frame_start + 1 && last_yoffset == 2);
+    assert(scanout_ok == 1);
     assert(memchr(last_log, 0, sizeof last_log) && strstr(last_log, "first frame committed"));
     /* The mapping was cleared on open; the retained scene was re-rendered. */
     assert(pixels[64] == 0 && pixels[65] == 0 && pixels[66] == 0 && pixels[67] == 255);
@@ -173,6 +188,19 @@ int main(void)
     assert(oa_module_entry()->resume(ctx) == 0);
     assert(opens == 4 && closes == 3);
     assert(commits >= frame_start + 4);
+    assert(pixels[64] == 3 && pixels[65] == 2 && pixels[66] == 1 && pixels[67] == 255);
+
+    /* The pan succeeds but the driver reports the wrong active yoffset: the
+     * first frame must not be accepted, restore/close, then retry cleanly. */
+    assert(oa_module_entry()->suspend(ctx) == 0);
+    assert(opens == 4 && closes == 4);
+    bad_verify = 1;
+    assert(oa_module_entry()->resume(ctx) == -1);
+    assert(scanout_bad == 1);
+    assert(opens == 5 && closes == 5);
+    assert(oa_module_entry()->resume(ctx) == 0);
+    assert(opens == 6 && closes == 5);
+    assert(scanout_ok == 3);
     assert(pixels[64] == 3 && pixels[65] == 2 && pixels[66] == 1 && pixels[67] == 255);
 
     for (unsigned i = 0;; ++i) {

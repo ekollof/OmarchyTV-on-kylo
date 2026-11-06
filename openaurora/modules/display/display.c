@@ -59,6 +59,7 @@ struct ctx {
     unsigned back;    /* frame we render into; 1 - displayed */
     int pan;          /* rotate frames after commit; off = commit the current frame */
     int want_region;  /* re-apply our window after a resume reopen */
+    int verify;       /* verify pan/region/MAU after a first-frame commit */
     struct oa_fb_snapshot snapshot;
     int snapshot_active;
     int closing, cleanup_running, cleanup_result;
@@ -819,6 +820,53 @@ static void *cleanup_worker(void *v)
     return NULL;
 }
 
+/* A pan ioctl return is not scanout proof. When display.verify_scanout=1,
+ * re-read the driver's live var/region/MAU after a first frame and require the
+ * state we asked for: the committed yoffset, our window size/origin, and an
+ * unchanged MAU. This does not prove the panel showed the frame; it catches a
+ * driver that ignored the pan/region request. */
+static int verify_scanout(struct ctx *c, const char *where)
+{
+    if (!c->verify) return 0;
+    struct fb_var_screeninfo v;
+    if (ioctl(c->fd, FBIOGET_VSCREENINFO, &v) != 0) {
+        c->api->log(c->api->priv, OA_LOG_ERROR,
+                    "%s: scanout var read failed: %s", c->path, strerror(errno));
+        return -1;
+    }
+    uint32_t reg[8] = {0};
+    int region_ok = 1;
+    if (c->want_region) {
+        if (ioctl(c->fd, OSD_REG_RD, reg) != 0) {
+            c->api->log(c->api->priv, OA_LOG_ERROR,
+                        "%s: scanout region read failed: %s", c->path, strerror(errno));
+            return -1;
+        }
+        region_ok = reg[2] == c->var.xres && reg[3] == c->var.yres &&
+                    reg[4] == 0 && reg[5] == 0;
+    }
+    uint32_t mau = 0;
+    int mau_ok = 1;
+    if (c->snapshot_active) {
+        if (ioctl(c->fd, OA_FB_MAU_RD, &mau) != 0) mau_ok = 0;
+        else if (mau != c->snapshot.mau) mau_ok = 0;
+    }
+    int offset_ok = v.yoffset == c->var.yoffset;
+    if (!offset_ok || !region_ok || !mau_ok) {
+        c->api->log(c->api->priv, OA_LOG_ERROR,
+                    "%s: scanout mismatch at %s: yoffset %u (want %u), "
+                    "region %ux%u at %u,%u (want %ux%u at 0,0), mau %u (want %u)",
+                    c->path, where, v.yoffset, c->var.yoffset,
+                    reg[2], reg[3], reg[4], reg[5],
+                    c->var.xres, c->var.yres, mau, c->snapshot.mau);
+        return -1;
+    }
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "%s: scanout verified at %s: yoffset %u region %ux%u at %u,%u mau %u",
+                c->path, where, v.yoffset, reg[2], reg[3], reg[4], reg[5], mau);
+    return 0;
+}
+
 static uint64_t monotonic_ms(void)
 {
     struct timespec t;
@@ -898,6 +946,7 @@ static int m_start(void *v)
     int want_region = c->api->config_get(c->api->priv, "display.set_region", "1")[0] == '1';
     c->want_region = want_region;
     c->mirror = c->api->config_get(c->api->priv, "display.mirror", "1")[0] == '1';
+    c->verify = c->api->config_get(c->api->priv, "display.verify_scanout", "0")[0] == '1';
     c->profile = c->api->config_get(c->api->priv, "display.profile", "0")[0] == '1';
     c->pan = c->api->config_get(c->api->priv, "display.pan", want_region ? "0" : "1")[0] == '1';
 
@@ -951,6 +1000,8 @@ static int m_start(void *v)
         fill_rect(c, 0, 0, (int)c->var.xres, (int)c->var.yres / 8, 255, 0, 255);
         present();
         c->api->log(c->api->priv, OA_LOG_INFO, "self-test: magenta band painted");
+        if (verify_scanout(c, "start") != 0)
+            return -1;
     }
     return 0;
 }
@@ -1027,12 +1078,13 @@ static int m_resume(void *v)
      * scene here instead of leaving the reopened layer blank until a consumer
      * repaints. */
     mark_dirty(c, 0, 0, c->scene_w, c->scene_h);
-    if (present() == 0) {
+    if (present() == 0 && verify_scanout(c, "resume") == 0) {
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "resume: first frame committed (yoffset %u)", c->var.yoffset);
         return 0;
     }
-    c->api->log(c->api->priv, OA_LOG_ERROR, "%s: resume first frame failed", c->path);
+    c->api->log(c->api->priv, OA_LOG_ERROR,
+                "%s: resume first frame failed or did not verify", c->path);
     int rc = restore_snapshot(c);
     if (rc == 0) {
         (void)close_layer(c, 1);

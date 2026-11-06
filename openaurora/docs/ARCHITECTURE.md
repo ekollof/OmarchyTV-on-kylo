@@ -75,8 +75,11 @@ RGBA. The display backend converts RGBA inputs into BGRA framebuffer bytes.
 `FBIOPAN_DISPLAY` after a resume reopen, matching the vendor `idtvResume`
 plane-enable/STR-frame ordering through the recovered first-pan show path
 (DISPLAY-RESUME-FRAME). The resume snapshot is taken before the window is
-re-applied, so stop restores the driver's region. This is the userspace fbdev
-path only; kernel PM interaction and stable panel scanout remain unverified.
+re-applied, so stop restores the driver's region. Opt-in
+`display.verify_scanout=1` re-reads the driver's yoffset, region and MAU after a
+first frame and rejects a mismatch instead of trusting the pan return. This is
+the userspace fbdev path only; kernel PM interaction and stable panel scanout
+remain unverified.
 
 `common/launcher_route.c` supplies the recovered launcher-operation to signed
 modal-result map and ordered settings-selection/enqueue plans. Retained fields

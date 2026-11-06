@@ -552,6 +552,16 @@ read back at start and on4 consecutive samples across resume in the panned frame
 (yoffset1080); stock repaints over it, so no panel scanout/cold acceptance.
 Staging removed, stock PIDs1711/1781 unchanged. DISPLAY-RESUME-FRAME.
 
+display scanout state check, 2026-11-06: opt-in display.verify_scanout re-reads
+FBIOGET_VSCREENINFO yoffset, OSD region size/origin and MAU after start/resume
+first frames, rejects a mismatch and restores/closes for retry. Fake test uses a
+one-shot wrong yoffset after a successful pan to prove rejection/retry; display/
+lifecycle/fake-fb suites, ASan, full suite and QEMU pass. On-TV
+/buffer/oa-display-verify (mod_display_fb fc4780db...) logged scanout verified at
+start and resume: yoffset0, region1920x1080 at0,0, mau0, stock PIDs1711/1781.
+Driver-state evidence only; stable panel scanout and cold-ownership acceptance
+still need authorized controlled ownership plus independent observation.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran
