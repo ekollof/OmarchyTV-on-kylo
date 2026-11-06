@@ -220,6 +220,17 @@ Full/QEMU pass. Free-on-worker only; live display-consumer teardown and the
 running vendor UI unproven. ir/i18n/settings/ui_vendor/ui_engine/display/
 source/ui_menu are the async modules. UI-MENU-QUIESCE.
 
+mod_audio async gate, 2026-11-06: unpublish audio and release plat
+synchronously, then detach oa_audio_owner and quiesce/poll-join/destroy it on
+a worker after audio.cleanup_delay_ms; m_stop/m_destroy join, m_start refuses
+if live, settled is suppressed while quiescing. New control audio-state and
+audio-volume. Stub-HAL test: volume42 set, reload fails fast, audio-state
+ENODEV, retry republishes with volume42 restored/reapplied, stop gate.
+Existing audio/cec tests pass; ARM links vendor libs+libpthread. Full/QEMU
+pass. No audible/hardware acceptance; a blocked owner RPC can keep cleanup
+pending. ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio
+are the async modules. AUDIO-QUIESCE.
+
 Real VIN HAL device simulation, 2026-11-06: the shipped ARM libNDAL3.so
 Hal_Vin wrappers and the real ARM mod_source.so run under qemu against an
 LD_PRELOAD fake /dev/video20. Hal_Vin_Open(0) opens /dev/video20 (not

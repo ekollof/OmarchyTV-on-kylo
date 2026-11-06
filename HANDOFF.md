@@ -203,6 +203,17 @@ tree; stop uses the gate. ARM module links libpthread. Full/QEMU pass.
 ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu are async.
 UI-MENU-QUIESCE.
 
+mod_audio quiesce, 2026-11-06: unpublish audio/release plat synchronously,
+detach oa_audio_owner, then quiesce/poll-join/destroy on a worker after
+audio.cleanup_delay_ms; m_stop/m_destroy join, m_start refuses if live,
+settled suppressed while quiescing. Control audio-state/audio-volume.
+Stub-HAL test: volume42 set, reload fails fast, audio-state ENODEV, retry
+republishes with volume42 restored/reapplied, stop gate. Existing audio/cec
+tests pass; ARM links vendor libs+libpthread. Full/QEMU pass. No audible/
+hardware acceptance; a blocked owner RPC can keep cleanup pending.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio are async.
+AUDIO-QUIESCE.
+
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so
 Hal_Vin wrappers and the real mod_source.so under qemu against an LD_PRELOAD
 fake /dev/video20. Hal_Vin_Open(0) opens /dev/video20 (not /dev/ntkdvif);

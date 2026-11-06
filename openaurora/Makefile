@@ -1167,6 +1167,11 @@ check-audio-session: $(BUILD)/tests/audio_session $(BUILD)/tests/audio-mods/mod_
 	@printf 'audio.enable = 1\n' > $(BUILD)/tests/audio-mods/audio.cfg
 	@$(BUILD)/tests/audio_session $(BUILD)/tests/audio-mods/modules $(BUILD)/tests/audio-mods/audio.cfg
 
+.PHONY: check-audio-quiesce
+check-audio-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/tests/audio-mods/mod_audio.so $(BUILD)/modules/mod_plat.so
+	node tests/audio_quiesce.cjs $(abspath $(BUILD))
+check: check-audio-quiesce
+
 $(BUILD)/tests/cec_audio_policy: tests/cec_audio_policy.c tests/lifecycle_retry.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)

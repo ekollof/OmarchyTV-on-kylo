@@ -19,9 +19,11 @@
  */
 #include <errno.h>
 #include <fcntl.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "openaurora/audio_owner.h"
@@ -60,6 +62,13 @@ struct ctx {
     int restored;
     int published;
     const oa_plat_iface *plat;
+    /* ABI 3 quiesce: the owner is detached and finished on a worker. */
+    pthread_t cleanup_thread;
+    int cleanup_running;
+    oa_audio_owner *cleanup_owner;
+    int cleanup_result;
+    unsigned cleanup_delay_ms;
+    int quiescing;
 };
 
 static struct ctx *g_ctx;
@@ -149,17 +158,42 @@ static void poke(void *ud) { (void)ud; }
 static void settled(void *ud)
 {
     struct ctx *c = ud;
-    if (c && c->api && c->api->post && c->id)
+    if (c && !c->quiescing && c->api && c->api->post && c->id)
         (void)c->api->post(c->api->priv, c->id, poke, c);
 }
-static int finish_owner(struct ctx *c)
+/* Finish one owner off the host loop. Quiesce signals shutdown; join may
+ * return EBUSY until the worker observes it, so poll with a short sleep. */
+static int finish_owner_ptr(oa_audio_owner *owner)
 {
-    if (!c || !c->owner) return 0;
-    if (oa_audio_owner_quiesce(c->owner) != 0) return -1;
-    if (oa_audio_owner_join(c->owner) != 0) return -1;
-    oa_audio_owner_destroy(c->owner);
-    c->owner = NULL;
+    if (!owner) return 0;
+    (void)oa_audio_owner_quiesce(owner);
+    for (;;) {
+        if (oa_audio_owner_join(owner) == 0) break;
+        if (errno != EBUSY) {
+            oa_audio_owner_destroy(owner);
+            return -1;
+        }
+        const struct timespec pause = { .tv_nsec = 5000000 };
+        (void)nanosleep(&pause, NULL);
+    }
+    oa_audio_owner_destroy(owner);
     return 0;
+}
+
+static void *cleanup_worker(void *v)
+{
+    struct ctx *c = v;
+    if (c->cleanup_delay_ms) {
+        const struct timespec pause = {
+            .tv_sec = c->cleanup_delay_ms / 1000u,
+            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
+        };
+        (void)nanosleep(&pause, NULL);
+    }
+    oa_audio_owner *owner = c->cleanup_owner;
+    c->cleanup_owner = NULL;
+    c->cleanup_result = finish_owner_ptr(owner);
+    return NULL;
 }
 
 static int m_init(const oa_host_api *api, void **out)
@@ -180,6 +214,12 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    if (c->owner || c->cleanup_running || c->cleanup_owner) return -EBUSY;
+    c->quiescing = 0;
+    c->cleanup_result = 0;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "audio.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
     c->plat = c->api->lookup(c->api->priv, OA_SVC_PLAT, 1);
     if (!c->plat || c->plat->is_ready() != 1 || c->plat->stage_errors()) return -1;
     /* Reserve the service before applying any settings. On collision stop()
@@ -212,37 +252,123 @@ static int m_start(void *v)
 static void m_stop(void *v)
 {
     struct ctx *c = v;
-    (void)finish_owner(c);
-    if (c->published) c->api->unpublish(c->api->priv, OA_SVC_AUDIO);
+    c->quiescing = 1;
+    int published = c->published;
     c->published = 0;
     c->enabled = 0;
-    if (c->api) c->api->release(c->api->priv, OA_SVC_PLAT);
-    c->plat = NULL;
+    if (published) c->api->unpublish(c->api->priv, OA_SVC_AUDIO);
+    if (c->plat) {
+        c->api->release(c->api->priv, OA_SVC_PLAT);
+        c->plat = NULL;
+    }
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->cleanup_owner) {
+        (void)finish_owner_ptr(c->cleanup_owner);
+        c->cleanup_owner = NULL;
+    }
+    if (c->owner) {
+        oa_audio_owner *owner = c->owner;
+        c->owner = NULL;
+        (void)finish_owner_ptr(owner);
+    }
 }
+
+/* ABI 3 gate: unpublish audio and release plat synchronously, then detach the
+ * owner and finish it on a worker. The owner can block in a client RPC, so the
+ * loop must not join it. */
+static int m_quiesce(void *v)
+{
+    struct ctx *c = v;
+    if (!c) return 0;
+    if (c->cleanup_running) {
+        for (int i = 0; i < 10; i++) {
+            int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+            if (rc == 0) {
+                c->cleanup_running = 0;
+                int result = c->cleanup_result;
+                c->cleanup_result = 0;
+                if (result) {
+                    c->api->log(c->api->priv, OA_LOG_ERROR,
+                                "audio: owner cleanup failed (%d)", result);
+                    return -EIO;
+                }
+                return 0;
+            }
+            if (rc != EBUSY) {
+                c->cleanup_running = 0;
+                return -EIO;
+            }
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
+        }
+        return -EAGAIN;
+    }
+
+    c->quiescing = 1;
+    int published = c->published;
+    c->published = 0;
+    c->enabled = 0;
+    if (published) c->api->unpublish(c->api->priv, OA_SVC_AUDIO);
+    if (c->plat) {
+        c->api->release(c->api->priv, OA_SVC_PLAT);
+        c->plat = NULL;
+    }
+    oa_audio_owner *owner = c->owner;
+    c->owner = NULL;
+    if (!owner) return 0;
+    c->cleanup_owner = owner;
+    c->cleanup_result = 0;
+    int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+    if (rc) {
+        c->cleanup_owner = NULL;
+        int result = finish_owner_ptr(owner);
+        return result ? -EIO : 0;
+    }
+    c->cleanup_running = 1;
+    return -EAGAIN;
+}
+
 /* Enabled HAL volume is not a recovered standby sequence, so suspend refuses
  * instead of reporting success. A disabled module only owns an idle worker. */
 static int m_suspend(void *v)
 {
     struct ctx *c = v;
-    if (!c || c->enabled) return -1;
-    return finish_owner(c);
+    if (!c || c->enabled || c->cleanup_running || c->cleanup_owner)
+        return -1;
+    c->quiescing = 1;
+    oa_audio_owner *owner = c->owner;
+    c->owner = NULL;
+    return finish_owner_ptr(owner) == 0 ? 0 : -1;
 }
+
 static int m_resume(void *v)
 {
     struct ctx *c = v;
-    if (!c) return -1;
+    if (!c || c->cleanup_running || c->cleanup_owner) return -1;
+    c->quiescing = 0;
     if (c->owner) return 0;
     return oa_audio_owner_create(&c->owner, settled, c) == 0 ? 0 : -1;
-}
-static int m_quiesce(void *v)
-{
-    struct ctx *c = v;
-    if (!c || !c->owner) return 0;
-    return oa_audio_owner_quiesce(c->owner) == 0 ? 0 : 1;
 }
 
 static void m_destroy(void *v)
 {
+    struct ctx *c = v;
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->cleanup_owner) {
+        (void)finish_owner_ptr(c->cleanup_owner);
+        c->cleanup_owner = NULL;
+    }
+    if (c->owner) {
+        oa_audio_owner *owner = c->owner;
+        c->owner = NULL;
+        (void)finish_owner_ptr(owner);
+    }
     if (g_ctx == v)
         g_ctx = NULL;
     free(v);

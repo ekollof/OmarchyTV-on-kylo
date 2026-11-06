@@ -292,6 +292,8 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  display-info            query display dimensions/bpp/frames\n"
                  "  source-select <type>    select a VIN source type 0-25\n"
                  "  source-state            query current source type/availability\n"
+                 "  audio-state             query audio enabled/volume\n"
+                 "  audio-volume <0-100>    set diagnostic audio volume\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -462,6 +464,48 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         h->api.release(h, OA_SVC_SOURCE);
         snprintf(outbuf, outlen, "source type %d available %d\n", type,
                  available);
+        return 0;
+    }
+    if (!strcmp(cmd, "audio-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_audio_iface *a = h->api.lookup(h, OA_SVC_AUDIO, 1);
+        if (!a) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int enabled = a->is_available ? a->is_available() : 0;
+        int volume = a->get_volume ? a->get_volume() : -1;
+        h->api.release(h, OA_SVC_AUDIO);
+        snprintf(outbuf, outlen, "audio enabled %d volume %d\n",
+                 enabled, volume);
+        return 0;
+    }
+    if (!strcmp(cmd, "audio-volume")) {
+        if (force || !a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        char *end = NULL;
+        long value = strtol(a1, &end, 0);
+        if (*a1 == '\0' || !end || *end != '\0' || value < 0 || value > 100) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_audio_iface *a = h->api.lookup(h, OA_SVC_AUDIO, 1);
+        if (!a) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int rc = a->set_volume((int)value);
+        h->api.release(h, OA_SVC_AUDIO);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EIO);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "ok\n");
         return 0;
     }
     if (!strcmp(cmd, "display-info")) {

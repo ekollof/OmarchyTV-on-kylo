@@ -219,13 +219,23 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       uses the gate. ARM module links libpthread. Full suite/QEMU pass.
       UI-MENU-QUIESCE.
 
+- [x] Asynchronous gate for `mod_audio`: unpublish `audio` and release `plat`
+      synchronously, detach the `oa_audio_owner`, then quiesce/poll-join/
+      destroy it on a worker after `audio.cleanup_delay_ms` (the owner may
+      block in a client RPC). `m_stop`/`m_destroy` join; `m_start` refuses if
+      live; `settled` is suppressed while quiescing. New `audio-state`/
+      `audio-volume` control probes. Stub-HAL test: volume 42 set, reload fails
+      fast, `audio-state` ENODEV, retry republishes with volume 42 restored
+      and reapplied; stop uses the gate. Existing audio/CEC tests pass; ARM
+      links vendor libs + libpthread. Full/QEMU pass. AUDIO-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
-      `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source` and
-      `ui_menu` are the existing models.
+      `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
+      `ui_menu` and `audio` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in
