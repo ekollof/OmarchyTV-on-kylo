@@ -21,11 +21,68 @@
 #define OA_NIM_DTV_TASK_PRIORITY 14
 #define OA_NIM_DTV_TERM_ACTIVE 0xffu
 
+/* The two unnamed UART helpers call DEV_IIC_Read/Write with these fixed
+ * arguments and the per-code subaddress: (0, 0, 0x80, 1, code, 1, &byte). */
+#define OA_NIM_DTV_IIC_BUS 0
+#define OA_NIM_DTV_IIC_DEV 0
+#define OA_NIM_DTV_IIC_REG 0x80
+#define OA_NIM_DTV_IIC_SIZE 1
+#define OA_NIM_DTV_IIC_LEN 1
+
 /* 1 for model types 0..3 (supported); 0 otherwise. */
 int oa_nim_dtv_model_supported(int model_type);
 
 /* Vendor gu32NimActiveModule: 1 for model type 4, 3 for 0..3 and the default
  * branch (including other/negative values). */
 int oa_nim_dtv_active_module(int model_type);
+
+/* Ordered one-shot task body recovered from 0x008601ac. The real body calls
+ * PLAT_DRV_GetModuleBufInfo(9), NIM init, optional HAL demod init/connect and
+ * the UART IR system-code sequence 21/17/64 (masks 8/8/2), then active 0xff
+ * and a condition signal. These callbacks stand in for that hardware path. */
+enum {
+    OA_NIM_DTV_STEP_LOCK = 0,
+    OA_NIM_DTV_STEP_MODULE_BUF,
+    OA_NIM_DTV_STEP_INIT_NIM,
+    OA_NIM_DTV_STEP_HAL_DEMOD,
+    OA_NIM_DTV_STEP_CONNECT_HAL,
+    OA_NIM_DTV_STEP_IR21,
+    OA_NIM_DTV_STEP_IR17,
+    OA_NIM_DTV_STEP_IR64,
+    OA_NIM_DTV_STEP_ACTIVE,
+    OA_NIM_DTV_STEP_SIGNAL,
+    OA_NIM_DTV_STEP_UNLOCK,
+    OA_NIM_DTV_STEP_COUNT
+};
+
+typedef struct {
+    int (*module_buf_info)(int module, void *ud); /* vendor 1 = found */
+    int (*init_nim_func)(void *ud);
+    int (*hal_demod_initialize)(void *ud);
+    int (*connect_hal)(void *ud);
+    /* DEV_IIC_Read/Write(0, 0, 0x80, 1, code, 1, &byte), then the per-code
+     * bit update. Both vendor helpers return 1 only when the IIC call returns 0. */
+    int (*ir_read)(int bus, int code, uint8_t *value, void *ud);
+    int (*ir_write)(int bus, int code, uint8_t value, void *ud);
+    void (*signal_done)(void *ud);
+    void (*step)(int step, void *ud); /* test/observability hook, may be NULL */
+} oa_nim_dtv_ops;
+
+typedef struct {
+    int module_buf_rc;
+    int initialized;
+    int active_module;
+    int failed_step; /* -1 = none, else the IR step that failed */
+    int failed_io;   /* -1 none, 0 read, 1 write */
+    int hal_used;
+    uint8_t ir_value[3]; /* final buffer bytes after OR masks */
+} oa_nim_dtv_result;
+
+/* Runs the one-shot sequence. Returns 0 when it reached SIGNAL/UNLOCK (even if
+ * an IR code was rejected, mirroring the vendor finish path), -EINVAL for bad
+ * arguments. Missing optional callbacks are skipped. */
+int oa_nim_dtv_task_run(int model_type, int hal_requested,
+                        const oa_nim_dtv_ops *ops, void *ud,
+                        oa_nim_dtv_result *out);
 
 #endif

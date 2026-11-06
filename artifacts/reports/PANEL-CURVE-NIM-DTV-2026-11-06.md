@@ -58,22 +58,45 @@ ok nim dtv: recovered model gate/active module and task constants
 ```
 
 The task entry at `0x008601ac` (created by `DEV_NIM_DTV_Init`) is a **one-shot
-initializer**, not a monitor loop:
+initializer**, not a monitor loop. Read-only Ghidra decompilation of the raw
+Thumb entry (disposable project copy; it was not a defined function) plus the
+exported helpers:
 
 1. lock `g_InitMutex`;
 2. `PLAT_DRV_GetModuleBufInfo(9, ...)`, logging the success/error branch;
 3. `_dev_nim_dtv_InitNimFunc(&state)`;
-4. if the active-module bit requests it: `HAL_Demod_User_Initialize()` then
-   `_dev_nim_dtv_Connect2HAL()`;
-5. UART IR system-code/active sequence for codes 21, 17 and 64 with bit masks
-   8, 8, 2 (failure branches still converge on the same finish);
+4. if `DAT_0176201c << 0x1e < 0` (bit1): `HAL_Demod_User_Initialize()` then
+   `_dev_nim_dtv_Connect2HAL(&state)`;
+5. the unnamed UART helpers call
+   `DEV_IIC_Read/Write(0, 0, 0x80, 1, code, 1, &byte)`, then update bits:
+   - code `0x15` (21): `byte &= 0xf7` (clear bit3);
+   - code `0x11` (17): `byte |= 8` (set bit3);
+   - code `0x40` (64): `byte |= 2` (set bit1); its write result is not checked;
 6. write active `0xff`, mark the stage initialized, signal the condition and
    unlock.
 
-`DEV_NIM_DTV_Term` clears the guard and writes `0xff`; it does not join. The
-task body therefore depends on the real NDAL module-buffer/demod/UART path and
-is not implemented. Only the model gate, active codes and task constants are
-covered offline.
+The IIC helpers return 1 only when `DEV_IIC_Read/Write` returns 0. The three
+bytes are separate stack slots, zeroed once before code 21. `DEV_NIM_DTV_Term`
+clears the guard and writes `0xff`; the recovered body does not join.
+
+Implemented as `oa_nim_dtv_task_run` with read/write callbacks and steps:
+
+```text
+LOCK, MODULE_BUF(9), INIT_NIM, [HAL_DEMOD, CONNECT_HAL],
+IR21 read/clear8/write, IR17 read/set8/write, IR64 read/set2/write,
+ACTIVE 0xff, SIGNAL, UNLOCK
+```
+
+Tests cover the full order with/without HAL, module-buffer and NIM-init
+failures continuing, every read/write rejection (including the ignored code-64
+write), the masks, the fixed IIC arguments, and bad arguments:
+
+```text
+ok nim dtv: model gate/constants and one-shot read/modify/write order, masks and failure finish
+```
+
+Only the ordered state machine and gate/constants are implemented; the real
+NDAL/HAL/UART callbacks and a cold-start execution remain open.
 
 ## Verification
 

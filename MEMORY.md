@@ -664,10 +664,13 @@ opt-in panel.curve/min_percent/duty_max (default linear/4095 path unchanged);
 fake-HAL tests cover identity/min20/p4=50 bend/percent-duty(4095 and1000
 calibration)/bounds/degenerate. DEV_NIM_DTV_Init idempotent guard,
 model0..3/type4 active1/else3, mutex and CreateTask(entry0x8601ad,
-stack0x1000, priority14), Term0xff; task body recovered as a one-shot init
-(modulebuf9/NIM init/HAL demod+connect/IR codes21,17,64 masks8,8,2/active0xff+
-signal), HAL/UART body unimplemented. ASan/UBSan clean, full suite all tests
-passed, ARM mod_panel builds. No panel/tuner hardware; curve default off.
+stack0x1000, priority14), Term0xff. Ghidra decompile of the raw Thumb task
+entry: modulebuf9, NIM init, conditional HAL demod+connect, then
+DEV_IIC_Read/Write(0,0,0x80,1,code,1,&byte): 0x15 clears bit3, 0x11 sets bit3,
+0x40 sets bit1 (write result unchecked); active0xff/signal/unlock. Implemented
+as an ordered fakeable state machine with read/write callbacks and failure
+tests; real HAL/UART callbacks unimplemented. ASan/UBSan clean, full suite all
+tests passed, ARM mod_panel builds. No panel/tuner hardware; curve default off.
 PANEL-CURVE-NIM-DTV.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin

@@ -75,11 +75,31 @@ it does not qualify as a harmless view-only observation.
 
 ## Firmware first
 
-Before a hardware change, ioctl, probe or reboot, answer the API question from
-the shipped binary/driver/kernel and check ARM instructions. Saved Ghidra
-prototypes are analysis metadata, often wrong about arguments/returns.
-On-set probing confirms understood behavior; it must not discover an API by
-guessing. Success return codes alone do not prove hardware effects.
+**The shipped vendor firmware is the source of truth for hardware and vendor
+behavior.** The TV/hardware is the black box used to confirm an already
+understood contract, never to discover one by guessing. Do not infer an ioctl,
+register, call signature, return convention, bit mask or task order from a
+decompiler alone, a function name, a nearby symbol, or a successful return
+code. Before implementing or probing, recover the fact from the vendor binary,
+driver, kernel or library and check the actual ARM instructions.
+
+Every hardware/API question must go through Ghidra (read-only) first:
+
+- record the exact source path, MD5 and address in the report;
+- decompile the exact function and inspect the instructions around it;
+- follow the callers/callees and data references (`FindCallers.java`);
+- verify arguments, return values, stack/struct-return conventions, Thumb/ARM
+  state and signedness from instructions, not the decompiler prototype;
+- cross-check symbols with `nm -D`/`readelf -s`; use the real exported names.
+  If a helper is genuinely unnamed, say so and name it only by its recovered
+  behavior rather than presenting an invented symbol;
+- compare the implementation and its tests against that recovered contract,
+  including failure branches and ignored returns.
+
+Saved Ghidra prototypes are analysis metadata, often wrong about
+arguments/returns. On-set probing confirms understood behavior; it must not
+discover an API by guessing. Success return codes alone do not prove hardware
+effects.
 
 Extract offline with `artifacts/scripts/extract_from_dump.sh vendor:/path`,
 `vendor2:/path` or `root:/path`; the source is
@@ -90,13 +110,27 @@ indexed in [artifacts/README.md](artifacts/README.md).
 
 Ghidra: `/opt/ghidra/support/analyzeHeadless`, Java scripts only.
 Use `-readOnly -noanalysis` on existing projects; do not open the same project
-concurrently. Durable script: `openaurora/tools/re/DumpFirmware.java` accepts
-exact symbols or @hex and optional --asm. `openaurora/tools/re/FindCallers.java`
-lists a symbol's references (call and data) from Ghidra's reference manager, so
-"who calls X" does not need a whole-binary grep; the objdump cache
-`artifacts/workbench/aurora.dis` (`objdump -d --no-show-raw-insn`, ~189 MB)
-serves instruction-level greps without re-disassembling. Other scripts are in
+concurrently. Durable scripts:
+
+- `openaurora/tools/re/DumpFirmware.java` — exact symbols or `@hex`, optional
+  `--asm`, data dumps and function-name search. This is the default.
+- `openaurora/tools/re/FindCallers.java` — a symbol's call/data references; use
+  it for "who calls X" instead of a whole-binary grep.
+- `openaurora/tools/re/DecompileRaw.java` — for an exact Thumb entry that
+  Ghidra did not define as a function (for example a task pointer). Run it only
+  on a **disposable copy** of the project; it creates the function there and
+  prints the decompilation. Never modify the canonical project for this.
+
+The objdump cache `artifacts/workbench/aurora.dis`
+(`objdump -d --no-show-raw-insn`, ~189 MB) serves instruction-level greps
+without re-disassembling. Other scripts are in
 `artifacts/workbench/ghidra_scripts`.
+
+Before calling a decompiled result "the firmware contract", check the exact
+instructions at least once; when Ghidra and objdump disagree, the instructions
+win. Keep raw decompiles/disassembly under `artifacts/analysis` and cite the
+addresses. A fake-device test proves the modeled order/arithmetic; it does not
+prove the hardware effect.
 
 | project directory under artifacts/workbench | project / program |
 |---|---|

@@ -1002,10 +1002,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       1000 calibration, clamping and degenerate tables.
       Recovered `DEV_NIM_DTV_Init` idempotent guard, model 0..3/type-4 active
       codes, mutex and `CreateTask(entry 0x008601ad, stack 0x1000, priority
-      14)`, Term `0xff`; the task body is a one-shot init (module buffer 9,
-      NIM init, HAL demod+connect, IR codes 21/17/64 masks 8/8/2, active
-      `0xff` + signal). Implemented only the gate/constants and tests; the
-      HAL/UART body remains unimplemented.
+      14)`, Term `0xff`. Ghidra decompile of the raw Thumb task entry gives a
+      one-shot init: module buffer 9, NIM init, conditional HAL demod/connect,
+      then `DEV_IIC_Read/Write(0,0,0x80,1,code,1,&byte)` where 0x15 clears
+      bit3, 0x11 sets bit3 and 0x40 sets bit1 (write result unchecked), then
+      active `0xff` + signal + unlock. Implemented as an ordered fakeable
+      state machine with read/write callbacks and failure tests; the real
+      HAL/UART callbacks remain unimplemented.
       Focused ASan/UBSan clean, full suite `all tests passed`, ARM mod_panel
       builds. No panel/tuner hardware; curve default off.
       PANEL-CURVE-NIM-DTV.
