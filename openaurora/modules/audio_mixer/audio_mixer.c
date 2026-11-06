@@ -1,9 +1,11 @@
 /* Reloadable, read-only IPC adapter. No NDAL link/init in the host process. */
 #include <errno.h>
+#include <pthread.h>
 #include <spawn.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 #include "openaurora/module.h"
 #include "openaurora/services.h"
@@ -16,15 +18,42 @@ struct ctx {
     int fd, published, active, closing, broken, pending, ready, canceled;
     unsigned device;
     oa_audio_broker_reply reply;
+    /* ABI 3 quiesce: the channel fd is detached and closed on a worker. The
+     * reap timer stays active across suspend and closes the child later. */
+    pthread_t cleanup_thread;
+    int cleanup_running, cleanup_fd;
+    unsigned cleanup_delay_ms;
 };
 static struct ctx *g_ctx;
 static void on_reply(void *ud, int fd, unsigned events);
-static void close_channel(struct ctx *c)
+static int detach_channel(struct ctx *c)
 {
     if (c->watch) c->api->watch_del(c->api->priv, c->watch);
     c->watch = 0;
     int fd = c->fd; c->fd = -1;
+    return fd;
+}
+
+static void close_channel(struct ctx *c)
+{
+    int fd = detach_channel(c);
     if (fd >= 0) (void)close(fd); /* consume fd, never replay close */
+}
+
+static void *cleanup_worker(void *ud)
+{
+    struct ctx *c = ud;
+    if (c->cleanup_delay_ms) {
+        const struct timespec pause = {
+            .tv_sec = c->cleanup_delay_ms / 1000u,
+            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
+        };
+        (void)nanosleep(&pause, NULL);
+    }
+    int fd = c->cleanup_fd;
+    c->cleanup_fd = -1;
+    if (fd >= 0) (void)close(fd);
+    return NULL;
 }
 static void failed_channel(struct ctx *c, int error)
 {
@@ -121,14 +150,23 @@ static int init(const oa_host_api *api, void **out)
     if (!api || api->abi != OA_ABI_VERSION || api->size < sizeof *api) return -1;
     struct ctx *c = calloc(1, sizeof *c);
     if (!c) return -1;
-    c->api = api; c->id = api->owner_id(api->priv); c->fd = -1;
+    c->api = api; c->id = api->owner_id(api->priv);
+    c->fd = -1; c->cleanup_fd = -1;
     g_ctx = c; *out = c;
     return 0;
 }
 static int start(void *ud)
 {
     struct ctx *c = ud;
-    if (c->child > 0) { errno = EBUSY; return -1; }
+    if (c->child > 0 || c->cleanup_running || c->cleanup_fd >= 0) {
+        errno = EBUSY;
+        return -1;
+    }
+    c->cleanup_running = 0;
+    c->cleanup_fd = -1;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "audio_mixer.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
     const char *path = c->api->config_get(c->api->priv, "audio_mixer.broker", NULL);
     if (!path || !*path) { errno = EINVAL; return -1; }
     if (access(path, X_OK)) return -1; /* not an exec/startup-health guarantee */
@@ -160,28 +198,88 @@ static int start(void *ud)
     c->active = 1;
     return 0;
 }
-static int quiesce(void *ud)
+/* unpublish=1 is the stop/reload gate; unpublish=0 is suspend, which must
+ * preserve the service and its holds across the stop/start cycle. */
+static int quiesce_impl(struct ctx *c, int unpublish)
 {
-    struct ctx *c = ud;
     if (!c) return 0;
-    c->active = 0; c->closing = 1;
+    if (c->cleanup_running) {
+        for (int i = 0; i < 10; i++) {
+            int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+            if (rc == 0) {
+                c->cleanup_running = 0;
+                break;
+            }
+            if (rc != EBUSY) {
+                c->cleanup_running = 0;
+                return -1;
+            }
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
+        }
+        if (c->cleanup_running) return -1;
+    }
+    c->active = 0;
+    c->closing = 1;
     c->pending = c->ready = c->canceled = 0;
-    close_channel(c); reap(c);
+    if (unpublish && c->published) {
+        c->api->unpublish(c->api->priv, OA_SVC_AUDIO_MIXER);
+        c->published = 0;
+    }
+    int fd = detach_channel(c);
+    if (fd >= 0) {
+        if (!c->cleanup_delay_ms) {
+            (void)close(fd);
+        } else {
+            c->cleanup_fd = fd;
+            if (pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c)) {
+                (void)close(fd);
+                c->cleanup_fd = -1;
+            } else {
+                c->cleanup_running = 1;
+            }
+        }
+    }
+    reap(c);
+    if (c->cleanup_running) return -1;
     return c->child > 0 ? -1 : 0;
 }
+
+static int quiesce(void *ud) { return quiesce_impl(ud, 1); }
 static void stop(void *ud)
 {
     struct ctx *c = ud;
     if (!c) return;
     if (c->timer) c->api->timer_del(c->api->priv, c->timer);
     c->timer = 0;
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->cleanup_fd >= 0) {
+        (void)close(c->cleanup_fd);
+        c->cleanup_fd = -1;
+    }
     close_channel(c);
     if (c->published) c->api->unpublish(c->api->priv, OA_SVC_AUDIO_MIXER);
     c->published = c->active = 0;
 }
+
 static void destroy(void *ud)
-{ if (g_ctx == ud) g_ctx = NULL; free(ud); }
-static int suspend(void *ud) { return quiesce(ud); }
+{
+    struct ctx *c = ud;
+    if (!c) return;
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->cleanup_fd >= 0) (void)close(c->cleanup_fd);
+    close_channel(c);
+    if (g_ctx == ud) g_ctx = NULL;
+    free(ud);
+}
+
+static int suspend(void *ud) { return quiesce_impl(ud, 0); }
 static int resume(void *ud)
 {
     struct ctx *c = ud;

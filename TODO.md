@@ -240,13 +240,24 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       retained-close/owner tests pass; ARM links libpthread. Full/QEMU pass.
       CEC-QUIESCE.
 
+- [x] Asynchronous gate for `mod_audio_mixer`: stop/reload unpublishes
+      `audio.mixer` synchronously, removes the watch and detaches the broker
+      socketpair, then closes it on a worker after
+      `audio_mixer.cleanup_delay_ms`; the 50 ms reap timer stays active to
+      retire the child. Suspend keeps the service/holds and timer; stop
+      joins/deletes the timer; start refuses if live. Echo-broker control
+      test: query/collect left123/right456, reload fails fast, `mixer-query`
+      ENODEV, status responsive, retry republishes with a fresh broker, child
+      reaped before quit, stop gate. Existing watch/timer/suspend/reload tests
+      pass; ARM links libpthread. Full/QEMU pass. AUDIO-MIXER-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
-      `ui_menu`, `audio` and `cec` are the existing models.
+      `ui_menu`, `audio`, `cec` and `audio_mixer` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

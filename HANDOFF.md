@@ -225,6 +225,18 @@ retained-close/owner tests pass; ARM links libpthread. Full/QEMU pass. No real
 CEC device/bus. ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/
 audio/cec are async. CEC-QUIESCE.
 
+audio_mixer quiesce, 2026-11-06: stop/reload unpublishes audio.mixer
+synchronously, removes the watch and detaches the broker socketpair, then
+closes on a worker after audio_mixer.cleanup_delay_ms; the50 ms reap timer
+stays active to retire the child. Suspend keeps service/holds+timer; stop
+joins/deletes timer; start refuses if live. Echo-broker control test:
+query/collect left123/right456, reload fails fast, mixer-query ENODEV, status
+responsive, retry republishes with fresh broker, child reaped before quit,
+stop gate. Existing watch/timer/suspend/reload tests pass; ARM links
+libpthread. Full/QEMU pass. Test broker only; no real mixer/ALSA.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer are async. AUDIO-MIXER-QUIESCE.
+
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so
 Hal_Vin wrappers and the real mod_source.so under qemu against an LD_PRELOAD
 fake /dev/video20. Hal_Vin_Open(0) opens /dev/video20 (not /dev/ntkdvif);

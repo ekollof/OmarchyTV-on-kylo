@@ -823,7 +823,7 @@ $(BUILD)/modules/mod_ui_diag.so: modules/ui_diag/ui_diag.c common/font_bitmap.c 
 
 $(BUILD)/modules/mod_audio_mixer.so: modules/audio_mixer/audio_mixer.c common/audio_broker_wire.c include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_broker.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
 
 $(BUILD)/modules/mod_graphics.so: modules/graphics/graphics.c common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/module.h include/openaurora/services.h include/openaurora/scene_client.h include/openaurora/scene_broker.h
 	@mkdir -p $(dir $@)
@@ -1092,6 +1092,11 @@ $(BUILD)/tests/mixer_bad_exec: tests/mixer_bad_exec
 
 check-mixer-module: $(BUILD)/tests/mixer_module $(BUILD)/tests/mixer_peer $(BUILD)/tests/mixer_bad_exec $(BUILD)/modules/mod_audio_mixer.so $(BUILD)/modules/mod_ticker.so
 	@$(BUILD)/tests/mixer_module $(BUILD)/modules $(abspath $(BUILD)/tests/mixer_peer) $(abspath $(BUILD)/tests/mixer_bad_exec)
+
+.PHONY: check-audio-mixer-quiesce
+check-audio-mixer-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_audio_mixer.so $(BUILD)/tests/mixer_peer
+	node tests/audio_mixer_quiesce.cjs $(abspath $(BUILD))
+check: check-audio-mixer-quiesce
 
 $(BUILD)/tests/owner_races: tests/owner_races.c common/audio_owner.c common/audio_client.c common/audio_netlink.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c
 	@mkdir -p $(dir $@)
