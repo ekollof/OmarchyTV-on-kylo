@@ -191,6 +191,14 @@ bw = base[2] - base[0]
 cw = changed[2] - changed[0]
 if not (40 <= bw <= 70):
     raise SystemExit(f"default 16:9 width unexpected: {bw}")
+# The default frame must show the other two DB values too: NATURAL and
+# MAXIMUM (font12 ink widths for the Dutch strings).
+v0 = value_box(load(f"{stage}/base.rgba"), 0)
+v1 = value_box(load(f"{stage}/base.rgba"), 1)
+if not v0 or not (122 <= v0[2] - v0[0] <= 145):
+    raise SystemExit(f"default MODE is not NATURAL: {v0}")
+if not v1 or not (118 <= v1[2] - v1[0] <= 140):
+    raise SystemExit(f"default ENERGY is not MAXIMUM: {v1}")
 if cw < 120:
     raise SystemExit(f"set: value did not change to the long label: width {cw}")
 if changed != restart:
@@ -224,7 +232,8 @@ if not m0 or not (95 <= m0[2] - m0[0] <= 120):
     raise SystemExit(f"set:MODE did not render Cinema: {m0}")
 if not m1 or not (25 <= m1[2] - m1[0] <= 55):
     raise SystemExit(f"mode2 energy did not render OFF: {m1}")
-print(f"ok qemu sub-launcher value: 16:9 width {bw} -> {cw} (DB field 2), "
+print(f"ok qemu sub-launcher value: default NATURAL/MAXIMUM/16:9 "
+      f"({v0[2]-v0[0]}/{v1[2]-v1[0]}/{bw}); 16:9 -> {cw} (DB field 2), "
       f"survives restart; setting: focus bottom {bottom}; Right AUTO width "
       f"{ebox[2] - ebox[0]}; MODE Cinema width {m0[2] - m0[0]}, energy OFF "
       f"width {m1[2] - m1[0]}")

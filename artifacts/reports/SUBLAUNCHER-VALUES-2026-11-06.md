@@ -96,10 +96,13 @@ QEMU, with the real ARM `mod_settings`, the vendor `libsqlite3.so.0` and a
 writable copy of the DB:
 
 ```text
-ok qemu sub-launcher value: 16:9 width 54 -> 155 (DB field 2), survives
-restart; setting: focus bottom 450; Right AUTO width 176; MODE Cinema width
-105, energy OFF width 36
+ok qemu sub-launcher value: default NATURAL/MAXIMUM/16:9 (132/129/54);
+16:9 -> 155 (DB field 2), survives restart; setting: focus bottom 450;
+Right AUTO width 176; MODE Cinema width 105, energy OFF width 36
 ```
+
+The default widths 132/129/54 are the p0/03 vendor capture's card 0/1/2
+value ink widths, so the firmware DB's source-1 values drive the live row.
 
 Steps: default source1 renders 16:9; `ui-action set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE`
 writes blob `+0x0c = 2` and renders 155 px; a fresh process renders the same;
