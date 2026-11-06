@@ -54,8 +54,9 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
 - [x] After each group: stop openaurora/modules, remove staging, restart stock
       Aurora/appmgr (or reboot), verify PIDs/fds/display/profile and confirm
       no helper or disabled-watchdog state is left behind. Tuner group restored
-      by `wdtctl set 10`; appmgr 1573, aurora 1779, staging/socket absent,
-      profile unchanged.
+      by `wdtctl set 10` on 2026-11-06 (appmgr 1573, aurora 1779) and again on
+      2026-11-07 (appmgr 1570, aurora 1770); staging/socket absent, profile
+      unchanged.
 
 ### Tuner / NIM / LNB (main goal)
 
@@ -81,20 +82,25 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
       `tuner.analog_standard=0..5`); verify the tune, the recovered ATV lock
       bit and `tuner.analog_scan` stepping, and record the strength/quality
       limits.
-- [ ] NIM `InitNimFunc`/`Connect2HAL`: 0x29-word state clear, table install,
+- [x] NIM `InitNimFunc`/`Connect2HAL`: 0x29-word state clear, table install,
       IIC codes 0x15/0x11/0x40, checked/ignored returns and the no-IIC-after-
       failed-MxL661-init guard. 2026-11-06: state/table/guard ran; the
-      NIM-DTV IIC code-21 read NACKed (`failed_step=5`). The vendor tolerates
-      every IIC failure and still signals init-complete (`0x00860252`), so the
-      replacement start gate was corrected; the remaining item is the
-      hardware run with `ir_code`/`errno` captured.
+      NIM-DTV IIC code-21 read NACKed (`failed_step=5`). 2026-11-07: recovered
+      that the vendor tolerates every IIC failure and still signals
+      init-complete (`0x00860252`), removed the stricter start gate, and
+      re-ran on hardware. Service started; `ir_code=21`, `ir_write=0`,
+      `errno=1`, kernel `ki2c: [i2c-0] Dev NACK`. The NACK itself remains a
+      hardware fact (no populated/responding device at slave `0x80`), not a
+      replacement failure. RF acceptance is separate.
 - [x] RT5047 LNB_EN descriptor + `Hal_Gpio_Init/Write`; if no LNB hardware or
       signal is available, verify the descriptor/no-op path and record the
       limit. 2026-11-06: LNB init returned success (`lnb=1`); no LNB signal or
       independent voltage check.
 - [ ] Typed/raw 0x5c channel and the verified 0x180 status fields; record the
-      unimplemented per-case maps as still open. Not exercised: the service did
-      not start (NIM IR gate).
+      unimplemented per-case maps as still open. 2026-11-07: the service
+      started and `tuner-scan 1`/`tuner-scan 4` plus `tuner-state` ran, but
+      with no RF the typed/raw channel and the 0x180 lock/strength/quality
+      fields are not independently validated; keep open.
 
 2026-11-06 tuner subgroup: staging/preflight/claim and the MxL661 init/sequence
 passed; the NIM task saw a NIM-DTV IIC code-21 NACK, so no tune/lock (also no
@@ -111,9 +117,17 @@ that signal. The module's `failed_step >= 0` start gate was stricter than the
 vendor and has been removed; `ir_code`/`ir_write`/`errno` are logged for
 diagnosis. `+0x48` is `DEV_NIM_DTV_PowerControl2` -> `PowerControl` -> HAL
 table entry `0xf` (`HAL_Demod_User_PowerControl`) -> `SAL_DEMOD_TUN_PowerDown`,
-a power-down path, not a power-up precondition. Re-run the service start and
-`tuner-scan 1` next; an FTA RF source is still required for lock/scan
-acceptance.
+a power-down path, not a power-up precondition.
+
+2026-11-07 second run: staged `cf361243...` and verified the manifest/preflight;
+stock 1779 stopped, watchdog disabled. The service started (`status started`,
+`services tuner:v1`) with `failed_step=5` log-only, and the kernel confirmed
+`ki2c: [i2c-0] Dev NACK` for slave `0x80`. `tuner-scan 1` (DVB-T) and
+`tuner-scan 4` (analog) returned ok; `tuner-state` advanced 25/50/75/100 and
+0/50/50/100/100. No RF source: the progress/services are synthetic and
+`lock 1` is not independent acceptance. Restored by `wdtctl set 10` (appmgr
+1570, aurora 1770, stage/socket absent, profile unchanged). An FTA RF source
+is still required for tune/lock/scan acceptance.
 
 ### Display / panel
 

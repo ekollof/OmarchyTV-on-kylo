@@ -712,9 +712,14 @@ module's own failed-step start gate was later corrected: the vendor's task
 tolerates every IIC failure and still signals init-complete at 0x00860252, and
 WaitInitComplete only waits on DAT_01936fb0. The helpers are
 _dev_nim_dtv_IIC_Read/Write over DEV_IIC i2c-0/slave 0x80; +0x48 is the
-HAL_Demod_User_PowerControl power-down path, not a power-up prerequisite. Not
-yet re-run. No RF source, so no tune/lock; stock Aurora/appmgr restored by
-wdtctl set 10. TUNER-TAKEOVER. SI2151 is the full Silicon Labs patch/property
+HAL_Demod_User_PowerControl power-down path, not a power-up prerequisite.
+Second run 2026-11-07 with mod_tuner sha256 cf361243...: service started
+(status started, services tuner:v1), kernel logged ki2c [i2c-0] Dev NACK,
+tuner-scan 1 (DVB-T) and tuner-scan 4 (analog) returned ok and tuner-state
+advanced. No RF source: progress/services are the synthetic scan state
+machine and lock 1 is not independent acceptance. Restored by wdtctl set 10;
+latest stock appmgr 1570/aurora 1770, staging/socket absent, profile
+unchanged. TUNER-TAKEOVER. SI2151 is the full Silicon Labs patch/property
 driver, not this profile's path.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin

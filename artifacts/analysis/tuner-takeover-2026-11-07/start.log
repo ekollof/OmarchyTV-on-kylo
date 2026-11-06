@@ -1,0 +1,29 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+launched=8476
+== ps
+no-openaurora
+== log
+[237529] INFO host         openaurora starting, modules=./modules
+[237530] INFO host         control socket /tmp/oa-tuner.sock
+[237546] INFO host         loaded tuner v1 (./modules/mod_tuner.so)
+[237552] INFO tuner        tuner hw: rc=0 failed_step=5 nim=1 hal=1 tuner=1 seq=1 seq_rc=0 lnb=1 ir_code=21 ir_write=0 errno=1
+[237552] DBG  tuner        service up: tuner v1
+[237552] INFO host         started tuner
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+setDVIFTunerType DVIF ==> KER_DVIF_IO_PLAT_SET_SALTunerType = PASS, status[0], fd: [13] 
+openaurora: 1 module(s) loaded, control on /tmp/oa-tuner.sock
+== status
+name    tuner
+state   started
+version 1
+path    ./modules/mod_tuner.so
+requires
+cleanup_pending 0
+activation_rejected 0
+services tuner:v1
+status_rc=0

@@ -1,8 +1,10 @@
-# Tuner takeover attempt — 2026-11-06
+# Tuner takeover attempts — 2026-11-06 and 2026-11-07
 
 Owner authorization: TV read-write, full takeover queue allowed, no FTA RF
 source connected, recovery reboot allowed. This record is the tuner subgroup
-only. Stock was restored after the tuner gate failed.
+only. The first run stopped at the NIM-DTV IIC step; the corrected start gate
+ran on 2026-11-07 and the tuner service started. Stock was restored after both
+runs.
 
 ## Pre-state
 
@@ -84,6 +86,54 @@ appmgr PID 1573, aurora.elf PID 1779 (zombie 1958), no openaurora
 /conf/mb230_hwprofile.bin still 1b063b2cc7faa8b92c0f843921e561c7
 ```
 
+## Second run — corrected start gate (2026-11-07)
+
+After the instruction-level follow-up, the module no longer rejects start on a
+NIM-DTV IIC failure. The same tuner-only bundle was re-staged, with the new
+`mod_tuner.so`:
+
+- Stage `/buffer/oa-tuner-20261107`, tar SHA256
+  `5c278bec3276131ed8e45b1ed70801f2dcd9413c34ccebdca675a913f5cd0fda`.
+  `SHA256SUMS` verified (including `mod_tuner.so`
+  `cf361243e10516242f0eac6bdffd9e3ec42ebe27dc7a038c70986a9a10f52022`)
+  and `openaurora --check --modules ./modules` printed
+  `Runtime preflight PASSED`.
+- Pre-state: stock `aurora.elf` 1779, appmgr 1573, uptime 1225.73 s;
+  hwprofile MD5 `1b063b2cc7faa8b92c0f843921e561c7`; fb1 `1920,2160`,
+  pan `0,0`. Watchdog disabled and stock Aurora SIGTERM'd; appmgr stayed.
+- Start log:
+
+```text
+[237546] INFO host         loaded tuner v1 (./modules/mod_tuner.so)
+[237552] INFO tuner        tuner hw: rc=0 failed_step=5 nim=1 hal=1 tuner=1 seq=1 seq_rc=0 lnb=1 ir_code=21 ir_write=0 errno=1
+[237552] DBG  tuner        service up: tuner v1
+[237552] INFO host         started tuner
+```
+
+`failed_step=5` is still the code-21 read, but it is now log-only. The kernel
+independently confirms a NACK rather than a return-convention problem:
+
+```text
+[3-1237.570998] ki2c: [i2c-0] Dev NACK
+```
+
+`status tuner` reported `state started` and `services tuner:v1`.
+
+- `tuner-state` before a scan: `network 0 state 0 progress 0 lock 0 ...`.
+- `tuner-scan 1` (DVB-T) returned `ok`; polling `tuner-state` advanced
+  25/50/75/100 with `lock 1`, `services` 3/6/9/12, then state `2` (done).
+- `tuner-scan 4` (analog, `tuner.analog=1`) returned `ok`; polling advanced
+  0/50/50/100/100 with `services` 1/1/2/2/3.
+- **No RF source is connected.** The progress and service counts are the
+  synthetic scan state machine, and `lock 1` is the vendor status bit on the
+  profile's mis-selected Si2157-as-MxL661 path; it is not an independent
+  tune/lock/scan acceptance. `unc 4294967295` is the unset sentinel.
+- Restore: `quit` unloaded the module and removed the socket; the stage,
+  heartbeat and socket were removed, `sync` completed, and
+  `/buffer/wdtctl set 10` rebooted the set. After boot (uptime 39.58 s):
+  appmgr 1570, `aurora.elf` 1770, no openaurora, stage/socket absent,
+  hwprofile unchanged, fb1 `1920,2160`, pan `0,0`.
+
 ## NIM IR-21 follow-up (instruction level)
 
 Correction to the first follow-up: the helpers at `0x0085fd04`/`0x0085fc80`
@@ -149,19 +199,21 @@ set remained restored.
 
 ## Evidence
 
-`artifacts/analysis/tuner-takeover-2026-11-06/`: `pre-state.txt`,
+First run: `artifacts/analysis/tuner-takeover-2026-11-06/` (`pre-state.txt`,
 `stop-stock.txt`, `start.log`, `start2.log`, `start3.log`, `run-fail.log`,
-`run.log`, `fds.log`.
+`run.log`, `fds.log`).
 
-TV `mod_tuner.so` with the IIC init and diagnostic is sha256
-`8cd06b7be6a2a850ca8932e6c122b732ddc646f17e2685e7bf0212a28b1c7b80`.
+Second run: `artifacts/analysis/tuner-takeover-2026-11-07/` (`pre-state.txt`,
+`stop-stock.txt`, `start.log`, `scan.log`, `scan2.log`, `analog-scan.log`,
+`dmesg-fds.log`, `cleanup.log`, `restore.log`).
+
+TV `mod_tuner.so` hashes: first run `8cd06b7b...`; corrected second run
+`cf361243e10516242f0eac6bdffd9e3ec42ebe27dc7a038c70986a9a10f52022`.
 
 ## Next
 
-1. Re-run the tuner subgroup with the corrected start gate and capture
-   `ir_code`/`ir_write`/`errno`. The service should now publish even when the
-   NIM-DTV IIC step NACKs; `tuner-state` and `tuner-scan 1` can then exercise
-   the MxL661/Si2157 programming path without RF.
-2. Add an FTA RF source for a real DVB-T/C or analog lock/scan acceptance.
-3. The display/audio/CEC/input/PVR groups were not started; the tuner gate
-   failed first and the set was restored.
+1. Add an FTA RF source and independently verify DVB-T/C or analog
+   tune/lock/scan; the synthetic progress and the `lock 1` bit without RF are
+   not acceptance.
+2. The display/audio/CEC/input/PVR groups were not started; only the tuner
+   subgroup has been exercised on hardware.

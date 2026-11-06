@@ -1,0 +1,19 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+39.58 109.88
+ 1570 /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+ 1770 /vendor/com.nvt.idtv/aurora.elf
+ 2177 [aurora.elf]
+== stage
+ls: /buffer/oa-tuner-20261107: No such file or directory
+ls: /tmp/oa-tuner.sock: No such file or directory
+== profile/fb
+1b063b2cc7faa8b92c0f843921e561c7  /conf/mb230_hwprofile.bin
+1920,2160
+0,0
+== wdt
+watchdog get -> failed
+wdt_rc=1

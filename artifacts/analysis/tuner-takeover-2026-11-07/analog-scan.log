@@ -1,0 +1,36 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+== analog scan
+ok
+scan_rc=0
+== astate1
+network 4 state 1 progress 0 lock 1 services 1 selected 0 error 0 strength 0 quality 0 ber 0.00 snr 0.00 unc 4294967295
+== astate2
+network 4 state 1 progress 50 lock 1 services 1 selected 0 error 0 strength 0 quality 0 ber 0.00 snr 0.00 unc 4294967295
+== astate3
+network 4 state 1 progress 50 lock 1 services 2 selected 0 error 0 strength 0 quality 0 ber 0.00 snr 0.00 unc 4294967295
+== astate4
+network 4 state 1 progress 100 lock 1 services 2 selected 0 error 0 strength 0 quality 0 ber 0.00 snr 0.00 unc 4294967295
+== astate5
+network 4 state 1 progress 100 lock 1 services 3 selected 0 error 0 strength 0 quality 0 ber 0.00 snr 0.00 unc 4294967295
+== log
+[237529] INFO host         openaurora starting, modules=./modules
+[237530] INFO host         control socket /tmp/oa-tuner.sock
+[237546] INFO host         loaded tuner v1 (./modules/mod_tuner.so)
+[237552] INFO tuner        tuner hw: rc=0 failed_step=5 nim=1 hal=1 tuner=1 seq=1 seq_rc=0 lnb=1 ir_code=21 ir_write=0 errno=1
+[237552] DBG  tuner        service up: tuner v1
+[237552] INFO host         started tuner
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+setDVIFTunerType DVIF ==> KER_DVIF_IO_PLAT_SET_SALTunerType = PASS, status[0], fd: [13] 
+openaurora: 1 module(s) loaded, control on /tmp/oa-tuner.sock
+== dmesg
+[1-1225.815647] nvt-stbc-ipc: error: ipc_send_and_wait_reply: please fix nvt_err error
+[1-1225.823532] nvt-stbc-ipc: Expect cmd=0xAE (1[0:ack, 1:data])[0m
+[1-1225.829746] nvt-stbc-ipc: error: ipc_send_and_wait_reply: please fix nvt_err error
+[1-1225.837527] [nvtstbcipc_write]ipc ret error(-3)
+[3-1237.565379] kdvif: [_KER_DVIF_Open][2562] END
+[3-1237.570998] ki2c: [i2c-0] Dev NACK 
