@@ -735,10 +735,15 @@ stepping is wired (analog_scan/start/stop/step/dwell, host stub test);
 the case-9 per-address calibration remains. First tuner takeover 2026-11-06:
 libNDAL3 Hal_Iic_Init is required in a replacement process and was added;
 MxL661 init, demod/tuner/AV2018/dvif/SetTunerType/LNB and HAL connect all
-passed, but the NIM task failed at IR code 21 (failed_step=5) and the module
-refused to start. No RF source, so no tune/lock; stock Aurora/appmgr restored
-by wdtctl set 10. TUNER-TAKEOVER. SI2151 is the full Silicon Labs
-patch/property driver, not this profile's path.
+passed, but the NIM task saw a NIM-DTV IIC code-21 NACK (failed_step=5). The
+module's own failed-step start gate was later corrected: the vendor's task
+tolerates every IIC failure and still signals init-complete at 0x00860252, and
+WaitInitComplete only waits on DAT_01936fb0. The helpers are
+_dev_nim_dtv_IIC_Read/Write over DEV_IIC i2c-0/slave 0x80; +0x48 is the
+HAL_Demod_User_PowerControl power-down path, not a power-up prerequisite. Not
+yet re-run. No RF source, so no tune/lock; stock Aurora/appmgr restored by
+wdtctl set 10. TUNER-TAKEOVER. SI2151 is the full Silicon Labs patch/property
+driver, not this profile's path.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches the local artifact. Staged

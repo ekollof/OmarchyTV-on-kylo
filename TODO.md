@@ -83,8 +83,11 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
       limits.
 - [ ] NIM `InitNimFunc`/`Connect2HAL`: 0x29-word state clear, table install,
       IIC codes 0x15/0x11/0x40, checked/ignored returns and the no-IIC-after-
-      failed-MxL661-init guard. 2026-11-06: state/table/guard ran; the IR
-      code-21 read/write failed (`failed_step=5`), so this remains open.
+      failed-MxL661-init guard. 2026-11-06: state/table/guard ran; the
+      NIM-DTV IIC code-21 read NACKed (`failed_step=5`). The vendor tolerates
+      every IIC failure and still signals init-complete (`0x00860252`), so the
+      replacement start gate was corrected; the remaining item is the
+      hardware run with `ir_code`/`errno` captured.
 - [x] RT5047 LNB_EN descriptor + `Hal_Gpio_Init/Write`; if no LNB hardware or
       signal is available, verify the descriptor/no-op path and record the
       limit. 2026-11-06: LNB init returned success (`lnb=1`); no LNB signal or
@@ -94,14 +97,23 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
       not start (NIM IR gate).
 
 2026-11-06 tuner subgroup: staging/preflight/claim and the MxL661 init/sequence
-passed; the NIM task failed at IR code 21, so no tune/lock (also no RF source).
-Stock was restored by watchdog reboot. TUNER-TAKEOVER. Display/audio/CEC/input/
-PVR groups were not started in this attempt. Follow-up: the task's IR helpers
-are `DEV_UART_IR` wrappers over `DEV_IIC` (i2c-0/0x80); `DEV_NIM_DTV_Init` only
-creates the task, while NIM power is the `DEV_NIM_PowerSetting` `+0x48`
-callback and the `DAT_01937040` power-control pointer. Recover those callbacks
-and add the power/reset step before the task; also log the raw `Hal_Iic_Read`
-return to separate a NACK from a return-convention error.
+passed; the NIM task saw a NIM-DTV IIC code-21 NACK, so no tune/lock (also no
+RF source). Stock was restored by watchdog reboot. TUNER-TAKEOVER.
+Display/audio/CEC/input/PVR groups were not started in this attempt.
+
+Follow-up correction: the helpers at `0x0085fd04`/`0x0085fc80` are
+`_dev_nim_dtv_IIC_Read/Write` (their debug strings name them), not
+`DEV_UART_IR`. They call `DEV_IIC` on i2c-0 with slave `0x80`, clock index 0
+(79 kHz) and the code as subaddress. Every NIM-DTV IIC failure branch jumps to
+the same finish path at `0x00860252`, which sets active-module `0xff`, sets
+`DAT_01936fb0=1` and signals; `DEV_NIM_DTV_WaitInitComplete` only waits for
+that signal. The module's `failed_step >= 0` start gate was stricter than the
+vendor and has been removed; `ir_code`/`ir_write`/`errno` are logged for
+diagnosis. `+0x48` is `DEV_NIM_DTV_PowerControl2` -> `PowerControl` -> HAL
+table entry `0xf` (`HAL_Demod_User_PowerControl`) -> `SAL_DEMOD_TUN_PowerDown`,
+a power-down path, not a power-up precondition. Re-run the service start and
+`tuner-scan 1` next; an FTA RF source is still required for lock/scan
+acceptance.
 
 ### Display / panel
 

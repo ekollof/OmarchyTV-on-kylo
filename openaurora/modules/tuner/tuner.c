@@ -298,6 +298,11 @@ struct hw_bind {
     int nim_inited;
     int hal_connected;
     int lnb_rc;
+    /* Last failed NIM-DTV IIC step: vendor collapses Hal_Iic_Read/Write to
+     * -1, so record errno at the wrapper boundary for diagnosis. */
+    int ir_fail_code;
+    int ir_fail_write;
+    int ir_fail_errno;
     oa_nim_dtv_hal nim_hal;
 #ifndef OA_NO_VENDOR
     struct oa_nim_tune_binding tune;
@@ -401,14 +406,26 @@ static int hw_ir_read(int bus, int code, uint8_t *value, void *v)
     /* Safety deviation: do not touch the NIM IIC path after a failed tuner
      * init. The vendor task cannot observe that failure. */
     if (!b->tuner_ok) return 0;
-    return oa_nim_dtv_hal_read(bus, code, value, &b->nim_hal);
+    int ok = oa_nim_dtv_hal_read(bus, code, value, &b->nim_hal);
+    if (!ok) {
+        b->ir_fail_code = code;
+        b->ir_fail_write = 0;
+        b->ir_fail_errno = errno;
+    }
+    return ok;
 }
 
 static int hw_ir_write(int bus, int code, uint8_t value, void *v)
 {
     struct hw_bind *b = v;
     if (!b->tuner_ok) return 0;
-    return oa_nim_dtv_hal_write(bus, code, value, &b->nim_hal);
+    int ok = oa_nim_dtv_hal_write(bus, code, value, &b->nim_hal);
+    if (!ok) {
+        b->ir_fail_code = code;
+        b->ir_fail_write = 1;
+        b->ir_fail_errno = errno;
+    }
+    return ok;
 }
 
 static int tuner_hw_bringup(struct ctx *c)
@@ -468,14 +485,21 @@ static int tuner_hw_bringup(struct ctx *c)
     rc = oa_nim_dtv_task_run((int)model, 1, &nim, &b, &result);
     c->api->log(c->api->priv, OA_LOG_INFO,
                 "tuner hw: rc=%d failed_step=%d nim=%d hal=%d tuner=%d "
-                "seq=%d seq_rc=%d lnb=%d",
+                "seq=%d seq_rc=%d lnb=%d ir_code=%d ir_write=%d errno=%d",
                 rc, result.failed_step, b.nim_inited, b.hal_connected,
-                b.tuner_ok, b.sequence_ran, b.sequence_rc, b.lnb_rc);
+                b.tuner_ok, b.sequence_ran, b.sequence_rc, b.lnb_rc,
+                b.ir_fail_code, b.ir_fail_write, b.ir_fail_errno);
     if (rc != 0) return -EIO;
     if (!b.nim_inited || !b.hal_connected) return -EIO;
     if (!b.tuner_ok || !b.sequence_ran || b.sequence_rc != 0) return -EIO;
     if (b.lnb_rc < 0) return -EIO;
-    if (result.failed_step >= 0) return -EIO;
+    /* Vendor parity: DEV_NIM_DTV_Init's one-shot task tolerates a failed
+     * NIM-DTV IIC read/write on codes 0x15/0x11/0x40. Every failure branch
+     * jumps to the same finish path (0x00860252), which sets the active
+     * module to 0xff and signals init-done; DEV_NIM_DTV_WaitInitComplete
+     * only waits for that signal (0x008615fc). Keep failed_step as a logged
+     * diagnostic instead of rejecting the service start.
+     */
     return 0;
 }
 #else

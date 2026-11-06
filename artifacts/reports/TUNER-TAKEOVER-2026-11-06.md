@@ -62,11 +62,13 @@ ERR host tuner: start() failed (-5)
 
 - MxL661 init, the demod/tuner/AV2018/dvif/SetTunerType/LNB sequence and
   HAL connect all reported success (`tuner=1 seq=1 seq_rc=0 hal=1 lnb=1`).
-- `failed_step=5` is `OA_NIM_DTV_STEP_IR21`: the NIM UART IR code-21 IIC
-  read/write still fails. The module correctly refuses to start with a
-  failed NIM step.
+- `failed_step=5` is `OA_NIM_DTV_STEP_IR21`: the NIM-DTV IIC code-21 read
+  fails. At the time the module refused to start on a failed NIM step; that
+  gate was our addition and is **superseded** by the instruction-level
+  follow-up below (the vendor tolerates the failure).
 - Open fds in the replacement process: `/dev/i2c-0..5`, `/dev/ntkiic0`,
-  `/dev/ntkdvif`, `/dev/ntgpio`. The NIM IR path is the remaining blocker.
+  `/dev/ntkdvif`, `/dev/ntgpio`. The NIM-DTV IIC path is the remaining
+  blocker.
 - No FTA RF source is connected, so no DVB-T/C/analog tune or lock was
   attempted. `tuner-state` was unavailable because the service never started.
 
@@ -84,9 +86,11 @@ appmgr PID 1573, aurora.elf PID 1779 (zombie 1958), no openaurora
 
 ## NIM IR-21 follow-up (instruction level)
 
-The one-shot task at `0x008601ac` does not call the IIC helper directly. For
-code 21 it calls `0x0085fd04` and `0x0085fc80`, the two `DEV_UART_IR`
-system-code helpers:
+Correction to the first follow-up: the helpers at `0x0085fd04`/`0x0085fc80`
+are **`_dev_nim_dtv_IIC_Read`/`_dev_nim_dtv_IIC_Write`**, not `DEV_UART_IR`.
+Their own debug strings at `0x01360e90`/`0x01360eb0` name them, and the
+failure format at `0x01361250` prints `SlaveAddr` and `SubAddr`. They are
+called for NIM-DTV codes 21/17/64:
 
 ```text
 0x86024a  bl 0x85fd04        read code 21 into [r7+1]
@@ -97,29 +101,51 @@ system-code helpers:
 0x86031e  bl 0x85fc80        write code 64
 ```
 
-Those helpers build the `DEV_IIC` call `(bus=0, dev=0, reg=0x80, size=1,
-code, len=1, &byte)` and call `DEV_IIC_Read/Write`, which in turn call
-`Hal_Iic_Read/Write`. So the path is the same i2c-0/0x80 bus, not the
-`/dev/ntkiic0` fd; the replacement already has `/dev/ntkiic0` open but the IR
-helpers use `Hal_Iic`.
+At the instruction level the helper call is
+`DEV_IIC_Read/Write(bus=0, speed_index=0, slave=0x80, width=1, subaddr=code,
+len=1, &byte)`. The helper's incoming `r0` becomes `DEV_IIC`'s clock-table
+index (`DAT_01358454[0] = 0x4f`, 79 kHz), `0x80` is the fixed 8-bit slave
+address (7-bit `0x40`), and the code is the subaddress. `DEV_IIC_Read` builds
+a 24-byte Hal context `{bus, 0x80, 1, 0, 79, 0}` plus a separate subaddress
+byte; libNDAL3 `_i2c_RdWr_Transfer` only consumes `ctx+0` (bus), `ctx+4`
+(slave address) and `ctx+8` (subaddress length), so the replacement's
+`{0, 0x80, 1, 0, 400, 0}` is transport-equivalent for this path. It is
+i2c-0, not `/dev/ntkiic0`.
 
-`DEV_NIM_DTV_Init` @ `0x00861678` only checks the model, logs, initializes the
-mutex and creates the task; it does **not** power the NIM. NIM power is split
-into callbacks:
+### The failure is tolerated by the vendor
 
-- `DEV_NIM_PowerSetting(nim)` calls `*(code **)(nim + 0x48)()`;
-- `DEV_NIM_DTV_PowerControl` calls the global function pointer
-  `DAT_01937040`.
+The one-shot task does **not** fail initialization when the NIM-DTV IIC step
+fails. Every failure branch (`0x86024e`, `0x8602fe`, `0x86030e` and the
+corresponding write branches) jumps to the same finish path at `0x860252`,
+which stores `0xff` to `DAT_01762020` (active module), stores `1` to
+`DAT_01936fb0` (init-done) and signals the condition variable.
+`DEV_NIM_DTV_WaitInitComplete` @ `0x008615fc` only waits for
+`DAT_01936fb0`; it has no success/failure result. The module's
+`result.failed_step >= 0` start gate was therefore stricter than the
+firmware and has been removed; `failed_step` remains a log-only diagnostic.
 
-The replacement module runs the task body directly and never invokes either
-power callback. The IR read returning failure is therefore consistent with an
-unpowered/unreset NIM chip, not necessarily a wrong bus. Before changing the
-IIC adapter, the next step is to recover where `DAT_01937040`/the `+0x48`
-callback are registered and what they toggle, then add the same power/reset
-sequence before the task. A raw `Hal_Iic_Read` return log would distinguish a
-real NACK from a return-convention mistake.
+### The +0x48 callback is power-down, not power-up
 
-No code was changed for this follow-up; the TV was already restored.
+`DEV_NIM_DTV_Create` @ `0x00864494` allocates the 0x5c-byte NIM object and
+sets `+0x48 = 0x008631c9` (`DEV_NIM_DTV_PowerControl2`). That wrapper calls
+`DEV_NIM_DTV_PowerControl`, which loads the HAL table entry at
+`[0x01937004 + 0x3c]` (the object is also the HAL state block; `DAT_01937040`
+was a misread of that member). `_dev_nim_dtv_Connect2HAL` sets entry `0xf` to
+`HAL_Demod_User_PowerControl` @ `0x0086c789`, which calls
+`SAL_DEMOD_TUN_PowerDown()` when its second argument is nonzero and the tuner
+is powered. `DEV_NIM_DTV_Init` only creates the task; neither callback is a
+power-up precondition for the task's IR sequence.
+
+The remaining likely explanation for the NACK is a NIM-DTV device that is not
+populated on this PCB (the profile has `Si2157`; the T2/S2 reset descriptors
+are `NIM_RESET_T2`/`NIM_RESET_S2`). The vendor tolerates that case, so the
+replacement must too. A raw `errno` from the failed Hal read is now logged as
+`ir_code`/`ir_write`/`errno` for the next hardware run.
+
+Code changed for this follow-up: removed the start gate in
+`modules/tuner/tuner.c`, added the raw diagnostic fields, and corrected the
+`nim_dtv.h` helper comment. No TV access was performed for this analysis; the
+set remained restored.
 
 ## Evidence
 
@@ -132,9 +158,10 @@ TV `mod_tuner.so` with the IIC init and diagnostic is sha256
 
 ## Next
 
-1. Recover why NIM IR code 21 fails: verify whether `DEV_IIC` bus 0 must use
-   `/dev/ntkiic0` rather than `Hal_Iic` i2c-0, and whether NIM power/reset
-   (`DEV_NIM_PowerSetting`/`DEV_NIM_DTV_PowerControl`) must run first.
-2. Re-run the tuner subgroup with an FTA RF source for tune/lock/scan.
+1. Re-run the tuner subgroup with the corrected start gate and capture
+   `ir_code`/`ir_write`/`errno`. The service should now publish even when the
+   NIM-DTV IIC step NACKs; `tuner-state` and `tuner-scan 1` can then exercise
+   the MxL661/Si2157 programming path without RF.
+2. Add an FTA RF source for a real DVB-T/C or analog lock/scan acceptance.
 3. The display/audio/CEC/input/PVR groups were not started; the tuner gate
    failed first and the set was restored.

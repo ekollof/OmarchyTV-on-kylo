@@ -21,8 +21,15 @@
 #define OA_NIM_DTV_TASK_PRIORITY 14
 #define OA_NIM_DTV_TERM_ACTIVE 0xffu
 
-/* The two unnamed UART helpers call DEV_IIC_Read/Write with these fixed
- * arguments and the per-code subaddress: (0, 0, 0x80, 1, code, 1, &byte). */
+/* The two helpers at 0x0085fd04/0x0085fc80 are _dev_nim_dtv_IIC_Read/Write
+ * (the names come from their own debug strings). They call
+ * DEV_IIC_Read/Write(0, 0, 0x80, 1, code, 1, &byte):
+ *   - bus 0 and the fixed 8-bit slave address 0x80,
+ *   - one subaddress byte (the per-code value 21/17/64),
+ *   - one data byte.
+ * The helper's first argument selects the DEV_IIC clock table entry; the
+ * one-shot task passes 0 (79 kHz). Keep the macro value even though the
+ * current kernel transfer ignores the clock field. */
 #define OA_NIM_DTV_IIC_BUS 0
 #define OA_NIM_DTV_IIC_DEV 0
 #define OA_NIM_DTV_IIC_REG 0x80
