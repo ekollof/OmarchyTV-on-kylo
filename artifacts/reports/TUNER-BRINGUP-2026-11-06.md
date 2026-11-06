@@ -237,9 +237,14 @@ type 6: out[0]=core[1]*1000, out[1]=core[12], out[2]=core[13], out[3]=0
 type 8: same, out[3]=word[3]==9 -> 1, ==11 -> 2, else 0xff
 ```
 
-`oa_nim_status_type6`/`type8` carry fake tests. Types 1, 2/7 and 3 have
-different output sizes and larger enum maps and remain to be decoded; the
-per-case values are not guessed.
+`oa_nim_status_type6`/`type8` carry fake tests. Type 1 is traced to an
+11-word copy at `0x86bc46..0x86bc80`: `out[0..7]` from `local_64` (r7+52),
+`out[8..10]` from `local_44` (r7+84); the case sets `out[1]=core[0]`,
+`out[2]=core[2]` and `out[9]=1` when byte `core+42` is zero, otherwise 9.
+`out[0]` is `core[11]`; the remaining words are core fields beyond the
+12-word region whose full write extent in `FUN_0086a4dc` is not yet pinned.
+Types 2/7 and 3 use secondary `tbb` switches at `0x86bc2a`/`0x86bc10` and
+larger maps. Those values are not guessed.
 
 ## SI2151 blocker
 
@@ -328,8 +333,9 @@ undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
    `PowerUpWithPatch` and property download is a separate large port; this
    TV's profile selects MxL661 and does not use it.
 2. The raw 0x180 per-case output mapping: the `tbb` dispatch and case targets
-   are recovered (type 1/2,7/3/4,5/6/8), but the per-case enum/field writes
-   still need instruction-level decoding.
+   are recovered; types 6/8 are implemented. Type 1's 11-word copy is traced
+   (`out[1]=core[0]`, `out[2]=core[2]`, `out[9]=1/9`), but the core status
+   write extent and the type 2/7/3 enum maps are not pinned yet.
 3. Analog/cable MxL661 RF tails and LUTs.
 4. Hardware acceptance is **not done**. The owner's standing instruction is
    read-only, no takeovers; running the gate requires explicit authorization
