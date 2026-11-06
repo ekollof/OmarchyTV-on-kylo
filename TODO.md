@@ -237,6 +237,16 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
       used because its contract forbids lifecycle calls. Limit: one slow
       `init`/`start` still blocks its own turn. OA-CLIENT-ASYNC.
 
+- [x] Module inventory and packaging consolidation: 36 installed modules
+      categorised as hardware 12, middleware 11, utilities 2 and UI/UX 11;
+      `module-categories` prints the taxonomy. Added `all-core`/`install-core`
+      and `cold-bundle-core` (the cold config's 8 modules, 1.5 MB) while
+      keeping the full 36-module `install`/`cold-bundle` unchanged, so no
+      reload or ABI behavior moved. Leaf merges (`ticker`+`ui_clock`,
+      `ui_theme`+`ui_profile`, `audio_curve`+`audio_amp_profile`) are an
+      explicit product decision because each removes a currently tested
+      reload boundary. MODULE-CONSOLIDATION.
+
 - [x] First production GPU scene-path probe on fb1: staged
       graphics/scene_display + oa-scene-broker/scene-renderer.so, painted the
       5-rail/12-card portal and handled 14 physical BLAST presses. Non-reload

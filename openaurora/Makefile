@@ -34,6 +34,13 @@ LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
 MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_menu i18n ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels lua spi
+# Four-way inventory. CORE_MODULES is exactly tools/boot/openaurora-cold.conf.
+CORE_MODULES := plat settings image_decode display panel ir ui_engine ui_vendor
+EXTRA_MODULES := $(filter-out $(CORE_MODULES),$(MODULES))
+HW_MODULES := plat panel display graphics scene_display audio cec ir source tuner spi power
+MW_MODULES := settings service_db channels epg pvr image_decode i18n audio_curve audio_mixer audio_amp_profile lua
+UTIL_MODULES := ticker ui_clock
+UI_MODULES := ui_engine ui_vendor ui_omarchy ui_theme ui_profile ui_menu ui_list ui_navigation ui_anim ui_console ui_diag
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -107,6 +114,7 @@ CORE_OBJ := $(CORE_SRC:core/%.c=$(BUILD)/core/%.o) $(BUILD)/common/audio_speaker
 CORE_DEP := $(CORE_OBJ:.o=.d)
 
 MOD_SO   := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).so)
+CORE_SO  := $(foreach m,$(CORE_MODULES),$(BUILD)/modules/mod_$(m).so)
 
 all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker $(BUILD)/fb-restore
 
@@ -1897,6 +1905,28 @@ cold-bundle: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/fb-res
 	@cd $(BUILD)/cold-bundle && sha256sum openaurora oa-supervise fb-restore openaurora.conf modules/*.so > manifest.sha256
 	@echo "cold bundle: $(BUILD)/cold-bundle ($(words $(MOD_SO)) modules)"
 
+# Consolidated deployment: only the modules the cold config autoloads. The
+# other $(words $(EXTRA_MODULES)) stay in the build and full bundle for
+# feature/takeover use; this does not change reload granularity.
+.PHONY: all-core cold-bundle-core module-categories
+all-core: $(BUILD)/$(PROJECT) $(CORE_SO)
+
+cold-bundle-core: all-core $(BUILD)/oa-supervise $(BUILD)/fb-restore
+	@rm -rf $(BUILD)/cold-bundle-core
+	@mkdir -p $(BUILD)/cold-bundle-core/modules
+	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/cold-bundle-core/
+	@cp $(CORE_SO) $(BUILD)/cold-bundle-core/modules/
+	@cp tools/boot/openaurora-cold.conf $(BUILD)/cold-bundle-core/openaurora.conf
+	@cd $(BUILD)/cold-bundle-core && sha256sum openaurora oa-supervise fb-restore openaurora.conf modules/*.so > manifest.sha256
+	@echo "core cold bundle: $(BUILD)/cold-bundle-core ($(words $(CORE_SO)) modules)"
+
+module-categories:
+	@echo "hardware ($(words $(HW_MODULES))): $(HW_MODULES)"
+	@echo "middleware ($(words $(MW_MODULES))): $(MW_MODULES)"
+	@echo "utilities ($(words $(UTIL_MODULES))): $(UTIL_MODULES)"
+	@echo "ui/ux ($(words $(UI_MODULES))): $(UI_MODULES)"
+	@echo "core ($(words $(CORE_MODULES))): $(CORE_MODULES)"
+
 $(BUILD)/tests/vendor_decoder_probe.so: $(call pic_objs,tests__vendor_decoder_probe,tests/vendor_decoder_probe.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -ldl
@@ -2518,6 +2548,14 @@ install: all
 	install -m 755 $(BUILD)/oa-supervise $(DESTDIR)$(BINDIR)/oa-supervise
 	install -m 755 $(BUILD)/oa-audio-broker $(DESTDIR)$(BINDIR)/oa-audio-broker
 	install -m 755 $(MOD_SO) $(DESTDIR)$(LIBDIR)/
+
+.PHONY: install-core
+install-core: all-core
+	install -d $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR)
+	install -m 755 $(BUILD)/$(PROJECT) $(DESTDIR)$(BINDIR)/$(PROJECT)
+	install -m 755 $(BUILD)/oa-supervise $(DESTDIR)$(BINDIR)/oa-supervise
+	install -m 755 $(BUILD)/oa-audio-broker $(DESTDIR)$(BINDIR)/oa-audio-broker
+	install -m 755 $(CORE_SO) $(DESTDIR)$(LIBDIR)/
 
 -include $(CORE_DEP) $(wildcard $(BUILD)/pic/*.d) $(wildcard $(BUILD)/pic/*/*.d) $(wildcard $(BUILD)/pic/*/*/*.d) $(wildcard $(BUILD)/pic/*/*/*/*.d) $(wildcard $(BUILD)/pic/*/*/*/*/*.d)
 
