@@ -451,7 +451,7 @@ static void config_load(oa_host *h, const char *path)
     FILE *f = fopen(path, "r");
     if (!f)
         return;
-    char line[256];
+    char line[2048];
     while (fgets(line, sizeof line, f) &&
            h->config_count < (int)(sizeof h->config / sizeof h->config[0])) {
         char *s = line;
@@ -878,6 +878,7 @@ int oa_host_run(oa_host *h)
         oa_host_sched_pump(h);
         oa_control_pump(h);
         fire_due_timers(h);
+        oa_skin_pump(h);
         if (!h->running || h->stop_requested)
             break;
         if (heartbeat_write(h) != 0) {

@@ -3798,3 +3798,19 @@ Use -Werror -pedantic; edit with apply_patch; use tools/tvssh.sh for authorized 
 Document cleanup changed local documentation and explanatory source comments;
 no executable behavior, binaries or TV state changed. Raw logs were preserved,
 with six previously temporary DRM traces copied into the analysis directory.
+
+Module base/stages + skin hot-switch, 2026-11-06: 36 installed modules
+categorised hardware12/middleware11/utilities2/UI11. Core is the base platform
+(10: plat display panel ir audio source power tuner settings image_decode), not
+a TV; distribution stages are tv15/av19/ui31 (functional TV)/dev34/full36, with
+generated per-stage autoload and `stage-bundle`/`install-stage`/`cold-bundle-core`
+(`module-categories` prints all). The startup parser now accepts 64 autoload
+names and 511-byte config values (was 16/191); tests/autoload.cjs covers a
+40-name list. Skins hot-switch through `api->control("skin <name>")`: a request
+from a skin callback is queued in skin_pending and oa_skin_pump runs it after
+posts/scheduler/batch/timers unwind; ui_omarchy and ui_diag demo key240 and
+tests/skin_switch_ipc.cjs switches omarchy->diag->omarchy on the real engine +
+fake display. The "stuck make" was config truncation plus a test that did not
+kill its child on assertion failure; both fixed and stale test hosts killed.
+Full suite passes. MODULE-CONSOLIDATION, SKIN-SWITCH. Hardware/display
+acceptance remains pending.

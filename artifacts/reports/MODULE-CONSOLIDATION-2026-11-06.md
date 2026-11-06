@@ -79,9 +79,12 @@ selection; the model/widget providers are independently reloadable.
 
 ## Findings
 
-- **36 modules / 3.68 MB installed; the cold config autoloads 8 / 772 KB.**
-- 27 modules are not in the cold boot set; 4 of those (`ui_console`, `ui_diag`,
-  `spi`, and the `ticker` example) are test/optional in nature.
+- **36 modules / 3.68 MB installed.** Core is the hardware/platform base
+  (10 modules): hardware access + settings/image_decode, no TV or UI layer.
+  It is the SSH/build/control-plane base, not a functional TV.
+- Distribution profiles add layers on top: `tv` (+5 TV services), `av` (+4
+  audio/CEC), `ui` (+12 UI/UX/skin), `dev` (+3 diagnostics/SPI) and `full`
+  (+2 alternative GPU backend). A functional TV is `tv`+`av`+`ui`.
 - Every candidate leaf merge (`ticker`+`ui_clock`, `ui_theme`+`ui_profile`,
   `audio_curve`+`audio_amp_profile`) has an independent reload/quiesce test
   today. Merging deletes a tested reload boundary; it is a product decision,
@@ -91,36 +94,31 @@ selection; the model/widget providers are independently reloadable.
   feature would restart its whole category (CEC reload restarts tuner/audio/
   display). That contradicts the reloadable-module objective.
 
-## Implemented: packaging tiers (no reload change)
+## Implemented: base platform + distribution stages (no reload change)
 
-`openaurora/Makefile` now exposes the taxonomy and additive deployment stages:
-
-```text
-module-categories   hardware 12 / middleware 11 / utilities 2 / ui-ux 11
-all-core + install-core      core 8 modules
-cold-bundle-core             cold config + 8 modules (1.5 MB bundle)
-all-stage + install-stage + stage-bundle STAGE=core|tv|av|ui|script|diag|full
-cold-bundle / install        full 36 modules (4.5 MB bundle)
-```
-
-Stages are cumulative. Each stage's `requires` are satisfied inside that
-stage, and every stage starts from the same 8-module cold core:
+`openaurora/Makefile` now exposes the taxonomy and additive distribution
+stages. Each stage is cumulative and its `requires` are satisfied inside the
+stage:
 
 | stage | adds | modules | bundle |
 |---|---|---:|---:|
-| core | plat, settings, image_decode, display, panel, ir, ui_engine, ui_vendor | 8 | 1.5 MB |
-| tv | tuner, epg, pvr, channels, service_db | 13 | 2.0 MB |
-| av | audio, audio_curve, audio_mixer, audio_amp_profile, cec, source, power | 20 | 2.4 MB |
-| ui | ticker, ui_clock, ui_anim, i18n, ui_theme, ui_profile, ui_menu, ui_list, ui_navigation, ui_omarchy | 30 | 2.9 MB |
-| script | lua (moddability layer) | 31 | 4.2 MB |
-| diag | ui_console, ui_diag, spi | 34 | 4.4 MB |
+| core | plat, display, panel, ir, audio, source, power, tuner, settings, image_decode | 10 | 1.4 MB |
+| tv | epg, pvr, channels, service_db, i18n | 15 | 1.7 MB |
+| av | audio_curve, audio_mixer, audio_amp_profile, cec | 19 | 1.9 MB |
+| ui | ticker, ui_clock, ui_anim, ui_engine, ui_vendor, ui_theme, ui_profile, ui_menu, ui_list, ui_navigation, ui_omarchy, lua | 31 | 4.2 MB |
+| dev | ui_console, ui_diag, spi | 34 | 4.4 MB |
 | full | graphics, scene_display (alternative display/GPU backend) | 36 | 4.5 MB |
 
-`full` is a build/dev bundle, not a boot profile: `graphics`+`scene_display`
-is an alternative to the core `display` backend, not an additive layer. The
-staged bundle still uses `tools/boot/openaurora-cold.conf`, which autoloads
-only the core 8; extra modules are present for `load`/`load-batch` so a
-core boot never depends on a feature layer being configured.
+`stage-bundle STAGE=...` writes the stage's `autoload=` list into the bundle
+config, so each profile boots exactly its layer. `full` is a build/dev bundle,
+not a boot profile: `graphics`+`scene_display` is an alternative to the core
+`display` backend, not an additive layer. `cold-bundle-core` is the base
+platform; the legacy `tools/boot/openaurora-cold.conf` 8-module set remains
+the minimal UI subset used by the full bundle.
+
+The startup autoload parser now accepts 64 names (was 16) and config values up
+to 511 bytes (was 191), so the 31-module UI stage fits. `tests/autoload.cjs`
+proves a 40-name list is not truncated.
 
 Measured:
 
@@ -129,26 +127,27 @@ hardware (12): plat panel display graphics scene_display audio cec ir source tun
 middleware (11): settings service_db channels epg pvr image_decode i18n audio_curve audio_mixer audio_amp_profile lua
 utilities (2): ticker ui_clock
 ui/ux (11): ui_engine ui_vendor ui_omarchy ui_theme ui_profile ui_menu ui_list ui_navigation ui_anim ui_console ui_diag
-core (8): plat settings image_decode display panel ir ui_engine ui_vendor
-stage tv (13): core + tuner epg pvr channels service_db
-stage av (20): tv + audio audio_curve audio_mixer audio_amp_profile cec source power
-stage ui (30): av + ticker ui_clock ui_anim i18n ui_theme ui_profile ui_menu ui_list ui_navigation ui_omarchy
-stage script (31): ui + lua
-stage diag (34): script + ui_console ui_diag spi
-core bundle: 8 modules / 1.5M; tv 2.0M; av 2.4M; ui 2.9M; script 4.2M; diag 4.4M; full 36/4.5M
+core (10): plat display panel ir audio source power tuner settings image_decode
+stage tv (15): core + epg pvr channels service_db i18n
+stage av (19): tv + audio_curve audio_mixer audio_amp_profile cec
+stage ui (31): av + ticker ui_clock ui_anim ui_engine ui_vendor ui_theme ui_profile ui_menu ui_list ui_navigation ui_omarchy lua
+stage dev (34): ui + ui_console ui_diag spi
+stage full (36): dev + graphics scene_display
+core 10/1.4M; tv 15/1.7M; av 19/1.9M; ui 31/4.2M; dev 34/4.4M; full 36/4.5M
 ```
 
 The full targets are unchanged, so the takeover queue keeps every feature
-module available. The core/stage bundles are the recommended cold-start
-staging sets.
+module available. The stage bundles are the distribution sets; a functional
+TV is `STAGE=ui` (31 modules).
 
 ## Recommendation
 
-1. Start every deployment from the 8-module core, then add layers with
-   `STAGE=tv`, `av`, `ui`, `script` or `diag` as the feature set grows. Keep
-   `full` for development/takeover staging; it is not a boot profile.
-2. Ship `cold-bundle-core`/`install-core` for the default cold deployment;
-   keep `cold-bundle`/`install` for takeover/full-feature staging.
+1. Treat `core` as the base platform (hardware access, settings/image decode,
+   control plane), then add `tv`, `av` and `ui` for a functional TV. Use
+   `dev` for diagnostics/SPI and `full` for development/takeover staging.
+2. Ship `cold-bundle-core`/`install-core` as the base image; distribution
+   profiles are `STAGE=tv|av|ui|dev` (cumulative), with `ui` (31 modules) being
+   the functional TV. Keep `install`/`cold-bundle` for the full set.
 3. Do not merge hardware modules. Keep tuner, display, audio, CEC, panel, IR,
    source and power independently reloadable.
 4. If fewer source modules are still wanted, do the leaf merges one at a time
@@ -162,6 +161,8 @@ staging sets.
    to dev-only installs; keep them buildable and test-covered.
 6. Reject the four-category-bundle option unless coarse, category-wide reload
    is explicitly accepted; it is not a drop-in change.
+7. Skins hot-switch through `api->control("skin <name>")`; the host defers the
+   request until the calling skin callback has unwound (SKIN-SWITCH).
 
 ## Limits
 

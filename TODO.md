@@ -239,16 +239,27 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
 
 - [x] Module inventory and packaging consolidation: 36 installed modules
       categorised as hardware 12, middleware 11, utilities 2 and UI/UX 11;
-      `module-categories` prints the taxonomy. Added `all-core`/`install-core`
-      and `cold-bundle-core` (the cold config's 8 modules, 1.5 MB) while
-      keeping the full 36-module `install`/`cold-bundle` unchanged, so no
-      reload or ABI behavior moved. Leaf merges (`ticker`+`ui_clock`,
-      `ui_theme`+`ui_profile`, `audio_curve`+`audio_amp_profile`) are an
-      explicit product decision because each removes a currently tested
-      reload boundary. Additive stages on top of core are buildable with
-      `stage-bundle STAGE=tv|av|ui|script|diag|full` (cumulative; 13/20/30/31/
-      34/36 modules) and installable with `install-stage`; the staged config
-      still autoloads only core. MODULE-CONSOLIDATION.
+      `module-categories` prints the taxonomy and every stage. Core is the
+      base platform (10: hardware access + settings/image_decode, no TV/UI),
+      not a functional TV; distribution profiles add `tv` (15), `av` (19) and
+      `ui` (31, the functional TV), then `dev` (34) and `full` (36). Added
+      `all-stage`/`install-stage`/`stage-bundle` with generated per-stage
+      `autoload=` lists; the base is `cold-bundle-core` (10, 1.4 MB) and the
+      full `install`/`cold-bundle` is unchanged. The startup parser now
+      accepts 64 autoload names and 511-byte config values (was 16/191);
+      `tests/autoload.cjs` proves a 40-name list is not truncated. No module
+      was merged or deleted; leaf merges remain a product decision. The old
+      take job hang was a config truncation plus a test that did not kill its
+      child on assertion failure; both are fixed. MODULE-CONSOLIDATION.
+
+- [x] Skin hot-switch from inside any skin: `api->control("skin <name>")`
+      from a skin callback is queued in `skin_pending` and executed by
+      `oa_skin_pump()` after posts/scheduler/batch/timers unwind, so the
+      calling skin is not unloaded on its own stack. `ui_omarchy` and
+      `ui_diag` demonstrate it on project key 240; vendor remains available
+      via `skin vendor`. `tests/skin_switch_ipc.cjs` switches omarchy → diag
+      → omarchy with the real engine and fake display; full suite passes.
+      SKIN-SWITCH. Hardware/display acceptance remains open.
 
 - [x] First production GPU scene-path probe on fb1: staged
       graphics/scene_display + oa-scene-broker/scene-renderer.so, painted the

@@ -141,6 +141,13 @@ static int skin_key(void *ud, int id)
     int handled = 0;
     if (!c || !c->active)
         return 1;
+    /* Project control key (emit-key 240): delegate the switch to the host so
+     * the current skin is removed only after this callback returns. */
+    if (id == 0xf0) {
+        char reply[64];
+        (void)c->api->control(c->api->priv, "skin diag", reply, sizeof reply);
+        return 0;
+    }
     /* The skeleton has no navigation yet; every press repaints so the seam is
      * observable. A loaded script may claim the key. Exit/Menu are ignored. */
     if (c->lua && c->lua->call("key", "omarchy", id, &handled) == 0 && handled)

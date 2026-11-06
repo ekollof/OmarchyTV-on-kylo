@@ -141,10 +141,11 @@ typedef struct {
     char config_path[256];
     /* Immutable initialization snapshot, owned by this host. First duplicate
      * wins as before; module reload does not reread the configuration file. */
-    struct { char k[64], v[192]; } config[48];
+    struct { char k[64], v[512]; } config[48];
     int config_count;
     /* Host-owned, transient skin policy; never written back to config. */
     char skin_selected[OA_NAME_MAX], skin_requested[OA_NAME_MAX], skin_module[OA_NAME_MAX];
+    char skin_pending[OA_NAME_MAX];
     uint64_t skin_timer, skin_deadline;
     uint32_t skin_owner;
     int skin_phase, skin_error, skin_fallback;
@@ -154,6 +155,9 @@ uint64_t oa_now_ms(void);
 int oa_skin_request(oa_host *h, const char *name);
 int oa_skin_bootstrap(oa_host *h);
 void oa_skin_status(oa_host *h, char *out, size_t cap);
+/* Run a skin request queued from inside a module callback. Loop thread only,
+ * after callbacks/timers have unwound. */
+void oa_skin_pump(oa_host *h);
 
 /* host.c */
 int oa_host_init(oa_host *h, const char *modules_dir, const char *config);

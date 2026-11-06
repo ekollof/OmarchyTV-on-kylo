@@ -89,6 +89,7 @@ int oa_skin_request(oa_host *h, const char *name)
         (*p >= 'A' && *p <= 'Z') || (*p >= '0' && *p <= '9') || *p == '_')) { errno = EINVAL; return -1; }
     if (h->cur_module || h->sleep_cycle || h->shutting_down || h->stop_requested) { errno = EBUSY; return -1; }
     if (h->skin_timer) { errno = EBUSY; return -1; }
+    h->skin_pending[0] = 0; /* an immediate request supersedes a queued one */
     oa_ui_skin_status s;
     if (snapshot(h, &s)) return -1;
     uint64_t timer = h->api.timer_add(h, 0, 10, tick, h);
@@ -123,4 +124,18 @@ int oa_skin_bootstrap(oa_host *h)
         }
     }
     return rc;
+}
+
+void oa_skin_pump(oa_host *h)
+{
+    if (!h || h->cur_module || h->skin_timer || !h->skin_pending[0])
+        return;
+    if (h->sleep_cycle || h->shutting_down || h->stop_requested)
+        return;
+    char name[OA_NAME_MAX];
+    snprintf(name, sizeof name, "%s", h->skin_pending);
+    h->skin_pending[0] = 0;
+    if (oa_skin_request(h, name))
+        h->api.log(h, OA_LOG_WARN, "skin: deferred '%s' failed (%d)",
+                   name, errno);
 }

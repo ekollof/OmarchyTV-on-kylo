@@ -3412,3 +3412,14 @@ source/settings parity and remaining TV features. Injected portal hit testing,
 open/home/back/source actions and list/dialog animation are in UI-PARITY;
 cold scanout, labels and other screens are not.
 Avoid treating old tier/symbol-count plans as acceptance criteria.
+
+Module base/stages + skin hot-switch, 2026-11-06: 36 modules categorised
+hardware12/middleware11/utilities2/UI11. Core=base platform 10 (hardware access
++ settings/image_decode, no TV/UI); stage-bundle STAGE=tv|av|ui|dev|full is
+15/19/31/34/36 with generated autoload, install-stage/cold-bundle-core, and
+module-categories prints the taxonomy. Autoload parser is 64 names/511-byte
+values (tests/autoload.cjs). Skin switching: `api->control("skin <name>")` from
+a skin callback is deferred via skin_pending and executed by oa_skin_pump after
+the stack unwinds; ui_omarchy/ui_diag demo key240, tests/skin_switch_ipc.cjs
+covers omarchy->diag->omarchy. Full suite passes. MODULE-CONSOLIDATION,
+SKIN-SWITCH.

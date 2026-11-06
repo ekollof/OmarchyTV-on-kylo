@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     const char *modules = NULL;
     const char *config = NULL;
     const char *sock = "/tmp/openaurora.sock";
-    const char *loads[16];
+    const char *loads[64];
     int nloads = 0;
     int loglevel = 2;
     int check = 0;
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
         else if (!strcmp(a, "--check"))
             check = 1;
         else if (!strcmp(a, "--load") && i + 1 < argc) {
-            if (nloads < 16)
+            if (nloads < 64)
                 loads[nloads++] = argv[++i];
         } else if (!strcmp(a, "--help") || !strcmp(a, "-h")) {
             usage(argv[0]);
@@ -105,11 +105,11 @@ int main(int argc, char **argv)
 
     /* autoload=ir,ui_console from the config file */
     const char *autoload = g_host.api.config_get(&g_host, "autoload", NULL);
-    char autobuf[256];
+    char autobuf[1024];
     if (autoload) {
         snprintf(autobuf, sizeof autobuf, "%s", autoload);
         char *save = NULL;
-        for (char *t = strtok_r(autobuf, ", ", &save); t && nloads < 16; t = strtok_r(NULL, ", ", &save))
+        for (char *t = strtok_r(autobuf, ", ", &save); t && nloads < 64; t = strtok_r(NULL, ", ", &save))
             loads[nloads++] = strdup(t); /* leaked on purpose: process lifetime */
     }
 

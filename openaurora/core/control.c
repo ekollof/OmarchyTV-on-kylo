@@ -374,7 +374,18 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
     if (!strcmp(cmd, "skin")) {
         if (a2 || force) { snprintf(outbuf, outlen, "failed errno %d\n", EINVAL); return -1; }
         if (!a1) { oa_skin_status(h, outbuf, outlen); return 0; }
-        if (oa_skin_request(h, a1)) { snprintf(outbuf, outlen, "failed errno %d\n", errno); return -1; }
+        if (oa_skin_request(h, a1)) {
+            /* A skin calling api->control("skin ...") runs with cur_module set;
+             * queue it until the callback and timers have unwound. */
+            if (errno == EBUSY && h->cur_module && !h->skin_timer &&
+                !h->skin_pending[0]) {
+                snprintf(h->skin_pending, sizeof h->skin_pending, "%s", a1);
+                snprintf(outbuf, outlen, "pending %s\n", a1);
+                return 0;
+            }
+            snprintf(outbuf, outlen, "failed errno %d\n", errno);
+            return -1;
+        }
         snprintf(outbuf, outlen, "pending %s\n", a1);
         return 0;
     }

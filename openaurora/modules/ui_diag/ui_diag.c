@@ -314,6 +314,13 @@ static int skin_key(void *ud, int id)
 {
     struct ctx *c = ud;
     if (!c) return 1;
+    /* Project control key (emit-key 240): the host defers the switch until this
+     * callback has returned, then loads ui_omarchy and unloads diag. */
+    if (id == 0xf0) {
+        char reply[64];
+        (void)c->api->control(c->api->priv, "skin omarchy", reply, sizeof reply);
+        return 0;
+    }
     if (id == 19 || id == 20) {
         c->selected += id == 19 ? 1 : -1;
         if (c->selected < 0) c->selected = ROW_COUNT - 1;
