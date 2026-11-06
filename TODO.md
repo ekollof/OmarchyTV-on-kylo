@@ -517,6 +517,21 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       33/35 deferred/scheduler gates + 2 audited synchronous stops = all 35
       descriptors decided. PLAT-POWER-QUIESCE.
 
+- [x] Vendor cold-start order for `mod_plat`: firmware `ICE_HardwareInit`
+      @0x007551a0 polls `access("/tmp/ntkdriver_completed", R_OK)` every 50 ms
+      (`0x00755498..0x007554ae`, literal `0x00755540`→`0x012930c5`), logs the
+      elapsed time and only then calls `PLAT_DRV_INI_Init` @0x0089b6e4
+      (`0x0075564c`). `plat` now waits before the audio prelude:
+      `plat.driver_wait` (unset auto-detects `/dev/ntkled`), `driver_marker`,
+      `driver_timeout_ms` (60 s, 0 = forever); timeout sets `STAGE_DRIVER`,
+      refuses HAL and allows retry. New `check-plat-startup-wait`: pre-existing
+      marker 1 ms, arriving marker 151 ms, timeout refusal 401 ms then retry;
+      focused ASan/UBSan clean, full suite `all tests passed`, QEMU pass. Cold
+      config opts in. View-only TV confirmed marker readable `1`, `/dev/ntkled`,
+      five `/proc/fb` OSD planes and fb1 OSD_NORMAL2 1920×2160 stride 7680 with
+      stock PIDs unchanged. No cold boot/HAL/display write; not scanout
+      acceptance. PLAT-STARTUP-WAIT.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
       `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`/`ui_diag`/`ui_anim`/`ui_clock`/`ticker`/`ui_console`/`ui_omarchy`,
@@ -1728,7 +1743,10 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       An ARM cold-start bundle
       (openaurora,25 modules, oa-supervise, fb-restore, cold config) is built
       and manifest-verified offline by `make cold-bundle`
-      (FB-SNAPSHOT-COLD-BUNDLE), but not executed. A temporary fb1 takeover on
+      (FB-SNAPSHOT-COLD-BUNDLE), but not executed. `plat` now enforces the
+      vendor `/tmp/ntkdriver_completed` wait before its HAL prelude, with tests
+      and a view-only live-marker check (PLAT-STARTUP-WAIT); that is ordering,
+      not a cold boot. A temporary fb1 takeover on
       2026-11-05 showed scanout, injected IR, vendor fallback and resume, then
       a failed direct relaunch; the owner had the watchdog reboot stock Aurora
       (TAKEOVER-2026-11-05). Cold boot without the vendor process, MCU authority

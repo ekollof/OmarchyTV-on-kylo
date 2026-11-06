@@ -297,11 +297,13 @@ cleanup returns. Never unload a module while its code is on the stack.
 queued callback or deferable heap/device close after start. `plat` unpublishes
 `plat` synchronously, but its vendor HAL bring-up is process-global and has no
 recovered de-init; a reload is not a driver/HAL reset and real-HAL reload after
-bring-up remains unaccepted. `power` publishes `power`, holds the `host.sleep`
-refcount and keeps the sysfs fd only inside the final entry callback; stop drops
-those synchronously. Their control-socket test asserts immediate stop/reload and
-service invalidation. Do not add a fake delay or disposable heap object to make
-them look asynchronous.
+bring-up remains unaccepted. Before the HAL prelude `plat` now reproduces the
+vendor `ICE_HardwareInit` wait for `/tmp/ntkdriver_completed` (50 ms
+`access(R_OK)` poll; timeout refuses bring-up), which fixes cold-start ordering.
+`power` publishes `power`, holds the `host.sleep` refcount and keeps the sysfs
+fd only inside the final entry callback; stop drops those synchronously. Their
+control-socket test asserts immediate stop/reload and service invalidation. Do
+not add a fake delay or disposable heap object to make them look asynchronous.
 
 ABI 3 validates descriptor magic/version/size; old/short layouts reject before
 unavailable fields are read, compatible extended prefixes are accepted. Use

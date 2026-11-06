@@ -32,10 +32,16 @@
  *   plat.enable   0 = do nothing (default 1)
  *   plat.vin      0 = skip the VIN-slot stage (default 1; it is PLAT_* inside aurora, so this is the
  *                 one stage we can only approximate)
+ *   plat.driver_wait 1/0 = wait for the kernel driver completion marker before the audio prelude;
+ *                 unset auto-detects the set (/dev/ntkled). Default marker
+ *                 /tmp/ntkdriver_completed, plat.driver_timeout_ms 60000 (0 = wait forever, the
+ *                 vendor loop has no timeout).
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "openaurora/events.h"
 #include "openaurora/module.h"
@@ -54,6 +60,7 @@ struct ctx {
 #define STAGE_IIC            (1u << 3)
 #define STAGE_VIN            (1u << 4)
 #define STAGE_VIDEO_DEVICE   (1u << 5)
+#define STAGE_DRIVER         (1u << 6)
 
 #define STAGE_TAIL   (STAGE_GPIO | STAGE_IIC | STAGE_VIDEO_DEVICE)
 
@@ -116,6 +123,48 @@ static const oa_plat_iface g_iface = { iface_ready, iface_errors };
 
 /* --------------------------------------------------------------- module */
 
+static uint64_t monotonic_ms(void)
+{
+    struct timespec ts;
+    if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) return 0;
+    return (uint64_t)ts.tv_sec * 1000u + (uint64_t)ts.tv_nsec / 1000000u;
+}
+
+/* Vendor order, ICE_HardwareInit @007551a0: before PLAT_DRV_INI_Init @0089b6e4
+ * it polls access("/tmp/ntkdriver_completed", R_OK) every 50 ms and logs the
+ * wait time. The loop has no vendor timeout; ours is configurable (0 = none)
+ * so a host/offline run can never wait forever. Auto mode is enabled only on
+ * the set (/dev/ntkled), matching mod_power's host-safety probe. */
+static int wait_driver_marker(struct ctx *c)
+{
+    const char *force = c->api->config_get(c->api->priv, "plat.driver_wait", NULL);
+    int enabled = force ? atoi(force) != 0 : access("/dev/ntkled", F_OK) == 0;
+    if (!enabled) return 0;
+    const char *path = c->api->config_get(c->api->priv, "plat.driver_marker",
+                                          "/tmp/ntkdriver_completed");
+    long timeout = atol(c->api->config_get(c->api->priv,
+                                           "plat.driver_timeout_ms", "60000"));
+    if (timeout < 0) timeout = 60000;
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "plat: waiting for %s (ICE_HardwareInit order)", path);
+    uint64_t started = monotonic_ms();
+    while (access(path, R_OK) != 0) {
+        uint64_t elapsed = monotonic_ms() - started;
+        if (timeout && elapsed >= (uint64_t)timeout) {
+            c->errors |= STAGE_DRIVER;
+            c->api->log(c->api->priv, OA_LOG_ERROR,
+                        "plat: %s not readable after %lu ms; refusing HAL bring-up",
+                        path, (unsigned long)elapsed);
+            return -1;
+        }
+        usleep(50000);
+    }
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "plat: driver marker ready after %lu ms",
+                (unsigned long)(monotonic_ms() - started));
+    return 0;
+}
+
 static int m_init(const oa_host_api *api, void **out)
 {
     if (!api || api->size < sizeof(oa_host_api) || api->abi != OA_ABI_VERSION)
@@ -139,6 +188,8 @@ static int m_start(void *v)
 
     /* 1. audio prelude — mandatory before anything else touches the HAL */
     c->ready = 0; c->errors = 0;
+    if (wait_driver_marker(c) != 0)
+        return -1;
     int protect_rc = Hal_Audio_Protect_Init();
     int mixer_rc = Hal_Audio_Mixer_Ctrl_Init();
     int proxy_rc = Hal_Audio_Proxy_Init();

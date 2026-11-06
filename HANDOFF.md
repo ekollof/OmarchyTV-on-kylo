@@ -525,6 +525,19 @@ unpublished; focused ASan/UBSan clean; full suite all tests passed; QEMU pass.
 No HAL/standby hardware, no TV run. 33/35 deferred/scheduler gates +2 audited
 synchronous stops = all35 decided. PLAT-POWER-QUIESCE.
 
+plat cold-start wait, 2026-11-06: firmware ICE_HardwareInit@0x7551a0 polls
+access("/tmp/ntkdriver_completed",R_OK) every50ms (0x755498..0x7554ae, literal
+0x755540->0x12930c5), logs elapsed and only then calls
+PLAT_DRV_INI_Init@0x89b6e4 (0x75564c). mod_plat now waits before the audio
+prelude: plat.driver_wait (unset auto via /dev/ntkled), driver_marker,
+driver_timeout_ms60s (0=forever); timeout sets STAGE_DRIVER and refuses HAL,
+retry works. New check-plat-startup-wait: pre-existing1ms, arriving151ms,
+timeout401ms then retry; focused ASan/UBSan clean, full suite all tests passed,
+QEMU pass. Cold config opts in. View-only TV: marker readable1, ntkled present,
+/proc/fb five OSD planes, fb1 OSD_NORMAL2 1920x2160 stride7680, stock PIDs
+1711/1781 unchanged. No cold boot/HAL/open-write; not scanout acceptance.
+PLAT-STARTUP-WAIT.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

@@ -1181,6 +1181,13 @@ check-plat-power-sync-stop: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_plat.so $(B
 	node tests/plat_power_sync_stop.cjs $(abspath $(BUILD))
 check: check-plat-power-sync-stop
 
+# Vendor ICE_HardwareInit order: wait for the kernel driver marker before the HAL prelude.
+.PHONY: check-plat-startup-wait
+check-plat-startup-wait: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_plat.so
+	@test "$(TARGET)" = host || { echo "  skip plat startup wait: host-only (no vendor HAL)"; exit 0; }
+	node tests/plat_startup_wait.cjs $(abspath $(BUILD))
+check: check-plat-startup-wait
+
 $(BUILD)/tests/sched: tests/sched.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $< $(filter %.o,$^) $(LDLIBS)
