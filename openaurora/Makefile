@@ -623,7 +623,7 @@ check: check-ui-object-scan
 
 $(BUILD)/modules/mod_ui_theme.so: modules/ui_theme/ui_theme.c common/svg_pack.c common/binsvg.c include/openaurora/svg_pack.h include/openaurora/binsvg.h include/openaurora/text_layout.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
 
 $(BUILD)/modules/mod_ui_menu.so: modules/ui_menu/ui_menu.c common/menu_model.c common/json.c common/launcher_anim.c include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
@@ -646,6 +646,11 @@ check: check-binsvg
 $(BUILD)/tests/ui_theme: tests/ui_theme.c common/svg_pack.c common/binsvg.c core/host.h include/openaurora/svg_pack.h include/openaurora/binsvg.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c,$^) $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-ui-theme-quiesce
+check-ui-theme-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_theme.so
+	node tests/ui_theme_quiesce.cjs $(abspath $(BUILD))
+check: check-ui-theme-quiesce
 
 .PHONY: check-ui-theme
 check-ui-theme: $(BUILD)/tests/ui_theme $(BUILD)/modules/mod_ui_theme.so $(BUILD)/modules/mod_ticker.so

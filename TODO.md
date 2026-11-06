@@ -320,14 +320,27 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       pass; ARM links libdl + libpthread. Full/QEMU pass.
       IMAGE-DECODE-QUIESCE.
 
+- [x] Asynchronous gate for `mod_ui_theme`: clear publication and unpublish
+      `ui.theme` synchronously, detach the parsed `oa_svg_pack`, then free it
+      synchronously or on a worker after `ui_theme.cleanup_delay_ms`.
+      `m_stop`/`m_destroy` join/free leftovers; `m_start` refuses if published,
+      a worker is live or a pack is still attached. New `theme-state` count
+      probe. Control-socket test: count 1, reload fails fast, `theme-state`
+      ENODEV, status responsive, the fixture is changed to 2 records while the
+      old pack is detached, the retry reports count 2; stop uses the gate.
+      Existing 702-record corpus, skin, hold, suspended-reload, fixture-IPC and
+      UI-anim bootstrap tests pass; ARM links libpthread. Full/QEMU pass.
+      UI-THEME-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
       `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr`,
-      `channels`, `service_db` and `image_decode` are the existing models.
+      `channels`, `service_db`, `image_decode` and `ui_theme` are the existing
+      models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

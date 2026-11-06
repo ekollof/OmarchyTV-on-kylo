@@ -309,6 +309,22 @@ Full/QEMU pass. Host codecs, not TV libraries; decode stays synchronous.
 ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer/tuner/epg/pvr/channels/service_db/image_decode are async.
 IMAGE-DECODE-QUIESCE.
+
+ui_theme quiesce, 2026-11-06: inventory found14 modules without a quiesce hook
+(audio_amp_profile/audio_curve/panel/plat/power/ticker/ui_anim/ui_clock/
+ui_console/ui_diag/ui_list/ui_navigation/ui_omarchy/ui_profile). Gate ui_theme:
+clear publication and unpublish ui.theme synchronously, detach the parsed
+oa_svg_pack, then free synchronously or on a worker after
+ui_theme.cleanup_delay_ms. m_stop/m_destroy join/free; m_start refuses if
+published/worker/pack live. New theme-state count probe. Control test: count 1,
+reload fails fast, theme-state ENODEV, status responsive, fixture changed to 2
+records while pending, retry reports count 2; stop gate. Existing 702-record
+corpus/skin/hold/suspended-reload/fixture-IPC/ui-anim bootstrap tests pass;
+ARM links libpthread. Full/QEMU pass. Synthetic pack only for the delayed
+gate; borrowed views still require the host hold.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme are async.
+UI-THEME-QUIESCE.
 SERVICE-DB-QUIESCE.
 
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so
@@ -2800,7 +2816,7 @@ Latest research is in
 
 Established: private GEM create sets framebuffer-mode, page-aligns its requested
 size and allocates runs from reserved OSD pools. Initial front requests one
-surface S; back shares it (count1), requests S (count2) or 2*S (count3).
+surface S; back shares it (count 1), requests S (count2) or 2*S (count3).
 Sync_FrontSurface2HW advertises 2*align4096(S), but the OSD commit gets address/
 size separately from its GEM. Size helper reads GEM +0x70; its aligned-size
 initialization is now verified in both target NAND kernel slots. Fresh kernel

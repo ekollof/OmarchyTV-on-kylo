@@ -328,6 +328,22 @@ Full/QEMU pass. Host codecs, not TV libraries; decode stays synchronous.
 ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer/tuner/epg/pvr/channels/service_db/image_decode are the async
 modules. IMAGE-DECODE-QUIESCE.
+
+ui_theme async gate, 2026-11-06: module inventory found 14 remaining modules
+without a quiesce hook (audio_amp_profile/audio_curve/panel/plat/power/ticker/
+ui_anim/ui_clock/ui_console/ui_diag/ui_list/ui_navigation/ui_omarchy/
+ui_profile). Gate ui_theme: clear publication and unpublish ui.theme
+synchronously, detach the parsed oa_svg_pack, then free synchronously or on a
+worker after ui_theme.cleanup_delay_ms. m_stop/m_destroy join/free; m_start
+refuses if published/worker/pack live. New theme-state count probe. Control
+test: count 1, reload fails fast, theme-state ENODEV, status responsive, fixture
+changed to 2 records while pending, retry reports count 2; stop gate. Existing
+702-record corpus/skin/hold/suspended-reload/fixture-IPC/ui-anim bootstrap
+tests pass; ARM links libpthread. Full/QEMU pass. Synthetic pack only for the
+delayed gate; borrowed views still require the host hold.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme are the
+async modules. UI-THEME-QUIESCE.
 SERVICE-DB-QUIESCE.
 CHANNELS-QUIESCE.
 
@@ -3058,7 +3074,7 @@ Latest [AUDIO-GAIN-TRANSPORT](artifacts/reports/AUDIO-GAIN-TRANSPORT-2026-11-01.
 finds that message-backed Hal_Audio_Ctrl0 can hide sendmsg failure, while the
 speaker ALSA setter updates a request cache and ignores lower failure results.
 Getter returns that cache; no audible acceptance follows. A new read-only
-mixer-probe passed on TV with ALSA_CONFIG_PATH=/vendor/etc/alsa.conf, count1,
+mixer-probe passed on TV with ALSA_CONFIG_PATH=/vendor/etc/alsa.conf, count 1,
 range0..100, value0. Default fresh-SSH configuration first failed; vendor/run.sh
 supplies this variable for the stock runtime. Helper removed and boot/UI/access/
 privacy/hook/keeper state verified unchanged. New durable Alsa project and
