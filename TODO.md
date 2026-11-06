@@ -2300,10 +2300,17 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       sanitizer and ARM/qemu pass. LUA-SERVICE. No TV access.
 - [ ] Real OmarchyTV screens replacing the skeleton after vendor parity. Keep
       OA_SVC_PORTAL on vendor and preserve engine draw/asset/present contracts.
-- [ ] Split module/test compile+link rules into .o + link so ccache can cache
-      them (most are one-step -shared invocations, which ccache cannot cache).
-      Preserve -Werror/-pedantic and the current link flags; measure a clean
-      cold/warm build and report the hit rate.
+- [x] Split module/test compile+link rules into .o + link so ccache can cache
+      them. Each shared library compiles PIC objects (`-c -fPIC -MMD -MP`) and
+      links those objects with the previous `-shared` flags. `-Werror` and
+      `-pedantic` stay in `CFLAGS`. Host measurement with a private `CCACHE_DIR`,
+      `rm -rf openaurora/build` between runs, `make -j all` plus the 75 concrete
+      `.so` targets: cold 202 cacheable calls, 185 misses and 17 hits (identical
+      sources compiled again inside that build), 79 uncacheable link steps;
+      warm 202/202 cacheable hits and 0 misses, plus 79 uncacheable links.
+      `check-sched`, `check-ui-lua`, `check-power`, `check-safety`,
+      `check-phases`, `check-quiesce` and `check-reload` exit 0 on that build.
+      No ASan/UBSan, ARM, or television run.
 - [ ] Reproduce vendor animations, transitions, focus/selection feedback, scrolling
       and other UI/UX flair. Recover effects/timing/easing/interrupt and resume
       behavior from firmware/assets; validate frame sequences and interaction,

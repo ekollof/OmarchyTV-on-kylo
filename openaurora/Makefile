@@ -77,12 +77,36 @@ ifneq ($(findstring gnueabihf,$(CC)),)
 endif
 LIBM ?= -lm
 
+# ccache stores a -c compilation and does not store a -shared link. Each
+# shared library therefore compiles its sources to PIC objects, then links
+# those objects. The object tree is per library so differing -D and
+# visibility flags do not share an object. Compile flags stay on -c; the
+# flags after -shared stay on the link. CFLAGS, including -Werror and
+# -pedantic, are unchanged.
+PIC_CPPFLAGS_SOURCE_FAKE = $(filter-out -DOA_NO_VENDOR,$(CPPFLAGS))
+
+pic_obj = $(BUILD)/pic/$(1)/$(patsubst %.c,%.o,$(2))
+pic_objs = $(foreach s,$(2),$(call pic_obj,$(1),$(s)))
+
+define emit_one_pic
+$(call pic_obj,$(1),$(2)): $(2) $(4)
+	@mkdir -p $$(dir $$@)
+	$$(CC) $(or $($(5)),$$(CPPFLAGS)) $(3) $$(CFLAGS) -fPIC -c -MMD -MP -o $$@ $$<
+endef
+
+define emit_pics
+$(foreach s,$(2),$(eval $(call emit_one_pic,$(1),$(s),$(3),$(4),$(5))))
+endef
+
+# Pattern-rule objects (abi, phase, skin) are intermediate. An empty
+# .SECONDARY keeps them, so make does not delete a compilation ccache stored.
+.SECONDARY:
+
 CORE_SRC := $(wildcard core/*.c)
 CORE_OBJ := $(CORE_SRC:core/%.c=$(BUILD)/core/%.o) $(BUILD)/common/audio_speaker.o
 CORE_DEP := $(CORE_OBJ:.o=.d)
 
 MOD_SO   := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).so)
-MOD_DEP  := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).d)
 
 all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker $(BUILD)/fb-restore
 
@@ -97,9 +121,10 @@ check: check-settings-hotel
 check-settings-hotel-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_settings.so
 	node tests/settings_hotel_ipc.cjs $(abspath $(BUILD))
 
-$(BUILD)/modules/mod_ui_profile.so: modules/ui_profile/ui_profile.c common/profile.c common/tab_policy.c include/openaurora/profile.h include/openaurora/tab_policy.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_ui_profile.so: $(call pic_objs,modules__mod_ui_profile,modules/ui_profile/ui_profile.c common/profile.c common/tab_policy.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_ui_profile,modules/ui_profile/ui_profile.c common/profile.c common/tab_policy.c,-pthread,include/openaurora/profile.h include/openaurora/tab_policy.h include/openaurora/module.h include/openaurora/services.h))
 
 $(BUILD)/tests/ui_profile: tests/ui_profile.c core/host.h include/openaurora/services.h include/openaurora/tab_policy.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -114,9 +139,10 @@ check-ui-profile: $(BUILD)/tests/ui_profile $(BUILD)/modules/mod_ui_profile.so $
 	@$(BUILD)/tests/ui_profile $(BUILD)/modules
 check: check-ui-profile
 
-$(BUILD)/modules/mod_ui_navigation.so: modules/ui_navigation/ui_navigation.c common/launcher_route.c include/openaurora/launcher_route.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_ui_navigation.so: $(call pic_objs,modules__mod_ui_navigation,modules/ui_navigation/ui_navigation.c common/launcher_route.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_ui_navigation,modules/ui_navigation/ui_navigation.c common/launcher_route.c,-pthread,include/openaurora/launcher_route.h include/openaurora/module.h include/openaurora/services.h))
 
 $(BUILD)/tests/ui_navigation: tests/ui_navigation.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -135,13 +161,15 @@ check: check-ui-navigation-quiesce
 check-ui-navigation-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_navigation.so
 	node tests/ui_navigation_ipc.cjs $(abspath $(BUILD))
 
-$(BUILD)/modules/mod_ui_list.so: modules/ui_list/ui_list.c common/svg_list_input.c common/svg_list_bodies.c common/svg_list_move.c common/svg_list_rows.c common/svg_list_impl.c include/openaurora/svg_list_input.h include/openaurora/svg_list_bodies.h include/openaurora/svg_list_move.h include/openaurora/svg_list_rows.h include/openaurora/svg_list_impl.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_ui_list.so: $(call pic_objs,modules__mod_ui_list,modules/ui_list/ui_list.c common/svg_list_input.c common/svg_list_bodies.c common/svg_list_move.c common/svg_list_rows.c common/svg_list_impl.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_ui_list,modules/ui_list/ui_list.c common/svg_list_input.c common/svg_list_bodies.c common/svg_list_move.c common/svg_list_rows.c common/svg_list_impl.c,-pthread,include/openaurora/svg_list_input.h include/openaurora/svg_list_bodies.h include/openaurora/svg_list_move.h include/openaurora/svg_list_rows.h include/openaurora/svg_list_impl.h include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_image_decode.so: modules/image_decode/image_decode.c include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_image_decode.so: $(call pic_objs,modules__mod_image_decode,modules/image_decode/image_decode.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) -ldl
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -ldl
+$(eval $(call emit_pics,modules__mod_image_decode,modules/image_decode/image_decode.c,-pthread,include/openaurora/module.h include/openaurora/services.h))
 
 $(BUILD)/tests/ui_list: tests/ui_list.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -417,9 +445,10 @@ check-launcher-db-module: $(BUILD)/tests/launcher_db_module $(BUILD)/modules/mod
 	@$(BUILD)/tests/launcher_db_module $(BUILD)/modules $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
 check: check-launcher-db-module
 
-$(BUILD)/tests/mod_broadcast_fixture.so: tests/broadcast_fixture.c include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/tests/mod_broadcast_fixture.so: $(call pic_objs,tests__mod_broadcast_fixture,tests/broadcast_fixture.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $<
+	$(CC) -shared -o $@ $^
+$(eval $(call emit_pics,tests__mod_broadcast_fixture,tests/broadcast_fixture.c,,include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h))
 
 $(BUILD)/tests/broadcast_services: tests/broadcast_services.c core/host.h include/openaurora/services.h include/openaurora/broadcast.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -636,17 +665,20 @@ check-ui-object-scan: $(BUILD)/tests/ui_object_scan
 
 check: check-ui-object-scan
 
-$(BUILD)/modules/mod_ui_theme.so: modules/ui_theme/ui_theme.c common/svg_pack.c common/binsvg.c include/openaurora/svg_pack.h include/openaurora/binsvg.h include/openaurora/text_layout.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_ui_theme.so: $(call pic_objs,modules__mod_ui_theme,modules/ui_theme/ui_theme.c common/svg_pack.c common/binsvg.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_ui_theme,modules/ui_theme/ui_theme.c common/svg_pack.c common/binsvg.c,-pthread,include/openaurora/svg_pack.h include/openaurora/binsvg.h include/openaurora/text_layout.h include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_ui_menu.so: modules/ui_menu/ui_menu.c common/menu_model.c common/json.c common/launcher_anim.c include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_ui_menu.so: $(call pic_objs,modules__mod_ui_menu,modules/ui_menu/ui_menu.c common/menu_model.c common/json.c common/launcher_anim.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_ui_menu,modules/ui_menu/ui_menu.c common/menu_model.c common/json.c common/launcher_anim.c,-fvisibility=hidden -pthread,include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_i18n.so: modules/i18n/i18n.c common/langprofile.c include/openaurora/langprofile.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_i18n.so: $(call pic_objs,modules__mod_i18n,modules/i18n/i18n.c common/langprofile.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_i18n,modules/i18n/i18n.c common/langprofile.c,-fvisibility=hidden -pthread,include/openaurora/langprofile.h include/openaurora/module.h include/openaurora/services.h))
 
 $(BUILD)/tests/binsvg: tests/binsvg.c common/binsvg.c common/text_layout.c include/openaurora/binsvg.h include/openaurora/text_layout.h
 	@mkdir -p $(dir $@)
@@ -823,9 +855,10 @@ $(BUILD)/oa-audio-broker: tools/audio/oa-audio-broker.c common/audio_broker.c co
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
-$(BUILD)/modules/mod_audio_curve.so: modules/audio_curve/audio_curve.c common/audio_curve.c include/openaurora/audio_curve.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_audio_curve.so: $(call pic_objs,modules__mod_audio_curve,modules/audio_curve/audio_curve.c common/audio_curve.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_audio_curve,modules/audio_curve/audio_curve.c common/audio_curve.c,-pthread,include/openaurora/audio_curve.h include/openaurora/module.h include/openaurora/services.h))
 
 $(BUILD)/oa-supervise: tools/boot/oa-supervise.c
 	@mkdir -p $(dir $@)
@@ -842,91 +875,105 @@ $(BUILD)/core/%.o: core/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c -o $@ $<
 
-$(BUILD)/modules/mod_ui_anim.so: modules/ui_anim/ui_anim.c common/ui_anim.c include/openaurora/ui_anim.h
+$(BUILD)/modules/mod_ui_anim.so: $(call pic_objs,modules__mod_ui_anim,modules/ui_anim/ui_anim.c common/ui_anim.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) -lm
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -lm
+$(eval $(call emit_pics,modules__mod_ui_anim,modules/ui_anim/ui_anim.c common/ui_anim.c,-pthread,include/openaurora/ui_anim.h))
 
-$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/langprofile.h
+$(BUILD)/modules/mod_ui_vendor.so: $(call pic_objs,modules__mod_ui_vendor,modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) -lm
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -lm
+$(eval $(call emit_pics,modules__mod_ui_vendor,modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c,-fvisibility=hidden -pthread,include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/langprofile.h))
 
-$(BUILD)/modules/mod_ui_engine.so: modules/ui_engine/ui_engine.c include/openaurora/ui_engine.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_ui_engine.so: $(call pic_objs,modules__mod_ui_engine,modules/ui_engine/ui_engine.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_ui_engine,modules/ui_engine/ui_engine.c,-pthread,include/openaurora/ui_engine.h include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_ir.so: modules/ir/ir.c include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_ir.so: $(call pic_objs,modules__mod_ir,modules/ir/ir.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_ir,modules/ir/ir.c,-pthread,include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_ui_omarchy.so: modules/ui_omarchy/ui_omarchy.c include/openaurora/ui_engine.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_ui_omarchy.so: $(call pic_objs,modules__mod_ui_omarchy,modules/ui_omarchy/ui_omarchy.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_ui_omarchy,modules/ui_omarchy/ui_omarchy.c,,include/openaurora/ui_engine.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_ui_diag.so: modules/ui_diag/ui_diag.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c include/openaurora/ui_engine.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h include/openaurora/lua_skin.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/canvas.h
+$(BUILD)/modules/mod_ui_diag.so: $(call pic_objs,modules__mod_ui_diag,modules/ui_diag/ui_diag.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) -lm
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -lm
+$(eval $(call emit_pics,modules__mod_ui_diag,modules/ui_diag/ui_diag.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c,-pthread,include/openaurora/ui_engine.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h include/openaurora/lua_skin.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/canvas.h))
 
-$(BUILD)/modules/mod_audio_mixer.so: modules/audio_mixer/audio_mixer.c common/audio_broker_wire.c include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_broker.h
+$(BUILD)/modules/mod_audio_mixer.so: $(call pic_objs,modules__mod_audio_mixer,modules/audio_mixer/audio_mixer.c common/audio_broker_wire.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_audio_mixer,modules/audio_mixer/audio_mixer.c common/audio_broker_wire.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_broker.h))
 
-$(BUILD)/modules/mod_graphics.so: modules/graphics/graphics.c common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/module.h include/openaurora/services.h include/openaurora/scene_client.h include/openaurora/scene_broker.h
+$(BUILD)/modules/mod_graphics.so: $(call pic_objs,modules__mod_graphics,modules/graphics/graphics.c common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_graphics,modules/graphics/graphics.c common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c,,include/openaurora/module.h include/openaurora/services.h include/openaurora/scene_client.h include/openaurora/scene_broker.h))
 
-$(BUILD)/modules/mod_scene_display.so: modules/scene_display/scene_display.c common/canvas.c common/scene_broker_transport.c include/openaurora/canvas.h include/openaurora/module.h include/openaurora/services.h include/openaurora/scene_broker.h
+$(BUILD)/modules/mod_scene_display.so: $(call pic_objs,modules__mod_scene_display,modules/scene_display/scene_display.c common/canvas.c common/scene_broker_transport.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) $(LIBM)
+	$(CC) -shared -o $@ $^ $(LDFLAGS) $(LIBM)
+$(eval $(call emit_pics,modules__mod_scene_display,modules/scene_display/scene_display.c common/canvas.c common/scene_broker_transport.c,,include/openaurora/canvas.h include/openaurora/module.h include/openaurora/services.h include/openaurora/scene_broker.h))
 
-$(BUILD)/modules/mod_cec.so: modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c
+$(BUILD)/modules/mod_cec.so: $(call pic_objs,modules__mod_cec,modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_cec,modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c,-pthread,))
 
-$(BUILD)/modules/mod_audio.so: modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c
+$(BUILD)/modules/mod_audio.so: $(call pic_objs,modules__mod_audio,modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) \
-	  $(if $(filter $(VENDOR_MODULES),audio),$(VENDOR_LDFLAGS),)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),audio),$(VENDOR_LDFLAGS),)
+$(eval $(call emit_pics,modules__mod_audio,modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c,-pthread,))
 
-$(BUILD)/modules/mod_display.so: modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h
+$(BUILD)/modules/mod_display.so: $(call pic_objs,modules__mod_display,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
-	  $(VENDOR_LDFLAGS) $(LIBM) -pthread
+	$(CC) -shared -o $@ $^ $(LDFLAGS) $(VENDOR_LDFLAGS) $(LIBM) -pthread
+$(eval $(call emit_pics,modules__mod_display,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c,-pthread,include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h))
 
-$(BUILD)/modules/mod_source.so: modules/source/source.c include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_source.so: $(call pic_objs,modules__mod_source,modules/source/source.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $< -pthread $(LDFLAGS) \
-	  $(if $(filter $(VENDOR_MODULES),source),$(VENDOR_LDFLAGS),)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),source),$(VENDOR_LDFLAGS),)
+$(eval $(call emit_pics,modules__mod_source,modules/source/source.c,-pthread,include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_display_fb.so: modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h
+$(BUILD)/modules/mod_display_fb.so: $(call pic_objs,modules__mod_display_fb,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_DISPLAY_NO_PLAT -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
-	  $(LIBM) -pthread
+	$(CC) -shared -o $@ $^ $(LDFLAGS) $(LIBM) -pthread
+$(eval $(call emit_pics,modules__mod_display_fb,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c,-DOA_DISPLAY_NO_PLAT -pthread,include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h))
 
-$(BUILD)/modules/mod_settings.so: modules/settings/settings.c common/launcher_db.c common/picture_config.c include/openaurora/launcher_db.h include/openaurora/launcher_item.h include/openaurora/picture_config.h
+$(BUILD)/modules/mod_settings.so: $(call pic_objs,modules__mod_settings,modules/settings/settings.c common/launcher_db.c common/picture_config.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) \
-	  -Ithird_party -L$(VENDOR_LIB) $(SQLITE_LIBS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -L$(VENDOR_LIB) $(SQLITE_LIBS)
+$(eval $(call emit_pics,modules__mod_settings,modules/settings/settings.c common/launcher_db.c common/picture_config.c,-Ithird_party -pthread,include/openaurora/launcher_db.h include/openaurora/launcher_item.h include/openaurora/picture_config.h))
 
-$(BUILD)/modules/mod_service_db.so: modules/service_db/service_db.c common/service_db.c include/openaurora/service_db.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_service_db.so: $(call pic_objs,modules__mod_service_db,modules/service_db/service_db.c common/service_db.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) \
-	  -Ithird_party $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
+$(eval $(call emit_pics,modules__mod_service_db,modules/service_db/service_db.c common/service_db.c,-Ithird_party -pthread,include/openaurora/service_db.h include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_epg.so: modules/epg/epg.c common/eit_section.c common/eit_cache.c common/eit_time.c include/openaurora/eit_section.h include/openaurora/eit_cache.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_epg.so: $(call pic_objs,modules__mod_epg,modules/epg/epg.c common/eit_section.c common/eit_cache.c common/eit_time.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_epg,modules/epg/epg.c common/eit_section.c common/eit_cache.c common/eit_time.c,-pthread,include/openaurora/eit_section.h include/openaurora/eit_cache.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_tuner.so: modules/tuner/tuner.c common/nim_stub.c common/nim_ts.c common/nim_ndal.c common/eit_dvb.c common/eit_ts.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_dvb.h include/openaurora/eit_section.h include/openaurora/eit_ts.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_tuner.so: $(call pic_objs,modules__mod_tuner,modules/tuner/tuner.c common/nim_stub.c common/nim_ts.c common/nim_ndal.c common/eit_dvb.c common/eit_ts.c common/eit_section.c common/eit_time.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) -ldl
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -ldl
+$(eval $(call emit_pics,modules__mod_tuner,modules/tuner/tuner.c common/nim_stub.c common/nim_ts.c common/nim_ndal.c common/eit_dvb.c common/eit_ts.c common/eit_section.c common/eit_time.c,-pthread,include/openaurora/nim.h include/openaurora/eit_dvb.h include/openaurora/eit_section.h include/openaurora/eit_ts.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_pvr.so: modules/pvr/pvr.c common/pvr_stub.c include/openaurora/pvr.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_pvr.so: $(call pic_objs,modules__mod_pvr,modules/pvr/pvr.c common/pvr_stub.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_pvr,modules/pvr/pvr.c common/pvr_stub.c,-pthread,include/openaurora/pvr.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_channels.so: modules/channels/channels.c common/channels.c include/openaurora/channels.h include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/modules/mod_channels.so: $(call pic_objs,modules__mod_channels,modules/channels/channels.c common/channels.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_channels,modules/channels/channels.c common/channels.c,-pthread,include/openaurora/channels.h include/openaurora/module.h include/openaurora/services.h))
 
 LUA_SRC := $(sort $(wildcard third_party/lua/*.c))
 LUA_OBJ := $(patsubst third_party/lua/%.c,$(BUILD)/third_party/lua/%.o,$(LUA_SRC))
@@ -939,20 +986,40 @@ $(BUILD)/modules/lua_skin.o: common/lua_skin.c include/openaurora/lua_skin.h inc
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -Ithird_party/lua -c -o $@ $<
 
-$(BUILD)/modules/mod_lua.so: modules/lua/lua.c $(BUILD)/modules/lua_skin.o $(LUA_OBJ) include/openaurora/lua_skin.h include/openaurora/module.h
+$(BUILD)/modules/mod_lua.so: $(call pic_objs,modules__mod_lua,modules/lua/lua.c) $(BUILD)/modules/lua_skin.o $(LUA_OBJ)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -Ithird_party/lua -o $@ modules/lua/lua.c $(BUILD)/modules/lua_skin.o $(LUA_OBJ) $(LDFLAGS) $(LIBM)
+	$(CC) -shared -o $@ $^ $(LDFLAGS) $(LIBM)
+$(eval $(call emit_pics,modules__mod_lua,modules/lua/lua.c,-Ithird_party/lua,include/openaurora/lua_skin.h include/openaurora/module.h))
 
-$(BUILD)/modules/mod_panel.so: modules/panel/panel.c include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h include/openaurora/vendor_pwm.h
+$(BUILD)/modules/mod_panel.so: $(call pic_objs,modules__mod_panel,modules/panel/panel.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $< -pthread $(LDFLAGS) \
-	  $(if $(filter $(VENDOR_MODULES),panel),$(VENDOR_LDFLAGS),)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),panel),$(VENDOR_LDFLAGS),)
+$(eval $(call emit_pics,modules__mod_panel,modules/panel/panel.c,-pthread,include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h include/openaurora/vendor_pwm.h))
 
-$(BUILD)/modules/mod_%.so: modules/%/*.c
+$(BUILD)/modules/mod_plat.so: $(call pic_objs,modules__mod_plat,modules/plat/plat.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $< $(LDFLAGS) \
-	  $(if $(filter $(VENDOR_MODULES),$*),$(VENDOR_LDFLAGS),) \
-	  $(if $(filter $(SETTINGS_MODULES),$*),-Ithird_party -L$(VENDOR_LIB) $(SQLITE_LIBS),)
+	$(CC) -shared -o $@ $^ $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),plat),$(VENDOR_LDFLAGS),)
+$(eval $(call emit_pics,modules__mod_plat,modules/plat/plat.c,,))
+
+$(BUILD)/modules/mod_ticker.so: $(call pic_objs,modules__mod_ticker,modules/ticker/ticker.c)
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_ticker,modules/ticker/ticker.c,,))
+
+$(BUILD)/modules/mod_ui_console.so: $(call pic_objs,modules__mod_ui_console,modules/ui_console/ui.c)
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_ui_console,modules/ui_console/ui.c,,))
+
+$(BUILD)/modules/mod_power.so: $(call pic_objs,modules__mod_power,modules/power/power.c)
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_power,modules/power/power.c,,))
+
+$(BUILD)/modules/mod_ui_clock.so: $(call pic_objs,modules__mod_ui_clock,modules/ui_clock/ui_clock.c)
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_ui_clock,modules/ui_clock/ui_clock.c,,))
 
 vendor:
 	@./scripts/fetch-vendor.sh
@@ -969,33 +1036,42 @@ tv:
 	@test -f $(VENDOR_LIB)/libNDAL3.so || { echo "run 'make vendor' first"; exit 1; }
 	$(MAKE) TARGET=tv CC="$(if $(CCACHE),$(CCACHE) ,)$(TV_CROSS)" BUILD=build-tv
 
-$(BUILD)/tests/mod_recovery_fixture.so: tests/recovery_fixture.c include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/tests/mod_recovery_fixture.so: $(call pic_objs,tests__mod_recovery_fixture,tests/recovery_fixture.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $<
+	$(CC) -shared -o $@ $^
+$(eval $(call emit_pics,tests__mod_recovery_fixture,tests/recovery_fixture.c,,include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/tests/mod_failed_init.so: tests/failed_init.c include/openaurora/module.h
+$(BUILD)/tests/mod_failed_init.so: $(call pic_objs,tests__mod_failed_init,tests/failed_init.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $<
+	$(CC) -shared -o $@ $^
+$(eval $(call emit_pics,tests__mod_failed_init,tests/failed_init.c,,include/openaurora/module.h))
 
 $(BUILD)/tests/registry: tests/registry.c $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
-$(BUILD)/tests/mod_post_worker.so: tests/post_worker.c tests/post_worker.h include/openaurora/module.h
+$(BUILD)/tests/mod_post_worker.so: $(call pic_objs,tests__mod_post_worker,tests/post_worker.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $< -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,tests__mod_post_worker,tests/post_worker.c,-pthread,tests/post_worker.h include/openaurora/module.h))
 
-$(BUILD)/tests/mod_post_fail_init.so: tests/post_worker.c tests/post_worker.h include/openaurora/module.h
+$(BUILD)/tests/mod_post_fail_init.so: $(call pic_objs,tests__mod_post_fail_init,tests/post_worker.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -DTEST_FAIL_INIT_POST -fPIC -shared -o $@ $< -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,tests__mod_post_fail_init,tests/post_worker.c,-DTEST_FAIL_INIT_POST -pthread,tests/post_worker.h include/openaurora/module.h))
 
-$(BUILD)/tests/mod_post_fail_start.so: tests/post_worker.c tests/post_worker.h include/openaurora/module.h
+$(BUILD)/tests/mod_post_fail_start.so: $(call pic_objs,tests__mod_post_fail_start,tests/post_worker.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -DTEST_FAIL_START_POST -fPIC -shared -o $@ $< -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,tests__mod_post_fail_start,tests/post_worker.c,-DTEST_FAIL_START_POST -pthread,tests/post_worker.h include/openaurora/module.h))
 
-$(BUILD)/tests/mod_abi_%.so: tests/abi_fixture.c include/openaurora/module.h
+$(BUILD)/pic/tests__mod_abi_%/tests/abi_fixture.o: tests/abi_fixture.c include/openaurora/module.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(if $(filter v1,$*),-DTEST_ABI_V1,) $(if $(filter v2,$*),-DTEST_ABI_V2,) $(if $(filter extended,$*),-DTEST_ABI_EXTENDED,) -fPIC -shared -o $@ $< $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(if $(filter v1,$*),-DTEST_ABI_V1,) $(if $(filter v2,$*),-DTEST_ABI_V2,) $(if $(filter extended,$*),-DTEST_ABI_EXTENDED,) -fPIC -c -MMD -MP -o $@ $<
+
+$(BUILD)/tests/mod_abi_%.so: $(BUILD)/pic/tests__mod_abi_%/tests/abi_fixture.o
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $< $(LDFLAGS)
 
 $(BUILD)/tests/module_safety: tests/module_safety.c tests/post_worker.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -1005,9 +1081,10 @@ SAFETY_FIXTURES := mod_post_worker mod_post_fail_init mod_post_fail_start mod_ab
 check-safety: all check-quiesce $(BUILD)/tests/module_safety $(addprefix $(BUILD)/tests/,$(addsuffix .so,$(SAFETY_FIXTURES)))
 	@$(BUILD)/tests/module_safety $(BUILD)/modules $(BUILD)/tests
 
-$(BUILD)/tests/mod_quiesce_fixture.so: tests/quiesce_fixture.c tests/quiesce_fixture.h include/openaurora/module.h
+$(BUILD)/tests/mod_quiesce_fixture.so: $(call pic_objs,tests__mod_quiesce_fixture,tests/quiesce_fixture.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $< $(LDFLAGS)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,tests__mod_quiesce_fixture,tests/quiesce_fixture.c,,tests/quiesce_fixture.h include/openaurora/module.h))
 
 $(BUILD)/tests/quiesce: tests/quiesce.c tests/quiesce_fixture.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -1017,17 +1094,20 @@ $(BUILD)/tests/quiesce: tests/quiesce.c tests/quiesce_fixture.h core/host.h $(fi
 check-quiesce: $(BUILD)/tests/quiesce $(BUILD)/tests/mod_quiesce_fixture.so
 	@$(BUILD)/tests/quiesce $(BUILD)/tests
 
-$(BUILD)/tests/mod_reload_fixture.so: tests/reload_fixture.c tests/reload_fixture.h include/openaurora/module.h
+$(BUILD)/tests/mod_reload_fixture.so: $(call pic_objs,tests__mod_reload_fixture,tests/reload_fixture.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $< $(LDFLAGS)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,tests__mod_reload_fixture,tests/reload_fixture.c,,tests/reload_fixture.h include/openaurora/module.h))
 
-$(BUILD)/tests/mod_reload_no_restore.so: tests/reload_fixture.c tests/reload_fixture.h include/openaurora/module.h
+$(BUILD)/tests/mod_reload_no_restore.so: $(call pic_objs,tests__mod_reload_no_restore,tests/reload_fixture.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -DRELOAD_WITHOUT_RESTORE -fPIC -shared -o $@ $< $(LDFLAGS)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,tests__mod_reload_no_restore,tests/reload_fixture.c,-DRELOAD_WITHOUT_RESTORE,tests/reload_fixture.h include/openaurora/module.h))
 
-$(BUILD)/tests/mod_reload_renamed.so: tests/reload_fixture.c tests/reload_fixture.h include/openaurora/module.h
+$(BUILD)/tests/mod_reload_renamed.so: $(call pic_objs,tests__mod_reload_renamed,tests/reload_fixture.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -DRELOAD_RENAMED -fPIC -shared -o $@ $< $(LDFLAGS)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,tests__mod_reload_renamed,tests/reload_fixture.c,-DRELOAD_RENAMED,tests/reload_fixture.h include/openaurora/module.h))
 
 $(BUILD)/tests/reload: tests/reload.c tests/reload_fixture.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -1036,11 +1116,15 @@ $(BUILD)/tests/reload: tests/reload.c tests/reload_fixture.h core/host.h $(filte
 check-reload: $(BUILD)/tests/reload $(BUILD)/tests/mod_reload_fixture.so $(BUILD)/tests/mod_reload_no_restore.so $(BUILD)/tests/mod_reload_renamed.so
 	@$(BUILD)/tests/reload $(BUILD)/tests
 
-$(BUILD)/tests/mod_phase_%.so: tests/phases_fixture.c tests/phases.h include/openaurora/module.h
+$(BUILD)/pic/tests__mod_phase_%/tests/phases_fixture.o: tests/phases_fixture.c tests/phases.h include/openaurora/module.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DPHASE_ID=$(if $(filter b,$*),1,$(if $(filter c replacement,$*),2,0)) \
 	  $(if $(filter no_suspend,$*),-DNO_PHASE_HOOKS,) $(if $(filter replacement,$*),-DPHASE_REPLACEMENT,) \
-	  -fPIC -shared -o $@ $< $(LDFLAGS)
+	  -fPIC -c -MMD -MP -o $@ $<
+
+$(BUILD)/tests/mod_phase_%.so: $(BUILD)/pic/tests__mod_phase_%/tests/phases_fixture.o
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $< $(LDFLAGS)
 
 $(BUILD)/tests/phases: tests/phases.c tests/phases.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -1231,9 +1315,10 @@ check-cec-audio: $(BUILD)/tests/cec $(BUILD)/tests/audio $(BUILD)/tests/plat_aud
 	@$(BUILD)/tests/audio
 	@$(BUILD)/tests/plat_audio
 
-$(BUILD)/tests/audio-mods/mod_audio.so: modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c tests/audio_hal_stub.c
+$(BUILD)/tests/audio-mods/mod_audio.so: $(call pic_objs,tests__audio-mods__mod_audio,modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c tests/audio_hal_stub.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,tests__audio-mods__mod_audio,modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c tests/audio_hal_stub.c,-UOA_NO_VENDOR -pthread,))
 
 $(BUILD)/tests/audio_session: tests/audio_session.c tests/lifecycle_retry.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -1316,9 +1401,10 @@ check-ui-jpeg-cards: $(BUILD)/tests/ui_live_cards ui-live-stage
 	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "$(CURDIR)/../artifacts/dumps/apdat_files/dlna-dmr/xml/icon" jpeg || test $$? -eq 77
 check: check-ui-jpeg-cards
 
-$(BUILD)/tests/ui_nav_display.so: tests/ui_nav_display.c tests/ui_nav_trace.h common/canvas.c include/openaurora/canvas.h include/openaurora/services.h
+$(BUILD)/tests/ui_nav_display.so: $(call pic_objs,tests__ui_nav_display,tests/ui_nav_display.c common/canvas.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -Itests -fPIC -shared -o $@ tests/ui_nav_display.c common/canvas.c $(LDFLAGS) $(LIBM)
+	$(CC) -shared -o $@ $^ $(LDFLAGS) $(LIBM)
+$(eval $(call emit_pics,tests__ui_nav_display,tests/ui_nav_display.c common/canvas.c,-Itests,tests/ui_nav_trace.h include/openaurora/canvas.h include/openaurora/services.h))
 
 $(BUILD)/tests/ui_nav: tests/ui_nav.c tests/ui_nav_trace.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -1379,9 +1465,19 @@ $(BUILD)/tests/skin_selection: tests/skin_selection.c core/host.h include/openau
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
 
-$(BUILD)/tests/mod_ui_custom.so $(BUILD)/tests/mod_ui_startfail.so $(BUILD)/tests/mod_ui_badenter.so $(BUILD)/tests/mod_ui_silent.so $(BUILD)/tests/mod_ui_busyfail.so $(BUILD)/tests/mod_ui_initbusy.so: tests/skin_candidate.c include/openaurora/ui_engine.h include/openaurora/module.h
+$(BUILD)/pic/tests__mod_ui_%/tests/skin_candidate.o: tests/skin_candidate.c include/openaurora/ui_engine.h include/openaurora/module.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared $(LDFLAGS) -DSKIN_NAME='"$(patsubst mod_ui_%.so,%,$(notdir $@))"' $(if $(filter %startfail.so %busyfail.so,$@),-DFAIL_START=1) $(if $(filter %busyfail.so,$@),-DBUSY=1) $(if $(filter %badenter.so,$@),-DFAIL_ENTER=1) $(if $(filter %silent.so,$@),-DSILENT=1) $(if $(filter %initbusy.so,$@),-DFAIL_INIT=1) -o $@ $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -c -MMD -MP -DSKIN_NAME='"$(*)"' \
+	  $(if $(filter startfail busyfail,$*),-DFAIL_START=1) \
+	  $(if $(filter busyfail,$*),-DBUSY=1) \
+	  $(if $(filter badenter,$*),-DFAIL_ENTER=1) \
+	  $(if $(filter silent,$*),-DSILENT=1) \
+	  $(if $(filter initbusy,$*),-DFAIL_INIT=1) \
+	  -o $@ $<
+
+$(BUILD)/tests/mod_ui_custom.so $(BUILD)/tests/mod_ui_startfail.so $(BUILD)/tests/mod_ui_badenter.so $(BUILD)/tests/mod_ui_silent.so $(BUILD)/tests/mod_ui_busyfail.so $(BUILD)/tests/mod_ui_initbusy.so: $(BUILD)/tests/mod_ui_%.so: $(BUILD)/pic/tests__mod_ui_%/tests/skin_candidate.o
+	@mkdir -p $(dir $@)
+	$(CC) -shared $(LDFLAGS) -o $@ $<
 
 .PHONY: check-skin-selection
 check-skin-selection: check-ui-skin $(BUILD)/tests/skin_selection $(BUILD)/tests/mod_ui_custom.so $(BUILD)/tests/mod_ui_startfail.so $(BUILD)/tests/mod_ui_badenter.so $(BUILD)/tests/mod_ui_silent.so $(BUILD)/tests/mod_ui_busyfail.so $(BUILD)/tests/mod_ui_initbusy.so
@@ -1602,9 +1698,10 @@ cold-bundle: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/fb-res
 	@cd $(BUILD)/cold-bundle && sha256sum openaurora oa-supervise fb-restore openaurora.conf modules/*.so > manifest.sha256
 	@echo "cold bundle: $(BUILD)/cold-bundle ($(words $(MOD_SO)) modules)"
 
-$(BUILD)/tests/vendor_decoder_probe.so: tests/vendor_decoder_probe.c
+$(BUILD)/tests/vendor_decoder_probe.so: $(call pic_objs,tests__vendor_decoder_probe,tests/vendor_decoder_probe.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $< -ldl
+	$(CC) -shared -o $@ $^ -ldl
+$(eval $(call emit_pics,tests__vendor_decoder_probe,tests/vendor_decoder_probe.c,,))
 .PHONY: check-image-decode-quiesce
 check-image-decode-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_image_decode.so
 	node tests/image_decode_quiesce.cjs $(abspath $(BUILD))
@@ -1651,9 +1748,10 @@ check-fixture-modules-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_theme.so 
 	node tests/fixture_modules_ipc.cjs $(abspath $(BUILD))
 check: check-fixture-modules-ipc
 
-$(BUILD)/tests/fake_fb_preload.so: tests/fake_fb_preload.c include/openaurora/fb_snapshot.h
+$(BUILD)/tests/fake_fb_preload.so: $(call pic_objs,tests__fake_fb_preload,tests/fake_fb_preload.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $< -ldl
+	$(CC) -shared -o $@ $^ -ldl
+$(eval $(call emit_pics,tests__fake_fb_preload,tests/fake_fb_preload.c,,include/openaurora/fb_snapshot.h))
 .PHONY: check-fake-fb-socket
 check-fake-fb-socket: $(BUILD)/$(PROJECT) $(BUILD)/tests/fake_fb_preload.so $(BUILD)/modules/mod_display_fb.so
 	node tests/fake_fb_socket.cjs $(abspath $(BUILD))
@@ -1664,9 +1762,10 @@ check-graphics-socket: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_graphics.so $(BU
 	node tests/graphics_socket.cjs $(abspath $(BUILD))
 check: check-graphics-socket
 
-$(BUILD)/tests/mod_plat_fixture.so: tests/plat_fixture.c include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/tests/mod_plat_fixture.so: $(call pic_objs,tests__mod_plat_fixture,tests/plat_fixture.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared $(LDFLAGS) -o $@ $<
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,tests__mod_plat_fixture,tests/plat_fixture.c,,include/openaurora/module.h include/openaurora/services.h))
 
 .PHONY: check-plat-consumers-socket
 check-plat-consumers-socket: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_plat_fixture.so $(BUILD)/modules/mod_audio.so $(BUILD)/modules/mod_source.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_panel.so
@@ -1778,13 +1877,15 @@ check: check-scene-broker check-scene-spawn check-scene-client check-graphics-mo
 check-scene-broker: $(BUILD)/tests/scene_broker
 	@$(BUILD)/tests/scene_broker
 
-$(BUILD)/tests/scene-renderer-fixture.so: tests/scene_renderer_fixture.c include/openaurora/scene_renderer.h include/openaurora/scene_broker.h
+$(BUILD)/tests/scene-renderer-fixture.so: $(call pic_objs,tests__scene-renderer-fixture,tests/scene_renderer_fixture.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared $(LDFLAGS) -Wl,-init,scene_fixture_init -Wl,-fini,scene_fixture_fini -o $@ $<
+	$(CC) -shared -o $@ $^ $(LDFLAGS) -Wl,-init,scene_fixture_init -Wl,-fini,scene_fixture_fini
+$(eval $(call emit_pics,tests__scene-renderer-fixture,tests/scene_renderer_fixture.c,,include/openaurora/scene_renderer.h include/openaurora/scene_broker.h))
 
-$(BUILD)/tests/scene-renderer-bad.so: tests/scene_renderer_fixture.c include/openaurora/scene_renderer.h include/openaurora/scene_broker.h
+$(BUILD)/tests/scene-renderer-bad.so: $(call pic_objs,tests__scene-renderer-bad,tests/scene_renderer_fixture.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -DBAD_RENDERER_ABI -fPIC -shared $(LDFLAGS) -Wl,-init,scene_fixture_init -Wl,-fini,scene_fixture_fini -o $@ $<
+	$(CC) -shared -o $@ $^ $(LDFLAGS) -Wl,-init,scene_fixture_init -Wl,-fini,scene_fixture_fini
+$(eval $(call emit_pics,tests__scene-renderer-bad,tests/scene_renderer_fixture.c,-DBAD_RENDERER_ABI,include/openaurora/scene_renderer.h include/openaurora/scene_broker.h))
 
 $(BUILD)/tests/scene_spawn: tests/scene_spawn.c common/scene_broker_wire.c common/scene_broker_transport.c include/openaurora/scene_broker.h
 	@mkdir -p $(dir $@)
@@ -1810,9 +1911,10 @@ $(BUILD)/tests/graphics_module: tests/graphics_module.c common/scene_broker_tran
 check-graphics-module: $(BUILD)/tests/graphics_module $(BUILD)/modules/mod_graphics.so $(BUILD)/modules/mod_ticker.so $(BUILD)/oa-scene-broker $(BUILD)/tests/scene-renderer-fixture.so
 	@$(BUILD)/tests/graphics_module $(BUILD)/modules $(abspath $(BUILD)/oa-scene-broker) $(abspath $(BUILD)/tests/scene-renderer-fixture.so)
 
-$(BUILD)/modules/mod_scene_gpu_fixture.so: tests/scene_gpu_fixture.c tests/scene_gpu_trace.h include/openaurora/services.h include/openaurora/module.h
+$(BUILD)/modules/mod_scene_gpu_fixture.so: $(call pic_objs,modules__mod_scene_gpu_fixture,tests/scene_gpu_fixture.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -Itests -fPIC -shared $(LDFLAGS) -o $@ $<
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_scene_gpu_fixture,tests/scene_gpu_fixture.c,-Itests,tests/scene_gpu_trace.h include/openaurora/services.h include/openaurora/module.h))
 
 $(BUILD)/tests/scene_display: tests/scene_display.c tests/scene_gpu_trace.h common/canvas.c include/openaurora/canvas.h core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -1874,9 +1976,10 @@ $(BUILD)/oa-scene-broker: tools/display/oa-scene-broker.c common/scene_broker.c 
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -ldl
 
-$(BUILD)/scene-renderer.so: tools/display/scene-renderer.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c include/openaurora/scene_renderer.h include/openaurora/scene_broker.h include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h
+$(BUILD)/scene-renderer.so: $(call pic_objs,scene-renderer,tools/display/scene-renderer.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -idirafter /usr/include -fPIC -shared $(LDFLAGS) -o $@ $(filter %.c,$^) $(EGL_PROBE_LIBS) -pthread -lm
+	$(CC) -shared -o $@ $^ $(LDFLAGS) $(EGL_PROBE_LIBS) -pthread -lm
+$(eval $(call emit_pics,scene-renderer,tools/display/scene-renderer.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c,-idirafter /usr/include -pthread,include/openaurora/scene_renderer.h include/openaurora/scene_broker.h include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h))
 
 $(BUILD)/egl-window-probe: tools/display/egl-window-probe.c common/scene_gles.c common/glyph_quad.c common/ui_anim.c include/openaurora/scene_gles.h include/openaurora/glyph_quad.h include/openaurora/ui_anim.h
 	@mkdir -p $(dir $@)
@@ -1954,10 +2057,10 @@ check-display: $(BUILD)/tests/display_present $(BUILD)/tests/display_binding $(B
 	@$(BUILD)/tests/fbregion_read
 
 # Production display code through the real loader; only fixture DSOs wrap I/O.
-$(BUILD)/display-fixture/mod_display_fb.so: modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c tests/display_dso_observer.c include/openaurora/module.h include/openaurora/services.h include/openaurora/fb_snapshot.h include/openaurora/ui_anim.h include/openaurora/canvas.h
+$(BUILD)/display-fixture/mod_display_fb.so: $(call pic_objs,display-fixture__mod_display_fb,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c tests/display_dso_observer.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_DISPLAY_NO_PLAT -fPIC -shared $(LDFLAGS) -o $@ $(filter %.c,$^) -lm -pthread \
-	  $(foreach call,open close system mmap munmap msync ioctl,-Wl,--wrap=$(call))
+	$(CC) -shared -o $@ $^ $(LDFLAGS) -lm -pthread $(foreach call,open close system mmap munmap msync ioctl,-Wl,--wrap=$(call))
+$(eval $(call emit_pics,display-fixture__mod_display_fb,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c tests/display_dso_observer.c,-DOA_DISPLAY_NO_PLAT -pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/fb_snapshot.h include/openaurora/ui_anim.h include/openaurora/canvas.h))
 
 $(BUILD)/tests/display_lifecycle: tests/display_lifecycle.c core/host.h include/openaurora/fb_snapshot.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -2129,9 +2232,10 @@ $(BUILD)/tests/ui_menu_action: tests/ui_menu_action.c core/host.h $(filter-out $
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_menu_action.c $(filter %.o,$^) $(LDLIBS)
 
-$(BUILD)/tests/mod_source_fake.so: modules/source/source.c tests/source_fake.c include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/tests/mod_source_fake.so: $(call pic_objs,tests__mod_source_fake,modules/source/source.c tests/source_fake.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(filter-out -DOA_NO_VENDOR,$(CPPFLAGS)) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -ldl -pthread
+	$(CC) -shared -o $@ $^ -ldl -pthread
+$(eval $(call emit_pics,tests__mod_source_fake,modules/source/source.c tests/source_fake.c,-pthread,include/openaurora/module.h include/openaurora/services.h,PIC_CPPFLAGS_SOURCE_FAKE))
 
 .PHONY: check-vin-real
 check-vin-real:
@@ -2161,17 +2265,20 @@ check-ui-menu-action: $(BUILD)/tests/ui_menu_action $(BUILD)/tests/ui_nav_displa
 	@$(BUILD)/tests/ui_menu_action $(BUILD)/tests/ui-menu-action/modules
 check: check-ui-menu-action
 
-$(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/tests/mod_fake_clock.so: $(call pic_objs,tests__mod_fake_clock,tests/mod_fake_clock.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_fake_clock.c $(LDFLAGS) $(LDLIBS)
+	$(CC) -shared -o $@ $^ $(LDFLAGS) $(LDLIBS)
+$(eval $(call emit_pics,tests__mod_fake_clock,tests/mod_fake_clock.c,,include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/tests/mod_sim_display.so: tools/display/sim-display.c include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/tests/mod_sim_display.so: $(call pic_objs,tests__mod_sim_display,tools/display/sim-display.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tools/display/sim-display.c $(LDFLAGS)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,tests__mod_sim_display,tools/display/sim-display.c,,include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/tests/mod_patch_fixture.so: tests/mod_patch_fixture.c include/openaurora/module.h include/openaurora/services.h
+$(BUILD)/tests/mod_patch_fixture.so: $(call pic_objs,tests__mod_patch_fixture,tests/mod_patch_fixture.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_patch_fixture.c $(LDFLAGS) $(LDLIBS)
+	$(CC) -shared -o $@ $^ $(LDFLAGS) $(LDLIBS)
+$(eval $(call emit_pics,tests__mod_patch_fixture,tests/mod_patch_fixture.c,,include/openaurora/module.h include/openaurora/services.h))
 
 check: all check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-ui-sources check-ui-skin check-ui-settings check-ui-settings-panel check-ui-settings-rows check-ui-settings-text check-ui-slide check-ui-rebind check-ui-rail-hl check-cec-audio check-audio-session check-cec-audio-policy check-cec-packet check-cec-device check-cec-owner check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-audio-owner check-control check-oa-client check-display check-svg check-vgrid check-runtime $(BUILD)/tests/mod_recovery_fixture.so $(BUILD)/tests/mod_failed_init.so $(BUILD)/tests/registry
 	@BUILD=$(BUILD) sh tests/run.sh
@@ -2188,7 +2295,7 @@ install: all
 	install -m 755 $(BUILD)/oa-audio-broker $(DESTDIR)$(BINDIR)/oa-audio-broker
 	install -m 755 $(MOD_SO) $(DESTDIR)$(LIBDIR)/
 
--include $(CORE_DEP) $(MOD_DEP)
+-include $(CORE_DEP) $(wildcard $(BUILD)/pic/*.d) $(wildcard $(BUILD)/pic/*/*.d) $(wildcard $(BUILD)/pic/*/*/*.d) $(wildcard $(BUILD)/pic/*/*/*/*.d) $(wildcard $(BUILD)/pic/*/*/*/*/*.d)
 
 $(BUILD)/tests/audio_amp: tests/audio_amp.c common/audio_amp.c include/openaurora/audio_amp.h
 	@mkdir -p $(dir $@)
@@ -2206,9 +2313,10 @@ check-audio-amp-profile: $(BUILD)/tests/audio_amp_profile
 	@$(BUILD)/tests/audio_amp_profile
 check: check-audio-amp-profile
 
-$(BUILD)/modules/mod_audio_amp_profile.so: modules/audio_amp_profile/audio_amp_profile.c common/audio_amp_profile.c common/profile.c include/openaurora/audio_amp.h include/openaurora/profile.h include/openaurora/services.h include/openaurora/module.h
+$(BUILD)/modules/mod_audio_amp_profile.so: $(call pic_objs,modules__mod_audio_amp_profile,modules/audio_amp_profile/audio_amp_profile.c common/audio_amp_profile.c common/profile.c)
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_audio_amp_profile,modules/audio_amp_profile/audio_amp_profile.c common/audio_amp_profile.c common/profile.c,-pthread,include/openaurora/audio_amp.h include/openaurora/profile.h include/openaurora/services.h include/openaurora/module.h))
 
 $(BUILD)/tests/amp_profile_module: tests/amp_profile_module.c common/profile.c core/host.h include/openaurora/services.h include/openaurora/audio_amp.h include/openaurora/profile.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
