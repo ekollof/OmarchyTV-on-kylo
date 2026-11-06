@@ -7,9 +7,11 @@
  */
 #include <errno.h>
 #include <inttypes.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "openaurora/module.h"
 #include "openaurora/service_db.h"
@@ -21,6 +23,11 @@ struct ctx {
     const oa_host_api *api;
     struct oa_service_list list;
     int published;
+    /* ABI 3 quiesce: the row array is detached and freed on a worker. */
+    pthread_t cleanup_thread;
+    int cleanup_running;
+    struct oa_service_list cleanup_list;
+    unsigned cleanup_delay_ms;
 };
 
 static struct ctx *g_ctx;
@@ -61,9 +68,29 @@ static int m_init(const oa_host_api *api, void **out)
     return 0;
 }
 
+/* No host API calls after this returns. */
+static void *cleanup_worker(void *v)
+{
+    struct ctx *c = v;
+    if (c->cleanup_delay_ms) {
+        const struct timespec pause = {
+            .tv_sec = c->cleanup_delay_ms / 1000u,
+            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
+        };
+        (void)nanosleep(&pause, NULL);
+    }
+    oa_service_db_free(&c->cleanup_list);
+    return NULL;
+}
+
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    if (c->published || c->cleanup_running) return -EBUSY;
+    c->cleanup_running = 0;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "service_db.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
     oa_service_db_free(&c->list);
     const char *path = c->api->config_get(c->api->priv, "service_db.path",
         DEFAULT_DB);
@@ -89,12 +116,58 @@ static int m_start(void *v)
     return 0;
 }
 
+/* ABI 3 gate: unpublish service.list synchronously, detach the row array, then
+ * free it synchronously or on a worker after service_db.cleanup_delay_ms. */
+static int m_quiesce(void *v)
+{
+    struct ctx *c = v;
+    if (!c) return 0;
+    if (c->cleanup_running) {
+        for (int i = 0; i < 10; i++) {
+            int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+            if (rc == 0) {
+                c->cleanup_running = 0;
+                return 0;
+            }
+            if (rc != EBUSY) {
+                c->cleanup_running = 0;
+                return -EIO;
+            }
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
+        }
+        return -EAGAIN;
+    }
+    int published = c->published;
+    c->published = 0;
+    if (published) c->api->unpublish(c->api->priv, OA_SVC_SERVICE_LIST);
+    if (!c->list.rows) return 0;
+    if (!c->cleanup_delay_ms) {
+        oa_service_db_free(&c->list);
+        return 0;
+    }
+    c->cleanup_list = c->list;
+    memset(&c->list, 0, sizeof c->list);
+    int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+    if (rc) {
+        oa_service_db_free(&c->cleanup_list);
+        return -EIO;
+    }
+    c->cleanup_running = 1;
+    return -EAGAIN;
+}
+
 static void m_stop(void *v)
 {
     struct ctx *c = v;
     int published = c->published;
     c->published = 0;
     if (published) c->api->unpublish(c->api->priv, OA_SVC_SERVICE_LIST);
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    oa_service_db_free(&c->cleanup_list);
     oa_service_db_free(&c->list);
 }
 
@@ -104,6 +177,11 @@ static int m_resume(void *v) { (void)v; return 0; }
 static void m_destroy(void *v)
 {
     struct ctx *c = v;
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    oa_service_db_free(&c->cleanup_list);
     oa_service_db_free(&c->list);
     if (g_ctx == c) g_ctx = NULL;
     free(c);
@@ -113,7 +191,7 @@ static const oa_module descriptor = {
     .magic = OA_MODULE_MAGIC, .abi = OA_ABI_VERSION, .size = sizeof descriptor,
     .name = "service_db", .version = "1", .requires = { "", 0 },
     .init = m_init, .start = m_start, .stop = m_stop, .destroy = m_destroy,
-    .suspend = m_suspend, .resume = m_resume
+    .suspend = m_suspend, .resume = m_resume, .quiesce = m_quiesce
 };
 
 OA_MODULE_EXPORT(descriptor)

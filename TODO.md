@@ -299,14 +299,24 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       again, stop uses the gate. Direct/IPC/UI channel tests pass; ARM links
       libpthread. Full/QEMU pass. CHANNELS-QUIESCE.
 
+- [x] Asynchronous gate for `mod_service_db`: clear publication and unpublish
+      `service.list` synchronously, detach the heap `oa_service_list` row
+      array, then free it synchronously or on a worker after
+      `service_db.cleanup_delay_ms`. `m_stop`/`m_destroy` join/free leftovers;
+      `m_start` refuses if live. Control-socket test with the 525-row dump:
+      reload fails fast, `service-list` ENODEV, status responsive, retry
+      re-reads 525 rows, sorted/name/channel probes work, stop uses the gate.
+      DB unit/module/IPC tests pass; ARM links libsqlite3 + libpthread.
+      Full/QEMU pass. SERVICE-DB-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
-      `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr` and
-      `channels` are the existing models.
+      `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr`,
+      `channels` and `service_db` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

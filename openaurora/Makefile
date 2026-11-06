@@ -561,6 +561,11 @@ check-service-db-module: $(BUILD)/tests/service_db_module $(BUILD)/modules/mod_s
 	@$(BUILD)/tests/service_db_module $(BUILD)/modules $(CURDIR)/../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db || test $$? -eq 77
 check: check-service-db-module
 
+.PHONY: check-service-db-quiesce
+check-service-db-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_service_db.so
+	node tests/service_db_quiesce.cjs $(abspath $(BUILD))
+check: check-service-db-quiesce
+
 .PHONY: check-service-db-ipc
 check-service-db-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_service_db.so
 	node tests/service_db_ipc.cjs $(abspath $(BUILD))
@@ -884,7 +889,7 @@ $(BUILD)/modules/mod_settings.so: modules/settings/settings.c common/launcher_db
 
 $(BUILD)/modules/mod_service_db.so: modules/service_db/service_db.c common/service_db.c include/openaurora/service_db.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) \
 	  -Ithird_party $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
 
 $(BUILD)/modules/mod_epg.so: modules/epg/epg.c common/eit_section.c common/eit_cache.c common/eit_time.c include/openaurora/eit_section.h include/openaurora/eit_cache.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h

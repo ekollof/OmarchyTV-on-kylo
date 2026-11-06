@@ -304,6 +304,19 @@ Direct/IPC/UI channel tests pass; ARM links libpthread. Full/QEMU pass.
 Project ACTIVECHANNELLIST model, not vendor EASI; no LCN/visibility.
 ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer/tuner/epg/pvr/channels are the async modules.
+
+service_db async gate, 2026-11-06: clear publication and unpublish
+service.list synchronously, detach the heap oa_service_list row array, then
+free it synchronously or on a worker after service_db.cleanup_delay_ms.
+m_stop/m_destroy join/free; m_start refuses if live. Control test with the
+525-row dump: reload fails fast, service-list ENODEV, status responsive, retry
+re-reads 525 rows, sorted/name/channel probes work, stop gate. DB unit/module/
+IPC tests pass; ARM links libsqlite3+libpthread. Full/QEMU pass. Project
+read-only dump inventory, not a live vendor settingsDB writer or runtime EASI
+filter; start-time open/read is still synchronous.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg/pvr/channels/service_db are the async modules.
+SERVICE-DB-QUIESCE.
 CHANNELS-QUIESCE.
 
 Real VIN HAL device simulation, 2026-11-06: the shipped ARM libNDAL3.so
