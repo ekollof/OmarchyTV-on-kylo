@@ -11,6 +11,7 @@ int oa_tuner_vendor_demod_init(void *ud, int index);
 int oa_tuner_vendor_dvif_open(void *ud);
 int oa_tuner_vendor_set_tuner_type(void *ud, int handle, uint32_t type);
 int oa_tuner_vendor_av2018_response(void *ud);
+int oa_tuner_vendor_lnb_init(void *ud);
 int oa_tuner_vendor_hal_iic_read(const void *ctx, const void *value,
                                  unsigned len, void *buf, void *ud);
 int oa_tuner_vendor_hal_iic_write(const void *ctx, const void *value,

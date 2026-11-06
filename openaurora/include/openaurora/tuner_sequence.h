@@ -30,7 +30,7 @@ typedef struct {
     int (*av2018_response)(void *ud);       /* vendor returns 1 */
     int (*dvif_open)(void *ud);             /* handle, negative = failure */
     int (*set_tuner_type)(void *ud, int handle, uint32_t type); /* 0 = ok */
-    void (*lnb_init)(void *ud);             /* may be NULL (unowned GPIO) */
+    int (*lnb_init)(void *ud); /* NULL or 1 initialized/0 absent/<0 error */
 } oa_tuner_sequence_ops;
 
 typedef struct {
@@ -40,6 +40,7 @@ typedef struct {
     int dvif_handle;
     int set_type_rc;
     int lnb_called;
+    int lnb_rc;
     uint32_t tuner_type;
 } oa_tuner_sequence_result;
 

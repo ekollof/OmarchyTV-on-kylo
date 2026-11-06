@@ -24,6 +24,7 @@
 #include "openaurora/nim.h"
 #include "openaurora/nim_dtv.h"
 #include "openaurora/nim_dtv_hal.h"
+#include "openaurora/nim_dtv_hw.h"
 #include "openaurora/services.h"
 #include "openaurora/tuner_identity.h"
 #include "openaurora/tuner_sequence.h"
@@ -242,6 +243,11 @@ struct hw_bind {
     int sequence_ran;
     int sequence_rc;
     int tuner_ok;
+    uint32_t nim_state[OA_NIM_DTV_STATE_WORDS];
+    struct oa_nim_dtv_hal_table hal_table;
+    int nim_inited;
+    int hal_connected;
+    int lnb_rc;
     oa_nim_dtv_hal nim_hal;
 };
 
@@ -258,6 +264,21 @@ static int hw_tuner_init(void *v)
     return rc;
 }
 
+static int hw_init_nim(void *v)
+{
+    struct hw_bind *b = v;
+    b->nim_inited = oa_nim_dtv_init_state(b->nim_state,
+                                          OA_NIM_DTV_STATE_WORDS);
+    return b->nim_inited;
+}
+
+static int hw_lnb_init(void *v)
+{
+    struct hw_bind *b = v;
+    b->lnb_rc = oa_tuner_vendor_lnb_init(NULL);
+    return b->lnb_rc;
+}
+
 static int hw_hal_sequence(void *v)
 {
     struct hw_bind *b = v;
@@ -267,13 +288,32 @@ static int hw_hal_sequence(void *v)
         .av2018_response = oa_tuner_vendor_av2018_response,
         .dvif_open = oa_tuner_vendor_dvif_open,
         .set_tuner_type = oa_tuner_vendor_set_tuner_type,
-        .lnb_init = NULL /* LNB_EN GPIO is owned by stock Aurora */
+        .lnb_init = hw_lnb_init
     };
     oa_tuner_sequence_result result;
     b->sequence_ran = 1;
     b->sequence_rc = oa_tuner_sequence_run(&ops, b, (uint32_t)b->sal_type,
                                            &result);
     return b->sequence_rc;
+}
+
+static int hw_connect_hal(void *v)
+{
+    struct hw_bind *b = v;
+    struct oa_nim_dtv_hal_ops ops = {
+        .initialize = hw_hal_sequence,
+        .open = NULL,
+        .set_channel = NULL,
+        .get_channel_status = NULL,
+        .check_lock = NULL,
+        .get_strength = NULL,
+        .get_quality = NULL,
+        .monitor = NULL,
+        .close = NULL,
+        .disconnect = NULL
+    };
+    b->hal_connected = oa_nim_dtv_connect_hal(&b->hal_table, &ops);
+    return b->hal_connected;
 }
 
 static int hw_ir_read(int bus, int code, uint8_t *value, void *v)
@@ -327,9 +367,9 @@ static int tuner_hw_bringup(struct ctx *c)
     };
     oa_nim_dtv_ops nim = {
         .module_buf_info = oa_nim_dtv_module_buf_info,
-        .init_nim_func = NULL, /* _dev_nim_dtv_InitNimFunc unresolved */
+        .init_nim_func = hw_init_nim,
         .hal_demod_initialize = hw_hal_sequence,
-        .connect_hal = NULL,   /* _dev_nim_dtv_Connect2HAL unresolved */
+        .connect_hal = hw_connect_hal,
         .ir_read = hw_ir_read,
         .ir_write = hw_ir_write,
         .signal_done = NULL,
@@ -340,7 +380,9 @@ static int tuner_hw_bringup(struct ctx *c)
     oa_nim_dtv_result result;
     rc = oa_nim_dtv_task_run((int)model, 1, &nim, &b, &result);
     if (rc != 0) return -EIO;
+    if (!b.nim_inited || !b.hal_connected) return -EIO;
     if (!b.tuner_ok || !b.sequence_ran || b.sequence_rc != 0) return -EIO;
+    if (b.lnb_rc < 0) return -EIO;
     if (result.failed_step >= 0) return -EIO;
     return 0;
 }

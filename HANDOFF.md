@@ -683,9 +683,11 @@ error; HAL_dvif_open returns cached handle; SetTunerType ioctl0xc0044485 maps
 unbound (/dev/ntgpio owned). Corrected Hal IIC ctx to 24 bytes
 {bus,addr,subaddr_len,0,timeout,0} (100 type0/400 type4), added MxL661 DEV
 adapter (0xfb pointer), sequence layer and default-off tuner.hw_init gate
-(host -ENOTSUP; TV builds mod_tuner.so sha256 50b27429... linking libNDAL3).
-Host/ASan/full/ARM-qemu pass. LNB GPIO + NIM init/connect + hardware
-acceptance remain. TUNER-BRINGUP.
+(host -ENOTSUP; TV builds mod_tuner.so sha256 b50a88e3... linking libNDAL3).
+Host/ASan/full/ARM-qemu pass. NIM state/Connect2HAL equivalents and RT5047
+LNB_EN descriptor+Hal_Gpio adapter are wired behind the gate; hardware
+acceptance remains blocked by the owner's read-only/no-takeover instruction.
+TUNER-BRINGUP.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified

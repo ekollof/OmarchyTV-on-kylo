@@ -19,6 +19,7 @@ struct fake {
     int set_handle;
     uint32_t set_type;
     int set_calls;
+    int lnb_rc;
 };
 
 static int c_demod(void *ud, int index)
@@ -60,10 +61,11 @@ static int c_set(void *ud, int handle, uint32_t type)
     return f->set_rc;
 }
 
-static void c_lnb(void *ud)
+static int c_lnb(void *ud)
 {
     struct fake *f = ud;
     f->calls[f->n++] = C_LNB;
+    return f->lnb_rc;
 }
 
 static const oa_tuner_sequence_ops ops = {
@@ -75,6 +77,7 @@ static void reset(struct fake *f)
     memset(f, 0, sizeof(*f));
     f->av_rc = 1;
     f->dvif_handle = 7;
+    f->lnb_rc = 1;
 }
 
 static void test_mxl661(void)
@@ -91,6 +94,7 @@ static void test_mxl661(void)
     assert(f.set_calls == 1 && f.set_handle == 7 && f.set_type == 0xc);
     assert(r.demod_rc == 0 && r.tuner_rc == 0 && r.av2018_rc == 1);
     assert(r.dvif_handle == 7 && r.set_type_rc == 0 && r.lnb_called == 1);
+    assert(r.lnb_rc == 1);
     assert(r.tuner_type == 0xc);
 }
 
@@ -111,7 +115,7 @@ static void test_external_type_skips_tuner(void)
     assert(oa_tuner_sequence_run(&ops, &f, 0xf, &r) == 0);
     assert(f.n == 2 && f.calls[0] == C_DEMOD && f.calls[1] == C_LNB);
     assert(r.dvif_handle == 0 && r.set_type_rc == 0 && r.tuner_type == 0);
-    assert(r.lnb_called == 1);
+    assert(r.lnb_called == 1 && r.lnb_rc == 1);
 }
 
 static void test_failures_continue(void)
@@ -145,6 +149,16 @@ static void test_failures_continue(void)
     f.av_rc = 0;
     assert(oa_tuner_sequence_run(&ops, &f, 0xd, &r) == 0);
     assert(r.av2018_rc == 0 && f.calls[5] == C_LNB);
+
+    /* LNB absence/failure is recorded but does not fail the sequence. */
+    reset(&f);
+    f.lnb_rc = 0;
+    assert(oa_tuner_sequence_run(&ops, &f, 0xd, &r) == 0);
+    assert(r.lnb_rc == 0 && f.calls[5] == C_LNB);
+    reset(&f);
+    f.lnb_rc = -1;
+    assert(oa_tuner_sequence_run(&ops, &f, 0xd, &r) == 0);
+    assert(r.lnb_rc == -1 && f.calls[5] == C_LNB);
 }
 
 static void test_no_lnb_and_bad_args(void)

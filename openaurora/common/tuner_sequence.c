@@ -27,8 +27,8 @@ int oa_tuner_sequence_run(const oa_tuner_sequence_ops *ops, void *ud,
 
     /* HAL_Demod_User_Initialize always calls SAL_LNB_Initialize afterwards. */
     if (ops->lnb_init) {
-        ops->lnb_init(ud);
         out->lnb_called = 1;
+        out->lnb_rc = ops->lnb_init(ud);
     }
 
     if (out->demod_rc != 0 || out->tuner_rc != 0)

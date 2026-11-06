@@ -1068,11 +1068,13 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       context, the MxL661 DEV adapter (0xfb pointer), the ordered sequence
       (`common/tuner_sequence.c`) and the default-off `tuner.hw_init=1` gate in
       `mod_tuner` (host refuses with -ENOTSUP; ARM `mod_tuner.so` builds with
-      libNDAL3). Still open: LNB_EN GPIO/RT5047 (stock aurora owns
-      `/dev/ntgpio`, index5=LNB_EN), `_dev_nim_dtv_InitNimFunc`/
-      `Connect2HAL` equivalents, the SI2151 backend, and real hardware
-      acceptance after a controlled ownership handover. Do not touch IIC/GPIO
-      while stock owns the devices.
+      libNDAL3). LNB_EN/RT5047 (descriptor ioctl + `Hal_Gpio_Init/Write`) and
+      `_dev_nim_dtv_InitNimFunc`/`Connect2HAL` equivalents (0x29-word state
+      clear, typed HAL table) are implemented behind the gate. Still open: the
+      SI2151 backend, the NIM HAL tuning table beyond `initialize`, and real
+      hardware acceptance after a controlled ownership handover (currently
+      blocked by the owner's read-only/no-takeover instruction). Do not touch
+      IIC/GPIO while stock owns the devices.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff
       tests pass host/sanitizer/ARM-qemu. CEC-AUDIO-CONTRACT.

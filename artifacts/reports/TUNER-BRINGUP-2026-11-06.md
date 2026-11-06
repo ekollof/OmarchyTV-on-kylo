@@ -93,6 +93,30 @@ MxL661 ops. The fake test models the 0xfb pointer protocol and runs the full
 41-write/5-read init through the adapter (46 DEV writes counting the five
 pointer writes, 5 reads).
 
+## NIM init/Connect2HAL and RT5047
+
+`_dev_nim_dtv_InitNimFunc` @ `0x00860114` zeroes a 0x29-word NIM state block
+and returns 1; it performs no I2C. `_dev_nim_dtv_Connect2HAL` @ `0x0086fea8`
+fills a 0x29-entry table with `HAL_Demod_User_*` pointers (Initialize, Open,
+SetChannel, Monitor, Close, GetChannelStatus, CheckLock, Strength, Quality,
+SNR, ...; entry 0x12 is zero) and returns 1. Both are state/table functions.
+
+`common/nim_dtv_hw.c` reproduces the state clear and a typed HAL table
+(initialize/open/set_channel/status/lock/strength/quality/monitor/close/
+disconnect). Only `initialize` is wired to the recovered sequence; the tuning
+entries remain NULL rather than invented.
+
+RT5047 (`SAL_LNB_Initialize` @ `0x00877384` -> `RT5047_Device_Initialize`
+@ `0x00877674`): look up function index 5 from `au8GPIOFuncName` (`LNB_EN`),
+then `DEV_GPIO_SetLevel(pin, level)`. `DEV_GPIO_GetDescription` @ `0x00850c38`
+uses the 0x88-byte ioctl `0xc088671f` on `/dev/ntgpio`: function name at
++0x80, pin at +0x00, level strings ("low"/"high") at +0x20. `DEV_GPIO_SetLevel`
+takes the GPIO mutex and calls `Hal_Gpio_Write`; `Hal_Gpio_Init` opens the
+device and the write issues ioctls `0x670a`, `0x670e`, `0x670c`. The TV adapter
+`oa_tuner_vendor_lnb_init` implements the descriptor ioctl and
+`Hal_Gpio_Init/Write`; `common/lnb_rt5047.c` handles present/absent/failure.
+This is a real GPIO write and only runs behind the gate.
+
 ## Module gate
 
 `mod_tuner` now accepts `tuner.hw_init=1` (default off):
@@ -104,19 +128,20 @@ pointer writes, 5 reads).
   `tuner.pcb_layout` (default 14), requires type 0xd, then runs the NIM-DTV
   task with `hal_requested=1`:
   - `hal_demod_initialize` = the recovered sequence (MxL661 init + AV2018 +
-    dvif + SetTunerType),
+    dvif + SetTunerType + RT5047),
   - `module_buf_info` = the verified return-0 stub,
   - IIC callbacks = `oa_nim_dtv_hal_*` over `Hal_Iic_Read/Write`,
-  - `init_nim_func` and `connect_hal` are NULL because
-    `_dev_nim_dtv_InitNimFunc` / `Connect2HAL` are aurora-internal and not
-    available to a replacement process,
-  - `lnb_init` is NULL because the LNB_EN GPIO is unowned.
+  - `init_nim_func` = `oa_nim_dtv_init_state` (zero the 0x29-word block),
+  - `connect_hal` = `oa_nim_dtv_connect_hal` with `initialize` wired and the
+    tuning entries NULL,
+  - `lnb_init` = `oa_tuner_vendor_lnb_init` (LNB_EN descriptor + level).
   Safety deviation: if the MxL661 init fails, the IIC callbacks fail before
   touching the bus, so the NIM-DTV task stops instead of continuing the
   vendor's I2C codes. The vendor task cannot observe the init failure; this
   guard keeps "no IIC after a failed tuner init" true for the gate.
-  The module returns `-EIO` if the sequence or an IIC step failed. The gate is
-  not exercised on hardware in this milestone.
+  The gate returns `-EIO` if the NIM state/vtable, sequence or IIC step
+  failed, or if an existing LNB_EN write failed (absent LNB is accepted).
+  It has not been exercised on hardware.
 
 ## Evidence
 
@@ -125,6 +150,8 @@ ok mxl661 dev: DEV_IIC context, 0xfb pointer read, failure propagation and
                full init over Hal_Iic
 ok tuner sequence: demod->tuner->AV2018->dvif->SetTunerType->LNB order,
                    0xd->0xc/8->8, type-0xf skip and failure continuation
+ok nim dtv hw: 0x29-word state clear and HAL table install
+ok rt5047: LNB_EN present/absent/error flow and level write
 ok tuner hal: four bus IDs from description+0x19, 0xff-only resolution, ...
 ok mxl661: default/custom init order, RMW masks, defaults table and failure behavior
 ok nim dtv hal: DEV_IIC bus/reg/address packing and Hal success inversion
@@ -136,22 +163,23 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 50b27429d14530a490d6f64f78b6bb55eef8a8be190cc95d7f60730374e3a882
+sha256 b50a88e35e89aac6ae615c9092a1f6f690d748703af3196e36060906610268d0
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
-undefined-but-runtime: Hal_Iic_Read/Write, HAL_Demod_Init, HAL_dvif_open,
+undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
+                       HAL_Demod_Init, HAL_dvif_open,
                        HAL_DEMOD_EXT_DVIF_SetTunerType
 ```
 
 ## Remaining
 
-1. LNB_EN GPIO: implement the Novatek GPIO descriptor/`Hal_Gpio_Write` path
-   only under a controlled ownership handover (stock Aurora currently owns
-   `/dev/ntgpio`).
-2. `_dev_nim_dtv_InitNimFunc` and `_dev_nim_dtv_Connect2HAL` equivalents
-   (aurora-internal; the gate currently skips them).
-3. SI2151 tuner backend (only the MxL661 path is recovered).
-4. Real hardware acceptance: stop stock Aurora, verify exclusive ownership of
-   `/dev/ntkiic0`, `/dev/ntgpio`, `/dev/ntkdvif` and `frontend0`, run the gate,
-   observe tuner lock, then restore stock and verify.
+1. SI2151 tuner backend (only the MxL661 path is recovered).
+2. The NIM HAL tuning table beyond `initialize` (SetChannel, Monitor,
+   GetChannelStatus, strength/quality, ...) is still NULL; only the init chain
+   is wired.
+3. Hardware acceptance is **not done**. The owner's standing instruction is
+   read-only, no takeovers; running the gate requires explicit authorization
+   to stop stock Aurora, claim `/dev/ntkiic0`, `/dev/ntgpio`, `/dev/ntkdvif`
+   and `frontend0`, observe tuner lock, then restore stock and verify.
+
 
 No tuner hardware has been accessed.
