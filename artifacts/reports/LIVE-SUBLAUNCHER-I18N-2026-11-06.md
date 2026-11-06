@@ -85,8 +85,15 @@ it again**. A QEMU Hebrew frame renders `מצב`, `חסכון בחשמל`,
 `קירוב והרחקה של תמונה`, `טבעי`, `מקסימום` and LTR `16:9`.
 
 Arabic/Persian values are different: they are stored logical and already
-carry Arabic presentation forms (`MODE` `'ﻭﺿﻊ'`). Drawing them LTR without a
-run-aware visual reorder would be wrong; that remains open.
+carry Arabic presentation forms (`MODE` `'ﻭﺿﻊ'`). `common/rtl_order.c`
+converts them to visual order for the LTR renderer: Arabic code points are
+RTL, Latin/digits are LTR, neutral runs (space/punctuation) take the RTL
+paragraph direction, the run order is reversed, and each Arabic run is
+reversed. A string with no Arabic code point is copied unchanged, so the
+English `16:9` fallback stays LTR. Bracket mirroring across runs is not
+implemented. QEMU Arabic renders `وضع`, `توفير الطاقة`,
+`تكبير/تصغير الصورة`, `طبيعي`, `حد أقصى`, `16:9`; Persian renders `حالت`,
+`صرفه جویی در مصرف انرژی`, `ابعاد تصویر`, `طبیعی`, `حداکثر`, `16:9`.
 
 The 41-locale font audit against the vendor 240 px box:
 
@@ -150,17 +157,20 @@ ok langprofile: 41 locales, localized MODE/ENERGY_SAVING/PICTURE_ZOOM and eng->k
 ok i18n service: 41 locales, Dutch/English reload and failed-load isolation
 ok i18n quiesce: reload fails fast, stays responsive, retry completes
 ok sub text locales: 41 locales; max label 264 px, max value 183 px; 2 label/0 value overflow, 0 missing glyphs
+ok rtl order: Arabic/Persian run visual order and LTR fallbacks
 ok qemu sub-launcher live: Dutch text within 4 px of p0/03; key 22 timer card bottom 405 -> 450 over 14 frames
 ok qemu sub-launcher live: heb text inside the 240 px box; key 22 timer card bottom 405 -> 450 over 27 frames
+ok qemu sub-launcher live: ara text inside the 240 px box; key 22 timer card bottom 405 -> 450 over 28 frames
+ok qemu sub-launcher live: per text inside the 240 px box; key 22 timer card bottom 405 -> 450 over 14 frames
 full_check=0
 ```
 
 ## Limits
 
-- Hebrew now uses the stored visual order. Arabic/Persian are stored logical
-  and pre-shaped; their run-aware visual reorder/shaping remains open. Mixed
-  Hebrew/Latin runs are drawn in the profile's stored order, not recomputed
-  with a BiDi algorithm.
+- Hebrew uses the stored visual order. Arabic/Persian now use the run reorder
+  above, but bracket mirroring across runs and mixed Hebrew/Latin BiDi are not
+  implemented. The Arabic/Persian order is a renderer-side transform verified
+  by QEMU rendering, not a capture-compared vendor oracle.
 - Bulgarian and Ukrainian labels exceed the 240 px row box and clip; the vendor
   value ellipsis path is decoded only from `setElipses(true)`, with no
   overflowing value to exercise it.

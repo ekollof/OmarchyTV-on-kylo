@@ -254,9 +254,10 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       values (elide), with no shrink-to-fit. At 240 px only Bulgarian
       ENERGY_SAVING (253) and Ukrainian PICTURE_ZOOM (264) clip; Lithuanian
       (239) fits. Profile Hebrew is stored in visual order and is drawn as
-      stored; Arabic/Persian are stored logical + pre-shaped and still need
-      run-aware visual order. Capture focused vendor cards and multilingual
-      oracle frames before claiming full visual parity.
+      stored; Arabic/Persian are converted from stored logical order by
+      `common/rtl_order.c` (QEMU ara/per verified). Bracket mirroring across
+      runs and mixed Hebrew/Latin BiDi remain. Capture focused vendor cards and
+      multilingual oracle frames before claiming full visual parity.
 
 - [ ] Live setting values and `setting:`/`set:`: the live cards use the p0/03
       values (NATURAL/MAXIMUM_STR/ZOOM_MODE_16_9), not live settings

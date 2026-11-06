@@ -33,4 +33,13 @@ const char *oa_langprofile_string(const struct oa_langprofile *profile,
  * NUL-terminated string, EOVERFLOW if cap is too small, or EINVAL. */
 int oa_langprofile_sanitize(const char *in, char *out, size_t cap);
 
+/* Convert stored logical Arabic/Persian text to visual order for an LTR
+ * renderer (reverse run order, reverse Arabic runs, keep Latin/digit runs
+ * left-to-right). Bracket mirroring across runs is not implemented. A string
+ * with no Arabic code point is copied unchanged, so a Latin fallback such as
+ * "16:9" stays LTR. Do not use this for Hebrew: the profile stores Hebrew
+ * already in visual order. Returns 0, EOVERFLOW if cap is too small, or
+ * EINVAL. */
+int oa_langprofile_visual_order(const char *in, char *out, size_t cap);
+
 #endif

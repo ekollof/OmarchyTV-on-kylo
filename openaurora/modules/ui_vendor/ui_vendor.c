@@ -647,7 +647,7 @@ static int sub_text_localized(oa_canvas *cv, const struct oa_bitmap_font *font,
                               const oa_i18n_iface *i18n, const char *key,
                               const char *locale, int pen_y)
 {
-    char clean[256];
+    char clean[256], visual[256];
     const char *loc = locale ? locale : i18n->current_locale();
     const char *text = i18n->translate(key, loc);
     if (oa_langprofile_sanitize(text, clean, sizeof clean) != 0) return EINVAL;
@@ -656,9 +656,13 @@ static int sub_text_localized(oa_canvas *cv, const struct oa_bitmap_font *font,
      * converts them to logical order for the vendor's RTL text engine, whose
      * layout restores the stored visual order. This renderer draws LTR, so it
      * must use the stored order directly and must not reverse it again.
-     * Arabic/Persian values are stored logical and pre-shaped; their visual
-     * run order is still open. */
-    return sub_text_draw(cv, font, clean, pen_y);
+     * Arabic/Persian values are stored logical and pre-shaped, so those need
+     * the run reorder before LTR drawing. */
+    text = clean;
+    if (loc && (!strcmp(loc, "ara") || !strcmp(loc, "per")) &&
+        oa_langprofile_visual_order(clean, visual, sizeof visual) == 0)
+        text = visual;
+    return sub_text_draw(cv, font, text, pen_y);
 }
 
 /* Render the three localized label/value pairs into card-sized transparent

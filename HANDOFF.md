@@ -125,8 +125,9 @@ reorder targets the vendor RTL engine); QEMU heb shows מצב/חסכון בחש�
 קירוב והרחקה של תמונה/טבעי/מקסימום/16:9. Runtime Left/Right uses `ui.clock`
 +10 ms timer for300 ms; QEMU `key 22` through the real IR parser card0
 bottom405→450. `mod_i18n` has the ABI3 async quiesce gate; `ir`/`i18n` are the
-async modules. Arabic/Persian visual order/shaping, live values, other async
-modules and scanout remain. LIVE-SUBLAUNCHER-I18N.
+async modules. Arabic/Persian run order is now handled by
+`common/rtl_order.c` (QEMU ara/per verified); bracket mirroring, live values,
+other async modules and scanout remain. LIVE-SUBLAUNCHER-I18N.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over
 Markt/Netflix (700x280, ~37ms effective) captured one redraw at t=53ms

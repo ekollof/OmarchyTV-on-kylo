@@ -116,9 +116,13 @@ Left/Right, `ui.clock` and a10 ms timer for300 ms; QEMU `key 22` through the
 real IR parser (plat no-vendor stub, ir no UART) moves card0 bottom405→450.
 `mod_i18n` now has the ABI3 async quiesce gate (unpublish, detach/free5 MB
 profile on a worker; reload fails fast and retries); `ir` and `i18n` are the
-async modules. Arabic/Persian are stored logical+pre-shaped and still need
-run-aware visual order/shaping; live setting values, other async modules and
-scanout remain. LIVE-SUBLAUNCHER-I18N.
+async modules. Arabic/Persian are stored logical+pre-shaped; `common/rtl_order.c`
+now reverses run order for the LTR renderer (Arabic RTL, Latin/digits LTR,
+neutral runs take RTL; no Arabic → unchanged). QEMU ara renders
+وضع/توفير الطاقة/تكبير تصغير الصورة/طبيعي/حد أقصى/16:9 and per renders
+حالت/صرفه جویی در مصرف انرژی/ابعاد تصویر/طبیعی/حداکثر. Bracket mirroring,
+live setting values, other async modules and scanout remain.
+LIVE-SUBLAUNCHER-I18N.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
 Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,

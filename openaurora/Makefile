@@ -801,7 +801,7 @@ $(BUILD)/modules/mod_ui_anim.so: modules/ui_anim/ui_anim.c common/ui_anim.c incl
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
-$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/langprofile.h
+$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/langprofile.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
@@ -1959,6 +1959,16 @@ check-sub-text-locales: $(BUILD)/tests/sub_text_locales
 	@test -f $(LANGPROFILE) && test -f $(SUBFONT).txt && test -f $(SUBFONT).bin || { echo "missing langprofile/font pack inputs" >&2; exit 2; }
 	@$(BUILD)/tests/sub_text_locales $(LANGPROFILE) $(SUBFONT).txt $(SUBFONT).bin
 check: check-sub-text-locales
+
+$(BUILD)/tests/rtl_order: tests/rtl_order.c common/langprofile.c common/rtl_order.c include/openaurora/langprofile.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ tests/rtl_order.c common/langprofile.c common/rtl_order.c
+
+.PHONY: check-rtl-order
+check-rtl-order: $(BUILD)/tests/rtl_order
+	@test -f $(LANGPROFILE) || { echo "missing $(LANGPROFILE); the real langprofile is required" >&2; exit 2; }
+	@$(BUILD)/tests/rtl_order $(LANGPROFILE)
+check: check-rtl-order
 
 $(BUILD)/tests/i18n_service: tests/i18n_service.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
