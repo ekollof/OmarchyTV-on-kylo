@@ -25,6 +25,77 @@ including the socket fixtures, decoder comparison and grid/capture research.
 See AGENT-REVIEW-2026-11-05 for corrections and current verification. Earlier
 test counts remain dated evidence; no full decoder/display/ownership gate closes.
 
+## Scheduled takeover test queue (single session)
+
+One owner-authorized session on 192.168.178.87. Nothing here is accepted until
+observed on the TV and stock operation is restored and verified. Offline tests
+and prior dated captures do not close these items. No persistent install,
+boot-hook or firmware changes; the watchdog must never be left disabled.
+
+### Preflight and rollback
+
+- [ ] Capture stock identity: uptime, appmgr/Aurora PIDs, `/proc/<pid>/fd`
+      targets (`ntgpio`, `ntkiic0`, `ntkdvif`, `frontend0`, display), display
+      state and `/conf/mb230_{hw,sw}profile.bin` MD5s.
+- [ ] Stage `build-tv-v3` `openaurora` and the required modules under `/tmp`;
+      verify size/SHA256 before execution; no writes to `/vendor`, `/conf` or
+      boot hooks.
+- [ ] Confirm the USB recovery media/script and `/conf/coredumpnoreset`; agree
+      the recovery/reboot path with the owner before starting.
+- [ ] Use the verified `wdtctl disable` / `wdtctl set 10` procedure only for
+      the test window; record every transition and restore stock feeding.
+- [ ] After each group: stop openaurora/modules, remove staging, restart stock
+      Aurora/appmgr (or reboot), verify PIDs/fds/display/profile and confirm
+      no helper or disabled-watchdog state is left behind.
+
+### Tuner / NIM / LNB (main goal)
+
+- [ ] Claim `/dev/ntkiic0`, `/dev/ntgpio`, `/dev/ntkdvif` and
+      `/dev/dvb/adapter0/frontend0`; verify stock no longer holds them.
+- [ ] `tuner.hw_init=1`, `tuner.backend=hal`, `/conf/mb230_hwprofile.bin`,
+      `tuner.pcb_layout=14`; verify SAL type 0xd (MxL661).
+- [ ] Observe the MxL661 init: reset, defaults table, `0x31` RMW, xtal,
+      IF-out, AGC and power-up; check the 41-write/5-read order and errors.
+- [ ] DVB-T tune on a known free-to-air multiplex (no CI+ card needed): case 9
+      IF, case 0xd start tune and case 0xb lock; verify PLL/spur writes, lock,
+      strength, quality and frequency.
+- [ ] DVB-C tail if a cable signal is available; otherwise record "not tested"
+      and do not mark it accepted.
+- [ ] NIM `InitNimFunc`/`Connect2HAL`: 0x29-word state clear, table install,
+      IIC codes 0x15/0x11/0x40, checked/ignored returns and the no-IIC-after-
+      failed-MxL661-init guard.
+- [ ] RT5047 LNB_EN descriptor + `Hal_Gpio_Init/Write`; if no LNB hardware or
+      signal is available, verify the descriptor/no-op path and record the
+      limit.
+- [ ] Typed/raw 0x5c channel and the verified 0x180 status fields; record the
+      unimplemented per-case maps as still open.
+
+### Display / panel
+
+- [ ] `display.verify_scanout` and full-screen bars; first frame on
+      vendor-initialized fb1; panel curve/`panel.duty_max`; backlight and
+      resume; restore stock display and verify.
+
+### Audio / CEC
+
+- [ ] Amp profile/init/reset/mute/standby (AD82587), speaker gain/volume and
+      mixer; verify audible output and no stuck mute/standby.
+- [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
+      ARC/audio and TX/RX; shared-owner queries only where read-only.
+
+### Input / source / PVR
+
+- [ ] Source/VIN switching: CVBS/HDMI1-3/YPbPr/VGA/TV IDs and picture slots.
+- [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release.
+- [ ] PVR: frontend/demux/dvr open, record/playback and TS output; record what
+      is gated by storage.
+
+### Separate owner gates (not this session unless explicitly extended)
+
+- [ ] Cold independent startup / boot without stock Aurora.
+- [ ] MCU/watchdog authority and standby/resume ownership.
+- [ ] Any persistent replacement or boot-hook change.
+
 ## Current acceptance gates
 
 - [x] Offline display simulation feasibility: actual fbdev module with wrapped
