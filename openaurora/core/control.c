@@ -49,17 +49,19 @@ struct client {
 
 /* Additive non-blocking module batches: one lifecycle operation per loop turn,
  * so a stack of modules does not monopolise the control loop. Each individual
- * init/start still runs to completion on the loop thread — the batch only
- * bounds the burst, it cannot make one slow module call asynchronous. */
+ * init/start/stop/unload/reload still runs to completion on the loop thread —
+ * the batch only bounds the burst, it cannot make one slow module call
+ * asynchronous. A failed entry is logged and the next one still runs. */
 #define BATCH_MAX 64
 #define BATCH_NAME 128
+enum { BATCH_LOAD, BATCH_START, BATCH_STOP, BATCH_UNLOAD, BATCH_RELOAD };
 static struct {
     char name[BATCH_NAME];
-    int start;
+    int op;
 } g_batch[BATCH_MAX];
 static unsigned g_batch_head, g_batch_count;
 
-static int batch_enqueue(const char *name, int start)
+static int batch_enqueue(const char *name, int op)
 {
     if (!name || !*name || strlen(name) >= BATCH_NAME)
         return 0;
@@ -67,7 +69,7 @@ static int batch_enqueue(const char *name, int start)
         return 0;
     unsigned tail = (g_batch_head + g_batch_count) % BATCH_MAX;
     memcpy(g_batch[tail].name, name, strlen(name) + 1);
-    g_batch[tail].start = start;
+    g_batch[tail].op = op;
     g_batch_count++;
     return 1;
 }
@@ -79,20 +81,36 @@ void oa_control_pump(oa_host *h)
     if (!h || h->sleep_cycle || h->shutting_down || g_batch_count == 0)
         return;
     char name[BATCH_NAME];
-    int start = g_batch[g_batch_head].start;
+    int op = g_batch[g_batch_head].op;
     memcpy(name, g_batch[g_batch_head].name, sizeof name);
     g_batch_head = (g_batch_head + 1) % BATCH_MAX;
     g_batch_count--;
 
     oa_mod *m = oa_host_find_module(h, name);
-    if (!m)
-        m = oa_module_load(h, name);
-    if (!m) {
-        h->api.log(h, OA_LOG_ERROR, "batch: load %s failed", name);
-        return;
+    switch (op) {
+    case BATCH_LOAD:
+        if (!m && !oa_module_load(h, name))
+            h->api.log(h, OA_LOG_ERROR, "batch: load %s failed", name);
+        break;
+    case BATCH_START:
+        if (!m)
+            m = oa_module_load(h, name);
+        if (!m || oa_module_start(h, m) != 0)
+            h->api.log(h, OA_LOG_ERROR, "batch: start %s failed", name);
+        break;
+    case BATCH_STOP:
+        if (!m || oa_module_stop(h, m) != 0)
+            h->api.log(h, OA_LOG_ERROR, "batch: stop %s failed", name);
+        break;
+    case BATCH_UNLOAD:
+        if (oa_module_unload(h, name, 0) != 0)
+            h->api.log(h, OA_LOG_ERROR, "batch: unload %s failed", name);
+        break;
+    case BATCH_RELOAD:
+        if (oa_module_reload(h, name, 0) != 0)
+            h->api.log(h, OA_LOG_ERROR, "batch: reload %s failed", name);
+        break;
     }
-    if (start && oa_module_start(h, m) != 0)
-        h->api.log(h, OA_LOG_ERROR, "batch: start %s failed", name);
 }
 
 int oa_control_pending(oa_host *h)
@@ -293,6 +311,9 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  load <name|path>         dlopen + init\n"
                  "  load-batch <names...>    queue loads, one per loop turn\n"
                  "  start-batch <names...>   queue load+start, one per loop turn\n"
+                 "  stop-batch <names...>    queue stops, one per turn (consumers first)\n"
+                 "  unload-batch <names...>  queue unloads, one per turn (consumers first)\n"
+                 "  reload-batch <names...>  queue hot reloads, one per turn (consumers first)\n"
                  "  start <name>             start (after deps)\n"
                  "  stop <name>              stop\n"
                  "  unload <name> [--force]  stop + destroy + dlclose\n"
@@ -1499,23 +1520,28 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         snprintf(outbuf, outlen, "%s %s\n", m ? "ok" : "failed", a1);
         return m ? 0 : -1;
     }
-    if (!strcmp(cmd, "load-batch") || !strcmp(cmd, "start-batch")) {
+    int bop = -1;
+    if (!strcmp(cmd, "load-batch")) bop = BATCH_LOAD;
+    else if (!strcmp(cmd, "start-batch")) bop = BATCH_START;
+    else if (!strcmp(cmd, "stop-batch")) bop = BATCH_STOP;
+    else if (!strcmp(cmd, "unload-batch")) bop = BATCH_UNLOAD;
+    else if (!strcmp(cmd, "reload-batch")) bop = BATCH_RELOAD;
+    if (bop >= 0) {
         if (!a1) {
             snprintf(outbuf, outlen, "usage: %s <name> [name...]\n", cmd);
             return -1;
         }
-        int start = cmd[0] == 's';
         int queued = 0, dropped = 0;
         const char *head[7] = { a1, a2, a3, a4, a5, a6, a7 };
         for (int i = 0; i < 7 && head[i]; i++) {
-            if (batch_enqueue(head[i], start))
+            if (batch_enqueue(head[i], bop))
                 queued++;
             else
                 dropped++;
         }
         char *more = NULL;
         while (save && (more = strtok_r(NULL, " \t\r\n", &save)) != NULL) {
-            if (batch_enqueue(more, start))
+            if (batch_enqueue(more, bop))
                 queued++;
             else
                 dropped++;

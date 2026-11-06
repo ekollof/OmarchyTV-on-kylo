@@ -63,6 +63,52 @@ int main(int argc, char **argv)
     assert(oa_control_pending(&h) == 0);
     puts("  ok   batch_load: start-batch starts one module per pump");
 
+    /* stop-batch stops one module per turn and leaves it loaded. */
+    command(&h, "stop-batch batch_a batch_c", "queued 2\n");
+    oa_control_pump(&h);
+    assert(state(&h, "batch_a") == OA_ST_LOADED);
+    assert(state(&h, "batch_c") == OA_ST_STARTED);
+    oa_control_pump(&h);
+    assert(state(&h, "batch_c") == OA_ST_LOADED);
+    assert(oa_control_pending(&h) == 0);
+    puts("  ok   batch_load: stop-batch stops one module per pump");
+
+    /* reload-batch keeps the loaded/started state one module per turn. */
+    command(&h, "start-batch batch_a", "queued 1\n");
+    oa_control_pump(&h);
+    assert(state(&h, "batch_a") == OA_ST_STARTED);
+    command(&h, "reload-batch batch_a", "queued 1\n");
+    oa_control_pump(&h);
+    assert(state(&h, "batch_a") == OA_ST_STARTED);
+    assert(oa_control_pending(&h) == 0);
+    puts("  ok   batch_load: reload-batch preserves started state");
+
+    /* unload-batch removes one module per turn. */
+    command(&h, "unload-batch batch_a batch_c", "queued 2\n");
+    oa_control_pump(&h);
+    assert(state(&h, "batch_a") == OA_ST_EMPTY);
+    assert(state(&h, "batch_c") == OA_ST_LOADED);
+    oa_control_pump(&h);
+    assert(state(&h, "batch_c") == OA_ST_EMPTY);
+    assert(oa_control_pending(&h) == 0);
+    puts("  ok   batch_load: unload-batch removes one module per pump");
+
+    /* A missing stop entry does not stall the following module. */
+    command(&h, "start-batch batch_a", "queued 1\n");
+    oa_control_pump(&h);
+    assert(state(&h, "batch_a") == OA_ST_STARTED);
+    command(&h, "stop-batch no_such_module_xyz batch_a", "queued 2\n");
+    oa_control_pump(&h);
+    assert(state(&h, "batch_a") == OA_ST_STARTED);
+    oa_control_pump(&h);
+    assert(state(&h, "batch_a") == OA_ST_LOADED);
+    assert(oa_control_pending(&h) == 0);
+    puts("  ok   batch_load: missing stop entry does not stall the rest");
+
+    command(&h, "start-batch batch_a", "queued 1\n");
+    oa_control_pump(&h);
+    assert(state(&h, "batch_a") == OA_ST_STARTED);
+
     /* Missing entries are reported by the pump and do not stall later work. */
     command(&h, "load-batch no_such_module_xyz batch_a", "queued 2\n");
     oa_control_pump(&h);

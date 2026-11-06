@@ -76,6 +76,12 @@ async function main() {
             return data.includes('state   ' + want);
         }, name + ' ' + want);
     }
+    async function waitGone(name) {
+        await waitFor(async () => {
+            const reply = await command('status ' + name);
+            return reply.includes('no such module');
+        }, name + ' gone');
+    }
 
     try {
         await waitFor(() => fs.existsSync(socket), 'socket');
@@ -99,6 +105,34 @@ async function main() {
         await waitState('ui_clock', 'started');
         await waitState('ui_anim', 'started');
 
+        /* The reverse direction: stop, reload and unload stacks one per turn. */
+        /* Teardown is consumers first: the provider holds are still live. */
+        assert.equal(await command('stop-batch ui_anim ui_clock ticker'),
+            'queued 3');
+        await waitState('ticker', 'loaded');
+        await waitState('ui_clock', 'loaded');
+        await waitState('ui_anim', 'loaded');
+
+        assert.equal(await command('reload-batch ui_anim'), 'queued 1');
+        await waitState('ui_anim', 'loaded');
+
+        assert.equal(await command('unload-batch ui_anim ui_clock ticker'),
+            'queued 3');
+        await waitGone('ticker');
+        await waitGone('ui_clock');
+        await waitGone('ui_anim');
+
+        assert.equal(await command('load-batch ticker ui_clock ui_anim'),
+            'queued 3');
+        await waitState('ticker', 'loaded');
+        await waitState('ui_clock', 'loaded');
+        await waitState('ui_anim', 'loaded');
+        assert.equal(await command('start-batch ticker ui_clock ui_anim'),
+            'queued 3');
+        await waitState('ticker', 'started');
+        await waitState('ui_clock', 'started');
+        await waitState('ui_anim', 'started');
+
         /* Re-queueing a loaded/started module is idempotent, and a missing
          * entry does not stop later entries. */
         assert.equal(await command('load-batch ticker'), 'queued 1');
@@ -110,7 +144,11 @@ async function main() {
         const help = await requestUntil('help\n', '  quit');
         assert.match(help, /load-batch <names\.\.\.>/);
         assert.match(help, /start-batch <names\.\.\.>/);
+        assert.match(help, /stop-batch <names\.\.\.>/);
+        assert.match(help, /unload-batch <names\.\.\.>/);
+        assert.match(help, /reload-batch <names\.\.\.>/);
         assert.equal(await command('load-batch'), 'usage: load-batch <name> [name...]');
+        assert.equal(await command('stop-batch'), 'usage: stop-batch <name> [name...]');
 
         child.kill('SIGTERM');
         const code = await Promise.race([

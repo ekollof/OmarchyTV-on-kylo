@@ -741,11 +741,13 @@ no-wait. `mod_ir` also has the ABI 3 worker cleanup gate: a slow UART/BLAST
 close returns EAGAIN, the first reload fails fast, and a retry completes; the
 pty + 400 ms-delay test passes. Later gates: i18n, settings, ui_vendor,
 ui_engine, display, source. OA-CLIENT-ASYNC. The host now also has additive
-`load-batch`/`start-batch`: one module dlopen/init or load+start per loop
-turn, an immediate `queued N` reply (64-entry FIFO, `dropped M` on overflow),
-and `poll_once` skips its wait while entries remain. Fixture and real-socket
-tests pass; the scheduler is not used because its contract forbids lifecycle
-calls. Limit: one slow init/start still blocks that turn.
+`load-batch`/`start-batch`/`stop-batch`/`unload-batch`/`reload-batch`: one
+lifecycle operation per loop turn, an immediate `queued N` reply (64-entry
+FIFO, `dropped M` on overflow), and `poll_once` skips its wait while entries
+remain. Teardown/reload order is consumers first because a loaded consumer
+keeps its provider hold. Fixture and real-socket tests pass; the scheduler is
+not used because its contract forbids lifecycle calls. Limit: one slow
+lifecycle call still blocks that turn.
 
 Offline IR IPC, 2026-11-05: `tests/ir_ipc.cjs` now drives `mod_ir` over the
 real Unix control socket with plat/recorder/ui_engine/ui_vendor fixtures

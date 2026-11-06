@@ -225,17 +225,20 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
       cleanup gate below. Later gates are in the following entries; the open
       generic item lists what is still synchronous.
 
-- [x] Non-blocking control batch loader: additive `load-batch`/`start-batch`
-      queue one module dlopen/init or load+start per host-loop turn (64-entry
-      FIFO, immediate `queued N`/`queued N dropped M` reply), and the loop
-      skips the poll wait while entries remain. `tests/batch_load.c` asserts
-      one module per pump, nothing before the pump, failure continuation,
-      overflow and oversized-name handling; `tests/batch_ipc.cjs` saves
-      `queued 3` + `no such module: ui_anim` from one pipelined write, then
-      observes all three load/start with no further commands. Host, focused
-      ASan/UBSan, full suite and ARM build pass. The module scheduler is not
-      used because its contract forbids lifecycle calls. Limit: one slow
-      `init`/`start` still blocks its own turn. OA-CLIENT-ASYNC.
+- [x] Non-blocking control batch loader: additive `load-batch`/`start-batch`/
+      `stop-batch`/`unload-batch`/`reload-batch` queue one lifecycle operation
+      per host-loop turn (64-entry FIFO, immediate `queued N`/`queued N
+      dropped M` reply), and the loop skips the poll wait while entries
+      remain. `tests/batch_load.c` asserts one module per pump, nothing before
+      the pump, stop/reload/unload state, failure continuation, overflow and
+      oversized-name handling; `tests/batch_ipc.cjs` saves `queued 3` + `no
+      such module: ui_anim` from one pipelined write, then loads, starts,
+      stops, reloads, unloads and reloads the stack without further commands.
+      Teardown/reload order is consumers first because a loaded consumer keeps
+      its provider hold. Host, focused ASan/UBSan, full suite and ARM build
+      pass. The module scheduler is not used because its contract forbids
+      lifecycle calls. Limit: one slow lifecycle call still blocks its own
+      turn. OA-CLIENT-ASYNC.
 
 - [x] Module inventory and packaging consolidation: 36 installed modules
       categorised as hardware 12, middleware 11, utilities 2 and UI/UX 11;
@@ -720,7 +723,10 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
       `power` and `spi` have no deferable cleanup and keep synchronous stop by
       design; the plat/power control-socket test asserts immediate stop/reload
       and service invalidation (PLAT-POWER-QUIESCE), and `spi.close` is a
-      synchronous fclose/close (SPI-MTD-NIM-STAGE).
+      synchronous fclose/close (SPI-MTD-NIM-STAGE). Host-level
+      load/start/stop/unload/reload batches now bound a stack, but each call is
+      still synchronous; a completion query and truly per-call asynchronous
+      lifecycle remain.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

@@ -770,11 +770,13 @@ libdl handles, returns EAGAIN while closing, and a later retry completes. The
 pty + 400 ms-delay test shows fail-fast reload, responsive status and successful
 retry; host/ARM builds pass. Later gates: i18n, settings, ui_vendor,
 ui_engine, display, source. OA-CLIENT-ASYNC-2026-11-05. The host now also has
-additive `load-batch`/`start-batch`: one module dlopen/init or load+start per
-loop turn, immediate `queued N` (64-entry FIFO, `dropped M` on overflow), and
-`poll_once` uses a zero timeout while entries remain. Fixture and real-socket
-tests pass; the scheduler is not used because its contract forbids lifecycle
-calls. Limit: one slow init/start still blocks that turn.
+additive `load-batch`/`start-batch`/`stop-batch`/`unload-batch`/
+`reload-batch`: one lifecycle operation per loop turn, an immediate `queued N`
+reply (64-entry FIFO, `dropped M` on overflow), and `poll_once` skips its wait
+while entries remain. Teardown/reload order is consumers first because a
+loaded consumer keeps its provider hold. Fixture and real-socket tests pass;
+the scheduler is not used because its contract forbids lifecycle calls.
+Limit: one slow lifecycle call still blocks that turn.
 
 Temporary takeover, 2026-11-05: openaurora owned fb1 while `aurora.elf` was
 stopped. Vendor Startpagina was the live skin. Right through the shipped IR
