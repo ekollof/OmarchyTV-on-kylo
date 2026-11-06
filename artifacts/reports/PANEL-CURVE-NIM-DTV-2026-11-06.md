@@ -138,13 +138,27 @@ Decompiling `SAL_DEMOD_TUN_Initialize` shows `HAL_TUNER_Init`, SI2151/MxL661
 tuner-class construction, AV2018 response handling, `HAL_dvif_open` and
 `HAL_DEMOD_EXT_DVIF_SetTunerType`; `SAL_LNB_Initialize` calls
 `RT5047_Device_Initialize`. Those SAL classes are aurora-internal, not exported
-by the linked vendor libraries. Replacing them with stubs would fake the
-hardware sequence and touching IIC before real tuner init would be unsafe.
+by the linked vendor libraries.
+
+Further recovery of the dependency graph:
+
+- `HAL_TUNER_Init` @0x0084c164 does not touch hardware; it resolves four IIC
+  bus IDs by calling `DEV_IIC_GetDescription(0..3)` and reading byte +0x19
+  (tuner, sat tuner, ext-demod, LNB).
+- `SAL_DEMOD_TUN_GetInitTunerType` @0x0084adb8 checks PCB layout: layouts
+  3/4/5/6 force type 0xf; the default path reads `Profile_GetTunerType` and
+  selects 8 for `"Si2151"`, otherwise 0xd (MxL661). The profile keys are
+  `TunerTypes`/`TunerType`; this TV's profile value is not in the plain dump
+  files and needs read-only extraction.
+- `HAL_Demod_Init(0)` and `HAL_dvif_open`/`HAL_DEMOD_EXT_DVIF_SetTunerType`
+  are exported by `libNDAL3.so`, but they are only part of the vendor sequence;
+  skipping the tuner-class and LNB initialization would not be a functional
+  tuner backend.
 
 So `mod_tuner` is deliberately **not wired** yet. The state machine, module
-buffer stub and IIC HAL adapter are ready; the next prerequisite is a real
-SAL/HAL demod-tuner backend (or a narrower recovered exported sequence), not a
-fake callback. No hardware was accessed.
+buffer stub and IIC HAL adapter are ready; the next prerequisite is the real
+SAL/HAL demod-tuner backend (or a much narrower, fully recovered exported
+sequence), not a fake callback. No hardware was accessed.
 
 ## Verification
 
