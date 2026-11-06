@@ -581,6 +581,16 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       `/dev/ntkspi` are untested. 33/36 descriptors have deferred/scheduler
       gates; `plat`/`power`/`spi` are audited synchronous. SPI-MTD-NIM-STAGE.
 
+- [x] Amp-init I2S MCLK request: `DEV_AMP_Init` @0x0084f4ac zeroes a 56-byte
+      parameter block, stores `0x100` and calls `Hal_Audio_Ctrl(0x3a)` before
+      creating the amp monitor task; the scalar return is ignored. `mod_audio`
+      now optionally sends the same `0x3a/0x100` once before volume/mute
+      (`audio.i2s_mclk=1`, default off; failure logs and continues).
+      Fake-HAL test asserts exactly one call, zeroed remaining params and a
+      following `0x33/50`; focused ASan/UBSan clean, full suite
+      `all tests passed`, QEMU pass. No vendor HAL, I2S clock, amp task or
+      audible acceptance; default off. AUDIO-I2S-MCLK.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
       `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`/`ui_diag`/`ui_anim`/`ui_clock`/`ticker`/`ui_console`/`ui_omarchy`,

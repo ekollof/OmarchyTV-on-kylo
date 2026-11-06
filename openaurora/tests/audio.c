@@ -13,7 +13,7 @@
 #include "openaurora/vendor_audio.h"
 
 extern const oa_module *oa_module_entry(void);
-static int calls, fail, ready = 1, errors, enabled = 1, held;
+static int calls, fail, ready = 1, errors, enabled = 1, held, i2s;
 static int last_op;
 static uint32_t last_params[OA_AUDIO_PARAM_WORDS];
 static const void *published;
@@ -52,6 +52,7 @@ static int unpublish(void *p, const char *name) { (void)p; assert(!strcmp(name, 
 static const char *config(void *p, const char *key, const char *def)
 {
     (void)p;
+    if (!strcmp(key, "audio.i2s_mclk")) return i2s ? "1" : "0";
     return !strcmp(key, "audio.enable") ? (enabled ? "1" : "0") : def;
 }
 static const oa_host_api api = {
@@ -125,6 +126,19 @@ int main(void)
     fail = 0;
     stop(m, c); assert(!published && !held && !audio->is_available()); m->destroy(c);
     puts("  ok   verified HAL request blocks, clamping, scalar failures and unchanged cached state on failure");
+
+    /* DEV_AMP_Init's I2S MCLK request: first start HAL call, zeroed params,
+     * params[0]=0x100, and no effect on the later volume request. */
+    i2s = 1; int i2s_calls = calls;
+    assert(!m->init(&api, &c) && !m->start(c)); audio = published;
+    assert(calls == i2s_calls + 1);
+    assert(last_op == 0x3a && last_params[0] == 0x100);
+    for (unsigned i = 1; i < OA_AUDIO_PARAM_WORDS; i++) assert(last_params[i] == 0);
+    assert(!audio->set_volume(50) && audio->get_volume() == 50);
+    check_request(0x33, 50, 0);
+    stop(m, c); m->destroy(c);
+    i2s = 0;
+    puts("  ok   opt-in DEV_AMP_Init I2S MCLK request uses 0x3a/0x100 once, before volume");
 
     assert(!m->init(&api, &c)); state[0] = 35;
     assert(!m->restore(c, state, sizeof state));

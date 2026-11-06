@@ -239,6 +239,19 @@ static int m_start(void *v)
     } else {
         c->api->log(c->api->priv, OA_LOG_INFO, "vendor audio HAL linked");
 
+        /* DEV_AMP_Init @0x84f4ac zeroes a 56-byte block, stores 0x100 in
+         * params[0] and calls Hal_Audio_Ctrl(0x3a) for the I2S MCLK before it
+         * creates the amp monitor task. The vendor does not check the scalar
+         * return. Keep this opt-in until the real clock/amp path is accepted. */
+        if (c->api->config_get(c->api->priv, "audio.i2s_mclk", "0")[0] == '1') {
+            uint32_t params[AUDIO_PARAM_WORDS];
+            memset(params, 0, sizeof params);
+            params[0] = 0x100;
+            int rc = Hal_Audio_Ctrl(0x3a, params);
+            c->api->log(c->api->priv, rc ? OA_LOG_WARN : OA_LOG_INFO,
+                        "i2s mclk -> 0x100 (%d)", rc);
+        }
+
         const char *vol = c->api->config_get(c->api->priv, "audio.volume", NULL);
         if (c->restored) {
             if ((c->volume >= 0 && apply_volume(c, c->volume)) ||

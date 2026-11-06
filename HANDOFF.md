@@ -584,6 +584,14 @@ hardware/tuner work; SPI writes/control and real /dev/ntkspi untested.
 33/36 descriptors have deferred/scheduler gates; plat/power/spi are audited
 synchronous (spi close is fclose/close, no worker). SPI-MTD-NIM-STAGE.
 
+audio i2s mclk, 2026-11-06: DEV_AMP_Init@0x84f4ac zeroes a56-byte block, sets
+params[0]=0x100 and calls Hal_Audio_Ctrl(0x3a) before creating the amp monitor
+task (return ignored). mod_audio now optionally sends 0x3a/0x100 before
+volume/mute (audio.i2s_mclk=1, default off; logs failure, continues). Fake-HAL
+test asserts one call, zeroed remaining params and following0x33/50; focused
+ASan/UBSan clean, full suite all tests passed, QEMU pass. No vendor HAL/I2S/
+amp task/audible acceptance; default off. AUDIO-I2S-MCLK.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran
