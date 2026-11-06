@@ -457,6 +457,16 @@ full suite all tests passed, QEMU pass. ARM links libm/libc only. No live
 animation across reload; no TV run. 29/35 descriptors now have quiesce; 6
 remain: plat/power/ticker/ui_clock/ui_console/ui_omarchy. UI-ANIM-QUIESCE.
 
+ui_clock async gate, 2026-11-06: unpublish ui.clock, remove timer and release
+raw clock synchronously, snapshot/detach FROST time state, then free from one
+sched slice after ui_clock.cleanup_delay_ms. Retry save uses snapshot;
+failed-activation start restores it; stop/destroy cancel/free. New clock-state
+probe. Control test: reload fails fast, clock-state ENODEV, status responsive,
+retry republishes; stop gate. Clock unit tests, full suite all tests passed,
+QEMU pass. ARM links libc only. No live continuity across reload; no TV run.
+30/35 descriptors now have quiesce; 5 remain: plat/power/ticker/ui_console/
+ui_omarchy. UI-CLOCK-QUIESCE.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

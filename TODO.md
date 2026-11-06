@@ -447,21 +447,31 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       suite `all tests passed`, and QEMU pass. ARM links libm/libc only. No
       live animation across reload; no TV run. UI-ANIM-QUIESCE.
 
+- [x] Asynchronous gate for `mod_ui_clock`: unpublish `ui.clock`, remove the
+      timer and release the raw clock synchronously, snapshot/detach the FROST
+      time state, then free it from one `sched` slice after
+      `ui_clock.cleanup_delay_ms`. Retry save uses the snapshot; failed
+      activation start restores it; stop/destroy cancel/free. New
+      `clock-state` probe. Control test: reload fails fast, `clock-state`
+      ENODEV, status responsive, retry republishes; stop uses the gate. Clock
+      unit tests, full suite `all tests passed`, and QEMU pass. ARM links libc
+      only. No live continuity across reload; no TV run. UI-CLOCK-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`/`ui_diag`/`ui_anim`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`/`ui_diag`/`ui_anim`/`ui_clock`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
       `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr`,
       `channels`, `service_db`, `image_decode`, `ui_theme`, `ui_list`,
       `ui_navigation`, `ui_profile`, `audio_curve`, `audio_amp_profile`,
-      `panel`, `ui_diag` and `ui_anim` are the gate models. `ui_theme`,
-      `channels`, `ui_diag` and `ui_anim` use the host `sched`; the others use
-      workers. `lua` unpublishes `ui.lua` and rejects hook/reload while a fetch
-      child is unreaped. `graphics` and `scene_display` have their own
-      non-pthread gates. `plat`, `power`, `ticker`, `ui_clock`, `ui_console`
-      and `ui_omarchy` still stop synchronously.
+      `panel`, `ui_diag`, `ui_anim` and `ui_clock` are the gate models.
+      `ui_theme`, `channels`, `ui_diag`, `ui_anim` and `ui_clock` use the host
+      `sched`; the others use workers. `lua` unpublishes `ui.lua` and rejects
+      hook/reload while a fetch child is unreaped. `graphics` and
+      `scene_display` have their own non-pthread gates. `plat`, `power`,
+      `ticker`, `ui_console` and `ui_omarchy` still stop synchronously.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in
