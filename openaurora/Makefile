@@ -1159,6 +1159,11 @@ check-ui-clock-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ticker.so $(BUI
 	node tests/ui_clock_quiesce.cjs $(abspath $(BUILD))
 check: check-ui-clock-quiesce
 
+.PHONY: check-ticker-quiesce
+check-ticker-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ticker.so
+	node tests/ticker_quiesce.cjs $(abspath $(BUILD))
+check: check-ticker-quiesce
+
 $(BUILD)/tests/sched: tests/sched.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $< $(filter %.o,$^) $(LDLIBS)

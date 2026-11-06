@@ -290,6 +290,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  panel-state             query panel requested percent\n"
                  "  anim-state              query ui.anim enabled/fault\n"
                  "  clock-state             query ui.clock current ms\n"
+                 "  ticker-state            query ticker saved tick count\n"
                  "  menu-state <dialog>     query ui.menu dialogs/branches\n"
                  "  ui-action <action>      apply a JSON menu action (open:/setting:/set:)\n"
                  "  picture-state <source>  read picture mode/zoom/energy 0-19\n"
@@ -312,6 +313,34 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         if (!a1) { oa_skin_status(h, outbuf, outlen); return 0; }
         if (oa_skin_request(h, a1)) { snprintf(outbuf, outlen, "failed errno %d\n", errno); return -1; }
         snprintf(outbuf, outlen, "pending %s\n", a1);
+        return 0;
+    }
+    if (!strcmp(cmd, "ticker-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_clock_iface *clock = h->api.lookup(h, OA_SVC_CLOCK, 1);
+        if (!clock) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        h->api.release(h, OA_SVC_CLOCK);
+        oa_mod *m = oa_host_find_module(h, "ticker");
+        if (!m || !m->ctx || !m->desc->save) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EIO);
+            return -1;
+        }
+        uint64_t ticks = 0;
+        uint32_t prev = h->cur_module;
+        h->cur_module = m->id;
+        size_t n = m->desc->save(m->ctx, &ticks, sizeof ticks);
+        h->cur_module = prev;
+        if (n != sizeof ticks) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EIO);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "ticker ticks %" PRIu64 "\n", ticks);
         return 0;
     }
     if (!strcmp(cmd, "clock-state")) {
