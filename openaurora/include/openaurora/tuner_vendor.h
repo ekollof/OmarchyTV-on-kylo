@@ -16,6 +16,13 @@ int oa_tuner_vendor_hal_iic_read(const void *ctx, const void *value,
                                  unsigned len, void *buf, void *ud);
 int oa_tuner_vendor_hal_iic_write(const void *ctx, const void *value,
                                   unsigned len, void *buf, void *ud);
+
+struct oa_nim_tune_ops;
+struct oa_tuner_vendor_tune_ud {
+    int tuner_type;
+    int fe_index;
+};
+const struct oa_nim_tune_ops *oa_tuner_vendor_tune_ops(void);
 #endif
 
 #endif

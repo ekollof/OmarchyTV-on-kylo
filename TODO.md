@@ -1072,8 +1072,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `_dev_nim_dtv_InitNimFunc`/`Connect2HAL` equivalents (0x29-word state
       clear, typed HAL table) are implemented behind the gate. The NIM tuning
       subset (path map, open/close, monitor/disconnect, check_lock, strength,
-      quality) is implemented in `common/nim_tune.c`; `set_channel`/
-      `get_channel_status` are large NDAL struct mappings and return -ENOTSUP.
+      quality) is implemented and installed in the module's NIM vtable.
+      `set_channel`/`get_channel_status` need `SAL_DEMOD_TUN_ProgramTuner`
+      (MxL661 RF/IF) and the 0x180-byte status mapping and return -ENOTSUP.
       SI2151 is the full Silicon Labs L1/L2/L3 `PowerUpWithPatch` + property
       driver, not this profile's path (hwprofile selects SAL 0xd/MxL661).
       Hardware acceptance is blocked by the owner's read-only/no-takeover

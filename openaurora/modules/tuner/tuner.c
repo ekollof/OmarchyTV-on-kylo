@@ -25,6 +25,7 @@
 #include "openaurora/nim_dtv.h"
 #include "openaurora/nim_dtv_hal.h"
 #include "openaurora/nim_dtv_hw.h"
+#include "openaurora/nim_tune.h"
 #include "openaurora/services.h"
 #include "openaurora/tuner_identity.h"
 #include "openaurora/tuner_sequence.h"
@@ -249,6 +250,10 @@ struct hw_bind {
     int hal_connected;
     int lnb_rc;
     oa_nim_dtv_hal nim_hal;
+#ifndef OA_NO_VENDOR
+    struct oa_nim_tune_binding tune;
+    struct oa_tuner_vendor_tune_ud tune_ud;
+#endif
 };
 
 #ifndef OA_NO_VENDOR
@@ -297,20 +302,45 @@ static int hw_hal_sequence(void *v)
     return b->sequence_rc;
 }
 
+static int hw_tune_open(void *v)
+{
+    return oa_nim_tune_hal_open(&((struct hw_bind *)v)->tune);
+}
+
+static int hw_tune_close(void *v)
+{
+    return oa_nim_tune_hal_close(&((struct hw_bind *)v)->tune);
+}
+
+static int hw_tune_check_lock(void *v)
+{
+    return oa_nim_tune_hal_check_lock(&((struct hw_bind *)v)->tune);
+}
+
+static int hw_tune_get_strength(void *v)
+{
+    return oa_nim_tune_hal_get_strength(&((struct hw_bind *)v)->tune);
+}
+
+static int hw_tune_get_quality(void *v)
+{
+    return oa_nim_tune_hal_get_quality(&((struct hw_bind *)v)->tune);
+}
+
 static int hw_connect_hal(void *v)
 {
     struct hw_bind *b = v;
     struct oa_nim_dtv_hal_ops ops = {
         .initialize = hw_hal_sequence,
-        .open = NULL,
-        .set_channel = NULL,
-        .get_channel_status = NULL,
-        .check_lock = NULL,
-        .get_strength = NULL,
-        .get_quality = NULL,
-        .monitor = NULL,
-        .close = NULL,
-        .disconnect = NULL
+        .open = hw_tune_open,
+        .set_channel = oa_nim_tune_hal_set_channel,
+        .get_channel_status = oa_nim_tune_hal_get_channel_status,
+        .check_lock = hw_tune_check_lock,
+        .get_strength = hw_tune_get_strength,
+        .get_quality = hw_tune_get_quality,
+        .monitor = oa_nim_tune_hal_monitor,
+        .close = hw_tune_close,
+        .disconnect = oa_nim_tune_hal_disconnect
     };
     b->hal_connected = oa_nim_dtv_connect_hal(&b->hal_table, &ops);
     return b->hal_connected;
@@ -365,6 +395,14 @@ static int tuner_hw_bringup(struct ctx *c)
         .sal_type = sal_type,
         .nim_hal = { &hw_iic_ops, NULL }
     };
+    b.tune_ud.tuner_type = sal_type;
+    b.tune_ud.fe_index = 0;
+    b.tune.ops = oa_tuner_vendor_tune_ops();
+    b.tune.ud = &b.tune_ud;
+    memset(&b.tune.state, 0, sizeof b.tune.state);
+    b.tune.state.handle = 0;
+    b.tune.state.path = OA_NIM_PATH_TERRESTRIAL;
+    b.tune.state.tuner_type = sal_type;
     oa_nim_dtv_ops nim = {
         .module_buf_info = oa_nim_dtv_module_buf_info,
         .init_nim_func = hw_init_nim,

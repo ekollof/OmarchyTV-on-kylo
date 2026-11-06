@@ -168,3 +168,57 @@ int oa_nim_tune_get_channel_status(const struct oa_nim_tune_ops *ops, void *ud,
     (void)out;
     return -ENOTSUP;
 }
+
+int oa_nim_tune_hal_open(void *v)
+{
+    struct oa_nim_tune_binding *b = v;
+    return oa_nim_tune_open(b->ops, b->ud, &b->state);
+}
+
+int oa_nim_tune_hal_close(void *v)
+{
+    struct oa_nim_tune_binding *b = v;
+    return oa_nim_tune_close(b->ops, b->ud, &b->state);
+}
+
+int oa_nim_tune_hal_monitor(void *v)
+{
+    (void)v;
+    return oa_nim_tune_monitor();
+}
+
+int oa_nim_tune_hal_disconnect(void *v)
+{
+    (void)v;
+    return oa_nim_tune_disconnect();
+}
+
+int oa_nim_tune_hal_check_lock(void *v)
+{
+    struct oa_nim_tune_binding *b = v;
+    return oa_nim_tune_check_lock(b->ops, b->ud, &b->state, &b->locked);
+}
+
+int oa_nim_tune_hal_get_strength(void *v)
+{
+    struct oa_nim_tune_binding *b = v;
+    return oa_nim_tune_get_strength(b->ops, b->ud, &b->state, &b->strength);
+}
+
+int oa_nim_tune_hal_get_quality(void *v)
+{
+    struct oa_nim_tune_binding *b = v;
+    return oa_nim_tune_get_quality(b->ops, b->ud, &b->state, &b->quality);
+}
+
+int oa_nim_tune_hal_set_channel(void *v)
+{
+    (void)v;
+    return -ENOTSUP;
+}
+
+int oa_nim_tune_hal_get_channel_status(void *v)
+{
+    (void)v;
+    return -ENOTSUP;
+}

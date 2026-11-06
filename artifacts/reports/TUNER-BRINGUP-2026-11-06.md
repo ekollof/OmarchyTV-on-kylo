@@ -128,8 +128,23 @@ table:
 
 The fake tests cover the path/index map, type delivery, open/close order,
 lock/strength/quality masks and buffer offsets, RSSI fallback, and the
-explicitly unresolved channel calls. The module's NIM vtable still wires only
-`initialize`; the tuning entries are not used by the init gate yet.
+explicitly unresolved channel calls. `oa_nim_tune_hal_*` adapts the same state
+to the NIM-DTV typed table; `mod_tuner` installs it in `connect_hal` with
+vendor adapters (`HAL_fe_open/close`, `HAL_DEMOD_EXT_DeliverConfig/SetStandy`,
+`HAL_Demod_GetStatus`). The table is installed but no tuning backend consumes
+it yet; `set_channel`/`get_channel_status` remain `-ENOTSUP`.
+
+### Why SetChannel/GetChannelStatus are not just struct mappings
+
+`HAL_Demod_User_SetChannel` copies a 0x5c-byte channel record, extracts the
+tuning parameters at +0xc/+0x10/+0x14/+0x1c/+0x28/+0x64, then calls
+`SAL_DEMOD_TUN_ProgramTuner` (MxL661 RF/IF programming, not recovered yet)
+before a path-specific NDAL/demux tail (`HAL_DEMOD_EXT_SetUnicableIF`,
+`DeliverConfig`, spectral inversion, ...). `GetChannelStatus` calls the lock
+helper, `HAL_Demod_GetStatus(...,0x600,...)` and maps a 0x180-byte status
+struct per signal type. Implementing these faithfully needs the RF/IF tuning
+sequence and the status layout, not only a field copy; both stay `-ENOTSUP`
+rather than guessed.
 
 ## SI2151 blocker
 
@@ -200,7 +215,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 b50a88e35e89aac6ae615c9092a1f6f690d748703af3196e36060906610268d0
+sha256 519053e68854419e985c0448bd3fd7f359f816e6fb49aa04d0b22f1b1a2fc827
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,
@@ -212,10 +227,11 @@ undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
 1. SI2151 tuner backend: the Silicon Labs L1/L2/L3 driver with
    `PowerUpWithPatch` and property download is a separate large port; this
    TV's profile selects MxL661 and does not use it.
-2. `SetChannel`/`GetChannelStatus` NDAL struct mappings (the rest of the NIM
-   tuning table is implemented in `common/nim_tune.c`).
-3. The module's NIM vtable still wires only `initialize`; the tuning entries
-   are not exercised by the gate.
+2. SetChannel/GetChannelStatus need `SAL_DEMOD_TUN_ProgramTuner` (MxL661
+   RF/IF) plus the 0x180-byte status mapping; they return `-ENOTSUP` and are
+   not guessed.
+3. The module's NIM vtable now carries the implemented tuning ops, but no
+   tuning backend consumes the table yet.
 4. Hardware acceptance is **not done**. The owner's standing instruction is
    read-only, no takeovers; running the gate requires explicit authorization
    to stop stock Aurora, claim `/dev/ntkiic0`, `/dev/ntgpio`, `/dev/ntkdvif`

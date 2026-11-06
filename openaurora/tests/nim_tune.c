@@ -217,6 +217,33 @@ static void test_unresolved(void)
     assert(oa_nim_tune_close(NULL, &f, &s) == 0);
 }
 
+static void test_binding(void)
+{
+    struct fake f = { .tuner_type = 0xd };
+    struct oa_nim_tune_binding b = {
+        .ops = &ops,
+        .ud = &f,
+        .state = { .handle = 9, .path = 1, .tuner_type = 0xd }
+    };
+    f.status[0] = 1;
+    uint32_t value = 0x11223344;
+    memcpy(f.status + 0x18, &value, sizeof value);
+    value = 0x55667788;
+    memcpy(f.status + 0x24, &value, sizeof value);
+
+    assert(oa_nim_tune_hal_open(&b) == 1);
+    assert(f.last_switch == 1 && f.deliver_value == 0xc);
+    assert(oa_nim_tune_hal_monitor(&b) == 1);
+    assert(oa_nim_tune_hal_check_lock(&b) == 1 && b.locked == 1);
+    assert(oa_nim_tune_hal_get_strength(&b) == 1 &&
+           b.strength == 0x11223344);
+    assert(oa_nim_tune_hal_get_quality(&b) == 1 && b.quality == 0x55667788);
+    assert(oa_nim_tune_hal_set_channel(&b) == -ENOTSUP);
+    assert(oa_nim_tune_hal_get_channel_status(&b) == -ENOTSUP);
+    assert(oa_nim_tune_hal_disconnect(&b) == 0);
+    assert(oa_nim_tune_hal_close(&b) == 1);
+}
+
 int main(void)
 {
     test_path_index();
@@ -224,6 +251,7 @@ int main(void)
     test_close_monitor();
     test_lock_strength_quality();
     test_unresolved();
+    test_binding();
     puts("ok nim tune: path/index map, open/close, lock/strength/quality "
          "masks and unresolved channel mappings");
     return 0;

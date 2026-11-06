@@ -65,4 +65,25 @@ int oa_nim_tune_get_channel_status(const struct oa_nim_tune_ops *ops,
                                    struct oa_nim_tune_state *state,
                                    void *out);
 
+/* Adapter to the NIM-DTV typed HAL table. The channel calls stay -ENOTSUP
+ * because the vendor table passes no channel/status pointer. */
+struct oa_nim_tune_binding {
+    const struct oa_nim_tune_ops *ops;
+    void *ud;
+    struct oa_nim_tune_state state;
+    uint8_t locked;
+    uint32_t strength;
+    uint32_t quality;
+};
+
+int oa_nim_tune_hal_open(void *v);
+int oa_nim_tune_hal_close(void *v);
+int oa_nim_tune_hal_monitor(void *v);
+int oa_nim_tune_hal_disconnect(void *v);
+int oa_nim_tune_hal_check_lock(void *v);
+int oa_nim_tune_hal_get_strength(void *v);
+int oa_nim_tune_hal_get_quality(void *v);
+int oa_nim_tune_hal_set_channel(void *v);
+int oa_nim_tune_hal_get_channel_status(void *v);
+
 #endif

@@ -10,6 +10,7 @@
 
 #include "openaurora/lnb_rt5047.h"
 #include "openaurora/mxl661_dev.h"
+#include "openaurora/nim_tune.h"
 
 /* libNDAL3 exports. Hal_Iic_Read/Write return 0 on success;
  * HAL_DEMOD_EXT_DVIF_SetTunerType returns 0 on success. */
@@ -146,6 +147,79 @@ int oa_tuner_vendor_hal_iic_write(const void *ctx, const void *value,
 {
     (void)ud;
     return Hal_Iic_Write(ctx, value, len, buf);
+}
+
+extern int HAL_fe_open(int adapter, int index);
+extern int HAL_fe_close(int fe);
+extern int HAL_DEMOD_EXT_DeliverConfig(int fe, uint32_t key, const void *data,
+                                       int len);
+extern int HAL_DEMOD_EXT_SetStandy(int fe, int on);
+extern int HAL_Demod_GetStatus(int handle, int index, uint32_t mask, void *buf);
+
+static int tune_switch(void *ud, int type)
+{
+    (void)ud;
+    (void)type; /* SAL_DEMOD_TUN_SwhitchTunerType is not exported */
+    return 0;
+}
+
+static int tune_type(void *ud)
+{
+    return ((const struct oa_tuner_vendor_tune_ud *)ud)->tuner_type;
+}
+
+static int tune_deliver(void *ud, uint32_t key, const void *data, int len)
+{
+    int index = ((const struct oa_tuner_vendor_tune_ud *)ud)->fe_index;
+    int fe = HAL_fe_open(0, index);
+    if (fe < 0)
+        return -1;
+    int rc = HAL_DEMOD_EXT_DeliverConfig(fe, key, data, len);
+    HAL_fe_close(fe);
+    return rc == 0 ? 0 : -1;
+}
+
+static int tune_fe_open(void *ud, int index)
+{
+    (void)ud;
+    return HAL_fe_open(0, index);
+}
+
+static void tune_fe_close(void *ud, int fe)
+{
+    (void)ud;
+    HAL_fe_close(fe);
+}
+
+static int tune_standby(void *ud, int fe, int on)
+{
+    (void)ud;
+    return HAL_DEMOD_EXT_SetStandy(fe, on);
+}
+
+static int tune_status(void *ud, int handle, int index, uint32_t mask,
+                       void *buf)
+{
+    (void)ud;
+    return HAL_Demod_GetStatus(handle, index, mask, buf);
+}
+
+static int tune_rssi(void *ud, int type, uint8_t *rssi)
+{
+    (void)ud;
+    (void)type;
+    (void)rssi;
+    return 0; /* MxL661 tuner RSSI sequence is not recovered */
+}
+
+static const struct oa_nim_tune_ops vendor_tune_ops = {
+    tune_switch, tune_type, tune_deliver, tune_fe_open, tune_fe_close,
+    tune_standby, tune_status, tune_rssi
+};
+
+const struct oa_nim_tune_ops *oa_tuner_vendor_tune_ops(void)
+{
+    return &vendor_tune_ops;
 }
 
 #endif /* !OA_NO_VENDOR */
