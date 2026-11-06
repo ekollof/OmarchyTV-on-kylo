@@ -428,11 +428,17 @@ typedef struct {
 /* ui.portal — measured home layout. Published by mod_ui_vendor.
  * hit() uses the same rectangles paint uses. screen 0 is the portal and
  * screen 1 is the one selected tile. */
+/* ui.portal v1 is hit/activate_at/screen. v2 appends menu_action; v1
+ * consumers receive the same prefix and continue to work. */
 #define OA_SVC_PORTAL "ui.portal"
 typedef struct {
     int (*hit)(int x, int y, int *band, int *index);
     int (*activate_at)(int x, int y);
     int (*screen)(void);
+    /* Apply a JSON menu action. The current vendor skin implements
+     * open:<screen>; other verbs return ENOTSUP until their dispatcher is
+     * wired. The action string is data, not a remote protocol. */
+    int (*menu_action)(const char *action);
 } oa_portal_iface;
 
 /* input — remote frames. Published by mod_ir.

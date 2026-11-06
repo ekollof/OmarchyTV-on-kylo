@@ -86,7 +86,7 @@ async function main() {
 
         await stdinCommand('status ui_vendor', 'name    ui_vendor');
         await waitFor(() => stdout.includes('state   started'), 'ui_vendor started');
-        await waitFor(() => stdout.includes('ui.portal:v1'), 'portal service');
+        await waitFor(() => stdout.includes('ui.portal:v2'), 'portal service');
 
         assert.equal(await command('stop ui_vendor'), 'ok');
         assert.equal(await command('ui-state'), 'failed errno ' + os.constants.errno.ENODEV);

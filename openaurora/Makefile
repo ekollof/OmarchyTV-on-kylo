@@ -1943,6 +1943,18 @@ check-ui-menu-service: $(BUILD)/tests/ui_menu_service $(BUILD)/modules/mod_ui_me
 	@$(BUILD)/tests/ui_menu_service $(BUILD)/tests/ui-menu/modules $(CURDIR)/menus/sub_launcher.json
 check: check-ui-menu-service
 
+$(BUILD)/tests/ui_menu_action: tests/ui_menu_action.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_menu_action.c $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-ui-menu-action
+check-ui-menu-action: $(BUILD)/tests/ui_menu_action $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_ui_menu.so $(BUILD)/tests/mod_fake_clock.so
+	@mkdir -p $(BUILD)/tests/ui-menu-action/modules
+	@cp $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_ui_menu.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/tests/ui-menu-action/modules/
+	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-menu-action/modules/mod_nav_display.so
+	@$(BUILD)/tests/ui_menu_action $(BUILD)/tests/ui-menu-action/modules
+check: check-ui-menu-action
+
 $(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_fake_clock.c $(LDFLAGS) $(LDLIBS)

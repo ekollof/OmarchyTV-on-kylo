@@ -98,8 +98,10 @@ launcher type to picture/sound/system/channel/AI branches. `DialogSubLauncher`
 listBox 189,255 1774x222, item 240x140, 300 ms 1→1.35 + glyph −42/−24.
 Runtime `menus/sub_launcher.json`; `tools/re/menu-tree.py` regenerates it from
 the ELF/decompile/BinSVG; bounded JSON loader + action strings; reloadable
-`ui.menu` v1 service. Host tree/action/service tests pass; ARM GLIBC 2.4.
-`ui_vendor` consumption and row-origin +0x204/+0x208/+0x210 remain.
+`ui.menu` v1 service. `oa_portal_iface` v2 `menu_action` opens vendor screens
+for `open:<screen>`; v1 consumers keep the prefix. Host tree/action/service
+and portal-action tests pass; ARM GLIBC 2.4. Sub-launcher row rendering and
+the row-origin reduction (`rowPos` standard 43 + mRowM mask) remain.
 SUBLAUNCHER-MENU-TREE.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over

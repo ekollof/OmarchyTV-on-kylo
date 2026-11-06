@@ -223,11 +223,19 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       reloadable `ui.menu` v1 service; host tree/action/service tests pass,
       ARM GLIBC 2.4. SUBLAUNCHER-MENU-TREE.
 
-- [ ] Sub-launcher screen integration: make `ui_vendor` consume the JSON
-      tree, resolve the `SVGListBoxBase` horizontal row origin
-      (+0x204/+0x208/+0x210), then compare the 300 ms item animation against
-      a real vendor transition. Do not apply it to the category rail or an
-      invented portal card row.
+- [x] JSON menu action dispatch to vendor screens: `oa_portal_iface` v2
+      appends `menu_action`; `open:portal|sources|settings|settings_list|
+      apps|channels` switch the vendor skin. `tests/ui_menu_action.c` loads a
+      JSON entry with `open:settings`, dispatches it through the portal
+      service, asserts screen 3, and verifies v1 lookup/v3 refusal. Other
+      verbs remain `ENOTSUP`.
+
+- [ ] Sub-launcher screen integration: render the JSON branch row in
+      `ui_vendor` and route `setting:`/`set:` actions to the value selector.
+      Resolve the `SVGListBoxBase` row origin from `rowPos` (standard 43) and
+      the mRowM mask, then compare the 300 ms item animation against a real
+      vendor transition. Do not apply it to the category rail or an invented
+      portal card row.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
       the vendor 30 ms APNG/10 ms controller cadence. Tighten the compositor

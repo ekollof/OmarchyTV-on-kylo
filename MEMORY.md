@@ -69,9 +69,14 @@ advertising are excluded. `DialogSubLauncher.svg` listBox 189,255 1774x222;
 items 240x140; `sublauncheritemFA` 300 ms scale 1→1.35 and glyph 0→−42/−24;
 `SettingSubLauncherListBoxFA` selectionIndicator y 0→100. Runtime model is
 `openaurora/menus/sub_launcher.json`; bounded JSON loader, action strings,
-and reloadable `ui.menu` v1 service; host tree/action/service tests pass, ARM
-GLIBC 2.4. `ui_vendor` does not consume it yet; horizontal row-origin fields
-+0x204/+0x208/+0x210 remain untraced. SUBLAUNCHER-MENU-TREE.
+and reloadable `ui.menu` v1 service; host tree/action/service tests pass.
+`oa_portal_iface` v2 appends `menu_action`; the vendor skin maps
+`open:portal|sources|settings|settings_list|apps|channels` to its screens
+(v1 consumers keep the prefix; v3 is refused). ARM GLIBC 2.4. `ui_vendor`
+still does not render the tree. The row-origin fields +0x204/+0x208/+0x210
+are built in `renderBackground` from `rowPos` (standard name 43) and the
+mRowM mask; the exact reduced screen coordinate is not yet checked.
+SUBLAUNCHER-MENU-TREE.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
 Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,

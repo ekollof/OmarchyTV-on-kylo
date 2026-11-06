@@ -1574,7 +1574,26 @@ static int portal_screen(void)
 {
     return g_ctx ? g_ctx->screen : 0;
 }
-static const oa_portal_iface g_portal = { portal_hit, portal_activate, portal_screen };
+static int portal_menu_action(const char *action)
+{
+    if (!g_ctx || !action) return EINVAL;
+    if (strncmp(action, "open:", 5)) return ENOTSUP;
+    const char *name = action + 5;
+    int screen;
+    if (!strcmp(name, "portal")) screen = SCREEN_PORTAL;
+    else if (!strcmp(name, "sources")) screen = SCREEN_SOURCES;
+    else if (!strcmp(name, "settings")) screen = SCREEN_SETTINGS;
+    else if (!strcmp(name, "settings_list")) screen = SCREEN_SETTINGS_LIST;
+    else if (!strcmp(name, "apps")) screen = SCREEN_APPS;
+    else if (!strcmp(name, "channels")) screen = SCREEN_CHANNELS;
+    else return ENOENT;
+    g_ctx->screen = screen;
+    if (g_ctx->d) paint(g_ctx);
+    return 0;
+}
+static const oa_portal_iface g_portal = {
+    portal_hit, portal_activate, portal_screen, portal_menu_action
+};
 
 static int m_init(const oa_host_api *api, void **out)
 {
@@ -2368,7 +2387,7 @@ static int m_start(void *v)
                     "ui_vendor: lifecycle subscription failed; refusing start");
         return -1;
     }
-    if (c->api->publish(c->api->priv, OA_SVC_PORTAL, 1, &g_portal) != 0) {
+    if (c->api->publish(c->api->priv, OA_SVC_PORTAL, 2, &g_portal) != 0) {
         if (c->anim) {
             c->anim->bind(NULL, NULL);
             c->api->release(c->api->priv, OA_SVC_UI_ANIM);

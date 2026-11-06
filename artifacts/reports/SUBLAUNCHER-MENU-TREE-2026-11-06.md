@@ -100,6 +100,15 @@ item textPos    79,374 323x39
 the button window top-left and uses the named `#scalerect` size, as recorded
 in SUBLAUNCHER-GRID-ANIM.
 
+The horizontal row origin is not left as a guess: `SVGListBoxBase::
+renderBackground` reads standard widget name 43 (`rowPos`) and name 44
+(`scrollPos`) from the list-box resource. `SettingSubLauncherListBoxFA.svg`
+has `rowPos 243,90 240x140`. `calculateHeight` sets the horizontal step
+`+0x20c` from the `mRowR`/`mRowM` widths (240 here); `renderBackground`
+derives `+0x204/+0x208/+0x210` from the `rowPos` rect and the `mRowM` mask
+rectangle. The exact reduced screen coordinate still needs the
+mask-transform check.
+
 ## JSON runtime model
 
 `openaurora/menus/sub_launcher.json` is the runtime form. Each dialog has
@@ -145,12 +154,19 @@ overwritten unless the decoder is rerun.
   document.
 - `include/openaurora/services.h`: `OA_SVC_UI_MENU` v1 for module consumers.
 - `menus/sub_launcher.json`: generated runtime tree.
+- `oa_portal_iface` v2 appends `menu_action`. The vendor skin implements
+  `open:portal|sources|settings|settings_list|apps|channels` and returns
+  `ENOTSUP` for `setting:`/`set:` until those dispatchers are wired. v1
+  consumers keep the same prefix; `tests/ui_menu_action.c` loads a JSON entry
+  with `open:settings`, dispatches it through the portal service, and asserts
+  screen 3. It also checks v1 lookup and refuses v3.
 
 ## Verification
 
 ```
 ok menu model: JSON firmware tree, actions and 300 ms item animation
 ok ui.menu service: JSON tree, reload, and failed-load isolation
+ok ui.menu action: JSON entry invokes the vendor screen dispatcher
 full_check=0
 ```
 
@@ -169,12 +185,14 @@ mod_ui_menu.so  GLIBC_2.4
 
 ## Limits
 
-- `ui_vendor` does not consume the JSON tree yet. It still paints its captured
-  settings states; routing `open:`/`setting:`/`set:` actions to screens and
-  settings is the next integration step.
+- `ui_vendor` has the `open:` screen dispatcher, but it does not render the
+  sub-launcher tree yet. It still paints its captured settings states;
+  rendering the JSON branch row and routing `setting:`/`set:` actions to the
+  value selector are the next integration steps.
 - `SVGListBoxBase`’s horizontal row origin fields (`+0x204`, `+0x208`,
-  `+0x210`) are not fully traced. The listBox rect and 240x140 item size are
-  proved; the exact first-row offset is not.
+  `+0x210`) are traced to `rowPos` (standard 43) and the `mRowM` mask, but
+  the mask transform has not been reduced to a checked screen coordinate.
+  The listBox rect and 240x140 item size are proved.
 - Dynamic keys are marked, not guessed; the runtime branch depends on the
   selected launcher item and model/region conditions.
 - FVP, recommendations and advertising branches are deliberately excluded.

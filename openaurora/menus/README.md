@@ -21,3 +21,6 @@ Schema:
 - `action` is an opaque string for the consumer, for example
   `setting:ENERGY_SAVING`, `set:ENERGY_SAVING=OFF`, or `open:settings`.
   The JSON layer does not assign meaning; the UI/settings dispatcher does.
+  The current vendor skin implements `open:portal|sources|settings|
+  settings_list|apps|channels` through `oa_portal_iface.menu_action` v2;
+  `setting:`/`set:` are still `ENOTSUP` there and are the next dispatcher.
