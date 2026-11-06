@@ -642,8 +642,11 @@ DEV_IIC_Read/Write(0,0,0x80,1,code,1,&byte): 0x15 clears bit3, 0x11 sets bit3,
 0x40 sets bit1 (write result unchecked); active0xff/signal/unlock. Implemented
 as an ordered fakeable state machine with read/write callbacks and failure
 tests; HAL adapter packs {0,0x80}/code/1 byte and inverts Hal_Iic 0=success to
-DEV 1=success, end-to-end fake-Hal test passes; mod_tuner still not wired
-because module-buffer/HAL-demd callbacks are missing. ASan/UBSan clean, full suite all
+DEV 1=success, end-to-end fake-Hal test passes. PLAT_DRV_GetModuleBufInfo is
+a literal return0 stub and is reproduced/tested; HAL_Demod_User_Initialize
+pulls in the SAL tuner/LNB subsystem (HAL_TUNER_Init, SI2151/MxL661/AV2018,
+RT5047), so mod_tuner is intentionally not wired rather than faking tuner
+init/touching IIC early. ASan/UBSan clean, full suite all
 tests passed, ARM mod_panel builds. No panel/tuner hardware; curve default off.
 PANEL-CURVE-NIM-DTV.
 

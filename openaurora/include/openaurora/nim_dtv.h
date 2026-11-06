@@ -36,6 +36,11 @@ int oa_nim_dtv_model_supported(int model_type);
  * branch (including other/negative values). */
 int oa_nim_dtv_active_module(int model_type);
 
+/* PLAT_DRV_GetModuleBufInfo @0x0089b79c is a literal `return 0` stub in this
+ * firmware. Keep the equivalent, including its argument contract, so the
+ * one-shot task logs the same "not found" branch. */
+int oa_nim_dtv_module_buf_info(int module, void *ud);
+
 /* Ordered one-shot task body recovered from 0x008601ac. The real body calls
  * PLAT_DRV_GetModuleBufInfo(9), NIM init, optional HAL demod init/connect and
  * the UART IR system-code sequence 21/17/64 (masks 8/8/2), then active 0xff

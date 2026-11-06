@@ -15,6 +15,14 @@ int oa_nim_dtv_active_module(int model_type)
     return model_type == 4 ? 1 : 3;
 }
 
+int oa_nim_dtv_module_buf_info(int module, void *ud)
+{
+    (void)module;
+    (void)ud;
+    /* PLAT_DRV_GetModuleBufInfo @0x0089b79c: movs r0,#0; return. */
+    return 0;
+}
+
 static void step(const oa_nim_dtv_ops *ops, void *ud, int value)
 {
     if (ops->step) ops->step(value, ud);

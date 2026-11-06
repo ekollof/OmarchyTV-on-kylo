@@ -95,6 +95,15 @@ int main(void)
     assert(OA_NIM_DTV_IIC_BUS == 0 && OA_NIM_DTV_IIC_DEV == 0);
     assert(OA_NIM_DTV_IIC_REG == 0x80 && OA_NIM_DTV_IIC_SIZE == 1 &&
            OA_NIM_DTV_IIC_LEN == 1);
+    assert(oa_nim_dtv_module_buf_info(9, NULL) == 0);
+
+    oa_nim_dtv_ops stub_ops = ops;
+    stub_ops.module_buf_info = oa_nim_dtv_module_buf_info;
+    oa_nim_dtv_result stub_result;
+    reset();
+    assert(oa_nim_dtv_task_run(0, 0, &stub_ops, NULL, &stub_result) == 0);
+    assert(stub_result.module_buf_rc == 0 && stub_result.initialized == 1 &&
+           nreads == 3);
 
     oa_nim_dtv_result r;
     reset();

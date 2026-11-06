@@ -115,6 +115,37 @@ the 0x15/0x11/0x40 sequence). A TV module can pass the real
 `Hal_Iic_Read/Write`; `mod_tuner` does not call the chain yet because the
 module-buffer and HAL demod callbacks still need real implementations.
 
+### Module-buffer and HAL-demod boundary
+
+`PLAT_DRV_GetModuleBufInfo` @0x0089b79c is a literal `return 0` stub
+(`movs r0,#0; pop`). `oa_nim_dtv_module_buf_info()` reproduces that and is
+covered by the state-machine test (the task logs the not-found branch and
+continues).
+
+`HAL_Demod_User_Initialize` @0x0086ade4 is not a small callback:
+
+```text
+memset 0x68-byte demod state
+_PLAT_OS_CreateMutex(...)
+TD_DBG_Register(3, 0x100000, "DEV_HAL_DEMOD", ...)
+HAL_Demod_Init(state+4)
+SAL_DEMOD_TUN_GetInitTunerType()
+SAL_DEMOD_TUN_Initialize(type, 1)
+SAL_LNB_Initialize()
+```
+
+Decompiling `SAL_DEMOD_TUN_Initialize` shows `HAL_TUNER_Init`, SI2151/MxL661
+tuner-class construction, AV2018 response handling, `HAL_dvif_open` and
+`HAL_DEMOD_EXT_DVIF_SetTunerType`; `SAL_LNB_Initialize` calls
+`RT5047_Device_Initialize`. Those SAL classes are aurora-internal, not exported
+by the linked vendor libraries. Replacing them with stubs would fake the
+hardware sequence and touching IIC before real tuner init would be unsafe.
+
+So `mod_tuner` is deliberately **not wired** yet. The state machine, module
+buffer stub and IIC HAL adapter are ready; the next prerequisite is a real
+SAL/HAL demod-tuner backend (or a narrower recovered exported sequence), not a
+fake callback. No hardware was accessed.
+
 ## Verification
 
 All three tests pass under focused ASan+UBSan (`detect_leaks=1`,
