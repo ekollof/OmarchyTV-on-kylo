@@ -507,6 +507,11 @@ check-tuner-ts-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_epg.so $(BUILD)/mod
 	node tests/tuner_ts_ipc.cjs $(abspath $(BUILD))
 check: check-tuner-ts-ipc
 
+.PHONY: check-pvr-quiesce
+check-pvr-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_pvr.so
+	node tests/pvr_quiesce.cjs $(abspath $(BUILD))
+check: check-pvr-quiesce
+
 .PHONY: check-pvr-ipc
 check-pvr-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_pvr.so
 	node tests/pvr_ipc.cjs $(abspath $(BUILD))
@@ -887,7 +892,7 @@ $(BUILD)/modules/mod_tuner.so: modules/tuner/tuner.c common/nim_stub.c common/ni
 
 $(BUILD)/modules/mod_pvr.so: modules/pvr/pvr.c common/pvr_stub.c include/openaurora/pvr.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
 
 $(BUILD)/modules/mod_channels.so: modules/channels/channels.c common/channels.c include/openaurora/channels.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)

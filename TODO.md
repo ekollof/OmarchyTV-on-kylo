@@ -274,14 +274,27 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       events; clear and stop use the gate. Existing EPG persistence and tuner
       handoff tests pass; ARM links libpthread. Full/QEMU pass. EPG-QUIESCE.
 
+- [x] Asynchronous gate for `mod_pvr`: clear publication and unpublish `pvr`
+      synchronously, then close the file-backed backend synchronously or on a
+      worker after `pvr.cleanup_delay_ms`. An `opened` flag prevents the
+      stop+unload double quiesce from spawning a second worker.
+      `m_stop`/`m_destroy` join/close leftovers; `m_start` refuses if
+      published, a worker is live or the backend is still open. Control-socket
+      test: add two reservations, reload fails fast, `pvr-list` ENODEV, status
+      responsive, the two-record `OAPVR1` file is present, the retry completes
+      and lists both, a new add continues the persisted id sequence,
+      record/stop still work, and stop uses the gate. Existing PVR
+      reload/cross-process test passes; ARM links libpthread. Full/QEMU pass.
+      PVR-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
-      `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner` and `epg` are the
-      existing models.
+      `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg` and `pvr` are
+      the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

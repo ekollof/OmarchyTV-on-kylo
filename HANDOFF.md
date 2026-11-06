@@ -260,6 +260,19 @@ handoff tests pass; ARM links libpthread. Full/QEMU pass. Project cache only,
 not vendor EIT/SQLite. ir/i18n/settings/ui_vendor/ui_engine/display/source/
 ui_menu/audio/cec/audio_mixer/tuner/epg are async. EPG-QUIESCE.
 
+mod_pvr quiesce, 2026-11-06: clear publication and unpublish pvr synchronously,
+then close the file-backed backend synchronously or on a worker after
+pvr.cleanup_delay_ms. opened prevents the stop+unload double quiesce from
+spawning a second worker. m_stop/m_destroy join/close leftovers; m_start
+refuses if published, a worker is live or the backend is still open. Control
+test: add two reservations, reload fails fast, pvr-list ENODEV, status
+responsive, the two-record OAPVR1 file is present, retry completes and lists
+both, a new add continues the persisted id sequence, record/stop still work,
+stop gate. Existing PVR reload/cross-process test passes; ARM links libpthread.
+Full/QEMU pass. Stub close is only an in-memory flag, not a slow storage
+close. ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg/pvr are async. PVR-QUIESCE.
+
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so
 Hal_Vin wrappers and the real mod_source.so under qemu against an LD_PRELOAD
 fake /dev/video20. Hal_Vin_Open(0) opens /dev/video20 (not /dev/ntkdvif);
