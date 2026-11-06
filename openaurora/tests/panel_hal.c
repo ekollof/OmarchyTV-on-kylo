@@ -11,7 +11,7 @@
 
 extern const oa_module *oa_module_entry(void);
 static const oa_panel_iface *panel_iface;
-static int g_curve, g_min_percent = 20;
+static int g_curve, g_min_percent = 20, g_duty_max = 4095;
 static unsigned init_calls, open_calls, set_calls, close_calls;
 static struct pwm_open_req last_open;
 static struct pwm_set_req last_set;
@@ -38,6 +38,7 @@ static const char *config(void *p, const char *key, const char *def)
     (void)p;
     if (!strcmp(key, "panel.curve")) return g_curve ? "1" : "0";
     if (!strcmp(key, "panel.min_percent")) return g_min_percent ? "20" : "0";
+    if (!strcmp(key, "panel.duty_max")) return g_duty_max == 1000 ? "1000" : "4095";
     if (!strcmp(key, "panel.start")) return "100";
     if (!strcmp(key, "panel.channel")) return "3";
     if (!strcmp(key, "panel.freq")) return "20000";
@@ -94,14 +95,22 @@ int main(void)
     stop_module(ctx);
     assert(close_calls == 1);
 
-    /* Default remains the historical linear percentages. */
-    g_curve = 0; g_min_percent = 0;
-    unsigned before = set_calls;
+    /* Final 12-bit calibration knob: duty_max=1000 with min 20%. */
+    g_curve = 1; g_min_percent = 20; g_duty_max = 1000;
     ctx = start_module();
-    assert(set_calls == before + 1 && last_set.duty == 4095);
-    assert(panel_iface->set_backlight_percent(50) == 0 && last_set.duty == 2047);
+    assert(last_set.duty == 1000);
+    assert(panel_iface->set_backlight_percent(50) == 0 && last_set.duty == 600);
+    assert(panel_iface->set_backlight_percent(0) == 0 && last_set.duty == 200);
     stop_module(ctx);
 
-    puts("ok panel hal: curve min/breakpoints reach 12-bit PWM; default linear path unchanged");
+    /* Default remains the historical linear percentages. */
+    g_curve = 0; g_min_percent = 0; g_duty_max = 1000;
+    unsigned before = set_calls;
+    ctx = start_module();
+    assert(set_calls == before + 1 && last_set.duty == 1000);
+    assert(panel_iface->set_backlight_percent(50) == 0 && last_set.duty == 500);
+    stop_module(ctx);
+
+    puts("ok panel hal: curve min/breakpoints and duty_max reach 12-bit PWM; default linear path unchanged");
     return 0;
 }

@@ -632,12 +632,14 @@ panel curve/nim dtv, 2026-11-06: DEV_PANEL_Init uses breakpoints40/60/80/100 and
 scale1000; SetPWMBacklightLimit writes M=(1000*pct+50)/100 at
 gstBacklightPara+4; SetPWMBacklightLv maps M+(level*(1000-M)+500)/1000 through
 the midpoint table with vendor integer rounding. Added common/panel_curve +
-opt-in panel.curve/min_percent (default linear path unchanged); fake-HAL tests
-cover identity/min20/p4=50 bend/percent-duty/bounds/degenerate. DEV_NIM_DTV_Init
-idempotent guard, model0..3/type4 active1/else3, mutex and
-CreateTask(entry0x8601ad, stack0x1000, priority14), Term0xff; only gate/constants
-implemented+tested. ASan/UBSan clean, full suite all tests passed, ARM mod_panel
-builds. No panel/tuner hardware; curve default off, NIM task body unimplemented.
+opt-in panel.curve/min_percent/duty_max (default linear/4095 path unchanged);
+fake-HAL tests cover identity/min20/p4=50 bend/percent-duty(4095 and1000
+calibration)/bounds/degenerate. DEV_NIM_DTV_Init idempotent guard,
+model0..3/type4 active1/else3, mutex and CreateTask(entry0x8601ad,
+stack0x1000, priority14), Term0xff; task body recovered as a one-shot init
+(modulebuf9/NIM init/HAL demod+connect/IR codes21,17,64 masks8,8,2/active0xff+
+signal), HAL/UART body unimplemented. ASan/UBSan clean, full suite all tests
+passed, ARM mod_panel builds. No panel/tuner hardware; curve default off.
 PANEL-CURVE-NIM-DTV.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin

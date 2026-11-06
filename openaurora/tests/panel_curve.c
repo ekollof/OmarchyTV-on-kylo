@@ -42,6 +42,7 @@ int main(void)
     assert(oa_panel_percent_to_duty(&c, 0, 4095) == 0);
     assert(oa_panel_percent_to_duty(&c, 50, 4095) == 2047);
     assert(oa_panel_percent_to_duty(&c, 100, 4095) == 4095);
+    assert(oa_panel_percent_to_duty(&c, 50, 1000) == 500);
     assert(oa_panel_percent_to_duty(&c, -5, 4095) == 0);
     assert(oa_panel_percent_to_duty(&c, 150, 4095) == 4095);
     oa_panel_curve_init(&c, 40, 60, 80, 100, 200);

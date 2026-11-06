@@ -18,7 +18,8 @@
  * they are configuration (panel.channel / panel.freq) until calibrated on the set.
  * panel.curve=1 selects the recovered DEV_PANEL_Init/SetPWMBacklightLv curve
  * (breakpoints 40/60/80/100, level scale 1000) with panel.min_percent as the
- * runtime limit; default 0 keeps the historical linear percent mapping.
+ * runtime limit; panel.duty_max is the final 12-bit calibration (default 4095).
+ * Default 0 curve keeps the historical linear percent mapping.
  *
  * Host builds define OA_NO_VENDOR and get no-op stubs, so the module still loads and
  * the lifecycle tests keep running on a laptop.
@@ -73,6 +74,7 @@ struct ctx {
     int percent; /* what we asked for, 0..100 */
     int raw;     /* optional: pass this duty verbatim, ignoring percent */
     int curve_on;/* panel.curve=1 uses the recovered vendor backlight curve */
+    int duty_max;/* panel.duty_max, 1..4095 */
     oa_panel_curve curve;
     int opened;
     int published;
@@ -84,15 +86,6 @@ struct ctx {
 };
 
 static struct ctx *g_ctx;
-
-static int pct_to_duty(int pct)
-{
-    if (pct < 0)
-        pct = 0;
-    if (pct > 100)
-        pct = 100;
-    return pct * 4095 / 100;
-}
 
 static int apply(struct ctx *c, int pct)
 {
@@ -120,8 +113,8 @@ static int apply(struct ctx *c, int pct)
     memset(&r, 0, sizeof r);
     r.freq = (uint32_t)c->freq;
     r.duty = (uint32_t)(c->raw >= 0 ? c->raw :
-             c->curve_on ? oa_panel_percent_to_duty(&c->curve, pct, 4095) :
-             pct_to_duty(pct));
+             c->curve_on ? oa_panel_percent_to_duty(&c->curve, pct, c->duty_max) :
+             pct * c->duty_max / 100);
     r.shift = 0;
     r.mode = 1;          /* must be < 9 */
     (void)Hal_Pwm_Set_ByChannel((unsigned)c->channel, &r);
@@ -187,6 +180,8 @@ static int m_start(void *v)
     c->percent = atoi(c->api->config_get(c->api->priv, "panel.start", "100"));
     c->raw = atoi(c->api->config_get(c->api->priv, "panel.raw", "-1"));
     c->curve_on = c->api->config_get(c->api->priv, "panel.curve", "0")[0] == '1';
+    c->duty_max = atoi(c->api->config_get(c->api->priv, "panel.duty_max", "4095"));
+    if (c->duty_max < 1 || c->duty_max > 4095) c->duty_max = 4095;
     oa_panel_curve_init(&c->curve, 40, 60, 80, 100,
         atoi(c->api->config_get(c->api->priv, "panel.min_percent", "0")) * 10);
 

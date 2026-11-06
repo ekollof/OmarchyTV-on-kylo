@@ -28,45 +28,52 @@ Implementation:
   with all integer rounding. A degenerate table returns the pre-curve value
   instead of taking the vendor divider fault (documented safety deviation).
 - `mod_panel` gains opt-in `panel.curve=1` and `panel.min_percent` (default 0).
-  Default behavior remains the historical linear `pct*4095/100`; the curve path
-  uses `oa_panel_percent_to_duty(..., 4095)`. The 0..1000 -> 0..4095 duty scale
-  is the existing HAL assumption, not hardware-accepted.
+  Default behavior remains the historical linear percent mapping; the curve
+  path uses `oa_panel_percent_to_duty(..., panel.duty_max)`. `panel.duty_max`
+  is the final 12-bit calibration knob (default 4095, clamped 1..4095); the
+  0..1000 -> 0..duty_max scale is explicit test input, not hardware-accepted.
 
 Tests:
 
 ```text
 ok panel curve: vendor breakpoints, runtime minimum, piecewise midpoint, percent-duty and bounds
-ok panel hal: curve min/breakpoints reach 12-bit PWM; default linear path unchanged
+ok panel hal: curve min/breakpoints and duty_max reach 12-bit PWM; default linear path unchanged
 ```
 
 Vectors cover the identity default, min=200 (`level 250 -> 400`, `500 -> 600`,
 `1000 -> 1000`), p4=50 bending (`500 -> 450`, `700 -> 650`), percent->duty
-(50% -> 2047, min20% 0% -> 819), clamping and a degenerate table.
+(50% -> 2047 at 4095, 50% -> 500 at duty_max 1000, min20% 0% -> 819), clamping
+and a degenerate table.
 
-## NIM-DTV task contract
+## NIM-DTV task body
 
-`DEV_NIM_DTV_Init` @0x00861678 is idempotent on a global initialized byte. It
-accepts model types 0..3, marks type 4 unsupported with
-`gu32NimActiveModule=1`, and leaves 0..3/default at 3. It initializes
-`g_InitMutex` and calls:
-
-```text
-PLAT_OS_CreateTask(entry 0x008601ad, arg 0, stack 0x1000, priority 14,
-                   params, 1)
-```
-
-`DEV_NIM_DTV_Term` @0x008617d4 clears the guard and writes active `0xff`; the
-recovered body does not join the task.
-
-Implemented `common/nim_dtv.c` + header for the verified model gate, active
-module code and task constants, with:
+`DEV_NIM_DTV_Init` @0x00861678 is idempotent on a global initialized byte,
+accepts model types 0..3, marks type 4 with active module 1 and others 3,
+initializes `g_InitMutex`, and creates one task at
+`CreateTask(entry 0x008601ad, arg 0, stack 0x1000, priority 14, params, 1)`.
+Implemented `common/nim_dtv.c` for that gate/active code and the constants:
 
 ```text
 ok nim dtv: recovered model gate/active module and task constants
 ```
 
-The task entry/body performs NIM/hardware work and is **not** implemented; no
-tuner access or fake-device task execution is claimed.
+The task entry at `0x008601ac` (created by `DEV_NIM_DTV_Init`) is a **one-shot
+initializer**, not a monitor loop:
+
+1. lock `g_InitMutex`;
+2. `PLAT_DRV_GetModuleBufInfo(9, ...)`, logging the success/error branch;
+3. `_dev_nim_dtv_InitNimFunc(&state)`;
+4. if the active-module bit requests it: `HAL_Demod_User_Initialize()` then
+   `_dev_nim_dtv_Connect2HAL()`;
+5. UART IR system-code/active sequence for codes 21, 17 and 64 with bit masks
+   8, 8, 2 (failure branches still converge on the same finish);
+6. write active `0xff`, mark the stage initialized, signal the condition and
+   unlock.
+
+`DEV_NIM_DTV_Term` clears the guard and writes `0xff`; it does not join. The
+task body therefore depends on the real NDAL module-buffer/demod/UART path and
+is not implemented. Only the model gate, active codes and task constants are
+covered offline.
 
 ## Verification
 
