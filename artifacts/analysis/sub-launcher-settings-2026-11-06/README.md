@@ -15,6 +15,8 @@ TV-offline Ghidra evidence for the object behind `SubLauncherDialog`'s
 | `picturemode-fields.txt` | `UserPreferences::get/setPictureMode`: config +0x04 |
 | `picture-config-fields.txt` | `NovoPictureSettings::get/setPictureMode`; config/energy callers |
 | `demoapp-ctor.txt` | `DemoApp` constructor: `+0x318` starts zeroed |
+| `source-mapping.txt`, `source-mapping2.txt`, `source-mapping3.txt` | `InputManager::getCurrentExtSrc`/`setCurrentExtSrc`, external-source display state and `getFirstExtSource` |
+| `ice-external-names.txt` | `ICE_ExternalGetName`/`ICE_ExternalNumberOfInterfaces` (13-entry descriptor table) |
 
 ## Object and vtable
 
@@ -77,3 +79,12 @@ The picture methods do not touch SQLite directly. They read/write
 
 `SVGSelectionBox`'s constructor writes 0x1 at `+0x2f4`, so `onKeyLeft`/
 `onKeyRight` wrap (cyclic navigation) rather than clamp.
+
+## Picture source index
+
+`InputManager::setCurrentExtSrc(index, main)` stores the external interface
+index at `+0x68` (main) and calls `UserPreferences::setCurrentSource(index+1)`.
+`NovoPictureSettings::getPictureSettingsIndexForCurrentSource` returns
+`getCurrentExtSrc(true)+1` for external sources and 0 for the tuner (or
+`numExt+1` for radio). The picture-configuration index is therefore the
+persisted `m_current_source`; the UI row order itself is not the index.

@@ -48,10 +48,12 @@ Those methods persist through `UserPreferences`:
   **+0x44 + pictureMode*0x70 + device3d*0x38** inside the same 0x240-byte block.
 
 `settingsDB.Settings.m_picture_setting_configuration` is exactly 11520 bytes =
-20 sources × 0x240. The dump's source 1 (HDMI1) has mode **1 = NATURAL**, zoom
-**1 = 16:9**, and energy **3 = MAXIMUM** for picture mode 1 — the three values
-visible in the p0/03 capture. That is the cross-check for the recovered field
-offsets and the mode list.
+20 sources × 0x240. The dump's source 1 has mode **1 = NATURAL**, zoom **1 = 16:9**, and energy
+**3 = MAXIMUM** for picture mode 1 — the three values visible in the p0/03
+capture. That is the cross-check for the recovered field offsets and the mode
+list. The dump's `m_current_source` is 5; the QEMU check sets it to 1 for the
+capture values and then to 5 to prove the source selection changes the
+configuration.
 
 ## Implementation
 
@@ -70,8 +72,12 @@ m_picture_setting_configuration=?`. Writes are refused with `EROFS` while
 `ui_vendor` now uses that service instead of the removed `ui.state_file`
 shadow:
 
-- on start/rebind it reads mode, zoom and the per-mode energy for
-  `picture.source` (default 1 = HDMI1, the captured configuration);
+- on start/rebind it derives the configuration index from
+  `Settings.m_current_source`: `InputManager::setCurrentExtSrc` stores the
+  external interface index and writes `setCurrentSource(index+1)`;
+  `getPictureSettingsIndexForCurrentSource` returns the same index+1 for
+  external sources and 0 for the tuner. So `picture index == m_current_source`
+  (0 = TV). An explicit `picture.source` is a diagnostic override only;
 - `set:<key>=<value>` and Left/Right write through `set_mode`/`set_zoom`/
   `set_energy`;
 - changing MODE re-reads the energy stored for that picture mode, matching
@@ -96,19 +102,23 @@ QEMU, with the real ARM `mod_settings`, the vendor `libsqlite3.so.0` and a
 writable copy of the DB:
 
 ```text
-ok qemu sub-launcher value: default NATURAL/MAXIMUM/16:9 (132/129/54);
-16:9 -> 155 (DB field 2), survives restart; setting: focus bottom 450;
-Right AUTO width 176; MODE Cinema width 105, energy OFF width 36
+ok qemu sub-launcher value: m_current_source=1 gives NATURAL/MAXIMUM/16:9
+(132/129/54); 16:9 -> 155 (DB field 2), survives restart; setting: focus
+bottom 450; Right AUTO width 176; MODE Cinema width 105, energy OFF width 36;
+source5 gives DYNAMIC/OFF (151/36)
 ```
 
 The default widths 132/129/54 are the p0/03 vendor capture's card 0/1/2
 value ink widths, so the firmware DB's source-1 values drive the live row.
 
-Steps: default source1 renders 16:9; `ui-action set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE`
-writes blob `+0x0c = 2` and renders 155 px; a fresh process renders the same;
-`setting:ENERGY_SAVING` reaches the 450 px scaled bottom; `Down,Down,Right`
-writes energy 4 and renders AUTO; `set:MODE=CINEMA` writes mode 2 and applies
-that mode's energy 0, rendering Cinema and Uit.
+Steps: `m_current_source=1` renders NATURAL/MAXIMUM/16:9 (132/129/54 px);
+`ui-action set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE` writes blob `+0x0c = 2` and
+renders 155 px; a fresh process renders the same; `setting:ENERGY_SAVING`
+reaches the 450 px scaled bottom; `Down,Down,Right` writes energy 4 and renders
+AUTO; `set:MODE=CINEMA` writes mode 2 and applies that mode's energy 0,
+rendering Cinema and Uit; setting `m_current_source=5` in the DB and restarting
+selects config 5 and renders DYNAMIC/OFF (151/36 px), proving the source
+mapping.
 
 The existing text/oracle checks still pass:
 
@@ -125,9 +135,11 @@ full_check=0
   `UserPreferences` instance. The field layout and values are verified against
   the firmware data, but a live vendor object was not executed. The separate
   `m_picture_mode_preset_key` and `m_last_zoom_mode` columns are not updated.
-- `picture.source` defaults to 1 (HDMI1). Deriving it at runtime from
-  `InputManager`/`EASITVControlInterface` is not implemented; on another input
-  the wrong 0x240 slot would be shown.
+- The configuration index is derived from `m_current_source`, matching the
+  firmware identity. The replacement's own source-selection screen does not
+  yet write `m_current_source` or switch the video hardware, so changing the
+  row in openaurora does not move the picture slot until source switching is
+  implemented. `InputManager::getCurrentExtSrc` itself is not called.
 - HDR energy variants (`+0x446c`, `+0xa10`, `+0xa48`) and the format-0
   `isFullModeApplicable` zoom choice are not implemented; the non-HDR +0x0c
   field is used.

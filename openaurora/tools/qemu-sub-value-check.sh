@@ -62,6 +62,12 @@ cp "$TEST/mod_sim_display.so" "$MOD/mod_ui_engine.so" "$MOD/mod_ui_menu.so" \
 cp "$TEST/mod_plat_stub.so" "$STAGE/modules/mod_plat.so"
 cp "$SQLITE_LIB" "$STAGE/libsqlite3.so.0"
 cp "$SETTINGSDB" "$STAGE/picture.db"
+python3 - "$STAGE/picture.db" <<'PY'
+import sqlite3, sys
+db = sqlite3.connect(sys.argv[1])
+db.execute("UPDATE Settings SET m_current_source=1")
+db.commit()
+PY
 cp "$UI/settings_top.rgba" "$UI/settings_cat.rgba" "$UI/settings_rail.rgba" \
    "$UI/sublauncher_card_0.rgba" "$UI/sublauncher_card_1.rgba" \
    "$UI/sublauncher_card_2.rgba" "$UI/sublauncher_card_0_bg.rgba" \
@@ -81,7 +87,6 @@ ui.font_index=$FONT.txt
 ui.font_pack=$FONT.bin
 settings.db=$STAGE/picture.db
 settings.readonly=0
-picture.source=1
 i18n.profile=$PROFILE
 i18n.language=dut
 plat.enable=1
@@ -159,6 +164,18 @@ off = 0x240 + 0x44 + 2 * 0x70
 assert struct.unpack_from("<i", b, off)[0] == 0, "mode2 energy not OFF"
 PY
 
+# 7. The picture source comes from m_current_source (firmware: external
+#    interface index + 1). Source 5 selects config 5: DYNAMIC/OFF/16:9.
+python3 - "$STAGE/picture.db" 5 <<'PY'
+import sqlite3, sys
+db = sqlite3.connect(sys.argv[1])
+db.execute("UPDATE Settings SET m_current_source=?", (int(sys.argv[2]),))
+db.commit()
+PY
+OA_QEMU_MODULES="$MODULES" \
+    "$ROOT/openaurora/tools/qemu-ui-layout.sh" "$STAGE" >/dev/null
+cp "$STAGE/frame.0" "$STAGE/source5.rgba"
+
 python3 - "$STAGE" <<'PY'
 import sys
 from PIL import Image
@@ -225,6 +242,14 @@ ebox = ink(cycle, 199 + 250, 199 + 250 + 240, 345, 400)
 if not ebox or ebox[2] - ebox[0] < 160:
     raise SystemExit(f"Right did not render the long AUTO value: {ebox}")
 
+source5 = load(f"{stage}/source5.rgba")
+s0 = ink(source5, 199, 199 + 240, 345, 400)
+s1 = ink(source5, 199 + 250, 199 + 250 + 240, 345, 400)
+if not s0 or not (145 <= s0[2] - s0[0] <= 170):
+    raise SystemExit(f"m_current_source=5 did not select DYNAMIC: {s0}")
+if not s1 or not (25 <= s1[2] - s1[0] <= 55):
+    raise SystemExit(f"m_current_source=5 did not select OFF energy: {s1}")
+
 mode = load(f"{stage}/mode.rgba")
 m0 = ink(mode, 199, 199 + 240, 345, 400)
 m1 = ink(mode, 199 + 250, 199 + 250 + 240, 345, 400)
@@ -232,9 +257,10 @@ if not m0 or not (95 <= m0[2] - m0[0] <= 120):
     raise SystemExit(f"set:MODE did not render Cinema: {m0}")
 if not m1 or not (25 <= m1[2] - m1[0] <= 55):
     raise SystemExit(f"mode2 energy did not render OFF: {m1}")
-print(f"ok qemu sub-launcher value: default NATURAL/MAXIMUM/16:9 "
-      f"({v0[2]-v0[0]}/{v1[2]-v1[0]}/{bw}); 16:9 -> {cw} (DB field 2), "
-      f"survives restart; setting: focus bottom {bottom}; Right AUTO width "
-      f"{ebox[2] - ebox[0]}; MODE Cinema width {m0[2] - m0[0]}, energy OFF "
-      f"width {m1[2] - m1[0]}")
+print(f"ok qemu sub-launcher value: m_current_source=1 gives "
+      f"NATURAL/MAXIMUM/16:9 ({v0[2]-v0[0]}/{v1[2]-v1[0]}/{bw}); 16:9 -> {cw} "
+      f"(DB field 2), survives restart; setting: focus bottom {bottom}; "
+      f"Right AUTO width {ebox[2] - ebox[0]}; MODE Cinema width "
+      f"{m0[2] - m0[0]}, energy OFF width {m1[2] - m1[0]}; source5 gives "
+      f"DYNAMIC/OFF ({s0[2] - s0[0]}/{s1[2] - s1[0]})")
 PY

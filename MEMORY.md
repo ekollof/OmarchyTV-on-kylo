@@ -130,20 +130,27 @@ vptr=`_ZTV19NovoPictureSettings`+8 (slots9c/a4/b0/b4/d0/e8/194/198/19c =
 picture-mode/apply/zoom/index/energy). UserPreferences keeps the per-source
 0x240 picture config at+0x43f0: mode+0x04, zoom+0x0c, energy+0x44+mode*0x70+
 device3d*0x38. `Settings.m_picture_setting_configuration` is20×0x240 bytes;
-source1 (HDMI1) has mode1 NATURAL, zoom1 16:9, energy3 MAXIMUM — exactly
-p0/03. PictureModeNameProvider's initializer at0x6eee50 fills
+dump source1 has mode1 NATURAL, zoom1 16:9, energy3 MAXIMUM (p0/03). The
+picture index is `m_current_source`: setCurrentExtSrc stores the external
+index and writes setCurrentSource(index+1), while
+getPictureSettingsIndexForCurrentSource returns index+1 (0=Tuner). ui_vendor
+derives it; picture.source is an override only. PictureModeNameProvider's initializer at0x6eee50 fills
 0x178d64c with0 DYNAMIC/1 NATURAL/2 CINEMA/3 GAME/4 SPORT, now explicit in
 the JSON. `SVGSelectionBox` is cyclic; Up/Down move focus, Left/Right change
 values. mod_settings publishes `picture.settings` v1 (get/set mode, zoom,
 energy; whole-blob UPDATE; EROFS when settings.readonly=1). ui_vendor reads/
-writes it, default picture.source1; the ui.state_file shadow is removed.
+writes it using m_current_source; the ui.state_file shadow is removed.
 QEMU: default16:9 width54→Ondertitels155 after set, blob+0xc=2, survives
 restart; setting focus bottom450; Down,Down,Right energy4/AUTO176;
-set:MODE=CINEMA writes mode2 and applies energy0 (Cinema105/Uit36).
-Host test asserts source1 values against the shipped DB and reload.
-Limits: serialized DB blob, not the live UserPreferences object; source index
-fixed to1; HDR energy variants/full-mode zoom not implemented; TV DB write
-needs settings.readonly=0. SUBLAUNCHER-VALUES.
+set:MODE=CINEMA writes mode2 and applies energy0 (Cinema105/Uit36); DB
+m_current_source5 selects config5 and renders DYNAMIC/OFF151/36. Host test
+asserts source1 values against the shipped DB and reload. mod_settings now has
+the ABI3 async quiesce gate (detach DB/flags, close on worker); control
+picture-state + reload proof. ir/i18n/settings are the async modules.
+Limits: serialized DB blob, not the live UserPreferences object; own source
+screen does not write m_current_source yet; HDR energy variants/full-mode zoom
+not implemented; TV DB write needs settings.readonly=0. SUBLAUNCHER-VALUES and
+SETTINGS-QUIESCE.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
 Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,

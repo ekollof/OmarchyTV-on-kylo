@@ -206,8 +206,9 @@ struct ctx {
      * an item may still use a firmware source marker instead of a list. The
      * defaults reproduce the p0/03 capture. picture.settings reads/writes the
      * firmware's per-source PictureSettingConfiguration (0x240 bytes) from
-     * settingsDB.m_picture_setting_configuration; picture.source selects the
-     * source index (default 1 = HDMI1, the capture's configuration). */
+     * settingsDB.m_picture_setting_configuration. The source index is the
+     * persisted m_current_source (firmware: external interface index + 1,
+     * 0 for the tuner); picture.source is a diagnostic override only. */
     int sub_value[3];
     const oa_picture_settings_iface *picture;
     int picture_source;
@@ -665,12 +666,34 @@ static void sub_values_default(struct ctx *c)
 
 static void sub_text_free(struct ctx *c);
 
+/* Firmware identity: InputManager::setCurrentExtSrc stores the external
+ * interface index and calls UserPreferences::setCurrentSource(index+1);
+ * NovoPictureSettings::getPictureSettingsIndexForCurrentSource returns the
+ * same index+1 for external sources and 0 for the tuner. So the persisted
+ * m_current_source is the picture-configuration index. An explicit
+ * picture.source config value is a diagnostic override only. */
+static int picture_source_now(struct ctx *c)
+{
+    const char *override = c->api->config_get(c->api->priv,
+                                              "picture.source", "");
+    if (override && override[0]) {
+        int v = atoi(override);
+        if (v >= 0 && v < 20) return v;
+    }
+    int source = -1;
+    if (c->settings &&
+        c->settings->get_int("m_current_source", &source) == 0 &&
+        source >= 0 && source < 20)
+        return source;
+    return 0; /* TV/tuner fallback */
+}
+
 /* Refresh the card values from the firmware's serialized
- * PictureSettingConfiguration. source defaults to HDMI1 (1), which is the
- * configuration matching the p0/03 capture; see picture.source. */
+ * PictureSettingConfiguration using the persisted current source. */
 static void picture_sync(struct ctx *c)
 {
     if (!c->picture) return;
+    c->picture_source = picture_source_now(c);
     int v;
     if (c->picture->get_mode(c->picture_source, &v) == 0 &&
         v >= 0 && v <= 4)
@@ -691,6 +714,7 @@ static void picture_sync(struct ctx *c)
 static void picture_commit(struct ctx *c, int card, int index)
 {
     if (!c->picture) return;
+    c->picture_source = picture_source_now(c);
     int rc;
     if (card == 0) {
         rc = c->picture->set_mode(c->picture_source, index);
@@ -2421,10 +2445,9 @@ static void rebind_now(struct ctx *c)
     if (!c->clock) c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
     if (!c->theme) c->theme = c->api->lookup(c->api->priv, OA_SVC_UI_THEME, 1);
     if (!c->i18n) c->i18n = c->api->lookup(c->api->priv, OA_SVC_I18N, 1);
-    if (!c->picture) {
+    if (!c->picture)
         c->picture = c->api->lookup(c->api->priv, OA_SVC_PICTURE_SETTINGS, 1);
-        if (c->picture) picture_sync(c);
-    }
+    if (c->picture && c->settings) picture_sync(c);
     apply_anim_policy(c);
     if (!c->lua) c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
     if (!slide_allowed(c)) {
@@ -2897,12 +2920,6 @@ static int m_start(void *v)
 {
     struct ctx *c = v;
     sub_values_default(c);
-    c->picture_source = atoi(c->api->config_get(c->api->priv,
-                                               "picture.source", "1"));
-    if (c->picture_source < 0 || c->picture_source > 19)
-        c->picture_source = 1;
-    c->picture = c->api->lookup(c->api->priv, OA_SVC_PICTURE_SETTINGS, 1);
-    if (c->picture) picture_sync(c);
     c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 2);
     if (!c->d) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "no ui.engine service — load mod_ui_engine first");
@@ -2984,6 +3001,8 @@ static int m_start(void *v)
         c->band = BAND_RAIL;
 
     c->settings = c->api->lookup(c->api->priv, OA_SVC_SETTINGS, 1);
+    c->picture = c->api->lookup(c->api->priv, OA_SVC_PICTURE_SETTINGS, 1);
+    if (c->picture) picture_sync(c);
     c->anim = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 1);
     if (c->anim) c->anim->bind(on_anim, c);
     /* v2 adds the recovered text-slide helpers; v1-only hosts simply get no slide. */

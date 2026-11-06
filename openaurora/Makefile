@@ -854,7 +854,7 @@ $(BUILD)/modules/mod_display_fb.so: modules/display/display.c common/ui_anim.c c
 
 $(BUILD)/modules/mod_settings.so: modules/settings/settings.c common/launcher_db.c include/openaurora/launcher_db.h include/openaurora/launcher_item.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) \
 	  -Ithird_party -L$(VENDOR_LIB) $(SQLITE_LIBS)
 
 $(BUILD)/modules/mod_service_db.so: modules/service_db/service_db.c common/service_db.c include/openaurora/service_db.h include/openaurora/module.h include/openaurora/services.h
@@ -1985,6 +1985,12 @@ check-picture-settings: $(BUILD)/tests/picture_settings $(BUILD)/modules/mod_set
 	@test -f $(SETTINGSDB) || { echo "missing $(SETTINGSDB); the real settingsDB is required" >&2; exit 2; }
 	@$(BUILD)/tests/picture_settings $(SETTINGSDB) $(abspath $(BUILD)/modules)
 check: check-picture-settings
+
+.PHONY: check-settings-quiesce
+check-settings-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_settings.so
+	@test -f $(SETTINGSDB) || { echo "missing $(SETTINGSDB); the real settingsDB is required" >&2; exit 2; }
+	node tests/settings_quiesce.cjs $(abspath $(BUILD)) $(abspath $(SETTINGSDB))
+check: check-settings-quiesce
 
 .PHONY: check-i18n-service
 check-i18n-service: $(BUILD)/tests/i18n_service $(BUILD)/modules/mod_i18n.so

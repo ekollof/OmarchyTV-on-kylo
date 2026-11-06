@@ -168,13 +168,18 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       `check-ir-ipc`, full-stack IPC and ARM/libpthread builds pass.
       OA-CLIENT-ASYNC. `mod_i18n` now has the same gate (LIVE-SUBLAUNCHER-I18N):
       unpublish, detach the5 MB profile, free it on a worker; first reload
-      fails fast, status stays responsive, retry completes. Other modules
-      still stop synchronously.
+      fails fast, status stays responsive, retry completes. `mod_settings`
+      now has the gate too (SETTINGS-QUIESCE): detach the SQLite handle and
+      clear publication flags before unpublishing, close on a worker; the
+      control test asserts fast-fail reload, responsive status, retry and the
+      republished `picture-state 1` values. Other modules still stop
+      synchronously.
 
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
-      stop/reload model beyond `ir`/`i18n`, with a completion query and bounded
-      client behavior. Do not call `dlclose`/module callbacks from an unowned
-      worker. `display_fb`, `ir` and `i18n` are the existing models.
+      stop/reload model beyond `ir`/`i18n`/`settings`, with a completion query
+      and bounded client behavior. Do not call `dlclose`/module callbacks from
+      an unowned worker. `display_fb`, `ir`, `i18n` and `settings` are the
+      existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in
@@ -267,20 +272,24 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       4 SPORT; the JSON now carries it. `mod_settings` publishes
       `picture.settings` over `Settings.m_picture_setting_configuration`
       (20×0x240, whole-blob update, EROFS while read-only); ui_vendor reads and
-      writes it (picture.source=1) and the old `ui.state_file` shadow is gone.
-      Host test checks source1 NATURAL/16:9/MAXIMUM against the shipped DB and
-      reload. QEMU: Ondertitels155/blob+0xc=2, survives restart; focus450;
+      writes it, deriving the configuration index from `m_current_source`
+      (firmware external index+1, 0=Tuner); the old `ui.state_file` shadow is
+      gone. Host test checks source1 NATURAL/16:9/MAXIMUM against the shipped
+      DB and reload. QEMU: m_current_source1 gives NATURAL/MAXIMUM/16:9
+      (132/129/54); Ondertitels155/blob+0xc=2, survives restart; focus450;
       Down,Down,Right AUTO176/energy4; set:MODE=CINEMA writes mode2 and applies
-      energy0 (Cinema/Uit). SUBLAUNCHER-VALUES.
+      energy0 (Cinema/Uit); m_current_source5 selects config5 and renders
+      DYNAMIC/OFF151/36. SUBLAUNCHER-VALUES.
 
 - [ ] Live picture backend details: the service uses the serialized settingsDB
-      blob, not the live `NovoPictureSettings`/`UserPreferences` object.
-      `picture.source` is fixed to 1 (HDMI1); deriving it from
-      InputManager/EASITVControlInterface is not implemented. HDR energy
-      variants (+0x446c/+0xa10/+0xa48) and the format-0 `isFullModeApplicable`
-      zoom choice are open. Writing the TV's DB requires `settings.readonly=0`
-      and is a deliberate deployment decision. Do not apply the row to the
-      category rail or an invented portal card row.
+      blob, not the live `NovoPictureSettings`/`UserPreferences` object. The
+      index is derived from `m_current_source`, but the replacement's own
+      source-selection screen does not write `m_current_source` or switch the
+      video hardware yet. HDR energy variants (+0x446c/+0xa10/+0xa48) and the
+      format-0 `isFullModeApplicable` zoom choice are open. Writing the TV's DB
+      requires `settings.readonly=0` and is a deliberate deployment decision.
+      Do not apply the row to the category rail or an invented portal card
+      row.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
       the vendor 30 ms APNG/10 ms controller cadence. Tighten the compositor

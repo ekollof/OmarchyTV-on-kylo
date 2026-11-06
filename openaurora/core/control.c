@@ -284,6 +284,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  image-decode <path>      decode PNG/JPEG through image.decode\n"
                  "  ui-state                query ui.portal screen\n"
                  "  ui-action <action>      apply a JSON menu action (open:/setting:/set:)\n"
+                 "  picture-state <source>  read picture mode/zoom/energy 0-19\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -332,6 +333,39 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
             return -1;
         }
         snprintf(outbuf, outlen, "ok\n");
+        return 0;
+    }
+    if (!strcmp(cmd, "picture-state")) {
+        if (force || !a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        char *end = NULL;
+        long source = strtol(a1, &end, 0);
+        if (*a1 == '\0' || !end || *end != '\0' ||
+            source < 0 || source > 19) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_picture_settings_iface *p =
+            h->api.lookup(h, OA_SVC_PICTURE_SETTINGS, 1);
+        if (!p) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int mode = -1, zoom = -1, energy = -1;
+        int rc = p->get_mode((int)source, &mode);
+        if (!rc) rc = p->get_zoom((int)source, &zoom);
+        if (!rc) rc = p->get_energy((int)source, mode < 0 ? 0 : mode, 0,
+                                    &energy);
+        h->api.release(h, OA_SVC_PICTURE_SETTINGS);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", rc);
+            return -1;
+        }
+        snprintf(outbuf, outlen,
+                 "picture source %ld mode %d zoom %d energy %d\n",
+                 source, mode, zoom, energy);
         return 0;
     }
     if (!strcmp(cmd, "image-decode")) {

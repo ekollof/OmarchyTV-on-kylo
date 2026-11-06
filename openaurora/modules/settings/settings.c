@@ -13,9 +13,11 @@
  */
 #include <sqlite3.h>
 #include <errno.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "openaurora/events.h"
 #include "openaurora/launcher_db.h"
@@ -44,6 +46,12 @@ struct ctx {
     char err[160];
     unsigned char picture[PICTURE_BYTES];
     int picture_on;
+    /* ABI 3 quiesce: closing the DB is handed to a worker so a locked or
+     * slow filesystem cannot stall the loop. */
+    pthread_t cleanup_thread;
+    int cleanup_running;
+    sqlite3 *cleanup_db;
+    unsigned cleanup_delay_ms;
 };
 
 static struct ctx *g_ctx;
@@ -244,6 +252,23 @@ static const oa_picture_settings_iface picture_iface = {
     picture_get_mode, picture_set_mode, picture_get_zoom, picture_set_zoom,
     picture_get_energy, picture_set_energy, is_writable
 };
+
+/* No host API calls and no database access after this returns. */
+static void *cleanup_worker(void *v)
+{
+    struct ctx *c = v;
+    if (c->cleanup_delay_ms) {
+        const struct timespec pause = {
+            .tv_sec = c->cleanup_delay_ms / 1000u,
+            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
+        };
+        (void)nanosleep(&pause, NULL);
+    }
+    sqlite3 *db = c->cleanup_db;
+    c->cleanup_db = NULL;
+    if (db) sqlite3_close_v2(db);
+    return NULL;
+}
 static int hotel_read(struct oa_tab_hotel *out)
 {
     if(!out)return EINVAL;
@@ -350,6 +375,9 @@ static int m_start(void *v)
              c->api->config_get(c->api->priv, "settings.db", DEFAULT_DB));
     const char *ro = c->api->config_get(c->api->priv, "settings.readonly", "1");
     c->readonly = atoi(ro) != 0;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "settings.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
 
     int flags = SQLITE_OPEN_READONLY;
     if (!c->readonly)
@@ -404,6 +432,64 @@ static int m_start(void *v)
     return 0;
 }
 
+/* ABI 3 gate: unpublish every service, detach the SQLite handle and close it
+ * on a worker. The host retries stop/reload until cleanup_pending clears. */
+static int m_quiesce(void *v)
+{
+    struct ctx *c = v;
+    if (c->cleanup_running) {
+        for (int i = 0; i < 10; i++) {
+            int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+            if (rc == 0) {
+                c->cleanup_running = 0;
+                return 0;
+            }
+            if (rc != EBUSY) {
+                c->cleanup_running = 0;
+                return -EIO;
+            }
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
+        }
+        return -EAGAIN;
+    }
+    /* Detach first: service-removed callbacks run synchronously and must see
+     * a closed provider (ENODEV/-1), not a live database. */
+    sqlite3 *db = c->db;
+    c->db = NULL;
+    int picture_published = c->picture_published;
+    int launcher_published = c->launcher_published;
+    int hotel_published = c->hotel_published;
+    int published = c->published;
+    c->picture_published = 0;
+    c->picture_on = 0;
+    c->launcher_published = 0;
+    c->hotel_published = 0;
+    c->published = 0;
+    if (picture_published)
+        c->api->unpublish(c->api->priv, OA_SVC_PICTURE_SETTINGS);
+    if (launcher_published)
+        c->api->unpublish(c->api->priv, OA_SVC_LAUNCHER_DB);
+    if (hotel_published)
+        c->api->unpublish(c->api->priv, OA_SVC_SETTINGS_HOTEL);
+    if (published)
+        c->api->unpublish(c->api->priv, OA_SVC_SETTINGS);
+    if (!db) return 0;
+    if (!c->cleanup_delay_ms) {
+        sqlite3_close_v2(db);
+        return 0;
+    }
+    c->cleanup_db = db;
+    int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+    if (rc) {
+        sqlite3_close_v2(c->cleanup_db);
+        c->cleanup_db = NULL;
+        return -EIO;
+    }
+    c->cleanup_running = 1;
+    return -EAGAIN;
+}
+
 static void m_stop(void *v)
 {
     struct ctx *c = v;
@@ -418,11 +504,25 @@ static void m_stop(void *v)
     if(launcher_published)c->api->unpublish(c->api->priv,OA_SVC_LAUNCHER_DB);
     if(hotel_published)c->api->unpublish(c->api->priv,OA_SVC_SETTINGS_HOTEL);
     if(published)c->api->unpublish(c->api->priv,OA_SVC_SETTINGS);
-    if(db)sqlite3_close(db);
+    if(c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if(c->cleanup_db) {
+        sqlite3_close_v2(c->cleanup_db);
+        c->cleanup_db = NULL;
+    }
+    if(db)sqlite3_close_v2(db);
 }
 
 static void m_destroy(void *v)
 {
+    struct ctx *c = v;
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->cleanup_db) sqlite3_close_v2(c->cleanup_db);
     if (g_ctx == v)
         g_ctx = NULL;
     free(v);
@@ -439,6 +539,7 @@ static const oa_module g_module = {
     .start = m_start,
     .stop = m_stop,
     .destroy = m_destroy,
+    .quiesce = m_quiesce,
 };
 
 OA_MODULE_EXPORT(g_module)

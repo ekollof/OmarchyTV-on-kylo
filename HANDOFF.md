@@ -136,13 +136,17 @@ index/energy). The per-source 0x240 UserPreferences config has mode+0x04,
 zoom+0x0c, energy+0x44+mode*0x70; `Settings.m_picture_setting_configuration`
 is20×0x240 and source1 has NATURAL/16:9/MAXIMUM (p0/03). The runtime
 PictureModeNameProvider table is0 DYNAMIC/1 NATURAL/2 CINEMA/3 GAME/4 SPORT.
-mod_settings publishes `picture.settings` and ui_vendor reads/writes it
-(picture.source1); the ui.state_file shadow is removed. QEMU: set zoom →
+mod_settings publishes `picture.settings`; ui_vendor derives the config index
+from m_current_source (firmware external index+1, 0=Tuner) and writes through
+it; the ui.state_file shadow is removed. mod_settings has the ABI3 async
+quiesce gate (detach DB/flags, close on worker) and a control `picture-state`. QEMU: set zoom →
 Ondertitels155 and blob+0xc=2, survives restart; setting focus450;
 Down,Down,Right AUTO176/energy4; set:MODE=CINEMA writes mode2 and applies
-energy0 (Cinema/Uit). Host test checks the shipped DB values and reload.
-Limits: serialized blob, not the live UserPreferences object; source fixed to
-1; HDR/full-mode zoom open; TV DB write needs settings.readonly=0.
+energy0 (Cinema/Uit); m_current_source5 selects config5 (DYNAMIC/OFF151/36).
+Host test checks the shipped DB values and reload. Limits: serialized blob,
+not the live UserPreferences object; own source screen does not write
+m_current_source yet; HDR/full-mode zoom open; TV DB write needs
+settings.readonly=0.
 SUBLAUNCHER-VALUES.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over
