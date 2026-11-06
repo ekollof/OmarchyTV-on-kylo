@@ -214,6 +214,17 @@ hardware acceptance; a blocked owner RPC can keep cleanup pending.
 ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio are async.
 AUDIO-QUIESCE.
 
+mod_cec quiesce, 2026-11-06: unpublish cec.owner/cec.audio synchronously,
+detach oa_cec_owner, then quiesce/poll/join/destroy on a worker after
+cec.cleanup_delay_ms. A failed close retains the owner (-EAGAIN) for a new
+generation; normal stop waits, force unload with a retained owner is outside
+the safe contract. m_start refuses if live, settled suppressed while
+quiescing. New cec-state probe. Test: reload fails fast, both services
+ENODEV, status responsive, retry republishes; stop gate. Existing
+retained-close/owner tests pass; ARM links libpthread. Full/QEMU pass. No real
+CEC device/bus. ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/
+audio/cec are async. CEC-QUIESCE.
+
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so
 Hal_Vin wrappers and the real mod_source.so under qemu against an LD_PRELOAD
 fake /dev/video20. Hal_Vin_Open(0) opens /dev/video20 (not /dev/ntkdvif);

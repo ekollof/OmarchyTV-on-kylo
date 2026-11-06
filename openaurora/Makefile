@@ -1040,6 +1040,11 @@ $(BUILD)/tests/cec_owner: tests/cec_owner.c tests/lifecycle_retry.h common/cec_o
 check-cec-owner: check-cec-async $(BUILD)/tests/cec_owner $(BUILD)/modules/mod_cec.so $(BUILD)/modules/mod_ticker.so
 	@$(BUILD)/tests/cec_owner $(BUILD)/modules
 
+.PHONY: check-cec-quiesce
+check-cec-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_cec.so
+	node tests/cec_quiesce.cjs $(abspath $(BUILD))
+check: check-cec-quiesce
+
 $(BUILD)/tests/cec_async: tests/cec_async.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c include/openaurora/cec_owner.h include/openaurora/cec_authority.h include/openaurora/cec_device.h include/openaurora/vendor_cec.h include/openaurora/cec.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) $(LDLIBS)

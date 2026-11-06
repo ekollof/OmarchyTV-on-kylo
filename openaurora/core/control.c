@@ -294,6 +294,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  source-state            query current source type/availability\n"
                  "  audio-state             query audio enabled/volume\n"
                  "  audio-volume <0-100>    set diagnostic audio volume\n"
+                 "  cec-state               query cec owner/audio policy\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -1147,6 +1148,33 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         h->api.release(h,OA_SVC_UI_LIST);
         if(error)snprintf(outbuf,outlen,"failed errno %d\n",error);
         return error?-1:0;
+    }
+    if (!strcmp(cmd, "cec-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_cec_service *owner =
+            h->api.lookup(h, OA_SVC_CEC_OWNER, 1);
+        const oa_cec_audio_iface *audio =
+            h->api.lookup(h, OA_SVC_CEC_AUDIO, 1);
+        if (!owner || !audio) {
+            if (owner) h->api.release(h, OA_SVC_CEC_OWNER);
+            if (audio) h->api.release(h, OA_SVC_CEC_AUDIO);
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int supported = owner->hardware_open_supported ?
+            owner->hardware_open_supported() : 0;
+        oa_cec_audio_route route;
+        memset(&route, 0, sizeof route);
+        if (audio->route) audio->route(&route);
+        h->api.release(h, OA_SVC_CEC_OWNER);
+        h->api.release(h, OA_SVC_CEC_AUDIO);
+        snprintf(outbuf, outlen,
+                 "cec owner 1 audio 1 supported %d local %d\n",
+                 supported, route.local_volume_permitted);
+        return 0;
     }
     if (!strcmp(cmd, "mixer-query") || !strcmp(cmd, "mixer-result") || !strcmp(cmd, "mixer-cancel")) {
         uint64_t value;
