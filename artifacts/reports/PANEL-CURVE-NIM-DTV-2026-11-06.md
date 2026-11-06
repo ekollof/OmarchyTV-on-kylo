@@ -148,8 +148,11 @@ Further recovery of the dependency graph:
 - `SAL_DEMOD_TUN_GetInitTunerType` @0x0084adb8 checks PCB layout: layouts
   3/4/5/6 force type 0xf; the default path reads `Profile_GetTunerType` and
   selects 8 for `"Si2151"`, otherwise 0xd (MxL661). The profile keys are
-  `TunerTypes`/`TunerType`; this TV's profile value is not in the plain dump
-  files and needs read-only extraction.
+  `TunerTypes`/`TunerType`; the live EFSL `mb230_swprofile.bin` is a hashed
+  binary blob without the plaintext value.
+- The live TV DT `tztv_tuner` exposes `name=tuner` at I2C device `0-a000`
+  (`modalias=i2c:tuner`), with no chip ID or bound driver. It does not identify
+  Si2151 vs MxL661.
 - `HAL_Demod_Init(0)` and `HAL_dvif_open`/`HAL_DEMOD_EXT_DVIF_SetTunerType`
   are exported by `libNDAL3.so`, but they are only part of the vendor sequence;
   skipping the tuner-class and LNB initialization would not be a functional
@@ -157,8 +160,9 @@ Further recovery of the dependency graph:
 
 So `mod_tuner` is deliberately **not wired** yet. The state machine, module
 buffer stub and IIC HAL adapter are ready; the next prerequisite is the real
-SAL/HAL demod-tuner backend (or a much narrower, fully recovered exported
-sequence), not a fake callback. No hardware was accessed.
+SAL/HAL demod-tuner backend (including the profile-selected tuner class), not a
+fake callback. No hardware was accessed to identify the tuner; that would need
+an explicit read-only probe decision.
 
 ## Verification
 

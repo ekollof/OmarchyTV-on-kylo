@@ -1016,7 +1016,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       requires the SAL tuner/LNB subsystem: HAL_TUNER_Init resolves four IIC
       bus IDs via DEV_IIC_GetDescription, SAL_DEMOD_TUN_Initialize builds
       SI2151/MxL661 + AV2018, tuner type comes from profile
-      TunerTypes/TunerType (8/0xd), and SAL_LNB_Initialize calls RT5047; so
+      TunerTypes/TunerType (8/0xd; EFSL value hashed, live DT only an unbound
+      tuner I2C node), and SAL_LNB_Initialize calls RT5047; so
       `mod_tuner` is intentionally not wired
       rather than faking tuner init or touching IIC early.
       Focused ASan/UBSan clean, full suite `all tests passed`, ARM mod_panel
