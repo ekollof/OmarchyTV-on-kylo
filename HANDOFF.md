@@ -513,6 +513,18 @@ staging removed, stock Aurora PID1781 unchanged; no fb/DVB/alsa/GPIO paths.
 Recorder display only; 33/35 descriptors now have quiesce; 2 remain:
 plat/power. UI-OMARCHY-QUIESCE.
 
+plat/power quiescence decision, 2026-11-06: neither owns a worker, queued
+callback, heap cleanup or reversible device close, so no fake async hook was
+added. plat stop unpublishes plat; the vendor HAL bring-up is process-global
+with no recovered de-init and NDAL_VideoExt_OpenDevice(0,10) installs a global
+fd, so real-HAL reload is not a reset and remains unaccepted. power stop
+unpublishes power and drops the host.sleep hold; its sysfs fd exists only inside
+the final entry callback. New check-plat-power-sync-stop drives the real host
+modules (OA_NO_VENDOR plat, power.enable=0): reload1ms/stop0ms, services
+unpublished; focused ASan/UBSan clean; full suite all tests passed; QEMU pass.
+No HAL/standby hardware, no TV run. 33/35 deferred/scheduler gates +2 audited
+synchronous stops = all35 decided. PLAT-POWER-QUIESCE.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

@@ -1174,6 +1174,13 @@ check-ui-omarchy-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so 
 	node tests/ui_omarchy_quiesce.cjs $(abspath $(BUILD))
 check: check-ui-omarchy-quiesce
 
+# plat/power own no deferable cleanup; prove the synchronous service gate.
+.PHONY: check-plat-power-sync-stop
+check-plat-power-sync-stop: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_plat.so $(BUILD)/modules/mod_power.so
+	@test "$(TARGET)" = host || { echo "  skip plat/power sync stop: host-only (no vendor HAL)"; exit 0; }
+	node tests/plat_power_sync_stop.cjs $(abspath $(BUILD))
+check: check-plat-power-sync-stop
+
 $(BUILD)/tests/sched: tests/sched.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $< $(filter %.o,$^) $(LDLIBS)

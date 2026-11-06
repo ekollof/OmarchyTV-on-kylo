@@ -503,6 +503,20 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       PID1781 unchanged; no fb/DVB/alsa/GPIO paths. Recorder display only; not
       scanout or real input. UI-OMARCHY-QUIESCE.
 
+- [x] Audit the last synchronous modules, `mod_plat` and `mod_power`: neither
+      owns a worker, queued callback, heap cleanup or reversible device close,
+      so neither gets a fake async gate. `plat` stop unpublishes `plat`; its
+      vendor HAL bring-up is process-global with no recovered de-init and
+      `NDAL_VideoExt_OpenDevice(0,10)` installs a global fd, so real-HAL reload
+      is not a reset. `power` stop unpublishes `power` and drops the
+      `host.sleep` refcount; its sysfs fd exists only inside the final entry
+      callback. New `check-plat-power-sync-stop` drives the real host modules
+      (OA_NO_VENDOR plat, `power.enable=0`): reload 1 ms / stop 0 ms with the
+      service unpublished; focused ASan/UBSan clean, full suite
+      `all tests passed`, QEMU pass. No HAL/standby hardware and no TV run.
+      33/35 deferred/scheduler gates + 2 audited synchronous stops = all 35
+      descriptors decided. PLAT-POWER-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
       `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`/`ui_diag`/`ui_anim`/`ui_clock`/`ticker`/`ui_console`/`ui_omarchy`,
@@ -518,7 +532,9 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       host `sched`; the others use workers. `lua` unpublishes
       `ui.lua` and rejects hook/reload while a fetch child is unreaped.
       `graphics` and `scene_display` have their own non-pthread gates. `plat`
-      and `power` still stop synchronously.
+      and `power` have no deferable cleanup and keep synchronous stop by
+      design; their control-socket test asserts immediate stop/reload and
+      service invalidation (PLAT-POWER-QUIESCE).
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

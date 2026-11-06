@@ -129,6 +129,9 @@ static int m_start(void *v)
 static void m_stop(void *v)
 {
     struct ctx *c = v;
+    /* No quiesce hook: nothing is deferable. The host.sleep hold is a refcount
+     * drop, and the only sysfs fd exists inside the final entry callback (which
+     * cannot overlap this loop-owned lifecycle call). */
     if (c->published) c->api->unpublish(c->api->priv, OA_SVC_POWER);
     c->published = 0;
     c->api->release(c->api->priv, OA_SVC_SLEEP);

@@ -220,6 +220,12 @@ static void m_stop(void *v)
     struct ctx *c = v;
     c->api->unpublish(c->api->priv, OA_SVC_PLAT);
     c->ready = 0;
+    /* No quiesce hook: this module owns no worker, heap cleanup or reversible
+     * device close after start. The HAL bring-up above is process-global and
+     * the firmware has no recovered de-init sequence; unpublishing is the whole
+     * synchronous teardown. A reload must not be read as driver/HAL reset, and
+     * a real-HAL reload after bring-up remains unaccepted (OpenDevice installs
+     * a process-global fd, not a per-module lease). */
 }
 
 static void m_destroy(void *v)
