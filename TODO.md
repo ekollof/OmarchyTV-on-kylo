@@ -465,7 +465,12 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       1.1 s for tick1, reload fails fast, `ticker-state` ENODEV, status
       responsive, retry preserves tick1; stop uses the gate. Clock/animation
       dependencies, full suite `all tests passed`, and QEMU pass. ARM links
-      libc only. Project diagnostic probe; no TV run. TICKER-QUIESCE.
+      libc only. Project diagnostic probe. On-TV CPU-only follow-up staged
+      under `/buffer/oa-sched-verify` with hash-verified ARM host+ticker/clock/
+      anim: tick1 observed, each stop/reload failed fast with ENODEV then
+      completed after 0.7 s, tick2 restored, unload clean, staging removed,
+      stock Aurora PID1781 unchanged; no fb/DVB/alsa/GPIO paths. Not
+      display/HAL/scanout/audio/tuner acceptance. TICKER-QUIESCE.
 
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond

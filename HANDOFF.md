@@ -477,6 +477,14 @@ dependencies, full suite all tests passed, QEMU pass. ARM links libc only.
 Project diagnostic probe; no TV run. 31/35 descriptors now have quiesce; 4
 remain: plat/power/ui_console/ui_omarchy. TICKER-QUIESCE.
 
+ticker/clock/anim on-TV CPU-only check, 2026-11-06: staged under
+/buffer/oa-sched-verify with hash-verified ARM host+mod_ticker/mod_ui_clock/
+mod_ui_anim. ticker ticks0 then1 after1.5s; stop ui_anim/clock and reload
+ticker each failed fast with ENODEV then completed after0.7s; tick2 restored;
+unload clean. Staging removed, no helper left, stock Aurora PID1781 unchanged.
+Only DSOs/socket/stdin opened; no fb/DVB/alsa/GPIO paths. CPU-only run, not
+display/HAL/scanout/audio/tuner acceptance. /tmp staging removed separately.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

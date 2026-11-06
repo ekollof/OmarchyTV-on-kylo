@@ -1,7 +1,8 @@
 # mod_ticker async quiesce — 2026-11-06
 
-TV was not touched. Offline host control-socket test with the real
-`mod_ticker`.
+Offline host control-socket test with the real `mod_ticker`, followed by a
+staged data-only ARM run on the TV. No display, audio, tuner or hardware
+module was loaded on the TV.
 
 ## Ownership and gate
 
@@ -66,6 +67,46 @@ ok qemu sub-launcher live: Dutch text within 4 px of p0/03
 ok qemu sub-launcher: static AE=0
 ```
 
+## On-TV ARM scheduler gate — 2026-11-06
+
+Staging was under `/buffer/oa-sched-verify` per the owner's current instruction
+(`/buffer` is the writable 232 MB ubi volume), not `/tmp`. The TV was woken with
+`tools/tvssh.sh`.
+
+Hash-verified ARM inputs:
+
+```text
+openaurora            sha256 6bcbecaa35b2347d6ae4aee3b7965139ee36e9cf45ecc7fe6fdfe67e56f5218b
+mod_ticker.so         sha256 ba361d410901c37d785f5eb396f3ec09243442723cafa0f673d7ebb72d9511ee
+mod_ui_clock.so       sha256 40c319113cb3cccdf69e39fcd6ca01bd6ceebcd937f5c21e9ce1f0ca24825574
+mod_ui_anim.so        sha256 a6d00160c6225f0b865b41e5e37bf4f7a2c815872ff71bfa73d36272d7ffdfd8
+```
+
+Only the three data-only modules were loaded. Config used 400 ms cleanup
+delays for each. Sequence/output:
+
+```text
+ticker ticks 0; clock now 7085402; anim enabled 0 fault 0
+after 1.5 s: ticker ticks 1
+stop ui_anim -> failed; anim-state -> failed errno 19
+wait 0.7 s; stop ui_anim -> ok
+stop ui_clock -> failed; clock-state -> failed errno 19
+wait 0.7 s; stop ui_clock -> ok
+reload ticker -> failed; ticker-state -> failed errno 19
+wait 0.7 s; reload ticker -> ok; ticker ticks 2  (8-byte state restored)
+stop ticker -> failed
+wait 0.7 s; stop ticker -> ok; unload all -> ok; quit -> bye
+```
+
+Afterward `/buffer/oa-sched-verify` was removed, no `openaurora` helper
+remained, and stock Aurora was still PID 1781. Only the staged DSOs, a Unix
+control socket and stdin were opened; no `/dev/fb*`, `/dev/ntk*`, `/dev/dvb`,
+`/dev/snd`, `/dev/i2c*`, fb1, scanout, audio or tuner/HAL path was opened.
+
+This is a CPU-only on-TV ARM run: it proves the ARM/glibc scheduler gates for
+ticker, ui_clock and ui_anim against real timers and `clock_gettime`, not
+display/HAL ownership, scanout, audio or tuner hardware acceptance.
+
 ## Limits
 
 - The socket test uses one real 1 s tick; longer-term tick emission and
@@ -73,7 +114,9 @@ ok qemu sub-launcher: static AE=0
 - The counter is stored via `save()` for the probe; this is project diagnostic
   access, not a new public service.
 - The dropped-task/cancel path is implemented but not forced by the socket test.
-- No ASan/UBSan, ARM execution or TV run was performed for this migration.
+- No ASan/UBSan or ARM execution was performed on the host; the on-TV ARM
+  run covers the module ABI and scheduler gates only.
 - Remaining synchronous modules (4): `plat`, `power`, `ui_console`,
   `ui_omarchy`.
-- Cold startup, scanout, real hardware and broad UI parity remain unaccepted.
+- Cold startup, scanout, real audio/CEC/tuner/PVR/VIN hardware and broad UI
+  parity remain unaccepted.
