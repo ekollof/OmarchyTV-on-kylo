@@ -326,6 +326,22 @@ static void test_status_cases(void)
     assert(oa_nim_status_type8(&c, NULL) == 0);
 }
 
+static void test_status_type1(void)
+{
+    struct oa_nim_core_status c;
+    memset(&c, 0, sizeof c);
+    c.word[0] = 0x11;
+    c.word[2] = 0x22;
+    uint32_t out[11];
+    assert(oa_nim_status_type1(&c, out) == 1);
+    assert(out[1] == 0x11 && out[2] == 0x22 && out[9] == 1);
+    assert(out[0] == 0 && out[3] == 0 && out[4] == 0 && out[5] == 0 &&
+           out[6] == 0 && out[7] == 0 && out[8] == 0 && out[10] == 0);
+    c.word[10] = 0x00010000u; /* byte +42 nonzero */
+    assert(oa_nim_status_type1(&c, out) == 1 && out[9] == 9);
+    assert(oa_nim_status_type1(NULL, out) == 0);
+}
+
 static void test_binding(void)
 {
     struct fake f = { .tuner_type = 0xd };
@@ -363,6 +379,7 @@ int main(void)
     test_raw_channel();
     test_raw_status();
     test_status_cases();
+    test_status_type1();
     test_binding();
     puts("ok nim tune: path/index map, open/close, lock/strength/quality "
          "masks and unresolved channel mappings");

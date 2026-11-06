@@ -260,6 +260,18 @@ int oa_nim_status_type8(const struct oa_nim_core_status *core, uint32_t out[4])
     return 1;
 }
 
+int oa_nim_status_type1(const struct oa_nim_core_status *core, uint32_t out[11])
+{
+    if (!core || !out)
+        return 0;
+    /* The vendor copies 11 words; only these fields are initialized. */
+    memset(out, 0, 11 * sizeof(*out));
+    out[1] = core->word[0];
+    out[2] = core->word[2];
+    out[9] = ((core->word[10] >> 16) & 0xffu) == 0 ? 1 : 9;
+    return 1;
+}
+
 int oa_nim_tune_hal_open(void *v)
 {
     struct oa_nim_tune_binding *b = v;

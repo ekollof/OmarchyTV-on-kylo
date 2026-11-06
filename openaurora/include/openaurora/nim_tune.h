@@ -65,6 +65,12 @@ struct oa_nim_core_status {
 int oa_nim_status_type6(const struct oa_nim_core_status *core, uint32_t out[4]);
 int oa_nim_status_type8(const struct oa_nim_core_status *core, uint32_t out[4]);
 
+/* Type 1 (11-word copy at 0x86bc46): out[1]=word[0], out[2]=word[2],
+ * out[9]=1 when byte +42 is zero else 9. The vendor leaves out[0],
+ * out[3..8] and out[10] from uninitialized stack; this model zeroes them
+ * deterministically. */
+int oa_nim_status_type1(const struct oa_nim_core_status *core, uint32_t out[11]);
+
 struct oa_nim_tune_ops {
     int (*switch_tuner_type)(void *ud, int type); /* 0 = success */
     int (*get_tuner_type)(void *ud);

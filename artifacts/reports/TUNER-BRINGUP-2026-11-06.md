@@ -237,20 +237,17 @@ type 6: out[0]=core[1]*1000, out[1]=core[12], out[2]=core[13], out[3]=0
 type 8: same, out[3]=word[3]==9 -> 1, ==11 -> 2, else 0xff
 ```
 
-`oa_nim_status_type6`/`type8` carry fake tests. Type 1 is traced to an
-11-word copy at `0x86bc46..0x86bc80`: `out[0..7]` from `local_64` (r7+52),
-`out[8..10]` from `local_44` (r7+84); the case sets `out[1]=core[0]`,
-`out[2]=core[2]` and `out[9]=1` when byte `core+42` is zero, otherwise 9.
-`out[0]` is `core[11]`; the remaining words are core fields beyond the
-12-word region whose full write extent in `FUN_0086a4dc` is not yet pinned.
-Types 2/7 and 3 use secondary `tbb` switches at `0x86bc2a`/`0x86bc10` and
-larger maps. Those values are not guessed.
-
-`FUN_0086a4dc` writes `param_2[1..9]` (through +0x24); the outer memset covers
-0x2c. Type 1's copy reads `local_64` at r7+52 and `local_44` at r7+84, which
-lie outside/beyond the core's 9-word write range in the decompiler frame.
-The frame mapping therefore needs instruction-level reconciliation before the
-type 1/2,7/3 words can be implemented; those values are not guessed.
+`oa_nim_status_type6`/`type8` carry fake tests. The core extent was pinned at
+instruction level: `FUN_0086a4dc` writes `param_2[0..9]` (offsets 0..36) plus
+a byte at +42; the outer memset covers 0x2c, so byte +42 is initialized but
+the type 1 copy's other words are not. Type 1 is an 11-word copy at
+`0x86bc46..0x86bc80` (`out[0..7]` from `local_64`, `out[8..10]` from
+`local_44`). `oa_nim_status_type1` sets the verified fields:
+`out[1]=word[0]`, `out[2]=word[2]`, `out[9]=1` when byte +42 is zero else 9,
+and deterministically zeroes the vendor's uninitialized words (`out[0]`,
+`out[3..8]`, `out[10]`). Tests cover both byte-42 branches. Types 2/7 and 3
+use secondary `tbb` switches at `0x86bc2a`/`0x86bc10` and larger maps; those
+values are not guessed.
 
 ## SI2151 blocker
 
@@ -326,7 +323,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 ec36928a69e37f76ef135899f8e2b43cdc964220d60adc1df1ec8d5ac1b4b9a7
+sha256 7da9de0e8c26780d9cee07f145dfbdba8e3ceed768e0011b2ef4306801c0510d
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,
