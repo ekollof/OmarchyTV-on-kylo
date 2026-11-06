@@ -667,8 +667,8 @@ check: check-ui-object-scan
 
 $(BUILD)/modules/mod_ui_theme.so: $(call pic_objs,modules__mod_ui_theme,modules/ui_theme/ui_theme.c common/svg_pack.c common/binsvg.c)
 	@mkdir -p $(dir $@)
-	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
-$(eval $(call emit_pics,modules__mod_ui_theme,modules/ui_theme/ui_theme.c common/svg_pack.c common/binsvg.c,-pthread,include/openaurora/svg_pack.h include/openaurora/binsvg.h include/openaurora/text_layout.h include/openaurora/module.h include/openaurora/services.h))
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_ui_theme,modules/ui_theme/ui_theme.c common/svg_pack.c common/binsvg.c,,include/openaurora/svg_pack.h include/openaurora/binsvg.h include/openaurora/text_layout.h include/openaurora/module.h include/openaurora/services.h))
 
 $(BUILD)/modules/mod_ui_menu.so: $(call pic_objs,modules__mod_ui_menu,modules/ui_menu/ui_menu.c common/menu_model.c common/json.c common/launcher_anim.c)
 	@mkdir -p $(dir $@)

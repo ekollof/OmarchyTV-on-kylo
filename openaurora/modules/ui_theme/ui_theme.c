@@ -4,17 +4,15 @@
 #include "openaurora/services.h"
 #include "openaurora/svg_pack.h"
 #include <errno.h>
-#include <pthread.h>
 #include <stdlib.h>
-#include <time.h>
 
 struct ctx {
     const oa_host_api *api;
     struct oa_svg_pack *pack;
     int published;
-    /* ABI 3 quiesce: the parsed pack is detached and freed on a worker. */
-    pthread_t cleanup_thread;
-    int cleanup_running;
+    /* ABI 3 quiesce: the parsed pack is detached and freed by a scheduler
+     * task on the host loop, not a dedicated thread. */
+    uint32_t cleanup_task;
     struct oa_svg_pack *cleanup_pack;
     unsigned cleanup_delay_ms;
 };
@@ -34,28 +32,36 @@ static int m_init(const oa_host_api *api, void **out)
     c->api=api; current=c; *out=c;
     return 0;
 }
-/* No host API calls after this returns. */
-static void *cleanup_worker(void *v)
+/* Runs as one nonblocking host scheduler slice; frees the detached pack. */
+static int cleanup_step(void *v, uint32_t *delay_ms)
 {
+    (void)delay_ms;
     struct ctx *c=v;
-    if(c->cleanup_delay_ms) {
-        const struct timespec pause={
-            .tv_sec=c->cleanup_delay_ms/1000u,
-            .tv_nsec=(long)(c->cleanup_delay_ms%1000u)*1000000L
-        };
-        (void)nanosleep(&pause,NULL);
-    }
     struct oa_svg_pack *pack=c->cleanup_pack;
     c->cleanup_pack=NULL;
+    c->cleanup_task=0;
     oa_svg_pack_free(pack);
-    return NULL;
+    return OA_SCHED_DONE;
+}
+
+/* Cancel a queued free and release any pack the step did not consume. */
+static void cancel_cleanup(struct ctx *c)
+{
+    if(c->cleanup_task) {
+        const oa_sched_iface *s=c->api->lookup(c->api->priv,OA_SVC_SCHED,1);
+        if(s) {
+            (void)s->cancel(s->context,c->cleanup_task);
+            c->api->release(c->api->priv,OA_SVC_SCHED);
+        }
+        c->cleanup_task=0;
+    }
+    if(c->cleanup_pack){oa_svg_pack_free(c->cleanup_pack);c->cleanup_pack=NULL;}
 }
 
 static int m_start(void *v)
 {
     struct ctx *c=v;
-    if(c->published || c->cleanup_running || c->pack) return -EBUSY;
-    c->cleanup_running=0;
+    if(c->published || c->cleanup_task || c->cleanup_pack || c->pack) return -EBUSY;
     long delay=atol(c->api->config_get(c->api->priv,
         "ui_theme.cleanup_delay_ms","0"));
     c->cleanup_delay_ms=delay>0?(unsigned)delay:0;
@@ -72,21 +78,14 @@ static int m_start(void *v)
     return 0;
 }
 /* ABI 3 gate: unpublish ui.theme synchronously, detach the parsed pack, then
- * free it synchronously or on a worker after ui_theme.cleanup_delay_ms. */
+ * free it synchronously or from one host scheduler slice after
+ * ui_theme.cleanup_delay_ms. The scheduler keeps cleanup on the loop and
+ * serializes it with other module slices. */
 static int m_quiesce(void *v)
 {
     struct ctx *c=v;
     if(!c)return 0;
-    if(c->cleanup_running) {
-        for(int i=0;i<10;i++) {
-            int rc=pthread_tryjoin_np(c->cleanup_thread,NULL);
-            if(rc==0){c->cleanup_running=0;return 0;}
-            if(rc!=EBUSY){c->cleanup_running=0;return -EIO;}
-            const struct timespec pause={.tv_nsec=5000000};
-            (void)nanosleep(&pause,NULL);
-        }
-        return -EAGAIN;
-    }
+    if(c->cleanup_task || c->cleanup_pack)return -EAGAIN;
     int published=c->published;
     c->published=0;
     if(published)c->api->unpublish(c->api->priv,OA_SVC_UI_THEME);
@@ -95,9 +94,13 @@ static int m_quiesce(void *v)
     if(!pack)return 0;
     if(!c->cleanup_delay_ms){oa_svg_pack_free(pack);return 0;}
     c->cleanup_pack=pack;
-    int rc=pthread_create(&c->cleanup_thread,NULL,cleanup_worker,c);
+    const oa_sched_iface *s=c->api->lookup(c->api->priv,OA_SVC_SCHED,1);
+    if(!s){c->cleanup_pack=NULL;oa_svg_pack_free(pack);return 0;}
+    uint32_t id=0;
+    int rc=s->submit(s->context,cleanup_step,c,c->cleanup_delay_ms,&id);
+    c->api->release(c->api->priv,OA_SVC_SCHED);
     if(rc){c->cleanup_pack=NULL;oa_svg_pack_free(pack);return -EIO;}
-    c->cleanup_running=1;
+    c->cleanup_task=id;
     return -EAGAIN;
 }
 
@@ -106,22 +109,14 @@ static void m_stop(void *v)
     struct ctx *c=v;
     if(c->published)c->api->unpublish(c->api->priv,OA_SVC_UI_THEME);
     c->published=0;
-    if(c->cleanup_running) {
-        (void)pthread_join(c->cleanup_thread,NULL);
-        c->cleanup_running=0;
-    }
-    if(c->cleanup_pack){oa_svg_pack_free(c->cleanup_pack);c->cleanup_pack=NULL;}
+    cancel_cleanup(c);
     oa_svg_pack_free(c->pack);c->pack=NULL;
 }
 
 static void m_destroy(void *v)
 {
     struct ctx *c=v;
-    if(c->cleanup_running) {
-        (void)pthread_join(c->cleanup_thread,NULL);
-        c->cleanup_running=0;
-    }
-    if(c->cleanup_pack)oa_svg_pack_free(c->cleanup_pack);
+    cancel_cleanup(c);
     oa_svg_pack_free(c->pack);
     if (current==c) current=NULL;
     free(c);

@@ -450,6 +450,14 @@ audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list/
 ui_navigation/ui_profile/audio_curve/audio_amp_profile/panel are the async
 modules. PANEL-QUIESCE.
 
+host sched first module use, 2026-11-06: ui_theme delayed pack free moved from
+a pthread to one nonblocking sched slice (cleanup_task), preserving synchronous
+unpublish, fail-fast EAGAIN while pending, delay0 sync free, cancel/free on
+stop. ARM ui_theme no longer links libpthread. Existing 400ms gate/fixture/
+skin/ui-anim tests pass; full suite ends all tests passed; QEMU pass. Only
+pure-free cleanup migrated; blocking close/join paths stay workers. TV not
+used. SCHED-UI-THEME.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches the local artifact. Staged
 build-tv-v3 openaurora (sha256 c03a68a1...) + mod_audio_amp_profile.so

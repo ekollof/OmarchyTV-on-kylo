@@ -99,6 +99,12 @@ ok qemu sub-launcher live: Dutch text within 4 px of p0/03
 ok qemu sub-launcher: static AE=0
 ```
 
+## Later scheduler migration
+
+SCHED-UI-THEME-2026-11-06 replaces the pthread cleanup described above with one
+nonblocking host `sched` slice. The synchronous unpublish, fail-fast gate and
+delayed free semantics are unchanged; the module no longer links libpthread.
+
 ## Limits
 
 - The test uses a tiny synthetic BinSVG pack for the control-socket gate; the

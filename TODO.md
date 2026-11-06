@@ -409,6 +409,15 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       ARM links vendor libs + libpthread. Full/QEMU pass. PANEL-QUIESCE. No
       PWM/backlight hardware run; real close remains unaccepted.
 
+- [x] First non-Lua host `sched` use: migrate `ui_theme`’s delayed pack free
+      from a pthread to one nonblocking scheduler slice. Quiesce still
+      unpublishes synchronously, fails fast while pending, frees at delay0,
+      and cancels/frees if the task is dropped. ARM `ui_theme` no longer links
+      libpthread. Existing 400 ms gate, fixture IPC, skin and UI-anim tests
+      pass; full suite ends `all tests passed`; QEMU passes. Only pure-free
+      cleanup migrated; blocking close/join paths remain workers. TV not used.
+      SCHED-UI-THEME.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
       `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`,
