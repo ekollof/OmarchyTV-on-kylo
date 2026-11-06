@@ -125,9 +125,21 @@ independently confirms a NACK rather than a return-convention problem:
 - `tuner-scan 4` (analog, `tuner.analog=1`) returned `ok`; polling advanced
   0/50/50/100/100 with `services` 1/1/2/2/3.
 - **No RF source is connected.** The progress and service counts are the
-  synthetic scan state machine, and `lock 1` is the vendor status bit on the
-  profile's mis-selected Si2157-as-MxL661 path; it is not an independent
+  synthetic scan state machine, and `lock 1` is not an independent
   tune/lock/scan acceptance. `unc 4294967295` is the unset sentinel.
+- Why `lock 1` is not trustworthy: `_dev_nim_dtv_TerrTuneTo` @ `0x00860498`
+  calls the NIM state entry at `[0x01937004 + 8]` (`0x0193700c` =
+  `HAL_Demod_User_SetChannel`) before `HAL_Demod_User_WaitLock`/`CheckLock`.
+  `HAL_Demod_User_SetChannel` @ `0x0086b0e8` sends the default (DVB-T) path to
+  `FUN_0086aab0(&DAT_019370cc, channel)`, which copies the 0x5c channel
+  record, calls `SAL_DEMOD_TUN_ProgramTuner`, and then `HAL_Demod_Set` with
+  the demod frequency/bandwidth fields. The current `tuner.backend=hal`
+  start path only calls `program_tuner` (`oa_mxl661_tune_dvbt`); it never
+  calls entry 2/`HAL_Demod_Set`. The lock bit therefore comes from a demod
+  that was never given the channel. The typed/raw `set_channel` slot remains
+  `-ENOTSUP`; recovering the full 0x5c record build and calling
+  `HAL_Demod_User_SetChannel` is the next offline step, not a guessed field
+  copy.
 - Restore: `quit` unloaded the module and removed the socket; the stage,
   heartbeat and socket were removed, `sync` completed, and
   `/buffer/wdtctl set 10` rebooted the set. After boot (uptime 39.58 s):

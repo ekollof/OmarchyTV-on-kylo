@@ -100,7 +100,14 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
       unimplemented per-case maps as still open. 2026-11-07: the service
       started and `tuner-scan 1`/`tuner-scan 4` plus `tuner-state` ran, but
       with no RF the typed/raw channel and the 0x180 lock/strength/quality
-      fields are not independently validated; keep open.
+      fields are not independently validated; keep open. New gap:
+      `_dev_nim_dtv_TerrTuneTo` calls `HAL_Demod_User_SetChannel`
+      (`[0x01937004+8]`) before WaitLock/CheckLock; that function calls
+      `FUN_0086aab0(&DAT_019370cc, channel)` -> `SAL_DEMOD_TUN_ProgramTuner`
+      + `HAL_Demod_Set`. The current `tuner.backend=hal` start only runs
+      `program_tuner`, so the demod is never given the channel and the
+      reported `lock 1` is not valid. Implement the 0x5c record build and
+      entry-2 call from firmware, then re-test with RF.
 
 2026-11-06 tuner subgroup: staging/preflight/claim and the MxL661 init/sequence
 passed; the NIM task saw a NIM-DTV IIC code-21 NACK, so no tune/lock (also no

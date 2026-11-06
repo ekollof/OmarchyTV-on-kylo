@@ -745,7 +745,9 @@ Second run 2026-11-07 with mod_tuner sha256 cf361243...: service started
 (status started, services tuner:v1), kernel logged ki2c [i2c-0] Dev NACK,
 tuner-scan 1 (DVB-T) and tuner-scan 4 (analog) returned ok and tuner-state
 advanced. No RF source: progress/services are the synthetic scan state
-machine and lock 1 is not independent acceptance. Restored by wdtctl set 10;
+machine and lock 1 is not independent acceptance; the current hal start only
+runs program_tuner and never HAL_Demod_User_SetChannel, so the demod was not
+given the 0x5c channel. Restored by wdtctl set 10;
 latest stock appmgr 1570/aurora 1770, staging/socket absent, profile
 unchanged. TUNER-TAKEOVER. SI2151 is the full Silicon Labs patch/property
 driver, not this profile's path.
