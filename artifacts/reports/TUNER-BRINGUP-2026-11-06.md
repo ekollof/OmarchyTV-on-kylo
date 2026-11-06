@@ -206,7 +206,28 @@ standard index. The raw 0x180 status array mapping remains.
 The raw 0x180 `HAL_Demod_GetStatus` buffer is parsed in
 `oa_nim_raw_status_parse` for its verified fields: lock at `+0`, strength at
 `+0x18`, quality at `+0x24`, with tests. The vendor's per-signal output-array
-enum mapping is garbled in the decompiler and is not guessed.
+enum mapping is garbled in the decompiler; the `tbb` dispatch and case targets
+are now recovered (above), but the per-case fields are not guessed.
+
+### 0x180 GetChannelStatus dispatch (recovered)
+
+`HAL_Demod_User_GetChannelStatus` @ `0x0086bafc` dispatches on signal type
+1..8 at `0x86bbae` (`tbb [pc,r3]`). The table bytes at `0x86bbb2` are
+`41 34 2a 6f 6f 14 34 04`, giving:
+
+```text
+type 1   -> 0x86bc34
+type 2,7 -> 0x86bc1a
+type 3   -> 0x86bc06
+type 4,5 -> 0x86bc90 (default/tail)
+type 6   -> 0x86bbda
+type 8   -> 0x86bbba
+```
+
+The common output copy is at `0x86bbe8`: four words from the core status are
+written to the caller's array, with the frequency field multiplied by 1000.
+The per-case enum/field mappings remain to be decoded; the decompiler output
+has duplicate/garbled case labels, so it was not used to guess them.
 
 ## SI2151 blocker
 
@@ -294,12 +315,10 @@ undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
 1. SI2151 tuner backend: the Silicon Labs L1/L2/L3 driver with
    `PowerUpWithPatch` and property download is a separate large port; this
    TV's profile selects MxL661 and does not use it.
-2. Analog/cable RF tails and the exact raw 0x5c channel / 0x180 status
-   mappings (the DVB-T RF/IF sequence and typed SetChannel/GetChannelStatus
-   are implemented in `common/mxl661_rf.c` / `common/nim_tune.c`).
-3. The module's NIM vtable carries the implemented tuning ops, but the raw
-   `set_channel(void*)`/`get_channel_status(void*)` slots remain -ENOTSUP
-   because the vendor table passes no data pointer.
+2. The raw 0x180 per-case output mapping: the `tbb` dispatch and case targets
+   are recovered (type 1/2,7/3/4,5/6/8), but the per-case enum/field writes
+   still need instruction-level decoding.
+3. Analog/cable MxL661 RF tails and LUTs.
 4. Hardware acceptance is **not done**. The owner's standing instruction is
    read-only, no takeovers; running the gate requires explicit authorization
    to stop stock Aurora, claim `/dev/ntkiic0`, `/dev/ntgpio`, `/dev/ntkdvif`

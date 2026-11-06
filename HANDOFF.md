@@ -692,8 +692,8 @@ SetChannel/GetChannelStatus mapping are implemented (common/mxl661_rf.c,
 common/nim_tune.c); a real tuner.backend=hal NIM backend (common/nim_hal.c,
 requires tuner.hw_init=1, terrestrial only) wires the ops into mod_tuner;
 the raw 0x5c channel record and the verified 0x180 lock/strength/quality
-fields are parsed/tests. Analog/cable tails and the vendor per-signal 0x180
-output mapping remain. SI2151 is the full Silicon Labs
+fields are parsed/tests; the 0x180 tbb dispatch/case targets are recovered,
+but the per-case enum mapping remains. Analog/cable tails remain. SI2151 is the full Silicon Labs
 patch/property driver, not this profile's path. Hardware acceptance remains
 blocked by the owner's read-only/no-takeover instruction. TUNER-BRINGUP.
 
