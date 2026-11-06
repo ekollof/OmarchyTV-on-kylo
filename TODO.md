@@ -166,13 +166,15 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       `tests/ir_quiesce.cjs` uses a pty plus a 400 ms diagnostic close delay
       and asserts fail-fast, responsive status and successful retry; host
       `check-ir-ipc`, full-stack IPC and ARM/libpthread builds pass.
-      OA-CLIENT-ASYNC. Only `ir` has this gate; the generic lifecycle remains
-      synchronous.
+      OA-CLIENT-ASYNC. `mod_i18n` now has the same gate (LIVE-SUBLAUNCHER-I18N):
+      unpublish, detach the5 MB profile, free it on a worker; first reload
+      fails fast, status stays responsive, retry completes. Other modules
+      still stop synchronously.
 
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
-      stop/reload model beyond `ir`, with a completion query and bounded client
-      behavior. Do not call `dlclose`/module callbacks from an unowned worker.
-      `display_fb` and `ir` are the existing models.
+      stop/reload model beyond `ir`/`i18n`, with a completion query and bounded
+      client behavior. Do not call `dlclose`/module callbacks from an unowned
+      worker. `display_fb`, `ir` and `i18n` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in
@@ -239,13 +241,25 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       card2 bounds 235x130 → 317x175 at p=0/0.5/1.
       `qemu-sub-launcher-check.sh` repeats it. QEMU-UI-LAYOUT.
 
-- [ ] Sub-launcher live text/runtime and `setting:`/`set:`: replace the
-      captured card text with live labels/values, wire the runtime key
-      handler and 300 ms repaint timer (the current `ui.sub_sel`/
-      `ui.sub_progress` are lab knobs), and capture a focused vendor card for
-      the transition comparison. Route `setting:`/`set:` to the value
-      selector. Do not apply the row to the category rail or an invented
-      portal card row.
+- [x] Sub-launcher live text/runtime: font3 labels + font12 values on clean
+      captured backgrounds; Dutch live text within4 px of p0/03 (most≤1 px).
+      `mod_i18n` resolves all41 langprofile locales with current→eng→key
+      fallback; U+202C-style controls are stripped. Runtime Left/Right uses
+      `ui.clock` + a10 ms timer for300 ms; QEMU `key 22` through the real IR
+      parser drives card0 bottom405→450. `qemu-sub-live-check.sh` repeats it.
+      LIVE-SUBLAUNCHER-I18N.
+
+- [ ] All-language shaping and fit: U+200E/200F, U+202A..E and U+2066..9
+      controls are stripped, but BiDi reordering/shaping is not implemented.
+      Three long labels exceed the235 px card (bul ENERGY_SAVING253, lit
+      PICTURE_ZOOM239, ukr264); the vendor translation-fit/ellipsis/shrink
+      policy is not decoded. Capture focused vendor cards and multilingual
+      oracle frames before claiming visual parity.
+
+- [ ] Live setting values and `setting:`/`set:`: the live cards use the p0/03
+      values (NATURAL/MAXIMUM_STR/ZOOM_MODE_16_9), not live settings
+      acquisition. Route `setting:`/`set:` to the value selector. Do not apply
+      the row to the category rail or an invented portal card row.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
       the vendor 30 ms APNG/10 ms controller cadence. Tighten the compositor

@@ -44,6 +44,7 @@
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/channels.h"
+#include "openaurora/langprofile.h"
 #include "openaurora/menu_model.h"
 #include "openaurora/ui_engine.h"
 #include "openaurora/ui_time.h"
@@ -170,6 +171,9 @@ struct ctx {
     int sel;                         /* picture-settings row, -1 = none */
     int sub_sel;                     /* JSON sub-launcher card, -1 = none */
     float sub_progress;              /* lab capture progress 0..1 */
+    int sub_anim_live;               /* runtime key animation is running */
+    uint32_t sub_anim_start;         /* ui.clock timestamp */
+    uint64_t sub_tick;               /* 10 ms repaint timer */
     int chan_sel;                    /* provisional channel-list selection */
     int text_on;                     /* live labels/values loaded (ui.text=1) */
     struct oa_font_pack font_pack;
@@ -189,6 +193,15 @@ struct ctx {
         int w, h, x, y;
     } text[SETTINGS_TEXT_MAX];
     struct settings_text_canvas title; /* live tab title blob (no focus variant) */
+    /* Sub-launcher live text: font3 labels + font12 values, localized through
+     * ui.i18n. Each blob is one card-sized transparent text surface. */
+    const oa_i18n_iface *i18n;
+    struct oa_bitmap_font sub_font, sub_value_font;
+    unsigned char *sub_font_data, *sub_value_data;
+    int sub_fonts_on;
+    struct { unsigned char *rgba; int w, h; } sub_text[3];
+    int sub_text_ready;
+    char sub_text_locale[8];
     /* Lab value editing (ui.edit=1): per-process shadow values for the four
      * slider rows 1..4. Range 0..100 is an INVENTED placeholder (per-setting
      * bounds come from runtime provider virtuals, not decodable statically);
@@ -232,6 +245,7 @@ struct ctx {
 };
 
 static struct ctx *g_ctx;
+static void paint(struct ctx *c);
 static const oa_ui_skin g_skin;
 static void skin_dispatch(void *ud)
 {
@@ -564,11 +578,176 @@ static void paint_settings(struct ctx *c)
  * The card cutouts are the vendor's own pixels; the row origin/pitch and the
  * 300 ms scale come from the checked JSON layout and launcher_anim. The lab
  * ui.sub_sel/ui.sub_progress knobs select a card and sample the animation. */
-static const struct { const char *key, *asset; } SUB_CARDS[] = {
-    { "MODE", "sublauncher_card_0" },
-    { "ENERGY_SAVING", "sublauncher_card_1" },
-    { "PICTURE_ZOOM", "sublauncher_card_2" },
+static const struct {
+    const char *key, *asset, *clean;
+} SUB_CARDS[] = {
+    { "MODE", "sublauncher_card_0", "sublauncher_card_0_bg" },
+    { "ENERGY_SAVING", "sublauncher_card_1", "sublauncher_card_1_bg" },
+    { "PICTURE_ZOOM", "sublauncher_card_2", "sublauncher_card_2_bg" },
 };
+
+/* The p0/03 picture-shortcut state. Live settings acquisition is separate;
+ * these are the vendor values visible in the oracle capture. */
+static const char *sub_value_key(const char *item_key)
+{
+    if (!strcmp(item_key, "MODE")) return "NATURAL";
+    if (!strcmp(item_key, "ENERGY_SAVING")) return "MAXIMUM_STR";
+    if (!strcmp(item_key, "PICTURE_ZOOM")) return "ZOOM_MODE_16_9";
+    return NULL;
+}
+
+static const uint8_t sub_white[4] = { 255, 255, 255, 255 };
+static void sub_text_free(struct ctx *c);
+
+/* Ink bounds relative to the pen, with a margin so negative bearings do not
+ * clip. Font3/font12 are the vendor card fonts (ink boxes match p0/03). */
+static int sub_text_ink(const struct oa_bitmap_font *font, const char *text,
+                        int *x0, int *y0, int *w, int *h)
+{
+    unsigned char *scratch = calloc(1024u * 200u, 4);
+    if (!scratch) return ENOMEM;
+    oa_canvas cv = { scratch, 1024, 200 };
+    int rc = oa_font_text_draw(&cv, font, text, 60, 60, sub_white, 0, NULL);
+    if (rc) {
+        free(scratch);
+        return rc;
+    }
+    int minx = 1024, miny = 200, maxx = -1, maxy = -1;
+    for (int y = 0; y < 200; y++)
+        for (int x = 0; x < 1024; x++)
+            if (scratch[((size_t)y * 1024 + x) * 4 + 3]) {
+                if (x < minx) minx = x;
+                if (y < miny) miny = y;
+                if (x > maxx) maxx = x;
+                if (y > maxy) maxy = y;
+            }
+    free(scratch);
+    if (maxx < 0) return ENOENT;
+    *x0 = minx - 60;
+    *y0 = miny - 60;
+    *w = maxx - minx + 1;
+    *h = maxy - miny + 1;
+    return 0;
+}
+
+static int sub_text_draw(oa_canvas *cv, const struct oa_bitmap_font *font,
+                         const char *text, int pen_y)
+{
+    /* Center the rendered ink in the card. This is language-neutral: a longer
+     * translation grows symmetrically and clips at both card edges instead of
+     * using a Dutch-fitted offset. */
+    int x0 = 0, y0 = 0, w = 0, h = 0;
+    int rc = sub_text_ink(font, text, &x0, &y0, &w, &h);
+    if (rc) return rc;
+    int pen_x = (cv->width - w) / 2 - x0;
+    return oa_font_text_draw(cv, font, text, pen_x, pen_y, sub_white, 0, NULL);
+}
+
+static int sub_text_localized(oa_canvas *cv, const struct oa_bitmap_font *font,
+                              const oa_i18n_iface *i18n, const char *key,
+                              const char *locale, int pen_y)
+{
+    char clean[256];
+    const char *text = i18n->translate(key, locale);
+    if (oa_langprofile_sanitize(text, clean, sizeof clean) != 0) return EINVAL;
+    return sub_text_draw(cv, font, clean, pen_y);
+}
+
+/* Render the three localized label/value pairs into card-sized transparent
+ * blobs. The label/value pen lines are fixed from the captured reference
+ * strings; localized ink heights then vary with the font exactly like the
+ * vendor. A missing glyph falls back to English, then the ASCII key. */
+static int sub_text_build(struct ctx *c, const struct oa_menu_branch *b)
+{
+    if (!c->i18n || !c->sub_fonts_on || !b || b->item_count < 3)
+        return EINVAL;
+    const char *locale = c->i18n->current_locale();
+    if (!locale) return EINVAL;
+    int x0, y0, w, h;
+    if (sub_text_ink(&c->sub_font, "Modus", &x0, &y0, &w, &h))
+        return EINVAL;
+    int label_pen = 19 - y0;
+    if (sub_text_ink(&c->sub_value_font, "Natuurlijk", &x0, &y0, &w, &h))
+        return EINVAL;
+    int value_pen = 76 - y0;
+    unsigned char *blobs[3] = { NULL, NULL, NULL };
+    for (unsigned i = 0; i < 3; i++) {
+        const char *key = b->items[i].key;
+        const char *value_key = sub_value_key(key);
+        if (!value_key) goto fail;
+        unsigned char *rgba = calloc(235u * 130u, 4);
+        if (!rgba) goto fail;
+        oa_canvas cv = { rgba, 235, 130 };
+        int rc = sub_text_localized(&cv, &c->sub_font, c->i18n, key, locale,
+                                    label_pen);
+        if (rc) rc = sub_text_localized(&cv, &c->sub_font, c->i18n, key, "eng",
+                                        label_pen);
+        if (rc) rc = sub_text_draw(&cv, &c->sub_font, key, label_pen);
+        if (rc) { free(rgba); goto fail; }
+        rc = sub_text_localized(&cv, &c->sub_value_font, c->i18n, value_key,
+                                locale, value_pen);
+        if (rc) rc = sub_text_localized(&cv, &c->sub_value_font, c->i18n,
+                                        value_key, "eng", value_pen);
+        if (rc) rc = sub_text_draw(&cv, &c->sub_value_font, value_key,
+                                   value_pen);
+        if (rc) { free(rgba); goto fail; }
+        blobs[i] = rgba;
+    }
+    sub_text_free(c);
+    for (unsigned i = 0; i < 3; i++) {
+        c->sub_text[i].rgba = blobs[i];
+        c->sub_text[i].w = 235;
+        c->sub_text[i].h = 130;
+    }
+    snprintf(c->sub_text_locale, sizeof c->sub_text_locale, "%s", locale);
+    c->sub_text_ready = 1;
+    return 0;
+fail:
+    for (unsigned i = 0; i < 3; i++) free(blobs[i]);
+    return EINVAL;
+}
+
+static uint32_t sub_now(struct ctx *c)
+{
+    return c->clock ? c->clock->now_ms() : (uint32_t)now_ms();
+}
+
+static uint32_t sub_elapsed(struct ctx *c, uint32_t now, uint32_t before)
+{
+    return c->clock ? c->clock->elapsed(now, before) : now - before;
+}
+
+static void sub_tick_cb(void *ud)
+{
+    struct ctx *c = ud;
+    if (!c) return;
+    if (c->screen != SCREEN_SUBLAUNCHER || !c->d) {
+        c->sub_anim_live = 0;
+        if (c->sub_tick) {
+            c->api->timer_del(c->api->priv, c->sub_tick);
+            c->sub_tick = 0;
+        }
+        return;
+    }
+    uint32_t elapsed = sub_elapsed(c, sub_now(c), c->sub_anim_start);
+    if (elapsed >= 300) {
+        c->sub_anim_live = 0;
+        c->sub_progress = 1.0f;
+        if (c->sub_tick) {
+            c->api->timer_del(c->api->priv, c->sub_tick);
+            c->sub_tick = 0;
+        }
+        paint(c);
+        return;
+    }
+    paint(c);
+}
+
+static void sub_tick_start(struct ctx *c)
+{
+    if (c->sub_tick) return;
+    c->sub_tick = c->api->timer_add(c->api->priv, 10, 10, sub_tick_cb, c);
+}
 
 static void paint_sub_launcher(struct ctx *c)
 {
@@ -596,6 +775,10 @@ static void paint_sub_launcher(struct ctx *c)
     int sel = c->sub_sel;
     if (sel >= (int)count) sel = (int)count - 1;
     float progress = sel >= 0 ? c->sub_progress : 0.0f;
+    if (c->sub_anim_live && sel >= 0) {
+        uint32_t elapsed = sub_elapsed(c, sub_now(c), c->sub_anim_start);
+        progress = elapsed >= 300 ? 1.0f : (float)elapsed / 300.0f;
+    }
     if (progress < 0) progress = 0;
     if (progress > 1) progress = 1;
 
@@ -616,18 +799,29 @@ static void paint_sub_launcher(struct ctx *c)
         int y2 = base.y2 > scaled.y2 ? base.y2 : scaled.y2;
         d->fill(x1, y1, x2 - x1, y2 - y1, 13, 14, 14);
     }
+    if (!c->sub_text_ready && c->i18n && c->sub_fonts_on)
+        (void)sub_text_build(c, mb);
+    int live = c->sub_text_ready;
     for (int pass = 0; pass < 2; pass++) {
         for (unsigned i = 0; i < count; i++) {
             if ((pass == 0 && (int)i == sel) || (pass == 1 && (int)i != sel))
                 continue;
-            const char *asset = NULL;
+            const char *asset = NULL, *clean = NULL;
             for (unsigned j = 0; j < sizeof SUB_CARDS / sizeof SUB_CARDS[0]; j++)
-                if (!strcmp(mb->items[i].key, SUB_CARDS[j].key))
+                if (!strcmp(mb->items[i].key, SUB_CARDS[j].key)) {
                     asset = SUB_CARDS[j].asset;
-            const oa_ui_icon *card = asset ? find_icon(c, asset) : NULL;
+                    clean = SUB_CARDS[j].clean;
+                }
+            int use_text = live && clean && c->sub_text[i].rgba;
+            const oa_ui_icon *card =
+                find_icon(c, use_text ? clean : asset);
+            if (!card && use_text) {
+                use_text = 0;
+                card = find_icon(c, asset);
+            }
             c->api->log(c->api->priv, OA_LOG_DEBUG,
-                        "sub-card i=%u key=%s asset=%s icon=%p", i,
-                        mb->items[i].key, asset ? asset : "(none)",
+                        "sub-card i=%u key=%s asset=%s text=%d icon=%p", i,
+                        mb->items[i].key, asset ? asset : "(none)", use_text,
                         (void *)card);
             if (!card) continue;
             oa_launcher_rect r;
@@ -639,12 +833,30 @@ static void paint_sub_launcher(struct ctx *c)
             else
                 d->blit_scaled(r.x1, r.y1, w, h, card->w, card->h,
                                card->rgba);
+            if (use_text) {
+                /* Text is independent of the scalerect: keep it at the
+                 * unscaled card origin so only the card surface grows. */
+                int tx = md->card_x + (int)i * md->card_pitch;
+                int ty = md->card_y;
+                d->blit(tx, ty, c->sub_text[i].w, c->sub_text[i].h,
+                        c->sub_text[i].rgba);
+            }
         }
     }
     c->api->release(c->api->priv, OA_SVC_UI_MENU);
     c->scene_painted = 1;
     if (d->present() != 0)
         c->api->log(c->api->priv, OA_LOG_ERROR, "sub-launcher present failed");
+}
+
+static void sub_text_free(struct ctx *c)
+{
+    for (int i = 0; i < 3; i++) {
+        free(c->sub_text[i].rgba);
+        memset(&c->sub_text[i], 0, sizeof c->sub_text[i]);
+    }
+    c->sub_text_ready = 0;
+    c->sub_text_locale[0] = '\0';
 }
 
 static void settings_text_free(struct ctx *c)
@@ -667,6 +879,11 @@ static void settings_text_free(struct ctx *c)
     oa_font_pack_free(&c->font_pack);
     c->text_on = 0;
     c->font_num_on = 0;
+    free(c->sub_font_data);
+    free(c->sub_value_data);
+    c->sub_font_data = c->sub_value_data = NULL;
+    c->sub_fonts_on = 0;
+    sub_text_free(c);
 }
 
 static int settings_font_open(struct oa_font_pack *pack, int id,
@@ -854,6 +1071,35 @@ static void apply_edit_init(struct ctx *c)
         while (*spec && *spec != ',')
             spec++;
     }
+}
+
+/* Sub-launcher card text uses the vendor item fonts: font3 for the label and
+ * font12 for the value (ink boxes match the p0/03 capture). The font pack is
+ * already open from settings_text_load. */
+static int sub_text_fonts_load(struct ctx *c)
+{
+    if (!c || !c->text_on || c->sub_fonts_on) return EINVAL;
+    int label_id = atoi(c->api->config_get(c->api->priv, "ui.sub_font_id", "3"));
+    int value_id = atoi(c->api->config_get(c->api->priv, "ui.sub_value_font_id", "12"));
+    if (label_id < 0 || value_id < 0) return EINVAL;
+    int rc = settings_font_open(&c->font_pack, label_id, &c->sub_font,
+                                &c->sub_font_data);
+    if (rc) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "sub text: font %d unavailable (%d)", label_id, rc);
+        return rc;
+    }
+    rc = settings_font_open(&c->font_pack, value_id, &c->sub_value_font,
+                            &c->sub_value_data);
+    if (rc) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "sub text: font %d unavailable (%d)", value_id, rc);
+        free(c->sub_font_data);
+        c->sub_font_data = NULL;
+        return rc;
+    }
+    c->sub_fonts_on = 1;
+    return 0;
 }
 
 static int settings_text_load(struct ctx *c)
@@ -1951,6 +2197,9 @@ static void on_service_removed(const void *evp, void *ud)
     } else if (!strcmp(ev->name, OA_SVC_UI_THEME)) {
         c->theme = NULL; /* active dialog uses only its copied numeric mode */
         apply_anim_policy(c);
+    } else if (!strcmp(ev->name, OA_SVC_I18N)) {
+        c->i18n = NULL;
+        sub_text_free(c);
     } else if (!strcmp(ev->name, OA_SVC_UI_LUA)) {
         c->lua = NULL; /* host already dropped the hold; do not repaint for this */
         return;
@@ -1985,6 +2234,7 @@ static void rebind_now(struct ctx *c)
     c->anim2 = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 2);
     if (!c->clock) c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
     if (!c->theme) c->theme = c->api->lookup(c->api->priv, OA_SVC_UI_THEME, 1);
+    if (!c->i18n) c->i18n = c->api->lookup(c->api->priv, OA_SVC_I18N, 1);
     apply_anim_policy(c);
     if (!c->lua) c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
     if (!slide_allowed(c)) {
@@ -2053,6 +2303,31 @@ static void cancel_dialog(struct ctx *c)
 
 static void move_key(struct ctx *c, uint8_t id)
 {
+    if (c->screen == SCREEN_SUBLAUNCHER) {
+        if (id == 21 || id == 22) {
+            int next = c->sub_sel;
+            if (next < 0) next = 0;
+            else if (id == 21 && next > 0) next--;
+            else if (id == 22 && next < 2) next++;
+            if (next != c->sub_sel) {
+                c->sub_sel = next;
+                c->sub_progress = 0;
+                c->sub_anim_live = 1;
+                c->sub_anim_start = sub_now(c);
+                sub_tick_start(c);
+                if (c->d) paint(c);
+            }
+        } else if (id == 10 || id == 48) {
+            c->sub_anim_live = 0;
+            if (c->sub_tick) {
+                c->api->timer_del(c->api->priv, c->sub_tick);
+                c->sub_tick = 0;
+            }
+            c->screen = SCREEN_SETTINGS;
+            if (c->d) paint(c);
+        }
+        return;
+    }
     if (c->screen == SCREEN_CHANNELS) {
         if (id == 10 || id == 48) {
             c->screen = SCREEN_PORTAL;
@@ -2480,6 +2755,7 @@ static int m_start(void *v)
     c->anim2 = c->api->lookup(c->api->priv, OA_SVC_UI_ANIM, 2);
     c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
     c->theme = c->api->lookup(c->api->priv, OA_SVC_UI_THEME, 1);
+    c->i18n = c->api->lookup(c->api->priv, OA_SVC_I18N, 1);
     c->fs_type = dialog_fs_type(c);
     c->slide_box = atoi(c->api->config_get(c->api->priv, "ui.slide_box", "0"));
     apply_anim_policy(c);
@@ -2560,8 +2836,9 @@ static int m_start(void *v)
         c->d = NULL;
         return -1;
     }
-    if (atoi(c->api->config_get(c->api->priv, "ui.text", "0")) == 1)
-        (void)settings_text_load(c);
+    if (atoi(c->api->config_get(c->api->priv, "ui.text", "0")) == 1 &&
+        settings_text_load(c) == 0)
+        (void)sub_text_fonts_load(c);
     if (c->screen == SCREEN_APPS)
         (void)app_label_open(c);
     c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
@@ -2574,6 +2851,11 @@ static void m_stop(void *v)
 {
     struct ctx *c = v;
     cancel_dialog(c);
+    c->sub_anim_live = 0;
+    if (c->sub_tick) {
+        c->api->timer_del(c->api->priv, c->sub_tick);
+        c->sub_tick = 0;
+    }
     settings_text_free(c);
     c->scene_painted = 0;
     if (c->mod_key) {
@@ -2617,6 +2899,10 @@ static void m_stop(void *v)
     if (c->theme) {
         c->api->release(c->api->priv, OA_SVC_UI_THEME);
         c->theme = NULL;
+    }
+    if (c->i18n) {
+        c->api->release(c->api->priv, OA_SVC_I18N);
+        c->i18n = NULL;
     }
     if (c->lua) {
         c->api->release(c->api->priv, OA_SVC_UI_LUA);

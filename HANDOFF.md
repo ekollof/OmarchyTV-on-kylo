@@ -113,6 +113,16 @@ item cell 199,274 240x140; unfocused row AE=0 and 300 ms card2 bounds
 `tools/qemu-sub-launcher-check.sh`. Live card text, focused vendor capture,
 runtime key/timer and scanout remain. QEMU-UI-LAYOUT.
 
+Live sub-launcher/i18n, 2026-11-06: font3 labels/font12 values; clean card
+backgrounds + live Dutch text within4 px of the capture (most≤1 px).
+`mod_i18n` resolves all41 langprofile locales with current→eng→key fallback;
+U+202C etc. are stripped (no BiDi reorder). Audit: 0 missing glyphs, 3 labels
+clip at235 px (bul253, lit239, ukr264), values max183. Runtime Left/Right uses
+`ui.clock` +10 ms timer for300 ms; QEMU `key 22` through the real IR parser
+card0 bottom405→450. `mod_i18n` has the ABI3 async quiesce gate; `ir`/`i18n`
+are the async modules. RTL shaping, vendor fit, live values, other async
+modules and scanout remain. LIVE-SUBLAUNCHER-I18N.
+
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over
 Markt/Netflix (700x280, ~37ms effective) captured one redraw at t=53ms
 (bbox 33,30 620x230) and 16 identical post frames through 621ms. Apps focus is

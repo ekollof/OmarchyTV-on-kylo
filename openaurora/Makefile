@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_menu ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels lua
+MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_menu i18n ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels lua
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -604,6 +604,10 @@ $(BUILD)/modules/mod_ui_menu.so: modules/ui_menu/ui_menu.c common/menu_model.c c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
+$(BUILD)/modules/mod_i18n.so: modules/i18n/i18n.c common/langprofile.c include/openaurora/langprofile.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
+
 $(BUILD)/tests/binsvg: tests/binsvg.c common/binsvg.c common/text_layout.c include/openaurora/binsvg.h include/openaurora/text_layout.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm
@@ -797,7 +801,7 @@ $(BUILD)/modules/mod_ui_anim.so: modules/ui_anim/ui_anim.c common/ui_anim.c incl
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
-$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h
+$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/langprofile.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
@@ -1931,6 +1935,48 @@ $(BUILD)/tests/menu_model: tests/menu_model.c common/menu_model.c common/launche
 check-menu-model: $(BUILD)/tests/menu_model
 	@$(BUILD)/tests/menu_model $(CURDIR)/menus/sub_launcher.json
 check: check-menu-model
+
+LANGPROFILE ?= ../artifacts/workbench/rootfs/vendor2/mb230_langprofile.bin
+
+$(BUILD)/tests/langprofile: tests/langprofile.c common/langprofile.c include/openaurora/langprofile.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ tests/langprofile.c common/langprofile.c
+
+.PHONY: check-langprofile
+check-langprofile: $(BUILD)/tests/langprofile
+	@test -f $(LANGPROFILE) || { echo "missing $(LANGPROFILE); the real langprofile is required" >&2; exit 2; }
+	@$(BUILD)/tests/langprofile $(LANGPROFILE)
+check: check-langprofile
+
+SUBFONT ?= ../artifacts/workbench/rootfs/vendor2/dynamic_ui/telefunken18_font_byte_data
+
+$(BUILD)/tests/sub_text_locales: tests/sub_text_locales.c common/langprofile.c common/font_pack.c common/font_bitmap.c common/font_text.c common/font_draw.c common/font_box.c common/canvas.c common/text_origin.c include/openaurora/langprofile.h include/openaurora/font_pack.h include/openaurora/font_bitmap.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/canvas.h include/openaurora/text_origin.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ tests/sub_text_locales.c common/langprofile.c common/font_pack.c common/font_bitmap.c common/font_text.c common/font_draw.c common/font_box.c common/canvas.c common/text_origin.c -lm
+
+.PHONY: check-sub-text-locales
+check-sub-text-locales: $(BUILD)/tests/sub_text_locales
+	@test -f $(LANGPROFILE) && test -f $(SUBFONT).txt && test -f $(SUBFONT).bin || { echo "missing langprofile/font pack inputs" >&2; exit 2; }
+	@$(BUILD)/tests/sub_text_locales $(LANGPROFILE) $(SUBFONT).txt $(SUBFONT).bin
+check: check-sub-text-locales
+
+$(BUILD)/tests/i18n_service: tests/i18n_service.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/i18n_service.c $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-i18n-service
+check-i18n-service: $(BUILD)/tests/i18n_service $(BUILD)/modules/mod_i18n.so
+	@test -f $(LANGPROFILE) || { echo "missing $(LANGPROFILE); the real langprofile is required" >&2; exit 2; }
+	@mkdir -p $(BUILD)/tests/i18n-service/modules
+	@cp $(BUILD)/modules/mod_i18n.so $(BUILD)/tests/i18n-service/modules/
+	@$(BUILD)/tests/i18n_service $(BUILD)/tests/i18n-service/modules $(LANGPROFILE)
+check: check-i18n-service
+
+.PHONY: check-i18n-quiesce
+check-i18n-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_i18n.so
+	@test -f $(LANGPROFILE) || { echo "missing $(LANGPROFILE); the real langprofile is required" >&2; exit 2; }
+	node tests/i18n_quiesce.cjs $(abspath $(BUILD)) $(abspath $(LANGPROFILE))
+check: check-i18n-quiesce
 
 $(BUILD)/tests/ui_menu_service: tests/ui_menu_service.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)

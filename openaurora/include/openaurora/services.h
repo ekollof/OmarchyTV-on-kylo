@@ -131,6 +131,20 @@ typedef struct {
     unsigned (*count)(void);
 } oa_ui_theme_iface;
 
+/* i18n v1 — vendor langprofile Dictionary. Published by mod_i18n. The
+ * provider owns every returned string; hold the service through use and drop
+ * it before reload. translate() follows Dictionary::translate: current
+ * locale, then "eng", then the key itself. locale==NULL uses the configured
+ * current locale. Unknown locale/key returns the key. */
+#define OA_SVC_I18N "i18n"
+typedef struct {
+    unsigned (*locale_count)(void);
+    const char *(*locale)(unsigned index);
+    int (*find_locale)(const char *code);
+    const char *(*translate)(const char *key, const char *locale);
+    const char *(*current_locale)(void);
+} oa_i18n_iface;
+
 /* ui.menu v1 — firmware-derived, JSON-loaded menu tree. Published by
  * mod_ui_menu. Loop-thread only. The provider owns the document and every
  * returned view/string; hold lookup(OA_SVC_UI_MENU,1) through use and drop it

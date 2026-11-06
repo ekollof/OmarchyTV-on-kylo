@@ -95,6 +95,24 @@ hidden; only `oa_module_entry` is exported, so `ui_menu`/`ui_vendor` do not
 interpose `oa_menu_*` symbols. Focused-card vendor capture, live card text,
 runtime key/timer and scanout remain. QEMU-UI-LAYOUT.
 
+Live sub-launcher text/i18n/animation, 2026-11-06 (TV off limits): the card
+label font is **3** and value font **12** (ink boxes match p0/03). Clean card
+backgrounds + live label/value text put Dutch within4 px of the capture
+(most≤1 px); `qemu-sub-live-check.sh` enforces 4 px. `mod_i18n` decodes the
+EFSL langprofile Dictionary, all **41 locales**, with the proven
+`Dictionary::translate` fallback current→`eng`→key (Dutch `ZOOM_MODE_16_9`
+empty → English `16:9`). U+200E/F, U+202A..E and U+2066..9 are stripped because
+they are not glyphs; this is **not** BiDi reordering/shaping. The 41-locale
+audit has 0 missing glyphs, max value183 px; 3 labels exceed the235 px card
+(bul ENERGY_SAVING253, lit PICTURE_ZOOM239, ukr264) and are clipped. The
+runtime path uses Left/Right, `ui.clock` and a10 ms timer for300 ms; QEMU
+`key 22` through the real IR parser (plat no-vendor stub, ir no UART) moves
+card0 bottom405→450 over 17 frames. `mod_i18n` now has the ABI3 async quiesce
+gate (unpublish, detach/free5 MB profile on a worker; reload fails fast and
+retries); `ir` and `i18n` are the async modules. RTL shaping, vendor fit
+policy, live setting values, other async modules and scanout remain.
+LIVE-SUBLAUNCHER-I18N.
+
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
 Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,
 one redraw at t=53ms (bbox 33,30 620x230, 45,745 px), then 16 identical post

@@ -16,6 +16,9 @@ HOST=$ROOT/openaurora/build-tv-v3/openaurora
 SOCK=$STAGE/control
 FRAME=$STAGE/frame
 LOG=$STAGE/log
+MODULES=${OA_QEMU_MODULES:-"sim_display ui_engine ui_menu ui_vendor"}
+KEY=${OA_QEMU_KEY:-}
+HOLD=${OA_QEMU_HOLD_MS:-0}
 
 test -x "$HOST" || { echo "missing $HOST" >&2; exit 2; }
 test -d "$STAGE/modules" || { echo "missing $STAGE/modules" >&2; exit 2; }
@@ -28,13 +31,17 @@ OA_NAV_CAPTURE=$FRAME "$QEMU" -L "$ROOTFS" "$HOST" \
 PID=$!
 trap 'kill "$PID" 2>/dev/null || true; wait "$PID" 2>/dev/null || true' EXIT INT TERM
 
-python3 - "$SOCK" <<'PY'
+python3 - "$SOCK" "$MODULES" "$FRAME" "$KEY" "$HOLD" <<'PY'
 import os
 import socket
 import sys
 import time
 
 sock = sys.argv[1]
+modules = sys.argv[2].split()
+frame = sys.argv[3]
+key = sys.argv[4]
+hold = int(sys.argv[5] or "0")
 for _ in range(100):
     if os.path.exists(sock):
         break
@@ -55,11 +62,20 @@ def command(text):
         data += chunk
     return data.decode().strip()
 
-for module in ("sim_display", "ui_engine", "ui_menu", "ui_vendor"):
+for module in modules:
     for verb in ("load", "start"):
         reply = command(f"{verb} {module}")
         if not reply.startswith("ok"):
             sys.exit(f"{verb} {module}: {reply}")
+if key:
+    for _ in range(100):
+        if os.path.exists(frame + ".0"):
+            break
+        time.sleep(0.05)
+    reply = command("key " + key)
+    if not reply.startswith("ok"):
+        sys.exit(f"key {key}: {reply}")
+    time.sleep(hold / 1000.0)
 s.close()
 PY
 
