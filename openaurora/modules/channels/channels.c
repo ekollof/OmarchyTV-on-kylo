@@ -6,9 +6,7 @@
  * incomplete; the UI falls back to stored order when no runtime list exists.
  */
 #include <errno.h>
-#include <pthread.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "openaurora/channels.h"
 #include "openaurora/module.h"
@@ -18,9 +16,9 @@ struct ctx {
     const oa_host_api *api;
     struct oa_channel_list *list;
     int published;
-    /* ABI 3 quiesce: the list is detached and destroyed on a worker. */
-    pthread_t cleanup_thread;
-    int cleanup_running;
+    /* ABI 3 quiesce: the list is detached and destroyed by a scheduler
+     * slice on the host loop. */
+    uint32_t cleanup_task;
     struct oa_channel_list *cleanup_list;
     unsigned cleanup_delay_ms;
 };
@@ -64,28 +62,40 @@ static int m_init(const oa_host_api *api, void **out)
     return 0;
 }
 
-/* No host API calls after this returns. */
-static void *cleanup_worker(void *v)
+/* One nonblocking scheduler slice frees the detached list. */
+static int cleanup_step(void *v, uint32_t *delay_ms)
 {
+    (void)delay_ms;
     struct ctx *c = v;
-    if (c->cleanup_delay_ms) {
-        const struct timespec pause = {
-            .tv_sec = c->cleanup_delay_ms / 1000u,
-            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
-        };
-        (void)nanosleep(&pause, NULL);
-    }
     struct oa_channel_list *list = c->cleanup_list;
     c->cleanup_list = NULL;
+    c->cleanup_task = 0;
     oa_channel_list_destroy(list);
-    return NULL;
+    return OA_SCHED_DONE;
+}
+
+/* Cancel a queued free and release any list the step did not consume. */
+static void cancel_cleanup(struct ctx *c)
+{
+    if (c->cleanup_task) {
+        const oa_sched_iface *s =
+            c->api->lookup(c->api->priv, OA_SVC_SCHED, 1);
+        if (s) {
+            (void)s->cancel(s->context, c->cleanup_task);
+            c->api->release(c->api->priv, OA_SVC_SCHED);
+        }
+        c->cleanup_task = 0;
+    }
+    if (c->cleanup_list) {
+        oa_channel_list_destroy(c->cleanup_list);
+        c->cleanup_list = NULL;
+    }
 }
 
 static int m_start(void *v)
 {
     struct ctx *c = v;
-    if (c->published || c->cleanup_running) return -EBUSY;
-    c->cleanup_running = 0;
+    if (c->published || c->cleanup_task || c->cleanup_list) return -EBUSY;
     long delay = atol(c->api->config_get(c->api->priv,
                                          "channels.cleanup_delay_ms", "0"));
     c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
@@ -100,28 +110,13 @@ static int m_start(void *v)
 }
 
 /* ABI 3 gate: unpublish channels synchronously and detach the runtime list,
- * then destroy it synchronously or on a worker after
+ * then destroy it synchronously or from one scheduler slice after
  * channels.cleanup_delay_ms. */
 static int m_quiesce(void *v)
 {
     struct ctx *c = v;
     if (!c) return 0;
-    if (c->cleanup_running) {
-        for (int i = 0; i < 10; i++) {
-            int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
-            if (rc == 0) {
-                c->cleanup_running = 0;
-                return 0;
-            }
-            if (rc != EBUSY) {
-                c->cleanup_running = 0;
-                return -EIO;
-            }
-            const struct timespec pause = { .tv_nsec = 5000000 };
-            (void)nanosleep(&pause, NULL);
-        }
-        return -EAGAIN;
-    }
+    if (c->cleanup_task || c->cleanup_list) return -EAGAIN;
     int published = c->published;
     c->published = 0;
     if (published) c->api->unpublish(c->api->priv, OA_SVC_CHANNELS);
@@ -133,13 +128,22 @@ static int m_quiesce(void *v)
         return 0;
     }
     c->cleanup_list = list;
-    int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+    const oa_sched_iface *s =
+        c->api->lookup(c->api->priv, OA_SVC_SCHED, 1);
+    if (!s) {
+        c->cleanup_list = NULL;
+        oa_channel_list_destroy(list);
+        return 0;
+    }
+    uint32_t id = 0;
+    int rc = s->submit(s->context, cleanup_step, c, c->cleanup_delay_ms, &id);
+    c->api->release(c->api->priv, OA_SVC_SCHED);
     if (rc) {
         c->cleanup_list = NULL;
         oa_channel_list_destroy(list);
         return -EIO;
     }
-    c->cleanup_running = 1;
+    c->cleanup_task = id;
     return -EAGAIN;
 }
 
@@ -149,14 +153,7 @@ static void m_stop(void *v)
     struct ctx *c = v;
     if (c->published) c->api->unpublish(c->api->priv, OA_SVC_CHANNELS);
     c->published = 0;
-    if (c->cleanup_running) {
-        (void)pthread_join(c->cleanup_thread, NULL);
-        c->cleanup_running = 0;
-    }
-    if (c->cleanup_list) {
-        oa_channel_list_destroy(c->cleanup_list);
-        c->cleanup_list = NULL;
-    }
+    cancel_cleanup(c);
     oa_channel_list_destroy(c->list);
     c->list = NULL;
 }
@@ -167,14 +164,10 @@ static int m_resume(void *v) { (void)v; return 0; }
 static void m_destroy(void *v)
 {
     struct ctx *c = v;
-    if (c->cleanup_running) {
-        (void)pthread_join(c->cleanup_thread, NULL);
-        c->cleanup_running = 0;
-    }
-    if (c->cleanup_list) oa_channel_list_destroy(c->cleanup_list);
+    cancel_cleanup(c);
     oa_channel_list_destroy(c->list);
-    if (g_ctx == v) g_ctx = NULL;
-    free(v);
+    if (g_ctx == c) g_ctx = NULL;
+    free(c);
 }
 
 static const oa_module descriptor = {

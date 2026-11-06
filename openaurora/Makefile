@@ -972,8 +972,8 @@ $(eval $(call emit_pics,modules__mod_pvr,modules/pvr/pvr.c common/pvr_stub.c,-pt
 
 $(BUILD)/modules/mod_channels.so: $(call pic_objs,modules__mod_channels,modules/channels/channels.c common/channels.c)
 	@mkdir -p $(dir $@)
-	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
-$(eval $(call emit_pics,modules__mod_channels,modules/channels/channels.c common/channels.c,-pthread,include/openaurora/channels.h include/openaurora/module.h include/openaurora/services.h))
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_channels,modules/channels/channels.c common/channels.c,,include/openaurora/channels.h include/openaurora/module.h include/openaurora/services.h))
 
 LUA_SRC := $(sort $(wildcard third_party/lua/*.c))
 LUA_OBJ := $(patsubst third_party/lua/%.c,$(BUILD)/third_party/lua/%.o,$(LUA_SRC))

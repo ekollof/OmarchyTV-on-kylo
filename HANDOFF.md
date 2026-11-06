@@ -430,6 +430,13 @@ skin/ui-anim tests pass; full suite ends all tests passed; QEMU pass. Only
 pure-free cleanup migrated; blocking close/join paths stay workers. TV not
 used. SCHED-UI-THEME.
 
+host sched second use, 2026-11-06: channels delayed list destroy moved from a
+pthread to one nonblocking sched slice (cleanup_task), preserving synchronous
+unpublish, fail-fast EAGAIN while pending, delay0 sync destroy, and cancel/free
+on stop. ARM channels no longer links libpthread. 400ms gate, XML/IPC tests,
+full suite all tests passed, QEMU pass. Pure-free cleanup only; blocking paths
+stay workers. TV not used. SCHED-CHANNELS.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

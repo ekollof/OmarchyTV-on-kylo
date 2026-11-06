@@ -418,6 +418,14 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       cleanup migrated; blocking close/join paths remain workers. TV not used.
       SCHED-UI-THEME.
 
+- [x] Second host `sched` use: migrate `channels`’ delayed list destroy from a
+      pthread to one nonblocking scheduler slice. Quiesce still unpublishes
+      synchronously, fails fast while pending, destroys at delay0, and
+      cancels/frees a dropped task. ARM `channels` no longer links libpthread.
+      400 ms gate, XML/IPC tests, full suite `all tests passed`, and QEMU pass.
+      Pure-free cleanup only; blocking close/join paths remain workers. TV not
+      used. SCHED-CHANNELS.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
       `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`,
