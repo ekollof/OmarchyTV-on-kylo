@@ -7,10 +7,12 @@
  * in-memory module: no persistence, EIT filtering or vendor EIT hub.
  */
 #include <errno.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "openaurora/broadcast.h"
@@ -28,6 +30,12 @@ struct ctx {
     int published;
     int persist;
     char path[EPG_PATH_MAX];
+    /* ABI 3 quiesce: the cache is detached and saved/freed on a worker. */
+    pthread_t cleanup_thread;
+    int cleanup_running;
+    struct oa_eit_cache *cleanup_cache;
+    int cleanup_save_error;
+    unsigned cleanup_delay_ms;
 };
 
 static struct ctx *g_ctx;
@@ -43,9 +51,9 @@ static int parse_u32(const char *text, uint32_t *out)
     return 0;
 }
 
-static int save_cache(struct ctx *c)
+static int save_cache(struct ctx *c, struct oa_eit_cache *cache)
 {
-    if (!c->persist) return 0;
+    if (!c->persist || !cache) return 0;
     char tmp[EPG_PATH_MAX + 8];
     if ((size_t)snprintf(tmp, sizeof tmp, "%s.tmp", c->path) >= sizeof tmp)
         return -ENAMETOOLONG;
@@ -53,10 +61,10 @@ static int save_cache(struct ctx *c)
     if (!file) return -errno;
     int rc = 0;
     if (fprintf(file, "OAEPG1\n") < 0) rc = -EIO;
-    size_t count = oa_eit_cache_count(c->cache);
+    size_t count = oa_eit_cache_count(cache);
     for (size_t i = 0; i < count && !rc; i++) {
         struct oa_eit_record record;
-        if (oa_eit_cache_get_at(c->cache, i, &record)) {
+        if (oa_eit_cache_get_at(cache, i, &record)) {
             rc = -EIO;
             break;
         }
@@ -250,7 +258,7 @@ static int epg_feed_section(const uint8_t *data, size_t len)
     int rc = oa_eit_parse_section(data, len, ingest_event, &state);
     if (rc < 0) return state.error ? state.error : rc;
     if (state.stored) {
-        int saved = save_cache(g_ctx);
+        int saved = save_cache(g_ctx, g_ctx->cache);
         if (saved) return saved;
     }
     return state.stored;
@@ -260,7 +268,7 @@ static void epg_clear(void)
 {
     if (!g_ctx || !g_ctx->cache) return;
     oa_eit_cache_clear(g_ctx->cache);
-    if (save_cache(g_ctx) && g_ctx->persist)
+    if (save_cache(g_ctx, g_ctx->cache) && g_ctx->persist)
         g_ctx->api->log(g_ctx->api->priv, OA_LOG_ERROR,
                         "epg: clear could not persist %s", g_ctx->path);
 }
@@ -292,9 +300,38 @@ static int m_init(const oa_host_api *api, void **out)
     return 0;
 }
 
+/* No host API calls after this returns. Persistence is part of cleanup, so a
+ * reload cannot republish the service before the old cache was saved. */
+static void *cleanup_worker(void *v)
+{
+    struct ctx *c = v;
+    if (c->cleanup_delay_ms) {
+        const struct timespec pause = {
+            .tv_sec = c->cleanup_delay_ms / 1000u,
+            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
+        };
+        (void)nanosleep(&pause, NULL);
+    }
+    struct oa_eit_cache *cache = c->cleanup_cache;
+    c->cleanup_cache = NULL;
+    c->cleanup_save_error = save_cache(c, cache);
+    oa_eit_cache_destroy(cache);
+    return NULL;
+}
+
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    if (c->published || c->cleanup_running) return -EBUSY;
+    c->cleanup_running = 0;
+    c->cleanup_save_error = 0;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "epg.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
+    if (!c->cache) {
+        c->cache = oa_eit_cache_create(EPG_CAPACITY);
+        if (!c->cache) return -1;
+    }
     const char *path = c->api->config_get(c->api->priv, "epg.path", "");
     c->persist = path && *path;
     if (c->persist) {
@@ -319,15 +356,85 @@ static int m_start(void *v)
     return 0;
 }
 
+/* ABI 3 gate: unpublish both epg services synchronously, detach the schedule
+ * cache, then save (when persistent) and destroy it on a worker after
+ * epg.cleanup_delay_ms. A stale iface sees published=0. */
+static int m_quiesce(void *v)
+{
+    struct ctx *c = v;
+    if (!c) return 0;
+    if (c->cleanup_running) {
+        for (int i = 0; i < 10; i++) {
+            int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+            if (rc == 0) {
+                c->cleanup_running = 0;
+                int saved = c->cleanup_save_error;
+                c->cleanup_save_error = 0;
+                if (saved) {
+                    c->api->log(c->api->priv, OA_LOG_ERROR,
+                                "epg: cleanup could not persist %s (%d)",
+                                c->path, saved);
+                }
+                return 0;
+            }
+            if (rc != EBUSY) {
+                c->cleanup_running = 0;
+                return -EIO;
+            }
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
+        }
+        return -EAGAIN;
+    }
+    int published = c->published;
+    c->published = 0;
+    if (published) {
+        c->api->unpublish(c->api->priv, OA_SVC_EPG_INGEST);
+        c->api->unpublish(c->api->priv, OA_SVC_EPG);
+    }
+    struct oa_eit_cache *cache = c->cache;
+    c->cache = NULL;
+    if (!cache) return 0;
+    if (!c->cleanup_delay_ms) {
+        int saved = save_cache(c, cache);
+        oa_eit_cache_destroy(cache);
+        if (saved) {
+            c->api->log(c->api->priv, OA_LOG_ERROR,
+                        "epg: cleanup could not persist %s (%d)", c->path,
+                        saved);
+        }
+        return 0;
+    }
+    c->cleanup_cache = cache;
+    c->cleanup_save_error = 0;
+    int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+    if (rc) {
+        c->cleanup_cache = NULL;
+        int saved = save_cache(c, cache);
+        oa_eit_cache_destroy(cache);
+        return saved ? -EIO : 0;
+    }
+    c->cleanup_running = 1;
+    return -EAGAIN;
+}
+
 static void m_stop(void *v)
 {
     struct ctx *c = v;
     if (c->published) {
-        if (c->persist) (void)save_cache(c);
+        if (c->persist) (void)save_cache(c, c->cache);
         c->api->unpublish(c->api->priv, OA_SVC_EPG_INGEST);
         c->api->unpublish(c->api->priv, OA_SVC_EPG);
     }
     c->published = 0;
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->cleanup_cache) {
+        oa_eit_cache_destroy(c->cleanup_cache);
+        c->cleanup_cache = NULL;
+    }
 }
 
 static int m_suspend(void *v) { (void)v; return 0; }
@@ -336,6 +443,11 @@ static int m_resume(void *v) { (void)v; return 0; }
 static void m_destroy(void *v)
 {
     struct ctx *c = v;
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    if (c->cleanup_cache) oa_eit_cache_destroy(c->cleanup_cache);
     if (g_ctx == c) g_ctx = NULL;
     oa_eit_cache_destroy(c->cache);
     free(c);
@@ -346,7 +458,7 @@ static const oa_module descriptor = {
     .name = "epg", .version = "1",
     .requires = { "", 0 }, .init = m_init, .start = m_start,
     .stop = m_stop, .destroy = m_destroy, .suspend = m_suspend,
-    .resume = m_resume
+    .resume = m_resume, .quiesce = m_quiesce
 };
 
 OA_MODULE_EXPORT(descriptor)

@@ -263,14 +263,25 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       stub/TS tuner IPC tests pass; ARM links libpthread. Full/QEMU pass.
       TUNER-QUIESCE.
 
+- [x] Asynchronous gate for `mod_epg`: clear publication and unpublish
+      `epg.ingest`/`epg` synchronously, detach the `oa_eit_cache`, then persist
+      (when `epg.path` is set) and destroy it on a worker after
+      `epg.cleanup_delay_ms`. `m_stop`/`m_destroy` join/free leftovers;
+      `m_start` refuses if live and recreates the cache for a stop/start cycle.
+      Control-socket test: ingest two EIT events, reload fails fast,
+      `epg-count` ENODEV, status responsive, the worker writes the two-record
+      `OAEPG1` file, the retry completes and the replacement reloads both
+      events; clear and stop use the gate. Existing EPG persistence and tuner
+      handoff tests pass; ARM links libpthread. Full/QEMU pass. EPG-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
-      `ui_menu`, `audio`, `cec`, `audio_mixer` and `tuner` are the existing
-      models.
+      `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner` and `epg` are the
+      existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

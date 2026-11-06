@@ -267,6 +267,18 @@ pass. No NIM/frontend/demux or PVR hardware. ir/i18n/settings/ui_vendor/
 ui_engine/display/source/ui_menu/audio/cec/audio_mixer/tuner are the async
 modules. TUNER-QUIESCE.
 
+mod_epg async gate, 2026-11-06: clear publication and unpublish
+epg.ingest/epg synchronously, detach the oa_eit_cache, then persist (when
+epg.path is set) and destroy it on a worker after epg.cleanup_delay_ms.
+m_stop/m_destroy join/free leftovers; m_start refuses if live and recreates
+the cache for a stop/start cycle. Control test: ingest two EIT events, reload
+fails fast, epg-count ENODEV, status responsive, worker writes the two-record
+OAEPG1 file, retry completes and reloads both events; clear/stop use the gate.
+Existing EPG persistence and tuner handoff tests pass; ARM links libpthread.
+Full/QEMU pass. Project cache only, not vendor EIT/SQLite.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg are the async modules. EPG-QUIESCE.
+
 Real VIN HAL device simulation, 2026-11-06: the shipped ARM libNDAL3.so
 Hal_Vin wrappers and the real ARM mod_source.so run under qemu against an
 LD_PRELOAD fake /dev/video20. Hal_Vin_Open(0) opens /dev/video20 (not

@@ -482,6 +482,11 @@ check-epg-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_epg.so
 	node tests/epg_ipc.cjs $(abspath $(BUILD))
 check: check-epg-ipc
 
+.PHONY: check-epg-quiesce
+check-epg-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_epg.so
+	node tests/epg_quiesce.cjs $(abspath $(BUILD))
+check: check-epg-quiesce
+
 .PHONY: check-epg-persist-ipc
 check-epg-persist-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_epg.so
 	node tests/epg_persist_ipc.cjs $(abspath $(BUILD))
@@ -874,7 +879,7 @@ $(BUILD)/modules/mod_service_db.so: modules/service_db/service_db.c common/servi
 
 $(BUILD)/modules/mod_epg.so: modules/epg/epg.c common/eit_section.c common/eit_cache.c common/eit_time.c include/openaurora/eit_section.h include/openaurora/eit_cache.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
 
 $(BUILD)/modules/mod_tuner.so: modules/tuner/tuner.c common/nim_stub.c common/nim_ts.c common/nim_ndal.c common/eit_dvb.c common/eit_ts.c common/eit_section.c common/eit_time.c include/openaurora/nim.h include/openaurora/eit_dvb.h include/openaurora/eit_section.h include/openaurora/eit_ts.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
