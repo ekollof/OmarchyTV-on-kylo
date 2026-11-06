@@ -788,6 +788,33 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       Owner authorized an idle hardware/CEC/audio test window on November 1; see AGENTS.md.
 - [ ] Reloadable modules: state, service holds, callback ownership and dependencies
       behave correctly through start/stop/reload/suspend/resume and failures.
+- [ ] Module consolidation audit: 36 descriptors is a large reload surface, but
+      do not merge blindly. First build a service/dependency + reload-blast-radius
+      matrix (who publishes what, who holds it, what reload resets, what hardware
+      or worker cleanup is involved). Preserve ABI 3, published service
+      names/versions, hold/owner semantics, quiesce, save/restore, independent
+      reload and config autoload.
+      Candidate tiers:
+      * data-only: `audio_curve` + `audio_amp_profile` -> one `audio_data`
+        module (separate services, no hardware close); fold `spi` into
+        `tuner`/`plat` once it has a real consumer; replace `ui_console` with a
+        test fixture or an `ui_omarchy` dev mode.
+      * UI state: `ui_list` + `ui_navigation` + `ui_profile` -> one `ui_state`
+        module if the service names/versions and independent reload tests can be
+        preserved; keep `ui_menu` separate unless its document reload is proven
+        equivalent.
+      * time: evaluate `ticker` + `ui_clock` -> one `time` descriptor. They are
+        provider/consumer today, so only merge if start/suspend/reload ordering,
+        clock publication and failure isolation remain equivalent.
+      * do not merge without new evidence: `plat`, `panel`, `power`, `audio`,
+        `audio_mixer`, `cec`, `tuner`, `epg`, `pvr`, `channels`, `service_db`,
+        `display`, `scene_display`, `graphics`, `ir`, `source`, `settings`,
+        `ui_engine`, `ui_vendor`. Their hardware, process, device or skin
+        ownership boundaries and reload blast radius are intentional.
+      Acceptance: same host/fake/ARM tests, module matrix IPC, quiesce/reload
+      suites, cold-bundle manifest; measure DSO count, build time, bundle size
+      and reload impact. Any service or ABI change must be explicit, not a
+      silent merge.
 - [ ] Reproduce vendor screens, remote behavior, settings and the remaining TV
       functionality; only then change UI/UX to native OmarchyTV.
 
