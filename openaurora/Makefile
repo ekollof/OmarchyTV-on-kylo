@@ -127,7 +127,7 @@ check-ui-navigation-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_navigation.
 
 $(BUILD)/modules/mod_ui_list.so: modules/ui_list/ui_list.c common/svg_list_input.c common/svg_list_bodies.c common/svg_list_move.c common/svg_list_rows.c common/svg_list_impl.c include/openaurora/svg_list_input.h include/openaurora/svg_list_bodies.h include/openaurora/svg_list_move.h include/openaurora/svg_list_rows.h include/openaurora/svg_list_impl.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
 
 $(BUILD)/modules/mod_image_decode.so: modules/image_decode/image_decode.c include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
@@ -140,6 +140,11 @@ $(BUILD)/tests/ui_list: tests/ui_list.c core/host.h include/openaurora/services.
 check-ui-list: $(BUILD)/tests/ui_list $(BUILD)/modules/mod_ui_list.so $(BUILD)/modules/mod_ticker.so
 	@$(BUILD)/tests/ui_list $(BUILD)/modules
 check: check-ui-list
+
+.PHONY: check-ui-list-quiesce
+check-ui-list-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_list.so
+	node tests/ui_list_quiesce.cjs $(abspath $(BUILD))
+check: check-ui-list-quiesce
 
 .PHONY: check-ui-list-ipc
 check-ui-list-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_list.so

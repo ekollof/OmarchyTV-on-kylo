@@ -332,15 +332,27 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       UI-anim bootstrap tests pass; ARM links libpthread. Full/QEMU pass.
       UI-THEME-QUIESCE.
 
+- [x] Asynchronous gate for `mod_ui_list`: move owned state to the heap. Quiesce
+      clears publication, unpublishes `ui.list` synchronously, snapshots the
+      OAL1 handoff blob, detaches the state, then frees it synchronously or on
+      a worker after `ui_list.cleanup_delay_ms`. Retry `save()` uses the
+      snapshot after detach; `restore()` allocates fresh state on a stopped
+      instance after validating the blob. `m_stop`/`m_destroy` join/free;
+      `m_start` refuses if live. Control-socket test: key selection, reload
+      fails fast, `list-state` ENODEV, status responsive, retry preserves the
+      selected/animation state and still routes keys; stop uses the gate.
+      Direct/IPC list tests pass; ARM links libpthread. Full/QEMU pass.
+      UI-LIST-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
       `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr`,
-      `channels`, `service_db`, `image_decode` and `ui_theme` are the existing
-      models.
+      `channels`, `service_db`, `image_decode`, `ui_theme` and `ui_list` are
+      the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

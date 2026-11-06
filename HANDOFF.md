@@ -325,6 +325,22 @@ gate; borrowed views still require the host hold.
 ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme are async.
 UI-THEME-QUIESCE.
+
+ui_list quiesce, 2026-11-06: owned state moved to heap. Quiesce clears
+publication, unpublishes ui.list synchronously, snapshots the OAL1 handoff
+blob, detaches state, then frees synchronously or on a worker after
+ui_list.cleanup_delay_ms. Retry save() uses the snapshot after detach;
+restore() allocates fresh state on a stopped instance after validating the
+blob. m_stop/m_destroy join/free; m_start refuses if live. Control test: key
+selection, reload fails fast, list-state ENODEV, status responsive, retry
+preserves selected/animation state and still routes keys; stop gate. Direct/
+IPC list tests pass; ARM links libpthread. Full/QEMU pass. Fixture list state,
+not vendor SVGScrollList. 22/35 descriptors now have quiesce; 13 remain:
+audio_amp_profile/audio_curve/panel/plat/power/ticker/ui_anim/ui_clock/
+ui_console/ui_diag/ui_navigation/ui_omarchy/ui_profile.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list
+are async. UI-LIST-QUIESCE.
 SERVICE-DB-QUIESCE.
 
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so
