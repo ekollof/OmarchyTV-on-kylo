@@ -5,6 +5,7 @@ set -eu
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 ARM=${ARM:-$ROOT/artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc}
 STAGE=${OA_QEMU_STAGE:-/tmp/oa-qemu-sub-live}
+LANG_CODE=${OA_QEMU_LANG:-dut}
 UI=$ROOT/artifacts/workbench/source-stage-20261101/ui
 FONT=$ROOT/artifacts/workbench/rootfs/vendor2/dynamic_ui/telefunken18_font_byte_data
 PROFILE=$ROOT/artifacts/workbench/rootfs/vendor2/mb230_langprofile.bin
@@ -70,7 +71,7 @@ ui.sub_progress=0
 ui.font_index=$FONT.txt
 ui.font_pack=$FONT.bin
 i18n.profile=$PROFILE
-i18n.language=dut
+i18n.language=$LANG_CODE
 plat.enable=1
 ir.device=
 ir.blast=0
@@ -81,13 +82,13 @@ OA_QEMU_MODULES="sim_display ui_engine ticker ui_clock plat ir ui_menu i18n ui_v
 OA_QEMU_KEY=22 OA_QEMU_HOLD_MS=700 \
     "$ROOT/openaurora/tools/qemu-ui-layout.sh" "$STAGE" >/dev/null
 
-python3 - "$STAGE" "$UI/settings_top.rgba" <<'PY'
+python3 - "$STAGE" "$UI/settings_top.rgba" "$LANG_CODE" <<'PY'
 import glob
 import struct
 import sys
 from PIL import Image
 
-stage, oracle = sys.argv[1], sys.argv[2]
+stage, oracle, lang = sys.argv[1], sys.argv[2], sys.argv[3]
 capd = open(oracle, "rb").read()
 w, h = struct.unpack_from("<II", capd, 4)
 cap = Image.frombytes("RGBA", (w, h), capd[12:])
@@ -114,11 +115,17 @@ def ink(px, x0, x1, y0, y1):
 frame0 = Image.frombytes("RGBA", (1920, 1080), open(f"{stage}/frame.0", "rb").read())
 fp = frame0.load()
 for card in range(3):
-    x0 = 201 + card * 250
-    label = ink(fp, x0, x0 + 235, 290, 320)
-    value = ink(fp, x0, x0 + 235, 345, 395)
+    box_x = 199 + card * 250
+    label = ink(fp, box_x, box_x + 240, 285, 325)
+    value = ink(fp, box_x, box_x + 240, 345, 400)
     if not label or not value:
         raise SystemExit(f"card {card}: missing live text")
+    for name, got in (("label", label), ("value", value)):
+        if got[0] < box_x or got[2] > box_x + 240:
+            raise SystemExit(f"card {card} {name}: ink {got} leaves the 240 px box")
+    if lang != "dut":
+        continue
+    x0 = 201 + card * 250
     for name, got, want in (("label", label, expected[card][0]),
                             ("value", value, expected[card][1])):
         rel = (got[0] - x0, got[1] - 276, got[2] - x0, got[3] - 276)
@@ -148,6 +155,7 @@ if seq[-1] not in (450, 451):
     raise SystemExit(f"animation did not reach the scaled bottom: {seq[-1]}")
 if len(set(seq)) < 6:
     raise SystemExit(f"too few animation steps: {seq}")
-print("ok qemu sub-launcher live: Dutch text bboxes within 4 px; "
+detail = "Dutch text within 4 px of p0/03" if lang == "dut" else f"{lang} text inside the 240 px box"
+print(f"ok qemu sub-launcher live: {detail}; "
       f"key 22 timer card bottom {seq[0]} -> {seq[-1]} over {len(seq)} frames")
 PY

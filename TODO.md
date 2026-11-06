@@ -242,19 +242,21 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       `qemu-sub-launcher-check.sh` repeats it. QEMU-UI-LAYOUT.
 
 - [x] Sub-launcher live text/runtime: font3 labels + font12 values on clean
-      captured backgrounds; Dutch live text within4 px of p0/03 (most≤1 px).
+      captured backgrounds; Dutch live text within4 px of p0/03 (most≤2 px).
       `mod_i18n` resolves all41 langprofile locales with current→eng→key
       fallback; U+202C-style controls are stripped. Runtime Left/Right uses
       `ui.clock` + a10 ms timer for300 ms; QEMU `key 22` through the real IR
       parser drives card0 bottom405→450. `qemu-sub-live-check.sh` repeats it.
       LIVE-SUBLAUNCHER-I18N.
 
-- [ ] All-language shaping and fit: U+200E/200F, U+202A..E and U+2066..9
-      controls are stripped, but BiDi reordering/shaping is not implemented.
-      Three long labels exceed the235 px card (bul ENERGY_SAVING253, lit
-      PICTURE_ZOOM239, ukr264); the vendor translation-fit/ellipsis/shrink
-      policy is not decoded. Capture focused vendor cards and multilingual
-      oracle frames before claiming visual parity.
+- [ ] All-language shaping and fit: the vendor row `text1` is 240x54; the row
+      sets `setElipses(false)` for labels (clip) and `setElipses(true)` for
+      values (elide), with no shrink-to-fit. At 240 px only Bulgarian
+      ENERGY_SAVING (253) and Ukrainian PICTURE_ZOOM (264) clip; Lithuanian
+      (239) fits. Profile Hebrew is stored in visual order and is drawn as
+      stored; Arabic/Persian are stored logical + pre-shaped and still need
+      run-aware visual order. Capture focused vendor cards and multilingual
+      oracle frames before claiming full visual parity.
 
 - [ ] Live setting values and `setting:`/`set:`: the live cards use the p0/03
       values (NATURAL/MAXIMUM_STR/ZOOM_MODE_16_9), not live settings

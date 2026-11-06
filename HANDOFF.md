@@ -114,13 +114,18 @@ item cell 199,274 240x140; unfocused row AE=0 and 300 ms card2 bounds
 runtime key/timer and scanout remain. QEMU-UI-LAYOUT.
 
 Live sub-launcher/i18n, 2026-11-06: font3 labels/font12 values; clean card
-backgrounds + live Dutch text within4 px of the capture (most≤1 px).
+backgrounds + live Dutch text within4 px of the capture (most≤2 px).
 `mod_i18n` resolves all41 langprofile locales with current→eng→key fallback;
-U+202C etc. are stripped (no BiDi reorder). Audit: 0 missing glyphs, 3 labels
-clip at235 px (bul253, lit239, ukr264), values max183. Runtime Left/Right uses
-`ui.clock` +10 ms timer for300 ms; QEMU `key 22` through the real IR parser
-card0 bottom405→450. `mod_i18n` has the ABI3 async quiesce gate; `ir`/`i18n`
-are the async modules. RTL shaping, vendor fit, live values, other async
+U+202C etc. are stripped. The row box is the vendor 240x54 `text1` at
+`runtime_item_x`199; the row sets `setElipses(false)` on the label (clip) and
+`setElipses(true)` on the value (elide), no shrink-to-fit. Audit:0 missing
+glyphs; at240 px only bul253 and ukr264 clip (lit239 fits), values max183.
+Profile Hebrew is stored visual order, so draw it as stored (Dictionary's
+reorder targets the vendor RTL engine); QEMU heb shows מצב/חסכון בחשמל/
+קירוב והרחקה של תמונה/טבעי/מקסימום/16:9. Runtime Left/Right uses `ui.clock`
++10 ms timer for300 ms; QEMU `key 22` through the real IR parser card0
+bottom405→450. `mod_i18n` has the ABI3 async quiesce gate; `ir`/`i18n` are the
+async modules. Arabic/Persian visual order/shaping, live values, other async
 modules and scanout remain. LIVE-SUBLAUNCHER-I18N.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over

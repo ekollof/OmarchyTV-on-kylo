@@ -1,0 +1,172 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (711 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1686 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '_ZN10SVGSurface8drawTextERK7UStringibi19rgba_drawing_colourS3_bNS_10TEXT_ALIGNEjjjibi'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN10SVGSurface8drawTextERK7UStringibi19rgba_drawing_colourS3_bNS_10TEXT_ALIGNEjjjibi -> SVGSurface::drawText @ 00eedfe4 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined drawText(UString * param_1, int param_2, bool param_3, int param_4, rgba_drawing_colour param_5, rgba_drawing_colour param_6, bool param_7, TEXT_ALIGN param_8, uint param_9, uint param_10, uint param_11, int param_12, bool param_13, int param_14) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SVGSurface::drawText(UString const&, int, bool, int, rgba_drawing_colour, rgba_drawing_colour,
+   bool, SVGSurface::TEXT_ALIGN, unsigned int, unsigned int, unsigned int, int, bool, int) */
+
+void __thiscall
+SVGSurface::drawText
+          (SVGSurface *this,UString *param_1,undefined4 param_2,int param_4_00,undefined4 param_4,
+          undefined4 param_6,undefined4 param_7,bool param_8,undefined4 param_9,undefined4 param_10,
+          undefined4 param_11,undefined4 param_12,int param_13,bool param_14,undefined4 param_15)
+
+{
+  int *piVar1;
+  int iVar2;
+  undefined4 local_90;
+  undefined4 local_8c [2];
+  undefined4 local_84;
+  undefined4 local_80;
+  undefined4 local_7c;
+  undefined4 local_78;
+  undefined4 local_74;
+  undefined4 local_70;
+  undefined1 local_6c;
+  undefined1 local_6b;
+  undefined4 local_68;
+  undefined4 local_64;
+  undefined4 local_60;
+  undefined1 local_5c;
+  undefined4 local_58;
+  undefined4 local_54 [2];
+  undefined4 local_4c;
+  undefined4 local_48;
+  undefined4 local_44;
+  undefined4 local_40;
+  undefined4 local_3c;
+  undefined4 local_38;
+  undefined4 local_34;
+  uint local_30;
+  int local_2c;
+
+  piVar1 = DAT_00eee148;
+  local_8c[0] = param_6;
+  local_90 = param_7;
+  local_2c = *DAT_00eee148;
+  local_4c = param_4;
+  local_38 = 1;
+  local_34 = 0;
+  switch(param_9) {
+  case 3:
+    local_34 = 1;
+    goto LAB_00eee058;
+  case 5:
+    local_34 = 0;
+    break;
+  case 6:
+    local_34 = 0;
+LAB_00eee058:
+    local_38 = 2;
+    goto LAB_00eee062;
+  case 7:
+    local_34 = 2;
+  default:
+    goto LAB_00eee062;
+  case 8:
+    local_38 = 2;
+  case 2:
+    local_34 = local_38;
+    break;
+  case 9:
+    local_38 = 2;
+  case 1:
+    local_34 = local_38;
+    goto LAB_00eee062;
+  }
+  local_38 = 0;
+LAB_00eee062:
+  local_30 = (uint)(param_4_00 != 0);
+  local_74 = param_12;
+  local_7c = param_10;
+  local_48 = param_15;
+  local_78 = param_11;
+  local_44 = 0;
+  local_40 = 0;
+  local_3c = 0;
+  local_54[0] = param_2;
+  local_84 = rgba_drawing_colour::convertEASIColour((rgba_drawing_colour *)&local_90);
+  local_80 = rgba_drawing_colour::convertEASIColour((rgba_drawing_colour *)local_8c);
+  if ((((*(int **)(this + 8) != (int *)0x0) &&
+       (iVar2 = (**(code **)(**(int **)(this + 8) + 0xc))(), iVar2 != 0)) &&
+      (local_80._0_1_ == (EASIColour)0xff)) && (local_84._0_1_ != (EASIColour)0xff)) {
+    local_80 = CONCAT31(local_80._1_3_,0xa5);
+  }
+  local_6c = 0;
+  local_70 = 1;
+  local_6b = 0;
+  local_68 = 0;
+  local_64 = 0;
+  local_60 = 0;
+  local_5c = 0;
+  local_58 = 0;
+  if (param_13 != -1) {
+    local_6b = 3;
+    local_68 = 2;
+    local_60 = 0xfffffff9;
+  }
+  if (*(UISurface **)(this + 4) != (UISurface *)0x0) {
+    UISurface::drawText(*(UISurface **)(this + 4),param_1,(UITextStyle *)local_54,param_8,
+                        (UITextRenderInfo *)&local_7c,(UICursorStyle *)&local_70,param_13,
+                        (EASIColour *)&local_80,(EASIColour *)&local_84,3,true,param_14);
+  }
+  if (local_2c == *piVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(local_7c);
+}
+
+ (GhidraScript)

@@ -1,0 +1,575 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (618 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1639 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '_ZN10SVGTextBox16renderForegroundEv' '_ZN10SVGTextBox11drawTextBoxEv' '_ZN9UISurfaceImpl8drawTextERK7UStringRK11UITextStylebPN9UISurface16UITextRenderInfoEP13UICursorStyleiP10EASIColourSC_ibb'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN10SVGTextBox16renderForegroundEv -> SVGTextBox::renderForeground @ 010c7a00 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined renderForeground(void) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SVGTextBox::renderForeground() */
+
+void __thiscall SVGTextBox::renderForeground(SVGTextBox *this)
+
+{
+  SVGTextBox SVar1;
+  SVGTextBox SVar2;
+  int *piVar3;
+  int iVar4;
+  int *piVar5;
+  undefined4 uVar6;
+  int iVar7;
+  EASIControlInterface *pEVar8;
+  UIResourceManager *pUVar9;
+  int iVar10;
+  int iVar11;
+  uint uVar12;
+  AnimationHelper *this_00;
+  UIWindowBuilder *pUVar13;
+  int iVar14;
+  UString *pUVar15;
+  SVGSurface *this_01;
+  uint uVar16;
+  SVGSurface *this_02;
+  UString aUStack_18c [8];
+  UString aUStack_184 [8];
+  UString aUStack_17c [8];
+  UString aUStack_174 [8];
+  UString aUStack_16c [8];
+  UString aUStack_164 [8];
+  UString aUStack_15c [8];
+  UString aUStack_154 [8];
+  UString aUStack_14c [8];
+  UString aUStack_144 [8];
+  UString aUStack_13c [8];
+  UString aUStack_134 [8];
+  UString aUStack_12c [8];
+  UString aUStack_124 [8];
+  UString aUStack_11c [8];
+  UString aUStack_114 [8];
+  UString aUStack_10c [8];
+  UString aUStack_104 [8];
+  UString aUStack_fc [8];
+  UString aUStack_f4 [8];
+  UString aUStack_ec [8];
+  UString aUStack_e4 [8];
+  UString aUStack_dc [8];
+  int local_d4;
+  int local_d0;
+  undefined4 local_cc;
+  undefined4 local_c8;
+  undefined4 local_c4;
+  undefined4 local_c0;
+  int local_bc;
+  int local_b8;
+  int local_b4;
+  int local_b0;
+  EASIPoint aEStack_ac [16];
+  int local_9c;
+  undefined4 uStack_98;
+  undefined4 uStack_94;
+  undefined4 uStack_90;
+  int local_8c;
+  int local_88;
+  int local_84;
+  int local_80;
+  RectangleDescription aRStack_7c [8];
+  int local_74;
+  int local_70;
+  int local_6c;
+  int local_68;
+  undefined4 local_64;
+  undefined4 local_5c;
+  int local_58;
+  int local_54;
+  int local_50;
+  int local_4c;
+  undefined4 uStack_48;
+  undefined4 uStack_44;
+  undefined4 uStack_40;
+  undefined4 local_30;
+  int local_2c;
+
+  piVar3 = DAT_010c7d90;
+  local_2c = *DAT_010c7d90;
+  RectangleDescription::RectangleDescription(aRStack_7c,(RectangleDescription *)(this + 0x1ec));
+  local_bc = local_74;
+  local_b8 = local_70;
+  local_b0 = local_68;
+  local_b4 = local_6c;
+  (**(code **)(*(int *)this + 0x28))(aEStack_ac,this);
+  this_02 = (SVGSurface *)(this + 0x1d4);
+  EASIRect::offset((EASIRect *)&local_bc,aEStack_ac);
+  iVar4 = SVGSurface::resizeUISurface(this_02,(EASIRect *)&local_bc);
+  if (iVar4 == 0) goto LAB_010c8030;
+  if (this[0x210] != (SVGTextBox)0x0) {
+    local_64 = *(undefined4 *)(this + 0x211);
+    local_5c = *(undefined4 *)(this + 0x215);
+  }
+  if ((this[0x21a] == (SVGTextBox)0x0) && (this[0x219] != (SVGTextBox)0x0)) {
+    piVar5 = (int *)SVGContext::getFontFinder(*(SVGContext **)(this + 0x68));
+    uVar6 = (**(code **)(*piVar5 + 8))
+                      (piVar5,local_68 - local_70,*(undefined4 *)(this + 0x1b4),
+                       *(undefined4 *)(this + 0x1c4));
+    *(undefined4 *)(this + 0x21c) = uVar6;
+    this[0x219] = (SVGTextBox)0x0;
+  }
+  iVar7 = UIFramework::isTranslationFitCheckOptionEnabled(*(UIFramework **)(this + 4));
+  if (iVar7 != 0) {
+    pUVar15 = (UString *)(this + 0xa4);
+    iVar7 = ::operator!=(pUVar15,DAT_010c7d94);
+    if (iVar7 != 0) {
+      memset(&local_9c,0,0x10);
+      local_58 = *(int *)(this + 0x21c);
+      local_50 = 0;
+      local_4c = local_9c;
+      uStack_48 = uStack_98;
+      uStack_44 = uStack_94;
+      uStack_40 = uStack_90;
+      pUVar13 = (UIWindowBuilder *)UIFramework::windowBuilder(*(UIFramework **)(this + 4));
+      iVar7 = UIWindowBuilder::calculateTextWidth(pUVar13,pUVar15,(UITextStyle *)&local_58,true);
+      local_80 = local_b0;
+      local_8c = local_bc;
+      local_88 = local_b8;
+      local_84 = local_b4;
+      if ((*(uint *)(this + 0x220) < 10) &&
+         (uVar16 = 1 << (*(uint *)(this + 0x220) & 0xff), (uVar16 & 0x92) == 0)) {
+        if ((uVar16 & 0x248) == 0) {
+          if ((uVar16 & 0x124) == 0) goto LAB_010c7b28;
+          local_84 = local_bc + (local_b4 - local_bc) / 2;
+          local_8c = local_84 - iVar7 / 2;
+          local_84 = local_84 + iVar7 / 2;
+        }
+        else {
+          local_8c = local_b4 - iVar7;
+        }
+      }
+      else {
+LAB_010c7b28:
+        local_84 = local_bc + iVar7;
+      }
+      UString::UString(aUStack_18c,pUVar15);
+      UString::UString(aUStack_184,DAT_010c7d98);
+      UString::UString(aUStack_17c,DAT_010c7d9c);
+      UString::replace(aUStack_18c,aUStack_184,aUStack_17c,0);
+      UString::~UString(aUStack_17c);
+      UString::~UString(aUStack_184);
+      if (local_b4 - local_bc < iVar7) {
+        if (*(int *)(this + 0xac) == 0) {
+          pUVar15 = (UString *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+          operator+((char *)aUStack_124,DAT_010c8118);
+          operator+(aUStack_11c,(char *)aUStack_124);
+          SVGWindow::getStateName((SVGWindow *)this);
+          operator+(aUStack_114,(char *)aUStack_11c);
+          operator+(aUStack_10c,(char *)aUStack_114);
+          EASIControlInterface::sendReplyToRobotester(pUVar15);
+          UString::~UString(aUStack_10c);
+          UString::~UString(aUStack_114);
+          UString::~UString(aUStack_11c);
+          UString::~UString(aUStack_124);
+        }
+        else {
+          local_d4 = 0;
+          local_d0 = 0;
+          local_cc = 0;
+          local_c8 = 0;
+          local_c4 = 0;
+          local_c0 = 0;
+          UString::UString(aUStack_e4);
+          pUVar9 = (UIResourceManager *)UIFramework::resourceManager(*(UIFramework **)(this + 4));
+          UIResourceManager::lookupAllTranslations
+                    (pUVar9,*(char **)(this + 0xac),(vector *)&local_d4);
+          pUVar9 = (UIResourceManager *)UIFramework::resourceManager(*(UIFramework **)(this + 4));
+          UIResourceManager::lookupAllLanguages(pUVar9,(vector *)&local_c8);
+          pUVar15 = DAT_010c7db8;
+          for (uVar16 = 0; uVar16 < (uint)(local_d0 - local_d4 >> 3); uVar16 = uVar16 + 1) {
+            pUVar13 = (UIWindowBuilder *)UIFramework::windowBuilder(*(UIFramework **)(this + 4));
+            iVar7 = UIWindowBuilder::calculateTextWidth
+                              (pUVar13,(UString *)(local_d4 + uVar16 * 8),(UITextStyle *)&local_58,
+                               true);
+            if (local_b4 - local_bc < iVar7) {
+              operator+((char *)aUStack_174,pUVar15);
+              UString::operator+=(aUStack_e4,aUStack_174);
+              UString::~UString(aUStack_174);
+              operator+((char *)aUStack_16c,DAT_010c7da0);
+              UString::operator+=(aUStack_e4,aUStack_16c);
+              UString::~UString(aUStack_16c);
+            }
+          }
+          UString::UString(aUStack_dc,*(char **)(this + 0xac));
+          pUVar15 = (UString *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+          operator+((char *)aUStack_164,DAT_010c7da4);
+          operator+(aUStack_15c,(char *)aUStack_164);
+          SVGContainer::getName(*(SVGContainer **)(this + *(int *)(this + 0x6c) * 4 + 0x74));
+          operator+(aUStack_154,aUStack_15c);
+          operator+(aUStack_14c,(char *)aUStack_154);
+          SVGWindow::getStateName((SVGWindow *)this);
+          operator+(aUStack_144,(char *)aUStack_14c);
+          operator+(aUStack_13c,(char *)aUStack_144);
+          operator+(aUStack_134,aUStack_13c);
+          operator+(aUStack_12c,(char *)aUStack_134);
+          EASIControlInterface::sendReplyToRobotester(pUVar15);
+          UString::~UString(aUStack_12c);
+          UString::~UString(aUStack_134);
+          UString::~UString(aUStack_13c);
+          UString::~UString(aUStack_144);
+          UString::~UString(aUStack_14c);
+          UString::~UString(aUStack_154);
+          UString::~UString(aUStack_15c);
+          UString::~UString(aUStack_164);
+          UString::~UString(aUStack_dc);
+          UString::~UString(aUStack_e4);
+          std::vector<UString,std::allocator<UString>>::~vector
+                    ((vector<UString,std::allocator<UString>> *)&local_c8);
+          std::vector<UString,std::allocator<UString>>::~vector
+                    ((vector<UString,std::allocator<UString>> *)&local_d4);
+        }
+        iVar7 = SVGSurface::resizeUISurface((SVGSurface *)(this + 0x1e0),(EASIRect *)&local_8c);
+        if (iVar7 == 0) {
+LAB_010c8028:
+          UString::~UString(aUStack_18c);
+          goto LAB_010c8030;
+        }
+        local_d4 = -0xffff01;
+        local_c8 = 0xff009b9b;
+        SVGSurface::drawRectangle
+                  ((SVGSurface *)(this + 0x1e0),0,(rgba_drawing_colour *)&local_d4,
+                   (rgba_drawing_colour *)&local_d4,0,0,local_84 - local_8c,local_80 - local_88);
+        iVar11 = local_b0 - local_b8;
+        iVar14 = 0;
+        iVar7 = local_b4 - local_bc;
+        iVar10 = 0;
+LAB_010c7ea0:
+        SVGSurface::drawRectangle
+                  ((SVGSurface *)(this + 0x1e0),5,(rgba_drawing_colour *)&local_d4,
+                   (rgba_drawing_colour *)&local_c8,iVar14,iVar10,iVar7,iVar11);
+      }
+      else if (0 < iVar7) {
+        this_01 = (SVGSurface *)(this + 0x1e0);
+        if (iVar7 < (local_b4 - local_bc) + -0x32) {
+          pUVar15 = (UString *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+          operator+((char *)aUStack_104,DAT_010c8664);
+          operator+(aUStack_fc,(char *)aUStack_104);
+          SVGWindow::getStateName((SVGWindow *)this);
+          operator+(aUStack_f4,(char *)aUStack_fc);
+          operator+(aUStack_ec,(char *)aUStack_f4);
+          EASIControlInterface::sendReplyToRobotester(pUVar15);
+          UString::~UString(aUStack_ec);
+          UString::~UString(aUStack_f4);
+          UString::~UString(aUStack_fc);
+          UString::~UString(aUStack_104);
+          iVar7 = SVGSurface::resizeUISurface(this_01,(EASIRect *)&local_bc);
+          if (iVar7 == 0) goto LAB_010c8028;
+          local_d4 = -0x10000;
+          local_c8 = 0xff009b9b;
+          SVGSurface::drawRectangle
+                    (this_01,0,(rgba_drawing_colour *)&local_c8,(rgba_drawing_colour *)&local_c8,0,0
+                     ,local_b4 - local_bc,local_b0 - local_b8);
+          iVar11 = local_80 - local_88;
+          iVar7 = local_84 - local_8c;
+          iVar10 = local_88 - local_b8;
+          iVar14 = local_8c - local_bc;
+          goto LAB_010c7ea0;
+        }
+        pUVar15 = (UString *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+        operator+((char *)aUStack_e4,DAT_010c8124);
+        operator+(aUStack_dc,(char *)aUStack_e4);
+        SVGWindow::getStateName((SVGWindow *)this);
+        operator+((UString *)&local_d4,(char *)aUStack_dc);
+        operator+((UString *)&local_c8,(char *)&local_d4);
+        EASIControlInterface::sendReplyToRobotester(pUVar15);
+        UString::~UString((UString *)&local_c8);
+        UString::~UString((UString *)&local_d4);
+        UString::~UString(aUStack_dc);
+        UString::~UString(aUStack_e4);
+        SVGSurface::clearUISurface(this_01);
+      }
+      UString::~UString(aUStack_18c);
+    }
+  }
+  pEVar8 = (EASIControlInterface *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+  iVar7 = EASIControlInterface::getOSDHorizontalMirror(pEVar8);
+  pEVar8 = (EASIControlInterface *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+  local_30 = EASIControlInterface::getSystemLanguage(pEVar8);
+  iVar10 = ::operator==((LanguageCode *)&local_30,DAT_010c8128);
+  if ((iVar10 == 0) && (iVar10 = ::operator==((LanguageCode *)&local_30,DAT_010c812c), iVar10 == 0))
+  {
+    iVar11 = ::operator==((LanguageCode *)&local_30,DAT_010c8130);
+    iVar10 = 0;
+    if (iVar11 != 0) goto LAB_010c80d2;
+  }
+  else {
+LAB_010c80d2:
+    ArabicShaping::ArabicShaping((ArabicShaping *)&local_58);
+    if ((*(uint *)(this + 0x228) & 0xfffffffd) == 0) {
+      iVar10 = ArabicShaping::isStringArabic((ArabicShaping *)&local_58,(UString *)(this + 0xa4));
+      if (iVar10 == 0) {
+        iVar10 = ArabicShaping::isStringHebrew((ArabicShaping *)&local_58,(UString *)(this + 0xa4));
+      }
+    }
+    else {
+      iVar10 = 0;
+    }
+    ArabicShaping::~ArabicShaping((ArabicShaping *)&local_58);
+    iVar7 = iVar4;
+  }
+  uVar16 = *(uint *)(this + 0x220);
+  if (iVar7 != 0) {
+    if (uVar16 < 10) {
+      uVar12 = 1 << (uVar16 & 0xff);
+      if ((uVar12 & 0x36c) == 0) {
+        if ((int)(uVar12 << 0x18) < 0) {
+          uVar16 = 9;
+        }
+        else if ((uVar12 & 2) == 0) {
+          uVar16 = 6;
+        }
+        else {
+          uVar16 = 3;
+        }
+      }
+    }
+    else {
+      uVar16 = 6;
+    }
+    if (*(uint *)(this + 0x22c) != 0) {
+      uVar16 = *(uint *)(this + 0x22c);
+    }
+  }
+  pUVar15 = (UString *)(this + 0x230);
+  iVar4 = UString::length(pUVar15);
+  if (iVar4 == 0) {
+    if (iVar7 == 0) {
+LAB_010c8174:
+      if (uVar16 == 5) {
+        if (this[0x1b0] == (SVGTextBox)0x0) goto LAB_010c8638;
+        goto LAB_010c8184;
+      }
+    }
+    else if (this[0x1b0] == (SVGTextBox)0x0) {
+      if (*(int *)(this + 0x1b4) < 2) {
+        UString::UString((UString *)&local_58,DAT_010c84a4);
+        UString::countOccurrences((UString *)(this + 0xa4),(UString *)&local_58);
+        UString::~UString((UString *)&local_58);
+        goto LAB_010c8174;
+      }
+      if (uVar16 != 5) goto LAB_010c8188;
+LAB_010c8638:
+      if (*(int *)(this + 0x1b4) < 2) {
+        piVar5 = (int *)SVGContext::getFontFinder(*(SVGContext **)(this + 0x68));
+        uVar6 = (**(code **)(*piVar5 + 8))
+                          (piVar5,*(int *)(this + 0x200) - *(int *)(this + 0x1f8),1,
+                           *(undefined4 *)(this + 0x1c4));
+        iVar4 = calculateTextWidth(this,this + 0xa4,uVar6,this[0x1b1],local_b0 - local_b8,local_64,
+                                   local_5c,this[0x1b0],1,local_b0 - local_b8,local_b4 - local_bc);
+        if (local_b4 - local_bc < iVar4) {
+          if (iVar7 == 0) {
+            uVar16 = 4;
+          }
+          else {
+            uVar16 = 6;
+          }
+          goto LAB_010c8188;
+        }
+      }
+LAB_010c8184:
+      uVar16 = 5;
+    }
+    else if (uVar16 == 5) goto LAB_010c8184;
+LAB_010c8188:
+    if (*(int *)(this + 0x1b4) != 0) {
+      if (0 < *(int *)(this + 0x1b4)) {
+        uVar6 = FUN_01285478(local_68 - local_70);
+        *(undefined4 *)(this + 0x1c0) = uVar6;
+        if (this[0x2b0] == (SVGTextBox)0x0) {
+          *(undefined4 *)(this + 0x2a8) = 0;
+        }
+        else {
+          this_00 = (AnimationHelper *)SVGContext::getAnimationHelper(*(SVGContext **)(this + 0x68))
+          ;
+          uVar6 = AnimationHelper::calculateSlidingMargin
+                            (this_00,*(uint *)(this + 0x2b4),*(float *)(this + 0x2b8),
+                             *(int *)(this + 0x2ac),SUB41(iVar7,0));
+          uVar16 = 4;
+          *(undefined4 *)(this + 0x2a8) = uVar6;
+        }
+        uVar6 = SVGSurface::drawText
+                          (this_02,this + 0xa4,*(undefined4 *)(this + 0x21c),this[0x1b1],
+                           *(undefined4 *)(this + 0x1c0),local_64,local_5c,this[0x1b0],uVar16,
+                           *(undefined4 *)(this + 0x1b4),local_68 - local_70,local_6c - local_74,
+                           0xffffffff,iVar10,-*(int *)(this + 0x2a8));
+        *(undefined4 *)(this + 0x1b8) = uVar6;
+        updateScrollbar(this);
+      }
+      goto LAB_010c8030;
+    }
+    *(int *)(this + 0x1c0) = local_68 - local_70;
+    SVar1 = this[0x1b1];
+    local_6c = local_6c - local_74;
+    SVar2 = this[0x1b0];
+    iVar4 = 0;
+    uVar6 = 0;
+    iVar7 = local_68 - local_70;
+  }
+  else {
+    local_8c = local_bc;
+    local_88 = local_b8;
+    local_84 = local_b4;
+    local_80 = local_b0;
+    piVar5 = (int *)SVGContext::getFontFinder(*(SVGContext **)(this + 0x68));
+    uVar6 = (**(code **)(*piVar5 + 8))
+                      (piVar5,*(int *)(this + 0x200) - *(int *)(this + 0x1f8),1,
+                       *(undefined4 *)(this + 0x1c4));
+    iVar4 = calculateTextWidth(this,pUVar15,uVar6,this[0x1b1],local_80 - local_88,local_64,local_5c,
+                               this[0x1b0],1,local_80 - local_88,local_84 - local_8c);
+    local_84 = iVar4 + local_8c;
+    if (iVar7 != 0) {
+      iVar11 = (local_b4 - local_bc) - iVar4;
+      local_8c = local_8c + iVar11;
+      local_84 = iVar11 + local_84;
+    }
+    iVar11 = SVGSurface::resizeUISurface((SVGSurface *)(this + 0x238),(EASIRect *)&local_8c);
+    if (iVar11 == 0) goto LAB_010c8030;
+    uVar6 = SVGSurface::drawText
+                      ((SVGSurface *)(this + 0x238),pUVar15,*(undefined4 *)(this + 0x21c),
+                       this[0x1b1],local_80 - local_88,local_64,local_5c,this[0x1b0],uVar16,1,
+                       local_80 - local_88,local_84 - local_8c,0xffffffff,iVar10,0);
+    *(undefined4 *)(this + 0x1b8) = uVar6;
+    local_54 = local_b8;
+    local_50 = local_b4 - iVar4;
+    local_58 = local_bc;
+    local_4c = local_b0;
+    if (iVar7 == 0) {
+      local_58 = local_bc + iVar4;
+      local_50 = iVar4 + local_50;
+    }
+    iVar4 = SVGSurface::resizeUISurface(this_02,(EASIRect *)&local_58);
+    if (iVar4 == 0) goto LAB_010c8030;
+    SVar1 = this[0x1b1];
+    iVar4 = local_4c - local_54;
+    local_6c = local_50 - local_58;
+    uVar6 = 1;
+    SVar2 = this[0x1b0];
+    iVar7 = iVar4;
+  }
+  uVar6 = SVGSurface::drawText
+                    (this_02,this + 0xa4,*(undefined4 *)(this + 0x21c),SVar1,iVar4,local_64,local_5c
+                     ,SVar2,uVar16,uVar6,iVar7,local_6c,0xffffffff,iVar10,0);
+  *(undefined4 *)(this + 0x1b8) = uVar6;
+LAB_010c8030:
+  UString::~UString((UString *)aRStack_7c);
+  if (local_2c != *piVar3) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN10SVGTextBox11drawTextBoxEv -> SVGTextBox::drawTextBox @ 010c87e8 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined drawTextBox(void) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SVGTextBox::drawTextBox() */
+
+void __thiscall SVGTextBox::drawTextBox(SVGTextBox *this)
+
+{
+  int *piVar1;
+  int iVar2;
+  UIAnimationController *this_00;
+  int iVar3;
+  float fVar4;
+
+  piVar1 = DAT_010c8884;
+  iVar3 = *DAT_010c8884;
+  *(undefined4 *)(this + 0x294) = *(undefined4 *)(this + 0x284);
+  *(undefined4 *)(this + 0x298) = *(undefined4 *)(this + 0x288);
+  *(undefined4 *)(this + 0x29c) = *(undefined4 *)(this + 0x28c);
+  *(undefined4 *)(this + 0x2a0) = *(undefined4 *)(this + 0x290);
+  this[0x219] = (SVGTextBox)0x1;
+  (**(code **)(*(int *)this + 0x50))(this);
+  iVar2 = UString::length((UString *)(this + 0xa4));
+  if (iVar2 != 0) {
+    (**(code **)(*(int *)this + 0x54))(this);
+  }
+  drawAnimatedRectangle(this);
+  iVar2 = SVGWindow::getAnimationEnabled((SVGWindow *)this);
+  if (iVar2 != 0) {
+    fVar4 = (float)getAnimationDuration(this);
+    if (1.0 < fVar4) {
+      this_00 = (UIAnimationController *)
+                UIFramework::animationController(*(UIFramework **)(this + 4));
+      UIAnimationController::startAnimation(this_00,(UIAnimationTarget *)(this + 0x98),fVar4);
+    }
+  }
+  if (iVar3 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+ERROR REPORT SCRIPT ERROR:  (HeadlessAnalyzer) java.lang.IllegalArgumentException: No function for exact query: _ZN9UISurfaceImpl8drawTextERK7UStringRK11UITextStylebPN9UISurface16UITextRenderInfoEP13UICursorStyleiP10EASIColourSC_ibb
+	at DumpFirmware.run(DumpFirmware.java:83)
+	at ghidra.app.script.GhidraScript.executeNormal(GhidraScript.java:460)
+	at ghidra.app.script.GhidraScript.doExecute(GhidraScript.java:314)
+	at ghidra.app.script.GhidraScript.execute(GhidraScript.java:290)
+	at ghidra.app.util.headless.HeadlessAnalyzer.runScript(HeadlessAnalyzer.java:597)
+	at ghidra.app.util.headless.HeadlessAnalyzer.runScriptsList(HeadlessAnalyzer.java:941)
+	at ghidra.app.util.headless.HeadlessAnalyzer.analyzeProgram(HeadlessAnalyzer.java:1097)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processFileNoImport(HeadlessAnalyzer.java:1195)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processFolderNoImport(HeadlessAnalyzer.java:1367)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1396)
+	at ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)
+	at ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)
+	at ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)
+	at ghidra.Ghidra.main(Ghidra.java:54)

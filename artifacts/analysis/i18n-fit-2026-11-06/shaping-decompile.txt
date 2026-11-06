@@ -1,0 +1,573 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (691 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1664 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '_ZN10DictionaryC1EPcPKcS2_' '_ZN32RightAlignedLanguageTextReverser7reverseE7UStringi' '_ZN32RightAlignedLanguageTextReverser13reverseStringE7UString' '_ZN13ArabicShaping11shapeStringERK7UStringRS0_b' '_ZNK13ArabicShaping16getShapedUstringER7UStringPjjb'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN10DictionaryC1EPcPKcS2_ -> Dictionary::Dictionary @ 011fa68c (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined Dictionary(char * param_1, char * param_2, char * param_3) (GhidraScript)
+INFO  DumpFirmware.java>
+/* Dictionary::Dictionary(char*, char const*, char const*) */
+
+void __thiscall Dictionary::Dictionary(Dictionary *this,char *param_1,char *param_2,char *param_3)
+
+{
+  int *piVar1;
+  undefined4 uVar2;
+  Dictionary DVar3;
+  void *pvVar4;
+  uint uVar5;
+  undefined4 *puVar6;
+  undefined4 *puVar7;
+  size_t sVar8;
+  int iVar9;
+  char *pcVar10;
+  size_t sVar11;
+  char *__dest;
+  int iVar12;
+  uint uVar13;
+  char *pcVar14;
+  char *pcVar15;
+  uint uVar16;
+  int iVar17;
+  int iVar18;
+  int local_5c;
+  int local_58;
+  char *local_54;
+  int local_50;
+  int local_4c;
+  ArabicShaping aAStack_44 [8];
+  UString aUStack_3c [8];
+  UString aUStack_34 [8];
+  int local_2c;
+
+  uVar2 = DAT_011fa97c;
+  piVar1 = DAT_011fa978;
+  uVar16 = 0;
+  *(undefined4 *)(this + 4) = 0;
+  local_2c = *piVar1;
+  *(undefined4 *)(this + 8) = 0;
+  *(undefined4 *)this = uVar2;
+  *(undefined4 *)(this + 0xc) = 0;
+  *(undefined4 *)(this + 0x10) = 0;
+  *(undefined4 *)(this + 0x14) = 0;
+  this[0x40] = (Dictionary)0x0;
+  *(char **)(this + 0x44) = param_1;
+  DVar3 = (Dictionary)isDictionaryMultiLanguageEnabled();
+  this[0x41] = DVar3;
+  strncpy((char *)(this + 0x18),param_2,0x14);
+  this[0x2b] = (Dictionary)0x0;
+  uVar5 = DAT_011fa980;
+  uVar13 = *(uint *)param_1;
+  *(uint *)(this + 4) = uVar13;
+  *(undefined4 *)(this + 8) = *(undefined4 *)(param_1 + 4);
+  if (uVar5 < uVar13) goto LAB_011fa72a;
+  pvVar4 = operator_new__(uVar13 * 0xc);
+  uVar16 = *(uint *)(this + 8);
+  *(void **)(this + 0x14) = pvVar4;
+  if (uVar16 < 0x10000000) goto LAB_011fa72e;
+  uVar5 = 0xffffffff;
+LAB_011fa704:
+  puVar6 = operator_new__(uVar5);
+  *puVar6 = 8;
+  puVar6[1] = uVar16;
+  puVar7 = puVar6 + 2;
+  while( true ) {
+    uVar5 = DAT_011fa984;
+    uVar16 = uVar16 - 1;
+    if ((int)uVar16 < 0) break;
+    puVar7[1] = 0;
+    *puVar7 = 0;
+    puVar7 = puVar7 + 2;
+  }
+  uVar16 = 0;
+  *(undefined4 **)(this + 0x10) = puVar6 + 2;
+  do {
+    if (*(int *)(this + 8) <= (int)uVar16) {
+      local_54 = param_1 + *(int *)(this + 8) * 8 + 8;
+      local_4c = 0;
+      local_5c = 0;
+      local_58 = 0;
+      for (iVar18 = 0; iVar18 < *(int *)(this + 4); iVar18 = iVar18 + 1) {
+        iVar17 = iVar18 * 0xc;
+        *(char **)(*(int *)(this + 0x14) + iVar17) = local_54;
+        iVar12 = *(int *)(this + 0x14);
+        pcVar14 = *(char **)(iVar12 + iVar17);
+        sVar8 = strlen(pcVar14);
+        *(char **)(iVar12 + iVar17 + 4) = pcVar14 + sVar8 + 1;
+        iVar12 = *(int *)(this + 0x14);
+        pcVar14 = *(char **)(iVar12 + iVar17 + 4);
+        sVar8 = strlen(pcVar14);
+        *(char **)(iVar12 + iVar17 + 8) = pcVar14 + sVar8 + 1;
+        iVar12 = *(int *)(this + 0x14);
+        local_54 = *(char **)(iVar17 + iVar12 + 8);
+        sVar8 = strlen(local_54);
+        pcVar14 = *(char **)(iVar17 + iVar12 + 4);
+        local_54 = local_54 + sVar8 + 1;
+        iVar9 = strcmp(pcVar14,DAT_011fa988);
+        iVar12 = local_5c;
+        iVar17 = iVar18;
+        if (((iVar9 != 0) &&
+            (iVar9 = strcmp(pcVar14,DAT_011fa98c), iVar12 = iVar18, iVar17 = local_58, iVar9 != 0))
+           && (iVar9 = strcmp(pcVar14,DAT_011fa990), iVar12 = local_5c, iVar9 == 0)) {
+          local_4c = iVar18;
+        }
+        local_58 = iVar17;
+        local_5c = iVar12;
+        if ((this[0x41] == (Dictionary)0x0) && (iVar12 = strcmp(param_3,pcVar14), iVar12 == 0)) {
+          *(int *)(this + 0xc) = iVar18;
+          this[0x40] = (Dictionary)0x1;
+        }
+      }
+      pcVar14 = param_1 + 0x10;
+      local_50 = 0;
+      do {
+        if (*(int *)(this + 8) <= local_50) {
+          if (local_2c == *DAT_011faa60) {
+            return;
+          }
+                    /* WARNING: Subroutine does not return */
+          __stack_chk_fail(this);
+        }
+        iVar12 = local_50 * 8;
+        *(undefined4 *)(*(int *)(this + 0x10) + local_50 * 8) = *(undefined4 *)(pcVar14 + -8);
+        pcVar15 = local_54 + *(int *)(pcVar14 + -4);
+        for (iVar18 = 0; iVar18 < *(int *)(this + 4); iVar18 = iVar18 + 1) {
+          if (this[0x41] == (Dictionary)0x0) {
+            if (iVar18 == 0) {
+              *DAT_011faa5c = pcVar15;
+            }
+            sVar8 = strlen(pcVar15);
+            if (iVar18 == *(int *)(this + 0xc)) {
+              pcVar10 = pcVar15;
+              if ((sVar8 + 1 == 1) && (0 < iVar18)) {
+                pcVar10 = (char *)*DAT_011faa5c;
+              }
+              iVar17 = *(int *)(*(int *)(this + 0x10) + iVar12 + 4);
+              sVar11 = strlen(pcVar10);
+              pvVar4 = operator_new__(sVar11 + 1);
+              *(void **)(iVar17 + iVar18 * 4) = pvVar4;
+              __dest = *(char **)(*(int *)(*(int *)(this + 0x10) + iVar12 + 4) + iVar18 * 4);
+              if (__dest != (char *)0x0) {
+                strcpy(__dest,pcVar10);
+              }
+            }
+            pcVar15 = pcVar15 + sVar8 + 1;
+          }
+          else {
+            iVar17 = iVar18 * 4;
+            *(char **)(*(int *)(*(int *)(this + 0x10) + iVar12 + 4) + iVar18 * 4) = pcVar15;
+            if ((local_58 == iVar18) || (local_5c == iVar18)) {
+              if (pcVar15 != (char *)0x0) {
+                if (*pcVar15 != '\0') {
+                  ArabicShaping::ArabicShaping(aAStack_44);
+                  UString::UString(aUStack_3c,DAT_011fa994);
+                  UString::UString(aUStack_34,pcVar15);
+                  ArabicShaping::shapeString(aAStack_44,aUStack_34,aUStack_3c,false);
+                  UString::~UString(aUStack_34);
+                  iVar9 = *(int *)(*(int *)(this + 0x10) + iVar12 + 4);
+                  pcVar15 = *(char **)(iVar9 + iVar17);
+                  sVar8 = strlen(pcVar15);
+                  pcVar15 = pcVar15 + sVar8 + 1;
+                  pcVar10 = (char *)UString::charArray(aUStack_3c);
+                  goto LAB_011fa95a;
+                }
+                if (local_4c == iVar18) goto LAB_011fa8fc;
+              }
+            }
+            else if ((local_4c == iVar18) && (pcVar15 != (char *)0x0)) {
+LAB_011fa8fc:
+              if (*pcVar15 != '\0') {
+                ArabicShaping::ArabicShaping(aAStack_44);
+                UString::UString(aUStack_3c,DAT_011fa994);
+                UString::UString(aUStack_34,pcVar15);
+                ArabicShaping::shapeString(aAStack_44,aUStack_34,aUStack_3c,true);
+                UString::~UString(aUStack_34);
+                iVar9 = *(int *)(*(int *)(this + 0x10) + iVar12 + 4);
+                pcVar15 = *(char **)(iVar9 + iVar17);
+                sVar8 = strlen(pcVar15);
+                pcVar15 = pcVar15 + sVar8 + 1;
+                pcVar10 = (char *)UString::charArray(aUStack_3c);
+LAB_011fa95a:
+                pcVar10 = strdup(pcVar10);
+                *(char **)(iVar9 + iVar17) = pcVar10;
+                UString::~UString(aUStack_3c);
+                ArabicShaping::~ArabicShaping(aAStack_44);
+                goto LAB_011fa972;
+              }
+            }
+            pcVar15 = *(char **)(*(int *)(*(int *)(this + 0x10) + iVar12 + 4) + iVar17);
+            sVar8 = strlen(pcVar15);
+            pcVar15 = pcVar15 + sVar8 + 1;
+          }
+LAB_011fa972:
+        }
+        pcVar14 = pcVar14 + 8;
+        local_50 = local_50 + 1;
+      } while( true );
+    }
+    iVar18 = *(int *)(this + 0x10);
+    if (uVar5 < *(uint *)(this + 4)) break;
+    puVar7 = operator_new__(*(uint *)(this + 4) << 2);
+    *(undefined4 **)(iVar18 + uVar16 * 8 + 4) = puVar7;
+    *(undefined4 *)(iVar18 + uVar16 * 8) = 0;
+    uVar16 = uVar16 + 1;
+    *puVar7 = 0;
+  } while( true );
+LAB_011fa72a:
+  __cxa_throw_bad_array_new_length();
+LAB_011fa72e:
+  uVar5 = (uVar16 + 1) * 8;
+  goto LAB_011fa704;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN32RightAlignedLanguageTextReverser7reverseE7UStringi -> RightAlignedLanguageTextReverser::reverse @ 00d4e3cc (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined reverse(UString param_1, int param_2) (GhidraScript)
+INFO  DumpFirmware.java>
+/* RightAlignedLanguageTextReverser::reverse(UString, int) */
+
+void RightAlignedLanguageTextReverser::reverse
+               (UString *param_1,undefined4 param_2,UString *param_3,undefined4 param_4)
+
+{
+  int *piVar1;
+  int iVar2;
+  char *pcVar3;
+  char *__delim;
+  int iVar4;
+  UString *this;
+  UString aUStack_54 [8];
+  UString aUStack_4c [8];
+  UString aUStack_44 [8];
+  UString aUStack_3c [8];
+  UString aUStack_34 [8];
+  UString aUStack_2c [8];
+  int local_24;
+
+  piVar1 = DAT_00d4e54c;
+  local_24 = *DAT_00d4e54c;
+  UString::UString(param_1,DAT_00d4e550);
+  UString::UString(aUStack_4c,param_3);
+  controlNewLines(aUStack_54,param_2,aUStack_4c);
+  UString::~UString(aUStack_4c);
+  iVar2 = ::operator!=(aUStack_54,DAT_00d4e550);
+  if (iVar2 == 0) {
+    UString::UString(aUStack_34,param_3);
+    reverseLine(aUStack_2c,param_2,aUStack_34,param_4);
+    UString::operator=(param_1,aUStack_2c);
+    UString::~UString(aUStack_2c);
+    this = aUStack_34;
+  }
+  else {
+    UString::UString(aUStack_2c,DAT_00d4e550);
+    pcVar3 = (char *)UString::charArray(param_3);
+    __delim = (char *)UString::charArray(aUStack_54);
+    pcVar3 = strtok(pcVar3,__delim);
+    while( true ) {
+      UString::operator=(aUStack_2c,pcVar3);
+      iVar4 = ::operator!=(aUStack_2c,(char *)0x0);
+      if (iVar4 == 0) break;
+      if (iVar2 == 0) {
+        UString::operator+=(param_1,aUStack_54);
+      }
+      UString::UString(aUStack_44,aUStack_2c);
+      reverseLine(aUStack_3c,param_2,aUStack_44,param_4);
+      UString::operator+=(param_1,aUStack_3c);
+      UString::~UString(aUStack_3c);
+      UString::~UString(aUStack_44);
+      pcVar3 = (char *)UString::charArray(aUStack_54);
+      pcVar3 = strtok((char *)0x0,pcVar3);
+      iVar2 = 0;
+    }
+    this = aUStack_2c;
+  }
+  UString::~UString(this);
+  UString::~UString(aUStack_54);
+  if (local_24 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(param_1);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN32RightAlignedLanguageTextReverser13reverseStringE7UString -> RightAlignedLanguageTextReverser::reverseString @ 00d4dd34 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined reverseString(UString param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* RightAlignedLanguageTextReverser::reverseString(UString) */
+
+void RightAlignedLanguageTextReverser::reverseString
+               (UString *param_1,undefined4 param_2,UString *param_3)
+
+{
+  int *piVar1;
+  int iVar2;
+  UString aUStack_24 [8];
+  int local_1c;
+
+  piVar1 = DAT_00d4ddac;
+  local_1c = *DAT_00d4ddac;
+  UString::UString(param_1,DAT_00d4ddb0);
+  iVar2 = UString::length(param_3);
+  while (iVar2 = iVar2 + -1, -1 < iVar2) {
+    UString::getSubstring((uint)aUStack_24,(uint)param_3);
+    UString::append(param_1,aUStack_24);
+    UString::~UString(aUStack_24);
+  }
+  if (local_1c != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(param_1);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN13ArabicShaping11shapeStringERK7UStringRS0_b -> ArabicShaping::shapeString @ 00c89664 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined shapeString(UString * param_1, UString * param_2, bool param_3) (GhidraScript)
+INFO  DumpFirmware.java>
+/* ArabicShaping::shapeString(UString const&, UString&, bool) */
+
+void __thiscall
+ArabicShaping::shapeString(ArabicShaping *this,UString *param_1,UString *param_2,bool param_3)
+
+{
+  int *piVar1;
+  ushort uVar2;
+  uint uVar3;
+  void *pvVar4;
+  int iVar5;
+  int iVar6;
+  int iVar7;
+  UString *pUVar8;
+  uint *puVar9;
+  uint uVar10;
+  int iVar11;
+  uint uVar12;
+  int unaff_r9;
+  uchar local_45;
+  uint local_44;
+  UString aUStack_40 [8];
+  UString aUStack_38 [8];
+  undefined2 local_30 [2];
+  int local_2c;
+
+  piVar1 = DAT_00c8987c;
+  local_2c = *DAT_00c8987c;
+  clear(this);
+  uVar3 = UString::length(param_1);
+  *(uint *)(this + 4) = uVar3;
+  if (uVar3 != 0) {
+    if (DAT_00c89880 < uVar3) {
+      __cxa_throw_bad_array_new_length();
+    }
+    else {
+      uVar10 = 0;
+      unaff_r9 = 0;
+      pvVar4 = operator_new__(uVar3 << 2);
+      *(void **)this = pvVar4;
+      uVar3 = *(uint *)(this + 4);
+      if (1999 < uVar3) {
+        uVar3 = 2000;
+      }
+      for (; uVar10 != uVar3; uVar10 = uVar10 + 1) {
+        iVar11 = *(int *)this;
+        uVar2 = UString::charAt(param_1,uVar10);
+        *(uint *)(iVar11 + uVar10 * 4) = (uint)uVar2;
+        uVar12 = *(uint *)(*(int *)this + uVar10 * 4);
+        iVar11 = isArabic(uVar12);
+        if ((iVar11 == 0) && (iVar11 = unaff_r9, uVar12 - 0x590 < 0x70)) {
+          iVar11 = 1;
+        }
+        unaff_r9 = iVar11;
+      }
+    }
+    if (unaff_r9 != 0) {
+      uVar3 = 0;
+      local_44 = 0;
+      getLineEndIndex(this,0,&local_44);
+      iVar11 = 0;
+      while (iVar5 = getLineEndIndex(this,uVar3,&local_44), uVar10 = local_44, iVar5 != 0) {
+        puVar9 = (uint *)(*(int *)this + uVar3 * 4);
+        iVar6 = isAnyArabicChar(puVar9,local_44);
+        if (iVar6 == 0) {
+          iVar6 = isAnyHebrewChar(puVar9,uVar10);
+        }
+        UString::UString(aUStack_40);
+        iVar7 = getShapedUstring(this,aUStack_40,(uint *)(*(int *)this + uVar3 * 4),local_44,
+                                 SUB41(iVar6,0));
+        iVar6 = unaff_r9;
+        if (iVar7 != 0) {
+          if (param_3) {
+            UString::append(param_2,aUStack_40);
+          }
+          else {
+            UString::UString(aUStack_38);
+            iVar6 = reverseLine(this,aUStack_40,aUStack_38,false);
+            if (iVar6 == 0) {
+              pUVar8 = aUStack_40;
+            }
+            else {
+              pUVar8 = aUStack_38;
+            }
+            UString::append(param_2,pUVar8);
+            UString::~UString(aUStack_38);
+          }
+          iVar7 = ((1 - local_44) + iVar5) - uVar3;
+          iVar6 = iVar11;
+          if (iVar7 == 1) {
+            local_45 = '\n';
+            if (*(int *)(*(int *)this + iVar5 * 4) == 0xd) {
+              local_45 = '\r';
+            }
+            UString::UString(aUStack_38,&local_45,1);
+            UString::append(param_2,aUStack_38);
+          }
+          else {
+            if (iVar7 != 2) goto LAB_00c897ca;
+            local_30[0] = *DAT_00c89884;
+            UString::UString(aUStack_38,(uchar *)local_30,2);
+            UString::append(param_2,aUStack_38);
+          }
+          UString::~UString(aUStack_38);
+        }
+LAB_00c897ca:
+        uVar3 = iVar5 + 1;
+        UString::~UString(aUStack_40);
+        iVar11 = iVar6;
+      }
+      if (iVar11 == 0) goto LAB_00c8983a;
+    }
+  }
+  UString::UString(aUStack_38,param_1);
+  UString::operator=(param_2,aUStack_38);
+  UString::~UString(aUStack_38);
+LAB_00c8983a:
+  if (local_2c != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZNK13ArabicShaping16getShapedUstringER7UStringPjjb -> ArabicShaping::getShapedUstring @ 00c893a0 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined getShapedUstring(UString * param_1, uint * param_2, uint param_3, bool param_4) (GhidraScript)
+INFO  DumpFirmware.java>
+/* ArabicShaping::getShapedUstring(UString&, unsigned int*, unsigned int, bool) const */
+
+void __thiscall
+ArabicShaping::getShapedUstring
+          (ArabicShaping *this,UString *param_1,uint *param_2,uint param_3,bool param_4)
+
+{
+  int *piVar1;
+  uint *puVar2;
+  int iVar3;
+  uchar *puVar4;
+  uint *unaff_r4;
+  uint uVar5;
+  uint uVar6;
+  undefined4 uVar7;
+  uint local_3c;
+  uchar *local_38;
+  UString aUStack_34 [8];
+  int local_2c;
+
+  piVar1 = DAT_00c894a4;
+  local_2c = *DAT_00c894a4;
+  if (DAT_00c894a8 < param_3) {
+    __cxa_throw_bad_array_new_length();
+LAB_00c893ea:
+    puVar2 = (uint *)shapeArabic(param_2,param_3);
+    if (puVar2 != (uint *)0x0) {
+      iVar3 = reOrderLine(puVar2,unaff_r4,&local_3c);
+      operator_delete__(puVar2);
+      if (iVar3 != 0) goto LAB_00c89422;
+    }
+    uVar7 = 0;
+  }
+  else {
+    unaff_r4 = operator_new__(param_3 << 2);
+    local_3c = param_3;
+    if (param_4) goto LAB_00c893ea;
+    copyString(param_2,unaff_r4,param_3);
+LAB_00c89422:
+    uVar6 = 0;
+    for (uVar5 = 0; uVar5 < local_3c; uVar5 = uVar5 + 1) {
+      iVar3 = UTF8::encodedLength((ushort)unaff_r4[uVar5]);
+      uVar6 = uVar6 + iVar3;
+    }
+    puVar4 = operator_new__(uVar6);
+    uVar6 = 0;
+    local_38 = puVar4;
+    for (uVar5 = 0; uVar5 < local_3c; uVar5 = uVar5 + 1) {
+      iVar3 = UTF8::encodeUcs2((ushort)unaff_r4[uVar5],&local_38);
+      uVar6 = uVar6 + iVar3;
+    }
+    UString::UString(aUStack_34,puVar4,uVar6);
+    UString::operator=(param_1,aUStack_34);
+    uVar7 = 1;
+    UString::~UString(aUStack_34);
+    operator_delete__(puVar4);
+  }
+  operator_delete__(unaff_r4);
+  if (local_2c != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar7);
+  }
+  return;
+}
+
+ (GhidraScript)

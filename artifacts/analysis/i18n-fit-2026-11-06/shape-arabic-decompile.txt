@@ -1,0 +1,737 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (631 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1612 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '_Z11shapeArabicPji' '_Z11reOrderLinePjS_Rj' '_Z10copyStringPKjPjj' '_Z17copyStringReversePKjPjjb' '_Z8isArabicj' '_Z8isHebrewj' '_Z15isAnyArabicCharPKjj' '_Z15isAnyHebrewCharPKjj' '_Z17isPunctuationMarkj' '_ZN13ArabicShaping11reverseLineERK7UStringRS0_b'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== _Z11shapeArabicPji -> shapeArabic @ 00c88904 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined shapeArabic(uint * param_1, int param_2) (GhidraScript)
+INFO  DumpFirmware.java>
+/* shapeArabic(unsigned int*, int) */
+
+void shapeArabic(uint *param_1,int param_2)
+
+{
+  int *piVar1;
+  uint *puVar2;
+  int iVar3;
+  int iVar4;
+  int iVar5;
+  uint uVar6;
+  uint uVar7;
+  int unaff_r5;
+  uint unaff_r6;
+  uint unaff_r8;
+  uint unaff_r9;
+  int iVar8;
+  uint *local_64;
+  int local_60;
+  int local_5c;
+  undefined1 auStack_58 [4];
+  uint local_54;
+  uint local_50;
+  uint local_4c;
+  uint local_48;
+  undefined1 auStack_44 [8];
+  uint local_3c;
+  uint local_30;
+  int local_2c;
+
+  puVar2 = DAT_00c88a90;
+  piVar1 = DAT_00c88a8c;
+  local_2c = *DAT_00c88a8c;
+  if (DAT_00c88a90 < (uint *)(param_2 + 1)) {
+    __cxa_throw_bad_array_new_length();
+    iVar3 = local_5c;
+    goto LAB_00c8897a;
+  }
+  puVar2 = operator_new__((param_2 + 1) * 4);
+  local_60 = 1;
+  local_5c = 0;
+  local_64 = puVar2;
+LAB_00c8893c:
+  if (param_2 <= local_5c) {
+    iVar3 = *piVar1;
+    local_64[local_60 + -1] = 0;
+    if (local_2c == iVar3) {
+      return;
+    }
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  unaff_r8 = param_1[local_5c];
+  iVar3 = CharacterMapContains(unaff_r8);
+  if (iVar3 != 0) {
+    iVar3 = local_5c + 1;
+    iVar8 = local_5c;
+    do {
+      iVar8 = iVar8 + -1;
+      iVar5 = iVar3;
+      if (iVar8 < 0) goto LAB_00c88a08;
+      unaff_r6 = param_1[iVar8];
+      iVar4 = IsTransparent(unaff_r6);
+    } while (iVar4 != 0);
+    iVar8 = CharacterMapContains(unaff_r6);
+    if ((iVar8 == 0) || ((GetCharRep((uint)auStack_58), local_50 == 0 && (local_4c == 0)))) {
+LAB_00c88a08:
+      unaff_r6 = 0;
+    }
+    for (; unaff_r5 = local_5c, iVar5 != param_2; iVar5 = iVar5 + 1) {
+      unaff_r9 = param_1[iVar5];
+      iVar8 = IsTransparent(unaff_r9);
+      if (iVar8 == 0) {
+        iVar8 = CharacterMapContains(unaff_r9);
+        if (iVar8 != 0) {
+          GetCharRep((uint)auStack_58);
+          if ((local_4c != 0) || (GetCharRep((uint)auStack_58), local_48 != 0)) goto LAB_00c8897a;
+          if (unaff_r9 == 0x640) {
+            local_5c = iVar3;
+            if (unaff_r8 == 0x644) goto LAB_00c88988;
+            goto LAB_00c88a56;
+          }
+        }
+        break;
+      }
+    }
+    goto LAB_00c88a52;
+  }
+  *puVar2 = unaff_r8;
+  goto LAB_00c889b2;
+LAB_00c8897a:
+  local_5c = iVar3;
+  if (unaff_r8 == 0x644) {
+    if (unaff_r9 == 0) {
+LAB_00c88a52:
+      unaff_r9 = 0;
+    }
+    else {
+LAB_00c88988:
+      if ((unaff_r9 - 0x622 < 2) || ((unaff_r9 & 0xfffffffd) == 0x625)) {
+        GetCombCharRep((uint)auStack_44,0x644);
+        uVar6 = local_3c;
+        if (unaff_r6 != 0) {
+          uVar6 = local_30;
+        }
+        *puVar2 = uVar6;
+        goto LAB_00c889b2;
+      }
+    }
+  }
+LAB_00c88a56:
+  local_5c = unaff_r5;
+  GetCharRep((uint)auStack_58);
+  if (unaff_r6 == 0) {
+    uVar6 = local_50;
+    if (unaff_r9 != 0) goto LAB_00c889ca;
+LAB_00c889cc:
+    uVar7 = local_54;
+  }
+  else {
+    uVar6 = local_48;
+    if (unaff_r9 == 0) {
+LAB_00c889ca:
+      uVar7 = uVar6;
+      if (uVar6 == 0) goto LAB_00c889cc;
+    }
+    else {
+      if (local_4c != 0) {
+        *puVar2 = local_4c;
+        goto LAB_00c889b2;
+      }
+      uVar6 = local_50;
+      uVar7 = local_48;
+      if (local_48 == 0) goto LAB_00c889ca;
+    }
+  }
+  *puVar2 = uVar7;
+LAB_00c889b2:
+  local_5c = local_5c + 1;
+  puVar2 = puVar2 + 1;
+  local_60 = local_60 + 1;
+  goto LAB_00c8893c;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _Z11reOrderLinePjS_Rj -> reOrderLine @ 00c88d60 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined reOrderLine(uint * param_1, uint * param_2, uint * param_3) (GhidraScript)
+INFO  DumpFirmware.java>
+/* reOrderLine(unsigned int*, unsigned int*, unsigned int&) */
+
+void reOrderLine(uint *param_1,uint *param_2,uint *param_3)
+
+{
+  int *piVar1;
+  bool bVar2;
+  bool bVar3;
+  uint uVar4;
+  uint *puVar5;
+  int iVar6;
+  int iVar7;
+  int iVar8;
+  int extraout_r2;
+  uint uVar9;
+  uint extraout_r3;
+  int iVar10;
+  int iVar11;
+  uint uVar12;
+  uint uVar13;
+  uint uVar14;
+  uint *puVar15;
+  uint *puVar16;
+  uint local_40;
+  uint *local_34;
+
+  iVar7 = *DAT_00c8904c;
+  if (DAT_00c89050 < *param_3) goto LAB_00c88dbc;
+  local_34 = operator_new__(*param_3 << 2);
+  uVar4 = *param_3;
+  for (puVar5 = local_34; local_34 + uVar4 != puVar5; puVar5 = puVar5 + 1) {
+    *puVar5 = 0;
+  }
+  uVar9 = 0;
+  puVar5 = param_1 + uVar4;
+  iVar8 = 0;
+  do {
+    uVar13 = DAT_00c89050;
+    if (uVar4 == uVar9) {
+      uVar4 = uVar4 - iVar8;
+      *param_3 = uVar4;
+      if (uVar4 <= uVar13) break;
+LAB_00c88dbc:
+      puVar5 = (uint *)0xc88dc1;
+      uVar4 = __cxa_throw_bad_array_new_length();
+      iVar8 = extraout_r2;
+      uVar9 = extraout_r3;
+LAB_00c88dc0:
+      local_34[uVar9 - iVar8] = (uint)param_1;
+    }
+    else {
+      puVar5 = puVar5 + -1;
+      param_1 = (uint *)*puVar5;
+      if (param_1 != (uint *)0x0) goto LAB_00c88dc0;
+      iVar8 = iVar8 + 1;
+    }
+    uVar9 = uVar9 + 1;
+  } while( true );
+  puVar5 = operator_new__(uVar4 * 4);
+  uVar4 = *local_34;
+  iVar8 = isArabic(uVar4);
+  if (iVar8 == 0) {
+    if (uVar4 - 0x590 < 0x70) {
+      iVar8 = 1;
+    }
+    else {
+      iVar8 = 0;
+    }
+  }
+  uVar13 = *param_3;
+  uVar9 = 0;
+  for (uVar4 = 0; uVar4 != uVar13; uVar4 = uVar4 + 1) {
+    uVar14 = local_34[uVar4];
+    iVar6 = isArabic(uVar14);
+    if (iVar6 == 0) {
+      if (uVar14 - 0x590 < 0x70) {
+        iVar6 = 1;
+      }
+      else {
+        iVar6 = 0;
+      }
+    }
+    if (iVar8 != iVar6) {
+      puVar5[uVar9] = uVar4 - 1;
+      uVar9 = uVar9 + 1;
+    }
+    iVar8 = iVar6;
+  }
+  if (uVar9 != 0) {
+    if (puVar5[uVar9 + 0x3fffffff] == uVar4 - 1) {
+      if (uVar9 == 1) goto LAB_00c88e8e;
+    }
+    else {
+      puVar5[uVar9 + 0x40000000] = uVar4 - 1;
+      uVar9 = uVar9 + 1;
+    }
+    uVar13 = 0;
+    puVar15 = puVar5;
+    while (puVar5 + uVar9 != puVar15) {
+      puVar16 = puVar15 + 1;
+      uVar14 = local_34[*puVar15];
+      iVar8 = isArabic(uVar14);
+      puVar15 = puVar16;
+      if ((iVar8 != 0) || (uVar14 - 0x590 < 0x70)) {
+        uVar13 = uVar13 + 1;
+      }
+    }
+    if (uVar13 != uVar9) {
+      uVar4 = *puVar5;
+      uVar13 = local_34[uVar4];
+      iVar8 = isArabic(uVar13);
+      if ((iVar8 == 0) && (0x6f < uVar13 - 0x590)) {
+        if (uVar4 + 1 < 2) {
+          iVar8 = 3;
+        }
+        else {
+          iVar8 = 1;
+        }
+      }
+      else {
+        iVar8 = 3;
+      }
+      uVar4 = local_34[(puVar5 + uVar9)[-1]];
+      iVar6 = isArabic(uVar4);
+      if ((iVar6 == 0) && (0x6f < uVar4 - 0x590)) {
+        if (iVar8 == 1) {
+          iVar8 = 0;
+          uVar4 = uVar9;
+          while (uVar4 != 0) {
+            uVar4 = uVar4 - 1;
+            uVar13 = getWordLen(puVar5,uVar4,uVar9);
+            uVar14 = puVar5[uVar4];
+            uVar12 = local_34[uVar14];
+            iVar6 = isArabic(uVar12);
+            if ((iVar6 != 0) || (uVar12 - 0x590 < 0x70)) break;
+            puVar15 = param_2 + iVar8;
+            iVar8 = iVar8 + uVar13;
+            bVar2 = (bool)needMirror(uVar4,uVar9,4);
+            copyStringReverse(local_34 + ((uVar14 + 1) - uVar13),puVar15,uVar13,bVar2);
+          }
+          local_40 = 0;
+          bVar2 = false;
+          for (uVar13 = 0; uVar13 < uVar4 + 1; uVar13 = uVar13 + 1) {
+            uVar14 = getWordLen(puVar5,uVar13,uVar9);
+            uVar12 = local_34[puVar5[uVar13]];
+            iVar11 = (puVar5[uVar13] + 1) - uVar14;
+            iVar6 = isArabic(uVar12);
+            if ((iVar6 == 0) && (0x6f < uVar12 - 0x590)) {
+              if (bVar2) {
+                puVar15 = param_2 + iVar8;
+                iVar8 = iVar8 + uVar14;
+                bVar3 = (bool)needMirror(uVar13,uVar9,4);
+                copyStringReverse(local_34 + iVar11,puVar15,uVar14,bVar3);
+              }
+            }
+            else {
+              if (!bVar2) {
+                local_40 = uVar13;
+              }
+              puVar15 = param_2 + iVar8;
+              iVar8 = iVar8 + uVar14;
+              copyString(local_34 + iVar11,puVar15,uVar14);
+              bVar2 = true;
+            }
+          }
+          for (uVar4 = 0; local_40 != uVar4; uVar4 = uVar4 + 1) {
+            uVar13 = getWordLen(puVar5,uVar4,uVar9);
+            uVar14 = puVar5[uVar4];
+            puVar15 = param_2 + iVar8;
+            iVar8 = iVar8 + uVar13;
+            bVar2 = (bool)needMirror(uVar4,uVar9,4);
+            copyStringReverse(local_34 + ((uVar14 + 1) - uVar13),puVar15,uVar13,bVar2);
+          }
+          goto LAB_00c88e98;
+        }
+        iVar8 = 2;
+      }
+      else if (1 < iVar8 - 2U) {
+        uVar4 = 0;
+        iVar8 = 0;
+        bVar2 = false;
+        for (uVar13 = 0; uVar13 != uVar9; uVar13 = uVar13 + 1) {
+          uVar14 = getWordLen(puVar5,uVar13,uVar9);
+          uVar12 = local_34[puVar5[uVar13]];
+          iVar11 = (puVar5[uVar13] + 1) - uVar14;
+          iVar6 = isArabic(uVar12);
+          if ((iVar6 == 0) && (0x6f < uVar12 - 0x590)) {
+            if (bVar2) {
+              puVar15 = param_2 + iVar8;
+              iVar8 = iVar8 + uVar14;
+              bVar3 = (bool)needMirror(uVar13,uVar9,1);
+              copyStringReverse(local_34 + iVar11,puVar15,uVar14,bVar3);
+            }
+          }
+          else {
+            if (!bVar2) {
+              uVar4 = uVar13;
+            }
+            puVar15 = param_2 + iVar8;
+            iVar8 = iVar8 + uVar14;
+            copyString(local_34 + iVar11,puVar15,uVar14);
+            bVar2 = true;
+          }
+        }
+        while (uVar4 != 0) {
+          uVar4 = uVar4 - 1;
+          uVar9 = getWordLen(puVar5,uVar4,uVar13);
+          uVar14 = puVar5[uVar4];
+          puVar15 = param_2 + iVar8;
+          iVar8 = iVar8 + uVar9;
+          bVar2 = (bool)needMirror(uVar4,uVar13,1);
+          copyStringReverse(local_34 + ((uVar14 + 1) - uVar9),puVar15,uVar9,bVar2);
+        }
+        goto LAB_00c88e98;
+      }
+      iVar6 = 0;
+      for (uVar4 = 0; uVar4 != uVar9; uVar4 = uVar4 + 1) {
+        uVar13 = getWordLen(puVar5,uVar4,uVar9);
+        iVar10 = (puVar5[uVar4] + 1) - uVar13;
+        uVar14 = local_34[puVar5[uVar4]];
+        iVar11 = isArabic(uVar14);
+        if ((iVar11 == 0) && (0x6f < uVar14 - 0x590)) {
+          bVar2 = (bool)needMirror(uVar4,uVar9,iVar8);
+          copyStringReverse(local_34 + iVar10,param_2 + iVar6,uVar13,bVar2);
+        }
+        else {
+          copyString(local_34 + iVar10,param_2 + iVar6,uVar13);
+        }
+        iVar6 = iVar6 + uVar13;
+      }
+      goto LAB_00c88e98;
+    }
+  }
+LAB_00c88e8e:
+  copyString(local_34,param_2,uVar4);
+LAB_00c88e98:
+  piVar1 = DAT_00c8904c;
+  operator_delete__(puVar5);
+  operator_delete__(local_34);
+  if (iVar7 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(1);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _Z10copyStringPKjPjj -> copyString @ 00c88c2c (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined copyString(uint * param_1, uint * param_2, uint param_3) (GhidraScript)
+INFO  DumpFirmware.java>
+/* copyString(unsigned int const*, unsigned int*, unsigned int) */
+
+void copyString(uint *param_1,uint *param_2,uint param_3)
+
+{
+  int *piVar1;
+  uint uVar2;
+  int iVar3;
+
+  piVar1 = DAT_00c88c68;
+  iVar3 = *DAT_00c88c68;
+  for (uVar2 = 0; uVar2 != param_3; uVar2 = uVar2 + 1) {
+    param_2[uVar2] = param_1[uVar2];
+  }
+  if (iVar3 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _Z17copyStringReversePKjPjjb -> copyStringReverse @ 00c88c6c (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined copyStringReverse(uint * param_1, uint * param_2, uint param_3, bool param_4) (GhidraScript)
+INFO  DumpFirmware.java>
+/* copyStringReverse(unsigned int const*, unsigned int*, unsigned int, bool) */
+
+void copyStringReverse(uint *param_1,uint *param_2,uint param_3,bool param_4)
+
+{
+  int *piVar1;
+  uint uVar2;
+  int iVar3;
+  uint *puVar4;
+
+  piVar1 = DAT_00c88cbc;
+  puVar4 = param_2 + param_3;
+  iVar3 = *DAT_00c88cbc;
+  while (puVar4 != param_2) {
+    uVar2 = *param_1;
+    if (param_4) {
+      uVar2 = isMirrorChar(uVar2);
+    }
+    puVar4 = puVar4 + -1;
+    *puVar4 = uVar2;
+    param_1 = param_1 + 1;
+  }
+  if (iVar3 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _Z8isArabicj -> isArabic @ 00c88a94 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined isArabic(uint param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* isArabic(unsigned int) */
+
+void isArabic(uint param_1)
+
+{
+  undefined4 uVar1;
+
+  if ((param_1 - 0x600 < 0x100) || (param_1 - 0xfb50 < 0x2b0)) {
+    uVar1 = 1;
+  }
+  else if (param_1 - 0xfe70 < 0x90) {
+    uVar1 = 1;
+  }
+  else {
+    uVar1 = 0;
+  }
+  if (*DAT_00c88ae8 == *DAT_00c88ae8) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(uVar1);
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _Z8isHebrewj -> isHebrew @ 00c88aec (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined isHebrew(uint param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* isHebrew(unsigned int) */
+
+void isHebrew(uint param_1)
+
+{
+  if (*DAT_00c88b24 == *DAT_00c88b24) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(param_1 - 0x590 < 0x70);
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _Z15isAnyArabicCharPKjj -> isAnyArabicChar @ 00c88b28 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined isAnyArabicChar(uint * param_1, uint param_2) (GhidraScript)
+INFO  DumpFirmware.java>
+/* isAnyArabicChar(unsigned int const*, unsigned int) */
+
+void isAnyArabicChar(uint *param_1,uint param_2)
+
+{
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  uint uVar4;
+
+  piVar1 = DAT_00c88b70;
+  iVar2 = *DAT_00c88b70;
+  for (uVar4 = 0; uVar4 != param_2; uVar4 = uVar4 + 1) {
+    iVar3 = isArabic(param_1[uVar4]);
+    if (iVar3 != 0) goto LAB_00c88b5c;
+  }
+  iVar3 = 0;
+LAB_00c88b5c:
+  if (iVar2 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(iVar3);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _Z15isAnyHebrewCharPKjj -> isAnyHebrewChar @ 00c88b74 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined isAnyHebrewChar(uint * param_1, uint param_2) (GhidraScript)
+INFO  DumpFirmware.java>
+/* isAnyHebrewChar(unsigned int const*, unsigned int) */
+
+void isAnyHebrewChar(uint *param_1,uint param_2)
+
+{
+  undefined4 uVar1;
+  uint uVar2;
+
+  uVar2 = 0;
+  do {
+    if (uVar2 == param_2) {
+      uVar1 = 0;
+LAB_00c88ba0:
+      if (*DAT_00c88bbc != *DAT_00c88bbc) {
+                    /* WARNING: Subroutine does not return */
+        __stack_chk_fail(uVar1);
+      }
+      return;
+    }
+    if (param_1[uVar2] - 0x590 < 0x70) {
+      uVar1 = 1;
+      goto LAB_00c88ba0;
+    }
+    uVar2 = uVar2 + 1;
+  } while( true );
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _Z17isPunctuationMarkj -> isPunctuationMark @ 00c894ac (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined isPunctuationMark(uint param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* isPunctuationMark(unsigned int) */
+
+void isPunctuationMark(uint param_1)
+
+{
+  undefined4 uVar1;
+  int iVar2;
+
+  iVar2 = 0;
+  do {
+    if (*(uint *)(DAT_00c894f4 + iVar2 * 4) == param_1) {
+      uVar1 = 1;
+      goto LAB_00c894d8;
+    }
+    iVar2 = iVar2 + 1;
+  } while (iVar2 != 6);
+  uVar1 = 0;
+LAB_00c894d8:
+  if (*DAT_00c894f0 != *DAT_00c894f0) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar1);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN13ArabicShaping11reverseLineERK7UStringRS0_b -> ArabicShaping::reverseLine @ 00c894f8 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined reverseLine(UString * param_1, UString * param_2, bool param_3) (GhidraScript)
+INFO  DumpFirmware.java>
+/* ArabicShaping::reverseLine(UString const&, UString&, bool) */
+
+void __thiscall
+ArabicShaping::reverseLine(ArabicShaping *this,UString *param_1,UString *param_2,bool param_3)
+
+{
+  int *piVar1;
+  char *pcVar2;
+  ushort uVar3;
+  int iVar4;
+  int iVar5;
+  UString *this_00;
+  uint uVar6;
+  bool bVar7;
+  UString aUStack_44 [8];
+  UString aUStack_3c [8];
+  UString aUStack_34 [8];
+  int local_2c;
+
+  piVar1 = DAT_00c8965c;
+  local_2c = *DAT_00c8965c;
+  iVar4 = UString::length(param_1);
+  if (iVar4 < 1) {
+    param_3 = false;
+  }
+  else {
+    iVar4 = iVar4 + -1;
+    UString::clear(param_2);
+    if (param_3) {
+      UString::UString(aUStack_44,DAT_00c89660);
+      UString::UString(aUStack_3c,DAT_00c89660);
+      pcVar2 = DAT_00c89660;
+      do {
+        UString::getSubstring((uint)aUStack_34,(uint)param_1);
+        UString::operator=(aUStack_44,aUStack_34);
+        UString::~UString(aUStack_34);
+        uVar3 = UString::charAt(aUStack_44,0);
+        uVar6 = (uint)uVar3;
+        iVar5 = isArabic(uVar6);
+        this_00 = param_2;
+        if ((iVar5 == 0) && (0x6f < uVar6 - 0x590)) {
+          iVar5 = isPunctuationMark(uVar6);
+          if (iVar5 != 0) {
+            this_00 = aUStack_3c;
+            goto LAB_00c89588;
+          }
+          if (uVar6 != 0x20) goto LAB_00c89588;
+          UString::append(param_2,aUStack_3c);
+          UString::operator=(aUStack_3c,pcVar2);
+        }
+        else {
+LAB_00c89588:
+          UString::append(this_00,aUStack_44);
+        }
+        bVar7 = iVar4 != 0;
+        iVar4 = iVar4 + -1;
+      } while (bVar7);
+      iVar4 = UString::length(aUStack_3c);
+      if (iVar4 != 0) {
+        UString::append(param_2,aUStack_3c);
+        UString::operator=(aUStack_3c,DAT_00c89660);
+      }
+      UString::~UString(aUStack_3c);
+      UString::~UString(aUStack_44);
+    }
+    else {
+      do {
+        UString::getSubstring((uint)aUStack_34,(uint)param_1);
+        UString::append(param_2,aUStack_34);
+        UString::~UString(aUStack_34);
+        bVar7 = iVar4 != 0;
+        iVar4 = iVar4 + -1;
+      } while (bVar7);
+      param_3 = true;
+    }
+  }
+  if (local_2c == *piVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(param_3);
+}
+
+ (GhidraScript)

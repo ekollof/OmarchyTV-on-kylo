@@ -1,7 +1,8 @@
 /* Locale audit for the sub-launcher live text: resolve all 41 dictionary
  * locales, measure the actual font3/font12 widths, and report any locale
- * whose string does not fit the 235 px card or lacks glyphs. */
+ * whose string does not fit the vendor 240 px row text box or lacks glyphs. */
 #include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,7 +69,7 @@ int main(int argc, char **argv)
             }
             if (k < 3) {
                 if (w > max_label) max_label = w;
-                if (w > 235) {
+                if (w > 240) {
                     label_overflow++;
                     if (label_overflow <= 8)
                         printf("label overflow: %s %s %d px\n", locale,
@@ -76,7 +77,7 @@ int main(int argc, char **argv)
                 }
             } else {
                 if (w > max_value) max_value = w;
-                if (w > 235) {
+                if (w > 240) {
                     value_overflow++;
                     if (value_overflow <= 8)
                         printf("value overflow: %s %s %d px\n", locale,
@@ -89,13 +90,31 @@ int main(int argc, char **argv)
     assert(!strcmp(oa_langprofile_string(profile, "MODE", "eng"), "Mode"));
     assert(!strcmp(oa_langprofile_string(profile, "ZOOM_MODE_16_9", "dut"),
                    "16:9"));
-    /* Hebrew carries U+202C directional controls; stripping them makes the
-     * existing Hebrew glyphs measurable. This is not BiDi reordering. */
-    const char *heb = oa_langprofile_string(profile, "ENERGY_SAVING", "heb");
+    /* Profile Hebrew is stored in visual order: MODE is 'בצמ', which reads
+     * 'מצב' when the stored left-to-right order is displayed. Dictionary
+     * reorders it to logical for the vendor RTL text engine; this renderer
+     * draws LTR, so it uses the stored order unchanged. U+202C controls are
+     * still stripped because they are not glyphs. */
+    const char *heb = oa_langprofile_string(profile, "MODE", "heb");
+    const char *heb_energy = oa_langprofile_string(profile, "ENERGY_SAVING",
+                                                   "heb");
     char heb_clean[256];
+    assert(!strcmp(heb, "\xd7\x91\xd7\xa6\xd7\x9e"));
     assert(oa_langprofile_sanitize(heb, heb_clean, sizeof heb_clean) == 0);
+    assert(!strcmp(heb_clean, heb));
+    assert(advance(&label.bitmap, heb_clean) > 0);
+    assert(oa_langprofile_sanitize(heb_energy, heb_clean,
+                                   sizeof heb_clean) == 0);
     assert(!strstr(heb_clean, "\xe2\x80\xac"));
     assert(advance(&label.bitmap, heb_clean) > 0);
+    char tiny[4];
+    assert(oa_langprofile_sanitize(heb, tiny, sizeof tiny) == EOVERFLOW);
+    assert(oa_langprofile_sanitize(NULL, heb_clean, sizeof heb_clean) ==
+           EINVAL);
+    /* At the vendor 240 px row text box only Bulgarian and Ukrainian still
+     * clip; Lithuanian 239 now fits. Labels are drawn with setElipses(false),
+     * so clipping (not shrinking) is the vendor policy. */
+    assert(label_overflow == 2 && value_overflow == 0 && missing == 0);
     printf("ok sub text locales: 41 locales; max label %d px, max value %d px; "
            "%u label/%u value overflow, %u missing glyphs\n",
            max_label, max_value, label_overflow, value_overflow, missing);

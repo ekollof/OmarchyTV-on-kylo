@@ -1,0 +1,266 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (666 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1680 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '@0x115ffec'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== @0x115ffec -> UISurfaceImpl::drawText @ 0115ffec (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined drawText(UString * param_1, UITextStyle * param_2, bool param_3, UITextRenderInfo * param_4, UICursorStyle * param_5, int param_6, EASIColour * param_7, EASIColour * param_8, int param_9, bool param_10, bool param_11) (GhidraScript)
+INFO  DumpFirmware.java>
+/* UISurfaceImpl::drawText(UString const&, UITextStyle const&, bool, UISurface::UITextRenderInfo*,
+   UICursorStyle*, int, EASIColour*, EASIColour*, int, bool, bool) */
+
+void __thiscall
+UISurfaceImpl::drawText
+          (UISurfaceImpl *this,UString *param_1,UITextStyle *param_2,bool param_3,
+          UITextRenderInfo *param_4,UICursorStyle *param_5,int param_6,EASIColour *param_7,
+          EASIColour *param_8,int param_9,bool param_10,bool param_11)
+
+{
+  undefined4 uVar1;
+  UIFrameworkTask *pUVar2;
+  int *piVar3;
+  AnyColourAPI *pAVar4;
+  AnyBitmapFont *pAVar5;
+  undefined4 uVar6;
+  undefined4 uVar7;
+  uchar *puVar8;
+  int iVar9;
+  int iVar10;
+  undefined1 uVar11;
+  undefined4 uVar12;
+  undefined4 uVar13;
+  uint uVar14;
+  AnySurface *pAVar15;
+  int iVar16;
+  undefined4 uVar17;
+  undefined4 *puVar18;
+  undefined4 local_cc;
+  undefined4 local_c8;
+  undefined4 local_c4;
+  undefined4 uStack_c0;
+  void *local_bc [4];
+  undefined4 local_ac;
+  UICursorStyle local_a8;
+  UICursorStyle local_a7;
+  undefined4 local_a4;
+  UPoint aUStack_a0 [8];
+  void *local_98;
+  undefined4 local_94;
+  UPoint aUStack_90 [100];
+  int local_2c;
+
+  local_2c = *DAT_011602ac;
+  if (*(int *)(this + 8) != 0) {
+    hal::CursorStyle::CursorStyle((CursorStyle *)&local_ac);
+    pUVar2 = (UIFrameworkTask *)UIFramework::uiFrameworkTask(*(UIFramework **)(this + 4));
+    piVar3 = (int *)UIFrameworkTask::factory(pUVar2);
+    pAVar4 = (AnyColourAPI *)(**(code **)(*piVar3 + 0x5c))();
+    switch(*(undefined4 *)(param_2 + 0x1c)) {
+    case 0:
+      uVar1 = 3;
+      break;
+    case 1:
+      uVar1 = 1;
+      break;
+    case 2:
+      uVar1 = 2;
+      break;
+    case 3:
+      uVar1 = 4;
+      break;
+    default:
+      if (param_11) {
+        uVar1 = 2;
+      }
+      else {
+        uVar1 = 1;
+      }
+    }
+    if (*(uint *)(param_2 + 0x20) < 4) {
+      uVar11 = *(undefined1 *)(DAT_011602b0 + *(uint *)(param_2 + 0x20));
+    }
+    else {
+      uVar11 = 1;
+    }
+    uVar13 = 1;
+    if (*(int *)(param_2 + 0x24) != 1) {
+      if (*(int *)(param_2 + 0x24) == 2) {
+        uVar13 = 2;
+      }
+      else {
+        uVar13 = 0;
+      }
+    }
+    puVar18 = (undefined4 *)0x0;
+    if (param_5 != (UICursorStyle *)0x0) {
+      if (*(int *)param_5 == 0) {
+        local_ac = 1;
+      }
+      else if (*(int *)param_5 == 1) {
+        local_ac = 3;
+      }
+      switch(*(undefined4 *)(param_5 + 8)) {
+      case 0:
+        local_a4 = 0;
+        break;
+      case 1:
+        local_a4 = 1;
+        break;
+      case 2:
+        local_a4 = 2;
+        break;
+      case 3:
+        local_a4 = 3;
+      }
+      local_a8 = param_5[4];
+      local_a7 = param_5[5];
+      UPoint::UPoint(aUStack_90,*(int *)(param_5 + 0xc),*(int *)(param_5 + 0x10));
+      UPoint::operator=(aUStack_a0,aUStack_90);
+      lynx::ColourData::ColourData((ColourData *)local_bc);
+      if (param_7 == (EASIColour *)0x0) {
+        local_bc[0] = (void *)(**(code **)(*(int *)pAVar4 + 0x24))(pAVar4,param_5[0x14]);
+      }
+      else {
+        lynx::Colour::Colour
+                  ((Colour *)aUStack_90,(uchar)*param_7,(uchar)param_7[1],(uchar)param_7[2],
+                   (uchar)param_7[3]);
+        local_bc[0] = (void *)(**(code **)(*(int *)pAVar4 + 0x2c))(pAVar4,aUStack_90);
+      }
+      local_94 = *(undefined4 *)(param_5 + 0x18);
+      puVar18 = &local_ac;
+      local_98 = local_bc[0];
+    }
+    pUVar2 = (UIFrameworkTask *)UIFramework::uiFrameworkTask(*(UIFramework **)(this + 4));
+    pAVar5 = (AnyBitmapFont *)UIFrameworkTask::getFont(pUVar2,*(uint *)param_2);
+    if (pAVar5 != (AnyBitmapFont *)0x0) {
+      lynx::ColourData::ColourData((ColourData *)&local_cc);
+      lynx::ColourData::ColourData((ColourData *)&local_c8);
+      if ((param_7 == (EASIColour *)0x0) || (param_8 == (EASIColour *)0x0)) {
+        local_cc = (**(code **)(*(int *)pAVar4 + 0x24))(pAVar4,param_2[4]);
+        local_c8 = (**(code **)(*(int *)pAVar4 + 0x24))(pAVar4,param_2[5]);
+      }
+      else {
+        lynx::Colour::Colour
+                  ((Colour *)local_bc,(uchar)*param_7,(uchar)param_7[1],(uchar)param_7[2],
+                   (uchar)param_7[3]);
+        lynx::Colour::Colour
+                  ((Colour *)aUStack_90,(uchar)*param_8,(uchar)param_8[1],(uchar)param_8[2],
+                   (uchar)param_8[3]);
+        local_cc = (**(code **)(*(int *)pAVar4 + 0x2c))(pAVar4,local_bc);
+        local_c8 = (**(code **)(*(int *)pAVar4 + 0x2c))(pAVar4,aUStack_90);
+      }
+      URect::URect((URect *)local_bc,*(int *)(param_2 + 0x14),*(int *)(param_2 + 0xc),
+                   *(int *)(param_2 + 0x18),*(int *)(param_2 + 0x10));
+      uVar17 = *(undefined4 *)(param_2 + 8);
+      if (param_11) {
+        uVar12 = 3;
+      }
+      else {
+        uVar12 = 0;
+      }
+      pUVar2 = (UIFrameworkTask *)UIFramework::uiFrameworkTask(*(UIFramework **)(this + 4));
+      uVar6 = UIFrameworkTask::osdWidth(pUVar2);
+      pUVar2 = (UIFrameworkTask *)UIFramework::uiFrameworkTask(*(UIFramework **)(this + 4));
+      uVar7 = UIFrameworkTask::osdHeight(pUVar2);
+      hal::TextControls::TextControls
+                ((TextControls *)aUStack_90,(URect *)local_bc,uVar17,0,&local_cc,&local_c8,uVar12,
+                 uVar1,uVar11,uVar6,uVar7,param_3,uVar13,puVar18,param_6,param_10,param_9);
+      hal::TextInfo::TextInfo((TextInfo *)local_bc);
+      pAVar15 = (AnySurface *)**(undefined4 **)(this + 8);
+      puVar8 = (uchar *)UString::charArray(param_1);
+      iVar9 = UString::byteLength(param_1);
+      hal::TextCommand::drawText
+                (pAVar15,pAVar4,puVar8,iVar9,pAVar5,(TextControls *)aUStack_90,
+                 (TextScroller *)(*(int *)(this + 8) + 0x28),(TextInfo *)local_bc,(URect *)0x0);
+      iVar9 = (**(code **)(*(int *)pAVar5 + 0x1c))(pAVar5);
+      if (param_4 != (UITextRenderInfo *)0x0) {
+        uVar1 = hal::TextInfo::nbLines((TextInfo *)local_bc);
+        *(undefined4 *)param_4 = uVar1;
+        uVar1 = hal::TextInfo::textHeight((TextInfo *)local_bc);
+        *(undefined4 *)(param_4 + 8) = uVar1;
+        uVar14 = 0;
+        iVar16 = 0;
+        while (uVar14 < *(uint *)param_4) {
+          iVar10 = hal::TextInfo::lineWidth((TextInfo *)local_bc,uVar14);
+          uVar14 = uVar14 + 1;
+          if (iVar16 < iVar10 + iVar9) {
+            iVar16 = iVar10 + iVar9;
+          }
+        }
+        *(int *)(param_4 + 4) = iVar16;
+      }
+      iVar9 = *(int *)(this + 8);
+      hal::TextScroller::TextScroller((TextScroller *)&local_c4);
+      *(undefined4 *)(iVar9 + 0x28) = local_c4;
+      *(undefined4 *)(iVar9 + 0x2c) = uStack_c0;
+      pUVar2 = (UIFrameworkTask *)UIFramework::uiFrameworkTask(*(UIFramework **)(this + 4));
+      piVar3 = (int *)UIFrameworkTask::uiRenderer(pUVar2);
+      iVar9 = (**(code **)(*piVar3 + 4))();
+      if (iVar9 != 0) {
+        UIFramework::requestOSD(*(UIFramework **)(this + 4));
+      }
+      if (local_bc[0] != (void *)0x0) {
+        operator_delete(local_bc[0]);
+      }
+      uVar1 = 1;
+      goto LAB_01160040;
+    }
+  }
+  uVar1 = 0;
+LAB_01160040:
+  if (local_2c != *DAT_011602ac) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar1);
+  }
+  return;
+}
+
+ (GhidraScript)

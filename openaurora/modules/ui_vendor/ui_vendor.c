@@ -648,8 +648,16 @@ static int sub_text_localized(oa_canvas *cv, const struct oa_bitmap_font *font,
                               const char *locale, int pen_y)
 {
     char clean[256];
-    const char *text = i18n->translate(key, locale);
+    const char *loc = locale ? locale : i18n->current_locale();
+    const char *text = i18n->translate(key, loc);
     if (oa_langprofile_sanitize(text, clean, sizeof clean) != 0) return EINVAL;
+    /* The Hebrew profile values are already stored in visual order (e.g.
+     * MODE is 'בצמ', the display form of 'מצב'). Dictionary::ArabicShaping
+     * converts them to logical order for the vendor's RTL text engine, whose
+     * layout restores the stored visual order. This renderer draws LTR, so it
+     * must use the stored order directly and must not reverse it again.
+     * Arabic/Persian values are stored logical and pre-shaped; their visual
+     * run order is still open. */
     return sub_text_draw(cv, font, clean, pen_y);
 }
 
@@ -675,9 +683,9 @@ static int sub_text_build(struct ctx *c, const struct oa_menu_branch *b)
         const char *key = b->items[i].key;
         const char *value_key = sub_value_key(key);
         if (!value_key) goto fail;
-        unsigned char *rgba = calloc(235u * 130u, 4);
+        unsigned char *rgba = calloc(240u * 130u, 4);
         if (!rgba) goto fail;
-        oa_canvas cv = { rgba, 235, 130 };
+        oa_canvas cv = { rgba, 240, 130 };
         int rc = sub_text_localized(&cv, &c->sub_font, c->i18n, key, locale,
                                     label_pen);
         if (rc) rc = sub_text_localized(&cv, &c->sub_font, c->i18n, key, "eng",
@@ -696,7 +704,7 @@ static int sub_text_build(struct ctx *c, const struct oa_menu_branch *b)
     sub_text_free(c);
     for (unsigned i = 0; i < 3; i++) {
         c->sub_text[i].rgba = blobs[i];
-        c->sub_text[i].w = 235;
+        c->sub_text[i].w = 240;
         c->sub_text[i].h = 130;
     }
     snprintf(c->sub_text_locale, sizeof c->sub_text_locale, "%s", locale);
@@ -836,7 +844,7 @@ static void paint_sub_launcher(struct ctx *c)
             if (use_text) {
                 /* Text is independent of the scalerect: keep it at the
                  * unscaled card origin so only the card surface grows. */
-                int tx = md->card_x + (int)i * md->card_pitch;
+                int tx = md->runtime_item_x + (int)i * md->card_pitch;
                 int ty = md->card_y;
                 d->blit(tx, ty, c->sub_text[i].w, c->sub_text[i].h,
                         c->sub_text[i].rgba);

@@ -1,0 +1,215 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (647 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1642 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '_ZN15UIWindowBuilder30calculateMaximumTextWidthIndexERKSt6vectorI7UStringSaIS1_EERK11UITextStyle' '_ZN15UIWindowBuilder18calculateTextWidthERK7UStringRK11UITextStyleb' '_ZN11UIFramework34isTranslationFitCheckOptionEnabledEv' '_ZN11UIFramework35setTranslationFitCheckOptionEnabledEb' '_ZN10SVGTextBox18calculateTextWidthERK7UStringibi19rgba_drawing_colourS3_bjjj'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN15UIWindowBuilder30calculateMaximumTextWidthIndexERKSt6vectorI7UStringSaIS1_EERK11UITextStyle -> UIWindowBuilder::calculateMaximumTextWidthIndex @ 011532b0 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined calculateMaximumTextWidthIndex(vector * param_1, UITextStyle * param_2) (GhidraScript)
+INFO  DumpFirmware.java>
+/* UIWindowBuilder::calculateMaximumTextWidthIndex(std::vector<UString, std::allocator<UString> >
+   const&, UITextStyle const&) */
+
+void __thiscall
+UIWindowBuilder::calculateMaximumTextWidthIndex
+          (UIWindowBuilder *this,vector *param_1,UITextStyle *param_2)
+
+{
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  uint uVar4;
+  uint uVar5;
+  int iVar6;
+
+  piVar1 = DAT_01153314;
+  iVar2 = *DAT_01153314;
+  uVar5 = 0xffffffff;
+  iVar6 = 0;
+  for (uVar4 = 0; uVar4 < (uint)(*(int *)(param_1 + 4) - *(int *)param_1 >> 3); uVar4 = uVar4 + 1) {
+    iVar3 = calculateTextWidth(this,(UString *)(*(int *)param_1 + uVar4 * 8),param_2,true);
+    if (iVar6 < iVar3) {
+      iVar6 = iVar3;
+      uVar5 = uVar4;
+    }
+  }
+  if (iVar2 == *piVar1) {
+    return;
+  }
+                    /* WARNING: Subroutine does not return */
+  __stack_chk_fail(uVar5);
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN15UIWindowBuilder18calculateTextWidthERK7UStringRK11UITextStyleb -> UIWindowBuilder::calculateTextWidth @ 0115318c (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined calculateTextWidth(UString * param_1, UITextStyle * param_2, bool param_3) (GhidraScript)
+INFO  DumpFirmware.java>
+/* UIWindowBuilder::calculateTextWidth(UString const&, UITextStyle const&, bool) */
+
+void __thiscall
+UIWindowBuilder::calculateTextWidth
+          (UIWindowBuilder *this,UString *param_1,UITextStyle *param_2,bool param_3)
+
+{
+  int *piVar1;
+  UIFramework *pUVar2;
+  int *piVar3;
+  int iVar4;
+  UISurface aUStack_44 [16];
+  EASIRect aEStack_34 [4];
+  int local_30;
+  int local_24;
+
+  piVar1 = DAT_01153248;
+  local_24 = *DAT_01153248;
+  pUVar2 = (UIFramework *)UIFrameworkTask::uiFramework(*(UIFrameworkTask **)this);
+  UISurface::UISurface(aUStack_44,pUVar2);
+  EASIRect::EASIRect(aEStack_34,0,0,0x780,0x438);
+  UISurface::create(aUStack_44,aEStack_34,false,false);
+  UISurface::drawText(aUStack_44,param_1,param_2,false,(UITextRenderInfo *)aEStack_34,
+                      (UICursorStyle *)0x0,-1,(EASIColour *)0x0,(EASIColour *)0x0,0,false,false);
+  UISurface::destroy(aUStack_44);
+  if ((!param_3) &&
+     (piVar3 = (int *)UIFrameworkTask::getFont(*(UIFrameworkTask **)this,*(uint *)param_2),
+     piVar3 != (int *)0x0)) {
+    iVar4 = (**(code **)(*piVar3 + 0x1c))();
+    local_30 = local_30 - iVar4;
+  }
+  UISurface::~UISurface(aUStack_44);
+  if (local_24 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(local_30);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN11UIFramework34isTranslationFitCheckOptionEnabledEv -> UIFramework::isTranslationFitCheckOptionEnabled @ 0113b6e8 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined isTranslationFitCheckOptionEnabled(void) (GhidraScript)
+INFO  DumpFirmware.java>
+/* UIFramework::isTranslationFitCheckOptionEnabled() */
+
+void __thiscall UIFramework::isTranslationFitCheckOptionEnabled(UIFramework *this)
+
+{
+  if (*DAT_0113b714 != *DAT_0113b714) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(this[8]);
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN11UIFramework35setTranslationFitCheckOptionEnabledEb -> UIFramework::setTranslationFitCheckOptionEnabled @ 0113b718 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined setTranslationFitCheckOptionEnabled(bool param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* UIFramework::setTranslationFitCheckOptionEnabled(bool) */
+
+void __thiscall UIFramework::setTranslationFitCheckOptionEnabled(UIFramework *this,bool param_1)
+
+{
+  int *piVar1;
+
+  piVar1 = DAT_0113b744;
+  this[8] = (UIFramework)param_1;
+  if (*piVar1 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN10SVGTextBox18calculateTextWidthERK7UStringibi19rgba_drawing_colourS3_bjjj -> SVGTextBox::calculateTextWidth @ 010c742c (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined calculateTextWidth(UString * param_1, int param_2, bool param_3, int param_4, rgba_drawing_colour param_5, rgba_drawing_colour param_6, bool param_7, uint param_8, uint param_9, uint param_10) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SVGTextBox::calculateTextWidth(UString const&, int, bool, int, rgba_drawing_colour,
+   rgba_drawing_colour, bool, unsigned int, unsigned int, unsigned int) */
+
+void __thiscall
+SVGTextBox::calculateTextWidth
+          (SVGTextBox *this,undefined4 param_1,undefined4 param_2,undefined4 param_4_00,
+          undefined4 param_4,undefined4 param_6,undefined4 param_7,undefined1 param_8,
+          undefined4 param_9,undefined4 param_10,undefined4 param_11)
+
+{
+  PaletteModel *pPVar1;
+  UISurface *this_00;
+  undefined4 uVar2;
+  SVGSurface aSStack_48 [12];
+  EASIRect aEStack_3c [16];
+  int local_2c;
+
+  local_2c = *DAT_010c7518;
+  pPVar1 = (PaletteModel *)SVGContext::getPaletteModel(*(SVGContext **)(this + 0x68));
+  SVGSurface::SVGSurface(aSStack_48,pPVar1);
+  this_00 = operator_new(0x10);
+  UISurface::UISurface(this_00,*(UIFramework **)(this + 4));
+  EASIRect::EASIRect(aEStack_3c,0,0,10,200);
+  UISurface::create(this_00,aEStack_3c,false,false);
+  SVGSurface::setUISurface(aSStack_48,this_00);
+  uVar2 = SVGSurface::getTextLength
+                    (aSStack_48,param_1,param_2,param_4_00,param_4,param_6,param_7,param_8,param_9,
+                     param_10,param_11);
+  SVGSurface::clearUISurface(aSStack_48);
+  UISurface::destroy(this_00);
+  (**(code **)(*(int *)this_00 + 4))(this_00);
+  if (local_2c != *DAT_010c7518) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail(uVar2);
+  }
+  return;
+}
+
+ (GhidraScript)

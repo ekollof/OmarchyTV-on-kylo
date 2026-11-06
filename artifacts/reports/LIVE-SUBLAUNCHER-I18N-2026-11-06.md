@@ -16,17 +16,23 @@ the vendor capture:
 
 `ui_vendor` now renders `SCREEN_SUBLAUNCHER` from the JSON picture branch with
 clean captured card backgrounds (`sublauncher_card_N_bg`) and live label/value
-text, centered in the 235 px card. The label/value pen lines are fixed from the
-reference strings; localized ink heights then vary with the font as in the
-vendor. Dutch live text measured against the capture:
+text. The text surface is the vendor row box: `SettingItemsListBoxRowItems_sublauncher`
+`text1` is **240x54** (rectangles.tsv hash `0x0db5c59b`, offset 10,-134), so the
+text canvas is 240 px wide and is blitted at the checked runtime item origin
+(`runtime_item_x` = 199), not the 235 px card inset. The label/value pen lines
+are fixed from the reference strings; localized ink heights then vary with the
+font as in the vendor. Dutch live text measured against the capture:
 
 ```text
 card 0 label cap (86,19)-(147,37)  live (87,19)-(148,37)
-card 1 label cap (34,19)-(198,42)  live (35,19)-(199,42)
-card 2 value cap (87,77)-(141,102) live (90,77)-(144,102)
+card 0 value cap (52,76)-(184,109) live (51,76)-(183,109)
+card 1 label cap (34,19)-(198,42)  live (36,19)-(200,42)
+card 1 value cap (52,76)-(181,102) live (53,76)-(182,102)
+card 2 label cap (48,19)-(184,37)  live (50,19)-(186,37)
+card 2 value cap (87,77)-(141,102) live (91,77)-(145,102)
 ```
 
-All six boxes are within 4 px; most are within 1 px. The QEMU check enforces
+All six boxes are within 4 px; five are within 2 px. The QEMU check enforces
 that tolerance. This is a live text path, not the baked cutout.
 
 ## All interface languages
@@ -51,21 +57,49 @@ uses keyed labels (`MODE`, `ENERGY_SAVING`, `PICTURE_ZOOM`) and value keys
 `oa_langprofile_sanitize` strips Unicode directional formatting controls
 (U+200E/200F, U+202A..202E, U+2066..2069) that the font cannot draw. The Hebrew
 `ENERGY_SAVING` string carries U+202C; stripping it makes the existing Hebrew
-glyphs measurable. This is **not** BiDi reordering or shaping.
+glyphs measurable. The sanitizer is not BiDi reordering or shaping.
 
-The 41-locale font audit:
+## Vendor fit and RTL policy
+
+`SettingItemsListBoxRow::renderItems` (0x00d54400) does not shrink or measure
+the translation for the card. It sets:
+
+- the label `SVGTextBox` to font `0x1a` and `SVGTextBox::setElipses(false)`;
+- the value `SVGButton` to font `0x1e`, `SVGButton::setElipses(true)` and text
+  alignment 4.
+
+There is no width-based font selection in the row path. `UIFramework`'s
+translation-fit check is only a diagnostic chord from
+`DemoApp::preHandleKeyPressMessage` (0xcff854), not production layout. So at
+the 240 px row box the label policy is **clip**, and the value policy is
+**elide** (no value overflows in this branch).
+
+The profile's Hebrew values are already stored in **visual order**: `MODE` is
+`'בצמ'` (the display form of `'מצב'`), `ENERGY_SAVING` is `'למשחב ןוכסח'`
+(`'חסכון בחשמל'`), `NATURAL` is `'יעבט'` (`'טבעי'`). `Dictionary` runs
+`ArabicShaping::shapeString(...,true)`, which converts the stored visual form
+to logical order for the vendor's RTL text engine; that engine lays logical
+text out right-to-left. Because `ui_vendor` draws with a plain LTR bitmap
+renderer, it must use the stored visual order directly and **must not reverse
+it again**. A QEMU Hebrew frame renders `מצב`, `חסכון בחשמל`,
+`קירוב והרחקה של תמונה`, `טבעי`, `מקסימום` and LTR `16:9`.
+
+Arabic/Persian values are different: they are stored logical and already
+carry Arabic presentation forms (`MODE` `'ﻭﺿﻊ'`). Drawing them LTR without a
+run-aware visual reorder would be wrong; that remains open.
+
+The 41-locale font audit against the vendor 240 px box:
 
 ```text
 ok sub text locales: 41 locales; max label 264 px, max value 183 px;
-3 label/0 value overflow, 0 missing glyphs
+2 label/0 value overflow, 0 missing glyphs
 label overflow: bul ENERGY_SAVING 253 px
-label overflow: lit PICTURE_ZOOM 239 px
 label overflow: ukr PICTURE_ZOOM 264 px
 ```
 
-The 235 px live card clips those three long labels symmetrically. The vendor
-translation-fit/ellipsis/shrink policy is not yet decoded, and RTL visual order
-is still left-to-right; do not claim full all-language visual parity.
+Lithuanian `PICTURE_ZOOM` (239 px) now fits. Bulgarian and Ukrainian clip
+symmetrically in the 240 px text surface, matching `setElipses(false)`. Values
+max 183 px, so the vendor value ellipsis path is not exercised.
 
 ## Runtime 300 ms animation
 
@@ -83,11 +117,15 @@ emits the key event. Captured card 0 bottom edge:
 static 405; frames grow 407, 411, 415, 420, 424, 428, 432, 436, 442, 447, 450
 ```
 
-The final 450 is the 130 px card scaled by 1.35 (175 px). The repeatable check:
+The final 450 is the 130 px card scaled by 1.35 (175 px). The repeatable check
+accepts `OA_QEMU_LANG`; Dutch compares against p0/03, other locales assert the
+text stays inside the 240 px box and the same key/timer path runs:
 
 ```text
-ok qemu sub-launcher live: Dutch text bboxes within 4 px;
-key 22 timer card bottom 405 -> 450 over 17 frames
+ok qemu sub-launcher live: Dutch text within 4 px of p0/03;
+key 22 timer card bottom 405 -> 450 over 14 frames
+ok qemu sub-launcher live: heb text inside the 240 px box;
+key 22 timer card bottom 405 -> 450 over 27 frames
 ```
 
 ## Asynchronous i18n quiesce
@@ -111,17 +149,21 @@ Most other modules still stop synchronously.
 ok langprofile: 41 locales, localized MODE/ENERGY_SAVING/PICTURE_ZOOM and eng->key fallback
 ok i18n service: 41 locales, Dutch/English reload and failed-load isolation
 ok i18n quiesce: reload fails fast, stays responsive, retry completes
-ok sub text locales: 41 locales; max label 264 px, max value 183 px; 3 label/0 value overflow, 0 missing glyphs
-ok qemu sub-launcher live: Dutch text bboxes within 4 px; key 22 timer card bottom 405 -> 450 over 17 frames
+ok sub text locales: 41 locales; max label 264 px, max value 183 px; 2 label/0 value overflow, 0 missing glyphs
+ok qemu sub-launcher live: Dutch text within 4 px of p0/03; key 22 timer card bottom 405 -> 450 over 14 frames
+ok qemu sub-launcher live: heb text inside the 240 px box; key 22 timer card bottom 405 -> 450 over 27 frames
 full_check=0
 ```
 
 ## Limits
 
-- RTL/BiDi reordering and shaping are not implemented; Hebrew/Arabic strings
-  are control-stripped and drawn left-to-right.
-- Three long labels exceed the 235 px card and are clipped; the vendor
-  translation-fit policy remains undecoded.
+- Hebrew now uses the stored visual order. Arabic/Persian are stored logical
+  and pre-shaped; their run-aware visual reorder/shaping remains open. Mixed
+  Hebrew/Latin runs are drawn in the profile's stored order, not recomputed
+  with a BiDi algorithm.
+- Bulgarian and Ukrainian labels exceed the 240 px row box and clip; the vendor
+  value ellipsis path is decoded only from `setElipses(true)`, with no
+  overflowing value to exercise it.
 - The live values are the p0/03 captured state (`NATURAL`, `MAXIMUM_STR`,
   `ZOOM_MODE_16_9`), not live settings acquisition.
 - Font3/font12 identification and text positions are checked against the Dutch
