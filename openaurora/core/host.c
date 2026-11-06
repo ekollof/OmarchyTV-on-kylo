@@ -719,6 +719,8 @@ static int poll_once(oa_host *h)
     }
 
     int timeout = next_timeout_ms(h);
+    if (oa_control_pending(h))
+        timeout = 0;
     if (h->heartbeat_path[0]) {
         uint64_t now = oa_now_ms();
         int hb_timeout = h->heartbeat_due > now ? (int)(h->heartbeat_due - now) : 0;
@@ -874,6 +876,7 @@ int oa_host_run(oa_host *h)
     while (h->running && !h->stop_requested) {
         oa_host_dispatch_posts(h);
         oa_host_sched_pump(h);
+        oa_control_pump(h);
         fire_due_timers(h);
         if (!h->running || h->stop_requested)
             break;

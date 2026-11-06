@@ -1930,6 +1930,30 @@ check-module-matrix-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ticker.so $(BU
 	node tests/module_matrix_ipc.cjs $(abspath $(BUILD))
 check: check-module-matrix-ipc
 
+# Additive batch queue: one module lifecycle operation per host-loop turn.
+$(BUILD)/pic/tests__mod_batch_%/tests/batch_fixture.o: tests/batch_fixture.c include/openaurora/module.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DBATCH_MODULE_NAME='"batch_$(*)"' -fPIC -c -MMD -MP -o $@ $<
+
+$(BUILD)/tests/mod_batch_%.so: $(BUILD)/pic/tests__mod_batch_%/tests/batch_fixture.o
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $< $(LDFLAGS)
+
+BATCH_FIXTURES := a b c
+$(BUILD)/tests/batch_load: tests/batch_load.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $< $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-batch-load
+check-batch-load: $(BUILD)/tests/batch_load $(addprefix $(BUILD)/tests/mod_batch_,$(addsuffix .so,$(BATCH_FIXTURES)))
+	@$(BUILD)/tests/batch_load $(BUILD)/tests
+check: check-batch-load
+
+.PHONY: check-batch-ipc
+check-batch-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_power.so
+	node tests/batch_ipc.cjs $(abspath $(BUILD))
+check: check-batch-ipc
+
 .PHONY: check-fixture-modules-ipc
 check-fixture-modules-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_theme.so $(BUILD)/modules/mod_ui_profile.so $(BUILD)/modules/mod_audio_amp_profile.so $(BUILD)/modules/mod_audio_curve.so $(BUILD)/modules/mod_audio_mixer.so $(BUILD)/oa-audio-broker
 	node tests/fixture_modules_ipc.cjs $(abspath $(BUILD))

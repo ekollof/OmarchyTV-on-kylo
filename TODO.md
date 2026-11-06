@@ -221,6 +221,18 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
       cleanup gate below. Later gates are in the following entries; the open
       generic item lists what is still synchronous.
 
+- [x] Non-blocking control batch loader: additive `load-batch`/`start-batch`
+      queue one module dlopen/init or load+start per host-loop turn (64-entry
+      FIFO, immediate `queued N`/`queued N dropped M` reply), and the loop
+      skips the poll wait while entries remain. `tests/batch_load.c` asserts
+      one module per pump, nothing before the pump, failure continuation,
+      overflow and oversized-name handling; `tests/batch_ipc.cjs` saves
+      `queued 3` + `no such module: ui_anim` from one pipelined write, then
+      observes all three load/start with no further commands. Host, focused
+      ASan/UBSan, full suite and ARM build pass. The module scheduler is not
+      used because its contract forbids lifecycle calls. Limit: one slow
+      `init`/`start` still blocks its own turn. OA-CLIENT-ASYNC.
+
 - [x] First production GPU scene-path probe on fb1: staged
       graphics/scene_display + oa-scene-broker/scene-renderer.so, painted the
       5-rail/12-card portal and handled 14 physical BLAST presses. Non-reload
@@ -1158,8 +1170,8 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       decoded and implemented. Types 2/7 and 3, and the analog RF tails remain.
       SI2151 is the full Silicon Labs L1/L2/L3 `PowerUpWithPatch` + property
       driver, not this profile's path (hwprofile selects SAL 0xd/MxL661).
-      Hardware acceptance is blocked by the owner's read-only/no-takeover
-      instruction. Do not touch IIC/GPIO while stock owns the devices.
+      Hardware acceptance awaits the scheduled owner takeover window and has
+      not run. Do not touch IIC/GPIO while stock owns the devices.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff
       tests pass host/sanitizer/ARM-qemu. CEC-AUDIO-CONTRACT.

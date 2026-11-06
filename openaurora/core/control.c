@@ -47,6 +47,61 @@ struct client {
     char output[CONTROL_QUEUE_MAX];
 };
 
+/* Additive non-blocking module batches: one lifecycle operation per loop turn,
+ * so a stack of modules does not monopolise the control loop. Each individual
+ * init/start still runs to completion on the loop thread — the batch only
+ * bounds the burst, it cannot make one slow module call asynchronous. */
+#define BATCH_MAX 64
+#define BATCH_NAME 128
+static struct {
+    char name[BATCH_NAME];
+    int start;
+} g_batch[BATCH_MAX];
+static unsigned g_batch_head, g_batch_count;
+
+static int batch_enqueue(const char *name, int start)
+{
+    if (!name || !*name || strlen(name) >= BATCH_NAME)
+        return 0;
+    if (g_batch_count >= BATCH_MAX)
+        return 0;
+    unsigned tail = (g_batch_head + g_batch_count) % BATCH_MAX;
+    memcpy(g_batch[tail].name, name, strlen(name) + 1);
+    g_batch[tail].start = start;
+    g_batch_count++;
+    return 1;
+}
+
+/* One module operation per call. The loop runs this before polling and stops
+ * waiting in poll() while work remains, so entries advance one per turn. */
+void oa_control_pump(oa_host *h)
+{
+    if (!h || h->sleep_cycle || h->shutting_down || g_batch_count == 0)
+        return;
+    char name[BATCH_NAME];
+    int start = g_batch[g_batch_head].start;
+    memcpy(name, g_batch[g_batch_head].name, sizeof name);
+    g_batch_head = (g_batch_head + 1) % BATCH_MAX;
+    g_batch_count--;
+
+    oa_mod *m = oa_host_find_module(h, name);
+    if (!m)
+        m = oa_module_load(h, name);
+    if (!m) {
+        h->api.log(h, OA_LOG_ERROR, "batch: load %s failed", name);
+        return;
+    }
+    if (start && oa_module_start(h, m) != 0)
+        h->api.log(h, OA_LOG_ERROR, "batch: start %s failed", name);
+}
+
+int oa_control_pending(oa_host *h)
+{
+    if (!h || h->sleep_cycle || h->shutting_down)
+        return 0;
+    return g_batch_count != 0;
+}
+
 static struct {
     int listen_fd;
     uint32_t listen_watch;
@@ -236,10 +291,16 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  list                     module table\n"
                  "  status <name>            details\n"
                  "  load <name|path>         dlopen + init\n"
+                 "  load-batch <names...>    queue loads, one per loop turn\n"
+                 "  start-batch <names...>   queue load+start, one per loop turn\n"
                  "  start <name>             start (after deps)\n"
                  "  stop <name>              stop\n"
                  "  unload <name> [--force]  stop + destroy + dlclose\n"
-                 "  reload <name> [--force]  hot reload with state handoff\n"
+                 "  reload <name> [--force]  hot reload with state handoff\n");
+        if (outlen) {
+            size_t used = strlen(outbuf);
+            if (used < outlen)
+                snprintf(outbuf + used, outlen - used,
                  "  suspend | resume         standby hooks for all modules\n"
                  "  standby                  coordinated power service request\n"
                  "  skin [name]              query/select ui_<name>, with vendor fallback\n"
@@ -307,6 +368,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  mixer-cancel <ticket>    discard/drain query\n"
                  "  loglevel <0-3>\n"
                  "  quit\n");
+        }
         return 0;
     }
     if (!strcmp(cmd, "skin")) {
@@ -1426,6 +1488,33 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         snprintf(outbuf, outlen, "%s %s\n", m ? "ok" : "failed", a1);
         return m ? 0 : -1;
     }
+    if (!strcmp(cmd, "load-batch") || !strcmp(cmd, "start-batch")) {
+        if (!a1) {
+            snprintf(outbuf, outlen, "usage: %s <name> [name...]\n", cmd);
+            return -1;
+        }
+        int start = cmd[0] == 's';
+        int queued = 0, dropped = 0;
+        const char *head[7] = { a1, a2, a3, a4, a5, a6, a7 };
+        for (int i = 0; i < 7 && head[i]; i++) {
+            if (batch_enqueue(head[i], start))
+                queued++;
+            else
+                dropped++;
+        }
+        char *more = NULL;
+        while (save && (more = strtok_r(NULL, " \t\r\n", &save)) != NULL) {
+            if (batch_enqueue(more, start))
+                queued++;
+            else
+                dropped++;
+        }
+        if (dropped)
+            snprintf(outbuf, outlen, "queued %d dropped %d\n", queued, dropped);
+        else
+            snprintf(outbuf, outlen, "queued %d\n", queued);
+        return 0;
+    }
     if (!strcmp(cmd, "start") && a1) {
         oa_mod *m = oa_host_find_module(h, a1);
         int rc = m ? oa_module_start(h, m) : -1;
@@ -1678,6 +1767,7 @@ int oa_control_start(oa_host *h, const char *sock_path)
 {
     if (g_ctl.owner) return -1;
     memset(&g_ctl, 0, sizeof g_ctl);
+    g_batch_head = g_batch_count = 0;
     g_ctl.owner = h;
     g_ctl.listen_fd = -1;
     for (int i = 0; i < MAX_CLIENTS; i++)
@@ -1717,6 +1807,7 @@ fail:
 void oa_control_stop(oa_host *h)
 {
     if (g_ctl.owner != h) return;
+    g_batch_head = g_batch_count = 0;
     for (int i = 0; i < MAX_CLIENTS; i++)
         client_close(h, &g_ctl.clients[i]);
     if (g_ctl.stdin_watch) h->api.watch_del(h, g_ctl.stdin_watch);

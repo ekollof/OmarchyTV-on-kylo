@@ -695,7 +695,7 @@ the raw 0x5c channel record and the verified 0x180 lock/strength/quality
 fields are parsed/tests; the 0x180 tbb dispatch/case targets are recovered and types 1/6/8 are
 decoded/implemented; types 2/7/3 and the analog tails remain. SI2151 is the full Silicon Labs
 patch/property driver, not this profile's path. Hardware acceptance remains
-blocked by the owner's read-only/no-takeover instruction. TUNER-BRINGUP.
+pending the scheduled owner takeover window (the gate has never run). TUNER-BRINGUP.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
@@ -734,7 +734,12 @@ Control client, 2026-11-05: `oa-client` has a default 5 s timeout and
 no-wait. `mod_ir` also has the ABI 3 worker cleanup gate: a slow UART/BLAST
 close returns EAGAIN, the first reload fails fast, and a retry completes; the
 pty + 400 ms-delay test passes. Later gates: i18n, settings, ui_vendor,
-ui_engine, display, source. OA-CLIENT-ASYNC.
+ui_engine, display, source. OA-CLIENT-ASYNC. The host now also has additive
+`load-batch`/`start-batch`: one module dlopen/init or load+start per loop
+turn, an immediate `queued N` reply (64-entry FIFO, `dropped M` on overflow),
+and `poll_once` skips its wait while entries remain. Fixture and real-socket
+tests pass; the scheduler is not used because its contract forbids lifecycle
+calls. Limit: one slow init/start still blocks that turn.
 
 Offline IR IPC, 2026-11-05: `tests/ir_ipc.cjs` now drives `mod_ir` over the
 real Unix control socket with plat/recorder/ui_engine/ui_vendor fixtures

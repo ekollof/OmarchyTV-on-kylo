@@ -723,7 +723,7 @@ the raw 0x5c channel record and the verified 0x180 lock/strength/quality
 fields are parsed/tests; the 0x180 tbb dispatch/case targets are recovered and types 1/6/8 are
 decoded/implemented; types 2/7/3 and the analog tails remain. SI2151 is the full Silicon Labs
 patch/property driver, not this profile's path. Hardware acceptance remains
-blocked by the owner's read-only/no-takeover instruction. TUNER-BRINGUP.
+pending the scheduled owner takeover window (the gate has never run). TUNER-BRINGUP.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches the local artifact. Staged
@@ -763,7 +763,12 @@ now has the ABI 3 worker cleanup gate: `m_quiesce` transfers UART/BLAST fds and
 libdl handles, returns EAGAIN while closing, and a later retry completes. The
 pty + 400 ms-delay test shows fail-fast reload, responsive status and successful
 retry; host/ARM builds pass. Later gates: i18n, settings, ui_vendor,
-ui_engine, display, source. OA-CLIENT-ASYNC-2026-11-05.
+ui_engine, display, source. OA-CLIENT-ASYNC-2026-11-05. The host now also has
+additive `load-batch`/`start-batch`: one module dlopen/init or load+start per
+loop turn, immediate `queued N` (64-entry FIFO, `dropped M` on overflow), and
+`poll_once` uses a zero timeout while entries remain. Fixture and real-socket
+tests pass; the scheduler is not used because its contract forbids lifecycle
+calls. Limit: one slow init/start still blocks that turn.
 
 Temporary takeover, 2026-11-05: openaurora owned fb1 while `aurora.elf` was
 stopped. Vendor Startpagina was the live skin. Right through the shipped IR

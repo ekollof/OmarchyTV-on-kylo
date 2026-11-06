@@ -197,6 +197,10 @@ const char *oa_state_name(int st);
 /* control.c */
 int oa_control_start(oa_host *h, const char *sock_path);
 void oa_control_stop(oa_host *h);
+/* Additive module batches: one load/start per call, run by the host loop.
+ * pending() is true while awake work remains, so poll() must not block. */
+void oa_control_pump(oa_host *h);
+int oa_control_pending(oa_host *h);
 /* returns 0 ok, -1 error, 1 = quit requested */
 int oa_control_command(oa_host *h, char *line, char *out, size_t outlen);
 
