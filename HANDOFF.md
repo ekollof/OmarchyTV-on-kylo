@@ -144,9 +144,9 @@ Ondertitels155 and blob+0xc=2, survives restart; setting focus450;
 Down,Down,Right AUTO176/energy4; set:MODE=CINEMA writes mode2 and applies
 energy0 (Cinema/Uit); m_current_source5 selects config5 (DYNAMIC/OFF151/36).
 Host test checks the shipped DB values and reload. Limits: serialized blob,
-not the live UserPreferences object; own source screen does not write
-m_current_source yet; HDR/full-mode zoom open; TV DB write needs
-settings.readonly=0.
+not the live UserPreferences object; Bronlijst row2 (HDMI1) now writes 5 and
+re-syncs the cards, but the video HAL is not switched; HDR/full-mode zoom
+open; TV DB write needs settings.readonly=0.
 SUBLAUNCHER-VALUES.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over

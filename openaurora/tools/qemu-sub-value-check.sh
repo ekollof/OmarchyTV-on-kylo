@@ -176,6 +176,31 @@ OA_QEMU_MODULES="$MODULES" \
     "$ROOT/openaurora/tools/qemu-ui-layout.sh" "$STAGE" >/dev/null
 cp "$STAGE/frame.0" "$STAGE/source5.rgba"
 
+# 8. Source screen: HDMI1 is Bronlijst row 2 -> m_current_source 5. Selecting
+#    it writes the setting through the service and re-syncs the cards in the
+#    same process; open:sub_launcher then shows config 5 (DYNAMIC/OFF).
+python3 - "$STAGE/picture.db" 1 <<'PY'
+import sqlite3, sys
+db = sqlite3.connect(sys.argv[1])
+db.execute("UPDATE Settings SET m_current_source=?", (int(sys.argv[2]),))
+db.commit()
+PY
+cp "$STAGE/config" "$STAGE/config.save"
+sed -i 's/^ui.screen=.*/ui.screen=sources/' "$STAGE/config"
+printf 'ui.src=2\n' >>"$STAGE/config"
+OA_QEMU_MODULES="$MODULES" OA_QEMU_HOLD_MS=600 OA_QEMU_KEYS=53 \
+OA_QEMU_ACTION="open:sub_launcher" \
+    "$ROOT/openaurora/tools/qemu-ui-layout.sh" "$STAGE" >/dev/null
+n=$(last_frame)
+cp "$STAGE/frame.$n" "$STAGE/source.rgba"
+mv "$STAGE/config.save" "$STAGE/config"
+python3 - "$STAGE/picture.db" <<'PY'
+import sqlite3, sys
+value = sqlite3.connect(sys.argv[1]).execute(
+    "select m_current_source from Settings").fetchone()[0]
+assert value == 5, f"source screen wrote {value}, expected 5"
+PY
+
 python3 - "$STAGE" <<'PY'
 import sys
 from PIL import Image
@@ -250,6 +275,14 @@ if not s0 or not (145 <= s0[2] - s0[0] <= 170):
 if not s1 or not (25 <= s1[2] - s1[0] <= 55):
     raise SystemExit(f"m_current_source=5 did not select OFF energy: {s1}")
 
+source = load(f"{stage}/source.rgba")
+q0 = ink(source, 199, 199 + 240, 345, 400)
+q1 = ink(source, 199 + 250, 199 + 250 + 240, 345, 400)
+if not q0 or not (145 <= q0[2] - q0[0] <= 170):
+    raise SystemExit(f"source-select did not resync DYNAMIC: {q0}")
+if not q1 or not (25 <= q1[2] - q1[0] <= 55):
+    raise SystemExit(f"source-select did not resync OFF: {q1}")
+
 mode = load(f"{stage}/mode.rgba")
 m0 = ink(mode, 199, 199 + 240, 345, 400)
 m1 = ink(mode, 199 + 250, 199 + 250 + 240, 345, 400)
@@ -262,5 +295,6 @@ print(f"ok qemu sub-launcher value: m_current_source=1 gives "
       f"(DB field 2), survives restart; setting: focus bottom {bottom}; "
       f"Right AUTO width {ebox[2] - ebox[0]}; MODE Cinema width "
       f"{m0[2] - m0[0]}, energy OFF width {m1[2] - m1[0]}; source5 gives "
-      f"DYNAMIC/OFF ({s0[2] - s0[0]}/{s1[2] - s1[0]})")
+      f"DYNAMIC/OFF ({s0[2] - s0[0]}/{s1[2] - s1[0]}); source-screen HDMI1 "
+      f"writes 5 and resyncs ({q0[2] - q0[0]}/{q1[2] - q1[0]})")
 PY

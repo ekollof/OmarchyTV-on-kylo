@@ -281,15 +281,22 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       energy0 (Cinema/Uit); m_current_source5 selects config5 and renders
       DYNAMIC/OFF151/36. SUBLAUNCHER-VALUES.
 
+- [x] Bronlijst source selection writes the picture index and re-syncs:
+      the ICE descriptor table at0x0175de8c gives CVBS2, HDMI1-3 4-6, YPbPr8,
+      PC9, WiDi11, APM12; m_current_source=index+1 (TV0). ui_vendor's
+      `SRC_PICTURE_INDEX={0,3,5,6,7,9,10,12,13}`; source-screen Select writes
+      `m_current_source` through settings and calls `picture_sync_index`.
+      QEMU: HDMI1 row2 → m_current_source5 and DYNAMIC/OFF (151/36) in the
+      same process. SUBLAUNCHER-VALUES.
+
 - [ ] Live picture backend details: the service uses the serialized settingsDB
-      blob, not the live `NovoPictureSettings`/`UserPreferences` object. The
-      index is derived from `m_current_source`, but the replacement's own
-      source-selection screen does not write `m_current_source` or switch the
-      video hardware yet. HDR energy variants (+0x446c/+0xa10/+0xa48) and the
-      format-0 `isFullModeApplicable` zoom choice are open. Writing the TV's DB
-      requires `settings.readonly=0` and is a deliberate deployment decision.
-      Do not apply the row to the category rail or an invented portal card
-      row.
+      blob, not the live `NovoPictureSettings`/`UserPreferences` object, and
+      the source screen does not call the video HAL
+      (`Hal_Vin_*`/`EASITVControlInterface`) to switch the input. HDR energy
+      variants (+0x446c/+0xa10/+0xa48) and the format-0
+      `isFullModeApplicable` zoom choice are open. Writing the TV's DB requires
+      `settings.readonly=0`. Do not apply the row to the category rail or an
+      invented portal card row.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
       the vendor 30 ms APNG/10 ms controller cadence. Tighten the compositor

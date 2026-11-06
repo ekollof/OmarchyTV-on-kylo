@@ -147,10 +147,13 @@ m_current_source5 selects config5 and renders DYNAMIC/OFF151/36. Host test
 asserts source1 values against the shipped DB and reload. mod_settings now has
 the ABI3 async quiesce gate (detach DB/flags, close on worker); control
 picture-state + reload proof. ir/i18n/settings are the async modules.
-Limits: serialized DB blob, not the live UserPreferences object; own source
-screen does not write m_current_source yet; HDR energy variants/full-mode zoom
-not implemented; TV DB write needs settings.readonly=0. SUBLAUNCHER-VALUES and
-SETTINGS-QUIESCE.
+The Bronlijst rows map to ICE descriptor indices2/4/5/6/8/9/11/12 (CVBS,
+HDMI1-3, YPbPr, PC, WiDi, APM), so m_current_source = 0,3,5,6,7,9,10,12,13;
+source-screen Select writes it through settings and re-syncs the cards
+(QEMU HDMI1 row2 →5, DYNAMIC/OFF151/36 in-process). Limits: serialized DB
+blob, not the live UserPreferences object; video HAL/source switching not
+called; HDR energy variants/full-mode zoom not implemented; TV DB write needs
+settings.readonly=0. SUBLAUNCHER-VALUES and SETTINGS-QUIESCE.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
 Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,

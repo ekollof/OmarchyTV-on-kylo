@@ -75,16 +75,16 @@ for _ in range(100):
     if os.path.exists(frame + ".0"):
         break
     time.sleep(0.05)
-if action:
-    reply = command("ui-action " + action)
-    if not reply.startswith("ok"):
-        sys.exit(f"ui-action {action}: {reply}")
 if key:
     keys.append(key)
 for one in keys:
     reply = command("key " + one)
     if not reply.startswith("ok"):
         sys.exit(f"key {one}: {reply}")
+if action:
+    reply = command("ui-action " + action)
+    if not reply.startswith("ok"):
+        sys.exit(f"ui-action {action}: {reply}")
 if (action or keys) and hold:
     time.sleep(hold / 1000.0)
 s.close()

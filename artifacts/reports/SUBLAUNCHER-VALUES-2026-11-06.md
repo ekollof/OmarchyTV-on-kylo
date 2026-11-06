@@ -86,6 +86,16 @@ shadow:
 The old `KEY=index` state file and its code are gone. A missing
 `picture.settings` provider leaves the p0/03 defaults in place.
 
+## Source selection
+
+The Bronlijst rows map to the ICE descriptor index, not the row number. The
+descriptor table at 0x0175de8c has groups at +0x28: CVBS index2, HDMI1..3
+indices4..6, YPbPr 8, VGA/PC 9, WiDi 11, APM 12. `getFirstHDMIIndex` returns 4
+and `setCurrentExtSrc(4)` writes `m_current_source=5`. `ui_vendor` now has
+`SRC_PICTURE_INDEX = {0,3,5,6,7,9,10,12,13}` for the nine rows; selecting a row
+writes `m_current_source` through `settings` and calls `picture_sync_index` so
+the cards switch to that source's 0x240 slot immediately.
+
 ## Verification
 
 Host, against a copy of the shipped settingsDB:
@@ -105,7 +115,8 @@ writable copy of the DB:
 ok qemu sub-launcher value: m_current_source=1 gives NATURAL/MAXIMUM/16:9
 (132/129/54); 16:9 -> 155 (DB field 2), survives restart; setting: focus
 bottom 450; Right AUTO width 176; MODE Cinema width 105, energy OFF width 36;
-source5 gives DYNAMIC/OFF (151/36)
+source5 gives DYNAMIC/OFF (151/36); source-screen HDMI1 writes 5 and
+resyncs (151/36)
 ```
 
 The default widths 132/129/54 are the p0/03 vendor capture's card 0/1/2
@@ -117,8 +128,10 @@ renders 155 px; a fresh process renders the same; `setting:ENERGY_SAVING`
 reaches the 450 px scaled bottom; `Down,Down,Right` writes energy 4 and renders
 AUTO; `set:MODE=CINEMA` writes mode 2 and applies that mode's energy 0,
 rendering Cinema and Uit; setting `m_current_source=5` in the DB and restarting
-selects config 5 and renders DYNAMIC/OFF (151/36 px), proving the source
-mapping.
+selects config 5 and renders DYNAMIC/OFF (151/36 px). Finally the source screen
+starts at HDMI1 row 2, Select writes `m_current_source=5` through the settings
+service, and `open:sub_launcher` shows DYNAMIC/OFF (151/36 px) in the same
+process; the DB assertion confirms the stored value is 5.
 
 The existing text/oracle checks still pass:
 
@@ -136,10 +149,11 @@ full_check=0
   the firmware data, but a live vendor object was not executed. The separate
   `m_picture_mode_preset_key` and `m_last_zoom_mode` columns are not updated.
 - The configuration index is derived from `m_current_source`, matching the
-  firmware identity. The replacement's own source-selection screen does not
-  yet write `m_current_source` or switch the video hardware, so changing the
-  row in openaurora does not move the picture slot until source switching is
-  implemented. `InputManager::getCurrentExtSrc` itself is not called.
+  firmware identity, and the Bronlijst Select now writes it and re-syncs the
+  cards. It does **not** call `Hal_Vin_*`/`EASITVControlInterface` to switch
+  the video hardware; `InputManager::getCurrentExtSrc` itself is not called.
+  The row mapping is the ICE descriptor table above; a runtime-disabled or
+  reordered interface list would need the same source-list service.
 - HDR energy variants (`+0x446c`, `+0xa10`, `+0xa48`) and the format-0
   `isFullModeApplicable` zoom choice are not implemented; the non-HDR +0x0c
   field is used.

@@ -125,6 +125,14 @@ static const struct {
     { 84, 775, 264, 29 },
 };
 
+/* Bronlijst row -> m_current_source. Rows are TV, BACK AV, HDMI1..HDMI3,
+ * YPbPr, VGA/PC, Wireless Display, AV share. The ICE descriptor table puts
+ * CVBS at index2, HDMI1..3 at4..6, YPbPr at8, PC at9, WiDi at11, APM at12;
+ * setCurrentSource/current picture index is descriptor index + 1, TV is 0. */
+static const int SRC_PICTURE_INDEX[MAX_SOURCES] = {
+    0, 3, 5, 6, 7, 9, 10, 12, 13
+};
+
 enum { BAND_RAIL = 0, BAND_CARDS = 1 };
 
 /* Vendor source-selection panel (DialogSourceSelection.svg 185) and the nine
@@ -688,12 +696,11 @@ static int picture_source_now(struct ctx *c)
     return 0; /* TV/tuner fallback */
 }
 
-/* Refresh the card values from the firmware's serialized
- * PictureSettingConfiguration using the persisted current source. */
-static void picture_sync(struct ctx *c)
+/* Refresh the card values for an explicit picture-configuration index. */
+static void picture_sync_index(struct ctx *c, int source)
 {
-    if (!c->picture) return;
-    c->picture_source = picture_source_now(c);
+    if (!c->picture || source < 0 || source >= 20) return;
+    c->picture_source = source;
     int v;
     if (c->picture->get_mode(c->picture_source, &v) == 0 &&
         v >= 0 && v <= 4)
@@ -708,13 +715,20 @@ static void picture_sync(struct ctx *c)
     sub_text_free(c);
 }
 
+/* Refresh using the persisted current source. */
+static void picture_sync(struct ctx *c)
+{
+    if (c->picture) picture_sync_index(c, picture_source_now(c));
+}
+
 /* Persist one card value through NovoPictureSettings' UserPreferences
  * picture-configuration store. The UI keeps the new value even when the
  * database is read-only; the write failure is logged. */
 static void picture_commit(struct ctx *c, int card, int index)
 {
     if (!c->picture) return;
-    c->picture_source = picture_source_now(c);
+    if (c->picture_source < 0 || c->picture_source >= 20)
+        c->picture_source = picture_source_now(c);
     int rc;
     if (card == 0) {
         rc = c->picture->set_mode(c->picture_source, index);
@@ -2706,7 +2720,15 @@ static void move_key(struct ctx *c, uint8_t id)
         } else if (id == 10 || id == 48) {
             c->screen = SCREEN_PORTAL;
         } else if (id == 53 || id == 0x8a) {
+            int index = SRC_PICTURE_INDEX[c->src];
+            int rc = c->settings ?
+                c->settings->set_int("m_current_source", index) : -1;
+            if (rc)
+                c->api->log(c->api->priv, OA_LOG_WARN,
+                            "source: m_current_source write failed (%d)", rc);
+            picture_sync_index(c, index);
             emit_action(c, OA_ACTION_SELECT);
+            if (c->d) paint(c);
             return;
         } else {
             return;
