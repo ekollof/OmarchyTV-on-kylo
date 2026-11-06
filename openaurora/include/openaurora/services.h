@@ -254,11 +254,20 @@ typedef struct {
  * run first: audio prelude → plat_common_init("DVIF") → Hal_Gpio_Init → Hal_Iic_Init → VIN slots →
  * NDAL_VideoExt_OpenDevice(0,10). Modules that touch the HAL declare it in requires[] so the host
  * refuses to start them before it. */
+/* plat — vendor platform bring-up in vendor order. */
 #define OA_SVC_PLAT "plat"
 typedef struct {
     int (*is_ready)(void);   /* 1 = bring-up sequence completed, 0 = stopped; inspect stage_errors too */
     int (*stage_errors)(void); /* bitmask of the optional stages that failed */
 } oa_plat_iface;
+
+/* spi — recovered DEV_SPI transport over /conf/spi.bin or /dev/ntkspi.
+ * Read-only project boundary; no writer and no hardware-ownership claim. */
+#define OA_SVC_SPI "spi"
+typedef struct {
+    int (*size)(void); /* file-backend bytes, 0 for the device backend */
+    int (*read)(uint32_t offset, uint32_t len, void *buf); /* 1 full read, 0 failure */
+} oa_spi_iface;
 
 /* display — the OSD layer via fbdev. Published by mod_display. */
 #define OA_SVC_DISPLAY "display"

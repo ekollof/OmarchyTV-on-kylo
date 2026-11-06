@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_menu i18n ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels lua
+MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_menu i18n ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels lua spi
 # only these modules call the vendor HAL, so only they get the dependency
 VENDOR_MODULES := plat panel audio source display
 # modules that need a third-party library (sqlite) rather than the vendor HAL
@@ -1016,6 +1016,11 @@ $(BUILD)/modules/mod_power.so: $(call pic_objs,modules__mod_power,modules/power/
 	$(CC) -shared -o $@ $^ $(LDFLAGS)
 $(eval $(call emit_pics,modules__mod_power,modules/power/power.c,,))
 
+$(BUILD)/modules/mod_spi.so: $(call pic_objs,modules__mod_spi,modules/spi/spi.c common/spi_dev.c)
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_spi,modules/spi/spi.c common/spi_dev.c,,include/openaurora/module.h include/openaurora/services.h include/openaurora/spi_dev.h))
+
 $(BUILD)/modules/mod_ui_clock.so: $(call pic_objs,modules__mod_ui_clock,modules/ui_clock/ui_clock.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ $(LDFLAGS)
@@ -1187,6 +1192,25 @@ check-plat-startup-wait: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_plat.so
 	@test "$(TARGET)" = host || { echo "  skip plat startup wait: host-only (no vendor HAL)"; exit 0; }
 	node tests/plat_startup_wait.cjs $(abspath $(BUILD))
 check: check-plat-startup-wait
+
+$(BUILD)/tests/spi_dev: tests/spi_dev.c common/spi_dev.c include/openaurora/spi_dev.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) \
+	  -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=ioctl
+
+.PHONY: check-spi-dev
+check-spi-dev: $(BUILD)/tests/spi_dev
+	@$(BUILD)/tests/spi_dev
+check: check-spi-dev
+
+$(BUILD)/tests/spi_module: tests/spi_module.c modules/spi/spi.c common/spi_dev.c include/openaurora/module.h include/openaurora/services.h include/openaurora/spi_dev.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-spi-module
+check-spi-module: $(BUILD)/tests/spi_module
+	@$(BUILD)/tests/spi_module
+check: check-spi-module
 
 $(BUILD)/tests/sched: tests/sched.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)

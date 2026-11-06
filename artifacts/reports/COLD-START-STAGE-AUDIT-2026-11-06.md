@@ -45,13 +45,15 @@ The modular design assigns device ownership outside `plat`:
 | panel init | `mod_panel` PWM/backlight; not `DEV_PANEL_Init` |
 | NIM / NIM DTV | `mod_tuner` stub / NDAL frontend; not the vendor device init |
 | amp init | `mod_audio` / `mod_audio_mixer` / `audio_amp_profile` data; amp board lifecycle still open |
-| SPI open/init, MTD init | no owner module |
+| SPI open/init | `mod_spi` opt-in read-only transport; not autoloaded (SPI-MTD-NIM-STAGE) |
+| MTD init | no owner needed: `DEV_MTD_Init` only registers a debug menu |
 
 Calling `DEV_INI_Init` from `plat` would duplicate panel/source/tuner/audio
 ownership and run unrecovered device code under stock Aurora. The correct cold
 start needs one owner per stage, not a second monolithic call. The real
-SPI/MTD/NIM-DTV and amp/panel power stages remain unimplemented; this is part of
-why independent cold startup is still unaccepted.
+NIM-DTV task and amp/panel power stages remain unimplemented; SPI is available
+behind `spi.enable=1`. This is part of why independent cold startup is still
+unaccepted.
 
 ## Implementation: `plat-state`
 

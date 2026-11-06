@@ -600,6 +600,18 @@ check-plat-startup-wait asserts ready/0x0 after start and ENODEV after stop; ful
 suite all tests passed. Offline host stubs only; no cold boot/hardware
 acceptance. COLD-START-STAGE-AUDIT.
 
+spi/mtd/nim stages, 2026-11-06: DEV_MTD_Init@0x85419c only registers a debug
+menu, so no cold-start MTD owner is needed. DEV_SPI_Open@0x858d0c prefers
+/conf/spi.bin (rb+/rb) and else /dev/ntkspi O_RDWR; read uses fseek/fread or
+ioctl0x8018531e with {offset,size,buf,0,0,0}, returning1/0. Added
+common/spi_dev + opt-in read-only mod_spi service (spi.enable=0, not
+autoloaded); fake file/device tests wrap open/close/ioctl and cover
+bounds/failure/zero-length. ASan clean, full suite all tests passed, QEMU pass,
+ARM ELF32 libc-only. DEV_NIM_DTV_Init@0x861678 creates a DTV task and remains
+hardware/tuner work; SPI writes/control and real /dev/ntkspi untested.
+33/36 descriptors have deferred/scheduler gates; plat/power/spi are audited
+synchronous (spi close is fclose/close, no worker). SPI-MTD-NIM-STAGE.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches the local artifact. Staged
 build-tv-v3 openaurora (sha256 c03a68a1...) + mod_audio_amp_profile.so

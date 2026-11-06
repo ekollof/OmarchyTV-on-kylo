@@ -567,6 +567,20 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       stop; full suite `all tests passed`. Offline host stubs only; no cold
       boot or hardware acceptance. COLD-START-STAGE-AUDIT.
 
+- [x] SPI/MTD/NIM-DTV stage recovery: `DEV_MTD_Init` @0x0085419c only registers
+      a debug menu, so no cold-start MTD owner is needed. `DEV_SPI_Open`
+      @0x00858d0c prefers `/conf/spi.bin` (`rb+`/`rb`) and otherwise
+      `/dev/ntkspi` `O_RDWR`; reads use `fseek/fread` or
+      `ioctl(0x8018531e)` with a 24-byte `{offset,size,buf,0,0,0}` request and
+      return 1/0. Added `common/spi_dev.c` and an opt-in read-only `spi` v1
+      module (`spi.enable=0`, not autoloaded). Fake file/device tests wrap
+      open/close/ioctl and cover bounds, NULL/zero-length and ioctl failure;
+      focused ASan/UBSan clean, full suite `all tests passed`, QEMU pass; ARM
+      module ELF32 and libc-only. `DEV_NIM_DTV_Init` @0x00861678 creates a DTV
+      task and remains hardware/tuner work; SPI writes/control and real
+      `/dev/ntkspi` are untested. 33/36 descriptors have deferred/scheduler
+      gates; `plat`/`power`/`spi` are audited synchronous. SPI-MTD-NIM-STAGE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
       `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`/`ui_diag`/`ui_anim`/`ui_clock`/`ticker`/`ui_console`/`ui_omarchy`,
@@ -581,10 +595,11 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       `ui_anim`, `ui_clock`, `ticker`, `ui_console` and `ui_omarchy` use the
       host `sched`; the others use workers. `lua` unpublishes
       `ui.lua` and rejects hook/reload while a fetch child is unreaped.
-      `graphics` and `scene_display` have their own non-pthread gates. `plat`
-      and `power` have no deferable cleanup and keep synchronous stop by
-      design; their control-socket test asserts immediate stop/reload and
-      service invalidation (PLAT-POWER-QUIESCE).
+      `graphics` and `scene_display` have their own non-pthread gates. `plat`,
+      `power` and `spi` have no deferable cleanup and keep synchronous stop by
+      design; the plat/power control-socket test asserts immediate stop/reload
+      and service invalidation (PLAT-POWER-QUIESCE), and `spi.close` is a
+      synchronous fclose/close (SPI-MTD-NIM-STAGE).
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in
@@ -1785,8 +1800,9 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       vendor `/tmp/ntkdriver_completed` wait before its HAL prelude, with tests
       and a view-only live-marker check (PLAT-STARTUP-WAIT); that is ordering,
       not a cold boot. The `DEV_INI_Init` device stages are audited and mapped
-      to owners (COLD-START-STAGE-AUDIT); SPI/MTD/NIM-DTV and amp/panel power
-      remain unimplemented. A temporary fb1 takeover on
+      to owners (COLD-START-STAGE-AUDIT); the SPI transport is now an opt-in
+      module with fake tests, MTD needs no owner, and NIM-DTV/amp/panel power
+      remain unimplemented (SPI-MTD-NIM-STAGE). A temporary fb1 takeover on
       2026-11-05 showed scanout, injected IR, vendor fallback and resume, then
       a failed direct relaunch; the owner had the watchdog reboot stock Aurora
       (TAKEOVER-2026-11-05). Cold boot without the vendor process, MCU authority
