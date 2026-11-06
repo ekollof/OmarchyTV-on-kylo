@@ -246,6 +246,12 @@ type 8: same, out[3]=word[3]==9 -> 1, ==11 -> 2, else 0xff
 Types 2/7 and 3 use secondary `tbb` switches at `0x86bc2a`/`0x86bc10` and
 larger maps. Those values are not guessed.
 
+`FUN_0086a4dc` writes `param_2[1..9]` (through +0x24); the outer memset covers
+0x2c. Type 1's copy reads `local_64` at r7+52 and `local_44` at r7+84, which
+lie outside/beyond the core's 9-word write range in the decompiler frame.
+The frame mapping therefore needs instruction-level reconciliation before the
+type 1/2,7/3 words can be implemented; those values are not guessed.
+
 ## SI2151 blocker
 
 `SI2151_L3_Init` @ `0x0086f130` calls `L0_Init`, `Si2151_L1_API_Init`, then
