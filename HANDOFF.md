@@ -297,6 +297,18 @@ read-only dump inventory, not a live vendor settingsDB writer or runtime EASI
 filter; start-time open/read is still synchronous.
 ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer/tuner/epg/pvr/channels/service_db are async.
+
+image_decode quiesce, 2026-11-06: clear publication and unpublish image.decode
+synchronously, detach libpng/zlib/TurboJPEG handles and clear TurboJPEG
+pointers, then dlclose synchronously or on a worker after
+image_decode.cleanup_delay_ms. m_stop/m_destroy join/close; m_start refuses if
+live and reopens. Control test: decode PNG, reload fails fast, image-decode
+ENODEV, status responsive, retry reopens and decodes the same bytes, stop
+gate. Existing PNG/JPEG unit+IPC tests pass; ARM links libdl+libpthread.
+Full/QEMU pass. Host codecs, not TV libraries; decode stays synchronous.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg/pvr/channels/service_db/image_decode are async.
+IMAGE-DECODE-QUIESCE.
 SERVICE-DB-QUIESCE.
 
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so

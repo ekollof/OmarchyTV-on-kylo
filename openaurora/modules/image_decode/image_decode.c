@@ -12,11 +12,13 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <pthread.h>
 #include <setjmp.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <time.h>
 #include <unistd.h>
 #include "openaurora/module.h"
 #include "openaurora/services.h"
@@ -32,6 +34,11 @@ struct ctx {
     void *zlib;
     void *tjlib;
     int published,suspended;
+    /* ABI 3 quiesce: codec handles are detached and dlclose'd on a worker. */
+    pthread_t cleanup_thread;
+    int cleanup_running;
+    void *cleanup_lib, *cleanup_zlib, *cleanup_tjlib;
+    unsigned cleanup_delay_ms;
     void *(*tj_init)(void);
     int (*tj_header)(void *,const unsigned char *,unsigned long,int *,int *,int *,int *);
     int (*tj_decompress)(void *,const unsigned char *,unsigned long,
@@ -235,19 +242,56 @@ static int m_init(const oa_host_api *api,void **out)
     struct ctx *c=calloc(1,sizeof *c);if(!c)return -1;
     c->api=api;*out=c;current=c;return 0;
 }
+static void close_handles(void **lib, void **zlib, void **tjlib)
+{
+    if (*tjlib) dlclose(*tjlib);
+    *tjlib=NULL;
+    if (*lib) dlclose(*lib);
+    *lib=NULL;
+    if (*zlib) dlclose(*zlib);
+    *zlib=NULL;
+}
+
+static void close_current(struct ctx *c)
+{
+    close_handles(&c->lib,&c->zlib,&c->tjlib);
+    c->tj_init=NULL;c->tj_header=NULL;c->tj_decompress=NULL;c->tj_destroy=NULL;
+}
+
+static void close_cleanup(struct ctx *c)
+{
+    close_handles(&c->cleanup_lib,&c->cleanup_zlib,&c->cleanup_tjlib);
+}
+
+/* No host API calls after this returns. */
+static void *cleanup_worker(void *v)
+{
+    struct ctx *c=v;
+    if(c->cleanup_delay_ms) {
+        const struct timespec pause={
+            .tv_sec=c->cleanup_delay_ms/1000u,
+            .tv_nsec=(long)(c->cleanup_delay_ms%1000u)*1000000L
+        };
+        (void)nanosleep(&pause,NULL);
+    }
+    close_cleanup(c);
+    return NULL;
+}
+
 static void m_stop(void *v)
 {
     struct ctx *c=v;
-    if(c->published)c->api->unpublish(c->api->priv,OA_SVC_IMAGE_DECODE);
+    int published=c->published;
     c->published=0;
-    if(c->tjlib)dlclose(c->tjlib);
-    c->tjlib=NULL;c->tj_init=NULL;c->tj_header=NULL;
-    c->tj_decompress=NULL;c->tj_destroy=NULL;
-    if(c->lib)dlclose(c->lib);
-    c->lib=NULL;
-    if(c->zlib)dlclose(c->zlib);
-    c->zlib=NULL;
+    if(published)c->api->unpublish(c->api->priv,OA_SVC_IMAGE_DECODE);
+    if(c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread,NULL);
+        c->cleanup_running=0;
+    }
+    close_current(c);
+    close_cleanup(c);
 }
+
 static void *open_turbojpeg(void)
 {
     static const char *paths[]={
@@ -264,6 +308,11 @@ static void *open_turbojpeg(void)
 static int m_start(void *v)
 {
     struct ctx *c=v;
+    if(c->published || c->cleanup_running) return -EBUSY;
+    c->cleanup_running=0;
+    long delay=atol(c->api->config_get(c->api->priv,
+        "image_decode.cleanup_delay_ms","0"));
+    c->cleanup_delay_ms=delay>0?(unsigned)delay:0;
     const char *name=c->api->config_get(c->api->priv,"image.lib",NULL);
     c->lib=open_png_lib(name,&c->zlib);
     if(!c->lib)return -1;
@@ -302,11 +351,43 @@ failed:
 }
 static void m_destroy(void *v)
 { m_stop(v);if(current==v)current=NULL;free(v); }
+/* ABI 3 gate: unpublish image.decode synchronously, detach the codec handles,
+ * then dlclose them synchronously or on a worker after
+ * image_decode.cleanup_delay_ms. */
+static int m_quiesce(void *v)
+{
+    struct ctx *c=v;
+    if(!c)return 0;
+    if(c->cleanup_running) {
+        for(int i=0;i<10;i++) {
+            int rc=pthread_tryjoin_np(c->cleanup_thread,NULL);
+            if(rc==0){c->cleanup_running=0;return 0;}
+            if(rc!=EBUSY){c->cleanup_running=0;return -EIO;}
+            const struct timespec pause={.tv_nsec=5000000};
+            (void)nanosleep(&pause,NULL);
+        }
+        return -EAGAIN;
+    }
+    int published=c->published;
+    c->published=0;
+    if(published)c->api->unpublish(c->api->priv,OA_SVC_IMAGE_DECODE);
+    if(!c->lib && !c->zlib && !c->tjlib)return 0;
+    if(!c->cleanup_delay_ms){close_current(c);return 0;}
+    c->cleanup_lib=c->lib;c->lib=NULL;
+    c->cleanup_zlib=c->zlib;c->zlib=NULL;
+    c->cleanup_tjlib=c->tjlib;c->tjlib=NULL;
+    c->tj_init=NULL;c->tj_header=NULL;c->tj_decompress=NULL;c->tj_destroy=NULL;
+    int rc=pthread_create(&c->cleanup_thread,NULL,cleanup_worker,c);
+    if(rc){close_cleanup(c);return -EIO;}
+    c->cleanup_running=1;
+    return -EAGAIN;
+}
+
 static int m_suspend(void *v) { ((struct ctx *)v)->suspended=1;return 0; }
 static int m_resume(void *v) { ((struct ctx *)v)->suspended=0;return 0; }
 static const oa_module module={
     .magic=OA_MODULE_MAGIC,.abi=OA_ABI_VERSION,.size=sizeof(oa_module),
     .name="image_decode",.version="2",.init=m_init,.start=m_start,.stop=m_stop,
-    .destroy=m_destroy,.suspend=m_suspend,.resume=m_resume
+    .destroy=m_destroy,.suspend=m_suspend,.resume=m_resume,.quiesce=m_quiesce
 };
 OA_MODULE_EXPORT(module)

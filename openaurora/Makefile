@@ -131,7 +131,7 @@ $(BUILD)/modules/mod_ui_list.so: modules/ui_list/ui_list.c common/svg_list_input
 
 $(BUILD)/modules/mod_image_decode.so: modules/image_decode/image_decode.c include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -ldl
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) -ldl
 
 $(BUILD)/tests/ui_list: tests/ui_list.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -1561,6 +1561,11 @@ cold-bundle: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/fb-res
 $(BUILD)/tests/vendor_decoder_probe.so: tests/vendor_decoder_probe.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $< -ldl
+.PHONY: check-image-decode-quiesce
+check-image-decode-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_image_decode.so
+	node tests/image_decode_quiesce.cjs $(abspath $(BUILD))
+check: check-image-decode-quiesce
+
 .PHONY: check-image-decode-ipc
 check-image-decode-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_image_decode.so
 	node tests/image_decode_ipc.cjs $(abspath $(BUILD))

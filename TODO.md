@@ -309,14 +309,25 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       DB unit/module/IPC tests pass; ARM links libsqlite3 + libpthread.
       Full/QEMU pass. SERVICE-DB-QUIESCE.
 
+- [x] Asynchronous gate for `mod_image_decode`: clear publication and
+      unpublish `image.decode` synchronously, detach the libpng/zlib/TurboJPEG
+      handles and clear the TurboJPEG pointers, then `dlclose` them
+      synchronously or on a worker after `image_decode.cleanup_delay_ms`.
+      `m_stop`/`m_destroy` join/close leftovers; `m_start` refuses if live and
+      reopens the codecs. Control-socket test: decode PNG, reload fails fast,
+      `image-decode` ENODEV, status responsive, retry reopens and decodes the
+      same bytes, stop uses the gate. Existing PNG/JPEG unit and IPC tests
+      pass; ARM links libdl + libpthread. Full/QEMU pass.
+      IMAGE-DECODE-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
       `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr`,
-      `channels` and `service_db` are the existing models.
+      `channels`, `service_db` and `image_decode` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in
