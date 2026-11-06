@@ -807,7 +807,7 @@ $(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c core/service_qu
 
 $(BUILD)/modules/mod_ui_engine.so: modules/ui_engine/ui_engine.c include/openaurora/ui_engine.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
 
 $(BUILD)/modules/mod_ir.so: modules/ir/ir.c include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
@@ -2020,6 +2020,11 @@ check: check-ui-menu-service
 $(BUILD)/tests/ui_menu_action: tests/ui_menu_action.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_menu_action.c $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-ui-engine-quiesce
+check-ui-engine-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/tests/ui_nav_display.so
+	node tests/ui_engine_quiesce.cjs $(abspath $(BUILD)) $(abspath $(CURDIR)/..)
+check: check-ui-engine-quiesce
 
 .PHONY: check-ui-vendor-quiesce
 check-ui-vendor-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_anim.so $(BUILD)/modules/mod_ui_menu.so $(BUILD)/modules/mod_i18n.so $(BUILD)/tests/mod_fake_clock.so $(BUILD)/tests/ui_nav_display.so

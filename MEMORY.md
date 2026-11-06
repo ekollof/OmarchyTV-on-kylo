@@ -168,6 +168,17 @@ portal7, stop/retry/unload clean. QEMU text/value/static checks pass; full
 suite passes. ir/i18n/settings/ui_vendor are the async modules; the rest still
 stop synchronously. UI-VENDOR-QUIESCE.
 
+ui_engine async quiesce, 2026-11-06: extended the old draining-only gate.
+m_quiesce refuses while a skin dispatch is on the stack, otherwise unpublishes
+ui.skin/ui.engine, drops display/alpha/async holds, unsubscribes module/svc/key
+events, deletes fps/rebind timers and clears skin/events, then detaches the
+OAI1 icon cache and frees it on a worker (`ui_engine.cleanup_delay_ms`); a
+second call with an empty cache returns0. New control `ui-icon <name>` loads a
+real asset (settings_top 1920x180). Control test: reload fails fast, status
+responsive, retry reloads, asset reloads, stop/retry/unload clean. Full suite
+and QEMU pass. ir/i18n/settings/ui_vendor/ui_engine are the async modules.
+UI-ENGINE-QUIESCE.
+
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
 Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,
 one redraw at t=53ms (bbox 33,30 620x230, 45,745 px), then 16 identical post

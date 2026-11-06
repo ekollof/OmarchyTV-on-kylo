@@ -178,13 +178,18 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       on a worker; idempotent for reload/unload. The control test asserts
       fast-fail reload, responsive status, retry, republished portal screen7
       and clean stop/unload. It also fixed restore rejecting screen7. Other
-      modules still stop synchronously.
+      modules still stop synchronously. `mod_ui_engine` has the gate too
+      (UI-ENGINE-QUIESCE): refuse while a skin dispatch is on the stack,
+      otherwise unpublish/drop display/alpha/async, unsubscribe, delete
+      timers, then free the OAI1 icon cache on a worker; idempotent. The
+      control test loads settings_top1920x180, fails fast, retries, reloads
+      the asset and stops/unloads cleanly.
 
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
-      stop/reload model beyond `ir`/`i18n`/`settings`/`ui_vendor`, with a
-      completion query and bounded client behavior. Do not call
+      stop/reload model beyond `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`,
+      with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
-      `i18n`, `settings` and `ui_vendor` are the existing models.
+      `i18n`, `settings`, `ui_vendor` and `ui_engine` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

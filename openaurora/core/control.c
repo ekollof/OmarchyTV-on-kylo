@@ -22,6 +22,7 @@
 #include "openaurora/channels.h"
 #include "openaurora/events.h"
 #include "openaurora/module.h"
+#include "openaurora/ui_engine.h"
 #include "host.h"
 
 /* Full module/service tables fit without truncating normal diagnostics. */
@@ -285,6 +286,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  ui-state                query ui.portal screen\n"
                  "  ui-action <action>      apply a JSON menu action (open:/setting:/set:)\n"
                  "  picture-state <source>  read picture mode/zoom/energy 0-19\n"
+                 "  ui-icon <name>          load/report a ui.engine asset\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -366,6 +368,26 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         snprintf(outbuf, outlen,
                  "picture source %ld mode %d zoom %d energy %d\n",
                  source, mode, zoom, energy);
+        return 0;
+    }
+    if (!strcmp(cmd, "ui-icon")) {
+        if (force || !a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_ui_engine_iface *e =
+            h->api.lookup(h, OA_SVC_UI_ENGINE, 2);
+        if (!e) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        const oa_ui_icon *ic = e->icon(a1);
+        h->api.release(h, OA_SVC_UI_ENGINE);
+        if (!ic) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENOENT);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "icon %s %dx%d\n", ic->name, ic->w, ic->h);
         return 0;
     }
     if (!strcmp(cmd, "image-decode")) {

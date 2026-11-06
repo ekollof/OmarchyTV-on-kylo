@@ -6,6 +6,7 @@
  */
 #include <fcntl.h>
 #include <errno.h>
+#include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,6 +54,12 @@ struct engine {
     unsigned nevents, dispatching;
     int draining;
     int frame_ready, enter_error, status_published;
+    /* ABI 3 quiesce: the icon cache is detached and freed on a worker. */
+    pthread_t cleanup_thread;
+    int cleanup_running;
+    unsigned cleanup_delay_ms;
+    unsigned char *cleanup_icons[ENGINE_MAX_ICONS];
+    int cleanup_n;
 };
 
 static struct engine *g_engine;
@@ -566,6 +573,9 @@ static int m_start(void *v)
 {
     struct engine *c = v;
     c->draining = 0;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "ui_engine.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
     snprintf(c->dir, sizeof c->dir, "%s",
              c->api->config_get(c->api->priv, "ui.dir", "/buffer/openaurora/ui"));
     snprintf(c->download_dir, sizeof c->download_dir, "%s",
@@ -610,10 +620,13 @@ static int m_start(void *v)
     return 0;
 }
 
-static void m_stop(void *v)
+/* Idempotent logical teardown: services, display holds, timers and
+ * subscriptions. The icon cache stays for heavy_detach(). */
+static void engine_teardown(struct engine *c)
 {
-    struct engine *c = v;
-    if (c->status_published) c->api->unpublish(c->api->priv, OA_SVC_UI_SKIN);
+    c->draining = 1;
+    if (c->status_published)
+        c->api->unpublish(c->api->priv, OA_SVC_UI_SKIN);
     c->status_published = 0;
     drop_display(c, 1);
     if (c->mod_key) {
@@ -643,16 +656,105 @@ static void m_stop(void *v)
         c->rebind_tick = 0;
     }
     c->api->unpublish(c->api->priv, OA_SVC_UI_ENGINE);
-    for (int i = 0; i < c->n; i++)
-        free(c->icons[i].rgba);
-    c->n = 0;
     c->acknowledged = 0;
     c->suspended = 0;
     c->rebind_pending = 0;
 }
 
+static void heavy_detach(struct engine *c)
+{
+    c->cleanup_n = 0;
+    for (int i = 0; i < c->n && c->cleanup_n < ENGINE_MAX_ICONS; i++) {
+        c->cleanup_icons[c->cleanup_n++] = c->icons[i].rgba;
+        c->icons[i].rgba = NULL;
+    }
+    c->n = 0;
+}
+
+static void heavy_free(struct engine *c)
+{
+    for (int i = 0; i < c->cleanup_n; i++) {
+        free(c->cleanup_icons[i]);
+        c->cleanup_icons[i] = NULL;
+    }
+    c->cleanup_n = 0;
+}
+
+/* No host API calls after this returns. */
+static void *cleanup_worker(void *v)
+{
+    struct engine *c = v;
+    if (c->cleanup_delay_ms) {
+        const struct timespec pause = {
+            .tv_sec = c->cleanup_delay_ms / 1000u,
+            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
+        };
+        (void)nanosleep(&pause, NULL);
+    }
+    heavy_free(c);
+    return NULL;
+}
+
+/* ABI 3 gate: refuse while a skin dispatch is on the stack, otherwise tear
+ * down synchronously and free the icon cache on a worker. */
+static int m_quiesce(void *v)
+{
+    struct engine *c = v;
+    if (!c) return 0;
+    if (c->cleanup_running) {
+        for (int i = 0; i < 10; i++) {
+            int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+            if (rc == 0) {
+                c->cleanup_running = 0;
+                return 0;
+            }
+            if (rc != EBUSY) {
+                c->cleanup_running = 0;
+                return -EIO;
+            }
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
+        }
+        return -EAGAIN;
+    }
+    if (c->dispatching) return -EAGAIN;
+    engine_teardown(c);
+    if (c->cleanup_n == 0) heavy_detach(c);
+    if (c->cleanup_n == 0) return 0;
+    if (!c->cleanup_delay_ms) {
+        heavy_free(c);
+        return 0;
+    }
+    int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+    if (rc) {
+        heavy_free(c);
+        return -EIO;
+    }
+    c->cleanup_running = 1;
+    return -EAGAIN;
+}
+
+static void m_stop(void *v)
+{
+    struct engine *c = v;
+    engine_teardown(c);
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    heavy_free(c);
+    for (int i = 0; i < c->n; i++) free(c->icons[i].rgba);
+    c->n = 0;
+}
+
 static void m_destroy(void *v)
 {
+    struct engine *c = v;
+    if (c->cleanup_running) {
+        (void)pthread_join(c->cleanup_thread, NULL);
+        c->cleanup_running = 0;
+    }
+    heavy_free(c);
     if (g_engine == v)
         g_engine = NULL;
     free(v);
@@ -695,14 +797,6 @@ static int m_resume(void *v)
     if (c->skin)
         post_skin(c, c->skin_entered ? 1 : 0, 0);
     return 0;
-}
-
-static int m_quiesce(void *v)
-{
-    struct engine *c = v;
-    if (!c) return 0;
-    c->draining = 1;
-    return c->dispatching ? -1 : 0;
 }
 
 static const oa_module g_module = {
