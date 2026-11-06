@@ -991,6 +991,20 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       panel scanout/full-screen geometry, not cold startup, vendor UI pixel
       parity or MCU authority. Captures under
       `artifacts/analysis/controlled-scanout-2026-11-06/`. CONTROLLED-SCANOUT.
+
+- [x] Offline panel backlight curve and NIM-DTV gate: recovered
+      `DEV_PANEL_Init` breakpoints 40/60/80/100 and scale 1000,
+      `SetPWMBacklightLimit` minimum `(1000*pct+50)/100`, and
+      `SetPWMBacklightLv` mapping/table interpolation. Added
+      `common/panel_curve.c` plus opt-in `panel.curve`/`panel.min_percent`
+      (default linear path unchanged); unit/fake-HAL vectors cover identity,
+      min20%, p4=50 bend, percent→duty, clamping and degenerate tables.
+      Recovered `DEV_NIM_DTV_Init` idempotent guard, model 0..3/type-4 active
+      codes, mutex and `CreateTask(entry 0x008601ad, stack 0x1000, priority
+      14)`, Term `0xff`; implemented only the gate/constants and tests.
+      Focused ASan/UBSan clean, full suite `all tests passed`, ARM mod_panel
+      builds. No panel/tuner hardware; curve default off and the NIM task body
+      remains unimplemented. PANEL-CURVE-NIM-DTV.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff
       tests pass host/sanitizer/ARM-qemu. CEC-AUDIO-CONTRACT.
@@ -1044,7 +1058,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 - [ ] Panel: brightness/power curve, init/close ownership and resume under exclusive
       native ownership. Board frequency/mode are recovered; do not sweep channels
       as a replacement for firmware/profile analysis. Nonzero HAL return is not
-      proof that an ioctl or brightness change happened.
+      proof that an ioctl or brightness change happened. The curve/minimum
+      mapping and opt-in `panel.curve` are recovered and fake-HAL tested
+      (PANEL-CURVE-NIM-DTV); exclusive hardware, the final duty scale and resume
+      remain open.
 - [ ] Audio: verify amp/speaker/soundbar volume, mute/routing and init ABI/ownership.
       Earlier non-crashing calls were not an audible acceptance test.
 - [x] Confirmed selected live amplifier from verified descriptor/object/vtable:

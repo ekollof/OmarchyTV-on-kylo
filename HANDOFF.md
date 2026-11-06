@@ -628,6 +628,18 @@ post-boot capture nonblank. This confirms controlled panel scanout and
 full-screen geometry; not cold startup, vendor UI pixel parity or MCU/standby
 authority. Captures under artifacts/analysis/controlled-scanout-2026-11-06.
 
+panel curve/nim dtv, 2026-11-06: DEV_PANEL_Init uses breakpoints40/60/80/100 and
+scale1000; SetPWMBacklightLimit writes M=(1000*pct+50)/100 at
+gstBacklightPara+4; SetPWMBacklightLv maps M+(level*(1000-M)+500)/1000 through
+the midpoint table with vendor integer rounding. Added common/panel_curve +
+opt-in panel.curve/min_percent (default linear path unchanged); fake-HAL tests
+cover identity/min20/p4=50 bend/percent-duty/bounds/degenerate. DEV_NIM_DTV_Init
+idempotent guard, model0..3/type4 active1/else3, mutex and
+CreateTask(entry0x8601ad, stack0x1000, priority14), Term0xff; only gate/constants
+implemented+tested. ASan/UBSan clean, full suite all tests passed, ARM mod_panel
+builds. No panel/tuner hardware; curve default off, NIM task body unimplemented.
+PANEL-CURVE-NIM-DTV.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

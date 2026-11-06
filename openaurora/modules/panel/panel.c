@@ -16,6 +16,9 @@
  *
  * Channel and frequency come from a per-model board table we have not located, so
  * they are configuration (panel.channel / panel.freq) until calibrated on the set.
+ * panel.curve=1 selects the recovered DEV_PANEL_Init/SetPWMBacklightLv curve
+ * (breakpoints 40/60/80/100, level scale 1000) with panel.min_percent as the
+ * runtime limit; default 0 keeps the historical linear percent mapping.
  *
  * Host builds define OA_NO_VENDOR and get no-op stubs, so the module still loads and
  * the lifecycle tests keep running on a laptop.
@@ -29,6 +32,7 @@
 
 #include "openaurora/events.h"
 #include "openaurora/module.h"
+#include "openaurora/panel_curve.h"
 #include "openaurora/services.h"
 #include "openaurora/vendor_pwm.h"
 
@@ -68,6 +72,8 @@ struct ctx {
     int freq;
     int percent; /* what we asked for, 0..100 */
     int raw;     /* optional: pass this duty verbatim, ignoring percent */
+    int curve_on;/* panel.curve=1 uses the recovered vendor backlight curve */
+    oa_panel_curve curve;
     int opened;
     int published;
     int needs_cleanup; /* one start cycle is cleaned exactly once */
@@ -113,7 +119,9 @@ static int apply(struct ctx *c, int pct)
     struct pwm_set_req r;
     memset(&r, 0, sizeof r);
     r.freq = (uint32_t)c->freq;
-    r.duty = (uint32_t)(c->raw >= 0 ? c->raw : pct_to_duty(pct));
+    r.duty = (uint32_t)(c->raw >= 0 ? c->raw :
+             c->curve_on ? oa_panel_percent_to_duty(&c->curve, pct, 4095) :
+             pct_to_duty(pct));
     r.shift = 0;
     r.mode = 1;          /* must be < 9 */
     (void)Hal_Pwm_Set_ByChannel((unsigned)c->channel, &r);
@@ -178,6 +186,9 @@ static int m_start(void *v)
     c->freq = atoi(c->api->config_get(c->api->priv, "panel.freq", "20000"));
     c->percent = atoi(c->api->config_get(c->api->priv, "panel.start", "100"));
     c->raw = atoi(c->api->config_get(c->api->priv, "panel.raw", "-1"));
+    c->curve_on = c->api->config_get(c->api->priv, "panel.curve", "0")[0] == '1';
+    oa_panel_curve_init(&c->curve, 40, 60, 80, 100,
+        atoi(c->api->config_get(c->api->priv, "panel.min_percent", "0")) * 10);
 
     if (!hal_ready()) {
         c->api->log(c->api->priv, OA_LOG_WARN,
