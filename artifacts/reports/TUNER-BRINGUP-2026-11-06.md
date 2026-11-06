@@ -106,6 +106,41 @@ SNR, ...; entry 0x12 is zero) and returns 1. Both are state/table functions.
 disconnect). Only `initialize` is wired to the recovered sequence; the tuning
 entries remain NULL rather than invented.
 
+## NIM HAL tuning subset
+
+`common/nim_tune.c` implements the verified part of the `HAL_Demod_User_*`
+table:
+
+- `Open`: switch tuner type (path 1 -> 1, else 2), read the SAL type, then
+  deliver key `0xa000` with the type mapping (`5..8/10/11` unchanged,
+  `0xd -> 0xc`); other types skip delivery.
+- `Close`: `HAL_fe_open(0,state)` + `HAL_DEMOD_EXT_SetStandy(fe,1)` +
+  `HAL_fe_close(fe)`.
+- `Monitor` = return 1; `Disconnect` = no-op.
+- `CheckLock`: path index `1->0x14`, `2/7->0x12`, `5->0x11`, `6->0x0e`,
+  `8->0x10` (path 3's dynamic resolver is not recovered); then
+  `HAL_Demod_GetStatus(handle,index,2,buf)` and `locked = buf[0]`.
+- `GetStrength`: path 1 uses mask `0x40` and the u32 at `buf+0x18`; otherwise
+  the tuner RSSI via `SAL_DEMOD_TUN_GetRSSI`.
+- `GetQuality`: mask `0x80` and the u32 at `buf+0x24`.
+- `SetChannel`/`GetChannelStatus` are large NIM-channel <-> NDAL struct
+  mappings and return `-ENOTSUP` rather than guessed conversions.
+
+The fake tests cover the path/index map, type delivery, open/close order,
+lock/strength/quality masks and buffer offsets, RSSI fallback, and the
+explicitly unresolved channel calls. The module's NIM vtable still wires only
+`initialize`; the tuning entries are not used by the init gate yet.
+
+## SI2151 blocker
+
+`SI2151_L3_Init` @ `0x0086f130` calls `L0_Init`, `Si2151_L1_API_Init`, then
+`Si2151_Init` @ `0x0087f720`, which calls `Si2151_PowerUpWithPatch`,
+`Si2151_storeUserProperties` and `Si2151_downloadAllProperties`. That is the
+Silicon Labs L1/L2/L3 driver with a firmware patch and large property tables:
+a separate large port, not a callback. The shipped hwprofile selects SAL 0xd
+(MxL661), so this TV does not use the SI2151 path. No fake SI2151 backend was
+added; it remains unimplemented.
+
 RT5047 (`SAL_LNB_Initialize` @ `0x00877384` -> `RT5047_Device_Initialize`
 @ `0x00877674`): look up function index 5 from `au8GPIOFuncName` (`LNB_EN`),
 then `DEV_GPIO_SetLevel(pin, level)`. `DEV_GPIO_GetDescription` @ `0x00850c38`
@@ -152,6 +187,8 @@ ok tuner sequence: demod->tuner->AV2018->dvif->SetTunerType->LNB order,
                    0xd->0xc/8->8, type-0xf skip and failure continuation
 ok nim dtv hw: 0x29-word state clear and HAL table install
 ok rt5047: LNB_EN present/absent/error flow and level write
+ok nim tune: path/index map, open/close, lock/strength/quality masks and
+             unresolved channel mappings
 ok tuner hal: four bus IDs from description+0x19, 0xff-only resolution, ...
 ok mxl661: default/custom init order, RMW masks, defaults table and failure behavior
 ok nim dtv hal: DEV_IIC bus/reg/address packing and Hal success inversion
@@ -172,11 +209,14 @@ undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
 
 ## Remaining
 
-1. SI2151 tuner backend (only the MxL661 path is recovered).
-2. The NIM HAL tuning table beyond `initialize` (SetChannel, Monitor,
-   GetChannelStatus, strength/quality, ...) is still NULL; only the init chain
-   is wired.
-3. Hardware acceptance is **not done**. The owner's standing instruction is
+1. SI2151 tuner backend: the Silicon Labs L1/L2/L3 driver with
+   `PowerUpWithPatch` and property download is a separate large port; this
+   TV's profile selects MxL661 and does not use it.
+2. `SetChannel`/`GetChannelStatus` NDAL struct mappings (the rest of the NIM
+   tuning table is implemented in `common/nim_tune.c`).
+3. The module's NIM vtable still wires only `initialize`; the tuning entries
+   are not exercised by the gate.
+4. Hardware acceptance is **not done**. The owner's standing instruction is
    read-only, no takeovers; running the gate requires explicit authorization
    to stop stock Aurora, claim `/dev/ntkiic0`, `/dev/ntgpio`, `/dev/ntkdvif`
    and `frontend0`, observe tuner lock, then restore stock and verify.

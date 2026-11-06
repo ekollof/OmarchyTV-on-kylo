@@ -1,0 +1,230 @@
+#include <assert.h>
+#include <errno.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "openaurora/nim_tune.h"
+
+struct fake {
+    int switch_calls;
+    int last_switch;
+    int tuner_type;
+    int deliver_calls;
+    uint32_t deliver_key;
+    uint8_t deliver_value;
+    int deliver_len;
+    int fe_open_rc;
+    int fe_open_calls;
+    int fe_close_calls;
+    int standby_calls;
+    int standby_on;
+    int last_fe;
+    int status_calls;
+    int status_rc;
+    int last_handle;
+    int last_index;
+    uint32_t last_mask;
+    uint8_t status[0x180];
+    int rssi_calls;
+    int rssi_rc;
+    uint8_t rssi;
+    int last_tuner;
+};
+
+static int switch_type(void *ud, int type)
+{
+    struct fake *f = ud;
+    f->switch_calls++;
+    f->last_switch = type;
+    return 0;
+}
+
+static int get_tuner_type(void *ud)
+{
+    return ((struct fake *)ud)->tuner_type;
+}
+
+static int deliver_config(void *ud, uint32_t key, const void *data, int len)
+{
+    struct fake *f = ud;
+    f->deliver_calls++;
+    f->deliver_key = key;
+    f->deliver_value = *(const uint8_t *)data;
+    f->deliver_len = len;
+    return 0;
+}
+
+static int fe_open(void *ud, int index)
+{
+    struct fake *f = ud;
+    (void)index;
+    f->fe_open_calls++;
+    return f->fe_open_rc;
+}
+
+static void fe_close(void *ud, int fe)
+{
+    struct fake *f = ud;
+    f->fe_close_calls++;
+    f->last_fe = fe;
+}
+
+static int set_standby(void *ud, int fe, int on)
+{
+    struct fake *f = ud;
+    f->standby_calls++;
+    f->standby_on = on;
+    f->last_fe = fe;
+    return 0;
+}
+
+static int get_status(void *ud, int handle, int index, uint32_t mask, void *buf)
+{
+    struct fake *f = ud;
+    f->status_calls++;
+    f->last_handle = handle;
+    f->last_index = index;
+    f->last_mask = mask;
+    if (f->status_rc == 0)
+        memcpy(buf, f->status, sizeof f->status);
+    return f->status_rc;
+}
+
+static int get_rssi(void *ud, int tuner_type, uint8_t *rssi)
+{
+    struct fake *f = ud;
+    f->rssi_calls++;
+    f->last_tuner = tuner_type;
+    if (f->rssi_rc)
+        *rssi = f->rssi;
+    return f->rssi_rc;
+}
+
+static const struct oa_nim_tune_ops ops = {
+    switch_type, get_tuner_type, deliver_config, fe_open, fe_close,
+    set_standby, get_status, get_rssi
+};
+
+static void test_path_index(void)
+{
+    struct oa_nim_tune_state s = { 0 };
+    static const struct { int path, index; } map[] = {
+        { 1, 0x14 }, { 2, 0x12 }, { 7, 0x12 }, { 5, 0x11 }, { 6, 0x0e },
+        { 8, 0x10 }, { 3, -1 }, { 0, 0 }, { 4, 0 }
+    };
+    for (size_t i = 0; i < sizeof map / sizeof map[0]; i++) {
+        s.path = map[i].path;
+        assert(oa_nim_tune_path_index(&s) == map[i].index);
+    }
+    assert(oa_nim_tune_path_index(NULL) == 0);
+}
+
+static void test_open(void)
+{
+    struct fake f = { .tuner_type = 0xd };
+    struct oa_nim_tune_state s = { .path = 1 };
+
+    assert(oa_nim_tune_open(&ops, &f, &s) == 1);
+    assert(f.switch_calls == 1 && f.last_switch == 1);
+    assert(f.deliver_calls == 1 && f.deliver_key == 0xa000 &&
+           f.deliver_value == 0xc && f.deliver_len == 1);
+    assert(s.tuner_type == 0xd);
+
+    memset(&f, 0, sizeof f);
+    f.tuner_type = 8;
+    s.path = 2;
+    assert(oa_nim_tune_open(&ops, &f, &s) == 1);
+    assert(f.last_switch == 2 && f.deliver_value == 8);
+
+    memset(&f, 0, sizeof f);
+    f.tuner_type = 0xf;
+    assert(oa_nim_tune_open(&ops, &f, &s) == 1);
+    assert(f.deliver_calls == 0);
+}
+
+static void test_close_monitor(void)
+{
+    struct fake f = { .fe_open_rc = 4 };
+    struct oa_nim_tune_state s = { 0 };
+    assert(oa_nim_tune_close(&ops, &f, &s) == 1);
+    assert(f.fe_open_calls == 1 && f.standby_calls == 1 &&
+           f.standby_on == 1 && f.fe_close_calls == 1 && f.last_fe == 4);
+
+    memset(&f, 0, sizeof f);
+    f.fe_open_rc = -1;
+    assert(oa_nim_tune_close(&ops, &f, &s) == 0);
+    assert(f.fe_open_calls == 1 && f.standby_calls == 0 &&
+           f.fe_close_calls == 0);
+
+    assert(oa_nim_tune_monitor() == 1);
+    assert(oa_nim_tune_disconnect() == 0);
+}
+
+static void test_lock_strength_quality(void)
+{
+    struct fake f = { 0 };
+    struct oa_nim_tune_state s = { .handle = 9, .path = 1, .tuner_type = 0xd };
+    uint8_t locked = 0;
+
+    f.status[0] = 1;
+    assert(oa_nim_tune_check_lock(&ops, &f, &s, &locked) == 1);
+    assert(locked == 1 && f.last_handle == 9 && f.last_index == 0x14 &&
+           f.last_mask == 2);
+
+    f.status_rc = 1;
+    assert(oa_nim_tune_check_lock(&ops, &f, &s, &locked) == 1);
+    assert(locked == 0);
+
+    memset(&f, 0, sizeof f);
+    uint32_t value = 0x12345678;
+    memcpy(f.status + 0x18, &value, sizeof value);
+    uint32_t strength = 0;
+    assert(oa_nim_tune_get_strength(&ops, &f, &s, &strength) == 1);
+    assert(strength == 0x12345678 && f.last_index == 0x14 &&
+           f.last_mask == 0x40);
+
+    s.path = 2;
+    f.rssi = 0x55;
+    f.rssi_rc = 1;
+    assert(oa_nim_tune_get_strength(&ops, &f, &s, &strength) == 1);
+    assert(strength == 0x55 && f.rssi_calls == 1 && f.last_tuner == 0xd);
+    f.rssi_rc = 0;
+    assert(oa_nim_tune_get_strength(&ops, &f, &s, &strength) == 1);
+    assert(strength == 0);
+
+    memset(&f, 0, sizeof f);
+    s.path = 1;
+    value = 0xabcdef01;
+    memcpy(f.status + 0x24, &value, sizeof value);
+    uint32_t quality = 0;
+    assert(oa_nim_tune_get_quality(&ops, &f, &s, &quality) == 1);
+    assert(quality == 0xabcdef01 && f.last_mask == 0x80 &&
+           f.last_index == 0x14);
+
+    assert(oa_nim_tune_check_lock(NULL, &f, &s, &locked) == 0);
+    assert(oa_nim_tune_get_strength(&ops, &f, &s, NULL) == 0);
+    assert(oa_nim_tune_get_quality(&ops, &f, &s, NULL) == 0);
+}
+
+static void test_unresolved(void)
+{
+    struct fake f = { 0 };
+    struct oa_nim_tune_state s = { 0 };
+    assert(oa_nim_tune_set_channel(&ops, &f, &s, NULL) == -ENOTSUP);
+    assert(oa_nim_tune_get_channel_status(&ops, &f, &s, NULL) == -ENOTSUP);
+    assert(oa_nim_tune_open(NULL, &f, &s) == 0);
+    assert(oa_nim_tune_close(NULL, &f, &s) == 0);
+}
+
+int main(void)
+{
+    test_path_index();
+    test_open();
+    test_close_monitor();
+    test_lock_strength_quality();
+    test_unresolved();
+    puts("ok nim tune: path/index map, open/close, lock/strength/quality "
+         "masks and unresolved channel mappings");
+    return 0;
+}

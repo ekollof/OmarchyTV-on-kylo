@@ -1070,11 +1070,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `mod_tuner` (host refuses with -ENOTSUP; ARM `mod_tuner.so` builds with
       libNDAL3). LNB_EN/RT5047 (descriptor ioctl + `Hal_Gpio_Init/Write`) and
       `_dev_nim_dtv_InitNimFunc`/`Connect2HAL` equivalents (0x29-word state
-      clear, typed HAL table) are implemented behind the gate. Still open: the
-      SI2151 backend, the NIM HAL tuning table beyond `initialize`, and real
-      hardware acceptance after a controlled ownership handover (currently
-      blocked by the owner's read-only/no-takeover instruction). Do not touch
-      IIC/GPIO while stock owns the devices.
+      clear, typed HAL table) are implemented behind the gate. The NIM tuning
+      subset (path map, open/close, monitor/disconnect, check_lock, strength,
+      quality) is implemented in `common/nim_tune.c`; `set_channel`/
+      `get_channel_status` are large NDAL struct mappings and return -ENOTSUP.
+      SI2151 is the full Silicon Labs L1/L2/L3 `PowerUpWithPatch` + property
+      driver, not this profile's path (hwprofile selects SAL 0xd/MxL661).
+      Hardware acceptance is blocked by the owner's read-only/no-takeover
+      instruction. Do not touch IIC/GPIO while stock owns the devices.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff
       tests pass host/sanitizer/ARM-qemu. CEC-AUDIO-CONTRACT.

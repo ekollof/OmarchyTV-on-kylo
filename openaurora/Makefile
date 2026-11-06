@@ -1216,12 +1216,17 @@ $(BUILD)/tests/lnb_rt5047: tests/lnb_rt5047.c common/lnb_rt5047.c include/openau
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
+$(BUILD)/tests/nim_tune: tests/nim_tune.c common/nim_tune.c include/openaurora/nim_tune.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
 .PHONY: check-tuner-backend
-check-tuner-backend: $(BUILD)/tests/mxl661_dev $(BUILD)/tests/tuner_sequence $(BUILD)/tests/nim_dtv_hw $(BUILD)/tests/lnb_rt5047
+check-tuner-backend: $(BUILD)/tests/mxl661_dev $(BUILD)/tests/tuner_sequence $(BUILD)/tests/nim_dtv_hw $(BUILD)/tests/lnb_rt5047 $(BUILD)/tests/nim_tune
 	@$(BUILD)/tests/mxl661_dev
 	@$(BUILD)/tests/tuner_sequence
 	@$(BUILD)/tests/nim_dtv_hw
 	@$(BUILD)/tests/lnb_rt5047
+	@$(BUILD)/tests/nim_tune
 check: check-tuner-backend
 
 $(BUILD)/tests/tuner_gate: tests/tuner_gate.c include/openaurora/module.h
