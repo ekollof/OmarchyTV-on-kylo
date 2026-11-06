@@ -100,9 +100,18 @@ Runtime `menus/sub_launcher.json`; `tools/re/menu-tree.py` regenerates it from
 the ELF/decompile/BinSVG; bounded JSON loader + action strings; reloadable
 `ui.menu` v1 service. `oa_portal_iface` v2 `menu_action` opens vendor screens
 for `open:<screen>`; v1 consumers keep the prefix. Host tree/action/service
-and portal-action tests pass; ARM GLIBC 2.4. Sub-launcher row rendering and
-the row-origin reduction (`rowPos` standard 43 + mRowM mask) remain.
-SUBLAUNCHER-MENU-TREE.
+and portal-action tests pass; ARM GLIBC 2.4. SUBLAUNCHER-MENU-TREE.
+
+QEMU UI oracle, 2026-11-06 (TV off limits): `tools/display/sim-display.c`
+(ARM GLIBC 2.4) publishes display/alpha and writes 1920x1080 RGBA frames;
+`tools/qemu-ui-layout.sh` runs the real ARM `openaurora` + ui_engine/ui_menu/
+ui_vendor under `qemu-arm-static`. P0/03 `SCREEN_SETTINGS` band is **AE=0** vs
+`settings_top.rgba`. `ui_vendor` `SCREEN_SUBLAUNCHER` maps the JSON picture
+branch to captured cards at checked layout 201/451/701,276 235x130, pitch 250,
+item cell 199,274 240x140; unfocused row AE=0 and 300 ms card2 bounds
+235x130 → 317x175 at p=0/0.5/1. Repeat with
+`tools/qemu-sub-launcher-check.sh`. Live card text, focused vendor capture,
+runtime key/timer and scanout remain. QEMU-UI-LAYOUT.
 
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over
 Markt/Netflix (700x280, ~37ms effective) captured one redraw at t=53ms

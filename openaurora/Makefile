@@ -602,7 +602,7 @@ $(BUILD)/modules/mod_ui_theme.so: modules/ui_theme/ui_theme.c common/svg_pack.c 
 
 $(BUILD)/modules/mod_ui_menu.so: modules/ui_menu/ui_menu.c common/menu_model.c common/json.c common/launcher_anim.c include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
 
 $(BUILD)/tests/binsvg: tests/binsvg.c common/binsvg.c common/text_layout.c include/openaurora/binsvg.h include/openaurora/text_layout.h
 	@mkdir -p $(dir $@)
@@ -797,9 +797,9 @@ $(BUILD)/modules/mod_ui_anim.so: modules/ui_anim/ui_anim.c common/ui_anim.c incl
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
-$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h
+$(BUILD)/modules/mod_ui_vendor.so: modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c include/openaurora/binsvg.h include/openaurora/ui_anim.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/font_box.h include/openaurora/text_origin.h include/openaurora/canvas.h include/openaurora/svg_scrollbar.h include/openaurora/service_db.h include/openaurora/menu_model.h include/openaurora/json.h include/openaurora/launcher_anim.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
+	$(CC) $(CPPFLAGS) -fvisibility=hidden $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) -lm
 
 $(BUILD)/modules/mod_ui_engine.so: modules/ui_engine/ui_engine.c include/openaurora/ui_engine.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
@@ -1958,6 +1958,10 @@ check: check-ui-menu-action
 $(BUILD)/tests/mod_fake_clock.so: tests/mod_fake_clock.c include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tests/mod_fake_clock.c $(LDFLAGS) $(LDLIBS)
+
+$(BUILD)/tests/mod_sim_display.so: tools/display/sim-display.c include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ tools/display/sim-display.c $(LDFLAGS)
 
 $(BUILD)/tests/mod_patch_fixture.so: tests/mod_patch_fixture.c include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)

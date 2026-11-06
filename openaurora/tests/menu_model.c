@@ -117,6 +117,24 @@ int main(int argc, char **argv)
     assert(oa_menu_dispatch(picture->items[0].action, record, &rec) == 0);
     assert(!strcmp(rec.last, "setting:MODE"));
 
+    assert(d->card_x == 201 && d->card_y == 276);
+    assert(d->card_w == 235 && d->card_h == 130);
+    assert(d->card_pitch == 250);
+    assert(d->runtime_item_x == 199 && d->runtime_item_y == 274);
+
+    oa_launcher_rect card, item;
+    oa_menu_card_rect(d, 0, 0.0f, &card, &item);
+    assert(card.x1 == 201 && card.y1 == 276);
+    assert(card.x2 == 436 && card.y2 == 406);
+    assert(item.x1 == 199 && item.y1 == 274);
+    assert(item.x2 == 439 && item.y2 == 414);
+    oa_menu_card_rect(d, 2, 0.0f, &card, &item);
+    assert(card.x1 == 701 && item.x1 == 699);
+    oa_menu_card_rect(d, 0, 0.5f, &card, &item);
+    assert(card.x2 == 477 && card.y2 == 428);
+    oa_menu_card_rect(d, 0, 1.0f, &card, &item);
+    assert(card.x2 == 518 && card.y2 == 451);
+
     oa_launcher_rect r;
     int gx = 0, gy = 0;
     oa_menu_item_anim(d, 100, 200, 0.0f, &r, &gx, &gy);

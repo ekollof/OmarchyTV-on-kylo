@@ -230,11 +230,21 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       service, asserts screen 3, and verifies v1 lookup/v3 refusal. Other
       verbs remain `ENOTSUP`.
 
-- [ ] Sub-launcher screen integration: render the JSON branch row in
-      `ui_vendor` and route `setting:`/`set:` actions to the value selector.
-      Resolve the `SVGListBoxBase` row origin from `rowPos` (standard 43) and
-      the mRowM mask, then compare the 300 ms item animation against a real
-      vendor transition. Do not apply it to the category rail or an invented
+- [x] QEMU offline UI oracle and JSON sub-launcher row: `sim-display` (ARM
+      GLIBC 2.4) writes 1920x1080 frames; `qemu-ui-layout.sh` runs the real
+      ARM ui_engine/ui_menu/ui_vendor stack. P0/03 `SCREEN_SETTINGS` band is
+      AE=0 vs `settings_top.rgba`. `SCREEN_SUBLAUNCHER` maps the JSON picture
+      branch to captured cards at checked layout 201/451/701,276 235x130,
+      pitch 250, item cell 199,274 240x140; unfocused row AE=0 and 300 ms
+      card2 bounds 235x130 → 317x175 at p=0/0.5/1.
+      `qemu-sub-launcher-check.sh` repeats it. QEMU-UI-LAYOUT.
+
+- [ ] Sub-launcher live text/runtime and `setting:`/`set:`: replace the
+      captured card text with live labels/values, wire the runtime key
+      handler and 300 ms repaint timer (the current `ui.sub_sel`/
+      `ui.sub_progress` are lab knobs), and capture a focused vendor card for
+      the transition comparison. Route `setting:`/`set:` to the value
+      selector. Do not apply the row to the category rail or an invented
       portal card row.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus

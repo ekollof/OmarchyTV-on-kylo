@@ -13,7 +13,11 @@ Schema:
 
 - `dialogs[]`: `id`, `class`, `name`, `svg`, `list` `[x,y,w,h]`, `item`
   (`w`, `h`, `scalerect`, `glyph`, `text`, `anim_ms`, `scale`,
-  `glyph_delta`), and `branches[]`.
+  `glyph_delta`), optional `layout`, and `branches[]`.
+- `layout`: checked runtime geometry, for example the p0/03 picture-shortcut
+  row `card [201,276,235,130]`, `pitch 250`, item cell `[199,274,240,140]`.
+  This is measured from the vendor capture, not derived from resource-space
+  coordinates; `source` records the oracle.
 - `branches[]`: `launcher_type`, `name`, `items[]`, optional `excluded`.
 - `items[]`: `id`, `key`, optional `action`, optional `dynamic` source note,
   and `values`. A dynamic value is a string marker; concrete values are
@@ -22,5 +26,11 @@ Schema:
   `setting:ENERGY_SAVING`, `set:ENERGY_SAVING=OFF`, or `open:settings`.
   The JSON layer does not assign meaning; the UI/settings dispatcher does.
   The current vendor skin implements `open:portal|sources|settings|
-  settings_list|apps|channels` through `oa_portal_iface.menu_action` v2;
-  `setting:`/`set:` are still `ENOTSUP` there and are the next dispatcher.
+  settings_list|sub_launcher|apps|channels` through
+  `oa_portal_iface.menu_action` v2; `setting:`/`set:` are still `ENOTSUP`
+  there and are the next dispatcher.
+
+`tools/qemu-sub-launcher-check.sh` builds the ARM stack, runs the real
+modules under `qemu-arm-static` with the offline framebuffer provider, and
+compares the static sub-launcher row to `settings_top.rgba` (AE=0) plus the
+300 ms card bounds. Use it when the TV is off limits.

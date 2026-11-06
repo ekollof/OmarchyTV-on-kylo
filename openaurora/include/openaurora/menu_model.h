@@ -46,6 +46,9 @@ struct oa_menu_dialog {
     const char *svg;
     int list_x, list_y, list_w, list_h; /* named listBox rect */
     int item_w, item_h;
+    int card_x, card_y, card_w, card_h; /* checked runtime card content */
+    int card_pitch;
+    int runtime_item_x, runtime_item_y; /* checked runtime item-cell origin */
     int scalerect_x, scalerect_y;
     int glyph_x, glyph_y, glyph_w, glyph_h;
     int text_x, text_y, text_w, text_h;
@@ -79,6 +82,14 @@ const struct oa_menu_branch *oa_menu_branch(const struct oa_menu_dialog *dialog,
 void oa_menu_item_anim(const struct oa_menu_dialog *dialog, int item_x,
                        int item_y, float progress, oa_launcher_rect *rect,
                        int *glyph_dx, int *glyph_dy);
+
+/* Checked runtime row geometry: card content origin/size, item-cell origin
+ * and pitch come from the p0/03 capture and the decoded listBox/item
+ * resources. progress 0..1 scales the card by the recovered item range,
+ * anchored at the card top-left. */
+void oa_menu_card_rect(const struct oa_menu_dialog *dialog, unsigned index,
+                       float progress, oa_launcher_rect *card,
+                       oa_launcher_rect *item);
 
 /* Dispatch an action string to a caller-supplied handler. The library does not
  * own a global action registry; modules decide what an action means. */

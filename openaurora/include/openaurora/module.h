@@ -165,6 +165,7 @@ _Static_assert(sizeof(oa_module_note) == 36, "module ELF note layout");
         __attribute__((used, section(".note.openaurora"), aligned(4))) = { \
         11, 12, OA_MODULE_MAGIC, "openaurora", OA_MODULE_MAGIC, OA_ABI_VERSION, sizeof(oa_module) \
     }; \
+    __attribute__((visibility("default"))) \
     const oa_module *oa_module_entry(void) { return &(descriptor); }
 
 #endif /* OPENAURORA_MODULE_H */

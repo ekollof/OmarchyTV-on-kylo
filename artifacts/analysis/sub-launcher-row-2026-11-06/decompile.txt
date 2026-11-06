@@ -1,0 +1,754 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/application.log (LoggingInitialization)
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)
+INFO  Searching for classes... (ClassSearcher)
+INFO  Class search complete (651 ms) (ClassSearcher)
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @25fb8912 (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)
+INFO  Initializing Random Number Generator... (SecureRandomFactory)
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)
+INFO  Headless startup complete (1651 ms) (AnalyzeHeadless)
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldOffset has been called by org.apache.felix.framework.util.SecureAction (file:/opt/ghidra/Ghidra/Features/Base/lib/org.apache.felix.framework-7.0.5.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.felix.framework.util.SecureAction
+WARNING: sun.misc.Unsafe::staticFieldOffset will be removed in a future release
+INFO  HEADLESS Script Paths:
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)
+INFO  REPORT: Execute script: DumpFirmware.java '_ZN14SVGListBoxBase14getRowPositionEiR8EASIRect' '_ZN14SVGListBoxBase16renderBackgroundEv' '_ZN24MaskPositioningTransform16getMaskRectangleEv' '_ZN28HorizontalMaskScaleTransform16setSurfaceUIRectERK8EASIRect' '_ZN28HorizontalMaskScaleTransform11setMaskNameERK7UString' '_ZN24MaskPositioningTransform16setSurfaceUIRectERK8EASIRect'  (HeadlessAnalyzer)
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN14SVGListBoxBase14getRowPositionEiR8EASIRect -> SVGListBoxBase::getRowPosition @ 010bbaa8 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined getRowPosition(int param_1, EASIRect * param_2) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SVGListBoxBase::getRowPosition(int, EASIRect&) */
+
+void __thiscall SVGListBoxBase::getRowPosition(SVGListBoxBase *this,int param_1,EASIRect *param_2)
+
+{
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  int local_4c;
+  int local_48;
+  int local_44;
+  int local_40;
+  int local_3c;
+  int local_38;
+  int local_34;
+  int local_30;
+  int local_2c;
+
+  piVar1 = DAT_010bbba8;
+  local_2c = *DAT_010bbba8;
+  iVar2 = *(int *)(this + 0x204);
+  if (this[0xe8] == (SVGListBoxBase)0x0) {
+    iVar3 = *(int *)(this + 0x208);
+    local_48 = *(int *)(this + 500) * param_1 + *(int *)(this + 0x1fc);
+    local_4c = iVar2;
+    local_44 = iVar2;
+    local_40 = local_48;
+    (**(code **)(*(int *)this + 0x28))((EASIRect *)&local_3c,this);
+    local_44 = (((local_34 - local_3c) - iVar2) - iVar3) + local_44;
+    local_40 = local_40 + *(int *)(this + 0x1f8);
+  }
+  else {
+    if (this[0xe9] == (SVGListBoxBase)0x0) {
+      local_4c = *(int *)(this + 0x20c) * param_1 + iVar2;
+    }
+    else {
+      (**(code **)(*(int *)this + 0x28))((EASIRect *)&local_3c,this);
+      local_4c = (local_34 - iVar2) - (param_1 * *(int *)(this + 0x20c) + *(int *)(this + 0x20c));
+    }
+    local_48 = *(int *)(this + 0x1fc);
+    iVar2 = *(int *)(this + 0x210);
+    local_44 = local_4c;
+    local_40 = local_48;
+    (**(code **)(*(int *)this + 0x28))((EASIRect *)&local_3c,this);
+    local_44 = local_44 + iVar2;
+    local_40 = (((local_30 - local_38) - *(int *)(this + 0x1fc)) - *(int *)(this + 0x200)) +
+               local_40;
+  }
+  EASIRect::EASIRect((EASIRect *)&local_3c,(EASIPoint *)&local_4c,(EASIPoint *)&local_44);
+  *(int *)param_2 = local_3c;
+  *(int *)(param_2 + 4) = local_38;
+  *(int *)(param_2 + 8) = local_34;
+  *(int *)(param_2 + 0xc) = local_30;
+  if (local_2c != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN14SVGListBoxBase16renderBackgroundEv -> SVGListBoxBase::renderBackground @ 010bd304 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined renderBackground(void) (GhidraScript)
+INFO  DumpFirmware.java>
+/* SVGListBoxBase::renderBackground() */
+
+void __thiscall SVGListBoxBase::renderBackground(SVGListBoxBase *this)
+
+{
+  int *piVar1;
+  undefined4 *puVar2;
+  int *piVar3;
+  undefined4 uVar4;
+  int iVar5;
+  int iVar6;
+  int iVar7;
+  int iVar8;
+  int iVar9;
+  EASIControlInterface *pEVar10;
+  undefined4 uVar11;
+  undefined4 uVar12;
+  int iVar13;
+  EASIRect *this_00;
+  code *pcVar14;
+  SVGSurface *this_01;
+  SVGContainer *pSVar15;
+  UString aUStack_388 [8];
+  UString aUStack_380 [8];
+  UString aUStack_378 [8];
+  UString aUStack_370 [8];
+  UString aUStack_368 [8];
+  UString aUStack_360 [8];
+  UString aUStack_358 [8];
+  UString aUStack_350 [8];
+  UString aUStack_348 [8];
+  UString aUStack_340 [8];
+  UString aUStack_338 [8];
+  UString aUStack_330 [8];
+  UString aUStack_328 [8];
+  UString aUStack_320 [8];
+  UString aUStack_318 [8];
+  UString aUStack_310 [8];
+  UString aUStack_308 [8];
+  UString aUStack_300 [8];
+  UString aUStack_2f8 [8];
+  UString aUStack_2f0 [8];
+  UString aUStack_2e8 [8];
+  UString aUStack_2e0 [8];
+  UString aUStack_2d8 [8];
+  UString aUStack_2d0 [8];
+  UString aUStack_2c8 [8];
+  UString aUStack_2c0 [8];
+  UString aUStack_2b8 [8];
+  UString aUStack_2b0 [8];
+  RectangleContainer aRStack_2a8 [12];
+  RectangleContainer aRStack_29c [12];
+  int local_290;
+  int local_28c;
+  int local_288;
+  int local_284;
+  int local_280;
+  undefined4 uStack_27c;
+  int local_278;
+  undefined4 uStack_274;
+  int local_270;
+  undefined4 uStack_26c;
+  int local_268;
+  undefined4 uStack_264;
+  int local_260;
+  undefined4 uStack_25c;
+  int local_258;
+  undefined4 uStack_254;
+  undefined4 local_250;
+  undefined4 uStack_24c;
+  undefined4 uStack_248;
+  undefined4 uStack_244;
+  int local_240;
+  int local_23c;
+  int local_238;
+  int local_234;
+  int local_230;
+  int iStack_22c;
+  int iStack_228;
+  int iStack_224;
+  int local_220;
+  undefined4 uStack_21c;
+  int iStack_218;
+  undefined4 uStack_214;
+  int local_210;
+  undefined4 uStack_20c;
+  int iStack_208;
+  undefined4 uStack_204;
+  int local_200;
+  undefined4 uStack_1fc;
+  int iStack_1f8;
+  undefined4 uStack_1f4;
+  int local_1f0;
+  undefined4 uStack_1ec;
+  int iStack_1e8;
+  undefined4 uStack_1e4;
+  int local_1e0;
+  undefined4 uStack_1dc;
+  int iStack_1d8;
+  undefined4 uStack_1d4;
+  int local_1d0;
+  undefined4 uStack_1cc;
+  int iStack_1c8;
+  undefined4 uStack_1c4;
+  EASIRect local_1c0 [4];
+  undefined4 auStack_1bc [3];
+  EASIRect aEStack_1b0 [16];
+  EASIRect aEStack_1a0 [16];
+  int local_190;
+  undefined4 uStack_18c;
+  int iStack_188;
+  undefined4 uStack_184;
+  int local_180;
+  undefined4 uStack_17c;
+  int iStack_178;
+  undefined4 uStack_174;
+  undefined4 local_170;
+  undefined4 uStack_16c;
+  undefined4 uStack_168;
+  undefined4 uStack_164;
+  undefined4 local_160 [11];
+  UString aUStack_134 [12];
+  undefined4 local_128 [11];
+  UString aUStack_fc [12];
+  HorizontalMaskScaleTransform aHStack_f0 [64];
+  HorizontalMaskScaleTransform aHStack_b0 [64];
+  HorizontalMaskScaleTransform aHStack_70 [68];
+  int local_2c;
+
+  piVar1 = DAT_010bd5b4;
+  local_2c = *DAT_010bd5b4;
+  pSVar15 = *(SVGContainer **)(this + *(int *)(this + 0x6c) * 4 + 0x74);
+  if (pSVar15 == (SVGContainer *)0x0) {
+    piVar3 = (int *)SVGContext::getSVGSupplier(*(SVGContext **)(this + 0x68));
+    iVar13 = *(int *)(this + 0x6c);
+    uVar4 = (**(code **)(*piVar3 + 8))(piVar3,*(undefined4 *)(this + iVar13 * 4 + 0x84));
+    *(undefined4 *)(this + iVar13 * 4 + 0x74) = uVar4;
+    pSVar15 = *(SVGContainer **)(this + *(int *)(this + 0x6c) * 4 + 0x74);
+    if (pSVar15 == (SVGContainer *)0x0) goto LAB_010bdd5a;
+  }
+  RectangleContainer::RectangleContainer(aRStack_2a8);
+  MaskPositioningTransform::MaskPositioningTransform((MaskPositioningTransform *)local_160);
+  HorizontalMaskScaleTransform::HorizontalMaskScaleTransform(aHStack_f0);
+  HorizontalMaskScaleTransform::HorizontalMaskScaleTransform(aHStack_b0);
+  HorizontalMaskScaleTransform::HorizontalMaskScaleTransform(aHStack_70);
+  EASIRect::EASIRect((EASIRect *)&local_290);
+  EASIRect::EASIRect((EASIRect *)&local_280);
+  EASIRect::EASIRect((EASIRect *)&local_270);
+  EASIRect::EASIRect((EASIRect *)&local_260);
+  calculateHeight(this,pSVar15);
+  this_01 = (SVGSurface *)(this + 0xec);
+  SVGSurface::clearUISurface(this_01);
+  EASIRect::EASIRect((EASIRect *)&local_250,0,0,0,0);
+  *(undefined4 *)(this + 0x214) = local_250;
+  *(undefined4 *)(this + 0x218) = uStack_24c;
+  *(undefined4 *)(this + 0x21c) = uStack_248;
+  *(undefined4 *)(this + 0x220) = uStack_244;
+  (**(code **)(*(int *)this + 0x28))(&local_240,this);
+  EASIRect::EASIRect((EASIRect *)&local_230,0,0,local_238 - local_240,*(int *)(this + 0x1fc));
+  local_290 = local_230;
+  local_28c = iStack_22c;
+  local_288 = iStack_228;
+  local_284 = iStack_224;
+  MaskPositioningTransform::setSurfaceUIRect
+            ((MaskPositioningTransform *)local_160,(EASIRect *)&local_290);
+  MaskPositioningTransform::setMaskContainer((MaskPositioningTransform *)local_160,aRStack_2a8);
+  MaskPositioningTransform::setAlignment((MaskPositioningTransform *)local_160,1);
+  SVGWindow::getWidgetStandardName((int)aUStack_388);
+  MaskPositioningTransform::setMaskName((MaskPositioningTransform *)local_160,aUStack_388);
+  UString::~UString(aUStack_388);
+  piVar3 = (int *)SVGContext::getSVGRenderer(*(SVGContext **)(this + 0x68));
+  pcVar14 = *(code **)(*piVar3 + 0xc);
+  SVGWindow::getWidgetStandardName((int)aUStack_380);
+  (*pcVar14)(piVar3,this_01,pSVar15,aUStack_380,aRStack_2a8,local_160);
+  UString::~UString(aUStack_380);
+  MaskPositioningTransform::getMaskRectangle();
+  local_270 = local_220;
+  uStack_26c = uStack_21c;
+  local_268 = iStack_218;
+  uStack_264 = uStack_214;
+  if (this[0x248] == (SVGListBoxBase)0x0) {
+    UString::UString(aUStack_378,(char *)*DAT_010bd5b8);
+    iVar13 = RectangleContainer::getRectangle(aRStack_2a8,aUStack_378);
+    UString::~UString(aUStack_378);
+    UString::UString(aUStack_370,(char *)*DAT_010bd5bc);
+    iVar5 = RectangleContainer::getRectangle(aRStack_2a8,aUStack_370);
+    UString::~UString(aUStack_370);
+    UString::UString(aUStack_368,(char *)*DAT_010bd5c0);
+    iVar6 = RectangleContainer::getRectangle(aRStack_2a8,aUStack_368);
+    UString::~UString(aUStack_368);
+    UString::UString(aUStack_360,(char *)*DAT_010bd5c4);
+    iVar7 = RectangleContainer::getRectangle(aRStack_2a8,aUStack_360);
+    puVar2 = DAT_010bd5c8;
+    UString::~UString(aUStack_360);
+    UString::UString(aUStack_358,(char *)*puVar2);
+    iVar8 = RectangleContainer::getRectangle(aRStack_2a8,aUStack_358);
+    UString::~UString(aUStack_358);
+    UString::UString(aUStack_350,(char *)*DAT_010bd5cc);
+    iVar9 = RectangleContainer::getRectangle(aRStack_2a8,aUStack_350);
+    UString::~UString(aUStack_350);
+    if (iVar13 == 0) {
+      if (iVar5 == 0) {
+        if (iVar7 == 0) {
+          if (iVar6 == 0) {
+            if (iVar9 == 0) {
+              if (iVar8 == 0) goto LAB_010bd57a;
+              uVar4 = 5;
+            }
+            else {
+              uVar4 = 4;
+            }
+          }
+          else {
+            uVar4 = 3;
+          }
+        }
+        else {
+          uVar4 = 2;
+        }
+      }
+      else {
+        uVar4 = 1;
+      }
+    }
+    else {
+LAB_010bd57a:
+      uVar4 = 0;
+    }
+    *(undefined4 *)(this + 0x244) = uVar4;
+  }
+  MaskPositioningTransform::resetMask((MaskPositioningTransform *)local_160);
+  SVGWindow::getWidgetStandardName((int)aUStack_348);
+  MaskPositioningTransform::setMaskName((MaskPositioningTransform *)local_160,aUStack_348);
+  UString::~UString(aUStack_348);
+  MaskPositioningTransform::setAlignment((MaskPositioningTransform *)local_160,2);
+  piVar3 = (int *)SVGContext::getSVGRenderer(*(SVGContext **)(this + 0x68));
+  pcVar14 = *(code **)(*piVar3 + 0xc);
+  SVGWindow::getWidgetStandardName((int)aUStack_340);
+  (*pcVar14)(piVar3,this_01,pSVar15,aUStack_340,aRStack_2a8,local_160);
+  UString::~UString(aUStack_340);
+  MaskPositioningTransform::getMaskRectangle();
+  local_260 = local_210;
+  uStack_25c = uStack_20c;
+  local_258 = iStack_208;
+  uStack_254 = uStack_204;
+  EASIRect::EASIRect((EASIRect *)&local_200,(local_268 - local_270) + local_290,local_28c,
+                     local_288 - (iStack_208 - local_210),local_284);
+  local_280 = local_200;
+  uStack_27c = uStack_1fc;
+  local_278 = iStack_1f8;
+  uStack_274 = uStack_1f4;
+  HorizontalMaskScaleTransform::setSurfaceUIRect(aHStack_f0,(EASIRect *)&local_280);
+  SVGWindow::getWidgetStandardName((int)aUStack_338);
+  HorizontalMaskScaleTransform::setMaskName(aHStack_f0,aUStack_338);
+  UString::~UString(aUStack_338);
+  HorizontalMaskScaleTransform::setMaskContainer(aHStack_f0,aRStack_2a8);
+  piVar3 = (int *)SVGContext::getSVGRenderer(*(SVGContext **)(this + 0x68));
+  pcVar14 = *(code **)(*piVar3 + 0xc);
+  SVGWindow::getWidgetStandardName((int)aUStack_330);
+  (*pcVar14)(piVar3,this_01,pSVar15,aUStack_330,aRStack_2a8,aHStack_f0);
+  UString::~UString(aUStack_330);
+  if (this[0xe8] == (SVGListBoxBase)0x0) {
+    if (0 < *(int *)(this + 500)) {
+      iVar13 = *(int *)(this + 0x200);
+      iVar5 = (local_234 - local_23c) - *(int *)(this + 0x1fc);
+      goto LAB_010bd710;
+    }
+  }
+  else if (0 < *(int *)(this + 0x20c)) {
+    iVar13 = *(int *)(this + 0x208);
+    iVar5 = (local_238 - local_240) - *(int *)(this + 0x204);
+LAB_010bd710:
+    uVar4 = FUN_01285478(iVar5 - iVar13);
+    *(undefined4 *)(this + 0x1f0) = uVar4;
+  }
+  if (this[0x234] != (SVGListBoxBase)0x0) {
+    this[0x234] = (SVGListBoxBase)0x0;
+  }
+  iVar13 = 0;
+  *(undefined4 *)(this + 0x230) = *(undefined4 *)(this + 0x1f0);
+  while( true ) {
+    iVar5 = *(int *)(this + 0x1f0);
+    if (iVar5 <= iVar13) break;
+    if (this[0xe8] == (SVGListBoxBase)0x0) {
+      local_28c = *(int *)(this + 500) * iVar13 + *(int *)(this + 0x1fc);
+      local_288 = local_238 - local_240;
+      local_284 = *(int *)(this + 500) + local_28c;
+      local_290 = 0;
+    }
+    else {
+      local_288 = *(int *)(this + 0x20c);
+      if (this[0xe9] == (SVGListBoxBase)0x0) {
+        local_290 = local_288 * iVar13 + *(int *)(this + 0x204);
+      }
+      else {
+        local_290 = (local_238 - *(int *)(this + 0x204)) - (iVar13 * local_288 + local_288);
+      }
+      local_288 = local_290 + local_288;
+      local_284 = local_234 - local_23c;
+      local_28c = 0;
+    }
+    MaskPositioningTransform::resetMask((MaskPositioningTransform *)local_160);
+    MaskPositioningTransform::setSurfaceUIRect
+              ((MaskPositioningTransform *)local_160,(EASIRect *)&local_290);
+    MaskPositioningTransform::setMaskContainer((MaskPositioningTransform *)local_160,aRStack_2a8);
+    MaskPositioningTransform::setAlignment((MaskPositioningTransform *)local_160,1);
+    SVGWindow::getWidgetStandardName((int)aUStack_328);
+    MaskPositioningTransform::setMaskName((MaskPositioningTransform *)local_160,aUStack_328);
+    UString::~UString(aUStack_328);
+    piVar3 = (int *)SVGContext::getSVGRenderer(*(SVGContext **)(this + 0x68));
+    pcVar14 = *(code **)(*piVar3 + 0xc);
+    SVGWindow::getWidgetStandardName((int)aUStack_320);
+    (*pcVar14)(piVar3,this_01,pSVar15,aUStack_320,aRStack_2a8,local_160);
+    UString::~UString(aUStack_320);
+    MaskPositioningTransform::getMaskRectangle();
+    local_270 = local_1f0;
+    uStack_26c = uStack_1ec;
+    local_268 = iStack_1e8;
+    uStack_264 = uStack_1e4;
+    pEVar10 = (EASIControlInterface *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+    iVar5 = EASIControlInterface::getOSDHorizontalMirror(pEVar10);
+    if (iVar5 != 0) {
+      SVGWindow::getWidgetStandardName((int)aUStack_318);
+      iVar5 = RectangleContainer::getRectangle(aRStack_2a8,aUStack_318);
+      UString::~UString(aUStack_318);
+      if (iVar5 != 0) {
+        iVar6 = *(int *)(iVar5 + 8);
+        uVar4 = *(undefined4 *)(iVar5 + 0xc);
+        uVar11 = *(undefined4 *)(iVar5 + 0x10);
+        uVar12 = *(undefined4 *)(iVar5 + 0x14);
+        *(int *)(this + 0x214) = iVar6;
+        *(undefined4 *)(this + 0x218) = uVar4;
+        *(undefined4 *)(this + 0x21c) = uVar11;
+        *(undefined4 *)(this + 0x220) = uVar12;
+        iVar5 = (*(int *)(this + 0x21c) - iVar6) / 2;
+        *(int *)(this + 0x214) = iVar6 + iVar5;
+        *(int *)(this + 0x21c) = iVar5 + *(int *)(this + 0x21c);
+      }
+    }
+    MaskPositioningTransform::resetMask((MaskPositioningTransform *)local_160);
+    SVGWindow::getWidgetStandardName((int)aUStack_310);
+    MaskPositioningTransform::setMaskName((MaskPositioningTransform *)local_160,aUStack_310);
+    UString::~UString(aUStack_310);
+    MaskPositioningTransform::setAlignment((MaskPositioningTransform *)local_160,2);
+    piVar3 = (int *)SVGContext::getSVGRenderer(*(SVGContext **)(this + 0x68));
+    pcVar14 = *(code **)(*piVar3 + 0xc);
+    SVGWindow::getWidgetStandardName((int)aUStack_308);
+    (*pcVar14)(piVar3,this_01,pSVar15,aUStack_308,aRStack_2a8,local_160);
+    UString::~UString(aUStack_308);
+    MaskPositioningTransform::getMaskRectangle();
+    local_260 = local_1e0;
+    uStack_25c = uStack_1dc;
+    local_258 = iStack_1d8;
+    uStack_254 = uStack_1d4;
+    pEVar10 = (EASIControlInterface *)UIFramework::uiControlInterface(*(UIFramework **)(this + 4));
+    iVar5 = EASIControlInterface::getOSDHorizontalMirror(pEVar10);
+    if (iVar5 == 0) {
+      SVGWindow::getWidgetStandardName((int)aUStack_300);
+      iVar5 = RectangleContainer::getRectangle(aRStack_2a8,aUStack_300);
+      UString::~UString(aUStack_300);
+      if (iVar5 != 0) {
+        uVar4 = *(undefined4 *)(iVar5 + 0xc);
+        uVar11 = *(undefined4 *)(iVar5 + 0x10);
+        uVar12 = *(undefined4 *)(iVar5 + 0x14);
+        *(undefined4 *)(this + 0x214) = *(undefined4 *)(iVar5 + 8);
+        *(undefined4 *)(this + 0x218) = uVar4;
+        *(undefined4 *)(this + 0x21c) = uVar11;
+        *(undefined4 *)(this + 0x220) = uVar12;
+      }
+    }
+    EASIRect::EASIRect((EASIRect *)&local_1d0,(local_268 - local_270) + local_290,local_28c,
+                       local_288 - (local_258 - local_260),local_284);
+    local_280 = local_1d0;
+    uStack_27c = uStack_1cc;
+    local_278 = iStack_1c8;
+    uStack_274 = uStack_1c4;
+    HorizontalMaskScaleTransform::setSurfaceUIRect(aHStack_b0,(EASIRect *)&local_280);
+    SVGWindow::getWidgetStandardName((int)aUStack_2f8);
+    HorizontalMaskScaleTransform::setMaskName(aHStack_b0,aUStack_2f8);
+    UString::~UString(aUStack_2f8);
+    HorizontalMaskScaleTransform::setMaskContainer(aHStack_b0,aRStack_2a8);
+    piVar3 = (int *)SVGContext::getSVGRenderer(*(SVGContext **)(this + 0x68));
+    pcVar14 = *(code **)(*piVar3 + 0xc);
+    SVGWindow::getWidgetStandardName((int)aUStack_2f0);
+    (*pcVar14)(piVar3,this_01,pSVar15,aUStack_2f0,aRStack_2a8,aHStack_b0);
+    UString::~UString(aUStack_2f0);
+    SVGWindow::getWidgetStandardName((int)aUStack_2e8);
+    iVar5 = RectangleContainer::getRectangle(aRStack_2a8,aUStack_2e8);
+    UString::~UString(aUStack_2e8);
+    if (iVar5 != 0) {
+      *(int *)(this + 0x1f8) = *(int *)(iVar5 + 0x14) - *(int *)(iVar5 + 0xc);
+      *(int *)(this + 0x210) = *(int *)(iVar5 + 0x10) - *(int *)(iVar5 + 8);
+      *(int *)(this + 0x204) = ((local_268 - local_270) + *(int *)(iVar5 + 8)) - local_280;
+      *(int *)(this + 0x208) = ((local_258 - local_260) + local_278) - *(int *)(iVar5 + 0x10);
+    }
+    iVar13 = iVar13 + 1;
+  }
+  if (this[0xe8] == (SVGListBoxBase)0x0) {
+    this_00 = aEStack_1a0;
+    local_234 = *(int *)(this + 0x200);
+    local_238 = local_238 - local_240;
+    iVar5 = *(int *)(this + 500) * iVar5 + *(int *)(this + 0x1fc);
+    iVar13 = 0;
+  }
+  else if (this[0xe9] == (SVGListBoxBase)0x0) {
+    this_00 = aEStack_1b0;
+    local_234 = local_234 - local_23c;
+    local_238 = *(int *)(this + 0x208);
+    iVar13 = *(int *)(this + 0x20c) * iVar5 + *(int *)(this + 0x204);
+    iVar5 = 0;
+  }
+  else {
+    this_00 = local_1c0;
+    local_234 = local_234 - local_23c;
+    iVar5 = 0;
+    local_238 = *(int *)(this + 0x208);
+    iVar13 = local_240;
+  }
+  EASIRect::EASIRect(this_00,iVar13,iVar5,local_238,local_234);
+  local_290 = *(int *)this_00;
+  local_28c = *(int *)(this_00 + 4);
+  local_288 = *(int *)(this_00 + 8);
+  local_284 = *(int *)(this_00 + 0xc);
+  MaskPositioningTransform::resetMask((MaskPositioningTransform *)local_160);
+  MaskPositioningTransform::setSurfaceUIRect
+            ((MaskPositioningTransform *)local_160,(EASIRect *)&local_290);
+  MaskPositioningTransform::setMaskContainer((MaskPositioningTransform *)local_160,aRStack_2a8);
+  MaskPositioningTransform::setAlignment((MaskPositioningTransform *)local_160,1);
+  SVGWindow::getWidgetStandardName((int)aUStack_2e0);
+  MaskPositioningTransform::setMaskName((MaskPositioningTransform *)local_160,aUStack_2e0);
+  UString::~UString(aUStack_2e0);
+  piVar3 = (int *)SVGContext::getSVGRenderer(*(SVGContext **)(this + 0x68));
+  pcVar14 = *(code **)(*piVar3 + 0xc);
+  SVGWindow::getWidgetStandardName((int)aUStack_2d8);
+  (*pcVar14)(piVar3,this_01,pSVar15,aUStack_2d8,aRStack_2a8,(MaskPositioningTransform *)local_160);
+  UString::~UString(aUStack_2d8);
+  MaskPositioningTransform::getMaskRectangle();
+  local_270 = local_190;
+  uStack_26c = uStack_18c;
+  local_268 = iStack_188;
+  uStack_264 = uStack_184;
+  MaskPositioningTransform::resetMask((MaskPositioningTransform *)local_160);
+  SVGWindow::getWidgetStandardName((int)aUStack_2d0);
+  MaskPositioningTransform::setMaskName((MaskPositioningTransform *)local_160,aUStack_2d0);
+  UString::~UString(aUStack_2d0);
+  MaskPositioningTransform::setAlignment((MaskPositioningTransform *)local_160,2);
+  piVar3 = (int *)SVGContext::getSVGRenderer(*(SVGContext **)(this + 0x68));
+  pcVar14 = *(code **)(*piVar3 + 0xc);
+  SVGWindow::getWidgetStandardName((int)aUStack_2c8);
+  (*pcVar14)(piVar3,this_01,pSVar15,aUStack_2c8,aRStack_2a8,(MaskPositioningTransform *)local_160);
+  UString::~UString(aUStack_2c8);
+  MaskPositioningTransform::getMaskRectangle();
+  local_260 = local_180;
+  uStack_25c = uStack_17c;
+  local_258 = iStack_178;
+  uStack_254 = uStack_174;
+  EASIRect::EASIRect((EASIRect *)&local_170,(local_268 - local_270) + local_290,local_28c,
+                     local_288 - (iStack_178 - local_180),local_284);
+  local_280 = local_170;
+  uStack_27c = uStack_16c;
+  local_278 = uStack_168;
+  uStack_274 = uStack_164;
+  HorizontalMaskScaleTransform::setSurfaceUIRect(aHStack_70,(EASIRect *)&local_280);
+  SVGWindow::getWidgetStandardName((int)aUStack_2c0);
+  HorizontalMaskScaleTransform::setMaskName(aHStack_70,aUStack_2c0);
+  UString::~UString(aUStack_2c0);
+  HorizontalMaskScaleTransform::setMaskContainer(aHStack_70,aRStack_2a8);
+  piVar3 = (int *)SVGContext::getSVGRenderer(*(SVGContext **)(this + 0x68));
+  pcVar14 = *(code **)(*piVar3 + 0xc);
+  SVGWindow::getWidgetStandardName((int)aUStack_2b8);
+  (*pcVar14)(piVar3,this_01,pSVar15,aUStack_2b8,aRStack_2a8,aHStack_70);
+  UString::~UString(aUStack_2b8);
+  MaskPositioningTransform::MaskPositioningTransform((MaskPositioningTransform *)local_128);
+  RectangleContainer::RectangleContainer(aRStack_29c);
+  piVar3 = (int *)SVGContext::getSVGRenderer(*(SVGContext **)(this + 0x68));
+  (**(code **)(*piVar3 + 0x10))
+            (piVar3,pSVar15,aRStack_29c,this + 0x280,(MaskPositioningTransform *)local_128);
+  SVGWindow::getWidgetStandardName((int)aUStack_2b0);
+  iVar13 = RectangleContainer::getRectangle(aRStack_29c,aUStack_2b0);
+  if (iVar13 != 0) {
+    SVGSurface::bringToFront(this_01);
+    *(int *)(this + 0x27c) = iVar13;
+    SVGSurface::drawRectangle
+              (this_01,*(int *)(iVar13 + 0x1c),(rgba_drawing_colour *)(iVar13 + 0x18),
+               (rgba_drawing_colour *)(iVar13 + 0x20),*(int *)(this + 0x26c) - local_240,
+               *(int *)(this + 0x270) - local_23c,*(int *)(this + 0x274) - *(int *)(this + 0x26c),
+               *(int *)(this + 0x278) - *(int *)(this + 0x270));
+  }
+  uVar4 = DAT_010bdebc;
+  UString::~UString(aUStack_2b0);
+  RectangleContainer::~RectangleContainer(aRStack_29c);
+  local_128[0] = uVar4;
+  UString::~UString(aUStack_fc);
+  HorizontalMaskScaleTransform::~HorizontalMaskScaleTransform(aHStack_70);
+  HorizontalMaskScaleTransform::~HorizontalMaskScaleTransform(aHStack_b0);
+  HorizontalMaskScaleTransform::~HorizontalMaskScaleTransform(aHStack_f0);
+  local_160[0] = uVar4;
+  UString::~UString(aUStack_134);
+  RectangleContainer::~RectangleContainer(aRStack_2a8);
+LAB_010bdd5a:
+  if (local_2c != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN24MaskPositioningTransform16getMaskRectangleEv -> MaskPositioningTransform::getMaskRectangle @ 00eec580 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined getMaskRectangle(void) (GhidraScript)
+INFO  DumpFirmware.java>
+/* MaskPositioningTransform::getMaskRectangle() */
+
+void MaskPositioningTransform::getMaskRectangle(void)
+
+{
+  int *piVar1;
+  EASIRect *in_r0;
+  int iVar2;
+  MaskPositioningTransform *in_r1;
+  int iVar3;
+
+  piVar1 = DAT_00eec5d8;
+  iVar3 = *DAT_00eec5d8;
+  iVar2 = getMask(in_r1);
+  if (iVar2 == 0) {
+    EASIRect::EASIRect(in_r0,0,0,0,0);
+  }
+  else {
+    *(undefined4 *)in_r0 = *(undefined4 *)(in_r1 + 0x18);
+    *(undefined4 *)(in_r0 + 4) = *(undefined4 *)(in_r1 + 0x1c);
+    *(undefined4 *)(in_r0 + 8) = *(undefined4 *)(in_r1 + 0x20);
+    *(undefined4 *)(in_r0 + 0xc) = *(undefined4 *)(in_r1 + 0x24);
+  }
+  if (iVar3 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN28HorizontalMaskScaleTransform16setSurfaceUIRectERK8EASIRect -> HorizontalMaskScaleTransform::setSurfaceUIRect @ 00eecbec (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined setSurfaceUIRect(EASIRect * param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* HorizontalMaskScaleTransform::setSurfaceUIRect(EASIRect const&) */
+
+void __thiscall
+HorizontalMaskScaleTransform::setSurfaceUIRect(HorizontalMaskScaleTransform *this,EASIRect *param_1)
+
+{
+  int *piVar1;
+  undefined4 uVar2;
+  undefined4 uVar3;
+  int iVar4;
+  undefined4 uVar5;
+
+  piVar1 = DAT_00eecc20;
+  iVar4 = *DAT_00eecc20;
+  uVar2 = *(undefined4 *)(param_1 + 4);
+  uVar3 = *(undefined4 *)(param_1 + 8);
+  uVar5 = *(undefined4 *)(param_1 + 0xc);
+  *(undefined4 *)(this + 4) = *(undefined4 *)param_1;
+  *(undefined4 *)(this + 8) = uVar2;
+  *(undefined4 *)(this + 0xc) = uVar3;
+  *(undefined4 *)(this + 0x10) = uVar5;
+  if (iVar4 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN28HorizontalMaskScaleTransform11setMaskNameERK7UString -> HorizontalMaskScaleTransform::setMaskName @ 00eecbb8 (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined setMaskName(UString * param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* HorizontalMaskScaleTransform::setMaskName(UString const&) */
+
+void __thiscall
+HorizontalMaskScaleTransform::setMaskName(HorizontalMaskScaleTransform *this,UString *param_1)
+
+{
+  int *piVar1;
+  int iVar2;
+
+  piVar1 = DAT_00eecbe8;
+  iVar2 = *DAT_00eecbe8;
+  UString::operator=((UString *)(this + 0x34),param_1);
+  if (iVar2 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)
+INFO  DumpFirmware.java>
+===== _ZN24MaskPositioningTransform16setSurfaceUIRectERK8EASIRect -> MaskPositioningTransform::setSurfaceUIRect @ 00eec4ec (GhidraScript)
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined setSurfaceUIRect(EASIRect * param_1) (GhidraScript)
+INFO  DumpFirmware.java>
+/* MaskPositioningTransform::setSurfaceUIRect(EASIRect const&) */
+
+void __thiscall
+MaskPositioningTransform::setSurfaceUIRect(MaskPositioningTransform *this,EASIRect *param_1)
+
+{
+  int *piVar1;
+  undefined4 uVar2;
+  undefined4 uVar3;
+  int iVar4;
+  undefined4 uVar5;
+
+  piVar1 = DAT_00eec520;
+  iVar4 = *DAT_00eec520;
+  uVar2 = *(undefined4 *)(param_1 + 4);
+  uVar3 = *(undefined4 *)(param_1 + 8);
+  uVar5 = *(undefined4 *)(param_1 + 0xc);
+  *(undefined4 *)(this + 8) = *(undefined4 *)param_1;
+  *(undefined4 *)(this + 0xc) = uVar2;
+  *(undefined4 *)(this + 0x10) = uVar3;
+  *(undefined4 *)(this + 0x14) = uVar5;
+  if (iVar4 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)

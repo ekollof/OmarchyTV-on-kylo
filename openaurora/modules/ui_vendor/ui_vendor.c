@@ -44,6 +44,7 @@
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/channels.h"
+#include "openaurora/menu_model.h"
 #include "openaurora/ui_engine.h"
 #include "openaurora/ui_time.h"
 #include "openaurora/canvas.h"
@@ -167,6 +168,8 @@ struct ctx {
     int card;
     int src;                         /* source-selection row, 0..MAX_SOURCES-1 */
     int sel;                         /* picture-settings row, -1 = none */
+    int sub_sel;                     /* JSON sub-launcher card, -1 = none */
+    float sub_progress;              /* lab capture progress 0..1 */
     int chan_sel;                    /* provisional channel-list selection */
     int text_on;                     /* live labels/values loaded (ui.text=1) */
     struct oa_font_pack font_pack;
@@ -337,7 +340,7 @@ static const oa_ui_icon *find_icon(struct ctx *c, const char *name)
 
 enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, SCREEN_SETTINGS = 3,
        SCREEN_SETTINGS_LIST = 4, SCREEN_APPS = 5, SCREEN_CHANNELS = 6,
-       ANIM_DIALOG = 1 };
+       SCREEN_SUBLAUNCHER = 7, ANIM_DIALOG = 1 };
 
 /* Picture-settings rows: 66 px FA bar content on the 70 px pitch, text
  * centered (row 4 centre 496). Row 6 ("Beeld zoomen") is disabled in the
@@ -555,6 +558,93 @@ static void paint_settings(struct ctx *c)
         return;
     }
     c->api->log(c->api->priv, OA_LOG_INFO, "painted captured picture-settings state");
+}
+
+/* p0/03 picture-shortcut row, driven by the JSON ui.menu picture branch.
+ * The card cutouts are the vendor's own pixels; the row origin/pitch and the
+ * 300 ms scale come from the checked JSON layout and launcher_anim. The lab
+ * ui.sub_sel/ui.sub_progress knobs select a card and sample the animation. */
+static const struct { const char *key, *asset; } SUB_CARDS[] = {
+    { "MODE", "sublauncher_card_0" },
+    { "ENERGY_SAVING", "sublauncher_card_1" },
+    { "PICTURE_ZOOM", "sublauncher_card_2" },
+};
+
+static void paint_sub_launcher(struct ctx *c)
+{
+    if (!c || !c->d) return;
+    const oa_ui_engine_iface *d = c->d;
+    d->clear(13, 14, 14);
+    const oa_ui_icon *top = find_icon(c, "settings_top");
+    if (top) d->blit(0, 240, top->w, top->h, top->rgba);
+    const oa_ui_icon *cat = find_icon(c, "settings_cat");
+    if (cat) d->blit(0, 440, cat->w, cat->h, cat->rgba);
+    const oa_ui_icon *rail = find_icon(c, "settings_rail");
+    if (rail) d->blit(0, 180, rail->w, rail->h, rail->rgba);
+
+    const oa_ui_menu_iface *menu =
+        c->api->lookup(c->api->priv, OA_SVC_UI_MENU, 1);
+    const struct oa_menu_dialog *md = menu ? menu->dialog("sub_launcher") : NULL;
+    const struct oa_menu_branch *mb = md ? menu->branch(md, 2) : NULL;
+    if (!mb || mb->item_count == 0) {
+        if (menu) c->api->release(c->api->priv, OA_SVC_UI_MENU);
+        c->scene_painted = 1;
+        (void)d->present();
+        return;
+    }
+    unsigned count = mb->item_count > 3 ? 3 : mb->item_count;
+    int sel = c->sub_sel;
+    if (sel >= (int)count) sel = (int)count - 1;
+    float progress = sel >= 0 ? c->sub_progress : 0.0f;
+    if (progress < 0) progress = 0;
+    if (progress > 1) progress = 1;
+
+    c->api->log(c->api->priv, OA_LOG_DEBUG,
+                "sub-row md=%p items=%u card=%d,%d %dx%d pitch=%d sel=%d p=%.2f",
+                (void *)md, count, md->card_x, md->card_y, md->card_w,
+                md->card_h, md->card_pitch, sel, progress);
+    if (sel >= 0) {
+        /* The unfocused row is the captured vendor row itself; do not repaint
+         * its gaps. Only the focused card's original+scaled union needs
+         * clearing before the scaled card is drawn over it. */
+        oa_launcher_rect base, scaled;
+        oa_menu_card_rect(md, (unsigned)sel, 0.0f, &base, NULL);
+        oa_menu_card_rect(md, (unsigned)sel, progress, &scaled, NULL);
+        int x1 = base.x1 < scaled.x1 ? base.x1 : scaled.x1;
+        int y1 = base.y1 < scaled.y1 ? base.y1 : scaled.y1;
+        int x2 = base.x2 > scaled.x2 ? base.x2 : scaled.x2;
+        int y2 = base.y2 > scaled.y2 ? base.y2 : scaled.y2;
+        d->fill(x1, y1, x2 - x1, y2 - y1, 13, 14, 14);
+    }
+    for (int pass = 0; pass < 2; pass++) {
+        for (unsigned i = 0; i < count; i++) {
+            if ((pass == 0 && (int)i == sel) || (pass == 1 && (int)i != sel))
+                continue;
+            const char *asset = NULL;
+            for (unsigned j = 0; j < sizeof SUB_CARDS / sizeof SUB_CARDS[0]; j++)
+                if (!strcmp(mb->items[i].key, SUB_CARDS[j].key))
+                    asset = SUB_CARDS[j].asset;
+            const oa_ui_icon *card = asset ? find_icon(c, asset) : NULL;
+            c->api->log(c->api->priv, OA_LOG_DEBUG,
+                        "sub-card i=%u key=%s asset=%s icon=%p", i,
+                        mb->items[i].key, asset ? asset : "(none)",
+                        (void *)card);
+            if (!card) continue;
+            oa_launcher_rect r;
+            oa_menu_card_rect(md, i, (int)i == sel ? progress : 0.0f, &r,
+                              NULL);
+            int w = r.x2 - r.x1, h = r.y2 - r.y1;
+            if (w == card->w && h == card->h)
+                d->blit(r.x1, r.y1, w, h, card->rgba);
+            else
+                d->blit_scaled(r.x1, r.y1, w, h, card->w, card->h,
+                               card->rgba);
+        }
+    }
+    c->api->release(c->api->priv, OA_SVC_UI_MENU);
+    c->scene_painted = 1;
+    if (d->present() != 0)
+        c->api->log(c->api->priv, OA_LOG_ERROR, "sub-launcher present failed");
 }
 
 static void settings_text_free(struct ctx *c)
@@ -1427,6 +1517,10 @@ static void paint(struct ctx *c)
         paint_settings_list(c);
         return;
     }
+    if (c->screen == SCREEN_SUBLAUNCHER) {
+        paint_sub_launcher(c);
+        return;
+    }
     if (c->screen == SCREEN_SETTINGS) {
         paint_settings(c);
         return;
@@ -1584,6 +1678,7 @@ static int portal_menu_action(const char *action)
     else if (!strcmp(name, "sources")) screen = SCREEN_SOURCES;
     else if (!strcmp(name, "settings")) screen = SCREEN_SETTINGS;
     else if (!strcmp(name, "settings_list")) screen = SCREEN_SETTINGS_LIST;
+    else if (!strcmp(name, "sub_launcher")) screen = SCREEN_SUBLAUNCHER;
     else if (!strcmp(name, "apps")) screen = SCREEN_APPS;
     else if (!strcmp(name, "channels")) screen = SCREEN_CHANNELS;
     else return ENOENT;
@@ -2341,6 +2436,15 @@ static int m_start(void *v)
         c->screen = SCREEN_SETTINGS;
     if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "settings_list"))
         c->screen = SCREEN_SETTINGS_LIST;
+    if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "sub_launcher")) {
+        c->screen = SCREEN_SUBLAUNCHER;
+        c->sub_sel = atoi(c->api->config_get(c->api->priv, "ui.sub_sel", "-1"));
+        if (c->sub_sel < -1 || c->sub_sel > 2) c->sub_sel = -1;
+        c->sub_progress = (float)atof(
+            c->api->config_get(c->api->priv, "ui.sub_progress", "0"));
+        if (c->sub_progress < 0) c->sub_progress = 0;
+        if (c->sub_progress > 1) c->sub_progress = 1;
+    }
     if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "apps")) {
         c->screen = SCREEN_APPS;
         if (!c->restored)

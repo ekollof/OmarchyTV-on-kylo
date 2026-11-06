@@ -594,6 +594,14 @@ def emit_json(model, path):
                     "scale": [scale_from, scale_to],
                     "glyph_delta": [glyph_dx, glyph_dy],
                 },
+                "layout": {
+                    "source": "p0/03 settings_top capture (0,240 1920x180): "
+                              "cards 201/451/701,36 235x130, pitch 250; "
+                              "item cell 199,274 240x140",
+                    "card": [201, 276, 235, 130],
+                    "pitch": 250,
+                    "item": [199, 274, 240, 140],
+                },
                 "branches": branches,
             }
         ],

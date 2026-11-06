@@ -78,6 +78,23 @@ are built in `renderBackground` from `rowPos` (standard name 43) and the
 mRowM mask; the exact reduced screen coordinate is not yet checked.
 SUBLAUNCHER-MENU-TREE.
 
+QEMU UI oracle, 2026-11-06 (TV off limits): `tools/display/sim-display.c`
+publishes display/display.alpha and writes 1920x1080 RGBA frames; ARM build is
+GLIBC 2.4. `tools/qemu-ui-layout.sh` runs the real
+`build-tv-v3/openaurora` + `ui_engine`/`ui_menu`/`ui_vendor` under
+`qemu-arm-static -L artifacts/workbench/rootfs/root`. The p0/03
+`SCREEN_SETTINGS` band matches `settings_top.rgba` **AE=0, 0/345,600**.
+`ui_vendor` now has `SCREEN_SUBLAUNCHER` (`ui.screen=sub_launcher`,
+`open:sub_launcher`): the JSON picture branch maps MODE/ENERGY_SAVING/
+PICTURE_ZOOM to captured card assets at the checked layout (cards
+201/451/701,276 235x130, pitch 250, item cell 199,274 240x140). The unfocused
+row is AE=0 vs the oracle; the 300 ms lab samples (`ui.sub_sel`,
+`ui.sub_progress`) give card2 701,276 235x130 → 317x175 at p=0/0.5/1.
+`tools/qemu-sub-launcher-check.sh` repeats this. Module internals are now
+hidden; only `oa_module_entry` is exported, so `ui_menu`/`ui_vendor` do not
+interpose `oa_menu_*` symbols. Focused-card vendor capture, live card text,
+runtime key/timer and scanout remain. QEMU-UI-LAYOUT.
+
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
 Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,
 one redraw at t=53ms (bbox 33,30 620x230, 45,745 px), then 16 identical post

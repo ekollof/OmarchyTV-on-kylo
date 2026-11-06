@@ -142,6 +142,21 @@ static int load_dialog(const struct oa_json *o, struct oa_menu_dialog *dialog)
         dialog->list_w = list[2];
         dialog->list_h = list[3];
     }
+    const struct oa_json *layout = oa_json_get(o, "layout");
+    if (layout && layout->type == OA_JSON_OBJECT) {
+        int r[4];
+        if (rect4(oa_json_get(layout, "card"), r) == 0) {
+            dialog->card_x = r[0];
+            dialog->card_y = r[1];
+            dialog->card_w = r[2];
+            dialog->card_h = r[3];
+        }
+        dialog->card_pitch = oa_json_int(layout, "pitch", 0);
+        if (rect4(oa_json_get(layout, "item"), r) == 0) {
+            dialog->runtime_item_x = r[0];
+            dialog->runtime_item_y = r[1];
+        }
+    }
     const struct oa_json *item = oa_json_get(o, "item");
     if (item && item->type == OA_JSON_OBJECT) {
         dialog->item_w = oa_json_int(item, "w", 0);
@@ -179,6 +194,17 @@ static int load_dialog(const struct oa_json *o, struct oa_menu_dialog *dialog)
             dialog->glyph_dx = (int)gd->items[0]->number;
             dialog->glyph_dy = (int)gd->items[1]->number;
         }
+    }
+    if (dialog->card_w <= 0) {
+        dialog->card_x = dialog->list_x;
+        dialog->card_y = dialog->list_y;
+        dialog->card_w = dialog->item_w;
+        dialog->card_h = dialog->item_h;
+    }
+    if (dialog->card_pitch <= 0) dialog->card_pitch = dialog->item_w;
+    if (dialog->runtime_item_x == 0 && dialog->runtime_item_y == 0) {
+        dialog->runtime_item_x = dialog->card_x;
+        dialog->runtime_item_y = dialog->card_y;
     }
     return load_branches(oa_json_get(o, "branches"), dialog);
 }
@@ -313,6 +339,25 @@ void oa_menu_item_anim(const struct oa_menu_dialog *dialog, int item_x,
                              progress, &dx, &dy);
     if (glyph_dx) *glyph_dx = dx;
     if (glyph_dy) *glyph_dy = dy;
+}
+
+void oa_menu_card_rect(const struct oa_menu_dialog *dialog, unsigned index,
+                       float progress, oa_launcher_rect *card,
+                       oa_launcher_rect *item)
+{
+    if (!dialog) return;
+    int cx = dialog->card_x + (int)index * dialog->card_pitch;
+    int cy = dialog->card_y;
+    if (card)
+        oa_launcher_scale_rect(cx, cy, dialog->card_w, dialog->card_h,
+                               dialog->scale_from, dialog->scale_to, progress,
+                               card);
+    if (item) {
+        item->x1 = dialog->runtime_item_x + (int)index * dialog->card_pitch;
+        item->y1 = dialog->runtime_item_y;
+        item->x2 = item->x1 + dialog->item_w;
+        item->y2 = item->y1 + dialog->item_h;
+    }
 }
 
 int oa_menu_dispatch(const char *action, oa_menu_action_fn fn, void *ud)
