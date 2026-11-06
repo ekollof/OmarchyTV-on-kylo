@@ -390,6 +390,22 @@ ui_clock/ui_console/ui_diag/ui_omarchy.
 ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list/
 ui_navigation/ui_profile/audio_curve are async. AUDIO-CURVE-QUIESCE.
+
+audio_amp_profile quiesce, 2026-11-06: profile+32-byte power moved into one
+heap profile_data. Quiesce clears published, unpublishes audio.amp_profile
+synchronously, detaches the data, then frees synchronously or on a worker
+after audio_amp_profile.cleanup_delay_ms. m_stop/m_destroy join/free; m_start
+refuses if live and rereads the hwprofile, so no handoff snapshot is needed.
+Control test: prescale17, reload fails fast, amp-profile ENODEV, status
+responsive, hwprofile changed to31, retry reports31; stop gate. Existing
+provider/module/IPC/fixture tests pass; ARM links libpthread. Full/QEMU pass.
+Immutable profile data only, not amp hardware. 26/35 descriptors now have
+quiesce; 9 remain: panel/plat/power/ticker/ui_anim/ui_clock/ui_console/
+ui_diag/ui_omarchy.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list/
+ui_navigation/ui_profile/audio_curve/audio_amp_profile are async.
+AUDIO-AMP-PROFILE-QUIESCE.
 SERVICE-DB-QUIESCE.
 
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so

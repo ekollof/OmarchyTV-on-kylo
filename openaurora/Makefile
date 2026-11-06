@@ -2189,11 +2189,16 @@ check: check-audio-amp-profile
 
 $(BUILD)/modules/mod_audio_amp_profile.so: modules/audio_amp_profile/audio_amp_profile.c common/audio_amp_profile.c common/profile.c include/openaurora/audio_amp.h include/openaurora/profile.h include/openaurora/services.h include/openaurora/module.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
 
 $(BUILD)/tests/amp_profile_module: tests/amp_profile_module.c common/profile.c core/host.h include/openaurora/services.h include/openaurora/audio_amp.h include/openaurora/profile.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+.PHONY: check-amp-profile-quiesce
+check-amp-profile-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_audio_amp_profile.so
+	node tests/amp_profile_quiesce.cjs $(abspath $(BUILD))
+check: check-amp-profile-quiesce
+
 .PHONY: check-amp-profile-module
 check-amp-profile-module: $(BUILD)/tests/amp_profile_module $(BUILD)/modules/mod_audio_amp_profile.so $(BUILD)/modules/mod_ticker.so
 	@$(BUILD)/tests/amp_profile_module $(BUILD)/modules

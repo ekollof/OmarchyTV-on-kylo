@@ -382,15 +382,28 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       Direct/module/fixture tests pass; ARM links libpthread. Full/QEMU pass.
       AUDIO-CURVE-QUIESCE.
 
+- [x] Asynchronous gate for `mod_audio_amp_profile`: move profile+32-byte
+      power into one heap object. Quiesce clears published, unpublishes
+      `audio.amp_profile` synchronously, detaches the data, then frees it
+      synchronously or on a worker after
+      `audio_amp_profile.cleanup_delay_ms`. `m_stop`/`m_destroy` join/free;
+      `m_start` refuses if live and rereads the hwprofile, so no handoff
+      snapshot is needed. Control-socket test: prescale17, reload fails fast,
+      `amp-profile` ENODEV, status responsive, hwprofile changed to31, retry
+      reports31; stop uses the gate. Existing provider/module/IPC/fixture
+      tests pass; ARM links libpthread. Full/QEMU pass.
+      AUDIO-AMP-PROFILE-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
       `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr`,
       `channels`, `service_db`, `image_decode`, `ui_theme`, `ui_list`,
-      `ui_navigation`, `ui_profile` and `audio_curve` are the existing models.
+      `ui_navigation`, `ui_profile`, `audio_curve` and `audio_amp_profile`
+      are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in
