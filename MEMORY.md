@@ -128,25 +128,29 @@ Sub-launcher values/picture store, 2026-11-06: `DemoApp+0x318` is
 `NovoPictureSettings*` (createApplicationModules0xcd5a98, initialise0xf28268);
 vptr=`_ZTV19NovoPictureSettings`+8 (slots9c/a4/b0/b4/d0/e8/194/198/19c =
 picture-mode/apply/zoom/index/energy). UserPreferences keeps the per-source
-0x240 picture config at+0x43f0: mode+0x04, zoom+0x0c, energy+0x44+mode*0x70+
-device3d*0x38. `Settings.m_picture_setting_configuration` is20×0x240 bytes;
-dump source1 has mode1 NATURAL, zoom1 16:9, energy3 MAXIMUM (p0/03). The
-picture index is `m_current_source`: setCurrentExtSrc stores the external
-index and writes setCurrentSource(index+1), while
-getPictureSettingsIndexForCurrentSource returns index+1 (0=Tuner). ui_vendor
-derives it; picture.source is an override only. PictureModeNameProvider's initializer at0x6eee50 fills
-0x178d64c with0 DYNAMIC/1 NATURAL/2 CINEMA/3 GAME/4 SPORT, now explicit in
-the JSON. `SVGSelectionBox` is cyclic; Up/Down move focus, Left/Right change
-values. mod_settings publishes `picture.settings` v1 (get/set mode, zoom,
-energy; whole-blob UPDATE; EROFS when settings.readonly=1). ui_vendor reads/
-writes it using m_current_source; the ui.state_file shadow is removed.
-QEMU: default16:9 width54→Ondertitels155 after set, blob+0xc=2, survives
-restart; setting focus bottom450; Down,Down,Right energy4/AUTO176;
-set:MODE=CINEMA writes mode2 and applies energy0 (Cinema105/Uit36); DB
-m_current_source5 selects config5 and renders DYNAMIC/OFF151/36. Host test
-asserts source1 values against the shipped DB and reload. mod_settings now has
-the ABI3 async quiesce gate (detach DB/flags, close on worker); control
-picture-state + reload proof. ir/i18n/settings are the async modules.
+0x240 picture config at+0x43f0: mode+0x04, zoom +0x08 normally (format 0
+full-mode false), +0x0c when full mode applies (format 2 or full-mode true),
+energy+0x44+mode*0x70+device3d*0x38. The fields store the vendor SettingValue
+ids, not JSON positions: MODE0..4; energy OFF0/MIN1/MED2/MAX3/AUTO4/CUSTOM5/
+SCREEN_OFF6; zoom AUTO1/16:9=5/SUBTITLE6/14:9=3/14:9zoom4/4:3=2/21:9=11/
+CINEMA8/FULL9. `m_last_zoom_mode=5`. Dump source1 is NATURAL/AUTO/MAXIMUM;
+configs3/4/14 (zoom5) match p0/03. PictureModeNameProvider's initializer
+at0x6eee50 fills0x178d64c with0 DYNAMIC/1 NATURAL/2 CINEMA/3 GAME/4 SPORT,
+now explicit in the JSON with the value ids. `SVGSelectionBox` is cyclic;
+Up/Down move focus, Left/Right change values. mod_settings publishes
+`picture.settings` v1 (get/set mode, zoom, energy; whole-blob UPDATE; EROFS
+read-only; `picture.full_mode`). ui_vendor stores/reads ids and derives the
+index from `m_current_source` (setCurrentExtSrc writes index+1, 0=Tuner); the
+ui.state_file shadow is removed. QEMU: source3 gives NATURAL/MAXIMUM/16:9
+(132/129/54); 16:9→Ondertitels155, DB zoom id6, survives restart; setting
+focus450; Down,Down,Right AUTO176/energy4; set:MODE=CINEMA writes mode2 and
+applies energy0 (Cinema105/Uit36); m_current_source5 gives DYNAMIC/OFF151/36.
+Host test checks IDs, reload and the full-mode +0x08/+0x0c rule. The offline
+PICTURE-OBJECT harness executes the shipped UserPreferences accessors under
+qemu-arm-static against the blob: 20 config copies/80 zoom formats/200 energy
+cases/242 setters match common/picture_config.c; get/set config(index0),
+mode, energy(non-HDR), default zoom and getZoomMode formats0/1/2 are executed.
+mod_settings has the ABI3 async quiesce gate; ir/i18n/settings are async.
 The Bronlijst rows map to ICE descriptor indices2/4/5/6/8/9/11/12 (CVBS,
 HDMI1-3, YPbPr, PC, WiDi, APM), so m_current_source = 0,3,5,6,7,9,10,12,13.
 Source-screen Select now calls source.select_type with the descriptor video
@@ -154,10 +158,11 @@ device (CVBS15, HDMI1/2/3 17/18/19, YPbPr20, VGA16, TV0; WiDi/APM no VIN slot)
 first; only on success it writes m_current_source and resyncs the cards
 (QEMU HDMI1 row2 logs VIN id3, writes5, shows DYNAMIC/OFF151/36 in-process).
 Host fake-VIN IPC asserts exact ids and source.enable. Limits: serialized DB
-blob, not the live UserPreferences object; real /dev/ntkdvif/TV hardware
-select is a separate unaccepted gate; HDR energy variants/full-mode zoom not
-implemented; TV DB write needs settings.readonly=0. SUBLAUNCHER-VALUES,
-SETTINGS-QUIESCE and SOURCE-VIN.
+blob; the accessors are executed offline (PICTURE-OBJECT) but not in a running
+vendor process; real /dev/ntkdvif/TV hardware select is a separate unaccepted
+gate; HDR energy variants, the twin-source setter and setZoomMode need the
+live EASI graph; TV DB write needs settings.readonly=0. SUBLAUNCHER-VALUES,
+PICTURE-OBJECT, SETTINGS-QUIESCE and SOURCE-VIN.
 
 ui_vendor async quiesce, 2026-11-06: the highest-state skin now has the ABI3
 gate. Teardown cancels every timer/slide/dialog, unsubscribes module/service

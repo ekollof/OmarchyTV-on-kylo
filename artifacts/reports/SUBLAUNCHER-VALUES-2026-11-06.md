@@ -42,18 +42,32 @@ Those methods persist through `UserPreferences`:
 
 - `getPictureSettingConfiguration(source)` is `UserPreferences+0x43f0 + source*0x240`.
 - `getPictureMode(source)` reads that block at **+0x04**.
-- `getZoomMode(index, 0)` reads **+0x08** (full-mode field) or **+0x0c**
-  (16:9/format field); the captured source has both at 1.
+- `NovoPictureSettings::getZoomMode(index, format)` reads **+0x0c** for
+  format 2, **+0x08** for format 1, and for format 0 (the UI path) reads
+  **+0x0c** only when `isFullModeApplicable(index)`, otherwise **+0x08**.
+  `setZoomMode` writes the same field, except that format 0 also uses +0x0c
+  for `ZOOM_MODE_FULL` (9).
 - `getEnergySavingMode(source, pictureMode, device3d)` reads
   **+0x44 + pictureMode*0x70 + device3d*0x38** inside the same 0x240-byte block.
 
 `settingsDB.Settings.m_picture_setting_configuration` is exactly 11520 bytes =
-20 sources × 0x240. The dump's source 1 has mode **1 = NATURAL**, zoom **1 = 16:9**, and energy
-**3 = MAXIMUM** for picture mode 1 — the three values visible in the p0/03
-capture. That is the cross-check for the recovered field offsets and the mode
-list. The dump's `m_current_source` is 5; the QEMU check sets it to 1 for the
-capture values and then to 5 to prove the source selection changes the
-configuration.
+20 sources × 0x240. The fields store the vendor `SettingValue` IDs, not JSON
+array positions. Recovered IDs:
+
+```text
+MODE          DYNAMIC 0, NATURAL 1, CINEMA 2, GAME 3, SPORT 4
+ENERGY_SAVING OFF 0, MINIMUM 1, MEDIUM 2, MAXIMUM 3, AUTO 4,
+              SCREEN_OFF 6, CUSTOM 5
+PICTURE_ZOOM  AUTO 1, 16:9 5, SUBTITLE 6, 14:9 3, 14:9 ZOOM 4,
+              4:3 2, 21:9 11, CINEMA 8, FULL 9
+```
+
+The dump's source 1 has mode 1 (NATURAL), zoom 1 (AUTO, not 16:9) and energy
+3 (MAXIMUM). The p0/03 capture (NATURAL / 16:9 / MAXIMUM) matches configs 3,
+4 and 14, which store zoom 5. The dump's `m_last_zoom_mode` is 5 (16:9), and
+`m_current_source` is 5 (whose config is DYNAMIC / AUTO-or-FULL / OFF). The
+QEMU check therefore uses source 3 for the capture values and source 5 for
+the current-source case.
 
 ## Implementation
 
@@ -101,37 +115,42 @@ the cards switch to that source's 0x240 slot immediately.
 Host, against a copy of the shipped settingsDB:
 
 ```text
-ok picture.settings: source1 NATURAL/16:9/MAXIMUM, writes persist at 0x240 stride
+ok picture.settings: vendor field IDs, 0x240 stride, full-mode zoom rule
+picture object: 20 source configs, 80 zoom formats, 200 energy cases, 242 setters
+ok picture object: vendor UserPreferences/NovoPictureSettings accessors match the model
 ```
 
-This asserts source1 mode=1, zoom=1, energy(mode1)=3, source0 mode=0 and
-energy=0, writes CINEMA/SUBTITLE/AUTO, reloads them, rejects out-of-range
-fields and refuses writes in read-only mode.
+This asserts source1 raw mode=1, zoom=1 (AUTO), energy(mode1)=3, source0
+mode=0 and energy=0, writes CINEMA/4:3/AUTO, reloads them, rejects
+out-of-range fields and refuses writes in read-only mode. It also checks the
+full-mode rule: with `picture.full_mode=0`, `set_zoom(1,5)` writes +0x08 and
+`set_zoom(1,9)` writes +0x0c while the getter still reads +0x08.
 
 QEMU, with the real ARM `mod_settings`, the vendor `libsqlite3.so.0` and a
 writable copy of the DB:
 
 ```text
-ok qemu sub-launcher value: m_current_source=1 gives NATURAL/MAXIMUM/16:9
-(132/129/54); 16:9 -> 155 (DB field 2), survives restart; setting: focus
-bottom 450; Right AUTO width 176; MODE Cinema width 105, energy OFF width 36;
-source5 gives DYNAMIC/OFF (151/36); source-screen HDMI1 writes 5 and
-resyncs (151/36)
+ok qemu sub-launcher value: m_current_source=3 (capture config) gives
+NATURAL/MAXIMUM/16:9 (132/129/54); 16:9 -> 155 (DB id 6), survives restart;
+setting: focus bottom 450; Right AUTO width 176; MODE Cinema width 105,
+energy OFF width 36; source5 gives DYNAMIC/OFF (151/36); source-screen
+HDMI1 writes 5 and resyncs (151/36)
 ```
 
 The default widths 132/129/54 are the p0/03 vendor capture's card 0/1/2
-value ink widths, so the firmware DB's source-1 values drive the live row.
+value ink widths, so the firmware DB's source-3 values drive the live row.
 
-Steps: `m_current_source=1` renders NATURAL/MAXIMUM/16:9 (132/129/54 px);
-`ui-action set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE` writes blob `+0x0c = 2` and
-renders 155 px; a fresh process renders the same; `setting:ENERGY_SAVING`
-reaches the 450 px scaled bottom; `Down,Down,Right` writes energy 4 and renders
-AUTO; `set:MODE=CINEMA` writes mode 2 and applies that mode's energy 0,
-rendering Cinema and Uit; setting `m_current_source=5` in the DB and restarting
-selects config 5 and renders DYNAMIC/OFF (151/36 px). Finally the source screen
-starts at HDMI1 row 2, Select writes `m_current_source=5` through the settings
-service, and `open:sub_launcher` shows DYNAMIC/OFF (151/36 px) in the same
-process; the DB assertion confirms the stored value is 5.
+Steps: `m_current_source=3` renders NATURAL/MAXIMUM/16:9 (132/129/54 px);
+`ui-action set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE` stores the vendor id 6 at
+blob `+0x0c` and renders 155 px; a fresh process renders the same;
+`setting:ENERGY_SAVING` reaches the 450 px scaled bottom; `Down,Down,Right`
+writes energy id 4 and renders AUTO; `set:MODE=CINEMA` writes mode 2 and
+applies that mode's energy 0, rendering Cinema and Uit; setting
+`m_current_source=5` in the DB and restarting selects config 5 and renders
+DYNAMIC/OFF (151/36 px). Finally the source screen starts at HDMI1 row 2,
+Select writes `m_current_source=5` through the settings service, and
+`open:sub_launcher` shows DYNAMIC/OFF (151/36 px) in the same process; the DB
+assertion confirms the stored value is 5.
 
 The existing text/oracle checks still pass:
 
@@ -143,20 +162,22 @@ full_check=0
 
 ## Limits
 
-- The service reads/writes the **serialized** settingsDB picture blob, not the
-  live vendor `NovoPictureSettings` object or its NVRAM-backed
-  `UserPreferences` instance. The field layout and values are verified against
-  the firmware data, but a live vendor object was not executed. The separate
+- The service reads/writes the **serialized** settingsDB picture blob. The
+  vendor `UserPreferences`/`NovoPictureSettings` accessors are now executed
+  offline against that blob (PICTURE-OBJECT-2026-11-06); the running vendor
+  object and NVRAM-backed instance are still not executed. The separate
   `m_picture_mode_preset_key` and `m_last_zoom_mode` columns are not updated.
 - The configuration index is derived from `m_current_source`, matching the
-  firmware identity, and the Bronlijst Select now writes it and re-syncs the
-  cards. It does **not** call `Hal_Vin_*`/`EASITVControlInterface` to switch
-  the video hardware; `InputManager::getCurrentExtSrc` itself is not called.
-  The row mapping is the ICE descriptor table above; a runtime-disabled or
+  firmware identity, and the Bronlijst Select writes it and re-syncs the
+  cards. The select also calls `mod_source`/`Hal_Vin_SelectInput` behind
+  `source.enable`; real `/dev/ntkdvif`/TV hardware switching remains a separate
+  unaccepted gate. `InputManager::getCurrentExtSrc` itself is not called. The
+  row mapping is the ICE descriptor table above; a runtime-disabled or
   reordered interface list would need the same source-list service.
-- HDR energy variants (`+0x446c`, `+0xa10`, `+0xa48`) and the format-0
-  `isFullModeApplicable` zoom choice are not implemented; the non-HDR +0x0c
-  field is used.
+- HDR energy variants (`+0x446c`, `+0xa10`, `+0xa48`) are not executed; the
+  non-HDR config array is used. The format-0 full-mode decision is exposed as
+  `picture.full_mode` (default 1), not derived from the live panel/decode
+  state.
 - Writing the TV's real `/conf/sqlite_db/settingsDB.db` requires
   `settings.readonly=0`; stock Aurora caches these values, so this is a
   deliberate deployment decision, not the default.

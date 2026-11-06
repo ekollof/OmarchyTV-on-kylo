@@ -72,23 +72,28 @@
               "values": [
                 {
                   "key": "DYNAMIC",
-                  "action": "set:MODE=DYNAMIC"
+                  "action": "set:MODE=DYNAMIC",
+                  "id": 0
                 },
                 {
                   "key": "NATURAL",
-                  "action": "set:MODE=NATURAL"
+                  "action": "set:MODE=NATURAL",
+                  "id": 1
                 },
                 {
                   "key": "CINEMA",
-                  "action": "set:MODE=CINEMA"
+                  "action": "set:MODE=CINEMA",
+                  "id": 2
                 },
                 {
                   "key": "GAME",
-                  "action": "set:MODE=GAME"
+                  "action": "set:MODE=GAME",
+                  "id": 3
                 },
                 {
                   "key": "SPORT",
-                  "action": "set:MODE=SPORT"
+                  "action": "set:MODE=SPORT",
+                  "id": 4
                 }
               ]
             },
@@ -99,31 +104,38 @@
               "values": [
                 {
                   "key": "OFF",
-                  "action": "set:ENERGY_SAVING=OFF"
+                  "action": "set:ENERGY_SAVING=OFF",
+                  "id": 0
                 },
                 {
                   "key": "MINIMUM_STR",
-                  "action": "set:ENERGY_SAVING=MINIMUM_STR"
+                  "action": "set:ENERGY_SAVING=MINIMUM_STR",
+                  "id": 1
                 },
                 {
                   "key": "MEDIUM",
-                  "action": "set:ENERGY_SAVING=MEDIUM"
+                  "action": "set:ENERGY_SAVING=MEDIUM",
+                  "id": 2
                 },
                 {
                   "key": "MAXIMUM_STR",
-                  "action": "set:ENERGY_SAVING=MAXIMUM_STR"
+                  "action": "set:ENERGY_SAVING=MAXIMUM_STR",
+                  "id": 3
                 },
                 {
                   "key": "AUTO",
-                  "action": "set:ENERGY_SAVING=AUTO"
+                  "action": "set:ENERGY_SAVING=AUTO",
+                  "id": 4
                 },
                 {
                   "key": "SCREEN_OFF",
-                  "action": "set:ENERGY_SAVING=SCREEN_OFF"
+                  "action": "set:ENERGY_SAVING=SCREEN_OFF",
+                  "id": 6
                 },
                 {
                   "key": "CUSTOM",
-                  "action": "set:ENERGY_SAVING=CUSTOM"
+                  "action": "set:ENERGY_SAVING=CUSTOM",
+                  "id": 5
                 }
               ]
             },
@@ -134,39 +146,48 @@
               "values": [
                 {
                   "key": "ZOOM_MODE_AUTO",
-                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_AUTO"
+                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_AUTO",
+                  "id": 1
                 },
                 {
                   "key": "ZOOM_MODE_16_9",
-                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_16_9"
+                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_16_9",
+                  "id": 5
                 },
                 {
                   "key": "ZOOM_MODE_SUBTITLE",
-                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE"
+                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_SUBTITLE",
+                  "id": 6
                 },
                 {
                   "key": "ZOOM_MODE_14_9",
-                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_14_9"
+                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_14_9",
+                  "id": 3
                 },
                 {
                   "key": "ZOOM_MODE_14_9_ZOOM",
-                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_14_9_ZOOM"
+                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_14_9_ZOOM",
+                  "id": 4
                 },
                 {
                   "key": "ZOOM_MODE_4_3",
-                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_4_3"
+                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_4_3",
+                  "id": 2
                 },
                 {
                   "key": "21:9",
-                  "action": "set:PICTURE_ZOOM=21:9"
+                  "action": "set:PICTURE_ZOOM=21:9",
+                  "id": 11
                 },
                 {
                   "key": "ZOOM_MODE_CINEMA",
-                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_CINEMA"
+                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_CINEMA",
+                  "id": 8
                 },
                 {
                   "key": "ZOOM_MODE_FULL",
-                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_FULL"
+                  "action": "set:PICTURE_ZOOM=ZOOM_MODE_FULL",
+                  "id": 9
                 }
               ]
             }
@@ -183,27 +204,33 @@
               "values": [
                 {
                   "key": "MUSIC",
-                  "action": "set:EQUALIZER=MUSIC"
+                  "action": "set:EQUALIZER=MUSIC",
+                  "id": 0
                 },
                 {
                   "key": "MOVIE",
-                  "action": "set:EQUALIZER=MOVIE"
+                  "action": "set:EQUALIZER=MOVIE",
+                  "id": 1
                 },
                 {
                   "key": "SPEECH",
-                  "action": "set:EQUALIZER=SPEECH"
+                  "action": "set:EQUALIZER=SPEECH",
+                  "id": 2
                 },
                 {
                   "key": "FLAT_EQ",
-                  "action": "set:EQUALIZER=FLAT_EQ"
+                  "action": "set:EQUALIZER=FLAT_EQ",
+                  "id": 3
                 },
                 {
                   "key": "CLASSIC",
-                  "action": "set:EQUALIZER=CLASSIC"
+                  "action": "set:EQUALIZER=CLASSIC",
+                  "id": 4
                 },
                 {
                   "key": "USER",
-                  "action": "set:EQUALIZER=USER"
+                  "action": "set:EQUALIZER=USER",
+                  "id": 5
                 }
               ]
             },
@@ -214,15 +241,18 @@
               "values": [
                 {
                   "key": "DISPLAY",
-                  "action": "set:CEC_SPEAKERS=DISPLAY"
+                  "action": "set:CEC_SPEAKERS=DISPLAY",
+                  "id": 0
                 },
                 {
                   "key": "TV",
-                  "action": "set:CEC_SPEAKERS=TV"
+                  "action": "set:CEC_SPEAKERS=TV",
+                  "id": 0
                 },
                 {
                   "key": "CEC_AMPLIFIER",
-                  "action": "set:CEC_SPEAKERS=CEC_AMPLIFIER"
+                  "action": "set:CEC_SPEAKERS=CEC_AMPLIFIER",
+                  "id": 1
                 }
               ]
             },
@@ -233,23 +263,28 @@
               "values": [
                 {
                   "key": "OFF",
-                  "action": "set:DOLBY_AUDIO_OR_MODE=OFF"
+                  "action": "set:DOLBY_AUDIO_OR_MODE=OFF",
+                  "id": 0
                 },
                 {
                   "key": "SMART",
-                  "action": "set:DOLBY_AUDIO_OR_MODE=SMART"
+                  "action": "set:DOLBY_AUDIO_OR_MODE=SMART",
+                  "id": 1
                 },
                 {
                   "key": "MOVIE",
-                  "action": "set:DOLBY_AUDIO_OR_MODE=MOVIE"
+                  "action": "set:DOLBY_AUDIO_OR_MODE=MOVIE",
+                  "id": 2
                 },
                 {
                   "key": "MUSIC",
-                  "action": "set:DOLBY_AUDIO_OR_MODE=MUSIC"
+                  "action": "set:DOLBY_AUDIO_OR_MODE=MUSIC",
+                  "id": 3
                 },
                 {
                   "key": "GENRE_CODE_NEWS",
-                  "action": "set:DOLBY_AUDIO_OR_MODE=GENRE_CODE_NEWS"
+                  "action": "set:DOLBY_AUDIO_OR_MODE=GENRE_CODE_NEWS",
+                  "id": 4
                 }
               ],
               "dynamic": "uVar3: DAT_00ee1de0 'Dolby Audio' or DAT_00ee1de4 'MODE'"
@@ -261,27 +296,33 @@
               "values": [
                 {
                   "key": "DISPLAY",
-                  "action": "set:SOUND_OUTPUT=DISPLAY"
+                  "action": "set:SOUND_OUTPUT=DISPLAY",
+                  "id": 0
                 },
                 {
                   "key": "TV",
-                  "action": "set:SOUND_OUTPUT=TV"
+                  "action": "set:SOUND_OUTPUT=TV",
+                  "id": 0
                 },
                 {
                   "key": "SPDIF",
-                  "action": "set:SOUND_OUTPUT=SPDIF"
+                  "action": "set:SOUND_OUTPUT=SPDIF",
+                  "id": 1
                 },
                 {
                   "key": "HDMI_ARC",
-                  "action": "set:SOUND_OUTPUT=HDMI_ARC"
+                  "action": "set:SOUND_OUTPUT=HDMI_ARC",
+                  "id": 2
                 },
                 {
                   "key": "HEADPHONE_ONLY",
-                  "action": "set:SOUND_OUTPUT=HEADPHONE_ONLY"
+                  "action": "set:SOUND_OUTPUT=HEADPHONE_ONLY",
+                  "id": 3
                 },
                 {
                   "key": "LINEOUT",
-                  "action": "set:SOUND_OUTPUT=LINEOUT"
+                  "action": "set:SOUND_OUTPUT=LINEOUT",
+                  "id": 4
                 }
               ]
             },
@@ -292,19 +333,23 @@
               "values": [
                 {
                   "key": "OFF",
-                  "action": "set:AVL=OFF"
+                  "action": "set:AVL=OFF",
+                  "id": 0
                 },
                 {
                   "key": "NORMAL",
-                  "action": "set:AVL=NORMAL"
+                  "action": "set:AVL=NORMAL",
+                  "id": 1
                 },
                 {
                   "key": "NIGHT",
-                  "action": "set:AVL=NIGHT"
+                  "action": "set:AVL=NIGHT",
+                  "id": 2
                 },
                 {
                   "key": "AUTO",
-                  "action": "set:AVL=AUTO"
+                  "action": "set:AVL=AUTO",
+                  "id": 3
                 }
               ]
             },
@@ -315,11 +360,13 @@
               "values": [
                 {
                   "key": "OFF",
-                  "action": "set:AVL=OFF"
+                  "action": "set:AVL=OFF",
+                  "id": 0
                 },
                 {
                   "key": "ON",
-                  "action": "set:AVL=ON"
+                  "action": "set:AVL=ON",
+                  "id": 1
                 }
               ]
             }
@@ -350,11 +397,13 @@
               "values": [
                 {
                   "key": "OFF",
-                  "action": "set:SUBTITLE=OFF"
+                  "action": "set:SUBTITLE=OFF",
+                  "id": 0
                 },
                 {
                   "key": "ON",
-                  "action": "set:SUBTITLE=ON"
+                  "action": "set:SUBTITLE=ON",
+                  "id": 1
                 }
               ]
             },
@@ -402,11 +451,13 @@
               "values": [
                 {
                   "key": "OFF",
-                  "action": "set:AI_TXT=OFF"
+                  "action": "set:AI_TXT=OFF",
+                  "id": 0
                 },
                 {
                   "key": "ON",
-                  "action": "set:AI_TXT=ON"
+                  "action": "set:AI_TXT=ON",
+                  "id": 1
                 }
               ]
             }

@@ -1,0 +1,49 @@
+SettingValue ids recovered from the shipped sub-launcher initialisers
+(artifacts/analysis/sub-launcher-menu-2026-11-06/menu-tree.json, parsed from
+initialisePictureSettingsShortcuts; aurora.elf MD5
+64c252340d3af6c5d66072611b7bad7a).
+
+The SVGSelectionBox stores each SettingValue id and getSelectedItemId()
+returns it; updatePictureMode/updateZoomMode/updateEnergySaving pass it to
+NovoPictureSettings. These are the values persisted in the 0x240 config.
+
+MODE (PictureModeNameProvider table, 0x006eee50):
+  0 DYNAMIC
+  1 NATURAL
+  2 CINEMA
+  3 GAME
+  4 SPORT
+
+ENERGY_SAVING (construction order / id):
+  OFF         0
+  MINIMUM_STR 1
+  MEDIUM      2
+  MAXIMUM_STR 3
+  AUTO        4
+  SCREEN_OFF  6
+  CUSTOM      5
+
+PICTURE_ZOOM (construction order / id):
+  ZOOM_MODE_AUTO        1
+  ZOOM_MODE_16_9        5
+  ZOOM_MODE_SUBTITLE    6
+  ZOOM_MODE_14_9        3
+  ZOOM_MODE_14_9_ZOOM   4
+  ZOOM_MODE_4_3         2
+  21:9                  0xb (11)
+  ZOOM_MODE_CINEMA      8
+  ZOOM_MODE_FULL        9
+
+Format-0 zoom field selection (NovoPictureSettings::getZoomMode 0x00fb64b4,
+setZoomMode 0x00fb6a0c):
+  get format 1 -> config+0x08
+  get format 2 -> config+0x0c
+  get format 0 -> isFullModeApplicable(index) ? +0x0c : +0x08
+  set format 1 -> +0x08
+  set format 2 -> +0x0c
+  set format 0 -> (+0x0c if isFullModeApplicable(index) or value == 9,
+                   else +0x08)
+
+Non-HDR energy field (UserPreferences get/setEnergySavingMode):
+  +0x4434 + source*0x240 + pictureMode*0x70 + device3d*0x38
+  (i.e. +0x44 inside each config).

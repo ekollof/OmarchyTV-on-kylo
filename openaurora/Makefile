@@ -852,7 +852,7 @@ $(BUILD)/modules/mod_display_fb.so: modules/display/display.c common/ui_anim.c c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DOA_DISPLAY_NO_PLAT -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS) \
 	  $(LIBM) -pthread
 
-$(BUILD)/modules/mod_settings.so: modules/settings/settings.c common/launcher_db.c include/openaurora/launcher_db.h include/openaurora/launcher_item.h
+$(BUILD)/modules/mod_settings.so: modules/settings/settings.c common/launcher_db.c common/picture_config.c include/openaurora/launcher_db.h include/openaurora/launcher_item.h include/openaurora/picture_config.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS) \
 	  -Ithird_party -L$(VENDOR_LIB) $(SQLITE_LIBS)
@@ -1975,10 +1975,19 @@ $(BUILD)/tests/i18n_service: tests/i18n_service.c core/host.h $(filter-out $(BUI
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/i18n_service.c $(filter %.o,$^) $(LDLIBS)
 
 SETTINGSDB ?= ../artifacts/dumps/apdat_files/sqlite_db/settingsDB.db
+AURORA_ELF ?= ../artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf
 
 $(BUILD)/tests/picture_settings: tests/picture_settings.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/picture_settings.c $(filter %.o,$^) $(LDLIBS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/picture_settings.c $(filter %.o,$^) $(LDLIBS) $(SQLITE_LIBS)
+
+.PHONY: check-picture-object
+check-picture-object:
+	@test -f $(AURORA_ELF) || { echo "missing $(AURORA_ELF); the shipped Aurora ELF is required" >&2; exit 2; }
+	@test -f $(SETTINGSDB) || { echo "missing $(SETTINGSDB); the real settingsDB is required" >&2; exit 2; }
+	OA_AURORA_ELF=$(abspath $(AURORA_ELF)) OA_SETTINGSDB=$(abspath $(SETTINGSDB)) \
+	    $(CURDIR)/tools/qemu-picture-object-check.sh
+check: check-picture-object
 
 .PHONY: check-picture-settings
 check-picture-settings: $(BUILD)/tests/picture_settings $(BUILD)/modules/mod_settings.so

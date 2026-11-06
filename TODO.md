@@ -283,20 +283,23 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
 
 - [x] `setting:`/`set:` dispatch, MODE and the picture store:
       `DemoApp+0x318` is `NovoPictureSettings*` (vptr
-      `_ZTV19NovoPictureSettings`+8); the per-source UserPreferences config is
-      0x240 bytes (mode+0x04, zoom+0x0c, energy+0x44+mode*0x70). The runtime
-      PictureModeNameProvider table is 0 DYNAMIC/1 NATURAL/2 CINEMA/3 GAME/
-      4 SPORT; the JSON now carries it. `mod_settings` publishes
-      `picture.settings` over `Settings.m_picture_setting_configuration`
-      (20×0x240, whole-blob update, EROFS while read-only); ui_vendor reads and
-      writes it, deriving the configuration index from `m_current_source`
-      (firmware external index+1, 0=Tuner); the old `ui.state_file` shadow is
-      gone. Host test checks source1 NATURAL/16:9/MAXIMUM against the shipped
-      DB and reload. QEMU: m_current_source1 gives NATURAL/MAXIMUM/16:9
-      (132/129/54); Ondertitels155/blob+0xc=2, survives restart; focus450;
-      Down,Down,Right AUTO176/energy4; set:MODE=CINEMA writes mode2 and applies
-      energy0 (Cinema/Uit); m_current_source5 selects config5 and renders
-      DYNAMIC/OFF151/36. SUBLAUNCHER-VALUES.
+      `_ZTV19NovoPictureSettings`+8); the per-source config is 0x240 bytes
+      (mode+0x04, zoom +0x08 normally / +0x0c when format-0 full mode applies,
+      energy+0x44+mode*0x70+device3d*0x38). Fields are vendor SettingValue
+      ids, not JSON positions: MODE0..4; zoom AUTO1/16:9=5/SUBTITLE6/14:9=3/
+      14:9zoom4/4:3=2/21:9=11/CINEMA8/FULL9; energy CUSTOM5/SCREEN_OFF6.
+      Dump source1 is NATURAL/AUTO/MAXIMUM; configs3/4/14 (zoom5) match p0/03.
+      The JSON carries the ids; mod_settings publishes `picture.settings`
+      (20×0x240, whole-blob update, EROFS read-only, picture.full_mode);
+      ui_vendor stores/reads ids and derives the index from m_current_source
+      (external index+1, 0=Tuner); the ui.state_file shadow is gone. Host test
+      checks IDs, reload and the +0x08/+0x0c rule; PICTURE-OBJECT executes the
+      shipped accessors offline (20 configs/80 zoom/200 energy/242 setters).
+      QEMU: source3 gives NATURAL/MAXIMUM/16:9 (132/129/54);
+      Ondertitels155/DB id6, survives restart; focus450; Down,Down,Right
+      AUTO176/energy4; set:MODE=CINEMA writes mode2 and applies energy0
+      (Cinema/Uit); m_current_source5 selects config5 and renders
+      DYNAMIC/OFF151/36. SUBLAUNCHER-VALUES and PICTURE-OBJECT.
 
 - [x] Bronlijst source selection writes the picture index, calls the VIN path
       and re-syncs: the ICE descriptor table at0x0175de8c gives CVBS2,
@@ -310,13 +313,17 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       DYNAMIC/OFF151/36 in-process. SOURCE-VIN.
 
 - [ ] Live picture/VIN backend details: the service uses the serialized
-      settingsDB blob, not the live `NovoPictureSettings`/`UserPreferences`
-      object. The source screen now calls `mod_source`/`Hal_Vin_SelectInput`
-      behind `source.enable`, but real `/dev/ntkdvif` and TV hardware switching
-      are a separate unaccepted gate. HDR energy variants
-      (+0x446c/+0xa10/+0xa48) and the format-0 `isFullModeApplicable` zoom
-      choice are open. Writing the TV's DB requires `settings.readonly=0`. Do
-      not apply the row to the category rail or an invented portal card row.
+      settingsDB blob; the shipped accessors are executed offline
+      (PICTURE-OBJECT), not inside a running Aurora `UserPreferences`/PQ
+      process. HDR energy variants (+0x446c/+0xa10/+0xa48), the twin-source
+      `setPictureSettingConfiguration` path (index != 0) and
+      `NovoPictureSettings::setZoomMode` need the live EASI/InputManager graph.
+      `picture.full_mode` is an explicit replacement input, not derived from
+      the panel/decode state. The source screen calls
+      `mod_source`/`Hal_Vin_SelectInput` behind `source.enable`; real
+      `/dev/ntkdvif` and TV hardware switching are still unaccepted. Writing
+      the TV's DB requires `settings.readonly=0`. Do not apply the row to the
+      category rail or an invented portal card row.
 
 - [ ] Exact animation cadence: the rail is ~50 ms/frame (CPU and GPU) versus
       the vendor 30 ms APNG/10 ms controller cadence. Tighten the compositor

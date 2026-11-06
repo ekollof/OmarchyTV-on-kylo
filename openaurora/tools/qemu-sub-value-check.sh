@@ -75,7 +75,7 @@ cp "$SETTINGSDB" "$STAGE/picture.db"
 python3 - "$STAGE/picture.db" <<'PY'
 import sqlite3, sys
 db = sqlite3.connect(sys.argv[1])
-db.execute("UPDATE Settings SET m_current_source=1")
+db.execute("UPDATE Settings SET m_current_source=3")
 db.commit()
 PY
 cp "$UI/settings_top.rgba" "$UI/settings_cat.rgba" "$UI/settings_rail.rgba" \
@@ -97,6 +97,7 @@ ui.font_index=$FONT.txt
 ui.font_pack=$FONT.bin
 settings.db=$STAGE/picture.db
 settings.readonly=0
+picture.full_mode=1
 source.enable=1
 i18n.profile=$PROFILE
 i18n.language=dut
@@ -113,7 +114,8 @@ last_frame() {
     ls "$STAGE"/frame.* 2>/dev/null | sed 's/.*\.//' | sort -n | tail -1
 }
 
-# 1. Default p0/03 values from the firmware DB: source1 NATURAL/MAXIMUM/16:9.
+# 1. Default p0/03 values from the firmware DB: source3 (mode1/zoom5/energy3)
+#    gives NATURAL/MAXIMUM/16:9. Source1 stores zoom1 = AUTO, not 16:9.
 OA_QEMU_MODULES="$MODULES" \
     "$ROOT/openaurora/tools/qemu-ui-layout.sh" "$STAGE" >/dev/null
 cp "$STAGE/frame.0" "$STAGE/base.rgba"
@@ -130,7 +132,7 @@ python3 - "$STAGE/picture.db" <<'PY'
 import sqlite3, struct, sys
 b = sqlite3.connect(sys.argv[1]).execute(
     "select m_picture_setting_configuration from Settings").fetchone()[0]
-assert struct.unpack_from("<i", b, 0x240 + 0x0c)[0] == 2, "zoom field not 2"
+assert struct.unpack_from("<i", b, 3 * 0x240 + 0x0c)[0] == 6, "zoom field not 6"
 PY
 
 # 3. Fresh process must load the saved blob.
@@ -156,7 +158,7 @@ python3 - "$STAGE/picture.db" <<'PY'
 import sqlite3, struct, sys
 b = sqlite3.connect(sys.argv[1]).execute(
     "select m_picture_setting_configuration from Settings").fetchone()[0]
-off = 0x240 + 0x44 + 1 * 0x70
+off = 3 * 0x240 + 0x44 + 1 * 0x70
 assert struct.unpack_from("<i", b, off)[0] == 4, "mode1 energy not AUTO"
 PY
 
@@ -171,8 +173,8 @@ python3 - "$STAGE/picture.db" <<'PY'
 import sqlite3, struct, sys
 b = sqlite3.connect(sys.argv[1]).execute(
     "select m_picture_setting_configuration from Settings").fetchone()[0]
-assert struct.unpack_from("<i", b, 0x240 + 0x04)[0] == 2, "mode field not CINEMA"
-off = 0x240 + 0x44 + 2 * 0x70
+assert struct.unpack_from("<i", b, 3 * 0x240 + 0x04)[0] == 2, "mode field not CINEMA"
+off = 3 * 0x240 + 0x44 + 2 * 0x70
 assert struct.unpack_from("<i", b, off)[0] == 0, "mode2 energy not OFF"
 PY
 
@@ -304,9 +306,9 @@ if not m0 or not (95 <= m0[2] - m0[0] <= 120):
     raise SystemExit(f"set:MODE did not render Cinema: {m0}")
 if not m1 or not (25 <= m1[2] - m1[0] <= 55):
     raise SystemExit(f"mode2 energy did not render OFF: {m1}")
-print(f"ok qemu sub-launcher value: m_current_source=1 gives "
+print(f"ok qemu sub-launcher value: m_current_source=3 (capture config) gives "
       f"NATURAL/MAXIMUM/16:9 ({v0[2]-v0[0]}/{v1[2]-v1[0]}/{bw}); 16:9 -> {cw} "
-      f"(DB field 2), survives restart; setting: focus bottom {bottom}; "
+      f"(DB id 6), survives restart; setting: focus bottom {bottom}; "
       f"Right AUTO width {ebox[2] - ebox[0]}; MODE Cinema width "
       f"{m0[2] - m0[0]}, energy OFF width {m1[2] - m1[0]}; source5 gives "
       f"DYNAMIC/OFF ({s0[2] - s0[0]}/{s1[2] - s1[0]}); source-screen HDMI1 "

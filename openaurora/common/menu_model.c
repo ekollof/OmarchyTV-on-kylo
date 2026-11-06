@@ -32,6 +32,7 @@ static int load_values(const struct oa_json *v, struct oa_menu_item *item)
         struct oa_menu_value *values = calloc(1, sizeof *values);
         if (!values) return ENOMEM;
         values[0].key = v->string;
+        values[0].id = -1;
         item->values = values;
         item->value_count = 1;
         return 0;
@@ -47,6 +48,7 @@ static int load_values(const struct oa_json *v, struct oa_menu_item *item)
         }
         values[i].key = oa_json_string(entry, "key", "");
         values[i].action = oa_json_string(entry, "action", NULL);
+        values[i].id = oa_json_int(entry, "id", -1);
     }
     item->values = values;
     item->value_count = v->count;

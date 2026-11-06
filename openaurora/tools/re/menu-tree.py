@@ -539,10 +539,16 @@ def runtime_values(item):
     keys = [value["key"] for value in item["values"]]
     if len(keys) == 1 and keys[0] in DYNAMIC_MARKERS:
         return keys[0]
-    return [
-        {"key": key, "action": f"set:{item['key']}={key}"}
-        for key in keys
-    ]
+    out = []
+    for value in item["values"]:
+        entry = {"key": value["key"],
+                 "action": f"set:{item['key']}={value['key']}"}
+        try:
+            entry["id"] = int(str(value["id"]), 0)
+        except (KeyError, ValueError):
+            pass
+        out.append(entry)
+    return out
 
 
 def emit_json(model, path):

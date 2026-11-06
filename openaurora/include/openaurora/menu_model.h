@@ -21,6 +21,7 @@ struct oa_json;
 struct oa_menu_value {
     const char *key;
     const char *action; /* optional action when this value is chosen */
+    int id;             /* vendor SettingValue id; -1 when not decoded */
 };
 
 struct oa_menu_item {

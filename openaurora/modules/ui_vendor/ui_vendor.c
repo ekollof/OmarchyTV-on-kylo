@@ -671,6 +671,33 @@ static int sub_default_value_index(const struct oa_menu_item *item)
     return item->value_count ? 0 : -1;
 }
 
+/* Stored picture/zoom/energy values are the vendor SettingValue ids, not
+ * the JSON array position. Map both ways; an absent id falls back to the
+ * array position for old documents that predate the ids. */
+static int sub_index_for_id(const struct oa_menu_item *item, int id)
+{
+    if (!item || id < 0) return -1;
+    for (unsigned i = 0; i < item->value_count; i++)
+        if (item->values[i].id == id) return (int)i;
+    return -1;
+}
+
+static int sub_stored_id(const struct oa_menu_item *item, int index)
+{
+    if (!item || index < 0 || (unsigned)index >= item->value_count)
+        return -1;
+    return item->values[index].id >= 0 ? item->values[index].id : index;
+}
+
+static const struct oa_menu_item *sub_item_for_key(
+    const struct oa_menu_branch *b, const char *key)
+{
+    if (!b) return NULL;
+    for (unsigned i = 0; i < b->item_count; i++)
+        if (!strcmp(b->items[i].key, key)) return &b->items[i];
+    return NULL;
+}
+
 static int sub_value_index(struct ctx *c, const struct oa_menu_item *item,
                            int card)
 {
@@ -728,55 +755,79 @@ static int picture_source_now(struct ctx *c)
     return 0; /* TV/tuner fallback */
 }
 
-/* Refresh the card values for an explicit picture-configuration index. */
-static void picture_sync_index(struct ctx *c, int source)
+/* Refresh the card values for an explicit picture-configuration index. The
+ * stored fields are vendor SettingValue ids; use the JSON menu branch as the
+ * id->index map and keep the current default when an id is unknown. */
+static void picture_sync_index(struct ctx *c, int source,
+                               const struct oa_menu_branch *held_branch)
 {
     if (!c->picture || source < 0 || source >= 20) return;
     c->picture_source = source;
+    const oa_ui_menu_iface *menu = NULL;
+    const struct oa_menu_branch *b = held_branch;
+    if (!b) {
+        menu = c->api->lookup(c->api->priv, OA_SVC_UI_MENU, 1);
+        const struct oa_menu_dialog *md =
+            menu ? menu->dialog("sub_launcher") : NULL;
+        b = md ? menu->branch(md, 2) : NULL;
+    }
+    const struct oa_menu_item *mi = sub_item_for_key(b, "MODE");
+    const struct oa_menu_item *me = sub_item_for_key(b, "ENERGY_SAVING");
+    const struct oa_menu_item *mz = sub_item_for_key(b, "PICTURE_ZOOM");
     int v;
-    if (c->picture->get_mode(c->picture_source, &v) == 0 &&
-        v >= 0 && v <= 4)
-        c->sub_value[0] = v;
-    if (c->picture->get_zoom(c->picture_source, &v) == 0 &&
-        v >= 0 && v <= 8)
-        c->sub_value[2] = v;
+    if (c->picture->get_mode(c->picture_source, &v) == 0) {
+        int index = mi ? sub_index_for_id(mi, v) : -1;
+        if (index >= 0) c->sub_value[0] = index;
+    }
+    if (c->picture->get_zoom(c->picture_source, &v) == 0) {
+        int index = mz ? sub_index_for_id(mz, v) : -1;
+        if (index >= 0) c->sub_value[2] = index;
+    }
     int mode = c->sub_value[0] >= 0 ? c->sub_value[0] : 1;
-    if (c->picture->get_energy(c->picture_source, mode, 0, &v) == 0 &&
-        v >= 0 && v <= 6)
-        c->sub_value[1] = v;
+    int mode_id = mi ? sub_stored_id(mi, mode) : mode;
+    if (c->picture->get_energy(c->picture_source, mode_id, 0, &v) == 0) {
+        int index = me ? sub_index_for_id(me, v) : -1;
+        if (index >= 0) c->sub_value[1] = index;
+    }
+    if (menu) c->api->release(c->api->priv, OA_SVC_UI_MENU);
     sub_text_free(c);
 }
 
 /* Refresh using the persisted current source. */
 static void picture_sync(struct ctx *c)
 {
-    if (c->picture) picture_sync_index(c, picture_source_now(c));
+    if (c->picture) picture_sync_index(c, picture_source_now(c), NULL);
 }
 
-/* Persist one card value through NovoPictureSettings' UserPreferences
- * picture-configuration store. The UI keeps the new value even when the
- * database is read-only; the write failure is logged. */
-static void picture_commit(struct ctx *c, int card, int index)
+/* Persist one card's vendor SettingValue id through NovoPictureSettings'
+ * UserPreferences picture-configuration store. The UI keeps the new value
+ * even when the database is read-only; the write failure is logged. */
+static void picture_commit(struct ctx *c, int card, int value,
+                           const struct oa_menu_branch *held_branch)
 {
     if (!c->picture) return;
     if (c->picture_source < 0 || c->picture_source >= 20)
         c->picture_source = picture_source_now(c);
     int rc;
     if (card == 0) {
-        rc = c->picture->set_mode(c->picture_source, index);
-        if (rc == 0) picture_sync(c); /* energy is per picture mode */
+        rc = c->picture->set_mode(c->picture_source, value);
+        if (rc == 0)
+            picture_sync_index(c, c->picture_source, held_branch);
     } else if (card == 1) {
-        int mode = c->sub_value[0] >= 0 ? c->sub_value[0] : 1;
-        rc = c->picture->set_energy(c->picture_source, mode, 0, index);
+        int mode_index = c->sub_value[0] >= 0 ? c->sub_value[0] : 1;
+        const struct oa_menu_item *mi =
+            sub_item_for_key(held_branch, "MODE");
+        int mode = mi ? sub_stored_id(mi, mode_index) : mode_index;
+        rc = c->picture->set_energy(c->picture_source, mode, 0, value);
     } else if (card == 2) {
-        rc = c->picture->set_zoom(c->picture_source, index);
+        rc = c->picture->set_zoom(c->picture_source, value);
     } else {
         return;
     }
     if (rc)
         c->api->log(c->api->priv, OA_LOG_WARN,
-                    "picture: write card %d index %d failed (%d)",
-                    card, index, rc);
+                    "picture: write card %d value %d failed (%d)",
+                    card, value, rc);
 }
 
 static const uint8_t sub_white[4] = { 255, 255, 255, 255 };
@@ -2173,7 +2224,7 @@ static int portal_menu_action(const char *action)
                     if (strcmp(item->values[v].key, eq + 1)) continue;
                     g_ctx->sub_value[card] = (int)v;
                     sub_text_free(g_ctx);
-                    picture_commit(g_ctx, card, (int)v);
+                    picture_commit(g_ctx, card, sub_stored_id(item, (int)v), b);
                     if (g_ctx->screen == SCREEN_SUBLAUNCHER && g_ctx->d)
                         paint(g_ctx);
                     rc = 0;
@@ -2583,7 +2634,7 @@ static int sub_value_step(struct ctx *c, int dir)
             if (next != index) {
                 c->sub_value[card] = next;
                 sub_text_free(c);
-                picture_commit(c, card, next);
+                picture_commit(c, card, sub_stored_id(item, next), b);
                 paint(c);
                 changed = 1;
             }
@@ -2785,7 +2836,7 @@ static void move_key(struct ctx *c, uint8_t id)
             if (rc)
                 c->api->log(c->api->priv, OA_LOG_WARN,
                             "source: m_current_source write failed (%d)", rc);
-            picture_sync_index(c, index);
+            picture_sync_index(c, index, NULL);
             emit_action(c, OA_ACTION_SELECT);
             if (c->d) paint(c);
             return;

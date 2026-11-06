@@ -131,26 +131,32 @@ picture_modes, the real PQ/UserPreferences write, other async modules and
 scanout remain. LIVE-SUBLAUNCHER-I18N.
 
 Sub-launcher values/picture store, 2026-11-06: `DemoApp+0x318` is
-`NovoPictureSettings*`; vptr=`_ZTV19NovoPictureSettings`+8 (mode/apply/zoom/
-index/energy). The per-source 0x240 UserPreferences config has mode+0x04,
-zoom+0x0c, energy+0x44+mode*0x70; `Settings.m_picture_setting_configuration`
-is20×0x240 and source1 has NATURAL/16:9/MAXIMUM (p0/03). The runtime
-PictureModeNameProvider table is0 DYNAMIC/1 NATURAL/2 CINEMA/3 GAME/4 SPORT.
-mod_settings publishes `picture.settings`; ui_vendor derives the config index
-from m_current_source (firmware external index+1, 0=Tuner) and writes through
-it; the ui.state_file shadow is removed. mod_settings has the ABI3 async
-quiesce gate (detach DB/flags, close on worker) and a control `picture-state`. QEMU: set zoom →
-Ondertitels155 and blob+0xc=2, survives restart; setting focus450;
-Down,Down,Right AUTO176/energy4; set:MODE=CINEMA writes mode2 and applies
-energy0 (Cinema/Uit); m_current_source5 selects config5 (DYNAMIC/OFF151/36).
-Host test checks the shipped DB values and reload. Bronlijst Select now calls
+`NovoPictureSettings*`; vptr=`_ZTV19NovoPictureSettings`+8. The per-source
+0x240 config has mode+0x04, zoom +0x08 normally / +0x0c when format-0 full
+mode applies, energy+0x44+mode*0x70+device3d*0x38. The fields are vendor
+SettingValue ids, not JSON positions: zoom AUTO1/16:9=5/SUBTITLE6/14:9=3/
+14:9zoom4/4:3=2/21:9=11/CINEMA8/FULL9; energy CUSTOM5/SCREEN_OFF6. Dump
+source1 is NATURAL/AUTO/MAXIMUM; configs3/4/14 (zoom5) match p0/03 and
+m_last_zoom_mode=5. The JSON carries ids and ui_vendor stores/reads them;
+mod_settings publishes `picture.settings` (whole-blob UPDATE, EROFS read-only,
+picture.full_mode) over m_current_source (external index+1, 0=Tuner); the
+ui.state_file shadow is removed. QEMU: source3 NATURAL/MAXIMUM/16:9
+(132/129/54); 16:9→Ondertitels155 and DB zoom id6, survives restart; setting
+focus450; Down,Down,Right AUTO176/energy4; set:MODE=CINEMA writes mode2 and
+applies energy0 (Cinema/Uit); m_current_source5 gives DYNAMIC/OFF151/36.
+Host test checks the IDs, reload and the +0x08/+0x0c rule. The offline
+PICTURE-OBJECT harness executes the shipped UserPreferences accessors under
+qemu-arm-static: 20 configs/80 zoom formats/200 energy cases/242 setters
+match the model; get/set config(index0)/mode/energy(non-HDR)/default zoom and
+getZoomMode formats0/1/2 are executed. Bronlijst Select calls
 source.select_type first (CVBS15, HDMI1/2/3 17/18/19, YPbPr20, VGA16, TV0;
-WiDi/APM no VIN slot) and only on success writes m_current_source and resyncs
-the cards; host fake-VIN IPC asserts ids3/3/66/3/2/1 and source.enable, QEMU
-HDMI1 row2 logs VIN id3 and shows DYNAMIC/OFF151/36. Limits: serialized blob,
-not the live UserPreferences object; real TV VIN/hardware select unaccepted;
-HDR/full-mode zoom open; TV DB write needs settings.readonly=0.
-SUBLAUNCHER-VALUES and SOURCE-VIN.
+WiDi/APM no VIN slot), then writes m_current_source and resyncs; host
+fake-VIN IPC asserts ids3/3/66/3/2/1 and source.enable, QEMU HDMI1 row2 logs
+VIN id3 and shows DYNAMIC/OFF151/36. Limits: serialized blob/offline object,
+not a running vendor UserPreferences/PQ process; real TV VIN/hardware select
+unaccepted; HDR variants/twin-source setter/setZoomMode need the live EASI
+graph; TV DB write needs settings.readonly=0. SUBLAUNCHER-VALUES,
+PICTURE-OBJECT and SOURCE-VIN.
 
 ui_vendor quiesce, 2026-11-06: ABI3 gate cancels timers/dialog/slide,
 unsubscribes, releases providers, unpublishes ui.portal and unregisters the

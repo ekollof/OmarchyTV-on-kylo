@@ -22,20 +22,10 @@
 #include "openaurora/events.h"
 #include "openaurora/launcher_db.h"
 #include "openaurora/module.h"
+#include "openaurora/picture_config.h"
 #include "openaurora/services.h"
 
 #define DEFAULT_DB "/conf/sqlite_db/settingsDB.db"
-
-/* UserPreferences PictureSettingConfiguration array, serialized in
- * Settings.m_picture_setting_configuration. 20 sources x 0x240 bytes. */
-#define PICTURE_SOURCES 20
-#define PICTURE_STRIDE 0x240
-#define PICTURE_BYTES (PICTURE_SOURCES * PICTURE_STRIDE)
-#define PIC_MODE_OFF 0x04
-#define PIC_ZOOM_OFF 0x0c
-#define PIC_ENERGY_OFF 0x44
-#define PIC_ENERGY_MODE_STRIDE 0x70
-#define PIC_ENERGY_3D_STRIDE 0x38
 
 struct ctx {
     const oa_host_api *api;
@@ -44,8 +34,9 @@ struct ctx {
     int published,hotel_published,launcher_published,picture_published;
     char path[128];
     char err[160];
-    unsigned char picture[PICTURE_BYTES];
+    unsigned char picture[OA_PICTURE_BYTES];
     int picture_on;
+    int picture_full_mode; /* UI format-0 zoom field: 1 = +0x0c, 0 = +0x08 */
     /* ABI 3 quiesce: closing the DB is handed to a worker so a locked or
      * slow filesystem cannot stall the loop. */
     pthread_t cleanup_thread;
@@ -140,8 +131,8 @@ static int picture_load(struct ctx *c)
     if (rc == SQLITE_ROW) {
         const void *blob = sqlite3_column_blob(st, 0);
         int n = sqlite3_column_bytes(st, 0);
-        if (blob && n == PICTURE_BYTES) {
-            memcpy(c->picture, blob, PICTURE_BYTES);
+        if (blob && n == OA_PICTURE_BYTES) {
+            memcpy(c->picture, blob, OA_PICTURE_BYTES);
             c->picture_on = 1;
         } else {
             error = ENODATA;
@@ -151,20 +142,6 @@ static int picture_load(struct ctx *c)
     }
     if (sqlite3_finalize(st) != SQLITE_OK && !error) error = EIO;
     return error;
-}
-
-static int pic_range(int source)
-{
-    return source >= 0 && source < PICTURE_SOURCES;
-}
-
-static int pic_get_abs(const struct ctx *c, int off, int *out)
-{
-    if (!c || !c->picture_on) return ENODEV;
-    if (off < 0 || off + (int)sizeof *out > PICTURE_BYTES || !out)
-        return EINVAL;
-    memcpy(out, c->picture + off, sizeof *out);
-    return 0;
 }
 
 static int picture_save(struct ctx *c)
@@ -180,72 +157,75 @@ static int picture_save(struct ctx *c)
         if (st) sqlite3_finalize(st);
         return sql_error(rc);
     }
-    rc = sqlite3_bind_blob(st, 1, c->picture, PICTURE_BYTES, SQLITE_TRANSIENT);
+    rc = sqlite3_bind_blob(st, 1, c->picture, OA_PICTURE_BYTES,
+                           SQLITE_TRANSIENT);
     if (rc == SQLITE_OK) rc = sqlite3_step(st);
     int error = rc == SQLITE_DONE ? 0 : sql_error(rc);
     if (sqlite3_finalize(st) != SQLITE_OK && !error) error = EIO;
     return error;
 }
 
-static int pic_store_abs(struct ctx *c, int off, int value)
+static int picture_ready(void)
 {
-    if (!c || !c->picture_on) return ENODEV;
-    if (off < 0 || off + (int)sizeof value > PICTURE_BYTES) return EINVAL;
-    if (c->readonly) return EROFS;
-    unsigned char *at = c->picture + off;
-    int old;
-    memcpy(&old, at, sizeof old);
-    memcpy(at, &value, sizeof value);
-    int rc = picture_save(c);
-    if (rc) memcpy(at, &old, sizeof old);
-    return rc;
+    if (!g_ctx || !g_ctx->picture_on) return ENODEV;
+    return 0;
 }
 
 static int picture_get_mode(int source, int *out)
 {
-    if (!pic_range(source)) return EINVAL;
-    return pic_get_abs(g_ctx, source * PICTURE_STRIDE + PIC_MODE_OFF, out);
+    int rc = picture_ready();
+    return rc ? rc : oa_picture_get_mode(g_ctx->picture, source, out);
 }
 
 static int picture_set_mode(int source, int mode)
 {
-    if (!pic_range(source) || mode < 0 || mode > 4) return EINVAL;
-    return pic_store_abs(g_ctx, source * PICTURE_STRIDE + PIC_MODE_OFF, mode);
+    int rc = picture_ready();
+    if (rc) return rc;
+    unsigned char backup[OA_PICTURE_BYTES];
+    memcpy(backup, g_ctx->picture, sizeof backup);
+    rc = oa_picture_set_mode(g_ctx->picture, source, mode);
+    if (!rc) rc = picture_save(g_ctx);
+    if (rc) memcpy(g_ctx->picture, backup, sizeof backup);
+    return rc;
 }
 
 static int picture_get_zoom(int source, int *out)
 {
-    if (!pic_range(source)) return EINVAL;
-    return pic_get_abs(g_ctx, source * PICTURE_STRIDE + PIC_ZOOM_OFF, out);
+    int rc = picture_ready();
+    return rc ? rc : oa_picture_get_zoom(g_ctx->picture, source,
+                                         g_ctx->picture_full_mode, out);
 }
 
 static int picture_set_zoom(int source, int zoom)
 {
-    if (!pic_range(source) || zoom < 0 || zoom > 0x7f) return EINVAL;
-    return pic_store_abs(g_ctx, source * PICTURE_STRIDE + PIC_ZOOM_OFF, zoom);
-}
-
-static int energy_offset(int source, int mode, int device3d)
-{
-    if (!pic_range(source) || mode < 0 || mode > 4 ||
-        device3d < 0 || device3d > 1)
-        return -1;
-    return source * PICTURE_STRIDE + PIC_ENERGY_OFF +
-           mode * PIC_ENERGY_MODE_STRIDE + device3d * PIC_ENERGY_3D_STRIDE;
+    int rc = picture_ready();
+    if (rc) return rc;
+    unsigned char backup[OA_PICTURE_BYTES];
+    memcpy(backup, g_ctx->picture, sizeof backup);
+    rc = oa_picture_set_zoom(g_ctx->picture, source,
+                             g_ctx->picture_full_mode, zoom);
+    if (!rc) rc = picture_save(g_ctx);
+    if (rc) memcpy(g_ctx->picture, backup, sizeof backup);
+    return rc;
 }
 
 static int picture_get_energy(int source, int mode, int device3d, int *out)
 {
-    int off = energy_offset(source, mode, device3d);
-    if (off < 0) return EINVAL;
-    return pic_get_abs(g_ctx, off, out);
+    int rc = picture_ready();
+    return rc ? rc : oa_picture_get_energy(g_ctx->picture, source, mode,
+                                            device3d, out);
 }
 
 static int picture_set_energy(int source, int mode, int device3d, int value)
 {
-    int off = energy_offset(source, mode, device3d);
-    if (off < 0 || value < 0 || value > 0xff) return EINVAL;
-    return pic_store_abs(g_ctx, off, value);
+    int rc = picture_ready();
+    if (rc) return rc;
+    unsigned char backup[OA_PICTURE_BYTES];
+    memcpy(backup, g_ctx->picture, sizeof backup);
+    rc = oa_picture_set_energy(g_ctx->picture, source, mode, device3d, value);
+    if (!rc) rc = picture_save(g_ctx);
+    if (rc) memcpy(g_ctx->picture, backup, sizeof backup);
+    return rc;
 }
 
 static const oa_picture_settings_iface picture_iface = {
@@ -378,6 +358,8 @@ static int m_start(void *v)
     long delay = atol(c->api->config_get(c->api->priv,
                                          "settings.cleanup_delay_ms", "0"));
     c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
+    c->picture_full_mode =
+        atoi(c->api->config_get(c->api->priv, "picture.full_mode", "1")) != 0;
 
     int flags = SQLITE_OPEN_READONLY;
     if (!c->readonly)

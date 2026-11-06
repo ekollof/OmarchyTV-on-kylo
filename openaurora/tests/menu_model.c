@@ -21,6 +21,13 @@ static int record(void *ud, const char *action)
     return 0;
 }
 
+static int value_id(const struct oa_menu_item *item, const char *key)
+{
+    for (unsigned i = 0; i < item->value_count; i++)
+        if (!strcmp(item->values[i].key, key)) return item->values[i].id;
+    return -1;
+}
+
 static int has_value(const struct oa_menu_item *item, const char *key,
                      const char *action)
 {
@@ -67,16 +74,28 @@ int main(int argc, char **argv)
     assert(!strcmp(picture->items[0].values[2].key, "CINEMA"));
     assert(!strcmp(picture->items[0].values[3].key, "GAME"));
     assert(!strcmp(picture->items[0].values[4].key, "SPORT"));
+    assert(value_id(&picture->items[0], "DYNAMIC") == 0);
+    assert(value_id(&picture->items[0], "NATURAL") == 1);
+    assert(value_id(&picture->items[0], "SPORT") == 4);
     assert(!strcmp(picture->items[1].key, "ENERGY_SAVING"));
     assert(picture->items[1].value_count == 7);
     assert(has_value(&picture->items[1], "OFF", "set:ENERGY_SAVING=OFF"));
     assert(has_value(&picture->items[1], "CUSTOM",
                      "set:ENERGY_SAVING=CUSTOM"));
+    assert(value_id(&picture->items[1], "OFF") == 0);
+    assert(value_id(&picture->items[1], "MAXIMUM_STR") == 3);
+    assert(value_id(&picture->items[1], "SCREEN_OFF") == 6);
+    assert(value_id(&picture->items[1], "CUSTOM") == 5);
     assert(!strcmp(picture->items[2].key, "PICTURE_ZOOM"));
     assert(has_value(&picture->items[2], "ZOOM_MODE_16_9",
                      "set:PICTURE_ZOOM=ZOOM_MODE_16_9"));
     assert(has_value(&picture->items[2], "21:9",
                      "set:PICTURE_ZOOM=21:9"));
+    assert(value_id(&picture->items[2], "ZOOM_MODE_AUTO") == 1);
+    assert(value_id(&picture->items[2], "ZOOM_MODE_16_9") == 5);
+    assert(value_id(&picture->items[2], "ZOOM_MODE_SUBTITLE") == 6);
+    assert(value_id(&picture->items[2], "ZOOM_MODE_FULL") == 9);
+    assert(value_id(&picture->items[2], "21:9") == 11);
 
     const struct oa_menu_branch *sound = oa_menu_branch(d, 3);
     assert(sound && sound->item_count == 6);
