@@ -1220,13 +1220,18 @@ $(BUILD)/tests/nim_tune: tests/nim_tune.c common/nim_tune.c include/openaurora/n
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
+$(BUILD)/tests/mxl661_tune: tests/mxl661_tune.c common/mxl661_tune.c include/openaurora/mxl661_tune.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
 .PHONY: check-tuner-backend
-check-tuner-backend: $(BUILD)/tests/mxl661_dev $(BUILD)/tests/tuner_sequence $(BUILD)/tests/nim_dtv_hw $(BUILD)/tests/lnb_rt5047 $(BUILD)/tests/nim_tune
+check-tuner-backend: $(BUILD)/tests/mxl661_dev $(BUILD)/tests/tuner_sequence $(BUILD)/tests/nim_dtv_hw $(BUILD)/tests/lnb_rt5047 $(BUILD)/tests/nim_tune $(BUILD)/tests/mxl661_tune
 	@$(BUILD)/tests/mxl661_dev
 	@$(BUILD)/tests/tuner_sequence
 	@$(BUILD)/tests/nim_dtv_hw
 	@$(BUILD)/tests/lnb_rt5047
 	@$(BUILD)/tests/nim_tune
+	@$(BUILD)/tests/mxl661_tune
 check: check-tuner-backend
 
 $(BUILD)/tests/tuner_gate: tests/tuner_gate.c include/openaurora/module.h

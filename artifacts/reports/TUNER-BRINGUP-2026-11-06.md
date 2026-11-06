@@ -146,6 +146,25 @@ struct per signal type. Implementing these faithfully needs the RF/IF tuning
 sequence and the status layout, not only a field copy; both stay `-ENOTSUP`
 rather than guessed.
 
+## MxL661 RF/IF recovery (partial)
+
+`SAL_DEMOD_TUN_ProgramTuner` @ `0x0084b0c8` maps standard index `0..7` to
+`7,8,6,10,9,0xc,0xd,0xb`, applies the 17-entry IF table at `0x01367d38`
+(`3650,4000,4100,4150,4500,4570,5000,5380,6000,6280,7200,8250,35250,36000,
+36150,36650,44000` kHz), then calls `SAL_TUNER_ProgramTuner` @ `0x0084af68`
+(SetIF via vtable+0x10, SetRF via +0xc, mutex and cached parameters).
+
+`C_SalTunerMxL661::SetIF` @ `0x0084d299` wraps MxLWare `ConfigTuner` command 9
+(standard/IF mode), and `SetRF` @ `0x0084d13d` wraps command 0xd
+(start-tune) followed by 0xb (channel tune and lock sequence). The 3-byte
+standard property tables are extracted: `DigitalDvbt` 21,
+`DigitalIsdbtAtsc` 23, `DigitalDvbc` 26, `AnalogNtsc` 26, `AnalogPal` 28,
+`AnalogSecam` 36 triples.
+
+`common/mxl661_tune.c` carries the verified standard-index and IF table
+mapping with tests. The `ConfigTuner` case 9/0xd/0xb register port and the
+SetChannel/GetChannelStatus tails are not guessed and remain open.
+
 ## SI2151 blocker
 
 `SI2151_L3_Init` @ `0x0086f130` calls `L0_Init`, `Si2151_L1_API_Init`, then
@@ -204,6 +223,7 @@ ok nim dtv hw: 0x29-word state clear and HAL table install
 ok rt5047: LNB_EN present/absent/error flow and level write
 ok nim tune: path/index map, open/close, lock/strength/quality masks and
              unresolved channel mappings
+ok mxl661 tune: standard index map and 17-entry IF table
 ok tuner hal: four bus IDs from description+0x19, 0xff-only resolution, ...
 ok mxl661: default/custom init order, RMW masks, defaults table and failure behavior
 ok nim dtv hal: DEV_IIC bus/reg/address packing and Hal success inversion
@@ -227,9 +247,9 @@ undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
 1. SI2151 tuner backend: the Silicon Labs L1/L2/L3 driver with
    `PowerUpWithPatch` and property download is a separate large port; this
    TV's profile selects MxL661 and does not use it.
-2. SetChannel/GetChannelStatus need `SAL_DEMOD_TUN_ProgramTuner` (MxL661
-   RF/IF) plus the 0x180-byte status mapping; they return `-ENOTSUP` and are
-   not guessed.
+2. MxL661 RF/IF register port: `ConfigTuner` cases 9/0xd/0xb and the
+   SetIF/SetRF packing (standard/IF mapping and tables are recovered;
+   `common/mxl661_tune.c`). SetChannel/GetChannelStatus depend on this.
 3. The module's NIM vtable now carries the implemented tuning ops, but no
    tuning backend consumes the table yet.
 4. Hardware acceptance is **not done**. The owner's standing instruction is

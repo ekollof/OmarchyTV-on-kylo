@@ -716,7 +716,8 @@ Host/ASan/full/ARM-qemu pass. NIM state/Connect2HAL equivalents and RT5047
 LNB_EN descriptor+Hal_Gpio adapter are wired behind the gate; the NIM tuning
 subset (path map, open/close, lock/strength/quality) is wired into the
 module table; set/get channel need ProgramTuner/0x180-status mapping and are
--ENOTSUP. SI2151 is the full Silicon Labs
+-ENOTSUP. MxL661 standard/IF mapping and the 17-entry IF table are in
+common/mxl661_tune.c; ConfigTuner case 9/0xd/0xb register port remains. SI2151 is the full Silicon Labs
 patch/property driver, not this profile's path. Hardware acceptance remains
 blocked by the owner's read-only/no-takeover instruction. TUNER-BRINGUP.
 
