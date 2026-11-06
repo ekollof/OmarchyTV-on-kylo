@@ -3,6 +3,8 @@
 #include <errno.h>
 #include <string.h>
 
+#include "openaurora/mxl661_atv.h"
+
 struct hal {
     const struct oa_nim_tune_ops *ops;
     void *ud;
@@ -15,11 +17,33 @@ struct hal {
 static struct hal g_hal;
 static const struct oa_nim_tune_ops *g_ops;
 static void *g_ud;
+static const struct oa_mxl661_atv_tables *g_atv_tables;
+static int g_atv_standard;
+static uint32_t g_atv_if_khz;
+static int g_atv_xtal24;
 
 void oa_nim_hal_set_ops(const struct oa_nim_tune_ops *ops, void *ud)
 {
     g_ops = ops;
     g_ud = ud;
+}
+
+int oa_nim_hal_set_atv(const struct oa_mxl661_atv_tables *tables,
+                       int standard, uint32_t if_khz, int xtal_24mhz)
+{
+    if (!tables) {
+        g_atv_tables = NULL;
+        return 0;
+    }
+    if (standard < OA_MXL661_ATV_NTSC || standard > OA_MXL661_ATV_SECAM_L)
+        return -EINVAL;
+    if (if_khz == 0)
+        return -EINVAL;
+    g_atv_tables = tables;
+    g_atv_standard = standard;
+    g_atv_if_khz = if_khz;
+    g_atv_xtal24 = xtal_24mhz != 0;
+    return 0;
 }
 
 static int hal_start(uint8_t path, const uint32_t *params, size_t count,
@@ -43,14 +67,29 @@ static int hal_start(uint8_t path, const uint32_t *params, size_t count,
 
     if (!oa_nim_tune_open(g_ops, g_ud, &g_hal.tune))
         return -EIO;
-    const struct oa_nim_tune_channel channel = {
-        .freq_hz = params[1] * 1000u,
-        .standard = 8,     /* DVB-T */
-        .bandwidth = 0x20, /* 6 MHz */
-        .if_khz = 5000
-    };
-    if (!oa_nim_tune_set_channel(g_ops, g_ud, &g_hal.tune, &channel))
-        return -EIO;
+    if (g_atv_tables) {
+        if (!g_ops->program_atv)
+            return -ENOTSUP;
+        struct oa_mxl661_analog_params p = {
+            .freq_hz = params[1] * 1000u,
+            .if_khz = g_atv_if_khz,
+            .bandwidth = 2, /* vendor SetRF analog bandwidth */
+            .standard = g_atv_standard,
+            .start = 0,
+            .xtal_24mhz = g_atv_xtal24
+        };
+        if (g_ops->program_atv(g_ud, &p, g_atv_tables) != 0)
+            return -EIO;
+    } else {
+        const struct oa_nim_tune_channel channel = {
+            .freq_hz = params[1] * 1000u,
+            .standard = 8,     /* DVB-T */
+            .bandwidth = 0x20, /* 6 MHz */
+            .if_khz = 5000
+        };
+        if (!oa_nim_tune_set_channel(g_ops, g_ud, &g_hal.tune, &channel))
+            return -EIO;
+    }
     g_hal.active = 1;
     result->state = OA_NIM_TUNE_UNLOCKED;
     result->frequency_khz = g_hal.frequency_khz;

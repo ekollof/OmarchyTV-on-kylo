@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include "openaurora/lnb_rt5047.h"
+#include "openaurora/mxl661_atv.h"
 #include "openaurora/mxl661_dev.h"
 #include "openaurora/mxl661_rf.h"
 #include "openaurora/nim_tune.h"
@@ -233,9 +234,21 @@ static int tune_program(void *ud, const struct oa_nim_tune_channel *ch)
     return oa_mxl661_tune_dvbt(&mops, (void *)&hal_ops, 0xc0, &p) == 0 ? 0 : -1;
 }
 
+static int tune_program_atv(void *ud,
+                            const struct oa_mxl661_analog_params *params,
+                            const struct oa_mxl661_atv_tables *tables)
+{
+    (void)ud;
+    if (!params || !tables)
+        return -1;
+    oa_mxl661_ops mops = { oa_mxl661_dev_write, oa_mxl661_dev_read, tune_sleep };
+    return oa_mxl661_tune_analog(&mops, (void *)&hal_ops, 0xc0, params,
+                                 tables) == 0 ? 0 : -1;
+}
+
 static const struct oa_nim_tune_ops vendor_tune_ops = {
     tune_switch, tune_type, tune_deliver, tune_fe_open, tune_fe_close,
-    tune_standby, tune_status, tune_rssi, tune_program
+    tune_standby, tune_status, tune_rssi, tune_program, tune_program_atv
 };
 
 const struct oa_nim_tune_ops *oa_tuner_vendor_tune_ops(void)

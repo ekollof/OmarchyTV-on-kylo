@@ -499,6 +499,26 @@ static int m_init(const oa_host_api *api, void **out)
         }
         oa_nim_hal_set_ops(oa_tuner_vendor_tune_ops(), NULL);
         c->backend = oa_nim_hal_backend();
+        const char *analog_on = api->config_get(api->priv, "tuner.analog", "0");
+        if (analog_on && (!strcmp(analog_on, "1") ||
+                          !strcmp(analog_on, "true"))) {
+            if (!c->atv_loaded) {
+                api->log(api->priv, OA_LOG_WARN,
+                         "tuner: analog requested but the ATV tables are unavailable");
+            } else {
+                int standard = atoi(api->config_get(api->priv,
+                                                    "tuner.analog_standard", "0"));
+                int if_khz = atoi(api->config_get(api->priv,
+                                                  "tuner.analog_if_khz", "5000"));
+                int xtal = atoi(api->config_get(api->priv,
+                                                "tuner.analog_xtal24", "0"));
+                if (oa_nim_hal_set_atv(&c->atv, standard,
+                                       if_khz > 0 ? (uint32_t)if_khz : 5000u,
+                                       xtal != 0) != 0)
+                    api->log(api->priv, OA_LOG_WARN,
+                             "tuner: invalid analog config, using DVB-T");
+            }
+        }
 #endif
     } else {
         c->backend = oa_nim_stub_backend();
@@ -637,6 +657,10 @@ static void m_destroy(void *v)
         c->cleanup_running = 0;
     }
     if (c->ts_open) oa_nim_ts_close();
+#ifndef OA_NO_VENDOR
+    /* The backend holds a pointer to c->atv; clear it before freeing. */
+    oa_nim_hal_set_atv(NULL, 0, 0, 0);
+#endif
     if (g_ctx == v) g_ctx = NULL;
     free(v);
 }

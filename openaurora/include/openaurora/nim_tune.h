@@ -30,6 +30,9 @@ struct oa_nim_tune_channel {
     uint32_t if_khz;
 };
 
+struct oa_mxl661_analog_params;
+struct oa_mxl661_atv_tables;
+
 struct oa_nim_tune_status {
     uint8_t locked;
     uint32_t strength;
@@ -90,6 +93,11 @@ struct oa_nim_tune_ops {
     int (*get_status)(void *ud, int handle, int index, uint32_t mask, void *buf);
     int (*get_rssi)(void *ud, int tuner_type, uint8_t *rssi); /* 1 = success */
     int (*program_tuner)(void *ud, const struct oa_nim_tune_channel *ch);
+    /* Optional analog (ATV) tail. The caller owns the runtime-loaded table
+     * set; 0 = success. NULL leaves the backend DVB-only. */
+    int (*program_atv)(void *ud,
+                       const struct oa_mxl661_analog_params *params,
+                       const struct oa_mxl661_atv_tables *tables);
 };
 
 struct oa_nim_tune_state {

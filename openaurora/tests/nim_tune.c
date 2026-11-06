@@ -114,7 +114,7 @@ static int program_tune(void *ud, const struct oa_nim_tune_channel *ch)
 
 static const struct oa_nim_tune_ops ops = {
     switch_type, get_tuner_type, deliver_config, fe_open, fe_close,
-    set_standby, get_status, get_rssi, program_tune
+    set_standby, get_status, get_rssi, program_tune, NULL
 };
 
 static void test_path_index(void)

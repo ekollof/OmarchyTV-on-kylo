@@ -230,8 +230,8 @@ ok   mxl661 atv corpus: loader CRC + real NTSC/PAL/PAL-D sequences
 `check-mxl661-atv-corpus` is explicit, requires the private
 `AURORA_ELF`, and is never part of the default suite. Focused ASan/UBSan and
 ARM/qemu pass with both synthetic and real tables; TV `mod_tuner.so` sha256
-`c9a29eaf...`. The module loads the tables under the hardware gate, but no
-analog NIM tuning backend consumes them yet and nothing has run on the TV.
+`1837da76...`. The module loads the tables under the hardware gate and
+`tuner.analog=1` feeds them to the NIM HAL backend; nothing has run on the TV.
 
 The typed `oa_nim_tune_set_channel` calls the `program_tuner` op (the vendor
 binding runs `oa_mxl661_tune_dvbt`); `oa_nim_tune_get_channel_status` fills
@@ -340,7 +340,31 @@ also not claimed: only the translations above are recovered.
 ok nim tune: path/index map, open/close, lock/strength/quality masks and unresolved channel mappings
 ```
 
-Focused ASan/UBSan and ARM/qemu pass; TV `mod_tuner.so` sha256 `c9a29eaf...`.
+Focused ASan/UBSan and ARM/qemu pass; TV `mod_tuner.so` sha256 `1837da76...`.
+
+### Analog NIM backend wiring
+
+The analog path is consumed by the NIM HAL backend:
+
+- `oa_nim_hal_set_atv(tables, standard, if_khz, xtal24)` enables analog start
+  with the caller-owned runtime table set; `NULL` restores the DVB-T default.
+- `oa_nim_tune_ops.program_atv` is implemented in `tuner_vendor.c` with the
+  same MxL661 DEV ops and calls `oa_mxl661_tune_analog`; the fake `nim_hal`
+  test asserts the frequency, standard, IF, xtal flag and table pointer, and
+  that the DVB path is restored after clearing.
+- `mod_tuner` opts in with `tuner.analog=1`, `tuner.analog_standard=0..5`,
+  `tuner.analog_if_khz=5000`, `tuner.analog_xtal24=0`, only under
+  `tuner.hw_init=1` and after the runtime table load. It clears the backend
+  pointer on destroy so a reload cannot leave a dangling table set.
+
+```text
+ok nim hal: backend start/monitor/signal/stop, DVB-T default and analog table path
+```
+
+TV `mod_tuner.so` sha256 `1837da76...`. Limits: `monitor`/`signal` still use
+the DVB status ops (vendor `GetATVStatus` is not wired); the scan uses one
+fixed default frequency rather than analog channel steps; the case-9
+per-address calibration remains. No hardware has run.
 
 ## SI2151 blocker
 
@@ -416,7 +440,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 c9a29eafbe686375be9cc83fcdfc1ef14c1a649ce289df3428bd64bebc430d80
+sha256 1837da76febc0a44a08bfafa10480c1965f070cfe759e4a0ba363be587077d59
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,
