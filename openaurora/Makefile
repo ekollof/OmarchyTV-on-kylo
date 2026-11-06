@@ -877,8 +877,8 @@ $(BUILD)/core/%.o: core/%.c
 
 $(BUILD)/modules/mod_ui_anim.so: $(call pic_objs,modules__mod_ui_anim,modules/ui_anim/ui_anim.c common/ui_anim.c)
 	@mkdir -p $(dir $@)
-	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -lm
-$(eval $(call emit_pics,modules__mod_ui_anim,modules/ui_anim/ui_anim.c common/ui_anim.c,-pthread,include/openaurora/ui_anim.h))
+	$(CC) -shared -o $@ $^ $(LDFLAGS) -lm
+$(eval $(call emit_pics,modules__mod_ui_anim,modules/ui_anim/ui_anim.c common/ui_anim.c,,include/openaurora/ui_anim.h))
 
 $(BUILD)/modules/mod_ui_vendor.so: $(call pic_objs,modules__mod_ui_vendor,modules/ui_vendor/ui_vendor.c core/service_query.c common/ui_anim.c common/binsvg.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c common/font_box.c common/text_origin.c common/svg_scrollbar.c common/menu_model.c common/json.c common/launcher_anim.c common/langprofile.c common/rtl_order.c)
 	@mkdir -p $(dir $@)
@@ -1260,6 +1260,11 @@ $(BUILD)/tests/ui_anim_review: tests/ui_anim_review.c common/ui_anim.c include/o
 
 check-ui-anim-review: $(BUILD)/tests/ui_anim_review $(BUILD)/modules/mod_ui_anim.so
 	@$(BUILD)/tests/ui_anim_review $(BUILD)/modules
+
+.PHONY: check-ui-anim-quiesce
+check-ui-anim-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ticker.so $(BUILD)/modules/mod_ui_clock.so $(BUILD)/modules/mod_ui_anim.so
+	node tests/ui_anim_quiesce.cjs $(abspath $(BUILD))
+check: check-ui-anim-quiesce
 
 $(BUILD)/tests/audio_speaker: tests/audio_speaker.c common/audio_speaker.c include/openaurora/audio_speaker.h
 	@mkdir -p $(dir $@)

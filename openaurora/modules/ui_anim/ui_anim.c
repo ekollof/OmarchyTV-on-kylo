@@ -16,17 +16,25 @@ struct ctx {
     int suspended;
     int published;
     int timer_fault; /* EAGAIN once the owned kick cannot arm the 10 ms timer */
+    /* ABI 3 quiesce: the controller is detached and freed by a sched slice. */
+    uint32_t cleanup_task;
+    oa_ui_anim *cleanup_anim;
+    unsigned cleanup_delay_ms;
 };
 static struct ctx *g_ctx;
 static void on_timer(void *ud);
+static int live(void)
+{
+    return g_ctx && g_ctx->published && g_ctx->anim;
+}
 
 static int set_enabled(int on)
 {
-    return g_ctx ? oa_ui_anim_set_enabled(g_ctx->anim, on) : -1;
+    return live() ? oa_ui_anim_set_enabled(g_ctx->anim, on) : -1;
 }
 static int enabled(void)
 {
-    return g_ctx ? oa_ui_anim_enabled(g_ctx->anim) : 0;
+    return live() ? oa_ui_anim_enabled(g_ctx->anim) : 0;
 }
 static void arm(struct ctx *c)
 {
@@ -55,7 +63,7 @@ static int fault(void)
 static int start(int id, int kind, const oa_anim_rect *from, const oa_anim_rect *to,
                  uint32_t duration, uint32_t *started)
 {
-    if (!g_ctx || !g_ctx->clock) return -1;
+    if (!live() || !g_ctx->clock) return -1;
     /* Service entry points execute under the consumer's owner token. Queue
      * the timer registration under our token; never borrow the caller's life. */
     if (!g_ctx->timer && !g_ctx->kick_pending) {
@@ -69,28 +77,28 @@ static int start(int id, int kind, const oa_anim_rect *from, const oa_anim_rect 
 }
 static int cancel(int id)
 {
-    if (!g_ctx) return -1;
+    if (!live()) return -1;
     return oa_ui_anim_cancel(g_ctx->anim, id);
 }
 static int finalise(int id)
 {
-    if (!g_ctx) return -1;
+    if (!live()) return -1;
     return oa_ui_anim_finalise(g_ctx->anim, id);
 }
 static int sample(uint32_t now)
 {
-    if (!g_ctx) return -1;
+    if (!live()) return -1;
     return oa_ui_anim_sample(g_ctx->anim, now);
 }
 static int get(int id, int *kind, oa_anim_rect *rect, float *eased, uint32_t *started,
                uint32_t *duration)
 {
-    if (!g_ctx) return -1;
+    if (!live()) return -1;
     return oa_ui_anim_get(g_ctx->anim, id, kind, rect, eased, started, duration);
 }
 static int bind(oa_anim_fn fn, void *ud)
 {
-    if (!g_ctx) return -1;
+    if (!live()) return -1;
     oa_ui_anim_bind(g_ctx->anim, fn, ud);
     return 0;
 }
@@ -102,11 +110,39 @@ static const oa_ui_anim_iface g_iface = {
 static void on_timer(void *ud)
 {
     struct ctx *c = ud;
-    if (!c->clock) return;
+    if (!c->clock || !c->anim) return;
     int running = oa_ui_anim_sample(c->anim, c->clock->now_ms());
     if (running <= 0 && c->timer) {
         c->api->timer_del(c->api->priv, c->timer);
         c->timer = 0;
+    }
+}
+
+static int cleanup_step(void *ud, uint32_t *delay_ms)
+{
+    (void)delay_ms;
+    struct ctx *c = ud;
+    oa_ui_anim *anim = c->cleanup_anim;
+    c->cleanup_anim = NULL;
+    c->cleanup_task = 0;
+    oa_ui_anim_destroy(anim);
+    return OA_SCHED_DONE;
+}
+
+static void cancel_cleanup(struct ctx *c)
+{
+    if (c->cleanup_task) {
+        const oa_sched_iface *s =
+            c->api->lookup(c->api->priv, OA_SVC_SCHED, 1);
+        if (s) {
+            (void)s->cancel(s->context, c->cleanup_task);
+            c->api->release(c->api->priv, OA_SVC_SCHED);
+        }
+        c->cleanup_task = 0;
+    }
+    if (c->cleanup_anim) {
+        oa_ui_anim_destroy(c->cleanup_anim);
+        c->cleanup_anim = NULL;
     }
 }
 static int m_init(const oa_host_api *api, void **out)
@@ -125,6 +161,11 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    if (c->published || c->cleanup_task || c->cleanup_anim) return -EBUSY;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "ui_anim.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
+    if (!c->anim && !(c->anim = oa_ui_anim_create())) return -ENOMEM;
     g_ctx = c;
     c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
     if (!c->clock) return -1;
@@ -133,24 +174,72 @@ static int m_start(void *v)
     c->suspended = 0;
     return 0;
 }
-static void m_stop(void *v)
+/* ABI 3 gate: unpublish ui.anim, remove the cadence timer, drop the clock
+ * hold and detach the controller synchronously, then destroy it from one
+ * scheduler slice after ui_anim.cleanup_delay_ms. */
+static int m_quiesce(void *v)
 {
     struct ctx *c = v;
+    if (!c) return 0;
+    if (c->cleanup_task || c->cleanup_anim) return -EAGAIN;
+    int published = c->published;
+    c->published = 0;
+    if (published) c->api->unpublish(c->api->priv, OA_SVC_UI_ANIM);
     if (c->timer) c->api->timer_del(c->api->priv, c->timer);
     c->timer = 0;
     c->kick_pending = 0;
     c->timer_fault = 0;
-    oa_ui_anim_bind(c->anim, NULL, NULL);
-    if (c->published) c->api->unpublish(c->api->priv, OA_SVC_UI_ANIM);
-    c->published = 0;
+    if (c->anim) oa_ui_anim_bind(c->anim, NULL, NULL);
     if (c->clock) c->api->release(c->api->priv, OA_SVC_UI_CLOCK);
     c->clock = NULL;
+    oa_ui_anim *anim = c->anim;
+    c->anim = NULL;
+    if (!anim) return 0;
+    if (!c->cleanup_delay_ms) {
+        oa_ui_anim_destroy(anim);
+        return 0;
+    }
+    c->cleanup_anim = anim;
+    const oa_sched_iface *s =
+        c->api->lookup(c->api->priv, OA_SVC_SCHED, 1);
+    if (!s) {
+        oa_ui_anim_destroy(anim);
+        c->cleanup_anim = NULL;
+        return 0;
+    }
+    uint32_t id = 0;
+    int rc = s->submit(s->context, cleanup_step, c, c->cleanup_delay_ms, &id);
+    c->api->release(c->api->priv, OA_SVC_SCHED);
+    if (rc) {
+        oa_ui_anim_destroy(anim);
+        c->cleanup_anim = NULL;
+        return -EIO;
+    }
+    c->cleanup_task = id;
+    return -EAGAIN;
+}
+
+static void m_stop(void *v)
+{
+    struct ctx *c = v;
+    c->published = 0;
+    if (c->timer) c->api->timer_del(c->api->priv, c->timer);
+    c->timer = 0;
+    c->kick_pending = 0;
+    c->timer_fault = 0;
+    if (c->anim) oa_ui_anim_bind(c->anim, NULL, NULL);
+    if (c->clock) c->api->release(c->api->priv, OA_SVC_UI_CLOCK);
+    c->clock = NULL;
+    cancel_cleanup(c);
+    oa_ui_anim_destroy(c->anim);
+    c->anim = NULL;
 }
 static void m_destroy(void *v)
 {
     struct ctx *c = v;
-    if (g_ctx == c) g_ctx = NULL;
+    cancel_cleanup(c);
     oa_ui_anim_destroy(c->anim);
+    if (g_ctx == c) g_ctx = NULL;
     free(c);
 }
 static int m_suspend(void *v)
@@ -177,6 +266,6 @@ static const oa_module g_module = {
     .name = "ui_anim", .version = "1",
     .requires = { OA_SVC_UI_CLOCK, "" },
     .init = m_init, .start = m_start, .stop = m_stop, .destroy = m_destroy,
-    .suspend = m_suspend, .resume = m_resume,
+    .suspend = m_suspend, .resume = m_resume, .quiesce = m_quiesce,
 };
 OA_MODULE_EXPORT(g_module)

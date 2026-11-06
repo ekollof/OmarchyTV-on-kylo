@@ -288,6 +288,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  theme-state             query ui.theme pack count\n"
                  "  profile-state           query ui.profile facts\n"
                  "  panel-state             query panel requested percent\n"
+                 "  anim-state              query ui.anim enabled/fault\n"
                  "  menu-state <dialog>     query ui.menu dialogs/branches\n"
                  "  ui-action <action>      apply a JSON menu action (open:/setting:/set:)\n"
                  "  picture-state <source>  read picture mode/zoom/energy 0-19\n"
@@ -310,6 +311,23 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         if (!a1) { oa_skin_status(h, outbuf, outlen); return 0; }
         if (oa_skin_request(h, a1)) { snprintf(outbuf, outlen, "failed errno %d\n", errno); return -1; }
         snprintf(outbuf, outlen, "pending %s\n", a1);
+        return 0;
+    }
+    if (!strcmp(cmd, "anim-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_ui_anim_iface *a =
+            h->api.lookup(h, OA_SVC_UI_ANIM, 3);
+        if (!a) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int on = a->enabled();
+        int fault = a->fault();
+        h->api.release(h, OA_SVC_UI_ANIM);
+        snprintf(outbuf, outlen, "anim enabled %d fault %d\n", on, fault);
         return 0;
     }
     if (!strcmp(cmd, "panel-state")) {
