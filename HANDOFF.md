@@ -406,6 +406,15 @@ ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list/
 ui_navigation/ui_profile/audio_curve/audio_amp_profile are async.
 AUDIO-AMP-PROFILE-QUIESCE.
+
+audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
+md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
+build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran
+with only that module and the real profile (cleanup_delay_ms400): amp-profile
+prescale27, first reload failed/ENODEV, retry after0.7s ok/prescale27, stop
+gate failed then completed after0.7s, unload/quit ok. Staging removed, no
+helper left, stock Aurora still PID1781 (TV woken from standby). Proves ARM/
+glibc module + gate + real profile data, not amp writes or audible output.
 SERVICE-DB-QUIESCE.
 
 Real VIN HAL simulation, 2026-11-06: run the shipped ARM libNDAL3.so

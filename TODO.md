@@ -392,7 +392,12 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       `amp-profile` ENODEV, status responsive, hwprofile changed to31, retry
       reports31; stop uses the gate. Existing provider/module/IPC/fixture
       tests pass; ARM links libpthread. Full/QEMU pass.
-      AUDIO-AMP-PROFILE-QUIESCE.
+      AUDIO-AMP-PROFILE-QUIESCE. On-TV ARM follow-up: the TV
+      `/conf/mb230_hwprofile.bin` matches the local artifact (md5
+      1b063b2cc7faa8b92c0f843921e561c7), and the hash-verified ARM host+module
+      ran data-only against it: prescale27, fail-fast reload/ENODEV, delayed
+      retry/stop, unload clean, staging removed, stock Aurora PID unchanged.
+      Amplifier hardware/audible acceptance still open.
 
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond

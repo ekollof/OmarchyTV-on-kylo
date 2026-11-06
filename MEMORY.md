@@ -426,6 +426,17 @@ ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list/
 ui_navigation/ui_profile/audio_curve/audio_amp_profile are the async modules.
 AUDIO-AMP-PROFILE-QUIESCE.
+
+audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
+md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches the local artifact. Staged
+build-tv-v3 openaurora (sha256 c03a68a1...) + mod_audio_amp_profile.so
+(cce8e2da...) in /tmp/oa-amp-verify, hash-verified, ran with only that module
+and the real profile with cleanup_delay_ms400. amp-profile prescale27; first
+reload failed with cleanup pending, amp-profile ENODEV; retry after0.7s ok and
+prescale27; stop gate failed then completed after0.7s; unload/quit ok. Staging
+removed, no openaurora left, stock Aurora still PID1781 (TV was woken from
+standby). Proves ARM/glibc module + gate + real profile data, not amp writes or
+audible output.
 SERVICE-DB-QUIESCE.
 CHANNELS-QUIESCE.
 

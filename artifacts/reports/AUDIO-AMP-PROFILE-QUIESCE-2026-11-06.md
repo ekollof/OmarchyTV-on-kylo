@@ -1,8 +1,9 @@
 # mod_audio_amp_profile async quiesce — 2026-11-06
 
-This gate evidence is offline: host control socket with a synthetic hwprofile.
-The TV was not used for the gate test. No amplifier, GPIO, MCU, I2C or audio
-device was touched.
+The gate test is offline (host control socket with a synthetic hwprofile),
+followed by a data-only ARM execution on the real TV against the TV's own
+`/conf/mb230_hwprofile.bin`. No amplifier, GPIO, MCU, I2C or audio device was
+touched, and no display/HAL module was loaded on the TV.
 
 ## Ownership change and gate
 
@@ -74,6 +75,47 @@ ok qemu sub-launcher live: Dutch text within 4 px of p0/03
 ok qemu sub-launcher: static AE=0
 ```
 
+## On-TV ARM and profile-identity check — 2026-11-06
+
+The TV was woken from standby for this check; stock Aurora kept running
+throughout.
+
+```text
+local artifacts/protocol/mb230_hwprofile.bin
+  md5 1b063b2cc7faa8b92c0f843921e561c7, 24514 bytes
+TV /conf/mb230_hwprofile.bin
+  md5 1b063b2cc7faa8b92c0f843921e561c7, 24514 bytes
+```
+
+The ARM `build-tv-v3/openaurora` and `mod_audio_amp_profile.so` were copied to
+`/tmp/oa-amp-verify`, hash-verified there, and run with only that module:
+
+```text
+openaurora ...                     554700 bytes  sha256 c03a68a1...
+mod_audio_amp_profile.so ...        43504 bytes  sha256 cce8e2da...
+```
+
+Config used the real `/conf/mb230_hwprofile.bin` and
+`audio_amp_profile.cleanup_delay_ms=400`. Stdin control sequence:
+
+```text
+load/start audio_amp_profile
+amp-profile -> power '12Watt' prescale 27 ch1 5 ch2 5 fine 128 clip 405736 drc 98304 state -1 attack -1 release -1
+reload audio_amp_profile -> failed (cleanup pending)
+amp-profile -> failed errno 19
+wait 0.7 s
+reload audio_amp_profile -> ok
+amp-profile -> ... prescale 27 ...        (ARM replacement reread the real profile)
+stop audio_amp_profile -> failed (same gate)
+wait 0.7 s
+stop audio_amp_profile -> ok; unload -> ok; quit -> bye
+```
+
+Afterward the staging directory was removed, no `openaurora` helper remained,
+and stock Aurora was still PID 1781. This proves the ARM module, real glibc,
+real profile data and gate sequence on the TV. It does not prove amplifier
+register writes or audible output.
+
 ## Limits
 
 - This is the immutable AD82587_D profile data and power string, not the
@@ -82,7 +124,9 @@ ok qemu sub-launcher: static AE=0
   remains covered by the existing module/IPC tests.
 - The worker frees profile+power, but the gate is observed through
   unpublish/fail-fast/retry and the changed prescale, not freed memory.
-- No TV, amplifier or hardware behavior is established by this report.
+- The TV run proves data-only ARM/glibc module behavior and the gate sequence
+  against the real profile; it does not exercise amplifier wiring, GPIO/MCU,
+  register writes or audio output.
 - Remaining synchronous modules (9): `panel`, `plat`, `power`, `ticker`,
   `ui_anim`, `ui_clock`, `ui_console`, `ui_diag`, `ui_omarchy`.
 - No stock-Aurora coexistence test was performed.
