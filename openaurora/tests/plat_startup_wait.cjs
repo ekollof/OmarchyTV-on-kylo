@@ -93,7 +93,9 @@ async function main() {
         const warm = await timed('start plat');
         assert.equal(warm.reply, 'ok');
         assert.ok(warm.elapsed < 500, `pre-existing marker start took ${warm.elapsed}ms`);
+        assert.equal(await command('plat-state'), 'plat ready 1 errors 0x0');
         assert.equal(await command('stop plat'), 'ok');
+        assert.equal(await command('plat-state'), 'failed errno 19');
         assert.equal(await command('unload plat'), 'ok');
 
         fs.rmSync(marker);

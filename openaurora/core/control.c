@@ -295,6 +295,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  ui-action <action>      apply a JSON menu action (open:/setting:/set:)\n"
                  "  picture-state <source>  read picture mode/zoom/energy 0-19\n"
                  "  ui-icon <name>          load/report a ui.engine asset\n"
+                 "  plat-state              query plat ready/stage errors\n"
                  "  display-info            query display dimensions/bpp/frames\n"
                  "  source-select <type>    select a VIN source type 0-25\n"
                  "  source-state            query current source type/availability\n"
@@ -696,6 +697,22 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
             return -1;
         }
         snprintf(outbuf, outlen, "ok\n");
+        return 0;
+    }
+    if (!strcmp(cmd, "plat-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_plat_iface *p = h->api.lookup(h, OA_SVC_PLAT, 1);
+        if (!p) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int ready = p->is_ready ? p->is_ready() : -1;
+        int errors = p->stage_errors ? p->stage_errors() : -1;
+        h->api.release(h, OA_SVC_PLAT);
+        snprintf(outbuf, outlen, "plat ready %d errors 0x%x\n", ready, errors);
         return 0;
     }
     if (!strcmp(cmd, "display-info")) {

@@ -555,6 +555,18 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       0,0, mau 0). This is driver state, not panel scanout; stable acceptance
       needs authorized controlled ownership plus independent observation.
 
+- [x] Cold-start stage audit: firmware `ICE_HardwareInit` calls
+      `PLAT_DRV_INI_Init` then `DEV_INI_Init` @0x00853a58 (`0x75564c/50`);
+      recovered its 11-stage order (PCB layout type, GPIO, source, panel, NIM,
+      IIC, amp, SPI init/open, NIM-DTV, MTD) and mapped each to the modular
+      owner. `plat` must not call it wholesale: that would duplicate
+      panel/source/tuner/audio ownership and run unrecovered device code under
+      stock. SPI/MTD/NIM-DTV and amp/panel power stages remain unimplemented.
+      New `plat-state` control probe reports `plat ready N errors 0xM`;
+      `check-plat-startup-wait` asserts ready/0x0 after start and ENODEV after
+      stop; full suite `all tests passed`. Offline host stubs only; no cold
+      boot or hardware acceptance. COLD-START-STAGE-AUDIT.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
       `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`/`ui_diag`/`ui_anim`/`ui_clock`/`ticker`/`ui_console`/`ui_omarchy`,
@@ -1772,7 +1784,9 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       (FB-SNAPSHOT-COLD-BUNDLE), but not executed. `plat` now enforces the
       vendor `/tmp/ntkdriver_completed` wait before its HAL prelude, with tests
       and a view-only live-marker check (PLAT-STARTUP-WAIT); that is ordering,
-      not a cold boot. A temporary fb1 takeover on
+      not a cold boot. The `DEV_INI_Init` device stages are audited and mapped
+      to owners (COLD-START-STAGE-AUDIT); SPI/MTD/NIM-DTV and amp/panel power
+      remain unimplemented. A temporary fb1 takeover on
       2026-11-05 showed scanout, injected IR, vendor fallback and resume, then
       a failed direct relaunch; the owner had the watchdog reboot stock Aurora
       (TAKEOVER-2026-11-05). Cold boot without the vendor process, MCU authority

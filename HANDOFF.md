@@ -562,6 +562,16 @@ start and resume: yoffset0, region1920x1080 at0,0, mau0, stock PIDs1711/1781.
 Driver-state evidence only; stable panel scanout and cold-ownership acceptance
 still need authorized controlled ownership plus independent observation.
 
+cold-start stage audit, 2026-11-06: firmware ICE_HardwareInit calls
+PLAT_DRV_INI_Init then DEV_INI_Init@0x853a58 (0x75564c/50, 11 stages: PCB
+layout, GPIO, source, panel, NIM, IIC, amp, SPI init/open, NIM-DTV, MTD). Each
+maps to a modular owner; plat must not call it wholesale (duplicate ownership,
+unrecovered device code under stock). SPI/MTD/NIM-DTV and amp/panel power stages
+remain unimplemented. New plat-state probe reports ready and stage-error mask;
+check-plat-startup-wait asserts ready/0x0 after start and ENODEV after stop; full
+suite all tests passed. Offline host stubs only; no cold boot/hardware
+acceptance. COLD-START-STAGE-AUDIT.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran
