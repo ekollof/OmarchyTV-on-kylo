@@ -782,6 +782,9 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
 - [ ] Independent startup: boot into openaurora without starting vendor Aurora.
       Temporary takeovers showed scanout, input, fallback and resume, then stock
       was restored. Cold boot, MCU authority and a clean handback are not verified.
+      The 2026-11-06 controlled run held a stable first frame with stock stopped
+      and restored by reboot (CONTROLLED-SCANOUT), but fb1 was already
+      vendor-initialized; it is not a cold independent startup.
       Owner authorized an idle hardware/CEC/audio test window on November 1; see AGENTS.md.
 - [ ] Reloadable modules: state, service holds, callback ownership and dependencies
       behave correctly through start/stop/reload/suspend/resume and failures.
@@ -965,6 +968,23 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       switching behavior. Do not infer actual mapping size from framebuffer metadata.
 - [ ] Verify independent scanout and full-screen geometry on panel at a future
       authorized takeover. Present success, pixel readback and oa.ready are insufficient.
+      Controlled ownership on 2026-11-06 held a byte-stable active frame with
+      stock stopped and verified pan/region/MAU (CONTROLLED-SCANOUT); independent
+      owner/HDMI panel confirmation and full-screen geometry remain open.
+
+- [x] Controlled-ownership first-frame stability: under the owner's 2026-11-06
+      full-access authorization, the watchdog was disabled, stock Aurora 1781
+      stopped, and a hash-verified staged `display_fb` started on the
+      vendor-initialized fb1 with snapshot/self-test/`verify_scanout`. The driver
+      reported `yoffset 0 region 1920x1080 at 0,0 mau 0`; three captures 2 s
+      apart and three raw active-frame reads 1 s apart were byte-identical
+      (`656b0caf…`), with the magenta band in the active frame and no stock
+      repaint. Stop restored fb1 (band gone, region/pan/MAU unchanged), staging
+      was removed, and `wdtctl set 10` rebooted; stock returned (appmgr 1582,
+      aurora 1784, fb1 1920x2160, no openaurora). This is stable controlled
+      framebuffer/scanout-path evidence, not independent panel observation, cold
+      startup or MCU authority. Captures under
+      `artifacts/analysis/controlled-scanout-2026-11-06/`. CONTROLLED-SCANOUT.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff
       tests pass host/sanitizer/ARM-qemu. CEC-AUDIO-CONTRACT.

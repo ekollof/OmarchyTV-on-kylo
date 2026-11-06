@@ -42,6 +42,12 @@ the earlier fb1 exclusion and offline-only restriction. Preserve/restore stock
 operation, display state and access. This does not authorize persistent
 replacement, boot-hook changes, stopping stock Aurora or watchdog takeover.**
 
+**Owner update, 2026-11-06: "you have full access to the TV." Temporary
+controlled display ownership is authorized, including stopping stock Aurora and
+a recovery reboot for a test. Preserve and verify stock restoration, remove
+staging, and never leave the watchdog disabled or a helper running. Persistent
+replacement and boot-hook changes remain separate gates.**
+
 **Using the TV to interrogate it is always allowed when the operation is
 view-only. No additional confirmation is needed**, including while it is in use.
 This includes files, processes, logs, existing state and firmware-understood

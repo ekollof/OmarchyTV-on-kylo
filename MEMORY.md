@@ -629,6 +629,21 @@ ASan/UBSan clean, full suite all tests passed, QEMU live ara/per pass. Standard
 BiDi rule, not instruction-level vendor text recovery; mixed Hebrew/Latin BiDi
 and visible capture remain open. RTL-BRACKET-MIRROR.
 
+controlled-ownership scanout, 2026-11-06: owner "you have full access to the TV";
+AGENTS updated. Watchdog disable sent, stock aurora1781 stopped, staged
+hash-verified display_fb (core025d1fb0/moduleb7ab1747) started on
+vendor-initialized fb1 with snapshot+self-test+verify. Log: yoffset0
+region1920x1080 at0,0 mau0. Three captures2s apart and three raw active-frame
+reads1s apart byte-identical (raw656b0caf...); magenta band in active frame,
+no stock repaint. Stop restored fb1 (band gone; region/pan/MAU same; manual
+pre-snapshot differs only3 stock bytes from the later start state), staging
+removed, wdtctl set10 rebooted. Stock returned: appmgr1582, aurora1784/zombie
+1962, fb1 1920x2160 stride7680, no openaurora, oa_boot/oa_fail absent,
+oa_safe/coredumpnoreset present, post-boot capture nonblank. Stable
+controlled framebuffer/scanout-path evidence; no independent owner/HDMI panel
+confirmation, not cold startup/MCU authority. Captures under
+artifacts/analysis/controlled-scanout-2026-11-06. CONTROLLED-SCANOUT.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches the local artifact. Staged
 build-tv-v3 openaurora (sha256 c03a68a1...) + mod_audio_amp_profile.so
