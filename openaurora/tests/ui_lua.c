@@ -369,6 +369,28 @@ int main(int argc, char **argv)
     lua = hold(&host);
     assert(!lua->status(&st) && st.loaded && st.timers == 0);
     drop(&host);
+    {
+        /* Suspend already dropped the pump. A full timer table must keep the
+         * module suspended; restoring the previous slots lets resume arm it. */
+        oa_mod *lm = oa_host_find_module(&host, "lua");
+        int saved[MAX_TIMERS];
+        uint32_t prev = host.cur_module;
+        assert(lm && lm->state == OA_ST_SUSPENDED && lm->desc->resume);
+        for (int i = 0; i < MAX_TIMERS; i++) {
+            saved[i] = host.timers[i].active;
+            host.timers[i].active = 1;
+        }
+        host.cur_module = lm->id;
+        assert(lm->desc->resume(lm->ctx) == -1);
+        host.cur_module = prev;
+        assert(lm->state == OA_ST_SUSPENDED);
+        for (int i = 0; i < MAX_TIMERS; i++)
+            host.timers[i].active = saved[i];
+        lua = hold(&host);
+        assert(!lua->status(&st) && st.loaded && st.timers == 0);
+        drop(&host);
+        puts("  ok   resume stays suspended when the fetch pump cannot be allocated");
+    }
     assert(!command(&host, "resume", out, sizeof out) && !strcmp(out, "ok\n"));
     assert(has_fill(trace, 0, 0, 40, 100, 9, 9, 9));
     puts("  ok   suspend drops script timers and resume still paints the script");

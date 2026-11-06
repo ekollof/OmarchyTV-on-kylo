@@ -278,7 +278,10 @@ it counts against the Lua memory cap when it is pushed.
 
 `suspend` / `resume` of the `lua` module keep the state. Timers are zero
 across suspend. Resume does not replay them; the script arms them again from
-a later hook. In-flight fetches are cancelled, not paused.
+a later hook. In-flight fetches are cancelled, not paused. Resume stays
+suspended when the 50 ms fetch pump cannot be allocated, and start fails
+the same way. Queued `oa.fetch` work is started by that pump, so the service
+is not left published without it.
 
 `stop` / `unload` leave no script timers and no watches. Unload is refused
 while a skin still holds the service, unless the operator forces it. Do not

@@ -1781,11 +1781,19 @@ static void drop_pump(struct runtime *rt)
     rt->pump_id = 0;
 }
 
-static void arm_pump(struct runtime *rt)
+/* The 50 ms pump is what starts a queued fetch. A published service with no
+ * pump looks healthy and never runs curl, so allocation failure is fatal. */
+static int arm_pump(struct runtime *rt)
 {
-    if (!rt->api || rt->pump_id || rt->quiescing)
-        return;
+    if (!rt || !rt->api || rt->quiescing)
+        return -1;
+    if (rt->pump_id)
+        return 0;
     rt->pump_id = rt->api->timer_add(rt->api->priv, 50, 50, on_pump, rt);
+    if (rt->pump_id)
+        return 0;
+    rt->api->log(rt->api->priv, OA_LOG_ERROR, "lua pump timer allocation failed");
+    return -1;
 }
 
 static int publish_service(struct runtime *rt)
@@ -1892,7 +1900,10 @@ static int finish_start(struct runtime *rt)
     rt->suspended = 0;
     if (publish_service(rt) != 0)
         return -1;
-    arm_pump(rt);
+    if (arm_pump(rt) != 0) {
+        unpublish_service(rt);
+        return -1;
+    }
     return 0;
 }
 
@@ -1959,9 +1970,10 @@ static int rt_resume(struct runtime *rt)
 {
     if (!rt)
         return -1;
-    rt->suspended = 0;
     rt->quiescing = 0;
-    arm_pump(rt);
+    if (arm_pump(rt) != 0)
+        return -1;
+    rt->suspended = 0;
     return 0;
 }
 

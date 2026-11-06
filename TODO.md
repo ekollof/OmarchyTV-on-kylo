@@ -2274,8 +2274,11 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       The http success path is the host run. qemu-user cannot exec host python
       or curl, so the ARM run takes the failed-transfer callback. Vendor pixels
       are unchanged. Quiesce unpublishes `ui.lua` and rejects hook/reload while
-      a fetch child is unreaped (`check-ui-lua`). This is not television startup
-      or scanout; criterion 4 stays unmet. See openaurora/docs/LUA.md.
+      a fetch child is unreaped (`check-ui-lua`). Start and resume fail, and
+      resume stays suspended, when the 50 ms fetch pump cannot be allocated
+      (`check-ui-lua`); that path was not re-run under ASan/UBSan or ARM.
+      This is not television startup or scanout; criterion 4 stays unmet.
+      See openaurora/docs/LUA.md.
 - [x] Gated `oa.aurora` Lua control bridge: `ui.lua.control` defaults off;
       1 allows synchronous read-only control queries, 2 allows deferred
       control commands through the host post queue. `aurora.query`,
