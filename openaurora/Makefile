@@ -960,10 +960,10 @@ $(BUILD)/modules/mod_epg.so: $(call pic_objs,modules__mod_epg,modules/epg/epg.c 
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
 $(eval $(call emit_pics,modules__mod_epg,modules/epg/epg.c common/eit_section.c common/eit_cache.c common/eit_time.c,-pthread,include/openaurora/eit_section.h include/openaurora/eit_cache.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_tuner.so: $(call pic_objs,modules__mod_tuner,modules/tuner/tuner.c common/nim_stub.c common/nim_ts.c common/nim_ndal.c common/eit_dvb.c common/eit_ts.c common/eit_section.c common/eit_time.c common/efsl_profile.c common/tuner_identity.c common/mxl661.c common/mxl661_dev.c common/mxl661_rf.c common/mxl661_tune.c common/tuner_hal.c common/tuner_sequence.c common/tuner_vendor.c common/nim_dtv.c common/nim_dtv_hal.c common/nim_dtv_hw.c common/nim_tune.c common/nim_hal.c common/lnb_rt5047.c)
+$(BUILD)/modules/mod_tuner.so: $(call pic_objs,modules__mod_tuner,modules/tuner/tuner.c common/nim_stub.c common/nim_ts.c common/nim_ndal.c common/eit_dvb.c common/eit_ts.c common/eit_section.c common/eit_time.c common/efsl_profile.c common/tuner_identity.c common/mxl661.c common/mxl661_dev.c common/mxl661_rf.c common/mxl661_atv.c common/mxl661_tune.c common/tuner_hal.c common/tuner_sequence.c common/tuner_vendor.c common/nim_dtv.c common/nim_dtv_hal.c common/nim_dtv_hw.c common/nim_tune.c common/nim_hal.c common/lnb_rt5047.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter tv,$(TARGET)),$(VENDOR_LDFLAGS)) -ldl
-$(eval $(call emit_pics,modules__mod_tuner,modules/tuner/tuner.c common/nim_stub.c common/nim_ts.c common/nim_ndal.c common/eit_dvb.c common/eit_ts.c common/eit_section.c common/eit_time.c common/efsl_profile.c common/tuner_identity.c common/mxl661.c common/mxl661_dev.c common/mxl661_rf.c common/mxl661_tune.c common/tuner_hal.c common/tuner_sequence.c common/tuner_vendor.c common/nim_dtv.c common/nim_dtv_hal.c common/nim_dtv_hw.c common/nim_tune.c common/nim_hal.c common/lnb_rt5047.c,-pthread,include/openaurora/nim.h include/openaurora/eit_dvb.h include/openaurora/eit_section.h include/openaurora/eit_ts.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h include/openaurora/efsl_profile.h include/openaurora/tuner_identity.h include/openaurora/mxl661.h include/openaurora/mxl661_dev.h include/openaurora/mxl661_rf.h include/openaurora/mxl661_tune.h include/openaurora/tuner_hal.h include/openaurora/tuner_sequence.h include/openaurora/tuner_vendor.h include/openaurora/nim_dtv.h include/openaurora/nim_dtv_hal.h include/openaurora/nim_dtv_hw.h include/openaurora/nim_tune.h include/openaurora/nim_hal.h include/openaurora/lnb_rt5047.h include/openaurora/hal_iic.h))
+$(eval $(call emit_pics,modules__mod_tuner,modules/tuner/tuner.c common/nim_stub.c common/nim_ts.c common/nim_ndal.c common/eit_dvb.c common/eit_ts.c common/eit_section.c common/eit_time.c common/efsl_profile.c common/tuner_identity.c common/mxl661.c common/mxl661_dev.c common/mxl661_rf.c common/mxl661_atv.c common/mxl661_tune.c common/tuner_hal.c common/tuner_sequence.c common/tuner_vendor.c common/nim_dtv.c common/nim_dtv_hal.c common/nim_dtv_hw.c common/nim_tune.c common/nim_hal.c common/lnb_rt5047.c,-pthread,include/openaurora/nim.h include/openaurora/eit_dvb.h include/openaurora/eit_section.h include/openaurora/eit_ts.h include/openaurora/eit_time.h include/openaurora/broadcast.h include/openaurora/module.h include/openaurora/services.h include/openaurora/efsl_profile.h include/openaurora/tuner_identity.h include/openaurora/mxl661.h include/openaurora/mxl661_dev.h include/openaurora/mxl661_rf.h include/openaurora/mxl661_atv.h include/openaurora/mxl661_tune.h include/openaurora/tuner_hal.h include/openaurora/tuner_sequence.h include/openaurora/tuner_vendor.h include/openaurora/nim_dtv.h include/openaurora/nim_dtv_hal.h include/openaurora/nim_dtv_hw.h include/openaurora/nim_tune.h include/openaurora/nim_hal.h include/openaurora/lnb_rt5047.h include/openaurora/hal_iic.h))
 
 $(BUILD)/modules/mod_pvr.so: $(call pic_objs,modules__mod_pvr,modules/pvr/pvr.c common/pvr_stub.c)
 	@mkdir -p $(dir $@)
@@ -1228,12 +1228,16 @@ $(BUILD)/tests/mxl661_rf: tests/mxl661_rf.c common/mxl661_rf.c include/openauror
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
+$(BUILD)/tests/mxl661_atv: tests/mxl661_atv.c common/mxl661_atv.c common/mxl661_rf.c include/openaurora/mxl661.h include/openaurora/mxl661_rf.h include/openaurora/mxl661_atv.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
 $(BUILD)/tests/nim_hal: tests/nim_hal.c common/nim_hal.c common/nim_tune.c common/mxl661_tune.c include/openaurora/nim.h include/openaurora/nim_hal.h include/openaurora/nim_tune.h include/openaurora/mxl661_tune.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
 .PHONY: check-tuner-backend
-check-tuner-backend: $(BUILD)/tests/mxl661_dev $(BUILD)/tests/tuner_sequence $(BUILD)/tests/nim_dtv_hw $(BUILD)/tests/lnb_rt5047 $(BUILD)/tests/nim_tune $(BUILD)/tests/mxl661_tune $(BUILD)/tests/mxl661_rf $(BUILD)/tests/nim_hal
+check-tuner-backend: $(BUILD)/tests/mxl661_dev $(BUILD)/tests/tuner_sequence $(BUILD)/tests/nim_dtv_hw $(BUILD)/tests/lnb_rt5047 $(BUILD)/tests/nim_tune $(BUILD)/tests/mxl661_tune $(BUILD)/tests/mxl661_rf $(BUILD)/tests/mxl661_atv $(BUILD)/tests/nim_hal
 	@$(BUILD)/tests/mxl661_dev
 	@$(BUILD)/tests/tuner_sequence
 	@$(BUILD)/tests/nim_dtv_hw
@@ -1241,8 +1245,16 @@ check-tuner-backend: $(BUILD)/tests/mxl661_dev $(BUILD)/tests/tuner_sequence $(B
 	@$(BUILD)/tests/nim_tune
 	@$(BUILD)/tests/mxl661_tune
 	@$(BUILD)/tests/mxl661_rf
+	@$(BUILD)/tests/mxl661_atv
 	@$(BUILD)/tests/nim_hal
 check: check-tuner-backend
+
+# Explicit corpus target: uses the caller's private firmware ELF; never part of
+# `make check`. The loader prints nothing and embeds no vendor data.
+.PHONY: check-mxl661-atv-corpus
+check-mxl661-atv-corpus: $(BUILD)/tests/mxl661_atv
+	@test -f $(AURORA_ELF) || { echo "missing $(AURORA_ELF); the real aurora.elf is required" >&2; exit 2; }
+	@$(BUILD)/tests/mxl661_atv $(AURORA_ELF)
 
 $(BUILD)/tests/tuner_gate: tests/tuner_gate.c include/openaurora/module.h
 	@mkdir -p $(dir $@)

@@ -37,4 +37,10 @@ int oa_mxl661_tune_dvbt(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
 int oa_mxl661_tune_dvbc(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
                         const struct oa_mxl661_rf_params *params);
 
+/* Shared primitives: Ctrl_ProgramRegisters over a {reg,mask,value} table and
+ * the case-0xb channel-tune/lock sequence. 0 = success. */
+int oa_mxl661_program_registers(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
+                                const uint8_t *table);
+int oa_mxl661_channel_tune(const oa_mxl661_ops *ops, void *ud, uint8_t addr);
+
 #endif

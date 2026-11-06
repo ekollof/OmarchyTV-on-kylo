@@ -61,6 +61,10 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
       strength, quality and frequency.
 - [ ] DVB-C tail if a cable signal is available; otherwise record "not tested"
       and do not mark it accepted.
+- [ ] Analog ATV only if an analog source exists: verify `tuner.atv_tables`
+      loads the on-TV aurora.elf CRC and run a PAL/NTSC tune; otherwise record
+      "not tested". The analog NIM backend is not wired yet, so this needs
+      that backend or an explicit helper.
 - [ ] NIM `InitNimFunc`/`Connect2HAL`: 0x29-word state clear, table install,
       IIC codes 0x15/0x11/0x40, checked/ignored returns and the no-IIC-after-
       failed-MxL661-init guard.
@@ -1170,11 +1174,26 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       map is implemented (types 1/2/3/6/7/8, types 4/5 return 0 with no
       output), with deterministic zeroing of vendor-stack slots and the
       type 2/7 out[14] preservation. The earlier type 6/8 mapping was
-      corrected. Analog RF tails remain.
+      corrected. The analog NTSC/PAL/SECAM case 9/0xd/0xb tails are
+      implemented (`common/mxl661_atv.c`) using the vendor tables loaded at
+      runtime from the TV's own aurora.elf with a CRC32 check; no vendor
+      table is embedded or distributed. Synthetic `check-mxl661-atv` and an
+      explicit private `check-mxl661-atv-corpus` pass, including ASan and
+      ARM/qemu. Still open: the case-9 per-address analog calibration and an
+      analog NIM backend (the module loads the tables, no backend consumes
+      them yet).
       SI2151 is the full Silicon Labs L1/L2/L3 `PowerUpWithPatch` + property
       driver, not this profile's path (hwprofile selects SAL 0xd/MxL661).
       Hardware acceptance awaits the scheduled owner takeover window and has
       not run. Do not touch IIC/GPIO while stock owns the devices.
+
+- [x] Analog MxL661 NTSC/PAL/SECAM RF/IF: case 9 property/register tables,
+      case 0xd pre-tune/LUT/divider tails and the shared 0xb lock, with the
+      vendor tables read at runtime from the TV's own aurora.elf (CRC32
+      `0x93a05fff`) instead of embedded. Synthetic `check-mxl661-atv` and the
+      explicit private `check-mxl661-atv-corpus` pass, as do focused
+      ASan/UBSan and ARM/qemu. Limits: per-address case-9 calibration,
+      analog NIM backend and hardware acceptance remain.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff
       tests pass host/sanitizer/ARM-qemu. CEC-AUDIO-CONTRACT.

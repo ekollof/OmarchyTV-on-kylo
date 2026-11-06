@@ -145,11 +145,33 @@ static void test_dvbc(void)
     assert(f.sleep_total == 120);
 }
 
+static void test_high_band_31(void)
+{
+    struct fake f;
+    memset(&f, 0, sizeof f);
+    struct oa_mxl661_rf_params p = {
+        .freq_hz = 800000000u,
+        .standard = 8,
+        .bandwidth = 0x20,
+        .if_khz = 5000,
+        .start = 0
+    };
+    assert(oa_mxl661_tune_dvbt(&ops, &f, 0xc0, &p) == 0);
+    assert(f.regs[0x7c] == 0x9f && f.regs[0x31] == 0x91);
+
+    memset(&f, 0, sizeof f);
+    p.standard = 6;
+    p.bandwidth = 0;
+    assert(oa_mxl661_tune_dvbc(&ops, &f, 0xc0, &p) == 0);
+    assert(f.regs[0x7c] == 0x9f && f.regs[0x31] == 0xd1);
+}
+
 int main(void)
 {
     test_dvbt_666mhz();
     test_high_if_and_failure();
     test_dvbc();
+    test_high_band_31();
     puts("ok mxl661 rf: DVB-T/DVB-C case 9/0xd/0xb order, property tables, "
          "spur registers, divider and lock sequence");
     return 0;

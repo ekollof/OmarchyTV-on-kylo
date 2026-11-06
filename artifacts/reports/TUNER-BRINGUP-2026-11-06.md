@@ -147,7 +147,7 @@ struct per signal type. Implementing these faithfully needs the RF/IF tuning
 sequence and the status layout, not only a field copy; both stay `-ENOTSUP`
 rather than guessed.
 
-## MxL661 RF/IF (DVB-T implemented)
+## MxL661 RF/IF (DVB-T/C and analog)
 
 `SAL_DEMOD_TUN_ProgramTuner` @ `0x0084b0c8` maps standard index `0..7` to
 `7,8,6,10,9,0xc,0xd,0xb`, applies the 17-entry IF table at `0x01367d38`
@@ -177,14 +177,72 @@ spur write is therefore `0x49=0x1c, 0xdb=0x17, 0xea=0x00, 0xeb=0xd8`.
   `0x31=0xc1`, the same spur registers and divider; case 0xb is shared.
   The fake tests assert the table, key registers, divider and lock sequence.
 
+### Analog ATV path and the no-blob distribution rule
+
+The vendor's NTSC/PAL/SECAM tables are **not** embedded in this tree or in any
+build product. `oa_mxl661_atv_load()` reads the 2744-byte table region
+`0x017681c8..0x01768c80` from the TV's own
+`/vendor/com.nvt.idtv/aurora.elf`, verifies CRC32 `0x93a05fff`, and the
+sequence code uses that copy. A missing file, wrong ELF class/machine or CRC
+mismatch disables analog tuning; there is no shipped fallback table. The
+module loads it only under `tuner.hw_init=1` (`tuner.atv_tables` overrides the
+path) and logs a warning when unavailable, so no vendor data reaches the
+repo, the binary or the rescue/install USB. Users with the hardware can point
+the loader at their own dump; host tests use synthetic tables or the explicit
+private corpus.
+
+Recovered analog behavior (`SAL_TUNER_MxL661_SetIF`/`SetRF`,
+`MxLWare601_API_ConfigTuner` case 9/0xd/0xb, `Ctrl_SetRfFreqLutReg`):
+
+- Case 9 maps the audio/color system to the MxLWare standard (audio overrides
+  the color-derived value) and selects the `AnalogNtsc`/`AnalogPal`/
+  `AnalogSecam` property table. NTSC LIF writes `0x5a=0x7e`, `0x5b=0x10`,
+  `0x8a=0`, `0xdd=xtal24`; HIF uses `0x5a=0xd9`, `0x5b=0x16`. PAL/PAL-I/
+  PAL-D select the shared `Pal` table, with `0xc=0xb/0x0/0x0` and
+  `0x8a=0x28` for PAL-I LIF. SECAM writes `0xc=0xb` (BG) or `0xc=0xc` (L).
+  The standard RF-LUT register tables (`0x4a..0x52`, NTSC HRC adds `0xdd=1`)
+  follow, then `0x6d=10`, `0x03=0/1` and 50 ms.
+- The analog post-tail reads `0x1a`: value 4 (or 2 with nonzero `0x5f`)
+  writes `0=1`, `0x69=1`, `0=0`.
+- Case 0xd analog pre-tune reads `0x1a==4` and clears `0x58` bit 2 and `0x57`
+  bit 3, then (when starting) writes `0x7c=0x1f/0x9f` and
+  `0x31=0x81/0x91` for LIF/HIF (`0xc1/0xd1` stay cable-only). This also
+  corrected the DVB-T/C HIF values: `0x31=0x91/0xd1` above 700 MHz, not
+  `0x81/0xc1`.
+- Per-standard frequency LUTs select a spur image by the first key within
+  +/-500 kHz (key 1 is the default) and write the four MxL601 spur registers
+  `0x49/0xdb/0xea/0xeb`: NTSC LIF/HIF, PAL B/G (16 MHz LIF/HIF, 24 MHz),
+  PAL-I, PAL-D (plus `0x93/0x94/0xba/0x5d` at the 358 MHz boundary), and
+  SECAM-L. The shared 0xb channel tune follows.
+- The analog `0x6d=0x80` common-tail value is the vendor's initialized
+  per-address record (bytes +1/+2 are zero). The larger case-9 per-address
+  calibration reads the `ConfigDevice`/`gTunerConfig` record and is not
+  modeled yet; it is a remaining parity gap, not a guessed value.
+
+Tests:
+
+```text
+ok mxl661 atv: analog case 9/0xd/0xb, LUT selection, PAL/SECAM/NTSC
+ok   mxl661 atv corpus: loader CRC + real NTSC/PAL/PAL-D sequences
+```
+
+`check-mxl661-atv` is synthetic and part of `make check`.
+`check-mxl661-atv-corpus` is explicit, requires the private
+`AURORA_ELF`, and is never part of the default suite. Focused ASan/UBSan and
+ARM/qemu pass with both synthetic and real tables; TV `mod_tuner.so` sha256
+`c9a29eaf...`. The module loads the tables under the hardware gate, but no
+analog NIM tuning backend consumes them yet and nothing has run on the TV.
+
 The typed `oa_nim_tune_set_channel` calls the `program_tuner` op (the vendor
 binding runs `oa_mxl661_tune_dvbt`); `oa_nim_tune_get_channel_status` fills
 locked/strength/quality from the lock/status ops. The module's raw
 `set_channel(void*)`/`get_channel_status(void*)` table slots remain
 `-ENOTSUP` because they carry no channel/status pointer.
 
-Still open: analog/cable RF tails, the exact 0x5c channel record and 0x180
-status array mappings, and hardware acceptance.
+Implemented offline: DVB-T/C and analog RF/IF, the 0x5c channel record
+and all 0x180 status maps. Still open: the case-9 per-address analog
+calibration, an analog NIM tuning backend (the module loads the tables but no
+backend consumes them), and every hardware acceptance step.
 
 ## NIM HAL backend (`tuner.backend=hal`)
 
@@ -282,7 +340,7 @@ also not claimed: only the translations above are recovered.
 ok nim tune: path/index map, open/close, lock/strength/quality masks and unresolved channel mappings
 ```
 
-Focused ASan/UBSan and ARM/qemu pass; TV `mod_tuner.so` sha256 `977b8024...`.
+Focused ASan/UBSan and ARM/qemu pass; TV `mod_tuner.so` sha256 `c9a29eaf...`.
 
 ## SI2151 blocker
 
@@ -358,7 +416,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 977b802441bd56a2c8c7da57a258ccec29fb1abc57668f8bb98fdb883fc60bb8
+sha256 c9a29eafbe686375be9cc83fcdfc1ef14c1a649ce289df3428bd64bebc430d80
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,

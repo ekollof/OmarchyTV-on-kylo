@@ -21,6 +21,7 @@
 #include "openaurora/efsl_profile.h"
 #include "openaurora/module.h"
 #include "openaurora/mxl661.h"
+#include "openaurora/mxl661_atv.h"
 #include "openaurora/nim.h"
 #include "openaurora/nim_dtv.h"
 #include "openaurora/nim_dtv_hal.h"
@@ -58,6 +59,8 @@ struct ctx {
     int ts_open;
     int hw_init;   /* tuner.hw_init=1: explicit hardware gate */
     int hw_done;
+    int atv_loaded;
+    struct oa_mxl661_atv_tables atv;
     uint32_t hw_sal_type;
     char ts_path[512];
     /* ABI 3 quiesce: the TS FILE* is detached and closed on a worker. */
@@ -449,6 +452,16 @@ static int m_init(const oa_host_api *api, void **out)
         return -ENOTSUP;
 #else
         c->hw_init = 1;
+        /* The analog tables live in the TV's own aurora.elf; nothing is
+         * embedded in this module or its install media. */
+        const char *atv = api->config_get(api->priv, "tuner.atv_tables",
+                                          "/vendor/com.nvt.idtv/aurora.elf");
+        if (oa_mxl661_atv_load(atv, &c->atv) == 0) {
+            c->atv_loaded = 1;
+        } else {
+            api->log(api->priv, OA_LOG_WARN,
+                     "atv tables unavailable (%s); analog tuning disabled", atv);
+        }
 #endif
     }
     const char *ts_path = api->config_get(api->priv, "tuner.ts_path", "");

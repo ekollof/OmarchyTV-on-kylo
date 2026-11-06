@@ -42,8 +42,8 @@ static void msleep(const oa_mxl661_ops *ops, void *ud, unsigned ms)
 }
 
 /* Ctrl_ProgramRegisters: 3-byte {reg, mask, value} entries, 00 00 00 ends. */
-static int program_registers(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
-                             const uint8_t *table)
+int oa_mxl661_program_registers(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
+                                const uint8_t *table)
 {
     int fail = 0;
     for (;;) {
@@ -69,7 +69,7 @@ static int program_registers(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
 static int set_if_dvbt(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
                        uint32_t if_khz)
 {
-    int fail = program_registers(ops, ud, addr, dvbt_props);
+    int fail = oa_mxl661_program_registers(ops, ud, addr, dvbt_props);
     uint8_t mode;
     if (if_khz < 0x89b2u) {
         fail |= wr(ops, ud, addr, 0x5a, 0xfe);
@@ -94,7 +94,7 @@ static int set_if_dvbt(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
 static int set_if_dvbc(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
                        uint32_t if_khz)
 {
-    int fail = program_registers(ops, ud, addr, dvbc_props);
+    int fail = oa_mxl661_program_registers(ops, ud, addr, dvbc_props);
     if (if_khz < 0x89b2u) {
         fail |= wr(ops, ud, addr, 0x5a, 0xfe);
         fail |= wr(ops, ud, addr, 0x5b, 0x10);
@@ -131,7 +131,11 @@ static int start_tune_dvbt(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
     if (!p->start) {
         fail |= wr(ops, ud, addr, 0x7c,
                    p->freq_hz < 700000000u ? 0x1f : 0x9f);
-        uint8_t v31 = (p->standard == 6 || p->standard == 9) ? 0xc1 : 0x81;
+        uint8_t v31;
+        if (p->freq_hz < 700000000u)
+            v31 = (p->standard == 6 || p->standard == 9) ? 0xc1 : 0x81;
+        else
+            v31 = (p->standard == 6 || p->standard == 9) ? 0xd1 : 0x91;
         fail |= wr(ops, ud, addr, 0x00, 0x01);
         fail |= wr(ops, ud, addr, 0x31, v31);
         fail |= wr(ops, ud, addr, 0x00, 0x00);
@@ -159,7 +163,7 @@ static int start_tune_dvbt(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
     return fail ? -1 : 0;
 }
 
-static int channel_tune(const oa_mxl661_ops *ops, void *ud, uint8_t addr)
+int oa_mxl661_channel_tune(const oa_mxl661_ops *ops, void *ud, uint8_t addr)
 {
     int fail = wr(ops, ud, addr, 0x12, 0x00);
     uint8_t v = 0;
@@ -189,7 +193,7 @@ int oa_mxl661_tune_dvbt(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
         return -1;
     int fail = set_if_dvbt(ops, ud, addr, params->if_khz);
     fail |= start_tune_dvbt(ops, ud, addr, params);
-    fail |= channel_tune(ops, ud, addr);
+    fail |= oa_mxl661_channel_tune(ops, ud, addr);
     return fail ? -1 : 0;
 }
 
@@ -206,7 +210,8 @@ int oa_mxl661_tune_dvbc(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
         fail |= wr(ops, ud, addr, 0x7c,
                    p.freq_hz < 700000000u ? 0x1f : 0x9f);
         fail |= wr(ops, ud, addr, 0x00, 0x01);
-        fail |= wr(ops, ud, addr, 0x31, 0xc1);
+        fail |= wr(ops, ud, addr, 0x31,
+                   p.freq_hz < 700000000u ? 0xc1 : 0xd1);
         fail |= wr(ops, ud, addr, 0x00, 0x00);
     }
     fail |= wr(ops, ud, addr, 0x49, 0x1c);
@@ -224,6 +229,6 @@ int oa_mxl661_tune_dvbc(const oa_mxl661_ops *ops, void *ud, uint8_t addr,
     fail |= wr(ops, ud, addr, 0x10, (uint8_t)((t & 0x3fff) >> 6));
     fail |= wr(ops, ud, addr, 0x11, (uint8_t)((t & 0x3fffff) >> 14));
     msleep(ops, ud, 30);
-    fail |= channel_tune(ops, ud, addr);
+    fail |= oa_mxl661_channel_tune(ops, ud, addr);
     return fail ? -1 : 0;
 }
