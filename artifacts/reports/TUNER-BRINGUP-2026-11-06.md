@@ -165,6 +165,13 @@ standard property tables are extracted: `DigitalDvbt` 21,
 mapping with tests. The `ConfigTuner` case 9/0xd/0xb register port and the
 SetChannel/GetChannelStatus tails are not guessed and remain open.
 
+The start-tune path (case 0xd) also depends on per-standard RF frequency LUTs
+and `Ctrl_SetRfFreqLutReg` @ `0x008823f8`: it selects a LUT entry within
+±500 kHz and writes the spur registers from `MxL601_SPUR_REGISTER` @
+`0x01768578` (count byte 4; registers `0x49/0xdb/0xea/0xeb`). The LUTs are
+large, frequency-dependent data tables. Porting them and the case 9/0xd/0xb
+register sequences is the remaining RF/IF work; no values were guessed.
+
 ## SI2151 blocker
 
 `SI2151_L3_Init` @ `0x0086f130` calls `L0_Init`, `Si2151_L1_API_Init`, then
@@ -247,9 +254,11 @@ undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
 1. SI2151 tuner backend: the Silicon Labs L1/L2/L3 driver with
    `PowerUpWithPatch` and property download is a separate large port; this
    TV's profile selects MxL661 and does not use it.
-2. MxL661 RF/IF register port: `ConfigTuner` cases 9/0xd/0xb and the
-   SetIF/SetRF packing (standard/IF mapping and tables are recovered;
-   `common/mxl661_tune.c`). SetChannel/GetChannelStatus depend on this.
+2. MxL661 RF/IF register port: `ConfigTuner` cases 9/0xd/0xb, the
+   SetIF/SetRF packing, per-standard RF frequency LUTs and the
+   `MxL601_SPUR_REGISTER` table (count 4; regs 0x49/0xdb/0xea/0xeb). The
+   standard/IF mapping is recovered in `common/mxl661_tune.c`.
+   SetChannel/GetChannelStatus depend on this.
 3. The module's NIM vtable now carries the implemented tuning ops, but no
    tuning backend consumes the table yet.
 4. Hardware acceptance is **not done**. The owner's standing instruction is
