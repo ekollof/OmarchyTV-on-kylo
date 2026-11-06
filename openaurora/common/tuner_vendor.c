@@ -16,6 +16,7 @@
 
 /* libNDAL3 exports. Hal_Iic_Read/Write return 0 on success;
  * HAL_DEMOD_EXT_DVIF_SetTunerType returns 0 on success. */
+extern void Hal_Iic_Init(void);
 extern int Hal_Iic_Write(const void *ctx, const void *value, unsigned len,
                          const void *buf);
 extern int Hal_Iic_Read(const void *ctx, const void *value, unsigned len,
@@ -39,6 +40,15 @@ static int hal_read(const void *ctx, const void *value, unsigned len,
 }
 
 static const oa_mxl661_hal_ops hal_ops = { hal_write, hal_read, NULL };
+static int g_iic_ready;
+
+void oa_tuner_vendor_iic_init(void)
+{
+    if (g_iic_ready)
+        return;
+    Hal_Iic_Init();
+    g_iic_ready = 1;
+}
 
 int oa_tuner_vendor_mxl661_init(uint8_t addr, const oa_mxl661_config *cfg)
 {

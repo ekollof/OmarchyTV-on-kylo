@@ -6,6 +6,9 @@
 
 #ifndef OA_NO_VENDOR
 /* TV-only bindings over libNDAL3/libNDAL_EX/unresolved lib scenarios. */
+/* Hal_Iic_Init(): open the eight IIC buses once per process. Vendor Aurora
+ * did this in its own startup; a replacement process must do it explicitly. */
+void oa_tuner_vendor_iic_init(void);
 int oa_tuner_vendor_mxl661_init(uint8_t addr, const oa_mxl661_config *cfg);
 int oa_tuner_vendor_demod_init(void *ud, int index);
 int oa_tuner_vendor_dvif_open(void *ud);

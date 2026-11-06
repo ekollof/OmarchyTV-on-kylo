@@ -34,28 +34,42 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
 
 ### Preflight and rollback
 
-- [ ] Capture stock identity: uptime, appmgr/Aurora PIDs, `/proc/<pid>/fd`
+- [x] Capture stock identity: uptime, appmgr/Aurora PIDs, `/proc/<pid>/fd`
       targets (`ntgpio`, `ntkiic0`, `ntkdvif`, `frontend0`, display), display
-      state and `/conf/mb230_{hw,sw}profile.bin` MD5s.
-- [ ] Stage `build-tv-v3` `openaurora` and the required modules under `/tmp`;
+      state and `/conf/mb230_{hw,sw}profile.bin` MD5s. 2026-11-06: aurora 1774,
+      appmgr 1574; hwprofile `1b063b2c...`, swprofile `a1d9e5e8...`;
+      TUNER-TAKEOVER.
+- [x] Stage `build-tv-v3` `openaurora` and the required modules under `/tmp`;
       verify size/SHA256 before execution; no writes to `/vendor`, `/conf` or
-      boot hooks.
+      boot hooks. Used `/buffer/oa-tuner-20261106` (rw, 191 MB free); tar
+      SHA256 `785652c7...`, manifest verified, `--check` passed.
 - [ ] Confirm the USB recovery media/script and `/conf/coredumpnoreset`; agree
-      the recovery/reboot path with the owner before starting.
-- [ ] Use the verified `wdtctl disable` / `wdtctl set 10` procedure only for
+      the recovery/reboot path with the owner before starting. `/conf/
+      coredumpnoreset` is present; the USB media was not re-verified. Recovery
+      used `wdtctl set 10` and returned stock cleanly.
+- [x] Use the verified `wdtctl disable` / `wdtctl set 10` procedure only for
       the test window; record every transition and restore stock feeding.
-- [ ] After each group: stop openaurora/modules, remove staging, restart stock
+      2026-11-06: disable sent, stock SIGTERM'd, `set 10` rebooted; no disabled
+      watchdog left.
+- [x] After each group: stop openaurora/modules, remove staging, restart stock
       Aurora/appmgr (or reboot), verify PIDs/fds/display/profile and confirm
-      no helper or disabled-watchdog state is left behind.
+      no helper or disabled-watchdog state is left behind. Tuner group restored
+      by `wdtctl set 10`; appmgr 1573, aurora 1779, staging/socket absent,
+      profile unchanged.
 
 ### Tuner / NIM / LNB (main goal)
 
-- [ ] Claim `/dev/ntkiic0`, `/dev/ntgpio`, `/dev/ntkdvif` and
+- [x] Claim `/dev/ntkiic0`, `/dev/ntgpio`, `/dev/ntkdvif` and
       `/dev/dvb/adapter0/frontend0`; verify stock no longer holds them.
-- [ ] `tuner.hw_init=1`, `tuner.backend=hal`, `/conf/mb230_hwprofile.bin`,
-      `tuner.pcb_layout=14`; verify SAL type 0xd (MxL661).
-- [ ] Observe the MxL661 init: reset, defaults table, `0x31` RMW, xtal,
+      2026-11-06: Aurora 1774 stopped; appmgr kept fb1/ntkgpu only.
+- [x] `tuner.hw_init=1`, `tuner.backend=hal`, `/conf/mb230_hwprofile.bin`,
+      `tuner.pcb_layout=14`; verify SAL type 0xd (MxL661). 2026-11-06: the
+      sequence reached SAL 0xd and `SetTunerType` returned PASS; module start
+      was still rejected later at NIM IR code 21.
+- [x] Observe the MxL661 init: reset, defaults table, `0x31` RMW, xtal,
       IF-out, AGC and power-up; check the 41-write/5-read order and errors.
+      2026-11-06: module init returned success (`tuner=1`, `seq_rc=0`,
+      `hal=1`, `lnb=1`); exact write-count instrumentation was not added.
 - [ ] DVB-T tune on a known free-to-air multiplex (no CI+ card needed): case 9
       IF, case 0xd start tune and case 0xb lock; verify PLL/spur writes, lock,
       strength, quality and frequency.
@@ -69,12 +83,20 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
       limits.
 - [ ] NIM `InitNimFunc`/`Connect2HAL`: 0x29-word state clear, table install,
       IIC codes 0x15/0x11/0x40, checked/ignored returns and the no-IIC-after-
-      failed-MxL661-init guard.
-- [ ] RT5047 LNB_EN descriptor + `Hal_Gpio_Init/Write`; if no LNB hardware or
+      failed-MxL661-init guard. 2026-11-06: state/table/guard ran; the IR
+      code-21 read/write failed (`failed_step=5`), so this remains open.
+- [x] RT5047 LNB_EN descriptor + `Hal_Gpio_Init/Write`; if no LNB hardware or
       signal is available, verify the descriptor/no-op path and record the
-      limit.
+      limit. 2026-11-06: LNB init returned success (`lnb=1`); no LNB signal or
+      independent voltage check.
 - [ ] Typed/raw 0x5c channel and the verified 0x180 status fields; record the
-      unimplemented per-case maps as still open.
+      unimplemented per-case maps as still open. Not exercised: the service did
+      not start (NIM IR gate).
+
+2026-11-06 tuner subgroup: staging/preflight/claim and the MxL661 init/sequence
+passed; the NIM task failed at IR code 21, so no tune/lock (also no RF source).
+Stock was restored by watchdog reboot. TUNER-TAKEOVER. Display/audio/CEC/input/
+PVR groups were not started in this attempt.
 
 ### Display / panel
 

@@ -683,7 +683,7 @@ error; HAL_dvif_open returns cached handle; SetTunerType ioctl0xc0044485 maps
 unbound (/dev/ntgpio owned). Corrected Hal IIC ctx to 24 bytes
 {bus,addr,subaddr_len,0,timeout,0} (100 type0/400 type4), added MxL661 DEV
 adapter (0xfb pointer), sequence layer and default-off tuner.hw_init gate
-(host -ENOTSUP; TV builds mod_tuner.so sha256 11fa27b1... linking libNDAL3).
+(host -ENOTSUP; TV builds mod_tuner.so sha256 8cd06b7b... linking libNDAL3).
 Host/ASan/full/ARM-qemu pass. NIM state/Connect2HAL equivalents and RT5047
 LNB_EN descriptor+Hal_Gpio adapter are wired behind the gate; the NIM tuning
 subset (path map, open/close, lock/strength/quality) is wired into the
@@ -704,9 +704,13 @@ config tuner.analog=1 with standard/if/xtal), and analog monitor/
 signal use the recovered SAL_TUNER_MxL661_GetATVStatus 0x2b/0x2c
 lock decode (strength/quality are not in that contract). Analog scan
 stepping is wired (analog_scan/start/stop/step/dwell, host stub test);
-the case-9 per-address calibration and hardware validation remain. SI2151 is the full Silicon Labs
-patch/property driver, not this profile's path. Hardware acceptance remains
-pending the scheduled owner takeover window (the gate has never run). TUNER-BRINGUP.
+the case-9 per-address calibration remains. First tuner takeover 2026-11-06:
+libNDAL3 Hal_Iic_Init is required in a replacement process and was added;
+MxL661 init, demod/tuner/AV2018/dvif/SetTunerType/LNB and HAL connect all
+passed, but the NIM task failed at IR code 21 (failed_step=5) and the module
+refused to start. No RF source, so no tune/lock; stock Aurora/appmgr restored
+by wdtctl set 10. TUNER-TAKEOVER. SI2151 is the full Silicon Labs
+patch/property driver, not this profile's path.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified

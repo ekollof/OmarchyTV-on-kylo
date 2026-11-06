@@ -1,0 +1,68 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+started=22586
+== ps
+22585 sh -c cd /buffer/oa-tuner-20261106 && setsid ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-tuner.sock --log 3 >run.log 2>&1 < /dev/null & echo started=$!; sleep 3; echo "== ps"; pgrep -af openaurora || true; echo "== sock"; ls -l /tmp/oa-tuner.sock 2>&1; echo "== log"; tail -30 run.log
+22586 ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-tuner.sock --log 3
+== sock
+srwx------    1 root     root             0 Nov  6 23:34 /tmp/oa-tuner.sock
+== log
+tail: can't open 'run.log': No such file or directory
+tail: no files
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+-rw-------    1 root     root          1575 Nov  6 23:34 /buffer/oa-tuner-20261106/run.log
+== log
+[631551] INFO host         openaurora starting, modules=./modules
+[631552] INFO host         control socket /tmp/oa-tuner.sock
+[631568] INFO host         loaded tuner v1 (./modules/mod_tuner.so)
+[631568] ERR  host         tuner: start() failed (-5)
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+[ERR][_i2c_RdWr_Transfer():969] gFileDesc init failed!!
+setDVIFTunerType DVIF ==> KER_DVIF_IO_PLAT_SET_SALTunerType = PASS, status[0], fd: [6] 
+openaurora: 1 module(s) loaded, control on /tmp/oa-tuner.sock
+== status
+name    tuner
+state   loaded
+version 1
+path    ./modules/mod_tuner.so
+requires
+cleanup_pending 0
+activation_rejected 0
+services
+== list
+tuner          loaded    id=3   ./modules/mod_tuner.so
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+bye
+quit_rc=0
+22838 sh -c /buffer/oa-tuner-20261106/oa-client --timeout 5 /tmp/oa-tuner.sock quit; echo quit_rc=$?; sleep 1; pgrep -af openaurora || echo no-openaurora; ls /tmp/oa-tuner.sock 2>&1
+ls: /tmp/oa-tuner.sock: No such file or directory

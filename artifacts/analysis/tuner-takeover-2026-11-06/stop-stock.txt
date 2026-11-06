@@ -1,0 +1,19 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+== before
+ 1574 /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+ 1774 /vendor/com.nvt.idtv/aurora.elf
+ 1945 [aurora.elf]
+== after
+ 1574 /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+== fds
+lrwx------    1 root     root            64 Nov  6 19:12 10 -> /dev/fb1
+lrwx------    1 root     root            64 Nov  6 19:12 14 -> /dev/ntkgpu
+== devices
+crw-rw-rw-    1 root     root      212,   3 Jan  6  1970 /dev/dvb/adapter0/frontend0
+crw-rw-rw-    1 root     root      132,   0 Jan  6  1970 /dev/ntgpio
+crw-rw-rw-    1 root     root      239,   0 Jan  6  1970 /dev/ntkdvif
+crw-rw-rw-    1 root     root      134,   0 Jan  6  1970 /dev/ntkiic0

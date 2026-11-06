@@ -466,6 +466,11 @@ static int tuner_hw_bringup(struct ctx *c)
                                          "tuner.nim_model", "0"));
     oa_nim_dtv_result result;
     rc = oa_nim_dtv_task_run((int)model, 1, &nim, &b, &result);
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "tuner hw: rc=%d failed_step=%d nim=%d hal=%d tuner=%d "
+                "seq=%d seq_rc=%d lnb=%d",
+                rc, result.failed_step, b.nim_inited, b.hal_connected,
+                b.tuner_ok, b.sequence_ran, b.sequence_rc, b.lnb_rc);
     if (rc != 0) return -EIO;
     if (!b.nim_inited || !b.hal_connected) return -EIO;
     if (!b.tuner_ok || !b.sequence_ran || b.sequence_rc != 0) return -EIO;
@@ -526,6 +531,9 @@ static int m_init(const oa_host_api *api, void **out)
         return -ENOTSUP;
 #else
         c->hw_init = 1;
+        /* Stock Aurora initialized the vendor IIC globals; a replacement
+         * process must open the buses itself. */
+        oa_tuner_vendor_iic_init();
         /* The analog tables live in the TV's own aurora.elf; nothing is
          * embedded in this module or its install media. */
         const char *atv = api->config_get(api->priv, "tuner.atv_tables",
