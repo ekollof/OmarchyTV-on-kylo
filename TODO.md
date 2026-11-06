@@ -690,9 +690,21 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       ENERGY_SAVING (253) and Ukrainian PICTURE_ZOOM (264) clip; Lithuanian
       (239) fits. Profile Hebrew is stored in visual order and is drawn as
       stored; Arabic/Persian are converted from stored logical order by
-      `common/rtl_order.c` (QEMU ara/per verified). Bracket mirroring across
-      runs and mixed Hebrew/Latin BiDi remain. Capture focused vendor cards and
-      multilingual oracle frames before claiming full visual parity.
+      `common/rtl_order.c` (QEMU ara/per verified); RTL-resolved paired
+      punctuation is mirrored per UAX #9 L4 (RTL-BRACKET-MIRROR). Mixed
+      Hebrew/Latin BiDi and elision/clipping at the 240 px row remain.
+      Capture focused vendor cards and multilingual oracle frames before
+      claiming full visual parity.
+
+- [x] RTL paired-punctuation mirroring: the Arabic/Persian visual-order helper
+      now applies UAX #9 L4 mirrored glyphs to RTL-resolved paired punctuation
+      (`() [] {} <> «» ‹› ⁅⁆ ⁽⁾ ₍₎ ≤≥ ≦≧`); LTR/no-Arabic fallbacks and
+      stored-visual Hebrew are unchanged. New cases `(ب)→(ب)`,
+      `ABC (ب)→(ب) ABC`, `[(ب)]`, `(abc)` plus the real 41-locale corpus pass;
+      focused ASan/UBSan clean, full suite `all tests passed`, QEMU live
+      ara/per pass. Standard BiDi rule, not instruction-level vendor text
+      recovery; mixed Hebrew/Latin BiDi and visible capture remain.
+      RTL-BRACKET-MIRROR.
 
 - [x] `setting:`/`set:` dispatch, MODE and the picture store:
       `DemoApp+0x318` is `NovoPictureSettings*` (vptr

@@ -46,6 +46,13 @@ int main(int argc, char **argv)
     check("\xef\xbb\xad\xef\xba\xbf\xef\xbb\x8a ABC",
           "ABC \xef\xbb\x8a\xef\xba\xbf\xef\xbb\xad");
 
+    /* UAX #9 L4: RTL-resolved paired punctuation is mirrored, so a bracketed
+     * Arabic word keeps its visual parentheses instead of swapping them. */
+    check("(\xd8\xa8)", "(\xd8\xa8)");
+    check("ABC (\xd8\xa8)", "(\xd8\xa8) ABC");
+    check("[(\xd8\xa8)]", "[(\xd8\xa8)]");
+    check("(abc)", "(abc)"); /* no Arabic: early LTR fallback, no mirroring */
+
     char out[16];
     assert(oa_langprofile_visual_order(NULL, out, sizeof out) == EINVAL);
     assert(oa_langprofile_visual_order("abc", NULL, sizeof out) == EINVAL);

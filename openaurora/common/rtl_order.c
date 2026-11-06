@@ -4,8 +4,9 @@
  * Arabic presentation forms. The vendor feeds them through its RTL text
  * engine; this project renders with an LTR bitmap font, so it needs the final
  * visual order itself. The conversion is the standard RTL run layout:
- * reverse the run order, keep Latin/digit runs internally left-to-right, and
- * reverse each Arabic run. Bracket mirroring across runs is not implemented.
+ * reverse the run order, keep Latin/digit runs internally left-to-right,
+ * reverse each Arabic run, and mirror RTL-resolved paired punctuation
+ * (UAX #9 L4). Mixed Hebrew/Latin BiDi remains outside this helper.
  * It is deliberately not applied to Hebrew, whose profile values are already
  * stored visual.
  */
@@ -73,8 +74,39 @@ static int decode(const char *in, uint32_t *cp, size_t cap, size_t *count)
     return 0;
 }
 
-static int encode(const uint32_t *cp, size_t count, char *out, size_t cap)
+/* UAX #9 rule L4: a character with Bidi_Mirrored=Yes is drawn with its
+ * mirrored glyph when its resolved direction is RTL. Only paired punctuation
+ * is needed here; Arabic presentation forms are not mirrored. */
+static uint32_t mirror_cp(uint32_t c)
 {
+    switch (c) {
+    case '(': return ')';
+    case ')': return '(';
+    case '[': return ']';
+    case ']': return '[';
+    case '{': return '}';
+    case '}': return '{';
+    case '<': return '>';
+    case '>': return '<';
+    case 0x00abu: return 0x00bbu; /* « » */
+    case 0x00bbu: return 0x00abu;
+    case 0x2039u: return 0x203au; /* ‹ › */
+    case 0x203au: return 0x2039u;
+    case 0x2045u: return 0x2046u; /* ⁅ ⁆ */
+    case 0x2046u: return 0x2045u;
+    case 0x207du: return 0x207eu; /* ⁽ ⁾ */
+    case 0x207eu: return 0x207du;
+    case 0x208du: return 0x208eu; /* ₍ ₎ */
+    case 0x208eu: return 0x208du;
+    case 0x2264u: return 0x2265u; /* ≤ ≥ */
+    case 0x2265u: return 0x2264u;
+    case 0x2266u: return 0x2267u; /* ≦ ≧ */
+    case 0x2267u: return 0x2266u;
+    default: return 0;
+    }
+}
+
+static int encode(const uint32_t *cp, size_t count, char *out, size_t cap){
     size_t o = 0;
     for (size_t i = 0; i < count; i++) {
         uint32_t c = cp[i];
@@ -162,8 +194,14 @@ int oa_langprofile_visual_order(const char *in, char *out, size_t cap)
         size_t begin = k == 0 ? 0 : runs[k - 1] + 1;
         size_t end = runs[k]; /* inclusive */
         if (rtl[k]) {
-            for (size_t i = end + 1; i-- > begin;)
-                visual[o++] = cp[i];
+            for (size_t i = end + 1; i-- > begin;) {
+                uint32_t c = cp[i];
+                if (dir[i] == DIR_RTL) {
+                    uint32_t m = mirror_cp(c);
+                    if (m) c = m;
+                }
+                visual[o++] = c;
+            }
         } else {
             for (size_t i = begin; i <= end; i++)
                 visual[o++] = cp[i];

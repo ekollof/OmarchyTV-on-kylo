@@ -620,6 +620,15 @@ test asserts one call, zeroed remaining params and following0x33/50; focused
 ASan/UBSan clean, full suite all tests passed, QEMU pass. No vendor HAL/I2S/
 amp task/audible acceptance; default off. AUDIO-I2S-MCLK.
 
+rtl bracket mirroring, 2026-11-06: Arabic/Persian visual-order helper now
+applies UAX#9 L4 mirrored glyphs to RTL-resolved paired punctuation
+(()[]{}/<>/guillemets/fraction/super-sub/<=/<= variants); LTR and no-Arabic
+fallbacks unchanged, stored-visual Hebrew untouched. New cases
+(ب)->(ب), ABC (ب)->(ب) ABC, [(ب)], (abc), plus the41-locale corpus; focused
+ASan/UBSan clean, full suite all tests passed, QEMU live ara/per pass. Standard
+BiDi rule, not instruction-level vendor text recovery; mixed Hebrew/Latin BiDi
+and visible capture remain open. RTL-BRACKET-MIRROR.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches the local artifact. Staged
 build-tv-v3 openaurora (sha256 c03a68a1...) + mod_audio_amp_profile.so
