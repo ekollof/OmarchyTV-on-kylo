@@ -674,12 +674,23 @@ DEV 1=success, end-to-end fake-Hal test passes. PLAT_DRV_GetModuleBufInfo is
 a literal return0 stub and is reproduced/tested; HAL_Demod_User_Initialize
 pulls in the SAL tuner/LNB subsystem: HAL_TUNER_Init resolves four IIC bus IDs
 via DEV_IIC_GetDescription, SAL_DEMOD_TUN_Initialize builds SI2151/MxL661 +
-AV2018, tuner type comes from profile TunerTypes/TunerType (8/0xd; EFSL value
-hashed, live DT only an unbound tuner I2C node), and
+AV2018, tuner type comes from profile TunerTypes/TunerType (EFSL decoded in
+EFSL-TUNER-IDENTITY: hwprofile value Si2157, vendor compares only Si2151, so
+SAL 0xd/NdNim 0xc on layout14), and
 SAL_LNB_Initialize calls RT5047. mod_tuner is intentionally not wired rather
 than faking tuner init or touching IIC early. ASan/UBSan clean, full suite all
 tests passed, ARM mod_panel builds. No panel/tuner hardware; curve default off.
 PANEL-CURVE-NIM-DTV.
+
+EFSL tuner identity, 2026-11-06: ROMProfile container decoded (EFSL header,
+root/entry tables, 20-byte hashed entries; getUniqueID seed0xf1d3b597 and
+shift remainders from __aeabi_uidivmod). mb230_hwprofile/swprofile MD5s match
+TV /conf (1b063b2c.../a1d9e5e8...). hwprofile TunerTypes/TunerType="Si2157";
+FUN_0084abb8 compares only "Si2151" and DEV_INI_Init sets layout14, so the
+firmware selects SAL0xd/NdNim0xc (not Si2151=8). common/efsl_profile.c +
+common/tuner_identity.c reproduce that with bounds checks; host, MD5-pinned
+corpus, ASan/UBSan, full suite and ARM/qemu pass. mod_tuner still unwired;
+MxLWare601 init/HAL tuner/LNB backend open. EFSL-TUNER-IDENTITY.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches the local artifact. Staged

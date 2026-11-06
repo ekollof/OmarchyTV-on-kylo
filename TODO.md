@@ -1050,17 +1050,21 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       Focused ASan/UBSan clean, full suite `all tests passed`, ARM mod_panel
       builds. No panel/tuner hardware; curve default off.
       PANEL-CURVE-NIM-DTV.
-- [ ] EFSL/SAL demod-tuner backend: decode the EFSL `swprofile` hash table enough
-      to read `TunerTypes`/`TunerType` (or otherwise identify the fitted tuner)
-      and select Si2151 (8) vs MxL661 (0xd). Recover the ARM ABI of
-      `SAL_DEMOD_TUN_Initialize`'s classes (Si2151/MxL661, AV2018,
-      `HAL_TUNER_Init` bus IDs, `HAL_dvif_open`,
-      `HAL_DEMOD_EXT_DVIF_SetTunerType`, RT5047 LNB) and implement a real backend
-      with fake-device tests. Then wire the NIM-DTV chain opt-in into
-      `mod_tuner`; do not fake tuner init or touch IIC before it. The EFSL
-      header is not plain key/value (`EFSL` + hashed entries; CRC32 of the key
-      did not match), and the live DT exposes only an unbound `tuner` I2C node,
-      so this needs a dedicated parser/RE step.
+- [ ] EFSL/SAL demod-tuner backend: the EFSL container and selection are decoded
+      (EFSL-TUNER-IDENTITY): ROMProfile `initialize/getUniqueID/findValue/
+      readValue` layout, 20-byte hashed entries, `0x0128570c` =
+      `__aeabi_uidivmod`; hwprofile `TunerTypes/TunerType = "Si2157"` and the
+      vendor compares only `"Si2151"`, so `DEV_INI_Init` layout14 selects
+      SAL0xd/NdNim0xc. `common/efsl_profile.c` + `common/tuner_identity.c` pass
+      host, MD5-pinned corpus, ASan/UBSan, full suite and ARM/qemu. Remaining
+      hardware backend: recover/implement `SAL_TUNER_MxL661_Init`'s six
+      MxLWare601 ConfigDevice/ConfigTuner sequences at I2C0xc0,
+      `HAL_TUNER_Init` bus IDs (`0x175eb78/76/77/75` from
+      `DEV_IIC_GetDescription(0..3)` byte+0x19), `HAL_TUNER_ReadBase/WriteBase`
+      over `Hal_Iic`, `HAL_Demod_Init(0)`, `HAL_dvif_open`/`SetTunerType`,
+      AV2018 response and RT5047 LNB, with fake-device tests. Then wire the
+      NIM-DTV chain opt-in into `mod_tuner`; do not fake tuner init or touch
+      IIC before it.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff
       tests pass host/sanitizer/ARM-qemu. CEC-AUDIO-CONTRACT.

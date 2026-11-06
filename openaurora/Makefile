@@ -1177,6 +1177,25 @@ check-nim-dtv: $(BUILD)/tests/nim_dtv $(BUILD)/tests/nim_dtv_hal
 	@$(BUILD)/tests/nim_dtv_hal
 check: check-nim-dtv
 
+$(BUILD)/tests/efsl_profile: tests/efsl_profile.c common/efsl_profile.c common/tuner_identity.c include/openaurora/efsl_profile.h include/openaurora/tuner_identity.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-efsl
+check-efsl: $(BUILD)/tests/efsl_profile
+	@$(BUILD)/tests/efsl_profile
+check: check-efsl
+
+# The vendor profiles are private artifacts. This corpus target is explicit:
+# it fails when they are missing or when their MD5 is not the analysed file.
+.PHONY: check-efsl-corpus
+check-efsl-corpus: $(BUILD)/tests/efsl_profile
+	@test -f ../artifacts/dumps/apdat_files/mb230_hwprofile.bin
+	@test -f ../artifacts/dumps/apdat_files/mb230_swprofile.bin
+	@test "$$(md5sum ../artifacts/dumps/apdat_files/mb230_hwprofile.bin | cut -d' ' -f1)" = "1b063b2cc7faa8b92c0f843921e561c7"
+	@test "$$(md5sum ../artifacts/dumps/apdat_files/mb230_swprofile.bin | cut -d' ' -f1)" = "a1d9e5e80a926a6e0abd812c98852894"
+	@$(BUILD)/tests/efsl_profile $(abspath ../artifacts/dumps/apdat_files/mb230_hwprofile.bin) $(abspath ../artifacts/dumps/apdat_files/mb230_swprofile.bin)
+
 check-power: $(BUILD)/tests/power_cycle $(addprefix $(BUILD)/tests/mod_phase_,$(addsuffix .so,$(PHASE_FIXTURES)))
 	@$(BUILD)/tests/power_cycle $(BUILD)/tests
 
