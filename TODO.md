@@ -1077,8 +1077,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       (MxL661 RF/IF) and the 0x180-byte status mapping and return -ENOTSUP.
       The MxL661 DVB-T case 9/0xd/0xb RF/IF sequence and the typed
       SetChannel/GetChannelStatus mapping are implemented
-      (`common/mxl661_rf.c`, `common/nim_tune.c`); analog/cable RF tails, the
-      raw 0x5c/0x180 mappings and the module's pointer-less raw table slots
+      (`common/mxl661_rf.c`, `common/nim_tune.c`); a real `tuner.backend=hal`
+      NIM backend (`common/nim_hal.c`, requires `tuner.hw_init=1`, terrestrial
+      only) wires start/monitor/signal/stop to the ops. Analog/cable RF tails,
+      the raw 0x5c/0x180 mappings and the module's pointer-less raw table slots
       remain.
       SI2151 is the full Silicon Labs L1/L2/L3 `PowerUpWithPatch` + property
       driver, not this profile's path (hwprofile selects SAL 0xd/MxL661).

@@ -25,6 +25,7 @@
 #include "openaurora/nim_dtv.h"
 #include "openaurora/nim_dtv_hal.h"
 #include "openaurora/nim_dtv_hw.h"
+#include "openaurora/nim_hal.h"
 #include "openaurora/nim_tune.h"
 #include "openaurora/services.h"
 #include "openaurora/tuner_identity.h"
@@ -440,6 +441,16 @@ static int m_init(const oa_host_api *api, void **out)
     struct ctx *c = calloc(1, sizeof *c);
     if (!c) return -1;
     c->api = api;
+    const char *hw = api->config_get(api->priv, "tuner.hw_init", "0");
+    int hw_on = hw && (!strcmp(hw, "1") || !strcmp(hw, "true"));
+    if (hw_on) {
+#ifdef OA_NO_VENDOR
+        free(c);
+        return -ENOTSUP;
+#else
+        c->hw_init = 1;
+#endif
+    }
     const char *ts_path = api->config_get(api->priv, "tuner.ts_path", "");
     const char *backend = api->config_get(api->priv, "tuner.backend", "");
     if (ts_path && *ts_path) {
@@ -464,17 +475,20 @@ static int m_init(const oa_host_api *api, void **out)
                 return -1;
             }
         }
-    } else {
-        c->backend = oa_nim_stub_backend();
-    }
-    const char *hw = api->config_get(api->priv, "tuner.hw_init", "0");
-    if (hw && (!strcmp(hw, "1") || !strcmp(hw, "true"))) {
+    } else if (backend && !strcmp(backend, "hal")) {
 #ifdef OA_NO_VENDOR
         free(c);
         return -ENOTSUP;
 #else
-        c->hw_init = 1;
+        if (!hw_on) {
+            free(c);
+            return -EACCES;
+        }
+        oa_nim_hal_set_ops(oa_tuner_vendor_tune_ops(), NULL);
+        c->backend = oa_nim_hal_backend();
 #endif
+    } else {
+        c->backend = oa_nim_stub_backend();
     }
     metrics_default(c);
     *out = c;

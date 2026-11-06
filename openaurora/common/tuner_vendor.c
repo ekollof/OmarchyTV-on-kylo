@@ -157,6 +157,8 @@ extern int HAL_DEMOD_EXT_DeliverConfig(int fe, uint32_t key, const void *data,
 extern int HAL_DEMOD_EXT_SetStandy(int fe, int on);
 extern int HAL_Demod_GetStatus(int handle, int index, uint32_t mask, void *buf);
 
+static struct oa_tuner_vendor_tune_ud g_tune_ud = { 0xd, 0 };
+
 static int tune_switch(void *ud, int type)
 {
     (void)ud;
@@ -166,12 +168,14 @@ static int tune_switch(void *ud, int type)
 
 static int tune_type(void *ud)
 {
-    return ((const struct oa_tuner_vendor_tune_ud *)ud)->tuner_type;
+    (void)ud;
+    return g_tune_ud.tuner_type;
 }
 
 static int tune_deliver(void *ud, uint32_t key, const void *data, int len)
 {
-    int index = ((const struct oa_tuner_vendor_tune_ud *)ud)->fe_index;
+    (void)ud;
+    int index = g_tune_ud.fe_index;
     int fe = HAL_fe_open(0, index);
     if (fe < 0)
         return -1;

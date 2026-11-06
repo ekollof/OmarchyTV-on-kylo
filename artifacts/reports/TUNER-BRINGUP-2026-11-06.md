@@ -181,6 +181,20 @@ locked/strength/quality from the lock/status ops. The module's raw
 Still open: analog/cable RF tails, the exact 0x5c channel record and 0x180
 status array mappings, and hardware acceptance.
 
+## NIM HAL backend (`tuner.backend=hal`)
+
+`common/nim_hal.c` exposes a real `oa_tuner_backend` over `oa_nim_tune_*`:
+
+- `start` (terrestrial only): open + set_channel (`program_tuner`) with
+  standard 8 / 6 MHz / 5000 kHz defaults; other paths return `-ENOTSUP`.
+- `monitor`: `check_lock` -> locked/unlocked; `signal`: `get_channel_status`
+  -> locked/strength/quality; `stop`: close.
+- `mod_tuner` selection requires `tuner.hw_init=1` (TV `-EACCES` otherwise;
+  host `-ENOTSUP`). The TV binding feeds `oa_mxl661_tune_dvbt`.
+
+Fake tests cover start/monitor/signal/stop, the channel fields and the
+terrestrial gate.
+
 ## SI2151 blocker
 
 `SI2151_L3_Init` @ `0x0086f130` calls `L0_Init`, `Si2151_L1_API_Init`, then
@@ -242,6 +256,8 @@ ok nim tune: path/index map, open/close, lock/strength/quality masks and
 ok mxl661 tune: standard index map and 17-entry IF table
 ok mxl661 rf: DVB-T case 9/0xd/0xb order, DigitalDvbt table, spur registers,
               divider and lock sequence
+ok nim hal: backend start/monitor/signal/stop over fake tuning ops and
+            terrestrial-only gate
 ok tuner hal: four bus IDs from description+0x19, 0xff-only resolution, ...
 ok mxl661: default/custom init order, RMW masks, defaults table and failure behavior
 ok nim dtv hal: DEV_IIC bus/reg/address packing and Hal success inversion
@@ -253,7 +269,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 f934d96f68830fe01af855115785a2f23611d118b6d67ab39f5e6d06f9293db2
+sha256 fc0c669bc02433194de3a3297ceb8897ff284b8c75243e618788940202e82c3a
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,

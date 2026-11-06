@@ -683,13 +683,15 @@ error; HAL_dvif_open returns cached handle; SetTunerType ioctl0xc0044485 maps
 unbound (/dev/ntgpio owned). Corrected Hal IIC ctx to 24 bytes
 {bus,addr,subaddr_len,0,timeout,0} (100 type0/400 type4), added MxL661 DEV
 adapter (0xfb pointer), sequence layer and default-off tuner.hw_init gate
-(host -ENOTSUP; TV builds mod_tuner.so sha256 f934d96f... linking libNDAL3).
+(host -ENOTSUP; TV builds mod_tuner.so sha256 fc0c669b... linking libNDAL3).
 Host/ASan/full/ARM-qemu pass. NIM state/Connect2HAL equivalents and RT5047
 LNB_EN descriptor+Hal_Gpio adapter are wired behind the gate; the NIM tuning
 subset (path map, open/close, lock/strength/quality) is wired into the
 module table. MxL661 DVB-T case 9/0xd/0xb RF/IF and the typed
 SetChannel/GetChannelStatus mapping are implemented (common/mxl661_rf.c,
-common/nim_tune.c); analog/cable tails and the raw 0x5c/0x180 mappings remain. SI2151 is the full Silicon Labs
+common/nim_tune.c); a real tuner.backend=hal NIM backend (common/nim_hal.c,
+requires tuner.hw_init=1, terrestrial only) wires the ops into mod_tuner.
+Analog/cable tails and the raw 0x5c/0x180 mappings remain. SI2151 is the full Silicon Labs
 patch/property driver, not this profile's path. Hardware acceptance remains
 blocked by the owner's read-only/no-takeover instruction. TUNER-BRINGUP.
 
