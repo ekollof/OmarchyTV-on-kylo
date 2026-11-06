@@ -1186,6 +1186,20 @@ check-efsl: $(BUILD)/tests/efsl_profile
 	@$(BUILD)/tests/efsl_profile
 check: check-efsl
 
+$(BUILD)/tests/tuner_hal: tests/tuner_hal.c common/tuner_hal.c include/openaurora/tuner_hal.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+$(BUILD)/tests/mxl661: tests/mxl661.c common/mxl661.c include/openaurora/mxl661.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-tuner-hardware
+check-tuner-hardware: $(BUILD)/tests/tuner_hal $(BUILD)/tests/mxl661
+	@$(BUILD)/tests/tuner_hal
+	@$(BUILD)/tests/mxl661
+check: check-tuner-hardware
+
 # The vendor profiles are private artifacts. This corpus target is explicit:
 # it fails when they are missing or when their MD5 is not the analysed file.
 .PHONY: check-efsl-corpus

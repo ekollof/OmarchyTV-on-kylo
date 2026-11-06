@@ -1057,14 +1057,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       vendor compares only `"Si2151"`, so `DEV_INI_Init` layout14 selects
       SAL0xd/NdNim0xc. `common/efsl_profile.c` + `common/tuner_identity.c` pass
       host, MD5-pinned corpus, ASan/UBSan, full suite and ARM/qemu. Remaining
-      hardware backend: recover/implement `SAL_TUNER_MxL661_Init`'s six
-      MxLWare601 ConfigDevice/ConfigTuner sequences at I2C0xc0,
-      `HAL_TUNER_Init` bus IDs (`0x175eb78/76/77/75` from
-      `DEV_IIC_GetDescription(0..3)` byte+0x19), `HAL_TUNER_ReadBase/WriteBase`
-      over `Hal_Iic`, `HAL_Demod_Init(0)`, `HAL_dvif_open`/`SetTunerType`,
-      AV2018 response and RT5047 LNB, with fake-device tests. Then wire the
-      NIM-DTV chain opt-in into `mod_tuner`; do not fake tuner init or touch
-      IIC before it.
+      hardware backend: Done so far: `SAL_TUNER_MxL661_Init`'s six MxLWare601
+      commands (41-write/5-read order, `MxL_OverwriteDefaults`, RMW masks,
+      stale-`cfg[3]` IF-out branch) in `common/mxl661.c`, and
+      `HAL_TUNER_Init` bus IDs plus `HAL_TUNER_ReadBase/WriteBase` in
+      `common/tuner_hal.c`; host, focused ASan/UBSan, full suite and ARM/qemu
+      pass (TUNER-MXL661). Still open: AV2018 construction/GetTunerResponse,
+      `HAL_Demod_Init(0)`, `HAL_dvif_open`/`HAL_DEMOD_EXT_DVIF_SetTunerType`
+      (`0xd -> 0xc`), `SAL_LNB_Initialize`/RT5047, the TV DEV_IIC adapter, and
+      then the NIM-DTV/mod_tuner opt-in wiring; do not touch IIC before it.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff
       tests pass host/sanitizer/ARM-qemu. CEC-AUDIO-CONTRACT.

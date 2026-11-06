@@ -664,6 +664,16 @@ common/tuner_identity.c reproduce that with bounds checks; host, MD5-pinned
 corpus, ASan/UBSan, full suite and ARM/qemu pass. mod_tuner still unwired;
 MxLWare601 init/HAL tuner/LNB backend open. EFSL-TUNER-IDENTITY.
 
+MxL661 tuner init backend, 2026-11-06: recovered SAL type0xd: MxLWare command
+buffer, Ctrl_Write/ReadRegister via DEV_IIC type4 addr0xc0 (0xfb pointer,
+0x20000000 read), MxL_OverwriteDefaults 26x3 {reg,mask,value}, default config
+11 words, and the exact 41-write/5-read order (reset, defaults+RMW31, xtal,
+IF-out incl. stale cfg[3] reg6/7 branch, AGC RMW8/9/5e, power-up0b). Added
+common/mxl661.c + common/tuner_hal.c (bus IDs from desc+0x19, Hal ctx
+{bus,reg,0,0,400,0}, clz success); host, focused ASan/UBSan, full suite and
+ARM/qemu pass. mod_tuner still unwired: AV2018/dvif/LNB + NIM chain remain.
+TUNER-MXL661.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran
