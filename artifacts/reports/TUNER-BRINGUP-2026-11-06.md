@@ -203,6 +203,11 @@ path-1 override and zero-bandwidth 40000 rule are applied.
 tests cover the offsets, override, zero-bandwidth default and invalid
 standard index. The raw 0x180 status array mapping remains.
 
+The raw 0x180 `HAL_Demod_GetStatus` buffer is parsed in
+`oa_nim_raw_status_parse` for its verified fields: lock at `+0`, strength at
+`+0x18`, quality at `+0x24`, with tests. The vendor's per-signal output-array
+enum mapping is garbled in the decompiler and is not guessed.
+
 ## SI2151 blocker
 
 `SI2151_L3_Init` @ `0x0086f130` calls `L0_Init`, `Si2151_L1_API_Init`, then
@@ -277,7 +282,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 def8cd7c86e6b1f91363e3987cea16f1bd7e6213edf6e441aa86305b9d8a92d7
+sha256 62effc87efcae7d244c71af8190f642a2f144a8d61c1c092bbc953bda3b61cc8
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,

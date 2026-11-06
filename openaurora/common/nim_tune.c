@@ -217,6 +217,17 @@ int oa_nim_tune_set_channel_raw(const struct oa_nim_tune_ops *ops, void *ud,
     return oa_nim_tune_set_channel(ops, ud, state, &parsed);
 }
 
+int oa_nim_raw_status_parse(const uint8_t raw[0x180],
+                            struct oa_nim_tune_status *out)
+{
+    if (!raw || !out)
+        return 0;
+    out->locked = raw[0];
+    out->strength = rd32(raw + 0x18);
+    out->quality = rd32(raw + 0x24);
+    return 1;
+}
+
 int oa_nim_tune_hal_open(void *v)
 {
     struct oa_nim_tune_binding *b = v;

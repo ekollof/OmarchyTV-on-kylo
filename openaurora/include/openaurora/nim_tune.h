@@ -43,6 +43,13 @@ struct oa_nim_raw_channel {
     uint8_t raw[0x5c];
 };
 
+/* Raw 0x180 HAL_Demod_GetStatus buffer. The verified fields are lock at +0,
+ * strength at +0x18 and quality at +0x24. The per-signal enum mapping of the
+ * vendor's output array is not recovered. */
+struct oa_nim_raw_status {
+    uint8_t raw[0x180];
+};
+
 struct oa_nim_tune_ops {
     int (*switch_tuner_type)(void *ud, int type); /* 0 = success */
     int (*get_tuner_type)(void *ud);
@@ -94,6 +101,10 @@ int oa_nim_raw_channel_parse(const uint8_t raw[0x5c], int path,
 int oa_nim_tune_set_channel_raw(const struct oa_nim_tune_ops *ops, void *ud,
                                 struct oa_nim_tune_state *state,
                                 const struct oa_nim_raw_channel *channel);
+
+/* Map the verified 0x180 fields into the typed status. 1 = success. */
+int oa_nim_raw_status_parse(const uint8_t raw[0x180],
+                            struct oa_nim_tune_status *out);
 
 /* Adapter to the NIM-DTV typed HAL table. The channel calls stay -ENOTSUP
  * because the vendor table passes no channel/status pointer. */

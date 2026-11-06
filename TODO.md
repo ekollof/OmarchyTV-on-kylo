@@ -1081,8 +1081,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       NIM backend (`common/nim_hal.c`, requires `tuner.hw_init=1`, terrestrial
       only) wires start/monitor/signal/stop to the ops. The raw 0x5c channel
       record is parsed into the typed channel (offsets +0/+4/+8/+0x10/+0x1c/
-      +0x58, SAL standard map, path-1 override/40000 rule). Analog/cable RF
-      tails and the raw 0x180 status mapping remain.
+      +0x58, SAL standard map, path-1 override/40000 rule); the verified 0x180
+      lock/strength/quality fields are parsed. Analog/cable RF tails and the
+      vendor per-signal 0x180 output mapping remain.
       SI2151 is the full Silicon Labs L1/L2/L3 `PowerUpWithPatch` + property
       driver, not this profile's path (hwprofile selects SAL 0xd/MxL661).
       Hardware acceptance is blocked by the owner's read-only/no-takeover

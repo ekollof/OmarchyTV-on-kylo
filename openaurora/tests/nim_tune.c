@@ -288,6 +288,20 @@ static void test_raw_channel(void)
            f.program_ch.standard == 8 && f.program_ch.bandwidth == 0x20);
 }
 
+static void test_raw_status(void)
+{
+    uint8_t raw[0x180];
+    memset(raw, 0, sizeof raw);
+    raw[0] = 1;
+    put32(raw + 0x18, 0x11223344u);
+    put32(raw + 0x24, 0x55667788u);
+    struct oa_nim_tune_status st;
+    assert(oa_nim_raw_status_parse(raw, &st) == 1);
+    assert(st.locked == 1 && st.strength == 0x11223344u &&
+           st.quality == 0x55667788u);
+    assert(oa_nim_raw_status_parse(NULL, &st) == 0);
+}
+
 static void test_binding(void)
 {
     struct fake f = { .tuner_type = 0xd };
@@ -323,6 +337,7 @@ int main(void)
     test_lock_strength_quality();
     test_channel_mapping();
     test_raw_channel();
+    test_raw_status();
     test_binding();
     puts("ok nim tune: path/index map, open/close, lock/strength/quality "
          "masks and unresolved channel mappings");
