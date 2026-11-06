@@ -183,13 +183,20 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       otherwise unpublish/drop display/alpha/async, unsubscribe, delete
       timers, then free the OAI1 icon cache on a worker; idempotent. The
       control test loads settings_top1920x180, fails fast, retries, reloads
-      the asset and stops/unloads cleanly.
+      the asset and stops/unloads cleanly. `mod_display` has the gate too
+      (DISPLAY-QUIESCE): closing rejects draw/present/info, the existing worker
+      restores the snapshot and closes the layer with
+      `display.cleanup_delay_ms`, and m_stop unpublishes after join. The
+      fake-fb socket test asserts fast-fail reload, responsive status, retry,
+      `display-info` 1920x1080 32bpp2, then the snapshot equality checks.
 
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
-      stop/reload model beyond `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`,
-      with a completion query and bounded client behavior. Do not call
+      stop/reload model beyond
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`, with a
+      completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
-      `i18n`, `settings`, `ui_vendor` and `ui_engine` are the existing models.
+      `i18n`, `settings`, `ui_vendor`, `ui_engine` and `display` are the
+      existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in

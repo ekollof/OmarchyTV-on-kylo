@@ -34,7 +34,7 @@ async function main() {
         'autoload=\n' +
         'display.fb=/dev/fb1\ndisplay.restore_snapshot=1\n' +
         'display.pan=1\ndisplay.set_region=1\ndisplay.test=1\n' +
-        'display.open_timeout_ms=1000\n');
+        'display.open_timeout_ms=1000\ndisplay.cleanup_delay_ms=400\n');
     const env = { ...process.env, LD_PRELOAD: preload,
         OA_FAKE_FB_STATE: final, OA_FAKE_FB_CHANGED: changed };
     const child = spawn(path.join(build, 'openaurora'),
@@ -66,6 +66,11 @@ async function main() {
             });
             s.setTimeout(3000, () => finish(Error('socket timeout')));
         }), 4000);
+    }
+    async function timedCommand(text) {
+        const started = Date.now();
+        const reply = await command(text);
+        return { reply, elapsed: Date.now() - started };
     }
     async function waitFor(predicate, label) {
         await bounded(new Promise((resolve, reject) => {
@@ -119,6 +124,21 @@ async function main() {
         assert.notEqual(changed_state.current_yoffset, changed_state.initial_yoffset);
         assert.notEqual(changed_state.current_pixels, changed_state.initial_pixels);
 
+        /* ABI3 async gate: the diagnostic delay keeps restore/close on a
+         * worker. The first reload must fail fast, status must stay
+         * responsive, and a retry must complete and republish display v2. */
+        const first = await timedCommand('reload display_fb');
+        assert.match(first.reply, /^failed/, 'first reload must fail fast');
+        assert.ok(first.elapsed < 1500, `first reload took ${first.elapsed}ms`);
+        const status = await timedCommand('status display_fb');
+        assert.ok(status.elapsed < 1000, `status took ${status.elapsed}ms`);
+        await new Promise(r => setTimeout(r, 600));
+        assert.equal(await retryCommand('reload display_fb'), 'ok',
+            'retry must complete the reload');
+        assert.equal(await command('display-info'),
+            'display 1920x1080 32bpp 2 frames');
+        await statusServices();
+
         fs.rmSync(final, { force: true });
         assert.equal(await command('suspend'), 'ok');
         await waitFor(() => fs.existsSync(final), 'suspend restore');
@@ -155,7 +175,7 @@ async function main() {
         const exit = await bounded(closed, 8000);
         assert.equal(exit.code, 0, stderr);
         assert(!fs.existsSync(socket), 'socket not removed');
-        console.log('ok actual fake-fbdev display_fb IPC: start/suspend/resume/reload/stop/reuse and full snapshot restoration');
+        console.log('ok actual fake-fbdev display_fb IPC: async gate, start/suspend/resume/reload/stop/reuse, full snapshot restoration');
     } finally {
         if (child.exitCode === null && !child.signalCode) child.kill('SIGTERM');
         try { await bounded(closed, 8000); } catch { child.kill('SIGKILL'); await closed; }

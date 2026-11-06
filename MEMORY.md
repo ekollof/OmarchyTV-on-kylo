@@ -179,6 +179,16 @@ responsive, retry reloads, asset reloads, stop/retry/unload clean. Full suite
 and QEMU pass. ir/i18n/settings/ui_vendor/ui_engine are the async modules.
 UI-ENGINE-QUIESCE.
 
+display async gate, 2026-11-06: the existing restore/close worker now has
+`display.cleanup_delay_ms`, explicit first-reload fail-fast/status/retry proof
+in tests/fake_fb_socket.cjs, and control `display-info`. `m_quiesce` sets
+closing (draw/present/info return-1), the worker restores the snapshot and
+closes the layer, m_stop unpublishes after join; retry is throttled on error.
+Fake fb1 memfd1920x1080 32bpp2 frames; existing suspend/resume/stop/reload/reuse
+snapshot equality still passes. Full suite/QEMU pass. This is not a real
+driver/GPU/scanout teardown. ir/i18n/settings/ui_vendor/ui_engine/display are
+the async modules. DISPLAY-QUIESCE.
+
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over the
 Markt/Netflix cells (700x280, effective ~37ms) captured 10 stable pre frames,
 one redraw at t=53ms (bbox 33,30 620x230, 45,745 px), then 16 identical post

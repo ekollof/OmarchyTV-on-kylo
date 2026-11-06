@@ -63,6 +63,7 @@ struct ctx {
     int closing, cleanup_running, cleanup_result;
     pthread_t cleanup_thread;
     uint64_t retry_after;
+    unsigned cleanup_delay_ms; /* diagnostic: hold the close worker open */
     int mirror;       /* copy the painted frame into the other frames (fights DFB's flip) */
     int profile;      /* log per-stage present timings when display.profile=1 */
 
@@ -795,6 +796,13 @@ static int close_layer(struct ctx *c)
 static void *cleanup_worker(void *v)
 {
     struct ctx *c = v;
+    if (c->cleanup_delay_ms) {
+        const struct timespec pause = {
+            .tv_sec = c->cleanup_delay_ms / 1000u,
+            .tv_nsec = (long)(c->cleanup_delay_ms % 1000u) * 1000000L
+        };
+        (void)nanosleep(&pause, NULL);
+    }
     c->cleanup_result = restore_snapshot(c);
     if (!c->cleanup_result) c->cleanup_result = close_layer(c);
     return NULL;
@@ -812,6 +820,8 @@ static int m_quiesce(void *v)
     struct ctx *c = v;
     if (!c) return 0;
     c->closing = 1;
+    /* Every draw/info entry point checks closing while the worker restores
+     * and closes the layer; m_stop unpublishes after the worker joins. */
     /* Check running before inspecting fields that the worker may modify. */
     if (c->cleanup_running) {
         int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
@@ -854,6 +864,9 @@ static int m_start(void *v)
     struct ctx *c = v;
     if (c->cleanup_running || (c->closing && c->fd >= 0)) return -EBUSY;
     c->closing = 0;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "display.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
 #ifdef OA_DISPLAY_NO_PLAT
     if (c->api->config_get(c->api->priv,"display.drm_init","0")[0]=='1') {
         c->api->log(c->api->priv,OA_LOG_ERROR,"display_fb cannot initialize platform HAL");

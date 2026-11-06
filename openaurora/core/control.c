@@ -287,6 +287,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  ui-action <action>      apply a JSON menu action (open:/setting:/set:)\n"
                  "  picture-state <source>  read picture mode/zoom/energy 0-19\n"
                  "  ui-icon <name>          load/report a ui.engine asset\n"
+                 "  display-info            query display dimensions/bpp/frames\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -388,6 +389,27 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
             return -1;
         }
         snprintf(outbuf, outlen, "icon %s %dx%d\n", ic->name, ic->w, ic->h);
+        return 0;
+    }
+    if (!strcmp(cmd, "display-info")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_display_iface *d = h->api.lookup(h, OA_SVC_DISPLAY, 2);
+        if (!d) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int w = 0, hgt = 0, bpp = 0, frames = 0;
+        int rc = d->info(&w, &hgt, &bpp, &frames);
+        h->api.release(h, OA_SVC_DISPLAY);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EIO);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "display %dx%d %dbpp %d frames\n",
+                 w, hgt, bpp, frames);
         return 0;
     }
     if (!strcmp(cmd, "image-decode")) {

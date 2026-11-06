@@ -166,6 +166,14 @@ delete timers, clear skin/events) and frees the OAI1 icon cache on a worker
 responsive status, retry, asset reload, clean stop/unload. Full suite/QEMU
 pass. ir/i18n/settings/ui_vendor/ui_engine are async. UI-ENGINE-QUIESCE.
 
+display quiesce, 2026-11-06: existing restore/close worker now has
+`display.cleanup_delay_ms` and an explicit control proof in fake_fb_socket.cjs
+(first reload fast-fail, status, retry, display-info 1920x1080 32bpp2); closing
+rejects draw/present/info, m_stop unpublishes after join, errors are throttled.
+Fake fb1 memfd; suspend/resume/stop/reload/reuse snapshot equality still
+passes. Not a real driver/GPU/scanout teardown. Full suite/QEMU pass.
+ir/i18n/settings/ui_vendor/ui_engine/display are async. DISPLAY-QUIESCE.
+
 Stock Apps-grid pulse capture, 2026-11-06: read-only fb1 sampler over
 Markt/Netflix (700x280, ~37ms effective) captured one redraw at t=53ms
 (bbox 33,30 620x230) and 16 identical post frames through 621ms. Apps focus is
