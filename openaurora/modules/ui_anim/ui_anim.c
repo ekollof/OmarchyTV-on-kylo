@@ -1,5 +1,6 @@
 /* Reloadable animation controller. The timer is the recovered 0 ms kick then
  * 10 ms cadence; sample() is the same update the timer runs. No framebuffer. */
+#include <errno.h>
 #include <stdlib.h>
 #include "openaurora/module.h"
 #include "openaurora/services.h"
@@ -14,6 +15,7 @@ struct ctx {
     int kick_pending;
     int suspended;
     int published;
+    int timer_fault; /* EAGAIN once the owned kick cannot arm the 10 ms timer */
 };
 static struct ctx *g_ctx;
 static void on_timer(void *ud);
@@ -37,9 +39,18 @@ static void kick(void *ud)
     c->kick_pending = 0;
     if (c->published && !c->suspended) {
         arm(c); /* owned post dispatch attributes this timer to ui_anim */
-        if (!c->timer)
+        if (!c->timer) {
+            c->timer_fault = EAGAIN;
             c->api->log(c->api->priv, OA_LOG_ERROR, "animation timer allocation failed");
+        } else {
+            c->timer_fault = 0;
+        }
     }
+}
+static int fault(void)
+{
+    if (!g_ctx) return -1;
+    return g_ctx->timer_fault;
 }
 static int start(int id, int kind, const oa_anim_rect *from, const oa_anim_rect *to,
                  uint32_t duration, uint32_t *started)
@@ -85,7 +96,7 @@ static int bind(oa_anim_fn fn, void *ud)
 }
 static const oa_ui_anim_iface g_iface = {
     set_enabled, enabled, start, cancel, finalise, sample, get, bind,
-    oa_anim_slide_duration, oa_anim_slide_margin,
+    oa_anim_slide_duration, oa_anim_slide_margin, fault,
 };
 
 static void on_timer(void *ud)
@@ -117,7 +128,7 @@ static int m_start(void *v)
     g_ctx = c;
     c->clock = c->api->lookup(c->api->priv, OA_SVC_UI_CLOCK, 1);
     if (!c->clock) return -1;
-    if (c->api->publish(c->api->priv, OA_SVC_UI_ANIM, 2, &g_iface) != 0) return -1;
+    if (c->api->publish(c->api->priv, OA_SVC_UI_ANIM, 3, &g_iface) != 0) return -1;
     c->published = 1;
     c->suspended = 0;
     return 0;
@@ -128,6 +139,7 @@ static void m_stop(void *v)
     if (c->timer) c->api->timer_del(c->api->priv, c->timer);
     c->timer = 0;
     c->kick_pending = 0;
+    c->timer_fault = 0;
     oa_ui_anim_bind(c->anim, NULL, NULL);
     if (c->published) c->api->unpublish(c->api->priv, OA_SVC_UI_ANIM);
     c->published = 0;

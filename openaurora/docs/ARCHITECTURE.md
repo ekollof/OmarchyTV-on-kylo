@@ -39,8 +39,9 @@ supersedes the old dumb-buffer, palette-handshake and init-does-SETPLANE plans.
 mod_ui_vendor paints the measured portal through the display service, moves
 rail/card focus from input/key, and publishes ui.portal for the same rectangles.
 Select opens that tile, Menu and Exit return to the portal, and Aux reads
-m_current_source through settings. mod_ui_anim publishes ui.anim v2 and requires
-ui.clock. mod_ir publishes input v1; feed() is the UART parser and an empty
+m_current_source through settings. mod_ui_anim publishes ui.anim v3 and requires
+ui.clock. v3 fault() reports a queued timer allocation failure after the host
+dispatches the kick. mod_ir publishes input v1; feed() is the UART parser and an empty
 ir.device leaves the port closed. UI-PARITY records the offline test. Labels,
 other screens and cold scanout remain open.
 UI parity includes animations/transitions, focus feedback, scrolling and other

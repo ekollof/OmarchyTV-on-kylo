@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <errno.h>
 #include <limits.h>
 #include <math.h>
 #include <stdio.h>
@@ -80,6 +81,28 @@ int main(int argc, char **argv)
     }
     assert(service->get(7, NULL, NULL, NULL, NULL, NULL) == -1);
     assert(timers(&h, m->id) == 0);
+
+    /* The kick runs after start() has returned. A full timer table must be
+     * visible to the caller that queued it, not only as a log line.
+     * timer_del clears active and leaves owner, so a retained slot from the
+     * cadence above is not an allocation. Occupy every slot as another owner. */
+    for (int i = 0; i < MAX_TIMERS; i++) {
+        h.timers[i].active = 1;
+        if (h.timers[i].owner == m->id)
+            h.timers[i].owner = 0;
+    }
+    assert(service->fault() == 0);
+    assert(service->start(8, OA_ANIM_LIST, &from, &to, 100, NULL) == 0);
+    assert(h.nposts == 1);
+    oa_host_dispatch_posts(&h);
+    assert(service->fault() == EAGAIN);
+    assert(timers(&h, m->id) == 0);
+    for (int i = 0; i < MAX_TIMERS; i++) h.timers[i].active = 0;
+    assert(service->start(8, OA_ANIM_LIST, &from, &to, 100, NULL) == 0);
+    oa_host_dispatch_posts(&h);
+    assert(service->fault() == 0);
+    assert(timers(&h, m->id) == 1);
+    puts("  ok   animation timer allocation failure is visible to the starter");
 
     /* Text slide, from AnimationHelper 0xef0210 / 0xef0264 (pause 800 ms, speed 50, x1000):
      * duration = 1600 + (distance/50)*1000, integer division first. */

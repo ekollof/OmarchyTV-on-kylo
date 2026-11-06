@@ -439,7 +439,10 @@ typedef struct {
 
 /* ui.anim — recovered list/dialog animation. Published by mod_ui_anim.
  * set_enabled only writes the flag. start() reads ui.clock and rejects a
- * duration below 1. sample() is the timer update and accepts an explicit now. */
+ * duration below 1. sample() is the timer update and accepts an explicit now.
+ * v3 appends fault(). start() can return 0 before the owned kick arms the
+ * 10 ms timer. After the host dispatches that kick, fault() is 0, or EAGAIN
+ * when the timer table was full. v1 and v2 callers keep the prefix. */
 #define OA_SVC_UI_ANIM "ui.anim"
 typedef struct {
     int (*set_enabled)(int on);
@@ -456,6 +459,9 @@ typedef struct {
      * (pause 800 ms, speed 50, x1000). duration_ms may be fractional; margin is in pixels. */
     float (*slide_duration)(int distance);
     int (*slide_margin)(uint32_t elapsed_ms, float duration_ms, int distance, int reverse);
+    /* v3. 0 when the cadence timer is armed or not yet attempted. EAGAIN when
+     * the queued kick could not allocate it. -1 when the service is down. */
+    int (*fault)(void);
 } oa_ui_anim_iface;
 
 /* ui.portal — measured home layout. Published by mod_ui_vendor.

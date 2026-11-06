@@ -663,8 +663,11 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       ticketed receive/empty/error results, retained failed-close ownership and
       drain-before-close. Four injected-I/O groups pass host, ASan/UBSan,
       ARM/qemu and actual TV. Staging removed; no live bus/device access. CEC-ASYNC.
-- [ ] Make queued animation timer-allocation failure observable to the initiating
-      consumer; the owned kick currently logs failure. No visual acceptance claim.
+- [x] Make queued animation timer-allocation failure observable to the initiating
+      consumer. `ui.anim` v3 `fault()` stays 0 until the owned kick runs, then
+      returns EAGAIN when the timer table is full and clears after a later kick
+      arms the 10 ms timer. The log line remains. `check-ui-anim-review` covers
+      the full table and the retry. No visual acceptance claim.
 - [x] Descriptor-size validation and module-owned worker posts were introduced
       in ABI2 and are retained in current ABI3. Historical ABI1/2 artifacts
       are preserved, not accepted as ABI3 modules. Host/sanitizer/ARM coverage
