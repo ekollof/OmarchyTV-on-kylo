@@ -25,6 +25,7 @@ static struct fb_var_screeninfo var;
 static unsigned char pixels[1024];
 static uint32_t region[8], mau;
 static const char *rotate;
+static const char *test_mode;
 static unsigned commits, last_yoffset, syncs, opens, closes;
 static int fail_sync, fail_commit, kernel_suspended, fail_unmap, fail_close;
 static unsigned height = 2;
@@ -131,6 +132,7 @@ static const char *config(void *priv, const char *key, const char *def)
     if (!strcmp(key,"display.drm_init")) return getenv("OA_TEST_BINDING_HAL")?"1":"0";
 #endif
     if (!strcmp(key, "display.pan") && rotate) return rotate;
+    if (!strcmp(key, "display.test")) return test_mode ? test_mode : "0";
     if (!strcmp(key, "display.mirror")) return "0";
     if (!strcmp(key, "display.restore_snapshot")) return getenv("OA_TEST_RESTORE") ? "1" : "0";
     return def;
@@ -224,6 +226,21 @@ int main(void)
     assert(pixels[0] == 13 && pixels[1] == 25 && pixels[2] == 50 && pixels[3] == 64);
     finish(ctx);
     puts("  ok   translucent canvas reaches premultiplied BGRA scanout at identity and during fade");
+
+    /* display.test=2: eight full-screen bars, committed at start. */
+    test_mode = "2"; height = 2;
+    ctx = start(1, 0, NULL);
+    static const unsigned char bars[8][4] = {
+        { 255, 255, 255, 255 }, { 0, 255, 255, 255 },
+        { 255, 255, 0, 255 },   { 0, 255, 0, 255 },
+        { 255, 0, 255, 255 },   { 0, 0, 255, 255 },
+        { 255, 0, 0, 255 },     { 0, 0, 0, 255 }
+    };
+    for (int i = 0; i < 8; i++)
+        assert(!memcmp(pixels + (size_t)i * 4, bars[i], 4));
+    test_mode = NULL;
+    finish(ctx);
+    puts("  ok   display.test=2 paints and commits eight full-screen BGRA bars");
 
     ctx = start(2, 2, NULL);
     assert(alpha && patch);

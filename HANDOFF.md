@@ -616,6 +616,18 @@ controlled framebuffer/scanout-path evidence; no independent owner/HDMI panel
 confirmation, not cold startup/MCU authority. Captures under
 artifacts/analysis/controlled-scanout-2026-11-06. CONTROLLED-SCANOUT.
 
+controlled scanout confirmation, 2026-11-06: second run with display.test=2
+(8 full-screen bars, module5422a86c) under the same temporary ownership;
+start log scanout verified yoffset0 region1920x1080 at0,0 mau0. Two captures5s
+apart identical (a29ccecc...), sampled white/yellow/cyan/green/magenta/red/
+blue/black across y540. Owner answered "Yes, I see the bars." Stop restored
+fb1 (row10 zero), staging removed, wdtctl set10 rebooted. Stock returned:
+uptime27.7s, appmgr1574, aurora1774/zombie1945, fb1 1920x2160 stride7680, no
+openaurora, oa_boot/oa_fail absent, oa_safe/coredumpnoreset present,
+post-boot capture nonblank. This confirms controlled panel scanout and
+full-screen geometry; not cold startup, vendor UI pixel parity or MCU/standby
+authority. Captures under artifacts/analysis/controlled-scanout-2026-11-06.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

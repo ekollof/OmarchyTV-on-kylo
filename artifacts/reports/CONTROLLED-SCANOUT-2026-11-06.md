@@ -93,3 +93,41 @@ The build/driver state is otherwise unchanged; no boot hook, persistent module
 or `/conf` flag was added. The owner may confirm the magenta band was visible if
 they observed the set during the hold; until then the panel effect remains
 owner-observation-pending.
+
+## Confirmed full-screen run — 2026-11-06
+
+A second controlled run replaced the band with `display.test=2`, eight
+full-screen vertical bars, and held it for visual confirmation.
+
+- Same staged core/module hashes (`openaurora 025d1fb0…`, `mod_display_fb`
+  `5422a86c…`); watchdog disabled, stock Aurora 1784 stopped, fb1 snapshot
+  saved.
+- Start log:
+
+```text
+present: scene=39ms mirror=0ms sync=0ms pan=14ms rect=0,0 1920x1080
+self-test: 8 full-screen colour bars painted
+/dev/fb1: scanout verified at start: yoffset 0 region 1920x1080 at 0,0 mau 0
+```
+
+- Two captures 5 s apart were identical
+  (`a29ccecc1d671106…`, `scanout-bars-a_0.png` / `-b_0.png`). Sampled at
+  y=540 across the panel:
+
+```text
+x 120 white, 360 yellow, 600 cyan, 840 green,
+x 1080 magenta, 1320 red, 1560 blue, 1800 black
+```
+
+- **Owner visual confirmation:** asked to compare the panel against that
+  left-to-right bar order, the owner answered **“Yes, I see the bars.”**
+- Stop restored fb1 (row 10 reads zero), staging was removed, and
+  `wdtctl set 10` rebooted. Stock returned: uptime ~27.7 s, appmgr 1574,
+  `aurora.elf` 1774 (zombie 1945), fb1 1920x2160 stride 7680, no
+  `openaurora`, `oa_boot`/`oa_fail` absent, `oa_safe`/`coredumpnoreset`
+  present, and the post-boot capture is non-blank.
+
+This closes the independent **panel-scanout and full-screen geometry** check for
+the controlled first frame: the owner saw the eight full-screen bars in our
+order and the captured active frame matches the same layout. It is still not
+cold independent startup, vendor UI pixel parity or MCU/standby authority.

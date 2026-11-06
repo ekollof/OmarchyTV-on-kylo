@@ -962,15 +962,18 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       geometry/backing retention and first post-wake frame. Kernel PM restoration
       differs from reopening a userspace fd; do not add speculative replay calls.
       The userspace resume path now retains/recommits the scene and re-applies
-      the window (DISPLAY-RESUME-FRAME, offline + on-TV device readback), but
-      kernel PM interaction and stable panel scanout are still unverified.
+      the window (DISPLAY-RESUME-FRAME, offline + on-TV device readback); the
+      controlled first-frame scanout/full-screen geometry is owner-confirmed
+      (CONTROLLED-SCANOUT). Kernel PM interaction, suspend/resume on hardware
+      and cold ordering remain unverified.
 - [ ] Finish alternate-MAU/separate-buffer/zero-buffer and later resize/surface
       switching behavior. Do not infer actual mapping size from framebuffer metadata.
-- [ ] Verify independent scanout and full-screen geometry on panel at a future
+- [x] Verify independent scanout and full-screen geometry on panel at a future
       authorized takeover. Present success, pixel readback and oa.ready are insufficient.
-      Controlled ownership on 2026-11-06 held a byte-stable active frame with
-      stock stopped and verified pan/region/MAU (CONTROLLED-SCANOUT); independent
-      owner/HDMI panel confirmation and full-screen geometry remain open.
+      Controlled first frame on 2026-11-06: `display.test=2` painted eight
+      full-screen bars, two captures 5 s apart matched, and the owner confirmed
+      "Yes, I see the bars" in the expected left-to-right order
+      (CONTROLLED-SCANOUT). Vendor UI pixel parity and cold startup remain open.
 
 - [x] Controlled-ownership first-frame stability: under the owner's 2026-11-06
       full-access authorization, the watchdog was disabled, stock Aurora 1781
@@ -981,9 +984,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       (`656b0caf…`), with the magenta band in the active frame and no stock
       repaint. Stop restored fb1 (band gone, region/pan/MAU unchanged), staging
       was removed, and `wdtctl set 10` rebooted; stock returned (appmgr 1582,
-      aurora 1784, fb1 1920x2160, no openaurora). This is stable controlled
-      framebuffer/scanout-path evidence, not independent panel observation, cold
-      startup or MCU authority. Captures under
+      aurora 1784, fb1 1920x2160, no openaurora). A second run with
+      `display.test=2` (module `5422a86c…`) painted eight full-screen bars;
+      two captures 5 s apart matched (`a29ccecc…`) and the owner confirmed
+      "Yes, I see the bars" in the expected order. This is confirmed controlled
+      panel scanout/full-screen geometry, not cold startup, vendor UI pixel
+      parity or MCU authority. Captures under
       `artifacts/analysis/controlled-scanout-2026-11-06/`. CONTROLLED-SCANOUT.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff

@@ -994,12 +994,28 @@ static int m_start(void *v)
         return -1;
     }
 
-    /* optional self-test: a colour band, so "does the layer actually show" is one command away */
+    /* optional self-test: a colour band or full-screen bars, so "does the
+     * layer actually show" is one command away */
     const char *test = c->api->config_get(c->api->priv, "display.test", "0");
     if (test[0] == '1') {
         fill_rect(c, 0, 0, (int)c->var.xres, (int)c->var.yres / 8, 255, 0, 255);
         present();
         c->api->log(c->api->priv, OA_LOG_INFO, "self-test: magenta band painted");
+        if (verify_scanout(c, "start") != 0)
+            return -1;
+    } else if (test[0] == '2') {
+        static const int bars[8][3] = {
+            { 255, 255, 255 }, { 255, 255, 0 }, { 0, 255, 255 }, { 0, 255, 0 },
+            { 255, 0, 255 }, { 255, 0, 0 }, { 0, 0, 255 }, { 0, 0, 0 }
+        };
+        int w = (int)c->var.xres, h = (int)c->var.yres;
+        for (int i = 0; i < 8; i++) {
+            int x0 = i * w / 8, x1 = (i + 1) * w / 8;
+            fill_rect(c, x0, 0, x1 - x0, h, bars[i][0], bars[i][1], bars[i][2]);
+        }
+        present();
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "self-test: 8 full-screen colour bars painted");
         if (verify_scanout(c, "start") != 0)
             return -1;
     }
