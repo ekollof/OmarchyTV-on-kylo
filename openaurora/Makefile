@@ -1720,6 +1720,11 @@ $(BUILD)/tests/display_binding: tests/display_present.c modules/display/display.
 	$(CC) $(CPPFLAGS) -DOA_DISPLAY_NO_PLAT $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm -pthread \
 	  $(foreach call,open close system mmap munmap msync ioctl pthread_create pthread_tryjoin_np,-Wl,--wrap=$(call))
 
+$(BUILD)/tests/display_resume_frame: tests/display_resume_frame.c modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c include/openaurora/canvas.h include/openaurora/fb_snapshot.h include/openaurora/module.h include/openaurora/services.h include/openaurora/ui_anim.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -lm -pthread \
+	  $(foreach call,open close system mmap munmap msync ioctl,-Wl,--wrap=$(call))
+
 $(BUILD)/fbregion: tools/mcu/fbregion.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
@@ -2095,9 +2100,10 @@ $(BUILD)/tests/fbregion_read: tests/fbregion_read.c tools/mcu/fbregion.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $< -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=ioctl
 
-check-display: $(BUILD)/tests/display_present $(BUILD)/tests/display_binding $(BUILD)/tests/fbregion_read
+check-display: $(BUILD)/tests/display_present $(BUILD)/tests/display_binding $(BUILD)/tests/display_resume_frame $(BUILD)/tests/fbregion_read
 	@$(BUILD)/tests/display_present
 	@$(BUILD)/tests/display_binding
+	@$(BUILD)/tests/display_resume_frame
 	@$(BUILD)/tests/fbregion_read
 
 # Production display code through the real loader; only fixture DSOs wrap I/O.

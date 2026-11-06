@@ -538,6 +538,20 @@ QEMU pass. Cold config opts in. View-only TV: marker readable1, ntkled present,
 1711/1781 unchanged. No cold boot/HAL/open-write; not scanout acceptance.
 PLAT-STARTUP-WAIT.
 
+display resume frame, 2026-11-06: vendor idtvResume@0x752b88 re-enables the OSD
+plane and restores the STR bootlogo (0x752ca6/aa/b0, repeated0x752cfc/d00/d06);
+kernel PM replays OSD state and first-pan shows plane/region. mod_display now
+keeps the last RGBA scene across suspend, reuses it on reopen, saves the resume
+snapshot before re-applying the region and recommits the scene via
+FBIOPAN_DISPLAY ("resume: first frame committed"); failure restores/closes but
+keeps the scene for retry; suspended quiesce frees only heap synchronously so
+reload stays immediate. New fake-driver test clears its map on open and proves
+re-render/region/commit/retry; display/lifecycle/fake-fb suites pass, ASan clean,
+full suite all tests passed, QEMU pass. On-TV under stock: magenta first frame
+read back at start and on4 consecutive samples across resume in the panned frame
+(yoffset1080); stock repaints over it, so no panel scanout/cold acceptance.
+Staging removed, stock PIDs1711/1781 unchanged. DISPLAY-RESUME-FRAME.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

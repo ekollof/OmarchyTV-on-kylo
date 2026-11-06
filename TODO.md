@@ -532,6 +532,23 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       stock PIDs unchanged. No cold boot/HAL/display write; not scanout
       acceptance. PLAT-STARTUP-WAIT.
 
+- [x] Firmware-derived display resume ordering: vendor `idtvResume` @0x00752b88
+      re-enables the OSD plane and restores the STR boot-logo frame
+      (`0x752ca6/aa/b0`, repeated `0x752cfc/d00/d06`); kernel PM replays OSD
+      state and first-pan recovery shows the plane/region. `mod_display` now
+      keeps the last RGBA scene across suspend, reuses it on reopen, saves the
+      resume snapshot before re-applying the region, and recommits the scene
+      through `FBIOPAN_DISPLAY` (`resume: first frame committed`). Failure
+      restores/closes but keeps the scene for retry; a suspended instance frees
+      only heap synchronously so reload stays immediate. New fake-driver test
+      clears its map on every open and proves re-render, region, commit and
+      retry; existing display/lifecycle/fake-fb socket suites pass, ASan/UBSan
+      clean, full suite `all tests passed`, QEMU pass. On-TV under stock: magenta
+      first frame read back at start and on 4 consecutive samples across resume
+      in the panned frame (yoffset 1080); stock repaints over it, so panel
+      scanout/cold acceptance remains open. Staging removed, stock PIDs
+      1711/1781 unchanged. DISPLAY-RESUME-FRAME.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
       `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`/`audio_amp_profile`/`panel`/`ui_diag`/`ui_anim`/`ui_clock`/`ticker`/`ui_console`/`ui_omarchy`,
@@ -886,6 +903,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 - [ ] Complete and verify the fbdev cold/resume lifecycle: initialization ordering,
       geometry/backing retention and first post-wake frame. Kernel PM restoration
       differs from reopening a userspace fd; do not add speculative replay calls.
+      The userspace resume path now retains/recommits the scene and re-applies
+      the window (DISPLAY-RESUME-FRAME, offline + on-TV device readback), but
+      kernel PM interaction and stable panel scanout are still unverified.
 - [ ] Finish alternate-MAU/separate-buffer/zero-buffer and later resize/surface
       switching behavior. Do not infer actual mapping size from framebuffer metadata.
 - [ ] Verify independent scanout and full-screen geometry on panel at a future

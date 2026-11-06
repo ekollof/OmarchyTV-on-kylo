@@ -58,6 +58,7 @@ struct ctx {
     unsigned frames;
     unsigned back;    /* frame we render into; 1 - displayed */
     int pan;          /* rotate frames after commit; off = commit the current frame */
+    int want_region;  /* re-apply our window after a resume reopen */
     struct oa_fb_snapshot snapshot;
     int snapshot_active;
     int closing, cleanup_running, cleanup_result;
@@ -745,9 +746,17 @@ static int open_layer(struct ctx *c)
         c->fd = -1;
         return -1;
     }
+    /* A resume reopen keeps the last scene: the vendor re-enables the OSD plane
+     * and restores its first frame, so our fbdev equivalent recommits this
+     * retained scene after mapping the new fd. A stop/reload still frees it. */
+    int reuse = c->scene && c->scene_w == (int)c->var.xres &&
+                c->scene_h == (int)c->var.yres;
+    if (!reuse) {
+        free(c->scene);
+        c->scene = calloc((size_t)c->var.xres * (size_t)c->var.yres, 4);
+    }
     c->scene_w = (int)c->var.xres;
     c->scene_h = (int)c->var.yres;
-    c->scene = calloc((size_t)c->scene_w * (size_t)c->scene_h, 4);
     c->scene_opaque = 0;
     c->dirty = 0;
     if (!c->scene) {
@@ -770,11 +779,13 @@ static int restore_snapshot(struct ctx *c)
     return 0;
 }
 
-static int close_layer(struct ctx *c)
+static int close_layer(struct ctx *c, int keep_scene)
 {
-    free(c->scene);
-    c->scene = NULL;
-    c->scene_w = c->scene_h = 0;
+    if (!keep_scene) {
+        free(c->scene);
+        c->scene = NULL;
+        c->scene_w = c->scene_h = 0;
+    }
     if (c->map) {
         if (munmap(c->map, c->maplen)) return -(errno ? errno : EIO);
         c->map = NULL;
@@ -804,7 +815,7 @@ static void *cleanup_worker(void *v)
         (void)nanosleep(&pause, NULL);
     }
     c->cleanup_result = restore_snapshot(c);
-    if (!c->cleanup_result) c->cleanup_result = close_layer(c);
+    if (!c->cleanup_result) c->cleanup_result = close_layer(c, 0);
     return NULL;
 }
 
@@ -834,7 +845,15 @@ static int m_quiesce(void *v)
             return c->cleanup_result;
         }
     }
-    if (c->fd < 0 && !c->map && !c->scene && !c->snapshot_active) return 0;
+    if (c->fd < 0 && !c->map && !c->snapshot_active) {
+        /* A successfully suspended instance has no layer to restore or close;
+         * only the retained first-post-wake scene remains. Freeing heap is not
+         * fallible device work, so this gate completes synchronously. */
+        free(c->scene);
+        c->scene = NULL;
+        c->scene_w = c->scene_h = 0;
+        return 0;
+    }
     if (monotonic_ms() < c->retry_after) return -EAGAIN;
     int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
     if (rc) return -rc;
@@ -877,6 +896,7 @@ static int m_start(void *v)
     snprintf(c->path, sizeof c->path, "%s", dev);
 
     int want_region = c->api->config_get(c->api->priv, "display.set_region", "1")[0] == '1';
+    c->want_region = want_region;
     c->mirror = c->api->config_get(c->api->priv, "display.mirror", "1")[0] == '1';
     c->profile = c->api->config_get(c->api->priv, "display.profile", "0")[0] == '1';
     c->pan = c->api->config_get(c->api->priv, "display.pan", want_region ? "0" : "1")[0] == '1';
@@ -895,7 +915,7 @@ static int m_start(void *v)
         if (rc) {
             c->api->log(c->api->priv, OA_LOG_ERROR,
                 "%s: full snapshot failed: %s", c->path, strerror(-rc));
-            close_layer(c);
+            (void)close_layer(c, 0);
             return -1;
         }
         c->snapshot_active = 1;
@@ -963,29 +983,64 @@ static int m_suspend(void *v)
     if (c->closing || c->cleanup_running) return -EBUSY;
     /* The host's suspend transaction is synchronous; unlike quiesce it has
      * no asynchronous retry protocol. Preserve the existing sync path but
-     * propagate failure and retain the snapshot/fd instead of discarding it. */
+     * propagate failure and retain the snapshot/fd instead of discarding it.
+     * Keep the scene: the vendor re-enables the OSD plane on resume, and our
+     * fbdev equivalent recommits this frame after reopening the layer. */
     int rc = restore_snapshot(c);
     if (rc) return rc;
-    return close_layer(c);
+    return close_layer(c, 1);
 }
 
 static int m_resume(void *v)
 {
     struct ctx *c = v;
-    if (c->cleanup_running || c->fd >= 0 || c->snapshot_active) return -EBUSY;
-    if (open_layer(c) != 0) return -1;
-    if (c->api->config_get(c->api->priv, "display.restore_snapshot", "0")[0] == '1') {
-        int rc = oa_fb_snapshot_save(c->fd, &c->snapshot);
-        if (rc) {
-            c->api->log(c->api->priv, OA_LOG_ERROR,
-                "%s: resume snapshot failed: %s", c->path, strerror(-rc));
-            close_layer(c);
-            return -1;
+    if (c->cleanup_running) return -EBUSY;
+    /* fd>=0 with a live map only happens after a failed first-frame attempt
+     * whose snapshot restore also failed. Retry present/restore without
+     * reopening, following the kernel's still-suspended PanDisplay EFAULT. */
+    if (c->fd < 0) {
+        if (open_layer(c) != 0) return -1;
+        /* Mirror start: capture the pre-ownership state before changing the
+         * region, so a later stop restores the driver's snapshot, not ours. */
+        if (c->api->config_get(c->api->priv, "display.restore_snapshot", "0")[0] == '1') {
+            int rc = oa_fb_snapshot_save(c->fd, &c->snapshot);
+            if (rc) {
+                c->api->log(c->api->priv, OA_LOG_ERROR,
+                    "%s: resume snapshot failed: %s", c->path, strerror(-rc));
+                (void)close_layer(c, 1);
+                return -1;
+            }
+            c->snapshot_active = 1;
         }
-        c->snapshot_active = 1;
+        if (c->want_region) {
+            int rr = set_region(c, c->var.xres, c->var.yres);
+            c->api->log(c->api->priv, rr == 0 ? OA_LOG_INFO : OA_LOG_WARN,
+                        "resume region -> %ux%u (%s)", c->var.xres, c->var.yres,
+                        rr == 0 ? "ok" : "refused");
+        }
     }
     c->closing = 0;
-    return 0;
+    if (!c->scene) return -1;
+    /* The vendor's idtvResume re-enables the OSD plane and restores its STR
+     * frame. With fbdev the recovered PanDisplay path both binds the buffer and
+     * shows a hidden plane/region on its first commit, so recommit the retained
+     * scene here instead of leaving the reopened layer blank until a consumer
+     * repaints. */
+    mark_dirty(c, 0, 0, c->scene_w, c->scene_h);
+    if (present() == 0) {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "resume: first frame committed (yoffset %u)", c->var.yoffset);
+        return 0;
+    }
+    c->api->log(c->api->priv, OA_LOG_ERROR, "%s: resume first frame failed", c->path);
+    int rc = restore_snapshot(c);
+    if (rc == 0) {
+        (void)close_layer(c, 1);
+    } else {
+        c->api->log(c->api->priv, OA_LOG_ERROR,
+                    "%s: resume restore pending: %s", c->path, strerror(-rc));
+    }
+    return -1;
 }
 
 static const oa_module g_module = {
