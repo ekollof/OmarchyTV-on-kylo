@@ -21,11 +21,17 @@ static const struct oa_mxl661_atv_tables *g_atv_tables;
 static int g_atv_standard;
 static uint32_t g_atv_if_khz;
 static int g_atv_xtal24;
+static int g_vendor_channel;
 
 void oa_nim_hal_set_ops(const struct oa_nim_tune_ops *ops, void *ud)
 {
     g_ops = ops;
     g_ud = ud;
+}
+
+void oa_nim_hal_set_vendor_channel(int enabled)
+{
+    g_vendor_channel = enabled != 0;
 }
 
 int oa_nim_hal_set_atv(const struct oa_mxl661_atv_tables *tables,
@@ -84,11 +90,20 @@ static int hal_start(uint8_t path, const uint32_t *params, size_t count,
         const struct oa_nim_tune_channel channel = {
             .freq_hz = params[1] * 1000u,
             .standard = 8,     /* DVB-T */
-            .bandwidth = 0x20, /* 6 MHz */
+            .bandwidth = 0x22, /* 8 MHz, DEV_NIM_DTV_StartTune's default */
             .if_khz = 5000
         };
-        if (!oa_nim_tune_set_channel(g_ops, g_ud, &g_hal.tune, &channel))
+        if (g_vendor_channel && g_ops->set_channel) {
+            struct oa_nim_raw_channel record;
+            /* StartTune's normal COFDM record: 8 MHz, IF mode 1. */
+            if (oa_nim_raw_channel_build_dvbt(&record, params[1], 8, 1) != 0)
+                return -EIO;
+            if (g_ops->set_channel(g_ud, 2, &record) != 0)
+                return -EIO;
+        } else if (!oa_nim_tune_set_channel(g_ops, g_ud, &g_hal.tune,
+                                            &channel)) {
             return -EIO;
+        }
     }
     g_hal.active = 1;
     result->state = OA_NIM_TUNE_UNLOCKED;

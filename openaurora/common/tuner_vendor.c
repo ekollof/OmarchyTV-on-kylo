@@ -24,6 +24,9 @@ extern int Hal_Iic_Read(const void *ctx, const void *value, unsigned len,
 extern int HAL_Demod_Init(int index);
 extern int HAL_dvif_open(void);
 extern int HAL_DEMOD_EXT_DVIF_SetTunerType(int handle, int type);
+/* Linkable NDAL equivalent of the Aurora-only HAL_Demod_User_SetChannel
+ * tail. 0 = success. */
+extern int HAL_Demod_Set(int frontend, const void *params);
 
 static int hal_write(const void *ctx, const void *value, unsigned len,
                      const void *buf, void *ud)
@@ -49,6 +52,8 @@ void oa_tuner_vendor_iic_init(void)
     Hal_Iic_Init();
     g_iic_ready = 1;
 }
+
+
 
 int oa_tuner_vendor_mxl661_init(uint8_t addr, const oa_mxl661_config *cfg)
 {
@@ -244,6 +249,40 @@ static int tune_program(void *ud, const struct oa_nim_tune_channel *ch)
     return oa_mxl661_tune_dvbt(&mops, (void *)&hal_ops, 0xc0, &p) == 0 ? 0 : -1;
 }
 
+/* Linkable reproduction of the Aurora-only HAL_Demod_User_SetChannel body for
+ * DVB-T (signal type 2):
+ *   1. FUN_0086aab0's SAL_DEMOD_TUN_ProgramTuner call, using our recovered
+ *      MxL661 DVB-T sequence (the record's standard type is 2 -> SAL 6 ->
+ *      MxL661 standard 8);
+ *   2. the same 0x54-byte HAL_Demod_Set parameter block built by FUN_0086aab0
+ *      for its DVB-T/default case.
+ * HAL_Demod_User_Initialize and HAL_Demod_User_SetChannel themselves live
+ * only in aurora.elf (not libNDAL3/EX), so a replacement process cannot link
+ * them; every linkable input they consume is reproduced here. */
+static int tune_set_channel(void *ud, int signal_type,
+                            const struct oa_nim_raw_channel *record)
+{
+    (void)ud;
+    if (signal_type != 2)
+        return -1;
+    struct oa_nim_dvbt_setup setup;
+    if (oa_nim_raw_channel_setup_dvbt(record, &setup) != 0)
+        return -1;
+
+    oa_tuner_vendor_iic_init();
+    oa_mxl661_ops mops = { oa_mxl661_dev_write, oa_mxl661_dev_read, tune_sleep };
+    struct oa_mxl661_rf_params p = {
+        .freq_hz = setup.freq_hz,
+        .standard = setup.standard,
+        .bandwidth = setup.bandwidth,
+        .if_khz = setup.if_khz,
+        .start = 0
+    };
+    if (oa_mxl661_tune_dvbt(&mops, (void *)&hal_ops, 0xc0, &p) != 0)
+        return -1;
+    return HAL_Demod_Set(0, setup.demod) == 0 ? 0 : -1;
+}
+
 static int tune_program_atv(void *ud,
                             const struct oa_mxl661_analog_params *params,
                             const struct oa_mxl661_atv_tables *tables)
@@ -270,8 +309,8 @@ static int tune_atv_status(void *ud, int path, uint8_t *locked)
 
 static const struct oa_nim_tune_ops vendor_tune_ops = {
     tune_switch, tune_type, tune_deliver, tune_fe_open, tune_fe_close,
-    tune_standby, tune_status, tune_rssi, tune_program, tune_program_atv,
-    tune_atv_status
+    tune_standby, tune_status, tune_rssi, tune_program, tune_set_channel,
+    tune_program_atv, tune_atv_status
 };
 
 const struct oa_nim_tune_ops *oa_tuner_vendor_tune_ops(void)

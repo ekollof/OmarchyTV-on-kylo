@@ -12,6 +12,10 @@ struct fake {
     int opens;
     int closes;
     int programs;
+    int set_channels;
+    int set_channel_type;
+    int set_channel_rc;
+    struct oa_nim_raw_channel set_record;
     int atv_programs;
     int atv_status_calls;
     int atv_path;
@@ -82,6 +86,15 @@ static int f_program(void *ud, const struct oa_nim_tune_channel *ch)
     f->channel = *ch;
     return 0;
 }
+static int f_set_channel(void *ud, int signal_type,
+                         const struct oa_nim_raw_channel *record)
+{
+    struct fake *f = ud;
+    f->set_channels++;
+    f->set_channel_type = signal_type;
+    f->set_record = *record;
+    return f->set_channel_rc;
+}
 static int f_program_atv(void *ud,
                          const struct oa_mxl661_analog_params *params,
                          const struct oa_mxl661_atv_tables *tables)
@@ -101,12 +114,18 @@ static int f_atv_status(void *ud, int path, uint8_t *locked)
     return 0;
 }
 
+static uint32_t get32(const uint8_t *p)
+{
+    return (uint32_t)p[0] | ((uint32_t)p[1] << 8) |
+           ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24);
+}
+
 int main(void)
 {
     struct fake f = { .locked = 1, .strength = 0x1234, .quality = 0x5678 };
     const struct oa_nim_tune_ops ops = {
         f_switch, f_type, f_deliver, f_open, f_close, f_standby, f_status,
-        f_rssi, f_program, f_program_atv, f_atv_status
+        f_rssi, f_program, f_set_channel, f_program_atv, f_atv_status
     };
     oa_nim_hal_set_ops(&ops, &f);
     const struct oa_tuner_backend *b = oa_nim_hal_backend();
@@ -118,7 +137,7 @@ int main(void)
     assert(tr.frequency_khz == 666000 && tr.state == OA_NIM_TUNE_UNLOCKED);
     assert(f.switches == 1 && f.programs == 1);
     assert(f.channel.freq_hz == 666000000u && f.channel.standard == 8 &&
-           f.channel.bandwidth == 0x20 && f.channel.if_khz == 5000);
+           f.channel.bandwidth == 0x22 && f.channel.if_khz == 5000);
 
     assert(b->nim->monitor(OA_NIM_PATH_TERRESTRIAL, &tr) == 0);
     assert(tr.state == OA_NIM_TUNE_LOCKED);
@@ -165,6 +184,34 @@ int main(void)
     assert(tr.state == OA_NIM_TUNE_LOCKED);
     assert(b->nim->signal(OA_NIM_PATH_TERRESTRIAL, &sig) == 0);
     assert(sig.strength == 0x1234 && sig.quality == 0x5678);
+    assert(b->nim->stop(OA_NIM_PATH_TERRESTRIAL) == 0);
+
+    /* Vendor 0x5c + HAL_Demod_User_SetChannel path: no duplicate tuner
+     * program, one exact DVB-T record. */
+    oa_nim_hal_set_vendor_channel(1);
+    assert(b->nim->start(OA_NIM_PATH_TERRESTRIAL, params, 2, &tr) == 0);
+    assert(f.set_channels == 1 && f.set_channel_type == 2 &&
+           f.programs == 2);
+    assert(get32(f.set_record.raw + 0x00) == 666000);
+    assert(get32(f.set_record.raw + 0x04) == 8);
+    assert(get32(f.set_record.raw + 0x10) == 1);
+    assert(get32(f.set_record.raw + 0x14) == 0);
+    assert(get32(f.set_record.raw + 0x1c) == 2);
+    assert(f.set_record.raw[0x24] == 0xff &&
+           f.set_record.raw[0x25] == 0xff &&
+           f.set_record.raw[0x26] == 0xff &&
+           f.set_record.raw[0x27] == 0);
+    assert(get32(f.set_record.raw + 0x58) == 0);
+    assert(b->nim->stop(OA_NIM_PATH_TERRESTRIAL) == 0);
+
+    f.set_channel_rc = -1;
+    assert(b->nim->start(OA_NIM_PATH_TERRESTRIAL, params, 2, &tr) == -EIO);
+    assert(f.set_channels == 2 && f.programs == 2);
+    f.set_channel_rc = 0;
+
+    oa_nim_hal_set_vendor_channel(0);
+    assert(b->nim->start(OA_NIM_PATH_TERRESTRIAL, params, 2, &tr) == 0);
+    assert(f.set_channels == 2 && f.programs == 3);
     assert(b->nim->stop(OA_NIM_PATH_TERRESTRIAL) == 0);
 
     assert(b->nim->start(OA_NIM_PATH_CABLE, params, 2, &tr) == -ENOTSUP);

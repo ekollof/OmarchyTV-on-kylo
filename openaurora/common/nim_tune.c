@@ -180,28 +180,110 @@ static uint32_t rd32(const uint8_t *p)
            ((uint32_t)p[3] << 24);
 }
 
+static void wr32(uint8_t *p, uint32_t v)
+{
+    p[0] = (uint8_t)v;
+    p[1] = (uint8_t)(v >> 8);
+    p[2] = (uint8_t)(v >> 16);
+    p[3] = (uint8_t)(v >> 24);
+}
+
+int oa_nim_raw_channel_build_dvbt(struct oa_nim_raw_channel *rec,
+                                  uint32_t freq_khz, uint32_t bandwidth_mhz,
+                                  uint32_t if_mode)
+{
+    if (!rec || freq_khz == 0 || freq_khz > 2000000u ||
+        bandwidth_mhz < 6 || bandwidth_mhz > 8 ||
+        (if_mode != 1 && if_mode != 2))
+        return -EINVAL;
+    memset(rec, 0, sizeof *rec);
+    wr32(rec->raw + 0x00, freq_khz);
+    wr32(rec->raw + 0x04, bandwidth_mhz);
+    wr32(rec->raw + 0x10, if_mode);
+    wr32(rec->raw + 0x14, 0);
+    wr32(rec->raw + 0x1c, 2); /* DVB-T signal type */
+    rec->raw[0x24] = 0xff;
+    rec->raw[0x25] = 0xff;
+    rec->raw[0x26] = 0xff;
+    rec->raw[0x27] = 0x00;
+    wr32(rec->raw + 0x58, 0);
+    return 0;
+}
+
+int oa_nim_raw_channel_setup_dvbt(const struct oa_nim_raw_channel *rec,
+                                  struct oa_nim_dvbt_setup *out)
+{
+    if (!rec || !out)
+        return -EINVAL;
+    if (rd32(rec->raw + 0x1c) != 2) /* DVB-T */
+        return -EINVAL;
+    uint32_t freq_khz = rd32(rec->raw + 0x00);
+    uint32_t bandwidth_mhz = rd32(rec->raw + 0x04);
+    if (freq_khz == 0 || freq_khz > 2000000u ||
+        bandwidth_mhz < 6 || bandwidth_mhz > 8)
+        return -EINVAL;
+
+    memset(out, 0, sizeof *out);
+    out->freq_hz = freq_khz * 1000u;
+    out->standard = 8;
+    out->bandwidth = bandwidth_mhz == 6 ? 0x20 :
+                     bandwidth_mhz == 7 ? 0x21 : 0x22;
+    out->if_khz = 5000;
+    /* FUN_0086aab0's DVB-T/default HAL_Demod_Set block. */
+    out->demod[0] = 0x12;
+    out->demod[1] = bandwidth_mhz;
+    out->demod[4] = rd32(rec->raw + 0x14) != 0;
+    out->demod[5] = 1;
+    out->demod[0x14] = freq_khz;
+    return 0;
+}
+
 int oa_nim_raw_channel_parse(const uint8_t raw[0x5c], int path,
                              struct oa_nim_tune_channel *out)
 {
-    if (!raw || !out)
+    if (!raw || !out || (path != 1 && path != 2))
         return 0;
-    uint32_t standard = oa_mxl661_standard_from_index(rd32(raw + 0x1c));
-    if (!standard)
+    uint32_t signal = rd32(raw + 0x1c);
+    uint32_t standard;
+    switch (signal) {
+    case 0: /* DVB-T2 */
+    case 2: /* DVB-T */
+        standard = 8;
+        break;
+    case 3: /* DVB-C */
+        standard = 6;
+        break;
+    default:
         return 0;
-    uint32_t freq = rd32(raw + 0);
-    uint32_t bandwidth = rd32(raw + 8);
-    uint32_t p4 = rd32(raw + 0x10);
-    uint32_t override = rd32(raw + 0x58);
+    }
+    uint32_t freq = rd32(raw + 0x00);
     if (path == 1) {
+        uint32_t override = rd32(raw + 0x58);
         if (override)
             freq = override;
-        if (bandwidth == 0 || p4 == 3)
-            bandwidth = 40000;
+    }
+    if (freq == 0 || freq > 2000000u)
+        return 0;
+    uint32_t bandwidth_mhz = rd32(raw + 0x04);
+    uint32_t bandwidth;
+    switch (bandwidth_mhz) {
+    case 6:
+        bandwidth = 0x20;
+        break;
+    case 7:
+        bandwidth = 0x21;
+        break;
+    case 0: /* StartTune's default path is 8 MHz. */
+    case 8:
+        bandwidth = 0x22;
+        break;
+    default:
+        return 0;
     }
     out->freq_hz = freq * 1000u;
     out->standard = standard;
     out->bandwidth = bandwidth;
-    out->if_khz = 0;
+    out->if_khz = 5000; /* gTunerConfig initial IF index 6. */
     return 1;
 }
 

@@ -12,6 +12,9 @@
 #include "openaurora/nim_tune.h"
 
 void oa_nim_hal_set_ops(const struct oa_nim_tune_ops *ops, void *ud);
+/* Use the vendor HAL_Demod_User_SetChannel path for DVB-T start when the ops
+ * table provides set_channel. 0 keeps the typed program_tuner fallback. */
+void oa_nim_hal_set_vendor_channel(int enabled);
 /* Enable analog start with the loaded table set (standard 0..5, xtal flag).
  * NULL tables clears analog mode. 0 = accepted, -EINVAL = bad arguments. */
 int oa_nim_hal_set_atv(const struct oa_mxl661_atv_tables *tables,

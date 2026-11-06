@@ -16,8 +16,11 @@
  * buf+0x18 (path 1) or the tuner RSSI otherwise; Quality uses mask 0x80 and
  * the u32 at buf+0x24.
  *
- * SetChannel/GetChannelStatus are large NIM-channel <-> NDAL struct mappings
- * and are deliberately left -ENOTSUP rather than guessed.
+ * The typed HAL SetChannel/GetChannelStatus slots are still -ENOTSUP. The
+ * raw 0x5c vendor SetChannel body is implemented instead: nim_tune.c builds
+ * the record and its host-testable MxL661/HAL_Demod_Set plan, and
+ * tuner_vendor.c runs the linkable equivalent of the Aurora-only
+ * HAL_Demod_User_SetChannel (MxL661 program then HAL_Demod_Set).
  */
 #ifndef OPENAURORA_NIM_TUNE_H
 #define OPENAURORA_NIM_TUNE_H
@@ -40,10 +43,22 @@ struct oa_nim_tune_status {
 };
 
 /* Raw 0x5c channel record from HAL_Demod_User_SetChannel.
- * Fields recovered from FUN_0086aab0: +0 freq (kHz), +4 p1, +8 bandwidth,
- * +0x10 p4, +0x1c standard index, +0x58 frequency override. */
+ *
+ * Recovered from DEV_NIM_DTV_StartTune @0x008619e0 and the consumer
+ * FUN_0086aab0 @0x0086aab0:
+ *   +0x00  u32 frequency (kHz)
+ *   +0x04  u32 bandwidth (MHz: 6/7/8; StartTune defaults it to 8)
+ *   +0x08  u32 ProgramTuner param[2]; used by the type-6 (analog) path
+ *   +0x10  u32 IF/frequency mode (StartTune initializes 1, sets 2 when the
+ *           platform request flag is set)
+ *   +0x14  u32 p4 (0..2 from the tune request)
+ *   +0x1c  u32 signal type (2 = DVB-T; the SAL layer maps it)
+ *   +0x24..0x27 four bytes; the default path writes ff ff ff 00
+ *   +0x58  u32 frequency override (satellite) / analog p6
+ * Fields not listed are zero in the builder. */
+#define OA_NIM_RAW_CHANNEL_SIZE 0x5c
 struct oa_nim_raw_channel {
-    uint8_t raw[0x5c];
+    uint8_t raw[OA_NIM_RAW_CHANNEL_SIZE];
 };
 
 /* Raw 0x180 HAL_Demod_GetStatus buffer. The verified fields are lock at +0,
@@ -93,6 +108,12 @@ struct oa_nim_tune_ops {
     int (*get_status)(void *ud, int handle, int index, uint32_t mask, void *buf);
     int (*get_rssi)(void *ud, int tuner_type, uint8_t *rssi); /* 1 = success */
     int (*program_tuner)(void *ud, const struct oa_nim_tune_channel *ch);
+    /* Optional vendor HAL_Demod_User_SetChannel(signal_type, raw record).
+     * The vendor function runs SAL_DEMOD_TUN_ProgramTuner and HAL_Demod_Set
+     * itself, so the caller must not also call program_tuner. 0 = success.
+     * NULL keeps the typed program_tuner fallback. */
+    int (*set_channel)(void *ud, int signal_type,
+                       const struct oa_nim_raw_channel *record);
     /* Optional analog (ATV) tail. The caller owns the runtime-loaded table
      * set; 0 = success. NULL leaves the backend DVB-only. */
     int (*program_atv)(void *ud,
@@ -134,6 +155,25 @@ int oa_nim_tune_get_channel_status(const struct oa_nim_tune_ops *ops,
                                    void *ud,
                                    struct oa_nim_tune_state *state,
                                    struct oa_nim_tune_status *out);
+
+/* Build the vendor 0x5c DVB-T record. freq_khz/frequency, bandwidth_mhz
+ * 6/7/8, if_mode 1 or 2. Returns 0 on success, -EINVAL for invalid input. */
+int oa_nim_raw_channel_build_dvbt(struct oa_nim_raw_channel *rec,
+                                  uint32_t freq_khz, uint32_t bandwidth_mhz,
+                                  uint32_t if_mode);
+
+/* Host-testable plan for the linkable HAL_Demod_User_SetChannel replacement:
+ * MxL661 program parameters plus the 0x54-byte HAL_Demod_Set block built by
+ * FUN_0086aab0 for DVB-T. Returns 0 on success, -EINVAL otherwise. */
+struct oa_nim_dvbt_setup {
+    uint32_t freq_hz;
+    uint32_t standard;   /* MxL661 DVB-T standard 8 */
+    uint32_t bandwidth;  /* 0x20 = 6 MHz, 0x21 = 7 MHz, 0x22 = 8 MHz */
+    uint32_t if_khz;
+    uint32_t demod[0x54 / sizeof(uint32_t)];
+};
+int oa_nim_raw_channel_setup_dvbt(const struct oa_nim_raw_channel *rec,
+                                  struct oa_nim_dvbt_setup *out);
 
 /* Parse the raw 0x5c record into the typed channel. Returns 1 on success. */
 int oa_nim_raw_channel_parse(const uint8_t raw[0x5c], int path,

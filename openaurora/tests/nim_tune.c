@@ -114,7 +114,7 @@ static int program_tune(void *ud, const struct oa_nim_tune_channel *ch)
 
 static const struct oa_nim_tune_ops ops = {
     switch_type, get_tuner_type, deliver_config, fe_open, fe_close,
-    set_standby, get_status, get_rssi, program_tune, NULL, NULL
+    set_standby, get_status, get_rssi, program_tune, NULL, NULL, NULL
 };
 
 static void test_path_index(void)
@@ -252,40 +252,79 @@ static void put32(uint8_t *p, uint32_t v)
     p[3] = (uint8_t)(v >> 24);
 }
 
+static uint32_t get32(const uint8_t *p)
+{
+    return (uint32_t)p[0] | ((uint32_t)p[1] << 8) |
+           ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24);
+}
+
 static void test_raw_channel(void)
 {
-    uint8_t raw[0x5c];
-    memset(raw, 0, sizeof raw);
-    put32(raw + 0, 666000);
-    put32(raw + 8, 0x20);
-    put32(raw + 0x1c, 1); /* standard index 1 -> DVB-T 8 */
+    struct oa_nim_raw_channel rec;
+    assert(oa_nim_raw_channel_build_dvbt(&rec, 666000, 8, 1) == 0);
+    assert(get32(rec.raw + 0x00) == 666000);
+    assert(get32(rec.raw + 0x04) == 8);
+    assert(get32(rec.raw + 0x10) == 1);
+    assert(get32(rec.raw + 0x14) == 0);
+    assert(get32(rec.raw + 0x1c) == 2);
+    assert(rec.raw[0x24] == 0xff && rec.raw[0x25] == 0xff &&
+           rec.raw[0x26] == 0xff && rec.raw[0x27] == 0);
+    assert(get32(rec.raw + 0x58) == 0);
+
     struct oa_nim_tune_channel ch;
-    assert(oa_nim_raw_channel_parse(raw, 1, &ch) == 1);
+    assert(oa_nim_raw_channel_parse(rec.raw, 1, &ch) == 1);
     assert(ch.freq_hz == 666000000u && ch.standard == 8 &&
-           ch.bandwidth == 0x20);
+           ch.bandwidth == 0x22 && ch.if_khz == 5000);
 
-    put32(raw + 0x58, 700000);
-    assert(oa_nim_raw_channel_parse(raw, 1, &ch) == 1);
+    assert(oa_nim_raw_channel_build_dvbt(&rec, 666000, 7, 2) == 0);
+    assert(get32(rec.raw + 0x10) == 2);
+    assert(oa_nim_raw_channel_parse(rec.raw, 1, &ch) == 1);
+    assert(ch.bandwidth == 0x21);
+
+    assert(oa_nim_raw_channel_build_dvbt(&rec, 666000, 6, 1) == 0);
+    assert(oa_nim_raw_channel_parse(rec.raw, 2, &ch) == 1);
+    assert(ch.bandwidth == 0x20 && ch.standard == 8);
+
+    assert(oa_nim_raw_channel_build_dvbt(NULL, 666000, 8, 1) == -EINVAL);
+    assert(oa_nim_raw_channel_build_dvbt(&rec, 0, 8, 1) == -EINVAL);
+    assert(oa_nim_raw_channel_build_dvbt(&rec, 2000001, 8, 1) == -EINVAL);
+    assert(oa_nim_raw_channel_build_dvbt(&rec, 666000, 5, 1) == -EINVAL);
+    assert(oa_nim_raw_channel_build_dvbt(&rec, 666000, 9, 1) == -EINVAL);
+    assert(oa_nim_raw_channel_build_dvbt(&rec, 666000, 8, 0) == -EINVAL);
+    assert(oa_nim_raw_channel_build_dvbt(&rec, 666000, 8, 3) == -EINVAL);
+
+    assert(oa_nim_raw_channel_build_dvbt(&rec, 666000, 8, 1) == 0);
+    put32(rec.raw + 0x58, 700000);
+    assert(oa_nim_raw_channel_parse(rec.raw, 1, &ch) == 1);
     assert(ch.freq_hz == 700000000u);
+    put32(rec.raw + 0x1c, 8);
+    assert(oa_nim_raw_channel_parse(rec.raw, 1, &ch) == 0);
+    put32(rec.raw + 0x1c, 2);
+    put32(rec.raw + 0x04, 5);
+    assert(oa_nim_raw_channel_parse(rec.raw, 1, &ch) == 0);
+    assert(oa_nim_raw_channel_parse(rec.raw, 0, &ch) == 0);
 
-    put32(raw + 8, 0);
-    assert(oa_nim_raw_channel_parse(raw, 1, &ch) == 1);
-    assert(ch.bandwidth == 40000);
+    assert(oa_nim_raw_channel_build_dvbt(&rec, 666000, 8, 1) == 0);
+    struct oa_nim_dvbt_setup setup;
+    assert(oa_nim_raw_channel_setup_dvbt(&rec, &setup) == 0);
+    assert(setup.freq_hz == 666000000u && setup.standard == 8 &&
+           setup.bandwidth == 0x22 && setup.if_khz == 5000);
+    assert(setup.demod[0] == 0x12 && setup.demod[1] == 8 &&
+           setup.demod[4] == 0 && setup.demod[5] == 1 &&
+           setup.demod[0x14] == 666000);
+    put32(rec.raw + 0x14, 1);
+    assert(oa_nim_raw_channel_setup_dvbt(&rec, &setup) == 0);
+    assert(setup.demod[4] == 1);
+    put32(rec.raw + 0x1c, 3);
+    assert(oa_nim_raw_channel_setup_dvbt(&rec, &setup) == -EINVAL);
 
-    put32(raw + 0x1c, 8);
-    assert(oa_nim_raw_channel_parse(raw, 1, &ch) == 0);
-
-    memset(raw, 0, sizeof raw);
-    put32(raw + 0, 666000);
-    put32(raw + 8, 0x20);
-    put32(raw + 0x1c, 1);
-    struct oa_nim_raw_channel rc;
-    memcpy(rc.raw, raw, sizeof raw);
+    assert(oa_nim_raw_channel_build_dvbt(&rec, 666000, 8, 1) == 0);
     struct fake f = { 0 };
     struct oa_nim_tune_state s = { .path = 1, .tuner_type = 0xd };
-    assert(oa_nim_tune_set_channel_raw(&ops, &f, &s, &rc) == 1);
+    assert(oa_nim_tune_set_channel_raw(&ops, &f, &s, &rec) == 1);
     assert(f.program_calls == 1 && f.program_ch.freq_hz == 666000000u &&
-           f.program_ch.standard == 8 && f.program_ch.bandwidth == 0x20);
+           f.program_ch.standard == 8 && f.program_ch.bandwidth == 0x22 &&
+           f.program_ch.if_khz == 5000);
 }
 
 static void test_raw_status(void)

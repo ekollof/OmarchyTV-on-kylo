@@ -59,6 +59,7 @@ struct ctx {
     int ts_open;
     int hw_init;   /* tuner.hw_init=1: explicit hardware gate */
     int hw_done;
+    int vendor_channel; /* tuner.vendor_channel=1: vendor 0x5c/HAL_Demod_Set */
     int atv_loaded;
     struct oa_mxl661_atv_tables atv;
     int analog_scan;
@@ -284,8 +285,10 @@ static const oa_tuner_iface tuner_iface = {
 };
 
 /* tuner.hw_init=1 is the explicit hardware gate. The host build refuses it
- * at load; the TV build runs the recovered HAL_Demod_User_Initialize order and
- * the NIM-DTV task after the start request, before publishing the service. */
+ * at load; the TV build runs the recovered SAL/demod/LNB order and the
+ * NIM-DTV task after the start request, before publishing the service.
+ * tuner.vendor_channel=1 selects the raw 0x5c HAL_Demod_Set start path
+ * (MxL661 program + HAL_Demod_Set) instead of the typed program_tuner only. */
 struct hw_bind {
     const oa_mxl661_config *cfg;
     uint8_t addr;
@@ -461,6 +464,7 @@ static int tuner_hw_bringup(struct ctx *c)
         .sal_type = sal_type,
         .nim_hal = { &hw_iic_ops, NULL }
     };
+    oa_nim_hal_set_vendor_channel(c->vendor_channel);
     b.tune_ud.tuner_type = sal_type;
     b.tune_ud.fe_index = 0;
     b.tune.ops = oa_tuner_vendor_tune_ops();
@@ -606,6 +610,11 @@ static int m_init(const oa_host_api *api, void **out)
             return -EACCES;
         }
         oa_nim_hal_set_ops(oa_tuner_vendor_tune_ops(), NULL);
+        const char *vch = api->config_get(api->priv, "tuner.vendor_channel",
+                                          "0");
+        c->vendor_channel = vch && (!strcmp(vch, "1") ||
+                                    !strcmp(vch, "true"));
+        oa_nim_hal_set_vendor_channel(c->vendor_channel);
         c->backend = oa_nim_hal_backend();
         const char *analog_on = api->config_get(api->priv, "tuner.analog", "0");
         int atv_on = analog_on && (!strcmp(analog_on, "1") ||
@@ -781,6 +790,7 @@ static void m_destroy(void *v)
 #ifndef OA_NO_VENDOR
     /* The backend holds a pointer to c->atv; clear it before freeing. */
     oa_nim_hal_set_atv(NULL, 0, 0, 0);
+    oa_nim_hal_set_vendor_channel(0);
 #endif
     if (g_ctx == v) g_ctx = NULL;
     free(v);
