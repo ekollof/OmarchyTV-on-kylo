@@ -437,6 +437,16 @@ on stop. ARM channels no longer links libpthread. 400ms gate, XML/IPC tests,
 full suite all tests passed, QEMU pass. Pure-free cleanup only; blocking paths
 stay workers. TV not used. SCHED-CHANNELS.
 
+ui_diag async gate, 2026-11-06: synchronously unsubscribe, unregister the diag
+skin/release ui.engine, detach font pack/pixels, then free them from one sched
+slice after ui_diag.cleanup_delay_ms. cancel/free on stop; m_start refuses
+while pending. Engine skin query shows active - while pending and active diag
+after reload. 400ms control test with nav_display/engine and extracted font
+pack; diag/skin-socket tests, full suite all tests passed, QEMU pass. ARM links
+libm/libc only. Recorder fixture, not scanout; no TV run. 28/35 descriptors now
+have quiesce; 7 remain: plat/power/ticker/ui_anim/ui_clock/ui_console/
+ui_omarchy. UI-DIAG-QUIESCE.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

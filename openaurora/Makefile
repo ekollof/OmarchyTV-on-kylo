@@ -902,8 +902,8 @@ $(eval $(call emit_pics,modules__mod_ui_omarchy,modules/ui_omarchy/ui_omarchy.c,
 
 $(BUILD)/modules/mod_ui_diag.so: $(call pic_objs,modules__mod_ui_diag,modules/ui_diag/ui_diag.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c)
 	@mkdir -p $(dir $@)
-	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -lm
-$(eval $(call emit_pics,modules__mod_ui_diag,modules/ui_diag/ui_diag.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c,-pthread,include/openaurora/ui_engine.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h include/openaurora/lua_skin.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/canvas.h))
+	$(CC) -shared -o $@ $^ $(LDFLAGS) -lm
+$(eval $(call emit_pics,modules__mod_ui_diag,modules/ui_diag/ui_diag.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c,,include/openaurora/ui_engine.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h include/openaurora/lua_skin.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h include/openaurora/canvas.h))
 
 $(BUILD)/modules/mod_audio_mixer.so: $(call pic_objs,modules__mod_audio_mixer,modules/audio_mixer/audio_mixer.c common/audio_broker_wire.c)
 	@mkdir -p $(dir $@)
@@ -1443,6 +1443,11 @@ check-ui-diag: $(BUILD)/tests/ui_diag $(BUILD)/tests/ui_nav_display.so $(BUILD)/
 	@cp $(BUILD)/tests/ui_nav_display.so $(BUILD)/tests/ui-diag/modules/mod_nav_display.so
 	@$(BUILD)/tests/ui_diag $(BUILD)/tests/ui-diag/modules
 check: check-ui-diag
+
+.PHONY: check-ui-diag-quiesce
+check-ui-diag-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_diag.so
+	node tests/ui_diag_quiesce.cjs $(abspath $(BUILD))
+check: check-ui-diag-quiesce
 
 $(BUILD)/tests/ui_lua: tests/ui_lua.c tests/ui_nav_trace.h include/openaurora/lua_skin.h include/openaurora/ui_engine.h core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)

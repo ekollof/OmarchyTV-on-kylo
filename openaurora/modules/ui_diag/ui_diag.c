@@ -62,6 +62,12 @@ struct ctx {
     unsigned char *font_data;
     unsigned char *title_data;
     uint64_t changed;
+    /* ABI 3 quiesce: font buffers are detached and freed by a sched slice. */
+    uint32_t cleanup_task;
+    struct oa_font_pack cleanup_pack;
+    unsigned char *cleanup_font_data;
+    unsigned char *cleanup_title_data;
+    unsigned cleanup_delay_ms;
 };
 
 static const oa_ui_skin g_skin;
@@ -79,6 +85,54 @@ static void fonts_free(struct ctx *c)
     c->font_data = c->title_data = NULL;
     c->font_on = c->title_on = 0;
     oa_font_pack_free(&c->pack);
+}
+
+static int cleanup_pending(const struct ctx *c)
+{
+    return c->cleanup_task || c->cleanup_font_data || c->cleanup_title_data ||
+        c->cleanup_pack.lengths || c->cleanup_pack.offsets ||
+        c->cleanup_pack.pack_path;
+}
+
+static void fonts_free_cleanup(struct ctx *c)
+{
+    free(c->cleanup_font_data);
+    free(c->cleanup_title_data);
+    c->cleanup_font_data = c->cleanup_title_data = NULL;
+    oa_font_pack_free(&c->cleanup_pack);
+}
+
+static void fonts_detach(struct ctx *c)
+{
+    c->cleanup_pack = c->pack;
+    memset(&c->pack, 0, sizeof c->pack);
+    c->cleanup_font_data = c->font_data;
+    c->cleanup_title_data = c->title_data;
+    c->font_data = c->title_data = NULL;
+    c->font_on = c->title_on = 0;
+}
+
+static int cleanup_step(void *v, uint32_t *delay_ms)
+{
+    (void)delay_ms;
+    struct ctx *c = v;
+    fonts_free_cleanup(c);
+    c->cleanup_task = 0;
+    return OA_SCHED_DONE;
+}
+
+static void cancel_cleanup(struct ctx *c)
+{
+    if (c->cleanup_task) {
+        const oa_sched_iface *s =
+            c->api->lookup(c->api->priv, OA_SVC_SCHED, 1);
+        if (s) {
+            (void)s->cancel(s->context, c->cleanup_task);
+            c->api->release(c->api->priv, OA_SVC_SCHED);
+        }
+        c->cleanup_task = 0;
+    }
+    fonts_free_cleanup(c);
 }
 
 static int font_open(struct oa_font_pack *pack, int id,
@@ -299,6 +353,10 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    if (cleanup_pending(c)) return -EBUSY;
+    long delay = atol(c->api->config_get(c->api->priv,
+                                         "ui_diag.cleanup_delay_ms", "0"));
+    c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
     c->d = c->api->lookup(c->api->priv, OA_SVC_UI_ENGINE, 2);
     if (!c->d) return -1;
     if (c->d->register_skin_dispatch(&g_skin, c, dispatch)) {
@@ -314,9 +372,15 @@ static int m_start(void *v)
     return 0;
 }
 
-static void m_stop(void *v)
+/* ABI 3 gate: drop the skin/engine registration and detach the font buffers
+ * synchronously, then free them from one scheduler slice after
+ * ui_diag.cleanup_delay_ms. */
+static int m_quiesce(void *v)
 {
     struct ctx *c = v;
+    if (!c) return 0;
+    if (cleanup_pending(c)) return -EAGAIN;
+    c->suspended = 1;
     if (c->changed) {
         c->api->unsubscribe(c->api->priv, c->changed);
         c->changed = 0;
@@ -326,6 +390,43 @@ static void m_stop(void *v)
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
         c->d = NULL;
     }
+    fonts_detach(c);
+    if (!cleanup_pending(c)) return 0;
+    if (!c->cleanup_delay_ms) {
+        fonts_free_cleanup(c);
+        return 0;
+    }
+    const oa_sched_iface *s =
+        c->api->lookup(c->api->priv, OA_SVC_SCHED, 1);
+    if (!s) {
+        fonts_free_cleanup(c);
+        return 0;
+    }
+    uint32_t id = 0;
+    int rc = s->submit(s->context, cleanup_step, c, c->cleanup_delay_ms, &id);
+    c->api->release(c->api->priv, OA_SVC_SCHED);
+    if (rc) {
+        fonts_free_cleanup(c);
+        return -EIO;
+    }
+    c->cleanup_task = id;
+    return -EAGAIN;
+}
+
+static void m_stop(void *v)
+{
+    struct ctx *c = v;
+    c->suspended = 1;
+    if (c->changed) {
+        c->api->unsubscribe(c->api->priv, c->changed);
+        c->changed = 0;
+    }
+    if (c->d) {
+        c->d->unregister_skin(&g_skin);
+        c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
+        c->d = NULL;
+    }
+    cancel_cleanup(c);
     fonts_free(c);
     c->suspended = 0;
 }
@@ -333,6 +434,7 @@ static void m_stop(void *v)
 static void m_destroy(void *v)
 {
     struct ctx *c = v;
+    cancel_cleanup(c);
     fonts_free(c);
     free(c);
 }
@@ -385,6 +487,7 @@ static const oa_module descriptor = {
     .suspend = m_suspend,
     .resume = m_resume,
     .destroy = m_destroy,
+    .quiesce = m_quiesce,
 };
 
 OA_MODULE_EXPORT(descriptor)
