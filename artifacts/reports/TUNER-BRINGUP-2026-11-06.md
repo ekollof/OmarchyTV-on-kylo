@@ -132,13 +132,14 @@ explicitly unresolved channel calls. `oa_nim_tune_hal_*` adapts the same state
 to the NIM-DTV typed table; `mod_tuner` installs it in `connect_hal` with
 vendor adapters (`HAL_fe_open/close`, `HAL_DEMOD_EXT_DeliverConfig/SetStandy`,
 `HAL_Demod_GetStatus`). The table is installed but no tuning backend consumes
-it yet; `set_channel`/`get_channel_status` remain `-ENOTSUP`.
+it yet; `set_channel`/`get_channel_status` remain `-ENOTSUP` in that binding,
+although the 0x180 output maps below are now decoded and tested.
 
 ### Why SetChannel/GetChannelStatus are not just struct mappings
 
 `HAL_Demod_User_SetChannel` copies a 0x5c-byte channel record, extracts the
 tuning parameters at +0xc/+0x10/+0x14/+0x1c/+0x28/+0x64, then calls
-`SAL_DEMOD_TUN_ProgramTuner` (MxL661 RF/IF programming, not recovered yet)
+`SAL_DEMOD_TUN_ProgramTuner` (the MxL661 DVB-T/C RF/IF sequence below)
 before a path-specific NDAL/demux tail (`HAL_DEMOD_EXT_SetUnicableIF`,
 `DeliverConfig`, spectral inversion, ...). `GetChannelStatus` calls the lock
 helper, `HAL_Demod_GetStatus(...,0x600,...)` and maps a 0x180-byte status
@@ -205,49 +206,82 @@ index (mapped through the SAL map) and `+0x58` frequency override; the
 path-1 override and zero-bandwidth 40000 rule are applied.
 `oa_nim_tune_set_channel_raw` feeds it to the `program_tuner` op. The fake
 tests cover the offsets, override, zero-bandwidth default and invalid
-standard index. The raw 0x180 status array mapping remains.
+standard index. The 0x180 status output maps are below.
 
 The raw 0x180 `HAL_Demod_GetStatus` buffer is parsed in
 `oa_nim_raw_status_parse` for its verified fields: lock at `+0`, strength at
-`+0x18`, quality at `+0x24`, with tests. The vendor's per-signal output-array
-enum mapping is garbled in the decompiler; the `tbb` dispatch and case targets
-are now recovered (above), but the per-case fields are not guessed.
+`+0x18`, quality at `+0x24`, with tests. The per-signal output maps are
+recovered and implemented below.
 
 ### 0x180 GetChannelStatus dispatch (recovered)
 
-`HAL_Demod_User_GetChannelStatus` @ `0x0086bafc` dispatches on signal type
-1..8 at `0x86bbae` (`tbb [pc,r3]`). The table bytes at `0x86bbb2` are
-`41 34 2a 6f 6f 14 34 04`, giving:
+`HAL_Demod_User_GetChannelStatus(type, out)` @ `0x0086bafc` first checks the
+requested type against the current type at object `+8` and prints
+`%s: wrong signal type(%d) with current type(%d)`; a mismatch returns 0. It
+then calls `FUN_0086a4dc` (r0 = status) and only uses the output buffer when
+that returned nonzero. The dispatch at `0x86bbae` (`tbb [pc,r3]`, table bytes
+`41 34 2a 6f 6f 14 34 04` at `0x86bbb2`):
 
 ```text
 type 1   -> 0x86bc34
 type 2,7 -> 0x86bc1a
 type 3   -> 0x86bc06
-type 4,5 -> 0x86bc90 (default/tail)
+type 4,5 -> 0x86bc90 (movs r6,#0; return 0, no output)
 type 6   -> 0x86bbda
 type 8   -> 0x86bbba
 ```
 
-The common output copy is at `0x86bbe8`: four words from the core status are
-written to the caller's array, with the frequency field multiplied by 1000.
-Cases 6 and 8 are decoded and implemented:
+The frame was reconciled at instruction level. The caller prefills
+`r7+8..r7+16` from object `+0xc/+0x10/+0x14`; `FUN_0086a4dc` then writes
+`param_2[0..9]` (offsets 0..36) and the byte at `+42`. So
+`struct oa_nim_core_status` now models 11 words:
 
 ```text
-type 6: out[0]=core[1]*1000, out[1]=core[12], out[2]=core[13], out[3]=0
-type 8: same, out[3]=word[3]==9 -> 1, ==11 -> 2, else 0xff
+word[0]   frequency kHz   word[1] object+0x10   word[2] symbol rate
+word[3..9] signal/standard enum fields
+word[10]  byte +42 in bits 16..23 (type-1 flag)
 ```
 
-`oa_nim_status_type6`/`type8` carry fake tests. The core extent was pinned at
-instruction level: `FUN_0086a4dc` writes `param_2[0..9]` (offsets 0..36) plus
-a byte at +42; the outer memset covers 0x2c, so byte +42 is initialized but
-the type 1 copy's other words are not. Type 1 is an 11-word copy at
-`0x86bc46..0x86bc80` (`out[0..7]` from `local_64`, `out[8..10]` from
-`local_44`). `oa_nim_status_type1` sets the verified fields:
-`out[1]=word[0]`, `out[2]=word[2]`, `out[9]=1` when byte +42 is zero else 9,
-and deterministically zeroes the vendor's uninitialized words (`out[0]`,
-`out[3..8]`, `out[10]`). Tests cover both byte-42 branches. Types 2/7 and 3
-use secondary `tbb` switches at `0x86bc2a`/`0x86bc10` and larger maps; those
-values are not guessed.
+The output locals at `r7+52..` are a separate, mostly unwritten stack area.
+The earlier `type 6/8 = word[1]*1000, word[12], word[13]` claim was wrong
+because it read that output-local area as core words; it was corrected from
+the instructions before anything depended on it.
+
+Verified maps (all implemented in `common/nim_tune.c` with fake tests):
+
+```text
+type 1 (11 words): out[1]=word0, out[2]=word2, out[9]= byte(+42)==0 ? 1 : 9
+type 3 (4 words):  out[0]=word0*1000, out[1]=word2, out[3]=word3 7..11 -> 1..5, else 6
+type 2/7 (16 words):
+  out[1]=word0*1000
+  out[2]=word4 1->0 2->1 3->2 4->3 5->5 6->7 else 0xff
+  out[3]=word1==6 -> 2, ==7 -> 1, else 0
+  out[6]=word3 3->0 7->1 9->2 11->6 else 0xff
+  out[7]=word6 0->0 1->1 else 2
+  out[8]=word9 1->1 2->2 3->3 else 0xff
+  out[9]=word8 and out[10]=word7: 0->1 1->0 2->2 3->6 4->7 5->3 6->4 else 0xff
+  out[11]=word5 1->1 2->0 3->3 4->2 5->8 6->9 7->7 else 0xff
+  out[14] is explicitly preserved from the caller's buffer (0x86bc1c)
+type 6 (4 words): out[0]=word0*1000, out[3]=0
+type 8 (4 words): out[0]=word0*1000, out[3]=word3==9 -> 1, ==11 -> 2, else 0xff
+```
+
+Type 7 adds `out[12]`: `_hal_NIM_DeliverConfig(&fe, 0xb003, &value, 1)` must
+return success and `value == 1`, else 0 (`0x86be52`). `oa_nim_status_type7`
+takes the deliver-config callback for that one read.
+
+Vendor stack slots that the case bodies copy but never write (`type 1`
+out[0]/out[3..8]/out[10]; `type 2` out[0]/[4]/[5]/[12]/[13]/[15];
+`type 3` out[2]; `type 6/8` out[1]/out[2]) are deterministically 0 in this
+model. That is a documented deviation from returning uninitialized stack, not
+firmware parity for those bytes. The enum names behind core word[3..9] are
+also not claimed: only the translations above are recovered.
+
+```text
+ok nim tune: path/index map, open/close, lock/strength/quality masks and unresolved channel mappings
+```
+
+Focused ASan/UBSan and ARM/qemu pass; TV `mod_tuner.so` sha256 `977b8024...`.
 
 ## SI2151 blocker
 
@@ -323,7 +357,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 7da9de0e8c26780d9cee07f145dfbdba8e3ceed768e0011b2ef4306801c0510d
+sha256 977b802441bd56a2c8c7da57a258ccec29fb1abc57668f8bb98fdb883fc60bb8
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,

@@ -228,13 +228,88 @@ int oa_nim_raw_status_parse(const uint8_t raw[0x180],
     return 1;
 }
 
+/* The vendor's raw-status fields behind core word[3..9] are not named here;
+ * these helpers are the recovered one-stage enum translations only. */
+static uint32_t status_map_core4(uint32_t v)
+{
+    switch (v) {
+    case 1: return 0;
+    case 2: return 1;
+    case 3: return 2;
+    case 4: return 3;
+    case 5: return 5;
+    case 6: return 7;
+    default: return 0xff;
+    }
+}
+
+static uint32_t status_map_core3(uint32_t v)
+{
+    switch (v) {
+    case 3: return 0;
+    case 7: return 1;
+    case 9: return 2;
+    case 11: return 6;
+    default: return 0xff;
+    }
+}
+
+static uint32_t status_map_core78(uint32_t v)
+{
+    switch (v) {
+    case 0: return 1;
+    case 1: return 0;
+    case 2: return 2;
+    case 3: return 6;
+    case 4: return 7;
+    case 5: return 3;
+    case 6: return 4;
+    default: return 0xff;
+    }
+}
+
+static uint32_t status_map_core5(uint32_t v)
+{
+    switch (v) {
+    case 1: return 1;
+    case 2: return 0;
+    case 3: return 3;
+    case 4: return 2;
+    case 5: return 8;
+    case 6: return 9;
+    case 7: return 7;
+    default: return 0xff;
+    }
+}
+
+static uint32_t status_map_core6(uint32_t v)
+{
+    switch (v) {
+    case 0: return 0;
+    case 1: return 1;
+    default: return 2;
+    }
+}
+
+static uint32_t status_map_core9(uint32_t v)
+{
+    switch (v) {
+    case 1: return 1;
+    case 2: return 2;
+    case 3: return 3;
+    default: return 0xff;
+    }
+}
+
 int oa_nim_status_type6(const struct oa_nim_core_status *core, uint32_t out[4])
 {
     if (!core || !out)
         return 0;
-    out[0] = core->word[1] * 1000u;
-    out[1] = core->word[12];
-    out[2] = core->word[13];
+    /* 0x86bbda: out[3]=0 and the common copy at 0x86bbe8. out[1]/out[2] are
+     * stack slots the vendor never writes here. */
+    out[0] = core->word[0] * 1000u;
+    out[1] = 0;
+    out[2] = 0;
     out[3] = 0;
     return 1;
 }
@@ -243,9 +318,10 @@ int oa_nim_status_type8(const struct oa_nim_core_status *core, uint32_t out[4])
 {
     if (!core || !out)
         return 0;
-    out[0] = core->word[1] * 1000u;
-    out[1] = core->word[12];
-    out[2] = core->word[13];
+    /* 0x86bbba: out[3] from core[3] (9 -> 1, 11 -> 2, else 0xff). */
+    out[0] = core->word[0] * 1000u;
+    out[1] = 0;
+    out[2] = 0;
     switch (core->word[3]) {
     case 9:
         out[3] = 1;
@@ -257,6 +333,60 @@ int oa_nim_status_type8(const struct oa_nim_core_status *core, uint32_t out[4])
         out[3] = 0xff;
         break;
     }
+    return 1;
+}
+
+int oa_nim_status_type3(const struct oa_nim_core_status *core, uint32_t out[4])
+{
+    if (!core || !out)
+        return 0;
+    /* 0x86bc06: out[0]=freq*1000, out[1]=symbol rate (object +0x14 is core[2]),
+     * out[3]=standard enum 7..11 -> 1..5, else 6. out[2] is vendor stack. */
+    out[0] = core->word[0] * 1000u;
+    out[1] = core->word[2];
+    out[2] = 0;
+    switch (core->word[3]) {
+    case 7: out[3] = 1; break;
+    case 8: out[3] = 2; break;
+    case 9: out[3] = 3; break;
+    case 10: out[3] = 4; break;
+    case 11: out[3] = 5; break;
+    default: out[3] = 6; break;
+    }
+    return 1;
+}
+
+int oa_nim_status_type2(const struct oa_nim_core_status *core, uint32_t out[16])
+{
+    if (!core || !out)
+        return 0;
+    /* 0x86bc1a..0x86bdfc: 16-word copy. out[14] is read from the caller's
+     * buffer before the copy (0x86bc1c); the other undefined slots zero. */
+    uint32_t keep14 = out[14];
+    memset(out, 0, 16 * sizeof(*out));
+    out[1] = core->word[0] * 1000u;
+    out[2] = status_map_core4(core->word[4]);
+    out[3] = core->word[1] == 6 ? 2 : core->word[1] == 7 ? 1 : 0;
+    out[6] = status_map_core3(core->word[3]);
+    out[7] = status_map_core6(core->word[6]);
+    out[8] = status_map_core9(core->word[9]);
+    out[9] = status_map_core78(core->word[8]);
+    out[10] = status_map_core78(core->word[7]);
+    out[11] = status_map_core5(core->word[5]);
+    out[14] = keep14;
+    return 1;
+}
+
+int oa_nim_status_type7(const struct oa_nim_core_status *core, uint32_t out[16],
+                        int (*deliver_config)(void *ud, uint32_t key,
+                                              const void *data, int len),
+                        void *ud)
+{
+    if (!oa_nim_status_type2(core, out))
+        return 0;
+    uint32_t value = 0;
+    int ok = deliver_config && deliver_config(ud, 0xb003u, &value, 1) == 0;
+    out[12] = ok && value == 1 ? 1 : 0;
     return 1;
 }
 

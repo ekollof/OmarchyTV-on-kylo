@@ -44,32 +44,40 @@ struct oa_nim_raw_channel {
 };
 
 /* Raw 0x180 HAL_Demod_GetStatus buffer. The verified fields are lock at +0,
- * strength at +0x18 and quality at +0x24. The per-signal enum mapping of the
- * vendor's output array is not recovered. */
+ * strength at +0x18 and quality at +0x24. */
 struct oa_nim_raw_status {
     uint8_t raw[0x180];
 };
 
-/* Core channel-status words produced by FUN_0086a4dc. Only the words used by
- * the decoded output cases are named here. */
+/* Caller prefill plus the words FUN_0086a4dc leaves in r7+8..r7+51:
+ *   word[0]  frequency in kHz (object +0xc, refreshed by the type-1 read)
+ *   word[1]  object +0x10
+ *   word[2]  symbol rate (object +0x14)
+ *   word[3..9] signal/standard enum fields
+ *   word[10] bytes 40..43; the type-1 flag is byte +42 (bits 16..23)
+ * The raw-status field identities behind word[3..9] are positional here, not
+ * named: only the enum translations are recovered. */
 struct oa_nim_core_status {
-    uint32_t word[16];
+    uint32_t word[11];
 };
 
-/* Decoded HAL_Demod_User_GetChannelStatus output cases 6 and 8:
- *   out[0] = word[1] * 1000
- *   out[1] = word[12]
- *   out[2] = word[13]
- *   out[3] = case 6: 0; case 8: word[3]==9 -> 1, ==11 -> 2, else 0xff
- */
+/* HAL_Demod_User_GetChannelStatus output cases (0x86bafc), all verified at
+ * instruction level. The vendor copies stack slots it never writes in some
+ * cases; this model zeroes every such slot deterministically. The exception
+ * is type 2/7 out[14], which the vendor explicitly preserves from the
+ * caller's buffer (ldr [r9,#56] at 0x86bc1c). */
+int oa_nim_status_type1(const struct oa_nim_core_status *core, uint32_t out[11]);
+int oa_nim_status_type2(const struct oa_nim_core_status *core, uint32_t out[16]);
+int oa_nim_status_type3(const struct oa_nim_core_status *core, uint32_t out[4]);
 int oa_nim_status_type6(const struct oa_nim_core_status *core, uint32_t out[4]);
 int oa_nim_status_type8(const struct oa_nim_core_status *core, uint32_t out[4]);
-
-/* Type 1 (11-word copy at 0x86bc46): out[1]=word[0], out[2]=word[2],
- * out[9]=1 when byte +42 is zero else 9. The vendor leaves out[0],
- * out[3..8] and out[10] from uninitialized stack; this model zeroes them
- * deterministically. */
-int oa_nim_status_type1(const struct oa_nim_core_status *core, uint32_t out[11]);
+/* Type 7 is type 2 plus out[12]: the vendor calls _hal_NIM_DeliverConfig with
+ * key 0xb003 and a 1-byte value, and reports 1 only when that read succeeded
+ * and returned 1 (0x86be52). A null callback models the failed read. */
+int oa_nim_status_type7(const struct oa_nim_core_status *core, uint32_t out[16],
+                        int (*deliver_config)(void *ud, uint32_t key,
+                                              const void *data, int len),
+                        void *ud);
 
 struct oa_nim_tune_ops {
     int (*switch_tuner_type)(void *ud, int type); /* 0 = success */

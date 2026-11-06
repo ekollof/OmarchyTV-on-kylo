@@ -302,28 +302,139 @@ static void test_raw_status(void)
     assert(oa_nim_raw_status_parse(NULL, &st) == 0);
 }
 
+struct fake_prop {
+    int calls;
+    uint32_t key;
+    int len;
+    uint32_t seen;
+    uint32_t reply;
+    int rc;
+};
+
+static int fake_deliver(void *ud, uint32_t key, const void *data, int len)
+{
+    struct fake_prop *p = ud;
+    p->calls++;
+    p->key = key;
+    p->len = len;
+    memcpy(&p->seen, data, sizeof p->seen);
+    if (p->rc == 0)
+        memcpy((void *)data, &p->reply, sizeof p->reply);
+    return p->rc;
+}
+
 static void test_status_cases(void)
 {
     struct oa_nim_core_status c;
     memset(&c, 0, sizeof c);
-    c.word[1] = 666000;
-    c.word[12] = 0x11;
-    c.word[13] = 0x22;
-    uint32_t out[4];
-    assert(oa_nim_status_type6(&c, out) == 1);
-    assert(out[0] == 666000000u && out[1] == 0x11 && out[2] == 0x22 &&
-           out[3] == 0);
+    c.word[0] = 666000; /* kHz */
+    uint32_t out[16];
 
+    /* Type 6: only the frequency; out[1]/out[2] are vendor stack slots. */
+    memset(out, 0xa5, sizeof out);
+    assert(oa_nim_status_type6(&c, out) == 1);
+    assert(out[0] == 666000000u && out[1] == 0 && out[2] == 0 && out[3] == 0);
+
+    /* Type 8 shares the four-word copy and maps core[3]. */
     c.word[3] = 9;
     assert(oa_nim_status_type8(&c, out) == 1);
-    assert(out[0] == 666000000u && out[3] == 1);
+    assert(out[0] == 666000000u && out[1] == 0 && out[2] == 0 && out[3] == 1);
     c.word[3] = 11;
     assert(oa_nim_status_type8(&c, out) == 1 && out[3] == 2);
-    c.word[3] = 0;
+    c.word[3] = 0x18;
     assert(oa_nim_status_type8(&c, out) == 1 && out[3] == 0xff);
 
     assert(oa_nim_status_type6(NULL, out) == 0);
     assert(oa_nim_status_type8(&c, NULL) == 0);
+}
+
+static void test_status_type3(void)
+{
+    struct oa_nim_core_status c;
+    uint32_t out[4];
+    memset(&c, 0, sizeof c);
+    c.word[0] = 474000; /* kHz */
+    c.word[2] = 6875;   /* symbol rate */
+    c.word[3] = 7;
+    memset(out, 0xa5, sizeof out);
+    assert(oa_nim_status_type3(&c, out) == 1);
+    assert(out[0] == 474000000u && out[1] == 6875 && out[2] == 0 && out[3] == 1);
+
+    for (uint32_t i = 0; i < 5; i++) {
+        c.word[3] = 7 + i;
+        assert(oa_nim_status_type3(&c, out) == 1 && out[3] == 1 + i);
+    }
+    c.word[3] = 6;
+    assert(oa_nim_status_type3(&c, out) == 1 && out[3] == 6);
+    c.word[3] = 12;
+    assert(oa_nim_status_type3(&c, out) == 1 && out[3] == 6);
+
+    assert(oa_nim_status_type3(NULL, out) == 0);
+    assert(oa_nim_status_type3(&c, NULL) == 0);
+}
+
+static void test_status_type2_7(void)
+{
+    struct oa_nim_core_status c;
+    uint32_t out[16];
+    memset(&c, 0, sizeof c);
+    c.word[0] = 666000;
+    c.word[1] = 6;
+    c.word[3] = 9;
+    c.word[4] = 5;
+    c.word[5] = 6;
+    c.word[6] = 1;
+    c.word[7] = 4;
+    c.word[8] = 3;
+    c.word[9] = 2;
+
+    memset(out, 0xa5, sizeof out);
+    out[14] = 0xdeadbeef;
+    assert(oa_nim_status_type2(&c, out) == 1);
+    assert(out[0] == 0 && out[1] == 666000000u && out[2] == 5 && out[3] == 2);
+    assert(out[4] == 0 && out[5] == 0);
+    assert(out[6] == 2 && out[7] == 1 && out[8] == 2 && out[9] == 6 &&
+           out[10] == 7 && out[11] == 9 && out[12] == 0);
+    assert(out[13] == 0 && out[14] == 0xdeadbeef && out[15] == 0);
+
+    /* Default branches of each map. */
+    c.word[1] = 0;
+    c.word[3] = 0;
+    c.word[4] = 0;
+    c.word[5] = 0;
+    c.word[6] = 7;
+    c.word[7] = 7;
+    c.word[8] = 7;
+    c.word[9] = 0;
+    assert(oa_nim_status_type2(&c, out) == 1);
+    assert(out[2] == 0xff && out[3] == 0 && out[6] == 0xff && out[7] == 2 &&
+           out[8] == 0xff && out[9] == 0xff && out[10] == 0xff &&
+           out[11] == 0xff);
+    c.word[6] = 0;
+    assert(oa_nim_status_type2(&c, out) == 1 && out[7] == 0);
+
+    /* Type 7 adds the 0xb003 one-byte read: 1 only on success and value 1. */
+    struct fake_prop p = { .reply = 1, .rc = 0 };
+    memset(out, 0xa5, sizeof out);
+    out[14] = 0x11223344;
+    assert(oa_nim_status_type7(&c, out, fake_deliver, &p) == 1);
+    assert(p.calls == 1 && p.key == 0xb003 && p.len == 1 && p.seen == 0);
+    assert(out[12] == 1 && out[14] == 0x11223344 && out[1] == 666000000u);
+
+    p.reply = 0;
+    p.rc = 0;
+    assert(oa_nim_status_type7(&c, out, fake_deliver, &p) == 1 && out[12] == 0);
+
+    p.reply = 1;
+    p.rc = -1;
+    assert(oa_nim_status_type7(&c, out, fake_deliver, &p) == 1 && out[12] == 0);
+
+    p.calls = 0;
+    assert(oa_nim_status_type7(&c, out, NULL, NULL) == 1);
+    assert(out[12] == 0 && p.calls == 0);
+
+    assert(oa_nim_status_type7(NULL, out, fake_deliver, &p) == 0);
+    assert(oa_nim_status_type7(&c, NULL, fake_deliver, &p) == 0);
 }
 
 static void test_status_type1(void)
@@ -333,6 +444,7 @@ static void test_status_type1(void)
     c.word[0] = 0x11;
     c.word[2] = 0x22;
     uint32_t out[11];
+    memset(out, 0xa5, sizeof out);
     assert(oa_nim_status_type1(&c, out) == 1);
     assert(out[1] == 0x11 && out[2] == 0x22 && out[9] == 1);
     assert(out[0] == 0 && out[3] == 0 && out[4] == 0 && out[5] == 0 &&
@@ -379,6 +491,8 @@ int main(void)
     test_raw_channel();
     test_raw_status();
     test_status_cases();
+    test_status_type3();
+    test_status_type2_7();
     test_status_type1();
     test_binding();
     puts("ok nim tune: path/index map, open/close, lock/strength/quality "
