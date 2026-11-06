@@ -2085,6 +2085,14 @@ $(BUILD)/tests/mod_plat_fixture.so: $(call pic_objs,tests__mod_plat_fixture,test
 	$(CC) -shared -o $@ $^ $(LDFLAGS)
 $(eval $(call emit_pics,tests__mod_plat_fixture,tests/plat_fixture.c,,include/openaurora/module.h include/openaurora/services.h))
 
+# qemu-vin-real-check.sh loads this as modules/mod_plat.so and calls
+# `load plat`; keep the descriptor name "plat" even though the source is a
+# test stub. It publishes only the no-HAL plat service.
+$(BUILD)/tests/mod_plat_stub.so: $(call pic_objs,tests__mod_plat_stub,tests/mod_plat_stub.c)
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,tests__mod_plat_stub,tests/mod_plat_stub.c,,include/openaurora/module.h include/openaurora/services.h))
+
 .PHONY: check-plat-consumers-socket
 check-plat-consumers-socket: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_plat_fixture.so $(BUILD)/modules/mod_audio.so $(BUILD)/modules/mod_source.so $(BUILD)/modules/mod_ir.so $(BUILD)/modules/mod_panel.so
 	node tests/plat_consumers_socket.cjs $(abspath $(BUILD))

@@ -40,8 +40,9 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "panel.min_percent")) return g_min_percent ? "20" : "0";
     if (!strcmp(key, "panel.duty_max")) return g_duty_max == 1000 ? "1000" : "4095";
     if (!strcmp(key, "panel.start")) return "100";
-    if (!strcmp(key, "panel.channel")) return "3";
-    if (!strcmp(key, "panel.freq")) return "20000";
+    if (!strcmp(key, "panel.channel")) return "0";
+    if (!strcmp(key, "panel.freq")) return "30000";
+    if (!strcmp(key, "panel.mode")) return "0";
     return def;
 }
 static int publish(void *p, const char *name, uint32_t version, const void *iface)
@@ -86,8 +87,10 @@ int main(void)
     g_curve = 1;
     void *ctx = start_module();
     assert(init_calls == 1 && open_calls == 1 && set_calls == 1);
-    assert(last_open.channel == 3 && last_open.freq == 20000 && last_open.duty == 4095);
-    assert(last_channel == 3 && last_set.duty == 4095);
+    assert(last_open.channel == 0 && last_open.freq == 30000 &&
+           last_open.duty == 4095);
+    assert(last_channel == 0 && last_set.freq == 30000 &&
+           last_set.mode == 0 && last_set.duty == 4095);
     /* min 20%: level=pct*10 -> curve -> 12-bit duty. */
     assert(panel_iface->set_backlight_percent(50) == 0 && last_set.duty == 2457);
     assert(panel_iface->set_backlight_percent(0) == 0 && last_set.duty == 819);

@@ -14,8 +14,10 @@
  *     ├─ Hal_Pwm_Open(&{channel, freq, duty, shift, mode, extra})
  *     └─ Hal_Pwm_Set_ByChannel(ch, &{freq, duty 0..4095, shift, mode})
  *
- * Channel and frequency come from a per-model board table we have not located, so
- * they are configuration (panel.channel / panel.freq) until calibrated on the set.
+ * The stock process's populated descriptor table and globals calibrate this
+ * unit: DEV_PWM_Get_ChIdx(0x6c) -> channel 0 via astPwmBasePin, frequency
+ * gu32PanelFreqInHz=30000, set-mode genPwmdimMode=0, current level 1000.
+ * Keep them as configuration because the values are board/profile state.
  * panel.curve=1 selects the recovered DEV_PANEL_Init/SetPWMBacklightLv curve
  * (breakpoints 40/60/80/100, level scale 1000) with panel.min_percent as the
  * runtime limit; panel.duty_max is the final 12-bit calibration (default 4095).
@@ -71,6 +73,7 @@ struct ctx {
     const oa_host_api *api;
     int channel;
     int freq;
+    int mode;    /* DEV_PANEL_SetPWMBacklightLevel's genPwmdimMode */
     int percent; /* what we asked for, 0..100 */
     int raw;     /* optional: pass this duty verbatim, ignoring percent */
     int curve_on;/* panel.curve=1 uses the recovered vendor backlight curve */
@@ -116,7 +119,7 @@ static int apply(struct ctx *c, int pct)
              c->curve_on ? oa_panel_percent_to_duty(&c->curve, pct, c->duty_max) :
              pct * c->duty_max / 100);
     r.shift = 0;
-    r.mode = 1;          /* must be < 9 */
+    r.mode = (uint32_t)c->mode; /* genPwmdimMode; must be < 9 */
     (void)Hal_Pwm_Set_ByChannel((unsigned)c->channel, &r);
     c->percent = pct;
     return 0;
@@ -176,7 +179,9 @@ static int m_start(void *v)
                                          "panel.cleanup_delay_ms", "0"));
     c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
     c->channel = atoi(c->api->config_get(c->api->priv, "panel.channel", "0"));
-    c->freq = atoi(c->api->config_get(c->api->priv, "panel.freq", "20000"));
+    c->freq = atoi(c->api->config_get(c->api->priv, "panel.freq", "30000"));
+    c->mode = atoi(c->api->config_get(c->api->priv, "panel.mode", "0"));
+    if (c->mode < 0 || c->mode > 8) c->mode = 0;
     c->percent = atoi(c->api->config_get(c->api->priv, "panel.start", "100"));
     c->raw = atoi(c->api->config_get(c->api->priv, "panel.raw", "-1"));
     c->curve_on = c->api->config_get(c->api->priv, "panel.curve", "0")[0] == '1';

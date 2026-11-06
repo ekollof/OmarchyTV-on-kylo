@@ -1,0 +1,26 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+openaurora: OK
+oa-client: OK
+openaurora.conf: OK
+modules/mod_panel.so: OK
+modules/mod_plat_stub.so: OK
+verify_rc=0
+check_rc=0
+Runtime preflight PASSED. No module entry/init/start, control socket or hardware access.
+This checks ELF metadata and library relocations, not device operation or display scanout.
+== pre
+747.54 2814.57
+ 1562 /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+ 1765 /vendor/com.nvt.idtv/aurora.elf
+ 1949 [aurora.elf]
+ 6387 sh -c cd /buffer/oa-panel-20261107 && sha256sum -c SHA256SUMS; echo verify_rc=$?; ./openaurora --check --modules ./modules >/tmp/oa-panel-check.log 2>&1; echo check_rc=$?; tail -2 /tmp/oa-panel-check.log; echo "== pre"; cat /proc/uptime; ps -eo pid,args | grep -E "[a]urora.elf|[a]ppmgr|[o]penaurora"; pid=$(ps -eo pid,args | awk "/[a]urora.elf/{print \$1; exit}"); echo pid=$pid; echo -n "backlight para: "; dd if=/proc/$pid/mem bs=1 skip=$((0x19354c4)) count=8 2>/dev/null | od -An -tx4 -v; echo -n "freq/mode: "; dd if=/proc/$pid/mem bs=1 skip=$((0x1761870)) count=16 2>/dev/null | od -An -tx4 -v; md5sum /conf/mb230_hwprofile.bin; cat /sys/class/graphics/fb1/virtual_size /sys/class/graphics/fb1/pan 2>/dev/null
+pid=1765
+backlight para:  03e803e8 00000000
+freq/mode:  00000000 03e803e8 00007530 00858f45
+1b063b2cc7faa8b92c0f843921e561c7  /conf/mb230_hwprofile.bin
+1920,2160
+0,0

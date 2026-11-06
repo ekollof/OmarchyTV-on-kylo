@@ -221,6 +221,17 @@ and one no-RF TV run pass. No RF tune/lock acceptance, no execution of the
 Aurora-only symbol, and the 6/7 MHz/platform-IF-mode variants remain
 unvalidated. Report: TUNER-VENDOR-CHANNEL-2026-11-07.
 
+PANEL-BACKLIGHT-2026-11-07: the stock process's populated descriptor table
+shows backlight id `0x6c` -> pin 108 -> PWM channel 0 (`astPwmBasePin`
+`0x175f320`); `gu32PanelFreqInHz` is 30000, `genPwmdimMode` 0 and the current
+level 1000. `mod_panel` defaults were corrected from 20000 Hz/mode 1 to
+30000 Hz/configurable `panel.mode=0`; the open request remains mode 1. A clean
+50% run loaded `plat_stub` + `panel`, opened `/dev/ntkled` and reported
+`panel-state 50`, but no measured/owner-confirmed brightness was obtained. A
+first stage accidentally used the real `mod_plat`; it was restored by reboot
+and is not panel acceptance. Panel power/resume remain open. Report:
+PANEL-BACKLIGHT-2026-11-07.
+
 EASI-PROBE-2026-11-05: testtool TCP1986 exposes read-only GETCHANNELLIST
 (RSN/name) and ACTIVECHANNELLIST XML (RSN/name/handle/ONID/TSID/SID/type). A
 whitelist-only probe client with bounded parsing, host fixture and ARM build

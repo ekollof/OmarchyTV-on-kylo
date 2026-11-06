@@ -1,10 +1,11 @@
-/* Stub plat service for fb1-only UI tests on the running set.
+/* Stub plat service for fb1-only UI, VIN and panel tests.
  *
- * mod_display declares OA_SVC_PLAT in requires[] but does not call it when
- * display.drm_init=0 / display.set_region=0. The real mod_plat runs the vendor
- * HAL bring-up, which must not run a second time under the stock aurora. This
- * stub publishes a ready, error-free plat interface so the display module can
- * start without touching audio/DRM/GPIO/I2C. Test-only, never deployed.
+ * mod_display/mod_panel declare OA_SVC_PLAT in requires[] but do not need the
+ * vendor HAL for these tests. The real mod_plat runs the vendor bring-up,
+ * which must not run a second time under the stock aurora (and fails under
+ * qemu without the audio mixer). This stub publishes a ready, error-free plat
+ * interface. Test-only, never deployed. The module name is "plat" because
+ * qemu-vin-real-check.sh loads the copied artifact as modules/mod_plat.so.
  */
 #include "openaurora/module.h"
 #include "openaurora/services.h"
@@ -41,7 +42,7 @@ static void m_destroy(void *v) { (void)v; }
 
 static const oa_module g_module = {
     .magic = OA_MODULE_MAGIC, .abi = OA_ABI_VERSION, .size = sizeof(oa_module),
-    .name = "plat_stub", .version = "1",
+    .name = "plat", .version = "1",
     .init = m_init, .start = m_start, .stop = m_stop, .destroy = m_destroy,
 };
 

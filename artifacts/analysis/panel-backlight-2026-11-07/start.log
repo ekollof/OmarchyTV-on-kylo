@@ -1,0 +1,42 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+watchdog disable -> sent
+disable_rc=0
+ 1562 /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+== start
+launched=6446
+== ps
+== log
+[754682] INFO host         openaurora starting, modules=./modules
+[754683] INFO host         control socket /tmp/oa-panel.sock
+[754683] INFO host         loaded plat v0.1 (./modules/mod_plat_stub.so)
+[754683] INFO plat         plat: waiting for /tmp/ntkdriver_completed (ICE_HardwareInit order)
+[754683] INFO plat         plat: driver marker ready after 0 ms
+[754683] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[754683] INFO plat         plat: common init (vpltio/v4l2/sharemem/drm, DVIF)
+[754683] INFO plat         plat: VIN slot defaults (7 slots)
+[754684] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[754684] DBG  plat         service up: plat v1
+[754684] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[754684] INFO host         started plat
+[754699] INFO host         loaded panel v0.2 (./modules/mod_panel.so)
+[754699] INFO panel        vendor HAL linked: channel 0, 30000 Hz, start 50%
+[754700] DBG  panel        service up: panel v1
+[754700] INFO host         started panel
+Can not open /dev/nvt/ntkled , try path /dev/ntkled 
+Open /dev/ntkled successfully 
+openaurora: 2 module(s) loaded, control on /tmp/oa-panel.sock
+== status
+name    panel
+state   started
+version 0.2
+path    ./modules/mod_panel.so
+requires plat
+cleanup_pending 0
+activation_rejected 0
+services panel:v1
+== panel
+panel percent 50

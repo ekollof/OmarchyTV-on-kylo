@@ -1,0 +1,15 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+pid=
+== panel state
+panel percent 50
+== log tail
+[ 63081] INFO panel        vendor HAL linked: channel 0, 30000 Hz, start 50%
+[ 63081] DBG  panel        service up: panel v1
+[ 63081] INFO host         started panel
+Can not open /dev/nvt/ntkled , try path /dev/ntkled 
+Open /dev/ntkled successfully 
+openaurora: 2 module(s) loaded, control on /tmp/oa-panel.sock

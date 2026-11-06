@@ -146,9 +146,19 @@ unvalidated.
 
 ### Display / panel
 
-- [ ] `display.verify_scanout` and full-screen bars; first frame on
-      vendor-initialized fb1; panel curve/`panel.duty_max`; backlight and
-      resume; restore stock display and verify.
+- [x] `display.verify_scanout` and full-screen bars; first frame on
+      vendor-initialized fb1; restore stock display. CONTROLLED-SCANOUT
+      2026-11-06: stock stopped, magenta band held byte-identical, driver
+      yoffset/region/MAU verified; second run's eight full-screen bars were
+      owner-confirmed on the panel; stop restored fb1 and watchdog reboot
+      returned stock. This is not cold startup or MCU/standby authority.
+- [ ] Panel backlight/PWM curve: stock calibration recovered read-only
+      (channel 0, 30000 Hz, set-mode 0, level 1000) and `mod_panel` defaults
+      corrected; clean 50% hardware run opened `/dev/ntkled` and reported
+      `panel-state 50`. Owner-confirmed brightness or measured duty is still
+      missing. PANEL-BACKLIGHT.
+- [ ] Panel power/backlight resume after real kernel PM suspend and standby
+      ownership; separate from the host hook-only `suspend`/`resume` tests.
 
 ### Audio / CEC
 

@@ -727,6 +727,17 @@ by wdtctl set 10; latest stock appmgr 1562/aurora 1765, staging/socket absent,
 profile unchanged. TUNER-TAKEOVER/TUNER-VENDOR-CHANNEL. SI2151 is the full
 Silicon Labs patch/property driver, not this profile's path.
 
+Panel backlight 2026-11-07: read the stock process read-only for calibration:
+GPIO descriptor 0x6c -> pin108 -> PWM channel0 via astPwmBasePin (0x175f320);
+gu32PanelFreqInHz=30000, genPwmdimMode=0, gstBacklightPara level1000. Corrected
+mod_panel defaults (30000 Hz, panel.mode0; open mode1) and tests. A first stage
+mistakenly contained the real mod_plat (stale stub) and ran the full plat HAL;
+it was restored by reboot and is not panel acceptance. Rebuilt the actual
+plat_stub (37f8f320...; later named plat 97ef7656... for the VIN harness) and ran cleanly at 50%: panel loaded, /dev/ntkled fd6
+open, panel-state50. Brightness is not measured/owner-confirmed; panel
+power/resume remain open. Restored by wdtctl set10: latest stock appmgr1577/
+aurora1774, level1000, freq/mode30000/0, profile/fb unchanged. PANEL-BACKLIGHT.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran
