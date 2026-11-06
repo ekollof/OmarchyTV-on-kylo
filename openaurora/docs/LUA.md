@@ -240,9 +240,12 @@ Stock `io` does not speak HTTP. `oa.fetch` is the only network path.
 - At most two fetches are queued or running. Suspend, stop, script swap, and
   a rejected candidate kill the child and drop the callback. A callback whose
   generation no longer matches does not touch a closed state.
-- Quiesce is non-blocking. A live child is signalled and, if it has not been
-  reaped, quiesce returns busy so the module is not `dlclose`d. The host
-  retries. The first pass sends `SIGTERM`; a later pass sends `SIGKILL`.
+- Quiesce is non-blocking. It unpublishes `ui.lua` and drops the pump
+  first. A live child is signalled and, if it has not been reaped, quiesce
+  returns busy so the module is not `dlclose`d. The host retries. The first
+  pass sends `SIGTERM`; a later pass sends `SIGKILL`. While that is pending,
+  `reload_script` fails and a paint/key/enter/leave hook is not called
+  (the hook reports not handled). Read-only status still answers.
 
 ```lua
 function oa_paint(skin)

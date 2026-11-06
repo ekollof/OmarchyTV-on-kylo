@@ -2,11 +2,13 @@
  * Drives the shipped modules and host control parser. */
 #include <arpa/inet.h>
 #include <assert.h>
+#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <poll.h>
 #include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -164,6 +166,76 @@ static int start_server(int port, const char *dir)
         snprintf(p, sizeof p, "%d", port);
         execl("/usr/bin/python3", "python3", "-m", "http.server", p, "--bind", "127.0.0.1", (char *)NULL);
         _exit(127);
+    }
+    return (int)pid;
+}
+
+static pid_t find_child(const char *comm)
+{
+    DIR *d = opendir("/proc");
+    struct dirent *e;
+    pid_t self = getpid();
+    pid_t found = 0;
+    if (!d)
+        return 0;
+    while ((e = readdir(d))) {
+        char path[64], buf[256], name[64];
+        char *left, *right;
+        ssize_t n;
+        int fd;
+        pid_t pid = (pid_t)atoi(e->d_name);
+        int ppid = 0;
+        if (pid <= 0)
+            continue;
+        snprintf(path, sizeof path, "/proc/%d/stat", (int)pid);
+        fd = open(path, O_RDONLY);
+        if (fd < 0)
+            continue;
+        n = read(fd, buf, sizeof buf - 1);
+        close(fd);
+        if (n <= 0)
+            continue;
+        buf[n] = 0;
+        left = strchr(buf, '(');
+        right = strrchr(buf, ')');
+        if (!left || !right || right < left || (size_t)(right - left - 1) >= sizeof name)
+            continue;
+        memcpy(name, left + 1, (size_t)(right - left - 1));
+        name[right - left - 1] = 0;
+        if (sscanf(right + 2, "%*c %d", &ppid) != 1 || ppid != self)
+            continue;
+        if (!strcmp(name, comm)) {
+            found = pid;
+            break;
+        }
+    }
+    closedir(d);
+    return found;
+}
+
+/* Accept connections and never write a response, so curl stays running. */
+static int hang_server(int port)
+{
+    pid_t pid = fork();
+    assert(pid >= 0);
+    if (pid == 0) {
+        int s = socket(AF_INET, SOCK_STREAM, 0);
+        int one = 1;
+        struct sockaddr_in in;
+        if (s < 0)
+            _exit(127);
+        setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &one, sizeof one);
+        memset(&in, 0, sizeof in);
+        in.sin_family = AF_INET;
+        in.sin_port = htons((uint16_t)port);
+        in.sin_addr.s_addr = htonl(0x7f000001);
+        if (bind(s, (struct sockaddr *)&in, sizeof in) != 0 || listen(s, 4) != 0)
+            _exit(127);
+        for (;;) {
+            int c = accept(s, NULL, NULL);
+            if (c < 0 && errno != EINTR)
+                _exit(0);
+        }
     }
     return (int)pid;
 }
@@ -447,6 +519,66 @@ int main(int argc, char **argv)
     }
     assert(!command(&host, "stop ui_omarchy", out, sizeof out));
     assert(!command(&host, "unload ui_omarchy", out, sizeof out));
+    {
+        int hang_port = port + 1;
+        int hang = hang_server(hang_port);
+        int handled = 0;
+        int q;
+        char hang_path[320];
+        oa_mod *lua_mod;
+        uint64_t end;
+        assert(server_up(hang_port));
+        snprintf(hang_path, sizeof hang_path, "%s/hang.lua", g_root);
+        {
+            FILE *f = fopen(hang_path, "w");
+            assert(f);
+            fprintf(f,
+                "oa.nav(1, 1)\n"
+                "function oa_paint(skin)\n"
+                "  oa.nav(4, 7)\n"
+                "  oa.fetch('http://127.0.0.1:%d/hang', function(body, err)\n"
+                "    oa.nav(5, 5)\n"
+                "  end)\n"
+                "  return 1\n"
+                "end\n",
+                hang_port);
+            assert(!fclose(f));
+        }
+        lua = hold(&host);
+        assert(lua->reload_script(hang_path) == 0);
+        assert(lua->call("paint", "omarchy", 0, &handled) == 0 && handled == 1);
+        assert(lua->nav(&band, &index) == 0 && band == 4 && index == 7);
+        drop(&host);
+        drive(&host, 15);
+        lua_mod = oa_host_find_module(&host, "lua");
+        assert(lua_mod && lua_mod->desc->quiesce);
+        {
+            /* Freeze curl so the SIGTERM inside quiesce cannot reap it
+             * before waitpid(WNOHANG). A stopped child is not a zombie. */
+            pid_t curl = find_child("curl");
+            assert(curl > 0);
+            assert(kill(curl, SIGSTOP) == 0);
+        }
+        q = lua_mod->desc->quiesce(lua_mod->ctx);
+        assert(q == -1);
+        handled = 0;
+        assert(lua->call("paint", "omarchy", 0, &handled) == 0 && handled == 0);
+        assert(lua->nav(&band, &index) == 0 && band == 4 && index == 7);
+        assert(lua->reload_script(g_script) == -1);
+        assert(lua->nav(&band, &index) == 0 && band == 4 && index == 7);
+        kill(hang, SIGTERM);
+        waitpid(hang, NULL, 0);
+        end = oa_now_ms() + 3000;
+        do {
+            q = lua_mod->desc->quiesce(lua_mod->ctx);
+            if (q == 0)
+                break;
+            usleep(20000);
+        } while (oa_now_ms() < end);
+        assert(q == 0);
+        unlink(hang_path);
+        puts("  ok   quiesce unpublishes lua and rejects hook/reload while curl is unreaped");
+    }
     assert(!command(&host, "stop lua", out, sizeof out));
     assert(!command(&host, "unload lua", out, sizeof out));
     g_script[0] = 0;

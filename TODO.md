@@ -147,7 +147,8 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       `mod_ir` now keeps `/dev/ttyS2` closed when BLAST succeeds unless
       `ir.device` is explicit, removing the common dual-open reload stall
       (observed host stall ~64 s). OA-CLIENT-ASYNC. `mod_ir` also has the async
-      cleanup gate below; other modules still stop synchronously.
+      cleanup gate below. Later gates are in the following entries; the open
+      generic item lists what is still synchronous.
 
 - [x] First production GPU scene-path probe on fb1: staged
       graphics/scene_display + oa-scene-broker/scene-renderer.so, painted the
@@ -177,8 +178,7 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       skin teardown, then the font pack and text caches are detached and freed
       on a worker; idempotent for reload/unload. The control test asserts
       fast-fail reload, responsive status, retry, republished portal screen7
-      and clean stop/unload. It also fixed restore rejecting screen7. Other
-      modules still stop synchronously. `mod_ui_engine` has the gate too
+      and clean stop/unload. It also fixed restore rejecting screen7. `mod_ui_engine` has the gate too
       (UI-ENGINE-QUIESCE): refuse while a skin dispatch is on the stack,
       otherwise unpublish/drop display/alpha/async, unsubscribe, delete
       timers, then free the OAI1 icon cache on a worker; idempotent. The
@@ -418,7 +418,11 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr`,
       `channels`, `service_db`, `image_decode`, `ui_theme`, `ui_list`,
       `ui_navigation`, `ui_profile`, `audio_curve`, `audio_amp_profile` and
-      `panel` are the existing models.
+      `panel` are the pthread models. `lua` unpublishes `ui.lua` and rejects
+      hook/reload while a fetch child is unreaped. `graphics` and
+      `scene_display` have their own non-pthread gates. `plat`, `power`,
+      `ticker`, `ui_anim`, `ui_clock`, `ui_console`, `ui_diag` and `ui_omarchy`
+      still stop synchronously.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in
@@ -567,16 +571,19 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       watchdog-safe instruction.
 
 - [ ] Stock apps-grid pixel parity: needs a pixel-correct full-screen apps-grid
-      oracle. The TV currently shows the no-signal frame, no HDMI capture device
+      oracle. A 2026-11-06 view-only wake still showed stock Aurora's
+      "Geen signaal" banner (PIDs 2204/1781, appmgr 1579, no openaurora),
+      not the apps grid. No HDMI capture device
       is attached and no keys were sent. Owner must leave the TV on the stock
       apps grid for a read-only fb1 capture, authorize navigation keys, or
       provide an HDMI capture. Then run `tools/tvshot.py` and
       `make -C openaurora compare-stock-apps-grid` against the firmware-grounded
       region manifest.
 
-- [ ] Independent startup: boot into openaurora without starting vendor Aurora;
-      full-screen scanout, input, fallback and resume all verified. Owner authorized
-      an idle hardware/CEC/audio test window on November 1; see AGENTS.md.
+- [ ] Independent startup: boot into openaurora without starting vendor Aurora.
+      Temporary takeovers showed scanout, input, fallback and resume, then stock
+      was restored. Cold boot, MCU authority and a clean handback are not verified.
+      Owner authorized an idle hardware/CEC/audio test window on November 1; see AGENTS.md.
 - [ ] Reloadable modules: state, service holds, callback ownership and dependencies
       behave correctly through start/stop/reload/suspend/resume and failures.
 - [ ] Reproduce vendor screens, remote behavior, settings and the remaining TV
@@ -1595,7 +1602,8 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       display integration. Start/draw/
       suspend remain synchronous; this is not kernel power parity or complete
       fallback. FBR2 native-struct ABI portability and file
-      validation remain open. Current TV permission excludes active fb1.
+      validation remain open. Temporary fb1 use was authorized on 2026-11-05;
+      stock Aurora is running again. This is not cold startup or a persistent binding.
 - [ ] Cold independent startup without vendor Aurora: establish MCU authority,
       watchdog/fallback and full display ownership/restoration from firmware.
       A historical FreshWDT return1 did not prove rejection or impossibility.
@@ -2262,8 +2270,9 @@ ARM checks are1771396 row renders,276 setters,536 image-ID/IDM,80 SVGImage,
       `build-lua-arm/tests/ui_lua` under qemu-arm-static and bwrap exit 0.
       The http success path is the host run. qemu-user cannot exec host python
       or curl, so the ARM run takes the failed-transfer callback. Vendor pixels
-      are unchanged. This is not television startup or scanout; criterion 4
-      stays unmet. See openaurora/docs/LUA.md.
+      are unchanged. Quiesce unpublishes `ui.lua` and rejects hook/reload while
+      a fetch child is unreaped (`check-ui-lua`). This is not television startup
+      or scanout; criterion 4 stays unmet. See openaurora/docs/LUA.md.
 - [x] Gated `oa.aurora` Lua control bridge: `ui.lua.control` defaults off;
       1 allows synchronous read-only control queries, 2 allows deferred
       control commands through the host post queue. `aurora.query`,

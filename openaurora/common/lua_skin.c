@@ -1812,6 +1812,10 @@ static int rt_quiesce(struct runtime *rt)
     if (!rt)
         return 0;
     rt->quiescing = 1;
+    /* Drop the service before the child is reaped so a later host turn
+     * cannot look it up and swap or hook the session under the child. */
+    unpublish_service(rt);
+    drop_pump(rt);
     if (!rt->live)
         return 0;
     for (i = 0; i < FETCHES; i++) {
@@ -2123,7 +2127,9 @@ static int svc_reload(const char *path)
     struct model saved;
     int have_model = 0;
     const char *use;
-    if (!rt || rt->suspended || rt->in_call)
+    /* Quiesce has unpublished the service and may still be reaping a child.
+     * A script swap here would block in waitpid and free that session. */
+    if (!rt || rt->suspended || rt->quiescing || rt->in_call)
         return -1;
     use = path && path[0] ? path : rt->path;
     if (rt->live) {
@@ -2265,7 +2271,9 @@ static int svc_call(const char *hook, const char *skin, int arg, int *handled)
         *handled = 0;
     if (!rt || !skin_name_ok(skin) || hook_name(hook, &global) != 0)
         return -1;
-    if (!rt->live || rt->suspended)
+    /* Not handled: the vendor skin must still see the key while cleanup
+     * is pending. The VM stays alive until stop, but hooks must not run. */
+    if (!rt->live || rt->suspended || rt->quiescing)
         return 0;
     if (rt->in_call) {
         set_note(rt, EBUSY, "lua hook re-entered");

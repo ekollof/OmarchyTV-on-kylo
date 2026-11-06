@@ -1,4 +1,12 @@
-# Current project state — last verified 2026-11-05
+# Current project state — last verified 2026-11-06
+
+View-only wake, 2026-11-06: stock Aurora PIDs 2204 and 1781, appmgr 1579,
+no openaurora. fb1 virtual 1920×2160, pan 0,1080. Frame 0 is the stock
+"Geen signaal" banner. `/conf/oa_safe` and `/conf/coredumpnoreset` are
+present; `/conf/oa_boot` and `/conf/oa_fail` are absent. `/buffer/openaurora`
+remains and `/buffer/oa-takeover` does not. Not a takeover.
+
+# Previous verified state — 2026-11-05
 
 Full portal takeover with the physical remote, 2026-11-05: staged ABI 3
 `plat_stub/display_fb/ui_engine/settings/service_db/image_decode/ir/ui_vendor`
