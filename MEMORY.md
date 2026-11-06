@@ -394,6 +394,22 @@ ticker/ui_anim/ui_clock/ui_console/ui_diag/ui_omarchy.
 ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
 audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list/
 ui_navigation/ui_profile are the async modules. UI-PROFILE-QUIESCE.
+
+audio_curve async gate, 2026-11-06: decoded101-point table moved to heap.
+Quiesce clears ready/published, unpublishes audio.curve synchronously,
+detaches the table, then frees synchronously or on a worker after
+audio_curve.cleanup_delay_ms. m_stop/m_destroy join/free; m_start refuses if
+live and rereads the AQ file/profile, so no handoff snapshot is needed.
+Control test: base100 curve110, reload fails fast, audio-curve ENODEV, status
+responsive, AQ changed to base200, retry curve210; stop gate. Direct/module/
+fixture tests pass; ARM links libpthread. Full/QEMU pass. DSP table entries,
+not hardware gain; profile selection still explicit. 25/35 descriptors now
+have quiesce; 10 remain: audio_amp_profile/panel/plat/power/ticker/ui_anim/
+ui_clock/ui_console/ui_diag/ui_omarchy.
+ir/i18n/settings/ui_vendor/ui_engine/display/source/ui_menu/audio/cec/
+audio_mixer/tuner/epg/pvr/channels/service_db/image_decode/ui_theme/ui_list/
+ui_navigation/ui_profile/audio_curve are the async modules.
+AUDIO-CURVE-QUIESCE.
 SERVICE-DB-QUIESCE.
 CHANNELS-QUIESCE.
 

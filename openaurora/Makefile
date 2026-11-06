@@ -825,7 +825,7 @@ $(BUILD)/oa-audio-broker: tools/audio/oa-audio-broker.c common/audio_broker.c co
 
 $(BUILD)/modules/mod_audio_curve.so: modules/audio_curve/audio_curve.c common/audio_curve.c include/openaurora/audio_curve.h include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -shared -MMD -MP -o $@ $(filter %.c,$^) -pthread $(LDFLAGS)
 
 $(BUILD)/oa-supervise: tools/boot/oa-supervise.c
 	@mkdir -p $(dir $@)
@@ -1190,6 +1190,11 @@ check-audio-client: $(BUILD)/tests/audio_client
 $(BUILD)/tests/audio_curve_module: tests/audio_curve_module.c core/host.h include/openaurora/audio_curve.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $< $(filter %.o,$^) $(LDLIBS)
+
+.PHONY: check-audio-curve-quiesce
+check-audio-curve-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_audio_curve.so
+	node tests/audio_curve_quiesce.cjs $(abspath $(BUILD))
+check: check-audio-curve-quiesce
 
 check-audio-curve-module: $(BUILD)/tests/audio_curve_module $(BUILD)/modules/mod_audio_curve.so $(BUILD)/modules/mod_ticker.so
 	@$(BUILD)/tests/audio_curve_module $(BUILD)/modules

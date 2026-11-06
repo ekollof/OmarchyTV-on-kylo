@@ -371,15 +371,26 @@ test counts remain dated evidence; no full decoder/display/ownership gate closes
       Unit/fixture tests pass; ARM links libpthread. Full/QEMU pass.
       UI-PROFILE-QUIESCE.
 
+- [x] Asynchronous gate for `mod_audio_curve`: move the decoded 101-point
+      table to the heap. Quiesce clears ready/published, unpublishes
+      `audio.curve` synchronously, detaches the table, then frees it
+      synchronously or on a worker after `audio_curve.cleanup_delay_ms`.
+      `m_stop`/`m_destroy` join/free; `m_start` refuses if live and rereads the
+      AQ file/profile, so no handoff snapshot is needed. Control-socket test:
+      base100 curve110, reload fails fast, `audio-curve` ENODEV, status
+      responsive, AQ changed to base200, retry curve210; stop uses the gate.
+      Direct/module/fixture tests pass; ARM links libpthread. Full/QEMU pass.
+      AUDIO-CURVE-QUIESCE.
+
 - [ ] Generic asynchronous module lifecycle: extend the queued/nonblocking
       stop/reload model beyond
-      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`,
+      `ir`/`i18n`/`settings`/`ui_vendor`/`ui_engine`/`display`/`source`/`ui_menu`/`audio`/`cec`/`audio_mixer`/`tuner`/`epg`/`pvr`/`channels`/`service_db`/`image_decode`/`ui_theme`/`ui_list`/`ui_navigation`/`ui_profile`/`audio_curve`,
       with a completion query and bounded client behavior. Do not call
       `dlclose`/module callbacks from an unowned worker. `display_fb`, `ir`,
       `i18n`, `settings`, `ui_vendor`, `ui_engine`, `display`, `source`,
       `ui_menu`, `audio`, `cec`, `audio_mixer`, `tuner`, `epg`, `pvr`,
       `channels`, `service_db`, `image_decode`, `ui_theme`, `ui_list`,
-      `ui_navigation` and `ui_profile` are the existing models.
+      `ui_navigation`, `ui_profile` and `audio_curve` are the existing models.
 
 - [x] Firmware-shaped partial rail animation: added `display.patch` v1
       replacement RGBA fill, dirty-rect conversion and page-rounded sync in
