@@ -93,10 +93,27 @@ write), the masks, the fixed IIC arguments, and bad arguments:
 
 ```text
 ok nim dtv: model gate/constants and one-shot read/modify/write order, masks and failure finish
+ok nim dtv hal: DEV_IIC bus/reg/address packing and Hal success inversion
 ```
 
 Only the ordered state machine and gate/constants are implemented; the real
 NDAL/HAL/UART callbacks and a cold-start execution remain open.
+
+### HAL callback wiring
+
+`include/openaurora/nim_dtv_hal.h` + `common/nim_dtv_hal.c` implement the next
+layer: pack `{bus=0, reg=0x80}`, the per-code address and one byte, call an
+`oa_nim_dtv_iic_ops` read/write callback, and invert the HAL convention
+(`Hal_Iic_Read/Write` return 0 on success) to the DEV helper convention
+(1 = success). `oa_nim_dtv_hal_read/write` plug directly into
+`oa_nim_dtv_ops.ir_read/ir_write`.
+
+The end-to-end test runs the one-shot state machine with those adapters over a
+fake `Hal_Iic_*`, asserting the fixed bus/register/address packing, read/write
+success inversion, failure paths and the resulting bytes (`0x67/0x6b/0x9a` for
+the 0x15/0x11/0x40 sequence). A TV module can pass the real
+`Hal_Iic_Read/Write`; `mod_tuner` does not call the chain yet because the
+module-buffer and HAL demod callbacks still need real implementations.
 
 ## Verification
 

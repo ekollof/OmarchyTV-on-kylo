@@ -1008,7 +1008,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       bit3, 0x11 sets bit3 and 0x40 sets bit1 (write result unchecked), then
       active `0xff` + signal + unlock. Implemented as an ordered fakeable
       state machine with read/write callbacks and failure tests; the real
-      HAL/UART callbacks remain unimplemented.
+      HAL/UART callbacks remain unimplemented. Added `common/nim_dtv_hal.c`:
+      packs `{bus 0, reg 0x80}`, the code address and one byte, calls
+      `Hal_Iic_Read/Write` ops and inverts 0=success to the DEV 1=success;
+      the state machine runs end-to-end over fake `Hal_Iic_*` (result bytes
+      0x67/0x6b/0x9a). `mod_tuner` is not wired yet: module-buffer and HAL
+      demod callbacks still need real implementations.
       Focused ASan/UBSan clean, full suite `all tests passed`, ARM mod_panel
       builds. No panel/tuner hardware; curve default off.
       PANEL-CURVE-NIM-DTV.

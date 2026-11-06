@@ -1167,9 +1167,14 @@ $(BUILD)/tests/nim_dtv: tests/nim_dtv.c common/nim_dtv.c include/openaurora/nim_
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
+$(BUILD)/tests/nim_dtv_hal: tests/nim_dtv_hal.c common/nim_dtv_hal.c common/nim_dtv.c include/openaurora/nim_dtv.h include/openaurora/nim_dtv_hal.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
 .PHONY: check-nim-dtv
-check-nim-dtv: $(BUILD)/tests/nim_dtv
+check-nim-dtv: $(BUILD)/tests/nim_dtv $(BUILD)/tests/nim_dtv_hal
 	@$(BUILD)/tests/nim_dtv
+	@$(BUILD)/tests/nim_dtv_hal
 check: check-nim-dtv
 
 check-power: $(BUILD)/tests/power_cycle $(addprefix $(BUILD)/tests/mod_phase_,$(addsuffix .so,$(PHASE_FIXTURES)))
