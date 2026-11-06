@@ -96,7 +96,12 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
 2026-11-06 tuner subgroup: staging/preflight/claim and the MxL661 init/sequence
 passed; the NIM task failed at IR code 21, so no tune/lock (also no RF source).
 Stock was restored by watchdog reboot. TUNER-TAKEOVER. Display/audio/CEC/input/
-PVR groups were not started in this attempt.
+PVR groups were not started in this attempt. Follow-up: the task's IR helpers
+are `DEV_UART_IR` wrappers over `DEV_IIC` (i2c-0/0x80); `DEV_NIM_DTV_Init` only
+creates the task, while NIM power is the `DEV_NIM_PowerSetting` `+0x48`
+callback and the `DAT_01937040` power-control pointer. Recover those callbacks
+and add the power/reset step before the task; also log the raw `Hal_Iic_Read`
+return to separate a NACK from a return-convention error.
 
 ### Display / panel
 

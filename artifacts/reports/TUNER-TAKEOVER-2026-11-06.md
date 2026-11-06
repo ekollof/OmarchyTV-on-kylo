@@ -82,6 +82,45 @@ appmgr PID 1573, aurora.elf PID 1779 (zombie 1958), no openaurora
 /conf/mb230_hwprofile.bin still 1b063b2cc7faa8b92c0f843921e561c7
 ```
 
+## NIM IR-21 follow-up (instruction level)
+
+The one-shot task at `0x008601ac` does not call the IIC helper directly. For
+code 21 it calls `0x0085fd04` and `0x0085fc80`, the two `DEV_UART_IR`
+system-code helpers:
+
+```text
+0x86024a  bl 0x85fd04        read code 21 into [r7+1]
+0x8602d6  bl 0x85fc80        write code 21 back
+0x8602e4  bl 0x85fd04        read code 17
+0x8602fa  bl 0x85fc80        write code 17
+0x860308  bl 0x85fd04        read code 64
+0x86031e  bl 0x85fc80        write code 64
+```
+
+Those helpers build the `DEV_IIC` call `(bus=0, dev=0, reg=0x80, size=1,
+code, len=1, &byte)` and call `DEV_IIC_Read/Write`, which in turn call
+`Hal_Iic_Read/Write`. So the path is the same i2c-0/0x80 bus, not the
+`/dev/ntkiic0` fd; the replacement already has `/dev/ntkiic0` open but the IR
+helpers use `Hal_Iic`.
+
+`DEV_NIM_DTV_Init` @ `0x00861678` only checks the model, logs, initializes the
+mutex and creates the task; it does **not** power the NIM. NIM power is split
+into callbacks:
+
+- `DEV_NIM_PowerSetting(nim)` calls `*(code **)(nim + 0x48)()`;
+- `DEV_NIM_DTV_PowerControl` calls the global function pointer
+  `DAT_01937040`.
+
+The replacement module runs the task body directly and never invokes either
+power callback. The IR read returning failure is therefore consistent with an
+unpowered/unreset NIM chip, not necessarily a wrong bus. Before changing the
+IIC adapter, the next step is to recover where `DAT_01937040`/the `+0x48`
+callback are registered and what they toggle, then add the same power/reset
+sequence before the task. A raw `Hal_Iic_Read` return log would distinguish a
+real NACK from a return-convention mistake.
+
+No code was changed for this follow-up; the TV was already restored.
+
 ## Evidence
 
 `artifacts/analysis/tuner-takeover-2026-11-06/`: `pre-state.txt`,
