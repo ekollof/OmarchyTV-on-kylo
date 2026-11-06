@@ -52,9 +52,20 @@ for _ in range(100):
     time.sleep(0.05)
 else:
     sys.exit("control socket did not appear")
-s = socket.socket(socket.AF_UNIX)
-s.settimeout(10)
-s.connect(sock)
+s = None
+for _ in range(100):
+    try:
+        s = socket.socket(socket.AF_UNIX)
+        s.settimeout(10)
+        s.connect(sock)
+        break
+    except OSError:
+        if s:
+            s.close()
+        s = None
+        time.sleep(0.05)
+if s is None:
+    sys.exit("control socket did not accept connections")
 
 def command(text):
     s.sendall((text + "\n").encode())
