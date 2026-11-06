@@ -230,7 +230,7 @@ ok   mxl661 atv corpus: loader CRC + real NTSC/PAL/PAL-D sequences
 `check-mxl661-atv-corpus` is explicit, requires the private
 `AURORA_ELF`, and is never part of the default suite. Focused ASan/UBSan and
 ARM/qemu pass with both synthetic and real tables; TV `mod_tuner.so` sha256
-`596cbda...`. The module loads the tables under the hardware gate and
+`11fa27b1...`. The module loads the tables under the hardware gate and
 `tuner.analog=1` feeds them to the NIM HAL backend; nothing has run on the TV.
 
 The typed `oa_nim_tune_set_channel` calls the `program_tuner` op (the vendor
@@ -340,7 +340,7 @@ also not claimed: only the translations above are recovered.
 ok nim tune: path/index map, open/close, lock/strength/quality masks and unresolved channel mappings
 ```
 
-Focused ASan/UBSan and ARM/qemu pass; TV `mod_tuner.so` sha256 `596cbda...`.
+Focused ASan/UBSan and ARM/qemu pass; TV `mod_tuner.so` sha256 `11fa27b1...`.
 
 ### Analog NIM backend wiring
 
@@ -370,9 +370,32 @@ uses it for analog monitor/signal instead of the DVB status ops. Strength and
 quality are not part of that SAL ATV contract, so analog reports 0 and UNC
 unknown.
 
-TV `mod_tuner.so` sha256 `596cbda...`. Limits: analog scan still uses one
-fixed default frequency rather than channel steps; the case-9 per-address
-calibration remains. No hardware has run.
+### Analog scan stepping
+
+`mod_tuner` steps analog scans when `tuner.analog_scan=1` (paired with
+`tuner.analog=1` on the HAL backend):
+
+```ini
+tuner.analog_start_khz=471250
+tuner.analog_stop_khz=855250
+tuner.analog_step_khz=8000
+tuner.analog_dwell=2
+```
+
+Network 4 now maps to the terrestrial NIM path instead of `-ENOTSUP`. Each
+frequency is monitored for `dwell` status polls; a lock counts one channel
+at most once, then the next frequency is started (clamped to the stop).
+Progress is range-based and `tuner-cancel` still stops the scan. Repeating
+`start` per frequency reopens/reprograms the NIM; that is acceptable for the
+offline path but is not hardware-validated. Host test over the stub backend:
+
+```text
+ok tuner analog scan: 5 stepped channels, progress 25/50/75/100, cancel
+```
+
+TV `mod_tuner.so` sha256 `11fa27b1...`. Limits: analog strength/quality are
+not in the SAL ATV status contract; the case-9 per-address calibration
+remains; no hardware has run.
 
 ## SI2151 blocker
 
@@ -448,7 +471,7 @@ static tests pass under `qemu-arm-static`. TV module build:
 
 ```text
 build-tv-v3/modules/mod_tuner.so
-sha256 596cbdabd2e0a3c44a1121261fb1a5fb8851174e01b5870df0fab3c2a47e0e79
+sha256 11fa27b1d270d22ae441e6c0f5bda3408428f22bca84c8d31d68fe99e6208df2
 NEEDED libNDAL3.so, libNDAL_EX.so, ...; RPATH /vendor/lib:/vendor/lib/libs
 undefined-but-runtime: Hal_Iic_Read/Write, Hal_Gpio_Init/Write,
                        HAL_Demod_Init, HAL_dvif_open,

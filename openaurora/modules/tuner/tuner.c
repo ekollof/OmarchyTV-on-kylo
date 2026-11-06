@@ -61,6 +61,10 @@ struct ctx {
     int hw_done;
     int atv_loaded;
     struct oa_mxl661_atv_tables atv;
+    int analog_scan;
+    uint32_t scan_start_khz, scan_stop_khz, scan_step_khz, scan_freq_khz;
+    unsigned scan_dwell, scan_dwell_left;
+    int scan_counted;
     uint32_t hw_sal_type;
     char ts_path[512];
     /* ABI 3 quiesce: the TS FILE* is detached and closed on a worker. */
@@ -107,7 +111,11 @@ static int path_for_network(uint8_t network, uint8_t *path)
         *path = 0; /* offline synthetic path */
         return 0;
     case OA_TUNER_NET_ANALOG:
-        return -ENOTSUP; /* ATV path was not recovered for this interface */
+        if (g_ctx && g_ctx->analog_scan) {
+            *path = OA_NIM_PATH_TERRESTRIAL;
+            return 0;
+        }
+        return -ENOTSUP;
     default:
         return -EINVAL;
     }
@@ -148,7 +156,39 @@ static int tuner_status(struct oa_tuner_status *out)
             c->active = 0;
         } else {
             apply_signal(c, &signal);
-            if (c->progress >= 100) {
+            if (c->analog_scan && c->network == OA_TUNER_NET_ANALOG) {
+                if (c->locked && !c->scan_counted) {
+                    c->services_found++;
+                    c->scan_counted = 1;
+                }
+                if (c->scan_dwell_left)
+                    c->scan_dwell_left--;
+                if (c->scan_dwell_left == 0) {
+                    if (c->scan_freq_khz >= c->scan_stop_khz) {
+                        c->progress = 100;
+                        c->state = OA_TUNER_DONE;
+                    } else {
+                        uint32_t next = c->scan_freq_khz + c->scan_step_khz;
+                        if (next > c->scan_stop_khz) next = c->scan_stop_khz;
+                        uint32_t next_params[2] = { 0, next };
+                        struct oa_nim_tune_result nr;
+                        int nrc = c->backend->nim->start(c->path, next_params,
+                                                         2, &nr);
+                        if (nrc) {
+                            c->state = OA_TUNER_FAILED;
+                            c->error = -nrc;
+                            c->active = 0;
+                        } else {
+                            c->scan_freq_khz = next;
+                            c->scan_dwell_left = c->scan_dwell;
+                            c->scan_counted = 0;
+                            c->progress = (uint8_t)
+                                (((next - c->scan_start_khz) * 100u) /
+                                 (c->scan_stop_khz - c->scan_start_khz));
+                        }
+                    }
+                }
+            } else if (c->progress >= 100) {
                 c->progress = 100;
                 c->services_found = SCAN_SERVICES;
                 c->state = OA_TUNER_DONE;
@@ -188,7 +228,9 @@ static int tuner_scan_start(uint8_t network, int clear_existing)
     int rc = path_for_network(network, &path);
     if (rc) return rc;
     if (c->state == OA_TUNER_SCANNING) return -EBUSY;
-    uint32_t params[2] = { 0, OA_NIM_DEFAULT_FREQUENCY_KHZ };
+    int analog = c->analog_scan && network == OA_TUNER_NET_ANALOG;
+    uint32_t params[2] = { 0, analog ? c->scan_start_khz
+                                     : OA_NIM_DEFAULT_FREQUENCY_KHZ };
     struct oa_nim_tune_result result;
     rc = c->backend->nim->start(path, params, 2, &result);
     if (rc) return rc;
@@ -200,6 +242,9 @@ static int tuner_scan_start(uint8_t network, int clear_existing)
     c->locked = 0;
     c->error = 0;
     c->active = 1;
+    c->scan_freq_khz = analog ? c->scan_start_khz : 0;
+    c->scan_dwell_left = c->scan_dwell;
+    c->scan_counted = 0;
     if (clear_existing) c->selected_handle = 0;
     metrics_default(c);
     if (result.state == OA_NIM_TUNE_LOCKED) c->locked = 1;
@@ -436,6 +481,20 @@ static int tuner_hw_bringup(struct ctx *c)
 }
 #endif
 
+static uint32_t config_u32(const oa_host_api *api, const char *key,
+                           uint32_t def)
+{
+    const char *text = api->config_get(api->priv, key, NULL);
+    if (!text || !*text)
+        return def;
+    char *end = NULL;
+    errno = 0;
+    unsigned long long value = strtoull(text, &end, 10);
+    if (errno || !end || *end || value > UINT32_MAX)
+        return def;
+    return (uint32_t)value;
+}
+
 static int m_init(const oa_host_api *api, void **out)
 {
     if (!api || api->size < sizeof(oa_host_api) || api->abi != OA_ABI_VERSION ||
@@ -444,6 +503,21 @@ static int m_init(const oa_host_api *api, void **out)
     struct ctx *c = calloc(1, sizeof *c);
     if (!c) return -1;
     c->api = api;
+    const char *ascan = api->config_get(api->priv, "tuner.analog_scan", "0");
+    if (ascan && (!strcmp(ascan, "1") || !strcmp(ascan, "true"))) {
+        c->analog_scan = 1;
+        c->scan_start_khz = config_u32(api, "tuner.analog_start_khz", 471250);
+        c->scan_stop_khz = config_u32(api, "tuner.analog_stop_khz", 855250);
+        c->scan_step_khz = config_u32(api, "tuner.analog_step_khz", 8000);
+        unsigned dwell = config_u32(api, "tuner.analog_dwell", 2);
+        c->scan_dwell = dwell < 1 ? 1 : dwell > 10 ? 10 : dwell;
+        if (c->scan_step_khz == 0 ||
+            c->scan_stop_khz <= c->scan_start_khz ||
+            (c->scan_stop_khz - c->scan_start_khz) / c->scan_step_khz > 2000) {
+            free(c);
+            return -EINVAL;
+        }
+    }
     const char *hw = api->config_get(api->priv, "tuner.hw_init", "0");
     int hw_on = hw && (!strcmp(hw, "1") || !strcmp(hw, "true"));
     if (hw_on) {
@@ -467,11 +541,13 @@ static int m_init(const oa_host_api *api, void **out)
     const char *ts_path = api->config_get(api->priv, "tuner.ts_path", "");
     const char *backend = api->config_get(api->priv, "tuner.backend", "");
     if (ts_path && *ts_path) {
+        if (c->analog_scan) { free(c); return -EINVAL; }
         if (strlen(ts_path) >= sizeof c->ts_path) { free(c); return -1; }
         memcpy(c->ts_path, ts_path, strlen(ts_path) + 1);
         c->backend = oa_nim_ts_backend();
         c->ts_source = 1;
     } else if (backend && !strcmp(backend, "ndal")) {
+        if (c->analog_scan) { free(c); return -EINVAL; }
         const char *frontend = api->config_get(api->priv,
             "tuner.frontend", "/dev/dvb/adapter0/frontend0");
         c->backend = oa_nim_ndal_backend(frontend);
@@ -500,9 +576,22 @@ static int m_init(const oa_host_api *api, void **out)
         oa_nim_hal_set_ops(oa_tuner_vendor_tune_ops(), NULL);
         c->backend = oa_nim_hal_backend();
         const char *analog_on = api->config_get(api->priv, "tuner.analog", "0");
-        if (analog_on && (!strcmp(analog_on, "1") ||
-                          !strcmp(analog_on, "true"))) {
+        int atv_on = analog_on && (!strcmp(analog_on, "1") ||
+                                   !strcmp(analog_on, "true"));
+        if (c->analog_scan && !atv_on) {
+            api->log(api->priv, OA_LOG_ERROR,
+                     "tuner: analog_scan requires tuner.analog=1 on the HAL backend");
+            free(c);
+            return -EINVAL;
+        }
+        if (atv_on) {
             if (!c->atv_loaded) {
+                if (c->analog_scan) {
+                    api->log(api->priv, OA_LOG_ERROR,
+                             "tuner: analog_scan requires the loaded ATV tables");
+                    free(c);
+                    return -EINVAL;
+                }
                 api->log(api->priv, OA_LOG_WARN,
                          "tuner: analog requested but the ATV tables are unavailable");
             } else {

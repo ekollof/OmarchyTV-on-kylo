@@ -64,8 +64,9 @@ boot-hook or firmware changes; the watchdog must never be left disabled.
 - [ ] Analog ATV only if an analog source exists: verify `tuner.atv_tables`
       loads the on-TV aurora.elf CRC and run a PAL/NTSC tune; otherwise record
       "not tested". The analog tuning backend exists (`tuner.analog=1`,
-      `tuner.analog_standard=0..5`); verify the tune and the recovered ATV
-      lock bit, and record the strength/quality/scan-step limits.
+      `tuner.analog_standard=0..5`); verify the tune, the recovered ATV lock
+      bit and `tuner.analog_scan` stepping, and record the strength/quality
+      limits.
 - [ ] NIM `InitNimFunc`/`Connect2HAL`: 0x29-word state clear, table install,
       IIC codes 0x15/0x11/0x40, checked/ignored returns and the no-IIC-after-
       failed-MxL661-init guard.
@@ -1215,7 +1216,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       monitor/signal use the recovered SAL_TUNER_MxL661_GetATVStatus
       0x2b/0x2c lock decode (`oa_mxl661_atv_status_lock`, fake-tested).
       Strength/quality are not part of that SAL contract and report 0.
-      Still open: analog scan stepping and the case-9 per-address calibration.
+      Analog scan stepping is wired (`tuner.analog_scan` with start/stop/step/
+      dwell; `check-tuner-analog-scan` over the stub). Still open: the case-9
+      per-address calibration and real-HAL scan validation.
       SI2151 is the full Silicon Labs L1/L2/L3 `PowerUpWithPatch` + property
       driver, not this profile's path (hwprofile selects SAL 0xd/MxL661).
       Hardware acceptance awaits the scheduled owner takeover window and has
@@ -1227,8 +1230,16 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `0x93a05fff`) instead of embedded. Synthetic `check-mxl661-atv` and the
       explicit private `check-mxl661-atv-corpus` pass, as do focused
       ASan/UBSan and ARM/qemu. Limits: analog strength/quality availability,
-      scan stepping, per-address case-9 calibration and hardware acceptance
-      remain.
+      per-address case-9 calibration and hardware acceptance remain; scan
+      stepping is tested offline over the stub.
+
+- [x] Analog scan stepping: network 4 maps to the terrestrial NIM path;
+      `tuner.analog_scan` steps `analog_start_khz..stop_khz` by `step_khz`
+      with `dwell` status polls, counts a locked channel once per frequency,
+      reports range progress and supports cancel. `tests/tuner_analog_scan.cjs`
+      over the stub visits five 1 MHz channels with progress 25/50/75/100 and
+      a clean cancel. Limits: the HAL backend repeats start per frequency and
+      no real hardware has run.
 - [x] Rechecked audio scalar return/no-argument ABI in ARM instructions; plat owns
       prelude, audio no longer repeats it. Fake-HAL failure gates/cache/handoff
       tests pass host/sanitizer/ARM-qemu. CEC-AUDIO-CONTRACT.

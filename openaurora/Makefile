@@ -1296,6 +1296,13 @@ check-tuner-gate: $(BUILD)/tests/tuner_gate $(BUILD)/modules/mod_tuner.so
 	@$(BUILD)/tests/tuner_gate $(abspath $(BUILD)/modules/mod_tuner.so)
 check: check-tuner-gate
 
+# Analog scan stepping over the offline stub backend; the real MxL661 path
+# remains behind tuner.hw_init and the owner-authorized takeover.
+.PHONY: check-tuner-analog-scan
+check-tuner-analog-scan: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_tuner.so
+	node tests/tuner_analog_scan.cjs $(abspath $(BUILD))
+check: check-tuner-analog-scan
+
 # The vendor profiles are private artifacts. This corpus target is explicit:
 # it fails when they are missing or when their MD5 is not the analysed file.
 .PHONY: check-efsl-corpus
