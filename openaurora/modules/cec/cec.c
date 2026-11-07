@@ -395,7 +395,10 @@ static void *cleanup_worker(void *v)
     c->cleanup_owner = NULL;
     int rc = finish_owner_ptr(owner);
     if (rc == -EAGAIN) c->cleanup_owner = owner;
-    if (c->cleanup_authority) {
+    /* The authority callbacks borrow this mapping through acquire. A retained
+     * owner (failed/blocked close) may still be inside authority_ensure, so
+     * unmap only after a successful join. A later generation retries. */
+    if (c->cleanup_authority && rc == 0) {
         oa_cec_authority_mem_close(&c->authority);
         c->authority_open = 0;
         c->cleanup_authority = 0;
@@ -646,7 +649,8 @@ static void stop(void *ud)
         int rc = finish_owner_ptr(owner);
         if (rc == -EAGAIN) c->owner = owner;
     }
-    if (c->authority_open) {
+    /* Keep the authority page mapped while any owner generation is retained. */
+    if (c->authority_open && !c->owner && !c->cleanup_owner) {
         oa_cec_authority_mem_close(&c->authority);
         c->authority_open = 0;
     }
@@ -673,16 +677,16 @@ static void destroy(void *ud)
         int rc = finish_owner_ptr(c->owner);
         if (rc == 0) c->owner = NULL;
     }
-    if (c->authority_open) {
-        oa_cec_authority_mem_close(&c->authority);
-        c->authority_open = 0;
-    }
     if (g_ctx == c) g_ctx = NULL;
     if (c->owner || c->cleanup_owner) {
         /* A retained hardware close must not be freed or unloaded underneath
-         * its worker. The normal stop path waits for quiesce to return 0; a
-         * force unload with a retained owner is outside the safe contract. */
+         * its worker. Keep the authority mapping alive too; a later quiesce
+         * generation owns the close. */
         return;
+    }
+    if (c->authority_open) {
+        oa_cec_authority_mem_close(&c->authority);
+        c->authority_open = 0;
     }
     oa_cec_policy_destroy(c->policy);
     free(c);

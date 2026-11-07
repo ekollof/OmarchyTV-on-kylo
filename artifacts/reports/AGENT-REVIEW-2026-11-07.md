@@ -29,6 +29,24 @@ binaries, `open_device=3` return convention, the unused second probe). It no
 longer claims "only a reboot can release it"; it says no tested userspace
 trigger was found.
 
+### HIGH — authority mapping lifetime across a timed-out quiesce (fixed)
+
+`cleanup_worker` unmapped the `/dev/mem` authority page even when
+`finish_owner_ptr` returned `-EAGAIN` and the owner was retained for a later
+generation. Acquire copies the authority callbacks but borrows the mapping
+context; a blocked acquire could touch the unmapped page. `stop`/`destroy` also
+closed it while an owner was retained.
+
+Fix: unmap only when `finish_owner_ptr` returns 0; `stop`/`destroy` keep the
+mapping alive while `owner`/`cleanup_owner` remains. Regression
+`check-cec-authority-lifetime` uses a fake host plus wrapped owner join/authority
+open/close: the first quiesce generation is forced to `-EAGAIN` and must keep
+`authority_open=1` and the sentinel mapping with zero close calls; after joins
+are allowed, the next generation must unmap exactly once and reach 0. Reverting
+the condition makes the test fail at `authority_open == 1`, confirming it
+catches the defect. `mod_cec.so` rebuilds as sha256
+`7cd655f6ac40082c6490954e51dedd7f0958980a3268c7974c3bdac3685be9cb`.
+
 ## Open, severity-ranked
 
 - **HIGH CEC suspend/resume** (`modules/cec/cec.c`): `suspend` joins/tears
@@ -36,11 +54,6 @@ trigger was found.
   `resume` does not re-acquire and sends can hit a fresh unopened device.
   `finish_owner_ptr` can also sleep/join on the loop. Move this to the existing
   cleanup worker and add a suspend-with-open/resume-acquire test.
-- **HIGH authority lifetime on quiesce** (`modules/cec/cec.c`): the cleanup
-  worker unmaps the authority page even when `finish_owner_ptr` returns
-  `-EAGAIN` and the owner is retained; a blocked acquire can touch the
-  unmapped page. Unmap only after a successful join, keep it across retained
-  generations, and test a timed-out quiesce.
 - **HIGH amp mute/balance vs Init** (`modules/audio_amp/audio_amp.c`):
   `set_mute`/`set_balance` now reject while `submitted`, but still run the STBC
   level / I2C writes on the host loop. Submit them as owner jobs ordered after

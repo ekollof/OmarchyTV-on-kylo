@@ -77,12 +77,15 @@ AGENT-REVIEW-2026-11-07 (Grok): the adversarial review found a CRITICAL CEC
 authority bug. `mmap64` failure returns `MAP_FAILED` ((void*)-1), not NULL;
 the opener only rejected NULL, so it published a bad `read_mirror` that would
 fault on `MAP_FAILED+0x200`. Fixed in commit f323673 by normalizing/rejecting
-MAP_FAILED with a regression test. The review's HIGH items remain: CEC
-suspend/resume clears no session state and joins on the loop; quiesce unmaps
-authority while a retained owner may still borrow it; amp mute/balance still
-run on the host loop; IR can desync its pipe, its record is 8 bytes not 6, and
-stop can block/leak inherited fds; the close-path wording was corrected to
-drop unproven "only reboot" claims. Reports: AGENT-REVIEW-2026-11-07,
+MAP_FAILED with a regression test. The HIGH authority-lifetime bug is also
+fixed: the `/dev/mem` mapping is retained while a quiesce generation returns
+EAGAIN and unmapped only after a successful join; `check-cec-authority-lifetime`
+forces a timed-out generation and then a completed one, and fails if the old
+unconditional unmap is restored (`mod_cec` 7cd655f6...). Remaining HIGH: CEC
+suspend/resume clears no session state and joins on the loop; amp mute/balance
+still run on the host loop; IR can desync its pipe, its record is 8 bytes not
+6, and stop can block/leak inherited fds; the close-path wording was corrected
+to drop unproven "only reboot" claims. Reports: AGENT-REVIEW-2026-11-07,
 AMP-BALANCE.
 
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR

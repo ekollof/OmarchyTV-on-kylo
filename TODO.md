@@ -206,10 +206,11 @@ unvalidated.
       bits 0x0e) and HP_Mute (GPIO0xc3) remain unwired; no hardware balance
       run. AMP-BALANCE.
 - [ ] Agent-review follow-ups (AGENT-REVIEW-2026-11-07): CEC suspend/resume
-      and authority unmap while an owner is retained on `-EAGAIN`, reply-queue
-      failure handling; amp mute/balance as owner jobs and Init
-      retry/suspend; IR pipe bound/8-byte record/bounded reap/O_CLOEXEC and
-      UART repeat; panel HAL failure reporting; tuner `demod[4]=p4`.
+      and reply-queue failure handling; amp mute/balance as owner jobs and
+      Init retry/suspend; IR pipe bound/8-byte record/bounded reap/O_CLOEXEC
+      and UART repeat; panel HAL failure reporting; tuner `demod[4]=p4`.
+      The CEC authority mapping lifetime across a timed-out quiesce is fixed
+      (`check-cec-authority-lifetime`).
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but
