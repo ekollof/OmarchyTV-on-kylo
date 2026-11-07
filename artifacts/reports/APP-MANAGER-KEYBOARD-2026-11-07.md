@@ -85,9 +85,14 @@ keyboard mapping, not the BLAST IR code list.
 0x0000001c 0x00170001 0x00000011
 ```
 
-Its use is not decoded yet; do not treat these words as a byte array without
-checking `HID_LoadKeycodeExtMap` at entry 0x32cdc (Ghidra did not define that
-Thumb entry as a function; a disposable-project `DecompileRaw` pass is needed).
+`HID_LoadKeycodeExtMap` at 0x32cdc (Thumb; not defined in the saved Ghidra
+project) reveals the runtime side: it reads environment variable
+`NVT_KEYCODE_EXT_MAP`, defaults to `/mtd_apexe/board/data/nvt.keycode.ini`,
+checks `access(..., R_OK)`, and parses the file with Jsoncpp (keys including
+`App` and `i`, formats such as `%s)`). The 12-byte object is therefore a
+built-in default/seed, not the complete runtime map. The `.ini` file is not in
+the extracted rootfs, so its full JSON schema is not recovered; the parser
+accepts a JSON object and builds the extended map in memory.
 
 ## App-manager HID/IR path
 
@@ -123,7 +128,8 @@ hardware IR driver and does not prove BLAST timing/repeat behavior.
   arithmetic; the table has not been executed through libappmgr.
 - Only the US English layout is present in this 0x180c-byte symbol; other
   languages would be separate tables/files if the product ships them.
-- `keycode_ext_layout` and `HID_LoadKeycodeExtMap` remain undecoded.
+- `HID_LoadKeycodeExtMap` is partially decoded (NVT_KEYCODE_EXT_MAP JSON), but
+  the runtime `.ini` and its full schema are not present in the rootfs.
 - No TV, framebuffer, DirectFB, IR or app-manager process was touched.
 
 ## Reproduction

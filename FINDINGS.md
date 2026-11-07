@@ -1783,7 +1783,7 @@ Symbol/function counts depend on the counting method and do not establish an ABI
   evidence now replaces blind draw/allocation/stacking probes.
 
 VENDOR-INVENTORY-2026-11-07: 389 ELF files in the extracted `/vendor` tree
-plus 72 outside it (461 total, 15 kernel modules) were hashed and dumped read-only (SONAME/NEEDED, sections, symbol tables,
+plus 72 outside it (461 total, 15 platform kernel modules; 41 .ko total) were hashed and dumped read-only (SONAME/NEEDED, sections, symbol tables,
 dynamic symbols, strings); Ghidra inventories cover aurora and 15 library/
 kernel projects. The GPIO function-name table has **208 entries, IDs 0..207**
 (`au8GPIOFuncName` 0x175f350; `astPwmBasePin` 0x175f320). The live GPIO probe's
@@ -1794,7 +1794,7 @@ is the pin used by `DEV_PANEL_*`. VPLTIO recovered 45/45 call-site immediates
 VENDOR-INVENTORY-2026-11-07; raw data under
 artifacts/analysis/vendor-inventory-2026-11-07/. An independent NDAL/kernel
 pass adds 132 NDAL3 + 36 NDAL_EX distinct ioctl immediates and module
-init/exit details; 9 of 15 kernel modules are not yet decompiled.
+init/exit details; 9 of the 16 platform modules are not yet decompiled.
 
 APP-MANAGER-KEYBOARD-2026-11-07: `libappmgr.so` is unstripped (MD5
 413930d9366b4f8e76e5ebc2db246a72, BuildID fd36d8414541b839f57ab5ab732ba4054897f707;
@@ -1807,8 +1807,9 @@ Each entry has a Linux keycode, modifier flags and up to two 12-byte subrecords
 codes). HID/IR path: `HID_CommandIrInput` 0x30f74, `COM_SendKey` 0x3678c,
 `HID_NamKeyToDfbKey` 0x32c14 (field copy, not a table lookup),
 `HID_DfbKeyToNamKey` 0x32b98, `HID_HandleWindowEvent` 0x313c0 and
-`MGR_SendCommand` 0x2a550. Static only; `keycode_ext_layout` and
-`HID_LoadKeycodeExtMap` remain undecoded.
+`MGR_SendCommand` 0x2a550. Static only; `HID_LoadKeycodeExtMap` reads `NVT_KEYCODE_EXT_MAP`
+(default `/mtd_apexe/board/data/nvt.keycode.ini`) through Jsoncpp, but the
+runtime `.ini`/full schema is not in the rootfs.
 
 ## What is still unknown
 

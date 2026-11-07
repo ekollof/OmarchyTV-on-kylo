@@ -1626,7 +1626,7 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 ## Remaining vendor parity
 
 - [x] Read-only vendor inventory: 389 ELF files in the extracted `/vendor` tree
-      plus 72 outside it (461 total, 15 kernel modules) are hashed and dumped for SONAME/NEEDED, sections, symbol tables,
+      plus 72 outside it (461 total, 15 platform kernel modules; 41 .ko total) are hashed and dumped for SONAME/NEEDED, sections, symbol tables,
       dynamic symbols and strings; Ghidra functions/callgraphs/symbols/data
       cover aurora (89,220 functions, 485,969 resolved call edges) and 14
       library/kernel projects. Recovered the 0..207 GPIO function-name
@@ -1634,7 +1634,7 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       call-site maps for GPIO/IIC/DRM/NDAL/PWM/panel. This is static evidence,
       not hardware acceptance; per-subsystem table decoding remains. An
       independent pass adds 132/36 NDAL3/NDAL_EX ioctl immediates and module
-      init/exit details; 9 of 15 kernel modules still need Ghidra projects.
+      init/exit details; 9 of the 16 platform modules still need Ghidra projects.
       VENDOR-INVENTORY-2026-11-07, grok-findings.md.
 - [x] Unstripped `libappmgr.so` inventory: 2,476 symbols, 693 exports, new
       read-only Ghidra project. Recovered the full 127-slot/119-key US keyboard
@@ -1642,8 +1642,9 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       label/codepoint subrecords, including DirectFB nav/F-key codes) as
       `keyboard-layout-us.tsv`, plus the HID/IR path (`HID_CommandIrInput`,
       `COM_SendKey`, `HID_NamKeyToDfbKey`, `HID_HandleWindowEvent`,
-      `MGR_SendCommand`). Static only; `keycode_ext_layout` remains undecoded
-      and the table is not yet used by our UI. APP-MANAGER-KEYBOARD.
+      `MGR_SendCommand`). Static only; `HID_LoadKeycodeExtMap` reads `NVT_KEYCODE_EXT_MAP`
+      JSON, but the runtime `.ini` is not in the rootfs, and the table is not
+      yet used by our UI. APP-MANAGER-KEYBOARD.
 - [ ] CEC transport, OSD-name caching, RCP and firmware workarounds. The injected
       System Audio/ARC route is not wire-level or electrical acceptance.
 - [x] Specification takes precedence over vendor CEC defects. Identity/name/power

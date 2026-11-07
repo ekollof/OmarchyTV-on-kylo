@@ -30,8 +30,8 @@ reload-suite/restore) is bundled for the next authorized takeover, with restore
 returning to stock without a reboot. The unified display/hardware path is still
 unvalidated.
 Vendor inventory, 2026-11-07: **389 ELF files** in the extracted `/vendor` tree
-(249,616,804 bytes, ARM ELF32) plus 72 outside it (461 total, 15 kernel
-modules) are hashed and dumped for SONAME/NEEDED,
+(249,616,804 bytes, ARM ELF32) plus 72 outside it (461 total, 15 platform kernel
+modules; 41 .ko total) are hashed and dumped for SONAME/NEEDED,
 sections, symbol tables, dynamic symbols and strings under
 `artifacts/analysis/vendor-inventory-2026-11-07/`. Ghidra read-only inventories
 cover aurora (89,220 functions, 485,969 resolved call edges) plus 15

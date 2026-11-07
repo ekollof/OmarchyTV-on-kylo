@@ -51,7 +51,7 @@ All compressed text is xz; read with `xz -dc FILE`.
 | `elf/elf-census.tsv` | 389 rows: path, size, MD5, SHA-256, ELF class/type/machine, SONAME, NEEDED count |
 | `elf/elf-census-extra.tsv` | 72 ELFs outside `/vendor` (whole-rootfs total 461) with vermagic |
 | `elf/elf-files-all-rootfs.txt` | exact 461-file ELF list |
-| `exports/kernel-modules.tsv` | 15 kernel modules: path, size, MD5, vermagic, symbol count |
+| `exports/kernel-modules.tsv` | 16 platform kernel modules: path, size, MD5, vermagic, symbol count |
 | `exports/kernel-module-symbols.txt.xz` | 125,595 kernel-module symbols with sizes |
 | `elf/elf-files.txt` | exact ELF path list |
 | `elf/dynamic-tags.txt.xz` | `readelf -dW` for every ELF (NEEDED, SONAME, RPATH/RUNPATH, flags) |
@@ -88,10 +88,12 @@ openaurora/tools/re/group-callsite-args.py    aggregate command maps
 openaurora/tools/re/DumpStringRefs.java        string -> referencing function
 ```
 
-## Kernel modules outside `/vendor`
+## Platform kernel modules
 
-The whole-rootfs census found 15 ARM kernel modules (`vermagic=4.9.118+ SMP
-preempt mod_unload ARMv7`), with 125,595 symbols in total. Seven already have
+The whole-rootfs census found **41 `.ko` files**: 26 generic Linux modules in
+`/vendor/modules` (USB, NFS, CIFS, Bluetooth, etc.) and **16 Novatek platform
+modules**. Fifteen platform modules live outside `/vendor`; `ntkethmac.ko` is
+inside it. The 16 platform modules carry **126,156 symbols**. Seven already have
 Ghidra projects (`ntkndpdrm`, `ntkndpextin`, `ntkdriver_nondovi`, `ntkndpalsa`,
 `ntkethmac`, `PreInit`, `ntkndphdmiswitch`); the other nine are symbol/string
 inventoried but not decompiled.
@@ -107,6 +109,7 @@ inventoried but not decompiled.
 | ntkndpextin.ko | `cb0689e9...` | 189,820 | 1,226 | yes |
 | ntkndphdmi.ko | `930204bb...` | 94,816 | 657 | no |
 | ntkndphdmiswitch.ko | `d4ff737d...` | 27,624 | 187 | yes |
+| ntkethmac.ko | `2efe1ee1...` | 83,444 | 561 | yes |
 | ntkndp_pq.ko | `c208cdd0...` | 141,576 | 682 | no |
 | ntkndptsd.ko | `2470bb73...` | 273,732 | 1,545 | no |
 | ntkndptuner.ko | `84be071e...` | 7,132 | 71 | no |

@@ -14,3 +14,4 @@ root/lib/modules/ntkndptuner.ko	7132	84be071efa5d16c2b6e8d13db667937a	vermagic=4
 root/lib/modules/PreInit.ko	721732	1e50bee8b7888315c7a070f8e69947f6	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	4495
 root/lib/modules/PreTcon.ko	155524	bf1d64f7e40555c913d1c7425dde552c	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	310
 vendor2/modules/ntkdriver_nondovi.ko	18423496	fded7005651e37b8a1b5e8e89f73f4ff	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	101539
+vendor/modules/ntkethmac.ko	83444	2efe1ee138ee29c2d490f6e4a667a38d	vermagic=4.9.118+ SMP preempt mod_unload ARMv7	561
