@@ -28,7 +28,7 @@ next authorized window and restores stock without a reboot. `display.cold_init=1
 repairs an unconfigured fb1 through the vendor SetPar ioctl; the fake-fb test
 passes, but cold scanout still needs a takeover/cold boot. COLD-DISPLAY-REPAIR. Independent NDAL
 pass: 132/36 ioctl immediates and module init/exit details in
-`grok-findings.md`; 9 of the 16 platform modules still need Ghidra projects.
+`grok-findings.md`; 9 of the 16 platform modules still lack Ghidra projects; grok-findings-2 now covers them by objdump/relocations.
 Vendor inventory 2026-11-07: `artifacts/analysis/vendor-inventory-2026-11-07/`
 holds the 389-ELF `/vendor` census plus 72 outside it (461 total, 15 platform kernel
 modules; 41 .ko total) and their hashes, full readelf/nm/strings dumps, Ghidra

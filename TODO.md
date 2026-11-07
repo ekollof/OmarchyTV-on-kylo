@@ -1642,7 +1642,7 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       call-site maps for GPIO/IIC/DRM/NDAL/PWM/panel. This is static evidence,
       not hardware acceptance; per-subsystem table decoding remains. An
       independent pass adds 132/36 NDAL3/NDAL_EX ioctl immediates and module
-      init/exit details; 9 of the 16 platform modules still need Ghidra projects.
+      init/exit details; 9 of the 16 platform modules still lack Ghidra projects; grok-findings-2 now covers codec/tuner/demod/TSD/PQ/PreTcon/PCI/kteec/HDMI by objdump/relocations.
       VENDOR-INVENTORY-2026-11-07, grok-findings.md.
 - [x] Shipped app-manager configs parsed: `nvt.app.ini`/`.debug.ini`/`.nfs.ini`
       (519 keys, 30 app rows). The stock appmgr uses the debug profile

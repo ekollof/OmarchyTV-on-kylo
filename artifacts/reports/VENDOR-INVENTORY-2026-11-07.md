@@ -81,6 +81,7 @@ All compressed text is xz; read with `xz -dc FILE`.
 | `strings/aurora-subsystems.tsv` | 9,646 subsystem-keyword strings / 4,776 references |
 | `../workbench/vendor-inventory-raw/aurora-strings.txt.xz` | local-only 376,113 aurora strings with file offsets; contains embedded key/cert strings, never commit/redistribute |
 | `grok-findings.md` | 98 KB independent NDAL/kernel second pass (exports, ioctls, device paths, init/exit) |
+| `grok-findings-2.md` | 30 KB objdump inventory of the nine remaining platform kernel modules |
 
 Durable scripts added for reproducing the inventory:
 
@@ -99,8 +100,9 @@ The whole-rootfs census found **41 `.ko` files**: 26 generic Linux modules in
 modules**. Fifteen platform modules live outside `/vendor`; `ntkethmac.ko` is
 inside it. The 16 platform modules carry **126,156 symbols**. Seven already have
 Ghidra projects (`ntkndpdrm`, `ntkndpextin`, `ntkdriver_nondovi`, `ntkndpalsa`,
-`ntkethmac`, `PreInit`, `ntkndphdmiswitch`); the other nine are symbol/string
-inventoried but not decompiled.
+`ntkethmac`, `PreInit`, `ntkndphdmiswitch`); the other nine now have an
+independent objdump/relocation inventory in `grok-findings-2.md` (init/exit,
+file_operations, ioctl tables, device nodes) but still no Ghidra project.
 
 | module | MD5 | size | symbols | Ghidra |
 |---|---|---:|---:|---|
@@ -125,6 +127,42 @@ inventoried but not decompiled.
 `ntkndpdemod`/`ntkndpci`; the NDAL ioctl map is the better entry point. The
 large `ntkdriver_nondovi.ko` accounts for most of the symbol count and is
 already covered by a Ghidra project.
+
+## Nine remaining platform modules (objdump second pass)
+
+`grok-findings-2.md` covers the nine modules without Ghidra projects, using
+`arm-none-linux-gnueabihf-objdump` and ELF relocations. Every MD5/SHA-256/size
+matches `exports/kernel-modules.tsv`. Section offsets are ET_REL offsets, not
+load addresses. Key recoveries:
+
+| module | entry/table | recovered contract |
+|---|---|---|
+| `ntkndpcodec.ko` | `ndp_codec_init` .text+0x370d0 | registers MFC/VENC/IMG platform drivers; V4L2 devices `imvq-mfc-dec`, `imvq-venc`, `imvq-img-dec`; 36-byte `v4l2_file_operations` and 460-byte `v4l2_ioctl_ops`; no `/dev/ndp*` string; `kteec_kobj_invoke_cmd` is a runtime lookup |
+| `ntkndptuner.ko` | `init_module` .init.text+0 | exports `ndp_tuner_attach`, copies 0xdc-byte `dvb_tuner_ops`; i2c adapter 0 + `i2c_new_device`; calls `KER_TUNER_Init`; no cleanup/unregister |
+| `ntkndpdemod.ko` | `ndp_demod_init` .init.text+0x1dc | `internal_fe` DVB frontend, `ndp_fe_attach`, DVBT/C/ISDBT/ATSC/J83B; TEE strings `tztv_int_demod_init` etc.; does not call `ndp_tuner_init` or import `ndp_tuner_attach` |
+| `ntkndptsd.ko` | `KER_Demux_DrvInit` .init.text+0 | DVB demux/TSPU, two demux objects, debugfs `tsd`, `nvt_demux_ioctl` accepts `0x40046f61/62`, `0xc0086f63/64/68`; `idx` proc node is separate from DVB nodes |
+| `ntkndp_pq.ko` | `ndp_pq_initial` .init.text+0 | `ndppq` char device, `NVT_ex_proc`, `0xba86`/`0xba87` command families, 217-entry subcommand jump table, OSD alpha/update ioctls `0x4001c83e`, `0x4004c840`, `0x4008c80a`, `PLAT_PQ_SHELL_Initialize` |
+| `PreTcon.ko` | `init_module` .init.text+0 | `PRE_TCON_Init`, register `0xFC0B13B4`, `TCON.BIN`/`romgen.bin`, demura/overdrive DT nodes, clock helpers |
+| `ntkndpci.ko` | `ndp_CI_DrvInit` .init.text+0 | DVB-CI EN50221, `NTCI_GetRouteMode`, `NTCI_SetDpHandle`, `KER_CI_timer` kthread |
+| `kteeclient.ko` | `kteec_init` .text+0x2460 | `/dev/teec`, ioctls `0xc004ee00..04`, exported `kteec_kobj_invoke_cmd`, secure-call handshake, `teec_kservice` kthread |
+| `ntkndphdmi.ko` | `ndp_hdmi_core_init` .init.text+0 | V4L2 capture `ndp-hdmi`, 13 `tztv_hdmi_int_switch_*` exports; distinct 94,816-byte file from `ntkndphdmiswitch.ko` |
+
+Three independent corrections:
+
+1. `ntkndphdmi.ko` and `ntkndphdmiswitch.ko` share identical `.modinfo`
+   description/author/license/depends bytes (`Template HDMI Driver`, etc.).
+   They are different binaries: 94,816 bytes / `930204bb...` (v4l2 capture,
+   `ndp-hdmi`) versus 27,624 bytes / `d4ff737d...` (HDMI switch). A description
+   lookup cannot distinguish them.
+2. `ntkndpdemod.ko` `init_module` does not call `ndp_tuner_init`; the
+   relocation at `.init.text+0x328` is `ndp_fe_attach`. The objdump label
+   `ndp_tuner_init+0xa4` is an address-range overlap, not a call.
+3. `ntkndpcodec.ko` `depends=ntkdriver,PreInit` does not name `kteeclient.ko`,
+   while its strings name `kteec_kobj_invoke_cmd`; that is a runtime symbol
+   lookup, not a missing hard dependency.
+
+No census contradiction: these nine are included in the 15 modules outside
+`/vendor` and the 41 total `.ko` files.
 
 ## Independent second pass (Grok)
 

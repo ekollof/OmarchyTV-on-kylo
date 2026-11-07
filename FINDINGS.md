@@ -1794,7 +1794,7 @@ is the pin used by `DEV_PANEL_*`. VPLTIO recovered 45/45 call-site immediates
 VENDOR-INVENTORY-2026-11-07; raw data under
 artifacts/analysis/vendor-inventory-2026-11-07/. An independent NDAL/kernel
 pass adds 132 NDAL3 + 36 NDAL_EX distinct ioctl immediates and module
-init/exit details; 9 of the 16 platform modules are not yet decompiled.
+init/exit details; 9 of the 16 platform modules still lack a Ghidra project but now have objdump/relocation inventories (grok-findings-2) covering codec/tuner/demod/TSD/PQ/PreTcon/PCI/kteec/HDMI.
 
 APP-MANAGER-KEYBOARD-2026-11-07: `libappmgr.so` is unstripped (MD5
 413930d9366b4f8e76e5ebc2db246a72, BuildID fd36d8414541b839f57ab5ab732ba4054897f707;
