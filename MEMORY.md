@@ -793,9 +793,15 @@ amp-init submits one Init to amp_owner, amp-state polls completion/caches.
 audio_amp.enable=0 default; enable=1 needs plat ready, loads the profile, opens
 /dev/i2c-3 and seeds the owner from the recovered aurora.elf cold-boot image
 (vaddr 0x17640e8, FNV 0xab635b86). Quiesce unpublishes then joins/closes on a
-worker. Host disabled/fail-closed lifecycle test, ARM build 41287a16... and TV
---check pass. No module start or hardware write yet; real mod_plat + amp-init +
-03..05 readback + owner audible confirmation remain. AMP-MODULE.
+worker. Host disabled/fail-closed lifecycle test, ARM build and TV `--check`
+pass. First hardware runs 2026-11-07: a stale core run submitted nothing; with
+the rebuilt core, real mod_plat + audio_amp ran, amp-init completed (`result 1`,
+`reset 0`, `mute 1`), the init-muted amp NACKed the read-only probe, and the
+new `amp-mute 0` restored I2C and readback `1b/05/05`. Stock runtime image
+matched the embedded baseline plus configure patches. Audible/owner-listening
+confirmation and paired shutdown remain. Restored by wdtctl set10: latest stock
+appmgr1575/aurora1777, source5, profile/fb/backlight unchanged, no stage/
+helper. AMP-MODULE.
 
 Input/PVR group 2026-11-07: live settingsDB source5/previous4/volume0;
 stock owns video28 BLAST, ntkdvif, video20/21/24, demux0 and DVB nodes.

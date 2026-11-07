@@ -339,6 +339,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  amp-profile             read immutable amplifier profile inputs\n"
                  "  amp-state               query audio.amp init lifecycle\n"
                  "  amp-init                submit one amplifier Init\n"
+                 "  amp-mute <0|1>          set the vendor amplifier mute level\n"
                  "  audio-curve <volume>    read published AQ curve value\n"
                  "  audio-curve-dump        dump 101 published AQ curve values\n"
                  "  audio-speaker <level> <balance>  speaker clamp/HAL balance map\n"
@@ -1308,8 +1309,23 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         h->api.release(h,OA_SVC_AUDIO_AMP);
         if(rc){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
         snprintf(outbuf,outlen,"amp enabled %d busy %d result %d ticket %" PRIu64
-            " reset %u mute %u\n",st.enabled,st.busy,st.native_result,
-            st.ticket,(unsigned)st.reset_cached,(unsigned)st.mute_cached);
+            " reset %u mute %u live %d known %d\n",st.enabled,st.busy,
+            st.native_result,st.ticket,(unsigned)st.reset_cached,
+            (unsigned)st.mute_cached,st.mute,st.mute_known);
+        return 0;
+    }
+    if(!strcmp(cmd,"amp-mute")) {
+        if(force || !a1 || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        int on;
+        if(!strcmp(a1,"0"))on=0;
+        else if(!strcmp(a1,"1"))on=1;
+        else {snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_audio_amp_iface *s=h->api.lookup(h,OA_SVC_AUDIO_AMP,1);
+        if(!s){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        int rc=s->set_mute(on);
+        h->api.release(h,OA_SVC_AUDIO_AMP);
+        if(rc){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
+        snprintf(outbuf,outlen,"ok\n");
         return 0;
     }
     if(!strcmp(cmd,"amp-init")) {

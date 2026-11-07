@@ -42,8 +42,15 @@ requires a ready plat service, loads the profile, opens `/dev/i2c-3` for
 writing and creates `amp_owner` with the baseline, while enable=0 publishes a
 disabled service and ENODEV. Quiesce unpublishes, detaches and joins/closes on
 a worker. Host lifecycle/fail-closed test and TV `--check` pass; ARM
-`mod_audio_amp.so` `41287a16...`. No module start, GPIO/STBC/register write or
-audible run has occurred. Report: AMP-MODULE-2026-11-07.
+`mod_audio_amp.so` `41287a16...`. Hardware 2026-11-07 with the real
+`mod_plat` + `audio_amp`: after rebuilding a stale core, `amp-init` completed
+on the TV (`result 1`, `reset 0`, `mute 1`). Init deliberately ends muted;
+in that state the amp NACKs the read-only I2C probe (`EPERM`). The new
+`amp-mute 0` restores I2C and readback `1b/05/05`. The stock runtime image at
+`0x17640e8` matches the embedded baseline plus the configure patches, so the
+baseline is confirmed. This is register/GPIO/STBC hardware acceptance, not
+audible acceptance; no owner listening confirmation, paired shutdown or
+in-module readback yet. Report: AMP-MODULE-2026-11-07.
 
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR
 under a replacement. The stock parser also polls `DEV_Ir_GetKey`

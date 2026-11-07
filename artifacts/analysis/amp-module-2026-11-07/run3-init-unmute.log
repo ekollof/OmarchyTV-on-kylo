@@ -1,0 +1,30 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+watchdog disable -> sent
+disable_rc=0
+ 1569 com.nvt.appmgr   /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+launched=4458
+== state pre
+amp enabled 1 busy 0 result -1 ticket 0 reset 0 mute 0 live 0 known 0
+== init
+ok
+init_rc=0
+state1: amp enabled 1 busy 1 result -1 ticket 0 reset 0 mute 0 live 0 known 0
+state2: amp enabled 1 busy 1 result -1 ticket 0 reset 0 mute 0 live 0 known 0
+state3: amp enabled 1 busy 1 result -1 ticket 0 reset 0 mute 0 live 0 known 0
+state4: amp enabled 1 busy 0 result 1 ticket 1 reset 0 mute 1 live 1 known 1
+== probe while init-muted
+probe_muted_rc=1
+== unmute
+AD82587 read: Operation not permitted
+ok
+unmute_rc=0
+== state after unmute
+amp enabled 1 busy 0 result 1 ticket 1 reset 0 mute 1 live 0 known 1
+== probe after unmute
+AD82587_D: /dev/i2c-3, slave 0x34 (vendor 0x68), registers 0x03..0x05 read only
+completed=2 register03=1b register04=05 register05=05
+probe_unmuted_rc=0

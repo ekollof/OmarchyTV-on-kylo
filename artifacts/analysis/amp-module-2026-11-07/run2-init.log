@@ -1,0 +1,47 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+launched=21904
+== ps
+21903 S    sh               sh -c cd /buffer/oa-amp-20261107b && setsid ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-amp.sock --log 3 >/buffer/oa-amp-20261107b/run.log 2>&1 < /dev/null & echo launched=$!; sleep 8; C=/buffer/oa-amp-20261107b/oa-client; echo "== ps"; ps -eo pid,stat,comm,args | grep -E "[o]penaurora"; echo "== log"; tail -14 /buffer/oa-amp-20261107b/run.log; echo "== status"; $C --timeout 10 /tmp/oa-amp.sock "status audio_amp"; echo "== pre"; $C --timeout 10 /tmp/oa-amp.sock "amp-state"; echo "== init"; $C --timeout 10 /tmp/oa-amp.sock "amp-init"; echo init_rc=$?; for i in 1 2 3 4 5 6 7 8 9 10; do sleep 0.4; S=$($C --timeout 10 /tmp/oa-amp.sock "amp-state"); echo "state$i: $S"; case "$S" in *"busy 0 result -1"*) ;; *"busy 0"*) break;; esac; done; echo "== final"; $C --timeout 10 /tmp/oa-amp.sock "amp-state"; echo "== probe"; /buffer/oa-amp-20261107b/amp-probe --read-volume; echo probe_rc=$?
+21904 S    openaurora       ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-amp.sock --log 3
+== log
+[DRM Init] : crtc_id = 26 
+[DRM Init] : plane_id[7] = 40 
+[DRM Init] : plane_id[6] = 54 
+[DRM Init] : plane_id[5] = 55 
+[DRM Init] : plane_id[2] = 56 
+[DRM Init] : plane_id[1] = 59 
+[DRM Init] : plane_id[0] = 60 
+[DRM Init] : plane_id[3] = 61 
+[DRM Init] : plane_id[4] = 62 
+[DRM Init] : Step 3 : Init Kernel Mode Setting - End 
+
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+openaurora: 2 module(s) loaded, control on /tmp/oa-amp.sock
+== status
+name    audio_amp
+state   started
+version 0.1
+path    ./modules/mod_audio_amp.so
+requires
+cleanup_pending 0
+activation_rejected 0
+services audio.amp:v1
+== pre
+amp enabled 1 busy 0 result -1 ticket 0 reset 0 mute 0
+== init
+ok
+init_rc=0
+state1: amp enabled 1 busy 1 result -1 ticket 0 reset 0 mute 0
+state2: amp enabled 1 busy 1 result -1 ticket 0 reset 0 mute 0
+state3: amp enabled 1 busy 1 result -1 ticket 0 reset 0 mute 0
+state4: amp enabled 1 busy 0 result 1 ticket 1 reset 0 mute 1
+== final
+amp enabled 1 busy 0 result 1 ticket 1 reset 0 mute 1
+== probe
+probe_rc=1
+AD82587 read: Operation not permitted

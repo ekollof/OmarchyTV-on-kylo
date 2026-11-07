@@ -54,4 +54,9 @@ int oa_amp_vendor_init(oa_amp_vendor *vendor, const oa_amp_vendor_io *io,
                        oa_amp_i2c *i2c, const oa_amp_board *board,
                        oa_amp_init_io *out);
 
+/* Write one board pin through the same level dispatch used by oa_amp_init.
+ * Returns the vendor boolean (nonzero success). Caller serializes with Init
+ * and owns device authority; no state cache is kept here. */
+int oa_amp_vendor_level(oa_amp_vendor *vendor, uint32_t pin, uint32_t level);
+
 #endif

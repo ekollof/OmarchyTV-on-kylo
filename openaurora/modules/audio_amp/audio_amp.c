@@ -51,6 +51,8 @@ struct ctx {
     int submitted;
     int have_result;
     oa_amp_completion result;
+    int mute_known;
+    int mute_state;
 
     /* ABI 3 quiesce: detach the owner/session, then join and close on a
      * worker. The host retries until the cleanup thread exits. */
@@ -113,6 +115,11 @@ static void poll_result(struct ctx *c)
         c->result = completion;
         c->have_result = 1;
         c->submitted = 0;
+        /* Init ends with the vendor Mute(1) step. The caller must unmute
+         * through amp-mute 0 when the audio path is ready; the stock boot
+         * flow does the same after DEV_AMP_Init. */
+        c->mute_known = 1;
+        c->mute_state = completion.state.mute_cached ? 1 : 0;
     } else if (rc < 0) {
         c->submitted = 0;
         c->api->log(c->api->priv, OA_LOG_ERROR,
@@ -134,6 +141,7 @@ static int iface_init(void)
         return rc;
     c->submitted = 1;
     c->have_result = 0;
+    c->mute_known = 0;
     memset(&c->result, 0, sizeof c->result);
     c->api->log(c->api->priv, OA_LOG_INFO,
                 "audio_amp: init submitted (ticket %llu)",
@@ -159,10 +167,30 @@ static int iface_state(oa_audio_amp_status *out)
     } else {
         out->native_result = -1;
     }
+    out->mute_known = c->mute_known;
+    out->mute = c->mute_known ? c->mute_state : 0;
     return 0;
 }
 
-static const oa_audio_amp_iface g_iface = { iface_init, iface_state };
+static int iface_set_mute(int on)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->published || !c->enabled)
+        return -ENODEV;
+    if (on != 0 && on != 1)
+        return -EINVAL;
+    int ok = oa_amp_vendor_level(&c->vendor, c->board.mute.pin,
+                                 (uint32_t)on);
+    if (!ok)
+        return -EIO;
+    c->mute_known = 1;
+    c->mute_state = on;
+    c->api->log(c->api->priv, OA_LOG_INFO, "audio_amp: mute -> %d", on);
+    return 0;
+}
+
+static const oa_audio_amp_iface g_iface = { iface_init, iface_state,
+                                            iface_set_mute };
 
 static void release_plat(struct ctx *c)
 {
@@ -260,6 +288,8 @@ static int m_start(void *v)
         return -EBUSY;
     c->submitted = 0;
     c->have_result = 0;
+    c->mute_known = 0;
+    c->mute_state = 0;
     memset(&c->result, 0, sizeof c->result);
     long delay = atol(c->api->config_get(c->api->priv,
                                          "audio_amp.cleanup_delay_ms", "0"));

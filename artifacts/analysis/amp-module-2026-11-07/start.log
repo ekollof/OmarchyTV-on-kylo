@@ -1,0 +1,83 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+watchdog disable -> sent
+disable_rc=0
+ 1562 com.nvt.appmgr   /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+== start
+launched=21591
+== ps
+21586 S    sh               sh -c /buffer/wdtctl disable; echo disable_rc=$?; kill -TERM 1766; sleep 2; ps -eo pid,comm,args | grep -E "[a]urora.elf|[a]ppmgr" || true; echo "== start"; cd /buffer/oa-amp-20261107 && setsid ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-amp.sock --log 3 >/buffer/oa-amp-20261107/run.log 2>&1 < /dev/null & echo launched=$!; sleep 8; echo "== ps"; ps -eo pid,stat,comm,args | grep -E "[o]penaurora"; echo "== log"; cat /buffer/oa-amp-20261107/run.log; echo "== status plat"; ./oa-client --timeout 10 /tmp/oa-amp.sock "status plat"; echo "== status audio_amp"; ./oa-client --timeout 10 /tmp/oa-amp.sock "status audio_amp"; echo "== amp-state"; ./oa-client --timeout 10 /tmp/oa-amp.sock "amp-state"
+21591 S    openaurora       ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-amp.sock --log 3
+== log
+[311774] INFO host         openaurora starting, modules=./modules
+[311775] INFO host         control socket /tmp/oa-amp.sock
+[311790] INFO host         loaded plat v0.1 (./modules/mod_plat.so)
+[311790] INFO plat         plat: waiting for /tmp/ntkdriver_completed (ICE_HardwareInit order)
+[311790] INFO plat         plat: driver marker ready after 0 ms
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:0
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:1
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:2
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:3
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:4
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:5
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:6
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:7
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:8
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:9
+[311791] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[DRM Init] : drmModeGetEncoder= PASS 
+[311796] INFO plat         plat: common init (vpltio/v4l2/sharemem/drm, DVIF)
+[311797] INFO plat         plat: VIN slot defaults (7 slots)
+[311799] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[311799] DBG  plat         service up: plat v1
+[311799] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[311799] INFO host         started plat
+[311800] INFO host         loaded audio_amp v0.1 (./modules/mod_audio_amp.so)
+[311800] DBG  audio_amp    service up: audio.amp v1
+[311800] INFO audio_amp    audio_amp: hardware enabled (profile '12Watt', 38 registers)
+[311800] INFO host         started audio_amp
+Hal_IfCmd_SockFd_Get@139 iSockFd=6
+Can not open /dev/nvt/ntkvplt
+ERR:[21591:21591]ClientDrmAuthentically(193) fail(-1)
+
+[DRM Init] : Step 1 : Open DRM Device : drm_card_id = 10 
+[DRM Init] : open drm pass 
+
+[DRM Init] : Step 2 : Create Frame Buffer - Start 
+[DRM Init] : fb_id = 103 
+[DRM Init] : Step 2 : Create Frame Buffer - End 
+
+[DRM Init] : Step 3 : Init Kernel Mode Setting - Start 
+[DRM Init] : crtc_id = 26 
+[DRM Init] : plane_id[7] = 40 
+[DRM Init] : plane_id[6] = 54 
+[DRM Init] : plane_id[5] = 55 
+[DRM Init] : plane_id[2] = 56 
+[DRM Init] : plane_id[1] = 59 
+[DRM Init] : plane_id[0] = 60 
+[DRM Init] : plane_id[3] = 61 
+[DRM Init] : plane_id[4] = 62 
+[DRM Init] : Step 3 : Init Kernel Mode Setting - End 
+
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+openaurora: 2 module(s) loaded, control on /tmp/oa-amp.sock
+== status plat
+sh: ./oa-client: not found
+== status audio_amp
+== amp-state
+sh: ./oa-client: not found
+sh: ./oa-client: not found

@@ -372,7 +372,9 @@ typedef struct {
  * snapshot on the loop: busy means submitted/not collected; result is the
  * vendor Init return (1 complete, 0 first write failed, negative argument
  * error), not audible acceptance. Hold the provider during calls; no pointer
- * escapes. Tickets are provider-instance scoped; reload invalidates them. */
+ * escapes. Tickets are provider-instance scoped; reload invalidates them.
+ * set_mute uses the same vendor mute level path after Init and records the
+ * last accepted request; it is not a hardware readback or audible proof. */
 #define OA_SVC_AUDIO_AMP "audio.amp"
 typedef struct {
     int enabled;
@@ -381,10 +383,13 @@ typedef struct {
     uint64_t ticket;
     int native_result;
     uint8_t reset_cached, mute_cached;
+    int mute_known; /* set_mute or a completed Init supplied a mute state */
+    int mute;       /* last accepted mute request, 0/1 */
 } oa_audio_amp_status;
 typedef struct {
     int (*init)(void);
     int (*state)(oa_audio_amp_status *out);
+    int (*set_mute)(int on); /* 0 accepted, negative errno */
 } oa_audio_amp_iface;
 
 /* audio — volume/mute. Published by mod_audio.

@@ -145,8 +145,7 @@ static void v_sub_init(void *context)
 int oa_amp_vendor_init(oa_amp_vendor *vendor, const oa_amp_vendor_io *io,
                        oa_amp_i2c *i2c, const oa_amp_board *board,
                        oa_amp_init_io *out)
-{
-    if (!vendor || !io || !board || !out)
+{    if (!vendor || !io || !board || !out)
         return -EINVAL;
     vendor->io = *io;
     vendor->i2c = i2c;
@@ -170,4 +169,11 @@ int oa_amp_vendor_init(oa_amp_vendor *vendor, const oa_amp_vendor_io *io,
     out->subwoofer_enable = v_sub_enable;
     out->subwoofer_init = v_sub_init;
     return 0;
+}
+
+int oa_amp_vendor_level(oa_amp_vendor *vendor, uint32_t pin, uint32_t level)
+{
+    if (!vendor || level > 1)
+        return 0;
+    return v_level(vendor, pin, level);
 }

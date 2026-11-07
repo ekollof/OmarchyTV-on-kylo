@@ -189,9 +189,14 @@ unvalidated.
       creates the owner with the recovered cold-boot image (`aurora.elf`
       vaddr `0x17640e8`, FNV `0xab635b86`). Quiesce unpublishes, then joins
       the owner and closes I2C on a worker. Host lifecycle/fail-closed tests,
-      ARM build and TV `--check` pass. Still open: real mod_plat + audio_amp
-      start, `amp-init` hardware run, independent 03..05 readback, owner
-      audible confirmation, paired shutdown. AMP-MODULE.
+      ARM build and TV `--check` pass. 2026-11-07 hardware: with the real
+      `mod_plat` + `audio_amp`, `amp-init` completed (`result 1`, `reset 0`,
+      `mute 1`); the init-muted amp NACKed the read-only probe, and the new
+      `amp-mute 0` restored I2C and readback `1b/05/05`. The stock runtime
+      image matched the embedded baseline plus configure patches. Restored by
+      `wdtctl set 10` (appmgr 1575/aurora 1777, source 5, profile/fb/backlight
+      unchanged). Still open: audible/owner-listening confirmation, paired
+      shutdown/standby, in-module readback. AMP-MODULE.
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but

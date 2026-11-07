@@ -1,0 +1,44 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+== retry stop
+ok
+stop2_rc=0
+name    audio_amp
+state   loaded
+version 0.1
+path    ./modules/mod_audio_amp.so
+requires
+cleanup_pending 0
+activation_rejected 0
+services
+== quit
+bye
+quit_rc=0
+== log tail
+[DRM Init] : plane_id[5] = 55 
+[DRM Init] : plane_id[2] = 56 
+[DRM Init] : plane_id[1] = 59 
+[DRM Init] : plane_id[0] = 60 
+[DRM Init] : plane_id[3] = 61 
+[DRM Init] : plane_id[4] = 62 
+[DRM Init] : Step 3 : Init Kernel Mode Setting - End 
+
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+openaurora: 2 module(s) loaded, control on /tmp/oa-amp.sock
+[380915] INFO host         audio_amp: init submitted (ticket 1)
+[410381] DBG  audio_amp    service down: audio.amp
+[410381] ERR  host         audio_amp: cleanup pending; retry stop/unload
+[461391] INFO host         stopped audio_amp
+[462401] DBG  plat         service down: plat
+[462401] INFO host         stopped plat
+[462401] INFO host         unloaded audio_amp
+[462402] INFO host         unloaded plat
+[462402] INFO host         openaurora stopped
+ls: /buffer/oa-amp-20261107b: No such file or directory
+ls: /tmp/oa-amp.sock: No such file or directory
+watchdog set 10s -> sent
+sent

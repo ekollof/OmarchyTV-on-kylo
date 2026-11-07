@@ -199,6 +199,20 @@ int main(void)
     assert(f.stbc == 3 && state.mute_cached == 9 &&
            state.reset_cached == 0);
 
+    /* Standalone level writes use the same dispatch as Init; this is the
+     * post-Init mute path (Init ends muted) and stays vendor boolean. */
+    memset(&f, 0, sizeof f);
+    f.stbc_rc = 1;
+    f.write_rc = 0;
+    assert(oa_amp_vendor_level(&vendor, 208, 0) == 1);
+    assert(f.stbc == 1 && f.stbc_pin[0] == 8 && f.stbc_cmd[0] == 3);
+    assert(oa_amp_vendor_level(&vendor, 208, 1) == 1);
+    assert(f.stbc == 2 && f.stbc_cmd[1] == 2);
+    assert(oa_amp_vendor_level(&vendor, 114, 0) == 1);
+    assert(f.writes == 1 && f.write_pin[0] == 114 && f.write_level[0] == 0);
+    assert(oa_amp_vendor_level(&vendor, 208, 2) == 0);
+    assert(oa_amp_vendor_level(NULL, 208, 0) == 0);
+
     assert(oa_amp_vendor_init(NULL, &vio, NULL, &board, &io) == -EINVAL);
     assert(oa_amp_vendor_init(&vendor, NULL, NULL, &board, &io) == -EINVAL);
     assert(oa_amp_vendor_init(&vendor, &vio, NULL, NULL, &io) == -EINVAL);
