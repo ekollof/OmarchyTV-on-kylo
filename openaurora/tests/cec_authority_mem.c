@@ -4,11 +4,12 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/mman.h>
 #include "openaurora/cec_authority_mem.h"
 
 struct fake {
     int opens, closes, maps, unmaps;
-    int open_rc, map_fail;
+    int open_rc, map_fail, map_failed_ptr;
     int fd_seen;
     uint64_t base;
     size_t size;
@@ -32,6 +33,7 @@ static void *f_map(void *p, int fd, uint64_t base, size_t size)
     f->maps++;
     f->base = base;
     f->size = size;
+    if (f->map_failed_ptr) { errno = ENOMEM; return MAP_FAILED; }
     if (f->map_fail) { errno = ENOMEM; return NULL; }
     return f->page;
 }
@@ -87,6 +89,15 @@ int main(void)
     errno = 0;
     assert(oa_cec_authority_mem_open(&m, &io) == -1);
     assert(errno == ENOMEM && f.closes == 1 && m.fd == -1 && !m.map);
+
+    /* Regression: mmap returns MAP_FAILED ((void *)-1), not NULL. It must be
+     * rejected before the authority callback can read through it. */
+    memset(&f, 0, sizeof f);
+    f.map_failed_ptr = 1;
+    errno = 0;
+    assert(oa_cec_authority_mem_open(&m, &io) == -1);
+    assert(errno == ENOMEM && f.closes == 1 && m.fd == -1 && !m.map);
+    assert(!m.authority.read_mirror && !m.authority.write_register);
 
     memset(&f, 0, sizeof f);
     f.open_rc = -EACCES;

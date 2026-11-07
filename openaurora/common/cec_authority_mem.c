@@ -14,7 +14,10 @@ static int sys_open(void *context, const char *path, int flags)
 static void *sys_map(void *context, int fd, uint64_t base, size_t size)
 {
     (void)context;
-    return mmap64(NULL, size, PROT_READ, MAP_SHARED, fd, (off64_t)base);
+    void *map = mmap64(NULL, size, PROT_READ, MAP_SHARED, fd, (off64_t)base);
+    /* mmap failure is MAP_FAILED ((void *)-1), not NULL. Normalize so the
+     * opener's NULL check is sufficient on the system path too. */
+    return map == MAP_FAILED ? NULL : map;
 }
 static int sys_unmap(void *context, void *address, size_t size)
 {
@@ -84,7 +87,7 @@ int oa_cec_authority_mem_open(oa_cec_authority_mem *m,
     }
     void *map = io->map(io->context, fd, OA_CEC_MIRROR_BASE,
                         OA_CEC_MIRROR_PAGE);
-    if (!map) {
+    if (!map || map == MAP_FAILED) {
         int primary = errno ? errno : EIO;
         (void)io->close(io->context, fd);
         m->io = (oa_cec_authority_mem_io){ 0 };
