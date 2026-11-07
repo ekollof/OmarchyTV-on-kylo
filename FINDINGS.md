@@ -102,9 +102,13 @@ result is untaken, and `poll_result` never overwrites the Init result with a
 later mute/balance completion. `check-amp-owner-jobs` and
 `check-audio-amp-jobs` pass (worker-only callback assertions; negative checks
 for allowing a second pending submission and for overwriting the Init result);
-ARM `mod_audio_amp` 67d34652.... All review HIGH items are fixed; MEDIUM
-items remain. The close-path wording was corrected to drop unproven "only
-reboot" claims. Reports: AGENT-REVIEW-2026-11-07, AMP-BALANCE, AMP-JOBS,
+ARM `mod_audio_amp` 67d34652.... The tuner p4 MEDIUM is fixed too:
+`oa_nim_raw_channel_setup_dvbt` copies the recovered 0..2 operand into
+`demod[4]` instead of a boolean and rejects p4>2; `check-tuner-backend`'s
+p4=2 case fails with the boolean form. ARM `mod_tuner` 1896d578.... MEDIUM
+items remaining: amp Init retry/suspend, CEC reply queue, panel HAL errors.
+The close-path wording was corrected to drop unproven "only reboot" claims.
+Reports: AGENT-REVIEW-2026-11-07, AMP-BALANCE, AMP-JOBS, TUNER-P4,
 IR-HELPER.
 
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR

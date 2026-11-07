@@ -219,8 +219,9 @@ int oa_nim_raw_channel_setup_dvbt(const struct oa_nim_raw_channel *rec,
         return -EINVAL;
     uint32_t freq_khz = rd32(rec->raw + 0x00);
     uint32_t bandwidth_mhz = rd32(rec->raw + 0x04);
+    uint32_t p4 = rd32(rec->raw + 0x14);
     if (freq_khz == 0 || freq_khz > 2000000u ||
-        bandwidth_mhz < 6 || bandwidth_mhz > 8)
+        bandwidth_mhz < 6 || bandwidth_mhz > 8 || p4 > 2)
         return -EINVAL;
 
     memset(out, 0, sizeof *out);
@@ -232,7 +233,7 @@ int oa_nim_raw_channel_setup_dvbt(const struct oa_nim_raw_channel *rec,
     /* FUN_0086aab0's DVB-T/default HAL_Demod_Set block. */
     out->demod[0] = 0x12;
     out->demod[1] = bandwidth_mhz;
-    out->demod[4] = rd32(rec->raw + 0x14) != 0;
+    out->demod[4] = p4; /* p4 is an operand 0..2, not a boolean */
     out->demod[5] = 1;
     out->demod[0x14] = freq_khz;
     return 0;

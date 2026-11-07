@@ -315,6 +315,12 @@ static void test_raw_channel(void)
     put32(rec.raw + 0x14, 1);
     assert(oa_nim_raw_channel_setup_dvbt(&rec, &setup) == 0);
     assert(setup.demod[4] == 1);
+    put32(rec.raw + 0x14, 2);
+    assert(oa_nim_raw_channel_setup_dvbt(&rec, &setup) == 0);
+    assert(setup.demod[4] == 2); /* p4=2 must not collapse to boolean 1 */
+    put32(rec.raw + 0x14, 3);
+    assert(oa_nim_raw_channel_setup_dvbt(&rec, &setup) == -EINVAL);
+    put32(rec.raw + 0x14, 1);
     put32(rec.raw + 0x1c, 3);
     assert(oa_nim_raw_channel_setup_dvbt(&rec, &setup) == -EINVAL);
 

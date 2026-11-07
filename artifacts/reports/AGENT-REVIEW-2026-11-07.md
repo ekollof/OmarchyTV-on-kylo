@@ -109,6 +109,14 @@ completion over the Init result fails the module state assert. ARM
 `mod_audio_amp.so` sha256
 `67d346529c443423074013ec7f2804fbd56f991fc9cb0c84c661b119e2a97153`.
 
+### MEDIUM — tuner p4 collapsed to a boolean (fixed)
+
+`oa_nim_raw_channel_setup_dvbt` wrote `demod[4] = p4 != 0`, losing the
+recovered 0..2 operand. It now rejects p4>2 and copies the value. The
+`check-tuner-backend` p4=2 case fails if the boolean form is restored. ARM
+`mod_tuner.so` sha256
+`1896d5786a5ad64a0397d78fe7816c2d14e28f0550501ac2d259c36fa261eb04`.
+
 ## Open, severity-ranked
 
 - **MEDIUM amp Init retry/suspend** (`modules/audio_amp/audio_amp.c`):
@@ -121,8 +129,6 @@ completion over the Init result fails the module state assert. ARM
 - **MEDIUM panel HAL errors** (`modules/panel/panel.c`): `Hal_Pwm_Init/Open/
   Set` results are ignored and `panel-state` reports the requested percent; a
   failed open is not retried. Propagate errors and keep the previous value.
-- **MEDIUM tuner p4** (`common/nim_tune.c`): `demod[4] = p4 != 0` loses p4=2;
-  assign the value and reject >2. Add a p4=2 test.
 - **LOW CEC poll retry / labels / 50 ms sleeps**: no automatic acquire retry
   (only `cec-open`), `amp-state`'s `mute` token is the Init snapshot while
   `live` tracks later calls, and several quiesce gates nanosleep on the loop.
