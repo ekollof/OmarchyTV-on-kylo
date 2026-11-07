@@ -1,0 +1,42 @@
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0084f904 <DEV_AMP_PowerDown@@Base>:
+  84f904:	f44f 5c00 	mov.w	ip, #8192	; 0x2000
+  84f908:	b590      	push	{r4, r7, lr}
+  84f90a:	ebad 0c0c 	sub.w	ip, sp, ip
+  84f90e:	f8cc 0fe8 	str.w	r0, [ip, #4072]	; 0xfe8
+  84f912:	f641 5468 	movw	r4, #7528	; 0x1d68
+  84f916:	b083      	sub	sp, #12
+  84f918:	f2c0 1479 	movt	r4, #377	; 0x179
+  84f91c:	6822      	ldr	r2, [r4, #0]
+  84f91e:	af00      	add	r7, sp, #0
+  84f920:	4603      	mov	r3, r0
+  84f922:	607a      	str	r2, [r7, #4]
+  84f924:	b170      	cbz	r0, 84f944 <DEV_AMP_PowerDown@@Base+0x40>
+  84f926:	6e83      	ldr	r3, [r0, #104]	; 0x68
+  84f928:	b163      	cbz	r3, 84f944 <DEV_AMP_PowerDown@@Base+0x40>
+  84f92a:	f1a1 0101 	sub.w	r1, r1, #1
+  84f92e:	fab1 f181 	clz	r1, r1
+  84f932:	0949      	lsrs	r1, r1, #5
+  84f934:	4798      	blx	r3
+  84f936:	687a      	ldr	r2, [r7, #4]
+  84f938:	6823      	ldr	r3, [r4, #0]
+  84f93a:	429a      	cmp	r2, r3
+  84f93c:	d104      	bne.n	84f948 <DEV_AMP_PowerDown@@Base+0x44>
+  84f93e:	370c      	adds	r7, #12
+  84f940:	46bd      	mov	sp, r7
+  84f942:	bd90      	pop	{r4, r7, pc}
+  84f944:	4618      	mov	r0, r3
+  84f946:	e7f6      	b.n	84f936 <DEV_AMP_PowerDown@@Base+0x32>
+  84f948:	f65f eefa 	blx	6af740 <__stack_chk_fail@plt>
+
+0084f94c <DEV_AMP_GetPowerDownStatus@@Base>:
+  84f94c:	f44f 5c00 	mov.w	ip, #8192	; 0x2000
+  84f950:	b590      	push	{r4, r7, lr}
+  84f952:	ebad 0c0c 	sub.w	ip, sp, ip
+  84f956:	Address 0x000000000084f956 is out of bounds.
+

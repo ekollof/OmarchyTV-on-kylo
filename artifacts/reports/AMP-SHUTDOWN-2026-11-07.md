@@ -45,6 +45,16 @@ The slots used by Term/PowerDown/GetPowerDownStatus (`+0x54`, `+0x68`,
 `+0x6c`) are **never assigned** and remain NULL. `AMP_AD82587_Close` is an
 empty function (only an unreachable return block).
 
+## Instruction check
+
+`DEV_AMP_Term` at `0x84f59c` executes `ldr r3,[r0,#84]` (+0x54), and
+`DEV_AMP_PowerDown` at `0x84f926` executes `ldr r3,[r0,#104]` (+0x68).
+`AMP_AD82587_Create` stores callbacks at +0x44/0x48/0x4c/0x50/0x60/0x64/
+0x70/0x74/0x78/0x80/0x90/0xbc and the other populated slots; there is **no
+store to +0x54, +0x68 or +0x6c**. Raw disassembly is saved in
+`artifacts/analysis/amp-shutdown-2026-11-07/` (`create.dis`, `term.dis`,
+`powerdown.dis`).
+
 ## Consequence
 
 For this board/profile there is **no vendor paired shutdown**:

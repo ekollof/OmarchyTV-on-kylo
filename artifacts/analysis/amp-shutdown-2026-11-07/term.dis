@@ -1,0 +1,42 @@
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0084f55c <DEV_AMP_Term@@Base>:
+  84f55c:	f44f 5c00 	mov.w	ip, #8192	; 0x2000
+  84f560:	b590      	push	{r4, r7, lr}
+  84f562:	ebad 0c0c 	sub.w	ip, sp, ip
+  84f566:	f8cc 0fe8 	str.w	r0, [ip, #4072]	; 0xfe8
+  84f56a:	f64f 235c 	movw	r3, #64092	; 0xfa5c
+  84f56e:	f641 5468 	movw	r4, #7528	; 0x1d68
+  84f572:	f2c0 1392 	movt	r3, #402	; 0x192
+  84f576:	b083      	sub	sp, #12
+  84f578:	f2c0 1479 	movt	r4, #377	; 0x179
+  84f57c:	681a      	ldr	r2, [r3, #0]
+  84f57e:	af00      	add	r7, sp, #0
+  84f580:	6821      	ldr	r1, [r4, #0]
+  84f582:	6079      	str	r1, [r7, #4]
+  84f584:	b93a      	cbnz	r2, 84f596 <DEV_AMP_Term@@Base+0x3a>
+  84f586:	687a      	ldr	r2, [r7, #4]
+  84f588:	2001      	movs	r0, #1
+  84f58a:	6823      	ldr	r3, [r4, #0]
+  84f58c:	429a      	cmp	r2, r3
+  84f58e:	d10a      	bne.n	84f5a6 <DEV_AMP_Term@@Base+0x4a>
+  84f590:	370c      	adds	r7, #12
+  84f592:	46bd      	mov	sp, r7
+  84f594:	bd90      	pop	{r4, r7, pc}
+  84f596:	6858      	ldr	r0, [r3, #4]
+  84f598:	2800      	cmp	r0, #0
+  84f59a:	d0f4      	beq.n	84f586 <DEV_AMP_Term@@Base+0x2a>
+  84f59c:	6d43      	ldr	r3, [r0, #84]	; 0x54
+  84f59e:	2b00      	cmp	r3, #0
+  84f5a0:	d0f1      	beq.n	84f586 <DEV_AMP_Term@@Base+0x2a>
+  84f5a2:	4798      	blx	r3
+  84f5a4:	e7ef      	b.n	84f586 <DEV_AMP_Term@@Base+0x2a>
+  84f5a6:	f660 e8cc 	blx	6af740 <__stack_chk_fail@plt>
+  84f5aa:	bf00      	nop
+
+0084f5ac <DEV_AMP_GetDesc@@Base>:
+  84f5ac:	f44f 5c00 	mov.w	ip, #8192	; 0x2000

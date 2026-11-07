@@ -1,0 +1,116 @@
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+008755d0 <AMP_AD82587_Create@@Base>:
+  8755d0:	f44f 5c00 	mov.w	ip, #8192	; 0x2000
+  8755d4:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+  8755d8:	ebad 0c0c 	sub.w	ip, sp, ip
+  8755dc:	f8cc 0fd0 	str.w	r0, [ip, #4048]	; 0xfd0
+  8755e0:	f641 5568 	movw	r5, #7528	; 0x1d68
+  8755e4:	b083      	sub	sp, #12
+  8755e6:	f2c0 1579 	movt	r5, #377	; 0x179
+  8755ea:	682b      	ldr	r3, [r5, #0]
+  8755ec:	af00      	add	r7, sp, #0
+  8755ee:	607b      	str	r3, [r7, #4]
+  8755f0:	2800      	cmp	r0, #0
+  8755f2:	f000 80ad 	beq.w	875750 <AMP_AD82587_Create@@Base+0x180>
+  8755f6:	4681      	mov	r9, r0
+  8755f8:	2101      	movs	r1, #1
+  8755fa:	20d8      	movs	r0, #216	; 0xd8
+  8755fc:	f639 ee78 	blx	6af2f0 <calloc@plt+0x4>
+  875600:	4604      	mov	r4, r0
+  875602:	2800      	cmp	r0, #0
+  875604:	f000 80a4 	beq.w	875750 <AMP_AD82587_Create@@Base+0x180>
+  875608:	2008      	movs	r0, #8
+  87560a:	f63b eb08 	blx	6b0c1c <malloc@plt>
+  87560e:	4680      	mov	r8, r0
+  875610:	2800      	cmp	r0, #0
+  875612:	f000 809f 	beq.w	875754 <AMP_AD82587_Create@@Base+0x184>
+  875616:	f249 13a4 	movw	r3, #37284	; 0x91a4
+  87561a:	26d8      	movs	r6, #216	; 0xd8
+  87561c:	f2c0 1336 	movt	r3, #310	; 0x136
+  875620:	60e6      	str	r6, [r4, #12]
+  875622:	cb0f      	ldmia	r3, {r0, r1, r2, r3}
+  875624:	2608      	movs	r6, #8
+  875626:	f04f 0e01 	mov.w	lr, #1
+  87562a:	f644 4a05 	movw	sl, #19461	; 0x4c05
+  87562e:	f8c4 60d0 	str.w	r6, [r4, #208]	; 0xd0
+  875632:	f104 0610 	add.w	r6, r4, #16
+  875636:	f8c4 e000 	str.w	lr, [r4]
+  87563a:	f2c0 0a87 	movt	sl, #135	; 0x87
+  87563e:	f8c4 e008 	str.w	lr, [r4, #8]
+  875642:	f644 6bf1 	movw	fp, #20209	; 0x4ef1
+  875646:	c607      	stmia	r6!, {r0, r1, r2}
+  875648:	0c1a      	lsrs	r2, r3, #16
+  87564a:	f826 3b02 	strh.w	r3, [r6], #2
+  87564e:	f245 5c99 	movw	ip, #21913	; 0x5599
+  875652:	f644 53ad 	movw	r3, #19885	; 0x4dad
+  875656:	f2c0 0b87 	movt	fp, #135	; 0x87
+  87565a:	7032      	strb	r2, [r6, #0]
+  87565c:	f2c0 0c87 	movt	ip, #135	; 0x87
+  875660:	f2c0 0387 	movt	r3, #135	; 0x87
+  875664:	f8c4 a048 	str.w	sl, [r4, #72]	; 0x48
+  875668:	f644 6151 	movw	r1, #20049	; 0x4e51
+  87566c:	f644 42cd 	movw	r2, #19661	; 0x4ccd
+  875670:	f644 5a19 	movw	sl, #19737	; 0x4d19
+  875674:	f8c4 b044 	str.w	fp, [r4, #68]	; 0x44
+  875678:	f2c0 0187 	movt	r1, #135	; 0x87
+  87567c:	f8c4 c04c 	str.w	ip, [r4, #76]	; 0x4c
+  875680:	f2c0 0287 	movt	r2, #135	; 0x87
+  875684:	6623      	str	r3, [r4, #96]	; 0x60
+  875686:	f2c0 0a87 	movt	sl, #135	; 0x87
+  87568a:	f644 4049 	movw	r0, #19529	; 0x4c49
+  87568e:	f644 4681 	movw	r6, #19585	; 0x4c81
+  875692:	f245 1c49 	movw	ip, #20809	; 0x5149
+  875696:	f245 2ba9 	movw	fp, #21161	; 0x52a9
+  87569a:	f245 531d 	movw	r3, #21789	; 0x551d
+  87569e:	f2c0 0087 	movt	r0, #135	; 0x87
+  8756a2:	f2c0 0687 	movt	r6, #135	; 0x87
+  8756a6:	f2c0 0c87 	movt	ip, #135	; 0x87
+  8756aa:	f2c0 0b87 	movt	fp, #135	; 0x87
+  8756ae:	6721      	str	r1, [r4, #112]	; 0x70
+  8756b0:	f2c0 0387 	movt	r3, #135	; 0x87
+  8756b4:	6762      	str	r2, [r4, #116]	; 0x74
+  8756b6:	f245 2105 	movw	r1, #20997	; 0x5205
+  8756ba:	f8c4 a07c 	str.w	sl, [r4, #124]	; 0x7c
+  8756be:	227f      	movs	r2, #127	; 0x7f
+  8756c0:	f04f 0a5f 	mov.w	sl, #95	; 0x5f
+  8756c4:	6520      	str	r0, [r4, #80]	; 0x50
+  8756c6:	6666      	str	r6, [r4, #100]	; 0x64
+  8756c8:	f2c0 0187 	movt	r1, #135	; 0x87
+  8756cc:	f8c4 c078 	str.w	ip, [r4, #120]	; 0x78
+  8756d0:	f644 5665 	movw	r6, #19813	; 0x4d65
+  8756d4:	f8c4 b080 	str.w	fp, [r4, #128]	; 0x80
+  8756d8:	f245 3c65 	movw	ip, #21349	; 0x5365
+  8756dc:	f8c4 3084 	str.w	r3, [r4, #132]	; 0x84
+  8756e0:	f04f 0b64 	mov.w	fp, #100	; 0x64
+  8756e4:	2300      	movs	r3, #0
+  8756e6:	f8c4 a028 	str.w	sl, [r4, #40]	; 0x28
+  8756ea:	62e2      	str	r2, [r4, #44]	; 0x2c
+  8756ec:	f245 3af9 	movw	sl, #21497	; 0x53f9
+  8756f0:	f245 4259 	movw	r2, #21593	; 0x5459
+  8756f4:	4670      	mov	r0, lr
+  8756f6:	f2c0 0687 	movt	r6, #135	; 0x87
+  8756fa:	f2c0 0c87 	movt	ip, #135	; 0x87
+  8756fe:	f2c0 0a87 	movt	sl, #135	; 0x87
+  875702:	6323      	str	r3, [r4, #48]	; 0x30
+  875704:	6363      	str	r3, [r4, #52]	; 0x34
+  875706:	f2c0 0287 	movt	r2, #135	; 0x87
+  87570a:	63a3      	str	r3, [r4, #56]	; 0x38
+  87570c:	63e3      	str	r3, [r4, #60]	; 0x3c
+  87570e:	f8c4 b040 	str.w	fp, [r4, #64]	; 0x40
+  875712:	f8c4 1090 	str.w	r1, [r4, #144]	; 0x90
+  875716:	2132      	movs	r1, #50	; 0x32
+  875718:	f888 3004 	strb.w	r3, [r8, #4]
+  87571c:	f888 e005 	strb.w	lr, [r8, #5]
+  875720:	f888 3006 	strb.w	r3, [r8, #6]
+  875724:	f8c4 80d4 	str.w	r8, [r4, #212]	; 0xd4
+  875728:	f8c9 4000 	str.w	r4, [r9]
+  87572c:	f8c4 6094 	str.w	r6, [r4, #148]	; 0x94
+  875730:	f8c4 c0a8 	str.w	ip, [r4, #168]	; 0xa8
+  875734:	f8c4 a0cc 	str.w	sl, [r4, #204]	; 0xcc
+  875738:	f8c4 20bc 	str.w	r2, [r4, #188]	; 0xbc
+  87573c:	f8c8 1000 	str.w	r1, [r8]
