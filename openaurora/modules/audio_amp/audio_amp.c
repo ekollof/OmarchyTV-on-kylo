@@ -171,8 +171,18 @@ static int iface_init(void)
     if (!c || !c->published || !c->enabled || !c->owner)
         return -ENODEV;
     poll_result(c);
-    if (c->submitted || c->have_result)
+    if (c->submitted)
         return -EBUSY;
+    /* A successful Init result is final for this generation. A failed result
+     * (0 = first write failed, negative = argument error) may be retried: the
+     * owner keeps the preceding image, matching the vendor's repeated-Init
+     * contract. */
+    if (c->have_result && c->result.native_result == 1)
+        return -EBUSY;
+    if (c->have_result)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "audio_amp: retrying Init after result %d",
+                    c->result.native_result);
     uint64_t ticket = 0;
     int rc = oa_amp_owner_submit(c->owner, &c->profile, &ticket);
     if (rc)
@@ -507,6 +517,23 @@ static void m_destroy(void *v)
     free(c);
 }
 
+/* standby: release the vendor I2C session and owner thread. The hardware
+ * registers are not read back; resume starts a fresh generation, so a
+ * successful Init result and caches are intentionally not carried across. */
+static int m_suspend(void *v)
+{
+    struct ctx *c = v;
+    if (!c || c->cleanup_running)
+        return -EBUSY;
+    teardown_now(c);
+    return 0;
+}
+
+static int m_resume(void *v)
+{
+    return m_start(v);
+}
+
 static const oa_module g_module = {
     .magic = OA_MODULE_MAGIC,
     .abi = OA_ABI_VERSION,
@@ -518,6 +545,8 @@ static const oa_module g_module = {
     .stop = m_stop,
     .destroy = m_destroy,
     .quiesce = m_quiesce,
+    .suspend = m_suspend,
+    .resume = m_resume,
 };
 
 OA_MODULE_EXPORT(g_module)

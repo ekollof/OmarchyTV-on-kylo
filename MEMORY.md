@@ -846,7 +846,10 @@ errors are fixed too (Open/Set 0 fails, failed open retries, last applied
 percent reported; check-panel-curve, PANEL-HAL-ERRORS; mod_panel 46a3c3ff...).
 The CEC reply queue is fixed (failed record dropped, no reply after close,
 release clears; check-cec-reply-queue, CEC-REPLY-QUEUE; mod_cec 5083aee9...).
-MEDIUM amp Init retry/suspend remains. AGENT-REVIEW.
+The last MEDIUM, amp Init retry/suspend, is fixed too (failed Init can retry,
+success stays final; suspend tears down owner/I2C, resume restarts;
+check-audio-amp-jobs, AMP-RETRY-SUSPEND; mod_audio_amp 1c9553a3...). Only LOW
+items remain. AGENT-REVIEW.
 
 Input/PVR group 2026-11-07: live settingsDB source5/previous4/volume0;
 stock owns video28 BLAST, ntkdvif, video20/21/24, demux0 and DVB nodes.

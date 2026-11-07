@@ -141,12 +141,22 @@ clear/retain. Restoring the drop-all line fails the queue assertion. ARM
 `mod_cec.so` sha256
 `5083aee9aa75f87b12f4b32a3139a7c60cb29c65591f3531ba93b2ac06ffa185`.
 
+### MEDIUM — amp Init retry and suspend/resume (fixed)
+
+`iface_init` refused after any retained result, including a failed Init, and
+the module had no suspend/resume, holding the owner/I2C session through
+standby. It now refuses only a pending job or a successful Init
+(`native_result == 1`); a failed result can be resubmitted with the owner's
+retained image. `suspend` runs `teardown_now` (unpublish, plat release, owner
+join/destroy, I2C close) and `resume` calls `m_start` to reopen and republish;
+the Init result/caches are intentionally not carried across standby because
+there is no register readback. `check-audio-amp-jobs` covers the failed-Init
+retry, success finality and the descriptor suspend/resume hooks; restoring the
+old refusal fails the retry assertion. ARM `mod_audio_amp.so` sha256
+`1c9553a343775e53c7004d1c883fe04adf9a895f0451ae11404240de1abb49f3`.
+
 ## Open, severity-ranked
 
-- **MEDIUM amp Init retry/suspend** (`modules/audio_amp/audio_amp.c`):
-  `iface_init` refuses while `have_result` is set, even after a failed Init;
-  the module has no suspend/resume, so host standby leaves it started with the
-  I2C session and last image/mute.
 - **LOW CEC poll retry / labels / 50 ms sleeps**: no automatic acquire retry
   (only `cec-open`), `amp-state`'s `mute` token is the Init snapshot while
   `live` tracks later calls, and several quiesce gates nanosleep on the loop.

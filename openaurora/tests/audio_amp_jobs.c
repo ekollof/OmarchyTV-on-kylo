@@ -116,6 +116,12 @@ static int fake_unpublish(void *priv, const char *name)
     (void)name;
     return 0;
 }
+static const char *fake_config(void *priv, const char *key, const char *def)
+{
+    (void)priv;
+    (void)key;
+    return def;
+}
 
 static const oa_host_api g_api = {
     .size = sizeof g_api,
@@ -123,6 +129,7 @@ static const oa_host_api g_api = {
     .log = fake_log,
     .publish = fake_publish,
     .unpublish = fake_unpublish,
+    .config_get = fake_config,
 };
 
 static void wait_prelude(void)
@@ -158,9 +165,8 @@ static oa_audio_amp_status wait_idle(void)
     return st;
 }
 
-int main(void)
+static struct ctx *make_ctx(void)
 {
-    hw.main_thread = pthread_self();
     void *opaque = NULL;
     assert(m_init(&g_api, &opaque) == 0);
     struct ctx *c = opaque;
@@ -180,6 +186,58 @@ int main(void)
     for (unsigned i = 0; i < OA_AD82587_REGISTERS; i++)
         initial.image[i] = (uint8_t)(0x40 + i);
     assert(!oa_amp_owner_create(&c->owner, &initial, &c->init_io));
+    return c;
+}
+
+static void test_failed_init_retry(void)
+{
+    struct ctx *c = make_ctx();
+    hw.block = 0;
+    hw.level_fail = 0;
+    hw.fail_write_reg = 3;
+    assert(iface_init() == 0);
+    oa_audio_amp_status st = wait_idle();
+    assert(st.have_result == 1 && st.native_result == 0);
+
+    hw.fail_write_reg = -1;
+    assert(iface_init() == 0); /* a failed Init can be retried */
+    st = wait_idle();
+    assert(st.have_result == 1 && st.native_result == 1);
+    assert(iface_init() == -EBUSY); /* success stays final for this generation */
+
+    int result = 0;
+    finish_owner(c->owner, &result);
+    assert(result == 0);
+    c->owner = NULL;
+    m_destroy(c);
+    puts("ok audio_amp lifecycle: failed Init retries, successful Init stays final");
+}
+
+static void test_suspend_resume(void)
+{
+    const oa_module *mod = oa_module_entry();
+    assert(mod->suspend && mod->resume);
+
+    struct ctx *c = make_ctx();
+    assert(mod->suspend(c) == 0);
+    assert(!c->published && c->owner == NULL && c->i2c == NULL);
+    m_destroy(c);
+
+    void *opaque = NULL;
+    assert(m_init(&g_api, &opaque) == 0);
+    c = opaque;
+    c->published = 1;
+    c->enabled = 0;
+    assert(mod->suspend(c) == 0 && !c->published);
+    assert(mod->resume(c) == 0 && c->published);
+    m_destroy(c);
+    puts("ok audio_amp lifecycle: suspend releases the owner and resume republishes");
+}
+
+int main(void)
+{
+    hw.main_thread = pthread_self();
+    struct ctx *c = make_ctx();
 
     /* Pending Init blocks both controls; after completion the Init result is
      * retained and the Init's trailing Mute(1) is reflected. */
@@ -233,6 +291,9 @@ int main(void)
     assert(result == 0);
     c->owner = NULL;
     m_destroy(c);
+
+    test_failed_init_retry();
+    test_suspend_resume();
     puts("all audio_amp job tests passed");
     return 0;
 }

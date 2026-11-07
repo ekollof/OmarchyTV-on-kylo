@@ -113,10 +113,13 @@ fails if the results are ignored. ARM `mod_panel` 46a3c3ff.... The CEC reply
 queue is fixed: a failed submission drops only that record, replies are never
 sent after close, and a successful release clears the queue;
 `check-cec-reply-queue` fails with the old drop-all behavior. ARM `mod_cec`
-5083aee9.... MEDIUM item remaining: amp Init retry/suspend. The close-path
-wording was corrected to drop unproven "only reboot" claims. Reports:
-AGENT-REVIEW-2026-11-07, AMP-BALANCE, AMP-JOBS, TUNER-P4, PANEL-HAL-ERRORS,
-CEC-REPLY-QUEUE, IR-HELPER.
+5083aee9.... The last MEDIUM is fixed: amp Init may be retried after a failed
+result (success stays final), and the module now has suspend/resume hooks that
+tear down the owner/I2C and restart/republish; `check-audio-amp-jobs` covers
+both. ARM `mod_audio_amp` 1c9553a3.... Only LOW review items remain. The
+close-path wording was corrected to drop unproven "only reboot" claims.
+Reports: AGENT-REVIEW-2026-11-07, AMP-BALANCE, AMP-JOBS, AMP-RETRY-SUSPEND,
+TUNER-P4, PANEL-HAL-ERRORS, CEC-REPLY-QUEUE, IR-HELPER.
 
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR
 under a replacement. The stock parser also polls `DEV_Ir_GetKey`
