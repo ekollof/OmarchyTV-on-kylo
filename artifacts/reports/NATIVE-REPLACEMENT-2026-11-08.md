@@ -80,6 +80,25 @@ per-profile. No app was launched on the TV. Bundle `oa-native-20261108b.tgz`
 sha256 `6ce14ca906b07bd5bf1d578655235bd33880a9108b537195fb7eb49f732623ac`;
 `oa-app-launch` links `libnam.so` with RPATH `/vendor/lib/nlib`.
 
+### TV attempt: temporary retail appmgr (blocked)
+
+The owner approved a temporary retail appmgr. A second appmgr with a custom
+retail list (`idtv=n`, `dialserver=n`, `youtube_test=n`; Netflix/Amazon/YouTube
+enabled) initialized DirectFB but failed at `_MGR_InitSaWMan` CreateManager
+(1278491788) because the stock appmgr already owned SaWMan. Stopping the stock
+appmgr (PID 1580) dropped the SSH session; the `ash ./run.sh` supervisor
+rebooted the set. Stock returned as appmgr 1581 (debug list) / aurora 1789;
+no app launch occurred. The stock appmgr's `/tmp/stdin.privserver` debug console
+accepted `@netflix` (write succeeded) but no Netflix process appeared; the
+disabled profile is the likely filter. Staging `/buffer/nvt.app.test.ini` was
+removed, `/conf/oa_safe` is present, the appmgr command line is the debug list,
+and the audio controls are healthy.
+
+The process-swap path is therefore not viable under the stock supervisor. TV
+app-launch acceptance needs a one-boot app-list override (for example a bind
+mount of a custom list over the read-only debug path) or a boot/profile change;
+both are owner gates.
+
 ## Native volume/mute OSD
 
 `ui_omarchy` now consumes the remote volume keys globally: code 16 up, 17 down,
@@ -113,10 +132,13 @@ documented ALSA-CONTROL limitation, not a new regression.
 - `ui_omarchy` is still the shell skeleton: home/sources/apps/settings/about,
   focus navigation, clock, launcher list and emitted actions. It is not full
   vendor UI parity (animations, menu hierarchy, localized assets, channel UI).
-- `OA_ACTION_SELECT` now has a host-tested consumer and libnam helper, but no
-  TV launch was attempted. The active `nvt.app.debug.ini` profile disables the
-  Netflix/Amazon/YouTube entries and `oa_apps.map` is not profile-verified; the
-  helper's registration callbacks are no-op stubs.
+- `OA_ACTION_SELECT` has a host-tested consumer and libnam helper. The
+  owner-approved temporary retail appmgr process swap failed: a second appmgr
+  could not create the SaWMan manager, and stopping the stock appmgr triggered
+  a supervised reboot (stock debug appmgr/aurora restored). The debug console
+  `@netflix` wrote but launched nothing. TV app-launch acceptance needs a
+  one-boot app-list override or boot/profile gate; `oa_apps.map` is not
+  profile-verified and the helper callbacks are no-op stubs.
 - The native volume/mute OSD is host-tested only; TV key handling, audible
   volume, CEC-volume policy and the overlay on the real fb1 remain open.
 - Takeover audio restore remains reboot-required for the hidden DSP state.
