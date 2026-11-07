@@ -168,7 +168,13 @@ unvalidated.
       profile query 12Watt/27/5/5/128, curve 8137, `audio.enable=0`; stock
       mixer values0 and amp registers 1b/05/05 unchanged. No audible output,
       volume/mute write or amp init/reset/standby. Native backend remains open.
-      AUDIO-CEC-TAKEOVER.
+      AUDIO-CEC-TAKEOVER. 2026-11-07 offline: added `common/amp_board.c`, the
+      explicit adapter between the recovered errno-returning transports
+      (normal reset114, MCU/STBC mute208, one-byte I2C writes) and
+      `amp_init`'s vendor boolean callbacks; `check-amp-board` covers the
+      default records, pin routing, errno->false mapping, write-failure finish
+      and cache/subwoofer policy. Injected I/O only; no device opened or
+      written.
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but
