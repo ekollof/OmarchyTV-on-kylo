@@ -1,0 +1,18 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+pid=6851
+== fds
+== modules
+75f7b000-75f7f000 r-xp 00000000 00:15 48904      /buffer/oa-av-20261107/modules/mod_cec.so
+75f7f000-75f8e000 ---p 00004000 00:15 48904      /buffer/oa-av-20261107/modules/mod_cec.so
+75f8e000-75f8f000 r--p 00003000 00:15 48904      /buffer/oa-av-20261107/modules/mod_cec.so
+75f8f000-75f90000 rw-p 00004000 00:15 48904      /buffer/oa-av-20261107/modules/mod_cec.so
+76790000-76793000 r-xp 00000000 00:15 48907      /buffer/oa-av-20261107/modules/mod_audio.so
+76793000-767a2000 ---p 00003000 00:15 48907      /buffer/oa-av-20261107/modules/mod_audio.so
+767a2000-767a3000 r--p 00002000 00:15 48907      /buffer/oa-av-20261107/modules/mod_audio.so
+767a3000-767a4000 rw-p 00003000 00:15 48907      /buffer/oa-av-20261107/modules/mod_audio.so
+== cec-state
+cec owner 1 audio 1 supported 0 local 1

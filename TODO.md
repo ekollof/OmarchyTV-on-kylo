@@ -163,9 +163,17 @@ unvalidated.
 ### Audio / CEC
 
 - [ ] Amp profile/init/reset/mute/standby (AD82587), speaker gain/volume and
-      mixer; verify audible output and no stuck mute/standby.
+      mixer; verify audible output and no stuck mute/standby. 2026-11-07
+      read-only group: audio_amp_profile/audio_curve/audio modules start,
+      profile query 12Watt/27/5/5/128, curve 8137, `audio.enable=0`; stock
+      mixer values0 and amp registers 1b/05/05 unchanged. No audible output,
+      volume/mute write or amp init/reset/standby. Native backend remains open.
+      AUDIO-CEC-TAKEOVER.
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
+      2026-11-07: `mod_cec` starts and publishes owner/audio policy, but
+      `cec-state` reports `supported 0`; no raw open, LA claim, authority or
+      bus traffic. The hardware backend/worker remains open.
 
 ### Input / source / PVR
 

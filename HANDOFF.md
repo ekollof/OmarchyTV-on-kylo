@@ -738,6 +738,18 @@ open, panel-state50. Brightness is not measured/owner-confirmed; panel
 power/resume remain open. Restored by wdtctl set10: latest stock appmgr1577/
 aurora1774, level1000, freq/mode30000/0, profile/fb unchanged. PANEL-BACKLIGHT.
 
+Audio/CEC read-only group 2026-11-07: stock pre-state captured (snd controlC0/
+C2/C3, i2c-3, video28, CEC major229 no node; mixer values0; amp regs1b/05/05;
+profile/AQ/fb/backlight). Staged d8d2006a... with plat stub + audio_amp_profile
++ audio_curve + audio + cec; all started. amp-profile 12Watt/27/5/5/128,
+audio-curve50 8137, audio-state enabled0 volume-1, cec-state owner1 audio1
+supported0 local1. No audio/CEC device fds and no volume/mute/amp/CEC bus
+operations; read-only probes unchanged. Fixed config key amp_profile.hwprofile
+(not audio_amp_profile.hwprofile); the typo caused EINVAL. Restored by wdtctl
+set10: latest stock appmgr1564/aurora1764, same fds, probes0 and1b/05/05,
+profile/AQ/fb/backlight unchanged. Not audible/CEC acceptance; native backends
+open. AUDIO-CEC-TAKEOVER.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran

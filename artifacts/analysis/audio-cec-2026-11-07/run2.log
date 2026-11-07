@@ -1,0 +1,87 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+launched=6851
+== ps
+ 6850 S    sh               sh -c cd /buffer/oa-av-20261107 && setsid ./openaurora --modules ./modules --config ./openaurora-fixed.conf --sock /tmp/oa-av.sock --log 3 >/buffer/oa-av-20261107/run2.log 2>&1 < /dev/null & echo launched=$!; sleep 6; echo "== ps"; ps -eo pid,stat,comm,args | grep -E "[o]penaurora"; echo "== log"; cat /buffer/oa-av-20261107/run2.log; echo "== status"; for m in plat audio_amp_profile audio_curve audio cec; do echo "-- $m"; /buffer/oa-av-20261107/oa-client --timeout 10 /tmp/oa-av.sock "status $m"; done; echo "== queries"; /buffer/oa-av-20261107/oa-client --timeout 10 /tmp/oa-av.sock "amp-profile"; /buffer/oa-av-20261107/oa-client --timeout 10 /tmp/oa-av.sock "audio-curve 50"; /buffer/oa-av-20261107/oa-client --timeout 10 /tmp/oa-av.sock "audio-state"; /buffer/oa-av-20261107/oa-client --timeout 10 /tmp/oa-av.sock "cec-state"; echo "== probes"; ALSA_CONFIG_PATH=/vendor/etc/alsa.conf /buffer/oa-av-20261107/mixer-probe --read-gain; echo mixer_rc=$?; /buffer/oa-av-20261107/amp-probe --read-volume; echo amp_rc=$?
+ 6851 S    openaurora       ./openaurora --modules ./modules --config ./openaurora-fixed.conf --sock /tmp/oa-av.sock --log 3
+== log
+[857064] INFO host         openaurora starting, modules=./modules
+[857065] INFO host         control socket /tmp/oa-av.sock
+[857065] INFO host         loaded plat v1 (./modules/mod_plat.so)
+[857065] DBG  plat         service up: plat v1
+[857065] INFO host         started plat
+[857065] INFO host         loaded audio_amp_profile v1 (./modules/mod_audio_amp_profile.so)
+[857066] DBG  audio_amp_profile service up: audio.amp_profile v1
+[857066] INFO host         started audio_amp_profile
+[857066] INFO host         loaded audio_curve v0.1 (./modules/mod_audio_curve.so)
+[857066] DBG  audio_curve  service up: audio.curve v1
+[857066] INFO host         started audio_curve
+[857081] INFO host         loaded audio v0.1 (./modules/mod_audio.so)
+[857081] DBG  audio        service up: audio v1
+[857081] WARN audio        audio disabled (no vendor HAL or not on the TV; audio.enable overrides)
+[857081] INFO host         started audio
+[857082] INFO host         loaded cec v1 (./modules/mod_cec.so)
+[857082] DBG  cec          service up: cec.owner v1
+[857082] DBG  cec          service up: cec.audio v1
+[857082] INFO host         started cec
+openaurora: 5 module(s) loaded, control on /tmp/oa-av.sock
+== status
+-- plat
+name    plat
+state   started
+version 1
+path    ./modules/mod_plat.so
+requires
+cleanup_pending 0
+activation_rejected 0
+services plat:v1
+-- audio_amp_profile
+name    audio_amp_profile
+state   started
+version 1
+path    ./modules/mod_audio_amp_profile.so
+requires
+cleanup_pending 0
+activation_rejected 0
+services audio.amp_profile:v1
+-- audio_curve
+name    audio_curve
+state   started
+version 0.1
+path    ./modules/mod_audio_curve.so
+requires
+cleanup_pending 0
+activation_rejected 0
+services audio.curve:v1
+-- audio
+name    audio
+state   started
+version 0.1
+path    ./modules/mod_audio.so
+requires plat
+cleanup_pending 0
+activation_rejected 0
+services audio:v1
+-- cec
+name    cec
+state   started
+version 1
+path    ./modules/mod_cec.so
+requires
+cleanup_pending 0
+activation_rejected 0
+services cec.owner:v1 cec.audio:v1
+== queries
+power '12Watt' prescale 27 ch1 5 ch2 5 fine 128 clip 405736 drc 98304 state -1 attack -1 release -1
+curve 8137
+audio enabled 0 volume -1
+cec owner 1 audio 1 supported 0 local 1
+== probes
+card=0 control=speaker out gain count=1 min=0 max=100 values=0
+mixer_rc=0
+AD82587_D: /dev/i2c-3, slave 0x34 (vendor 0x68), registers 0x03..0x05 read only
+completed=2 register03=1b register04=05 register05=05
+amp_rc=0

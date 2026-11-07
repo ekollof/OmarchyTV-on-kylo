@@ -1,0 +1,8 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+e3f6b5a2859725eeca179ef468b48493c663edcf4c51521613363461351e58cd  amp-profile-probe
+size=24514 rc=0 power='12Watt' prescale=27 ch1=5 ch2=5 fine=128 clip=405736 drc=98304 state=-1 attack=-1 release=-1
+probe_rc=0

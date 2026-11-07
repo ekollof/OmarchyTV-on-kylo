@@ -232,6 +232,17 @@ first stage accidentally used the real `mod_plat`; it was restored by reboot
 and is not panel acceptance. Panel power/resume remain open. Report:
 PANEL-BACKLIGHT-2026-11-07.
 
+AUDIO-CEC-TAKEOVER-2026-11-07: the first audio/CEC control-plane group is not
+hardware acceptance. The `audio_amp_profile` config key is
+`amp_profile.hwprofile`; using `audio_amp_profile.hwprofile` makes start return
+EINVAL (the ARM parser on `/conf/mb230_hwprofile.bin` returns rc0, 12Watt,
+prescale27). With the correct key, plat stub + audio_amp_profile + audio_curve +
+audio + cec start; profile query 12Watt/27/5/5/128, curve50=8137,
+`audio-state` enabled0 volume-1, `cec-state` supported0 local1. The host opens
+no snd/i2c/video28/ntkcec fd; no volume/mute/amp or CEC bus operation. Read-only
+mixer values0 and amp 1b/05/05 are unchanged. Native amp and CEC hardware
+backends remain open. Report: AUDIO-CEC-TAKEOVER-2026-11-07.
+
 EASI-PROBE-2026-11-05: testtool TCP1986 exposes read-only GETCHANNELLIST
 (RSN/name) and ACTIVECHANNELLIST XML (RSN/name/handle/ONID/TSID/SID/type). A
 whitelist-only probe client with bounded parsing, host fixture and ARM build
