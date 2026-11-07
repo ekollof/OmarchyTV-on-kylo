@@ -178,9 +178,20 @@ unvalidated.
 ### Input / source / PVR
 
 - [ ] Source/VIN switching: CVBS/HDMI1-3/YPbPr/VGA/TV IDs and picture slots.
-- [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release.
+      2026-11-07: `Hal_Vin_SelectInput`/`SetStreamStart` selected type17
+      (HDMI1, vin id3) then type0 (TV, vin id1); `source-state` reflected both.
+      Visible display/audio routing and DB/UI resync were not validated; the
+      settings `m_current_source` stayed5. INPUT-PVR-TAKEOVER.
+- [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
+      `mod_ir` was unimplementable on the control loop: `BLAST_RX` blocked in
+      `blast_io_get_key` and every socket command timed out; a poll readiness
+      gate did not fix it. The TV link also needed `-ldl`. BLAST must move to a
+      dedicated worker that posts key events; no IR key was tested in the
+      clean run (`ir.blast=0`).
 - [ ] PVR: frontend/demux/dvr open, record/playback and TS output; record what
-      is gated by storage.
+      is gated by storage. 2026-11-07: only the offline persistent stub ran;
+      `pvr-add`/`pvr-list`/`pvr-cancel` worked (cancel state3, record retained).
+      No frontend/demux/dvr fd, recording, playback or TS output.
 
 ### Separate owner gates (not this session unless explicitly extended)
 

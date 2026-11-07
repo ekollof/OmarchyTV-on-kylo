@@ -243,6 +243,17 @@ no snd/i2c/video28/ntkcec fd; no volume/mute/amp or CEC bus operation. Read-only
 mixer values0 and amp 1b/05/05 are unchanged. Native amp and CEC hardware
 backends remain open. Report: AUDIO-CEC-TAKEOVER-2026-11-07.
 
+INPUT-PVR-TAKEOVER-2026-11-07: `mod_ir` used `dlopen` without `-ldl`; the TV
+preflight rejected it (`undefined symbol: dlopen`, fixed to NEEDED libdl).
+More importantly, `NDAL_VideoExt_BLAST_RX` blocks in `blast_io_get_key` and
+was called from a 50 ms host timer. The single host thread then blocked and
+every control command timed out; a poll-readiness gate did not help. BLAST must
+move to a dedicated worker and marshal keys with `api->post`; until then
+`ir.blast=0`. With BLAST off, plat/source/ir/pvr start; source-select 17
+(vin3) then 0 (vin1) and the offline PVR add/cancel work. This is not IR
+hardware, DVR hardware or visible source-routing acceptance. Report:
+INPUT-PVR-TAKEOVER-2026-11-07.
+
 EASI-PROBE-2026-11-05: testtool TCP1986 exposes read-only GETCHANNELLIST
 (RSN/name) and ACTIVECHANNELLIST XML (RSN/name/handle/ONID/TSID/SID/type). A
 whitelist-only probe client with bounded parsing, host fixture and ARM build

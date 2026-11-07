@@ -17,6 +17,7 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <poll.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -237,6 +238,16 @@ static void blast_poll(void *ud)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "ir: BLAST protocol sweep -> %u", c->rc_protocol);
     }
+    /* BLAST_RX can sleep in blast_io_get_key even when the v4l2 fd reports
+     * readable; this readiness gate is not a complete fix. The vendor call
+     * must move to a dedicated worker before BLAST can be enabled from the
+     * host loop again. The 2026-11-07 input/PVR run used ir.blast=0 after
+     * this path blocked every control command while the remote was idle. */
+    if (c->blast_fd < 0)
+        return;
+    struct pollfd ready = { .fd = c->blast_fd, .events = POLLIN };
+    if (poll(&ready, 1, 0) <= 0)
+        return;
     uint32_t code = 0;
     uint8_t aux = 0, flag = 0;
     /* DEV_Ir_GetKey returns 0 when a key is present; a nonzero value is the

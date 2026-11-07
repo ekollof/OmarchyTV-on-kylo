@@ -923,7 +923,7 @@ $(eval $(call emit_pics,modules__mod_ui_engine,modules/ui_engine/ui_engine.c,-pt
 
 $(BUILD)/modules/mod_ir.so: $(call pic_objs,modules__mod_ir,modules/ir/ir.c)
 	@mkdir -p $(dir $@)
-	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -ldl
 $(eval $(call emit_pics,modules__mod_ir,modules/ir/ir.c,-pthread,include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h))
 
 $(BUILD)/modules/mod_ui_omarchy.so: $(call pic_objs,modules__mod_ui_omarchy,modules/ui_omarchy/ui_omarchy.c)

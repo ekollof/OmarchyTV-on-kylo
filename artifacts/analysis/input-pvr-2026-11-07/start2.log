@@ -1,0 +1,39 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+watchdog disable -> sent
+disable_rc=0
+ 1568 /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+== start
+launched=3803
+== ps
+ 3793 S    sh               sh -c /buffer/wdtctl disable; echo disable_rc=$?; kill -TERM 1769; sleep 2; ps -eo pid,args | grep -E "[a]urora.elf|[a]ppmgr" || true; echo "== start"; cd /buffer/oa-ip-20261107c && setsid ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-ip.sock --log 3 >/buffer/oa-ip-20261107c/run.log 2>&1 < /dev/null & echo launched=$!; sleep 5; echo "== ps"; ps -eo pid,stat,comm,args | grep -E "[o]penaurora"; echo "== wchan"; pid=$(ps -eo pid,comm,args | awk "\$2 == \"openaurora\" {print \$1; exit}"); echo pid=$pid; cat /proc/$pid/wchan 2>/dev/null; echo; echo "== log"; cat /buffer/oa-ip-20261107c/run.log; echo "== status"; /buffer/oa-ip-20261107c/oa-client --timeout 5 /tmp/oa-ip.sock "status source"; echo status_rc=$?
+ 3803 S    openaurora       ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-ip.sock --log 3
+== wchan
+pid=3803
+blast_io_get_key
+== log
+[146764] INFO host         openaurora starting, modules=./modules
+[146765] INFO host         control socket /tmp/oa-ip.sock
+[146766] INFO host         loaded plat v1 (./modules/mod_plat.so)
+[146766] DBG  plat         service up: plat v1
+[146766] INFO host         started plat
+[146781] INFO host         loaded source v0.1 (./modules/mod_source.so)
+[146781] INFO source       source: VIN open (fd 6), switching enabled
+[146781] DBG  source       service up: source v1
+[146781] INFO host         started source
+[146781] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[146781] DBG  ir           service up: input v1
+[146784] INFO ir           ir: BLAST v4l2 fd 7 from /dev/video28
+[146785] INFO ir           ir: BLAST receiver protocol 4 (set rc=0, poll on)
+[146785] INFO ir           remote parser ready; BLAST only, UART path empty
+[146785] INFO host         started ir
+[146785] INFO host         loaded pvr v1 (./modules/mod_pvr.so)
+[146785] DBG  pvr          service up: pvr v2
+[146785] INFO host         started pvr
+openaurora: 4 module(s) loaded, control on /tmp/oa-ip.sock
+== status
+status_rc=1
+oa-client: timeout after 5s waiting for a reply

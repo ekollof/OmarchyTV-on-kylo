@@ -750,6 +750,17 @@ set10: latest stock appmgr1564/aurora1764, same fds, probes0 and1b/05/05,
 profile/AQ/fb/backlight unchanged. Not audible/CEC acceptance; native backends
 open. AUDIO-CEC-TAKEOVER.
 
+Input/PVR group 2026-11-07: live settingsDB source5/previous4/volume0;
+stock owns video28 BLAST, ntkdvif, video20/21/24, demux0 and DVB nodes.
+Preflight found mod_ir missing -ldl on TV (fixed; libdl NEEDED). Two BLAST
+runs hung the single host thread in blast_io_get_key; a poll-readiness gate
+did not help, so both were killed and stock rebooted. Clean run with
+ir.blast=0: plat/source/ir/pvr started; source-select 17 (vin3) then 0 (vin1);
+PVR add id1/list/cancel state3; no video28/ntkdvif/DVB fds; source stayed5.
+Restored by wdtctl set10: latest stock appmgr1619/aurora1773, fds/profile/fb/
+backlight unchanged. IR BLAST hardware blocked pending a dedicated worker;
+PVR is the offline stub, not DVR hardware. INPUT-PVR-TAKEOVER.
+
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches local. Staged hash-verified
 build-tv-v3 openaurora + mod_audio_amp_profile.so in /tmp/oa-amp-verify, ran
