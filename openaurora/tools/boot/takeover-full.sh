@@ -14,6 +14,17 @@ case "${1:-}" in
 start)
     sha256sum -c manifest.sha256 >/dev/null
     ./openaurora --check --modules ./modules
+    # Snapshot the optical/SPDIF controls while stock is still running.
+    if [ -x ./oa-alsactl ] && [ -r /vendor/etc/alsa.conf ]; then
+        mkdir -p /buffer/oa-audio-before
+        if ALSA_CONFIG_PATH=/vendor/etc/alsa.conf ./oa-alsactl --card 0 \
+                save /buffer/oa-audio-before/card0.txt; then
+            grep -E '^(nvt opu hw volume|main out source select|main out source connect|spdif bypass|hw out mute)[[:space:]]' \
+                /buffer/oa-audio-before/card0.txt \
+                > /buffer/oa-audio-before/optical.txt || true
+            echo "audio snapshot: $(wc -l < /buffer/oa-audio-before/optical.txt) optical controls"
+        fi
+    fi
     /buffer/wdtctl disable
     for p in $(pidof aurora.elf 2>/dev/null || true); do
         kill -TERM "$p" 2>/dev/null || true
@@ -45,7 +56,26 @@ reload-suite)
     ;;
 restore)
     ./oa-client /tmp/openaurora.sock quit
-    sleep 3
+    sleep 5
+    if [ -x ./oa-alsactl ] && [ -s /buffer/oa-audio-before/optical.txt ] &&
+       [ -r /vendor/etc/alsa.conf ]; then
+        if ALSA_CONFIG_PATH=/vendor/etc/alsa.conf ./oa-alsactl --card 0 \
+                restore /buffer/oa-audio-before/optical.txt; then
+            echo "optical control restore -> ok"
+        else
+            echo "optical control restore -> failed" >&2
+        fi
+        # Any nonzero OPU hardware attenuation (observed 0 12000 12000)
+        # silences the optical soundbar. Healthy playback uses 0 0 0.
+        if ALSA_CONFIG_PATH=/vendor/etc/alsa.conf ./oa-alsactl --card 0 \
+                setv "nvt opu hw volume" 0 0 0; then
+            echo "opu volume restore -> ok"
+        else
+            echo "opu volume restore -> failed" >&2
+        fi
+        ALSA_CONFIG_PATH=/vendor/etc/alsa.conf ./oa-alsactl --card 0 \
+            get "nvt opu hw volume" || true
+    fi
     echo "verify stock:"
     ps -eo pid,ppid,args | grep -E '[a]urora.elf|[o]penaurora|[o]a-supervise' || true
     ;;

@@ -18,14 +18,21 @@ or quit. Host tests cover the exit and relaunch event order; not yet exercised
 on the TV. Boot persistence/boot hooks remain a separate gate. TV restored
 stock (appmgr 1577, aurora 1769 after a forced reboot). REPLACEMENT-SYSTEM,
 HW-ACCEPT-2, TAKEOVER-ACCEPT.
-Takeover audio regression, 2026-11-07: the first 32-module real-platform run
+Takeover audio regression, 2026-11-07/08: the first 32-module real-platform run
 produced a visible vendor portal and native UI, and `reload-suite` relaunched
 the core; but the process-only restore left the soundbar silent. The soundbar is
 fed by optical S/PDIF and the TV speakers are intentionally muted. Killing and
 restarting stock Aurora did not recover it; `reboot -f` did (owner confirmed
-optical soundbar audio back). Until an optical/SPDIF audio restore path is
-recovered, a takeover must be treated as requiring a reboot for audio. This is
-not TV-speaker, amplifier-mute or CEC-audio acceptance. `display.cold_init` did
+optical soundbar audio back). ALSA-CONTROL-2026-11-07 now records two separate
+states: `nvt opu hw volume 0 12000 12000` is one verified cause, and writing
+`0 0 0` restored audio without a reboot; a later takeover also left sticky route
+controls (`spdif region area=1`, `hp/line out nvt enable=1`,
+`hp/line out hp gain enable=0`) whose ALSA writes return success but do not
+change, so a reboot remains required for that state. `oa-alsactl` (save/get/set/
+setv/restore), the filtered critical-control restore and the OPU defensive
+restore are integrated in the full bundle. Preventing the sticky writer or
+recovering a safe driver reset remains open. This is not TV-speaker,
+amplifier-mute or CEC-audio acceptance. `display.cold_init` did
 not fire because fb1 was already a valid 1280x720; post-reboot stock fb1 is
 1920x2160.
 Full system candidate, 2026-11-07: `full-replacement-bundle` builds 32 modules

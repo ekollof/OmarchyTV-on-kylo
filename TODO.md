@@ -329,9 +329,14 @@ unvalidated.
       visible UI but left the optical-S/PDIF soundbar silent after process-only
       restore; a stock Aurora restart did not recover it, `reboot -f` did (owner
       confirmed optical soundbar audio back). TV internal speakers are
-      intentionally muted. Recover/implement the optical/SPDIF (and any amp)
-      teardown or restore path, or explicitly require a reboot after every
-      takeover. TAKEOVER-ACCEPT-2026-11-07.
+      intentionally muted. 2026-11-08 ALSA-CONTROL: `nvt opu hw volume
+      0 12000 12000` is one reproduced cause and `0 0 0` restored audio without
+      reboot; a later run also left sticky route controls (`spdif region area`,
+      `hp/line out nvt enable`, `hp/line out hp gain enable`) whose writes
+      return success but do not change. Recover/prevent the sticky writer or a
+      safe driver reset, or explicitly require a reboot after every takeover.
+      `oa-alsactl` and filtered OPU/route restore are integrated but not
+      sufficient for the sticky state. TAKEOVER-ACCEPT-2026-11-07.
 
 - [x] Offline display simulation feasibility: actual fbdev module with wrapped
       device calls on host/ARM qemu, and actual scene_gles with the host Mesa
