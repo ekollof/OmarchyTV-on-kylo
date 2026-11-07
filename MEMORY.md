@@ -785,8 +785,12 @@ cec-open/cec-close/cec-send/cec-state. Host tests pass; ARM core 88bb2906...,
 mod_cec 10ef4b50.... Hardware attempt stopped stock but the kernel thread
 DRV_CEC_CALLBAC (pid2929) kept the exclusive KER_CEC lock; raw open returned
 EPERM (CEC Try lock fail), so no frame TX/RX. Reboot restored stock aurora1740
-with its own callback thread2937; no node/stage/socket. Raw takeover needs a
-graceful stock CEC release or early boot-order start. CEC-RAW-BACKEND.
+with its own callback thread2937; no node/stage/socket. Close-path follow-up:
+ICE_CECClose is a stub, PLAT_CEC_Close has no internal caller, and a new
+process's NDAL_VideoExt_CEC_Init(NULL) (with or without open) reports success
+but leaves the orphaned thread; no userspace stock-close trigger. Raw takeover
+needs an early boot-order start or shared stock-owned monitoring.
+CEC-RAW-BACKEND.
 
 Amp transport 2026-11-07 (offline): recovered DEV_GPIO_SetLevel/SetDirection.
 Pin<200 -> linkable Hal_Gpio_Write/Config (0 success; issue the mutating 670a

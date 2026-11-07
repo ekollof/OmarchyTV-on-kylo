@@ -1,0 +1,28 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+3d86d82b642fc851084192ffa72a99ef303a2c6d303c308970bd6db11c2babd3  /tmp/cec-stock-close
+== pre
+ 1740  1679 S    aurora.elf       /vendor/com.nvt.idtv/aurora.elf
+ 1934  1740 Z    aurora.elf       [aurora.elf]
+ 2937     2 SW   DRV_CEC_CALLBAC  [DRV_CEC_CALLBAC]
+watchdog disable -> sent
+disable_rc=0
+== after stop
+ 2937     2 SW   DRV_CEC_CALLBAC  [DRV_CEC_CALLBAC]
+== close probe
+open_device(0,10)=3 cec_init(NULL)=1
+probe_rc=0
+== after close
+ 2937     2 SW   DRV_CEC_CALLBAC  [DRV_CEC_CALLBAC]
+== dmesg
+[2-371.933979] usbcore: registered new interface driver btusb
+[2-380.701349] [0]FR2IP_SYS_InstallStatusCallback  fr2ip sys context doesn't ready
+[2-380.701359] [0]FR2IP_SYS_InstallStatusCallback  fr2ip sys context doesn't ready
+[2-380.701365] [0][KER_FR2IP_DRM_Mute](0)
+[2-380.701371] [0]KER_FR2IP_DRM_Close, plane0,already closed
+[2-380.703731] DEC_FLOW Cmd(1), Decoder = 0
+[2-380.703807] DEC_FLOW Cmd(2), Decoder = 0
+[2-380.703847] enSrcId=0x800, enClkrvSrc=1

@@ -285,8 +285,12 @@ SIGTERM, the kernel thread `DRV_CEC_CALLBACK` still held the KER_CEC exclusive
 semaphore (`kcec: CEC Try lock fail`), so the raw open returned EPERM and no
 CEC frame was sent or received. Stock restore by reboot created its own
 callback thread. This confirms the close/open defect from CEC-OWNERSHIP:
-process death is not a graceful CEC release. A raw takeover needs a graceful
-stock close or an early boot-order start, not a driver-global patch.
+process death is not a graceful CEC release. Follow-up: `ICE_CECClose`
+@0x806e44 is a debug-only stub, `PLAT_CEC_Close` @0x88bff4 is never called
+internally, and `NDAL_VideoExt_CEC_Init(NULL)` from a new process reports
+success without stopping the orphaned kernel thread. There is no userspace
+stock-close trigger for the SIGTERM case; a raw takeover needs an early
+boot-order start or shared stock-owned monitoring, not a driver-global patch.
 Report: CEC-RAW-BACKEND-2026-11-07.
 
 INPUT-PVR-TAKEOVER-2026-11-07: `mod_ir` used `dlopen` without `-ldl`; the TV

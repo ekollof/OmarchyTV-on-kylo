@@ -1,0 +1,17 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+38.68 103.66
+ 1574  1381 S    com.nvt.appmgr   /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+ 1773  1727 S    aurora.elf       /vendor/com.nvt.idtv/aurora.elf
+ 1956  1773 Z    aurora.elf       [aurora.elf]
+ 2930     2 SW   DRV_CEC_CALLBAC  [DRV_CEC_CALLBAC]
+ls: /dev/ntkcec: No such file or directory
+ls: /tmp/ntkcec: No such file or directory
+ls: /tmp/cec-close2: No such file or directory
+ls: /tmp/cec-stock-close: No such file or directory
+1920,2160
+0,0
+1b063b2cc7faa8b92c0f843921e561c7  /conf/mb230_hwprofile.bin

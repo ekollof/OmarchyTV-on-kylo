@@ -207,8 +207,13 @@ unvalidated.
       tests pass. Hardware: authority bit1 was set (`0x000001ab`), but stock
       SIGTERM left kernel thread `DRV_CEC_CALLBAC` holding the exclusive
       KER_CEC lock, so raw open returned EPERM (`CEC Try lock fail`) and no
-      frame was sent/received. Raw takeover needs a graceful stock CEC release
-      or an early boot-order start; do not patch driver globals. CEC-RAW-BACKEND.
+      frame was sent/received. Follow-up close-path recovery: `ICE_CECClose`
+      is a stub, `PLAT_CEC_Close` has no internal caller, and
+      `NDAL_VideoExt_CEC_Init(NULL)` from a new process reports success without
+      stopping the orphaned thread. No userspace stock-close trigger exists, so
+      raw takeover requires an early boot-order start (boot-hook gate) or
+      shared stock-owned monitoring. Do not patch driver globals or unload the
+      driver. CEC-RAW-BACKEND.
 
 ### Input / source / PVR
 
