@@ -106,6 +106,9 @@ stage/socket absent
   real `BLAST_RX`; the fake test proves the record/pipe/emit path, but no owner
   pressed a key during the hardware run. A physical press with the helper
   active is the remaining IR acceptance, including repeat/release timing.
+- `oa-ir-blast` is not yet part of the normal stage/install packaging. This run
+  used a manual `/buffer/oa-ip-20261107g` stage with `ir.blast_helper` set to
+  its absolute path. The install path must ship the helper alongside `mod_ir`.
 - Source VIN switching worked, but visible display/audio routing and UI/DB
   resync were not validated.
 - PVR is the offline stub only; no frontend/demux/dvr open, recording,
