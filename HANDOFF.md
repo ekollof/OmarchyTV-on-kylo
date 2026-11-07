@@ -760,9 +760,9 @@ EPERM (CEC Try lock fail), so no frame TX/RX. Reboot restored stock aurora1740
 with its own callback thread2937; no node/stage/socket. Close-path follow-up:
 ICE_CECClose is a stub, PLAT_CEC_Close has no internal caller, and a new
 process's NDAL_VideoExt_CEC_Init(NULL) (with or without open) reports success
-but leaves the orphaned thread; no userspace stock-close trigger. Raw takeover
-needs an early boot-order start or shared stock-owned monitoring.
-CEC-RAW-BACKEND.
+but leaves the orphaned thread; no tested userspace stock-close trigger was
+found. Raw takeover needs an early boot-order start or shared stock-owned
+monitoring. CEC-RAW-BACKEND.
 
 Amp transport 2026-11-07 (offline): recovered DEV_GPIO_SetLevel/SetDirection.
 Pin<200 -> linkable Hal_Gpio_Write/Config (0 success; issue the mutating 670a
@@ -793,6 +793,15 @@ empty, so this board has no vendor paired shutdown; DEV_AMP_Term/PowerDown are
 no-ops. The module closes I2C on quiesce and does not invent a mute/reset on
 stop; standby/amp-rail policy is a separate MCU/panel/power concern. Audible
 confirmation remains. AMP-SHUTDOWN.
+Amp balance 2026-11-07: recovered AMP_AD82587_SetBalance (regs4/5, 127/50
+formula, 0/50/100 boundaries) and added amp-balance/set_balance with host
+formula/CLI tests; mute/balance reject while Init is submitted. SetVolume is
+reg3 prescale+readback, SoftMute reg2 0x0e, HP_Mute GPIO0xc3; unwired. ARM
+mod_audio_amp 7334a236.... No hardware balance run. AMP-BALANCE.
+Agent review 2026-11-07 (Grok): fixed CRITICAL MAP_FAILED authority mapping
+(commit f323673, regression test), corrected CEC close-path wording; remaining
+high CEC suspend/resume + authority unmap on -EAGAIN, amp mute/balance loop
+ordering, IR pipe/8-byte record/bounded reap/CLOEXEC. AGENT-REVIEW.
 
 Input/PVR group 2026-11-07: live settingsDB source5/previous4/volume0;
 stock owns video28 BLAST, ntkdvif, video20/21/24, demux0 and DVB nodes.

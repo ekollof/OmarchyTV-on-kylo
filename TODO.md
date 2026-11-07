@@ -199,7 +199,17 @@ unvalidated.
       in-module readback. AMP-MODULE. Follow-up: the AD82587 object has NULL
       Term/PowerDown slots and an empty Close, so there is no vendor paired
       shutdown; do not invent a reset/mute-on-stop. Standby/amp-rail policy is
-      an MCU/panel/power-owner concern. AMP-SHUTDOWN.
+      an MCU/panel/power-owner concern. AMP-SHUTDOWN. 2026-11-07 balance:
+      recovered the SetBalance regs4/5 formula and added `amp-balance
+      <0..100>`/`set_balance` with host tests; mute and balance reject while
+      Init is submitted. SetVolume (reg3 prescale + readback), SoftMute (reg2
+      bits 0x0e) and HP_Mute (GPIO0xc3) remain unwired; no hardware balance
+      run. AMP-BALANCE.
+- [ ] Agent-review follow-ups (AGENT-REVIEW-2026-11-07): CEC suspend/resume
+      and authority unmap while an owner is retained on `-EAGAIN`, reply-queue
+      failure handling; amp mute/balance as owner jobs and Init
+      retry/suspend; IR pipe bound/8-byte record/bounded reap/O_CLOEXEC and
+      UART repeat; panel HAL failure reporting; tuner `demod[4]=p4`.
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but
@@ -213,9 +223,10 @@ unvalidated.
       frame was sent/received. Follow-up close-path recovery: `ICE_CECClose`
       is a stub, `PLAT_CEC_Close` has no internal caller, and
       `NDAL_VideoExt_CEC_Init(NULL)` from a new process reports success without
-      stopping the orphaned thread. No userspace stock-close trigger exists, so
-      raw takeover requires an early boot-order start (boot-hook gate) or
-      shared stock-owned monitoring. Do not patch driver globals or unload the
+      stopping the orphaned thread. No tested userspace stock-close trigger was
+      found (indirect callers were not exhaustively checked), so the viable
+      path remains an early boot-order start (boot-hook gate) or shared
+      stock-owned monitoring. Do not patch driver globals or unload the
       driver. CEC-RAW-BACKEND.
 
 ### Input / source / PVR

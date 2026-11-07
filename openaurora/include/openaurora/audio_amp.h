@@ -22,6 +22,13 @@ typedef struct {
  * hardware initialization routine or a UI-volume-to-amplifier conversion. */
 int oa_ad82587_configure(uint8_t out[OA_AD82587_REGISTERS],
     const uint8_t baseline[OA_AD82587_REGISTERS], const oa_ad82587_profile *profile);
+/* AMP_AD82587_SetBalance @0x875204 register formula for balance 0..100:
+ *   0..49   -> reg4=0, reg5=127 - (balance*127)/50
+ *   50      -> reg4=0, reg5=0
+ *   51..100 -> reg4=127 - ((100-balance)*127)/50, reg5=0
+ * Returns 0 or -EINVAL (outside 0..100). The vendor writes reg4 first and
+ * reg5 only on success; this helper computes values only. */
+int oa_ad82587_balance_regs(int balance, uint8_t *reg4, uint8_t *reg5);
 /* aurora.elf .data initializer at virtual 0x017640e8 (file 0x017440e8), the
  * retained global the vendor Init patches and writes. Not the live stock
  * image; read-only data with no GPIO/MCU/I2C access. */

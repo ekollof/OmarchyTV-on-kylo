@@ -109,16 +109,19 @@ async function main() {
         assert.match(await command('status audio_amp'),
                      /^name\s+audio_amp$/m);
         assert.equal(await command('amp-state'),
-            'amp enabled 0 busy 0 result -1 ticket 0 reset 0 mute 0 live 0 known 0');
+            'amp enabled 0 busy 0 result -1 ticket 0 reset 0 mute 0 live 0 known 0 balance 0 balance_known 0');
         assert.equal(await command('amp-init'), 'failed errno 19');
         assert.equal(await command('amp-mute 1'), 'failed errno 19');
         assert.equal(await command('amp-mute 2'), 'failed errno 22');
+        assert.equal(await command('amp-balance 50'), 'failed errno 19');
+        assert.equal(await command('amp-balance 101'), 'failed errno 22');
+        assert.equal(await command('amp-balance x'), 'failed errno 22');
         const started = Date.now();
         assert.equal(await command('reload audio_amp'), 'ok');
         assert.ok(Date.now() - started < 1500,
                   'disabled reload must not block');
         assert.equal(await command('amp-state'),
-            'amp enabled 0 busy 0 result -1 ticket 0 reset 0 mute 0 live 0 known 0');
+            'amp enabled 0 busy 0 result -1 ticket 0 reset 0 mute 0 live 0 known 0 balance 0 balance_known 0');
         assert.equal(await command('stop audio_amp'), 'ok');
         assert.equal(await command('amp-state'), 'failed errno 19');
     });
@@ -131,6 +134,7 @@ async function main() {
         assert.equal(await command('amp-state'), 'failed errno 19');
         assert.equal(await command('amp-init'), 'failed errno 19');
         assert.equal(await command('amp-mute 1'), 'failed errno 19');
+        assert.equal(await command('amp-balance 50'), 'failed errno 19');
         assert.equal(await command('stop audio_amp'), 'ok');
     });
 

@@ -123,18 +123,25 @@ libNDAL_EX, opened the platform video context with
 open_device(0,10)=3 cec_init(NULL)=1
 ```
 
-A matching `cec_init(config)` then `cec_init(NULL)` also returned
-`cec_open=1 cec_close=1`. In both cases the orphaned kernel thread remained:
+`3` is the returned value but its convention is not independently established
+here; `1` is the NDAL/ndcommon boolean, not the separate driver close result
+(see CEC-TRANSPORT-CONTRACT). The orphaned kernel thread remained:
 
 ```text
  2937  2 SW  DRV_CEC_CALLBAC  [DRV_CEC_CALLBAC]
 ```
 
-`dmesg` showed no CEC close. A different process's VPL close reports vendor
-success but cannot stop the context owned by the dead stock process. There is
-therefore **no userspace stock-close trigger** in this firmware for the
-SIGTERM case; the kernel thread/semaphore is only cleared by a reboot (or by
-starting the replacement before stock opens CEC, which is a boot-order gate).
+`dmesg` showed no CEC close. A supplementary Open→Close probe in the same
+session also reported success, but its stdout was not saved to a durable log,
+so it is not used as acceptance evidence.
+
+A different process's VPL close therefore reports vendor success without
+stopping the context owned by the dead stock process. No tested userspace
+stock-close trigger was found for the SIGTERM case: `ICE_CECClose` is a stub,
+`PLAT_CEC_Close` has no direct internal caller, and the NDAL close probe did
+not stop the thread. Indirect callbacks/other binaries were not exhaustively
+checked, so "only a reboot can ever release it" is not claimed; the viable
+tested path remains an early boot-order start or shared stock-owned monitoring.
 The probe source is kept for reproducibility; it must run only with stock
 stopped and is not a production helper.
 
@@ -144,10 +151,12 @@ stopped and is not a production helper.
   or ARC transmission. The raw open is the remaining blocker.
 - Native authority is read-only; a clear mirror bit would need the recovered
   STBC `0xf011` write path.
-- The follow-up proved there is **no userspace stock-close trigger** for the
-  SIGTERM case: `ICE_CECClose` is a stub, `PLAT_CEC_Close` is never called, and
-  a new process's `NDAL_VideoExt_CEC_Init(NULL)` reports success without
-  stopping the orphaned kernel thread.
+- The follow-up found **no tested userspace stock-close trigger** for the
+  SIGTERM case: `ICE_CECClose` is a stub, `PLAT_CEC_Close` has no direct
+  internal caller, and a new process's `NDAL_VideoExt_CEC_Init(NULL)` reported
+  success without stopping the orphaned kernel thread. Indirect callers and
+  other binaries were not exhaustively checked; no reboot-only/unreachable
+  claim is made.
 - Options for the next window:
   1. start the replacement early enough at boot, before stock opens CEC (a
      boot-hook/order gate, separate authorization);

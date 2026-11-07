@@ -62,6 +62,29 @@ mute/reset-on-stop. Quiesce closes the I2C session; standby/amp-rail policy is a
 separate MCU/panel/power-owner contract. Audible output remains the amp
 acceptance gate. Report: AMP-SHUTDOWN-2026-11-07.
 
+AMP-BALANCE-2026-11-07 recovers `AMP_AD82587_SetBalance` @0x875204. For
+balance 0..100 the vendor writes reg4 then reg5: <50 -> 0, 127-(b*127)/50;
+50 -> 0,0; >50 -> 127-((100-b)*127)/50, 0; >100 -> 127,0. The division is
+signed/truncating. `oa_ad82587_balance_regs` and `audio.amp` `set_balance`
+implement the 0..100 path; `amp-balance` exposes it. SetVolume is the reg3
+prescale write plus 3-byte readback, not UI volume; SoftMute is reg2 bits
+0x0e; HP_Mute is GPIO0xc3. Those need a general amp read/GPIO descriptor and
+remain unwired. Mute/balance reject while Init is submitted; the writes still
+run on the caller. Host tests pass; no hardware balance run. Report:
+AMP-BALANCE-2026-11-07.
+
+AGENT-REVIEW-2026-11-07 (Grok): the adversarial review found a CRITICAL CEC
+authority bug. `mmap64` failure returns `MAP_FAILED` ((void*)-1), not NULL;
+the opener only rejected NULL, so it published a bad `read_mirror` that would
+fault on `MAP_FAILED+0x200`. Fixed in commit f323673 by normalizing/rejecting
+MAP_FAILED with a regression test. The review's HIGH items remain: CEC
+suspend/resume clears no session state and joins on the loop; quiesce unmaps
+authority while a retained owner may still borrow it; amp mute/balance still
+run on the host loop; IR can desync its pipe, its record is 8 bytes not 6, and
+stop can block/leak inherited fds; the close-path wording was corrected to
+drop unproven "only reboot" claims. Reports: AGENT-REVIEW-2026-11-07,
+AMP-BALANCE.
+
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR
 under a replacement. The stock parser also polls `DEV_Ir_GetKey`
 (`NDAL_VideoExt_BLAST_RX`, V4L2 control 0xf25). The BLAST common fd in the live
@@ -298,9 +321,10 @@ callback thread. This confirms the close/open defect from CEC-OWNERSHIP:
 process death is not a graceful CEC release. Follow-up: `ICE_CECClose`
 @0x806e44 is a debug-only stub, `PLAT_CEC_Close` @0x88bff4 is never called
 internally, and `NDAL_VideoExt_CEC_Init(NULL)` from a new process reports
-success without stopping the orphaned kernel thread. There is no userspace
-stock-close trigger for the SIGTERM case; a raw takeover needs an early
-boot-order start or shared stock-owned monitoring, not a driver-global patch.
+success without stopping the orphaned kernel thread. No tested userspace
+stock-close trigger was found for the SIGTERM case (indirect callers were not
+exhaustively checked); a raw takeover still needs an early boot-order start or
+shared stock-owned monitoring, not a driver-global patch.
 Report: CEC-RAW-BACKEND-2026-11-07.
 
 INPUT-PVR-TAKEOVER-2026-11-07: `mod_ir` used `dlopen` without `-ldl`; the TV

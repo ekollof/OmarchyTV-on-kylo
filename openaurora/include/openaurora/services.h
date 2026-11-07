@@ -403,11 +403,14 @@ typedef struct {
     uint8_t reset_cached, mute_cached;
     int mute_known; /* set_mute or a completed Init supplied a mute state */
     int mute;       /* last accepted mute request, 0/1 */
+    int balance_known; /* set_balance supplied a balance state */
+    int balance;       /* last accepted balance request, 0..100 */
 } oa_audio_amp_status;
 typedef struct {
     int (*init)(void);
     int (*state)(oa_audio_amp_status *out);
     int (*set_mute)(int on); /* 0 accepted, negative errno */
+    int (*set_balance)(int balance); /* 0..100, regs 4/5; 0 accepted */
 } oa_audio_amp_iface;
 
 /* audio — volume/mute. Published by mod_audio.

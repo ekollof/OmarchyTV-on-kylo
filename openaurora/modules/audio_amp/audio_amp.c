@@ -53,6 +53,8 @@ struct ctx {
     oa_amp_completion result;
     int mute_known;
     int mute_state;
+    int balance_known;
+    int balance_state;
 
     /* ABI 3 quiesce: detach the owner/session, then join and close on a
      * worker. The host retries until the cleanup thread exits. */
@@ -142,6 +144,7 @@ static int iface_init(void)
     c->submitted = 1;
     c->have_result = 0;
     c->mute_known = 0;
+    c->balance_known = 0;
     memset(&c->result, 0, sizeof c->result);
     c->api->log(c->api->priv, OA_LOG_INFO,
                 "audio_amp: init submitted (ticket %llu)",
@@ -169,6 +172,8 @@ static int iface_state(oa_audio_amp_status *out)
     }
     out->mute_known = c->mute_known;
     out->mute = c->mute_known ? c->mute_state : 0;
+    out->balance_known = c->balance_known;
+    out->balance = c->balance_known ? c->balance_state : 0;
     return 0;
 }
 
@@ -177,6 +182,10 @@ static int iface_set_mute(int on)
     struct ctx *c = g_ctx;
     if (!c || !c->published || !c->enabled)
         return -ENODEV;
+    /* Do not race the owner worker's Init: the trailing Mute(1) and the
+     * caller's level write use the same STBC/global state. */
+    if (c->submitted)
+        return -EBUSY;
     if (on != 0 && on != 1)
         return -EINVAL;
     int ok = oa_amp_vendor_level(&c->vendor, c->board.mute.pin,
@@ -189,8 +198,33 @@ static int iface_set_mute(int on)
     return 0;
 }
 
+static int iface_set_balance(int balance)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->published || !c->enabled || !c->i2c)
+        return -ENODEV;
+    if (c->submitted)
+        return -EBUSY;
+    uint8_t reg4 = 0, reg5 = 0;
+    if (oa_ad82587_balance_regs(balance, &reg4, &reg5) != 0)
+        return -EINVAL;
+    /* Vendor order: reg4 first, reg5 only after reg4 succeeds. A failure
+     * leaves the hardware partially updated and the cached state unchanged. */
+    if (oa_amp_i2c_write(c->i2c, 4, &reg4) != 0)
+        return -EIO;
+    if (oa_amp_i2c_write(c->i2c, 5, &reg5) != 0)
+        return -EIO;
+    c->balance_known = 1;
+    c->balance_state = balance;
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "audio_amp: balance -> %d (reg4 %u reg5 %u)", balance,
+                (unsigned)reg4, (unsigned)reg5);
+    return 0;
+}
+
 static const oa_audio_amp_iface g_iface = { iface_init, iface_state,
-                                            iface_set_mute };
+                                            iface_set_mute,
+                                            iface_set_balance };
 
 static void release_plat(struct ctx *c)
 {
@@ -290,6 +324,8 @@ static int m_start(void *v)
     c->have_result = 0;
     c->mute_known = 0;
     c->mute_state = 0;
+    c->balance_known = 0;
+    c->balance_state = 0;
     memset(&c->result, 0, sizeof c->result);
     long delay = atol(c->api->config_get(c->api->priv,
                                          "audio_amp.cleanup_delay_ms", "0"));

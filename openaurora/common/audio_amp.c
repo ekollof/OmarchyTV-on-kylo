@@ -48,3 +48,20 @@ int oa_ad82587_configure(uint8_t out[OA_AD82587_REGISTERS],
     memcpy(out, image, sizeof image);
     return 0;
 }
+
+int oa_ad82587_balance_regs(int balance, uint8_t *reg4, uint8_t *reg5)
+{
+    if (!reg4 || !reg5 || balance < 0 || balance > 100)
+        return -EINVAL;
+    if (balance < 50) {
+        *reg4 = 0;
+        *reg5 = (uint8_t)(127 - (balance * 127) / 50);
+    } else if (balance == 50) {
+        *reg4 = 0;
+        *reg5 = 0;
+    } else {
+        *reg4 = (uint8_t)(127 - ((100 - balance) * 127) / 50);
+        *reg5 = 0;
+    }
+    return 0;
+}

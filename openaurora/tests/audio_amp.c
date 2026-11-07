@@ -85,5 +85,22 @@ int main(void)
            oa_ad82587_baseline[4] == 0x0d &&
            oa_ad82587_baseline[5] == 0x0d);
     puts("ok amp image: recovered 38-byte cold-boot baseline (FNV 0xab635b86)");
+
+    /* AMP_AD82587_SetBalance @0x875204 register formula. */
+    uint8_t r4 = 0xa5, r5 = 0xa5;
+    assert(oa_ad82587_balance_regs(0, &r4, &r5) == 0 && r4 == 0 && r5 == 127);
+    assert(oa_ad82587_balance_regs(1, &r4, &r5) == 0 && r4 == 0 && r5 == 125);
+    assert(oa_ad82587_balance_regs(25, &r4, &r5) == 0 && r4 == 0 && r5 == 64);
+    assert(oa_ad82587_balance_regs(49, &r4, &r5) == 0 && r4 == 0 && r5 == 3);
+    assert(oa_ad82587_balance_regs(50, &r4, &r5) == 0 && r4 == 0 && r5 == 0);
+    assert(oa_ad82587_balance_regs(51, &r4, &r5) == 0 && r4 == 3 && r5 == 0);
+    assert(oa_ad82587_balance_regs(75, &r4, &r5) == 0 && r4 == 64 && r5 == 0);
+    assert(oa_ad82587_balance_regs(99, &r4, &r5) == 0 && r4 == 125 && r5 == 0);
+    assert(oa_ad82587_balance_regs(100, &r4, &r5) == 0 && r4 == 127 && r5 == 0);
+    assert(oa_ad82587_balance_regs(-1, &r4, &r5) == -EINVAL);
+    assert(oa_ad82587_balance_regs(101, &r4, &r5) == -EINVAL);
+    assert(oa_ad82587_balance_regs(50, NULL, &r5) == -EINVAL);
+    assert(oa_ad82587_balance_regs(50, &r4, NULL) == -EINVAL);
+    puts("ok amp image: balance 0/50/100 and 127/50 register formula");
     return 0;
 }
