@@ -28,7 +28,10 @@ OSD enable remains open. REPLACEMENT-SYSTEM.
 `check-plat-drm-gate` covers drm_init 0/1; `takeover-full.sh` (start/status/
 reload-suite/restore) is bundled for the next authorized takeover, with restore
 returning to stock without a reboot. The unified display/hardware path is still
-unvalidated.
+unvalidated. `display.cold_init=1` now repairs a registered-but-unconfigured
+fb1 via `FBIOPUT_VSCREENINFO` (vendor gstOSDfbOps check_var/set_par);
+`check-display` covers zero-var repair and first pan, but cold scanout is
+still unaccepted. COLD-DISPLAY-REPAIR.
 Vendor inventory, 2026-11-07: **389 ELF files** in the extracted `/vendor` tree
 (249,616,804 bytes, ARM ELF32) plus 72 outside it (461 total, 15 platform kernel
 modules; 41 .ko total) are hashed and dumped for SONAME/NEEDED,

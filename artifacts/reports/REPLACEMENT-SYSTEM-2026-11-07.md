@@ -54,7 +54,9 @@ allocation/enable is recovered (OSD-BUFFER-CONTRACT).
 ## Configuration
 
 - `display.mirror=0` (stock stopped; only the active frame), `display.pan=0`,
-  `display.set_region=1`, `display.restore_snapshot=1`, `display.profile=1`.
+  `display.set_region=1`, `display.restore_snapshot=1`, `display.profile=1`,
+  `display.cold_init=1` (repair an unconfigured fb1 via the vendor SetPar path;
+  no effect when the var is valid).
 - `ui.fps=0`: no idle full-frame repaints; input paints immediately.
 - `ui.dir=/buffer/openaurora/ui` (TV-local private assets), settings DB live
   read-only.
@@ -145,9 +147,9 @@ with those six modules started all of them, including `audio_mixer` spawning
 `ui.engine` skin; it can be loaded after stopping `ui_vendor`.
 
 Bundle hashes: openaurora `521047b8...`, `mod_plat.so` `446ee107...`,
-`mod_ui_vendor.so` `d0afa127...`, `mod_panel.so` `454220b0...`, config
-`adc2f327...`; tar
-`61cabb201d1a8d791cb68cf6e80a2e3eceb76032c8166fbcfa4776e124e428f0`.
+`mod_ui_vendor.so` `d0afa127...`, `mod_panel.so` `454220b0...`,
+`mod_display.so` `130405a4...`, config `844adf2d...`; tar
+`b5dc4c13d9aa6c09019f6419d3329499f07e5946fcdecae2f90e7fe01e5d2167`.
 The 2026-11-07 panel-scale fix and stock backlight curve are included; the
 bundle was re-uploaded to `/buffer/oa-full-20261107`, its manifest verified and
 `--check` passed. It has not been started.
@@ -158,9 +160,14 @@ unconditional call fails the test. `check-display` now covers the fbdev
 first-pan order from a zero/hidden region state: the region window is written
 before the first PanDisplay, with zero origin, then the frame commits. This is
 the offline fbdev/PanDisplay cold candidate; it does not prove visible scanout.
-`full-replacement`/`plat.drm_init=0` still needs an authorized takeover + cold
-boot; OSD-KERNEL-INIT says the existing fbdev/PanDisplay first-pan/region path
-is the first cold candidate, not a blind private-GEM backend.
+`display.cold_init=1` additionally repairs a registered-but-unconfigured fb1
+through `FBIOPUT_VSCREENINFO`, whose `gstOSDfbOps` entries call the vendor
+`_ker_osd_fb_CheckVar`/`_ker_osd_fb_SetPar`; `check-display` covers zero-var
+repair, region-before-pan and first buffer 0, and fails if the repair is
+skipped. `full-replacement`/`plat.drm_init=0` still needs an authorized
+takeover + cold boot; OSD-KERNEL-INIT says the existing fbdev/PanDisplay
+first-pan/region path is the first cold candidate, not a blind private-GEM
+backend.
 
 ## Authorized-window driver
 

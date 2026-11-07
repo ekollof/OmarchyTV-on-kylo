@@ -1815,6 +1815,17 @@ disabled, `run_aurora.sh` as idtv), while retail `nvt.app.ini` enables them;
 hotkeys f1=idtv/f2=netflix/f3=demo1 and YouTube repeat 19000us x4 are recorded
 in APP-MANAGER-CONFIG.
 
+COLD-DISPLAY-REPAIR-2026-11-07: `ntkdriver_nondovi.ko` `gstOSDfbOps` at
+0x75494 carries `fb_check_var` -> `_ker_osd_fb_CheckVar` (0x754a8) and
+`fb_set_par` -> `_ker_osd_fb_SetPar` (0x754ac); `FBIOPUT_VSCREENINFO` therefore
+runs the vendor SetPar path. `mod_display` adds opt-in `display.cold_init=1`:
+if fb1 has no valid xres/yres/32bpp/line_length, it writes the shipped
+1920x1080/2-frame/32bpp BGRA template, re-reads var/fix, then uses the normal
+region + FBIOPAN_DISPLAY path. Both bundles set it; a valid var is untouched.
+`check-display` covers zero-var repair, region-before-pan and first buffer 0;
+skipping the repair fails the test. This is offline mode-request evidence, not
+cold boot/visible scanout acceptance.
+
 ## What is still unknown
 
 Cold scanout and resume ownership; complete IR behavior; independent panel/audio/

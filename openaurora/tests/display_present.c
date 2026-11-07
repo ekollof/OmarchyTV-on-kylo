@@ -28,6 +28,8 @@ static const char *rotate;
 static const char *test_mode;
 static unsigned commits, last_yoffset, syncs, opens, closes;
 static unsigned region_writes, region_before_pan;
+static int cold_init, cold_zero;
+static unsigned put_calls;
 static int fail_sync, fail_commit, kernel_suspended, fail_unmap, fail_close;
 static unsigned height = 2;
 static pthread_t main_thread;
@@ -98,6 +100,10 @@ int __wrap_ioctl(int fd, unsigned long request, ...)
     va_end(args);
     switch (request) {
     case FBIOGET_VSCREENINFO: memcpy(arg, &var, sizeof var); return 0;
+    case FBIOPUT_VSCREENINFO:
+        put_calls++;
+        memcpy(&var, arg, sizeof var);
+        return 0;
     case FBIOGET_FSCREENINFO: {
         struct fb_fix_screeninfo *fix = arg;
         memset(fix, 0, sizeof *fix);
@@ -138,6 +144,10 @@ static const char *config(void *priv, const char *key, const char *def)
 #endif
     if (!strcmp(key, "display.pan") && rotate) return rotate;
     if (!strcmp(key, "display.test")) return test_mode ? test_mode : "0";
+    if (!strcmp(key, "display.cold_init")) return cold_init ? "1" : "0";
+    if (!strcmp(key, "display.cold_width")) return "8";
+    if (!strcmp(key, "display.cold_height")) return "2";
+    if (!strcmp(key, "display.cold_frames")) return "2";
     if (!strcmp(key, "display.mirror")) return "0";
     if (!strcmp(key, "display.restore_snapshot")) return getenv("OA_TEST_RESTORE") ? "1" : "0";
     return def;
@@ -171,11 +181,15 @@ static void *start(unsigned frames, unsigned yoffset, const char *rotation)
     memset(region, 0, sizeof region);
     mau = 0;
     region_writes = region_before_pan = 0;
-    var.xres = var.xres_virtual = 8;
-    var.yres = height;
-    var.yres_virtual = frames * var.yres;
-    var.bits_per_pixel = 32;
-    var.yoffset = yoffset;
+    if (cold_zero) {
+        memset(&var, 0, sizeof var);
+    } else {
+        var.xres = var.xres_virtual = 8;
+        var.yres = height;
+        var.yres_virtual = frames * var.yres;
+        var.bits_per_pixel = 32;
+        var.yoffset = yoffset;
+    }
     rotate = rotation;
     commits = syncs = 0;
     fail_sync = fail_commit = 0;
@@ -227,6 +241,22 @@ int main(void)
     assert(region[2] == var.xres && region[3] == height);
     assert(region[4] == 0 && region[5] == 0);
     puts("  ok   cold first pan: region written from zero state before PanDisplay");
+
+    /* Cold/unconfigured fb1: opt-in repair issues FBIOPUT_VSCREENINFO with the
+     * shipped 1920x1080/2-frame template before mapping/region/pan. */
+    finish(ctx);
+    cold_zero = 1; cold_init = 1; put_calls = 0;
+    ctx = start(1, 0, NULL);
+    assert(put_calls == 1);
+    assert(var.xres == 8 && var.yres == 2 && var.yres_virtual == 4 && var.bits_per_pixel == 32);
+    assert(region_writes == 1 && region_before_pan);
+    assert(region[2] == 8 && region[3] == 2 && region[4] == 0 && region[5] == 0);
+    assert(alpha && !alpha->clear_rgba(1, 2, 3, 255));
+    assert(!display->present() && commits == 1 && last_yoffset == 0);
+    puts("  ok   cold repair: unconfigured fb programmed before map/region/pan");
+    cold_zero = 0; cold_init = 0;
+    finish(ctx);
+    ctx = start(1, 0, NULL);
     assert(alpha && !alpha->clear_rgba(36, 38, 40, 153));
     assert(!display->present());
     assert(pixels[0] == 24 && pixels[1] == 23 && pixels[2] == 22 && pixels[3] == 153);

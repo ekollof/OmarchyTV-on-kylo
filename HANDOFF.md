@@ -24,7 +24,9 @@ plat with `plat.drm_init=0`, broker, AQ/theme/profile/menu configs) preflights
 and its asset modules start CPU-only; unified real-plat display/hardware awaits
 a takeover test. `ui_omarchy` is excluded due to the single ui.engine skin.
 `check-plat-drm-gate` tests drm_init 0/1; `takeover-full.sh` is bundled for the
-next authorized window and restores stock without a reboot. Independent NDAL
+next authorized window and restores stock without a reboot. `display.cold_init=1`
+repairs an unconfigured fb1 through the vendor SetPar ioctl; the fake-fb test
+passes, but cold scanout still needs a takeover/cold boot. COLD-DISPLAY-REPAIR. Independent NDAL
 pass: 132/36 ioctl immediates and module init/exit details in
 `grok-findings.md`; 9 of the 16 platform modules still need Ghidra projects.
 Vendor inventory 2026-11-07: `artifacts/analysis/vendor-inventory-2026-11-07/`

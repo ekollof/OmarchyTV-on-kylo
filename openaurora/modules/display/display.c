@@ -68,6 +68,8 @@ struct ctx {
     unsigned cleanup_delay_ms; /* diagnostic: hold the close worker open */
     int mirror;       /* copy the painted frame into the other frames (fights DFB's flip) */
     int profile;      /* log per-stage present timings when display.profile=1 */
+    int cold_init;    /* repair an unconfigured fb before first use */
+    unsigned cold_w, cold_h, cold_frames;
 
     /* Offscreen RGBA scene: every draw renders here, present() copies it to the visible frame or
      * maps it through the recovered full-screen transition quad. */
@@ -687,6 +689,43 @@ static int fb_make_node(struct ctx *c)
 #endif
 }
 
+/* Cold-boot repair: the kernel driver registers fb1 even when its var has not
+ * been mode-configured yet. The shipped template for fb1 is 1920x1080, two
+ * frames, 32bpp (install_fpga.sh: size 1920x1080, buffers 2). Opt-in only;
+ * a valid var is left untouched so takeover behavior does not change. */
+static int cold_repair(struct ctx *c)
+{
+    if (!c->cold_init)
+        return 0;
+    if (c->var.xres && c->var.yres && c->var.bits_per_pixel == 32 && c->fix.line_length)
+        return 0;
+
+    struct fb_var_screeninfo v;
+    memset(&v, 0, sizeof v);
+    v.xres = c->cold_w;
+    v.xres_virtual = c->cold_w;
+    v.yres = c->cold_h;
+    v.yres_virtual = c->cold_h * c->cold_frames;
+    v.bits_per_pixel = 32;
+    v.red.offset = 16;   v.red.length = 8;
+    v.green.offset = 8;  v.green.length = 8;
+    v.blue.offset = 0;   v.blue.length = 8;
+    v.transp.offset = 24; v.transp.length = 8;
+    v.activate = FB_ACTIVATE_NOW;
+    if (ioctl(c->fd, FBIOPUT_VSCREENINFO, &v) != 0)
+        return -1;
+    if (ioctl(c->fd, FBIOGET_VSCREENINFO, &c->var) != 0 ||
+        ioctl(c->fd, FBIOGET_FSCREENINFO, &c->fix) != 0)
+        return -1;
+    if (c->var.xres != c->cold_w || c->var.yres != c->cold_h ||
+        c->var.bits_per_pixel != 32 || !c->fix.line_length)
+        return -1;
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "%s: cold repair set %ux%u x32, %u frame(s) before first use",
+                c->path, c->var.xres, c->var.yres, c->cold_frames);
+    return 0;
+}
+
 static int open_layer(struct ctx *c)
 {
     /* The fb devices are not necessarily there when the UI process starts (the boot hook runs
@@ -727,6 +766,13 @@ static int open_layer(struct ctx *c)
         c->api->log(c->api->priv, OA_LOG_INFO, "%s: appeared after %d ms", c->path, waited);
     if (ioctl(c->fd, FBIOGET_VSCREENINFO, &c->var) != 0 ||
         ioctl(c->fd, FBIOGET_FSCREENINFO, &c->fix) != 0) {
+        close(c->fd);
+        c->fd = -1;
+        return -1;
+    }
+    if (cold_repair(c) != 0) {
+        c->api->log(c->api->priv, OA_LOG_ERROR,
+                    "%s: cold repair failed", c->path);
         close(c->fd);
         c->fd = -1;
         return -1;
@@ -948,6 +994,13 @@ static int m_start(void *v)
     c->mirror = c->api->config_get(c->api->priv, "display.mirror", "1")[0] == '1';
     c->verify = c->api->config_get(c->api->priv, "display.verify_scanout", "0")[0] == '1';
     c->profile = c->api->config_get(c->api->priv, "display.profile", "0")[0] == '1';
+    c->cold_init = c->api->config_get(c->api->priv, "display.cold_init", "0")[0] == '1';
+    c->cold_w = (unsigned)atoi(c->api->config_get(c->api->priv, "display.cold_width", "1920"));
+    c->cold_h = (unsigned)atoi(c->api->config_get(c->api->priv, "display.cold_height", "1080"));
+    c->cold_frames = (unsigned)atoi(c->api->config_get(c->api->priv, "display.cold_frames", "2"));
+    if (!c->cold_w || c->cold_w > 4096) c->cold_w = 1920;
+    if (!c->cold_h || c->cold_h > 4096) c->cold_h = 1080;
+    if (!c->cold_frames || c->cold_frames > 8) c->cold_frames = 2;
     c->pan = c->api->config_get(c->api->priv, "display.pan", want_region ? "0" : "1")[0] == '1';
 
     drm_bringup(c);

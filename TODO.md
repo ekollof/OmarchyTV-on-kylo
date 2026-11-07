@@ -152,6 +152,14 @@ unvalidated.
       yoffset/region/MAU verified; second run's eight full-screen bars were
       owner-confirmed on the panel; stop restored fb1 and watchdog reboot
       returned stock. This is not cold startup or MCU/standby authority.
+- [x] Offline cold-fb1 repair: `display.cold_init=1` detects an invalid var and
+      writes the shipped 1920x1080/2-frame/32bpp template via
+      `FBIOPUT_VSCREENINFO`; `ntkdriver_nondovi.ko`'s `gstOSDfbOps` proves
+      `fb_check_var`→`_ker_osd_fb_CheckVar` and `fb_set_par`→
+      `_ker_osd_fb_SetPar`. `check-display` covers zero-var repair,
+      region-before-pan and first buffer 0, and fails if the repair is skipped.
+      Both bundles set it; no effect on a valid var. Not cold-boot or visible
+      scanout acceptance. COLD-DISPLAY-REPAIR-2026-11-07.
 - [ ] Panel backlight/PWM curve: stock calibration recovered read-only
       (channel 0, 30000 Hz, set-mode 0, level 1000) and `mod_panel` defaults
       corrected; clean 50% hardware run opened `/dev/ntkled` and reported
