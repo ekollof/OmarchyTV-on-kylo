@@ -34,7 +34,10 @@ functions/callgraphs/symbols/data for aurora + 15 projects, the 0..207 GPIO
 name table, VPLTIO 45/45 call-site map and audio opcode map. See VENDOR-INVENTORY.
 Unstripped `libappmgr.so` yielded the 127-slot/119-key US keyboard layout
 (`keyboard_layout` 0x52f50; `keyboard-layout-us.tsv`) and HID/IR key-path
-entry points; see APP-MANAGER-KEYBOARD. Static only.
+entry points; see APP-MANAGER-KEYBOARD. The stock appmgr uses
+`nvt.app.debug.ini` (disables dial/streaming apps, launches `run_aurora.sh`);
+retail `nvt.app.ini`, app table, layers/properties and hotkeys are in
+APP-MANAGER-CONFIG. Static only.
 
 Latest hardware acceptance, 2026-11-07: owner granted full TV access; a
 temporary six-module run with stock stopped produced real physical IR

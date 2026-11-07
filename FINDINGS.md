@@ -1809,7 +1809,11 @@ codes). HID/IR path: `HID_CommandIrInput` 0x30f74, `COM_SendKey` 0x3678c,
 `HID_DfbKeyToNamKey` 0x32b98, `HID_HandleWindowEvent` 0x313c0 and
 `MGR_SendCommand` 0x2a550. Static only; `HID_LoadKeycodeExtMap` reads `NVT_KEYCODE_EXT_MAP`
 (default `/mtd_apexe/board/data/nvt.keycode.ini`) through Jsoncpp, but the
-runtime `.ini`/full schema is not in the rootfs.
+runtime `.ini`/full schema is not in the rootfs. The shipped app configs show
+the stock appmgr uses `nvt.app.debug.ini` (dial/Netflix/Amazon/YouTube
+disabled, `run_aurora.sh` as idtv), while retail `nvt.app.ini` enables them;
+hotkeys f1=idtv/f2=netflix/f3=demo1 and YouTube repeat 19000us x4 are recorded
+in APP-MANAGER-CONFIG.
 
 ## What is still unknown
 

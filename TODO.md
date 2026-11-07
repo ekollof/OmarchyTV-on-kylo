@@ -1636,6 +1636,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       independent pass adds 132/36 NDAL3/NDAL_EX ioctl immediates and module
       init/exit details; 9 of the 16 platform modules still need Ghidra projects.
       VENDOR-INVENTORY-2026-11-07, grok-findings.md.
+- [x] Shipped app-manager configs parsed: `nvt.app.ini`/`.debug.ini`/`.nfs.ini`
+      (519 keys, 30 app rows). The stock appmgr uses the debug profile
+      (dial/streaming apps disabled, `run_aurora.sh` idtv); retail enables them.
+      App layers/states/properties, hotkeys f1/f2/f3 and YouTube repeat
+      19000us x4 are in APP-MANAGER-CONFIG. Config only; no launch/IPC test.
 - [x] Unstripped `libappmgr.so` inventory: 2,476 symbols, 693 exports, new
       read-only Ghidra project. Recovered the full 127-slot/119-key US keyboard
       layout at `keyboard_layout` 0x52f50 (Linux keycode + modifier flags + two

@@ -45,7 +45,11 @@ modifier flags + up to two label/codepoint subrecords, including DirectFB
 nav/F-key codes) and extracted to `keyboard-layout-us.tsv`. HID/IR entry points
 (`HID_CommandIrInput` 0x30f74, `COM_SendKey` 0x3678c, `HID_NamKeyToDfbKey`
 0x32c14, `HID_HandleWindowEvent` 0x313c0, `MGR_SendCommand` 0x2a550) are
-recorded; static only, table not executed. APP-MANAGER-KEYBOARD.
+recorded; static only, table not executed. The shipped app configs are parsed:
+the stock appmgr uses `nvt.app.debug.ini`, which disables dial/Netflix/Amazon/
+YouTube and launches `run_aurora.sh`; retail `nvt.app.ini` enables them.
+Hotkeys f1=idtv/f2=netflix/f3=demo1 and YouTube repeat 19000us x4 are recorded.
+APP-MANAGER-KEYBOARD, APP-MANAGER-CONFIG.
 
 Hardware acceptance, 2026-11-07 (owner: "ok, use the TV, full access"):
 temporary six-module bundle (`plat,panel,audio_amp,ir,tuner,cec`) ran with

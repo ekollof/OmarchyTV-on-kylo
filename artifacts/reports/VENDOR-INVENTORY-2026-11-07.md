@@ -63,6 +63,9 @@ All compressed text is xz; read with `xz -dc FILE`.
 | `exports/libappmgr-all-symbols.txt` | 2,476 unstripped appmgr symbols with sizes |
 | `keyboard-layout-us.tsv` | 127-slot appmgr US keyboard layout (119 populated) |
 | `strings/appmgr-strings.txt.xz` | appmgr strings with file offsets |
+| `config/nvt.app*.ini` | shipped app-manager configs (retail/debug/NFS) |
+| `config/app-config-keys.tsv` | 519 config key/value rows |
+| `config/app-list.tsv` | 30 app rows: enabled, program, layer, states, properties, repeat |
 | `../workbench/vendor-inventory-raw/elf/symbol-tables.txt.xz` | local-only full `readelf -sW` (ignored; not committed) |
 | `../workbench/vendor-inventory-raw/elf/strings.txt.xz` | local-only `strings -a -n 5`; contains vendor certificate/key material, never redistribute |
 | `ghidra-summary.tsv` | per-project function/symbol/call-edge/data counts and MD5 |
@@ -387,8 +390,19 @@ functions and 4,553 resolved call edges in the new Ghidra project. Recovered:
   `MGR_SendCommand` 0x2a550.
 
 Details and the key table are in APP-MANAGER-KEYBOARD-2026-11-07. The table has
-not been executed through the library; `keycode_ext_layout` and
-`HID_LoadKeycodeExtMap` remain undecoded.
+not been executed through the library; `keycode_ext_layout` is a built-in
+seed and `HID_LoadKeycodeExtMap` loads an optional JSON map from
+`NVT_KEYCODE_EXT_MAP` (default `/mtd_apexe/board/data/nvt.keycode.ini`, not in
+the rootfs).
+
+The shipped app-manager configs are also recovered: `nvt.app.ini`,
+`nvt.app.debug.ini` and `nvt.app.nfs.ini` (519 key/value rows, 30 app rows).
+The observed stock appmgr uses `nvt.app.debug.ini`, which disables
+dialserver/Netflix/Amazon/YouTube and launches `run_aurora.sh` instead of
+`aurora.elf`; the retail file enables them. App programs, layers, state
+transitions, properties, hotkeys (f1=idtv, f2=netflix, f3=demo1) and YouTube
+repeat (19000 µs ×4) are in `config/app-list.tsv`. See
+APP-MANAGER-CONFIG-2026-11-07.
 
 ## Corrections and limits
 
