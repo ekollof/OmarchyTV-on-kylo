@@ -39,7 +39,9 @@ Unstripped `libappmgr.so` yielded the 127-slot/119-key US keyboard layout
 entry points; see APP-MANAGER-KEYBOARD. The stock appmgr uses
 `nvt.app.debug.ini` (disables dial/streaming apps, launches `run_aurora.sh`);
 retail `nvt.app.ini`, app table, layers/properties and hotkeys are in
-APP-MANAGER-CONFIG. Static only.
+APP-MANAGER-CONFIG. The idtv wrapper `run-aurora.sh` is bundled and
+host-tested (dry-run/missing bundle/argv/manifest) but not installed; see
+APP-MANAGER-ENTRY. Static only.
 
 Latest hardware acceptance, 2026-11-07: owner granted full TV access; a
 temporary six-module run with stock stopped produced real physical IR

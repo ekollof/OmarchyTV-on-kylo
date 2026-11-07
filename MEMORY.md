@@ -52,7 +52,10 @@ recorded; static only, table not executed. The shipped app configs are parsed:
 the stock appmgr uses `nvt.app.debug.ini`, which disables dial/Netflix/Amazon/
 YouTube and launches `run_aurora.sh`; retail `nvt.app.ini` enables them.
 Hotkeys f1=idtv/f2=netflix/f3=demo1 and YouTube repeat 19000us x4 are recorded.
-APP-MANAGER-KEYBOARD, APP-MANAGER-CONFIG.
+APP-MANAGER-KEYBOARD, APP-MANAGER-CONFIG. The appmgr idtv entry wrapper
+(`tools/boot/run-aurora.sh`) is host-tested (dry-run, missing bundle, complete
+supervisor argv, manifest failure) and bundled, but NOT installed; boot
+integration still needs owner authorization. APP-MANAGER-ENTRY.
 
 Hardware acceptance, 2026-11-07 (owner: "ok, use the TV, full access"):
 temporary six-module bundle (`plat,panel,audio_amp,ir,tuner,cec`) ran with

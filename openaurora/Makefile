@@ -2078,11 +2078,11 @@ full-replacement-bundle: $(BUILD)/$(PROJECT) $(FULL_REPLACEMENT_SO) $(BUILD)/oa-
 	@rm -rf $(BUILD)/full-replacement
 	@mkdir -p $(BUILD)/full-replacement/modules $(BUILD)/full-replacement/menus
 	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/full-replacement/
-	@cp tools/boot/takeover-full.sh $(BUILD)/full-replacement/
+	@cp tools/boot/takeover-full.sh tools/boot/run-aurora.sh $(BUILD)/full-replacement/
 	@cp $(FULL_REPLACEMENT_SO) $(BUILD)/full-replacement/modules/
 	@cp tools/boot/openaurora-full-replacement.conf $(BUILD)/full-replacement/openaurora.conf
 	@cp menus/sub_launcher.json $(BUILD)/full-replacement/menus/
-	@cd $(BUILD)/full-replacement && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker takeover-full.sh openaurora.conf menus/*.json modules/*.so > manifest.sha256
+	@cd $(BUILD)/full-replacement && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker takeover-full.sh run-aurora.sh openaurora.conf menus/*.json modules/*.so > manifest.sha256
 	@echo "full replacement bundle: $(BUILD)/full-replacement ($(words $(FULL_REPLACEMENT_SO)) modules)"
 
 install-stage: all-stage
@@ -2862,6 +2862,11 @@ check: check-amp-gpio-query
 $(BUILD)/tests/amp_stbc: tests/amp_stbc.c common/amp_stbc.c include/openaurora/amp_stbc.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-appmgr-entry
+check-appmgr-entry:
+	@sh tests/appmgr_entry.sh
+check: check-appmgr-entry
+
 .PHONY: check-amp-stbc
 check-amp-stbc: $(BUILD)/tests/amp_stbc
 	@$(BUILD)/tests/amp_stbc

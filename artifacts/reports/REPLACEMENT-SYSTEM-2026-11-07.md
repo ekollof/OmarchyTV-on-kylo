@@ -117,7 +117,8 @@ real plat,display,panel,ir,audio,source,power,tuner,settings,service_db,
 image_decode,epg,pvr,channels,i18n,audio_curve,audio_mixer,
 audio_amp_profile,audio_amp,cec,ticker,ui_clock,ui_anim,ui_engine,
 ui_vendor,ui_theme,ui_profile,ui_menu,ui_list,ui_navigation,lua
-+ oa-client, oa-supervise, fb-restore, oa-ir-blast, oa-audio-broker, menus
++ oa-client, oa-supervise, fb-restore, oa-ir-blast, oa-audio-broker,
+  takeover-full.sh, run-aurora.sh, menus
 ```
 
 `plat.drm_init=0` skips only `Hal_Video_DrmInit(1)` so the real platform can
@@ -148,8 +149,9 @@ with those six modules started all of them, including `audio_mixer` spawning
 
 Bundle hashes: openaurora `521047b8...`, `mod_plat.so` `446ee107...`,
 `mod_ui_vendor.so` `d0afa127...`, `mod_panel.so` `454220b0...`,
-`mod_display.so` `130405a4...`, config `844adf2d...`; tar
-`b5dc4c13d9aa6c09019f6419d3329499f07e5946fcdecae2f90e7fe01e5d2167`.
+`mod_display.so` `130405a4...`, config `844adf2d...`, `run-aurora.sh`
+`0f9c3f98...`; tar
+`ca252e1d4cf6ec2583d1c26fe6ac1e0887db06d9c90f32cfe3dbc30716ca2976`.
 The 2026-11-07 panel-scale fix and stock backlight curve are included; the
 bundle was re-uploaded to `/buffer/oa-full-20261107`, its manifest verified and
 `--check` passed. It has not been started.
@@ -183,7 +185,10 @@ restore       quit; supervisor re-arms the watchdog and execs stock (no reboot)
 
 It is intentionally not run by the build or tests. The supervisor path means a
 failed full-system start still returns to stock, and `restore` does not require
-a reboot. The window is currently not authorized.
+a reboot. `run-aurora.sh` is the separate app-manager idtv entry point: it
+verifies the bundle/manifest, execs `oa-supervise` with the stock fallback, and
+is bundled but **not installed**. Its host tests cover dry-run, missing bundle,
+complete argv handoff and manifest failure; see APP-MANAGER-ENTRY. The window is currently not authorized.
 
 ## Suite reload (no reboot)
 

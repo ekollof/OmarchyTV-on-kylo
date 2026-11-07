@@ -1925,6 +1925,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] Host-tested app-manager idtv entry wrapper (`run-aurora.sh`): bundle/
+      manifest checks, stock fallback, `oa-supervise` argv with watchdog and
+      child, dry-run; four host cases pass. Bundled but not installed; appmgr
+      launch/suspend and persistent boot integration remain unauthorized.
+      APP-MANAGER-ENTRY.
+
 The callback-driven common/ helpers below are implemented and independently
 tested at their stated boundary. They are not all connected to ui_vendor or
 a native widget backend. Current shared integration gates are live item/style/

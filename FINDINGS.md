@@ -1826,6 +1826,16 @@ region + FBIOPAN_DISPLAY path. Both bundles set it; a valid var is untouched.
 skipping the repair fails the test. This is offline mode-request evidence, not
 cold boot/visible scanout acceptance.
 
+APP-MANAGER-ENTRY-2026-11-07: `tools/boot/run-aurora.sh` is the intended
+appmgr idtv entry. It resolves the bundle, verifies `manifest.sha256` when
+present, clears stale heartbeat/ready/socket files and execs `oa-supervise`
+with `--wdt /buffer/wdtctl` and the stock fallback, or execs stock if the
+bundle is missing/bad. `OA_DRYRUN=1` prints the plan without execution.
+`tests/appmgr_entry.sh` covers dry-run, missing bundle, complete supervisor
+argv and manifest failure (all pass). The wrapper is bundled (and in the
+manifest) but NOT installed; appmgr launch/suspend/resume and persistent boot
+integration remain unauthorized/untested.
+
 ## What is still unknown
 
 Cold scanout and resume ownership; complete IR behavior; independent panel/audio/
