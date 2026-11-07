@@ -7,13 +7,13 @@ hardware acceptance.
 
 ## Composition
 
-`make TARGET=tv BUILD=build-tv-v3 native-replacement-bundle` builds the same 32
+`make TARGET=tv BUILD=build-tv-v3 native-replacement-bundle` builds the same 33
 modules and binaries as the full replacement, but copies
 `tools/boot/openaurora-native.conf`. The autoload list is:
 
 ```text
 plat,display,panel,ir,audio,source,power,tuner,settings,service_db,
-image_decode,epg,pvr,channels,i18n,audio_curve,audio_mixer,
+image_decode,epg,pvr,channels,i18n,audio_curve,audio_mixer,app_launch,
 audio_amp_profile,audio_amp,cec,ticker,ui_clock,ui_anim,ui_engine,
 ui_omarchy,lua
 ```
@@ -54,6 +54,32 @@ real platform, and the vendor portal never started. This supersedes the earlier
 note that `ui_omarchy` was excluded because `ui_vendor` owned the single
 `ui.engine` skin.
 
+## App-launch consumer
+
+`mod_app_launch` consumes `OA_TOPIC_ACTION` `SELECT`, maps the launcher display
+name through `oa_apps.map` to a stock NAM application name, and spawns the
+one-shot `oa-app-launch` helper. The helper calls the recovered stock contract:
+
+```text
+ice_APM_StartProcess(name, args)
+  -> LIBNAM_APP_SendCommand(0x106,
+       { char name[40]; char args[8192]; int state=2; })
+registration: LIBNAM_APP_Register("COM.NOVATEK.IDTV", 0x007A0035, cb1, cb2)
+```
+
+The libnam decompilation confirms `LIBNAM_APP_SendCommand` does **not** create a
+client for command `0x106`; registration must precede it. The helper's callbacks
+are no-op stubs for this short-lived launcher registration; it does not claim to
+be the full idtv app-server event implementation.
+
+The consumer is host-tested: mapped spawn, explicit argument override,
+unknown-name rejection, disabled-mode rejection and reap. The native config
+autoloads it with `app_launch.enable = 0` because the active
+`nvt.app.debug.ini` profile disables Netflix/Amazon/YouTube and the map is
+per-profile. No app was launched on the TV. Bundle `oa-native-20261108b.tgz`
+sha256 `6ce14ca906b07bd5bf1d578655235bd33880a9108b537195fb7eb49f732623ac`;
+`oa-app-launch` links `libnam.so` with RPATH `/vendor/lib/nlib`.
+
 ## Restore and audio
 
 `takeover-full.sh restore` returned stock (`aurora.elf 4468`) and reported
@@ -67,11 +93,10 @@ documented ALSA-CONTROL limitation, not a new regression.
 - `ui_omarchy` is still the shell skeleton: home/sources/apps/settings/about,
   focus navigation, clock, launcher list and emitted actions. It is not full
   vendor UI parity (animations, menu hierarchy, localized assets, channel UI).
-- `OA_ACTION_SELECT` is still emitted without an app-launch consumer. The
-  recovered stock path is `ice_APM_StartProcess` -> `LIBNAM_APP_SendCommand`
-  command `0x106` with a 8236-byte name/args payload, registered as
-  `COM.NOVATEK.IDTV`; the active `nvt.app.debug.ini` profile disables the
-  Netflix/Amazon/YouTube entries, so live acceptance needs a profile decision.
+- `OA_ACTION_SELECT` now has a host-tested consumer and libnam helper, but no
+  TV launch was attempted. The active `nvt.app.debug.ini` profile disables the
+  Netflix/Amazon/YouTube entries and `oa_apps.map` is not profile-verified; the
+  helper's registration callbacks are no-op stubs.
 - Takeover audio restore remains reboot-required for the hidden DSP state.
 - Cold boot/replacement boot path, RF/DVB lock, CEC TX/RX, DVR, backlight
   feedback, IR repeat and amplifier mute remain unaccepted.

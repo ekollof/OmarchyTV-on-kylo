@@ -33,7 +33,7 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_menu i18n ui_navigation ui_profile ui_list image_decode audio_amp_profile audio_amp epg tuner pvr channels lua spi
+MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer app_launch graphics scene_display ui_theme ui_menu i18n ui_navigation ui_profile ui_list image_decode audio_amp_profile audio_amp epg tuner pvr channels lua spi
 # Four-way inventory. CORE_MODULES is the hardware/platform base (SSH/build
 # target): hardware access + the local data stores, no TV or UI layer.
 CORE_MODULES := plat display panel ir audio source power tuner settings image_decode
@@ -945,6 +945,11 @@ $(BUILD)/modules/mod_audio_mixer.so: $(call pic_objs,modules__mod_audio_mixer,mo
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
 $(eval $(call emit_pics,modules__mod_audio_mixer,modules/audio_mixer/audio_mixer.c common/audio_broker_wire.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_broker.h))
 
+$(BUILD)/modules/mod_app_launch.so: $(call pic_objs,modules__mod_app_launch,modules/app_launch/app_launch.c)
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $^ $(LDFLAGS)
+$(eval $(call emit_pics,modules__mod_app_launch,modules/app_launch/app_launch.c,,include/openaurora/app_launch.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h))
+
 $(BUILD)/modules/mod_graphics.so: $(call pic_objs,modules__mod_graphics,modules/graphics/graphics.c common/scene_client.c common/scene_broker_wire.c common/scene_broker_transport.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ $(LDFLAGS)
@@ -1534,6 +1539,15 @@ $(BUILD)/tests/mixer_bad_exec: tests/mixer_bad_exec
 check-mixer-module: $(BUILD)/tests/mixer_module $(BUILD)/tests/mixer_peer $(BUILD)/tests/mixer_bad_exec $(BUILD)/modules/mod_audio_mixer.so $(BUILD)/modules/mod_ticker.so
 	@$(BUILD)/tests/mixer_module $(BUILD)/modules $(abspath $(BUILD)/tests/mixer_peer) $(abspath $(BUILD)/tests/mixer_bad_exec)
 
+$(BUILD)/tests/app_launch: tests/app_launch.c core/host.h include/openaurora/app_launch.h include/openaurora/events.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
+
+.PHONY: check-app-launch
+check-app-launch: $(BUILD)/tests/app_launch $(BUILD)/modules/mod_app_launch.so
+	@$(BUILD)/tests/app_launch $(BUILD)/modules
+check: check-app-launch
+
 .PHONY: check-audio-mixer-quiesce
 check-audio-mixer-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_audio_mixer.so $(BUILD)/tests/mixer_peer
 	node tests/audio_mixer_quiesce.cjs $(abspath $(BUILD))
@@ -2071,7 +2085,7 @@ replacement-bundle: $(BUILD)/$(PROJECT) $(REPLACEMENT_SO) $(BUILD)/tests/mod_pla
 # Complete real-platform composition: all feature/UI modules, fixed asset
 # configs, real plat with plat.drm_init=0 (preserve the vendor OSD). Takeover
 # candidate; cold OSD enable remains open.
-FULL_REPLACEMENT_MODULES := plat display panel ir audio source power tuner settings service_db image_decode epg pvr channels i18n audio_curve audio_mixer audio_amp_profile audio_amp cec ticker ui_clock ui_anim ui_engine ui_vendor ui_omarchy ui_theme ui_profile ui_menu ui_list ui_navigation lua
+FULL_REPLACEMENT_MODULES := plat display panel ir audio source power tuner settings service_db image_decode epg pvr channels i18n audio_curve audio_mixer app_launch audio_amp_profile audio_amp cec ticker ui_clock ui_anim ui_engine ui_vendor ui_omarchy ui_theme ui_profile ui_menu ui_list ui_navigation lua
 FULL_REPLACEMENT_SO := $(foreach m,$(FULL_REPLACEMENT_MODULES),$(BUILD)/modules/mod_$(m).so)
 $(BUILD)/oa-alsactl: tools/audio/oa-alsactl.c
 	@mkdir -p $(dir $@)
@@ -2080,19 +2094,26 @@ $(BUILD)/oa-alsactl: tools/audio/oa-alsactl.c
 	# this TV-only helper, and link the TV's own libasound.
 	$(CC) $(CPPFLAGS) $(if $(filter tv arm,$(TARGET)),-idirafter /usr/include,) $(filter-out -pedantic,$(CFLAGS)) $(LDFLAGS) -o $@ $< -L$(VENDOR_LIB) -Wl,-rpath,/vendor/lib/libs -l:libasound.so.2 -lpthread -ldl
 
+# TV-only one-shot NAM launcher. The vendor libnam is glibc ARM; the helper is
+# spawned by mod_app_launch with an explicit display-name->app map.
+$(BUILD)/oa-app-launch: tools/app/oa-app-launch.c
+	@mkdir -p $(dir $@)
+	@test -f $(VENDOR_LIB)/nlib/libnam.so || { echo "missing $(VENDOR_LIB)/nlib/libnam.so (run make vendor)"; exit 1; }
+	$(CC) $(CPPFLAGS) $(if $(filter tv arm,$(TARGET)),-idirafter /usr/include,) $(filter-out -pedantic,$(CFLAGS)) $(LDFLAGS) -o $@ $< -L$(VENDOR_LIB)/nlib -Wl,-rpath,/vendor/lib/nlib -Wl,--allow-shlib-undefined -l:libnam.so
+
 BUNDLE_DIR ?= $(BUILD)/full-replacement
 BUNDLE_CONF ?= tools/boot/openaurora-full-replacement.conf
 BUNDLE_LABEL ?= full replacement
 .PHONY: full-replacement-bundle
-full-replacement-bundle: $(BUILD)/$(PROJECT) $(FULL_REPLACEMENT_SO) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl
+full-replacement-bundle: $(BUILD)/$(PROJECT) $(FULL_REPLACEMENT_SO) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl $(BUILD)/oa-app-launch
 	@rm -rf $(BUNDLE_DIR)
 	@mkdir -p $(BUNDLE_DIR)/modules $(BUNDLE_DIR)/menus
-	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl $(BUNDLE_DIR)/
-	@cp tools/boot/takeover-full.sh tools/boot/run-aurora.sh $(BUNDLE_DIR)/
+	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl $(BUILD)/oa-app-launch $(BUNDLE_DIR)/
+	@cp tools/boot/takeover-full.sh tools/boot/run-aurora.sh tools/boot/oa_apps.map $(BUNDLE_DIR)/
 	@cp $(FULL_REPLACEMENT_SO) $(BUNDLE_DIR)/modules/
 	@cp $(BUNDLE_CONF) $(BUNDLE_DIR)/openaurora.conf
 	@cp menus/sub_launcher.json $(BUNDLE_DIR)/menus/
-	@cd $(BUNDLE_DIR) && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker oa-alsactl takeover-full.sh run-aurora.sh openaurora.conf menus/*.json modules/*.so > manifest.sha256
+	@cd $(BUNDLE_DIR) && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker oa-alsactl oa-app-launch takeover-full.sh run-aurora.sh oa_apps.map openaurora.conf menus/*.json modules/*.so > manifest.sha256
 	@echo "$(BUNDLE_LABEL) bundle: $(BUNDLE_DIR) ($(words $(FULL_REPLACEMENT_SO)) modules)"
 
 # OmarchyTV-native UI composition: same modules and hardware stack, but the

@@ -1,0 +1,12 @@
+# Display name<TAB>stock NAM application name<TAB>optional arguments
+#
+# The native shell emits the launcher display name. oa-app-launch passes the
+# mapped stock name to LIBNAM_APP_SendCommand(0x106). The active
+# nvt.app.debug.ini profile disables Netflix/Amazon/YouTube, so these entries
+# only work after the app-manager profile enables them. Extend this file for
+# the apps present in the selected profile.
+Netflix	netflix
+YouTube	youtube
+YouTube Kids	youtube_test
+Prime Video	amazon
+Internet Browser	dialLaunch

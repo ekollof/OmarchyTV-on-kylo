@@ -198,7 +198,10 @@ unvalidated.
       2026-11-08 `native-replacement-bundle`: 26 modules autoloaded,
       `ui_omarchy` started and painted 1920x1080 (40-44 ms scene, 4-8 ms pan),
       `ui_vendor` absent; stock restore then reboot (hidden audio DSP state).
-      Native shell parity, app-launch consumer and cold boot remain open.
+      2026-11-08b adds `mod_app_launch`, `oa-app-launch` and `oa_apps.map`
+      (33 bundle modules, 27 autoloaded); the consumer is host-tested but
+      `app_launch.enable=0` and no TV launch was attempted. Native shell parity,
+      app-launch TV acceptance and cold boot remain open.
       REPLACEMENT-SYSTEM, NATIVE-REPLACEMENT.
 
 ### Audio / CEC
