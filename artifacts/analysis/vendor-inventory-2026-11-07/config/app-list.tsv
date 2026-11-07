@@ -1,31 +1,31 @@
 file	section	enabled	program	layer	state_init	state_off	state_on	state_poweroff	property	repeat_us	repeat_mag
-nvt.app.ini	dialserver	y	/mtd_apexe/board/com.nvt.dial/com.nvt.dialserver		BG	BG	BG	BG			
-nvt.app.ini	idtv	y	/mtd_apexe/board/com.nvt.idtv/aurora.elf	1280x720	FG	PAUSE			VOLCTRL|NODFB|IPCKEY		
-nvt.app.ini	privserver	y	/mtd_apexe/board/com.nvt.privserver/com.nvt.privserver		1	1			NODFB|IPCKEY		
-nvt.app.ini	netflix	y	/mtd_apexe/board/com.nvt.nflx/netflix	1280x720	PAUSE	PAUSE	FG	STOP_BY_SELF	RP|RE|SUSPEND|BOOT1|DELAY10|LOGO|IPCKEY		
-nvt.app.ini	amazon	y	/mtd_apexe/board/com.nvt.amazon/run.sh	1920x1080	STOP	STOP_BY_SELF	FG	STOP_BY_SELF	IPCKEY|SUSPEND|SENDSTATE|DELAY		
-nvt.app.ini	ntts	n	/mtd_apexe/board/com.nvt.ntts/nvttts		PAUSE	BG			NOREG|BG|DELAY3|NODFB|DELAY		
+nvt.app.ini	dialserver	y	/mtd_apexe/board/com.nvt.dial/com.nvt.dialserver		BG	BG	BG	BG
+nvt.app.ini	idtv	y	/mtd_apexe/board/com.nvt.idtv/aurora.elf	1280x720	FG	PAUSE			VOLCTRL|NODFB|IPCKEY
+nvt.app.ini	privserver	y	/mtd_apexe/board/com.nvt.privserver/com.nvt.privserver		1	1			NODFB|IPCKEY
+nvt.app.ini	netflix	y	/mtd_apexe/board/com.nvt.nflx/netflix	1280x720	PAUSE	PAUSE	FG	STOP_BY_SELF	RP|RE|SUSPEND|BOOT1|DELAY10|LOGO|IPCKEY
+nvt.app.ini	amazon	y	/mtd_apexe/board/com.nvt.amazon/run.sh	1920x1080	STOP	STOP_BY_SELF	FG	STOP_BY_SELF	IPCKEY|SUSPEND|SENDSTATE|DELAY
+nvt.app.ini	ntts	n	/mtd_apexe/board/com.nvt.ntts/nvttts		PAUSE	BG			NOREG|BG|DELAY3|NODFB|DELAY
 nvt.app.ini	youtube	y	/mtd_apexe/board/com.nvt.cobalt/run.sh	1280x720	STOP	STOP_BY_SELF	FG	STOP_BY_SELF	IPCKEY|SENDSTATE|DELAY	19000	4
 nvt.app.ini	youtube_test	y	/mtd_apexe/board/com.nvt.cobalt/run.sh	1280x720	STOP	STOP	FG	STOP	IPCKEY|SENDSTATE|CLEAROSD|DELAY	19000	4
-nvt.app.ini	demo1	n	/mtd_apexe/board/com.nvt.appmgr/com.nvt.dfb_demo1	1280x720	STOP	STOP_BY_SELF					
-nvt.app.ini	demo2	n	/mtd_apexe/board/com.nvt.appmgr/com.nvt.dfb_demo2	1280x720	STOP	STOP_BY_SELF					
-nvt.app.debug.ini	dialserver	n	/mtd_apexe/board/com.nvt.dial/com.nvt.dialserver		BG	BG	BG	BG			
-nvt.app.debug.ini	idtv	y	/mtd_apexe/board/run_aurora.sh	1280x720	FG	PAUSE			VOLCTRL|NODFB|IPCKEY		
-nvt.app.debug.ini	privserver	y	/mtd_apexe/board/com.nvt.privserver/com.nvt.privserver		1	1			NODFB|IPCKEY		
-nvt.app.debug.ini	netflix	n	/mtd_apexe/board/com.nvt.nflx/netflix	1280x720	PAUSE	PAUSE	FG	STOP_BY_SELF	RP|RE|SUSPEND|BOOT1|DELAY10|LOGO|IPCKEY		
-nvt.app.debug.ini	amazon	n	/mtd_apexe/board/com.nvt.amazon/run.sh	1920x1080	STOP	STOP_BY_SELF	FG	STOP_BY_SELF	IPCKEY|SUSPEND|SENDSTATE|DELAY		
-nvt.app.debug.ini	ntts	n	/mtd_apexe/board/com.nvt.ntts/nvttts		PAUSE	BG			NOREG|BG|DELAY3|NODFB|DELAY		
+nvt.app.ini	demo1	n	/mtd_apexe/board/com.nvt.appmgr/com.nvt.dfb_demo1	1280x720	STOP	STOP_BY_SELF
+nvt.app.ini	demo2	n	/mtd_apexe/board/com.nvt.appmgr/com.nvt.dfb_demo2	1280x720	STOP	STOP_BY_SELF
+nvt.app.debug.ini	dialserver	n	/mtd_apexe/board/com.nvt.dial/com.nvt.dialserver		BG	BG	BG	BG
+nvt.app.debug.ini	idtv	y	/mtd_apexe/board/run_aurora.sh	1280x720	FG	PAUSE			VOLCTRL|NODFB|IPCKEY
+nvt.app.debug.ini	privserver	y	/mtd_apexe/board/com.nvt.privserver/com.nvt.privserver		1	1			NODFB|IPCKEY
+nvt.app.debug.ini	netflix	n	/mtd_apexe/board/com.nvt.nflx/netflix	1280x720	PAUSE	PAUSE	FG	STOP_BY_SELF	RP|RE|SUSPEND|BOOT1|DELAY10|LOGO|IPCKEY
+nvt.app.debug.ini	amazon	n	/mtd_apexe/board/com.nvt.amazon/run.sh	1920x1080	STOP	STOP_BY_SELF	FG	STOP_BY_SELF	IPCKEY|SUSPEND|SENDSTATE|DELAY
+nvt.app.debug.ini	ntts	n	/mtd_apexe/board/com.nvt.ntts/nvttts		PAUSE	BG			NOREG|BG|DELAY3|NODFB|DELAY
 nvt.app.debug.ini	youtube	n	/mtd_apexe/board/com.nvt.cobalt/run.sh	1280x720	STOP	STOP_BY_SELF	FG	STOP_BY_SELF	IPCKEY|SENDSTATE|DELAY	19000	4
 nvt.app.debug.ini	youtube_test	n	/mtd_apexe/board/com.nvt.cobalt/run.sh	1280x720	STOP	STOP	FG	STOP	IPCKEY|SENDSTATE|CLEAROSD|DELAY	19000	4
-nvt.app.debug.ini	demo1	n	/mtd_apexe/board/com.nvt.appmgr/com.nvt.dfb_demo1	1280x720	STOP	STOP_BY_SELF					
-nvt.app.debug.ini	demo2	n	/mtd_apexe/board/com.nvt.appmgr/com.nvt.dfb_demo2	1280x720	STOP	STOP_BY_SELF					
-nvt.app.nfs.ini	dialserver	y	/mtd_apexe/board/com.nvt.dial/com.nvt.dialserver		BG	BG	BG	BG			
-nvt.app.nfs.ini	idtv	y	/buffer/aurora.elf	1280x720	FG	PAUSE			VOLCTRL|NODFB|IPCKEY		
-nvt.app.nfs.ini	privserver	y	/mtd_apexe/board/com.nvt.privserver/com.nvt.privserver		1	1			NODFB|IPCKEY		
-nvt.app.nfs.ini	netflix	y	/mtd_apexe/board/com.nvt.nflx/netflix	1280x720	PAUSE	PAUSE	FG	STOP_BY_SELF	RP|RE|SUSPEND|BOOT1|DELAY10|LOGO|IPCKEY		
-nvt.app.nfs.ini	amazon	y	/mtd_apexe/board/com.nvt.amazon/run.sh	1920x1080	STOP	STOP_BY_SELF	FG	STOP_BY_SELF	IPCKEY|SUSPEND|SENDSTATE|DELAY		
-nvt.app.nfs.ini	ntts	n	/mtd_apexe/board/com.nvt.ntts/nvttts		PAUSE	BG			NOREG|BG|DELAY3|NODFB|DELAY		
+nvt.app.debug.ini	demo1	n	/mtd_apexe/board/com.nvt.appmgr/com.nvt.dfb_demo1	1280x720	STOP	STOP_BY_SELF
+nvt.app.debug.ini	demo2	n	/mtd_apexe/board/com.nvt.appmgr/com.nvt.dfb_demo2	1280x720	STOP	STOP_BY_SELF
+nvt.app.nfs.ini	dialserver	y	/mtd_apexe/board/com.nvt.dial/com.nvt.dialserver		BG	BG	BG	BG
+nvt.app.nfs.ini	idtv	y	/buffer/aurora.elf	1280x720	FG	PAUSE			VOLCTRL|NODFB|IPCKEY
+nvt.app.nfs.ini	privserver	y	/mtd_apexe/board/com.nvt.privserver/com.nvt.privserver		1	1			NODFB|IPCKEY
+nvt.app.nfs.ini	netflix	y	/mtd_apexe/board/com.nvt.nflx/netflix	1280x720	PAUSE	PAUSE	FG	STOP_BY_SELF	RP|RE|SUSPEND|BOOT1|DELAY10|LOGO|IPCKEY
+nvt.app.nfs.ini	amazon	y	/mtd_apexe/board/com.nvt.amazon/run.sh	1920x1080	STOP	STOP_BY_SELF	FG	STOP_BY_SELF	IPCKEY|SUSPEND|SENDSTATE|DELAY
+nvt.app.nfs.ini	ntts	n	/mtd_apexe/board/com.nvt.ntts/nvttts		PAUSE	BG			NOREG|BG|DELAY3|NODFB|DELAY
 nvt.app.nfs.ini	youtube	y	/mtd_apexe/board/com.nvt.cobalt/run.sh	1280x720	STOP	STOP_BY_SELF	FG	STOP_BY_SELF	IPCKEY|SENDSTATE|DELAY	19000	4
 nvt.app.nfs.ini	youtube_test	y	/mtd_apexe/board/com.nvt.cobalt/run.sh	1280x720	STOP	STOP	FG	STOP	IPCKEY|SENDSTATE|CLEAROSD|DELAY	19000	4
-nvt.app.nfs.ini	demo1	n	/mtd_apexe/board/com.nvt.appmgr/com.nvt.dfb_demo1	1280x720	STOP	STOP_BY_SELF					
-nvt.app.nfs.ini	demo2	n	/mtd_apexe/board/com.nvt.appmgr/com.nvt.dfb_demo2	1280x720	STOP	STOP_BY_SELF					
+nvt.app.nfs.ini	demo1	n	/mtd_apexe/board/com.nvt.appmgr/com.nvt.dfb_demo1	1280x720	STOP	STOP_BY_SELF
+nvt.app.nfs.ini	demo2	n	/mtd_apexe/board/com.nvt.appmgr/com.nvt.dfb_demo2	1280x720	STOP	STOP_BY_SELF

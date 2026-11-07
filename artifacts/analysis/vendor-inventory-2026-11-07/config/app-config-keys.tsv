@@ -43,25 +43,25 @@ nvt.app.ini	apps	demo2	n
 nvt.app.ini	hotkey	f1	idtv
 nvt.app.ini	hotkey	f2	netflix
 nvt.app.ini	hotkey	f3	demo1
-nvt.app.ini	hotkey	f4	
+nvt.app.ini	hotkey	f4
 nvt.app.ini	dialserver	gid	105
 nvt.app.ini	dialserver	uid	105
 nvt.app.ini	dialserver	index	0x02
 nvt.app.ini	dialserver	name	dialserver
 nvt.app.ini	dialserver	program	/mtd_apexe/board/com.nvt.dial/com.nvt.dialserver
-nvt.app.ini	dialserver	icon	
+nvt.app.ini	dialserver	icon
 nvt.app.ini	dialserver	state_of_initialize	BG
 nvt.app.ini	dialserver	state_of_switch_off	BG
 nvt.app.ini	dialserver	state_of_switch_on	BG
 nvt.app.ini	dialserver	state_of_poweroff	BG
-nvt.app.ini	dialserver	resource	
+nvt.app.ini	dialserver	resource
 nvt.app.ini	dialserver	descr	dail server
 nvt.app.ini	idtv	gid	101|6|7|8|200
 nvt.app.ini	idtv	uid	101
 nvt.app.ini	idtv	index	0x10
 nvt.app.ini	idtv	name	idtv
 nvt.app.ini	idtv	program	/mtd_apexe/board/com.nvt.idtv/aurora.elf
-nvt.app.ini	idtv	args	
+nvt.app.ini	idtv	args
 nvt.app.ini	idtv	state_of_initialize	FG
 nvt.app.ini	idtv	state_of_switch_off	PAUSE
 nvt.app.ini	idtv	layer	1280x720
@@ -72,7 +72,7 @@ nvt.app.ini	privserver	uid	110
 nvt.app.ini	privserver	index	0x110
 nvt.app.ini	privserver	name	privserver
 nvt.app.ini	privserver	program	/mtd_apexe/board/com.nvt.privserver/com.nvt.privserver
-nvt.app.ini	privserver	args	
+nvt.app.ini	privserver	args
 nvt.app.ini	privserver	state_of_initialize	1
 nvt.app.ini	privserver	state_of_switch_off	1
 nvt.app.ini	privserver	property	NODFB|IPCKEY
@@ -216,25 +216,25 @@ nvt.app.debug.ini	apps	demo2	n
 nvt.app.debug.ini	hotkey	f1	idtv
 nvt.app.debug.ini	hotkey	f2	netflix
 nvt.app.debug.ini	hotkey	f3	demo1
-nvt.app.debug.ini	hotkey	f4	
+nvt.app.debug.ini	hotkey	f4
 nvt.app.debug.ini	dialserver	gid	105
 nvt.app.debug.ini	dialserver	uid	105
 nvt.app.debug.ini	dialserver	index	0x02
 nvt.app.debug.ini	dialserver	name	dialserver
 nvt.app.debug.ini	dialserver	program	/mtd_apexe/board/com.nvt.dial/com.nvt.dialserver
-nvt.app.debug.ini	dialserver	icon	
+nvt.app.debug.ini	dialserver	icon
 nvt.app.debug.ini	dialserver	state_of_initialize	BG
 nvt.app.debug.ini	dialserver	state_of_switch_off	BG
 nvt.app.debug.ini	dialserver	state_of_switch_on	BG
 nvt.app.debug.ini	dialserver	state_of_poweroff	BG
-nvt.app.debug.ini	dialserver	resource	
+nvt.app.debug.ini	dialserver	resource
 nvt.app.debug.ini	dialserver	descr	dail server
 nvt.app.debug.ini	idtv	gid	101|6|7|8|200
 nvt.app.debug.ini	idtv	uid	101
 nvt.app.debug.ini	idtv	index	0x10
 nvt.app.debug.ini	idtv	name	idtv
 nvt.app.debug.ini	idtv	program	/mtd_apexe/board/run_aurora.sh
-nvt.app.debug.ini	idtv	args	
+nvt.app.debug.ini	idtv	args
 nvt.app.debug.ini	idtv	state_of_initialize	FG
 nvt.app.debug.ini	idtv	state_of_switch_off	PAUSE
 nvt.app.debug.ini	idtv	layer	1280x720
@@ -245,7 +245,7 @@ nvt.app.debug.ini	privserver	uid	110
 nvt.app.debug.ini	privserver	index	0x110
 nvt.app.debug.ini	privserver	name	privserver
 nvt.app.debug.ini	privserver	program	/mtd_apexe/board/com.nvt.privserver/com.nvt.privserver
-nvt.app.debug.ini	privserver	args	
+nvt.app.debug.ini	privserver	args
 nvt.app.debug.ini	privserver	state_of_initialize	1
 nvt.app.debug.ini	privserver	state_of_switch_off	1
 nvt.app.debug.ini	privserver	property	NODFB|IPCKEY
@@ -389,25 +389,25 @@ nvt.app.nfs.ini	apps	demo2	n
 nvt.app.nfs.ini	hotkey	f1	idtv
 nvt.app.nfs.ini	hotkey	f2	netflix
 nvt.app.nfs.ini	hotkey	f3	demo1
-nvt.app.nfs.ini	hotkey	f4	
+nvt.app.nfs.ini	hotkey	f4
 nvt.app.nfs.ini	dialserver	gid	105
 nvt.app.nfs.ini	dialserver	uid	105
 nvt.app.nfs.ini	dialserver	index	0x02
 nvt.app.nfs.ini	dialserver	name	dialserver
 nvt.app.nfs.ini	dialserver	program	/mtd_apexe/board/com.nvt.dial/com.nvt.dialserver
-nvt.app.nfs.ini	dialserver	icon	
+nvt.app.nfs.ini	dialserver	icon
 nvt.app.nfs.ini	dialserver	state_of_initialize	BG
 nvt.app.nfs.ini	dialserver	state_of_switch_off	BG
 nvt.app.nfs.ini	dialserver	state_of_switch_on	BG
 nvt.app.nfs.ini	dialserver	state_of_poweroff	BG
-nvt.app.nfs.ini	dialserver	resource	
+nvt.app.nfs.ini	dialserver	resource
 nvt.app.nfs.ini	dialserver	descr	dail server
 nvt.app.nfs.ini	idtv	gid	101|6|7|8|200
 nvt.app.nfs.ini	idtv	uid	101
 nvt.app.nfs.ini	idtv	index	0x10
 nvt.app.nfs.ini	idtv	name	idtv
 nvt.app.nfs.ini	idtv	program	/buffer/aurora.elf
-nvt.app.nfs.ini	idtv	args	
+nvt.app.nfs.ini	idtv	args
 nvt.app.nfs.ini	idtv	state_of_initialize	FG
 nvt.app.nfs.ini	idtv	state_of_switch_off	PAUSE
 nvt.app.nfs.ini	idtv	layer	1280x720
@@ -418,7 +418,7 @@ nvt.app.nfs.ini	privserver	uid	110
 nvt.app.nfs.ini	privserver	index	0x110
 nvt.app.nfs.ini	privserver	name	privserver
 nvt.app.nfs.ini	privserver	program	/mtd_apexe/board/com.nvt.privserver/com.nvt.privserver
-nvt.app.nfs.ini	privserver	args	
+nvt.app.nfs.ini	privserver	args
 nvt.app.nfs.ini	privserver	state_of_initialize	1
 nvt.app.nfs.ini	privserver	state_of_switch_off	1
 nvt.app.nfs.ini	privserver	property	NODFB|IPCKEY
