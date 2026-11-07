@@ -1,0 +1,51 @@
+program	libappmgr.so
+executable_path	/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/vendor/com.nvt.appmgr/libappmgr.so
+executable_md5	413930d9366b4f8e76e5ebc2db246a72
+executable_sha256	9be3c9d6f15747d27e72e98ba25283bb02a70d2548ae5f98156a8932372ee1d8
+language	ARM:LE:32:v8
+image_base	00010000
+compiler	unknown
+created	Sat Nov 07 22:31:56 CET 2026
+
+[memory blocks]
+segment_1.1	00010000	000100f3	244	r--	initialized
+.note.gnu.build-id	000100f4	00010117	36	r--	initialized
+.hash	00010118	0001174f	5688	r--	initialized
+.dynsym	00011750	00014f7f	14384	r--	initialized
+.dynstr	00014f80	00022cc6	56647	r--	initialized
+.gnu.version	00022cc8	000233cd	1798	r--	initialized
+.gnu.version_r	000233d0	000234df	272	r--	initialized
+.rel.dyn	000234e0	00023cbf	2016	r--	initialized
+.rel.plt	00023cc0	0002540f	5968	r--	initialized
+.init	00025410	0002541b	12	r-x	initialized
+.plt	0002541c	00027727	8972	r-x	initialized
+.text	00027728	000473eb	130244	r-x	initialized
+.fini	000473ec	000473f3	8	r-x	initialized
+.rodata	000473f4	0004fac4	34513	r--	initialized
+.ARM.extab	0004fac8	0005122c	5989	r--	initialized
+.ARM.exidx	00051230	00051e8f	3168	r--	initialized
+.eh_frame	00051e90	00051e93	4	r--	initialized
+.init_array	00062000	00062023	36	rw-	initialized
+.fini_array	00062024	00062027	4	rw-	initialized
+.jcr	00062028	0006202b	4	rw-	initialized
+.data.rel.ro	0006202c	0006208b	96	rw-	initialized
+.dynamic	0006208c	000621fb	368	rw-	initialized
+.got	000621fc	00062e47	3148	r--	initialized
+.data	00062e48	0006477b	6452	rw-	initialized
+.bss	0006477c	00064a7f	772	rw-	uninitialized
+EXTERNAL	00065000	0006532b	812	rw-	uninitialized
+.ARM.attributes	.ARM.attributes::00000000	.ARM.attributes::00000030	49	---	initialized
+.comment	.comment::00000000	.comment::0000002c	45	---	initialized
+.shstrtab	.shstrtab::00000000	.shstrtab::00000107	264	---	initialized
+.strtab	.strtab::00000000	.strtab::00010828	67625	---	initialized
+.symtab	.symtab::00000000	.symtab::0000c4ef	50416	---	initialized
+_elfSectionHeaders	_elfSectionHeaders::00000000	_elfSectionHeaders::000004af	1200	---	initialized
+memory_bytes	401254
+functions_total	1556
+functions_external	0
+functions_thunks	940
+functions_named	1556
+symbols_total	9718
+symbols_external	195
+call_edges	4553
+named_or_string_data	7634

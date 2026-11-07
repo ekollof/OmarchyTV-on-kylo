@@ -1784,15 +1784,29 @@ Symbol/function counts depend on the counting method and do not establish an ABI
 
 VENDOR-INVENTORY-2026-11-07: all 389 ELF files in the extracted `/vendor` tree
 were hashed and dumped read-only (SONAME/NEEDED, sections, symbol tables,
-dynamic symbols, strings); Ghidra inventories cover aurora and 14 library/
+dynamic symbols, strings); Ghidra inventories cover aurora and 15 library/
 kernel projects. The full GPIO function-name table has **226 slots / 224 named entries**
 (`au8GPIOFuncName` 0x175f350; `astPwmBasePin` 0x175f320). The live GPIO probe's
 printed `id`/`pin` labels were swapped: the ioctl word 0 is the pin, word 1 the
 function id, and `DEV_GPIO_GetDescription` returns `entry+8`, so descriptor[1]
-is the pin used by `DEV_PANEL_*`. VPLTIO recovered 45/45 immediate commands
-(41 unique) and `Hal_Audio_Ctrl` 58/59 immediate opcodes. Report:
+is the pin used by `DEV_PANEL_*`. VPLTIO recovered 45/45 call-site immediates
+(39 unique) and `Hal_Audio_Ctrl` 58 immediate call sites (37 unique opcodes). Report:
 VENDOR-INVENTORY-2026-11-07; raw data under
 artifacts/analysis/vendor-inventory-2026-11-07/.
+
+APP-MANAGER-KEYBOARD-2026-11-07: `libappmgr.so` is unstripped (MD5
+413930d9366b4f8e76e5ebc2db246a72, BuildID fd36d8414541b839f57ab5ab732ba4054897f707;
+2,476 symbols, 693 exports). `keyboard_layout` at 0x52f50 is 0x180c bytes:
+a 0x3c-byte header (US English, 119 keys) followed by 127 slots × 0x30 bytes.
+Each entry has a Linux keycode, modifier flags and up to two 12-byte subrecords
+{codepoint, codepoint, label}; `KBL_findCode` selects by modifier flags and
+`KBL_mapExtKeycode` scans by keycode. The full table is
+`keyboard-layout-us.tsv` (119 populated keys, including DirectFB nav/F-key
+codes). HID/IR path: `HID_CommandIrInput` 0x30f74, `COM_SendKey` 0x3678c,
+`HID_NamKeyToDfbKey` 0x32c14 (field copy, not a table lookup),
+`HID_DfbKeyToNamKey` 0x32b98, `HID_HandleWindowEvent` 0x313c0 and
+`MGR_SendCommand` 0x2a550. Static only; `keycode_ext_layout` and
+`HID_LoadKeycodeExtMap` remain undecoded.
 
 ## What is still unknown
 

@@ -27,8 +27,11 @@ a takeover test. `ui_omarchy` is excluded due to the single ui.engine skin.
 next authorized window and restores stock without a reboot.
 Vendor inventory 2026-11-07: `artifacts/analysis/vendor-inventory-2026-11-07/`
 holds the 389-ELF census/hashes, full readelf/nm/strings dumps, Ghidra
-functions/callgraphs/symbols/data for aurora + 14 projects, the 226-slot (224 named) GPIO
-name table, VPLTIO 45/45 map and audio opcode map. See VENDOR-INVENTORY.
+functions/callgraphs/symbols/data for aurora + 15 projects, the 226-slot (224 named) GPIO
+name table, VPLTIO 45/45 call-site map and audio opcode map. See VENDOR-INVENTORY.
+Unstripped `libappmgr.so` yielded the 127-slot/119-key US keyboard layout
+(`keyboard_layout` 0x52f50; `keyboard-layout-us.tsv`) and HID/IR key-path
+entry points; see APP-MANAGER-KEYBOARD. Static only.
 
 Latest hardware acceptance, 2026-11-07: owner granted full TV access; a
 temporary six-module run with stock stopped produced real physical IR

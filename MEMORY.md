@@ -33,11 +33,18 @@ Vendor inventory, 2026-11-07: all **389 ELF files** in the extracted `/vendor`
 tree (249,616,804 bytes, ARM ELF32) are hashed and dumped for SONAME/NEEDED,
 sections, symbol tables, dynamic symbols and strings under
 `artifacts/analysis/vendor-inventory-2026-11-07/`. Ghidra read-only inventories
-cover aurora (89,220 functions, 485,969 resolved call edges) plus 14
+cover aurora (89,220 functions, 485,969 resolved call edges) plus 15
 library/kernel projects. Recovered the 226-slot (224 named) GPIO name table
-(`au8GPIOFuncName` 0x175f350), VPLTIO 45/45 commands and 58/59 immediate audio
-opcodes, with call-site maps for GPIO/IIC/DRM/NDAL/PWM/panel. Static only; see
+(`au8GPIOFuncName` 0x175f350), VPLTIO 45/45 call sites (39 unique) and 58 immediate audio call sites
+(37 unique opcodes), with call-site maps for GPIO/IIC/DRM/NDAL/PWM/panel. Static only; see
 VENDOR-INVENTORY-2026-11-07 and PANEL-BACKLIGHT.
+Vendor `libappmgr.so` is unstripped: the full US keyboard layout was recovered
+at `keyboard_layout` 0x52f50 (127 slots × 48 bytes, 119 keys, Linux keycode +
+modifier flags + up to two label/codepoint subrecords, including DirectFB
+nav/F-key codes) and extracted to `keyboard-layout-us.tsv`. HID/IR entry points
+(`HID_CommandIrInput` 0x30f74, `COM_SendKey` 0x3678c, `HID_NamKeyToDfbKey`
+0x32c14, `HID_HandleWindowEvent` 0x313c0, `MGR_SendCommand` 0x2a550) are
+recorded; static only, table not executed. APP-MANAGER-KEYBOARD.
 
 Hardware acceptance, 2026-11-07 (owner: "ok, use the TV, full access"):
 temporary six-module bundle (`plat,panel,audio_amp,ir,tuner,cec`) ran with

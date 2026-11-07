@@ -1630,10 +1630,18 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       dynamic symbols and strings; Ghidra functions/callgraphs/symbols/data
       cover aurora (89,220 functions, 485,969 resolved call edges) and 14
       library/kernel projects. Recovered the 226-slot (224 named) GPIO function-name
-      table, VPLTIO 45/45 command map and 58/59 immediate audio opcodes, with
+      table, VPLTIO 45/45 call-site map and 58 immediate audio call sites (37 unique opcodes), with
       call-site maps for GPIO/IIC/DRM/NDAL/PWM/panel. This is static evidence,
       not hardware acceptance; per-subsystem table decoding remains.
       VENDOR-INVENTORY-2026-11-07.
+- [x] Unstripped `libappmgr.so` inventory: 2,476 symbols, 693 exports, new
+      read-only Ghidra project. Recovered the full 127-slot/119-key US keyboard
+      layout at `keyboard_layout` 0x52f50 (Linux keycode + modifier flags + two
+      label/codepoint subrecords, including DirectFB nav/F-key codes) as
+      `keyboard-layout-us.tsv`, plus the HID/IR path (`HID_CommandIrInput`,
+      `COM_SendKey`, `HID_NamKeyToDfbKey`, `HID_HandleWindowEvent`,
+      `MGR_SendCommand`). Static only; `keycode_ext_layout` remains undecoded
+      and the table is not yet used by our UI. APP-MANAGER-KEYBOARD.
 - [ ] CEC transport, OSD-name caching, RCP and firmware workarounds. The injected
       System Audio/ARC route is not wire-level or electrical acceptance.
 - [x] Specification takes precedence over vendor CEC defects. Identity/name/power

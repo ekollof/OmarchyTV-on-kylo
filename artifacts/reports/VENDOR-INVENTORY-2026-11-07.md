@@ -4,9 +4,10 @@ Status: read-only extraction and static analysis. No TV execution, no hardware
 writes and no vendor binary redistribution. Raw dumps stay under
 `artifacts/analysis/vendor-inventory-2026-11-07/`; vendor ELFs remain in the
 ignored `artifacts/workbench/rootfs` tree. Full per-file strings and symbol
-tables are kept local-only under `artifacts/workbench/vendor-inventory-raw/`
-because the vendor blobs contain certificate/key material; only curated maps,
-hashes and TV-platform analysis are committed.
+tables, including aurora's full string dump, are kept local-only under
+`artifacts/workbench/vendor-inventory-raw/` because the vendor blobs contain
+certificate/key material; only curated maps, hashes and TV-platform analysis
+are committed.
 
 ## Scope
 
@@ -50,18 +51,24 @@ All compressed text is xz; read with `xz -dc FILE`.
 | `elf/sections.txt.xz` | `readelf -SW` for every ELF |
 | `elf/dyn-symbols.txt.xz` | `nm -D` defined and undefined symbols per ELF |
 | `elf/dyn-symbol-index.tsv.xz` | flat 348,443-row symbol index: library, address, type, name |
+| `elf/build-metadata.txt.xz` | GNU build-id, `.comment` compiler strings and ARM attributes per ELF |
+| `exports/libNDAL3.tsv`, `libNDAL_EX.tsv`, `libappmgr.tsv` | sorted defined dynamic exports (address, type, name) |
+| `exports/libappmgr-all-symbols.txt` | 2,476 unstripped appmgr symbols with sizes |
+| `keyboard-layout-us.tsv` | 127-slot appmgr US keyboard layout (119 populated) |
+| `strings/appmgr-strings.txt.xz` | appmgr strings with file offsets |
 | `../workbench/vendor-inventory-raw/elf/symbol-tables.txt.xz` | local-only full `readelf -sW` (ignored; not committed) |
 | `../workbench/vendor-inventory-raw/elf/strings.txt.xz` | local-only `strings -a -n 5`; contains vendor certificate/key material, never redistribute |
 | `ghidra-summary.tsv` | per-project function/symbol/call-edge/data counts and MD5 |
 | `ghidra/<tag>/` | per-program `inventory.txt`, `functions.tsv.xz`, `callgraph.tsv.xz`, `symbols.named.tsv.xz`, `data.tsv.xz` |
 | `gpio-function-names.tsv` | full GPIO function-name table (226 slots, 224 named; ID → name) |
-| `calls/vpltio-command-map.tsv` | VPLTIO command → calls/callers/sites (45/45 immediate values recovered) |
+| `calls/vpltio-command-map.tsv` | VPLTIO command → calls/callers/sites (45/45 call sites, 39 unique values) |
 | `calls/vpltio-sendcmd-r0-objdump.tsv` | raw per-call rows with setup instructions |
 | `calls/api-args/` | per-symbol/register call-site maps (GPIO, IIC, audio, DRM, NDAL, PWM, panel) |
 | `calls/api-args/ioctl-r1-map.tsv` | aurora `ioctl` command immediates (91 direct sites, 83 immediate) |
 | `calls/aurora-plt-call-counts.txt` | call count for every `@plt` import in aurora |
 | `strings/aurora-device-paths.tsv` | 288 defined path strings / 690 references with function owner |
 | `strings/aurora-subsystems.tsv` | 9,646 subsystem-keyword strings / 4,776 references |
+| `../workbench/vendor-inventory-raw/aurora-strings.txt.xz` | local-only 376,113 aurora strings with file offsets; contains embedded key/cert strings, never commit/redistribute |
 | `grok-findings.md` | second-opinion NDAL/kernel-module extraction (when present) |
 
 Durable scripts added for reproducing the inventory:
@@ -96,6 +103,7 @@ Ghidra analysis output, not a claim that every function was identified. The
 | eth | ntkethmac.ko | `2efe1ee1...` | 334 | 1,082 | 1,259 | 735 |
 | hdmiswitch | ntkndphdmiswitch.ko | `d4ff737d...` | 39 | 42 | 269 | 306 |
 | ir | libdirectfb_nvt_uart_ir.so | `be21722f...` | 79 | 115 | 421 | 342 |
+| appmgr | libappmgr.so | `413930d9...` | 1,556 | 4,553 | 9,718 | 7,634 |
 | uboot | uboot-code.bin | `d556db31...` | 1,534 | 8,376 | 17,682 | 4,988 |
 
 `ndalex` is a second Ghidra project for the same `libNDAL_EX.so` MD5; it is a
@@ -203,7 +211,7 @@ word 1 is the function id, and `DEV_GPIO_GetDescription` returns `entry+8`).
 
 ## Audio control opcodes
 
-`Hal_Audio_Ctrl` has 59 call sites; 58 immediate `r0` opcodes were recovered.
+`Hal_Audio_Ctrl` has 59 `@plt` references; 58 direct call sites were matched and all 58 carry an immediate `r0` opcode (37 unique).
 The complete map is `calls/api-args/Hal_Audio_Ctrl-r0-map.tsv`. Platform-facing
 examples:
 
@@ -264,6 +272,45 @@ checking the caller/arguments.
 video24 global fd evidence. `Hal_Video_DrmInit(1)` has one immediate call site
 in `plat_common_init` at `0x9248f2`.
 
+## High-value libraries not yet decompiled deeply
+
+The census and dynamic-symbol index cover every ELF, but Ghidra projects exist
+only for the TV platform pieces. Libraries worth a future deep pass, in rough
+priority order for the replacement:
+
+```text
+libdirectfb-1.7.so.1    core DirectFB below the analyzed TDGA OSD layer
+libSDP_OMX_Core.so      OpenMAX/media pipeline
+libesplyrclient/srv.so  media player IPC
+libnbinder.so           binder-style IPC used by framework services
+libWasabi.so            PlayReady/DRM (not a replacement target; do not port)
+libkeyutil/libcrypt_ntk DRM/key handling (not a replacement target)
+```
+
+`libomi.so`, `libavcodec/format`, Amazon/Netflix and Opera libraries are
+third-party application payloads; they are inventoried but deliberately not
+decompiled.
+
+## Unstripped app-manager recovery
+
+`libappmgr.so` is **not stripped** (MD5 `413930d9...`, BuildID
+`fd36d841...`): 2,476 symbols with sizes, 693 defined dynamic exports, 1,556
+functions and 4,553 resolved call edges in the new Ghidra project. Recovered:
+
+- full US keyboard layout, 127 slots × 48 bytes at `keyboard_layout` 0x52f50,
+  119 populated keys, including DirectFB navigation/F-key codes
+  (`keyboard-layout-us.tsv`);
+- `KBL_mapExtKeycode` 0x33651 and `KBL_findCode` 0x33721, with the entry/
+  subrecord structure;
+- HID/IR path: `HID_CommandIrInput` 0x30f74, `COM_SendKey` 0x3678c,
+  `HID_NamKeyToDfbKey` 0x32c14, `HID_DfbKeyToNamKey` 0x32b98,
+  `HID_HandleWindowEvent` 0x313c0, `HID_SendWinEventToApp` 0x31c1c and
+  `MGR_SendCommand` 0x2a550.
+
+Details and the key table are in APP-MANAGER-KEYBOARD-2026-11-07. The table has
+not been executed through the library; `keycode_ext_layout` and
+`HID_LoadKeycodeExtMap` remain undecoded.
+
 ## Corrections and limits
 
 - `DEV_PANEL_PowerSequence` is a standby/power-off/reset path, not a boot
@@ -299,4 +346,6 @@ python3 openaurora/tools/re/group-callsite-args.py <tsv> <map.tsv>
 Source hashes are in `elf/elf-census.tsv`; the aurora MD5 is
 `64c252340d3af6c5d66072611b7bad7a`, `libNDAL3.so`
 `c842bad804302ec822076c3d9d3ce31d`, `libNDAL_EX.so`
-`e6a465861d1869b8b138b3f299c89f87`.
+`e6a465861d1869b8b138b3f299c89f87`. Aurora's GNU build-id is
+`4a16c2b5be5987c079a744b7323621d5ee0fd243`; its ARM attributes are
+`Tag_CPU_name 7-A`, `Tag_CPU_arch v7`, `Tag_ABI_VFP_args VFP registers`.

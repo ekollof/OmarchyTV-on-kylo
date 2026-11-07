@@ -1,5 +1,6 @@
 tag	program	functions_total	functions_external	functions_named	call_edges	symbols_total	symbols_external	named_or_string_data	memory_bytes	md5
 alsa	ntkndpalsa.ko	982	0	982	6876	9959	279	7921	726016	8758a13d12799217ce702849df7d54da
+appmgr	libappmgr.so	1556	0	1556	4553	9718	195	7634	401254	413930d9366b4f8e76e5ebc2db246a72
 dfb	libdirectfb_tdga.so	214	0	214	449	1908	60	1234	55907	a770a7e5e7d33c2857e773a91c6c2654
 eth	ntkethmac.ko	334	0	334	1082	1259	61	735	83848	2efe1ee138ee29c2d490f6e4a667a38d
 extin	ntkndpextin.ko	194	0	194	386	1655	59	1839	190131	cb0689e9e1c425a27e670168e51cc32f
