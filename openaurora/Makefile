@@ -2080,17 +2080,29 @@ $(BUILD)/oa-alsactl: tools/audio/oa-alsactl.c
 	# this TV-only helper, and link the TV's own libasound.
 	$(CC) $(CPPFLAGS) $(if $(filter tv arm,$(TARGET)),-idirafter /usr/include,) $(filter-out -pedantic,$(CFLAGS)) $(LDFLAGS) -o $@ $< -L$(VENDOR_LIB) -Wl,-rpath,/vendor/lib/libs -l:libasound.so.2 -lpthread -ldl
 
+BUNDLE_DIR ?= $(BUILD)/full-replacement
+BUNDLE_CONF ?= tools/boot/openaurora-full-replacement.conf
+BUNDLE_LABEL ?= full replacement
 .PHONY: full-replacement-bundle
 full-replacement-bundle: $(BUILD)/$(PROJECT) $(FULL_REPLACEMENT_SO) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl
-	@rm -rf $(BUILD)/full-replacement
-	@mkdir -p $(BUILD)/full-replacement/modules $(BUILD)/full-replacement/menus
-	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl $(BUILD)/full-replacement/
-	@cp tools/boot/takeover-full.sh tools/boot/run-aurora.sh $(BUILD)/full-replacement/
-	@cp $(FULL_REPLACEMENT_SO) $(BUILD)/full-replacement/modules/
-	@cp tools/boot/openaurora-full-replacement.conf $(BUILD)/full-replacement/openaurora.conf
-	@cp menus/sub_launcher.json $(BUILD)/full-replacement/menus/
-	@cd $(BUILD)/full-replacement && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker oa-alsactl takeover-full.sh run-aurora.sh openaurora.conf menus/*.json modules/*.so > manifest.sha256
-	@echo "full replacement bundle: $(BUILD)/full-replacement ($(words $(FULL_REPLACEMENT_SO)) modules)"
+	@rm -rf $(BUNDLE_DIR)
+	@mkdir -p $(BUNDLE_DIR)/modules $(BUNDLE_DIR)/menus
+	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl $(BUNDLE_DIR)/
+	@cp tools/boot/takeover-full.sh tools/boot/run-aurora.sh $(BUNDLE_DIR)/
+	@cp $(FULL_REPLACEMENT_SO) $(BUNDLE_DIR)/modules/
+	@cp $(BUNDLE_CONF) $(BUNDLE_DIR)/openaurora.conf
+	@cp menus/sub_launcher.json $(BUNDLE_DIR)/menus/
+	@cd $(BUNDLE_DIR) && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker oa-alsactl takeover-full.sh run-aurora.sh openaurora.conf menus/*.json modules/*.so > manifest.sha256
+	@echo "$(BUNDLE_LABEL) bundle: $(BUNDLE_DIR) ($(words $(FULL_REPLACEMENT_SO)) modules)"
+
+# OmarchyTV-native UI composition: same modules and hardware stack, but the
+# autoloaded skin is ui_omarchy over ui.engine instead of ui_vendor.
+.PHONY: native-replacement-bundle
+native-replacement-bundle:
+	@$(MAKE) --no-print-directory full-replacement-bundle \
+	    BUNDLE_DIR=$(BUILD)/native-replacement \
+	    BUNDLE_CONF=tools/boot/openaurora-native.conf \
+	    BUNDLE_LABEL='native replacement'
 
 install-stage: all-stage
 	install -d $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR)

@@ -195,7 +195,11 @@ unvalidated.
       the real platform with `plat.drm_init=0`, all feature modules, broker,
       and AQ/theme/profile/menu configs; preflight and CPU-only asset starts
       pass, unified real-plat display/hardware awaits a takeover test.
-      REPLACEMENT-SYSTEM.
+      2026-11-08 `native-replacement-bundle`: 26 modules autoloaded,
+      `ui_omarchy` started and painted 1920x1080 (40-44 ms scene, 4-8 ms pan),
+      `ui_vendor` absent; stock restore then reboot (hidden audio DSP state).
+      Native shell parity, app-launch consumer and cold boot remain open.
+      REPLACEMENT-SYSTEM, NATIVE-REPLACEMENT.
 
 ### Audio / CEC
 

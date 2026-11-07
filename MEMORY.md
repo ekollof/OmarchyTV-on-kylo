@@ -40,9 +40,19 @@ with the real platform and `plat.drm_init=0` (skip only Hal_Video_DrmInit to
 preserve the vendor OSD), plus oa-audio-broker and fixed asset configs. The
 bundle preflights on the TV; a CPU-only run started audio_curve/audio_mixer/
 audio_amp_profile/ui_theme/ui_profile/ui_menu (including the broker and 1
-dialog). `ui_omarchy` is excluded because ui_vendor owns the single ui.engine
-skin. The unified real-plat display/hardware path awaits a takeover test; cold
-OSD enable remains open. REPLACEMENT-SYSTEM.
+dialog). The vendor-portal composition remains available; the native sibling
+below is the 2026-11-08 default. Cold OSD enable remains open.
+REPLACEMENT-SYSTEM.
+Native replacement default, 2026-11-08: `native-replacement-bundle` copies
+`tools/boot/openaurora-native.conf`, autoloading 26 modules with `ui_omarchy`
+over ui.engine and excluding the vendor portal stack. TV takeover:
+`ui_omarchy` painted 1920x1080 (scene 40-44 ms, pan 4-8 ms, first present
+acknowledged), `ui_vendor` absent; tar sha256
+`a0174cba3f0c72e8b1bbb841782baf368f00e7a9537c0d8ef6735a31cfd7c726`.
+Stock restore returned aurora 4468; the hidden audio DSP state still required a
+reboot (post-reboot appmgr 1580/aurora 1781). App-launch/OA_ACTION_SELECT
+consumer, full UI parity, cold boot and hardware gates remain.
+NATIVE-REPLACEMENT.
 `check-plat-drm-gate` covers drm_init 0/1; `takeover-full.sh` (start/status/
 reload-suite/restore) is bundled for the next authorized takeover, with restore
 returning to stock for process/UI only; audio requires a reboot after takeover
