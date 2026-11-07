@@ -82,7 +82,8 @@ async function main() {
         }), 5000);
         assert.equal(await command('load cec'), 'ok cec');
         assert.equal(await command('start cec'), 'ok');
-        const tree = 'cec owner 1 audio 1 supported 0 local 1';
+        const tree = 'cec owner 1 audio 1 supported 0 local 1 enabled 0 '
+                   + 'opening 0 open 0 rx 0 tx 0 error 0 last 0';
         assert.equal(await command('cec-state'), tree);
 
         const first = await timed('reload cec');

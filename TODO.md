@@ -201,7 +201,14 @@ unvalidated.
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but
       `cec-state` reports `supported 0`; no raw open, LA claim, authority or
-      bus traffic. The hardware backend/worker remains open.
+      bus traffic. 2026-11-07 native backend: added the read-only authority
+      mirror map, `cec.enable` gate, async owner acquire/receive/send, 100 ms
+      poll, policy reply queue and `cec-open`/`cec-close`/`cec-send`; host
+      tests pass. Hardware: authority bit1 was set (`0x000001ab`), but stock
+      SIGTERM left kernel thread `DRV_CEC_CALLBAC` holding the exclusive
+      KER_CEC lock, so raw open returned EPERM (`CEC Try lock fail`) and no
+      frame was sent/received. Raw takeover needs a graceful stock CEC release
+      or an early boot-order start; do not patch driver globals. CEC-RAW-BACKEND.
 
 ### Input / source / PVR
 

@@ -132,7 +132,7 @@ endef
 .SECONDARY:
 
 CORE_SRC := $(wildcard core/*.c)
-CORE_OBJ := $(CORE_SRC:core/%.c=$(BUILD)/core/%.o) $(BUILD)/common/audio_speaker.o
+CORE_OBJ := $(CORE_SRC:core/%.c=$(BUILD)/core/%.o) $(BUILD)/common/audio_speaker.o $(BUILD)/common/cec.o
 CORE_DEP := $(CORE_OBJ:.o=.d)
 
 MOD_SO   := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).so)
@@ -902,6 +902,10 @@ $(BUILD)/common/audio_speaker.o: common/audio_speaker.c include/openaurora/audio
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c -o $@ $<
 
+$(BUILD)/common/cec.o: common/cec.c include/openaurora/cec.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c -o $@ $<
+
 $(BUILD)/core/%.o: core/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c -o $@ $<
@@ -951,10 +955,10 @@ $(BUILD)/modules/mod_scene_display.so: $(call pic_objs,modules__mod_scene_displa
 	$(CC) -shared -o $@ $^ $(LDFLAGS) $(LIBM)
 $(eval $(call emit_pics,modules__mod_scene_display,modules/scene_display/scene_display.c common/canvas.c common/scene_broker_transport.c,,include/openaurora/canvas.h include/openaurora/module.h include/openaurora/services.h include/openaurora/scene_broker.h))
 
-$(BUILD)/modules/mod_cec.so: $(call pic_objs,modules__mod_cec,modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c)
+$(BUILD)/modules/mod_cec.so: $(call pic_objs,modules__mod_cec,modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
-$(eval $(call emit_pics,modules__mod_cec,modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c,-pthread,))
+$(eval $(call emit_pics,modules__mod_cec,modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c,-pthread,include/openaurora/cec_authority_mem.h))
 
 $(BUILD)/modules/mod_audio.so: $(call pic_objs,modules__mod_audio,modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c)
 	@mkdir -p $(dir $@)
@@ -1408,7 +1412,20 @@ $(BUILD)/tests/cec_device: tests/cec_device.c common/cec_device.c common/cec_pac
 check-cec-device: $(BUILD)/tests/cec_device
 	@$(BUILD)/tests/cec_device
 
-$(BUILD)/tests/cec_owner: tests/cec_owner.c tests/lifecycle_retry.h common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c common/cec.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+$(BUILD)/tests/cec_authority_mem: tests/cec_authority_mem.c common/cec_authority_mem.c common/cec_authority.c include/openaurora/cec_authority_mem.h include/openaurora/cec_authority.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-cec-authority-mem
+check-cec-authority-mem: $(BUILD)/tests/cec_authority_mem
+	@$(BUILD)/tests/cec_authority_mem
+check: check-cec-authority-mem
+
+.PHONY: check-cec-transport-ipc
+check-cec-transport-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_cec.so
+	node tests/cec_transport_ipc.cjs $(abspath $(BUILD))
+check: check-cec-transport-ipc
+
+$(BUILD)/tests/cec_owner: tests/cec_owner.c tests/lifecycle_retry.h common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
 

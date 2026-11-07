@@ -778,6 +778,16 @@ latest stock appmgr1564/aurora1764, same fds, probes0 and1b/05/05, profile/AQ/
 fb/backlight unchanged. Not audible/CEC acceptance; native backends open.
 AUDIO-CEC-TAKEOVER.
 
+CEC native backend 2026-11-07: added cec_authority_mem (read-only /dev/mem page
+0xfc040000+0x200; bit1 was set, mirror 0x000001ab), cec.enable/device/poll
+config, async owner acquire/receive/send with policy reply queue, and
+cec-open/cec-close/cec-send/cec-state. Host tests pass; ARM core 88bb2906...,
+mod_cec 10ef4b50.... Hardware attempt stopped stock but the kernel thread
+DRV_CEC_CALLBAC (pid2929) kept the exclusive KER_CEC lock; raw open returned
+EPERM (CEC Try lock fail), so no frame TX/RX. Reboot restored stock aurora1740
+with its own callback thread2937; no node/stage/socket. Raw takeover needs a
+graceful stock CEC release or early boot-order start. CEC-RAW-BACKEND.
+
 Amp transport 2026-11-07 (offline): recovered DEV_GPIO_SetLevel/SetDirection.
 Pin<200 -> linkable Hal_Gpio_Write/Config (0 success; issue the mutating 670a
 claim); pin>=200 -> (pin+0x38)&0xff with level0->STBC cmd3, level1->cmd2.

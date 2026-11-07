@@ -276,6 +276,19 @@ no snd/i2c/video28/ntkcec fd; no volume/mute/amp or CEC bus operation. Read-only
 mixer values0 and amp 1b/05/05 are unchanged. Native amp and CEC hardware
 backends remain open. Report: AUDIO-CEC-TAKEOVER-2026-11-07.
 
+CEC-RAW-BACKEND-2026-11-07: the native CEC path is wired behind `cec.enable`
+with a read-only `/dev/mem` authority check at `0xfc040200` (bit1 must be set;
+the TV read `0x000001ab`), async owner acquire/receive/send, a 100 ms poll and
+`cec-open`/`cec-close`/`cec-send`. A clear authority bit fails closed because
+no userspace STBC `0xf011` write path is recovered. Hardware: after stock
+SIGTERM, the kernel thread `DRV_CEC_CALLBACK` still held the KER_CEC exclusive
+semaphore (`kcec: CEC Try lock fail`), so the raw open returned EPERM and no
+CEC frame was sent or received. Stock restore by reboot created its own
+callback thread. This confirms the close/open defect from CEC-OWNERSHIP:
+process death is not a graceful CEC release. A raw takeover needs a graceful
+stock close or an early boot-order start, not a driver-global patch.
+Report: CEC-RAW-BACKEND-2026-11-07.
+
 INPUT-PVR-TAKEOVER-2026-11-07: `mod_ir` used `dlopen` without `-ldl`; the TV
 preflight rejected it (`undefined symbol: dlopen`, fixed to NEEDED libdl).
 More importantly, `NDAL_VideoExt_BLAST_RX` blocks in `blast_io_get_key` and

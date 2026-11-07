@@ -1,0 +1,32 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+== try1
+ok
+cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 1 open 0 rx 0 tx 0 error 0 last 0
+== try2
+ok
+cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 1 open 0 rx 0 tx 0 error 0 last 0
+== try3
+ok
+cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 1 open 0 rx 0 tx 0 error 0 last 0
+== try4
+ok
+cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 1 open 0 rx 0 tx 0 error 0 last 0
+== try5
+ok
+cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 1 open 0 rx 0 tx 0 error 0 last 0
+== fds
+== procs
+ 1575 com.nvt.appmgr   /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+ 2929 DRV_CEC_CALLBAC  [DRV_CEC_CALLBAC]
+ 8353 openaurora       ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-cec.sock --log 3
+== dmesg
+[0-1238.044282] kcec: CEC Try lock fail
+[0-1238.052838] kcec: error: KER_CEC_Open [ntkdriver]: please fix nvt_err error
+[0-1240.053804] kcec: CEC Try lock fail
+[0-1240.062361] kcec: error: KER_CEC_Open [ntkdriver]: please fix nvt_err error
+[0-1242.063521] kcec: CEC Try lock fail
+[0-1242.072676] kcec: error: KER_CEC_Open [ntkdriver]: please fix nvt_err error

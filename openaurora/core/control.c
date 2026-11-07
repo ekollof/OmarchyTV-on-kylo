@@ -387,6 +387,9 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  audio-state             query audio enabled/volume\n"
                  "  audio-volume <0-100>    set diagnostic audio volume\n"
                  "  cec-state               query cec owner/audio policy\n"
+                 "  cec-open                acquire the raw CEC device\n"
+                 "  cec-close               release the raw CEC device\n"
+                 "  cec-send <hex>          submit one CEC frame (TV initiator)\n"
                  "  mixer-query <0-5>        submit read-only gain query\n"
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
@@ -1506,14 +1509,89 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         }
         int supported = owner->hardware_open_supported ?
             owner->hardware_open_supported() : 0;
+        oa_cec_transport_status transport;
+        memset(&transport, 0, sizeof transport);
+        if (owner->status) (void)owner->status(&transport);
         oa_cec_audio_route route;
         memset(&route, 0, sizeof route);
         if (audio->route) audio->route(&route);
         h->api.release(h, OA_SVC_CEC_OWNER);
         h->api.release(h, OA_SVC_CEC_AUDIO);
         snprintf(outbuf, outlen,
-                 "cec owner 1 audio 1 supported %d local %d\n",
-                 supported, route.local_volume_permitted);
+                 "cec owner 1 audio 1 supported %d local %d enabled %d "
+                 "opening %d open %d rx %" PRIu64 " tx %" PRIu64
+                 " error %d last %d\n",
+                 supported, route.local_volume_permitted, transport.enabled,
+                 transport.opening, transport.open, transport.rx_frames,
+                 transport.tx_frames, transport.last_error,
+                 transport.have_last_rx);
+        return 0;
+    }
+    if (!strcmp(cmd, "cec-open") || !strcmp(cmd, "cec-close")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_cec_service *owner =
+            h->api.lookup(h, OA_SVC_CEC_OWNER, 1);
+        if (!owner) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int open = !strcmp(cmd, "cec-open");
+        int rc = open ? (owner->open ? owner->open() : -ENOTSUP)
+                      : (owner->close ? owner->close() : -ENOTSUP);
+        h->api.release(h, OA_SVC_CEC_OWNER);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", -rc);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "ok\n");
+        return 0;
+    }
+    if (!strcmp(cmd, "cec-send")) {
+        if (force || !a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        size_t length = strlen(a1);
+        if (!length || (length & 1u) || length > OA_CEC_MAX_FRAME * 2u) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        uint8_t wire[OA_CEC_MAX_FRAME];
+        for (size_t i = 0; i < length / 2; i++) {
+            int hi = a1[2 * i], lo = a1[2 * i + 1];
+            hi = hi >= '0' && hi <= '9' ? hi - '0'
+               : hi >= 'a' && hi <= 'f' ? hi - 'a' + 10
+               : hi >= 'A' && hi <= 'F' ? hi - 'A' + 10 : -1;
+            lo = lo >= '0' && lo <= '9' ? lo - '0'
+               : lo >= 'a' && lo <= 'f' ? lo - 'a' + 10
+               : lo >= 'A' && lo <= 'F' ? lo - 'A' + 10 : -1;
+            if (hi < 0 || lo < 0) {
+                snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+                return -1;
+            }
+            wire[i] = (uint8_t)((hi << 4) | lo);
+        }
+        oa_cec_message message;
+        if (oa_cec_decode(&message, wire, length / 2) != OA_CEC_VALID) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_cec_service *owner =
+            h->api.lookup(h, OA_SVC_CEC_OWNER, 1);
+        if (!owner) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int rc = owner->send ? owner->send(&message) : -ENOTSUP;
+        h->api.release(h, OA_SVC_CEC_OWNER);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", -rc);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "ok\n");
         return 0;
     }
     if (!strcmp(cmd, "mixer-query") || !strcmp(cmd, "mixer-result") || !strcmp(cmd, "mixer-cancel")) {

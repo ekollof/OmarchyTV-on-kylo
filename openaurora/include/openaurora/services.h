@@ -199,11 +199,29 @@ typedef struct {
     int (*live)(void *context, uint32_t id);
 } oa_sched_iface;
 
-/* cec.owner — worker lifecycle only. hardware_open_supported is 0 until a
- * firmware-backed authority and exclusive-open backend is explicitly installed. */
+/* cec.owner — worker lifecycle and optional raw transport.
+ * hardware_open_supported reports the configured hardware gate, not an open
+ * session. status copies counters/state on the loop; send validates and
+ * submits one frame to the worker (0 accepted, -errno, never waits for TX);
+ * open/close submit acquire/release. Hold the service during calls; no pointer
+ * escapes. A send result is submission, not ACK/audible acceptance. */
 #define OA_SVC_CEC_OWNER "cec.owner"
 typedef struct {
+    int enabled;
+    int opening;
+    int open;
+    int last_error;
+    uint64_t rx_frames;
+    uint64_t tx_frames;
+    int have_last_rx;
+    oa_cec_message last_rx;
+} oa_cec_transport_status;
+typedef struct {
     int (*hardware_open_supported)(void);
+    int (*status)(oa_cec_transport_status *out);
+    int (*send)(const oa_cec_message *message);
+    int (*open)(void);
+    int (*close)(void);
 } oa_cec_service;
 
 /* cec.audio — TV System Audio / ARC policy. No device or amplifier access.

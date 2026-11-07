@@ -1,0 +1,39 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+watchdog disable -> sent
+disable_rc=0
+ 1575 com.nvt.appmgr   /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+crw-rw-rw-    1 root     root      229,   0 Nov  7 11:05 /tmp/ntkcec
+launched=8353
+== ps
+ 8345 S    sh               sh -c /buffer/wdtctl disable; echo disable_rc=$?; kill -TERM 1777; sleep 2; ps -eo pid,comm,args | grep -E "[a]urora.elf|[a]ppmgr" || true; mknod /tmp/ntkcec c 229 0; chmod 666 /tmp/ntkcec; ls -l /tmp/ntkcec; cd /buffer/oa-cec-20261107 && setsid ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-cec.sock --log 3 >/buffer/oa-cec-20261107/run.log 2>&1 < /dev/null & echo launched=$!; sleep 3; echo "== ps"; ps -eo pid,stat,comm,args | grep -E "[o]penaurora"; C=/buffer/oa-cec-20261107/oa-client; echo "== state"; $C --timeout 10 /tmp/oa-cec.sock "cec-state"; echo state_rc=$?; echo "== log"; cat /buffer/oa-cec-20261107/run.log; echo "== dmesg"; dmesg | tail -12
+ 8353 S    openaurora       ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-cec.sock --log 3
+== state
+cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 0 open 0 rx 0 tx 0 error 1 last 0
+state_rc=0
+== log
+[211079] INFO host         openaurora starting, modules=./modules
+[211080] INFO host         control socket /tmp/oa-cec.sock
+[211080] INFO host         loaded cec v1 (./modules/mod_cec.so)
+[211080] DBG  cec          service up: cec.owner v1
+[211080] DBG  cec          service up: cec.audio v1
+[211080] INFO cec          cec: hardware enabled (/tmp/ntkcec, poll 100 ms)
+[211080] INFO host         started cec
+openaurora: 1 module(s) loaded, control on /tmp/oa-cec.sock
+[211181] WARN cec          cec acquire failed (1)
+== dmesg
+nvt_vhash_check(905) : image name: stbc
+[2-39.488516] get_signature_stbc(308) : enter...
+[2-39.493303] 365359F0C4
+SHA:
+[2-39.493948] 592950DE9E55CD1052A690A48BA1914BC531308A41B2CAFB20A765C8E48E68F6
+nvt_vhash_check: Retry verify 1 ...
+[2-40.535293] VHASH Verify OK!(verify_status=1)!
+[2-40.549532] nvt_vhash_backup_data: TPS read vtbl size: 384 ...
+[2-40.565599] nvt_vhash_backup_data: TPS read vhash size: 32 ...
+[2-40.577718] nvt_vhash_backup_data(808) : TPS Already Sync with SPI!
+[0-1211.100618] kcec: CEC Try lock fail
+[0-1211.108781] kcec: error: KER_CEC_Open [ntkdriver]: please fix nvt_err error
