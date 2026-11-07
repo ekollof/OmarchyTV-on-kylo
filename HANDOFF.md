@@ -787,7 +787,12 @@ new `amp-mute 0` restored I2C and readback `1b/05/05`. Stock runtime image
 matched the embedded baseline plus configure patches. Audible/owner-listening
 confirmation and paired shutdown remain. Restored by wdtctl set10: latest stock
 appmgr1575/aurora1777, source5, profile/fb/backlight unchanged, no stage/
-helper. AMP-MODULE.
+helper. AMP-MODULE. Amp shutdown 2026-11-07: the AD82587 vtable leaves Term
+(+0x54), PowerDown (+0x68) and GetPowerDownStatus (+0x6c) NULL and Close is
+empty, so this board has no vendor paired shutdown; DEV_AMP_Term/PowerDown are
+no-ops. The module closes I2C on quiesce and does not invent a mute/reset on
+stop; standby/amp-rail policy is a separate MCU/panel/power concern. Audible
+confirmation remains. AMP-SHUTDOWN.
 
 Input/PVR group 2026-11-07: live settingsDB source5/previous4/volume0;
 stock owns video28 BLAST, ntkdvif, video20/21/24, demux0 and DVB nodes.

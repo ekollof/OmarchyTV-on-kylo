@@ -52,6 +52,16 @@ baseline is confirmed. This is register/GPIO/STBC hardware acceptance, not
 audible acceptance; no owner listening confirmation, paired shutdown or
 in-module readback yet. Report: AMP-MODULE-2026-11-07.
 
+AMP-SHUTDOWN-2026-11-07 corrects "paired shutdown" for the AD82587 this board
+actually uses. `AMP_AD82587_Create` @0x8755d0 installs Init/GetCap/Open/Close/
+Reset/Mute/SoftMute/volume/balance/HP_Mute but leaves the Term (+0x54),
+PowerDown (+0x68) and GetPowerDownStatus (+0x6c) slots NULL; `AMP_AD82587_Close`
+is empty. `DEV_AMP_Term` and `DEV_AMP_PowerDown` therefore do nothing. There is
+no vendor paired shutdown to reproduce; the module must not invent a
+mute/reset-on-stop. Quiesce closes the I2C session; standby/amp-rail policy is a
+separate MCU/panel/power-owner contract. Audible output remains the amp
+acceptance gate. Report: AMP-SHUTDOWN-2026-11-07.
+
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR
 under a replacement. The stock parser also polls `DEV_Ir_GetKey`
 (`NDAL_VideoExt_BLAST_RX`, V4L2 control 0xf25). The BLAST common fd in the live

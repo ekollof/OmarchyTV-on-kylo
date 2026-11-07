@@ -195,8 +195,11 @@ unvalidated.
       `amp-mute 0` restored I2C and readback `1b/05/05`. The stock runtime
       image matched the embedded baseline plus configure patches. Restored by
       `wdtctl set 10` (appmgr 1575/aurora 1777, source 5, profile/fb/backlight
-      unchanged). Still open: audible/owner-listening confirmation, paired
-      shutdown/standby, in-module readback. AMP-MODULE.
+      unchanged). Still open: audible/owner-listening confirmation and
+      in-module readback. AMP-MODULE. Follow-up: the AD82587 object has NULL
+      Term/PowerDown slots and an empty Close, so there is no vendor paired
+      shutdown; do not invent a reset/mute-on-stop. Standby/amp-rail policy is
+      an MCU/panel/power-owner concern. AMP-SHUTDOWN.
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but
