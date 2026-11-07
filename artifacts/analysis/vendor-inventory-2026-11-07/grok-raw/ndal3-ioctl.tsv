@@ -1,0 +1,277 @@
+func	site	cmd	ioc	evidence
+_FreeGemBuffer	4e7b068c	0x40086409	W d nr=9 sz=8	4e7b0680: movt	r1, #16392	; 0x4008 || 4e7b0676: movw	r1, #25609	; 0x6409
+HAL_AllocBuffer	4e7b0832	0xc0106440	RW d nr=64 sz=16	4e7b0822: movt	r1, #49168	; 0xc010 || 4e7b081c: movw	r1, #25664	; 0x6440
+HAL_Handle2VirAdr	4e7b0928	0xc01064b3	RW d nr=179 sz=16	4e7b0916: movt	r1, #49168	; 0xc010 || 4e7b090e: movw	r1, #25779	; 0x64b3
+HAL_Handle2IPCName	4e7b0a0e	0xc008640a	RW d nr=10 sz=8	4e7b0a04: movt	r1, #49160	; 0xc008 || 4e7b09fe: movw	r1, #25610	; 0x640a
+HAL_IPCName2Handle	4e7b0afe	0xc010640b	RW d nr=11 sz=16	4e7b0ae8: movt	r1, #49168	; 0xc010 || 4e7b0ade: movw	r1, #25611	; 0x640b
+compress_open	4e7b0e10	0xc0c44310	RW C nr=16 sz=196	4e7b0e0c: movt	r1, #49348	; 0xc0c4 || 4e7b0e06: movw	r1, #17168	; 0x4310
+compress_open	4e7b0e5a	0x40844312	W C nr=18 sz=132	4e7b0e56: movt	r1, #16516	; 0x4084 || 4e7b0e4e: movw	r1, #17170	; 0x4312
+compress_get_hpointer	4e7b0ff2	0x801c4321	R C nr=33 sz=28	4e7b0fea: movt	r1, #32796	; 0x801c || 4e7b0fe4: movw	r1, #17185	; 0x4321
+compress_get_tstamp	4e7b10ce	0x80144320	R C nr=32 sz=20	4e7b10c6: movt	r1, #32788	; 0x8014 || 4e7b10c0: movw	r1, #17184	; 0x4320
+compress_write	4e7b11ee	REG		4e7b11ec: mov	r1, fp
+compress_read	4e7b138a	REG		4e7b1388: mov	r1, fp
+compress_start	4e7b1484	0x4332	NONE C nr=50 sz=0	4e7b147e: movw	r1, #17202	; 0x4332
+compress_stop	4e7b1500	0x4333	NONE C nr=51 sz=0	4e7b14fa: movw	r1, #17203	; 0x4333
+compress_pause	4e7b1574	0x4330	NONE C nr=48 sz=0	4e7b156e: movw	r1, #17200	; 0x4330
+compress_resume	4e7b15e2	0x4331	NONE C nr=49 sz=0	4e7b15d6: movw	r1, #17201	; 0x4331
+compress_drain	4e7b1644	0x4334	NONE C nr=52 sz=0	4e7b163e: movw	r1, #17204	; 0x4334
+compress_partial_drain	4e7b16be	0x4336	NONE C nr=54 sz=0	4e7b16b8: movw	r1, #17206	; 0x4336
+compress_next_track	4e7b174e	0x4335	NONE C nr=53 sz=0	4e7b1748: movw	r1, #17205	; 0x4335
+compress_set_gapless_metadata	4e7b17f4	0x80044300	R C nr=0 sz=4	4e7b17ee: movt	r1, #32772	; 0x8004 || 4e7b17e6: mov.w	r1, #17152	; 0x4300
+compress_set_gapless_metadata	4e7b182a	0x40244314	W C nr=20 sz=36	4e7b181e: movt	r1, #16420	; 0x4024 || 4e7b1814: movw	r1, #17172	; 0x4314
+compress_set_gapless_metadata	4e7b1844	0x40244314	W C nr=20 sz=36	4e7b183a: movt	r1, #16420	; 0x4024 || 4e7b1832: movw	r1, #17172	; 0x4314
+is_codec_supported	4e7b1932	0xc0c44310	RW C nr=16 sz=196	4e7b192e: movt	r1, #49348	; 0xc0c4 || 4e7b1928: movw	r1, #17168	; 0x4310
+compress_get_codec_caps	4e7b1b3c	0xeb884311	RW C nr=17 sz=11144	4e7b1b36: movt	r1, #60296	; 0xeb88 || 4e7b1b30: movw	r1, #17169	; 0x4311
+compress_get_pts	4e7b1bc4	0xc0244315	RW C nr=21 sz=36	4e7b1bbe: movt	r1, #49188	; 0xc024 || 4e7b1bb6: movw	r1, #17173	; 0x4315
+compress_set_pts	4e7b1c54	0x40244314	W C nr=20 sz=36	4e7b1c44: movt	r1, #16420	; 0x4024 || 4e7b1c3e: movw	r1, #17172	; 0x4314
+compress_get_bufinfo	4e7b1cd8	0xc0244315	RW C nr=21 sz=36	4e7b1cd2: movt	r1, #49188	; 0xc024 || 4e7b1cca: movw	r1, #17173	; 0x4315
+compress_get_secure_buf	4e7b1e2c	0xc0244315	RW C nr=21 sz=36	4e7b1e26: movt	r1, #49188	; 0xc024 || 4e7b1e1e: movw	r1, #17173	; 0x4315
+compress_get_debug_conf	4e7b1eb8	0xc0244315	RW C nr=21 sz=36	4e7b1eb2: movt	r1, #49188	; 0xc024 || 4e7b1eaa: movw	r1, #17173	; 0x4315
+compress_get_pcm_metadata	4e7b1f4e	0xc0244315	RW C nr=21 sz=36	4e7b1f48: movt	r1, #49188	; 0xc024 || 4e7b1f40: movw	r1, #17173	; 0x4315
+compress_close_device	4e7b1ffa	0x40244314	W C nr=20 sz=36	4e7b1ff4: movt	r1, #16420	; 0x4024 || 4e7b1fec: movw	r1, #17172	; 0x4314
+compress_set_sync	4e7b2080	0x40244314	W C nr=20 sz=36	4e7b2074: movt	r1, #16420	; 0x4024 || 4e7b206e: movw	r1, #17172	; 0x4314
+compress_write_strm	4e7b217a	0x40244314	W C nr=20 sz=36	4e7b2168: movt	r1, #16420	; 0x4024 || 4e7b2162: movw	r1, #17172	; 0x4314
+compress_read_pcm	4e7b222e	0xc0244315	RW C nr=21 sz=36	4e7b2228: movt	r1, #49188	; 0xc024 || 4e7b2220: movw	r1, #17173	; 0x4315
+compress_read_pcm	4e7b2266	0xc0244315	RW C nr=21 sz=36	4e7b2260: movt	r1, #49188	; 0xc024 || 4e7b2258: movw	r1, #17173	; 0x4315
+_HAL_dvif_enableDVIF	4e7b2a02	0xc0014484	RW D nr=132 sz=1	4e7b29fa: movt	r1, #49153	; 0xc001 || 4e7b29f4: movw	r1, #17540	; 0x4484
+_HAL_dvif_set_dmdc_procedure	4e7b2a7e	0xc0044482	RW D nr=130 sz=4	4e7b2a76: movt	r1, #49156	; 0xc004 || 4e7b2a70: movw	r1, #17538	; 0x4482
+_HAL_fe_get_status	4e7b2c88	0x80046f45	R o nr=69 sz=4	4e7b2c80: movt	r1, #32772	; 0x8004 || 4e7b2c76: movw	r1, #28485	; 0x6f45
+HAL_Demod_SetVif	4e7b2f40	0xc00c4483	RW D nr=131 sz=12	4e7b2f36: movt	r1, #49164	; 0xc00c || 4e7b2f32: movw	r1, #17539	; 0x4483
+HalDemod_GetPLP_List	4e7b35b0	0x80086f53	R o nr=83 sz=8	4e7b35a2: movt	r1, #32776	; 0x8008 || 4e7b3598: movw	r1, #28499	; 0x6f53
+HalDemod_send_diseqc_sequence	4e7b374a	0x40076f3f	W o nr=63 sz=7	4e7b3746: movt	r1, #16391	; 0x4007 || 4e7b3740: movw	r1, #28479	; 0x6f3f
+HalDemod_send_diseqc_sequence	4e7b375e	0x40076f41	W o nr=65 sz=7	4e7b3754: movw	r1, #28481	; 0x6f41 || 4e7b3746: movt	r1, #16391	; 0x4007
+HAL_fe_set_parms	4e7b382c	0x40086f52	W o nr=82 sz=8	4e7b3820: movt	r1, #16392	; 0x4008 || 4e7b3818: movw	r1, #28498	; 0x6f52
+HAL_fe_get_frontend	4e7b4336	0x80246f4d	R o nr=77 sz=36	4e7b4330: movt	r1, #32804	; 0x8024 || 4e7b432a: movw	r1, #28493	; 0x6f4d
+HAL_fe_get_parms	4e7b4404	0x80086f53	R o nr=83 sz=8	4e7b43fc: movt	r1, #32776	; 0x8008 || 4e7b43f4: movw	r1, #28499	; 0x6f53
+HAL_Demod_GetStatus	4e7b456a	0x80104470	R D nr=112 sz=16	4e7b455e: movt	r1, #32784	; 0x8010 || 4e7b455a: movw	r1, #17520	; 0x4470
+HAL_Demod_GetStatus	4e7b45d6	0x80054471	R D nr=113 sz=5	4e7b45ca: movt	r1, #32773	; 0x8005 || 4e7b45c6: movw	r1, #17521	; 0x4471
+HAL_Demod_GetStatus	4e7b46b8	0x80046f46	R o nr=70 sz=4	4e7b46b2: movt	r1, #32772	; 0x8004 || 4e7b46aa: movw	r1, #28486	; 0x6f46
+HAL_Demod_GetStatus	4e7b46e6	0x80026f48	R o nr=72 sz=2	4e7b46e0: movt	r1, #32770	; 0x8002 || 4e7b46d8: movw	r1, #28488	; 0x6f48
+HAL_Demod_GetStatus	4e7b475e	0x80086f53	R o nr=83 sz=8	4e7b4754: movt	r1, #32776	; 0x8008 || 4e7b4746: movw	r1, #28499	; 0x6f53
+HAL_Demod_GetStatus	4e7b47a2	0x80246f4d	R o nr=77 sz=36	4e7b479e: movt	r1, #32804	; 0x8024 || 4e7b4796: movw	r1, #28493	; 0x6f4d
+HAL_Demod_GetStatus	4e7b4894	0x80046f49	R o nr=73 sz=4	4e7b488e: movt	r1, #32772	; 0x8004 || 4e7b4886: movw	r1, #28489	; 0x6f49
+HAL_Demod_GetStatus	4e7b4de6	0x80086f53	R o nr=83 sz=8	4e7b4dda: movt	r1, #32776	; 0x8008 || 4e7b4dd4: movw	r1, #28499	; 0x6f53
+_hal_fe_get_frontend.isra.1	4e7b53fa	0x80246f4d	R o nr=77 sz=36	4e7b53f4: movt	r1, #32804	; 0x8024 || 4e7b53ee: movw	r1, #28493	; 0x6f4d
+_hal_fe_get_parms	4e7b54aa	0x80086f53	R o nr=83 sz=8	4e7b54a0: movt	r1, #32776	; 0x8008 || 4e7b549a: movw	r1, #28499	; 0x6f53
+_hal_fe_set_parms	4e7b5570	0x40086f52	W o nr=82 sz=8	4e7b5564: movt	r1, #16392	; 0x4008 || 4e7b555e: movw	r1, #28498	; 0x6f52
+HAL_DEMOD_EXT_DVIF_SetTunerType	4e7b5620	0xc0044485	RW D nr=133 sz=4	4e7b561a: movt	r1, #49156	; 0xc004 || 4e7b5614: movw	r1, #17541	; 0x4485
+HAL_DEMOD_EXT_DVIF_SetStandby	4e7b56d0	0xc0014484	RW D nr=132 sz=1	4e7b56ca: movt	r1, #49153	; 0xc001 || 4e7b56c4: movw	r1, #17540	; 0x4484
+HAL_DEMOD_EXT_DVIF_SetupConfig	4e7b57ae	0xc0044486	RW D nr=134 sz=4	4e7b57a8: movt	r1, #49156	; 0xc004 || 4e7b57a2: movw	r1, #17542	; 0x4486
+HAL_DEMOD_EXT_SetUnicableIF	4e7b5a4a	0x40086f52	W o nr=82 sz=8	4e7b5a44: movt	r1, #16392	; 0x4008 || 4e7b5a3e: movw	r1, #28498	; 0x6f52
+HAL_DEMOD_EXT_DeliverConfig	4e7b5e10	0x80246f51	R o nr=81 sz=36	4e7b5e08: movt	r1, #32804	; 0x8024 || 4e7b5e00: movw	r1, #28497	; 0x6f51
+HAL_DEMOD_EXT_DeliverConfig	4e7b5e6e	0x80246f51	R o nr=81 sz=36	4e7b5e68: movt	r1, #32804	; 0x8024 || 4e7b5e62: movw	r1, #28497	; 0x6f51
+_Hal_Demux_CI_TaskRoutine	4e7b60be	0xbd03	NONE bd nr=3 sz=0	4e7b60b6: movw	r1, #48387	; 0xbd03
+Hal_Demux_CI_Init	4e7b615a	0xbd02	NONE bd nr=2 sz=0	4e7b6156: movw	r1, #48386	; 0xbd02
+Hal_Demux_CI_Reset	4e7b62c2	0xbd04	NONE bd nr=4 sz=0	4e7b62b4: movw	r1, #48388	; 0xbd04
+Hal_Demux_CI_GetStatus	4e7b638a	0xbd05	NONE bd nr=5 sz=0	4e7b6376: movw	r1, #48389	; 0xbd05
+Hal_Demux_CI_Set	4e7b652e	0xbd0a	NONE bd nr=10 sz=0	4e7b6520: movw	r1, #48394	; 0xbd0a
+Hal_Demux_CI_Set	4e7b6582	0xbd0e	NONE bd nr=14 sz=0	4e7b6568: movw	r1, #48398	; 0xbd0e
+Hal_Demux_CI_Set	4e7b6598	0xbd0e	NONE bd nr=14 sz=0	4e7b6592: movw	r1, #48398	; 0xbd0e
+Hal_Demux_CI_Read_Reg	4e7b66c2	0xbd08	NONE bd nr=8 sz=0	4e7b66b0: movw	r1, #48392	; 0xbd08
+Hal_Demux_CI_Write_Reg	4e7b67aa	0xbd09	NONE bd nr=9 sz=0	4e7b6798: movw	r1, #48393	; 0xbd09
+Hal_Demux_CI_Read_CIs_Memory	4e7b6896	0xbd06	NONE bd nr=6 sz=0	4e7b6884: movw	r1, #48390	; 0xbd06
+Hal_Demux_CI_Write_FCR_Value	4e7b6980	0xbd07	NONE bd nr=7 sz=0	4e7b6970: movw	r1, #48391	; 0xbd07
+Hal_Demux_CI_GetEncryptMem	4e7b6b42	0xbd0c	NONE bd nr=12 sz=0	4e7b6b38: movw	r1, #48396	; 0xbd0c
+Hal_Demux_Ctrl_Inv_Cache	4e7b6d68	0xc014730a	RW s nr=10 sz=20	4e7b6d58: movt	r1, #49172	; 0xc014 || 4e7b6d52: movw	r1, #29450	; 0x730a
+Hal_Demux_Ctrl_Hwmem_Flush_Range	4e7b6dde	0x2a	NONE 00 nr=42 sz=0	4e7b6dd2: movs	r1, #42	; 0x2a
+Hal_Demux_Ctrl_QueryBufferPVR	4e7b6e66	0xbb44	NONE bb nr=68 sz=0	4e7b6e5c: movw	r1, #47940	; 0xbb44
+Hal_Demux_Ctrl_Crypto_PVR	4e7b6fcc	0xbe10	NONE be nr=16 sz=0	4e7b6f98: movw	r1, #48656	; 0xbe10
+Hal_Demux_Ctrl_Crypto_SetPvrKey	4e7b708c	0xbe11	NONE be nr=17 sz=0	4e7b707e: movw	r1, #48657	; 0xbe11
+Hal_Demux_Ctrl_Crypto_Encrypt	4e7b718e	0xbe0e	NONE be nr=14 sz=0	4e7b7172: movw	r1, #48654	; 0xbe0e
+Hal_Demux_Ctrl_Crypto_Decrypt	4e7b72fe	0xbe0f	NONE be nr=15 sz=0	4e7b72e2: movw	r1, #48655	; 0xbe0f
+Hal_Demux_Ctrl_Crypto_GetPRNG	4e7b73f8	0xbe12	NONE be nr=18 sz=0	4e7b73e8: movw	r1, #48658	; 0xbe12
+Hal_Demux_Ctrl_CacheFlush	4e7b747a	0xbb43	NONE bb nr=67 sz=0	4e7b7470: movw	r1, #47939	; 0xbb43
+Hal_Demux_Ctrl_SetReadAddr	4e7b74fe	0xbb54	NONE bb nr=84 sz=0	4e7b74f4: movw	r1, #47956	; 0xbb54
+Hal_Demux_Desc_Set_Bypass	4e7b7878	0xbb2c	NONE bb nr=44 sz=0	4e7b786e: movw	r1, #47916	; 0xbb2c
+Hal_Demux_Desc_Set_Bypass	4e7b78c0	0xbb26	NONE bb nr=38 sz=0	4e7b78ba: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Set_Bypass	4e7b792c	0xbb2b	NONE bb nr=43 sz=0	4e7b7920: movw	r1, #47915	; 0xbb2b
+Hal_Demux_Desc_EnableMask	4e7b7a76	0xbb24	NONE bb nr=36 sz=0	4e7b7a6e: movw	r1, #47908	; 0xbb24
+Hal_Demux_Desc_EnableMask	4e7b7aaa	0xbb25	NONE bb nr=37 sz=0	4e7b7aa2: movw	r1, #47909	; 0xbb25
+Hal_Demux_Desc_Open	4e7b7bd4	0xbb72	NONE bb nr=114 sz=0	4e7b7bc8: movw	r1, #47986	; 0xbb72
+Hal_Demux_Desc_Open	4e7b7c26	0xbb1e	NONE bb nr=30 sz=0	4e7b7c0a: movw	r1, #47902	; 0xbb1e
+Hal_Demux_Desc_Open	4e7b7d34	0xbb73	NONE bb nr=115 sz=0	4e7b7d18: movw	r1, #47987	; 0xbb73
+Hal_Demux_Desc_Close	4e7b7f02	0xbb1f	NONE bb nr=31 sz=0	4e7b7efa: movw	r1, #47903	; 0xbb1f
+Hal_Demux_Desc_Close	4e7b7f94	0xbb74	NONE bb nr=116 sz=0	4e7b7f8c: movw	r1, #47988	; 0xbb74
+Hal_Demux_Desc_Set_Pid	4e7b8250	0xbb20	NONE bb nr=32 sz=0	4e7b8248: movw	r1, #47904	; 0xbb20
+Hal_Demux_Desc_Set_Pid	4e7b82c8	0xbb75	NONE bb nr=117 sz=0	4e7b82b0: movw	r1, #47989	; 0xbb75
+Hal_Demux_Desc_Disable	4e7b84b0	0xbb2c	NONE bb nr=44 sz=0	4e7b84a6: movw	r1, #47916	; 0xbb2c
+Hal_Demux_Desc_Disable	4e7b84d8	0xbb2b	NONE bb nr=43 sz=0	4e7b84d0: movw	r1, #47915	; 0xbb2b
+Hal_Demux_Desc_Cfg	4e7b86dc	0xbb26	NONE bb nr=38 sz=0	4e7b86d4: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Cfg	4e7b8724	0xbb2a	NONE bb nr=42 sz=0	4e7b871a: movw	r1, #47914	; 0xbb2a
+Hal_Demux_Desc_Cfg	4e7b87a8	0xbb26	NONE bb nr=38 sz=0	4e7b87a0: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Cfg	4e7b87fa	0xbb26	NONE bb nr=38 sz=0	4e7b87f2: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Cfg	4e7b883c	0xbb26	NONE bb nr=38 sz=0	4e7b8834: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Cfg	4e7b887e	0xbb26	NONE bb nr=38 sz=0	4e7b8876: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Cfg	4e7b88c0	0xbb26	NONE bb nr=38 sz=0	4e7b88b8: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Config	4e7b8c06	0xbb26	NONE bb nr=38 sz=0	4e7b8bfe: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Config	4e7b8c4e	0xbb2a	NONE bb nr=42 sz=0	4e7b8c44: movw	r1, #47914	; 0xbb2a
+Hal_Demux_Desc_Config	4e7b8cf8	0xbb26	NONE bb nr=38 sz=0	4e7b8cec: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Config	4e7b8d4e	0xbb26	NONE bb nr=38 sz=0	4e7b8d46: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Config	4e7b8d90	0xbb26	NONE bb nr=38 sz=0	4e7b8d88: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Config	4e7b8dd2	0xbb26	NONE bb nr=38 sz=0	4e7b8dca: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Config	4e7b8e14	0xbb26	NONE bb nr=38 sz=0	4e7b8e0c: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Config	4e7b8e56	0xbb26	NONE bb nr=38 sz=0	4e7b8e4e: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Config	4e7b8ed2	0xbb26	NONE bb nr=38 sz=0	4e7b8eca: movw	r1, #47910	; 0xbb26
+Hal_Demux_Desc_Set_Descrambler_Keys	4e7b9242	0xbb2b	NONE bb nr=43 sz=0	4e7b922a: movw	r1, #47915	; 0xbb2b
+Hal_Demux_Desc_Set_Descrambler_Keys	4e7b93e0	0xbb29	NONE bb nr=41 sz=0	4e7b93d2: movw	r1, #47913	; 0xbb29
+Hal_Demux_Desc_Set_Descrambler_Keys	4e7b9402	0xbb2a	NONE bb nr=42 sz=0	4e7b93f6: movw	r1, #47914	; 0xbb2a
+Hal_Demux_Desc_Start	4e7b9774	0xbb23	NONE bb nr=35 sz=0	4e7b9762: movw	r1, #47907	; 0xbb23
+Hal_Demux_Desc_Start	4e7b978e	0xbb22	NONE bb nr=34 sz=0	4e7b9788: movw	r1, #47906	; 0xbb22
+Hal_Demux_Desc_Start	4e7b983c	0xbb78	NONE bb nr=120 sz=0	4e7b982a: movw	r1, #47992	; 0xbb78
+Hal_Demux_Desc_Start	4e7b9854	0xbb77	NONE bb nr=119 sz=0	4e7b984e: movw	r1, #47991	; 0xbb77
+Hal_Demux_Desc_Stop	4e7b99e6	0xbb23	NONE bb nr=35 sz=0	4e7b99da: movw	r1, #47907	; 0xbb23
+Hal_Demux_Desc_Stop	4e7b9a66	0xbb78	NONE bb nr=120 sz=0	4e7b9a5a: movw	r1, #47992	; 0xbb78
+Hal_Demux_Desc_EnableMask4ECP	4e7b9b5e	0xbb72	NONE bb nr=114 sz=0	4e7b9b50: movw	r1, #47986	; 0xbb72
+Hal_Demux_Dvb_Close	4e7b9c6c	0x6f2a	NONE o nr=42 sz=0	4e7b9c62: movw	r1, #28458	; 0x6f2a
+Hal_Demux_Dvb_Setsource	4e7b9cd6	0x40046f31	W o nr=49 sz=4	4e7b9cd2: movt	r1, #16388	; 0x4004 || 4e7b9ccc: movw	r1, #28465	; 0x6f31
+Hal_Demux_Dvb_Stop	4e7b9d9a	0x6f2a	NONE o nr=42 sz=0	4e7b9d8c: movw	r1, #28458	; 0x6f2a
+Hal_Demux_Dvb_GetStc	4e7b9de2	0xc0106f32	RW o nr=50 sz=16	4e7b9dd8: movt	r1, #49168	; 0xc010 || 4e7b9dd2: movw	r1, #28466	; 0x6f32
+Hal_Demux_Dvb_Dvr_Flush	4e7b9e70	0xc0086f68	RW o nr=104 sz=8	4e7b9e64: movt	r1, #49160	; 0xc008 || 4e7b9e5c: movw	r1, #28520	; 0x6f68
+Hal_Demux_Dvb_Dvr_GetPlayBuffer	4e7b9ef0	0xc0086f64	RW o nr=100 sz=8	4e7b9ee6: movt	r1, #49160	; 0xc008 || 4e7b9ede: movw	r1, #28516	; 0x6f64
+Hal_Demux_Dvb_Set_Pesfilter	4e7ba06c	0x6f2d	NONE o nr=45 sz=0	4e7ba05e: movw	r1, #28461	; 0x6f2d
+Hal_Demux_Dvb_Set_Pesfilter	4e7ba0aa	0x40146f2c	W o nr=44 sz=20	4e7ba0a0: movt	r1, #16404	; 0x4014 || 4e7ba096: movw	r1, #28460	; 0x6f2c
+Hal_Demux_Dvb_Set_Sectionfilter	4e7ba172	0x6f2d	NONE o nr=45 sz=0	4e7ba15c: movw	r1, #28461	; 0x6f2d
+Hal_Demux_Dvb_Set_Sectionfilter	4e7ba1d6	0x403c6f2b	W o nr=43 sz=60	4e7ba1c8: movt	r1, #16444	; 0x403c || 4e7ba1c0: movw	r1, #28459	; 0x6f2b
+venc_v4l2_set_mmap_secure	4e7bb162	0xc0445609	RW V nr=9 sz=68	4e7bb154: movt	r1, #49220	; 0xc044 || 4e7bb14c: movw	r1, #22025	; 0x5609
+venc_v4l2_set_mmap_normal	4e7bb278	0xc0445609	RW V nr=9 sz=68	4e7bb26a: movt	r1, #49220	; 0xc044 || 4e7bb262: movw	r1, #22025	; 0x5609
+venc_v4l2_streamon	4e7bb3a2	0x40045612	W V nr=18 sz=4	4e7bb398: movt	r1, #16388	; 0x4004 || 4e7bb390: movw	r1, #22034	; 0x5612
+venc_v4l2_streamoff	4e7bb47a	0x40045613	W V nr=19 sz=4	4e7bb470: movt	r1, #16388	; 0x4004 || 4e7bb468: movw	r1, #22035	; 0x5613
+venc_v4l2_set_bitrate	4e7bb556	0xc008561c	RW V nr=28 sz=8	4e7bb548: movt	r1, #49160	; 0xc008 || 4e7bb53e: movw	r1, #22044	; 0x561c
+venc_v4l2_set_framerate	4e7bb5d0	0xc0cc5616	RW V nr=22 sz=204	4e7bb5b8: movt	r1, #49356	; 0xc0cc || 4e7bb5b0: movw	r1, #22038	; 0x5616
+venc_v4l2_set_mute	4e7bb64a	0xc008561c	RW V nr=28 sz=8	4e7bb63a: movt	r1, #49160	; 0xc008 || 4e7bb62e: movw	r1, #22044	; 0x561c
+venc_v4l2_set_src_mode	4e7bb6ba	0xc008561c	RW V nr=28 sz=8	4e7bb6aa: movt	r1, #49160	; 0xc008 || 4e7bb6a2: movw	r1, #22044	; 0x561c
+venc_v4l2_set_vid_fmt	4e7bb74c	0xc0cc5605	RW V nr=5 sz=204	4e7bb746: movt	r1, #49356	; 0xc0cc || 4e7bb73c: movw	r1, #22021	; 0x5605
+venc_v4l2_subscribe_event	4e7bb7d8	0x4020565a	W V nr=90 sz=32	4e7bb7d2: movt	r1, #16416	; 0x4020 || 4e7bb7c6: movw	r1, #22106	; 0x565a
+venc_v4l2_de_queue_event	4e7bb844	0x80805659	R V nr=89 sz=128	4e7bb83a: movt	r1, #32896	; 0x8080 || 4e7bb82e: movw	r1, #22105	; 0x5659
+venc_v4l2_queue_buffer	4e7bb920	0xc044560f	RW V nr=15 sz=68	4e7bb91a: movt	r1, #49220	; 0xc044 || 4e7bb90e: movw	r1, #22031	; 0x560f
+venc_v4l2_queue_phys_buffer	4e7bb9c0	0xc044560f	RW V nr=15 sz=68	4e7bb9b8: movt	r1, #49220	; 0xc044 || 4e7bb9ac: movw	r1, #22031	; 0x560f
+venc_v4l2_dequeue_buffer	4e7bba4e	0xc0445611	RW V nr=17 sz=68	4e7bba4a: movt	r1, #49220	; 0xc044 || 4e7bba42: movw	r1, #22033	; 0x5611
+venc_v4l2_set_event	4e7bbafc	0xc044560f	RW V nr=15 sz=68	4e7bbaf4: movt	r1, #49220	; 0xc044 || 4e7bbae8: movw	r1, #22031	; 0x560f
+Hal_Gpio_Read	4e7be5c6	0x6712	NONE g nr=18 sz=0	4e7be5b8: movw	r1, #26386	; 0x6712
+Hal_Gpio_Write	4e7be798	0x670a	NONE g nr=10 sz=0	4e7be78c: movw	r1, #26378	; 0x670a
+Hal_Gpio_Write	4e7be7b0	0x670e	NONE g nr=14 sz=0	4e7be7a6: movw	r1, #26382	; 0x670e
+Hal_Gpio_Write	4e7be7d0	0x670c	NONE g nr=12 sz=0	4e7be7c8: movw	r1, #26380	; 0x670c
+Hal_Gpio_Config	4e7be8c6	0x670a	NONE g nr=10 sz=0	4e7be8ba: movw	r1, #26378	; 0x670a
+Hal_Gpio_Config	4e7be8d6	0x670e	NONE g nr=14 sz=0	4e7be8d2: movw	r1, #26382	; 0x670e
+Hal_Gpio_GetDirection	4e7be9d4	0x670a	NONE g nr=10 sz=0	4e7be9c6: movw	r1, #26378	; 0x670a
+Hal_Gpio_GetDirection	4e7be9e4	0x670f	NONE g nr=15 sz=0	4e7be9e0: movw	r1, #26383	; 0x670f
+Hal_Gpio_PinctrlRead	4e7beac4	0x670a	NONE g nr=10 sz=0	4e7beab8: movw	r1, #26378	; 0x670a
+Hal_Gpio_PinctrlRead	4e7bead4	0x6711	NONE g nr=17 sz=0	4e7bead0: movw	r1, #26385	; 0x6711
+Hal_Gpio_PinctrlWrite	4e7bebc6	0x670a	NONE g nr=10 sz=0	4e7bebbe: movw	r1, #26378	; 0x670a
+Hal_Gpio_PinctrlWrite	4e7bebd6	0x6710	NONE g nr=16 sz=0	4e7bebd2: movw	r1, #26384	; 0x6710
+Hal_Gpio_GetDriving	4e7bec9e	0x670a	NONE g nr=10 sz=0	4e7bec92: movw	r1, #26378	; 0x670a
+Hal_Gpio_GetDriving	4e7becae	0x6720	NONE g nr=32 sz=0	4e7becaa: movw	r1, #26400	; 0x6720
+Hal_Gpio_SetDriving	4e7bed76	0x670a	NONE g nr=10 sz=0	4e7bed6e: movw	r1, #26378	; 0x670a
+Hal_Gpio_SetDriving	4e7bed86	0x6721	NONE g nr=33 sz=0	4e7bed82: movw	r1, #26401	; 0x6721
+Hal_Gpio_Conf_CITSIF	4e7bee40	0x6722	NONE g nr=34 sz=0	4e7bee2a: movw	r1, #26402	; 0x6722
+_i2c_RdWr_Transfer	4e7bf0c4	0x707	NONE 07 nr=7 sz=0	4e7bf0c0: movw	r1, #1799	; 0x707
+Hal_SPI_EraseFlash	4e7bf58a	0x5320	NONE S nr=32 sz=0	4e7bf586: movw	r1, #21280	; 0x5320
+Hal_PQ_SetHdmiPC	4e7bf644	0xba87	NONE ba nr=135 sz=0	4e7bf63c: movw	r1, #47751	; 0xba87
+Hal_PQ_SetOffsetGain	4e7bf6b2	0xba87	NONE ba nr=135 sz=0	4e7bf6a6: movw	r1, #47751	; 0xba87
+Hal_PQ_ContrastDimming	4e7bf718	0xba87	NONE ba nr=135 sz=0	4e7bf710: movw	r1, #47751	; 0xba87
+Hal_PQ_WCE	4e7bf79c	0xba87	NONE ba nr=135 sz=0	4e7bf792: movw	r1, #47751	; 0xba87
+Hal_PQ_VideoDecoder	4e7bf80e	0xba87	NONE ba nr=135 sz=0	4e7bf802: movw	r1, #47751	; 0xba87
+Hal_PQ_PostSharpness	4e7bf87a	0xba87	NONE ba nr=135 sz=0	4e7bf86e: movw	r1, #47751	; 0xba87
+Hal_PQ_PostPostSharpness	4e7bf8e6	0xba87	NONE ba nr=135 sz=0	4e7bf8da: movw	r1, #47751	; 0xba87
+Hal_PQ_SetHLPF	4e7bf94c	0xba87	NONE ba nr=135 sz=0	4e7bf944: movw	r1, #47751	; 0xba87
+Hal_PQ_DataDump	4e7bfa00	0xba87	NONE ba nr=135 sz=0	4e7bf9ec: movw	r1, #47751	; 0xba87
+Hal_PQ_SetBLE	4e7bfa7c	0xba87	NONE ba nr=135 sz=0	4e7bfa74: movw	r1, #47751	; 0xba87
+Hal_PQ_SetBLEStartPointMin	4e7bfae4	0xba87	NONE ba nr=135 sz=0	4e7bfadc: movw	r1, #47751	; 0xba87
+Hal_PQ_ColorSpaceCustom	4e7bfb54	0xba87	NONE ba nr=135 sz=0	4e7bfb4c: movw	r1, #47751	; 0xba87
+Hal_PQ_BypassDither	4e7bfbbc	0xba87	NONE ba nr=135 sz=0	4e7bfbb4: movw	r1, #47751	; 0xba87
+Hal_PQ_SetRGBOnlyMode	4e7bfc24	0xba87	NONE ba nr=135 sz=0	4e7bfc1c: movw	r1, #47751	; 0xba87
+Hal_PQ_ColorEnhanceBypass	4e7bfc8c	0xba87	NONE ba nr=135 sz=0	4e7bfc84: movw	r1, #47751	; 0xba87
+Hal_PQ_Comp_Phase	4e7bfcf4	0xba87	NONE ba nr=135 sz=0	4e7bfcec: movw	r1, #47751	; 0xba87
+Hal_PQ_SetColorCompensation	4e7bfd5c	0xba87	NONE ba nr=135 sz=0	4e7bfd54: movw	r1, #47751	; 0xba87
+Hal_PQ_SetSaturation	4e7bfdc4	0xba87	NONE ba nr=135 sz=0	4e7bfdbc: movw	r1, #47751	; 0xba87
+Hal_PQ_SetSaturationSub	4e7bfe2c	0xba87	NONE ba nr=135 sz=0	4e7bfe24: movw	r1, #47751	; 0xba87
+Hal_PQ_SetxvYCC	4e7bfe9c	0xba87	NONE ba nr=135 sz=0	4e7bfe90: movw	r1, #47751	; 0xba87
+Hal_PQ_SetHdmiBlackLevel	4e7bff00	0xba87	NONE ba nr=135 sz=0	4e7bfef8: movw	r1, #47751	; 0xba87
+Hal_PQ_SetFilmMode	4e7bff68	0xba87	NONE ba nr=135 sz=0	4e7bff60: movw	r1, #47751	; 0xba87
+Hal_PQ_SetScartUltraBlack	4e7bffd6	0xba87	NONE ba nr=135 sz=0	4e7bffca: movw	r1, #47751	; 0xba87
+Hal_PQ_PPQT_Version	4e7c003c	0xba87	NONE ba nr=135 sz=0	4e7c0034: movw	r1, #47751	; 0xba87
+Hal_PQ_ClearWhite	4e7c00aa	0xba87	NONE ba nr=135 sz=0	4e7c009e: movw	r1, #47751	; 0xba87
+Hal_PQ_ClearWhite2	4e7c011c	0xba87	NONE ba nr=135 sz=0	4e7c010c: movw	r1, #47751	; 0xba87
+Hal_PQ_GammaEnable	4e7c01e8	0xba87	NONE ba nr=135 sz=0	4e7c01e0: movw	r1, #47751	; 0xba87
+Hal_PQ_WB_Enable	4e7c0250	0xba87	NONE ba nr=135 sz=0	4e7c0248: movw	r1, #47751	; 0xba87
+Hal_PQ_ReadAPL_CB	4e7c02b8	0xba87	NONE ba nr=135 sz=0	4e7c02b0: movw	r1, #47751	; 0xba87
+Hal_PQ_SetBlackAdjust	4e7c0326	0xba87	NONE ba nr=135 sz=0	4e7c031a: movw	r1, #47751	; 0xba87
+Hal_PQ_SetFRCDemoModeOnOff	4e7c0392	0xba87	NONE ba nr=135 sz=0	4e7c0386: movw	r1, #47751	; 0xba87
+Hal_PQ_SetCCEMode	4e7c03fe	0xba87	NONE ba nr=135 sz=0	4e7c03f2: movw	r1, #47751	; 0xba87
+Hal_PQ_SetBIPPMode	4e7c0464	0xba87	NONE ba nr=135 sz=0	4e7c045c: movw	r1, #47751	; 0xba87
+Hal_PQ_SetPictureQuality	4e7c0514	0xba87	NONE ba nr=135 sz=0	4e7c0506: movw	r1, #47751	; 0xba87
+Hal_PQ_SetPictureQuality	4e7c0534	0xba87	NONE ba nr=135 sz=0	4e7c0528: movw	r1, #47751	; 0xba87
+Hal_PQ_SetPictureQuality	4e7c055c	0xba87	NONE ba nr=135 sz=0	4e7c0552: movw	r1, #47751	; 0xba87
+Hal_PQ_SetPictureQuality	4e7c05a6	0xba87	NONE ba nr=135 sz=0	4e7c05a0: movw	r1, #47751	; 0xba87
+Hal_PQ_SetPictureQuality	4e7c05c8	0xba87	NONE ba nr=135 sz=0	4e7c05be: movw	r1, #47751	; 0xba87
+Hal_PQ_SetPictureQuality	4e7c0606	0xba87	NONE ba nr=135 sz=0	4e7c05fc: movw	r1, #47751	; 0xba87
+Hal_PQ_ReadDP_RGB_APL	4e7c0670	0xba87	NONE ba nr=135 sz=0	4e7c0668: movw	r1, #47751	; 0xba87
+Hal_PQ_GetHistogram	4e7c06d8	0xba87	NONE ba nr=135 sz=0	4e7c06d0: movw	r1, #47751	; 0xba87
+Hal_PQ_GetHDRStatus	4e7c0782	0xba87	NONE ba nr=135 sz=0	4e7c0776: movw	r1, #47751	; 0xba87
+Hal_PQ_SetDVPanelConfig	4e7c07e8	0xba87	NONE ba nr=135 sz=0	4e7c07e0: movw	r1, #47751	; 0xba87
+Hal_PQ_SetCMOnOff	4e7c0850	0xba87	NONE ba nr=135 sz=0	4e7c0848: movw	r1, #47751	; 0xba87
+Hal_PQ_SetPictureMode	4e7c08b8	0xba87	NONE ba nr=135 sz=0	4e7c08b0: movw	r1, #47751	; 0xba87
+Hal_PQ_SetGammaData	4e7c0920	0xba87	NONE ba nr=135 sz=0	4e7c0918: movw	r1, #47751	; 0xba87
+Hal_PQ_GetGammaData	4e7c0988	0xba87	NONE ba nr=135 sz=0	4e7c0980: movw	r1, #47751	; 0xba87
+Hal_PQ_SetGammaSinglePoint	4e7c0a02	0xba87	NONE ba nr=135 sz=0	4e7c09f0: movw	r1, #47751	; 0xba87
+Hal_PQ_GetGammaSinglePoint	4e7c0a7a	0xba87	NONE ba nr=135 sz=0	4e7c0a68: movw	r1, #47751	; 0xba87
+Hal_PQ_GetPanelCursor	4e7c0b28	0xba87	NONE ba nr=135 sz=0	4e7c0b12: movw	r1, #47751	; 0xba87
+Hal_PQ_SetHDR10P_BYPASS	4e7c0b98	0xba87	NONE ba nr=135 sz=0	4e7c0b90: movw	r1, #47751	; 0xba87
+Hal_Pwm_Open	4e7c0de8	0x403c4c4c	W L nr=76 sz=60	4e7c0de4: movt	r1, #16444	; 0x403c || 4e7c0ddc: movw	r1, #19532	; 0x4c4c
+Hal_Pwm_Set_ByChannel	4e7c1048	0xc03c4c53	RW L nr=83 sz=60	4e7c1044: movt	r1, #49212	; 0xc03c || 4e7c103e: movw	r1, #19539	; 0x4c53
+Hal_Pwm_Set_HWFR_ByChannel	4e7c119a	0xc03c4c55	RW L nr=85 sz=60	4e7c1196: movt	r1, #49212	; 0xc03c || 4e7c1190: movw	r1, #19541	; 0x4c55
+sh_drv_tsmux_Init	4e7c1354	0xc004c80d	RW c8 nr=13 sz=4	4e7c134e: movt	r1, #49156	; 0xc004 || 4e7c1348: movw	r1, #51213	; 0xc80d
+sh_drv_tsmux_Open	4e7c14c8	0xc004c801	RW c8 nr=1 sz=4	4e7c14c0: movt	r1, #49156	; 0xc004 || 4e7c14b6: movw	r1, #51201	; 0xc801
+sh_drv_tsmux_Start	4e7c15e6	0xc004c803	RW c8 nr=3 sz=4	4e7c15e0: movt	r1, #49156	; 0xc004 || 4e7c15da: movw	r1, #51203	; 0xc803
+sh_drv_tsmux_Packetize	4e7c16e2	0xc004c80c	RW c8 nr=12 sz=4	4e7c16de: movt	r1, #49156	; 0xc004 || 4e7c16d8: movw	r1, #51212	; 0xc80c
+sh_drv_tsmux_SetPmtMode	4e7c178c	0xc004c812	RW c8 nr=18 sz=4	4e7c1788: movt	r1, #49156	; 0xc004 || 4e7c1782: movw	r1, #51218	; 0xc812
+sh_drv_tsmux_SetUserSection	4e7c17ea	0xc004c806	RW c8 nr=6 sz=4	4e7c17e6: movt	r1, #49156	; 0xc004 || 4e7c17e0: movw	r1, #51206	; 0xc806
+sh_drv_tsmux_StartUserSection	4e7c184e	0xc004c807	RW c8 nr=7 sz=4	4e7c184a: movt	r1, #49156	; 0xc004 || 4e7c1844: movw	r1, #51207	; 0xc807
+sh_drv_tsmux_StopUserSection	4e7c1892	0xc004c808	RW c8 nr=8 sz=4	4e7c188c: movt	r1, #49156	; 0xc004 || 4e7c1886: movw	r1, #51208	; 0xc808
+sh_drv_tsmux_ReleaseTsBuffer	4e7c18e0	0xc004c80b	RW c8 nr=11 sz=4	4e7c18dc: movt	r1, #49156	; 0xc004 || 4e7c18d6: movw	r1, #51211	; 0xc80b
+sh_drv_tsmux_Stop	4e7c1948	0xc004c804	RW c8 nr=4 sz=4	4e7c1940: movt	r1, #49156	; 0xc004 || 4e7c193a: movw	r1, #51204	; 0xc804
+sh_drv_tsmux_Flush	4e7c19d0	0xc004c805	RW c8 nr=5 sz=4	4e7c19ca: movt	r1, #49156	; 0xc004 || 4e7c19c4: movw	r1, #51205	; 0xc805
+sh_drv_tsmux_Close	4e7c1a2a	0xc004c802	RW c8 nr=2 sz=4	4e7c1a24: movt	r1, #49156	; 0xc004 || 4e7c1a1e: movw	r1, #51202	; 0xc802
+sh_drv_tsmux_Close	4e7c1a7c	0xc004c804	RW c8 nr=4 sz=4	4e7c1a74: movt	r1, #49156	; 0xc004 || 4e7c1a6e: movw	r1, #51204	; 0xc804
+sh_drv_tsmux_WaitStatus	4e7c1b9a	0xc004c809	RW c8 nr=9 sz=4	4e7c1b90: movt	r1, #49156	; 0xc004 || 4e7c1b84: movw	r1, #51209	; 0xc809
+_ZL24sh_drv_tsmux_TaskRoutinePv	4e7c1c12	REG		4e7c1c0a: mov	r1, r6
+_ZL24sh_drv_tsmux_TaskRoutinePv	4e7c1c40	REG		4e7c1c3c: mov	r1, r8
+Hal_Userdata_EnableVbiLine	4e7c1e88	0xc0185648	RW V nr=72 sz=24	4e7c1e58: movt	r1, #49176	; 0xc018 || 4e7c1e40: movw	r1, #22088	; 0x5648
+Hal_Userdata_EnableVbiLine	4e7c1ed2	0xc0185648	RW V nr=72 sz=24	4e7c1eae: movt	r1, #49176	; 0xc018 || 4e7c1e96: movw	r1, #22088	; 0x5648
+Hal_Userdata_DisableVbiLine	4e7c209a	0xc0185648	RW V nr=72 sz=24	4e7c2080: movt	r1, #49176	; 0xc018 || 4e7c2060: movw	r1, #22088	; 0x5648
+_HAL_UserData_GetAnalogData	4e7c228a	0xc0185647	RW V nr=71 sz=24	4e7c2260: movt	r1, #49176	; 0xc018 || 4e7c224e: movw	r1, #22087	; 0x5647
+_HAL_UserData_GetAnalogData	4e7c2388	0xc0185647	RW V nr=71 sz=24	4e7c2366: movt	r1, #49176	; 0xc018 || 4e7c234e: movw	r1, #22087	; 0x5647
+ServerDrmAuthentically	4e7c2982	0x40046411	W d nr=17 sz=4	4e7c297e: movt	r1, #16388	; 0x4004 || 4e7c2976: movw	r1, #25617	; 0x6411
+ServerDrmAuthentically	4e7c2996	0x80046402	R d nr=2 sz=4	4e7c2990: movt	r1, #32772	; 0x8004 || 4e7c298a: movw	r1, #25602	; 0x6402
+ClientDrmAuthentically	4e7c2a64	0x80046402	R d nr=2 sz=4	4e7c2a5c: movt	r1, #32772	; 0x8004 || 4e7c2a56: movw	r1, #25602	; 0x6402
+ClientDrmAuthentically	4e7c2a8e	0x40046411	W d nr=17 sz=4	4e7c2a8a: movt	r1, #16388	; 0x4004 || 4e7c2a82: movw	r1, #25617	; 0x6411
+Hal_Video_Libdrm_drmIoctl	4e7c7408	REG		4e7c7404: mov	r1, r6
+Hal_Video_Vpltio_SendCmd	4e7c867c	0xc0245604	RW V nr=4 sz=36	4e7c8678: movt	r1, #49188	; 0xc024 || 4e7c8670: movw	r1, #22020	; 0x5604
+Hal_VideoDec_Streamon	4e7c8a42	0x40045612	W V nr=18 sz=4	4e7c8a3c: movt	r1, #16388	; 0x4004 || 4e7c8a34: movw	r1, #22034	; 0x5612
+Hal_VideoDec_Streamoff	4e7c8b52	0x40045613	W V nr=19 sz=4	4e7c8b4c: movt	r1, #16388	; 0x4004 || 4e7c8b44: movw	r1, #22035	; 0x5613
+Hal_VideoDec_Pause	4e7c8c54	0xc008561c	RW V nr=28 sz=8	4e7c8c4e: movt	r1, #49160	; 0xc008 || 4e7c8c46: movw	r1, #22044	; 0x561c
+Hal_VideoDec_Resume	4e7c8d52	0xc008561c	RW V nr=28 sz=8	4e7c8d46: movt	r1, #49160	; 0xc008 || 4e7c8d3c: movw	r1, #22044	; 0x561c
+Hal_VideoDec_v4l2_get_ctrls	4e7c8e50	0xc0185647	RW V nr=71 sz=24	4e7c8e46: movt	r1, #49176	; 0xc018 || 4e7c8e3e: movw	r1, #22087	; 0x5647
+Hal_VideoDec_v4l2_set_ctrls	4e7c8f0a	0xc008561c	RW V nr=28 sz=8	4e7c8efe: movt	r1, #49160	; 0xc008 || 4e7c8ef8: movw	r1, #22044	; 0x561c
+Hal_VideoDec_v4l2_set_fmt	4e7c8fc4	0xc0cc5605	RW V nr=5 sz=204	4e7c8fc0: movt	r1, #49356	; 0xc0cc || 4e7c8fb8: movw	r1, #22021	; 0x5605
+Hal_VideoDec_get_status	4e7c912c	0xc0185647	RW V nr=71 sz=24	4e7c911e: movt	r1, #49176	; 0xc018 || 4e7c9116: movw	r1, #22087	; 0x5647
+Hal_VideoDec_get_status	4e7c91aa	0xc0185647	RW V nr=71 sz=24	4e7c918e: movt	r1, #49176	; 0xc018 || 4e7c9188: movw	r1, #22087	; 0x5647
+Hal_VideoDec_get_status	4e7c920e	0xc0185647	RW V nr=71 sz=24	4e7c91fe: movt	r1, #49176	; 0xc018 || 4e7c91f4: movw	r1, #22087	; 0x5647
+Hal_VideoDec_get_status	4e7c925a	0xc0185647	RW V nr=71 sz=24	4e7c924a: movt	r1, #49176	; 0xc018 || 4e7c9240: movw	r1, #22087	; 0x5647
+Hal_VideoDec_subscribe_event	4e7c93e8	0x4020565a	W V nr=90 sz=32	4e7c93e2: movt	r1, #16416	; 0x4020 || 4e7c93d6: movw	r1, #22106	; 0x565a
+Hal_VideoDec_subscribe_event	4e7c9404	0x4020565a	W V nr=90 sz=32	4e7c93fa: movt	r1, #16416	; 0x4020 || 4e7c93f2: movw	r1, #22106	; 0x565a
+Hal_VideoDec_subscribe_event	4e7c9420	0x4020565a	W V nr=90 sz=32	4e7c9416: movt	r1, #16416	; 0x4020 || 4e7c940e: movw	r1, #22106	; 0x565a
+Hal_VideoDec_subscribe_event	4e7c943c	0x4020565a	W V nr=90 sz=32	4e7c9432: movt	r1, #16416	; 0x4020 || 4e7c942a: movw	r1, #22106	; 0x565a
+Hal_VideoDec_subscribe_event	4e7c9458	0x4020565a	W V nr=90 sz=32	4e7c944e: movt	r1, #16416	; 0x4020 || 4e7c9446: movw	r1, #22106	; 0x565a
+Hal_VideoDec_subscribe_event	4e7c9474	0x4020565a	W V nr=90 sz=32	4e7c946a: movt	r1, #16416	; 0x4020 || 4e7c9462: movw	r1, #22106	; 0x565a
+Hal_VideoDec_subscribe_event	4e7c9492	0x4020565a	W V nr=90 sz=32	4e7c948c: movt	r1, #16416	; 0x4020 || 4e7c9480: movw	r1, #22106	; 0x565a
+Hal_VideoDec_poll_event	4e7c9688	0x80805659	R V nr=89 sz=128	4e7c9680: movt	r1, #32896	; 0x8080 || 4e7c967a: movw	r1, #22105	; 0x5659
+Hal_Vin_SelectInput	4e7c9966	0xc0045627	RW V nr=39 sz=4	4e7c995e: movt	r1, #49156	; 0xc004 || 4e7c9958: movw	r1, #22055	; 0x5627
+Hal_Vin_SetColorSystem	4e7c99ce	0x40085618	W V nr=24 sz=8	4e7c99c4: movt	r1, #16392	; 0x4008 || 4e7c99b6: movw	r1, #22040	; 0x5618
+Hal_Vin_GetVDLock	4e7c9a46	0xc008561b	RW V nr=27 sz=8	4e7c9a36: movt	r1, #49160	; 0xc008 || 4e7c9a2e: movw	r1, #22043	; 0x561b
+Hal_Vin_GetLock	4e7c9abe	0xc050561a	RW V nr=26 sz=80	4e7c9aba: movt	r1, #49232	; 0xc050 || 4e7c9ab2: movw	r1, #22042	; 0x561a
+Hal_Vin_GetRes	4e7c9b5a	0xc0185647	RW V nr=71 sz=24	4e7c9b36: movt	r1, #49176	; 0xc018 || 4e7c9b24: movw	r1, #22087	; 0x5647
+Hal_Vin_SetInputRes	4e7c9bf2	0xc0185648	RW V nr=72 sz=24	4e7c9bce: movt	r1, #49176	; 0xc018 || 4e7c9bbc: movw	r1, #22088	; 0x5648
+Hal_Vin_GetHdmiStatus	4e7c9c88	0xc0185647	RW V nr=71 sz=24	4e7c9c66: movt	r1, #49176	; 0xc018 || 4e7c9c54: movw	r1, #22087	; 0x5647
+Hal_Vin_SetPcMode	4e7c9d1e	0xc0185648	RW V nr=72 sz=24	4e7c9cfa: movt	r1, #49176	; 0xc018 || 4e7c9ce8: movw	r1, #22088	; 0x5648
+Hal_Vin_SetStreamStart	4e7c9d88	0x40045612	W V nr=18 sz=4	4e7c9d7c: movt	r1, #16388	; 0x4004 || 4e7c9d78: movw	r1, #22034	; 0x5612

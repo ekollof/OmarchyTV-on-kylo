@@ -1,0 +1,1448 @@
+
+/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/PreInit.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0002bbf0 <GPIO_Ioctl>:
+   2bbf0:	mov	ip, sp
+   2bbf4:	push	{r4, r5, r6, r7, r8, r9, sl, fp, ip, lr, pc}
+   2bbf8:	sub	fp, ip, #4
+   2bbfc:	sub	sp, sp, #412	; 0x19c
+   2bc00:	push	{lr}		; (str lr, [sp, #-4]!)
+   2bc04:	bl	0 <__gnu_mcount_nc>
+   2bc08:	movw	r4, #0
+   2bc0c:	uxtb	r1, r1
+   2bc10:	movt	r4, #0
+   2bc14:	ldr	r0, [r4]
+   2bc18:	mov	r3, #0
+   2bc1c:	sub	r1, r1, #1
+   2bc20:	mov	r5, r2
+   2bc24:	str	r3, [fp, #-384]	; 0xfffffe80
+   2bc28:	str	r0, [fp, #-48]	; 0xffffffd0
+   2bc2c:	str	r3, [fp, #-380]	; 0xfffffe84
+   2bc30:	str	r3, [fp, #-376]	; 0xfffffe88
+   2bc34:	str	r3, [fp, #-372]	; 0xfffffe8c
+   2bc38:	cmp	r1, #33	; 0x21
+   2bc3c:	ldrls	pc, [pc, r1, lsl #2]
+   2bc40:	b	2be00 <GPIO_Ioctl+0x210>
+   2bc44:	.word	0x0002bd7c
+   2bc48:	.word	0x0002be0c
+   2bc4c:	.word	0x0002be00
+   2bc50:	.word	0x0002be00
+   2bc54:	.word	0x0002be00
+   2bc58:	.word	0x0002be00
+   2bc5c:	.word	0x0002be00
+   2bc60:	.word	0x0002be00
+   2bc64:	.word	0x0002be00
+   2bc68:	.word	0x0002be2c
+   2bc6c:	.word	0x0002bef4
+   2bc70:	.word	0x0002c008
+   2bc74:	.word	0x0002c0d4
+   2bc78:	.word	0x0002c164
+   2bc7c:	.word	0x0002c21c
+   2bc80:	.word	0x0002c310
+   2bc84:	.word	0x0002c3c8
+   2bc88:	.word	0x0002c474
+   2bc8c:	.word	0x0002be00
+   2bc90:	.word	0x0002c4d4
+   2bc94:	.word	0x0002c58c
+   2bc98:	.word	0x0002c66c
+   2bc9c:	.word	0x0002be00
+   2bca0:	.word	0x0002be00
+   2bca4:	.word	0x0002be00
+   2bca8:	.word	0x0002be00
+   2bcac:	.word	0x0002be00
+   2bcb0:	.word	0x0002be00
+   2bcb4:	.word	0x0002be00
+   2bcb8:	.word	0x0002c708
+   2bcbc:	.word	0x0002c784
+   2bcc0:	.word	0x0002cae8
+   2bcc4:	.word	0x0002cb68
+   2bcc8:	.word	0x0002bccc
+   2bccc:	cmp	r2, #0
+   2bcd0:	beq	2be00 <GPIO_Ioctl+0x210>
+   2bcd4:	movw	r3, #0
+   2bcd8:	mov	r1, #192	; 0xc0
+   2bcdc:	movt	r3, #0
+   2bce0:	movt	r1, #576	; 0x240
+   2bce4:	ldr	r0, [r3, #24]
+   2bce8:	mov	r2, #4
+   2bcec:	bl	0 <kmem_cache_alloc_trace>
+   2bcf0:	subs	r7, r0, #0
+   2bcf4:	beq	2be00 <GPIO_Ioctl+0x210>
+   2bcf8:	mov	r3, sp
+   2bcfc:	bic	r3, r3, #8128	; 0x1fc0
+   2bd00:	bic	r3, r3, #63	; 0x3f
+   2bd04:	ldr	r3, [r3, #8]
+   2bd08:	adds	r2, r5, #1
+   2bd0c:	sbcscc	r2, r2, r3
+   2bd10:	movcc	r3, #0
+   2bd14:	cmp	r3, #0
+   2bd18:	bne	2ce74 <GPIO_Ioctl+0x1284>
+   2bd1c:	mov	r1, r5
+   2bd20:	mov	r2, #1
+   2bd24:	bl	0 <arm_copy_from_user>
+   2bd28:	subs	r1, r0, #0
+   2bd2c:	rsbne	r0, r1, #1
+   2bd30:	bne	2ce7c <GPIO_Ioctl+0x128c>
+   2bd34:	movw	r6, #0
+   2bd38:	ldrb	r8, [r7]
+   2bd3c:	movt	r6, #0
+   2bd40:	ldr	r3, [r6, #-384]	; 0xfffffe80
+   2bd44:	ldr	r5, [r3]
+   2bd48:	nop	{0}
+   2bd4c:	cmp	r8, #1
+   2bd50:	biceq	r2, r5, #131072	; 0x20000
+   2bd54:	bicne	r5, r5, #65536	; 0x10000
+   2bd58:	orreq	r2, r2, #65536	; 0x10000
+   2bd5c:	orrne	r5, r5, #131072	; 0x20000
+   2bd60:	streq	r2, [r3]
+   2bd64:	strne	r5, [r3]
+   2bd68:	nop	{0}
+   2bd6c:	mov	r0, r7
+   2bd70:	bl	0 <kfree>
+   2bd74:	mov	r0, #0
+   2bd78:	b	2be14 <GPIO_Ioctl+0x224>
+   2bd7c:	cmp	r2, #0
+   2bd80:	beq	2be00 <GPIO_Ioctl+0x210>
+   2bd84:	movw	r3, #0
+   2bd88:	mov	r1, #192	; 0xc0
+   2bd8c:	movt	r3, #0
+   2bd90:	movt	r1, #576	; 0x240
+   2bd94:	ldr	r0, [r3, #28]
+   2bd98:	mov	r2, #112	; 0x70
+   2bd9c:	bl	0 <kmem_cache_alloc_trace>
+   2bda0:	subs	r6, r0, #0
+   2bda4:	beq	2be00 <GPIO_Ioctl+0x210>
+   2bda8:	mov	r3, sp
+   2bdac:	bic	r3, r3, #8128	; 0x1fc0
+   2bdb0:	bic	r3, r3, #63	; 0x3f
+   2bdb4:	ldr	r3, [r3, #8]
+   2bdb8:	adds	r2, r5, #112	; 0x70
+   2bdbc:	sbcscc	r2, r2, r3
+   2bdc0:	movcc	r3, #0
+   2bdc4:	cmp	r3, #0
+   2bdc8:	bne	2d050 <GPIO_Ioctl+0x1460>
+   2bdcc:	mov	r1, r5
+   2bdd0:	mov	r2, #112	; 0x70
+   2bdd4:	bl	0 <arm_copy_from_user>
+   2bdd8:	subs	r5, r0, #0
+   2bddc:	rsbne	r0, r5, #112	; 0x70
+   2bde0:	bne	2cc5c <GPIO_Ioctl+0x106c>
+   2bde4:	movw	r3, #0
+   2bde8:	movt	r3, #0
+   2bdec:	ldr	r3, [r3, #64]	; 0x40
+   2bdf0:	cmp	r3, #0
+   2bdf4:	bne	2cdc4 <GPIO_Ioctl+0x11d4>
+   2bdf8:	mov	r0, r6
+   2bdfc:	bl	0 <kfree>
+   2be00:	movw	r0, #65012	; 0xfdf4
+   2be04:	movt	r0, #65535	; 0xffff
+   2be08:	b	2be14 <GPIO_Ioctl+0x224>
+   2be0c:	bl	2a570 <ntgpio_Close>
+   2be10:	mov	r0, #0
+   2be14:	ldr	r2, [fp, #-48]	; 0xffffffd0
+   2be18:	ldr	r3, [r4]
+   2be1c:	cmp	r2, r3
+   2be20:	bne	2d194 <GPIO_Ioctl+0x15a4>
+   2be24:	sub	sp, fp, #40	; 0x28
+   2be28:	ldm	sp, {r4, r5, r6, r7, r8, r9, sl, fp, sp, pc}
+   2be2c:	cmp	r2, #0
+   2be30:	beq	2be00 <GPIO_Ioctl+0x210>
+   2be34:	movw	r3, #0
+   2be38:	mov	r1, #192	; 0xc0
+   2be3c:	movt	r3, #0
+   2be40:	movt	r1, #576	; 0x240
+   2be44:	ldr	r0, [r3, #24]
+   2be48:	mov	r2, #8
+   2be4c:	bl	0 <kmem_cache_alloc_trace>
+   2be50:	subs	r6, r0, #0
+   2be54:	beq	2be00 <GPIO_Ioctl+0x210>
+   2be58:	mov	r3, sp
+   2be5c:	bic	r3, r3, #8128	; 0x1fc0
+   2be60:	bic	r3, r3, #63	; 0x3f
+   2be64:	ldr	r3, [r3, #8]
+   2be68:	adds	r2, r5, #8
+   2be6c:	sbcscc	r2, r2, r3
+   2be70:	movcc	r3, #0
+   2be74:	cmp	r3, #0
+   2be78:	bne	2cc54 <GPIO_Ioctl+0x1064>
+   2be7c:	mov	r1, r5
+   2be80:	mov	r2, #8
+   2be84:	bl	0 <arm_copy_from_user>
+   2be88:	subs	r5, r0, #0
+   2be8c:	bne	2d1d8 <GPIO_Ioctl+0x15e8>
+   2be90:	ldr	r3, [r6]
+   2be94:	cmp	r3, #167	; 0xa7
+   2be98:	bhi	2bdf8 <GPIO_Ioctl+0x208>
+   2be9c:	movw	r2, #0
+   2bea0:	mov	r1, #44	; 0x2c
+   2bea4:	movt	r2, #0
+   2bea8:	mov	r7, #1
+   2beac:	mla	r2, r1, r3, r2
+   2beb0:	sub	r0, fp, #368	; 0x170
+   2beb4:	mov	r1, #148	; 0x94
+   2beb8:	str	r7, [r2, #68]	; 0x44
+   2bebc:	bl	0 <__memzero>
+   2bec0:	ldr	lr, [r6]
+   2bec4:	mov	r3, r7
+   2bec8:	ldrb	ip, [r6, #4]
+   2becc:	sub	r2, fp, #368	; 0x170
+   2bed0:	mov	r1, r5
+   2bed4:	mov	r0, #3
+   2bed8:	str	lr, [fp, #-368]	; 0xfffffe90
+   2bedc:	strb	ip, [fp, #-348]	; 0xfffffea4
+   2bee0:	bl	295f4 <_drv_gpio_record_add_p>
+   2bee4:	mov	r0, r6
+   2bee8:	bl	0 <kfree>
+   2beec:	mov	r0, r5
+   2bef0:	b	2be14 <GPIO_Ioctl+0x224>
+   2bef4:	cmp	r2, #0
+   2bef8:	beq	2be00 <GPIO_Ioctl+0x210>
+   2befc:	movw	r3, #0
+   2bf00:	mov	r1, #192	; 0xc0
+   2bf04:	movt	r3, #0
+   2bf08:	movt	r1, #576	; 0x240
+   2bf0c:	ldr	r0, [r3, #24]
+   2bf10:	mov	r2, #4
+   2bf14:	bl	0 <kmem_cache_alloc_trace>
+   2bf18:	subs	r7, r0, #0
+   2bf1c:	beq	2be00 <GPIO_Ioctl+0x210>
+   2bf20:	mov	r3, sp
+   2bf24:	bic	r3, r3, #8128	; 0x1fc0
+   2bf28:	bic	r3, r3, #63	; 0x3f
+   2bf2c:	ldr	r3, [r3, #8]
+   2bf30:	adds	r2, r5, #4
+   2bf34:	sbcscc	r2, r2, r3
+   2bf38:	movcc	r3, #0
+   2bf3c:	cmp	r3, #0
+   2bf40:	bne	2d05c <GPIO_Ioctl+0x146c>
+   2bf44:	mov	r1, r5
+   2bf48:	mov	r2, #4
+   2bf4c:	bl	0 <arm_copy_from_user>
+   2bf50:	subs	r1, r0, #0
+   2bf54:	rsbne	r0, r1, #4
+   2bf58:	bne	2ce7c <GPIO_Ioctl+0x128c>
+   2bf5c:	ldr	r9, [r7]
+   2bf60:	cmp	r9, #167	; 0xa7
+   2bf64:	bhi	2bf84 <GPIO_Ioctl+0x394>
+   2bf68:	movw	r2, #0
+   2bf6c:	mov	r3, #44	; 0x2c
+   2bf70:	movt	r2, #0
+   2bf74:	mla	r3, r3, r9, r2
+   2bf78:	ldr	r2, [r3, #68]	; 0x44
+   2bf7c:	cmp	r2, #0
+   2bf80:	strne	r1, [r3, #68]	; 0x44
+   2bf84:	movw	r6, #0
+   2bf88:	movt	r6, #0
+   2bf8c:	ldrb	r3, [r6, #-424]	; 0xfffffe58
+   2bf90:	cmp	r3, #0
+   2bf94:	beq	2cdf8 <GPIO_Ioctl+0x1208>
+   2bf98:	ldr	r3, [r6, #-432]	; 0xfffffe50
+   2bf9c:	cmp	r3, #0
+   2bfa0:	beq	2bd6c <GPIO_Ioctl+0x17c>
+   2bfa4:	mov	r5, #0
+   2bfa8:	mov	r8, r5
+   2bfac:	b	2bfc0 <GPIO_Ioctl+0x3d0>
+   2bfb0:	mov	r5, r3
+   2bfb4:	ldr	r3, [r3, #4]
+   2bfb8:	cmp	r3, #0
+   2bfbc:	beq	2bd6c <GPIO_Ioctl+0x17c>
+   2bfc0:	ldr	r2, [r3, #12]
+   2bfc4:	cmp	r9, r2
+   2bfc8:	bne	2bfb0 <GPIO_Ioctl+0x3c0>
+   2bfcc:	ldr	r2, [r3]
+   2bfd0:	cmp	r2, #3
+   2bfd4:	bne	2bfb0 <GPIO_Ioctl+0x3c0>
+   2bfd8:	cmp	r5, #0
+   2bfdc:	ldr	r2, [r3, #4]
+   2bfe0:	beq	2d028 <GPIO_Ioctl+0x1438>
+   2bfe4:	str	r2, [r5, #4]
+   2bfe8:	ldr	r2, [r3, #4]
+   2bfec:	cmp	r2, #0
+   2bff0:	beq	2d208 <GPIO_Ioctl+0x1618>
+   2bff4:	str	r8, [r3, #4]
+   2bff8:	mov	r0, r3
+   2bffc:	bl	0 <kfree>
+   2c000:	mov	r3, r5
+   2c004:	b	2bfb0 <GPIO_Ioctl+0x3c0>
+   2c008:	cmp	r2, #0
+   2c00c:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c010:	movw	r3, #0
+   2c014:	mov	r1, #192	; 0xc0
+   2c018:	movt	r3, #0
+   2c01c:	movt	r1, #576	; 0x240
+   2c020:	ldr	r0, [r3, #24]
+   2c024:	mov	r2, #8
+   2c028:	bl	0 <kmem_cache_alloc_trace>
+   2c02c:	subs	r6, r0, #0
+   2c030:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c034:	mov	r3, sp
+   2c038:	bic	r3, r3, #8128	; 0x1fc0
+   2c03c:	bic	r3, r3, #63	; 0x3f
+   2c040:	ldr	r3, [r3, #8]
+   2c044:	adds	r2, r5, #8
+   2c048:	sbcscc	r2, r2, r3
+   2c04c:	movcc	r3, #0
+   2c050:	cmp	r3, #0
+   2c054:	bne	2cc54 <GPIO_Ioctl+0x1064>
+   2c058:	mov	r1, r5
+   2c05c:	mov	r2, #8
+   2c060:	bl	0 <arm_copy_from_user>
+   2c064:	subs	r5, r0, #0
+   2c068:	bne	2d1d8 <GPIO_Ioctl+0x15e8>
+   2c06c:	ldrb	r1, [r6, #4]
+   2c070:	ldr	r0, [r6]
+   2c074:	bl	28c9c <ntgpio_SetLevel>
+   2c078:	cmp	r0, #0
+   2c07c:	beq	2bdf8 <GPIO_Ioctl+0x208>
+   2c080:	mov	r1, #148	; 0x94
+   2c084:	sub	r0, fp, #368	; 0x170
+   2c088:	bl	0 <__memzero>
+   2c08c:	movw	r3, #0
+   2c090:	ldr	r2, [r6]
+   2c094:	movt	r3, #0
+   2c098:	ldrb	r1, [r6, #4]
+   2c09c:	ldr	r3, [r3, #136]	; 0x88
+   2c0a0:	str	r2, [fp, #-368]	; 0xfffffe90
+   2c0a4:	str	r1, [fp, #-364]	; 0xfffffe94
+   2c0a8:	cmp	r2, r3
+   2c0ac:	beq	2c0c4 <GPIO_Ioctl+0x4d4>
+   2c0b0:	sub	r2, fp, #368	; 0x170
+   2c0b4:	mov	r1, r5
+   2c0b8:	mov	r3, #1
+   2c0bc:	mov	r0, #4
+   2c0c0:	bl	295f4 <_drv_gpio_record_add_p>
+   2c0c4:	mov	r0, r6
+   2c0c8:	bl	0 <kfree>
+   2c0cc:	mov	r0, #0
+   2c0d0:	b	2be14 <GPIO_Ioctl+0x224>
+   2c0d4:	cmp	r2, #0
+   2c0d8:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c0dc:	movw	r3, #0
+   2c0e0:	mov	r1, #192	; 0xc0
+   2c0e4:	movt	r3, #0
+   2c0e8:	movt	r1, #576	; 0x240
+   2c0ec:	ldr	r0, [r3, #24]
+   2c0f0:	mov	r2, #8
+   2c0f4:	bl	0 <kmem_cache_alloc_trace>
+   2c0f8:	subs	r6, r0, #0
+   2c0fc:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c100:	mov	r7, #57344	; 0xe000
+   2c104:	mov	r3, sp
+   2c108:	movt	r7, #65535	; 0xffff
+   2c10c:	and	r3, r3, r7
+   2c110:	ldr	r3, [r3, #8]
+   2c114:	adds	r2, r5, #8
+   2c118:	sbcscc	r2, r2, r3
+   2c11c:	movcc	r3, #0
+   2c120:	cmp	r3, #0
+   2c124:	bne	2cc6c <GPIO_Ioctl+0x107c>
+   2c128:	mov	r1, r5
+   2c12c:	mov	r2, #8
+   2c130:	bl	0 <arm_copy_from_user>
+   2c134:	subs	r1, r0, #0
+   2c138:	bne	2d1e0 <GPIO_Ioctl+0x15f0>
+   2c13c:	add	r1, r6, #4
+   2c140:	ldr	r0, [r6]
+   2c144:	bl	28e14 <ntgpio_GetLevel>
+   2c148:	cmp	r0, #0
+   2c14c:	bne	2c444 <GPIO_Ioctl+0x854>
+   2c150:	mov	r0, r6
+   2c154:	bl	0 <kfree>
+   2c158:	movw	r0, #65012	; 0xfdf4
+   2c15c:	movt	r0, #65535	; 0xffff
+   2c160:	b	2be14 <GPIO_Ioctl+0x224>
+   2c164:	cmp	r2, #0
+   2c168:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c16c:	movw	r3, #0
+   2c170:	mov	r1, #192	; 0xc0
+   2c174:	movt	r3, #0
+   2c178:	movt	r1, #576	; 0x240
+   2c17c:	ldr	r0, [r3, #24]
+   2c180:	mov	r2, #8
+   2c184:	bl	0 <kmem_cache_alloc_trace>
+   2c188:	subs	r6, r0, #0
+   2c18c:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c190:	mov	r3, sp
+   2c194:	bic	r3, r3, #8128	; 0x1fc0
+   2c198:	bic	r3, r3, #63	; 0x3f
+   2c19c:	ldr	r3, [r3, #8]
+   2c1a0:	adds	r2, r5, #8
+   2c1a4:	sbcscc	r2, r2, r3
+   2c1a8:	movcc	r3, #0
+   2c1ac:	cmp	r3, #0
+   2c1b0:	bne	2cc54 <GPIO_Ioctl+0x1064>
+   2c1b4:	mov	r1, r5
+   2c1b8:	mov	r2, #8
+   2c1bc:	bl	0 <arm_copy_from_user>
+   2c1c0:	subs	r5, r0, #0
+   2c1c4:	bne	2d1d8 <GPIO_Ioctl+0x15e8>
+   2c1c8:	ldrb	r1, [r6, #4]
+   2c1cc:	ldr	r0, [r6]
+   2c1d0:	bl	28450 <ntgpio_SetDirection>
+   2c1d4:	cmp	r0, #0
+   2c1d8:	beq	2c150 <GPIO_Ioctl+0x560>
+   2c1dc:	mov	r1, #148	; 0x94
+   2c1e0:	sub	r0, fp, #368	; 0x170
+   2c1e4:	bl	0 <__memzero>
+   2c1e8:	ldr	lr, [r6]
+   2c1ec:	sub	r2, fp, #368	; 0x170
+   2c1f0:	ldrb	ip, [r6, #4]
+   2c1f4:	mov	r3, #1
+   2c1f8:	mov	r1, r5
+   2c1fc:	mov	r0, #5
+   2c200:	str	lr, [fp, #-368]	; 0xfffffe90
+   2c204:	str	ip, [fp, #-360]	; 0xfffffe98
+   2c208:	bl	295f4 <_drv_gpio_record_add_p>
+   2c20c:	mov	r0, r6
+   2c210:	bl	0 <kfree>
+   2c214:	mov	r0, r5
+   2c218:	b	2be14 <GPIO_Ioctl+0x224>
+   2c21c:	cmp	r2, #0
+   2c220:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c224:	movw	r3, #0
+   2c228:	mov	r1, #192	; 0xc0
+   2c22c:	movt	r3, #0
+   2c230:	movt	r1, #576	; 0x240
+   2c234:	ldr	r0, [r3, #24]
+   2c238:	mov	r2, #8
+   2c23c:	bl	0 <kmem_cache_alloc_trace>
+   2c240:	subs	r6, r0, #0
+   2c244:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c248:	mov	r7, #57344	; 0xe000
+   2c24c:	mov	r3, sp
+   2c250:	movt	r7, #65535	; 0xffff
+   2c254:	and	r3, r3, r7
+   2c258:	ldr	r3, [r3, #8]
+   2c25c:	adds	r2, r5, #8
+   2c260:	sbcscc	r2, r2, r3
+   2c264:	movcc	r3, #0
+   2c268:	cmp	r3, #0
+   2c26c:	bne	2cc6c <GPIO_Ioctl+0x107c>
+   2c270:	mov	r1, r5
+   2c274:	mov	r2, #8
+   2c278:	bl	0 <arm_copy_from_user>
+   2c27c:	subs	r1, r0, #0
+   2c280:	bne	2d1e0 <GPIO_Ioctl+0x15f0>
+   2c284:	ldr	r3, [r6]
+   2c288:	cmp	r3, #167	; 0xa7
+   2c28c:	bhi	2ce90 <GPIO_Ioctl+0x12a0>
+   2c290:	movw	r1, #0
+   2c294:	mov	r2, #44	; 0x2c
+   2c298:	movt	r1, #0
+   2c29c:	mla	r2, r2, r3, r1
+   2c2a0:	ldr	r0, [r2, #68]	; 0x44
+   2c2a4:	cmp	r0, #0
+   2c2a8:	beq	2ceb4 <GPIO_Ioctl+0x12c4>
+   2c2ac:	ldr	r0, [r2, #72]	; 0x48
+   2c2b0:	cmp	r0, #0
+   2c2b4:	beq	2d00c <GPIO_Ioctl+0x141c>
+   2c2b8:	ldr	r3, [r2, #76]	; 0x4c
+   2c2bc:	mov	r2, sp
+   2c2c0:	and	r7, r7, r2
+   2c2c4:	adds	r3, r3, #0
+   2c2c8:	movne	r3, #1
+   2c2cc:	strb	r3, [r6, #4]
+   2c2d0:	ldr	r3, [r7, #8]
+   2c2d4:	adds	r2, r5, #8
+   2c2d8:	sbcscc	r2, r2, r3
+   2c2dc:	movcc	r3, #0
+   2c2e0:	cmp	r3, #0
+   2c2e4:	bne	2c464 <GPIO_Ioctl+0x874>
+   2c2e8:	mov	r0, r5
+   2c2ec:	mov	r2, #8
+   2c2f0:	mov	r1, r6
+   2c2f4:	bl	0 <arm_copy_to_user>
+   2c2f8:	subs	r5, r0, #0
+   2c2fc:	bne	2c464 <GPIO_Ioctl+0x874>
+   2c300:	mov	r0, r6
+   2c304:	bl	0 <kfree>
+   2c308:	mov	r0, r5
+   2c30c:	b	2be14 <GPIO_Ioctl+0x224>
+   2c310:	cmp	r2, #0
+   2c314:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c318:	movw	r3, #0
+   2c31c:	mov	r1, #192	; 0xc0
+   2c320:	movt	r3, #0
+   2c324:	movt	r1, #576	; 0x240
+   2c328:	ldr	r0, [r3, #24]
+   2c32c:	mov	r2, #8
+   2c330:	bl	0 <kmem_cache_alloc_trace>
+   2c334:	subs	r6, r0, #0
+   2c338:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c33c:	mov	r3, sp
+   2c340:	bic	r3, r3, #8128	; 0x1fc0
+   2c344:	bic	r3, r3, #63	; 0x3f
+   2c348:	ldr	r3, [r3, #8]
+   2c34c:	adds	r2, r5, #8
+   2c350:	sbcscc	r2, r2, r3
+   2c354:	movcc	r3, #0
+   2c358:	cmp	r3, #0
+   2c35c:	bne	2cc54 <GPIO_Ioctl+0x1064>
+   2c360:	mov	r1, r5
+   2c364:	mov	r2, #8
+   2c368:	bl	0 <arm_copy_from_user>
+   2c36c:	subs	r5, r0, #0
+   2c370:	bne	2d1d8 <GPIO_Ioctl+0x15e8>
+   2c374:	ldrb	r1, [r6, #4]
+   2c378:	ldr	r0, [r6]
+   2c37c:	bl	27e54 <ntgpio_SetAltMode>
+   2c380:	cmp	r0, #0
+   2c384:	beq	2c150 <GPIO_Ioctl+0x560>
+   2c388:	mov	r1, #148	; 0x94
+   2c38c:	sub	r0, fp, #368	; 0x170
+   2c390:	bl	0 <__memzero>
+   2c394:	ldr	lr, [r6]
+   2c398:	sub	r2, fp, #368	; 0x170
+   2c39c:	ldrb	ip, [r6, #4]
+   2c3a0:	mov	r3, #1
+   2c3a4:	mov	r1, r5
+   2c3a8:	mov	r0, #6
+   2c3ac:	str	lr, [fp, #-368]	; 0xfffffe90
+   2c3b0:	str	ip, [fp, #-352]	; 0xfffffea0
+   2c3b4:	bl	295f4 <_drv_gpio_record_add_p>
+   2c3b8:	mov	r0, r6
+   2c3bc:	bl	0 <kfree>
+   2c3c0:	mov	r0, r5
+   2c3c4:	b	2be14 <GPIO_Ioctl+0x224>
+   2c3c8:	cmp	r2, #0
+   2c3cc:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c3d0:	movw	r3, #0
+   2c3d4:	mov	r1, #192	; 0xc0
+   2c3d8:	movt	r3, #0
+   2c3dc:	movt	r1, #576	; 0x240
+   2c3e0:	ldr	r0, [r3, #24]
+   2c3e4:	mov	r2, #8
+   2c3e8:	bl	0 <kmem_cache_alloc_trace>
+   2c3ec:	subs	r6, r0, #0
+   2c3f0:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c3f4:	mov	r7, #57344	; 0xe000
+   2c3f8:	mov	r3, sp
+   2c3fc:	movt	r7, #65535	; 0xffff
+   2c400:	and	r3, r3, r7
+   2c404:	ldr	r3, [r3, #8]
+   2c408:	adds	r2, r5, #8
+   2c40c:	sbcscc	r2, r2, r3
+   2c410:	movcc	r3, #0
+   2c414:	cmp	r3, #0
+   2c418:	bne	2cc6c <GPIO_Ioctl+0x107c>
+   2c41c:	mov	r1, r5
+   2c420:	mov	r2, #8
+   2c424:	bl	0 <arm_copy_from_user>
+   2c428:	subs	r1, r0, #0
+   2c42c:	bne	2d1e0 <GPIO_Ioctl+0x15f0>
+   2c430:	add	r1, r6, #4
+   2c434:	ldr	r0, [r6]
+   2c438:	bl	282a8 <ntgpio_GetAltMode>
+   2c43c:	cmp	r0, #0
+   2c440:	beq	2c150 <GPIO_Ioctl+0x560>
+   2c444:	mov	r3, sp
+   2c448:	and	r7, r7, r3
+   2c44c:	ldr	r3, [r7, #8]
+   2c450:	adds	r2, r5, #8
+   2c454:	sbcscc	r2, r2, r3
+   2c458:	movcc	r3, #0
+   2c45c:	cmp	r3, #0
+   2c460:	beq	2c2e8 <GPIO_Ioctl+0x6f8>
+   2c464:	mov	r0, r6
+   2c468:	bl	0 <kfree>
+   2c46c:	mvn	r0, #13
+   2c470:	b	2be14 <GPIO_Ioctl+0x224>
+   2c474:	cmp	r2, #0
+   2c478:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c47c:	movw	r1, #0
+   2c480:	mov	r2, #0
+   2c484:	movt	r1, #0
+   2c488:	mov	lr, r2
+   2c48c:	ldr	r6, [r1, #-392]	; 0xfffffe78
+   2c490:	sub	r3, r1, #376	; 0x178
+   2c494:	ldr	r7, [r1, #-388]	; 0xfffffe7c
+   2c498:	mov	r0, #2
+   2c49c:	mov	ip, #1
+   2c4a0:	ldr	r1, [r6]
+   2c4a4:	b	2c4c4 <GPIO_Ioctl+0x8d4>
+   2c4a8:	cmp	r2, #0
+   2c4ac:	beq	2d1f8 <GPIO_Ioctl+0x1608>
+   2c4b0:	strb	lr, [r3]
+   2c4b4:	add	r2, r2, #1
+   2c4b8:	add	r3, r3, #1
+   2c4bc:	cmp	r2, #5
+   2c4c0:	beq	2cc28 <GPIO_Ioctl+0x1038>
+   2c4c4:	ands	r6, r1, r0, lsl r2
+   2c4c8:	beq	2c4a8 <GPIO_Ioctl+0x8b8>
+   2c4cc:	strb	ip, [r3]
+   2c4d0:	b	2c4b4 <GPIO_Ioctl+0x8c4>
+   2c4d4:	cmp	r2, #0
+   2c4d8:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c4dc:	movw	r3, #0
+   2c4e0:	mov	r1, #192	; 0xc0
+   2c4e4:	movt	r3, #0
+   2c4e8:	movt	r1, #576	; 0x240
+   2c4ec:	ldr	r0, [r3, #24]
+   2c4f0:	mov	r2, #8
+   2c4f4:	bl	0 <kmem_cache_alloc_trace>
+   2c4f8:	subs	r6, r0, #0
+   2c4fc:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c500:	mov	r3, sp
+   2c504:	bic	r3, r3, #8128	; 0x1fc0
+   2c508:	bic	r3, r3, #63	; 0x3f
+   2c50c:	ldr	r3, [r3, #8]
+   2c510:	adds	r2, r5, #8
+   2c514:	sbcscc	r2, r2, r3
+   2c518:	movcc	r3, #0
+   2c51c:	cmp	r3, #0
+   2c520:	bne	2cc54 <GPIO_Ioctl+0x1064>
+   2c524:	mov	r1, r5
+   2c528:	mov	r2, #8
+   2c52c:	bl	0 <arm_copy_from_user>
+   2c530:	subs	r5, r0, #0
+   2c534:	bne	2d1d8 <GPIO_Ioctl+0x15e8>
+   2c538:	ldrh	r1, [r6, #4]
+   2c53c:	ldr	r0, [r6]
+   2c540:	bl	285d0 <ntgpio_ConfigPadMode>
+   2c544:	cmp	r0, #0
+   2c548:	beq	2bdf8 <GPIO_Ioctl+0x208>
+   2c54c:	mov	r1, #148	; 0x94
+   2c550:	sub	r0, fp, #368	; 0x170
+   2c554:	bl	0 <__memzero>
+   2c558:	ldr	lr, [r6]
+   2c55c:	sub	r2, fp, #368	; 0x170
+   2c560:	ldrh	ip, [r6, #4]
+   2c564:	mov	r3, #1
+   2c568:	mov	r1, r5
+   2c56c:	mov	r0, #7
+   2c570:	str	lr, [fp, #-368]	; 0xfffffe90
+   2c574:	str	ip, [fp, #-344]	; 0xfffffea8
+   2c578:	bl	295f4 <_drv_gpio_record_add_p>
+   2c57c:	mov	r0, r6
+   2c580:	bl	0 <kfree>
+   2c584:	mov	r0, r5
+   2c588:	b	2be14 <GPIO_Ioctl+0x224>
+   2c58c:	cmp	r2, #0
+   2c590:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c594:	movw	r3, #0
+   2c598:	mov	r1, #192	; 0xc0
+   2c59c:	movt	r3, #0
+   2c5a0:	movt	r1, #576	; 0x240
+   2c5a4:	ldr	r0, [r3, #24]
+   2c5a8:	mov	r2, #8
+   2c5ac:	bl	0 <kmem_cache_alloc_trace>
+   2c5b0:	subs	r6, r0, #0
+   2c5b4:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c5b8:	mov	r3, sp
+   2c5bc:	bic	r3, r3, #8128	; 0x1fc0
+   2c5c0:	bic	r3, r3, #63	; 0x3f
+   2c5c4:	ldr	r3, [r3, #8]
+   2c5c8:	adds	r2, r5, #8
+   2c5cc:	sbcscc	r2, r2, r3
+   2c5d0:	movcc	r3, #0
+   2c5d4:	cmp	r3, #0
+   2c5d8:	bne	2cc6c <GPIO_Ioctl+0x107c>
+   2c5dc:	mov	r1, r5
+   2c5e0:	mov	r2, #8
+   2c5e4:	bl	0 <arm_copy_from_user>
+   2c5e8:	subs	r1, r0, #0
+   2c5ec:	bne	2d1e0 <GPIO_Ioctl+0x15f0>
+   2c5f0:	movw	r3, #0
+   2c5f4:	ldr	r0, [r6]
+   2c5f8:	movt	r3, #0
+   2c5fc:	ldr	r3, [r3, #-420]	; 0xfffffe5c
+   2c600:	cmp	r0, #167	; 0xa7
+   2c604:	movls	r5, #0
+   2c608:	movhi	r5, #1
+   2c60c:	cmp	r3, #0
+   2c610:	orreq	r5, r5, #1
+   2c614:	cmp	r5, #0
+   2c618:	bne	2bdf8 <GPIO_Ioctl+0x208>
+   2c61c:	ldr	r1, [r6, #4]
+   2c620:	bl	29364 <ntgpio_ConfigIntType.part.11>
+   2c624:	cmp	r0, #0
+   2c628:	beq	2bdf8 <GPIO_Ioctl+0x208>
+   2c62c:	mov	r1, #148	; 0x94
+   2c630:	sub	r0, fp, #368	; 0x170
+   2c634:	bl	0 <__memzero>
+   2c638:	ldr	lr, [r6]
+   2c63c:	sub	r2, fp, #368	; 0x170
+   2c640:	ldr	ip, [r6, #4]
+   2c644:	mov	r3, #1
+   2c648:	mov	r1, r5
+   2c64c:	mov	r0, #8
+   2c650:	str	lr, [fp, #-368]	; 0xfffffe90
+   2c654:	str	ip, [fp, #-356]	; 0xfffffe9c
+   2c658:	bl	295f4 <_drv_gpio_record_add_p>
+   2c65c:	mov	r0, r6
+   2c660:	bl	0 <kfree>
+   2c664:	mov	r0, r5
+   2c668:	b	2be14 <GPIO_Ioctl+0x224>
+   2c66c:	cmp	r2, #0
+   2c670:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c674:	movw	r3, #0
+   2c678:	mov	r1, #192	; 0xc0
+   2c67c:	movt	r3, #0
+   2c680:	movt	r1, #576	; 0x240
+   2c684:	ldr	r0, [r3, #24]
+   2c688:	mov	r2, #8
+   2c68c:	bl	0 <kmem_cache_alloc_trace>
+   2c690:	subs	r6, r0, #0
+   2c694:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c698:	mov	r3, sp
+   2c69c:	bic	r3, r3, #8128	; 0x1fc0
+   2c6a0:	bic	r3, r3, #63	; 0x3f
+   2c6a4:	ldr	r3, [r3, #8]
+   2c6a8:	adds	r2, r5, #8
+   2c6ac:	sbcscc	r2, r2, r3
+   2c6b0:	movcc	r3, #0
+   2c6b4:	cmp	r3, #0
+   2c6b8:	bne	2cc6c <GPIO_Ioctl+0x107c>
+   2c6bc:	mov	r1, r5
+   2c6c0:	mov	r2, #8
+   2c6c4:	bl	0 <arm_copy_from_user>
+   2c6c8:	subs	r1, r0, #0
+   2c6cc:	bne	2d1e0 <GPIO_Ioctl+0x15f0>
+   2c6d0:	ldr	r1, [r6]
+   2c6d4:	sub	r3, r1, #1
+   2c6d8:	cmp	r3, #166	; 0xa6
+   2c6dc:	bhi	2c0c4 <GPIO_Ioctl+0x4d4>
+   2c6e0:	ldr	r0, [r6, #4]
+   2c6e4:	bl	294c0 <ntgpio_AltModeInit>
+   2c6e8:	cmp	r0, #0
+   2c6ec:	beq	2bdf8 <GPIO_Ioctl+0x208>
+   2c6f0:	ldr	r3, [r6]
+   2c6f4:	mov	r1, #1
+   2c6f8:	ldr	r2, [r6, #4]
+   2c6fc:	mov	r0, #2
+   2c700:	bl	295f4 <_drv_gpio_record_add_p>
+   2c704:	b	2c0c4 <GPIO_Ioctl+0x4d4>
+   2c708:	movw	r6, #0
+   2c70c:	movt	r6, #0
+   2c710:	ldrb	r3, [r6, #-424]	; 0xfffffe58
+   2c714:	cmp	r3, #0
+   2c718:	beq	2cc20 <GPIO_Ioctl+0x1030>
+   2c71c:	cmp	r5, #0
+   2c720:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c724:	mov	r3, sp
+   2c728:	mov	r2, #1
+   2c72c:	bic	r3, r3, #8128	; 0x1fc0
+   2c730:	strb	r2, [r6, #-636]	; 0xfffffd84
+   2c734:	bic	r3, r3, #63	; 0x3f
+   2c738:	ldr	r3, [r3, #8]
+   2c73c:	adds	r2, r5, #169	; 0xa9
+   2c740:	sbcscc	r2, r2, r3
+   2c744:	movcc	r3, #0
+   2c748:	cmp	r3, #0
+   2c74c:	bne	2d068 <GPIO_Ioctl+0x1478>
+   2c750:	mov	r1, r5
+   2c754:	sub	r0, fp, #217	; 0xd9
+   2c758:	mov	r2, #169	; 0xa9
+   2c75c:	bl	0 <arm_copy_from_user>
+   2c760:	subs	r1, r0, #0
+   2c764:	bne	2d220 <GPIO_Ioctl+0x1630>
+   2c768:	ldrb	r2, [fp, #-217]	; 0xffffff27
+   2c76c:	cmp	r2, #168	; 0xa8
+   2c770:	bhi	2bd74 <GPIO_Ioctl+0x184>
+   2c774:	sub	r1, fp, #216	; 0xd8
+   2c778:	ldr	r0, [pc, #2736]	; 2d230 <GPIO_Ioctl+0x1640>
+   2c77c:	bl	0 <memcpy>
+   2c780:	b	2bd74 <GPIO_Ioctl+0x184>
+   2c784:	cmp	r2, #0
+   2c788:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c78c:	movw	r3, #0
+   2c790:	mov	r1, #192	; 0xc0
+   2c794:	movt	r3, #0
+   2c798:	movt	r1, #576	; 0x240
+   2c79c:	ldr	r0, [r3, #8]
+   2c7a0:	mov	r2, #136	; 0x88
+   2c7a4:	bl	0 <kmem_cache_alloc_trace>
+   2c7a8:	subs	r3, r0, #0
+   2c7ac:	str	r3, [fp, #-392]	; 0xfffffe78
+   2c7b0:	beq	2be00 <GPIO_Ioctl+0x210>
+   2c7b4:	movw	r6, #0
+   2c7b8:	movt	r6, #0
+   2c7bc:	ldrb	r7, [r6, #-371]	; 0xfffffe8d
+   2c7c0:	cmp	r7, #0
+   2c7c4:	beq	2cd1c <GPIO_Ioctl+0x112c>
+   2c7c8:	ldr	r0, [r6, #-364]	; 0xfffffe94
+   2c7cc:	movw	r1, #32960	; 0x80c0
+   2c7d0:	movt	r1, #576	; 0x240
+   2c7d4:	add	r0, r0, #1
+   2c7d8:	bl	0 <__kmalloc>
+   2c7dc:	subs	r3, r0, #0
+   2c7e0:	str	r3, [fp, #-396]	; 0xfffffe74
+   2c7e4:	beq	2d15c <GPIO_Ioctl+0x156c>
+   2c7e8:	mov	r7, #57344	; 0xe000
+   2c7ec:	mov	r3, sp
+   2c7f0:	movt	r7, #65535	; 0xffff
+   2c7f4:	and	r3, r3, r7
+   2c7f8:	ldr	r3, [r3, #8]
+   2c7fc:	adds	r2, r5, #136	; 0x88
+   2c800:	sbcscc	r2, r2, r3
+   2c804:	movcc	r3, #0
+   2c808:	cmp	r3, #0
+   2c80c:	bne	2d07c <GPIO_Ioctl+0x148c>
+   2c810:	mov	r1, r5
+   2c814:	mov	r2, #136	; 0x88
+   2c818:	ldr	r0, [fp, #-392]	; 0xfffffe78
+   2c81c:	bl	0 <arm_copy_from_user>
+   2c820:	subs	r1, r0, #0
+   2c824:	rsbne	r0, r1, #136	; 0x88
+   2c828:	bne	2d084 <GPIO_Ioctl+0x1494>
+   2c82c:	ldr	r3, [fp, #-392]	; 0xfffffe78
+   2c830:	ldr	r1, [r3, #128]	; 0x80
+   2c834:	cmp	r1, #0
+   2c838:	beq	2d198 <GPIO_Ioctl+0x15a8>
+   2c83c:	mov	r3, sp
+   2c840:	ldr	r8, [r6, #-364]	; 0xfffffe94
+   2c844:	and	r7, r7, r3
+   2c848:	ldr	r3, [r7, #8]
+   2c84c:	adds	r2, r1, r8
+   2c850:	sbcscc	r2, r2, r3
+   2c854:	movcc	r3, #0
+   2c858:	cmp	r3, #0
+   2c85c:	bne	2d0d4 <GPIO_Ioctl+0x14e4>
+   2c860:	mov	r2, r8
+   2c864:	ldr	r0, [fp, #-396]	; 0xfffffe74
+   2c868:	bl	0 <arm_copy_from_user>
+   2c86c:	mov	r7, r0
+   2c870:	cmp	r7, #0
+   2c874:	bne	2d0a8 <GPIO_Ioctl+0x14b8>
+   2c878:	ldr	r8, [fp, #-396]	; 0xfffffe74
+   2c87c:	mov	r1, #1
+   2c880:	ldr	r0, [r6, #-364]	; 0xfffffe94
+   2c884:	add	r0, r8, r0
+   2c888:	bl	0 <__memzero>
+   2c88c:	ldr	r2, [fp, #-392]	; 0xfffffe78
+   2c890:	ldr	r0, [pc, #2460]	; 2d234 <GPIO_Ioctl+0x1644>
+   2c894:	str	r8, [r2, #128]	; 0x80
+   2c898:	bl	0 <down>
+   2c89c:	movw	r1, #0
+   2c8a0:	mov	r0, r7
+   2c8a4:	movt	r1, #0
+   2c8a8:	bl	266f4 <nvt_dt_find_node_by_name>
+   2c8ac:	subs	r3, r0, #0
+   2c8b0:	mov	r8, r3
+   2c8b4:	beq	2d0dc <GPIO_Ioctl+0x14ec>
+   2c8b8:	nop	{0}
+   2c8bc:	mov	r3, #0
+   2c8c0:	mov	r0, r8
+   2c8c4:	mov	r1, r3
+   2c8c8:	str	r3, [r6, #-368]	; 0xfffffe90
+   2c8cc:	bl	0 <of_get_next_child>
+   2c8d0:	subs	r7, r0, #0
+   2c8d4:	beq	2ce08 <GPIO_Ioctl+0x1218>
+   2c8d8:	ldr	sl, [r7]
+   2c8dc:	cmp	sl, #0
+   2c8e0:	beq	2ce30 <GPIO_Ioctl+0x1240>
+   2c8e4:	str	r5, [fp, #-400]	; 0xfffffe70
+   2c8e8:	mov	r5, r7
+   2c8ec:	ldr	r9, [fp, #-392]	; 0xfffffe78
+   2c8f0:	mov	r7, r8
+   2c8f4:	str	r6, [fp, #-404]	; 0xfffffe6c
+   2c8f8:	b	2c91c <GPIO_Ioctl+0xd2c>
+   2c8fc:	mov	r1, r5
+   2c900:	mov	r0, r7
+   2c904:	bl	0 <of_get_next_child>
+   2c908:	subs	r5, r0, #0
+   2c90c:	beq	2ce00 <GPIO_Ioctl+0x1210>
+   2c910:	ldr	sl, [r5]
+   2c914:	cmp	sl, #0
+   2c918:	beq	2ce30 <GPIO_Ioctl+0x1240>
+   2c91c:	ldr	r8, [r9, #128]	; 0x80
+   2c920:	mov	r0, sl
+   2c924:	bl	0 <strlen>
+   2c928:	mov	r6, r0
+   2c92c:	mov	r0, r8
+   2c930:	bl	0 <strlen>
+   2c934:	cmp	r6, r0
+   2c938:	mov	r1, r8
+   2c93c:	movcc	r2, r0
+   2c940:	movcs	r2, r6
+   2c944:	mov	r0, sl
+   2c948:	bl	0 <memcmp>
+   2c94c:	cmp	r0, #0
+   2c950:	bne	2c8fc <GPIO_Ioctl+0xd0c>
+   2c954:	mov	r7, r5
+   2c958:	movw	r1, #0
+   2c95c:	mov	r2, r0
+   2c960:	movt	r1, #0
+   2c964:	sub	r3, fp, #384	; 0x180
+   2c968:	mov	r0, r7
+   2c96c:	ldr	r5, [fp, #-400]	; 0xfffffe70
+   2c970:	ldr	r6, [fp, #-404]	; 0xfffffe6c
+   2c974:	bl	0 <of_property_read_u32_index>
+   2c978:	ldr	r9, [fp, #-392]	; 0xfffffe78
+   2c97c:	movw	r1, #0
+   2c980:	sub	r3, fp, #380	; 0x17c
+   2c984:	movt	r1, #0
+   2c988:	mov	r2, #1
+   2c98c:	mov	r0, r7
+   2c990:	add	ip, r9, #8
+   2c994:	add	sl, r9, #80	; 0x50
+   2c998:	mov	r8, ip
+   2c99c:	str	ip, [fp, #-408]	; 0xfffffe68
+   2c9a0:	bl	0 <of_property_read_u32_index>
+   2c9a4:	movw	r1, #0
+   2c9a8:	add	ip, r9, #32
+   2c9ac:	sub	r3, fp, #376	; 0x178
+   2c9b0:	movt	r1, #0
+   2c9b4:	mov	r2, #2
+   2c9b8:	mov	r0, r7
+   2c9bc:	str	ip, [fp, #-400]	; 0xfffffe70
+   2c9c0:	bl	0 <of_property_read_u32_index>
+   2c9c4:	movw	r1, #0
+   2c9c8:	sub	r2, fp, #372	; 0x174
+   2c9cc:	movt	r1, #0
+   2c9d0:	mov	r0, r7
+   2c9d4:	bl	0 <of_get_property>
+   2c9d8:	add	r3, r9, #56	; 0x38
+   2c9dc:	mov	r1, r0
+   2c9e0:	ldr	r2, [fp, #-372]	; 0xfffffe8c
+   2c9e4:	mov	r0, r8
+   2c9e8:	str	r3, [fp, #-404]	; 0xfffffe6c
+   2c9ec:	add	r8, r9, #104	; 0x68
+   2c9f0:	bl	0 <memcpy>
+   2c9f4:	movw	r1, #0
+   2c9f8:	sub	r2, fp, #372	; 0x174
+   2c9fc:	movt	r1, #0
+   2ca00:	mov	r0, r7
+   2ca04:	bl	0 <of_get_property>
+   2ca08:	ldr	r2, [fp, #-372]	; 0xfffffe8c
+   2ca0c:	mov	r1, r0
+   2ca10:	ldr	r0, [fp, #-400]	; 0xfffffe70
+   2ca14:	bl	0 <memcpy>
+   2ca18:	movw	r1, #0
+   2ca1c:	sub	r2, fp, #372	; 0x174
+   2ca20:	movt	r1, #0
+   2ca24:	mov	r0, r7
+   2ca28:	bl	0 <of_get_property>
+   2ca2c:	ldr	r2, [fp, #-372]	; 0xfffffe8c
+   2ca30:	mov	r1, r0
+   2ca34:	ldr	r0, [fp, #-404]	; 0xfffffe6c
+   2ca38:	bl	0 <memcpy>
+   2ca3c:	movw	r1, #0
+   2ca40:	sub	r2, fp, #372	; 0x174
+   2ca44:	movt	r1, #0
+   2ca48:	mov	r0, r7
+   2ca4c:	bl	0 <of_get_property>
+   2ca50:	ldr	r2, [fp, #-372]	; 0xfffffe8c
+   2ca54:	mov	r1, r0
+   2ca58:	mov	r0, sl
+   2ca5c:	bl	0 <memcpy>
+   2ca60:	movw	r1, #0
+   2ca64:	sub	r2, fp, #372	; 0x174
+   2ca68:	movt	r1, #0
+   2ca6c:	mov	r0, r7
+   2ca70:	bl	0 <of_get_property>
+   2ca74:	ldr	r2, [fp, #-372]	; 0xfffffe8c
+   2ca78:	mov	r1, r0
+   2ca7c:	mov	r0, r8
+   2ca80:	bl	0 <memcpy>
+   2ca84:	ldr	r3, [fp, #-380]	; 0xfffffe84
+   2ca88:	ldr	r2, [fp, #-376]	; 0xfffffe88
+   2ca8c:	str	r3, [r9]
+   2ca90:	str	r2, [r9, #4]
+   2ca94:	nop	{0}
+   2ca98:	nop	{0}
+   2ca9c:	mov	r3, #1
+   2caa0:	str	r3, [r6, #-368]	; 0xfffffe90
+   2caa4:	mov	r3, sp
+   2caa8:	bic	r3, r3, #8128	; 0x1fc0
+   2caac:	bic	r3, r3, #63	; 0x3f
+   2cab0:	ldr	r3, [r3, #8]
+   2cab4:	adds	r2, r5, #136	; 0x88
+   2cab8:	sbcscc	r2, r2, r3
+   2cabc:	movcc	r3, #0
+   2cac0:	cmp	r3, #0
+   2cac4:	beq	2cf00 <GPIO_Ioctl+0x1310>
+   2cac8:	ldr	r0, [fp, #-392]	; 0xfffffe78
+   2cacc:	bl	0 <kfree>
+   2cad0:	ldr	r0, [fp, #-396]	; 0xfffffe74
+   2cad4:	bl	0 <kfree>
+   2cad8:	ldr	r0, [pc, #1876]	; 2d234 <GPIO_Ioctl+0x1644>
+   2cadc:	bl	0 <up>
+   2cae0:	mvn	r0, #13
+   2cae4:	b	2be14 <GPIO_Ioctl+0x224>
+   2cae8:	cmp	r2, #0
+   2caec:	beq	2be00 <GPIO_Ioctl+0x210>
+   2caf0:	movw	r3, #0
+   2caf4:	mov	r1, #192	; 0xc0
+   2caf8:	movt	r3, #0
+   2cafc:	movt	r1, #576	; 0x240
+   2cb00:	ldr	r0, [r3, #24]
+   2cb04:	mov	r2, #8
+   2cb08:	bl	0 <kmem_cache_alloc_trace>
+   2cb0c:	subs	r6, r0, #0
+   2cb10:	beq	2be00 <GPIO_Ioctl+0x210>
+   2cb14:	mov	r7, #57344	; 0xe000
+   2cb18:	mov	r3, sp
+   2cb1c:	movt	r7, #65535	; 0xffff
+   2cb20:	and	r3, r3, r7
+   2cb24:	ldr	r3, [r3, #8]
+   2cb28:	adds	r2, r5, #8
+   2cb2c:	sbcscc	r2, r2, r3
+   2cb30:	movcc	r3, #0
+   2cb34:	cmp	r3, #0
+   2cb38:	bne	2cc6c <GPIO_Ioctl+0x107c>
+   2cb3c:	mov	r1, r5
+   2cb40:	mov	r2, #8
+   2cb44:	bl	0 <arm_copy_from_user>
+   2cb48:	subs	r1, r0, #0
+   2cb4c:	bne	2d1e0 <GPIO_Ioctl+0x15f0>
+   2cb50:	add	r1, r6, #4
+   2cb54:	ldr	r0, [r6]
+   2cb58:	bl	29070 <ntgpio_GetDriving>
+   2cb5c:	cmp	r0, #0
+   2cb60:	bne	2c444 <GPIO_Ioctl+0x854>
+   2cb64:	b	2bdf8 <GPIO_Ioctl+0x208>
+   2cb68:	cmp	r2, #0
+   2cb6c:	beq	2be00 <GPIO_Ioctl+0x210>
+   2cb70:	movw	r3, #0
+   2cb74:	mov	r1, #192	; 0xc0
+   2cb78:	movt	r3, #0
+   2cb7c:	movt	r1, #576	; 0x240
+   2cb80:	ldr	r0, [r3, #24]
+   2cb84:	mov	r2, #8
+   2cb88:	bl	0 <kmem_cache_alloc_trace>
+   2cb8c:	subs	r6, r0, #0
+   2cb90:	beq	2be00 <GPIO_Ioctl+0x210>
+   2cb94:	mov	r3, sp
+   2cb98:	bic	r3, r3, #8128	; 0x1fc0
+   2cb9c:	bic	r3, r3, #63	; 0x3f
+   2cba0:	ldr	r3, [r3, #8]
+   2cba4:	adds	r2, r5, #8
+   2cba8:	sbcscc	r2, r2, r3
+   2cbac:	movcc	r3, #0
+   2cbb0:	cmp	r3, #0
+   2cbb4:	bne	2cc54 <GPIO_Ioctl+0x1064>
+   2cbb8:	mov	r1, r5
+   2cbbc:	mov	r2, #8
+   2cbc0:	bl	0 <arm_copy_from_user>
+   2cbc4:	subs	r5, r0, #0
+   2cbc8:	bne	2d1d8 <GPIO_Ioctl+0x15e8>
+   2cbcc:	ldrb	r1, [r6, #4]
+   2cbd0:	ldr	r0, [r6]
+   2cbd4:	bl	2875c <ntgpio_SetDriving>
+   2cbd8:	cmp	r0, #0
+   2cbdc:	beq	2bdf8 <GPIO_Ioctl+0x208>
+   2cbe0:	mov	r1, #148	; 0x94
+   2cbe4:	sub	r0, fp, #368	; 0x170
+   2cbe8:	bl	0 <__memzero>
+   2cbec:	ldr	lr, [r6]
+   2cbf0:	sub	r2, fp, #368	; 0x170
+   2cbf4:	ldrb	ip, [r6, #4]
+   2cbf8:	mov	r3, #1
+   2cbfc:	mov	r1, r5
+   2cc00:	mov	r0, #9
+   2cc04:	str	lr, [fp, #-368]	; 0xfffffe90
+   2cc08:	str	ip, [fp, #-364]	; 0xfffffe94
+   2cc0c:	bl	295f4 <_drv_gpio_record_add_p>
+   2cc10:	mov	r0, r6
+   2cc14:	bl	0 <kfree>
+   2cc18:	mov	r0, r5
+   2cc1c:	b	2be14 <GPIO_Ioctl+0x224>
+   2cc20:	bl	29300 <_drv_gpio_load_p.part.10>
+   2cc24:	b	2c71c <GPIO_Ioctl+0xb2c>
+   2cc28:	mov	r3, sp
+   2cc2c:	bic	r3, r3, #8128	; 0x1fc0
+   2cc30:	bic	r3, r3, #63	; 0x3f
+   2cc34:	ldr	r3, [r3, #8]
+   2cc38:	adds	r1, r5, #5
+   2cc3c:	sbcscc	r1, r1, r3
+   2cc40:	movcc	r3, #0
+   2cc44:	cmp	r3, #0
+   2cc48:	beq	2cd04 <GPIO_Ioctl+0x1114>
+   2cc4c:	mvn	r0, #13
+   2cc50:	b	2be14 <GPIO_Ioctl+0x224>
+   2cc54:	mov	r0, #0
+   2cc58:	mov	r5, #8
+   2cc5c:	mov	r1, r5
+   2cc60:	add	r0, r6, r0
+   2cc64:	bl	0 <__memzero>
+   2cc68:	b	2c464 <GPIO_Ioctl+0x874>
+   2cc6c:	mov	r0, #0
+   2cc70:	mov	r1, #8
+   2cc74:	b	2cc60 <GPIO_Ioctl+0x1070>
+   2cc78:	movw	r3, #0
+   2cc7c:	ldr	r0, [r6, #-384]	; 0xfffffe80
+   2cc80:	movt	r3, #0
+   2cc84:	movw	r2, #0
+   2cc88:	ldr	r1, [r3]
+   2cc8c:	movt	r2, #0
+   2cc90:	ldr	r3, [r0]
+   2cc94:	ldr	r0, [pc, #1436]	; 2d238 <GPIO_Ioctl+0x1648>
+   2cc98:	add	r1, r1, #16
+   2cc9c:	bl	0 <__dynamic_nvt_dbg>
+   2cca0:	b	2bd6c <GPIO_Ioctl+0x17c>
+   2cca4:	movw	r3, #0
+   2cca8:	str	r5, [sp]
+   2ccac:	movt	r3, #0
+   2ccb0:	movw	r2, #0
+   2ccb4:	ldr	r1, [r3]
+   2ccb8:	movt	r2, #0
+   2ccbc:	mov	r3, r8
+   2ccc0:	ldr	r0, [pc, #1396]	; 2d23c <GPIO_Ioctl+0x164c>
+   2ccc4:	add	r1, r1, #16
+   2ccc8:	bl	0 <__dynamic_nvt_dbg>
+   2cccc:	ldr	r3, [r6, #-384]	; 0xfffffe80
+   2ccd0:	b	2bd4c <GPIO_Ioctl+0x15c>
+   2ccd4:	movw	r3, #0
+   2ccd8:	movw	r0, #1822	; 0x71e
+   2ccdc:	movt	r3, #0
+   2cce0:	movw	r2, #0
+   2cce4:	ldr	r1, [r3]
+   2cce8:	movt	r2, #0
+   2ccec:	str	r0, [sp]
+   2ccf0:	ldr	r3, [pc, #1352]	; 2d240 <GPIO_Ioctl+0x1650>
+   2ccf4:	add	r1, r1, #16
+   2ccf8:	ldr	r0, [pc, #1348]	; 2d244 <GPIO_Ioctl+0x1654>
+   2ccfc:	bl	0 <__dynamic_nvt_dbg>
+   2cd00:	b	2c8bc <GPIO_Ioctl+0xccc>
+   2cd04:	mov	r0, r5
+   2cd08:	ldr	r1, [pc, #1336]	; 2d248 <GPIO_Ioctl+0x1658>
+   2cd0c:	bl	0 <arm_copy_to_user>
+   2cd10:	cmp	r0, #0
+   2cd14:	beq	2be14 <GPIO_Ioctl+0x224>
+   2cd18:	b	2cc4c <GPIO_Ioctl+0x105c>
+   2cd1c:	sub	r0, r6, #696	; 0x2b8
+   2cd20:	bl	0 <down>
+   2cd24:	movw	r1, #0
+   2cd28:	mov	r0, r7
+   2cd2c:	movt	r1, #0
+   2cd30:	bl	266f4 <nvt_dt_find_node_by_name>
+   2cd34:	subs	r7, r0, #0
+   2cd38:	beq	2d11c <GPIO_Ioctl+0x152c>
+   2cd3c:	nop	{0}
+   2cd40:	mov	r3, #0
+   2cd44:	mov	r0, r7
+   2cd48:	mov	r1, r3
+   2cd4c:	str	r3, [r6, #-368]	; 0xfffffe90
+   2cd50:	bl	0 <of_get_next_child>
+   2cd54:	subs	sl, r0, #0
+   2cd58:	beq	2cda8 <GPIO_Ioctl+0x11b8>
+   2cd5c:	ldr	r0, [sl]
+   2cd60:	cmp	r0, #0
+   2cd64:	movne	r8, #1
+   2cd68:	bne	2cd7c <GPIO_Ioctl+0x118c>
+   2cd6c:	b	2cf3c <GPIO_Ioctl+0x134c>
+   2cd70:	ldr	r0, [sl]
+   2cd74:	cmp	r0, #0
+   2cd78:	beq	2cf3c <GPIO_Ioctl+0x134c>
+   2cd7c:	bl	0 <strlen>
+   2cd80:	ldr	r3, [r6, #-364]	; 0xfffffe94
+   2cd84:	mov	r1, sl
+   2cd88:	str	r8, [r6, #-368]	; 0xfffffe90
+   2cd8c:	cmp	r3, r0
+   2cd90:	movcc	r3, r0
+   2cd94:	mov	r0, r7
+   2cd98:	str	r3, [r6, #-364]	; 0xfffffe94
+   2cd9c:	bl	0 <of_get_next_child>
+   2cda0:	subs	sl, r0, #0
+   2cda4:	bne	2cd70 <GPIO_Ioctl+0x1180>
+   2cda8:	ldr	r3, [r6, #-368]	; 0xfffffe90
+   2cdac:	cmp	r3, #1
+   2cdb0:	bne	2d168 <GPIO_Ioctl+0x1578>
+   2cdb4:	ldr	r0, [pc, #1144]	; 2d234 <GPIO_Ioctl+0x1644>
+   2cdb8:	strb	r3, [r6, #-371]	; 0xfffffe8d
+   2cdbc:	bl	0 <up>
+   2cdc0:	b	2c7c8 <GPIO_Ioctl+0xbd8>
+   2cdc4:	mov	r0, r6
+   2cdc8:	bl	2b5a8 <ntgpio_Open.part.21>
+   2cdcc:	cmp	r0, #0
+   2cdd0:	beq	2bdf8 <GPIO_Ioctl+0x208>
+   2cdd4:	mov	r3, #1
+   2cdd8:	mov	r2, r6
+   2cddc:	mov	r1, r5
+   2cde0:	mov	r0, r5
+   2cde4:	bl	295f4 <_drv_gpio_record_add_p>
+   2cde8:	mov	r0, r6
+   2cdec:	bl	0 <kfree>
+   2cdf0:	mov	r0, r5
+   2cdf4:	b	2be14 <GPIO_Ioctl+0x224>
+   2cdf8:	bl	29300 <_drv_gpio_load_p.part.10>
+   2cdfc:	b	2bf98 <GPIO_Ioctl+0x3a8>
+   2ce00:	ldr	r5, [fp, #-400]	; 0xfffffe70
+   2ce04:	ldr	r6, [fp, #-404]	; 0xfffffe6c
+   2ce08:	ldr	r3, [r6, #-368]	; 0xfffffe90
+   2ce0c:	cmp	r3, #1
+   2ce10:	beq	2caa4 <GPIO_Ioctl+0xeb4>
+   2ce14:	ldr	r0, [fp, #-392]	; 0xfffffe78
+   2ce18:	bl	0 <kfree>
+   2ce1c:	ldr	r0, [fp, #-396]	; 0xfffffe74
+   2ce20:	bl	0 <kfree>
+   2ce24:	ldr	r0, [pc, #1032]	; 2d234 <GPIO_Ioctl+0x1644>
+   2ce28:	bl	0 <up>
+   2ce2c:	b	2be00 <GPIO_Ioctl+0x210>
+   2ce30:	movw	r3, #0
+   2ce34:	movw	r1, #0
+   2ce38:	movt	r3, #0
+   2ce3c:	movt	r1, #0
+   2ce40:	ldr	r0, [r3]
+   2ce44:	movw	r3, #1829	; 0x725
+   2ce48:	ldr	r2, [pc, #1020]	; 2d24c <GPIO_Ioctl+0x165c>
+   2ce4c:	add	r0, r0, #16
+   2ce50:	bl	0 <nvt_err>
+   2ce54:	ldr	r0, [fp, #-392]	; 0xfffffe78
+   2ce58:	bl	0 <kfree>
+   2ce5c:	ldr	r0, [fp, #-396]	; 0xfffffe74
+   2ce60:	bl	0 <kfree>
+   2ce64:	ldr	r0, [pc, #968]	; 2d234 <GPIO_Ioctl+0x1644>
+   2ce68:	bl	0 <up>
+   2ce6c:	mvn	r0, #21
+   2ce70:	b	2be14 <GPIO_Ioctl+0x224>
+   2ce74:	mov	r0, #0
+   2ce78:	mov	r1, #1
+   2ce7c:	add	r0, r7, r0
+   2ce80:	bl	0 <__memzero>
+   2ce84:	mov	r0, r7
+   2ce88:	bl	0 <kfree>
+   2ce8c:	b	2cc4c <GPIO_Ioctl+0x105c>
+   2ce90:	movw	r2, #0
+   2ce94:	movw	r1, #0
+   2ce98:	movt	r2, #0
+   2ce9c:	movt	r1, #0
+   2cea0:	ldr	r0, [r2]
+   2cea4:	movw	r2, #3573	; 0xdf5
+   2cea8:	add	r0, r0, #16
+   2ceac:	bl	0 <nvt_err>
+   2ceb0:	b	2bdf8 <GPIO_Ioctl+0x208>
+   2ceb4:	ldr	r0, [r1]
+   2ceb8:	movw	r1, #0
+   2cebc:	movt	r1, #0
+   2cec0:	movw	r2, #3580	; 0xdfc
+   2cec4:	add	r0, r0, #16
+   2cec8:	bl	0 <nvt_err>
+   2cecc:	b	2bdf8 <GPIO_Ioctl+0x208>
+   2ced0:	movw	r3, #0
+   2ced4:	movw	r0, #1738	; 0x6ca
+   2ced8:	movt	r3, #0
+   2cedc:	movw	r2, #0
+   2cee0:	ldr	r1, [r3]
+   2cee4:	movt	r2, #0
+   2cee8:	str	r0, [sp]
+   2ceec:	ldr	r3, [pc, #844]	; 2d240 <GPIO_Ioctl+0x1650>
+   2cef0:	add	r1, r1, #16
+   2cef4:	ldr	r0, [pc, #852]	; 2d250 <GPIO_Ioctl+0x1660>
+   2cef8:	bl	0 <__dynamic_nvt_dbg>
+   2cefc:	b	2cd40 <GPIO_Ioctl+0x1150>
+   2cf00:	ldr	r6, [fp, #-392]	; 0xfffffe78
+   2cf04:	mov	r0, r5
+   2cf08:	mov	r2, #136	; 0x88
+   2cf0c:	mov	r1, r6
+   2cf10:	bl	0 <arm_copy_to_user>
+   2cf14:	subs	r5, r0, #0
+   2cf18:	bne	2cac8 <GPIO_Ioctl+0xed8>
+   2cf1c:	ldr	r0, [pc, #784]	; 2d234 <GPIO_Ioctl+0x1644>
+   2cf20:	bl	0 <up>
+   2cf24:	mov	r0, r6
+   2cf28:	bl	0 <kfree>
+   2cf2c:	ldr	r0, [fp, #-396]	; 0xfffffe74
+   2cf30:	bl	0 <kfree>
+   2cf34:	mov	r0, r5
+   2cf38:	b	2be14 <GPIO_Ioctl+0x224>
+   2cf3c:	movw	r3, #0
+   2cf40:	movw	r1, #0
+   2cf44:	movt	r3, #0
+   2cf48:	movt	r1, #0
+   2cf4c:	ldr	r0, [r3]
+   2cf50:	movw	r3, #1745	; 0x6d1
+   2cf54:	ldr	r2, [pc, #752]	; 2d24c <GPIO_Ioctl+0x165c>
+   2cf58:	add	r0, r0, #16
+   2cf5c:	bl	0 <nvt_err>
+   2cf60:	ldr	r0, [pc, #716]	; 2d234 <GPIO_Ioctl+0x1644>
+   2cf64:	bl	0 <up>
+   2cf68:	ldr	r0, [fp, #-392]	; 0xfffffe78
+   2cf6c:	bl	0 <kfree>
+   2cf70:	mvn	r0, #21
+   2cf74:	b	2be14 <GPIO_Ioctl+0x224>
+   2cf78:	ldr	r2, [fp, #-404]	; 0xfffffe6c
+   2cf7c:	movw	r3, #0
+   2cf80:	ldr	ip, [fp, #-376]	; 0xfffffe88
+   2cf84:	movt	r3, #0
+   2cf88:	ldr	r0, [fp, #-380]	; 0xfffffe84
+   2cf8c:	ldr	r1, [fp, #-384]	; 0xfffffe80
+   2cf90:	str	r2, [sp, #24]
+   2cf94:	ldr	lr, [fp, #-408]	; 0xfffffe68
+   2cf98:	ldr	r2, [fp, #-400]	; 0xfffffe70
+   2cf9c:	str	r8, [sp, #32]
+   2cfa0:	str	sl, [sp, #28]
+   2cfa4:	str	r2, [sp, #20]
+   2cfa8:	movw	r2, #0
+   2cfac:	str	lr, [sp, #16]
+   2cfb0:	movt	r2, #0
+   2cfb4:	str	r0, [sp, #8]
+   2cfb8:	str	ip, [sp, #12]
+   2cfbc:	str	r1, [sp, #4]
+   2cfc0:	ldr	r1, [r3]
+   2cfc4:	ldr	ip, [r7]
+   2cfc8:	ldr	r3, [pc, #636]	; 2d24c <GPIO_Ioctl+0x165c>
+   2cfcc:	add	r1, r1, #16
+   2cfd0:	ldr	r0, [pc, #636]	; 2d254 <GPIO_Ioctl+0x1664>
+   2cfd4:	str	ip, [sp]
+   2cfd8:	bl	0 <__dynamic_nvt_dbg>
+   2cfdc:	b	2ca9c <GPIO_Ioctl+0xeac>
+   2cfe0:	movw	r1, #0
+   2cfe4:	ldr	r0, [r7]
+   2cfe8:	movt	r1, #0
+   2cfec:	movw	r2, #0
+   2cff0:	ldr	r1, [r1]
+   2cff4:	movt	r2, #0
+   2cff8:	str	r0, [sp]
+   2cffc:	ldr	r0, [pc, #596]	; 2d258 <GPIO_Ioctl+0x1668>
+   2d000:	add	r1, r1, #16
+   2d004:	bl	0 <__dynamic_nvt_dbg>
+   2d008:	b	2ca98 <GPIO_Ioctl+0xea8>
+   2d00c:	ldr	r0, [r1]
+   2d010:	movw	r1, #0
+   2d014:	movt	r1, #0
+   2d018:	movw	r2, #3587	; 0xe03
+   2d01c:	add	r0, r0, #16
+   2d020:	bl	0 <nvt_err>
+   2d024:	b	2bdf8 <GPIO_Ioctl+0x208>
+   2d028:	str	r2, [r6, #-432]	; 0xfffffe50
+   2d02c:	ldr	r2, [r3, #4]
+   2d030:	cmp	r2, #0
+   2d034:	bne	2d1e8 <GPIO_Ioctl+0x15f8>
+   2d038:	str	r5, [r6, #-428]	; 0xfffffe54
+   2d03c:	mov	r0, r3
+   2d040:	str	r5, [r3, #4]
+   2d044:	bl	0 <kfree>
+   2d048:	ldr	r3, [r6, #-432]	; 0xfffffe50
+   2d04c:	b	2bfb8 <GPIO_Ioctl+0x3c8>
+   2d050:	mov	r0, #0
+   2d054:	mov	r5, #112	; 0x70
+   2d058:	b	2cc5c <GPIO_Ioctl+0x106c>
+   2d05c:	mov	r0, #0
+   2d060:	mov	r1, #4
+   2d064:	b	2ce7c <GPIO_Ioctl+0x128c>
+   2d068:	sub	r0, fp, #217	; 0xd9
+   2d06c:	mov	r1, #169	; 0xa9
+   2d070:	bl	0 <__memzero>
+   2d074:	mvn	r0, #13
+   2d078:	b	2be14 <GPIO_Ioctl+0x224>
+   2d07c:	mov	r0, #0
+   2d080:	mov	r1, #136	; 0x88
+   2d084:	ldr	r5, [fp, #-392]	; 0xfffffe78
+   2d088:	add	r0, r5, r0
+   2d08c:	bl	0 <__memzero>
+   2d090:	mov	r0, r5
+   2d094:	bl	0 <kfree>
+   2d098:	ldr	r0, [fp, #-396]	; 0xfffffe74
+   2d09c:	bl	0 <kfree>
+   2d0a0:	mvn	r0, #13
+   2d0a4:	b	2be14 <GPIO_Ioctl+0x224>
+   2d0a8:	ldr	r5, [fp, #-396]	; 0xfffffe74
+   2d0ac:	sub	r0, r8, r7
+   2d0b0:	mov	r1, r7
+   2d0b4:	add	r0, r5, r0
+   2d0b8:	bl	0 <__memzero>
+   2d0bc:	ldr	r0, [fp, #-392]	; 0xfffffe78
+   2d0c0:	bl	0 <kfree>
+   2d0c4:	mov	r0, r5
+   2d0c8:	bl	0 <kfree>
+   2d0cc:	mvn	r0, #13
+   2d0d0:	b	2be14 <GPIO_Ioctl+0x224>
+   2d0d4:	mov	r7, r8
+   2d0d8:	b	2c870 <GPIO_Ioctl+0xc80>
+   2d0dc:	movw	r1, #0
+   2d0e0:	movt	r1, #0
+   2d0e4:	bl	0 <of_find_node_by_name>
+   2d0e8:	subs	r3, r0, #0
+   2d0ec:	mov	r8, r3
+   2d0f0:	bne	2c8b8 <GPIO_Ioctl+0xcc8>
+   2d0f4:	movw	r3, #0
+   2d0f8:	movw	r1, #0
+   2d0fc:	movt	r3, #0
+   2d100:	movt	r1, #0
+   2d104:	ldr	r0, [r3]
+   2d108:	movw	r2, #1899	; 0x76b
+   2d10c:	ldr	r3, [pc, #312]	; 2d24c <GPIO_Ioctl+0x165c>
+   2d110:	add	r0, r0, #16
+   2d114:	bl	0 <nvt_err>
+   2d118:	b	2ce14 <GPIO_Ioctl+0x1224>
+   2d11c:	movw	r1, #0
+   2d120:	movt	r1, #0
+   2d124:	bl	0 <of_find_node_by_name>
+   2d128:	subs	r7, r0, #0
+   2d12c:	bne	2cd3c <GPIO_Ioctl+0x114c>
+   2d130:	movw	r3, #0
+   2d134:	movw	r1, #0
+   2d138:	movt	r3, #0
+   2d13c:	movt	r1, #0
+   2d140:	ldr	r0, [r3]
+   2d144:	movw	r2, #1765	; 0x6e5
+   2d148:	ldr	r3, [pc, #252]	; 2d24c <GPIO_Ioctl+0x165c>
+   2d14c:	add	r0, r0, #16
+   2d150:	bl	0 <nvt_err>
+   2d154:	sub	r0, r6, #696	; 0x2b8
+   2d158:	bl	0 <up>
+   2d15c:	ldr	r0, [fp, #-392]	; 0xfffffe78
+   2d160:	bl	0 <kfree>
+   2d164:	b	2be00 <GPIO_Ioctl+0x210>
+   2d168:	movw	r3, #0
+   2d16c:	movw	r1, #0
+   2d170:	movt	r3, #0
+   2d174:	movt	r1, #0
+   2d178:	ldr	r0, [r3]
+   2d17c:	movw	r3, #1756	; 0x6dc
+   2d180:	ldr	r2, [pc, #196]	; 2d24c <GPIO_Ioctl+0x165c>
+   2d184:	add	r0, r0, #16
+   2d188:	bl	0 <nvt_err>
+   2d18c:	ldr	r0, [pc, #160]	; 2d234 <GPIO_Ioctl+0x1644>
+   2d190:	b	2d158 <GPIO_Ioctl+0x1568>
+   2d194:	bl	0 <__stack_chk_fail>
+   2d198:	movw	r3, #0
+   2d19c:	movw	r1, #0
+   2d1a0:	movt	r3, #0
+   2d1a4:	movt	r1, #0
+   2d1a8:	ldr	r0, [r3]
+   2d1ac:	movw	r2, #1793	; 0x701
+   2d1b0:	ldr	r3, [pc, #148]	; 2d24c <GPIO_Ioctl+0x165c>
+   2d1b4:	add	r0, r0, #16
+   2d1b8:	bl	0 <nvt_err>
+   2d1bc:	ldr	r0, [fp, #-392]	; 0xfffffe78
+   2d1c0:	bl	0 <kfree>
+   2d1c4:	ldr	r0, [fp, #-396]	; 0xfffffe74
+   2d1c8:	bl	0 <kfree>
+   2d1cc:	movw	r0, #65012	; 0xfdf4
+   2d1d0:	movt	r0, #65535	; 0xffff
+   2d1d4:	b	2be14 <GPIO_Ioctl+0x224>
+   2d1d8:	rsb	r0, r5, #8
+   2d1dc:	b	2cc5c <GPIO_Ioctl+0x106c>
+   2d1e0:	rsb	r0, r1, #8
+   2d1e4:	b	2cc60 <GPIO_Ioctl+0x1070>
+   2d1e8:	str	r5, [r3, #4]
+   2d1ec:	mov	r0, r3
+   2d1f0:	bl	0 <kfree>
+   2d1f4:	b	2d048 <GPIO_Ioctl+0x1458>
+   2d1f8:	ldr	r6, [r7]
+   2d1fc:	tst	r6, #16777216	; 0x1000000
+   2d200:	beq	2c4b0 <GPIO_Ioctl+0x8c0>
+   2d204:	b	2c4cc <GPIO_Ioctl+0x8dc>
+   2d208:	str	r5, [r6, #-428]	; 0xfffffe54
+   2d20c:	mov	r0, r3
+   2d210:	str	r2, [r3, #4]
+   2d214:	bl	0 <kfree>
+   2d218:	mov	r3, r5
+   2d21c:	b	2bfb0 <GPIO_Ioctl+0x3c0>
+   2d220:	rsb	r0, r1, #169	; 0xa9
+   2d224:	sub	r3, fp, #217	; 0xd9
+   2d228:	add	r0, r3, r0
+   2d22c:	b	2d070 <GPIO_Ioctl+0x1480>
+   2d230:	.word	0x0001531f
+   2d234:	.word	0x000152e0
+   2d238:	.word	0x000024a0
+   2d23c:	.word	0x00002480
+   2d240:	.word	0x00012bf4
+   2d244:	.word	0x00002420
+   2d248:	.word	0x00015420
+   2d24c:	.word	0x00012be8
+   2d250:	.word	0x00002400
+   2d254:	.word	0x00002460
+   2d258:	.word	0x00002440
+
+Disassembly of section .text.unlikely:
+
+Disassembly of section .exit.text:
+
+Disassembly of section .init.text:

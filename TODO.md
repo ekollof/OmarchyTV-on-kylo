@@ -1625,15 +1625,17 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Remaining vendor parity
 
-- [x] Read-only vendor inventory: all 389 ELF files in the extracted `/vendor`
-      tree are hashed and dumped for SONAME/NEEDED, sections, symbol tables,
+- [x] Read-only vendor inventory: 389 ELF files in the extracted `/vendor` tree
+      plus 72 outside it (461 total, 15 kernel modules) are hashed and dumped for SONAME/NEEDED, sections, symbol tables,
       dynamic symbols and strings; Ghidra functions/callgraphs/symbols/data
       cover aurora (89,220 functions, 485,969 resolved call edges) and 14
-      library/kernel projects. Recovered the 226-slot (224 named) GPIO function-name
+      library/kernel projects. Recovered the 0..207 GPIO function-name
       table, VPLTIO 45/45 call-site map and 58 immediate audio call sites (37 unique opcodes), with
       call-site maps for GPIO/IIC/DRM/NDAL/PWM/panel. This is static evidence,
-      not hardware acceptance; per-subsystem table decoding remains.
-      VENDOR-INVENTORY-2026-11-07.
+      not hardware acceptance; per-subsystem table decoding remains. An
+      independent pass adds 132/36 NDAL3/NDAL_EX ioctl immediates and module
+      init/exit details; 9 of 15 kernel modules still need Ghidra projects.
+      VENDOR-INVENTORY-2026-11-07, grok-findings.md.
 - [x] Unstripped `libappmgr.so` inventory: 2,476 symbols, 693 exports, new
       read-only Ghidra project. Recovered the full 127-slot/119-key US keyboard
       layout at `keyboard_layout` 0x52f50 (Linux keycode + modifier flags + two

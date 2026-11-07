@@ -1,0 +1,72 @@
+root/bin/busybox	708460	773d4dca19048d660681fc3cce815a33	a0ef7779d86cbf26408134c99155fcd46475ff157f6bed8edf9b9c1b069867a9	ELF32	DYN (Position-Independent Executable file)	ARM		3
+root/bin/gdbserver	377122	8e24e4033fe53c0706b0552be7954cdb	a09b28b5c4d0ac576a530368bdd172ba2c3d2773ef4d03017dae23dd1c98b18c	ELF32	EXEC (Executable file)	ARM		4
+root/bin/iperf	532364	34ae1d84a6ea85ba7bb6f345fd9aff81	ce0725a052fe5398b06f438424c588f770148053a3dfc7cd66896a87c5b6ecef	ELF32	EXEC (Executable file)	ARM		0
+root/bin/ntfs-3g	654448	9b2524238e49d0502fb93cef5056a2f4	132a65f707d9db51d2e3ec6bf256f6c83e872d4d7e3ec0f3228d88c92e9433c1	ELF32	EXEC (Executable file)	ARM		0
+root/lib/ld-2.23.so	102788	96cf0f65603cf00e612eac17b8cdb35c	f304986afa83f6d3a7935dccea065330ccaba6026634c25f7856fd4c351ec826	ELF32	DYN (Shared object file)	ARM	ld-linux-armhf.so.3	0
+root/lib/libanl-2.23.so	14132	4af0f5317ab79133f185df7a0997bc2b	7497f176b0216fcb642de478ff1630c889bdac6ed9a36c447f3e174a14632cac	ELF32	DYN (Shared object file)	ARM	libanl.so.1	2
+root/lib/libasan_preinit.o	600	1fdaddd1357b1b36a4291f1a9b32ad95	81829215cdfb501616590dcdd2d58a0a5baf8bcec95c7a571dfd53031fddbf68	ELF32	REL (Relocatable file)	ARM		0
+root/lib/libasan.so.3.0.0	868108	34a5106885e45d4e69bd1288c33d27ef	4a5a2b75f555c4aca224a5bd9e7aed6073b6dd79a083e70a5ffd2dbf99b2357f	ELF32	DYN (Shared object file)	ARM	libasan.so.3	7
+root/lib/libatomic.so.1.2.0	22056	ee0dcf6070555a78e003d510de05ff82	ab845cc3fd7f69792bdc35431e2013eddfefac889f8272dfe93a08c39beb5863	ELF32	DYN (Shared object file)	ARM	libatomic.so.1	2
+root/lib/libBrokenLocale-2.23.so	5548	871f75e4865dcac8df8ad1d94abaa457	b8cb1239598099f134c06839c2a92a6a2280efd5515bf1ddf5ed79f8e799b00e	ELF32	DYN (Shared object file)	ARM	libBrokenLocale.so.1	1
+root/lib/libc-2.23.so	903164	6ffe6403c8a3794a4fea26d676b45240	d84db56bfab954b62f397b7174ab837cb365ba46171436bcee1f0cfb5658e8cc	ELF32	DYN (Shared object file)	ARM	libc.so.6	1
+root/lib/libcidn-2.23.so	177704	b0eff78492143e00b61b709b7bc21950	68a7a62d07b338b2c89acd216f0cfb33f59bcb40bc9597845962cbaf4fbb506f	ELF32	DYN (Shared object file)	ARM	libcidn.so.1	1
+root/lib/libcrypt-2.23.so	30340	39a7f9f7c4c25908c33279d220433d1f	f3ba141f3b27bdf05a0a61670ff0f12b650df11a00dca358f0acddb6289f0b06	ELF32	DYN (Shared object file)	ARM	libcrypt.so.1	1
+root/lib/libdl-2.23.so	11256	72f2c99552f24970b437914a8b15c0d3	648b8cb21d95ca3c0e10c5e4b46736cdb90d83709e7d43b3e80fb1423b2d22a4	ELF32	DYN (Shared object file)	ARM	libdl.so.2	2
+root/lib/libgcc_s.so.1	100032	36619431e51e8def238259f7f6c6d08f	7b015fba1f5f746c48a84f97306e89fb8d97fcea397fd8fd818ca96418a9c2dc	ELF32	DYN (Shared object file)	ARM	libgcc_s.so.1	1
+root/lib/libgfortran.so.3.0.0	491600	2df7db471d8050f220339276a768a12c	6b42dbf9df1fbc5b7d2241e032629a57cd333e36453e1cb7cb8081477483993d	ELF32	DYN (Shared object file)	ARM	libgfortran.so.3	3
+root/lib/libgomp.so.1.0.0	121208	61339b8b8efceaf28de21251e1047112	f097dea2368603d64958881554435208cd33a4afe7cd67718de3d8aafeb5a28f	ELF32	DYN (Shared object file)	ARM	libgomp.so.1	3
+root/lib/libitm.so.1.0.0	65324	5515c202ee0b22e5c88bb2acd90ece81	2e3f0921d3ca39fd0963fbd369f6d517d932891c31032daa74f294a1839687dd	ELF32	DYN (Shared object file)	ARM	libitm.so.1	3
+root/lib/libm-2.23.so	425004	5820b1536933b3ab7dc2239d9712e0b6	c17f13bb250755946c3c8d08fea39d4af95978012e70fd5d0ee2a9525dc1cfcf	ELF32	DYN (Shared object file)	ARM	libm.so.6	1
+root/lib/libmemusage.so	13836	a2694707cdbfa2d420623ea76f2882d4	b0f7628cf7869fc731a6e0dbeee3bca06d557a43acc729a8ddafbc0443ab64d9	ELF32	DYN (Shared object file)	ARM	libmemusage.so	3
+root/lib/libnsl-2.23.so	55152	95f6ccb5542c77e302e5a5ac2153c92c	5d20d74788324332fa83044789de81215c2ba70bfe1288b37723748651fd242d	ELF32	DYN (Shared object file)	ARM	libnsl.so.1	1
+root/lib/libnss_compat-2.23.so	22292	4385c4b30ee19d63f79b85d003d75a1a	85e5d8816b5146675e472e1d987bc2a35338757d088fc26efc81eec68abb4b5e	ELF32	DYN (Shared object file)	ARM	libnss_compat.so.2	2
+root/lib/libnss_db-2.23.so	26288	c99ba4be17ce47be9c44f0f86eea435e	3e4f5be03bfbb35398e9560a62778387094b998014d86a8d2cc7663540c09d79	ELF32	DYN (Shared object file)	ARM	libnss_db.so.2	2
+root/lib/libnss_dns-2.23.so	13848	805930a2f811520dc10a751862273240	f83a7d69964cb85217b0f3e08a4955aa4fd883515d2dfdb55cd6815b5649ff32	ELF32	DYN (Shared object file)	ARM	libnss_dns.so.2	2
+root/lib/libnss_files-2.23.so	30296	7ec11213cc3c2778303193bafd015a53	d2d094eaae3840e518ea0ae53271b546d8a8d7b7e2067e52f952ebc98734ee60	ELF32	DYN (Shared object file)	ARM	libnss_files.so.2	1
+root/lib/libnss_hesiod-2.23.so	13844	55dee543db0e7cbe3f75a34d52c153c1	7392db7ec3b51a1f772951a07ab2a011db7b3e1cead19b6217b651ba1bf4acc7	ELF32	DYN (Shared object file)	ARM	libnss_hesiod.so.2	3
+root/lib/libnss_nis-2.23.so	30324	e29f76d5cabe8c832de75b8cde0577ee	599a7ffbd63e2f5d6033df7ea17eaa905cc6a5c3f6affc12d79d906ab913af74	ELF32	DYN (Shared object file)	ARM	libnss_nis.so.2	3
+root/lib/libnss_nisplus-2.23.so	34412	504553266ebde6e113ad8213b7929050	fc1b71e822ed080b15a4a2ae8d5c5aedaa6846296c0453e53c0350fbf0e95bed	ELF32	DYN (Shared object file)	ARM	libnss_nisplus.so.2	2
+root/lib/libpcprofile.so	5508	49dda255b9fcc6b12813505cb1e204cc	cc56f685a64b7bd056e4c23319afe9e756ad2e8450aa475bb771a26def75aab8	ELF32	DYN (Shared object file)	ARM	libpcprofile.so	1
+root/lib/libpthread-2.23.so	74504	e171808ddae87fab780f550715b634fe	0513b8f140823c98125b6321b7e1fe6855e1fc9f59ddc0597db9ca57872a5d8f	ELF32	DYN (Shared object file)	ARM	libpthread.so.0	2
+root/lib/libresolv-2.23.so	57356	e045b4452d88cf1023a35394eccf35bc	4ffc2195d9593f43b5c9de22d82cd5d8926315b5e7dd008bc4b187b062f700e3	ELF32	DYN (Shared object file)	ARM	libresolv.so.2	2
+root/lib/librt-2.23.so	24296	4ee802e2ea46343bed430b09f3320197	569eb6417d840544f4fe3d4e9b49d21e2f6e8d65fe20d6df56a1cf6b1399e877	ELF32	DYN (Shared object file)	ARM	librt.so.1	3
+root/lib/libSegFault.so	9672	412d88ab5eca6238f8b37f932f964958	a4fea2f1c661e2897c9c4a563a37272a63f31dad630971a87148efeaba8e7287	ELF32	DYN (Shared object file)	ARM	libSegFault.so	1
+root/lib/libssp.so.0.0.0	5848	e2f7abe154eb11655a2528240f364a74	7480283cd64164b785c09d052c51501e40183c97dbc46b9d7b5c511d2335ffa6	ELF32	DYN (Shared object file)	ARM	libssp.so.0	1
+root/lib/libstdc++.so.6.0.22	1032604	c42eb3afc046d8a97769f07505efc2b4	db579b835623fd309597ff9c113b93255c0ff334259793cc98ff2245f21272b8	ELF32	DYN (Shared object file)	ARM	libstdc++.so.6	4
+root/lib/libthread_db-1.0.so	22284	23a28fd3842a79c961fdd36f26aa71a1	a182b5b0e885ef6ea5881bb3a6027a1bca7553421a45b51492d49c34893e2762	ELF32	DYN (Shared object file)	ARM	libthread_db.so.1	1
+root/lib/libubsan.so.0.0.0	187136	26bebc5a2cf93346bc1f61ce4e93af1c	2095b2a2b268b2b39b62b7cf997d8ae05b66194607fe3bde7b5c5125ea79761a	ELF32	DYN (Shared object file)	ARM	libubsan.so.0	7
+root/lib/libutil-2.23.so	9768	ed9ef394c774049f55942bc96b7cd1c6	6ce7986709d897b1728b7000c10aa123d7f8860bb3bc2d68a99f3df1015791ba	ELF32	DYN (Shared object file)	ARM	libutil.so.1	1
+root/lib/modules/kteeclient.ko	26228	235215638f06201efe9bbebbb6389c9b	075c885338a15e179c4eaee4538dadd3deb1b67241dc3719558b9e1b8b9444d9	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/ntkndpalsa.ko	716516	8758a13d12799217ce702849df7d54da	1f9c61731d6eb195e733a3653194a91fcb59ee7d1a740448314213d2709e46d5	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/ntkndpci.ko	7828	6a06a1bdf95dffa93371b9575a6d294f	27d4d192509d3cea807ff41630da8e53bc08c735fe2bfc11245fba2b070fadfc	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/ntkndpcodec.ko	489788	76b9671c0064a4c674a99997796d405c	e5e15b41fa82b3fe861df326cae33ccd7840a25b5b9682003c48e7df92a1c37e	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/ntkndpdemod.ko	37260	607e40dc6f5252efeb5c89d30fb8e066	1eb62cd4a6bab43122f65a619a8b10fe24638e725cdbc9cc67aaf6d1d026b94a	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/ntkndpdrm.ko	926996	a70aca9b814e51cb9680476ce27051de	b91bbb1020eddf7dc8198ef2bc2d63e1263ce142bf11fbbfe08dfc9a3484bb49	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/ntkndpextin.ko	189820	cb0689e9e1c425a27e670168e51cc32f	8d71fad857a61b473672dcef92b9ed3c022c71dc93d4ddcf1a77d816d74cf74a	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/ntkndphdmi.ko	94816	930204bb8a2d977bd7f2501a575a0964	5d2bac7d507dde9c39ac348948a8bdddc59a37f2610bb7ba20019167265b7a4b	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/ntkndphdmiswitch.ko	27624	d4ff737dcbd9be2b628f2dd4eccf5d7a	5f2040c70b47b95465c7d0029a972371a232ca61012ec07ab74911c0c7bc87e6	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/ntkndp_pq.ko	141576	c208cdd0967cddf8cba7c826adf3f73a	025a5ba97a85a2ddca71fa3dd05b5d52fd94c8a85e1e5ee1525a07d518c0a97f	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/ntkndptsd.ko	273732	2470bb737131e4f803163ba9b1dce569	44e9d6888197df8ae794806115d8a6e3e9808e7dbf28dcd36eb27d73457f2a95	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/ntkndptuner.ko	7132	84be071efa5d16c2b6e8d13db667937a	8fd65ab9a3aa3203f3adfca25d9948c47e65f611b929b42c4b95020fda15be31	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/PreInit.ko	721732	1e50bee8b7888315c7a070f8e69947f6	5d4cdbba65cd1191a496d79219cf549e01abe83e117de91d24804d93916d5db1	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/lib/modules/PreTcon.ko	155524	bf1d64f7e40555c913d1c7425dde552c	20311a77c7730f26c7e069f8b8c1a73a0c43a3846a32b0c0fe783ad68a532d87	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7
+root/sbin/mkfs.ext4	227724	1260acb6a40c43d90d56faf33549a899	bdcb3bd4d2ac55dfb1b3109fb1b9a9aef27d1e3d73b3c0ba98692e4d6101f27a	ELF32	EXEC (Executable file)	ARM		3
+root/usr/sbin/bootlogo	520644	ce20bbf78dabbe70611c72c50a9e91dd	06c1ec5e3e031a748165750e723da5d796e0c2b32db1fe89b0c2ce27a951f6b6	ELF32	EXEC (Executable file)	ARM		0
+root/usr/sbin/flash_erase	22348	aef7957f928a7386b1d49356e97a5544	0301e7b7ba0066b6cbc0188e80d401a618744387051edc16f85910d99d66ebfd	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/mkfs.ubifs	92936	d0363665394f0499b6caa45cd50ea0a9	a54c1fb22fedb9d9eba6c07e2b50fbb8db363f64ac9543c8d35f97b863f4036f	ELF32	EXEC (Executable file)	ARM		2
+root/usr/sbin/mtdinfo	21320	2bfac3aa0f10e31be24febbbab69052f	3b5266462fdc8d8f9b57b6148983df5a56fec835b01423eadb065f976f25bef6	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/nanddump	22360	c852528349c73f7af1a56a0fea238adf	d5f6e4746d5efa85e75a6a2740408e2d99c673be0c3ec440b32387aad081f365	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/nandwrite	25940	c909217389eae1e4a8775fa3d1fd3840	dd0cd788f624f9da2635dad92991cc5533fd78b75982306d9891a54b8babfb5e	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/pcbconfig	16920	fa0ab5d40e2aa1e2c490d6fffc7adeb9	5710fa742fde44df863bcdc1a5b29b1a3ac9398527897aaea5d8a42fe1ac4886	ELF32	EXEC (Executable file)	ARM		3
+root/usr/sbin/ubiattach	15256	f876646772c6b5b2de915bf34ffc236f	370045afa78859bdc4e03d97f0a02e93dd6a3a7ed8327f4d2b8bf728eac9d021	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/ubiblock	10412	d07e1047d3545e893f70c76582003d18	c66fb10232611ab101ba325d06505aa29893a2d3d255132086575b77dc52faf7	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/ubicrc32	5836	7535f994b0f22e96df8a5328f7e614f0	a69d844b0b1342d1e45541aaf66ef7876e3d3dc455c90c8b3e0826888ded0bb0	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/ubidetach	11556	44b91d16ce90f78e985b6535475f9d32	c9472577b2826e93ddbdd1d17a3fc1eeae59a92f8b6be3cd7a40c108d45cbd0d	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/ubiformat	42928	2b5f2a85c852e13bf85880b54dc37055	550d06f8207c9cb467c0d3603b305c11cc0957da9eca4711e53e8c0b65cbf4b3	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/ubimkvol	18288	a851826b549a853c75f686f2a9280001	4a7866042aeca998abeabc5a08c3733696a30311aea6f850907321b66084ca62	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/ubinfo	19096	e6f1bcf2c80476e0cda3b7587dca25f5	ddf2b7d2afe8b9b59045c3d2af96d51634447bc13edfc8b9b55d31acc23f1b16	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/ubinize	27304	402c4fc8c8188240400cd5b9e8859e27	ceae2435178bc602cd2d0ff99b5ca52fd70bc9522e7c4b1bb781b7eab48c5ade	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/ubirename	12320	315520e9c0bf29e81d81b81e858804af	55955c5fc96e27ee81d2a2babbdb9a12bd8a9adf34f97c5034106bbf714379f1	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/ubirmvol	13696	5b071d974850ce3add18942d3c816ede	a6be6d821e7e8233a2adbbeac4b7fa43c3d4ef47561345723bb2cb8efd7ba52e	ELF32	EXEC (Executable file)	ARM		1
+root/usr/sbin/ubiupdatevol	14320	f60480e3cdedf555b295716593b1c173	1d949d84dd57f1c8a259f142d5ef6a31b8567b2a56f08d1f13ef7150ac2dad5a	ELF32	EXEC (Executable file)	ARM		1
+vendor2/modules/ntkdriver_nondovi.ko	18423496	fded7005651e37b8a1b5e8e89f73f4ff	55036a613b92ba89519f9909323807b7dcc35e06a6ef141ed377953f4c4ca28c	ELF32	REL (Relocatable file)	ARM		0	vermagic=4.9.118+ SMP preempt mod_unload ARMv7

@@ -1,0 +1,43 @@
+
+/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/PreInit.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+Disassembly of section .text.unlikely:
+
+Disassembly of section .exit.text:
+
+Disassembly of section .init.text:
+
+00001474 <init_module>:
+    1474:	mov	ip, sp
+    1478:	push	{r4, r5, fp, ip, lr, pc}
+    147c:	sub	fp, ip, #4
+    1480:	movw	r4, #0
+    1484:	movt	r4, #0
+    1488:	mov	r0, r4
+    148c:	bl	0 <printk>
+    1490:	movw	r0, #0
+    1494:	movt	r0, #0
+    1498:	bl	0 <printk>
+    149c:	movw	r1, #0
+    14a0:	movw	r0, #0
+    14a4:	movt	r1, #0
+    14a8:	movt	r0, #0
+    14ac:	bl	0 <printk>
+    14b0:	mov	r0, r4
+    14b4:	bl	0 <printk>
+    14b8:	bl	3b228 <KER_EMU_Init>
+    14bc:	bl	35a44 <KER_Nerve_Init>
+    14c0:	bl	1aea0 <KER_PMI_Init>
+    14c4:	bl	21704 <KER_SYS_DrvInit>
+    14c8:	bl	3240c <KER_AXI_SLAVE_Init>
+    14cc:	bl	245a8 <nvt_cma_init>
+    14d0:	bl	c8 <nt726xx_gpio_init>
+    14d4:	bl	0 <module_gpio_init>
+    14d8:	bl	1c018 <KER_CLK_DrvInit>
+    14dc:	bl	3f618 <i2c_nt726xx_platform_init>
+    14e0:	bl	10374 <KER_TCON_DrvInit>
+    14e4:	mov	r0, #0
+    14e8:	ldm	sp, {r4, r5, fp, sp, pc}

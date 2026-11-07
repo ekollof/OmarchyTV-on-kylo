@@ -1782,17 +1782,19 @@ Symbol/function counts depend on the counting method and do not establish an ABI
 - Vendor OSD allocation and commit are recoverable from offline firmware; current
   evidence now replaces blind draw/allocation/stacking probes.
 
-VENDOR-INVENTORY-2026-11-07: all 389 ELF files in the extracted `/vendor` tree
-were hashed and dumped read-only (SONAME/NEEDED, sections, symbol tables,
+VENDOR-INVENTORY-2026-11-07: 389 ELF files in the extracted `/vendor` tree
+plus 72 outside it (461 total, 15 kernel modules) were hashed and dumped read-only (SONAME/NEEDED, sections, symbol tables,
 dynamic symbols, strings); Ghidra inventories cover aurora and 15 library/
-kernel projects. The full GPIO function-name table has **226 slots / 224 named entries**
+kernel projects. The GPIO function-name table has **208 entries, IDs 0..207**
 (`au8GPIOFuncName` 0x175f350; `astPwmBasePin` 0x175f320). The live GPIO probe's
 printed `id`/`pin` labels were swapped: the ioctl word 0 is the pin, word 1 the
 function id, and `DEV_GPIO_GetDescription` returns `entry+8`, so descriptor[1]
 is the pin used by `DEV_PANEL_*`. VPLTIO recovered 45/45 call-site immediates
 (39 unique) and `Hal_Audio_Ctrl` 58 immediate call sites (37 unique opcodes). Report:
 VENDOR-INVENTORY-2026-11-07; raw data under
-artifacts/analysis/vendor-inventory-2026-11-07/.
+artifacts/analysis/vendor-inventory-2026-11-07/. An independent NDAL/kernel
+pass adds 132 NDAL3 + 36 NDAL_EX distinct ioctl immediates and module
+init/exit details; 9 of 15 kernel modules are not yet decompiled.
 
 APP-MANAGER-KEYBOARD-2026-11-07: `libappmgr.so` is unstripped (MD5
 413930d9366b4f8e76e5ebc2db246a72, BuildID fd36d8414541b839f57ab5ab732ba4054897f707;

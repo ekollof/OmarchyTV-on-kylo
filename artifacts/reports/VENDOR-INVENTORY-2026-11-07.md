@@ -12,10 +12,13 @@ are committed.
 ## Scope
 
 Source is the extracted `/vendor` tree from this TV's NAND dump
-(`artifacts/workbench/rootfs/vendor`). The census found **389 ELF files**,
-**249,616,804 bytes**, all **ELF32 / ARM**:
+(`artifacts/workbench/rootfs/vendor`). The `/vendor` census found **389 ELF
+files**, **249,616,804 bytes**, all **ELF32 / ARM**. The whole extracted rootfs
+has **461 ELF files**; the 72 outside `/vendor` include **15 kernel modules**
+under `root/lib/modules` and `vendor2/modules` and are in
+`elf/elf-census-extra.tsv`.
 
-| ELF type | files |
+| ELF type | files in `/vendor` |
 |---|---:|
 | shared object (`DYN`) | 331 |
 | executable (`EXEC`) | 32 |
@@ -46,6 +49,10 @@ All compressed text is xz; read with `xz -dc FILE`.
 | path | contents |
 |---|---|
 | `elf/elf-census.tsv` | 389 rows: path, size, MD5, SHA-256, ELF class/type/machine, SONAME, NEEDED count |
+| `elf/elf-census-extra.tsv` | 72 ELFs outside `/vendor` (whole-rootfs total 461) with vermagic |
+| `elf/elf-files-all-rootfs.txt` | exact 461-file ELF list |
+| `exports/kernel-modules.tsv` | 15 kernel modules: path, size, MD5, vermagic, symbol count |
+| `exports/kernel-module-symbols.txt.xz` | 125,595 kernel-module symbols with sizes |
 | `elf/elf-files.txt` | exact ELF path list |
 | `elf/dynamic-tags.txt.xz` | `readelf -dW` for every ELF (NEEDED, SONAME, RPATH/RUNPATH, flags) |
 | `elf/sections.txt.xz` | `readelf -SW` for every ELF |
@@ -60,7 +67,7 @@ All compressed text is xz; read with `xz -dc FILE`.
 | `../workbench/vendor-inventory-raw/elf/strings.txt.xz` | local-only `strings -a -n 5`; contains vendor certificate/key material, never redistribute |
 | `ghidra-summary.tsv` | per-project function/symbol/call-edge/data counts and MD5 |
 | `ghidra/<tag>/` | per-program `inventory.txt`, `functions.tsv.xz`, `callgraph.tsv.xz`, `symbols.named.tsv.xz`, `data.tsv.xz` |
-| `gpio-function-names.tsv` | full GPIO function-name table (226 slots, 224 named; ID → name) |
+| `gpio-function-names.tsv` | GPIO function-name table, IDs 0..207 (ID → name) |
 | `calls/vpltio-command-map.tsv` | VPLTIO command → calls/callers/sites (45/45 call sites, 39 unique values) |
 | `calls/vpltio-sendcmd-r0-objdump.tsv` | raw per-call rows with setup instructions |
 | `calls/api-args/` | per-symbol/register call-site maps (GPIO, IIC, audio, DRM, NDAL, PWM, panel) |
@@ -69,7 +76,7 @@ All compressed text is xz; read with `xz -dc FILE`.
 | `strings/aurora-device-paths.tsv` | 288 defined path strings / 690 references with function owner |
 | `strings/aurora-subsystems.tsv` | 9,646 subsystem-keyword strings / 4,776 references |
 | `../workbench/vendor-inventory-raw/aurora-strings.txt.xz` | local-only 376,113 aurora strings with file offsets; contains embedded key/cert strings, never commit/redistribute |
-| `grok-findings.md` | second-opinion NDAL/kernel-module extraction (when present) |
+| `grok-findings.md` | 98 KB independent NDAL/kernel second pass (exports, ioctls, device paths, init/exit) |
 
 Durable scripts added for reproducing the inventory:
 
@@ -80,6 +87,70 @@ openaurora/tools/re/objdump-callsite-args.py  same over the objdump cache
 openaurora/tools/re/group-callsite-args.py    aggregate command maps
 openaurora/tools/re/DumpStringRefs.java        string -> referencing function
 ```
+
+## Kernel modules outside `/vendor`
+
+The whole-rootfs census found 15 ARM kernel modules (`vermagic=4.9.118+ SMP
+preempt mod_unload ARMv7`), with 125,595 symbols in total. Seven already have
+Ghidra projects (`ntkndpdrm`, `ntkndpextin`, `ntkdriver_nondovi`, `ntkndpalsa`,
+`ntkethmac`, `PreInit`, `ntkndphdmiswitch`); the other nine are symbol/string
+inventoried but not decompiled.
+
+| module | MD5 | size | symbols | Ghidra |
+|---|---|---:|---:|---|
+| kteeclient.ko | `23521563...` | 26,228 | 185 | no |
+| ntkndpalsa.ko | `8758a13d...` | 716,516 | 5,054 | yes |
+| ntkndpci.ko | `6a06a1bd...` | 7,828 | 73 | no |
+| ntkndpcodec.ko | `76b9671c...` | 489,788 | 3,021 | no |
+| ntkndpdemod.ko | `607e40dc...` | 37,260 | 343 | no |
+| ntkndpdrm.ko | `a70aca9b...` | 926,996 | 6,207 | yes |
+| ntkndpextin.ko | `cb0689e9...` | 189,820 | 1,226 | yes |
+| ntkndphdmi.ko | `930204bb...` | 94,816 | 657 | no |
+| ntkndphdmiswitch.ko | `d4ff737d...` | 27,624 | 187 | yes |
+| ntkndp_pq.ko | `c208cdd0...` | 141,576 | 682 | no |
+| ntkndptsd.ko | `2470bb73...` | 273,732 | 1,545 | no |
+| ntkndptuner.ko | `84be071e...` | 7,132 | 71 | no |
+| PreInit.ko | `1e50bee8...` | 721,732 | 4,495 | yes |
+| PreTcon.ko | `bf1d64f7...` | 155,524 | 310 | no |
+| ntkdriver_nondovi.ko | `fded7005...` | 18,423,496 | 101,539 | yes |
+
+`ntkndptuner.ko` is only 7 KB, so its tuner logic is a thin shim over
+`ntkndpdemod`/`ntkndpci`; the NDAL ioctl map is the better entry point. The
+large `ntkdriver_nondovi.ko` accounts for most of the symbol count and is
+already covered by a Ghidra project.
+
+## Independent second pass (Grok)
+
+`grok-findings.md` is a separately produced NDAL/kernel read using objdump,
+`nm`, `readelf`, `strings` and `modinfo` (no Ghidra project opened). It adds:
+
+- **libNDAL3.so**: 517 dynamic functions, 22 `D`, 22 `B`; 276 `ioctl` calls,
+  132 distinct immediates; aurora uses 228 NDAL3 symbols with 1,328 calls.
+  Recovered commands include demux/CI (`0xbbxx`, `0xbdxx`, `0x6fxx`), video
+  (`0xc0xx56xx`), PQ (`0xba87` selector), GPIO (`0x67xx`), PWM
+  (`0x403c4c4c`/`0xc03c4c53`), SPI, TSMUX (`0xc8xx`) and DRM buffers.
+- **libNDAL_EX.so**: 330 dynamic functions; 102 ioctl-like calls, 36 distinct
+  immediates; aurora uses 112 symbols with 339 calls. Recovered GPU
+  (`G` type), NIM/frontend (`o` type), NDSYS (`s` type), TSPU (`bb`) and
+  Dolby Vision (`0x6001`/`0x6000`) commands.
+- **Device paths** in NDAL3: `/dev/ntkdvif`, `/dev/ntktspu`, `/dev/ndp_hwmem`,
+  `/dev/ntkcrypto`, `/dev/ntksys`, `/dev/video10..13`, `/dev/ntkspi`,
+  `/dev/ntgpio`, `/dev/ntkiic0`, `/dev/nvt/ntkled`, `/dev/ntkled`,
+  `/dev/ntktsmux`, `/dev/dri/card0/1`, `/dev/nvt/ntkvplt`, `/dev/ntkvplt`,
+  `/dev/dvb/adapter%i/*`, `/dev/snd/comprC%uD%u`; NDAL_EX adds
+  `/dev/nvt/kdolby`, `/dev/ndppq`, `/dev/nvt/ntkgpu`.
+- **Kernel modules**: init/exit disassembly and ioctl entry points for
+  `ntkndpdrm`, `ntkndpextin`, `ntkdriver_nondovi`, `ntkndpalsa`, `ntkethmac`,
+  `PreInit`, `ntkndphdmiswitch`; `PreInit GPIO_Ioctl` switches on
+  `(command & 0xff) - 1` for 1..34, while `IIC_Ioctl`, `vu_ioctl` and
+  `MAU_IOCtl` have separate entry points.
+- **VPLTIO cross-check**: 43 of the 45 objdump rows match the independently
+  re-read instructions; the two remaining callers are the unnamed functions
+  above, and the shared commands are one command from two callers.
+
+The second pass's contradictions table is retained with a resolution note; it
+drove the GPIO 0..207 truncation, the caller-name fixes and the whole-rootfs
+census extension.
 
 ## Ghidra inventory
 
@@ -152,7 +223,12 @@ Full evidence with setup instructions is in
 ```
 
 This map is static call-site data; it does not prove which commands the panel
-accepts or what each argument struct means.
+accepts or what each argument struct means. Two callers are unnamed functions:
+`8f6d90` belongs to the function starting at `8f682c` (not `PLAT_VLIB_EnableMsg`)
+and `92e918` to `92e8ac` (not `plat_set_dimming`). The canonical rows are
+`calls/vpltio-sendcmd-r0-objdump.tsv`; the older Ghidra scan is retained as
+`vpltio-sendcmd-r0-ghidra-superseded.tsv` because it had 14 UNKNOWN rows and a
+wrong `0x0` at `92e3da` (the instruction sets `0x1c8`).
 
 ## Aurora ioctl command immediates
 
@@ -193,7 +269,7 @@ are deliberately left UNKNOWN rather than guessed.
 
 `au8GPIOFuncName` is at **0x175f350** (Ghidra label; file offset
 `0x173f350`), 24 bytes per record. The table was extracted from the ELF and
-contains **226 slots, 224 named entries**. `astPwmBasePin` is at **0x175f320**.
+contains **208 named entries, IDs 0..207**. ID 208 is the ASCII sentinel `TOTAL`; later bytes are a different/undecoded region, not 24-byte pin records.. `astPwmBasePin` is at **0x175f320**.
 
 ```text
 0   TUNER_IIC_SDA            108 BACKLIGHT_LEVEL
@@ -260,7 +336,7 @@ audio/GPIO/PWM/STBC/DRM/OSD strings to their owning functions.
 | `gstBacklightPara` | 0x19354c4 | level + runtime minimum |
 | `gstVoutPwmParams` | 0x19354cc | curve thresholds/midpoints |
 | `astPwmBasePin` | 0x175f320 | pin 108 → channel 0 |
-| `au8GPIOFuncName` | 0x175f350 | 226-slot (224 named) table |
+| `au8GPIOFuncName` | 0x175f350 | 0..207 table |
 
 `DEV_PANEL_SetBacklightLevel` receives `0x4000` at `0x7e3c96`
 (`ice_BacklightSetPanelBright`); that is outside the documented 0..1000 range

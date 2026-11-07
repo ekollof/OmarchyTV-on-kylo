@@ -1,0 +1,246 @@
+
+/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/vendor/modules/ntkethmac.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00006ec0 <nvt_private_ioctl>:
+    6ec0:	mov	ip, sp
+    6ec4:	push	{r4, r5, r6, fp, ip, lr, pc}
+    6ec8:	sub	fp, ip, #4
+    6ecc:	sub	sp, sp, #20
+    6ed0:	push	{lr}		; (str lr, [sp, #-4]!)
+    6ed4:	bl	0 <__gnu_mcount_nc>
+    6ed8:	subs	r4, r0, #0
+    6edc:	beq	6f5c <nvt_private_ioctl+0x9c>
+    6ee0:	ldr	r1, [r4, #16]
+    6ee4:	cmp	r1, #0
+    6ee8:	beq	6f24 <nvt_private_ioctl+0x64>
+    6eec:	mov	r3, sp
+    6ef0:	sub	r0, fp, #44	; 0x2c
+    6ef4:	bic	r3, r3, #8128	; 0x1fc0
+    6ef8:	bic	r3, r3, #63	; 0x3f
+    6efc:	ldr	r3, [r3, #8]
+    6f00:	adds	r2, r1, #16
+    6f04:	sbcscc	r2, r2, r3
+    6f08:	movcc	r3, #0
+    6f0c:	cmp	r3, #0
+    6f10:	bne	7130 <nvt_private_ioctl+0x270>
+    6f14:	mov	r2, #16
+    6f18:	bl	0 <arm_copy_from_user>
+    6f1c:	subs	r1, r0, #0
+    6f20:	bne	7258 <nvt_private_ioctl+0x398>
+    6f24:	ldr	r1, [fp, #-44]	; 0xffffffd4
+    6f28:	sub	r3, r1, #1
+    6f2c:	cmp	r3, #5
+    6f30:	ldrls	pc, [pc, r3, lsl #2]
+    6f34:	b	6f50 <nvt_private_ioctl+0x90>
+    6f38:	.word	0x0000700c
+    6f3c:	.word	0x00007044
+    6f40:	.word	0x00007060
+    6f44:	.word	0x000070c8
+    6f48:	.word	0x000070f4
+    6f4c:	.word	0x00006f68
+    6f50:	movw	r0, #0
+    6f54:	movt	r0, #0
+    6f58:	bl	0 <printk>
+    6f5c:	mvn	r0, #0
+    6f60:	sub	sp, fp, #24
+    6f64:	ldm	sp, {r4, r5, r6, fp, sp, pc}
+    6f68:	movw	r3, #0
+    6f6c:	movw	r0, #0
+    6f70:	movt	r3, #0
+    6f74:	movt	r0, #0
+    6f78:	ldr	r3, [r3]
+    6f7c:	ldr	r1, [pc, #740]	; 7268 <nvt_private_ioctl+0x3a8>
+    6f80:	ldr	r4, [r3, #4]
+    6f84:	bl	0 <printk>
+    6f88:	cmp	r4, #0
+    6f8c:	beq	7240 <nvt_private_ioctl+0x380>
+    6f90:	cmn	r4, #1344	; 0x540
+    6f94:	beq	7158 <nvt_private_ioctl+0x298>
+    6f98:	ldr	r5, [r4, #1344]	; 0x540
+    6f9c:	cmp	r5, #0
+    6fa0:	beq	7140 <nvt_private_ioctl+0x280>
+    6fa4:	ldr	r3, [r4, #48]	; 0x30
+    6fa8:	tst	r3, #1
+    6fac:	bne	7194 <nvt_private_ioctl+0x2d4>
+    6fb0:	mov	r0, #540	; 0x21c
+    6fb4:	mov	r1, #268435456	; 0x10000000
+    6fb8:	movt	r0, #64516	; 0xfc04
+    6fbc:	bl	808 <ioremap_OR_value>
+    6fc0:	mov	r0, #512	; 0x200
+    6fc4:	mvn	r1, #256	; 0x100
+    6fc8:	movt	r0, #64516	; 0xfc04
+    6fcc:	bl	7b8 <ioremap_AND_value>
+    6fd0:	mov	r0, #536	; 0x218
+    6fd4:	mvn	r1, #12
+    6fd8:	movt	r0, #64516	; 0xfc04
+    6fdc:	bl	7b8 <ioremap_AND_value>
+    6fe0:	mov	r0, #540	; 0x21c
+    6fe4:	mvn	r1, #268435456	; 0x10000000
+    6fe8:	movt	r0, #64516	; 0xfc04
+    6fec:	bl	7b8 <ioremap_AND_value>
+    6ff0:	movw	r0, #0
+    6ff4:	ldr	r1, [pc, #620]	; 7268 <nvt_private_ioctl+0x3a8>
+    6ff8:	movt	r0, #0
+    6ffc:	bl	0 <printk>
+    7000:	mov	r0, #0
+    7004:	sub	sp, fp, #24
+    7008:	ldm	sp, {r4, r5, r6, fp, sp, pc}
+    700c:	ldr	r4, [fp, #-40]	; 0xffffffd8
+    7010:	cmp	r4, #1
+    7014:	beq	7170 <nvt_private_ioctl+0x2b0>
+    7018:	cmp	r4, #0
+    701c:	bne	6f5c <nvt_private_ioctl+0x9c>
+    7020:	movw	r3, #0
+    7024:	movw	r0, #0
+    7028:	movt	r3, #0
+    702c:	movt	r0, #0
+    7030:	mov	r1, r4
+    7034:	str	r4, [r3, #56]	; 0x38
+    7038:	bl	0 <printk>
+    703c:	mov	r0, r4
+    7040:	b	6f60 <nvt_private_ioctl+0xa0>
+    7044:	bl	6fc <nvt_internal_PHY_power_down>
+    7048:	movw	r0, #0
+    704c:	movt	r0, #0
+    7050:	bl	0 <printk>
+    7054:	mov	r0, #0
+    7058:	sub	sp, fp, #24
+    705c:	ldm	sp, {r4, r5, r6, fp, sp, pc}
+    7060:	mov	r0, #724	; 0x2d4
+    7064:	movt	r0, #64787	; 0xfd13
+    7068:	bl	6c <ioremap_read>
+    706c:	mov	r3, r0
+    7070:	movw	r0, #0
+    7074:	mov	r1, r3
+    7078:	movt	r0, #0
+    707c:	str	r3, [fp, #-40]	; 0xffffffd8
+    7080:	bl	0 <printk>
+    7084:	mov	r3, sp
+    7088:	ldr	r0, [r4, #16]
+    708c:	bic	r3, r3, #8128	; 0x1fc0
+    7090:	bic	r3, r3, #63	; 0x3f
+    7094:	ldr	r3, [r3, #8]
+    7098:	adds	r2, r0, #16
+    709c:	sbcscc	r2, r2, r3
+    70a0:	movcc	r3, #0
+    70a4:	cmp	r3, #0
+    70a8:	bne	6f5c <nvt_private_ioctl+0x9c>
+    70ac:	mov	r2, #16
+    70b0:	sub	r1, fp, #44	; 0x2c
+    70b4:	bl	0 <arm_copy_to_user>
+    70b8:	adds	r0, r0, #0
+    70bc:	movne	r0, #1
+    70c0:	rsb	r0, r0, #0
+    70c4:	b	6f60 <nvt_private_ioctl+0xa0>
+    70c8:	mov	r0, #724	; 0x2d4
+    70cc:	ldr	r1, [fp, #-40]	; 0xffffffd8
+    70d0:	movt	r0, #64787	; 0xfd13
+    70d4:	bl	774 <ioremap_write>
+    70d8:	movw	r0, #0
+    70dc:	ldr	r1, [fp, #-40]	; 0xffffffd8
+    70e0:	movt	r0, #0
+    70e4:	bl	0 <printk>
+    70e8:	mov	r0, #0
+    70ec:	sub	sp, fp, #24
+    70f0:	ldm	sp, {r4, r5, r6, fp, sp, pc}
+    70f4:	mov	r0, #708	; 0x2c4
+    70f8:	ldr	r1, [fp, #-40]	; 0xffffffd8
+    70fc:	movt	r0, #64787	; 0xfd13
+    7100:	bl	774 <ioremap_write>
+    7104:	mov	r0, #712	; 0x2c8
+    7108:	ldr	r1, [fp, #-40]	; 0xffffffd8
+    710c:	movt	r0, #64787	; 0xfd13
+    7110:	bl	774 <ioremap_write>
+    7114:	movw	r0, #0
+    7118:	ldr	r1, [fp, #-40]	; 0xffffffd8
+    711c:	movt	r0, #0
+    7120:	bl	0 <printk>
+    7124:	mov	r0, #0
+    7128:	sub	sp, fp, #24
+    712c:	ldm	sp, {r4, r5, r6, fp, sp, pc}
+    7130:	mov	r1, #16
+    7134:	bl	0 <__memzero>
+    7138:	mvn	r0, #0
+    713c:	b	6f60 <nvt_private_ioctl+0xa0>
+    7140:	movw	r0, #0
+    7144:	ldr	r1, [pc, #284]	; 7268 <nvt_private_ioctl+0x3a8>
+    7148:	movt	r0, #0
+    714c:	bl	0 <printk>
+    7150:	mvn	r0, #0
+    7154:	b	6f60 <nvt_private_ioctl+0xa0>
+    7158:	movw	r0, #0
+    715c:	ldr	r1, [pc, #260]	; 7268 <nvt_private_ioctl+0x3a8>
+    7160:	movt	r0, #0
+    7164:	bl	0 <printk>
+    7168:	mvn	r0, #0
+    716c:	b	6f60 <nvt_private_ioctl+0xa0>
+    7170:	movw	r3, #0
+    7174:	movw	r0, #0
+    7178:	movt	r3, #0
+    717c:	mov	r1, r4
+    7180:	movt	r0, #0
+    7184:	str	r4, [r3, #56]	; 0x38
+    7188:	bl	0 <printk>
+    718c:	mov	r0, #0
+    7190:	b	6f60 <nvt_private_ioctl+0xa0>
+    7194:	ldr	r0, [r5, #32]
+    7198:	movw	r6, #0
+    719c:	bl	0 <disable_irq>
+    71a0:	mov	r0, #500	; 0x1f4
+    71a4:	movt	r6, #0
+    71a8:	bl	0 <msleep>
+    71ac:	mov	r0, r4
+    71b0:	bl	0 <netif_device_detach>
+    71b4:	ldr	r1, [r4, #640]	; 0x280
+    71b8:	mov	r0, #0
+    71bc:	add	r1, r1, #88	; 0x58
+    71c0:	bl	0 <_set_bit>
+    71c4:	ldr	r0, [r6, #24]
+    71c8:	bl	0 <flush_workqueue>
+    71cc:	movw	r0, #0
+    71d0:	movt	r0, #0
+    71d4:	bl	0 <del_timer>
+    71d8:	add	r0, r6, #28
+    71dc:	bl	0 <del_timer>
+    71e0:	mov	r0, r5
+    71e4:	bl	3228 <synopGMAC_disable_interrupt_all>
+    71e8:	mov	r0, r5
+    71ec:	bl	34bc <synopGMAC_disable_dma_rx>
+    71f0:	mov	r0, r5
+    71f4:	bl	3360 <synopGMAC_take_desc_ownership_rx>
+    71f8:	mov	r0, r5
+    71fc:	bl	3488 <synopGMAC_disable_dma_tx>
+    7200:	mov	r0, r5
+    7204:	bl	33f4 <synopGMAC_take_desc_ownership_tx>
+    7208:	mov	r0, r5
+    720c:	bl	6264 <synopGMAC_giveup_rx_desc_queue.constprop.6>
+    7210:	mov	r0, r5
+    7214:	bl	6174 <synopGMAC_giveup_tx_desc_queue.constprop.5>
+    7218:	mov	r0, r5
+    721c:	bl	3c38 <synopGMAC_pmt_int_enable>
+    7220:	mov	r0, r5
+    7224:	bl	3598 <synopGMAC_magic_packet_enable>
+    7228:	mov	r0, r5
+    722c:	bl	3538 <synopGMAC_power_down_enable>
+    7230:	movw	r0, #0
+    7234:	movt	r0, #0
+    7238:	bl	0 <printk>
+    723c:	b	6fb0 <nvt_private_ioctl+0xf0>
+    7240:	movw	r0, #0
+    7244:	ldr	r1, [pc, #28]	; 7268 <nvt_private_ioctl+0x3a8>
+    7248:	movt	r0, #0
+    724c:	bl	0 <printk>
+    7250:	mvn	r0, #0
+    7254:	b	6f60 <nvt_private_ioctl+0xa0>
+    7258:	rsb	r0, r1, #16
+    725c:	sub	r3, fp, #44	; 0x2c
+    7260:	add	r0, r3, r0
+    7264:	b	7134 <nvt_private_ioctl+0x274>
+    7268:	.word	0x00000338
+
+Disassembly of section .init.text:
+
+Disassembly of section .exit.text:

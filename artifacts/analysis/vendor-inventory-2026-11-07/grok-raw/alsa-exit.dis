@@ -1,0 +1,16 @@
+
+/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/ntkndpalsa.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+Disassembly of section .init.text:
+
+Disassembly of section .exit.text:
+
+00000000 <cleanup_module>:
+   0:	mov	ip, sp
+   4:	push	{fp, ip, lr, pc}
+   8:	sub	fp, ip, #4
+   c:	bl	878 <audio_alsa_exit>
+  10:	ldm	sp, {fp, sp, pc}

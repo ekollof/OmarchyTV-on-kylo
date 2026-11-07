@@ -1,0 +1,68 @@
+
+/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/PreInit.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0003ad88 <vu_ioctl>:
+   3ad88:	mov	ip, sp
+   3ad8c:	push	{r1, r2, r3}
+   3ad90:	push	{r4, r5, r6, fp, ip, lr, pc}
+   3ad94:	sub	fp, ip, #16
+   3ad98:	sub	sp, sp, #8
+   3ad9c:	push	{lr}		; (str lr, [sp, #-4]!)
+   3ada0:	bl	0 <__gnu_mcount_nc>
+   3ada4:	cmn	r0, #1
+   3ada8:	mov	r2, #0
+   3adac:	add	r3, fp, #8
+   3adb0:	mov	r4, r0
+   3adb4:	str	r2, [fp, #-32]	; 0xffffffe0
+   3adb8:	str	r3, [fp, #-28]	; 0xffffffe4
+   3adbc:	beq	3adf8 <vu_ioctl+0x70>
+   3adc0:	ldmib	fp, {r3, r5}
+   3adc4:	ubfx	r3, r3, #16, #14
+   3adc8:	cmp	r3, r2
+   3adcc:	add	r3, fp, #12
+   3add0:	moveq	r5, r2
+   3add4:	str	r3, [fp, #-28]	; 0xffffffe4
+   3add8:	bl	3aa00 <KER_EMU_DevMap>
+   3addc:	sub	r1, fp, #32
+   3ade0:	mov	r6, r0
+   3ade4:	mov	r0, r4
+   3ade8:	bl	3aacc <_emu_wrapper_get_device_p>
+   3adec:	cmp	r6, #0
+   3adf0:	cmpne	r0, #0
+   3adf4:	bne	3ae04 <vu_ioctl+0x7c>
+   3adf8:	mvn	r0, #0
+   3adfc:	sub	sp, fp, #24
+   3ae00:	ldm	sp, {r4, r5, r6, fp, sp, pc}
+   3ae04:	ldr	r3, [r6, #4]
+   3ae08:	cmp	r3, #0
+   3ae0c:	beq	3adf8 <vu_ioctl+0x70>
+   3ae10:	ldr	r0, [r0, #52]	; 0x34
+   3ae14:	blx	r3
+   3ae18:	cmp	r0, #0
+   3ae1c:	beq	3adf8 <vu_ioctl+0x70>
+   3ae20:	ldr	r3, [r6, #4]
+   3ae24:	ldr	r0, [r0, #52]	; 0x34
+   3ae28:	blx	r3
+   3ae2c:	subs	r4, r0, #0
+   3ae30:	beq	3adf8 <vu_ioctl+0x70>
+   3ae34:	bl	3aa40 <_emu_wrapper_get_hash_p>
+   3ae38:	ldr	r3, [r4, #40]	; 0x28
+   3ae3c:	ldr	r3, [r3, #36]	; 0x24
+   3ae40:	cmp	r3, #0
+   3ae44:	beq	3adf8 <vu_ioctl+0x70>
+   3ae48:	mov	r2, r5
+   3ae4c:	ldr	r1, [fp, #4]
+   3ae50:	blx	r3
+   3ae54:	adds	r0, r0, #0
+   3ae58:	movne	r0, #1
+   3ae5c:	rsb	r0, r0, #0
+   3ae60:	b	3adfc <vu_ioctl+0x74>
+
+Disassembly of section .text.unlikely:
+
+Disassembly of section .exit.text:
+
+Disassembly of section .init.text:

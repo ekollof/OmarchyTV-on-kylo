@@ -1,0 +1,111 @@
+
+/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/ntkndpdrm.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+Disassembly of section .init.text:
+
+00000000 <init_module>:
+   0:	mov	ip, sp
+   4:	push	{r4, r5, fp, ip, lr, pc}
+   8:	sub	fp, ip, #4
+   c:	sub	sp, sp, #72	; 0x48
+  10:	movw	r3, #0
+  14:	movw	r2, #0
+  18:	movt	r3, #0
+  1c:	movt	r2, #0
+  20:	mov	r1, #1048576	; 0x100000
+  24:	mov	r0, #5
+  28:	bl	0 <DRV_DBG_Register>
+  2c:	bl	42b14 <gfxp_init>
+  30:	cmp	r0, #0
+  34:	blt	17c <init_module+0x17c>
+  38:	bl	39fa4 <dp_main_init>
+  3c:	cmp	r0, #0
+  40:	blt	178 <init_module+0x178>
+  44:	bl	3e874 <dp_sub_init>
+  48:	cmp	r0, #0
+  4c:	blt	178 <init_module+0x178>
+  50:	bl	40dd4 <dp_sub2_init>
+  54:	cmp	r0, #0
+  58:	blt	178 <init_module+0x178>
+  5c:	bl	2635c <dummy_panel_init>
+  60:	cmp	r0, #0
+  64:	blt	178 <init_module+0x178>
+  68:	mov	r2, #48	; 0x30
+  6c:	mov	r1, #0
+  70:	sub	r0, fp, #68	; 0x44
+  74:	movw	r5, #0
+  78:	bl	0 <memset>
+  7c:	movt	r5, #0
+  80:	sub	r0, fp, #68	; 0x44
+  84:	movw	r4, #0
+  88:	str	r5, [fp, #-60]	; 0xffffffc4
+  8c:	bl	0 <platform_device_register_full>
+  90:	cmn	r0, #4096	; 0x1000
+  94:	movt	r4, #0
+  98:	str	r0, [r4]
+  9c:	bhi	e8 <init_module+0xe8>
+  a0:	mov	r2, #48	; 0x30
+  a4:	mov	r1, #0
+  a8:	sub	r0, fp, #68	; 0x44
+  ac:	bl	0 <memset>
+  b0:	mov	r3, #1
+  b4:	sub	r0, fp, #68	; 0x44
+  b8:	str	r5, [fp, #-60]	; 0xffffffc4
+  bc:	str	r3, [fp, #-56]	; 0xffffffc8
+  c0:	bl	0 <platform_device_register_full>
+  c4:	cmn	r0, #4096	; 0x1000
+  c8:	str	r0, [r4, #4]
+  cc:	bhi	e8 <init_module+0xe8>
+  d0:	movw	r1, #0
+  d4:	ldr	r0, [pc, #168]	; 184 <init_module+0x184>
+  d8:	movt	r1, #0
+  dc:	bl	0 <__platform_driver_register>
+  e0:	and	r0, r0, r0, asr #31
+  e4:	b	17c <init_module+0x17c>
+  e8:	movw	r3, #0
+  ec:	movt	r3, #0
+  f0:	ldr	r3, [r3]
+  f4:	tst	r3, #2048	; 0x800
+  f8:	beq	170 <init_module+0x170>
+  fc:	nop	{0}
+ 100:	b	170 <init_module+0x170>
+ 104:	movw	r3, #0
+ 108:	movt	r3, #0
+ 10c:	ldr	r1, [r3]
+ 110:	cmp	r1, #0
+ 114:	addne	r1, r1, #16
+ 118:	bne	124 <init_module+0x124>
+ 11c:	bl	0 <NDP_DebugInit>
+ 120:	mov	r1, r0
+ 124:	mov	ip, sp
+ 128:	ldr	r0, [pc, #88]	; 188 <init_module+0x188>
+ 12c:	bic	r2, ip, #8128	; 0x1fc0
+ 130:	movw	r4, #747	; 0x2eb
+ 134:	bic	r2, r2, #63	; 0x3f
+ 138:	movw	r3, #0
+ 13c:	ldr	lr, [r2, #12]
+ 140:	movw	r2, #0
+ 144:	str	r4, [sp, #16]
+ 148:	movt	r3, #0
+ 14c:	str	r0, [sp, #12]
+ 150:	movt	r2, #0
+ 154:	ldr	r5, [lr, #692]	; 0x2b4
+ 158:	add	r4, lr, #948	; 0x3b4
+ 15c:	ldr	r0, [pc, #40]	; 18c <init_module+0x18c>
+ 160:	str	r5, [sp, #8]
+ 164:	ldr	lr, [lr, #688]	; 0x2b0
+ 168:	stm	sp, {r4, lr}
+ 16c:	bl	0 <__dynamic_nvt_dbg>
+ 170:	ldr	r0, [pc, #12]	; 184 <init_module+0x184>
+ 174:	bl	0 <platform_driver_unregister>
+ 178:	mov	r0, #0
+ 17c:	sub	sp, fp, #20
+ 180:	ldm	sp, {r4, r5, fp, sp, pc}
+ 184:	.word	0x00000238
+ 188:	.word	0x00001408
+ 18c:	.word	0x00002180
+
+Disassembly of section .exit.text:

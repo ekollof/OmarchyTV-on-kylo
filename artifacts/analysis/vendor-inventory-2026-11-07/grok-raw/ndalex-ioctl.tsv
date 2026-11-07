@@ -1,0 +1,103 @@
+func	site	cmd	ioc	evidence
+_Z23NDAL_CommonExt_GetCAUIDPj	4db56d8a	REG		4db56d84: mov	r1, r4
+_Z20_ksys_get_hw_versioni	4db56fda	0xc0347300	RW s nr=0 sz=52	4db56fd6: movt	r1, #49204	; 0xc034 || 4db56fce: mov.w	r1, #29440	; 0x7300
+_Z27NDAL_GfxExt_SetTransparency22_Nd_Gfxex_OSD_PLANE_IDj	4db57382	REG		4db5737c: mov	r1, r4
+_Z27NDAL_GfxExt_EnableOSDEngineb	4db57410	REG		4db5740a: mov	r1, r4
+_Z29NDAL_GfxExt_EnableProtectAreab22_Nd_Gfxex_OSD_PLANE_IDjj	4db574e2	REG		4db574dc: mov	r1, r4
+_Z24NDAL_GfxExt_SET_CROP_WIN22_Nd_Gfxex_OSD_PLANE_IDP8_ST_RECTS1_	4db57626	REG		4db57620: mov	r1, r4
+_Z25NDAL_GfxExt_GetAlphaCounthPj	4db576fc	REG		4db576f6: mov	r1, r4
+_Z29NDAL_GfxExt_SetOSD1_AUTHORITY22_Nd_Gfxex_OSD_PLANE_ID	4db5779c	REG		4db57796: mov	r1, r4
+_Z23NDAL_GfxExt_SetPreAlpha22_Nd_Gfxex_OSD_PLANE_IDb	4db5783e	REG		4db57838: mov	r1, r4
+NDAL_VenderVideoExt_GetDPCountTsk	4db57e1a	0xba86	NONE ba nr=134 sz=0	4db57e08: movw	r1, #47750	; 0xba86
+NDAL_VenderVideoExt_Send_DolbyVision_GetCmd	4db5814c	0xd01b6001	RW ` nr=1 sz=4123	4db58144: movt	r1, #53275	; 0xd01b || 4db5813e: movw	r1, #24577	; 0x6001
+NDAL_VenderVideoExt_Send_DolbyVision_GetCmd	4db5817a	0xd01b6000	RW ` nr=0 sz=4123	4db58172: movt	r1, #53275	; 0xd01b || 4db5816c: mov.w	r1, #24576	; 0x6000
+NDAL_VenderVideoExt_SendGetCmd	4db58260	0xba87	NONE ba nr=135 sz=0	4db58258: movw	r1, #47751	; 0xba87
+NDAL_VenderVideoExt_SendSetCmd	4db584f6	0xba87	NONE ba nr=135 sz=0	4db584ee: movw	r1, #47751	; 0xba87
+_ZL18_send_v4l2_commandjjP16v4l2_ext_controlj	4db586fc	REG		4db586f8: mov	r1, r4
+NDAL_VideoExt_Set_VDStatusBeforeDP	4db5889c	REG		4db58896: mov	r1, r4
+NDAL_VideoExt_Set_HDMI_ClrRatioScramble	4db58ac0	REG		4db58aba: mov	r1, r4
+NDAL_VideoExt_SetPanel	4db5914a	REG		4db59144: mov	r1, r4
+NDAL_VideoExt_SetFrameBGColor	4db5922c	REG		4db59226: mov	r1, r4
+NDAL_VideoExt_SetVX1Partition	4db592b8	REG		4db592b2: mov	r1, r4
+NDAL_VideoExt_SetDPFrameRate	4db59362	REG		4db5935c: mov	r1, r4
+NDAL_VideoExt_SetNonlinearScalingParameter	4db594a2	REG		4db5949c: mov	r1, r7
+NDAL_VideoExt_SetNetflexFlag	4db59534	REG		4db5952e: mov	r1, r4
+NDAL_VideoExt_Set3D	4db59602	REG		4db595fc: mov	r1, r4
+NDAL_VideoExt_SetUp2DTo3D	4db596ae	REG		4db596a8: mov	r1, r4
+NDAL_VideoExt_FreeFRCFB	4db59744	REG		4db5973e: mov	r1, r4
+NDAL_VideoExt_VD_GetStatus	4db59e4a	LDR		4db59e44: ldr	r1, [r7, #0]
+NDAL_VideoExt_VD_DeliverConfig	4db59f8a	REG		4db59f84: mov	r1, r5
+NDAL_VideoExt_VD_DeliverConfig	4db59ff4	REG		4db59fee: mov	r1, r5
+NDAL_VideoExt_VD_DeliverConfig	4db5a058	REG		4db5a052: mov	r1, r5
+NDAL_VideoExt_VD_DeliverConfig	4db5a0bc	REG		4db5a0b6: mov	r1, r5
+NDAL_VideoExt_VD_GetNoiseLevel	4db5a1a8	REG		4db5a1a2: mov	r1, r4
+GPU_SYS_GetVersion	4db63d5c	0x4004471f	W G nr=31 sz=4	4db63d50: movt	r1, #16388	; 0x4004 || 4db63d4c: movw	r1, #18207	; 0x471f
+GPU_SYS_Lock	4db63e58	0x40044740	W G nr=64 sz=4	4db63e4c: movt	r1, #16388	; 0x4004 || 4db63e44: movw	r1, #18240	; 0x4740
+GPU_SYS_Unlock	4db63ec0	0x40044741	W G nr=65 sz=4	4db63eb4: movt	r1, #16388	; 0x4004 || 4db63eac: movw	r1, #18241	; 0x4741
+GPU_SYS_Trigger_Unlock	4db63f2a	0x4004474a	W G nr=74 sz=4	4db63f26: movt	r1, #16388	; 0x4004 || 4db63f22: movw	r1, #18250	; 0x474a
+GPU_SYS_MEM_CMA_Alloc	4db63fac	0xc0044742	RW G nr=66 sz=4	4db63f98: movt	r1, #49156	; 0xc004 || 4db63f94: movw	r1, #18242	; 0x4742
+GPU_SYS_MEM_PAGES_Alloc	4db64012	0xc0044742	RW G nr=66 sz=4	4db63ffc: movt	r1, #49156	; 0xc004 || 4db63ff8: movw	r1, #18242	; 0x4742
+GPU_SYS_MEM_Free	4db64062	0xc0044743	RW G nr=67 sz=4	4db6405a: movt	r1, #49156	; 0xc004 || 4db64054: movw	r1, #18243	; 0x4743
+GPU_SYS_MEM_Show	4db640c4	0xc0044744	RW G nr=68 sz=4	4db640b8: movt	r1, #49156	; 0xc004 || 4db640b0: movw	r1, #18244	; 0x4744
+GPU_SYS_MEM_Cache_Invalidate	4db64130	0x40044722	W G nr=34 sz=4	4db64124: movt	r1, #16388	; 0x4004 || 4db6411e: movw	r1, #18210	; 0x4722
+GPU_SYS_MEM_Cache_Writeback	4db641b4	0x40044722	W G nr=34 sz=4	4db641a8: movt	r1, #16388	; 0x4004 || 4db641a2: movw	r1, #18210	; 0x4722
+GPU_SYS_MEM_Cache_Invalidate_All	4db64238	0x40044723	W G nr=35 sz=4	4db6422c: movt	r1, #16388	; 0x4004 || 4db64226: movw	r1, #18211	; 0x4723
+GPU_SYS_MEM_Cache_Writeback_All	4db642bc	0x40044723	W G nr=35 sz=4	4db642b0: movt	r1, #16388	; 0x4004 || 4db642aa: movw	r1, #18211	; 0x4723
+GPU_SYS_MEM_Cache_Sync_Ranges	4db6433c	0x40044724	W G nr=36 sz=4	4db64332: movt	r1, #16388	; 0x4004 || 4db6432c: movw	r1, #18212	; 0x4724
+GPU_SYS_MEM_Cache_Flush_All	4db643b8	0x40044725	W G nr=37 sz=4	4db643aa: movt	r1, #16388	; 0x4004 || 4db643a2: movw	r1, #18213	; 0x4725
+ndcommon_v4l2_ioctl	4db66c98	REG		4db66c86: mov	r1, r0
+_ZL21_ndal_fe_get_frontendiiPi.isra.0	4db6707a	0x80246f4d	R o nr=77 sz=36	4db67074: movt	r1, #32804	; 0x8024 || 4db6706e: movw	r1, #28493	; 0x6f4d
+_ZL18_ndal_fe_get_parmsiiPi	4db6712a	0x80086f53	R o nr=83 sz=8	4db67120: movt	r1, #32776	; 0x8008 || 4db6711a: movw	r1, #28499	; 0x6f53
+_ZL18_ndal_fe_set_parmsiij	4db671f0	0x40086f52	W o nr=82 sz=8	4db671e4: movt	r1, #16392	; 0x4008 || 4db671de: movw	r1, #28498	; 0x6f52
+Nd_NIM_VD_GetNoiseForAP	4db672b8	REG		4db672b2: mov	r1, r4
+Nd_NIM_VD_GetStatus	4db67368	REG		4db67362: mov	r1, r5
+Nd_NIM_VD_SetAMCForceMode	4db67484	REG		4db6747e: mov	r1, r4
+Nd_NIM_VD_SetAutoScan	4db67510	REG		4db6750a: mov	r1, r4
+Nd_NIM_VD_SetChannelUpDnInit	4db675a0	REG		4db6759a: mov	r1, r4
+Nd_NIM_VD_SetSupportTortureRoom	4db67638	REG		4db67632: mov	r1, r4
+Nd_NIM_VD_ConnectATV	4db676c2	REG		4db676bc: mov	r1, r4
+Nd_NIM_DVIF_SetTunerType	4db6773c	0xc0044485	RW D nr=133 sz=4	4db67736: movt	r1, #49156	; 0xc004 || 4db67730: movw	r1, #17541	; 0x4485
+Nd_NIM_SetUnicableIF	4db679ce	0x40086f52	W o nr=82 sz=8	4db679c8: movt	r1, #16392	; 0x4008 || 4db679c2: movw	r1, #28498	; 0x6f52
+Nd_NIM_GetPLPStatus	4db67bf0	0x80086f53	R o nr=83 sz=8	4db67bd8: movt	r1, #32776	; 0x8008 || 4db67bd2: movw	r1, #28499	; 0x6f53
+Nd_NIM_Send_diseqc_sequence	4db67cea	0x40076f3f	W o nr=63 sz=7	4db67ce6: movt	r1, #16391	; 0x4007 || 4db67ce0: movw	r1, #28479	; 0x6f3f
+Nd_NIM_Send_diseqc_sequence	4db67d02	0x40076f41	W o nr=65 sz=7	4db67cfe: movw	r1, #28481	; 0x6f41 || 4db67ce6: movt	r1, #16391	; 0x4007
+Nd_NIM_DeliverConfig	4db67f52	0x80246f51	R o nr=81 sz=36	4db67f4a: movt	r1, #32804	; 0x8024 || 4db67f42: movw	r1, #28497	; 0x6f51
+Nd_NIM_DeliverConfig	4db67fb0	0x80246f51	R o nr=81 sz=36	4db67faa: movt	r1, #32804	; 0x8024 || 4db67fa4: movw	r1, #28497	; 0x6f51
+_Z21NDOSD_SetTransparencyhj	4db6815e	REG		4db68158: mov	r1, r4
+_Z21NDOSD_EnableOSDEngineb	4db681ec	REG		4db681e6: mov	r1, r4
+_ZL18_send_v4l2_commandjjP16v4l2_ext_controlj	4db68268	REG		4db68264: mov	r1, r4
+NDSCALER_BRIG_SetNetflexFlag	4db68570	REG		4db6856a: mov	r1, r4
+NDSYS_SYS_GetReservedMemory	4db68eae	0xc0147305	RW s nr=5 sz=20	4db68eaa: movt	r1, #49172	; 0xc014 || 4db68ea4: movw	r1, #29445	; 0x7305
+NDSYS_SYS_GetReservedMemory	4db68f10	0xc0107303	RW s nr=3 sz=16	4db68ef2: movt	r1, #49168	; 0xc010 || 4db68ee6: movw	r1, #29443	; 0x7303
+NDSYS_SYS_GetReservedMemory	4db68f2a	0xc0107303	RW s nr=3 sz=16	4db68f24: movt	r1, #49168	; 0xc010 || 4db68f1c: movw	r1, #29443	; 0x7303
+ND_SYS_Init	4db695a2	0xc0107303	RW s nr=3 sz=16	4db6958e: movt	r1, #49168	; 0xc010 || 4db69586: movw	r1, #29443	; 0x7303
+ND_TSPU_CRC32_Check	4db69760	0xbb5e	NONE bb nr=94 sz=0	4db69750: movw	r1, #47966	; 0xbb5e
+ND_TSPU_Get_Audio_Filter_Handle	4db69824	0xbb6c	NONE bb nr=108 sz=0	4db6981a: movw	r1, #47980	; 0xbb6c
+ND_TSPU_FILT_GetPTS	4db698ce	0xbb55	NONE bb nr=85 sz=0	4db698c6: movw	r1, #47957	; 0xbb55
+ND_TSPU_Desc_PID_Enable	4db6998c	0xbb72	NONE bb nr=114 sz=0	4db69982: movw	r1, #47986	; 0xbb72
+ND_TSPU_Desc_PID_Enable	4db699ce	0xbb1e	NONE bb nr=30 sz=0	4db699c2: movw	r1, #47902	; 0xbb1e
+ND_TSPU_Desc_PID_Enable	4db699f6	0xbb20	NONE bb nr=32 sz=0	4db699e0: movw	r1, #47904	; 0xbb20
+ND_TSPU_Desc_PID_Enable	4db69a12	0xbb22	NONE bb nr=34 sz=0	4db69a0a: movw	r1, #47906	; 0xbb22
+ND_TSPU_Desc_PID_Disable	4db69adc	0xbb23	NONE bb nr=35 sz=0	4db69ad4: movw	r1, #47907	; 0xbb23
+ND_TSPU_Desc_PID_Disable	4db69af8	0xbb1f	NONE bb nr=31 sz=0	4db69aec: movw	r1, #47903	; 0xbb1f
+ND_TSPU_Desc_Get_ScrambleStatus	4db69bae	0xbb5f	NONE bb nr=95 sz=0	4db69b9e: movw	r1, #47967	; 0xbb5f
+ND_TSPU_Desc_Get_ScrambleBit	4db69c58	0xbb21	NONE bb nr=33 sz=0	4db69c48: movw	r1, #47905	; 0xbb21
+NDOSD_GetAlphaCount	4db69dc8	REG		4db69dc2: mov	r1, r4
+NDOSD_SetAutomuteTrigger	4db69e78	REG		4db69e72: mov	r1, r4
+NDOSD_EnableProtectionArea	4db69f1a	REG		4db69f14: mov	r1, r4
+NDOSD_SetPhyBufferAddress	4db69ff2	REG		4db69fec: mov	r1, r4
+NDOSD_GetPhyBufferAddress	4db6a0e0	REG		4db6a0da: mov	r1, r4
+NDOSD_SetColorMode	4db6a1ca	REG		4db6a1c4: mov	r1, r4
+NDOSD_GetColorMode	4db6a2b8	REG		4db6a2b2: mov	r1, r4
+NDOSD_SetStride	4db6a3a2	REG		4db6a39c: mov	r1, r4
+NDOSD_GetStride	4db6a490	REG		4db6a48a: mov	r1, r4
+NDOSD_SetDispWin	4db6a59e	REG		4db6a598: mov	r1, r4
+NDOSD_GetDispWin	4db6a6a4	REG		4db6a69e: mov	r1, r5
+NDOSD_SetUpdateEnable	4db6a78c	REG		4db6a786: mov	r1, r4
+NDOSD_SetForceBufferOrder	4db6a86e	REG		4db6a868: mov	r1, r4
+NDOSD_GetCurrentBufferOrder	4db6a95c	REG		4db6a956: mov	r1, r4
+NDOSD_GetAutomuteStatus	4db6aa50	REG		4db6aa4a: mov	r1, r4
+NDOSD_GetStrLogoPhyAddrFromCMABuffer	4db6ab44	REG		4db6ab3e: mov	r1, r4
+NDOSD_ReleaseCMABuffer	4db6ac3a	REG		4db6ac34: mov	r1, r4
+NDOSD_SetPlaneOrder	4db6ad08	REG		4db6ad02: mov	r1, r4
+NDOSD_GetPlaneOrder	4db6adda	REG		4db6add4: mov	r1, r4

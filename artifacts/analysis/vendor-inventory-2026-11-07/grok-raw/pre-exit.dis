@@ -1,0 +1,31 @@
+
+/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/PreInit.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+Disassembly of section .text.unlikely:
+
+Disassembly of section .exit.text:
+
+00000140 <cleanup_module>:
+ 140:	mov	ip, sp
+ 144:	push	{fp, ip, lr, pc}
+ 148:	sub	fp, ip, #4
+ 14c:	movw	r0, #0
+ 150:	movt	r0, #0
+ 154:	bl	0 <printk>
+ 158:	bl	3f690 <i2c_nt726xx_platform_exit>
+ 15c:	bl	24654 <nvt_cma_exit>
+ 160:	bl	32b3c <KER_AXI_SLAVE_Exit>
+ 164:	bl	21b84 <KER_SYS_DrvExit>
+ 168:	bl	1c228 <KER_CLK_DrvExit>
+ 16c:	bl	1b2ac <KER_PMI_Exit>
+ 170:	bl	3666c <KER_Nerve_Exit>
+ 174:	bl	3b280 <KER_EMU_Exit>
+ 178:	movw	r0, #0
+ 17c:	movt	r0, #0
+ 180:	bl	0 <printk>
+ 184:	ldm	sp, {fp, sp, pc}
+
+Disassembly of section .init.text:

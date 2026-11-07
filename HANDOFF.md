@@ -24,10 +24,13 @@ plat with `plat.drm_init=0`, broker, AQ/theme/profile/menu configs) preflights
 and its asset modules start CPU-only; unified real-plat display/hardware awaits
 a takeover test. `ui_omarchy` is excluded due to the single ui.engine skin.
 `check-plat-drm-gate` tests drm_init 0/1; `takeover-full.sh` is bundled for the
-next authorized window and restores stock without a reboot.
+next authorized window and restores stock without a reboot. Independent NDAL
+pass: 132/36 ioctl immediates and module init/exit details in
+`grok-findings.md`; 9 of 15 kernel modules still need Ghidra projects.
 Vendor inventory 2026-11-07: `artifacts/analysis/vendor-inventory-2026-11-07/`
-holds the 389-ELF census/hashes, full readelf/nm/strings dumps, Ghidra
-functions/callgraphs/symbols/data for aurora + 15 projects, the 226-slot (224 named) GPIO
+holds the 389-ELF `/vendor` census plus 72 outside it (461 total, 15 kernel
+modules) and their hashes, full readelf/nm/strings dumps, Ghidra
+functions/callgraphs/symbols/data for aurora + 15 projects, the 0..207 GPIO
 name table, VPLTIO 45/45 call-site map and audio opcode map. See VENDOR-INVENTORY.
 Unstripped `libappmgr.so` yielded the 127-slot/119-key US keyboard layout
 (`keyboard_layout` 0x52f50; `keyboard-layout-us.tsv`) and HID/IR key-path

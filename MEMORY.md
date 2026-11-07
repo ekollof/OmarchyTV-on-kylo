@@ -29,12 +29,13 @@ OSD enable remains open. REPLACEMENT-SYSTEM.
 reload-suite/restore) is bundled for the next authorized takeover, with restore
 returning to stock without a reboot. The unified display/hardware path is still
 unvalidated.
-Vendor inventory, 2026-11-07: all **389 ELF files** in the extracted `/vendor`
-tree (249,616,804 bytes, ARM ELF32) are hashed and dumped for SONAME/NEEDED,
+Vendor inventory, 2026-11-07: **389 ELF files** in the extracted `/vendor` tree
+(249,616,804 bytes, ARM ELF32) plus 72 outside it (461 total, 15 kernel
+modules) are hashed and dumped for SONAME/NEEDED,
 sections, symbol tables, dynamic symbols and strings under
 `artifacts/analysis/vendor-inventory-2026-11-07/`. Ghidra read-only inventories
 cover aurora (89,220 functions, 485,969 resolved call edges) plus 15
-library/kernel projects. Recovered the 226-slot (224 named) GPIO name table
+library/kernel projects. Recovered the GPIO name table for IDs 0..207
 (`au8GPIOFuncName` 0x175f350), VPLTIO 45/45 call sites (39 unique) and 58 immediate audio call sites
 (37 unique opcodes), with call-site maps for GPIO/IIC/DRM/NDAL/PWM/panel. Static only; see
 VENDOR-INVENTORY-2026-11-07 and PANEL-BACKLIGHT.

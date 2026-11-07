@@ -1,0 +1,115 @@
+
+/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/vendor2/modules/ntkdriver_nondovi.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+Disassembly of section .init.text:
+
+00003228 <init_module>:
+    3228:	mov	ip, sp
+    322c:	push	{fp, ip, lr, pc}
+    3230:	sub	fp, ip, #4
+    3234:	sub	sp, sp, #8
+    3238:	movw	r0, #0
+    323c:	movt	r0, #0
+    3240:	bl	0 <printk>
+    3244:	movw	r0, #0
+    3248:	movt	r0, #0
+    324c:	bl	0 <printk>
+    3250:	movw	r1, #0
+    3254:	movw	r0, #0
+    3258:	movt	r1, #0
+    325c:	movt	r0, #0
+    3260:	bl	0 <printk>
+    3264:	movw	r0, #0
+    3268:	movt	r0, #0
+    326c:	bl	0 <printk>
+    3270:	movw	r0, #0
+    3274:	movt	r0, #0
+    3278:	bl	0 <printk>
+    327c:	movw	r0, #0
+    3280:	mov	r1, #0
+    3284:	movt	r0, #0
+    3288:	bl	0 <proc_mkdir>
+    328c:	movw	r3, #0
+    3290:	movt	r3, #0
+    3294:	str	r0, [r3]
+    3298:	bl	51bd30 <KER_STBC_DrvInit>
+    329c:	bl	514ff8 <SPI_DrvInit>
+    32a0:	mov	r3, #50	; 0x32
+    32a4:	sub	r0, fp, #12
+    32a8:	str	r3, [r0, #-4]!
+    32ac:	bl	51e754 <DRV_STBC_Open>
+    32b0:	cmp	r0, #0
+    32b4:	bne	32c4 <init_module+0x9c>
+    32b8:	movw	r0, #0
+    32bc:	movt	r0, #0
+    32c0:	bl	0 <printk>
+    32c4:	bl	5288c0 <KER_STC_DrvInit>
+    32c8:	bl	37ad54 <KER_PTSQ_DrvInit>
+    32cc:	bl	2b48 <KER_SB_DrvInit>
+    32d0:	bl	300c <KER_TSPU_DrvInit>
+    32d4:	bl	955c <KER_AUD_DrvInit>
+    32d8:	bl	df8 <KER_DVIF_DrvInit>
+    32dc:	bl	bf4cc <KER_BLAST_DrvInit>
+    32e0:	bl	10d018 <KER_DOLBY_DrvInit>
+    32e4:	bl	55812c <KER_TVOUT_DrvInit>
+    32e8:	bl	383c50 <KER_SCLR_DrvInit>
+    32ec:	bl	55fe7c <KER_TVADC_DrvInit>
+    32f0:	bl	16b0d8 <KER_HDMI_DrvInit>
+    32f4:	bl	649e70 <KER_VPLT_DrvInit>
+    32f8:	bl	64b0d8 <KER_VD_DrvInit>
+    32fc:	bl	1154 <KER_FR2IP_DrvInit>
+    3300:	bl	1268 <KER_FRE_DrvInit>
+    3304:	bl	5dc978 <kvdec_imvq_device_init>
+    3308:	bl	5e8114 <kvenc_device_init>
+    330c:	bl	5ea288 <VODFB_VidInit>
+    3310:	bl	6731f4 <KER_WDT_DrvInit>
+    3314:	bl	2cd8 <KER_TSMUX_DrvInit>
+    3318:	bl	1904 <KER_OSD_DrvInit>
+    331c:	bl	675504 <KER_XDMA_DrvInit>
+    3320:	bl	15cea8 <KER_GPU_DrvInit>
+    3324:	bl	e3a28 <Ker_DispAge_DrvInit>
+    3328:	bl	d2c4c <KER_CPE_DrvInit>
+    332c:	bl	c5244 <KER_CAL_DrvInit>
+    3330:	bl	d5e48 <KER_CRYPTO_DrvInit>
+    3334:	bl	590 <KER_CI_DrvInit>
+    3338:	bl	2e4 <KER_CEC_DrvInit>
+    333c:	bl	dfb5c <nt_ddcci_DriverInit>
+    3340:	bl	1a9730 <KER_LEDTOP_DrvInit>
+    3344:	bl	1b4468 <DRV_LEDTOP_Init>
+    3348:	bl	166e98 <KER_HDMA_DrvInit>
+    334c:	bl	de0 <KER_DEMOD_DrvInit>
+    3350:	bl	20009c <ndp_alsa_init>
+    3354:	bl	52bfe0 <DRV_SDADC_Init>
+    3358:	bl	22514c <NVT_DBG_Init>
+    335c:	bl	0 <BRIG_Init>
+    3360:	movw	r0, #0
+    3364:	movt	r0, #0
+    3368:	bl	0 <printk>
+    336c:	bl	b14 <KER_CONVERTER_DrvInit>
+    3370:	bl	12d8 <KER_LEON2_DrvInit>
+    3374:	bl	15e4 <KER_LEON2Core2_DrvInit>
+    3378:	movw	r0, #0
+    337c:	movt	r0, #0
+    3380:	bl	0 <printk>
+    3384:	bl	1b780c <KER_DDRINFO_DrvInit>
+    3388:	bl	e16d4 <DRV_DDCCI_Init>
+    338c:	bl	bfde4 <DRV_BLAST_Init>
+    3390:	movw	r0, #0
+    3394:	movt	r0, #0
+    3398:	bl	0 <printk>
+    339c:	movw	r0, #0
+    33a0:	movt	r0, #0
+    33a4:	bl	0 <printk>
+    33a8:	movw	r0, #0
+    33ac:	movt	r0, #0
+    33b0:	bl	0 <printk>
+    33b4:	mov	r0, #0
+    33b8:	sub	sp, fp, #12
+    33bc:	ldm	sp, {fp, sp, pc}
+
+Disassembly of section .exit.text:
+
+Disassembly of section .text.unlikely:

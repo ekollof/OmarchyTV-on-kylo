@@ -1,0 +1,75 @@
+
+/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/vendor2/modules/ntkdriver_nondovi.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+Disassembly of section .init.text:
+
+Disassembly of section .exit.text:
+
+00000960 <cleanup_module>:
+ 960:	mov	ip, sp
+ 964:	push	{fp, ip, lr, pc}
+ 968:	sub	fp, ip, #4
+ 96c:	movw	r0, #0
+ 970:	movt	r0, #0
+ 974:	bl	0 <printk>
+ 978:	bl	15d514 <KER_GPU_DrvExit>
+ 97c:	bl	e409c <Ker_DispAge_DrvExit>
+ 980:	bl	675acc <KER_XDMA_DrvExit>
+ 984:	bl	67338c <KER_WDT_DrvExit>
+ 988:	bl	4b4 <KER_OSD_DrvExit>
+ 98c:	bl	2c0 <KER_FR2IP_DrvExit>
+ 990:	bl	10d690 <KER_DOLBY_DrvExit>
+ 994:	bl	2f8 <KER_FRE_DrvExit>
+ 998:	bl	5dcb2c <kvdec_imvq_device_exit>
+ 99c:	bl	5e8204 <kvenc_device_exit>
+ 9a0:	bl	5ea428 <VODFB_VidTerm>
+ 9a4:	bl	888 <KER_TSMUX_DrvExit>
+ 9a8:	bl	383f70 <KER_SCLR_DrvExit>
+ 9ac:	bl	55ff70 <KER_TVADC_DrvExit>
+ 9b0:	bl	64a12c <KER_VPLT_DrvExit>
+ 9b4:	bl	16a184 <KER_HDMI_DrvExit>
+ 9b8:	bl	558590 <KER_TVOUT_DrvExit>
+ 9bc:	bl	bf6e0 <KER_BLAST_DrvExit>
+ 9c0:	bl	e04a8 <nt_ddcci_DriverExit>
+ 9c4:	bl	9b1c <KER_AUD_DrvExit>
+ 9c8:	bl	25c <KER_DVIF_DrvExit>
+ 9cc:	bl	8e4 <KER_TSPU_DrvExit>
+ 9d0:	movw	r0, #0
+ 9d4:	movt	r0, #0
+ 9d8:	bl	0 <printk>
+ 9dc:	bl	1e8 <KER_CONVERTER_DrvExit>
+ 9e0:	bl	828 <KER_SB_DrvExit>
+ 9e4:	bl	37ae38 <KER_PTSQ_DrvExit>
+ 9e8:	bl	528d28 <KER_STC_DrvExit>
+ 9ec:	bl	d6134 <KER_CRYPTO_DrvExit>
+ 9f0:	bl	d2334 <KER_CPE_DrvExit>
+ 9f4:	bl	c556c <KER_CAL_DrvExit>
+ 9f8:	bl	ac <KER_CI_DrvExit>
+ 9fc:	bl	0 <KER_CEC_DrvExit>
+ a00:	bl	1a9b04 <KER_LEDTOP_DrvExit>
+ a04:	bl	167494 <KER_HDMA_DrvExit>
+ a08:	bl	52bde8 <DRV_SDADC_Term>
+ a0c:	bl	2233cc <NVT_DBG_Term>
+ a10:	bl	33c <KER_LEON2_DrvExit>
+ a14:	bl	3f4 <KER_LEON2Core2_DrvExit>
+ a18:	bl	51531c <SPI_DrvExit>
+ a1c:	bl	51bf04 <KER_STBC_DrvExit>
+ a20:	movw	r3, #0
+ a24:	movw	r0, #0
+ a28:	movt	r3, #0
+ a2c:	movt	r0, #0
+ a30:	ldr	r1, [r3]
+ a34:	bl	0 <remove_proc_entry>
+ a38:	movw	r0, #0
+ a3c:	mov	r1, #0
+ a40:	movt	r0, #0
+ a44:	bl	0 <remove_proc_entry>
+ a48:	movw	r0, #0
+ a4c:	movt	r0, #0
+ a50:	bl	0 <printk>
+ a54:	ldm	sp, {fp, sp, pc}
+
+Disassembly of section .text.unlikely:

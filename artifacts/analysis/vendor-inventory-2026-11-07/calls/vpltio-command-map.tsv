@@ -1,6 +1,6 @@
 value	calls	callers	call_sites
 0x152	2	PLAT_VOUT_LoadOverDriveTable@@Base,PLAT_VOUT_SetOverDrive@@Base	8faee2,8fb088
-0x18c	2	PLAT_VLIB_EnableMsg@@Base,PLAT_VOUT_SetWindowBGcolor@@Base	8f6d90,8f9642
+0x18c	2	(unnamed 8f682c),PLAT_VOUT_SetWindowBGcolor@@Base	8f6d90,8f9642
 0x18d	1	plat_vpltio_set_frame_mute@@Base	92da42
 0x191	1	plat_vpltio_set_graphic_blending@@Base	92d968
 0x1c7	1	plat_vpltio_set_ssc@@Base	92dbda
@@ -30,7 +30,7 @@ value	calls	callers	call_sites
 0x482	1	plat_vin_slot_pc_mode_set@@Base	92edc4
 0x4c1	2	PLAT_TVOUT_EnableTVOut@@Base	8eedfc,8eee96
 0x4c3	1	PLAT_VOUT_SetDoubleFrameRate@@Base	8fa52a
-0x4c4	1	plat_set_dimming@@Base	92e918
+0x4c4	1	(unnamed 92e8ac)	92e918
 0x4c8	1	PLAT_VIU_SetTconOnOffStatus@@Base	9009c2
 0x503	1	PLAT_VIU_SetPhotoLBMFormat@@Base	9008be
 0x603	1	PLAT_TVOUT_EnableTVOut@@Base	8eef68

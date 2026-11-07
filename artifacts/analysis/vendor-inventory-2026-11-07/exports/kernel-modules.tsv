@@ -1,0 +1,16 @@
+path	size	md5	vermagic	symbols
+root/lib/modules/kteeclient.ko	26228	235215638f06201efe9bbebbb6389c9b	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	185
+root/lib/modules/ntkndpalsa.ko	716516	8758a13d12799217ce702849df7d54da	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	5054
+root/lib/modules/ntkndpci.ko	7828	6a06a1bdf95dffa93371b9575a6d294f	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	73
+root/lib/modules/ntkndpcodec.ko	489788	76b9671c0064a4c674a99997796d405c	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	3021
+root/lib/modules/ntkndpdemod.ko	37260	607e40dc6f5252efeb5c89d30fb8e066	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	343
+root/lib/modules/ntkndpdrm.ko	926996	a70aca9b814e51cb9680476ce27051de	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	6207
+root/lib/modules/ntkndpextin.ko	189820	cb0689e9e1c425a27e670168e51cc32f	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	1226
+root/lib/modules/ntkndphdmi.ko	94816	930204bb8a2d977bd7f2501a575a0964	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	657
+root/lib/modules/ntkndphdmiswitch.ko	27624	d4ff737dcbd9be2b628f2dd4eccf5d7a	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	187
+root/lib/modules/ntkndp_pq.ko	141576	c208cdd0967cddf8cba7c826adf3f73a	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	682
+root/lib/modules/ntkndptsd.ko	273732	2470bb737131e4f803163ba9b1dce569	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	1545
+root/lib/modules/ntkndptuner.ko	7132	84be071efa5d16c2b6e8d13db667937a	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	71
+root/lib/modules/PreInit.ko	721732	1e50bee8b7888315c7a070f8e69947f6	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	4495
+root/lib/modules/PreTcon.ko	155524	bf1d64f7e40555c913d1c7425dde552c	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	310
+vendor2/modules/ntkdriver_nondovi.ko	18423496	fded7005651e37b8a1b5e8e89f73f4ff	vermagic=4.9.118+ SMP preempt mod_unload ARMv7 	101539

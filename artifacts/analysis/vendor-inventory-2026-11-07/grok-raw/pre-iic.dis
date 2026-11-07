@@ -1,0 +1,345 @@
+
+/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/PreInit.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0003bd70 <IIC_Ioctl>:
+   3bd70:	mov	ip, sp
+   3bd74:	push	{r4, r5, r6, r7, r8, r9, sl, fp, ip, lr, pc}
+   3bd78:	sub	fp, ip, #4
+   3bd7c:	sub	sp, sp, #76	; 0x4c
+   3bd80:	push	{lr}		; (str lr, [sp, #-4]!)
+   3bd84:	bl	0 <__gnu_mcount_nc>
+   3bd88:	uxtb	r1, r1
+   3bd8c:	mov	r4, #0
+   3bd90:	mov	r5, r2
+   3bd94:	str	r2, [fp, #-104]	; 0xffffff98
+   3bd98:	cmp	r1, #7
+   3bd9c:	str	r4, [fp, #-88]	; 0xffffffa8
+   3bda0:	str	r4, [fp, #-84]	; 0xffffffac
+   3bda4:	str	r4, [fp, #-80]	; 0xffffffb0
+   3bda8:	str	r4, [fp, #-76]	; 0xffffffb4
+   3bdac:	str	r4, [fp, #-72]	; 0xffffffb8
+   3bdb0:	str	r4, [fp, #-68]	; 0xffffffbc
+   3bdb4:	str	r4, [fp, #-64]	; 0xffffffc0
+   3bdb8:	str	r4, [fp, #-60]	; 0xffffffc4
+   3bdbc:	str	r4, [fp, #-56]	; 0xffffffc8
+   3bdc0:	str	r4, [fp, #-52]	; 0xffffffcc
+   3bdc4:	str	r4, [fp, #-48]	; 0xffffffd0
+   3bdc8:	bne	3c23c <IIC_Ioctl+0x4cc>
+   3bdcc:	ldr	r0, [pc, #1208]	; 3c28c <IIC_Ioctl+0x51c>
+   3bdd0:	bl	0 <down>
+   3bdd4:	cmp	r5, r4
+   3bdd8:	beq	3c27c <IIC_Ioctl+0x50c>
+   3bddc:	movw	r3, #0
+   3bde0:	mov	r1, #192	; 0xc0
+   3bde4:	movt	r3, #0
+   3bde8:	movt	r1, #576	; 0x240
+   3bdec:	ldr	r0, [r3, #24]
+   3bdf0:	mov	r2, #44	; 0x2c
+   3bdf4:	bl	0 <kmem_cache_alloc_trace>
+   3bdf8:	subs	r6, r0, #0
+   3bdfc:	beq	3c27c <IIC_Ioctl+0x50c>
+   3be00:	mov	r3, sp
+   3be04:	ldr	r1, [fp, #-104]	; 0xffffff98
+   3be08:	bic	r3, r3, #8128	; 0x1fc0
+   3be0c:	bic	r3, r3, #63	; 0x3f
+   3be10:	ldr	r3, [r3, #8]
+   3be14:	adds	r2, r1, #44	; 0x2c
+   3be18:	sbcscc	r2, r2, r3
+   3be1c:	movcc	r3, #0
+   3be20:	cmp	r3, #0
+   3be24:	bne	3c248 <IIC_Ioctl+0x4d8>
+   3be28:	mov	r2, #44	; 0x2c
+   3be2c:	bl	0 <arm_copy_from_user>
+   3be30:	subs	r1, r0, #0
+   3be34:	rsbne	r4, r1, #44	; 0x2c
+   3be38:	bne	3c24c <IIC_Ioctl+0x4dc>
+   3be3c:	ldr	r3, [r6, #36]	; 0x24
+   3be40:	cmp	r3, #6
+   3be44:	ldrls	pc, [pc, r3, lsl #2]
+   3be48:	b	3c214 <IIC_Ioctl+0x4a4>
+   3be4c:	.word	0x0003c000
+   3be50:	.word	0x0003c050
+   3be54:	.word	0x0003c010
+   3be58:	.word	0x0003c020
+   3be5c:	.word	0x0003c030
+   3be60:	.word	0x0003c040
+   3be64:	.word	0x0003be68
+   3be68:	movw	r3, #0
+   3be6c:	movt	r3, #0
+   3be70:	str	r3, [r6, #32]
+   3be74:	movw	r1, #0
+   3be78:	mov	r0, #0
+   3be7c:	movt	r1, #0
+   3be80:	bl	266f4 <nvt_dt_find_node_by_name>
+   3be84:	subs	r3, r0, #0
+   3be88:	str	r3, [fp, #-100]	; 0xffffff9c
+   3be8c:	beq	3c1b8 <IIC_Ioctl+0x448>
+   3be90:	nop	{0}
+   3be94:	mov	r1, #0
+   3be98:	ldr	r0, [fp, #-100]	; 0xffffff9c
+   3be9c:	bl	0 <of_get_next_child>
+   3bea0:	subs	r5, r0, #0
+   3bea4:	beq	3bfbc <IIC_Ioctl+0x24c>
+   3bea8:	movw	sl, #0
+   3beac:	movw	r8, #0
+   3beb0:	movw	r9, #0
+   3beb4:	movw	r3, #0
+   3beb8:	movt	sl, #0
+   3bebc:	movt	r8, #0
+   3bec0:	movt	r9, #0
+   3bec4:	movt	r3, #0
+   3bec8:	str	r3, [fp, #-96]	; 0xffffffa0
+   3becc:	sub	r2, fp, #80	; 0x50
+   3bed0:	mov	r1, sl
+   3bed4:	mov	r0, r5
+   3bed8:	bl	0 <of_get_property>
+   3bedc:	sub	r3, fp, #84	; 0x54
+   3bee0:	mov	r2, #0
+   3bee4:	mov	r1, r8
+   3bee8:	mov	r0, r5
+   3beec:	bl	0 <of_property_read_u32_index>
+   3bef0:	sub	r3, fp, #88	; 0x58
+   3bef4:	mov	r2, #1
+   3bef8:	mov	r1, r8
+   3befc:	mov	r0, r5
+   3bf00:	bl	0 <of_property_read_u32_index>
+   3bf04:	sub	r3, fp, #56	; 0x38
+   3bf08:	mov	r2, #0
+   3bf0c:	mov	r1, r9
+   3bf10:	mov	r0, r5
+   3bf14:	bl	0 <of_property_read_u32_index>
+   3bf18:	sub	r3, fp, #52	; 0x34
+   3bf1c:	mov	r2, #0
+   3bf20:	ldr	r1, [fp, #-96]	; 0xffffffa0
+   3bf24:	mov	r0, r5
+   3bf28:	bl	0 <of_property_read_u32_index>
+   3bf2c:	movw	r1, #0
+   3bf30:	sub	r3, fp, #48	; 0x30
+   3bf34:	mov	r2, #0
+   3bf38:	movt	r1, #0
+   3bf3c:	mov	r0, r5
+   3bf40:	bl	0 <of_property_read_u32_index>
+   3bf44:	movw	r1, #0
+   3bf48:	sub	r3, fp, #76	; 0x4c
+   3bf4c:	mov	r2, #0
+   3bf50:	movt	r1, #0
+   3bf54:	mov	r0, r5
+   3bf58:	bl	0 <of_property_read_u32_index>
+   3bf5c:	movw	r1, #0
+   3bf60:	sub	r3, fp, #72	; 0x48
+   3bf64:	movt	r1, #0
+   3bf68:	mov	r2, #0
+   3bf6c:	mov	r0, r5
+   3bf70:	bl	0 <of_property_read_u32_index>
+   3bf74:	mov	r1, #0
+   3bf78:	mov	r0, r5
+   3bf7c:	b	3bf9c <IIC_Ioctl+0x22c>
+   3bf80:	ldr	r1, [r4]
+   3bf84:	ldr	r0, [r6, #32]
+   3bf88:	bl	0 <strcmp>
+   3bf8c:	subs	r7, r0, #0
+   3bf90:	mov	r1, r4
+   3bf94:	mov	r0, r5
+   3bf98:	beq	3c060 <IIC_Ioctl+0x2f0>
+   3bf9c:	bl	0 <of_get_next_child>
+   3bfa0:	subs	r4, r0, #0
+   3bfa4:	bne	3bf80 <IIC_Ioctl+0x210>
+   3bfa8:	mov	r1, r5
+   3bfac:	ldr	r0, [fp, #-100]	; 0xffffff9c
+   3bfb0:	bl	0 <of_get_next_child>
+   3bfb4:	subs	r5, r0, #0
+   3bfb8:	bne	3becc <IIC_Ioctl+0x15c>
+   3bfbc:	mov	r3, sp
+   3bfc0:	ldr	r1, [fp, #-104]	; 0xffffff98
+   3bfc4:	bic	r3, r3, #8128	; 0x1fc0
+   3bfc8:	bic	r3, r3, #63	; 0x3f
+   3bfcc:	ldr	r3, [r3, #8]
+   3bfd0:	adds	r2, r1, #44	; 0x2c
+   3bfd4:	sbcscc	r2, r2, r3
+   3bfd8:	movcc	r3, #0
+   3bfdc:	cmp	r3, #0
+   3bfe0:	beq	3c184 <IIC_Ioctl+0x414>
+   3bfe4:	ldr	r0, [pc, #672]	; 3c28c <IIC_Ioctl+0x51c>
+   3bfe8:	bl	0 <up>
+   3bfec:	mov	r0, r6
+   3bff0:	bl	0 <kfree>
+   3bff4:	mvn	r0, #13
+   3bff8:	sub	sp, fp, #40	; 0x28
+   3bffc:	ldm	sp, {r4, r5, r6, r7, r8, r9, sl, fp, sp, pc}
+   3c000:	movw	r3, #0
+   3c004:	movt	r3, #0
+   3c008:	str	r3, [r6, #32]
+   3c00c:	b	3be74 <IIC_Ioctl+0x104>
+   3c010:	movw	r3, #0
+   3c014:	movt	r3, #0
+   3c018:	str	r3, [r6, #32]
+   3c01c:	b	3be74 <IIC_Ioctl+0x104>
+   3c020:	movw	r3, #0
+   3c024:	movt	r3, #0
+   3c028:	str	r3, [r6, #32]
+   3c02c:	b	3be74 <IIC_Ioctl+0x104>
+   3c030:	movw	r3, #0
+   3c034:	movt	r3, #0
+   3c038:	str	r3, [r6, #32]
+   3c03c:	b	3be74 <IIC_Ioctl+0x104>
+   3c040:	movw	r3, #0
+   3c044:	movt	r3, #0
+   3c048:	str	r3, [r6, #32]
+   3c04c:	b	3be74 <IIC_Ioctl+0x104>
+   3c050:	movw	r3, #0
+   3c054:	movt	r3, #0
+   3c058:	str	r3, [r6, #32]
+   3c05c:	b	3be74 <IIC_Ioctl+0x104>
+   3c060:	sub	r2, fp, #80	; 0x50
+   3c064:	mov	r1, sl
+   3c068:	mov	r0, r4
+   3c06c:	bl	0 <of_get_property>
+   3c070:	movw	r1, #0
+   3c074:	sub	r3, fp, #68	; 0x44
+   3c078:	movt	r1, #0
+   3c07c:	mov	r2, r7
+   3c080:	mov	r0, r4
+   3c084:	bl	0 <of_property_read_u32_index>
+   3c088:	movw	r1, #0
+   3c08c:	sub	r3, fp, #64	; 0x40
+   3c090:	movt	r1, #0
+   3c094:	mov	r2, r7
+   3c098:	mov	r0, r4
+   3c09c:	bl	0 <of_property_read_u32_index>
+   3c0a0:	sub	r3, fp, #56	; 0x38
+   3c0a4:	mov	r2, r7
+   3c0a8:	mov	r1, r9
+   3c0ac:	mov	r0, r4
+   3c0b0:	bl	0 <of_property_read_u32_index>
+   3c0b4:	sub	r3, fp, #52	; 0x34
+   3c0b8:	mov	r2, r7
+   3c0bc:	ldr	r1, [fp, #-96]	; 0xffffffa0
+   3c0c0:	mov	r0, r4
+   3c0c4:	bl	0 <of_property_read_u32_index>
+   3c0c8:	movw	r1, #0
+   3c0cc:	sub	r3, fp, #48	; 0x30
+   3c0d0:	mov	r2, r7
+   3c0d4:	movt	r1, #0
+   3c0d8:	mov	r0, r4
+   3c0dc:	bl	0 <of_property_read_u32_index>
+   3c0e0:	movw	r1, #0
+   3c0e4:	mov	r2, r7
+   3c0e8:	movt	r1, #0
+   3c0ec:	sub	r3, fp, #60	; 0x3c
+   3c0f0:	mov	r0, r4
+   3c0f4:	bl	0 <of_property_read_u32_index>
+   3c0f8:	ldr	r2, [fp, #-52]	; 0xffffffcc
+   3c0fc:	ldr	r3, [fp, #-60]	; 0xffffffc4
+   3c100:	ldr	ip, [fp, #-68]	; 0xffffffbc
+   3c104:	adds	r2, r2, #0
+   3c108:	ldr	r0, [fp, #-64]	; 0xffffffc0
+   3c10c:	ldr	lr, [fp, #-56]	; 0xffffffc8
+   3c110:	movne	r2, #1
+   3c114:	ldr	r1, [fp, #-48]	; 0xffffffd0
+   3c118:	cmp	r3, #300	; 0x12c
+   3c11c:	strb	r2, [r6, #40]	; 0x28
+   3c120:	moveq	r3, #2
+   3c124:	strb	ip, [r6, #25]
+   3c128:	strb	r0, [r6]
+   3c12c:	strb	lr, [r6, #41]	; 0x29
+   3c130:	str	r1, [r6, #4]
+   3c134:	beq	3c14c <IIC_Ioctl+0x3dc>
+   3c138:	cmp	r3, #400	; 0x190
+   3c13c:	moveq	r3, #4
+   3c140:	beq	3c14c <IIC_Ioctl+0x3dc>
+   3c144:	subs	r3, r3, #100	; 0x64
+   3c148:	movne	r3, #1
+   3c14c:	str	r3, [r6, #28]
+   3c150:	b	3bfa8 <IIC_Ioctl+0x238>
+   3c154:	movw	r3, #0
+   3c158:	movw	r0, #3771	; 0xebb
+   3c15c:	movt	r3, #0
+   3c160:	movw	r2, #0
+   3c164:	ldr	r1, [r3, #40]	; 0x28
+   3c168:	movt	r2, #0
+   3c16c:	str	r0, [sp]
+   3c170:	ldr	r3, [pc, #280]	; 3c290 <IIC_Ioctl+0x520>
+   3c174:	add	r1, r1, #16
+   3c178:	ldr	r0, [pc, #276]	; 3c294 <IIC_Ioctl+0x524>
+   3c17c:	bl	0 <__dynamic_nvt_dbg>
+   3c180:	b	3be94 <IIC_Ioctl+0x124>
+   3c184:	ldr	r0, [fp, #-104]	; 0xffffff98
+   3c188:	mov	r2, #44	; 0x2c
+   3c18c:	mov	r1, r6
+   3c190:	bl	0 <arm_copy_to_user>
+   3c194:	subs	r4, r0, #0
+   3c198:	bne	3bfe4 <IIC_Ioctl+0x274>
+   3c19c:	ldr	r0, [pc, #232]	; 3c28c <IIC_Ioctl+0x51c>
+   3c1a0:	bl	0 <up>
+   3c1a4:	mov	r0, r6
+   3c1a8:	bl	0 <kfree>
+   3c1ac:	mov	r0, r4
+   3c1b0:	sub	sp, fp, #40	; 0x28
+   3c1b4:	ldm	sp, {r4, r5, r6, r7, r8, r9, sl, fp, sp, pc}
+   3c1b8:	nop	{0}
+   3c1bc:	movw	r1, #0
+   3c1c0:	mov	r0, #0
+   3c1c4:	movt	r1, #0
+   3c1c8:	bl	0 <of_find_node_by_name>
+   3c1cc:	subs	r3, r0, #0
+   3c1d0:	str	r3, [fp, #-100]	; 0xffffff9c
+   3c1d4:	bne	3be90 <IIC_Ioctl+0x120>
+   3c1d8:	movw	r4, #0
+   3c1dc:	movt	r4, #0
+   3c1e0:	add	r0, r4, #424	; 0x1a8
+   3c1e4:	bl	0 <up>
+   3c1e8:	ldr	r0, [r4, #40]	; 0x28
+   3c1ec:	movw	r1, #0
+   3c1f0:	movt	r1, #0
+   3c1f4:	ldr	r3, [pc, #156]	; 3c298 <IIC_Ioctl+0x528>
+   3c1f8:	movw	r2, #3831	; 0xef7
+   3c1fc:	add	r0, r0, #16
+   3c200:	bl	0 <nvt_err>
+   3c204:	mov	r0, r6
+   3c208:	bl	0 <kfree>
+   3c20c:	mvn	r0, #18
+   3c210:	b	3bff8 <IIC_Ioctl+0x288>
+   3c214:	movw	r3, #0
+   3c218:	movw	r1, #0
+   3c21c:	movt	r3, #0
+   3c220:	movt	r1, #0
+   3c224:	ldr	r0, [r3, #40]	; 0x28
+   3c228:	movw	r3, #3757	; 0xead
+   3c22c:	ldr	r2, [pc, #92]	; 3c290 <IIC_Ioctl+0x520>
+   3c230:	add	r0, r0, #16
+   3c234:	bl	0 <nvt_err>
+   3c238:	b	3be74 <IIC_Ioctl+0x104>
+   3c23c:	mvn	r0, #13
+   3c240:	sub	sp, fp, #40	; 0x28
+   3c244:	ldm	sp, {r4, r5, r6, r7, r8, r9, sl, fp, sp, pc}
+   3c248:	mov	r1, #44	; 0x2c
+   3c24c:	add	r0, r6, r4
+   3c250:	bl	0 <__memzero>
+   3c254:	b	3bfe4 <IIC_Ioctl+0x274>
+   3c258:	movw	r3, #0
+   3c25c:	movw	r2, #0
+   3c260:	movt	r3, #0
+   3c264:	movt	r2, #0
+   3c268:	ldr	r1, [r3, #40]	; 0x28
+   3c26c:	ldr	r0, [pc, #40]	; 3c29c <IIC_Ioctl+0x52c>
+   3c270:	add	r1, r1, #16
+   3c274:	bl	0 <__dynamic_nvt_dbg>
+   3c278:	b	3c1bc <IIC_Ioctl+0x44c>
+   3c27c:	ldr	r0, [pc, #8]	; 3c28c <IIC_Ioctl+0x51c>
+   3c280:	bl	0 <up>
+   3c284:	mvn	r0, #13
+   3c288:	b	3bff8 <IIC_Ioctl+0x288>
+   3c28c:	.word	0x00051028
+   3c290:	.word	0x00013c98
+   3c294:	.word	0x000035a0
+   3c298:	.word	0x00013ca4
+   3c29c:	.word	0x00003580
+
+Disassembly of section .text.unlikely:
+
+Disassembly of section .exit.text:
+
+Disassembly of section .init.text:

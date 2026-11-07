@@ -1,0 +1,98 @@
+
+/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/ntkndpdrm.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+Disassembly of section .init.text:
+
+Disassembly of section .exit.text:
+
+00000000 <cleanup_module>:
+   0:	mov	ip, sp
+   4:	push	{r4, r5, r6, fp, ip, lr, pc}
+   8:	sub	fp, ip, #4
+   c:	sub	sp, sp, #28
+  10:	movw	r3, #0
+  14:	movt	r3, #0
+  18:	ldr	r2, [r3]
+  1c:	mov	r5, r3
+  20:	tst	r2, #256	; 0x100
+  24:	beq	9c <cleanup_module+0x9c>
+  28:	nop	{0}
+  2c:	b	9c <cleanup_module+0x9c>
+  30:	movw	r3, #0
+  34:	movt	r3, #0
+  38:	ldr	r1, [r3]
+  3c:	cmp	r1, #0
+  40:	addne	r1, r1, #16
+  44:	bne	50 <cleanup_module+0x50>
+  48:	bl	0 <NDP_DebugInit>
+  4c:	mov	r1, r0
+  50:	mov	ip, sp
+  54:	ldr	r0, [pc, #240]	; 14c <cleanup_module+0x14c>
+  58:	bic	r2, ip, #8128	; 0x1fc0
+  5c:	movw	r4, #757	; 0x2f5
+  60:	bic	r2, r2, #63	; 0x3f
+  64:	movw	r3, #0
+  68:	ldr	lr, [r2, #12]
+  6c:	movw	r2, #0
+  70:	str	r4, [sp, #16]
+  74:	movt	r3, #0
+  78:	str	r0, [sp, #12]
+  7c:	movt	r2, #0
+  80:	ldr	r6, [lr, #692]	; 0x2b4
+  84:	add	r4, lr, #948	; 0x3b4
+  88:	ldr	r0, [pc, #192]	; 150 <cleanup_module+0x150>
+  8c:	str	r6, [sp, #8]
+  90:	ldr	lr, [lr, #688]	; 0x2b0
+  94:	stm	sp, {r4, lr}
+  98:	bl	0 <__dynamic_nvt_dbg>
+  9c:	movw	r4, #0
+  a0:	movt	r4, #0
+  a4:	ldr	r0, [r4]
+  a8:	bl	0 <platform_device_unregister>
+  ac:	ldr	r0, [r4, #4]
+  b0:	bl	0 <platform_device_unregister>
+  b4:	ldr	r0, [pc, #152]	; 154 <cleanup_module+0x154>
+  b8:	bl	0 <platform_driver_unregister>
+  bc:	bl	42d64 <gfxp_exit>
+  c0:	bl	0 <NDP_DebugExit>
+  c4:	ldr	r3, [r5]
+  c8:	tst	r3, #256	; 0x100
+  cc:	beq	144 <cleanup_module+0x144>
+  d0:	nop	{0}
+  d4:	b	144 <cleanup_module+0x144>
+  d8:	movw	r3, #0
+  dc:	movt	r3, #0
+  e0:	ldr	r1, [r3]
+  e4:	cmp	r1, #0
+  e8:	addne	r1, r1, #16
+  ec:	bne	f8 <cleanup_module+0xf8>
+  f0:	bl	0 <NDP_DebugInit>
+  f4:	mov	r1, r0
+  f8:	mov	ip, sp
+  fc:	ldr	r0, [pc, #72]	; 14c <cleanup_module+0x14c>
+ 100:	bic	r2, ip, #8128	; 0x1fc0
+ 104:	movw	r4, #770	; 0x302
+ 108:	bic	r2, r2, #63	; 0x3f
+ 10c:	movw	r3, #0
+ 110:	ldr	lr, [r2, #12]
+ 114:	movw	r2, #0
+ 118:	str	r4, [sp, #16]
+ 11c:	movt	r3, #0
+ 120:	str	r0, [sp, #12]
+ 124:	movt	r2, #0
+ 128:	ldr	r5, [lr, #692]	; 0x2b4
+ 12c:	add	r4, lr, #948	; 0x3b4
+ 130:	ldr	r0, [pc, #32]	; 158 <cleanup_module+0x158>
+ 134:	str	r5, [sp, #8]
+ 138:	ldr	lr, [lr, #688]	; 0x2b0
+ 13c:	stm	sp, {r4, lr}
+ 140:	bl	0 <__dynamic_nvt_dbg>
+ 144:	sub	sp, fp, #24
+ 148:	ldm	sp, {r4, r5, r6, fp, sp, pc}
+ 14c:	.word	0x00001418
+ 150:	.word	0x000021a0
+ 154:	.word	0x00000238
+ 158:	.word	0x000021c0
