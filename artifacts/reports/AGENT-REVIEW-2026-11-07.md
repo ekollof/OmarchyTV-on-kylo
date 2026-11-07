@@ -129,15 +129,24 @@ open/set, retry and failed-start reporting; ignoring the results fails the new
 assertions. ARM `mod_panel.so` sha256
 `46a3c3ff8ced3eac4876039442045d2c537c4f937e099a14e0d5af9f8d19d967`.
 
+### MEDIUM — CEC reply queue dropped everything (fixed)
+
+`cec_poll` sent queued policy replies without checking `session_open` and set
+`reply_head = reply_tail` on a failed submission, discarding every later
+reply. The send path is now gated on an open session, a failure advances only
+the failed record, and a successful release clears the queue (failed release
+keeps it). Regression `check-cec-reply-queue` covers a failed first send with a
+later reply still delivered, no send/receive while closed, and release
+clear/retain. Restoring the drop-all line fails the queue assertion. ARM
+`mod_cec.so` sha256
+`5083aee9aa75f87b12f4b32a3139a7c60cb29c65591f3531ba93b2ac06ffa185`.
+
 ## Open, severity-ranked
 
 - **MEDIUM amp Init retry/suspend** (`modules/audio_amp/audio_amp.c`):
   `iface_init` refuses while `have_result` is set, even after a failed Init;
   the module has no suspend/resume, so host standby leaves it started with the
   I2C session and last image/mute.
-- **MEDIUM CEC reply queue** (`modules/cec/cec.c`): a failed reply send drops
-  the whole queue; it can also send after close. Drop only the failed record,
-  clear on release, never send when closed.
 - **LOW CEC poll retry / labels / 50 ms sleeps**: no automatic acquire retry
   (only `cec-open`), `amp-state`'s `mute` token is the Init snapshot while
   `live` tracks later calls, and several quiesce gates nanosleep on the loop.

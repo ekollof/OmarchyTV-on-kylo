@@ -309,7 +309,7 @@ static void cec_poll(void *ud)
         }
         return;
     }
-    if (c->reply_head != c->reply_tail) {
+    if (c->session_open && c->reply_head != c->reply_tail) {
         oa_cec_message message = c->reply_q[c->reply_head];
         uint64_t ticket = 0;
         if (oa_cec_owner_send_async(c->owner, &message, &ticket) == 0) {
@@ -317,7 +317,9 @@ static void cec_poll(void *ud)
             c->job_pending = 1;
         } else {
             c->last_error = errno ? errno : EIO;
-            c->reply_head = c->reply_tail; /* drop on submission failure */
+            /* Drop only the failed frame; later replies keep their order and
+             * are retried on the next poll. Never send replies after close. */
+            c->reply_head = (c->reply_head + 1u) & 3u;
         }
         return;
     }

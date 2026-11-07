@@ -109,11 +109,14 @@ p4=2 case fails with the boolean form. ARM `mod_tuner` 1896d578.... The panel
 MEDIUM is fixed: Open/Set 0 is treated as a definite vendor failure, a failed
 Open closes any cached fd and retries, failed Set keeps the last applied
 percent, and `iface_get` returns -1 until a set succeeds; `check-panel-curve`
-fails if the results are ignored. ARM `mod_panel` 46a3c3ff.... MEDIUM items
-remaining: amp Init retry/suspend, CEC reply queue. The close-path wording was
-corrected to drop unproven "only reboot" claims. Reports:
+fails if the results are ignored. ARM `mod_panel` 46a3c3ff.... The CEC reply
+queue is fixed: a failed submission drops only that record, replies are never
+sent after close, and a successful release clears the queue;
+`check-cec-reply-queue` fails with the old drop-all behavior. ARM `mod_cec`
+5083aee9.... MEDIUM item remaining: amp Init retry/suspend. The close-path
+wording was corrected to drop unproven "only reboot" claims. Reports:
 AGENT-REVIEW-2026-11-07, AMP-BALANCE, AMP-JOBS, TUNER-P4, PANEL-HAL-ERRORS,
-IR-HELPER.
+CEC-REPLY-QUEUE, IR-HELPER.
 
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR
 under a replacement. The stock parser also polls `DEV_Ir_GetKey`

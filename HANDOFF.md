@@ -816,7 +816,9 @@ All review HIGH items are fixed, and the tuner p4 MEDIUM is fixed (demod[4]
 keeps 0..2; check-tuner-backend, TUNER-P4; mod_tuner 1896d578...). Panel HAL
 errors are fixed too (Open/Set 0 fails, failed open retries, last applied
 percent reported; check-panel-curve, PANEL-HAL-ERRORS; mod_panel 46a3c3ff...).
-MEDIUM amp Init retry/suspend and CEC reply queue remain. AGENT-REVIEW.
+The CEC reply queue is fixed (failed record dropped, no reply after close,
+release clears; check-cec-reply-queue, CEC-REPLY-QUEUE; mod_cec 5083aee9...).
+MEDIUM amp Init retry/suspend remains. AGENT-REVIEW.
 
 Input/PVR group 2026-11-07: live settingsDB source5/previous4/volume0;
 stock owns video28 BLAST, ntkdvif, video20/21/24, demux0 and DVB nodes.

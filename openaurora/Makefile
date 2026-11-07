@@ -1455,6 +1455,20 @@ check-cec-suspend-resume: $(BUILD)/tests/cec_suspend_resume
 	@$(BUILD)/tests/cec_suspend_resume
 check: check-cec-suspend-resume
 
+$(BUILD)/tests/cec_reply_queue: tests/cec_reply_queue.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c modules/cec/cec.c include/openaurora/cec_owner.h include/openaurora/cec_authority_mem.h include/openaurora/cec_device.h include/openaurora/module.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ \
+	  tests/cec_reply_queue.c common/cec_owner.c common/cec_authority.c \
+	  common/cec_authority_mem.c common/cec_device.c common/cec_packet.c \
+	  common/cec.c common/cec_policy.c -pthread \
+	  -Wl,--wrap=oa_cec_owner_send_async \
+	  -Wl,--wrap=oa_cec_owner_take \
+	  -Wl,--wrap=oa_cec_owner_receive_async
+.PHONY: check-cec-reply-queue
+check-cec-reply-queue: $(BUILD)/tests/cec_reply_queue
+	@$(BUILD)/tests/cec_reply_queue
+check: check-cec-reply-queue
+
 $(BUILD)/tests/cec_owner: tests/cec_owner.c tests/lifecycle_retry.h common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)
