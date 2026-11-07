@@ -174,7 +174,15 @@ unvalidated.
       `amp_init`'s vendor boolean callbacks; `check-amp-board` covers the
       default records, pin routing, errno->false mapping, write-failure finish
       and cache/subwoofer policy. Injected I/O only; no device opened or
-      written.
+      written. A second layer, `common/amp_vendor.c`, composes the linkable
+      vendor wrappers: `Hal_Gpio_Write/Config` for pin<200 and
+      `NDAL_VideoExt_STBC_SetStbcGpio((pin+0x38)&0xff, level?2:3)` for
+      pin>=200, plus the I2C session. `check-amp-vendor` covers routing,
+      vendor booleans, 38 writes and the full sequencer; ARM links only those
+      three vendor symbols. The GPIO wrappers issue the `670a` claim and the
+      STBC call needs the plat video-open global fd. No module consumer,
+      hardware run, paired shutdown or audible acceptance yet.
+      AMP-TRANSPORT.
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but

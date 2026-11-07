@@ -19,6 +19,19 @@ Private controls forward to EX_PLAT; successful ioctl still does not prove
 MCU success. Full libv4l2 wrapper behavior/native authority remain open; no live
 device open or MCU call, metadata read only after tvssh WoL. See report.
 
+AMP-TRANSPORT-2026-11-07 recovers the write side used by amp Init.
+`DEV_GPIO_SetLevel` sends pin <200 to `Hal_Gpio_Write` and pin >=200 to
+`PLAT_SYS_SetStbcGpio((pin+0x38)&0xff, level?2:3)`; the wrappers are linkable
+(`Hal_Gpio_*` in libNDAL3, `NDAL_VideoExt_STBC_SetStbcGpio` in libNDAL_EX).
+`Hal_Gpio_Write/Config` are mutating: they issue the `670a` claim before
+`670e`/`670c`. The STBC setter returns the ndcommon ioctl boolean (1 success,
+0 failure) and uses the process-global fd installed by
+`NDAL_VideoExt_OpenDevice(0,index)`, so it fails closed without the platform
+video open. `common/amp_vendor.c` composes injected GPIO/STBC/I2C/delay into
+`oa_amp_init_io`; `check-amp-vendor` passes the full sequencer. No hardware
+run, no module consumer, and paired shutdown/ownership remain open.
+Report: AMP-TRANSPORT-2026-11-07.
+
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR
 under a replacement. The stock parser also polls `DEV_Ir_GetKey`
 (`NDAL_VideoExt_BLAST_RX`, V4L2 control 0xf25). The BLAST common fd in the live

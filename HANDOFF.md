@@ -750,6 +750,16 @@ set10: latest stock appmgr1564/aurora1764, same fds, probes0 and1b/05/05,
 profile/AQ/fb/backlight unchanged. Not audible/CEC acceptance; native backends
 open. AUDIO-CEC-TAKEOVER.
 
+Amp transport 2026-11-07 (offline): recovered DEV_GPIO_SetLevel/SetDirection.
+Pin<200 -> linkable Hal_Gpio_Write/Config (0 success; issue the mutating 670a
+claim); pin>=200 -> (pin+0x38)&0xff with level0->STBC cmd3, level1->cmd2.
+NDAL_VideoExt_STBC_SetStbcGpio returns the ndcommon ioctl boolean (1 success/0
+failure) and needs the global fd from NDAL_VideoExt_OpenDevice(0,index).
+common/amp_board.c + common/amp_vendor.c compose both with the I2C session into
+oa_amp_init_io; check-amp-board/check-amp-vendor pass; ARM references only the
+three exported vendor symbols. No module consumer, hardware run, paired
+shutdown or audible acceptance. AMP-TRANSPORT.
+
 Input/PVR group 2026-11-07: live settingsDB source5/previous4/volume0;
 stock owns video28 BLAST, ntkdvif, video20/21/24, demux0 and DVB nodes.
 Preflight found mod_ir missing -ldl on TV (fixed; libdl NEEDED). Two BLAST

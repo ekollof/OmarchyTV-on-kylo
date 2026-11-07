@@ -2739,4 +2739,12 @@ check-amp-board: $(BUILD)/tests/amp_board
 	@$(BUILD)/tests/amp_board
 check: check-amp-board
 
+$(BUILD)/tests/amp_vendor: tests/amp_vendor.c common/amp_vendor.c common/amp_board.c common/amp_init.c common/audio_amp.c common/amp_i2c.c include/openaurora/amp_vendor.h include/openaurora/amp_board.h include/openaurora/amp_init.h include/openaurora/audio_amp.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+.PHONY: check-amp-vendor
+check-amp-vendor: $(BUILD)/tests/amp_vendor
+	@$(BUILD)/tests/amp_vendor
+check: check-amp-vendor
+
 .PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-oa-client check-display check-svg check-runtime clean install arm tv vendor
