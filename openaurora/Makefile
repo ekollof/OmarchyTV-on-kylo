@@ -1197,10 +1197,15 @@ $(BUILD)/tests/panel_hal: tests/panel_hal.c modules/panel/panel.c common/panel_c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
 
+$(BUILD)/tests/panel_standby: tests/panel_standby.c modules/panel/panel.c common/panel_curve.c include/openaurora/module.h include/openaurora/services.h include/openaurora/vendor_pwm.h include/openaurora/panel_curve.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
+
 .PHONY: check-panel-curve
-check-panel-curve: $(BUILD)/tests/panel_curve $(BUILD)/tests/panel_hal
+check-panel-curve: $(BUILD)/tests/panel_curve $(BUILD)/tests/panel_hal $(BUILD)/tests/panel_standby
 	@$(BUILD)/tests/panel_curve
 	@$(BUILD)/tests/panel_hal
+	@$(BUILD)/tests/panel_standby
 check: check-panel-curve
 
 $(BUILD)/tests/nim_dtv: tests/nim_dtv.c common/nim_dtv.c include/openaurora/nim_dtv.h

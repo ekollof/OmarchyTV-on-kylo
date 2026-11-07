@@ -30,6 +30,7 @@
  */
 #include <errno.h>
 #include <pthread.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -64,11 +65,21 @@ static int Hal_Pwm_Set_ByChannel(unsigned ch, struct pwm_set_req *r)
     return 0;
 }
 static void Hal_Pwm_Close(void) {}
+static int Hal_Gpio_Write(int pin, int level) { (void)pin; (void)level; return 0; }
+static int Hal_Video_Vpltio_SendCmd(int cmd, int a, void *buf, int b, int c, int d,
+                                    int e, int f, int g)
+{
+    (void)cmd; (void)a; (void)buf; (void)b; (void)c; (void)d; (void)e; (void)f; (void)g;
+    return 0;
+}
 #else
 static int hal_ready(void)
 {
     return 1;
 }
+extern int Hal_Gpio_Write(int pin, int level);
+extern int Hal_Video_Vpltio_SendCmd(int cmd, int a, void *buf, int b, int c, int d,
+                                    int e, int f, int g);
 #endif
 
 struct ctx {
@@ -86,6 +97,14 @@ struct ctx {
     int restored;     /* a valid percent was handed across reload */
     int published;
     int needs_cleanup; /* one start cycle is cleaned exactly once */
+    /* Opt-in standby panel-power sequence (DEV_PANEL_PowerSequence). The
+     * defaults are the live profile's descriptors/panel-extra values. */
+    int standby;
+    int power_pin, power_on_level;
+    int bl_pin, bl_on_level;
+    int lvds_cmd;
+    unsigned on_delay_ms, bl_on_delay_ms;
+    unsigned off_bl_delay_ms, off_lvds_delay_ms, off_panel_delay_ms;
     /* ABI 3 quiesce: the vendor PWM close runs on a worker. */
     pthread_t cleanup_thread;
     int cleanup_running;
@@ -110,19 +129,10 @@ static uint32_t hal_duty(int duty)
     return (uint32_t)((unsigned)duty * 1000u / 4095u);
 }
 
-static int apply(struct ctx *c, int pct)
+static int write_hal(struct ctx *c, uint32_t hal)
 {
     if (!hal_ready())
         return -ENOTSUP;
-    if (pct < 0)
-        pct = 0;
-    if (pct > 100)
-        pct = 100;
-    int duty12 = c->raw >= 0 ? c->raw :
-                 c->curve_on ? oa_panel_percent_to_duty(&c->curve, pct, c->duty_max) :
-                 pct * c->duty_max / 100;
-    uint32_t hal = hal_duty(duty12);
-
     if (!c->opened) {
         /* Init: 1 = initialized now, 0 = already initialized. Both are the
          * vendor success paths (the semaphore failure is only printed). */
@@ -151,12 +161,88 @@ static int apply(struct ctx *c, int pct)
     r.shift = 0;
     r.mode = (uint32_t)c->mode; /* genPwmdimMode; must be < 9 */
     /* Same convention as Open: 0 is a definite failure, nonzero is the vendor
-     * success path (not a hardware readback). Keep the last applied value. */
-    if (Hal_Pwm_Set_ByChannel((unsigned)c->channel, &r) == 0)
-        return -EIO;
+     * success path (not a hardware readback). */
+    return Hal_Pwm_Set_ByChannel((unsigned)c->channel, &r) == 0 ? -EIO : 0;
+}
+
+static int apply(struct ctx *c, int pct)
+{
+    if (!hal_ready())
+        return -ENOTSUP;
+    if (pct < 0)
+        pct = 0;
+    if (pct > 100)
+        pct = 100;
+    int duty12 = c->raw >= 0 ? c->raw :
+                 c->curve_on ? oa_panel_percent_to_duty(&c->curve, pct, c->duty_max) :
+                 pct * c->duty_max / 100;
+    int rc = write_hal(c, hal_duty(duty12));
+    if (rc != 0)
+        return rc;
     c->percent = pct;
     c->have_percent = 1;
     return 0;
+}
+
+static void delay_ms(unsigned ms)
+{
+    if (!ms)
+        return;
+    const struct timespec pause = {
+        .tv_sec = ms / 1000u,
+        .tv_nsec = (long)(ms % 1000u) * 1000000L
+    };
+    (void)nanosleep(&pause, NULL);
+}
+
+static void standby_gpio(struct ctx *c, int pin, int level)
+{
+    if (!c->standby || !hal_ready())
+        return;
+    if (Hal_Gpio_Write(pin, level) != 0)
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "panel: standby GPIO %d -> %d failed", pin, level);
+}
+
+/* plat_vpltio_mute_lvds @0x0092e0f8: cmd 0x1cc with the mute byte as the
+ * second data argument. 0 = LVDS data off, 1 = on. */
+static void standby_lvds(struct ctx *c, int on)
+{
+    if (!c->standby || !hal_ready())
+        return;
+    uint32_t unused = 0;
+    unsigned char mute = on ? 1 : 0;
+    (void)Hal_Video_Vpltio_SendCmd(c->lvds_cmd, (int)(uintptr_t)&unused, &mute,
+                                   0, 0, 0, 0, 0, 0);
+}
+
+/* DEV_PANEL_PowerSequence(1) @0x00857ac0 order for the live profile: panel
+ * power -> 30 ms -> LVDS on -> PWM restore -> 580 ms -> backlight power.
+ * The TCON PMIC GPIO step is skipped because panel-extra +0x4a is 0. */
+static int panel_power_on(struct ctx *c)
+{
+    standby_gpio(c, c->power_pin, c->power_on_level);
+    delay_ms(c->on_delay_ms);
+    standby_lvds(c, 1);
+    int pct = c->have_percent ? c->percent : 100;
+    int rc = apply(c, pct);
+    delay_ms(c->bl_on_delay_ms);
+    standby_gpio(c, c->bl_pin, c->bl_on_level);
+    return rc;
+}
+
+/* DEV_PANEL_PowerSequence(0): 70 ms -> backlight power off -> 220 ms ->
+ * LVDS off -> 30 ms -> PWM 0 -> panel power off. PLAT_PQ_SHELL_SetAutoBacklight
+ * (0) has no owner in this module and is omitted, not emulated. */
+static void panel_power_off(struct ctx *c)
+{
+    delay_ms(c->off_bl_delay_ms);
+    standby_gpio(c, c->bl_pin, !c->bl_on_level);
+    delay_ms(c->off_lvds_delay_ms);
+    standby_lvds(c, 0);
+    delay_ms(c->off_panel_delay_ms);
+    (void)write_hal(c, 0);
+    standby_gpio(c, c->power_pin, !c->power_on_level);
 }
 
 static int iface_set(int pct)
@@ -232,6 +318,27 @@ static int m_start(void *v)
     if (c->duty_max < 1 || c->duty_max > 4095) c->duty_max = 4095;
     oa_panel_curve_init(&c->curve, 40, 60, 80, 100,
         atoi(c->api->config_get(c->api->priv, "panel.min_percent", "0")) * 10);
+
+    /* Opt-in standby sequence. Defaults are the live panel's descriptor pins,
+     * polarity and PLAT_VIU panel-extra delays (30/580/220/30 ms). */
+    c->standby = c->api->config_get(c->api->priv, "panel.standby", "0")[0] == '1';
+    c->power_pin = atoi(c->api->config_get(c->api->priv, "panel.power_pin", "110"));
+    c->power_on_level = atoi(c->api->config_get(c->api->priv,
+                                                "panel.power_on_level", "1")) != 0;
+    c->bl_pin = atoi(c->api->config_get(c->api->priv, "panel.bl_power_pin", "111"));
+    c->bl_on_level = atoi(c->api->config_get(c->api->priv,
+                                             "panel.bl_on_level", "0")) != 0;
+    c->lvds_cmd = atoi(c->api->config_get(c->api->priv, "panel.lvds_cmd", "460"));
+    long on = atol(c->api->config_get(c->api->priv, "panel.on_delay_ms", "30"));
+    long bl_on = atol(c->api->config_get(c->api->priv, "panel.bl_on_delay_ms", "580"));
+    long off_bl = atol(c->api->config_get(c->api->priv, "panel.off_bl_delay_ms", "70"));
+    long off_lvds = atol(c->api->config_get(c->api->priv, "panel.off_lvds_delay_ms", "220"));
+    long off_panel = atol(c->api->config_get(c->api->priv, "panel.off_panel_delay_ms", "30"));
+    c->on_delay_ms = on > 0 && on <= 10000 ? (unsigned)on : 0;
+    c->bl_on_delay_ms = bl_on > 0 && bl_on <= 10000 ? (unsigned)bl_on : 0;
+    c->off_bl_delay_ms = off_bl > 0 && off_bl <= 10000 ? (unsigned)off_bl : 0;
+    c->off_lvds_delay_ms = off_lvds > 0 && off_lvds <= 10000 ? (unsigned)off_lvds : 0;
+    c->off_panel_delay_ms = off_panel > 0 && off_panel <= 10000 ? (unsigned)off_panel : 0;
 
     if (!hal_ready()) {
         c->api->log(c->api->priv, OA_LOG_WARN,
@@ -325,6 +432,8 @@ static void m_destroy(void *v)
 static int m_suspend(void *v)
 {
     struct ctx *c = v;
+    if (c->standby && hal_ready())
+        panel_power_off(c);
     /* let the stock stack own the PWM controller while the TV is asleep */
     if (hal_ready() && c->opened) {
         Hal_Pwm_Close();
@@ -338,6 +447,8 @@ static int m_resume(void *v)
     struct ctx *c = v;
     if (!hal_ready())
         return 0;
+    if (c->standby)
+        return panel_power_on(c);
     int rc = apply(c, c->percent); /* 0 is a valid applied value */
     if (rc != 0) {
         c->api->log(c->api->priv, OA_LOG_WARN,

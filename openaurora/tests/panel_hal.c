@@ -30,6 +30,13 @@ int Hal_Pwm_Set_ByChannel(unsigned ch, struct pwm_set_req *r)
 }
 void Hal_Pwm_Close(void) { close_calls++; }
 int Hal_Pwm_Terminate(void) { return 0; }
+int Hal_Gpio_Write(int pin, int level) { (void)pin; (void)level; return 0; }
+int Hal_Video_Vpltio_SendCmd(int cmd, int a, void *buf, int b, int c, int d,
+                             int e, int f, int g)
+{
+    (void)cmd; (void)a; (void)buf; (void)b; (void)c; (void)d; (void)e; (void)f; (void)g;
+    return 0;
+}
 
 static void log_message(void *p, int level, const char *fmt, ...)
 {

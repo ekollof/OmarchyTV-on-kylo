@@ -181,3 +181,30 @@ an earlier indexing pass was wrong. Standby panel power-down/power-up is still
 unimplemented: the full sequence also needs LVDS mute/unmute, TCON PMIC GPIO and
 the panel-extra delays, and partial GPIO-only power switching must not be used.
 The polarity evidence is recorded for that work; it has not been exercised.
+
+## Standby sequence implementation (opt-in, fake-HAL tested)
+
+`mod_panel` now implements the recovered sequence behind `panel.standby=1`
+(default 0, so takeover/boot behavior is unchanged):
+
+```text
+off: BL power off (111=1) -> 220 ms -> LVDS off (cmd 0x1cc byte 0)
+     -> 30 ms -> PWM 0 -> PANELPWR off (110=0)
+on:  PANELPWR on (110=1) -> 30 ms -> LVDS on (byte 1)
+     -> PWM restore (last applied level) -> 580 ms -> BL power on (111=0)
+```
+
+The 70 ms pre-backlight delay, 30/580/220/30 ms panel-extra delays and the
+TCON PMIC skip come from `DEV_PANEL_PowerSequence @0x00857ac0` plus the live
+`PLAT_VIU_GetPanelExtraStruct` bytes (`0x019d4d64`: `1e00 4402 dc00 1e00 ...`,
+`+0x4a == 0`). `plat_vpltio_mute_lvds @0x0092e0f8` sends
+`Hal_Video_Vpltio_SendCmd(0x1cc, &unused, &mute, 0...)`. Pins and levels are
+overridable (`panel.power_pin/power_on_level`, `panel.bl_power_pin/bl_on_level`,
+`panel.lvds_cmd`, delay keys).
+
+`check-panel-standby` asserts the exact GPIO/LVDS/PWM order and returns failure
+when the backlight is powered before the PWM restore. `PLAT_PQ_SHELL_SetAutoBacklight(0)`
+has no owner in this module and is deliberately omitted rather than emulated.
+The sequence has **not** been run on the TV: suspend/standby is blocked by the
+current no-takeover/no-reboot constraint, and partial GPIO-only switching must
+not be used.
