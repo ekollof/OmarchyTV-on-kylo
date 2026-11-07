@@ -17,7 +17,7 @@ suite resets the reload streak, and stock fallback only follows a real failure
 or quit. Host tests cover the exit and relaunch event order; not yet exercised
 on the TV. Boot persistence/boot hooks remain a separate gate. TV restored
 stock (appmgr 1574, aurora 1778). REPLACEMENT-SYSTEM, HW-ACCEPT-2.
-Full system candidate, 2026-11-07: `full-replacement-bundle` builds 31 modules
+Full system candidate, 2026-11-07: `full-replacement-bundle` builds 32 modules
 with the real platform and `plat.drm_init=0` (skip only Hal_Video_DrmInit to
 preserve the vendor OSD), plus oa-audio-broker and fixed asset configs. The
 bundle preflights on the TV; a CPU-only run started audio_curve/audio_mixer/
@@ -56,6 +56,11 @@ APP-MANAGER-KEYBOARD, APP-MANAGER-CONFIG. The appmgr idtv entry wrapper
 (`tools/boot/run-aurora.sh`) is host-tested (dry-run, missing bundle, complete
 supervisor argv, manifest failure) and bundled, but NOT installed; boot
 integration still needs owner authorization. APP-MANAGER-ENTRY.
+Native `ui_omarchy` is now a functional shell (home Sources/Apps/Settings/About,
+2D focus, source picker, launcher.db app list, CEC/settings panel, clock,
+optional EF41 text) and is included in the 32-module bundle but not autoloaded;
+`check-ui-skin`/`check-ui-omarchy-quiesce` pass. App launch, live settings DB
+action, hardware input and scanout remain open. NATIVE-UI.
 
 Hardware acceptance, 2026-11-07 (owner: "ok, use the TV, full access"):
 temporary six-module bundle (`plat,panel,audio_amp,ir,tuner,cec`) ran with

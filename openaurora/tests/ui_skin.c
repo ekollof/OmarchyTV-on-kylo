@@ -28,8 +28,9 @@ static void pump(oa_host *h)
     }
     oa_host_dispatch_posts(h);
 }
-static void queue_key(oa_host *h)
-{ oa_key_event e = {.id = 19, .kind = OA_KEY_PRESS}; h->api.emit(h, OA_TOPIC_KEY, &e); }
+static void queue_key_id(oa_host *h, int id)
+{ oa_key_event e = {.id = (uint8_t)id, .kind = OA_KEY_PRESS}; h->api.emit(h, OA_TOPIC_KEY, &e); }
+static void queue_key(oa_host *h) { queue_key_id(h, 19); }
 static uint64_t deny_timer(void *p, uint32_t delay, uint32_t repeat, void (*cb)(void *), void *ud)
 { (void)p; (void)delay; (void)repeat; (void)cb; (void)ud; return 0; }
 
@@ -40,14 +41,55 @@ static const char *config(void *ud, const char *key, const char *def)
     if (!strcmp(key, "ui.ok_file")) return "";
     if (!strcmp(key, "ui.fps")) return use_fps ? "20" : "0";
     if (!strcmp(key, "ui.dir")) return asset_dir;
+    if (!strcmp(key, "ui.font_index") && getenv("OA_UI_FONT_INDEX"))
+        return getenv("OA_UI_FONT_INDEX");
+    if (!strcmp(key, "ui.font_pack") && getenv("OA_UI_FONT_PACK"))
+        return getenv("OA_UI_FONT_PACK");
     return def;
 }
+
+static int fake_source_select;
+static int fake_source_current = -1;
+static int fake_cec;
+static int fake_cec_sets;
+static int fake_set_int(const char *col, int v)
+{
+    if (strcmp(col, "m_cec_enabled")) return -1;
+    fake_cec = v;
+    fake_cec_sets++;
+    return 0;
+}
+static int fake_get_int(const char *col, int *out)
+{
+    if (!strcmp(col, "m_current_source") && out) { *out = 0; return 0; }
+    if (!strcmp(col, "m_cec_enabled") && out) { *out = fake_cec; return 0; }
+    return -1;
+}
+static int fake_writable(void) { return 1; }
+static const oa_settings_iface fake_settings = {
+    fake_get_int, fake_set_int, fake_writable
+};
+static int fake_select_type(int type) { fake_source_select = type; fake_source_current = type; return 0; }
+static int fake_current_type(void) { return fake_source_current; }
+static int fake_available(void) { return 1; }
+static const oa_source_iface fake_source = {
+    fake_select_type, fake_current_type, fake_available
+};
 
 static int command(oa_host *host, const char *text, char *out, size_t cap)
 {
     char line[160];
     snprintf(line, sizeof line, "%s", text);
     return oa_control_command(host, line, out, cap);
+}
+
+static void capture(const oa_nav_trace *trace, const char *name)
+{
+    const char *dir = getenv("OA_UI_CAPTURE_DIR");
+    if (!dir || !*dir) return;
+    char path[512];
+    snprintf(path, sizeof path, "%s/%s.rgba", dir, name);
+    (void)trace->capture(path);
 }
 
 static int has_fill(const oa_nav_trace *trace, int x, int y, int w, int h, int r, int g, int b)
@@ -71,6 +113,8 @@ int main(int argc, char **argv)
     assert(!oa_host_init(&host, argv[1], NULL));
     host.log_level = OA_LOG_ERROR;
     host.api.config_get = config;
+    assert(!host.api.publish(&host, OA_SVC_SETTINGS, 1, &fake_settings));
+    assert(!host.api.publish(&host, OA_SVC_SOURCE, 1, &fake_source));
     char out[256];
 
     assert(!command(&host, "load nav_display", out, sizeof out) && strstr(out, "ok"));
@@ -97,11 +141,45 @@ int main(int argc, char **argv)
     assert(!command(&host, "load ui_omarchy", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_omarchy", out, sizeof out) && !strcmp(out, "ok\n"));
     const oa_nav_trace *trace = host.api.lookup(&host, OA_SVC_NAV_TRACE, 1);
+    capture(trace, "home");
     assert(trace);
     int transform;
     assert(!trace->transform(&transform, NULL, NULL) && transform == 0);
     assert(has_fill(trace, 0, 0, 14, 1080, 0, 122, 204));      /* omarchy side bar */
-    assert(has_fill(trace, 40, 88, 300, 180, 24, 28, 36));      /* skeleton tile */
+    assert(has_fill(trace, 40, 88, 300, 180, 24, 28, 36));      /* home tile 0 */
+    assert(has_fill(trace, 360, 288, 300, 180, 24, 28, 36));    /* home tile 3 */
+    assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* focus frame 0 */
+    queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
+    assert(has_fill(trace, 40, 88, 1840, 904, 18, 21, 28));     /* Sources screen */
+    capture(trace, "sources");
+    queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
+    assert(fake_source_select == 15);                            /* BACK AV */
+    queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
+    assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* back home */
+    queue_key_id(&host, 22); oa_host_dispatch_posts(&host);
+    assert(has_fill(trace, 360, 88, 300, 4, 0, 122, 204));      /* focus tile 1 */
+    queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
+    assert(has_fill(trace, 40, 88, 1840, 904, 20, 24, 32));     /* Apps screen */
+    capture(trace, "apps");
+    queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
+    assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* back home */
+    queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
+    assert(has_fill(trace, 40, 288, 300, 4, 0, 122, 204));      /* focus tile 2 */
+    queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
+    assert(has_fill(trace, 40, 88, 1840, 904, 21, 25, 33));     /* Settings screen */
+    capture(trace, "settings");
+    queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
+    assert(fake_cec == 1 && fake_cec_sets == 1);                 /* CEC toggled on */
+    queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 22); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
+    assert(has_fill(trace, 40, 88, 1840, 904, 22, 26, 35));     /* About screen */
+    capture(trace, "about");
+    queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
+    assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* back home */
 
     /* Switch to the vendor skin: unload omarchy, select vendor, start it. */
     assert(!command(&host, "unload ui_omarchy", out, sizeof out) && strstr(out, "ok"));

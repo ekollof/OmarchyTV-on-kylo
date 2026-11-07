@@ -1925,6 +1925,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Native UI, assets and OmarchyTV
 
+- [x] First functional native OmarchyTV shell in `mod_ui_omarchy`: Home grid
+      (Sources/Apps/Settings/About), 2D focus/accent frame, Sources picker,
+      launcher.db Apps list, CEC/settings panel, About, live clock and optional
+      EF41 text. `check-ui-skin` covers home/focus and all four screens;
+      `check-ui-omarchy-quiesce` still passes. Included in the 32-module bundle
+      but not autoloaded; app launch, live writable DB action and hardware/
+      scanout acceptance remain open. NATIVE-UI-2026-11-07.
+
 - [x] Host-tested app-manager idtv entry wrapper (`run-aurora.sh`): bundle/
       manifest checks, stock fallback, `oa-supervise` argv with watchdog and
       child, dry-run; four host cases pass. Bundled but not installed; appmgr

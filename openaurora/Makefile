@@ -930,10 +930,10 @@ $(BUILD)/modules/mod_ir.so: $(call pic_objs,modules__mod_ir,modules/ir/ir.c)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -ldl
 $(eval $(call emit_pics,modules__mod_ir,modules/ir/ir.c,-pthread,include/openaurora/events.h include/openaurora/ir_blast.h include/openaurora/module.h include/openaurora/services.h))
 
-$(BUILD)/modules/mod_ui_omarchy.so: $(call pic_objs,modules__mod_ui_omarchy,modules/ui_omarchy/ui_omarchy.c)
+$(BUILD)/modules/mod_ui_omarchy.so: $(call pic_objs,modules__mod_ui_omarchy,modules/ui_omarchy/ui_omarchy.c common/canvas.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c)
 	@mkdir -p $(dir $@)
-	$(CC) -shared -o $@ $^ $(LDFLAGS)
-$(eval $(call emit_pics,modules__mod_ui_omarchy,modules/ui_omarchy/ui_omarchy.c,,include/openaurora/ui_engine.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h))
+	$(CC) -shared -o $@ $^ $(LDFLAGS) $(LIBM)
+$(eval $(call emit_pics,modules__mod_ui_omarchy,modules/ui_omarchy/ui_omarchy.c common/canvas.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c,,include/openaurora/ui_engine.h include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h include/openaurora/canvas.h include/openaurora/font_bitmap.h include/openaurora/font_pack.h include/openaurora/font_text.h include/openaurora/font_draw.h))
 
 $(BUILD)/modules/mod_ui_diag.so: $(call pic_objs,modules__mod_ui_diag,modules/ui_diag/ui_diag.c common/font_bitmap.c common/font_pack.c common/font_text.c common/font_draw.c)
 	@mkdir -p $(dir $@)
@@ -2071,7 +2071,7 @@ replacement-bundle: $(BUILD)/$(PROJECT) $(REPLACEMENT_SO) $(BUILD)/tests/mod_pla
 # Complete real-platform composition: all feature/UI modules, fixed asset
 # configs, real plat with plat.drm_init=0 (preserve the vendor OSD). Takeover
 # candidate; cold OSD enable remains open.
-FULL_REPLACEMENT_MODULES := plat display panel ir audio source power tuner settings service_db image_decode epg pvr channels i18n audio_curve audio_mixer audio_amp_profile audio_amp cec ticker ui_clock ui_anim ui_engine ui_vendor ui_theme ui_profile ui_menu ui_list ui_navigation lua
+FULL_REPLACEMENT_MODULES := plat display panel ir audio source power tuner settings service_db image_decode epg pvr channels i18n audio_curve audio_mixer audio_amp_profile audio_amp cec ticker ui_clock ui_anim ui_engine ui_vendor ui_omarchy ui_theme ui_profile ui_menu ui_list ui_navigation lua
 FULL_REPLACEMENT_SO := $(foreach m,$(FULL_REPLACEMENT_MODULES),$(BUILD)/modules/mod_$(m).so)
 .PHONY: full-replacement-bundle
 full-replacement-bundle: $(BUILD)/$(PROJECT) $(FULL_REPLACEMENT_SO) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker

@@ -1836,6 +1836,17 @@ argv and manifest failure (all pass). The wrapper is bundled (and in the
 manifest) but NOT installed; appmgr launch/suspend/resume and persistent boot
 integration remain unauthorized/untested.
 
+NATIVE-UI-2026-11-07: `mod_ui_omarchy` is a functional native shell over
+ui.engine: Home grid (Sources/Apps/Settings/About) with 2D focus and accent
+frame; Sources rows use the recovered source types and `source.select_type`;
+Apps reads `launcher.db` read_all/count/get; Settings reads
+`m_current_source`/`m_cec_enabled` and toggles CEC; About; live HH:MM clock;
+optional EF41 text. No vendor skin assets, portal, telemetry or advertising.
+`check-ui-skin` covers home tile/focus moves and all four sub-screens; the
+72-byte state handoff is unchanged and `check-ui-omarchy-quiesce` passes. The
+module is in the 32-module bundle but not autoloaded; app launch, live writable
+DB action, hardware input and scanout remain open.
+
 ## What is still unknown
 
 Cold scanout and resume ownership; complete IR behavior; independent panel/audio/

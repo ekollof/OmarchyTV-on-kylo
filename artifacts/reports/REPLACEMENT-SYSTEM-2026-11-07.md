@@ -110,13 +110,13 @@ not exercised as the boot path.
 
 ## Full real-platform composition
 
-`make TARGET=tv ... full-replacement-bundle` builds a 31-module candidate:
+`make TARGET=tv ... full-replacement-bundle` builds a 32-module candidate:
 
 ```text
 real plat,display,panel,ir,audio,source,power,tuner,settings,service_db,
 image_decode,epg,pvr,channels,i18n,audio_curve,audio_mixer,
 audio_amp_profile,audio_amp,cec,ticker,ui_clock,ui_anim,ui_engine,
-ui_vendor,ui_theme,ui_profile,ui_menu,ui_list,ui_navigation,lua
+ui_vendor,ui_omarchy,ui_theme,ui_profile,ui_menu,ui_list,ui_navigation,lua
 + oa-client, oa-supervise, fb-restore, oa-ir-blast, oa-audio-broker,
   takeover-full.sh, run-aurora.sh, menus
 ```
@@ -144,14 +144,15 @@ Read-only verification on the TV (stock stayed running; no display/fb1, no
 takeover): the full bundle's manifest and `--check` passed; a CPU-only core
 with those six modules started all of them, including `audio_mixer` spawning
 `oa-audio-broker`, and `ui_menu` loaded 1 dialog. `quit` left no core/broker.
-`ui_omarchy` is deliberately excluded: `ui_vendor` already owns the single
-`ui.engine` skin; it can be loaded after stopping `ui_vendor`.
+`ui_omarchy` is deliberately **not autoloaded**: `ui_vendor` already owns the
+single `ui.engine` skin. The native module is included in the bundle/module set
+and can be loaded after stopping `ui_vendor` (see NATIVE-UI).
 
 Bundle hashes: openaurora `521047b8...`, `mod_plat.so` `446ee107...`,
 `mod_ui_vendor.so` `d0afa127...`, `mod_panel.so` `454220b0...`,
-`mod_display.so` `130405a4...`, config `844adf2d...`, `run-aurora.sh`
-`0f9c3f98...`; tar
-`ca252e1d4cf6ec2583d1c26fe6ac1e0887db06d9c90f32cfe3dbc30716ca2976`.
+`mod_display.so` `130405a4...`, `mod_ui_omarchy.so` `e00184cd...`,
+config `844adf2d...`, `run-aurora.sh` `0f9c3f98...`; tar
+`f83ec3ee0b50b58fc745e9b2fbf83a90a7822028b25cff736954efb1829f813d`.
 The 2026-11-07 panel-scale fix and stock backlight curve are included; the
 bundle was re-uploaded to `/buffer/oa-full-20261107`, its manifest verified and
 `--check` passed. It has not been started.
@@ -231,7 +232,7 @@ briefly returns to stock while the new core starts and repaints.
 - Boot persistence, early startup before stock and boot hooks remain a separate
   owner gate; the system currently runs after a takeover.
 - Real-plat plus visible OSD (one-process full hardware system) needs a
-  takeover test of `plat.drm_init=0`; the full 31-module bundle preflights and
+  takeover test of `plat.drm_init=0`; the full 32-module bundle preflights and
   its asset modules start CPU-only, but the unified display/hardware path was
   not run. Cold OSD allocation/binding/enable is still required for boot.
 - Exact rail-highlight geometry/cadence, settings-list/full menu assets, source
