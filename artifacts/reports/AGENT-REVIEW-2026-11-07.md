@@ -79,15 +79,16 @@ awaited with a blocking `waitpid`.
 Fix: read only into the buffer's free space (64 is a multiple of the 8-byte
 record); pin size/offsets with `_Static_assert` and zero the padding in the
 writer; open the UART with `O_CLOEXEC` and mark every fd above stderr
-close-on-exec in the forked child with an async-signal-safe `fcntl` sweep
-(3..`_SC_OPEN_MAX`, capped at 65536); reap
+close-on-exec in the forked child with an async-signal-safe `ioctl(FIOCLEX)`
+sweep (3..`_SC_OPEN_MAX`, capped at 65536; `fcntl` was rejected by TV
+preflight for a GLIBC_2.28 binding); reap
 with `WNOHANG` only, bounded to 100 ms after SIGTERM and 100 ms after SIGKILL,
 retaining the pid for a later retry if it still survives. Regression
 `check-ir-helper` covers a 7+65-byte split, the 8-byte layout, the CLOEXEC
 sweep, and a SIGTERM-ignoring child (`~113 ms`, then `ECHILD`). Restoring the
 unbounded read fails `nevents == 9`; a no-op sweep fails the `FD_CLOEXEC`
 assertion. ARM hashes: `mod_ir.so`
-`87d2f16b883f9c0919f2930fac9ebeb686e8e713e3ca50e582f538663863a83e`,
+`169945faa8c65479ff6a4f266c79fcb870f02838d4b04bb1c400a886cade7275`,
 `oa-ir-blast`
 `36ef366586e7dc4a78d6b21d9fa2aed99421d9ea0e5dc79d2e7d6e71a98c3678`.
 

@@ -523,7 +523,10 @@ static void m_destroy(void *v)
 static int m_suspend(void *v)
 {
     struct ctx *c = v;
-    if (!c || c->cleanup_running)
+    /* A submit or an untaken result means the owner worker may be inside the
+     * Init sequencer; joining it here would block the host loop. Reject
+     * without changing state so the caller can amp-state and retry. */
+    if (!c || c->cleanup_running || c->submitted)
         return -EBUSY;
     teardown_now(c);
     return 0;

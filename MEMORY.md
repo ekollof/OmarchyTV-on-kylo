@@ -1,4 +1,25 @@
-# Current project state — last verified 2026-11-06
+# Current project state — last verified 2026-11-07
+
+Hardware acceptance, 2026-11-07 (owner: "ok, use the TV, full access"):
+temporary six-module bundle (`plat,panel,audio_amp,ir,tuner,cec`) ran with
+stock stopped. **Amp:** the default-PCM 440 Hz tone was audible, but the
+focused A/B heard it while Init left mute 1, so the Init/mute state does not
+gate that path; audible-amp acceptance is retracted (mute gating/readback/
+volume/standby open). **Physical IR:** real BLAST press/release records for
+Right/Down/Up/Left (0x3056/0x3853/0x3054/0x3855) via `oa-ir-blast`; held keys
+arrived as `aux=01 flag=00` and are emitted as PRESS; `OA_KEY_REPEAT` is
+unimplemented; no OK press. **Panel negative:** `panel 50` and `panel 0`
+returned ok and updated state but the owner saw no dimming; the direct
+`Hal_Pwm_Set_ByChannel` path is insufficient. **CEC:** created `/tmp/ntkcec`
+(229:0); acquire finished errno 1, no TX/RX. **Tuner:** HAL-backend scan
+attempt with synthetic +25 progress and lock1/strength0; no RF source. DVR,
+cold startup and UI parity not tested. The IR helper's child fd sweep uses
+`ioctl(FIOCLEX)` (no GLIBC_2.28 `fcntl`). Restored by `wdtctl set 10`:
+appmgr 1565/aurora 1767 after the first run and 1566/1770 after the amp A/B;
+staging/`/tmp/ntkcec` absent, hwprofile unchanged, fb1 1920x2160.
+HW-ACCEPT-2026-11-07, AGENT-REVIEW-2-2026-11-07.
+
+# Previous verified state — 2026-11-06
 
 View-only wake, 2026-11-06: stock Aurora PIDs 2204 and 1781, appmgr 1579,
 no openaurora. fb1 virtual 1920×2160, pan 0,1080. Frame 0 is the stock

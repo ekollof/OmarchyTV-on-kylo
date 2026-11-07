@@ -1,3 +1,26 @@
+HW-ACCEPT-2026-11-07 is the first owner-confirmed hardware run covering the
+fixed modules. **Amp:** a quiet 440 Hz default-PCM tone was audible, but a
+focused A/B also heard it while Init left the amp at mute 1; the Init/mute
+state does not gate that PCM path. The audible-amp acceptance is **retracted**;
+mute gating, register readback, volume/balance and standby remain open.
+**IR:** the physical remote produced real BLAST press and release records for
+Right (0x3056), Down (0x3853), Up (0x3054) and Left (0x3855) through
+`oa-ir-blast`; held keys arrived as `aux=01 flag=00` and are emitted as
+`OA_KEY_PRESS` (`OA_KEY_REPEAT` is unimplemented; the vendor key path reads
+only `flag`). No OK press was captured. **Negative:** `panel 50` and `panel 0`
+returned `ok` and updated `panel-state`, but the owner saw no visible dimming
+at either value — the direct `Hal_Pwm_Set_ByChannel` path is not this panel's
+working backlight path; recover `DEV_PANEL`/MCU/`/dev/ntkled` before any
+brightness claim. CEC with a created `/tmp/ntkcec` (229:0) finished acquire
+with errno 1; no TX/RX. `tuner-scan` was a HAL-backend attempt with the
+module's synthetic +25 progress counter and signal lock 1/strength 0; no RF
+source, so no tune/lock acceptance. DVR, cold startup and broad UI parity were
+not tested. The IR helper also needed `ioctl(FIOCLEX)` instead of `fcntl` to
+avoid a `GLIBC_2.28` binding on the TV's glibc 2.23. Stock was restored by
+`wdtctl set 10` (appmgr 1565/aurora 1767 after the first run; 1566/1770 after
+the amp A/B), staging/ntkcec absent, profile and fb1 unchanged. Report:
+HW-ACCEPT-2026-11-07; follow-up review: AGENT-REVIEW-2-2026-11-07.
+
 AGENT-REVIEW-2026-11-05: the original vendor-decoder harness compared shipped
 classes with Pillow/host TurboJPEG, not directly with our DSO on generated
 variants. The maintained differential now runs both ARM implementations on all

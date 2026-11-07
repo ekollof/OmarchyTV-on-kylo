@@ -234,6 +234,38 @@ static void test_suspend_resume(void)
     puts("ok audio_amp lifecycle: suspend releases the owner and resume republishes");
 }
 
+static long elapsed_ms(const struct timespec *a, const struct timespec *b)
+{
+    return (b->tv_sec - a->tv_sec) * 1000L +
+           (b->tv_nsec - a->tv_nsec) / 1000000L;
+}
+
+static void test_suspend_busy(void)
+{
+    const oa_module *mod = oa_module_entry();
+    struct ctx *c = make_ctx();
+    hw.block = 1;
+    hw.released = 0;
+    hw.preludes = 0;
+    assert(iface_init() == 0);
+    wait_prelude();
+
+    struct timespec a, b;
+    clock_gettime(CLOCK_MONOTONIC, &a);
+    assert(mod->suspend(c) == -EBUSY); /* must not join the running Init */
+    clock_gettime(CLOCK_MONOTONIC, &b);
+    assert(elapsed_ms(&a, &b) < 100);
+    assert(c->owner != NULL && c->published); /* rejected suspend is untouched */
+
+    release_worker();
+    oa_audio_amp_status st = wait_idle();
+    assert(st.native_result == 1);
+    assert(mod->suspend(c) == 0);
+    assert(!c->published && c->owner == NULL);
+    m_destroy(c);
+    puts("ok audio_amp lifecycle: suspend rejects a busy Init without blocking");
+}
+
 int main(void)
 {
     hw.main_thread = pthread_self();
@@ -294,6 +326,7 @@ int main(void)
 
     test_failed_init_retry();
     test_suspend_resume();
+    test_suspend_busy();
     puts("all audio_amp job tests passed");
     return 0;
 }

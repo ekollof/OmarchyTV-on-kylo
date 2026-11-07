@@ -321,7 +321,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         if (outlen) {
             size_t used = strlen(outbuf);
             if (used < outlen)
-                snprintf(outbuf + used, outlen - used,
+                used += (size_t)snprintf(outbuf + used, outlen - used,
                  "  suspend | resume         standby hooks for all modules\n"
                  "  standby                  coordinated power service request\n"
                  "  skin [name]              query/select ui_<name>, with vendor fallback\n"
@@ -370,7 +370,10 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  ui-state                query ui.portal screen\n"
                  "  theme-state             query ui.theme pack count\n"
                  "  profile-state           query ui.profile facts\n"
-                 "  panel-state             query last applied panel percent (-1 unknown)\n"
+                 "  panel <0-100>           set panel backlight percent\n"
+                 "  panel-state             query last applied panel percent (-1 unknown)\n");
+            if (used < outlen)
+                snprintf(outbuf + used, outlen - used,
                  "  anim-state              query ui.anim enabled/fault\n"
                  "  clock-state             query ui.clock current ms\n"
                  "  ticker-state            query ticker saved tick count\n"
@@ -543,6 +546,31 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         int fault = a->fault();
         h->api.release(h, OA_SVC_UI_ANIM);
         snprintf(outbuf, outlen, "anim enabled %d fault %d\n", on, fault);
+        return 0;
+    }
+    if (!strcmp(cmd, "panel")) {
+        if (force || !a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        char *end = NULL;
+        long pct = strtol(a1, &end, 10);
+        if (!*a1 || !end || *end || pct < 0 || pct > 100) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_panel_iface *p = h->api.lookup(h, OA_SVC_PANEL, 1);
+        if (!p) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int rc = p->set_backlight_percent((int)pct);
+        h->api.release(h, OA_SVC_PANEL);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", -rc);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "ok\n");
         return 0;
     }
     if (!strcmp(cmd, "panel-state")) {

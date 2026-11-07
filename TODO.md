@@ -155,8 +155,12 @@ unvalidated.
 - [ ] Panel backlight/PWM curve: stock calibration recovered read-only
       (channel 0, 30000 Hz, set-mode 0, level 1000) and `mod_panel` defaults
       corrected; clean 50% hardware run opened `/dev/ntkled` and reported
-      `panel-state 50`. Owner-confirmed brightness or measured duty is still
-      missing. PANEL-BACKLIGHT.
+      `panel-state 50`. 2026-11-07 owner-confirmed run: `panel 50` and
+      `panel 0` both returned `ok` and updated `panel-state`, but the owner saw
+      **no visible dimming at either value**. The direct
+      `Hal_Pwm_Set_ByChannel` path therefore reports vendor success without
+      driving this panel. Do not claim brightness acceptance; recover the real
+      `DEV_PANEL`/MCU/`/dev/ntkled` path first. HW-ACCEPT.
 - [ ] Panel power/backlight resume after real kernel PM suspend and standby
       ownership; separate from the host hook-only `suspend`/`resume` tests.
 
@@ -195,8 +199,12 @@ unvalidated.
       `amp-mute 0` restored I2C and readback `1b/05/05`. The stock runtime
       image matched the embedded baseline plus configure patches. Restored by
       `wdtctl set 10` (appmgr 1575/aurora 1777, source 5, profile/fb/backlight
-      unchanged). Still open: audible/owner-listening confirmation and
-      in-module readback. AMP-MODULE. Follow-up: the AD82587 object has NULL
+      unchanged). 2026-11-07 owner-confirmed amp A/B: `amp-init` result 1
+      (mute 1) and `amp-mute 0` (`live 0`), but the same 440 Hz default-PCM
+      tone was **audible in both states**. The Init/mute state does not gate
+      that PCM path; audible-amp acceptance is retracted. In-module readback,
+      mute gating, volume/balance hardware and standby remain open.
+      AMP-MODULE, HW-ACCEPT. Follow-up: the AD82587 object has NULL
       Term/PowerDown slots and an empty Close, so there is no vendor paired
       shutdown; do not invent a reset/mute-on-stop. Standby/amp-rail policy is
       an MCU/panel/power-owner concern. AMP-SHUTDOWN. 2026-11-07 balance:
@@ -217,6 +225,8 @@ unvalidated.
       (`check-panel-curve`, PANEL-HAL-ERRORS), the CEC reply queue
       (`check-cec-reply-queue`, CEC-REPLY-QUEUE) and amp Init
       retry/suspend (`check-audio-amp-jobs`, AMP-RETRY-SUSPEND) are fixed.
+- [ ] Panel `panel <0-100>` still runs `Hal_Pwm_*` on the host loop; submit it
+      to a worker and report completion (AGENT-REVIEW-2-2026-11-07).
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but
@@ -260,7 +270,15 @@ unvalidated.
       `all`/`all-core`/`all-stage` build the helper,
       cold/stage bundles copy and hash it, `install*` put it in `BINDIR`, and
       `ir.blast_helper=oa-ir-blast` resolves against `/proc/self/exe`.
-      IR-BLAST-HELPER.
+      IR-BLAST-HELPER. 2026-11-07 physical run: owner key presses produced
+      real BLAST records for Right (0x3056), Down (0x3853), Up (0x3054) and
+      Left (0x3855) with press and release records. Held keys arrived as
+      `aux=01 flag=00` between `aux=00 flag=00` press and `flag=01` release;
+      the module emits every flag=0 as PRESS. Firmware `_dev_uart_parse_rc_key`
+      @0x85d7dc passes the aux pointer but selects 0x50/0x5e from flag only
+      and never reads aux, so the module matches vendor synthesis; an
+      `OA_KEY_REPEAT` emitter is still unimplemented. No OK press was
+      captured. HW-ACCEPT.
 - [ ] PVR: frontend/demux/dvr open, record/playback and TS output; record what
       is gated by storage. 2026-11-07: only the offline persistent stub ran;
       `pvr-add`/`pvr-list`/`pvr-cancel` worked (cancel state3, record retained).

@@ -318,7 +318,7 @@ static void cec_poll(void *ud)
         } else {
             c->last_error = errno ? errno : EIO;
             /* Drop only the failed frame; later replies keep their order and
-             * are retried on the next poll. Never send replies after close. */
+             * are attempted on the next poll. Never send replies after close. */
             c->reply_head = (c->reply_head + 1u) & 3u;
         }
         return;

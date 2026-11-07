@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <termios.h>
@@ -232,17 +233,14 @@ static void on_readable(void *ud, int fd, unsigned rev)
  * marks the pipe and open_port() uses O_CLOEXEC, but fds opened by other
  * modules or vendor libraries are outside this module's control. Run this in
  * the forked child just before exec: mark every descriptor above stderr
- * close-on-exec. Only async-signal-safe calls (sysconf/fcntl) are used; the
- * host is multi-threaded and opendir/strtol could touch malloc after fork. */
+ * close-on-exec. Only async-signal-safe calls are used; ioctl(FIOCLEX) avoids
+ * the toolchain's fcntl@GLIBC_2.28, which the TV's glibc 2.23 cannot load. */
 static void mark_inherited_fds_cloexec(void)
 {
     long max = sysconf(_SC_OPEN_MAX);
     if (max < 0 || max > 65536) max = 65536;
-    for (int fd = 3; fd < (int)max; fd++) {
-        int flags = fcntl(fd, F_GETFD);
-        if (flags >= 0 && !(flags & FD_CLOEXEC))
-            (void)fcntl(fd, F_SETFD, flags | FD_CLOEXEC);
-    }
+    for (int fd = 3; fd < (int)max; fd++)
+        (void)ioctl(fd, FIOCLEX, 0);
 }
 
 /* Nonblocking reap with a bounded wait. Returns 1 when the child is gone
@@ -410,6 +408,11 @@ static int blast_open(struct ctx *c)
                                       "ir.blast_set", "1")) != 0;
 
     int p[2];
+    /* Format arguments before fork so the child only uses async-signal-safe
+     * calls between fork and exec. */
+    char proto_arg[16];
+    snprintf(proto_arg, sizeof proto_arg, "%d", proto);
+    const char *set_arg = set ? "1" : "0";
     if (pipe2(p, O_NONBLOCK | O_CLOEXEC) != 0) {
         c->api->log(c->api->priv, OA_LOG_WARN,
                     "ir: BLAST helper pipe: %s", strerror(errno));
@@ -429,10 +432,8 @@ static int blast_open(struct ctx *c)
             _exit(127);
         close(p[1]);
         mark_inherited_fds_cloexec();
-        char ps[16], ss[2] = { set ? '1' : '0', 0 };
-        snprintf(ps, sizeof ps, "%d", proto);
         execl(c->blast_helper, c->blast_helper,
-              "--video", video, "--protocol", ps, "--set", ss,
+              "--video", video, "--protocol", proto_arg, "--set", set_arg,
               (char *)NULL);
         _exit(127);
     }

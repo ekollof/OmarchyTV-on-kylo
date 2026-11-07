@@ -88,6 +88,11 @@ async function main() {
         assert.equal(await command('load panel'), 'ok panel');
         assert.equal(await command('start panel'), 'ok');
         assert.equal(await command('panel-state'), 'panel percent 40');
+        assert.equal(await command('panel 50'), 'failed errno 95',
+            'host build has no vendor HAL');
+        assert.equal(await command('panel 101'), 'failed errno 22');
+        assert.equal(await command('panel'), 'failed errno 22');
+        assert.equal(await command('panel-state'), 'panel percent 40');
 
         const reload = await timed('reload panel');
         assert.equal(reload.reply, 'failed', 'reload must fail fast while cleanup runs');

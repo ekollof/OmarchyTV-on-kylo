@@ -66,11 +66,20 @@ static const oa_host_api api = { .size = sizeof(oa_host_api), .abi = OA_ABI_VERS
     .log = log_message, .config_get = config, .publish = publish,
     .unpublish = unpublish, .release = release };
 
-static void *start_module(void)
+static void *init_module(void)
 {
     void *ctx = NULL;
     assert(oa_module_entry()->init(&api, &ctx) == 0);
+    return ctx;
+}
+static void start_ctx(void *ctx)
+{
     assert(oa_module_entry()->start(ctx) == 0 && panel_iface);
+}
+static void *start_module(void)
+{
+    void *ctx = init_module();
+    start_ctx(ctx);
     return ctx;
 }
 static void stop_module(void *ctx)
@@ -161,5 +170,42 @@ int main(void)
     assert(panel_iface->get_backlight_percent() == 30);
     stop_module(ctx);
     puts("ok panel hal: failed start reports unknown percent and recovers on set");
+
+    /* 0 is a real applied value and must survive suspend/resume. */
+    init_rc = 0; open_rc = 1; set_rc = 1;
+    g_curve = 0; g_min_percent = 0; g_duty_max = 4095;
+    ctx = start_module();
+    assert(panel_iface->set_backlight_percent(0) == 0 && last_set.duty == 0);
+    assert(oa_module_entry()->suspend(ctx) == 0);
+    assert(oa_module_entry()->resume(ctx) == 0);
+    assert(last_set.duty == 0 && panel_iface->get_backlight_percent() == 0);
+    stop_module(ctx);
+    puts("ok panel hal: suspend/resume keeps an applied 0 percent");
+
+    /* Save/restore a real 0 across a started reload instead of panel.start. */
+    ctx = start_module();
+    assert(panel_iface->set_backlight_percent(0) == 0);
+    unsigned char blob = 0xa5;
+    assert(oa_module_entry()->save(ctx, &blob, 1) == 1 && blob == 0);
+    stop_module(ctx);
+    void *next = init_module();
+    assert(oa_module_entry()->restore(next, &blob, 1) == 0);
+    start_ctx(next);
+    assert(panel_iface->get_backlight_percent() == 0 && last_set.duty == 0);
+    stop_module(next);
+    puts("ok panel hal: restored 0 percent overrides the configured start");
+
+    /* A never-applied state saves as 0xFF and restores as unknown, not 0. */
+    init_rc = 0; open_rc = 0; set_rc = 1;
+    ctx = start_module();
+    assert(panel_iface->get_backlight_percent() == -1);
+    blob = 0xa5;
+    assert(oa_module_entry()->save(ctx, &blob, 1) == 1 && blob == 0xff);
+    assert(oa_module_entry()->restore(ctx, &blob, 1) == 0);
+    assert(panel_iface->get_backlight_percent() == -1);
+    unsigned char bad = 101;
+    assert(oa_module_entry()->restore(ctx, &bad, 1) == -1);
+    stop_module(ctx);
+    puts("ok panel hal: unknown percent saves as 0xFF and restores unknown");
     return 0;
 }

@@ -8,6 +8,19 @@ authorized live checks are recorded below and in MEMORY.md.
 
 ## Current objective and safety
 
+Latest hardware acceptance, 2026-11-07: owner granted full TV access; a
+temporary six-module run with stock stopped produced real physical IR
+press/release records for four keys (aux repeats are emitted as PRESS;
+`OA_KEY_REPEAT` unimplemented) and an owner-confirmed **negative** amp mute
+gate: the default-PCM tone was audible while Init left mute 1, so the audible
+amp acceptance was retracted. It also produced an owner-confirmed negative on
+the direct PWM backlight path (no visible change at 50%/0%), an acquire errno
+1 on CEC with a created `/tmp/ntkcec` (no TX/RX), and only a HAL tuner scan
+with synthetic progress (no RF). Stock was restored by `wdtctl set 10`
+(appmgr 1565/aurora 1767, then 1566/1770 after the amp A/B). See
+HW-ACCEPT-2026-11-07 and AGENT-REVIEW-2-2026-11-07 in MEMORY/FINDINGS; no
+persistent change.
+
 Latest owner instructions,2026-11-05: "You can test on the TV if you need to"
 and "You can also use fb1." Temporary display tests are reauthorized with stock
 state/access restored afterward. Historical offline/fb1 exclusions below describe

@@ -81,6 +81,7 @@ struct ctx {
     oa_panel_curve curve;
     int opened;
     int have_percent; /* a PWM set has succeeded (or host simulation) */
+    int restored;     /* a valid percent was handed across reload */
     int published;
     int needs_cleanup; /* one start cycle is cleaned exactly once */
     /* ABI 3 quiesce: the vendor PWM close runs on a worker. */
@@ -197,11 +198,14 @@ static int m_start(void *v)
     c->freq = atoi(c->api->config_get(c->api->priv, "panel.freq", "30000"));
     c->mode = atoi(c->api->config_get(c->api->priv, "panel.mode", "0"));
     if (c->mode < 0 || c->mode > 8) c->mode = 0;
-    c->percent = atoi(c->api->config_get(c->api->priv, "panel.start", "100"));
-    /* Host builds have no HAL: keep the configured value as the simulated
-     * state so lifecycle tests still report it. TV builds only report a
-     * percent after a successful PWM set. */
-    c->have_percent = !hal_ready();
+    int restored = c->restored;
+    if (!restored) {
+        c->percent = atoi(c->api->config_get(c->api->priv, "panel.start", "100"));
+        /* Host builds have no HAL: keep the configured value as the simulated
+         * state so lifecycle tests still report it. TV builds only report a
+         * percent after a successful PWM set. */
+        c->have_percent = !hal_ready();
+    }
     c->raw = atoi(c->api->config_get(c->api->priv, "panel.raw", "-1"));
     c->curve_on = c->api->config_get(c->api->priv, "panel.curve", "0")[0] == '1';
     c->duty_max = atoi(c->api->config_get(c->api->priv, "panel.duty_max", "4095"));
@@ -215,10 +219,14 @@ static int m_start(void *v)
     } else {
         c->api->log(c->api->priv, OA_LOG_INFO, "vendor HAL linked: channel %d, %d Hz, start %d%%",
                     c->channel, c->freq, c->percent);
-        if (apply(c, c->percent) != 0)
+        if (apply(c, c->percent) != 0) {
+            if (restored)
+                c->have_percent = 0; /* handed-over value was not reapplied */
             c->api->log(c->api->priv, OA_LOG_WARN,
                         "panel: initial PWM apply failed; percent unknown");
+        }
     }
+    c->restored = 0;
 
     if (c->api->publish(c->api->priv, OA_SVC_PANEL, 1, &g_iface) != 0) {
         c->api->log(c->api->priv, OA_LOG_WARN, "panel service already published");
@@ -310,7 +318,7 @@ static int m_resume(void *v)
     struct ctx *c = v;
     if (!hal_ready())
         return 0;
-    int rc = apply(c, c->percent ? c->percent : 100);
+    int rc = apply(c, c->percent); /* 0 is a valid applied value */
     if (rc != 0) {
         c->api->log(c->api->priv, OA_LOG_WARN,
                     "panel: resume PWM apply failed; keeping last value");
@@ -324,7 +332,8 @@ static size_t m_save(void *v, void *buf, size_t cap)
     struct ctx *c = v;
     if (!buf || cap < 1)
         return 1;
-    ((unsigned char *)buf)[0] = (unsigned char)c->percent;
+    ((unsigned char *)buf)[0] = c->have_percent ?
+        (unsigned char)c->percent : 0xff;
     return 1;
 }
 
@@ -333,7 +342,18 @@ static int m_restore(void *v, const void *buf, size_t len)
     struct ctx *c = v;
     if (len < 1)
         return -1;
-    c->percent = ((const unsigned char *)buf)[0];
+    unsigned value = ((const unsigned char *)buf)[0];
+    if (value == 0xff) {
+        /* never applied: let m_start use the configured start */
+        c->have_percent = 0;
+        c->restored = 0;
+        return 0;
+    }
+    if (value > 100)
+        return -1;
+    c->percent = (int)value;
+    c->have_percent = 1;
+    c->restored = 1;
     return 0;
 }
 
