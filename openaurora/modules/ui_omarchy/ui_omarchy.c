@@ -39,6 +39,9 @@ struct ctx {
     uint32_t removed, changed;
     uint64_t rebind;
     uint32_t clock_timer;
+    uint64_t volume_timer;
+    int volume, mute;
+    int volume_show, volume_value, overlay_mute;
     int screen;
     int focus;
     int source_focus;
@@ -390,6 +393,85 @@ static void paint_about(struct ctx *c, int W, int H)
     footer(c, W, H, "Exit returns");
 }
 
+static void volume_hide(void *ud)
+{
+    struct ctx *c = ud;
+    if (!c) return;
+    c->volume_timer = 0;
+    c->volume_show = 0;
+    if (c->active && !c->suspended) paint(c);
+}
+
+static void volume_show(struct ctx *c, int volume, int mute)
+{
+    c->volume_show = 1;
+    c->volume_value = volume < 0 ? 0 : volume > 100 ? 100 : volume;
+    c->overlay_mute = mute;
+    if (c->volume_timer) {
+        c->api->timer_del(c->api->priv, c->volume_timer);
+        c->volume_timer = 0;
+    }
+    c->volume_timer = c->api->timer_add(c->api->priv, 1500, 0, volume_hide, c);
+    paint(c);
+}
+
+static void paint_volume(struct ctx *c, int W, int H, int ar, int ag, int ab)
+{
+    int w = 360, h = 96;
+    if (w > W - 80) w = W - 80;
+    if (h > H - 80) h = H - 80;
+    int x = W - w - 40;
+    int y = H - h - 40;
+    c->d->fill(x, y, w, h, 18, 21, 28);
+    c->d->fill(x + 16, y + h - 24, w - 32, 8, 40, 45, 55);
+    int fillw = (w - 32) * c->volume_value / 100;
+    if (fillw > 0)
+        c->d->fill(x + 16, y + h - 24, fillw, 8, ar, ag, ab);
+    char line[64];
+    if (c->overlay_mute)
+        snprintf(line, sizeof line, "Mute");
+    else
+        snprintf(line, sizeof line, "Volume %d%%", c->volume_value);
+    text_at(c, x + 16, y + 16, c->font_on ? &c->font : NULL, line,
+            235, 238, 242, w - 32);
+}
+
+/* Volume keys are global to the shell: code 16 up, 17 down, 13 mute. The
+ * audio service can refuse (disabled/CEC); consume the key either way so it
+ * does not move the current screen selection. */
+static int volume_key(struct ctx *c, int id)
+{
+    const oa_audio_iface *a = c->api->lookup(c->api->priv, OA_SVC_AUDIO, 1);
+    if (!a) return 0;
+    int rc = 0;
+    if (id == 13) {
+        int on = c->mute == 1 ? 0 : 1;
+        rc = a->set_mute(on);
+        if (rc == 0) {
+            c->mute = on;
+            volume_show(c, c->volume, on);
+        }
+    } else {
+        int v = c->volume;
+        if (v < 0 && a->get_volume) v = a->get_volume();
+        if (v < 0) v = 50;
+        v += id == 16 ? 2 : -2;
+        if (v < 0) v = 0;
+        if (v > 100) v = 100;
+        rc = a->set_volume(v);
+        if (rc == 0) {
+            c->volume = v;
+            c->mute = 0;
+            volume_show(c, v, 0);
+        }
+    }
+    c->api->release(c->api->priv, OA_SVC_AUDIO);
+    if (rc != 0)
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "volume/mute key %d failed (%d)", id, rc);
+    return 0;
+}
+
 static void paint(struct ctx *c)
 {
     const oa_ui_engine_iface *d = c ? c->d : NULL;
@@ -428,6 +510,8 @@ static void paint(struct ctx *c)
     case SCREEN_ABOUT: paint_about(c, W, H); break;
     default: paint_home(c, W, H, ar, ag, ab); break;
     }
+    if (c->volume_show)
+        paint_volume(c, W, H, ar, ag, ab);
     (void)d->present();
 }
 
@@ -596,6 +680,8 @@ static int skin_key(void *ud, int id)
         (void)c->api->control(c->api->priv, "skin diag", reply, sizeof reply);
         return 0;
     }
+    if (id == 13 || id == 16 || id == 17)
+        return volume_key(c, id);
     /* Scripts may change theme/key semantics first, then native navigation
      * applies the resulting colours. */
     if (c->lua && c->lua->call("key", "omarchy", id, &handled) == 0 && handled) {
@@ -678,6 +764,8 @@ static int m_init(const oa_host_api *api, void **out)
     c->state = state_new();
     if (!c->state) { free(c); return -1; }
     c->api = api;
+    c->volume = -1;
+    c->mute = -1;
     *out = c;
     return 0;
 }
@@ -776,6 +864,11 @@ static int m_quiesce(void *v)
         c->api->timer_del(c->api->priv, c->clock_timer);
         c->clock_timer = 0;
     }
+    if (c->volume_timer) {
+        c->api->timer_del(c->api->priv, c->volume_timer);
+        c->volume_timer = 0;
+    }
+    c->volume_show = 0;
     fonts_free(c);
     c->suspended = 0;
     oa_omarchy_state *st = c->state;
@@ -829,6 +922,11 @@ static void m_stop(void *v)
         c->api->timer_del(c->api->priv, c->clock_timer);
         c->clock_timer = 0;
     }
+    if (c->volume_timer) {
+        c->api->timer_del(c->api->priv, c->volume_timer);
+        c->volume_timer = 0;
+    }
+    c->volume_show = 0;
     fonts_free(c);
     c->suspended = 0;
     cancel_cleanup(c);
@@ -880,6 +978,11 @@ static int m_suspend(void *v)
     c->suspended = 1;
     if (c->rebind) c->api->timer_del(c->api->priv, c->rebind);
     c->rebind = 0;
+    if (c->volume_timer) {
+        c->api->timer_del(c->api->priv, c->volume_timer);
+        c->volume_timer = 0;
+    }
+    c->volume_show = 0;
     if (c->d) {
         c->d->unregister_skin(&g_skin);
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);

@@ -53,8 +53,10 @@ Stock restore returned aurora 4468; the hidden audio DSP state still required a
 reboot (post-reboot appmgr 1580/aurora 1781). The 2026-11-08b bundle adds
 `mod_app_launch` (27 autoloaded, 33 bundle modules), `oa-app-launch` and
 `oa_apps.map`; the consumer is host-tested but `app_launch.enable=0` and no TV
-launch was attempted. App-launch TV acceptance, full UI parity, cold boot and
-hardware gates remain. NATIVE-REPLACEMENT.
+launch was attempted. The native shell also handles volume up/down/mute
+(codes 16/17/13) through the audio service with a 1.5 s OSD; `check-ui-skin`
+passes, TV key/audible/OSD acceptance is pending. App-launch TV acceptance,
+full UI parity, cold boot and hardware gates remain. NATIVE-REPLACEMENT.
 `check-plat-drm-gate` covers drm_init 0/1; `takeover-full.sh` (start/status/
 reload-suite/restore) is bundled for the next authorized takeover, with restore
 returning to stock for process/UI only; audio requires a reboot after takeover

@@ -200,8 +200,10 @@ unvalidated.
       `ui_vendor` absent; stock restore then reboot (hidden audio DSP state).
       2026-11-08b adds `mod_app_launch`, `oa-app-launch` and `oa_apps.map`
       (33 bundle modules, 27 autoloaded); the consumer is host-tested but
-      `app_launch.enable=0` and no TV launch was attempted. Native shell parity,
-      app-launch TV acceptance and cold boot remain open.
+      `app_launch.enable=0` and no TV launch was attempted. The native shell now
+      handles volume up/down/mute (codes 16/17/13) through the audio service
+      with a 1.5 s OSD; `check-ui-skin` passes, TV acceptance pending. Native
+      shell parity, app-launch TV acceptance and cold boot remain open.
       REPLACEMENT-SYSTEM, NATIVE-REPLACEMENT.
 
 ### Audio / CEC

@@ -125,6 +125,28 @@ static int fake_available(void) { return 1; }
 static const oa_source_iface fake_source = {
     fake_select_type, fake_current_type, fake_available
 };
+static int fake_volume = 50;
+static int fake_mute;
+static int fake_volume_calls;
+static int fake_mute_calls;
+static int fake_audio_set_volume(int v)
+{
+    fake_volume = v;
+    fake_volume_calls++;
+    return 0;
+}
+static int fake_audio_get_volume(void) { return fake_volume; }
+static int fake_audio_set_mute(int on)
+{
+    fake_mute = on;
+    fake_mute_calls++;
+    return 0;
+}
+static int fake_audio_available(void) { return 1; }
+static const oa_audio_iface fake_audio = {
+    fake_audio_set_volume, fake_audio_get_volume, fake_audio_set_mute,
+    fake_audio_available, NULL
+};
 
 static int command(oa_host *host, const char *text, char *out, size_t cap)
 {
@@ -166,6 +188,7 @@ int main(int argc, char **argv)
     assert(!host.api.publish(&host, OA_SVC_SETTINGS, 1, &fake_settings));
     assert(!host.api.publish(&host, OA_SVC_SOURCE, 1, &fake_source));
     assert(!host.api.publish(&host, OA_SVC_LAUNCHER_DB, 1, &fake_launcher));
+    assert(!host.api.publish(&host, OA_SVC_AUDIO, 1, &fake_audio));
     assert(host.api.subscribe(&host, OA_TOPIC_ACTION, on_action, NULL));
     char out[256];
 
@@ -238,6 +261,17 @@ int main(int argc, char **argv)
     capture(trace, "about");
     queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
     assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* back home */
+
+    /* Volume/mute keys are global to the shell: codes 16/17/13. */
+    fake_volume = 50; fake_volume_calls = 0; fake_mute_calls = 0; fake_mute = 0;
+    queue_key_id(&host, 16); oa_host_dispatch_posts(&host);
+    assert(fake_volume_calls == 1 && fake_volume == 52);
+    assert(has_fill(trace, 1520, 944, 360, 96, 18, 21, 28));
+    queue_key_id(&host, 13); oa_host_dispatch_posts(&host);
+    assert(fake_mute_calls == 1 && fake_mute == 1);
+    puts("  ok   volume/mute keys call the audio service and draw the native OSD");
+    pump(&host);
+    assert(!has_fill(trace, 1520, 944, 360, 96, 18, 21, 28));
 
     /* The fake launcher is not a real vendor list; drop it before ui_vendor. */
     assert(!host.api.unpublish(&host, OA_SVC_LAUNCHER_DB));

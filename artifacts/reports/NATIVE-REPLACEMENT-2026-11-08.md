@@ -80,6 +80,26 @@ per-profile. No app was launched on the TV. Bundle `oa-native-20261108b.tgz`
 sha256 `6ce14ca906b07bd5bf1d578655235bd33880a9108b537195fb7eb49f732623ac`;
 `oa-app-launch` links `libnam.so` with RPATH `/vendor/lib/nlib`.
 
+## Native volume/mute OSD
+
+`ui_omarchy` now consumes the remote volume keys globally: code 16 up, 17 down,
+13 mute (IR-KEYMAP codes). It looks up `audio`, calls `set_volume`/`set_mute`,
+and draws a 1.5 s bottom-right overlay with a 0..100 bar. If the audio service
+is absent or refuses (disabled/CEC policy), the key is still consumed so it
+cannot move the current screen selection. The host `check-ui-skin` test verifies
+the service calls, the OSD fill and the timer hide:
+
+```text
+ok   volume/mute keys call the audio service and draw the native OSD
+```
+
+No TV key/audible/OSD acceptance has been performed yet. Updated bundle
+`oa-native-20261108c.tgz` sha256
+`56a3dc4aa786108bd6b49212c128e16cae1666f94b7ca5e095171c99c7e54669`;
+ARM `mod_ui_omarchy` sha256
+`d32774e1ef22dcf75d173f118d653b095e3498f85095ee5a8b95260d2f227906`;
+TV metadata preflight passed (no module start or hardware access).
+
 ## Restore and audio
 
 `takeover-full.sh restore` returned stock (`aurora.elf 4468`) and reported
@@ -97,6 +117,8 @@ documented ALSA-CONTROL limitation, not a new regression.
   TV launch was attempted. The active `nvt.app.debug.ini` profile disables the
   Netflix/Amazon/YouTube entries and `oa_apps.map` is not profile-verified; the
   helper's registration callbacks are no-op stubs.
+- The native volume/mute OSD is host-tested only; TV key handling, audible
+  volume, CEC-volume policy and the overlay on the real fb1 remain open.
 - Takeover audio restore remains reboot-required for the hidden DSP state.
 - Cold boot/replacement boot path, RF/DVB lock, CEC TX/RX, DVR, backlight
   feedback, IR repeat and amplifier mute remain unaccepted.
