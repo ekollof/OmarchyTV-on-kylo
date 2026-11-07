@@ -30,6 +30,8 @@
  * VIN or the video-device open at all.
  *
  *   plat.enable   0 = do nothing (default 1)
+ *   plat.drm_init 0 = skip Hal_Video_DrmInit(1) and keep a vendor-initialized
+ *                 OSD layer (takeover full-system mode; default 1)
  *   plat.vin      0 = skip the VIN-slot stage (default 1; it is PLAT_* inside aurora, so this is the
  *                 one stage we can only approximate)
  *   plat.driver_wait 1/0 = wait for the kernel driver completion marker before the audio prelude;
@@ -206,10 +208,16 @@ static int m_start(void *v)
     Hal_Video_Vpltio_Init();
     Hal_Video_V4l2InfoInit();
     Hal_Video_DrmShareMemCreate();
-    Hal_Video_DrmInit(1);
+    int drm_init = c->api->config_get(c->api->priv, "plat.drm_init", "1")[0] == '1';
+    if (drm_init)
+        Hal_Video_DrmInit(1);
+    else
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "plat: Hal_Video_DrmInit skipped; preserving the vendor OSD");
     int src = 1;                                  /* DVIF */
     Hal_Video_Vpltio_SendCmd(0x302, 0, &src, 0, 0, 0, 0, 0, 0);
-    c->api->log(c->api->priv, OA_LOG_INFO, "plat: common init (vpltio/v4l2/sharemem/drm, DVIF)");
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "plat: common init (vpltio/v4l2/sharemem, drm %d, DVIF)", drm_init);
 
     /* 3. GPIO and I2C */
     if (Hal_Gpio_Init() != 0) {

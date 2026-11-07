@@ -106,6 +106,46 @@ heartbeat/ready, relaunches on `reload-suite` (exit 75) without re-arming the
 watchdog, and returns to stock only on a real failure or explicit quit. It was
 not exercised as the boot path.
 
+## Full real-platform composition
+
+`make TARGET=tv ... full-replacement-bundle` builds a 31-module candidate:
+
+```text
+real plat,display,panel,ir,audio,source,power,tuner,settings,service_db,
+image_decode,epg,pvr,channels,i18n,audio_curve,audio_mixer,
+audio_amp_profile,audio_amp,cec,ticker,ui_clock,ui_anim,ui_engine,
+ui_vendor,ui_theme,ui_profile,ui_menu,ui_list,ui_navigation,lua
++ oa-client, oa-supervise, fb-restore, oa-ir-blast, oa-audio-broker, menus
+```
+
+`plat.drm_init=0` skips only `Hal_Video_DrmInit(1)` so the real platform can
+run the audio prelude, GPIO/IIC, VIN slots and STBC video open while preserving
+the vendor-initialized OSD. This is the candidate for a one-process full
+system; it has **not** been run on the TV yet (no takeover authorized).
+
+Config fixes for modules that failed in the 32-module stage run:
+
+```text
+audio_curve.aq=/conf/AQ.bin          audio_curve.profile=0
+audio_mixer.broker=./oa-audio-broker
+amp_profile.hwprofile=/conf/mb230_hwprofile.bin
+ui_theme.index=/vendor2/dynamic_ui/telefunken18_svg.txt
+ui_theme.binary=/vendor2/dynamic_ui/telefunken18_svg.bin
+ui_profile.swprofile=/conf/mb230_swprofile.bin
+ui_menu.file=./menus/sub_launcher.json
+```
+
+Read-only verification on the TV (stock stayed running; no display/fb1, no
+takeover): the full bundle's manifest and `--check` passed; a CPU-only core
+with those six modules started all of them, including `audio_mixer` spawning
+`oa-audio-broker`, and `ui_menu` loaded 1 dialog. `quit` left no core/broker.
+`ui_omarchy` is deliberately excluded: `ui_vendor` already owns the single
+`ui.engine` skin; it can be loaded after stopping `ui_vendor`.
+
+Bundle hashes: openaurora `521047b8...`, `mod_plat.so` `446ee107...`,
+`mod_ui_vendor.so` `d0afa127...`; tar
+`fb97c8627bfa57af07d2b40246bb9d81516ca1666d2c5174031e2f40ea5e120a`.
+
 ## Suite reload (no reboot)
 
 - The core exposes `reload-suite` over the control socket. It returns `bye`,
@@ -146,9 +186,10 @@ briefly returns to stock while the new core starts and repaints.
 
 - Boot persistence, early startup before stock and boot hooks remain a separate
   owner gate; the system currently runs after a takeover.
-- Real-plat plus visible OSD (one-process full hardware system) needs the
-  vendor OSD allocation/binding/enable contract; the real-plat UI run was
-  black.
+- Real-plat plus visible OSD (one-process full hardware system) needs a
+  takeover test of `plat.drm_init=0`; the full 31-module bundle preflights and
+  its asset modules start CPU-only, but the unified display/hardware path was
+  not run. Cold OSD allocation/binding/enable is still required for boot.
 - Exact rail-highlight geometry/cadence, settings-list/full menu assets, source
   and channel UI, EPG/PVR UI and animation parity remain.
 - Amp mute gate, RF tune/lock, CEC raw ownership, DVR and cold startup remain

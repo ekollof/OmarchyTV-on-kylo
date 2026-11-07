@@ -2063,6 +2063,22 @@ replacement-bundle: $(BUILD)/$(PROJECT) $(REPLACEMENT_SO) $(BUILD)/tests/mod_pla
 	@cd $(BUILD)/replacement && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast openaurora.conf menus/*.json modules/*.so > manifest.sha256
 	@echo "replacement bundle: $(BUILD)/replacement ($(words $(REPLACEMENT_SO)) modules + plat_stub)"
 
+# Complete real-platform composition: all feature/UI modules, fixed asset
+# configs, real plat with plat.drm_init=0 (preserve the vendor OSD). Takeover
+# candidate; cold OSD enable remains open.
+FULL_REPLACEMENT_MODULES := plat display panel ir audio source power tuner settings service_db image_decode epg pvr channels i18n audio_curve audio_mixer audio_amp_profile audio_amp cec ticker ui_clock ui_anim ui_engine ui_vendor ui_theme ui_profile ui_menu ui_list ui_navigation lua
+FULL_REPLACEMENT_SO := $(foreach m,$(FULL_REPLACEMENT_MODULES),$(BUILD)/modules/mod_$(m).so)
+.PHONY: full-replacement-bundle
+full-replacement-bundle: $(BUILD)/$(PROJECT) $(FULL_REPLACEMENT_SO) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker
+	@rm -rf $(BUILD)/full-replacement
+	@mkdir -p $(BUILD)/full-replacement/modules $(BUILD)/full-replacement/menus
+	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/full-replacement/
+	@cp $(FULL_REPLACEMENT_SO) $(BUILD)/full-replacement/modules/
+	@cp tools/boot/openaurora-full-replacement.conf $(BUILD)/full-replacement/openaurora.conf
+	@cp menus/sub_launcher.json $(BUILD)/full-replacement/menus/
+	@cd $(BUILD)/full-replacement && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker openaurora.conf menus/*.json modules/*.so > manifest.sha256
+	@echo "full replacement bundle: $(BUILD)/full-replacement ($(words $(FULL_REPLACEMENT_SO)) modules)"
+
 install-stage: all-stage
 	install -d $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR)
 	install -m 755 $(BUILD)/$(PROJECT) $(DESTDIR)$(BINDIR)/$(PROJECT)

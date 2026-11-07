@@ -173,7 +173,11 @@ unvalidated.
       real-plat OSD unification (real plat leaves the vendor OSD black) and
       boot persistence/boot-hook (separate gate). `reload-suite` (exit 75) +
       `oa-supervise` relaunches the whole suite without rebooting or re-arming
-      the watchdog; per-module reload remains. REPLACEMENT-SYSTEM.
+      the watchdog; per-module reload remains. `full-replacement-bundle` adds
+      the real platform with `plat.drm_init=0`, all feature modules, broker,
+      and AQ/theme/profile/menu configs; preflight and CPU-only asset starts
+      pass, unified real-plat display/hardware awaits a takeover test.
+      REPLACEMENT-SYSTEM.
 
 ### Audio / CEC
 

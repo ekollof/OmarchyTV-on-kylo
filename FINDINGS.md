@@ -10,6 +10,13 @@ matches); rail assets are the vendor 11×30 ms APNG. The real `plat` DRM/KMS
 bring-up leaves the vendor-enabled OSD black; the UI uses plat_stub until cold
 OSD allocation/enable is recovered. Boot persistence is a separate gate. TV was
 restored stock. Report: REPLACEMENT-SYSTEM-2026-11-07.
+The `full-replacement-bundle` extends this to 31 modules with the real platform
+and `plat.drm_init=0` (skip only `Hal_Video_DrmInit(1)` to preserve the vendor
+OSD), `oa-audio-broker`, and fixed AQ/theme/profile/menu configs. Its TV
+preflight and CPU-only starts of audio_curve/audio_mixer/audio_amp_profile/
+ui_theme/ui_profile/ui_menu pass; the unified real-plat display/hardware path
+awaits a takeover test, and `ui_omarchy` is excluded while ui_vendor owns the
+single ui.engine skin.
 
 HW-ACCEPT-2026-11-07 is the first owner-confirmed hardware run covering the
 fixed modules. **Amp:** a quiet 440 Hz default-PCM tone was audible, but a

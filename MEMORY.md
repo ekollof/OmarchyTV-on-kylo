@@ -17,6 +17,14 @@ suite resets the reload streak, and stock fallback only follows a real failure
 or quit. Host tests cover the exit and relaunch event order; not yet exercised
 on the TV. Boot persistence/boot hooks remain a separate gate. TV restored
 stock (appmgr 1574, aurora 1778). REPLACEMENT-SYSTEM, HW-ACCEPT-2.
+Full system candidate, 2026-11-07: `full-replacement-bundle` builds 31 modules
+with the real platform and `plat.drm_init=0` (skip only Hal_Video_DrmInit to
+preserve the vendor OSD), plus oa-audio-broker and fixed asset configs. The
+bundle preflights on the TV; a CPU-only run started audio_curve/audio_mixer/
+audio_amp_profile/ui_theme/ui_profile/ui_menu (including the broker and 1
+dialog). `ui_omarchy` is excluded because ui_vendor owns the single ui.engine
+skin. The unified real-plat display/hardware path awaits a takeover test; cold
+OSD enable remains open. REPLACEMENT-SYSTEM.
 
 Hardware acceptance, 2026-11-07 (owner: "ok, use the TV, full access"):
 temporary six-module bundle (`plat,panel,audio_amp,ir,tuner,cec`) ran with

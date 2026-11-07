@@ -19,6 +19,10 @@ the stub until cold OSD enable is recovered. `reload-suite` exits the core
 with 75 and `oa-supervise` relaunches it without re-arming the watchdog
 (host-tested); per-module reload remains available. Boot persistence is a
 separate gate. TV stock (appmgr 1574, aurora 1778). REPLACEMENT-SYSTEM.
+Full system candidate 2026-11-07: `full-replacement-bundle` (31 modules, real
+plat with `plat.drm_init=0`, broker, AQ/theme/profile/menu configs) preflights
+and its asset modules start CPU-only; unified real-plat display/hardware awaits
+a takeover test. `ui_omarchy` is excluded due to the single ui.engine skin.
 
 Latest hardware acceptance, 2026-11-07: owner granted full TV access; a
 temporary six-module run with stock stopped produced real physical IR
