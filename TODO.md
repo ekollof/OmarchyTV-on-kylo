@@ -220,7 +220,11 @@ unvalidated.
       now runs in killable `oa-ir-blast`; real quit and `reload ir` pass with
       no helper left, and `pipe2` replaced a GLIBC_2.28 `fcntl` binding. Still
       unverified: a physical remote press/repeat/release with the helper
-      active. Packaging verified: `all`/`all-core`/`all-stage` build the helper,
+      active. The UART parser marks a repeated `P` frame as repeat; the BLAST
+      path forwards `BLAST_RX` unchanged, so the window must determine whether
+      held keys produce repeated `flag=0` records or a repeat flag. If only
+      edges arrive, repeat synthesis is still missing. Packaging verified:
+      `all`/`all-core`/`all-stage` build the helper,
       cold/stage bundles copy and hash it, `install*` put it in `BINDIR`, and
       `ir.blast_helper=oa-ir-blast` resolves against `/proc/self/exe`.
       IR-BLAST-HELPER.

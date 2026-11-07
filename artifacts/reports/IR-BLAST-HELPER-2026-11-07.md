@@ -129,6 +129,30 @@ hwprofile 1b063b2c..., fb1 1920x2160 pan 0,0, backlight 1000
 stage/socket absent
 ```
 
+## Press-window acceptance criteria
+
+The UART key parser `_dev_uart_parse_rc_key` @ `0x0085d7dc` makes the repeat
+contract explicit for that transport:
+
+- `'P'` frame: valid press; the code is stored in `DAT_019357c4`.
+- a second `'P'` with the **same code**: sets the repeat byte at `param_3+4`
+  (prints `Get Repat key code`).
+- `'^'` frame: release, reuses the stored code and clears it.
+
+The BLAST path is a direct wrapper: `DEV_Ir_GetKey` @ `0x00853fa0` forwards to
+`NDAL_VideoExt_BLAST_RX` and returns its result; it does not synthesize the
+repeat byte. Prior live evidence (`TAKEOVER-IR`) recorded `flag` 0 on a press
+and 1 on a release. What is not yet confirmed is how a **held** key appears:
+
+- repeated `flag=0` records (the worker already emits repeated presses), or
+- a distinct repeat flag, or
+- a single press/release edge with repeats synthesized in the RC/UI layer.
+
+The owner press window must capture the raw `code/aux/flag` stream while
+holding one key. If only one press and one release arrive, repeat synthesis is
+still missing and must be recovered before key-repeat parity is claimed. The
+window also verifies the helper is killed/reaped and stock is restored.
+
 ## Limits
 
 - **Physical remote key acceptance is not run.** The helper is blocked in the
