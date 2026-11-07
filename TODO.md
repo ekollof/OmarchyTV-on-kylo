@@ -201,17 +201,20 @@ unvalidated.
       shutdown; do not invent a reset/mute-on-stop. Standby/amp-rail policy is
       an MCU/panel/power-owner concern. AMP-SHUTDOWN. 2026-11-07 balance:
       recovered the SetBalance regs4/5 formula and added `amp-balance
-      <0..100>`/`set_balance` with host tests; mute and balance reject while
-      Init is submitted. SetVolume (reg3 prescale + readback), SoftMute (reg2
-      bits 0x0e) and HP_Mute (GPIO0xc3) remain unwired; no hardware balance
-      run. AMP-BALANCE.
+      <0..100>`/`set_balance` with host tests. Follow-up AMP-JOBS moved both
+      mute and balance to typed owner worker jobs; `amp-state` reports the
+      applied value, and a pending job still rejects with `-EBUSY`. SetVolume
+      (reg3 prescale + readback), SoftMute (reg2 bits 0x0e) and HP_Mute
+      (GPIO0xc3) remain unwired; no hardware/audible balance run.
+      AMP-BALANCE.
 - [ ] Agent-review follow-ups (AGENT-REVIEW-2026-11-07): CEC reply-queue
-      failure handling; amp mute/balance as owner jobs and Init retry/suspend;
-      UART repeat semantics; panel HAL failure reporting; tuner `demod[4]=p4`.
-      The CEC authority mapping lifetime across a timed-out quiesce
-      (`check-cec-authority-lifetime`), CEC suspend/resume
-      (`check-cec-suspend-resume`) and IR helper pipe/8-byte
-      record/CLOEXEC/bounded reap (`check-ir-helper`, IR-HELPER) are fixed.
+      failure handling; amp Init retry/suspend; UART repeat semantics; panel
+      HAL failure reporting; tuner `demod[4]=p4`. The CEC authority mapping
+      lifetime (`check-cec-authority-lifetime`), CEC suspend/resume
+      (`check-cec-suspend-resume`), IR helper pipe/8-byte
+      record/CLOEXEC/bounded reap (`check-ir-helper`, IR-HELPER) and amp
+      mute/balance owner jobs (`check-amp-owner-jobs`, `check-audio-amp-jobs`,
+      AMP-JOBS) are fixed.
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but

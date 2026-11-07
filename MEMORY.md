@@ -823,9 +823,12 @@ stop; standby/amp-rail policy is a separate MCU/panel/power concern. Audible
 confirmation remains. AMP-SHUTDOWN.
 Amp balance 2026-11-07: recovered AMP_AD82587_SetBalance (regs4/5, 127/50
 formula, 0/50/100 boundaries) and added amp-balance/set_balance with host
-formula/CLI tests; mute/balance reject while Init is submitted. SetVolume is
-reg3 prescale+readback, SoftMute reg2 0x0e, HP_Mute GPIO0xc3; unwired. ARM
-mod_audio_amp 7334a236.... No hardware balance run. AMP-BALANCE.
+formula/CLI tests. AMP-JOBS moved mute/balance to typed owner worker jobs
+(gpio(1) level mapping, reg4 then reg5) with typed completions; later results
+never overwrite the Init result and failures leave caches unchanged.
+check-amp-owner-jobs and check-audio-amp-jobs pass; ARM mod_audio_amp
+67d34652.... SetVolume is reg3 prescale+readback, SoftMute reg2 0x0e, HP_Mute
+GPIO0xc3; unwired. No hardware/audible balance run. AMP-BALANCE, AMP-JOBS.
 Agent review 2026-11-07 (Grok): fixed CRITICAL MAP_FAILED authority mapping
 (commit f323673, regression test), the HIGH authority lifetime across a
 timed-out quiesce (keep the mapping until join succeeds; check-cec-authority-
@@ -833,8 +836,12 @@ lifetime), the HIGH CEC suspend/resume state/worker join (clear session,
 cleanup worker, resume reopens/re-acquires; check-cec-suspend-resume), and the
 HIGH IR helper framing/record/CLOEXEC/reap defects (bounded read, 8-byte
 static assert, child CLOEXEC sweep, WNOHANG-only bounded reap; check-ir-helper,
-IR-HELPER); mod_cec c8f4138c..., mod_ir 87d2f16b..., oa-ir-blast 36ef3665....
-Remaining high: amp mute/balance loop ordering. AGENT-REVIEW.
+IR-HELPER), and the HIGH amp mute/balance on-the-loop defect (typed
+INIT/MUTE/BALANCE owner jobs, ordered single slot, typed completions;
+check-amp-owner-jobs/check-audio-amp-jobs, AMP-JOBS); mod_cec c8f4138c...,
+mod_ir 87d2f16b..., oa-ir-blast 36ef3665..., mod_audio_amp 67d34652....
+All review HIGH items are fixed; MEDIUM amp Init retry/suspend, CEC reply
+queue, panel HAL errors and tuner p4 remain. AGENT-REVIEW.
 
 Input/PVR group 2026-11-07: live settingsDB source5/previous4/volume0;
 stock owns video28 BLAST, ntkdvif, video20/21/24, demux0 and DVB nodes.

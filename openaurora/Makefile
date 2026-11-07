@@ -2764,6 +2764,14 @@ check-amp-owner: $(BUILD)/tests/amp_owner
 	@$(BUILD)/tests/amp_owner
 check: check-amp-owner
 
+$(BUILD)/tests/amp_owner_jobs: tests/amp_owner_jobs.c common/amp_owner.c common/amp_init.c common/audio_amp.c include/openaurora/amp_owner.h include/openaurora/amp_init.h include/openaurora/audio_amp.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
+.PHONY: check-amp-owner-jobs
+check-amp-owner-jobs: $(BUILD)/tests/amp_owner_jobs
+	@$(BUILD)/tests/amp_owner_jobs
+check: check-amp-owner-jobs
+
 $(BUILD)/tests/amp_i2c: tests/amp_i2c.c common/amp_i2c.c include/openaurora/amp_i2c.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
@@ -2811,5 +2819,16 @@ check: check-amp-vendor
 check-audio-amp-module: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_audio_amp.so $(BUILD)/tests/mod_plat_stub.so
 	node tests/audio_amp_ipc.cjs $(abspath $(BUILD))
 check: check-audio-amp-module
+
+$(BUILD)/tests/audio_amp_jobs: tests/audio_amp_jobs.c modules/audio_amp/audio_amp.c common/amp_owner.c common/amp_init.c common/amp_vendor.c common/amp_board.c common/audio_amp.c common/amp_i2c.c common/audio_amp_profile.c common/profile.c include/openaurora/amp_owner.h include/openaurora/amp_init.h include/openaurora/audio_amp.h include/openaurora/module.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ \
+	  tests/audio_amp_jobs.c common/amp_owner.c common/amp_init.c \
+	  common/amp_vendor.c common/amp_board.c common/audio_amp.c \
+	  common/amp_i2c.c common/audio_amp_profile.c common/profile.c -pthread
+.PHONY: check-audio-amp-jobs
+check-audio-amp-jobs: $(BUILD)/tests/audio_amp_jobs
+	@$(BUILD)/tests/audio_amp_jobs
+check: check-audio-amp-jobs
 
 .PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-oa-client check-display check-svg check-runtime clean install arm tv vendor

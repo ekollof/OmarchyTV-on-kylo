@@ -114,14 +114,50 @@ static void poll_result(struct ctx *c)
     oa_amp_completion completion;
     int rc = oa_amp_owner_take(c->owner, &completion);
     if (rc == 1) {
-        c->result = completion;
-        c->have_result = 1;
         c->submitted = 0;
-        /* Init ends with the vendor Mute(1) step. The caller must unmute
-         * through amp-mute 0 when the audio path is ready; the stock boot
-         * flow does the same after DEV_AMP_Init. */
-        c->mute_known = 1;
-        c->mute_state = completion.state.mute_cached ? 1 : 0;
+        if (completion.kind == OA_AMP_JOB_INIT) {
+            c->result = completion;
+            c->have_result = 1;
+            /* Init ends with the vendor Mute(1) step. The caller must unmute
+             * through amp-mute 0 when the audio path is ready; the stock boot
+             * flow does the same after DEV_AMP_Init. */
+            c->mute_known = 1;
+            c->mute_state = completion.state.mute_cached ? 1 : 0;
+        } else if (completion.kind == OA_AMP_JOB_MUTE) {
+            /* Never overwrite the retained Init result; apply a later mute
+             * completion only to the mute cache. */
+            if (completion.native_result == 0) {
+                c->mute_known = 1;
+                c->mute_state = completion.value ? 1 : 0;
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "audio_amp: mute -> %d (ticket %llu)",
+                            c->mute_state,
+                            (unsigned long long)completion.ticket);
+            } else {
+                c->api->log(c->api->priv, OA_LOG_ERROR,
+                            "audio_amp: mute failed (%d, ticket %llu)",
+                            completion.native_result,
+                            (unsigned long long)completion.ticket);
+            }
+        } else if (completion.kind == OA_AMP_JOB_BALANCE) {
+            if (completion.native_result == 0) {
+                c->balance_known = 1;
+                c->balance_state = completion.value;
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "audio_amp: balance -> %d (ticket %llu)",
+                            c->balance_state,
+                            (unsigned long long)completion.ticket);
+            } else {
+                c->api->log(c->api->priv, OA_LOG_ERROR,
+                            "audio_amp: balance failed (%d, ticket %llu)",
+                            completion.native_result,
+                            (unsigned long long)completion.ticket);
+            }
+        } else {
+            c->api->log(c->api->priv, OA_LOG_ERROR,
+                        "audio_amp: unknown completion kind %d",
+                        completion.kind);
+        }
     } else if (rc < 0) {
         c->submitted = 0;
         c->api->log(c->api->priv, OA_LOG_ERROR,
@@ -180,45 +216,45 @@ static int iface_state(oa_audio_amp_status *out)
 static int iface_set_mute(int on)
 {
     struct ctx *c = g_ctx;
-    if (!c || !c->published || !c->enabled)
+    if (!c || !c->published || !c->enabled || !c->owner)
         return -ENODEV;
-    /* Do not race the owner worker's Init: the trailing Mute(1) and the
-     * caller's level write use the same STBC/global state. */
+    poll_result(c);
+    /* One ordered owner slot: a mute cannot overtake a pending Init or an
+     * untaken result. The STBC/GPIO write runs only on the worker. */
     if (c->submitted)
         return -EBUSY;
     if (on != 0 && on != 1)
         return -EINVAL;
-    int ok = oa_amp_vendor_level(&c->vendor, c->board.mute.pin,
-                                 (uint32_t)on);
-    if (!ok)
-        return -EIO;
-    c->mute_known = 1;
-    c->mute_state = on;
-    c->api->log(c->api->priv, OA_LOG_INFO, "audio_amp: mute -> %d", on);
+    uint64_t ticket = 0;
+    int rc = oa_amp_owner_submit_mute(c->owner, on, &ticket);
+    if (rc)
+        return rc;
+    c->submitted = 1;
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "audio_amp: mute submitted -> %d (ticket %llu)", on,
+                (unsigned long long)ticket);
     return 0;
 }
 
 static int iface_set_balance(int balance)
 {
     struct ctx *c = g_ctx;
-    if (!c || !c->published || !c->enabled || !c->i2c)
+    if (!c || !c->published || !c->enabled || !c->owner)
         return -ENODEV;
+    poll_result(c);
     if (c->submitted)
         return -EBUSY;
     uint8_t reg4 = 0, reg5 = 0;
     if (oa_ad82587_balance_regs(balance, &reg4, &reg5) != 0)
         return -EINVAL;
-    /* Vendor order: reg4 first, reg5 only after reg4 succeeds. A failure
-     * leaves the hardware partially updated and the cached state unchanged. */
-    if (oa_amp_i2c_write(c->i2c, 4, &reg4) != 0)
-        return -EIO;
-    if (oa_amp_i2c_write(c->i2c, 5, &reg5) != 0)
-        return -EIO;
-    c->balance_known = 1;
-    c->balance_state = balance;
+    uint64_t ticket = 0;
+    int rc = oa_amp_owner_submit_balance(c->owner, balance, &ticket);
+    if (rc)
+        return rc;
+    c->submitted = 1;
     c->api->log(c->api->priv, OA_LOG_INFO,
-                "audio_amp: balance -> %d (reg4 %u reg5 %u)", balance,
-                (unsigned)reg4, (unsigned)reg5);
+                "audio_amp: balance submitted -> %d (ticket %llu)", balance,
+                (unsigned long long)ticket);
     return 0;
 }
 

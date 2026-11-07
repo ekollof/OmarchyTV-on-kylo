@@ -31,9 +31,11 @@ worker. `amp-state` polls the completion nonblocking and copies the ticket,
 native result, reset/mute caches, plus the live mute state. `result -1` means
 no completed result yet; `busy 1` means submitted and not collected. The owner
 allows one pending request or one untaken result, so the caller must collect
-with `amp-state` before submitting again. `amp-mute` drives the same vendor
-level path (pin 208 STBC command 3/2) after Init; it is a request state, not a
-hardware readback.
+with `amp-state` before submitting again. `amp-mute`/`amp-balance` submit typed
+owner jobs (AMP-JOBS); the pin 208 STBC level and reg4/reg5 writes run on the
+worker. Their `ok` means submitted, not completed: a later transport failure
+appears in `amp-state`/logs, and the values are request state, not a hardware
+readback.
 
 Startup with `enable=1` requires a ready `plat` service (platform GPIO/video
 prelude; the STBC path needs the video-open global fd), loads the profile,

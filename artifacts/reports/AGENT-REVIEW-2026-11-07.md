@@ -91,12 +91,26 @@ assertion. ARM hashes: `mod_ir.so`
 `oa-ir-blast`
 `36ef366586e7dc4a78d6b21d9fa2aed99421d9ea0e5dc79d2e7d6e71a98c3678`.
 
+### HIGH — amp mute/balance on the host loop (fixed)
+
+`set_mute`/`set_balance` rejected while Init was submitted but still ran the
+STBC/GPIO level and I2C register writes on the host loop. The owner API now
+has typed jobs (`INIT`/`MUTE`/`BALANCE`) on its existing single ordered worker
+slot; `submit_mute`/`submit_balance` reject with `-EBUSY` while a job is
+pending or its result is untaken, so they cannot overtake Init. Mute uses the
+board mute record (`gpio(1)` + level_on/off), balance writes reg4 then reg5
+through the same vendor boolean write callback. `poll_result` dispatches on the
+kind: a later mute/balance completion updates only its cache and never
+overwrites the retained Init result/ticket, and failures leave the cache
+unchanged. `check-amp-owner-jobs` and `check-audio-amp-jobs` cover ordering,
+worker-only callbacks, successful/failed results and result retention; allowing
+a second submit while pending fails the ordering assert, and copying every
+completion over the Init result fails the module state assert. ARM
+`mod_audio_amp.so` sha256
+`67d346529c443423074013ec7f2804fbd56f991fc9cb0c84c661b119e2a97153`.
+
 ## Open, severity-ranked
 
-- **HIGH amp mute/balance vs Init** (`modules/audio_amp/audio_amp.c`):
-  `set_mute`/`set_balance` now reject while `submitted`, but still run the STBC
-  level / I2C writes on the host loop. Submit them as owner jobs ordered after
-  Init and do not let `poll_result` overwrite a later mute result.
 - **MEDIUM amp Init retry/suspend** (`modules/audio_amp/audio_amp.c`):
   `iface_init` refuses while `have_result` is set, even after a failed Init;
   the module has no suspend/resume, so host standby leaves it started with the

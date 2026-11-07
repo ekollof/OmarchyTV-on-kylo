@@ -36,8 +36,9 @@ state unchanged (the hardware may be partially updated; there is no rollback).
 `set_balance`; the control socket gains `amp-balance <0..100>` and
 `amp-state` reports `balance`/`balance_known`. Both `set_mute` and
 `set_balance` reject with `-EBUSY` while an Init is submitted, closing the
-race found by the adversarial review (the STBC/I2C calls still run on the
-caller; a worker job remains a follow-up).
+race found by the adversarial review. Follow-up (AMP-JOBS): the writes now run
+as typed `oa_amp_owner` worker jobs, not on the caller; both submissions still
+reject with `-EBUSY` while a job is pending or its result is untaken.
 
 Tests (`check-audio-amp`): 0/1/25/49/50/51/75/99/100 exact register pairs,
 negative/101/NULL rejection. `check-audio-amp-module`: disabled ENODEV,
@@ -66,6 +67,7 @@ invalid 101/non-numeric EINVAL, enable=1 fail-closed. ARM
 - `amp-balance` writes the vendor regs 4/5 but the audible/electrical effect is
   unverified. The stock profile has 5/5; balance 50 writes 0/0 per the vendor
   formula.
-- The control still runs on the host loop (guarded against a concurrent Init);
-  moving it to an owner job is a review follow-up.
+- The control runs as typed `oa_amp_owner` worker jobs since AMP-JOBS; the
+  host loop only submits and polls. A pending job or untaken result still
+  returns `-EBUSY`.
 - UI volume/range is a separate contract (AUDIO-VOLUME/AQ), not this command.

@@ -69,9 +69,9 @@ signed/truncating. `oa_ad82587_balance_regs` and `audio.amp` `set_balance`
 implement the 0..100 path; `amp-balance` exposes it. SetVolume is the reg3
 prescale write plus 3-byte readback, not UI volume; SoftMute is reg2 bits
 0x0e; HP_Mute is GPIO0xc3. Those need a general amp read/GPIO descriptor and
-remain unwired. Mute/balance reject while Init is submitted; the writes still
-run on the caller. Host tests pass; no hardware balance run. Report:
-AMP-BALANCE-2026-11-07.
+remain unwired. Mute/balance now run as typed owner worker jobs (AMP-JOBS);
+a pending job or untaken result rejects with `-EBUSY`. Host tests pass; no
+hardware balance run. Report: AMP-BALANCE, AMP-JOBS.
 
 AGENT-REVIEW-2026-11-07 (Grok): the adversarial review found a CRITICAL CEC
 authority bug. `mmap64` failure returns `MAP_FAILED` ((void*)-1), not NULL;
@@ -94,10 +94,18 @@ marks every fd above stderr close-on-exec (UART now `O_CLOEXEC`), and
 `blast_helper_stop` uses `WNOHANG` only (100 ms after SIGTERM, 100 ms after
 SIGKILL) with a retained-pid retry instead of a blocking `waitpid`.
 `check-ir-helper` fails if the old read or a no-op CLOEXEC sweep is restored;
-ARM `mod_ir` 87d2f16b..., `oa-ir-blast` 36ef3665.... Remaining review HIGH:
-amp mute/balance still run on the host loop. The close-path wording was
-corrected to drop unproven "only reboot" claims. Reports:
-AGENT-REVIEW-2026-11-07, AMP-BALANCE, IR-HELPER.
+ARM `mod_ir` 87d2f16b..., `oa-ir-blast` 36ef3665.... The last review HIGH is
+also fixed: amp mute/balance are typed `OA_AMP_JOB_MUTE`/`BALANCE` jobs on the
+owner worker, using the mute record/level mapping and reg4-then-reg5 writes;
+the single ordered slot still returns `-EBUSY` while Init is pending or its
+result is untaken, and `poll_result` never overwrites the Init result with a
+later mute/balance completion. `check-amp-owner-jobs` and
+`check-audio-amp-jobs` pass (worker-only callback assertions; negative checks
+for allowing a second pending submission and for overwriting the Init result);
+ARM `mod_audio_amp` 67d34652.... All review HIGH items are fixed; MEDIUM
+items remain. The close-path wording was corrected to drop unproven "only
+reboot" claims. Reports: AGENT-REVIEW-2026-11-07, AMP-BALANCE, AMP-JOBS,
+IR-HELPER.
 
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR
 under a replacement. The stock parser also polls `DEV_Ir_GetKey`
