@@ -784,14 +784,15 @@ Preflight found mod_ir missing -ldl on TV (fixed; libdl NEEDED). Two BLAST
 runs hung the single host thread in blast_io_get_key; a poll-readiness gate
 did not help, so both were killed and stock rebooted. Clean run with
 ir.blast=0: plat/source/ir/pvr started; source-select 17 (vin3) then 0 (vin1);
-PVR add id1/list/cancel state3; source stayed5. BLAST RX then moved to a
-dedicated worker posting keys; fake blocking libNDAL_EX test passes. Hardware
-ir.blast=1: main poll_schedule_timeout, worker blast_io_get_key, source/PVR
-commands responsive. But quit cannot join the worker after fd close (cleanup
-stuck in pthread_join), so stop/reload needs a killable helper or vendor wake.
-Final restore by wdtctl set10: appmgr1566/aurora1769, source5, fds/profile/fb/
-backlight unchanged. PVR is the offline stub, not DVR hardware.
-INPUT-PVR-TAKEOVER.
+PVR add id1/list/cancel state3; source stayed5. BLAST_RX now runs in the
+killable oa-ir-blast helper, which owns /dev/video28 and writes fixed 6-byte
+records to a pipe2 stdout; mod_ir emits on the loop and kills/reaps the child.
+Host fake-blocking test passes. Hardware ir.blast=1: host main
+poll_schedule_timeout, child oa-ir-blast blast_io_get_key; source/PVR commands
+responsive; quit clean, no helper; reload changed helper 6277->6300 and quit
+clean. Physical remote press is still unverified. Final restore by wdtctl set10:
+appmgr1562/aurora1766, source5, fds/profile/fb/backlight unchanged. PVR is the
+offline stub, not DVR hardware. INPUT-PVR-TAKEOVER / IR-BLAST-HELPER.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches the local artifact. Staged

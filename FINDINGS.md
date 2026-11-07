@@ -248,13 +248,15 @@ preflight rejected it (`undefined symbol: dlopen`, fixed to NEEDED libdl).
 More importantly, `NDAL_VideoExt_BLAST_RX` blocks in `blast_io_get_key` and
 was called from a 50 ms host timer. The single host thread then blocked and
 every control command timed out; a poll-readiness gate did not help. BLAST RX
-now runs on a dedicated worker and queues keys for `api->post`; the fake
-blocking-lib test passes, and with real BLAST the main thread is in
-`poll_schedule_timeout` while the worker is in `blast_io_get_key`; source and
-PVR commands stay responsive. Closing the v4l2 fd does **not** interrupt the
-vendor call, so quit/stop cleanup remains stuck joining the worker. A killable
-helper process or a vendor-supported wake is required before reload or
-physical-key acceptance. With BLAST off, source-select 17 (vin3) then 0 (vin1)
+now runs in the killable `oa-ir-blast` child, which owns `/dev/video28` and
+writes fixed 6-byte records to a pipe2 stdout; `mod_ir` emits on the loop and
+SIGTERM/SIGKILL/reaps the helper. The fake blocking-lib test passes; real
+BLAST shows host main `poll_schedule_timeout` and child `blast_io_get_key`,
+source/PVR commands responsive, quit clean with no helper, and `reload ir`
+changes the helper pid (6277->6300) cleanly. A `fcntl` binding required
+GLIBC_2.28 on the TV's glibc 2.23; `pipe2` (GLIBC_2.9) fixed it. Physical
+remote press/repeat/release remains unverified. Report: IR-BLAST-HELPER.
+With BLAST off, source-select 17 (vin3) then 0 (vin1)
 and offline PVR add/cancel work. Report: INPUT-PVR-TAKEOVER-2026-11-07.
 
 EASI-PROBE-2026-11-05: testtool TCP1986 exposes read-only GETCHANNELLIST

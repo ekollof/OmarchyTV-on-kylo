@@ -1,0 +1,11 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+no-host-helper
+ls: /tmp/oa-ip.sock: No such file or directory
+ls: /buffer/oa-ip-20261107g: No such file or directory
+ls: /tmp/oa-ip.sock: No such file or directory
+watchdog set 10s -> sent
+sent

@@ -1,9 +1,9 @@
-/* Fake libNDAL_EX BLAST receiver for the IR worker lifecycle test.
+/* Fake libNDAL_EX BLAST receiver for the IR helper lifecycle test.
  *
  * The real NDAL_VideoExt_BLAST_RX blocks in blast_io_get_key while the remote
  * is idle. This fake blocks for 150 ms per call, then returns one press and one
- * release before settling into the no-key path. mod_ir must call it on its
- * dedicated worker and deliver the keys through api->post.
+ * release before settling into the no-key path. oa-ir-blast calls it in the
+ * helper process and writes the records to its stdout pipe.
  */
 #include <stdint.h>
 #include <unistd.h>

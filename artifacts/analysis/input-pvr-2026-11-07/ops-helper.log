@@ -1,0 +1,29 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+== host threads
+6137 poll_schedule_timeout
+== helper
+ps: invalid option -- 'p'
+BusyBox v1.29.3 (2019-02-22 09:47:02 CST) multi-call binary.
+
+Usage: ps [-o COL1,COL2=HEADER] [-T]
+
+Show list of processes
+
+	-o COL1,COL2=HEADER	Select columns for display
+	-T			Show threads
+blast_io_get_key
+== ops
+ok
+source type 17 available 1
+ok
+source type 0 available 1
+id 1
+count 1
+job id=1 service=1 state=0 start=1000 end=2000 repeat=0 pad=0/0 name=cli reservation
+ok
+count 1
+job id=1 service=1 state=3 start=1000 end=2000 repeat=0 pad=0/0 name=cli reservation

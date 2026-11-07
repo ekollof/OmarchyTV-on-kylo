@@ -14,18 +14,21 @@
  * The port is exclusive: whoever has it open consumes the bytes. When our UI is
  * in front that is us; when the stock UI runs, this module must not be started.
  */
-#include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <termios.h>
 #include <time.h>
 #include <unistd.h>
 
 #include "openaurora/events.h"
+#include "openaurora/ir_blast.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 
@@ -40,39 +43,23 @@ struct ctx {
     int n;
     uint8_t last_cmd;
     char dev[64];
-    void *blast;
-    int (*blast_set)(unsigned);
-    int (*blast_rx)(uint32_t *, uint8_t *, uint8_t *);
-    void (*blast_v4l2_fd)(int);
-    int (*blast_v4l2_close)(int);
-    int blast_fd;
-    int blast_on;
-    unsigned rc_protocol, rc_sweep;
 
-    /* BLAST_RX blocks in the vendor driver while the remote is idle. It runs
-     * on this dedicated receiver; keys are queued and delivered on the loop
-     * through api->post, never by calling emit/log from the worker. */
-    uint32_t id;
-    pthread_t blast_thread;
-    int blast_thread_started;
-    volatile int blast_stop;
-    pthread_mutex_t blast_lock;
-    struct {
-        uint32_t code;
-        uint8_t aux, flag;
-    } blast_q[16];
-    unsigned blast_head, blast_tail;
-    int blast_post_pending;
-    int quiescing;
+    /* BLAST_RX blocks in the vendor driver while the remote is idle and is
+     * not interrupted by closing the v4l2 fd. It runs in oa-ir-blast; this
+     * module reads fixed records from the helper's stdout pipe and can kill
+     * and reap the child on stop. */
+    char blast_helper[256];
+    pid_t blast_pid;
+    int blast_pipe;
+    uint32_t blast_watch;
+    unsigned char blast_rxbuf[64];
+    size_t blast_rxn;
 
-    /* ABI 3 quiesce: a BLAST/UART dual close can stall the vendor driver for
-     * tens of seconds. The loop hands the fds/libs to this worker and retries
-     * the join later, as display_fb does for its snapshot restore. */
+    /* ABI 3 quiesce: the UART close can stall the vendor driver for tens of
+     * seconds. The loop hands that fd to this worker and retries the join. */
     pthread_t cleanup_thread;
     int cleanup_running;
-    int cleanup_fd, cleanup_blast_fd;
-    void *cleanup_blast;
-    int (*cleanup_v4l2_close)(int);
+    int cleanup_fd;
     unsigned cleanup_delay_ms; /* diagnostic: exercise the async cleanup gate */
 };
 
@@ -236,193 +223,166 @@ static void on_readable(void *ud, int fd, unsigned rev)
  * same 9-byte frame: FF FF 50/5E A1 A2 CC ~CC FF FF. Use the same path when the
  * UART is silent (the MCU only forwards frames after _HW_MCU_RcInit).
  *
- * BLAST_RX blocks in the vendor driver while the remote is idle. The receiver
- * therefore runs on blast_worker; the worker only queues the raw result and
- * calls api->post. blast_deliver runs on the host loop and does the logging and
- * emit_key work. Never call the host from the worker. */
-static void blast_deliver(void *ud)
+ * BLAST_RX blocks in the vendor driver while the remote is idle and is not
+ * interrupted by closing the v4l2 fd. It therefore runs in the separate
+ * oa-ir-blast process; this module reads fixed records from the helper's
+ * stdout pipe on the loop, emits keys there, and kills/reaps the helper on
+ * stop. No vendor BLAST call runs in the host process. */
+static void blast_helper_read(void *ud, int fd, unsigned rev)
 {
     struct ctx *c = ud;
-    if (!c || c->quiescing)
+    unsigned char buf[64];
+    ssize_t n = read(fd, buf, sizeof buf);
+    (void)rev;
+    if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR))
         return;
-    for (;;) {
-        pthread_mutex_lock(&c->blast_lock);
-        if (c->blast_head == c->blast_tail) {
-            c->blast_post_pending = 0;
-            pthread_mutex_unlock(&c->blast_lock);
-            break;
+    if (n > 0) {
+        if (c->blast_rxn + (size_t)n > sizeof c->blast_rxbuf)
+            c->blast_rxn = 0;
+        memcpy(c->blast_rxbuf + c->blast_rxn, buf, (size_t)n);
+        c->blast_rxn += (size_t)n;
+        while (c->blast_rxn >= sizeof(struct oa_ir_blast_record)) {
+            struct oa_ir_blast_record r;
+            memcpy(&r, c->blast_rxbuf, sizeof r);
+            c->blast_rxn -= sizeof r;
+            memmove(c->blast_rxbuf, c->blast_rxbuf + sizeof r,
+                    c->blast_rxn);
+            uint8_t rc = (uint8_t)(r.code & 0x3f);
+            const char *name = rc_name(rc);
+            c->api->log(c->api->priv, OA_LOG_DEBUG,
+                        "ir: BLAST code=%08x aux=%02x flag=%02x -> rc=%u %s",
+                        r.code, r.aux, r.flag, rc, name ? name : "?");
+            emit_key(c, rc, r.flag ? OA_KEY_RELEASE : OA_KEY_PRESS);
         }
-        uint32_t code = c->blast_q[c->blast_head].code;
-        uint8_t aux = c->blast_q[c->blast_head].aux;
-        uint8_t flag = c->blast_q[c->blast_head].flag;
-        c->blast_head = (c->blast_head + 1) & 15u;
-        pthread_mutex_unlock(&c->blast_lock);
-        uint8_t rc = (uint8_t)(code & 0x3f);
-        const char *name = rc_name(rc);
-        c->api->log(c->api->priv, OA_LOG_DEBUG,
-                    "ir: BLAST code=%08x aux=%02x flag=%02x -> rc=%u %s",
-                    code, aux, flag, rc, name ? name : "?");
-        emit_key(c, rc, flag ? OA_KEY_RELEASE : OA_KEY_PRESS);
+        return;
+    }
+
+    /* EOF/error: the helper is gone or closed its pipe. Reap it here if it
+     * already exited; a still-running child is killed by blast_close. */
+    if (c->blast_watch) {
+        c->api->watch_del(c->api->priv, c->blast_watch);
+        c->blast_watch = 0;
+    }
+    if (c->blast_pipe >= 0) {
+        close(c->blast_pipe);
+        c->blast_pipe = -1;
+    }
+    if (c->blast_pid > 0) {
+        int status = 0;
+        pid_t r = waitpid(c->blast_pid, &status, WNOHANG);
+        if (r == c->blast_pid) {
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "ir: BLAST helper pid %d exited (%d)",
+                        (int)c->blast_pid, status);
+            c->blast_pid = -1;
+        }
     }
 }
 
-static void *blast_worker(void *v)
+static void blast_helper_stop(struct ctx *c)
 {
-    struct ctx *c = v;
-    unsigned tick = 0;
-    while (!c->blast_stop) {
-        if (!c->blast_on || !c->blast_rx)
-            break;
-        if (c->rc_sweep && ++tick >= 40) {
-            static const unsigned next[] = { 4, 5, 6, 0xc };
-            tick = 0;
-            for (unsigned i = 0; i < 4; i++)
-                if (next[i] == c->rc_protocol) {
-                    c->rc_protocol = next[(i + 1) & 3u];
-                    break;
-                }
-            (void)c->blast_set(c->rc_protocol);
-        }
-        uint32_t code = 0;
-        uint8_t aux = 0, flag = 0;
-        /* DEV_Ir_GetKey returns 0 when a key is present; a nonzero value is
-         * the no-key/debug path. The call may sleep in the vendor driver. */
-        int rc = c->blast_rx(&code, &aux, &flag);
-        if (c->blast_stop)
-            break;
-        if (rc) {
-            const struct timespec pause = { .tv_nsec = 20000000 };
-            (void)nanosleep(&pause, NULL);
-            continue;
-        }
-        int post = 0;
-        pthread_mutex_lock(&c->blast_lock);
-        unsigned next = (c->blast_tail + 1) & 15u;
-        if (next != c->blast_head) {
-            c->blast_q[c->blast_tail].code = code;
-            c->blast_q[c->blast_tail].aux = aux;
-            c->blast_q[c->blast_tail].flag = flag;
-            c->blast_tail = next;
-            if (!c->blast_post_pending) {
-                c->blast_post_pending = 1;
-                post = 1;
+    if (c->blast_watch) {
+        c->api->watch_del(c->api->priv, c->blast_watch);
+        c->blast_watch = 0;
+    }
+    if (c->blast_pipe >= 0) {
+        close(c->blast_pipe);
+        c->blast_pipe = -1;
+    }
+    if (c->blast_pid > 0) {
+        pid_t pid = c->blast_pid;
+        c->blast_pid = -1;
+        (void)kill(pid, SIGTERM);
+        int status = 0;
+        int reaped = 0;
+        for (int i = 0; i < 20; i++) {
+            pid_t r = waitpid(pid, &status, WNOHANG);
+            if (r == pid || r < 0) {
+                reaped = 1;
+                break;
             }
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
         }
-        pthread_mutex_unlock(&c->blast_lock);
-        if (post && c->api->post(c->api->priv, c->id, blast_deliver, c) != 0) {
-            pthread_mutex_lock(&c->blast_lock);
-            c->blast_post_pending = 0;
-            pthread_mutex_unlock(&c->blast_lock);
+        if (!reaped) {
+            (void)kill(pid, SIGKILL);
+            (void)waitpid(pid, &status, 0);
         }
     }
-    return NULL;
+    c->blast_rxn = 0;
 }
 
 static void blast_close(struct ctx *c)
 {
-    c->blast_stop = 1;
-    c->blast_on = 0;
-    if (c->blast_fd >= 0) {
-        if (c->blast_v4l2_close)
-            c->blast_v4l2_close(c->blast_fd);
-        else
-            close(c->blast_fd);
-        c->blast_fd = -1;
-    }
-    if (c->blast_thread_started) {
-        (void)pthread_join(c->blast_thread, NULL);
-        c->blast_thread_started = 0;
-    }
-    if (c->blast) {
-        dlclose(c->blast);
-        c->blast = NULL;
-    }
-    c->blast_set = NULL;
-    c->blast_rx = NULL;
-    c->blast_v4l2_fd = NULL;
-    c->blast_v4l2_close = NULL;
+    blast_helper_stop(c);
 }
 
 static int blast_open(struct ctx *c)
 {
-    /* libNDAL3/EX reference ALSA control and libv4l2 wrapper symbols. mod_plat
-     * normally brings both in; make the IR module self-contained when loaded alone. */
-    (void)dlopen("libasound.so.2", RTLD_NOW | RTLD_GLOBAL);
-    void *v4l2 = dlopen("libv4l2.so.0", RTLD_NOW | RTLD_GLOBAL);
-    int (*v4l2_open_fn)(const char *, int, ...) = NULL;
-    int (*v4l2_close_fn)(int) = NULL;
-    if (v4l2) {
-        void *sym = dlsym(v4l2, "v4l2_open");
-        if (sym)
-            memcpy(&v4l2_open_fn, &sym, sizeof sym);
-        sym = dlsym(v4l2, "v4l2_close");
-        if (sym)
-            memcpy(&v4l2_close_fn, &sym, sizeof sym);
-    }
-    c->blast_v4l2_close = v4l2_close_fn;
-    c->blast = dlopen("libNDAL_EX.so", RTLD_NOW | RTLD_LOCAL);
-    if (!c->blast) {
-        c->api->log(c->api->priv, OA_LOG_WARN, "ir: BLAST unavailable: %s", dlerror());
+    const char *helper = c->api->config_get(c->api->priv,
+                                            "ir.blast_helper", NULL);
+    if (!helper || !*helper) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "ir: ir.blast_helper is not configured");
         return -1;
     }
-    void *set = dlsym(c->blast, "NDAL_VideoExt_BLAST_SetRcProtocol");
-    void *rx = dlsym(c->blast, "NDAL_VideoExt_BLAST_RX");
-    if (!set || !rx) {
-        c->api->log(c->api->priv, OA_LOG_WARN, "ir: BLAST symbols missing");
-        blast_close(c);
+    if (strlen(helper) >= sizeof c->blast_helper) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "ir: ir.blast_helper path too long");
         return -1;
     }
-    memcpy(&c->blast_set, &set, sizeof set);
-    memcpy(&c->blast_rx, &rx, sizeof rx);
-    void *setfd = dlsym(c->blast, "ndcommon_v4l2_set_fd");
-    if (setfd)
-        memcpy(&c->blast_v4l2_fd, &setfd, sizeof setfd);
-    const char *video = c->api->config_get(c->api->priv, "ir.blast_video", "/dev/video28");
-    if (video[0]) {
-        if (!c->blast_v4l2_fd) {
-            c->api->log(c->api->priv, OA_LOG_WARN,
-                        "ir: no ndcommon_v4l2_set_fd for %s", video);
-        } else {
-            int fd = v4l2_open_fn
-                ? v4l2_open_fn(video, O_RDWR | O_NONBLOCK)
-                : open(video, O_RDWR | O_NONBLOCK);
-            if (fd < 0) {
-                c->api->log(c->api->priv, OA_LOG_WARN,
-                            "ir: %s: %s", video, strerror(errno));
-            } else {
-                c->blast_fd = fd;
-                c->blast_v4l2_fd(fd);
-                c->api->log(c->api->priv, OA_LOG_INFO,
-                            "ir: BLAST v4l2 fd %d from %s", fd, video);
-            }
-        }
-    }
-    c->rc_sweep = 0;
-    int proto = atoi(c->api->config_get(c->api->priv, "ir.rc_protocol", "4"));
-    if (proto == 0) {
-        c->rc_sweep = 1;
+    snprintf(c->blast_helper, sizeof c->blast_helper, "%s", helper);
+
+    const char *video = c->api->config_get(c->api->priv,
+                                            "ir.blast_video", "/dev/video28");
+    int proto = atoi(c->api->config_get(c->api->priv,
+                                        "ir.rc_protocol", "4"));
+    if (proto == 0)
         proto = 4;
-    }
-    c->rc_protocol = (unsigned)proto;
-    int rc = 0;
-    if (atoi(c->api->config_get(c->api->priv, "ir.blast_set", "1")) == 1)
-        rc = c->blast_set(c->rc_protocol);
-    c->blast_on = 1;
-    c->blast_stop = 0;
-    c->blast_head = 0;
-    c->blast_tail = 0;
-    c->blast_post_pending = 0;
-    if (pthread_create(&c->blast_thread, NULL, blast_worker, c) != 0) {
-        c->blast_on = 0;
-        blast_close(c);
-        c->api->log(c->api->priv, OA_LOG_ERROR,
-                    "ir: BLAST receiver worker create failed");
+    int set = atoi(c->api->config_get(c->api->priv,
+                                      "ir.blast_set", "1")) != 0;
+
+    int p[2];
+    if (pipe2(p, O_NONBLOCK | O_CLOEXEC) != 0) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "ir: BLAST helper pipe: %s", strerror(errno));
         return -1;
     }
-    c->blast_thread_started = 1;
+    pid_t pid = fork();
+    if (pid < 0) {
+        close(p[0]);
+        close(p[1]);
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "ir: BLAST helper fork: %s", strerror(errno));
+        return -1;
+    }
+    if (pid == 0) {
+        close(p[0]);
+        if (dup2(p[1], STDOUT_FILENO) < 0)
+            _exit(127);
+        close(p[1]);
+        char ps[16], ss[2] = { set ? '1' : '0', 0 };
+        snprintf(ps, sizeof ps, "%d", proto);
+        execl(c->blast_helper, c->blast_helper,
+              "--video", video, "--protocol", ps, "--set", ss,
+              (char *)NULL);
+        _exit(127);
+    }
+    close(p[1]);
+    c->blast_pipe = p[0];
+    c->blast_pid = pid;
+    c->blast_rxn = 0;
+    c->blast_watch = c->api->watch_add(c->api->priv, p[0], OA_WATCH_READ,
+                                       blast_helper_read, c);
+    if (!c->blast_watch) {
+        c->api->log(c->api->priv, OA_LOG_ERROR,
+                    "ir: BLAST helper watch failed");
+        blast_helper_stop(c);
+        return -1;
+    }
     c->api->log(c->api->priv, OA_LOG_INFO,
-                "ir: BLAST receiver protocol %u%s (set rc=%d, worker on)",
-                c->rc_protocol, c->rc_sweep ? " sweep" : "", rc);
+                "ir: BLAST helper pid %d (protocol %d, set %d, video %s)",
+                (int)pid, proto, set, video[0] ? video : "<none>");
     return 0;
 }
 
@@ -453,15 +413,10 @@ static int m_init(const oa_host_api *api, void **out)
     if (!c)
         return -1;
     c->api = api;
-    c->id = api->owner_id ? api->owner_id(api->priv) : 0;
-    if (pthread_mutex_init(&c->blast_lock, NULL) != 0) {
-        free(c);
-        return -1;
-    }
     c->fd = -1;
-    c->blast_fd = -1;
+    c->blast_pid = -1;
+    c->blast_pipe = -1;
     c->cleanup_fd = -1;
-    c->cleanup_blast_fd = -1;
     g_ctx = c;
     *out = c;
     return 0;
@@ -470,11 +425,8 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct ctx *c = v;
-    if (c->cleanup_running || c->cleanup_fd >= 0 || c->cleanup_blast_fd >= 0 ||
-        c->cleanup_blast || c->blast_thread_started)
+    if (c->cleanup_running || c->cleanup_fd >= 0 || c->blast_pid > 0)
         return -EBUSY;
-    c->quiescing = 0;
-    c->blast_stop = 0;
     g_ctx = c;
     if (c->api->publish(c->api->priv, OA_SVC_INPUT, 1, &g_input) != 0)
         return -1;
@@ -543,24 +495,6 @@ static void *cleanup_worker(void *v)
         };
         (void)nanosleep(&pause, NULL);
     }
-    if (c->cleanup_blast_fd >= 0) {
-        int fd = c->cleanup_blast_fd;
-        c->cleanup_blast_fd = -1;
-        if (c->cleanup_v4l2_close) (void)c->cleanup_v4l2_close(fd);
-        else (void)close(fd);
-    }
-    if (c->blast_thread_started) {
-        (void)pthread_join(c->blast_thread, NULL);
-        c->blast_thread_started = 0;
-    }
-    if (c->cleanup_blast) {
-        (void)dlclose(c->cleanup_blast);
-        c->cleanup_blast = NULL;
-    }
-    c->blast_set = NULL;
-    c->blast_rx = NULL;
-    c->blast_v4l2_fd = NULL;
-    c->blast_v4l2_close = NULL;
     if (c->cleanup_fd >= 0) {
         int fd = c->cleanup_fd;
         c->cleanup_fd = -1;
@@ -601,51 +535,23 @@ static int m_quiesce(void *v)
         return -EAGAIN;
     }
 
-    c->quiescing = 1;
-    c->blast_stop = 1;
-    c->blast_on = 0;
+    blast_helper_stop(c);
     if (c->watch) {
         c->api->watch_del(c->api->priv, c->watch);
         c->watch = 0;
     }
-    if (c->fd < 0 && c->blast_fd < 0 && !c->blast &&
-        !c->blast_thread_started)
+    if (c->fd < 0)
         return 0;
 
     c->cleanup_fd = c->fd;
-    c->cleanup_blast_fd = c->blast_fd;
-    c->cleanup_blast = c->blast;
-    c->cleanup_v4l2_close = c->blast_v4l2_close;
     c->fd = -1;
-    c->blast_fd = -1;
-    c->blast = NULL;
-    c->blast_v4l2_close = NULL;
-
     int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
     if (rc) {
-        /* Rare fallback: close on the loop rather than leaking the fds. */
-        if (c->cleanup_blast_fd >= 0) {
-            if (c->cleanup_v4l2_close) (void)c->cleanup_v4l2_close(c->cleanup_blast_fd);
-            else (void)close(c->cleanup_blast_fd);
-            c->cleanup_blast_fd = -1;
-        }
-        if (c->blast_thread_started) {
-            (void)pthread_join(c->blast_thread, NULL);
-            c->blast_thread_started = 0;
-        }
-        if (c->cleanup_blast) {
-            (void)dlclose(c->cleanup_blast);
-            c->cleanup_blast = NULL;
-        }
-        c->blast_set = NULL;
-        c->blast_rx = NULL;
-        c->blast_v4l2_fd = NULL;
-        c->blast_v4l2_close = NULL;
+        /* Rare fallback: close on the loop rather than leaking the fd. */
         if (c->cleanup_fd >= 0) {
             (void)close(c->cleanup_fd);
             c->cleanup_fd = -1;
         }
-        c->cleanup_v4l2_close = NULL;
         return -EIO;
     }
     c->cleanup_running = 1;
@@ -659,15 +565,6 @@ static void m_destroy(void *v)
         (void)pthread_join(c->cleanup_thread, NULL);
         c->cleanup_running = 0;
     }
-    if (c->cleanup_blast_fd >= 0) {
-        if (c->cleanup_v4l2_close) (void)c->cleanup_v4l2_close(c->cleanup_blast_fd);
-        else (void)close(c->cleanup_blast_fd);
-        c->cleanup_blast_fd = -1;
-    }
-    if (c->cleanup_blast) {
-        (void)dlclose(c->cleanup_blast);
-        c->cleanup_blast = NULL;
-    }
     if (c->cleanup_fd >= 0) {
         (void)close(c->cleanup_fd);
         c->cleanup_fd = -1;
@@ -677,7 +574,6 @@ static void m_destroy(void *v)
         c->api->unpublish(c->api->priv, OA_SVC_INPUT);
         c->published = 0;
     }
-    pthread_mutex_destroy(&c->blast_lock);
     if (g_ctx == c)
         g_ctx = NULL;
     free(c);

@@ -2017,12 +2017,17 @@ check-ir-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_plat.so $(BUILD)/modu
 	node tests/ir_quiesce.cjs $(abspath $(BUILD))
 check: check-ir-quiesce
 
+$(BUILD)/oa-ir-blast: tools/ir/oa-ir-blast.c include/openaurora/ir_blast.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $< -ldl \
+	  -Wl,-rpath,/vendor/lib:/vendor/lib/libs
+
 $(BUILD)/tests/fake_blast_lib.so: tests/fake_blast_lib.c
 	@mkdir -p $(dir $@)
 	$(CC) -shared -fPIC -o $@ $< -pthread
 
 .PHONY: check-ir-blast-worker
-check-ir-blast-worker: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ir.so $(BUILD)/tests/mod_plat_stub.so $(BUILD)/tests/fake_blast_lib.so
+check-ir-blast-worker: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ir.so $(BUILD)/tests/mod_plat_stub.so $(BUILD)/tests/fake_blast_lib.so $(BUILD)/oa-ir-blast
 	node tests/ir_blast_worker.cjs $(abspath $(BUILD))
 check: check-ir-blast-worker
 

@@ -1,9 +1,10 @@
 # Input/PVR takeover group — 2026-11-07
 
 Owner authorization: TV read-write/full access, recovery reboot allowed. This
-group exercised source/VIN switching and the offline PVR stub. IR hardware
-(BLAST) is **not** accepted: the vendor receive call blocks the host loop and
-must move to a dedicated worker.
+group exercised source/VIN switching and the offline PVR stub. The initial
+BLAST timer/worker path blocked shutdown; [IR-BLAST-HELPER](IR-BLAST-HELPER-2026-11-07.md)
+supersedes it with a killable helper process. Physical remote key acceptance
+remains unverified.
 
 ## Pre-state (stock)
 
@@ -134,10 +135,11 @@ thread sat in `pthread_join` (`futex_wait_queue_me`) and the host retried
 `ir: cleanup pending`. Closing the fd is not sufficient to interrupt the
 vendor call. The host had to be killed and stock restored by reboot.
 
-The worker therefore fixes the **running** control-loop hang but not the
-**stop/reload** path. A separate helper process (killable by the module) or a
-vendor-supported cancellation/wake is required before BLAST can be a
-production, reloadable path.
+The worker therefore fixed the **running** control-loop hang but not the
+**stop/reload** path. This was superseded by
+[IR-BLAST-HELPER](IR-BLAST-HELPER-2026-11-07.md): BLAST_RX moved into the
+killable `oa-ir-blast` child, and real stop/reload now pass. The physical
+remote press remains unverified.
 
 ## Restore
 
@@ -159,11 +161,9 @@ boot but the sustained source values are unchanged.)
 
 ## Limits
 
-- The worker keeps the control loop responsive while real BLAST is active, and
-  the fake test proves posted press/release keys. **Physical remote key
-  acceptance is still not run**, and stop/reload remains blocked because the
-  vendor call is not interrupted by closing the v4l2 fd. A killable helper
-  process or a vendor-supported cancellation/wake is the required next step.
+- BLAST_RX now runs in the killable `oa-ir-blast` helper; real `quit` and
+  `reload ir` pass (see IR-BLAST-HELPER). **Physical remote key acceptance is
+  still not run**; the fake test proves the record/pipe/emit path.
 - No real PVR/DVR hardware: no frontend/demux/dvr open, recording, playback or
   TS output. The stub stores reservations only.
 - Source switch hardware was exercised but the display/audio routing side

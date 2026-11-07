@@ -1,8 +1,9 @@
-/* IR BLAST worker lifecycle: fake blocking libNDAL_EX, real mod_ir.
+/* IR BLAST helper lifecycle: fake blocking libNDAL_EX, real oa-ir-blast and
+ * mod_ir.
  *
- * Proves that BLAST_RX runs off the host loop (status replies while the fake
- * blocks), keys reach the loop through api->post (debug log), and quit joins
- * the receiver without hanging.
+ * Proves that BLAST_RX runs in the helper process (status replies while the
+ * fake blocks), fixed records reach the module's loop (debug log), and quit
+ * kills/reaps the helper without hanging.
  */
 const assert = require('assert/strict');
 const { spawn } = require('child_process');
@@ -24,7 +25,9 @@ async function main() {
     const ir = path.join(build, 'modules', 'mod_ir.so');
     const plat = path.join(build, 'tests', 'mod_plat_stub.so');
     const fake = path.join(build, 'tests', 'fake_blast_lib.so');
-    for (const f of [ir, plat, fake]) assert.ok(fs.existsSync(f), `missing ${f}`);
+    const helper = path.join(build, 'oa-ir-blast');
+    for (const f of [ir, plat, fake, helper])
+        assert.ok(fs.existsSync(f), `missing ${f}`);
 
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'oa-ir-blast-'));
     const modules = path.join(dir, 'modules');
@@ -37,6 +40,7 @@ async function main() {
     fs.writeFileSync(config,
         'autoload=\n' +
         'ir.blast=1\n' +
+        `ir.blast_helper=${helper}\n` +
         'ir.blast_video=\n' +
         'ir.device=\n' +
         'ir.rc_protocol=4\n' +
@@ -104,7 +108,7 @@ async function main() {
         assert.ok(elapsed < 1000, `status ir took ${elapsed}ms`);
 
         await new Promise(resolve => setTimeout(resolve, 700));
-        assert.match(output, /BLAST receiver protocol 4/);
+        assert.match(output, /BLAST helper pid/);
         assert.match(output, /BLAST code=00003056/);
         assert.match(output, /rc=22 Right/);
 
