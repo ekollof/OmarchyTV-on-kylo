@@ -25,7 +25,8 @@ under `root/lib/modules` and `vendor2/modules` and are in
 | relocatable kernel module (`REL`) | 26 |
 
 Every file has its size, MD5, SHA-256, class/type/machine, SONAME and NEEDED
-count in `elf/elf-census.tsv`. The inventory includes third-party browser,
+count in `elf/elf-census.tsv`; curated dynamic tags, sections and dynamic
+symbols are committed, while full strings/symbol tables are local-only. The inventory includes third-party browser,
 Opera, Amazon, Netflix, Samba and crypto libraries; their symbols and strings
 are captured but only the TV platform pieces were decompiled deeply.
 
