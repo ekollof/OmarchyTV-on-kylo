@@ -398,6 +398,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  mixer-result <ticket>    collect query result\n"
                  "  mixer-cancel <ticket>    discard/drain query\n"
                  "  loglevel <0-3>\n"
+                 "  reload-suite            clean stop for supervisor relaunch\n"
                  "  quit\n");
         }
         return 0;
@@ -1760,6 +1761,15 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         h->log_level = atoi(a1);
         snprintf(outbuf, outlen, "loglevel %d\n", h->log_level);
         return 0;
+    }
+    if (!strcmp(cmd, "reload-suite")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        h->reload_requested = 1;
+        snprintf(outbuf, outlen, "bye\n");
+        return 1;
     }
     if (!strcmp(cmd, "quit") || !strcmp(cmd, "exit")) {
         snprintf(outbuf, outlen, "bye\n");

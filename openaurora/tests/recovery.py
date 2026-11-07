@@ -194,6 +194,35 @@ def idle_signal(r):
             child.wait()
 
 
+def suite_reload(r):
+    # A child that exits 75 asks oa-supervise to relaunch it. The second run
+    # exits 0, which is a real stop, so the vendor fallback follows. The
+    # watchdog must stay disabled between the two runs.
+    counter, child = r.dir / "child-count", r.dir / "child"
+    child.write_text(
+        "#!/bin/sh\n"
+        f'n=$(cat "{counter}" 2>/dev/null || echo 0)\n'
+        'n=$((n+1))\n'
+        f'echo "$n" > "{counter}"\n'
+        f'echo "child$n" >> "{r.events}"\n'
+        '[ "$n" -eq 1 ] && exit 75\n'
+        "exit 0\n")
+    child.chmod(0o700)
+    r.command = [str(BUILD / "oa-supervise"), "--heartbeat", str(r.hb),
+                 "--ready", str(r.ready), "--wdt", str(r.dir / "wdt"),
+                 "--fallback", str(r.dir / "fallback"), "--fail", str(r.fail),
+                 "--enable", str(r.enable), "--safe", str(r.safe),
+                 "--startup-ms", "800", "--timeout-ms", "1500",
+                 "--stable-ms", "300", "--", str(child)]
+    r.start()
+    r.fallback()
+    events = read(r.events).splitlines()
+    assert events == ["wdt disable", "child1", "child2", "wdt set 10", "fallback"], events
+    assert read(counter).strip() == "2"
+    assert "suite reload requested" in read(r.dir / "log")
+    assert read(r.fail) == "1\n"
+
+
 if __name__ == "__main__":
     case("heartbeat advances; SIGTERM exits; fallback re-arms watchdog", healthy)
     case("blocked module callback stops heartbeat and triggers fallback", blocked_callback)
@@ -206,3 +235,4 @@ if __name__ == "__main__":
     case("safe marker during takeover returns to vendor UI", safe_running)
     case("failed watchdog disable skips child and falls back", watchdog_failure, wdt_fail=True)
     case("idle event loop heartbeats and exits on SIGTERM", idle_signal, modules=False)
+    case("suite reload restarts without re-arming the watchdog", suite_reload, modules=False)

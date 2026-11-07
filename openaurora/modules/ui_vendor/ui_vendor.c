@@ -604,9 +604,13 @@ static void paint_settings(struct ctx *c)
         return;
     /* Captured Beeld state from p0/03, R/B-corrected: rail 0,180,176,660; top
      * setting tiles 0,240,1920,180; category row and the selected "Beeld"
-     * caption 0,440,1920,260. That capture stores the background as (14,14,13),
-     * so the corrected background is (13,14,14). Static state; no navigation. */
-    d->clear(13, 14, 14);
+     * caption 0,440,1920,260. The capture's (14,14,13) background is the
+     * video plane/empty canvas, not a painted rect: keep the rest transparent
+     * over the underlying layer, exactly like the vendor dialog. */
+    if (d->clear_rgba(0, 0, 0, 0)) {
+        c->api->log(c->api->priv, OA_LOG_ERROR, "settings clear failed");
+        return;
+    }
     const oa_ui_icon *top = find_icon(c, "settings_top");
     if (top)
         d->blit(0, 240, top->w, top->h, top->rgba);

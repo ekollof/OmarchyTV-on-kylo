@@ -8,6 +8,18 @@ authorized live checks are recorded below and in MEMORY.md.
 
 ## Current objective and safety
 
+Replacement system, 2026-11-07: `make TARGET=tv ... replacement-bundle` builds
+a takeover-mode UI (`plat_stub` + display/panel/ir/settings/service_db/
+image_decode/ui_engine/ui_vendor/ticker/ui_clock/ui_anim, client and menus).
+Verified portal paint, physical BLAST navigation, picture-settings entry and
+`reload ui_vendor`; `display.mirror=0` + `ui.fps=0` gives ~46–51 ms scene +
+6–12 ms pan. Settings now uses the firmware transparent 780×1080 panel; the
+real-plat DRM/KMS path leaves the vendor OSD black, so the UI composition uses
+the stub until cold OSD enable is recovered. `reload-suite` exits the core
+with 75 and `oa-supervise` relaunches it without re-arming the watchdog
+(host-tested); per-module reload remains available. Boot persistence is a
+separate gate. TV stock (appmgr 1574, aurora 1778). REPLACEMENT-SYSTEM.
+
 Latest hardware acceptance, 2026-11-07: owner granted full TV access; a
 temporary six-module run with stock stopped produced real physical IR
 press/release records for four keys (aux repeats are emitted as PRESS;

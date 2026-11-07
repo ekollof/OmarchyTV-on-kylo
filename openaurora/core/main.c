@@ -132,6 +132,8 @@ int main(int argc, char **argv)
 
     int rc = oa_host_run(&g_host);
 
+    if (g_host.reload_requested)
+        return rc == 0 ? 75 : 1; /* only a clean teardown may relaunch */
     g_host.api.log(&g_host, rc == 0 ? OA_LOG_INFO : OA_LOG_ERROR,
                    rc == 0 ? "openaurora stopped" : "openaurora stopped with modules still loaded");
     return rc == 0 ? 0 : 1;

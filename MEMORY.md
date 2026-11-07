@@ -1,5 +1,23 @@
 # Current project state — last verified 2026-11-07
 
+Replacement system, 2026-11-07: `make replacement-bundle` produces a
+reproducible takeover UI (`plat_stub` + display/panel/ir/settings/service_db/
+image_decode/ui_engine/ui_vendor/ticker/ui_clock/ui_anim + oa-client + menus).
+On the TV it painted the portal, accepted physical BLAST navigation
+(`band/rail/card` changes), opened the picture-settings screen, and survived
+`reload ui_vendor`. With `display.mirror=0`, `ui.fps=0`, paint is 46–51 ms
+scene + 6–12 ms pan with no idle repaints. The settings panel now clears
+transparent per firmware (780×1080 panel over the video plane); rail_hl01..11
+(11×30 ms vendor APNG) and settings assets are installed under
+`/buffer/openaurora/ui`. The real `plat` DRM/KMS run left the vendor-enabled
+OSD black, so the UI composition uses `plat_stub`; real-plat unification
+requires cold OSD allocation/enable. `reload-suite` exits the core with 75 and
+`oa-supervise` relaunches the suite with the watchdog still disabled; a stable
+suite resets the reload streak, and stock fallback only follows a real failure
+or quit. Host tests cover the exit and relaunch event order; not yet exercised
+on the TV. Boot persistence/boot hooks remain a separate gate. TV restored
+stock (appmgr 1574, aurora 1778). REPLACEMENT-SYSTEM, HW-ACCEPT-2.
+
 Hardware acceptance, 2026-11-07 (owner: "ok, use the TV, full access"):
 temporary six-module bundle (`plat,panel,audio_amp,ir,tuner,cec`) ran with
 stock stopped. **Amp:** the default-PCM 440 Hz tone was audible, but the

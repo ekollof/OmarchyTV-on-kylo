@@ -1969,6 +1969,11 @@ check-control: $(BUILD)/tests/control_reply $(BUILD)/tests/control_transport
 check-oa-client: $(BUILD)/oa-client
 	node tests/oa_client.cjs $(abspath $(BUILD)/oa-client)
 
+.PHONY: check-reload-suite
+check-reload-suite: $(BUILD)/$(PROJECT)
+	node tests/reload_suite.cjs $(abspath $(BUILD))
+check: check-reload-suite
+
 .PHONY: check-autoload
 check-autoload: $(BUILD)/$(PROJECT)
 	node tests/autoload.cjs $(abspath $(BUILD))
@@ -2030,14 +2035,33 @@ cold-bundle-core: all-core $(BUILD)/oa-supervise $(BUILD)/fb-restore
 .PHONY: all-stage stage-bundle install-stage
 all-stage: $(BUILD)/$(PROJECT) $(STAGE_SO) $(BUILD)/oa-ir-blast
 
-stage-bundle: all-stage $(BUILD)/oa-supervise $(BUILD)/fb-restore
+stage-bundle: all-stage $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client
 	@rm -rf $(BUILD)/stage-$(STAGE)
-	@mkdir -p $(BUILD)/stage-$(STAGE)/modules
-	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-ir-blast $(BUILD)/stage-$(STAGE)/
+	@mkdir -p $(BUILD)/stage-$(STAGE)/modules $(BUILD)/stage-$(STAGE)/menus
+	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/stage-$(STAGE)/
 	@cp $(STAGE_SO) $(BUILD)/stage-$(STAGE)/modules/
+	@cp menus/sub_launcher.json $(BUILD)/stage-$(STAGE)/menus/
 	@sed 's/^autoload =.*/autoload = $(call stage_autoload,$(STAGE_MODULES))/' tools/boot/openaurora-cold.conf > $(BUILD)/stage-$(STAGE)/openaurora.conf
-	@cd $(BUILD)/stage-$(STAGE) && sha256sum openaurora oa-supervise fb-restore oa-ir-blast openaurora.conf modules/*.so > manifest.sha256
+	@cd $(BUILD)/stage-$(STAGE) && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast openaurora.conf menus/*.json modules/*.so > manifest.sha256
 	@echo "stage $(STAGE) bundle: $(BUILD)/stage-$(STAGE) ($(words $(STAGE_SO)) modules)"
+
+# Takeover-mode replacement UI: plat_stub preserves the vendor-enabled OSD;
+# the real plat DRM/KMS black-screen issue is documented in
+# artifacts/reports/HW-ACCEPT-2-2026-11-07.md. UI assets are local/private and
+# expected under /buffer/openaurora/ui on the TV.
+REPLACEMENT_MODULES := plat display panel ir settings service_db image_decode ui_engine ui_vendor ticker ui_clock ui_anim
+REPLACEMENT_SO := $(foreach m,$(REPLACEMENT_MODULES),$(BUILD)/modules/mod_$(m).so)
+.PHONY: replacement-bundle
+replacement-bundle: $(BUILD)/$(PROJECT) $(REPLACEMENT_SO) $(BUILD)/tests/mod_plat_stub.so $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast
+	@rm -rf $(BUILD)/replacement
+	@mkdir -p $(BUILD)/replacement/modules $(BUILD)/replacement/menus
+	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/replacement/
+	@cp $(REPLACEMENT_SO) $(BUILD)/replacement/modules/
+	@cp $(BUILD)/tests/mod_plat_stub.so $(BUILD)/replacement/modules/mod_plat.so
+	@cp tools/boot/openaurora-replacement.conf $(BUILD)/replacement/openaurora.conf
+	@cp menus/sub_launcher.json $(BUILD)/replacement/menus/
+	@cd $(BUILD)/replacement && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast openaurora.conf menus/*.json modules/*.so > manifest.sha256
+	@echo "replacement bundle: $(BUILD)/replacement ($(words $(REPLACEMENT_SO)) modules + plat_stub)"
 
 install-stage: all-stage
 	install -d $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR)

@@ -1,3 +1,16 @@
+REPLACEMENT-SYSTEM-2026-11-07 assembles the reproducible takeover UI:
+`make replacement-bundle` emits `plat_stub` + display/panel/ir/settings/
+service_db/image_decode/ui_engine/ui_vendor/ticker/ui_clock/ui_anim, oa-client
+and menus. On the TV the portal painted, physical BLAST navigation changed
+`band/rail/card`, `open:settings` reached the captured picture-settings screen,
+and `reload ui_vendor` preserved it. `display.mirror=0` + `ui.fps=0` gives
+46–51 ms scene + 6–12 ms pan with no idle repaints. The settings panel is the
+firmware 780×1080 transparent overlay over the video plane (clear_rgba now
+matches); rail assets are the vendor 11×30 ms APNG. The real `plat` DRM/KMS
+bring-up leaves the vendor-enabled OSD black; the UI uses plat_stub until cold
+OSD allocation/enable is recovered. Boot persistence is a separate gate. TV was
+restored stock. Report: REPLACEMENT-SYSTEM-2026-11-07.
+
 HW-ACCEPT-2026-11-07 is the first owner-confirmed hardware run covering the
 fixed modules. **Amp:** a quiet 440 Hz default-PCM tone was audible, but a
 focused A/B also heard it while Init left the amp at mute 1; the Init/mute

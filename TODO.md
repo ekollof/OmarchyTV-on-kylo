@@ -163,6 +163,17 @@ unvalidated.
       `DEV_PANEL`/MCU/`/dev/ntkled` path first. HW-ACCEPT.
 - [ ] Panel power/backlight resume after real kernel PM suspend and standby
       ownership; separate from the host hook-only `suspend`/`resume` tests.
+- [ ] Replacement takeover system: `make replacement-bundle` builds the
+      reproducible `plat_stub` + display/panel/ir/settings/service_db/
+      image_decode/ui_engine/ui_vendor/ticker/ui_clock/ui_anim composition
+      with client and menus. Verified portal paint, physical BLAST navigation,
+      picture-settings entry and `reload ui_vendor`; `display.mirror=0` +
+      `ui.fps=0` gives ~46–51 ms scene + 6–12 ms pan. Remaining: exact
+      rail-highlight cadence/geometry, full menu/source/channel UI assets,
+      real-plat OSD unification (real plat leaves the vendor OSD black) and
+      boot persistence/boot-hook (separate gate). `reload-suite` (exit 75) +
+      `oa-supervise` relaunches the whole suite without rebooting or re-arming
+      the watchdog; per-module reload remains. REPLACEMENT-SYSTEM.
 
 ### Audio / CEC
 

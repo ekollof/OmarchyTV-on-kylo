@@ -125,6 +125,7 @@ typedef struct {
     int running;
     int sleep_cycle; /* pins lifecycle/DSOs through prepare, entry and restore */
     int shutting_down; /* stop/unload only; load/start/reload/suspend/resume refuse */
+    int reload_requested; /* clean exit for an oa-supervise relaunch */
     volatile sig_atomic_t stop_requested;
 
     char heartbeat_path[256];

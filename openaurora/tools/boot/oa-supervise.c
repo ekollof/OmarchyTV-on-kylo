@@ -123,53 +123,70 @@ int main(int argc, char **argv)
         fprintf(stderr, "oa-supervise: watchdog disable failed\n");
         goto failed;
     }
-    uint64_t start = now_ms(), healthy_since = 0;
-    int stable = 0;
-    pid_t child = fork();
-    if (child < 0) goto failed;
-    if (!child) {
-        const char *preload = getenv("OA_CHILD_PRELOAD");
-        if (preload && *preload) setenv("LD_PRELOAD", preload, 1);
-        execv(argv[child_arg], argv + child_arg);
-        _exit(127);
-    }
-    fprintf(stderr, "oa-supervise: child %ld, startup %u ms, heartbeat timeout %u ms\n",
-            (long)child, startup_ms, timeout_ms);
+    int reloads = 0;
+    pid_t child = -1;
     for (;;) {
-        int status;
-        pid_t r = waitpid(child, &status, WNOHANG);
-        if (r == child) {
-            fprintf(stderr, "oa-supervise: child exited (wait status %#x)\n", status);
-            break;
+        uint64_t start = now_ms(), healthy_since = 0;
+        int stable = 0;
+        unlink(heartbeat);
+        unlink(ready);
+        child = fork();
+        if (child < 0) goto failed;
+        if (!child) {
+            const char *preload = getenv("OA_CHILD_PRELOAD");
+            if (preload && *preload) setenv("LD_PRELOAD", preload, 1);
+            execv(argv[child_arg], argv + child_arg);
+            _exit(127);
         }
-        if (r < 0 && errno != EINTR) break;
-        if (stopping || access(safe, F_OK) == 0) {
-            fprintf(stderr, "oa-supervise: vendor UI requested\n");
-            goto kill_child;
-        }
-        uint64_t now = now_ms(), stamp = 0;
-        int alive = receipt(heartbeat, child, &stamp) && stamp >= start && stamp <= now &&
-                    now - stamp <= timeout_ms;
-        if (!healthy_since) {
-            if (alive && receipt(ready, child, NULL)) {
-                healthy_since = now;
-                fprintf(stderr, "oa-supervise: host loop alive, first present acknowledged\n");
-            } else if (now - start >= startup_ms) {
-                fprintf(stderr, "oa-supervise: startup deadline expired\n");
+        fprintf(stderr, "oa-supervise: child %ld, startup %u ms, heartbeat timeout %u ms\n",
+                (long)child, startup_ms, timeout_ms);
+        for (;;) {
+            int status;
+            pid_t r = waitpid(child, &status, WNOHANG);
+            if (r == child) {
+                if (!stopping && access(safe, F_OK) != 0 &&
+                    WIFEXITED(status) && WEXITSTATUS(status) == 75 &&
+                    reloads < 5) {
+                    reloads++;
+                    fprintf(stderr, "oa-supervise: suite reload requested; "
+                            "restarting (%d/5)\n", reloads);
+                    break; /* relaunch the replacement suite */
+                }
+                fprintf(stderr, "oa-supervise: child exited (wait status %#x)\n", status);
+                goto child_done;
+            }
+            if (r < 0 && errno != EINTR) goto child_done;
+            if (stopping || access(safe, F_OK) == 0) {
+                fprintf(stderr, "oa-supervise: vendor UI requested\n");
                 goto kill_child;
             }
-        } else if (!alive) {
-            fprintf(stderr, "oa-supervise: host heartbeat missing, invalid or stale\n");
-            goto kill_child;
-        } else if (!stable && now - healthy_since >= stable_ms) {
-            FILE *f = fopen(fail, "w");
-            if (f) { fputs("0\n", f); fclose(f); }
-            stable = 1;
-            fprintf(stderr, "oa-supervise: stable; failure streak cleared\n");
+            uint64_t now = now_ms(), stamp = 0;
+            int alive = receipt(heartbeat, child, &stamp) && stamp >= start && stamp <= now &&
+                        now - stamp <= timeout_ms;
+            if (!healthy_since) {
+                if (alive && receipt(ready, child, NULL)) {
+                    healthy_since = now;
+                    reloads = 0; /* a presented suite is not a reload loop */
+                    fprintf(stderr, "oa-supervise: host loop alive, first present acknowledged\n");
+                } else if (now - start >= startup_ms) {
+                    fprintf(stderr, "oa-supervise: startup deadline expired\n");
+                    goto kill_child;
+                }
+            } else if (!alive) {
+                fprintf(stderr, "oa-supervise: host heartbeat missing, invalid or stale\n");
+                goto kill_child;
+            } else if (!stable && now - healthy_since >= stable_ms) {
+                FILE *f = fopen(fail, "w");
+                if (f) { fputs("0\n", f); fclose(f); }
+                stable = 1;
+                reloads = 0;
+                fprintf(stderr, "oa-supervise: stable; failure streak cleared\n");
+            }
+            usleep(100000);
         }
-        usleep(100000);
+        /* Clean suite reload: the watchdog stays disabled across the relaunch. */
+        continue;
     }
-    goto child_done;
 kill_child:
     /* SIGKILL works even with a blocked callback or a SIGSTOPped process. Reap
      * before re-arming the watchdog and starting the vendor as sole owner. */

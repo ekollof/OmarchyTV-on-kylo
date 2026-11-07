@@ -1,0 +1,155 @@
+# Replacement system — 2026-11-07
+
+This is the assembled, reproducible Aurora replacement UI in takeover mode. It
+is not a persistent boot replacement; that remains a separate gate. The
+composition is based on firmware assets and tests, not owner visual judgment.
+
+## Composition
+
+Built by:
+
+```text
+make TARGET=tv BUILD=build-tv-v3 CC=<arm-gcc> replacement-bundle
+```
+
+`build-tv-v3/replacement/`:
+
+```text
+openaurora          17367e39...
+oa-client           f3d20a61...
+oa-supervise        fcdad6c4...
+fb-restore          afa1dbe1...
+oa-ir-blast         36ef3665...
+openaurora.conf
+menus/sub_launcher.json
+modules/mod_plat.so       fb11e812...  (tests/mod_plat_stub.so, module name "plat")
+modules/mod_display.so
+modules/mod_panel.so
+modules/mod_ir.so
+modules/mod_settings.so
+modules/mod_service_db.so
+modules/mod_image_decode.so
+modules/mod_ui_engine.so
+modules/mod_ui_vendor.so  d0afa127...
+modules/mod_ticker.so
+modules/mod_ui_clock.so
+modules/mod_ui_anim.so
+manifest.sha256
+```
+
+Autoload:
+
+```text
+plat,display,panel,ir,settings,service_db,image_decode,
+ui_engine,ui_vendor,ticker,ui_clock,ui_anim
+```
+
+The real `plat` DRM/KMS bring-up changes the visible plane and leaves the
+vendor-enabled fb1 OSD black (owner-observed on the 32-module stage). The
+takeover composition therefore uses `plat_stub`, which publishes a ready
+`plat` service without touching the vendor-initialized display. Hardware
+services use the real-plat composition separately until cold OSD
+allocation/enable is recovered (OSD-BUFFER-CONTRACT).
+
+## Configuration
+
+- `display.mirror=0` (stock stopped; only the active frame), `display.pan=0`,
+  `display.set_region=1`, `display.restore_snapshot=1`, `display.profile=1`.
+- `ui.fps=0`: no idle full-frame repaints; input paints immediately.
+- `ui.dir=/buffer/openaurora/ui` (TV-local private assets), settings DB live
+  read-only.
+- `ir.blast=1`, BLAST helper `oa-ir-blast`.
+- `panel.start=100`.
+
+## Verified
+
+- Stub stack: `display region -> 1920x1080 (ok)`; portal painted; physical
+  remote pressed via BLAST; `ui-state`/portal log moved `band 0 rail 2 card 0`
+  to `band 1 rail 2 card 2`, then `band 1 rail 2 card 1`.
+- `ui-action open:settings` -> `portal screen 3`; captured picture-settings
+  painted.
+- `reload ui_vendor` completed and preserved the screen.
+- Performance with `mirror=0`/`fps=0`: `present: scene=46..51ms mirror=0ms
+  sync=0ms pan=6..12ms`, versus the old 2 fps/617 ms cadence.
+- Rail highlight: the vendor APNG is 11 frames at 30 ms, 210x210; OAI1 frames
+  `rail_hl01..11` are installed under `/buffer/openaurora/ui`, and
+  `check-ui-rail-hl` asserts 11 frames at 30 ms in the vendor button window.
+  The live 10 ms patch cadence measured ~50 ms per frame; exact 30 ms is still
+  open.
+- `ticker -> ui.clock -> ui.anim` starts, enabling the animation service.
+- Settings transparency: firmware says the panel is a 780x1080 rect with the
+  rest transparent over the video plane (UI-TRANSPARENCY/SETTINGS-PANEL-
+  CAPTURE). `paint_settings` now clears RGBA(0,0,0,0), not opaque 13,14,14;
+  `check-ui-settings-panel` passes. The previous live run used the old opaque
+  clear, so the transparent live composition was not re-run on hardware.
+
+## Run / restore
+
+```sh
+# preflight (no hardware access)
+cd /buffer/oa-ui-20261107 && ./openaurora --check --modules ./modules
+
+# takeover
+/buffer/wdtctl disable
+kill -TERM $(pidof aurora.elf)
+./openaurora --modules ./modules --config ./openaurora.conf \
+  --sock /tmp/openaurora.sock --log 3
+
+# restore
+./oa-client /tmp/openaurora.sock quit
+rm -rf /buffer/oa-ui-20261107 /tmp/openaurora.sock
+/buffer/wdtctl set 10
+```
+
+`oa-supervise` is the intended launcher: it disables the watchdog, monitors
+heartbeat/ready, relaunches on `reload-suite` (exit 75) without re-arming the
+watchdog, and returns to stock only on a real failure or explicit quit. It was
+not exercised as the boot path.
+
+## Suite reload (no reboot)
+
+- The core exposes `reload-suite` over the control socket. It returns `bye`,
+  performs the normal clean stop (modules quiesce/unload, display snapshot
+  restored) and exits with **75**.
+- `oa-supervise` treats exit 75 as a **relaunch request**, not a failure. It
+  keeps the watchdog disabled, restarts the same child argv, resets the
+  heartbeat/ready receipts and waits for the new first present. Stock fallback
+  and watchdog re-arm happen only on a real exit/failure (or after five
+  consecutive reload exits before reaching the stable window).
+- A stable suite resets the reload streak, so later reloads are allowed
+  indefinitely.
+- Tests: `check-reload-suite` asserts the core exits 75 after the socket
+  reply; `tests/recovery.py` runs a fake child that exits 75, then a second
+  child, and asserts the event order `wdt disable, child1, child2,
+  wdt set 10, fallback` — no watchdog re-arm between runs.
+- Per-module `reload <name>` still works without restarting the core. Use
+  `reload-suite` when the core binary, config autoload or uncommitted module
+  set changes.
+
+Supervised launch (the supervisor remains the parent across reloads):
+
+```sh
+./oa-supervise --heartbeat /tmp/openaurora.alive --ready /tmp/openaurora.ready \
+  --wdt /buffer/wdtctl --fallback /vendor/com.nvt.idtv/aurora.elf \
+  -- ./openaurora --modules ./modules --config ./openaurora.conf \
+     --sock /tmp/openaurora.sock --log 3
+
+# later, without rebooting:
+./oa-client /tmp/openaurora.sock reload-suite
+```
+
+The supervisor reload path is host-tested; it has not yet been exercised on
+the TV. The core's display stop restores the stock snapshot, so the screen
+briefly returns to stock while the new core starts and repaints.
+
+## Limits / next
+
+- Boot persistence, early startup before stock and boot hooks remain a separate
+  owner gate; the system currently runs after a takeover.
+- Real-plat plus visible OSD (one-process full hardware system) needs the
+  vendor OSD allocation/binding/enable contract; the real-plat UI run was
+  black.
+- Exact rail-highlight geometry/cadence, settings-list/full menu assets, source
+  and channel UI, EPG/PVR UI and animation parity remain.
+- Amp mute gate, RF tune/lock, CEC raw ownership, DVR and cold startup remain
+  unaccepted; the hardware report records those negatives.
