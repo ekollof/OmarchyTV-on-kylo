@@ -1,0 +1,66 @@
+program	ntkdriver_nondovi.ko
+executable_path	/tmp/opencode/rootfs/vendor2/modules/ntkdriver_nondovi.ko
+executable_md5	fded7005651e37b8a1b5e8e89f73f4ff
+executable_sha256	55036a613b92ba89519f9909323807b7dcc35e06a6ef141ed377953f4c4ca28c
+language	ARM:LE:32:v8
+image_base	00010000
+compiler	unknown
+created	Sat Oct 31 20:20:19 CET 2026
+
+[memory blocks]
+.plt	00010200	00010200	1	rw-	initialized
+.init.plt	00010201	00010201	1	rw-	initialized
+.note.gnu.build-id	00010204	00010227	36	r--	initialized
+.text	00010228	0068626f	6774856	r-x	initialized
+.init.text	00686270	0068962f	13248	r-x	initialized
+.exit.text	00689630	0068a087	2648	r-x	initialized
+.text.unlikely	0068a088	0068f9ff	22904	r-x	initialized
+__ksymtab	0068fa00	00692577	11128	r--	initialized
+__ksymtab_gpl	00692578	0069257f	8	r--	initialized
+.rodata	00692580	007570b4	805685	r--	initialized
+.rodata.str1.4	007570b8	00887c49	1248146	r--	initialized
+__mcount_loc	00887c4c	00895eef	58020	r--	initialized
+.alt.smp.init	00895ef0	0089604f	352	r--	initialized
+__ksymtab_strings	00896050	0089e064	32789	r--	initialized
+.rodata.str	0089e065	0089e494	1072	r--	initialized
+__bug_table	0089e498	0089e5e7	336	r--	initialized
+.modinfo	0089e5e8	0089f12b	2884	r--	initialized
+__param	0089f12c	0089f4d7	940	r--	initialized
+__jump_table	0089f4d8	008d4caf	219096	rw-	initialized
+.data	008d4cb0	009d1feb	1037116	rw-	initialized
+__verbose	009d1ff0	00a6034f	582496	rw-	initialized
+.init.rodata	00a60350	00a95737	218088	rw-	initialized
+.gnu.linkonce.this_module	00a95740	00a9593f	512	rw-	initialized
+.bss	00a95940	00bbd81f	1212128	rw-	uninitialized
+EXTERNAL	00bbe000	00bbe5f3	1524	rw-	uninitialized
+.ARM.attributes	.ARM.attributes::00000000	.ARM.attributes::00000032	51	---	initialized
+.comment	.comment::00000000	.comment::0000718f	29072	---	initialized
+.rel.alt.smp.init	.rel.alt.smp.init::00000000	.rel.alt.smp.init::0000015f	352	---	initialized
+.rel.data	.rel.data::00000000	.rel.data::0001380f	79888	---	initialized
+.rel.exit.text	.rel.exit.text::00000000	.rel.exit.text::000007df	2016	---	initialized
+.rel.gnu.linkonce.this_module	.rel.gnu.linkonce.this_module::00000000	.rel.gnu.linkonce.this_module::0000000f	16	---	initialized
+.rel.init.text	.rel.init.text::00000000	.rel.init.text::00001faf	8112	---	initialized
+.rel.rodata	.rel.rodata::00000000	.rel.rodata::0000433f	17216	---	initialized
+.rel.text	.rel.text::00000000	.rel.text::0035b867	3520616	---	initialized
+.rel.text.unlikely	.rel.text.unlikely::00000000	.rel.text.unlikely::00003347	13128	---	initialized
+.rel__bug_table	.rel__bug_table::00000000	.rel__bug_table::000001bf	448	---	initialized
+.rel__jump_table	.rel__jump_table::00000000	.rel__jump_table::0006afaf	438192	---	initialized
+.rel__ksymtab	.rel__ksymtab::00000000	.rel__ksymtab::000056ef	22256	---	initialized
+.rel__ksymtab_gpl	.rel__ksymtab_gpl::00000000	.rel__ksymtab_gpl::0000000f	16	---	initialized
+.rel__mcount_loc	.rel__mcount_loc::00000000	.rel__mcount_loc::0001c547	116040	---	initialized
+.rel__param	.rel__param::00000000	.rel__param::000005df	1504	---	initialized
+.rel__verbose	.rel__verbose::00000000	.rel__verbose::0008e35f	582496	---	initialized
+.shstrtab	.shstrtab::00000000	.shstrtab::00000195	406	---	initialized
+.strtab	.strtab::00000000	.strtab::000e23a9	926634	---	initialized
+.symtab	.symtab::00000000	.symtab::0018e20f	1630736	---	initialized
+_elfHeader	_elfHeader::00000000	_elfHeader::00000033	52	---	initialized
+_elfSectionHeaders	_elfSectionHeaders::00000000	_elfSectionHeaders::0000072f	1840	---	initialized
+memory_bytes	19637101
+functions_total	14940
+functions_external	0
+functions_thunks	354
+functions_named	14940
+symbols_total	244048
+symbols_external	354
+call_edges	168673
+named_or_string_data	131945

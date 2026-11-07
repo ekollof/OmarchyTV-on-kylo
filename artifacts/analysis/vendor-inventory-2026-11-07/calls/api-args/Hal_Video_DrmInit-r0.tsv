@@ -1,0 +1,3 @@
+symbol	call_site	caller	value	status	context
+Hal_Video_DrmInit	9247e6	_Z16plat_common_initj@@Base		UNKNOWN	9247e0: blx	6b334c <Hal_Video_DrmShareMemCreate@plt> ; 9247e4: mov	r0, r6
+Hal_Video_DrmInit	9248f2	_Z16plat_common_initPKc@@Base	0x1	IMM	9248f0: movs	r0, #1

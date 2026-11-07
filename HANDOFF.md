@@ -25,6 +25,10 @@ and its asset modules start CPU-only; unified real-plat display/hardware awaits
 a takeover test. `ui_omarchy` is excluded due to the single ui.engine skin.
 `check-plat-drm-gate` tests drm_init 0/1; `takeover-full.sh` is bundled for the
 next authorized window and restores stock without a reboot.
+Vendor inventory 2026-11-07: `artifacts/analysis/vendor-inventory-2026-11-07/`
+holds the 389-ELF census/hashes, full readelf/nm/strings dumps, Ghidra
+functions/callgraphs/symbols/data for aurora + 14 projects, the 226-slot (224 named) GPIO
+name table, VPLTIO 45/45 map and audio opcode map. See VENDOR-INVENTORY.
 
 Latest hardware acceptance, 2026-11-07: owner granted full TV access; a
 temporary six-module run with stock stopped produced real physical IR
@@ -771,7 +775,9 @@ open, panel-state50. Brightness is not measured/owner-confirmed; panel
 power/resume remain open. Later instruction review: `plat_set_dimming` converts
 the 12-bit duty to the HAL's 0..1000 domain, so the module's direct 0..4095
 write saturated at 50%/100%; it now converts at the HAL boundary and
-`check-panel-curve` asserts 1000/600/200. Restored by wdtctl set10: latest stock
+`check-panel-curve` asserts 1000/600/200. The recovered standby
+power/LVDS/PWM/backlight order is implemented behind `panel.standby=1`
+(default 0) with `check-panel-standby`; not run on the TV. Restored by wdtctl set10: latest stock
 appmgr1577/aurora1774, level1000, freq/mode30000/0, profile/fb unchanged.
 PANEL-BACKLIGHT.
 

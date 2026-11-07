@@ -1,0 +1,20 @@
+program	uboot-code.bin
+executable_path	/tmp/opencode/uboot-code.bin
+executable_md5	d556db31072630e3e938857207e77bee
+executable_sha256	6cef338edb8566d3f239d33c38e6be8fcb41dfce01dbfb40d810c10ef0244502
+language	AARCH64:LE:64:v8A
+image_base	00000000
+compiler	unknown
+created	Sat Oct 31 19:56:15 CET 2026
+
+[memory blocks]
+ram	02800000	028bf9af	784816	rwx	initialized
+memory_bytes	784816
+functions_total	1534
+functions_external	0
+functions_thunks	10
+functions_named	0
+symbols_total	17682
+symbols_external	0
+call_edges	8376
+named_or_string_data	4988

@@ -1,0 +1,59 @@
+program	ntkndpalsa.ko
+executable_path	/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/root/lib/modules/ntkndpalsa.ko
+executable_md5	8758a13d12799217ce702849df7d54da
+executable_sha256	1f9c61731d6eb195e733a3653194a91fcb59ee7d1a740448314213d2709e46d5
+language	ARM:LE:32:v8
+image_base	00010000
+compiler	unknown
+created	Sun Nov 01 01:00:51 CET 2026
+
+[memory blocks]
+.plt	00010200	00010200	1	rw-	initialized
+.init.plt	00010201	00010201	1	rw-	initialized
+.note.gnu.build-id	00010204	00010227	36	r--	initialized
+.text	00010228	0004091f	198392	r-x	initialized
+.init.text	00040920	00040937	24	r-x	initialized
+.exit.text	00040938	0004094b	20	r-x	initialized
+__ksymtab	0004094c	000409e3	152	r--	initialized
+__ksymtab_gpl	000409e4	00040a0b	40	r--	initialized
+.rodata	00040a10	00047536	27431	r--	initialized
+.modinfo	00047538	00047699	354	r--	initialized
+.rodata.str1.4	0004769c	0005588c	57841	r--	initialized
+__param	00055890	000558a3	20	r--	initialized
+__mcount_loc	000558a4	00056387	2788	r--	initialized
+__ksymtab_strings	00056388	00056531	426	r--	initialized
+__jump_table	00056538	000588fb	9156	rw-	initialized
+.data	00058900	000664bb	56252	rw-	initialized
+__verbose	000664c0	0006c41f	24416	rw-	initialized
+.gnu.linkonce.this_module	0006c440	0006c63f	512	rw-	initialized
+.bss	0006c640	0006e723	8420	rw-	uninitialized
+EXTERNAL	0006f000	0006f483	1156	rw-	uninitialized
+.ARM.attributes	.ARM.attributes::00000000	.ARM.attributes::00000030	49	---	initialized
+.comment	.comment::00000000	.comment::00000535	1334	---	initialized
+.module_version	.module_version::00000000	.module_version::00000016	23	---	initialized
+.rel.data	.rel.data::00000000	.rel.data::000020ff	8448	---	initialized
+.rel.exit.text	.rel.exit.text::00000000	.rel.exit.text::00000007	8	---	initialized
+.rel.gnu.linkonce.this_module	.rel.gnu.linkonce.this_module::00000000	.rel.gnu.linkonce.this_module::0000000f	16	---	initialized
+.rel.init.text	.rel.init.text::00000000	.rel.init.text::00000007	8	---	initialized
+.rel.rodata	.rel.rodata::00000000	.rel.rodata::000010a7	4264	---	initialized
+.rel.text	.rel.text::00000000	.rel.text::00020327	131880	---	initialized
+.rel__jump_table	.rel__jump_table::00000000	.rel__jump_table::00004787	18312	---	initialized
+.rel__ksymtab	.rel__ksymtab::00000000	.rel__ksymtab::0000012f	304	---	initialized
+.rel__ksymtab_gpl	.rel__ksymtab_gpl::00000000	.rel__ksymtab_gpl::0000004f	80	---	initialized
+.rel__mcount_loc	.rel__mcount_loc::00000000	.rel__mcount_loc::000015c7	5576	---	initialized
+.rel__param	.rel__param::00000000	.rel__param::0000001f	32	---	initialized
+.rel__verbose	.rel__verbose::00000000	.rel__verbose::00005f5f	24416	---	initialized
+.shstrtab	.shstrtab::00000000	.shstrtab::00000157	344	---	initialized
+.strtab	.strtab::00000000	.strtab::0000dc2f	56368	---	initialized
+.symtab	.symtab::00000000	.symtab::00014dff	85504	---	initialized
+_elfHeader	_elfHeader::00000000	_elfHeader::00000033	52	---	initialized
+_elfSectionHeaders	_elfSectionHeaders::00000000	_elfSectionHeaders::00000617	1560	---	initialized
+memory_bytes	726016
+functions_total	982
+functions_external	0
+functions_thunks	279
+functions_named	982
+symbols_total	9959
+symbols_external	279
+call_edges	6876
+named_or_string_data	7921

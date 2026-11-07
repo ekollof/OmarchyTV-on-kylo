@@ -1,0 +1,2 @@
+symbol	call_site	caller	value	status	context
+Hal_Pwm_Set_ByChannel	92e73e	plat_set_dimming@@Base		UNKNOWN	92e724: cbz	r5, 92e750 <plat_set_dimming@@Base+0xe8> ; 92e726: movs	r3, #0 ; 92e728: str	r3, [r7, #12] ; 92e72a: movw	r4, #14592 ; 92e72e: movt	r4, #375 ; 92e732: ldrb.w	r3, [r4, r8] ; 92e736: cmp	r3, #0 ; 92e738: bne.n	92e806 <plat_set_dimming@@Base+0x19e> ; 92e73a: mov	r0, r8 ; 92e73c: mov	r1, r7

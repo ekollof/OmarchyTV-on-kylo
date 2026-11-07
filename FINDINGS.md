@@ -389,8 +389,12 @@ initializer: its callers are `ICE_HardwareActiveStandby` and the
 `PLAT_SYS_PowerOffNow`/`Reset`/`PowerSavingNow` paths, so the boot logo/panel
 power comes from xboot/kernel/PreInit. The standby polarity was recovered
 read-only (PANELPWR pin110 on=1/off=0; BKLTPWR pin111 on=0/off=1 on the live
-profile); the LVDS/TCON/delay sequence is still unimplemented and unverified.
-Report: PANEL-BACKLIGHT-2026-11-07.
+profile), and `mod_panel` now implements the recovered LVDS/PWM/power order
+behind `panel.standby=1` (default 0) with `check-panel-standby` asserting the
+exact order and testing a wrong order as failure. The live panel-extra delays
+are 30/580/220/30 ms + a 70 ms pre-backlight delay, and TCON PMIC is disabled
+by `+0x4a == 0`. The sequence has not been run on the TV; standby/suspend
+remains unaccepted. Report: PANEL-BACKLIGHT-2026-11-07.
 
 AUDIO-CEC-TAKEOVER-2026-11-07: the first audio/CEC control-plane group is not
 hardware acceptance. The `audio_amp_profile` config key is
@@ -1777,6 +1781,18 @@ Symbol/function counts depend on the counting method and do not establish an ABI
   hardware from /tmp. The persistent installation remains ABI 1.
 - Vendor OSD allocation and commit are recoverable from offline firmware; current
   evidence now replaces blind draw/allocation/stacking probes.
+
+VENDOR-INVENTORY-2026-11-07: all 389 ELF files in the extracted `/vendor` tree
+were hashed and dumped read-only (SONAME/NEEDED, sections, symbol tables,
+dynamic symbols, strings); Ghidra inventories cover aurora and 14 library/
+kernel projects. The full GPIO function-name table has **226 slots / 224 named entries**
+(`au8GPIOFuncName` 0x175f350; `astPwmBasePin` 0x175f320). The live GPIO probe's
+printed `id`/`pin` labels were swapped: the ioctl word 0 is the pin, word 1 the
+function id, and `DEV_GPIO_GetDescription` returns `entry+8`, so descriptor[1]
+is the pin used by `DEV_PANEL_*`. VPLTIO recovered 45/45 immediate commands
+(41 unique) and `Hal_Audio_Ctrl` 58/59 immediate opcodes. Report:
+VENDOR-INVENTORY-2026-11-07; raw data under
+artifacts/analysis/vendor-inventory-2026-11-07/.
 
 ## What is still unknown
 

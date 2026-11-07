@@ -167,6 +167,12 @@ unvalidated.
       panel power and resume remain separate. PANEL-BACKLIGHT-2026-11-07.
 - [ ] Panel power/backlight resume after real kernel PM suspend and standby
       ownership; separate from the host hook-only `suspend`/`resume` tests.
+      `mod_panel` now implements the recovered
+      panel-power/LVDS/PWM/backlight order behind `panel.standby=1` (default
+      0), with pins 110/111, levels 1/0, 30/580/220/30 ms delays and a 70 ms
+      pre-backlight delay; `check-panel-standby` asserts the order and fails a
+      wrong order. It has not been run on the TV (suspend blocked), and the
+      real standby/power-owner path remains unaccepted. PANEL-BACKLIGHT.
 - [ ] Replacement takeover system: `make replacement-bundle` builds the
       reproducible `plat_stub` + display/panel/ir/settings/service_db/
       image_decode/ui_engine/ui_vendor/ticker/ui_clock/ui_anim composition
@@ -1619,6 +1625,15 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
 
 ## Remaining vendor parity
 
+- [x] Read-only vendor inventory: all 389 ELF files in the extracted `/vendor`
+      tree are hashed and dumped for SONAME/NEEDED, sections, symbol tables,
+      dynamic symbols and strings; Ghidra functions/callgraphs/symbols/data
+      cover aurora (89,220 functions, 485,969 resolved call edges) and 14
+      library/kernel projects. Recovered the 226-slot (224 named) GPIO function-name
+      table, VPLTIO 45/45 command map and 58/59 immediate audio opcodes, with
+      call-site maps for GPIO/IIC/DRM/NDAL/PWM/panel. This is static evidence,
+      not hardware acceptance; per-subsystem table decoding remains.
+      VENDOR-INVENTORY-2026-11-07.
 - [ ] CEC transport, OSD-name caching, RCP and firmware workarounds. The injected
       System Audio/ARC route is not wire-level or electrical acceptance.
 - [x] Specification takes precedence over vendor CEC defects. Identity/name/power

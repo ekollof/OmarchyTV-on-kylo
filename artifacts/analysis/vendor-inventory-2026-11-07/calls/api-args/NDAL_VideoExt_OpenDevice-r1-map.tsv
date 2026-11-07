@@ -1,0 +1,2 @@
+value	calls	callers	call_sites
+0xa	3	DEV_Ipc_init@@Base,PLAT_DRV_INI_Init@@Base,PLAT_VIU_Init@@Base	8772be,89b740,900020

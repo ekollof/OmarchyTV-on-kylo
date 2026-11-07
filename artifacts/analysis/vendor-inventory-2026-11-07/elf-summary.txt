@@ -1,0 +1,6 @@
+elf_count	389
+total_bytes	249616804
+largest	vendor/lib/opera/libomi.so	64294748
+type_DYN (Shared object file)	331
+type_REL (Relocatable file)	26
+type_EXEC (Executable file)	32

@@ -1,0 +1,6 @@
+symbol	call_site	caller	value	status	context
+NDAL_VideoExt_OpenDevice	8772be	DEV_Ipc_init@@Base	0x0	IMM	8772ba: movs	r0, #0 ; 8772bc: str	r3, [r7, #4]
+NDAL_VideoExt_OpenDevice	89b740	PLAT_DRV_INI_Init@@Base	0x0	IMM	89b73e: movs	r0, #0
+NDAL_VideoExt_OpenDevice	900020	PLAT_VIU_Init@@Base		UNKNOWN	8ffffa: bl	8f9728 <PLAT_VOUT_EnableDisplayWindow@@Base> ; 8ffffe: ldr	r3, [r7, #12] ; 900000: movs	r2, #0 ; 900002: movt	r2, #32772 ; 900006: movs	r1, #10 ; 900008: str	r2, [r4, #0] ; 90000a: movw	r4, #19584 ; 90000e: mov	r0, r3 ; 900010: str	r3, [r7, #4] ; 900012: movw	r3, #19448 ; 900016: movt	r4, #413 ; 90001a: mov	r5, r3 ; 90001c: add.w	sl, r4, #224
+NDAL_VideoExt_OpenDevice	902d10	PLAT_VIU_ChangeInput@@Base		UNKNOWN	902d08: bl	92cbe0 <plat_drm_connect_dpsource@@Base> ; 902d0c: mov	r1, r5 ; 902d0e: mov	r0, r4
+NDAL_VideoExt_OpenDevice	902f4c	PLAT_VIU_ChangeInput@@Base		UNKNOWN	902f44: bl	92cbe0 <plat_drm_connect_dpsource@@Base> ; 902f48: mov	r1, r5 ; 902f4a: mov	r0, r4

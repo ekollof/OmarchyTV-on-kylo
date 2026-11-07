@@ -1,0 +1,2 @@
+symbol	call_site	caller	value	status	context
+NDAL_VideoExt_STBC_SetStbcGpio	8c664e	PLAT_SYS_SetStbcGpio@@Base		UNKNOWN	8c6628: mov.w	ip, #8192 ; 8c662c: stmdb	sp!, {r4, r5, r6, r7, r8, lr} ; 8c6630: sub.w	ip, sp, ip ; 8c6634: str.w	r0, [ip, #4064] ; 8c6638: movw	r4, #7528 ; 8c663c: sub	sp, #8 ; 8c663e: movt	r4, #377 ; 8c6642: ldr	r3, [r4, #0] ; 8c6644: add	r7, sp, #0 ; 8c6646: mov	r6, r1 ; 8c6648: uxtb	r1, r1 ; 8c664a: mov	r8, r0 ; 8c664c: str	r3, [r7, #4]

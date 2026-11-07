@@ -1,0 +1,50 @@
+program	ntkethmac.ko
+executable_path	/tmp/opencode/rootfs/vendor/modules/ntkethmac.ko
+executable_md5	2efe1ee138ee29c2d490f6e4a667a38d
+executable_sha256	5c215d5c193f771d667c9aa391c96343dd9121e858afe11e1f48aa9f4244e57c
+language	ARM:LE:32:v8
+image_base	00010000
+compiler	unknown
+created	Sat Oct 31 22:16:36 CET 2026
+
+[memory blocks]
+.init.plt	00010001	00010001	1	rw-	initialized
+.note.gnu.build-id	00010004	00010027	36	r--	initialized
+.text	00010028	00018deb	36292	r-x	initialized
+.init.text	00018dec	00019007	540	r-x	initialized
+.exit.text	00019008	0001906b	100	r-x	initialized
+.rodata	0001906c	0001951b	1200	r--	initialized
+.rodata.str1.4	0001951c	0001a50e	4083	r--	initialized
+__mcount_loc	0001a510	0001a943	1076	r--	initialized
+.rodata.str	0001a944	0001a9bb	120	r--	initialized
+__bug_table	0001a9bc	0001a9eb	48	r--	initialized
+.modinfo	0001a9ec	0001aacd	226	r--	initialized
+.data	0001aad0	0001abcf	256	rw-	initialized
+.gnu.linkonce.this_module	0001ac00	0001adff	512	rw-	initialized
+.plt	0001ae00	0001ae00	1	rw-	initialized
+.bss	0001ae04	0001ae8f	140	rw-	uninitialized
+EXTERNAL	0001b000	0001b113	276	rw-	uninitialized
+.ARM.attributes	.ARM.attributes::00000000	.ARM.attributes::00000030	49	---	initialized
+.comment	.comment::00000000	.comment::0000016f	368	---	initialized
+.rel.data	.rel.data::00000000	.rel.data::0000005f	96	---	initialized
+.rel.exit.text	.rel.exit.text::00000000	.rel.exit.text::0000005f	96	---	initialized
+.rel.gnu.linkonce.this_module	.rel.gnu.linkonce.this_module::00000000	.rel.gnu.linkonce.this_module::0000000f	16	---	initialized
+.rel.init.text	.rel.init.text::00000000	.rel.init.text::00000147	328	---	initialized
+.rel.rodata	.rel.rodata::00000000	.rel.rodata::00000057	88	---	initialized
+.rel.text	.rel.text::00000000	.rel.text::000035c7	13768	---	initialized
+.rel__bug_table	.rel__bug_table::00000000	.rel__bug_table::0000003f	64	---	initialized
+.rel__mcount_loc	.rel__mcount_loc::00000000	.rel__mcount_loc::00000867	2152	---	initialized
+.shstrtab	.shstrtab::00000000	.shstrtab::00000106	263	---	initialized
+.strtab	.strtab::00000000	.strtab::00002840	10305	---	initialized
+.symtab	.symtab::00000000	.symtab::0000276f	10096	---	initialized
+_elfHeader	_elfHeader::00000000	_elfHeader::00000033	52	---	initialized
+_elfSectionHeaders	_elfSectionHeaders::00000000	_elfSectionHeaders::000004af	1200	---	initialized
+memory_bytes	83848
+functions_total	334
+functions_external	0
+functions_thunks	61
+functions_named	334
+symbols_total	1259
+symbols_external	61
+call_edges	1082
+named_or_string_data	735

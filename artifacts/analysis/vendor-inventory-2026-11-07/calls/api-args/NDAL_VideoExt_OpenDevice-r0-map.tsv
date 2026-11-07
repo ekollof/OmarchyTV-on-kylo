@@ -1,0 +1,2 @@
+value	calls	callers	call_sites
+0x0	2	DEV_Ipc_init@@Base,PLAT_DRV_INI_Init@@Base	8772be,89b740

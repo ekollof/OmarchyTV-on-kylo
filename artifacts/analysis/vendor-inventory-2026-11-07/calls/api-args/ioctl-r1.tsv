@@ -1,0 +1,92 @@
+symbol	call_site	caller	value	status	context
+ioctl	77b7ca	ice_IrSimulatorThread@@Base		UNKNOWN	77b7be: blx	6af740 <__stack_chk_fail@plt> ; 77b7c2: add.w	r2, r7, #32 ; 77b7c6: ldr	r1, [pc, #540] ; 77b7c8: mov	r0, r8
+ioctl	788044	ICE_SocketAvailable@@Base	0x541b	IMM	78803e: movw	r1, #21531 ; 788042: str	r3, [r7, #4]
+ioctl	78869c	ICE_SocketIoctl@@Base	0x5421	IMM	788698: movw	r1, #21537
+ioctl	788bd2	ICE_SocketGetLocalAddress@@Base	0x8912	IMM	788bc8: movw	r1, #35090 ; 788bcc: add.w	r2, r7, #12 ; 788bd0: str	r4, [r7, #16]
+ioctl	788c0c	ICE_SocketGetLocalAddress@@Base	0x8913	IMM	788c04: movw	r1, #35091 ; 788c08: mov	r0, r6 ; 788c0a: str	r3, [r7, #4]
+ioctl	788e48	ICE_SocketGetMacAddress@@Base	0x8912	IMM	788e40: movw	r1, #35090 ; 788e44: adds	r2, r7, #4 ; 788e46: str	r5, [r7, #8]
+ioctl	788e7c	ICE_SocketGetMacAddress@@Base	0x8913	IMM	788e76: movw	r1, #35091 ; 788e7a: mov	r0, r4
+ioctl	788e98	ICE_SocketGetMacAddress@@Base	0x8927	IMM	788e92: movw	r1, #35111 ; 788e96: mov	r0, r4
+ioctl	7a93b8	getAlbumArtURI@@Base	0x8915	IMM	7a93b2: movw	r1, #35093 ; 7a93b6: mov	r0, r9
+ioctl	7a950e	getAlbumArtURI@@Base	0x8913	IMM	7a9508: movw	r1, #35091 ; 7a950c: mov	r0, r9
+ioctl	7aaa44	getAlbumArtURI@@Base	0x8913	IMM	7aaa3e: movw	r1, #35091 ; 7aaa42: mov	r0, sl
+ioctl	7ad120	ice_IPAdjustDNSDefaultGateway@@Base	0x8912	IMM	7ad11c: movw	r1, #35090
+ioctl	7ad69a	ice_IPAdjustDNSDefaultGateway@@Base	0x891b	IMM	7ad694: movw	r1, #35099 ; 7ad698: mov	r0, r9
+ioctl	7ad710	ice_IPAdjustDNSDefaultGateway@@Base	0x8919	IMM	7ad70a: movw	r1, #35097 ; 7ad70e: mov	r0, r9
+ioctl	7aefa6	ICE_IPGetMACAddress@@Base	0x8927	IMM	7aefa0: movw	r1, #35111 ; 7aefa4: mov	r0, r9
+ioctl	7b75ee	ICE_WiFi_BRCM_SetCountryCode@@Base		UNKNOWN	7b75b8: blx	6af740 <__stack_chk_fail@plt> ; 7b75bc: add.w	r7, r7, #264 ; 7b75c0: mov	sp, r7 ; 7b75c2: ldmia.w	sp!, {r4, r5, r6, r7, r8, pc} ; 7b75c6: nop ; 7b75c8: adds	r0, r5, #5 ; 7b75ca: lsls	r1, r7, #5 ; 7b75cc: strb	r6, [r4, r5] ; 7b75ce: lsls	r4, r5, #4 ; 7b75d0: mov.w	r2, #16384 ; 7b75d4: push	{r4, r5, r7, lr} ; 7b75d6: sub.w	ip, sp, r2 ; 7b75da: str.w	r0, [ip, #4064] ; 7b75de: ldr	r4, [pc, #96] ; 7b75e0: sub	sp, #16 ; 7b75e2: add.w	r2, r0, #80 ; 7b75e6: add	r7, sp, #8 ; 7b75e8: ldr	r0, [r0, #76] ; 7b75ea: ldr	r3, [r4, #0] ; 7b75ec: str	r3, [r7, #4]
+ioctl	7b7c3a	ice_WiFi_RALINK_IsConnected@@Base	0x8bf1	IMM	7b7c34: movw	r1, #35825 ; 7b7c38: ldr	r0, [r5, #76]
+ioctl	7b820e	ICE_WiFi_RALINK_ScanAp@@Base	0x8b18	IMM	7b8208: movw	r1, #35608 ; 7b820c: ldr	r0, [r5, #76]
+ioctl	7b836a	ICE_WiFi_RALINK_GetScanResults@@Base	0x8be1	IMM	7b835e: movw	r1, #35809 ; 7b8362: strh.w	fp, [r8, #100] ; 7b8366: ldr.w	r0, [r8, #76]
+ioctl	7b8430	ICE_WiFi_RALINK_GetScanResults@@Base	0x8be1	IMM	7b8428: movw	r1, #35809 ; 7b842c: ldr.w	r0, [r8, #76]
+ioctl	7b890e	ICE_WiFi_RALINK_DisconnectAp@@Base	0x8be2	IMM	7b8908: movw	r1, #35810 ; 7b890c: ldr	r0, [r4, #76]
+ioctl	7b8be0	ICE_WiFi_RALINK_ConnectAp@@Base	0x8be2	IMM	7b8bd6: movw	r1, #35810 ; 7b8bda: strh.w	fp, [r4, #102] ; 7b8bde: ldr	r0, [r4, #76]
+ioctl	7b8c6c	ICE_WiFi_RALINK_ConnectAp@@Base	0x8be2	IMM	7b8c62: movw	r1, #35810 ; 7b8c66: strh.w	fp, [r4, #102] ; 7b8c6a: ldr	r0, [r4, #76]
+ioctl	7b8d40	ICE_WiFi_RALINK_ConnectAp@@Base	0x8be2	IMM	7b8d36: movw	r1, #35810 ; 7b8d3a: strh.w	fp, [r4, #102] ; 7b8d3e: ldr	r0, [r4, #76]
+ioctl	7b8eba	ICE_WiFi_RALINK_ConnectAp@@Base	0x8be2	IMM	7b8eac: movw	r1, #35810 ; 7b8eb0: str	r5, [r4, #96] ; 7b8eb2: strh.w	r3, [r4, #102] ; 7b8eb6: ldr	r0, [r4, #76] ; 7b8eb8: str	r3, [r7, #4]
+ioctl	7b8f28	ICE_WiFi_RALINK_ConnectAp@@Base	0x8be2	IMM	7b8f1e: movw	r1, #35810 ; 7b8f22: strh.w	r6, [r4, #102] ; 7b8f26: ldr	r0, [r4, #76]
+ioctl	7b8f92	ICE_WiFi_RALINK_ConnectAp@@Base	0x8be2	IMM	7b8f88: movw	r1, #35810 ; 7b8f8c: strh.w	fp, [r4, #102] ; 7b8f90: ldr	r0, [r4, #76]
+ioctl	7b900a	ICE_WiFi_RALINK_ConnectAp@@Base	0x8be2	IMM	7b9000: movw	r1, #35810 ; 7b9004: strh.w	fp, [r4, #102] ; 7b9008: ldr	r0, [r4, #76]
+ioctl	7b9076	ICE_WiFi_RALINK_ConnectAp@@Base	0x8be2	IMM	7b906c: movw	r1, #35810 ; 7b9070: strh.w	fp, [r4, #102] ; 7b9074: ldr	r0, [r4, #76]
+ioctl	7b90e0	ICE_WiFi_RALINK_ConnectAp@@Base	0x8be2	IMM	7b90d6: movw	r1, #35810 ; 7b90da: strh.w	r6, [r4, #102] ; 7b90de: ldr	r0, [r4, #76]
+ioctl	7b935c	ICE_WiFi_RALINK_GetAuthStatus@@Base	0x8be1	IMM	7b9354: movw	r1, #35809 ; 7b9358: str	r5, [r6, #96] ; 7b935a: ldr	r0, [r6, #76]
+ioctl	7b9494	ICE_WiFi_RALINK_IsConnected@@Base	0x8bf1	IMM	7b948e: movw	r1, #35825 ; 7b9492: ldr	r0, [r5, #76]
+ioctl	7b967c	ICE_WiFi_RALINK_GetLinkStatus@@Base	0x8bf1	IMM	7b9676: movw	r1, #35825 ; 7b967a: ldr	r0, [r4, #76]
+ioctl	7b9848	ICE_WiFi_RALINK_SetMacAddress@@Base	0x8be1	IMM	7b9840: movw	r1, #35809 ; 7b9844: str	r4, [r5, #96] ; 7b9846: ldr	r0, [r5, #76]
+ioctl	7b99bc	ICE_WiFi_RALINK_GetMacAddress@@Base	0x8b15	IMM	7b99b0: movw	r1, #35605 ; 7b99b4: strh.w	r5, [r4, #102] ; 7b99b8: str	r0, [r4, #96] ; 7b99ba: ldr	r0, [r4, #76]
+ioctl	7b9bb0	ICE_WiFi_RALINK_GetConnectedInfo@@Base	0x8bf1	IMM	7b9ba6: movw	r1, #35825 ; 7b9baa: strh.w	r6, [r4, #102] ; 7b9bae: ldr	r0, [r4, #76]
+ioctl	7b9c2a	ICE_WiFi_RALINK_GetConnectedInfo@@Base	0x8bf1	IMM	7b9c24: movw	r1, #35825 ; 7b9c28: ldr	r0, [r4, #76]
+ioctl	7b9cf0	ICE_WiFi_RALINK_GetMimoBwCap@@Base	0x8be1	IMM	7b9ce6: movw	r1, #35809 ; 7b9cea: strh.w	r9, [r5, #100] ; 7b9cee: ldr	r0, [r5, #76]
+ioctl	7bb4a6	ICE_WiFi_RALINK_SetCountryCode@@Base		UNKNOWN	7bb470: blx	6af740 <__stack_chk_fail@plt> ; 7bb474: add.w	r7, r7, #264 ; 7bb478: mov	sp, r7 ; 7bb47a: ldmia.w	sp!, {r4, r5, r6, r7, r8, pc} ; 7bb47e: nop ; 7bb480: adds	r0, r5, #5 ; 7bb482: lsls	r1, r7, #5 ; 7bb484: strb	r6, [r4, r5] ; 7bb486: lsls	r4, r5, #4 ; 7bb488: mov.w	r2, #16384 ; 7bb48c: push	{r4, r5, r7, lr} ; 7bb48e: sub.w	ip, sp, r2 ; 7bb492: str.w	r0, [ip, #4064] ; 7bb496: ldr	r4, [pc, #96] ; 7bb498: sub	sp, #16 ; 7bb49a: add.w	r2, r0, #80 ; 7bb49e: add	r7, sp, #8 ; 7bb4a0: ldr	r0, [r0, #76] ; 7bb4a2: ldr	r3, [r4, #0] ; 7bb4a4: str	r3, [r7, #4]
+ioctl	7bcd9e	ice_WiFi_MTK_IsConnected@@Base	0x8bf1	IMM	7bcd98: movw	r1, #35825 ; 7bcd9c: ldr	r0, [r5, #76]
+ioctl	7be62c	ICE_WiFi_MTK_IsConnected@@Base	0x8bf1	IMM	7be626: movw	r1, #35825 ; 7be62a: ldr	r0, [r5, #76]
+ioctl	7be75c	ICE_WiFi_MTK_GetLinkStatus@@Base	0x8bf1	IMM	7be756: movw	r1, #35825 ; 7be75a: ldr	r0, [r4, #76]
+ioctl	7be870	ICE_WiFi_MTK_SetMacAddress@@Base	0x8be1	IMM	7be868: movw	r1, #35809 ; 7be86c: str	r4, [r5, #96] ; 7be86e: ldr	r0, [r5, #76]
+ioctl	7be9e4	ICE_WiFi_MTK_GetMacAddress@@Base	0x8b15	IMM	7be9de: movw	r1, #35605 ; 7be9e2: ldr	r0, [r4, #76]
+ioctl	7bee80	ICE_WiFi_MTK_GetMimoBwCap@@Base	0x8be1	IMM	7bee76: movw	r1, #35809 ; 7bee7a: strh.w	r9, [r5, #100] ; 7bee7e: ldr	r0, [r5, #76]
+ioctl	7c05fa	getLocalNetConfig@@Base	0x8915	IMM	7c05f0: movw	r1, #35093 ; 7c05f4: mov	r0, r8 ; 7c05f6: add.w	r6, r4, #16
+ioctl	7c0614	getLocalNetConfig@@Base	0x891b	IMM	7c060e: movw	r1, #35099 ; 7c0612: mov	r0, r8
+ioctl	7c5112	ice_bluetooth_bthid_config@@Base		UNKNOWN	7c5104: blx	6b2abc <printf@plt> ; 7c5108: add.w	r5, r7, #12 ; 7c510c: ldr	r1, [pc, #328] ; 7c510e: mov	r2, r5 ; 7c5110: mov	r0, r6
+ioctl	7c519c	ice_bluetooth_bthid_config@@Base		UNKNOWN	7c517a: blx	6b0164 <strncpy@plt+0x4> ; 7c517e: strb.w	r8, [r7, #139] ; 7c5182: strh.w	fp, [r7, #140] ; 7c5186: mov	r2, r5 ; 7c5188: ldrh.w	fp, [r7, #4] ; 7c518c: mov	r0, r6 ; 7c518e: ldr	r1, [pc, #212] ; 7c5190: strh.w	sl, [r7, #142] ; 7c5194: strh.w	r9, [r7, #144] ; 7c5198: strh.w	fp, [r7, #146]
+ioctl	7c51ca	ice_bluetooth_bthid_config@@Base		UNKNOWN	7c51bc: blx	6b2abc <printf@plt> ; 7c51c0: cmp	r4, #0 ; 7c51c2: blt.n	7c5222 <ice_bluetooth_bthid_config@@Base+0x18e> ; 7c51c4: mov	r2, r5 ; 7c51c6: ldr	r1, [pc, #144] ; 7c51c8: mov	r0, r6
+ioctl	7c5374	ice_bluetooth_bthid_desc_write@@Base		UNKNOWN	7c536a: blx	6b2abc <printf@plt> ; 7c536e: mov	r0, r6 ; 7c5370: mov	r2, r7 ; 7c5372: ldr	r1, [pc, #100]
+ioctl	7f98d0	ICE_FsDriveSizeKb@@Base	0x1260	IMM	7f98cc: mov.w	r1, #4704
+ioctl	83ad1a	dlnaNetIfInterfaceStopPeer@@Base	0x8913	IMM	83ad12: movw	r1, #35091 ; 83ad16: ldr.w	r0, [r8, #4]
+ioctl	850cc2	DEV_GPIO_GetDescription@@Base	0xc088671f	IMM	850cb2: movw	r1, #26399 ; 850cb6: adds	r2, r7, #4 ; 850cb8: ldr	r0, [r0, #0] ; 850cba: movt	r1, #49288 ; 850cbe: str.w	r3, [r7, #132]
+ioctl	8532e2	DEV_IIC_GetDescription@@Base	0xc02c6907	IMM	8532d0: movw	r1, #26887 ; 8532d4: ldr	r0, [r2, #0] ; 8532d6: movt	r1, #49196 ; 8532da: str	r6, [r3, #36] ; 8532dc: mov	r2, r3 ; 8532de: str	r5, [r3, #32] ; 8532e0: mov	r4, r3
+ioctl	854218	DEV_MTD_EraseFlash@@Base	0x40084d02	IMM	854206: movw	r1, #19714 ; 85420a: mov	r5, r2 ; 85420c: movt	r1, #16392 ; 854210: adds	r2, r7, #4 ; 854212: str	r6, [r7, #4] ; 854214: str	r5, [r7, #8] ; 854216: str	r3, [r7, #12]
+ioctl	85430e	DEV_MTD_ShowInfo@@Base	0x80204d01	IMM	854300: movw	r1, #19713 ; 854304: add.w	r2, r7, #8 ; 854308: mov	r0, r6 ; 85430a: movt	r1, #32800
+ioctl	854324	DEV_MTD_ShowInfo@@Base	0x80044d07	IMM	854318: movw	r1, #19719 ; 85431c: adds	r2, r7, #4 ; 85431e: movt	r1, #32772 ; 854322: mov	r0, r6
+ioctl	854356	DEV_MTD_ShowInfo@@Base		UNKNOWN	854342: b.n	85434e <DEV_MTD_ShowInfo@@Base+0x82> ; 854344: ldr	r3, [r7, #4] ; 854346: adds	r5, #1 ; 854348: adds	r4, #16 ; 85434a: cmp	r5, r3 ; 85434c: bge.n	854362 <DEV_MTD_ShowInfo@@Base+0x96> ; 85434e: mov	r2, r4 ; 854350: mov	r1, r8 ; 854352: mov	r0, r6 ; 854354: str	r5, [r4, #12]
+ioctl	8595bc	_Z13_dev_spi_readP11_ST_DEV_SPIjjPh@@Base	0x8018531e	IMM	8595a2: movw	r1, #21278 ; 8595a6: adds	r2, r7, #4 ; 8595a8: movt	r1, #32792 ; 8595ac: str	r6, [r7, #8] ; 8595ae: str.w	sl, [r7, #4] ; 8595b2: str.w	r8, [r7, #12] ; 8595b6: str	r5, [r7, #16] ; 8595b8: str	r5, [r7, #20] ; 8595ba: str	r5, [r7, #24]
+ioctl	859c48	_Z14_dev_spi_writeP11_ST_DEV_SPIjjPh@@Base	0x4018531f	IMM	859c2e: movw	r1, #21279 ; 859c32: adds	r2, r7, #4 ; 859c34: movt	r1, #16408 ; 859c38: str	r6, [r7, #8] ; 859c3a: str.w	sl, [r7, #4] ; 859c3e: str.w	r8, [r7, #12] ; 859c42: str	r5, [r7, #16] ; 859c44: str	r5, [r7, #20] ; 859c46: str	r5, [r7, #24]
+ioctl	85a15e	_Z20_dev_spi_read_statusP11_ST_DEV_SPI@@Base	0x80185321	IMM	85a146: movw	r1, #21281 ; 85a14a: movs	r4, #0 ; 85a14c: adds	r2, r7, #4 ; 85a14e: movt	r1, #32792 ; 85a152: str	r4, [r7, #8] ; 85a154: str	r4, [r7, #4] ; 85a156: str	r4, [r7, #12] ; 85a158: str	r4, [r7, #16] ; 85a15a: str	r4, [r7, #20] ; 85a15c: str	r4, [r7, #24]
+ioctl	85a2de	_Z14_dev_spi_eraseP11_ST_DEV_SPIjj@@Base	0x40185320	IMM	85a2c4: movw	r1, #21280 ; 85a2c8: str	r4, [r7, #8] ; 85a2ca: movt	r1, #16408 ; 85a2ce: movs	r4, #0 ; 85a2d0: adds	r2, r7, #4 ; 85a2d2: str.w	r8, [r7, #4] ; 85a2d6: str	r4, [r7, #12] ; 85a2d8: str	r4, [r7, #16] ; 85a2da: str	r4, [r7, #20] ; 85a2dc: str	r4, [r7, #24]
+ioctl	8a1384	_PLAT_MEM_Resize@@Base	0x8913	IMM	8a137e: movw	r1, #35091 ; 8a1382: mov	r0, r6
+ioctl	8a141c	_PLAT_MEM_Resize@@Base	0x8927	IMM	8a1416: movw	r1, #35111 ; 8a141a: mov	r0, r8
+ioctl	8a1d28	PLAT_NetCtrl_Get_If_Info@@Base	0x8915	IMM	8a1d22: movw	r1, #35093 ; 8a1d26: mov	r0, r9
+ioctl	8a1d86	PLAT_NetCtrl_Get_If_Info@@Base	0x891b	IMM	8a1d80: movw	r1, #35099 ; 8a1d84: mov	r0, r4
+ioctl	8a21a0	PLAT_NetCtrl_Set_If@@Base	0x8916	IMM	8a2196: movw	r1, #35094 ; 8a219a: add.w	r2, r7, #36 ; 8a219e: mov	r0, r6
+ioctl	8a2208	PLAT_NetCtrl_Set_If@@Base	0x891c	IMM	8a21fe: movw	r1, #35100 ; 8a2202: add.w	r2, r7, #36 ; 8a2206: mov	r0, r6
+ioctl	8a2a86	PLAT_NetCtrl_Set_IfMacAddr@@Base	0x8924	IMM	8a2a5e: movw	r1, #35108 ; 8a2a62: ldrb	r0, [r4, #0] ; 8a2a64: strb.w	lr, [r7, #23] ; 8a2a68: ldrb.w	ip, [r4, #3] ; 8a2a6c: strb	r3, [r7, #24] ; 8a2a6e: ldrb.w	lr, [r4, #4] ; 8a2a72: ldrb	r3, [r4, #5] ; 8a2a74: strb	r0, [r7, #22] ; 8a2a76: mov	r0, sl ; 8a2a78: strb.w	ip, [r7, #25] ; 8a2a7c: strb.w	lr, [r7, #26] ; 8a2a80: strb	r3, [r7, #27] ; 8a2a82: strh.w	fp, [r7, #20]
+ioctl	8c5a0a	PLAT_SYS_SetCurrentTime@@Base	0x4024700a	IMM	8c59fe: movw	r1, #28682 ; 8c5a02: mov	r2, r4 ; 8c5a04: mov	r0, r9 ; 8c5a06: movt	r1, #16420
+ioctl	8c5a6a	PLAT_SYS_SetCurrentTime@@Base	0x80247009	IMM	8c5a5e: movw	r1, #28681 ; 8c5a62: mov	r2, r4 ; 8c5a64: mov	r0, r9 ; 8c5a66: movt	r1, #32804
+ioctl	8c6d14	PLAT_SYS_SetEth_PHY_Power_STR@@Base	0x89f0	IMM	8c6d0c: movw	r1, #35312 ; 8c6d10: mov	r0, r5 ; 8c6d12: str	r3, [r7, #36]
+ioctl	8c6e26	PLAT_SYS_SetEth_PHY_PowerDown@@Base	0x89f0	IMM	8c6e14: movw	r1, #35312 ; 8c6e18: mov	r0, r6 ; 8c6e1a: str	r3, [r7, #36] ; 8c6e1c: str	r4, [r7, #8] ; 8c6e1e: str	r4, [r7, #12] ; 8c6e20: str	r4, [r7, #16] ; 8c6e22: str.w	lr, [r7, #4]
+ioctl	92cb74	plat_drm_get_dpsource@@Base	0xc0185647	IMM	92cb46: movw	r1, #22087 ; 92cb4a: movt	r3, #160 ; 92cb4e: mov.w	ip, #420 ; 92cb52: mov.w	lr, #1 ; 92cb56: str	r0, [r7, #56] ; 92cb58: mov.w	r4, #10485760 ; 92cb5c: add.w	r2, r7, #36 ; 92cb60: movt	r1, #49176 ; 92cb64: ldr	r0, [r7, #4] ; 92cb66: str	r3, [r7, #16] ; 92cb68: str	r4, [r7, #36] ; 92cb6a: str	r6, [r7, #28] ; 92cb6c: str.w	ip, [r7, #20] ; 92cb70: str.w	lr, [r7, #40]
+ioctl	930daa	_Z25_TdAVEnc_GetEncryptBufferv@@Base	0xc010bd0c	IMM	930da0: movw	r1, #48396 ; 930da4: adds	r2, r7, #4 ; 930da6: movt	r1, #49168
+ioctl	9360ca	_Z24_TdRecorder_TSPU_PVR_BufP30ST_DRV_TSPU_PVR_BUF_QUERY_INFO@@Base	0xbb44	IMM	9360c6: movw	r1, #47940
+ioctl	93617c	_Z23_TdRecorder_SetReadAddrjj@@Base	0xbb54	IMM	936178: movw	r1, #47956
+ioctl	93b392	_ZN20plat_Gfx_DRM_gpu_drv8FillRectEP21_ST_DRV_GPU_RECT_DATA21_EN_DRV_GPU_FILL_MODE22_EN_DRV_GPU_BLEND_MODEjjj@@Base	0x6480	IMM	93b382: mov.w	r1, #25728 ; 93b386: add.w	r2, r7, #16 ; 93b38a: ldr.w	r0, [r8] ; 93b38e: movt	r1, #49236
+ioctl	93b626	_ZN20plat_Gfx_DRM_gpu_drv9ScaleRectEP21_ST_DRV_GPU_RECT_DATAS1_@@Base	0x6480	IMM	93b618: mov.w	r1, #25728 ; 93b61c: add.w	r2, r7, #8 ; 93b620: ldr	r0, [r6, #0] ; 93b622: movt	r1, #49236
+ioctl	93b7d2	_ZN20plat_Gfx_DRM_gpu_drv4CopyEP21_ST_DRV_GPU_RECT_DATAS1_@@Base	0x6480	IMM	93b7c2: mov.w	r1, #25728 ; 93b7c6: add.w	r2, r7, #8 ; 93b7ca: ldr.w	r0, [r8] ; 93b7ce: movt	r1, #49236
+ioctl	93ba4a	_ZN20plat_Gfx_DRM_gpu_drv7BitBlitEP21_ST_DRV_GPU_RECT_DATAS1_22_EN_DRV_GPU_BLEND_MODEjjb@@Base	0x6480	IMM	93ba3a: mov.w	r1, #25728 ; 93ba3e: add.w	r2, r7, #16 ; 93ba42: ldr.w	r0, [r8] ; 93ba46: movt	r1, #49236
+ioctl	945976	cem_get_idtv_state@@Base	0x80fc9203	IMM	94596c: movw	r1, #37379 ; 945970: mov	r2, r7 ; 945972: movt	r1, #33020
+ioctl	9459f0	cem_set_idtv_state@@Base	0x40fc9202	IMM	9459e6: movw	r1, #37378 ; 9459ea: adds	r2, r7, #4 ; 9459ec: movt	r1, #16636
+ioctl	945b1e	cem_change_state@@Base	0x9200	IMM	945b10: mov.w	r1, #37376 ; 945b14: str.w	r6, [r2, #-24]! ; 945b18: movt	r1, #16636 ; 945b1c: mov	r0, r8
+ioctl	945bd2	cem_change_state@@Base	0x9200	IMM	945bc2: mov.w	r1, #37376 ; 945bc6: str.w	fp, [r9, #-24]! ; 945bca: movt	r1, #16636 ; 945bce: mov	r2, r9 ; 945bd0: mov	r0, r8
+ioctl	945c40	cem_change_state@@Base	0x9200	IMM	945c32: mov.w	r1, #37376 ; 945c36: mov	r2, r9 ; 945c38: movt	r1, #16636 ; 945c3c: mov	r0, r8 ; 945c3e: str	r6, [r7, #0]
+ioctl	945ca6	cem_change_state@@Base	0x9200	IMM	945c96: mov.w	r1, #37376 ; 945c9a: mov	r2, r9 ; 945c9c: movt	r1, #16636 ; 945ca0: mov	r0, r8 ; 945ca2: str.w	fp, [r7]
+ioctl	945cfc	cem_change_state@@Base	0x9200	IMM	945cee: mov.w	r1, #37376 ; 945cf2: mov	r2, r9 ; 945cf4: movt	r1, #16636 ; 945cf8: mov	r0, r8 ; 945cfa: str	r6, [r7, #0]
+ioctl	945d14	cem_change_state@@Base	0x9200	IMM	945d04: mov.w	r1, #37376 ; 945d08: mov	r2, r9 ; 945d0a: movt	r1, #16636 ; 945d0e: mov	r0, r8 ; 945d10: str.w	fp, [r7]
+ioctl	cb4816	ICE_GetNodeIdForUUID@@Base	0x8927	IMM	cb4810: movw	r1, #35111 ; cb4814: mov	r0, r6

@@ -1,0 +1,54 @@
+program	libNDAL3.so
+executable_path	/tmp/opencode/ap0/lib/libNDAL3.so
+executable_md5	c842bad804302ec822076c3d9d3ce31d
+executable_sha256	0d9c2092263744867ea9f3284b8328cb5b27bb6684c580579aa25dca9ddefbca
+language	ARM:LE:32:v8
+image_base	4e7a0000
+compiler	unknown
+created	Fri Oct 30 23:08:40 CET 2026
+
+[memory blocks]
+segment_1.1	4e7a0000	4e7a00f3	244	r--	initialized
+.note.gnu.build-id	4e7a00f4	4e7a0117	36	r--	initialized
+.hash	4e7a0118	4e7a14cf	5048	r--	initialized
+.dynsym	4e7a14d0	4e7a42ff	11824	r--	initialized
+.dynstr	4e7a4300	4e7a7e2c	15149	r--	initialized
+.gnu.version	4e7a7e2e	4e7a83f3	1478	r--	initialized
+.gnu.version_r	4e7a83f4	4e7a84c3	208	r--	initialized
+.rel.dyn	4e7a84c4	4e7aa52b	8296	r--	initialized
+.rel.plt	4e7aa52c	4e7aaf8b	2656	r--	initialized
+.init	4e7aaf8c	4e7aaf97	12	r-x	initialized
+.plt	4e7aaf98	4e7abf3b	4004	r-x	initialized
+.text	4e7abf40	4e7d03ff	148672	r-x	initialized
+.fini	4e7d0400	4e7d0407	8	r-x	initialized
+.rodata	4e7d0408	4e7dc6c7	49856	r--	initialized
+.ARM.extab	4e7dc6c8	4e7dd14b	2692	r--	initialized
+.ARM.exidx	4e7dd14c	4e7de14b	4096	r--	initialized
+.eh_frame	4e7de14c	4e7de14f	4	r--	initialized
+.init_array	4e7ee150	4e7ee153	4	rw-	initialized
+.fini_array	4e7ee154	4e7ee157	4	rw-	initialized
+.jcr	4e7ee158	4e7ee15b	4	rw-	initialized
+.data.rel.ro	4e7ee15c	4e7ee32b	464	rw-	initialized
+.dynamic	4e7ee32c	4e7ee43b	272	rw-	initialized
+.got	4e7ee43c	4e7eea3b	1536	r--	initialized
+.data	4e7eea3c	4e7f700f	34260	rw-	initialized
+.bss	4e7f7010	4e80e733	96036	rw-	uninitialized
+EXTERNAL	4e80f000	4e80f2bb	700	rw-	uninitialized
+.ARM.attributes	.ARM.attributes::00000000	.ARM.attributes::00000030	49	---	initialized
+.comment	.comment::00000000	.comment::0000002c	45	---	initialized
+.gnu.liblist	.gnu.liblist::00000000	.gnu.liblist::00000077	120	---	initialized
+.gnu.libstr	.gnu.libstr::00000000	.gnu.libstr::0000005a	91	---	initialized
+.gnu.prelink_undo	.gnu.prelink_undo::00000000	.gnu.prelink_undo::0000057b	1404	---	initialized
+.shstrtab	.shstrtab::00000000	.shstrtab::00000132	307	---	initialized
+.strtab	.strtab::00000000	.strtab::00006bdd	27614	---	initialized
+.symtab	.symtab::00000000	.symtab::000103ef	66544	---	initialized
+_elfSectionHeaders	_elfSectionHeaders::00000000	_elfSectionHeaders::00000527	1320	---	initialized
+memory_bytes	485057
+functions_total	1101
+functions_external	0
+functions_thunks	499
+functions_named	1101
+symbols_total	12784
+symbols_external	168
+call_edges	5275
+named_or_string_data	9748

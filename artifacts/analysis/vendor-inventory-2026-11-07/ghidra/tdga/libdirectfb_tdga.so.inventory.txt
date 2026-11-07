@@ -1,0 +1,50 @@
+program	libdirectfb_tdga.so
+executable_path	/tmp/opencode/rootfs/vendor/lib/dfb/directfb-1.7-1/gfxdrivers/libdirectfb_tdga.so
+executable_md5	a770a7e5e7d33c2857e773a91c6c2654
+executable_sha256	c1925da4adf693cde0773365d1e22ae37dc35e89c0286859e62a600515bcf54e
+language	ARM:LE:32:v8
+image_base	00010000
+compiler	unknown
+created	Sat Oct 31 00:40:41 CET 2026
+
+[memory blocks]
+segment_1.1	00010000	000100f3	244	r--	initialized
+.note.gnu.build-id	000100f4	00010117	36	r--	initialized
+.hash	00010118	00010543	1068	r--	initialized
+.dynsym	00010544	00010da3	2144	r--	initialized
+.dynstr	00010da4	0001173d	2458	r--	initialized
+.gnu.version	0001173e	00011849	268	r--	initialized
+.gnu.version_r	0001184c	0001188b	64	r--	initialized
+.rel.dyn	0001188c	00011c1b	912	r--	initialized
+.rel.plt	00011c1c	00011e3b	544	r--	initialized
+.init	00011e3c	00011e47	12	r-x	initialized
+.plt	00011e48	000121af	872	r-x	initialized
+.text	000121b0	00018beb	27196	r-x	initialized
+.fini	00018bec	00018bf3	8	r-x	initialized
+.rodata	00018bf8	0001a537	6464	r--	initialized
+.ARM.exidx	0001a538	0001a54f	24	r--	initialized
+.eh_frame	0001a550	0001a553	4	r--	initialized
+.init_array	0002a554	0002a55b	8	rw-	initialized
+.fini_array	0002a55c	0002a563	8	rw-	initialized
+.jcr	0002a564	0002a567	4	rw-	initialized
+.data.rel.ro	0002a568	0002a6bf	344	rw-	initialized
+.dynamic	0002a6c0	0002a7d7	280	rw-	initialized
+.got	0002a7d8	0002a983	428	r--	initialized
+.data	0002a984	0002aa7f	252	rw-	initialized
+.bss	0002aa80	0002aa8b	12	rw-	uninitialized
+EXTERNAL	0002b000	0002b10f	272	rw-	uninitialized
+.ARM.attributes	.ARM.attributes::00000000	.ARM.attributes::00000032	51	---	initialized
+.comment	.comment::00000000	.comment::0000002c	45	---	initialized
+.shstrtab	.shstrtab::00000000	.shstrtab::000000fc	253	---	initialized
+.strtab	.strtab::00000000	.strtab::00000ff7	4088	---	initialized
+.symtab	.symtab::00000000	.symtab::000018ef	6384	---	initialized
+_elfSectionHeaders	_elfSectionHeaders::00000000	_elfSectionHeaders::00000487	1160	---	initialized
+memory_bytes	55907
+functions_total	214
+functions_external	0
+functions_thunks	131
+functions_named	214
+symbols_total	1908
+symbols_external	60
+call_edges	449
+named_or_string_data	1234

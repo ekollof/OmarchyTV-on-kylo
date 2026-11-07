@@ -1,0 +1,63 @@
+program	ntkndpdrm.ko
+executable_path	/tmp/opencode/rootfs/root/lib/modules/ntkndpdrm.ko
+executable_md5	a70aca9b814e51cb9680476ce27051de
+executable_sha256	b91bbb1020eddf7dc8198ef2bc2d63e1263ce142bf11fbbfe08dfc9a3484bb49
+language	ARM:LE:32:v8
+image_base	00010000
+compiler	unknown
+created	Fri Oct 30 17:02:43 CET 2026
+
+[memory blocks]
+.plt	00010200	00010200	1	rw-	initialized
+.init.plt	00010201	00010201	1	rw-	initialized
+.note.gnu.build-id	00010204	00010227	36	r--	initialized
+.text	00010228	0005b01b	306676	r-x	initialized
+.init.text	0005b01c	0005b1ab	400	r-x	initialized
+.exit.text	0005b1ac	0005b307	348	r-x	initialized
+__ksymtab	0005b308	0005b337	48	r--	initialized
+.rodata	0005b338	000632dc	32677	r--	initialized
+.rodata.str1.4	000632e0	00071ee3	60420	r--	initialized
+__mcount_loc	00071ee4	000727fb	2328	r--	initialized
+.modinfo	000727fc	00072989	398	r--	initialized
+__ksymtab_strings	0007298a	00072a3f	182	r--	initialized
+__param	00072a40	00072af3	180	r--	initialized
+.rodata.str	00072af4	00072c01	270	r--	initialized
+__bug_table	00072c04	00072c6f	108	r--	initialized
+.alt.smp.init	00072c70	00072c7f	16	r--	initialized
+__jump_table	00072c80	00077deb	20844	rw-	initialized
+.data	00077dec	00079a8b	7328	rw-	initialized
+__verbose	00079a90	00086fcf	54592	rw-	initialized
+.data.unlikely	00086fd0	00086fd0	1	rw-	initialized
+.gnu.linkonce.this_module	00087000	000871ff	512	rw-	initialized
+.bss	00087200	0008777b	1404	rw-	uninitialized
+EXTERNAL	00088000	00088457	1112	rw-	uninitialized
+.ARM.attributes	.ARM.attributes::00000000	.ARM.attributes::00000032	51	---	initialized
+.comment	.comment::00000000	.comment::000004d9	1242	---	initialized
+.module_version	.module_version::00000000	.module_version::00000015	22	---	initialized
+.rel.alt.smp.init	.rel.alt.smp.init::00000000	.rel.alt.smp.init::0000000f	16	---	initialized
+.rel.data	.rel.data::00000000	.rel.data::00000be7	3048	---	initialized
+.rel.exit.text	.rel.exit.text::00000000	.rel.exit.text::000000e7	232	---	initialized
+.rel.gnu.linkonce.this_module	.rel.gnu.linkonce.this_module::00000000	.rel.gnu.linkonce.this_module::0000000f	16	---	initialized
+.rel.init.text	.rel.init.text::00000000	.rel.init.text::00000117	280	---	initialized
+.rel.rodata	.rel.rodata::00000000	.rel.rodata::00000cef	3312	---	initialized
+.rel.text	.rel.text::00000000	.rel.text::00025a57	154200	---	initialized
+.rel__bug_table	.rel__bug_table::00000000	.rel__bug_table::0000008f	144	---	initialized
+.rel__jump_table	.rel__jump_table::00000000	.rel__jump_table::0000a2d7	41688	---	initialized
+.rel__ksymtab	.rel__ksymtab::00000000	.rel__ksymtab::0000005f	96	---	initialized
+.rel__mcount_loc	.rel__mcount_loc::00000000	.rel__mcount_loc::0000122f	4656	---	initialized
+.rel__param	.rel__param::00000000	.rel__param::0000011f	288	---	initialized
+.rel__verbose	.rel__verbose::00000000	.rel__verbose::0000d53f	54592	---	initialized
+.shstrtab	.shstrtab::00000000	.shstrtab::00000182	387	---	initialized
+.strtab	.strtab::00000000	.strtab::00011062	69731	---	initialized
+.symtab	.symtab::00000000	.symtab::0001955f	103776	---	initialized
+_elfHeader	_elfHeader::00000000	_elfHeader::00000033	52	---	initialized
+_elfSectionHeaders	_elfSectionHeaders::00000000	_elfSectionHeaders::000006b7	1720	---	initialized
+memory_bytes	929431
+functions_total	837
+functions_external	0
+functions_thunks	252
+functions_named	837
+symbols_total	9028
+symbols_external	252
+call_edges	2086
+named_or_string_data	8690

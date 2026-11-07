@@ -29,6 +29,15 @@ OSD enable remains open. REPLACEMENT-SYSTEM.
 reload-suite/restore) is bundled for the next authorized takeover, with restore
 returning to stock without a reboot. The unified display/hardware path is still
 unvalidated.
+Vendor inventory, 2026-11-07: all **389 ELF files** in the extracted `/vendor`
+tree (249,616,804 bytes, ARM ELF32) are hashed and dumped for SONAME/NEEDED,
+sections, symbol tables, dynamic symbols and strings under
+`artifacts/analysis/vendor-inventory-2026-11-07/`. Ghidra read-only inventories
+cover aurora (89,220 functions, 485,969 resolved call edges) plus 14
+library/kernel projects. Recovered the 226-slot (224 named) GPIO name table
+(`au8GPIOFuncName` 0x175f350), VPLTIO 45/45 commands and 58/59 immediate audio
+opcodes, with call-site maps for GPIO/IIC/DRM/NDAL/PWM/panel. Static only; see
+VENDOR-INVENTORY-2026-11-07 and PANEL-BACKLIGHT.
 
 Hardware acceptance, 2026-11-07 (owner: "ok, use the TV, full access"):
 temporary six-module bundle (`plat,panel,audio_amp,ir,tuner,cec`) ran with
@@ -43,7 +52,10 @@ returned ok and updated state but the owner saw no dimming. The later
 instruction check found a units bug, not a wrong path: the module sent 12-bit
 duty to a HAL that `plat_set_dimming` feeds in its 0..1000 domain, so 50%/100%
 saturated. The module now converts at the HAL boundary (`check-panel-curve`
-asserts 1000/600/200); visible dimming is still unaccepted. **CEC:** created
+asserts 1000/600/200); visible dimming is still unaccepted. The recovered
+standby power/LVDS/PWM/backlight order is implemented behind `panel.standby=1`
+(default 0) with `check-panel-standby`; it has not been run on the TV.
+**CEC:** created
 `/tmp/ntkcec`
 (229:0); acquire finished errno 1, no TX/RX. **Tuner:** HAL-backend scan
 attempt with synthetic +25 progress and lock1/strength0; no RF source. DVR,

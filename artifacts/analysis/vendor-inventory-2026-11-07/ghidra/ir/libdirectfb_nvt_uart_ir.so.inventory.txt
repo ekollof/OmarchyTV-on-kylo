@@ -1,0 +1,49 @@
+program	libdirectfb_nvt_uart_ir.so
+executable_path	/tmp/opencode/ap0/lib/dfb/directfb-1.7-1/inputdrivers/libdirectfb_nvt_uart_ir.so
+executable_md5	be21722f7afddeb2741816e0266ddfec
+executable_sha256	3dced14fed7fca974a31bca51f7473fac533989b75befec615e6fd61c3a65ddc
+language	ARM:LE:32:v8
+image_base	00010000
+compiler	unknown
+created	Fri Oct 30 18:25:06 CET 2026
+
+[memory blocks]
+segment_0.1	00010000	000100d3	212	r--	initialized
+.note.gnu.build-id	000100d4	000100f7	36	r--	initialized
+.hash	000100f8	0001025b	356	r--	initialized
+.dynsym	0001025c	0001057b	800	r--	initialized
+.dynstr	0001057c	0001088b	784	r--	initialized
+.gnu.version	0001088c	000108ef	100	r--	initialized
+.gnu.version_r	000108f0	0001090f	32	r--	initialized
+.rel.dyn	00010910	000109cf	192	r--	initialized
+.rel.plt	000109d0	00010aa7	216	r--	initialized
+.init	00010aa8	00010ab3	12	r-x	initialized
+.plt	00010ab4	00010c17	356	r-x	initialized
+.text	00010c18	000117c7	2992	r-x	initialized
+.fini	000117c8	000117cf	8	r-x	initialized
+.rodata	000117d0	00011e83	1716	r--	initialized
+.eh_frame	00011e84	00011e87	4	r--	initialized
+.init_array	00022000	00022007	8	rw-	initialized
+.fini_array	00022008	0002200f	8	rw-	initialized
+.jcr	00022010	00022013	4	rw-	initialized
+.data.rel.ro	00022014	00022047	52	rw-	initialized
+.dynamic	00022048	00022147	256	rw-	initialized
+.got	00022148	000221df	152	r--	initialized
+.data	000221e0	000221e3	4	rw-	initialized
+.bss	000221e4	000221eb	8	rw-	uninitialized
+EXTERNAL	00023000	00023073	116	rw-	uninitialized
+.ARM.attributes	.ARM.attributes::00000000	.ARM.attributes::00000032	51	---	initialized
+.comment	.comment::00000000	.comment::0000002c	45	---	initialized
+.shstrtab	.shstrtab::00000000	.shstrtab::000000f1	242	---	initialized
+.strtab	.strtab::00000000	.strtab::0000058f	1424	---	initialized
+.symtab	.symtab::00000000	.symtab::00000a9f	2720	---	initialized
+_elfSectionHeaders	_elfSectionHeaders::00000000	_elfSectionHeaders::0000045f	1120	---	initialized
+memory_bytes	14026
+functions_total	79
+functions_external	0
+functions_thunks	49
+functions_named	79
+symbols_total	421
+symbols_external	26
+call_edges	115
+named_or_string_data	342

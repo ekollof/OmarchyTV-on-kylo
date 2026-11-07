@@ -1,0 +1,54 @@
+program	libNDAL_EX.so
+executable_path	/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/vendor/lib/libNDAL_EX.so
+executable_md5	e6a465861d1869b8b138b3f299c89f87
+executable_sha256	492c1e06f79162a6e4a850e354ab93b800fc04d2971e3313688f8ed4f3188a42
+language	ARM:LE:32:v8
+image_base	4db50000
+compiler	unknown
+created	Wed Nov 04 19:58:42 CET 2026
+
+[memory blocks]
+segment_1.1	4db50000	4db500f3	244	r--	initialized
+.note.gnu.build-id	4db500f4	4db50117	36	r--	initialized
+.hash	4db50118	4db50cab	2964	r--	initialized
+.dynsym	4db50cac	4db52a6b	7616	r--	initialized
+.dynstr	4db52a6c	4db5543e	10707	r--	initialized
+.gnu.version	4db55440	4db557f7	952	r--	initialized
+.gnu.version_r	4db557f8	4db55887	144	r--	initialized
+.rel.dyn	4db55888	4db55c1f	920	r--	initialized
+.rel.plt	4db55c20	4db56287	1640	r--	initialized
+.init	4db56288	4db56293	12	r-x	initialized
+.plt	4db56294	4db56c43	2480	r-x	initialized
+.text	4db56c48	4db6ae37	82416	r-x	initialized
+.fini	4db6ae38	4db6ae3f	8	r-x	initialized
+.rodata	4db6ae40	4db7045c	22045	r--	initialized
+.ARM.extab	4db70460	4db709af	1360	r--	initialized
+.ARM.exidx	4db709b0	4db7136f	2496	r--	initialized
+.eh_frame	4db71370	4db71373	4	r--	initialized
+.init_array	4db81374	4db81377	4	rw-	initialized
+.fini_array	4db81378	4db8137b	4	rw-	initialized
+.jcr	4db8137c	4db8137f	4	rw-	initialized
+.data.rel.ro	4db81380	4db813df	96	rw-	initialized
+.dynamic	4db813e0	4db8150f	304	rw-	initialized
+.got	4db81510	4db818d7	968	r--	initialized
+.data	4db818d8	4db81c33	860	rw-	initialized
+.bss	4db81c34	4db84557	10532	rw-	uninitialized
+EXTERNAL	4db85000	4db851d7	472	rw-	uninitialized
+.ARM.attributes	.ARM.attributes::00000000	.ARM.attributes::00000030	49	---	initialized
+.comment	.comment::00000000	.comment::0000002c	45	---	initialized
+.gnu.liblist	.gnu.liblist::00000000	.gnu.liblist::000000b3	180	---	initialized
+.gnu.libstr	.gnu.libstr::00000000	.gnu.libstr::00000080	129	---	initialized
+.gnu.prelink_undo	.gnu.prelink_undo::00000000	.gnu.prelink_undo::0000057b	1404	---	initialized
+.shstrtab	.shstrtab::00000000	.shstrtab::00000132	307	---	initialized
+.strtab	.strtab::00000000	.strtab::00004784	18309	---	initialized
+.symtab	.symtab::00000000	.symtab::0000936f	37744	---	initialized
+_elfSectionHeaders	_elfSectionHeaders::00000000	_elfSectionHeaders::00000527	1320	---	initialized
+memory_bytes	208775
+functions_total	676
+functions_external	0
+functions_thunks	319
+functions_named	676
+symbols_total	6011
+symbols_external	115
+call_edges	2299
+named_or_string_data	4766

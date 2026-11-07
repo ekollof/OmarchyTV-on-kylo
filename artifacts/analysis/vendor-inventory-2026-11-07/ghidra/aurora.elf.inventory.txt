@@ -1,0 +1,56 @@
+program	aurora.elf
+executable_path	/tmp/opencode/ap0/com.nvt.idtv/aurora.elf
+executable_md5	64c252340d3af6c5d66072611b7bad7a
+executable_sha256	7d6e4ca589f72135ae5e13c977a5bfae7f999abac7de701f8ac5c178f09a5993
+language	ARM:LE:32:v8
+image_base	00010000
+compiler	unknown
+created	Fri Oct 30 09:32:26 CET 2026
+
+[memory blocks]
+segment_3.1	00010000	00010153	340	r--	initialized
+.interp	00010154	0001016c	25	r--	initialized
+.note.ABI-tag	00010170	0001018f	32	r--	initialized
+.note.gnu.build-id	00010190	000101b3	36	r--	initialized
+.hash	000101b4	0008e01b	515688	r--	initialized
+.dynsym	0008e01c	0020596b	1538384	r--	initialized
+.rel.dyn	0020596c	00206067	1788	r--	initialized
+.rel.plt	00206068	0020ac5f	19448	r--	initialized
+.gnu.liblist	0020ac60	0020b763	2820	r--	initialized
+.gnu.conflict	0020b764	0025716b	309768	r--	initialized
+segment_3.12	0025716c	0067a597	4338732	r--	initialized
+.gnu.version	0067a598	006a94c1	192298	r--	initialized
+.gnu.version_r	006a94c4	006a97c3	768	r--	initialized
+segment_3.16	006a97c4	006ae863	20640	r--	initialized
+.init	006ae864	006ae86f	12	r-x	initialized
+.plt	006ae870	006b5ab3	29252	r-x	initialized
+.text	006b5ab8	01285fa7	12387568	r-x	initialized
+.fini	01285fa8	01285faf	8	r-x	initialized
+.rodata	01285fb0	01580933	3123588	r--	initialized
+.ARM.extab	01580934	016a3b6f	1192508	r--	initialized
+.ARM.exidx	016a3b70	01741a4f	646880	r--	initialized
+.eh_frame	01741a50	01741a53	4	r--	initialized
+.init_array	01751a54	01753873	7712	rw-	initialized
+.fini_array	01753874	01753877	4	rw-	initialized
+.jcr	01753878	0175387b	4	rw-	initialized
+.dynamic	0175387c	01753d93	1304	rw-	initialized
+.got	01753d94	017563bf	9772	r--	initialized
+.data	017563c0	01791007	240712	rw-	initialized
+.dynbss	01791010	01791ed3	3780	rw-	initialized
+.bss	01791ed4	01a2de5f	2736012	rw-	uninitialized
+.dynstr	01a31ed4	01ea6b87	4672692	r--	initialized
+EXTERNAL	01ea7000	01ea92af	8880	rw-	uninitialized
+.ARM.attributes	.ARM.attributes::00000000	.ARM.attributes::00000034	53	---	initialized
+.comment	.comment::00000000	.comment::0000002c	45	---	initialized
+.gnu.prelink_undo	.gnu.prelink_undo::00000000	.gnu.prelink_undo::00000593	1428	---	initialized
+.shstrtab	.shstrtab::00000000	.shstrtab::00000135	310	---	initialized
+_elfSectionHeaders	_elfSectionHeaders::00000000	_elfSectionHeaders::00000527	1320	---	initialized
+memory_bytes	32004615
+functions_total	89220
+functions_external	0
+functions_thunks	4673
+functions_named	85674
+symbols_total	759749
+symbols_external	2433
+call_edges	485969
+named_or_string_data	332334

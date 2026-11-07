@@ -1,0 +1,53 @@
+program	libmali.so
+executable_path	/home/ekollof/Work/tvhack/artifacts/workbench/rootfs/vendor/lib/libmali.so
+executable_md5	d1aa5c1679a9467ec51865d4f2120112
+executable_sha256	29460414e8ebba961b7eae25e33d69ba378eecfff2b7e1b91e36683654966399
+language	ARM:LE:32:v8
+image_base	476a0000
+compiler	unknown
+created	Sun Nov 01 16:44:04 CET 2026
+
+[memory blocks]
+segment_1.1	476a0000	476a0113	276	r--	initialized
+.note.gnu.build-id	476a0114	476a0137	36	r--	initialized
+.hash	476a0138	476a23fb	8900	r--	initialized
+.dynsym	476a23fc	476a6e7b	19072	r--	initialized
+.dynstr	476a6e7c	476aca53	23512	r--	initialized
+.gnu.version	476aca54	476ad3a3	2384	r--	initialized
+.gnu.version_d	476ad3a4	476ad3db	56	r--	initialized
+.gnu.version_r	476ad3dc	476ad5ab	464	r--	initialized
+.rel.dyn	476ad5ac	47706027	363132	r--	initialized
+.rel.plt	47706028	477068e7	2240	r--	initialized
+.init	477068f4	477068ff	12	r-x	initialized
+.plt	47706900	477076f3	3572	r-x	initialized
+.text	47707700	47c2ee87	5404552	r-x	initialized
+.fini	47c2ee88	47c2ee8f	8	r-x	initialized
+.rodata	47c2ee90	47e7d12b	2417308	r--	initialized
+.ARM.extab	47e7d12c	47e7d7c5	1690	r--	initialized
+.ARM.exidx	47e7d7c8	47e7de2f	1640	r--	initialized
+.eh_frame	47e7de30	47e7de33	4	r--	initialized
+.init_array	47e8e8e0	47e8ebff	800	rw-	initialized
+.fini_array	47e8ec00	47e8ec07	8	rw-	initialized
+.jcr	47e8ec08	47e8ec0b	4	rw-	initialized
+.data.rel.ro	47e8ec10	47eda523	309524	rw-	initialized
+.dynamic	47eda524	47eda65b	312	rw-	initialized
+.got	47eda65c	47edbb27	5324	r--	initialized
+.data	47edbb28	47ee42db	34740	rw-	initialized
+.bss	47ee42e0	47efa723	91204	rw-	uninitialized
+EXTERNAL	47efb000	47efb4e7	1256	rw-	uninitialized
+.ARM.attributes	.ARM.attributes::00000000	.ARM.attributes::00000034	53	---	initialized
+.comment	.comment::00000000	.comment::0000002c	45	---	initialized
+.gnu.liblist	.gnu.liblist::00000000	.gnu.liblist::0000009f	160	---	initialized
+.gnu.libstr	.gnu.libstr::00000000	.gnu.libstr::00000070	113	---	initialized
+.gnu.prelink_undo	.gnu.prelink_undo::00000000	.gnu.prelink_undo::0000059b	1436	---	initialized
+.shstrtab	.shstrtab::00000000	.shstrtab::00000137	312	---	initialized
+_elfSectionHeaders	_elfSectionHeaders::00000000	_elfSectionHeaders::00000527	1320	---	initialized
+memory_bytes	8695469
+functions_total	21230
+functions_external	0
+functions_thunks	696
+functions_named	1615
+symbols_total	195460
+symbols_external	308
+call_edges	141096
+named_or_string_data	42749

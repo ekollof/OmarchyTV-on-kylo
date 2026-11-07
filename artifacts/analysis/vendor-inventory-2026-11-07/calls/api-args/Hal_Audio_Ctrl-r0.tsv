@@ -1,0 +1,59 @@
+symbol	call_site	caller	value	status	context
+Hal_Audio_Ctrl	84f4f8	DEV_AMP_Init@@Base	0x3a	IMM	84f4f4: movs	r0, #58 ; 84f4f6: str	r3, [r7, #0]
+Hal_Audio_Ctrl	883a24	PLAT_AIN_SetInputGain@@Base	0x32	IMM	883a1e: movs	r0, #50 ; 883a20: stmia.w	r7, {r5, r6}
+Hal_Audio_Ctrl	883b84	PLAT_AIN_Init@@Base	0x11	IMM	883b7c: movs	r0, #17 ; 883b7e: mov	r1, r8 ; 883b80: strb.w	r9, [r3]
+Hal_Audio_Ctrl	883ba2	PLAT_AIN_Init@@Base	0x40	IMM	883b96: movs	r0, #64 ; 883b98: str	r4, [r3, #0] ; 883b9a: str.w	r9, [r3, #20] ; 883b9e: str	r4, [r7, #0] ; 883ba0: str	r4, [r7, #4]
+Hal_Audio_Ctrl	883bb8	PLAT_AIN_Init@@Base	0x1e	IMM	883bb2: movs	r0, #30 ; 883bb4: str.w	r9, [r7]
+Hal_Audio_Ctrl	88475e	PLAT_AIN_Connect@@Base	0x2a	IMM	884758: movs	r0, #42 ; 88475a: str	r2, [r7, #16] ; 88475c: str	r3, [r7, #20]
+Hal_Audio_Ctrl	884848	PLAT_AIN_Connect@@Base	0x2a	IMM	884842: movs	r0, #42 ; 884844: str	r2, [r7, #16] ; 884846: str	r3, [r7, #20]
+Hal_Audio_Ctrl	88487c	PLAT_AIN_Connect@@Base	0x2a	IMM	884874: movs	r0, #42 ; 884876: str.w	fp, [r7, #20] ; 88487a: str	r3, [r7, #16]
+Hal_Audio_Ctrl	886186	PLAT_AIN_SetSIFFreqDevTracking@@Base	0x12	IMM	886184: movs	r0, #18
+Hal_Audio_Ctrl	886256	PLAT_AIN_SetSIFCtrlParam@@Base	0x13	IMM	886254: movs	r0, #19
+Hal_Audio_Ctrl	8865e0	PLAT_AIN_SetDDPBypassCapability@@Base	0x23	IMM	8865da: movs	r0, #35 ; 8865dc: str	r6, [r7, #0] ; 8865de: str	r5, [r7, #4]
+Hal_Audio_Ctrl	886fa8	PLAT_Audio_Testcase_ExtInADC_Connect@@Base	0x41	IMM	886fa6: movs	r0, #65
+Hal_Audio_Ctrl	887398	PLAT_Audio_Testcase_ExtInADC_Connect@@Base	0x41	IMM	887394: movs	r0, #65 ; 887396: str	r3, [r7, #8]
+Hal_Audio_Ctrl	88743c	PLAT_Audio_Testcase_ExtInADC_Connect@@Base	0x46	IMM	88743a: movs	r0, #70
+Hal_Audio_Ctrl	88765c	PLAT_AOUT_VolTableConfig@@Base	0x2e	IMM	887656: movs	r0, #46 ; 887658: str	r5, [r7, #4] ; 88765a: str	r6, [r7, #8]
+Hal_Audio_Ctrl	88766e	PLAT_AOUT_VolTableConfig@@Base	0x3e	IMM	88766c: movs	r0, #62
+Hal_Audio_Ctrl	887702	PLAT_AOUT_VolTableConfig_EX@@Base	0x2e	IMM	8876f8: movs	r0, #46 ; 8876fa: str.w	r8, [r7] ; 8876fe: str	r5, [r7, #4] ; 887700: str	r6, [r7, #8]
+Hal_Audio_Ctrl	887766	PLAT_AOUT_SetSpeakerVolTableIndex@@Base	0x3e	IMM	887764: movs	r0, #62
+Hal_Audio_Ctrl	8887c0	PLAT_AOUT_SpeakerSet@@Base	0x2c	IMM	8887b2: movs	r0, #44 ; 8887b4: str.w	fp, [r7, #20] ; 8887b8: str	r4, [r7, #8] ; 8887ba: str	r3, [r7, #16] ; 8887bc: str.w	sl, [r7, #12]
+Hal_Audio_Ctrl	8887ee	PLAT_AOUT_SpeakerSet@@Base	0x2d	IMM	8887e0: movs	r0, #45 ; 8887e2: adds	r4, #1 ; 8887e4: str.w	sl, [r7, #12] ; 8887e8: str	r3, [r7, #16] ; 8887ea: str.w	fp, [r7, #20]
+Hal_Audio_Ctrl	889134	PLAT_AOUT_SetSpeakerHWMute@@Base	0x35	IMM	88912e: movs	r0, #53 ; 889130: stmia.w	r7, {r2, r3}
+Hal_Audio_Ctrl	889c14	PLAT_AOUT_SetSpeakerBalance@@Base	0x16	IMM	889c0c: movs	r0, #22 ; 889c0e: ldrh.w	r3, [sl, #36] ; 889c12: str	r3, [r7, #12]
+Hal_Audio_Ctrl	889cce	PLAT_AOUT_SetSpeakerBalance@@Base	0x37	IMM	889cca: movs	r0, #55 ; 889ccc: str	r6, [r7, #0]
+Hal_Audio_Ctrl	889d50	PLAT_AOUT_SetBalanceStep@@Base	0x37	IMM	889d4c: movs	r0, #55 ; 889d4e: str	r5, [r7, #0]
+Hal_Audio_Ctrl	889f26	PLAT_AOUT_SetSpeakerMainGain@@Base	0x3d	IMM	889f10: mov.w	r0, #61 ; 889f14: it	ls ; 889f16: ldrls.w	r9, [r3, r4, lsl #2] ; 889f1a: mov.w	r4, #4294967295 ; 889f1e: str	r4, [r7, #12] ; 889f20: str	r4, [r7, #16] ; 889f22: str.w	r9, [r7, #8]
+Hal_Audio_Ctrl	889f4e	PLAT_AOUT_SetSpeakerMainGain@@Base	0x3c	IMM	889f3e: movs	r0, #60 ; 889f40: uxth.w	r3, sl ; 889f44: str.w	r9, [r7, #8] ; 889f48: str.w	fp, [r7, #12] ; 889f4c: str	r3, [r7, #16]
+Hal_Audio_Ctrl	889f6c	PLAT_AOUT_SetSpeakerMainGain@@Base	0x3d	IMM	889f62: movs	r0, #61 ; 889f64: str	r4, [r7, #12] ; 889f66: str	r4, [r7, #16] ; 889f68: str.w	r9, [r7, #8]
+Hal_Audio_Ctrl	88a1fa	PLAT_AOUT_SetSpeakerMixGain@@Base	0x3d	IMM	88a1e4: mov.w	r0, #61 ; 88a1e8: it	ls ; 88a1ea: ldrls.w	r9, [r3, r4, lsl #2] ; 88a1ee: mov.w	r4, #4294967295 ; 88a1f2: str	r4, [r7, #12] ; 88a1f4: str	r4, [r7, #16] ; 88a1f6: str.w	r9, [r7, #8]
+Hal_Audio_Ctrl	88a212	PLAT_AOUT_SetSpeakerMixGain@@Base	0x3c	IMM	88a204: movs	r0, #60 ; 88a206: str.w	r9, [r7, #8] ; 88a20a: str.w	fp, [r7, #16] ; 88a20e: uxth	r3, r3 ; 88a210: str	r3, [r7, #12]
+Hal_Audio_Ctrl	88a224	PLAT_AOUT_SetSpeakerMixGain@@Base	0x3d	IMM	88a21a: movs	r0, #61 ; 88a21c: str	r4, [r7, #12] ; 88a21e: str	r4, [r7, #16] ; 88a220: str.w	r9, [r7, #8]
+Hal_Audio_Ctrl	88a702	PLAT_AOUT_SetSpeakerDataType@@Base	0x15	IMM	88a6f4: mov.w	r0, #21 ; 88a6f8: it	ls ; 88a6fa: ldrls.w	r3, [r3, r5, lsl #2] ; 88a6fe: str.w	r3, [r1, #-64]!
+Hal_Audio_Ctrl	88a778	PLAT_AOUT_SetSpeakerDataType@@Base	0x2f	IMM	88a776: movs	r0, #47
+Hal_Audio_Ctrl	88add2	PLAT_AOUT_SetSPDIFForceCopyProtection@@Base	0x30	IMM	88add0: movs	r0, #48
+Hal_Audio_Ctrl	88b0b0	PLAT_AOUT_SetAC4DialogueEnhanceGain@@Base	0x1d	IMM	88b0aa: movs	r0, #29 ; 88b0ac: str	r6, [r7, #0] ; 88b0ae: str	r5, [r7, #4]
+Hal_Audio_Ctrl	891b06	PLAT_CRYPT_SetKey@@Base	0x33	IMM	891b02: movs	r0, #51 ; 891b04: str	r6, [r7, #0]
+Hal_Audio_Ctrl	8955c2	PLAT_DEC_StartAudioDesDecoding@@Base	0x1b	IMM	8955bc: movs	r0, #27 ; 8955be: str	r3, [r7, #32] ; 8955c0: str	r6, [r7, #36]
+Hal_Audio_Ctrl	89593a	PLAT_DEC_StartAudioDesDecodingSinglePID@@Base	0x1b	IMM	895934: movs	r0, #27 ; 895936: str	r3, [r7, #32] ; 895938: str	r3, [r7, #36]
+Hal_Audio_Ctrl	895e74	PLAT_DEC_SetAudSyncMaster@@Base	0x22	IMM	895e6a: movs	r0, #34 ; 895e6c: str.w	r8, [r7] ; 895e70: str	r6, [r7, #4] ; 895e72: str	r5, [r7, #8]
+Hal_Audio_Ctrl	89734c	PLAT_DEC_SetAudioMainVolume@@Base	0x33	IMM	897348: movs	r0, #51 ; 89734a: str	r5, [r7, #0]
+Hal_Audio_Ctrl	897394	PLAT_DEC_SetAudioDesVolume@@Base	0x20	IMM	897390: movs	r0, #32 ; 897392: str	r5, [r7, #0]
+Hal_Audio_Ctrl	8973e0	PLAT_DEC_SetAudioPanFadeAct@@Base	0x24	IMM	8973da: movs	r0, #36 ; 8973dc: str	r6, [r7, #0] ; 8973de: str	r5, [r7, #4]
+Hal_Audio_Ctrl	897550	PLAT_DEC_SetAudioDownMixMode@@Base	0x1c	IMM	89754c: movs	r0, #28 ; 89754e: str	r6, [r7, #0]
+Hal_Audio_Ctrl	897ae2	PLAT_DEC_SetAudioAACFuntion@@Base	0x19	IMM	897ada: movs	r0, #25 ; 897adc: mov	r1, r7 ; 897ade: str	r2, [r7, #4] ; 897ae0: str	r3, [r7, #60]
+Hal_Audio_Ctrl	897e50	PLAT_DEC_SetAudioDesLanguage@@Base	0x1f	IMM	897e3e: movs	r0, #31 ; 897e40: ldr	r2, [r7, #8] ; 897e42: mov	r9, r4 ; 897e44: ldr	r3, [r7, #12] ; 897e46: str	r4, [r7, #16] ; 897e48: str	r6, [r7, #20] ; 897e4a: str	r5, [r7, #24] ; 897e4c: str	r2, [r7, #28] ; 897e4e: str	r3, [r7, #32]
+Hal_Audio_Ctrl	8d0df8	TZSysSVC_TA_Factory_Reset@@Base	0x2b	IMM	8d0df4: movs	r0, #43 ; 8d0df6: str	r5, [r7, #0]
+Hal_Audio_Ctrl	8d0e40	TZSysSVC_TA_Factory_Reset@@Base	0x15	IMM	8d0e3c: movs	r0, #21 ; 8d0e3e: str	r5, [r7, #0]
+Hal_Audio_Ctrl	8d212e	_Z30PLAT_AOUT_SetSpeakerDACCICGainh26_EN_PLAT_AUD_DAC_GAIN_TYPEhh@@Base	0x2d	IMM	8d2122: movs	r0, #45 ; 8d2124: str	r6, [r7, #4] ; 8d2126: str.w	r8, [r7, #8] ; 8d212a: str.w	r9, [r7, #12]
+Hal_Audio_Ctrl	8d2158	_Z30PLAT_AOUT_SetSpeakerDACCICGainh26_EN_PLAT_AUD_DAC_GAIN_TYPEhh@@Base	0x2c	IMM	8d214c: movs	r0, #44 ; 8d214e: str	r6, [r7, #4] ; 8d2150: str.w	r8, [r7, #8] ; 8d2154: str.w	r9, [r7, #12]
+Hal_Audio_Ctrl	8d21e4	PLAT_AOUT_SetSPDIFForceCP@@Base	0x30	IMM	8d21dc: movs	r0, #48 ; 8d21de: str.w	r8, [r7] ; 8d21e2: str	r6, [r7, #4]
+Hal_Audio_Ctrl	8d312a	PLAT_VAUD_CaptureMute@@Base	0x25	IMM	8d3126: movs	r0, #37 ; 8d3128: str	r6, [r7, #0]
+Hal_Audio_Ctrl	8d44a0	PLAT_VAUD_SetSyncMode@@Base	0x22	IMM	8d449a: movs	r0, #34 ; 8d449c: str	r6, [r7, #0] ; 8d449e: str	r5, [r7, #4]
+Hal_Audio_Ctrl	8d4570	PLAT_VAUD_SetDACInverse@@Base	0x36	IMM	8d456c: movs	r0, #54 ; 8d456e: str	r5, [r7, #0]
+Hal_Audio_Ctrl	8d477a	PLAT_VAUD_Init@@Base	0x37	IMM	8d4776: movs	r0, #55 ; 8d4778: str	r3, [r7, #0]
+Hal_Audio_Ctrl	8d4794	PLAT_VAUD_Init@@Base	0x1e	IMM	8d4790: movs	r0, #30 ; 8d4792: str	r3, [r7, #0]
+Hal_Audio_Ctrl	8d4ac0	PLAT_VAUD_SetDECExtraCap@@Base	0x1a	IMM	8d4abc: movs	r0, #26 ; 8d4abe: str	r5, [r7, #0]
+Hal_Audio_Ctrl	8d4b34	PLAT_VAUD_SetDTSDRCPercent@@Base	0x26	IMM	8d4b2e: movs	r0, #38 ; 8d4b30: str	r6, [r7, #0] ; 8d4b32: str	r5, [r7, #4]
+Hal_Audio_Ctrl	8d4cb0	PLAT_VAUD_SetSPDIFDataType@@Base	0x2f	IMM	8d4caa: movs	r0, #47 ; 8d4cac: stmia.w	r7, {r2, r3}
+Hal_Audio_Ctrl	8d8d0c	_ZN13C_SimpleCache14FreshCachePROCEv@@Base	0x22	IMM	8d8d08: movs	r0, #34 ; 8d8d0a: str	r5, [r7, #4]

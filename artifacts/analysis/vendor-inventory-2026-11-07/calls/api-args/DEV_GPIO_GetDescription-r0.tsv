@@ -1,0 +1,53 @@
+symbol	call_site	caller	value	status	context
+DEV_GPIO_GetDescription	7514b0	_HW_MCU_SetUartOnOff@@Base	0xcb	IMM	7514ae: movs	r0, #203
+DEV_GPIO_GetDescription	797d28	ice_ci_change_tso_gpio@@Base		UNKNOWN	797d22: blx	6b32b0 <puts@plt> ; 797d26: mov	r0, r4
+DEV_GPIO_GetDescription	797db6	ice_ci_change_tso_gpio@@Base		UNKNOWN	797db0: blx	6b32b0 <puts@plt> ; 797db4: mov	r0, r4
+DEV_GPIO_GetDescription	7f2f26	ICE_ExternalInit@@Base	0xb1	IMM	7f2f24: movs	r0, #177
+DEV_GPIO_GetDescription	7f2f48	ICE_ExternalInit@@Base	0xb0	IMM	7f2f46: movs	r0, #176
+DEV_GPIO_GetDescription	84ae96	SAL_DEMOD_TUN_RFSW@@Base	0xab	IMM	84ae90: movs	r0, #171 ; 84ae92: str	r2, [r7, #8] ; 84ae94: str	r3, [r7, #36]
+DEV_GPIO_GetDescription	84efd8	_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base		UNKNOWN	84efa0: mov	r6, r0 ; 84efa2: cmp	r0, #0 ; 84efa4: beq.w	84f14c <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x158c> ; 84efa8: ldr	r1, [r7, #8] ; 84efaa: ldr	r2, [r0, #20] ; 84efac: ldr	r3, [r0, #24] ; 84efae: ldr.w	lr, [r0, #4] ; 84efb2: ldr	r5, [r0, #8] ; 84efb4: ldr	r0, [r0, #12] ; 84efb6: str	r3, [r1, #24] ; 84efb8: str	r2, [r1, #20] ; 84efba: ldr	r3, [r6, #28] ; 84efbc: ldr	r2, [r6, #16] ; 84efbe: ldr	r6, [r6, #32] ; 84efc0: str.w	lr, [r1, #4] ; 84efc4: str	r5, [r1, #8] ; 84efc6: str	r0, [r1, #12] ; 84efc8: str	r2, [r1, #16] ; 84efca: str	r3, [r1, #28] ; 84efcc: str	r6, [r1, #32] ; 84efce: ldr	r2, [r7, #4] ; 84efd0: movw	r3, #283 ; 84efd4: mov	r0, lr ; 84efd6: str	r3, [r2, #4]
+DEV_GPIO_GetDescription	84f008	_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base		UNKNOWN	84efde: cbz	r0, 84effc <_ZN16C_SalTunerAV2018C1EP16_ST_TUNER_PARAMS@@Base+0x143c> ; 84efe0: ldr	r0, [r0, #0] ; 84efe2: movw	r5, #64100 ; 84efe6: ldr	r1, [r6, #4] ; 84efe8: movt	r5, #402 ; 84efec: ldr	r2, [r6, #8] ; 84efee: ldr	r3, [r6, #12] ; 84eff0: stmia	r5!, {r0, r1, r2, r3} ; 84eff2: ldr	r0, [r6, #16] ; 84eff4: ldr	r1, [r6, #20] ; 84eff6: ldr	r2, [r6, #24] ; 84eff8: ldr	r3, [r6, #28] ; 84effa: stmia	r5!, {r0, r1, r2, r3} ; 84effc: ldr	r2, [r7, #8] ; 84effe: movw	r3, #283 ; 84f002: ldr	r0, [r2, #8] ; 84f004: ldr	r2, [r7, #4] ; 84f006: str	r3, [r2, #36]
+DEV_GPIO_GetDescription	85111a	DEV_GPIO_GetDescription@@Base		UNKNOWN	851114: bl	91bee4 <TD_OS_TaskDelay@@Base> ; 851118: mov	r0, sl
+DEV_GPIO_GetDescription	8513c8	DEV_GPIO_ShowGPIOStatus@@Base	0x0	IMM	8513c4: movs	r0, #0 ; 8513c6: str	r3, [r7, #4]
+DEV_GPIO_GetDescription	851400	DEV_GPIO_ShowGPIOStatus@@Base		UNKNOWN	8513da: blx	6af740 <__stack_chk_fail@plt> ; 8513de: nop ; 8513e0: mov.w	ip, #16384 ; 8513e4: push	{r4, r7, lr} ; 8513e6: sub.w	ip, sp, ip ; 8513ea: str.w	r0, [ip, #4072] ; 8513ee: movw	r4, #7528 ; 8513f2: sub	sp, #12 ; 8513f4: movt	r4, #377 ; 8513f8: ldr	r3, [r4, #0] ; 8513fa: add	r7, sp, #0 ; 8513fc: ldr	r0, [r0, #0] ; 8513fe: str	r3, [r7, #4]
+DEV_GPIO_GetDescription	851438	DEV_GPIO_ShowGPIOStatus@@Base	0xc8	IMM	851434: movs	r0, #200 ; 851436: str	r3, [r7, #4]
+DEV_GPIO_GetDescription	85156a	DEV_GPIO_GetLevel@@Base	0x75	IMM	851564: movs	r0, #117 ; 851566: str	r2, [r7, #8] ; 851568: str	r3, [r7, #12]
+DEV_GPIO_GetDescription	851cb8	DEV_GPIO_SetAltMode@@Base		UNKNOWN	851caa: b.n	851cb4 <DEV_GPIO_SetAltMode@@Base+0x170> ; 851cac: cmp	r0, #199 ; 851cae: ble.n	851d1c <DEV_GPIO_SetAltMode@@Base+0x1d8> ; 851cb0: cmp	r4, r9 ; 851cb2: beq.n	851cd8 <DEV_GPIO_SetAltMode@@Base+0x194> ; 851cb4: ldr.w	r0, [r4, #4]!
+DEV_GPIO_GetDescription	851f30	DEV_PWM_Get_ChIdx@@Base		UNKNOWN	851f2c: cbz	r1, 851f5e <DEV_PWM_Get_ChIdx@@Base+0x52> ; 851f2e: mov	r8, r1
+DEV_GPIO_GetDescription	85209e	DEV_GPIO_Init@@Base	0x6f	IMM	85209c: movs	r0, #111
+DEV_GPIO_GetDescription	8524e0	DEV_PWM_Set_ByChannel@@Base	0x6c	IMM	8524de: movs	r0, #108
+DEV_GPIO_GetDescription	852856	DEV_GPIO_USB_SetPwrOnOff@@Base	0x93	IMM	852852: movs	r0, #147 ; 852854: str	r3, [r7, #4]
+DEV_GPIO_GetDescription	852930	DEV_GPIO_WifiDongle_SetPwrOnOff@@Base		UNKNOWN	852920: cbz	r5, 85297a <DEV_GPIO_WifiDongle_SetPwrOnOff@@Base+0xba> ; 852922: subs	r4, #1 ; 852924: add.w	r3, r7, #24 ; 852928: add.w	r3, r3, r4, lsl #2 ; 85292c: ldr.w	r0, [r3, #-12]
+DEV_GPIO_GetDescription	85297e	DEV_GPIO_WifiDongle_SetPwrOnOff@@Base	0xb3	IMM	85297a: movs	r0, #179 ; 85297c: subs	r4, #1
+DEV_GPIO_GetDescription	852a2c	DEV_GPIO_PanelPwr_GetLevel@@Base	0x6e	IMM	852a2a: movs	r0, #110
+DEV_GPIO_GetDescription	852ae6	DEV_GPIO_SetSPDIFOUT@@Base	0x92	IMM	852ae2: movs	r0, #146 ; 852ae4: str	r3, [r7, #4]
+DEV_GPIO_GetDescription	852bac	DEV_GPIO_DolbyVersion_OnOff@@Base	0x70	IMM	852baa: movs	r0, #112
+DEV_GPIO_GetDescription	852c22	DEV_GPIO_SwitchVGAToI2C@@Base	0xc8	IMM	852c20: movs	r0, #200
+DEV_GPIO_GetDescription	852d90	_Z16_user_input_atoiPi@@Base		UNKNOWN	852d58: blx	6b32b0 <puts@plt> ; 852d5c: movw	r2, #32272 ; 852d60: movw	fp, #62288 ; 852d64: movw	sl, #55348 ; 852d68: movt	r2, #309 ; 852d6c: movw	r3, #32240 ; 852d70: movt	fp, #373 ; 852d74: movt	sl, #296 ; 852d78: add.w	r4, r8, #8 ; 852d7c: movs	r5, #0 ; 852d7e: mov	r9, r2 ; 852d80: movt	r3, #309 ; 852d84: str.w	r8, [r7, #8] ; 852d88: str	r3, [r7, #20] ; 852d8a: ldr.w	r8, [r6, r5, lsl #3] ; 852d8e: mov	r0, r8
+DEV_GPIO_GetDescription	853c20	DEV_INI_BY_PCB_Layout_Setting_Init@@Base	0xa8	IMM	853c1e: movs	r0, #168
+DEV_GPIO_GetDescription	853cca	DEV_INI_BY_PCB_Layout_Setting_Init@@Base	0xa8	IMM	853cc8: movs	r0, #168
+DEV_GPIO_GetDescription	85796a	DEV_PANEL_SetPWMBacklightLevel@@Base	0x6c	IMM	857968: movs	r0, #108
+DEV_GPIO_GetDescription	857eca	DEV_PANEL_SetBacklightFreqSet@@Base	0x6c	IMM	857ec6: movs	r0, #108 ; 857ec8: str	r6, [r7, #4]
+DEV_GPIO_GetDescription	85845e	DEV_PANEL_Init@@Base	0x6e	IMM	85844e: movs	r0, #110 ; 858450: strh.w	lr, [r3, #4] ; 858454: strh	r5, [r3, #6] ; 858456: strh	r4, [r3, #8] ; 858458: strh	r1, [r3, #10] ; 85845a: strh	r2, [r3, #2] ; 85845c: strh	r2, [r3, #12]
+DEV_GPIO_GetDescription	858486	DEV_PANEL_Init@@Base	0x6f	IMM	858484: movs	r0, #111
+DEV_GPIO_GetDescription	87541c	AMP_AD82587_HP_Mute@@Base	0xc3	IMM	875416: movs	r0, #195 ; 875418: mov	r5, r1 ; 87541a: str	r3, [r7, #4]
+DEV_GPIO_GetDescription	8757f4	AMP_PREAMP_HP_Mute@@Base	0xc3	IMM	8757ee: movs	r0, #195 ; 8757f0: mov	r5, r1 ; 8757f2: str	r3, [r7, #4]
+DEV_GPIO_GetDescription	8759fe	_AMP_PREAMP_DisableIIS@@Base		UNKNOWN	8759e0: mov.w	ip, #8192 ; 8759e4: push	{r4, r5, r7, lr} ; 8759e6: sub.w	ip, sp, ip ; 8759ea: str.w	r0, [ip, #4072] ; 8759ee: movw	r5, #7528 ; 8759f2: sub	sp, #8 ; 8759f4: movt	r5, #377 ; 8759f8: ldr	r3, [r5, #0] ; 8759fa: add	r7, sp, #0 ; 8759fc: str	r3, [r7, #4]
+DEV_GPIO_GetDescription	875a6a	AMP_PREAMP_Init@@Base	0xc4	IMM	875a68: movs	r0, #196
+DEV_GPIO_GetDescription	87691c	AMP_AD82586C_VESTEL_HP_Mute@@Base	0xc3	IMM	876916: movs	r0, #195 ; 876918: mov	r5, r1 ; 87691a: str	r3, [r7, #4]
+DEV_GPIO_GetDescription	877694	RT5047_Device_Initialize@@Base	0x5	IMM	877690: movs	r0, #5 ; 877692: str	r3, [r7, #36]
+DEV_GPIO_GetDescription	877700	RT5047_SetLNBPower@@Base	0x5	IMM	8776fc: movs	r0, #5 ; 8776fe: str	r3, [r7, #36]
+DEV_GPIO_GetDescription	877788	RT5047_SetPolar@@Base	0x5	IMM	877784: movs	r0, #5 ; 877786: str	r3, [r7, #68]
+DEV_GPIO_GetDescription	8777c0	RT5047_SetPolar@@Base	0x10	IMM	8777be: movs	r0, #16
+DEV_GPIO_GetDescription	877892	RT5047_GetAntOverload@@Base	0x4	IMM	87788e: movs	r0, #4 ; 877890: str	r3, [r7, #4]
+DEV_GPIO_GetDescription	87789a	RT5047_GetAntOverload@@Base	0x5	IMM	877898: movs	r0, #5
+DEV_GPIO_GetDescription	8fc424	PLAT_VUTIL_IPCShmWrite@@Base		UNKNOWN	8fc3dc: str.w	sl, [r7, #12] ; 8fc3e0: ands.w	sl, r5, #255 ; 8fc3e4: add.w	r6, r7, #24 ; 8fc3e8: movt	r4, #313 ; 8fc3ec: mov.w	r1, #2 ; 8fc3f0: movw	r8, #60984 ; 8fc3f4: movt	r0, #313 ; 8fc3f8: str	r4, [r7, #4] ; 8fc3fa: str	r3, [r7, #44] ; 8fc3fc: mov	fp, r2 ; 8fc3fe: str	r2, [r7, #24] ; 8fc400: mov	r9, r2 ; 8fc402: str	r2, [r6, #4] ; 8fc404: movt	r8, #313 ; 8fc408: str	r2, [r6, #8] ; 8fc40a: mov.w	r4, #1 ; 8fc40e: str	r0, [r7, #8] ; 8fc410: str	r2, [r6, #12] ; 8fc412: str	r2, [r6, #16] ; 8fc414: str	r1, [r7, #20] ; 8fc416: beq.n	8fc45a <PLAT_VUTIL_IPCShmWrite@@Base+0x29a> ; 8fc418: cmp.w	sl, #4 ; 8fc41c: bhi.w	8fc52a <PLAT_VUTIL_IPCShmWrite@@Base+0x36a> ; 8fc420: ldr.w	r0, [r8, fp, lsl #2]
+DEV_GPIO_GetDescription	8fc45c	PLAT_VUTIL_IPCShmWrite@@Base	0xc0	IMM	8fc45a: movs	r0, #192
+DEV_GPIO_GetDescription	8fc760	DEV_SRC_ConfigFrontEndDevice@@Base	0xc0	IMM	8fc75e: movs	r0, #192
+DEV_GPIO_GetDescription	8fc786	DEV_SRC_ConfigFrontEndDevice@@Base		UNKNOWN	8fc77e: blx	6aeddc <NDAL_VideoExt_Set_HDMI_ClrRatioScramble@plt> ; 8fc782: ldrb	r0, [r7, #7] ; 8fc784: adds	r0, #204
+DEV_GPIO_GetDescription	8fc904	DEV_SRC_HDMIHotPlugCtrl@@Base		UNKNOWN	8fc8fe: blx	6aeddc <NDAL_VideoExt_Set_HDMI_ClrRatioScramble@plt> ; 8fc902: mov	r0, r6
+DEV_GPIO_GetDescription	8fc96e	DEV_SRC_HDMIHotPlugCtrl@@Base	0xc0	IMM	8fc96c: movs	r0, #192
+DEV_GPIO_GetDescription	8fca5c	DEV_SRC_HDMIHotPlugAfterResume@@Base	0xcc	IMM	8fca44: movs	r0, #204 ; 8fca46: str	r3, [r7, #4] ; 8fca48: str	r3, [r7, #0] ; 8fca4a: mov	r4, r7 ; 8fca4c: str	r2, [r7, #20] ; 8fca4e: add.w	r6, r7, #20 ; 8fca52: str	r3, [r7, #8] ; 8fca54: str	r3, [r7, #12] ; 8fca56: str	r3, [r7, #16] ; 8fca58: ldr.w	r9, [pc, #160]
+DEV_GPIO_GetDescription	8fca7c	DEV_SRC_HDMIHotPlugAfterResume@@Base		UNKNOWN	8fca70: bl	8516c4 <DEV_GPIO_SetLevel@@Base> ; 8fca74: cmp	r5, r6 ; 8fca76: beq.n	8fca8c <DEV_SRC_HDMIHotPlugAfterResume@@Base+0x6c> ; 8fca78: ldr.w	r0, [r9], #4
+DEV_GPIO_GetDescription	8fd456	DEV_SRC_ConfigFrontEndDevice_level@@Base	0xc0	IMM	8fd454: movs	r0, #192
+DEV_GPIO_GetDescription	8fd478	DEV_SRC_ConfigFrontEndDevice_level@@Base	0xcc	IMM	8fd474: movs	r0, #204 ; 8fd476: mov	r5, sl
