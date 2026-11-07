@@ -73,5 +73,17 @@ int main(void)
     assert(oa_ad82587_configure(out.image, baseline, &p) == -EINVAL);
     assert(!memcmp(saved, out.image, sizeof saved));
     puts("ok amp image: in-place output and atomic invalid-input rejection; no hardware access");
+
+    /* Recovered cold-boot image: provenance guard against accidental edits. */
+    uint32_t fnv = UINT32_C(2166136261);
+    for (unsigned i = 0; i < OA_AD82587_REGISTERS; i++) {
+        fnv ^= oa_ad82587_baseline[i];
+        fnv *= UINT32_C(16777619);
+    }
+    assert(fnv == UINT32_C(0xab635b86));
+    assert(oa_ad82587_baseline[3] == 0x0e &&
+           oa_ad82587_baseline[4] == 0x0d &&
+           oa_ad82587_baseline[5] == 0x0d);
+    puts("ok amp image: recovered 38-byte cold-boot baseline (FNV 0xab635b86)");
     return 0;
 }

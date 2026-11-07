@@ -337,6 +337,8 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  key <code>               feed an IR key frame (RC/NEC code)\n"
                  "  hotel-state             persisted hotel tab inputs\n"
                  "  amp-profile             read immutable amplifier profile inputs\n"
+                 "  amp-state               query audio.amp init lifecycle\n"
+                 "  amp-init                submit one amplifier Init\n"
                  "  audio-curve <volume>    read published AQ curve value\n"
                  "  audio-curve-dump        dump 101 published AQ curve values\n"
                  "  audio-speaker <level> <balance>  speaker clamp/HAL balance map\n"
@@ -1296,6 +1298,28 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
             " state %" PRId32 " attack %" PRId32 " release %" PRId32 "\n",
             power,p.prescale,p.channel1,p.channel2,p.fine_tune,p.power_clip,p.speaker_drc,
             p.state_control4,p.limiter_attack,p.release_threshold);
+        return 0;
+    }
+    if(!strcmp(cmd,"amp-state")) {
+        if(force || a1 || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_audio_amp_iface *s=h->api.lookup(h,OA_SVC_AUDIO_AMP,1);
+        if(!s){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        oa_audio_amp_status st;int rc=s->state(&st);
+        h->api.release(h,OA_SVC_AUDIO_AMP);
+        if(rc){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
+        snprintf(outbuf,outlen,"amp enabled %d busy %d result %d ticket %" PRIu64
+            " reset %u mute %u\n",st.enabled,st.busy,st.native_result,
+            st.ticket,(unsigned)st.reset_cached,(unsigned)st.mute_cached);
+        return 0;
+    }
+    if(!strcmp(cmd,"amp-init")) {
+        if(force || a1 || a2){snprintf(outbuf,outlen,"failed errno %d\n",EINVAL);return -1;}
+        const oa_audio_amp_iface *s=h->api.lookup(h,OA_SVC_AUDIO_AMP,1);
+        if(!s){snprintf(outbuf,outlen,"failed errno %d\n",ENODEV);return -1;}
+        int rc=s->init();
+        h->api.release(h,OA_SVC_AUDIO_AMP);
+        if(rc){snprintf(outbuf,outlen,"failed errno %d\n",-rc);return -1;}
+        snprintf(outbuf,outlen,"ok\n");
         return 0;
     }
     if(!strcmp(cmd,"audio-curve") || !strcmp(cmd,"audio-curve-dump")) {

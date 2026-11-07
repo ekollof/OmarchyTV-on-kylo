@@ -14,13 +14,18 @@ typedef struct {
 /* Supply all profile values and the current register image (initially the
  * locally extracted firmware baseline). Vendor init mutates a retained global
  * image; repeated init must feed the preceding image back in, not reset it.
- * No default register image is invented or embedded. Profile sentinels and
+ * This function invents no baseline; the recovered cold-boot initializer is
+ * the separate oa_ad82587_baseline below. Profile sentinels and
  * low-byte/low24-bit truncation match the shipped method; notably the release
  * override is ignored when unsigned speaker_drc <500. out may equal baseline.
  * Returns -EINVAL without changing out for invalid pointers. This is not a
  * hardware initialization routine or a UI-volume-to-amplifier conversion. */
 int oa_ad82587_configure(uint8_t out[OA_AD82587_REGISTERS],
     const uint8_t baseline[OA_AD82587_REGISTERS], const oa_ad82587_profile *profile);
+/* aurora.elf .data initializer at virtual 0x017640e8 (file 0x017440e8), the
+ * retained global the vendor Init patches and writes. Not the live stock
+ * image; read-only data with no GPIO/MCU/I2C access. */
+extern const uint8_t oa_ad82587_baseline[OA_AD82587_REGISTERS];
 /* Fresh immutable hwprofile snapshot using recovered power/section/default
  * rules. out->speaker_power borrows the caller's32-byte power buffer, never
  * input data or temporary stack storage. Both outputs unchanged on error.

@@ -33,17 +33,17 @@ BINDIR   ?= $(PREFIX)/bin
 LIBDIR   ?= $(PREFIX)/lib/$(PROJECT)
 
 BUILD    ?= build
-MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_menu i18n ui_navigation ui_profile ui_list image_decode audio_amp_profile epg tuner pvr channels lua spi
+MODULES  := plat ticker ir ui_console panel power display audio settings service_db source ui_vendor ui_engine ui_omarchy ui_diag ui_clock ui_anim audio_curve cec audio_mixer graphics scene_display ui_theme ui_menu i18n ui_navigation ui_profile ui_list image_decode audio_amp_profile audio_amp epg tuner pvr channels lua spi
 # Four-way inventory. CORE_MODULES is the hardware/platform base (SSH/build
 # target): hardware access + the local data stores, no TV or UI layer.
 CORE_MODULES := plat display panel ir audio source power tuner settings image_decode
-HW_MODULES := plat panel display graphics scene_display audio cec ir source tuner spi power
+HW_MODULES := plat panel display graphics scene_display audio cec ir source tuner spi power audio_amp
 MW_MODULES := settings service_db channels epg pvr image_decode i18n audio_curve audio_mixer audio_amp_profile lua
 UTIL_MODULES := ticker ui_clock
 UI_MODULES := ui_engine ui_vendor ui_omarchy ui_theme ui_profile ui_menu ui_list ui_navigation ui_anim ui_console ui_diag
 # Additive distribution layers on the base platform. Each stage is cumulative.
 TV_MODULES := epg pvr channels service_db i18n
-AV_MODULES := audio_curve audio_mixer audio_amp_profile cec
+AV_MODULES := audio_curve audio_mixer audio_amp_profile audio_amp cec
 UI_TIER_MODULES := ticker ui_clock ui_anim ui_engine ui_vendor ui_theme ui_profile ui_menu ui_list ui_navigation ui_omarchy lua
 DEV_MODULES := ui_console ui_diag spi
 GPU_MODULES := graphics scene_display
@@ -64,7 +64,7 @@ comma := ,
 stage_autoload = $(subst $(space),$(comma),$(1))
 EXTRA_MODULES := $(filter-out $(CORE_MODULES),$(MODULES))
 # only these modules call the vendor HAL, so only they get the dependency
-VENDOR_MODULES := plat panel audio source display
+VENDOR_MODULES := plat panel audio source display audio_amp
 # modules that need a third-party library (sqlite) rather than the vendor HAL
 SETTINGS_MODULES := settings service_db
 SQLITE_LIBS := -lsqlite3
@@ -960,6 +960,11 @@ $(BUILD)/modules/mod_audio.so: $(call pic_objs,modules__mod_audio,modules/audio/
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),audio),$(VENDOR_LDFLAGS),)
 $(eval $(call emit_pics,modules__mod_audio,modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c,-pthread,))
+
+$(BUILD)/modules/mod_audio_amp.so: $(call pic_objs,modules__mod_audio_amp,modules/audio_amp/audio_amp.c common/amp_owner.c common/amp_init.c common/amp_vendor.c common/amp_board.c common/audio_amp.c common/amp_i2c.c common/audio_amp_profile.c common/profile.c)
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),audio_amp),$(VENDOR_LDFLAGS),)
+$(eval $(call emit_pics,modules__mod_audio_amp,modules/audio_amp/audio_amp.c common/amp_owner.c common/amp_init.c common/amp_vendor.c common/amp_board.c common/audio_amp.c common/amp_i2c.c common/audio_amp_profile.c common/profile.c,-pthread,include/openaurora/amp_board.h include/openaurora/amp_i2c.h include/openaurora/amp_init.h include/openaurora/amp_owner.h include/openaurora/amp_vendor.h include/openaurora/audio_amp.h include/openaurora/module.h include/openaurora/services.h))
 
 $(BUILD)/modules/mod_display.so: $(call pic_objs,modules__mod_display,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c)
 	@mkdir -p $(dir $@)
@@ -2746,5 +2751,10 @@ $(BUILD)/tests/amp_vendor: tests/amp_vendor.c common/amp_vendor.c common/amp_boa
 check-amp-vendor: $(BUILD)/tests/amp_vendor
 	@$(BUILD)/tests/amp_vendor
 check: check-amp-vendor
+
+.PHONY: check-audio-amp-module
+check-audio-amp-module: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_audio_amp.so $(BUILD)/tests/mod_plat_stub.so
+	node tests/audio_amp_ipc.cjs $(abspath $(BUILD))
+check: check-audio-amp-module
 
 .PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-oa-client check-display check-svg check-runtime clean install arm tv vendor

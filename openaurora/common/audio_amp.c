@@ -2,6 +2,19 @@
 #include <string.h>
 #include "openaurora/audio_amp.h"
 
+/* Initial AD82587 register image, copied from the shipping aurora.elf .data
+ * initializer at virtual 0x017640e8 (file offset 0x017440e8; .data starts at
+ * 0x017563c0/0x017363c0). The vendor Init/Reset/Mute code patches this
+ * retained global and writes all 38 registers; this is the cold-boot
+ * baseline, not the live stock image (the live 03..05 read 1b/05/05). It is
+ * recovered from the firmware, not invented; FNV-1a-32 = 0xab635b86. */
+const uint8_t oa_ad82587_baseline[OA_AD82587_REGISTERS] = {
+    0x01, 0x01, 0x11, 0x0e, 0x0d, 0x0d, 0x81, 0x00, 0x6a, 0x0d,
+    0x00, 0x0f, 0x36, 0x80, 0x00, 0x00, 0x08, 0x00, 0x00, 0x06,
+    0x70, 0x00, 0x00, 0x14, 0xc0, 0x00, 0x00, 0x00, 0x1a, 0x00,
+    0x00, 0x53, 0x00, 0x10, 0x02, 0x00, 0x00, 0x00
+};
+
 static void be24(uint8_t *p, uint32_t value)
 {
     p[0] = (uint8_t)(value >> 16);

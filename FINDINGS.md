@@ -32,6 +32,19 @@ video open. `common/amp_vendor.c` composes injected GPIO/STBC/I2C/delay into
 run, no module consumer, and paired shutdown/ownership remain open.
 Report: AMP-TRANSPORT-2026-11-07.
 
+AMP-MODULE-2026-11-07 adds the gated `audio_amp` module and the missing
+baseline. The vendor Init patches a retained 38-byte global whose initializer
+is in aurora.elf `.data` at virtual `0x017640e8` (file `0x017440e8`), embedded
+as `oa_ad82587_baseline` with FNV-1a-32 `0xab635b86`; the live 03..05
+`1b/05/05` is not the baseline (`0e/0d/0d`). `audio.amp:v1` exposes
+`amp-init` (submit only) and `amp-state` (nonblocking completion); enable=1
+requires a ready plat service, loads the profile, opens `/dev/i2c-3` for
+writing and creates `amp_owner` with the baseline, while enable=0 publishes a
+disabled service and ENODEV. Quiesce unpublishes, detaches and joins/closes on
+a worker. Host lifecycle/fail-closed test and TV `--check` pass; ARM
+`mod_audio_amp.so` `41287a16...`. No module start, GPIO/STBC/register write or
+audible run has occurred. Report: AMP-MODULE-2026-11-07.
+
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR
 under a replacement. The stock parser also polls `DEV_Ir_GetKey`
 (`NDAL_VideoExt_BLAST_RX`, V4L2 control 0xf25). The BLAST common fd in the live

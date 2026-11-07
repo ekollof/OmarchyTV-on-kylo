@@ -760,6 +760,15 @@ oa_amp_init_io; check-amp-board/check-amp-vendor pass; ARM references only the
 three exported vendor symbols. No module consumer, hardware run, paired
 shutdown or audible acceptance. AMP-TRANSPORT.
 
+Amp module 2026-11-07 (offline): audio_amp v0.1 publishes audio.amp:v1;
+amp-init submits one Init to amp_owner, amp-state polls completion/caches.
+audio_amp.enable=0 default; enable=1 needs plat ready, loads the profile, opens
+/dev/i2c-3 and seeds the owner from the recovered aurora.elf cold-boot image
+(vaddr 0x17640e8, FNV 0xab635b86). Quiesce unpublishes then joins/closes on a
+worker. Host disabled/fail-closed lifecycle test, ARM build 41287a16... and TV
+--check pass. No module start or hardware write yet; real mod_plat + amp-init +
+03..05 readback + owner audible confirmation remain. AMP-MODULE.
+
 Input/PVR group 2026-11-07: live settingsDB source5/previous4/volume0;
 stock owns video28 BLAST, ntkdvif, video20/21/24, demux0 and DVB nodes.
 Preflight found mod_ir missing -ldl on TV (fixed; libdl NEEDED). Two BLAST

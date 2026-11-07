@@ -366,6 +366,27 @@ typedef struct {
     int (*copy)(oa_ad82587_profile *out,char power[32]);
 } oa_audio_amp_profile_iface;
 
+/* audio.amp — gated AD82587 Init lifecycle. Published by mod_audio_amp.
+ * init submits one blocking Init to the module's amp_owner worker; it returns
+ * 0 accepted or negative errno and never waits for the worker. state copies a
+ * snapshot on the loop: busy means submitted/not collected; result is the
+ * vendor Init return (1 complete, 0 first write failed, negative argument
+ * error), not audible acceptance. Hold the provider during calls; no pointer
+ * escapes. Tickets are provider-instance scoped; reload invalidates them. */
+#define OA_SVC_AUDIO_AMP "audio.amp"
+typedef struct {
+    int enabled;
+    int busy;
+    int have_result;
+    uint64_t ticket;
+    int native_result;
+    uint8_t reset_cached, mute_cached;
+} oa_audio_amp_status;
+typedef struct {
+    int (*init)(void);
+    int (*state)(oa_audio_amp_status *out);
+} oa_audio_amp_iface;
+
 /* audio — volume/mute. Published by mod_audio.
  * bind_session is reserved and returns ENOTSUP for every argument until an
  * asynchronous service completion contract exists. The lower owner supports

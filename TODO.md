@@ -182,7 +182,16 @@ unvalidated.
       three vendor symbols. The GPIO wrappers issue the `670a` claim and the
       STBC call needs the plat video-open global fd. No module consumer,
       hardware run, paired shutdown or audible acceptance yet.
-      AMP-TRANSPORT.
+      AMP-TRANSPORT. 2026-11-07 module: `audio_amp` v0.1 publishes
+      `audio.amp:v1`; `amp-init` submits one Init to the existing owner worker
+      and `amp-state` polls the completion. `audio_amp.enable=0` by default;
+      enable=1 requires plat ready, loads the profile, opens `/dev/i2c-3` and
+      creates the owner with the recovered cold-boot image (`aurora.elf`
+      vaddr `0x17640e8`, FNV `0xab635b86`). Quiesce unpublishes, then joins
+      the owner and closes I2C on a worker. Host lifecycle/fail-closed tests,
+      ARM build and TV `--check` pass. Still open: real mod_plat + audio_amp
+      start, `amp-init` hardware run, independent 03..05 readback, owner
+      audible confirmation, paired shutdown. AMP-MODULE.
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but
