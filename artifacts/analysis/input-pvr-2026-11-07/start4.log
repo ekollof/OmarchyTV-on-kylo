@@ -1,0 +1,56 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+watchdog disable -> sent
+disable_rc=0
+ 1619 /vendor/com.nvt.appmgr/com.nvt.appmgr --applist=/vendor/data/nvt.app.debug.ini
+== start
+launched=5924
+== ps
+ 5903 S    sh               sh -c /buffer/wdtctl disable; echo disable_rc=$?; kill -TERM 1773; sleep 2; ps -eo pid,args | grep -E "[a]urora.elf|[a]ppmgr" || true; echo "== start"; cd /buffer/oa-ip-20261107e && setsid ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-ip.sock --log 3 >/buffer/oa-ip-20261107e/run.log 2>&1 < /dev/null & echo launched=$!; sleep 5; echo "== ps"; ps -eo pid,stat,comm,args | grep -E "[o]penaurora"; echo "== wchan"; pid=$(ps -eo pid,comm,args | awk "\$2 == \"openaurora\" {print \$1; exit}"); echo pid=$pid; cat /proc/$pid/wchan 2>/dev/null; echo; echo "== log"; cat /buffer/oa-ip-20261107e/run.log; echo "== status source"; /buffer/oa-ip-20261107e/oa-client --timeout 5 /tmp/oa-ip.sock "status source"; echo "== status ir"; /buffer/oa-ip-20261107e/oa-client --timeout 5 /tmp/oa-ip.sock "status ir"; echo "== source-state"; /buffer/oa-ip-20261107e/oa-client --timeout 5 /tmp/oa-ip.sock "source-state"
+ 5924 S    openaurora       ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-ip.sock --log 3
+== wchan
+pid=5924
+poll_schedule_timeout
+== log
+[635805] INFO host         openaurora starting, modules=./modules
+[635806] INFO host         control socket /tmp/oa-ip.sock
+[635806] INFO host         loaded plat v1 (./modules/mod_plat.so)
+[635806] DBG  plat         service up: plat v1
+[635806] INFO host         started plat
+[635821] INFO host         loaded source v0.1 (./modules/mod_source.so)
+[635822] INFO source       source: VIN open (fd 6), switching enabled
+[635822] DBG  source       service up: source v1
+[635822] INFO host         started source
+[635822] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[635822] DBG  ir           service up: input v1
+[635825] INFO ir           ir: BLAST v4l2 fd 7 from /dev/video28
+[635825] INFO ir           ir: BLAST receiver protocol 4 (set rc=0, worker on)
+[635825] INFO ir           remote parser ready; BLAST only, UART path empty
+[635825] INFO host         started ir
+[635826] INFO host         loaded pvr v1 (./modules/mod_pvr.so)
+[635826] DBG  pvr          service up: pvr v2
+[635826] INFO host         started pvr
+openaurora: 4 module(s) loaded, control on /tmp/oa-ip.sock
+== status source
+name    source
+state   started
+version 0.1
+path    ./modules/mod_source.so
+requires plat
+cleanup_pending 0
+activation_rejected 0
+services source:v1
+== status ir
+name    ir
+state   started
+version 0.1
+path    ./modules/mod_ir.so
+requires plat
+cleanup_pending 0
+activation_rejected 0
+services input:v1
+== source-state
+source type -1 available 1

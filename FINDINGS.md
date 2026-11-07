@@ -247,12 +247,15 @@ INPUT-PVR-TAKEOVER-2026-11-07: `mod_ir` used `dlopen` without `-ldl`; the TV
 preflight rejected it (`undefined symbol: dlopen`, fixed to NEEDED libdl).
 More importantly, `NDAL_VideoExt_BLAST_RX` blocks in `blast_io_get_key` and
 was called from a 50 ms host timer. The single host thread then blocked and
-every control command timed out; a poll-readiness gate did not help. BLAST must
-move to a dedicated worker and marshal keys with `api->post`; until then
-`ir.blast=0`. With BLAST off, plat/source/ir/pvr start; source-select 17
-(vin3) then 0 (vin1) and the offline PVR add/cancel work. This is not IR
-hardware, DVR hardware or visible source-routing acceptance. Report:
-INPUT-PVR-TAKEOVER-2026-11-07.
+every control command timed out; a poll-readiness gate did not help. BLAST RX
+now runs on a dedicated worker and queues keys for `api->post`; the fake
+blocking-lib test passes, and with real BLAST the main thread is in
+`poll_schedule_timeout` while the worker is in `blast_io_get_key`; source and
+PVR commands stay responsive. Closing the v4l2 fd does **not** interrupt the
+vendor call, so quit/stop cleanup remains stuck joining the worker. A killable
+helper process or a vendor-supported wake is required before reload or
+physical-key acceptance. With BLAST off, source-select 17 (vin3) then 0 (vin1)
+and offline PVR add/cancel work. Report: INPUT-PVR-TAKEOVER-2026-11-07.
 
 EASI-PROBE-2026-11-05: testtool TCP1986 exposes read-only GETCHANNELLIST
 (RSN/name) and ACTIVECHANNELLIST XML (RSN/name/handle/ONID/TSID/SID/type). A

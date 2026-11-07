@@ -2017,6 +2017,15 @@ check-ir-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_plat.so $(BUILD)/modu
 	node tests/ir_quiesce.cjs $(abspath $(BUILD))
 check: check-ir-quiesce
 
+$(BUILD)/tests/fake_blast_lib.so: tests/fake_blast_lib.c
+	@mkdir -p $(dir $@)
+	$(CC) -shared -fPIC -o $@ $< -pthread
+
+.PHONY: check-ir-blast-worker
+check-ir-blast-worker: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ir.so $(BUILD)/tests/mod_plat_stub.so $(BUILD)/tests/fake_blast_lib.so
+	node tests/ir_blast_worker.cjs $(abspath $(BUILD))
+check: check-ir-blast-worker
+
 .PHONY: check-ui-vendor-ipc
 check-ui-vendor-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui_nav_display.so
 	node tests/ui_vendor_ipc.cjs $(abspath $(BUILD))

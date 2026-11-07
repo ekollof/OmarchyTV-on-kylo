@@ -17,7 +17,6 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <poll.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,9 +46,24 @@ struct ctx {
     void (*blast_v4l2_fd)(int);
     int (*blast_v4l2_close)(int);
     int blast_fd;
-    uint64_t blast_timer;
     int blast_on;
-    unsigned rc_protocol, rc_sweep, rc_tick;
+    unsigned rc_protocol, rc_sweep;
+
+    /* BLAST_RX blocks in the vendor driver while the remote is idle. It runs
+     * on this dedicated receiver; keys are queued and delivered on the loop
+     * through api->post, never by calling emit/log from the worker. */
+    uint32_t id;
+    pthread_t blast_thread;
+    int blast_thread_started;
+    volatile int blast_stop;
+    pthread_mutex_t blast_lock;
+    struct {
+        uint32_t code;
+        uint8_t aux, flag;
+    } blast_q[16];
+    unsigned blast_head, blast_tail;
+    int blast_post_pending;
+    int quiescing;
 
     /* ABI 3 quiesce: a BLAST/UART dual close can stall the vendor driver for
      * tens of seconds. The loop hands the fds/libs to this worker and retries
@@ -220,58 +234,93 @@ static void on_readable(void *ud, int fd, unsigned rev)
 /* The stock parser has two sources: the MCU UART frames above and the vendor
  * NDAL BLAST V4L2 receiver. DEV_Ir_GetKey polls BLAST_RX and synthesizes the
  * same 9-byte frame: FF FF 50/5E A1 A2 CC ~CC FF FF. Use the same path when the
- * UART is silent (the MCU only forwards frames after _HW_MCU_RcInit). */
-static void blast_poll(void *ud)
+ * UART is silent (the MCU only forwards frames after _HW_MCU_RcInit).
+ *
+ * BLAST_RX blocks in the vendor driver while the remote is idle. The receiver
+ * therefore runs on blast_worker; the worker only queues the raw result and
+ * calls api->post. blast_deliver runs on the host loop and does the logging and
+ * emit_key work. Never call the host from the worker. */
+static void blast_deliver(void *ud)
 {
     struct ctx *c = ud;
-    if (!c || !c->blast_on || !c->blast_rx)
+    if (!c || c->quiescing)
         return;
-    if (c->rc_sweep && ++c->rc_tick >= 40) {
-        static const unsigned next[] = { 4, 5, 6, 0xc };
-        c->rc_tick = 0;
-        for (unsigned i = 0; i < 4; i++)
-            if (next[i] == c->rc_protocol) {
-                c->rc_protocol = next[(i + 1) & 3u];
-                break;
-            }
-        (void)c->blast_set(c->rc_protocol);
-        c->api->log(c->api->priv, OA_LOG_INFO,
-                    "ir: BLAST protocol sweep -> %u", c->rc_protocol);
+    for (;;) {
+        pthread_mutex_lock(&c->blast_lock);
+        if (c->blast_head == c->blast_tail) {
+            c->blast_post_pending = 0;
+            pthread_mutex_unlock(&c->blast_lock);
+            break;
+        }
+        uint32_t code = c->blast_q[c->blast_head].code;
+        uint8_t aux = c->blast_q[c->blast_head].aux;
+        uint8_t flag = c->blast_q[c->blast_head].flag;
+        c->blast_head = (c->blast_head + 1) & 15u;
+        pthread_mutex_unlock(&c->blast_lock);
+        uint8_t rc = (uint8_t)(code & 0x3f);
+        const char *name = rc_name(rc);
+        c->api->log(c->api->priv, OA_LOG_DEBUG,
+                    "ir: BLAST code=%08x aux=%02x flag=%02x -> rc=%u %s",
+                    code, aux, flag, rc, name ? name : "?");
+        emit_key(c, rc, flag ? OA_KEY_RELEASE : OA_KEY_PRESS);
     }
-    /* BLAST_RX can sleep in blast_io_get_key even when the v4l2 fd reports
-     * readable; this readiness gate is not a complete fix. The vendor call
-     * must move to a dedicated worker before BLAST can be enabled from the
-     * host loop again. The 2026-11-07 input/PVR run used ir.blast=0 after
-     * this path blocked every control command while the remote was idle. */
-    if (c->blast_fd < 0)
-        return;
-    struct pollfd ready = { .fd = c->blast_fd, .events = POLLIN };
-    if (poll(&ready, 1, 0) <= 0)
-        return;
-    uint32_t code = 0;
-    uint8_t aux = 0, flag = 0;
-    /* DEV_Ir_GetKey returns 0 when a key is present; a nonzero value is the
-     * no-key/debug path that delays and retries. */
-    if (c->blast_rx(&code, &aux, &flag))
-        return;
-    /* The BLAST hardware decoder returns the profile RC code in the low six
-     * bits (Right = 22 -> 0x16, seen as 0x3056/0x3856 with the RC5 toggle);
-     * flag is 0 on press and 1 on release. Do not feed this through the NEC
-     * frame parser: that parser expects the 0x66/0x11 A1/A2/complement frame. */
-    uint8_t rc = (uint8_t)(code & 0x3f);
-    const char *name = rc_name(rc);
-    c->api->log(c->api->priv, OA_LOG_DEBUG,
-                "ir: BLAST code=%08x aux=%02x flag=%02x -> rc=%u %s",
-                code, aux, flag, rc, name ? name : "?");
-    emit_key(c, rc, flag ? OA_KEY_RELEASE : OA_KEY_PRESS);
+}
+
+static void *blast_worker(void *v)
+{
+    struct ctx *c = v;
+    unsigned tick = 0;
+    while (!c->blast_stop) {
+        if (!c->blast_on || !c->blast_rx)
+            break;
+        if (c->rc_sweep && ++tick >= 40) {
+            static const unsigned next[] = { 4, 5, 6, 0xc };
+            tick = 0;
+            for (unsigned i = 0; i < 4; i++)
+                if (next[i] == c->rc_protocol) {
+                    c->rc_protocol = next[(i + 1) & 3u];
+                    break;
+                }
+            (void)c->blast_set(c->rc_protocol);
+        }
+        uint32_t code = 0;
+        uint8_t aux = 0, flag = 0;
+        /* DEV_Ir_GetKey returns 0 when a key is present; a nonzero value is
+         * the no-key/debug path. The call may sleep in the vendor driver. */
+        int rc = c->blast_rx(&code, &aux, &flag);
+        if (c->blast_stop)
+            break;
+        if (rc) {
+            const struct timespec pause = { .tv_nsec = 20000000 };
+            (void)nanosleep(&pause, NULL);
+            continue;
+        }
+        int post = 0;
+        pthread_mutex_lock(&c->blast_lock);
+        unsigned next = (c->blast_tail + 1) & 15u;
+        if (next != c->blast_head) {
+            c->blast_q[c->blast_tail].code = code;
+            c->blast_q[c->blast_tail].aux = aux;
+            c->blast_q[c->blast_tail].flag = flag;
+            c->blast_tail = next;
+            if (!c->blast_post_pending) {
+                c->blast_post_pending = 1;
+                post = 1;
+            }
+        }
+        pthread_mutex_unlock(&c->blast_lock);
+        if (post && c->api->post(c->api->priv, c->id, blast_deliver, c) != 0) {
+            pthread_mutex_lock(&c->blast_lock);
+            c->blast_post_pending = 0;
+            pthread_mutex_unlock(&c->blast_lock);
+        }
+    }
+    return NULL;
 }
 
 static void blast_close(struct ctx *c)
 {
-    if (c->blast_timer) {
-        c->api->timer_del(c->api->priv, c->blast_timer);
-        c->blast_timer = 0;
-    }
+    c->blast_stop = 1;
     c->blast_on = 0;
     if (c->blast_fd >= 0) {
         if (c->blast_v4l2_close)
@@ -279,6 +328,10 @@ static void blast_close(struct ctx *c)
         else
             close(c->blast_fd);
         c->blast_fd = -1;
+    }
+    if (c->blast_thread_started) {
+        (void)pthread_join(c->blast_thread, NULL);
+        c->blast_thread_started = 0;
     }
     if (c->blast) {
         dlclose(c->blast);
@@ -345,7 +398,6 @@ static int blast_open(struct ctx *c)
         }
     }
     c->rc_sweep = 0;
-    c->rc_tick = 0;
     int proto = atoi(c->api->config_get(c->api->priv, "ir.rc_protocol", "4"));
     if (proto == 0) {
         c->rc_sweep = 1;
@@ -356,12 +408,22 @@ static int blast_open(struct ctx *c)
     if (atoi(c->api->config_get(c->api->priv, "ir.blast_set", "1")) == 1)
         rc = c->blast_set(c->rc_protocol);
     c->blast_on = 1;
-    c->blast_timer = c->api->timer_add(c->api->priv, 0, 50, blast_poll, c);
+    c->blast_stop = 0;
+    c->blast_head = 0;
+    c->blast_tail = 0;
+    c->blast_post_pending = 0;
+    if (pthread_create(&c->blast_thread, NULL, blast_worker, c) != 0) {
+        c->blast_on = 0;
+        blast_close(c);
+        c->api->log(c->api->priv, OA_LOG_ERROR,
+                    "ir: BLAST receiver worker create failed");
+        return -1;
+    }
+    c->blast_thread_started = 1;
     c->api->log(c->api->priv, OA_LOG_INFO,
-                "ir: BLAST receiver protocol %u%s (set rc=%d, poll %s)",
-                c->rc_protocol, c->rc_sweep ? " sweep" : "", rc,
-                c->blast_timer ? "on" : "unavailable");
-    return c->blast_timer ? 0 : -1;
+                "ir: BLAST receiver protocol %u%s (set rc=%d, worker on)",
+                c->rc_protocol, c->rc_sweep ? " sweep" : "", rc);
+    return 0;
 }
 
 static int input_feed(const uint8_t *bytes, size_t n)
@@ -391,6 +453,11 @@ static int m_init(const oa_host_api *api, void **out)
     if (!c)
         return -1;
     c->api = api;
+    c->id = api->owner_id ? api->owner_id(api->priv) : 0;
+    if (pthread_mutex_init(&c->blast_lock, NULL) != 0) {
+        free(c);
+        return -1;
+    }
     c->fd = -1;
     c->blast_fd = -1;
     c->cleanup_fd = -1;
@@ -404,8 +471,10 @@ static int m_start(void *v)
 {
     struct ctx *c = v;
     if (c->cleanup_running || c->cleanup_fd >= 0 || c->cleanup_blast_fd >= 0 ||
-        c->cleanup_blast)
+        c->cleanup_blast || c->blast_thread_started)
         return -EBUSY;
+    c->quiescing = 0;
+    c->blast_stop = 0;
     g_ctx = c;
     if (c->api->publish(c->api->priv, OA_SVC_INPUT, 1, &g_input) != 0)
         return -1;
@@ -480,10 +549,18 @@ static void *cleanup_worker(void *v)
         if (c->cleanup_v4l2_close) (void)c->cleanup_v4l2_close(fd);
         else (void)close(fd);
     }
+    if (c->blast_thread_started) {
+        (void)pthread_join(c->blast_thread, NULL);
+        c->blast_thread_started = 0;
+    }
     if (c->cleanup_blast) {
         (void)dlclose(c->cleanup_blast);
         c->cleanup_blast = NULL;
     }
+    c->blast_set = NULL;
+    c->blast_rx = NULL;
+    c->blast_v4l2_fd = NULL;
+    c->blast_v4l2_close = NULL;
     if (c->cleanup_fd >= 0) {
         int fd = c->cleanup_fd;
         c->cleanup_fd = -1;
@@ -524,16 +601,15 @@ static int m_quiesce(void *v)
         return -EAGAIN;
     }
 
-    if (c->blast_timer) {
-        c->api->timer_del(c->api->priv, c->blast_timer);
-        c->blast_timer = 0;
-    }
+    c->quiescing = 1;
+    c->blast_stop = 1;
     c->blast_on = 0;
     if (c->watch) {
         c->api->watch_del(c->api->priv, c->watch);
         c->watch = 0;
     }
-    if (c->fd < 0 && c->blast_fd < 0 && !c->blast)
+    if (c->fd < 0 && c->blast_fd < 0 && !c->blast &&
+        !c->blast_thread_started)
         return 0;
 
     c->cleanup_fd = c->fd;
@@ -544,9 +620,6 @@ static int m_quiesce(void *v)
     c->blast_fd = -1;
     c->blast = NULL;
     c->blast_v4l2_close = NULL;
-    c->blast_set = NULL;
-    c->blast_rx = NULL;
-    c->blast_v4l2_fd = NULL;
 
     int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
     if (rc) {
@@ -556,10 +629,18 @@ static int m_quiesce(void *v)
             else (void)close(c->cleanup_blast_fd);
             c->cleanup_blast_fd = -1;
         }
+        if (c->blast_thread_started) {
+            (void)pthread_join(c->blast_thread, NULL);
+            c->blast_thread_started = 0;
+        }
         if (c->cleanup_blast) {
             (void)dlclose(c->cleanup_blast);
             c->cleanup_blast = NULL;
         }
+        c->blast_set = NULL;
+        c->blast_rx = NULL;
+        c->blast_v4l2_fd = NULL;
+        c->blast_v4l2_close = NULL;
         if (c->cleanup_fd >= 0) {
             (void)close(c->cleanup_fd);
             c->cleanup_fd = -1;
@@ -596,6 +677,7 @@ static void m_destroy(void *v)
         c->api->unpublish(c->api->priv, OA_SVC_INPUT);
         c->published = 0;
     }
+    pthread_mutex_destroy(&c->blast_lock);
     if (g_ctx == c)
         g_ctx = NULL;
     free(c);

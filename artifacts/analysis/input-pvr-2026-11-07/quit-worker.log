@@ -1,0 +1,25 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+== quit
+bye
+quit_rc=1
+oa-client: timeout after 20s waiting for a reply
+== ps
+ 5924 S    openaurora       ./openaurora --modules ./modules --config ./openaurora.conf --sock /tmp/oa-ip.sock --log 3
+== log tail
+[689821] ERR  host         ir: cleanup pending; retry stop/unload
+[689821] ERR  host         plat: required by active module 'ir'
+[689872] ERR  host         ir: cleanup pending; retry stop/unload
+[689872] ERR  host         plat: required by active module 'ir'
+[689923] ERR  host         ir: cleanup pending; retry stop/unload
+[689923] ERR  host         plat: required by active module 'ir'
+[689974] ERR  host         ir: cleanup pending; retry stop/unload
+[689974] ERR  host         plat: required by active module 'ir'
+[690026] ERR  host         ir: cleanup pending; retry stop/unload
+[690026] ERR  host         plat: required by active module 'ir'
+[690077] ERR  host         ir: cleanup pending; retry stop/unload
+[690077] ERR  host         plat: required by active module 'ir'
+srwx------    1 root     root             0 Nov  7 01:20 /tmp/oa-ip.sock

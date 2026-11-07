@@ -183,11 +183,15 @@ unvalidated.
       Visible display/audio routing and DB/UI resync were not validated; the
       settings `m_current_source` stayed5. INPUT-PVR-TAKEOVER.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
-      `mod_ir` was unimplementable on the control loop: `BLAST_RX` blocked in
-      `blast_io_get_key` and every socket command timed out; a poll readiness
-      gate did not fix it. The TV link also needed `-ldl`. BLAST must move to a
-      dedicated worker that posts key events; no IR key was tested in the
-      clean run (`ir.blast=0`).
+      `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts
+      them to the loop; the TV link also needed `-ldl`. `check-ir-blast-worker`
+      uses a blocking fake libNDAL_EX and proves loop responsiveness, posted
+      press/release keys and clean fake quit. Hardware `ir.blast=1`: main
+      thread `poll_schedule_timeout`, worker `blast_io_get_key`, source/PVR
+      commands responsive. **But real quit cannot join the worker after fd
+      close; cleanup sticks in pthread_join.** A killable helper process or a
+      vendor-supported wake is required before stop/reload and physical-key
+      acceptance. No physical key was tested.
 - [ ] PVR: frontend/demux/dvr open, record/playback and TS output; record what
       is gated by storage. 2026-11-07: only the offline persistent stub ran;
       `pvr-add`/`pvr-list`/`pvr-cancel` worked (cancel state3, record retained).
