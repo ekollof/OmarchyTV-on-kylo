@@ -40,7 +40,7 @@ async function main() {
     fs.writeFileSync(config,
         'autoload=\n' +
         'ir.blast=1\n' +
-        `ir.blast_helper=${helper}\n` +
+        'ir.blast_helper=oa-ir-blast\n' +
         'ir.blast_video=\n' +
         'ir.device=\n' +
         'ir.rc_protocol=4\n' +

@@ -192,9 +192,10 @@ unvalidated.
       now runs in killable `oa-ir-blast`; real quit and `reload ir` pass with
       no helper left, and `pipe2` replaced a GLIBC_2.28 `fcntl` binding. Still
       unverified: a physical remote press/repeat/release with the helper
-      active. Packaging gap: `oa-ir-blast` must be installed with `mod_ir` and
-      `ir.blast_helper` set by the stage/install path; this run used a manual
-      `/buffer` stage. IR-BLAST-HELPER.
+      active. Packaging verified: `all`/`all-core`/`all-stage` build the helper,
+      cold/stage bundles copy and hash it, `install*` put it in `BINDIR`, and
+      `ir.blast_helper=oa-ir-blast` resolves against `/proc/self/exe`.
+      IR-BLAST-HELPER.
 - [ ] PVR: frontend/demux/dvr open, record/playback and TS output; record what
       is gated by storage. 2026-11-07: only the offline persistent stub ran;
       `pvr-add`/`pvr-list`/`pvr-cancel` worked (cancel state3, record retained).

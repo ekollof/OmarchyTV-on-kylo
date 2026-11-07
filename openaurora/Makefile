@@ -139,7 +139,7 @@ MOD_SO   := $(foreach m,$(MODULES),$(BUILD)/modules/mod_$(m).so)
 CORE_SO  := $(foreach m,$(CORE_MODULES),$(BUILD)/modules/mod_$(m).so)
 STAGE_SO := $(foreach m,$(STAGE_MODULES),$(BUILD)/modules/mod_$(m).so)
 
-all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-audio-broker $(BUILD)/fb-restore
+all: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/fb-restore
 
 $(BUILD)/tests/settings_hotel: tests/settings_hotel.c core/host.h include/openaurora/services.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -1949,34 +1949,35 @@ cold-bundle: $(BUILD)/$(PROJECT) $(MOD_SO) $(BUILD)/oa-supervise $(BUILD)/fb-res
 # other $(words $(EXTRA_MODULES)) stay in the build and full bundle for
 # feature/takeover use; this does not change reload granularity.
 .PHONY: all-core cold-bundle-core module-categories
-all-core: $(BUILD)/$(PROJECT) $(CORE_SO)
+all-core: $(BUILD)/$(PROJECT) $(CORE_SO) $(BUILD)/oa-ir-blast
 
 cold-bundle-core: all-core $(BUILD)/oa-supervise $(BUILD)/fb-restore
 	@rm -rf $(BUILD)/cold-bundle-core
 	@mkdir -p $(BUILD)/cold-bundle-core/modules
-	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/cold-bundle-core/
+	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-ir-blast $(BUILD)/cold-bundle-core/
 	@cp $(CORE_SO) $(BUILD)/cold-bundle-core/modules/
 	@sed 's/^autoload =.*/autoload = $(call stage_autoload,$(CORE_MODULES))/' tools/boot/openaurora-cold.conf > $(BUILD)/cold-bundle-core/openaurora.conf
-	@cd $(BUILD)/cold-bundle-core && sha256sum openaurora oa-supervise fb-restore openaurora.conf modules/*.so > manifest.sha256
+	@cd $(BUILD)/cold-bundle-core && sha256sum openaurora oa-supervise fb-restore oa-ir-blast openaurora.conf modules/*.so > manifest.sha256
 	@echo "core cold bundle: $(BUILD)/cold-bundle-core ($(words $(CORE_SO)) modules)"
 
 # Additive layers on the core: STAGE=core|tv|av|ui|script|diag|full.
 .PHONY: all-stage stage-bundle install-stage
-all-stage: $(BUILD)/$(PROJECT) $(STAGE_SO)
+all-stage: $(BUILD)/$(PROJECT) $(STAGE_SO) $(BUILD)/oa-ir-blast
 
 stage-bundle: all-stage $(BUILD)/oa-supervise $(BUILD)/fb-restore
 	@rm -rf $(BUILD)/stage-$(STAGE)
 	@mkdir -p $(BUILD)/stage-$(STAGE)/modules
-	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/stage-$(STAGE)/
+	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-ir-blast $(BUILD)/stage-$(STAGE)/
 	@cp $(STAGE_SO) $(BUILD)/stage-$(STAGE)/modules/
 	@sed 's/^autoload =.*/autoload = $(call stage_autoload,$(STAGE_MODULES))/' tools/boot/openaurora-cold.conf > $(BUILD)/stage-$(STAGE)/openaurora.conf
-	@cd $(BUILD)/stage-$(STAGE) && sha256sum openaurora oa-supervise fb-restore openaurora.conf modules/*.so > manifest.sha256
+	@cd $(BUILD)/stage-$(STAGE) && sha256sum openaurora oa-supervise fb-restore oa-ir-blast openaurora.conf modules/*.so > manifest.sha256
 	@echo "stage $(STAGE) bundle: $(BUILD)/stage-$(STAGE) ($(words $(STAGE_SO)) modules)"
 
 install-stage: all-stage
 	install -d $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR)
 	install -m 755 $(BUILD)/$(PROJECT) $(DESTDIR)$(BINDIR)/$(PROJECT)
 	install -m 755 $(BUILD)/oa-supervise $(DESTDIR)$(BINDIR)/oa-supervise
+	install -m 755 $(BUILD)/oa-ir-blast $(DESTDIR)$(BINDIR)/oa-ir-blast
 	install -m 755 $(BUILD)/oa-audio-broker $(DESTDIR)$(BINDIR)/oa-audio-broker
 	install -m 755 $(STAGE_SO) $(DESTDIR)$(LIBDIR)/
 
@@ -2633,6 +2634,7 @@ install: all
 	install -d $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR)
 	install -m 755 $(BUILD)/$(PROJECT) $(DESTDIR)$(BINDIR)/$(PROJECT)
 	install -m 755 $(BUILD)/oa-supervise $(DESTDIR)$(BINDIR)/oa-supervise
+	install -m 755 $(BUILD)/oa-ir-blast $(DESTDIR)$(BINDIR)/oa-ir-blast
 	install -m 755 $(BUILD)/oa-audio-broker $(DESTDIR)$(BINDIR)/oa-audio-broker
 	install -m 755 $(MOD_SO) $(DESTDIR)$(LIBDIR)/
 
@@ -2641,6 +2643,7 @@ install-core: all-core
 	install -d $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR)
 	install -m 755 $(BUILD)/$(PROJECT) $(DESTDIR)$(BINDIR)/$(PROJECT)
 	install -m 755 $(BUILD)/oa-supervise $(DESTDIR)$(BINDIR)/oa-supervise
+	install -m 755 $(BUILD)/oa-ir-blast $(DESTDIR)$(BINDIR)/oa-ir-blast
 	install -m 755 $(BUILD)/oa-audio-broker $(DESTDIR)$(BINDIR)/oa-audio-broker
 	install -m 755 $(CORE_SO) $(DESTDIR)$(LIBDIR)/
 

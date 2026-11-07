@@ -790,9 +790,12 @@ records to a pipe2 stdout; mod_ir emits on the loop and kills/reaps the child.
 Host fake-blocking test passes. Hardware ir.blast=1: host main
 poll_schedule_timeout, child oa-ir-blast blast_io_get_key; source/PVR commands
 responsive; quit clean, no helper; reload changed helper 6277->6300 and quit
-clean. Physical remote press is still unverified. Final restore by wdtctl set10:
-appmgr1562/aurora1766, source5, fds/profile/fb/backlight unchanged. PVR is the
-offline stub, not DVR hardware. INPUT-PVR-TAKEOVER / IR-BLAST-HELPER.
+clean. Packaging verified: all/core/stage build and manifest oa-ir-blast,
+install puts it in BINDIR, config `ir.blast_helper=oa-ir-blast` resolves via
+/proc/self/exe. Physical remote press is still unverified. Final restore by
+wdtctl set10: appmgr1562/aurora1766, source5, fds/profile/fb/backlight
+unchanged. PVR is the offline stub, not DVR hardware. INPUT-PVR-TAKEOVER /
+IR-BLAST-HELPER.
 
 audio_amp_profile on-TV ARM check, 2026-11-06: TV /conf/mb230_hwprofile.bin
 md5 1b063b2cc7faa8b92c0f843921e561c7/24514B matches the local artifact. Staged

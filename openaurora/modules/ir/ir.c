@@ -317,21 +317,44 @@ static void blast_close(struct ctx *c)
     blast_helper_stop(c);
 }
 
+static int resolve_helper(struct ctx *c, const char *configured)
+{
+    if (!configured || !*configured)
+        configured = "oa-ir-blast";
+    if (strchr(configured, '/')) {
+        if (strlen(configured) >= sizeof c->blast_helper)
+            return -1;
+        snprintf(c->blast_helper, sizeof c->blast_helper, "%s", configured);
+        return 0;
+    }
+
+    /* A bare helper name is installed next to the core executable. This works
+     * for both the stage bundle root and the installed BINDIR. */
+    char exe[512];
+    ssize_t n = readlink("/proc/self/exe", exe, sizeof exe - 1);
+    if (n <= 0)
+        return -1;
+    exe[n] = '\0';
+    char *slash = strrchr(exe, '/');
+    if (!slash)
+        return -1;
+    slash[1] = '\0';
+    int len = snprintf(c->blast_helper, sizeof c->blast_helper,
+                       "%s%s", exe, configured);
+    return len > 0 && (size_t)len < sizeof c->blast_helper ? 0 : -1;
+}
+
 static int blast_open(struct ctx *c)
 {
     const char *helper = c->api->config_get(c->api->priv,
-                                            "ir.blast_helper", NULL);
-    if (!helper || !*helper) {
+                                            "ir.blast_helper",
+                                            "oa-ir-blast");
+    if (resolve_helper(c, helper) != 0) {
         c->api->log(c->api->priv, OA_LOG_WARN,
-                    "ir: ir.blast_helper is not configured");
+                    "ir: cannot resolve ir.blast_helper '%s'",
+                    helper ? helper : "");
         return -1;
     }
-    if (strlen(helper) >= sizeof c->blast_helper) {
-        c->api->log(c->api->priv, OA_LOG_WARN,
-                    "ir: ir.blast_helper path too long");
-        return -1;
-    }
-    snprintf(c->blast_helper, sizeof c->blast_helper, "%s", helper);
 
     const char *video = c->api->config_get(c->api->priv,
                                             "ir.blast_video", "/dev/video28");

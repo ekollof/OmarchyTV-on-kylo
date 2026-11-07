@@ -50,6 +50,35 @@ the module's `fcntl` use with `GLIBC_2.28 not found` on the TV's glibc 2.23;
 `check-ir-ipc`, `check-ir-quiesce`, the focused IR groups and the full
 `make -j1 check` pass.
 
+## Packaging
+
+`oa-ir-blast` is now part of the normal stage/install outputs:
+
+- `all`, `all-core` and `all-stage` build `$(BUILD)/oa-ir-blast`.
+- `cold-bundle-core` and `stage-bundle` copy it next to `openaurora` and include
+  it in `manifest.sha256`.
+- `install`, `install-stage` and `install-core` install it in `BINDIR` next to
+  `openaurora`.
+- `tools/boot/openaurora-cold.conf` sets:
+  `ir.blast_helper = oa-ir-blast`.
+- A bare helper name is resolved against `dirname(/proc/self/exe)` by `mod_ir`,
+  so the same config works in a stage bundle root and in `BINDIR`.
+
+Verified with `TARGET=tv STAGE=core`:
+
+```text
+build-tv-v3/stage-core/oa-ir-blast  1f581b71...  (ARM, 20,860 bytes)
+build-tv-v3/stage-core/openaurora.conf: ir.blast_helper = oa-ir-blast
+build-tv-v3/stage-core/manifest.sha256: 1f581b71... oa-ir-blast
+sha256sum -c manifest.sha256 -> OK
+DESTDIR=/tmp/opencode/oa-install install-stage
+  /tmp/opencode/oa-install/usr/local/bin/oa-ir-blast  1f581b71...
+```
+
+The host helper lifecycle test now uses the relative
+`ir.blast_helper=oa-ir-blast` and passes. Physical remote press/repeat/release
+is still the remaining manual acceptance.
+
 ## Hardware run
 
 Stage `/buffer/oa-ip-20261107g`, tar SHA256
@@ -106,9 +135,10 @@ stage/socket absent
   real `BLAST_RX`; the fake test proves the record/pipe/emit path, but no owner
   pressed a key during the hardware run. A physical press with the helper
   active is the remaining IR acceptance, including repeat/release timing.
-- `oa-ir-blast` is not yet part of the normal stage/install packaging. This run
-  used a manual `/buffer/oa-ip-20261107g` stage with `ir.blast_helper` set to
-  its absolute path. The install path must ship the helper alongside `mod_ir`.
+- Packaging is now verified: the TV core stage, manifest, config and temporary
+  install tree all contain the same `oa-ir-blast` and relative
+  `ir.blast_helper=oa-ir-blast`. The earlier hardware run used an absolute
+  manual path; the host lifecycle test covers the relative packaging path.
 - Source VIN switching worked, but visible display/audio routing and UI/DB
   resync were not validated.
 - PVR is the offline stub only; no frontend/demux/dvr open, recording,
