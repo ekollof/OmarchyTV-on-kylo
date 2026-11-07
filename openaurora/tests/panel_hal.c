@@ -1,5 +1,6 @@
 /* mod_panel with the recovered backlight curve, fake PWM HAL. */
 #include <assert.h>
+#include <errno.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -12,19 +13,20 @@
 extern const oa_module *oa_module_entry(void);
 static const oa_panel_iface *panel_iface;
 static int g_curve, g_min_percent = 20, g_duty_max = 4095;
+static int init_rc = 1, open_rc = 1, set_rc = 1;
 static unsigned init_calls, open_calls, set_calls, close_calls;
 static struct pwm_open_req last_open;
 static struct pwm_set_req last_set;
 static unsigned last_channel;
 
-int Hal_Pwm_Init(void) { init_calls++; return 0; }
-int Hal_Pwm_Open(struct pwm_open_req *r) { last_open = *r; open_calls++; return 0; }
+int Hal_Pwm_Init(void) { init_calls++; return init_rc; }
+int Hal_Pwm_Open(struct pwm_open_req *r) { last_open = *r; open_calls++; return open_rc; }
 int Hal_Pwm_Set_ByChannel(unsigned ch, struct pwm_set_req *r)
 {
     last_channel = ch;
     last_set = *r;
     set_calls++;
-    return 0;
+    return set_rc;
 }
 void Hal_Pwm_Close(void) { close_calls++; }
 int Hal_Pwm_Terminate(void) { return 0; }
@@ -115,5 +117,49 @@ int main(void)
     stop_module(ctx);
 
     puts("ok panel hal: curve min/breakpoints and duty_max reach 12-bit PWM; default linear path unchanged");
+
+    /* Vendor return semantics: Open/Set 0 is a definite failure. A failed
+     * open is retried, and panel-state keeps the last applied value. */
+    init_rc = 0; /* already initialized: still a success path */
+    g_curve = 0; g_min_percent = 0; g_duty_max = 4095;
+    open_rc = 1; set_rc = 1;
+    ctx = start_module();
+    assert(panel_iface->get_backlight_percent() == 100);
+    unsigned opens = open_calls, sets = set_calls, closes = close_calls;
+    assert(oa_module_entry()->suspend(ctx) == 0); /* close before reopening */
+    assert(close_calls == closes + 1);
+
+    open_rc = 0;
+    assert(panel_iface->set_backlight_percent(40) == -EIO);
+    assert(panel_iface->get_backlight_percent() == 100);
+    assert(open_calls == opens + 1 && set_calls == sets);
+    assert(close_calls == closes + 2); /* failed open releases the cached fd */
+
+    open_rc = 1;
+    assert(panel_iface->set_backlight_percent(40) == 0);
+    assert(panel_iface->get_backlight_percent() == 40);
+    assert(open_calls == opens + 2 && set_calls == sets + 1);
+
+    set_rc = 0;
+    assert(panel_iface->set_backlight_percent(80) == -EIO);
+    assert(panel_iface->get_backlight_percent() == 40);
+    set_rc = 1;
+    assert(panel_iface->set_backlight_percent(80) == 0);
+    assert(panel_iface->get_backlight_percent() == 80);
+    stop_module(ctx);
+    puts("ok panel hal: failed Open/Set keep the last applied percent; open retries");
+
+    /* A failed initial open leaves the percent unknown (-1) but publishes the
+     * service; a later set retries and recovers. */
+    init_rc = 0; open_rc = 0; set_rc = 1;
+    closes = close_calls;
+    ctx = start_module();
+    assert(panel_iface->get_backlight_percent() == -1);
+    assert(close_calls == closes + 1);
+    open_rc = 1;
+    assert(panel_iface->set_backlight_percent(30) == 0);
+    assert(panel_iface->get_backlight_percent() == 30);
+    stop_module(ctx);
+    puts("ok panel hal: failed start reports unknown percent and recovers on set");
     return 0;
 }

@@ -80,6 +80,7 @@ struct ctx {
     int duty_max;/* panel.duty_max, 1..4095 */
     oa_panel_curve curve;
     int opened;
+    int have_percent; /* a PWM set has succeeded (or host simulation) */
     int published;
     int needs_cleanup; /* one start cycle is cleaned exactly once */
     /* ABI 3 quiesce: the vendor PWM close runs on a worker. */
@@ -93,13 +94,15 @@ static struct ctx *g_ctx;
 static int apply(struct ctx *c, int pct)
 {
     if (!hal_ready())
-        return -1;
+        return -ENOTSUP;
     if (pct < 0)
         pct = 0;
     if (pct > 100)
         pct = 100;
 
     if (!c->opened) {
+        /* Init: 1 = initialized now, 0 = already initialized. Both are the
+         * vendor success paths (the semaphore failure is only printed). */
         (void)Hal_Pwm_Init();
         struct pwm_open_req d;
         memset(&d, 0, sizeof d);
@@ -108,7 +111,13 @@ static int apply(struct ctx *c, int pct)
         d.duty = 4095;   /* aurora's call site opens at full range */
         d.shift = 0;
         d.mode = 1;      /* desc[4] == 1 at aurora's call site */
-        (void)Hal_Pwm_Open(&d);
+        if (Hal_Pwm_Open(&d) == 0) {
+            /* 0 is a definite vendor failure (bad argument/fd/ioctl). Open
+             * may already have cached the shared fd, so close it before
+             * returning; the next call retries the open. */
+            Hal_Pwm_Close();
+            return -EIO;
+        }
         c->opened = 1;
     }
 
@@ -120,19 +129,25 @@ static int apply(struct ctx *c, int pct)
              pct * c->duty_max / 100);
     r.shift = 0;
     r.mode = (uint32_t)c->mode; /* genPwmdimMode; must be < 9 */
-    (void)Hal_Pwm_Set_ByChannel((unsigned)c->channel, &r);
+    /* Same convention as Open: 0 is a definite failure, nonzero is the vendor
+     * success path (not a hardware readback). Keep the last applied value. */
+    if (Hal_Pwm_Set_ByChannel((unsigned)c->channel, &r) == 0)
+        return -EIO;
     c->percent = pct;
+    c->have_percent = 1;
     return 0;
 }
 
 static int iface_set(int pct)
 {
-    return g_ctx ? apply(g_ctx, pct) : -1;
+    if (!g_ctx)
+        return -ENODEV;
+    return apply(g_ctx, pct);
 }
 
 static int iface_get(void)
 {
-    return g_ctx ? g_ctx->percent : -1;
+    return g_ctx && g_ctx->have_percent ? g_ctx->percent : -1;
 }
 
 static const oa_panel_iface g_iface = { iface_set, iface_get };
@@ -183,6 +198,10 @@ static int m_start(void *v)
     c->mode = atoi(c->api->config_get(c->api->priv, "panel.mode", "0"));
     if (c->mode < 0 || c->mode > 8) c->mode = 0;
     c->percent = atoi(c->api->config_get(c->api->priv, "panel.start", "100"));
+    /* Host builds have no HAL: keep the configured value as the simulated
+     * state so lifecycle tests still report it. TV builds only report a
+     * percent after a successful PWM set. */
+    c->have_percent = !hal_ready();
     c->raw = atoi(c->api->config_get(c->api->priv, "panel.raw", "-1"));
     c->curve_on = c->api->config_get(c->api->priv, "panel.curve", "0")[0] == '1';
     c->duty_max = atoi(c->api->config_get(c->api->priv, "panel.duty_max", "4095"));
@@ -196,7 +215,9 @@ static int m_start(void *v)
     } else {
         c->api->log(c->api->priv, OA_LOG_INFO, "vendor HAL linked: channel %d, %d Hz, start %d%%",
                     c->channel, c->freq, c->percent);
-        apply(c, c->percent);
+        if (apply(c, c->percent) != 0)
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "panel: initial PWM apply failed; percent unknown");
     }
 
     if (c->api->publish(c->api->priv, OA_SVC_PANEL, 1, &g_iface) != 0) {
@@ -287,8 +308,14 @@ static int m_suspend(void *v)
 static int m_resume(void *v)
 {
     struct ctx *c = v;
-    if (hal_ready())
-        return apply(c, c->percent ? c->percent : 100);
+    if (!hal_ready())
+        return 0;
+    int rc = apply(c, c->percent ? c->percent : 100);
+    if (rc != 0) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "panel: resume PWM apply failed; keeping last value");
+        return rc;
+    }
     return 0;
 }
 

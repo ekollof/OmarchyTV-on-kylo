@@ -370,7 +370,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  ui-state                query ui.portal screen\n"
                  "  theme-state             query ui.theme pack count\n"
                  "  profile-state           query ui.profile facts\n"
-                 "  panel-state             query panel requested percent\n"
+                 "  panel-state             query last applied panel percent (-1 unknown)\n"
                  "  anim-state              query ui.anim enabled/fault\n"
                  "  clock-state             query ui.clock current ms\n"
                  "  ticker-state            query ticker saved tick count\n"

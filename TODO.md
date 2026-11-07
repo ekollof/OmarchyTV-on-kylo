@@ -208,13 +208,13 @@ unvalidated.
       (GPIO0xc3) remain unwired; no hardware/audible balance run.
       AMP-BALANCE.
 - [ ] Agent-review follow-ups (AGENT-REVIEW-2026-11-07): CEC reply-queue
-      failure handling; amp Init retry/suspend; UART repeat semantics; panel
-      HAL failure reporting. The CEC authority mapping lifetime
-      (`check-cec-authority-lifetime`), CEC suspend/resume
-      (`check-cec-suspend-resume`), IR helper pipe/8-byte
+      failure handling; amp Init retry/suspend; UART repeat semantics. The CEC
+      authority mapping lifetime (`check-cec-authority-lifetime`), CEC
+      suspend/resume (`check-cec-suspend-resume`), IR helper pipe/8-byte
       record/CLOEXEC/bounded reap (`check-ir-helper`, IR-HELPER), amp
       mute/balance owner jobs (`check-amp-owner-jobs`, `check-audio-amp-jobs`,
-      AMP-JOBS) and tuner p4 (`check-tuner-backend`, TUNER-P4) are fixed.
+      AMP-JOBS), tuner p4 (`check-tuner-backend`, TUNER-P4) and panel HAL
+      errors (`check-panel-curve`, PANEL-HAL-ERRORS) are fixed.
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but

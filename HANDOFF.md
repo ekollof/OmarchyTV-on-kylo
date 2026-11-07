@@ -813,8 +813,10 @@ INIT/MUTE/BALANCE owner jobs, ordered single slot, typed completions;
 check-amp-owner-jobs/check-audio-amp-jobs, AMP-JOBS); mod_cec c8f4138c...,
 mod_ir 87d2f16b..., oa-ir-blast 36ef3665..., mod_audio_amp 67d34652....
 All review HIGH items are fixed, and the tuner p4 MEDIUM is fixed (demod[4]
-keeps 0..2; check-tuner-backend, TUNER-P4; mod_tuner 1896d578...). MEDIUM amp
-Init retry/suspend, CEC reply queue, panel HAL errors remain. AGENT-REVIEW.
+keeps 0..2; check-tuner-backend, TUNER-P4; mod_tuner 1896d578...). Panel HAL
+errors are fixed too (Open/Set 0 fails, failed open retries, last applied
+percent reported; check-panel-curve, PANEL-HAL-ERRORS; mod_panel 46a3c3ff...).
+MEDIUM amp Init retry/suspend and CEC reply queue remain. AGENT-REVIEW.
 
 Input/PVR group 2026-11-07: live settingsDB source5/previous4/volume0;
 stock owns video28 BLAST, ntkdvif, video20/21/24, demux0 and DVB nodes.

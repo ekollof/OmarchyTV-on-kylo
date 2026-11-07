@@ -28,7 +28,10 @@ _Static_assert(sizeof(struct pwm_set_req) == 16, "PWM Set reads four words");
 _Static_assert(offsetof(struct pwm_set_req, mode) == 12, "PWM Set mode word");
 
 #ifndef OA_NO_VENDOR
-/* Scalar results are not panel-level readback or proof that an ioctl ran. */
+/* Scalar results are not panel-level readback or proof that an ioctl ran.
+ * Open/Set: 0 = definite failure (bad argument/fd/ioctl), nonzero = the
+ * vendor success path (the GetLock shortcut in this lib always returns 1).
+ * Init: 1 = initialized now, 0 = already initialized; both are success. */
 int Hal_Pwm_Init(void);
 int Hal_Pwm_Open(struct pwm_open_req *request);
 int Hal_Pwm_Set_ByChannel(unsigned channel, struct pwm_set_req *request);

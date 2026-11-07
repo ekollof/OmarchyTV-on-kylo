@@ -117,6 +117,18 @@ recovered 0..2 operand. It now rejects p4>2 and copies the value. The
 `mod_tuner.so` sha256
 `1896d5786a5ad64a0397d78fe7816c2d14e28f0550501ac2d259c36fa261eb04`.
 
+### MEDIUM — panel HAL errors ignored (fixed)
+
+`apply` ignored `Hal_Pwm_Init/Open/Set`, marked the session open after a failed
+Open, and reported the requested percent even when the write failed. The
+recovered contract treats Open/Set 0 as a definite failure (1 is the vendor
+success path) and Init 0 as "already initialized". Failed Open now closes any
+cached fd and retries next time; failed Set keeps the last applied value;
+`iface_get` returns -1 until a set succeeds. `check-panel-curve` covers failed
+open/set, retry and failed-start reporting; ignoring the results fails the new
+assertions. ARM `mod_panel.so` sha256
+`46a3c3ff8ced3eac4876039442045d2c537c4f937e099a14e0d5af9f8d19d967`.
+
 ## Open, severity-ranked
 
 - **MEDIUM amp Init retry/suspend** (`modules/audio_amp/audio_amp.c`):
@@ -126,9 +138,6 @@ recovered 0..2 operand. It now rejects p4>2 and copies the value. The
 - **MEDIUM CEC reply queue** (`modules/cec/cec.c`): a failed reply send drops
   the whole queue; it can also send after close. Drop only the failed record,
   clear on release, never send when closed.
-- **MEDIUM panel HAL errors** (`modules/panel/panel.c`): `Hal_Pwm_Init/Open/
-  Set` results are ignored and `panel-state` reports the requested percent; a
-  failed open is not retried. Propagate errors and keep the previous value.
 - **LOW CEC poll retry / labels / 50 ms sleeps**: no automatic acquire retry
   (only `cec-open`), `amp-state`'s `mute` token is the Init snapshot while
   `live` tracks later calls, and several quiesce gates nanosleep on the loop.
