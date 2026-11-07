@@ -1839,13 +1839,31 @@ integration remain unauthorized/untested.
 NATIVE-UI-2026-11-07: `mod_ui_omarchy` is a functional native shell over
 ui.engine: Home grid (Sources/Apps/Settings/About) with 2D focus and accent
 frame; Sources rows use the recovered source types and `source.select_type`;
-Apps reads `launcher.db` read_all/count/get; Settings reads
+Apps reads `launcher.db` via `read_parent(0)`/count/get, filters deleted/
+out-of-sync rows and de-duplicates names (the earlier `read_all` exposed 54
+hidden rows; the live TV showed 19 apps); Settings reads
 `m_current_source`/`m_cec_enabled` and toggles CEC; About; live HH:MM clock;
 optional EF41 text. No vendor skin assets, portal, telemetry or advertising.
 `check-ui-skin` covers home tile/focus moves and all four sub-screens; the
 72-byte state handoff is unchanged and `check-ui-omarchy-quiesce` passes. The
-module is in the 32-module bundle but not autoloaded; app launch, live writable
-DB action, hardware input and scanout remain open.
+module is in the 32-module bundle but not autoloaded. Apps Select emits
+OA_ACTION_SELECT (index + name), Sources Select emits OA_ACTION_SOURCE only
+after `select_type` succeeds, Exit emits OA_ACTION_BACK, and the app list
+reloads on launcher.db change/removal. There is no in-process app launcher;
+the action event is the seam. The live TV emitted
+`action kind=0 index=1 name=Prime Video`. Actual process launch, hardware input
+and scanout remain open.
+
+TAKEOVER-ACCEPT-2026-11-07: the 32-module real-platform bundle ran under
+`oa-supervise` with all modules started and a visible vendor portal at
+1280x720; `ui_omarchy` loaded/selected and painted the native home/apps/
+settings screens. `reload-suite` changed the core PID 10483->11346 while the
+supervisor stayed 10480. Process-only `restore` brought stock back but left the
+**optical-S/PDIF soundbar silent**; stock Aurora restart did not recover it,
+`reboot -f` did (owner confirmed optical audio back; appmgr 1577/aurora 1769,
+fb1 1920x2160). TV internal speakers are intentionally muted; this is not
+amp/speaker acceptance. A future takeover needs an optical/SPDIF restore step
+or a reboot. Post-restore OSD also stayed at 1280x720 until reboot.
 
 ## What is still unknown
 

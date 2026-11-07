@@ -150,9 +150,9 @@ and can be loaded after stopping `ui_vendor` (see NATIVE-UI).
 
 Bundle hashes: openaurora `521047b8...`, `mod_plat.so` `446ee107...`,
 `mod_ui_vendor.so` `d0afa127...`, `mod_panel.so` `454220b0...`,
-`mod_display.so` `130405a4...`, `mod_ui_omarchy.so` `e00184cd...`,
+`mod_display.so` `130405a4...`, `mod_ui_omarchy.so` `359e7aa9...`,
 config `844adf2d...`, `run-aurora.sh` `0f9c3f98...`; tar
-`f83ec3ee0b50b58fc745e9b2fbf83a90a7822028b25cff736954efb1829f813d`.
+`1038bada12dcf04691ce010dab80d699be05105ae52484316dcd44de2d802d06`.
 The 2026-11-07 panel-scale fix and stock backlight curve are included; the
 bundle was re-uploaded to `/buffer/oa-full-20261107`, its manifest verified and
 `--check` passed. It has not been started.
@@ -181,15 +181,18 @@ authorized window:
 start         preflight, watchdog disable, stop stock, launch under oa-supervise
 status        module table + recent log
 reload-suite  ask oa-supervise to relaunch the core (no reboot)
-restore       quit; supervisor re-arms the watchdog and execs stock (no reboot)
+restore       quit; supervisor re-arms the watchdog and execs stock
+              (process/UI only; audio needs a reboot after takeover)
 ```
 
 It is intentionally not run by the build or tests. The supervisor path means a
 failed full-system start still returns to stock, and `restore` does not require
-a reboot. `run-aurora.sh` is the separate app-manager idtv entry point: it
+a reboot for process/UI. The first full run nevertheless left the soundbar
+silent; a stock process restart did not recover it, `reboot -f` did. See
+TAKEOVER-ACCEPT-2026-11-07 before the next window. `run-aurora.sh` is the separate app-manager idtv entry point: it
 verifies the bundle/manifest, execs `oa-supervise` with the stock fallback, and
 is bundled but **not installed**. Its host tests cover dry-run, missing bundle,
-complete argv handoff and manifest failure; see APP-MANAGER-ENTRY. The window is currently not authorized.
+complete argv handoff and manifest failure; see APP-MANAGER-ENTRY. The window was used once on 2026-11-07; see TAKEOVER-ACCEPT-2026-11-07.
 
 ## Suite reload (no reboot)
 

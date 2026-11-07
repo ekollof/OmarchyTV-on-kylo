@@ -48,6 +48,56 @@ static const char *config(void *ud, const char *key, const char *def)
     return def;
 }
 
+static int action_count;
+static oa_action_event last_action;
+static char last_action_name[64];
+static void on_action(const void *evp, void *ud)
+{
+    (void)ud;
+    const oa_action_event *ev = evp;
+    if (!ev) return;
+    last_action = *ev;
+    snprintf(last_action_name, sizeof last_action_name, "%s",
+             ev->name ? ev->name : "");
+    last_action.name = last_action_name;
+    action_count++;
+}
+struct oa_launcher_list { int n; };
+static const char *fake_app_names[] = { "Netflix", "YouTube", "Amazon" };
+static int fake_launcher_read_all(struct oa_launcher_list **out)
+{
+    if (!out) return -1;
+    struct oa_launcher_list *l = calloc(1, sizeof *l);
+    if (!l) return -1;
+    l->n = 3;
+    *out = l;
+    return 0;
+}
+static size_t fake_launcher_count(const struct oa_launcher_list *l)
+{
+    return l ? (size_t)l->n : 0;
+}
+static int fake_launcher_get(const struct oa_launcher_list *l, size_t i,
+                             struct oa_launcher_row_view *out)
+{
+    if (!l || !out || i >= (size_t)l->n) return -1;
+    memset(out, 0, sizeof *out);
+    out->application_name = fake_app_names[i];
+    return 0;
+}
+static int fake_launcher_format(const struct oa_launcher_list *l, size_t i,
+                                char *buf, size_t cap)
+{
+    if (!l || !buf || i >= (size_t)l->n) return -1;
+    snprintf(buf, cap, "%s", fake_app_names[i]);
+    return 0;
+}
+static void fake_launcher_release(struct oa_launcher_list *l) { free(l); }
+static const oa_launcher_db_iface fake_launcher = {
+    fake_launcher_read_all, NULL, fake_launcher_count, fake_launcher_get,
+    fake_launcher_format, fake_launcher_release
+};
+
 static int fake_source_select;
 static int fake_source_current = -1;
 static int fake_cec;
@@ -115,6 +165,8 @@ int main(int argc, char **argv)
     host.api.config_get = config;
     assert(!host.api.publish(&host, OA_SVC_SETTINGS, 1, &fake_settings));
     assert(!host.api.publish(&host, OA_SVC_SOURCE, 1, &fake_source));
+    assert(!host.api.publish(&host, OA_SVC_LAUNCHER_DB, 1, &fake_launcher));
+    assert(host.api.subscribe(&host, OA_TOPIC_ACTION, on_action, NULL));
     char out[256];
 
     assert(!command(&host, "load nav_display", out, sizeof out) && strstr(out, "ok"));
@@ -155,13 +207,19 @@ int main(int argc, char **argv)
     queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
     assert(fake_source_select == 15);                            /* BACK AV */
+    assert(action_count == 1 && last_action.kind == OA_ACTION_SOURCE &&
+           last_action.index == 15 && !strcmp(last_action_name, "BACK AV"));
     queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
+    assert(action_count == 2 && last_action.kind == OA_ACTION_BACK);
     assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* back home */
     queue_key_id(&host, 22); oa_host_dispatch_posts(&host);
     assert(has_fill(trace, 360, 88, 300, 4, 0, 122, 204));      /* focus tile 1 */
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
     assert(has_fill(trace, 40, 88, 1840, 904, 20, 24, 32));     /* Apps screen */
     capture(trace, "apps");
+    queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
+    assert(action_count == 3 && last_action.kind == OA_ACTION_SELECT &&
+           last_action.index == 0 && !strcmp(last_action_name, "Netflix"));
     queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
     assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* back home */
     queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
@@ -181,6 +239,8 @@ int main(int argc, char **argv)
     queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
     assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* back home */
 
+    /* The fake launcher is not a real vendor list; drop it before ui_vendor. */
+    assert(!host.api.unpublish(&host, OA_SVC_LAUNCHER_DB));
     /* Switch to the vendor skin: unload omarchy, select vendor, start it. */
     assert(!command(&host, "unload ui_omarchy", out, sizeof out) && strstr(out, "ok"));
     g_skin = "vendor";

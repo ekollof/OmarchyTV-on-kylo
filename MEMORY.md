@@ -16,7 +16,18 @@ requires cold OSD allocation/enable. `reload-suite` exits the core with 75 and
 suite resets the reload streak, and stock fallback only follows a real failure
 or quit. Host tests cover the exit and relaunch event order; not yet exercised
 on the TV. Boot persistence/boot hooks remain a separate gate. TV restored
-stock (appmgr 1574, aurora 1778). REPLACEMENT-SYSTEM, HW-ACCEPT-2.
+stock (appmgr 1577, aurora 1769 after a forced reboot). REPLACEMENT-SYSTEM,
+HW-ACCEPT-2, TAKEOVER-ACCEPT.
+Takeover audio regression, 2026-11-07: the first 32-module real-platform run
+produced a visible vendor portal and native UI, and `reload-suite` relaunched
+the core; but the process-only restore left the soundbar silent. The soundbar is
+fed by optical S/PDIF and the TV speakers are intentionally muted. Killing and
+restarting stock Aurora did not recover it; `reboot -f` did (owner confirmed
+optical soundbar audio back). Until an optical/SPDIF audio restore path is
+recovered, a takeover must be treated as requiring a reboot for audio. This is
+not TV-speaker, amplifier-mute or CEC-audio acceptance. `display.cold_init` did
+not fire because fb1 was already a valid 1280x720; post-reboot stock fb1 is
+1920x2160.
 Full system candidate, 2026-11-07: `full-replacement-bundle` builds 32 modules
 with the real platform and `plat.drm_init=0` (skip only Hal_Video_DrmInit to
 preserve the vendor OSD), plus oa-audio-broker and fixed asset configs. The
@@ -27,8 +38,9 @@ skin. The unified real-plat display/hardware path awaits a takeover test; cold
 OSD enable remains open. REPLACEMENT-SYSTEM.
 `check-plat-drm-gate` covers drm_init 0/1; `takeover-full.sh` (start/status/
 reload-suite/restore) is bundled for the next authorized takeover, with restore
-returning to stock without a reboot. The unified display/hardware path is still
-unvalidated. `display.cold_init=1` now repairs a registered-but-unconfigured
+returning to stock for process/UI only; audio requires a reboot after takeover
+(TAKEOVER-ACCEPT). The unified display path is now hardware-validated visible;
+audio restore, cold boot and hardware gates remain open. `display.cold_init=1` now repairs a registered-but-unconfigured
 fb1 via `FBIOPUT_VSCREENINFO` (vendor gstOSDfbOps check_var/set_par);
 `check-display` covers zero-var repair and first pan, but cold scanout is
 still unaccepted. COLD-DISPLAY-REPAIR.
@@ -59,8 +71,10 @@ integration still needs owner authorization. APP-MANAGER-ENTRY.
 Native `ui_omarchy` is now a functional shell (home Sources/Apps/Settings/About,
 2D focus, source picker, launcher.db app list, CEC/settings panel, clock,
 optional EF41 text) and is included in the 32-module bundle but not autoloaded;
-`check-ui-skin`/`check-ui-omarchy-quiesce` pass. App launch, live settings DB
-action, hardware input and scanout remain open. NATIVE-UI.
+`check-ui-skin`/`check-ui-omarchy-quiesce` pass; fake services cover SOURCE
+and SELECT actions, BACK, CEC toggle and launcher reload. No in-process app
+launcher exists: OA_TOPIC_ACTION is the seam. Actual process launch, hardware
+input and scanout remain open. NATIVE-UI.
 
 Hardware acceptance, 2026-11-07 (owner: "ok, use the TV, full access"):
 temporary six-module bundle (`plat,panel,audio_amp,ir,tuner,cec`) ran with

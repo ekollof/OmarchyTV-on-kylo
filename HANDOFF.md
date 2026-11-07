@@ -18,13 +18,16 @@ real-plat DRM/KMS path leaves the vendor OSD black, so the UI composition uses
 the stub until cold OSD enable is recovered. `reload-suite` exits the core
 with 75 and `oa-supervise` relaunches it without re-arming the watchdog
 (host-tested); per-module reload remains available. Boot persistence is a
-separate gate. TV stock (appmgr 1574, aurora 1778). REPLACEMENT-SYSTEM.
+separate gate. TV stock after forced reboot (appmgr 1577, aurora 1769);
+TAKEOVER-ACCEPT records the audio regression. REPLACEMENT-SYSTEM.
 Full system candidate 2026-11-07: `full-replacement-bundle` (32 modules, real
 plat with `plat.drm_init=0`, broker, AQ/theme/profile/menu configs) preflights
 and its asset modules start CPU-only; unified real-plat display/hardware awaits
 a takeover test. `ui_omarchy` is excluded due to the single ui.engine skin.
 `check-plat-drm-gate` tests drm_init 0/1; `takeover-full.sh` is bundled for the
-next authorized window and restores stock without a reboot. `display.cold_init=1`
+next authorized window and restores stock process/UI without a reboot; the
+optical-S/PDIF soundbar requires a reboot after takeover (owner-confirmed
+regression; TV speakers intentionally muted). `display.cold_init=1`
 repairs an unconfigured fb1 through the vendor SetPar ioctl; the fake-fb test
 passes, but cold scanout still needs a takeover/cold boot. COLD-DISPLAY-REPAIR. Independent NDAL
 pass: 132/36 ioctl immediates and module init/exit details in
@@ -42,8 +45,9 @@ retail `nvt.app.ini`, app table, layers/properties and hotkeys are in
 APP-MANAGER-CONFIG. The idtv wrapper `run-aurora.sh` is bundled and
 host-tested (dry-run/missing bundle/argv/manifest) but not installed; see
 APP-MANAGER-ENTRY. The native `ui_omarchy` shell now has
-home/sources/apps/settings/about screens and is bundled but not autoloaded; see
-NATIVE-UI. Static only.
+home/sources/apps/settings/about screens, live launcher reload and
+OA_TOPIC_ACTION SELECT/SOURCE/BACK emission; bundled but not autoloaded. The
+actual app process launch consumer is still missing. See NATIVE-UI. Static only.
 
 Latest hardware acceptance, 2026-11-07: owner granted full TV access; a
 temporary six-module run with stock stopped produced real physical IR

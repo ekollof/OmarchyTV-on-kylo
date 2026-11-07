@@ -325,6 +325,14 @@ unvalidated.
 
 ## Current acceptance gates
 
+- [ ] **Takeover audio restore:** the first real-platform takeover produced a
+      visible UI but left the optical-S/PDIF soundbar silent after process-only
+      restore; a stock Aurora restart did not recover it, `reboot -f` did (owner
+      confirmed optical soundbar audio back). TV internal speakers are
+      intentionally muted. Recover/implement the optical/SPDIF (and any amp)
+      teardown or restore path, or explicitly require a reboot after every
+      takeover. TAKEOVER-ACCEPT-2026-11-07.
+
 - [x] Offline display simulation feasibility: actual fbdev module with wrapped
       device calls on host/ARM qemu, and actual scene_gles with the host Mesa
       adapter. UI-FB-SIM; this audit reran all nine transform/orientation checks.
@@ -1930,8 +1938,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       launcher.db Apps list, CEC/settings panel, About, live clock and optional
       EF41 text. `check-ui-skin` covers home/focus and all four screens;
       `check-ui-omarchy-quiesce` still passes. Included in the 32-module bundle
-      but not autoloaded; app launch, live writable DB action and hardware/
-      scanout acceptance remain open. NATIVE-UI-2026-11-07.
+      but not autoloaded. Apps Select emits OA_ACTION_SELECT (index+name), Sources
+      Select emits OA_ACTION_SOURCE after a successful switch, Exit emits
+      OA_ACTION_BACK, and launcher.db changes reload the app list; fake service
+      tests cover these. There is no in-process app launcher, so actual process
+      launch, hardware input and scanout acceptance remain open.
+      NATIVE-UI-2026-11-07.
 
 - [x] Host-tested app-manager idtv entry wrapper (`run-aurora.sh`): bundle/
       manifest checks, stock fallback, `oa-supervise` argv with watchdog and

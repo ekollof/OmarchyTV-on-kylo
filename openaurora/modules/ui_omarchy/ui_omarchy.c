@@ -221,16 +221,26 @@ static void apps_load(struct ctx *c)
         c->api->lookup(c->api->priv, OA_SVC_LAUNCHER_DB, 1);
     if (!db) return;
     struct oa_launcher_list *list = NULL;
-    if (db->read_all(&list) == 0 && list) {
+    int rc = db->read_parent ? db->read_parent(0, 0, 0, &list) : -1;
+    if (rc != 0) list = NULL;
+    if (!list) (void)db->read_all(&list);
+    if (list) {
         size_t n = db->count(list);
-        c->app_total = n > 999 ? 999 : (int)n;
-        for (int i = 0; i < APP_ROWS && (size_t)i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
             struct oa_launcher_row_view row;
-            if (db->get(list, (size_t)i, &row) != 0) continue;
+            if (db->get(list, i, &row) != 0) continue;
+            if (row.is_deleted || row.is_out_of_sync) continue;
             const char *name = row.application_name ? row.application_name : "";
-            snprintf(c->apps[c->app_n], sizeof c->apps[c->app_n], "%s", name);
-            if (c->apps[c->app_n][0]) c->app_n++;
+            if (!name[0]) continue;
+            int dup = 0;
+            for (int k = 0; k < c->app_n; k++)
+                if (!strcmp(c->apps[k], name)) { dup = 1; break; }
+            if (dup) continue;
+            c->app_total++;
+            if (c->app_n < APP_ROWS)
+                snprintf(c->apps[c->app_n++], sizeof c->apps[0], "%s", name);
         }
+        if (c->app_total > 999) c->app_total = 999;
         db->release(list);
     }
     c->api->release(c->api->priv, OA_SVC_LAUNCHER_DB);
@@ -444,8 +454,21 @@ static void skin_paint(void *ud)
     paint(ud);
 }
 
+static void emit_action(struct ctx *c, uint8_t kind, int index, const char *name)
+{
+    oa_action_event act;
+    memset(&act, 0, sizeof act);
+    act.kind = kind;
+    act.index = (uint8_t)index;
+    act.name = name;
+    c->api->log(c->api->priv, OA_LOG_INFO, "action kind=%u index=%d name=%s",
+                (unsigned)kind, index, name ? name : "-");
+    c->api->emit(c->api->priv, OA_TOPIC_ACTION, &act);
+}
+
 static void back_home(struct ctx *c)
 {
+    emit_action(c, OA_ACTION_BACK, c->screen, NULL);
     c->screen = SCREEN_HOME;
     c->focus = 0;
     paint(c);
@@ -493,7 +516,10 @@ static int key_sources(struct ctx *c, int id)
             if (src) {
                 int rc = src->select_type(type);
                 c->api->release(c->api->priv, OA_SVC_SOURCE);
-                if (rc == 0) paint(c);
+                if (rc == 0) {
+                    emit_action(c, OA_ACTION_SOURCE, type, SOURCE_NAMES[c->source_focus]);
+                    paint(c);
+                }
             }
         }
         return 0;
@@ -509,6 +535,11 @@ static int key_apps(struct ctx *c, int id)
         if (n < 0) n = 0;
         if (n >= c->app_n) n = c->app_n ? c->app_n - 1 : 0;
         if (n != c->app_focus) { c->app_focus = n; paint(c); }
+        return 0;
+    }
+    if ((id == 53 || id == 0x8a) && c->app_focus >= 0 && c->app_focus < c->app_n) {
+        emit_action(c, OA_ACTION_SELECT, c->app_focus, c->apps[c->app_focus]);
+        return 0;
     }
     return 0;
 }
@@ -598,6 +629,10 @@ static void changed(const void *ev, void *ud)
     (void)ev;
     struct ctx *c = ud;
     if (!c || !c->active) return;
+    if (c->screen == SCREEN_APPS) {
+        apps_load(c);
+        if (!c->suspended) paint(c);
+    }
     if (!c->suspended && !c->d && !c->rebind)
         c->rebind = c->api->timer_add(c->api->priv, 0, 0, rebind, c);
 }
@@ -609,6 +644,12 @@ static void removed(const void *ev, void *ud)
         return;
     if (!strcmp(e->name, OA_SVC_UI_LUA)) {
         c->lua = NULL;
+        return;
+    }
+    if (!strcmp(e->name, OA_SVC_LAUNCHER_DB) && c->screen == SCREEN_APPS) {
+        c->app_n = 0;
+        c->app_total = 0;
+        if (!c->suspended) paint(c);
         return;
     }
     if (!strcmp(e->name, OA_SVC_UI_ENGINE)) {
