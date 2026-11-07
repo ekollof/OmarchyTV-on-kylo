@@ -126,3 +126,58 @@ stage/socket absent; hwprofile 1b063b2c... unchanged; fb1 1920x2160 pan 0,0
   ownership remain unverified.
 - Next: owner-confirmed 50% vs 100% observation, then panel power/resume; then
   audio/CEC and input/PVR groups.
+
+## Correction, later on 2026-11-07: the HAL expects 0..1000, not 0..4095
+
+The negative "no visible dimming" result above has a concrete firmware cause.
+`mod_panel` called `Hal_Pwm_Set_ByChannel` directly with the 12-bit duty
+(`0..4095`), but the vendor chain converts that word before the HAL:
+
+```text
+DEV_PANEL_SetPWMBacklightLevel @0x008578d9
+  duty12 = level(0..1000) * 4.095, clamp 4095
+DEV_PWM_Set_ByChannel @0x008523dc
+  _dev_config_pwm @0x00850a84
+    plat_set_dimming @0x0092e668
+      duty12 < 0x1000 ? hal = duty12*1000/4095 : hal = 1000
+      Hal_Pwm_Open/Set_ByChannel(ch, {freq, hal, shift, mode})
+```
+
+Checked against instructions: `plat_set_dimming` calls `FUN_01285200(duty*1000,
+0xfff)` (an unsigned divide; a zero divisor raises, as elsewhere in this
+firmware), and both its `Hal_Pwm_Open` initial duty and `Hal_Pwm_Set_ByChannel`
+word 1 receive that 0..1000 value. Sending 2047 at 50% therefore saturates at
+the device, exactly as sending 4095 does; 20% sent 819 (an effective ~82%),
+which explains why the sweep showed almost no change.
+
+Fix: `mod_panel` keeps its public `panel.curve`/`panel.duty_max`/`panel.raw`
+values in the documented 12-bit domain and converts once at the HAL boundary
+(`0 -> 0`, `>=0x1000 -> 1000`, otherwise `duty*1000/4095`), matching
+`plat_set_dimming`. `check-panel-curve` now asserts the HAL receives `1000` at
+100%, `600` at 50% and `200` at 0% for the default min-20% curve, and the old
+direct 12-bit path fails the test. This is still not a brightness measurement;
+visible dimming remains the acceptance gate.
+
+`DEV_PANEL_PowerSequence` @0x00857ac0 is not a boot initializer. Its callers are
+`ICE_HardwareActiveStandby` @0x0074c8ac/0x0074ca46 and the
+`PLAT_SYS_PowerOffNow`/`Reset`/`ResetByHWWDT`/`PowerSavingNow` paths, so the
+boot panel power comes from xboot/kernel/PreInit.
+
+Read-only stock globals (`/proc/1778/mem`) resolve the panel-power polarity
+that `DEV_PANEL_Init` copies from descriptors 0x6e/0x6f:
+
+```text
+GPIO table 0x01931270 -> 0x02923000
+id 110 (PANELPWR) pin=110 dir=output; init copies input-level code = 1
+id 111 (BKLTPWR)  pin=111 dir=output; init copies input-level code = 0
+DAT_01935470 = 1   DAT_019354a8 = 0
+PCB layout 14:
+  PanelPowerSet(1)          -> SetLevel(110, 1);  (0) -> 0
+  PanelBackLightPowerSet(1) -> SetLevel(111, 0);  (0) -> 1
+```
+
+The "input level" word is descriptor[5], not data beyond the 0x20-byte entry;
+an earlier indexing pass was wrong. Standby panel power-down/power-up is still
+unimplemented: the full sequence also needs LVDS mute/unmute, TCON PMIC GPIO and
+the panel-extra delays, and partial GPIO-only power switching must not be used.
+The polarity evidence is recorded for that work; it has not been exercised.

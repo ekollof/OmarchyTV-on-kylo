@@ -29,9 +29,12 @@ Right (0x3056), Down (0x3853), Up (0x3054) and Left (0x3855) through
 `OA_KEY_PRESS` (`OA_KEY_REPEAT` is unimplemented; the vendor key path reads
 only `flag`). No OK press was captured. **Negative:** `panel 50` and `panel 0`
 returned `ok` and updated `panel-state`, but the owner saw no visible dimming
-at either value — the direct `Hal_Pwm_Set_ByChannel` path is not this panel's
-working backlight path; recover `DEV_PANEL`/MCU/`/dev/ntkled` before any
-brightness claim. CEC with a created `/tmp/ntkcec` (229:0) finished acquire
+at either value. The later instruction check found the cause: `mod_panel`
+passed 12-bit duty (`0..4095`) straight to `Hal_Pwm_Set_ByChannel`, while
+`plat_set_dimming` converts it to the HAL's `0..1000` domain first, so 50% and
+100% both saturated (see PANEL-BACKLIGHT-2026-11-07 correction). The module now
+converts at the HAL boundary and the fake-HAL test covers it; visible dimming is
+still unaccepted. CEC with a created `/tmp/ntkcec` (229:0) finished acquire
 with errno 1; no TX/RX. `tuner-scan` was a HAL-backend attempt with the
 module's synthetic +25 progress counter and signal lock 1/strength 0; no RF
 source, so no tune/lock acceptance. DVR, cold startup and broad UI parity were
@@ -372,10 +375,22 @@ shows backlight id `0x6c` -> pin 108 -> PWM channel 0 (`astPwmBasePin`
 level 1000. `mod_panel` defaults were corrected from 20000 Hz/mode 1 to
 30000 Hz/configurable `panel.mode=0`; the open request remains mode 1. A clean
 50% run loaded `plat_stub` + `panel`, opened `/dev/ntkled` and reported
-`panel-state 50`, but no measured/owner-confirmed brightness was obtained. A
-first stage accidentally used the real `mod_plat`; it was restored by reboot
-and is not panel acceptance. Panel power/resume remain open. Report:
-PANEL-BACKLIGHT-2026-11-07.
+`panel-state 50`, but no measured/owner-confirmed brightness was obtained. The
+same run's negative no-dimming result is explained by a units bug, not a wrong
+path: `DEV_PANEL_SetPWMBacklightLevel` produces a 12-bit duty, and
+`plat_set_dimming` @0x0092e668 converts it with `duty<0x1000 ?
+duty*1000/4095 : 1000` before `Hal_Pwm_Set_ByChannel`; the module had passed
+`0..4095` directly, saturating 50%/100%. It now converts once at the HAL
+boundary, and `check-panel-curve` asserts 1000/600/200 for 100/50/0%. Visible
+brightness, panel power and resume remain unaccepted. A first stage
+accidentally used the real `mod_plat`; it was restored by reboot and is not
+panel acceptance. `DEV_PANEL_PowerSequence` @0x00857ac0 is not a boot
+initializer: its callers are `ICE_HardwareActiveStandby` and the
+`PLAT_SYS_PowerOffNow`/`Reset`/`PowerSavingNow` paths, so the boot logo/panel
+power comes from xboot/kernel/PreInit. The standby polarity was recovered
+read-only (PANELPWR pin110 on=1/off=0; BKLTPWR pin111 on=0/off=1 on the live
+profile); the LVDS/TCON/delay sequence is still unimplemented and unverified.
+Report: PANEL-BACKLIGHT-2026-11-07.
 
 AUDIO-CEC-TAKEOVER-2026-11-07: the first audio/CEC control-plane group is not
 hardware acceptance. The `audio_amp_profile` config key is

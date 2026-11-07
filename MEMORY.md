@@ -25,6 +25,10 @@ audio_amp_profile/ui_theme/ui_profile/ui_menu (including the broker and 1
 dialog). `ui_omarchy` is excluded because ui_vendor owns the single ui.engine
 skin. The unified real-plat display/hardware path awaits a takeover test; cold
 OSD enable remains open. REPLACEMENT-SYSTEM.
+`check-plat-drm-gate` covers drm_init 0/1; `takeover-full.sh` (start/status/
+reload-suite/restore) is bundled for the next authorized takeover, with restore
+returning to stock without a reboot. The unified display/hardware path is still
+unvalidated.
 
 Hardware acceptance, 2026-11-07 (owner: "ok, use the TV, full access"):
 temporary six-module bundle (`plat,panel,audio_amp,ir,tuner,cec`) ran with
@@ -35,8 +39,12 @@ volume/standby open). **Physical IR:** real BLAST press/release records for
 Right/Down/Up/Left (0x3056/0x3853/0x3054/0x3855) via `oa-ir-blast`; held keys
 arrived as `aux=01 flag=00` and are emitted as PRESS; `OA_KEY_REPEAT` is
 unimplemented; no OK press. **Panel negative:** `panel 50` and `panel 0`
-returned ok and updated state but the owner saw no dimming; the direct
-`Hal_Pwm_Set_ByChannel` path is insufficient. **CEC:** created `/tmp/ntkcec`
+returned ok and updated state but the owner saw no dimming. The later
+instruction check found a units bug, not a wrong path: the module sent 12-bit
+duty to a HAL that `plat_set_dimming` feeds in its 0..1000 domain, so 50%/100%
+saturated. The module now converts at the HAL boundary (`check-panel-curve`
+asserts 1000/600/200); visible dimming is still unaccepted. **CEC:** created
+`/tmp/ntkcec`
 (229:0); acquire finished errno 1, no TX/RX. **Tuner:** HAL-backend scan
 attempt with synthetic +25 progress and lock1/strength0; no RF source. DVR,
 cold startup and UI parity not tested. The IR helper's child fd sweep uses

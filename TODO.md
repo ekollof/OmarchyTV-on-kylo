@@ -157,10 +157,14 @@ unvalidated.
       corrected; clean 50% hardware run opened `/dev/ntkled` and reported
       `panel-state 50`. 2026-11-07 owner-confirmed run: `panel 50` and
       `panel 0` both returned `ok` and updated `panel-state`, but the owner saw
-      **no visible dimming at either value**. The direct
-      `Hal_Pwm_Set_ByChannel` path therefore reports vendor success without
-      driving this panel. Do not claim brightness acceptance; recover the real
-      `DEV_PANEL`/MCU/`/dev/ntkled` path first. HW-ACCEPT.
+      **no visible dimming at either value**. The cause was a units mismatch,
+      not a wrong device path: the firmware converts the 12-bit duty to the
+      HAL's `0..1000` domain in `plat_set_dimming` before
+      `Hal_Pwm_Set_ByChannel`, while the module sent `0..4095` directly and
+      saturated 50%/100%. The module now applies that exact conversion and
+      `check-panel-curve` covers 1000/600/200 for 100/50/0%. Do not claim
+      brightness acceptance until visible dimming is independently confirmed;
+      panel power and resume remain separate. PANEL-BACKLIGHT-2026-11-07.
 - [ ] Panel power/backlight resume after real kernel PM suspend and standby
       ownership; separate from the host hook-only `suspend`/`resume` tests.
 - [ ] Replacement takeover system: `make replacement-bundle` builds the

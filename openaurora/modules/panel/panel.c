@@ -12,7 +12,7 @@
  *   plat_set_dimming()
  *     ├─ Hal_Pwm_Init()
  *     ├─ Hal_Pwm_Open(&{channel, freq, duty, shift, mode, extra})
- *     └─ Hal_Pwm_Set_ByChannel(ch, &{freq, duty 0..4095, shift, mode})
+ *     └─ Hal_Pwm_Set_ByChannel(ch, &{freq, duty 0..1000, shift, mode})
  *
  * The stock process's populated descriptor table and globals calibrate this
  * unit: DEV_PWM_Get_ChIdx(0x6c) -> channel 0 via astPwmBasePin, frequency
@@ -21,7 +21,9 @@
  * panel.curve=1 selects the recovered DEV_PANEL_Init/SetPWMBacklightLv curve
  * (breakpoints 40/60/80/100, level scale 1000) with panel.min_percent as the
  * runtime limit; panel.duty_max is the final 12-bit calibration (default 4095).
- * Default 0 curve keeps the historical linear percent mapping.
+ * Default 0 curve keeps the historical linear percent mapping. The 12-bit
+ * value is converted to the vendor HAL's 0..1000 domain exactly as
+ * plat_set_dimming does before Hal_Pwm_Set_ByChannel.
  *
  * Host builds define OA_NO_VENDOR and get no-op stubs, so the module still loads and
  * the lifecycle tests keep running on a laptop.
@@ -75,7 +77,7 @@ struct ctx {
     int freq;
     int mode;    /* DEV_PANEL_SetPWMBacklightLevel's genPwmdimMode */
     int percent; /* what we asked for, 0..100 */
-    int raw;     /* optional: pass this duty verbatim, ignoring percent */
+    int raw;     /* optional: 12-bit duty, ignoring percent (HAL-converted) */
     int curve_on;/* panel.curve=1 uses the recovered vendor backlight curve */
     int duty_max;/* panel.duty_max, 1..4095 */
     oa_panel_curve curve;
@@ -92,6 +94,22 @@ struct ctx {
 
 static struct ctx *g_ctx;
 
+/* Vendor scale correction: DEV_PANEL_SetPWMBacklightLevel builds a 12-bit
+ * duty (0..4095) and passes it to DEV_PWM_Set_ByChannel, but plat_set_dimming
+ * (@0x0092e668) converts that word to the HAL's 0..1000 domain before
+ * Hal_Pwm_Set_ByChannel: duty < 0x1000 ? duty*1000/4095 : 1000. Calling the
+ * HAL directly with 0..4095 made 50% and 100% both clamp at the device and
+ * explained the "no visible change" panel runs. Keep the module's public
+ * percent/duty_max/raw values in the 12-bit domain and convert exactly here. */
+static uint32_t hal_duty(int duty)
+{
+    if (duty <= 0)
+        return 0;
+    if (duty >= 0x1000)
+        return 1000;
+    return (uint32_t)((unsigned)duty * 1000u / 4095u);
+}
+
 static int apply(struct ctx *c, int pct)
 {
     if (!hal_ready())
@@ -100,6 +118,10 @@ static int apply(struct ctx *c, int pct)
         pct = 0;
     if (pct > 100)
         pct = 100;
+    int duty12 = c->raw >= 0 ? c->raw :
+                 c->curve_on ? oa_panel_percent_to_duty(&c->curve, pct, c->duty_max) :
+                 pct * c->duty_max / 100;
+    uint32_t hal = hal_duty(duty12);
 
     if (!c->opened) {
         /* Init: 1 = initialized now, 0 = already initialized. Both are the
@@ -109,7 +131,7 @@ static int apply(struct ctx *c, int pct)
         memset(&d, 0, sizeof d);
         d.channel = (uint32_t)c->channel;
         d.freq = (uint32_t)c->freq;
-        d.duty = 4095;   /* aurora's call site opens at full range */
+        d.duty = hal;    /* same HAL domain as Set (see hal_duty) */
         d.shift = 0;
         d.mode = 1;      /* desc[4] == 1 at aurora's call site */
         if (Hal_Pwm_Open(&d) == 0) {
@@ -125,9 +147,7 @@ static int apply(struct ctx *c, int pct)
     struct pwm_set_req r;
     memset(&r, 0, sizeof r);
     r.freq = (uint32_t)c->freq;
-    r.duty = (uint32_t)(c->raw >= 0 ? c->raw :
-             c->curve_on ? oa_panel_percent_to_duty(&c->curve, pct, c->duty_max) :
-             pct * c->duty_max / 100);
+    r.duty = hal;
     r.shift = 0;
     r.mode = (uint32_t)c->mode; /* genPwmdimMode; must be < 9 */
     /* Same convention as Open: 0 is a definite failure, nonzero is the vendor

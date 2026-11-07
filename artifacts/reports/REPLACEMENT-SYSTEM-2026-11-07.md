@@ -133,6 +133,8 @@ ui_theme.index=/vendor2/dynamic_ui/telefunken18_svg.txt
 ui_theme.binary=/vendor2/dynamic_ui/telefunken18_svg.bin
 ui_profile.swprofile=/conf/mb230_swprofile.bin
 ui_menu.file=./menus/sub_launcher.json
+panel.channel=0 panel.freq=30000 panel.mode=0
+panel.curve=1 panel.duty_max=4095 (stock backlight curve/scale)
 ```
 
 Read-only verification on the TV (stock stayed running; no display/fb1, no
@@ -143,8 +145,12 @@ with those six modules started all of them, including `audio_mixer` spawning
 `ui.engine` skin; it can be loaded after stopping `ui_vendor`.
 
 Bundle hashes: openaurora `521047b8...`, `mod_plat.so` `446ee107...`,
-`mod_ui_vendor.so` `d0afa127...`; tar
-`fb97c8627bfa57af07d2b40246bb9d81516ca1666d2c5174031e2f40ea5e120a`.
+`mod_ui_vendor.so` `d0afa127...`, `mod_panel.so` `454220b0...`, config
+`adc2f327...`; tar
+`61cabb201d1a8d791cb68cf6e80a2e3eceb76032c8166fbcfa4776e124e428f0`.
+The 2026-11-07 panel-scale fix and stock backlight curve are included; the
+bundle was re-uploaded to `/buffer/oa-full-20261107`, its manifest verified and
+`--check` passed. It has not been started.
 
 `check-plat-drm-gate` is a fake-HAL regression: `plat.drm_init=0` logs the skip
 and does not call the DRM bring-up, while `1` keeps it. Restoring the

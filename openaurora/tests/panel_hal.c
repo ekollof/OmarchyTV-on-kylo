@@ -12,7 +12,7 @@
 
 extern const oa_module *oa_module_entry(void);
 static const oa_panel_iface *panel_iface;
-static int g_curve, g_min_percent = 20, g_duty_max = 4095;
+static int g_curve, g_min_percent = 20, g_duty_max = 4095, g_raw = -1;
 static int init_rc = 1, open_rc = 1, set_rc = 1;
 static unsigned init_calls, open_calls, set_calls, close_calls;
 static struct pwm_open_req last_open;
@@ -41,6 +41,7 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "panel.curve")) return g_curve ? "1" : "0";
     if (!strcmp(key, "panel.min_percent")) return g_min_percent ? "20" : "0";
     if (!strcmp(key, "panel.duty_max")) return g_duty_max == 1000 ? "1000" : "4095";
+    if (!strcmp(key, "panel.raw")) return g_raw == 4095 ? "4095" : g_raw == 2047 ? "2047" : "-1";
     if (!strcmp(key, "panel.start")) return "100";
     if (!strcmp(key, "panel.channel")) return "0";
     if (!strcmp(key, "panel.freq")) return "30000";
@@ -99,33 +100,48 @@ int main(void)
     void *ctx = start_module();
     assert(init_calls == 1 && open_calls == 1 && set_calls == 1);
     assert(last_open.channel == 0 && last_open.freq == 30000 &&
-           last_open.duty == 4095);
+           last_open.duty == 1000);
     assert(last_channel == 0 && last_set.freq == 30000 &&
-           last_set.mode == 0 && last_set.duty == 4095);
-    /* min 20%: level=pct*10 -> curve -> 12-bit duty. */
-    assert(panel_iface->set_backlight_percent(50) == 0 && last_set.duty == 2457);
-    assert(panel_iface->set_backlight_percent(0) == 0 && last_set.duty == 819);
-    assert(panel_iface->set_backlight_percent(100) == 0 && last_set.duty == 4095);
+           last_set.mode == 0 && last_set.duty == 1000);
+    /* min 20%: level=pct*10 -> curve -> 12-bit duty -> vendor HAL 0..1000. */
+    assert(panel_iface->set_backlight_percent(50) == 0 && last_set.duty == 600);
+    assert(panel_iface->set_backlight_percent(0) == 0 && last_set.duty == 200);
+    assert(panel_iface->set_backlight_percent(100) == 0 && last_set.duty == 1000);
+    /* 50% must not saturate: the old 12-bit-direct path sent 2047. */
+    assert(panel_iface->set_backlight_percent(50) == 0 && last_set.duty != 2047);
     stop_module(ctx);
     assert(close_calls == 1);
 
     /* Final 12-bit calibration knob: duty_max=1000 with min 20%. */
     g_curve = 1; g_min_percent = 20; g_duty_max = 1000;
     ctx = start_module();
-    assert(last_set.duty == 1000);
-    assert(panel_iface->set_backlight_percent(50) == 0 && last_set.duty == 600);
-    assert(panel_iface->set_backlight_percent(0) == 0 && last_set.duty == 200);
+    assert(last_set.duty == 244);
+    assert(panel_iface->set_backlight_percent(50) == 0 && last_set.duty == 146);
+    assert(panel_iface->set_backlight_percent(0) == 0 && last_set.duty == 48);
     stop_module(ctx);
 
     /* Default remains the historical linear percentages. */
     g_curve = 0; g_min_percent = 0; g_duty_max = 1000;
     unsigned before = set_calls;
     ctx = start_module();
-    assert(set_calls == before + 1 && last_set.duty == 1000);
-    assert(panel_iface->set_backlight_percent(50) == 0 && last_set.duty == 500);
+    assert(set_calls == before + 1 && last_set.duty == 244);
+    assert(panel_iface->set_backlight_percent(50) == 0 && last_set.duty == 122);
     stop_module(ctx);
 
-    puts("ok panel hal: curve min/breakpoints and duty_max reach 12-bit PWM; default linear path unchanged");
+    puts("ok panel hal: vendor 0..1000 HAL scale, curve, duty_max and linear path");
+
+    /* panel.raw is also 12-bit and crosses the same HAL boundary. */
+    g_curve = 0; g_min_percent = 0; g_duty_max = 4095; g_raw = 2047;
+    ctx = start_module();
+    assert(last_set.duty == 499);
+    assert(panel_iface->set_backlight_percent(0) == 0 && last_set.duty == 499);
+    stop_module(ctx);
+    g_raw = 4095;
+    ctx = start_module();
+    assert(last_set.duty == 1000);
+    stop_module(ctx);
+    g_raw = -1;
+    puts("ok panel hal: panel.raw converts from 12-bit to the HAL domain");
 
     /* Vendor return semantics: Open/Set 0 is a definite failure. A failed
      * open is retried, and panel-state keeps the last applied value. */

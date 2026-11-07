@@ -23,6 +23,8 @@ Full system candidate 2026-11-07: `full-replacement-bundle` (31 modules, real
 plat with `plat.drm_init=0`, broker, AQ/theme/profile/menu configs) preflights
 and its asset modules start CPU-only; unified real-plat display/hardware awaits
 a takeover test. `ui_omarchy` is excluded due to the single ui.engine skin.
+`check-plat-drm-gate` tests drm_init 0/1; `takeover-full.sh` is bundled for the
+next authorized window and restores stock without a reboot.
 
 Latest hardware acceptance, 2026-11-07: owner granted full TV access; a
 temporary six-module run with stock stopped produced real physical IR
@@ -30,9 +32,11 @@ press/release records for four keys (aux repeats are emitted as PRESS;
 `OA_KEY_REPEAT` unimplemented) and an owner-confirmed **negative** amp mute
 gate: the default-PCM tone was audible while Init left mute 1, so the audible
 amp acceptance was retracted. It also produced an owner-confirmed negative on
-the direct PWM backlight path (no visible change at 50%/0%), an acquire errno
-1 on CEC with a created `/tmp/ntkcec` (no TX/RX), and only a HAL tuner scan
-with synthetic progress (no RF). Stock was restored by `wdtctl set 10`
+the PWM backlight path (no visible change at 50%/0%); the later instruction
+check found a 12-bit-vs-0..1000 units bug in the module, now fixed and covered
+by `check-panel-curve` (visible dimming still unaccepted). It also produced an
+acquire errno 1 on CEC with a created `/tmp/ntkcec` (no TX/RX), and only a HAL
+tuner scan with synthetic progress (no RF). Stock was restored by `wdtctl set 10`
 (appmgr 1565/aurora 1767, then 1566/1770 after the amp A/B). See
 HW-ACCEPT-2026-11-07 and AGENT-REVIEW-2-2026-11-07 in MEMORY/FINDINGS; no
 persistent change.
@@ -764,8 +768,12 @@ mistakenly contained the real mod_plat (stale stub) and ran the full plat HAL;
 it was restored by reboot and is not panel acceptance. Rebuilt the actual
 plat_stub (37f8f320...; later named plat 97ef7656... for the VIN harness) and ran cleanly at 50%: panel loaded, /dev/ntkled fd6
 open, panel-state50. Brightness is not measured/owner-confirmed; panel
-power/resume remain open. Restored by wdtctl set10: latest stock appmgr1577/
-aurora1774, level1000, freq/mode30000/0, profile/fb unchanged. PANEL-BACKLIGHT.
+power/resume remain open. Later instruction review: `plat_set_dimming` converts
+the 12-bit duty to the HAL's 0..1000 domain, so the module's direct 0..4095
+write saturated at 50%/100%; it now converts at the HAL boundary and
+`check-panel-curve` asserts 1000/600/200. Restored by wdtctl set10: latest stock
+appmgr1577/aurora1774, level1000, freq/mode30000/0, profile/fb unchanged.
+PANEL-BACKLIGHT.
 
 Audio/CEC read-only group 2026-11-07: stock pre-state captured (snd controlC0/
 C2/C3, i2c-3, video28, CEC major229 no node; mixer values0; amp regs1b/05/05;
