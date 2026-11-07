@@ -827,10 +827,11 @@ formula/CLI tests; mute/balance reject while Init is submitted. SetVolume is
 reg3 prescale+readback, SoftMute reg2 0x0e, HP_Mute GPIO0xc3; unwired. ARM
 mod_audio_amp 7334a236.... No hardware balance run. AMP-BALANCE.
 Agent review 2026-11-07 (Grok): fixed CRITICAL MAP_FAILED authority mapping
-(commit f323673, regression test) and the HIGH authority lifetime across a
+(commit f323673, regression test), the HIGH authority lifetime across a
 timed-out quiesce (keep the mapping until join succeeds; check-cec-authority-
-lifetime; mod_cec 7cd655f6...); corrected CEC close-path wording. Remaining
-high CEC suspend/resume, amp mute/balance loop ordering, IR pipe/8-byte
+lifetime), and the HIGH CEC suspend/resume state/worker join (clear session,
+cleanup worker, resume reopens/re-acquires; check-cec-suspend-resume); mod_cec
+c8f4138c.... Remaining high: amp mute/balance loop ordering, IR pipe/8-byte
 record/bounded reap/CLOEXEC. AGENT-REVIEW.
 
 Input/PVR group 2026-11-07: live settingsDB source5/previous4/volume0;

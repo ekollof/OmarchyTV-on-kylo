@@ -1439,6 +1439,22 @@ check-cec-authority-lifetime: $(BUILD)/tests/cec_authority_lifetime
 	@$(BUILD)/tests/cec_authority_lifetime
 check: check-cec-authority-lifetime
 
+$(BUILD)/tests/cec_suspend_resume: tests/cec_suspend_resume.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c modules/cec/cec.c include/openaurora/cec_owner.h include/openaurora/cec_authority_mem.h include/openaurora/cec_device.h include/openaurora/module.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ \
+	  tests/cec_suspend_resume.c common/cec_owner.c common/cec_authority.c \
+	  common/cec_authority_mem.c common/cec_device.c common/cec_packet.c \
+	  common/cec.c common/cec_policy.c -pthread \
+	  -Wl,--wrap=oa_cec_owner_join \
+	  -Wl,--wrap=oa_cec_authority_mem_open \
+	  -Wl,--wrap=oa_cec_authority_mem_close \
+	  -Wl,--wrap=oa_cec_device_open \
+	  -Wl,--wrap=oa_cec_device_close
+.PHONY: check-cec-suspend-resume
+check-cec-suspend-resume: $(BUILD)/tests/cec_suspend_resume
+	@$(BUILD)/tests/cec_suspend_resume
+check: check-cec-suspend-resume
+
 $(BUILD)/tests/cec_owner: tests/cec_owner.c tests/lifecycle_retry.h common/cec_owner.c common/cec_authority.c common/cec_device.c common/cec_packet.c core/host.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore $(LDFLAGS) -o $@ $(filter %.c %.o,$^) $(LDLIBS)

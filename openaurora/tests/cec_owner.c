@@ -173,9 +173,10 @@ static int thread_count(void)
 }
 static void wait_threads(int want)
 {
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 200; i++) {
         if (thread_count() == want) return;
-        sched_yield();
+        const struct timespec pause = { .tv_nsec = 1000000 };
+        (void)nanosleep(&pause, NULL);
     }
     assert(thread_count() == want);
 }

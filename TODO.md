@@ -205,12 +205,13 @@ unvalidated.
       Init is submitted. SetVolume (reg3 prescale + readback), SoftMute (reg2
       bits 0x0e) and HP_Mute (GPIO0xc3) remain unwired; no hardware balance
       run. AMP-BALANCE.
-- [ ] Agent-review follow-ups (AGENT-REVIEW-2026-11-07): CEC suspend/resume
-      and reply-queue failure handling; amp mute/balance as owner jobs and
-      Init retry/suspend; IR pipe bound/8-byte record/bounded reap/O_CLOEXEC
-      and UART repeat; panel HAL failure reporting; tuner `demod[4]=p4`.
-      The CEC authority mapping lifetime across a timed-out quiesce is fixed
-      (`check-cec-authority-lifetime`).
+- [ ] Agent-review follow-ups (AGENT-REVIEW-2026-11-07): CEC reply-queue
+      failure handling; amp mute/balance as owner jobs and Init retry/suspend;
+      IR pipe bound/8-byte record/bounded reap/O_CLOEXEC and UART repeat; panel
+      HAL failure reporting; tuner `demod[4]=p4`. The CEC authority mapping
+      lifetime across a timed-out quiesce (`check-cec-authority-lifetime`) and
+      CEC suspend/resume state/worker join (`check-cec-suspend-resume`) are
+      fixed.
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but

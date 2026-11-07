@@ -81,12 +81,15 @@ MAP_FAILED with a regression test. The HIGH authority-lifetime bug is also
 fixed: the `/dev/mem` mapping is retained while a quiesce generation returns
 EAGAIN and unmapped only after a successful join; `check-cec-authority-lifetime`
 forces a timed-out generation and then a completed one, and fails if the old
-unconditional unmap is restored (`mod_cec` 7cd655f6...). Remaining HIGH: CEC
-suspend/resume clears no session state and joins on the loop; amp mute/balance
-still run on the host loop; IR can desync its pipe, its record is 8 bytes not
-6, and stop can block/leak inherited fds; the close-path wording was corrected
-to drop unproven "only reboot" claims. Reports: AGENT-REVIEW-2026-11-07,
-AMP-BALANCE.
+unconditional unmap is restored. The HIGH CEC suspend/resume bug is fixed too:
+suspend clears opening/session/closing/job/reply state, hands the owner to the
+cleanup worker and waits for it because the host has no retry for a SUSPENDED
+module; resume reaps, reopens authority, restarts polling and re-acquires.
+`check-cec-suspend-resume` fails without the state clear. `mod_cec`
+c8f4138c.... Remaining HIGH: amp mute/balance still run on the host loop; IR can
+desync its pipe, its record is 8 bytes not 6, and stop can block/leak inherited
+fds; the close-path wording was corrected to drop unproven "only reboot" claims.
+Reports: AGENT-REVIEW-2026-11-07, AMP-BALANCE.
 
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR
 under a replacement. The stock parser also polls `DEV_Ir_GetKey`

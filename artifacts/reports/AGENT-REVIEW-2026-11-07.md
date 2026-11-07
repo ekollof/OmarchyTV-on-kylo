@@ -45,15 +45,31 @@ open/close: the first quiesce generation is forced to `-EAGAIN` and must keep
 are allowed, the next generation must unmap exactly once and reach 0. Reverting
 the condition makes the test fail at `authority_open == 1`, confirming it
 catches the defect. `mod_cec.so` rebuilds as sha256
-`7cd655f6ac40082c6490954e51dedd7f0958980a3268c7974c3bdac3685be9cb`.
+`c8f4138cfe04d887c874fec099c7f11ba02d48ba3cb095db48462d23396c725a`.
+
+### HIGH — CEC suspend/resume state and host-thread join (fixed)
+
+`suspend` previously called `finish_owner` on the host thread, did not clear
+`session_open`/`opening`/`job_pending`/`closing` or the reply queue, and
+`resume` therefore skipped re-acquire because the stale session looked open.
+It could also block the loop on the owner join.
+
+Fix: suspend stops polling, clears the session state, detaches the owner to the
+existing `cleanup_worker`, and waits (bounded) for that generation because this
+host provides no retry for a module left SUSPENDED. Resume reaps the worker,
+creates a fresh owner, reopens the authority page, restarts polling and submits
+a new acquire. The `pthread_create` failure fallback now keeps a retained owner
+on `-EAGAIN` instead of dropping the pointer. Regression
+`check-cec-suspend-resume` (fake host + wrapped authority/device I/O and owner
+join) completes an acquire, suspends, asserts the session/timer state is
+cleared, the owner/authority/device were closed, and the blocking join ran on a
+thread other than the caller; it then resumes and asserts a reopened authority
+and the fresh acquire completing. Removing `clear_session_state()` makes it
+fail at the suspend assertion. `mod_cec.so` sha256
+`c8f4138cfe04d887c874fec099c7f11ba02d48ba3cb095db48462d23396c725a`.
 
 ## Open, severity-ranked
 
-- **HIGH CEC suspend/resume** (`modules/cec/cec.c`): `suspend` joins/tears
-  down the owner on the host thread and does not clear `session_open`, so
-  `resume` does not re-acquire and sends can hit a fresh unopened device.
-  `finish_owner_ptr` can also sleep/join on the loop. Move this to the existing
-  cleanup worker and add a suspend-with-open/resume-acquire test.
 - **HIGH amp mute/balance vs Init** (`modules/audio_amp/audio_amp.c`):
   `set_mute`/`set_balance` now reject while `submitted`, but still run the STBC
   level / I2C writes on the host loop. Submit them as owner jobs ordered after

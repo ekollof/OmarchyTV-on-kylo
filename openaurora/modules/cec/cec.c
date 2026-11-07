@@ -274,6 +274,7 @@ static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
         c->closing = 0;
         if (comp->rc == 0) {
             c->session_open = 0;
+            c->reply_head = c->reply_tail = 0;
             c->last_error = 0;
             c->api->log(c->api->priv, OA_LOG_INFO, "cec raw transport closed");
         } else {
@@ -346,6 +347,53 @@ static int begin_acquire(struct ctx *c)
     c->job_pending = 1;
     c->last_error = 0;
     return 0;
+}
+
+static void stop_poll(struct ctx *c)
+{
+    if (c->poll_timer) {
+        c->api->timer_del(c->api->priv, c->poll_timer);
+        c->poll_timer = 0;
+    }
+}
+
+static int start_poll(struct ctx *c)
+{
+    if (!c || !c->api) return -1;
+    if (c->poll_timer) return 0;
+    long poll = atol(c->api->config_get(c->api->priv, "cec.poll_ms", "100"));
+    if (poll < 20) poll = 20;
+    if (poll > 1000) poll = 1000;
+    c->poll_timer = c->api->timer_add(c->api->priv, 0, (unsigned)poll,
+                                      cec_poll, c);
+    return c->poll_timer ? 0 : -1;
+}
+
+static void clear_session_state(struct ctx *c)
+{
+    c->opening = 0;
+    c->session_open = 0;
+    c->closing = 0;
+    c->job_pending = 0;
+    c->reply_head = c->reply_tail = 0;
+}
+
+/* Reap a cleanup generation without blocking the loop. Returns 0 when the
+ * worker is joined, -EBUSY while it still runs, and the generation's error
+ * otherwise. A retained owner remains for an explicit later retry. */
+static int reap_cleanup(struct ctx *c)
+{
+    if (!c->cleanup_running) return 0;
+    int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
+    if (rc == EBUSY) return -EBUSY;
+    if (rc) {
+        c->cleanup_running = 0;
+        return -EIO;
+    }
+    c->cleanup_running = 0;
+    int result = c->cleanup_result;
+    c->cleanup_result = 0;
+    return result;
 }
 
 static int init(const oa_host_api *api, void **out)
@@ -425,6 +473,7 @@ static int start(void *ud)
     c->have_last_rx = 0;
     c->reply_head = c->reply_tail = 0;
     memset(&c->last_rx, 0, sizeof c->last_rx);
+    clear_session_state(c);
     long delay = atol(c->api->config_get(c->api->priv,
                                          "cec.cleanup_delay_ms", "0"));
     c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
@@ -470,13 +519,7 @@ static int start(void *ud)
     c->audio_published = 1;
 
     if (c->enabled) {
-        long poll = atol(c->api->config_get(c->api->priv,
-                                            "cec.poll_ms", "100"));
-        if (poll < 20) poll = 20;
-        if (poll > 1000) poll = 1000;
-        c->poll_timer = c->api->timer_add(c->api->priv, 0, (unsigned)poll,
-                                          cec_poll, c);
-        if (!c->poll_timer) {
+        if (start_poll(c) != 0) {
             c->api->log(c->api->priv, OA_LOG_ERROR,
                         "cec: poll timer unavailable");
             return -1;
@@ -486,8 +529,7 @@ static int start(void *ud)
                         "cec: acquire submission failed (%d)",
                         c->last_error);
         c->api->log(c->api->priv, OA_LOG_INFO,
-                    "cec: hardware enabled (%s, poll %ld ms)",
-                    c->device_path, poll);
+                    "cec: hardware enabled (%s)", c->device_path);
     }
     return 0;
 }
@@ -495,10 +537,7 @@ static int quiesce(void *ud)
 {
     struct ctx *c = ud;
     if (!c) return 0;
-    if (c->poll_timer) {
-        c->api->timer_del(c->api->priv, c->poll_timer);
-        c->poll_timer = 0;
-    }
+    stop_poll(c);
     if (c->cleanup_running) {
         for (int i = 0; i < 10; i++) {
             int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
@@ -532,6 +571,7 @@ static int quiesce(void *ud)
         c->api->unpublish(c->api->priv, OA_SVC_CEC_AUDIO);
     c->enabled = 0;
     c->quiescing = 1;
+    clear_session_state(c);
     c->cleanup_authority = c->authority_open ? 1 : 0;
     if (c->owner) {
         c->cleanup_owner = c->owner;
@@ -561,60 +601,85 @@ static int quiesce(void *ud)
     return -EAGAIN;
 }
 
-/* Idle workers exit within one generation. A failed hardware close keeps the
- * session: finish_owner_ptr returns -EAGAIN and leaves the owner for a later
- * quiesce generation. */
-static int finish_owner(struct ctx *c)
-{
-    if (!c) return 0;
-    if (c->cleanup_running || c->cleanup_owner) return -1;
-    oa_cec_owner *owner = c->owner;
-    c->owner = NULL;
-    int rc = finish_owner_ptr(owner);
-    if (rc == -EAGAIN) c->owner = owner;
-    return rc == 0 ? 0 : -1;
-}
-
 static int suspend(void *ud)
 {
     struct ctx *c = ud;
     if (!c) return -1;
-    if (c->poll_timer) {
-        c->api->timer_del(c->api->priv, c->poll_timer);
-        c->poll_timer = 0;
+    /* Reap a generation left by an earlier suspend attempt that timed out
+     * waiting for the worker, so a retry does not stay stuck on
+     * cleanup_running. A retained owner (failed close) needs quiesce/stop. */
+    int prior = reap_cleanup(c);
+    if (prior == -EBUSY || c->cleanup_running) return -EBUSY;
+    if (prior != 0 || c->cleanup_owner) return -1;
+    stop_poll(c);
+    clear_session_state(c);
+    if (c->owner) {
+        c->quiescing = 1;
+        c->cleanup_owner = c->owner;
+        c->owner = NULL;
+        c->cleanup_authority = c->authority_open ? 1 : 0;
+        c->cleanup_result = 0;
+        int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
+        if (rc) {
+            /* Rare fallback: finish synchronously rather than leaking. A
+             * failed close (_EAGAIN) retains the owner for a later
+             * generation, so keep the pointer and the mapping too. */
+            int result = finish_owner_ptr(c->cleanup_owner);
+            if (result != 0)
+                return -1;
+            c->cleanup_owner = NULL;
+            if (c->authority_open) {
+                oa_cec_authority_mem_close(&c->authority);
+                c->authority_open = 0;
+            }
+            c->cleanup_authority = 0;
+            return 0;
+        }
+        c->cleanup_running = 1;
+        /* suspend() is synchronous in this host: no retry is provided for a
+         * module left SUSPENDED. Let the cleanup worker own the blocking
+         * join/close, but do not return success until it has finished. */
+        for (int i = 0; i < 40; i++) {
+            int rc = reap_cleanup(c);
+            if (rc == 0) break;
+            if (rc != -EBUSY) return -1;
+            const struct timespec pause = { .tv_nsec = 5000000 };
+            (void)nanosleep(&pause, NULL);
+        }
+        if (c->cleanup_running || c->cleanup_owner) return -EBUSY;
+        return 0;
     }
-    int rc = finish_owner(c);
-    if (rc == 0 && c->authority_open) {
+    if (c->authority_open) {
         oa_cec_authority_mem_close(&c->authority);
         c->authority_open = 0;
     }
-    return rc;
+    c->cleanup_authority = 0;
+    return 0;
 }
+
 static int resume(void *ud)
 {
     struct ctx *c = ud;
-    if (!c || c->cleanup_running || c->cleanup_owner) return -1;
+    if (!c) return -1;
+    int rc = reap_cleanup(c);
+    if (rc != 0) return rc == -EBUSY ? -EBUSY : -EIO;
+    if (c->cleanup_owner) return -EBUSY; /* retained generation needs a retry */
     c->quiescing = 0;
     if (!c->owner && oa_cec_owner_create(&c->owner, settled, c) != 0)
         return -1;
-    if (!c->enabled) return 0;
+    if (!c->enabled) {
+        clear_session_state(c);
+        return 0;
+    }
     if (!c->authority_open) {
         c->authority = (oa_cec_authority_mem)OA_CEC_AUTHORITY_MEM_INIT;
         if (oa_cec_authority_mem_open(&c->authority, NULL) != 0)
             return -1;
         c->authority_open = 1;
     }
-    if (!c->poll_timer) {
-        long poll = atol(c->api->config_get(c->api->priv,
-                                            "cec.poll_ms", "100"));
-        if (poll < 20) poll = 20;
-        if (poll > 1000) poll = 1000;
-        c->poll_timer = c->api->timer_add(c->api->priv, 0, (unsigned)poll,
-                                          cec_poll, c);
-        if (!c->poll_timer) return -1;
-    }
-    if (!c->session_open && !c->opening && !c->job_pending)
-        (void)begin_acquire(c);
+    if (start_poll(c) != 0) return -1;
+    clear_session_state(c);
+    if (begin_acquire(c) != 0) return -1;
     return 0;
 }
 
