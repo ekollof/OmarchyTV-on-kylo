@@ -27,6 +27,7 @@ static uint32_t region[8], mau;
 static const char *rotate;
 static const char *test_mode;
 static unsigned commits, last_yoffset, syncs, opens, closes;
+static unsigned region_writes, region_before_pan;
 static int fail_sync, fail_commit, kernel_suspended, fail_unmap, fail_close;
 static unsigned height = 2;
 static pthread_t main_thread;
@@ -105,7 +106,11 @@ int __wrap_ioctl(int fd, unsigned long request, ...)
         return 0;
     }
     case 0x8020c86cu: memcpy(arg, region, 32); return 0;
-    case 0x4020c86bu: memcpy(region, arg, 32); return 0;
+    case 0x4020c86bu:
+        region_writes++;
+        if (!commits) region_before_pan = 1;
+        memcpy(region, arg, 32);
+        return 0;
     case OA_FB_MAU_RD: *(uint32_t *)arg = mau; return 0;
     case FBIOPAN_DISPLAY: {
         const struct fb_var_screeninfo *commit = arg;
@@ -165,6 +170,7 @@ static void *start(unsigned frames, unsigned yoffset, const char *rotation)
     memset(pixels, 0, sizeof pixels);
     memset(region, 0, sizeof region);
     mau = 0;
+    region_writes = region_before_pan = 0;
     var.xres = var.xres_virtual = 8;
     var.yres = height;
     var.yres_virtual = frames * var.yres;
@@ -215,6 +221,12 @@ int main(void)
     assert(!unsetenv("OA_TEST_BINDING_HAL"));
 #endif
     void *ctx = start(1, 0, NULL);
+    /* Cold/hidden initial state: start must set the 1920x1080-style window
+     * (here 8xheight) and zero origin before the first PanDisplay. */
+    assert(region_writes == 1 && region_before_pan);
+    assert(region[2] == var.xres && region[3] == height);
+    assert(region[4] == 0 && region[5] == 0);
+    puts("  ok   cold first pan: region written from zero state before PanDisplay");
     assert(alpha && !alpha->clear_rgba(36, 38, 40, 153));
     assert(!display->present());
     assert(pixels[0] == 24 && pixels[1] == 23 && pixels[2] == 22 && pixels[3] == 153);

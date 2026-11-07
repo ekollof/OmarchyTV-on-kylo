@@ -148,10 +148,13 @@ Bundle hashes: openaurora `521047b8...`, `mod_plat.so` `446ee107...`,
 
 `check-plat-drm-gate` is a fake-HAL regression: `plat.drm_init=0` logs the skip
 and does not call the DRM bring-up, while `1` keeps it. Restoring the
-unconditional call fails the test. `full-replacement`/`plat.drm_init=0` still
-needs an authorized takeover + cold boot; OSD-KERNEL-INIT says the existing
-fbdev/PanDisplay first-pan/region path is the first cold candidate, not a blind
-private-GEM backend.
+unconditional call fails the test. `check-display` now covers the fbdev
+first-pan order from a zero/hidden region state: the region window is written
+before the first PanDisplay, with zero origin, then the frame commits. This is
+the offline fbdev/PanDisplay cold candidate; it does not prove visible scanout.
+`full-replacement`/`plat.drm_init=0` still needs an authorized takeover + cold
+boot; OSD-KERNEL-INIT says the existing fbdev/PanDisplay first-pan/region path
+is the first cold candidate, not a blind private-GEM backend.
 
 ## Authorized-window driver
 
