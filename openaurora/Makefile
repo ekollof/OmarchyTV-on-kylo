@@ -2073,10 +2073,11 @@ full-replacement-bundle: $(BUILD)/$(PROJECT) $(FULL_REPLACEMENT_SO) $(BUILD)/oa-
 	@rm -rf $(BUILD)/full-replacement
 	@mkdir -p $(BUILD)/full-replacement/modules $(BUILD)/full-replacement/menus
 	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/full-replacement/
+	@cp tools/boot/takeover-full.sh $(BUILD)/full-replacement/
 	@cp $(FULL_REPLACEMENT_SO) $(BUILD)/full-replacement/modules/
 	@cp tools/boot/openaurora-full-replacement.conf $(BUILD)/full-replacement/openaurora.conf
 	@cp menus/sub_launcher.json $(BUILD)/full-replacement/menus/
-	@cd $(BUILD)/full-replacement && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker openaurora.conf menus/*.json modules/*.so > manifest.sha256
+	@cd $(BUILD)/full-replacement && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker takeover-full.sh openaurora.conf menus/*.json modules/*.so > manifest.sha256
 	@echo "full replacement bundle: $(BUILD)/full-replacement ($(words $(FULL_REPLACEMENT_SO)) modules)"
 
 install-stage: all-stage
@@ -2505,6 +2506,14 @@ check-vgrid: $(BUILD)/tests/vendor_grid
 $(BUILD)/tests/fbregion_read: tests/fbregion_read.c tools/mcu/fbregion.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $< -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=ioctl
+
+$(BUILD)/tests/plat_drm_gate: tests/plat_drm_gate.c modules/plat/plat.c include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ tests/plat_drm_gate.c
+.PHONY: check-plat-drm-gate
+check-plat-drm-gate: $(BUILD)/tests/plat_drm_gate
+	@$(BUILD)/tests/plat_drm_gate
+check: check-plat-drm-gate
 
 check-display: $(BUILD)/tests/display_present $(BUILD)/tests/display_binding $(BUILD)/tests/display_resume_frame $(BUILD)/tests/fbregion_read
 	@$(BUILD)/tests/display_present

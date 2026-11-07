@@ -146,6 +146,29 @@ Bundle hashes: openaurora `521047b8...`, `mod_plat.so` `446ee107...`,
 `mod_ui_vendor.so` `d0afa127...`; tar
 `fb97c8627bfa57af07d2b40246bb9d81516ca1666d2c5174031e2f40ea5e120a`.
 
+`check-plat-drm-gate` is a fake-HAL regression: `plat.drm_init=0` logs the skip
+and does not call the DRM bring-up, while `1` keeps it. Restoring the
+unconditional call fails the test. `full-replacement`/`plat.drm_init=0` still
+needs an authorized takeover + cold boot; OSD-KERNEL-INIT says the existing
+fbdev/PanDisplay first-pan/region path is the first cold candidate, not a blind
+private-GEM backend.
+
+## Authorized-window driver
+
+`tools/boot/takeover-full.sh` is included in the full bundle for the next
+authorized window:
+
+```text
+start         preflight, watchdog disable, stop stock, launch under oa-supervise
+status        module table + recent log
+reload-suite  ask oa-supervise to relaunch the core (no reboot)
+restore       quit; supervisor re-arms the watchdog and execs stock (no reboot)
+```
+
+It is intentionally not run by the build or tests. The supervisor path means a
+failed full-system start still returns to stock, and `restore` does not require
+a reboot. The window is currently not authorized.
+
 ## Suite reload (no reboot)
 
 - The core exposes `reload-suite` over the control socket. It returns `bye`,
