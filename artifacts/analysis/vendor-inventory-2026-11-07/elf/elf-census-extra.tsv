@@ -1,3 +1,4 @@
+path	size	md5	sha256	class	type	machine	soname	needed	vermagic
 root/bin/busybox	708460	773d4dca19048d660681fc3cce815a33	a0ef7779d86cbf26408134c99155fcd46475ff157f6bed8edf9b9c1b069867a9	ELF32	DYN (Position-Independent Executable file)	ARM		3
 root/bin/gdbserver	377122	8e24e4033fe53c0706b0552be7954cdb	a09b28b5c4d0ac576a530368bdd172ba2c3d2773ef4d03017dae23dd1c98b18c	ELF32	EXEC (Executable file)	ARM		4
 root/bin/iperf	532364	34ae1d84a6ea85ba7bb6f345fd9aff81	ce0725a052fe5398b06f438424c588f770148053a3dfc7cd66896a87c5b6ecef	ELF32	EXEC (Executable file)	ARM		0
