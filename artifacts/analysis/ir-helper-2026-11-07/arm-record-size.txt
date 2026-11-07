@@ -1,0 +1,7 @@
+ARM record-size probe (openaurora/include/openaurora/ir_blast.h)
+compiler: artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc
+command: $ARM-gcc -Iopenaurora/include -std=c11 -Wall -Wextra -Werror -pedantic -c ir_record_probe.c
+
+00000000 00000008 B ir_record_size_probe
+
+     9: 00000000     8 OBJECT  GLOBAL DEFAULT    3 ir_record_size_probe

@@ -928,7 +928,7 @@ $(eval $(call emit_pics,modules__mod_ui_engine,modules/ui_engine/ui_engine.c,-pt
 $(BUILD)/modules/mod_ir.so: $(call pic_objs,modules__mod_ir,modules/ir/ir.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) -ldl
-$(eval $(call emit_pics,modules__mod_ir,modules/ir/ir.c,-pthread,include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h))
+$(eval $(call emit_pics,modules__mod_ir,modules/ir/ir.c,-pthread,include/openaurora/events.h include/openaurora/ir_blast.h include/openaurora/module.h include/openaurora/services.h))
 
 $(BUILD)/modules/mod_ui_omarchy.so: $(call pic_objs,modules__mod_ui_omarchy,modules/ui_omarchy/ui_omarchy.c)
 	@mkdir -p $(dir $@)
@@ -2083,6 +2083,14 @@ $(BUILD)/tests/fake_blast_lib.so: tests/fake_blast_lib.c
 check-ir-blast-worker: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ir.so $(BUILD)/tests/mod_plat_stub.so $(BUILD)/tests/fake_blast_lib.so $(BUILD)/oa-ir-blast
 	node tests/ir_blast_worker.cjs $(abspath $(BUILD))
 check: check-ir-blast-worker
+
+$(BUILD)/tests/ir_helper: tests/ir_helper.c modules/ir/ir.c include/openaurora/events.h include/openaurora/ir_blast.h include/openaurora/module.h include/openaurora/services.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ tests/ir_helper.c -pthread
+.PHONY: check-ir-helper
+check-ir-helper: $(BUILD)/tests/ir_helper
+	@$(BUILD)/tests/ir_helper
+check: check-ir-helper
 
 .PHONY: check-ui-vendor-ipc
 check-ui-vendor-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/tests/ui_nav_display.so

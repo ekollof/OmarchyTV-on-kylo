@@ -86,10 +86,18 @@ suspend clears opening/session/closing/job/reply state, hands the owner to the
 cleanup worker and waits for it because the host has no retry for a SUSPENDED
 module; resume reaps, reopens authority, restarts polling and re-acquires.
 `check-cec-suspend-resume` fails without the state clear. `mod_cec`
-c8f4138c.... Remaining HIGH: amp mute/balance still run on the host loop; IR can
-desync its pipe, its record is 8 bytes not 6, and stop can block/leak inherited
-fds; the close-path wording was corrected to drop unproven "only reboot" claims.
-Reports: AGENT-REVIEW-2026-11-07, AMP-BALANCE.
+c8f4138c.... The HIGH IR helper defects are fixed: reads are bounded to the
+assembly buffer's free space (a 7+65-byte split used to reset/desync), the
+header pins the 8-byte record (code@0/aux@4/flag@5) with `_Static_assert`
+(ARM probe symbol size 8) and the writer zeroes padding, the forked helper
+marks every fd above stderr close-on-exec (UART now `O_CLOEXEC`), and
+`blast_helper_stop` uses `WNOHANG` only (100 ms after SIGTERM, 100 ms after
+SIGKILL) with a retained-pid retry instead of a blocking `waitpid`.
+`check-ir-helper` fails if the old read or a no-op CLOEXEC sweep is restored;
+ARM `mod_ir` 87d2f16b..., `oa-ir-blast` 36ef3665.... Remaining review HIGH:
+amp mute/balance still run on the host loop. The close-path wording was
+corrected to drop unproven "only reboot" claims. Reports:
+AGENT-REVIEW-2026-11-07, AMP-BALANCE, IR-HELPER.
 
 TAKEOVER-IR-2026-11-05: opening `/dev/ttyS2` is not sufficient for physical IR
 under a replacement. The stock parser also polls `DEV_Ir_GetKey`

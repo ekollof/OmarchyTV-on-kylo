@@ -119,7 +119,11 @@ int main(int argc, char **argv)
             usleep(20000);
             continue;
         }
-        struct oa_ir_blast_record record = { code, aux, flag };
+        struct oa_ir_blast_record record;
+        memset(&record, 0, sizeof record); /* deterministic padding bytes */
+        record.code = code;
+        record.aux = aux;
+        record.flag = flag;
         if (write_all(STDOUT_FILENO, &record, sizeof record) != 0)
             return 1;
     }

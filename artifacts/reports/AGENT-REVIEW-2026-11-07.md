@@ -68,20 +68,35 @@ and the fresh acquire completing. Removing `clear_session_state()` makes it
 fail at the suspend assertion. `mod_cec.so` sha256
 `c8f4138cfe04d887c874fec099c7f11ba02d48ba3cb095db48462d23396c725a`.
 
+### HIGH — IR helper pipe framing, CLOEXEC and bounded reap (fixed)
+
+`blast_helper_read` read a full 64-byte chunk into a temporary buffer and reset
+the assembly buffer when a pending partial plus that chunk overflowed it, which
+desynced or dropped records. The header also understated the 8-byte ARM record,
+the forked helper inherited host device/socket fds, and a SIGKILLed helper was
+awaited with a blocking `waitpid`.
+
+Fix: read only into the buffer's free space (64 is a multiple of the 8-byte
+record); pin size/offsets with `_Static_assert` and zero the padding in the
+writer; open the UART with `O_CLOEXEC` and mark every fd above stderr
+close-on-exec in the forked child with an async-signal-safe `fcntl` sweep
+(3..`_SC_OPEN_MAX`, capped at 65536); reap
+with `WNOHANG` only, bounded to 100 ms after SIGTERM and 100 ms after SIGKILL,
+retaining the pid for a later retry if it still survives. Regression
+`check-ir-helper` covers a 7+65-byte split, the 8-byte layout, the CLOEXEC
+sweep, and a SIGTERM-ignoring child (`~113 ms`, then `ECHILD`). Restoring the
+unbounded read fails `nevents == 9`; a no-op sweep fails the `FD_CLOEXEC`
+assertion. ARM hashes: `mod_ir.so`
+`87d2f16b883f9c0919f2930fac9ebeb686e8e713e3ca50e582f538663863a83e`,
+`oa-ir-blast`
+`36ef366586e7dc4a78d6b21d9fa2aed99421d9ea0e5dc79d2e7d6e71a98c3678`.
+
 ## Open, severity-ranked
 
 - **HIGH amp mute/balance vs Init** (`modules/audio_amp/audio_amp.c`):
   `set_mute`/`set_balance` now reject while `submitted`, but still run the STBC
   level / I2C writes on the host loop. Submit them as owner jobs ordered after
   Init and do not let `poll_result` overwrite a later mute result.
-- **HIGH IR pipe and stop** (`modules/ir/ir.c`, `include/openaurora/ir_blast.h`):
-  a full 64-byte read with leftover bytes resets the stream and desyncs the
-  fixed record; bound reads to the free space and kill/reap on real overflow.
-  `struct oa_ir_blast_record` is 8 bytes on ARM (tail padding), not 6; the docs
-  are wrong. `blast_helper_stop` can `waitpid(pid,0)` forever on the loop, and
-  the child inherits `/dev/mem`, `/dev/ntgpio`, UART and other fds without
-  `O_CLOEXEC`. Fix with bounded/nonblocking reap on a worker, `closefrom`/CLOEXEC,
-  and a static assert for the record size.
 - **MEDIUM amp Init retry/suspend** (`modules/audio_amp/audio_amp.c`):
   `iface_init` refuses while `have_result` is set, even after a failed Init;
   the module has no suspend/resume, so host standby leaves it started with the

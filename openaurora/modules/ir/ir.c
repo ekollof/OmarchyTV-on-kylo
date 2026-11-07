@@ -128,7 +128,7 @@ static const char *key_name(uint8_t cmd)
 
 static int open_port(struct ctx *c)
 {
-    int fd = open(c->dev, O_RDWR | O_NOCTTY | O_NONBLOCK);
+    int fd = open(c->dev, O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC);
     if (fd < 0)
         return -1;
 
@@ -228,18 +228,63 @@ static void on_readable(void *ud, int fd, unsigned rev)
  * oa-ir-blast process; this module reads fixed records from the helper's
  * stdout pipe on the loop, emits keys there, and kills/reaps the helper on
  * stop. No vendor BLAST call runs in the host process. */
+/* The helper must not inherit the host's devices/sockets across exec. pipe2()
+ * marks the pipe and open_port() uses O_CLOEXEC, but fds opened by other
+ * modules or vendor libraries are outside this module's control. Run this in
+ * the forked child just before exec: mark every descriptor above stderr
+ * close-on-exec. Only async-signal-safe calls (sysconf/fcntl) are used; the
+ * host is multi-threaded and opendir/strtol could touch malloc after fork. */
+static void mark_inherited_fds_cloexec(void)
+{
+    long max = sysconf(_SC_OPEN_MAX);
+    if (max < 0 || max > 65536) max = 65536;
+    for (int fd = 3; fd < (int)max; fd++) {
+        int flags = fcntl(fd, F_GETFD);
+        if (flags >= 0 && !(flags & FD_CLOEXEC))
+            (void)fcntl(fd, F_SETFD, flags | FD_CLOEXEC);
+    }
+}
+
+/* Nonblocking reap with a bounded wait. Returns 1 when the child is gone
+ * (reaped now or already reaped) and 0 when it is still running. Never uses a
+ * blocking waitpid: a helper stuck in a vendor call must not stall the loop. */
+static int reap_child_bounded(pid_t pid, int attempts)
+{
+    int status = 0;
+    for (int i = 0; i < attempts; i++) {
+        pid_t r = waitpid(pid, &status, WNOHANG);
+        if (r == pid)
+            return 1;
+        if (r < 0 && errno == ECHILD)
+            return 1;
+        if (r < 0 && errno != EINTR)
+            return 0;
+        const struct timespec pause = { .tv_nsec = 5000000 };
+        (void)nanosleep(&pause, NULL);
+    }
+    return 0;
+}
+
 static void blast_helper_read(void *ud, int fd, unsigned rev)
 {
     struct ctx *c = ud;
-    unsigned char buf[64];
-    ssize_t n = read(fd, buf, sizeof buf);
     (void)rev;
+    /* Read only into free space. An unbounded 64-byte read with a partial
+     * record pending used to reset the assembly buffer and drop/desync
+     * records; records are 8 bytes and the buffer is a multiple of 8, so a
+     * bounded read always drains exactly. */
+    size_t room = 0;
+    if (c->blast_rxn > sizeof c->blast_rxbuf)
+        c->blast_rxn = 0; /* cannot happen; avoid a size_t underflow */
+    room = sizeof c->blast_rxbuf - c->blast_rxn;
+    if (room == 0) {
+        c->blast_rxn = 0; /* impossible with 8-byte records; stay safe */
+        room = sizeof c->blast_rxbuf;
+    }
+    ssize_t n = read(fd, c->blast_rxbuf + c->blast_rxn, room);
     if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR))
         return;
     if (n > 0) {
-        if (c->blast_rxn + (size_t)n > sizeof c->blast_rxbuf)
-            c->blast_rxn = 0;
-        memcpy(c->blast_rxbuf + c->blast_rxn, buf, (size_t)n);
         c->blast_rxn += (size_t)n;
         while (c->blast_rxn >= sizeof(struct oa_ir_blast_record)) {
             struct oa_ir_blast_record r;
@@ -275,6 +320,8 @@ static void blast_helper_read(void *ud, int fd, unsigned rev)
                         "ir: BLAST helper pid %d exited (%d)",
                         (int)c->blast_pid, status);
             c->blast_pid = -1;
+        } else if (r < 0 && errno == ECHILD) {
+            c->blast_pid = -1; /* already reaped by a deferred stop */
         }
     }
 }
@@ -293,20 +340,17 @@ static void blast_helper_stop(struct ctx *c)
         pid_t pid = c->blast_pid;
         c->blast_pid = -1;
         (void)kill(pid, SIGTERM);
-        int status = 0;
-        int reaped = 0;
-        for (int i = 0; i < 20; i++) {
-            pid_t r = waitpid(pid, &status, WNOHANG);
-            if (r == pid || r < 0) {
-                reaped = 1;
-                break;
-            }
-            const struct timespec pause = { .tv_nsec = 5000000 };
-            (void)nanosleep(&pause, NULL);
-        }
-        if (!reaped) {
+        if (!reap_child_bounded(pid, 20)) {
             (void)kill(pid, SIGKILL);
-            (void)waitpid(pid, &status, 0);
+            if (!reap_child_bounded(pid, 20)) {
+                /* A helper stuck in an uninterruptible vendor call cannot be
+                 * waited for without stalling the loop. Remember it so a
+                 * later stop/destroy retries the nonblocking reap. */
+                c->api->log(c->api->priv, OA_LOG_WARN,
+                            "ir: BLAST helper pid %d survived SIGKILL; "
+                            "deferring reap", (int)pid);
+                c->blast_pid = pid;
+            }
         }
     }
     c->blast_rxn = 0;
@@ -384,6 +428,7 @@ static int blast_open(struct ctx *c)
         if (dup2(p[1], STDOUT_FILENO) < 0)
             _exit(127);
         close(p[1]);
+        mark_inherited_fds_cloexec();
         char ps[16], ss[2] = { set ? '1' : '0', 0 };
         snprintf(ps, sizeof ps, "%d", proto);
         execl(c->blast_helper, c->blast_helper,
@@ -448,6 +493,14 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    if (c->blast_pid > 0) {
+        /* A stop may have deferred an unkillable child's reap. Clear it here
+         * once it is gone instead of refusing to start forever. */
+        int status = 0;
+        pid_t r = waitpid(c->blast_pid, &status, WNOHANG);
+        if (r == c->blast_pid || (r < 0 && errno == ECHILD))
+            c->blast_pid = -1;
+    }
     if (c->cleanup_running || c->cleanup_fd >= 0 || c->blast_pid > 0)
         return -EBUSY;
     g_ctx = c;

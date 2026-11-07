@@ -829,10 +829,12 @@ mod_audio_amp 7334a236.... No hardware balance run. AMP-BALANCE.
 Agent review 2026-11-07 (Grok): fixed CRITICAL MAP_FAILED authority mapping
 (commit f323673, regression test), the HIGH authority lifetime across a
 timed-out quiesce (keep the mapping until join succeeds; check-cec-authority-
-lifetime), and the HIGH CEC suspend/resume state/worker join (clear session,
-cleanup worker, resume reopens/re-acquires; check-cec-suspend-resume); mod_cec
-c8f4138c.... Remaining high: amp mute/balance loop ordering, IR pipe/8-byte
-record/bounded reap/CLOEXEC. AGENT-REVIEW.
+lifetime), the HIGH CEC suspend/resume state/worker join (clear session,
+cleanup worker, resume reopens/re-acquires; check-cec-suspend-resume), and the
+HIGH IR helper framing/record/CLOEXEC/reap defects (bounded read, 8-byte
+static assert, child CLOEXEC sweep, WNOHANG-only bounded reap; check-ir-helper,
+IR-HELPER); mod_cec c8f4138c..., mod_ir 87d2f16b..., oa-ir-blast 36ef3665....
+Remaining high: amp mute/balance loop ordering. AGENT-REVIEW.
 
 Input/PVR group 2026-11-07: live settingsDB source5/previous4/volume0;
 stock owns video28 BLAST, ntkdvif, video20/21/24, demux0 and DVB nodes.
