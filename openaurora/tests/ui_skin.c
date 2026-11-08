@@ -41,6 +41,7 @@ static const char *config(void *ud, const char *key, const char *def)
     if (!strcmp(key, "ui.ok_file")) return "";
     if (!strcmp(key, "ui.fps")) return use_fps ? "20" : "0";
     if (!strcmp(key, "ui.dir")) return asset_dir;
+    if (!strcmp(key, "ui.omarchy.wallpaper")) return "wallpaper";
     if (!strcmp(key, "ui.font_index") && getenv("OA_UI_FONT_INDEX"))
         return getenv("OA_UI_FONT_INDEX");
     if (!strcmp(key, "ui.font_pack") && getenv("OA_UI_FONT_PACK"))
@@ -177,6 +178,20 @@ static int has_fill(const oa_nav_trace *trace, int x, int y, int w, int h, int r
     return 0;
 }
 
+static int has_scaled(const oa_nav_trace *trace, int x, int y, int w, int h,
+                      int sw, int sh)
+{
+    int n = trace->scaled_count();
+    for (int i = 0; i < n; i++) {
+        int sx, sy, dw, dh, ssw, ssh;
+        if (trace->scaled_at(i, &sx, &sy, &dw, &dh, &ssw, &ssh) == 0 &&
+            sx == x && sy == y && dw == w && dh == h &&
+            ssw == sw && ssh == sh)
+            return 1;
+    }
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
     assert(argc == 2);
@@ -212,6 +227,14 @@ int main(int argc, char **argv)
     assert(!engine->icon(long_name));
     assert(!engine->set_scene_transform(4, 0.5f));
     puts("  ok   engine rejects malformed or ambiguous asset names/sizes and keeps RGBA alpha");
+    snprintf(asset_path, sizeof asset_path, "%s/wallpaper.rgba", asset_dir);
+    const unsigned char wall[] = {
+        'O','A','I','1',2,0,0,0,2,0,0,0,
+        0,0,0,255, 255,255,255,255,
+        255,255,255,255, 0,0,0,255
+    };
+    file = fopen(asset_path, "wb");
+    assert(file && fwrite(wall, 1, sizeof wall, file) == sizeof wall && !fclose(file));
 
     assert(!command(&host, "load ui_omarchy", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_omarchy", out, sizeof out) && !strcmp(out, "ok\n"));
@@ -220,47 +243,57 @@ int main(int argc, char **argv)
     assert(trace);
     int transform;
     assert(!trace->transform(&transform, NULL, NULL) && transform == 0);
-    assert(has_fill(trace, 0, 0, 14, 1080, 0, 122, 204));      /* omarchy side bar */
-    assert(has_fill(trace, 40, 88, 300, 180, 24, 28, 36));      /* home tile 0 */
-    assert(has_fill(trace, 360, 288, 300, 180, 24, 28, 36));    /* home tile 3 */
-    assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* focus frame 0 */
+    assert(has_fill(trace, 0, 0, 1920, 52, 9, 8, 9));            /* top bar */
+    assert(has_scaled(trace, 0, 0, 1920, 1080, 2, 2));           /* native wallpaper */
+    assert(has_fill(trace, 40, 86, 520, 336, 9, 8, 9));           /* status terminal */
+    assert(has_fill(trace, 60, 804, 273, 196, 9, 8, 9));          /* dock tile 0 */
+    assert(has_fill(trace, 56, 800, 281, 4, 181, 151, 144));      /* focus frame 0 */
+    /* Workspace 2 (Inputs) through the bar, as in the reference. */
+    queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 22); oa_host_dispatch_posts(&host);
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
-    assert(has_fill(trace, 40, 88, 1840, 904, 18, 21, 28));     /* Sources screen */
+    assert(has_fill(trace, 40, 86, 1840, 954, 9, 8, 9));         /* Sources screen */
+    assert(has_fill(trace, 70, 202, 430, 260, 9, 8, 9));         /* source tile 0 */
     capture(trace, "sources");
-    queue_key_id(&host, 19); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 22); oa_host_dispatch_posts(&host);       /* BACK AV */
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
-    assert(fake_source_select == 15);                            /* BACK AV */
+    assert(fake_source_select == 15);                             /* BACK AV */
     assert(action_count == 1 && last_action.kind == OA_ACTION_SOURCE &&
            last_action.index == 15 && !strcmp(last_action_name, "BACK AV"));
     queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
-    assert(action_count == 2 && last_action.kind == OA_ACTION_BACK);
-    assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* back home */
+    assert(action_count == 1);                                    /* internal back: no action */
+    assert(has_fill(trace, 56, 800, 281, 4, 181, 151, 144));      /* dock focus unchanged */
+    /* Workspace 3 (Apps) through the bar. */
+    queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
     queue_key_id(&host, 22); oa_host_dispatch_posts(&host);
-    assert(has_fill(trace, 360, 88, 300, 4, 0, 122, 204));      /* focus tile 1 */
+    queue_key_id(&host, 22); oa_host_dispatch_posts(&host);
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
-    assert(has_fill(trace, 40, 88, 1840, 904, 20, 24, 32));     /* Apps screen */
+    assert(has_fill(trace, 40, 86, 1840, 954, 9, 8, 9));         /* Apps screen */
+    assert(has_fill(trace, 70, 202, 237, 200, 9, 8, 9));         /* app tile 0 */
     capture(trace, "apps");
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
-    assert(action_count == 3 && last_action.kind == OA_ACTION_SELECT &&
+    assert(action_count == 2 && last_action.kind == OA_ACTION_SELECT &&
            last_action.index == 0 && !strcmp(last_action_name, "Netflix"));
     queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
-    assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* back home */
-    queue_key_id(&host, 19); oa_host_dispatch_posts(&host);
-    assert(has_fill(trace, 40, 288, 300, 4, 0, 122, 204));      /* focus tile 2 */
+    /* Workspace 4 (Settings) through the bar. */
+    queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 22); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 22); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 22); oa_host_dispatch_posts(&host);
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
-    assert(has_fill(trace, 40, 88, 1840, 904, 21, 25, 33));     /* Settings screen */
+    assert(has_fill(trace, 40, 86, 1840, 954, 9, 8, 9));         /* Settings screen */
+    assert(has_fill(trace, 70, 212, 1780, 76, 9, 8, 9));         /* settings row 0 */
     capture(trace, "settings");
     queue_key_id(&host, 19); oa_host_dispatch_posts(&host);
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
-    assert(fake_cec == 1 && fake_cec_sets == 1);                 /* CEC toggled on */
-    queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
-    queue_key_id(&host, 22); oa_host_dispatch_posts(&host);
+    assert(fake_cec == 1 && fake_cec_sets == 1);                  /* CEC toggled on */
+    queue_key_id(&host, 19); oa_host_dispatch_posts(&host);
     queue_key_id(&host, 19); oa_host_dispatch_posts(&host);
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
-    assert(has_fill(trace, 40, 88, 1840, 904, 22, 26, 35));     /* About screen */
+    assert(has_fill(trace, 40, 86, 1840, 954, 9, 8, 9));         /* About screen */
     capture(trace, "about");
     queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
-    assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* back home */
+    assert(has_fill(trace, 0, 0, 1920, 52, 9, 8, 9));            /* back home */
 
     /* Volume/mute keys are global to the shell: codes 16/17/13. */
     fake_volume = 50; fake_volume_calls = 0; fake_mute_calls = 0; fake_mute = 0;
@@ -290,7 +323,7 @@ int main(int argc, char **argv)
     g_skin = "omarchy";
     assert(!command(&host, "load ui_omarchy", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start ui_omarchy", out, sizeof out) && !strcmp(out, "ok\n"));
-    assert(has_fill(trace, 0, 0, 14, 1080, 0, 122, 204));
+    assert(has_fill(trace, 0, 0, 1920, 52, 9, 8, 9));
 
     puts("  ok   ui.skin selects the engine's active skin; vendor and omarchy switch by reload, no rebuild");
     queue_key(&host);
@@ -301,7 +334,7 @@ int main(int argc, char **argv)
     assert(!command(&host, "start ui_engine", out, sizeof out));
     pump(&host);
     queue_key(&host); oa_host_dispatch_posts(&host);
-    assert(has_fill(trace, 0, 0, 14, 1080, 0, 122, 204));
+    assert(has_fill(trace, 0, 0, 1920, 52, 9, 8, 9));
     assert(oa_module_unload(&host, "ui_engine", 0) == -1);
     puts("  ok   queued input survives forced engine removal safely; Omarchy rebinds and pins its replacement");
     for (unsigned i = 0; i < 40; i++) {
@@ -349,6 +382,7 @@ int main(int argc, char **argv)
     puts("  ok   configured repaint timer allocation failures reject start/resume and remain retryable");
     host.stop_requested = 1; assert(!oa_host_run(&host));
     close(host.selfpipe[0]); close(host.selfpipe[1]); pthread_mutex_destroy(&host.post_mu);
-    assert(!unlink(asset_path) && !rmdir(asset_dir));
+    char bad_path[256]; snprintf(bad_path, sizeof bad_path, "%s/bad.rgba", asset_dir);
+    assert(!unlink(asset_path) && !unlink(bad_path) && !rmdir(asset_dir));
     return 0;
 }

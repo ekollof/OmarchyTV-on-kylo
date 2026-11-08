@@ -158,6 +158,10 @@ use `nm -D`, not plain nm. Kernel .text address offsets must not be applied to
 Parity assets come from /vendor2/dynamic_ui, /buffer logos/downloaded tile icons,
 settingsDB LauncherItem, slim_i18n and source-name getters. Use the profile-derived
 IR map plus ICE/vk XMLs; NEC, RC, ICE and DIAL are distinct code spaces.
+The OmarchyTV reference implementation is <https://gitlab.com/piermark/omarchytv>
+(Android/webOS/Tizen). The checked-in `launcher/omarchy/` snapshot is dated; use the
+GitLab tree (pin the commit in the report) for current UI/UX. The production
+Omarchy UI is native `ui_engine` drawing: do not embed or launch the browser app.
 Theme geometry and aligned localized string records remain partly undecoded.
 Offline `openaurora/tools/re/svg-animations.c` walks the BinSVG pack and
 `svg-names.c` resolves all 702 resource IDs/names from ELF svg_name_list, verifying

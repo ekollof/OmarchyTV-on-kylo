@@ -73,12 +73,19 @@ IR-KEYMAP/SETTINGS-INPUT/TAB-LEAF confirm RC 20=Up/ICE 0x20a, 19=Down/0x20b,
 Source/mute firmware recovery is in progress before enabling. App-launch TV
 acceptance needs a boot-time app list/profile gate; full UI parity, cold boot
 and hardware gates remain. NATIVE-REPLACEMENT.
-Native UI target, 2026-11-08: `ui_omarchy` is a placeholder. The target
-look/work is the browser OmarchyTV app in `launcher/omarchy/` (workspaces, top
-bar, clock, app grid, themes, wallpapers, screensaver), but the production UI
-must be native over `ui_engine`/canvas, not a browser/webview/Opera. Theme,
-wallpaper and font data may be imported as native assets; do not polish the
-placeholder. Source test: `source.enable=1`/VIN fd 22 wrote `m_current_source`
+Native OmarchyUI, 2026-11-08: `ui_omarchy` is now a native workspace shell
+modelled on the OmarchyTV reference (<https://gitlab.com/piermark/omarchytv>,
+pinned `8489a19`): 52 px five-workspace bar and clock, six-slot TV/app dock,
+four-column inputs, seven-column apps, theme/CEC/about screens, six reference
+palettes, OAI1 wallpaper import with a gradient fallback, and `ui.lua` v2
+`oa.pane` widgets (3 panes × 8 lines) with the editable `lua/omarchy.lua`
+default. Host tests `check-ui-skin`, `check-ui-lua`,
+`check-ui-omarchy-quiesce` and `check-ui-skin-socket` pass; 1920x1080 captures
+with the EF41 pack were checked. No TV acceptance yet; the EF41 font is not the
+reference's JetBrains/Caskaydia Mono, and app icons, focus animation,
+screensaver, plugins and persistence remain open. Production UI is native
+`ui_engine` only, never a browser/webview. NATIVE-OMARCHY-UI.
+Source test: `source.enable=1`/VIN fd 22 wrote `m_current_source`
 but did not change the displayed source; the `plat_vin_slot_connect`/VPLT/
 `Hal_Video_Set_V4l2Info`/audio companion path is missing, so `source.enable`
 was reverted. The test left stock `m_current_source=5`/`m_volume=0` and the

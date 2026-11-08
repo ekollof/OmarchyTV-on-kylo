@@ -32,6 +32,13 @@ repairs an unconfigured fb1 through the vendor SetPar ioctl; the fake-fb test
 passes, but cold scanout still needs a takeover/cold boot. COLD-DISPLAY-REPAIR. Independent NDAL
 pass: 132/36 ioctl immediates and module init/exit details in
 `grok-findings.md`; 9 of the 16 platform modules still lack Ghidra projects; grok-findings-2 now covers them by objdump/relocations.
+Native Omarchy shell, 2026-11-08: `ui_omarchy` is now a five-workspace native
+shell (bar/clock, six-slot TV/app dock, 4-column inputs, 7-column apps,
+theme/settings/about, OAI1 wallpaper) with a `ui.lua` v2 `oa.pane` widget
+contract and editable `lua/omarchy.lua`. Reference is
+<https://gitlab.com/piermark/omarchytv> at `8489a19`; production drawing stays
+native `ui_engine`, never a browser. Host tests pass; no TV acceptance yet.
+See NATIVE-OMARCHY-UI-2026-11-08.
 Vendor inventory 2026-11-07: `artifacts/analysis/vendor-inventory-2026-11-07/`
 holds the 389-ELF `/vendor` census plus 72 outside it (461 total, 15 platform kernel
 modules; 41 .ko total) and their hashes, full readelf/nm/strings dumps, Ghidra

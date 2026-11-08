@@ -39,8 +39,26 @@
 #include <stdint.h>
 
 #define OA_SVC_UI_LUA "ui.lua"
-#define OA_LUA_API_VERSION 1u
+#define OA_LUA_API_VERSION 2u
 #define OA_LUA_NAME_MAX 32
+#define OA_LUA_PANES 3
+#define OA_LUA_PANE_LINES 8
+#define OA_LUA_PANE_TITLE 24
+#define OA_LUA_PANE_LABEL 16
+#define OA_LUA_PANE_VALUE 64
+
+typedef struct {
+    char label[OA_LUA_PANE_LABEL];
+    char value[OA_LUA_PANE_VALUE];
+    int tone; /* 0 normal, 1 up/green, 2 down/red */
+} oa_lua_pane_line;
+
+typedef struct {
+    char id[OA_LUA_NAME_MAX];
+    char title[OA_LUA_PANE_TITLE];
+    int line_count;
+    oa_lua_pane_line lines[OA_LUA_PANE_LINES];
+} oa_lua_pane;
 
 typedef struct {
     char name[OA_LUA_NAME_MAX];
@@ -74,6 +92,10 @@ typedef struct {
     /* hook is paint, key, enter, or leave. Missing hook returns 0 and
      * *handled 0. A Lua error returns -1 and leaves prior config in place. */
     int (*call)(const char *hook, const char *skin, int arg, int *handled);
+    /* Widget panes published by oa.pane{...} during a hook. Bounded copies;
+     * the skin renders them and never receives a lua_State. */
+    int (*pane_count)(void);
+    int (*pane_at)(int index, oa_lua_pane *out);
 } oa_lua_iface;
 
 #endif

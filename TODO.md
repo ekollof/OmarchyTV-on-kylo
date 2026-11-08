@@ -226,10 +226,13 @@ unvalidated.
       stock volume/source; no further TV tests until fixed. The native UI
       target is the browser OmarchyTV app reproduced natively.
 
-- [ ] Native OmarchyUI port: reproduce the browser OmarchyTV app
-      (`launcher/omarchy`: workspaces, top bar, clock, app grid, themes,
-      wallpapers, screensaver) with the native `ui_engine`/canvas; no browser/
-      webview/Opera. Placeholder `ui_omarchy` is not acceptance.
+- [ ] Native OmarchyUI port: the workspace shell and Lua panes are
+      host-tested (NATIVE-OMARCHY-UI-2026-11-08): five-workspace bar/clock,
+      six-slot TV/app dock, 4-column inputs, 7-column apps, themes, OAI1
+      wallpaper and `ui.lua` v2 `oa.pane` widgets. Remaining: TV acceptance,
+      launcher icon decode, focus animation/transitions, screensaver,
+      theme/wallpaper persistence, EF41→reference font conversion and the
+      larger plugin/arcade/Cinemarchy scope. No browser/webview/Opera.
 - [ ] Takeover stock-settings restore: snapshot/restore `m_volume` and
       `m_current_source` (or never write them); the bundle-e test left 0/5 and
       required a forced reboot for audio. No further TV tests until fixed.

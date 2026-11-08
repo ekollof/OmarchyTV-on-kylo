@@ -70,10 +70,10 @@ static void cap_dump(void)
 }
 static int g_clears, g_presents;
 static int g_ax, g_ay, g_aw, g_ah, g_accent;
-enum { FILL_MAX = 32 };
+enum { FILL_MAX = 512 };
 static struct { int x, y, w, h, r, g, b; } g_fill[FILL_MAX];
 static int g_nf;
-enum { BLIT_MAX = 64 };
+enum { BLIT_MAX = 256 };
 static struct { int x, y, w, h, r, g, b, a; } g_blit[BLIT_MAX];
 static int g_nb;
 enum { SCALED_MAX = 32 };

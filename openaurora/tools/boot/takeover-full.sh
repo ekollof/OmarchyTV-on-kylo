@@ -14,6 +14,9 @@ case "${1:-}" in
 start)
     sha256sum -c manifest.sha256 >/dev/null
     ./openaurora --check --modules ./modules
+    # Editable Lua widget data (the script itself is in ./lua and may be
+    # overridden by ui.lua.script in openaurora.conf).
+    mkdir -p /buffer/openaurora/lua-data
     # Snapshot the optical/SPDIF controls while stock is still running.
     if [ -x ./oa-alsactl ] && [ -r /vendor/etc/alsa.conf ]; then
         mkdir -p /buffer/oa-audio-before

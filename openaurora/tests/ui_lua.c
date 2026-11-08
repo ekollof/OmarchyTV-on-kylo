@@ -315,6 +315,11 @@ int main(int argc, char **argv)
             "  if skin == 'omarchy' and not oa.state.armed then\n"
             "    oa.state.armed = true\n"
             "    oa.after(60000, function() end)\n"
+            "    oa.pane{ id='stats', title='stats', lines={\n"
+            "      {label='load', value='1.0'},\n"
+            "      'local widgets',\n"
+            "      {label='temp', value='9 C', tone='up'},\n"
+            "    } }\n"
             "  elseif skin == 'vendor' then\n"
             "    oa.theme(1, 2, 3, 255, 4, 5, 6, 255)\n"
             "  end\n"
@@ -340,7 +345,7 @@ int main(int argc, char **argv)
     assert(!command(&host, "load lua", out, sizeof out) && strstr(out, "ok"));
     assert(!command(&host, "start lua", out, sizeof out) && !strcmp(out, "ok\n"));
     lua = hold(&host);
-    assert(!lua->status(&st) && st.loaded && st.api == 1 && !st.error);
+    assert(!lua->status(&st) && st.loaded && st.api == OA_LUA_API_VERSION && !st.error);
     {
         FILE *f = fopen(out_path, "r");
         char buf[8] = {0};
@@ -357,6 +362,18 @@ int main(int argc, char **argv)
     assert(!has_fill(trace, 0, 0, 14, 1080, 0, 122, 204));
     lua = hold(&host);
     assert(!lua->status(&st) && st.timers == 1);
+    assert(lua->pane_count() == 1);
+    oa_lua_pane pane;
+    assert(lua->pane_at(0, &pane) == 0);
+    assert(!strcmp(pane.id, "stats") && !strcmp(pane.title, "stats"));
+    assert(pane.line_count == 3);
+    assert(!strcmp(pane.lines[0].label, "load") &&
+           !strcmp(pane.lines[0].value, "1.0"));
+    assert(!strcmp(pane.lines[1].label, "") &&
+           !strcmp(pane.lines[1].value, "local widgets"));
+    assert(!strcmp(pane.lines[2].label, "temp") &&
+           !strcmp(pane.lines[2].value, "9 C") && pane.lines[2].tone == 1);
+    assert(lua->pane_at(1, &pane) == -1);
     drop(&host);
     {
         oa_key_event e = {.id = 19, .kind = OA_KEY_PRESS};

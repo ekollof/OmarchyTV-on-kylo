@@ -76,6 +76,8 @@ struct model {
     int has_nav, nav_band, nav_index;
     int has_theme;
     int bg[4], accent[4];
+    int npane;
+    oa_lua_pane panes[OA_LUA_PANES];
 };
 
 struct slot {
@@ -337,6 +339,116 @@ static int l_theme(lua_State *L)
         m->accent[i] = ch[i + 4];
     }
     m->has_theme = 1;
+    return 0;
+}
+
+static int pane_text(lua_State *L, int idx, char *dst, size_t cap,
+                     int allow_empty)
+{
+    size_t n = 0;
+    const char *s = lua_tolstring(L, idx, &n);
+    if (lua_type(L, idx) != LUA_TSTRING || !s || n >= cap ||
+        (!allow_empty && n == 0))
+        return -1;
+    memcpy(dst, s, n);
+    dst[n] = 0;
+    return 0;
+}
+
+static int pane_find(struct model *m, const char *id)
+{
+    for (int i = 0; i < m->npane; i++)
+        if (!strcmp(m->panes[i].id, id))
+            return i;
+    return -1;
+}
+
+static int l_pane_clear(lua_State *L)
+{
+    struct model *m = model_of(L);
+    if (!m)
+        return luaL_error(L, "no model");
+    m->npane = 0;
+    return 0;
+}
+
+/* oa.pane{ id="weather", title="weather", lines={
+ *   {"Alessandria", "9 C", "up"}, {"clear", "min 6 / max 16"} } }
+ * A plain string line has no label. The table is bounded before copying. */
+static int l_pane(lua_State *L)
+{
+    struct model *m = model_of(L);
+    oa_lua_pane p;
+    if (!m)
+        return luaL_error(L, "no model");
+    luaL_checktype(L, 1, LUA_TTABLE);
+    memset(&p, 0, sizeof p);
+    lua_getfield(L, 1, "title");
+    if (pane_text(L, -1, p.title, sizeof p.title, 0) != 0)
+        return luaL_error(L, "pane title");
+    lua_pop(L, 1);
+    lua_getfield(L, 1, "id");
+    if (lua_isnil(L, -1))
+        snprintf(p.id, sizeof p.id, "%s", p.title);
+    else if (pane_text(L, -1, p.id, sizeof p.id, 0) != 0)
+        return luaL_error(L, "pane id");
+    lua_pop(L, 1);
+
+    lua_getfield(L, 1, "lines");
+    luaL_checktype(L, -1, LUA_TTABLE);
+    lua_Unsigned n = lua_rawlen(L, -1);
+    if (n > OA_LUA_PANE_LINES)
+        return luaL_error(L, "pane line count");
+    p.line_count = (int)n;
+    for (int i = 0; i < p.line_count; i++) {
+        lua_rawgeti(L, -1, i + 1);
+        if (lua_type(L, -1) == LUA_TSTRING) {
+            if (pane_text(L, -1, p.lines[i].value,
+                          sizeof p.lines[i].value, 0) != 0)
+                return luaL_error(L, "pane line");
+        } else if (lua_type(L, -1) == LUA_TTABLE) {
+            lua_getfield(L, -1, "label");
+            if (!lua_isnil(L, -1) &&
+                pane_text(L, -1, p.lines[i].label,
+                          sizeof p.lines[i].label, 1) != 0)
+                return luaL_error(L, "pane label");
+            lua_pop(L, 1);
+            lua_getfield(L, -1, "value");
+            if (pane_text(L, -1, p.lines[i].value,
+                          sizeof p.lines[i].value, 0) != 0)
+                return luaL_error(L, "pane value");
+            lua_pop(L, 1);
+            lua_getfield(L, -1, "tone");
+            if (!lua_isnil(L, -1)) {
+                if (lua_type(L, -1) == LUA_TSTRING) {
+                    const char *tone = lua_tostring(L, -1);
+                    if (!strcmp(tone, "up")) p.lines[i].tone = 1;
+                    else if (!strcmp(tone, "down")) p.lines[i].tone = 2;
+                    else if (strcmp(tone, "normal"))
+                        return luaL_error(L, "pane tone");
+                } else if (lua_isinteger(L, -1)) {
+                    lua_Integer tone = lua_tointeger(L, -1);
+                    if (tone < 0 || tone > 2)
+                        return luaL_error(L, "pane tone");
+                    p.lines[i].tone = (int)tone;
+                } else {
+                    return luaL_error(L, "pane tone");
+                }
+            }
+            lua_pop(L, 1);
+        } else {
+            return luaL_error(L, "pane line type");
+        }
+        lua_pop(L, 1);
+    }
+    lua_pop(L, 1);
+    int slot = pane_find(m, p.id);
+    if (slot < 0) {
+        if (m->npane >= OA_LUA_PANES)
+            return luaL_error(L, "pane table full");
+        slot = m->npane++;
+    }
+    m->panes[slot] = p;
     return 0;
 }
 
@@ -1004,6 +1116,8 @@ static const luaL_Reg oa_funcs[] = {
     {"layout", l_layout},
     {"nav", l_nav},
     {"theme", l_theme},
+    {"pane", l_pane},
+    {"pane_clear", l_pane_clear},
     {"bind", l_bind},
     {"anim", l_anim},
     {"nav_band", l_nav_band},
@@ -2396,6 +2510,18 @@ static int svc_theme(int bg[4], int accent[4])
     }
     return 0;
 }
+static int svc_pane_count(void)
+{
+    return g_rt && g_rt->live ? g_rt->live->model.npane : 0;
+}
+static int svc_pane_at(int index, oa_lua_pane *out)
+{
+    if (!out || !g_rt || !g_rt->live || index < 0 ||
+        index >= g_rt->live->model.npane)
+        return -1;
+    *out = g_rt->live->model.panes[index];
+    return 0;
+}
 
 static int svc_binding(int key, char *dst, size_t cap)
 {
@@ -2519,7 +2645,7 @@ static int svc_call(const char *hook, const char *skin, int arg, int *handled)
 
 static const oa_lua_iface g_iface = {
     svc_status, svc_reload, svc_layout_count, svc_layout_at, svc_nav, svc_theme,
-    svc_binding, svc_anim, svc_call
+    svc_binding, svc_anim, svc_call, svc_pane_count, svc_pane_at
 };
 
 /* Module entry points. One runtime per process; the service table above

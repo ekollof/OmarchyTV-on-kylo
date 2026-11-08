@@ -2107,13 +2107,16 @@ BUNDLE_LABEL ?= full replacement
 .PHONY: full-replacement-bundle
 full-replacement-bundle: $(BUILD)/$(PROJECT) $(FULL_REPLACEMENT_SO) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl $(BUILD)/oa-app-launch
 	@rm -rf $(BUNDLE_DIR)
-	@mkdir -p $(BUNDLE_DIR)/modules $(BUNDLE_DIR)/menus
+	@mkdir -p $(BUNDLE_DIR)/modules $(BUNDLE_DIR)/menus $(BUNDLE_DIR)/ui $(BUNDLE_DIR)/lua
 	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl $(BUILD)/oa-app-launch $(BUNDLE_DIR)/
 	@cp tools/boot/takeover-full.sh tools/boot/run-aurora.sh tools/boot/oa_apps.map $(BUNDLE_DIR)/
 	@cp $(FULL_REPLACEMENT_SO) $(BUNDLE_DIR)/modules/
 	@cp $(BUNDLE_CONF) $(BUNDLE_DIR)/openaurora.conf
 	@cp menus/sub_launcher.json $(BUNDLE_DIR)/menus/
-	@cd $(BUNDLE_DIR) && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker oa-alsactl oa-app-launch takeover-full.sh run-aurora.sh oa_apps.map openaurora.conf menus/*.json modules/*.so > manifest.sha256
+	@cp ui/README.md $(BUNDLE_DIR)/ui/
+	@cp lua/omarchy.lua $(BUNDLE_DIR)/lua/
+	@if ls ui/*.rgba >/dev/null 2>&1; then cp ui/*.rgba $(BUNDLE_DIR)/ui/; fi
+	@cd $(BUNDLE_DIR) && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker oa-alsactl oa-app-launch takeover-full.sh run-aurora.sh oa_apps.map openaurora.conf menus/*.json modules/*.so ui/* lua/* > manifest.sha256
 	@echo "$(BUNDLE_LABEL) bundle: $(BUNDLE_DIR) ($(words $(FULL_REPLACEMENT_SO)) modules)"
 
 # OmarchyTV-native UI composition: same modules and hardware stack, but the

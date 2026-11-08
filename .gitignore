@@ -35,3 +35,6 @@
 
 # Raw recorder intermediates; PNG captures are the maintained evidence.
 artifacts/analysis/**/offline-apps-grid-*.rgba
+
+# Locally imported native UI artwork (licence/permission varies; not redistributed)
+openaurora/ui/*.rgba
