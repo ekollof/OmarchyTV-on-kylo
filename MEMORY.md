@@ -102,6 +102,9 @@ NIM-DTV models0..3/default take the demod HAL and model4 skips; MTD returns0.
 Panel power is a separate missing owner: `DEV_PANEL_PanelPowerSet`/
 `PanelBackLightPowerSet`/`PowerSequence` use GPIO110/111, the panel-extra
 delays and LVDS mute/TCON PMIC; `mod_panel` only has the PWM curve/level.
+Read-only stock values: panel-extra +0/+2/+4/+6/+8 = 30/580/220/30/100 ms,
++0x4a=0; GPIO110 pin/flag 110/1, GPIO111 111/0, PWM108 channel0, high period
+1000; effective on 30ms LVDS +580ms BL, off 220ms LVDS +30ms panel.
 Read-only TV: fb0..fb4 are OSD_NORMAL1/2/3 and OSD_CURSOR1/2; stock holds
 fb0-2/card0/ntkgpu. The stock-UI map (portal/settings/source/apps/EPG/PVR)
 is in the same report.

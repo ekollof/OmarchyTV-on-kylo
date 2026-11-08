@@ -43,7 +43,9 @@ maps the cold-start stages and the current stock-UI coverage.
       Next: implement the one-owner-per-stage order, GPIO/IIC first; then the
       recovered panel power sequence (`PanelPowerSet`/`PanelBackLightPowerSet`/
       `PowerSequence`, panel-extra delays) as a separate `mod_panel` owner.
-      See `artifacts/analysis/panel-power-2026-11-08.md`.
+      Stock values: panel-extra 30/580/220/30/100 ms, GPIO110 110/1,
+      GPIO111 111/0, PWM108 channel0, TCON gate0; on 30ms LVDS +580ms BL,
+      off 220ms LVDS +30ms panel. See `artifacts/analysis/panel-power-2026-11-08.md`.
 - [ ] Real display/OSD cold enable: complete the format/stride/region/enable/
       alpha/update and resume sequence; `plat.drm_init=0` is a takeover
       workaround, not parity. OSD-BUFFER-CONTRACT, DRM-PLANE-CONTRACT,

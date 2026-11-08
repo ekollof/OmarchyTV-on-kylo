@@ -194,3 +194,66 @@ sequence.
   another caller (e.g. the panel standby/TCON path) drives it.
 - GPIO 110/111 description records (pin/level/active-low fields) on this set;
   `DEV_PANEL_Init` copies them from the device layer, which is not owned yet.
+
+## Runtime values from the stock process (read-only)
+
+Read from `/proc/1770/mem` (stock `aurora.elf`, PID verified by cmdline) with
+`dd`/`od` only. No write, ptrace stop, key or display operation.
+
+`PLAT_VIU_GetPanelExtraStruct` (`0x019d4d64`, 0x5e bytes):
+
+| offset | value | decoded |
+|---:|---:|---|
+| `+0` | `0x001e` (30) | panel-on -> LVDS-on delay, ms |
+| `+2` | `0x0244` (580) | LVDS-on -> backlight-on delay, ms |
+| `+4` | `0x00dc` (220) | backlight-off -> LVDS-off delay, ms |
+| `+6` | `0x001e` (30) | LVDS-off -> panel-power-off delay, ms |
+| `+8` | `0x0064` (100) | PTF PWM level; used as `*10` = 1000 |
+| `+0x4a` | `0` | TCON PMIC GPIO gate off |
+
+The Init/power block at `0x019354b4` is
+`01 00 0a 00 28 00 20 03 dc 00 37 00 0a 00`:
+byte `1`, halfwords `10, 40, 800, 220, 55, 10`. This matches
+`DEV_PANEL_Init` and `DEV_PANEL_SetPowerSequenceParams(NULL)`.
+
+Other stock state:
+
+| address | value | meaning |
+|---|---|---|
+| `0x01761876` | `1000` | `gu16PanelHighPeriodIn1000` |
+| `0x01761874` | `1000` | `gu16OrgPanelHighPeriodIn1000` |
+| `0x0176186c` | `1` | `gbPowerOffOnDelay` |
+| `0x019354c4` | `e8 03 e8 03 00 00 00 00` | `gstBacklightPara`: two 1000 halfwords |
+| `0x01935539` | `0` | TCON PMIC second gate |
+| `0x019354e0` | all zero | `u32TimeOff`/`u32TimeOffOnDiff`/`u32TimeOn` |
+
+GPIO table pointer at `0x01931270` was `0x031c7000`. Entries (32 bytes,
+`GetDescription` returns `entry+8`):
+
+```text
+GPIO 110: ff ff ff ff ff ff ff ff 6e 00 00 00 6e 00 00 00
+          02 00 00 00 00 00 00 00 02 00 00 00 01 00 00 00
+GPIO 111: ff ff ff ff ff ff ff ff 6f 00 00 00 6f 00 00 00
+          02 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00
+GPIO 108: ff ff ff ff ff ff ff ff 6c 00 00 00 6c 00 00 00
+          00 00 00 00 01 00 00 00 02 00 00 00 02 00 00 00
+```
+
+`DEV_PANEL_Init` copies 32 bytes from `entry+8`, so:
+`DAT_01935460` (panel pin) = 110, `DAT_01935470` (panel flag) = 1;
+`DAT_01935498` (backlight pin) = 111, `DAT_019354a8` (backlight flag) = 0.
+GPIO 108 (`desc+4` = 108) maps through the PWM table to channel 0.
+
+Consequences for this set (PCB layout 14):
+
+- Panel power on is layout-14 `else` + `DEV_TCON_BIN_Ver_IsMatch`; the TCON gate
+  is currently 0, so the recovered `PanelPowerSet(1)` path performs no GPIO
+  write. Panel power **off** writes GPIO 110 with `flag != 1` = 0.
+- `DEV_TCON_CHIPSET_Set_PMIC_GPIO` is a no-op while `panel_extra+0x4a` and
+  `0x01935539` are both 0.
+- The effective on sequence is: panel power (possibly gated), 30 ms, LVDS
+  unmute, PWM 1000, 580 ms, backlight power on. Off: 70 ms, backlight power
+  off, 220 ms, PWM/LVDS mute, 30 ms, panel power off.
+
+These are the values to use for a native panel-power owner. Do not substitute
+the Init block (10/40/800/220/55/10) for the panel-extra timing fields.

@@ -155,6 +155,12 @@ power owner:
 - LVDS mute is VPLT command `0x1cc` with a one-byte value
   (`plat_vpltio_mute_lvds`). TCON PMIC is GPIO 209, gated by panel-extra+0x4a
   and `0x01935539` (`DEV_TCON_CHIPSET_Set_PMIC_GPIO`).
+- Runtime stock panel-extra (read-only): `+0=30`, `+2=580`, `+4=220`,
+  `+6=30`, `+8=100` (PTF PWM 1000), `+0x4a=0`. GPIO 110 pin/flag = 110/1;
+  GPIO 111 = 111/0; PWM 108 = channel 0; high period 1000; TCON gate 0.
+  Effective on: panel power (gated), 30 ms, LVDS unmute, PWM 1000, 580 ms,
+  backlight on. Off: 70 ms, backlight off, 220 ms, PWM/LVDS mute, 30 ms,
+  panel off.
 
 `mod_panel` has the PWM curve/level but none of the power sequence, LVDS mute,
 TCON PMIC or panel-extra fields. This is the next panel owner to implement.
