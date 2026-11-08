@@ -97,7 +97,9 @@ and the audio controls are healthy.
 The process-swap path is therefore not viable under the stock supervisor. TV
 app-launch acceptance needs a one-boot app-list override (for example a bind
 mount of a custom list over the read-only debug path) or a boot/profile change;
-both are owner gates.
+both are owner gates. The one-boot bind-mount option was not approved or
+executed; the owner requested restoring stock and staying away from the set
+after the failed process-swap attempt.
 
 ## Native volume/mute OSD
 
@@ -112,7 +114,14 @@ the service calls, the OSD fill and the timer hide:
 ok   volume/mute keys call the audio service and draw the native OSD
 ```
 
-No TV key/audible/OSD acceptance has been performed yet. Updated bundle
+No TV key/audible/OSD acceptance was obtained. A 2026-11-08 takeover started
+the OSD build (27 modules, `ui_omarchy`, 1920x1080, scene 37-43 ms, first
+present acknowledged), but the owner requested restoring stock before pressing
+keys. `takeover-full.sh restore` reported `optical control restore -> ok` /
+`opu volume restore -> ok`; stock is appmgr 1581 / aurora 5873, `/conf/oa_safe`
+is present and the OpenAurora runtime files are gone. No reboot was performed
+after that restore, so the hidden audio DSP state may still need one. TV work
+is paused at the owner's request.
 `oa-native-20261108c.tgz` sha256
 `56a3dc4aa786108bd6b49212c128e16cae1666f94b7ca5e095171c99c7e54669`;
 ARM `mod_ui_omarchy` sha256

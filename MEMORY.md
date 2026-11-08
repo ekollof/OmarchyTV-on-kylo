@@ -61,6 +61,14 @@ up/down/mute (codes 16/17/13) through the audio service with a 1.5 s OSD;
 `check-ui-skin` passes, TV key/audible/OSD acceptance is pending. App-launch TV
 acceptance needs a one-boot app-list override or boot/profile gate; full UI
 parity, cold boot and hardware gates remain. NATIVE-REPLACEMENT.
+TV pause, 2026-11-08: the volume-OSD takeover was started (native UI, 27
+modules, 1920x1080, first present acknowledged) but stopped at the owner's
+request before any remote-key test. Stock restored: appmgr 1581, aurora 5873,
+`/conf/oa_safe` present, OpenAurora runtime files gone; `optical control
+restore -> ok` / `opu volume restore -> ok`. No reboot was performed, so the
+hidden audio DSP state may still need one. The one-boot app-list override for
+app-launch TV acceptance was not approved or executed. TV/audio/app-launch work
+is paused until the owner resumes it.
 `check-plat-drm-gate` covers drm_init 0/1; `takeover-full.sh` (start/status/
 reload-suite/restore) is bundled for the next authorized takeover, with restore
 returning to stock for process/UI only; audio requires a reboot after takeover

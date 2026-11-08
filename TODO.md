@@ -209,6 +209,12 @@ unvalidated.
       pending. App-launch TV acceptance needs a one-boot app-list override or
       boot/profile gate; native shell parity, app-launch TV acceptance and cold
       boot remain open. REPLACEMENT-SYSTEM, NATIVE-REPLACEMENT.
+      TV pause, 2026-11-08: the volume-OSD takeover was stopped at the owner's
+      request before key testing. Stock restored (appmgr 1581, aurora 5873,
+      `/conf/oa_safe`, runtime files gone; optical/OPU restore ok); no reboot,
+      so the hidden audio DSP state may still need one. The app-launch
+      one-boot override was not approved/executed. TV/audio/app-launch work is
+      paused until the owner resumes it.
 
 ### Audio / CEC
 
