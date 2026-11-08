@@ -83,8 +83,9 @@ make check-ui-skin-socket     # real binary socket/switch/fallback
 All pass. A local capture run with the vendor EF41 pack
 (`OA_UI_FONT_INDEX`/`OA_UI_FONT_PACK`) produced `home/sources/apps/settings/
 about` 1920x1080 RGBA snapshots; the layout, dock, bar, clock and text were
-visually checked. The test wallpaper is a 2x2 checkerboard; the real
-wallpaper is an OAI1 import.
+visually checked. A Lua-pane variant (`stats`, `local widgets`, `temp 9 C`,
+tone up) was also captured and checked. The test wallpaper is a 2x2
+checkerboard; the real wallpaper is an OAI1 import.
 
 Reference layout facts used: five workspaces and a centred clock, six-slot
 dock with TV first, four-column TV grid, seven-column app grid, and the

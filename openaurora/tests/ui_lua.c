@@ -41,6 +41,10 @@ static const char *config(void *ud, const char *key, const char *def)
         return "0";
     if (!strcmp(key, "ui.dir"))
         return g_root;
+    if (!strcmp(key, "ui.font_index") && getenv("OA_UI_FONT_INDEX"))
+        return getenv("OA_UI_FONT_INDEX");
+    if (!strcmp(key, "ui.font_pack") && getenv("OA_UI_FONT_PACK"))
+        return getenv("OA_UI_FONT_PACK");
     if (!strcmp(key, "ui.lua.script"))
         return g_script;
     if (!strcmp(key, "ui.lua.data"))
@@ -375,6 +379,15 @@ int main(int argc, char **argv)
            !strcmp(pane.lines[2].value, "9 C") && pane.lines[2].tone == 1);
     assert(lua->pane_at(1, &pane) == -1);
     drop(&host);
+    {
+        const char *capdir = getenv("OA_UI_CAPTURE_DIR");
+        if (capdir && *capdir) {
+            char path[512];
+            if (snprintf(path, sizeof path, "%s/panes.rgba", capdir) <
+                (int)sizeof path)
+                (void)trace->capture(path);
+        }
+    }
     {
         oa_key_event e = {.id = 19, .kind = OA_KEY_PRESS};
         host.api.emit(&host, OA_TOPIC_KEY, &e);
