@@ -227,7 +227,7 @@ int main(int argc, char **argv)
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
     assert(has_fill(trace, 40, 88, 1840, 904, 18, 21, 28));     /* Sources screen */
     capture(trace, "sources");
-    queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 19); oa_host_dispatch_posts(&host);
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
     assert(fake_source_select == 15);                            /* BACK AV */
     assert(action_count == 1 && last_action.kind == OA_ACTION_SOURCE &&
@@ -245,17 +245,17 @@ int main(int argc, char **argv)
            last_action.index == 0 && !strcmp(last_action_name, "Netflix"));
     queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
     assert(has_fill(trace, 40, 88, 300, 4, 0, 122, 204));       /* back home */
-    queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 19); oa_host_dispatch_posts(&host);
     assert(has_fill(trace, 40, 288, 300, 4, 0, 122, 204));      /* focus tile 2 */
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
     assert(has_fill(trace, 40, 88, 1840, 904, 21, 25, 33));     /* Settings screen */
     capture(trace, "settings");
-    queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 19); oa_host_dispatch_posts(&host);
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
     assert(fake_cec == 1 && fake_cec_sets == 1);                 /* CEC toggled on */
     queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
     queue_key_id(&host, 22); oa_host_dispatch_posts(&host);
-    queue_key_id(&host, 20); oa_host_dispatch_posts(&host);
+    queue_key_id(&host, 19); oa_host_dispatch_posts(&host);
     queue_key_id(&host, 53); oa_host_dispatch_posts(&host);
     assert(has_fill(trace, 40, 88, 1840, 904, 22, 26, 35));     /* About screen */
     capture(trace, "about");

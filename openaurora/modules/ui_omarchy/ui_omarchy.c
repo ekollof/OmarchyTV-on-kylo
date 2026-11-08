@@ -561,8 +561,8 @@ static void back_home(struct ctx *c)
 static int key_home(struct ctx *c, int id)
 {
     int f = c->focus;
-    if (id == 19) f = f >= 2 ? f - 2 : f;          /* Up */
-    else if (id == 20) f = f < 2 ? f + 2 : f;      /* Down */
+    if (id == 20) f = f >= 2 ? f - 2 : f;          /* Up (ICE 0x20a) */
+    else if (id == 19) f = f < 2 ? f + 2 : f;      /* Down (ICE 0x20b) */
     else if (id == 21) f = (f % 2) ? f - 1 : f;    /* Left */
     else if (id == 22) f = (f % 2) ? f : f + 1;    /* Right */
     else if (id == 53 || id == 0x8a) {             /* Select */
@@ -584,9 +584,9 @@ static int key_home(struct ctx *c, int id)
 
 static int key_sources(struct ctx *c, int id)
 {
-    if (id == 10 || id == 48) { back_home(c); return 0; }
+    if (id == 10 || id == 37 || id == 48) { back_home(c); return 0; }
     if (id == 19 || id == 20) {
-        int n = c->source_focus + (id == 19 ? -1 : 1);
+        int n = c->source_focus + (id == 20 ? -1 : 1);
         if (n < 0) n = 0;
         if (n >= SOURCE_ROWS) n = SOURCE_ROWS - 1;
         if (n != c->source_focus) { c->source_focus = n; paint(c); }
@@ -613,9 +613,9 @@ static int key_sources(struct ctx *c, int id)
 
 static int key_apps(struct ctx *c, int id)
 {
-    if (id == 10 || id == 48) { back_home(c); return 0; }
+    if (id == 10 || id == 37 || id == 48) { back_home(c); return 0; }
     if (id == 19 || id == 20) {
-        int n = c->app_focus + (id == 19 ? -1 : 1);
+        int n = c->app_focus + (id == 20 ? -1 : 1);
         if (n < 0) n = 0;
         if (n >= c->app_n) n = c->app_n ? c->app_n - 1 : 0;
         if (n != c->app_focus) { c->app_focus = n; paint(c); }
@@ -630,9 +630,9 @@ static int key_apps(struct ctx *c, int id)
 
 static int key_settings(struct ctx *c, int id)
 {
-    if (id == 10 || id == 48) { back_home(c); return 0; }
+    if (id == 10 || id == 37 || id == 48) { back_home(c); return 0; }
     if (id == 19 || id == 20) {
-        int n = c->settings_focus + (id == 19 ? -1 : 1);
+        int n = c->settings_focus + (id == 20 ? -1 : 1);
         if (n < 0) n = 0;
         if (n > 1) n = 1;
         if (n != c->settings_focus) { c->settings_focus = n; paint(c); }
@@ -660,7 +660,7 @@ static int native_key(struct ctx *c, int id)
     case SCREEN_APPS: return key_apps(c, id);
     case SCREEN_SETTINGS: return key_settings(c, id);
     case SCREEN_ABOUT:
-        if (id == 10 || id == 48) { back_home(c); return 0; }
+        if (id == 10 || id == 37 || id == 48) { back_home(c); return 0; }
         return 0;
     default:
         return key_home(c, id);

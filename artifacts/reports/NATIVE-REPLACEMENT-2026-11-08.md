@@ -120,21 +120,34 @@ the service calls, the OSD fill and the timer hide:
 ok   volume/mute keys call the audio service and draw the native OSD
 ```
 
-No TV key/audible/OSD acceptance was obtained. A 2026-11-08 takeover started
-the OSD build (27 modules, `ui_omarchy`, 1920x1080, scene 37-43 ms, first
-present acknowledged), but the owner requested restoring stock before pressing
-keys. `takeover-full.sh restore` reported `optical control restore -> ok` /
-`opu volume restore -> ok`; stock is appmgr 1581 / aurora 5873, `/conf/oa_safe`
-is present and the OpenAurora runtime files are gone. The soundbar was silent
-after that process-only restore; a recovery `reboot -f` restored stock audio
-(post-reboot appmgr 1620 / aurora 1772, OPU 0 0 0 and route controls healthy;
-owner confirmed the soundbar audible). TV tests remain paused at the owner's
-request.
-`oa-native-20261108c.tgz` sha256
-`56a3dc4aa786108bd6b49212c128e16cae1666f94b7ca5e095171c99c7e54669`;
+TV test 2026-11-08 (bundle d, native UI 1920x1080, 27 modules):
+- Volume up/down: the bottom-right OSD appeared and the soundbar volume
+  changed. This is TV-accepted for the native volume path.
+- Mute: IR code 13 reached the UI, but `audio.set_mute` returned -1 and the
+  soundbar did not mute.
+- Sources: up/down was reversed, OK did not switch, Exit did nothing, Back
+  returned.
+
+Firmware mapping (IR-KEYMAP + SETTINGS-INPUT/TAB-DISPATCH/TAB-LEAF):
+RC 20=KeyUp/ICE 0x20a, 19=KeyDown/0x20b, 53=KeySelect/0x20e,
+10=KeyExit/0x210, 37=KeyExit2/0x25b, 48=KeyMenu/0x22d,
+13=KeyMute/0x222, 16/17=VolumeUp/Down/0x220/0x221.
+SettingsDialog/TabDialog route 0x20a/0x20b to onUpDownPress,
+0x210/0x25b/0x22d to onMenuPress, and 0x222 directly to
+DemoApp::toggleAndDisplayMuteState. The native shell now maps RC 20=Up,
+19=Down and RC 37 to the back/menu action; focused `check-ui-skin` passes.
+The source OK failure is not the key: the source module is gated by
+`source.enable` and does not implement the stock
+`plat_vin_slot_connect`/VPLT/`Hal_Video_Set_V4l2Info` route. The mute failure
+is the audio interface, not the key. Source and mute recovery from the
+firmware is in progress before either path is enabled.
+
+Bundle `oa-native-20261108d.tgz` sha256
+`daa8e0cf5798ae4f1f05dda6e6af00deb6b55c82ca3bf5464415dcaa3fbecb91`;
 ARM `mod_ui_omarchy` sha256
-`d32774e1ef22dcf75d173f118d653b095e3498f85095ee5a8b95260d2f227906`;
-TV metadata preflight passed (no module start or hardware access).
+`d32774e1ef22dcf75d173f118d653b095e3498f85095ee5a8b95260d2f227906`.
+Stock restored after the test: appmgr 1563 / aurora 1781, `/conf/oa_safe`
+present, audio controls healthy.
 
 ## Restore and audio
 
@@ -156,8 +169,11 @@ documented ALSA-CONTROL limitation, not a new regression.
   `@netflix` wrote but launched nothing. TV app-launch acceptance needs a
   one-boot app-list override or boot/profile gate; `oa_apps.map` is not
   profile-verified and the helper callbacks are no-op stubs.
-- The native volume/mute OSD is host-tested only; TV key handling, audible
-  volume, CEC-volume policy and the overlay on the real fb1 remain open.
+- Volume up/down and the native OSD are TV-accepted. Mute is not: the key
+  reaches the UI but `audio.set_mute` returns -1; the stock action is
+  `DemoApp::toggleAndDisplayMuteState`. Source OK is blocked by the incomplete
+  source path, not the key. The firmware-backed RC 20/19/37 key fixes are
+  host-tested; a TV retest is pending with the source/mute recovery.
 - Takeover audio restore remains reboot-required for the hidden DSP state.
 - Cold boot/replacement boot path, RF/DVB lock, CEC TX/RX, DVR, backlight
   feedback, IR repeat and amplifier mute remain unaccepted.

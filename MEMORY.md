@@ -60,18 +60,21 @@ registration was refused. The helper also needed libpthread for libnpc's
 `sem_init` (now linked; sha256
 `c6a99a451fd525ade4f5e8f61f311404b2d805f2bc93d27eef8a91e29323a070`). Stock
 restored after reboot: appmgr 1578 / aurora 1780, `/conf/oa_safe`, controls
-healthy. The native shell handles volume up/down/mute (codes 16/17/13) through
-the audio service with a 1.5 s OSD; `check-ui-skin` passes, TV key/audible/OSD
-acceptance is pending. App-launch TV acceptance needs a boot-time app
-list/profile gate; full UI parity, cold boot and hardware gates remain.
-NATIVE-REPLACEMENT.
-TV available, 2026-11-08: the volume-OSD takeover was started but stopped at
-the owner's request before key testing. Stock restored: appmgr 1581, aurora
-5873, `/conf/oa_safe`, runtime files gone; optical/OPU restore ok. The soundbar
-was silent after that process-only restore; `reboot -f` restored audio (owner
-confirmed). The runtime appmgr retry ended with a reboot to stock appmgr 1578 /
-aurora 1780; staging removed and controls healthy. No further appmgr swap is
-planned; volume-OSD TV acceptance is still pending and the TV is available.
+healthy. The native shell handles volume up/down/mute (codes 16/17/13) with a
+1.5 s OSD. TV test: volume up/down OSD + soundbar volume accepted; mute key
+reaches the UI but `audio.set_mute` returns -1; source OK is blocked by the
+incomplete source path; up/down was reversed and Exit2 unhandled. Firmware
+IR-KEYMAP/SETTINGS-INPUT/TAB-LEAF confirm RC 20=Up/ICE 0x20a, 19=Down/0x20b,
+37=KeyExit2/0x25b menu/back; the shell now maps these (`check-ui-skin` passes).
+Source/mute firmware recovery is in progress before enabling. App-launch TV
+acceptance needs a boot-time app list/profile gate; full UI parity, cold boot
+and hardware gates remain. NATIVE-REPLACEMENT.
+TV available, 2026-11-08: a later volume-OSD takeover ran on bundle d
+(27 modules, `ui_omarchy`, 1920x1080) and the owner confirmed volume up/down
+OSD and soundbar volume. Mute/source/Exit2 findings are above. Stock restored:
+appmgr 1563 / aurora 1781, `/conf/oa_safe`, controls healthy. The runtime
+appmgr retry ended at 1578/1780 before that. TV is available; source/mute
+recovery and the key retest remain.
 `check-plat-drm-gate` covers drm_init 0/1; `takeover-full.sh` (start/status/
 reload-suite/restore) is bundled for the next authorized takeover, with restore
 returning to stock for process/UI only; audio requires a reboot after takeover
