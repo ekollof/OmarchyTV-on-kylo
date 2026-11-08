@@ -158,25 +158,33 @@ only when `panel_extra+0x4a != 0` and byte `0x01935539 != 0`; it sets GPIO 209
 to 0 for off and 1 for on. The two gates are board/profile state, not
 constants.
 
-## What OpenAurora has and lacks
+## What OpenAurora has
 
-`mod_panel` currently owns:
-- `Hal_Pwm_Open`/`Hal_Pwm_Set_ByChannel` with the vendor 0..1000 conversion;
-- the recovered backlight curve (`common/panel_curve.c`);
-- `panel.start`, `panel.freq=30000`, `panel.mode=0`, `panel.channel=0`,
-  `panel.duty_max=4095`, and an opt-in `panel.standby` flag.
+`mod_panel` already implements the recovered sequence:
 
-It does **not** own:
-- the GPIO 110/111 descriptions or the timing block;
-- `DEV_PANEL_PanelPowerSet`/`PanelBackLightPowerSet`;
-- `DEV_PANEL_PowerSequence` with the panel-extra delays;
-- `plat_vpltio_mute_lvds`, `DEV_TCON_CHIPSET_Set_PMIC_GPIO`,
-  `PLAT_PQ_SHELL_SetAutoBacklight`, or `PLAT_VIU_GetPanelExtraStruct`.
+- `panel_power_on`: GPIO 110 on, `on_delay_ms`, LVDS on, PWM restore,
+  `bl_on_delay_ms`, GPIO 111 on.
+- `panel_power_off`: `off_bl_delay_ms`, GPIO 111 off, `off_lvds_delay_ms`,
+  LVDS off, `off_panel_delay_ms`, PWM 0, GPIO 110 off.
+- `standby_lvds`: VPLT `0x1cc` with the mute byte.
+- `Hal_Gpio_Write` for pins 110/111 (`DEV_GPIO_SetLevel` uses the same HAL
+  call for pins below 168; the device-layer table is not required for these
+  two pins).
+- `panel.standby` gates suspend/resume; the defaults are exactly the runtime
+  values above (`30/580/220/30`, GPIO 110 on=1, GPIO 111 on=0).
 
-A native panel-power owner must supply those or an explicit equivalent. Do not
-call vendor `DEV_PANEL_*` code without the device-layer GPIO state
-(`DEV_GPIO_Init`) and the VIU/panel-extra state. `panel.standby` is not this
-sequence.
+Added 2026-11-08: `panel.power_on_start` (default 0) runs the same power-on
+sequence at `m_start` for a cold boot. It is off for takeovers because stock
+already owns the panel; set it to 1 only when booting without stock.
+`PLAT_PQ_SHELL_SetAutoBacklight` and the TCON PMIC GPIO are omitted/disabled
+because the latter's gates are 0 on this set; the former has no owner here.
+
+`tests/panel_standby.c` covers the suspend/resume order and the opt-in cold
+start order with fake PWM/GPIO/VPLTIO. This is a userspace sequence proof, not
+visible panel acceptance.
+
+Do not call vendor `DEV_PANEL_*` code without the device-layer GPIO state
+(`DEV_GPIO_Init`) and the VIU/panel-extra state.
 
 ## Not recovered
 

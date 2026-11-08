@@ -100,6 +100,7 @@ struct ctx {
     /* Opt-in standby panel-power sequence (DEV_PANEL_PowerSequence). The
      * defaults are the live profile's descriptors/panel-extra values. */
     int standby;
+    int power_on_start; /* run the power-on sequence at m_start (cold boot) */
     int power_pin, power_on_level;
     int bl_pin, bl_on_level;
     int lvds_cmd;
@@ -224,7 +225,7 @@ static int panel_power_on(struct ctx *c)
     standby_gpio(c, c->power_pin, c->power_on_level);
     delay_ms(c->on_delay_ms);
     standby_lvds(c, 1);
-    int pct = c->have_percent ? c->percent : 100;
+    int pct = c->percent >= 0 ? c->percent : 100;
     int rc = apply(c, pct);
     delay_ms(c->bl_on_delay_ms);
     standby_gpio(c, c->bl_pin, c->bl_on_level);
@@ -322,6 +323,10 @@ static int m_start(void *v)
     /* Opt-in standby sequence. Defaults are the live panel's descriptor pins,
      * polarity and PLAT_VIU panel-extra delays (30/580/220/30 ms). */
     c->standby = c->api->config_get(c->api->priv, "panel.standby", "0")[0] == '1';
+    c->power_on_start = c->api->config_get(c->api->priv,
+                                           "panel.power_on_start", "0")[0] == '1';
+    if (c->power_on_start)
+        c->standby = 1; /* the GPIO/LVDS helpers share the sequence gate */
     c->power_pin = atoi(c->api->config_get(c->api->priv, "panel.power_pin", "110"));
     c->power_on_level = atoi(c->api->config_get(c->api->priv,
                                                 "panel.power_on_level", "1")) != 0;
@@ -346,7 +351,14 @@ static int m_start(void *v)
     } else {
         c->api->log(c->api->priv, OA_LOG_INFO, "vendor HAL linked: channel %d, %d Hz, start %d%%",
                     c->channel, c->freq, c->percent);
-        if (apply(c, c->percent) != 0) {
+        if (c->power_on_start) {
+            if (panel_power_on(c) != 0) {
+                if (restored)
+                    c->have_percent = 0;
+                c->api->log(c->api->priv, OA_LOG_WARN,
+                            "panel: cold power-on sequence failed; percent unknown");
+            }
+        } else if (apply(c, c->percent) != 0) {
             if (restored)
                 c->have_percent = 0; /* handed-over value was not reapplied */
             c->api->log(c->api->priv, OA_LOG_WARN,

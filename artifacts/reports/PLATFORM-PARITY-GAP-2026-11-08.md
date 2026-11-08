@@ -162,8 +162,13 @@ power owner:
   backlight on. Off: 70 ms, backlight off, 220 ms, PWM/LVDS mute, 30 ms,
   panel off.
 
-`mod_panel` has the PWM curve/level but none of the power sequence, LVDS mute,
-TCON PMIC or panel-extra fields. This is the next panel owner to implement.
+`mod_panel` already implements `panel_power_on/off` and the LVDS VPLT command
+behind `panel.standby`, with the runtime defaults above. It now also has
+`panel.power_on_start` (default 0) to run the power-on sequence at `m_start`
+for a cold boot. `tests/panel_standby.c` covers both orders with fake
+PWM/GPIO/VPLTIO. The TCON PMIC gate is 0 on this set, so that step is
+disabled; the missing acceptance is visible panel-on/off and a cold boot, not
+the sequence body.
 
 ### Read-only TV state observed
 

@@ -19,6 +19,7 @@
 
 extern const oa_module *oa_module_entry(void);
 static const oa_panel_iface *panel_iface;
+static int g_start_on;
 
 enum event_kind { EV_INIT, EV_OPEN, EV_SET, EV_CLOSE, EV_GPIO, EV_LVDS };
 struct event {
@@ -69,6 +70,7 @@ static const char *config(void *p, const char *key, const char *def)
 {
     (void)p;
     if (!strcmp(key, "panel.standby")) return "1";
+    if (!strcmp(key, "panel.power_on_start")) return g_start_on ? "1" : "0";
     if (!strcmp(key, "panel.start")) return "100";
     if (!strcmp(key, "panel.on_delay_ms")) return "0";
     if (!strcmp(key, "panel.bl_on_delay_ms")) return "0";
@@ -148,7 +150,28 @@ int main(void)
     }
     oa_module_entry()->stop(ctx);
     oa_module_entry()->destroy(ctx);
+
+    /* Cold-start hook: the same recovered order runs at m_start, before the
+     * panel service is published. Default is off so a takeover preserves the
+     * stock panel state. */
+    g_start_on = 1;
+    event_count = 0;
+    ctx = NULL;
+    assert(oa_module_entry()->init(&api, &ctx) == 0 && ctx);
+    assert(oa_module_entry()->start(ctx) == 0 && panel_iface);
+    const struct event cold_on[] = {
+        { EV_GPIO, 110, 1 },   /* panel power on */
+        { EV_LVDS, 460, 1 },   /* LVDS data on */
+        { EV_INIT, 0, 0 },
+        { EV_OPEN, 1000, 1 },
+        { EV_SET, 1000, 0 },   /* panel.start 100% */
+        { EV_GPIO, 111, 0 },   /* backlight power on (active low) */
+    };
+    expect(cold_on, sizeof cold_on / sizeof cold_on[0]);
+    oa_module_entry()->stop(ctx);
+    oa_module_entry()->destroy(ctx);
     puts("ok panel standby: recovered power/LVDS/PWM order and pins");
+    puts("ok panel cold start: opt-in power-on sequence at m_start");
     puts("all panel standby tests passed");
     return 0;
 }
