@@ -80,26 +80,32 @@ per-profile. No app was launched on the TV. Bundle `oa-native-20261108b.tgz`
 sha256 `6ce14ca906b07bd5bf1d578655235bd33880a9108b537195fb7eb49f732623ac`;
 `oa-app-launch` links `libnam.so` with RPATH `/vendor/lib/nlib`.
 
-### TV attempt: temporary retail appmgr (blocked)
+### TV app-launch attempts (runtime swaps blocked)
 
 The owner approved a temporary retail appmgr. A second appmgr with a custom
 retail list (`idtv=n`, `dialserver=n`, `youtube_test=n`; Netflix/Amazon/YouTube
 enabled) initialized DirectFB but failed at `_MGR_InitSaWMan` CreateManager
-(1278491788) because the stock appmgr already owned SaWMan. Stopping the stock
-appmgr (PID 1580) dropped the SSH session; the `ash ./run.sh` supervisor
-rebooted the set. Stock returned as appmgr 1581 (debug list) / aurora 1789;
-no app launch occurred. The stock appmgr's `/tmp/stdin.privserver` debug console
-accepted `@netflix` (write succeeded) but no Netflix process appeared; the
-disabled profile is the likely filter. Staging `/buffer/nvt.app.test.ini` was
-removed, `/conf/oa_safe` is present, the appmgr command line is the debug list,
-and the audio controls are healthy.
+(1278491788) because the stock appmgr owned SaWMan. Stopping the stock appmgr
+dropped SSH and the `ash ./run.sh` supervisor rebooted the set; stock returned
+as appmgr 1581 / aurora 1789. The debug console `@netflix` wrote but did not
+launch (disabled profile).
 
-The process-swap path is therefore not viable under the stock supervisor. TV
-app-launch acceptance needs a one-boot app-list override (for example a bind
-mount of a custom list over the read-only debug path) or a boot/profile change;
-both are owner gates. The one-boot bind-mount option was not approved or
-executed; the owner requested restoring stock and staying away from the set
-after the failed process-swap attempt.
+A second runtime attempt paused the `run.sh` supervisor, disabled the
+watchdog, stopped the stock appmgr, and started the custom retail appmgr. It
+created SaWMan (`DirectFB/Main: Initialization End`) and started privserver,
+but never created the NAM manager socket
+`/tmp/.NPC.COM.NOVATEK.COMP.NAM`. `oa-app-launch` registration failed with
+`connect ... Connection refused`; no Netflix started. The first helper run
+also exposed a real link bug: `libnpc.so` needs `sem_init` from libpthread.
+The helper now links libpthread (NEEDED `libpthread.so.0`, sha256
+`c6a99a451fd525ade4f5e8f61f311404b2d805f2bc93d27eef8a91e29323a070`).
+A reboot restored stock appmgr 1578 / aurora 1780; staging removed and controls
+healthy.
+
+Runtime appmgr swaps are therefore not a reliable acceptance path. TV
+app-launch acceptance needs a boot-time app list/retail profile (boot hook) or
+a persistent profile change; both are owner gates. The TV is available again;
+no further appmgr swap is planned without that gate.
 
 ## Native volume/mute OSD
 

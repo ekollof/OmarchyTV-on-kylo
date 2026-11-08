@@ -52,26 +52,26 @@ acknowledged), `ui_vendor` absent; tar sha256
 Stock restore returned aurora 4468; the hidden audio DSP state still required a
 reboot (post-reboot appmgr 1580/aurora 1781). The 2026-11-08b bundle adds
 `mod_app_launch` (27 autoloaded, 33 bundle modules), `oa-app-launch` and
-`oa_apps.map`; the consumer is host-tested but `app_launch.enable=0`. An
-owner-approved temporary retail appmgr process swap failed: a second appmgr
-could not create the SaWMan manager, and stopping the stock appmgr triggered a
-supervised reboot that restored appmgr 1581/aurora 1789. The debug console
-`@netflix` wrote but did not launch. The native shell also handles volume
-up/down/mute (codes 16/17/13) through the audio service with a 1.5 s OSD;
-`check-ui-skin` passes, TV key/audible/OSD acceptance is pending. App-launch TV
-acceptance needs a one-boot app-list override or boot/profile gate; full UI
-parity, cold boot and hardware gates remain. NATIVE-REPLACEMENT.
-TV pause, 2026-11-08: the volume-OSD takeover was started (native UI, 27
-modules, 1920x1080, first present acknowledged) but stopped at the owner's
-request before any remote-key test. Stock restored: appmgr 1581, aurora 5873,
-`/conf/oa_safe` present, OpenAurora runtime files gone; `optical control
-restore -> ok` / `opu volume restore -> ok`. The soundbar was silent after that
-process-only restore; a recovery `reboot -f` restored stock audio. Post-reboot
-stock is appmgr 1620 / aurora 1772, `/conf/oa_safe` present, OPU 0 0 0,
-route controls 2/2/3/0x00; the owner confirmed the soundbar audible. The
-one-boot app-list override for app-launch TV acceptance was not approved or
-executed. TV tests remain paused until the owner resumes them; host-side work
-can continue without touching the set.
+`oa_apps.map`; the consumer is host-tested but `app_launch.enable=0`. Two
+owner-approved runtime retail-appmgr attempts failed: the first could not
+create the SaWMan manager; the second (`run.sh` paused, watchdog disabled)
+created SaWMan but never the NAM manager socket, so `oa-app-launch`
+registration was refused. The helper also needed libpthread for libnpc's
+`sem_init` (now linked; sha256
+`c6a99a451fd525ade4f5e8f61f311404b2d805f2bc93d27eef8a91e29323a070`). Stock
+restored after reboot: appmgr 1578 / aurora 1780, `/conf/oa_safe`, controls
+healthy. The native shell handles volume up/down/mute (codes 16/17/13) through
+the audio service with a 1.5 s OSD; `check-ui-skin` passes, TV key/audible/OSD
+acceptance is pending. App-launch TV acceptance needs a boot-time app
+list/profile gate; full UI parity, cold boot and hardware gates remain.
+NATIVE-REPLACEMENT.
+TV available, 2026-11-08: the volume-OSD takeover was started but stopped at
+the owner's request before key testing. Stock restored: appmgr 1581, aurora
+5873, `/conf/oa_safe`, runtime files gone; optical/OPU restore ok. The soundbar
+was silent after that process-only restore; `reboot -f` restored audio (owner
+confirmed). The runtime appmgr retry ended with a reboot to stock appmgr 1578 /
+aurora 1780; staging removed and controls healthy. No further appmgr swap is
+planned; volume-OSD TV acceptance is still pending and the TV is available.
 `check-plat-drm-gate` covers drm_init 0/1; `takeover-full.sh` (start/status/
 reload-suite/restore) is bundled for the next authorized takeover, with restore
 returning to stock for process/UI only; audio requires a reboot after takeover

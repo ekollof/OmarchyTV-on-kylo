@@ -2099,7 +2099,7 @@ $(BUILD)/oa-alsactl: tools/audio/oa-alsactl.c
 $(BUILD)/oa-app-launch: tools/app/oa-app-launch.c
 	@mkdir -p $(dir $@)
 	@test -f $(VENDOR_LIB)/nlib/libnam.so || { echo "missing $(VENDOR_LIB)/nlib/libnam.so (run make vendor)"; exit 1; }
-	$(CC) $(CPPFLAGS) $(if $(filter tv arm,$(TARGET)),-idirafter /usr/include,) $(filter-out -pedantic,$(CFLAGS)) $(LDFLAGS) -o $@ $< -L$(VENDOR_LIB)/nlib -Wl,-rpath,/vendor/lib/nlib -Wl,--allow-shlib-undefined -l:libnam.so
+	$(CC) $(CPPFLAGS) $(if $(filter tv arm,$(TARGET)),-idirafter /usr/include,) $(filter-out -pedantic,$(CFLAGS)) $(LDFLAGS) -o $@ $< -L$(VENDOR_LIB)/nlib -Wl,-rpath,/vendor/lib/nlib -Wl,--allow-shlib-undefined -Wl,--no-as-needed -lpthread -Wl,--as-needed -l:libnam.so
 
 BUNDLE_DIR ?= $(BUILD)/full-replacement
 BUNDLE_CONF ?= tools/boot/openaurora-full-replacement.conf
