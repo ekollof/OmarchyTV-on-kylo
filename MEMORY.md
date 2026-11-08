@@ -65,10 +65,13 @@ TV pause, 2026-11-08: the volume-OSD takeover was started (native UI, 27
 modules, 1920x1080, first present acknowledged) but stopped at the owner's
 request before any remote-key test. Stock restored: appmgr 1581, aurora 5873,
 `/conf/oa_safe` present, OpenAurora runtime files gone; `optical control
-restore -> ok` / `opu volume restore -> ok`. No reboot was performed, so the
-hidden audio DSP state may still need one. The one-boot app-list override for
-app-launch TV acceptance was not approved or executed. TV/audio/app-launch work
-is paused until the owner resumes it.
+restore -> ok` / `opu volume restore -> ok`. The soundbar was silent after that
+process-only restore; a recovery `reboot -f` restored stock audio. Post-reboot
+stock is appmgr 1620 / aurora 1772, `/conf/oa_safe` present, OPU 0 0 0,
+route controls 2/2/3/0x00; the owner confirmed the soundbar audible. The
+one-boot app-list override for app-launch TV acceptance was not approved or
+executed. TV tests remain paused until the owner resumes them; host-side work
+can continue without touching the set.
 `check-plat-drm-gate` covers drm_init 0/1; `takeover-full.sh` (start/status/
 reload-suite/restore) is bundled for the next authorized takeover, with restore
 returning to stock for process/UI only; audio requires a reboot after takeover

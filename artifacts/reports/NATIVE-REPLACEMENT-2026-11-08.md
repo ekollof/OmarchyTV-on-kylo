@@ -119,9 +119,11 @@ the OSD build (27 modules, `ui_omarchy`, 1920x1080, scene 37-43 ms, first
 present acknowledged), but the owner requested restoring stock before pressing
 keys. `takeover-full.sh restore` reported `optical control restore -> ok` /
 `opu volume restore -> ok`; stock is appmgr 1581 / aurora 5873, `/conf/oa_safe`
-is present and the OpenAurora runtime files are gone. No reboot was performed
-after that restore, so the hidden audio DSP state may still need one. TV work
-is paused at the owner's request.
+is present and the OpenAurora runtime files are gone. The soundbar was silent
+after that process-only restore; a recovery `reboot -f` restored stock audio
+(post-reboot appmgr 1620 / aurora 1772, OPU 0 0 0 and route controls healthy;
+owner confirmed the soundbar audible). TV tests remain paused at the owner's
+request.
 `oa-native-20261108c.tgz` sha256
 `56a3dc4aa786108bd6b49212c128e16cae1666f94b7ca5e095171c99c7e54669`;
 ARM `mod_ui_omarchy` sha256

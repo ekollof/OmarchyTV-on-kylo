@@ -211,10 +211,12 @@ unvalidated.
       boot remain open. REPLACEMENT-SYSTEM, NATIVE-REPLACEMENT.
       TV pause, 2026-11-08: the volume-OSD takeover was stopped at the owner's
       request before key testing. Stock restored (appmgr 1581, aurora 5873,
-      `/conf/oa_safe`, runtime files gone; optical/OPU restore ok); no reboot,
-      so the hidden audio DSP state may still need one. The app-launch
-      one-boot override was not approved/executed. TV/audio/app-launch work is
-      paused until the owner resumes it.
+      `/conf/oa_safe`, runtime files gone; optical/OPU restore ok). The soundbar
+      was silent after the process-only restore; a recovery `reboot -f`
+      restored audio (post-reboot appmgr 1620/aurora 1772, OPU 0 0 0, route
+      controls healthy; owner confirmed audible). The app-launch one-boot
+      override was not approved/executed. TV tests remain paused until the
+      owner resumes them.
 
 ### Audio / CEC
 
