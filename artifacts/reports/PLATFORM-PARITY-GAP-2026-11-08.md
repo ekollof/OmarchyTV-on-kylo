@@ -23,7 +23,7 @@ creation at `0x00755654`).
 | 0 | `DEV_COMMON_SET_PCBLAYOUTTYPE(14)` | `0x00850288` | none; `plat` passes `tuner.pcb_layout=14` to the tuner backend | vendor global `DAT_0175f028` not set; any `DEV_COMMON_GET_PCBLAYOUTTYPE` consumer sees its default |
 | 1 | `DEV_GPIO_Init` | `0x00851fcc` | `plat` calls `Hal_Gpio_Init` (NDAL library) | **different layer**: device opens `/dev/ntgpio`, creates semaphores and the 0x1fec shared state; `Hal_Gpio_Init` only opens a HAL fd |
 | 2 | `dev_src_init` | `0x008fc654` | `mod_source` VIN select only | no `DEV_SRC_HDMIHotPlug` task, no source mutex, no `plat_vin_slot_set_auto_color_system(2)` |
-| 3 | `DEV_PANEL_Init` | `0x008583fc` | `mod_panel` PWM/backlight HAL | copies GPIO 110/111 descriptions, writes the timing block at `0x019354b4`, gets PWM channel 108, sets curve 40/60/80/100; returns the channel index. Init does **not** light the panel; a power/backlight owner is still separate |
+| 3 | `DEV_PANEL_Init` | `0x008583fc` | `mod_panel` PWM/backlight HAL | copies GPIO 110/111 descriptions, writes the timing block at `0x019354b4`, gets PWM channel 108, sets curve 40/60/80/100; returns the channel index. Init does **not** light the panel: `DEV_PANEL_PowerSequence`/`PanelPowerSet`/`PanelBackLightPowerSet` and the panel-extra delays are still missing (panel-power-2026-11-08) |
 | 4 | `DEV_NIM_Init` | `0x00854fd0` | `mod_tuner` HAL/NDAL/stub backend | creates `DEV NIM ATV`/`DEV NIM DTV` factories and the SI2151/MxL661 debug menus; it opens no tuner device itself |
 | 5 | `DEV_IIC_Init` | `0x008531e8` | `plat` calls `Hal_Iic_Init` (8 buses) | **different layer**: device opens `/dev/ntkiic0` and stores a separate fd used by `DEV_IIC_*` |
 | 6 | `DEV_AMP_Init` | `0x0084f4ac` | `mod_audio`/`mod_audio_amp` transport | `Hal_Audio_Ctrl(0x3a,{0x100})` is implemented opt-in; the `DEV_AMP_ID` profile/factory/GPIO task is not |
@@ -132,6 +132,33 @@ Full instruction-level detail is in
 - `DEV_MTD_Init` only registers a debug menu and returns 0. No cold-start
   owner is required; flash ioctls are a separate mutating contract.
 
+### Panel power sequence (new)
+
+`artifacts/analysis/panel-power-2026-11-08.md` recovers the missing panel
+power owner:
+
+- `DEV_PANEL_PanelPowerSet(on)` writes the GPIO 110 (PANELPWR) description
+  from `DEV_PANEL_Init`; `PanelBackLightPowerSet(on)` writes GPIO 111
+  (BKLTPWR). Both have layout/TCON branches and are not a plain `SetLevel(on)`.
+- `DEV_PANEL_PowerSequence(on)` is the real on/off sequence: backlight off,
+  70 ms, backlight-power off, `extra+4` delay, PWM/LVDS mute, `extra+6`
+  delay, TCON PMIC GPIO and panel power off; on is panel power, TCON PMIC,
+  `extra+0` delay, LVDS unmute, PWM level, `extra+2` delay, backlight power.
+  The delays come from `PLAT_VIU_GetPanelExtraStruct`, not the Init block.
+- `DEV_PANEL_SetPowerSequenceParams(NULL)` restores the Init block
+  `{1,10,40,800,220,55,10}`; that block is distinct from the panel-extra
+  timing fields.
+- The panel-extra struct is `0x019d4d64` (0x5e bytes), filled by
+  `PLAT_VIU_init_panelextrastruct` -> `FUN_008fec68`, a parser for a panel text
+  file whose path is supplied by `FUN_007800ac` and is not yet decoded. The
+  timing values must be read from that file/vendor state, not guessed.
+- LVDS mute is VPLT command `0x1cc` with a one-byte value
+  (`plat_vpltio_mute_lvds`). TCON PMIC is GPIO 209, gated by panel-extra+0x4a
+  and `0x01935539` (`DEV_TCON_CHIPSET_Set_PMIC_GPIO`).
+
+`mod_panel` has the PWM curve/level but none of the power sequence, LVDS mute,
+TCON PMIC or panel-extra fields. This is the next panel owner to implement.
+
 ### Read-only TV state observed
 
 The worker checked stock without stopping it. `/proc/fb` names: fb0
@@ -181,7 +208,8 @@ The stock UI is the vendor skin (`ui_vendor`), not the native Omarchy shell.
    is not a gate. Panel init does not light the panel, so keep a separate
    power/backlight owner; enable SPI and do not open `/dev/ntkspi` while stock
    holds it; run NIM-DTV only after IIC/NIM. Do not call vendor `DEV_*` code
-   without its device-layer state.
+   without its device-layer state. The first panel-power slice is the recovered
+   `PanelPowerSet`/`PanelBackLightPowerSet`/`PowerSequence` order and delays.
 2. **Real display/OSD cold enable** (OSD-BUFFER-CONTRACT, DRM-PLANE-CONTRACT,
    COLD-DISPLAY-REPAIR): complete format/stride/region/enable/alpha/update and
    resume, then a cold scanout acceptance. `plat.drm_init=0` is a takeover

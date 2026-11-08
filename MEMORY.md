@@ -99,6 +99,9 @@ PWM108 and the 40/60/80/100 curve (init does not light the panel); NIM creates
 the ATV/DTV factories; amp sends 0x3a/0x100 and creates the DEV_AMP_ID task;
 SPI opens `/dev/ntkspi` when `/conf/spi.bin` is absent (stock holds fd27);
 NIM-DTV models0..3/default take the demod HAL and model4 skips; MTD returns0.
+Panel power is a separate missing owner: `DEV_PANEL_PanelPowerSet`/
+`PanelBackLightPowerSet`/`PowerSequence` use GPIO110/111, the panel-extra
+delays and LVDS mute/TCON PMIC; `mod_panel` only has the PWM curve/level.
 Read-only TV: fb0..fb4 are OSD_NORMAL1/2/3 and OSD_CURSOR1/2; stock holds
 fb0-2/card0/ntkgpu. The stock-UI map (portal/settings/source/apps/EPG/PVR)
 is in the same report.

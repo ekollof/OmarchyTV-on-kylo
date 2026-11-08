@@ -40,7 +40,10 @@ maps the cold-start stages and the current stock-UI coverage.
       NIM creates ATV/DTV factories; amp sends 0x3a/0x100 + DEV_AMP_ID task;
       SPI opens `/dev/ntkspi` when `/conf/spi.bin` is absent (stock holds fd27);
       NIM-DTV models0..3/default take demod HAL, model4 skips; MTD returns0.
-      Next: implement the one-owner-per-stage order, GPIO/IIC first.
+      Next: implement the one-owner-per-stage order, GPIO/IIC first; then the
+      recovered panel power sequence (`PanelPowerSet`/`PanelBackLightPowerSet`/
+      `PowerSequence`, panel-extra delays) as a separate `mod_panel` owner.
+      See `artifacts/analysis/panel-power-2026-11-08.md`.
 - [ ] Real display/OSD cold enable: complete the format/stride/region/enable/
       alpha/update and resume sequence; `plat.drm_init=0` is a takeover
       workaround, not parity. OSD-BUFFER-CONTRACT, DRM-PLANE-CONTRACT,
