@@ -219,10 +219,23 @@ unvalidated.
       acceptance needs a boot-time profile/list gate;
       native shell parity, app-launch TV acceptance and cold boot remain open.
       REPLACEMENT-SYSTEM, NATIVE-REPLACEMENT.
-      TV available, 2026-11-08: a later volume-OSD takeover ran on bundle d
-      and the owner confirmed volume up/down OSD + soundbar volume. Stock
-      restored appmgr 1563/aurora 1781, controls healthy. Source/mute recovery
-      and the key retest remain; the app-launch boot/profile gate is pending.
+      TV/audio state, 2026-11-08: the bundle-e key/source test confirmed
+      up/down/Exit/volume OSD; source did not change and the test left stock
+      `m_current_source=5`/`m_volume=0`. The owner force-rebooted to restore
+      audio; the TV is stock/audio back. The takeover restore does not restore
+      stock volume/source; no further TV tests until fixed. The native UI
+      target is the browser OmarchyTV app reproduced natively.
+
+- [ ] Native OmarchyUI port: reproduce the browser OmarchyTV app
+      (`launcher/omarchy`: workspaces, top bar, clock, app grid, themes,
+      wallpapers, screensaver) with the native `ui_engine`/canvas; no browser/
+      webview/Opera. Placeholder `ui_omarchy` is not acceptance.
+- [ ] Takeover stock-settings restore: snapshot/restore `m_volume` and
+      `m_current_source` (or never write them); the bundle-e test left 0/5 and
+      required a forced reboot for audio. No further TV tests until fixed.
+- [ ] Source switching full path: implement `plat_vin_slot_connect`/VPLT/
+      `Hal_Video_Set_V4l2Info` and the audio companion; VIN select/start alone
+      does not change the display. `source.enable` remains disabled.
 
 ### Audio / CEC
 

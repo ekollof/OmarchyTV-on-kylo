@@ -107,6 +107,36 @@ app-launch acceptance needs a boot-time app list/retail profile (boot hook) or
 a persistent profile change; both are owner gates. The TV is available again;
 no further appmgr swap is planned without that gate.
 
+## Native UI target
+
+`ui_omarchy` is a placeholder. The design/behavior target is the browser
+OmarchyTV port in `launcher/omarchy/` (P3, upstream webOS app): `index.html`
+(23 KB), `app.js` (131 KB), `data.js`, `dhh.js`, `compat.js`,
+`omarchy_themes.json`, fonts and wallpapers. It was verified on this TV with the
+top bar/workspaces 1-5/clock, OMARCHY TV logo panel, weather/system panels, app
+grid, 28 themes, wallpapers and the Aquarium screensaver. The final native UI
+should reproduce that look/work with the native renderer (`ui_engine`/canvas),
+reusing the theme/wallpaper/font assets. The production UI is native-only: do
+not embed, launch or webview the browser/webOS app; the browser is the
+visual/behavioral reference. Theme, wallpaper and font data may be imported as
+native assets, not executed as a web app. Do not treat the current placeholder
+screens, 4-tile home or opacity as parity, and do not polish them as the target.
+
+## Source test and stock state 2026-11-08
+
+Bundle e set `source.enable=1`; the source module opened the VIN (fd 22) and the
+UI wrote `m_current_source`, but the displayed source did not change. The VIN
+`Hal_Vin_SelectInput`/`SetStreamStart` path alone is not wired to the display;
+the companion `plat_vin_slot_connect`/VPLT/`Hal_Video_Set_V4l2Info`/audio path is
+still missing. The placeholder source transition and `source.enable=1` were
+reverted; do not enable source switching until the full firmware path is
+recovered. After the test the stock settings DB had `m_current_source=5` (HDMI1) and
+`m_volume=0`; the ALSA route controls were healthy but the soundbar stayed
+silent and the owner had to force-reboot to restore audio. This is a
+stock-settings/restore regression, not just the DSP. The takeover restore must
+snapshot/restore the stock volume/source settings or the test must not write
+them; no further TV tests until that is fixed.
+
 ## Native volume/mute OSD
 
 `ui_omarchy` now consumes the remote volume keys globally: code 16 up, 17 down,
@@ -173,9 +203,15 @@ documented ALSA-CONTROL limitation, not a new regression.
 
 ## Limits
 
-- `ui_omarchy` is still the shell skeleton: home/sources/apps/settings/about,
-  focus navigation, clock, launcher list and emitted actions. It is not full
-  vendor UI parity (animations, menu hierarchy, localized assets, channel UI).
+- `ui_omarchy` is a placeholder, not the target. The native UI should reproduce
+  the browser OmarchyTV app in `launcher/omarchy/` (workspaces, top bar, clock,
+  app grid, themes, wallpapers, screensaver) with the native renderer. Do not
+  polish the placeholder's 4-tile home/opacity as parity.
+- Source switching is not wired: the VIN select/start returns but does not
+  change the display; the VPLT/`Hal_Video_Set_V4l2Info`/audio companion path is
+  missing. `source.enable` is reverted to disabled. The stock settings DB is at
+  `m_current_source=5`, `m_volume=0`; use the stock remote to return to TV and
+  raise volume.
 - `OA_ACTION_SELECT` has a host-tested consumer and libnam helper. The
   owner-approved temporary retail appmgr process swap failed: a second appmgr
   could not create the SaWMan manager, and stopping the stock appmgr triggered

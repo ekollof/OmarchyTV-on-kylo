@@ -73,12 +73,23 @@ IR-KEYMAP/SETTINGS-INPUT/TAB-LEAF confirm RC 20=Up/ICE 0x20a, 19=Down/0x20b,
 Source/mute firmware recovery is in progress before enabling. App-launch TV
 acceptance needs a boot-time app list/profile gate; full UI parity, cold boot
 and hardware gates remain. NATIVE-REPLACEMENT.
-TV available, 2026-11-08: a later volume-OSD takeover ran on bundle d
-(27 modules, `ui_omarchy`, 1920x1080) and the owner confirmed volume up/down
-OSD and soundbar volume. Mute/source/Exit2 findings are above. Stock restored:
-appmgr 1563 / aurora 1781, `/conf/oa_safe`, controls healthy. The runtime
-appmgr retry ended at 1578/1780 before that. TV is available; source/mute
-recovery and the key retest remain.
+Native UI target, 2026-11-08: `ui_omarchy` is a placeholder. The target
+look/work is the browser OmarchyTV app in `launcher/omarchy/` (workspaces, top
+bar, clock, app grid, themes, wallpapers, screensaver), but the production UI
+must be native over `ui_engine`/canvas, not a browser/webview/Opera. Theme,
+wallpaper and font data may be imported as native assets; do not polish the
+placeholder. Source test: `source.enable=1`/VIN fd 22 wrote `m_current_source`
+but did not change the displayed source; the `plat_vin_slot_connect`/VPLT/
+`Hal_Video_Set_V4l2Info`/audio companion path is missing, so `source.enable`
+was reverted. The test left stock `m_current_source=5`/`m_volume=0` and the
+owner force-rebooted to restore audio; add stock-settings restore before more
+TV tests. NATIVE-REPLACEMENT.
+TV/audio state, 2026-11-08: the bundle-e key/source test confirmed up/down,
+Exit and volume-OSD fixes; source did not change and the test left stock
+settings `m_current_source=5`/`m_volume=0`. The owner force-rebooted to restore
+audio; the TV is stock/audio back. The takeover restore does not restore stock
+volume/source, so no further TV tests until that is fixed. The native UI target
+is the browser OmarchyTV app reproduced natively; source/mute recovery remains.
 `check-plat-drm-gate` covers drm_init 0/1; `takeover-full.sh` (start/status/
 reload-suite/restore) is bundled for the next authorized takeover, with restore
 returning to stock for process/UI only; audio requires a reboot after takeover
