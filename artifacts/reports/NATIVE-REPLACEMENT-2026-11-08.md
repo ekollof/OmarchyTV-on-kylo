@@ -149,6 +149,20 @@ ARM `mod_ui_omarchy` sha256
 Stock restored after the test: appmgr 1563 / aurora 1781, `/conf/oa_safe`
 present, audio controls healthy.
 
+Mute follow-up: `DemoApp::toggleAndDisplayMuteState` at `0xcd82a8` first checks
+`Profile_IsSoundOutputSelectionEnabled`/`isTestProductModeEnabled`, then the
+audio object's output type (`vtable+0x154`) and another object's `+0x5c`.
+For external output types 1/2 with the zero condition it jumps straight to the
+function end; only the internal path toggles the audio object's mute and shows
+the status icon or opens `VolumeDialog`. The offline settingsDB has
+`m_sound_output_mode=1`, `m_digital_audio_out=1`, `m_spdif_out_on=1`,
+`m_sound_mode_external=4`, consistent with the optical external output. The
+owner's "mute does nothing" is therefore likely stock behavior for optical,
+not a missing `PLAT_AOUT` call; do **not** substitute volume 0. The exact
+`+0x5c` condition/class is still being recovered. The
+`PLAT_AOUT_SetSystemMute`/`SetSpeakerHWMute` callers found so far are media,
+audio-start and sound-output-mode paths, not the DemoApp key branch.
+
 ## Restore and audio
 
 `takeover-full.sh restore` returned stock (`aurora.elf 4468`) and reported
@@ -169,11 +183,13 @@ documented ALSA-CONTROL limitation, not a new regression.
   `@netflix` wrote but launched nothing. TV app-launch acceptance needs a
   one-boot app-list override or boot/profile gate; `oa_apps.map` is not
   profile-verified and the helper callbacks are no-op stubs.
-- Volume up/down and the native OSD are TV-accepted. Mute is not: the key
-  reaches the UI but `audio.set_mute` returns -1; the stock action is
-  `DemoApp::toggleAndDisplayMuteState`. Source OK is blocked by the incomplete
-  source path, not the key. The firmware-backed RC 20/19/37 key fixes are
-  host-tested; a TV retest is pending with the source/mute recovery.
+- Volume up/down and the native OSD are TV-accepted. Mute is likely stock
+  no-op for the external optical output: `DemoApp::toggleAndDisplayMuteState`
+  skips external output types 1/2, and the settingsDB has
+  `m_sound_output_mode=1`, `m_digital_audio_out=1`, `m_spdif_out_on=1`. Do not
+  substitute volume 0. Source OK is blocked by the incomplete source path, not
+  the key. The RC 20/19/37 key fixes are committed; a TV retest is pending with
+  the source/mute recovery.
 - Takeover audio restore remains reboot-required for the hidden DSP state.
 - Cold boot/replacement boot path, RF/DVB lock, CEC TX/RX, DVR, backlight
   feedback, IR repeat and amplifier mute remain unaccepted.

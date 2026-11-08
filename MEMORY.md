@@ -62,8 +62,12 @@ registration was refused. The helper also needed libpthread for libnpc's
 restored after reboot: appmgr 1578 / aurora 1780, `/conf/oa_safe`, controls
 healthy. The native shell handles volume up/down/mute (codes 16/17/13) with a
 1.5 s OSD. TV test: volume up/down OSD + soundbar volume accepted; mute key
-reaches the UI but `audio.set_mute` returns -1; source OK is blocked by the
-incomplete source path; up/down was reversed and Exit2 unhandled. Firmware
+reaches the UI and `audio.set_mute` returns -1, but stock
+`DemoApp::toggleAndDisplayMuteState` skips the mute/dialog path for external
+output types 1/2 and the settingsDB has `m_sound_output_mode=1`,
+`m_digital_audio_out=1`, `m_spdif_out_on=1`; the optical mute is likely stock
+no-op, so do not force volume 0. Source OK is blocked by the incomplete source
+path; up/down was reversed and Exit2 unhandled. Firmware
 IR-KEYMAP/SETTINGS-INPUT/TAB-LEAF confirm RC 20=Up/ICE 0x20a, 19=Down/0x20b,
 37=KeyExit2/0x25b menu/back; the shell now maps these (`check-ui-skin` passes).
 Source/mute firmware recovery is in progress before enabling. App-launch TV
