@@ -346,6 +346,8 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  audio-speaker <level> <balance>  speaker clamp/HAL balance map\n"
                  "  launcher-items <parent|all> [deleted] [outofsync]\n"
                  "                           settingsDB LauncherItem rows\n"
+                 "  settings-get <column>    read one Settings column\n"
+                 "  settings-set <column> <int>  write one Settings column\n"
                  "  tuner-state             scan/lock/signal state\n"
                  "  tuner-scan <net>        start fixture scan 1-5\n"
                  "  tuner-cancel            cancel a running scan\n"
@@ -681,6 +683,55 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         }
         int rc = p->menu_action(a1);
         h->api.release(h, OA_SVC_PORTAL);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", rc);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "ok\n");
+        return 0;
+    }
+    if (!strcmp(cmd, "settings-get")) {
+        if (force || !a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_settings_iface *s =
+            h->api.lookup(h, OA_SVC_SETTINGS, 1);
+        if (!s) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int value = 0;
+        int rc = s->get_int(a1, &value);
+        h->api.release(h, OA_SVC_SETTINGS);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", rc);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "%d\n", value);
+        return 0;
+    }
+    if (!strcmp(cmd, "settings-set")) {
+        if (force || !a1 || !a2 || a3) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        char *end = NULL;
+        errno = 0;
+        long value = strtol(a2, &end, 0);
+        if (*a2 == '\0' || !end || *end != '\0' || errno ||
+            value < INT_MIN || value > INT_MAX) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_settings_iface *s =
+            h->api.lookup(h, OA_SVC_SETTINGS, 1);
+        if (!s) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int rc = s->set_int(a1, (int)value);
+        h->api.release(h, OA_SVC_SETTINGS);
         if (rc) {
             snprintf(outbuf, outlen, "failed errno %d\n", rc);
             return -1;

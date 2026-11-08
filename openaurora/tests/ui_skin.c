@@ -294,6 +294,15 @@ int main(int argc, char **argv)
     capture(trace, "about");
     queue_key_id(&host, 10); oa_host_dispatch_posts(&host);
     assert(has_fill(trace, 0, 0, 1920, 52, 9, 8, 9));            /* back home */
+    assert(!command(&host, "settings-get m_cec_enabled", out, sizeof out) &&
+           atoi(out) == 1);
+    assert(!command(&host, "settings-set m_cec_enabled 0", out, sizeof out) &&
+           !strcmp(out, "ok\n"));
+    assert(fake_cec == 0 && fake_cec_sets == 2);
+    assert(command(&host, "settings-set m_cec_enabled nope", out,
+                   sizeof out) == -1);
+    assert(command(&host, "settings-get", out, sizeof out) == -1);
+    puts("  ok   settings-get/set expose the snapshot/restore columns");
 
     /* Volume/mute keys are global to the shell: codes 16/17/13. */
     fake_volume = 50; fake_volume_calls = 0; fake_mute_calls = 0; fake_mute = 0;

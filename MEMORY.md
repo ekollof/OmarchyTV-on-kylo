@@ -85,6 +85,11 @@ with the EF41 pack were checked. No TV acceptance yet; the EF41 font is not the
 reference's JetBrains/Caskaydia Mono, and app icons, focus animation,
 screensaver, plugins and persistence remain open. Production UI is native
 `ui_engine` only, never a browser/webview. NATIVE-OMARCHY-UI.
+Takeover settings restore, 2026-11-08: new `settings-get`/`settings-set`
+control commands (host-tested) let `takeover-full.sh` snapshot
+`m_volume`/`m_current_source`/`m_cec_enabled` and restore them before `quit`;
+it also copies settingsDB for manual recovery. Not TV-validated; the hidden
+DSP/route state may still need a reboot. No further TV tests until validated.
 Source test: `source.enable=1`/VIN fd 22 wrote `m_current_source`
 but did not change the displayed source; the `plat_vin_slot_connect`/VPLT/
 `Hal_Video_Set_V4l2Info`/audio companion path is missing, so `source.enable`

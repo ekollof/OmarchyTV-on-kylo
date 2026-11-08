@@ -233,9 +233,11 @@ unvalidated.
       launcher icon decode, focus animation/transitions, screensaver,
       theme/wallpaper persistence, EF41→reference font conversion and the
       larger plugin/arcade/Cinemarchy scope. No browser/webview/Opera.
-- [ ] Takeover stock-settings restore: snapshot/restore `m_volume` and
-      `m_current_source` (or never write them); the bundle-e test left 0/5 and
-      required a forced reboot for audio. No further TV tests until fixed.
+- [ ] Takeover stock-settings restore: `settings-get`/`settings-set` are
+      host-tested, and `takeover-full.sh` snapshots
+      `m_volume`/`m_current_source`/`m_cec_enabled` and restores them before
+      `quit`, plus a settingsDB copy. Not TV-validated; hidden DSP/route state
+      may still require a reboot. No further TV tests until validated.
 - [ ] Source switching full path: implement `plat_vin_slot_connect`/VPLT/
       `Hal_Video_Set_V4l2Info` and the audio companion; VIN select/start alone
       does not change the display. `source.enable` remains disabled.

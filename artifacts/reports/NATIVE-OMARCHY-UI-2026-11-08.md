@@ -67,6 +67,17 @@ selects the file and `ui.lua.data` is the sandbox write root
 (`/buffer/openaurora/lua-data`). The native autoload order now starts `lua`
 before `ui_engine`/`ui_omarchy`; the bundle ships `lua/omarchy.lua`.
 
+## Takeover settings restore
+
+New host-tested control commands `settings-get <column>` and
+`settings-set <column> <int>` let `takeover-full.sh` snapshot `m_volume`,
+`m_current_source` and `m_cec_enabled` after the core starts, and restore them
+before `quit`. It also copies `settingsDB.db` to
+`/buffer/oa-settings-before/` for manual recovery. This addresses the
+bundle-e regression where the test left stock source/volume values behind.
+The restore has not been exercised on the TV; the hidden DSP/route state may
+still require a reboot.
+
 ## Evidence
 
 Host-only; no TV, HAL, framebuffer or vendor library was touched.

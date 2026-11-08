@@ -43,6 +43,21 @@ start)
            --sock /tmp/openaurora.sock --log 3 > /tmp/oa-full.log 2>&1 &
     echo "supervisor=$!"
     sleep 8
+    # Snapshot the Settings columns this run may change. Restore them before
+    # quit so the stock app re-reads them on restart. The DB copy is a manual
+    # recovery aid; it is not restored automatically.
+    mkdir -p /buffer/oa-settings-before
+    : > /buffer/oa-settings-before/values.txt
+    for key in m_volume m_current_source m_cec_enabled; do
+        value=$(./oa-client /tmp/openaurora.sock settings-get "$key" 2>/dev/null || true)
+        case "$value" in
+            ''|*[!0-9-]*) ;;
+            *) echo "$key $value" >> /buffer/oa-settings-before/values.txt ;;
+        esac
+    done
+    cp -f /conf/sqlite_db/settingsDB.db \
+        /buffer/oa-settings-before/settingsDB.db 2>/dev/null || true
+    echo "settings snapshot: $(wc -l < /buffer/oa-settings-before/values.txt) columns"
     ./oa-client /tmp/openaurora.sock list
     ./oa-client /tmp/openaurora.sock display-info \
         "status plat" "status ui_vendor" "status audio" "status source" \
@@ -58,6 +73,15 @@ reload-suite)
     ./oa-client /tmp/openaurora.sock list
     ;;
 restore)
+    if [ -s /buffer/oa-settings-before/values.txt ]; then
+        while read -r key value; do
+            if ./oa-client /tmp/openaurora.sock settings-set "$key" "$value"; then
+                echo "settings restore $key=$value -> ok"
+            else
+                echo "settings restore $key=$value -> failed" >&2
+            fi
+        done < /buffer/oa-settings-before/values.txt
+    fi
     ./oa-client /tmp/openaurora.sock quit
     sleep 5
     if [ -x ./oa-alsactl ] && [ -s /buffer/oa-audio-before/optical.txt ] &&
