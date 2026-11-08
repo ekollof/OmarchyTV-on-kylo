@@ -13,6 +13,10 @@ IPC/socket/CLI, then a native OmarchyTV UI. Preserve all other TV feature scope.
 advertising IDs, sponsored placements or ad delivery, even as optional modules.**
 Local diagnostics and ordinary TV/network functions remain in scope.
 
+Priority (owner, 2026-11-08): platform/hardware support and stock-UI parity come
+first, so the replacement is dependable. The native Omarchy shell is a skin on
+top and must not be used as evidence of platform or stock-UI parity.
+
 ## Read first and document authority
 
 Read [TODO.md](TODO.md), [MEMORY.md](MEMORY.md), [FINDINGS.md](FINDINGS.md) and

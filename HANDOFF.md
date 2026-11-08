@@ -8,6 +8,13 @@ authorized live checks are recorded below and in MEMORY.md.
 
 ## Current objective and safety
 
+Priority 2026-11-08: platform/hardware ownership and stock-UI parity come
+first; the native Omarchy shell is only a skin. [PLATFORM-PARITY-GAP](artifacts/reports/PLATFORM-PARITY-GAP-2026-11-08.md)
+maps the `DEV_INI_Init` cold-start stages (GPIO/IIC/src/panel/NIM/amp/SPI/
+NIM-DTV), the real OSD enable gap and the stock-UI coverage. `DEV_INI_Init`
+is best-effort and normally returns 0; `DEV_GPIO_Init`/`DEV_IIC_Init` are not
+`Hal_Gpio_Init`/`Hal_Iic_Init`. The parallel Grok worker is recovering the
+device-stage contracts.
 Replacement system, 2026-11-07: `make TARGET=tv ... replacement-bundle` builds
 a takeover-mode UI (`plat_stub` + display/panel/ir/settings/service_db/
 image_decode/ui_engine/ui_vendor/ticker/ui_clock/ui_anim, client and menus).

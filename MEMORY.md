@@ -85,6 +85,18 @@ with the EF41 pack were checked. No TV acceptance yet; the EF41 font is not the
 reference's JetBrains/Caskaydia Mono, and app icons, focus animation,
 screensaver, plugins and persistence remain open. Production UI is native
 `ui_engine` only, never a browser/webview. NATIVE-OMARCHY-UI.
+Platform parity priority, 2026-11-08: the owner wants hardware/platform and
+stock-UI parity before the native shell. PLATFORM-PARITY-GAP records the
+cold-start map: `DEV_INI_Init` is best-effort and normally returns 0 via
+`DEV_MTD_Init`; `ICE_HardwareInit` ignores it. `DEV_GPIO_Init` (opens
+`/dev/ntgpio`, 0x1fec state, semaphores) and `DEV_IIC_Init` (opens
+`/dev/ntkiic0`) are device-layer inits, not the `Hal_Gpio_Init`/`Hal_Iic_Init`
+calls in `plat`; `dev_src_init` creates the `DEV_SRC_HDMIHotPlug` task and sets
+auto color system2; `DEV_PANEL_Init` returns the PWM channel index;
+`DEV_AMP_Init` returns1 after the `0x3a/0x100` I2S MCLK request and
+`DEV_AMP_ID` task. The Grok worker is recovering panel/NIM/amp/SPI/NIM-DTV;
+its report is pending. The stock-UI map (portal/settings/source/apps/EPG/PVR)
+is in the same report.
 Takeover settings restore, 2026-11-08: new `settings-get`/`settings-set`
 control commands (host-tested) let `takeover-full.sh` snapshot
 `m_volume`/`m_current_source`/`m_cec_enabled` and restore them before `quit`;

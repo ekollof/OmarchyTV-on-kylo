@@ -25,6 +25,31 @@ including the socket fixtures, decoder comparison and grid/capture research.
 See AGENT-REVIEW-2026-11-05 for corrections and current verification. Earlier
 test counts remain dated evidence; no full decoder/display/ownership gate closes.
 
+## Platform + stock-UI parity (current priority, 2026-11-08)
+
+Platform ownership and the stock vendor UI are the gate; the native Omarchy
+shell is deferred. [PLATFORM-PARITY-GAP-2026-11-08](artifacts/reports/PLATFORM-PARITY-GAP-2026-11-08.md)
+maps the cold-start stages and the current stock-UI coverage.
+
+- [ ] Cold-start `DEV_INI_Init` stage ownership: decide/implement the device
+      layer for GPIO/IIC/src/panel/NIM/amp/SPI/NIM-DTV. `plat` currently calls
+      the HAL `Hal_Gpio_Init`/`Hal_Iic_Init`, which are not `DEV_GPIO_Init`/
+      `DEV_IIC_Init`; do not call vendor `DEV_*` code without their device-layer
+      state. The parallel Grok worker is recovering the panel/NIM/amp/SPI/
+      NIM-DTV contract.
+- [ ] Real display/OSD cold enable: complete the format/stride/region/enable/
+      alpha/update and resume sequence; `plat.drm_init=0` is a takeover
+      workaround, not parity. OSD-BUFFER-CONTRACT, DRM-PLANE-CONTRACT,
+      COLD-DISPLAY-REPAIR.
+- [ ] Source/VIN full path: `PLAT_VIU_ChangeInput`, `plat_drm_connect_dpsource`,
+      `NDAL_VideoExt_OpenDevice`, V4L2Info/FdCommon and the audio companion;
+      keep `source.enable=0` until accepted.
+- [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
+      gain/SPDIF and audible acceptance.
+- [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.
+- [ ] Stock vendor-UI screens: live launcher DB/icons, settings tabs, channel/
+      EPG/PVR, app launch profile. `ui_omarchy` is not stock-UI parity.
+
 ## Scheduled takeover test queue (single session)
 
 One owner-authorized session on 192.168.178.87. Nothing here is accepted until
