@@ -35,8 +35,12 @@ maps the cold-start stages and the current stock-UI coverage.
       layer for GPIO/IIC/src/panel/NIM/amp/SPI/NIM-DTV. `plat` currently calls
       the HAL `Hal_Gpio_Init`/`Hal_Iic_Init`, which are not `DEV_GPIO_Init`/
       `DEV_IIC_Init`; do not call vendor `DEV_*` code without their device-layer
-      state. The parallel Grok worker is recovering the panel/NIM/amp/SPI/
-      NIM-DTV contract.
+      state. Grok's device-stage report is merged: panel copies GPIO110/111,
+      timing block, PWM108 + curve 40/60/80/100 (init does not light the panel);
+      NIM creates ATV/DTV factories; amp sends 0x3a/0x100 + DEV_AMP_ID task;
+      SPI opens `/dev/ntkspi` when `/conf/spi.bin` is absent (stock holds fd27);
+      NIM-DTV models0..3/default take demod HAL, model4 skips; MTD returns0.
+      Next: implement the one-owner-per-stage order, GPIO/IIC first.
 - [ ] Real display/OSD cold enable: complete the format/stride/region/enable/
       alpha/update and resume sequence; `plat.drm_init=0` is a takeover
       workaround, not parity. OSD-BUFFER-CONTRACT, DRM-PLANE-CONTRACT,

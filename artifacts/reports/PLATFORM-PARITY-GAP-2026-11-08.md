@@ -23,14 +23,14 @@ creation at `0x00755654`).
 | 0 | `DEV_COMMON_SET_PCBLAYOUTTYPE(14)` | `0x00850288` | none; `plat` passes `tuner.pcb_layout=14` to the tuner backend | vendor global `DAT_0175f028` not set; any `DEV_COMMON_GET_PCBLAYOUTTYPE` consumer sees its default |
 | 1 | `DEV_GPIO_Init` | `0x00851fcc` | `plat` calls `Hal_Gpio_Init` (NDAL library) | **different layer**: device opens `/dev/ntgpio`, creates semaphores and the 0x1fec shared state; `Hal_Gpio_Init` only opens a HAL fd |
 | 2 | `dev_src_init` | `0x008fc654` | `mod_source` VIN select only | no `DEV_SRC_HDMIHotPlug` task, no source mutex, no `plat_vin_slot_set_auto_color_system(2)` |
-| 3 | `DEV_PANEL_Init` | `0x008583fc` | `mod_panel` PWM/backlight HAL | vendor panel power/timing/GPIO description and backlight curve are not run |
-| 4 | `DEV_NIM_Init` | `0x00854fd0` | `mod_tuner` HAL/NDAL/stub backend | vendor NIM device creation and debug registration are not run |
+| 3 | `DEV_PANEL_Init` | `0x008583fc` | `mod_panel` PWM/backlight HAL | copies GPIO 110/111 descriptions, writes the timing block at `0x019354b4`, gets PWM channel 108, sets curve 40/60/80/100; returns the channel index. Init does **not** light the panel; a power/backlight owner is still separate |
+| 4 | `DEV_NIM_Init` | `0x00854fd0` | `mod_tuner` HAL/NDAL/stub backend | creates `DEV NIM ATV`/`DEV NIM DTV` factories and the SI2151/MxL661 debug menus; it opens no tuner device itself |
 | 5 | `DEV_IIC_Init` | `0x008531e8` | `plat` calls `Hal_Iic_Init` (8 buses) | **different layer**: device opens `/dev/ntkiic0` and stores a separate fd used by `DEV_IIC_*` |
-| 6 | `DEV_AMP_Init` | `0x0084f4ac` | `mod_audio`/`mod_audio_amp` transport | `Hal_Audio_Ctrl(0x3a,{0x100})` is implemented opt-in; the `DEV_AMP_ID` task is not |
-| 7 | `DEV_SPI_Init` | `0x0085946c` | `mod_spi` opt-in read-only transport, not autoloaded | vendor semaphore/init state is not run |
-| 8 | `DEV_SPI_Open(0)` | `0x00858d0c` | same | `/conf/spi.bin`, `/dev/ntkspi`, and the vendor open path are not run |
-| 9 | `DEV_NIM_DTV_Init` | `0x00861678` | `mod_tuner` NDAL frontend | vendor NIM-DTV task/initialization is not run |
-| 10 | `DEV_MTD_Init` | `0x0085419c` | none needed | only registers a debug menu |
+| 6 | `DEV_AMP_Init` | `0x0084f4ac` | `mod_audio`/`mod_audio_amp` transport | `Hal_Audio_Ctrl(0x3a,{0x100})` is implemented opt-in; the `DEV_AMP_ID` profile/factory/GPIO task is not |
+| 7 | `DEV_SPI_Init` | `0x0085946c` | `mod_spi` opt-in read-only transport, not autoloaded | creates/destroys the vendor semaphore; returns 0 if missing |
+| 8 | `DEV_SPI_Open(0)` | `0x00858d0c` | same | `/conf/spi.bin` absent on this set, so the path is `open("/dev/ntkspi",2)`; do not open while stock holds fd 27 |
+| 9 | `DEV_NIM_DTV_Init` | `0x00861678` | `mod_tuner` NDAL frontend | creates the DTV init task; models 0..3/default take `HAL_Demod_User_Initialize` + `Connect2HAL`, model4 skips; IR failure still marks init done |
+| 10 | `DEV_MTD_Init` | `0x0085419c` | none needed | only registers a debug menu and returns 0; flash ioctls are not on this path |
 
 ### Exact orchestration facts
 
@@ -101,6 +101,51 @@ Our `mod_plat` reproduces steps 1-7 in the same order, but it calls the HAL
 `Hal_Audio_Protect_Init(0)` argument is not currently passed (the function
 ignores it); this is a cosmetic ABI mismatch, not a proven effect.
 
+### Device-stage contracts (parallel worker)
+
+Full instruction-level detail is in
+`artifacts/analysis/platform-dev-ini-grok-2026-11-08.md`. The merged facts:
+
+- `DEV_PANEL_Init` copies GPIO descriptions 110/111 into `0x0193545c`/
+  `0x01935494`, writes the timing block `{1,10,40,800,220,55,10}` at
+  `0x019354b4`, gets PWM channel 108, and calls
+  `DEV_PANEL_SetBacklightPWMCurve(40,60,80,100)`. It returns the PWM channel
+  index (1 on success), not a generic boolean. It does not call
+  `DEV_PANEL_SetPWMBacklightLv` or any panel-power function; those remain a
+  separate owner.
+- `DEV_NIM_Init` is idempotent through `0x019353fc`, runs
+  `DEV_NIM_Dbg_Init` (SI2151/MxL661 menus), then creates the `DEV NIM ATV`
+  and `DEV NIM DTV` factory objects. It opens no tuner/demod device itself.
+- `DEV_AMP_Init` sends `Hal_Audio_Ctrl(0x3a,{0x100})` (return ignored) and
+  creates the `DEV_AMP_ID` task (stack 0x1000, priority 3). The task reads
+  `Profile_GetMainSpeakerPower`/`Profile_GetDRC`, creates the amp factory and
+  gets its GPIO descriptions; the board AD82587 sequencer remains the later
+  AMP-INIT/AMP-MODULE contract.
+- `DEV_SPI_Init` creates/replaces the vendor semaphore. `DEV_SPI_Open` reads
+  `/conf/spi.bin` if present; on this set it is absent, so the vendor path is
+  `open("/dev/ntkspi",2)`. Aurora already holds `/dev/ntkspi` at fd 27; do not
+  open a second owner while stock runs.
+- `DEV_NIM_DTV_Init` creates the DTV init task. Models 0..3 and the default
+  take `HAL_Demod_User_Initialize` + `_dev_nim_dtv_Connect2HAL`; model 4
+  skips them. The task's IR IIC chain (codes 21/17/64, bit 8/bit 2) marks
+  init complete even when the IR helper fails.
+- `DEV_MTD_Init` only registers a debug menu and returns 0. No cold-start
+  owner is required; flash ioctls are a separate mutating contract.
+
+### Read-only TV state observed
+
+The worker checked stock without stopping it. `/proc/fb` names: fb0
+`OSD_NORMAL1`, fb1 `OSD_NORMAL2`, fb2 `OSD_NORMAL3`, fb3 `OSD_CURSOR1`,
+fb4 `OSD_CURSOR2`; `/dev/dri/card0`, `card1`, `controlD64`, `controlD65`
+exist. Aurora 1770 and appmgr 1567 hold fb0-fb2, card0 and `/dev/ntkgpu`;
+Aurora also holds `/dev/ntgpio` (fds 16/24), `/dev/ntkiic0` (23/26),
+`/dev/ntkled` (25), `/dev/ntkspi` (27) and the vplt/dvif/sys nodes.
+`/tmp/ntkdriver_completed` exists; `/conf/spi.bin` does not. Loaded modules
+include `ntkdriver`, `ntkndpalsa`, `ntkndptuner`, `ntkndpdemod`,
+`ntkndpextin`, `ntkndpdrm`, `ntkndphdmi`, `mali`, `PreInit`. This confirms
+that stock owns the OSD/DRM nodes; a replacement must not take a second
+scanout owner while it is running.
+
 ### Ownership consequence
 
 Our `plat` reproduces the **HAL/library** half (`Hal_Gpio_Init`,
@@ -130,9 +175,13 @@ The stock UI is the vendor skin (`ui_vendor`), not the native Omarchy shell.
 
 ## Prioritized next work
 
-1. **Cold-start stage ownership** (this report + the parallel worker). Decide
-   device-layer ownership per stage, then implement a `DEV_INI`-equivalent
-   module or extend `plat` without duplicating stock ownership.
+1. **Cold-start stage ownership** (this report + Grok's merged device-stage
+   report). Implement one owner per stage, in order: GPIO, IIC, src, panel,
+   NIM, amp, SPI, NIM-DTV, then MTD (no owner needed). `DEV_INI_Init`'s return
+   is not a gate. Panel init does not light the panel, so keep a separate
+   power/backlight owner; enable SPI and do not open `/dev/ntkspi` while stock
+   holds it; run NIM-DTV only after IIC/NIM. Do not call vendor `DEV_*` code
+   without its device-layer state.
 2. **Real display/OSD cold enable** (OSD-BUFFER-CONTRACT, DRM-PLANE-CONTRACT,
    COLD-DISPLAY-REPAIR): complete format/stride/region/enable/alpha/update and
    resume, then a cold scanout acceptance. `plat.drm_init=0` is a takeover

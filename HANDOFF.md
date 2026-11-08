@@ -13,8 +13,11 @@ first; the native Omarchy shell is only a skin. [PLATFORM-PARITY-GAP](artifacts/
 maps the `DEV_INI_Init` cold-start stages (GPIO/IIC/src/panel/NIM/amp/SPI/
 NIM-DTV), the real OSD enable gap and the stock-UI coverage. `DEV_INI_Init`
 is best-effort and normally returns 0; `DEV_GPIO_Init`/`DEV_IIC_Init` are not
-`Hal_Gpio_Init`/`Hal_Iic_Init`. The parallel Grok worker is recovering the
-device-stage contracts.
+`Hal_Gpio_Init`/`Hal_Iic_Init`. Grok's device-stage report is merged: panel GPIO110/111/timing/PWM108/curve
+(init does not light the panel), NIM ATV/DTV factories, amp 0x3a/0x100 +
+DEV_AMP_ID task, SPI `/dev/ntkspi` when `/conf/spi.bin` is absent, NIM-DTV
+model0..3/default demod HAL vs model4, MTD returns0. Next is the one-owner-
+per-stage implementation, GPIO/IIC first.
 Replacement system, 2026-11-07: `make TARGET=tv ... replacement-bundle` builds
 a takeover-mode UI (`plat_stub` + display/panel/ir/settings/service_db/
 image_decode/ui_engine/ui_vendor/ticker/ui_clock/ui_anim, client and menus).

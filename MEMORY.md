@@ -94,8 +94,13 @@ cold-start map: `DEV_INI_Init` is best-effort and normally returns 0 via
 calls in `plat`; `dev_src_init` creates the `DEV_SRC_HDMIHotPlug` task and sets
 auto color system2; `DEV_PANEL_Init` returns the PWM channel index;
 `DEV_AMP_Init` returns1 after the `0x3a/0x100` I2S MCLK request and
-`DEV_AMP_ID` task. The Grok worker is recovering panel/NIM/amp/SPI/NIM-DTV;
-its report is pending. The stock-UI map (portal/settings/source/apps/EPG/PVR)
+`DEV_AMP_ID` task. Grok's device-stage report adds: panel copies GPIO110/111, the timing block,
+PWM108 and the 40/60/80/100 curve (init does not light the panel); NIM creates
+the ATV/DTV factories; amp sends 0x3a/0x100 and creates the DEV_AMP_ID task;
+SPI opens `/dev/ntkspi` when `/conf/spi.bin` is absent (stock holds fd27);
+NIM-DTV models0..3/default take the demod HAL and model4 skips; MTD returns0.
+Read-only TV: fb0..fb4 are OSD_NORMAL1/2/3 and OSD_CURSOR1/2; stock holds
+fb0-2/card0/ntkgpu. The stock-UI map (portal/settings/source/apps/EPG/PVR)
 is in the same report.
 Takeover settings restore, 2026-11-08: new `settings-get`/`settings-set`
 control commands (host-tested) let `takeover-full.sh` snapshot
