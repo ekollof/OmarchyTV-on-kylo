@@ -1,0 +1,211 @@
+=== Thu Jan  1 01:00:09 CET 1970 run-aurora /buffer/openaurora stage=0
+oa-boot-gate: native allowed (fail=0)
+oa-boot-gate: attempt started (stage=0)
+oa-wdtfeed: lock: Resource temporarily unavailable (continuing)
+oa-supervise: watchdog kept armed (external feeder)
+oa-supervise: child 2717, startup 75000 ms, heartbeat timeout 5000 ms
+[  7487] INFO host         openaurora starting, modules=/buffer/openaurora/modules
+[  7488] INFO host         control socket /tmp/openaurora.sock
+[  7506] INFO host         loaded plat v0.1 (/buffer/openaurora/modules/mod_plat.so)
+[  7506] INFO plat         plat: waiting for /tmp/ntkdriver_completed (ICE_HardwareInit order)
+[  7506] INFO plat         plat: driver marker ready after 0 ms
+[  7549] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[  7550] WARN plat         plat: Hal_Video_DrmInit skipped; preserving the vendor OSD
+[  7550] INFO plat         plat: common init (vpltio/v4l2/sharemem, drm 0, DVIF)
+[  7550] INFO plat         plat: VIN slot defaults (7 slots)
+[  7582] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[  7582] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[  7582] INFO host         started plat
+[  7583] INFO host         loaded display v0.1 (/buffer/openaurora/modules/mod_display.so)
+[  7583] INFO display      /dev/fb1: 1920x1080 32bpp, 2 frame(s), back=0
+[  7987] INFO display      /dev/fb1: full snapshot saved (16588800 bytes, mau 0)
+[  7987] INFO display      region -> 1920x1080 (ok)
+[  7987] INFO host         started display
+[  7987] INFO host         loaded panel v0.2 (/buffer/openaurora/modules/mod_panel.so)
+[  7988] INFO panel        vendor HAL linked: channel 0, 30000 Hz, start 100%
+[  7988] INFO host         started panel
+[  7988] INFO host         loaded ir v0.1 (/buffer/openaurora/modules/mod_ir.so)
+[  7990] INFO ir           ir: BLAST helper pid 2721 (protocol 4, set 1, video /dev/video28)
+[  7990] INFO ir           remote parser ready; BLAST only, UART path empty
+[  7990] INFO host         started ir
+[  7991] INFO host         loaded settings v0.2 (/buffer/openaurora/modules/mod_settings.so)
+[  8014] INFO settings     /conf/sqlite_db/settingsDB.db open (read-write)
+[  8043] INFO settings     picture: 20 configs; source1 mode=1 zoom=1 energy=3
+[  8044] INFO settings     probe: m_cec_enabled=1
+[  8044] INFO host         started settings
+[  8044] INFO host         loaded service_db v1 (/buffer/openaurora/modules/mod_service_db.so)
+[  8083] INFO service_db   service_db: 134 rows (54 dvb, 67 easi, 13 analog) from /conf/sqlite_db/settingsDB.db
+[  8083] INFO host         started service_db
+[  8083] INFO host         loaded image_decode v2 (/buffer/openaurora/modules/mod_image_decode.so)
+[  8092] INFO host         started image_decode
+[  8093] INFO host         loaded epg v1 (/buffer/openaurora/modules/mod_epg.so)
+[  8093] INFO host         started epg
+[  8093] INFO host         loaded pvr v1 (/buffer/openaurora/modules/mod_pvr.so)
+[  8093] INFO host         started pvr
+[  8093] INFO host         loaded channels v1 (/buffer/openaurora/modules/mod_channels.so)
+[  8093] INFO host         started channels
+[  8094] INFO host         loaded i18n v0.1 (/buffer/openaurora/modules/mod_i18n.so)
+[  8459] INFO i18n         i18n: 41 locales, language eng
+[  8459] INFO host         started i18n
+[  8460] INFO host         loaded ticker v1.0 (/buffer/openaurora/modules/mod_ticker.so)
+[  8460] INFO host         started ticker
+[  8460] INFO host         loaded ui_clock v0.1 (/buffer/openaurora/modules/mod_ui_clock.so)
+[  8460] INFO host         started ui_clock
+[  8460] INFO host         loaded ui_anim v1 (/buffer/openaurora/modules/mod_ui_anim.so)
+[  8460] INFO host         started ui_anim
+[  8461] INFO host         loaded ui_engine v1 (/buffer/openaurora/modules/mod_ui_engine.so)
+[  8461] INFO ui_engine    ui_engine started
+[  8461] INFO host         started ui_engine
+[  8461] INFO host         loaded ui_vendor v0.2 (/buffer/openaurora/modules/mod_ui_vendor.so)
+[  8972] INFO ui_vendor    present: scene=54ms mirror=0ms sync=1ms pan=9ms mirror=0 rect=0,0 1920x1080
+[  8972] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[  8972] INFO host         started ui_vendor
+[  8973] INFO host         loaded ui_theme v0.1 (/buffer/openaurora/modules/mod_ui_theme.so)
+[  9002] INFO host         started ui_theme
+[  9003] INFO host         loaded ui_profile v0.1 (/buffer/openaurora/modules/mod_ui_profile.so)
+[  9010] INFO host         started ui_profile
+[  9010] INFO host         loaded ui_menu v0.1 (/buffer/openaurora/modules/mod_ui_menu.so)
+[  9011] INFO ui_menu      ui_menu: loaded /buffer/openaurora/menus/sub_launcher.json (1 dialogs)
+[  9011] INFO host         started ui_menu
+[  9012] INFO host         loaded ui_list v0.1 (/buffer/openaurora/modules/mod_ui_list.so)
+[  9012] INFO host         started ui_list
+[  9012] INFO host         loaded ui_navigation v0.2 (/buffer/openaurora/modules/mod_ui_navigation.so)
+[  9012] INFO host         started ui_navigation
+[  9012] INFO host         loaded lua v1 (/buffer/openaurora/modules/mod_lua.so)
+[  9012] INFO host         started lua
+[  9013] INFO host         loaded power v0.1 (/buffer/openaurora/modules/mod_power.so)
+[  9013] INFO power        standby enabled (/sys/power/state)
+[  9013] INFO host         started power
+Hal_IfCmd_SockFd_Get@139 iSockFd=6
+Can not open /dev/nvt/ntkvplt
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+Can not open /dev/nvt/ntkled , try path /dev/ntkled 
+Open /dev/ntkled successfully 
+openaurora: 23 module(s) loaded, control on /tmp/openaurora.sock
+[  9013] INFO ui_vendor    animations enabled (DesignStyle.svg animation marker)
+[  9392] INFO ui_vendor    present: scene=48ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[  9392] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+oa-supervise: host loop alive, first present acknowledged
+oa-supervise: boot attempt cleared
+oa-supervise: stable; failure streak cleared
+=== Thu Jan  1 01:00:15 CET 1970 run-aurora /buffer/openaurora stage=0
+oa-boot-gate: native allowed (fail=0)
+oa-boot-gate: attempt started (stage=0)
+oa-wdtfeed: lock: Resource temporarily unavailable (continuing)
+oa-supervise: watchdog kept armed (external feeder)
+oa-supervise: child 2753, startup 75000 ms, heartbeat timeout 5000 ms
+[ 14073] INFO host         openaurora starting, modules=/buffer/openaurora/modules
+[ 14074] INFO host         control socket /tmp/openaurora.sock
+[ 14090] INFO host         loaded plat v0.1 (/buffer/openaurora/modules/mod_plat.so)
+[ 14090] INFO plat         plat: waiting for /tmp/ntkdriver_completed (ICE_HardwareInit order)
+[ 14091] INFO plat         plat: driver marker ready after 1 ms
+[ 14132] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[ 14133] WARN plat         plat: Hal_Video_DrmInit skipped; preserving the vendor OSD
+[ 14133] INFO plat         plat: common init (vpltio/v4l2/sharemem, drm 0, DVIF)
+[ 14133] INFO plat         plat: VIN slot defaults (7 slots)
+[ 14163] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[ 14163] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[ 14163] INFO host         started plat
+[ 14164] INFO host         loaded display v0.1 (/buffer/openaurora/modules/mod_display.so)
+[ 14164] INFO display      /dev/fb1: 1920x1080 32bpp, 2 frame(s), back=0
+[ 14557] INFO display      /dev/fb1: full snapshot saved (16588800 bytes, mau 0)
+[ 14557] INFO display      region: src 1920x1080 dst 3840x2160 was dst 1920x1080 pos 0,0 (ok)
+[ 14557] INFO display      region -> 1920x1080 (ok)
+[ 14557] INFO host         started display
+[ 14558] INFO host         loaded panel v0.2 (/buffer/openaurora/modules/mod_panel.so)
+[ 14558] INFO panel        vendor HAL linked: channel 0, 30000 Hz, start 100%
+[ 14558] INFO host         started panel
+[ 14558] INFO host         loaded ir v0.1 (/buffer/openaurora/modules/mod_ir.so)
+[ 14561] INFO ir           ir: BLAST helper pid 2756 (protocol 4, set 1, video /dev/video28)
+[ 14561] INFO ir           remote parser ready; BLAST only, UART path empty
+[ 14561] INFO host         started ir
+[ 14562] INFO host         loaded settings v0.2 (/buffer/openaurora/modules/mod_settings.so)
+[ 14584] INFO settings     /conf/sqlite_db/settingsDB.db open (read-write)
+[ 14612] INFO settings     picture: 20 configs; source1 mode=1 zoom=1 energy=3
+[ 14612] INFO settings     probe: m_cec_enabled=1
+[ 14612] INFO host         started settings
+[ 14613] INFO host         loaded service_db v1 (/buffer/openaurora/modules/mod_service_db.so)
+[ 14649] INFO service_db   service_db: 134 rows (54 dvb, 67 easi, 13 analog) from /conf/sqlite_db/settingsDB.db
+[ 14649] INFO host         started service_db
+[ 14650] INFO host         loaded image_decode v2 (/buffer/openaurora/modules/mod_image_decode.so)
+[ 14659] INFO host         started image_decode
+[ 14659] INFO host         loaded epg v1 (/buffer/openaurora/modules/mod_epg.so)
+[ 14659] INFO host         started epg
+[ 14659] INFO host         loaded pvr v1 (/buffer/openaurora/modules/mod_pvr.so)
+[ 14659] INFO host         started pvr
+[ 14660] INFO host         loaded channels v1 (/buffer/openaurora/modules/mod_channels.so)
+[ 14660] INFO host         started channels
+[ 14660] INFO host         loaded i18n v0.1 (/buffer/openaurora/modules/mod_i18n.so)
+[ 15010] INFO i18n         i18n: 41 locales, language eng
+[ 15010] INFO host         started i18n
+[ 15011] INFO host         loaded ticker v1.0 (/buffer/openaurora/modules/mod_ticker.so)
+[ 15011] INFO host         started ticker
+[ 15011] INFO host         loaded ui_clock v0.1 (/buffer/openaurora/modules/mod_ui_clock.so)
+[ 15011] INFO host         started ui_clock
+[ 15012] INFO host         loaded ui_anim v1 (/buffer/openaurora/modules/mod_ui_anim.so)
+[ 15012] INFO host         started ui_anim
+[ 15012] INFO host         loaded ui_engine v1 (/buffer/openaurora/modules/mod_ui_engine.so)
+[ 15012] INFO ui_engine    ui_engine started
+[ 15012] INFO host         started ui_engine
+[ 15013] INFO host         loaded ui_vendor v0.2 (/buffer/openaurora/modules/mod_ui_vendor.so)
+[ 15510] INFO ui_vendor    present: scene=52ms mirror=0ms sync=0ms pan=15ms mirror=0 rect=0,0 1920x1080
+[ 15510] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[ 15510] INFO host         started ui_vendor
+[ 15511] INFO host         loaded ui_theme v0.1 (/buffer/openaurora/modules/mod_ui_theme.so)
+[ 15539] INFO host         started ui_theme
+[ 15540] INFO host         loaded ui_profile v0.1 (/buffer/openaurora/modules/mod_ui_profile.so)
+[ 15546] INFO host         started ui_profile
+[ 15546] INFO host         loaded ui_menu v0.1 (/buffer/openaurora/modules/mod_ui_menu.so)
+[ 15547] INFO ui_menu      ui_menu: loaded /buffer/openaurora/menus/sub_launcher.json (1 dialogs)
+[ 15547] INFO host         started ui_menu
+[ 15548] INFO host         loaded ui_list v0.1 (/buffer/openaurora/modules/mod_ui_list.so)
+[ 15548] INFO host         started ui_list
+[ 15548] INFO host         loaded ui_navigation v0.2 (/buffer/openaurora/modules/mod_ui_navigation.so)
+[ 15548] INFO host         started ui_navigation
+[ 15548] INFO host         loaded lua v1 (/buffer/openaurora/modules/mod_lua.so)
+[ 15548] INFO host         started lua
+[ 15549] INFO host         loaded power v0.1 (/buffer/openaurora/modules/mod_power.so)
+[ 15549] INFO power        standby enabled (/sys/power/state)
+[ 15549] INFO host         started power
+Hal_IfCmd_SockFd_Get@139 iSockFd=6
+Can not open /dev/nvt/ntkvplt
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+Can not open /dev/nvt/ntkled , try path /dev/ntkled 
+Open /dev/ntkled successfully 
+openaurora: 23 module(s) loaded, control on /tmp/openaurora.sock
+[ 15549] INFO ui_vendor    animations enabled (DesignStyle.svg animation marker)
+[ 15910] INFO ui_vendor    present: scene=47ms mirror=0ms sync=0ms pan=3ms mirror=0 rect=0,0 1920x1080
+[ 15910] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+oa-supervise: host loop alive, first present acknowledged
+oa-supervise: boot attempt cleared
+oa-supervise: stable; failure streak cleared
+[466410] INFO ui_vendor    present: scene=48ms mirror=0ms sync=0ms pan=20ms mirror=0 rect=0,0 1920x1080
+[466410] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+[466770] INFO ui_vendor    present: scene=47ms mirror=0ms sync=0ms pan=4ms mirror=0 rect=0,0 1920x1080
+[466770] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 0 card 0
+[467150] INFO ui_vendor    present: scene=48ms mirror=0ms sync=0ms pan=17ms mirror=0 rect=0,0 1920x1080
+[467150] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 0 card 0
+[467650] INFO ui_vendor    present: scene=47ms mirror=0ms sync=0ms pan=20ms mirror=0 rect=0,0 1920x1080
+[467650] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+[468010] INFO ui_vendor    present: scene=47ms mirror=0ms sync=0ms pan=4ms mirror=0 rect=0,0 1920x1080
+[468010] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[468370] INFO ui_vendor    present: scene=47ms mirror=0ms sync=0ms pan=3ms mirror=0 rect=0,0 1920x1080
+[468370] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[469270] INFO ui_vendor    present: scene=48ms mirror=0ms sync=0ms pan=2ms mirror=0 rect=0,0 1920x1080
+[469270] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[469910] INFO ui_vendor    present: scene=47ms mirror=0ms sync=0ms pan=15ms mirror=0 rect=0,0 1920x1080
+[469910] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+[470530] INFO ui_vendor    present: scene=43ms mirror=0ms sync=0ms pan=3ms mirror=0 rect=0,0 1920x1080
+[470530] INFO ui_vendor    painted source selection: row 0
+[472810] INFO ui_vendor    present: scene=47ms mirror=0ms sync=0ms pan=7ms mirror=0 rect=0,0 1920x1080
+[472810] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+[473770] INFO ui_vendor    present: scene=47ms mirror=0ms sync=0ms pan=2ms mirror=0 rect=0,0 1920x1080
+[473770] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[474390] INFO ui_vendor    present: scene=47ms mirror=1ms sync=0ms pan=7ms mirror=0 rect=0,0 1920x1080
+[474390] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[474890] INFO ui_vendor    present: scene=49ms mirror=0ms sync=0ms pan=15ms mirror=0 rect=0,0 1920x1080
+[474890] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[477050] INFO ui_vendor    present: scene=48ms mirror=0ms sync=0ms pan=13ms mirror=0 rect=0,0 1920x1080
+[477050] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0

@@ -71,6 +71,10 @@ struct ctx {
     int cold_init;    /* repair an unconfigured fb before first use */
     int osd_reinit;   /* force the vendor SetPar path even on a valid var */
     unsigned cold_w, cold_h, cold_frames;
+    /* OSD destination/canvas size. On this panel the vendor region reports
+     * source 1920x1080 and destination 3840x2160; a cold boot can leave the
+     * destination at the source size (top-left quadrant). */
+    unsigned dst_w, dst_h;
 
     /* Offscreen RGBA scene: every draw renders here, present() copies it to the visible frame or
      * maps it through the recovered full-screen transition quad. */
@@ -557,27 +561,37 @@ static const oa_display_patch_iface patch_iface = {patch_fill_rgba};
 /* ------------------------------------------------------------------- layer */
 
 /* Set source dimensions and destination origin while preserving the driver's
- * source origin and destination dimensions. Historical quarter-screen paint
- * did not prove a complete cold geometry/initialization diagnosis. */
+ * source origin. The destination size is programmed from display.dst_width/
+ * dst_height (default 3840x2160, the panel canvas): a cold boot can leave the
+ * destination at the source size, which shows the 1920x1080 UI as a top-left
+ * quadrant. Stock's region is [2]/[3]=1920x1080, [4]/[5]=0, [6]/[7]=3840x2160. */
 static int set_region(struct ctx *c, unsigned w, unsigned h)
 {
-    /* Read-modify-write, as NVTGA_OSD_SetRegion does (libdirectfb_tdga, decompiled):
-     *   ioctl(0x8020c86c) reads the 32-byte region; words 2/3 are the window size and words 4/5
-     *   are its position on the OSD canvas. Words 0/1 are left exactly as the driver reports them.
-     *
-     * Both halves were confirmed the hard way on the set: writing the size into words 4/5 put the
-     * window at canvas (1920,1080) - visible, but as a quadrant - and keeping a stale offset in
-     * words 4/5 then pushed it off-screen entirely. So the offset has to be driven to 0 as well.
-     */
+    /* Read-modify-write, as NVTGA_OSD_SetRegion does (libdirectfb_tdga,
+     * 0x152b8; verified: ioctl 0x8020c86c reads 0x20 bytes, then
+     * 0x4020c86b writes them):
+     *   words 2/3 = source/window size, 4/5 = position on the OSD canvas,
+     *   6/7 = destination size. Words 0/1 are left as the driver reports.
+     * The vendor setter only writes 2/3; the cold-boot destination must be
+     * programmed explicitly. */
     uint32_t reg[8];
     memset(reg, 0, sizeof reg);
     if (ioctl(c->fd, OSD_REG_RD, reg) != 0)
         return -1;
+    uint32_t was[8];
+    memcpy(was, reg, sizeof reg);
     reg[2] = w;
     reg[3] = h;
     reg[4] = 0;
     reg[5] = 0;
-    return ioctl(c->fd, OSD_REG_WR, reg) == 0 ? 0 : -1;
+    reg[6] = c->dst_w;
+    reg[7] = c->dst_h;
+    int rc = ioctl(c->fd, OSD_REG_WR, reg) == 0 ? 0 : -1;
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "region: src %ux%u dst %ux%u was dst %ux%u pos %u,%u (%s)",
+                w, h, c->dst_w, c->dst_h, was[6], was[7], was[4], was[5],
+                rc == 0 ? "ok" : "refused");
+    return rc;
 }
 
 /*
@@ -1023,6 +1037,10 @@ static int m_start(void *v)
     if (!c->cold_w || c->cold_w > 4096) c->cold_w = 1920;
     if (!c->cold_h || c->cold_h > 4096) c->cold_h = 1080;
     if (!c->cold_frames || c->cold_frames > 8) c->cold_frames = 2;
+    c->dst_w = (unsigned)atoi(c->api->config_get(c->api->priv, "display.dst_width", "3840"));
+    c->dst_h = (unsigned)atoi(c->api->config_get(c->api->priv, "display.dst_height", "2160"));
+    if (!c->dst_w || c->dst_w > 8192) c->dst_w = 3840;
+    if (!c->dst_h || c->dst_h > 8192) c->dst_h = 2160;
     c->pan = c->api->config_get(c->api->priv, "display.pan", want_region ? "0" : "1")[0] == '1';
 
     drm_bringup(c);

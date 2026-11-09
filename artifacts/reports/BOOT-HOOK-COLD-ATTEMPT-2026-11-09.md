@@ -240,6 +240,13 @@ prior 12-module payload was restored to `/buffer/openaurora`. `/conf` is the
 Oct-31 image (`oa_safe` present, no `oa_boot`), stock appmgr/aurora running,
 watchdog re-armed, no helpers.
 
+A later cold boot with the destination programming fix reached the
+**full-screen portal** (owner-confirmed); the surviving log shows
+`region: src 1920x1080 dst 3840x2160 was dst 1920x1080`. The remaining
+first-paint icons/fonts and late `eth0` issues have a settle repaint and a
+background network watcher; see
+[STAGED-COLD-BOOT-DESIGN-2026-11-09](STAGED-COLD-BOOT-DESIGN-2026-11-09.md).
+
 ## Evidence files
 
 - `artifacts/analysis/boot-hook-2026-11-09/aurora.elf.restored` — the Oct-31

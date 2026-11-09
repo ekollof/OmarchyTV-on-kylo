@@ -1,0 +1,273 @@
+== tvhack boot Thu Jan  1 01:00:07 CET 1970
+id: uid=0(root) gid=0(root)
+uname: Linux (none) 4.9.118+ #2 SMP PREEMPT Mon Jul 26 10:59:37 CST 2021 armv7l GNU/Linux
+oa: state boot=1 safe=0 coredump=1 conf=1 bin=1 sup=1 wdt=1 marker=1
+oa: decision native=1
+devpts: 0
+passwd bind: 0
+hosts bind: 0
+dropbear rc: 0
+telnetd rc: 0
+dialserver: 1934
+services done, id=uid=0(root) gid=0(root)
+db internet flag forced: 1
+keepalive: started pid=2601
+oa-wdtfeed: beat 1, watchdog 10s
+oa-wdtfeed: beat 2, watchdog 10s
+oa-wdtfeed: beat 3, watchdog 10s
+oa-wdtfeed: beat 4, watchdog 10s
+oa-wdtfeed: beat 5, watchdog 10s
+oa-wdtfeed: beat 6, watchdog 10s
+oa-wdtfeed: beat 7, watchdog 10s
+oa-wdtfeed: beat 8, watchdog 10s
+oa-wdtfeed: beat 9, watchdog 10s
+oa-wdtfeed: beat 10, watchdog 10s
+oa-wdtfeed: beat 11, watchdog 10s
+oa-wdtfeed: beat 12, watchdog 10s
+oa-wdtfeed: beat 13, watchdog 10s
+oa-wdtfeed: beat 14, watchdog 10s
+oa-wdtfeed: beat 15, watchdog 10s
+oa-wdtfeed: beat 16, watchdog 10s
+oa-wdtfeed: beat 17, watchdog 10s
+oa-wdtfeed: beat 18, watchdog 10s
+oa-wdtfeed: beat 19, watchdog 10s
+oa-wdtfeed: beat 20, watchdog 10s
+oa-wdtfeed: beat 21, watchdog 10s
+oa-wdtfeed: beat 22, watchdog 10s
+oa-wdtfeed: beat 23, watchdog 10s
+oa-wdtfeed: beat 24, watchdog 10s
+oa-wdtfeed: beat 25, watchdog 10s
+oa-wdtfeed: beat 26, watchdog 10s
+oa-wdtfeed: beat 27, watchdog 10s
+oa-wdtfeed: beat 28, watchdog 10s
+oa-wdtfeed: beat 29, watchdog 10s
+oa-wdtfeed: beat 30, watchdog 10s
+oa-wdtfeed: beat 31, watchdog 10s
+oa-wdtfeed: beat 32, watchdog 10s
+oa-wdtfeed: beat 33, watchdog 10s
+oa-wdtfeed: beat 34, watchdog 10s
+oa-wdtfeed: beat 35, watchdog 10s
+oa-wdtfeed: beat 36, watchdog 10s
+oa-wdtfeed: beat 37, watchdog 10s
+oa-wdtfeed: beat 38, watchdog 10s
+oa-wdtfeed: beat 39, watchdog 10s
+oa-wdtfeed: beat 40, watchdog 10s
+oa-wdtfeed: beat 41, watchdog 10s
+oa-wdtfeed: beat 42, watchdog 10s
+oa-wdtfeed: beat 43, watchdog 10s
+oa-wdtfeed: beat 44, watchdog 10s
+oa-wdtfeed: beat 45, watchdog 10s
+oa-wdtfeed: beat 46, watchdog 10s
+oa-wdtfeed: beat 47, watchdog 10s
+oa-wdtfeed: beat 48, watchdog 10s
+oa-wdtfeed: beat 49, watchdog 10s
+oa-wdtfeed: beat 50, watchdog 10s
+oa-wdtfeed: beat 51, watchdog 10s
+oa-wdtfeed: beat 52, watchdog 10s
+oa-wdtfeed: beat 53, watchdog 10s
+oa-wdtfeed: beat 54, watchdog 10s
+oa-wdtfeed: beat 55, watchdog 10s
+oa-wdtfeed: beat 56, watchdog 10s
+oa-wdtfeed: beat 57, watchdog 10s
+oa-wdtfeed: beat 58, watchdog 10s
+oa-wdtfeed: beat 59, watchdog 10s
+oa-wdtfeed: beat 60, watchdog 10s
+oa-wdtfeed: beat 61, watchdog 10s
+oa-wdtfeed: beat 62, watchdog 10s
+oa-wdtfeed: beat 63, watchdog 10s
+oa-wdtfeed: beat 64, watchdog 10s
+oa-wdtfeed: beat 65, watchdog 10s
+== tvhack boot Thu Jan  1 01:00:06 CET 1970
+id: uid=0(root) gid=0(root)
+uname: Linux (none) 4.9.118+ #2 SMP PREEMPT Mon Jul 26 10:59:37 CST 2021 armv7l GNU/Linux
+oa: state boot=1 safe=0 coredump=1 conf=1 bin=1 sup=1 wdt=1 marker=1
+oa: decision native=1
+net: before: no-address
+net: native: keeping the run_aurora dev MAC and lease
+ifconfig: SIOCGIFFLAGS: No such device
+udhcpc: SIOCGIFINDEX: No such device
+udhcpc: SIOCGIFINDEX: No such device
+udhcpc: SIOCGIFINDEX: No such device
+net: after: no-address
+devpts: 0
+passwd bind: 0
+hosts bind: 0
+dropbear rc: 0
+telnetd rc: 0
+dialserver: 2681
+services done, id=uid=0(root) gid=0(root)
+db internet flag forced: 1
+keepalive: started pid=2712
+oa-wdtfeed: beat 1, watchdog 10s
+oa-wdtfeed: beat 2, watchdog 10s
+oa-wdtfeed: beat 3, watchdog 10s
+oa-wdtfeed: beat 4, watchdog 10s
+oa-wdtfeed: beat 5, watchdog 10s
+oa-wdtfeed: beat 6, watchdog 10s
+oa-wdtfeed: beat 7, watchdog 10s
+oa-wdtfeed: beat 8, watchdog 10s
+oa-wdtfeed: beat 9, watchdog 10s
+oa-wdtfeed: beat 10, watchdog 10s
+oa-wdtfeed: beat 11, watchdog 10s
+oa-wdtfeed: beat 12, watchdog 10s
+oa-wdtfeed: beat 13, watchdog 10s
+oa-wdtfeed: beat 14, watchdog 10s
+oa-wdtfeed: beat 15, watchdog 10s
+oa-wdtfeed: beat 16, watchdog 10s
+oa-wdtfeed: beat 17, watchdog 10s
+oa-wdtfeed: beat 18, watchdog 10s
+oa-wdtfeed: beat 19, watchdog 10s
+oa-wdtfeed: beat 20, watchdog 10s
+oa-wdtfeed: beat 21, watchdog 10s
+oa-wdtfeed: beat 22, watchdog 10s
+oa-wdtfeed: beat 23, watchdog 10s
+oa-wdtfeed: beat 24, watchdog 10s
+oa-wdtfeed: beat 25, watchdog 10s
+oa-wdtfeed: beat 26, watchdog 10s
+oa-wdtfeed: beat 27, watchdog 10s
+oa-wdtfeed: beat 28, watchdog 10s
+oa-wdtfeed: beat 29, watchdog 10s
+oa-wdtfeed: beat 30, watchdog 10s
+oa-wdtfeed: beat 31, watchdog 10s
+oa-wdtfeed: beat 32, watchdog 10s
+oa-wdtfeed: beat 33, watchdog 10s
+oa-wdtfeed: beat 34, watchdog 10s
+oa-wdtfeed: beat 35, watchdog 10s
+oa-wdtfeed: beat 36, watchdog 10s
+oa-wdtfeed: beat 37, watchdog 10s
+oa-wdtfeed: beat 38, watchdog 10s
+oa-wdtfeed: beat 39, watchdog 10s
+oa-wdtfeed: beat 40, watchdog 10s
+oa-wdtfeed: beat 41, watchdog 10s
+oa-wdtfeed: beat 42, watchdog 10s
+oa-wdtfeed: beat 43, watchdog 10s
+oa-wdtfeed: beat 44, watchdog 10s
+oa-wdtfeed: beat 45, watchdog 10s
+oa-wdtfeed: beat 46, watchdog 10s
+oa-wdtfeed: beat 47, watchdog 10s
+oa-wdtfeed: beat 48, watchdog 10s
+oa-wdtfeed: beat 49, watchdog 10s
+oa-wdtfeed: beat 50, watchdog 10s
+oa-wdtfeed: beat 51, watchdog 10s
+oa-wdtfeed: beat 52, watchdog 10s
+oa-wdtfeed: beat 53, watchdog 10s
+oa-wdtfeed: beat 54, watchdog 10s
+oa-wdtfeed: beat 55, watchdog 10s
+oa-wdtfeed: beat 56, watchdog 10s
+oa-wdtfeed: beat 57, watchdog 10s
+oa-wdtfeed: beat 58, watchdog 10s
+oa-wdtfeed: beat 59, watchdog 10s
+oa-wdtfeed: beat 60, watchdog 10s
+oa-wdtfeed: beat 61, watchdog 10s
+oa-wdtfeed: beat 62, watchdog 10s
+oa-wdtfeed: beat 63, watchdog 10s
+oa-wdtfeed: beat 64, watchdog 10s
+oa-wdtfeed: beat 65, watchdog 10s
+oa-wdtfeed: beat 66, watchdog 10s
+oa-wdtfeed: beat 67, watchdog 10s
+oa-wdtfeed: beat 68, watchdog 10s
+oa-wdtfeed: beat 69, watchdog 10s
+oa-wdtfeed: beat 70, watchdog 10s
+oa-wdtfeed: beat 71, watchdog 10s
+oa-wdtfeed: beat 72, watchdog 10s
+oa-wdtfeed: beat 73, watchdog 10s
+oa-wdtfeed: beat 74, watchdog 10s
+oa-wdtfeed: beat 75, watchdog 10s
+oa-wdtfeed: beat 76, watchdog 10s
+oa-wdtfeed: beat 77, watchdog 10s
+oa-wdtfeed: beat 78, watchdog 10s
+oa-wdtfeed: beat 79, watchdog 10s
+oa-wdtfeed: beat 80, watchdog 10s
+oa-wdtfeed: beat 81, watchdog 10s
+oa-wdtfeed: beat 82, watchdog 10s
+oa-wdtfeed: beat 83, watchdog 10s
+oa-wdtfeed: beat 84, watchdog 10s
+oa-wdtfeed: beat 85, watchdog 10s
+oa-wdtfeed: beat 86, watchdog 10s
+oa-wdtfeed: beat 87, watchdog 10s
+oa-wdtfeed: beat 88, watchdog 10s
+oa-wdtfeed: beat 89, watchdog 10s
+oa-wdtfeed: beat 90, watchdog 10s
+oa-wdtfeed: beat 91, watchdog 10s
+oa-wdtfeed: beat 92, watchdog 10s
+oa-wdtfeed: beat 93, watchdog 10s
+oa-wdtfeed: beat 94, watchdog 10s
+oa-wdtfeed: beat 95, watchdog 10s
+oa-wdtfeed: beat 96, watchdog 10s
+oa-wdtfeed: beat 97, watchdog 10s
+oa-wdtfeed: beat 98, watchdog 10s
+oa-wdtfeed: beat 99, watchdog 10s
+oa-wdtfeed: beat 100, watchdog 10s
+oa-wdtfeed: beat 101, watchdog 10s
+oa-wdtfeed: beat 102, watchdog 10s
+oa-wdtfeed: beat 103, watchdog 10s
+oa-wdtfeed: beat 104, watchdog 10s
+oa-wdtfeed: beat 105, watchdog 10s
+oa-wdtfeed: beat 106, watchdog 10s
+oa-wdtfeed: beat 107, watchdog 10s
+oa-wdtfeed: beat 108, watchdog 10s
+oa-wdtfeed: beat 109, watchdog 10s
+oa-wdtfeed: beat 110, watchdog 10s
+oa-wdtfeed: beat 111, watchdog 10s
+oa-wdtfeed: beat 112, watchdog 10s
+oa-wdtfeed: beat 113, watchdog 10s
+oa-wdtfeed: beat 114, watchdog 10s
+oa-wdtfeed: beat 115, watchdog 10s
+oa-wdtfeed: beat 116, watchdog 10s
+oa-wdtfeed: beat 117, watchdog 10s
+oa-wdtfeed: beat 118, watchdog 10s
+oa-wdtfeed: beat 119, watchdog 10s
+oa-wdtfeed: beat 120, watchdog 10s
+oa-wdtfeed: beat 121, watchdog 10s
+oa-wdtfeed: beat 122, watchdog 10s
+oa-wdtfeed: beat 123, watchdog 10s
+oa-wdtfeed: beat 124, watchdog 10s
+oa-wdtfeed: beat 125, watchdog 10s
+oa-wdtfeed: beat 126, watchdog 10s
+oa-wdtfeed: beat 127, watchdog 10s
+oa-wdtfeed: beat 128, watchdog 10s
+oa-wdtfeed: beat 129, watchdog 10s
+oa-wdtfeed: beat 130, watchdog 10s
+oa-wdtfeed: beat 131, watchdog 10s
+oa-wdtfeed: beat 132, watchdog 10s
+oa-wdtfeed: beat 133, watchdog 10s
+oa-wdtfeed: beat 134, watchdog 10s
+oa-wdtfeed: beat 135, watchdog 10s
+oa-wdtfeed: beat 136, watchdog 10s
+oa-wdtfeed: beat 137, watchdog 10s
+oa-wdtfeed: beat 138, watchdog 10s
+oa-wdtfeed: beat 139, watchdog 10s
+oa-wdtfeed: beat 140, watchdog 10s
+oa-wdtfeed: beat 141, watchdog 10s
+oa-wdtfeed: beat 142, watchdog 10s
+oa-wdtfeed: beat 143, watchdog 10s
+oa-wdtfeed: beat 144, watchdog 10s
+oa-wdtfeed: beat 145, watchdog 10s
+oa-wdtfeed: beat 146, watchdog 10s
+oa-wdtfeed: beat 147, watchdog 10s
+oa-wdtfeed: beat 148, watchdog 10s
+oa-wdtfeed: beat 149, watchdog 10s
+oa-wdtfeed: beat 150, watchdog 10s
+oa-wdtfeed: beat 151, watchdog 10s
+oa-wdtfeed: beat 152, watchdog 10s
+oa-wdtfeed: beat 153, watchdog 10s
+oa-wdtfeed: beat 154, watchdog 10s
+oa-wdtfeed: beat 155, watchdog 10s
+oa-wdtfeed: beat 156, watchdog 10s
+oa-wdtfeed: beat 157, watchdog 10s
+oa-wdtfeed: beat 158, watchdog 10s
+oa-wdtfeed: beat 159, watchdog 10s
+oa-wdtfeed: beat 160, watchdog 10s
+oa-wdtfeed: beat 161, watchdog 10s
+oa-wdtfeed: beat 162, watchdog 10s
+oa-wdtfeed: beat 163, watchdog 10s
+oa-wdtfeed: beat 164, watchdog 10s
+oa-wdtfeed: beat 165, watchdog 10s
+oa-wdtfeed: beat 166, watchdog 10s
+oa-wdtfeed: beat 167, watchdog 10s
+oa-wdtfeed: beat 168, watchdog 10s
+oa-wdtfeed: beat 169, watchdog 10s
+oa-wdtfeed: beat 170, watchdog 10s
+oa-wdtfeed: beat 171, watchdog 10s
+oa-wdtfeed: beat 172, watchdog 10s
+oa-wdtfeed: beat 173, watchdog 10s

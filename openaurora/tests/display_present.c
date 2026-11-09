@@ -241,6 +241,7 @@ int main(void)
     assert(region_writes == 1 && region_before_pan);
     assert(region[2] == var.xres && region[3] == height);
     assert(region[4] == 0 && region[5] == 0);
+    assert(region[6] == 3840 && region[7] == 2160);
     puts("  ok   cold first pan: region written from zero state before PanDisplay");
 
     /* Cold/unconfigured fb1: opt-in repair issues FBIOPUT_VSCREENINFO with the
@@ -252,6 +253,7 @@ int main(void)
     assert(var.xres == 8 && var.yres == 2 && var.yres_virtual == 4 && var.bits_per_pixel == 32);
     assert(region_writes == 1 && region_before_pan);
     assert(region[2] == 8 && region[3] == 2 && region[4] == 0 && region[5] == 0);
+    assert(region[6] == 3840 && region[7] == 2160);
     assert(alpha && !alpha->clear_rgba(1, 2, 3, 255));
     assert(!display->present() && commits == 1 && last_yoffset == 0);
     puts("  ok   cold repair: unconfigured fb programmed before map/region/pan");
@@ -270,6 +272,7 @@ int main(void)
            var.transp.length == 8);
     assert(region_writes == 1 && region_before_pan);
     assert(region[2] == 8 && region[3] == 2 && region[4] == 0 && region[5] == 0);
+    assert(region[6] == 3840 && region[7] == 2160);
     assert(!display->fill(0, 0, 1, 1, 1, 2, 3));
     assert(!display->present());
     unsigned p = put_calls;

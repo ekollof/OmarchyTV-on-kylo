@@ -469,13 +469,16 @@ unvalidated.
       `display.osd_reinit` is the prime suspect. The revised stage 0 was then
       validated as a stopped-stock takeover: full-screen portal with all tile
       icons (owner-confirmed, HDMI1 behind it); sources list empty and settings
-      not reachable at this stage. Not accepted yet. Next: stage 0 is now the
-      takeover display path (`plat.drm_init=0`, `display.osd_reinit=0`); the
-      forced DRM/OSD reinit is stage 2; add the remaining `plat` pieces and the
-      source/settings services one at a time. Logs now live on `/buffer` and
-      survive the apdat0 recovery. The hook template, deploy/restore script
-      and runbook are in the repo; `/buffer/openaurora` is the prior 12-module
-      payload and the native path is disabled.
+      not reachable at this stage. A later cold boot reached the **full-screen
+      portal** too (region `src 1920x1080 dst 3840x2160`, was dst 1080p). Cold
+      gaps: leftmost card icons/fonts missing at first paint (settle repaint
+      2.5/5 s added) and no network because `eth0` did not exist yet (background
+      watcher added). Not accepted yet. Next: re-arm stage 0 and confirm the
+      full UI (all icons) and late SSH, then advance the stage ladder
+      (panel → forced DRM/OSD reinit → SPI → tuner → audio). Logs now live on
+      `/buffer` and survive the apdat0 recovery. The hook template,
+      deploy/restore script and runbook are in the repo; `/buffer/openaurora`
+      is the prior 12-module payload and the native path is disabled.
 - [ ] MCU/watchdog authority and standby/resume ownership.
 - [ ] Any persistent replacement or boot-hook change. The `/conf`-only hook
       (`/conf/remote.txt` -> `/conf/remotelf/aurora.elf`, gated by

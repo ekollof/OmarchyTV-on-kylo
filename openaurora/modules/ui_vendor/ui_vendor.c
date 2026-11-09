@@ -286,6 +286,9 @@ struct ctx {
     uint32_t sub_key;
     uint32_t ready_key;              /* ui.engine bound the display: repaint */
     uint64_t tick;    /* repaint timer, when ui.fps > 0 */
+    uint64_t settle_tick;            /* delayed portal repaints while assets settle */
+    unsigned settle_ms;
+    int settle_left;
     /* ABI 3 quiesce: logical teardown is synchronous; the large font/text
      * buffers are detached and freed on a worker. */
     pthread_t cleanup_thread;
@@ -2107,6 +2110,23 @@ static void paint(struct ctx *c)
      * sampler. Neither is liveness or independent physical scanout proof. */
 }
 
+/* A cold boot starts the UI while /vendor2 and /buffer are still cold; the
+ * first portal paint can miss theme icons or text that are loaded just after.
+ * Repaint twice (default 2.5 s and 5 s) so those assets appear without
+ * enabling continuous idle repaints. */
+static void settle_repaint_cb(void *ud)
+{
+    struct ctx *c = ud;
+    if (!c) return;
+    c->settle_tick = 0;
+    if (!c->d) return;
+    if (c->settle_left > 0) c->settle_left--;
+    if (c->screen == SCREEN_PORTAL) paint(c);
+    if (c->settle_left > 0)
+        c->settle_tick = c->api->timer_add(c->api->priv, c->settle_ms, 0,
+                                           settle_repaint_cb, c);
+}
+
 /* A firmware-shaped partial update for the one-shot rail highlight. The
  * vendor APNG only changes the 160x160 button window; repainting the whole
  * 1920x1080 portal for each 30 ms frame is a software-only cost. The patch
@@ -3237,6 +3257,15 @@ static int m_start(void *v)
     c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
     if (c->api->config_get(c->api->priv, "ui.paint", "1")[0] == '1')
         paint(c);
+    int settle = atoi(c->api->config_get(c->api->priv, "ui.settle_repaint_ms", "2500"));
+    if (settle > 0) {
+        c->settle_ms = (unsigned)settle;
+        if (c->settle_ms < 100) c->settle_ms = 100;
+        if (c->settle_ms > 20000) c->settle_ms = 20000;
+        c->settle_left = 2;
+        c->settle_tick = c->api->timer_add(c->api->priv, c->settle_ms, 0,
+                                           settle_repaint_cb, c);
+    }
     return 0;
 }
 
@@ -3351,6 +3380,11 @@ static void ui_vendor_teardown(struct ctx *c)
         c->api->timer_del(c->api->priv, c->rebind_tick);
         c->rebind_tick = 0;
     }
+    if (c->settle_tick) {
+        c->api->timer_del(c->api->priv, c->settle_tick);
+        c->settle_tick = 0;
+    }
+    c->settle_left = 0;
     if (c->rail_hl_tick) {
         c->api->timer_del(c->api->priv, c->rail_hl_tick);
         c->rail_hl_tick = 0;

@@ -44,11 +44,40 @@ fi
 { echo "oa: decision native=$OA_NATIVE"; } >>"$L" 2>&1
 
 {
-  # run_aurora.sh forced a dev MAC; put the real one back and renew the lease
-  ifconfig eth0 down 2>/dev/null
-  ifconfig eth0 hw ether 70:54:B4:FE:70:C6 2>/dev/null
-  ifconfig eth0 up 2>/dev/null
-  udhcpc -i eth0 -b -q -n -t 5 -T 3 -A 3 2>/dev/null &
+  # eth0 may not exist yet when the idtv app starts on a cold boot (the 2026-11-09
+  # log showed SIOCGIFINDEX/No such device). Watch in the background, log every
+  # step, and start dropbear immediately so SSH works as soon as eth0 appears.
+  # A native test keeps the run_aurora dev MAC and lease; stock restores the
+  # owner's real MAC.
+  (
+    i=0
+    while [ $i -lt 60 ] && [ ! -e /sys/class/net/eth0 ]; do
+      sleep 1
+      i=$((i+1))
+    done
+    if [ ! -e /sys/class/net/eth0 ]; then
+      echo "net: eth0 absent after ${i}s; no network"
+      exit 0
+    fi
+    echo "net: eth0 present after ${i}s; before: $(ifconfig eth0 2>/dev/null | grep 'inet addr' || echo no-address)"
+    if [ "$OA_NATIVE" = 1 ]; then
+      echo "net: native: keeping the run_aurora dev MAC and lease"
+      ifconfig eth0 up 2>&1
+    else
+      ifconfig eth0 down 2>&1
+      ifconfig eth0 hw ether 70:54:B4:FE:70:C6 2>&1
+      ifconfig eth0 up 2>&1
+    fi
+    sleep 1
+    j=0
+    while [ $j -lt 5 ]; do
+      ifconfig eth0 2>/dev/null | grep -q 'inet addr' && break
+      udhcpc -i eth0 -b -q -n -t 10 -T 3 -A 5 2>&1
+      j=$((j+1))
+      sleep 2
+    done
+    echo "net: after: $(ifconfig eth0 2>/dev/null | grep 'inet addr' || echo no-address)"
+  ) >>"$L" 2>&1 &
 
   mkdir -p /dev/pts
   mount -t devpts devpts /dev/pts 2>/dev/null

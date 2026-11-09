@@ -220,6 +220,48 @@ Known gaps at this stage (functional, not display):
   `source` module and `source.enable=0`, so an empty source list is expected;
   settings accessibility needs verification once the menu path is correct.
 
+## Cold-boot result: full-screen UI (2026-11-09, later)
+
+The next armed stage-0 cold boot reached the **full-screen portal** (owner
+confirmed). The surviving log proves the destination fix:
+
+```text
+display: region: src 1920x1080 dst 3840x2160 was dst 1920x1080 pos 0,0 (ok)
+ui_vendor present: rect=0,0 1920x1080
+painted portal: 5 rail items, 12 cards
+oa-supervise: host loop alive, first present acknowledged
+oa-supervise: boot attempt cleared; stable; failure streak cleared
+```
+
+Cold-boot evidence: `artifacts/analysis/coldboot-2026-11-09/`
+(`app.log`, `boot.log`, `history.log`; the app log's first section is the
+earlier attempt, the second this boot).
+
+Two remaining issues, both now addressed:
+
+1. **Leftmost card icons and fonts missing** — no errors; the UI painted at
+   ≈15.5 s before `ui_theme` started (15.511 s) and before late icon/font
+   loads settled. `ui_vendor` now repaints the portal twice after the first
+   paint (`ui.settle_repaint_ms`, default 2500 ms; 2.5 s and 5 s) so late
+   assets appear without continuous idle repaints.
+2. **No network** — the hook tried before `eth0` existed:
+
+   ```text
+   net: before: no-address
+   ifconfig: SIOCGIFFLAGS: No such device
+   udhcpc: SIOCGIFINDEX: No such device
+   ```
+
+   The hook now starts a background watcher (up to 60 s) for
+   `/sys/class/net/eth0`, logs the before/after address, keeps the
+   run_aurora dev-MAC lease on a native boot and restores the owner's real MAC
+   on stock. Dropbear starts immediately, so SSH works when eth0 appears.
+
+The cold-boot logs also confirmed 23 UI-base modules started, `ui_menu` loaded
+the deployed menu file, and the supervisor cleared the attempt. The next boot
+verifies the settle repaint and the late network; no source/tuner/audio
+services are expected at stage 0.
+
 ## Deployment runbook (not executed)
 
 Prepare on the host, then run only with explicit owner authorization:
