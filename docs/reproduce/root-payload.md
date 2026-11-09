@@ -15,12 +15,14 @@ The root shell is the vendor's own debug-app path: `/conf/remote.txt` makes
 `run.sh` choose the debug applist, appmgr starts
 `/mtd_apexe/board/run_aurora.sh` for the idtv app (observed as uid 0 on this
 firmware), the loopback CIFS mount fails, and `/conf/remotelf/aurora.elf` runs.
-The hook starts a root telnetd (and optionally dropbear) and then execs stock UI.
+The hook starts a root telnetd (and optionally dropbear) and then execs the
+vendor Aurora UI (under the debug app list while `remote.txt` exists).
 
 ## 1. Dump your NAND (read-only)
 
-Use a dedicated FAT32 stick (MBR) containing only `kylo_usb_update.scr` and the
-dump chunks. Copy the tracked `artifacts/scripts/nand_dump.scr` to
+Use a dedicated FAT32 stick (MBR). The stick you insert contains only
+`kylo_usb_update.scr` (the renamed dump script); the script writes the 64 dump
+chunks to that same stick. Copy the tracked `artifacts/scripts/nand_dump.scr` to
 `kylo_usb_update.scr` (exact name, <8 KB, final `%` line). The script reads
 64 × 8 MiB = 512 MiB. If your NAND differs, stop and adapt first.
 
@@ -103,6 +105,20 @@ If your extracted volume table differs (LEB size/count/volume size), stop and
 adapt `-c`, the pad size and the UBI write length; do not write beyond the
 volume.
 
+Verify the pristine image before trusting it as your recovery:
+
+```sh
+sudo rm -rf verify-orig
+sudo .venv/bin/ubireader_extract_files -k -o verify-orig apdat0_orig.ubifs
+sudo diff -r --no-dereference conf verify-orig
+sudo sh -c 'cd conf && find . -mindepth 1 -printf "%U:%G %m %y %p\n" | sort' > conf.meta
+sudo sh -c 'cd verify-orig && find . -mindepth 1 -printf "%U:%G %m %y %p\n" | sort' > verify-orig.meta
+diff conf.meta verify-orig.meta
+```
+
+Both diffs must be empty. This is the image you will restore from; do not skip
+the check.
+
 ## 3. Prepare the hook tree
 
 Start from a copy of `conf/` (the pristine tree); do not edit the pristine
@@ -124,7 +140,9 @@ remotelf/hostkey_ed25519        generated host key, mode 600     [optional]
 remotelf/dropbear               ARM dropbear, mode 755           [optional]
 remotelf/keepalive.sh           local keepalive helper           [optional, not shipped]
 remotelf/hosts                  /etc/hosts blocklist             [optional, not shipped]
-oa_safe                         empty; keeps the full hook on stock UI (do NOT create oa_boot)
+no_dial                         empty; skip vendor dialserver    [full hook]
+no_force_net                    empty; skip settingsDB/iptables  [full hook]
+oa_safe                         empty; keeps the full hook on vendor UI (do NOT create oa_boot)
 ```
 
 Create the required entries from your own hook file:
@@ -142,14 +160,21 @@ sudo chown 101:101 hook/oa_safe
 
 ```sh
 #!/bin/sh
-# /conf/remotelf/aurora.elf - owner bootstrap, then stock UI
-ifconfig eth0 up 2>/dev/null
+# /conf/remotelf/aurora.elf - owner bootstrap, then vendor UI
+OWNER_MAC=AA:BB:CC:DD:EE:FF   # <- your TV's MAC, not the vendor debug MAC
+ifconfig eth0 down
+ifconfig eth0 hw ether "$OWNER_MAC"
+ifconfig eth0 up
 udhcpc -i eth0 -b -q -n -t 10 -T 3 -A 5 2>/dev/null
 mkdir -p /dev/pts
 mount -t devpts devpts /dev/pts 2>/dev/null
 telnetd -l /bin/sh -p 2323
 exec /vendor/com.nvt.idtv/aurora.elf
 ```
+
+`run_aurora.sh` already forced the firmware debug MAC
+`D4:E2:CC:EC:45:E9`; without the three `ifconfig` lines every TV keeps that
+shared address. Set `OWNER_MAC` from your rating label or stock network screen.
 
 That is telnet-only. Key-based dropbear needs root's home and
 `authorized_keys` prepared as the tracked hook does (`/tmp/tvh_root`, passwd
@@ -164,12 +189,17 @@ hook. If you use it:
   remove the MAC restore and let DHCP run. The vendor `run_aurora.sh` forces
   `D4:E2:CC:EC:45:E9` before its CIFS attempt; the full hook restores the real
   MAC afterward;
-- it starts telnetd `2323`, tries dropbear `22`, dialserver and privacy blocks;
+- it starts telnetd `2323` and tries dropbear `22`;
+- unless `/conf/no_dial` exists it starts `com.nvt.dialserver`;
+- unless `/conf/no_force_net` exists it sets
+  `Settings.m_privacy_internet_connection_en=1` and adds a Samba TV REJECT rule;
 - `keepalive.sh` and `hosts` are local helpers, not shipped; if absent the hook
-  logs and skips them, so telnetd/SSH still work but privacy/keepalive does not;
+  logs and skips those helpers, but the DIAL/DB/iptables actions above still
+  run unless `no_dial`/`no_force_net` exist;
 - missing optional files are logged/skipped, but telnetd is the root fallback;
 - it only takes the native path if `/conf/oa_boot` exists; keep `oa_safe` so it
-  resumes stock UI.
+  resumes the vendor UI. For a telnet/SSH-only hook, also create empty
+  `/conf/no_dial` and `/conf/no_force_net`.
 
 Generate your own SSH material (do not reuse the original set's keys):
 
@@ -208,16 +238,24 @@ sudo sh -c 'cd verify && find . -mindepth 1 -printf "%U:%G %m %y %p\n" | sort' >
 diff hook.meta verify.meta
 ```
 
-## 4. Write it with the USB apply script
+## 4. Write it with the tested USB script
 
 On a FAT32 stick:
 
-- `apdat0_full.ubifs` = your `apdat0_hook.ubifs` (the tracked apply script uses
-  this name);
-- `kylo_usb_update.scr` = `artifacts/scripts/apply_apdat0_hook.scr` (verify
-  <8 KB and the final `%`);
-- the script writes `0x782000` bytes to `ubi part apdat0` and reads it back to
+- `apdat0_full.ubifs` = your `apdat0_hook.ubifs` (the tested script loads this
+  exact name);
+- `kylo_usb_update.scr` = `artifacts/recovery-stability/kylo_usb_update.scr`
+  (584 bytes, MD5 `de1591298d633cf6422a1ade4e8835a9`; the exact script that
+  completed recovery on the original set). Verify the size/MD5 and final `%`;
+- **do not use** `artifacts/scripts/apply_apdat0_hook.scr` (549 bytes) for the
+  first write. Its earlier attempt did not complete and the cause is not
+  established; keep it as archaeology until it has its own accepted run;
+- the 584-byte script contains only U-Boot commands, no keys. It writes
+  `0x782000` bytes to `ubi part apdat0` and reads the volume back to
   `apdat0_readback.bin`.
+
+The script bytes are proven; **your** image is not. Treat the first write as a
+recovery-gated test and keep the pristine stick ready.
 
 Power-cycle with OK held as in step 1. After the progress screen, wait ~2 min.
 Copy `apdat0_readback.bin` back and compare its hash with the image; a mismatch
@@ -225,27 +263,35 @@ means restore immediately.
 
 ## 5. Boot and verify root
 
-1. Boot normally. The hook runs as the idtv app; stock UI should return.
+1. Boot normally. The hook runs as the idtv app. The vendor Aurora UI should
+   return, but `remote.txt` selects the **debug app list**: Netflix, Amazon,
+   YouTube and the vendor dialserver stay disabled until you restore the
+   pristine `/conf`. This is not retail behavior.
 2. Find the TV's DHCP address (router or an ARP scan). Do **not** assume the
-   original set's IP or MAC.
+   original set's IP or MAC; verify the hook programmed your own MAC.
 3. Root shell:
    - `telnet <ip> 2323` → `id` should be uid 0;
    - with the full hook's dropbear setup, `ssh -i owner_ed25519 root@<ip>`;
    - check `/conf/remote.txt`, `/conf/remotelf/aurora.elf`, and the listeners.
 4. If the full hook is used, read `/buffer/tvhack-boot.log` (MAC/network,
-   dropbear, telnetd, privacy).
+   dropbear, telnetd, DIAL, settingsDB/iptables).
 5. Harden: firewall ports 22/2323 to your management host, use SSH keys, and
    disable telnet in your hook once SSH is proven. Never expose it to the
    internet.
 
-## 6. Restore stock
+## 6. Restore the pristine `/conf`
 
-Build/keep `apdat0_orig.ubifs` from your pristine tree. Put it and
-`artifacts/scripts/restore_apdat0.scr` (renamed `kylo_usb_update.scr`) on the
-FAT32 stick; power-cycle with OK held; wait; verify the stock UI and access.
+Put your round-trip-verified `apdat0_orig.ubifs` on the FAT32 stick **renamed
+to `apdat0_full.ubifs`**, and use the same 584-byte tested script as
+`kylo_usb_update.scr`. It writes and reads back `0x782000` bytes; compare
+`apdat0_readback.bin` with the pristine image. Power-cycle with OK held; wait;
+verify the retail UI and access.
 
-Keep the dump, both images and the restore stick. A broken `/conf` image can
-require this physical recovery; `/conf` is unsigned but not risk-free.
+`artifacts/scripts/restore_apdat0.scr` (392 bytes) has no readback and has not
+completed a recovery. Do not rely on it for the first restore. Keep a separate
+restore stick, or replace `apdat0_full.ubifs` and re-hash it before use, so you
+cannot apply the hook image by mistake. Keep the dump, both images and the
+restore stick; a broken `/conf` image requires this physical recovery.
 
 ## What can differ
 
@@ -256,6 +302,10 @@ require this physical recovery; `/conf` is unsigned but not risk-free.
   count and volume size before writing. The tested layout is 31 × 253,952 B.
 - **U-Boot USB numbering:** the scripts use `usb 0:1`; a different stick may be
   `usb 0:0`. Adjust and re-verify the script.
+- **USB script bytes:** the 584-byte tested script is the recommendation. The
+  549-byte `apply_apdat0_hook.scr` and 392-byte `restore_apdat0.scr` differ in
+  comments/blank lines/readback and have not completed a recovery; do not treat
+  them as equivalent without your own accepted run.
 - **Rootfs glibc:** 2.23/hard-float; a newer cross toolchain can emit symbols
   the TV lacks. Check `readelf --version-info` and prefer static helpers when
   in doubt.
@@ -263,6 +313,9 @@ require this physical recovery; `/conf` is unsigned but not risk-free.
 ## Do not
 
 - write fs0/ap0/ap1, kernel, bootloader or SPI;
-- reuse the original set's payload image, dropbear, keys, MAC or settings DB;
+- use `apply_apdat0_hook.scr` or `restore_apdat0.scr` for the first
+  write/restore, or `flash_image.sh`/`restore_full_nand.scr` unless you are
+  deliberately doing a full-NAND recovery;
+- reuse the original set's payload image, dropbear, keys, MAC, IP or settings DB;
 - commit your dump, vendor libraries, keys or settings DB;
 - leave telnetd open or the TV exposed to the internet.

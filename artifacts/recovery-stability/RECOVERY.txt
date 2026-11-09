@@ -1,5 +1,10 @@
 TVHACK recovery - Telefunken D65U546A / Vestel MB230
 
+NOTE: This is the original set's tested recovery record. It names its IP
+192.168.178.87, MAC 70:54:b4:fe:70:c6, local image and accepted keys. Do not
+reuse that image, those keys, the IP or the MAC on another TV. Build your own
+image and keys with docs/reproduce/root-payload.md.
+
 1. Unplug the TV from mains power.
 2. Insert this USB stick into the TV.
 3. Hold OK on the remote while reconnecting mains power.

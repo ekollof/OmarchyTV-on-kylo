@@ -59,17 +59,19 @@ cd tvhack
   the internet.
 - `remote.txt` + the hook persists in `/conf`; stock restore means writing your
   pristine image back, not merely deleting a file.
-- The documented work trees (`conf/`, `hook/`, `verify/`, `.venv/`, `remote.txt`,
-  keys, images) are in `.gitignore`. Never `git add -f` them: they contain your
-  TV's settings database, vendor files and private keys.
+- The documented work trees (`conf/`, `hook/`, `verify/`, `verify-orig/`,
+  `.venv/`, `remote.txt`, `my-hook.sh`, keys, dropbear, settings DB, images) are
+  in `.gitignore`. Never `git add -f` them: they contain your TV's settings
+  database, vendor files and private keys.
 
 ## End-to-end checklist
 
 1. **Verify hardware/firmware.** Record model, mainboard, firmware and your
    TV's real Ethernet MAC. Do not apply the original set's MAC or addresses.
-2. **Host dependencies.** Follow [dependencies.md](dependencies.md) and run
-   `tools/check-host.sh`. Ghidra, the ARM toolchain, qemu, mtd-utils and
-   ubi_reader are not shipped.
+2. **Host dependencies.** Follow [dependencies.md](dependencies.md). Run
+   `tools/check-host.sh --root` before the dump; it checks only the NAND ->
+   `/conf` path. Run the full checker before the build/Ghidra stage. Ghidra,
+   the ARM toolchain and qemu are analysis-only and do not block root access.
 3. **Dump your own NAND (read-only).** Put `nand_dump.scr` on a FAT32 stick as
    `kylo_usb_update.scr`, hold OK while reconnecting mains, and collect
    `n00.bin..n63.bin`. Merge to a 512 MiB `tv_nand.bin` and hash it. This is
@@ -83,9 +85,10 @@ cd tvhack
    `remote.txt`, the tracked hook (edit the MAC), telnetd and optionally
    dropbear/keys; build/pad/verify the UBIFS image. Full recipe:
    [root-payload.md](root-payload.md).
-6. **Write and boot.** Use the USB apply script with **your** image; wait for
-   the progress screen; find the IP by DHCP/ARP; verify `id` is root. Then
-   harden the listeners.
+6. **Write and boot.** Use the tested 584-byte USB script with **your** image;
+   wait for the progress screen; find the IP by DHCP/ARP; verify `id` is root.
+   The vendor UI returns under the debug app list (Netflix/Amazon/YouTube/DIAL
+   stay off while `remote.txt` exists). Then harden the listeners.
 7. **Reconstruct the analysis/build environment.** Extract your binaries,
    import them into your own Ghidra projects, run the host tests and ARM build
    (see [../reverse-engineering/tooling.md](../reverse-engineering/tooling.md)
@@ -93,8 +96,9 @@ cd tvhack
 8. **Record your own identities.** The hashes/addresses in this repo describe
    firmware 0.51.52.3. If yours differs, record your own and re-verify every
    address from your firmware before reusing a contract.
-9. **Restore stock** with your pristine image and `restore_apdat0.scr`, then
-   verify access/stock. Remove staging and leave no helper running.
+9. **Restore stock** with your pristine image named `apdat0_full.ubifs` on the
+   stick and the same 584-byte tested script; verify stock UI/access afterward.
+   Remove staging and leave no helper running.
 
 ## Bootstrap root in one page
 
@@ -108,15 +112,18 @@ The mechanism is the vendor's own debug app path, not a memory exploit:
   -> run_aurora.sh tries the loopback CIFS mount, fails
   -> executes /conf/remotelf/aurora.elf
   -> hook starts telnetd :2323 (root) and optionally dropbear :22
-  -> hook execs stock aurora unless /conf/oa_boot enables the replacement
+  -> hook execs vendor aurora unless /conf/oa_boot enables the replacement
 ```
 
 Minimal hook (your own file, root shell only):
 
 ```sh
 #!/bin/sh
-# /conf/remotelf/aurora.elf - owner bootstrap, stock UI afterwards
-ifconfig eth0 up 2>/dev/null
+# /conf/remotelf/aurora.elf - owner bootstrap, vendor UI afterwards
+OWNER_MAC=AA:BB:CC:DD:EE:FF   # <- your TV's MAC, not the vendor debug MAC
+ifconfig eth0 down
+ifconfig eth0 hw ether "$OWNER_MAC"
+ifconfig eth0 up
 udhcpc -i eth0 -b -q -n -t 10 -T 3 -A 5 2>/dev/null
 mkdir -p /dev/pts
 mount -t devpts devpts /dev/pts 2>/dev/null
@@ -124,11 +131,21 @@ telnetd -l /bin/sh -p 2323
 exec /vendor/com.nvt.idtv/aurora.elf
 ```
 
+`run_aurora.sh` has already forced the firmware debug MAC
+`D4:E2:CC:EC:45:E9`; every TV that skips the MAC line above keeps that shared
+address. Replace `OWNER_MAC` with the MAC on your rating label/stock network
+screen.
+
+The vendor UI returns, but `remote.txt` selects the debug app list: Netflix,
+Amazon, YouTube and the vendor dialserver stay disabled until you restore the
+pristine `/conf`.
+
 Use the tracked `openaurora/tools/boot/aurora-boot-hook.sh` only after
 replacing its hard-coded MAC and reading what it does (dropbear/telnet,
-privacy blocks, keepalive, supervised native boot gate). The original set's
-`artifacts/payload/aurora.elf`, images and keys are local-only and must not be
-copied to another TV.
+settingsDB internet flag, Samba iptables rule, DIAL, keepalive, supervised
+native boot gate). Create `/conf/no_force_net` and `/conf/no_dial` for a
+telnet/SSH-only hook. The original set's `artifacts/payload/aurora.elf`, images
+and keys are local-only and must not be copied to another TV.
 
 ## Build and analysis workflow
 
@@ -152,27 +169,41 @@ copied to another TV.
 
 ## Recovery
 
-1. Keep your pristine `apdat0_orig.ubifs` (built from the extracted tree) and a
-   FAT32 stick with `restore_apdat0.scr` renamed to `kylo_usb_update.scr`.
-2. Power off, insert the stick, hold OK while reconnecting mains, release at
-   the progress screen, wait ~2 minutes, do not interrupt.
-3. Verify stock UI and access afterward.
+1. Keep your pristine `apdat0_orig.ubifs` (built and round-trip verified from
+   the extracted tree) on a **separate** FAT32 restore stick, renamed
+   `apdat0_full.ubifs`.
+2. Put the tested 584-byte script (`artifacts/recovery-stability/kylo_usb_update.scr`,
+   MD5 `de1591298d633cf6422a1ade4e8835a9`) on the stick as
+   `kylo_usb_update.scr`; it writes and reads back `0x782000` bytes.
+3. Power off, insert the stick, hold OK while reconnecting mains, release at
+   the progress screen, wait ~2 minutes, do not interrupt. Compare
+   `apdat0_readback.bin` with your pristine image.
+4. Verify the retail UI and access afterward.
 
 The tested `artifacts/recovery-stability/` image and keys belong to the
-original set. Do not use them on your TV; the tracked `kylo_usb_update.scr`
-script is generic only in that it writes **your** `apdat0_full.ubifs`.
+original set. Do not use that image, its keys, IP or MAC on your TV. The
+script's 584 bytes are only U-Boot commands and load **your**
+`apdat0_full.ubifs`; the 549-byte `apply_apdat0_hook.scr` did not complete on
+the original set, so it is not the first-write recommendation. The 392-byte
+`restore_apdat0.scr` has no readback and has not completed a recovery; use the
+584-byte script for the first restore.
 
 ## Troubleshooting
 
 - **Stick not read:** FAT32 (MBR), `kylo_usb_update.scr` exactly, <8 KB, final
   `%` line, try a USB 2.0 stick; the U-Boot device may be `usb 0:0` instead of
   `usb 0:1` (adjust the tracked script only if your bootloader differs).
-- **Boots stock, no root:** verify `/conf/remote.txt` exists, the hook is
+- **Vendor UI but no root:** verify `/conf/remote.txt` exists, the hook is
   executable (`/conf/remotelf/aurora.elf`), `run.sh` selected the debug applist,
   and appmgr launched `run_aurora.sh`. Check the hook's log
   (`/buffer/tvhack-boot.log`) and listeners `22`/`2323`.
-- **No network:** the hook must bring up `eth0` and DHCP; find the lease by ARP
-  scan or your router, and replace any hard-coded MAC with your TV's.
+- **No UI / black screen after the hook:** `run_aurora.sh` always executes
+  `/conf/remotelf/aurora.elf` and does not fall back to stock Aurora when the
+  hook is missing or not executable. Restore your pristine image from the USB
+  stick.
+- **No network:** the hook must program your TV's MAC, bring up `eth0` and run
+  DHCP. `run_aurora.sh` otherwise leaves the shared debug MAC
+  `D4:E2:CC:EC:45:E9`; find the lease by ARP scan or your router.
 - **`/conf` fails to mount:** the stock mount helper may format it after
   repeated failures; restore the pristine image and settings backup.
 - **No SSH:** dropbear may be missing or built against a newer glibc; telnet

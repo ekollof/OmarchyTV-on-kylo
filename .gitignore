@@ -23,11 +23,20 @@
 /conf-ubi/
 /hook/
 /verify/
+/verify-orig/
 /remote.txt
 /owner_ed25519
 /owner_ed25519.pub
+/my-hook.sh
+/hostkey_*
+/authorized_keys
+/dropbear
+/settingsDB.db
+/settingsDBBackup.db
 /hook.meta
 /verify.meta
+/conf.meta
+/verify-orig.meta
 
 # Build trees (build, build-tv, build-tv-v2/v3 and the dated sanitizer/lab variants)
 /openaurora/build*/

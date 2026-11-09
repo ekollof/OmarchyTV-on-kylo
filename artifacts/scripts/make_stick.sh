@@ -1,4 +1,9 @@
 #!/bin/sh
+# ORIGINAL HOST ONLY. Populate a FAT32 stick from the original set's local
+# artifacts/payload. The generated README names the original IP/MAC and the
+# active script is the 549-byte apply form; for another TV use
+# docs/reproduce/root-payload.md and the 584-byte tested recovery script.
+#
 # Populate a FAT32 stick as the TV's flash/recovery stick (U-Boot "hold OK at power-on" channel).
 #
 #   artifacts/scripts/make_stick.sh [/mnt/tvusb]

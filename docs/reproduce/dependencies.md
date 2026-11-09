@@ -11,10 +11,14 @@ host; newer versions usually work, but record what you use.
 Run the checker after installing:
 
 ```sh
-tools/check-host.sh
+tools/check-host.sh --root   # only the NAND -> /conf root path
+tools/check-host.sh          # full build/analysis toolchain
 ```
 
-It reports versions and missing tools; it never installs or reads the TV.
+`--root` checks the tools needed to dump the NAND, build the `/conf` image and
+restore it. The full check additionally covers Ghidra, the ARM compiler, qemu,
+Node and the SQLite headers. A Ghidra/ARM/qemu miss does **not** block the root
+path. The checker never installs anything and never reads the TV.
 
 ## Tested host
 
@@ -27,7 +31,7 @@ It reports versions and missing tools; it never installs or reads the TV.
 | Java | OpenJDK 27.0.1 | Ghidra runtime; use a JDK supported by your Ghidra |
 | Ghidra | 12.1.2 DEV (`/opt/ghidra`) | headless analysis and the `tools/re` scripts |
 | ARM GNU toolchain | 10.2-2020.11 (arm-10.16), GCC 10.2.1 | ARM hard-float TV builds |
-| qemu | qemu-arm 11.1.3 (`qemu-user-static`) | ARM tests with the extracted rootfs |
+| qemu | qemu-arm 11.1.3 (`qemu-user-static`; binary may be `qemu-arm-static` or `qemu-arm`) | ARM tests with the extracted rootfs |
 | mtd-utils | 2.3.1 | `mkfs.ubifs`, UBI tools |
 | squashfs-tools | 4.7.5 | `unsquashfs` for root/vendor/vendor2 |
 | SQLite | 3.54.1 CLI + headers | settings DB checks and `-lsqlite3` host builds |

@@ -1,5 +1,10 @@
 #!/bin/sh
-# Rebuild artifacts/payload/apdat0_full.ubifs from the TV's live /conf.
+# ORIGINAL HOST MAINTENANCE ONLY.
+# Rebuild artifacts/payload/apdat0_full.ubifs from the original TV's live /conf.
+#
+# This requires SSH access to the original set, its local payload/keys and the
+# original workbench artifacts; it is not the first-root path for another owner.
+# For another TV, use docs/reproduce/root-payload.md.
 #
 # The image matches what actually runs (hook, dropbear, keys, sqlite3, privacy DB),
 # so it is the one to put on the FAT32 stick as kylo_usb_update.scr + image.
