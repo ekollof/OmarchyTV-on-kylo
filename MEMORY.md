@@ -1,5 +1,19 @@
 # Current project state — last verified 2026-11-07
 
+Boot-hook cold attempt and recovery, 2026-11-09: the installed `/conf` hook
+(`/conf/remote.txt` -> `run_aurora.sh` -> `/conf/remotelf/aurora.elf`, sha256
+`c3943712...`, gated by `oa_boot`/`oa_safe`) was used to boot the 34-module
+cold bundle on the real boot path after staging it at `/buffer/openaurora`.
+The second attempt hung the set (no ARP/SSH/telnet; WoL ineffective); the
+tested recovery-stability USB pair (`apdat0_full.ubifs` `994da7ff...` +
+`kylo_usb_update.scr` `de15912...`) restored `/conf`. Stock is back: appmgr
+1554, aurora 1756, fb1 1920x2160, `oa_safe` present, `oa_boot` absent, Oct-31
+hook/config restored, dropbear :22 and telnetd :2323 running, watchdog armed.
+The 34-module staging was removed and the prior 12-module payload restored to
+`/buffer/openaurora`. The native path stays disabled; see
+BOOT-HOOK-COLD-ATTEMPT-2026-11-09 for the boot chain, evidence and retry
+requirements (pre-init fallback, staged cold bring-up).
+
 Replacement system, 2026-11-07: `make replacement-bundle` produces a
 reproducible takeover UI (`plat_stub` + display/panel/ir/settings/service_db/
 image_decode/ui_engine/ui_vendor/ticker/ui_clock/ui_anim + oa-client + menus).
@@ -118,7 +132,9 @@ remain 0. Cold-profile gate 2026-11-09: started with stock stopped using
 portal and the fb1 frame capture was non-blank; 32 of 34 bundled modules
 autoloaded, stock restored and force-rebooted. Still not a power-on cold boot
 or persistent replacement; owner visual scanout and boot-hook persistence
-remain.
+remain. A real boot-path attempt the same day hung the set and required the
+USB `/conf` recovery (BOOT-HOOK-COLD-ATTEMPT-2026-11-09); the cold flags have
+not been validated on a power-on boot and must be brought up in stages.
 Read-only TV: fb0..fb4 are OSD_NORMAL1/2/3 and OSD_CURSOR1/2; stock holds
 fb0-2/card0/ntkgpu. The stock-UI map (portal/settings/source/apps/EPG/PVR)
 is in the same report.

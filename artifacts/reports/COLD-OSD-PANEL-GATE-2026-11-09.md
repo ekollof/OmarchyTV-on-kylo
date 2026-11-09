@@ -75,3 +75,12 @@ watchdog set 10s
   physical panel/scanout or of every plane.
 - `source.enable`, `audio.source_enable` and `cec.enable` remain 0.
 - True cold boot, boot-hook persistence and stock-UI full parity remain open.
+
+## Follow-up (2026-11-09, same day)
+
+A real boot-path attempt with this profile hung the set and required the USB
+`/conf` recovery; see
+[BOOT-HOOK-COLD-ATTEMPT-2026-11-09](BOOT-HOOK-COLD-ATTEMPT-2026-11-09.md).
+This gate therefore does **not** validate a power-on cold boot, and its cold
+flags must be brought up in stages (UI/OSD/DRM first, then panel, SPI/NIM,
+tuner, audio) before any retry.

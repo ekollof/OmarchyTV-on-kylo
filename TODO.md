@@ -456,9 +456,19 @@ unvalidated.
 
 ### Separate owner gates (not this session unless explicitly extended)
 
-- [ ] Cold independent startup / boot without stock Aurora.
+- [ ] Cold independent startup / boot without stock Aurora. 2026-11-09: the
+      installed `/conf` hook was exercised on the real boot path with the
+      34-module cold bundle; the second attempt hung the set and required the
+      tested USB `/conf` recovery (BOOT-HOOK-COLD-ATTEMPT-2026-11-09). Not
+      accepted. Retry requires a pre-init watchdog/fallback that does not
+      depend on the replacement or the network, and staged bring-up
+      (UI/OSD/DRM first, then panel, SPI/NIM, tuner, audio one stage per cold
+      boot).
 - [ ] MCU/watchdog authority and standby/resume ownership.
-- [ ] Any persistent replacement or boot-hook change.
+- [ ] Any persistent replacement or boot-hook change. The `/conf`-only hook
+      (`/conf/remote.txt` -> `/conf/remotelf/aurora.elf`, gated by
+      `/conf/oa_boot` + `/conf/oa_safe`) is installed but disabled (oa_safe
+      present, oa_boot absent). Enabling the native path remains this gate.
 
 ## Current acceptance gates
 
