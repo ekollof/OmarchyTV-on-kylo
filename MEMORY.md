@@ -109,10 +109,16 @@ unaccepted. A separate cold candidate profile (`openaurora-cold.conf`) now
 sets real DRM init, no snapshot restore, panel power-on, I2S MCLK and SPI
 before tuner, with the stock `ui_vendor` stack and `display.osd_reinit=1`
 (forced kernel SetPar: BGRA/transp alpha/32-byte stride, region, pan, resume
-reinit); `cold-replacement-bundle` (33 modules) and `check-cold-config` pass.
+reinit); `cold-replacement-bundle` (34 modules) and `check-cold-config` pass.
 `check-display` covers the forced reinit on a valid var and resume. No ARM module has an undefined vendor
 `DEV_*` symbol, so the cold path is HAL-only; `source.enable`/`cec.enable`
-remain 0. This is not a TV cold-boot acceptance.
+remain 0. Cold-profile gate 2026-11-09: started with stock stopped using
+`plat.drm_init=1`/`display.osd_reinit=1`/`panel.power_on_start=1`; DRM
+13/fb98/crtc26, panel 100%, fb1 1920x2160/pan 0,1080, `ui_vendor` painted the
+portal and the fb1 frame capture was non-blank; 32 of 34 bundled modules
+autoloaded, stock restored and force-rebooted. Still not a power-on cold boot
+or persistent replacement; owner visual scanout and boot-hook persistence
+remain.
 Read-only TV: fb0..fb4 are OSD_NORMAL1/2/3 and OSD_CURSOR1/2; stock holds
 fb0-2/card0/ntkgpu. The stock-UI map (portal/settings/source/apps/EPG/PVR)
 is in the same report.

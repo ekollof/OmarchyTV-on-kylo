@@ -54,12 +54,16 @@ maps the cold-start stages and the current stock-UI coverage.
       `make cold-replacement-bundle` (33 modules, manifest verified) and
       `make check-cold-config` pass. Not a TV cold-boot acceptance; the
       TV-side `--check`/boot gate is still open.
-- [ ] Real display/OSD cold enable: the opt-in `display.osd_reinit` path now
-      forces the kernel vendor `_ker_osd_fb_SetPar` via FBIOPUT_VSCREENINFO
+- [ ] Real display/OSD cold enable: the opt-in `display.osd_reinit` path forces
+      the kernel vendor `_ker_osd_fb_SetPar` via FBIOPUT_VSCREENINFO
       (BGRA/transp alpha/32-byte stride), checks the format, writes region and
-      pans; resume reopens/repeats. `check-display` host tests pass and the
-      ARM/cold bundle builds. TV cold scanout and visible acceptance remain
-      open; `plat.drm_init=0` is still the takeover workaround.
+      pans; resume reopens/repeats. A cold-profile gate on 2026-11-09 ran with
+      `plat.drm_init=1`, `display.osd_reinit=1` and `panel.power_on_start=1`
+      after stopping stock: DRM 13/fb 98/crtc 26, panel 100%, fb1
+      1920x2160/pan 0,1080, `ui_vendor` painted the portal and the fb1 frame
+      was captured non-blank. Stock was restored/rebooted. Still open: a true
+      power-on boot without stock, boot-hook persistence, owner visual
+      confirmation and full plane/stock-UI parity. COLD-OSD-PANEL-GATE.
 - [ ] Source/VIN full path: the connect half is implemented behind
       `source.enable=0` with an injectable HAL seam (SOURCE-PATH-2026-11-09):
       type gates, per-type Open(0/1/3+2/4), VPLT `0x4c4`, V4L2Info/FdCommon,
