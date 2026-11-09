@@ -106,6 +106,10 @@ maps the cold-start stages and the current stock-UI coverage.
 - [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
       gain/SPDIF and audible acceptance.
 - [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.
+      CEC now has a module-level injectable transport and a host fake TX/RX
+      test (`check-cec-module-fake`: auto-open, RX `50 7a a8`, TX `04 04`,
+      close); the real ARM module and cold bundle verify. Hardware/bus
+      acceptance, the authority write path and enabling `cec.enable` remain.
 - [ ] Stock vendor-UI screens: live launcher DB/icons, settings tabs, channel/
       EPG/PVR, app launch profile. `ui_omarchy` is not stock-UI parity.
 

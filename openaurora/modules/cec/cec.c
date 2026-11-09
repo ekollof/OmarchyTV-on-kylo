@@ -12,6 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "openaurora/cec_authority_mem.h"
+#include "openaurora/cec_module_transport.h"
 #include "openaurora/cec_owner.h"
 #include "openaurora/cec_policy.h"
 #include "openaurora/module.h"
@@ -27,6 +28,7 @@ struct ctx {
 
     /* Optional hardware transport (cec.enable=1). */
     int enabled;
+    const oa_cec_module_transport *transport;
     char device_path[OA_CEC_OWNER_PATH_MAX];
     oa_cec_authority_mem authority;
     int authority_open;
@@ -335,9 +337,12 @@ static void cec_poll(void *ud)
 static int begin_acquire(struct ctx *c)
 {
     if (!c || !c->owner) return -ENODEV;
+    const oa_cec_device_io *device =
+        c->transport && c->transport->device ? c->transport->device
+                                             : &native_device_io;
     oa_cec_acquire request = {
         .authority = &c->authority.authority,
-        .device = &native_device_io,
+        .device = device,
         .path = c->device_path
     };
     uint64_t ticket = 0;
@@ -464,6 +469,7 @@ static int start(void *ud)
     c->quiescing = 0;
     c->cleanup_result = 0;
     c->cleanup_authority = 0;
+    c->transport = NULL;
     c->job_pending = 0;
     c->opening = 0;
     c->session_open = 0;
@@ -492,7 +498,10 @@ static int start(void *ud)
         }
         snprintf(c->device_path, sizeof c->device_path, "%s", path);
         c->authority = (oa_cec_authority_mem)OA_CEC_AUTHORITY_MEM_INIT;
-        if (oa_cec_authority_mem_open(&c->authority, NULL) != 0) {
+        c->transport = oa_cec_module_transport_get();
+        const oa_cec_authority_mem_io *am =
+            c->transport ? c->transport->authority_mem : NULL;
+        if (oa_cec_authority_mem_open(&c->authority, am) != 0) {
             c->api->log(c->api->priv, OA_LOG_ERROR,
                         "cec: authority mirror map failed (%d)",
                         errno ? errno : EIO);

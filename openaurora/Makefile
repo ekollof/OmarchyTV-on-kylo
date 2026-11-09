@@ -960,10 +960,10 @@ $(BUILD)/modules/mod_scene_display.so: $(call pic_objs,modules__mod_scene_displa
 	$(CC) -shared -o $@ $^ $(LDFLAGS) $(LIBM)
 $(eval $(call emit_pics,modules__mod_scene_display,modules/scene_display/scene_display.c common/canvas.c common/scene_broker_transport.c,,include/openaurora/canvas.h include/openaurora/module.h include/openaurora/services.h include/openaurora/scene_broker.h))
 
-$(BUILD)/modules/mod_cec.so: $(call pic_objs,modules__mod_cec,modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c)
+$(BUILD)/modules/mod_cec.so: $(call pic_objs,modules__mod_cec,modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c common/cec_module_transport.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS)
-$(eval $(call emit_pics,modules__mod_cec,modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c,-pthread,include/openaurora/cec_authority_mem.h))
+$(eval $(call emit_pics,modules__mod_cec,modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c common/cec_module_transport.c,-pthread,include/openaurora/cec_authority_mem.h include/openaurora/cec_module_transport.h))
 
 $(BUILD)/modules/mod_audio.so: $(call pic_objs,modules__mod_audio,modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c)
 	@mkdir -p $(dir $@)
@@ -1445,12 +1445,22 @@ check-cec-transport-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_cec.so
 	node tests/cec_transport_ipc.cjs $(abspath $(BUILD))
 check: check-cec-transport-ipc
 
-$(BUILD)/tests/cec_authority_lifetime: tests/cec_authority_lifetime.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c modules/cec/cec.c include/openaurora/cec_owner.h include/openaurora/cec_authority_mem.h include/openaurora/module.h
+$(BUILD)/tests/mod_cec_fake.so: $(call pic_objs,tests__mod_cec_fake,modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c common/cec_module_transport.c tests/cec_module_fake.c)
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $^ -pthread -ldl $(LDFLAGS)
+$(eval $(call emit_pics,tests__mod_cec_fake,modules/cec/cec.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c common/cec_module_transport.c tests/cec_module_fake.c,-pthread,include/openaurora/cec_authority_mem.h include/openaurora/cec_module_transport.h include/openaurora/vendor_cec.h))
+
+.PHONY: check-cec-module-fake
+check-cec-module-fake: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so
+	node tests/cec_module_fake.cjs $(abspath $(BUILD))
+check: check-cec-module-fake
+
+$(BUILD)/tests/cec_authority_lifetime: tests/cec_authority_lifetime.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c common/cec_module_transport.c modules/cec/cec.c include/openaurora/cec_owner.h include/openaurora/cec_authority_mem.h include/openaurora/cec_module_transport.h include/openaurora/module.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ \
 	  tests/cec_authority_lifetime.c common/cec_owner.c common/cec_authority.c \
 	  common/cec_authority_mem.c common/cec_device.c common/cec_packet.c \
-	  common/cec.c common/cec_policy.c -pthread \
+	  common/cec.c common/cec_policy.c common/cec_module_transport.c -pthread \
 	  -Wl,--wrap=oa_cec_owner_join \
 	  -Wl,--wrap=oa_cec_authority_mem_open \
 	  -Wl,--wrap=oa_cec_authority_mem_close
@@ -1459,12 +1469,12 @@ check-cec-authority-lifetime: $(BUILD)/tests/cec_authority_lifetime
 	@$(BUILD)/tests/cec_authority_lifetime
 check: check-cec-authority-lifetime
 
-$(BUILD)/tests/cec_suspend_resume: tests/cec_suspend_resume.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c modules/cec/cec.c include/openaurora/cec_owner.h include/openaurora/cec_authority_mem.h include/openaurora/cec_device.h include/openaurora/module.h
+$(BUILD)/tests/cec_suspend_resume: tests/cec_suspend_resume.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c common/cec_module_transport.c modules/cec/cec.c include/openaurora/cec_owner.h include/openaurora/cec_authority_mem.h include/openaurora/cec_device.h include/openaurora/cec_module_transport.h include/openaurora/module.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ \
 	  tests/cec_suspend_resume.c common/cec_owner.c common/cec_authority.c \
 	  common/cec_authority_mem.c common/cec_device.c common/cec_packet.c \
-	  common/cec.c common/cec_policy.c -pthread \
+	  common/cec.c common/cec_policy.c common/cec_module_transport.c -pthread \
 	  -Wl,--wrap=oa_cec_owner_join \
 	  -Wl,--wrap=oa_cec_authority_mem_open \
 	  -Wl,--wrap=oa_cec_authority_mem_close \
@@ -1475,12 +1485,12 @@ check-cec-suspend-resume: $(BUILD)/tests/cec_suspend_resume
 	@$(BUILD)/tests/cec_suspend_resume
 check: check-cec-suspend-resume
 
-$(BUILD)/tests/cec_reply_queue: tests/cec_reply_queue.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c modules/cec/cec.c include/openaurora/cec_owner.h include/openaurora/cec_authority_mem.h include/openaurora/cec_device.h include/openaurora/module.h
+$(BUILD)/tests/cec_reply_queue: tests/cec_reply_queue.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c common/cec_module_transport.c modules/cec/cec.c include/openaurora/cec_owner.h include/openaurora/cec_authority_mem.h include/openaurora/cec_device.h include/openaurora/cec_module_transport.h include/openaurora/module.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ \
 	  tests/cec_reply_queue.c common/cec_owner.c common/cec_authority.c \
 	  common/cec_authority_mem.c common/cec_device.c common/cec_packet.c \
-	  common/cec.c common/cec_policy.c -pthread \
+	  common/cec.c common/cec_policy.c common/cec_module_transport.c -pthread \
 	  -Wl,--wrap=oa_cec_owner_send_async \
 	  -Wl,--wrap=oa_cec_owner_take \
 	  -Wl,--wrap=oa_cec_owner_receive_async
