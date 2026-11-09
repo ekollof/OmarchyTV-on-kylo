@@ -108,6 +108,8 @@ struct ctx {
     int sound_output;
     int ep_plugged;
     int unmute;          /* mirror _ice_AudioSwitchPath2MM's SetSoftMute(0,1) */
+    int spk_map0;
+    int spk_map1;
     int ain_ready;
     int ain_handle;
     int path_src;
@@ -226,6 +228,10 @@ static void vaud_init(struct ctx *c)
         if (c->h->audio_send)
             (void)c->h->audio_send("AQuality", post, 0x38);
     }
+    /* ICE_AudioInit: PLAT_AOUT_SetSpeakerMixGain(0,0x8000), speaker id 0
+     * from the firmware table 0x0136c768. */
+    (void)ctrl_words(c, 0x3c, 0, -1, 0x8000, 0);
+    (void)ctrl_words(c, 0x3d, 0, -1, -1, 0);
     c->vaud_ready = 1;
     c->api->log(c->api->priv, OA_LOG_INFO,
                 "audio source: VAUD init (0x37/0x1e/0x4a rc %d, AQ %s, PP %s)",
@@ -397,8 +403,28 @@ static int hp_mode(struct ctx *c)
     return 3;
 }
 
+/* PLAT_VAUD_SwitchHP. On this set DAT_0176da40=0 and DAT_0176da00=1, so the
+ * vendor takes the switch branch, not the table/simple branch. Mode 3
+ * (sound output 1, EP off) is:
+ *   Ctrl 0x2b {1} (FUN_008d0dc4(0)), Ctrl 0x15 {0} (FUN_008d0e10(0)),
+ *   PLAT_AOUT_SpeakerConnect(0,0), then the two 9-spin gain groups.
+ * The simple table branch is kept only for the equal-map profile. */
 static void switch_hp(struct ctx *c, int mode)
 {
+    if (c->spk_map0 != c->spk_map1) {
+        if (mode == 3 || mode == 4) {
+            const int *g = g_hp_gain[mode];
+            (void)ctrl_words(c, 0x2b, 1, 0, 0, 0);
+            (void)ctrl_words(c, 0x15, 0, 0, 0, 0);
+            c->spk_out[0] = 0; /* PLAT_AOUT_SpeakerConnect(0,0), state only */
+            for (int i = 0; i < 9; i++)
+                (void)ctrl_words(c, 0x2c, i, 4, g[0], g[1]);
+            for (int i = 0; i < 9; i++)
+                (void)ctrl_words(c, 0x2d, i, 4, g[2], g[3]);
+            return;
+        }
+        /* Modes 1/2 and the default are not the stock sound-output path. */
+    }
     if (mode < 0 || mode > 4) {
         (void)ctrl_words(c, 0x2b, 1, 0, 0, 0);
         (void)ctrl_words(c, 0x2b, 0, 0, 0, 0);
@@ -557,6 +583,8 @@ static int m_start(void *v)
     if (c->sound_output < 0 || c->sound_output > 4)
         c->sound_output = 1;
     c->ep_plugged = cfg_int(c, "audio.source.ep_plugged", 0) != 0;
+    c->spk_map0 = cfg_int(c, "audio.source.spk_map0", 0);
+    c->spk_map1 = cfg_int(c, "audio.source.spk_map1", 1);
     c->unmute = cfg_int(c, "audio.source.unmute", 0) != 0;
     /* Stock speaker table: 0..3 exist with types 0..3; 4..8 do not. */
     for (int i = 0; i < 4; i++) {

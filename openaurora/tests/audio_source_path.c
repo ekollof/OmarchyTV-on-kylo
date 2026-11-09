@@ -171,15 +171,15 @@ static void expect_soft_mute(void)
     expect(AF_SET, 0x4b, 1, 0, NULL);
 }
 
-/* PLAT_VAUD_SwitchHP(3) on the stock speaker configuration. */
+/* PLAT_VAUD_SwitchHP(3) on the stock map (DAT_0176da40=0 != da00=1). */
 static void expect_hp_mode3(void)
 {
+    expect_ctrl(0x2b, 1, 0, 0, 0);
+    expect_ctrl(0x15, 0, 0, 0, 0);
     for (int i = 0; i < 9; i++)
         expect_ctrl(0x2c, i, 4, 0x0f, 0x01);
     for (int i = 0; i < 9; i++)
         expect_ctrl(0x2d, i, 4, 0x34, 0x00);
-    expect_ctrl(0x2b, 1, 0, 0, 0);
-    expect_ctrl(0x2b, 0, 0, 0, 0);
 }
 
 static void expect_tail(void)
@@ -226,6 +226,8 @@ int main(void)
     expect_ctrl_op_count(0x2e, 0, 101, 0);
     expect_ctrl(0x3e, 0, 0, 0, 0);
     expect_send_len("AQuality", 0x18a0);
+    expect_ctrl(0x3c, 0, -1, 0x8000, 0);
+    expect_ctrl(0x3d, 0, -1, -1, 0);
     expect_send("MuxInput", 0x801, 0);
     expect_soft_mute();
     expect_ctrl(0x2a, 0xfff, 1, 0, 0);

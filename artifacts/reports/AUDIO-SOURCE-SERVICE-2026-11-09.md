@@ -141,15 +141,31 @@ PLAT_VAUD_SwitchHP(mode)
 `_ice_Sound_Control_GetSoundOutput` returns the word behind `0x0078c0e8`.
 Stock values are sound output **1**, EP **not plugged** → mode **3**.
 
-`PLAT_VAUD_SwitchHP` `0x008d3fd8` takes the stock speaker branch
-(`DAT_0176da40 == DAT_0176da00`). The mode table at `0x0198128c` is five
-16-byte records (`A,B,C,D`); stock mode 3 is `0f 01 34 00`. The sequence is
-`SetSpeakerDACCICGain(4,0,A,B)` and `(4,1,C,D)`, each looping spin 0..8 into
-`Hal_Audio_Ctrl(0x2c/0x2d, {i,4,A,B})`, then `FUN_008d0dc4(0/1)` →
-`Hal_Audio_Ctrl(0x2b,{1})` and `(0x2b,{0})`. The module carries the five
-records read from the stock process and computes the mode from
-`audio.source.sound_output` (default 1) and `audio.source.ep_plugged`
-(default 0), so the default path emits the exact stock mode-3 sequence.
+`PLAT_VAUD_SwitchHP` `0x008d3fd8`: stock `DAT_0176da40=0` and
+`DAT_0176da00=1` are **not equal**, so the switch branch is used, not the
+simple table branch. For mode 3 (`0x8d40a0` -> `0x8d4042`) the exact order is:
+
+```text
+FUN_008d0dc4(0) -> Hal_Audio_Ctrl(0x2b,{1})
+FUN_008d0e10(0) -> Hal_Audio_Ctrl(0x15,{0})
+PLAT_AOUT_SpeakerConnect(0,0)
+SetSpeakerDACCICGain(4,0,0x0f,0x01) -> 9x Ctrl(0x2c,{i,4,0x0f,0x01})
+SetSpeakerDACCICGain(4,1,0x34,0x00) -> 9x Ctrl(0x2d,{i,4,0x34,0x00})
+```
+
+There are no trailing `0x2b` calls in this branch. The module carries the five
+16-byte records and now emits this exact order when `audio.source.spk_map0`
+(default 0) differs from `spk_map1` (default 1); the simple table branch is
+only a fallback for the equal-map profile.
+
+`ICE_AudioInit` also calls `PLAT_AOUT_SetSpeakerMixGain(0,0x8000)`
+(`0x0088a03c`), which sends `Ctrl(0x3c,{0,0xffffffff,0x8000})` and
+`Ctrl(0x3d,{0,0xffffffff,0xffffffff})` (speaker id 0 from table
+`0x0136c768`). This is now emitted in the same init.
+
+The module computes the mode from `audio.source.sound_output` (default 1) and
+`audio.source.ep_plugged` (default 0), so the default path emits the exact
+stock mode-3 sequence.
 
 ## Implementation
 

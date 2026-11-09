@@ -154,7 +154,9 @@ stock's exact mixer state (HDMI ES, mute 0, speaker mute 0, codec PCM).
 VAUD init (`Ctrl 0x37/0x1e`, `DualCmd 0x4a`) is also included, as is the
 101-entry AQ volume table (`Ctrl 0x2e/0x3e`); the AQuality post-param send is
 supported via opt-in `audio.source.pp_blob` (stock-captured 0x18a0 block), full
-derivation unported.
+derivation unported. The HP switch branch is corrected (map 0!=1:
+0x2b{1}->0x15{0}->SpeakerConnect->gains) and the speaker mix gain
+(Ctrl 0x3c/0x3d, 0x8000) is included.
 The recovered MM-path `SetSoftMute(0,1)` release is opt-in
 (`audio.source.unmute=1`), and the host config cap is now 128 with an overflow
 warning (the 48-entry cap silently dropped that key).

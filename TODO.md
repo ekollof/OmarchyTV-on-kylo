@@ -99,7 +99,10 @@ maps the cold-start stages and the current stock-UI coverage.
       `oa_audio_curve_from_aq`). The AQuality post-params
       (`InitPPParams` -> `Hal_Audio_Send("AQuality",{block,0x18a0,...})`) are
       supported via opt-in `audio.source.pp_blob` using a stock-captured block;
-      the full derivation remains unported.
+      the full derivation remains unported. The HP switch branch was corrected
+      (stock map 0!=1: Ctrl 0x2b{1} -> 0x15{0} -> SpeakerConnect -> gains, no
+      trailing 0x2b) and the ICE_AudioInit speaker mix gain (Ctrl 0x3c/0x3d,
+      0x8000) is included.
 - [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
       gain/SPDIF and audible acceptance.
 - [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.
