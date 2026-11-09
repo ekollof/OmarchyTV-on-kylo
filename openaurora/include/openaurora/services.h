@@ -579,4 +579,14 @@ typedef struct {
     int (*diag)(int *drm_dev, int *plane, unsigned *info4, unsigned *fd9);
 } oa_source_iface;
 
+/* audio_source — the recovered ICE_AudioStart external-source branch.
+ * Published by mod_audio_source. select_source takes an ICE_DeviceSource
+ * (0..55), not a video source type. -2 means disabled by audio.source_enable. */
+#define OA_SVC_AUDIO_SOURCE "audio_source"
+typedef struct {
+    int (*select_source)(int device_source);
+    int (*current_source)(void);
+    int (*is_available)(void);
+} oa_audio_source_iface;
+
 #endif /* OPENAURORA_SERVICES_H */

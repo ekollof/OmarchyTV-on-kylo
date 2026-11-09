@@ -64,7 +64,7 @@ comma := ,
 stage_autoload = $(subst $(space),$(comma),$(1))
 EXTRA_MODULES := $(filter-out $(CORE_MODULES),$(MODULES))
 # only these modules call the vendor HAL, so only they get the dependency
-VENDOR_MODULES := plat panel audio source display audio_amp
+VENDOR_MODULES := plat panel audio source audio_source display audio_amp
 # modules that need a third-party library (sqlite) rather than the vendor HAL
 SETTINGS_MODULES := settings service_db
 SQLITE_LIBS := -lsqlite3
@@ -979,6 +979,11 @@ $(BUILD)/modules/mod_display.so: $(call pic_objs,modules__mod_display,modules/di
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ $(LDFLAGS) $(VENDOR_LDFLAGS) $(LIBM) -pthread
 $(eval $(call emit_pics,modules__mod_display,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c,-pthread,include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h))
+
+$(BUILD)/modules/mod_audio_source.so: $(call pic_objs,modules__mod_audio_source,modules/audio_source/audio_source.c common/audio_source_hal_vendor.c)
+	@mkdir -p $(dir $@)
+	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),audio_source),$(VENDOR_LDFLAGS),)
+$(eval $(call emit_pics,modules__mod_audio_source,modules/audio_source/audio_source.c common/audio_source_hal_vendor.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_source_hal.h))
 
 $(BUILD)/modules/mod_source.so: $(call pic_objs,modules__mod_source,modules/source/source.c common/source_hal_vendor.c)
 	@mkdir -p $(dir $@)
@@ -2090,7 +2095,7 @@ replacement-bundle: $(BUILD)/$(PROJECT) $(REPLACEMENT_SO) $(BUILD)/tests/mod_pla
 # Complete real-platform composition: all feature/UI modules, fixed asset
 # configs, real plat with plat.drm_init=0 (preserve the vendor OSD). Takeover
 # candidate; cold OSD enable remains open.
-FULL_REPLACEMENT_MODULES := plat display panel ir audio source power tuner settings service_db image_decode epg pvr channels i18n audio_curve audio_mixer app_launch audio_amp_profile audio_amp cec ticker ui_clock ui_anim ui_engine ui_vendor ui_omarchy ui_theme ui_profile ui_menu ui_list ui_navigation lua
+FULL_REPLACEMENT_MODULES := plat display panel ir audio source audio_source power tuner settings service_db image_decode epg pvr channels i18n audio_curve audio_mixer app_launch audio_amp_profile audio_amp cec ticker ui_clock ui_anim ui_engine ui_vendor ui_omarchy ui_theme ui_profile ui_menu ui_list ui_navigation lua
 FULL_REPLACEMENT_SO := $(foreach m,$(FULL_REPLACEMENT_MODULES),$(BUILD)/modules/mod_$(m).so)
 $(BUILD)/oa-alsactl: tools/audio/oa-alsactl.c
 	@mkdir -p $(dir $@)
@@ -2772,6 +2777,15 @@ $(BUILD)/tests/source_path: tests/source_path.c modules/source/source.c tests/so
 check-source-path: $(BUILD)/tests/source_path
 	@$(BUILD)/tests/source_path
 check: check-source-path
+
+$(BUILD)/tests/audio_source_path: tests/audio_source_path.c modules/audio_source/audio_source.c tests/audio_source_fake.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
+
+.PHONY: check-audio-source
+check-audio-source: $(BUILD)/tests/audio_source_path
+	@$(BUILD)/tests/audio_source_path
+check: check-audio-source
 
 .PHONY: check-vin-real
 check-vin-real:

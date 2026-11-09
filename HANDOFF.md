@@ -17,7 +17,11 @@ is best-effort and normally returns 0; `DEV_GPIO_Init`/`DEV_IIC_Init` are not
 (init does not light the panel), NIM ATV/DTV factories, amp 0x3a/0x100 +
 DEV_AMP_ID task, SPI `/dev/ntkspi` when `/conf/spi.bin` is absent, NIM-DTV
 model0..3/default demod HAL vs model4, MTD returns0. Next is the one-owner-
-per-stage implementation, GPIO/IIC first. Source connect half,
+per-stage implementation, GPIO/IIC first. Audio source,
+2026-11-09: `mod_audio_source` implements the recovered `ICE_AudioStart`
+external branch behind `audio.source_enable=0`; `check-audio-source` passes,
+ARM links five HAL symbols. Not TV-accepted. AUDIO-SOURCE-SERVICE-2026-11-09.
+Source connect half,
 2026-11-09: implemented behind `source.enable=0` with an injectable HAL seam
 (type gates, per-type VIN opens, VPLT `0x4c4`, V4L2Info/FdCommon, DRM dpsource,
 NDAL VideoExt, Audio EasySelect); `check-source-path`/`check-source-fake-ipc`

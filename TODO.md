@@ -73,6 +73,15 @@ maps the cold-start stages and the current stock-UI coverage.
       needs `plat.drm_init=1` (takeover leaves the DRM device id -1). The HDMI
       picture, audio and cold boot remain unconfirmed. The module fails fast
       before any VIN/VPLT call when the DRM id is -1; keep `source.enable=0`.
+- [x] Audio source service behind a gate: `mod_audio_source` implements the
+      recovered `ICE_AudioStart` external branch with the 56-entry source
+      table, `Hal_Audio_Ctrl(0x2a)`, the five `plat_adec_connect(0,2)`
+      EasySelect calls, `plat_audio_connect`, speaker mutes and output mute.
+      `check-audio-source` asserts the exact 13-call HDMI sequence, ATV,
+      source-10 skip, cache and gates; ARM links the five HAL symbols.
+      `audio.source_enable=0` is enforced in all profiles. Not TV-accepted;
+      HP/scart/foreground/main-gain and the video-type→device-source mapping
+      remain.
 - [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
       gain/SPDIF and audible acceptance.
 - [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.

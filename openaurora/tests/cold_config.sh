@@ -19,6 +19,7 @@ grep -qx 'audio\.i2s_mclk = 1' "$cold" || fail "cold audio.i2s_mclk"
 grep -qx 'spi\.enable = 1' "$cold" || fail "cold spi.enable"
 grep -qx 'source\.enable = 0' "$cold" || fail "cold source.enable"
 grep -qx 'cec\.enable = 0' "$cold" || fail "cold cec.enable"
+grep -qx 'audio\.source_enable = 0' "$cold" || fail "cold audio.source_enable"
 
 autoload=$(sed -n 's/^autoload = //p' "$cold")
 [ -n "$autoload" ] || fail "cold autoload missing"
