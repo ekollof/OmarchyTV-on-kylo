@@ -105,7 +105,12 @@ power-on sequence at start for a cold boot. Stock values confirmed read-only:
 panel-extra 30/580/220/30/100 ms, +0x4a=0; GPIO110 on=1, GPIO111 on=0,
 PWM108 channel0, high period1000; TCON gate0. `check-panel-curve` and
 `check-panel-quiesce` pass; visible panel-on/off and cold boot remain
-unaccepted.
+unaccepted. A separate cold candidate profile (`openaurora-cold.conf`) now
+sets real DRM init, no snapshot restore, panel power-on, I2S MCLK and SPI
+before tuner, with the stock `ui_vendor` stack; `cold-replacement-bundle` (33
+modules) and `check-cold-config` pass. No ARM module has an undefined vendor
+`DEV_*` symbol, so the cold path is HAL-only; `source.enable`/`cec.enable`
+remain 0. This is not a TV cold-boot acceptance.
 Read-only TV: fb0..fb4 are OSD_NORMAL1/2/3 and OSD_CURSOR1/2; stock holds
 fb0-2/card0/ntkgpu. The stock-UI map (portal/settings/source/apps/EPG/PVR)
 is in the same report.

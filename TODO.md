@@ -47,6 +47,13 @@ maps the cold-start stages and the current stock-UI coverage.
       channel0 and TCON gate0; `check-panel-curve`/`check-panel-quiesce` pass.
       Remaining: visible panel-on/off and a cold-boot acceptance.
       See `artifacts/analysis/panel-power-2026-11-08.md`.
+- [x] HAL-only device-layer decision + cold-start profile candidate:
+      no ARM module has an undefined vendor `DEV_*` symbol; the new
+      `openaurora-cold.conf` sets real DRM init, no snapshot restore,
+      panel power-on, I2S MCLK and SPI before tuner, and uses `ui_vendor`.
+      `make cold-replacement-bundle` (33 modules, manifest verified) and
+      `make check-cold-config` pass. Not a TV cold-boot acceptance; the
+      TV-side `--check`/boot gate is still open.
 - [ ] Real display/OSD cold enable: complete the format/stride/region/enable/
       alpha/update and resume sequence; `plat.drm_init=0` is a takeover
       workaround, not parity. OSD-BUFFER-CONTRACT, DRM-PLANE-CONTRACT,

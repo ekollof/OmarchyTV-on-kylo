@@ -196,6 +196,31 @@ equivalent in OpenAurora, or keep our modules strictly on the HAL layer and
 never call vendor `DEV_*` code. Do not call `DEV_INI_Init` wholesale from
 `plat` under stock Aurora.
 
+### Cold-start profile candidate
+
+`openaurora/tools/boot/openaurora-cold.conf` is a separate cold-boot profile,
+not the takeover config:
+
+- `plat.drm_init=1`, `display.restore_snapshot=0`, `display.cold_init=1`;
+- `panel.standby=1`, `panel.power_on_start=1`;
+- `audio.i2s_mclk=1`; `spi.enable=1` autoloaded before `tuner`;
+- stock `ui_vendor` stack (no `ui_omarchy`);
+- `source.enable=0` and `cec.enable=0` remain gated.
+
+`make cold-replacement-bundle` builds the 33-module ARM candidate and its
+manifest verifies. `make check-cold-config` checks the cold/takeover flags,
+the `ui_vendor` selection and `spi` before `tuner`; it passes. The host/qemu
+`--check` cannot run because its child loader needs the TV's ARM interpreter;
+the real preflight belongs to a later TV/cold-boot gate. This is a profile
+artifact, not cold-boot acceptance.
+
+**HAL-only ownership evidence:** every ARM module in `build-tv-v3/modules`
+was checked with `nm -D -u | grep ' DEV_'`; there are no undefined vendor
+`DEV_*` symbols. The modules use the NDAL HAL (`Hal_Gpio_*`, `Hal_Iic_*`,
+`Hal_Pwm_*`) or implement the device behavior themselves. The device-layer
+`DEV_GPIO_Init`/`DEV_IIC_Init` are therefore not part of this replacement's
+cold path; do not add them merely for parity with the vendor call graph.
+
 ## Stock-UI parity map
 
 The stock UI is the vendor skin (`ui_vendor`), not the native Omarchy shell.

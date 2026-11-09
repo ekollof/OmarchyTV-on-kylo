@@ -1213,6 +1213,11 @@ check-panel-curve: $(BUILD)/tests/panel_curve $(BUILD)/tests/panel_hal $(BUILD)/
 	@$(BUILD)/tests/panel_standby
 check: check-panel-curve
 
+.PHONY: check-cold-config
+check-cold-config:
+	@sh tests/cold_config.sh
+check: check-cold-config
+
 $(BUILD)/tests/nim_dtv: tests/nim_dtv.c common/nim_dtv.c include/openaurora/nim_dtv.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
@@ -2127,6 +2132,15 @@ native-replacement-bundle:
 	    BUNDLE_DIR=$(BUILD)/native-replacement \
 	    BUNDLE_CONF=tools/boot/openaurora-native.conf \
 	    BUNDLE_LABEL='native replacement'
+
+# Cold-start candidate: stock vendor UI, real platform, no takeover fallback.
+# NOT TV-accepted; build only until a cold-boot/recovery gate is authorized.
+.PHONY: cold-replacement-bundle
+cold-replacement-bundle:
+	@$(MAKE) --no-print-directory full-replacement-bundle \
+	    BUNDLE_DIR=$(BUILD)/cold-replacement \
+	    BUNDLE_CONF=tools/boot/openaurora-cold.conf \
+	    BUNDLE_LABEL='cold replacement candidate'
 
 install-stage: all-stage
 	install -d $(DESTDIR)$(BINDIR) $(DESTDIR)$(LIBDIR)
