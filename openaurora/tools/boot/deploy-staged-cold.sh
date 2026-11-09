@@ -111,7 +111,7 @@ deploy()
     [ -n "$bundle" ] || { echo "--bundle is required" >&2; usage; }
     [ -n "$stage" ] || { echo "--stage is required" >&2; usage; }
     case $stage in
-    0|1|2|3|4) ;;
+    0|1|2|3|4|5) ;;
     *) echo "invalid stage '$stage' (use 0..4)" >&2; exit 2 ;;
     esac
 
@@ -176,10 +176,12 @@ deploy()
         sync
         echo
         echo "Armed for stage $stage. The next power-on runs the replacement."
-        echo "Watch for:"
-        echo "  /conf/tvhack.log  oa: ... native=1, run-aurora stage=$stage"
-        echo "  /conf/oa_last_ok  written only after the stable window"
-        echo "  /conf/oa_fail     nonzero or 'exec vendor fallback' means it failed"
+        echo "Logs survive the /conf recovery:"
+        echo "  /buffer/tvhack-boot.log      hook state/decision + feeder beats"
+        echo "  /buffer/openaurora-app.log   entry, supervisor and app output"
+        echo "  /buffer/oa-boot-history.log  prepare/start/clear history"
+        echo "  /conf/oa_last_ok             written only after the stable window"
+        echo "  /conf/oa_fail                nonzero or 'exec vendor fallback' = failed"
         echo "If the set resets/hangs, the watchdog feeder stops and the attempt"
         echo "is counted; three unproven boots disable the native path."
         echo

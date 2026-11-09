@@ -17,7 +17,7 @@ set -eu
 
 here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 stock=${OA_STOCK:-/vendor/com.nvt.idtv/aurora.elf}
-log=${OA_APPLOG:-/tmp/oa-appmgr.log}
+log=${OA_APPLOG:-/buffer/openaurora-app.log}
 gate=${OA_GATE:-/conf}
 node=${OA_WDT_NODE:-/proc/nvtstbcipc}
 
@@ -26,7 +26,7 @@ if [ -r "$gate/oa_stage" ]; then
     stage=$(cat "$gate/oa_stage" 2>/dev/null || echo 0)
 fi
 case $stage in
-0|1|2|3|4) ;;
+0|1|2|3|4|5) ;;
 *) stage=0 ;;
 esac
 cfg=$here/openaurora-stage$stage.conf
@@ -72,7 +72,7 @@ fi
 # The feeder must be running before the risky hardware init. It daemonizes and
 # exits 0 only after the IPC node opened, so a failure here is fail-closed.
 if ! "$here/oa-wdtfeed" --node "$node" --interval 3 --timeout 10 \
-        --stop "$gate/oa_wdt_stop" --log /conf/tvhack.log; then
+        --stop "$gate/oa_wdt_stop" --log /buffer/tvhack-boot.log; then
     echo "run-aurora: watchdog feeder failed to start"
     exec "$stock"
 fi

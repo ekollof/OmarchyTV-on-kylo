@@ -2153,7 +2153,7 @@ full-replacement-bundle: $(BUILD)/$(PROJECT) $(FULL_REPLACEMENT_SO) $(BUILD)/oa-
 	@cp tools/boot/takeover-full.sh tools/boot/run-aurora.sh tools/boot/oa-boot-gate.sh tools/boot/aurora-boot-hook.sh tools/boot/deploy-staged-cold.sh tools/boot/oa_apps.map $(BUNDLE_DIR)/
 	@cp $(FULL_REPLACEMENT_SO) $(BUNDLE_DIR)/modules/
 	@cp $(BUNDLE_CONF) $(BUNDLE_DIR)/openaurora.conf
-	@for s in 0 1 2 3 4; do sh tools/boot/stage-profile.sh $$s $(BUNDLE_CONF) > $(BUNDLE_DIR)/openaurora-stage$$s.conf; done
+	@for s in 0 1 2 3 4 5; do sh tools/boot/stage-profile.sh $$s $(BUNDLE_CONF) > $(BUNDLE_DIR)/openaurora-stage$$s.conf; done
 	@cp menus/sub_launcher.json $(BUNDLE_DIR)/menus/
 	@cp ui/README.md $(BUNDLE_DIR)/ui/
 	@cp lua/omarchy.lua $(BUNDLE_DIR)/lua/

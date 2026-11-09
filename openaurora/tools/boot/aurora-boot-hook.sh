@@ -1,7 +1,28 @@
 #!/bin/sh
 # tvhack local boot hook - runs from /conf/remotelf/aurora.elf (apdat0, no network needed)
-L=/conf/tvhack.log
+# The attempt log lives on /buffer (ubi14), not /conf: the USB recovery only
+# rewrites apdat0, so this log and the app log survive a recovery.
+L=/buffer/tvhack-boot.log
 S=/conf/remotelf
+
+# mount_buffer.sh runs in parallel with appmgr; give /buffer a bounded moment
+# so the log and the bundle checks below see the mounted filesystem.
+i=0
+while [ ! -e /tmp/mount_buffer_ready ] && [ $i -lt 20 ]; do
+  sleep 1
+  i=$((i+1))
+done
+
+# keep the log bounded (rotate once at boot)
+if [ -f "$L" ] && [ "$(wc -c < "$L" 2>/dev/null)" -gt 200000 ]; then
+  mv -f "$L" "$L.old" 2>/dev/null
+fi
+
+{
+  echo "== tvhack boot $(date)"
+  echo "id: $(id)"
+  echo "uname: $(uname -a)"
+} >>"$L" 2>&1
 
 # Native takeover is opt-in. Validate the recovery pieces before suppressing the
 # browser opener; /conf/oa_safe always selects vendor aurora.
@@ -9,15 +30,7 @@ oa_state()
 {
   echo "oa: $1 boot=$([ -f /conf/oa_boot ] && echo 1 || echo 0) safe=$([ -f /conf/oa_safe ] && echo 1 || echo 0) coredump=$([ -f /conf/coredumpnoreset ] && echo 1 || echo 0) conf=$([ -r /conf/openaurora.conf ] && echo 1 || echo 0) bin=$([ -x /buffer/openaurora/openaurora ] && echo 1 || echo 0) sup=$([ -x /buffer/openaurora/oa-supervise ] && echo 1 || echo 0) wdt=$([ -x /buffer/wdtctl ] && echo 1 || echo 0) marker=$([ -e /tmp/mount_buffer_ready ] && echo 1 || echo 0)"
 }
-{ oa_state pre; } >>"$L" 2>&1
-# mount_buffer.sh runs in parallel with appmgr; give /buffer a bounded moment
-# so the bundle checks below see the mounted filesystem.
-i=0
-while [ ! -e /tmp/mount_buffer_ready ] && [ $i -lt 20 ]; do
-  sleep 1
-  i=$((i+1))
-done
-{ oa_state post; } >>"$L" 2>&1
+{ oa_state state; } >>"$L" 2>&1
 
 OA_NATIVE=0
 if [ -f /conf/oa_boot ] && [ ! -f /conf/oa_safe ] &&
@@ -30,16 +43,7 @@ fi
 # Record the decision itself. Diagnostic only.
 { echo "oa: decision native=$OA_NATIVE"; } >>"$L" 2>&1
 
-# keep the log bounded (rotate once at boot)
-if [ -f "$L" ] && [ "$(wc -c < "$L" 2>/dev/null)" -gt 200000 ]; then
-  mv -f "$L" "$L.old" 2>/dev/null
-fi
-
 {
-  echo "== tvhack boot $(date)"
-  echo "id: $(id)"
-  echo "uname: $(uname -a)"
-
   # run_aurora.sh forced a dev MAC; put the real one back and renew the lease
   ifconfig eth0 down 2>/dev/null
   ifconfig eth0 hw ether 70:54:B4:FE:70:C6 2>/dev/null
@@ -230,6 +234,9 @@ if [ -x "$S/keepalive.sh" ]; then
   "$S/keepalive.sh" --once >>"$L" 2>&1
   "$S/keepalive.sh" >>"$L" 2>&1 < /dev/null &
 fi
+
+# Last kernel-ring snapshot before handing over; /buffer survives recovery.
+dmesg > /buffer/tvhack-dmesg.log 2>/dev/null || true
 
 # Hand the native branch to the staged boot entry. It re-checks the boot gate,
 # starts the MCU watchdog feeder, records the attempt, selects

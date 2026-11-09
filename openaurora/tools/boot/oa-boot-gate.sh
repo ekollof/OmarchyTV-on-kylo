@@ -19,6 +19,7 @@ set -u
 
 conf=${1:-/conf}
 cmd=${2:-status}
+history=${OA_BOOT_HISTORY:-/buffer/oa-boot-history.log}
 boot=$conf/oa_boot
 safe=$conf/oa_safe
 bootfail=$conf/oa_bootfail
@@ -41,6 +42,16 @@ write_count()
     printf '%s\n' "$2" >"$1" 2>/dev/null || true
 }
 
+# The attempt history must survive the USB /conf recovery: keep it on /buffer,
+# which is a separate UBI volume and is not written by the recovery image.
+log_history()
+{
+    [ -n "$history" ] || return 0
+    [ -d "$(dirname "$history")" ] || return 0
+    printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo unknown)" "$*" \
+        >>"$history" 2>/dev/null || true
+}
+
 case $cmd in
 prepare)
     n=$(read_count "$bootfail")
@@ -55,20 +66,23 @@ prepare)
         echo "oa-boot-gate: removing $boot after $n unproven boots" >&2
     fi
     if [ -f "$safe" ] || [ ! -f "$boot" ]; then
+        log_history "prepare safe=$([ -f "$safe" ] && echo 1 || echo 0) boot=$([ -f "$boot" ] && echo 1 || echo 0) fail=$n result=blocked"
         echo "oa-boot-gate: native blocked (safe=$([ -f "$safe" ] && echo 1 || echo 0) boot=$([ -f "$boot" ] && echo 1 || echo 0) fail=$n)"
         exit 1
     fi
+    log_history "prepare safe=0 boot=1 fail=$n result=allowed"
     echo "oa-boot-gate: native allowed (fail=$n)"
     exit 0
     ;;
 start)
     stage=${3:-0}
     case $stage in
-    0|1|2|3|4) ;;
+    0|1|2|3|4|5) ;;
     *) echo "oa-boot-gate: invalid stage '$stage'" >&2; exit 2 ;;
     esac
     printf 'stage=%s\n' "$stage" >"$try" 2>/dev/null || true
     printf '%s\n' "$stage" >"$stage_file" 2>/dev/null || true
+    log_history "start stage=$stage"
     echo "oa-boot-gate: attempt started (stage=$stage)"
     exit 0
     ;;
@@ -77,6 +91,7 @@ clear)
     rm -f "$try"
     write_count "$bootfail" 0
     printf 'stage=%s time=%s\n' "$stage" "$(date +%s 2>/dev/null || echo unknown)" >"$last" 2>/dev/null || true
+    log_history "clear stage=$stage result=stable"
     echo "oa-boot-gate: cleared (stage=$stage)"
     exit 0
     ;;

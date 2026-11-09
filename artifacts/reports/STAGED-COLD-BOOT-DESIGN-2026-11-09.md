@@ -2,12 +2,17 @@
 
 Status: **implemented, host-tested and exercised on the set. Three armed
 attempts were made: A fell back safely on a gate-argument bug, B fell back
-safely on a tuner init/loader-cleanup failure, and C (UI-base stage 0) hung
-the set and required the USB `/conf` recovery. The watchdog feeder did not
-recover C.** The native path is disabled again (`/conf/oa_safe` present,
-`/conf/oa_boot` absent). Do not retry without a guaranteed out-of-band
-recovery and a takeover-style first stage. This follows the failed power-on
-attempt in [BOOT-HOOK-COLD-ATTEMPT-2026-11-09](BOOT-HOOK-COLD-ATTEMPT-2026-11-09.md).
+safely on a tuner init/loader-cleanup failure, and C reached the UI on a true
+boot but rendered only its top-left quadrant with missing icons.** The owner's
+observation shows C was **not** a kernel hang: the set was alive and drawing.
+Only `192.168.178.87` was probed (no subnet sweep), so the network miss was
+misread as a hang and the USB recovery was used unnecessarily. The quadrant
+matches the forced OSD reinit (`display.osd_reinit=1`) shrinking the vendor's
+display window; stage 0 is now the proven takeover display path and the
+reinit is isolated at stage 2. Logs now live on `/buffer` so a recovery cannot
+erase them. The native path is disabled (`/conf/oa_safe` present,
+`/conf/oa_boot` absent). This follows the failed power-on attempt in
+[BOOT-HOOK-COLD-ATTEMPT-2026-11-09](BOOT-HOOK-COLD-ATTEMPT-2026-11-09.md).
 
 ## Problem
 
@@ -68,20 +73,27 @@ and the amp stay gated in every stage.
 
 | stage | adds | flags |
 |---|---|---|
-| 0 | UI base + `plat` bring-up + OSD reinit | `plat.drm_init=1`, `display.cold_init=1`, `display.osd_reinit=1`; autoload is the UI base only (`plat,display,panel,ir,settings,service_db,image_decode,epg,pvr,channels,i18n,ticker,ui_*,lua,power`); panel/SPI/tuner/audio owners off |
+| 0 | takeover display + UI on the vendor-initialized OSD | `plat.drm_init=0`, `display.cold_init=0`, `display.osd_reinit=0`, `display.restore_snapshot=1`; autoload is the UI base only (`plat,display,panel,ir,settings,service_db,image_decode,epg,pvr,channels,i18n,ticker,ui_*,lua,power`); panel/SPI/tuner/audio owners off |
 | 1 | panel power sequence | `panel.standby=1`, `panel.power_on_start=1` |
-| 2 | SPI | `spi.enable=1` and `spi` in the autoload |
-| 3 | NIM-DTV tuner | `tuner.hw_init=1` and `tuner` in the autoload |
-| 4 | audio | `audio.i2s_mclk=1` and the audio modules in the autoload |
+| 2 | forced DRM/OSD reinit (the top-left-quadrant risk) | `plat.drm_init=1`, `display.cold_init=1`, `display.osd_reinit=1`, `display.restore_snapshot=0` |
+| 3 | SPI | `spi.enable=1` and `spi` in the autoload |
+| 4 | NIM-DTV tuner | `tuner.hw_init=1` and `tuner` in the autoload |
+| 5 | audio | `audio.i2s_mclk=1` and the audio modules in the autoload |
 
 `/conf/oa_stage` selects the stage. The boot entry uses
 `openaurora-stageN.conf` when present, otherwise `openaurora.conf`.
 
-Stage 0 still runs the whole `plat` base before the UI: audio
-Protect/Mixer/Proxy prelude, VPLTIO/V4L2/DRM sharemem, `Hal_Video_DrmInit(1)`,
-DVIF `0x302`, `Hal_Gpio_Init`, `Hal_Iic_Init`, VIN defaults and
-`NDAL_VideoExt_OpenDevice(0,10)`. The stage ladder does not split those; that
-is the next design step (see Attempt results).
+Stage 0 matches the proven takeover display path: no `plat` DRM init and no
+forced OSD SetPar, so the vendor/appmgr-initialized display window is
+preserved. Stage 2 isolates the reinit that produced the top-left quadrant on
+a true boot. All stages still run the `plat` software/audio prelude and
+GPIO/IIC/video-device bring-up; those are the next candidates to gate if a
+stage still fails.
+
+Logs: `/buffer/tvhack-boot.log` (hook decision + feeder beats),
+`/buffer/openaurora-app.log` (entry/supervisor/app), and
+`/buffer/oa-boot-history.log` (prepare/start/clear). `/buffer` is a separate
+UBI volume, so the apdat0 recovery does not erase them.
 
 ## Attempt results (same day)
 
@@ -95,9 +107,14 @@ is the next design step (see Attempt results).
   the core; the supervisor's startup deadline fell back to stock. Fixes:
   loader skips quiesce/destroy when init returned no ctx; per-stage autoload;
   `spi` bundled; supervisor kills the child's process group.
-- **C (UI-base stage 0):** the set became unreachable and did not recover on
-  its own; the watchdog feeder's `set 10` produced no reset within several
-  minutes. USB `/conf` recovery was used again and the stage log was lost.
+- **C (UI-base stage 0):** the owner saw **our UI**, but only the top-left
+  quadrant and with icons missing. The set was alive and drawing; it was not a
+  kernel hang. Only `192.168.178.87` was probed, so the network miss was
+  misread and the USB `/conf` recovery was used unnecessarily. The quadrant is
+  consistent with `display.osd_reinit=1` forcing the OSD var/SetPar to
+  1920x1080 and shrinking the vendor's display window. The watchdog feeder was
+  not implicated (it kept feeding a live kernel) and its reset remains
+  unproven. Stage 0 is now the takeover display path; the reinit is stage 2.
 
 Until the watchdog reset is proven in isolation (or a switched mains outlet
 is available), a cold attempt has no guaranteed recovery. The next first
@@ -116,7 +133,7 @@ rm /conf/oa_wdt_stop
 oa-boot-gate.sh /conf prepare        # blocked -> exec stock
 oa-boot-gate.sh /conf start STAGE    # write the attempt token
 oa-wdtfeed --node /proc/nvtstbcipc --interval 3 --timeout 10 \
-           --stop /conf/oa_wdt_stop --log /conf/tvhack.log   # fail -> exec stock
+           --stop /conf/oa_wdt_stop --log /buffer/tvhack-boot.log   # fail -> exec stock
 exec oa-supervise --heartbeat ... --ready ... --wdt /buffer/wdtctl \
      --fallback /vendor/com.nvt.idtv/aurora.elf --gate /conf --wdt-keep \
      -- openaurora --modules ./modules --config openaurora-stageN.conf
@@ -186,13 +203,14 @@ sh deploy-staged-cold.sh --bundle /buffer/openaurora-staged --stage 0 --apply
 Expected on the next boot (stage 0):
 
 ```text
-/conf/tvhack.log: oa: pre ... / oa: post ... / oa: decision native=1
-/conf/tvhack.log: run-aurora /buffer/openaurora stage=0
-/conf/tvhack.log: oa-wdtfeed: beat 1, watchdog 10s
-/conf/tvhack.log: oa-supervise: watchdog kept armed (external feeder)
-/conf/tvhack.log: oa-supervise: host loop alive, first present acknowledged
-/conf/tvhack.log: oa-supervise: boot attempt cleared
-/conf/tvhack.log: oa-supervise: stable; failure streak cleared
+/buffer/tvhack-boot.log: oa: state ... / oa: decision native=1
+/buffer/tvhack-boot.log: oa-wdtfeed: beat 1, watchdog 10s
+/buffer/openaurora-app.log: run-aurora /buffer/openaurora stage=0
+/buffer/openaurora-app.log: oa-supervise: watchdog kept armed (external feeder)
+/buffer/openaurora-app.log: oa-supervise: host loop alive, first present acknowledged
+/buffer/openaurora-app.log: oa-supervise: boot attempt cleared
+/buffer/openaurora-app.log: oa-supervise: stable; failure streak cleared
+/buffer/oa-boot-history.log: prepare ... result=allowed / start stage=0 / clear stage=0
 /conf/oa_last_ok: ok
 /conf/oa_fail: 0
 ```

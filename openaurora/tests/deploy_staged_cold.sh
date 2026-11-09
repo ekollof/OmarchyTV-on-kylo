@@ -26,7 +26,7 @@ done
 cp "$root/tools/boot/oa-boot-gate.sh" "$bundle/"
 cp "$root/tools/boot/run-aurora.sh" "$bundle/"
 cp "$root/tools/boot/aurora-boot-hook.sh" "$bundle/"
-for s in 0 1 2 3 4; do
+for s in 0 1 2 3 4 5; do
     sh "$gen" "$s" >"$bundle/openaurora-stage$s.conf"
 done
 : >"$bundle/modules/x"

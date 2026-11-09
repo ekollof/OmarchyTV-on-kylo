@@ -6,6 +6,7 @@ gate=$root/tools/boot/oa-boot-gate.sh
 tmp=$(mktemp -d "${TMPDIR:-/tmp}/oa-boot-gate.XXXXXX")
 trap 'rm -rf "$tmp"' EXIT HUP INT TERM
 mkdir -p "$tmp/conf"
+export OA_BOOT_HISTORY=$tmp/history
 
 run()
 {
@@ -93,5 +94,12 @@ run status
 test "$rc" -eq 0
 printf '%s\n' "$out" | grep -q "boot=1 safe=0 fail=0 try=0 stage=0"
 echo "ok boot gate: status reports the current state"
+
+# The attempt history is kept outside /conf (on /buffer in production) so the
+# USB /conf recovery cannot erase it.
+grep -q "start stage=2" "$tmp/history"
+grep -q "clear stage=0 result=stable" "$tmp/history"
+grep -q "result=blocked" "$tmp/history"
+echo "ok boot gate: attempt history records prepare/start/clear outside /conf"
 
 echo "all boot gate tests passed"

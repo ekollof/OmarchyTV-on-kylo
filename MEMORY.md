@@ -15,17 +15,20 @@ BOOT-HOOK-COLD-ATTEMPT-2026-11-09 for the boot chain, evidence and retry
 requirements. The retry safety is implemented and host-tested
 (STAGED-COLD-BOOT-DESIGN-2026-11-09): external MCU watchdog feeder
 (`oa-wdtfeed`), boot-attempt gate (`oa-boot-gate.sh`, 3 unproven boots
-auto-disable), `oa-supervise --wdt-keep --gate`, the stage0..4 hardware ladder
+auto-disable), `oa-supervise --wdt-keep --gate`, the stage0..5 hardware ladder
 and a fail-closed appmgr entry. The hook template and a dry-run
 deploy/restore script (`deploy-staged-cold.sh`) plus the exact runbook are in
 the repo. Three armed attempts were made the same day: A and B fell back to
 stock safely (gate-argument bug; tuner init + NULL-ctx cleanup, both fixed);
-C (UI-base stage 0) hung the set and required the USB recovery again. The
-watchdog feeder's `set 10` did not reset the hung set and is unproven. The TV
-is stock (`oa_safe` present, no `oa_boot`); `/buffer/openaurora` is the prior
-12-module payload and all staged bundles/backups were removed. Do not retry a
-cold boot without a guaranteed out-of-band recovery and a takeover-style
-first stage.
+C reached our UI on a true boot but rendered only its top-left quadrant with
+icons missing. The set was alive (not a kernel hang); only `.87` was probed,
+so the network miss was misread and the USB recovery was used unnecessarily.
+Stage 0 is now the takeover display path (`plat.drm_init=0`,
+`display.osd_reinit=0`); the forced DRM/OSD reinit moved to stage 2. Boot and
+app logs now live on `/buffer` (`tvhack-boot.log`, `openaurora-app.log`,
+`oa-boot-history.log`) and survive the apdat0 recovery. The TV is stock
+(`oa_safe` present, no `oa_boot`); `/buffer/openaurora` is the prior 12-module
+payload and all staged bundles/backups were removed.
 
 Replacement system, 2026-11-07: `make replacement-bundle` produces a
 reproducible takeover UI (`plat_stub` + display/panel/ir/settings/service_db/

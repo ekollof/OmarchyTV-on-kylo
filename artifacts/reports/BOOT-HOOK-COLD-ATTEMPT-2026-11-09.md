@@ -204,32 +204,36 @@ the stage profiles no longer autoload hardware owners before their stage;
 `spi` is now included in the bundle; the supervisor puts the child in its own
 process group and kills the group so IR/broker helpers are not orphaned.
 
-### Attempt C — UI-base stage 0 hang (USB recovery again)
+### Attempt C — UI rendered, wrong OSD geometry (not a hang)
 
 The UI-base stage (stage 0 autoload: plat, display, panel, ir, settings,
 service_db, image_decode, epg, pvr, channels, i18n, ticker, ui_*, lua, power;
-no tuner/SPI/audio/source/CEC) was armed and power-cycled. The set became
-unreachable (no ICMP/ARP) and did **not** recover on its own. The external
-watchdog feeder was running by design, but its `set 10` did not produce a
-reset within several minutes. The owner used the recovery-stability stick
-again; `/conf` was restored to the Oct-31 image and the stage log was lost
-with it.
+no tuner/SPI/audio/source/CEC) was armed and power-cycled. The owner saw
+**our UI**, but only in the top-left quadrant and with icons missing. The set
+was alive and drawing; it was not a kernel hang. Only `192.168.178.87` was
+probed, so the network miss was misread as a hang and the USB `/conf` recovery
+was used unnecessarily (it did restore stock). The stage log was lost with
+`/conf`.
+
+The quadrant is consistent with `display.osd_reinit=1` forcing the OSD
+var/SetPar to 1920x1080 on a true boot, which shrinks/repositions the vendor's
+display window. The takeover path never did that and showed the UI correctly.
+The watchdog feeder was feeding a live kernel and is not implicated; its reset
+behavior still has no isolated test.
 
 Consequences:
 
-- The `plat` base still runs DRM/OSD, the audio prelude, VPLTIO/V4L2/sharemem/
-  DVIF, GPIO/IIC init and `NDAL_VideoExt_OpenDevice(0,10)`. On a real boot
-  these may conflict with the already-running appmgr/DFB/privserver; the
-  stopped-stock gate did not reproduce that state.
-- The MCU-watchdog feeder is **not yet a proven recovery**: either the
-  watchdog was not armed/feedable in that state, or the reset path did not
-  fire. Treat the watchdog as unvalidated until an isolated reset test passes.
-- A guaranteed out-of-band recovery (proven watchdog reset or a switched mains
-  outlet) must exist before another cold attempt.
-- Next design split: a takeover-style first stage (`plat.drm_init=0`,
-  `display.osd_reinit=0`, no plat base bring-up) to prove the UI on the vendor-
-  initialized OSD, then add plat pieces one at a time (audio prelude, VPLTIO/
-  V4L2/sharemem, DRM, DVIF, GPIO/IIC, video device) with a config gate each.
+- Stage 0 is now the takeover display path (`plat.drm_init=0`,
+  `display.cold_init=0`, `display.osd_reinit=0`,
+  `display.restore_snapshot=1`). The forced DRM/OSD reinit moved to stage 2.
+- The `plat` software/audio prelude, VPLTIO/V4L2/sharemem, GPIO/IIC and video
+  device bring-up still run in every stage; they are the next candidates to
+  gate if a later stage fails.
+- Boot and app logs now live on `/buffer` (`tvhack-boot.log`,
+  `openaurora-app.log`, `oa-boot-history.log`), which the apdat0 recovery does
+  not touch. A next attempt leaves diagnosable evidence.
+- A full subnet ARP sweep is mandatory before concluding the set is offline;
+  `.87` alone is not evidence.
 
 Cleanup after recovery: the staged bundles and backups were removed and the
 prior 12-module payload was restored to `/buffer/openaurora`. `/conf` is the
