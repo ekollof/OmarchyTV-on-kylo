@@ -272,9 +272,12 @@ The stock UI is the vendor skin (`ui_vendor`), not the native Omarchy shell.
 3. **Source/VIN path**: the connect half is implemented behind
    `source.enable=0` (type gates, per-type opens, VPLT `0x4c4`, V4L2Info/
    FdCommon, DRM dpsource, NDAL VideoExt, Audio EasySelect) and fake-HAL
-   tested in SOURCE-PATH-2026-11-09. Finish the vendor disconnect body,
-   `NdVideoSetting`/VinParam/TDLayer, HDMI PHY and the high-level AudioIF
-   transport; keep the gate 0 until TV acceptance.
+   tested in SOURCE-PATH-2026-11-09. A 2026-11-09 controlled takeover run
+   proved the connect/disconnect HAL path live and painted the OSD, but also
+   showed that `plat.drm_init=0` leaves the DRM device id at -1: a source
+   switch requires `plat.drm_init=1`. The HDMI picture, audio and cold boot
+   are still unconfirmed. Finish `NdVideoSetting`/VinParam/TDLayer, HDMI PHY
+   and the high-level AudioIF transport; keep the gate 0 until then.
 4. **Audio amp/route**: native AD82587 backend, reset/mute/standby, speaker
    gain/SPDIF, audible acceptance.
 5. **Tuner/NIM-DTV**, **CEC ownership/TX**, **panel/power/watchdog**, **IR

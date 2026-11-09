@@ -97,3 +97,72 @@ The ARM `mod_source.so` builds and links
   AUDIO-SOURCE-TRANSPORT-2026-11-09.
 - `source.enable=0` in every shipped profile. No TV, `source-select` effect,
   display switch, scanout or audio acceptance was obtained.
+
+## Live TV acceptance (2026-11-09, owner-authorized window)
+
+Status: **controlled takeover run; stock restored. This proves the HAL call
+path and the OSD layer paint. It is not an independent visual confirmation of
+the HDMI picture or the panel scanout.**
+
+Deployed the 33-module `full-replacement` bundle to a staging directory
+(`/buffer/openaurora-source-test`, removed after the run) with
+`source.enable=1`. Stock `aurora.elf` was stopped under `oa-supervise`; the
+watchdog was disabled for the run and re-armed afterwards.
+
+### Takeover mode cannot pass the DRM stage
+
+First run kept `plat.drm_init=0` (the normal takeover profile). The new
+read-only diagnostic:
+
+```text
+$ ./oa-client /tmp/openaurora.sock source-probe
+source drm dev=-1 plane=5 info=7,4294967295,4294967295,25 fd=-1,...
+```
+
+`Hal_Video_Get_DrmDeviceId(0)` is `-1` when `Hal_Video_DrmInit(1)` was skipped,
+so `drm_connect` cannot reach `Hal_Video_Drm_Set_DpSource`. **A source switch
+requires `plat.drm_init=1`; the takeover profile is not sufficient.**
+
+### DRM-initialized run
+
+Second run used `plat.drm_init=1`, `display.restore_snapshot=0`,
+`display.osd_reinit=1`, `source.enable=1`:
+
+```text
+$ ./oa-client ... source-probe
+source drm dev=10 plane=5 info=7,-1,-1,25 fd=-1,...
+
+$ ./oa-client ... "source-select 17"
+ok
+[258057] INFO host source -> type 17 (vin id 3, 2 fd)
+$ ./oa-client ... source-probe
+source drm dev=10 plane=5 info=0,35,34,17 fd=-1,-1,-1,35,34,-1,-1,-1,-1
+
+$ ./oa-client ... "source-select 0"
+ok
+[266889] INFO host source -> type 0 (vin id 1, 1 fd)
+$ ./oa-client ... source-probe
+source drm dev=10 plane=5 info=0,34,-1,0 fd=34,-1,-1,-1,-1,-1,-1,-1,-1
+```
+
+The process held `/dev/ntkdvif`, `/dev/video28`, `/dev/video21` (HDMI1 dual
+open) and a second `/dev/video28` from `NDAL_VideoExt_OpenDevice`; after the
+type-0 switch it held one `/dev/video20`. The V4L2Info words are exactly the
+recovered contract (`word1`/`word2` dual fds, `word3` type; then the reset
+defaults `7,-1,-1,25` and the single-fd reconnect).
+
+`fb1` was reinitialized to `1920x2160`, stride `7680`, 32bpp, and the
+`ui_vendor` apps grid was captured from the OSD layer (frame 0 non-blank) at
+1920x1080. That is OSD-layer content, not an HDMI picture or panel scanout
+check.
+
+### Restore
+
+`quit` returned to stock; stock `aurora.elf` restarted in place, repainted the
+same apps-grid OSD layer, appmgr 1567 stayed up, `/conf/oa_safe` was restored,
+the watchdog was re-armed (`wdtctl set 10`), the staging directory was removed,
+and `settingsDB.db` mtime was unchanged (`08:23`, before the run). No
+settings-set was issued.
+
+Not proven: the HDMI1/TV picture actually appearing on the panel, audio
+routing, and a cold boot. Those remain acceptance gates.

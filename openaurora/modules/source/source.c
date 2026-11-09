@@ -413,8 +413,28 @@ static int iface_available(void)
 {
     return g_ctx && g_ctx->h ? 1 : 0;
 }
+static int iface_diag(int *drm_dev, int *plane, unsigned *info4, unsigned *fd9)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->h)
+        return -1;
+    if (drm_dev)
+        *drm_dev = c->h->drm_device_id ? c->h->drm_device_id(0) : -1;
+    if (plane)
+        *plane = c->h->drm_plane_type ? c->h->drm_plane_type(0) : -1;
+    if (info4) {
+        memset(info4, 0, 4 * sizeof *info4);
+        if (c->h->v4l2_info_get) c->h->v4l2_info_get(0, info4);
+    }
+    if (fd9) {
+        memset(fd9, 0, 9 * sizeof *fd9);
+        if (c->h->v4l2_fd_get) c->h->v4l2_fd_get(fd9);
+    }
+    return 0;
+}
 
-static const oa_source_iface g_iface = { select_type, iface_current, iface_available };
+static const oa_source_iface g_iface = { select_type, iface_current,
+                                         iface_available, iface_diag };
 
 static int m_init(const oa_host_api *api, void **out)
 {

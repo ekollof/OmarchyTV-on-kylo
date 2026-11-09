@@ -390,6 +390,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  display-info            query display dimensions/bpp/frames\n"
                  "  source-select <type>    select a VIN source type 0-25\n"
                  "  source-state            query current source type/availability\n"
+                 "  source-probe            read-only DRM ids/V4L2Info/FdCommon\n"
                  "  audio-state             query audio enabled/volume\n"
                  "  audio-volume <0-100>    set diagnostic audio volume\n"
                  "  cec-state               query cec owner/audio policy\n"
@@ -836,6 +837,32 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         h->api.release(h, OA_SVC_SOURCE);
         snprintf(outbuf, outlen, "source type %d available %d\n", type,
                  available);
+        return 0;
+    }
+    if (!strcmp(cmd, "source-probe")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_source_iface *src = h->api.lookup(h, OA_SVC_SOURCE, 1);
+        if (!src) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int drm_dev = -1, plane = -1;
+        unsigned info[4] = { 0 }, fd[9] = { 0 };
+        int rc = src->diag ? src->diag(&drm_dev, &plane, info, fd) : -1;
+        h->api.release(h, OA_SVC_SOURCE);
+        if (rc != 0) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EIO);
+            return -1;
+        }
+        snprintf(outbuf, outlen,
+                 "source drm dev=%d plane=%d info=%u,%u,%u,%u "
+                 "fd=%u,%u,%u,%u,%u,%u,%u,%u,%u\n",
+                 drm_dev, plane, info[0], info[1], info[2], info[3],
+                 fd[0], fd[1], fd[2], fd[3], fd[4], fd[5], fd[6], fd[7],
+                 fd[8]);
         return 0;
     }
     if (!strcmp(cmd, "audio-state")) {

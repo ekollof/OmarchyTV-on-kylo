@@ -67,8 +67,11 @@ maps the cold-start stages and the current stock-UI coverage.
       `Hal_Audio_EasySelect` companion. `check-source-path` and
       `check-source-fake-ipc` pass; ARM/cold bundle builds. Remaining: the
       vendor disconnect body, `NdVideoSetting`/VinParam/UpdateTDLayer, HDMI
-      PHY, the high-level `AudioIF` transport, and TV acceptance. Keep
-      `source.enable=0` until accepted.
+      PHY and the high-level `AudioIF` transport. A 2026-11-09 controlled
+      takeover run selected HDMI1 and TV live (`ok`, dual/single VIN fds,
+      V4L2Info/FdCommon words, OSD apps grid captured) and showed the switch
+      needs `plat.drm_init=1` (takeover leaves the DRM device id -1). The HDMI
+      picture, audio and cold boot remain unconfirmed; keep `source.enable=0`.
 - [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
       gain/SPDIF and audible acceptance.
 - [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.

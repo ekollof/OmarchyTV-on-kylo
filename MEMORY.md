@@ -127,8 +127,13 @@ Open(0/1/3+2/4), VPLT `0x4c4`, V4L2Info/FdCommon, DRM dpsource, NDAL
 VideoExt and Hal_Audio_EasySelect, plus the disconnect path (DRM code0xe/plane
 id, VIN VPLT25/V4L2 reset/fd words, type2/3 VDEC close, audio-off refcount).
 `check-source-path` and `check-source-fake-ipc` pass; the ARM/cold bundle
-builds. Remaining: NdVideoSetting/VinParam/UpdateTDLayer, HDMI PHY, high-level
-AudioIF transport and TV acceptance. The earlier `source.enable=1` test
+builds. Live controlled takeover 2026-11-09: `source-select 17` and `0`
+returned ok with dual/single VIN fds and the modelled V4L2Info/FdCommon words;
+fb1 reinit painted the apps grid; `source-probe` showed DRM dev=-1 with
+`plat.drm_init=0` and dev=10 with `drm_init=1`, so a source switch requires
+`plat.drm_init=1`. Stock restored, staging removed, settings DB unchanged.
+Remaining: independent HDMI-picture/panel acceptance, NdVideoSetting/VinParam/
+UpdateTDLayer, HDMI PHY and the high-level AudioIF transport. The earlier `source.enable=1` test
 wrote `m_current_source` but did not change the displayed source; the gate is
 reverted and stays 0. The test left stock `m_current_source=5`/`m_volume=0` and the
 owner force-rebooted to restore audio; add stock-settings restore before more

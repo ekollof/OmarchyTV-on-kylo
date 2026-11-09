@@ -574,6 +574,9 @@ typedef struct {
     int (*select_type)(int type); /* 0 = switched, -2 = disabled by config */
     int (*current_type)(void);
     int (*is_available)(void);
+    /* Read-only diagnostic: vendor DRM ids plus the current V4L2Info (4
+     * words) and FdCommon (9 words). Does not open a device or switch. */
+    int (*diag)(int *drm_dev, int *plane, unsigned *info4, unsigned *fd9);
 } oa_source_iface;
 
 #endif /* OPENAURORA_SERVICES_H */

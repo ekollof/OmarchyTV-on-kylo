@@ -113,6 +113,16 @@ int main(void)
     void *ctx = start(1);
     assert(iface->current_type() == -1 && iface->is_available() == 1);
     assert(source_fake_count() == 0); /* start must not open a VIN fd */
+    /* The diagnostic reads the vendor tables but opens/switches nothing. */
+    int drm_dev = -1, plane = -1;
+    unsigned info[4] = { 0 }, fd[9] = { 0 };
+    assert(iface->diag(&drm_dev, &plane, info, fd) == 0);
+    assert(drm_dev == 7 && plane == 5);
+    assert(info[0] == 0 && info[1] == 0x200 && info[2] == 0x11 &&
+           info[3] == 0x22);
+    assert(fd[0] == 1 && fd[8] == 9);
+    assert(source_fake_count() == 4); /* DEV, PLANE, INFO_GET, FD_GET */
+    source_fake_reset();
 
     /* Type 0: single VIN(0), VPLT 0x4c4 {1,0}, select id1, start, 4-word
      * V4L2Info (word2 preserved), 9-word FdCommon (fd word0), DRM and NDAL. */
