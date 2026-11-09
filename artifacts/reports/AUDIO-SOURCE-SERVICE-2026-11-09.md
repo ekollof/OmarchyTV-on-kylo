@@ -309,6 +309,38 @@ if silent, only the AQ/PP post-param tables and the HDMI RX aud-info task
 (which only sends `PLAT_OS_SendEvent(0,7,3,...)` on aud-info changes, not an
 audio start) remain as candidates.
 
+### AQuality post-params
+
+`PLAT_VAUD_InitPPParams` `0x008d276c` builds a 0x18a0-byte block at
+`0x0197f9d8` from `u32EQParams`/`g_aAVLDefaultSetting` and the AQ fields;
+`PLAT_AOUT_SetPostParams` `0x0088a818` sends it with
+`Hal_Audio_Send("AQuality", {block,0x18a0,mute,...}, 0x38)` after comparing
+against its cached copy. The full derivation is not ported.
+
+For acceptance, `audio.source.pp_blob` can name a 0x18a0 block captured
+read-only from the stock process (`0x0197f9d8`); the module loads it and sends
+the same `AQuality` payload. Default is off. Final run with the captured
+block:
+
+```text
+audio        volume -> 50
+audio source: AIN init (0x11/0x40/0x1e, handle 0x12345678)
+audio source: VAUD init (0x37/0x1e/0x4a rc 0, AQ loaded, PP sent)
+audio source: MuxInput 0x801 port 0 (rc 0)
+audio source: speaker release (0,1)
+audio source -> 37 (ain 0x801, out0 in 0)
+main out source select   2:HDMI ES
+main out gain            100
+speaker out gain         0
+hdmi in codec info       1:PCM
+oa-supervise: stable; failure streak cleared
+```
+
+It held for 90 s; stock was restored and force-rebooted. If this still does
+not produce audible output, the DSP command surface (AIN/VAUD/AQ/AQuality/
+MuxInput/mutes) is exhausted and the remaining candidate is the ICE
+AudioIF/decoder transport, not a missing mixer or post-param command.
+
 ## Evidence
 
 ```text

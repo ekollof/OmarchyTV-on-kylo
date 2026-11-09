@@ -96,9 +96,10 @@ maps the cold-start stages and the current stock-UI coverage.
       as stock (HDMI ES, mute 0, speaker mute 0, codec PCM) and held 90 s.
       VAUD init (`Ctrl 0x37/0x1e`, `DualCmd 0x4a`) is also implemented, as is
       the 101-entry AQ volume table (`Ctrl 0x2e/0x3e` via
-      `oa_audio_curve_from_aq`). The EQ/AVL post-param tables
-      (`InitPPParams`/"AQuality") remain unported and are the next suspect if
-      output is still silent.
+      `oa_audio_curve_from_aq`). The AQuality post-params
+      (`InitPPParams` -> `Hal_Audio_Send("AQuality",{block,0x18a0,...})`) are
+      supported via opt-in `audio.source.pp_blob` using a stock-captured block;
+      the full derivation remains unported.
 - [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
       gain/SPDIF and audible acceptance.
 - [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.

@@ -18,6 +18,7 @@ static const oa_audio_source_iface *iface;
 static int enabled;
 static int unmute;
 static const char *aq_path;
+static const char *pp_path;
 static int pos;
 
 static void log_message(void *p, int level, const char *fmt, ...)
@@ -33,6 +34,8 @@ static const char *config(void *p, const char *key, const char *def)
         return unmute ? "1" : "0";
     if (!strcmp(key, "audio.source.aq"))
         return aq_path;
+    if (!strcmp(key, "audio.source.pp_blob"))
+        return pp_path;
     return def;
 }
 static int publish(void *p, const char *name, uint32_t version, const void *ifc)
@@ -146,6 +149,19 @@ static void expect_ctrl_op_count(int op, int w0, int w2, int w3)
     }
 }
 
+static void expect_send_len(const char *name, int len)
+{
+    assert(pos < audio_fake_count());
+    const struct audio_fake_event *ev = audio_fake_at(pos++);
+    if (ev->kind != AF_SEND || ev->b != len || !ev->name ||
+        strcmp(ev->name, name)) {
+        fprintf(stderr, "pos %d send-len: kind %d b %d name %s want %s %d\n",
+                pos - 1, ev->kind, ev->b, ev->name ? ev->name : "(null)",
+                name, len);
+        assert(0);
+    }
+}
+
 /* soft_mute(1,1) on the stock speaker table: 0..3, types 0..3. */
 static void expect_soft_mute(void)
 {
@@ -180,6 +196,12 @@ int main(void)
     uint8_t zbuf[OA_AUDIO_AQ_SIZE] = { 0 };
     assert(fwrite(zbuf, 1, sizeof zbuf, af) == sizeof zbuf);
     fclose(af);
+    pp_path = "/tmp/oa-audio-source-pp.bin";
+    af = fopen(pp_path, "wb");
+    assert(af);
+    uint8_t ppbuf[0x18a0] = { 0 };
+    assert(fwrite(ppbuf, 1, sizeof ppbuf, af) == sizeof ppbuf);
+    fclose(af);
 
     /* Disabled gate: no HAL traffic at all. */
     reset();
@@ -203,6 +225,7 @@ int main(void)
     expect_dual(0x4a);
     expect_ctrl_op_count(0x2e, 0, 101, 0);
     expect_ctrl(0x3e, 0, 0, 0, 0);
+    expect_send_len("AQuality", 0x18a0);
     expect_send("MuxInput", 0x801, 0);
     expect_soft_mute();
     expect_ctrl(0x2a, 0xfff, 1, 0, 0);
@@ -302,7 +325,8 @@ int main(void)
     assert(audio_fake_count() == 0);
     done(ctx);
     unlink(aq_path);
+    unlink(pp_path);
 
-    puts("ok audio source: soft mute, AIN/ADEC/audio EasySelect, output mute, HP, AQ table, unmute, video map, gate");
+    puts("ok audio source: soft mute, AIN/ADEC/audio EasySelect, output mute, HP, AQ table, AQuality, unmute, video map, gate");
     return 0;
 }

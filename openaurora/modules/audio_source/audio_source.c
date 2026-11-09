@@ -114,6 +114,8 @@ struct ctx {
     int path_port;
     int vaud_ready;
     oa_audio_curve vol_curve;
+    uint8_t pp[0x18a0];
+    int pp_loaded;
 };
 
 static struct ctx *g_ctx;
@@ -177,6 +179,26 @@ static int load_aq(struct ctx *c)
     return oa_audio_curve_from_aq(&c->vol_curve, buf, n, profile);
 }
 
+/* PLAT_AOUT_SetPostParams: Hal_Audio_Send("AQuality", {block,0x18a0,...}).
+ * Only used when audio.source.pp_blob names a 0x18a0-byte stock-initialized
+ * block; the InitPPParams derivation is not ported. */
+static int load_pp(struct ctx *c)
+{
+    const char *path = c->api->config_get(c->api->priv,
+                                          "audio.source.pp_blob", "");
+    if (!path || !*path)
+        return -1;
+    FILE *f = fopen(path, "rb");
+    if (!f)
+        return -1;
+    size_t n = fread(c->pp, 1, sizeof c->pp, f);
+    fclose(f);
+    if (n != sizeof c->pp)
+        return -1;
+    c->pp_loaded = 1;
+    return 0;
+}
+
 /* PLAT_VAUD_Init from ICE_AudioInit: Ctrl 0x37 and 0x1e with zeroed 0x38
  * payloads, then DualCmd 0x4a. The AQ volume table follows; the AQ/PP
  * post-param tables (EQ/AVL) are not ported. */
@@ -192,10 +214,23 @@ static void vaud_init(struct ctx *c)
         (void)ctrl_words(c, 0x2e, 0, (int)(uintptr_t)c->vol_curve.points, 101, 0);
         (void)ctrl_words(c, 0x3e, 0, 0, 0, 0);
     }
+    int pp = load_pp(c);
+    if (pp == 0) {
+        uint32_t post[0x38 / 4];
+        memset(post, 0, sizeof post);
+        post[0] = (uint32_t)(uintptr_t)c->pp;
+        post[1] = 0x18a0;
+        post[2] = 0; /* u32MuteFrame */
+        post[10] = (uint32_t)(uintptr_t)c->pp;
+        post[11] = 0;
+        if (c->h->audio_send)
+            (void)c->h->audio_send("AQuality", post, 0x38);
+    }
     c->vaud_ready = 1;
     c->api->log(c->api->priv, OA_LOG_INFO,
-                "audio source: VAUD init (0x37/0x1e/0x4a rc %d, AQ %s)", rc,
-                aq == 0 ? "loaded" : "unavailable");
+                "audio source: VAUD init (0x37/0x1e/0x4a rc %d, AQ %s, PP %s)",
+                rc, aq == 0 ? "loaded" : "unavailable",
+                pp == 0 ? "sent" : "unavailable");
 }
 
 /* PLAT_AIN_SetPathConfig(source, port): Hal_Audio_Send("MuxInput",
@@ -539,6 +574,7 @@ static int m_start(void *v)
     c->path_src = -1;
     c->path_port = -1;
     c->vaud_ready = 0;
+    c->pp_loaded = 0;
     if (c->api->publish(c->api->priv, OA_SVC_AUDIO_SOURCE, 1, &g_iface) != 0)
         c->api->log(c->api->priv, OA_LOG_WARN,
                     "audio_source service already published");
