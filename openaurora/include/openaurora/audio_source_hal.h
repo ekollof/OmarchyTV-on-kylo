@@ -27,6 +27,9 @@ struct oa_audio_source_hal {
     /* Hal_Audio_KItem(code) followed by Hal_Audio_SetControl(kitem,
      * {code, value, 0}). */
     int (*kitem_set)(int code, const void *value);
+    /* Hal_Audio_Send(name, params, len): PLAT_AIN_SetPathConfig sends
+     * "MuxInput" with a 0x38-byte {source, port} payload. */
+    int (*audio_send)(const char *name, void *params, int len);
     void (*delay_ms)(unsigned ms);
 };
 

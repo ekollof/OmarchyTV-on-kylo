@@ -107,6 +107,10 @@ struct ctx {
     int sound_output;
     int ep_plugged;
     int unmute;          /* mirror _ice_AudioSwitchPath2MM's SetSoftMute(0,1) */
+    int ain_ready;
+    int ain_handle;
+    int path_src;
+    int path_port;
 };
 
 static struct ctx *g_ctx;
@@ -133,6 +137,54 @@ static int ctrl_words(struct ctx *c, int op, int w0, int w1, int w2, int w3)
 static int ctrl_pip(struct ctx *c, int code, int value)
 {
     return ctrl_words(c, 0x2a, code, value, 0, 0);
+}
+
+/* PLAT_AIN_Init/Open from PLAT_INI_Init/ICE_AudioOpen. The vendor runs this
+ * at boot; the service runs it lazily before the first source. PLAT_AIN_Open
+ * stores a software handle, not an fd. */
+static void ain_init(struct ctx *c)
+{
+    (void)ctrl_words(c, 0x11, 1, 0, 0, 0);
+    (void)ctrl_words(c, 0x40, 0, 0, 0, 0);
+    (void)ctrl_words(c, 0x1e, 1, 0, 0, 0);
+    c->ain_handle = 0x12345678;
+    c->ain_ready = 1;
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "audio source: AIN init (0x11/0x40/0x1e, handle 0x12345678)");
+}
+
+/* PLAT_AIN_SetPathConfig(source, port): Hal_Audio_Send("MuxInput",
+ * {source, port}, 0x38). Ports are the PLAT_VAUD_Init pairs for the sources
+ * this service uses; 0x7fff is a no-op in the vendor. */
+static int ain_path_port(int src)
+{
+    switch (src) {
+    case 0x101: return 8;
+    case 0x201: case 0x801: case 0x802: case 0x1100: case 0x1900:
+    case 0x1800: return 0;
+    case 0x1501: return 2;
+    case 0x601: return 3;
+    case 0x301: case 0x302: return 1;
+    default: return 0;
+    }
+}
+static int ain_path_config(struct ctx *c, int src)
+{
+    if (src == 0x7fff)
+        return 0;
+    int port = ain_path_port(src);
+    if (c->path_src == src && c->path_port == port)
+        return 0;
+    uint32_t params[0x38 / 4];
+    memset(params, 0, sizeof params);
+    params[0] = (uint32_t)src;
+    params[1] = (uint32_t)port;
+    int rc = c->h->audio_send ? c->h->audio_send("MuxInput", params, 0x38) : -1;
+    c->path_src = src;
+    c->path_port = port;
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "audio source: MuxInput 0x%x port %d (rc %d)", src, port, rc);
+    return rc;
 }
 
 static int speaker_mute(struct ctx *c, int spk, int mask)
@@ -289,6 +341,9 @@ static int select_source(struct ctx *c, int src)
     if (src < 0 || src > 55)
         return -1;
     int mapped = g_ain_source[src];
+    if (!c->ain_ready)
+        ain_init(c);
+    (void)ain_path_config(c, mapped);
     (void)soft_mute(c, 1, 1);
     for (int spk = 0; spk < 4; spk++)
         c->spk_out[spk] = 0; /* PLAT_AOUT_SpeakerConnect(spk, 0), state only */
@@ -380,6 +435,9 @@ static int m_init(const oa_host_api *api, void **out)
     c->current = -1;
     c->soft_last = 0;
     c->mute_mask = 0;
+    c->ain_ready = 0;
+    c->path_src = -1;
+    c->path_port = -1;
     c->ain_id[0] = c->ain_id[1] = 0;
     c->ain_src[0] = c->ain_src[1] = -1;
     c->aout_in[0] = c->aout_in[1] = c->aout_in[2] = -1;
@@ -429,6 +487,9 @@ static int m_start(void *v)
     c->current = -1;
     c->soft_last = 0;
     c->ain_src[0] = c->ain_src[1] = -1;
+    c->ain_ready = 0;
+    c->path_src = -1;
+    c->path_port = -1;
     if (c->api->publish(c->api->priv, OA_SVC_AUDIO_SOURCE, 1, &g_iface) != 0)
         c->api->log(c->api->priv, OA_LOG_WARN,
                     "audio_source service already published");

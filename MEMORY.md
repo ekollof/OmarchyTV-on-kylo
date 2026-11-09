@@ -148,6 +148,9 @@ is verified (main out select/connect 2:HDMI ES after `audio-source-video 17`,
 main out mute 0, no ALSA errors) and the `oa-alsactl` enum/boolean diagnostics
 are fixed. A known-playing HDMI1 run (codec PCM) stayed at HDMI ES/mute 0 for
 90 s, then stock was restored and rebooted; owner audition is still pending.
+The missing AIN init (`Ctrl 0x11/0x40/0x1e`, handle 0x12345678) and
+`MuxInput {source,port}` path config are now included; the final run reached
+stock's exact mixer state (HDMI ES, mute 0, speaker mute 0, codec PCM).
 The recovered MM-path `SetSoftMute(0,1)` release is opt-in
 (`audio.source.unmute=1`), and the host config cap is now 128 with an overflow
 warning (the 48-entry cap silently dropped that key).

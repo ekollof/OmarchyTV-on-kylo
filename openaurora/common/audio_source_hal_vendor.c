@@ -24,9 +24,14 @@ static int no_kitem(int code, const void *value)
     (void)code; (void)value;
     return -1;
 }
+static int no_send(const char *name, void *params, int len)
+{
+    (void)name; (void)params; (void)len;
+    return -1;
+}
 static void no_delay(unsigned ms) { (void)ms; }
 static const struct oa_audio_source_hal g_hal = {
-    no_ctrl, no_select, no_set, no_kitem, no_delay
+    no_ctrl, no_select, no_set, no_kitem, no_send, no_delay
 };
 #else
 extern int Hal_Audio_Ctrl(int op, void *params);
@@ -34,6 +39,7 @@ extern int Hal_Audio_EasySelect(int path, int id, const void *records);
 extern int Hal_Audio_EasySet(int item, const void *value, int zero);
 extern void *Hal_Audio_KItem(int code);
 extern int Hal_Audio_SetControl(void *kitem, void *params);
+extern int Hal_Audio_Send(const char *name, void *params, int len);
 extern int usleep(unsigned usec);
 
 static int hal_ctrl(int op, void *params) { return Hal_Audio_Ctrl(op, params); }
@@ -61,8 +67,12 @@ static void hal_delay(unsigned ms)
     if (ms)
         (void)usleep(ms * 1000u);
 }
+static int hal_send(const char *name, void *params, int len)
+{
+    return Hal_Audio_Send(name, params, len);
+}
 static const struct oa_audio_source_hal g_hal = {
-    hal_ctrl, hal_select, hal_set, hal_kitem, hal_delay
+    hal_ctrl, hal_select, hal_set, hal_kitem, hal_send, hal_delay
 };
 #endif
 

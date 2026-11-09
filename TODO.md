@@ -89,7 +89,11 @@ maps the cold-start stages and the current stock-UI coverage.
       for 90 s, then stock was restored and rebooted. The recovered MM-path
       `SetSoftMute(0,1)` release is opt-in (`audio.source.unmute=1`); the host
       config cap was raised 48→128 because it silently dropped that key.
-      Owner-audible confirmation and foreground/scart/main-gain remain.
+      Owner-audible confirmation and foreground/scart/main-gain remain. The
+      missing AIN init (`Ctrl 0x11/0x40/0x1e`, handle 0x12345678) and
+      `MuxInput {source,port}` path config (0x801→0, 0x301→1, 0x101→8) are now
+      implemented behind the gate; the final run reached the same mixer state
+      as stock (HDMI ES, mute 0, speaker mute 0, codec PCM) and held 90 s.
 - [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
       gain/SPDIF and audible acceptance.
 - [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.

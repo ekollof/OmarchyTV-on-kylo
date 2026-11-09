@@ -105,6 +105,19 @@ static void expect_ctrl(int op, int w0, int w1, int w2, int w3)
     }
 }
 
+static void expect_send(const char *name, int src, int port)
+{
+    assert(pos < audio_fake_count());
+    const struct audio_fake_event *ev = audio_fake_at(pos++);
+    if (ev->kind != AF_SEND || ev->a != src || ev->b != port ||
+        !ev->name || strcmp(ev->name, name)) {
+        fprintf(stderr, "pos %d send: kind %d %d,%d name %s want %s %d,%d\n",
+                pos - 1, ev->kind, ev->a, ev->b,
+                ev->name ? ev->name : "(null)", name, src, port);
+        assert(0);
+    }
+}
+
 /* soft_mute(1,1) on the stock speaker table: 0..3, types 0..3. */
 static void expect_soft_mute(void)
 {
@@ -147,6 +160,10 @@ int main(void)
     reset();
     ctx = start(1);
     assert(iface->select_source(37) == 0);
+    expect_ctrl(0x11, 1, 0, 0, 0);
+    expect_ctrl(0x40, 0, 0, 0, 0);
+    expect_ctrl(0x1e, 1, 0, 0, 0);
+    expect_send("MuxInput", 0x801, 0);
     expect_soft_mute();
     expect_ctrl(0x2a, 0xfff, 1, 0, 0);
     expect_ctrl(0x2a, 0x802, 0, 0, 0);
@@ -170,6 +187,7 @@ int main(void)
     /* ATV source 8 -> table 0x101: no PIP/ADEC, EasySelect(1) and path 5. */
     reset();
     assert(iface->select_source(8) == 0);
+    expect_send("MuxInput", 0x101, 8);
     expect_soft_mute();
     expect(AF_SELECT, 1, 1, 0, "atv on");
     expect(AF_SELECT, 5, 0x101, 0, "ATV");
@@ -180,6 +198,7 @@ int main(void)
     /* Source 10 is the vendor's "skip AIN connect" special case. */
     reset();
     assert(iface->select_source(10) == 0);
+    expect_send("MuxInput", 0x201, 0);
     expect_soft_mute();
     expect_tail();
     assert(pos == audio_fake_count());
@@ -187,6 +206,7 @@ int main(void)
     /* Bronlijst video type 17 -> HDMI1 audio device 0x25 -> table 0x801. */
     reset();
     assert(iface->select_video_type(17) == 0);
+    expect_send("MuxInput", 0x801, 0);
     expect_soft_mute();
     expect_ctrl(0x2a, 0xfff, 1, 0, 0);
     expect_ctrl(0x2a, 0x802, 0, 0, 0);
@@ -203,6 +223,7 @@ int main(void)
     /* Video type 15 -> CVBS audio 0x23 -> table 0x301 -> AV. */
     reset();
     assert(iface->select_video_type(15) == 0);
+    expect_send("MuxInput", 0x301, 1);
     expect_soft_mute();
     expect(AF_SELECT, 5, 0x301, 0, "AV");
     expect(AF_DELAY, 200, 0, 0, NULL); /* CVBS is an ADC source (0x23) */

@@ -210,6 +210,41 @@ confirmation is still the remaining gate; if silent despite the matched state,
 the next gap is the HDMI RX/DSP playback path (the codec reports PCM and
 `dspMonitor` is alive, so the mixer/decoder controls are not the suspect).
 
+### AIN init and MuxInput path config
+
+The missing HDMI RX initialization was recovered next:
+
+- `PLAT_AIN_Init` `0x00883b08` is called only by `PLAT_INI_Init`
+  (`0x008a0586`), not by our `plat`. It locks the AIN mutex and issues
+  `Hal_Audio_Ctrl(0x11,{1})`, `(0x40,{0,0})`, `(0x1e,{1})`, then creates the
+  `AIN_PlayEnSemaphore` and `AIN DBGPlayTask`.
+- `PLAT_AIN_Open` `0x00883fc0` (from `ICE_AudioOpen`) stores the software
+  handle `0x12345678` in `g_hAudHandle[0]`; it does not open an fd.
+- `PLAT_AIN_SetPathConfig` `0x00884068` stores `{source,port}` and calls
+  `Hal_Audio_Send("MuxInput", {source,port}, 0x38)`. Its callers
+  `PLAT_Audio_Init`/`PLAT_VAUD_Init` set the pairs; for this service:
+  `0x801→0`, `0x802→0`, `0x1200→0`, `0x201→0`, `0x301→1`, `0x101→8`,
+  `0x601→3`, `0x1501→2`.
+
+`mod_audio_source` now runs the AIN init lazily before the first source and
+sends the `MuxInput` pair when the mapped source/port changes, behind
+`audio.source_enable`. Final gated run:
+
+```text
+audio source: AIN init (0x11/0x40/0x1e, handle 0x12345678)
+audio source: MuxInput 0x801 port 0 (rc 0)
+audio source: speaker release (0,1)
+audio source -> 37 (ain 0x801, out0 in 0)
+main out source select   2:HDMI ES
+main out mute            0
+speaker out mute         0
+hdmi in codec info       1:PCM
+oa-supervise: stable; failure streak cleared
+```
+
+It held for 90 s and stock was restored/rebooted. Audible confirmation
+remains the owner gate; the missing AIN init/path config is now covered.
+
 ## Evidence
 
 ```text
