@@ -220,6 +220,7 @@ superseded claims and descriptions.
 - [LUA-SCREEN](../../artifacts/reports/LUA-SCREEN-2026-11-05.md)
 - [LUA-SERVICE](../../artifacts/reports/LUA-SERVICE-2026-11-05.md)
 - [NATIVE-OMARCHY-UI](../../artifacts/reports/NATIVE-OMARCHY-UI-2026-11-08.md)
+- [NATIVE-REPLACEMENT](../../artifacts/reports/NATIVE-REPLACEMENT-2026-11-08.md)
 - [NATIVE-UI](../../artifacts/reports/NATIVE-UI-2026-11-07.md)
 - [NAVIGATION-SERVICE](../../artifacts/reports/NAVIGATION-SERVICE-2026-11-03.md)
 - [PORTAL-CAPTURE](../../artifacts/reports/PORTAL-CAPTURE-2026-11-05.md)
@@ -353,6 +354,7 @@ superseded claims and descriptions.
 - [WORK-REVIEW](../../artifacts/reports/WORK-REVIEW-2026-11-04.md)
 
 ## Other and miscellaneous
+- [ALSA-CONTROL](../../artifacts/reports/ALSA-CONTROL-2026-11-07.md)
 - [BOOTSPLASH](../../artifacts/reports/BOOTSPLASH-2026-10-30.md)
 - [CONTENT-HEADER-OWNERSHIP](../../artifacts/reports/CONTENT-HEADER-OWNERSHIP-2026-11-03.md)
 - [DIAL-KEYS-SCREEN](../../artifacts/reports/DIAL-KEYS-SCREEN-2026-10-30.md)

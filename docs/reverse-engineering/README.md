@@ -25,6 +25,15 @@ binaries, the Ghidra projects and the dated topic reports.
    and third-party manuals stay local. See
    [artifacts/README.md](../../artifacts/README.md).
 
+## Keeping this current
+
+Follow the documentation hygiene rules in [AGENTS.md](../../AGENTS.md). When a
+report, binary, hash, address or contract changes, update the matching document
+here, add/remove the report in the canonical index, regenerate the topic map
+(`sh tools/docs/gen-report-map.sh`) and run `sh tools/docs/check-docs.sh`.
+Superseded reports are archived under `artifacts/archive/` with a top
+`SUPERSEDED BY:` line; they are not current evidence.
+
 ## Where the evidence lives
 
 | path | contents |

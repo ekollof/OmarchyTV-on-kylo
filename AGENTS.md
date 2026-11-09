@@ -22,7 +22,9 @@ top and must not be used as evidence of platform or stock-UI parity.
 Read [TODO.md](TODO.md), [MEMORY.md](MEMORY.md), [FINDINGS.md](FINDINGS.md) and
 [HANDOFF.md](HANDOFF.md). Follow the [report index](artifacts/reports/README.md)
 to topic evidence. Older reports and archived logs are dated records, not a
-queue of experiments to repeat.
+queue of experiments to repeat. The [documentation index](docs/README.md) is the
+navigation layer for the compiled reverse-engineering set; the report index
+remains the chronological authority.
 
 - These instructions carry the standing owner constraints.
 - MEMORY owns last verified TV/deployment/build state; it is not a live poll.
@@ -37,6 +39,52 @@ queue of experiments to repeat.
   evidence and the remaining limits in the entry.
 - Update canonical entries when evidence changes; mark superseded claims at
   their source. Do not silently generalize a failed experiment into an API rule.
+
+### Documentation hygiene
+
+`docs/reverse-engineering/` is maintained navigation over the evidence, not a
+snapshot. Keep it current in the same change that changes the evidence; a
+docs-only pass is not acceptance evidence.
+
+**On every evidence change** (new/corrected report, binary, hash, address,
+contract, gate or resolved question):
+
+- Update the canonical dated report and [FINDINGS.md](FINDINGS.md) first.
+- Update the matching section of `docs/reverse-engineering/subsystems.md`;
+  update `binaries.md` for a new/changed binary, path, MD5 or Ghidra project;
+  `tooling.md` for a new search/extraction step; `glossary.md` for a new term;
+  `open-questions.md` when a question is answered or opened.
+- Add/rename/remove the entry in the
+  [report index](artifacts/reports/README.md) and regenerate the topic map:
+  `sh tools/docs/gen-report-map.sh`.
+- Update MEMORY only for verified state, TODO only for work/gates and HANDOFF
+  only for entry points. Do not create a competing “latest state” in docs.
+- Run `sh tools/docs/check-docs.sh`; broken relative links, a stale report map
+  or an unindexed report fail the change.
+
+**Report status.** New reports, and reports touched for a correction, carry a
+`Status:` line (current / superseded by X / archived), a `Last verified:` date,
+`Supersedes:`/`Superseded-by:` when applicable, and the evidence class
+(firmware / on-TV / host / qemu). Do not leave a corrected report marked
+current.
+
+**Archiving.** `artifacts/archive/` is the only archive; never delete evidence.
+Archive a report or plan when it is superseded, its claim is corrected, the
+approach is abandoned, or it no longer describes the current contract:
+
+- keep the dated filename under `artifacts/archive/`, add a top
+  `SUPERSEDED BY: <current doc>` line, and record the reason/replacement in
+  `artifacts/archive/README.md`;
+- remove it from the active report index and topic map, or mark it historical;
+- never cite an archived item as current evidence. Reference it only as
+  archaeology, with the replacement named;
+- raw `artifacts/analysis/` evidence stays for provenance; if its report is
+  archived, link that report as historical;
+- do not resurrect a superseded contract without re-verifying the firmware and
+  recording the new evidence.
+
+Do this at every milestone/commit that changes evidence, when a report
+supersedes another, when a hash/address changes, and before a handoff.
 
 ## TV access: standing owner authorization
 

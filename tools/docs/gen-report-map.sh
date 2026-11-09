@@ -6,7 +6,7 @@ set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 index=$root/artifacts/reports/README.md
-out=$root/docs/reverse-engineering/report-map.md
+out=${1:-$root/docs/reverse-engineering/report-map.md}
 tmp=$(mktemp "${TMPDIR:-/tmp}/oa-report-map.XXXXXX")
 trap 'rm -f "$tmp" "$tmp.pairs" "$tmp.sorted"' EXIT HUP INT TERM
 

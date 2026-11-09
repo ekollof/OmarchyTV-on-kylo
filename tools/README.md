@@ -26,3 +26,12 @@ backend. Other vendor/API buffers need their own format evidence.
 
 Offline colour regression (synthetic reads, SSH/WoL forbidden):
 `python3 tools/tests/tvshot_decode.py` from the project root.
+
+## Documentation helpers
+
+- `docs/gen-report-map.sh` — regenerate
+  `docs/reverse-engineering/report-map.md` from the canonical report index
+  (optional output path argument).
+- `docs/check-docs.sh` — check relative links, report-map freshness and that
+  every `artifacts/reports/*.md` is indexed. Run it after any evidence or doc
+  change; a failure blocks the change (AGENTS documentation hygiene).
