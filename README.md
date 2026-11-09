@@ -12,6 +12,9 @@ contains resumption pointers, not another independent status history.
 - [Current findings and corrections](FINDINGS.md): conclusions, limits and known red herrings.
 - [Report index](artifacts/reports/README.md): which reports are current evidence,
   historical experiments or superseded plans.
+- [Reverse-engineering docs](docs/reverse-engineering/README.md): binary/hash
+  inventory, recovered subsystem contracts, tooling recipes and a topic map of
+  the 331 reports.
 - [Artifact map](artifacts/README.md): provenance, recovery image identities and raw evidence.
 - [Helper roles](tools/README.md): queries, UI mutations and offline simulation.
 - [Architecture](openaurora/docs/ARCHITECTURE.md), [runtime preflight](openaurora/docs/RUNTIME-CHECK.md),
