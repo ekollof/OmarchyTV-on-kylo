@@ -17,7 +17,12 @@ is best-effort and normally returns 0; `DEV_GPIO_Init`/`DEV_IIC_Init` are not
 (init does not light the panel), NIM ATV/DTV factories, amp 0x3a/0x100 +
 DEV_AMP_ID task, SPI `/dev/ntkspi` when `/conf/spi.bin` is absent, NIM-DTV
 model0..3/default demod HAL vs model4, MTD returns0. Next is the one-owner-
-per-stage implementation, GPIO/IIC first.
+per-stage implementation, GPIO/IIC first. Source connect half,
+2026-11-09: implemented behind `source.enable=0` with an injectable HAL seam
+(type gates, per-type VIN opens, VPLT `0x4c4`, V4L2Info/FdCommon, DRM dpsource,
+NDAL VideoExt, Audio EasySelect); `check-source-path`/`check-source-fake-ipc`
+pass. Vendor disconnect/NdVideoSetting/HDMI PHY/high-level AudioIF and TV
+effect remain. SOURCE-PATH-2026-11-09.
 Replacement system, 2026-11-07: `make TARGET=tv ... replacement-bundle` builds
 a takeover-mode UI (`plat_stub` + display/panel/ir/settings/service_db/
 image_decode/ui_engine/ui_vendor/ticker/ui_clock/ui_anim, client and menus).

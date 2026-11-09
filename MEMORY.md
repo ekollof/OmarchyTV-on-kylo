@@ -121,10 +121,15 @@ control commands (host-tested) let `takeover-full.sh` snapshot
 `m_volume`/`m_current_source`/`m_cec_enabled` and restore them before `quit`;
 it also copies settingsDB for manual recovery. Not TV-validated; the hidden
 DSP/route state may still need a reboot. No further TV tests until validated.
-Source test: `source.enable=1`/VIN fd 22 wrote `m_current_source`
-but did not change the displayed source; the `plat_vin_slot_connect`/VPLT/
-`Hal_Video_Set_V4l2Info`/audio companion path is missing, so `source.enable`
-was reverted. The test left stock `m_current_source=5`/`m_volume=0` and the
+Source path, 2026-11-09: the connect half is implemented behind
+`source.enable=0` with an injectable HAL seam: type gates, per-type
+Open(0/1/3+2/4), VPLT `0x4c4`, V4L2Info/FdCommon, DRM dpsource, NDAL
+VideoExt and Hal_Audio_EasySelect. `check-source-path` and
+`check-source-fake-ipc` pass; the ARM/cold bundle builds. Remaining: vendor
+disconnect body, NdVideoSetting/VinParam/UpdateTDLayer, HDMI PHY, high-level
+AudioIF transport and TV acceptance. The earlier `source.enable=1` test
+wrote `m_current_source` but did not change the displayed source; the gate is
+reverted and stays 0. The test left stock `m_current_source=5`/`m_volume=0` and the
 owner force-rebooted to restore audio; add stock-settings restore before more
 TV tests. NATIVE-REPLACEMENT.
 TV/audio state, 2026-11-08: the bundle-e key/source test confirmed up/down,

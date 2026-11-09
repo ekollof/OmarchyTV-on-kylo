@@ -1,24 +1,26 @@
 /*
- * mod_source — input switching through the vendor VIN HAL.
+ * mod_source — input switching through the vendor VIN/VPLT/V4L2/DRM path.
  *
- * Decompiled from libNDAL3.so / aurora (see OPENAURORA-T1-PLANS-2026-10-30.md):
+ * Recovered from aurora's PLAT_VIU_ChangeInput / plat_vin_slot_connect and
+ * libNDAL3/libNDAL_EX. The hardware calls go through oa_source_hal so the
+ * exact order and arguments can be host-tested without a TV.
  *
- *   int Hal_Vin_Open(int idx);                   // opens /dev/ntkdvif, returns fd
- *   void Hal_Vin_SelectInput(int fd, int id);    // ioctl(fd, 0xc0045627, &id)
- *   void Hal_Vin_SetStreamStart(int fd);         // ioctl(fd, 0x40045612, &{1})
+ * Key contracts:
+ *   Hal_Vin_Open(index)          0..4 -> /dev/video20/24/21/28/66
+ *   Hal_Vin_SelectInput(fd,id)   ioctl(fd,0xc0045627,&id)
+ *   Hal_Vin_SetStreamStart(fd)   ioctl(fd,0x40045612,&{1})
+ *   Hal_Video_Vpltio_SendCmd(0x4c4,0,&{tableA,tableB},0...)
+ *   Hal_Video_Get/Set_V4l2Info   4 words at slot*16
+ *   Hal_Video_Get/Set_V4l2FdCommon  9 words
+ *   NDAL_VideoExt_OpenDevice(flag,type)
+ *   Hal_Audio_EasySelect(0,1,&{1,"adc on"})
  *
- * Aurora's `plat_vin_slot_connect(slot, type)` also uses a companion VPLT command
- * and Hal_Video_Set_V4l2Info; this module does not reproduce that complete path
- * or audio routing. The input id comes from a 26-entry table (`.data 0x013b9e78`):
- *
- *   type 0->1, 5->0, 10->2, 15->1, 16->2, 17/18/20/21->3, 19->66, 25->255, others 0
- *
- * Switching changes what is on screen, so it is **disabled by default**: the module opens the device and
- * publishes the service, but only acts when `source.enable=1`.
+ * source.enable remains the policy gate. A disabled module returns -2 and
+ * makes no HAL call. Unsupported types fail without touching the display.
  */
 #include <errno.h>
-#include <fcntl.h>
 #include <pthread.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,81 +30,290 @@
 #include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
+#include "openaurora/source_hal.h"
 
-#ifdef OA_NO_VENDOR
-static int have_hal(void)
-{
-    return 0;
-}
-static int Hal_Vin_Open(int idx)
-{
-    (void)idx;
-    return -1;
-}
-static void Hal_Vin_Close(int fd)
-{
-    (void)fd;
-}
-static void Hal_Vin_SelectInput(int fd, int id)
-{
-    (void)fd;
-    (void)id;
-}
-static void Hal_Vin_SetStreamStart(int fd)
-{
-    (void)fd;
-}
-#else
-extern int Hal_Vin_Open(int idx);
-extern void Hal_Vin_Close(int fd);
-extern void Hal_Vin_SelectInput(int fd, int id);
-extern void Hal_Vin_SetStreamStart(int fd);
-static int have_hal(void)
-{
-    return 1;
-}
-#endif
-
-/* source type -> Hal_Vin input id, read out of aurora's .data table */
+/* table A: source type -> Hal_Vin input id (aurora .data 0x013b9e78) */
 static const int g_input_id[26] = {
-    1, 0, 0, 0, 0, 0, 0, 0, 0, 0,   /* 0..9  */
-    2, 0, 0, 0, 0, 1, 2, 3, 3, 66,  /* 10..19 */
-    3, 3, 0, 0, 0, 255              /* 20..25 */
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    2, 0, 0, 0, 0, 1, 2, 3, 3, 66,
+    3, 3, 0, 0, 0, 255
 };
+/* table B: only types 5 and 21 are 1 */
+static const int g_input_aux[26] = {
+    0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 0, 0, 0
+};
+
+struct audio_adc_record {
+    int id;
+    char name[0x28];
+};
+static const struct audio_adc_record g_adc_on = { 1, "adc on" };
+
+struct ext_control {
+    uint32_t id, size, reserved2;
+    void *ptr;
+};
+struct ext_controls {
+    uint32_t which, count, error_idx, request_fd, reserved;
+    struct ext_control *controls;
+};
+
+#define MAX_FDS 2
 
 struct ctx {
     const oa_host_api *api;
-    int fd;
+    const struct oa_source_hal *h;
     int enabled;
-    int current; /* -1 = unknown */
-    /* ABI 3 quiesce: Hal_Vin_Close is handed to a worker after the service
-     * is unpublished and the fd is detached. */
+    int current;
+    int slot_connected;
+    int slot_type;
+    int fds[MAX_FDS];
+    int nfds;
+    /* ABI 3 quiesce: fds are detached and closed on a worker. */
     pthread_t cleanup_thread;
     int cleanup_running;
-    int close_fd;
+    int close_fds[MAX_FDS];
+    int close_n;
     unsigned cleanup_delay_ms;
 };
 
 static struct ctx *g_ctx;
 
-static int select_type(int type)
+static void close_fds(struct ctx *c)
 {
-    struct ctx *c = g_ctx;
-    if (!c || c->fd < 0 || type < 0 || type > 25)
-        return -1;
-    if (!c->enabled)
-        return -2;
+    for (int i = 0; i < c->nfds; i++)
+        if (c->fds[i] >= 0 && c->h && c->h->vin_close)
+            c->h->vin_close(c->fds[i]);
+    c->nfds = 0;
+    c->slot_connected = 0;
+}
 
-    Hal_Vin_SelectInput(c->fd, g_input_id[type]);
-    Hal_Vin_SetStreamStart(c->fd);
-    c->current = type;
-    c->api->log(c->api->priv, OA_LOG_INFO, "source -> type %d (vin id %d)", type, g_input_id[type]);
+static int open_index(int type)
+{
+    switch (type) {
+    case 0: case 4: case 5: case 20: case 21: return 0;
+    case 10: return 1;
+    case 14: case 15: case 16: case 17: case 18: return 3;
+    case 19: return 4;
+    default: return -1; /* 1,2,3,6..9,11..13 and >21 are not VIN slots */
+    }
+}
+
+/* 0x92e8ac: VPLT 0x4c4 with {tableA,tableB}, then SelectInput(fd,tableA). */
+static void vplt_select(struct ctx *c, int fd, int type)
+{
+    int pair[2] = { g_input_id[type], g_input_aux[type] };
+    if (c->h->vpltio_send)
+        (void)c->h->vpltio_send(0x4c4, 0, pair, 0, 0, 0, 0, 0, 0);
+    if (c->h->vin_select)
+        c->h->vin_select(fd, pair[0]);
+}
+
+static int vin_slot_connect(struct ctx *c, int type)
+{
+    if (type < 0 || type > 21)
+        return -1;
+    /* plat_vin_slot_connect calls EasySelect for types 4..21 before the
+     * connected short-circuit, even when the slot is already connected. */
+    if (type >= 4 && c->h->audio_easy_select)
+        c->h->audio_easy_select(0, 1, &g_adc_on);
+
+    if (c->slot_connected && c->slot_type == type)
+        return 0;
+    if (c->slot_connected) {
+        /* The vendor PLAT_VIU_ChangeInput disconnects the previous source
+         * before connecting a new one. We do the fd/slot part natively; the
+         * platform DRM/VDEC disconnect body is not available as a library. */
+        close_fds(c);
+    }
+
+    int idx = open_index(type);
+    if (idx < 0)
+        return -1;
+
+    if (idx == 3) {
+        int fd1 = c->h->vin_open ? c->h->vin_open(3) : -1;
+        if (fd1 < 0)
+            return -1;
+        vplt_select(c, fd1, type);
+
+        uint32_t info[4];
+        memset(info, 0, sizeof info);
+        if (c->h->v4l2_info_get) c->h->v4l2_info_get(0, info);
+        uint32_t fdinfo[9];
+        memset(fdinfo, 0, sizeof fdinfo);
+        if (c->h->v4l2_fd_get) c->h->v4l2_fd_get(fdinfo);
+
+        int fd2 = c->h->vin_open ? c->h->vin_open(2) : -1;
+        if (fd2 < 0) {
+            if (c->h->vin_close) c->h->vin_close(fd1);
+            return -1;
+        }
+        if (c->h->vin_select) c->h->vin_select(fd2, 0);
+        if (c->h->vin_start) c->h->vin_start(fd2);
+
+        info[0] = 0;
+        info[1] = (uint32_t)fd2;
+        info[2] = (uint32_t)fd1;
+        info[3] = (uint32_t)type;
+        if (c->h->v4l2_info_set)
+            c->h->v4l2_info_set(0, (int)info[0], (int)info[1],
+                                (int)info[2], (int)info[3]);
+        fdinfo[3] = (uint32_t)fd2;
+        fdinfo[4] = (uint32_t)fd1;
+        if (c->h->v4l2_fd_set)
+            c->h->v4l2_fd_set((int)fdinfo[0], (int)fdinfo[1], (int)fdinfo[2],
+                              (int)fdinfo[3], (int)fdinfo[4], (int)fdinfo[5],
+                              (int)fdinfo[6], (int)fdinfo[7], (int)fdinfo[8]);
+        c->fds[0] = fd1;
+        c->fds[1] = fd2;
+        c->nfds = 2;
+    } else {
+        int fd = c->h->vin_open ? c->h->vin_open(idx) : -1;
+        if (fd < 0)
+            return -1;
+        vplt_select(c, fd, type);
+        if (c->h->vin_start) c->h->vin_start(fd);
+
+        uint32_t info[4];
+        memset(info, 0, sizeof info);
+        if (c->h->v4l2_info_get) c->h->v4l2_info_get(0, info);
+        info[0] = 0;
+        info[1] = (uint32_t)fd;
+        info[3] = (uint32_t)type;
+        if (c->h->v4l2_info_set)
+            c->h->v4l2_info_set(0, (int)info[0], (int)info[1],
+                                (int)info[2], (int)info[3]);
+
+        uint32_t fdinfo[9];
+        memset(fdinfo, 0, sizeof fdinfo);
+        if (c->h->v4l2_fd_get) c->h->v4l2_fd_get(fdinfo);
+        int fd_index = idx == 0 ? 0 : idx == 1 ? 1 : 2;
+        fdinfo[fd_index] = (uint32_t)fd;
+        if (c->h->v4l2_fd_set)
+            c->h->v4l2_fd_set((int)fdinfo[0], (int)fdinfo[1], (int)fdinfo[2],
+                              (int)fdinfo[3], (int)fdinfo[4], (int)fdinfo[5],
+                              (int)fdinfo[6], (int)fdinfo[7], (int)fdinfo[8]);
+        c->fds[0] = fd;
+        c->nfds = 1;
+    }
+    c->slot_connected = 1;
+    c->slot_type = type;
     return 0;
 }
 
-static int iface_select(int type)
+/* plat_drm_get_dpsource @0x92cac8: V4L2Info word1 is the fd, word2 is the
+ * format selector. Types 1..3 use Get_V4l2Drm; other types ask
+ * VIDIOC_G_EXT_CTRLS id 0xa00968 (size 0x1a4) into the output buffer. */
+static int drm_get_dpsource(struct ctx *c, int dev, int type, uint32_t *out)
 {
-    return select_type(type);
+    uint32_t info[4];
+    memset(info, 0, sizeof info);
+    if (c->h->v4l2_info_get) c->h->v4l2_info_get(dev, info);
+
+    if (type >= 1 && type <= 3) {
+        if (c->h->v4l2_drm_get) c->h->v4l2_drm_get(0, out);
+        if (type == 1) out[0] = 0;
+        else if (type == 2) out[0] = 1;
+        /* type 3 keeps the Get_V4l2Drm result and falls through to the map */
+        if (type != 3) {
+            out[0x67] = 0;
+            return 0;
+        }
+    } else {
+        struct ext_control ctl;
+        struct ext_controls ctls;
+        memset(&ctl, 0, sizeof ctl);
+        memset(&ctls, 0, sizeof ctls);
+        ctl.id = 0xa00968;
+        ctl.size = 0x1a4;
+        ctl.ptr = out;
+        ctls.which = 0xa00000;
+        ctls.count = 1;
+        ctls.controls = &ctl;
+        if (!c->h->ioctl ||
+            c->h->ioctl((int)info[1], 0xc0185647UL, &ctls) != 0)
+            return -1;
+    }
+
+    switch (info[2]) {
+    case 0: out[0] = 2; break;
+    case 4: case 5: out[0] = 3; break;
+    case 0x0e: case 0x0f: case 0x10: case 0x11: case 0x12:
+        out[0] = 7; break;
+    case 0x13: out[0] = 5; break;
+    case 0x14: case 0x15: out[0] = 0x0b; break;
+    default: out[0] = 4; break;
+    }
+    out[0x67] = 0;
+    return 0;
+}
+
+/* plat_drm_connect_dpsource @0x92cbe0. */
+static int drm_connect(struct ctx *c, int dev, int type)
+{
+    int drm_dev = c->h->drm_device_id ? c->h->drm_device_id(0) : -1;
+    int plane = c->h->drm_plane_type ? c->h->drm_plane_type(dev) : -1;
+    if (drm_dev < 0 || plane < 0)
+        return -1;
+    uint32_t pinfo[12];
+    memset(pinfo, 0, sizeof pinfo);
+    if (c->h->drm_plane_info) c->h->drm_plane_info(plane, pinfo);
+
+    uint32_t src[0x69];
+    memset(src, 0, sizeof src);
+    if (drm_get_dpsource(c, dev, type, src) != 0)
+        return -1;
+    if (c->h->drm_set_dpsource)
+        c->h->drm_set_dpsource(drm_dev, (int)src[0], (int)src[1], (int)src[2]);
+    return 0;
+}
+
+/* PLAT_VIU_ChangeInput connect half. Path 0 is the main display path used by
+ * this set's Bronlijst. The vendor also disconnects the old source and updates
+ * aurora-internal NdVideoSetting/VinParam tables; those are not library calls
+ * and are deliberately not guessed here. */
+static int change_input(struct ctx *c, int type)
+{
+    if (!c->enabled)
+        return -2;
+    if (type < 0 || type > 25)
+        return -1;
+    /* PLAT_VIU_ChangeInput's early same-source return. */
+    if (c->current == type && c->slot_connected)
+        return 0;
+    /* PLAT_VIU_ChangeInput disconnects the old path before the type gates. */
+    if (c->slot_connected && c->slot_type != type)
+        close_fds(c);
+    if (type == 25)
+        return 0;
+
+    if (type == 1) {
+        if (c->h->sd_video_connect) c->h->sd_video_connect();
+        if (drm_connect(c, 0, 1) != 0) return -1;
+        if (c->h->video_ext_open) c->h->video_ext_open(0, 1);
+    } else if (type == 2 || type == 3) {
+        if (c->h->video_ext_open) c->h->video_ext_open(0, (unsigned)type);
+    } else {
+        if (vin_slot_connect(c, type) != 0)
+            return -1;
+        if (drm_connect(c, 0, type) != 0)
+            return -1;
+        if (c->h->video_ext_open)
+            c->h->video_ext_open(0, (unsigned)type);
+    }
+    c->current = type;
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "source -> type %d (vin id %d, %d fd)", type,
+                g_input_id[type], c->nfds);
+    return 0;
+}
+
+static int select_type(int type)
+{
+    return g_ctx ? change_input(g_ctx, type) : -1;
 }
 static int iface_current(void)
 {
@@ -110,10 +321,10 @@ static int iface_current(void)
 }
 static int iface_available(void)
 {
-    return g_ctx && g_ctx->fd >= 0 ? 1 : 0;
+    return g_ctx && g_ctx->h ? 1 : 0;
 }
 
-static const oa_source_iface g_iface = { iface_select, iface_current, iface_available };
+static const oa_source_iface g_iface = { select_type, iface_current, iface_available };
 
 static int m_init(const oa_host_api *api, void **out)
 {
@@ -123,8 +334,9 @@ static int m_init(const oa_host_api *api, void **out)
     if (!c)
         return -1;
     c->api = api;
-    c->fd = -1;
-    c->close_fd = -1;
+    c->h = oa_source_hal();
+    c->fds[0] = c->fds[1] = -1;
+    c->close_fds[0] = c->close_fds[1] = -1;
     c->current = -1;
     *out = c;
     g_ctx = c;
@@ -134,34 +346,25 @@ static int m_init(const oa_host_api *api, void **out)
 static int m_start(void *v)
 {
     struct ctx *c = v;
+    if (!c->h) return -1;
     long delay = atol(c->api->config_get(c->api->priv,
                                          "source.cleanup_delay_ms", "0"));
     c->cleanup_delay_ms = delay > 0 ? (unsigned)delay : 0;
     c->cleanup_running = 0;
-    c->close_fd = -1;
     c->current = -1;
-    c->fd = -1;
+    c->slot_connected = 0;
+    c->nfds = 0;
+    c->close_n = 0;
     const char *en = c->api->config_get(c->api->priv, "source.enable", "0");
-    c->enabled = atoi(en) != 0 && have_hal();
-
-    if (!have_hal()) {
-        c->api->log(c->api->priv, OA_LOG_WARN, "source: built without the vendor HAL");
-    } else {
-        c->fd = Hal_Vin_Open(0);
-        if (c->fd < 0)
-            c->api->log(c->api->priv, OA_LOG_WARN, "source: Hal_Vin_Open(0) failed (/dev/ntkdvif)");
-        else
-            c->api->log(c->api->priv, OA_LOG_INFO, "source: VIN open (fd %d), switching %s", c->fd,
-                        c->enabled ? "enabled" : "disabled (source.enable=1 to allow)");
-    }
-
+    c->enabled = atoi(en) != 0;
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "source: per-type VIN switching %s",
+                c->enabled ? "enabled" : "disabled (source.enable=1 to allow)");
     if (c->api->publish(c->api->priv, OA_SVC_SOURCE, 1, &g_iface) != 0)
         c->api->log(c->api->priv, OA_LOG_WARN, "source service already published");
     return 0;
 }
 
-/* No host API calls and no ctx access except the fd/delay fields captured
- * before the thread starts. */
 static void *cleanup_worker(void *v)
 {
     struct ctx *c = v;
@@ -172,50 +375,59 @@ static void *cleanup_worker(void *v)
         };
         (void)nanosleep(&pause, NULL);
     }
-    int fd = c->close_fd;
-    c->close_fd = -1;
-    if (fd >= 0) Hal_Vin_Close(fd);
+    for (int i = 0; i < c->close_n; i++) {
+        if (c->close_fds[i] >= 0 && c->h && c->h->vin_close)
+            c->h->vin_close(c->close_fds[i]);
+        c->close_fds[i] = -1;
+    }
+    c->close_n = 0;
     return NULL;
 }
 
-/* ABI 3 gate: unpublish the source service and detach the fd synchronously,
- * then close it on a worker. A stale iface call sees fd < 0 and returns -1. */
 static int m_quiesce(void *v)
 {
     struct ctx *c = v;
+    if (!c) return 0;
     if (c->cleanup_running) {
         for (int i = 0; i < 10; i++) {
             int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
-            if (rc == 0) {
-                c->cleanup_running = 0;
-                return 0;
-            }
-            if (rc != EBUSY) {
-                c->cleanup_running = 0;
-                return -EIO;
-            }
+            if (rc == 0) { c->cleanup_running = 0; return 0; }
+            if (rc != EBUSY) { c->cleanup_running = 0; return -EIO; }
             const struct timespec pause = { .tv_nsec = 5000000 };
             (void)nanosleep(&pause, NULL);
         }
         return -EAGAIN;
     }
-
+    c->enabled = 0;
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
-    if (c->fd < 0) return 0;
+    if (c->nfds == 0) return 0;
 
-    int fd = c->fd;
-    c->fd = -1;
+    c->close_n = c->nfds;
+    for (int i = 0; i < c->nfds; i++) {
+        c->close_fds[i] = c->fds[i];
+        c->fds[i] = -1;
+    }
+    c->nfds = 0;
+    c->slot_connected = 0;
     c->current = -1;
     if (!c->cleanup_delay_ms) {
-        Hal_Vin_Close(fd);
+        for (int i = 0; i < c->close_n; i++) {
+            if (c->close_fds[i] >= 0 && c->h && c->h->vin_close)
+                c->h->vin_close(c->close_fds[i]);
+            c->close_fds[i] = -1;
+        }
+        c->close_n = 0;
         return 0;
     }
-    c->close_fd = fd;
     int rc = pthread_create(&c->cleanup_thread, NULL, cleanup_worker, c);
     if (rc) {
-        Hal_Vin_Close(c->close_fd);
-        c->close_fd = -1;
+        for (int i = 0; i < c->close_n; i++) {
+            if (c->close_fds[i] >= 0 && c->h && c->h->vin_close)
+                c->h->vin_close(c->close_fds[i]);
+            c->close_fds[i] = -1;
+        }
+        c->close_n = 0;
         return -EIO;
     }
     c->cleanup_running = 1;
@@ -225,20 +437,14 @@ static int m_quiesce(void *v)
 static void m_stop(void *v)
 {
     struct ctx *c = v;
+    c->enabled = 0;
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
     if (c->cleanup_running) {
         (void)pthread_join(c->cleanup_thread, NULL);
         c->cleanup_running = 0;
     }
-    if (c->close_fd >= 0) {
-        Hal_Vin_Close(c->close_fd);
-        c->close_fd = -1;
-    }
-    if (c->fd >= 0) {
-        Hal_Vin_Close(c->fd);
-        c->fd = -1;
-    }
+    close_fds(c);
     c->current = -1;
 }
 
@@ -249,8 +455,7 @@ static void m_destroy(void *v)
         (void)pthread_join(c->cleanup_thread, NULL);
         c->cleanup_running = 0;
     }
-    if (c->close_fd >= 0) Hal_Vin_Close(c->close_fd);
-    if (c->fd >= 0) Hal_Vin_Close(c->fd);
+    close_fds(c);
     if (g_ctx == v)
         g_ctx = NULL;
     free(v);
@@ -261,7 +466,7 @@ static const oa_module g_module = {
     .abi = OA_ABI_VERSION,
     .size = sizeof(oa_module),
     .name = "source",
-    .version = "0.1",
+    .version = "0.2",
     .requires = { OA_SVC_PLAT, "" },
     .init = m_init,
     .start = m_start,

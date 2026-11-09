@@ -60,9 +60,15 @@ maps the cold-start stages and the current stock-UI coverage.
       pans; resume reopens/repeats. `check-display` host tests pass and the
       ARM/cold bundle builds. TV cold scanout and visible acceptance remain
       open; `plat.drm_init=0` is still the takeover workaround.
-- [ ] Source/VIN full path: `PLAT_VIU_ChangeInput`, `plat_drm_connect_dpsource`,
-      `NDAL_VideoExt_OpenDevice`, V4L2Info/FdCommon and the audio companion;
-      keep `source.enable=0` until accepted.
+- [ ] Source/VIN full path: the connect half is implemented behind
+      `source.enable=0` with an injectable HAL seam (SOURCE-PATH-2026-11-09):
+      type gates, per-type Open(0/1/3+2/4), VPLT `0x4c4`, V4L2Info/FdCommon,
+      `plat_drm_get/connect_dpsource`, `NDAL_VideoExt_OpenDevice` and the
+      `Hal_Audio_EasySelect` companion. `check-source-path` and
+      `check-source-fake-ipc` pass; ARM/cold bundle builds. Remaining: the
+      vendor disconnect body, `NdVideoSetting`/VinParam/UpdateTDLayer, HDMI
+      PHY, the high-level `AudioIF` transport, and TV acceptance. Keep
+      `source.enable=0` until accepted.
 - [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
       gain/SPDIF and audible acceptance.
 - [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.

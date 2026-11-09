@@ -269,9 +269,12 @@ The stock UI is the vendor skin (`ui_vendor`), not the native Omarchy shell.
    COLD-DISPLAY-REPAIR): complete format/stride/region/enable/alpha/update and
    resume, then a cold scanout acceptance. `plat.drm_init=0` is a takeover
    workaround, not parity.
-3. **Source/VIN full path**: finish `PLAT_VIU_ChangeInput`, `plat_drm_connect_
-   dpsource`, `NDAL_VideoExt_OpenDevice`, V4L2Info/FdCommon and the audio
-   companion. Keep `source.enable=0` until then.
+3. **Source/VIN path**: the connect half is implemented behind
+   `source.enable=0` (type gates, per-type opens, VPLT `0x4c4`, V4L2Info/
+   FdCommon, DRM dpsource, NDAL VideoExt, Audio EasySelect) and fake-HAL
+   tested in SOURCE-PATH-2026-11-09. Finish the vendor disconnect body,
+   `NdVideoSetting`/VinParam/TDLayer, HDMI PHY and the high-level AudioIF
+   transport; keep the gate 0 until TV acceptance.
 4. **Audio amp/route**: native AD82587 backend, reset/mute/standby, speaker
    gain/SPDIF, audible acceptance.
 5. **Tuner/NIM-DTV**, **CEC ownership/TX**, **panel/power/watchdog**, **IR

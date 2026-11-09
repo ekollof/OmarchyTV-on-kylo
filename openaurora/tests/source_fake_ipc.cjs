@@ -94,26 +94,27 @@ async function main() {
             'source type -1 available 1');
 
         const cases = [
-            [17, 3],  /* HDMI1 */
-            [18, 3],  /* HDMI2 */
-            [19, 66], /* HDMI3 */
-            [15, 1],  /* BACK AV / CVBS */
-            [16, 2],  /* VGA/PC */
-            [20, 3],  /* YPbPr */
-            [0, 1],   /* TV */
+            [17, 'select fd=103 id=3'],  /* HDMI1: Open(3) then Open(2) */
+            [18, 'select fd=103 id=3'],  /* HDMI2 */
+            [19, 'select fd=104 id=66'], /* HDMI3: Open(4) */
+            [15, 'select fd=103 id=1'],  /* BACK AV / CVBS */
+            [16, 'select fd=103 id=2'],  /* VGA/PC */
+            [20, 'select fd=103 id=3'],  /* YPbPr */
+            [0, 'select fd=100 id=1'],   /* TV: Open(0) */
         ];
-        for (const [type, id] of cases) {
+        for (const [type, line] of cases) {
             assert.equal(await command(`source-select ${type}`), 'ok');
             assert.equal(await command('source-state'),
                 `source type ${type} available 1`);
-            assert.ok(log().includes(`select fd=100 id=${id}`),
-                `missing VIN id ${id} for type ${type}`);
+            assert.ok(log().includes(line),
+                `missing '${line}' for type ${type}`);
         }
         assert.equal(await command('source-select 99'), 'failed errno 22');
 
         /* ABI 3 gate: the diagnostic delay keeps Hal_Vin_Close on a worker.
          * The first reload fails fast; the service is already unpublished,
          * status stays responsive, and a retry completes and reopens VIN. */
+        fs.writeFileSync(vin, ''); /* isolate the lifecycle phase */
         const first = await timed('reload source');
         assert.match(first.reply, /^failed/, 'first reload must fail fast');
         assert.ok(first.elapsed < 1500, `first reload took ${first.elapsed}ms`);
@@ -125,12 +126,12 @@ async function main() {
             'retry must complete the reload');
         assert.equal(await command('source-state'),
             'source type -1 available 1');
-        assert.equal(await command('source-select 17'), 'ok');
+        assert.equal(await command('source-select 0'), 'ok');
         const after_reload = log();
         const opens = [...after_reload.matchAll(/open idx=0/g)];
         const close_at = after_reload.indexOf('close fd=100');
-        assert.equal(opens.length, 2, 'reload must reopen VIN once');
-        assert.ok(close_at >= 0 && close_at < opens[1].index,
+        assert.equal(opens.length, 1, 'reload must reopen VIN once');
+        assert.ok(close_at >= 0 && close_at < opens[0].index,
             'worker close must precede the reopened VIN fd');
 
         const stop = await timed('stop source');
@@ -181,8 +182,8 @@ async function main() {
         const exit2 = await bounded(closed2, 8000);
         assert.equal(exit2.code, 0, stderr);
         const text = log();
-        assert.ok((text.match(/open idx=0/g) || []).length >= 2,
-            'source must reopen the VIN device after reload');
+        assert.ok((text.match(/open idx=0/g) || []).length >= 1,
+            'source must have opened the VIN device');
         assert.ok(text.includes('close fd=100'));
         console.log(`ok source fake-VIN IPC: reload fails fast (${first.elapsed}ms), worker closes fd before VIN reopen, stop uses the gate, source.enable holds`);
     } finally {

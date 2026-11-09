@@ -980,10 +980,10 @@ $(BUILD)/modules/mod_display.so: $(call pic_objs,modules__mod_display,modules/di
 	$(CC) -shared -o $@ $^ $(LDFLAGS) $(VENDOR_LDFLAGS) $(LIBM) -pthread
 $(eval $(call emit_pics,modules__mod_display,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c,-pthread,include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h))
 
-$(BUILD)/modules/mod_source.so: $(call pic_objs,modules__mod_source,modules/source/source.c)
+$(BUILD)/modules/mod_source.so: $(call pic_objs,modules__mod_source,modules/source/source.c common/source_hal_vendor.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),source),$(VENDOR_LDFLAGS),)
-$(eval $(call emit_pics,modules__mod_source,modules/source/source.c,-pthread,include/openaurora/module.h include/openaurora/services.h))
+$(eval $(call emit_pics,modules__mod_source,modules/source/source.c common/source_hal_vendor.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/source_hal.h))
 
 $(BUILD)/modules/mod_display_fb.so: $(call pic_objs,modules__mod_display_fb,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c)
 	@mkdir -p $(dir $@)
@@ -2762,7 +2762,16 @@ $(BUILD)/tests/ui_menu_action: tests/ui_menu_action.c core/host.h $(filter-out $
 $(BUILD)/tests/mod_source_fake.so: $(call pic_objs,tests__mod_source_fake,modules/source/source.c tests/source_fake.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -ldl -pthread
-$(eval $(call emit_pics,tests__mod_source_fake,modules/source/source.c tests/source_fake.c,-pthread,include/openaurora/module.h include/openaurora/services.h,PIC_CPPFLAGS_SOURCE_FAKE))
+$(eval $(call emit_pics,tests__mod_source_fake,modules/source/source.c tests/source_fake.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/source_hal.h,PIC_CPPFLAGS_SOURCE_FAKE))
+
+$(BUILD)/tests/source_path: tests/source_path.c modules/source/source.c tests/source_fake.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
+
+.PHONY: check-source-path
+check-source-path: $(BUILD)/tests/source_path
+	@$(BUILD)/tests/source_path
+check: check-source-path
 
 .PHONY: check-vin-real
 check-vin-real:
