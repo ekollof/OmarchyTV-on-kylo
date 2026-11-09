@@ -12,6 +12,7 @@ fail() { echo "cold-config: $*" >&2; exit 1; }
 grep -qx 'plat\.drm_init = 1' "$cold" || fail "cold plat.drm_init"
 grep -qx 'display\.restore_snapshot = 0' "$cold" || fail "cold restore_snapshot"
 grep -qx 'display\.cold_init = 1' "$cold" || fail "cold display.cold_init"
+grep -qx 'display\.osd_reinit = 1' "$cold" || fail "cold display.osd_reinit"
 grep -qx 'panel\.standby = 1' "$cold" || fail "cold panel.standby"
 grep -qx 'panel\.power_on_start = 1' "$cold" || fail "cold panel.power_on_start"
 grep -qx 'audio\.i2s_mclk = 1' "$cold" || fail "cold audio.i2s_mclk"

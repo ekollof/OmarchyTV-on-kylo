@@ -54,10 +54,12 @@ maps the cold-start stages and the current stock-UI coverage.
       `make cold-replacement-bundle` (33 modules, manifest verified) and
       `make check-cold-config` pass. Not a TV cold-boot acceptance; the
       TV-side `--check`/boot gate is still open.
-- [ ] Real display/OSD cold enable: complete the format/stride/region/enable/
-      alpha/update and resume sequence; `plat.drm_init=0` is a takeover
-      workaround, not parity. OSD-BUFFER-CONTRACT, DRM-PLANE-CONTRACT,
-      COLD-DISPLAY-REPAIR.
+- [ ] Real display/OSD cold enable: the opt-in `display.osd_reinit` path now
+      forces the kernel vendor `_ker_osd_fb_SetPar` via FBIOPUT_VSCREENINFO
+      (BGRA/transp alpha/32-byte stride), checks the format, writes region and
+      pans; resume reopens/repeats. `check-display` host tests pass and the
+      ARM/cold bundle builds. TV cold scanout and visible acceptance remain
+      open; `plat.drm_init=0` is still the takeover workaround.
 - [ ] Source/VIN full path: `PLAT_VIU_ChangeInput`, `plat_drm_connect_dpsource`,
       `NDAL_VideoExt_OpenDevice`, V4L2Info/FdCommon and the audio companion;
       keep `source.enable=0` until accepted.

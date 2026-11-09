@@ -107,8 +107,10 @@ PWM108 channel0, high period1000; TCON gate0. `check-panel-curve` and
 `check-panel-quiesce` pass; visible panel-on/off and cold boot remain
 unaccepted. A separate cold candidate profile (`openaurora-cold.conf`) now
 sets real DRM init, no snapshot restore, panel power-on, I2S MCLK and SPI
-before tuner, with the stock `ui_vendor` stack; `cold-replacement-bundle` (33
-modules) and `check-cold-config` pass. No ARM module has an undefined vendor
+before tuner, with the stock `ui_vendor` stack and `display.osd_reinit=1`
+(forced kernel SetPar: BGRA/transp alpha/32-byte stride, region, pan, resume
+reinit); `cold-replacement-bundle` (33 modules) and `check-cold-config` pass.
+`check-display` covers the forced reinit on a valid var and resume. No ARM module has an undefined vendor
 `DEV_*` symbol, so the cold path is HAL-only; `source.enable`/`cec.enable`
 remain 0. This is not a TV cold-boot acceptance.
 Read-only TV: fb0..fb4 are OSD_NORMAL1/2/3 and OSD_CURSOR1/2; stock holds

@@ -69,6 +69,7 @@ struct ctx {
     int mirror;       /* copy the painted frame into the other frames (fights DFB's flip) */
     int profile;      /* log per-stage present timings when display.profile=1 */
     int cold_init;    /* repair an unconfigured fb before first use */
+    int osd_reinit;   /* force the vendor SetPar path even on a valid var */
     unsigned cold_w, cold_h, cold_frames;
 
     /* Offscreen RGBA scene: every draw renders here, present() copies it to the visible frame or
@@ -695,9 +696,11 @@ static int fb_make_node(struct ctx *c)
  * a valid var is left untouched so takeover behavior does not change. */
 static int cold_repair(struct ctx *c)
 {
-    if (!c->cold_init)
+    if (!c->cold_init && !c->osd_reinit)
         return 0;
-    if (c->var.xres && c->var.yres && c->var.bits_per_pixel == 32 && c->fix.line_length)
+    int valid = c->var.xres && c->var.yres && c->var.bits_per_pixel == 32 &&
+                c->fix.line_length;
+    if (valid && !c->osd_reinit)
         return 0;
 
     struct fb_var_screeninfo v;
@@ -712,6 +715,9 @@ static int cold_repair(struct ctx *c)
     v.blue.offset = 0;   v.blue.length = 8;
     v.transp.offset = 24; v.transp.length = 8;
     v.activate = FB_ACTIVATE_NOW;
+    v.yoffset = valid ? c->var.yoffset : 0;
+    if (v.yoffset >= c->cold_h * c->cold_frames)
+        v.yoffset = 0;
     if (ioctl(c->fd, FBIOPUT_VSCREENINFO, &v) != 0)
         return -1;
     if (ioctl(c->fd, FBIOGET_VSCREENINFO, &c->var) != 0 ||
@@ -720,9 +726,24 @@ static int cold_repair(struct ctx *c)
     if (c->var.xres != c->cold_w || c->var.yres != c->cold_h ||
         c->var.bits_per_pixel != 32 || !c->fix.line_length)
         return -1;
+    if (c->fix.line_length < c->var.xres * 4u ||
+        (c->fix.line_length & 31u) != 0) {
+        c->api->log(c->api->priv, OA_LOG_ERROR,
+                    "%s: rejected stride %u for %ux%u x32",
+                    c->path, c->fix.line_length, c->var.xres, c->var.yres);
+        return -1;
+    }
+    if (c->var.transp.offset != 24 || c->var.transp.length != 8) {
+        c->api->log(c->api->priv, OA_LOG_ERROR,
+                    "%s: rejected alpha field offset=%u length=%u",
+                    c->path, c->var.transp.offset, c->var.transp.length);
+        return -1;
+    }
     c->api->log(c->api->priv, OA_LOG_INFO,
-                "%s: cold repair set %ux%u x32, %u frame(s) before first use",
-                c->path, c->var.xres, c->var.yres, c->cold_frames);
+                "%s: %s set %ux%u x32, %u frame(s), stride %u, alpha %u/%u before first use",
+                c->path, c->osd_reinit ? "osd reinit" : "cold repair",
+                c->var.xres, c->var.yres, c->cold_frames, c->fix.line_length,
+                c->var.transp.offset, c->var.transp.length);
     return 0;
 }
 
@@ -995,6 +1016,7 @@ static int m_start(void *v)
     c->verify = c->api->config_get(c->api->priv, "display.verify_scanout", "0")[0] == '1';
     c->profile = c->api->config_get(c->api->priv, "display.profile", "0")[0] == '1';
     c->cold_init = c->api->config_get(c->api->priv, "display.cold_init", "0")[0] == '1';
+    c->osd_reinit = c->api->config_get(c->api->priv, "display.osd_reinit", "0")[0] == '1';
     c->cold_w = (unsigned)atoi(c->api->config_get(c->api->priv, "display.cold_width", "1920"));
     c->cold_h = (unsigned)atoi(c->api->config_get(c->api->priv, "display.cold_height", "1080"));
     c->cold_frames = (unsigned)atoi(c->api->config_get(c->api->priv, "display.cold_frames", "2"));

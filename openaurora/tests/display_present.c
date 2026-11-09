@@ -28,7 +28,7 @@ static const char *rotate;
 static const char *test_mode;
 static unsigned commits, last_yoffset, syncs, opens, closes;
 static unsigned region_writes, region_before_pan;
-static int cold_init, cold_zero;
+static int cold_init, cold_zero, osd_reinit;
 static unsigned put_calls;
 static int fail_sync, fail_commit, kernel_suspended, fail_unmap, fail_close;
 static unsigned height = 2;
@@ -145,6 +145,7 @@ static const char *config(void *priv, const char *key, const char *def)
     if (!strcmp(key, "display.pan") && rotate) return rotate;
     if (!strcmp(key, "display.test")) return test_mode ? test_mode : "0";
     if (!strcmp(key, "display.cold_init")) return cold_init ? "1" : "0";
+    if (!strcmp(key, "display.osd_reinit")) return osd_reinit ? "1" : "0";
     if (!strcmp(key, "display.cold_width")) return "8";
     if (!strcmp(key, "display.cold_height")) return "2";
     if (!strcmp(key, "display.cold_frames")) return "2";
@@ -255,6 +256,28 @@ int main(void)
     assert(!display->present() && commits == 1 && last_yoffset == 0);
     puts("  ok   cold repair: unconfigured fb programmed before map/region/pan");
     cold_zero = 0; cold_init = 0;
+    finish(ctx);
+    /* Opt-in reinit on an already-valid var: force the vendor SetPar path
+     * (BGRA/alpha/stride), then region/pan. This is the cold profile's
+     * display.osd_reinit mode; the auto repair above remains the fallback. */
+    cold_init = 1; osd_reinit = 1; put_calls = 0;
+    ctx = start(1, 0, NULL);
+    assert(put_calls == 1);
+    assert(var.xres == 8 && var.yres == 2 && var.yres_virtual == 4 &&
+           var.bits_per_pixel == 32);
+    assert(var.red.offset == 16 && var.green.offset == 8 &&
+           var.blue.offset == 0 && var.transp.offset == 24 &&
+           var.transp.length == 8);
+    assert(region_writes == 1 && region_before_pan);
+    assert(region[2] == 8 && region[3] == 2 && region[4] == 0 && region[5] == 0);
+    assert(!display->fill(0, 0, 1, 1, 1, 2, 3));
+    assert(!display->present());
+    unsigned p = put_calls;
+    assert(oa_module_entry()->suspend(ctx) == 0);
+    assert(oa_module_entry()->resume(ctx) == 0);
+    assert(put_calls == p + 1);
+    puts("  ok   osd reinit: valid var forced through BGRA/alpha/stride + region/pan + resume");
+    osd_reinit = 0; cold_init = 0;
     finish(ctx);
     ctx = start(1, 0, NULL);
     assert(alpha && !alpha->clear_rgba(36, 38, 40, 153));

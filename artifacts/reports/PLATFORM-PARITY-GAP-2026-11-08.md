@@ -196,12 +196,31 @@ equivalent in OpenAurora, or keep our modules strictly on the HAL layer and
 never call vendor `DEV_*` code. Do not call `DEV_INI_Init` wholesale from
 `plat` under stock Aurora.
 
+### OSD cold reinit (vendor SetPar path)
+
+`display.osd_reinit=1` forces the vendor kernel `_ker_osd_fb_SetPar` path even
+when `fb_var` already looks valid: `FBIOPUT_VSCREENINFO` with the recovered
+fb1 template (BGRA 32bpp, `transp` offset24/length8, 1920x1080, two frames),
+then `FBIOGET_*` verification. The module rejects a stride below
+`xres*4` or not 32-byte aligned, and rejects a missing alpha field. The
+kernel SetPar performs alpha-blend enable, alpha255, color mode, aligned
+stride and display-window setup; the module then writes the region and the
+first `FBIOPAN_DISPLAY` commits/binds the buffer. Resume reopens the layer and
+repeats the reinit before recommitting the retained scene.
+
+This is the vendor fbdev/SetPar path, not a duplicate DRM/private-GEM or MMIO
+implementation. Host tests: `check-display` covers forced reinit on a valid
+var (format/BGRA/alpha/stride assertions, region-before-pan, resume reinit),
+and `check-cold-config`; the ARM `mod_display.so` and cold bundle rebuild and
+verify. It is not TV cold-scanout acceptance.
+
 ### Cold-start profile candidate
 
 `openaurora/tools/boot/openaurora-cold.conf` is a separate cold-boot profile,
 not the takeover config:
 
-- `plat.drm_init=1`, `display.restore_snapshot=0`, `display.cold_init=1`;
+- `plat.drm_init=1`, `display.restore_snapshot=0`, `display.cold_init=1`,
+  `display.osd_reinit=1`;
 - `panel.standby=1`, `panel.power_on_start=1`;
 - `audio.i2s_mclk=1`; `spi.enable=1` autoloaded before `tuner`;
 - stock `ui_vendor` stack (no `ui_omarchy`);
