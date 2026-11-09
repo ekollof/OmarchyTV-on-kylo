@@ -460,10 +460,13 @@ unvalidated.
       installed `/conf` hook was exercised on the real boot path with the
       34-module cold bundle; the second attempt hung the set and required the
       tested USB `/conf` recovery (BOOT-HOOK-COLD-ATTEMPT-2026-11-09). Not
-      accepted. Retry requires a pre-init watchdog/fallback that does not
-      depend on the replacement or the network, and staged bring-up
-      (UI/OSD/DRM first, then panel, SPI/NIM, tuner, audio one stage per cold
-      boot).
+      accepted. The retry safety is now implemented and host-tested
+      (STAGED-COLD-BOOT-DESIGN-2026-11-09): external MCU watchdog feeder,
+      boot-attempt gate with 3-unproven-boot auto-disable, supervisor
+      `--wdt-keep`/`--gate`, a 5-step hardware ladder (DRM/OSD/UI → panel →
+      SPI → tuner → I2S) and a fail-closed appmgr entry. The installed hook's
+      native branch still needs the `run-aurora.sh` handoff; nothing is
+      deployed and the native path stays disabled.
 - [ ] MCU/watchdog authority and standby/resume ownership.
 - [ ] Any persistent replacement or boot-hook change. The `/conf`-only hook
       (`/conf/remote.txt` -> `/conf/remotelf/aurora.elf`, gated by

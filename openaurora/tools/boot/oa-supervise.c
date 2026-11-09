@@ -70,6 +70,35 @@ static void record_failure(const char *path, const char *enable)
     fprintf(stderr, "oa-supervise: failure streak %u/3\n", n);
 }
 
+/* Boot-attempt gate files are shared with tools/boot/oa-boot-gate.sh. A boot
+ * that reaches the stable window clears its token; one that does not is
+ * counted by the hook on the next boot. */
+static void clear_attempt(const char *gate)
+{
+    if (!gate || !*gate) return;
+    char path[512];
+    snprintf(path, sizeof path, "%s/oa_try", gate);
+    unlink(path);
+    snprintf(path, sizeof path, "%s/oa_bootfail", gate);
+    FILE *f = fopen(path, "w");
+    if (f) { fputs("0\n", f); fclose(f); }
+    snprintf(path, sizeof path, "%s/oa_last_ok", gate);
+    f = fopen(path, "w");
+    if (f) { fputs("ok\n", f); fclose(f); }
+    fprintf(stderr, "oa-supervise: boot attempt cleared\n");
+}
+
+/* Stop the external watchdog feeder on fallback so the vendor stack can own
+ * the watchdog again (it may disable it for standby). */
+static void stop_feeder(const char *gate)
+{
+    if (!gate || !*gate) return;
+    char path[512];
+    snprintf(path, sizeof path, "%s/oa_wdt_stop", gate);
+    FILE *f = fopen(path, "w");
+    if (f) { fputs("vendor\n", f); fclose(f); }
+}
+
 static unsigned duration(const char *s)
 {
     char *end;
@@ -87,11 +116,14 @@ int main(int argc, char **argv)
     const char *heartbeat = "/tmp/openaurora.alive", *ready = "/tmp/openaurora.ready";
     const char *wdt = "/buffer/wdtctl", *fallback = "/vendor/com.nvt.idtv/aurora.elf";
     const char *fail = "/conf/oa_fail", *enable = "/conf/oa_boot", *safe = "/conf/oa_safe";
+    const char *gate = NULL;
+    int wdt_keep = 0;
     unsigned startup_ms = 75000, timeout_ms = 5000, stable_ms = 30000;
     int child_arg = 0;
     for (int i = 1; i < argc; i++) {
         const char *a = argv[i];
         if (!strcmp(a, "--")) { child_arg = i + 1; break; }
+        if (!strcmp(a, "--wdt-keep")) { wdt_keep = 1; continue; }
         if (i + 1 >= argc) goto usage;
         const char *v = argv[++i];
         if (!strcmp(a, "--heartbeat")) heartbeat = v;
@@ -101,6 +133,7 @@ int main(int argc, char **argv)
         else if (!strcmp(a, "--fail")) fail = v;
         else if (!strcmp(a, "--enable")) enable = v;
         else if (!strcmp(a, "--safe")) safe = v;
+        else if (!strcmp(a, "--gate")) gate = v;
         else if (!strcmp(a, "--startup-ms")) startup_ms = duration(v);
         else if (!strcmp(a, "--timeout-ms")) timeout_ms = duration(v);
         else if (!strcmp(a, "--stable-ms")) stable_ms = duration(v);
@@ -119,7 +152,9 @@ int main(int argc, char **argv)
     sigaction(SIGINT, &sa, NULL);
     unlink(heartbeat);
     unlink(ready);
-    if (watchdog(wdt, "disable") != 0) {
+    if (wdt_keep) {
+        fprintf(stderr, "oa-supervise: watchdog kept armed (external feeder)\n");
+    } else if (watchdog(wdt, "disable") != 0) {
         fprintf(stderr, "oa-supervise: watchdog disable failed\n");
         goto failed;
     }
@@ -178,6 +213,7 @@ int main(int argc, char **argv)
             } else if (!stable && now - healthy_since >= stable_ms) {
                 FILE *f = fopen(fail, "w");
                 if (f) { fputs("0\n", f); fclose(f); }
+                clear_attempt(gate);
                 stable = 1;
                 reloads = 0;
                 fprintf(stderr, "oa-supervise: stable; failure streak cleared\n");
@@ -197,6 +233,7 @@ child_done:
     unlink(ready);
 failed:
     record_failure(fail, enable);
+    stop_feeder(gate);
     if (watchdog(wdt, "set") != 0)
         fprintf(stderr, "oa-supervise: WARNING: watchdog re-arm failed\n");
 fallback:
@@ -207,6 +244,7 @@ fallback:
 usage:
     fprintf(stderr, "usage: %s [--heartbeat PATH] [--ready PATH] [--wdt PATH]\n"
             "  [--fallback PATH] [--fail PATH] [--enable PATH] [--safe PATH]\n"
+            "  [--gate DIR] [--wdt-keep]\n"
             "  [--startup-ms N] [--timeout-ms N] [--stable-ms N] -- PROGRAM [ARGS...]\n", argv[0]);
     return 2;
 }

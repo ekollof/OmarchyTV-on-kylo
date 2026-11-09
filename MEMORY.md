@@ -12,7 +12,13 @@ hook/config restored, dropbear :22 and telnetd :2323 running, watchdog armed.
 The 34-module staging was removed and the prior 12-module payload restored to
 `/buffer/openaurora`. The native path stays disabled; see
 BOOT-HOOK-COLD-ATTEMPT-2026-11-09 for the boot chain, evidence and retry
-requirements (pre-init fallback, staged cold bring-up).
+requirements. The retry safety is implemented and host-tested
+(STAGED-COLD-BOOT-DESIGN-2026-11-09): external MCU watchdog feeder
+(`oa-wdtfeed`), boot-attempt gate (`oa-boot-gate.sh`, 3 unproven boots
+auto-disable), `oa-supervise --wdt-keep --gate`, the stage0..4 hardware ladder
+and a fail-closed appmgr entry. The ARM cold bundle includes them and its
+manifest verifies; nothing is deployed and the installed hook's native branch
+still needs the handoff.
 
 Replacement system, 2026-11-07: `make replacement-bundle` produces a
 reproducible takeover UI (`plat_stub` + display/panel/ir/settings/service_db/

@@ -895,6 +895,14 @@ $(BUILD)/oa-supervise: tools/boot/oa-supervise.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
+$(BUILD)/oa-wdtfeed: tools/mcu/oa-wdtfeed.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
+$(BUILD)/tests/supervise_child: tests/supervise_child.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
 $(BUILD)/$(PROJECT): $(CORE_OBJ)
 	$(CC) $(LDFLAGS) -o $@ $(CORE_OBJ) $(LDLIBS)
 
@@ -1222,6 +1230,17 @@ check: check-panel-curve
 check-cold-config:
 	@sh tests/cold_config.sh
 check: check-cold-config
+
+.PHONY: check-boot-gate check-wdtfeed check-stage-profiles check-supervise-boot
+check-boot-gate:
+	@sh tests/boot_gate.sh
+check-wdtfeed: $(BUILD)/oa-wdtfeed
+	@sh tests/wdtfeed.sh $(abspath $(BUILD)/oa-wdtfeed)
+check-stage-profiles:
+	@sh tests/stage_profiles.sh
+check-supervise-boot: $(BUILD)/oa-supervise $(BUILD)/tests/supervise_child
+	@sh tests/supervise_boot.sh $(abspath $(BUILD)/oa-supervise) $(abspath $(BUILD)/tests/supervise_child)
+check: check-boot-gate check-wdtfeed check-stage-profiles check-supervise-boot
 
 $(BUILD)/tests/nim_dtv: tests/nim_dtv.c common/nim_dtv.c include/openaurora/nim_dtv.h
 	@mkdir -p $(dir $@)
@@ -2125,18 +2144,19 @@ BUNDLE_DIR ?= $(BUILD)/full-replacement
 BUNDLE_CONF ?= tools/boot/openaurora-full-replacement.conf
 BUNDLE_LABEL ?= full replacement
 .PHONY: full-replacement-bundle
-full-replacement-bundle: $(BUILD)/$(PROJECT) $(FULL_REPLACEMENT_SO) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl $(BUILD)/oa-app-launch
+full-replacement-bundle: $(BUILD)/$(PROJECT) $(FULL_REPLACEMENT_SO) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl $(BUILD)/oa-app-launch $(BUILD)/oa-wdtfeed
 	@rm -rf $(BUNDLE_DIR)
 	@mkdir -p $(BUNDLE_DIR)/modules $(BUNDLE_DIR)/menus $(BUNDLE_DIR)/ui $(BUNDLE_DIR)/lua
-	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl $(BUILD)/oa-app-launch $(BUNDLE_DIR)/
-	@cp tools/boot/takeover-full.sh tools/boot/run-aurora.sh tools/boot/oa_apps.map $(BUNDLE_DIR)/
+	@cp $(BUILD)/$(PROJECT) $(BUILD)/oa-supervise $(BUILD)/fb-restore $(BUILD)/oa-client $(BUILD)/oa-ir-blast $(BUILD)/oa-audio-broker $(BUILD)/oa-alsactl $(BUILD)/oa-app-launch $(BUILD)/oa-wdtfeed $(BUNDLE_DIR)/
+	@cp tools/boot/takeover-full.sh tools/boot/run-aurora.sh tools/boot/oa-boot-gate.sh tools/boot/oa_apps.map $(BUNDLE_DIR)/
 	@cp $(FULL_REPLACEMENT_SO) $(BUNDLE_DIR)/modules/
 	@cp $(BUNDLE_CONF) $(BUNDLE_DIR)/openaurora.conf
+	@for s in 0 1 2 3 4; do sh tools/boot/stage-profile.sh $$s $(BUNDLE_CONF) > $(BUNDLE_DIR)/openaurora-stage$$s.conf; done
 	@cp menus/sub_launcher.json $(BUNDLE_DIR)/menus/
 	@cp ui/README.md $(BUNDLE_DIR)/ui/
 	@cp lua/omarchy.lua $(BUNDLE_DIR)/lua/
 	@if ls ui/*.rgba >/dev/null 2>&1; then cp ui/*.rgba $(BUNDLE_DIR)/ui/; fi
-	@cd $(BUNDLE_DIR) && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker oa-alsactl oa-app-launch takeover-full.sh run-aurora.sh oa_apps.map openaurora.conf menus/*.json modules/*.so ui/* lua/* > manifest.sha256
+	@cd $(BUNDLE_DIR) && sha256sum openaurora oa-supervise fb-restore oa-client oa-ir-blast oa-audio-broker oa-alsactl oa-app-launch oa-wdtfeed takeover-full.sh run-aurora.sh oa-boot-gate.sh oa_apps.map openaurora.conf openaurora-stage*.conf menus/*.json modules/*.so ui/* lua/* > manifest.sha256
 	@echo "$(BUNDLE_LABEL) bundle: $(BUNDLE_DIR) ($(words $(FULL_REPLACEMENT_SO)) modules)"
 
 # OmarchyTV-native UI composition: same modules and hardware stack, but the
