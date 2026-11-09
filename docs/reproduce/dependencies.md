@@ -105,7 +105,8 @@ version-specific and contain the vendor binaries. Import your own extracted
 ```sh
 python3 -m venv .venv
 .venv/bin/pip install --upgrade pip
-.venv/bin/pip install ubi_reader vmlinux-to-elf
+.venv/bin/pip install ubi_reader
+.venv/bin/pip install vmlinux-to-elf   # optional, kernel reconstruction
 export UBIREADER=$PWD/.venv/bin/ubireader_extract_images
 export UBIREADER_PYTHON=$PWD/.venv/bin/python3
 ```

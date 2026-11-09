@@ -145,7 +145,9 @@ exec /vendor/com.nvt.idtv/aurora.elf
 
 That is telnet-only. Key-based dropbear needs root's home and
 `authorized_keys` prepared as the tracked hook does (`/tmp/tvh_root`, passwd
-bind); do not assume that copying `authorized_keys` alone is enough.
+bind); do not assume that copying `authorized_keys` alone is enough. If the
+hook's `id` is not uid 0, stop: a different firmware may drop the idtv
+privileges, and binding port 2323/starting dropbear will not work.
 
 The tracked `openaurora/tools/boot/aurora-boot-hook.sh` is the full research
 hook. If you use it:

@@ -150,6 +150,7 @@ cat <<'EOF'
 Your own NAND dump, vendor libraries, Ghidra project databases, payload images
 and keys are not part of this repository. Extract/build them from your own TV:
 docs/reproduce/root-payload.md and docs/reverse-engineering/tooling.md.
+Install/version help: docs/reproduce/dependencies.md.
 EOF
 
 if [ "$fail" -eq 0 ]; then
