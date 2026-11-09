@@ -83,8 +83,9 @@ maps the cold-start stages and the current stock-UI coverage.
       ExternalAVSourceManager table (13×0x38) and HP policy are recovered:
       video types 15..22 map to their audio devices, and stock sound output1 /
       EP-off selects SwitchHP mode3 (5x16-byte table, 18 Ctrl 0x2c/0x2d +
-      2 Ctrl 0x2b). Not TV-accepted; foreground/scart/main-gain and the
-      owner-audible acceptance remain.
+      2 Ctrl 0x2b). Not TV-accepted; the mixer state is verified (main out
+      select/connect 2:HDMI ES after `audio-source-video 17`), but
+      foreground/scart/main-gain and owner-audible confirmation remain.
 - [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
       gain/SPDIF and audible acceptance.
 - [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.

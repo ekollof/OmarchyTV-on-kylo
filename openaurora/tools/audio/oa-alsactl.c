@@ -103,7 +103,8 @@ static int print_control(snd_ctl_elem_id_t *id, int verbose)
         type == SND_CTL_ELEM_TYPE_BOOLEAN) {
         for (unsigned i = 0; i < count; i++)
             printf("\t%ld", snd_ctl_elem_value_get_integer(val, i));
-        if (verbose)
+        /* snd_ctl_elem_info_get_min/max assert on non-integer types. */
+        if (verbose && type == SND_CTL_ELEM_TYPE_INTEGER)
             printf("\tmin=%ld\tmax=%ld",
                    snd_ctl_elem_info_get_min(info),
                    snd_ctl_elem_info_get_max(info));

@@ -223,3 +223,37 @@ index 2, which the tool also labels `DTV DEC0`. **The main-out selection
 confirmation was obtained. Stock was restored and the TV rebooted; the gates
 remain 0 in every profile. Fixing the enum-label diagnostic (or reading the
 kernel enum table directly) is the next acceptance step.
+
+### Confirmation after fixing the diagnostic
+
+`oa-alsactl` used `snd_ctl_elem_info_get_item_name` without re-reading the
+info after `snd_ctl_elem_info_set_item`; the vendor driver fills the name
+table only on the second read. Re-reading the info fixed the label (and a
+separate `get_min/max` assertion on boolean controls was removed by checking
+the type). Verified on the TV:
+
+```text
+main out source select   0  enum  1  2:HDMI ES
+main out source connect  0  enum  1  2:HDMI ES
+main out mute            0  bool  1  0
+hdmi in                  0  enum  1  0:hdmirx audio on
+hdmi in decoder          0  enum  1  0:decoder0
+```
+
+The repeat gated run (`source-select 17`, `audio-source-video 17`) produced
+the same mixer state with no ALSA errors:
+
+```text
+[368675] INFO host         source -> type 17 (vin id 3, 2 fd)
+[368751] INFO host         audio source -> 37 (ain 0x801, out0 in 0)
+main out source select   2:HDMI ES
+main out source connect  2:HDMI ES
+main out mute            0
+speaker out mute         1   (soft-mute step; main out is the HDMI path)
+```
+
+The main-out selection is therefore **verified at the mixer level**: index 2
+is HDMI ES, and `EasySelect(5,0x801)` selected it. Stock was restored and
+force-rebooted; stock itself reports `2:HDMI ES` and `speaker out mute 0`.
+Audible confirmation is still the owner's gate; `source.enable` and
+`audio.source_enable` remain 0.

@@ -143,7 +143,10 @@ ExternalAVSourceManager table `0x175de8c` (13x0x38) gives video/audio device
 pairs; Bronlijst types 15..20/22 are the video-device values (15→0x23,
 16/20→0x29, 17→0x25, 18→0x26, 19→0x27, 22→0x28). HP policy: sound output1 /
 EP-off → SwitchHP mode3 (stock 0x198128c records; 18 Ctrl 0x2c/0x2d + 2 Ctrl
-0x2b). Foreground/scart/main-gain and owner audition remain. The earlier `source.enable=1` test
+0x2b). Foreground/scart/main-gain and owner audition remain; the mixer state
+is verified (main out select/connect 2:HDMI ES after `audio-source-video 17`,
+main out mute 0, no ALSA errors) and the `oa-alsactl` enum/boolean diagnostics
+are fixed. The earlier `source.enable=1` test
 wrote `m_current_source` but did not change the displayed source; the gate is
 reverted and stays 0. The test left stock `m_current_source=5`/`m_volume=0` and the
 owner force-rebooted to restore audio; add stock-settings restore before more
