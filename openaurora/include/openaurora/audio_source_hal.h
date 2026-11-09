@@ -30,6 +30,9 @@ struct oa_audio_source_hal {
     /* Hal_Audio_Send(name, params, len): PLAT_AIN_SetPathConfig sends
      * "MuxInput" with a 0x38-byte {source, port} payload. */
     int (*audio_send)(const char *name, void *params, int len);
+    /* Hal_Audio_DualCmd(op, params): PLAT_VAUD_Init sends 0x4a with a zeroed
+     * 0x38-byte payload. */
+    int (*audio_dual_cmd)(int op, void *params);
     void (*delay_ms)(unsigned ms);
 };
 

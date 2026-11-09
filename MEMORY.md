@@ -151,6 +151,8 @@ are fixed. A known-playing HDMI1 run (codec PCM) stayed at HDMI ES/mute 0 for
 The missing AIN init (`Ctrl 0x11/0x40/0x1e`, handle 0x12345678) and
 `MuxInput {source,port}` path config are now included; the final run reached
 stock's exact mixer state (HDMI ES, mute 0, speaker mute 0, codec PCM).
+VAUD init (`Ctrl 0x37/0x1e`, `DualCmd 0x4a`) is also included; the AQ/PP DSP
+tables remain unported.
 The recovered MM-path `SetSoftMute(0,1)` release is opt-in
 (`audio.source.unmute=1`), and the host config cap is now 128 with an overflow
 warning (the 48-entry cap silently dropped that key).

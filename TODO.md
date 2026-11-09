@@ -94,6 +94,9 @@ maps the cold-start stages and the current stock-UI coverage.
       `MuxInput {source,port}` path config (0x801→0, 0x301→1, 0x101→8) are now
       implemented behind the gate; the final run reached the same mixer state
       as stock (HDMI ES, mute 0, speaker mute 0, codec PCM) and held 90 s.
+      VAUD init (`Ctrl 0x37/0x1e`, `DualCmd 0x4a`) is also implemented; the
+      AQ/PP DSP tables (`InitAQSetting`/`InitPPParams`) remain unported and are
+      the next suspect if output is still silent.
 - [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
       gain/SPDIF and audible acceptance.
 - [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.

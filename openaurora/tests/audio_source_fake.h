@@ -2,7 +2,7 @@
 #define OPENAURORA_TEST_AUDIO_SOURCE_FAKE_H
 
 enum audio_fake_kind {
-    AF_CTRL = 1, AF_SELECT, AF_SET, AF_KITEM, AF_DELAY, AF_SEND
+    AF_CTRL = 1, AF_SELECT, AF_SET, AF_KITEM, AF_DELAY, AF_SEND, AF_DUAL
 };
 
 struct audio_fake_event {

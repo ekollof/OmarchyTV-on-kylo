@@ -66,9 +66,15 @@ static int f_send(const char *name, void *params, int len)
     rec(AF_SEND, p ? p[0] : -1, p ? p[1] : -1, len, 0, 0, name);
     return 0;
 }
+static int f_dual(int op, void *params)
+{
+    const int *p = params;
+    rec(AF_DUAL, op, p ? p[0] : -1, p ? p[1] : -1, 0, 0, NULL);
+    return 0;
+}
 
 static const struct oa_audio_source_hal g_fake = {
-    f_ctrl, f_select, f_set, f_kitem, f_send, f_delay
+    f_ctrl, f_select, f_set, f_kitem, f_send, f_dual, f_delay
 };
 
 const struct oa_audio_source_hal *oa_audio_source_hal(void)

@@ -111,6 +111,7 @@ struct ctx {
     int ain_handle;
     int path_src;
     int path_port;
+    int vaud_ready;
 };
 
 static struct ctx *g_ctx;
@@ -151,6 +152,20 @@ static void ain_init(struct ctx *c)
     c->ain_ready = 1;
     c->api->log(c->api->priv, OA_LOG_INFO,
                 "audio source: AIN init (0x11/0x40/0x1e, handle 0x12345678)");
+}
+
+/* PLAT_VAUD_Init from ICE_AudioInit: Ctrl 0x37 and 0x1e with zeroed 0x38
+ * payloads, then DualCmd 0x4a. The AQ/PP table programming is not ported. */
+static void vaud_init(struct ctx *c)
+{
+    (void)ctrl_words(c, 0x37, 0, 0, 0, 0);
+    (void)ctrl_words(c, 0x1e, 0, 0, 0, 0);
+    uint32_t params[0x38 / 4];
+    memset(params, 0, sizeof params);
+    int rc = c->h->audio_dual_cmd ? c->h->audio_dual_cmd(0x4a, params) : -1;
+    c->vaud_ready = 1;
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "audio source: VAUD init (0x37/0x1e/0x4a rc %d)", rc);
 }
 
 /* PLAT_AIN_SetPathConfig(source, port): Hal_Audio_Send("MuxInput",
@@ -343,6 +358,8 @@ static int select_source(struct ctx *c, int src)
     int mapped = g_ain_source[src];
     if (!c->ain_ready)
         ain_init(c);
+    if (!c->vaud_ready)
+        vaud_init(c);
     (void)ain_path_config(c, mapped);
     (void)soft_mute(c, 1, 1);
     for (int spk = 0; spk < 4; spk++)
@@ -438,6 +455,7 @@ static int m_init(const oa_host_api *api, void **out)
     c->ain_ready = 0;
     c->path_src = -1;
     c->path_port = -1;
+    c->vaud_ready = 0;
     c->ain_id[0] = c->ain_id[1] = 0;
     c->ain_src[0] = c->ain_src[1] = -1;
     c->aout_in[0] = c->aout_in[1] = c->aout_in[2] = -1;
@@ -490,6 +508,7 @@ static int m_start(void *v)
     c->ain_ready = 0;
     c->path_src = -1;
     c->path_port = -1;
+    c->vaud_ready = 0;
     if (c->api->publish(c->api->priv, OA_SVC_AUDIO_SOURCE, 1, &g_iface) != 0)
         c->api->log(c->api->priv, OA_LOG_WARN,
                     "audio_source service already published");

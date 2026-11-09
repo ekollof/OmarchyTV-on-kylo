@@ -118,6 +118,17 @@ static void expect_send(const char *name, int src, int port)
     }
 }
 
+static void expect_dual(int op)
+{
+    assert(pos < audio_fake_count());
+    const struct audio_fake_event *ev = audio_fake_at(pos++);
+    if (ev->kind != AF_DUAL || ev->a != op) {
+        fprintf(stderr, "pos %d dual: kind %d op %d want %d\n", pos - 1,
+                ev->kind, ev->a, op);
+        assert(0);
+    }
+}
+
 /* soft_mute(1,1) on the stock speaker table: 0..3, types 0..3. */
 static void expect_soft_mute(void)
 {
@@ -163,6 +174,9 @@ int main(void)
     expect_ctrl(0x11, 1, 0, 0, 0);
     expect_ctrl(0x40, 0, 0, 0, 0);
     expect_ctrl(0x1e, 1, 0, 0, 0);
+    expect_ctrl(0x37, 0, 0, 0, 0);
+    expect_ctrl(0x1e, 0, 0, 0, 0);
+    expect_dual(0x4a);
     expect_send("MuxInput", 0x801, 0);
     expect_soft_mute();
     expect_ctrl(0x2a, 0xfff, 1, 0, 0);

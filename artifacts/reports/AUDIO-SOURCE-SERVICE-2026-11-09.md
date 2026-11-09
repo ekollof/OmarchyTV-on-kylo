@@ -245,6 +245,36 @@ oa-supervise: stable; failure streak cleared
 It held for 90 s and stock was restored/rebooted. Audible confirmation
 remains the owner gate; the missing AIN init/path config is now covered.
 
+### VAUD init
+
+`PLAT_VAUD_Init` `0x008d4588` is called from `ICE_AudioInit` `0x007e1164`
+(itself from `IceAudioIF::initialise`). Besides the `PLAT_AIN_SetPathConfig`
+pairs, its HAL-visible sequence is `Hal_Audio_Ctrl(0x37,{0})`,
+`Hal_Audio_Ctrl(0x1e,{0})`, then `Hal_Audio_DualCmd(0x4a,{0})`. It also loads
+`/conf/AQ.bin` (`PLAT_VAUD_InitAQSetting`) and programs EQ/AVL
+(`PLAT_VAUD_InitPPParams`), which are **not** ported.
+
+`mod_audio_source` now runs those three VAUD commands once, after AIN init,
+behind `audio.source_enable`. The final gated run:
+
+```text
+audio source: AIN init (0x11/0x40/0x1e, handle 0x12345678)
+audio source: VAUD init (0x37/0x1e/0x4a rc 0)
+audio source: MuxInput 0x801 port 0 (rc 0)
+audio source: speaker release (0,1)
+audio source -> 37 (ain 0x801, out0 in 0)
+main out source select   2:HDMI ES
+main out mute            0
+speaker out mute         0
+hdmi in codec info       1:PCM
+oa-supervise: stable; failure streak cleared
+```
+
+It held for 90 s, then stock was restored and force-rebooted. If audible
+output is still absent with this state, the remaining gap is the AQ/PP DSP
+table programming (`PLAT_VAUD_InitAQSetting`/`InitPPParams`) or the HDMI RX
+decoder task, not the mixer, AIN or VAUD command initialization.
+
 ## Evidence
 
 ```text
