@@ -111,8 +111,12 @@ static int print_control(snd_ctl_elem_id_t *id, int verbose)
         for (unsigned i = 0; i < count; i++) {
             unsigned v = snd_ctl_elem_value_get_enumerated(val, i);
             const char *label = NULL;
+            /* The vendor driver fills the item-name table only when info is
+             * read again after set_item. Calling get_item_name without the
+             * second info call returns item 0 for every index. */
             snd_ctl_elem_info_set_item(info, v);
-            label = snd_ctl_elem_info_get_item_name(info);
+            if (snd_ctl_elem_info(ctl, info) >= 0)
+                label = snd_ctl_elem_info_get_item_name(info);
             if (label && *label)
                 printf("\t%u:%s", v, label);
             else
