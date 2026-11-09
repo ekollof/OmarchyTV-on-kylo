@@ -104,6 +104,8 @@ struct ctx {
     int spk_found[SPK_COUNT];
     int spk_mute[SPK_COUNT];
     unsigned adc_delay_ms;
+    int sound_output;
+    int ep_plugged;
 };
 
 static struct ctx *g_ctx;
@@ -115,15 +117,21 @@ static int is_adc_source(int src)
     return (1 << (src - 0x22)) & 0x87;
 }
 
-static int ctrl_pip(struct ctx *c, int code, int value)
+static int ctrl_words(struct ctx *c, int op, int w0, int w1, int w2, int w3)
 {
     if (!c->h->audio_ctrl)
         return -1;
-    uint8_t params[0x38];
+    uint32_t params[0x38 / 4];
     memset(params, 0, sizeof params);
-    memcpy(params, &code, sizeof code);
-    memcpy(params + 4, &value, sizeof value);
-    return c->h->audio_ctrl(0x2a, params);
+    params[0] = (uint32_t)w0;
+    params[1] = (uint32_t)w1;
+    params[2] = (uint32_t)w2;
+    params[3] = (uint32_t)w3;
+    return c->h->audio_ctrl(op, params);
+}
+static int ctrl_pip(struct ctx *c, int code, int value)
+{
+    return ctrl_words(c, 0x2a, code, value, 0, 0);
 }
 
 static int speaker_mute(struct ctx *c, int spk, int mask)
@@ -230,6 +238,49 @@ static int ain_connect(struct ctx *c, int in, int src, int unused)
     return audio_connect(c, in, src);
 }
 
+/* PLAT_VAUD_SwitchHP's stock speaker configuration branch. Table values are
+ * PLAT profile state read from the running stock process (0x0198128c, 5
+ * records of four bytes). SetSpeakerDACCICGain loops spin 0..8 for each of
+ * the two gain types; FUN_008d0dc4(p) is Ctrl(0x2b,{p^1}). */
+static const int g_hp_gain[5][4] = {
+    { 0x12, 0x02, 0x36, 0x00 },
+    { 0x0f, 0x01, 0x34, 0x00 },
+    { 0x08, 0x00, 0x3b, 0x00 },
+    { 0x0f, 0x01, 0x34, 0x00 },
+    { 0x08, 0x00, 0x3b, 0x00 },
+};
+
+/* _ice_Sound_Control_GetSoundOutput + DEV_GPIO_EP_IsPlugIn policy from
+ * ICE_AudioStart 0x007e23b6..0x007e2450. Stock values: sound output 1,
+ * EP not plugged -> mode 3. */
+static int hp_mode(struct ctx *c)
+{
+    if (c->sound_output == 3)
+        return c->ep_plugged ? 1 : 0;
+    if (c->sound_output == 4)
+        return 2;
+    if (c->sound_output == 0 && !c->ep_plugged)
+        return 0;
+    return 3;
+}
+
+static void switch_hp(struct ctx *c, int mode)
+{
+    if (mode < 0 || mode > 4) {
+        (void)ctrl_words(c, 0x2b, 1, 0, 0, 0);
+        (void)ctrl_words(c, 0x2b, 0, 0, 0, 0);
+        return;
+    }
+    const int *g = g_hp_gain[mode];
+    /* SetSpeakerDACCICGain(4, 0, g[0], g[1]) and (4, 1, g[2], g[3]) */
+    for (int i = 0; i < 9; i++)
+        (void)ctrl_words(c, 0x2c, i, 4, g[0], g[1]);
+    for (int i = 0; i < 9; i++)
+        (void)ctrl_words(c, 0x2d, i, 4, g[2], g[3]);
+    (void)ctrl_words(c, 0x2b, 1, 0, 0, 0);
+    (void)ctrl_words(c, 0x2b, 0, 0, 0, 0);
+}
+
 static int select_source(struct ctx *c, int src)
 {
     if (!c->enabled)
@@ -253,11 +304,40 @@ static int select_source(struct ctx *c, int src)
     /* PLAT_AOUT_Connect(0, mapped, ain_id): state only on this firmware. */
     c->aout_in[0] = c->ain_id[0];
     (void)aout_mute(c, 0, 0);
+    switch_hp(c, hp_mode(c));
     c->current = src;
     c->api->log(c->api->priv, OA_LOG_INFO,
                 "audio source -> %d (ain 0x%x, out0 in %d)", src, mapped,
                 c->aout_in[0]);
     return 0;
+}
+
+/* ExternalAVSourceManager interface table (0x0175de8c, 13 records of 0x38)
+ * video device -> audio device. The Bronlijst source types 15..20 are the
+ * video-device values; HDMI4 (22) is included for completeness. TV (0) uses
+ * the DVB/ATV route and has no external interface. */
+static int video_audio_device(int video_type)
+{
+    switch (video_type) {
+    case 15: return 0x23; /* CVBS, EXT index 2 */
+    case 16: return 0x29; /* VGA/PC, index 9 */
+    case 17: return 0x25; /* HDMI1, index 4 */
+    case 18: return 0x26; /* HDMI2, index 5 */
+    case 19: return 0x27; /* HDMI3, index 6 */
+    case 20: return 0x29; /* YPbPr, index 8 */
+    case 22: return 0x28; /* HDMI4, index 7 */
+    default: return -1;
+    }
+}
+
+static int pub_select_video(int video_type)
+{
+    if (!g_ctx)
+        return -1;
+    int dev = video_audio_device(video_type);
+    if (dev < 0)
+        return -1;
+    return select_source(g_ctx, dev);
 }
 
 static int iface_current(void)
@@ -274,6 +354,7 @@ static int pub_select(int src)
 }
 static const oa_audio_source_iface g_iface = {
     .select_source = pub_select,
+    .select_video_type = pub_select_video,
     .current_source = iface_current,
     .is_available = iface_available
 };
@@ -322,6 +403,10 @@ static int m_start(void *v)
     if (c->adc_delay_ms > 2000)
         c->adc_delay_ms = 2000;
     c->mute_mask = cfg_int(c, "audio.source.mute_mask", 0);
+    c->sound_output = cfg_int(c, "audio.source.sound_output", 1);
+    if (c->sound_output < 0 || c->sound_output > 4)
+        c->sound_output = 1;
+    c->ep_plugged = cfg_int(c, "audio.source.ep_plugged", 0) != 0;
     /* Stock speaker table: 0..3 exist with types 0..3; 4..8 do not. */
     for (int i = 0; i < 4; i++) {
         char key[32];

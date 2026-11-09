@@ -392,6 +392,7 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  "  source-state            query current source type/availability\n"
                  "  source-probe            read-only DRM ids/V4L2Info/FdCommon\n"
                  "  audio-source-select <n> select an ICE_DeviceSource (audio)\n"
+                 "  audio-source-video <t>  map a Bronlijst/VIN type to audio\n"
                  "  audio-source-state      query the audio-source state\n"
                  "  audio-state             query audio enabled/volume\n"
                  "  audio-volume <0-100>    set diagnostic audio volume\n"
@@ -885,6 +886,36 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
             return -1;
         }
         int rc = as->select_source((int)src);
+        h->api.release(h, OA_SVC_AUDIO_SOURCE);
+        if (rc == -2) {
+            snprintf(outbuf, outlen, "failed disabled\n");
+            return -1;
+        }
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EIO);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "ok\n");
+        return 0;
+    }
+    if (!strcmp(cmd, "audio-source-video")) {
+        if (force || !a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        char *end = NULL;
+        long type = strtol(a1, &end, 0);
+        if (*a1 == '\0' || !end || *end != '\0' || type < 0 || type > 25) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_audio_source_iface *as =
+            h->api.lookup(h, OA_SVC_AUDIO_SOURCE, 1);
+        if (!as) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int rc = as->select_video_type((int)type);
         h->api.release(h, OA_SVC_AUDIO_SOURCE);
         if (rc == -2) {
             snprintf(outbuf, outlen, "failed disabled\n");

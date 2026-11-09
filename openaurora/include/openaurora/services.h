@@ -585,6 +585,9 @@ typedef struct {
 #define OA_SVC_AUDIO_SOURCE "audio_source"
 typedef struct {
     int (*select_source)(int device_source);
+    /* Bronlijst/VIN video source type -> ExternalAVSourceManager audio device.
+     * TV (0) and unsupported types return -1; no HAL call is made. */
+    int (*select_video_type)(int video_type);
     int (*current_source)(void);
     int (*is_available)(void);
 } oa_audio_source_iface;

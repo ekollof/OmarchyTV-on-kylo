@@ -7,7 +7,7 @@ enum audio_fake_kind {
 
 struct audio_fake_event {
     int kind;
-    int a, b, c;        /* ctrl: op, code, value; select: path, id, name */
+    int a, b, c, d, e;  /* ctrl: op,w0,w1,w2,w3; select: path,id,-,-,- */
     const char *name;   /* select record name, or NULL */
 };
 

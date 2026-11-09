@@ -79,9 +79,12 @@ maps the cold-start stages and the current stock-UI coverage.
       EasySelect calls, `plat_audio_connect`, speaker mutes and output mute.
       `check-audio-source` asserts the exact 13-call HDMI sequence, ATV,
       source-10 skip, cache and gates; ARM links the five HAL symbols.
-      `audio.source_enable=0` is enforced in all profiles. Not TV-accepted;
-      HP/scart/foreground/main-gain and the video-type→device-source mapping
-      remain.
+      `audio.source_enable=0` is enforced in all profiles. The
+      ExternalAVSourceManager table (13×0x38) and HP policy are recovered:
+      video types 15..22 map to their audio devices, and stock sound output1 /
+      EP-off selects SwitchHP mode3 (5x16-byte table, 18 Ctrl 0x2c/0x2d +
+      2 Ctrl 0x2b). Not TV-accepted; foreground/scart/main-gain and the
+      owner-audible acceptance remain.
 - [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
       gain/SPDIF and audible acceptance.
 - [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.

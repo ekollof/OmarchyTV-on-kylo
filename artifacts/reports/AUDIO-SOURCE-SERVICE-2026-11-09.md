@@ -95,6 +95,62 @@ HAL picks the first matching id, so `0x801` resolves to **HDMI ES**.
   mute when `mask & 0`; speakers 1/2/3 when `second != 0`; store `last` only
   when `second == 0`. `ICE_AudioStart` calls `(1,1)`.
 
+## ExternalAVSourceManager mapping and HP policy
+
+`ExternalAVSourceManager` uses a 13-record table at `0x0175de8c`, stride
+`0x38`, fields `+0` video device, `+4` audio device, `+8` video type,
+`+0x2c` name. `ICE_ExternalGetVideoDevice/AudioDevice` read those fields;
+`selectExtSource(index)` uses the interface index, and
+`getExternalIndexFromSource(device)` scans the video-device field.
+
+| idx | video | audio | type | name |
+|---:|---:|---:|---:|---|
+| 0 | 0x0e | 0x22 | 1 | EXT1 |
+| 1 | 0x15 | 0x22 | 6 | EXT1 |
+| 2 | 0x0f | 0x23 | 2 | Fav |
+| 3 | 0x17 | 0x29 | 6 | Svhs |
+| 4 | 0x11 | 0x25 | 7 | HDMI1 |
+| 5 | 0x12 | 0x26 | 7 | HDMI2 |
+| 6 | 0x13 | 0x27 | 7 | HDMI3 |
+| 7 | 0x16 | 0x28 | 7 | HDMI4 |
+| 8 | 0x14 | 0x29 | 3 | YPbPr |
+| 9 | 0x10 | 0x29 | 8 | VGA |
+| 10 | 0x20 | 0x34 | 10 | DVD |
+| 11 | 0x1d | 0x0b | 13 | Widi |
+| 12 | 0x1e | 0x32 | 14 | APM |
+
+The Bronlijst/VIN source types already used by `mod_source` are the video
+device values, so the implemented mapping is: 15 (CVBS) → 0x23, 16 (VGA) →
+0x29, 17 (HDMI1) → 0x25, 18 (HDMI2) → 0x26, 19 (HDMI3) → 0x27, 20 (YPbPr) →
+0x29, 22 (HDMI4) → 0x28. TV (0) has no external interface; WiDi/APM are 0x0b
+and 0x32 but have no VIN slot in the decoded switch.
+
+**HP policy** (`ICE_AudioStart` `0x007e23b6`):
+
+```text
+sound = _ice_Sound_Control_GetSoundOutput()
+ep    = DEV_GPIO_EP_IsPlugIn()
+mode  = 3
+if sound == 3: mode = ep ? 1 : 0
+else if sound == 4: mode = 2
+else if sound == 0 and !ep: mode = 0
+PLAT_VAUD_SwitchHP(mode)
+```
+
+`DEV_GPIO_EP_IsPlugIn` reads byte `+4` of the EP descriptor at `0x01931284`;
+`_ice_Sound_Control_GetSoundOutput` returns the word behind `0x0078c0e8`.
+Stock values are sound output **1**, EP **not plugged** → mode **3**.
+
+`PLAT_VAUD_SwitchHP` `0x008d3fd8` takes the stock speaker branch
+(`DAT_0176da40 == DAT_0176da00`). The mode table at `0x0198128c` is five
+16-byte records (`A,B,C,D`); stock mode 3 is `0f 01 34 00`. The sequence is
+`SetSpeakerDACCICGain(4,0,A,B)` and `(4,1,C,D)`, each looping spin 0..8 into
+`Hal_Audio_Ctrl(0x2c/0x2d, {i,4,A,B})`, then `FUN_008d0dc4(0/1)` →
+`Hal_Audio_Ctrl(0x2b,{1})` and `(0x2b,{0})`. The module carries the five
+records read from the stock process and computes the mode from
+`audio.source.sound_output` (default 1) and `audio.source.ep_plugged`
+(default 0), so the default path emits the exact stock mode-3 sequence.
+
 ## Implementation
 
 - `include/openaurora/audio_source_hal.h`: injectable seam for
@@ -106,13 +162,13 @@ HAL picks the first matching id, so `0x801` resolves to **HDMI ES**.
   EasySelect table and the recovered records.
 - `audio.source_enable` (default 0) gates every HAL call; the service returns
   -2 when disabled.
-- Control commands: `audio-source-select <n>`, `audio-source-state`.
+- Control commands: `audio-source-select <n>`, `audio-source-video <type>`,
+  `audio-source-state`.
 
-Deliberate omissions (not recovered/portable here): the sound-output/HP
-detection policy (`PLAT_VAUD_SwitchHP`), foreground/scart routing, speaker
-main gain, `ice_Audio_SystemDelayUnMute`, and the
-`ExternalAVSourceManager` video-type → `ICE_DeviceSource` mapping. The service
-takes the device source directly.
+Deliberate omissions (not recovered/portable here): foreground/scart routing,
+speaker main gain, `ice_Audio_SystemDelayUnMute`, and the non-stock
+`PLAT_VAUD_SwitchHP` branch. The service takes either the device source or the
+Bronlijst/VIN video type.
 
 ## Evidence
 
@@ -128,9 +184,11 @@ U Hal_Audio_KItem
 U Hal_Audio_SetControl
 ```
 
-The host test asserts the exact 13-call HDMI-class sequence (KItem 0x43,
+The host test asserts the exact HDMI-class sequence including the 20-call HP
+switch (KItem 0x43,
 EasySet 0x46/0x4e/0x4b, Ctrl 0x2a/0xfff and 0x2a/0x802, EasySelect 0/1,
 2/0, 3/1, 0x32/1, 0x32/2, 5/0x801 with "HDMI ES", KItem 0x52), the ATV
-class (atv EasySelect + path 5 "ATV"), the source-10 skip, the AIN cache, and
-the disabled/out-of-range gates. The ARM module builds and links all five
+class (atv EasySelect + path 5 "ATV"), the source-10 skip, the AIN cache, the
+video-type mapping (17 → 0x25, 15 → 0x23 + ADC delay), and the
+disabled/out-of-range gates. The ARM module builds and links all five
 vendor HAL symbols; the cold bundle includes it but does not autoload it.
