@@ -23,12 +23,15 @@ stock safely (gate-argument bug; tuner init + NULL-ctx cleanup, both fixed);
 C reached our UI on a true boot but rendered only its top-left quadrant with
 icons missing. The set was alive (not a kernel hang); only `.87` was probed,
 so the network miss was misread and the USB recovery was used unnecessarily.
-Stage 0 is now the takeover display path (`plat.drm_init=0`,
-`display.osd_reinit=0`); the forced DRM/OSD reinit moved to stage 2. Boot and
-app logs now live on `/buffer` (`tvhack-boot.log`, `openaurora-app.log`,
-`oa-boot-history.log`) and survive the apdat0 recovery. The TV is stock
-(`oa_safe` present, no `oa_boot`); `/buffer/openaurora` is the prior 12-module
-payload and all staged bundles/backups were removed.
+The revised stage 0 (`plat.drm_init=0`, `display.osd_reinit=0`, UI base) was
+then validated as a stopped-stock takeover: full-screen 1920x1080 portal with
+all tile icons, owner-confirmed, HDMI1 source behind it; sources list empty
+and settings not reachable at this stage. Stage 2 now isolates the forced
+DRM/OSD reinit. Boot and app logs live on `/buffer`
+(`tvhack-boot.log`, `openaurora-app.log`, `oa-boot-history.log`) and survive
+the apdat0 recovery. The TV is stock (`oa_safe` present, no `oa_boot`);
+`/buffer/openaurora` is the prior 12-module payload and all staged
+bundles/backups were removed.
 
 Replacement system, 2026-11-07: `make replacement-bundle` produces a
 reproducible takeover UI (`plat_stub` + display/panel/ir/settings/service_db/

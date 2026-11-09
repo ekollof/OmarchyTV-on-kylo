@@ -466,11 +466,13 @@ unvalidated.
       fixes committed); C reached **our UI** on a true boot but showed only
       the top-left quadrant with icons missing — the set was alive, the
       network miss was misread (only `.87` probed), and the forced
-      `display.osd_reinit` is the prime suspect. Not accepted. Next: stage 0
-      is now the takeover display path (`plat.drm_init=0`,
-      `display.osd_reinit=0`); the forced DRM/OSD reinit is stage 2; add the
-      remaining `plat` pieces one at a time (audio prelude, VPLTIO/V4L2/
-      sharemem, GPIO/IIC, video device). Logs now live on `/buffer` and
+      `display.osd_reinit` is the prime suspect. The revised stage 0 was then
+      validated as a stopped-stock takeover: full-screen portal with all tile
+      icons (owner-confirmed, HDMI1 behind it); sources list empty and settings
+      not reachable at this stage. Not accepted yet. Next: stage 0 is now the
+      takeover display path (`plat.drm_init=0`, `display.osd_reinit=0`); the
+      forced DRM/OSD reinit is stage 2; add the remaining `plat` pieces and the
+      source/settings services one at a time. Logs now live on `/buffer` and
       survive the apdat0 recovery. The hook template, deploy/restore script
       and runbook are in the repo; `/buffer/openaurora` is the prior 12-module
       payload and the native path is disabled.

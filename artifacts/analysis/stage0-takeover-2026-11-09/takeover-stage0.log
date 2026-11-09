@@ -1,0 +1,511 @@
+watchdog disable -> sent
+oa-supervise: child 3990, startup 75000 ms, heartbeat timeout 5000 ms
+[203618] INFO host         openaurora starting, modules=./modules
+[203627] INFO host         control socket /tmp/openaurora.sock
+[203650] INFO host         loaded plat v0.1 (./modules/mod_plat.so)
+[203650] INFO plat         plat: waiting for /tmp/ntkdriver_completed (ICE_HardwareInit order)
+[203650] INFO plat         plat: driver marker ready after 0 ms
+[203661] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[203661] WARN plat         plat: Hal_Video_DrmInit skipped; preserving the vendor OSD
+[203662] INFO plat         plat: common init (vpltio/v4l2/sharemem, drm 0, DVIF)
+[203662] INFO plat         plat: VIN slot defaults (7 slots)
+[203665] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[203665] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[203665] INFO host         started plat
+[203672] INFO host         loaded display v0.1 (./modules/mod_display.so)
+[203673] INFO display      /dev/fb1: 1920x1080 32bpp, 2 frame(s), back=1
+[204083] INFO display      /dev/fb1: full snapshot saved (16588800 bytes, mau 0)
+[204083] INFO display      region -> 1920x1080 (ok)
+[204083] INFO host         started display
+[204087] INFO host         loaded panel v0.2 (./modules/mod_panel.so)
+[204087] INFO panel        vendor HAL linked: channel 0, 30000 Hz, start 100%
+[204087] INFO host         started panel
+[204092] INFO host         loaded ir v0.1 (./modules/mod_ir.so)
+[204095] INFO ir           ir: BLAST helper pid 3993 (protocol 4, set 1, video /dev/video28)
+[204095] INFO ir           remote parser ready; BLAST only, UART path empty
+[204095] INFO host         started ir
+[204103] INFO host         loaded settings v0.2 (./modules/mod_settings.so)
+[204104] INFO settings     /conf/sqlite_db/settingsDB.db open (read-write)
+[204134] INFO settings     picture: 20 configs; source1 mode=1 zoom=1 energy=3
+[204134] INFO settings     probe: m_cec_enabled=1
+[204134] INFO host         started settings
+[204137] INFO host         loaded service_db v1 (./modules/mod_service_db.so)
+[204172] INFO service_db   service_db: 134 rows (54 dvb, 67 easi, 13 analog) from /conf/sqlite_db/settingsDB.db
+[204172] INFO host         started service_db
+[204175] INFO host         loaded image_decode v2 (./modules/mod_image_decode.so)
+[204176] INFO host         started image_decode
+[204181] INFO host         loaded epg v1 (./modules/mod_epg.so)
+[204181] INFO host         started epg
+[204183] INFO host         loaded pvr v1 (./modules/mod_pvr.so)
+[204183] INFO host         started pvr
+[204186] INFO host         loaded channels v1 (./modules/mod_channels.so)
+[204186] INFO host         started channels
+[204189] INFO host         loaded i18n v0.1 (./modules/mod_i18n.so)
+[204204] INFO i18n         i18n: 41 locales, language eng
+[204204] INFO host         started i18n
+[204207] INFO host         loaded ticker v1.0 (./modules/mod_ticker.so)
+[204207] INFO host         started ticker
+[204209] INFO host         loaded ui_clock v0.1 (./modules/mod_ui_clock.so)
+[204209] INFO host         started ui_clock
+[204212] INFO host         loaded ui_anim v1 (./modules/mod_ui_anim.so)
+[204212] INFO host         started ui_anim
+[204218] INFO host         loaded ui_engine v1 (./modules/mod_ui_engine.so)
+[204218] INFO ui_engine    ui_engine started
+[204219] INFO host         started ui_engine
+[204224] INFO host         loaded ui_vendor v0.2 (./modules/mod_ui_vendor.so)
+[204863] INFO ui_vendor    present: scene=55ms mirror=0ms sync=0ms pan=3ms mirror=0 rect=0,0 1920x1080
+[204864] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[204864] INFO host         started ui_vendor
+[204867] INFO host         loaded ui_theme v0.1 (./modules/mod_ui_theme.so)
+[204874] INFO host         started ui_theme
+[204877] INFO host         loaded ui_profile v0.1 (./modules/mod_ui_profile.so)
+[204877] INFO host         started ui_profile
+[204882] INFO host         loaded ui_menu v0.1 (./modules/mod_ui_menu.so)
+[204883] ERR  ui_menu      ui_menu: cannot load /buffer/openaurora/menus/sub_launcher.json (2)
+[204883] ERR  host         ui_menu: start() failed (-1)
+[204887] INFO host         loaded ui_list v0.1 (./modules/mod_ui_list.so)
+[204887] INFO host         started ui_list
+[204890] INFO host         loaded ui_navigation v0.2 (./modules/mod_ui_navigation.so)
+[204890] INFO host         started ui_navigation
+[204903] INFO host         loaded lua v1 (./modules/mod_lua.so)
+[204903] INFO host         started lua
+[204905] INFO host         loaded power v0.1 (./modules/mod_power.so)
+[204905] INFO power        standby enabled (/sys/power/state)
+[204905] INFO host         started power
+Hal_IfCmd_SockFd_Get@139 iSockFd=6
+Can not open /dev/nvt/ntkvplt
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+Can not open /dev/nvt/ntkled , try path /dev/ntkled 
+Open /dev/ntkled successfully 
+openaurora: 23 module(s) loaded, control on /tmp/openaurora.sock
+[204963] INFO ui_vendor    present: scene=6ms mirror=0ms sync=0ms pan=14ms mirror=0 rect=0,211 209x670
+[204965] INFO ui_vendor    animations enabled (DesignStyle.svg animation marker)
+[205396] INFO ui_vendor    present: scene=51ms mirror=0ms sync=0ms pan=14ms mirror=0 rect=0,0 1920x1080
+[205396] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+oa-supervise: host loop alive, first present acknowledged
+[205447] INFO ui_vendor    present: scene=4ms mirror=0ms sync=0ms pan=8ms mirror=0 rect=0,211 209x670
+[205497] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=8ms mirror=0 rect=0,211 209x670
+[205547] INFO ui_vendor    present: scene=3ms mirror=0ms sync=1ms pan=8ms mirror=0 rect=0,211 209x670
+[205596] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=7ms mirror=0 rect=0,211 209x670
+[205647] INFO ui_vendor    present: scene=4ms mirror=0ms sync=0ms pan=8ms mirror=0 rect=0,211 209x670
+[205697] INFO ui_vendor    present: scene=4ms mirror=0ms sync=0ms pan=8ms mirror=0 rect=0,211 209x670
+[205747] INFO ui_vendor    present: scene=4ms mirror=0ms sync=0ms pan=8ms mirror=0 rect=0,211 209x670
+[205797] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=8ms mirror=0 rect=0,211 209x670
+[205847] INFO ui_vendor    present: scene=5ms mirror=0ms sync=0ms pan=8ms mirror=0 rect=0,211 209x670
+oa-supervise: stable; failure streak cleared
+[314479] INFO ui_vendor    present: scene=46ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,0 1920x1080
+[314480] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+[314529] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[314579] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[314629] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[314679] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[314729] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[314779] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[314829] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[314879] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[314929] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[314979] INFO ui_vendor    present: scene=2ms mirror=1ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[315680] INFO ui_vendor    present: scene=46ms mirror=0ms sync=0ms pan=9ms mirror=0 rect=0,0 1920x1080
+[315680] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[315729] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[315779] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[315829] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[315879] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[315929] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[315979] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[316029] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[316079] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[316129] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[316179] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[316879] INFO ui_vendor    present: scene=46ms mirror=0ms sync=0ms pan=15ms mirror=0 rect=0,0 1920x1080
+[316879] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[316929] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[316979] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[317029] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[317079] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[317129] INFO ui_vendor    present: scene=4ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[317179] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[317229] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[317279] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[317329] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[317379] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[318646] INFO ui_vendor    present: scene=48ms mirror=0ms sync=0ms pan=6ms mirror=0 rect=0,0 1920x1080
+[318646] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[321979] INFO ui_vendor    present: scene=46ms mirror=0ms sync=0ms pan=5ms mirror=0 rect=0,0 1920x1080
+[321979] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[322996] INFO ui_vendor    present: scene=46ms mirror=0ms sync=0ms pan=13ms mirror=0 rect=0,0 1920x1080
+[322996] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 4 card 0
+[323046] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[323095] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=10ms mirror=0 rect=0,211 209x670
+[323146] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[323196] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[323246] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[323295] INFO ui_vendor    present: scene=3ms mirror=0ms sync=1ms pan=10ms mirror=0 rect=0,211 209x670
+[323346] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[323396] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[323446] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[323496] INFO ui_vendor    present: scene=4ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[326029] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=5ms mirror=0 rect=0,0 1920x1080
+[326029] INFO ui_vendor    painted captured picture-settings state
+[331879] INFO ui_vendor    present: scene=46ms mirror=0ms sync=0ms pan=9ms mirror=0 rect=0,0 1920x1080
+[331879] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 4 card 0
+[332913] INFO ui_vendor    present: scene=47ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,0 1920x1080
+[332913] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 4 card 0
+[334379] INFO ui_vendor    present: scene=46ms mirror=0ms sync=0ms pan=2ms mirror=0 rect=0,0 1920x1080
+[334379] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[334429] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[334479] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[334529] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[334579] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[334629] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[334679] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[334729] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[334779] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[334829] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[334879] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[335479] INFO ui_vendor    present: scene=46ms mirror=0ms sync=0ms pan=14ms mirror=0 rect=0,0 1920x1080
+[335480] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 4 card 0
+[335529] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[335579] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[335629] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[335679] INFO ui_vendor    present: scene=4ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[335729] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[335779] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[335829] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[335879] INFO ui_vendor    present: scene=3ms mirror=0ms sync=1ms pan=11ms mirror=0 rect=0,211 209x670
+[335929] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[336229] INFO ui_vendor    present: scene=41ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[336229] INFO ui_vendor    painted captured picture-settings state
+[336529] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[336529] INFO ui_vendor    painted captured picture-settings state
+[336829] INFO ui_vendor    present: scene=41ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[336829] INFO ui_vendor    painted captured picture-settings state
+[337129] INFO ui_vendor    present: scene=41ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[337129] INFO ui_vendor    painted captured picture-settings state
+[337429] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,0 1920x1080
+[337429] INFO ui_vendor    painted captured picture-settings state
+[337729] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[337729] INFO ui_vendor    painted captured picture-settings state
+[338029] INFO ui_vendor    present: scene=41ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[338029] INFO ui_vendor    painted captured picture-settings state
+[338329] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,0 1920x1080
+[338329] INFO ui_vendor    painted captured picture-settings state
+[338629] INFO ui_vendor    present: scene=41ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[338629] INFO ui_vendor    painted captured picture-settings state
+[338929] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,0 1920x1080
+[338929] INFO ui_vendor    painted captured picture-settings state
+[339229] INFO ui_vendor    present: scene=43ms mirror=0ms sync=0ms pan=5ms mirror=0 rect=0,0 1920x1080
+[339229] INFO ui_vendor    painted captured picture-settings state
+[339529] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[339529] INFO ui_vendor    painted captured picture-settings state
+[339829] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[339829] INFO ui_vendor    painted captured picture-settings state
+[340129] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,0 1920x1080
+[340129] INFO ui_vendor    painted captured picture-settings state
+[340429] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,0 1920x1080
+[340429] INFO ui_vendor    painted captured picture-settings state
+[340729] INFO ui_vendor    present: scene=41ms mirror=0ms sync=1ms pan=11ms mirror=0 rect=0,0 1920x1080
+[340729] INFO ui_vendor    painted captured picture-settings state
+[341029] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[341029] INFO ui_vendor    painted captured picture-settings state
+[341329] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,0 1920x1080
+[341329] INFO ui_vendor    painted captured picture-settings state
+[341629] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[341629] INFO ui_vendor    painted captured picture-settings state
+[341929] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[341929] INFO ui_vendor    painted captured picture-settings state
+[342229] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[342229] INFO ui_vendor    painted captured picture-settings state
+[342529] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[342529] INFO ui_vendor    painted captured picture-settings state
+[342829] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=8ms mirror=0 rect=0,0 1920x1080
+[342829] INFO ui_vendor    painted captured picture-settings state
+[343129] INFO ui_vendor    present: scene=42ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[343129] INFO ui_vendor    painted captured picture-settings state
+[343529] INFO ui_vendor    present: scene=46ms mirror=0ms sync=0ms pan=16ms mirror=0 rect=0,0 1920x1080
+[343529] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 4 card 0
+[387845] INFO ui_vendor    present: scene=46ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,0 1920x1080
+[387845] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 3 card 0
+[387895] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[387946] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[387995] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[388045] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[388095] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[388146] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[388195] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[388245] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[388646] INFO ui_vendor    present: scene=47ms mirror=0ms sync=0ms pan=16ms mirror=0 rect=0,0 1920x1080
+[388646] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 2 card 0
+[388695] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[388745] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[388795] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[388845] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[388895] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[388945] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[388995] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[389395] INFO ui_vendor    present: scene=46ms mirror=0ms sync=0ms pan=16ms mirror=0 rect=0,0 1920x1080
+[389395] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+[389445] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[389495] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[389546] INFO ui_vendor    present: scene=5ms mirror=0ms sync=0ms pan=4ms mirror=0 rect=0,211 209x670
+[389595] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=8ms mirror=0 rect=0,211 209x670
+[389645] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[389695] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[389746] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=12ms mirror=0 rect=0,211 209x670
+[389795] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[389845] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[389895] INFO ui_vendor    present: scene=3ms mirror=0ms sync=0ms pan=11ms mirror=0 rect=0,211 209x670
+[392012] INFO ui_vendor    present: scene=43ms mirror=0ms sync=0ms pan=7ms mirror=0 rect=0,0 1920x1080
+[392012] INFO ui_vendor    painted source selection: row 0
+[394045] INFO ui_vendor    present: scene=47ms mirror=0ms sync=0ms pan=4ms mirror=0 rect=0,0 1920x1080
+[394045] INFO ui_vendor    painted portal: 5 rail items, 12 cards, band 0 rail 1 card 0
+oa-supervise: vendor UI requested
+oa-supervise: failure streak 1/3
+watchdog set 10s -> sent
+oa-supervise: exec vendor fallback /vendor/com.nvt.idtv/aurora.elf
+[mali-info] mali_shm has been created
+2026-11-09 10:56:44.469 [  1] I sdkVersion: 1.10.0
+debugRegisterSignalHandlers - Register signal handlers
+[0m[BOOT] wait for amazon permission settings ready Time = 1
+[0m[0m
+#*### Console Started ###
+[0m[0m
+Load profile /conf/mb230_hwprofile.bin
+[0m[0mDone, size:24514
+
+[0m[0m
+Load profile /conf/mb230_swprofile.bin
+[0m[0mDone, size:60075
+
+[0m[30;41mloadProfile(/conf/mb230_devprofile.bin): Open file failed!
+[0m
+=== FROST_DebugStartConsole ===
+[36;48m======ICE_HardwareInit, 4063, it is digitalIB!!! =======[0m
+[1;37;41mcheck [0/1] COM.NVT.PRIVSERVER[0mmkfifo  fail !!!
+=== FROST_DebugStartConsole ===
+ndcommon_v4l2_ioctl v4l2_ioctl fail 
+PLAT_SYS_GetPowerOnEvent fail :0EnableSecuriry(1): flag on
+[0m[36;48m ICE_LowPowerModeQueryExitType, power on event=255, event type=13[m 
+[0m[30;41m
+[1;31m_HW_Update_ExitTypeAndKeyEvent-3246, get exit event fail!!!!![0m[0m[0m_HW_Read_FastTurnOnFile[1526], start
+[0m[0m
+===================== Read FTO PARAMAS =====================
+[0m[0m	Tuner-ID[2]
+[0m[0m	Tuner-Network Type[0x0]
+[0m[0m	Tuner-Channel Freq[0]
+[0m[0m	Tuner-Symbol Rate[0]
+[0m
+[0m	V-Source[0x11]
+[0m[0m	V-Type[0x2]
+[0m ===== _dbgTaskProc ====== 
+[0m	V-PID[0x2000]
+[0m[0m	V-SrcSize[3840,2160]
+[0m[0m	V-Size[3840,2160]
+[0m[0m	A-Source[0x25]
+[0m[0m	A-Type[0x0]
+[0m[0m	A-PID[0x2000]
+[0m[0m	A-Level[0]
+[0m[0m	A-AVL[0]
+[0m[0m	A-DynamicBass[0]
+[0m[0m	A-SurroundMode[0]
+[0m[0m	A-stDPA_AVL[0, 0, 0, 0]
+[0m[0m	A-DAPprofile[0]
+[0m[0m	A-enSoundOutput[1]
+[0m[0m	A-audio_digital_out_type[1]
+[0m[0m	A-DTSVirtualX_mode[0]
+[0m[0m	A-s8EQGain[0][0][0][0][0]
+[0m[0m	A-AC4_DialogueEnhancementLevel[0]
+[0m[0m	A-AC4_PresentationID[0]
+[0m[0m	PCR-PID[0x1fff]
+[0m[0m	Channel Locked[0]
+[0m[0m	crc32[0xa40a0413]
+[0m[0m===============================================================
+
+[0m[0m_HW_Read_FastTurnOnFile[1603], end[0m[0m
+[36;48m[FTO]ICE_HardwareInit, 4180 - hotel=0, test=0, read=1[m
+[0m[0m[BOOT] wait for ntkdriver ready Time = 0
+[0mtesttool > ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:0
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:1
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:2
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:3
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:4
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:5
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:6
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:7
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:8
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/conf.c:3718:(snd_config_update_r) Cannot access file /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../autobuild/arm-linux-gnueabihf-6.1.1/out/share/alsa/alsa.conf
+ALSA lib /home/nvt02316/alsa_1103/alsa-lib-1.0.29/autobuild/../src/control/control.c:955:(snd_ctl_open_noupdate) Invalid CTL hw:9
+[DRM Init] : drmModeGetEncoder= PASS 
+Hal_IfCmd_SockFd_Get@139 iSockFd=6
+
+[Hal_Common_Init]FUNCTION_START g_btdcommonInit = 0
+
+##############################################
+
+##############################################
+
+################ plat_common_init:98 ###############
+
+##############################################
+
+##############################################
+Can not open /dev/nvt/ntkvplt
+ERR:[3987:3987]ClientDrmAuthentically(193) fail(-1)
+
+[DRM Init] : Step 1 : Open DRM Device : drm_card_id = 10 
+[DRM Init] : open drm pass 
+
+[DRM Init] : Step 2 : Create Frame Buffer - Start 
+[DRM Init] : fb_id = 98 
+[DRM Init] : Step 2 : Create Frame Buffer - End 
+
+[DRM Init] : Step 3 : Init Kernel Mode Setting - Start 
+[DRM Init] : crtc_id = 26 
+[DRM Init] : plane_id[7] = 40 
+[DRM Init] : plane_id[6] = 54 
+[DRM Init] : plane_id[5] = 55 
+[DRM Init] : plane_id[2] = 56 
+[DRM Init] : plane_id[1] = 59 
+[DRM Init] : plane_id[0] = 60 
+[DRM Init] : plane_id[3] = 61 
+[DRM Init] : plane_id[4] = 62 
+[DRM Init] : Step 3 : Init Kernel Mode Setting - End 
+
+Set DVIF source!!!
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+[36;48mDEV_INI_Init, 195 ===[0m
+[PLAT-SYS][36;48mPLAT_SYS_IsBootFromSpecialKeyEvent, Netflix Key event=0[0m
+
+Can not open /dev/nvt/ntkled , try path /dev/ntkled 
+Open /dev/ntkled successfully 
+[0;32;41m[ERR_PLAT_SYS][0m[PLAT_SYS_Get_RegionType] bUsingDefault == TRUE !!!
+
+[0;32;41m[ERR_PLAT_SYS][0m[PLAT_SYS_Get_RegionType] bUsingDefault == TRUE !!!
+
+[0;32;41m[ERR_PLAT_SYS][0m[PLAT_SYS_Get_RegionType] bUsingDefault == TRUE !!!
+
+[0;32;41m[ERR_PLAT_SYS][0m[PLAT_SYS_Get_RegionType] bUsingDefault == TRUE !!!
+
+[0;32;41m[ERR_PLAT_SYS][0m[PLAT_SYS_Get_RegionType] bUsingDefault == TRUE !!!
+
+[0;32;41m[ERR_PLAT_SYS][0m[PLAT_SYS_Get_RegionType] bUsingDefault == TRUE !!!
+
+Device NIM ATV create complete
+Device NIM DTV create complete
+#DEV-SRC#Not found HDMI4 HotPlug Definition
+ DEV_AMP_Init --- HAL_AUDIO_SET_IISMCLK
+#DEV-SPI# _destory_semaphore, 723, Semaphore pointer is null .. 
+[36;48mSPI open handle=0x17.[0m
+mobo dbg...
+[PLAT_VIU_Init]===> Init.
+DEV_INI_GetPcbVersion, 526, /tmp/pcbver doesn't exist. default version is 0x00
+
+
+ SAL_DEMOD_TUN_GetInitTunerType: Get Tuner Type = Si2157
+
+iic_param--enDeviceName 0 TUNER
+iic_param--u8SlaveAddr 0xc0
+iic_param--u8Bus_ID 0x0
+iic_param--enBusClock 0x4
+iic_param--u8GetBusID 0x0
+iic_param--enEnableBus 0x1
+iic_param--enDeviceName 1 SAT_TUNER
+iic_param--u8SlaveAddr 0xc6
+iic_param--u8Bus_ID 0x0
+iic_param--enBusClock 0x4
+iic_param--u8GetBusID 0x0
+iic_param--enEnableBus 0x1
+[0m[ICE_VIDEO][MSG][0m[6026]ice_VideoCheckPTF():check PTF from: /conf/ptf.ptf
+iic_param--enDeviceName 2 EXT_DEMOD
+iic_param--u8SlaveAddr 0x0
+iic_param--u8Bus_ID 0x0
+iic_param--enBusClock 0x0
+iic_param--u8GetBusID 0x0
+iic_param--enEnableBus 0x0
+iic_param--enDeviceName 3 LNB
+iic_param--u8SlaveAddr 0x0
+iic_param--u8Bus_ID 0x0
+iic_param--enBusClock 0x0
+iic_param--u8GetBusID 0x0
+iic_param--enEnableBus 0x0
+HAL_TUNER_Init: Tuner bus ID: BUS-0
+HAL_TUNER_Init: Sat Tuner bus ID: BUS-0
+HAL_TUNER_Init: Ext-Demod bus ID: BUS-0
+HAL_TUNER_Init: LNB bus ID: BUS-0
+
+
+ SAL_DEMOD_TUN_Initialize: Init Tuner 13
+
+---[3987:3987] CreateWindow(3111):window ID[0] Use Old front surface
+setDVIFTunerType DVIF ==> KER_DVIF_IO_PLAT_SET_SALTunerType = PASS, status[0], fd: [24] 
+ Read iic  FAIL pau8Buf[0]:00
+---[3987:3987] CreateWindow(3169):window ID[0] Use Old Back surface
+Default_OSD_PLANE_Size-Default_OSD_PLANE_Size Env=Null ,use default value
+---[3987:3987] CreateWindow(3111):window ID[1] Use Old front surface
+---[3987:3987] CreateWindow(3169):window ID[1] Use Old Back surface
+Default_OSD_PLANE_Size-Default_OSD_PLANE_Size Env=Null ,use default value
+---[3987:3987] CreateWindow(3111):window ID[2] Use Old front surface
+---[3987:3987] CreateWindow(3169):window ID[2] Use Old Back surface
+Default_OSD_PLANE_Size-Default_OSD_PLANE_Size Env=Null ,use default value
+---[3987:3987] CreateWindow(3111):window ID[3] Use Old front surface
+---[3987:3987] CreateWindow(3169):window ID[3] Use Old Back surface
+Default_OSD_PLANE_Size-Default_OSD_PLANE_Size Env=Null ,use default value
+---[3987:3987] CreateWindow(3111):window ID[4] Use Old front surface
+---[3987:3987] CreateWindow(3169):window ID[4] Use Old Back surface
+Default_OSD_PLANE_Size-Default_OSD_PLANE_Size Env=Null ,use default value
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=1
+[TD_SCHG_Base] VIU_LockTask_Enable,path=1,Enable=1
+[TD_SCHG_Base] VIU_LockTask_Enable,path=1,Enable=1
+[TD_SCHG_Base] VIU_LockTask_Enable,path=1,Enable=1
+[TD_SCHG_Base] VIU_LockTask_Enable,path=1,Enable=1
+[TD_SCHG_Base] VIU_LockTask_Enable,path=1,Enable=1
+[TD_SCHG_Base] VIU_LockTask_Enable,path=1,Enable=1
+[lwhite]<===PLAT_AIN_InitSUPPORT_ANTENNA_OVERLOAD ENABLE, task running
+[PLAT_TSPU_Initialize]start, u8TotalDemuxNo = 3
+[PLAT_TSPU_Initialize] Create TSDATA Polling Task Success
+Hal_Demux_CI_Init End
+<in> pDmxHndl(0x197f890), eSrc(513)
+<out>
+<in> pDmxHndl(0x197f894), eSrc(4610)
+<out>
+[PLAT_TSPU_Initialize]success, astDemuxHandle[0] = 0x12345600
+[PLAT_TSPU_Initialize]success, astDemuxHandle[1] = 0x12345601
+!!!!!!!!!!!!!!!NDAL_VenderVideo_init Start!!!!!!!!!!!!
+ NDAL-VENDERVIDEOEXT-0.0.048-2017/04/10-xxx , NDAL-VENDERVIDEOEXT-0.0.021-HEADER
+!!!!!!!!!!!!!!!NDAL_VenderVideo_init Finish!!!!!!!!!!!!
+
+PLAT_TVOUT_Init Success
+[Test] chmod /tmp/.NPC.COM.NVT.NPC.PQMGR to 777
+[PLAT_NPCPQ_MSG] 
+LIB_NPC_PQMGR_SERVER is running###########################
+
+
+PLAT_PQNPCSERVER_Init Success
+Can not open file.
+Can Not Parse CEC Config File, Use Default Setting !!
+ESPLAYERSRV_Open (384)
+esplayersrv_process-->mode:[0]key:[7777]
+[Test] chmod /tmp/.NPC.COM.NVT.PRIVSERVER.CB to 777
+Samba2idtv_Server_Init[Test] chmod /tmp/.NPC.npc.sambatv to 777
+CNPCSamba2IdtvServer::CNPCSamba2IdtvServer()CNPCSamba2IdtvServer_System::CNPCSamba2IdtvServer_System()#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x20000, len:0x10000 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x1c33f0, len:0x10 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x72000, len:0x2000 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x71000, len:0x1000 [0m 
+#DEV-SPI# [36;48_dev_spi_read, 737, addr:0x70000, len:0x1000 [0m 
+_HW_MCU_GetUartStatus: UartOnOff = 0x0 
+[PLAT_AOUT_VolTableConfig]===>  u32Size=101
+VIDIOC_G_EXT_CTRLS: Bad file descriptor
+VIDIOC_G_EXT_CTRLS: Bad file descriptor
+VIDIOC_G_EXT_CTRLS: Bad file descriptor
+VIDIOC_G_EXT_CTRLS: Bad file descriptor

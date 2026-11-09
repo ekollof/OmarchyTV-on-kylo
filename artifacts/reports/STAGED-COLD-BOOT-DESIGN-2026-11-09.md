@@ -9,9 +9,11 @@ Only `192.168.178.87` was probed (no subnet sweep), so the network miss was
 misread as a hang and the USB recovery was used unnecessarily. The quadrant
 matches the forced OSD reinit (`display.osd_reinit=1`) shrinking the vendor's
 display window; stage 0 is now the proven takeover display path and the
-reinit is isolated at stage 2. Logs now live on `/buffer` so a recovery cannot
-erase them. The native path is disabled (`/conf/oa_safe` present,
-`/conf/oa_boot` absent). This follows the failed power-on attempt in
+reinit is isolated at stage 2. The revised stage-0 config was then validated
+on the set as a stopped-stock takeover: full-screen portal with all icons
+(owner-confirmed). Logs now live on `/buffer` so a recovery cannot erase them.
+The native path is disabled (`/conf/oa_safe` present, `/conf/oa_boot`
+absent). This follows the failed power-on attempt in
 [BOOT-HOOK-COLD-ATTEMPT-2026-11-09](BOOT-HOOK-COLD-ATTEMPT-2026-11-09.md).
 
 ## Problem
@@ -178,6 +180,45 @@ supervisor. This hook change is **not deployed**.
 - `cold-replacement-bundle` now contains `oa-wdtfeed`, `oa-boot-gate.sh`,
   `aurora-boot-hook.sh`, `deploy-staged-cold.sh` and
   `openaurora-stage0..4.conf`; the ARM bundle manifest verifies.
+
+## Stage-0 takeover validation (2026-11-09)
+
+The new stage-0 config was run as a **stopped-stock takeover** (no boot hook,
+no cold boot): stock aurora stopped, `oa-supervise -- ... openaurora
+--config openaurora-stage0.conf` started from `/buffer/openaurora-stage0`.
+The vendor OSD was left untouched (`plat.drm_init=0`,
+`display.osd_reinit=0`, `display.cold_init=0`,
+`display.restore_snapshot=1`).
+
+Result: **full-screen vendor portal at 1920x1080** — 5 rail items, 12 cards,
+all tile icons visible; the owner confirmed "full screen, HDMI1 source
+showing". Framebuffer capture:
+`artifacts/analysis/stage0-takeover-2026-11-09/portal.png`; log:
+`takeover-stage0.log` (same directory).
+
+Evidence:
+
+```text
+plat: Hal_Video_DrmInit skipped; preserving the vendor OSD
+plat: common init (vpltio/v4l2/sharemem, drm 0, DVIF)
+plat: NDAL_VideoExt_OpenDevice(0,10)
+display: /dev/fb1 1920x1080 32bpp, 2 frame(s), back=1
+display: full snapshot saved; region -> 1920x1080 (ok)
+ui_vendor present: rect=0,0 1920x1080; painted portal: 5 rail items, 12 cards
+```
+
+So the top-left-quadrant problem in attempt C was the forced OSD reinit, and
+the takeover display path is the correct first cold stage.
+
+Known gaps at this stage (functional, not display):
+
+- `ui_menu` cannot load `/buffer/openaurora/menus/sub_launcher.json` when run
+  from `/buffer/openaurora-stage0`; the deployed path is `/buffer/openaurora`
+  so this is a takeover-path artifact, but it must be re-checked on the cold
+  boot.
+- The sources list is empty and settings are not reachable. Stage 0 has no
+  `source` module and `source.enable=0`, so an empty source list is expected;
+  settings accessibility needs verification once the menu path is correct.
 
 ## Deployment runbook (not executed)
 
