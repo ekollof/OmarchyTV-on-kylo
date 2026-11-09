@@ -980,10 +980,10 @@ $(BUILD)/modules/mod_display.so: $(call pic_objs,modules__mod_display,modules/di
 	$(CC) -shared -o $@ $^ $(LDFLAGS) $(VENDOR_LDFLAGS) $(LIBM) -pthread
 $(eval $(call emit_pics,modules__mod_display,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c,-pthread,include/openaurora/ui_anim.h include/openaurora/canvas.h include/openaurora/fb_snapshot.h))
 
-$(BUILD)/modules/mod_audio_source.so: $(call pic_objs,modules__mod_audio_source,modules/audio_source/audio_source.c common/audio_source_hal_vendor.c)
+$(BUILD)/modules/mod_audio_source.so: $(call pic_objs,modules__mod_audio_source,modules/audio_source/audio_source.c common/audio_source_hal_vendor.c common/audio_curve.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),audio_source),$(VENDOR_LDFLAGS),)
-$(eval $(call emit_pics,modules__mod_audio_source,modules/audio_source/audio_source.c common/audio_source_hal_vendor.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_source_hal.h))
+$(eval $(call emit_pics,modules__mod_audio_source,modules/audio_source/audio_source.c common/audio_source_hal_vendor.c common/audio_curve.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_source_hal.h include/openaurora/audio_curve.h))
 
 $(BUILD)/modules/mod_source.so: $(call pic_objs,modules__mod_source,modules/source/source.c common/source_hal_vendor.c)
 	@mkdir -p $(dir $@)
@@ -2778,7 +2778,7 @@ check-source-path: $(BUILD)/tests/source_path
 	@$(BUILD)/tests/source_path
 check: check-source-path
 
-$(BUILD)/tests/audio_source_path: tests/audio_source_path.c modules/audio_source/audio_source.c tests/audio_source_fake.c
+$(BUILD)/tests/audio_source_path: tests/audio_source_path.c modules/audio_source/audio_source.c tests/audio_source_fake.c common/audio_curve.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
 

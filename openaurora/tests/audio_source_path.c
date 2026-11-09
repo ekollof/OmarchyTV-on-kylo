@@ -6,8 +6,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "audio_source_fake.h"
+#include "openaurora/audio_curve.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 
@@ -15,6 +17,7 @@ extern const oa_module *oa_module_entry(void);
 static const oa_audio_source_iface *iface;
 static int enabled;
 static int unmute;
+static const char *aq_path;
 static int pos;
 
 static void log_message(void *p, int level, const char *fmt, ...)
@@ -28,6 +31,8 @@ static const char *config(void *p, const char *key, const char *def)
         return enabled ? "1" : "0";
     if (!strcmp(key, "audio.source.unmute"))
         return unmute ? "1" : "0";
+    if (!strcmp(key, "audio.source.aq"))
+        return aq_path;
     return def;
 }
 static int publish(void *p, const char *name, uint32_t version, const void *ifc)
@@ -129,6 +134,18 @@ static void expect_dual(int op)
     }
 }
 
+static void expect_ctrl_op_count(int op, int w0, int w2, int w3)
+{
+    assert(pos < audio_fake_count());
+    const struct audio_fake_event *ev = audio_fake_at(pos++);
+    if (ev->kind != AF_CTRL || ev->a != op || ev->b != w0 ||
+        ev->d != w2 || ev->e != w3) {
+        fprintf(stderr, "pos %d ctrl*: op %d %d,%d,%d,%d want %d %d,*,%d,%d\n",
+                pos - 1, ev->a, ev->b, ev->c, ev->d, ev->e, op, w0, w2, w3);
+        assert(0);
+    }
+}
+
 /* soft_mute(1,1) on the stock speaker table: 0..3, types 0..3. */
 static void expect_soft_mute(void)
 {
@@ -157,6 +174,13 @@ static void expect_tail(void)
 
 int main(void)
 {
+    aq_path = "/tmp/oa-audio-source-aq.bin";
+    FILE *af = fopen(aq_path, "wb");
+    assert(af);
+    uint8_t zbuf[OA_AUDIO_AQ_SIZE] = { 0 };
+    assert(fwrite(zbuf, 1, sizeof zbuf, af) == sizeof zbuf);
+    fclose(af);
+
     /* Disabled gate: no HAL traffic at all. */
     reset();
     void *ctx = start(0);
@@ -177,6 +201,8 @@ int main(void)
     expect_ctrl(0x37, 0, 0, 0, 0);
     expect_ctrl(0x1e, 0, 0, 0, 0);
     expect_dual(0x4a);
+    expect_ctrl_op_count(0x2e, 0, 101, 0);
+    expect_ctrl(0x3e, 0, 0, 0, 0);
     expect_send("MuxInput", 0x801, 0);
     expect_soft_mute();
     expect_ctrl(0x2a, 0xfff, 1, 0, 0);
@@ -275,7 +301,8 @@ int main(void)
     assert(iface->select_source(-1) == -1);
     assert(audio_fake_count() == 0);
     done(ctx);
+    unlink(aq_path);
 
-    puts("ok audio source: soft mute, AIN/ADEC/audio EasySelect, output mute, HP, unmute, video map, gate");
+    puts("ok audio source: soft mute, AIN/ADEC/audio EasySelect, output mute, HP, AQ table, unmute, video map, gate");
     return 0;
 }

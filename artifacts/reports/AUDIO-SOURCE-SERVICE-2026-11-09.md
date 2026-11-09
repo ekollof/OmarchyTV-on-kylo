@@ -275,6 +275,40 @@ output is still absent with this state, the remaining gap is the AQ/PP DSP
 table programming (`PLAT_VAUD_InitAQSetting`/`InitPPParams`) or the HDMI RX
 decoder task, not the mixer, AIN or VAUD command initialization.
 
+### AQ volume table
+
+`PLAT_VAUD_SetVolumeTable` `0x008d29f0` copies 101 16-bit entries and calls
+`PLAT_AOUT_VolTableConfig` `0x008875e8`, which sends
+`Hal_Audio_Ctrl(0x2e,{0,table,101})` followed by `Hal_Audio_Ctrl(0x3e,{0})`.
+`oa_audio_curve_from_aq` already decodes exactly that 101-entry table from
+`/conf/AQ.bin` (AUDIO-VOLUME), so `mod_audio_source` now loads the file
+(`audio.source.aq`, default `/conf/AQ.bin`; `audio.source.aq_profile`) and
+sends the table after the VAUD commands when enabled. The EQ/AVL post-param
+tables (`PLAT_VAUD_InitPPParams`/"AQuality") are still unported.
+
+Final run with the table and `audio.volume=50`:
+
+```text
+audio        volume -> 50
+audio source: AIN init (0x11/0x40/0x1e, handle 0x12345678)
+audio source: VAUD init (0x37/0x1e/0x4a rc 0, AQ loaded)
+audio source: MuxInput 0x801 port 0 (rc 0)
+audio source: speaker release (0,1)
+audio source -> 37 (ain 0x801, out0 in 0)
+main out source select   2:HDMI ES
+main out gain            100
+speaker out gain         0
+hdmi in codec info       1:PCM
+oa-supervise: stable; failure streak cleared
+```
+
+Stock's own mixer reports the same `main out gain 100`/`speaker out gain 0`,
+so gain 0 is normal for the HDMI ES path. The run held for 90 s, then stock
+was restored and force-rebooted. Audible confirmation remains the owner gate;
+if silent, only the AQ/PP post-param tables and the HDMI RX aud-info task
+(which only sends `PLAT_OS_SendEvent(0,7,3,...)` on aud-info changes, not an
+audio start) remain as candidates.
+
 ## Evidence
 
 ```text

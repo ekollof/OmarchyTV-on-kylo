@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "openaurora/audio_curve.h"
 #include "openaurora/audio_source_hal.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
@@ -112,6 +113,7 @@ struct ctx {
     int path_src;
     int path_port;
     int vaud_ready;
+    oa_audio_curve vol_curve;
 };
 
 static struct ctx *g_ctx;
@@ -154,8 +156,30 @@ static void ain_init(struct ctx *c)
                 "audio source: AIN init (0x11/0x40/0x1e, handle 0x12345678)");
 }
 
+static int cfg_int(struct ctx *c, const char *key, int def);
+
+/* PLAT_VAUD_InitAQSetting -> PLAT_VAUD_SetVolumeTable: the 101-entry AQ curve
+ * is sent with Hal_Audio_Ctrl(0x2e,{0,table,101}) and then Ctrl(0x3e,{0}).
+ * The existing audio_curve parser decodes the same AQ.bin layout. */
+static int load_aq(struct ctx *c)
+{
+    const char *path = c->api->config_get(c->api->priv, "audio.source.aq",
+                                          "/conf/AQ.bin");
+    FILE *f = fopen(path, "rb");
+    if (!f)
+        return -1;
+    uint8_t buf[OA_AUDIO_AQ_SIZE];
+    size_t n = fread(buf, 1, sizeof buf, f);
+    fclose(f);
+    if (n != sizeof buf)
+        return -1;
+    int profile = cfg_int(c, "audio.source.aq_profile", 0);
+    return oa_audio_curve_from_aq(&c->vol_curve, buf, n, profile);
+}
+
 /* PLAT_VAUD_Init from ICE_AudioInit: Ctrl 0x37 and 0x1e with zeroed 0x38
- * payloads, then DualCmd 0x4a. The AQ/PP table programming is not ported. */
+ * payloads, then DualCmd 0x4a. The AQ volume table follows; the AQ/PP
+ * post-param tables (EQ/AVL) are not ported. */
 static void vaud_init(struct ctx *c)
 {
     (void)ctrl_words(c, 0x37, 0, 0, 0, 0);
@@ -163,9 +187,15 @@ static void vaud_init(struct ctx *c)
     uint32_t params[0x38 / 4];
     memset(params, 0, sizeof params);
     int rc = c->h->audio_dual_cmd ? c->h->audio_dual_cmd(0x4a, params) : -1;
+    int aq = load_aq(c);
+    if (aq == 0) {
+        (void)ctrl_words(c, 0x2e, 0, (int)(uintptr_t)c->vol_curve.points, 101, 0);
+        (void)ctrl_words(c, 0x3e, 0, 0, 0, 0);
+    }
     c->vaud_ready = 1;
     c->api->log(c->api->priv, OA_LOG_INFO,
-                "audio source: VAUD init (0x37/0x1e/0x4a rc %d)", rc);
+                "audio source: VAUD init (0x37/0x1e/0x4a rc %d, AQ %s)", rc,
+                aq == 0 ? "loaded" : "unavailable");
 }
 
 /* PLAT_AIN_SetPathConfig(source, port): Hal_Audio_Send("MuxInput",
