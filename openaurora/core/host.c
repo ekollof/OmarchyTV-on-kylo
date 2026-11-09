@@ -452,8 +452,14 @@ static void config_load(oa_host *h, const char *path)
     if (!f)
         return;
     char line[2048];
-    while (fgets(line, sizeof line, f) &&
-           h->config_count < (int)(sizeof h->config / sizeof h->config[0])) {
+    int capacity = (int)(sizeof h->config / sizeof h->config[0]);
+    while (fgets(line, sizeof line, f)) {
+        if (h->config_count >= capacity) {
+            fprintf(stderr,
+                    "host: config table full (%d entries); ignoring the rest of %s\n",
+                    capacity, path);
+            break;
+        }
         char *s = line;
         while (*s == ' ' || *s == '\t')
             s++;

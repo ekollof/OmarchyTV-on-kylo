@@ -106,6 +106,7 @@ struct ctx {
     unsigned adc_delay_ms;
     int sound_output;
     int ep_plugged;
+    int unmute;          /* mirror _ice_AudioSwitchPath2MM's SetSoftMute(0,1) */
 };
 
 static struct ctx *g_ctx;
@@ -305,6 +306,14 @@ static int select_source(struct ctx *c, int src)
     c->aout_in[0] = c->ain_id[0];
     (void)aout_mute(c, 0, 0);
     switch_hp(c, hp_mode(c));
+    /* The HDMI branch of ICE_AudioStart has no explicit soft-mute release;
+     * _ice_AudioSwitchPath2MM ends with SetSoftMute(0,1). This opt-in mirrors
+     * that recovered unmute for the acceptance test. */
+    if (c->unmute) {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "audio source: speaker release (0,1)");
+        (void)soft_mute(c, 0, 1);
+    }
     c->current = src;
     c->api->log(c->api->priv, OA_LOG_INFO,
                 "audio source -> %d (ain 0x%x, out0 in %d)", src, mapped,
@@ -407,6 +416,7 @@ static int m_start(void *v)
     if (c->sound_output < 0 || c->sound_output > 4)
         c->sound_output = 1;
     c->ep_plugged = cfg_int(c, "audio.source.ep_plugged", 0) != 0;
+    c->unmute = cfg_int(c, "audio.source.unmute", 0) != 0;
     /* Stock speaker table: 0..3 exist with types 0..3; 4..8 do not. */
     for (int i = 0; i < 4; i++) {
         char key[32];
@@ -423,8 +433,10 @@ static int m_start(void *v)
         c->api->log(c->api->priv, OA_LOG_WARN,
                     "audio_source service already published");
     c->api->log(c->api->priv, OA_LOG_INFO,
-                "audio_source: ICE_AudioStart external branch %s",
-                c->enabled ? "enabled" : "disabled (audio.source_enable=1 to allow)");
+                "audio_source: ICE_AudioStart external branch %s "
+                "(unmute %d, sound %d, ep %d)",
+                c->enabled ? "enabled" : "disabled (audio.source_enable=1 to allow)",
+                c->unmute, c->sound_output, c->ep_plugged);
     return 0;
 }
 

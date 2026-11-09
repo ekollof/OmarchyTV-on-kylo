@@ -141,8 +141,10 @@ typedef struct {
     char modules_dir[256];
     char config_path[256];
     /* Immutable initialization snapshot, owned by this host. First duplicate
-     * wins as before; module reload does not reread the configuration file. */
-    struct { char k[64], v[512]; } config[48];
+     * wins as before; module reload does not reread the configuration file.
+     * Keep this above the shipped profile count (49 at 2026-11-09); overflow
+     * now logs a warning instead of silently dropping later keys. */
+    struct { char k[64], v[512]; } config[128];
     int config_count;
     /* Host-owned, transient skin policy; never written back to config. */
     char skin_selected[OA_NAME_MAX], skin_requested[OA_NAME_MAX], skin_module[OA_NAME_MAX];

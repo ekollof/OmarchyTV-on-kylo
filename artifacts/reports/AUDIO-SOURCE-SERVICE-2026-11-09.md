@@ -170,6 +170,46 @@ speaker main gain, `ice_Audio_SystemDelayUnMute`, and the non-stock
 `PLAT_VAUD_SwitchHP` branch. The service takes either the device source or the
 Bronlijst/VIN video type.
 
+### Speaker-out unmute
+
+`PLAT_VAUD_SetSoftMute` callers were checked. `_ice_AudioSwitchPath2MM`
+`0x007dd768` ends its external/MM route with `PLAT_VAUD_SetSoftMute(0,1)`
+after `SwitchHP`/`SetForeground`, which releases speakers 0..3 via
+`KItem(0x43)` and `EasySet(0x46/0x4e/0x4b)` with value 0. The HDMI external
+branch of `ICE_AudioStart` has no such call: its only soft-mute calls are the
+initial `(1,1)` and the `source <= 1` `(0,1)` tail. `ICE_AudioVolume`
+`0x007df2ec` also calls `SetSoftMute(volume,0)` when the volume changes.
+
+Because the stock run ended with `speaker out mute=0` while the HDMI run ended
+at 1, the module has an **opt-in** `audio.source.unmute=1` that mirrors the
+recovered MM-path release after `SwitchHP`. Default 0 keeps the HDMI branch
+vendor-faithful; the acceptance run sets it to 1.
+
+The first unmute run still reported `unmute 0`: the host config snapshot was
+capped at 48 entries (`core/host.h`), and the 49-line profile silently dropped
+`audio.source.unmute`. The cap is now 128 with an explicit overflow warning;
+`audio.source.unmute=1` is read and the log shows the release. This also fixes
+any later profile key that used to be dropped.
+
+Final gated run with `audio.source.unmute=1`:
+
+```text
+audio_source: ICE_AudioStart external branch enabled (unmute 1, sound 1, ep 0)
+audio source: speaker release (0,1)
+audio source -> 37 (ain 0x801, out0 in 0)
+main out source select   2:HDMI ES
+main out mute            0
+speaker out mute         0
+hdmi in codec info       1:PCM
+oa-supervise: stable; failure streak cleared
+```
+
+This now matches stock's mixer state exactly and held for the 90-second
+window. Stock was quit, restored and force-rebooted. Owner-audible
+confirmation is still the remaining gate; if silent despite the matched state,
+the next gap is the HDMI RX/DSP playback path (the codec reports PCM and
+`dspMonitor` is alive, so the mixer/decoder controls are not the suspect).
+
 ## Evidence
 
 ```text

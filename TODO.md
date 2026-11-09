@@ -86,8 +86,10 @@ maps the cold-start stages and the current stock-UI coverage.
       2 Ctrl 0x2b). Not TV-accepted; the mixer state is verified (main out
       select/connect 2:HDMI ES after `audio-source-video 17`). A known-playing
       HDMI1 PCM run kept `hdmi in codec info=PCM`, main out HDMI ES and mute 0
-      for 90 s, then stock was restored and rebooted; owner-audible
-      confirmation and foreground/scart/main-gain remain.
+      for 90 s, then stock was restored and rebooted. The recovered MM-path
+      `SetSoftMute(0,1)` release is opt-in (`audio.source.unmute=1`); the host
+      config cap was raised 48→128 because it silently dropped that key.
+      Owner-audible confirmation and foreground/scart/main-gain remain.
 - [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
       gain/SPDIF and audible acceptance.
 - [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.

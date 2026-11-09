@@ -14,6 +14,7 @@
 extern const oa_module *oa_module_entry(void);
 static const oa_audio_source_iface *iface;
 static int enabled;
+static int unmute;
 static int pos;
 
 static void log_message(void *p, int level, const char *fmt, ...)
@@ -25,6 +26,8 @@ static const char *config(void *p, const char *key, const char *def)
     (void)p;
     if (!strcmp(key, "audio.source_enable"))
         return enabled ? "1" : "0";
+    if (!strcmp(key, "audio.source.unmute"))
+        return unmute ? "1" : "0";
     return def;
 }
 static int publish(void *p, const char *name, uint32_t version, const void *ifc)
@@ -75,6 +78,17 @@ static void expect(int kind, int a, int b, int c, const char *name)
     if (ev->kind != kind || ev->a != a || ev->b != b || ev->c != c ||
         (name && strcmp(ev->name ? ev->name : "", name))) {
         fprintf(stderr, "pos %d: kind %d a %d b %d c %d name %s\n", pos - 1,
+                ev->kind, ev->a, ev->b, ev->c, ev->name ? ev->name : "(null)");
+        assert(0);
+    }
+}
+static void expect_at(int index, int kind, int a, int b, int c, const char *name)
+{
+    assert(index >= 0 && index < audio_fake_count());
+    const struct audio_fake_event *ev = audio_fake_at(index);
+    if (ev->kind != kind || ev->a != a || ev->b != b || ev->c != c ||
+        (name && strcmp(ev->name ? ev->name : "", name))) {
+        fprintf(stderr, "at %d: kind %d a %d b %d c %d name %s\n", index,
                 ev->kind, ev->a, ev->b, ev->c, ev->name ? ev->name : "(null)");
         assert(0);
     }
@@ -202,6 +216,23 @@ int main(void)
     assert(iface->select_video_type(99) == -1);
     assert(audio_fake_count() == 0);
 
+    /* Opt-in speaker release mirroring _ice_AudioSwitchPath2MM. */
+    done(ctx);
+    unmute = 1;
+    reset();
+    ctx = start(1);
+    assert(iface->select_video_type(17) == 0);
+    int n = audio_fake_count();
+    assert(n >= 4);
+    expect_at(n - 4, AF_KITEM, 0x43, 0, 0, NULL);
+    expect_at(n - 3, AF_SET, 0x46, 0, 0, NULL);
+    expect_at(n - 2, AF_SET, 0x4e, 0, 0, NULL);
+    expect_at(n - 1, AF_SET, 0x4b, 0, 0, NULL);
+    assert(iface->current_source() == 37);
+    done(ctx);
+    unmute = 0;
+    ctx = start(1);
+
     /* Out-of-range device source. */
     reset();
     assert(iface->select_source(56) == -1);
@@ -210,6 +241,6 @@ int main(void)
     assert(audio_fake_count() == 0);
     done(ctx);
 
-    puts("ok audio source: soft mute, AIN/ADEC/audio EasySelect, output mute, HP, video map, gate");
+    puts("ok audio source: soft mute, AIN/ADEC/audio EasySelect, output mute, HP, unmute, video map, gate");
     return 0;
 }

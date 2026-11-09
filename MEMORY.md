@@ -148,6 +148,9 @@ is verified (main out select/connect 2:HDMI ES after `audio-source-video 17`,
 main out mute 0, no ALSA errors) and the `oa-alsactl` enum/boolean diagnostics
 are fixed. A known-playing HDMI1 run (codec PCM) stayed at HDMI ES/mute 0 for
 90 s, then stock was restored and rebooted; owner audition is still pending.
+The recovered MM-path `SetSoftMute(0,1)` release is opt-in
+(`audio.source.unmute=1`), and the host config cap is now 128 with an overflow
+warning (the 48-entry cap silently dropped that key).
 No userspace PCM stream was open in our process, so a silent result means the
 next gap is the ICE audio playback/DSP path. The earlier `source.enable=1` test
 wrote `m_current_source` but did not change the displayed source; the gate is
