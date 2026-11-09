@@ -50,6 +50,7 @@ struct audio_adc_record {
     char name[0x28];
 };
 static const struct audio_adc_record g_adc_on = { 1, "adc on" };
+static const struct audio_adc_record g_adc_off = { 0, "adc off" };
 
 struct ext_control {
     uint32_t id, size, reserved2;
@@ -69,8 +70,11 @@ struct ctx {
     int current;
     int slot_connected;
     int slot_type;
+    int audio_refs;
     int fds[MAX_FDS];
     int nfds;
+    uint32_t v4l2_info[4];
+    uint32_t fdcommon[9];
     /* ABI 3 quiesce: fds are detached and closed on a worker. */
     pthread_t cleanup_thread;
     int cleanup_running;
@@ -170,6 +174,8 @@ static int vin_slot_connect(struct ctx *c, int type)
         c->fds[0] = fd1;
         c->fds[1] = fd2;
         c->nfds = 2;
+        memcpy(c->v4l2_info, info, sizeof info);
+        memcpy(c->fdcommon, fdinfo, sizeof fdinfo);
     } else {
         int fd = c->h->vin_open ? c->h->vin_open(idx) : -1;
         if (fd < 0)
@@ -198,10 +204,65 @@ static int vin_slot_connect(struct ctx *c, int type)
                               (int)fdinfo[6], (int)fdinfo[7], (int)fdinfo[8]);
         c->fds[0] = fd;
         c->nfds = 1;
+        memcpy(c->v4l2_info, info, sizeof info);
+        memcpy(c->fdcommon, fdinfo, sizeof fdinfo);
     }
     c->slot_connected = 1;
     c->slot_type = type;
+    if (type >= 4)
+        c->audio_refs++;
     return 0;
+}
+
+/* plat_vin_slot_disconnect @0x92f108. The V4L2 table carries the old type in
+ * word3 and the fd in word1 (single or dual fd2); dual fd1 is word2 of Info.
+ * The disconnect VPLT uses type 25 (tableA 255). */
+static void vin_slot_disconnect(struct ctx *c)
+{
+    if (!c->slot_connected)
+        return;
+    int type = c->slot_type;
+    int fd2 = c->nfds > 0 ? c->fds[c->nfds - 1] : -1;
+    int fd1 = c->nfds > 1 ? c->fds[0] : -1;
+    uint32_t fdinfo[9];
+    memcpy(fdinfo, c->fdcommon, sizeof fdinfo);
+    switch (type) {
+    case 0: case 4: case 5: case 20: case 21:
+        fdinfo[0] = 0xffffffffu;
+        break;
+    case 10:
+        fdinfo[1] = 0xffffffffu;
+        break;
+    case 14: case 15: case 16: case 17: case 18:
+        if (fd1 >= 0 && c->h->vin_close) c->h->vin_close(fd1);
+        fdinfo[3] = 0xffffffffu;
+        fdinfo[4] = 0xffffffffu;
+        break;
+    case 19:
+        fdinfo[2] = 0xffffffffu;
+        break;
+    default:
+        break;
+    }
+    vplt_select(c, fd2, 25);
+    if (fd2 >= 0 && c->h->vin_close) c->h->vin_close(fd2);
+    if (c->h->v4l2_info_reset) c->h->v4l2_info_reset(0);
+    c->v4l2_info[0] = 7;
+    c->v4l2_info[1] = c->v4l2_info[2] = 0xffffffffu;
+    c->v4l2_info[3] = 25;
+    if (c->h->v4l2_fd_set)
+        c->h->v4l2_fd_set((int)fdinfo[0], (int)fdinfo[1], (int)fdinfo[2],
+                          (int)fdinfo[3], (int)fdinfo[4], (int)fdinfo[5],
+                          (int)fdinfo[6], (int)fdinfo[7], (int)fdinfo[8]);
+    memcpy(c->fdcommon, fdinfo, sizeof fdinfo);
+    c->nfds = 0;
+    c->fds[0] = c->fds[1] = -1;
+    c->slot_connected = 0;
+    if (c->audio_refs > 0) {
+        c->audio_refs--;
+        if (c->audio_refs == 0 && c->h->audio_easy_select)
+            c->h->audio_easy_select(0, 0, &g_adc_off);
+    }
 }
 
 /* plat_drm_get_dpsource @0x92cac8: V4L2Info word1 is the fd, word2 is the
@@ -271,6 +332,27 @@ static int drm_connect(struct ctx *c, int dev, int type)
     return 0;
 }
 
+/* plat_drm_disconnect_dpsource @0x92cce0: same plane lookup, then code 0xe
+ * and the plane ID in words 0/1 of the Set_DpSource payload. */
+static void drm_disconnect(struct ctx *c, int type)
+{
+    int drm_dev = c->h->drm_device_id ? c->h->drm_device_id(0) : -1;
+    int plane = c->h->drm_plane_type ? c->h->drm_plane_type(0) : -1;
+    if (drm_dev < 0 || plane < 0)
+        return;
+    uint32_t pinfo[12];
+    memset(pinfo, 0, sizeof pinfo);
+    if (c->h->drm_plane_info) c->h->drm_plane_info(plane, pinfo);
+    uint32_t src[0x69];
+    memset(src, 0, sizeof src);
+    if (drm_get_dpsource(c, 0, type, src) != 0)
+        return;
+    src[0] = 0x0e;
+    src[1] = pinfo[0];
+    if (c->h->drm_set_dpsource)
+        c->h->drm_set_dpsource(drm_dev, (int)src[0], (int)src[1], (int)src[2]);
+}
+
 /* PLAT_VIU_ChangeInput connect half. Path 0 is the main display path used by
  * this set's Bronlijst. The vendor also disconnects the old source and updates
  * aurora-internal NdVideoSetting/VinParam tables; those are not library calls
@@ -285,8 +367,16 @@ static int change_input(struct ctx *c, int type)
     if (c->current == type && c->slot_connected)
         return 0;
     /* PLAT_VIU_ChangeInput disconnects the old path before the type gates. */
-    if (c->slot_connected && c->slot_type != type)
-        close_fds(c);
+    if (c->current >= 0) {
+        drm_disconnect(c, c->current);
+        if (c->slot_connected) {
+            vin_slot_disconnect(c);
+        } else if (c->current == 2 || c->current == 3) {
+            if (c->h->video_dec_stop) c->h->video_dec_stop(0);
+            if (c->h->video_dec_close) c->h->video_dec_close(0);
+        }
+        c->current = -1;
+    }
     if (type == 25)
         return 0;
 

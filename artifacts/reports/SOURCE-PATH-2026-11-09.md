@@ -40,6 +40,16 @@ half of `PLAT_VIU_ChangeInput` / `plat_vin_slot_connect`:
     0x14/0x15->0xb, default 4`) and `out[0x67]=0`;
   - `Hal_Video_Drm_Set_DpSource(dev, word0, word1, word2)`.
 - `NDAL_VideoExt_OpenDevice(0, type)`.
+- Disconnect before a type change:
+  - `plat_drm_disconnect_dpsource`: DRM device/plane lookup and
+    `drm_get_dpsource`, then `Hal_Video_Drm_Set_DpSource(dev,0xe,plane_id,
+    src[2])`;
+  - `plat_vin_slot_disconnect`: V4L2Info/FdCommon state, the type-specific
+    fd-word clear, VPLT type 25, close the primary/secondary fds,
+    `Hal_Video_Reset_V4l2Info`, `Set_V4l2FdCommon`;
+  - for old types 2/3, `video_dec_stop(0)` then `Hal_VideoDec_Close(0)`;
+  - the `Hal_Audio_EasySelect` enable refcount is decremented and the
+    `{id=0,"adc off"}` record is selected when it reaches zero.
 
 Table A is the 26-entry `0x013b9e78` table; table B is 0 except types 5 and 21.
 
@@ -68,9 +78,11 @@ The ARM `mod_source.so` builds and links
 
 ## Deliberate limits / not recovered
 
-- `PLAT_VIU_ChangeInput`'s full disconnect path (`plat_drm_disconnect_dpsource`,
-  `plat_vin_slot_disconnect`, VDEC/NDAL disconnect) is represented by closing
-  our VIN fds and clearing the slot, not by the unread vendor body.
+- The disconnect path above is implemented at the HAL-call level; the
+  aurora-internal `PLAT_VIU_NdVideoSetting`/`VinParam`/TDLayer table updates
+  and the full VDEC state machine are still not ported. `video_dec_stop` is an
+  explicit no-op hook because `PLAT_DEC_StopVideoDecoding` is aurora-internal;
+  `Hal_VideoDec_Close` is linked.
 - `PLAT_VIU_NdVideoSetting`, `PLAT_SRCIN_GetVinParam` and
   `PLAT_VIN_UpdateTDLayerInputSource` are aurora-internal table/state updates,
   not library calls; they are not guessed.
@@ -79,7 +91,9 @@ The ARM `mod_source.so` builds and links
 - `PLAT_DEC_SdVideoConnect` is an explicit hook; the production table uses a
   no-op because it is internal to aurora. Type 1 is not in this set's
   Bronlijst.
-- The high-level `AudioIF::setTransportStreamSource`/`startNonDVB*` companion
-  is not called; the low-level `Hal_Audio_EasySelect` is.
+- The high-level `AudioIF::setTransportStreamSource`/`startNonDVB*` transport
+  is not implemented; only the low-level `Hal_Audio_EasySelect` is. The
+  recovered call chain and the PLAT_AOUT/AIN/VAUD blocker are in
+  AUDIO-SOURCE-TRANSPORT-2026-11-09.
 - `source.enable=0` in every shipped profile. No TV, `source-select` effect,
   display switch, scanout or audio acceptance was obtained.

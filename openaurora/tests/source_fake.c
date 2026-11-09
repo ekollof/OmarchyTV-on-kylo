@@ -112,6 +112,11 @@ static void f_info_set(int index, int w0, int w1, int w2, int w3)
     REC(SF_INFO_SET, index, w0, w1, w2, w3);
     append_log("info set idx=%d w=%d,%d,%d,%d", index, w0, w1, w2, w3);
 }
+static void f_info_reset(int index)
+{
+    REC(SF_INFO_RESET, index);
+    append_log("info reset idx=%d", index);
+}
 static void f_drm_get(int index, void *out)
 {
     memset(out, 0, 0x1a4);
@@ -157,6 +162,16 @@ static void f_ext(int flag, unsigned type)
     REC(SF_EXT, flag, (int)type);
     append_log("videoext flag=%d type=%u", flag, type);
 }
+static void f_dec_stop(int path)
+{
+    REC(SF_DEC_STOP, path);
+    append_log("dec stop path=%d", path);
+}
+static void f_dec_close(int path)
+{
+    REC(SF_DEC_CLOSE, path);
+    append_log("dec close path=%d", path);
+}
 static void f_sd(void)
 {
     REC(SF_SD, 0);
@@ -190,8 +205,9 @@ static int f_ioctl(int fd, unsigned long request, void *arg)
 
 static const struct oa_source_hal g_fake = {
     f_open, f_close, f_select, f_start, f_audio, f_vplt,
-    f_info_get, f_info_set, f_drm_get, f_fd_get, f_fd_set,
-    f_device, f_plane, f_plane_info, f_dp, f_ext, f_sd, f_ioctl
+    f_info_get, f_info_set, f_info_reset, f_drm_get, f_fd_get, f_fd_set,
+    f_device, f_plane, f_plane_info, f_dp, f_ext,
+    f_dec_stop, f_dec_close, f_sd, f_ioctl
 };
 
 const struct oa_source_hal *oa_source_hal(void)

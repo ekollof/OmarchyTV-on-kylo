@@ -24,6 +24,7 @@ struct oa_source_hal {
                        int e, int f, int g);
     void (*v4l2_info_get)(int index, void *out4);
     void (*v4l2_info_set)(int index, int w0, int w1, int w2, int w3);
+    void (*v4l2_info_reset)(int index);
     void (*v4l2_drm_get)(int index, void *out_1a4);
     void (*v4l2_fd_get)(void *out9);
     void (*v4l2_fd_set)(int w0, int w1, int w2, int w3, int w4,
@@ -33,6 +34,8 @@ struct oa_source_hal {
     void (*drm_plane_info)(int plane, void *out12);
     void (*drm_set_dpsource)(int dev, int w0, int w1, int w2);
     void (*video_ext_open)(int flag, unsigned type);
+    void (*video_dec_stop)(int path);      /* PLAT_DEC_StopVideoDecoding */
+    void (*video_dec_close)(int path);     /* Hal_VideoDec_Close */
     void (*sd_video_connect)(void);        /* PLAT_DEC_SdVideoConnect, type 1 */
     int (*ioctl)(int fd, unsigned long request, void *arg);
 };
