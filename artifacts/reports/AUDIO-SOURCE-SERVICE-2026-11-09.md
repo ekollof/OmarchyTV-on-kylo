@@ -192,3 +192,34 @@ class (atv EasySelect + path 5 "ATV"), the source-10 skip, the AIN cache, the
 video-type mapping (17 → 0x25, 15 → 0x23 + ADC delay), and the
 disabled/out-of-range gates. The ARM module builds and links all five
 vendor HAL symbols; the cold bundle includes it but does not autoload it.
+
+## Live audio acceptance attempt (2026-11-09)
+
+Status: **route executed on the TV; audible acceptance is still unproven.
+The TV was rebooted and stock restored.**
+
+The first gated run (`source.enable=1`, `audio.source_enable=1`,
+`plat.drm_init=1`) returned `ok` for `source-select 17` and
+`audio-source-video 17`, but the NDAL audio controls failed with
+`Invalid CTL hw:3..9`: the process did not have stock's
+`ALSA_CONFIG_PATH=/vendor/etc/alsa.conf` (`vendor/run.sh:254`). The new
+`set_vendor_alsa_config()` in `core/main.c` sets it before any module starts.
+
+The second run had no ALSA errors and logged:
+
+```text
+[588293] INFO host         source -> type 17 (vin id 3, 2 fd)
+[588370] INFO host         audio source -> 37 (ain 0x801, out0 in 0)
+main out source select   enum  2
+speaker out mute         bool  1
+```
+
+Direct `Hal_Audio_EasySelect(5, id, table)` probes returned 0 and changed the
+main-out enum index for `0x1200` (7) and `0x1800` (14), but
+`oa-alsactl get` printed the label as `DTV DEC0` for every index. The tool's
+enum-item label lookup is therefore unreliable, and the `0x801` probe wrote
+index 2, which the tool also labels `DTV DEC0`. **The main-out selection
+(HDMI ES vs DTV) is not yet independently verified**, and no audible
+confirmation was obtained. Stock was restored and the TV rebooted; the gates
+remain 0 in every profile. Fixing the enum-label diagnostic (or reading the
+kernel enum table directly) is the next acceptance step.

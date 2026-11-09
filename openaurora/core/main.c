@@ -15,6 +15,17 @@
 
 static oa_host g_host;
 
+/* The stock launcher exports ALSA_CONFIG_PATH=/vendor/etc/alsa.conf
+ * (vendor/run.sh:254). libNDAL3's audio controls and the mixer helpers load
+ * that config; without it snd_ctl_open fails with hw:3..hw:9 errors and every
+ * HAL control silently fails. Set it before any module starts. */
+static void set_vendor_alsa_config(void)
+{
+    if (!getenv("ALSA_CONFIG_PATH") &&
+        access("/vendor/etc/alsa.conf", R_OK) == 0)
+        (void)setenv("ALSA_CONFIG_PATH", "/vendor/etc/alsa.conf", 1);
+}
+
 static void on_signal(int sig)
 {
     (void)sig;
@@ -42,6 +53,7 @@ static int exists(const char *p)
 
 int main(int argc, char **argv)
 {
+    set_vendor_alsa_config();
     const char *modules = NULL;
     const char *config = NULL;
     const char *sock = "/tmp/openaurora.sock";
