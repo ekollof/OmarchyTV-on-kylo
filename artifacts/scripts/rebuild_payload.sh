@@ -14,8 +14,17 @@ REPO=$(cd "$HERE/../.." && pwd)
 STAGE=/tmp/opencode/apdat_files
 OUT=$REPO/artifacts/payload/apdat0_full.ubifs
 FULL=$((31 * 253952))   # 31 LEBs x 253952 = 7872512
-UBIREADER=${UBIREADER:-$REPO/artifacts/workbench/venv/bin/ubireader_extract_files}
-UBIREADER_PYTHON=${UBIREADER_PYTHON:-$REPO/artifacts/workbench/venv/bin/python3}
+if [ -z "${UBIREADER:-}" ]; then
+    if [ -x "$REPO/.venv/bin/ubireader_extract_files" ]; then
+        UBIREADER=$REPO/.venv/bin/ubireader_extract_files
+    else
+        UBIREADER=$REPO/artifacts/workbench/venv/bin/ubireader_extract_files
+    fi
+fi
+if [ -z "${UBIREADER_PYTHON:-}" ]; then
+    UBIREADER_PYTHON=$(dirname "$UBIREADER")/python3
+    [ -x "$UBIREADER_PYTHON" ] || UBIREADER_PYTHON=python3
+fi
 
 echo "== 1/5 snapshot /conf from the TV"
 sudo rm -rf "$STAGE"

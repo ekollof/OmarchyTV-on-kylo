@@ -93,8 +93,9 @@ The helper uses artifacts/workbench/rootfs/{root,vendor,vendor2} as caches. It h
 root(fs0), vendor(ap0), vendor2(ap1), not /conf(apdat0). Profiles already exist
 in profiles and protocol. If another original /conf file is needed, carve the
 0xA00000-byte partition at NAND offset 0xE340000 using dd and extract with
-artifacts/workbench/venv/bin/python3 followed by
-artifacts/workbench/venv/bin/ubireader_extract_files. That is local extraction, not a
+`sudo .venv/bin/ubireader_extract_files -k` (see
+[docs/reproduce/root-payload.md](../docs/reproduce/root-payload.md)); `-k`
+preserves the 101:101 idtv ownership. That is local extraction, not a
 reason to wake the TV. Preserve analysed Ghidra projects: regenerating analysis
 is avoidable work even though their source firmware remains in the NAND dump.
 

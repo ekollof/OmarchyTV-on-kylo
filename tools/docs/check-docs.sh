@@ -36,7 +36,7 @@ check_links()
 }
 
 check_links README.md AGENTS.md docs/README.md docs/reverse-engineering/*.md \
-    artifacts/reports/README.md
+    docs/reproduce/*.md artifacts/reports/README.md
 
 sh tools/docs/gen-report-map.sh "$tmp.map" >/dev/null || {
     echo "report-map generator failed"

@@ -36,6 +36,11 @@ Superseded reports are archived under `artifacts/archive/` with a top
 
 ## Where the evidence lives
 
+`artifacts/workbench/`, `artifacts/dumps/` and `artifacts/payload/` are
+**local-only** and absent in a fresh clone: they contain the NAND dump, vendor
+binaries, Ghidra databases, toolchain and keys. Create them from your own TV
+([../reproduce/README.md](../reproduce/README.md)); never publish or commit them.
+
 | path | contents |
 |---|---|
 | `artifacts/dumps/tv_nand.bin` | 512 MiB NAND capture; source of truth (MD5 `36de1801…`) |

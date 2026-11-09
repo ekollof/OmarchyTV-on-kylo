@@ -17,6 +17,8 @@ points at them by topic.
 
 - [Reverse-engineering overview](reverse-engineering/README.md) — evidence
   rules, artifact map and quick lookup.
+- [Reproduce on another TV](reproduce/README.md) — owner bootstrap (unsigned
+  `/conf` hook), dependency sources, NAND dump/extract, build and restore.
 - [Binaries and hashes](reverse-engineering/binaries.md) — every key firmware
   binary/module, MD5, Ghidra project and role.
 - [Subsystems](reverse-engineering/subsystems.md) — recovered contracts by

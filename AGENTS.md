@@ -42,9 +42,9 @@ remains the chronological authority.
 
 ### Documentation hygiene
 
-`docs/reverse-engineering/` is maintained navigation over the evidence, not a
-snapshot. Keep it current in the same change that changes the evidence; a
-docs-only pass is not acceptance evidence.
+`docs/reverse-engineering/` and `docs/reproduce/` are maintained navigation
+over the evidence, not a snapshot. Keep them current in the same change that
+changes the evidence; a docs-only pass is not acceptance evidence.
 
 **On every evidence change** (new/corrected report, binary, hash, address,
 contract, gate or resolved question):
@@ -53,7 +53,9 @@ contract, gate or resolved question):
 - Update the matching section of `docs/reverse-engineering/subsystems.md`;
   update `binaries.md` for a new/changed binary, path, MD5 or Ghidra project;
   `tooling.md` for a new search/extraction step; `glossary.md` for a new term;
-  `open-questions.md` when a question is answered or opened.
+  `open-questions.md` when a question is answered or opened. When the owner
+  bootstrap path, toolchain, dependency or recovery procedure changes, update
+  `docs/reproduce/` and `tools/check-host.sh`.
 - Add/rename/remove the entry in the
   [report index](artifacts/reports/README.md) and regenerate the topic map:
   `sh tools/docs/gen-report-map.sh`.

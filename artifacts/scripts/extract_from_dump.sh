@@ -21,8 +21,17 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 REPO=$(cd "$HERE/../.." && pwd)
 DUMP=${DUMP:-$REPO/artifacts/dumps/tv_nand.bin}
 WORK=${WORK:-$REPO/artifacts/workbench/rootfs}
-UBIREADER=${UBIREADER:-$REPO/artifacts/workbench/venv/bin/ubireader_extract_images}
-UBIREADER_PYTHON=${UBIREADER_PYTHON:-$REPO/artifacts/workbench/venv/bin/python3}
+if [ -z "${UBIREADER:-}" ]; then
+    if [ -x "$REPO/.venv/bin/ubireader_extract_images" ]; then
+        UBIREADER=$REPO/.venv/bin/ubireader_extract_images
+    else
+        UBIREADER=$REPO/artifacts/workbench/venv/bin/ubireader_extract_images
+    fi
+fi
+if [ -z "${UBIREADER_PYTHON:-}" ]; then
+    UBIREADER_PYTHON=$(dirname "$UBIREADER")/python3
+    [ -x "$UBIREADER_PYTHON" ] || UBIREADER_PYTHON=python3
+fi
 FS0_OFF=0x2040000          # mtd12 "fs0" in NAND
 FS0_SIZE=0x0c300000
 

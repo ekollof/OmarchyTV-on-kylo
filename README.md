@@ -15,6 +15,8 @@ contains resumption pointers, not another independent status history.
 - [Reverse-engineering docs](docs/reverse-engineering/README.md): binary/hash
   inventory, recovered subsystem contracts, tooling recipes and a topic map of
   the 331 reports.
+- [Reproduce on your own TV](docs/reproduce/README.md): owner root/access
+  bootstrap, dependency sources, NAND dump/extract and recovery.
 - [Artifact map](artifacts/README.md): provenance, recovery image identities and raw evidence.
 - [Helper roles](tools/README.md): queries, UI mutations and offline simulation.
 - [Architecture](openaurora/docs/ARCHITECTURE.md), [runtime preflight](openaurora/docs/RUNTIME-CHECK.md),

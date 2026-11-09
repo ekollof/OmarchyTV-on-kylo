@@ -19,5 +19,8 @@ not authorization or evidence that their current combination was tested.
 
 Use [the artifact map](../README.md) for exact image/script identities and
 [STABILITY](../reports/STABILITY-2026-10-31.md) for recovery evidence.
+For a first-time owner on the same hardware, start with
+[docs/reproduce/README.md](../../docs/reproduce/README.md): it covers the NAND
+dump, building your own `/conf` image, the USB write and restore.
 Future physical recovery instructions are in ../recovery-stability/RECOVERY.txt.
 Keep unsigned /conf writable recovery distinct from writing signed firmware.

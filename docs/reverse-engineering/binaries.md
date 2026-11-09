@@ -76,8 +76,9 @@ artifacts/scripts/extract_from_dump.sh root:/path/in/rootfs -o /tmp/out
 ```
 
 `/conf` (apdat0) is not handled by the extractor: carve 0xA00000 bytes at NAND
-offset 0xE340000, then use `artifacts/workbench/venv/bin/python3
-artifacts/workbench/venv/bin/ubireader_extract_files`.
+offset 0xE340000, then extract as root with ownership preserved:
+`sudo .venv/bin/ubireader_extract_files -k -o conf-ubi apdat0.img` (full recipe
+in [../reproduce/root-payload.md](../reproduce/root-payload.md)).
 
 The extracted trees are caches; if a hash does not match the report, stop and
 re-extract rather than analyse an unknown build.

@@ -27,6 +27,13 @@ backend. Other vendor/API buffers need their own format evidence.
 Offline colour regression (synthetic reads, SSH/WoL forbidden):
 `python3 tools/tests/tvshot_decode.py` from the project root.
 
+## Host setup helper
+
+`check-host.sh` reports host build/analysis tools (compiler, binutils, Python,
+Node, qemu, mtd-utils, squashfs-tools, SQLite headers), Ghidra, the ARM
+toolchain and ubi_reader. It never installs anything and never reads the TV.
+Sources and versions: [../docs/reproduce/dependencies.md](../docs/reproduce/dependencies.md).
+
 ## Documentation helpers
 
 - `docs/gen-report-map.sh` — regenerate

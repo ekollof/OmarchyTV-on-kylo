@@ -6,6 +6,11 @@ local; use artifacts/reports/README.md to distinguish current conclusions from
 historical experiments. The original documentation cleanup was offline; later
 authorized live checks are recorded below and in MEMORY.md.
 
+For a fresh owner/agent on the same hardware, the maintained bootstrap is
+[docs/reproduce/README.md](docs/reproduce/README.md): NAND dump, unsigned
+`/conf` root hook, dependency sources, build and restore. It ships no firmware,
+vendor libraries, keys or tested payload images.
+
 ## Current objective and safety
 
 Priority 2026-11-08: platform/hardware ownership and stock-UI parity come

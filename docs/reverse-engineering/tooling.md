@@ -3,6 +3,12 @@
 The goal is to answer “where is this contract?” from the firmware, not from a
 decompiler guess. Every query below is read-only and local.
 
+**Local-only paths.** `artifacts/workbench/` (Ghidra projects, extracted rootfs,
+objdump cache, ARM toolchain) and `artifacts/dumps/` are not in git. The commands
+below use the original host's paths; in a fresh clone, create your own project
+and extracted tree from your own dump ([../reproduce/README.md](../reproduce/README.md))
+and substitute those paths. Nothing here requires the original set's files.
+
 ## Ghidra headless
 
 Canonical launcher:
@@ -60,9 +66,9 @@ artifacts/scripts/extract_from_dump.sh root:/lib/modules/ntkndpdrm.ko -o /tmp/ou
 
 - Sources: `root` = fs0, `vendor` = ap0, `vendor2` = ap1.
 - `/conf` (apdat0) is not supported by the helper. Carve 0xA00000 bytes at
-  NAND offset 0xE340000 with `dd`, then run:
-  `artifacts/workbench/venv/bin/python3
-  artifacts/workbench/venv/bin/ubireader_extract_files`.
+  NAND offset 0xE340000 with `dd`, then extract it as root with ownership
+  preserved: `sudo .venv/bin/ubireader_extract_files -k -o conf-ubi apdat0.img`
+  (see [../reproduce/root-payload.md](../reproduce/root-payload.md)).
 - The extractor uses `artifacts/workbench/rootfs/*` as caches. If a hash does
   not match the report, re-extract before analysing.
 

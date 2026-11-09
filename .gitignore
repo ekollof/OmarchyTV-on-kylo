@@ -16,6 +16,19 @@
 # Vendor libraries fetched from the firmware (`make vendor`)
 /openaurora/vendor/
 
+# Owner root-payload work trees and keys (docs/reproduce/root-payload.md).
+# These contain the TV's /conf, vendor settings DB, dropbear and private keys.
+/.venv/
+/conf/
+/conf-ubi/
+/hook/
+/verify/
+/remote.txt
+/owner_ed25519
+/owner_ed25519.pub
+/hook.meta
+/verify.meta
+
 # Build trees (build, build-tv, build-tv-v2/v3 and the dated sanitizer/lab variants)
 /openaurora/build*/
 
