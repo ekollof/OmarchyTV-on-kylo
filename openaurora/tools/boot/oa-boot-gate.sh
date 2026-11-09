@@ -8,24 +8,17 @@
 # oa-supervise calls the equivalent of `clear STAGE` once the child has been
 # stable for its stable window.
 #
-# ROOT is the filesystem root: "/" on the set, a temporary directory in host
-# tests. State files live in $ROOT/conf:
-#   oa_boot      enable (absent = never start the replacement)
-#   oa_safe      force vendor UI (always wins)
-#   oa_bootfail  consecutive native boots that never reached stability
-#   oa_try       token for the attempt currently in progress
-#   oa_last_ok   last successful boot (stage + time)
-#   oa_stage     requested hardware bring-up stage (0..4)
+# STATE_DIR is the directory holding oa_boot/oa_safe/oa_try/...: "/conf" on
+# the set, a temporary directory in host tests.
 #
-# Usage: oa-boot-gate.sh ROOT prepare
-#        oa-boot-gate.sh ROOT start STAGE
-#        oa-boot-gate.sh ROOT clear STAGE
-#        oa-boot-gate.sh ROOT status
+# Usage: oa-boot-gate.sh STATE_DIR prepare
+#        oa-boot-gate.sh STATE_DIR start STAGE
+#        oa-boot-gate.sh STATE_DIR clear STAGE
+#        oa-boot-gate.sh STATE_DIR status
 set -u
 
-root=${1:-/}
+conf=${1:-/conf}
 cmd=${2:-status}
-conf=$root/conf
 boot=$conf/oa_boot
 safe=$conf/oa_safe
 bootfail=$conf/oa_bootfail
@@ -92,7 +85,7 @@ status)
     exit 0
     ;;
 *)
-    echo "usage: $0 ROOT prepare|start STAGE|clear STAGE|status" >&2
+    echo "usage: $0 STATE_DIR prepare|start STAGE|clear STAGE|status" >&2
     exit 2
     ;;
 esac

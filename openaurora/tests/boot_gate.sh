@@ -10,7 +10,7 @@ mkdir -p "$tmp/conf"
 run()
 {
     # Capture combined output and exit status without letting set -e abort.
-    out=$(sh "$gate" "$tmp" "$@" 2>&1) && rc=0 || rc=$?
+    out=$(sh "$gate" "$tmp/conf" "$@" 2>&1) && rc=0 || rc=$?
 }
 
 # Empty state: no enable file, native blocked, no token written.
