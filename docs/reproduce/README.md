@@ -2,9 +2,10 @@
 
 Status: onboarding and reproducibility guide for **owners of the same hardware**.
 Last verified: 2026-11-10 (host commands and paths; the physical USB steps were
-last exercised on the original set in the reports below, not re-run for this
-guide). No firmware, vendor libraries, private keys or tested payload images are
-distributed here; you extract or build everything from your own TV.
+last exercised on the original set in the reports cited by
+[root-payload.md](root-payload.md), not re-run for this guide). No firmware,
+vendor libraries, private keys or tested payload images are distributed here;
+you extract or build everything from your own TV.
 
 ## Who this is for
 
