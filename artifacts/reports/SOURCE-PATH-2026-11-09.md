@@ -121,7 +121,11 @@ source drm dev=-1 plane=5 info=7,4294967295,4294967295,25 fd=-1,...
 
 `Hal_Video_Get_DrmDeviceId(0)` is `-1` when `Hal_Video_DrmInit(1)` was skipped,
 so `drm_connect` cannot reach `Hal_Video_Drm_Set_DpSource`. **A source switch
-requires `plat.drm_init=1`; the takeover profile is not sufficient.**
+requires `plat.drm_init=1`; the takeover profile is not sufficient.** The
+module now checks the DRM device id before opening VIN or sending VPLT and
+returns an error with `"DRM not initialized (plat.drm_init=1 required)"`
+instead of leaving a half-connected slot; the fake test covers that no HAL
+event other than the read-only id check is emitted.
 
 ### DRM-initialized run
 

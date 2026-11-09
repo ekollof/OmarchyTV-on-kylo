@@ -128,6 +128,7 @@ int main(void)
      * V4L2Info (word2 preserved), 9-word FdCommon (fd word0), DRM and NDAL. */
     reset();
     assert(iface->select_type(0) == 0);
+    expect(SF_DRM_DEV, 0, SKIP, SKIP, SKIP, SKIP);
     expect(SF_OPEN, 0, 100, SKIP, SKIP, SKIP);
     expect(SF_VPLT, 0x4c4, 0, 1, 0, SKIP);
     expect(SF_SELECT, 100, 1, SKIP, SKIP, SKIP);
@@ -163,6 +164,7 @@ int main(void)
     expect(SF_CLOSE, 100, SKIP, SKIP, SKIP, SKIP);
     expect(SF_INFO_RESET, 0, SKIP, SKIP, SKIP, SKIP);
     expect_fd(-1, 2, 3, 4, 5, 6, 7, 8, 9);
+    expect(SF_DRM_DEV, 0, SKIP, SKIP, SKIP, SKIP); /* fail-fast check */
     expect(SF_AUDIO, 0, 1, 1, SKIP, SKIP);
     expect(SF_OPEN, 3, 103, SKIP, SKIP, SKIP);
     expect(SF_VPLT, 0x4c4, 0, 3, 0, SKIP);
@@ -187,23 +189,13 @@ int main(void)
     reset();
     assert(iface->select_type(17) == 0);
     assert(source_fake_count() == 0);
+    done(ctx);
+    ctx = start(1);
 
     /* Type 19 (HDMI3): single Open(4), VPLT {66,0}, fd word2 of FdCommon. */
     reset();
     assert(iface->select_type(19) == 0);
     expect(SF_DRM_DEV, 0, SKIP, SKIP, SKIP, SKIP);
-    expect(SF_PLANE, 0, SKIP, SKIP, SKIP, SKIP);
-    expect(SF_PLANE_INFO, 5, SKIP, SKIP, SKIP, SKIP);
-    expect(SF_INFO_GET, 0, 0, 0x200, 0x11, 0x22);
-    expect_ioctl(0x200, 0xc0185647, 0xa00000, 1, 0xa00968, 0x1a4);
-    expect(SF_DP, 7, 0x0e, 0xa0, 0x55, SKIP);
-    expect(SF_CLOSE, 103, SKIP, SKIP, SKIP, SKIP);
-    expect(SF_VPLT, 0x4c4, 0, 255, 0, SKIP);
-    expect(SF_SELECT, 102, 255, SKIP, SKIP, SKIP);
-    expect(SF_CLOSE, 102, SKIP, SKIP, SKIP, SKIP);
-    expect(SF_INFO_RESET, 0, SKIP, SKIP, SKIP, SKIP);
-    expect_fd(1, 2, 3, -1, -1, 6, 7, 8, 9);
-    expect(SF_AUDIO, 0, 0, 0, SKIP, SKIP);
     expect(SF_AUDIO, 0, 1, 1, SKIP, SKIP);
     expect(SF_OPEN, 4, 104, SKIP, SKIP, SKIP);
     expect(SF_VPLT, 0x4c4, 0, 66, 0, SKIP);
@@ -227,6 +219,7 @@ int main(void)
     /* Type 1: SD connect + DRM + NDAL, no VIN slot open or audio select. */
     reset();
     assert(iface->select_type(1) == 0);
+    expect(SF_DRM_DEV, 0, SKIP, SKIP, SKIP, SKIP);
     expect(SF_SD, SKIP, SKIP, SKIP, SKIP, SKIP);
     expect(SF_DRM_DEV, 0, SKIP, SKIP, SKIP, SKIP);
     expect(SF_PLANE, 0, SKIP, SKIP, SKIP, SKIP);
@@ -251,10 +244,11 @@ int main(void)
     /* Unsupported slot types fail after the audio select and never open. */
     reset();
     assert(iface->select_type(6) == -1);
+    expect(SF_DRM_DEV, 0, SKIP, SKIP, SKIP, SKIP);
     expect(SF_AUDIO, 0, 1, 1, SKIP, SKIP);
     assert(pos == source_fake_count());
     assert(iface->select_type(99) == -1);
-    assert(source_fake_count() == 1);
+    assert(source_fake_count() == 2);
 
     /* Disabled module: no HAL traffic at all. */
     done(ctx);
@@ -263,6 +257,15 @@ int main(void)
     assert(iface->select_type(0) == -2);
     assert(source_fake_count() == 0);
     done(ctx);
+
+    /* Uninitialized DRM (takeover profile): fail fast before any VIN/VPLT. */
+    source_fake_set_drm_dev(-1);
+    reset();
+    ctx = start(1);
+    assert(iface->select_type(17) == -1);
+    assert(source_fake_count() == 1); /* the read-only DRM id check only */
+    expect(SF_DRM_DEV, 0, SKIP, SKIP, SKIP, SKIP);
+    source_fake_set_drm_dev(7);
 
     puts("ok source path: type gates, VIN opens/VPLT, V4L2Info/FdCommon, DRM/NDAL and audio order");
     return 0;

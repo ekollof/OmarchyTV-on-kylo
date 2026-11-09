@@ -12,6 +12,7 @@
 #include "source_fake.h"
 
 static struct source_fake_event g_ev[256];
+static int g_drm_dev = 7;
 static int g_n;
 static char g_log[16384];
 static size_t g_log_n;
@@ -47,6 +48,7 @@ static void append_log(const char *fmt, ...)
     }
 }
 
+void source_fake_set_drm_dev(int dev) { g_drm_dev = dev; }
 void source_fake_reset(void)
 {
     g_n = 0;
@@ -139,7 +141,7 @@ static void f_fd_set(int w0, int w1, int w2, int w3, int w4,
 static int f_device(int index)
 {
     REC(SF_DRM_DEV, index);
-    return 7;
+    return g_drm_dev;
 }
 static int f_plane(int path)
 {

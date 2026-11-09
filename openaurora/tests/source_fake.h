@@ -16,6 +16,7 @@ struct source_fake_event {
 };
 
 void source_fake_reset(void);
+void source_fake_set_drm_dev(int dev);
 int source_fake_count(void);
 const struct source_fake_event *source_fake_at(int index);
 const char *source_fake_log_text(void);

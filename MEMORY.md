@@ -131,7 +131,8 @@ builds. Live controlled takeover 2026-11-09: `source-select 17` and `0`
 returned ok with dual/single VIN fds and the modelled V4L2Info/FdCommon words;
 fb1 reinit painted the apps grid; `source-probe` showed DRM dev=-1 with
 `plat.drm_init=0` and dev=10 with `drm_init=1`, so a source switch requires
-`plat.drm_init=1`. Stock restored, staging removed, settings DB unchanged.
+`plat.drm_init=1`. The module now fails fast before opening VIN/VPLT when the
+DRM id is -1. Stock restored, staging removed, settings DB unchanged.
 Remaining: independent HDMI-picture/panel acceptance, NdVideoSetting/VinParam/
 UpdateTDLayer, HDMI PHY and the high-level AudioIF transport. The earlier `source.enable=1` test
 wrote `m_current_source` but did not change the displayed source; the gate is

@@ -71,7 +71,8 @@ maps the cold-start stages and the current stock-UI coverage.
       takeover run selected HDMI1 and TV live (`ok`, dual/single VIN fds,
       V4L2Info/FdCommon words, OSD apps grid captured) and showed the switch
       needs `plat.drm_init=1` (takeover leaves the DRM device id -1). The HDMI
-      picture, audio and cold boot remain unconfirmed; keep `source.enable=0`.
+      picture, audio and cold boot remain unconfirmed. The module fails fast
+      before any VIN/VPLT call when the DRM id is -1; keep `source.enable=0`.
 - [ ] Audio amp/route: native AD82587 backend, reset/mute/standby, speaker
       gain/SPDIF and audible acceptance.
 - [ ] Tuner/NIM-DTV, CEC ownership/TX, panel/power/watchdog, IR repeat.

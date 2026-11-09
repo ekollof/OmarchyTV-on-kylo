@@ -379,6 +379,18 @@ static int change_input(struct ctx *c, int type)
     }
     if (type == 25)
         return 0;
+    /* A source switch cannot complete without the vendor DRM device. The
+     * takeover profile skips Hal_Video_DrmInit(1), which leaves the device id
+     * at -1; fail before opening VIN or sending VPLT so no half-switch occurs. */
+    if (type != 2 && type != 3) {
+        int drm_dev = c->h->drm_device_id ? c->h->drm_device_id(0) : -1;
+        if (drm_dev < 0) {
+            c->api->log(c->api->priv, OA_LOG_ERROR,
+                        "source: DRM not initialized (plat.drm_init=1 required); "
+                        "type %d not connected", type);
+            return -1;
+        }
+    }
 
     if (type == 1) {
         if (c->h->sd_video_connect) c->h->sd_video_connect();
