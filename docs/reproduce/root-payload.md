@@ -68,8 +68,16 @@ sudo stat -c '%u:%g %a %n' "$conf" "$conf/sqlite_db/settingsDB.db"
 ```
 
 The database must print `ok`; the volume root and most files are owned by
-`101:101` (idtv), with a few `0:0`, `105:105` and `110:110`. Copy the volume
-directory to `conf/` and keep `apdat0.img`:
+`101:101` (idtv), with a few `0:0`, `105:105` and `110:110`. Confirm the UBI
+geometry before building, because `mkfs.ubifs` must match it:
+
+```sh
+.venv/bin/ubireader_display_info apdat0.img | \
+  grep -iE "LEB Size|PEB Size|Volume Name|reserved_pebs"
+# tested: LEB 253952, PEB 262144, Volume apdat0, reserved_pebs 31
+```
+
+Copy the volume directory to `conf/` and keep `apdat0.img`:
 
 ```sh
 sudo rm -rf conf
