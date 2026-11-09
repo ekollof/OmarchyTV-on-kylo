@@ -185,10 +185,10 @@ privileges, and binding port 2323/starting dropbear will not work.
 The tracked `openaurora/tools/boot/aurora-boot-hook.sh` is the full research
 hook. If you use it:
 
-- replace the hard-coded MAC `70:54:B4:FE:70:C6` with **your** TV's real MAC, or
-  remove the MAC restore and let DHCP run. The vendor `run_aurora.sh` forces
-  `D4:E2:CC:EC:45:E9` before its CIFS attempt; the full hook restores the real
-  MAC afterward;
+- replace the hard-coded MAC `70:54:B4:FE:70:C6` with **your** TV's real MAC.
+  The vendor `run_aurora.sh` forces `D4:E2:CC:EC:45:E9` before its CIFS attempt;
+  removing the restore leaves that shared debug MAC. The full hook restores
+  your MAC afterward;
 - it starts telnetd `2323` and tries dropbear `22`;
 - unless `/conf/no_dial` exists it starts `com.nvt.dialserver`;
 - unless `/conf/no_force_net` exists it sets
