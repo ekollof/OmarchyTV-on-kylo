@@ -257,3 +257,27 @@ is HDMI ES, and `EasySelect(5,0x801)` selected it. Stock was restored and
 force-rebooted; stock itself reports `2:HDMI ES` and `speaker out mute 0`.
 Audible confirmation is still the owner's gate; `source.enable` and
 `audio.source_enable` remain 0.
+
+### Known-playing HDMI1 run (2026-11-09)
+
+Before the run, stock reported `hdmi in codec info = PCM`, so HDMI1 had an
+active PCM stream. The gated takeover was repeated with that source:
+
+```text
+source -> type 17 (vin id 3, 2 fd)
+audio source -> 37 (ain 0x801, out0 in 0)
+main out source select   2:HDMI ES
+main out source connect  2:HDMI ES
+main out mute            0
+hdmi in codec info       1:PCM
+hdmi in                  0:hdmirx audio on
+```
+
+The vendor `dspMonitor` remained alive. The takeover stayed stable for the
+90-second ticker window (`oa-supervise: stable; failure streak cleared`) and
+was then quit, restored and force-rebooted. Stock is running again
+(appmgr/aurora, fb1 1920x2160, `/conf/oa_safe` present, watchdog re-armed).
+No userspace PCM stream was open in our process, so whether the vendor DSP
+path actually produced audible output is still **owner-confirmation only**.
+If it was silent, the next gap is the ICE audio playback/DSP path, not the
+mixer selection.
