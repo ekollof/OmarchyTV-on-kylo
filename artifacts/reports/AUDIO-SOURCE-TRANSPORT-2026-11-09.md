@@ -78,3 +78,38 @@ state) to the existing `mod_audio`/`audio_mixer`/`audio_amp` services, then add
 an `audio.source` service that `mod_source` can call. Do not fake the hardware
 route or treat a successful `Hal_Audio_Ctrl` as audible acceptance. The source
 gate stays 0 until that service and TV acceptance exist.
+
+## `ICE_AudioStart` follow-up (2026-11-09)
+
+`DvbAudioPlayer::startNonDVBAudio` reaches the vendor path through
+`IceAudioIF`'s vtable (`+0x20`); the concrete implementation is
+`ICE_AudioStart` `0x007e2114` (1419 decompiled lines). Its external-source
+branch (`*param_1 == 0`, `param_1[1] != 0xb`) is:
+
+```text
+PLAT_VAUD_SetSoftMute(1)
+PLAT_AOUT_SpeakerConnect(0..3, 0)
+if source != 10:
+    PLAT_AIN_Connect(*in_id, table[source], 0)
+    PLAT_AIN_Enable(*in_id)
+if _ice_IsADCSource(source): PLAT_OS_TaskDelay(200)
+PLAT_AOUT_Connect(0, table[source], *in_id)
+PLAT_AOUT_SetMute(0)
+... PLAT_VAUD_SwitchHP / PLAT_AOUT_SetForeground / speaker main gain ...
+```
+
+The DVB branch additionally uses `PLAT_DEC_*` (connect/stop/start/flush/gain,
+audio description), `PLAT_TSPU_*` (demux source, A/V PID change), `PLAT_CI_*`
+and `PLAT_VAUD_*`. The source table is indexed by `ICE_DeviceSource`
+(`DAT_007e27b0` style 16-bit tables for decode type), and the path tables are
+aurora globals, not library exports.
+
+This confirms the earlier blocker with a concrete size: a faithful native
+`audio.source` service must port the `ICE_AudioStart` external branch plus
+`PLAT_AIN_Connect`/`Enable` and `PLAT_AOUT_Connect`/`SpeakerConnect`/`SetMute`
+state machines and their HAL opcodes, while the DVB branch additionally needs
+the DEC/TSPU/CI stack. It is not a single wrapper call and was not attempted
+in this step. The low-level `Hal_Audio_EasySelect(0,1,&adc_on)` companion is
+already emitted by `mod_source` for types 4..21.
+
+The source gate stays 0 until that service exists and is audibly accepted.

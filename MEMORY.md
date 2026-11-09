@@ -134,7 +134,10 @@ fb1 reinit painted the apps grid; `source-probe` showed DRM dev=-1 with
 `plat.drm_init=1`. The module now fails fast before opening VIN/VPLT when the
 DRM id is -1. Stock restored, staging removed, settings DB unchanged.
 Remaining: independent HDMI-picture/panel acceptance, NdVideoSetting/VinParam/
-UpdateTDLayer, HDMI PHY and the high-level AudioIF transport. The earlier `source.enable=1` test
+UpdateTDLayer, HDMI PHY and the high-level AudioIF transport. `ICE_AudioStart`
+`0x7e2114` is 1419 decompiled lines; its external branch calls
+PLAT_VAUD/AOUT/AIN state machines, and the DVB branch also DEC/TSPU/CI, so a
+native audio.source service is a subsystem port, not a wrapper. The earlier `source.enable=1` test
 wrote `m_current_source` but did not change the displayed source; the gate is
 reverted and stays 0. The test left stock `m_current_source=5`/`m_volume=0` and the
 owner force-rebooted to restore audio; add stock-settings restore before more
