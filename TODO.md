@@ -464,9 +464,10 @@ unvalidated.
       (STAGED-COLD-BOOT-DESIGN-2026-11-09): external MCU watchdog feeder,
       boot-attempt gate with 3-unproven-boot auto-disable, supervisor
       `--wdt-keep`/`--gate`, a 5-step hardware ladder (DRM/OSD/UI → panel →
-      SPI → tuner → I2S) and a fail-closed appmgr entry. The installed hook's
-      native branch still needs the `run-aurora.sh` handoff; nothing is
-      deployed and the native path stays disabled.
+      SPI → tuner → I2S) and a fail-closed appmgr entry. The hook template,
+      dry-run deploy/restore script and the exact runbook are prepared
+      (`deploy-staged-cold.sh`, STAGED-COLD-BOOT-DESIGN); nothing is deployed
+      and the native path stays disabled pending explicit owner authorization.
 - [ ] MCU/watchdog authority and standby/resume ownership.
 - [ ] Any persistent replacement or boot-hook change. The `/conf`-only hook
       (`/conf/remote.txt` -> `/conf/remotelf/aurora.elf`, gated by

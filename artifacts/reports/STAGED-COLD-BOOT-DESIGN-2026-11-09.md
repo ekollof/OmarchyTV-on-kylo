@@ -119,8 +119,72 @@ supervisor. This hook change is **not deployed**.
 - `tools/boot/run-aurora.sh` + `check-appmgr-entry` — stage config selection,
   gate prepare/start, feeder start, fail-closed gate/feeder paths and the
   supervisor arguments.
-- `cold-replacement-bundle` now contains `oa-wdtfeed`, `oa-boot-gate.sh` and
+- `tools/boot/aurora-boot-hook.sh` — the installed hook with diagnostics, the
+  bounded `/buffer` wait and the native branch handing off to
+  `run-aurora.sh`.
+- `tools/boot/deploy-staged-cold.sh` + `check-deploy-staged-cold` — dry-run /
+  apply / restore; refuses without `coredumpnoreset`, `/buffer/wdtctl`, a
+  verified manifest or the selected stage config; backs up the bundle and hook;
+  installs the hook template, `oa_stage`, `oa_boot` and removes `oa_safe`.
+- `cold-replacement-bundle` now contains `oa-wdtfeed`, `oa-boot-gate.sh`,
+  `aurora-boot-hook.sh`, `deploy-staged-cold.sh` and
   `openaurora-stage0..4.conf`; the ARM bundle manifest verifies.
+
+## Deployment runbook (not executed)
+
+Prepare on the host, then run only with explicit owner authorization:
+
+```sh
+# 1. copy the bundle to a fresh directory on /buffer (host -> TV, verified)
+tar -czf /tmp/opencode/oa-stage0.tgz -C openaurora/build-tv-v3/cold-replacement .
+#    ssh: mkdir /buffer/openaurora-staged; tar -xzf -  (separate verify step)
+cd /buffer/openaurora-staged && sha256sum -c manifest.sha256
+
+# 2. preflight and dry run (no changes)
+./openaurora --check --modules ./modules --config ./openaurora-stage0.conf
+sh deploy-staged-cold.sh --bundle /buffer/openaurora-staged --stage 0
+
+# 3. apply (backs up /buffer/openaurora and the hook first)
+sh deploy-staged-cold.sh --bundle /buffer/openaurora-staged --stage 0 --apply
+
+# 4. power-cycle the set (owner-approved). The current stock session is
+#    unaffected until then.
+```
+
+Expected on the next boot (stage 0):
+
+```text
+/conf/tvhack.log: oa: pre ... / oa: post ... / oa: decision native=1
+/conf/tvhack.log: run-aurora /buffer/openaurora stage=0
+/conf/tvhack.log: oa-wdtfeed: beat 1, watchdog 10s
+/conf/tvhack.log: oa-supervise: watchdog kept armed (external feeder)
+/conf/tvhack.log: oa-supervise: host loop alive, first present acknowledged
+/conf/tvhack.log: oa-supervise: boot attempt cleared
+/conf/tvhack.log: oa-supervise: stable; failure streak cleared
+/conf/oa_last_ok: ok
+/conf/oa_fail: 0
+```
+
+Verify with SSH (the hook's dropbear stays up): `sh /buffer/openaurora/oa-boot-gate.sh /conf status`,
+`cat /conf/oa_last_ok`, `ps` for `openaurora`/`oa-wdtfeed`, and a read-only
+fb capture. Then obtain owner visible confirmation and keep it running for
+several minutes.
+
+Failure handling: a reset/hang stops the feeder, the MCU resets the set, and
+the next boot counts the attempt; three unproven boots remove `oa_boot`. If
+SSH is reachable but the UI failed, `touch /conf/oa_safe` selects the vendor
+fallback immediately.
+
+Restore:
+
+```sh
+sh /buffer/openaurora/deploy-staged-cold.sh --restore --apply
+# or: touch /conf/oa_safe; rm -f /conf/oa_boot
+reboot
+```
+
+Then verify stock (`appmgr`, `aurora.elf`, fb1 1920x2160, `oa_safe` present,
+`oa_boot` absent). The USB recovery-stability stick remains the last resort.
 
 ## Acceptance procedure (per stage, with explicit owner authorization)
 
