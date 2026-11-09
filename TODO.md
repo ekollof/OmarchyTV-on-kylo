@@ -458,16 +458,20 @@ unvalidated.
 
 - [ ] Cold independent startup / boot without stock Aurora. 2026-11-09: the
       installed `/conf` hook was exercised on the real boot path with the
-      34-module cold bundle; the second attempt hung the set and required the
-      tested USB `/conf` recovery (BOOT-HOOK-COLD-ATTEMPT-2026-11-09). Not
-      accepted. The retry safety is now implemented and host-tested
-      (STAGED-COLD-BOOT-DESIGN-2026-11-09): external MCU watchdog feeder,
-      boot-attempt gate with 3-unproven-boot auto-disable, supervisor
-      `--wdt-keep`/`--gate`, a 5-step hardware ladder (DRM/OSD/UI → panel →
-      SPI → tuner → I2S) and a fail-closed appmgr entry. The hook template,
-      dry-run deploy/restore script and the exact runbook are prepared
-      (`deploy-staged-cold.sh`, STAGED-COLD-BOOT-DESIGN); nothing is deployed
-      and the native path stays disabled pending explicit owner authorization.
+      34-module cold bundle; the first attempt hung the set and required the
+      USB `/conf` recovery (BOOT-HOOK-COLD-ATTEMPT-2026-11-09). The staged
+      safety path was then implemented and armed three times
+      (STAGED-COLD-BOOT-DESIGN-2026-11-09): A blocked on a gate-argument bug
+      and B on a tuner init/NULL-ctx cleanup (both fell back to stock safely,
+      fixes committed); C, the UI-base stage 0, hung the set and needed the USB
+      recovery again. The watchdog feeder's reset did **not** recover C and is
+      unproven. Not accepted. Do not retry without (1) a proven watchdog reset
+      or a switched mains outlet, and (2) a takeover-style first stage
+      (`plat.drm_init=0`, `display.osd_reinit=0`) plus one-at-a-time `plat`
+      gates (audio prelude, VPLTIO/V4L2/sharemem, DRM, DVIF, GPIO/IIC, video
+      device). The hook template, deploy/restore script and runbook are in the
+      repo; `/buffer/openaurora` is the prior 12-module payload and the native
+      path is disabled.
 - [ ] MCU/watchdog authority and standby/resume ownership.
 - [ ] Any persistent replacement or boot-hook change. The `/conf`-only hook
       (`/conf/remote.txt` -> `/conf/remotelf/aurora.elf`, gated by

@@ -158,6 +158,84 @@ was moved back to `/buffer/openaurora`, and
 - The native path remains disabled and the boot-hook/persistent-replacement
   gate stays closed until these conditions are met.
 
+## Follow-up: staged-path attempts (same day)
+
+After the recovery, the staged safety path was implemented and three more
+armed attempts were made. The TV is stock after each; the `/conf` recovery
+image was used again after the last one.
+
+### Attempt A — gate argument bug (safe fallback)
+
+The first armed stage-0 boot selected native, but `run-aurora.sh` passed
+`/conf` to `oa-boot-gate.sh`, which treated its argument as a filesystem root
+and checked `/conf/conf/oa_boot`. It blocked and the wrapper exec'd stock — the
+fail-closed path worked. The wrapper log showed:
+
+```text
+run-aurora /buffer/openaurora stage=0
+oa-boot-gate: native blocked (safe=0 boot=0 fail=0)
+run-aurora: boot gate blocked
+```
+
+The gate now takes the state directory directly (`/conf`). No replacement
+code ran.
+
+### Attempt B — tuner init failure and loader cleanup (safe fallback)
+
+With the gate fixed, stage 0 reached the base bring-up and display:
+
+```text
+plat: audio prelude (Protect/Mixer/Proxy)
+plat: common init (vpltio/v4l2/sharemem, drm 1, DVIF)
+plat: NDAL_VideoExt_OpenDevice(0,10)
+plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+display: /dev/fb1 osd reinit ... region -> 1920x1080 (ok)
+```
+
+The full autoload then hit the tuner (`tuner.backend=hal`, `hw_init=0`), whose
+`m_init` intentionally returns `-EACCES`, and the core never reached its host
+loop. The failed init left `slot->ctx` NULL; the loader called
+`quiesce(NULL)`/`destroy(NULL)`, and the tuner's destroy dereferenced the NULL
+context. The supervisor's startup deadline fired, recorded failure 1/3,
+stopped the feeder and exec'd vendor aurora. The set stayed reachable.
+
+Fixes: the loader skips quiesce/destroy when a failed init returned no ctx;
+the stage profiles no longer autoload hardware owners before their stage;
+`spi` is now included in the bundle; the supervisor puts the child in its own
+process group and kills the group so IR/broker helpers are not orphaned.
+
+### Attempt C — UI-base stage 0 hang (USB recovery again)
+
+The UI-base stage (stage 0 autoload: plat, display, panel, ir, settings,
+service_db, image_decode, epg, pvr, channels, i18n, ticker, ui_*, lua, power;
+no tuner/SPI/audio/source/CEC) was armed and power-cycled. The set became
+unreachable (no ICMP/ARP) and did **not** recover on its own. The external
+watchdog feeder was running by design, but its `set 10` did not produce a
+reset within several minutes. The owner used the recovery-stability stick
+again; `/conf` was restored to the Oct-31 image and the stage log was lost
+with it.
+
+Consequences:
+
+- The `plat` base still runs DRM/OSD, the audio prelude, VPLTIO/V4L2/sharemem/
+  DVIF, GPIO/IIC init and `NDAL_VideoExt_OpenDevice(0,10)`. On a real boot
+  these may conflict with the already-running appmgr/DFB/privserver; the
+  stopped-stock gate did not reproduce that state.
+- The MCU-watchdog feeder is **not yet a proven recovery**: either the
+  watchdog was not armed/feedable in that state, or the reset path did not
+  fire. Treat the watchdog as unvalidated until an isolated reset test passes.
+- A guaranteed out-of-band recovery (proven watchdog reset or a switched mains
+  outlet) must exist before another cold attempt.
+- Next design split: a takeover-style first stage (`plat.drm_init=0`,
+  `display.osd_reinit=0`, no plat base bring-up) to prove the UI on the vendor-
+  initialized OSD, then add plat pieces one at a time (audio prelude, VPLTIO/
+  V4L2/sharemem, DRM, DVIF, GPIO/IIC, video device) with a config gate each.
+
+Cleanup after recovery: the staged bundles and backups were removed and the
+prior 12-module payload was restored to `/buffer/openaurora`. `/conf` is the
+Oct-31 image (`oa_safe` present, no `oa_boot`), stock appmgr/aurora running,
+watchdog re-armed, no helpers.
+
 ## Evidence files
 
 - `artifacts/analysis/boot-hook-2026-11-09/aurora.elf.restored` — the Oct-31

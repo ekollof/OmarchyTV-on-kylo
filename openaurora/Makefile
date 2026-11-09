@@ -2126,7 +2126,7 @@ replacement-bundle: $(BUILD)/$(PROJECT) $(REPLACEMENT_SO) $(BUILD)/tests/mod_pla
 # Complete real-platform composition: all feature/UI modules, fixed asset
 # configs, real plat with plat.drm_init=0 (preserve the vendor OSD). Takeover
 # candidate; cold OSD enable remains open.
-FULL_REPLACEMENT_MODULES := plat display panel ir audio source audio_source power tuner settings service_db image_decode epg pvr channels i18n audio_curve audio_mixer app_launch audio_amp_profile audio_amp cec ticker ui_clock ui_anim ui_engine ui_vendor ui_omarchy ui_theme ui_profile ui_menu ui_list ui_navigation lua
+FULL_REPLACEMENT_MODULES := plat display panel ir audio source audio_source power tuner settings service_db image_decode epg pvr channels i18n audio_curve audio_mixer app_launch audio_amp_profile audio_amp cec ticker ui_clock ui_anim ui_engine ui_vendor ui_omarchy ui_theme ui_profile ui_menu ui_list ui_navigation lua spi
 FULL_REPLACEMENT_SO := $(foreach m,$(FULL_REPLACEMENT_MODULES),$(BUILD)/modules/mod_$(m).so)
 $(BUILD)/oa-alsactl: tools/audio/oa-alsactl.c
 	@mkdir -p $(dir $@)

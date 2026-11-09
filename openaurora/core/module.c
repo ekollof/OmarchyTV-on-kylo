@@ -149,8 +149,11 @@ oa_mod *oa_module_load(oa_host *h, const char *path_or_name)
         h->api.log(h, OA_LOG_ERROR, "load '%s': init() failed (%d)", path, rc);
         slot->state = OA_ST_LOADED;
         slot->init_failed = 1;
+        /* A module that fails before returning its ctx has nothing to
+         * quiesce or destroy; calling either with NULL has crashed or hung
+         * modules whose early-failure path leaves *out untouched (tuner). */
         h->cur_module = slot->id;
-        int busy = desc->quiesce ? desc->quiesce(slot->ctx) : 0;
+        int busy = (slot->ctx && desc->quiesce) ? desc->quiesce(slot->ctx) : 0;
         h->cur_module = prev;
         if (busy) {
             slot->cleanup_pending = 1;
@@ -159,7 +162,8 @@ oa_mod *oa_module_load(oa_host *h, const char *path_or_name)
         }
         oa_host_disable_posts(h, slot->id);
         h->cur_module = slot->id;
-        slot->desc->destroy(slot->ctx);
+        if (slot->ctx)
+            slot->desc->destroy(slot->ctx);
         h->cur_module = prev;
         oa_host_cleanup_owned(h, slot->id);
         dlclose(dl);

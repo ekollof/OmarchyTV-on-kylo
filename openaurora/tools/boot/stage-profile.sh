@@ -37,10 +37,19 @@ i2s=0
 [ "$stage" -ge 3 ] && tuner=1
 [ "$stage" -ge 4 ] && i2s=1
 
+base_autoload=plat,display,panel,ir,settings,service_db,image_decode,epg,pvr,channels,i18n,ticker,ui_clock,ui_anim,ui_engine,ui_vendor,ui_theme,ui_profile,ui_menu,ui_list,ui_navigation,lua,power
+case $stage in
+0|1) autoload=$base_autoload ;;
+2) autoload=$base_autoload,spi ;;
+3) autoload=$base_autoload,spi,tuner ;;
+4) autoload=$base_autoload,spi,tuner,audio,audio_curve,audio_mixer,audio_amp_profile,audio_amp ;;
+esac
+
 {
     echo "# Generated cold-boot stage $stage from $(basename "$base")."
-    echo "# Stage 0 = DRM/OSD/UI only; each later stage adds one hardware owner."
+    echo "# Stage 0 = DRM/OSD/UI base; each later stage adds one hardware owner."
     sed \
+        -e "s|^autoload = .*|autoload = $autoload|" \
         -e "s|^panel.standby = .*|panel.standby = $panel|" \
         -e "s|^panel.power_on_start = .*|panel.power_on_start = $panel|" \
         -e "s|^spi.enable = .*|spi.enable = $spi|" \

@@ -20,6 +20,20 @@ expect()
     fi
 }
 
+expect_autoload()
+{
+    stage=$1 module=$2 present=$3
+    line=$(sed -n 's|^autoload = ||p' "$tmp/stage$stage.conf" | head -1)
+    case ",$line," in
+    *",$module,"*) got=1 ;;
+    *) got=0 ;;
+    esac
+    if [ "$got" != "$present" ]; then
+        echo "stage $stage: $module present=$got, want $present" >&2
+        exit 1
+    fi
+}
+
 # Every stage keeps the DRM/OSD/UI base.
 for stage in 0 1 2 3 4; do
     expect "$stage" plat.drm_init 1
@@ -32,16 +46,27 @@ for stage in 0 1 2 3 4; do
     expect "$stage" audio_amp.enable 0
     expect "$stage" ui_menu.file /buffer/openaurora/menus/sub_launcher.json
     expect "$stage" audio_mixer.broker /buffer/openaurora/oa-audio-broker
+    expect_autoload "$stage" plat 1
+    expect_autoload "$stage" display 1
+    expect_autoload "$stage" ui_vendor 1
+    expect_autoload "$stage" source 0
+    expect_autoload "$stage" audio_source 0
+    expect_autoload "$stage" cec 0
 done
 echo "ok stage profiles: all stages keep the UI base and closed gates"
 
-# Stage 0 is DRM/OSD/UI only.
+# Stage 0/1 must not autoload hardware owners.
+for stage in 0 1; do
+    expect_autoload "$stage" spi 0
+    expect_autoload "$stage" tuner 0
+    expect_autoload "$stage" audio 0
+done
 expect 0 panel.standby 0
 expect 0 panel.power_on_start 0
 expect 0 spi.enable 0
 expect 0 tuner.hw_init 0
 expect 0 audio.i2s_mclk 0
-echo "ok stage profiles: stage 0 enables no hardware owner beyond DRM/OSD"
+echo "ok stage profiles: stage 0/1 enable no hardware owner beyond DRM/OSD"
 
 # The ladder adds exactly one owner per stage.
 expect 1 panel.standby 1
@@ -49,22 +74,35 @@ expect 1 panel.power_on_start 1
 expect 1 spi.enable 0
 expect 1 tuner.hw_init 0
 expect 1 audio.i2s_mclk 0
+expect_autoload 1 spi 0
+expect_autoload 1 tuner 0
+expect_autoload 1 audio 0
 
 expect 2 panel.standby 1
 expect 2 spi.enable 1
 expect 2 tuner.hw_init 0
 expect 2 audio.i2s_mclk 0
+expect_autoload 2 spi 1
+expect_autoload 2 tuner 0
+expect_autoload 2 audio 0
 
 expect 3 panel.standby 1
 expect 3 spi.enable 1
 expect 3 tuner.hw_init 1
 expect 3 audio.i2s_mclk 0
+expect_autoload 3 spi 1
+expect_autoload 3 tuner 1
+expect_autoload 3 audio 0
 
 expect 4 panel.standby 1
 expect 4 spi.enable 1
 expect 4 tuner.hw_init 1
 expect 4 audio.i2s_mclk 1
-echo "ok stage profiles: stages 1..4 add panel, SPI, tuner and I2S in order"
+expect_autoload 4 spi 1
+expect_autoload 4 tuner 1
+expect_autoload 4 audio 1
+expect_autoload 4 audio_mixer 1
+echo "ok stage profiles: stages 1..4 add panel, SPI, tuner and audio in order"
 
 # Invalid stages are rejected.
 if sh "$gen" 5 >/dev/null 2>&1; then

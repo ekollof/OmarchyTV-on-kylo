@@ -168,11 +168,15 @@ int main(int argc, char **argv)
         child = fork();
         if (child < 0) goto failed;
         if (!child) {
+            /* Own process group so a fallback kills helpers started by the
+             * suite (IR blaster, broker) instead of orphaning them. */
+            setpgid(0, 0);
             const char *preload = getenv("OA_CHILD_PRELOAD");
             if (preload && *preload) setenv("LD_PRELOAD", preload, 1);
             execv(argv[child_arg], argv + child_arg);
             _exit(127);
         }
+        (void)setpgid(child, child);
         fprintf(stderr, "oa-supervise: child %ld, startup %u ms, heartbeat timeout %u ms\n",
                 (long)child, startup_ms, timeout_ms);
         for (;;) {
@@ -224,9 +228,13 @@ int main(int argc, char **argv)
         continue;
     }
 kill_child:
-    /* SIGKILL works even with a blocked callback or a SIGSTOPped process. Reap
-     * before re-arming the watchdog and starting the vendor as sole owner. */
-    kill(child, SIGKILL);
+    /* SIGKILL works even with a blocked callback or a SIGSTOPped process. The
+     * child is its own process-group leader, so this also reaps helpers the
+     * suite started (IR blaster, broker). Fall back to the pid if the group
+     * does not exist. Reap before re-arming the watchdog and starting the
+     * vendor as sole owner. */
+    if (kill(-child, SIGKILL) != 0)
+        kill(child, SIGKILL);
     while (waitpid(child, NULL, 0) < 0 && errno == EINTR) {}
 child_done:
     unlink(heartbeat);

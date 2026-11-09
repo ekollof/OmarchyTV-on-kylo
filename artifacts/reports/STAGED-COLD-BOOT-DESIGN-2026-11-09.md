@@ -1,9 +1,13 @@
 # Staged cold-boot design — 2026-11-09
 
-Status: **design and safety pieces implemented and host-tested; not deployed.
-The native boot path stays disabled (`/conf/oa_safe` present,
-`/conf/oa_boot` absent).** This follows the failed power-on attempt in
-[BOOT-HOOK-COLD-ATTEMPT-2026-11-09](BOOT-HOOK-COLD-ATTEMPT-2026-11-09.md).
+Status: **implemented, host-tested and exercised on the set. Three armed
+attempts were made: A fell back safely on a gate-argument bug, B fell back
+safely on a tuner init/loader-cleanup failure, and C (UI-base stage 0) hung
+the set and required the USB `/conf` recovery. The watchdog feeder did not
+recover C.** The native path is disabled again (`/conf/oa_safe` present,
+`/conf/oa_boot` absent). Do not retry without a guaranteed out-of-band
+recovery and a takeover-style first stage. This follows the failed power-on
+attempt in [BOOT-HOOK-COLD-ATTEMPT-2026-11-09](BOOT-HOOK-COLD-ATTEMPT-2026-11-09.md).
 
 ## Problem
 
@@ -64,14 +68,42 @@ and the amp stay gated in every stage.
 
 | stage | adds | flags |
 |---|---|---|
-| 0 | DRM + OSD reinit + UI only | `plat.drm_init=1`, `display.cold_init=1`, `display.osd_reinit=1`; panel/SPI/tuner/I2S off |
+| 0 | UI base + `plat` bring-up + OSD reinit | `plat.drm_init=1`, `display.cold_init=1`, `display.osd_reinit=1`; autoload is the UI base only (`plat,display,panel,ir,settings,service_db,image_decode,epg,pvr,channels,i18n,ticker,ui_*,lua,power`); panel/SPI/tuner/audio owners off |
 | 1 | panel power sequence | `panel.standby=1`, `panel.power_on_start=1` |
-| 2 | SPI | `spi.enable=1` |
-| 3 | NIM-DTV tuner | `tuner.hw_init=1` |
-| 4 | audio clock | `audio.i2s_mclk=1` |
+| 2 | SPI | `spi.enable=1` and `spi` in the autoload |
+| 3 | NIM-DTV tuner | `tuner.hw_init=1` and `tuner` in the autoload |
+| 4 | audio | `audio.i2s_mclk=1` and the audio modules in the autoload |
 
 `/conf/oa_stage` selects the stage. The boot entry uses
 `openaurora-stageN.conf` when present, otherwise `openaurora.conf`.
+
+Stage 0 still runs the whole `plat` base before the UI: audio
+Protect/Mixer/Proxy prelude, VPLTIO/V4L2/DRM sharemem, `Hal_Video_DrmInit(1)`,
+DVIF `0x302`, `Hal_Gpio_Init`, `Hal_Iic_Init`, VIN defaults and
+`NDAL_VideoExt_OpenDevice(0,10)`. The stage ladder does not split those; that
+is the next design step (see Attempt results).
+
+## Attempt results (same day)
+
+- **A (full cold, first armed):** the wrapper passed `/conf` to
+  `oa-boot-gate.sh`, which treated it as a filesystem root and checked
+  `/conf/conf/oa_boot`. It blocked; the wrapper exec'd stock. Fix: the gate
+  takes the state directory directly.
+- **B (full cold, fixed gate):** `plat` and `display` succeeded, then the
+  full autoload hit `tuner` with `hw_init=0` (intentional `-EACCES`). The
+  failed init left `slot->ctx` NULL and the loader's `destroy(NULL)` stalled
+  the core; the supervisor's startup deadline fell back to stock. Fixes:
+  loader skips quiesce/destroy when init returned no ctx; per-stage autoload;
+  `spi` bundled; supervisor kills the child's process group.
+- **C (UI-base stage 0):** the set became unreachable and did not recover on
+  its own; the watchdog feeder's `set 10` produced no reset within several
+  minutes. USB `/conf` recovery was used again and the stage log was lost.
+
+Until the watchdog reset is proven in isolation (or a switched mains outlet
+is available), a cold attempt has no guaranteed recovery. The next first
+stage should be takeover-style (`plat.drm_init=0`, `display.osd_reinit=0`) to
+prove the UI on the vendor-initialized OSD, then add one `plat` piece at a
+time with a config gate each.
 
 ## Boot entry
 

@@ -17,9 +17,15 @@ requirements. The retry safety is implemented and host-tested
 (`oa-wdtfeed`), boot-attempt gate (`oa-boot-gate.sh`, 3 unproven boots
 auto-disable), `oa-supervise --wdt-keep --gate`, the stage0..4 hardware ladder
 and a fail-closed appmgr entry. The hook template and a dry-run
-deploy/restore script (`deploy-staged-cold.sh`) plus the exact runbook are
-prepared; the ARM cold bundle includes them and its manifest verifies. Nothing
-is deployed and the installed hook's native branch still needs the handoff.
+deploy/restore script (`deploy-staged-cold.sh`) plus the exact runbook are in
+the repo. Three armed attempts were made the same day: A and B fell back to
+stock safely (gate-argument bug; tuner init + NULL-ctx cleanup, both fixed);
+C (UI-base stage 0) hung the set and required the USB recovery again. The
+watchdog feeder's `set 10` did not reset the hung set and is unproven. The TV
+is stock (`oa_safe` present, no `oa_boot`); `/buffer/openaurora` is the prior
+12-module payload and all staged bundles/backups were removed. Do not retry a
+cold boot without a guaranteed out-of-band recovery and a takeover-style
+first stage.
 
 Replacement system, 2026-11-07: `make replacement-bundle` produces a
 reproducible takeover UI (`plat_stub` + display/panel/ir/settings/service_db/
