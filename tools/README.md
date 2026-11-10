@@ -34,6 +34,18 @@ Node, qemu, mtd-utils, squashfs-tools, SQLite headers), Ghidra, the ARM
 toolchain and ubi_reader. It never installs anything and never reads the TV.
 Sources and versions: [../docs/reproduce/dependencies.md](../docs/reproduce/dependencies.md).
 
+## QEMU device simulation
+
+- `qemu-fb-real-check.sh` — real ARM `mod_display` over the modeled fb1
+  (var/fix/mmap, region/MAU, pan, snapshot).
+- `qemu-panel-real-check.sh` — real ARM `mod_plat` + `mod_panel` over a
+  permissive logged NDAL device boundary; asserts PWM and GPIO values.
+- `qemu-vin-real-check.sh` — real ARM `mod_source` over a fake VIN device.
+- `qemu-ui-layout.sh` — real UI modules over the replacement `sim_display`.
+
+The framebuffer/panel boundaries are test models, not kernel or scanout
+emulation. See [QEMU-TV-SIM](../artifacts/reports/QEMU-TV-SIM-2026-11-10.md).
+
 ## Documentation helpers
 
 - `docs/gen-report-map.sh` — regenerate

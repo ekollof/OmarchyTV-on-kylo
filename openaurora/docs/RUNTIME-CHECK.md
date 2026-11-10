@@ -73,3 +73,17 @@ ARM constructor/undefined-symbol/ABI/note/entry fixtures pass their expected
 success/failure cases. Direct `qemu-arm-static -L` alone does not redirect this
 mode's child `execve` of the absolute ELF interpreter; the namespace supplies
 the real guest paths, with the host's existing ARM binfmt handler.
+
+## QEMU device simulation
+
+Two separate checks exercise real ARM modules against modeled device
+boundaries; they are not hardware acceptance:
+
+- `tools/qemu-fb-real-check.sh` — real `mod_display` over the ARM fb1 model
+  (var/fix/mmap, region/MAU, pan, snapshot).
+- `tools/qemu-panel-real-check.sh` — real `mod_plat` + `mod_panel` over a
+  permissive logged NDAL device boundary; asserts PWM channel/duty and GPIO
+  110/111 writes.
+
+The panel boundary returns success for unknown TV ioctls and does not maintain
+bus state. See QEMU-TV-SIM-2026-11-10 for the observed calls and limits.

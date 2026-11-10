@@ -343,6 +343,7 @@ superseded claims and descriptions.
 - [OPENAURORA-PARITY](../../artifacts/reports/OPENAURORA-PARITY-2026-10-30.md)
 - [OPENAURORA-T1-PLANS](../../artifacts/reports/OPENAURORA-T1-PLANS-2026-10-30.md)
 - [OPENAURORA-VENDOR-HAL](../../artifacts/reports/OPENAURORA-VENDOR-HAL-2026-10-30.md)
+- [QEMU-TV-SIM](../../artifacts/reports/QEMU-TV-SIM-2026-11-10.md)
 - [QEMU-UI-LAYOUT](../../artifacts/reports/QEMU-UI-LAYOUT-2026-11-06.md)
 - [REPLACEMENT-SYSTEM](../../artifacts/reports/REPLACEMENT-SYSTEM-2026-11-07.md)
 - [RTL-BRACKET-MIRROR](../../artifacts/reports/RTL-BRACKET-MIRROR-2026-11-06.md)

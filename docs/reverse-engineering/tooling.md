@@ -118,6 +118,9 @@ cd openaurora && make check
 make check-cec-audio check-plat-drm-gate check-plat-startup-wait \
      check-hw-stage-profiles check-hw-ready
 
+# Real ARM modules over modeled TV devices (qemu; local rootfs/vendor libs):
+make check-qemu-fb-real check-qemu-panel-real
+
 # ARM + qemu with the extracted rootfs:
 qemu-arm-static -L ../artifacts/workbench/rootfs/root build-tv-v3/tests/<binary>
 

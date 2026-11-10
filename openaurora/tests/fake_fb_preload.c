@@ -66,6 +66,16 @@ static uint64_t fnv(const unsigned char *p, size_t n)
     return h;
 }
 
+static void fblog(const char *what, int fd, unsigned long cmd)
+{
+    const char *path = getenv("FAKE_FB_LOG");
+    if (!path || !*path) return;
+    FILE *f = fopen(path, "a");
+    if (!f) return;
+    fprintf(f, "%s fd=%d cmd=%#lx\n", what, fd, cmd);
+    fclose(f);
+}
+
 static void write_state(const char *path, int include_pixels)
 {
     if (!path || !*path) return;
@@ -124,11 +134,10 @@ int open(const char *path, int flags, ...)
     if (flags & O_CREAT) {
         va_list ap; va_start(ap, flags); mode = (mode_t)va_arg(ap, int); va_end(ap);
     }
-    if (!strcmp(path, "/dev/fb1")) return FAKE_FD;
+    if (!strcmp(path, "/dev/fb1")) { fblog("open", FAKE_FD, 0); return FAKE_FD; }
     if (!real_open) load_real();
     return real_open(path, flags, mode);
 }
-
 int close(int fd)
 {
     if (fd == FAKE_FD) { write_state(getenv("OA_FAKE_FB_STATE"), 1); return 0; }
@@ -147,6 +156,7 @@ int ioctl(int fd, unsigned long cmd, ...)
         va_list ap; va_start(ap, cmd); void *a = va_arg(ap, void *); va_end(ap);
         return real_ioctl(fd, cmd, a);
     }
+    fblog("ioctl", fd, cmd);
     va_list ap; va_start(ap, cmd); void *arg = va_arg(ap, void *); va_end(ap);
     switch (cmd) {
     case FBIOGET_VSCREENINFO: memcpy(arg, &var, sizeof var); return 0;
@@ -170,6 +180,7 @@ int ioctl(int fd, unsigned long cmd, ...)
 void *mmap(void *addr, size_t len, int prot, int flags, int fd, off_t off)
 {
     if (fd == FAKE_FD) {
+        fblog("mmap", fd, (unsigned long)len);
         if (off != 0 || len > fix.smem_len) { errno = EINVAL; return MAP_FAILED; }
         return pixels;
     }

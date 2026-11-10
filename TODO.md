@@ -67,6 +67,12 @@ maps the cold-start stages and the current stock-UI coverage.
       `check-hw-stage-profiles`, `check-hw-ready`, `check-boot-gate` and
       `check-appmgr-entry` pass on the host. Next: one stage per authorized
       TV boot; then decide the DEV_* device-half target.
+- [ ] QEMU TV device models: `qemu-fb-real-check` runs real `mod_display`
+      over the ARM fb1 model; `qemu-panel-real-check` runs real
+      `mod_plat`/`mod_panel` over a permissive logged NDAL boundary and asserts
+      PWM/GPIO values. Both pass on the host; neither is hardware acceptance.
+      Next: make GPIO/PWM stateful, then IIC/SPI and VIN/V4L2 only from
+      recovered ioctl contracts. See QEMU-TV-SIM-2026-11-10.
 - [x] HAL-only device-layer decision + cold-start profile candidate:
       no ARM module has an undefined vendor `DEV_*` symbol; the new
       `openaurora-cold.conf` sets real DRM init, no snapshot restore,

@@ -16,8 +16,12 @@ device-gap disposition in COLD-START-SEQUENCE closes PCB layout, DEV GPIO/IIC
 description state, NIM factories, SPI semaphore and MTD for the HAL-only path;
 source hotplug, `DEV_AMP_ID`, the GPIO earphone handler and non-layout-14
 panel/TCON branches remain open. The full `make check` still stops in the
-unrelated `check-vin-real` fixture (`source-select 17` EIO). TV was not
-contacted and remains stock.
+unrelated `check-vin-real` fixture (`source-select 17` EIO). QEMU device
+simulation 2026-11-10: the real ARM `mod_display` passes over the modeled fb1
+(var/fix/mmap/region/MAU/pan/snapshot), and the real ARM `mod_plat`+`mod_panel`
+pass over a permissive logged NDAL device boundary (PWM channel0/30000 Hz/duty
+1000; GPIO 110=1, 111=0). These are qemu/host simulation, not hardware effects.
+TV was not contacted and remains stock.
 
 Boot-hook cold attempt and recovery, 2026-11-09: the installed `/conf` hook
 (`/conf/remote.txt` -> `run_aurora.sh` -> `/conf/remotelf/aurora.elf`, sha256

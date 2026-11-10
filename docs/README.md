@@ -41,4 +41,4 @@ points at them by topic.
   [runtime check](../openaurora/docs/RUNTIME-CHECK.md).
 - [Artifact map and provenance](../artifacts/README.md) — dump/extract layout,
   verified identities, recovery pair, no-redistribution rules.
-- [Report index](../artifacts/reports/README.md) — 332 dated topic reports.
+- [Report index](../artifacts/reports/README.md) — 333 dated topic reports.
