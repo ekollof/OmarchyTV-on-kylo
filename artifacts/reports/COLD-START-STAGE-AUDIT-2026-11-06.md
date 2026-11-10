@@ -1,5 +1,15 @@
 # Cold-start stage audit and `plat-state` — 2026-11-06
 
+Status: historical, partly superseded by
+[COLD-START-SEQUENCE-2026-11-10](COLD-START-SEQUENCE-2026-11-10.md).
+Superseded-by: COLD-START-SEQUENCE-2026-11-10 for the current cold-start
+contract and gap disposition.
+The stage order and `plat-state` evidence remain useful; the “full suite
+passes” and “panel/SPI/MTD/NIM-DTV still unimplemented” statements are dated and
+corrected there.
+Last verified: 2026-11-10 (documentation correction; original run 2026-11-06).
+Evidence class: offline firmware instructions plus host tests.
+
 Offline firmware audit of the vendor hardware-init stage order after our
 `PLAT_DRV_INI_Init` work, plus a probe for the stages `plat` owns. No TV
 operation, HAL call or stock-Aurora stop.
@@ -54,6 +64,14 @@ start needs one owner per stage, not a second monolithic call. The real
 NIM-DTV task and amp/panel power stages remain unimplemented; SPI is available
 behind `spi.enable=1`. This is part of why independent cold startup is still
 unaccepted.
+
+Correction 2026-11-10: `mod_panel` now implements the recovered panel power/PTF
+off order; `mod_tuner` owns the NIM-DTV task; `mod_spi` is the SPI open owner;
+MTD needs no hardware owner. The current stage-by-stage disposition is in
+[COLD-START-SEQUENCE-2026-11-10](COLD-START-SEQUENCE-2026-11-10.md). The
+“full suite: all tests passed” line below is the dated 2026-11-06 host result,
+not current evidence; the full suite currently stops in the unrelated
+`check-vin-real` fixture.
 
 ## Implementation: `plat-state`
 

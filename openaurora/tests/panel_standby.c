@@ -2,7 +2,7 @@
  *
  * Firmware order (DEV_PANEL_PowerSequence @0x00857ac0, live panel-extra
  * delays 30/580/220/30 ms and TCON PMIC disabled by +0x4a == 0):
- *   off: BL power off -> LVDS off -> PWM 0 -> panel power off
+ *   off: BL power off -> PTF PWM 1000 -> LVDS off -> panel power off
  *   on:  panel power -> LVDS on -> PWM restore -> BL power on
  * GPIO defaults: PANELPWR 110 on=1, BKLTPWR 111 on=0.
  */
@@ -123,8 +123,8 @@ int main(void)
     assert(oa_module_entry()->suspend(ctx) == 0);
     const struct event off[] = {
         { EV_GPIO, 111, 1 },   /* backlight power off (active low) */
+        { EV_SET, 1000, 0 },   /* PTF PWM level before LVDS off (stock 1000) */
         { EV_LVDS, 460, 0 },   /* LVDS data off */
-        { EV_SET, 0, 0 },      /* PWM 0 */
         { EV_GPIO, 110, 0 },   /* panel power off */
         { EV_CLOSE, 0, 0 },
     };

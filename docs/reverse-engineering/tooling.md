@@ -114,6 +114,10 @@ $ARM-readelf -d artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf
 # Host build/tests (no vendor HAL):
 cd openaurora && make check
 
+# Cold-start contract and no-UI ladder (fake HAL; no TV):
+make check-cec-audio check-plat-drm-gate check-plat-startup-wait \
+     check-hw-stage-profiles check-hw-ready
+
 # ARM + qemu with the extracted rootfs:
 qemu-arm-static -L ../artifacts/workbench/rootfs/root build-tv-v3/tests/<binary>
 

@@ -51,13 +51,15 @@ maps the cold-start stages and the current stock-UI coverage.
       audio-prelude return, logs GPIO/IIC/VIN failures and continues, and
       `plat_common_init` is idempotent with a one-byte DVIF value. `mod_plat`
       now matches; `check-cec-audio`/`check-plat-drm-gate`/`check-plat-startup-wait`
-      pass. This does not close the item: `DEV_INI_Init`'s device stages are
-      still partly module-owned, partly gated and partly missing (PCB-layout
-      global, DEV GPIO/IIC descriptions, source hotplug, panel timing/GPIO
-      descriptions, NIM factories, DEV_AMP_ID, SPI semaphore). Next: decide
-      HAL-only acceptance vs device-layer equivalents, then build a
-      hardware-only cold ladder with no display/UI modules. Report:
-      COLD-START-SEQUENCE-2026-11-10. Do not use UI paint as cold-start
+      pass. This does not close the item: the device-gap disposition in
+      COLD-START-SEQUENCE-2026-11-10 closes PCB layout, DEV GPIO/IIC description
+      state, panel timing/GPIO copies, NIM factories, SPI semaphore and MTD for
+      the HAL-only path. The panel off path now matches the stock PTF branch
+      (PWM 1000 before LVDS off, not PWM 0). Real remaining device effects:
+      `dev_src_init` hotplug, `DEV_AMP_ID`, the GPIO earphone handler and
+      non-layout-14 panel/TCON branches. Next: decide HAL-only acceptance vs
+      those device-layer equivalents, then run the no-UI hardware ladder.
+      Report: COLD-START-SEQUENCE-2026-11-10. Do not use UI paint as cold-start
       evidence. Hardware-only ladder 2026-11-10: `openaurora-cold-hw.conf` +
       `stage-hw-profile.sh` (`hw0..hw4`) implement plat -> panel -> I2S MCLK ->
       SPI open -> NIM-DTV with no display/UI; `host.ready_after_autoload`

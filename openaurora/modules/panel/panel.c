@@ -106,6 +106,7 @@ struct ctx {
     int lvds_cmd;
     unsigned on_delay_ms, bl_on_delay_ms;
     unsigned off_bl_delay_ms, off_lvds_delay_ms, off_panel_delay_ms;
+    unsigned off_pwm; /* DEV_PANEL_SetPWMBacklightLevel before LVDS off */
     /* ABI 3 quiesce: the vendor PWM close runs on a worker. */
     pthread_t cleanup_thread;
     int cleanup_running;
@@ -232,17 +233,20 @@ static int panel_power_on(struct ctx *c)
     return rc;
 }
 
-/* DEV_PANEL_PowerSequence(0): 70 ms -> backlight power off -> 220 ms ->
- * LVDS off -> 30 ms -> PWM 0 -> panel power off. PLAT_PQ_SHELL_SetAutoBacklight
- * (0) has no owner in this module and is omitted, not emulated. */
+/* DEV_PANEL_PowerSequence(0) @0x00857ac0, stock PTF mode (Init byte 0 = 1,
+ * gu16PanelHighPeriodIn1000 = 1000, panel-extra +8 = 100):
+ *   70 ms -> backlight power off -> +4 delay -> PWM PTF level (extra+8*10)
+ *   -> LVDS off -> +6 delay -> [TCON PMIC, gated 0] -> panel power off.
+ * PLAT_PQ_SHELL_SetAutoBacklight(0) has no owner in this module and is omitted,
+ * not emulated. */
 static void panel_power_off(struct ctx *c)
 {
     delay_ms(c->off_bl_delay_ms);
     standby_gpio(c, c->bl_pin, !c->bl_on_level);
     delay_ms(c->off_lvds_delay_ms);
+    (void)write_hal(c, c->off_pwm);
     standby_lvds(c, 0);
     delay_ms(c->off_panel_delay_ms);
-    (void)write_hal(c, 0);
     standby_gpio(c, c->power_pin, !c->power_on_level);
 }
 
@@ -344,6 +348,8 @@ static int m_start(void *v)
     c->off_bl_delay_ms = off_bl > 0 && off_bl <= 10000 ? (unsigned)off_bl : 0;
     c->off_lvds_delay_ms = off_lvds > 0 && off_lvds <= 10000 ? (unsigned)off_lvds : 0;
     c->off_panel_delay_ms = off_panel > 0 && off_panel <= 10000 ? (unsigned)off_panel : 0;
+    long off_pwm = atol(c->api->config_get(c->api->priv, "panel.off_pwm", "1000"));
+    c->off_pwm = off_pwm < 0 ? 0 : off_pwm > 1000 ? 1000 : (unsigned)off_pwm;
 
     if (!hal_ready()) {
         c->api->log(c->api->priv, OA_LOG_WARN,

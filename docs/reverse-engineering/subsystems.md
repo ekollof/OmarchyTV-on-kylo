@@ -110,7 +110,11 @@ Evidence: [OSD-BUFFER-CONTRACT](../../artifacts/reports/OSD-BUFFER-CONTRACT-2026
   `+0x4a=0`; GPIO110 on=1, GPIO111 on=0; PWM108 channel0, high period 1000;
   TCON gate 0. `panel.power_on_start` replays the recovered sequence;
   `panel.standby`, `panel.start`, `panel.freq`, `panel.curve`, `panel.duty_max`
-  are the exposed knobs.
+  are the exposed knobs. The stock Init mode byte is 1, so the off path sets
+  PWM to `panel.off_pwm` (default 1000) **before** LVDS off, matching
+  `DEV_PANEL_PowerSequence`; the timing halfwords at `0x019354b8..c0` are
+  write-only. The GPIO 110/111 description copies are replaced by direct HAL
+  pins for layout 14; other layout/TCON branches remain open.
 - Backlight/TCON and the HAL error paths are separate from OSD/DRM ownership;
   a successful panel write is not visible-scanout proof.
 

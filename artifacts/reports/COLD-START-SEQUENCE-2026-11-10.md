@@ -4,9 +4,15 @@ Status: **current offline instruction audit, host fix and no-UI ladder. TV was
 not contacted and no UI was loaded.** The HAL half of the vendor cold start is
 instruction-exact. A hardware-only `hw0..hw4` ladder is implemented and
 host-tested. The device half (`DEV_INI_Init`) is still not called by the
-replacement: its effects are partly implemented in modules, partly gated, and
-partly missing. Full vendor cold-start parity is therefore **not** claimed yet.
+replacement; the gap disposition below closes the stages with no HAL-path
+consumer and leaves the real remaining effects open. Full vendor cold-start
+parity is therefore **not** claimed yet.
 
+Last verified: 2026-11-10 (firmware instructions, data-reference queries and
+host fake-HAL tests; TV not contacted).
+Supersedes: the HAL return/sequence claims in COLD-START-STAGE-AUDIT-2026-11-06
+and the panel off-path/PWM claim in PANEL-BACKLIGHT-2026-11-07; those reports
+are marked historical/corrected at source.
 Evidence class: firmware instructions plus host tests. No on-TV or qemu
 hardware-effect acceptance.
 
@@ -55,14 +61,35 @@ ignored. `DEV_INI_Init` returns the low byte of `DEV_MTD_Init`, which returns 0.
 | 1 | `DEV_COMMON_SET_PCBLAYOUTTYPE(14)` | `0x00850288` | stores 14 in `DAT_0175f028`, returns 1 | tuner config only; global not set |
 | 2 | `DEV_GPIO_Init` | `0x00851fcc` | opens `/dev/ntgpio` O_RDWR, two semaphores, 0x1fec state, GPIO/PWM description tables | HAL `Hal_Gpio_Init` only |
 | 3 | `dev_src_init` | `0x008fc654` | mutex + `DEV_SRC_HDMIHotPlug` task (stack 0x1000, prio 0x10) + `plat_vin_slot_set_auto_color_system(2)` | `mod_source` VIN select, gated off |
-| 4 | `DEV_PANEL_Init` | `0x008583fc` | copies GPIO 110/111 descriptions, timing block `{1,10,40,800,220,55,10}`, PWM ch108, curve 40/60/80/100; returns channel index | `mod_panel` PWM/curve/power; timing/descriptions not copied |
-| 5 | `DEV_NIM_Init` | `0x00854fd0` | one-shot `DEV NIM ATV`/`DEV NIM DTV` factories + debug menus; always returns 1 | `mod_tuner` owns HAL/NIM-DTV; factories not created |
-| 6 | `DEV_IIC_Init` | `0x008531e8` | opens `/dev/ntkiic0` O_RDWR, stores device fd, returns 1/0 | HAL `Hal_Iic_Init` only |
+| 4 | `DEV_PANEL_Init` | `0x008583fc` | copies GPIO 110/111 descriptions, timing block `{1,10,40,800,220,55,10}`, PWM ch108, curve 40/60/80/100; returns channel index | `mod_panel` PWM/curve/power; PTF off order now matched; descriptions replaced by direct HAL pins |
+| 5 | `DEV_NIM_Init` | `0x00854fd0` | one-shot `DEV NIM ATV`/`DEV NIM DTV` factories + debug menus; always returns 1; no device node opened | `mod_tuner` direct HAL/NIM-DTV; factories not created |
+| 6 | `DEV_IIC_Init` | `0x008531e8` | opens `/dev/ntkiic0` O_RDWR, stores device fd, returns 1/0 | HAL `Hal_Iic_Init` only; no DEV consumer |
 | 7 | `DEV_AMP_Init` | `0x0084f4ac` | `Hal_Audio_Ctrl(0x3a,{0x100})` ignored; creates `DEV_AMP_ID` task (stack 0x1000, prio 3); returns 1/0 | `audio.i2s_mclk=1` sends 0x3a; task missing; `audio_amp.enable=0` |
-| 8 | `DEV_SPI_Init` | `0x0085946c` | creates/replaces semaphore at `0x019354f0`, returns 1/0 | `mod_spi` transport; semaphore not reproduced |
+| 8 | `DEV_SPI_Init` | `0x0085946c` | creates/replaces semaphore at `0x019354f0`, returns 1/0 | `mod_spi` sole owner; host loop serializes access |
 | 9 | `DEV_SPI_Open(0)` | `0x00858d0c` | `/conf/spi.bin` `rb+`, else `/dev/ntkspi` O_RDWR; returns 1/0 | `mod_spi` file/device open; equivalent boundary |
 | 10 | `DEV_NIM_DTV_Init` | `0x00861678` | one-shot task; models 0..3/default take demod+Connect2HAL, model4 skips; IR failure still marks done | `mod_tuner` `tuner.hw_init=1` NIM-DTV task |
 | 11 | `DEV_MTD_Init` | `0x0085419c` | registers a debug menu only, returns 0 | no owner needed |
+
+## Gap disposition (instruction/data-reference evidence)
+
+| stage | finding | disposition |
+|---|---|---|
+| PCB layout | `DAT_0175f028` is read only by `DEV_COMMON_GET_PCBLAYOUTTYPE` (`0x00850272`); no replacement module calls it. `DEV_GPIO_Init` reads it into state+0x7fa. | **Not applicable to the HAL-only path.** The tuner receives layout 14 explicitly. A device-layer implementation must set this global before its GPIO init. |
+| DEV GPIO | The 0x1fec state pointer `0x01931270` is read only by `DEV_GPIO_GetDescription`; the `/dev/ntgpio` fd `0x0175f0a4` is read only there. `DEV_GPIO_Init` also starts an earphone-handler task and initializes PWM/descriptions. | **Not applicable for HAL GPIO.** HAL modules use their own device paths. The earphone hotplug task is still open if audio-jack events are required; do not fake it. |
+| DEV IIC | The `/dev/ntkiic0` fd `0x017608c8` is read only by `DEV_IIC_GetDescription` (`0x008532d4`); no replacement module calls it. | **Not applicable for HAL IIC.** `Hal_Iic_Init` owns the eight HAL buses. |
+| source init | `dev_src_init` creates the `DEV_SRC_HDMIHotPlug` task and calls `plat_vin_slot_set_auto_color_system(2)`; it returns 1. | **Open and gated**: `source.enable=0`; no hotplug task is implemented. This is a real missing effect when source is enabled. |
+| panel init | The timing halfwords at `0x019354b8..c0` have only writes (`DEV_PANEL_Init`, `DEV_PANEL_SetPowerSequenceParams`); the only read of the block is the mode byte at `0x019354b4` by `DEV_PANEL_PowerSequence` (`0x00857bf8`). GPIO 110/111 copies are read only by the two DEV panel-power helpers. | **Closed for the stock layout 14**: `mod_panel` uses direct HAL pins/levels and now follows the PTF off order (PWM at `panel.off_pwm=1000` before LVDS off). Other panel layouts/TCON BIN branches remain unverified. |
+| NIM init | `DEV_NIM_Init` opens no device node; its factory result only selects a debug string and the factory objects are vendor-internal dispatch tables. | **Not applicable to the direct `mod_tuner` NIM-DTV task.** |
+| amp init | `DEV_AMP_Init` sends the recovered MCLK request and creates `DEV_AMP_ID`; the task body/profile resource row is not fully recovered. | **Partially closed**: MCLK is the opt-in `audio.i2s_mclk`; `DEV_AMP_ID` remains open and the amp is gated (`audio_amp.enable=0`). |
+| SPI init | The semaphore at `0x019354f0` is used by `DEV_SPI_Wait/Read/Write/Close`; `mod_spi` is the sole SPI owner and host dispatch is single-threaded. | **Not applicable to the current single-owner module.** Do not add a fake semaphore; the boundary is already serialized. |
+| NIM-DTV | Task model/IR failure behavior matches `mod_tuner` `tuner.hw_init=1`. | **Closed** for the recovered model 0 path. |
+| MTD | `DEV_MTD_Init` only registers a debug menu and returns 0. | **Closed**: no hardware owner. |
+
+**Panel correction:** `mod_panel` now writes `panel.off_pwm` (default 1000)
+before LVDS off, matching the stock PTF branch; the earlier “PWM 0 after LVDS
+off” claim is corrected at source in PANEL-BACKLIGHT-2026-11-07. The fake-HAL
+`check-panel-curve`/`panel_standby` test asserts the new order.
+
 
 ## What changed in the replacement
 
@@ -91,6 +118,9 @@ make check-cec-audio          # plat_audio: exact order, prelude continuation, i
 make check-plat-drm-gate      # drm_init 0/1 gate
 make check-plat-startup-wait  # driver-marker wait/refusal/retry
 make check-plat-power-sync-stop
+make check-panel-curve        # includes the corrected panel_standby PTF off order
+make check-hw-stage-profiles  # hw0..hw4, no display/UI
+make check-hw-ready           # receipt only after all autoload starts succeed
 ```
 
 These are fake-HAL tests; they prove order and state, not hardware effects.
@@ -108,6 +138,12 @@ documented device-stage order, restricted to effects with a current owner:
 | hw2 | `plat,panel,audio` | `DEV_AMP_Init`'s `0x3a/0x100` MCLK request | `0x0084f4ac`; task **not** included |
 | hw3 | `plat,panel,audio,spi` | `DEV_SPI_Init`/`DEV_SPI_Open(0)` boundary | `0x0085946c`, `0x00858d0c` |
 | hw4 | `plat,panel,audio,spi,tuner` | `DEV_NIM_DTV_Init` task | `0x00861678` |
+
+`hw1` runs `mod_panel`'s recovered standby/power sequence behind
+`panel.standby=1`/`panel.power_on_start=1`. `DEV_PANEL_Init` itself does not
+light the panel; the stock cold-boot panel power comes from
+xboot/kernel/PreInit. `hw1` is therefore a project test of the recovered power
+sequence, not a claim that the vendor `DEV_INI_Init` stage powers the panel.
 
 No stage autoloads `display`, `ir`, `settings`, or any `ui_*`. PCB layout,
 DEV GPIO/IIC, `dev_src_init`, NIM factories, `DEV_AMP_ID` and MTD are **not**
@@ -145,10 +181,12 @@ check-appmgr-entry       # hw2 selects openaurora-stagehw2.conf
 1. In the next authorized TV window, run `hw0..hw4` one stage per boot, with no
    display/UI modules, and record the stage-specific log/control state. The
    ladder and ready receipt are host-tested only; no hardware effect is proven.
-2. Decide the target for the device half: formally accept the HAL-only design
-   (and prove each enabled effect is covered) or implement the device-layer
-   equivalents. PCB layout, DEV GPIO/IIC, `dev_src_init`, panel timing/GPIO
-   descriptions, NIM factories and `DEV_AMP_ID` remain open.
+2. Decide the target for the device half. The gap disposition above closes
+   PCB layout, DEV GPIO/IIC description state, panel timing/GPIO copies, NIM
+   factories, SPI semaphore and MTD for the HAL-only path. The real remaining
+   device effects are `dev_src_init` hotplug, `DEV_AMP_ID`, the GPIO earphone
+   handler and non-layout-14 panel/TCON branches. Implement those only from
+   firmware evidence.
 3. Keep `source.enable=0`, `audio.source_enable=0`, `audio_amp.enable=0` and
    `cec.enable=0` until their own cold stage is accepted.
 4. Only after the hardware ladder is stable should a display/UI stage be

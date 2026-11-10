@@ -11,7 +11,14 @@ not close it.
   the OSD destination fix is proven by the log (`was dst 1920x1080 → 3840x2160`).
   Still unverified: the settle repaint for late icons/fonts and the 60 s `eth0`
   watcher (both committed in `bff29c5`, not yet boot-tested), the physical
-  panel/scanout confirmation, and stages 1–5 of the ladder.
+  panel/scanout confirmation, the UI stages 1–5 and the no-UI `hw0..hw4`
+  hardware ladder. The hw ladder and ready receipt are host-tested only.
+- The vendor cold-start HAL order is now instruction-exact; the device-gap
+  disposition is in [COLD-START-SEQUENCE](../../artifacts/reports/COLD-START-SEQUENCE-2026-11-10.md).
+  Remaining real device effects: `dev_src_init` hotplug, `DEV_AMP_ID`, the GPIO
+  earphone handler and non-layout-14 panel/TCON branches. PCB layout, DEV
+  GPIO/IIC description state, NIM factories, SPI semaphore and MTD are not
+  required for the HAL-only path.
 - A **true power-on/persistent boot hook** remains a separate owner gate.
   The installed hook is disabled (`oa_safe` present, `oa_boot` absent); the
   last armed attempt required the USB `/conf` recovery. Do not re-arm without

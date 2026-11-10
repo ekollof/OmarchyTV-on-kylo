@@ -1,7 +1,12 @@
 # Platform + stock-UI parity gap — 2026-11-08
 
-Status: **current priority audit; firmware facts recovered offline, plus a
-read-only TV state check. No code or hardware change.**
+Status: current priority audit; corrected 2026-11-10 for the HAL return
+semantics and the device-gap disposition. The current cold-start contract is
+[COLD-START-SEQUENCE-2026-11-10](COLD-START-SEQUENCE-2026-11-10.md).
+Last verified: 2026-11-10 (firmware instructions + host tests; TV state remains
+the 2026-11-08 read-only sample).
+Evidence class: offline firmware and host tests plus a dated read-only TV
+state check; no code or hardware change in the original audit.
 
 Owner direction (2026-11-08): platform and hardware support, then stock-UI
 parity, come first. The native Omarchy shell is only a skin on top of the
@@ -284,6 +289,30 @@ The stock UI is the vendor skin (`ui_vendor`), not the native Omarchy shell.
    repeat**, then the remaining stock-UI screens.
 
 Do not use the native Omarchy shell to claim platform or stock-UI parity.
+
+## Corrections 2026-11-10
+
+- `PLAT_DRV_INI_Init` ignores all three audio-prelude returns; `mod_plat` now
+  matches. `plat_common_init` is idempotent and passes a one-byte DVIF value.
+  See COLD-START-SEQUENCE-2026-11-10.
+- `DEV_GPIO_Init`/`DEV_IIC_Init` device state is consumed only by the vendor
+  `DEV_GPIO_GetDescription`/`DEV_IIC_GetDescription` path. No replacement
+  module calls those; the HAL GPIO/IIC paths own the enabled devices. These
+  stages are not required unless a full device-layer parity path is chosen.
+- `DEV_PANEL_Init`'s timing halfwords at `0x019354b8..c0` are write-only; only
+  the mode byte at `0x019354b4` is read by `DEV_PANEL_PowerSequence`. The stock
+  mode is 1 and the off path sets PWM to the PTF level (1000) before LVDS off;
+  `mod_panel` now matches. The GPIO 110/111 description copies are consumed
+  only by the DEV panel-power helpers and are replaced by direct HAL pins for
+  the stock layout 14. Non-layout-14/TCON branches remain open.
+- `DEV_NIM_Init` opens no device node; its factory result only selects a debug
+  string. `mod_tuner` owns the direct NIM-DTV task. `DEV_SPI_Init`'s semaphore
+  is for vendor DEV_SPI callers; `mod_spi` is the single owner. `DEV_MTD_Init`
+  only registers a debug menu. These are not hardware gaps for the HAL-only
+  path.
+- The real remaining device effects are `dev_src_init` hotplug,
+  `DEV_AMP_ID`, the GPIO earphone handler and non-layout-14 panel/TCON
+  branches. See the gap-disposition table in COLD-START-SEQUENCE-2026-11-10.
 
 ## Evidence
 

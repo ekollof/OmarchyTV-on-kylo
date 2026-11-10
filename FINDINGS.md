@@ -9,6 +9,17 @@ timing/GPIO descriptions, NIM factories, `DEV_AMP_ID` and the SPI semaphore
 remain missing or gated. HAL half exact; full cold-start parity not claimed.
 Report: COLD-START-SEQUENCE-2026-11-10.
 
+COLD-START-SEQUENCE-2026-11-10 also corrects the panel off-path claim: the
+stock Init block mode byte `0x019354b4` is 1, and `DEV_PANEL_PowerSequence`
+sets PWM to the PTF level (1000) before LVDS off, not PWM 0 after it.
+`mod_panel` now writes `panel.off_pwm` (default 1000) before LVDS off and the
+fake-HAL test asserts it. The timing halfwords at `0x019354b8..c0` are
+write-only; the GPIO 110/111 description copies are consumed only by the DEV
+panel-power helpers, replaced by direct HAL pins for layout 14. PCB layout,
+DEV GPIO/IIC description state, NIM factories, SPI semaphore and MTD are not
+required for the HAL-only path; `dev_src_init` hotplug, `DEV_AMP_ID`, the GPIO
+earphone handler and non-layout-14 panel/TCON branches remain open.
+
 REPLACEMENT-SYSTEM-2026-11-07 assembles the reproducible takeover UI:
 `make replacement-bundle` emits `plat_stub` + display/panel/ir/settings/
 service_db/image_decode/ui_engine/ui_vendor/ticker/ui_clock/ui_anim, oa-client

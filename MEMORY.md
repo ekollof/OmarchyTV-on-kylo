@@ -10,8 +10,14 @@ This is not cold-start acceptance: `DEV_INI_Init`'s device stages remain partly
 module-owned, gated or missing (see COLD-START-SEQUENCE-2026-11-10). A
 hardware-only no-UI ladder (`hw0..hw4`: plat, panel, I2S MCLK, SPI open,
 NIM-DTV) and its ready receipt are host-tested; no stage has been run on the
-TV. The full `make check` still stops in the unrelated `check-vin-real` fixture
-(`source-select 17` EIO). TV was not contacted and remains stock.
+TV. The panel off path now sets the stock PTF PWM level 1000 before LVDS off,
+matching `DEV_PANEL_PowerSequence`; the old PWM-0 claim is corrected. The
+device-gap disposition in COLD-START-SEQUENCE closes PCB layout, DEV GPIO/IIC
+description state, NIM factories, SPI semaphore and MTD for the HAL-only path;
+source hotplug, `DEV_AMP_ID`, the GPIO earphone handler and non-layout-14
+panel/TCON branches remain open. The full `make check` still stops in the
+unrelated `check-vin-real` fixture (`source-select 17` EIO). TV was not
+contacted and remains stock.
 
 Boot-hook cold attempt and recovery, 2026-11-09: the installed `/conf` hook
 (`/conf/remote.txt` -> `run_aurora.sh` -> `/conf/remotelf/aurora.elf`, sha256

@@ -1,5 +1,13 @@
 # Panel backlight calibration and 50% hardware run — 2026-11-07
 
+Status: current; corrected 2026-11-10 for the PTF off-path PWM order and the
+panel Init-block disposition.
+Last verified: 2026-11-10 (firmware instructions and fake-HAL host test); the
+50% hardware observation remains the 2026-11-07 TV run.
+Evidence class: on-TV read-only calibration plus firmware instructions/host
+test. The 2026-11-07 hardware observations are unchanged; the off-path order
+below is the 2026-11-10 correction.
+
 Owner authorization: TV read-write/full access, display/fb1 tests allowed,
 recovery reboot allowed. This record covers the real `mod_panel` PWM path. It
 does not claim an independent brightness measurement: the owner did not confirm
@@ -188,13 +196,21 @@ The polarity evidence is recorded for that work; it has not been exercised.
 (default 0, so takeover/boot behavior is unchanged):
 
 ```text
-off: BL power off (111=1) -> 220 ms -> LVDS off (cmd 0x1cc byte 0)
-     -> 30 ms -> PWM 0 -> PANELPWR off (110=0)
+off: BL power off (111=1) -> 220 ms -> PWM PTF level 1000
+     -> LVDS off (cmd 0x1cc byte 0) -> 30 ms -> PANELPWR off (110=0)
 on:  PANELPWR on (110=1) -> 30 ms -> LVDS on (byte 1)
      -> PWM restore (last applied level) -> 580 ms -> BL power on (111=0)
 ```
 
-The 70 ms pre-backlight delay, 30/580/220/30 ms panel-extra delays and the
+Correction 2026-11-10: `DEV_PANEL_Init` stores byte 0 = 1 at `0x019354b4`;
+`DEV_PANEL_PowerSequence` reads that byte at `0x00857bf8`. With stock
+`gu16PanelHighPeriodIn1000 = 1000` and panel-extra `+8 = 100`, the off path
+takes the PTF branch: `DEV_PANEL_SetPWMBacklightLevel(extra+8*10)` = 1000
+before LVDS off, not PWM 0 after it. The timing halfwords at
+`0x019354b8..c0` are write-only in the firmware; only the mode byte is read.
+`mod_panel` now writes `panel.off_pwm` (default 1000) before LVDS off; set it
+to 0 only for a non-PTF panel profile. The fake-HAL test asserts the corrected
+order. The 70 ms pre-backlight delay, 30/580/220/30 ms panel-extra delays and the
 TCON PMIC skip come from `DEV_PANEL_PowerSequence @0x00857ac0` plus the live
 `PLAT_VIU_GetPanelExtraStruct` bytes (`0x019d4d64`: `1e00 4402 dc00 1e00 ...`,
 `+0x4a == 0`). `plat_vpltio_mute_lvds @0x0092e0f8` sends
@@ -202,7 +218,8 @@ TCON PMIC skip come from `DEV_PANEL_PowerSequence @0x00857ac0` plus the live
 overridable (`panel.power_pin/power_on_level`, `panel.bl_power_pin/bl_on_level`,
 `panel.lvds_cmd`, delay keys).
 
-`check-panel-standby` asserts the exact GPIO/LVDS/PWM order and returns failure
+`check-panel-curve` (the `panel_standby` case) asserts the exact
+GPIO/LVDS/PWM order and returns failure
 when the backlight is powered before the PWM restore. `PLAT_PQ_SHELL_SetAutoBacklight(0)`
 has no owner in this module and is deliberately omitted rather than emulated.
 The sequence has **not** been run on the TV: suspend/standby is blocked by the

@@ -24,6 +24,7 @@ link the owning report for the full meaning.
 | **NIM / DTV / ATV / MXL661** | tuner front end, digital TV, analog TV, and the MXL661 tuner IC/ATV tables. |
 | **OAI1** | the replacement's flat UI asset blobs (RGBA) built from theme PNGs for the legacy `ui_fb`/blit path. |
 | **OSD / TCON / LVDS / VPLTIO / VPL** | on-screen display, panel timing controller, panel link, video-platform I/O and video pipeline. |
+| **PTF / panel-extra** | panel power timing/PWM mode. Stock Init block `0x019354b4` byte0=1; the halfword timing fields are write-only. `PLAT_VIU_GetPanelExtraStruct` supplies the 30/580/220/30 ms delays and PTF level 100 (`*10`). |
 | **PVR / EPG / EIT** | personal video recorder, electronic program guide, DVB event-information table. |
 | **S/PDIF** | optical/coaxial audio output; the soundbar path. |
 | **SWProfile / HWProfile** | `/conf/mb230_swprofile.bin` and `/conf/mb230_hwprofile.bin` (amp/tuner/pin/board data). |
