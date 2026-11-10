@@ -653,6 +653,30 @@ static int heartbeat_write(oa_host *h)
     return -1;
 }
 
+/* Hardware-only profiles have no UI module to write the present receipt.
+ * This marker proves that every configured autoload module loaded and its
+ * start() returned 0; it does not prove a hardware effect. The supervisor
+ * checks the same "<pid> <value>" shape as heartbeat/UI receipts. */
+int oa_host_ready(oa_host *h)
+{
+    const char *path = api_config_get(h, "host.ready_file", "/tmp/openaurora.ready");
+    if (!path || !*path) return -1;
+    char tmp[288];
+    if (strlen(path) >= sizeof tmp - 32) return -1;
+    snprintf(tmp, sizeof tmp, "%s.%ld.tmp", path, (long)getpid());
+    FILE *f = fopen(tmp, "w");
+    if (!f) return -1;
+    int failed = fprintf(f, "%ld %llu\n", (long)getpid(),
+                         (unsigned long long)oa_now_ms()) < 0;
+    if (fclose(f) != 0) failed = 1;
+    if (!failed && rename(tmp, path) == 0) {
+        h->api.log(h, OA_LOG_INFO, "host: ready receipt %s (all autoload starts succeeded)", path);
+        return 0;
+    }
+    unlink(tmp);
+    return -1;
+}
+
 static int next_timeout_ms(oa_host *h)
 {
     uint64_t now = oa_now_ms(), best = 0;

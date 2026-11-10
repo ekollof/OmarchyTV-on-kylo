@@ -61,6 +61,12 @@ prelude). The `DEV_*` device half is not called: GPIO/IIC use the HAL,
 SPI open, and source hotplug/`DEV_AMP_ID` remain gated or missing. Full vendor
 cold-start parity is not claimed; no UI is cold-start evidence.
 
+`openaurora-cold-hw.conf` + `stage-hw-profile.sh` provide the no-UI ladder
+`hw0..hw4` (plat -> panel -> I2S MCLK -> SPI open -> NIM-DTV). The core's
+`host.ready_after_autoload` writes the supervisor receipt only when every
+autoload start succeeds. It is a host-tested sequence marker, not a hardware
+acceptance.
+
 Evidence: [COLD-START-STAGE-AUDIT](../../artifacts/reports/COLD-START-STAGE-AUDIT-2026-11-06.md),
 [STAGED-COLD-BOOT-DESIGN](../../artifacts/reports/STAGED-COLD-BOOT-DESIGN-2026-11-09.md),
 [BOOT-HOOK-COLD-ATTEMPT](../../artifacts/reports/BOOT-HOOK-COLD-ATTEMPT-2026-11-09.md),

@@ -7,8 +7,9 @@
 #
 # Staged cold boot: the wrapper refuses to start the replacement unless the
 # pre-init recovery is present (boot-attempt gate + external watchdog feeder).
-# It selects openaurora-stageN.conf from /conf/oa_stage, records the attempt,
-# starts the feeder, then hands off to oa-supervise --wdt-keep --gate /conf.
+# It selects openaurora-stage<stage>.conf from /conf/oa_stage, records the
+# attempt, starts the feeder, then hands off to oa-supervise --wdt-keep --gate.
+# stage is 0..5 (UI ladder) or hw0..hw4 (hardware-only, no display/UI).
 # A failed or hung boot leaves the attempt token; the next boot counts it and
 # three unproven attempts disable the native path.
 #
@@ -26,7 +27,7 @@ if [ -r "$gate/oa_stage" ]; then
     stage=$(cat "$gate/oa_stage" 2>/dev/null || echo 0)
 fi
 case $stage in
-0|1|2|3|4|5) ;;
+0|1|2|3|4|5|hw0|hw1|hw2|hw3|hw4) ;;
 *) stage=0 ;;
 esac
 cfg=$here/openaurora-stage$stage.conf

@@ -169,6 +169,7 @@ int oa_runtime_check(const char *modules_dir);
  * the loop alive until the completion post, timer or watch has been dispatched
  * and a later stop/unload succeeds. Returns -1 if a module remains loaded.
  * Does not dlclose an instance whose gate is still busy. */
+int oa_host_ready(oa_host *h);
 int oa_host_run(oa_host *h);
 void oa_host_quit(oa_host *h);
 void oa_host_signal_stop(oa_host *h); /* async-signal-safe, after init */

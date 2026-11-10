@@ -111,8 +111,8 @@ deploy()
     [ -n "$bundle" ] || { echo "--bundle is required" >&2; usage; }
     [ -n "$stage" ] || { echo "--stage is required" >&2; usage; }
     case $stage in
-    0|1|2|3|4|5) ;;
-    *) echo "invalid stage '$stage' (use 0..4)" >&2; exit 2 ;;
+    0|1|2|3|4|5|hw0|hw1|hw2|hw3|hw4) ;;
+    *) echo "invalid stage '$stage' (use 0..5 or hw0..hw4)" >&2; exit 2 ;;
     esac
 
     stage_conf=openaurora-stage$stage.conf

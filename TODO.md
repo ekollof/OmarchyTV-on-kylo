@@ -58,7 +58,13 @@ maps the cold-start stages and the current stock-UI coverage.
       HAL-only acceptance vs device-layer equivalents, then build a
       hardware-only cold ladder with no display/UI modules. Report:
       COLD-START-SEQUENCE-2026-11-10. Do not use UI paint as cold-start
-      evidence.
+      evidence. Hardware-only ladder 2026-11-10: `openaurora-cold-hw.conf` +
+      `stage-hw-profile.sh` (`hw0..hw4`) implement plat -> panel -> I2S MCLK ->
+      SPI open -> NIM-DTV with no display/UI; `host.ready_after_autoload`
+      writes the supervisor receipt only when every autoload start succeeds.
+      `check-hw-stage-profiles`, `check-hw-ready`, `check-boot-gate` and
+      `check-appmgr-entry` pass on the host. Next: one stage per authorized
+      TV boot; then decide the DEV_* device-half target.
 - [x] HAL-only device-layer decision + cold-start profile candidate:
       no ARM module has an undefined vendor `DEV_*` symbol; the new
       `openaurora-cold.conf` sets real DRM init, no snapshot restore,

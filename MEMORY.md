@@ -7,8 +7,10 @@ a one-byte source, GPIO/IIC/VIN failures logged without aborting, then
 `NDAL_VideoExt_OpenDevice(0,10)`. `check-cec-audio`, `check-plat-drm-gate`,
 `check-plat-startup-wait` and `check-plat-power-sync-stop` pass on the host.
 This is not cold-start acceptance: `DEV_INI_Init`'s device stages remain partly
-module-owned, gated or missing (see COLD-START-SEQUENCE-2026-11-10). The full
-`make check` still stops in the unrelated `check-vin-real` fixture
+module-owned, gated or missing (see COLD-START-SEQUENCE-2026-11-10). A
+hardware-only no-UI ladder (`hw0..hw4`: plat, panel, I2S MCLK, SPI open,
+NIM-DTV) and its ready receipt are host-tested; no stage has been run on the
+TV. The full `make check` still stops in the unrelated `check-vin-real` fixture
 (`source-select 17` EIO). TV was not contacted and remains stock.
 
 Boot-hook cold attempt and recovery, 2026-11-09: the installed `/conf` hook

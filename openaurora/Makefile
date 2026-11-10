@@ -1231,18 +1231,22 @@ check-cold-config:
 	@sh tests/cold_config.sh
 check: check-cold-config
 
-.PHONY: check-boot-gate check-wdtfeed check-stage-profiles check-supervise-boot check-deploy-staged-cold
+.PHONY: check-boot-gate check-wdtfeed check-stage-profiles check-hw-stage-profiles check-hw-ready check-supervise-boot check-deploy-staged-cold
 check-boot-gate:
 	@sh tests/boot_gate.sh
 check-wdtfeed: $(BUILD)/oa-wdtfeed
 	@sh tests/wdtfeed.sh $(abspath $(BUILD)/oa-wdtfeed)
 check-stage-profiles:
 	@sh tests/stage_profiles.sh
+check-hw-stage-profiles:
+	@sh tests/hw_stage_profiles.sh
+check-hw-ready: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_plat_stub.so
+	@node tests/hw_ready.cjs $(BUILD)
 check-supervise-boot: $(BUILD)/oa-supervise $(BUILD)/tests/supervise_child
 	@sh tests/supervise_boot.sh $(abspath $(BUILD)/oa-supervise) $(abspath $(BUILD)/tests/supervise_child)
 check-deploy-staged-cold:
 	@sh tests/deploy_staged_cold.sh
-check: check-boot-gate check-wdtfeed check-stage-profiles check-supervise-boot check-deploy-staged-cold
+check: check-boot-gate check-wdtfeed check-stage-profiles check-hw-stage-profiles check-hw-ready check-supervise-boot check-deploy-staged-cold
 
 $(BUILD)/tests/nim_dtv: tests/nim_dtv.c common/nim_dtv.c include/openaurora/nim_dtv.h
 	@mkdir -p $(dir $@)
@@ -2154,6 +2158,7 @@ full-replacement-bundle: $(BUILD)/$(PROJECT) $(FULL_REPLACEMENT_SO) $(BUILD)/oa-
 	@cp $(FULL_REPLACEMENT_SO) $(BUNDLE_DIR)/modules/
 	@cp $(BUNDLE_CONF) $(BUNDLE_DIR)/openaurora.conf
 	@for s in 0 1 2 3 4 5; do sh tools/boot/stage-profile.sh $$s $(BUNDLE_CONF) > $(BUNDLE_DIR)/openaurora-stage$$s.conf; done
+	@for s in hw0 hw1 hw2 hw3 hw4; do sh tools/boot/stage-hw-profile.sh $$s > $(BUNDLE_DIR)/openaurora-stage$$s.conf; done
 	@cp menus/sub_launcher.json $(BUNDLE_DIR)/menus/
 	@cp ui/README.md $(BUNDLE_DIR)/ui/
 	@cp lua/omarchy.lua $(BUNDLE_DIR)/lua/

@@ -104,6 +104,18 @@ grep -qx -- "$tmp/bundle/openaurora-stage1.conf" "$sup"
 rm -f "$tmp/gate/oa_stage" "$tmp/bundle/openaurora-stage1.conf"
 echo "ok appmgr entry: oa_stage selects the staged config"
 
+# Hardware-only stages use the same oa_stage selector and stagehwN config.
+printf 'hw2\n' >"$tmp/gate/oa_stage"
+printf 'test=1\n' >"$tmp/bundle/openaurora-stagehw2.conf"
+rm -f "$sup" "$gate_log"
+OA_STOCK="$stock" OA_APPLOG="$tmp/app.log" OA_TEST_SUPERVISE="$sup" \
+    OA_TEST_GATE="$gate_log" OA_TEST_FEEDER="$feeder_log" \
+    "$tmp/bundle/run-aurora.sh"
+grep -qx -- "$tmp/gate start hw2" "$gate_log"
+grep -qx -- "$tmp/bundle/openaurora-stagehw2.conf" "$sup"
+rm -f "$tmp/gate/oa_stage" "$tmp/bundle/openaurora-stagehw2.conf"
+echo "ok appmgr entry: hardware-only oa_stage selects the hw config"
+
 # A blocked gate must exec stock without starting the feeder or supervisor.
 : >"$tmp/gate.block"
 rm -f "$mark" "$sup" "$feeder_log"

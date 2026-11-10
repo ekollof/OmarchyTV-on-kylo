@@ -130,10 +130,23 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    int autoload_failed = 0;
     for (int i = 0; i < nloads; i++) {
         oa_mod *m = oa_module_load(&g_host, loads[i]);
-        if (m)
-            oa_module_start(&g_host, m);
+        if (m) {
+            if (oa_module_start(&g_host, m) != 0)
+                autoload_failed = 1;
+        } else {
+            autoload_failed = 1;
+        }
+    }
+    /* Hardware-only stages have no UI presenter. Only write the ready receipt
+     * when every configured autoload module loaded and start() returned 0;
+     * a stage failure must leave the supervisor's startup deadline running. */
+    if (nloads > 0 && !autoload_failed &&
+        !strcmp(g_host.api.config_get(&g_host, "host.ready_after_autoload", "0"), "1")) {
+        if (oa_host_ready(&g_host) != 0)
+            g_host.api.log(&g_host, OA_LOG_ERROR, "host: ready receipt could not be written");
     }
     if (oa_skin_bootstrap(&g_host))
         g_host.api.log(&g_host, OA_LOG_ERROR, "UI selection could not start");

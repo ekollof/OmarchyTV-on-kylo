@@ -83,6 +83,19 @@ test "$rc" -eq 0
 printf '%s\n' "$out" | grep -q "native allowed (fail=0)"
 echo "ok boot gate: malformed counter is treated as zero"
 
+# Hardware-only stages are valid and recorded exactly like the UI stages.
+run start hw2
+test "$rc" -eq 0
+grep -qx "stage=hw2" "$tmp/conf/oa_try"
+grep -qx "hw2" "$tmp/conf/oa_stage"
+run clear hw2
+test "$rc" -eq 0
+echo "ok boot gate: hardware-only stage is recorded and cleared"
+
+# Restore the numeric stage for the status expectation below.
+run start 0
+run clear 0
+
 # Invalid stage is rejected without writing a token.
 run start 7
 test "$rc" -eq 2

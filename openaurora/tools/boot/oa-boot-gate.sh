@@ -77,7 +77,7 @@ prepare)
 start)
     stage=${3:-0}
     case $stage in
-    0|1|2|3|4|5) ;;
+    0|1|2|3|4|5|hw0|hw1|hw2|hw3|hw4) ;;
     *) echo "oa-boot-gate: invalid stage '$stage'" >&2; exit 2 ;;
     esac
     printf 'stage=%s\n' "$stage" >"$try" 2>/dev/null || true

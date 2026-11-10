@@ -1,8 +1,9 @@
 # Cold-start sequence audit — 2026-11-10
 
-Status: **current offline instruction audit and host fix. TV was not contacted
-and no UI was loaded.** The HAL half of the vendor cold start is now
-instruction-exact. The device half (`DEV_INI_Init`) is still not called by the
+Status: **current offline instruction audit, host fix and no-UI ladder. TV was
+not contacted and no UI was loaded.** The HAL half of the vendor cold start is
+instruction-exact. A hardware-only `hw0..hw4` ladder is implemented and
+host-tested. The device half (`DEV_INI_Init`) is still not called by the
 replacement: its effects are partly implemented in modules, partly gated, and
 partly missing. Full vendor cold-start parity is therefore **not** claimed yet.
 
@@ -94,6 +95,39 @@ make check-plat-power-sync-stop
 
 These are fake-HAL tests; they prove order and state, not hardware effects.
 
+## Hardware-only ladder (offline, no UI)
+
+Added `openaurora/tools/boot/openaurora-cold-hw.conf` and
+`openaurora/tools/boot/stage-hw-profile.sh` for `hw0..hw4`. The order is the
+documented device-stage order, restricted to effects with a current owner:
+
+| stage | autoload | added stage | vendor evidence |
+|---|---|---|---|
+| hw0 | `plat` | `PLAT_DRV_INI_Init` HAL half | `0x0089b6e4` |
+| hw1 | `plat,panel` | `DEV_PANEL_Init` / panel power | `0x008583fc`, panel-power analysis |
+| hw2 | `plat,panel,audio` | `DEV_AMP_Init`'s `0x3a/0x100` MCLK request | `0x0084f4ac`; task **not** included |
+| hw3 | `plat,panel,audio,spi` | `DEV_SPI_Init`/`DEV_SPI_Open(0)` boundary | `0x0085946c`, `0x00858d0c` |
+| hw4 | `plat,panel,audio,spi,tuner` | `DEV_NIM_DTV_Init` task | `0x00861678` |
+
+No stage autoloads `display`, `ir`, `settings`, or any `ui_*`. PCB layout,
+DEV GPIO/IIC, `dev_src_init`, NIM factories, `DEV_AMP_ID` and MTD are **not**
+listed as passing stages because they have no documented replacement effect.
+
+The base profile sets `host.ready_after_autoload=1`; `core/main.c` writes the
+supervisor receipt only if every autoloaded module loaded and `start()` returned
+0. That is a sequence-completion marker, not a hardware-effect claim. `hw0..hw4`
+use the normal `oa_stage` selector (`openaurora-stagehwN.conf`), boot gate and
+`oa-supervise`; no UI fallback exists in these profiles.
+
+Host tests:
+
+```text
+check-hw-stage-profiles  # no UI/display modules; order and flags
+check-hw-ready           # receipt only after all autoload starts succeed
+check-boot-gate          # hw2 recorded/cleared
+check-appmgr-entry       # hw2 selects openaurora-stagehw2.conf
+```
+
 ## Verdict
 
 - **HAL half:** exact for the implemented `mod_plat` path, including the
@@ -108,13 +142,13 @@ These are fake-HAL tests; they prove order and state, not hardware effects.
 
 ## Required next order
 
-1. Decide the target for the device half: formally accept the HAL-only design
+1. In the next authorized TV window, run `hw0..hw4` one stage per boot, with no
+   display/UI modules, and record the stage-specific log/control state. The
+   ladder and ready receipt are host-tested only; no hardware effect is proven.
+2. Decide the target for the device half: formally accept the HAL-only design
    (and prove each enabled effect is covered) or implement the device-layer
-   equivalents. The current cold config comment claims HAL-only; that decision
-   is not yet accepted by hardware evidence.
-2. Build a **hardware-only** cold ladder with no display/UI modules:
-   `plat` alone first, then panel, audio/I2S MCLK, SPI, NIM-DTV. Each stage
-   gets one owner and one pass/fail observation.
+   equivalents. PCB layout, DEV GPIO/IIC, `dev_src_init`, panel timing/GPIO
+   descriptions, NIM factories and `DEV_AMP_ID` remain open.
 3. Keep `source.enable=0`, `audio.source_enable=0`, `audio_amp.enable=0` and
    `cec.enable=0` until their own cold stage is accepted.
 4. Only after the hardware ladder is stable should a display/UI stage be

@@ -310,7 +310,14 @@ recovered de-init; a reload is not a driver/HAL reset and real-HAL reload after
 bring-up remains unaccepted. Before the HAL prelude `plat` now reproduces the
 vendor `ICE_HardwareInit` wait for `/tmp/ntkdriver_completed` (50 ms
 `access(R_OK)` poll; timeout refuses bring-up), which fixes cold-start ordering.
-`power` publishes `power`, holds the `host.sleep` refcount and keeps the sysfs
+The HAL order itself is instruction-matched to `PLAT_DRV_INI_Init`
+(`../../artifacts/reports/COLD-START-SEQUENCE-2026-11-10.md`): Protect(0),
+Mixer, Proxy, idempotent `plat_common_init("DVIF")`, GPIO, IIC, VIN, then
+`NDAL_VideoExt_OpenDevice(0,10)`; prelude and stage failures only log. The
+no-UI `hw0..hw4` ladder (`tools/boot/openaurora-cold-hw.conf`,
+`stage-hw-profile.sh`) is host-tested but not TV-accepted; its
+`host.ready_after_autoload` marker proves all autoload starts returned 0, not a
+hardware effect. `power` publishes `power`, holds the `host.sleep` refcount and keeps the sysfs
 fd only inside the final entry callback; stop drops those synchronously. Their
 control-socket test asserts immediate stop/reload and service invalidation. Do
 not add a fake delay or disposable heap object to make them look asynchronous.

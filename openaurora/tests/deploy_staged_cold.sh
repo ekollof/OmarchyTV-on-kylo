@@ -5,6 +5,7 @@ set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 deploy=$root/tools/boot/deploy-staged-cold.sh
 gen=$root/tools/boot/stage-profile.sh
+hwgen=$root/tools/boot/stage-hw-profile.sh
 tmp=$(mktemp -d "${TMPDIR:-/tmp}/oa-deploy.XXXXXX")
 trap 'rm -rf "$tmp"' EXIT HUP INT TERM
 
@@ -29,6 +30,9 @@ cp "$root/tools/boot/aurora-boot-hook.sh" "$bundle/"
 for s in 0 1 2 3 4 5; do
     sh "$gen" "$s" >"$bundle/openaurora-stage$s.conf"
 done
+for s in hw0 hw1 hw2 hw3 hw4; do
+    sh "$hwgen" "$s" >"$bundle/openaurora-stage$s.conf"
+done
 : >"$bundle/modules/x"
 (
     cd "$bundle"
@@ -46,6 +50,13 @@ test -f "$setroot/buffer/openaurora/old-marker"
 test ! -e "$setroot/conf/oa_boot"
 test ! -e "$setroot/conf/oa_stage"
 echo "ok deploy: dry run changes nothing"
+
+# Hardware-only stage is a valid bundle selection; dry run still changes nothing.
+out=$(sh "$deploy" --bundle "$bundle" --stage hw2)
+printf '%s\n' "$out" | grep -q "deploy: stage hw2"
+test ! -e "$setroot/conf/oa_boot"
+test ! -e "$setroot/conf/oa_stage"
+echo "ok deploy: hardware-only stage dry run changes nothing"
 
 # Apply installs the bundle, hook and stage flags with backups.
 sh "$deploy" --bundle "$bundle" --stage 0 --apply >"$tmp/apply.log"
