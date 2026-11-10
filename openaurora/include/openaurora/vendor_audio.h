@@ -7,7 +7,7 @@
 #include <stdint.h>
 #define OA_AUDIO_PARAM_WORDS 14
 #ifndef OA_NO_VENDOR
-extern int Hal_Audio_Protect_Init(void);
+extern int Hal_Audio_Protect_Init(int arg); /* vendor passes 0; body ignores it */
 extern int Hal_Audio_Mixer_Ctrl_Init(void);
 extern int Hal_Audio_Proxy_Init(void);
 extern int Hal_Audio_Ctrl(int opcode, uint32_t *params);

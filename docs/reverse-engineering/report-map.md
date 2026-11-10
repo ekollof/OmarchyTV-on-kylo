@@ -15,6 +15,7 @@ superseded claims and descriptions.
 - [BOOT-HOOK-COLD-ATTEMPT](../../artifacts/reports/BOOT-HOOK-COLD-ATTEMPT-2026-11-09.md)
 - [COLD-DISPLAY-REPAIR](../../artifacts/reports/COLD-DISPLAY-REPAIR-2026-11-07.md)
 - [COLD-OSD-PANEL-GATE](../../artifacts/reports/COLD-OSD-PANEL-GATE-2026-11-09.md)
+- [COLD-START-SEQUENCE](../../artifacts/reports/COLD-START-SEQUENCE-2026-11-10.md)
 - [COLD-START-STAGE-AUDIT](../../artifacts/reports/COLD-START-STAGE-AUDIT-2026-11-06.md)
 - [FULL-STACK-REHEARSAL](../../artifacts/reports/FULL-STACK-REHEARSAL-2026-11-05.md)
 - [IMAGE-DECODE](../../artifacts/reports/IMAGE-DECODE-2026-11-04.md)

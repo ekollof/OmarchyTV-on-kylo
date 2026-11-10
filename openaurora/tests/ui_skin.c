@@ -124,7 +124,10 @@ static int fake_select_type(int type) { fake_source_select = type; fake_source_c
 static int fake_current_type(void) { return fake_source_current; }
 static int fake_available(void) { return 1; }
 static const oa_source_iface fake_source = {
-    fake_select_type, fake_current_type, fake_available
+    .select_type = fake_select_type,
+    .current_type = fake_current_type,
+    .is_available = fake_available,
+    .diag = NULL
 };
 static int fake_volume = 50;
 static int fake_mute;

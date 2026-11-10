@@ -10,7 +10,7 @@
  *
  *   ICE_HardwareInit                    @007551a0   (waits for /tmp/ntkdriver_completed)
  *     └─ PLAT_DRV_INI_Init              @0089b6e4
- *          Hal_Audio_Protect_Init()    (no semantic argument; int return)
+ *          Hal_Audio_Protect_Init(0)  (vendor passes an explicit 0; return ignored)
  *          Hal_Audio_Mixer_Ctrl_Init()
  *          Hal_Audio_Proxy_Init()
  *          plat_common_init("DVIF")     @009247f8
@@ -23,6 +23,12 @@
  *          Hal_Iic_Init()
  *          plat_vin_slot_init()         (PLAT_*, internal to aurora — see the log line)
  *          NDAL_VideoExt_OpenDevice(0, 10)
+ *
+ * The vendor only logs a failing GPIO/IIC/VIN stage and continues; the audio
+ * prelude returns are ignored entirely. ICE_HardwareInit then runs
+ * DEV_INI_Init (PCB layout, GPIO, source, panel, NIM, IIC, amp, SPI,
+ * NIM-DTV, MTD) regardless of these results. This module is the HAL half;
+ * the DEV_* stages are owned separately and are not called here.
  *
  * Why this module exists: the audio HAL cannot be called before the prelude (calling it cold killed
  * the process, MEMORY 2026-10-30), and the display bring-up must run after it — openaurora used to
@@ -75,6 +81,12 @@ static uint32_t g_vin_side[VIN_SLOTS][3];
 static unsigned char g_vin_state[0x150];
 
 static struct ctx *g_ctx;
+/* Vendor plat_common_init is idempotent through the process-global
+ * DAT_019e59a8. The first call runs the Vpltio/V4L2/sharemem/DRM sequence and
+ * sets this flag; later starts only log. The vendor never reloads a module, so
+ * a DSO reload resetting this is a project-side difference. */
+static int g_common_done;
+static int g_common_drm = -1;
 
 /* ------------------------------------------------------------- vendor HAL */
 
@@ -90,7 +102,7 @@ extern int Hal_Iic_Init(void);
 extern void NDAL_VideoExt_OpenDevice(int flag, unsigned index);
 extern int NDAL_VideoExt_STBC_FreshWDT(void);
 #else
-static int Hal_Audio_Protect_Init(void) { return 0; }
+static int Hal_Audio_Protect_Init(int arg) { (void)arg; return 0; }
 static int Hal_Audio_Mixer_Ctrl_Init(void) { return 0; }
 static int Hal_Audio_Proxy_Init(void) { return 0; }
 static void Hal_Video_Vpltio_Init(void) {}
@@ -180,6 +192,47 @@ static int m_init(const oa_host_api *api, void **out)
     return 0;
 }
 
+/* Vendor plat_common_init("DVIF") @009247f8. It is a void/always-zero
+ * function guarded by DAT_019e59a8; the first call runs the four HAL inits and
+ * the 0x302 DVIF SendCmd, later calls do nothing. PLAT_DRV_INI_Init checks the
+ * return anyway but can never observe a failure. */
+static void common_init(struct ctx *c, int drm_init)
+{
+    if (g_common_done) {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "plat: common init already done (vendor idempotence); skipping");
+        if (drm_init != g_common_drm)
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "plat: common init ran with drm %d; requested drm %d ignored until process restart",
+                        g_common_drm, drm_init);
+        return;
+    }
+    Hal_Video_Vpltio_Init();
+    Hal_Video_V4l2InfoInit();
+    Hal_Video_DrmShareMemCreate();
+    if (drm_init)
+        Hal_Video_DrmInit(1);
+    else
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "plat: Hal_Video_DrmInit skipped; preserving the vendor OSD");
+    unsigned char src = 1;                        /* DVIF; vendor passes a byte */
+    Hal_Video_Vpltio_SendCmd(0x302, 0, &src, 0, 0, 0, 0, 0, 0);
+    g_common_done = 1;
+    g_common_drm = drm_init;
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "plat: common init (vpltio/v4l2/sharemem, drm %d, DVIF)", drm_init);
+}
+
+#ifdef OA_PLAT_TEST
+/* Test-only: the vendor flag is process-global; let one host process exercise
+ * fresh-start and idempotent-start cases without spawning a child. */
+void oa_plat_test_reset_common(void)
+{
+    g_common_done = 0;
+    g_common_drm = -1;
+}
+#endif
+
 static int m_start(void *v)
 {
     struct ctx *c = v;
@@ -188,36 +241,25 @@ static int m_start(void *v)
         return -1;
     }
 
-    /* 1. audio prelude — mandatory before anything else touches the HAL */
+    /* 1. audio prelude — vendor calls Protect(0)/Mixer/Proxy and ignores every
+     * return. A failure is logged but never blocks the later stages. */
     c->ready = 0; c->errors = 0;
     if (wait_driver_marker(c) != 0)
         return -1;
-    int protect_rc = Hal_Audio_Protect_Init();
+    int protect_rc = Hal_Audio_Protect_Init(0);
     int mixer_rc = Hal_Audio_Mixer_Ctrl_Init();
     int proxy_rc = Hal_Audio_Proxy_Init();
     if (protect_rc || mixer_rc || proxy_rc) {
         c->errors |= STAGE_AUDIO_PRECHECK;
-        c->api->log(c->api->priv, OA_LOG_ERROR,
-                    "plat: audio prelude failed (protect %d, mixer %d, proxy %d)",
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "plat: audio prelude returned (protect %d, mixer %d, proxy %d); vendor continues",
                     protect_rc, mixer_rc, proxy_rc);
-        return -1;
     }
     c->api->log(c->api->priv, OA_LOG_INFO, "plat: audio prelude (Protect/Mixer/Proxy)");
 
     /* 2. plat_common_init("DVIF") */
-    Hal_Video_Vpltio_Init();
-    Hal_Video_V4l2InfoInit();
-    Hal_Video_DrmShareMemCreate();
     int drm_init = c->api->config_get(c->api->priv, "plat.drm_init", "1")[0] == '1';
-    if (drm_init)
-        Hal_Video_DrmInit(1);
-    else
-        c->api->log(c->api->priv, OA_LOG_WARN,
-                    "plat: Hal_Video_DrmInit skipped; preserving the vendor OSD");
-    int src = 1;                                  /* DVIF */
-    Hal_Video_Vpltio_SendCmd(0x302, 0, &src, 0, 0, 0, 0, 0, 0);
-    c->api->log(c->api->priv, OA_LOG_INFO,
-                "plat: common init (vpltio/v4l2/sharemem, drm %d, DVIF)", drm_init);
+    common_init(c, drm_init);
 
     /* 3. GPIO and I2C */
     if (Hal_Gpio_Init() != 0) {

@@ -1,5 +1,16 @@
 # Current project state — last verified 2026-11-07
 
+Host-only cold-start correction, 2026-11-10: `mod_plat` now matches the vendor
+`PLAT_DRV_INI_Init` HAL order exactly — `Hal_Audio_Protect_Init(0)`, all three
+audio-prelude returns ignored/logged, `plat_common_init("DVIF")` idempotent with
+a one-byte source, GPIO/IIC/VIN failures logged without aborting, then
+`NDAL_VideoExt_OpenDevice(0,10)`. `check-cec-audio`, `check-plat-drm-gate`,
+`check-plat-startup-wait` and `check-plat-power-sync-stop` pass on the host.
+This is not cold-start acceptance: `DEV_INI_Init`'s device stages remain partly
+module-owned, gated or missing (see COLD-START-SEQUENCE-2026-11-10). The full
+`make check` still stops in the unrelated `check-vin-real` fixture
+(`source-select 17` EIO). TV was not contacted and remains stock.
+
 Boot-hook cold attempt and recovery, 2026-11-09: the installed `/conf` hook
 (`/conf/remote.txt` -> `run_aurora.sh` -> `/conf/remotelf/aurora.elf`, sha256
 `c3943712...`, gated by `oa_boot`/`oa_safe`) was used to boot the 34-module

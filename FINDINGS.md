@@ -1,3 +1,14 @@
+COLD-START-SEQUENCE-2026-11-10 corrects the HAL cold-start contract:
+`PLAT_DRV_INI_Init` passes an explicit 0 to `Hal_Audio_Protect_Init`, ignores
+all three audio-prelude returns, and only logs GPIO/IIC/VIN failures;
+`plat_common_init` is idempotent and passes a one-byte DVIF value. `mod_plat`
+now matches and `tests/plat_audio.c` no longer asserts that a prelude failure
+gates later stages. The vendor `DEV_INI_Init` device half is still not a single
+owner: PCB-layout global, DEV GPIO/IIC descriptions, source hotplug, panel
+timing/GPIO descriptions, NIM factories, `DEV_AMP_ID` and the SPI semaphore
+remain missing or gated. HAL half exact; full cold-start parity not claimed.
+Report: COLD-START-SEQUENCE-2026-11-10.
+
 REPLACEMENT-SYSTEM-2026-11-07 assembles the reproducible takeover UI:
 `make replacement-bundle` emits `plat_stub` + display/panel/ir/settings/
 service_db/image_decode/ui_engine/ui_vendor/ticker/ui_clock/ui_anim, oa-client

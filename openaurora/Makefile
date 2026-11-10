@@ -1661,7 +1661,7 @@ $(BUILD)/tests/audio: tests/audio.c modules/audio/audio.c common/audio_owner.c c
 
 $(BUILD)/tests/plat_audio: tests/plat_audio.c modules/plat/plat.c include/openaurora/vendor_audio.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR -DOA_PLAT_TEST $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
 check-cec-audio: $(BUILD)/tests/cec $(BUILD)/tests/audio $(BUILD)/tests/plat_audio
 	@$(BUILD)/tests/cec
@@ -2608,7 +2608,7 @@ $(BUILD)/tests/fbregion_read: tests/fbregion_read.c tools/mcu/fbregion.c
 
 $(BUILD)/tests/plat_drm_gate: tests/plat_drm_gate.c modules/plat/plat.c include/openaurora/module.h include/openaurora/services.h
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ tests/plat_drm_gate.c
+	$(CC) $(CPPFLAGS) -DOA_PLAT_TEST $(CFLAGS) $(LDFLAGS) -o $@ tests/plat_drm_gate.c
 .PHONY: check-plat-drm-gate
 check-plat-drm-gate: $(BUILD)/tests/plat_drm_gate
 	@$(BUILD)/tests/plat_drm_gate

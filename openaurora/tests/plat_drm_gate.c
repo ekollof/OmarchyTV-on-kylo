@@ -66,6 +66,7 @@ static const oa_host_api api = {
 
 static void run(int drm, const char *expect, const char *absent)
 {
+    oa_plat_test_reset_common();
     drm_enabled = drm;
     logs_at = 0;
     logs[0] = 0;

@@ -47,6 +47,18 @@ maps the cold-start stages and the current stock-UI coverage.
       channel0 and TCON gate0; `check-panel-curve`/`check-panel-quiesce` pass.
       Remaining: visible panel-on/off and a cold-boot acceptance.
       See `artifacts/analysis/panel-power-2026-11-08.md`.
+      HAL sequence correction 2026-11-10: `PLAT_DRV_INI_Init` ignores every
+      audio-prelude return, logs GPIO/IIC/VIN failures and continues, and
+      `plat_common_init` is idempotent with a one-byte DVIF value. `mod_plat`
+      now matches; `check-cec-audio`/`check-plat-drm-gate`/`check-plat-startup-wait`
+      pass. This does not close the item: `DEV_INI_Init`'s device stages are
+      still partly module-owned, partly gated and partly missing (PCB-layout
+      global, DEV GPIO/IIC descriptions, source hotplug, panel timing/GPIO
+      descriptions, NIM factories, DEV_AMP_ID, SPI semaphore). Next: decide
+      HAL-only acceptance vs device-layer equivalents, then build a
+      hardware-only cold ladder with no display/UI modules. Report:
+      COLD-START-SEQUENCE-2026-11-10. Do not use UI paint as cold-start
+      evidence.
 - [x] HAL-only device-layer decision + cold-start profile candidate:
       no ARM module has an undefined vendor `DEV_*` symbol; the new
       `openaurora-cold.conf` sets real DRM init, no snapshot restore,

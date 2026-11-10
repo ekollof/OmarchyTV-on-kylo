@@ -38,6 +38,29 @@ kernel init=/init  ->  /etc/inittab ::sysinit:/etc/rc.local
   USB pair rewrites only apdat0. Do not patch signed partitions or the
   bootloader.
 
+**Cold hardware sequence** (instruction-verified; see
+[COLD-START-SEQUENCE](../../artifacts/reports/COLD-START-SEQUENCE-2026-11-10.md)):
+
+```text
+ICE_HardwareInit @7551a0
+  wait /tmp/ntkdriver_completed
+  PLAT_DRV_INI_Init @89b6e4
+    Hal_Audio_Protect_Init(0), Mixer_Ctrl_Init, Proxy_Init   (returns ignored)
+    plat_common_init("DVIF")                                  (idempotent; byte src=1)
+    Hal_Gpio_Init, Hal_Iic_Init, plat_vin_slot_init          (nonzero logged; continue)
+    NDAL_VideoExt_OpenDevice(0,10)
+  DEV_INI_Init @853a58                                       (each zero logged; continue)
+    PCB layout 14, DEV_GPIO_Init, dev_src_init, DEV_PANEL_Init,
+    DEV_NIM_Init, DEV_IIC_Init, DEV_AMP_Init, DEV_SPI_Init,
+    DEV_SPI_Open(0), DEV_NIM_DTV_Init, DEV_MTD_Init
+```
+
+`mod_plat` implements the HAL half exactly (including the non-aborting
+prelude). The `DEV_*` device half is not called: GPIO/IIC use the HAL,
+`mod_panel` owns PWM/power, `mod_tuner` owns NIM/NIM-DTV, `mod_spi` owns the
+SPI open, and source hotplug/`DEV_AMP_ID` remain gated or missing. Full vendor
+cold-start parity is not claimed; no UI is cold-start evidence.
+
 Evidence: [COLD-START-STAGE-AUDIT](../../artifacts/reports/COLD-START-STAGE-AUDIT-2026-11-06.md),
 [STAGED-COLD-BOOT-DESIGN](../../artifacts/reports/STAGED-COLD-BOOT-DESIGN-2026-11-09.md),
 [BOOT-HOOK-COLD-ATTEMPT](../../artifacts/reports/BOOT-HOOK-COLD-ATTEMPT-2026-11-09.md),
