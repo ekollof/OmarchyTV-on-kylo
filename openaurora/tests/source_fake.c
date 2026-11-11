@@ -206,11 +206,18 @@ static int f_ioctl(int fd, unsigned long request, void *arg)
     return 0;
 }
 
+static int f_color(int fd, uint32_t v0, uint32_t v1)
+{
+    REC(SF_COLOR, fd, v0, v1);
+    append_log("color fd=%d v0=%x v1=%x", fd, v0, v1);
+    return 0;
+}
+
 static const struct oa_source_hal g_fake = {
     f_open, f_close, f_select, f_start, f_audio, f_vplt,
     f_info_get, f_info_set, f_info_reset, f_drm_get, f_fd_get, f_fd_set,
     f_device, f_plane, f_plane_info, f_dp, f_ext,
-    f_dec_stop, f_dec_close, f_sd, f_ioctl
+    f_dec_stop, f_dec_close, f_sd, f_ioctl, f_color
 };
 
 const struct oa_source_hal *oa_source_hal(void)

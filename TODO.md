@@ -62,8 +62,10 @@ maps the cold-start stages and the current stock-UI coverage.
       implemented in `common/dev_gpio.c`/`dev_gpio_vendor.c`; live read-only
       pins 274..277 active-low, MHL/HDMI5 absent; pulse hardware-verified
       2026-11-11: STBC 74..77 values 2 then 3, connected Deck re-ran HDCP22
-      re-auth, gate remains 0; auto-color-system still open; see
-      HOTPLUG-HW-2026-11-11), `DEV_AMP_ID` (profile
+      re-auth, gate remains 0; `plat_vin_slot_set_auto_color_system(2)`
+      implemented behind default-off `source.auto_color_system` and traced on
+      the TV (VIN(0) ioctl 0x40085618 {0x00ff40ff,0}); see HOTPLUG-HW and
+      AUTO-COLOR-SYSTEM-2026-11-11), `DEV_AMP_ID` (profile
       and reset114/mute208 effects covered by audio_amp_profile/amp_board;
       vendor factory/monitor task not reproduced), the GPIO earphone handler
       and non-layout-14 panel/TCON branches. Next: decide HAL-only acceptance vs

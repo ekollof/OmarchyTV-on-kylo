@@ -15,6 +15,7 @@
 #include <string.h>
 
 #define STBC_V4L2_CMD 0xc0185648UL
+#define VIN_COLOR_CMD 0x40085618UL
 #define ARM_SYS_ioctl 54
 
 static int (*real_ioctl)(int, unsigned long, ...);
@@ -56,6 +57,20 @@ static void log_controls(unsigned long cmd, const void *arg)
     fclose(f);
 }
 
+static void log_color(const void *arg)
+{
+    const char *path = getenv("OA_TRACE_LOG");
+    if (!path || !*path || !arg)
+        return;
+    const uint32_t *w = arg;
+    FILE *f = fopen(path, "a");
+    if (!f)
+        return;
+    fprintf(f, "vin_color cmd=%#lx v0=%08x v1=%08x\n",
+            (unsigned long)VIN_COLOR_CMD, w[0], w[1]);
+    fclose(f);
+}
+
 int ioctl(int fd, unsigned long cmd, ...)
 {
     va_list ap;
@@ -64,6 +79,8 @@ int ioctl(int fd, unsigned long cmd, ...)
     va_end(ap);
     if (cmd == STBC_V4L2_CMD)
         log_controls(cmd, arg);
+    else if (cmd == VIN_COLOR_CMD)
+        log_color(arg);
     if (!real_ioctl) {
         void *p = dlsym(RTLD_NEXT, "ioctl");
         memcpy(&real_ioctl, &p, sizeof real_ioctl);
@@ -82,6 +99,8 @@ long syscall(long number, ...)
         va_end(ap);
         if (cmd == STBC_V4L2_CMD)
             log_controls(cmd, arg);
+        else if (cmd == VIN_COLOR_CMD)
+            log_color(arg);
         if (!real_syscall) {
             void *p = dlsym(RTLD_NEXT, "syscall");
             memcpy(&real_syscall, &p, sizeof real_syscall);

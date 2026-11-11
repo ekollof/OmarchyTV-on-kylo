@@ -38,6 +38,10 @@ struct oa_source_hal {
     void (*video_dec_close)(int path);     /* Hal_VideoDec_Close */
     void (*sd_video_connect)(void);        /* PLAT_DEC_SdVideoConnect, type 1 */
     int (*ioctl)(int fd, unsigned long request, void *arg);
+    /* plat_vin_slot_set_auto_color_system: open VIN(0), set the color-system
+     * words, close. The vendor calls it from dev_src_init after creating the
+     * hotplug task; the two words are table entry 2 = 0x00ff40ff, 0. */
+    int (*vin_set_color_system)(int fd, uint32_t v0, uint32_t v1);
 };
 
 const struct oa_source_hal *oa_source_hal(void);

@@ -40,7 +40,11 @@ query shows `HDMI_HOTPLUG_1..4` at pins 274..277, output/normal-low/active-low;
 `MHL_CDSENSE`/`HDMI_HOTPLUG_5` are absent (errno 524). The pulse was run on
 the TV on 2026-11-11: the pass-through trace showed STBC channels 74..77 with
 values 2 then 3, and the connected Deck re-ran HDCP22 init/auth; the gate
-remains default 0 (HOTPLUG-HW-2026-11-11). Raw CEC acquire retest 2026-11-11:
+remains default 0 (HOTPLUG-HW-2026-11-11). The
+`plat_vin_slot_set_auto_color_system(2)` VIN(0) ioctl `0x40085618` with
+`{0x00ff40ff,0}` is implemented behind default-off
+`source.auto_color_system` and was traced on the TV on 2026-11-11
+(AUTO-COLOR-SYSTEM-2026-11-11). Raw CEC acquire retest 2026-11-11:
 the authority mirror map and `mod_cec` start pass, but `CEC_OPEN` still
 returns EPERM (`kcec: CEC Try lock fail`) with no `/proc/*/fd` holder after
 stock Aurora stop; the same orphaned `DRV_CEC_CALLBAC` lock as 2026-11-07

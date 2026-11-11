@@ -14,6 +14,7 @@
 extern const oa_module *oa_module_entry(void);
 static const oa_source_iface *iface;
 static int enabled = 1;
+static int color_gate;
 static int pos;
 
 #define SKIP INT64_MIN
@@ -69,6 +70,7 @@ static const char *config(void *p, const char *key, const char *def)
 {
     (void)p;
     if (!strcmp(key, "source.enable")) return enabled ? "1" : "0";
+    if (!strcmp(key, "source.auto_color_system")) return color_gate ? "1" : "0";
     if (!strcmp(key, "source.cleanup_delay_ms")) return "0";
     return def;
 }
@@ -266,6 +268,20 @@ int main(void)
     assert(source_fake_count() == 1); /* the read-only DRM id check only */
     expect(SF_DRM_DEV, 0, SKIP, SKIP, SKIP, SKIP);
     source_fake_set_drm_dev(7);
+
+    /* dev_src_init's plat_vin_slot_set_auto_color_system(2): open VIN(0),
+     * set {0x00ff40ff, 0}, close. Explicit gate; the default start above
+     * still opens nothing. */
+    done(ctx);
+    reset();
+    color_gate = 1;
+    ctx = start(1);
+    expect(SF_OPEN, 0, 100, SKIP, SKIP, SKIP);
+    expect(SF_COLOR, 100, 0x00ff40ff, 0, SKIP, SKIP);
+    expect(SF_CLOSE, 100, SKIP, SKIP, SKIP, SKIP);
+    assert(pos == source_fake_count());
+    done(ctx);
+    color_gate = 0;
 
     puts("ok source path: type gates, VIN opens/VPLT, V4L2Info/FdCommon, DRM/NDAL and audio order");
     return 0;

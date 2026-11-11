@@ -559,6 +559,32 @@ static void *pulse_worker(void *v)
     return NULL;
 }
 
+static void apply_auto_color_system(struct ctx *c)
+{
+    const char *en = c->api->config_get(c->api->priv,
+                                        "source.auto_color_system", "0");
+    if (!c->enabled || !en || atoi(en) == 0)
+        return;
+    if (!c->h->vin_open || !c->h->vin_close || !c->h->vin_set_color_system) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "source: auto color system unavailable");
+        return;
+    }
+    /* dev_src_init calls plat_vin_slot_set_auto_color_system(2) after
+     * creating the hotplug task: Hal_Vin_Open(0), ioctl 0x40085618 with
+     * {0x00ff40ff, 0}, Hal_Vin_Close(fd). */
+    int fd = c->h->vin_open(0);
+    if (fd < 0) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "source: auto color VIN(0) open failed (%d)", fd);
+        return;
+    }
+    int rc = c->h->vin_set_color_system(fd, 0x00ff40ffu, 0u);
+    c->h->vin_close(fd);
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "source: auto color system 2 -> 0x00ff40ff (%d)", rc);
+}
+
 static int m_start(void *v)
 {
     struct ctx *c = v;
@@ -592,6 +618,7 @@ static int m_start(void *v)
                         "source: HDMI hotplug pulse thread failed (%d)", rc);
         }
     }
+    apply_auto_color_system(c);
     return 0;
 }
 

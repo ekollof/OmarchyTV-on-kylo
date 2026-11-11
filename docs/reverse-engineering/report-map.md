@@ -359,6 +359,7 @@ superseded claims and descriptions.
 
 ## Other and miscellaneous
 - [ALSA-CONTROL](../../artifacts/reports/ALSA-CONTROL-2026-11-07.md)
+- [AUTO-COLOR-SYSTEM](../../artifacts/reports/AUTO-COLOR-SYSTEM-2026-11-11.md)
 - [BOOTSPLASH](../../artifacts/reports/BOOTSPLASH-2026-10-30.md)
 - [CONTENT-HEADER-OWNERSHIP](../../artifacts/reports/CONTENT-HEADER-OWNERSHIP-2026-11-03.md)
 - [DEV-GPIO-PROVIDER](../../artifacts/reports/DEV-GPIO-PROVIDER-2026-11-11.md)

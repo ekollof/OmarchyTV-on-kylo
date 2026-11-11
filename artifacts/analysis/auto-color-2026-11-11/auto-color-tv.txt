@@ -1,0 +1,48 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+=== state
+source type -1 available 1
+=== quit
+bye
+ 5323 S    ./oa-wdtfeed --node /proc/nvtstbcipc --interval 3 --timeout 10 --stop /tmp/oa-wdt-stop --log /buffer/oa-color-test/wdt.log --daemon
+=== wdt
+oa-wdtfeed: beat 11, watchdog 10s
+oa-wdtfeed: beat 12, watchdog 10s
+oa-wdtfeed: stop file /tmp/oa-wdt-stop, exiting after 12 beat(s)
+=== log
+[517696] INFO host         openaurora starting, modules=/buffer/oa-color-test/modules
+[517697] INFO host         control socket /buffer/oa-color-test/control
+[517715] INFO host         loaded plat v0.1 (/buffer/oa-color-test/modules/mod_plat.so)
+[517715] INFO plat         plat: waiting for /tmp/ntkdriver_completed (ICE_HardwareInit order)
+[517715] INFO plat         plat: driver marker ready after 0 ms
+[517727] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[517727] WARN plat         plat: Hal_Video_DrmInit skipped; preserving the vendor OSD
+[517727] INFO plat         plat: common init (vpltio/v4l2/sharemem, drm 0, DVIF)
+[517727] INFO plat         plat: VIN slot defaults (7 slots)
+[517730] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[517730] DBG  plat         service up: plat v1
+[517730] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[517730] INFO host         started plat
+[517731] INFO host         loaded source v0.2 (/buffer/oa-color-test/modules/mod_source.so)
+[517731] INFO source       source: per-type VIN switching enabled
+[517731] DBG  source       service up: source v1
+[517731] INFO source       source: auto color system 2 -> 0x00ff40ff (0)
+[517731] INFO host         started source
+[517731] INFO host         host: ready receipt /tmp/openaurora.ready (all autoload starts succeeded)
+Hal_IfCmd_SockFd_Get@139 iSockFd=6
+Can not open /dev/nvt/ntkvplt
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+openaurora: 2 module(s) loaded, control on /buffer/oa-color-test/control
+[535411] DBG  source       service down: source
+[535411] INFO host         stopped source
+[535411] DBG  plat         service down: plat
+[535411] INFO host         stopped plat
+[535411] INFO host         unloaded source
+[535412] INFO host         unloaded plat
+[535413] INFO host         openaurora stopped
+=== trace
+vin_color cmd=0x40085618 v0=00ff40ff v1=00000000

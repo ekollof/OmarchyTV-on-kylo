@@ -50,17 +50,23 @@ static int no_ioctl(int fd, unsigned long request, void *arg)
     (void)fd; (void)request; (void)arg;
     return -1;
 }
+static int no_color(int fd, uint32_t v0, uint32_t v1)
+{
+    (void)fd; (void)v0; (void)v1;
+    return -1;
+}
 static const struct oa_source_hal g_hal = {
     no_open, no_close, no_select, no_start, no_audio, no_vplt,
     no_info_get, no_info_set, no_info_reset, no_drm_get, no_fd_get, no_fd_set,
     no_device, no_plane, no_plane_info, no_dp, no_video_ext,
-    no_dec_stop, no_dec_close, no_sd, no_ioctl
+    no_dec_stop, no_dec_close, no_sd, no_ioctl, no_color
 };
 #else
 extern int Hal_Vin_Open(int index);
 extern void Hal_Vin_Close(int fd);
 extern void Hal_Vin_SelectInput(int fd, int id);
 extern void Hal_Vin_SetStreamStart(int fd);
+extern int Hal_Vin_SetColorSystem(int fd, int unused, uint32_t v0, uint32_t v1);
 extern void Hal_Audio_EasySelect(int path, int id, const void *records);
 extern int Hal_Video_Vpltio_SendCmd(int cmd, int a, void *buf, int b, int c,
                                     int d, int e, int f, int g);
@@ -95,6 +101,12 @@ static void hal_sd_video_connect(void)
     /* PLAT_DEC_SdVideoConnect is internal to aurora; the low-level type-1
      * path is not used by this set's Bronlijst. Keep the slot explicit. */
 }
+static int hal_vin_color_system(int fd, uint32_t v0, uint32_t v1)
+{
+    /* plat_vin_slot_set_auto_color_system @0x0092ec80 passes the table words
+     * in r2/r3; Hal ignores r1 and sends ioctl 0x40085618 with {v0,v1}. */
+    return Hal_Vin_SetColorSystem(fd, 0, v0, v1);
+}
 static const struct oa_source_hal g_hal = {
     Hal_Vin_Open, Hal_Vin_Close, Hal_Vin_SelectInput, Hal_Vin_SetStreamStart,
     Hal_Audio_EasySelect, Hal_Video_Vpltio_SendCmd,
@@ -104,7 +116,7 @@ static const struct oa_source_hal g_hal = {
     Hal_Video_Get_DrmDeviceId, Hal_Video_VideoPath_to_PlaneType,
     Hal_Video_Get_DrmPlaneInfo, Hal_Video_Drm_Set_DpSource,
     NDAL_VideoExt_OpenDevice, hal_dec_stop, hal_dec_close,
-    hal_sd_video_connect, hal_ioctl
+    hal_sd_video_connect, hal_ioctl, hal_vin_color_system
 };
 #endif
 
