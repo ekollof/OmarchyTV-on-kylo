@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "openaurora/source_hal.h"
+#include "openaurora/dev_gpio.h"
 #include "source_fake.h"
 
 static struct source_fake_event g_ev[256];
@@ -215,4 +216,11 @@ static const struct oa_source_hal g_fake = {
 const struct oa_source_hal *oa_source_hal(void)
 {
     return &g_fake;
+}
+
+/* The fake source build has no vendor GPIO transport; the hotplug pulse is
+ * only started behind source.hotplug_pulse and source.enable. */
+const struct oa_dev_gpio_io *oa_dev_gpio_vendor_io(void)
+{
+    return NULL;
 }

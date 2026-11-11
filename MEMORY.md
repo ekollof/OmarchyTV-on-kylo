@@ -9,25 +9,37 @@ a one-byte source, GPIO/IIC/VIN failures logged without aborting, then
 This is not cold-start acceptance: `DEV_INI_Init`'s device stages remain partly
 module-owned, gated or missing (see COLD-START-SEQUENCE-2026-11-10). A
 hardware-only no-UI ladder (`hw0..hw4`: plat, panel, I2S MCLK, SPI open,
-NIM-DTV) and its ready receipt are host-tested; no stage has been run on the
-TV. The panel off path now sets the stock PTF PWM level 1000 before LVDS off,
-matching `DEV_PANEL_PowerSequence`; the old PWM-0 claim is corrected. The
+NIM-DTV) and its ready receipt are host-tested. `hw0` passed on the TV on
+2026-11-11 under controlled ownership: staged current ARM `openaurora`/
+`mod_plat` (verified hashes), external `oa-wdtfeed`, appmgr paused and stock
+Aurora stopped; `plat` completed the driver-marker wait, audio prelude, DRM
+mode set, common init, 7 VIN slots and `NDAL_VideoExt_OpenDevice(0,10)`;
+`plat-state` was `plat ready 1 errors 0x0`; `quit` was clean and a reboot
+restored stock (appmgr 1624, aurora 1785, no openaurora). `hw1..hw4` remain
+unrun. The panel off path now sets the stock PTF PWM level 1000 before LVDS
+off, matching `DEV_PANEL_PowerSequence`; the old PWM-0 claim is corrected. The
 device-gap disposition in COLD-START-SEQUENCE closes PCB layout, DEV GPIO/IIC
 description state, NIM factories, SPI semaphore and MTD for the HAL-only path;
-source hotplug, `DEV_AMP_ID`, the GPIO earphone handler and non-layout-14
-panel/TCON branches remain open; the `DEV_SRC_HDMIHotPlug` one-shot pulse is
-now implemented in `common/src_hotplug.c` with `check-src-hotplug`, but has no
-runtime descriptor provider/wiring yet. `DEV_AMP_ID` profile/reset114/mute208
+`DEV_AMP_ID`, the GPIO earphone handler and non-layout-14 panel/TCON branches
+remain open. The `DEV_SRC_HDMIHotPlug` one-shot pulse and its runtime
+`DEV_GPIO_GetDescription` provider are now implemented in
+`common/src_hotplug.c`, `common/dev_gpio.c` and `dev_gpio_vendor.c`, and wired
+in `mod_source` behind default-off `source.hotplug_pulse=1`. A read-only live
+query shows `HDMI_HOTPLUG_1..4` at pins 274..277, output/normal-low/active-low;
+`MHL_CDSENSE`/`HDMI_HOTPLUG_5` are absent (errno 524). The actual pulse was not
+run on the TV. `DEV_AMP_ID` profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced. The full `make check` passes on the host
 (rc=0) after the UI settle-repaint fixtures and the 128-entry registry capacity
-test were corrected. QEMU device
-simulation 2026-11-10: the real ARM `mod_display` passes over the modeled fb1
+test were corrected; `check-dev-gpio` and the corrected `check-src-hotplug`
+pass. QEMU device
+simulation 2026-11-10/11: the real ARM `mod_display` passes over the modeled fb1
 (var/fix/mmap/region/MAU/pan/snapshot), the real ARM `mod_plat`+`mod_panel`
 pass over a permissive logged NDAL device boundary (PWM channel0/30000 Hz/duty
-1000; GPIO 110=1, 111=0), and the real ARM `mod_source` passes the VIN/DP-source
-boundary for types 17/19 (`/dev/video28`+`/dev/video21`, `/dev/video66`). These
-are qemu/host simulation, not hardware effects.
+1000; GPIO 110=1, 111=0), the real ARM `mod_source` passes the VIN/DP-source
+boundary for types 17/19 (`/dev/video28`+`/dev/video21`, `/dev/video66`), and
+the new real hotplug check passes with STBC channels 74..77 values 2 then 3.
+These are qemu/host simulation, not hardware effects.
 TV was not contacted and remains stock.
 
 Boot-hook cold attempt and recovery, 2026-11-09: the installed `/conf` hook

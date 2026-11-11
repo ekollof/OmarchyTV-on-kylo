@@ -1,0 +1,58 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+bye
+=== ps
+ 4642 S    ./oa-wdtfeed --node /proc/nvtstbcipc --interval 3 --timeout 10 --stop /tmp/oa-wdt-stop --log /tmp/oa-hw/wdt.log --daemon
+=== wdt tail
+oa-wdtfeed: beat 18, watchdog 10s
+oa-wdtfeed: beat 19, watchdog 10s
+oa-wdtfeed: beat 20, watchdog 10s
+oa-wdtfeed: stop file /tmp/oa-wdt-stop, exiting after 20 beat(s)
+=== stage log
+[304722] INFO host         openaurora starting, modules=/tmp/oa-hw/modules
+[304723] INFO host         control socket /tmp/oa-hw/control
+[304739] INFO host         loaded plat v0.1 (/tmp/oa-hw/modules/mod_plat.so)
+[304739] INFO plat         plat: waiting for /tmp/ntkdriver_completed (ICE_HardwareInit order)
+[304739] INFO plat         plat: driver marker ready after 0 ms
+[304750] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[DRM Init] : drmModeGetEncoder= PASS 
+[304754] INFO plat         plat: common init (vpltio/v4l2/sharemem, drm 1, DVIF)
+[304754] INFO plat         plat: VIN slot defaults (7 slots)
+[304757] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[304757] DBG  plat         service up: plat v1
+[304757] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[304757] INFO host         started plat
+[304757] INFO host         host: ready receipt /tmp/openaurora.ready (all autoload starts succeeded)
+Hal_IfCmd_SockFd_Get@139 iSockFd=6
+Can not open /dev/nvt/ntkvplt
+ERR:[4761:4761]ClientDrmAuthentically(193) fail(-1)
+
+[DRM Init] : Step 1 : Open DRM Device : drm_card_id = 14 
+[DRM Init] : open drm pass 
+
+[DRM Init] : Step 2 : Create Frame Buffer - Start 
+[DRM Init] : fb_id = 103 
+[DRM Init] : Step 2 : Create Frame Buffer - End 
+
+[DRM Init] : Step 3 : Init Kernel Mode Setting - Start 
+[DRM Init] : crtc_id = 26 
+[DRM Init] : plane_id[7] = 40 
+[DRM Init] : plane_id[6] = 54 
+[DRM Init] : plane_id[5] = 55 
+[DRM Init] : plane_id[2] = 56 
+[DRM Init] : plane_id[1] = 59 
+[DRM Init] : plane_id[0] = 60 
+[DRM Init] : plane_id[3] = 61 
+[DRM Init] : plane_id[4] = 62 
+[DRM Init] : Step 3 : Init Kernel Mode Setting - End 
+
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+openaurora: 1 module(s) loaded, control on /tmp/oa-hw/control
+[336470] DBG  plat         service down: plat
+[336470] INFO host         stopped plat
+[336470] INFO host         unloaded plat
+[336471] INFO host         openaurora stopped

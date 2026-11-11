@@ -993,10 +993,10 @@ $(BUILD)/modules/mod_audio_source.so: $(call pic_objs,modules__mod_audio_source,
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),audio_source),$(VENDOR_LDFLAGS),)
 $(eval $(call emit_pics,modules__mod_audio_source,modules/audio_source/audio_source.c common/audio_source_hal_vendor.c common/audio_curve.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_source_hal.h include/openaurora/audio_curve.h))
 
-$(BUILD)/modules/mod_source.so: $(call pic_objs,modules__mod_source,modules/source/source.c common/source_hal_vendor.c)
+$(BUILD)/modules/mod_source.so: $(call pic_objs,modules__mod_source,modules/source/source.c common/source_hal_vendor.c common/dev_gpio.c common/dev_gpio_vendor.c common/src_hotplug.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),source),$(VENDOR_LDFLAGS),)
-$(eval $(call emit_pics,modules__mod_source,modules/source/source.c common/source_hal_vendor.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/source_hal.h))
+$(eval $(call emit_pics,modules__mod_source,modules/source/source.c common/source_hal_vendor.c common/dev_gpio.c common/dev_gpio_vendor.c common/src_hotplug.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/source_hal.h include/openaurora/dev_gpio.h include/openaurora/src_hotplug.h))
 
 $(BUILD)/modules/mod_display_fb.so: $(call pic_objs,modules__mod_display_fb,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c)
 	@mkdir -p $(dir $@)
@@ -2801,12 +2801,12 @@ $(BUILD)/tests/ui_menu_action: tests/ui_menu_action.c core/host.h $(filter-out $
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_menu_action.c $(filter %.o,$^) $(LDLIBS)
 
-$(BUILD)/tests/mod_source_fake.so: $(call pic_objs,tests__mod_source_fake,modules/source/source.c tests/source_fake.c)
+$(BUILD)/tests/mod_source_fake.so: $(call pic_objs,tests__mod_source_fake,modules/source/source.c tests/source_fake.c common/dev_gpio.c common/src_hotplug.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -ldl -pthread
-$(eval $(call emit_pics,tests__mod_source_fake,modules/source/source.c tests/source_fake.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/source_hal.h,PIC_CPPFLAGS_SOURCE_FAKE))
+$(eval $(call emit_pics,tests__mod_source_fake,modules/source/source.c tests/source_fake.c common/dev_gpio.c common/src_hotplug.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/source_hal.h include/openaurora/dev_gpio.h include/openaurora/src_hotplug.h,PIC_CPPFLAGS_SOURCE_FAKE))
 
-$(BUILD)/tests/source_path: tests/source_path.c modules/source/source.c tests/source_fake.c
+$(BUILD)/tests/source_path: tests/source_path.c modules/source/source.c tests/source_fake.c common/dev_gpio.c common/src_hotplug.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
 
@@ -2829,13 +2829,15 @@ check-vin-real:
 	tools/qemu-vin-real-check.sh
 check: check-vin-real
 
-.PHONY: check-qemu-fb-real check-qemu-panel-real
+.PHONY: check-qemu-fb-real check-qemu-panel-real check-qemu-hotplug-real
 check-qemu-fb-real:
 	tools/qemu-fb-real-check.sh
 check-qemu-panel-real:
 	tools/qemu-panel-real-check.sh
+check-qemu-hotplug-real:
+	tools/qemu-hotplug-real-check.sh
 # Offline device-boundary checks; require the local vendor rootfs/toolchain.
-check-qemu-real: check-qemu-fb-real check-qemu-panel-real check-vin-real
+check-qemu-real: check-qemu-fb-real check-qemu-panel-real check-qemu-hotplug-real check-vin-real
 
 .PHONY: check-source-fake-ipc
 check-source-fake-ipc: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_source_fake.so $(BUILD)/modules/mod_plat.so
@@ -3035,6 +3037,15 @@ check-src-hotplug: $(BUILD)/tests/src_hotplug
 check: check-src-hotplug
 
 $(BUILD)/tests/src_hotplug: tests/src_hotplug.c common/src_hotplug.c include/openaurora/src_hotplug.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-dev-gpio
+check-dev-gpio: $(BUILD)/tests/dev_gpio
+	@$(BUILD)/tests/dev_gpio
+check: check-dev-gpio
+
+$(BUILD)/tests/dev_gpio: tests/dev_gpio.c common/dev_gpio.c include/openaurora/dev_gpio.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 

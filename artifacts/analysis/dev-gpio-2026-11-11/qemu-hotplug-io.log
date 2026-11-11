@@ -1,0 +1,54 @@
+open /dev/nvt/ntkvplt
+ioctl cmd=0xc0245604
+open /dev/ntgpio
+open /dev/i2c-0
+open /dev/i2c-1
+open /dev/i2c-2
+open /dev/i2c-3
+open /dev/i2c-4
+open /dev/i2c-5
+open /dev/i2c-6
+open /dev/i2c-7
+open /dev/nvt/ntkiic0
+open /dev/video24
+ioctl cmd=0x80685600
+open /dev/ntgpio
+gpio_desc_missing name=MHL_CDSENSE errno=524
+gpio_desc name=HDMI_HOTPLUG_1 pin=274 active=low
+ext cmd=0xc0185648 which=0xf170000 count=3
+ext_ctl cmd=0xc0185648 idx=0 id=0xf170f0f size=1 byte0=0
+ext_ctl cmd=0xc0185648 idx=1 id=0xf170f0f size=1 byte0=74
+ext_ctl cmd=0xc0185648 idx=2 id=0xf170f0f size=1 byte0=2
+gpio_desc name=HDMI_HOTPLUG_2 pin=275 active=low
+ext cmd=0xc0185648 which=0xf170000 count=3
+ext_ctl cmd=0xc0185648 idx=0 id=0xf170f0f size=1 byte0=0
+ext_ctl cmd=0xc0185648 idx=1 id=0xf170f0f size=1 byte0=75
+ext_ctl cmd=0xc0185648 idx=2 id=0xf170f0f size=1 byte0=2
+gpio_desc name=HDMI_HOTPLUG_3 pin=276 active=low
+ext cmd=0xc0185648 which=0xf170000 count=3
+ext_ctl cmd=0xc0185648 idx=0 id=0xf170f0f size=1 byte0=0
+ext_ctl cmd=0xc0185648 idx=1 id=0xf170f0f size=1 byte0=76
+ext_ctl cmd=0xc0185648 idx=2 id=0xf170f0f size=1 byte0=2
+gpio_desc name=HDMI_HOTPLUG_4 pin=277 active=low
+ext cmd=0xc0185648 which=0xf170000 count=3
+ext_ctl cmd=0xc0185648 idx=0 id=0xf170f0f size=1 byte0=0
+ext_ctl cmd=0xc0185648 idx=1 id=0xf170f0f size=1 byte0=77
+ext_ctl cmd=0xc0185648 idx=2 id=0xf170f0f size=1 byte0=2
+gpio_desc_missing name=HDMI_HOTPLUG_5 errno=524
+ext cmd=0xc0185648 which=0xf170000 count=3
+ext_ctl cmd=0xc0185648 idx=0 id=0xf170f0f size=1 byte0=0
+ext_ctl cmd=0xc0185648 idx=1 id=0xf170f0f size=1 byte0=74
+ext_ctl cmd=0xc0185648 idx=2 id=0xf170f0f size=1 byte0=3
+ext cmd=0xc0185648 which=0xf170000 count=3
+ext_ctl cmd=0xc0185648 idx=0 id=0xf170f0f size=1 byte0=0
+ext_ctl cmd=0xc0185648 idx=1 id=0xf170f0f size=1 byte0=75
+ext_ctl cmd=0xc0185648 idx=2 id=0xf170f0f size=1 byte0=3
+ext cmd=0xc0185648 which=0xf170000 count=3
+ext_ctl cmd=0xc0185648 idx=0 id=0xf170f0f size=1 byte0=0
+ext_ctl cmd=0xc0185648 idx=1 id=0xf170f0f size=1 byte0=76
+ext_ctl cmd=0xc0185648 idx=2 id=0xf170f0f size=1 byte0=3
+ext cmd=0xc0185648 which=0xf170000 count=3
+ext_ctl cmd=0xc0185648 idx=0 id=0xf170f0f size=1 byte0=0
+ext_ctl cmd=0xc0185648 idx=1 id=0xf170f0f size=1 byte0=77
+ext_ctl cmd=0xc0185648 idx=2 id=0xf170f0f size=1 byte0=3
+close cmd=0

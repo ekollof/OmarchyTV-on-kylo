@@ -56,9 +56,12 @@ maps the cold-start stages and the current stock-UI coverage.
       state, panel timing/GPIO copies, NIM factories, SPI semaphore and MTD for
       the HAL-only path. The panel off path now matches the stock PTF branch
       (PWM 1000 before LVDS off, not PWM 0). Real remaining device effects:
-      `dev_src_init` hotplug (one-shot task now implemented in
-      `common/src_hotplug.c` with `check-src-hotplug`; runtime descriptor
-      provider/wiring and auto-color-system still open), `DEV_AMP_ID` (profile
+      `dev_src_init` hotplug (one-shot task implemented in
+      `common/src_hotplug.c` with `check-src-hotplug`; runtime
+      `DEV_GPIO_GetDescription` provider and `source.hotplug_pulse` wiring now
+      implemented in `common/dev_gpio.c`/`dev_gpio_vendor.c`; live read-only
+      pins 274..277 active-low, MHL/HDMI5 absent; actual pulse and
+      auto-color-system still open), `DEV_AMP_ID` (profile
       and reset114/mute208 effects covered by audio_amp_profile/amp_board;
       vendor factory/monitor task not reproduced), the GPIO earphone handler
       and non-layout-14 panel/TCON branches. Next: decide HAL-only acceptance vs
@@ -69,8 +72,11 @@ maps the cold-start stages and the current stock-UI coverage.
       SPI open -> NIM-DTV with no display/UI; `host.ready_after_autoload`
       writes the supervisor receipt only when every autoload start succeeds.
       `check-hw-stage-profiles`, `check-hw-ready`, `check-boot-gate` and
-      `check-appmgr-entry` pass on the host. Next: one stage per authorized
-      TV boot; then decide the DEV_* device-half target.
+      `check-appmgr-entry` pass on the host. On-TV 2026-11-11: `hw0` passed
+      under controlled ownership (`plat-state` = `plat ready 1 errors 0x0`,
+      DRM fb 103/crtc 26, clean quit, reboot restored stock); see
+      HW-LADDER-2026-11-11. Next: hw1..hw4 one stage per authorized boot; then
+      decide the DEV_* device-half target.
 - [ ] QEMU TV device models: `qemu-fb-real-check` runs real `mod_display`
       over the ARM fb1 model; `qemu-panel-real-check` runs real
       `mod_plat`/`mod_panel` over a permissive logged NDAL boundary and asserts

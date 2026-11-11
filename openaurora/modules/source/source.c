@@ -20,6 +20,7 @@
  */
 #include <errno.h>
 #include <pthread.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,10 +28,12 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "openaurora/dev_gpio.h"
 #include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/source_hal.h"
+#include "openaurora/src_hotplug.h"
 
 /* table A: source type -> Hal_Vin input id (aurora .data 0x013b9e78) */
 static const int g_input_id[26] = {
@@ -81,6 +84,10 @@ struct ctx {
     int close_fds[MAX_FDS];
     int close_n;
     unsigned cleanup_delay_ms;
+    /* dev_src_init's one-shot DEV_SRC_HDMIHotPlug task, started only behind
+     * source.enable=1 and source.hotplug_pulse=1. */
+    pthread_t pulse_thread;
+    int pulse_running;
 };
 
 static struct ctx *g_ctx;
@@ -465,6 +472,93 @@ static int m_init(const oa_host_api *api, void **out)
     return 0;
 }
 
+/* --------------------------------------------------- HDMI hotplug pulse */
+/* dev_src_init creates DEV_SRC_HDMIHotPlug before source selection. The task
+ * is one-shot: descriptors -> inactive -> 500 ms -> active. Run it on a
+ * worker because the recovered delay is blocking; the host loop and the ABI 3
+ * quiesce gate must not wait for it. */
+extern const struct oa_dev_gpio_io *oa_dev_gpio_vendor_io(void);
+
+struct pulse_job {
+    struct ctx *mod;
+    struct oa_dev_gpio gpio;
+};
+
+static int pulse_desc(void *ud, int gpio_id, int *pin, int *active)
+{
+    struct pulse_job *j = ud;
+    struct oa_gpio_desc d;
+    if (oa_dev_gpio_describe(&j->gpio, gpio_id, &d) != 1)
+        return 0;
+    *pin = d.pin;
+    *active = d.active;
+    return 1;
+}
+
+static int pulse_get(void *ud, int pin, int *level)
+{
+    struct pulse_job *j = ud;
+    return oa_dev_gpio_get_level(&j->gpio, pin, level);
+}
+
+static void pulse_set(void *ud, int pin, int level)
+{
+    struct pulse_job *j = ud;
+    (void)oa_dev_gpio_set_level(&j->gpio, pin, level);
+}
+
+static void pulse_delay(void *ud, unsigned ms)
+{
+    (void)ud;
+    struct timespec pause = {
+        .tv_sec = ms / 1000u,
+        .tv_nsec = (long)(ms % 1000u) * 1000000L
+    };
+    (void)nanosleep(&pause, NULL);
+}
+
+static void pulse_log(void *ud, const char *fmt, ...)
+{
+    struct pulse_job *j = ud;
+    char buf[256];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(buf, sizeof buf, fmt, ap);
+    va_end(ap);
+    j->mod->api->log(j->mod->api->priv, OA_LOG_INFO, "source: %s", buf);
+}
+
+static void *pulse_worker(void *v)
+{
+    struct ctx *c = v;
+    struct pulse_job job = { .mod = c };
+    const struct oa_dev_gpio_io *io = oa_dev_gpio_vendor_io();
+    if (!io) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "source: hotplug pulse requested without a vendor GPIO transport");
+        return NULL;
+    }
+    int rc = oa_dev_gpio_open(&job.gpio, io);
+    if (rc != 0) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "source: hotplug /dev/ntgpio open failed (%d)", rc);
+        return NULL;
+    }
+    const oa_src_hotplug_ops ops = {
+        .ud = &job,
+        .descriptor = pulse_desc,
+        .get_level = pulse_get,
+        .set_level = pulse_set,
+        .delay_ms = pulse_delay,
+        .log = pulse_log,
+    };
+    int n = oa_src_hdmi_hotplug_pulse(&ops);
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "source: HDMI hotplug pulse finished (%d descriptor(s))", n);
+    oa_dev_gpio_close(&job.gpio);
+    return NULL;
+}
+
 static int m_start(void *v)
 {
     struct ctx *c = v;
@@ -484,6 +578,20 @@ static int m_start(void *v)
                 c->enabled ? "enabled" : "disabled (source.enable=1 to allow)");
     if (c->api->publish(c->api->priv, OA_SVC_SOURCE, 1, &g_iface) != 0)
         c->api->log(c->api->priv, OA_LOG_WARN, "source service already published");
+
+    const char *pulse = c->api->config_get(c->api->priv,
+                                           "source.hotplug_pulse", "0");
+    if (c->enabled && atoi(pulse) != 0) {
+        int rc = pthread_create(&c->pulse_thread, NULL, pulse_worker, c);
+        if (rc == 0) {
+            c->pulse_running = 1;
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "source: HDMI hotplug pulse started");
+        } else {
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "source: HDMI hotplug pulse thread failed (%d)", rc);
+        }
+    }
     return 0;
 }
 
@@ -510,6 +618,12 @@ static int m_quiesce(void *v)
 {
     struct ctx *c = v;
     if (!c) return 0;
+    if (c->pulse_running) {
+        int rc = pthread_tryjoin_np(c->pulse_thread, NULL);
+        if (rc == EBUSY)
+            return -EAGAIN;
+        c->pulse_running = 0;
+    }
     if (c->cleanup_running) {
         for (int i = 0; i < 10; i++) {
             int rc = pthread_tryjoin_np(c->cleanup_thread, NULL);
@@ -559,6 +673,10 @@ static int m_quiesce(void *v)
 static void m_stop(void *v)
 {
     struct ctx *c = v;
+    if (c->pulse_running) {
+        (void)pthread_join(c->pulse_thread, NULL);
+        c->pulse_running = 0;
+    }
     c->enabled = 0;
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
@@ -573,6 +691,10 @@ static void m_stop(void *v)
 static void m_destroy(void *v)
 {
     struct ctx *c = v;
+    if (c->pulse_running) {
+        (void)pthread_join(c->pulse_thread, NULL);
+        c->pulse_running = 0;
+    }
     if (c->cleanup_running) {
         (void)pthread_join(c->cleanup_thread, NULL);
         c->cleanup_running = 0;

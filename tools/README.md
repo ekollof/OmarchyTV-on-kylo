@@ -40,8 +40,18 @@ Sources and versions: [../docs/reproduce/dependencies.md](../docs/reproduce/depe
   (var/fix/mmap, region/MAU, pan, snapshot).
 - `qemu-panel-real-check.sh` — real ARM `mod_plat` + `mod_panel` over a
   permissive logged NDAL device boundary; asserts PWM and GPIO values.
+- `qemu-hotplug-real-check.sh` — real ARM `mod_plat` + `mod_source` over the
+  descriptor/STBC boundary; asserts pins 274..277 active-low and STBC
+  channels 74..77 values 2 then 3.
 - `qemu-vin-real-check.sh` — real ARM `mod_source` over a fake VIN device.
 - `qemu-ui-layout.sh` — real UI modules over the replacement `sim_display`.
+
+## TV descriptor probe
+
+- `tv-gpio-describe.c` — static ARM build; issues only the read-only
+  `DEV_GPIO_GetDescription` ioctl (`0xc088671f`) for MHL/HDMI hotplug ids and
+  prints pin/mode/normal/active. It does not claim, write, export or initialize
+  GPIO. Build/stage/verify/remove manually; see DEV-GPIO-PROVIDER-2026-11-11.
 
 The framebuffer/panel boundaries are test models, not kernel or scanout
 emulation. See [QEMU-TV-SIM](../artifacts/reports/QEMU-TV-SIM-2026-11-10.md).
