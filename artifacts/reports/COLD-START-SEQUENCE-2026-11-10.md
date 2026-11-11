@@ -143,6 +143,19 @@ register writer:
   208), and resolves the GPIO descriptions.
 - It then creates the vendor amp task (stack `0x1000`) for the factory.
 
+The factory monitor task entry is `0x84e110` (priority 10, stack `0x1000`).
+After a 15 s startup delay it loops every 2.5 s over the factory list at
+`0x0192fa5c`. For each object with a `+0xbc` check pointer it calls
+`AMP_AD82587_IsAlive` (`0x875458`) unless the global byte `0x0192fa55` is set.
+`IsAlive` reads three amp bytes (registers 03..05) through `_DEV_AMP_ReadIIC`
+and compares them to the retained image at `0x017640e8+3..5`; on mismatch it
+logs and the monitor calls the object's `+0x44` (`AMP_AD82587_Init`,
+`0x874ef0`) and `+0x70` (`AMP_AD82587_Mute`, `0x874e50`, level 0).
+`AMP_AD82586CSubWoofer_IsAlive` participates in the factory check. The exact
+`_DEV_AMP_ReadIIC` signature and subwoofer ownership still need recovery;
+`audio_amp` has the register image/init/mute but does not poll or
+reinitialize on a register mismatch.
+
 Our `audio_amp_profile` already decodes `DefaultSpeaker`/DRC from the same
 hwprofile, `amp_board` uses reset 114 / mute 208, and `audio_amp` owns the
 direct AD82587 register sequence/owner worker. The vendor factory/monitor task
