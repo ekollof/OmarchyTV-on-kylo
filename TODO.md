@@ -67,10 +67,11 @@ maps the cold-start stages and the current stock-UI coverage.
       the TV (VIN(0) ioctl 0x40085618 {0x00ff40ff,0}); see HOTPLUG-HW and
       AUTO-COLOR-SYSTEM-2026-11-11), `DEV_AMP_ID` (profile
       and reset114/mute208 effects covered by audio_amp_profile/amp_board;
-      monitor task 0x84e110/IsAlive 0x875458 recovered, not implemented:
-      regs03..05 vs retained image, then Init/Mute; subwoofer IsAlive is
-      literal return1; _DEV_AMP_ReadIIC default signature recovered, but its
-      double-read/0-1 return quirk needs a live amp read check), the GPIO earphone detector
+      monitor task 0x84e110/IsAlive 0x875458 recovered; check state machine
+      implemented/tested in common/amp_monitor.c (check-amp-monitor), not
+      wired: regs03..05 vs retained image, then Init/Mute; subwoofer IsAlive
+      is literal return1; vendor double-read/0-1 quirk and live owner timer
+      open), the GPIO earphone detector
       (implemented/tested in `common/earphone.c`; GPIO117/100ms/board17/event
       17; event-17 audio routing open)
       and non-layout-14 panel/TCON branches. Next: decide HAL-only acceptance vs

@@ -79,6 +79,7 @@ superseded claims and descriptions.
 - [AMP-INIT](../../artifacts/reports/AMP-INIT-2026-11-04.md)
 - [AMP-JOBS](../../artifacts/reports/AMP-JOBS-2026-11-07.md)
 - [AMP-MODULE](../../artifacts/reports/AMP-MODULE-2026-11-07.md)
+- [AMP-MONITOR](../../artifacts/reports/AMP-MONITOR-2026-11-11.md)
 - [AMP-OWNER](../../artifacts/reports/AMP-OWNER-2026-11-04.md)
 - [AMP-PROFILE-MODULE](../../artifacts/reports/AMP-PROFILE-MODULE-2026-11-04.md)
 - [AMP-RETRY-SUSPEND](../../artifacts/reports/AMP-RETRY-SUSPEND-2026-11-07.md)
