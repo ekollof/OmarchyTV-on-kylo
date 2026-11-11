@@ -3029,4 +3029,13 @@ check-audio-amp-jobs: $(BUILD)/tests/audio_amp_jobs
 	@$(BUILD)/tests/audio_amp_jobs
 check: check-audio-amp-jobs
 
+.PHONY: check-src-hotplug
+check-src-hotplug: $(BUILD)/tests/src_hotplug
+	@$(BUILD)/tests/src_hotplug
+check: check-src-hotplug
+
+$(BUILD)/tests/src_hotplug: tests/src_hotplug.c common/src_hotplug.c include/openaurora/src_hotplug.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
 .PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-oa-client check-display check-svg check-runtime clean install arm tv vendor

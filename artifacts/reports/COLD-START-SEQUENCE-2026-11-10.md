@@ -77,7 +77,7 @@ ignored. `DEV_INI_Init` returns the low byte of `DEV_MTD_Init`, which returns 0.
 | PCB layout | `DAT_0175f028` is read only by `DEV_COMMON_GET_PCBLAYOUTTYPE` (`0x00850272`); no replacement module calls it. `DEV_GPIO_Init` reads it into state+0x7fa. | **Not applicable to the HAL-only path.** The tuner receives layout 14 explicitly. A device-layer implementation must set this global before its GPIO init. |
 | DEV GPIO | The 0x1fec state pointer `0x01931270` is read only by `DEV_GPIO_GetDescription`; the `/dev/ntgpio` fd `0x0175f0a4` is read only there. `DEV_GPIO_Init` also starts an earphone-handler task and initializes PWM/descriptions. | **Not applicable for HAL GPIO.** HAL modules use their own device paths. The earphone hotplug task is still open if audio-jack events are required; do not fake it. |
 | DEV IIC | The `/dev/ntkiic0` fd `0x017608c8` is read only by `DEV_IIC_GetDescription` (`0x008532d4`); no replacement module calls it. | **Not applicable for HAL IIC.** `Hal_Iic_Init` owns the eight HAL buses. |
-| source init | `dev_src_init` creates the `DEV_SRC_HDMIHotPlug` task and calls `plat_vin_slot_set_auto_color_system(2)`; it returns 1. | **Open and gated**: `source.enable=0`; no hotplug task is implemented. This is a real missing effect when source is enabled. |
+| source init | `dev_src_init` creates the `DEV_SRC_HDMIHotPlug` task and calls `plat_vin_slot_set_auto_color_system(2)`; it returns 1. The task body at `0x008fc3b0` resolves GPIO 204..207 (`HDMI_HOTPLUG_1..4`) and 193 (`HDMI_HOTPLUG_5`), drives inactive, reads MHL CD sense 192, waits 500 ms, then drives active. | **Partially implemented**: `common/src_hotplug.c` reproduces the one-shot pulse with injected descriptor/get/set/delay/log operations and `check-src-hotplug` covers active-low/high, missing descriptor, MHL high/failure and a missing-op rejection. It is **not wired**: active levels/pins come from runtime GPIO descriptors (device layer), and `source.enable=0`. The auto-color-system call is still missing. |
 | panel init | The timing halfwords at `0x019354b8..c0` have only writes (`DEV_PANEL_Init`, `DEV_PANEL_SetPowerSequenceParams`); the only read of the block is the mode byte at `0x019354b4` by `DEV_PANEL_PowerSequence` (`0x00857bf8`). GPIO 110/111 copies are read only by the two DEV panel-power helpers. | **Closed for the stock layout 14**: `mod_panel` uses direct HAL pins/levels and now follows the PTF off order (PWM at `panel.off_pwm=1000` before LVDS off). Other panel layouts/TCON BIN branches remain unverified. |
 | NIM init | `DEV_NIM_Init` opens no device node; its factory result only selects a debug string and the factory objects are vendor-internal dispatch tables. | **Not applicable to the direct `mod_tuner` NIM-DTV task.** |
 | amp init | `DEV_AMP_Init` sends the recovered MCLK request and creates `DEV_AMP_ID`; the task body/profile resource row is not fully recovered. | **Partially closed**: MCLK is the opt-in `audio.i2s_mclk`; `DEV_AMP_ID` remains open and the amp is gated (`audio_amp.enable=0`). |
@@ -89,6 +89,30 @@ ignored. `DEV_INI_Init` returns the low byte of `DEV_MTD_Init`, which returns 0.
 before LVDS off, matching the stock PTF branch; the earlier “PWM 0 after LVDS
 off” claim is corrected at source in PANEL-BACKLIGHT-2026-11-07. The fake-HAL
 `check-panel-curve`/`panel_standby` test asserts the new order.
+
+### DEV_SRC_HDMIHotPlug recovery
+
+The task body at `0x008fc3b0` (created by `dev_src_init` at `0x008fc654` with
+stack `0x1000`, priority `0x10`) is one-shot, not a continuous watcher:
+
+1. Resolve GPIO descriptors 204, 205, 206, 207 (`HDMI_HOTPLUG_1..4`) and 193
+   (`HDMI_HOTPLUG_5`). A missing descriptor logs
+   `#DEV-SRC#Not found HDMI%d HotPlug Definition`.
+2. Drive each present pin to its inactive level (`active_level ? 0 : 1`).
+3. Resolve MHL CD sense 192 and read its level; level 1 logs
+   `#DEV-SRC#MHL CD_SENSE Is High`; a read failure logs the pin failure.
+4. Delay 500 ms.
+5. Drive each present pin to its active level, logging
+   `End toggle PIN=%d, Active level=%d` and
+   `#DEV-SRC#Toogle HDMI%d HotPlug Successfully`.
+
+`common/src_hotplug.c` implements this with an injected
+descriptor/get/set/delay/log provider; `tests/src_hotplug.c` covers active-high
+and active-low pins, a missing HDMI3 descriptor, MHL high, MHL read failure and
+a missing required op. The helper is not wired: the active levels are runtime
+GPIO descriptor data, not firmware constants, and source remains gated. The
+separate `plat_vin_slot_set_auto_color_system(2)` call from `dev_src_init` is
+still open.
 
 
 ## What changed in the replacement
@@ -184,7 +208,8 @@ check-appmgr-entry       # hw2 selects openaurora-stagehw2.conf
 2. Decide the target for the device half. The gap disposition above closes
    PCB layout, DEV GPIO/IIC description state, panel timing/GPIO copies, NIM
    factories, SPI semaphore and MTD for the HAL-only path. The real remaining
-   device effects are `dev_src_init` hotplug, `DEV_AMP_ID`, the GPIO earphone
+   device effects are `dev_src_init` hotplug (state machine now implemented,
+   runtime descriptor provider/wiring open), `DEV_AMP_ID`, the GPIO earphone
    handler and non-layout-14 panel/TCON branches. Implement those only from
    firmware evidence.
 3. Keep `source.enable=0`, `audio.source_enable=0`, `audio_amp.enable=0` and
