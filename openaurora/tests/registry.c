@@ -28,7 +28,9 @@ static void config_isolation(const char *modules)
     f = fdopen(fd, "w");
     assert(f);
     /* Fill a separate host's complete table, then exceed its bound. */
-    for (int i = 0; i < 50; i++) assert(fprintf(f, "key%d=value%d\n", i, i) > 0);
+    int cap = (int)(sizeof ((oa_host *)0)->config / sizeof ((oa_host *)0)->config[0]);
+    for (int i = 0; i < cap + 2; i++)
+        assert(fprintf(f, "key%d=value%d\n", i, i) > 0);
     assert(!fclose(f));
     oa_host *first = calloc(1, sizeof *first), *second = calloc(1, sizeof *second);
     assert(first && second);
@@ -39,9 +41,13 @@ static void config_isolation(const char *modules)
     assert(!strcmp(first->api.config_get(first, "ui.skin", "fallback"), "vendor"));
     assert(!oa_host_init(second, modules, b));
     assert(!second->api.config_get(second, "sample", NULL));
-    assert(second->config_count == 48);
-    assert(!strcmp(second->api.config_get(second, "key47", NULL), "value47"));
-    assert(!second->api.config_get(second, "key48", NULL));
+    assert(second->config_count == cap);
+    char last_key[32], over_key[32], last_value[32];
+    snprintf(last_key, sizeof last_key, "key%d", cap - 1);
+    snprintf(over_key, sizeof over_key, "key%d", cap);
+    snprintf(last_value, sizeof last_value, "value%d", cap - 1);
+    assert(!strcmp(second->api.config_get(second, last_key, NULL), last_value));
+    assert(!second->api.config_get(second, over_key, NULL));
     assert(!strcmp(borrowed, "first"));
     assert(!first->api.config_get(first, "key0", NULL));
     strcpy(first->skin_selected, "omarchy");

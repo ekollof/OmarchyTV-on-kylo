@@ -15,8 +15,9 @@ matching `DEV_PANEL_PowerSequence`; the old PWM-0 claim is corrected. The
 device-gap disposition in COLD-START-SEQUENCE closes PCB layout, DEV GPIO/IIC
 description state, NIM factories, SPI semaphore and MTD for the HAL-only path;
 source hotplug, `DEV_AMP_ID`, the GPIO earphone handler and non-layout-14
-panel/TCON branches remain open. The full `make check` still stops in the
-unrelated `check-ui-async` test (`ui_async.c:63`, uploads count). QEMU device
+panel/TCON branches remain open. The full `make check` passes on the host
+(rc=0) after the UI settle-repaint fixtures and the 128-entry registry capacity
+test were corrected. QEMU device
 simulation 2026-11-10: the real ARM `mod_display` passes over the modeled fb1
 (var/fix/mmap/region/MAU/pan/snapshot), the real ARM `mod_plat`+`mod_panel`
 pass over a permissive logged NDAL device boundary (PWM channel0/30000 Hz/duty

@@ -102,8 +102,9 @@ HDMI PHY, DP-source register effects or picture.
   other four OSD layers or driver SetPar.
 - The qemu VIN check now passes with the DRM/DP-source boundary; it still does
   not model V4L2 formats or HDMI/DP register effects. The full host suite now
-  stops later in the unrelated `check-ui-async` (`ui_async.c:63`, uploads
-  count), not in VIN.
+  passes (`make check`, rc=0) after the settle-repaint fixtures were isolated
+  from the real-time `pump()` helper and the registry capacity test was updated
+  to the current 128-entry table.
 - Every result here is qemu/host simulation. It is not a TV cold boot, panel
   acceptance, scanout proof or device-ownership claim.
 

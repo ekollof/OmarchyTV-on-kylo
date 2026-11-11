@@ -19,6 +19,7 @@ static const char *config(void *ud, const char *key, const char *def)
     if (!strcmp(key, "ui.ok_file")) return ready_path;
     if (!strcmp(key, "ui.fps")) return "0";
     if (!strcmp(key, "ui.launch_anim")) return "1"; /* lab path: vendor launcher is instant */
+    if (!strcmp(key, "ui.settle_repaint_ms")) return "0"; /* pump() is not a real-time scheduler */
     return def;
 }
 static void pump(oa_host *h)
@@ -60,7 +61,11 @@ static void cached_dialog(const char *modules, const char *fake_clock)
     const clock_control *clock = h.api.lookup(&h, "fake.clock", 1);
     require(t && anim && clock && !t->settle(0)); pump(&h); require(!t->settle(0)); pump(&h);
     oa_display_result last; unsigned uploads, frames;
-    require(!t->stats(&last, &uploads, &frames) && uploads == 1);
+    int stats_ok = !t->stats(&last, &uploads, &frames);
+    if (!stats_ok || uploads != 1)
+        fprintf(stderr, "first stats: ok=%d uploads=%u frames=%u errno=%d\n",
+                stats_ok, uploads, frames, errno);
+    require(stats_ok && uploads == 1);
     uint64_t revision = last.revision;
     require(!anim->set_enabled(1));
     oa_key_event key = {.id = 53, .kind = OA_KEY_PRESS}; h.api.emit(&h, OA_TOPIC_KEY, &key);

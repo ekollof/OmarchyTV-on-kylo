@@ -71,9 +71,10 @@ maps the cold-start stages and the current stock-UI coverage.
       over the ARM fb1 model; `qemu-panel-real-check` runs real
       `mod_plat`/`mod_panel` over a permissive logged NDAL boundary and asserts
       PWM/GPIO values; `qemu-vin-real-check` now passes type 17/19 VIN and
-      DP-source boundaries. All pass on the host; none is hardware acceptance.
-      Next: make GPIO/PWM stateful, then IIC/SPI and VIN/V4L2 formats only from
-      recovered ioctl contracts. See QEMU-TV-SIM-2026-11-10.
+      DP-source boundaries. All pass on the host, and the full `make check` is
+      green (rc=0); none is hardware acceptance. Next: make GPIO/PWM stateful,
+      then IIC/SPI and VIN/V4L2 formats only from recovered ioctl contracts.
+      See QEMU-TV-SIM-2026-11-10.
 - [x] HAL-only device-layer decision + cold-start profile candidate:
       no ARM module has an undefined vendor `DEV_*` symbol; the new
       `openaurora-cold.conf` sets real DRM init, no snapshot restore,
