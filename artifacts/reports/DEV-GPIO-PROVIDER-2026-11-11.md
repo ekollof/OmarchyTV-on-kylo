@@ -121,8 +121,9 @@ and in COLD-START-SEQUENCE.
   join it. `source` already requires `plat`, so the STBC device is opened
   before the worker can run.
 
-`source.hotplug_pulse` is a new, default-off gate. Enabling it is a hardware
-effect; the actual pulse was **not** run on the TV in this pass.
+`source.hotplug_pulse` is a new, default-off gate. The pulse was subsequently
+run on the TV under controlled ownership; see
+[HOTPLUG-HW-2026-11-11](HOTPLUG-HW-2026-11-11.md).
 
 ## Verification
 
@@ -143,18 +144,18 @@ effect; the actual pulse was **not** run on the TV in this pass.
 
 ## Limits
 
-- **The pulse was not executed on the TV.** It is an STBC hardware effect and
-  the prior cold-call warning (`NDAL_VideoExt_STBC_*` reset the set) still
-  applies. A controlled acceptance run must first prove the platform STBC
-  owner, then enable `source.hotplug_pulse=1` in an authorized window and
-  verify the HDMI source re-detection without disturbing stock operation.
+- **The pulse was run on the TV on 2026-11-11** after `plat` opened the STBC
+  device. The pass-through trace showed STBC channels 74..77 with values 2
+  (inactive) then 3 (active), and the connected Deck re-ran HDCP22
+  init/auth. See [HOTPLUG-HW-2026-11-11](HOTPLUG-HW-2026-11-11.md). The gate
+  remains default 0; this was a controlled, temporary run.
 - The provider is not a general DEV GPIO implementation: it maps only the six
   hotplug names and returns "absent" for other ids. It does not reproduce the
   firmware's 0x1fec descriptor cache or the DEV GPIO/PWM initialization state.
 - On qemu, NDAL's `Hal_IfCmd` socket was `-1`; the V4L2 fallback carried the
-  STBC ext-controls. The real TV's vendor init may use the command socket.
-  This does not change the recovered channel/value mapping, but it is not
-  hardware acceptance.
+  STBC ext-controls. On the real TV, `plat` reported
+  `Hal_IfCmd_SockFd_Get@139 iSockFd=6` and the same V4L2 ext-control path
+  performed the traced writes.
 - The TV was woken from standby by `tools/tvssh.sh` for the read-only query.
   It was left in stock operation; no settings, services, display or boot hooks
   were changed. Staging was removed and verified.

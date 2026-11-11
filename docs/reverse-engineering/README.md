@@ -48,7 +48,7 @@ binaries, Ghidra databases, toolchain and keys. Create them from your own TV
 | `artifacts/workbench/ghidra_*` | analysed Ghidra projects (map below) |
 | `artifacts/workbench/aurora.dis` | objdump cache of `aurora.elf` (`-d --no-show-raw-insn`, ~189 MB) |
 | `artifacts/workbench/ker*`, `venv/`, `velf/` | reconstructed kernels, UBI/disassembly tooling |
-| `artifacts/reports/` | 335 dated topic reports; index in [README](../../artifacts/reports/README.md) |
+| `artifacts/reports/` | 336 dated topic reports; index in [README](../../artifacts/reports/README.md) |
 | `artifacts/analysis/` | raw evidence, logs, TSVs, test binaries by dated topic |
 | `artifacts/protocol/`, `profiles/`, `ui-assets/` | keymaps, hardware/software profiles, theme assets |
 | `openaurora/` | replacement source, host tests, TV builds, RE helper scripts |

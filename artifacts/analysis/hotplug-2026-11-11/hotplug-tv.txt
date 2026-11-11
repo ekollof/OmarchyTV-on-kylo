@@ -1,0 +1,66 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+=== quit
+bye
+ 8124 S    ./oa-wdtfeed --node /proc/nvtstbcipc --interval 3 --timeout 10 --stop /tmp/oa-wdt-stop --log /buffer/oa-hotplug/wdt.log --daemon
+=== wdt
+oa-wdtfeed: beat 17, watchdog 10s
+oa-wdtfeed: beat 18, watchdog 10s
+oa-wdtfeed: stop file /tmp/oa-wdt-stop, exiting after 18 beat(s)
+=== hotplug log
+[189409] INFO host         openaurora starting, modules=/buffer/oa-hotplug/modules
+[189410] INFO host         control socket /buffer/oa-hotplug/control
+[189426] INFO host         loaded plat v0.1 (/buffer/oa-hotplug/modules/mod_plat.so)
+[189427] INFO plat         plat: waiting for /tmp/ntkdriver_completed (ICE_HardwareInit order)
+[189427] INFO plat         plat: driver marker ready after 0 ms
+[189439] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[189439] WARN plat         plat: Hal_Video_DrmInit skipped; preserving the vendor OSD
+[189439] INFO plat         plat: common init (vpltio/v4l2/sharemem, drm 0, DVIF)
+[189439] INFO plat         plat: VIN slot defaults (7 slots)
+[189442] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[189442] DBG  plat         service up: plat v1
+[189442] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[189442] INFO host         started plat
+[189443] INFO host         loaded source v0.2 (/buffer/oa-hotplug/modules/mod_source.so)
+[189443] INFO source       source: per-type VIN switching enabled
+[189443] DBG  source       service up: source v1
+[189443] INFO source       source: HDMI hotplug pulse started
+[189443] INFO host         started source
+[189443] INFO host         host: ready receipt /tmp/openaurora.ready (all autoload starts succeeded)
+Hal_IfCmd_SockFd_Get@139 iSockFd=6
+Can not open /dev/nvt/ntkvplt
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+openaurora: 2 module(s) loaded, control on /buffer/oa-hotplug/control
+[189445] INFO host         source: #DEV-SRC#Not found HDMI5 HotPlug Definition
+[189945] INFO host         source: End toggle PIN=274, Active level=0
+[189945] INFO host         source: #DEV-SRC#Toogle HDMI1 HotPlug Successfully
+[189945] INFO host         source: End toggle PIN=275, Active level=0
+[189945] INFO host         source: #DEV-SRC#Toogle HDMI2 HotPlug Successfully
+[189945] INFO host         source: End toggle PIN=276, Active level=0
+[189945] INFO host         source: #DEV-SRC#Toogle HDMI3 HotPlug Successfully
+[189945] INFO host         source: End toggle PIN=277, Active level=0
+[189946] INFO host         source: #DEV-SRC#Toogle HDMI4 HotPlug Successfully
+[189946] INFO host         source: HDMI hotplug pulse finished (4 descriptor(s))
+[213803] DBG  source       service down: source
+[213803] INFO host         stopped source
+[213803] DBG  plat         service down: plat
+[213803] INFO host         stopped plat
+[213803] INFO host         unloaded source
+[213804] INFO host         unloaded plat
+[213805] INFO host         openaurora stopped
+=== trace
+stbc cmd=0xc0185648 count=3 channel=74 value=2
+stbc cmd=0xc0185648 count=3 channel=75 value=2
+stbc cmd=0xc0185648 count=3 channel=76 value=2
+stbc cmd=0xc0185648 count=3 channel=77 value=2
+stbc cmd=0xc0185648 count=3 channel=74 value=3
+stbc cmd=0xc0185648 count=3 channel=75 value=3
+stbc cmd=0xc0185648 count=3 channel=76 value=3
+stbc cmd=0xc0185648 count=3 channel=77 value=3
+=== dmesg tail
+[0-1191.624599] [HDMI-CMD]:[HDCP22] init() 
+[0-1191.903779] [HDMI-CMD]:[HDCP22] Auth Done 

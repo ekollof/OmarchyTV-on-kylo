@@ -37,8 +37,11 @@ remain open. The `DEV_SRC_HDMIHotPlug` one-shot pulse and its runtime
 `common/src_hotplug.c`, `common/dev_gpio.c` and `dev_gpio_vendor.c`, and wired
 in `mod_source` behind default-off `source.hotplug_pulse=1`. A read-only live
 query shows `HDMI_HOTPLUG_1..4` at pins 274..277, output/normal-low/active-low;
-`MHL_CDSENSE`/`HDMI_HOTPLUG_5` are absent (errno 524). The actual pulse was not
-run on the TV. `DEV_AMP_ID` profile/reset114/mute208
+`MHL_CDSENSE`/`HDMI_HOTPLUG_5` are absent (errno 524). The pulse was run on
+the TV on 2026-11-11: the pass-through trace showed STBC channels 74..77 with
+values 2 then 3, and the connected Deck re-ran HDCP22 init/auth; the gate
+remains default 0 (HOTPLUG-HW-2026-11-11). `DEV_AMP_ID`
+profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced. The full `make check` passes on the host
 (rc=0) after the UI settle-repaint fixtures and the 128-entry registry capacity
