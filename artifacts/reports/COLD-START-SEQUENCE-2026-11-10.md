@@ -80,7 +80,7 @@ ignored. `DEV_INI_Init` returns the low byte of `DEV_MTD_Init`, which returns 0.
 | source init | `dev_src_init` creates the `DEV_SRC_HDMIHotPlug` task and calls `plat_vin_slot_set_auto_color_system(2)`; it returns 1. The task body at `0x008fc3b0` resolves GPIO 204..207 (`HDMI_HOTPLUG_1..4`) and 193 (`HDMI_HOTPLUG_5`), drives inactive, reads MHL CD sense 192, waits 500 ms, then drives active. | **Partially implemented**: `common/src_hotplug.c` reproduces the one-shot pulse with injected descriptor/get/set/delay/log operations and `check-src-hotplug` covers active-low/high, missing descriptor, MHL high/failure and a missing-op rejection. It is **not wired**: active levels/pins come from runtime GPIO descriptors (device layer), and `source.enable=0`. The auto-color-system call is still missing. |
 | panel init | The timing halfwords at `0x019354b8..c0` have only writes (`DEV_PANEL_Init`, `DEV_PANEL_SetPowerSequenceParams`); the only read of the block is the mode byte at `0x019354b4` by `DEV_PANEL_PowerSequence` (`0x00857bf8`). GPIO 110/111 copies are read only by the two DEV panel-power helpers. | **Closed for the stock layout 14**: `mod_panel` uses direct HAL pins/levels and now follows the PTF off order (PWM at `panel.off_pwm=1000` before LVDS off). Other panel layouts/TCON BIN branches remain unverified. |
 | NIM init | `DEV_NIM_Init` opens no device node; its factory result only selects a debug string and the factory objects are vendor-internal dispatch tables. | **Not applicable to the direct `mod_tuner` NIM-DTV task.** |
-| amp init | `DEV_AMP_Init` sends the recovered MCLK request and creates `DEV_AMP_ID`; the task body/profile resource row is not fully recovered. | **Partially closed**: MCLK is the opt-in `audio.i2s_mclk`; `DEV_AMP_ID` remains open and the amp is gated (`audio_amp.enable=0`). |
+| amp init | `DEV_AMP_Init` sends the recovered MCLK request and creates `DEV_AMP_ID`; the task body at `0x0084ebf0` reads `Profile_GetMainSpeakerPower`/`Profile_GetDRC` (`SpeakerAmp`, `6Watt`, `6Watt_12V`, `8Watt`), selects `AMP_AD82587`, copies its default resource row (row 1: reset GPIO 114, mute GPIO 208), and resolves the GPIO descriptions. | **Effect covered by existing modules**: `audio_amp_profile` decodes `DefaultSpeaker`/DRC, `amp_board` uses reset 114 / mute 208, and `audio_amp` drives the direct AD82587 register sequence. The vendor `DEV_AMP_ID` factory/monitor task is **not reproduced**; amp remains gated (`audio_amp.enable=0`) with no audible acceptance. |
 | SPI init | The semaphore at `0x019354f0` is used by `DEV_SPI_Wait/Read/Write/Close`; `mod_spi` is the sole SPI owner and host dispatch is single-threaded. | **Not applicable to the current single-owner module.** Do not add a fake semaphore; the boundary is already serialized. |
 | NIM-DTV | Task model/IR failure behavior matches `mod_tuner` `tuner.hw_init=1`. | **Closed** for the recovered model 0 path. |
 | MTD | `DEV_MTD_Init` only registers a debug menu and returns 0. | **Closed**: no hardware owner. |
@@ -113,6 +113,25 @@ a missing required op. The helper is not wired: the active levels are runtime
 GPIO descriptor data, not firmware constants, and source remains gated. The
 separate `plat_vin_slot_set_auto_color_system(2)` call from `dev_src_init` is
 still open.
+
+### DEV_AMP_ID recovery
+
+The task body at `0x0084ebf0` is a profile/resource selector, not the AD82587
+register writer:
+
+- `Profile_GetMainSpeakerPower` returns `SpeakerAmp`/`6Watt`/`6Watt_12V`/
+  `8Watt`; `Profile_GetDRC` selects the DRC section.
+- The task allocates the amp type string, parses the resource table with
+  `TD_DBG_StrToNum`, calls `DEV_AMP_FACT_Create` (`AMP_AD82587`), copies the
+  default resource row from `0x01763ef0` (row 1: reset GPIO 114, mute GPIO
+  208), and resolves the GPIO descriptions.
+- It then creates the vendor amp task (stack `0x1000`) for the factory.
+
+Our `audio_amp_profile` already decodes `DefaultSpeaker`/DRC from the same
+hwprofile, `amp_board` uses reset 114 / mute 208, and `audio_amp` owns the
+direct AD82587 register sequence/owner worker. The vendor factory/monitor task
+is still not reproduced; `audio_amp.enable=0` and no audible/on-TV acceptance
+is claimed.
 
 
 ## What changed in the replacement

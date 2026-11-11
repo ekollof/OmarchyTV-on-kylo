@@ -17,7 +17,9 @@ description state, NIM factories, SPI semaphore and MTD for the HAL-only path;
 source hotplug, `DEV_AMP_ID`, the GPIO earphone handler and non-layout-14
 panel/TCON branches remain open; the `DEV_SRC_HDMIHotPlug` one-shot pulse is
 now implemented in `common/src_hotplug.c` with `check-src-hotplug`, but has no
-runtime descriptor provider/wiring yet. The full `make check` passes on the host
+runtime descriptor provider/wiring yet. `DEV_AMP_ID` profile/reset114/mute208
+effects are covered by `audio_amp_profile`/`amp_board`; the vendor
+factory/monitor task is not reproduced. The full `make check` passes on the host
 (rc=0) after the UI settle-repaint fixtures and the 128-entry registry capacity
 test were corrected. QEMU device
 simulation 2026-11-10: the real ARM `mod_display` passes over the modeled fb1
