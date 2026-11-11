@@ -36,6 +36,7 @@ struct gpio_id {
 };
 
 static const struct gpio_id ids[] = {
+    { 117, "EARPHONE" },
     { 192, "MHL_CDSENSE" },
     { 193, "HDMI_HOTPLUG_5" },
     { 204, "HDMI_HOTPLUG_1" },

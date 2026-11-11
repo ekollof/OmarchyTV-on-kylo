@@ -31,7 +31,8 @@ confirmation. The panel off path now sets the stock PTF PWM level
 is corrected. The
 device-gap disposition in COLD-START-SEQUENCE closes PCB layout, DEV GPIO/IIC
 description state, NIM factories, SPI semaphore and MTD for the HAL-only path;
-`DEV_AMP_ID`, the GPIO earphone handler and non-layout-14 panel/TCON branches
+`DEV_AMP_ID`, the GPIO earphone detector (implemented/tested; event-17 audio
+routing open) and non-layout-14 panel/TCON branches
 remain open. The `DEV_SRC_HDMIHotPlug` one-shot pulse and its runtime
 `DEV_GPIO_GetDescription` provider are now implemented in
 `common/src_hotplug.c`, `common/dev_gpio.c` and `dev_gpio_vendor.c`, and wired
@@ -44,7 +45,11 @@ remains default 0 (HOTPLUG-HW-2026-11-11). The
 `plat_vin_slot_set_auto_color_system(2)` VIN(0) ioctl `0x40085618` with
 `{0x00ff40ff,0}` is implemented behind default-off
 `source.auto_color_system` and was traced on the TV on 2026-11-11
-(AUTO-COLOR-SYSTEM-2026-11-11). Raw CEC acquire retest 2026-11-11:
+(AUTO-COLOR-SYSTEM-2026-11-11). The `DEV_GPIO_Init` earphone detector is
+implemented in `common/earphone.c` (GPIO 117, 100 ms, board-17 swap, event 17)
+with `check-earphone`; the live read-only descriptor is pin 117, input,
+normal-high, active-low. Event-17 audio routing remains open. Raw CEC acquire
+retest 2026-11-11:
 the authority mirror map and `mod_cec` start pass, but `CEC_OPEN` still
 returns EPERM (`kcec: CEC Try lock fail`) with no `/proc/*/fd` holder after
 stock Aurora stop; the same orphaned `DRV_CEC_CALLBAC` lock as 2026-11-07

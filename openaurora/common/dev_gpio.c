@@ -23,6 +23,7 @@ static const struct gpio_name {
     int id;
     const char *name;
 } g_names[] = {
+    { 117, "EARPHONE" },
     { 192, "MHL_CDSENSE" },
     { 193, "HDMI_HOTPLUG_5" },
     { 204, "HDMI_HOTPLUG_1" },

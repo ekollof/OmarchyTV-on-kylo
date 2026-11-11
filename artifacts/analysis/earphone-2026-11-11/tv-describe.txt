@@ -1,0 +1,12 @@
+# tools/tv-gpio-describe.c, static ARM, sha256
+# 49a9a3c1d0da5ecc6c447dd30b4ab360d2eb38a02aa67a27fa8b677545f898f4
+# Verified equal on the TV before execution; removed after.
+# Read-only DEV_GPIO_GetDescription (0xc088671f); no GPIO claim/write.
+id=117 name=EARPHONE       rc=0 errno=0 pin=117 fun2=0 mode='input' normal='high' active='low' idle='default' int_type='no_int'
+  parsed: active=low(0) normal=high(1)
+id=192 name=MHL_CDSENSE    rc=-1 errno=524 pin=0 ...
+id=193 name=HDMI_HOTPLUG_5 rc=-1 errno=524 pin=0 ...
+id=204 name=HDMI_HOTPLUG_1 rc=0 errno=0 pin=274 mode='output' normal='low' active='low' idle='default' int_type='no_int'
+id=205 name=HDMI_HOTPLUG_2 rc=0 errno=0 pin=275 mode='output' normal='low' active='low' idle='default' int_type='no_int'
+id=206 name=HDMI_HOTPLUG_3 rc=0 errno=0 pin=276 mode='output' normal='low' active='low' idle='default' int_type='no_int'
+id=207 name=HDMI_HOTPLUG_4 rc=0 errno=0 pin=277 mode='output' normal='low' active='low' idle='default' int_type='no_int'

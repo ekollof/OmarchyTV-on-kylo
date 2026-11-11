@@ -67,7 +67,9 @@ maps the cold-start stages and the current stock-UI coverage.
       the TV (VIN(0) ioctl 0x40085618 {0x00ff40ff,0}); see HOTPLUG-HW and
       AUTO-COLOR-SYSTEM-2026-11-11), `DEV_AMP_ID` (profile
       and reset114/mute208 effects covered by audio_amp_profile/amp_board;
-      vendor factory/monitor task not reproduced), the GPIO earphone handler
+      vendor factory/monitor task not reproduced), the GPIO earphone detector
+      (implemented/tested in `common/earphone.c`; GPIO117/100ms/board17/event
+      17; event-17 audio routing open)
       and non-layout-14 panel/TCON branches. Next: decide HAL-only acceptance vs
       those device-layer equivalents, then run the no-UI hardware ladder.
       Report: COLD-START-SEQUENCE-2026-11-10. Do not use UI paint as cold-start

@@ -3049,4 +3049,13 @@ $(BUILD)/tests/dev_gpio: tests/dev_gpio.c common/dev_gpio.c include/openaurora/d
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
+.PHONY: check-earphone
+check-earphone: $(BUILD)/tests/earphone
+	@$(BUILD)/tests/earphone
+check: check-earphone
+
+$(BUILD)/tests/earphone: tests/earphone.c common/earphone.c include/openaurora/earphone.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
 .PHONY: all check check-safety check-reload check-phases check-power check-ui-clock check-ui-nav check-cec-audio check-cec-packet check-cec-device check-audio-curve check-audio-curve-module check-audio-netlink check-audio-client check-control check-oa-client check-display check-svg check-runtime clean install arm tv vendor

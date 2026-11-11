@@ -364,6 +364,7 @@ superseded claims and descriptions.
 - [CONTENT-HEADER-OWNERSHIP](../../artifacts/reports/CONTENT-HEADER-OWNERSHIP-2026-11-03.md)
 - [DEV-GPIO-PROVIDER](../../artifacts/reports/DEV-GPIO-PROVIDER-2026-11-11.md)
 - [DIAL-KEYS-SCREEN](../../artifacts/reports/DIAL-KEYS-SCREEN-2026-10-30.md)
+- [EARPHONE-DETECTOR](../../artifacts/reports/EARPHONE-DETECTOR-2026-11-11.md)
 - [HOTPLUG-HW](../../artifacts/reports/HOTPLUG-HW-2026-11-11.md)
 - [INPUT-PVR-TAKEOVER](../../artifacts/reports/INPUT-PVR-TAKEOVER-2026-11-07.md)
 - [Menu flow evidence](../../artifacts/reports/../analysis/ui-menu-flow-2026-11-04/README.md)

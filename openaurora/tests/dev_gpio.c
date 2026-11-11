@@ -160,6 +160,7 @@ int main(void)
 
     /* The name table is the shipping au8GPIOFuncName data. */
     assert(!strcmp(oa_dev_gpio_name(192), "MHL_CDSENSE"));
+    assert(!strcmp(oa_dev_gpio_name(117), "EARPHONE"));
     assert(!strcmp(oa_dev_gpio_name(193), "HDMI_HOTPLUG_5"));
     assert(!strcmp(oa_dev_gpio_name(204), "HDMI_HOTPLUG_1"));
     assert(!strcmp(oa_dev_gpio_name(207), "HDMI_HOTPLUG_4"));
