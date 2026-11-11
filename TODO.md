@@ -77,11 +77,15 @@ maps the cold-start stages and the current stock-UI coverage.
       clean reboot after each): hw0 `plat ready 1 errors 0x0`; hw1 `panel
       percent 100`; hw2 `audio enabled 1 volume -1` + `i2s mclk -> 0x100 (0)`;
       hw3 `spi: device backend, 0 bytes`; hw4 all modules started but
-      `tuner hw: rc=0 failed_step=5` = IR21 (IIC 0x15) `ir_write=0 errno=1`,
-      the vendor-tolerated branch, not a clean tuner pass. See
+      `tuner hw: rc=0 failed_step=5` = IR21 (IIC 0x15) read NACK,
+      `ki2c: [i2c-0] Dev NACK`, `ir_write=0 errno=1`; this is the
+      vendor-tolerated finish branch, not a clean NIM IR/EEPROM pass. A rerun
+      with attributable errno reproduced it; `tuner-scan 1` advanced the
+      fixture scan (progress 25→50) with `lock 0/strength 0/quality 0`, so a
+      real RF/lock check needs an antenna/signal generator. See
       HW-LADDER-2026-11-11. Next: panel visible brightness/off-order, audio
-      audibility, tuner RF/lock, then a real cold boot/display scanout with the
-      boot gate; keep source/audio-source/amp/CEC at 0 until those pass.
+      audibility, then a real cold boot/display scanout with the boot gate;
+      keep source/audio-source/amp/CEC at 0 until those pass.
 - [ ] QEMU TV device models: `qemu-fb-real-check` runs real `mod_display`
       over the ARM fb1 model; `qemu-panel-real-check` runs real
       `mod_plat`/`mod_panel` over a permissive logged NDAL boundary and asserts

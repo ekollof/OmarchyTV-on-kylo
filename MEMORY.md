@@ -18,10 +18,15 @@ restored stock. `hw0`: `plat ready 1 errors 0x0` (DRM fb 103/crtc 26,
 100` (611 ms, `/dev/ntkled` fallback). `hw2`: `audio enabled 1 volume -1`,
 `i2s mclk -> 0x100 (0)`. `hw3`: `spi: device backend, 0 bytes` (`/dev/ntkspi`;
 `/conf/spi.bin` absent). `hw4`: all five modules started, but
-`tuner hw: rc=0 failed_step=5` = IR21 (IIC code 0x15) with `ir_write=0 errno=1`;
-this is the vendor-tolerated NIM-DTV failure branch, not a clean tuner pass.
-No cold boot, display/scanout, audible audio, tuner RF lock or visible
-brightness confirmation. The panel off path now sets the stock PTF PWM level
+`tuner hw: rc=0 failed_step=5` = IR21 (IIC code 0x15) with `ir_write=0
+errno=1`; the failing call is the **read**, the kernel logs
+`ki2c: [i2c-0] Dev NACK`, and this is the vendor-tolerated NIM-DTV finish
+branch, not a clean NIM IR/EEPROM pass. A rerun with `errno=0` before each IR
+call produced the same NACK/errno 1. `tuner-scan 1` advanced the fixture scan
+(progress 25→50, services 3→6) with `lock 0/strength 0/quality 0`; there was
+no RF source, so real lock acceptance still needs an antenna or signal
+generator. No cold boot, display/scanout, audible audio or visible brightness
+confirmation. The panel off path now sets the stock PTF PWM level
 1000 before LVDS off, matching `DEV_PANEL_PowerSequence`; the old PWM-0 claim
 is corrected. The
 device-gap disposition in COLD-START-SEQUENCE closes PCB layout, DEV GPIO/IIC

@@ -409,6 +409,11 @@ static int hw_ir_read(int bus, int code, uint8_t *value, void *v)
     /* Safety deviation: do not touch the NIM IIC path after a failed tuner
      * init. The vendor task cannot observe that failure. */
     if (!b->tuner_ok) return 0;
+    /* The NDAL helper collapses a kernel I2C NACK to -1 and does not
+     * guarantee errno; clear it so a recorded value is attributable to this
+     * call. The vendor task tolerates IR read/write failures on
+     * 0x15/0x11/0x40 and jumps to the finish path. */
+    errno = 0;
     int ok = oa_nim_dtv_hal_read(bus, code, value, &b->nim_hal);
     if (!ok) {
         b->ir_fail_code = code;
@@ -422,6 +427,7 @@ static int hw_ir_write(int bus, int code, uint8_t value, void *v)
 {
     struct hw_bind *b = v;
     if (!b->tuner_ok) return 0;
+    errno = 0;
     int ok = oa_nim_dtv_hal_write(bus, code, value, &b->nim_hal);
     if (!ok) {
         b->ir_fail_code = code;

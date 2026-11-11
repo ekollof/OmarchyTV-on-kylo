@@ -1,0 +1,100 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ok
+=== state
+network 1 state 3 progress 50 lock 0 services 6 selected 0 error 0 strength 0 quality 0 ber 0.00 snr 0.00 unc 4294967295
+=== tuner hw
+[517320] INFO tuner        tuner hw: rc=0 failed_step=5 nim=1 hal=1 tuner=1 seq=1 seq_rc=0 lnb=1 ir_code=21 ir_write=0 errno=1
+=== dmesg
+[3-517.338938] ki2c: [i2c-0] Dev NACK 
+=== quit
+bye
+ 5297 S    ./oa-wdtfeed --node /proc/nvtstbcipc --interval 3 --timeout 10 --stop /tmp/oa-wdt-stop --log /buffer/oa-hw-test/wdt.log --daemon
+=== wdt
+oa-wdtfeed: beat 76, watchdog 10s
+oa-wdtfeed: beat 77, watchdog 10s
+oa-wdtfeed: stop file /tmp/oa-wdt-stop, exiting after 77 beat(s)
+=== log
+[516649] INFO host         openaurora starting, modules=/buffer/oa-hw-test/modules
+[516650] INFO host         control socket /buffer/oa-hw-test/control
+[516667] INFO host         loaded plat v0.1 (/buffer/oa-hw-test/modules/mod_plat.so)
+[516667] INFO plat         plat: waiting for /tmp/ntkdriver_completed (ICE_HardwareInit order)
+[516667] INFO plat         plat: driver marker ready after 0 ms
+[516679] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[DRM Init] : drmModeGetEncoder= PASS 
+[516683] INFO plat         plat: common init (vpltio/v4l2/sharemem, drm 1, DVIF)
+[516683] INFO plat         plat: VIN slot defaults (7 slots)
+[516686] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[516686] DBG  plat         service up: plat v1
+[516686] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[516686] INFO host         started plat
+[516686] INFO host         loaded panel v0.2 (/buffer/oa-hw-test/modules/mod_panel.so)
+[516686] INFO panel        vendor HAL linked: channel 0, 30000 Hz, start 100%
+[517297] DBG  panel        service up: panel v1
+[517297] INFO host         started panel
+[517298] INFO host         loaded audio v0.1 (/buffer/oa-hw-test/modules/mod_audio.so)
+[517298] DBG  audio        service up: audio v1
+[517298] INFO audio        vendor audio HAL linked
+[517298] INFO audio        i2s mclk -> 0x100 (0)
+[517298] INFO host         started audio
+[517299] INFO host         loaded spi v0.1 (/buffer/oa-hw-test/modules/mod_spi.so)
+[517299] DBG  spi          service up: spi v1
+[517299] INFO spi          spi: device backend, 0 bytes
+[517299] INFO host         started spi
+[517300] INFO host         loaded tuner v1 (/buffer/oa-hw-test/modules/mod_tuner.so)
+[517320] INFO tuner        tuner hw: rc=0 failed_step=5 nim=1 hal=1 tuner=1 seq=1 seq_rc=0 lnb=1 ir_code=21 ir_write=0 errno=1
+[517320] DBG  tuner        service up: tuner v1
+[517320] INFO host         started tuner
+[517320] INFO host         host: ready receipt /tmp/openaurora.ready (all autoload starts succeeded)
+Hal_IfCmd_SockFd_Get@139 iSockFd=6
+Can not open /dev/nvt/ntkvplt
+ERR:[5380:5380]ClientDrmAuthentically(193) fail(-1)
+
+[DRM Init] : Step 1 : Open DRM Device : drm_card_id = 13 
+[DRM Init] : open drm pass 
+
+[DRM Init] : Step 2 : Create Frame Buffer - Start 
+[DRM Init] : fb_id = 98 
+[DRM Init] : Step 2 : Create Frame Buffer - End 
+
+[DRM Init] : Step 3 : Init Kernel Mode Setting - Start 
+[DRM Init] : crtc_id = 26 
+[DRM Init] : plane_id[7] = 40 
+[DRM Init] : plane_id[6] = 54 
+[DRM Init] : plane_id[5] = 55 
+[DRM Init] : plane_id[2] = 56 
+[DRM Init] : plane_id[1] = 59 
+[DRM Init] : plane_id[0] = 60 
+[DRM Init] : plane_id[3] = 61 
+[DRM Init] : plane_id[4] = 62 
+[DRM Init] : Step 3 : Init Kernel Mode Setting - End 
+
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+Can not open /dev/nvt/ntkled , try path /dev/ntkled 
+Open /dev/ntkled successfully 
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+setDVIFTunerType DVIF ==> KER_DVIF_IO_PLAT_SET_SALTunerType = PASS, status[0], fd: [31] 
+openaurora: 5 module(s) loaded, control on /buffer/oa-hw-test/control
+[724350] DBG  tuner        service down: tuner
+[724350] INFO host         stopped tuner
+[724350] DBG  spi          service down: spi
+[724351] INFO host         stopped spi
+[724351] DBG  audio        service down: audio
+[724351] ERR  host         audio: cleanup pending; retry stop/unload
+[724351] DBG  panel        service down: panel
+[724351] INFO host         stopped panel
+[724351] ERR  host         plat: required by active module 'audio'
+[724351] INFO host         unloaded tuner
+[724351] INFO host         unloaded spi
+[724356] INFO host         stopped audio
+[724356] INFO host         unloaded audio
+[724356] INFO host         unloaded panel
+[724356] DBG  plat         service down: plat
+[724357] INFO host         stopped plat
+[724357] INFO host         unloaded plat
+[724358] INFO host         openaurora stopped
