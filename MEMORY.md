@@ -58,7 +58,9 @@ LA8/PA1000 (CEC-LIVE). `cec.enable` remains 0. `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced (entry `0x84e110`, IsAlive `0x875458`:
-regs 03..05 vs retained image, then Init/Mute; subwoofer/IIC signature open). The full `make check` passes on the host
+regs 03..05 vs retained image, then Init/Mute; subwoofer IsAlive is literal
+`return 1`; `_DEV_AMP_ReadIIC` default signature recovered, but its
+double-read/0-1 return quirk needs a live amp read check). The full `make check` passes on the host
 (rc=0) after the UI settle-repaint fixtures and the 128-entry registry capacity
 test were corrected; `check-dev-gpio` and the corrected `check-src-hotplug`
 pass. QEMU device
