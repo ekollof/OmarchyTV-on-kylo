@@ -40,7 +40,12 @@ query shows `HDMI_HOTPLUG_1..4` at pins 274..277, output/normal-low/active-low;
 `MHL_CDSENSE`/`HDMI_HOTPLUG_5` are absent (errno 524). The pulse was run on
 the TV on 2026-11-11: the pass-through trace showed STBC channels 74..77 with
 values 2 then 3, and the connected Deck re-ran HDCP22 init/auth; the gate
-remains default 0 (HOTPLUG-HW-2026-11-11). `DEV_AMP_ID`
+remains default 0 (HOTPLUG-HW-2026-11-11). Raw CEC acquire retest 2026-11-11:
+the authority mirror map and `mod_cec` start pass, but `CEC_OPEN` still
+returns EPERM (`kcec: CEC Try lock fail`) with no `/proc/*/fd` holder after
+stock Aurora stop; the same orphaned `DRV_CEC_CALLBAC` lock as 2026-11-07
+survives stock exit. A first-opener boot/handoff is required; the Deck is at
+LA8/PA1000 (CEC-LIVE). `cec.enable` remains 0. `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced. The full `make check` passes on the host

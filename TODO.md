@@ -463,7 +463,10 @@ unvalidated.
       found (indirect callers were not exhaustively checked), so the viable
       path remains an early boot-order start (boot-hook gate) or shared
       stock-owned monitoring. Do not patch driver globals or unload the
-      driver. CEC-RAW-BACKEND.
+      driver. CEC-RAW-BACKEND. 2026-11-11 retest: same `CEC Try lock fail`
+      with no `/proc/*/fd` CEC holder after stock stop; authority map and
+      module start pass, `cec-state open 0 error 1`, no TX/RX; see
+      CEC-RAW-ACQUIRE-2026-11-11. The Deck is at LA8/PA1000 (CEC-LIVE).
 
 ### Input / source / PVR
 

@@ -118,6 +118,7 @@ superseded claims and descriptions.
 - [CEC-MODULE-TRANSPORT](../../artifacts/reports/CEC-MODULE-TRANSPORT-2026-11-09.md)
 - [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md)
 - [CEC-QUIESCE](../../artifacts/reports/CEC-QUIESCE-2026-11-06.md)
+- [CEC-RAW-ACQUIRE](../../artifacts/reports/CEC-RAW-ACQUIRE-2026-11-11.md)
 - [CEC-RAW-BACKEND](../../artifacts/reports/CEC-RAW-BACKEND-2026-11-07.md)
 - [CEC-REPLY-QUEUE](../../artifacts/reports/CEC-REPLY-QUEUE-2026-11-07.md)
 - [CEC-SPEC](../../artifacts/reports/CEC-SPEC-2026-10-30.md)

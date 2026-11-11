@@ -1,0 +1,38 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+=== state
+cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 0 open 0 rx 0 tx 0 error 1 last 0
+=== log
+[406174] INFO host         openaurora starting, modules=/buffer/oa-cec-test/modules
+[406175] INFO host         control socket /buffer/oa-cec-test/control
+[406175] INFO host         loaded cec v1 (/buffer/oa-cec-test/modules/mod_cec.so)
+[406175] DBG  cec          service up: cec.owner v1
+[406175] DBG  cec          service up: cec.audio v1
+[406176] INFO cec          cec: hardware enabled (/tmp/ntkcec)
+[406176] INFO host         started cec
+[406176] INFO host         host: ready receipt /tmp/openaurora.ready (all autoload starts succeeded)
+openaurora: 1 module(s) loaded, control on /buffer/oa-cec-test/control
+[406276] WARN cec          cec acquire failed (1)
+=== kernel
+[3-33.726479] kcec: Send command: fail because get TX permission fail
+[3-33.738067] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[0-35.926679] kcec: Send command: fail because get TX permission fail
+[0-35.938288] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+kcec: Send command: fail because get TX permission fail
+[2-39.688007] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[0-406.194652] kcec: CEC Try lock fail
+[0-406.202758] kcec: error: KER_CEC_Open [ntkdriver]: please fix nvt_err error
+=== fds
+4873 4 -> /buffer/oa-cec-test/wdt.log
+4946 1 -> /buffer/oa-cec-test/cec.log
+4946 2 -> /buffer/oa-cec-test/cec.log
+=== quit
+bye
+ 4873 S    ./oa-wdtfeed --node /proc/nvtstbcipc --interval 3 --timeout 10 --stop /tmp/oa-wdt-stop --log /buffer/oa-cec-test/wdt.log --daemon
+oa-wdtfeed: beat 45, watchdog 10s
+oa-wdtfeed: beat 46, watchdog 10s
+oa-wdtfeed: stop file /tmp/oa-wdt-stop, exiting after 46 beat(s)
+cleanup_ok
