@@ -72,11 +72,16 @@ maps the cold-start stages and the current stock-UI coverage.
       SPI open -> NIM-DTV with no display/UI; `host.ready_after_autoload`
       writes the supervisor receipt only when every autoload start succeeds.
       `check-hw-stage-profiles`, `check-hw-ready`, `check-boot-gate` and
-      `check-appmgr-entry` pass on the host. On-TV 2026-11-11: `hw0` passed
-      under controlled ownership (`plat-state` = `plat ready 1 errors 0x0`,
-      DRM fb 103/crtc 26, clean quit, reboot restored stock); see
-      HW-LADDER-2026-11-11. Next: hw1..hw4 one stage per authorized boot; then
-      decide the DEV_* device-half target.
+      `check-appmgr-entry` pass on the host. On-TV 2026-11-11: all five stages
+      ran under controlled ownership (external `oa-wdtfeed`, stock stopped,
+      clean reboot after each): hw0 `plat ready 1 errors 0x0`; hw1 `panel
+      percent 100`; hw2 `audio enabled 1 volume -1` + `i2s mclk -> 0x100 (0)`;
+      hw3 `spi: device backend, 0 bytes`; hw4 all modules started but
+      `tuner hw: rc=0 failed_step=5` = IR21 (IIC 0x15) `ir_write=0 errno=1`,
+      the vendor-tolerated branch, not a clean tuner pass. See
+      HW-LADDER-2026-11-11. Next: panel visible brightness/off-order, audio
+      audibility, tuner RF/lock, then a real cold boot/display scanout with the
+      boot gate; keep source/audio-source/amp/CEC at 0 until those pass.
 - [ ] QEMU TV device models: `qemu-fb-real-check` runs real `mod_display`
       over the ARM fb1 model; `qemu-panel-real-check` runs real
       `mod_plat`/`mod_panel` over a permissive logged NDAL boundary and asserts

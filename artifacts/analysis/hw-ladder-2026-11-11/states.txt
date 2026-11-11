@@ -1,0 +1,50 @@
+Hardware ladder state captures — on-TV 2026-11-11
+=================================================
+
+All commands were read via the control socket after the stage's ready receipt.
+No state-changing query beyond the module's own service was used.
+
+hw0 (plat only)
+  $ oa-client /tmp/oa-hw/control plat-state
+  plat ready 1 errors 0x0
+
+hw1 (plat,panel)
+  $ oa-client /buffer/oa-hw-test/control plat-state
+  plat ready 1 errors 0x0
+  $ oa-client /buffer/oa-hw-test/control panel-state
+  panel percent 100
+
+hw2 (plat,panel,audio)
+  plat ready 1 errors 0x0
+  panel percent 100
+  audio enabled 1 volume -1
+  log: audio: i2s mclk -> 0x100 (0)
+
+hw3 (plat,panel,audio,spi)
+  plat ready 1 errors 0x0
+  panel percent 100
+  audio enabled 1 volume -1
+  log: spi: device backend, 0 bytes
+  /conf/spi.bin absent; /dev/ntkspi char 245:0 used
+
+hw4 (plat,panel,audio,spi,tuner)
+  plat ready 1 errors 0x0
+  panel percent 100
+  audio enabled 1 volume -1
+  log: spi: device backend, 0 bytes
+  log: tuner hw: rc=0 failed_step=5 nim=1 hal=1 tuner=1 seq=1 seq_rc=0
+       lnb=1 ir_code=21 ir_write=0 errno=1
+  failed_step 5 = OA_NIM_DTV_STEP_IR21 (IIC code 0x15); vendor-tolerated
+  failure, not a clean tuner pass.
+
+Restore (post-hw4)
+  uptime 0 min
+  appmgr 1569, run_aurora.sh 1695, aurora.elf 1771 (zombie 2209)
+  no openaurora / oa-wdtfeed
+  /buffer/oa-hw-test removed
+
+Earlier restores after hw0/hw1/hw2/hw3 also returned stock:
+  hw0: appmgr 1624, aurora 1785
+  hw1: appmgr 1579, aurora 1779
+  hw2: appmgr 1575, aurora 1777
+  hw3: appmgr 1570, aurora 1771

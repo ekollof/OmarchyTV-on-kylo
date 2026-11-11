@@ -1,0 +1,76 @@
+192.168.178.87 already awake
+Warning: Permanently added '192.168.178.87' (ED25519) to the list of known hosts.
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+bye
+=== ps
+ 3363 S    ./oa-wdtfeed --node /proc/nvtstbcipc --interval 3 --timeout 10 --stop /tmp/oa-wdt-stop --log /buffer/oa-hw-test/wdt.log --daemon
+=== wdt
+oa-wdtfeed: beat 18, watchdog 10s
+oa-wdtfeed: beat 19, watchdog 10s
+oa-wdtfeed: stop file /tmp/oa-wdt-stop, exiting after 19 beat(s)
+=== log
+[ 58761] INFO host         openaurora starting, modules=/buffer/oa-hw-test/modules
+[ 58769] INFO host         control socket /buffer/oa-hw-test/control
+[ 58790] INFO host         loaded plat v0.1 (/buffer/oa-hw-test/modules/mod_plat.so)
+[ 58790] INFO plat         plat: waiting for /tmp/ntkdriver_completed (ICE_HardwareInit order)
+[ 58790] INFO plat         plat: driver marker ready after 0 ms
+[ 58801] INFO plat         plat: audio prelude (Protect/Mixer/Proxy)
+[DRM Init] : drmModeGetEncoder= PASS 
+[ 58806] INFO plat         plat: common init (vpltio/v4l2/sharemem, drm 1, DVIF)
+[ 58806] INFO plat         plat: VIN slot defaults (7 slots)
+[ 58808] INFO plat         plat: NDAL_VideoExt_OpenDevice(0,10)
+[ 58808] DBG  plat         service up: plat v1
+[ 58809] INFO plat         plat: sequence done (gpio/iic errors 0; common/video unverifiable: void returns)
+[ 58809] INFO host         started plat
+[ 58812] INFO host         loaded panel v0.2 (/buffer/oa-hw-test/modules/mod_panel.so)
+[ 58812] INFO panel        vendor HAL linked: channel 0, 30000 Hz, start 100%
+[ 59422] DBG  panel        service up: panel v1
+[ 59422] INFO host         started panel
+[ 59427] INFO host         loaded audio v0.1 (/buffer/oa-hw-test/modules/mod_audio.so)
+[ 59427] DBG  audio        service up: audio v1
+[ 59427] INFO audio        vendor audio HAL linked
+[ 59427] INFO audio        i2s mclk -> 0x100 (0)
+[ 59427] INFO host         started audio
+[ 59428] INFO host         host: ready receipt /tmp/openaurora.ready (all autoload starts succeeded)
+Hal_IfCmd_SockFd_Get@139 iSockFd=6
+Can not open /dev/nvt/ntkvplt
+ERR:[3434:3434]ClientDrmAuthentically(193) fail(-1)
+
+[DRM Init] : Step 1 : Open DRM Device : drm_card_id = 13 
+[DRM Init] : open drm pass 
+
+[DRM Init] : Step 2 : Create Frame Buffer - Start 
+[DRM Init] : fb_id = 98 
+[DRM Init] : Step 2 : Create Frame Buffer - End 
+
+[DRM Init] : Step 3 : Init Kernel Mode Setting - Start 
+[DRM Init] : crtc_id = 26 
+[DRM Init] : plane_id[7] = 40 
+[DRM Init] : plane_id[6] = 54 
+[DRM Init] : plane_id[5] = 55 
+[DRM Init] : plane_id[2] = 56 
+[DRM Init] : plane_id[1] = 59 
+[DRM Init] : plane_id[0] = 60 
+[DRM Init] : plane_id[3] = 61 
+[DRM Init] : plane_id[4] = 62 
+[DRM Init] : Step 3 : Init Kernel Mode Setting - End 
+
+[ERR][Hal_Iic_Init():572] /dev/i2c-6 open failed, gFileDesc[6] = -1
+[ERR][Hal_Iic_Init():572] /dev/i2c-7 open failed, gFileDesc[7] = -1
+Can not open /dev/nvt/ntkled , try path /dev/ntkled 
+Open /dev/ntkled successfully 
+openaurora: 3 module(s) loaded, control on /buffer/oa-hw-test/control
+[ 94718] DBG  audio        service down: audio
+[ 94718] ERR  host         audio: cleanup pending; retry stop/unload
+[ 94718] DBG  panel        service down: panel
+[ 94718] INFO host         stopped panel
+[ 94718] ERR  host         plat: required by active module 'audio'
+[ 94729] INFO host         stopped audio
+[ 94729] INFO host         unloaded audio
+[ 94729] INFO host         unloaded panel
+[ 94729] DBG  plat         service down: plat
+[ 94729] INFO host         stopped plat
+[ 94730] INFO host         unloaded plat
+[ 94731] INFO host         openaurora stopped

@@ -9,15 +9,21 @@ a one-byte source, GPIO/IIC/VIN failures logged without aborting, then
 This is not cold-start acceptance: `DEV_INI_Init`'s device stages remain partly
 module-owned, gated or missing (see COLD-START-SEQUENCE-2026-11-10). A
 hardware-only no-UI ladder (`hw0..hw4`: plat, panel, I2S MCLK, SPI open,
-NIM-DTV) and its ready receipt are host-tested. `hw0` passed on the TV on
-2026-11-11 under controlled ownership: staged current ARM `openaurora`/
-`mod_plat` (verified hashes), external `oa-wdtfeed`, appmgr paused and stock
-Aurora stopped; `plat` completed the driver-marker wait, audio prelude, DRM
-mode set, common init, 7 VIN slots and `NDAL_VideoExt_OpenDevice(0,10)`;
-`plat-state` was `plat ready 1 errors 0x0`; `quit` was clean and a reboot
-restored stock (appmgr 1624, aurora 1785, no openaurora). `hw1..hw4` remain
-unrun. The panel off path now sets the stock PTF PWM level 1000 before LVDS
-off, matching `DEV_PANEL_PowerSequence`; the old PWM-0 claim is corrected. The
+NIM-DTV) and its ready receipt are host-tested. All five stages ran on the TV
+on 2026-11-11 under controlled ownership: staged current ARM core/modules
+(verified hashes), external `oa-wdtfeed`, appmgr paused and stock Aurora
+stopped. Each stage wrote the ready receipt, quit cleanly, and a reboot
+restored stock. `hw0`: `plat ready 1 errors 0x0` (DRM fb 103/crtc 26,
+`NDAL_VideoExt_OpenDevice(0,10)`, i2c-6/7 logged only). `hw1`: `panel percent
+100` (611 ms, `/dev/ntkled` fallback). `hw2`: `audio enabled 1 volume -1`,
+`i2s mclk -> 0x100 (0)`. `hw3`: `spi: device backend, 0 bytes` (`/dev/ntkspi`;
+`/conf/spi.bin` absent). `hw4`: all five modules started, but
+`tuner hw: rc=0 failed_step=5` = IR21 (IIC code 0x15) with `ir_write=0 errno=1`;
+this is the vendor-tolerated NIM-DTV failure branch, not a clean tuner pass.
+No cold boot, display/scanout, audible audio, tuner RF lock or visible
+brightness confirmation. The panel off path now sets the stock PTF PWM level
+1000 before LVDS off, matching `DEV_PANEL_PowerSequence`; the old PWM-0 claim
+is corrected. The
 device-gap disposition in COLD-START-SEQUENCE closes PCB layout, DEV GPIO/IIC
 description state, NIM factories, SPI semaphore and MTD for the HAL-only path;
 `DEV_AMP_ID`, the GPIO earphone handler and non-layout-14 panel/TCON branches
