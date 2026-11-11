@@ -26,6 +26,15 @@ queue of experiments to repeat. The [documentation index](docs/README.md) is the
 navigation layer for the compiled reverse-engineering set; the report index
 remains the chronological authority.
 
+**Docs-first preflight.** Before a new recovery, probe or hardware experiment,
+search the report index, documentation index, MEMORY/TODO/FINDINGS/HANDOFF and
+prior reports for the exact topic, address, ioctl, device path or command. If a
+documented contract, tool or command exists, use it and cite it; do not
+re-derive it from the binary or guess a protocol. Start a new investigation
+only when the docs are absent, incomplete or contradicted, and record that gap
+(and update the canonical report/index) as part of the work. If the search
+finds nothing, say so explicitly before proceeding.
+
 - These instructions carry the standing owner constraints.
 - MEMORY owns last verified TV/deployment/build state; it is not a live poll.
 - TODO owns pending work and acceptance gates.
