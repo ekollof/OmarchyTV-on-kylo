@@ -123,7 +123,37 @@ int ioctl(int fd, unsigned long req, ...)
         vin_log("start fd=%d on=%d", fd, on);
         return 0;
     }
+    /* VIDIOC_G_EXT_CTRLS id 0xa00968, used by plat_drm_get_dpsource for
+     * non-1..3 source types. The model accepts the request; it does not claim
+     * driver control values. */
+    if (req == 0xc0185647u) {
+        vin_log("ext_ctrls fd=%d", fd);
+        return 0;
+    }
     vin_log("ioctl fd=%d req=%#lx", fd, req);
     errno = ENOTTY;
     return -1;
+}
+
+/* mod_plat_stub does not run Hal_Video_DrmInit(1); the real VIN/source module
+ * still needs the post-init DRM id and plane type for drm_connect. These are
+ * boundary values for the fixture, not a DRM emulation. */
+int Hal_Video_Get_DrmDeviceId(int index)
+{
+    (void)index;
+    return 13;
+}
+
+int Hal_Video_VideoPath_to_PlaneType(int path)
+{
+    (void)path;
+    return 0;
+}
+
+int Hal_Video_Vpltio_SendCmd(int cmd, int a, void *buf, int b, int c, int d,
+                             int e, int f, int g)
+{
+    (void)cmd; (void)a; (void)buf; (void)b; (void)c; (void)d;
+    (void)e; (void)f; (void)g;
+    return 0;
 }

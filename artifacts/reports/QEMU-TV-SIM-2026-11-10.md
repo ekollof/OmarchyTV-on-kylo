@@ -19,7 +19,9 @@ Evidence class: qemu/host simulation; not on-TV acceptance.
 - `tests/fake_vin_device.c` — ARM LD_PRELOAD model for `/dev/video*` used by
   the qemu real-VIN check.
 - `tools/qemu-vin-real-check.sh` — real ARM `mod_source` against the fake VIN
-  device; currently stops at `source-select 17` (EIO) with the stub platform.
+  device; now also supplies the post-DRM id/plane boundary and accepts the
+  `VIDIOC_G_EXT_CTRLS` request used by the DP-source path. It passes types 17
+  and 19 with open/select/start and reload/stop ordering.
 
 ## New real-fbdev check
 
@@ -70,6 +72,24 @@ COLD-START-SEQUENCE-2026-11-10.
 
 This is a call-path and ordering check, not a PWM/GPIO/panel hardware effect.
 
+## VIN/DP-source check
+
+The existing `qemu-vin-real-check.sh` now passes. The fixture supplies the
+post-DRM boundary values (`Hal_Video_Get_DrmDeviceId` = 13,
+`Hal_Video_VideoPath_to_PlaneType` = 0, VPLTIO success) and accepts
+`VIDIOC_G_EXT_CTRLS` id `0xa00968`. The real `mod_source` then executes:
+
+```text
+type 17: open /dev/video28 -> select id 3
+         open /dev/video21 -> select id 0 -> start -> ext_ctrls
+type 19: open /dev/video66 -> select id 66 -> start -> ext_ctrls
+reload:  close before reopening /dev/video28 + /dev/video21
+```
+
+This proves the real ARM VIN open/select/start/ext-controls and async
+reload/stop path against the modeled boundary. It does not model V4L2 formats,
+HDMI PHY, DP-source register effects or picture.
+
 ## Limits and next slices
 
 - The TV io model is **permissive**: it returns success without maintaining
@@ -80,8 +100,10 @@ This is a call-path and ordering check, not a PWM/GPIO/panel hardware effect.
   modeled statefully.
 - The fb model is fixed to the recovered fb1 geometry and does not model the
   other four OSD layers or driver SetPar.
-- The qemu VIN check still has the `source-select 17` fixture failure; it is
-  not caused by the new framebuffer/panel slices.
+- The qemu VIN check now passes with the DRM/DP-source boundary; it still does
+  not model V4L2 formats or HDMI/DP register effects. The full host suite now
+  stops later in the unrelated `check-ui-async` (`ui_async.c:63`, uploads
+  count), not in VIN.
 - Every result here is qemu/host simulation. It is not a TV cold boot, panel
   acceptance, scanout proof or device-ownership claim.
 

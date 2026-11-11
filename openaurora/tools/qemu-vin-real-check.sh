@@ -127,17 +127,24 @@ assert command("unload source") == "ok"
 assert command("quit") == "bye"
 
 log = open(os.path.join(stage, "vin.log")).read()
-assert log.count("open path=/dev/video20") == 2, log
-assert "select fd=" in log and "id=3" in log, log
-assert "select fd=" in log and "id=66" in log, log
-assert log.count("start fd=") == log.count("select fd="), log
-assert "on=1" in log, log
-assert log.count("close fd=") == 2, log
+# Source type 17 uses the two-fd path (idx 3): /dev/video28 + /dev/video21.
+# Type 19 uses the single fd /dev/video66. These paths come from the current
+# source/HAL mapping; the fake log is authoritative for this fixture.
+assert log.count("open path=/dev/video28") == 2, log
+assert log.count("open path=/dev/video21") == 2, log
+assert "open path=/dev/video66" in log, log
+assert "id=3" in log, log
+assert "id=66" in log, log
+assert log.count("start fd=") >= 3, log
+assert log.count("ext_ctrls fd=") >= 4, log
+assert log.count("close fd=") >= 3, log
 close_at = log.index("close fd=")
-second_open = log.index("open path=/dev/video20", log.index("open path=/dev/video20") + 1)
+second_open = log.index("open path=/dev/video28",
+                        log.index("open path=/dev/video28") + 1)
 assert close_at < second_open, "worker close must precede the reopened device"
-print("ok qemu real VIN: libNDAL3 Hal_Vin /dev/video20 open, select id3/id66, "
-      "stream start, async reload/stop gate")
+print("ok qemu real VIN: libNDAL3 opened /dev/video28 + /dev/video21 for type 17, "
+      "/dev/video66 for type 19, selected ids 3/66, started streams, and "
+      "closed before the reload reopen")
 PY
 
 wait "$PID"

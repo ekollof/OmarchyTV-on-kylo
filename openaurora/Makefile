@@ -2835,7 +2835,7 @@ check-qemu-fb-real:
 check-qemu-panel-real:
 	tools/qemu-panel-real-check.sh
 # Offline device-boundary checks; require the local vendor rootfs/toolchain.
-check-qemu-real: check-qemu-fb-real check-qemu-panel-real
+check-qemu-real: check-qemu-fb-real check-qemu-panel-real check-vin-real
 
 .PHONY: check-source-fake-ipc
 check-source-fake-ipc: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_source_fake.so $(BUILD)/modules/mod_plat.so
