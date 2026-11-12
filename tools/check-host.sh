@@ -182,6 +182,21 @@ if [ "$mode" = full ]; then
         fail=1
     fi
 
+    echo "== optional REA second opinion"
+    if [ -x "$root/tools/re/rea.sh" ] &&
+       command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
+        rea_bin="$root/artifacts/workbench/rea/node_modules/.bin/rea"
+        if [ -x "$rea_bin" ]; then
+            printf '  ok    %-24s %s\n' "rea-agents" \
+                "$("$rea_bin" --version 2>/dev/null | head -1)"
+        else
+            printf '  skip  %-24s optional; tools/re/rea.sh installs pinned 6.9.0 on first use\n' \
+                "rea-agents"
+        fi
+    else
+        printf '  skip  %-24s node/npm missing or wrapper absent\n' "rea-agents"
+    fi
+
     echo "== optional VMLINUX tooling"
     if command -v vmlinux-to-elf >/dev/null 2>&1; then
         printf '  ok    %-24s %s\n' "vmlinux-to-elf" "$(command -v vmlinux-to-elf)"

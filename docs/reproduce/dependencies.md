@@ -104,6 +104,15 @@ version-specific and contain the vendor binaries. Import your own extracted
 `aurora.elf`/libraries/modules and run the scripts in
 [../reverse-engineering/tooling.md](../reverse-engineering/tooling.md).
 
+## Optional REA second opinion
+
+`tools/re/rea.sh` bootstraps `rea-agents@6.9.0` (MIT) under
+`artifacts/workbench/rea` on first use; Node/npm are already in the host list.
+It is optional and is not used by the build, tests or recovery path. See
+[tooling](../reverse-engineering/tooling.md#rea-optional-second-opinion-layer)
+and [tools/re/README.md](../../tools/re/README.md). Upstream:
+<https://github.com/morluto/rea>.
+
 ## UBI extraction and kernel tooling
 
 ```sh

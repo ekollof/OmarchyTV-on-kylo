@@ -133,26 +133,33 @@ Keep focused sanitizer runs and the full suite distinct. A qemu run proves ARM
 execution against a guest rootfs, not device effects. A CPU-only on-TV run is
 not display/HAL acceptance.
 
-## Optional REA pilot (2026-11-12)
+## REA (optional second-opinion layer)
 
-A sandboxed pilot evaluated `rea-agents@6.9.0` (MIT) as a supplementary
-static-analysis/query layer. It is not a repo dependency and was not installed
-with `rea setup`; use a temp npm prefix and copies of the binaries.
+`tools/re/rea.sh` is the maintained wrapper for `rea-agents@6.9.0` (MIT). It
+bootstraps the pinned package under `artifacts/workbench/rea` (gitignored) on
+first use, analyzes hashed copies under `/tmp/opencode/rea-targets`, and sets
+`REA_OBJDUMP_COMMAND` to the ARM cross objdump. It never runs `rea setup`,
+opens a canonical `ghidra_*` project, writes the repo, or contacts the TV.
 
 Prerequisites on this host: Node 26.13.0, Ghidra 12.2 at `/opt/ghidra`
 (REA reports the 12.x >=12.1 compatible line), and the ARM cross toolchain.
-Set `REA_OBJDUMP_COMMAND` to the ARM objdump for ELF32/ARM; the host objdump
-cannot disassemble this architecture.
 
 ```sh
-mkdir -p /tmp/opencode/rea-eval && cd /tmp/opencode/rea-eval
-npm_config_cache=$PWD/npm-cache npm install --ignore-scripts --no-audit --no-fund rea-agents@6.9.0
-./node_modules/.bin/rea inspect-kernel-module /path/to/module.ko --format json
-./node_modules/.bin/rea function /path/to/aurora.elf 0x0102fce0 --provider ghidra --format json
-REA_OBJDUMP_COMMAND=/path/to/arm-none-linux-gnueabihf-objdump \
-  ./node_modules/.bin/rea inspect-with-objdump /path/to/module.ko \
-  disassemble --symbol _CEC_TX_Data --format json
+tools/re/rea.sh help
+tools/re/rea.sh doctor
+tools/re/rea.sh kernel artifacts/workbench/rootfs/vendor2/modules/ntkdriver_nondovi.ko
+tools/re/rea.sh function artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf 0x0102fce0
+tools/re/rea.sh objdump artifacts/workbench/rootfs/vendor2/modules/ntkdriver_nondovi.ko _CEC_TX_Data
+tools/re/rea.sh raw <rea args...>
 ```
+
+`doctor` exits nonzero because Hopper is absent; the Ghidra checks are the
+relevant ones. `function` starts Ghidra 12.2 and the first import of a large
+binary can take minutes; `REA_GHIDRA_STARTUP_TIMEOUT_MS` defaults to 900000.
+`objdump` requires the ARM cross-binutils; the host objdump cannot decode
+ELF32/ARM. `raw` bypasses the copy and should only be used with a copy path.
+Override `REA_PREFIX`, `REA_TARGETS`, `REA_VERSION` or `REA_OBJDUMP_COMMAND`
+when needed; do not change the pin casually.
 
 Pilot result: the kernel-module inspector matched `readelf` offsets/sizes for
 `.init.text`, `.exit.text`, `.gnu.linkonce.this_module` and `__ksymtab*`, and

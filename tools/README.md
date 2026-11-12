@@ -12,6 +12,11 @@ Only 192.168.178.87 is in scope. Read ../AGENTS.md for standing authorization.
 | wspoll.c | historical client with concrete WebSocket framing/short-read/state bugs; do not execute until repaired/tested; UI-LIVE-OBJECTS used host Node WebSocket API instead |
 | tvsim.py / tvsimctl.sh | offline browser/control-plane simulation; no TV hardware emulation |
 | pcstatus.py | optional host helper, not TV parity evidence; do not probe other LAN hosts |
+| re/rea.sh | optional pinned REA 6.9.0 second-opinion layer; bootstraps under artifacts/workbench/rea and analyzes hashed copies |
+
+`re/rea.sh` is optional; see [re/README.md](re/README.md) and the REA section of
+[the tooling guide](../docs/reverse-engineering/tooling.md). It never opens the
+canonical `ghidra_*` projects or contacts the TV.
 
 Presence of an action in a helper is not permission to run it. Prefer offline
 firmware extraction for code/assets, and firmware-understood GETs for actual
