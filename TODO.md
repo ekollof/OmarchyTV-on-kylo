@@ -475,6 +475,14 @@ unvalidated.
       with no `/proc/*/fd` CEC holder after stock stop; authority map and
       module start pass, `cec-state open 0 error 1`, no TX/RX; see
       CEC-RAW-ACQUIRE-2026-11-11. The Deck is at LA8/PA1000 (CEC-LIVE).
+      2026-11-12 first-opener boot: a temporary hook branch acquired raw CEC
+      before stock (`cec raw transport open (/tmp/ntkcec)`, `open 1`), but
+      `cec-send` returned `EBUSY` because the single owner job slot was busy
+      with the 100 ms receive poll; no TX/RX. A retry boot hung and required
+      USB recovery (stick rebuilt clean with the tested pair). Fix the send
+      queue/wait and harden the harness (`timeout -s KILL`, no blocking trap
+      wait, unconditional stock fallback) before retrying; capture the Deck's
+      `84` reply. See CEC-FIRST-OPENER-2026-11-12.
 
 ### Input / source / PVR
 

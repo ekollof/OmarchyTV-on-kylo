@@ -114,6 +114,7 @@ superseded claims and descriptions.
 ## CEC
 - [CEC-ASYNC](../../artifacts/reports/CEC-ASYNC-2026-11-01.md)
 - [CEC-AUDIO-CONTRACT](../../artifacts/reports/CEC-AUDIO-CONTRACT-2026-10-31.md)
+- [CEC-FIRST-OPENER](../../artifacts/reports/CEC-FIRST-OPENER-2026-11-12.md)
 - [CEC-INPUT-RENAME](../../artifacts/reports/CEC-INPUT-RENAME-2026-10-30.md)
 - [CEC-LIVE](../../artifacts/reports/CEC-LIVE-2026-11-01.md)
 - [CEC-MODULE-TRANSPORT](../../artifacts/reports/CEC-MODULE-TRANSPORT-2026-11-09.md)

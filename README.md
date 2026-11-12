@@ -14,7 +14,7 @@ contains resumption pointers, not another independent status history.
   historical experiments or superseded plans.
 - [Reverse-engineering docs](docs/reverse-engineering/README.md): binary/hash
   inventory, recovered subsystem contracts, tooling recipes and a topic map of
-  the 340 reports.
+  the 341 reports.
 - [Reproduce on your own TV](docs/reproduce/README.md): owner root/access
   bootstrap, dependency sources, NAND dump/extract and recovery.
 - [Artifact map](artifacts/README.md): provenance, recovery image identities and raw evidence.

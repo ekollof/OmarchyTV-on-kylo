@@ -54,7 +54,14 @@ the authority mirror map and `mod_cec` start pass, but `CEC_OPEN` still
 returns EPERM (`kcec: CEC Try lock fail`) with no `/proc/*/fd` holder after
 stock Aurora stop; the same orphaned `DRV_CEC_CALLBAC` lock as 2026-11-07
 survives stock exit. A first-opener boot/handoff is required; the Deck is at
-LA8/PA1000 (CEC-LIVE). `cec.enable` remains 0. `DEV_AMP_ID`
+LA8/PA1000 (CEC-LIVE). `cec.enable` remains 0. First-opener boot 2026-11-12: a
+temporary hook branch ran `mod_cec` before stock and acquired the raw device
+(`cec raw transport open (/tmp/ntkcec)`, `open 1`, no lock failure). The
+identity sends returned `EBUSY` because the single owner job slot was busy
+with the 100 ms receive poll; no TX/RX. A retry boot hung and required USB
+recovery; stock is restored (appmgr 1549/aurora 1758, original hook
+`c3943712…`, no CEC-first branch/staging). Next: queue/wait the send and harden
+the boot harness. CEC-FIRST-OPENER-2026-11-12. `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced (entry `0x84e110`, IsAlive `0x875458`:
