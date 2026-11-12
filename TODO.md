@@ -490,7 +490,12 @@ unvalidated.
       hook `c3943712…`, no staging, `aurora.elf` 1773, `DRV_CEC_CALLBAC` 2855).
       Next: wake/verify the peer CEC stack or use a known-good CEC device, then
       capture a reply before claiming RX/logical-address acceptance. See
-      CEC-FIRST-OPENER-2026-11-12.
+      CEC-FIRST-OPENER-2026-11-12. Also implement the stock routing/power
+      policy: 0x82 Active Source selects the PA input, 0x9D Inactive Source
+      clears the active source and falls back, and 0x36 Standby is accepted only
+      from the active device. Owner test 2026-11-12: Deck sleep left the TV on
+      and switched it to a tuner input; resume switched to HDMI1. Exact frames
+      and the tuner fallback policy are not captured; CEC-LIVE.
 
 ### Input / source / PVR
 

@@ -59,6 +59,10 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   run. The 2026-11-01 cache “LA8” was an array slot, not a wire LA; on
   2026-11-12 LA8 NACKed while LA4 and broadcast ACKed, but LA4 answered no
   83/46/8f query. A raw receive consumes messages and is not a view-only query.
+- Routing/power policy (Active Source 0x82, Inactive Source 0x9D, Standby 0x36)
+  is not implemented. Stock observation 2026-11-12: Deck sleep left the TV on at
+  a tuner input; resume switched to HDMI1. Exact frames and the tuner fallback
+  policy still need capture or firmware recovery.
 
 Reports: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),

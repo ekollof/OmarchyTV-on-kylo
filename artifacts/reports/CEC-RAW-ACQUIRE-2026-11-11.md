@@ -1,7 +1,7 @@
 # Raw CEC acquire attempt — 2026-11-11
 
 Status: current
-Last verified: 2026-11-11
+Last verified: 2026-11-12
 Evidence class: on-TV controlled ownership; no CEC frame sent.
 Supersedes: the "raw ownership needs an authorized TV session" limit in
 CEC-MODULE-TRANSPORT-2026-11-09 for the acquire step only.

@@ -170,6 +170,11 @@ Evidence: [AUDIO-ROUTING](../../artifacts/reports/AUDIO-ROUTING-2026-11-01.md),
   but sent no reply. CEC-ASYNC/REPLY-QUEUE/QUIESCE cover the ownership and
   reload gates; CEC-MODULE-TRANSPORT adds the injectable raw-device/authority
   seam and a host fake; CEC-FIRST-OPENER records the boot-order/TX path.
+- Routing/power policy is not implemented: stock accepts 0x82 Active Source
+  (switch to the PA input), 0x9D Inactive Source (clear the active source), and
+  0x36 Standby only from the active device. The owner's 2026-11-12 Deck
+  suspend/resume test left the TV on at a tuner input on sleep and switched to
+  HDMI1 on resume; exact frames and the tuner fallback policy are not captured.
 
 Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),
