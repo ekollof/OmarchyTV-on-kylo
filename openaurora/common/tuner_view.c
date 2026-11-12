@@ -42,3 +42,23 @@ int oa_tuner_position_of_handle(const struct oa_channel_snapshot *channels,
     }
     return -ENOENT;
 }
+
+int oa_tuner_position_of_service_handle(const struct oa_service_list *services,
+                                        const size_t *order, size_t count,
+                                        uint32_t handle, int *position)
+{
+    if (!services || !services->rows || !position || handle == 0)
+        return -EINVAL;
+    if (count > services->count) count = services->count;
+    for (size_t i = 0; i < count; i++) {
+        size_t row = order ? order[i] : i;
+        if (row >= services->count) return -EINVAL;
+        int64_t value = services->rows[row].handle;
+        if (value <= 0 || (uint64_t)value > UINT32_MAX) continue;
+        if ((uint32_t)value != handle) continue;
+        if (i > (size_t)INT_MAX) return -ERANGE;
+        *position = (int)i;
+        return 0;
+    }
+    return -ENOENT;
+}

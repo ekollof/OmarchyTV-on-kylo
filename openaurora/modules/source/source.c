@@ -537,40 +537,58 @@ static int inactive_select_tuner(void *context, int position)
 /* Gated CEC 0x9D fallback: resolve the active-list position to a service
  * handle, connect DTV, then select the service. The caller only invokes this
  * while an external source is displayed. */
+/* The runtime active list is authoritative; the stored settingsDB inventory
+ * is the fallback when no ACTIVEChannelList has been ingested yet. */
+static int resolve_saved_handle(struct ctx *c, int position, uint32_t *handle)
+{
+    const oa_channel_iface *channels = c->api->lookup
+        ? c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1) : NULL;
+    const struct oa_channel_snapshot *snapshot =
+        channels && channels->snapshot ? channels->snapshot() : NULL;
+    if (snapshot && (size_t)position < snapshot->count) {
+        struct oa_tuner_view view = {0};
+        view.channels = snapshot;
+        int rc = oa_tuner_handle_at(&view, position, handle);
+        if (channels && c->api->release)
+            c->api->release(c->api->priv, OA_SVC_CHANNELS);
+        return rc;
+    }
+    if (channels && c->api->release)
+        c->api->release(c->api->priv, OA_SVC_CHANNELS);
+
+    const oa_service_list_iface *services = c->api->lookup
+        ? c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1) : NULL;
+    const struct oa_service_list *list =
+        services && services->snapshot ? services->snapshot() : NULL;
+    if (list && list->rows && list->count > 0) {
+        struct oa_tuner_view view = {0};
+        view.services = list;
+        view.count = list->count;
+        int rc = oa_tuner_handle_at(&view, position, handle);
+        if (services && c->api->release)
+            c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
+        return rc;
+    }
+    if (services && c->api->release)
+        c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
+    return -ENODEV;
+}
+
 static int iface_inactive_source(int saved_position)
 {
     struct ctx *c = g_ctx;
     if (!c || !c->enabled || !c->inactive_enabled) return -2;
     if (saved_position < 0) return -EINVAL;
 
-    const oa_channel_iface *channels = c->api->lookup
-        ? c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1) : NULL;
-    const struct oa_channel_snapshot *snapshot =
-        channels ? channels->snapshot() : NULL;
-    if (!snapshot || (size_t)saved_position >= snapshot->count) {
-        if (channels && c->api->release)
-            c->api->release(c->api->priv, OA_SVC_CHANNELS);
-        return -ENODEV;
-    }
-
-    struct oa_tuner_view view;
-    memset(&view, 0, sizeof view);
-    view.channels = snapshot;
     uint32_t handle = 0;
-    int rc = oa_tuner_handle_at(&view, saved_position, &handle);
-    if (rc < 0) {
-        if (c->api->release)
-            c->api->release(c->api->priv, OA_SVC_CHANNELS);
-        return rc;
-    }
+    int rc = resolve_saved_handle(c, saved_position, &handle);
+    if (rc < 0) return rc;
 
     const oa_tuner_iface *tuner = c->api->lookup
         ? c->api->lookup(c->api->priv, OA_SVC_TUNER, 1) : NULL;
     if (!tuner || !tuner->select) {
         if (tuner && c->api->release)
             c->api->release(c->api->priv, OA_SVC_TUNER);
-        if (c->api->release)
-            c->api->release(c->api->priv, OA_SVC_CHANNELS);
         return -ENODEV;
     }
 
@@ -583,8 +601,6 @@ static int iface_inactive_source(int saved_position)
     rc = oa_source_loss_inactive_source(&worker, 1, 1, saved_position);
     if (c->api->release)
         c->api->release(c->api->priv, OA_SVC_TUNER);
-    if (c->api->release)
-        c->api->release(c->api->priv, OA_SVC_CHANNELS);
     return rc == OA_SOURCE_LOSS_DTV_TUNER ? 0 : rc;
 }
 

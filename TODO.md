@@ -554,11 +554,13 @@ unvalidated.
       `check-tuner-view` implement the recovered `TunerManager` view
       position→handle mapping (`(this+0x1c)->vtable+0x54`). The source service
       now exposes gated `inactive_source(position)` v3
-      (`source.inactive_fallback`), resolving `OA_SVC_CHANNELS`, connecting DTV
-      and calling `OA_SVC_TUNER.select(handle)`; the `source_path` fake-service
-      test covers order/gates. `mod_cec` routes broadcast 0x9D behind
-      `cec.inactive_fallback` (selected handle→active-list position;
-      `cec_inactive.cjs` covers position 1/2 and disabled/TV gates). Remaining:
+      (`source.inactive_fallback`), resolving `OA_SVC_CHANNELS` with the stored
+      `OA_SVC_SERVICE_LIST` fallback, connecting DTV and calling
+      `OA_SVC_TUNER.select(handle)`; the `source_path` fake-service test covers
+      runtime/stored order/gates. `mod_cec` routes broadcast 0x9D behind
+      `cec.inactive_fallback` (selected handle→active-list or stored-list
+      position; `cec_inactive.cjs` covers position 1/2, the stored fallback and
+      disabled/TV gates). Remaining:
       the full select/mute/decoder/UI body, any `SetConnectInfo` caller outside
       the analyzed paths and the UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:

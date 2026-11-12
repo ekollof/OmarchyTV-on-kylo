@@ -260,18 +260,29 @@ static void handle_inactive_source(struct ctx *c, const oa_cec_message *m)
 
     const oa_channel_iface *channels =
         c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1);
+    const oa_service_list_iface *services =
+        c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
     const oa_tuner_iface *tuner =
         c->api->lookup(c->api->priv, OA_SVC_TUNER, 1);
     uint32_t handle = 0;
     int position = -1;
     const struct oa_channel_snapshot *snapshot = NULL;
+    const struct oa_service_list *service_list = NULL;
     if (channels && channels->snapshot) snapshot = channels->snapshot();
+    if (services && services->snapshot) service_list = services->snapshot();
     if (tuner && tuner->selected) handle = tuner->selected();
 
     int rc = -ENOENT;
-    if (handle && snapshot &&
-        oa_tuner_position_of_handle(snapshot, handle, &position) == 0)
-        rc = source->inactive_source(position);
+    if (handle) {
+        if (snapshot &&
+            oa_tuner_position_of_handle(snapshot, handle, &position) == 0)
+            rc = source->inactive_source(position);
+        else if (service_list &&
+                 oa_tuner_position_of_service_handle(service_list, NULL,
+                                                     service_list->count,
+                                                     handle, &position) == 0)
+            rc = source->inactive_source(position);
+    }
 
     if (rc == 0)
         c->api->log(c->api->priv, OA_LOG_INFO,
@@ -283,6 +294,7 @@ static void handle_inactive_source(struct ctx *c, const oa_cec_message *m)
                     "handle %u position %d", rc, current, handle, position);
 
     drop_lookup(c, OA_SVC_TUNER, tuner);
+    drop_lookup(c, OA_SVC_SERVICE_LIST, services);
     drop_lookup(c, OA_SVC_CHANNELS, channels);
     drop_lookup(c, OA_SVC_SOURCE, source);
 }

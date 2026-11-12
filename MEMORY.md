@@ -115,12 +115,13 @@ emitter is recovered. `TunerManager::requestServiceSelectForDisplay` resolves
 view position→handle via `(TunerManager+0x1c)->vtable+0x54` then selects via
 `+0xd4`; `common/tuner_view.c` + `check-tuner-view` cover the position→handle
 mapping. The source service exposes gated `inactive_source(position)` v3
-(`source.inactive_fallback`): it resolves `OA_SVC_CHANNELS`, connects DTV and
-calls `OA_SVC_TUNER.select(handle)`; `source_path` fake-service tests cover the
-order/gates. `mod_cec` routes broadcast 0x9D behind `cec.inactive_fallback`;
-it requires a displayed external source, maps the selected tuner handle back to
-its active-list position and calls the worker; `cec_inactive.cjs` covers the
-route and disabled/TV gates. The full select/mute/decoder/UI contract and any
+(`source.inactive_fallback`): it resolves `OA_SVC_CHANNELS`, falling back to the
+stored `OA_SVC_SERVICE_LIST` rows, connects DTV and calls
+`OA_SVC_TUNER.select(handle)`; `source_path` fake-service tests cover the
+runtime/stored order/gates. `mod_cec` routes broadcast 0x9D behind
+`cec.inactive_fallback`; it requires a displayed external source, maps the
+selected tuner handle back to its active-list or stored-list position and calls
+the worker; `cec_inactive.cjs` covers both paths and the disabled/TV gates. The full select/mute/decoder/UI contract and any
 `SetConnectInfo` caller outside the analyzed paths remain open. The status-4/HPD path is the
 cable-unplug policy; `source.video_status` is a no-signal detector, not the
 sleep trigger. `source.video_status()` v2 is now

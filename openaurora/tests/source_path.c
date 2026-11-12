@@ -46,6 +46,26 @@ static const oa_tuner_iface fake_tuner = {
     NULL, NULL, NULL, fake_tuner_select, NULL
 };
 
+static struct oa_service_row service_rows[3] = {
+    { .handle = 100 }, { .handle = 200 }, { .handle = 300 }
+};
+static struct oa_service_list service_list = {
+    .rows = service_rows, .count = 3, .capacity = 3
+};
+static const struct oa_service_list *fake_service_snapshot(void)
+{
+    return &service_list;
+}
+static int fake_service_format(const struct oa_service_list *list, size_t index,
+                               char *buf, size_t cap)
+{
+    (void)list; (void)index; (void)buf; (void)cap;
+    return -1;
+}
+static const oa_service_list_iface fake_services = {
+    fake_service_snapshot, fake_service_format
+};
+
 #define SKIP INT64_MIN
 static void expect(int kind, int64_t a, int64_t b, int64_t c, int64_t d,
                    int64_t e)
@@ -126,6 +146,7 @@ static const void *lookup(void *p, const char *name, uint32_t min_version)
     if (min_version > 1) return NULL;
     if (!strcmp(name, OA_SVC_CHANNELS)) return &fake_channels;
     if (!strcmp(name, OA_SVC_TUNER)) return &fake_tuner;
+    if (!strcmp(name, OA_SVC_SERVICE_LIST)) return &fake_services;
     return NULL;
 }
 static const oa_host_api api = {
@@ -370,12 +391,25 @@ int main(void)
     assert(iface->current_type() == 0);
     done(ctx);
 
+    /* No runtime channel list: the stored service.list rows are the fallback. */
     reset();
     channel_snapshot.count = 0;
+    service_list.count = 3;
+    tuner_selected = 0;
+    tuner_select_calls = 0;
+    ctx = start(1);
+    assert(iface->inactive_source(1) == 0);
+    assert(tuner_selected == 200 && tuner_select_calls == 1);
+    done(ctx);
+
+    /* Neither source has a row: reject without guessing a service. */
+    reset();
+    service_list.count = 0;
     ctx = start(1);
     assert(iface->inactive_source(0) == -ENODEV);
     done(ctx);
     channel_snapshot.count = 3;
+    service_list.count = 3;
 
     inactive_gate = 0;
     ctx = start(1);

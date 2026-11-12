@@ -235,9 +235,10 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   `TunerManager` view position→handle mapping
   (`(this+0x1c)->vtable+0x54`). The source service's gated
   `inactive_source(position)` v3 (`source.inactive_fallback`) resolves
-  `OA_SVC_CHANNELS`, connects DTV and calls `OA_SVC_TUNER.select(handle)`;
-  `source_path` fake-service tests cover the order/gates. `mod_cec` routes
-  broadcast 0x9D behind `cec.inactive_fallback` (`cec_inactive.cjs`). The full
+  `OA_SVC_CHANNELS` or the stored `OA_SVC_SERVICE_LIST` fallback, connects DTV
+  and calls `OA_SVC_TUNER.select(handle)`; `source_path` fake-service tests
+  cover the runtime/stored order/gates. `mod_cec` routes broadcast 0x9D behind
+  `cec.inactive_fallback` (`cec_inactive.cjs` covers both paths). The full
   select/mute/decoder/UI body remains open. Do not substitute an
   always-switch-to-TV or HPD shortcut.
 

@@ -78,7 +78,36 @@ int main(void)
     };
     assert(oa_tuner_position_of_handle(&empty, 100, &position) == -ENOENT);
 
+    /* Stored service-list inverse used when no runtime active list exists. */
+    rows[2].handle = 402;
+    assert(oa_tuner_position_of_service_handle(&services, NULL, 3, 400,
+                                               &position) == 0 &&
+           position == 0);
+    assert(oa_tuner_position_of_service_handle(&services, NULL, 3, 402,
+                                               &position) == 0 &&
+           position == 2);
+    assert(oa_tuner_position_of_service_handle(&services, NULL, 3, 999,
+                                               &position) == -ENOENT);
+    assert(oa_tuner_position_of_service_handle(&services, order, 3, 402,
+                                               &position) == 0 &&
+           position == 0);
+    assert(oa_tuner_position_of_service_handle(&services, order, 3, 400,
+                                               &position) == 0 &&
+           position == 1);
+    assert(oa_tuner_position_of_service_handle(&services, order, 3, 401,
+                                               &position) == 0 &&
+           position == 2);
+    assert(oa_tuner_position_of_service_handle(&services, bad_order, 3, 401,
+                                               &position) == -EINVAL);
+    assert(oa_tuner_position_of_service_handle(NULL, NULL, 0, 400,
+                                               &position) == -EINVAL);
+    assert(oa_tuner_position_of_service_handle(&services, NULL, 3, 0,
+                                               &position) == -EINVAL);
+    assert(oa_tuner_position_of_service_handle(&services, NULL, 3, 400,
+                                               NULL) == -EINVAL);
+
     puts("ok tuner-view: runtime list, stored order, identity order, "
-         "position/size/handle rejection, selected-handle inverse");
+         "position/size/handle rejection, selected-handle inverse, "
+         "stored service-list inverse");
     return 0;
 }

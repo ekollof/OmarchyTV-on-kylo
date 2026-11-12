@@ -44,6 +44,13 @@ int oa_tuner_handle_at(const struct oa_tuner_view *view, int position,
 int oa_tuner_position_of_handle(const struct oa_channel_snapshot *channels,
                                 uint32_t handle, int *position);
 
+/* Stored service-list inverse. order maps view positions to row indexes;
+ * NULL means identity. Returns 0 and the position, -ENOENT when absent, or
+ * -EINVAL/-ERANGE for a null/bad list, bad order or null position. */
+int oa_tuner_position_of_service_handle(const struct oa_service_list *services,
+                                        const size_t *order, size_t count,
+                                        uint32_t handle, int *position);
+
 #ifdef __cplusplus
 }
 #endif

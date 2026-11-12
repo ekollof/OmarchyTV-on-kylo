@@ -379,10 +379,11 @@ replacement backends.
 
 The source service exposes `inactive_source(position)` v3 behind
 `source.inactive_fallback`. It resolves the active `OA_SVC_CHANNELS` position
-through `oa_tuner_handle_at`, connects DTV, and calls the `OA_SVC_TUNER`
-`select(handle)` method. `tests/source_path.c` covers the gate, DTV/source
-order, position→handle selection (100/200/300), missing-channel rejection and
-the disabled gate.
+through `oa_tuner_handle_at`; when no runtime list exists it falls back to the
+stored `OA_SVC_SERVICE_LIST` rows. It then connects DTV and calls the
+`OA_SVC_TUNER` `select(handle)` method. `tests/source_path.c` covers the gate,
+DTV/source order, position→handle selection (100/200/300), the stored-list
+fallback, absent-row rejection and the disabled gate.
 
 `mod_cec` now routes received broadcast `0x9D` to that worker behind
 `cec.inactive_fallback`. The route ignores our own LA and directed frames,
@@ -434,12 +435,14 @@ transitions remain open.
   position→handle mapping is implemented/tested in `common/tuner_view.c`
   (`check-tuner-view`); the full select/mute/decoder/UI contract is open.
 - The source service's `inactive_source(position)` v3 worker is gated by
-  `source.inactive_fallback`, resolves `OA_SVC_CHANNELS`, connects DTV and calls
+  `source.inactive_fallback`, resolves `OA_SVC_CHANNELS` with the stored
+  `OA_SVC_SERVICE_LIST` fallback, connects DTV and calls
   `OA_SVC_TUNER.select(handle)`. The fake-service `source_path` test covers the
   order/gates. `mod_cec` routes broadcast 0x9D behind `cec.inactive_fallback`,
   requires a displayed external source, maps the selected tuner handle back to
-  its active-list position and calls the worker; `cec_inactive.cjs` covers the
-  route and its disabled/TV gates. `0x82 Active Source` is implemented behind
+  its active-list or stored-list position and calls the worker;
+  `cec_inactive.cjs` covers the runtime and stored fallback plus the
+  disabled/TV gates. `0x82 Active Source` is implemented behind
   `cec.active_source` by the PA top nibble (HDMI1..4; `cec_active.cjs`); the
   vendor's logical-address mapping is a documented deviation.
 - On external connect, `this+0x94` saves the previous external source index
@@ -547,9 +550,10 @@ source; the sleep trigger is CEC `0x9D`/key 597.
   (`common/source_vin.c`, `source.vin_status`, `source.video_status()` v2,
   `check-source-vin` and the fake-module service test) and the gated
   `inactive_source(position)` v3 worker (`source.inactive_fallback`,
-  `source_path` fake-service order/gates) are tested. `mod_cec` routes
+  `source_path` runtime/stored-list order/gates) are tested. `mod_cec` routes
   broadcast 0x9D behind `cec.inactive_fallback` (`cec_inactive.cjs` fake
-  source/channel/tuner services, position 1/2 and disabled/TV gates) and
+  source/channel/service-list/tuner services, position 1/2, stored fallback and
+  disabled/TV gates) and
   broadcast 0x82 behind `cec.active_source` by PA top nibble
   (`cec_active.cjs`). Not wired: the full tuner select/mute/decoder/UI body
   and the UI timing. Do not add a guessed fallback.

@@ -583,10 +583,11 @@ typedef struct {
      * switches a source or selects a tuner. */
     int (*video_status)(void);
     /* v3: gated CEC 0x9D inactive-source fallback. Connects DTV and selects
-     * the active channel-list position through OA_SVC_CHANNELS and
-     * OA_SVC_TUNER. Returns 0, -2 when disabled, or a negative error. The
-     * caller must only invoke it while an external source is displayed.
-     * source.inactive_fallback=1 is required. */
+     * the active channel-list position through OA_SVC_CHANNELS, falling back
+     * to the stored OA_SVC_SERVICE_LIST rows, then OA_SVC_TUNER. Returns 0,
+     * -2 when disabled, or a negative error. The caller must only invoke it
+     * while an external source is displayed. source.inactive_fallback=1 is
+     * required. */
     int (*inactive_source)(int saved_position);
 } oa_source_iface;
 

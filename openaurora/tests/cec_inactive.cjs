@@ -43,7 +43,8 @@ async function scenario(build, options) {
         'cec.cleanup_delay_ms=0\n' +
         `cec.inactive_fallback=${options.gate}\n` +
         `fake.source_external=${options.external}\n` +
-        `fake.tuner_selected=${options.selected}\n`);
+        `fake.tuner_selected=${options.selected}\n` +
+        `fake.channels_empty=${options.channelsEmpty ? '1' : '0'}\n`);
     const child = spawn(path.join(build, 'openaurora'),
         ['--modules', modules, '--config', config, '--sock', socket,
          '--log', '3'],
@@ -123,6 +124,10 @@ async function main() {
     });
     await scenario(build, {
         gate: '1', external: '17', selected: '300', expect: 2
+    });
+    await scenario(build, {
+        gate: '1', external: '17', selected: '200', expect: 1,
+        channelsEmpty: true
     });
     await scenario(build, {
         gate: '0', external: '17', selected: '200', expect: null
