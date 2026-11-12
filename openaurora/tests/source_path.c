@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "openaurora/broadcast.h"
+#include "openaurora/channels.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/source_vin.h"
@@ -17,7 +19,32 @@ static const oa_source_iface *iface;
 static int enabled = 1;
 static int color_gate;
 static int vin_gate;
+static int inactive_gate;
 static int pos;
+
+static struct oa_channel_entry channel_entries[3];
+static struct oa_channel_snapshot channel_snapshot = {
+    .entries = channel_entries, .count = 3, .source = 1
+};
+static uint32_t tuner_selected;
+static int tuner_select_calls;
+
+static const struct oa_channel_snapshot *fake_channel_snapshot(void)
+{
+    return &channel_snapshot;
+}
+static const oa_channel_iface fake_channels = {
+    fake_channel_snapshot, NULL, NULL
+};
+static int fake_tuner_select(uint32_t handle)
+{
+    tuner_selected = handle;
+    tuner_select_calls++;
+    return 0;
+}
+static const oa_tuner_iface fake_tuner = {
+    NULL, NULL, NULL, fake_tuner_select, NULL
+};
 
 #define SKIP INT64_MIN
 static void expect(int kind, int64_t a, int64_t b, int64_t c, int64_t d,
@@ -74,6 +101,7 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "source.enable")) return enabled ? "1" : "0";
     if (!strcmp(key, "source.auto_color_system")) return color_gate ? "1" : "0";
     if (!strcmp(key, "source.vin_status")) return vin_gate ? "1" : "0";
+    if (!strcmp(key, "source.inactive_fallback")) return inactive_gate ? "1" : "0";
     if (!strcmp(key, "source.cleanup_delay_ms")) return "0";
     return def;
 }
@@ -92,10 +120,18 @@ static int unpublish(void *p, const char *name)
     return 0;
 }
 static void release(void *p, const char *name) { (void)p; (void)name; }
+static const void *lookup(void *p, const char *name, uint32_t min_version)
+{
+    (void)p;
+    if (min_version > 1) return NULL;
+    if (!strcmp(name, OA_SVC_CHANNELS)) return &fake_channels;
+    if (!strcmp(name, OA_SVC_TUNER)) return &fake_tuner;
+    return NULL;
+}
 static const oa_host_api api = {
     .size = sizeof(oa_host_api), .abi = OA_ABI_VERSION,
     .log = log_message, .config_get = config, .publish = publish,
-    .unpublish = unpublish, .release = release
+    .unpublish = unpublish, .lookup = lookup, .release = release
 };
 
 static void *start(int on)
@@ -316,6 +352,37 @@ int main(void)
     assert(source_fake_vin_opens() == 0);
     done(ctx);
 
-    puts("ok source path: type gates, VIN opens/VPLT, V4L2Info/FdCommon, DRM/NDAL, audio and gated HDMI RX status order");
+    /* v3 inactive_source: CEC 0x9D worker selects DTV then the active-list
+     * position's service handle. source.inactive_fallback gates it. */
+    source_fake_set_drm_dev(7);
+    channel_entries[0].handle = 100;
+    channel_entries[1].handle = 200;
+    channel_entries[2].handle = 300;
+    channel_snapshot.count = 3;
+    tuner_selected = 0;
+    tuner_select_calls = 0;
+    reset();
+    inactive_gate = 1;
+    ctx = start(1);
+    assert(iface->inactive_source(-1) == -EINVAL);
+    assert(iface->inactive_source(1) == 0);
+    assert(tuner_selected == 200 && tuner_select_calls == 1);
+    assert(iface->current_type() == 0);
+    done(ctx);
+
+    reset();
+    channel_snapshot.count = 0;
+    ctx = start(1);
+    assert(iface->inactive_source(0) == -ENODEV);
+    done(ctx);
+    channel_snapshot.count = 3;
+
+    inactive_gate = 0;
+    ctx = start(1);
+    assert(iface->inactive_source(1) == -2);
+    done(ctx);
+
+    puts("ok source path: type gates, VIN opens/VPLT, V4L2Info/FdCommon, "
+         "DRM/NDAL, audio, gated HDMI RX status and inactive-source order");
     return 0;
 }

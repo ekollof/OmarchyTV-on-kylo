@@ -28,13 +28,17 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "openaurora/broadcast.h"
+#include "openaurora/channels.h"
 #include "openaurora/dev_gpio.h"
 #include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/source_hal.h"
+#include "openaurora/source_loss.h"
 #include "openaurora/source_vin.h"
 #include "openaurora/src_hotplug.h"
+#include "openaurora/tuner_view.h"
 
 /* table A: source type -> Hal_Vin input id (aurora .data 0x013b9e78) */
 static const int g_input_id[26] = {
@@ -95,6 +99,7 @@ struct ctx {
     int vin_fd;
     int vin_ready; /* -1 unknown, 0 lost, 1 ready */
     int vin_error_logged;
+    int inactive_enabled; /* source.inactive_fallback */
 };
 
 static struct ctx *g_ctx;
@@ -510,9 +515,83 @@ static int iface_video_status(void)
     return rc;
 }
 
+struct inactive_ctx {
+    struct ctx *mod;
+    const oa_tuner_iface *tuner;
+    uint32_t handle;
+};
+
+static int inactive_select_dtv(void *context)
+{
+    struct inactive_ctx *i = context;
+    return change_input(i->mod, 0);
+}
+
+static int inactive_select_tuner(void *context, int position)
+{
+    (void)position;
+    struct inactive_ctx *i = context;
+    return i->tuner->select(i->handle);
+}
+
+/* Gated CEC 0x9D fallback: resolve the active-list position to a service
+ * handle, connect DTV, then select the service. The caller only invokes this
+ * while an external source is displayed. */
+static int iface_inactive_source(int saved_position)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->enabled || !c->inactive_enabled) return -2;
+    if (saved_position < 0) return -EINVAL;
+
+    const oa_channel_iface *channels = c->api->lookup
+        ? c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1) : NULL;
+    const struct oa_channel_snapshot *snapshot =
+        channels ? channels->snapshot() : NULL;
+    if (!snapshot || (size_t)saved_position >= snapshot->count) {
+        if (channels && c->api->release)
+            c->api->release(c->api->priv, OA_SVC_CHANNELS);
+        return -ENODEV;
+    }
+
+    struct oa_tuner_view view;
+    memset(&view, 0, sizeof view);
+    view.channels = snapshot;
+    uint32_t handle = 0;
+    int rc = oa_tuner_handle_at(&view, saved_position, &handle);
+    if (rc < 0) {
+        if (c->api->release)
+            c->api->release(c->api->priv, OA_SVC_CHANNELS);
+        return rc;
+    }
+
+    const oa_tuner_iface *tuner = c->api->lookup
+        ? c->api->lookup(c->api->priv, OA_SVC_TUNER, 1) : NULL;
+    if (!tuner || !tuner->select) {
+        if (tuner && c->api->release)
+            c->api->release(c->api->priv, OA_SVC_TUNER);
+        if (c->api->release)
+            c->api->release(c->api->priv, OA_SVC_CHANNELS);
+        return -ENODEV;
+    }
+
+    struct inactive_ctx inactive = { c, tuner, handle };
+    struct oa_source_loss_worker worker = {
+        .context = &inactive,
+        .select_dtv = inactive_select_dtv,
+        .select_tuner_position = inactive_select_tuner
+    };
+    rc = oa_source_loss_inactive_source(&worker, 1, 1, saved_position);
+    if (c->api->release)
+        c->api->release(c->api->priv, OA_SVC_TUNER);
+    if (c->api->release)
+        c->api->release(c->api->priv, OA_SVC_CHANNELS);
+    return rc == OA_SOURCE_LOSS_DTV_TUNER ? 0 : rc;
+}
+
 static const oa_source_iface g_iface = { select_type, iface_current,
                                          iface_available, iface_diag,
-                                         iface_video_status };
+                                         iface_video_status,
+                                         iface_inactive_source };
 
 static int m_init(const oa_host_api *api, void **out)
 {
@@ -673,6 +752,12 @@ static int m_start(void *v)
     if (c->vin_enabled)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "source: HDMI RX status poll enabled (read-only /dev/video21)");
+    const char *inactive = c->api->config_get(c->api->priv,
+                                              "source.inactive_fallback", "0");
+    c->inactive_enabled = inactive && atoi(inactive) != 0;
+    if (c->inactive_enabled)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "source: CEC 0x9D inactive-source fallback enabled");
     if (c->api->publish(c->api->priv, OA_SVC_SOURCE, 1, &g_iface) != 0)
         c->api->log(c->api->priv, OA_LOG_WARN, "source service already published");
 
@@ -735,6 +820,7 @@ static int m_quiesce(void *v)
     close_vin_status(c);
     c->vin_enabled = 0;
     c->vin_ready = -1;
+    c->inactive_enabled = 0;
     c->enabled = 0;
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
@@ -781,6 +867,7 @@ static void m_stop(void *v)
     close_vin_status(c);
     c->vin_enabled = 0;
     c->vin_ready = -1;
+    c->inactive_enabled = 0;
     c->enabled = 0;
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);

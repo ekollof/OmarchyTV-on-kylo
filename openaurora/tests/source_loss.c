@@ -1,6 +1,7 @@
 /* Pure source-loss policy test from InputManager @0x00fb1f30/0x00fb1fbc.
  * No TV, HAL, tuner, UI or device access. */
 #include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 
 #include "openaurora/source_loss.h"
@@ -145,6 +146,69 @@ static void test_invalid_arguments(void)
            OA_SOURCE_LOSS_NONE);
 }
 
+struct fake_worker {
+    int dtv_calls;
+    int tuner_calls;
+    int last_position;
+    int dtv_rc;
+    int tuner_rc;
+};
+
+static int fake_dtv(void *context)
+{
+    struct fake_worker *f = context;
+    f->dtv_calls++;
+    return f->dtv_rc;
+}
+
+static int fake_tuner(void *context, int position)
+{
+    struct fake_worker *f = context;
+    f->tuner_calls++;
+    f->last_position = position;
+    return f->tuner_rc;
+}
+
+static void test_inactive_source_worker(void)
+{
+    struct fake_worker f = { 0 };
+    struct oa_source_loss_worker w = {
+        .context = &f, .select_dtv = fake_dtv,
+        .select_tuner_position = fake_tuner
+    };
+
+    assert(oa_source_loss_inactive_source(&w, 0, 1, 3) ==
+           OA_SOURCE_LOSS_NONE);
+    assert(oa_source_loss_inactive_source(&w, 1, 0, 3) ==
+           OA_SOURCE_LOSS_NONE);
+    assert(oa_source_loss_inactive_source(&w, 1, 1, -1) ==
+           OA_SOURCE_LOSS_NONE);
+    assert(f.dtv_calls == 0 && f.tuner_calls == 0);
+
+    assert(oa_source_loss_inactive_source(&w, 1, 1, 3) ==
+           OA_SOURCE_LOSS_DTV_TUNER);
+    assert(f.dtv_calls == 1 && f.tuner_calls == 1);
+    assert(f.last_position == 3);
+
+    f.dtv_calls = f.tuner_calls = 0;
+    f.dtv_rc = -EIO;
+    assert(oa_source_loss_inactive_source(&w, 1, 1, 3) == -EIO);
+    assert(f.dtv_calls == 1 && f.tuner_calls == 0);
+
+    f.dtv_calls = f.tuner_calls = 0;
+    f.dtv_rc = 0;
+    f.tuner_rc = -ENODEV;
+    assert(oa_source_loss_inactive_source(&w, 1, 1, 3) == -ENODEV);
+    assert(f.dtv_calls == 1 && f.tuner_calls == 1);
+
+    assert(oa_source_loss_inactive_source(NULL, 1, 1, 3) == -EINVAL);
+    w.select_tuner_position = NULL;
+    assert(oa_source_loss_inactive_source(&w, 1, 1, 3) == -EINVAL);
+    w.select_tuner_position = fake_tuner;
+    w.select_dtv = NULL;
+    assert(oa_source_loss_inactive_source(&w, 1, 1, 3) == -EINVAL);
+}
+
 int main(void)
 {
     test_init();
@@ -153,7 +217,9 @@ int main(void)
     test_gates();
     test_connect_is_idempotent();
     test_invalid_arguments();
+    test_inactive_source_worker();
     puts("ok source-loss policy: connect/disconnect, previous external, "
-         "tuner position, flag gates, invalid arguments");
+         "tuner position, flag gates, inactive-source worker order/gates, "
+         "invalid arguments");
     return 0;
 }

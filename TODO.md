@@ -551,10 +551,13 @@ unvalidated.
       select a tuner; it is a no-signal detector, not the sleep trigger. The
       key-597 emitter is recovered (CEC 0x9D). `common/tuner_view.c` +
       `check-tuner-view` implement the recovered `TunerManager` view
-      position→handle mapping (`(this+0x1c)->vtable+0x54`). Remaining: the full
-      select/mute/decoder/UI body, the `mod_cec` 0x9D route, any
-      `SetConnectInfo` caller outside the analyzed paths and the UI/timing.
-      SOURCE-LOSS-FALLBACK-2026-11-12.
+      position→handle mapping (`(this+0x1c)->vtable+0x54`). The source service
+      now exposes gated `inactive_source(position)` v3
+      (`source.inactive_fallback`), resolving `OA_SVC_CHANNELS`, connecting DTV
+      and calling `OA_SVC_TUNER.select(handle)`; the `source_path` fake-service
+      test covers order/gates. Remaining: the `mod_cec` 0x9D route, the full
+      select/mute/decoder/UI body, any `SetConnectInfo` caller outside the
+      analyzed paths and the UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
       `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts
       them to the loop; the TV link also needed `-ldl`. `check-ir-blast-worker`

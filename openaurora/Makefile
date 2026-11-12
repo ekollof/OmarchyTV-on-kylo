@@ -1006,10 +1006,10 @@ $(BUILD)/modules/mod_audio_source.so: $(call pic_objs,modules__mod_audio_source,
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),audio_source),$(VENDOR_LDFLAGS),)
 $(eval $(call emit_pics,modules__mod_audio_source,modules/audio_source/audio_source.c common/audio_source_hal_vendor.c common/audio_curve.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/audio_source_hal.h include/openaurora/audio_curve.h))
 
-$(BUILD)/modules/mod_source.so: $(call pic_objs,modules__mod_source,modules/source/source.c common/source_hal_vendor.c common/dev_gpio.c common/dev_gpio_vendor.c common/src_hotplug.c common/source_vin.c common/source_vin_vendor.c)
+$(BUILD)/modules/mod_source.so: $(call pic_objs,modules__mod_source,modules/source/source.c common/source_hal_vendor.c common/dev_gpio.c common/dev_gpio_vendor.c common/src_hotplug.c common/source_vin.c common/source_vin_vendor.c common/source_loss.c common/tuner_view.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),source),$(VENDOR_LDFLAGS),)
-$(eval $(call emit_pics,modules__mod_source,modules/source/source.c common/source_hal_vendor.c common/dev_gpio.c common/dev_gpio_vendor.c common/src_hotplug.c common/source_vin.c common/source_vin_vendor.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/source_hal.h include/openaurora/dev_gpio.h include/openaurora/src_hotplug.h include/openaurora/source_vin.h))
+$(eval $(call emit_pics,modules__mod_source,modules/source/source.c common/source_hal_vendor.c common/dev_gpio.c common/dev_gpio_vendor.c common/src_hotplug.c common/source_vin.c common/source_vin_vendor.c common/source_loss.c common/tuner_view.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/source_hal.h include/openaurora/dev_gpio.h include/openaurora/src_hotplug.h include/openaurora/source_vin.h include/openaurora/source_loss.h include/openaurora/tuner_view.h))
 
 $(BUILD)/modules/mod_display_fb.so: $(call pic_objs,modules__mod_display_fb,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c)
 	@mkdir -p $(dir $@)
@@ -2814,12 +2814,12 @@ $(BUILD)/tests/ui_menu_action: tests/ui_menu_action.c core/host.h $(filter-out $
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests $(LDFLAGS) -o $@ tests/ui_menu_action.c $(filter %.o,$^) $(LDLIBS)
 
-$(BUILD)/tests/mod_source_fake.so: $(call pic_objs,tests__mod_source_fake,modules/source/source.c tests/source_fake.c common/dev_gpio.c common/src_hotplug.c common/source_vin.c)
+$(BUILD)/tests/mod_source_fake.so: $(call pic_objs,tests__mod_source_fake,modules/source/source.c tests/source_fake.c common/dev_gpio.c common/src_hotplug.c common/source_vin.c common/source_loss.c common/tuner_view.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -ldl -pthread
-$(eval $(call emit_pics,tests__mod_source_fake,modules/source/source.c tests/source_fake.c common/dev_gpio.c common/src_hotplug.c common/source_vin.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/source_hal.h include/openaurora/dev_gpio.h include/openaurora/src_hotplug.h include/openaurora/source_vin.h,PIC_CPPFLAGS_SOURCE_FAKE))
+$(eval $(call emit_pics,tests__mod_source_fake,modules/source/source.c tests/source_fake.c common/dev_gpio.c common/src_hotplug.c common/source_vin.c common/source_loss.c common/tuner_view.c,-pthread,include/openaurora/module.h include/openaurora/services.h include/openaurora/source_hal.h include/openaurora/dev_gpio.h include/openaurora/src_hotplug.h include/openaurora/source_vin.h include/openaurora/source_loss.h include/openaurora/tuner_view.h,PIC_CPPFLAGS_SOURCE_FAKE))
 
-$(BUILD)/tests/source_path: tests/source_path.c modules/source/source.c tests/source_fake.c common/dev_gpio.c common/src_hotplug.c common/source_vin.c
+$(BUILD)/tests/source_path: tests/source_path.c modules/source/source.c tests/source_fake.c common/dev_gpio.c common/src_hotplug.c common/source_vin.c common/source_loss.c common/tuner_view.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
 

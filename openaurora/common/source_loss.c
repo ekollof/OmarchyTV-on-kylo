@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <string.h>
 
 #include "openaurora/source_loss.h"
@@ -52,4 +53,20 @@ enum oa_source_loss_action oa_source_loss_disconnected(
         return OA_SOURCE_LOSS_TUNER_POSITION;
     }
     return OA_SOURCE_LOSS_NONE;
+}
+
+int oa_source_loss_inactive_source(const struct oa_source_loss_worker *worker,
+                                   int enabled, int displayed_external,
+                                   int saved_tuner_position)
+{
+    if (!worker || !worker->select_dtv || !worker->select_tuner_position)
+        return -EINVAL;
+    if (!enabled || !displayed_external || saved_tuner_position < 0)
+        return OA_SOURCE_LOSS_NONE;
+
+    int rc = worker->select_dtv(worker->context);
+    if (rc < 0) return rc;
+    rc = worker->select_tuner_position(worker->context, saved_tuner_position);
+    if (rc < 0) return rc;
+    return OA_SOURCE_LOSS_DTV_TUNER;
 }

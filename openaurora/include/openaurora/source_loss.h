@@ -28,8 +28,29 @@ enum oa_source_loss_action {
     OA_SOURCE_LOSS_NONE = 0,
     OA_SOURCE_LOSS_SELECT_EXTERNAL,
     OA_SOURCE_LOSS_PREVIOUS_EXTERNAL,
-    OA_SOURCE_LOSS_TUNER_POSITION
+    OA_SOURCE_LOSS_TUNER_POSITION,
+    OA_SOURCE_LOSS_DTV_TUNER
 };
+
+/*
+ * Gated CEC 0x9D worker policy. The caller supplies the two effects:
+ * select_dtv() connects the DTV source; select_tuner_position() resolves the
+ * saved view position through the TunerManager/channel-list contract. The
+ * helper only decides whether to run them and in which order. It does not
+ * touch CEC, source, tuner, HAL or UI state.
+ */
+struct oa_source_loss_worker {
+    void *context;
+    int (*select_dtv)(void *context);
+    int (*select_tuner_position)(void *context, int position);
+};
+
+/* Returns OA_SOURCE_LOSS_DTV_TUNER after both callbacks succeed,
+ * OA_SOURCE_LOSS_NONE when disabled/not on an external source/no saved
+ * position, or a negative callback error. */
+int oa_source_loss_inactive_source(const struct oa_source_loss_worker *worker,
+                                   int enabled, int displayed_external,
+                                   int saved_tuner_position);
 
 struct oa_source_loss {
     int previous_external; /* +0x94: -1 = none/TV */

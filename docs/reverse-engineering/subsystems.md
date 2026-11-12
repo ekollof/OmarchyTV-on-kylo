@@ -230,9 +230,12 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   not select a tuner. It is a no-signal detector, not the sleep trigger.
   `common/tuner_view.c` + `check-tuner-view` cover the recovered
   `TunerManager` view position→handle mapping
-  (`(this+0x1c)->vtable+0x54`); the full select/mute/decoder/UI body and the
-  `mod_cec` 0x9D route remain open. Do not substitute an always-switch-to-TV or
-  HPD shortcut.
+  (`(this+0x1c)->vtable+0x54`). The source service's gated
+  `inactive_source(position)` v3 (`source.inactive_fallback`) resolves
+  `OA_SVC_CHANNELS`, connects DTV and calls `OA_SVC_TUNER.select(handle)`;
+  `source_path` fake-service tests cover the order/gates. The full
+  select/mute/decoder/UI body and the `mod_cec` 0x9D route remain open. Do not
+  substitute an always-switch-to-TV or HPD shortcut.
 
 Evidence: [SOURCE-PATH](../../artifacts/reports/SOURCE-PATH-2026-11-09.md),
 [SOURCE-LOSS-FALLBACK](../../artifacts/reports/SOURCE-LOSS-FALLBACK-2026-11-12.md),

@@ -357,7 +357,15 @@ sequence. The position→handle mapping over ACTIVECHANNELLIST and the stored
 service list is implemented in `common/tuner_view.c` /
 `include/openaurora/tuner_view.h`; `check-tuner-view` covers the runtime list,
 stored order, identity order and rejection cases. The full select/mute/
-decoder/UI contract and the CEC 0x9D route remain open.
+decoder/UI contract remains open.
+
+The source service now exposes `inactive_source(position)` v3 behind
+`source.inactive_fallback`. It resolves the active `OA_SVC_CHANNELS` position
+through `oa_tuner_handle_at`, connects DTV, and calls the `OA_SVC_TUNER`
+`select(handle)` method. `tests/source_path.c` covers the gate, DTV/source
+order, position→handle selection (100/200/300), missing-channel rejection and
+the disabled gate. `mod_cec` does not yet route received `0x9D` to this method;
+that is the remaining CEC module integration.
 
 ## What this establishes
 
@@ -385,6 +393,10 @@ decoder/UI contract and the CEC 0x9D route remain open.
   `(TunerManager+0x1c)->vtable+0x54` and selects the handle via `+0xd4`. The
   position→handle mapping is implemented/tested in `common/tuner_view.c`
   (`check-tuner-view`); the full select/mute/decoder/UI contract is open.
+- The source service's `inactive_source(position)` v3 worker is gated by
+  `source.inactive_fallback`, resolves `OA_SVC_CHANNELS`, connects DTV and calls
+  `OA_SVC_TUNER.select(handle)`. The fake-service `source_path` test covers the
+  order/gates; `mod_cec` does not yet route 0x9D to it.
 - On external connect, `this+0x94` saves the previous external source index
   (`-1` for TV) and `this+0x90` the tuner navigation position. On disconnect,
   `+0x94` is restored first; `+0x90` is the tuner-position path only when
@@ -488,9 +500,11 @@ source; the sleep trigger is CEC `0x9D`/key 597.
   (`common/source_hdmi_event_io.c`, `check-source-hdmi-event-io`), the HPD
   model (`common/source_hpd.c`, `check-source-hpd`) and the VIN provider
   (`common/source_vin.c`, `source.vin_status`, `source.video_status()` v2,
-  `check-source-vin` and the fake-module service test) are tested. Not wired:
-  the CEC `0x9D`/DTV/tuner consumer, the tuner service/view re-tune and the UI
-  timing. Do not add a guessed fallback.
+  `check-source-vin` and the fake-module service test) and the gated
+  `inactive_source(position)` v3 worker (`source.inactive_fallback`,
+  `source_path` fake-service order/gates) are tested. Not wired: the `mod_cec`
+  0x9D route, the full tuner select/mute/decoder/UI body and the UI timing.
+  Do not add a guessed fallback.
 - On-TV evidence (read-only): the V4L2 capture produced one scaler event while
   stock stayed up; `oa-hpd-status` read `01 01 00 01 00` (HDMI1=1) and stayed
   unchanged through a 120 s Deck sleep/resume; `oa-hdmi-vin` recorded the
