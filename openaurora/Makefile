@@ -2824,6 +2824,15 @@ check-source-loss: $(BUILD)/tests/source_loss
 	@$(BUILD)/tests/source_loss
 check: check-source-loss
 
+$(BUILD)/tests/source_hdmi_event: tests/source_hdmi_event.c common/source_hdmi_event.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-source-hdmi-event
+check-source-hdmi-event: $(BUILD)/tests/source_hdmi_event
+	@$(BUILD)/tests/source_hdmi_event
+check: check-source-hdmi-event
+
 $(BUILD)/tests/audio_source_path: tests/audio_source_path.c modules/audio_source/audio_source.c tests/audio_source_fake.c common/audio_curve.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread

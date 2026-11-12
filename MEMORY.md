@@ -90,8 +90,11 @@ Provider trace: `AitHub::initialise` @ `0x1169f80` registers
 `NebulaExternalAVSourceNavigator` @ `0x118e73c` → Novo navigator → InputManager.
 Kernel carrier `ndp_SRC_ConnectInfo` (0x74 bytes) in `ntkdriver_nondovi`;
 `NDP_ExtSrc_Get/SetConnectInfo` @ `0x61bb6c`/`0x61bb8c`;
-`_VIU_CheckReconnect` @ `0x61d868`. Exact ICE/HDMI event, V4L2 ID and
-`SetConnectInfo` caller remain unidentified. `mod_cec` routing/power policy is
+`_VIU_CheckReconnect` @ `0x61d868`. HDMI userspace notification: V4L2 event
+`0xc000001` on `/dev/video21`; 28-byte payload (source type `[0..3]`, status
+`[7]`); `common/source_hdmi_event.c` + `check-source-hdmi-event` pass; the live
+adapter is not wired. Status role and any `SetConnectInfo` caller outside the
+analyzed paths remain unidentified. `mod_cec` routing/power policy is
 not implemented. `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor

@@ -172,6 +172,38 @@ ICE/HDMI-switch event that invokes `NEBULA_HandleExternalInterfaceStatusChange`
 are outside the analyzed driver path and remain unidentified. Do not guess a
 V4L2 control ID or event from the address alone.
 
+### 6. V4L2 event provider
+
+The userspace notification is a private V4L2 event on `/dev/video21`
+(`ndp-hdmi`, the live node name):
+
+- `_ndp_hdmi_core_vidioc_subscribe_event` @ `0x0000052c` accepts only event
+  type `0xc000001`; it calls `VPL_SCLR_CTRL_Event_Subscribe` and
+  `v4l2_event_subscribe`.
+- `VPL_SCLR_CTRL_Event_RegisterCB` @ `0x00637538` stores `event_cb` at
+  `0x00bb3e64 + 4`; `eventEnable` at `0x00bb3e64 + 0` is gated by bit 1.
+- `_CTRL_EVENT_Update` @ `0x006394bc` builds a 28-byte payload and calls
+  `event_cb(0xc000001, &payload)`. Its caller
+  `VPL_SCLR_CTRL_UpdateSCLR` @ `0x0063967c` passes `(source, arg == 6)`.
+- Payload layout: source type at `[0..3]` (little-endian), `VidSetting+0x86`
+  at `[4..5]`, `VidSetting+0x0c` at `[6]`, the `(arg == 6)` status byte at
+  `[7]`, and scaler timing fields at `[8..0x1b]`.
+- `_ndp_hdmi_core_event_callback` @ `0x0000150c` copies those 28 bytes into
+  the V4L2 event data and calls `v4l2_event_queue`.
+
+Address convention: the `ntkndphdmi.ko` addresses are `.text` section offsets
+(objdump/nm); the `ntkdriver_nondovi.ko` addresses are Ghidra runtime addresses
+(`.text` offset + `0x10228` in this import).
+
+Pure decoder: `include/openaurora/source_hdmi_event.h` /
+`common/source_hdmi_event.c`. `make check-source-hdmi-event` covers the
+28-byte bound, little-endian source type, status byte, raw preservation and
+short/null rejection; the full host suite passes. The live
+`/dev/video21` subscribe/dequeue adapter is intentionally not wired: stock
+owns the node and consuming its events would interfere. The status byte's role
+(video ready/lost vs connect/disconnect) is not proven; do not map it to the
+NEBULA/`ExternalSourceStatus` values without a captured event.
+
 ## What this establishes
 
 - Stock sleep fallback is an **external-interface disconnect** policy, gated by
@@ -212,14 +244,18 @@ wire a guessed V4L2 event.
 
 ## Limits and next work
 
-- The exact ICE/HDMI-switch event that invokes
-  `NEBULA_HandleExternalInterfaceStatusChange` and the caller of
-  `NDP_ExtSrc_SetConnectInfo` are not identified. The 0x74-byte
-  `ndp_SRC_ConnectInfo` layout is only partially decoded (per-port flags at
-  `0x0`, `0xc`, `0x14`, `0x1c`, `0x28`, `0x34`, `0x40`); no V4L2 control or
-  event ID is established. `NDP_ExtSrc_g_ext_ctrls` handles controls
-  `0xa00966`/`0xa00968`/`0xa0099f`/`0xa00967`/`0xa009ab` but does not expose
-  the 0x74-byte block in the analyzed path.
+- The HDMI userspace notification is identified as V4L2 event `0xc000001` on
+  `/dev/video21`; the pure payload decoder is tested. The live adapter is not
+  wired. The status byte's role and any `NDP_ExtSrc_SetConnectInfo` caller
+  outside the analyzed RX/switch paths remain open. In `ntkndphdmi.ko`,
+  `SetConnectInfo` is called from `tztv_hdmi_int_switch_connect_port` @
+  `0x1070`, `_ndp_hdmi_core_release_func` @ `0x42b4` and
+  `_ndp_hdmi_core_vidioc_s_input` @ `0x46e0`; `ntkndphdmiswitch.ko` calls it
+  from `_ndp_hdmi_switch_vidioc_s_input` @ `0x7ac`. The 0x74-byte
+  `ndp_SRC_ConnectInfo` per-port flags are at `0x0`, `0xc`, `0x14`, `0x1c`,
+  `0x28`, `0x34`, `0x40`; the V4L2 controls
+  `0xa00966`/`0xa00968`/`0xa0099f`/`0xa00967`/`0xa009ab` do not expose the
+  block in the analyzed path.
 - `requestSelectServiceForDisplay` @ `0x00fb19f0` is the tuner service/decoder
   path; its full service-list, decoder-allocation and UI state contract is not
   recovered here. It takes the `NovoServiceViewController::getCurrentView`
@@ -232,10 +268,12 @@ wire a guessed V4L2 event.
 - The no-signal timeout, black-screen and standby policies
   (`HDMINoSignalTimeout`, `NoSignalCapability`, `NovoSignalController`) are
   separate; they were not exercised in this trace.
-- `mod_source` currently implements the connect/disconnect HAL path only. A
-  pure policy helper (`common/source_loss.c`, `check-source-loss`) is tested,
-  but it is not wired: the source-loss event provider and the tuner service/
-  view re-tune are still needed. Do not add a guessed fallback.
+- `mod_source` currently implements the connect/disconnect HAL path only. The
+  pure policy helper (`common/source_loss.c`, `check-source-loss`) and the
+  `0xc000001` payload decoder (`common/source_hdmi_event.c`,
+  `check-source-hdmi-event`) are tested. Not wired: the live `/dev/video21`
+  subscribe/dequeue adapter (stock owns the node) and the tuner service/view
+  re-tune. Do not add a guessed fallback.
 - No TV access. The owner's suspend/resume observation is behavioral
   confirmation, not an independently captured hotplug trace.
 
@@ -267,6 +305,16 @@ wire a guessed V4L2 event.
 - `nondovi-viu-reconnect2.txt` — `_VIU_CheckReconnect`.
 - `nondovi-extsrc-ctrls.txt` — `NDP_ExtSrc_g/s_ext_ctrls` control IDs.
 - `nondovi-connectinfo-refs.txt` — `ndp_SRC_ConnectInfo` references.
+- `hdmi-connect-port.txt` / `hdmi-s-input.txt` — HDMI RX connect/release/input
+  call sites.
+- `hdmiswitch-s-input.txt` — switch-driver `s_input` call site.
+- `nondovi-sclr-events.txt` / `nondovi-ctrl-event-update.txt` /
+  `nondovi-update-sclr.txt` — VPL scaler event callback, payload construction
+  and `UpdateSCLR` caller.
+- `nondovi-ctrl-event-callers.txt` / `nondovi-sclr-event-refs.txt` — callback
+  registration/event references.
+- `ntkndphdmi.dis` — HDMI RX driver disassembly with the event/subscribe
+  functions.
 
 Related: [CEC-LIVE-2026-11-01](CEC-LIVE-2026-11-01.md),
 [CEC-SPEC-VS-AURORA-2026-10-30](CEC-SPEC-VS-AURORA-2026-10-30.md),

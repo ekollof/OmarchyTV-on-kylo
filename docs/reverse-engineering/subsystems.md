@@ -207,8 +207,11 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   helper (`common/source_loss.c`, `check-source-loss`) is tested but not wired.
   Stock provider entry: `AitHub` → `NEBULA_Register...` → `NEBULA_Handle...` →
   Nebula navigator; kernel status carrier `ndp_SRC_ConnectInfo` /
-  `NDP_ExtSrc_Get/SetConnectInfo`. The exact ICE/V4L2 event and tuner service/
-  view re-tune remain open. Do not substitute an always-switch-to-TV shortcut.
+  `NDP_ExtSrc_Get/SetConnectInfo`. HDMI userspace notification is V4L2 event
+  `0xc000001` on `/dev/video21` with a 28-byte payload (source type `[0..3]`,
+  status `[7]`); `common/source_hdmi_event.c` + `check-source-hdmi-event`. The
+  live adapter, status-role mapping and tuner service/view re-tune remain open.
+  Do not substitute an always-switch-to-TV shortcut.
 
 Evidence: [SOURCE-PATH](../../artifacts/reports/SOURCE-PATH-2026-11-09.md),
 [SOURCE-LOSS-FALLBACK](../../artifacts/reports/SOURCE-LOSS-FALLBACK-2026-11-12.md),

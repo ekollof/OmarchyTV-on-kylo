@@ -1,0 +1,157 @@
+
+artifacts/workbench/rootfs/root/lib/modules/ntkndphdmi.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00001070 <tztv_hdmi_int_switch_connect_port>:
+    1070:	e1a0c00d 	mov	ip, sp
+    1074:	e92dd870 	push	{r4, r5, r6, fp, ip, lr, pc}
+    1078:	e24cb004 	sub	fp, ip, #4
+    107c:	e24dd09c 	sub	sp, sp, #156	; 0x9c
+    1080:	e52de004 	push	{lr}		; (str lr, [sp, #-4]!)
+    1084:	ebfffffe 	bl	0 <__gnu_mcount_nc>
+    1088:	e3004000 	movw	r4, #0
+    108c:	e1a05000 	mov	r5, r0
+    1090:	e3404000 	movt	r4, #0
+    1094:	e5943000 	ldr	r3, [r4]
+    1098:	e3130010 	tst	r3, #16
+    109c:	0a000000 	beq	10a4 <tztv_hdmi_int_switch_connect_port+0x34>
+    10a0:	e320f000 	nop	{0}
+    10a4:	ebfffffe 	bl	0 <NDP_ExtSrc_GetConnectInfo>
+    10a8:	e3a02074 	mov	r2, #116	; 0x74
+    10ac:	e1a01000 	mov	r1, r0
+    10b0:	e24b0090 	sub	r0, fp, #144	; 0x90
+    10b4:	ebfffffe 	bl	0 <memcpy>
+    10b8:	e3550003 	cmp	r5, #3
+    10bc:	979ff105 	ldrls	pc, [pc, r5, lsl #2]
+    10c0:	ea000003 	b	10d4 <tztv_hdmi_int_switch_connect_port+0x64>
+    10c4:	000010d4 	.word	0x000010d4
+    10c8:	00001184 	.word	0x00001184
+    10cc:	00001178 	.word	0x00001178
+    10d0:	00001190 	.word	0x00001190
+    10d4:	e3a0300c 	mov	r3, #12
+    10d8:	e50b3070 	str	r3, [fp, #-112]	; 0xffffff90
+    10dc:	e24b0090 	sub	r0, fp, #144	; 0x90
+    10e0:	ebfffffe 	bl	0 <NDP_ExtSrc_SetConnectInfo>
+    10e4:	e5943000 	ldr	r3, [r4]
+    10e8:	e3130020 	tst	r3, #32
+    10ec:	0a000000 	beq	10f4 <tztv_hdmi_int_switch_connect_port+0x84>
+    10f0:	e320f000 	nop	{0}
+    10f4:	e3130010 	tst	r3, #16
+    10f8:	0a000000 	beq	1100 <tztv_hdmi_int_switch_connect_port+0x90>
+    10fc:	e320f000 	nop	{0}
+    1100:	e3a00000 	mov	r0, #0
+    1104:	e24bd018 	sub	sp, fp, #24
+    1108:	e89da870 	ldm	sp, {r4, r5, r6, fp, sp, pc}
+    110c:	e3003000 	movw	r3, #0
+    1110:	e3403000 	movt	r3, #0
+    1114:	e5931000 	ldr	r1, [r3]
+    1118:	e3510000 	cmp	r1, #0
+    111c:	12811010 	addne	r1, r1, #16
+    1120:	0a00005d 	beq	129c <tztv_hdmi_int_switch_connect_port+0x22c>
+    1124:	e1a0c00d 	mov	ip, sp
+    1128:	e59f2178 	ldr	r2, [pc, #376]	; 12a8 <tztv_hdmi_int_switch_connect_port+0x238>
+    112c:	e3cc3d7f 	bic	r3, ip, #8128	; 0x1fc0
+    1130:	e300e6fd 	movw	lr, #1789	; 0x6fd
+    1134:	e3c3303f 	bic	r3, r3, #63	; 0x3f
+    1138:	e593000c 	ldr	r0, [r3, #12]
+    113c:	e3003000 	movw	r3, #0
+    1140:	e58d200c 	str	r2, [sp, #12]
+    1144:	e3002000 	movw	r2, #0
+    1148:	e58de010 	str	lr, [sp, #16]
+    114c:	e3403000 	movt	r3, #0
+    1150:	e590e2b4 	ldr	lr, [r0, #692]	; 0x2b4
+    1154:	e2806fed 	add	r6, r0, #948	; 0x3b4
+    1158:	e3402000 	movt	r2, #0
+    115c:	e58de008 	str	lr, [sp, #8]
+    1160:	e590e2b0 	ldr	lr, [r0, #688]	; 0x2b0
+    1164:	e58d6000 	str	r6, [sp]
+    1168:	e59f013c 	ldr	r0, [pc, #316]	; 12ac <tztv_hdmi_int_switch_connect_port+0x23c>
+    116c:	e58de004 	str	lr, [sp, #4]
+    1170:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    1174:	eaffffca 	b	10a4 <tztv_hdmi_int_switch_connect_port+0x34>
+    1178:	e3a0300e 	mov	r3, #14
+    117c:	e50b3070 	str	r3, [fp, #-112]	; 0xffffff90
+    1180:	eaffffd5 	b	10dc <tztv_hdmi_int_switch_connect_port+0x6c>
+    1184:	e3a0300d 	mov	r3, #13
+    1188:	e50b3070 	str	r3, [fp, #-112]	; 0xffffff90
+    118c:	eaffffd2 	b	10dc <tztv_hdmi_int_switch_connect_port+0x6c>
+    1190:	e3a0300f 	mov	r3, #15
+    1194:	e50b3070 	str	r3, [fp, #-112]	; 0xffffff90
+    1198:	eaffffcf 	b	10dc <tztv_hdmi_int_switch_connect_port+0x6c>
+    119c:	e3003000 	movw	r3, #0
+    11a0:	e3403000 	movt	r3, #0
+    11a4:	e5931000 	ldr	r1, [r3]
+    11a8:	e3510000 	cmp	r1, #0
+    11ac:	12811010 	addne	r1, r1, #16
+    11b0:	0a000033 	beq	1284 <tztv_hdmi_int_switch_connect_port+0x214>
+    11b4:	e1a0c00d 	mov	ip, sp
+    11b8:	e59f00e8 	ldr	r0, [pc, #232]	; 12a8 <tztv_hdmi_int_switch_connect_port+0x238>
+    11bc:	e3cc2d7f 	bic	r2, ip, #8128	; 0x1fc0
+    11c0:	e3004718 	movw	r4, #1816	; 0x718
+    11c4:	e3c2203f 	bic	r2, r2, #63	; 0x3f
+    11c8:	e3003000 	movw	r3, #0
+    11cc:	e592e00c 	ldr	lr, [r2, #12]
+    11d0:	e3002000 	movw	r2, #0
+    11d4:	e58d4010 	str	r4, [sp, #16]
+    11d8:	e3403000 	movt	r3, #0
+    11dc:	e58d000c 	str	r0, [sp, #12]
+    11e0:	e3402000 	movt	r2, #0
+    11e4:	e59e52b4 	ldr	r5, [lr, #692]	; 0x2b4
+    11e8:	e28e4fed 	add	r4, lr, #948	; 0x3b4
+    11ec:	e59f00bc 	ldr	r0, [pc, #188]	; 12b0 <tztv_hdmi_int_switch_connect_port+0x240>
+    11f0:	e58d5008 	str	r5, [sp, #8]
+    11f4:	e59ee2b0 	ldr	lr, [lr, #688]	; 0x2b0
+    11f8:	e88d4010 	stm	sp, {r4, lr}
+    11fc:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    1200:	e3a00000 	mov	r0, #0
+    1204:	e24bd018 	sub	sp, fp, #24
+    1208:	e89da870 	ldm	sp, {r4, r5, r6, fp, sp, pc}
+    120c:	e3003000 	movw	r3, #0
+    1210:	e3403000 	movt	r3, #0
+    1214:	e5931000 	ldr	r1, [r3]
+    1218:	e3510000 	cmp	r1, #0
+    121c:	12811010 	addne	r1, r1, #16
+    1220:	0a00001a 	beq	1290 <tztv_hdmi_int_switch_connect_port+0x220>
+    1224:	e1a0c00d 	mov	ip, sp
+    1228:	e51b6070 	ldr	r6, [fp, #-112]	; 0xffffff90
+    122c:	e3cc3d7f 	bic	r3, ip, #8128	; 0x1fc0
+    1230:	e59f2070 	ldr	r2, [pc, #112]	; 12a8 <tztv_hdmi_int_switch_connect_port+0x238>
+    1234:	e3c3303f 	bic	r3, r3, #63	; 0x3f
+    1238:	e3000717 	movw	r0, #1815	; 0x717
+    123c:	e593e00c 	ldr	lr, [r3, #12]
+    1240:	e3003000 	movw	r3, #0
+    1244:	e58d5014 	str	r5, [sp, #20]
+    1248:	e3403000 	movt	r3, #0
+    124c:	e58d0010 	str	r0, [sp, #16]
+    1250:	e58d200c 	str	r2, [sp, #12]
+    1254:	e28e5fed 	add	r5, lr, #948	; 0x3b4
+    1258:	e58d6018 	str	r6, [sp, #24]
+    125c:	e3002000 	movw	r2, #0
+    1260:	e59e62b4 	ldr	r6, [lr, #692]	; 0x2b4
+    1264:	e3402000 	movt	r2, #0
+    1268:	e59f0044 	ldr	r0, [pc, #68]	; 12b4 <tztv_hdmi_int_switch_connect_port+0x244>
+    126c:	e58d6008 	str	r6, [sp, #8]
+    1270:	e59ee2b0 	ldr	lr, [lr, #688]	; 0x2b0
+    1274:	e88d4020 	stm	sp, {r5, lr}
+    1278:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    127c:	e5943000 	ldr	r3, [r4]
+    1280:	eaffff9b 	b	10f4 <tztv_hdmi_int_switch_connect_port+0x84>
+    1284:	ebfffffe 	bl	0 <NDP_DebugInit>
+    1288:	e1a01000 	mov	r1, r0
+    128c:	eaffffc8 	b	11b4 <tztv_hdmi_int_switch_connect_port+0x144>
+    1290:	ebfffffe 	bl	0 <NDP_DebugInit>
+    1294:	e1a01000 	mov	r1, r0
+    1298:	eaffffe1 	b	1224 <tztv_hdmi_int_switch_connect_port+0x1b4>
+    129c:	ebfffffe 	bl	0 <NDP_DebugInit>
+    12a0:	e1a01000 	mov	r1, r0
+    12a4:	eaffff9e 	b	1124 <tztv_hdmi_int_switch_connect_port+0xb4>
+    12a8:	00000124 	.word	0x00000124
+    12ac:	00000300 	.word	0x00000300
+    12b0:	00000340 	.word	0x00000340
+    12b4:	00000320 	.word	0x00000320
+
+Disassembly of section .init.text:
+
+Disassembly of section .exit.text:

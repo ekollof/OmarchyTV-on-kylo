@@ -527,9 +527,13 @@ unvalidated.
       `NebulaExternalAVSourceNavigator` @ `0x118e73c` → Novo navigator →
       InputManager. Kernel carrier `ndp_SRC_ConnectInfo` (0x74 bytes) via
       `NDP_ExtSrc_Get/SetConnectInfo` @ `0x61bb6c`/`0x61bb8c` and
-      `_VIU_CheckReconnect` @ `0x61d868`. Remaining: the exact ICE/V4L2 event
-      and `SetConnectInfo` caller, the tuner service/view re-tune and the UI/
-      timing. SOURCE-LOSS-FALLBACK-2026-11-12.
+      `_VIU_CheckReconnect` @ `0x61d868`. HDMI userspace notification: V4L2
+      event `0xc000001` on `/dev/video21`; 28-byte payload (source type
+      `[0..3]`, status `[7]`); decoder `common/source_hdmi_event.c` +
+      `check-source-hdmi-event` pass; live adapter not wired. Remaining: the
+      status-role mapping, any `SetConnectInfo` caller outside the analyzed
+      paths, the live subscribe/dequeue adapter, the tuner service/view re-tune
+      and the UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
       `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts
       them to the loop; the TV link also needed `-ldl`. `check-ir-blast-worker`

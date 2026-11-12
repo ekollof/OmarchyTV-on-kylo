@@ -1,0 +1,466 @@
+
+artifacts/workbench/rootfs/root/lib/modules/ntkndphdmi.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+000046e0 <_ndp_hdmi_core_vidioc_s_input>:
+    46e0:	e1a0c00d 	mov	ip, sp
+    46e4:	e92dd870 	push	{r4, r5, r6, fp, ip, lr, pc}
+    46e8:	e24cb004 	sub	fp, ip, #4
+    46ec:	e24dd09c 	sub	sp, sp, #156	; 0x9c
+    46f0:	e52de004 	push	{lr}		; (str lr, [sp, #-4]!)
+    46f4:	ebfffffe 	bl	0 <__gnu_mcount_nc>
+    46f8:	e3000000 	movw	r0, #0
+    46fc:	e3004000 	movw	r4, #0
+    4700:	e3400000 	movt	r0, #0
+    4704:	e3404000 	movt	r4, #0
+    4708:	e1a05002 	mov	r5, r2
+    470c:	ebfffffe 	bl	0 <mutex_lock>
+    4710:	e5943000 	ldr	r3, [r4]
+    4714:	e3130010 	tst	r3, #16
+    4718:	0a000000 	beq	4720 <_ndp_hdmi_core_vidioc_s_input+0x40>
+    471c:	e320f000 	nop	{0}
+    4720:	e35500ff 	cmp	r5, #255	; 0xff
+    4724:	0a000065 	beq	48c0 <_ndp_hdmi_core_vidioc_s_input+0x1e0>
+    4728:	ebfffffe 	bl	0 <NDP_ExtSrc_GetConnectInfo>
+    472c:	e3a02074 	mov	r2, #116	; 0x74
+    4730:	e1a01000 	mov	r1, r0
+    4734:	e24b0090 	sub	r0, fp, #144	; 0x90
+    4738:	ebfffffe 	bl	0 <memcpy>
+    473c:	e55b3074 	ldrb	r3, [fp, #-116]	; 0xffffff8c
+    4740:	e3530000 	cmp	r3, #0
+    4744:	e5943000 	ldr	r3, [r4]
+    4748:	0a000014 	beq	47a0 <_ndp_hdmi_core_vidioc_s_input+0xc0>
+    474c:	e3130080 	tst	r3, #128	; 0x80
+    4750:	0a000000 	beq	4758 <_ndp_hdmi_core_vidioc_s_input+0x78>
+    4754:	e320f000 	nop	{0}
+    4758:	e3a01002 	mov	r1, #2
+    475c:	e55b006c 	ldrb	r0, [fp, #-108]	; 0xffffff94
+    4760:	ebfffffe 	bl	0 <NDP_ExtSrc_IsSourceTheSame>
+    4764:	e3500000 	cmp	r0, #0
+    4768:	0a00007e 	beq	4968 <_ndp_hdmi_core_vidioc_s_input+0x288>
+    476c:	e5943000 	ldr	r3, [r4]
+    4770:	e3130080 	tst	r3, #128	; 0x80
+    4774:	0a000000 	beq	477c <_ndp_hdmi_core_vidioc_s_input+0x9c>
+    4778:	e320f000 	nop	{0}
+    477c:	e3a01016 	mov	r1, #22
+    4780:	e55b006c 	ldrb	r0, [fp, #-108]	; 0xffffff94
+    4784:	ebfffffe 	bl	0 <NDP_ExtSrc_ChangeInput>
+    4788:	ebfffffe 	bl	0 <NDP_ExtSrc_GetConnectInfo>
+    478c:	e3a02074 	mov	r2, #116	; 0x74
+    4790:	e1a01000 	mov	r1, r0
+    4794:	e24b0090 	sub	r0, fp, #144	; 0x90
+    4798:	ebfffffe 	bl	0 <memcpy>
+    479c:	ea000003 	b	47b0 <_ndp_hdmi_core_vidioc_s_input+0xd0>
+    47a0:	e3130020 	tst	r3, #32
+    47a4:	1a00006d 	bne	4960 <_ndp_hdmi_core_vidioc_s_input+0x280>
+    47a8:	ebfffffe 	bl	0 <NDP_ExtSrc_GuessSclrPath>
+    47ac:	e50b006c 	str	r0, [fp, #-108]	; 0xffffff94
+    47b0:	e24b0090 	sub	r0, fp, #144	; 0x90
+    47b4:	ebfffffe 	bl	0 <NDP_ExtSrc_SetConnectInfo>
+    47b8:	e5943000 	ldr	r3, [r4]
+    47bc:	e3130020 	tst	r3, #32
+    47c0:	0a000000 	beq	47c8 <_ndp_hdmi_core_vidioc_s_input+0xe8>
+    47c4:	e320f000 	nop	{0}
+    47c8:	e51b1070 	ldr	r1, [fp, #-112]	; 0xffffff90
+    47cc:	e3005000 	movw	r5, #0
+    47d0:	e55b006c 	ldrb	r0, [fp, #-108]	; 0xffffff94
+    47d4:	e3405000 	movt	r5, #0
+    47d8:	ebfffffe 	bl	0 <NDP_ExtSrc_ChangeInput>
+    47dc:	ebfffffe 	bl	0 <NDP_ExtSrc_GetConnectInfo>
+    47e0:	e3a02074 	mov	r2, #116	; 0x74
+    47e4:	e1a01000 	mov	r1, r0
+    47e8:	e24b0090 	sub	r0, fp, #144	; 0x90
+    47ec:	ebfffffe 	bl	0 <memcpy>
+    47f0:	e3a03001 	mov	r3, #1
+    47f4:	e24b0090 	sub	r0, fp, #144	; 0x90
+    47f8:	e54b3074 	strb	r3, [fp, #-116]	; 0xffffff8c
+    47fc:	ebfffffe 	bl	0 <NDP_ExtSrc_SetConnectInfo>
+    4800:	e1a0300d 	mov	r3, sp
+    4804:	e5942000 	ldr	r2, [r4]
+    4808:	e3c33d7f 	bic	r3, r3, #8128	; 0x1fc0
+    480c:	e3c3303f 	bic	r3, r3, #63	; 0x3f
+    4810:	e593c00c 	ldr	ip, [r3, #12]
+    4814:	e3120020 	tst	r2, #32
+    4818:	e59c32b0 	ldr	r3, [ip, #688]	; 0x2b0
+    481c:	e5853200 	str	r3, [r5, #512]	; 0x200
+    4820:	0a000000 	beq	4828 <_ndp_hdmi_core_vidioc_s_input+0x148>
+    4824:	e320f000 	nop	{0}
+    4828:	e3120010 	tst	r2, #16
+    482c:	0a000000 	beq	4834 <_ndp_hdmi_core_vidioc_s_input+0x154>
+    4830:	e320f000 	nop	{0}
+    4834:	e3000000 	movw	r0, #0
+    4838:	e3a04000 	mov	r4, #0
+    483c:	e3400000 	movt	r0, #0
+    4840:	ebfffffe 	bl	0 <mutex_unlock>
+    4844:	e1a00004 	mov	r0, r4
+    4848:	e24bd018 	sub	sp, fp, #24
+    484c:	e89da870 	ldm	sp, {r4, r5, r6, fp, sp, pc}
+    4850:	e3003000 	movw	r3, #0
+    4854:	e3403000 	movt	r3, #0
+    4858:	e5931000 	ldr	r1, [r3]
+    485c:	e3510000 	cmp	r1, #0
+    4860:	12811010 	addne	r1, r1, #16
+    4864:	0a000135 	beq	4d40 <_ndp_hdmi_core_vidioc_s_input+0x660>
+    4868:	e1a0c00d 	mov	ip, sp
+    486c:	e59f255c 	ldr	r2, [pc, #1372]	; 4dd0 <_ndp_hdmi_core_vidioc_s_input+0x6f0>
+    4870:	e3cc3d7f 	bic	r3, ip, #8128	; 0x1fc0
+    4874:	e3a0ee25 	mov	lr, #592	; 0x250
+    4878:	e3c3303f 	bic	r3, r3, #63	; 0x3f
+    487c:	e593000c 	ldr	r0, [r3, #12]
+    4880:	e3003000 	movw	r3, #0
+    4884:	e58d200c 	str	r2, [sp, #12]
+    4888:	e3002000 	movw	r2, #0
+    488c:	e58de010 	str	lr, [sp, #16]
+    4890:	e3403000 	movt	r3, #0
+    4894:	e590e2b4 	ldr	lr, [r0, #692]	; 0x2b4
+    4898:	e2806fed 	add	r6, r0, #948	; 0x3b4
+    489c:	e3402000 	movt	r2, #0
+    48a0:	e58de008 	str	lr, [sp, #8]
+    48a4:	e590e2b0 	ldr	lr, [r0, #688]	; 0x2b0
+    48a8:	e58d6000 	str	r6, [sp]
+    48ac:	e59f0520 	ldr	r0, [pc, #1312]	; 4dd4 <_ndp_hdmi_core_vidioc_s_input+0x6f4>
+    48b0:	e58de004 	str	lr, [sp, #4]
+    48b4:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    48b8:	e35500ff 	cmp	r5, #255	; 0xff
+    48bc:	1affff99 	bne	4728 <_ndp_hdmi_core_vidioc_s_input+0x48>
+    48c0:	e5943000 	ldr	r3, [r4]
+    48c4:	e3130020 	tst	r3, #32
+    48c8:	0a000000 	beq	48d0 <_ndp_hdmi_core_vidioc_s_input+0x1f0>
+    48cc:	e320f000 	nop	{0}
+    48d0:	ebfffe77 	bl	42b4 <_ndp_hdmi_core_release_func.constprop.13>
+    48d4:	e1a04000 	mov	r4, r0
+    48d8:	e3000000 	movw	r0, #0
+    48dc:	e3400000 	movt	r0, #0
+    48e0:	ebfffffe 	bl	0 <mutex_unlock>
+    48e4:	e1a00004 	mov	r0, r4
+    48e8:	e24bd018 	sub	sp, fp, #24
+    48ec:	e89da870 	ldm	sp, {r4, r5, r6, fp, sp, pc}
+    48f0:	e3003000 	movw	r3, #0
+    48f4:	e3403000 	movt	r3, #0
+    48f8:	e5931000 	ldr	r1, [r3]
+    48fc:	e3510000 	cmp	r1, #0
+    4900:	12811010 	addne	r1, r1, #16
+    4904:	0a000110 	beq	4d4c <_ndp_hdmi_core_vidioc_s_input+0x66c>
+    4908:	e1a0c00d 	mov	ip, sp
+    490c:	e59f04bc 	ldr	r0, [pc, #1212]	; 4dd0 <_ndp_hdmi_core_vidioc_s_input+0x6f0>
+    4910:	e3cc3d7f 	bic	r3, ip, #8128	; 0x1fc0
+    4914:	e3a020ff 	mov	r2, #255	; 0xff
+    4918:	e3c3303f 	bic	r3, r3, #63	; 0x3f
+    491c:	e3a04f95 	mov	r4, #596	; 0x254
+    4920:	e593e00c 	ldr	lr, [r3, #12]
+    4924:	e3003000 	movw	r3, #0
+    4928:	e58d2014 	str	r2, [sp, #20]
+    492c:	e3002000 	movw	r2, #0
+    4930:	e58d4010 	str	r4, [sp, #16]
+    4934:	e3403000 	movt	r3, #0
+    4938:	e58d000c 	str	r0, [sp, #12]
+    493c:	e28e4fed 	add	r4, lr, #948	; 0x3b4
+    4940:	e59e52b4 	ldr	r5, [lr, #692]	; 0x2b4
+    4944:	e3402000 	movt	r2, #0
+    4948:	e59f0488 	ldr	r0, [pc, #1160]	; 4dd8 <_ndp_hdmi_core_vidioc_s_input+0x6f8>
+    494c:	e58d5008 	str	r5, [sp, #8]
+    4950:	e59ee2b0 	ldr	lr, [lr, #688]	; 0x2b0
+    4954:	e88d4010 	stm	sp, {r4, lr}
+    4958:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    495c:	eaffffdb 	b	48d0 <_ndp_hdmi_core_vidioc_s_input+0x1f0>
+    4960:	e320f000 	nop	{0}
+    4964:	eaffff8f 	b	47a8 <_ndp_hdmi_core_vidioc_s_input+0xc8>
+    4968:	e51b306c 	ldr	r3, [fp, #-108]	; 0xffffff94
+    496c:	e3530000 	cmp	r3, #0
+    4970:	03a03001 	moveq	r3, #1
+    4974:	150b006c 	strne	r0, [fp, #-108]	; 0xffffff94
+    4978:	e24b0090 	sub	r0, fp, #144	; 0x90
+    497c:	050b306c 	streq	r3, [fp, #-108]	; 0xffffff94
+    4980:	ebfffffe 	bl	0 <NDP_ExtSrc_SetConnectInfo>
+    4984:	e3a01002 	mov	r1, #2
+    4988:	e55b006c 	ldrb	r0, [fp, #-108]	; 0xffffff94
+    498c:	ebfffffe 	bl	0 <NDP_ExtSrc_IsSourceTheSame>
+    4990:	e3500000 	cmp	r0, #0
+    4994:	e5943000 	ldr	r3, [r4]
+    4998:	0a00008b 	beq	4bcc <_ndp_hdmi_core_vidioc_s_input+0x4ec>
+    499c:	e3130080 	tst	r3, #128	; 0x80
+    49a0:	0affff75 	beq	477c <_ndp_hdmi_core_vidioc_s_input+0x9c>
+    49a4:	e320f000 	nop	{0}
+    49a8:	eaffff73 	b	477c <_ndp_hdmi_core_vidioc_s_input+0x9c>
+    49ac:	e3002000 	movw	r2, #0
+    49b0:	e3402000 	movt	r2, #0
+    49b4:	e5921000 	ldr	r1, [r2]
+    49b8:	e3510000 	cmp	r1, #0
+    49bc:	12811010 	addne	r1, r1, #16
+    49c0:	11a05003 	movne	r5, r3
+    49c4:	0a0000e9 	beq	4d70 <_ndp_hdmi_core_vidioc_s_input+0x690>
+    49c8:	e59f2400 	ldr	r2, [pc, #1024]	; 4dd0 <_ndp_hdmi_core_vidioc_s_input+0x6f0>
+    49cc:	e3000296 	movw	r0, #662	; 0x296
+    49d0:	e58d3014 	str	r3, [sp, #20]
+    49d4:	e28cefed 	add	lr, ip, #948	; 0x3b4
+    49d8:	e58d0010 	str	r0, [sp, #16]
+    49dc:	e3003000 	movw	r3, #0
+    49e0:	e58d200c 	str	r2, [sp, #12]
+    49e4:	e3002000 	movw	r2, #0
+    49e8:	e59c02b4 	ldr	r0, [ip, #692]	; 0x2b4
+    49ec:	e3402000 	movt	r2, #0
+    49f0:	e58de000 	str	lr, [sp]
+    49f4:	e3403000 	movt	r3, #0
+    49f8:	e58d5004 	str	r5, [sp, #4]
+    49fc:	e58d0008 	str	r0, [sp, #8]
+    4a00:	e59f03d4 	ldr	r0, [pc, #980]	; 4ddc <_ndp_hdmi_core_vidioc_s_input+0x6fc>
+    4a04:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    4a08:	e5942000 	ldr	r2, [r4]
+    4a0c:	eaffff85 	b	4828 <_ndp_hdmi_core_vidioc_s_input+0x148>
+    4a10:	e3003000 	movw	r3, #0
+    4a14:	e3403000 	movt	r3, #0
+    4a18:	e5931000 	ldr	r1, [r3]
+    4a1c:	e3510000 	cmp	r1, #0
+    4a20:	12811010 	addne	r1, r1, #16
+    4a24:	0a0000ce 	beq	4d64 <_ndp_hdmi_core_vidioc_s_input+0x684>
+    4a28:	e1a0c00d 	mov	ip, sp
+    4a2c:	e59f039c 	ldr	r0, [pc, #924]	; 4dd0 <_ndp_hdmi_core_vidioc_s_input+0x6f0>
+    4a30:	e3cc2d7f 	bic	r2, ip, #8128	; 0x1fc0
+    4a34:	e3a04fa6 	mov	r4, #664	; 0x298
+    4a38:	e3c2203f 	bic	r2, r2, #63	; 0x3f
+    4a3c:	e3003000 	movw	r3, #0
+    4a40:	e592e00c 	ldr	lr, [r2, #12]
+    4a44:	e3002000 	movw	r2, #0
+    4a48:	e58d4010 	str	r4, [sp, #16]
+    4a4c:	e3403000 	movt	r3, #0
+    4a50:	e58d000c 	str	r0, [sp, #12]
+    4a54:	e3402000 	movt	r2, #0
+    4a58:	e59e52b4 	ldr	r5, [lr, #692]	; 0x2b4
+    4a5c:	e28e4fed 	add	r4, lr, #948	; 0x3b4
+    4a60:	e59f0378 	ldr	r0, [pc, #888]	; 4de0 <_ndp_hdmi_core_vidioc_s_input+0x700>
+    4a64:	e58d5008 	str	r5, [sp, #8]
+    4a68:	e59ee2b0 	ldr	lr, [lr, #688]	; 0x2b0
+    4a6c:	e88d4010 	stm	sp, {r4, lr}
+    4a70:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    4a74:	eaffff6e 	b	4834 <_ndp_hdmi_core_vidioc_s_input+0x154>
+    4a78:	e3003000 	movw	r3, #0
+    4a7c:	e3403000 	movt	r3, #0
+    4a80:	e5931000 	ldr	r1, [r3]
+    4a84:	e3510000 	cmp	r1, #0
+    4a88:	12811010 	addne	r1, r1, #16
+    4a8c:	0a0000b1 	beq	4d58 <_ndp_hdmi_core_vidioc_s_input+0x678>
+    4a90:	e1a0c00d 	mov	ip, sp
+    4a94:	e51be070 	ldr	lr, [fp, #-112]	; 0xffffff90
+    4a98:	e3cc3d7f 	bic	r3, ip, #8128	; 0x1fc0
+    4a9c:	e51b506c 	ldr	r5, [fp, #-108]	; 0xffffff94
+    4aa0:	e3c3303f 	bic	r3, r3, #63	; 0x3f
+    4aa4:	e59f2324 	ldr	r2, [pc, #804]	; 4dd0 <_ndp_hdmi_core_vidioc_s_input+0x6f0>
+    4aa8:	e593000c 	ldr	r0, [r3, #12]
+    4aac:	e3003000 	movw	r3, #0
+    4ab0:	e58de018 	str	lr, [sp, #24]
+    4ab4:	e300e28e 	movw	lr, #654	; 0x28e
+    4ab8:	e58d5014 	str	r5, [sp, #20]
+    4abc:	e3403000 	movt	r3, #0
+    4ac0:	e58d200c 	str	r2, [sp, #12]
+    4ac4:	e2805fed 	add	r5, r0, #948	; 0x3b4
+    4ac8:	e58de010 	str	lr, [sp, #16]
+    4acc:	e3002000 	movw	r2, #0
+    4ad0:	e590e2b4 	ldr	lr, [r0, #692]	; 0x2b4
+    4ad4:	e3402000 	movt	r2, #0
+    4ad8:	e58de008 	str	lr, [sp, #8]
+    4adc:	e590e2b0 	ldr	lr, [r0, #688]	; 0x2b0
+    4ae0:	e58d5000 	str	r5, [sp]
+    4ae4:	e59f02f8 	ldr	r0, [pc, #760]	; 4de4 <_ndp_hdmi_core_vidioc_s_input+0x704>
+    4ae8:	e58de004 	str	lr, [sp, #4]
+    4aec:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    4af0:	eaffff34 	b	47c8 <_ndp_hdmi_core_vidioc_s_input+0xe8>
+    4af4:	e3003000 	movw	r3, #0
+    4af8:	e3403000 	movt	r3, #0
+    4afc:	e5931000 	ldr	r1, [r3]
+    4b00:	e3510000 	cmp	r1, #0
+    4b04:	12811010 	addne	r1, r1, #16
+    4b08:	0a0000a1 	beq	4d94 <_ndp_hdmi_core_vidioc_s_input+0x6b4>
+    4b0c:	e1a0c00d 	mov	ip, sp
+    4b10:	e59f22b8 	ldr	r2, [pc, #696]	; 4dd0 <_ndp_hdmi_core_vidioc_s_input+0x6f0>
+    4b14:	e3cc3d7f 	bic	r3, ip, #8128	; 0x1fc0
+    4b18:	e300e283 	movw	lr, #643	; 0x283
+    4b1c:	e3c3303f 	bic	r3, r3, #63	; 0x3f
+    4b20:	e593000c 	ldr	r0, [r3, #12]
+    4b24:	e3003000 	movw	r3, #0
+    4b28:	e58d200c 	str	r2, [sp, #12]
+    4b2c:	e3002000 	movw	r2, #0
+    4b30:	e58de010 	str	lr, [sp, #16]
+    4b34:	e3403000 	movt	r3, #0
+    4b38:	e590e2b4 	ldr	lr, [r0, #692]	; 0x2b4
+    4b3c:	e2805fed 	add	r5, r0, #948	; 0x3b4
+    4b40:	e3402000 	movt	r2, #0
+    4b44:	e58de008 	str	lr, [sp, #8]
+    4b48:	e590e2b0 	ldr	lr, [r0, #688]	; 0x2b0
+    4b4c:	e58d5000 	str	r5, [sp]
+    4b50:	e59f0290 	ldr	r0, [pc, #656]	; 4de8 <_ndp_hdmi_core_vidioc_s_input+0x708>
+    4b54:	e58de004 	str	lr, [sp, #4]
+    4b58:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    4b5c:	eaffff11 	b	47a8 <_ndp_hdmi_core_vidioc_s_input+0xc8>
+    4b60:	e3003000 	movw	r3, #0
+    4b64:	e3403000 	movt	r3, #0
+    4b68:	e5931000 	ldr	r1, [r3]
+    4b6c:	e3510000 	cmp	r1, #0
+    4b70:	12811010 	addne	r1, r1, #16
+    4b74:	0a000089 	beq	4da0 <_ndp_hdmi_core_vidioc_s_input+0x6c0>
+    4b78:	e1a0c00d 	mov	ip, sp
+    4b7c:	e59f224c 	ldr	r2, [pc, #588]	; 4dd0 <_ndp_hdmi_core_vidioc_s_input+0x6f0>
+    4b80:	e3cc3d7f 	bic	r3, ip, #8128	; 0x1fc0
+    4b84:	e300e262 	movw	lr, #610	; 0x262
+    4b88:	e3c3303f 	bic	r3, r3, #63	; 0x3f
+    4b8c:	e593000c 	ldr	r0, [r3, #12]
+    4b90:	e3003000 	movw	r3, #0
+    4b94:	e58d200c 	str	r2, [sp, #12]
+    4b98:	e3002000 	movw	r2, #0
+    4b9c:	e58de010 	str	lr, [sp, #16]
+    4ba0:	e3403000 	movt	r3, #0
+    4ba4:	e590e2b4 	ldr	lr, [r0, #692]	; 0x2b4
+    4ba8:	e2805fed 	add	r5, r0, #948	; 0x3b4
+    4bac:	e3402000 	movt	r2, #0
+    4bb0:	e58de008 	str	lr, [sp, #8]
+    4bb4:	e590e2b0 	ldr	lr, [r0, #688]	; 0x2b0
+    4bb8:	e58d5000 	str	r5, [sp]
+    4bbc:	e59f0228 	ldr	r0, [pc, #552]	; 4dec <_ndp_hdmi_core_vidioc_s_input+0x70c>
+    4bc0:	e58de004 	str	lr, [sp, #4]
+    4bc4:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    4bc8:	eafffee2 	b	4758 <_ndp_hdmi_core_vidioc_s_input+0x78>
+    4bcc:	e3130080 	tst	r3, #128	; 0x80
+    4bd0:	0afffef4 	beq	47a8 <_ndp_hdmi_core_vidioc_s_input+0xc8>
+    4bd4:	e320f000 	nop	{0}
+    4bd8:	eafffef2 	b	47a8 <_ndp_hdmi_core_vidioc_s_input+0xc8>
+    4bdc:	e3003000 	movw	r3, #0
+    4be0:	e3403000 	movt	r3, #0
+    4be4:	e5931000 	ldr	r1, [r3]
+    4be8:	e3510000 	cmp	r1, #0
+    4bec:	12811010 	addne	r1, r1, #16
+    4bf0:	0a00006d 	beq	4dac <_ndp_hdmi_core_vidioc_s_input+0x6cc>
+    4bf4:	e1a0c00d 	mov	ip, sp
+    4bf8:	e51b506c 	ldr	r5, [fp, #-108]	; 0xffffff94
+    4bfc:	e3cc3d7f 	bic	r3, ip, #8128	; 0x1fc0
+    4c00:	e59f21c8 	ldr	r2, [pc, #456]	; 4dd0 <_ndp_hdmi_core_vidioc_s_input+0x6f0>
+    4c04:	e3c3303f 	bic	r3, r3, #63	; 0x3f
+    4c08:	e3a0e016 	mov	lr, #22
+    4c0c:	e593000c 	ldr	r0, [r3, #12]
+    4c10:	e3003000 	movw	r3, #0
+    4c14:	e58de018 	str	lr, [sp, #24]
+    4c18:	e300e267 	movw	lr, #615	; 0x267
+    4c1c:	e58d5014 	str	r5, [sp, #20]
+    4c20:	e3403000 	movt	r3, #0
+    4c24:	e58d200c 	str	r2, [sp, #12]
+    4c28:	e2805fed 	add	r5, r0, #948	; 0x3b4
+    4c2c:	e58de010 	str	lr, [sp, #16]
+    4c30:	e3002000 	movw	r2, #0
+    4c34:	e590e2b4 	ldr	lr, [r0, #692]	; 0x2b4
+    4c38:	e3402000 	movt	r2, #0
+    4c3c:	e58de008 	str	lr, [sp, #8]
+    4c40:	e590e2b0 	ldr	lr, [r0, #688]	; 0x2b0
+    4c44:	e58d5000 	str	r5, [sp]
+    4c48:	e59f01a0 	ldr	r0, [pc, #416]	; 4df0 <_ndp_hdmi_core_vidioc_s_input+0x710>
+    4c4c:	e58de004 	str	lr, [sp, #4]
+    4c50:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    4c54:	eafffec8 	b	477c <_ndp_hdmi_core_vidioc_s_input+0x9c>
+    4c58:	e3003000 	movw	r3, #0
+    4c5c:	e3403000 	movt	r3, #0
+    4c60:	e5933000 	ldr	r3, [r3]
+    4c64:	e3530000 	cmp	r3, #0
+    4c68:	12831010 	addne	r1, r3, #16
+    4c6c:	0a000051 	beq	4db8 <_ndp_hdmi_core_vidioc_s_input+0x6d8>
+    4c70:	e1a0c00d 	mov	ip, sp
+    4c74:	e59f2154 	ldr	r2, [pc, #340]	; 4dd0 <_ndp_hdmi_core_vidioc_s_input+0x6f0>
+    4c78:	e3cc3d7f 	bic	r3, ip, #8128	; 0x1fc0
+    4c7c:	e3a0ef9f 	mov	lr, #636	; 0x27c
+    4c80:	e3c3303f 	bic	r3, r3, #63	; 0x3f
+    4c84:	e593000c 	ldr	r0, [r3, #12]
+    4c88:	e3003000 	movw	r3, #0
+    4c8c:	e58d200c 	str	r2, [sp, #12]
+    4c90:	e3002000 	movw	r2, #0
+    4c94:	e58de010 	str	lr, [sp, #16]
+    4c98:	e3403000 	movt	r3, #0
+    4c9c:	e590e2b4 	ldr	lr, [r0, #692]	; 0x2b4
+    4ca0:	e2805fed 	add	r5, r0, #948	; 0x3b4
+    4ca4:	e3402000 	movt	r2, #0
+    4ca8:	e58de008 	str	lr, [sp, #8]
+    4cac:	e590e2b0 	ldr	lr, [r0, #688]	; 0x2b0
+    4cb0:	e58d5000 	str	r5, [sp]
+    4cb4:	e59f0138 	ldr	r0, [pc, #312]	; 4df4 <_ndp_hdmi_core_vidioc_s_input+0x714>
+    4cb8:	e58de004 	str	lr, [sp, #4]
+    4cbc:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    4cc0:	eafffeb8 	b	47a8 <_ndp_hdmi_core_vidioc_s_input+0xc8>
+    4cc4:	e3003000 	movw	r3, #0
+    4cc8:	e3403000 	movt	r3, #0
+    4ccc:	e5933000 	ldr	r3, [r3]
+    4cd0:	e3530000 	cmp	r3, #0
+    4cd4:	12831010 	addne	r1, r3, #16
+    4cd8:	0a000039 	beq	4dc4 <_ndp_hdmi_core_vidioc_s_input+0x6e4>
+    4cdc:	e1a0c00d 	mov	ip, sp
+    4ce0:	e51b506c 	ldr	r5, [fp, #-108]	; 0xffffff94
+    4ce4:	e3cc3d7f 	bic	r3, ip, #8128	; 0x1fc0
+    4ce8:	e59f20e0 	ldr	r2, [pc, #224]	; 4dd0 <_ndp_hdmi_core_vidioc_s_input+0x6f0>
+    4cec:	e3c3303f 	bic	r3, r3, #63	; 0x3f
+    4cf0:	e3a0e016 	mov	lr, #22
+    4cf4:	e593000c 	ldr	r0, [r3, #12]
+    4cf8:	e3003000 	movw	r3, #0
+    4cfc:	e58de018 	str	lr, [sp, #24]
+    4d00:	e300e275 	movw	lr, #629	; 0x275
+    4d04:	e58d5014 	str	r5, [sp, #20]
+    4d08:	e3403000 	movt	r3, #0
+    4d0c:	e58d200c 	str	r2, [sp, #12]
+    4d10:	e2805fed 	add	r5, r0, #948	; 0x3b4
+    4d14:	e58de010 	str	lr, [sp, #16]
+    4d18:	e3002000 	movw	r2, #0
+    4d1c:	e590e2b4 	ldr	lr, [r0, #692]	; 0x2b4
+    4d20:	e3402000 	movt	r2, #0
+    4d24:	e58de008 	str	lr, [sp, #8]
+    4d28:	e590e2b0 	ldr	lr, [r0, #688]	; 0x2b0
+    4d2c:	e58d5000 	str	r5, [sp]
+    4d30:	e59f00c0 	ldr	r0, [pc, #192]	; 4df8 <_ndp_hdmi_core_vidioc_s_input+0x718>
+    4d34:	e58de004 	str	lr, [sp, #4]
+    4d38:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+    4d3c:	eafffe8e 	b	477c <_ndp_hdmi_core_vidioc_s_input+0x9c>
+    4d40:	ebfffffe 	bl	0 <NDP_DebugInit>
+    4d44:	e1a01000 	mov	r1, r0
+    4d48:	eafffec6 	b	4868 <_ndp_hdmi_core_vidioc_s_input+0x188>
+    4d4c:	ebfffffe 	bl	0 <NDP_DebugInit>
+    4d50:	e1a01000 	mov	r1, r0
+    4d54:	eafffeeb 	b	4908 <_ndp_hdmi_core_vidioc_s_input+0x228>
+    4d58:	ebfffffe 	bl	0 <NDP_DebugInit>
+    4d5c:	e1a01000 	mov	r1, r0
+    4d60:	eaffff4a 	b	4a90 <_ndp_hdmi_core_vidioc_s_input+0x3b0>
+    4d64:	ebfffffe 	bl	0 <NDP_DebugInit>
+    4d68:	e1a01000 	mov	r1, r0
+    4d6c:	eaffff2d 	b	4a28 <_ndp_hdmi_core_vidioc_s_input+0x348>
+    4d70:	ebfffffe 	bl	0 <NDP_DebugInit>
+    4d74:	e1a0300d 	mov	r3, sp
+    4d78:	e1a01000 	mov	r1, r0
+    4d7c:	e3c32d7f 	bic	r2, r3, #8128	; 0x1fc0
+    4d80:	e5953200 	ldr	r3, [r5, #512]	; 0x200
+    4d84:	e3c2203f 	bic	r2, r2, #63	; 0x3f
+    4d88:	e592c00c 	ldr	ip, [r2, #12]
+    4d8c:	e59c52b0 	ldr	r5, [ip, #688]	; 0x2b0
+    4d90:	eaffff0c 	b	49c8 <_ndp_hdmi_core_vidioc_s_input+0x2e8>
+    4d94:	ebfffffe 	bl	0 <NDP_DebugInit>
+    4d98:	e1a01000 	mov	r1, r0
+    4d9c:	eaffff5a 	b	4b0c <_ndp_hdmi_core_vidioc_s_input+0x42c>
+    4da0:	ebfffffe 	bl	0 <NDP_DebugInit>
+    4da4:	e1a01000 	mov	r1, r0
+    4da8:	eaffff72 	b	4b78 <_ndp_hdmi_core_vidioc_s_input+0x498>
+    4dac:	ebfffffe 	bl	0 <NDP_DebugInit>
+    4db0:	e1a01000 	mov	r1, r0
+    4db4:	eaffff8e 	b	4bf4 <_ndp_hdmi_core_vidioc_s_input+0x514>
+    4db8:	ebfffffe 	bl	0 <NDP_DebugInit>
+    4dbc:	e1a01000 	mov	r1, r0
+    4dc0:	eaffffaa 	b	4c70 <_ndp_hdmi_core_vidioc_s_input+0x590>
+    4dc4:	ebfffffe 	bl	0 <NDP_DebugInit>
+    4dc8:	e1a01000 	mov	r1, r0
+    4dcc:	eaffffc2 	b	4cdc <_ndp_hdmi_core_vidioc_s_input+0x5fc>
+    4dd0:	000004e8 	.word	0x000004e8
+    4dd4:	00000c00 	.word	0x00000c00
+    4dd8:	00000c20 	.word	0x00000c20
+    4ddc:	00000d00 	.word	0x00000d00
+    4de0:	00000d20 	.word	0x00000d20
+    4de4:	00000ce0 	.word	0x00000ce0
+    4de8:	00000cc0 	.word	0x00000cc0
+    4dec:	00000c40 	.word	0x00000c40
+    4df0:	00000c60 	.word	0x00000c60
+    4df4:	00000ca0 	.word	0x00000ca0
+    4df8:	00000c80 	.word	0x00000c80
+
+Disassembly of section .init.text:
+
+Disassembly of section .exit.text:
