@@ -76,17 +76,21 @@ leave a long pre-stock wait that depends on SSH; use a short fixed window.
 CEC-FIRST-OPENER-2026-11-12. Owner suspend/resume
 test 2026-11-12: Deck sleep left the TV on and switched it to a tuner input;
 Deck resume switched to HDMI1. Instruction check of `handleCECMessage` @
-`0x0102fce0`: 0x82 calls `selectSource`; 0x9D returns unless the TV is in the
-standby transition and does not clear the active source. SOURCE-LOSS-FALLBACK
-identifies the external-interface disconnect policy as the **cable-unplug**
-fallback: navigator callback @ `0xfb32f0` →
+`0x0102fce0`: 0x82 calls `selectSource`; the 0x9D controller path returns
+unless the TV is in the standby transition. The separate
+`SvgAppCECEventsListener::notifyCECDataMessageReceived` @ `0xd9766c` handles
+0x9D by posting `UIKeyPressMessage(597)`, which selects DTV/tuner. The sleep
+fallback is CEC 0x9D/key 597, not the external-interface disconnect policy.
+SOURCE-LOSS-FALLBACK identifies the external-interface disconnect policy as
+the **cable-unplug** fallback: navigator callback @ `0xfb32f0` →
 `InputManager::handleExternalSourceDisconnected` @ `0xfb1fbc` → saved tuner
-service `this+0x90` or previous external source `this+0x94`. The stock log shows
-the **Deck-sleep** tuner switch is the VIU lost-signal path: event 3 →
-`ICE_VideoHide` → key 597 → `ICE_VideoSelectSource` source 8 →
-`TunerManager::selectServiceForDisplay(1)`. A pure policy helper
-`common/source_loss.c` is host-tested (`check-source-loss`) but not wired; the
-tuner service/decoder contract remains.
+service `this+0x90` or previous external source `this+0x94`. The **Deck-sleep**
+tuner switch is CEC `0x9D Inactive Source`: `SvgAppCECEventsListener` posts
+`UIKeyPressMessage(597)`, and the UI selects DTV/tuner
+(`ICE_VideoSelectSource` source 8 → `TunerManager::selectServiceForDisplay(1)`).
+The VIU `LOST SIGNAL`/`ICE_VideoHide` lines follow the source change. A pure
+policy helper `common/source_loss.c` is host-tested (`check-source-loss`) but
+not wired; the tuner service/decoder contract remains.
 Provider trace: `AitHub::initialise` @ `0x1169f80` registers
 `ExternalInterfaceStatusCallback` via
 `NEBULA_RegisterExternalInterfaceStatusCallback` @ `0x116f9b0`; the exported
@@ -105,10 +109,15 @@ HDMI2=200/2, HDMI3=201/3, HDMI4=202/1; level1=connected;
 HDMI1=1. HPD stayed high through Deck suspend. `Hal_Vin_GetHdmiStatus` GET
 `0xa00967` works on video21 when the kernel `error_idx` count sentinel is
 ignored (video20/24/28 reject); it captured `w0=1` active, `w0=0/5` during
-suspend and back to `1`. The stock log path is VIU event 3 → `ICE_VideoHide` →
-key 597 → `ICE_VideoSelectSource` source 8 → `TunerManager::selectServiceForDisplay(1)`;
-the key-597 generator and any `SetConnectInfo` caller outside the analyzed
-paths remain unidentified. The status-4/HPD path is the cable-unplug policy. `source.video_status()` v2 is now
+suspend and back to `1`. The sleep trigger is CEC `0x9D`:
+`SvgAppCECEventsListener` → `UIKeyPressMessage(597)` → DTV/tuner; the key
+emitter is recovered. `TunerManager::requestServiceSelectForDisplay` resolves
+view position→handle via `(TunerManager+0x1c)->vtable+0x54` then selects via
+`+0xd4`; `common/tuner_view.c` + `check-tuner-view` cover the position→handle
+mapping. The full select/mute/decoder/UI contract and any `SetConnectInfo`
+caller outside the analyzed paths remain open. The status-4/HPD path is the
+cable-unplug policy; `source.video_status` is a no-signal detector, not the
+sleep trigger. `source.video_status()` v2 is now
 host-tested behind `source.vin_status` (`check-source-vin` and the fake-module
 `source_path` test); it exposes ready/lost and does not select a tuner.
 `mod_cec` routing/power policy is

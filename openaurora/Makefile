@@ -2873,6 +2873,15 @@ check-source-vin: $(BUILD)/tests/source_vin
 	@$(BUILD)/tests/source_vin
 check: check-source-vin
 
+$(BUILD)/tests/tuner_view: tests/tuner_view.c common/tuner_view.c include/openaurora/tuner_view.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-tuner-view
+check-tuner-view: $(BUILD)/tests/tuner_view
+	@$(BUILD)/tests/tuner_view
+check: check-tuner-view
+
 $(BUILD)/tests/audio_source_path: tests/audio_source_path.c modules/audio_source/audio_source.c tests/audio_source_fake.c common/audio_curve.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread

@@ -491,15 +491,17 @@ unvalidated.
       Next: wake/verify the peer CEC stack or use a known-good CEC device, then
       capture a reply before claiming RX/logical-address acceptance. See
       CEC-FIRST-OPENER-2026-11-12. Also implement the stock routing/power
-      policy: 0x82 Active Source selects the PA input; 0x9D Inactive Source
-      does **not** clear the active source in the recovered path (it returns
-      unless the TV is in the standby transition); 0x36 Standby is accepted only
-      from the active device. Owner test 2026-11-12: Deck sleep left the TV on
-      and switched it to a tuner input; resume switched to HDMI1. The sleep
-      fallback is the external-interface disconnect policy in
-      SOURCE-LOSS-FALLBACK (navigator → InputManager; saved tuner service
-      `this+0x90` or previous external source `this+0x94`), not 0x9D. The tuner
-      service/decoder contract is still open. CEC-LIVE. Boot 6 armed a
+      policy: 0x82 Active Source selects the PA input; the
+      `NovoCECController::handleCECMessage` 0x9D path returns unless the TV is
+      in the standby transition, but the separate `SvgAppCECEventsListener`
+      handles 0x9D by posting `UIKeyPressMessage(597)` and selecting DTV/tuner;
+      0x36 Standby is accepted only from the active device. Owner test
+      2026-11-12: Deck sleep left the TV on and switched it to a tuner input;
+      resume switched to HDMI1. The sleep fallback is CEC 0x9D/key 597; the
+      external-interface disconnect policy in SOURCE-LOSS-FALLBACK (navigator →
+      InputManager; saved tuner service `this+0x90` or previous external source
+      `this+0x94`) is the cable-unplug fallback. The tuner service/decoder
+      contract is still open. CEC-LIVE. Boot 6 armed a
       raw-RX monitor, but the pre-stock eth0/DHCP failed (`Network is down`), so
       SSH was unavailable and no trigger was created; USB recovery restored
       stock. Do not leave a long pre-stock SSH-dependent wait; the next retry
@@ -519,11 +521,13 @@ unvalidated.
       `0xfb19f0`) or the previous external source `this+0x94`
       (`requestSelectExtSource` @ `0xfb1c50`), gated by a video-group match,
       `this[0x88]`, service list/interface `0x13` and `this[0x98]`. This is the
-      **cable-unplug** policy. The stock log shows the Deck-sleep tuner switch is
-      the VIU lost-signal path: event 3 → `ICE_VideoHide` → key 597 →
-      `ICE_VideoSelectSource` source 8 → `TunerManager::selectServiceForDisplay(1)`.
-      A pure policy helper `common/source_loss.c` plus `check-source-loss`
-      passes; it is not wired. Provider trace:
+      **cable-unplug** policy. The Deck-sleep tuner switch is CEC `0x9D
+      Inactive Source`: `SvgAppCECEventsListener` posts `UIKeyPressMessage(597)`,
+      and the UI selects DTV/tuner (`ICE_VideoSelectSource` source 8 →
+      `TunerManager::selectServiceForDisplay(1)`). The VIU `LOST SIGNAL`/
+      `ICE_VideoHide` lines follow the source change. A pure policy helper
+      `common/source_loss.c` plus `check-source-loss` passes; it is not wired.
+      Provider trace:
       `AitHub::initialise` @ `0x1169f80` registers
       `ExternalInterfaceStatusCallback` via `NEBULA_Register...` @ `0x116f9b0`;
       exported `NEBULA_Handle...` @ `0x116fa38` →
@@ -544,9 +548,13 @@ unvalidated.
       `source.video_status()` v2 + `source.vin_status` now expose the
       read-only provider; `check-source-vin` and the fake-module
       `source_path` test pass, and the TV `mod_source.so` builds. It does not
-      select a tuner. Remaining: the key-597 generator, the tuner service/view
-      re-tune, any `SetConnectInfo` caller outside the analyzed paths and the
-      UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
+      select a tuner; it is a no-signal detector, not the sleep trigger. The
+      key-597 emitter is recovered (CEC 0x9D). `common/tuner_view.c` +
+      `check-tuner-view` implement the recovered `TunerManager` view
+      position→handle mapping (`(this+0x1c)->vtable+0x54`). Remaining: the full
+      select/mute/decoder/UI body, the `mod_cec` 0x9D route, any
+      `SetConnectInfo` caller outside the analyzed paths and the UI/timing.
+      SOURCE-LOSS-FALLBACK-2026-11-12.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
       `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts
       them to the loop; the TV link also needed `-ldl`. `check-ir-blast-worker`

@@ -1,0 +1,136 @@
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00d976a0 <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x34>:
+  d976a0:	f518 e04e 	blx	6af740 <__stack_chk_fail@plt>
+  d976a4:	2982      	cmp	r1, #130	; 0x82
+  d976a6:	d062      	beq.n	d9776e <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x102>
+  d976a8:	299d      	cmp	r1, #157	; 0x9d
+  d976aa:	d1f4      	bne.n	d97696 <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x2a>
+  d976ac:	6886      	ldr	r6, [r0, #8]
+  d976ae:	2010      	movs	r0, #16
+  d976b0:	f518 e544 	blx	6b013c <_Znwj@plt>
+  d976b4:	f240 2155 	movw	r1, #597	; 0x255
+  d976b8:	4604      	mov	r4, r0
+  d976ba:	f3b1 f96f 	bl	114899c <_ZN17UIKeyPressMessageC1E14ICE_keypressId@@Base>
+  d976be:	e08e      	b.n	d977de <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x172>
+  d976c0:	6886      	ldr	r6, [r0, #8]
+  d976c2:	2010      	movs	r0, #16
+  d976c4:	f518 e53a 	blx	6b013c <_Znwj@plt>
+  d976c8:	f240 211f 	movw	r1, #543	; 0x21f
+  d976cc:	4604      	mov	r4, r0
+  d976ce:	f3b1 f965 	bl	114899c <_ZN17UIKeyPressMessageC1E14ICE_keypressId@@Base>
+  d976d2:	e084      	b.n	d977de <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x172>
+  d976d4:	6840      	ldr	r0, [r0, #4]
+  d976d6:	f735 fcfd 	bl	ccd0d4 <_ZN7DemoApp14getModuleStateEv@@Base>
+  d976da:	2801      	cmp	r0, #1
+  d976dc:	d1db      	bne.n	d97696 <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x2a>
+  d976de:	6860      	ldr	r0, [r4, #4]
+  d976e0:	f8d0 0328 	ldr.w	r0, [r0, #808]	; 0x328
+  d976e4:	6801      	ldr	r1, [r0, #0]
+  d976e6:	6ece      	ldr	r6, [r1, #108]	; 0x6c
+  d976e8:	47b0      	blx	r6
+  d976ea:	2800      	cmp	r0, #0
+  d976ec:	d0d3      	beq.n	d97696 <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x2a>
+  d976ee:	6862      	ldr	r2, [r4, #4]
+  d976f0:	f8d2 02b0 	ldr.w	r0, [r2, #688]	; 0x2b0
+  d976f4:	6803      	ldr	r3, [r0, #0]
+  d976f6:	6d59      	ldr	r1, [r3, #84]	; 0x54
+  d976f8:	4788      	blx	r1
+  d976fa:	2800      	cmp	r0, #0
+  d976fc:	d0cb      	beq.n	d97696 <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x2a>
+  d976fe:	6860      	ldr	r0, [r4, #4]
+  d97700:	f3a2 fe30 	bl	113a364 <_ZNK5UIApp17modalTargetsDepthEv@@Base>
+  d97704:	2800      	cmp	r0, #0
+  d97706:	dd02      	ble.n	d9770e <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0xa2>
+  d97708:	6860      	ldr	r0, [r4, #4]
+  d9770a:	f3a2 fe61 	bl	113a3d0 <_ZN5UIApp20closeAllModalTargetsEv@@Base>
+  d9770e:	2010      	movs	r0, #16
+  d97710:	68a6      	ldr	r6, [r4, #8]
+  d97712:	f518 e514 	blx	6b013c <_Znwj@plt>
+  d97716:	f240 211f 	movw	r1, #543	; 0x21f
+  d9771a:	4604      	mov	r4, r0
+  d9771c:	f3b1 f93e 	bl	114899c <_ZN17UIKeyPressMessageC1E14ICE_keypressId@@Base>
+  d97720:	e05d      	b.n	d977de <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x172>
+  d97722:	6840      	ldr	r0, [r0, #4]
+  d97724:	f735 fcd6 	bl	ccd0d4 <_ZN7DemoApp14getModuleStateEv@@Base>
+  d97728:	2801      	cmp	r0, #1
+  d9772a:	d10e      	bne.n	d9774a <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0xde>
+  d9772c:	6860      	ldr	r0, [r4, #4]
+  d9772e:	f8d0 0328 	ldr.w	r0, [r0, #808]	; 0x328
+  d97732:	6806      	ldr	r6, [r0, #0]
+  d97734:	6ef2      	ldr	r2, [r6, #108]	; 0x6c
+  d97736:	4790      	blx	r2
+  d97738:	b138      	cbz	r0, d9774a <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0xde>
+  d9773a:	6863      	ldr	r3, [r4, #4]
+  d9773c:	f8d3 02b0 	ldr.w	r0, [r3, #688]	; 0x2b0
+  d97740:	6801      	ldr	r1, [r0, #0]
+  d97742:	6d4e      	ldr	r6, [r1, #84]	; 0x54
+  d97744:	47b0      	blx	r6
+  d97746:	2800      	cmp	r0, #0
+  d97748:	d15c      	bne.n	d97804 <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x198>
+  d9774a:	68a0      	ldr	r0, [r4, #8]
+  d9774c:	f3a4 f904 	bl	113b958 <_ZNK11UIFramework18uiControlInterfaceEv@@Base>
+  d97750:	f7df f0be 	bl	9768d0 <_ZNK20EASIControlInterface17isTeletextEnabledEv@@Base>
+  d97754:	2800      	cmp	r0, #0
+  d97756:	d09e      	beq.n	d97696 <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x2a>
+  d97758:	6860      	ldr	r0, [r4, #4]
+  d9775a:	f8d0 0338 	ldr.w	r0, [r0, #824]	; 0x338
+  d9775e:	6802      	ldr	r2, [r0, #0]
+  d97760:	6f93      	ldr	r3, [r2, #120]	; 0x78
+  d97762:	4798      	blx	r3
+  d97764:	2118      	movs	r1, #24
+  d97766:	6860      	ldr	r0, [r4, #4]
+  d97768:	f73f fd04 	bl	cd7174 <_ZN7DemoApp14setModuleStateE11ModuleState@@Base>
+  d9776c:	e793      	b.n	d97696 <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x2a>
+  d9776e:	6841      	ldr	r1, [r0, #4]
+  d97770:	f8d1 02f0 	ldr.w	r0, [r1, #752]	; 0x2f0
+  d97774:	f1b6 ffda 	bl	f4e72c <_ZNK22NovoTunerConfiguration24getTunersRecordingStatusEv@@Base>
+  d97778:	f020 0602 	bic.w	r6, r0, #2
+  d9777c:	2e01      	cmp	r6, #1
+  d9777e:	d10d      	bne.n	d9779c <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x130>
+  d97780:	205c      	movs	r0, #92	; 0x5c
+  d97782:	f8d4 8008 	ldr.w	r8, [r4, #8]
+  d97786:	f518 e4da 	blx	6b013c <_Znwj@plt>
+  d9778a:	217e      	movs	r1, #126	; 0x7e
+  d9778c:	4606      	mov	r6, r0
+  d9778e:	f777 f913 	bl	d0e9b8 <_ZN23DialogNavigationMessageC1E21DialogNavigationCodes@@Base>
+  d97792:	2200      	movs	r2, #0
+  d97794:	4631      	mov	r1, r6
+  d97796:	4640      	mov	r0, r8
+  d97798:	f3a3 ffd6 	bl	113b748 <_ZN11UIFramework11postMessageEP10AnyMessageb@@Base>
+  d9779c:	6860      	ldr	r0, [r4, #4]
+  d9779e:	f735 fc99 	bl	ccd0d4 <_ZN7DemoApp14getModuleStateEv@@Base>
+  d977a2:	2801      	cmp	r0, #1
+  d977a4:	f47f af77 	bne.w	d97696 <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x2a>
+  d977a8:	6860      	ldr	r0, [r4, #4]
+  d977aa:	f8d0 0328 	ldr.w	r0, [r0, #808]	; 0x328
+  d977ae:	6802      	ldr	r2, [r0, #0]
+  d977b0:	6ed3      	ldr	r3, [r2, #108]	; 0x6c
+  d977b2:	4798      	blx	r3
+  d977b4:	2800      	cmp	r0, #0
+  d977b6:	f43f af6e 	beq.w	d97696 <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x2a>
+  d977ba:	6861      	ldr	r1, [r4, #4]
+  d977bc:	f8d1 02b0 	ldr.w	r0, [r1, #688]	; 0x2b0
+  d977c0:	6806      	ldr	r6, [r0, #0]
+  d977c2:	6d72      	ldr	r2, [r6, #84]	; 0x54
+  d977c4:	4790      	blx	r2
+  d977c6:	2800      	cmp	r0, #0
+  d977c8:	f43f af65 	beq.w	d97696 <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x2a>
+  d977cc:	2010      	movs	r0, #16
+  d977ce:	68a6      	ldr	r6, [r4, #8]
+  d977d0:	f518 e4b4 	blx	6b013c <_Znwj@plt>
+  d977d4:	f240 211f 	movw	r1, #543	; 0x21f
+  d977d8:	4604      	mov	r4, r0
+  d977da:	f3b1 f8df 	bl	114899c <_ZN17UIKeyPressMessageC1E14ICE_keypressId@@Base>
+  d977de:	2201      	movs	r2, #1
+  d977e0:	4621      	mov	r1, r4
+  d977e2:	4630      	mov	r0, r6
+  d977e4:	f3a3 ffb0 	bl	113b748 <_ZN11UIFramework11postMessageEP10AnyMessageb@@Base>
+  d977e8:	e755      	b.n	d97696 <_ZN23SvgAppCECEventsListener28notifyCECDataMessageReceivedE13NovoCECOpcode@@Base+0x2a>
+  d977ea:	2110      	movs	r1, #16
+  d977ec:	4620      	mov	r0, r4
+  d977ee:	Address 0x0000000000d977ee is out of bounds.

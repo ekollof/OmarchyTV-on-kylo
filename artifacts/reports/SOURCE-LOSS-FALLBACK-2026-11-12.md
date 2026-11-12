@@ -4,19 +4,21 @@ Status: current
 Last verified: 2026-11-12
 Evidence class: firmware instructions, REA cross-check, read-only on-TV
 HPD/V4L2 captures, probe rejection logs and owner-reported stock behavior.
-Corrects: the 2026-11-12 CEC-LIVE hypothesis that `0x9D Inactive Source`
-caused the Deck-sleep tuner fallback. `0x9D` returns unless the TV is already in
-the standby transition; it does not select a tuner.
+Corrects: the earlier 2026-11-12 conclusion that `0x9D Inactive Source` was
+not the trigger. `SvgAppCECEventsListener::notifyCECDataMessageReceived`
+handles opcode `0x9D` by constructing `UIKeyPressMessage(597)` and posting it
+to the UI; `DemoApp`/`portal_closedstate` then selects DTV/tuner. The
+`NovoCECController::handleCECMessage` `0x9D` return is a separate controller
+path and does not cover this UI listener.
 Corrected 2026-11-12: the private V4L2 event byte 4 is the
 `VPL_SCLR_CTRL_UpdateSCLR` reason flag, not a source status; stock cable
 plug/unplug uses HPD GPIO polling. The V4L2 event is not the source-loss
-provider. Deck suspend keeps HPD high. The HDMI RX status getter on
-`/dev/video21` was subsequently reproduced and shows the suspend transition.
-The stock log then identified the sleep tuner switch as the VIU `LOST SIGNAL`
-path (`ICE_VideoHide` → key 597 → `ICE_VideoSelectSource` source 8 →
-`TunerManager::selectServiceForDisplay`), not the status-4 external-interface
-disconnect policy. The latter remains the HPD cable-unplug fallback; the code
-that emits key 597 and the tuner service re-tune remain open.
+provider. Deck suspend keeps HPD high. CEC `0x9D` is the Deck-sleep trigger:
+`SvgAppCECEventsListener` → `UIKeyPressMessage(597)` → DTV/tuner. The VIU
+`LOST SIGNAL`/`ICE_VideoHide` lines occur as the TV leaves HDMI1 and are
+consequences, not the trigger. The status-4 external-interface disconnect
+policy remains the HPD cable-unplug fallback; the tuner service/view re-tune
+remains open.
 
 ## Observation
 
@@ -26,12 +28,11 @@ The owner tested stock suspend/resume with the Steam Deck on HDMI1:
 - Deck resume: the TV switched back to HDMI1.
 
 The resume side is consistent with `0x82 Active Source` calling
-`selectSource`. The sleep side is the **VIU lost-signal** path, not the
-external-interface disconnect policy below, not CEC `0x9D`, and not `0x36
-Standby`. The stock log shows `LOST SIGNAL` (VIU event 3) → `ICE_VideoHide` →
-synthetic key 597 → `ICE_VideoSelectSource` source 8 →
-`TunerManager::selectServiceForDisplay(1)`. HPD stays high through suspend, and
-the private V4L2 event is a scaler update, so neither is the trigger. The
+`selectSource`. The sleep side is **CEC `0x9D Inactive Source`**:
+`SvgAppCECEventsListener` posts `UIKeyPressMessage(597)`, and the UI selects
+DTV/tuner. The stock log then shows `LOST SIGNAL`/`ICE_VideoHide` as the TV
+leaves HDMI1; those are consequences. HPD stays high through suspend, and the
+private V4L2 event is a scaler update, so neither is the trigger. The
 external-interface disconnect policy below is the HPD cable-unplug fallback.
 
 ## Source identity
@@ -78,8 +79,8 @@ the dispatcher above is the reachable callback path.
 
 ### 3. The fallback decision
 
-This is the HPD/status-4 cable-unplug policy. The Deck-sleep path in the stock
-log uses VIU lost-signal/key 597 instead; see section 7.
+This is the HPD/status-4 cable-unplug policy. The Deck-sleep path uses CEC
+`0x9D`/key 597 instead; see section 7.
 
 `InputManager::handleExternalSourceDisconnected` @ `0x00fb1fbc` takes the
 disconnected external index. Its exact branch sequence:
@@ -284,12 +285,22 @@ byte0 = 1. A 120 s capture through another Deck sleep/resume stayed exactly
 `01 01 00 01 00`; HPD does **not** drop on suspend. HPD is cable plug/unplug,
 not the sleep trigger.
 
-The HDMI RX video status is the suspend detector. `plat_vin_slot_get_status`
-@ `0x0092ea68` calls `Hal_Vin_GetHdmiStatus`, which issues the private GET
-ext-control `0xa00967` with a 0x14-byte output. The vendor getter checks only
-the ioctl return; the target kernel leaves `error_idx == count`, so a direct
-`oa-hdmi-vin` getter on `/dev/video21` reproduces it. `video20`, `video24` and
-`video28` reject (`EPERM`/`EINVAL`/`EPROTO`). The sleep/resume capture shows:
+The sleep trigger is **CEC `0x9D Inactive Source`**, not the video path.
+`SvgAppCECEventsListener::notifyCECDataMessageReceived` @ `0x00d9766c` compares
+the opcode and, at `0xd976a8`, matches `0x9d`; it then constructs
+`UIKeyPressMessage(597)` (`movw r1,#597` at `0xd976b4`) and posts it to the UI
+with push-front at `0xd977de`. The stock log matches this: key 597 reaches
+`DemoApp::preHandleKeyPressMessage` and `portal_closedstate`, then
+`ICE_CIDSetInputName` DTV, `ICE_VideoSelectSource` source 8 and
+`TunerManager::selectServiceForDisplay(1)`. The key-597 emitter is therefore
+recovered; the remaining contract is the DTV/tuner service/view selection.
+
+The HDMI RX status is the **no-signal consequence**, not the trigger.
+`plat_vin_slot_get_status` @ `0x0092ea68` calls `Hal_Vin_GetHdmiStatus`, which
+issues GET ext-control `0xa00967` with a 0x14-byte output. The vendor getter
+checks only the ioctl return; the target kernel leaves `error_idx == count`, so
+the direct `oa-hdmi-vin` getter on `/dev/video21` reproduces it. The
+sleep/resume capture shows the TV losing HDMI sync as it leaves the input:
 
 ```text
 active      w0=1 w1=1 w2=1 w3=0 w4=0
@@ -299,11 +310,7 @@ resume      w0=0 w1=1 w2=1 w3=0 w4=0xffffffff
 active      w0=1 w1=1 w2=1 w3=0 w4=0
 ```
 
-`plat_vin_slot_get_status` maps `w0 == 1` to its connected/ready flag and
-`w1`/`w2` through the video-format tables. The `w0` `1 -> 0/5 -> 1` transition
-is the video-loss/no-signal event at suspend/resume.
-
-The stock log excerpt confirms the immediate path after that transition:
+The stock log excerpt shows the ordering:
 
 ```text
 Path0 Mode Change = LOST SIGNAL
@@ -318,35 +325,52 @@ PLAT_VIU_ChangeInput SourceID=0x0
 TunerManager::selectServiceForDisplay(1)
 ```
 
-The resume side is `CEC 0x82` → `requestSelectExtSource 4` → source 17
-(HDMI1). The code that emits key 597 is not yet identified; the sequence is
-not the status-4 `handleExternalSourceDisconnected` policy. The video-lost
-methods (`ExternalAVSourceManager::externalVideoLostEvent`,
-`InputManager::handleExternalSourceVideoLost`) only set flags and call CEC;
-they do not select the tuner. `SignalLostDialog::onExternalSignalCheckTimer`
-runs a 1 s counter and `endCurrentDialog`, but the switch here is immediate, so
-the 3-minute dialog countdown is not the trigger. Do not claim a wired
-fallback.
+The `LOST SIGNAL`/`ICE_VideoHide` lines are the HDMI input losing sync as the
+TV starts the DTV switch; they are not the trigger. The resume side is
+`CEC 0x82` → `requestSelectExtSource 4` → source 17 (HDMI1). The
+`NovoCECController::handleCECMessage` `0x9D` return is a separate controller
+path and does not cover the `SvgAppCECEventsListener` UI listener. The
+video-lost methods only set flags and call CEC; they do not select the tuner.
+`SignalLostDialog::onExternalSignalCheckTimer` runs a 1 s counter and
+`endCurrentDialog`, but the switch here is immediate, so the 3-minute dialog
+countdown is not the trigger.
 
-The read-only provider is now implemented in the replacement:
+The read-only VIN provider is implemented in the replacement:
 `common/source_vin.c` / `include/openaurora/source_vin.h` decode `w0` and
 expose an injectable poll seam; `mod_source` appends `video_status()` to
 `oa_source_iface` v2, gated by `source.vin_status`. The method opens
 `/dev/video21` lazily, returns 1 ready / 0 lost / -1 unavailable, and never
 selects a source or tuner. `check-source-vin` covers the decoder and poll
 seam; `tests/source_path.c` exercises ready/lost through the fake module; the
-TV `mod_source.so` builds with `common/source_vin_vendor.c`. The consumer that
-turns this status into the tuner switch remains open.
+TV `mod_source.so` builds with `common/source_vin_vendor.c`. It is a no-signal
+detector, not the sleep trigger.
+
+The tuner service/view contract is partially recovered.
+`TunerManager::requestServiceSelectForDisplay` @ `0x00f776b8` takes the
+TunerManager mutex and calls `requestServiceSelectForDisplayInternal` @
+`0x00f771e0`. The internal path rejects an empty `EASIServiceList`
+(TunerManager+0x7c) and a pending standby request, then calls
+`(TunerManager+0x1c)->vtable+0x54(position, view)` to resolve the service
+handle and `+0xd4(handle, TunerManager+0x58, bool)` to select it, followed by
+`NovoServiceNavigationInfo::notifyServiceSelected` and the mute/decoder/hide
+sequence. The position→handle mapping over ACTIVECHANNELLIST and the stored
+service list is implemented in `common/tuner_view.c` /
+`include/openaurora/tuner_view.h`; `check-tuner-view` covers the runtime list,
+stored order, identity order and rejection cases. The full select/mute/
+decoder/UI contract and the CEC 0x9D route remain open.
 
 ## What this establishes
 
 - The stock **cable-unplug** fallback is an **external-interface disconnect**
   policy, gated by the disconnected source's video group relative to
   `this+0x68`. It is not the Deck-sleep path.
-- The Deck-sleep fallback is the VIU lost-signal path: event 3 →
-  `ICE_VideoHide` → synthetic key 597 → `ICE_VideoSelectSource` source 8
-  (tuner) → `TunerManager::selectServiceForDisplay(1)`. The key-597 generator
-  and tuner service/view contract remain open.
+- The Deck-sleep fallback is **CEC `0x9D Inactive Source`**:
+  `SvgAppCECEventsListener` constructs `UIKeyPressMessage(597)` at `0xd976b4`
+  and posts it front. The UI selects DTV/tuner (`ICE_VideoSelectSource`
+  source 8 → `TunerManager::selectServiceForDisplay(1)`). The key-597 emitter
+  is recovered; the tuner service/view contract remains open.
+- The VIU `LOST SIGNAL`/`ICE_VideoHide` lines follow the CEC-triggered source
+  change; they are consequences, not the trigger.
 - Stock cable plug/unplug uses HPD GPIO polling: HDMI1=pin203/bulk byte0,
   HDMI2=pin200/byte2, HDMI3=pin201/byte3, HDMI4=pin202/byte1; level 1 is
   connected and level 0 is disconnected. `oa-hpd-status` confirmed HDMI1=1
@@ -354,11 +378,13 @@ turns this status into the tuner switch remains open.
 - The private V4L2 event `0xc000001` is a scaler update. Byte 4 is the
   `UpdateSCLR arg == 6` flag, not a source status; the live payload repeated
   3840x2160 timings. It is not the source-loss provider.
-- The HDMI RX status `w0` is the suspend detector: 1 while active, 0/5 while
-  the Deck is asleep. The stock log shows the switch path: VIU event 3 →
-  `ICE_VideoHide` → key 597 → `ICE_VideoSelectSource` source 8 →
-  `TunerManager::selectServiceForDisplay(1)`. The key-597 generator remains
-  open.
+- The HDMI RX status `w0` is a no-signal detector: 1 while active, 0/5 after
+  the TV leaves HDMI1. It is not the sleep trigger; the `source.video_status()`
+  v2 provider exposes it read-only for no-signal UI/policy.
+- `TunerManager::requestServiceSelectForDisplay` resolves a view position via
+  `(TunerManager+0x1c)->vtable+0x54` and selects the handle via `+0xd4`. The
+  position→handle mapping is implemented/tested in `common/tuner_view.c`
+  (`check-tuner-view`); the full select/mute/decoder/UI contract is open.
 - On external connect, `this+0x94` saves the previous external source index
   (`-1` for TV) and `this+0x90` the tuner navigation position. On disconnect,
   `+0x94` is restored first; `+0x90` is the tuner-position path only when
@@ -366,8 +392,11 @@ turns this status into the tuner switch remains open.
 - The branch requires `this[0x88] == 0`, a matching video group, a non-empty
   service list for the tuner-position path, interface `0x13` enabled, and
   `this+0x98` set.
-- `0x9D Inactive Source` is not the trigger; it does not clear the active source
-  in this path. `0x36 Standby` is also not the trigger (the TV stayed on).
+- `0x9D Inactive Source` **is** the Deck-sleep trigger through
+  `SvgAppCECEventsListener`/`UIKeyPressMessage(597)`. The
+  `NovoCECController::handleCECMessage` return path is separate and does not
+  override the UI listener. `0x36 Standby` is not the trigger (the TV stayed
+  on).
 - REA's Ghidra provider recovered the same function and the same calls; its
   assembly at `0xfb2004`, `0xfb2048` and `0xfb208e` matches the canonical Ghidra
   dump exactly.
@@ -376,7 +405,7 @@ turns this status into the tuner switch remains open.
 
 `include/openaurora/source_loss.h` and `common/source_loss.c` transcribe the
 recovered decision logic only. This is the HPD/status-4 cable-unplug policy;
-the Deck-sleep path uses the VIU lost-signal/key-597 sequence above. The
+the Deck-sleep path uses the CEC 0x9D/key-597 sequence above. The
 helper:
 
 - saves the previous external index and the tuner position on external connect
@@ -389,7 +418,7 @@ helper:
 `make check-source-loss` covers TV→HDMI→tuner, external→external→tuner,
 `flag_88`, `auto_switched`, group mismatch, invalid arguments and idempotent
 connect. The full host suite passes. The helper is **not wired** into
-`mod_source`: the key-597/tuner consumer, the
+`mod_source`: the CEC `0x9D` → DTV/tuner consumer, the
 `requestSelectServiceForDisplay`/`TunerManager` service/view re-tune and the
 5 s blue-background/UI timing are still open. Do not wire a guessed V4L2 event.
 
@@ -409,7 +438,8 @@ injectable `oa_source_vin_io`. The production provider
 `0xa00967`; `mod_source` exposes it as `source.video_status()` (v2) only when
 `source.vin_status=1`. `check-source-vin` covers ready/lost/null and the poll
 seam; `tests/source_path.c` covers the service gate and live word sets through
-the fake module. It deliberately does not select a source.
+the fake module. It is a no-signal detector and deliberately does not select a
+source; the sleep trigger is CEC `0x9D`/key 597.
 
 ## Limits and next work
 
@@ -429,12 +459,14 @@ the fake module. It deliberately does not select a source.
   change. The HDMI RX status getter `Hal_Vin_GetHdmiStatus`/`0xa00967` works on
   `video21` when `error_idx` is treated as the vendor sentinel; it captured
   `w0 1 -> 0/5 -> 1` across suspend. `video20`/`video24`/`video28` reject. The
-  stock log shows the sleep path is VIU lost-signal event 3 → `ICE_VideoHide`
-  → synthetic key 597 → `ICE_VideoSelectSource` source 8 →
-  `TunerManager::selectServiceForDisplay(1)`. The key-597 generator and the
-  tuner service/view contract remain open. The status-4/HPD policy is the cable
-  unplug path. The video-lost methods only set flags and call CEC; they do not
-  select the tuner. Do not substitute HPD for the suspend trigger.
+  sleep trigger is CEC `0x9D`: `SvgAppCECEventsListener` constructs
+  `UIKeyPressMessage(597)` and posts it; the UI selects DTV/tuner
+  (`ICE_VideoSelectSource` source 8 →
+  `TunerManager::selectServiceForDisplay(1)`). The key-597 emitter is
+  recovered; the tuner service/view contract remains open. The status-4/HPD
+  policy is the cable-unplug path. The video-lost methods only set flags and
+  call CEC; they do not select the tuner. Do not substitute HPD for the sleep
+  trigger.
 - `requestSelectServiceForDisplay` @ `0x00fb19f0` is the tuner service/decoder
   path; its full service-list, decoder-allocation and UI state contract is not
   recovered here. It takes the `NovoServiceViewController::getCurrentView`
@@ -443,7 +475,9 @@ the fake module. It deliberately does not select a source.
   `requestServiceSelectForDisplayInternal` @ `0x00f771e0` →
   `requestServiceSelectInternal` @ `0x00f7568c`. The stock path uses
   `EASIServiceList` @ `this+0x7c`, a `TunerRequestData`/decoder set and the
-  service handle; an always-switch-to-TV shortcut would be wrong.
+  service handle; an always-switch-to-TV shortcut would be wrong. The
+  position→handle part is now implemented/tested in `common/tuner_view.c`;
+  the select/mute/decoder/UI body is still open.
 - The no-signal timeout, black-screen and standby policies
   (`HDMINoSignalTimeout`, `NoSignalCapability`, `NovoSignalController`) are
   separate; they were not exercised in this trace.
@@ -455,18 +489,18 @@ the fake module. It deliberately does not select a source.
   model (`common/source_hpd.c`, `check-source-hpd`) and the VIN provider
   (`common/source_vin.c`, `source.vin_status`, `source.video_status()` v2,
   `check-source-vin` and the fake-module service test) are tested. Not wired:
-  the key-597/tuner consumer, the tuner service/view re-tune and the UI timing.
-  Do not add a guessed fallback.
+  the CEC `0x9D`/DTV/tuner consumer, the tuner service/view re-tune and the UI
+  timing. Do not add a guessed fallback.
 - On-TV evidence (read-only): the V4L2 capture produced one scaler event while
   stock stayed up; `oa-hpd-status` read `01 01 00 01 00` (HDMI1=1) and stayed
   unchanged through a 120 s Deck sleep/resume; `oa-hdmi-vin` recorded the
   rejected `video20`/`video24`/`video28` GETs and the working `video21` status.
   Staging was removed, no helper remained, `/conf/oa_boot` was absent and
   `oa_safe`/`coredumpnoreset` were present.
-- A brief `gdbserver --attach` attempt to catch the key-597 generator stopped
-  stock long enough for the watchdog to reboot the set. Stock returned as PID
-  1775; no staging/helper remained. Do not repeat a debugger attach on stock;
-  the stock log path above was used instead.
+- A brief `gdbserver --attach` attempt, before the key-597 emitter was found,
+  stopped stock long enough for the watchdog to reboot the set. Stock returned
+  as PID 1775; no staging/helper remained. Do not repeat a debugger attach on
+  stock; the CEC listener disassembly identified the emitter instead.
 
 ## Evidence
 
@@ -519,12 +553,18 @@ the fake module. It deliberately does not select a source.
   attempts; its `video21` `EPROTO` predates treating `error_idx` as the vendor
   sentinel. `video20`/`video24`/`video28` still reject.
 - `hdmi-vin-sleep-resume-2026-11-12.log` — working `video21` HDMI RX status
-  capture: `w0=1` active, `w0=0/5` during suspend, back to `w0=1`.
+  capture: `w0=1` active, `w0=0/5` after the TV leaves HDMI1, back to `w0=1`
+  on resume. This is the no-signal consequence, not the sleep trigger.
 - `stock-aurora-source-loss-excerpt-2026-11-12.log` — ANSI-stripped stock log
-  excerpt with private ID records removed. Shows `LOST SIGNAL` (VIU event 3)
-  → `ICE_VideoHide` → key 597 → `ICE_VideoSelectSource` source 8 →
+  excerpt with private ID records removed. Shows `LOST SIGNAL` (VIU event 3),
+  `ICE_VideoHide`, key 597, `ICE_VideoSelectSource` source 8 →
   `TunerManager::selectServiceForDisplay(1)`, and the resume `CEC 0x82` →
   source 17 (HDMI1).
+- `cec-9d-key597.txt` — `SvgAppCECEventsListener::notifyCECDataMessageReceived`
+  `0x9D` branch: `movw r1,#597`, `UIKeyPressMessage(597)`, then
+  `UIFramework::postMessage(..., 1)`.
+- `demoapp-key597.txt` — `DemoApp::preHandleKeyPressMessage`/`handleMessage`
+  key-597 handling and the 0x255/0x25b/0x22d portal close branch.
 - `signal-dialog.txt` / `signal-dialog-counter2.txt` — `SignalLostDialog`
   external-signal timer, counter and `endCurrentDialog`.
 - `input-timeout.txt` — `InputManager::selectExtSource`,
@@ -551,6 +591,10 @@ the fake module. It deliberately does not select a source.
 - `ice-external-open.txt` / `ice-video-cb-callers.txt` — ICE external/video
   callback registration.
 - `ndp-extsrc-g-ctrl.dis` — `NDP_ExtSrc_g_ext_ctrls` control dispatch.
+- `tunermanager-select.txt` — `TunerManager::requestServiceSelectForDisplay`
+  and internal/select decompile; position→handle and select vtable calls.
+- `cec-9d-key597.txt` / `demoapp-key597.txt` — CEC 0x9D → UIKeyPressMessage(597)
+  and the DemoApp key-597 handler.
 
 Related: [CEC-LIVE-2026-11-01](CEC-LIVE-2026-11-01.md),
 [CEC-SPEC-VS-AURORA-2026-10-30](CEC-SPEC-VS-AURORA-2026-10-30.md),

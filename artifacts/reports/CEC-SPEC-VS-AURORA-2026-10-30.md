@@ -1,12 +1,17 @@
 # CEC 1.3a spec vs aurora's implementation — 2026-10-30
 
-> **2026-11-12 correction:** the 0x9D row below is wrong. An instruction check
-> of `NovoCECController::handleCECMessage` @ `0x0102fce0` shows 0x9D returns
-> unless the TV is already in the standby transition; it does not clear the
-> active source. The observed Deck-sleep tuner fallback is the external-interface
-> disconnect policy in SOURCE-LOSS-FALLBACK-2026-11-12, not 0x9D. 0x82 still
-> calls `selectSource`. See CEC-LIVE-2026-11-01 and CEC-FIRST-OPENER-2026-11-12.
-> Raw instruction excerpt: `../analysis/cec-first-2026-11-12/rea-2026-11-12.txt`.
+> **2026-11-12 correction (updated):** the 0x9D row was wrong in the other
+> direction. `NovoCECController::handleCECMessage` @ `0x0102fce0` returns
+> unless the TV is already in the standby transition, but the separate
+> `SvgAppCECEventsListener::notifyCECDataMessageReceived` @ `0x00d9766c`
+> handles opcode `0x9D` by constructing `UIKeyPressMessage(597)` and posting it
+> to the UI. The observed Deck-sleep tuner fallback **is** CEC 0x9D; the UI
+> selects DTV/tuner (`TunerManager::selectServiceForDisplay(1)`). The
+> external-interface disconnect policy in SOURCE-LOSS-FALLBACK-2026-11-12 is
+> the cable-unplug fallback, not the sleep path. 0x82 still calls
+> `selectSource`. See CEC-LIVE-2026-11-01 and CEC-FIRST-OPENER-2026-11-12.
+> Raw instruction excerpt: `../analysis/cec-first-2026-11-12/rea-2026-11-12.txt`
+> and `../analysis/source-loss-2026-11-12/cec-9d-key597.txt`.
 
 > **2026-10-31 correction:** use [CEC-AUDIO-CONTRACT](CEC-AUDIO-CONTRACT-2026-10-31.md)
 > for current System Audio/ARC contracts. ARC is specified in 1.4, not 1.3a.
@@ -20,8 +25,8 @@
 > **Status: Static comparison only; broader conformance, later CEC revisions and live wire behavior are unverified.** See [report index](README.md) and
 > [current corrections](../../FINDINGS.md); old plans do not authorize TV changes.
 
-Last verified: 2026-11-12 (0x9D correction). Evidence class: firmware
-instructions; no live wire capture.
+Last verified: 2026-11-12 (0x9D UI-listener correction). Evidence class:
+firmware instructions; no live wire capture.
 
 Side-by-side comparison. Spec side: **HDMI 1.3a Supplement 1 (CEC)**, the normative text (local copy
 `/tmp/opencode/cec13a.txt`). Implementation side: `aurora.elf` (symbols intact) — decompiled
@@ -85,7 +90,7 @@ plus its own workarounds. The policy layer does the TV behaviour. Both were insp
 | 0x8F | `<Give Device Power Status>` | reply 0x90 | replies 0x90 from `this[0x4c]` | ok |
 | 0x90 | `<Report Power Status>` | length **1** | length 1, stores the device's power state | ok |
 | 0x91 | `<Get Menu Language>` | reply 0x32 | handled | ok |
-| 0x9D | `<Inactive Source>` | source went away | 2026-11-12 instruction check: returns unless the TV is in the standby transition; does **not** clear the active source in this path (see correction above) | needs re-check |
+| 0x9D | `<Inactive Source>` | source went away | `NovoCECController::handleCECMessage` returns unless the TV is in the standby transition; the UI listener `SvgAppCECEventsListener` posts `UIKeyPressMessage(597)`, which selects DTV/tuner | implemented via UI listener; controller path separate |
 | 0xA3 | `<Report Short Audio Descriptor>` | EDID/SAD bookkeeping | consumed for ARC/EDID | ok |
 | 0xC0 | `<Initiate ARC>` | start ARC | ICE special-cases it, policy sets ARC and replies 0xC1 | ok |
 | 0xC5 | `<Terminate ARC>` | stop ARC | replies 0xC2 | ok |
