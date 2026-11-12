@@ -49,6 +49,14 @@ static const oa_cec_authority_mem_io authority_mem = {
     NULL, am_open, am_map, am_unmap, am_close
 };
 
+static int hex_value(char c)
+{
+    if (c >= '0' && c <= '9') return c - '0';
+    if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+    if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+    return -1;
+}
+
 static int dev_open(void *context, const char *path, int flags)
 {
     (void)context; (void)flags;
@@ -94,7 +102,18 @@ static int dev_ioctl(void *context, int fd, unsigned long request, void *argumen
         if (atomic_exchange(&rx_pending, 0)) {
             const char *mode = getenv("OA_CEC_FAKE_RX");
             p->bytes[0] = 0x50;
-            if (mode && !strcmp(mode, "9d")) {
+            if (mode && !strncmp(mode, "raw:", 4)) {
+                const char *hex = mode + 4;
+                size_t n = 0;
+                while (hex[0] && hex[1] && n < sizeof p->bytes) {
+                    int hi = hex_value(hex[0]);
+                    int lo = hex_value(hex[1]);
+                    if (hi < 0 || lo < 0) break;
+                    p->bytes[n++] = (uint8_t)((hi << 4) | lo);
+                    hex += 2;
+                }
+                p->length = (uint8_t)n;
+            } else if (mode && !strcmp(mode, "9d")) {
                 /* Broadcast Inactive Source from LA5 with PA 0x1000. */
                 p->bytes[0] = 0x5f;
                 p->bytes[1] = 0x9d;

@@ -490,8 +490,9 @@ unvalidated.
       hook `c3943712…`, no staging, `aurora.elf` 1773, `DRV_CEC_CALLBAC` 2855).
       Next: wake/verify the peer CEC stack or use a known-good CEC device, then
       capture a reply before claiming RX/logical-address acceptance. See
-      CEC-FIRST-OPENER-2026-11-12. Also implement the stock routing/power
-      policy: 0x82 Active Source selects the PA input; the
+      CEC-FIRST-OPENER-2026-11-12. Routing/power status: 0x82 Active Source
+      is implemented behind `cec.active_source` by PA top nibble (HDMI1..4;
+      `cec_active.cjs`); the vendor path uses logical addresses. The
       `NovoCECController::handleCECMessage` 0x9D path returns unless the TV is
       in the standby transition, but the separate `SvgAppCECEventsListener`
       handles 0x9D by posting `UIKeyPressMessage(597)` and selecting DTV/tuner;

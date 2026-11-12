@@ -1,0 +1,231 @@
+CEC 0x82 Active Source / NovoCECController::selectSource evidence
+aurora.elf MR: 0x0102fce1 handleCECMessage, 0x0102f5e1 selectSource
+
+=== handleCECMessage 0x82 compare
+ 102fee2:	2890      	cmp	r0, #144	; 0x90
+ 102fee4:	d07c      	beq.n	102ffe0 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x300>
+ 102fee6:	d823      	bhi.n	102ff30 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x250>
+ 102fee8:	2884      	cmp	r0, #132	; 0x84
+ 102feea:	f000 8224 	beq.w	1030336 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x656>
+ 102feee:	d80f      	bhi.n	102ff10 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x230>
+ 102fef0:	2882      	cmp	r0, #130	; 0x82
+ 102fef2:	f000 8182 	beq.w	10301fa <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x51a>
+ 102fef6:	2883      	cmp	r0, #131	; 0x83
+ 102fef8:	f47f af5e 	bne.w	102fdb8 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xd8>
+ 102fefc:	f107 0328 	add.w	r3, r7, #40	; 0x28
+ 102ff00:	f8a7 a028 	strh.w	sl, [r7, #40]	; 0x28
+ 102ff04:	9300      	str	r3, [sp, #0]
+ 102ff06:	2284      	movs	r2, #132	; 0x84
+ 102ff08:	f887 a02a 	strb.w	sl, [r7, #42]	; 0x2a
+ 102ff0c:	2303      	movs	r3, #3
+ 102ff0e:	e1eb      	b.n	10302e8 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x608>
+
+=== selectSource call site
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+010308d8 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xbf8>:
+ 10308d8:	68a2      	ldr	r2, [r4, #8]
+ 10308da:	4790      	blx	r2
+ 10308dc:	f7ff ba17 	b.w	102fd0e <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2e>
+ 10308e0:	4631      	mov	r1, r6
+ 10308e2:	4620      	mov	r0, r4
+ 10308e4:	f7fe fe7c 	bl	102f5e0 <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base>
+ 10308e8:	e426      	b.n	1030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>
+ 10308ea:	2d00      	cmp	r5, #0
+ 10308ec:	f47f ac24 	bne.w	1030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>
+
+=== CEC logical -> video group table @ 0x0152fa4c
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .rodata:
+ 152fa4c 03000000 04000000 09000000 0c000000  ................
+ 152fa5c 0d000000 00000000                    ........
+
+=== selectSource 0x0102f5e0
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0102f5e0 <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base>:
+ 102f5e0:	f44f 4280 	mov.w	r2, #16384	; 0x4000
+ 102f5e4:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
+ 102f5e8:	ebad 0c02 	sub.w	ip, sp, r2
+ 102f5ec:	f8cc 0fc8 	str.w	r0, [ip, #4040]	; 0xfc8
+ 102f5f0:	b086      	sub	sp, #24
+ 102f5f2:	460e      	mov	r6, r1
+ 102f5f4:	7b49      	ldrb	r1, [r1, #13]
+ 102f5f6:	4604      	mov	r4, r0
+ 102f5f8:	4845      	ldr	r0, [pc, #276]	; (102f710 <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0x130>)
+ 102f5fa:	af02      	add	r7, sp, #8
+ 102f5fc:	6803      	ldr	r3, [r0, #0]
+ 102f5fe:	090d      	lsrs	r5, r1, #4
+ 102f600:	4680      	mov	r8, r0
+ 102f602:	60fb      	str	r3, [r7, #12]
+ 102f604:	d059      	beq.n	102f6ba <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0xda>
+ 102f606:	68e0      	ldr	r0, [r4, #12]
+ 102f608:	f5f4 f3fc 	bl	a23e04 <_ZN22EASITVControlInterface24getNumberOfExtInterfacesEv@@Base>
+ 102f60c:	f100 0a01 	add.w	sl, r0, #1
+ 102f610:	1e68      	subs	r0, r5, #1
+ 102f612:	2804      	cmp	r0, #4
+ 102f614:	f04f 0500 	mov.w	r5, #0
+ 102f618:	bfd6      	itet	le
+ 102f61a:	4a3e      	ldrle	r2, [pc, #248]	; (102f714 <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0x134>)
+ 102f61c:	f04f 0900 	movgt.w	r9, #0
+ 102f620:	f852 9020 	ldrle.w	r9, [r2, r0, lsl #2]
+ 102f624:	4629      	mov	r1, r5
+ 102f626:	68e0      	ldr	r0, [r4, #12]
+ 102f628:	f5f4 f43a 	bl	a23ea0 <_ZN22EASITVControlInterface29getVideoGroupIDOfExtInterfaceEi@@Base>
+ 102f62c:	4548      	cmp	r0, r9
+ 102f62e:	d162      	bne.n	102f6f6 <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0x116>
+ 102f630:	4629      	mov	r1, r5
+ 102f632:	6ae0      	ldr	r0, [r4, #44]	; 0x2c
+ 102f634:	f74d fb52 	bl	f7ccdc <_ZNK15UserPreferences18getExternalEnabledEj@@Base>
+ 102f638:	2800      	cmp	r0, #0
+ 102f63a:	d03e      	beq.n	102f6ba <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0xda>
+ 102f63c:	6873      	ldr	r3, [r6, #4]
+ 102f63e:	2b0e      	cmp	r3, #14
+ 102f640:	bfde      	ittt	le
+ 102f642:	f44f 7194 	movle.w	r1, #296	; 0x128
+ 102f646:	fb01 4303 	mlale	r3, r1, r3, r4
+ 102f64a:	f8c3 9138 	strle.w	r9, [r3, #312]	; 0x138
+ 102f64e:	6820      	ldr	r0, [r4, #0]
+ 102f650:	6871      	ldr	r1, [r6, #4]
+ 102f652:	6942      	ldr	r2, [r0, #20]
+ 102f654:	4620      	mov	r0, r4
+ 102f656:	4790      	blx	r2
+ 102f658:	2102      	movs	r1, #2
+ 102f65a:	68a0      	ldr	r0, [r4, #8]
+ 102f65c:	f547 f650 	bl	977300 <_ZNK20EASIControlInterface14isVideoShowingE10DecoderSet@@Base>
+ 102f660:	4601      	mov	r1, r0
+ 102f662:	b910      	cbnz	r0, 102f66a <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0x8a>
+ 102f664:	68a0      	ldr	r0, [r4, #8]
+ 102f666:	f546 f45d 	bl	975f24 <_ZN20EASIControlInterface18selectVideoDecoderE10DecoderSet@@Base>
+ 102f66a:	6aa0      	ldr	r0, [r4, #40]	; 0x28
+ 102f66c:	6803      	ldr	r3, [r0, #0]
+ 102f66e:	6f99      	ldr	r1, [r3, #120]	; 0x78
+ 102f670:	4788      	blx	r1
+ 102f672:	2201      	movs	r2, #1
+ 102f674:	4629      	mov	r1, r5
+ 102f676:	6920      	ldr	r0, [r4, #16]
+ 102f678:	f782 faea 	bl	fb1c50 <_ZN12InputManager22requestSelectExtSourceEib@@Base>
+ 102f67c:	2101      	movs	r1, #1
+ 102f67e:	6920      	ldr	r0, [r4, #16]
+ 102f680:	f780 f9a8 	bl	faf9d4 <_ZN12InputManager24setSwitchedAutomaticallyEb@@Base>
+ 102f684:	4924      	ldr	r1, [pc, #144]	; (102f718 <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0x138>)
+ 102f686:	1d38      	adds	r0, r7, #4
+ 102f688:	f457 f85c 	bl	c86744 <_ZN7UStringC1EPKc@@Base>
+ 102f68c:	6872      	ldr	r2, [r6, #4]
+ 102f68e:	1d39      	adds	r1, r7, #4
+ 102f690:	4620      	mov	r0, r4
+ 102f692:	f7fe ffa5 	bl	102e5e0 <_ZN17NovoCECController11getHDMINameER7UString10CECLogical@@Base>
+ 102f696:	2101      	movs	r1, #1
+ 102f698:	68a0      	ldr	r0, [r4, #8]
+ 102f69a:	f550 f1e3 	bl	97fa64 <_ZN20EASIControlInterface15CIDSetHDMIisCECEb@@Base>
+ 102f69e:	1d38      	adds	r0, r7, #4
+ 102f6a0:	68a5      	ldr	r5, [r4, #8]
+ 102f6a2:	f457 fd09 	bl	c870b8 <_ZNK7UString5c_strEv@@Base>
+ 102f6a6:	4601      	mov	r1, r0
+ 102f6a8:	4628      	mov	r0, r5
+ 102f6aa:	f550 f20f 	bl	97facc <_ZN20EASIControlInterface15CIDSetInputNameEPKc@@Base>
+ 102f6ae:	6872      	ldr	r2, [r6, #4]
+ 102f6b0:	2a0e      	cmp	r2, #14
+ 102f6b2:	dd09      	ble.n	102f6c8 <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0xe8>
+ 102f6b4:	1d38      	adds	r0, r7, #4
+ 102f6b6:	f456 ff4d 	bl	c86554 <_ZN7UStringD1Ev@@Base>
+ 102f6ba:	68fc      	ldr	r4, [r7, #12]
+ 102f6bc:	f8d8 6000 	ldr.w	r6, [r8]
+ 102f6c0:	42b4      	cmp	r4, r6
+ 102f6c2:	d021      	beq.n	102f708 <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0x128>
+ 102f6c4:	f680 c83c 	blx	6af740 <__stack_chk_fail@plt>
+ 102f6c8:	f44f 7094 	mov.w	r0, #296	; 0x128
+ 102f6cc:	4350      	muls	r0, r2
+ 102f6ce:	1823      	adds	r3, r4, r0
+ 102f6d0:	f993 119a 	ldrsb.w	r1, [r3, #410]	; 0x19a
+ 102f6d4:	2900      	cmp	r1, #0
+ 102f6d6:	d0ed      	beq.n	102f6b4 <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0xd4>
+ 102f6d8:	f500 709e 	add.w	r0, r0, #316	; 0x13c
+ 102f6dc:	4420      	add	r0, r4
+ 102f6de:	f457 faa3 	bl	c86c28 <_ZNK7UString7isEmptyEv@@Base>
+ 102f6e2:	2800      	cmp	r0, #0
+ 102f6e4:	d0e6      	beq.n	102f6b4 <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0xd4>
+ 102f6e6:	2300      	movs	r3, #0
+ 102f6e8:	2246      	movs	r2, #70	; 0x46
+ 102f6ea:	9300      	str	r3, [sp, #0]
+ 102f6ec:	6871      	ldr	r1, [r6, #4]
+ 102f6ee:	68a0      	ldr	r0, [r4, #8]
+ 102f6f0:	f54b f16c 	bl	97a9cc <_ZN20EASIControlInterface14sendCecMessageE10CECLogicalhhPKh@@Base>
+ 102f6f4:	e7de      	b.n	102f6b4 <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0xd4>
+ 102f6f6:	3501      	adds	r5, #1
+ 102f6f8:	45aa      	cmp	sl, r5
+ 102f6fa:	d293      	bcs.n	102f624 <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0x44>
+ 102f6fc:	e7dd      	b.n	102f6ba <_ZN17NovoCECController12selectSourceERK10CECMessage@@Base+0xda>
+ 102f6fe:	1d38      	adds	r0, r7, #4
+ 102f700:	f456 ff28 	bl	c86554 <_ZN7UStringD1Ev@@Base>
+ 102f704:	f681 cf9e 	blx	6b1644 <__cxa_end_cleanup@plt>
+ 102f708:	3710      	adds	r7, #16
+ 102f70a:	46bd      	mov	sp, r7
+ 102f70c:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
+ 102f710:	1d68      	adds	r0, r5, #5
+ 102f712:	0179      	lsls	r1, r7, #5
+ 102f714:	fa4c 0152 			; <UNDEFINED> instruction: 0xfa4c0152
+ 102f718:	5cda      	ldrb	r2, [r3, r3]
+ 102f71a:	012f      	lsls	r7, r5, #4
+
+=== external descriptor table @ 0x0175de8c (stride 0x38)
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+Contents of section .data:
+ 175de8c 0e000000 22000000 01000000 0b000000  ...."...........
+ 175de9c 01000000 0b000000 01000000 01000000  ................
+ 175deac 02000000 01000000 01000000 45585431  ............EXT1
+ 175debc 00000000 00000000 15000000 22000000  ............"...
+ 175decc 06000000 0b000000 01000000 0b000000  ................
+ 175dedc 05000000 01000000 02000000 01000000  ................
+ 175deec 01000000 45585431 00000000 00000000  ....EXT1........
+ 175defc 0f000000 23000000 02000000 0b000000  ....#...........
+ 175df0c 02000000 0b000000 01000000 01000000  ................
+ 175df1c 02000000 08000000 08000000 46617600  ............Fav.
+ 175df2c 00000000 00000000 17000000 29000000  ............)...
+ 175df3c 06000000 0b000000 06000000 0b000000  ................
+ 175df4c 05000000 01000000 02000000 07000000  ................
+ 175df5c 07000000 53766873 00000000 00000000  ....Svhs........
+ 175df6c 11000000 25000000 07000000 07000000  ....%...........
+ 175df7c 07000000 07000000 06000000 02000000  ................
+ 175df8c 02000000 03000000 03000000 48444d49  ............HDMI
+ 175df9c 31000000 00000000 12000000 26000000  1...........&...
+ 175dfac 07000000 07000000 07000000 07000000  ................
+ 175dfbc 06000000 02000000 02000000 04000000  ................
+ 175dfcc 04000000 48444d49 32000000 00000000  ....HDMI2.......
+ 175dfdc 13000000 27000000 07000000 07000000  ....'...........
+ 175dfec 07000000 07000000 06000000 02000000  ................
+ 175dffc 02000000 09000000 09000000 48444d49  ............HDMI
+ 175e00c 33000000 00000000 16000000 28000000  3...........(...
+ 175e01c 07000000 07000000 07000000 07000000  ................
+ 175e02c 06000000 02000000 02000000 0c000000  ................
+ 175e03c 0c000000 48444d49 34000000 00000000  ....HDMI4.......
+ 175e04c 14000000 29000000 03000000 0b000000  ....)...........
+ 175e05c 03000000 0b000000 02000000 01000000  ................
+ 175e06c 02000000 05000000 05000000 59506250  ............YPbP
+ 175e07c 72000000 00000000 10000000 29000000  r...........)...
+ 175e08c 08000000 0b000000 08000000 0b000000  ................
+ 175e09c 07000000 01000000 02000000 06000000  ................
+ 175e0ac 06000000 56474100 00000000 00000000  ....VGA.........
+ 175e0bc 20000000 34000000 0a000000 0b000000   ...4...........
+ 175e0cc 0a000000 0b000000 01000000 01000000  ................
+ 175e0dc 02000000 0e000000 0e000000 44564400  ............DVD.
+ 175e0ec 00000000 00000000 1d000000 0b000000  ................
+ 175e0fc 0d000000 0d000000 0d000000 0d000000  ................
+ 175e10c 06000000 02000000 02000000 0f000000  ................
+ 175e11c 0f000000 57696469 00000000 00000000  ....Widi........
+ 175e12c 1e000000 32000000 0e000000 0e000000  ....2...........
+ 175e13c 0e000000 0e000000 06000000 02000000  ................
+ 175e14c 02000000 10000000 10000000 41504d00  ............APM.
+ 175e15c 00000000 00000000                    ........

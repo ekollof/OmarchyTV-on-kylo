@@ -9,7 +9,9 @@
 > selects DTV/tuner (`TunerManager::selectServiceForDisplay(1)`). The
 > external-interface disconnect policy in SOURCE-LOSS-FALLBACK-2026-11-12 is
 > the cable-unplug fallback, not the sleep path. 0x82 still calls
-> `selectSource`. See CEC-LIVE-2026-11-01 and CEC-FIRST-OPENER-2026-11-12.
+> `selectSource`; the replacement routes it by physical address behind
+> `cec.active_source` (`cec_active.cjs`). See CEC-LIVE-2026-11-01 and
+> CEC-FIRST-OPENER-2026-11-12.
 > Raw instruction excerpt: `../analysis/cec-first-2026-11-12/rea-2026-11-12.txt`
 > and `../analysis/source-loss-2026-11-12/cec-9d-key597.txt`.
 
@@ -83,7 +85,7 @@ plus its own workarounds. The policy layer does the TV behaviour. Both were insp
 | 0x7A | `<Report Audio Status>` | update UI volume | updates volume dialog state | ok |
 | 0x7E | `<System Audio Mode Status>` | — | clears/sets SAM | ok |
 | 0x80 | `<Routing Change>` | length **4** (old PA + new PA) | length must be 4, compares both PAs | ok |
-| 0x82 | `<Active Source>` | length **2**, sender ≠ 0 | length 2, sender ≠ 0, switches input | ok |
+| 0x82 | `<Active Source>` | length **2**, sender ≠ 0 | length 2, sender ≠ 0, switches input by logical address; replacement selects by PA top nibble behind `cec.active_source` | vendor logical mapping; replacement PA mapping |
 | 0x83 | `<Give Physical Address>` | reply 0x84 | replies 0x84 with PA + device type | ok |
 | 0x84 | `<Report Physical Address>` | length **3**; record LA↔PA↔type | length 3, sender ≠ 0/15, stores PA + device type + video group, then asks the name | ok |
 | 0x85 | `<Request Active Source>` | nobody-by-default → broadcast own 0.0.0.0 | if current input isn't HDMI, broadcasts `Active Source` 0x0000 | ok |

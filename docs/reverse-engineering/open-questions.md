@@ -59,8 +59,9 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   run. The 2026-11-01 cache “LA8” was an array slot, not a wire LA; on
   2026-11-12 LA8 NACKed while LA4 and broadcast ACKed, but LA4 answered no
   83/46/8f query. A raw receive consumes messages and is not a view-only query.
-- Routing/power policy (Active Source 0x82, Inactive Source 0x9D, Standby 0x36)
-  is not implemented. 0x82 calls `selectSource`; the
+- Routing/power status: 0x82 Active Source is implemented behind
+  `cec.active_source` by PA top nibble (HDMI1..4; `cec_active.cjs`); the vendor
+  path `selectSource` uses logical addresses. The
   `NovoCECController::handleCECMessage` 0x9D path returns unless the TV is in
   the standby transition, but the separate `SvgAppCECEventsListener` handles
   0x9D by posting `UIKeyPressMessage(597)`; 0x36 is accepted only from the

@@ -170,8 +170,10 @@ Evidence: [AUDIO-ROUTING](../../artifacts/reports/AUDIO-ROUTING-2026-11-01.md),
   but sent no reply. CEC-ASYNC/REPLY-QUEUE/QUIESCE cover the ownership and
   reload gates; CEC-MODULE-TRANSPORT adds the injectable raw-device/authority
   seam and a host fake; CEC-FIRST-OPENER records the boot-order/TX path.
-- Routing/power policy is not implemented: stock 0x82 Active Source calls
-  `selectSource`; the `NovoCECController::handleCECMessage` 0x9D path returns
+- Routing/power status: 0x82 Active Source is implemented behind
+  `cec.active_source` by PA top nibble (HDMI1..4; `cec_active.cjs`); the stock
+  path `selectSource` uses CEC logical addresses. The
+  `NovoCECController::handleCECMessage` 0x9D path returns
   unless the TV is in the standby transition, but the separate
   `SvgAppCECEventsListener` handles 0x9D by posting `UIKeyPressMessage(597)`;
   0x36 Standby is accepted only from the active device. The owner's 2026-11-12
@@ -183,7 +185,8 @@ Evidence: [AUDIO-ROUTING](../../artifacts/reports/AUDIO-ROUTING-2026-11-01.md),
   lines follow the source change. The external-interface disconnect policy is
   the cable-unplug fallback in SOURCE-LOSS-FALLBACK. Resume-to-HDMI1 is
   consistent with 0x82/video ready. `mod_cec` routes broadcast 0x9D behind
-  `cec.inactive_fallback`; the rest of routing/power remains unimplemented.
+  `cec.inactive_fallback` and 0x82 behind `cec.active_source`; 0x36/power
+  remains unimplemented.
 
 Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),

@@ -27,7 +27,10 @@ static struct ctx *g_ctx;
 
 static int fake_select_type(int type)
 {
-    (void)type;
+    if (!g_ctx) return -ENODEV;
+    g_ctx->api->log(g_ctx->api->priv, OA_LOG_INFO,
+                    "fake source select type %d", type);
+    g_ctx->external_type = type;
     return 0;
 }
 static int fake_current_type(void)

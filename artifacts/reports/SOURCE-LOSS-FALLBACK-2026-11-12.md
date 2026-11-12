@@ -394,6 +394,19 @@ drives the real receive path with fake source/channel/tuner services and
 covers position 1/2, the disabled gate and the TV/no-external gate. The full
 select/mute/decoder/UI body remains open.
 
+The companion `0x82 Active Source` route is implemented behind
+`cec.active_source`. CEC 1.3a carries the source physical address; the
+replacement maps the PA's top nibble 1..4 to HDMI1..HDMI4 (source types
+17/18/19/22), validated with `oa_cec_physical_address_valid` and a 2-byte
+broadcast check. The vendor `NovoCECController::selectSource` @ `0x0102f5e0`
+instead maps CEC logical addresses 1..5 to video groups `{3,4,9,12,13}` and
+selects the matching enabled external interface; the descriptor table at
+`0x0175de8c` (stride `0x38`) resolves the HDMI inputs. Using the PA is the
+specification-correct behavior and is recorded as a deliberate vendor
+deviation. `tests/cec_active.cjs` covers PA `0x1000`/`0x2000`, the disabled
+gate, directed frames, invalid PA and unmapped HDMI5. `0x36 Standby` and power
+transitions remain open.
+
 ## What this establishes
 
 - The stock **cable-unplug** fallback is an **external-interface disconnect**
@@ -426,7 +439,9 @@ select/mute/decoder/UI body remains open.
   order/gates. `mod_cec` routes broadcast 0x9D behind `cec.inactive_fallback`,
   requires a displayed external source, maps the selected tuner handle back to
   its active-list position and calls the worker; `cec_inactive.cjs` covers the
-  route and its disabled/TV gates.
+  route and its disabled/TV gates. `0x82 Active Source` is implemented behind
+  `cec.active_source` by the PA top nibble (HDMI1..4; `cec_active.cjs`); the
+  vendor's logical-address mapping is a documented deviation.
 - On external connect, `this+0x94` saves the previous external source index
   (`-1` for TV) and `this+0x90` the tuner navigation position. On disconnect,
   `+0x94` is restored first; `+0x90` is the tuner-position path only when
@@ -534,9 +549,10 @@ source; the sleep trigger is CEC `0x9D`/key 597.
   `inactive_source(position)` v3 worker (`source.inactive_fallback`,
   `source_path` fake-service order/gates) are tested. `mod_cec` routes
   broadcast 0x9D behind `cec.inactive_fallback` (`cec_inactive.cjs` fake
-  source/channel/tuner services, position 1/2 and disabled/TV gates). Not
-  wired: the full tuner select/mute/decoder/UI body and the UI timing. Do not
-  add a guessed fallback.
+  source/channel/tuner services, position 1/2 and disabled/TV gates) and
+  broadcast 0x82 behind `cec.active_source` by PA top nibble
+  (`cec_active.cjs`). Not wired: the full tuner select/mute/decoder/UI body
+  and the UI timing. Do not add a guessed fallback.
 - On-TV evidence (read-only): the V4L2 capture produced one scaler event while
   stock stayed up; `oa-hpd-status` read `01 01 00 01 00` (HDMI1=1) and stayed
   unchanged through a 120 s Deck sleep/resume; `oa-hdmi-vin` recorded the
@@ -641,6 +657,8 @@ source; the sleep trigger is CEC `0x9D`/key 597.
   and internal/select decompile; position→handle and select vtable calls.
 - `cec-9d-key597.txt` / `demoapp-key597.txt` — CEC 0x9D → UIKeyPressMessage(597)
   and the DemoApp key-597 handler.
+- `cec-active-source.txt` — 0x82 handler/selectSource instructions, the CEC
+  logical-to-video-group table and the 13-record external descriptor table.
 
 Related: [CEC-LIVE-2026-11-01](CEC-LIVE-2026-11-01.md),
 [CEC-SPEC-VS-AURORA-2026-10-30](CEC-SPEC-VS-AURORA-2026-10-30.md),

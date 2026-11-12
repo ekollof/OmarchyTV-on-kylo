@@ -12,6 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "openaurora/broadcast.h"
+#include "openaurora/cec.h"
 #include "openaurora/cec_authority_mem.h"
 #include "openaurora/cec_module_transport.h"
 #include "openaurora/cec_owner.h"
@@ -29,6 +30,7 @@ struct ctx {
     int owner_published;
     int audio_published;
     int inactive_enabled; /* cec.inactive_fallback */
+    int active_source_enabled; /* cec.active_source */
 
     /* Optional hardware transport (cec.enable=1). */
     int enabled;
@@ -285,6 +287,60 @@ static void handle_inactive_source(struct ctx *c, const oa_cec_message *m)
     drop_lookup(c, OA_SVC_SOURCE, source);
 }
 
+/* CEC 1.3a <Active Source> carries the source's physical address. The HDMI
+ * input is the top PA nibble: 1..4 -> HDMI1..HDMI4. The vendor
+ * NovoCECController::selectSource maps the CEC logical address instead; using
+ * the PA is the specification-correct behavior. Gate on cec.active_source. */
+static int active_source_type(uint16_t pa)
+{
+    switch ((pa >> 12) & 15u) {
+    case 1: return 17; /* HDMI1 */
+    case 2: return 18; /* HDMI2 */
+    case 3: return 19; /* HDMI3 */
+    case 4: return 22; /* HDMI4 */
+    default: return -1;
+    }
+}
+
+static void handle_active_source(struct ctx *c, const oa_cec_message *m)
+{
+    if (!c || !c->active_source_enabled || !m || m->opcode != 0x82) return;
+    if (m->initiator == 0 || m->destination != 15 || m->count != 2) return;
+
+    uint16_t pa = (uint16_t)((m->operands[0] << 8) | m->operands[1]);
+    if (!oa_cec_physical_address_valid(pa)) {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x82 active source ignored: invalid pa 0x%04x", pa);
+        return;
+    }
+    int type = active_source_type(pa);
+    if (type < 0) {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x82 active source ignored: pa 0x%04x has no "
+                    "mapped HDMI input", pa);
+        return;
+    }
+
+    const oa_source_iface *source =
+        c->api->lookup(c->api->priv, OA_SVC_SOURCE, 1);
+    if (!source || !source->select_type) {
+        drop_lookup(c, OA_SVC_SOURCE, source);
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "cec 0x82 ignored: source service unavailable");
+        return;
+    }
+    int rc = source->select_type(type);
+    if (rc == 0)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x82 active source: pa 0x%04x type %d selected",
+                    pa, type);
+    else
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x82 active source: pa 0x%04x type %d failed (%d)",
+                    pa, type, rc);
+    drop_lookup(c, OA_SVC_SOURCE, source);
+}
+
 static void queue_replies(struct ctx *c, const oa_cec_message *replies, int n)
 {
     for (int i = 0; i < n; i++) {
@@ -344,6 +400,7 @@ static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
             else if (count > 0)
                 queue_replies(c, replies, count);
             handle_inactive_source(c, &comp->message);
+            handle_active_source(c, &comp->message);
         } else if (comp->rc < 0) {
             c->last_error = comp->error ? comp->error : EIO;
             if (!c->rx_error_logged) {
@@ -596,6 +653,13 @@ static int start(void *ud)
     if (c->inactive_enabled)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "cec: inactive-source fallback enabled (0x9d)");
+    const char *active = c->api->config_get(c->api->priv,
+                                            "cec.active_source", "0");
+    c->active_source_enabled = active &&
+        (!strcmp(active, "1") || !strcmp(active, "true"));
+    if (c->active_source_enabled)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec: active-source routing enabled (0x82)");
     if (c->enabled) {
         const char *path = c->api->config_get(c->api->priv, "cec.device",
                                               "/tmp/ntkcec");
@@ -690,6 +754,7 @@ static int quiesce(void *ud)
         c->api->unpublish(c->api->priv, OA_SVC_CEC_AUDIO);
     c->enabled = 0;
     c->inactive_enabled = 0;
+    c->active_source_enabled = 0;
     c->quiescing = 1;
     clear_session_state(c);
     c->cleanup_authority = c->authority_open ? 1 : 0;
@@ -841,6 +906,7 @@ static void stop(void *ud)
     }
     c->enabled = 0;
     c->inactive_enabled = 0;
+    c->active_source_enabled = 0;
     c->cleanup_authority = 0;
 }
 
