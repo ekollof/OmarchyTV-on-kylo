@@ -1508,6 +1508,11 @@ check-cec-active: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD)/te
 	node tests/cec_active.cjs $(abspath $(BUILD))
 check: check-cec-active
 
+.PHONY: check-cec-routing
+check-cec-routing: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD)/tests/mod_cec_services_fake.so
+	node tests/cec_routing.cjs $(abspath $(BUILD))
+check: check-cec-routing
+
 .PHONY: check-cec-standby
 check-cec-standby: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD)/tests/mod_cec_services_fake.so
 	node tests/cec_standby.cjs $(abspath $(BUILD))

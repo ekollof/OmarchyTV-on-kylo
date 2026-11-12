@@ -84,7 +84,7 @@ plus its own workarounds. The policy layer does the TV behaviour. Both were insp
 | 0x72 | `<Set System Audio Mode>` | enable/disable SAM | sets audio mode, replies 0x7E when needed | ok |
 | 0x7A | `<Report Audio Status>` | update UI volume | updates volume dialog state | ok |
 | 0x7E | `<System Audio Mode Status>` | — | clears/sets SAM | ok |
-| 0x80 | `<Routing Change>` | length **4** (old PA + new PA) | length must be 4, compares both PAs | ok |
+| 0x80 | `<Routing Change>` | length **4** (old PA + new PA) | length must be 4, compares both PAs | replacement follows only when the old PA is the tracked active PA, then selects the new PA's HDMI input behind `cec.active_source` (`cec_routing.cjs`) |
 | 0x82 | `<Active Source>` | length **2**, sender ≠ 0 | length 2, sender ≠ 0, switches input by logical address; replacement selects by PA top nibble behind `cec.active_source` | vendor logical mapping; replacement PA mapping |
 | 0x83 | `<Give Physical Address>` | reply 0x84 | replies 0x84 with PA + device type | replacement broadcasts 0x84 PA 0x0000/type TV behind `cec.identity` (`cec_identity.cjs`) |
 | 0x84 | `<Report Physical Address>` | length **3**; record LA↔PA↔type | length 3, sender ≠ 0/15, stores PA + device type + video group, then asks the name | replacement logs LA/PA/type behind `cec.identity` |

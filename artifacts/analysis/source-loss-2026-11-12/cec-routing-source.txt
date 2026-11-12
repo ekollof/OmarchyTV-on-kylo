@@ -1,0 +1,67 @@
+CEC 0x80 Routing Change evidence
+aurora.elf MR: 0x0102fce1 handleCECMessage, dispatch 0x1030496
+
+=== dispatch
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0102fd88 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xa8>:
+ 102fd88:	f1ba 0f00 	cmp.w	sl, #0
+ 102fd8c:	f040 851c 	bne.w	10307c8 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xae8>
+ 102fd90:	7b30      	ldrb	r0, [r6, #12]
+ 102fd92:	2880      	cmp	r0, #128	; 0x80
+ 102fd94:	f000 837f 	beq.w	1030496 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x7b6>
+ 102fd98:	f200 80a3 	bhi.w	102fee2 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x202>
+ 102fd9c:	2845      	cmp	r0, #69	; 0x45
+ 102fd9e:	Address 0x000000000102fd9e is out of bounds.
+
+
+=== handler 0x01030496
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+01030496 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x7b6>:
+ 1030496:	7f35      	ldrb	r5, [r6, #28]
+ 1030498:	2d04      	cmp	r5, #4
+ 103049a:	f47f ae51 	bne.w	1030140 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x460>
+ 103049e:	7bb1      	ldrb	r1, [r6, #14]
+ 10304a0:	7b70      	ldrb	r0, [r6, #13]
+ 10304a2:	6822      	ldr	r2, [r4, #0]
+ 10304a4:	f896 b00f 	ldrb.w	fp, [r6, #15]
+ 10304a8:	7c35      	ldrb	r5, [r6, #16]
+ 10304aa:	ea41 2a00 	orr.w	sl, r1, r0, lsl #8
+ 10304ae:	6993      	ldr	r3, [r2, #24]
+ 10304b0:	4620      	mov	r0, r4
+ 10304b2:	4798      	blx	r3
+ 10304b4:	280f      	cmp	r0, #15
+ 10304b6:	bfd7      	itett	le
+ 10304b8:	f44f 7194 	movle.w	r1, #296	; 0x128
+ 10304bc:	f64f 71ff 	movwgt	r1, #65535	; 0xffff
+ 10304c0:	fb00 1101 	mlale	r1, r0, r1, r1
+ 10304c4:	1909      	addle	r1, r1, r4
+ 10304c6:	bfd8      	it	le
+ 10304c8:	6889      	ldrle	r1, [r1, #8]
+ 10304ca:	458a      	cmp	sl, r1
+ 10304cc:	f47f ae34 	bne.w	1030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>
+ 10304d0:	ea45 250b 	orr.w	r5, r5, fp, lsl #8
+ 10304d4:	2100      	movs	r1, #0
+ 10304d6:	f44f 7c94 	mov.w	ip, #296	; 0x128
+ 10304da:	fb0c 4e01 	mla	lr, ip, r1, r4
+ 10304de:	f8de 0130 	ldr.w	r0, [lr, #304]	; 0x130
+ 10304e2:	4285      	cmp	r5, r0
+ 10304e4:	d104      	bne.n	10304f0 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x810>
+ 10304e6:	6822      	ldr	r2, [r4, #0]
+ 10304e8:	4620      	mov	r0, r4
+ 10304ea:	6953      	ldr	r3, [r2, #20]
+ 10304ec:	4798      	blx	r3
+ 10304ee:	e623      	b.n	1030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>
+ 10304f0:	3101      	adds	r1, #1
+ 10304f2:	290f      	cmp	r1, #15
+ 10304f4:	d1f1      	bne.n	10304da <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x7fa>
+ 10304f6:	e61f      	b.n	1030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>

@@ -35,6 +35,7 @@ struct ctx {
     int identity_enabled; /* cec.identity */
     int power_status_enabled; /* cec.power_status */
     int active_logical;  /* last valid 0x82 initiator, -1 unknown */
+    uint16_t active_pa;  /* last valid 0x82 physical address, 0 unknown */
 
     /* Optional hardware transport (cec.enable=1). */
     int enabled;
@@ -337,6 +338,7 @@ static void handle_active_source(struct ctx *c, const oa_cec_message *m)
         return;
     }
     c->active_logical = m->initiator;
+    c->active_pa = pa;
 
     const oa_source_iface *source =
         c->api->lookup(c->api->priv, OA_SVC_SOURCE, 1);
@@ -355,6 +357,59 @@ static void handle_active_source(struct ctx *c, const oa_cec_message *m)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "cec 0x82 active source: pa 0x%04x type %d failed (%d)",
                     pa, type, rc);
+    drop_lookup(c, OA_SVC_SOURCE, source);
+}
+
+/* CEC 1.3a <Routing Change> carries the old and new physical addresses.
+ * Follow it only when the old PA is the source recorded from 0x82, so a
+ * stale routing message cannot steal the screen. */
+static void handle_routing_change(struct ctx *c, const oa_cec_message *m)
+{
+    if (!c || !c->active_source_enabled || !m || m->opcode != 0x80) return;
+    if (m->destination != 15 || m->initiator == 0 || m->count != 4) return;
+
+    uint16_t old_pa = (uint16_t)((m->operands[0] << 8) | m->operands[1]);
+    uint16_t new_pa = (uint16_t)((m->operands[2] << 8) | m->operands[3]);
+    if (!oa_cec_physical_address_valid(old_pa) ||
+        !oa_cec_physical_address_valid(new_pa)) {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x80 routing ignored: invalid pa 0x%04x -> 0x%04x",
+                    old_pa, new_pa);
+        return;
+    }
+    if (c->active_pa == 0 || old_pa != c->active_pa) {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x80 routing ignored: old pa 0x%04x is not active",
+                    old_pa);
+        return;
+    }
+    int type = active_source_type(new_pa);
+    if (type < 0) {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x80 routing ignored: new pa 0x%04x has no "
+                    "mapped HDMI input", new_pa);
+        return;
+    }
+
+    const oa_source_iface *source =
+        c->api->lookup(c->api->priv, OA_SVC_SOURCE, 1);
+    if (!source || !source->select_type) {
+        drop_lookup(c, OA_SVC_SOURCE, source);
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "cec 0x80 ignored: source service unavailable");
+        return;
+    }
+    int rc = source->select_type(type);
+    if (rc == 0) {
+        c->active_pa = new_pa;
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x80 routing: old 0x%04x new 0x%04x type %d selected",
+                    old_pa, new_pa, type);
+    } else {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x80 routing: old 0x%04x new 0x%04x type %d failed (%d)",
+                    old_pa, new_pa, type, rc);
+    }
     drop_lookup(c, OA_SVC_SOURCE, source);
 }
 
@@ -520,6 +575,7 @@ static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
                 queue_replies(c, replies, count);
             handle_inactive_source(c, &comp->message);
             handle_active_source(c, &comp->message);
+            handle_routing_change(c, &comp->message);
             handle_standby(c, &comp->message);
             handle_identity(c, &comp->message);
             handle_power_status(c, &comp->message);
@@ -747,6 +803,7 @@ static int start(void *ud)
     if (c->owner || c->cleanup_running || c->cleanup_owner) return -EBUSY;
     c->quiescing = 0;
     c->active_logical = -1;
+    c->active_pa = 0;
     c->cleanup_result = 0;
     c->cleanup_authority = 0;
     c->transport = NULL;
@@ -903,6 +960,7 @@ static int quiesce(void *ud)
     c->identity_enabled = 0;
     c->power_status_enabled = 0;
     c->active_logical = -1;
+    c->active_pa = 0;
     c->quiescing = 1;
     clear_session_state(c);
     c->cleanup_authority = c->authority_open ? 1 : 0;
@@ -947,6 +1005,7 @@ static int suspend(void *ud)
     stop_poll(c);
     clear_session_state(c);
     c->active_logical = -1;
+    c->active_pa = 0;
     if (c->owner) {
         c->quiescing = 1;
         c->cleanup_owner = c->owner;
@@ -1060,6 +1119,7 @@ static void stop(void *ud)
     c->identity_enabled = 0;
     c->power_status_enabled = 0;
     c->active_logical = -1;
+    c->active_pa = 0;
     c->cleanup_authority = 0;
 }
 

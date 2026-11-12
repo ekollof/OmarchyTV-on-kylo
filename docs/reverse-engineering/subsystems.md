@@ -190,7 +190,9 @@ Evidence: [AUDIO-ROUTING](../../artifacts/reports/AUDIO-ROUTING-2026-11-01.md),
   (`cec_standby.cjs`). Identity queries are behind `cec.identity`
   (0x83 -> 0x84, 0x85 -> 0x82 while tuner-owned; `cec_identity.cjs`).
   Power-status queries are behind `cec.power_status` (0x8F -> 0x90 "on",
-  0x90 logged; `cec_power_status.cjs`).
+  0x90 logged; `cec_power_status.cjs`). 0x80 Routing Change follows only a
+  matching old active PA and selects the new PA's HDMI input behind
+  `cec.active_source` (`cec_routing.cjs`).
 
 Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),
