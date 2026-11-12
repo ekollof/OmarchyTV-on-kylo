@@ -1,0 +1,18 @@
+# start pid=18894 path=/dev/video21 seconds=120 poll_ms=50
+status n=1 mono=3445.700781 w0=1 w1=1 w2=1 w3=0 w4=0
+# heartbeat mono=3455.724833 polls=201 changes=1 w0=1 w1=1 w2=1 w3=0 w4=0
+# heartbeat mono=3465.747402 polls=401 changes=1 w0=1 w1=1 w2=1 w3=0 w4=0
+# heartbeat mono=3475.721412 polls=600 changes=1 w0=1 w1=1 w2=1 w3=0 w4=0
+# heartbeat mono=3485.744111 polls=800 changes=1 w0=1 w1=1 w2=1 w3=0 w4=0
+# heartbeat mono=3495.718975 polls=999 changes=1 w0=1 w1=1 w2=1 w3=0 w4=0
+# heartbeat mono=3505.742255 polls=1199 changes=1 w0=1 w1=1 w2=1 w3=0 w4=0
+status n=2 mono=3506.995055 w0=0 w1=1 w2=1 w3=0 w4=4294967295
+status n=3 mono=3507.295649 w0=5 w1=0 w2=0 w3=0 w4=4294967295
+# heartbeat mono=3515.713902 polls=1398 changes=3 w0=5 w1=0 w2=0 w3=0 w4=4294967295
+status n=4 mono=3524.034104 w0=0 w1=1 w2=1 w3=0 w4=4294967295
+# heartbeat mono=3525.737976 polls=1598 changes=4 w0=0 w1=1 w2=1 w3=0 w4=4294967295
+status n=5 mono=3526.890812 w0=1 w1=1 w2=1 w3=0 w4=0
+# heartbeat mono=3535.717428 polls=1797 changes=5 w0=1 w1=1 w2=1 w3=0 w4=0
+# heartbeat mono=3545.744086 polls=1997 changes=5 w0=1 w1=1 w2=1 w3=0 w4=0
+# heartbeat mono=3555.721938 polls=2196 changes=5 w0=1 w1=1 w2=1 w3=0 w4=0
+# summary polls=2395 changes=5 errors=0 elapsed=120.044

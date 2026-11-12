@@ -70,9 +70,10 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   navigator; `ndp_SRC_ConnectInfo`/`NDP_ExtSrc_Get/SetConnectInfo`) is traced.
   The V4L2 event `0xc000001` on `/dev/video21` is a scaler update, not source
   loss; its decoder/adapter and the HPD plug/unplug model are tested. HPD stayed
-  high through Deck suspend, so the status-4 producer for the sleep fallback,
-  the `Hal_Vin_GetHdmiStatus` `0xa00967` fd/class/context and the tuner
-  service/view re-tune remain open.
+  high through Deck suspend. The HDMI RX status getter on `video21` captured
+  `w0=1` active and `w0=0/5` during suspend; the consumer that selects the
+  tuner (status 4 versus no-signal/`SignalLostDialog`) and the tuner service/
+  view re-tune remain open.
 
 Reports: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),

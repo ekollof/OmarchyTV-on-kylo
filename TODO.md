@@ -535,11 +535,13 @@ unvalidated.
       polling: HDMI1=pin203/byte0, HDMI2=200/2, HDMI3=201/3, HDMI4=202/1,
       level1=connected; `common/source_hpd.c` + `check-source-hpd` pass and
       `oa-hpd-status` confirmed HDMI1=1, but HPD stayed high through Deck
-      suspend. Remaining: the status-4 producer for suspend,
-      `Hal_Vin_GetHdmiStatus`/`0xa00967` fd/class/context (direct GETs were
-      rejected), any `SetConnectInfo` caller outside the analyzed paths, the
-      worker, the tuner service/view re-tune and the UI/timing.
-      SOURCE-LOSS-FALLBACK-2026-11-12.
+      suspend. `Hal_Vin_GetHdmiStatus`/`0xa00967` works on video21 when the
+      kernel `error_idx` count sentinel is ignored; it captured `w0=1` active,
+      `w0=0/5` during suspend and back to `1` (video20/24/28 reject).
+      Remaining: the consumer that selects the tuner (external status 4 versus
+      no-signal/`SignalLostDialog`), any `SetConnectInfo` caller outside the
+      analyzed paths, the worker, the tuner service/view re-tune and the
+      UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
       `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts
       them to the loop; the TV link also needed `-ldl`. `check-ir-blast-worker`

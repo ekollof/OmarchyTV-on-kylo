@@ -99,9 +99,12 @@ provider. Stock cable plug/unplug is HPD polling: HDMI1=pin203/bulk byte0,
 HDMI2=200/2, HDMI3=201/3, HDMI4=202/1; level1=connected;
 `common/source_hpd.c` + `check-source-hpd` pass and `oa-hpd-status` confirmed
 HDMI1=1. HPD stayed high through Deck suspend. `Hal_Vin_GetHdmiStatus` GET
-`0xa00967` was rejected on video20/21/24/28; the status-4 producer for suspend
-and any `SetConnectInfo` caller outside the analyzed paths remain unidentified.
-No worker is wired. `mod_cec` routing/power policy is
+`0xa00967` works on video21 when the kernel `error_idx` count sentinel is
+ignored (video20/24/28 reject); it captured `w0=1` active, `w0=0/5` during
+suspend and back to `1`. The consumer that selects the tuner (external status 4
+versus no-signal/`SignalLostDialog`) and any `SetConnectInfo` caller outside the
+analyzed paths remain unidentified. No worker is wired. `mod_cec`
+routing/power policy is
 not implemented. `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor

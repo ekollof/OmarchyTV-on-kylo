@@ -100,9 +100,19 @@ static int read_status(int fd, uint32_t words[OA_HDMI_STATUS_WORDS])
     controls.count = 1;
     controls.controls = &control;
 
-    if (ioctl(fd, VIDIOC_G_EXT_CTRLS, &controls) < 0)
+    errno = 0;
+    int ret = ioctl(fd, VIDIOC_G_EXT_CTRLS, &controls);
+    if (ret < 0) {
+        fprintf(stderr,
+                "G_EXT_CTRLS ret=%d errno=%d class=0x%x count=%u "
+                "error_idx=%u id=0x%x size=%u ptr=%p\n",
+                ret, errno, controls.ctrl_class, controls.count,
+                controls.error_idx, control.id, control.size, control.ptr);
         return -(errno ? errno : EIO);
-    if (controls.error_idx != 0) return -EPROTO;
+    }
+    /* Hal_Vin_GetHdmiStatus ignores error_idx and checks only the ioctl
+     * return. The target kernel leaves error_idx == count on success, so do
+     * not turn that sentinel into a probe failure. */
     return 0;
 }
 
@@ -150,7 +160,9 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    int fd = open(path, O_RDWR | O_CLOEXEC);
+    /* The getter needs no write access; stock opens the external-input nodes
+     * read-only. O_RDWR was rejected with EPERM on video20. */
+    int fd = open(path, O_RDONLY | O_CLOEXEC);
     if (fd < 0) {
         fprintf(stderr, "open %s: %s\n", path, strerror(errno));
         return 1;

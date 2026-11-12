@@ -10,8 +10,9 @@ the standby transition; it does not select a tuner.
 Corrected 2026-11-12: the private V4L2 event byte 4 is the
 `VPL_SCLR_CTRL_UpdateSCLR` reason flag, not a source status; stock cable
 plug/unplug uses HPD GPIO polling. The V4L2 event is not the source-loss
-provider. Deck suspend keeps HPD high, and the status-4 producer for the
-suspend fallback remains open.
+provider. Deck suspend keeps HPD high. The HDMI RX status getter on
+`/dev/video21` was subsequently reproduced and shows the suspend transition;
+the status-4 producer and the consumer that selects the tuner remain open.
 
 ## Observation
 
@@ -273,16 +274,31 @@ byte0 = 1. A 120 s capture through another Deck sleep/resume stayed exactly
 `01 01 00 01 00`; HPD does **not** drop on suspend. HPD is cable plug/unplug,
 not the sleep trigger.
 
-The remaining candidate is the HDMI RX video status. `plat_vin_slot_get_status`
-@ `0x0092ea68` calls `Hal_Vin_GetHdmiStatus` for the VIN slot, which issues the
-private GET ext-control `0xa00967` with a 0x14-byte output. A direct probe on
-`/dev/video20`, `video21`, `video24` and `video28` was rejected
-(`EPERM`, `EPROTO`, `EINVAL`, `EPROTO`); the stock fd/class/context was not
-reproduced. The video-lost methods
+The HDMI RX video status is the suspend detector. `plat_vin_slot_get_status`
+@ `0x0092ea68` calls `Hal_Vin_GetHdmiStatus`, which issues the private GET
+ext-control `0xa00967` with a 0x14-byte output. The vendor getter checks only
+the ioctl return; the target kernel leaves `error_idx == count`, so a direct
+`oa-hdmi-vin` getter on `/dev/video21` reproduces it. `video20`, `video24` and
+`video28` reject (`EPERM`/`EINVAL`/`EPROTO`). The sleep/resume capture shows:
+
+```text
+active      w0=1 w1=1 w2=1 w3=0 w4=0
+sleep       w0=0 w1=1 w2=1 w3=0 w4=0xffffffff
+            w0=5 w1=0 w2=0 w3=0 w4=0xffffffff
+resume      w0=0 w1=1 w2=1 w3=0 w4=0xffffffff
+active      w0=1 w1=1 w2=1 w3=0 w4=0
+```
+
+`plat_vin_slot_get_status` maps `w0 == 1` to its connected/ready flag and
+`w1`/`w2` through the video-format tables. The `w0` `1 -> 0/5 -> 1` transition
+is the video-loss/no-signal event at suspend/resume. The consumer that turns
+this into the TV's tuner switch is not yet identified.
+`SignalLostDialog::onExternalSignalCheckTimer` runs a 1 s counter and
+`endCurrentDialog`; the no-signal timeout/standby path is a candidate, as is the
+external status-4 producer. The video-lost methods
 (`ExternalAVSourceManager::externalVideoLostEvent`,
 `InputManager::handleExternalSourceVideoLost`) only set flags and call CEC;
-they do not select the tuner. The status-4 producer that drives the suspend
-fallback remains unidentified. Do not substitute HPD for it.
+they do not select the tuner. Do not claim a wired fallback.
 
 ## What this establishes
 
@@ -296,6 +312,9 @@ fallback remains unidentified. Do not substitute HPD for it.
 - The private V4L2 event `0xc000001` is a scaler update. Byte 4 is the
   `UpdateSCLR arg == 6` flag, not a source status; the live payload repeated
   3840x2160 timings. It is not the source-loss provider.
+- The HDMI RX status `w0` is the suspend detector: 1 while active, 0/5 while
+  the Deck is asleep. The path from that status to the tuner switch is still
+  open.
 - On external connect, `this+0x94` saves the previous external source index
   (`-1` for TV) and `this+0x90` the tuner navigation position. On disconnect,
   `+0x94` is restored first; `+0x90` is the tuner-position path only when
@@ -352,12 +371,13 @@ plug/unplug, not Deck suspend.
   `0x28`, `0x34`, `0x40`.
 - The HPD provider detects cable plug/unplug only. `oa-hpd-status` confirmed
   HDMI1=1 with the Deck on TV, and a 120 s sleep/resume capture showed no HPD
-  change. `Hal_Vin_GetHdmiStatus`/`0xa00967` is the next candidate, but direct
-  GETs on `/dev/video20`, `video21`, `video24` and `video28` were rejected
-  (`EPERM`, `EPROTO`, `EINVAL`, `EPROTO`). The stock fd/class/context and the
-  status-4 producer for the suspend fallback remain unidentified. The video-lost
-  methods only set flags and call CEC; they do not select the tuner. Do not
-  substitute HPD for the suspend trigger.
+  change. The HDMI RX status getter `Hal_Vin_GetHdmiStatus`/`0xa00967` works on
+  `video21` when `error_idx` is treated as the vendor sentinel; it captured
+  `w0 1 -> 0/5 -> 1` across suspend. `video20`/`video24`/`video28` reject. The
+  consumer that selects the tuner (external status 4 versus the no-signal
+  timeout/`SignalLostDialog`) remains unidentified. The video-lost methods only
+  set flags and call CEC; they do not select the tuner. Do not substitute HPD
+  for the suspend trigger.
 - `requestSelectServiceForDisplay` @ `0x00fb19f0` is the tuner service/decoder
   path; its full service-list, decoder-allocation and UI state contract is not
   recovered here. It takes the `NovoServiceViewController::getCurrentView`
@@ -431,8 +451,20 @@ plug/unplug, not Deck suspend.
   `status=23` label is byte 7; the raw payload and section 6 are authoritative.
 - `hpd-live-2026-11-12.log` — read-only `0x6712` HPD capture: HDMI1=1 with the
   Deck on TV; 120 s Deck sleep/resume left `01 01 00 01 00` unchanged.
-- `hdmi-vin-get-attempts-2026-11-12.log` — direct `0xa00967` GET attempts on
-  `/dev/video20`/`video24`/`video28`/`video21` and their rejections.
+- `hdmi-vin-get-attempts-2026-11-12.log` — earlier direct `0xa00967` GET
+  attempts; its `video21` `EPROTO` predates treating `error_idx` as the vendor
+  sentinel. `video20`/`video24`/`video28` still reject.
+- `hdmi-vin-sleep-resume-2026-11-12.log` — working `video21` HDMI RX status
+  capture: `w0=1` active, `w0=0/5` during suspend, back to `w0=1`.
+- `signal-dialog.txt` / `signal-dialog-counter2.txt` — `SignalLostDialog`
+  external-signal timer, counter and `endCurrentDialog`.
+- `input-timeout.txt` — `InputManager::selectExtSource`,
+  `deselectExtSource`, `handleTimeout`.
+- `ndal3-v4l2info.txt` — `Hal_Video_Get_V4l2Info`/`Hal_Video_V4l2InfoInit`.
+- `hdmi-g-ext-ctrls.dis` / `ex-plat-ext-ctrls.txt` /
+  `ndp-extsrc-stringtouser.txt` — ext-control routing and class handling.
+- `avsource-status-producers.txt` — ICE-side `AVSourceManager` stubs and
+  `ExternalAVSourceManager` status message producers.
 - `ice-hdmi-status.txt` — `_ice_CheckHdmiPlugStatus` and
   `ice_externalCheckCbStatus`.
 - `ice-hdmi-position.txt` — `_ice_ext_GetHDMICallbackPosition`,

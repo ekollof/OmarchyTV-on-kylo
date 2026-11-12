@@ -212,8 +212,10 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   `VidSetting+0x0c` at `[5]`, `VidSetting+0x86` at `[6..7]`), not source loss;
   the decoder/adapter and the HPD model (`common/source_hpd.c`,
   HDMI1=pin203/byte0, level1=connected) are tested. HPD stayed high through Deck
-  suspend; the status-4 producer for suspend, the `Hal_Vin_GetHdmiStatus`
-  `0xa00967` fd/class/context and the tuner service/view re-tune remain open.
+  suspend. `Hal_Vin_GetHdmiStatus`/`0xa00967` works on `video21` (ignore the
+  kernel `error_idx` sentinel) and captured `w0=1` active, `w0=0/5` during
+  suspend, back to `1`; the consumer that selects the tuner (status 4 versus
+  no-signal/`SignalLostDialog`) and the tuner service/view re-tune remain open.
   Do not substitute an always-switch-to-TV or HPD shortcut.
 
 Evidence: [SOURCE-PATH](../../artifacts/reports/SOURCE-PATH-2026-11-09.md),
