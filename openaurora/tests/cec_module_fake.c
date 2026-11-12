@@ -5,6 +5,7 @@
 #include <stdatomic.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -18,6 +19,7 @@
 
 static uint8_t mirror_page[4096];
 static atomic_int rx_pending = 1;
+static atomic_int rx_delay_once;
 static atomic_int tx_count;
 static atomic_int open_count;
 static atomic_int init_count;
@@ -81,6 +83,14 @@ static int dev_ioctl(void *context, int fd, unsigned long request, void *argumen
     }
     if (request == CEC_RX) {
         oa_cec_raw_packet *p = argument;
+        if (atomic_exchange(&rx_delay_once, 1) == 0) {
+            const char *d = getenv("OA_CEC_FAKE_RX_DELAY_MS");
+            int ms = d ? atoi(d) : 0;
+            if (ms > 0) {
+                fprintf(stderr, "fake cec rx delay %d\n", ms);
+                usleep((useconds_t)ms * 1000);
+            }
+        }
         if (atomic_exchange(&rx_pending, 0)) {
             p->bytes[0] = 0x50;
             p->bytes[1] = 0x7a;

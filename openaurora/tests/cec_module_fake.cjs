@@ -44,7 +44,8 @@ async function main() {
     const child = spawn(path.join(build, 'openaurora'),
         ['--modules', modules, '--config', config, '--sock', socket,
          '--log', '3'],
-        { stdio: ['ignore', 'pipe', 'pipe'] });
+        { stdio: ['ignore', 'pipe', 'pipe'],
+          env: { ...process.env, OA_CEC_FAKE_RX_DELAY_MS: '1500' } });
     let output = '';
     child.stdout.on('data', d => { output = (output + d).slice(-65536); });
     child.stderr.on('data', d => { output = (output + d).slice(-65536); });
@@ -85,6 +86,12 @@ async function main() {
         }, 4000, 'auto open');
         assert.match(opened, /enabled 1/);
 
+        /* Hold the first receive in the fake device, then send. The owner has
+         * one job slot; the module must queue the send, not return EBUSY. */
+        await waitFor(() => output.includes('fake cec rx delay'), 4000,
+                      'first receive delay');
+        assert.equal(await command('cec-send 0404'), 'ok');
+
         const received = await waitFor(async () => {
             const s = await command('cec-state');
             return /rx 1/.test(s) ? s : null;
@@ -93,7 +100,6 @@ async function main() {
         assert.ok(output.includes('cec rx 5->0 op 7a len 1 [a8 ]'),
             'missing received-frame log');
 
-        assert.equal(await command('cec-send 0404'), 'ok');
         const sent = await waitFor(async () => {
             const s = await command('cec-state');
             return /tx 1/.test(s) ? s : null;

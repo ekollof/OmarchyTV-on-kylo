@@ -46,6 +46,11 @@ struct ctx {
     oa_cec_message reply_q[4];
     unsigned reply_head;
     unsigned reply_tail;
+    /* User sends are queued when the single owner slot is occupied by the
+     * receive poll; the poll drains this ring before replies/receive. */
+    oa_cec_message tx_q[4];
+    unsigned tx_head;
+    unsigned tx_tail;
 
     /* ABI 3 quiesce: the owner is detached and finished on a worker. A failed
      * hardware close retains the owner for a later quiesce generation. */
@@ -109,16 +114,25 @@ static int transport_send(const oa_cec_message *message)
 {
     struct ctx *c = g_ctx;
     if (!c || !c->enabled || !c->session_open || !c->owner) return -ENODEV;
+    if (c->closing) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "cec send rejected: transport closing");
+        return -EBUSY;
+    }
     if (!message || message->initiator != 0) return -EINVAL;
     uint8_t wire[OA_CEC_MAX_FRAME];
     size_t length = 0;
     if (oa_cec_encode(message, wire, sizeof wire, &length) != 0)
         return -EINVAL;
-    if (c->job_pending) return -EBUSY;
-    uint64_t ticket = 0;
-    if (oa_cec_owner_send_async(c->owner, message, &ticket) != 0)
-        return -(errno ? errno : EIO);
-    c->job_pending = 1;
+    unsigned next = (c->tx_tail + 1u) & 3u;
+    if (next == c->tx_head) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "cec send rejected: tx queue full (head %u tail %u)",
+                    c->tx_head, c->tx_tail);
+        return -EBUSY;
+    }
+    c->tx_q[c->tx_tail] = *message;
+    c->tx_tail = next;
     return 0;
 }
 
@@ -135,7 +149,7 @@ static int transport_close(void)
     struct ctx *c = g_ctx;
     if (!c || !c->enabled) return -ENODEV;
     if (!c->session_open || !c->owner) return -ENODEV;
-    if (c->job_pending) return -EBUSY;
+    if (c->job_pending || c->tx_head != c->tx_tail) return -EBUSY;
     uint64_t ticket = 0;
     if (oa_cec_owner_release_async(c->owner, &ticket) != 0)
         return -(errno ? errno : EIO);
@@ -277,6 +291,7 @@ static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
         if (comp->rc == 0) {
             c->session_open = 0;
             c->reply_head = c->reply_tail = 0;
+            c->tx_head = c->tx_tail = 0;
             c->last_error = 0;
             c->api->log(c->api->priv, OA_LOG_INFO, "cec raw transport closed");
         } else {
@@ -308,6 +323,21 @@ static void cec_poll(void *ud)
             c->last_error = errno ? errno : EIO;
             c->api->log(c->api->priv, OA_LOG_WARN,
                         "cec completion take failed (%d)", c->last_error);
+        }
+        return;
+    }
+    if (c->session_open && !c->closing && c->tx_head != c->tx_tail) {
+        oa_cec_message message = c->tx_q[c->tx_head];
+        uint64_t ticket = 0;
+        if (oa_cec_owner_send_async(c->owner, &message, &ticket) == 0) {
+            c->tx_head = (c->tx_head + 1u) & 3u;
+            c->job_pending = 1;
+        } else {
+            c->last_error = errno ? errno : EIO;
+            /* A busy owner is a race with the completion slot; retry next
+             * poll. A permanent encode/address error drops only this frame. */
+            if (errno != EBUSY)
+                c->tx_head = (c->tx_head + 1u) & 3u;
         }
         return;
     }
@@ -383,6 +413,7 @@ static void clear_session_state(struct ctx *c)
     c->closing = 0;
     c->job_pending = 0;
     c->reply_head = c->reply_tail = 0;
+    c->tx_head = c->tx_tail = 0;
 }
 
 /* Reap a cleanup generation without blocking the loop. Returns 0 when the
@@ -480,6 +511,7 @@ static int start(void *ud)
     c->tx_frames = 0;
     c->have_last_rx = 0;
     c->reply_head = c->reply_tail = 0;
+    c->tx_head = c->tx_tail = 0;
     memset(&c->last_rx, 0, sizeof c->last_rx);
     clear_session_state(c);
     long delay = atol(c->api->config_get(c->api->priv,
