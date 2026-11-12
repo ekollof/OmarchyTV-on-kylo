@@ -496,7 +496,9 @@ unvalidated.
       `NovoCECController::handleCECMessage` 0x9D path returns unless the TV is
       in the standby transition, but the separate `SvgAppCECEventsListener`
       handles 0x9D by posting `UIKeyPressMessage(597)` and selecting DTV/tuner;
-      0x36 Standby is accepted only from the active device. Owner test
+      0x36 Standby is implemented behind `cec.standby`, accepted only from the
+      tracked active source and calling `OA_SVC_POWER.standby()`
+      (`cec_standby.cjs`). Owner test
       2026-11-12: Deck sleep left the TV on and switched it to a tuner input;
       resume switched to HDMI1. The sleep fallback is CEC 0x9D/key 597; the
       external-interface disconnect policy in SOURCE-LOSS-FALLBACK (navigator →

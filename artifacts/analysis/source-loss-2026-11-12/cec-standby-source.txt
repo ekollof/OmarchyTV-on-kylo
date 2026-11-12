@@ -1,0 +1,84 @@
+CEC 0x36 Standby / NovoCECController::handleCECMessage evidence
+aurora.elf MR: 0x0102fce1 handleCECMessage
+
+=== 0x36 dispatch
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0102fdd0 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xf0>:
+ 102fdd0:	2302      	movs	r3, #2
+ 102fdd2:	f887 c028 	strb.w	ip, [r7, #40]	; 0x28
+ 102fdd6:	6871      	ldr	r1, [r6, #4]
+ 102fdd8:	e287      	b.n	10302ea <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x60a>
+ 102fdda:	2800      	cmp	r0, #0
+ 102fddc:	d1cc      	bne.n	102fd78 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x98>
+ 102fdde:	e794      	b.n	102fd0a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2a>
+ 102fde0:	2836      	cmp	r0, #54	; 0x36
+ 102fde2:	f000 81b4 	beq.w	103014e <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x46e>
+ 102fde6:	2844      	cmp	r0, #68	; 0x44
+ 102fde8:	d1e6      	bne.n	102fdb8 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xd8>
+ 102fdea:	7f32      	ldrb	r2, [r6, #28]
+ 102fdec:	2a01      	cmp	r2, #1
+ 102fdee:	d18c      	bne.n	102fd0a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2a>
+
+=== 0x36 handler 0x0103014e
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0103014e <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x46e>:
+ 103014e:	6822      	ldr	r2, [r4, #0]
+ 1030150:	4620      	mov	r0, r4
+ 1030152:	6993      	ldr	r3, [r2, #24]
+ 1030154:	4798      	blx	r3
+ 1030156:	4285      	cmp	r5, r0
+ 1030158:	f47f add7 	bne.w	102fd0a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2a>
+ 103015c:	6820      	ldr	r0, [r4, #0]
+ 103015e:	6d41      	ldr	r1, [r0, #84]	; 0x54
+ 1030160:	4620      	mov	r0, r4
+ 1030162:	4788      	blx	r1
+ 1030164:	2800      	cmp	r0, #0
+ 1030166:	f43f add0 	beq.w	102fd0a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2a>
+ 103016a:	6ce1      	ldr	r1, [r4, #76]	; 0x4c
+ 103016c:	2903      	cmp	r1, #3
+ 103016e:	d1e3      	bne.n	1030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>
+ 1030170:	e5cb      	b.n	102fd0a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2a>
+ 1030172:	Address 0x0000000001030172 is out of bounds.
+
+
+=== common notify tail 0x01030138
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+01030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>:
+ 1030138:	6831      	ldr	r1, [r6, #0]
+ 103013a:	2900      	cmp	r1, #0
+ 103013c:	f47f ade5 	bne.w	102fd0a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2a>
+ 1030140:	f241 35ac 	movw	r5, #5036	; 0x13ac
+ 1030144:	5960      	ldr	r0, [r4, r5]
+ 1030146:	2800      	cmp	r0, #0
+ 1030148:	f040 83c4 	bne.w	10308d4 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xbf4>
+ 103014c:	e5dd      	b.n	102fd0a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2a>
+
+=== 0x90 power-status handler for contrast
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+01030128 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x448>:
+ 1030128:	2801      	cmp	r0, #1
+ 103012a:	f040 83a5 	bne.w	1030878 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xb98>
+ 103012e:	465a      	mov	r2, fp
+ 1030130:	4629      	mov	r1, r5
+ 1030132:	4620      	mov	r0, r4
+ 1030134:	f7fe f9d2 	bl	102e4dc <_ZN17NovoCECController20setDevicePowerStatusE10CECLogical14CECPowerStatus@@Base>

@@ -31,6 +31,8 @@ struct ctx {
     int audio_published;
     int inactive_enabled; /* cec.inactive_fallback */
     int active_source_enabled; /* cec.active_source */
+    int standby_enabled; /* cec.standby */
+    int active_logical;  /* last valid 0x82 initiator, -1 unknown */
 
     /* Optional hardware transport (cec.enable=1). */
     int enabled;
@@ -332,6 +334,7 @@ static void handle_active_source(struct ctx *c, const oa_cec_message *m)
                     "mapped HDMI input", pa);
         return;
     }
+    c->active_logical = m->initiator;
 
     const oa_source_iface *source =
         c->api->lookup(c->api->priv, OA_SVC_SOURCE, 1);
@@ -351,6 +354,35 @@ static void handle_active_source(struct ctx *c, const oa_cec_message *m)
                     "cec 0x82 active source: pa 0x%04x type %d failed (%d)",
                     pa, type, rc);
     drop_lookup(c, OA_SVC_SOURCE, source);
+}
+
+/* CEC 1.3a <Standby> is broadcast and is accepted only from the device that
+ * announced itself as the active source. The vendor controller checks
+ * getActiveLogicalDevice/CEC-enabled and notifies listeners; the replacement
+ * applies the spec policy directly through OA_SVC_POWER behind cec.standby. */
+static void handle_standby(struct ctx *c, const oa_cec_message *m)
+{
+    if (!c || !c->standby_enabled || !m || m->opcode != 0x36) return;
+    if (m->destination != 15 || m->initiator == 0 || m->count != 0) return;
+    if (c->active_logical < 0 || m->initiator != c->active_logical) return;
+
+    const oa_power_iface *power =
+        c->api->lookup(c->api->priv, OA_SVC_POWER, 1);
+    if (!power || !power->standby || !power->is_available ||
+        !power->is_available()) {
+        drop_lookup(c, OA_SVC_POWER, power);
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "cec 0x36 standby ignored: power unavailable");
+        return;
+    }
+    int rc = power->standby();
+    if (rc == 0)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x36 standby: la %u accepted", m->initiator);
+    else
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "cec 0x36 standby: la %u failed (%d)", m->initiator, rc);
+    drop_lookup(c, OA_SVC_POWER, power);
 }
 
 static void queue_replies(struct ctx *c, const oa_cec_message *replies, int n)
@@ -413,6 +445,7 @@ static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
                 queue_replies(c, replies, count);
             handle_inactive_source(c, &comp->message);
             handle_active_source(c, &comp->message);
+            handle_standby(c, &comp->message);
         } else if (comp->rc < 0) {
             c->last_error = comp->error ? comp->error : EIO;
             if (!c->rx_error_logged) {
@@ -636,6 +669,7 @@ static int start(void *ud)
     struct ctx *c = ud;
     if (c->owner || c->cleanup_running || c->cleanup_owner) return -EBUSY;
     c->quiescing = 0;
+    c->active_logical = -1;
     c->cleanup_result = 0;
     c->cleanup_authority = 0;
     c->transport = NULL;
@@ -672,6 +706,13 @@ static int start(void *ud)
     if (c->active_source_enabled)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "cec: active-source routing enabled (0x82)");
+    const char *standby = c->api->config_get(c->api->priv,
+                                             "cec.standby", "0");
+    c->standby_enabled = standby &&
+        (!strcmp(standby, "1") || !strcmp(standby, "true"));
+    if (c->standby_enabled)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec: standby routing enabled (0x36)");
     if (c->enabled) {
         const char *path = c->api->config_get(c->api->priv, "cec.device",
                                               "/tmp/ntkcec");
@@ -767,6 +808,8 @@ static int quiesce(void *ud)
     c->enabled = 0;
     c->inactive_enabled = 0;
     c->active_source_enabled = 0;
+    c->standby_enabled = 0;
+    c->active_logical = -1;
     c->quiescing = 1;
     clear_session_state(c);
     c->cleanup_authority = c->authority_open ? 1 : 0;
@@ -810,6 +853,7 @@ static int suspend(void *ud)
     if (prior != 0 || c->cleanup_owner) return -1;
     stop_poll(c);
     clear_session_state(c);
+    c->active_logical = -1;
     if (c->owner) {
         c->quiescing = 1;
         c->cleanup_owner = c->owner;
@@ -919,6 +963,8 @@ static void stop(void *ud)
     c->enabled = 0;
     c->inactive_enabled = 0;
     c->active_source_enabled = 0;
+    c->standby_enabled = 0;
+    c->active_logical = -1;
     c->cleanup_authority = 0;
 }
 

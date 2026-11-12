@@ -64,8 +64,9 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   path `selectSource` uses logical addresses. The
   `NovoCECController::handleCECMessage` 0x9D path returns unless the TV is in
   the standby transition, but the separate `SvgAppCECEventsListener` handles
-  0x9D by posting `UIKeyPressMessage(597)`; 0x36 is accepted only from the
-  active device. Stock observation 2026-11-12: Deck
+  0x9D by posting `UIKeyPressMessage(597)`; 0x36 is implemented behind
+  `cec.standby` and accepted only from the tracked active source
+  (`cec_standby.cjs`). Stock observation 2026-11-12: Deck
   sleep left the TV on at a tuner input; this is CEC `0x9D Inactive Source`:
   `SvgAppCECEventsListener` posts `UIKeyPressMessage(597)`, and the UI selects
   DTV/tuner (`ICE_VideoSelectSource` source 8 →

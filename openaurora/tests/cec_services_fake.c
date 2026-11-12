@@ -18,7 +18,9 @@ struct ctx {
     int channels_published;
     int tuner_published;
     int service_published;
+    int power_published;
     int channels_empty;
+    int power_available;
     int external_type;
     uint32_t selected_handle;
     struct oa_channel_entry entries[3];
@@ -124,6 +126,20 @@ static const oa_tuner_iface tuner_iface = {
     fake_status, fake_scan_start, fake_scan_cancel, fake_select, fake_selected
 };
 
+static int fake_power_standby(void)
+{
+    if (!g_ctx) return -ENODEV;
+    g_ctx->api->log(g_ctx->api->priv, OA_LOG_INFO, "fake power standby");
+    return 0;
+}
+static int fake_power_available(void)
+{
+    return g_ctx ? g_ctx->power_available : 0;
+}
+static const oa_power_iface power_iface = {
+    fake_power_standby, fake_power_available
+};
+
 static int m_init(const oa_host_api *api, void **out)
 {
     if (!api || api->size < sizeof *api || api->abi != OA_ABI_VERSION)
@@ -137,6 +153,8 @@ static int m_init(const oa_host_api *api, void **out)
         api->priv, "fake.tuner_selected", "200"), NULL, 10);
     c->channels_empty = atoi(api->config_get(api->priv,
                                               "fake.channels_empty", "0"));
+    c->power_available = atoi(api->config_get(api->priv,
+                                               "fake.power_available", "1"));
     for (size_t i = 0; i < 3; i++) {
         c->entries[i].handle = (uint32_t)(100 * (i + 1));
         c->service_rows[i].handle = (int64_t)(100 * (i + 1));
@@ -184,12 +202,24 @@ static int m_start(void *v)
         return -1;
     }
     c->service_published = 1;
+    if (c->api->publish(c->api->priv, OA_SVC_POWER, 1, &power_iface) != 0) {
+        c->api->unpublish(c->api->priv, OA_SVC_SERVICE_LIST);
+        c->api->unpublish(c->api->priv, OA_SVC_TUNER);
+        c->api->unpublish(c->api->priv, OA_SVC_CHANNELS);
+        c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
+        c->service_published = c->tuner_published = 0;
+        c->channels_published = c->source_published = 0;
+        return -1;
+    }
+    c->power_published = 1;
     return 0;
 }
 
 static void m_stop(void *v)
 {
     struct ctx *c = v;
+    if (c->power_published)
+        c->api->unpublish(c->api->priv, OA_SVC_POWER);
     if (c->service_published)
         c->api->unpublish(c->api->priv, OA_SVC_SERVICE_LIST);
     if (c->tuner_published)
@@ -198,7 +228,7 @@ static void m_stop(void *v)
         c->api->unpublish(c->api->priv, OA_SVC_CHANNELS);
     if (c->source_published)
         c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
-    c->service_published = c->tuner_published = 0;
+    c->power_published = c->service_published = c->tuner_published = 0;
     c->channels_published = c->source_published = 0;
 }
 

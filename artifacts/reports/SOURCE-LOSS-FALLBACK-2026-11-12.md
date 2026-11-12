@@ -405,8 +405,15 @@ selects the matching enabled external interface; the descriptor table at
 `0x0175de8c` (stride `0x38`) resolves the HDMI inputs. Using the PA is the
 specification-correct behavior and is recorded as a deliberate vendor
 deviation. `tests/cec_active.cjs` covers PA `0x1000`/`0x2000`, the disabled
-gate, directed frames, invalid PA and unmapped HDMI5. `0x36 Standby` and power
-transitions remain open.
+gate, directed frames, invalid PA and unmapped HDMI5.
+
+The gated `0x36 Standby` route tracks the active logical address from a valid
+`0x82` and calls `OA_SVC_POWER.standby()` only for a broadcast Standby from
+that source. The vendor `handleCECMessage` 0x36 handler @ `0x103014e` checks
+`getActiveLogicalDevice`, CEC-enabled and power state, then notifies listeners;
+the replacement applies the spec policy directly behind `cec.standby`.
+`tests/cec_standby.cjs` covers accepted standby, the disabled gate, missing
+active source, wrong LA and unavailable power.
 
 ## What this establishes
 
@@ -663,6 +670,8 @@ source; the sleep trigger is CEC `0x9D`/key 597.
   and the DemoApp key-597 handler.
 - `cec-active-source.txt` — 0x82 handler/selectSource instructions, the CEC
   logical-to-video-group table and the 13-record external descriptor table.
+- `cec-standby-source.txt` — 0x36 dispatch/handler instructions and the
+  active-device/CEC-enabled/power-state gates.
 
 Related: [CEC-LIVE-2026-11-01](CEC-LIVE-2026-11-01.md),
 [CEC-SPEC-VS-AURORA-2026-10-30](CEC-SPEC-VS-AURORA-2026-10-30.md),

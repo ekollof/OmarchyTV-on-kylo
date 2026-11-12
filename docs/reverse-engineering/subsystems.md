@@ -185,8 +185,9 @@ Evidence: [AUDIO-ROUTING](../../artifacts/reports/AUDIO-ROUTING-2026-11-01.md),
   lines follow the source change. The external-interface disconnect policy is
   the cable-unplug fallback in SOURCE-LOSS-FALLBACK. Resume-to-HDMI1 is
   consistent with 0x82/video ready. `mod_cec` routes broadcast 0x9D behind
-  `cec.inactive_fallback` and 0x82 behind `cec.active_source`; 0x36/power
-  remains unimplemented.
+  `cec.inactive_fallback` and 0x82 behind `cec.active_source`; 0x36 is behind
+  `cec.standby` and accepted only from the tracked active source
+  (`cec_standby.cjs`).
 
 Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),

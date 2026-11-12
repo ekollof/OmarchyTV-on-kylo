@@ -18,7 +18,6 @@
 #define CEC_TX    UINT32_C(0xc0104304)
 
 static uint8_t mirror_page[4096];
-static atomic_int rx_pending = 1;
 static atomic_int rx_delay_once;
 static atomic_int tx_count;
 static atomic_int open_count;
@@ -55,6 +54,55 @@ static int hex_value(char c)
     if (c >= 'a' && c <= 'f') return c - 'a' + 10;
     if (c >= 'A' && c <= 'F') return c - 'A' + 10;
     return -1;
+}
+
+#define FAKE_RX_MAX 4
+static uint8_t rx_frames[FAKE_RX_MAX][16];
+static int rx_lengths[FAKE_RX_MAX];
+static int rx_count;
+static int rx_at;
+
+static void parse_rx_frame(const char *text)
+{
+    if (!strncmp(text, "raw:", 4)) text += 4;
+    int n = 0;
+    while (text[0] && text[1] && n < 16) {
+        int hi = hex_value(text[0]);
+        int lo = hex_value(text[1]);
+        if (hi < 0 || lo < 0) break;
+        rx_frames[rx_count][n++] = (uint8_t)((hi << 4) | lo);
+        text += 2;
+    }
+    rx_lengths[rx_count] = n;
+    if (n > 0) rx_count++;
+}
+
+static void init_rx_frames(void)
+{
+    if (rx_count || rx_at) return;
+    const char *mode = getenv("OA_CEC_FAKE_RX");
+    if (mode && !strncmp(mode, "seq:", 4)) {
+        const char *p = mode + 4;
+        while (*p && rx_count < FAKE_RX_MAX) {
+            char item[40];
+            size_t n = 0;
+            while (*p && *p != ',' && n + 1 < sizeof item)
+                item[n++] = *p++;
+            item[n] = '\0';
+            if (*p == ',') p++;
+            parse_rx_frame(item);
+        }
+        return;
+    }
+    if (mode && !strcmp(mode, "9d")) {
+        parse_rx_frame("5f9d1000");
+        return;
+    }
+    if (mode) {
+        parse_rx_frame(mode);
+        return;
+    }
+    parse_rx_frame("507aa8");
 }
 
 static int dev_open(void *context, const char *path, int flags)
@@ -99,33 +147,12 @@ static int dev_ioctl(void *context, int fd, unsigned long request, void *argumen
                 usleep((useconds_t)ms * 1000);
             }
         }
-        if (atomic_exchange(&rx_pending, 0)) {
-            const char *mode = getenv("OA_CEC_FAKE_RX");
-            p->bytes[0] = 0x50;
-            if (mode && !strncmp(mode, "raw:", 4)) {
-                const char *hex = mode + 4;
-                size_t n = 0;
-                while (hex[0] && hex[1] && n < sizeof p->bytes) {
-                    int hi = hex_value(hex[0]);
-                    int lo = hex_value(hex[1]);
-                    if (hi < 0 || lo < 0) break;
-                    p->bytes[n++] = (uint8_t)((hi << 4) | lo);
-                    hex += 2;
-                }
-                p->length = (uint8_t)n;
-            } else if (mode && !strcmp(mode, "9d")) {
-                /* Broadcast Inactive Source from LA5 with PA 0x1000. */
-                p->bytes[0] = 0x5f;
-                p->bytes[1] = 0x9d;
-                p->bytes[2] = 0x10;
-                p->bytes[3] = 0x00;
-                p->length = 4;
-            } else {
-                p->bytes[1] = 0x7a;
-                p->bytes[2] = 0xa8;
-                p->length = 3;
-            }
+        init_rx_frames();
+        if (rx_at < rx_count) {
+            p->length = (uint8_t)rx_lengths[rx_at];
+            memcpy(p->bytes, rx_frames[rx_at], (size_t)rx_lengths[rx_at]);
             p->status = 1;
+            rx_at++;
         } else {
             p->length = 0;
             p->status = 0;

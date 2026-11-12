@@ -128,7 +128,9 @@ sleep trigger. `source.video_status()` v2 is now
 host-tested behind `source.vin_status` (`check-source-vin` and the fake-module
 `source_path` test); it exposes ready/lost and does not select a tuner.
 `mod_cec` routes 0x82 Active Source by PA behind `cec.active_source`
-(HDMI1..4; `cec_active.cjs`); 0x36 power policy is not implemented. `DEV_AMP_ID`
+(HDMI1..4; `cec_active.cjs`); 0x36 Standby is gated by `cec.standby`, accepted
+only from the tracked active source and calls `OA_SVC_POWER.standby()`
+(`cec_standby.cjs`). `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced (entry `0x84e110`, IsAlive `0x875458`:
