@@ -677,6 +677,8 @@ source; the sleep trigger is CEC `0x9D`/key 597.
 - `cec-power-status-source.txt` — 0x8F reply and 0x90 length/state handling.
 - `cec-routing-source.txt` — 0x80 dispatch, length-4 check and old/new PA
   comparison.
+- `cec-osd-name-source.txt` — 0x47 length/truncation and setHDMIName
+  instructions; the vendor does not answer 0x46.
 
 Related: [CEC-LIVE-2026-11-01](CEC-LIVE-2026-11-01.md),
 [CEC-SPEC-VS-AURORA-2026-10-30](CEC-SPEC-VS-AURORA-2026-10-30.md),

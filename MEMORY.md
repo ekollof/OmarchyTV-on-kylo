@@ -136,7 +136,9 @@ displayed, 0x84 logged (`cec_identity.cjs`). Power-status queries are gated
 by `cec.power_status`: 0x8F -> directed 0x90 "on", 0x90 reports logged
 (`cec_power_status.cjs`). 0x80 Routing Change is followed only when the old PA
 is the tracked active PA, then selects the new PA's HDMI input behind
-`cec.active_source` (`cec_routing.cjs`). `DEV_AMP_ID`
+`cec.active_source` (`cec_routing.cjs`). OSD names are behind
+`cec.identity`: 0x46 -> directed 0x47 with `cec.osd_name` (default "TV"),
+incoming 0x47 logged (`cec_osd_name.cjs`). `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced (entry `0x84e110`, IsAlive `0x875458`:

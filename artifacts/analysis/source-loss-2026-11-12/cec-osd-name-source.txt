@@ -1,0 +1,49 @@
+CEC 0x46/0x47 OSD-name evidence
+aurora.elf MR: 0x0102fce1 handleCECMessage
+
+0x46 is not dispatched in handleCECMessage; the vendor sends Give OSD Name
+itself and does not answer it. The replacement adds the spec 0x47 reply.
+
+=== 0x47 Set OSD Name handler 0x010304f8
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+010304f8 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x818>:
+ 10304f8:	f896 c01c 	ldrb.w	ip, [r6, #28]
+ 10304fc:	f10c 32ff 	add.w	r2, ip, #4294967295	; 0xffffffff
+ 1030500:	2a0d      	cmp	r2, #13
+ 1030502:	f63f ac04 	bhi.w	102fd0e <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2e>
+ 1030506:	f106 010d 	add.w	r1, r6, #13
+ 103050a:	f107 0008 	add.w	r0, r7, #8
+ 103050e:	f456 f919 	bl	c86744 <_ZN7UStringC1EPKc@@Base>
+ 1030512:	f107 0008 	add.w	r0, r7, #8
+ 1030516:	f896 a01c 	ldrb.w	sl, [r6, #28]
+ 103051a:	f456 fb17 	bl	c86b4c <_ZNK7UString6lengthEv@@Base>
+ 103051e:	4582      	cmp	sl, r0
+ 1030520:	d211      	bcs.n	1030546 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x866>
+ 1030522:	7f33      	ldrb	r3, [r6, #28]
+ 1030524:	2200      	movs	r2, #0
+ 1030526:	f107 0108 	add.w	r1, r7, #8
+ 103052a:	f107 0010 	add.w	r0, r7, #16
+ 103052e:	f456 fe8d 	bl	c8724c <_ZNK7UString12getSubstringEjj@@Base>
+ 1030532:	f107 0110 	add.w	r1, r7, #16
+ 1030536:	f107 0008 	add.w	r0, r7, #8
+ 103053a:	f456 fae1 	bl	c86b00 <_ZN7UStringaSERKS_@@Base>
+ 103053e:	f107 0010 	add.w	r0, r7, #16
+ 1030542:	f456 f807 	bl	c86554 <_ZN7UStringD1Ev@@Base>
+ 1030546:	f107 0108 	add.w	r1, r7, #8
+ 103054a:	f107 0018 	add.w	r0, r7, #24
+ 103054e:	f456 f951 	bl	c867f4 <_ZN7UStringC1ERKS_@@Base>
+ 1030552:	462a      	mov	r2, r5
+ 1030554:	f107 0118 	add.w	r1, r7, #24
+ 1030558:	4620      	mov	r0, r4
+ 103055a:	f7fd ffe7 	bl	102e52c <_ZN17NovoCECController11setHDMINameE7UString10CECLogical@@Base>
+ 103055e:	f107 0018 	add.w	r0, r7, #24
+ 1030562:	f455 fff7 	bl	c86554 <_ZN7UStringD1Ev@@Base>
+ 1030566:	f107 0008 	add.w	r0, r7, #8
+ 103056a:	e791      	b.n	1030490 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x7b0>
+ 103056c:	6960      	ldr	r0, [r4, #20]
+ 103056e:	Address 0x000000000103056e is out of bounds.

@@ -504,7 +504,9 @@ unvalidated.
       `cec.power_status` (0x8F -> 0x90 "on", 0x90 logged;
       `cec_power_status.cjs`). 0x80 Routing Change is followed only when the
       old PA is the tracked active PA, then selects the new PA's HDMI input
-      behind `cec.active_source` (`cec_routing.cjs`). Owner test
+      behind `cec.active_source` (`cec_routing.cjs`). OSD-name queries are
+      behind `cec.identity` (0x46 -> 0x47 configured name, 0x47 logged;
+      `cec_osd_name.cjs`). Owner test
       2026-11-12: Deck sleep left the TV on and switched it to a tuner input;
       resume switched to HDMI1. The sleep fallback is CEC 0x9D/key 597; the
       external-interface disconnect policy in SOURCE-LOSS-FALLBACK (navigator →

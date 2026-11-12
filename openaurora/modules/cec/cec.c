@@ -36,6 +36,7 @@ struct ctx {
     int power_status_enabled; /* cec.power_status */
     int active_logical;  /* last valid 0x82 initiator, -1 unknown */
     uint16_t active_pa;  /* last valid 0x82 physical address, 0 unknown */
+    char osd_name[15];   /* cec.osd_name, 1..14 printable ASCII */
 
     /* Optional hardware transport (cec.enable=1). */
     int enabled;
@@ -530,6 +531,39 @@ static void handle_power_status(struct ctx *c, const oa_cec_message *m)
     }
 }
 
+/* CEC OSD-name exchange. The vendor stores incoming 0x47 names; the
+ * replacement also answers 0x46 Give OSD Name with a directed 0x47 carrying
+ * the configured TV name (1..14 printable ASCII). Gate with cec.identity. */
+static void handle_osd_name(struct ctx *c, const oa_cec_message *m)
+{
+    if (!c || !c->identity_enabled || !m) return;
+    if (m->initiator == 0 || m->initiator == 15) return;
+
+    if (m->opcode == 0x46) {
+        if (m->count != 0) return;
+        if (m->destination != 0 && m->destination != 15) return;
+        size_t n = strlen(c->osd_name);
+        if (n > OA_CEC_MAX_OPERANDS) n = OA_CEC_MAX_OPERANDS;
+        oa_cec_message reply = {
+            .initiator = 0, .destination = m->initiator, .opcode = 0x47,
+            .count = (uint8_t)n
+        };
+        memcpy(reply.operands, c->osd_name, n);
+        queue_replies(c, &reply, 1);
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x46 -> 0x47 name %s", c->osd_name);
+        return;
+    }
+    if (m->opcode == 0x47) {
+        if (m->destination != 0 || m->count < 1 || m->count > 14) return;
+        for (size_t i = 0; i < m->count; i++)
+            if (m->operands[i] < 0x20 || m->operands[i] > 0x7e) return;
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x47 la %u name %.*s", m->initiator,
+                    (int)m->count, (const char *)m->operands);
+    }
+}
+
 static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
 {
     switch (comp->operation) {
@@ -579,6 +613,7 @@ static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
             handle_standby(c, &comp->message);
             handle_identity(c, &comp->message);
             handle_power_status(c, &comp->message);
+            handle_osd_name(c, &comp->message);
         } else if (comp->rc < 0) {
             c->last_error = comp->error ? comp->error : EIO;
             if (!c->rx_error_logged) {
@@ -861,6 +896,18 @@ static int start(void *ud)
     if (c->power_status_enabled)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "cec: power-status replies enabled (0x8f/0x90)");
+    const char *osd = c->api->config_get(c->api->priv, "cec.osd_name", "TV");
+    size_t osd_len = 0;
+    if (osd) {
+        while (osd_len < 14 && osd[osd_len] >= 0x20 && osd[osd_len] <= 0x7e)
+            osd_len++;
+    }
+    if (!osd || osd_len == 0 || osd[osd_len] != '\0') {
+        memcpy(c->osd_name, "TV", 3);
+    } else {
+        memcpy(c->osd_name, osd, osd_len);
+        c->osd_name[osd_len] = '\0';
+    }
     if (c->enabled) {
         const char *path = c->api->config_get(c->api->priv, "cec.device",
                                               "/tmp/ntkcec");

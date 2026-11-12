@@ -1528,6 +1528,11 @@ check-cec-power-status: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUI
 	node tests/cec_power_status.cjs $(abspath $(BUILD))
 check: check-cec-power-status
 
+.PHONY: check-cec-osd-name
+check-cec-osd-name: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD)/tests/mod_cec_services_fake.so
+	node tests/cec_osd_name.cjs $(abspath $(BUILD))
+check: check-cec-osd-name
+
 $(BUILD)/tests/cec_authority_lifetime: tests/cec_authority_lifetime.c common/cec_owner.c common/cec_authority.c common/cec_authority_mem.c common/cec_device.c common/cec_packet.c common/cec.c common/cec_policy.c common/cec_module_transport.c common/tuner_view.c modules/cec/cec.c include/openaurora/cec_owner.h include/openaurora/cec_authority_mem.h include/openaurora/cec_module_transport.h include/openaurora/module.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ \
