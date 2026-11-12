@@ -132,7 +132,9 @@ host-tested behind `source.vin_status` (`check-source-vin` and the fake-module
 only from the tracked active source and calls `OA_SVC_POWER.standby()`
 (`cec_standby.cjs`). Identity queries are gated by `cec.identity`: 0x83 ->
 broadcast 0x84 PA 0x0000/type TV, 0x85 -> 0x82 0x0000 while the tuner is
-displayed, 0x84 logged (`cec_identity.cjs`). `DEV_AMP_ID`
+displayed, 0x84 logged (`cec_identity.cjs`). Power-status queries are gated
+by `cec.power_status`: 0x8F -> directed 0x90 "on", 0x90 reports logged
+(`cec_power_status.cjs`). `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced (entry `0x84e110`, IsAlive `0x875458`:

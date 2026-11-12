@@ -500,7 +500,9 @@ unvalidated.
       tracked active source and calling `OA_SVC_POWER.standby()`
       (`cec_standby.cjs`). Identity queries are implemented behind
       `cec.identity` (0x83 -> 0x84, 0x85 -> 0x82 0x0000 when tuner-owned,
-      0x84 logged; `cec_identity.cjs`). Owner test
+      0x84 logged; `cec_identity.cjs`). Power-status queries are behind
+      `cec.power_status` (0x8F -> 0x90 "on", 0x90 logged;
+      `cec_power_status.cjs`). Owner test
       2026-11-12: Deck sleep left the TV on and switched it to a tuner input;
       resume switched to HDMI1. The sleep fallback is CEC 0x9D/key 597; the
       external-interface disconnect policy in SOURCE-LOSS-FALLBACK (navigator →

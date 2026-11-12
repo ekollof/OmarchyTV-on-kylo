@@ -89,8 +89,8 @@ plus its own workarounds. The policy layer does the TV behaviour. Both were insp
 | 0x83 | `<Give Physical Address>` | reply 0x84 | replies 0x84 with PA + device type | replacement broadcasts 0x84 PA 0x0000/type TV behind `cec.identity` (`cec_identity.cjs`) |
 | 0x84 | `<Report Physical Address>` | length **3**; record LA↔PA↔type | length 3, sender ≠ 0/15, stores PA + device type + video group, then asks the name | replacement logs LA/PA/type behind `cec.identity` |
 | 0x85 | `<Request Active Source>` | nobody-by-default → broadcast own 0.0.0.0 | if current input isn't HDMI, broadcasts `Active Source` 0x0000 | replacement broadcasts 0x82 0x0000 while the tuner is displayed, behind `cec.identity` (`cec_identity.cjs`) |
-| 0x8F | `<Give Device Power Status>` | reply 0x90 | replies 0x90 from `this[0x4c]` | ok |
-| 0x90 | `<Report Power Status>` | length **1** | length 1, stores the device's power state | ok |
+| 0x8F | `<Give Device Power Status>` | reply 0x90 | replies 0x90 from `this[0x4c]` | replacement replies 0x90 "on" behind `cec.power_status` (`cec_power_status.cjs`) |
+| 0x90 | `<Report Power Status>` | length **1** | length 1, stores the device's power state | replacement logs LA/status behind `cec.power_status` |
 | 0x91 | `<Get Menu Language>` | reply 0x32 | handled | ok |
 | 0x9D | `<Inactive Source>` | source went away | `NovoCECController::handleCECMessage` returns unless the TV is in the standby transition; the UI listener `SvgAppCECEventsListener` posts `UIKeyPressMessage(597)`, which selects DTV/tuner | replacement implements the gated 0x9D source/tuner route (`cec.inactive_fallback`); UI key path not reproduced; on-TV unverified |
 | 0xA3 | `<Report Short Audio Descriptor>` | EDID/SAD bookkeeping | consumed for ARC/EDID | ok |

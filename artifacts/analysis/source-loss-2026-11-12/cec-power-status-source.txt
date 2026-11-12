@@ -1,0 +1,85 @@
+CEC 0x8F/0x90 power-status evidence
+aurora.elf MR: 0x0102fce1 handleCECMessage
+
+=== 0x8F Give Device Power Status handler
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0102ff10 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x230>:
+ 102ff10:	2885      	cmp	r0, #133	; 0x85
+ 102ff12:	f000 81d7 	beq.w	10302c4 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x5e4>
+ 102ff16:	288f      	cmp	r0, #143	; 0x8f
+ 102ff18:	f47f af4e 	bne.w	102fdb8 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xd8>
+ 102ff1c:	6ce1      	ldr	r1, [r4, #76]	; 0x4c
+ 102ff1e:	f107 0330 	add.w	r3, r7, #48	; 0x30
+ 102ff22:	2290      	movs	r2, #144	; 0x90
+ 102ff24:	f803 1d18 	strb.w	r1, [r3, #-24]!
+ 102ff28:	9300      	str	r3, [sp, #0]
+ 102ff2a:	2301      	movs	r3, #1
+ 102ff2c:	4629      	mov	r1, r5
+ 102ff2e:	e1dc      	b.n	10302ea <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x60a>
+
+=== 0x90 Report Power Status handler
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0102ffe0 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x300>:
+ 102ffe0:	7f35      	ldrb	r5, [r6, #28]
+ 102ffe2:	2d01      	cmp	r5, #1
+ 102ffe4:	f47f ae91 	bne.w	102fd0a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2a>
+ 102ffe8:	f896 b00d 	ldrb.w	fp, [r6, #13]
+ 102ffec:	6875      	ldr	r5, [r6, #4]
+ 102ffee:	f1bb 0f00 	cmp.w	fp, #0
+ 102fff2:	f040 808b 	bne.w	103010c <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x42c>
+ 102fff6:	f44f 7294 	mov.w	r2, #296	; 0x128
+ 102fffa:	fb02 4c05 	mla	ip, r2, r5, r4
+ 102fffe:	f8dc 3148 	ldr.w	r3, [ip, #328]	; 0x148
+ 1030002:	2b00      	cmp	r3, #0
+ 1030004:	d067      	beq.n	10300d6 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x3f6>
+ 1030006:	f107 0a30 	add.w	sl, r7, #48	; 0x30
+ 103000a:	6ae0      	ldr	r0, [r4, #44]	; 0x2c
+ 103000c:	f751 fcae 	bl	f8196c <_ZNK15UserPreferences17getSystemLanguageEv@@Base>
+ 1030010:	f84a 0d0c 	str.w	r0, [sl, #-12]!
+ 1030014:	4650      	mov	r0, sl
+ 1030016:	f0f3 fa7f 	bl	1123518 <_ZNK12LanguageCode9charArrayEv@@Base>
+ 103001a:	4601      	mov	r1, r0
+ 103001c:	f107 0020 	add.w	r0, r7, #32
+
+=== setDevicePowerStatus
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0102e4dc <_ZN17NovoCECController20setDevicePowerStatusE10CECLogical14CECPowerStatus@@Base>:
+ 102e4dc:	f44f 4380 	mov.w	r3, #16384	; 0x4000
+ 102e4e0:	b590      	push	{r4, r7, lr}
+ 102e4e2:	ebad 0c03 	sub.w	ip, sp, r3
+ 102e4e6:	f8cc 0fe8 	str.w	r0, [ip, #4072]	; 0xfe8
+ 102e4ea:	4b0f      	ldr	r3, [pc, #60]	; (102e528 <_ZN17NovoCECController20setDevicePowerStatusE10CECLogical14CECPowerStatus@@Base+0x4c>)
+ 102e4ec:	b083      	sub	sp, #12
+ 102e4ee:	290e      	cmp	r1, #14
+ 102e4f0:	af00      	add	r7, sp, #0
+ 102e4f2:	681c      	ldr	r4, [r3, #0]
+ 102e4f4:	607c      	str	r4, [r7, #4]
+ 102e4f6:	dc0d      	bgt.n	102e514 <_ZN17NovoCECController20setDevicePowerStatusE10CECLogical14CECPowerStatus@@Base+0x38>
+ 102e4f8:	f44f 7c94 	mov.w	ip, #296	; 0x128
+ 102e4fc:	fb0c 0101 	mla	r1, ip, r1, r0
+ 102e500:	f8d1 4150 	ldr.w	r4, [r1, #336]	; 0x150
+ 102e504:	f8c1 2148 	str.w	r2, [r1, #328]	; 0x148
+ 102e508:	2c0e      	cmp	r4, #14
+ 102e50a:	bfdc      	itt	le
+ 102e50c:	fb0c 0404 	mlale	r4, ip, r4, r0
+ 102e510:	f8c4 2148 	strle.w	r2, [r4, #328]	; 0x148
+ 102e514:	687a      	ldr	r2, [r7, #4]
+ 102e516:	6818      	ldr	r0, [r3, #0]
+ 102e518:	4282      	cmp	r2, r0
+ 102e51a:	d001      	beq.n	102e520 <_ZN17NovoCECController20setDevicePowerStatusE10CECLogical14CECPowerStatus@@Base+0x44>
+ 102e51c:	f681 c910 	blx	6af740 <__stack_chk_fail@plt>

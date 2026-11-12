@@ -67,8 +67,9 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   0x9D by posting `UIKeyPressMessage(597)`; 0x36 is implemented behind
   `cec.standby` and accepted only from the tracked active source
   (`cec_standby.cjs`). Identity queries are behind `cec.identity`
-  (0x83 -> 0x84, 0x85 -> 0x82 while tuner-owned; `cec_identity.cjs`). Stock
-  observation 2026-11-12: Deck
+  (0x83 -> 0x84, 0x85 -> 0x82 while tuner-owned; `cec_identity.cjs`).
+  Power-status queries are behind `cec.power_status` (0x8F -> 0x90 "on",
+  0x90 logged; `cec_power_status.cjs`). Stock observation 2026-11-12: Deck
   sleep left the TV on at a tuner input; this is CEC `0x9D Inactive Source`:
   `SvgAppCECEventsListener` posts `UIKeyPressMessage(597)`, and the UI selects
   DTV/tuner (`ICE_VideoSelectSource` source 8 →

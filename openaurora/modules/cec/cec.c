@@ -33,6 +33,7 @@ struct ctx {
     int active_source_enabled; /* cec.active_source */
     int standby_enabled; /* cec.standby */
     int identity_enabled; /* cec.identity */
+    int power_status_enabled; /* cec.power_status */
     int active_logical;  /* last valid 0x82 initiator, -1 unknown */
 
     /* Optional hardware transport (cec.enable=1). */
@@ -448,6 +449,32 @@ static void handle_identity(struct ctx *c, const oa_cec_message *m)
     }
 }
 
+/* 0x8F Give Device Power Status is directed to the TV; reply 0x90 with the
+ * running state ("on"). The module only receives while the TV is powered.
+ * 0x90 reports from other devices are logged for the device table. */
+static void handle_power_status(struct ctx *c, const oa_cec_message *m)
+{
+    if (!c || !c->power_status_enabled || !m) return;
+    if (m->opcode == 0x8f) {
+        if (m->destination != 0 || m->initiator == 0 || m->initiator == 15 ||
+            m->count != 0) return;
+        oa_cec_message reply = {
+            .initiator = 0, .destination = m->initiator, .opcode = 0x90,
+            .count = 1, .operands = { 0x00 } /* on */
+        };
+        queue_replies(c, &reply, 1);
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x8f -> 0x90 status 0");
+        return;
+    }
+    if (m->opcode == 0x90) {
+        if (m->count != 1 || m->initiator == 0 || m->initiator == 15) return;
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x90 la %u status %u",
+                    m->initiator, (unsigned)m->operands[0]);
+    }
+}
+
 static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
 {
     switch (comp->operation) {
@@ -495,6 +522,7 @@ static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
             handle_active_source(c, &comp->message);
             handle_standby(c, &comp->message);
             handle_identity(c, &comp->message);
+            handle_power_status(c, &comp->message);
         } else if (comp->rc < 0) {
             c->last_error = comp->error ? comp->error : EIO;
             if (!c->rx_error_logged) {
@@ -769,6 +797,13 @@ static int start(void *ud)
     if (c->identity_enabled)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "cec: identity-query replies enabled (0x83/0x85)");
+    const char *power_status = c->api->config_get(c->api->priv,
+                                                  "cec.power_status", "0");
+    c->power_status_enabled = power_status &&
+        (!strcmp(power_status, "1") || !strcmp(power_status, "true"));
+    if (c->power_status_enabled)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec: power-status replies enabled (0x8f/0x90)");
     if (c->enabled) {
         const char *path = c->api->config_get(c->api->priv, "cec.device",
                                               "/tmp/ntkcec");
@@ -866,6 +901,7 @@ static int quiesce(void *ud)
     c->active_source_enabled = 0;
     c->standby_enabled = 0;
     c->identity_enabled = 0;
+    c->power_status_enabled = 0;
     c->active_logical = -1;
     c->quiescing = 1;
     clear_session_state(c);
@@ -1022,6 +1058,7 @@ static void stop(void *ud)
     c->active_source_enabled = 0;
     c->standby_enabled = 0;
     c->identity_enabled = 0;
+    c->power_status_enabled = 0;
     c->active_logical = -1;
     c->cleanup_authority = 0;
 }

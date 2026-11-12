@@ -674,6 +674,7 @@ source; the sleep trigger is CEC `0x9D`/key 597.
   active-device/CEC-enabled/power-state gates.
 - `cec-identity-source.txt` — 0x83/0x84/0x85 dispatch, reply-build and
   setDevicePhysicalAddress instructions.
+- `cec-power-status-source.txt` — 0x8F reply and 0x90 length/state handling.
 
 Related: [CEC-LIVE-2026-11-01](CEC-LIVE-2026-11-01.md),
 [CEC-SPEC-VS-AURORA-2026-10-30](CEC-SPEC-VS-AURORA-2026-10-30.md),
