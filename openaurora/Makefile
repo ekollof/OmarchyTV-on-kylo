@@ -1518,6 +1518,11 @@ check-cec-image-view: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD
 	node tests/cec_image_view.cjs $(abspath $(BUILD))
 check: check-cec-image-view
 
+.PHONY: check-cec-rcp
+check-cec-rcp: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD)/tests/mod_cec_services_fake.so
+	node tests/cec_rcp.cjs $(abspath $(BUILD))
+check: check-cec-rcp
+
 .PHONY: check-cec-standby
 check-cec-standby: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD)/tests/mod_cec_services_fake.so
 	node tests/cec_standby.cjs $(abspath $(BUILD))

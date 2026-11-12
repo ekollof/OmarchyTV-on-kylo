@@ -77,8 +77,8 @@ plus its own workarounds. The policy layer does the TV behaviour. Both were insp
 | 0x04 | `<Image View On>` | wake TV, switch to the source | wakes, selects source, buffers `Active Source` | replacement selects the 0x84 device PA's HDMI input behind `cec.active_source` (`cec_image_view.cjs`); wake-from-standby remains a power-path task |
 | 0x0D | `<Text View On>` | as above, also clear menus | same plus menu clear; aborts with reason 1 when not allowed | replacement selects the 0x84 device PA's HDMI input behind `cec.active_source` (`cec_image_view.cjs`); menu clear not reproduced |
 | 0x36 | `<Standby>` | TV may enter standby | only from the active device, and only if own power state ≠ 3 (in transition to standby) | replacement implements gated `cec.standby` via `OA_SVC_POWER`, only from the tracked active source (`cec_standby.cjs`) |
-| 0x44 | `<User Control Pressed>` | RCP | length must be 1 and sender must be the active device; 0x41–0x43 (vol up/down/mute) mapped via a table; others forwarded | ok |
-| 0x45 | `<User Control Released>` | RCP | stops the key-press timer, forces 0x2f2 | ok |
+| 0x44 | `<User Control Pressed>` | RCP | length must be 1 and sender must be the active device; 0x41–0x43 (vol up/down/mute) mapped via a table; others forwarded | replacement handles active-source 0x41..0x43 through `OA_SVC_AUDIO` behind `cec.rcp` (`cec_rcp.cjs`); other codes are logged, not forwarded |
+| 0x45 | `<User Control Released>` | RCP | stops the key-press timer, forces 0x2f2 | replacement logs the release; no key-press timer is reproduced (`cec_rcp.cjs`) |
 | 0x47 | `<Set OSD Name>` | store name, ≤14 ASCII, directed only | length check `len-1 ≤ 13`, truncates to `len`, stores per LA | replacement logs a directed 1..14-byte printable name behind `cec.identity`; also answers 0x46 with a directed 0x47 name (`cec_osd_name.cjs`) |
 | 0x71 | `<Give Audio Status>` | reply with `<Report Audio Status>` | replies 0x7A with volume + mute bit | ok |
 | 0x72 | `<Set System Audio Mode>` | enable/disable SAM | sets audio mode, replies 0x7E when needed | ok |

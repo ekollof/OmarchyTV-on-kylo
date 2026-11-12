@@ -1,0 +1,72 @@
+CEC 0x44 User Control Pressed / 0x45 Released evidence
+aurora.elf MR: 0x0102fce1 handleCECMessage
+
+=== 0x44 dispatch and active-device/length checks
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0102fde0 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x100>:
+ 102fde0:	2836      	cmp	r0, #54	; 0x36
+ 102fde2:	f000 81b4 	beq.w	103014e <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x46e>
+ 102fde6:	2844      	cmp	r0, #68	; 0x44
+ 102fde8:	d1e6      	bne.n	102fdb8 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xd8>
+ 102fdea:	7f32      	ldrb	r2, [r6, #28]
+ 102fdec:	2a01      	cmp	r2, #1
+ 102fdee:	d18c      	bne.n	102fd0a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2a>
+ 102fdf0:	6820      	ldr	r0, [r4, #0]
+ 102fdf2:	6983      	ldr	r3, [r0, #24]
+ 102fdf4:	4620      	mov	r0, r4
+ 102fdf6:	4798      	blx	r3
+ 102fdf8:	4285      	cmp	r5, r0
+ 102fdfa:	d186      	bne.n	102fd0a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2a>
+ 102fdfc:	f896 a00d 	ldrb.w	sl, [r6, #13]
+ 102fe00:	4620      	mov	r0, r4
+ 102fe02:	f7ff fdb3 	bl	102f96c <_ZN17NovoCECController26stopCecDeviceKeyPressTimerEv@@Base>
+ 102fe06:	f1aa 0541 	sub.w	r5, sl, #65	; 0x41
+ 102fe0a:	2d02      	cmp	r5, #2
+ 102fe0c:	f200 8194 	bhi.w	1030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>
+ 102fe10:	4b72      	ldr	r3, [pc, #456]	; (102ffdc <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2fc>)
+ 102fe12:	f240 2ef2 	movw	lr, #754	; 0x2f2
+ 102fe16:	f853 1c04 	ldr.w	r1, [r3, #-4]
+ 102fe1a:	4571      	cmp	r1, lr
+ 102fe1c:	f000 81a9 	beq.w	1030172 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x492>
+ 102fe20:	f853 2b08 	ldr.w	r2, [r3], #8
+ 102fe24:	4592      	cmp	sl, r2
+ 102fe26:	d1f6      	bne.n	102fe16 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x136>
+ 102fe28:	f241 30ac 	movw	r0, #5036	; 0x13ac
+ 102fe2c:	f8c4 1084 	str.w	r1, [r4, #132]	; 0x84
+ 102fe30:	5820      	ldr	r0, [r4, r0]
+ 102fe32:	b110      	cbz	r0, 102fe3a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x15a>
+ 102fe34:	6805      	ldr	r5, [r0, #0]
+ 102fe36:	692b      	ldr	r3, [r5, #16]
+ 102fe38:	4798      	blx	r3
+ 102fe3a:	68a0      	ldr	r0, [r4, #8]
+ 102fe3c:	f549 f0fc 	bl	979038 <_ZN20EASIControlInterface11controlTaskEv@@Base>
+ 102fe40:	6801      	ldr	r1, [r0, #0]
+ 102fe42:	f44f 73fa 	mov.w	r3, #500	; 0x1f4
+ 102fe46:	2230      	movs	r2, #48	; 0x30
+ 102fe48:	f8d1 50cc 	ldr.w	r5, [r1, #204]	; 0xcc
+ 102fe4c:	1d21      	adds	r1, r4, #4
+ 102fe4e:	47a8      	blx	r5
+ 102fe50:	f8c4 0120 	str.w	r0, [r4, #288]	; 0x120
+ 102fe54:	e170      	b.n	1030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>
+
+=== 0x45 release handler
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+01030178 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x498>:
+ 1030178:	4620      	mov	r0, r4
+ 103017a:	f240 25f2 	movw	r5, #754	; 0x2f2
+ 103017e:	f7ff fbf5 	bl	102f96c <_ZN17NovoCECController26stopCecDeviceKeyPressTimerEv@@Base>
+ 1030182:	f8c4 5084 	str.w	r5, [r4, #132]	; 0x84
+ 1030186:	e7d7      	b.n	1030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>
+ 1030188:	f107 0a30 	add.w	sl, r7, #48	; 0x30
+ 103018c:	6ae0      	ldr	r0, [r4, #44]	; 0x2c
+ 103018e:	Address 0x000000000103018e is out of bounds.

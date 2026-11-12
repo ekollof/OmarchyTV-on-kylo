@@ -19,8 +19,12 @@ struct ctx {
     int tuner_published;
     int service_published;
     int power_published;
+    int audio_published;
     int channels_empty;
     int power_available;
+    int audio_available;
+    int audio_volume;
+    int audio_muted;
     int external_type;
     uint32_t selected_handle;
     struct oa_channel_entry entries[3];
@@ -140,6 +144,34 @@ static const oa_power_iface power_iface = {
     fake_power_standby, fake_power_available
 };
 
+static int fake_set_volume(int v)
+{
+    if (!g_ctx) return -ENODEV;
+    g_ctx->api->log(g_ctx->api->priv, OA_LOG_INFO,
+                    "fake audio volume %d", v);
+    g_ctx->audio_volume = v;
+    return 0;
+}
+static int fake_get_volume(void)
+{
+    return g_ctx ? g_ctx->audio_volume : -1;
+}
+static int fake_set_mute(int on)
+{
+    if (!g_ctx) return -ENODEV;
+    g_ctx->api->log(g_ctx->api->priv, OA_LOG_INFO,
+                    "fake audio mute %d", on);
+    g_ctx->audio_muted = on;
+    return 0;
+}
+static int fake_audio_available(void)
+{
+    return g_ctx ? g_ctx->audio_available : 0;
+}
+static const oa_audio_iface audio_iface = {
+    fake_set_volume, fake_get_volume, fake_set_mute, fake_audio_available, NULL
+};
+
 static int m_init(const oa_host_api *api, void **out)
 {
     if (!api || api->size < sizeof *api || api->abi != OA_ABI_VERSION)
@@ -155,6 +187,10 @@ static int m_init(const oa_host_api *api, void **out)
                                               "fake.channels_empty", "0"));
     c->power_available = atoi(api->config_get(api->priv,
                                                "fake.power_available", "1"));
+    c->audio_available = atoi(api->config_get(api->priv,
+                                               "fake.audio_available", "1"));
+    c->audio_volume = atoi(api->config_get(api->priv,
+                                            "fake.audio_volume", "42"));
     for (size_t i = 0; i < 3; i++) {
         c->entries[i].handle = (uint32_t)(100 * (i + 1));
         c->service_rows[i].handle = (int64_t)(100 * (i + 1));
@@ -212,12 +248,25 @@ static int m_start(void *v)
         return -1;
     }
     c->power_published = 1;
+    if (c->api->publish(c->api->priv, OA_SVC_AUDIO, 1, &audio_iface) != 0) {
+        c->api->unpublish(c->api->priv, OA_SVC_POWER);
+        c->api->unpublish(c->api->priv, OA_SVC_SERVICE_LIST);
+        c->api->unpublish(c->api->priv, OA_SVC_TUNER);
+        c->api->unpublish(c->api->priv, OA_SVC_CHANNELS);
+        c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
+        c->power_published = c->service_published = c->tuner_published = 0;
+        c->channels_published = c->source_published = 0;
+        return -1;
+    }
+    c->audio_published = 1;
     return 0;
 }
 
 static void m_stop(void *v)
 {
     struct ctx *c = v;
+    if (c->audio_published)
+        c->api->unpublish(c->api->priv, OA_SVC_AUDIO);
     if (c->power_published)
         c->api->unpublish(c->api->priv, OA_SVC_POWER);
     if (c->service_published)
@@ -228,8 +277,8 @@ static void m_stop(void *v)
         c->api->unpublish(c->api->priv, OA_SVC_CHANNELS);
     if (c->source_published)
         c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
-    c->power_published = c->service_published = c->tuner_published = 0;
-    c->channels_published = c->source_published = 0;
+    c->audio_published = c->power_published = c->service_published = 0;
+    c->tuner_published = c->channels_published = c->source_published = 0;
 }
 
 static int m_suspend(void *v) { (void)v; return 0; }

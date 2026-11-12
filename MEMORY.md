@@ -143,7 +143,9 @@ incoming 0x47 logged (`cec_osd_name.cjs`). One-touch 0x04/0x0D selects the
 (`cec_image_view.cjs`). Source switches emit `source/state`; `ui_vendor` maps
 the type to the Bronlijst row, writes `m_current_source`, syncs picture cards
 and repaints, and `ui_omarchy` repaints (`source_map`/`check-source-map`;
-`source_path` event assertion). `DEV_AMP_ID`
+`source_path` event assertion). Active-source 0x44 0x41..0x43 volume/mute is
+gated by `cec.rcp` and uses `OA_SVC_AUDIO`; 0x45 releases are logged
+(`cec_rcp.cjs`). `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced (entry `0x84e110`, IsAlive `0x875458`:

@@ -34,6 +34,8 @@ struct ctx {
     int standby_enabled; /* cec.standby */
     int identity_enabled; /* cec.identity */
     int power_status_enabled; /* cec.power_status */
+    int rcp_enabled; /* cec.rcp: active-source volume/mute */
+    int rcp_muted;   /* local CEC mute toggle state */
     int active_logical;  /* last valid 0x82 initiator, -1 unknown */
     uint16_t active_pa;  /* last valid 0x82 physical address, 0 unknown */
     uint16_t device_pa[16];   /* 0x84 PA per logical address */
@@ -618,6 +620,77 @@ static void handle_osd_name(struct ctx *c, const oa_cec_message *m)
     }
 }
 
+/* CEC 0x44/0x45 user control: the active source's volume/mute keys. The
+ * vendor maps 0x41..0x43 through its key table and forwards others; this
+ * module implements the TV-volume subset through OA_SVC_AUDIO. */
+static void handle_rcp(struct ctx *c, const oa_cec_message *m)
+{
+    if (!c || !c->rcp_enabled || !m) return;
+    if (m->opcode != 0x44 && m->opcode != 0x45) return;
+    if (m->destination != 0 && m->destination != 15) return;
+    if (m->initiator == 0 || m->initiator == 15) return;
+    if (c->active_logical < 0 || m->initiator != c->active_logical) return;
+    if (m->count != 1) return;
+
+    if (m->opcode == 0x45) {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x45 release code 0x%02x la %u",
+                    m->operands[0], m->initiator);
+        return;
+    }
+
+    unsigned code = m->operands[0];
+    if (code != 0x41 && code != 0x42 && code != 0x43) {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x44 code 0x%02x la %u ignored",
+                    code, m->initiator);
+        return;
+    }
+
+    const oa_audio_iface *audio =
+        c->api->lookup(c->api->priv, OA_SVC_AUDIO, 1);
+    if (!audio || !audio->is_available || !audio->is_available() ||
+        !audio->set_volume || !audio->set_mute) {
+        drop_lookup(c, OA_SVC_AUDIO, audio);
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "cec 0x44 ignored: audio service unavailable");
+        return;
+    }
+
+    if (code == 0x43) {
+        int next = !c->rcp_muted;
+        int rc = audio->set_mute(next);
+        if (rc == 0) {
+            c->rcp_muted = next;
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "cec 0x44 mute -> %d", next);
+        } else {
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "cec 0x44 mute failed (%d)", rc);
+        }
+    } else {
+        int volume = audio->get_volume ? audio->get_volume() : -1;
+        if (volume < 0 || volume > 100) {
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "cec 0x44 volume ignored: current volume unknown");
+        } else {
+            int next = code == 0x41 ? volume + 1 : volume - 1;
+            if (next < 0) next = 0;
+            if (next > 100) next = 100;
+            int rc = audio->set_volume(next);
+            if (rc == 0)
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "cec 0x44 volume %s -> %d",
+                            code == 0x41 ? "up" : "down", next);
+            else
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "cec 0x44 volume %s failed (%d)",
+                            code == 0x41 ? "up" : "down", rc);
+        }
+    }
+    drop_lookup(c, OA_SVC_AUDIO, audio);
+}
+
 static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
 {
     switch (comp->operation) {
@@ -669,6 +742,7 @@ static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
             handle_identity(c, &comp->message);
             handle_power_status(c, &comp->message);
             handle_osd_name(c, &comp->message);
+            handle_rcp(c, &comp->message);
         } else if (comp->rc < 0) {
             c->last_error = comp->error ? comp->error : EIO;
             if (!c->rx_error_logged) {
@@ -894,6 +968,7 @@ static int start(void *ud)
     c->quiescing = 0;
     c->active_logical = -1;
     c->active_pa = 0;
+    c->rcp_muted = 0;
     memset(c->device_pa, 0, sizeof c->device_pa);
     memset(c->device_type, 0, sizeof c->device_type);
     c->cleanup_result = 0;
@@ -953,6 +1028,11 @@ static int start(void *ud)
     if (c->power_status_enabled)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "cec: power-status replies enabled (0x8f/0x90)");
+    const char *rcp = c->api->config_get(c->api->priv, "cec.rcp", "0");
+    c->rcp_enabled = rcp && (!strcmp(rcp, "1") || !strcmp(rcp, "true"));
+    if (c->rcp_enabled)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec: active-source volume/mute enabled (0x44/0x45)");
     const char *osd = c->api->config_get(c->api->priv, "cec.osd_name", "TV");
     size_t osd_len = 0;
     if (osd) {
@@ -1063,8 +1143,10 @@ static int quiesce(void *ud)
     c->standby_enabled = 0;
     c->identity_enabled = 0;
     c->power_status_enabled = 0;
+    c->rcp_enabled = 0;
     c->active_logical = -1;
     c->active_pa = 0;
+    c->rcp_muted = 0;
     memset(c->device_pa, 0, sizeof c->device_pa);
     memset(c->device_type, 0, sizeof c->device_type);
     c->quiescing = 1;
@@ -1112,6 +1194,7 @@ static int suspend(void *ud)
     clear_session_state(c);
     c->active_logical = -1;
     c->active_pa = 0;
+    c->rcp_muted = 0;
     memset(c->device_pa, 0, sizeof c->device_pa);
     memset(c->device_type, 0, sizeof c->device_type);
     if (c->owner) {
@@ -1226,8 +1309,10 @@ static void stop(void *ud)
     c->standby_enabled = 0;
     c->identity_enabled = 0;
     c->power_status_enabled = 0;
+    c->rcp_enabled = 0;
     c->active_logical = -1;
     c->active_pa = 0;
+    c->rcp_muted = 0;
     memset(c->device_pa, 0, sizeof c->device_pa);
     memset(c->device_type, 0, sizeof c->device_type);
     c->cleanup_authority = 0;
