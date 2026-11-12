@@ -498,7 +498,9 @@ unvalidated.
       handles 0x9D by posting `UIKeyPressMessage(597)` and selecting DTV/tuner;
       0x36 Standby is implemented behind `cec.standby`, accepted only from the
       tracked active source and calling `OA_SVC_POWER.standby()`
-      (`cec_standby.cjs`). Owner test
+      (`cec_standby.cjs`). Identity queries are implemented behind
+      `cec.identity` (0x83 -> 0x84, 0x85 -> 0x82 0x0000 when tuner-owned,
+      0x84 logged; `cec_identity.cjs`). Owner test
       2026-11-12: Deck sleep left the TV on and switched it to a tuner input;
       resume switched to HDMI1. The sleep fallback is CEC 0x9D/key 597; the
       external-interface disconnect policy in SOURCE-LOSS-FALLBACK (navigator →

@@ -86,9 +86,9 @@ plus its own workarounds. The policy layer does the TV behaviour. Both were insp
 | 0x7E | `<System Audio Mode Status>` | — | clears/sets SAM | ok |
 | 0x80 | `<Routing Change>` | length **4** (old PA + new PA) | length must be 4, compares both PAs | ok |
 | 0x82 | `<Active Source>` | length **2**, sender ≠ 0 | length 2, sender ≠ 0, switches input by logical address; replacement selects by PA top nibble behind `cec.active_source` | vendor logical mapping; replacement PA mapping |
-| 0x83 | `<Give Physical Address>` | reply 0x84 | replies 0x84 with PA + device type | ok |
-| 0x84 | `<Report Physical Address>` | length **3**; record LA↔PA↔type | length 3, sender ≠ 0/15, stores PA + device type + video group, then asks the name | ok |
-| 0x85 | `<Request Active Source>` | nobody-by-default → broadcast own 0.0.0.0 | if current input isn't HDMI, broadcasts `Active Source` 0x0000 | ok |
+| 0x83 | `<Give Physical Address>` | reply 0x84 | replies 0x84 with PA + device type | replacement broadcasts 0x84 PA 0x0000/type TV behind `cec.identity` (`cec_identity.cjs`) |
+| 0x84 | `<Report Physical Address>` | length **3**; record LA↔PA↔type | length 3, sender ≠ 0/15, stores PA + device type + video group, then asks the name | replacement logs LA/PA/type behind `cec.identity` |
+| 0x85 | `<Request Active Source>` | nobody-by-default → broadcast own 0.0.0.0 | if current input isn't HDMI, broadcasts `Active Source` 0x0000 | replacement broadcasts 0x82 0x0000 while the tuner is displayed, behind `cec.identity` (`cec_identity.cjs`) |
 | 0x8F | `<Give Device Power Status>` | reply 0x90 | replies 0x90 from `this[0x4c]` | ok |
 | 0x90 | `<Report Power Status>` | length **1** | length 1, stores the device's power state | ok |
 | 0x91 | `<Get Menu Language>` | reply 0x32 | handled | ok |
@@ -119,7 +119,7 @@ Two of those need a footnote:
 | feature abort with the right reason | CEC Table 29 | reason 0 for unrecognised, reason 1 ("not in correct mode") on 0x0D paths; per-device reasons via `setFeatureAbortReason` | conformant |
 | validate operand lengths | each message's table | every branch checks `CECMessage[0x1c]` before using params (0x80=4, 0x82=2, 0x84=3, 0x90=1) | conformant, unusually strict |
 | buffer `<Active Source>` while powering up | CEC 13.1.2 | `isActiveSourceMessageReceived` / `setActiveSourceMessageReceived` state | conformant |
-| TV broadcasts `Active Source` 0.0.0.0 for its own screen | CEC 13.2.2 | 0x85 handler broadcasts PA 0x0000 when the current input isn't HDMI | conformant |
+| TV broadcasts `Active Source` 0.0.0.0 for its own screen | CEC 13.2.2 | 0x85 handler broadcasts PA 0x0000 when the current input isn't HDMI | conformant; replacement gated `cec.identity` |
 | store the OSD name and use it in menus | CEC 13.11.2 | `setHDMIName`, preferred over user + factory names | conformant |
 | `<Give OSD Name>` only to a device that just appeared | CEC 13.11.2 | sent on 0x84 *and* on input switch when the cache is empty | conformant (superset, allowed) |
 | only the device at 0.0.0.0 may be LA 0 | CEC 10.2 | `PLAT_CEC_GetLogicalAddress` / `SetLogicalAddress`; LA 0 fixed | conformant |

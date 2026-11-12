@@ -32,6 +32,7 @@ struct ctx {
     int inactive_enabled; /* cec.inactive_fallback */
     int active_source_enabled; /* cec.active_source */
     int standby_enabled; /* cec.standby */
+    int identity_enabled; /* cec.identity */
     int active_logical;  /* last valid 0x82 initiator, -1 unknown */
 
     /* Optional hardware transport (cec.enable=1). */
@@ -400,6 +401,53 @@ static void queue_replies(struct ctx *c, const oa_cec_message *replies, int n)
     }
 }
 
+/* Standard CEC identity queries. 0x84 is broadcast (PA + device type TV);
+ * 0x85 asks who owns the screen, so the TV answers 0x82 0x0000 only while the
+ * tuner is displayed. 0x84 reports are logged for the device table. */
+static void handle_identity(struct ctx *c, const oa_cec_message *m)
+{
+    if (!c || !c->identity_enabled || !m) return;
+    if (m->initiator == 0 || m->initiator == 15) return;
+
+    if (m->opcode == 0x83) {
+        if (m->count != 0) return;
+        if (m->destination != 0 && m->destination != 15) return;
+        oa_cec_message reply = {
+            .initiator = 0, .destination = 15, .opcode = 0x84,
+            .count = 3, .operands = { 0x00, 0x00, 0x00 }
+        };
+        queue_replies(c, &reply, 1);
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x83 -> 0x84 pa 0x0000 type 0");
+        return;
+    }
+    if (m->opcode == 0x85) {
+        if (m->destination != 15 || m->count != 0) return;
+        const oa_source_iface *source =
+            c->api->lookup(c->api->priv, OA_SVC_SOURCE, 1);
+        int current = source && source->current_type
+            ? source->current_type() : -1;
+        drop_lookup(c, OA_SVC_SOURCE, source);
+        if (current != 0) return; /* an external source owns the screen */
+        oa_cec_message reply = {
+            .initiator = 0, .destination = 15, .opcode = 0x82,
+            .count = 2, .operands = { 0x00, 0x00 }
+        };
+        queue_replies(c, &reply, 1);
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x85 -> 0x82 pa 0x0000");
+        return;
+    }
+    if (m->opcode == 0x84) {
+        if (m->count != 3) return;
+        uint16_t pa = (uint16_t)((m->operands[0] << 8) | m->operands[1]);
+        if (!oa_cec_physical_address_valid(pa)) return;
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x84 la %u pa 0x%04x type %u",
+                    m->initiator, pa, (unsigned)m->operands[2]);
+    }
+}
+
 static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
 {
     switch (comp->operation) {
@@ -446,6 +494,7 @@ static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
             handle_inactive_source(c, &comp->message);
             handle_active_source(c, &comp->message);
             handle_standby(c, &comp->message);
+            handle_identity(c, &comp->message);
         } else if (comp->rc < 0) {
             c->last_error = comp->error ? comp->error : EIO;
             if (!c->rx_error_logged) {
@@ -713,6 +762,13 @@ static int start(void *ud)
     if (c->standby_enabled)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "cec: standby routing enabled (0x36)");
+    const char *identity = c->api->config_get(c->api->priv,
+                                              "cec.identity", "0");
+    c->identity_enabled = identity &&
+        (!strcmp(identity, "1") || !strcmp(identity, "true"));
+    if (c->identity_enabled)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec: identity-query replies enabled (0x83/0x85)");
     if (c->enabled) {
         const char *path = c->api->config_get(c->api->priv, "cec.device",
                                               "/tmp/ntkcec");
@@ -809,6 +865,7 @@ static int quiesce(void *ud)
     c->inactive_enabled = 0;
     c->active_source_enabled = 0;
     c->standby_enabled = 0;
+    c->identity_enabled = 0;
     c->active_logical = -1;
     c->quiescing = 1;
     clear_session_state(c);
@@ -964,6 +1021,7 @@ static void stop(void *ud)
     c->inactive_enabled = 0;
     c->active_source_enabled = 0;
     c->standby_enabled = 0;
+    c->identity_enabled = 0;
     c->active_logical = -1;
     c->cleanup_authority = 0;
 }

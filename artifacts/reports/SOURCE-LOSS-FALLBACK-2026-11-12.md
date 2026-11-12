@@ -672,6 +672,8 @@ source; the sleep trigger is CEC `0x9D`/key 597.
   logical-to-video-group table and the 13-record external descriptor table.
 - `cec-standby-source.txt` — 0x36 dispatch/handler instructions and the
   active-device/CEC-enabled/power-state gates.
+- `cec-identity-source.txt` — 0x83/0x84/0x85 dispatch, reply-build and
+  setDevicePhysicalAddress instructions.
 
 Related: [CEC-LIVE-2026-11-01](CEC-LIVE-2026-11-01.md),
 [CEC-SPEC-VS-AURORA-2026-10-30](CEC-SPEC-VS-AURORA-2026-10-30.md),

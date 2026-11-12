@@ -1,0 +1,131 @@
+CEC 0x83/0x84/0x85 identity evidence
+aurora.elf MR: 0x0102fce1 handleCECMessage
+
+=== 0x83 dispatch and 0x84 reply build
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0102fee8 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x208>:
+ 102fee8:	2884      	cmp	r0, #132	; 0x84
+ 102feea:	f000 8224 	beq.w	1030336 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x656>
+ 102feee:	d80f      	bhi.n	102ff10 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x230>
+ 102fef0:	2882      	cmp	r0, #130	; 0x82
+ 102fef2:	f000 8182 	beq.w	10301fa <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x51a>
+ 102fef6:	2883      	cmp	r0, #131	; 0x83
+ 102fef8:	f47f af5e 	bne.w	102fdb8 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xd8>
+ 102fefc:	f107 0328 	add.w	r3, r7, #40	; 0x28
+ 102ff00:	f8a7 a028 	strh.w	sl, [r7, #40]	; 0x28
+ 102ff04:	9300      	str	r3, [sp, #0]
+ 102ff06:	2284      	movs	r2, #132	; 0x84
+ 102ff08:	f887 a02a 	strb.w	sl, [r7, #42]	; 0x2a
+ 102ff0c:	2303      	movs	r3, #3
+ 102ff0e:	e1eb      	b.n	10302e8 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x608>
+
+=== 0x85 handler
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+010302c4 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x5e4>:
+ 10302c4:	2101      	movs	r1, #1
+ 10302c6:	6920      	ldr	r0, [r4, #16]
+ 10302c8:	f77f fbb8 	bl	fafa3c <_ZNK12InputManager16getCurrentExtSrcEb@@Base>
+ 10302cc:	4601      	mov	r1, r0
+ 10302ce:	68e0      	ldr	r0, [r4, #12]
+ 10302d0:	f5f3 f5cc 	bl	a23e6c <_ZN22EASITVControlInterface21getTypeOfExtInterfaceEi@@Base>
+ 10302d4:	2807      	cmp	r0, #7
+ 10302d6:	f43f af2f 	beq.w	1030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>
+ 10302da:	2302      	movs	r3, #2
+ 10302dc:	2282      	movs	r2, #130	; 0x82
+ 10302de:	f107 0528 	add.w	r5, r7, #40	; 0x28
+ 10302e2:	f8a7 a028 	strh.w	sl, [r7, #40]	; 0x28
+ 10302e6:	9500      	str	r5, [sp, #0]
+ 10302e8:	210f      	movs	r1, #15
+
+=== 0x84 handler
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+01030336 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x656>:
+ 1030336:	7f32      	ldrb	r2, [r6, #28]
+ 1030338:	2a03      	cmp	r2, #3
+ 103033a:	f47f ace8 	bne.w	102fd0e <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2e>
+ 103033e:	2d0f      	cmp	r5, #15
+ 1030340:	f43f ace5 	beq.w	102fd0e <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2e>
+ 1030344:	2d00      	cmp	r5, #0
+ 1030346:	f43f ace2 	beq.w	102fd0e <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2e>
+ 103034a:	f896 a00d 	ldrb.w	sl, [r6, #13]
+ 103034e:	7bb0      	ldrb	r0, [r6, #14]
+ 1030350:	ea50 220a 	orrs.w	r2, r0, sl, lsl #8
+ 1030354:	d10d      	bne.n	1030372 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x692>
+ 1030356:	2303      	movs	r3, #3
+ 1030358:	2284      	movs	r2, #132	; 0x84
+ 103035a:	210f      	movs	r1, #15
+ 103035c:	2500      	movs	r5, #0
+ 103035e:	f107 0628 	add.w	r6, r7, #40	; 0x28
+ 1030362:	853d      	strh	r5, [r7, #40]	; 0x28
+ 1030364:	f887 502a 	strb.w	r5, [r7, #42]	; 0x2a
+ 1030368:	9600      	str	r6, [sp, #0]
+ 103036a:	68a0      	ldr	r0, [r4, #8]
+ 103036c:	f54a f32e 	bl	97a9cc <_ZN20EASIControlInterface14sendCecMessageE10CECLogicalhhPKh@@Base>
+ 1030370:	e4cd      	b.n	102fd0e <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2e>
+ 1030372:	4629      	mov	r1, r5
+ 1030374:	4620      	mov	r0, r4
+ 1030376:	f896 b00f 	ldrb.w	fp, [r6, #15]
+ 103037a:	f7fe fc75 	bl	102ec68 <_ZN17NovoCECController24setDevicePhysicalAddressE10CECLogicalj@@Base>
+ 103037e:	6821      	ldr	r1, [r4, #0]
+ 1030380:	4620      	mov	r0, r4
+ 1030382:	465a      	mov	r2, fp
+ 1030384:	6a0b      	ldr	r3, [r1, #32]
+ 1030386:	4629      	mov	r1, r5
+ 1030388:	4798      	blx	r3
+ 103038a:	49c2      	ldr	r1, [pc, #776]	; (1030694 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x9b4>)
+ 103038c:	f107 0018 	add.w	r0, r7, #24
+ 1030390:	f456 f9d8 	bl	c86744 <_ZN7UStringC1EPKc@@Base>
+ 1030394:	462a      	mov	r2, r5
+ 1030396:	f107 0118 	add.w	r1, r7, #24
+ 103039a:	4620      	mov	r0, r4
+ 103039c:	f7fe f920 	bl	102e5e0 <_ZN17NovoCECController11getHDMINameER7UString10CECLogical@@Base>
+ 10303a0:	6822      	ldr	r2, [r4, #0]
+ 10303a2:	4620      	mov	r0, r4
+ 10303a4:	6991      	ldr	r1, [r2, #24]
+ 10303a6:	4788      	blx	r1
+ 10303a8:	ea5f 1e1a 	movs.w	lr, sl, lsr #4
+ 10303ac:	d00f      	beq.n	10303ce <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x6ee>
+ 10303ae:	Address 0x00000000010303ae is out of bounds.
+
+
+=== common send tail 0x010302e8
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+010302e8 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x608>:
+ 10302e8:	210f      	movs	r1, #15
+ 10302ea:	68a0      	ldr	r0, [r4, #8]
+ 10302ec:	e775      	b.n	10301da <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x4fa>
+ 10302ee:	bf00      	nop
+ 10302f0:	d854      	bhi.n	103039c <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x6bc>
+ 10302f2:	0178      	lsls	r0, r7, #5
+ 10302f4:	7f84      	ldrb	r4, [r0, #30]
+ 10302f6:	012b      	lsls	r3, r5, #4
+ 10302f8:	d8c4      	bhi.n	1030284 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x5a4>
+ 10302fa:	0178      	lsls	r0, r7, #5
+ 10302fc:	cf4e      	ldmia	r7!, {r1, r2, r3, r6}
+ 10302fe:	0150      	lsls	r0, r2, #5
+ 1030300:	4620      	mov	r0, r4
+ 1030302:	f7ff fc75 	bl	102fbf0 <_ZN17NovoCECController20isTVInProhibitedModeEv@@Base>
+ 1030306:	b948      	cbnz	r0, 103031c <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x63c>
+ 1030308:	f241 32ac 	movw	r2, #5036	; 0x13ac
+ 103030c:	58a0      	ldr	r0, [r4, r2]
+ 103030e:	b128      	cbz	r0, 103031c <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x63c>
