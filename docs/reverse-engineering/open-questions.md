@@ -63,14 +63,16 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   is not implemented. 0x82 calls `selectSource`; 0x9D returns unless the TV is
   in the standby transition and does not clear the active source; 0x36 is
   accepted only from the active device. Stock observation 2026-11-12: Deck
-  sleep left the TV on at a tuner input (more likely HDMI hotplug/source loss);
-  resume switched to HDMI1. Exact frames and the fallback policy still need
-  capture or firmware recovery.
+  sleep left the TV on at a tuner input; SOURCE-LOSS-FALLBACK identifies the
+  external-interface disconnect policy (saved tuner service or previous external
+  source), not 0x9D. Resume switched to HDMI1. The fallback is not implemented;
+  the tuner service/decoder contract remains.
 
 Reports: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),
 [CEC-LIVE](../../artifacts/reports/CEC-LIVE-2026-11-01.md),
-[CEC-MODULE-TRANSPORT](../../artifacts/reports/CEC-MODULE-TRANSPORT-2026-11-09.md).
+[CEC-MODULE-TRANSPORT](../../artifacts/reports/CEC-MODULE-TRANSPORT-2026-11-09.md),
+[SOURCE-LOSS-FALLBACK](../../artifacts/reports/SOURCE-LOSS-FALLBACK-2026-11-12.md).
 
 ## Tuner, source and broadcast
 

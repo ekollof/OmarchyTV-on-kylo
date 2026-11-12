@@ -496,8 +496,10 @@ unvalidated.
       unless the TV is in the standby transition); 0x36 Standby is accepted only
       from the active device. Owner test 2026-11-12: Deck sleep left the TV on
       and switched it to a tuner input; resume switched to HDMI1. The sleep
-      fallback is more likely HDMI hotplug/source loss than 0x9D. Exact frames
-      and the tuner fallback policy are not captured; CEC-LIVE. Boot 6 armed a
+      fallback is the external-interface disconnect policy in
+      SOURCE-LOSS-FALLBACK (navigator → InputManager; saved tuner service
+      `this+0x90` or previous external source `this+0x94`), not 0x9D. The tuner
+      service/decoder contract is still open. CEC-LIVE. Boot 6 armed a
       raw-RX monitor, but the pre-stock eth0/DHCP failed (`Network is down`), so
       SSH was unavailable and no trigger was created; USB recovery restored
       stock. Do not leave a long pre-stock SSH-dependent wait; the next retry
@@ -510,6 +512,15 @@ unvalidated.
       (HDMI1, vin id3) then type0 (TV, vin id1); `source-state` reflected both.
       Visible display/audio routing and DB/UI resync were not validated; the
       settings `m_current_source` stayed5. INPUT-PVR-TAKEOVER.
+- [ ] HDMI source-loss fallback: navigator
+      `handleExternalInterfaceDisconnected` @ `0xfb32f0` →
+      `InputManager::handleExternalSourceDisconnected` @ `0xfb1fbc` selects the
+      saved tuner service `this+0x90` (`requestSelectServiceForDisplay` @
+      `0xfb19f0`) or the previous external source `this+0x94`
+      (`requestSelectExtSource` @ `0xfb1c50`), gated by a video-group match,
+      `this[0x88]`, service list/interface `0x13` and `this[0x98]`. This explains
+      the Deck-sleep tuner fallback. Not implemented; recover the tuner
+      service/decoder contract first and keep it gated. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
       `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts
       them to the loop; the TV link also needed `-ldl`. `check-ir-blast-worker`

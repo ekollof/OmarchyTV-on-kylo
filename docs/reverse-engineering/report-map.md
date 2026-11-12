@@ -128,6 +128,7 @@ superseded claims and descriptions.
 - [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md)
 
 ## Source, VIN and V4L2
+- [SOURCE-LOSS-FALLBACK](../../artifacts/reports/SOURCE-LOSS-FALLBACK-2026-11-12.md)
 - [SOURCE-PATH](../../artifacts/reports/SOURCE-PATH-2026-11-09.md)
 - [SOURCE-QUIESCE](../../artifacts/reports/SOURCE-QUIESCE-2026-11-06.md)
 - [SOURCES-CAPTURE](../../artifacts/reports/SOURCES-CAPTURE-2026-11-05.md)

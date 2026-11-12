@@ -3,10 +3,10 @@
 > **2026-11-12 correction:** the 0x9D row below is wrong. An instruction check
 > of `NovoCECController::handleCECMessage` @ `0x0102fce0` shows 0x9D returns
 > unless the TV is already in the standby transition; it does not clear the
-> active source. The observed Deck-sleep tuner fallback is therefore more likely
-> the HDMI hotplug/source-loss path, not 0x9D. 0x82 still calls `selectSource`.
-> See CEC-LIVE-2026-11-01 and CEC-FIRST-OPENER-2026-11-12. Raw instruction
-> excerpt: `../analysis/cec-first-2026-11-12/rea-2026-11-12.txt`.
+> active source. The observed Deck-sleep tuner fallback is the external-interface
+> disconnect policy in SOURCE-LOSS-FALLBACK-2026-11-12, not 0x9D. 0x82 still
+> calls `selectSource`. See CEC-LIVE-2026-11-01 and CEC-FIRST-OPENER-2026-11-12.
+> Raw instruction excerpt: `../analysis/cec-first-2026-11-12/rea-2026-11-12.txt`.
 
 > **2026-10-31 correction:** use [CEC-AUDIO-CONTRACT](CEC-AUDIO-CONTRACT-2026-10-31.md)
 > for current System Audio/ARC contracts. ARC is specified in 1.4, not 1.3a.

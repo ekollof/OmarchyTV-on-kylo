@@ -174,8 +174,9 @@ Evidence: [AUDIO-ROUTING](../../artifacts/reports/AUDIO-ROUTING-2026-11-01.md),
   `selectSource`; 0x9D Inactive Source returns unless the TV is in the standby
   transition and does not clear the active source; 0x36 Standby is accepted only
   from the active device. The owner's 2026-11-12 Deck suspend/resume test left
-  the TV on at a tuner input on sleep (more likely HDMI hotplug/source loss) and
-  switched to HDMI1 on resume; exact frames and fallback policy are not captured.
+  the TV on at a tuner input on sleep; that is the external-interface disconnect
+  fallback in SOURCE-LOSS-FALLBACK, not CEC 0x9D. Resume-to-HDMI1 is consistent
+  with 0x82/video ready. `mod_cec` routing/power remains unimplemented.
 
 Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),
@@ -197,8 +198,16 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   the replace-source probe fails fast when vendor DRM is not initialized.
 - `plat_vin_slot_init` is pure data (7 slots, defaults `{0,7,7,1,1,0,4,0,0}`
   plus `{7,0,25}`); `mod_source` drives slot 0 through `Hal_Vin_*`.
+- External-interface disconnect fallback: navigator
+  `handleExternalInterfaceDisconnected` @ `0xfb32f0` →
+  `InputManager::handleExternalSourceDisconnected` @ `0xfb1fbc`. It matches the
+  disconnected video group and selects the saved tuner service `this+0x90`
+  (`requestSelectServiceForDisplay` @ `0xfb19f0`) or the previous external
+  source `this+0x94` (`requestSelectExtSource` @ `0xfb1c50`). Not implemented in
+  `mod_source`; do not substitute an always-switch-to-TV shortcut.
 
 Evidence: [SOURCE-PATH](../../artifacts/reports/SOURCE-PATH-2026-11-09.md),
+[SOURCE-LOSS-FALLBACK](../../artifacts/reports/SOURCE-LOSS-FALLBACK-2026-11-12.md),
 [SOURCE-VIN](../../artifacts/reports/SOURCE-VIN-2026-11-06.md),
 [SOURCES-CAPTURE](../../artifacts/reports/SOURCES-CAPTURE-2026-11-05.md),
 [SOURCES-CEC](../../artifacts/reports/SOURCES-CEC-2026-10-30.md).

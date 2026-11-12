@@ -77,9 +77,12 @@ CEC-FIRST-OPENER-2026-11-12. Owner suspend/resume
 test 2026-11-12: Deck sleep left the TV on and switched it to a tuner input;
 Deck resume switched to HDMI1. Instruction check of `handleCECMessage` @
 `0x0102fce0`: 0x82 calls `selectSource`; 0x9D returns unless the TV is in the
-standby transition and does not clear the active source, so the sleep tuner
-fallback is more likely HDMI hotplug/source loss. Exact frames and fallback
-policy are not captured. `mod_cec` routing/power policy is not implemented. `DEV_AMP_ID`
+standby transition and does not clear the active source. SOURCE-LOSS-FALLBACK
+identifies the sleep tuner fallback as the external-interface disconnect policy:
+navigator callback @ `0xfb32f0` → `InputManager::handleExternalSourceDisconnected`
+@ `0xfb1fbc` → saved tuner service `this+0x90` or previous external source
+`this+0x94`. It is not implemented; the tuner service/decoder contract remains.
+`mod_cec` routing/power policy is not implemented. `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced (entry `0x84e110`, IsAlive `0x875458`:
