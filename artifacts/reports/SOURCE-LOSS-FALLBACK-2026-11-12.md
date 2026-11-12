@@ -138,6 +138,40 @@ The `NovoController`/UI path maps the resulting event to
 recovered code that path does **not** select the tuner. The tuner/previous-source
 fallback is the navigator callback above.
 
+### 5. Provider entry and status carrier
+
+The stock callback is registered by `AitHub::initialise` @ `0x01169f80` through
+`NEBULA_RegisterExternalInterfaceStatusCallback` @ `0x0116f9b0`; it passes
+`ExternalInterfaceStatusCallback` @ `0x011684d4` (Thumb entry `0x011684d5`).
+The registration stores an `ExternalInterfaceStatusChangeCallback` @
+`0x0118e219` in the `NebulaExternalAVSourceNavigator` singleton.
+
+The exported event entry is `NEBULA_HandleExternalInterfaceStatusChange` @
+`0x0116fa38`. It has no internal caller in `aurora.elf`; it forwards to
+`NebulaExternalAVSourceNavigator::handleExternalInterfaceStatusChange` @
+`0x0118e73c`. Status values 1..6 dispatch through the
+`AnyNovoExternalAVSourceNavigator` vtable slots `+0xb8..+0xcc`, which reach the
+six `NovoExternalAVSourceNavigator::handleExternalInterface*` methods and then
+`InputManager`. The exact enum labels are not recovered; the slot order follows
+the method set above.
+
+The kernel-side status block is `ndp_SRC_ConnectInfo` (0x74 bytes, runtime
+`0x00bb0d98`) in `ntkdriver_nondovi.ko`:
+
+- `NDP_ExtSrc_GetConnectInfo` @ `0x0061bb6c` returns its address;
+- `NDP_ExtSrc_SetConnectInfo` @ `0x0061bb8c` copies 0x74 bytes into it;
+- `NDP_ExtSrc_Initial` @ `0x0061d1d8` zeroes per-port flags at `0x0`, `0xc`,
+  `0x14`, `0x1c`, `0x28`, `0x34`, `0x40`;
+- `_VIU_CheckReconnect` @ `0x0061d868` reads those flags and calls
+  `NDP_ExtSrc_ChangeInput` to reconnect the VIU.
+
+`NDP_ExtSrc_g_ext_ctrls` @ `0x0061cd84` handles controls `0xa00966`,
+`0xa00968`, `0xa0099f`, `0xa00967` and `0xa009ab`; it does not directly expose
+the 0x74-byte block in the analyzed path. The `SetConnectInfo` caller and the
+ICE/HDMI-switch event that invokes `NEBULA_HandleExternalInterfaceStatusChange`
+are outside the analyzed driver path and remain unidentified. Do not guess a
+V4L2 control ID or event from the address alone.
+
 ## What this establishes
 
 - Stock sleep fallback is an **external-interface disconnect** policy, gated by
@@ -172,12 +206,20 @@ recovered decision logic only. The helper:
 connect. The full host suite passes. The helper is **not wired** into
 `mod_source`: the external-interface event provider, the
 `requestSelectServiceForDisplay`/`TunerManager` service/view re-tune and the
-5 s blue-background/UI timing are still open.
+5 s blue-background/UI timing are still open. Section 5 identifies the stock
+provider entry and status block, but not the hardware event ID/caller; do not
+wire a guessed V4L2 event.
 
 ## Limits and next work
 
-- The exact HDMI hotplug event source (HPD, +5V/EDID, or ICE status) and the
-  adapter that registers the navigator callback are not fully traced.
+- The exact ICE/HDMI-switch event that invokes
+  `NEBULA_HandleExternalInterfaceStatusChange` and the caller of
+  `NDP_ExtSrc_SetConnectInfo` are not identified. The 0x74-byte
+  `ndp_SRC_ConnectInfo` layout is only partially decoded (per-port flags at
+  `0x0`, `0xc`, `0x14`, `0x1c`, `0x28`, `0x34`, `0x40`); no V4L2 control or
+  event ID is established. `NDP_ExtSrc_g_ext_ctrls` handles controls
+  `0xa00966`/`0xa00968`/`0xa0099f`/`0xa00967`/`0xa009ab` but does not expose
+  the 0x74-byte block in the analyzed path.
 - `requestSelectServiceForDisplay` @ `0x00fb19f0` is the tuner service/decoder
   path; its full service-list, decoder-allocation and UI state contract is not
   recovered here. It takes the `NovoServiceViewController::getCurrentView`
@@ -215,6 +257,16 @@ connect. The full host suite passes. The helper is **not wired** into
 - `aurora-source-status-map.txt` — status conversion functions.
 - `rea-aurora-source-fallback.json` / `.asm` — REA 6.9.0 Ghidra cross-check of
   `InputManager::handleExternalSourceDisconnected` @ `0x00fb1fbc`.
+- `aurora-nebula-register.txt` — `AitHub::initialise` registration and callback
+  storage.
+- `aurora-nebula-status-change.txt` — `NEBULA_HandleExternalInterfaceStatusChange`
+  and the navigator status switch.
+- `aurora-avsource-base.txt` / `aurora-extav-vtables.txt` — `AVSourceManager`
+  base and `ExternalAVSourceManager` vtable slots.
+- `nondovi-extsrc-status.txt` — `NDP_ExtSrc_Get/SetConnectInfo`, sync info.
+- `nondovi-viu-reconnect2.txt` — `_VIU_CheckReconnect`.
+- `nondovi-extsrc-ctrls.txt` — `NDP_ExtSrc_g/s_ext_ctrls` control IDs.
+- `nondovi-connectinfo-refs.txt` — `ndp_SRC_ConnectInfo` references.
 
 Related: [CEC-LIVE-2026-11-01](CEC-LIVE-2026-11-01.md),
 [CEC-SPEC-VS-AURORA-2026-10-30](CEC-SPEC-VS-AURORA-2026-10-30.md),

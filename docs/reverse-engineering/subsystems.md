@@ -204,9 +204,11 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   disconnected video group and selects the saved tuner service `this+0x90`
   (`requestSelectServiceForDisplay` @ `0xfb19f0`) or the previous external
   source `this+0x94` (`requestSelectExtSource` @ `0xfb1c50`). A pure policy
-  helper (`common/source_loss.c`, `check-source-loss`) is tested but not wired;
-  the event provider and tuner service/view re-tune remain open. Do not
-  substitute an always-switch-to-TV shortcut.
+  helper (`common/source_loss.c`, `check-source-loss`) is tested but not wired.
+  Stock provider entry: `AitHub` → `NEBULA_Register...` → `NEBULA_Handle...` →
+  Nebula navigator; kernel status carrier `ndp_SRC_ConnectInfo` /
+  `NDP_ExtSrc_Get/SetConnectInfo`. The exact ICE/V4L2 event and tuner service/
+  view re-tune remain open. Do not substitute an always-switch-to-TV shortcut.
 
 Evidence: [SOURCE-PATH](../../artifacts/reports/SOURCE-PATH-2026-11-09.md),
 [SOURCE-LOSS-FALLBACK](../../artifacts/reports/SOURCE-LOSS-FALLBACK-2026-11-12.md),

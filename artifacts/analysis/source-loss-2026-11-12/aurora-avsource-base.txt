@@ -1,0 +1,95 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.2_DEV/preferences (Preferences)  
+INFO  Loading previous preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (544 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @4229bb3f (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Loaded 118 trusted CA certificate(s) from /etc/ssl/certs/ca-certificates.crt (UnixSystemTrustKeyStoreUtil)  
+INFO  Loaded 118 trusted CA certificates from the OS trust store. (DefaultTrustManagerFactory)  
+INFO  Loaded 118 trusted CA certificates from the Java default trust store. (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1110 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 60 extension points (19 false positives) (ClassSearcher)  
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Swift/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)  
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFirmware.java '--asm' '@0x00a661a8'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)  
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== @0x00a661a8 -> AVSourceManager::AVSourceManager @ 00a661a8 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined AVSourceManager(void) (GhidraScript)  
+INFO  DumpFirmware.java> 
+/* AVSourceManager::AVSourceManager() */
+
+void __thiscall AVSourceManager::AVSourceManager(AVSourceManager *this)
+
+{
+  int *piVar1;
+  int iVar2;
+  
+  piVar1 = DAT_00a661d8;
+  iVar2 = *DAT_00a661d8;
+  *(undefined4 *)this = DAT_00a661dc;
+  if (iVar2 != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> DISASSEMBLY 00a661a8 (GhidraScript)  
+INFO  DumpFirmware.java> 00a661a8  mov.w r1,#0x4000 (GhidraScript)  
+INFO  DumpFirmware.java> 00a661ac  push {r7,lr} (GhidraScript)  
+INFO  DumpFirmware.java> 00a661ae  sub.w r12,sp,r1 (GhidraScript)  
+INFO  DumpFirmware.java> 00a661b2  str.w r0,[r12,#0xff0] (GhidraScript)  
+INFO  DumpFirmware.java> 00a661b6  ldr r3,[0x00a661d8] (GhidraScript)  
+INFO  DumpFirmware.java> 00a661b8  sub sp,#0x8 (GhidraScript)  
+INFO  DumpFirmware.java> 00a661ba  ldr r1,[0x00a661dc] (GhidraScript)  
+INFO  DumpFirmware.java> 00a661bc  add r7,sp,#0x0 (GhidraScript)  
+INFO  DumpFirmware.java> 00a661be  ldr r2,[r3,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 00a661c0  str r1,[r0,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 00a661c2  str r2,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 00a661c4  ldr r2,[r7,#0x4] (GhidraScript)  
+INFO  DumpFirmware.java> 00a661c6  ldr r3,[r3,#0x0] (GhidraScript)  
+INFO  DumpFirmware.java> 00a661c8  cmp r2,r3 (GhidraScript)  
+INFO  DumpFirmware.java> 00a661ca  beq 0x00a661d0 (GhidraScript)  
+INFO  DumpFirmware.java> 00a661cc  blx 0x006af740 (GhidraScript)  
+INFO  DumpFirmware.java> 00a661d0  adds r7,#0x8 (GhidraScript)  
+INFO  DumpFirmware.java> 00a661d2  mov sp,r7 (GhidraScript)  
+INFO  DumpFirmware.java> 00a661d4  pop {r7,pc} (GhidraScript)  
+INFO  REPORT: Discarding changes to the following read-only file: /aurora.elf (HeadlessAnalyzer)  

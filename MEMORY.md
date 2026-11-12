@@ -83,7 +83,16 @@ navigator callback @ `0xfb32f0` → `InputManager::handleExternalSourceDisconnec
 @ `0xfb1fbc` → saved tuner service `this+0x90` or previous external source
 `this+0x94`. A pure policy helper `common/source_loss.c` is host-tested
 (`check-source-loss`) but not wired; the tuner service/decoder contract remains.
-`mod_cec` routing/power policy is not implemented. `DEV_AMP_ID`
+Provider trace: `AitHub::initialise` @ `0x1169f80` registers
+`ExternalInterfaceStatusCallback` via
+`NEBULA_RegisterExternalInterfaceStatusCallback` @ `0x116f9b0`; the exported
+`NEBULA_HandleExternalInterfaceStatusChange` @ `0x116fa38` →
+`NebulaExternalAVSourceNavigator` @ `0x118e73c` → Novo navigator → InputManager.
+Kernel carrier `ndp_SRC_ConnectInfo` (0x74 bytes) in `ntkdriver_nondovi`;
+`NDP_ExtSrc_Get/SetConnectInfo` @ `0x61bb6c`/`0x61bb8c`;
+`_VIU_CheckReconnect` @ `0x61d868`. Exact ICE/HDMI event, V4L2 ID and
+`SetConnectInfo` caller remain unidentified. `mod_cec` routing/power policy is
+not implemented. `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced (entry `0x84e110`, IsAlive `0x875458`:

@@ -65,8 +65,10 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   accepted only from the active device. Stock observation 2026-11-12: Deck
   sleep left the TV on at a tuner input; SOURCE-LOSS-FALLBACK identifies the
   external-interface disconnect policy (saved tuner service or previous external
-  source), not 0x9D. Resume switched to HDMI1. The fallback is not implemented;
-  the tuner service/decoder contract remains.
+  source), not 0x9D. Resume switched to HDMI1. A pure policy helper is tested
+  but not wired; the stock provider entry (`AitHub` → `NEBULA_Handle...` →
+  navigator; `ndp_SRC_ConnectInfo`/`NDP_ExtSrc_Get/SetConnectInfo`) is traced,
+  but the exact ICE/V4L2 event and tuner service/view re-tune remain open.
 
 Reports: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),

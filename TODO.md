@@ -520,8 +520,15 @@ unvalidated.
       (`requestSelectExtSource` @ `0xfb1c50`), gated by a video-group match,
       `this[0x88]`, service list/interface `0x13` and `this[0x98]`. This explains
       the Deck-sleep tuner fallback. A pure policy helper `common/source_loss.c`
-      plus `check-source-loss` passes; it is not wired. Remaining: the
-      source-loss event provider, the tuner service/view re-tune and the UI/
+      plus `check-source-loss` passes; it is not wired. Provider trace:
+      `AitHub::initialise` @ `0x1169f80` registers
+      `ExternalInterfaceStatusCallback` via `NEBULA_Register...` @ `0x116f9b0`;
+      exported `NEBULA_Handle...` @ `0x116fa38` →
+      `NebulaExternalAVSourceNavigator` @ `0x118e73c` → Novo navigator →
+      InputManager. Kernel carrier `ndp_SRC_ConnectInfo` (0x74 bytes) via
+      `NDP_ExtSrc_Get/SetConnectInfo` @ `0x61bb6c`/`0x61bb8c` and
+      `_VIU_CheckReconnect` @ `0x61d868`. Remaining: the exact ICE/V4L2 event
+      and `SetConnectInfo` caller, the tuner service/view re-tune and the UI/
       timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
       `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts
