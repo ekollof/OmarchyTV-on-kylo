@@ -17,6 +17,10 @@ struct source_fake_event {
 
 void source_fake_reset(void);
 void source_fake_set_drm_dev(int dev);
+void source_fake_vin_set(const uint32_t words[5]);
+int source_fake_vin_opens(void);
+int source_fake_vin_reads(void);
+int source_fake_vin_closes(void);
 int source_fake_count(void);
 const struct source_fake_event *source_fake_at(int index);
 const char *source_fake_log_text(void);

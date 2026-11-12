@@ -577,6 +577,11 @@ typedef struct {
     /* Read-only diagnostic: vendor DRM ids plus the current V4L2Info (4
      * words) and FdCommon (9 words). Does not open a device or switch. */
     int (*diag)(int *drm_dev, int *plane, unsigned *info4, unsigned *fd9);
+    /* v2: read-only HDMI RX video status from GET 0xa00967.
+     * 1 = active signal, 0 = lost/no signal, -1 = unavailable or disabled by
+     * source.vin_status. The caller owns the poll cadence; this method never
+     * switches a source or selects a tuner. */
+    int (*video_status)(void);
 } oa_source_iface;
 
 /* audio_source — the recovered ICE_AudioStart external-source branch.

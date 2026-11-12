@@ -33,6 +33,7 @@
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/source_hal.h"
+#include "openaurora/source_vin.h"
 #include "openaurora/src_hotplug.h"
 
 /* table A: source type -> Hal_Vin input id (aurora .data 0x013b9e78) */
@@ -88,6 +89,12 @@ struct ctx {
      * source.enable=1 and source.hotplug_pulse=1. */
     pthread_t pulse_thread;
     int pulse_running;
+    /* source.vin_status: read-only HDMI RX status on /dev/video21. */
+    const struct oa_source_vin_io *vin_io;
+    int vin_enabled;
+    int vin_fd;
+    int vin_ready; /* -1 unknown, 0 lost, 1 ready */
+    int vin_error_logged;
 };
 
 static struct ctx *g_ctx;
@@ -99,6 +106,15 @@ static void close_fds(struct ctx *c)
             c->h->vin_close(c->fds[i]);
     c->nfds = 0;
     c->slot_connected = 0;
+}
+
+static void close_vin_status(struct ctx *c)
+{
+    if (c->vin_fd >= 0) {
+        if (c->vin_io && c->vin_io->close)
+            (void)c->vin_io->close(c->vin_io->context, c->vin_fd);
+        c->vin_fd = -1;
+    }
 }
 
 static int open_index(int type)
@@ -452,8 +468,51 @@ static int iface_diag(int *drm_dev, int *plane, unsigned *info4, unsigned *fd9)
     return 0;
 }
 
+/* Read-only HDMI RX status. The caller polls; this never switches a source.
+ * The direct GET must ignore error_idx: the target kernel leaves it equal to
+ * count on success, matching Hal_Vin_GetHdmiStatus. */
+static int iface_video_status(void)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->vin_enabled || !c->vin_io || !c->vin_io->open ||
+        !c->vin_io->read)
+        return -1;
+    if (c->vin_fd < 0) {
+        c->vin_fd = c->vin_io->open(c->vin_io->context);
+        if (c->vin_fd < 0) {
+            if (!c->vin_error_logged) {
+                c->api->log(c->api->priv, OA_LOG_WARN,
+                            "source: HDMI RX status open failed");
+                c->vin_error_logged = 1;
+            }
+            return -1;
+        }
+    }
+    uint32_t words[OA_SOURCE_VIN_WORDS];
+    memset(words, 0, sizeof words);
+    int rc = oa_source_vin_poll(c->vin_io, c->vin_fd, words);
+    if (rc < 0) {
+        if (!c->vin_error_logged) {
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "source: HDMI RX status read failed (%d)", rc);
+            c->vin_error_logged = 1;
+        }
+        close_vin_status(c);
+        return -1;
+    }
+    c->vin_error_logged = 0;
+    if (rc != c->vin_ready) {
+        c->vin_ready = rc;
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "source: HDMI RX video %s (w0=%u)",
+                    rc ? "ready" : "lost", words[0]);
+    }
+    return rc;
+}
+
 static const oa_source_iface g_iface = { select_type, iface_current,
-                                         iface_available, iface_diag };
+                                         iface_available, iface_diag,
+                                         iface_video_status };
 
 static int m_init(const oa_host_api *api, void **out)
 {
@@ -467,6 +526,9 @@ static int m_init(const oa_host_api *api, void **out)
     c->fds[0] = c->fds[1] = -1;
     c->close_fds[0] = c->close_fds[1] = -1;
     c->current = -1;
+    c->vin_io = oa_source_vin_io();
+    c->vin_fd = -1;
+    c->vin_ready = -1;
     *out = c;
     g_ctx = c;
     return 0;
@@ -602,6 +664,15 @@ static int m_start(void *v)
     c->api->log(c->api->priv, OA_LOG_INFO,
                 "source: per-type VIN switching %s",
                 c->enabled ? "enabled" : "disabled (source.enable=1 to allow)");
+    close_vin_status(c);
+    const char *vin = c->api->config_get(c->api->priv,
+                                         "source.vin_status", "0");
+    c->vin_enabled = vin && atoi(vin) != 0;
+    c->vin_ready = -1;
+    c->vin_error_logged = 0;
+    if (c->vin_enabled)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "source: HDMI RX status poll enabled (read-only /dev/video21)");
     if (c->api->publish(c->api->priv, OA_SVC_SOURCE, 1, &g_iface) != 0)
         c->api->log(c->api->priv, OA_LOG_WARN, "source service already published");
 
@@ -661,6 +732,9 @@ static int m_quiesce(void *v)
         }
         return -EAGAIN;
     }
+    close_vin_status(c);
+    c->vin_enabled = 0;
+    c->vin_ready = -1;
     c->enabled = 0;
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
@@ -704,6 +778,9 @@ static void m_stop(void *v)
         (void)pthread_join(c->pulse_thread, NULL);
         c->pulse_running = 0;
     }
+    close_vin_status(c);
+    c->vin_enabled = 0;
+    c->vin_ready = -1;
     c->enabled = 0;
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
@@ -726,6 +803,7 @@ static void m_destroy(void *v)
         (void)pthread_join(c->cleanup_thread, NULL);
         c->cleanup_running = 0;
     }
+    close_vin_status(c);
     close_fds(c);
     if (g_ctx == v)
         g_ctx = NULL;

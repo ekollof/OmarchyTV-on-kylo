@@ -10,6 +10,7 @@
 
 #include "openaurora/source_hal.h"
 #include "openaurora/dev_gpio.h"
+#include "openaurora/source_vin.h"
 #include "source_fake.h"
 
 static struct source_fake_event g_ev[256];
@@ -17,6 +18,8 @@ static int g_drm_dev = 7;
 static int g_n;
 static char g_log[16384];
 static size_t g_log_n;
+static uint32_t g_vin_words[OA_SOURCE_VIN_WORDS] = { 1, 1, 1, 0, 0 };
+static int g_vin_opens, g_vin_reads, g_vin_closes;
 
 static void rec(int kind, const long long *v)
 {
@@ -50,11 +53,19 @@ static void append_log(const char *fmt, ...)
 }
 
 void source_fake_set_drm_dev(int dev) { g_drm_dev = dev; }
+void source_fake_vin_set(const uint32_t words[OA_SOURCE_VIN_WORDS])
+{
+    if (words) memcpy(g_vin_words, words, sizeof g_vin_words);
+}
+int source_fake_vin_opens(void) { return g_vin_opens; }
+int source_fake_vin_reads(void) { return g_vin_reads; }
+int source_fake_vin_closes(void) { return g_vin_closes; }
 void source_fake_reset(void)
 {
     g_n = 0;
     g_log_n = 0;
     g_log[0] = 0;
+    g_vin_opens = g_vin_reads = g_vin_closes = 0;
 }
 int source_fake_count(void) { return g_n; }
 const struct source_fake_event *source_fake_at(int index)
@@ -223,6 +234,43 @@ static const struct oa_source_hal g_fake = {
 const struct oa_source_hal *oa_source_hal(void)
 {
     return &g_fake;
+}
+
+static int f_vin_open(void *context)
+{
+    (void)context;
+    g_vin_opens++;
+    append_log("vin open fd=105");
+    return 105;
+}
+
+static int f_vin_read(void *context, int fd,
+                      uint32_t words[OA_SOURCE_VIN_WORDS])
+{
+    (void)context;
+    if (fd != 105 || !words) return -1;
+    g_vin_reads++;
+    memcpy(words, g_vin_words, sizeof g_vin_words);
+    append_log("vin read w0=%u", words[0]);
+    return 0;
+}
+
+static int f_vin_close(void *context, int fd)
+{
+    (void)context;
+    if (fd != 105) return -1;
+    g_vin_closes++;
+    append_log("vin close fd=%d", fd);
+    return 0;
+}
+
+static const struct oa_source_vin_io g_fake_vin = {
+    NULL, f_vin_open, f_vin_read, f_vin_close
+};
+
+const struct oa_source_vin_io *oa_source_vin_io(void)
+{
+    return &g_fake_vin;
 }
 
 /* The fake source build has no vendor GPIO transport; the hotplug pulse is

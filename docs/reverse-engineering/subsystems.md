@@ -174,9 +174,12 @@ Evidence: [AUDIO-ROUTING](../../artifacts/reports/AUDIO-ROUTING-2026-11-01.md),
   `selectSource`; 0x9D Inactive Source returns unless the TV is in the standby
   transition and does not clear the active source; 0x36 Standby is accepted only
   from the active device. The owner's 2026-11-12 Deck suspend/resume test left
-  the TV on at a tuner input on sleep; that is the external-interface disconnect
-  fallback in SOURCE-LOSS-FALLBACK, not CEC 0x9D. Resume-to-HDMI1 is consistent
-  with 0x82/video ready. `mod_cec` routing/power remains unimplemented.
+  the TV on at a tuner input on sleep; the stock log shows the VIU lost-signal
+  event 3 → `ICE_VideoHide` → key 597 → `ICE_VideoSelectSource` source 8 →
+  `TunerManager::selectServiceForDisplay(1)`, not CEC 0x9D and not the
+  external-interface disconnect policy. The latter is the cable-unplug fallback
+  in SOURCE-LOSS-FALLBACK. Resume-to-HDMI1 is consistent with 0x82/video ready.
+  `mod_cec` routing/power remains unimplemented.
 
 Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),
@@ -205,6 +208,9 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   (`requestSelectServiceForDisplay` @ `0xfb19f0`) or the previous external
   source `this+0x94` (`requestSelectExtSource` @ `0xfb1c50`). A pure policy
   helper (`common/source_loss.c`, `check-source-loss`) is tested but not wired.
+  This is the **cable-unplug** policy; the stock log shows the Deck-sleep tuner
+  switch is VIU lost-signal event 3 → `ICE_VideoHide` → key 597 →
+  `ICE_VideoSelectSource` source 8 → `TunerManager::selectServiceForDisplay(1)`.
   Stock provider entry: `AitHub` → `NEBULA_Register...` → `NEBULA_Handle...` →
   Nebula navigator; kernel status carrier `ndp_SRC_ConnectInfo` /
   `NDP_ExtSrc_Get/SetConnectInfo`. V4L2 event `0xc000001` on `/dev/video21` is
@@ -214,9 +220,10 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   HDMI1=pin203/byte0, level1=connected) are tested. HPD stayed high through Deck
   suspend. `Hal_Vin_GetHdmiStatus`/`0xa00967` works on `video21` (ignore the
   kernel `error_idx` sentinel) and captured `w0=1` active, `w0=0/5` during
-  suspend, back to `1`; the consumer that selects the tuner (status 4 versus
-  no-signal/`SignalLostDialog`) and the tuner service/view re-tune remain open.
-  Do not substitute an always-switch-to-TV or HPD shortcut.
+  suspend, back to `1`; `source.video_status()` v2 behind `source.vin_status`
+  exposes ready/lost (`check-source-vin`, fake-module `source_path`) and does
+  not select a tuner. The key-597 generator and the tuner service/view re-tune
+  remain open. Do not substitute an always-switch-to-TV or HPD shortcut.
 
 Evidence: [SOURCE-PATH](../../artifacts/reports/SOURCE-PATH-2026-11-09.md),
 [SOURCE-LOSS-FALLBACK](../../artifacts/reports/SOURCE-LOSS-FALLBACK-2026-11-12.md),

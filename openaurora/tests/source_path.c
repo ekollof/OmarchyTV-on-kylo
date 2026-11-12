@@ -9,12 +9,14 @@
 
 #include "openaurora/module.h"
 #include "openaurora/services.h"
+#include "openaurora/source_vin.h"
 #include "source_fake.h"
 
 extern const oa_module *oa_module_entry(void);
 static const oa_source_iface *iface;
 static int enabled = 1;
 static int color_gate;
+static int vin_gate;
 static int pos;
 
 #define SKIP INT64_MIN
@@ -71,6 +73,7 @@ static const char *config(void *p, const char *key, const char *def)
     (void)p;
     if (!strcmp(key, "source.enable")) return enabled ? "1" : "0";
     if (!strcmp(key, "source.auto_color_system")) return color_gate ? "1" : "0";
+    if (!strcmp(key, "source.vin_status")) return vin_gate ? "1" : "0";
     if (!strcmp(key, "source.cleanup_delay_ms")) return "0";
     return def;
 }
@@ -283,6 +286,36 @@ int main(void)
     done(ctx);
     color_gate = 0;
 
-    puts("ok source path: type gates, VIN opens/VPLT, V4L2Info/FdCommon, DRM/NDAL and audio order");
+    /* v2 source.video_status: source.vin_status gates the read-only HDMI RX
+     * query. The fake returns the live ready/suspend word sets. */
+    reset();
+    vin_gate = 1;
+    const uint32_t ready[OA_SOURCE_VIN_WORDS] = { 1, 1, 1, 0, 0 };
+    const uint32_t sleep0[OA_SOURCE_VIN_WORDS] = { 0, 1, 1, 0, 0xffffffffu };
+    const uint32_t sleep5[OA_SOURCE_VIN_WORDS] = { 5, 0, 0, 0, 0xffffffffu };
+    source_fake_vin_set(ready);
+    ctx = start(1);
+    assert(source_fake_vin_opens() == 0 && source_fake_vin_reads() == 0);
+    assert(iface->video_status() == 1);
+    assert(source_fake_vin_opens() == 1 && source_fake_vin_reads() == 1);
+    source_fake_vin_set(sleep0);
+    assert(iface->video_status() == 0);
+    source_fake_vin_set(sleep5);
+    assert(iface->video_status() == 0);
+    source_fake_vin_set(ready);
+    assert(iface->video_status() == 1);
+    assert(source_fake_vin_reads() == 4);
+    done(ctx);
+    assert(source_fake_vin_closes() == 1);
+    vin_gate = 0;
+
+    reset();
+    source_fake_vin_set(ready);
+    ctx = start(1);
+    assert(iface->video_status() == -1);
+    assert(source_fake_vin_opens() == 0);
+    done(ctx);
+
+    puts("ok source path: type gates, VIN opens/VPLT, V4L2Info/FdCommon, DRM/NDAL, audio and gated HDMI RX status order");
     return 0;
 }

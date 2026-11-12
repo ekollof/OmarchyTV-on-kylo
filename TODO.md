@@ -518,9 +518,12 @@ unvalidated.
       saved tuner service `this+0x90` (`requestSelectServiceForDisplay` @
       `0xfb19f0`) or the previous external source `this+0x94`
       (`requestSelectExtSource` @ `0xfb1c50`), gated by a video-group match,
-      `this[0x88]`, service list/interface `0x13` and `this[0x98]`. This explains
-      the Deck-sleep tuner fallback. A pure policy helper `common/source_loss.c`
-      plus `check-source-loss` passes; it is not wired. Provider trace:
+      `this[0x88]`, service list/interface `0x13` and `this[0x98]`. This is the
+      **cable-unplug** policy. The stock log shows the Deck-sleep tuner switch is
+      the VIU lost-signal path: event 3 → `ICE_VideoHide` → key 597 →
+      `ICE_VideoSelectSource` source 8 → `TunerManager::selectServiceForDisplay(1)`.
+      A pure policy helper `common/source_loss.c` plus `check-source-loss`
+      passes; it is not wired. Provider trace:
       `AitHub::initialise` @ `0x1169f80` registers
       `ExternalInterfaceStatusCallback` via `NEBULA_Register...` @ `0x116f9b0`;
       exported `NEBULA_Handle...` @ `0x116fa38` →
@@ -538,9 +541,11 @@ unvalidated.
       suspend. `Hal_Vin_GetHdmiStatus`/`0xa00967` works on video21 when the
       kernel `error_idx` count sentinel is ignored; it captured `w0=1` active,
       `w0=0/5` during suspend and back to `1` (video20/24/28 reject).
-      Remaining: the consumer that selects the tuner (external status 4 versus
-      no-signal/`SignalLostDialog`), any `SetConnectInfo` caller outside the
-      analyzed paths, the worker, the tuner service/view re-tune and the
+      `source.video_status()` v2 + `source.vin_status` now expose the
+      read-only provider; `check-source-vin` and the fake-module
+      `source_path` test pass, and the TV `mod_source.so` builds. It does not
+      select a tuner. Remaining: the key-597 generator, the tuner service/view
+      re-tune, any `SetConnectInfo` caller outside the analyzed paths and the
       UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
       `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts

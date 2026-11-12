@@ -1,0 +1,139 @@
+# excerpt from the 2026-11-12 stock Aurora log; ANSI stripped; private ID records removed
+    > novo_src/inputmanager: requestSelectExtSource ext_index_to_select: 4, current ext source: 4
+
+[ICE_CIDSetHDMICec] - CEC IS ACTIVE
+
+[ICE_CIDSetInputName] - SourceType: 5
+
+[ICE_CIDSetInputName] - input_name: Steam Deck
+
+[ICE_CIDSetInputName] - ice_cid_video_info.input_name: Steam Deck
+
+[ICE_CIDSetInputName] - ice_cid_video_info.input_type: 110
+
+[ICE_CIDSetInputName] - ice_cid_video_info.input_number: 1
+ ICE_LowPowerModeQueryExitType, power on event=39, event type=12
+Force print for debug
+Initiator Addr: 0x4
+Follower Addr: 0xf
+CEC Command: 0x82
+total param: 2
+Param 0: 0x10
+Param 1: 0x0
+    > novo_src/inputmanager: requestSelectExtSource ext_index_to_select: 4, current ext source: 4
+
+[ICE_CIDSetHDMICec] - CEC IS ACTIVE
+
+[ICE_CIDSetInputName] - SourceType: 5
+
+[ICE_CIDSetInputName] - input_name: Steam Deck
+
+[ICE_CIDSetInputName] - ice_cid_video_info.input_name: Steam Deck
+
+[ICE_CIDSetInputName] - ice_cid_video_info.input_type: 110
+
+[ICE_CIDSetInputName] - ice_cid_video_info.input_number: 1
+[TD_SCHG_Base]Path0 Mode Change  = LOST SIGNAL
+[TD_SCHG_Base] Mode Change Occur, ModeChangeAction =3
+[TD_SCHG_Base] [CCC][_exec_event_callback]u8Path(0) viu callback event= 3, [Time=17526312]
+[ICE_VIDEO][MSG][5211]_ice_video_cb_func():path=0, event=3
+[TD_SCHG_Base] [CCC][_exec_event_callback] Exit ,[Time=17526312]
+[TD_SCHG_Base]  [CCC] [plat_viu_send_videvt]u8Path(0) viu send event= 3, [Time=17526312]
+[TD_SCHG_Base] [CCC] _PLAT_VIU_EnableBlueScreen ,Path=0, EnableBlueScreen=1,[Time=17526312] caller = ICE_VideoHide, line = 8103
+[ICE_VIDEO][MSG][8116]ICE_VideoHide():
+   === ICE_VideoHide 8116 Video Show Status 0 ===
+[ICE_VIDEO][MSG][8130]ICE_VideoHide():
+   === ICE_VideoHide 8130 Video Show Status 0 ===
+    > app/demoapp: preHandleKeyPressMessage() key: 597
+    > novo_src/portal_closedstate: handleKeyPressMessage(): 597
+
+[ICE_CIDSetSourceTypePortal] -
+
+[ICE_CIDSetInputName] - SourceType: 5
+
+[ICE_CIDSetInputName] - input_name: DTV
+
+[ICE_CIDSetInputName] - ice_cid_video_info.input_name: DTV
+
+[ICE_CIDSetInputName] - ice_cid_video_info.input_type: 103
+
+[ICE_CIDSetInputName] - ice_cid_video_info.input_number: 1
+[ICE_VIDEO][MSG][7820]ICE_VideoShow():
+   === ICE_VideoShow 7820 Video Show Status 0 ===
+[ICE_VIDEO][MSG][7864]ICE_VideoShow():Exit: signal become unlock!!
+[ICE_VIDEO][MSG][8156]ICE_VideoStop():ICE_VideoStop
+[ICE_VIDEO][MSG][8123]ICE_VideoHide():Exit: Video is already MUTED, Dont call driver function ...
+[ICE_VIDEO][MSG][8130]ICE_VideoHide():
+   === ICE_VideoHide 8130 Video Show Status 0 ===
+ICE Trace: ICE_AudioVolume(0,0,1,0), Start
+[ICE_VIDEO][ERR][6472]ICE_VideoSelectSource():The Videohandle is NULL or unknown source !!!
+
+ICE_AUDIO ERROR: [3000]ICE_AudioSelectSource():ICE_AudioHandle invalid or unknown source
+ICE_AUDIO ERROR: [3000]ICE_AudioSelectSource():ICE_AudioHandle invalid or unknown source
+ERROR: [596]ICE_SoundControlGetAvailableSoundModes():ICE_SoundControlGetAvailableSoundModes: ICE_AudioHandle is stopped
+ERROR: [878]ICE_SoundControlSetSoundMode():ICE_SoundControlSetSoundMode: ICE_AudioHandle is stopped
+[ICE_VIDEO][MSG][6497]ICE_VideoSelectSource():Middle Ware input source id ---=8----
+[ICE_VIDEO][MSG][6606]ICE_VideoSelectSource():select source =8, path=0 (pstVINParam->enSourceType=0)
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=1
+[TD_SCHG_Base]  PLAT_VIU_ChangeInput( u8Path=0, SourceID=0x0) [Time=17526682]
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=0
+    > novo_src/tunermanager: --> TunerManager::selectServiceForDisplay(1)
+
+ICE_HardwareDisableFastTurnOn[6088], start -- disable[0]
+[FTO]ICE_HardwareDisableFastTurnOn[6104], end
+    > novo_src/tunermanager: TunerManager::selectServiceForDisplay
+
+ICE_HardwareDisableFastTurnOn[6088], start -- disable[0]
+[FTO]ICE_HardwareDisableFastTurnOn[6104], end
+[ICE_CI][ERR][1908]ICE_GetMediasetVODStatus():ICE_GetMediasetVODStatus not supported
+[ERR][HAL_Demod_SetVif():206] : ==> do Enable DVIF
+[ERR][HAL_Demod_SetVif():266]  DVIF calculted TVADC clock[108].
+_VD_setDVIFMode = 1
+[lwhite]======>DEV_COMMON_GetLocalSet  g_enLocalSet=2
+[lwhite]======>DEV_COMMON_GetLocalSet  g_enLocalSet=2
+[lwhite]======>DEV_COMMON_GetLocalSet  g_enLocalSet=2
+Force print for debug
+Initiator Addr: 0x4
+Follower Addr: 0xf
+CEC Command: 0x82
+total param: 2
+Param 0: 0x10
+Param 1: 0x0
+    > novo_src/inputmanager: requestSelectExtSource ext_index_to_select: 4, current ext source: -1
+
+[ICE_CIDSetHDMICec] -
+
+[ICE_CIDSetSourceTypePortal] -
+
+[ICE_CIDSetInputName] - SourceType: 0
+
+[ICE_CIDSetInputName] - input_name: Steam Deck
+
+[ICE_CIDSetInputName] - ice_cid_video_info.input_name: Steam Deck
+
+[ICE_CIDSetInputName] - ice_cid_video_info.input_type: 1000
+
+[ICE_CIDSetInputName] - ice_cid_video_info.input_number: 1
+ICE Trace: ICE_AudioVolume(0,0,0,1), Start
+[ICE_VIDEO][MSG][8123]ICE_VideoHide():Exit: Video is already MUTED, Dont call driver function ...
+[ICE_VIDEO][MSG][8130]ICE_VideoHide():
+   === ICE_VideoHide 8130 Video Show Status 0 ===
+[ICE_VIDEO][MSG][6497]ICE_VideoSelectSource():Middle Ware input source id ---=17----
+[ICE_VIDEO][MSG][6578]ICE_VideoSelectSource():PortD, ident=1, STR=0, ACON=0, bhdmi_hpd_flag=0, don't do HPD
+[ICE_VIDEO][MSG][6606]ICE_VideoSelectSource():select source =17, path=0 (pstVINParam->enSourceType=5)
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=1
+[TD_SCHG_Base]  PLAT_VIU_ChangeInput( u8Path=0, SourceID=0x11) [Time=17588292]
+[TD_SCHG_Base] VIU_LockTask_Enable,path=0,Enable=0
+[ICE_VIDEO][MSG][6654]ICE_VideoSelectSource(): CloseTuner
+[ICE_VIDEO][MSG][7487]ICE_VideoStart():ICE_VideoStart Pid 2000ICE Trace: ICE_AudioVolume(0,0,1,0), Start
+ICE Trace: ICE_AudioVolume(0,0,1,1), Start
+EN_PLAT_AUD_SPK_SPDIF ad:0, g_enSpkDataType:2
+EN_PLAT_DEC_AUDIO_DOWNMIX_MODE_LORO
+[PLAT_DEC] Audio_DownMix_Mod=1
+
+[PLAT_DEC] PLAT_DEC_SetAudioDownMixMode=1,set driver mode=0
+
+ICE Trace: ICE_AudioVolume(0,0,0,1), Start
+ICE Trace: ICE_AudioVolume(1,50,0,0), Start
+
+[ICE_CIDSetHDMICec] - CEC IS ACTIVE

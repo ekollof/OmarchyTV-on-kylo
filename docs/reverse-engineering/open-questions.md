@@ -63,17 +63,21 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   is not implemented. 0x82 calls `selectSource`; 0x9D returns unless the TV is
   in the standby transition and does not clear the active source; 0x36 is
   accepted only from the active device. Stock observation 2026-11-12: Deck
-  sleep left the TV on at a tuner input; SOURCE-LOSS-FALLBACK identifies the
-  external-interface disconnect policy (saved tuner service or previous external
-  source), not 0x9D. Resume switched to HDMI1. A pure policy helper is tested
-  but not wired; the stock provider entry (`AitHub` → `NEBULA_Handle...` →
-  navigator; `ndp_SRC_ConnectInfo`/`NDP_ExtSrc_Get/SetConnectInfo`) is traced.
+  sleep left the TV on at a tuner input; the stock log shows the VIU lost-signal
+  event 3 → `ICE_VideoHide` → key 597 → `ICE_VideoSelectSource` source 8 →
+  `TunerManager::selectServiceForDisplay(1)`, not 0x9D. The
+  external-interface disconnect policy (saved tuner service or previous
+  external source) is the cable-unplug fallback. Resume switched to HDMI1. A
+  pure policy helper is tested but not wired; the stock provider entry
+  (`AitHub` → `NEBULA_Handle...` → navigator;
+  `ndp_SRC_ConnectInfo`/`NDP_ExtSrc_Get/SetConnectInfo`) is traced.
   The V4L2 event `0xc000001` on `/dev/video21` is a scaler update, not source
   loss; its decoder/adapter and the HPD plug/unplug model are tested. HPD stayed
   high through Deck suspend. The HDMI RX status getter on `video21` captured
-  `w0=1` active and `w0=0/5` during suspend; the consumer that selects the
-  tuner (status 4 versus no-signal/`SignalLostDialog`) and the tuner service/
-  view re-tune remain open.
+  `w0=1` active and `w0=0/5` during suspend; the key-597 generator and the
+  tuner service/view re-tune remain open. The source service now exposes the
+  read-only `video_status()` v2 behind `source.vin_status`; it is host-tested
+  but not wired to a tuner.
 
 Reports: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),
