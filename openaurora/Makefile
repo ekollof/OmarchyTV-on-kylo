@@ -2815,6 +2815,15 @@ check-source-path: $(BUILD)/tests/source_path
 	@$(BUILD)/tests/source_path
 check: check-source-path
 
+$(BUILD)/tests/source_loss: tests/source_loss.c common/source_loss.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-source-loss
+check-source-loss: $(BUILD)/tests/source_loss
+	@$(BUILD)/tests/source_loss
+check: check-source-loss
+
 $(BUILD)/tests/audio_source_path: tests/audio_source_path.c modules/audio_source/audio_source.c tests/audio_source_fake.c common/audio_curve.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread

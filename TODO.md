@@ -519,8 +519,10 @@ unvalidated.
       `0xfb19f0`) or the previous external source `this+0x94`
       (`requestSelectExtSource` @ `0xfb1c50`), gated by a video-group match,
       `this[0x88]`, service list/interface `0x13` and `this[0x98]`. This explains
-      the Deck-sleep tuner fallback. Not implemented; recover the tuner
-      service/decoder contract first and keep it gated. SOURCE-LOSS-FALLBACK-2026-11-12.
+      the Deck-sleep tuner fallback. A pure policy helper `common/source_loss.c`
+      plus `check-source-loss` passes; it is not wired. Remaining: the
+      source-loss event provider, the tuner service/view re-tune and the UI/
+      timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
       `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts
       them to the loop; the TV link also needed `-ldl`. `check-ir-blast-worker`

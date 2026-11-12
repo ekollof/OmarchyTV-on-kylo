@@ -81,7 +81,8 @@ standby transition and does not clear the active source. SOURCE-LOSS-FALLBACK
 identifies the sleep tuner fallback as the external-interface disconnect policy:
 navigator callback @ `0xfb32f0` → `InputManager::handleExternalSourceDisconnected`
 @ `0xfb1fbc` → saved tuner service `this+0x90` or previous external source
-`this+0x94`. It is not implemented; the tuner service/decoder contract remains.
+`this+0x94`. A pure policy helper `common/source_loss.c` is host-tested
+(`check-source-loss`) but not wired; the tuner service/decoder contract remains.
 `mod_cec` routing/power policy is not implemented. `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
