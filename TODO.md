@@ -527,14 +527,19 @@ unvalidated.
       `NebulaExternalAVSourceNavigator` @ `0x118e73c` → Novo navigator →
       InputManager. Kernel carrier `ndp_SRC_ConnectInfo` (0x74 bytes) via
       `NDP_ExtSrc_Get/SetConnectInfo` @ `0x61bb6c`/`0x61bb8c` and
-      `_VIU_CheckReconnect` @ `0x61d868`. HDMI userspace notification: V4L2
-      event `0xc000001` on `/dev/video21`; 28-byte payload (source type
-      `[0..3]`, status `[7]`); decoder `common/source_hdmi_event.c` +
-      `check-source-hdmi-event` pass; injectable `source_hdmi_event_io.c`
-      adapter + `check-source-hdmi-event-io` pass; no worker/live capture is
-      wired. Remaining: the status-role mapping, any `SetConnectInfo` caller
-      outside the analyzed paths, the worker/live capture, the tuner service/
-      view re-tune and the UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
+      `_VIU_CheckReconnect` @ `0x61d868`. V4L2 event `0xc000001` on
+      `/dev/video21` is a scaler update (source type `[0..3]`, `UpdateSCLR
+      arg==6` at `[4]`, `VidSetting+0x0c` at `[5]`, `VidSetting+0x86` at
+      `[6..7]`); one live event was captured and the decoder/adapter tests
+      pass. It is not the source-loss provider. Stock cable plug/unplug is HPD
+      polling: HDMI1=pin203/byte0, HDMI2=200/2, HDMI3=201/3, HDMI4=202/1,
+      level1=connected; `common/source_hpd.c` + `check-source-hpd` pass and
+      `oa-hpd-status` confirmed HDMI1=1, but HPD stayed high through Deck
+      suspend. Remaining: the status-4 producer for suspend,
+      `Hal_Vin_GetHdmiStatus`/`0xa00967` fd/class/context (direct GETs were
+      rejected), any `SetConnectInfo` caller outside the analyzed paths, the
+      worker, the tuner service/view re-tune and the UI/timing.
+      SOURCE-LOSS-FALLBACK-2026-11-12.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
       `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts
       them to the loop; the TV link also needed `-ldl`. `check-ir-blast-worker`

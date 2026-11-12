@@ -2,11 +2,16 @@
 
 Status: current
 Last verified: 2026-11-12
-Evidence class: firmware instructions plus REA cross-check and owner-reported
-stock behavior; no new on-TV test.
+Evidence class: firmware instructions, REA cross-check, read-only on-TV
+HPD/V4L2 captures, probe rejection logs and owner-reported stock behavior.
 Corrects: the 2026-11-12 CEC-LIVE hypothesis that `0x9D Inactive Source`
 caused the Deck-sleep tuner fallback. `0x9D` returns unless the TV is already in
 the standby transition; it does not select a tuner.
+Corrected 2026-11-12: the private V4L2 event byte 4 is the
+`VPL_SCLR_CTRL_UpdateSCLR` reason flag, not a source status; stock cable
+plug/unplug uses HPD GPIO polling. The V4L2 event is not the source-loss
+provider. Deck suspend keeps HPD high, and the status-4 producer for the
+suspend fallback remains open.
 
 ## Observation
 
@@ -17,7 +22,9 @@ The owner tested stock suspend/resume with the Steam Deck on HDMI1:
 
 The resume side is consistent with `0x82 Active Source` calling
 `selectSource`. The sleep side is the **external-interface disconnect**
-fallback below, not CEC `0x9D` and not `0x36 Standby`.
+fallback below, not CEC `0x9D` and not `0x36 Standby`. Its status-4 producer is
+not yet identified: HPD stays high through suspend, and the private V4L2 event
+is a scaler update, so neither is the direct sleep trigger.
 
 ## Source identity
 
@@ -172,22 +179,24 @@ ICE/HDMI-switch event that invokes `NEBULA_HandleExternalInterfaceStatusChange`
 are outside the analyzed driver path and remain unidentified. Do not guess a
 V4L2 control ID or event from the address alone.
 
-### 6. V4L2 event provider
+### 6. Private V4L2 event is a scaler update, not source loss
 
-The userspace notification is a private V4L2 event on `/dev/video21`
-(`ndp-hdmi`, the live node name):
+The private event on `/dev/video21` (`ndp-hdmi`) is a scaler update
+notification:
 
 - `_ndp_hdmi_core_vidioc_subscribe_event` @ `0x0000052c` accepts only event
   type `0xc000001`; it calls `VPL_SCLR_CTRL_Event_Subscribe` and
   `v4l2_event_subscribe`.
 - `VPL_SCLR_CTRL_Event_RegisterCB` @ `0x00637538` stores `event_cb` at
   `0x00bb3e64 + 4`; `eventEnable` at `0x00bb3e64 + 0` is gated by bit 1.
+  `VPL_SCLR_CTRL_Event_Subscribe` ORs bit 1; it does not replace the mask.
 - `_CTRL_EVENT_Update` @ `0x006394bc` builds a 28-byte payload and calls
   `event_cb(0xc000001, &payload)`. Its caller
   `VPL_SCLR_CTRL_UpdateSCLR` @ `0x0063967c` passes `(source, arg == 6)`.
-- Payload layout: source type at `[0..3]` (little-endian), `VidSetting+0x86`
-  at `[4..5]`, `VidSetting+0x0c` at `[6]`, the `(arg == 6)` status byte at
-  `[7]`, and scaler timing fields at `[8..0x1b]`.
+- Exact payload layout from the stores: `[0..3]` source type (little-endian),
+  `[4]` `(UpdateSCLR arg == 6)` (`strb r6`), `[5]` `VidSetting+0x0c`,
+  `[6..7]` `VidSetting+0x86` (little-endian uint16), `[8..0x1b]` scaler
+  timing fields. The earlier `[4..5]`/`[6]`/`[7]` reading was wrong.
 - `_ndp_hdmi_core_event_callback` @ `0x0000150c` copies those 28 bytes into
   the V4L2 event data and calls `v4l2_event_queue`.
 
@@ -195,25 +204,98 @@ Address convention: the `ntkndphdmi.ko` addresses are `.text` section offsets
 (objdump/nm); the `ntkdriver_nondovi.ko` addresses are Ghidra runtime addresses
 (`.text` offset + `0x10228` in this import).
 
+A read-only capture ran while stock stayed up. `_ndp_hdmi_core_open` @
+`0x00001820` is per-fd (`v4l2_fh_init/add`, callback registration) and release
+@ `0x000016b8` only removes the per-fd fh; subscribe ORs the global enable bit.
+The capture produced one event during the Deck sleep/resume window:
+
+```text
+05 00 00 00 00 00 70 17 00 0f 70 08 00 00 00 00 00 0f 70 08 00 00 00 00 00 0f 70 08
+```
+
+Source type 5, update flag 0, `VidSetting+0x0c` 0, `VidSetting+0x86` 0x1770,
+and repeated 3840x2160 timing pairs. It is not a connected/disconnected or
+video-lost status.
+
 Pure decoder: `include/openaurora/source_hdmi_event.h` /
 `common/source_hdmi_event.c`. `make check-source-hdmi-event` covers the
-28-byte bound, little-endian source type, status byte, raw preservation and
-short/null rejection. The injectable adapter
+28-byte bound, source type, update flag, VidSetting fields, the exact live
+sample, raw preservation and short/null rejection. The injectable adapter
 `include/openaurora/source_hdmi_event_io.h` / `common/source_hdmi_event_io.c`
 uses the target ABI (`sizeof(v4l2_event)=128`, data at offset 8,
 `VIDIOC_SUBSCRIBE_EVENT=0x4020565a`, `VIDIOC_DQEVENT=0x80805659`) and
 `make check-source-hdmi-event-io` covers open/subscribe, dequeue decode,
-EAGAIN/wrong-type/error and cleanup. The full host suite passes. The adapter is
-not wired to a worker, and the live `/dev/video21` capture requires stock
-stopped and was not run; stock owns the node and consuming its events would
-interfere. The status byte's role (video ready/lost vs connect/disconnect) is
-not proven; do not map it to the NEBULA/`ExternalSourceStatus` values without a
-captured event.
+EAGAIN/wrong-type/error and cleanup. The adapter is not wired to source-loss.
+Do not map its update flag to `ExternalSourceStatus` or the NEBULA status.
+
+### 7. Stock HPD provider detects cable plug/unplug only
+
+`ice_externalCheckCbStatus` @ `0x007f58ec` is the stock thread: it sleeps
+1500 ms, then loops `_ice_CheckHdmiPlugStatus`, HDR polling, capture-protect
+and PWM work, and sleeps 30 ms after the first iteration.
+
+`_ice_CheckHdmiPlugStatus` @ `0x007f56c8` loops `uVar13 = 0..3` and calls
+`PLAT_VIU_GET_HDMI_IDENT(uVar13)`, comparing against a per-port previous
+byte. On a 0 transition it calls `_ice_hdmi_cb_func_to_app(pos,1)`,
+`_ice_video_cb_func_to_app(7)` and `_ice_hdmi_cb_func_to_app(pos,2)`; on a 1
+transition it calls `_ice_hdmi_cb_func_to_app(pos,0)`.
+
+`PLAT_VIU_GET_HDMI_IDENT` @ `0x00901a38` computes `(arg - 1) & 0xff`; arguments
+1..3 select table `0x0139f448` = 200, 201, 202, and argument 0 (or any other)
+selects the `0xcb` fallback = 203. It calls `Hal_Gpio_Read(pin, &level)`.
+
+`Hal_Gpio_Read` @ `0x4e7be4cc` has a separate pins-200..204 bulk branch: it
+sends kernel getter `0x6712` and reads five bytes, with no sysfs export, pin
+claim or GPIO configuration. The index table `0x4e7d614c` is
+`[2,3,1,0,4]` for pins 200..204. `_ice_ext_GetHDMICallbackPosition(0..3)`
+maps the same loop indices to the HDMI1..4 source-list positions 4..7
+(`ExternalAVSourceManager` table `0x0175de8c`). Therefore:
+
+```text
+HDMI1 = arg0 = pin203 = bulk byte0
+HDMI2 = arg1 = pin200 = bulk byte2
+HDMI3 = arg2 = pin201 = bulk byte3
+HDMI4 = arg3 = pin202 = bulk byte1
+```
+
+HDMI1=byte0 is live-confirmed; HDMI2..4 follow the same recovered loop/table
+order. `extInterfaceCallback` @ `0x00a26e44` maps the ICE callback status through
+table `0x013d847c` = `[3,4,2]`: 0 -> 3 connected, 1 -> 4 disconnected,
+2 -> 2 attributes changed. `ExternalAVSourceManager::publishExternalSourceState`
+@ `0x00a26514` confirms 3 = `externalAVSourceConnected`, 4 =
+`externalAVSourceDisconnected`, 2 = `externalAVSourceAttributesChanged`.
+`InputManager::externalSourceStatusChanged` @ `0x00fb02f8` consumes 3/4 for
+HDMI interface type 7 and calls `NovoCECController::onHDMIDisconnected` on 4.
+
+A read-only HPD probe (`oa-hpd-status`, GET `0x6712` on `/dev/ntgpio`, no HAL,
+claim or export) read `01 01 00 01 00` while the Deck was on HDMI1: HDMI1
+byte0 = 1. A 120 s capture through another Deck sleep/resume stayed exactly
+`01 01 00 01 00`; HPD does **not** drop on suspend. HPD is cable plug/unplug,
+not the sleep trigger.
+
+The remaining candidate is the HDMI RX video status. `plat_vin_slot_get_status`
+@ `0x0092ea68` calls `Hal_Vin_GetHdmiStatus` for the VIN slot, which issues the
+private GET ext-control `0xa00967` with a 0x14-byte output. A direct probe on
+`/dev/video20`, `video21`, `video24` and `video28` was rejected
+(`EPERM`, `EPROTO`, `EINVAL`, `EPROTO`); the stock fd/class/context was not
+reproduced. The video-lost methods
+(`ExternalAVSourceManager::externalVideoLostEvent`,
+`InputManager::handleExternalSourceVideoLost`) only set flags and call CEC;
+they do not select the tuner. The status-4 producer that drives the suspend
+fallback remains unidentified. Do not substitute HPD for it.
 
 ## What this establishes
 
 - Stock sleep fallback is an **external-interface disconnect** policy, gated by
-  the disconnected source's video group relative to `this+0x68`.
+  the disconnected source's video group relative to `this+0x68`. The status-4
+  producer that invokes it on Deck suspend is not yet identified.
+- Stock cable plug/unplug uses HPD GPIO polling: HDMI1=pin203/bulk byte0,
+  HDMI2=pin200/byte2, HDMI3=pin201/byte3, HDMI4=pin202/byte1; level 1 is
+  connected and level 0 is disconnected. `oa-hpd-status` confirmed HDMI1=1
+  with the Deck on TV. HPD stayed high through Deck suspend.
+- The private V4L2 event `0xc000001` is a scaler update. Byte 4 is the
+  `UpdateSCLR arg == 6` flag, not a source status; the live payload repeated
+  3840x2160 timings. It is not the source-loss provider.
 - On external connect, `this+0x94` saves the previous external source index
   (`-1` for TV) and `this+0x90` the tuner navigation position. On disconnect,
   `+0x94` is restored first; `+0x90` is the tuner-position path only when
@@ -242,27 +324,40 @@ recovered decision logic only. The helper:
 `make check-source-loss` covers TV→HDMI→tuner, external→external→tuner,
 `flag_88`, `auto_switched`, group mismatch, invalid arguments and idempotent
 connect. The full host suite passes. The helper is **not wired** into
-`mod_source`: the external-interface event provider, the
+`mod_source`: the suspend-time status-4 provider, the
 `requestSelectServiceForDisplay`/`TunerManager` service/view re-tune and the
-5 s blue-background/UI timing are still open. Section 5 identifies the stock
-provider entry and status block, but not the hardware event ID/caller; do not
-wire a guessed V4L2 event.
+5 s blue-background/UI timing are still open. Do not wire a guessed V4L2 event.
+
+`include/openaurora/source_hpd.h` and `common/source_hpd.c` transcribe the
+stock HPD mapping and event sequence only: pin 1..4 -> 203/200/201/202, bulk
+index 0/2/3/1, first sample 1 -> connected, 1->0 -> disconnected then
+attributes changed. `make check-source-hpd` covers the mapping, independent
+ports, the exact `01 01 00 01 00` live sample, buffer/error gates and an
+injectable bulk-getter adapter. `oa-hpd-status` is the read-only `0x6712`
+probe. The HPD model is not wired into `mod_source` either: it detects cable
+plug/unplug, not Deck suspend.
 
 ## Limits and next work
 
-- The HDMI userspace notification is identified as V4L2 event `0xc000001` on
-  `/dev/video21`; the payload decoder and injectable adapter are tested. The
-  live adapter/worker and live capture are not wired or run. The status byte's
-  role and any `NDP_ExtSrc_SetConnectInfo` caller outside the analyzed RX/switch
-  paths remain open. In `ntkndphdmi.ko`, `SetConnectInfo` is called from
-  `tztv_hdmi_int_switch_connect_port` @ `0x1070`,
-  `_ndp_hdmi_core_release_func` @ `0x42b4` and
+- The private V4L2 event `0xc000001` on `/dev/video21` is a scaler update; byte
+  4 is the `UpdateSCLR arg == 6` flag, not a source status. The decoder and
+  injectable adapter are tested, and a read-only live capture ran while stock
+  stayed up; the adapter is not wired. Any `NDP_ExtSrc_SetConnectInfo` caller
+  outside the analyzed RX/switch paths remains open. In `ntkndphdmi.ko`,
+  `SetConnectInfo` is called from `tztv_hdmi_int_switch_connect_port` @
+  `0x1070`, `_ndp_hdmi_core_release_func` @ `0x42b4` and
   `_ndp_hdmi_core_vidioc_s_input` @ `0x46e0`; `ntkndphdmiswitch.ko` calls it
   from `_ndp_hdmi_switch_vidioc_s_input` @ `0x7ac`. The 0x74-byte
   `ndp_SRC_ConnectInfo` per-port flags are at `0x0`, `0xc`, `0x14`, `0x1c`,
-  `0x28`, `0x34`, `0x40`; the V4L2 controls
-  `0xa00966`/`0xa00968`/`0xa0099f`/`0xa00967`/`0xa009ab` do not expose the
-  block in the analyzed path.
+  `0x28`, `0x34`, `0x40`.
+- The HPD provider detects cable plug/unplug only. `oa-hpd-status` confirmed
+  HDMI1=1 with the Deck on TV, and a 120 s sleep/resume capture showed no HPD
+  change. `Hal_Vin_GetHdmiStatus`/`0xa00967` is the next candidate, but direct
+  GETs on `/dev/video20`, `video21`, `video24` and `video28` were rejected
+  (`EPERM`, `EPROTO`, `EINVAL`, `EPROTO`). The stock fd/class/context and the
+  status-4 producer for the suspend fallback remain unidentified. The video-lost
+  methods only set flags and call CEC; they do not select the tuner. Do not
+  substitute HPD for the suspend trigger.
 - `requestSelectServiceForDisplay` @ `0x00fb19f0` is the tuner service/decoder
   path; its full service-list, decoder-allocation and UI state contract is not
   recovered here. It takes the `NovoServiceViewController::getCurrentView`
@@ -277,13 +372,17 @@ wire a guessed V4L2 event.
   separate; they were not exercised in this trace.
 - `mod_source` currently implements the connect/disconnect HAL path only. The
   pure policy helper (`common/source_loss.c`, `check-source-loss`), the
-  `0xc000001` payload decoder (`common/source_hdmi_event.c`,
-  `check-source-hdmi-event`) and the injectable V4L2 adapter
-  (`common/source_hdmi_event_io.c`, `check-source-hdmi-event-io`) are tested.
-  Not wired: a worker/live capture (stock owns `/dev/video21`) and the tuner
-  service/view re-tune. Do not add a guessed fallback.
-- No TV access. The owner's suspend/resume observation is behavioral
-  confirmation, not an independently captured hotplug trace.
+  corrected `0xc000001` decoder (`common/source_hdmi_event.c`,
+  `check-source-hdmi-event`), the injectable adapter
+  (`common/source_hdmi_event_io.c`, `check-source-hdmi-event-io`) and the HPD
+  model (`common/source_hpd.c`, `check-source-hpd`) are tested. Not wired: the
+  status-4 provider for suspend, the tuner service/view re-tune and the UI
+  timing. Do not add a guessed fallback.
+- On-TV evidence (read-only): the V4L2 capture produced one scaler event while
+  stock stayed up; `oa-hpd-status` read `01 01 00 01 00` (HDMI1=1) and stayed
+  unchanged through a 120 s Deck sleep/resume; `oa-hdmi-vin` recorded the
+  rejected GETs. Staging was removed, no helper remained, stock PID 1752 stayed
+  S, `/conf/oa_boot` was absent and `oa_safe`/`coredumpnoreset` were present.
 
 ## Evidence
 
@@ -326,6 +425,31 @@ wire a guessed V4L2 event.
 - `v4l2_event_abi.c` — target-toolchain ABI check: event size 128, `u` offset
   8, subscription size 32, `VIDIOC_SUBSCRIBE_EVENT=0x4020565a`,
   `VIDIOC_DQEVENT=0x80805659`.
+- `v4l2_ext_abi.c` — target ABI check: `v4l2_ext_control` 20 bytes, pointer
+  at 12, `v4l2_ext_controls` 24 bytes, controls pointer at 20.
+- `hdmi-event-live-2026-11-12.log` — V4L2 `0xc000001` capture. Its old probe
+  `status=23` label is byte 7; the raw payload and section 6 are authoritative.
+- `hpd-live-2026-11-12.log` — read-only `0x6712` HPD capture: HDMI1=1 with the
+  Deck on TV; 120 s Deck sleep/resume left `01 01 00 01 00` unchanged.
+- `hdmi-vin-get-attempts-2026-11-12.log` — direct `0xa00967` GET attempts on
+  `/dev/video20`/`video24`/`video28`/`video21` and their rejections.
+- `ice-hdmi-status.txt` — `_ice_CheckHdmiPlugStatus` and
+  `ice_externalCheckCbStatus`.
+- `ice-hdmi-position.txt` — `_ice_ext_GetHDMICallbackPosition`,
+  `ice_external_GetHDMIARCPort`, `ice_GetHdmiPositionInSourceList`.
+- `scart-callback.txt` / `extinterfacecallback.txt` — ICE callback mapping.
+- `extstatus-chain.txt` — `publishExternalSourceState` and
+  `InputManager::externalSourceStatusChanged`.
+- `extavmgr-open.txt` — `openExtInterface`, `deviceStatusChange`, thread.
+- `extvideo-controller.txt` — `ExternalVideoStatusController` and SCART
+  registration.
+- `video-lost-path.txt` — video-lost/ready navigator and `InputManager`
+  methods.
+- `plat-vin-slot.txt` / `plat-vin-stable.txt` — `plat_vin_slot_get_status`,
+  `Hal_Vin_GetHdmiStatus` fields and `PLAT_VIN_UpdateTDLayerSourceStatus`.
+- `ice-external-open.txt` / `ice-video-cb-callers.txt` — ICE external/video
+  callback registration.
+- `ndp-extsrc-g-ctrl.dis` — `NDP_ExtSrc_g_ext_ctrls` control dispatch.
 
 Related: [CEC-LIVE-2026-11-01](CEC-LIVE-2026-11-01.md),
 [CEC-SPEC-VS-AURORA-2026-10-30](CEC-SPEC-VS-AURORA-2026-10-30.md),

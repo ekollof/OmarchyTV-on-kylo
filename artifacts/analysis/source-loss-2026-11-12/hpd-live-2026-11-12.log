@@ -1,0 +1,16 @@
+# start pid=9871 path=/dev/ntgpio seconds=120 poll_ms=30
+event n=1 mono=1390.401387 port=1 status=connected raw=0101000100
+event n=2 mono=1390.401426 port=3 status=connected raw=0101000100
+event n=3 mono=1390.401446 port=4 status=connected raw=0101000100
+# heartbeat mono=1400.422976 polls=334 events=3 raw=0101000100
+# heartbeat mono=1410.409078 polls=666 events=3 raw=0101000100
+# heartbeat mono=1420.429153 polls=999 events=3 raw=0101000100
+# heartbeat mono=1430.414564 polls=1331 events=3 raw=0101000100
+# heartbeat mono=1440.429292 polls=1664 events=3 raw=0101000100
+# heartbeat mono=1450.419928 polls=1996 events=3 raw=0101000100
+# heartbeat mono=1460.405504 polls=2328 events=3 raw=0101000100
+# heartbeat mono=1470.423719 polls=2661 events=3 raw=0101000100
+# heartbeat mono=1482.699515 polls=2957 events=3 raw=0101000100
+# heartbeat mono=1490.406056 polls=3213 events=3 raw=0101000100
+# heartbeat mono=1500.428607 polls=3546 events=3 raw=0101000100
+# summary polls=3877 events=3 errors=0 elapsed=120.022

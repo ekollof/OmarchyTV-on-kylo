@@ -23,22 +23,25 @@ extern "C" {
  * (.text offset + 0x10228 in this import).
  *
  * The V4L2 event type is 0xc000001. The event data is 28 bytes:
- *   [0..3]   source type (little-endian, VPL_SRC_GetSrcType)
- *   [4..5]   VPL VidSetting+0x86
- *   [6]      VPL VidSetting+0x0c
- *   [7]      status byte; the recovered producer writes (UpdateSCLR arg == 6)
+ *   [0..3]    source type (little-endian, VPL_SRC_GetSrcType)
+ *   [4]       (VPL_SCLR_CTRL_UpdateSCLR arg == 6)
+ *   [5]       VPL VidSetting+0x0c
+ *   [6..7]    VPL VidSetting+0x86 (little-endian uint16)
  *   [8..0x1b] scaler timing fields from VPL_SCLR_VidSetting(0)
  *
- * The status byte's mapping to the NEBULA ExternalInterfaceStatus or the
- * ExternalAVSourceManager role (video ready/lost/connected/disconnected) is
- * not proven. This decoder preserves the raw bytes and the recovered offsets;
- * it does not guess the role.
+ * This is a scaler update notification, not the stock HDMI hotplug/source-loss
+ * provider. Stock polls the HPD GPIOs 200..203 (see source_hpd.h). Do not map
+ * update_flag to ExternalSourceStatus or to the NEBULA interface status.
+ * The captured live event had source_type 5, update_flag 0 and 0x1770 at
+ * [6..7]; the timing fields repeated 3840x2160.
  */
 #define OA_SOURCE_HDMI_EVENT_SIZE 28u
 
 struct oa_source_hdmi_event {
     uint32_t source_type;
-    uint8_t status;
+    uint8_t update_flag;
+    uint8_t video_setting_0c;
+    uint16_t video_setting_86;
     uint8_t raw[OA_SOURCE_HDMI_EVENT_SIZE];
 };
 

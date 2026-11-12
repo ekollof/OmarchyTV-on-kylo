@@ -207,12 +207,14 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   helper (`common/source_loss.c`, `check-source-loss`) is tested but not wired.
   Stock provider entry: `AitHub` → `NEBULA_Register...` → `NEBULA_Handle...` →
   Nebula navigator; kernel status carrier `ndp_SRC_ConnectInfo` /
-  `NDP_ExtSrc_Get/SetConnectInfo`. HDMI userspace notification is V4L2 event
-  `0xc000001` on `/dev/video21` with a 28-byte payload (source type `[0..3]`,
-  status `[7]`); `common/source_hdmi_event.c` + `check-source-hdmi-event` and
-  the injectable `source_hdmi_event_io.c` + `check-source-hdmi-event-io`. The
-  worker/live capture, status-role mapping and tuner service/view re-tune remain
-  open. Do not substitute an always-switch-to-TV shortcut.
+  `NDP_ExtSrc_Get/SetConnectInfo`. V4L2 event `0xc000001` on `/dev/video21` is
+  a scaler update (source type `[0..3]`, `UpdateSCLR arg==6` at `[4]`,
+  `VidSetting+0x0c` at `[5]`, `VidSetting+0x86` at `[6..7]`), not source loss;
+  the decoder/adapter and the HPD model (`common/source_hpd.c`,
+  HDMI1=pin203/byte0, level1=connected) are tested. HPD stayed high through Deck
+  suspend; the status-4 producer for suspend, the `Hal_Vin_GetHdmiStatus`
+  `0xa00967` fd/class/context and the tuner service/view re-tune remain open.
+  Do not substitute an always-switch-to-TV or HPD shortcut.
 
 Evidence: [SOURCE-PATH](../../artifacts/reports/SOURCE-PATH-2026-11-09.md),
 [SOURCE-LOSS-FALLBACK](../../artifacts/reports/SOURCE-LOSS-FALLBACK-2026-11-12.md),

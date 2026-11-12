@@ -1,0 +1,137 @@
+
+artifacts/workbench/rootfs/vendor2/modules/ntkdriver_nondovi.ko:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0060cb5c <NDP_ExtSrc_g_ext_ctrls>:
+  60cb5c:	e1a0c00d 	mov	ip, sp
+  60cb60:	e92dd8f0 	push	{r4, r5, r6, r7, fp, ip, lr, pc}
+  60cb64:	e24cb004 	sub	fp, ip, #4
+  60cb68:	e24dd038 	sub	sp, sp, #56	; 0x38
+  60cb6c:	e52de004 	push	{lr}		; (str lr, [sp, #-4]!)
+  60cb70:	ebfffffe 	bl	0 <__gnu_mcount_nc>
+  60cb74:	e3004000 	movw	r4, #0
+  60cb78:	e300c966 	movw	ip, #2406	; 0x966
+  60cb7c:	e3404000 	movt	r4, #0
+  60cb80:	e340c0a0 	movt	ip, #160	; 0xa0
+  60cb84:	e594e000 	ldr	lr, [r4]
+  60cb88:	e153000c 	cmp	r3, ip
+  60cb8c:	e1a07001 	mov	r7, r1
+  60cb90:	e1a05002 	mov	r5, r2
+  60cb94:	e1a06000 	mov	r6, r0
+  60cb98:	e50be020 	str	lr, [fp, #-32]	; 0xffffffe0
+  60cb9c:	0a000043 	beq	60ccb0 <NDP_ExtSrc_g_ext_ctrls+0x154>
+  60cba0:	e3002968 	movw	r2, #2408	; 0x968
+  60cba4:	e34020a0 	movt	r2, #160	; 0xa0
+  60cba8:	e1530002 	cmp	r3, r2
+  60cbac:	0a000044 	beq	60ccc4 <NDP_ExtSrc_g_ext_ctrls+0x168>
+  60cbb0:	e300299f 	movw	r2, #2463	; 0x99f
+  60cbb4:	e34020a0 	movt	r2, #160	; 0xa0
+  60cbb8:	e1530002 	cmp	r3, r2
+  60cbbc:	0a000034 	beq	60cc94 <NDP_ExtSrc_g_ext_ctrls+0x138>
+  60cbc0:	e3002967 	movw	r2, #2407	; 0x967
+  60cbc4:	e34020a0 	movt	r2, #160	; 0xa0
+  60cbc8:	e1530002 	cmp	r3, r2
+  60cbcc:	0a000043 	beq	60cce0 <NDP_ExtSrc_g_ext_ctrls+0x184>
+  60cbd0:	e30029ab 	movw	r2, #2475	; 0x9ab
+  60cbd4:	e34020a0 	movt	r2, #160	; 0xa0
+  60cbd8:	e1530002 	cmp	r3, r2
+  60cbdc:	0a000005 	beq	60cbf8 <NDP_ExtSrc_g_ext_ctrls+0x9c>
+  60cbe0:	e51b2020 	ldr	r2, [fp, #-32]	; 0xffffffe0
+  60cbe4:	e5943000 	ldr	r3, [r4]
+  60cbe8:	e1520003 	cmp	r2, r3
+  60cbec:	1a00004f 	bne	60cd30 <NDP_ExtSrc_g_ext_ctrls+0x1d4>
+  60cbf0:	e24bd01c 	sub	sp, fp, #28
+  60cbf4:	e89da8f0 	ldm	sp, {r4, r5, r6, r7, fp, sp, pc}
+  60cbf8:	e3a0102c 	mov	r1, #44	; 0x2c
+  60cbfc:	e24b004c 	sub	r0, fp, #76	; 0x4c
+  60cc00:	ebfffffe 	bl	0 <__memzero>
+  60cc04:	e5d53000 	ldrb	r3, [r5]
+  60cc08:	e3530002 	cmp	r3, #2
+  60cc0c:	0a00000c 	beq	60cc44 <NDP_ExtSrc_g_ext_ctrls+0xe8>
+  60cc10:	e3530003 	cmp	r3, #3
+  60cc14:	0a000034 	beq	60ccec <NDP_ExtSrc_g_ext_ctrls+0x190>
+  60cc18:	e3530001 	cmp	r3, #1
+  60cc1c:	03a03000 	moveq	r3, #0
+  60cc20:	050b304c 	streq	r3, [fp, #-76]	; 0xffffffb4
+  60cc24:	0a000008 	beq	60cc4c <NDP_ExtSrc_g_ext_ctrls+0xf0>
+  60cc28:	e3002000 	movw	r2, #0
+  60cc2c:	e3402000 	movt	r2, #0
+  60cc30:	e5922000 	ldr	r2, [r2]
+  60cc34:	e3520000 	cmp	r2, #0
+  60cc38:	aaffffe8 	bge	60cbe0 <NDP_ExtSrc_g_ext_ctrls+0x84>
+  60cc3c:	e320f000 	nop	{0}
+  60cc40:	eaffffe6 	b	60cbe0 <NDP_ExtSrc_g_ext_ctrls+0x84>
+  60cc44:	e3a03001 	mov	r3, #1
+  60cc48:	e50b304c 	str	r3, [fp, #-76]	; 0xffffffb4
+  60cc4c:	e6ef0076 	uxtb	r0, r6
+  60cc50:	e24b104c 	sub	r1, fp, #76	; 0x4c
+  60cc54:	e24b6024 	sub	r6, fp, #36	; 0x24
+  60cc58:	ebfffffe 	bl	632cf4 <VPL_HDMI_GetInfoFrame>
+  60cc5c:	e24be044 	sub	lr, fp, #68	; 0x44
+  60cc60:	e1a0c00e 	mov	ip, lr
+  60cc64:	e2855010 	add	r5, r5, #16
+  60cc68:	e8bc000f 	ldm	ip!, {r0, r1, r2, r3}
+  60cc6c:	e28ee010 	add	lr, lr, #16
+  60cc70:	e15c0006 	cmp	ip, r6
+  60cc74:	e5050010 	str	r0, [r5, #-16]
+  60cc78:	e505100c 	str	r1, [r5, #-12]
+  60cc7c:	e5052008 	str	r2, [r5, #-8]
+  60cc80:	e5053004 	str	r3, [r5, #-4]
+  60cc84:	1afffff5 	bne	60cc60 <NDP_ExtSrc_g_ext_ctrls+0x104>
+  60cc88:	e59e0000 	ldr	r0, [lr]
+  60cc8c:	e5850000 	str	r0, [r5]
+  60cc90:	eaffffd2 	b	60cbe0 <NDP_ExtSrc_g_ext_ctrls+0x84>
+  60cc94:	e3003000 	movw	r3, #0
+  60cc98:	e3403000 	movt	r3, #0
+  60cc9c:	e0836100 	add	r6, r3, r0, lsl #2
+  60cca0:	e596304c 	ldr	r3, [r6, #76]	; 0x4c
+  60cca4:	e243300c 	sub	r3, r3, #12
+  60cca8:	e5853000 	str	r3, [r5]
+  60ccac:	eaffffcb 	b	60cbe0 <NDP_ExtSrc_g_ext_ctrls+0x84>
+  60ccb0:	e1a02003 	mov	r2, r3
+  60ccb4:	e1a01005 	mov	r1, r5
+  60ccb8:	e59b3004 	ldr	r3, [fp, #4]
+  60ccbc:	ebfffbc2 	bl	60bbcc <_convert_ext_ctrl_resolution>
+  60ccc0:	eaffffc6 	b	60cbe0 <NDP_ExtSrc_g_ext_ctrls+0x84>
+  60ccc4:	e2851008 	add	r1, r5, #8
+  60ccc8:	ebfffecb 	bl	60c7fc <_convert_ext_ctrl_info.constprop.7>
+  60cccc:	e30a3bcd 	movw	r3, #43981	; 0xabcd
+  60ccd0:	e5857000 	str	r7, [r5]
+  60ccd4:	e3413234 	movt	r3, #4660	; 0x1234
+  60ccd8:	e58531a0 	str	r3, [r5, #416]	; 0x1a0
+  60ccdc:	eaffffbf 	b	60cbe0 <NDP_ExtSrc_g_ext_ctrls+0x84>
+  60cce0:	e1a01005 	mov	r1, r5
+  60cce4:	ebfffc58 	bl	60be4c <_convert_ext_hdmi_status>
+  60cce8:	eaffffbc 	b	60cbe0 <NDP_ExtSrc_g_ext_ctrls+0x84>
+  60ccec:	e3a03002 	mov	r3, #2
+  60ccf0:	e50b304c 	str	r3, [fp, #-76]	; 0xffffffb4
+  60ccf4:	eaffffd4 	b	60cc4c <NDP_ExtSrc_g_ext_ctrls+0xf0>
+  60ccf8:	e3002000 	movw	r2, #0
+  60ccfc:	e3402000 	movt	r2, #0
+  60cd00:	e5922000 	ldr	r2, [r2]
+  60cd04:	e3520000 	cmp	r2, #0
+  60cd08:	12821010 	addne	r1, r2, #16
+  60cd0c:	0a000008 	beq	60cd34 <NDP_ExtSrc_g_ext_ctrls+0x1d8>
+  60cd10:	e30002ba 	movw	r0, #698	; 0x2ba
+  60cd14:	e3002000 	movw	r2, #0
+  60cd18:	e88d0009 	stm	sp, {r0, r3}
+  60cd1c:	e3402000 	movt	r2, #0
+  60cd20:	e59f301c 	ldr	r3, [pc, #28]	; 60cd44 <NDP_ExtSrc_g_ext_ctrls+0x1e8>
+  60cd24:	e59f001c 	ldr	r0, [pc, #28]	; 60cd48 <NDP_ExtSrc_g_ext_ctrls+0x1ec>
+  60cd28:	ebfffffe 	bl	0 <__dynamic_nvt_dbg>
+  60cd2c:	eaffffab 	b	60cbe0 <NDP_ExtSrc_g_ext_ctrls+0x84>
+  60cd30:	ebfffffe 	bl	0 <__stack_chk_fail>
+  60cd34:	ebfffffe 	bl	63d40c <VPLT_DebugInit>
+  60cd38:	e5d53000 	ldrb	r3, [r5]
+  60cd3c:	e1a01000 	mov	r1, r0
+  60cd40:	eafffff2 	b	60cd10 <NDP_ExtSrc_g_ext_ctrls+0x1b4>
+  60cd44:	000b6690 	.word	0x000b6690
+  60cd48:	000854a0 	.word	0x000854a0
+
+Disassembly of section .init.text:
+
+Disassembly of section .exit.text:
+
+Disassembly of section .text.unlikely:

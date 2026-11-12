@@ -1,0 +1,4 @@
+# start pid=5724 path=/dev/video21 type=0x0c000001 seconds=300
+# subscribed fd=3 poll_ms=250
+event n=1 mono=551.768164 src=0x00000005 status=23 raw=0500000000007017000f700800000000000f700800000000000f7008
+dequeue: No such file or directory

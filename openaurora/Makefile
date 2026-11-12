@@ -609,6 +609,19 @@ $(BUILD)/dfbkey: tools/probe/dfbkey.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
+$(BUILD)/oa-hdmi-event: tools/probe/hdmi-event.c common/source_hdmi_event_io.c common/source_hdmi_event.c include/openaurora/source_hdmi_event.h include/openaurora/source_hdmi_event_io.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+$(BUILD)/oa-hpd-status: tools/probe/hpd-status.c common/source_hpd.c include/openaurora/source_hpd.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+$(BUILD)/oa-hdmi-vin: tools/probe/hdmi-vin-status.c
+	@test "$(TARGET)" = tv || { echo "oa-hdmi-vin requires TARGET=tv"; exit 2; }
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
+
 $(BUILD)/tests/easi_probe: tests/easi_probe.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
@@ -2841,6 +2854,15 @@ $(BUILD)/tests/source_hdmi_event_io: tests/source_hdmi_event_io.c common/source_
 check-source-hdmi-event-io: $(BUILD)/tests/source_hdmi_event_io
 	@$(BUILD)/tests/source_hdmi_event_io
 check: check-source-hdmi-event-io
+
+$(BUILD)/tests/source_hpd: tests/source_hpd.c common/source_hpd.c include/openaurora/source_hpd.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-source-hpd
+check-source-hpd: $(BUILD)/tests/source_hpd
+	@$(BUILD)/tests/source_hpd
+check: check-source-hpd
 
 $(BUILD)/tests/audio_source_path: tests/audio_source_path.c modules/audio_source/audio_source.c tests/audio_source_fake.c common/audio_curve.c
 	@mkdir -p $(dir $@)

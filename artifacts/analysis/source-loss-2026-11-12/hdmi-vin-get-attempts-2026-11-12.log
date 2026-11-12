@@ -1,0 +1,16 @@
+=== /dev/video20
+# start pid=11665 path=/dev/video20 seconds=1 poll_ms=200
+GET 0xa00967: Operation not permitted
+# summary polls=0 changes=0 errors=1 elapsed=0.000
+=== /dev/video24
+# start pid=11666 path=/dev/video24 seconds=1 poll_ms=200
+GET 0xa00967: Invalid argument
+# summary polls=0 changes=0 errors=1 elapsed=0.000
+=== /dev/video28
+# start pid=11667 path=/dev/video28 seconds=1 poll_ms=200
+GET 0xa00967: Protocol error
+# summary polls=0 changes=0 errors=1 elapsed=0.000
+=== /dev/video21
+# start pid=11668 path=/dev/video21 seconds=1 poll_ms=200
+GET 0xa00967: Protocol error
+# summary polls=0 changes=0 errors=1 elapsed=0.000

@@ -83,9 +83,10 @@ static void fill_payload(struct fake *f)
 {
     memset(f->payload, 0, sizeof f->payload);
     f->payload[0] = 0x15;
-    f->payload[4] = 0x86;
-    f->payload[6] = 0x0c;
-    f->payload[7] = 1;
+    f->payload[4] = 1;
+    f->payload[5] = 0x70;
+    f->payload[6] = 0x70;
+    f->payload[7] = 0x17;
     for (int i = 8; i < (int)OA_SOURCE_HDMI_EVENT_SIZE; i++)
         f->payload[i] = (uint8_t)i;
 }
@@ -121,8 +122,10 @@ static void test_subscribe_read_close(void)
     struct oa_source_hdmi_event event;
     assert(oa_source_hdmi_event_read(&fio, fd, &event) == 1);
     assert(event.source_type == 0x15);
-    assert(event.status == 1);
-    assert(event.raw[7] == 1 && event.raw[27] == 27);
+    assert(event.update_flag == 1);
+    assert(event.video_setting_0c == 0x70);
+    assert(event.video_setting_86 == 0x1770);
+    assert(event.raw[4] == 1 && event.raw[27] == 27);
 
     assert(oa_source_hdmi_event_close(&fio, fd) == 0);
     assert(f.close_calls == 1);
