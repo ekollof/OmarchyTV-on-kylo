@@ -78,14 +78,15 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   loss; its decoder/adapter and the HPD plug/unplug model are tested. HPD stayed
   high through Deck suspend. The HDMI RX status getter on `video21` captured
   `w0=1` active and `w0=0/5` during suspend; the full DTV/tuner select/mute/
-  decoder/UI body and the `mod_cec` 0x9D route remain open. The source service
+  decoder/UI body remains open. The source service
   now exposes the read-only `video_status()` v2 behind `source.vin_status`; it
   is host-tested but not wired to a tuner and is a no-signal detector, not the
   sleep trigger. `common/tuner_view.c` + `check-tuner-view` cover the recovered
   `TunerManager` view position→handle mapping. The source service's gated
   `inactive_source(position)` v3 resolves `OA_SVC_CHANNELS`, connects DTV and
   calls `OA_SVC_TUNER.select(handle)`; `source_path` fake-service tests cover
-  the order/gates. The `mod_cec` 0x9D route remains open.
+  the order/gates. `mod_cec` routes broadcast 0x9D behind
+  `cec.inactive_fallback`; `cec_inactive.cjs` covers the route and gates.
 
 Reports: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),

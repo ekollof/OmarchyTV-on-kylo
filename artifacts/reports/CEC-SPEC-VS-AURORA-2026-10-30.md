@@ -90,7 +90,7 @@ plus its own workarounds. The policy layer does the TV behaviour. Both were insp
 | 0x8F | `<Give Device Power Status>` | reply 0x90 | replies 0x90 from `this[0x4c]` | ok |
 | 0x90 | `<Report Power Status>` | length **1** | length 1, stores the device's power state | ok |
 | 0x91 | `<Get Menu Language>` | reply 0x32 | handled | ok |
-| 0x9D | `<Inactive Source>` | source went away | `NovoCECController::handleCECMessage` returns unless the TV is in the standby transition; the UI listener `SvgAppCECEventsListener` posts `UIKeyPressMessage(597)`, which selects DTV/tuner | implemented via UI listener; controller path separate |
+| 0x9D | `<Inactive Source>` | source went away | `NovoCECController::handleCECMessage` returns unless the TV is in the standby transition; the UI listener `SvgAppCECEventsListener` posts `UIKeyPressMessage(597)`, which selects DTV/tuner | replacement implements the gated 0x9D source/tuner route (`cec.inactive_fallback`); UI key path not reproduced; on-TV unverified |
 | 0xA3 | `<Report Short Audio Descriptor>` | EDID/SAD bookkeeping | consumed for ARC/EDID | ok |
 | 0xC0 | `<Initiate ARC>` | start ARC | ICE special-cases it, policy sets ARC and replies 0xC1 | ok |
 | 0xC5 | `<Terminate ARC>` | stop ARC | replies 0xC2 | ok |

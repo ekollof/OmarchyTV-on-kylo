@@ -38,6 +38,12 @@ struct oa_tuner_view {
 int oa_tuner_handle_at(const struct oa_tuner_view *view, int position,
                        uint32_t *handle);
 
+/* Inverse of the active-list mapping: finds the first entry whose handle
+ * matches. Returns 0 and a nonnegative position, -ENOENT when absent, or
+ * -EINVAL for a null/invalid list, zero handle or null position. */
+int oa_tuner_position_of_handle(const struct oa_channel_snapshot *channels,
+                                uint32_t handle, int *position);
+
 #ifdef __cplusplus
 }
 #endif

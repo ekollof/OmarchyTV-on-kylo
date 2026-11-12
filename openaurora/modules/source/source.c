@@ -758,7 +758,7 @@ static int m_start(void *v)
     if (c->inactive_enabled)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "source: CEC 0x9D inactive-source fallback enabled");
-    if (c->api->publish(c->api->priv, OA_SVC_SOURCE, 1, &g_iface) != 0)
+    if (c->api->publish(c->api->priv, OA_SVC_SOURCE, 3, &g_iface) != 0)
         c->api->log(c->api->priv, OA_LOG_WARN, "source service already published");
 
     const char *pulse = c->api->config_get(c->api->priv,

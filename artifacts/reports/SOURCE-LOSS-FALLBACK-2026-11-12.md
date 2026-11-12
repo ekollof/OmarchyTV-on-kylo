@@ -356,16 +356,43 @@ handle and `+0xd4(handle, TunerManager+0x58, bool)` to select it, followed by
 sequence. The position→handle mapping over ACTIVECHANNELLIST and the stored
 service list is implemented in `common/tuner_view.c` /
 `include/openaurora/tuner_view.h`; `check-tuner-view` covers the runtime list,
-stored order, identity order and rejection cases. The full select/mute/
-decoder/UI contract remains open.
+stored order, identity order and rejection cases. The display-select sequence
+is recovered but not yet implemented. `tunermanager-select.dis` records the
+instructions:
 
-The source service now exposes `inactive_source(position)` v3 behind
+- `0xf77516` branches on the display/mute bool. When set, `0xf77538`
+  `muteOn`, `0xf77540` `headphoneMuteOn`, `0xf7754a` `muteScartOut(true)`,
+  `0xf7755a` `enableSPDIFOut(0,false)`, `0xf77564` `selectVideoDecoder(0)`,
+  `0xf7756e` `hideVideo(0)`, `0xf77578` `subtitlesOff(true)` and `0xf77582`
+  `setTeletextFont(-1)` run before the service-select request; the
+  `DAT_00f775e0`/`DAT_00f775d0` flags record the pending mute/hide state.
+- The false branch at `0xf77518` selects decoder 1 and hides video 1.
+- After `requestServiceSelectInternal` and the second `+0xd4` select, the
+  post-select path either unmutes (`0xf7767e` `muteOff`, `0xf77686`
+  `headphoneMuteOff`, `0xf77690` `muteScartOut(false)`) and shows video
+  (`0xf776a2`), or clears the pending flags. The mute/show decisions also
+  depend on standby, service authorization, dual-view and subtitle state.
+
+The full select/mute/decoder/UI contract remains open; the exact vendor
+`EASIControlInterface`/`EASITVControlInterface` effects do not yet have
+replacement backends.
+
+The source service exposes `inactive_source(position)` v3 behind
 `source.inactive_fallback`. It resolves the active `OA_SVC_CHANNELS` position
 through `oa_tuner_handle_at`, connects DTV, and calls the `OA_SVC_TUNER`
 `select(handle)` method. `tests/source_path.c` covers the gate, DTV/source
 order, position→handle selection (100/200/300), missing-channel rejection and
-the disabled gate. `mod_cec` does not yet route received `0x9D` to this method;
-that is the remaining CEC module integration.
+the disabled gate.
+
+`mod_cec` now routes received broadcast `0x9D` to that worker behind
+`cec.inactive_fallback`. The route ignores our own LA and directed frames,
+requires a displayed external source (type 1..24), looks up the source service
+at v3, resolves the selected tuner handle back to its active-list position with
+`oa_tuner_position_of_handle`, then calls the gated source worker. No
+selected/known service means no guessed fallback. `tests/cec_inactive.cjs`
+drives the real receive path with fake source/channel/tuner services and
+covers position 1/2, the disabled gate and the TV/no-external gate. The full
+select/mute/decoder/UI body remains open.
 
 ## What this establishes
 
@@ -396,7 +423,10 @@ that is the remaining CEC module integration.
 - The source service's `inactive_source(position)` v3 worker is gated by
   `source.inactive_fallback`, resolves `OA_SVC_CHANNELS`, connects DTV and calls
   `OA_SVC_TUNER.select(handle)`. The fake-service `source_path` test covers the
-  order/gates; `mod_cec` does not yet route 0x9D to it.
+  order/gates. `mod_cec` routes broadcast 0x9D behind `cec.inactive_fallback`,
+  requires a displayed external source, maps the selected tuner handle back to
+  its active-list position and calls the worker; `cec_inactive.cjs` covers the
+  route and its disabled/TV gates.
 - On external connect, `this+0x94` saves the previous external source index
   (`-1` for TV) and `this+0x90` the tuner navigation position. On disconnect,
   `+0x94` is restored first; `+0x90` is the tuner-position path only when
@@ -502,9 +532,11 @@ source; the sleep trigger is CEC `0x9D`/key 597.
   (`common/source_vin.c`, `source.vin_status`, `source.video_status()` v2,
   `check-source-vin` and the fake-module service test) and the gated
   `inactive_source(position)` v3 worker (`source.inactive_fallback`,
-  `source_path` fake-service order/gates) are tested. Not wired: the `mod_cec`
-  0x9D route, the full tuner select/mute/decoder/UI body and the UI timing.
-  Do not add a guessed fallback.
+  `source_path` fake-service order/gates) are tested. `mod_cec` routes
+  broadcast 0x9D behind `cec.inactive_fallback` (`cec_inactive.cjs` fake
+  source/channel/tuner services, position 1/2 and disabled/TV gates). Not
+  wired: the full tuner select/mute/decoder/UI body and the UI timing. Do not
+  add a guessed fallback.
 - On-TV evidence (read-only): the V4L2 capture produced one scaler event while
   stock stayed up; `oa-hpd-status` read `01 01 00 01 00` (HDMI1=1) and stayed
   unchanged through a 120 s Deck sleep/resume; `oa-hdmi-vin` recorded the

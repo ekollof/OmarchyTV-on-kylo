@@ -182,8 +182,8 @@ Evidence: [AUDIO-ROUTING](../../artifacts/reports/AUDIO-ROUTING-2026-11-01.md),
   `TunerManager::selectServiceForDisplay(1)`). The VIU lost-signal/ICE_VideoHide
   lines follow the source change. The external-interface disconnect policy is
   the cable-unplug fallback in SOURCE-LOSS-FALLBACK. Resume-to-HDMI1 is
-  consistent with 0x82/video ready. `mod_cec` routing/power remains
-  unimplemented.
+  consistent with 0x82/video ready. `mod_cec` routes broadcast 0x9D behind
+  `cec.inactive_fallback`; the rest of routing/power remains unimplemented.
 
 Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),
@@ -233,9 +233,10 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   (`(this+0x1c)->vtable+0x54`). The source service's gated
   `inactive_source(position)` v3 (`source.inactive_fallback`) resolves
   `OA_SVC_CHANNELS`, connects DTV and calls `OA_SVC_TUNER.select(handle)`;
-  `source_path` fake-service tests cover the order/gates. The full
-  select/mute/decoder/UI body and the `mod_cec` 0x9D route remain open. Do not
-  substitute an always-switch-to-TV or HPD shortcut.
+  `source_path` fake-service tests cover the order/gates. `mod_cec` routes
+  broadcast 0x9D behind `cec.inactive_fallback` (`cec_inactive.cjs`). The full
+  select/mute/decoder/UI body remains open. Do not substitute an
+  always-switch-to-TV or HPD shortcut.
 
 Evidence: [SOURCE-PATH](../../artifacts/reports/SOURCE-PATH-2026-11-09.md),
 [SOURCE-LOSS-FALLBACK](../../artifacts/reports/SOURCE-LOSS-FALLBACK-2026-11-12.md),

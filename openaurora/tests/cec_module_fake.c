@@ -92,10 +92,20 @@ static int dev_ioctl(void *context, int fd, unsigned long request, void *argumen
             }
         }
         if (atomic_exchange(&rx_pending, 0)) {
+            const char *mode = getenv("OA_CEC_FAKE_RX");
             p->bytes[0] = 0x50;
-            p->bytes[1] = 0x7a;
-            p->bytes[2] = 0xa8;
-            p->length = 3;
+            if (mode && !strcmp(mode, "9d")) {
+                /* Broadcast Inactive Source from LA5 with PA 0x1000. */
+                p->bytes[0] = 0x5f;
+                p->bytes[1] = 0x9d;
+                p->bytes[2] = 0x10;
+                p->bytes[3] = 0x00;
+                p->length = 4;
+            } else {
+                p->bytes[1] = 0x7a;
+                p->bytes[2] = 0xa8;
+                p->length = 3;
+            }
             p->status = 1;
         } else {
             p->length = 0;

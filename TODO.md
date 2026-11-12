@@ -555,9 +555,11 @@ unvalidated.
       now exposes gated `inactive_source(position)` v3
       (`source.inactive_fallback`), resolving `OA_SVC_CHANNELS`, connecting DTV
       and calling `OA_SVC_TUNER.select(handle)`; the `source_path` fake-service
-      test covers order/gates. Remaining: the `mod_cec` 0x9D route, the full
-      select/mute/decoder/UI body, any `SetConnectInfo` caller outside the
-      analyzed paths and the UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
+      test covers order/gates. `mod_cec` routes broadcast 0x9D behind
+      `cec.inactive_fallback` (selected handle→active-list position;
+      `cec_inactive.cjs` covers position 1/2 and disabled/TV gates). Remaining:
+      the full select/mute/decoder/UI body, any `SetConnectInfo` caller outside
+      the analyzed paths and the UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
       `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts
       them to the loop; the TV link also needed `-ldl`. `check-ir-blast-worker`

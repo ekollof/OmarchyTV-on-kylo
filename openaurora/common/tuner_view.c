@@ -1,4 +1,5 @@
 #include <errno.h>
+#include <limits.h>
 #include <stdint.h>
 
 #include "openaurora/tuner_view.h"
@@ -26,4 +27,18 @@ int oa_tuner_handle_at(const struct oa_tuner_view *view, int position,
     if (value <= 0 || (uint64_t)value > UINT32_MAX) return -EINVAL;
     *handle = (uint32_t)value;
     return 0;
+}
+
+int oa_tuner_position_of_handle(const struct oa_channel_snapshot *channels,
+                                uint32_t handle, int *position)
+{
+    if (!channels || !channels->entries || !position || handle == 0)
+        return -EINVAL;
+    for (size_t i = 0; i < channels->count; i++) {
+        if (channels->entries[i].handle != handle) continue;
+        if (i > (size_t)INT_MAX) return -ERANGE;
+        *position = (int)i;
+        return 0;
+    }
+    return -ENOENT;
 }

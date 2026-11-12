@@ -108,7 +108,7 @@ static const char *config(void *p, const char *key, const char *def)
 static int publish(void *p, const char *name, uint32_t version, const void *ifc)
 {
     (void)p;
-    assert(!strcmp(name, OA_SVC_SOURCE) && version == 1);
+    assert(!strcmp(name, OA_SVC_SOURCE) && version == 3);
     iface = ifc;
     return 0;
 }

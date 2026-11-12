@@ -11,12 +11,15 @@
 #include <sys/ioctl.h>
 #include <time.h>
 #include <unistd.h>
+#include "openaurora/broadcast.h"
 #include "openaurora/cec_authority_mem.h"
 #include "openaurora/cec_module_transport.h"
 #include "openaurora/cec_owner.h"
 #include "openaurora/cec_policy.h"
+#include "openaurora/channels.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
+#include "openaurora/tuner_view.h"
 
 struct ctx {
     const oa_host_api *api;
@@ -25,6 +28,7 @@ struct ctx {
     uint32_t id;
     int owner_published;
     int audio_published;
+    int inactive_enabled; /* cec.inactive_fallback */
 
     /* Optional hardware transport (cec.enable=1). */
     int enabled;
@@ -217,6 +221,70 @@ static void log_frame(struct ctx *c, const char *tag,
                     operands);
 }
 
+static void drop_lookup(struct ctx *c, const char *name, const void *iface)
+{
+    if (iface && c->api->release)
+        c->api->release(c->api->priv, name);
+}
+
+/* Recovered stock route: SvgAppCECEventsListener handles broadcast 0x9D
+ * <Inactive Source> by posting UIKeyPressMessage(597); the UI selects DTV and
+ * the saved tuner service. This module reproduces the source/tuner effect,
+ * not the UI key. Gate on cec.inactive_fallback, require an external source
+ * to be displayed, and resolve the saved service handle back to its active
+ * list position. No saved/known service means no guessed fallback. */
+static void handle_inactive_source(struct ctx *c, const oa_cec_message *m)
+{
+    if (!c || !c->inactive_enabled || !m || m->opcode != 0x9d) return;
+    /* CEC 1.3a: Inactive Source is broadcast by the device that was active.
+     * Ignore our own LA and directed frames. */
+    if (m->initiator == 0 || m->destination != 15) return;
+
+    const oa_source_iface *source =
+        c->api->lookup(c->api->priv, OA_SVC_SOURCE, 3);
+    if (!source || !source->inactive_source || !source->current_type) {
+        drop_lookup(c, OA_SVC_SOURCE, source);
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "cec 0x9d ignored: source service v3 unavailable");
+        return;
+    }
+    int current = source->current_type();
+    /* 0 = TV, 25 = disconnect VPLT, -1 = service down. The worker must only
+     * run while an external input is actually displayed. */
+    if (current <= 0 || current >= 25) {
+        drop_lookup(c, OA_SVC_SOURCE, source);
+        return;
+    }
+
+    const oa_channel_iface *channels =
+        c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1);
+    const oa_tuner_iface *tuner =
+        c->api->lookup(c->api->priv, OA_SVC_TUNER, 1);
+    uint32_t handle = 0;
+    int position = -1;
+    const struct oa_channel_snapshot *snapshot = NULL;
+    if (channels && channels->snapshot) snapshot = channels->snapshot();
+    if (tuner && tuner->selected) handle = tuner->selected();
+
+    int rc = -ENOENT;
+    if (handle && snapshot &&
+        oa_tuner_position_of_handle(snapshot, handle, &position) == 0)
+        rc = source->inactive_source(position);
+
+    if (rc == 0)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x9d inactive source: external %d handle %u "
+                    "position %d selected", current, handle, position);
+    else
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x9d inactive source skipped (%d): external %d "
+                    "handle %u position %d", rc, current, handle, position);
+
+    drop_lookup(c, OA_SVC_TUNER, tuner);
+    drop_lookup(c, OA_SVC_CHANNELS, channels);
+    drop_lookup(c, OA_SVC_SOURCE, source);
+}
+
 static void queue_replies(struct ctx *c, const oa_cec_message *replies, int n)
 {
     for (int i = 0; i < n; i++) {
@@ -275,6 +343,7 @@ static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
                             "cec audio policy rejected frame");
             else if (count > 0)
                 queue_replies(c, replies, count);
+            handle_inactive_source(c, &comp->message);
         } else if (comp->rc < 0) {
             c->last_error = comp->error ? comp->error : EIO;
             if (!c->rx_error_logged) {
@@ -520,6 +589,13 @@ static int start(void *ud)
 
     const char *enable = c->api->config_get(c->api->priv, "cec.enable", "0");
     c->enabled = enable && (!strcmp(enable, "1") || !strcmp(enable, "true"));
+    const char *inactive = c->api->config_get(c->api->priv,
+                                              "cec.inactive_fallback", "0");
+    c->inactive_enabled = inactive &&
+        (!strcmp(inactive, "1") || !strcmp(inactive, "true"));
+    if (c->inactive_enabled)
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec: inactive-source fallback enabled (0x9d)");
     if (c->enabled) {
         const char *path = c->api->config_get(c->api->priv, "cec.device",
                                               "/tmp/ntkcec");
@@ -613,6 +689,7 @@ static int quiesce(void *ud)
     if (audio_published)
         c->api->unpublish(c->api->priv, OA_SVC_CEC_AUDIO);
     c->enabled = 0;
+    c->inactive_enabled = 0;
     c->quiescing = 1;
     clear_session_state(c);
     c->cleanup_authority = c->authority_open ? 1 : 0;
@@ -763,6 +840,7 @@ static void stop(void *ud)
         c->authority_open = 0;
     }
     c->enabled = 0;
+    c->inactive_enabled = 0;
     c->cleanup_authority = 0;
 }
 

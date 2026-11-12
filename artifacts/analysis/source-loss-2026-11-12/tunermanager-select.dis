@@ -1,0 +1,466 @@
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00f771e0 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base>:
+  f771e0:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+  f771e4:	f44f 4480 	mov.w	r4, #16384	; 0x4000
+  f771e8:	ebad 0c04 	sub.w	ip, sp, r4
+  f771ec:	f8cc 0fa8 	str.w	r0, [ip, #4008]	; 0xfa8
+  f771f0:	b08d      	sub	sp, #52	; 0x34
+  f771f2:	af04      	add	r7, sp, #16
+  f771f4:	4616      	mov	r6, r2
+  f771f6:	60fb      	str	r3, [r7, #12]
+  f771f8:	4604      	mov	r4, r0
+  f771fa:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+  f771fc:	4a1d      	ldr	r2, [pc, #116]	; (f77274 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x94>)
+  f771fe:	f897 0058 	ldrb.w	r0, [r7, #88]	; 0x58
+  f77202:	60bb      	str	r3, [r7, #8]
+  f77204:	6813      	ldr	r3, [r2, #0]
+  f77206:	6078      	str	r0, [r7, #4]
+  f77208:	481b      	ldr	r0, [pc, #108]	; (f77278 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x98>)
+  f7720a:	6139      	str	r1, [r7, #16]
+  f7720c:	61fb      	str	r3, [r7, #28]
+  f7720e:	6cbd      	ldr	r5, [r7, #72]	; 0x48
+  f77210:	f897 a050 	ldrb.w	sl, [r7, #80]	; 0x50
+  f77214:	f897 b054 	ldrb.w	fp, [r7, #84]	; 0x54
+  f77218:	f503 fa82 	bl	c7a720 <trace_string@@Base>
+  f7721c:	2300      	movs	r3, #0
+  f7721e:	9001      	str	r0, [sp, #4]
+  f77220:	9300      	str	r3, [sp, #0]
+  f77222:	2201      	movs	r2, #1
+  f77224:	4619      	mov	r1, r3
+  f77226:	4815      	ldr	r0, [pc, #84]	; (f7727c <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x9c>)
+  f77228:	f503 fafa 	bl	c7a820 <trace_output@@Base>
+  f7722c:	6fe0      	ldr	r0, [r4, #124]	; 0x7c
+  f7722e:	f1b3 f907 	bl	112a440 <_ZNK15EASIServiceList7isEmptyEv@@Base>
+  f77232:	4681      	mov	r9, r0
+  f77234:	b150      	cbz	r0, f7724c <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x6c>
+  f77236:	f04f 0801 	mov.w	r8, #1
+  f7723a:	4e0e      	ldr	r6, [pc, #56]	; (f77274 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x94>)
+  f7723c:	4640      	mov	r0, r8
+  f7723e:	69fa      	ldr	r2, [r7, #28]
+  f77240:	6835      	ldr	r5, [r6, #0]
+  f77242:	42aa      	cmp	r2, r5
+  f77244:	f000 8230 	beq.w	f776a8 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x4c8>
+  f77248:	f738 ca7a 	blx	6af740 <__stack_chk_fail@plt>
+  f7724c:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f77250:	f5fe f534 	bl	975cbc <_ZN20EASIControlInterface19getStandbyRequestedEv@@Base>
+  f77254:	4680      	mov	r8, r0
+  f77256:	b1a8      	cbz	r0, f77284 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0xa4>
+  f77258:	4809      	ldr	r0, [pc, #36]	; (f77280 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0xa0>)
+  f7725a:	f503 fa61 	bl	c7a720 <trace_string@@Base>
+  f7725e:	f8cd 9000 	str.w	r9, [sp]
+  f77262:	464b      	mov	r3, r9
+  f77264:	9001      	str	r0, [sp, #4]
+  f77266:	2201      	movs	r2, #1
+  f77268:	4649      	mov	r1, r9
+  f7726a:	4804      	ldr	r0, [pc, #16]	; (f7727c <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x9c>)
+  f7726c:	f503 fad8 	bl	c7a820 <trace_output@@Base>
+  f77270:	e7e3      	b.n	f7723a <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x5a>
+  f77272:	bf00      	nop
+  f77274:	1d68      	adds	r0, r5, #5
+  f77276:	0179      	lsls	r1, r7, #5
+  f77278:	4bcc      	ldr	r3, [pc, #816]	; (f775ac <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x3cc>)
+  f7727a:	0151      	lsls	r1, r2, #5
+  f7727c:	cb50      	ldmia	r3!, {r4, r6}
+  f7727e:	01a1      	lsls	r1, r4, #6
+  f77280:	4bfc      	ldr	r3, [pc, #1008]	; (f77674 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x494>)
+  f77282:	0151      	lsls	r1, r2, #5
+  f77284:	69e0      	ldr	r0, [r4, #28]
+  f77286:	462a      	mov	r2, r5
+  f77288:	6801      	ldr	r1, [r0, #0]
+  f7728a:	6d4b      	ldr	r3, [r1, #84]	; 0x54
+  f7728c:	6939      	ldr	r1, [r7, #16]
+  f7728e:	4798      	blx	r3
+  f77290:	1c43      	adds	r3, r0, #1
+  f77292:	4605      	mov	r5, r0
+  f77294:	d0d1      	beq.n	f7723a <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x5a>
+  f77296:	f8d4 00a0 	ldr.w	r0, [r4, #160]	; 0xa0
+  f7729a:	f7eb fc45 	bl	f62b28 <_ZNK20ProfileConfiguration22isLaTivuSupportEnabledEv@@Base>
+  f7729e:	b150      	cbz	r0, f772b6 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0xd6>
+  f772a0:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f772a4:	f602 f278 	bl	979798 <_ZNK20EASIControlInterface18isMediaPlayerInUseEv@@Base>
+  f772a8:	b128      	cbz	r0, f772b6 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0xd6>
+  f772aa:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f772ac:	f004 fda6 	bl	f7bdfc <_ZN15UserPreferences17getCurrentServiceEv@@Base>
+  f772b0:	4285      	cmp	r5, r0
+  f772b2:	f040 81c8 	bne.w	f77646 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x466>
+  f772b6:	69e0      	ldr	r0, [r4, #28]
+  f772b8:	f104 0158 	add.w	r1, r4, #88	; 0x58
+  f772bc:	6179      	str	r1, [r7, #20]
+  f772be:	4629      	mov	r1, r5
+  f772c0:	697a      	ldr	r2, [r7, #20]
+  f772c2:	6803      	ldr	r3, [r0, #0]
+  f772c4:	f8d3 80d4 	ldr.w	r8, [r3, #212]	; 0xd4
+  f772c8:	4633      	mov	r3, r6
+  f772ca:	47c0      	blx	r8
+  f772cc:	4680      	mov	r8, r0
+  f772ce:	b156      	cbz	r6, f772e6 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x106>
+  f772d0:	f1bb 0f00 	cmp.w	fp, #0
+  f772d4:	d107      	bne.n	f772e6 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x106>
+  f772d6:	6be0      	ldr	r0, [r4, #60]	; 0x3c
+  f772d8:	4629      	mov	r1, r5
+  f772da:	68e2      	ldr	r2, [r4, #12]
+  f772dc:	f852 0020 	ldr.w	r0, [r2, r0, lsl #2]
+  f772e0:	3004      	adds	r0, #4
+  f772e2:	f7be fdc1 	bl	f35e68 <_ZN25NovoServiceNavigationInfo21notifyServiceSelectedEi@@Base>
+  f772e6:	4bba      	ldr	r3, [pc, #744]	; (f775d0 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x3f0>)
+  f772e8:	2101      	movs	r1, #1
+  f772ea:	7019      	strb	r1, [r3, #0]
+  f772ec:	f038 0304 	bics.w	r3, r8, #4
+  f772f0:	f000 8111 	beq.w	f77516 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x336>
+  f772f4:	48b7      	ldr	r0, [pc, #732]	; (f775d4 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x3f4>)
+  f772f6:	6802      	ldr	r2, [r0, #0]
+  f772f8:	4681      	mov	r9, r0
+  f772fa:	2a04      	cmp	r2, #4
+  f772fc:	f000 8101 	beq.w	f77502 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x322>
+  f77300:	f8d9 3000 	ldr.w	r3, [r9]
+  f77304:	2b04      	cmp	r3, #4
+  f77306:	d10d      	bne.n	f77324 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x144>
+  f77308:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f7730a:	f004 fd5d 	bl	f7bdc8 <_ZNK15UserPreferences10getCountryEv@@Base>
+  f7730e:	2814      	cmp	r0, #20
+  f77310:	d108      	bne.n	f77324 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x144>
+  f77312:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f77314:	f004 fd72 	bl	f7bdfc <_ZN15UserPreferences17getCurrentServiceEv@@Base>
+  f77318:	4285      	cmp	r5, r0
+  f7731a:	d003      	beq.n	f77324 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x144>
+  f7731c:	7a20      	ldrb	r0, [r4, #8]
+  f7731e:	2800      	cmp	r0, #0
+  f77320:	f000 80f9 	beq.w	f77516 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x336>
+  f77324:	f8d4 00f4 	ldr.w	r0, [r4, #244]	; 0xf4
+  f77328:	4baa      	ldr	r3, [pc, #680]	; (f775d4 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x3f4>)
+  f7732a:	f8c3 8000 	str.w	r8, [r3]
+  f7732e:	b110      	cbz	r0, f77336 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x156>
+  f77330:	6802      	ldr	r2, [r0, #0]
+  f77332:	69d1      	ldr	r1, [r2, #28]
+  f77334:	4788      	blx	r1
+  f77336:	f8d4 0094 	ldr.w	r0, [r4, #148]	; 0x94
+  f7733a:	b110      	cbz	r0, f77342 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x162>
+  f7733c:	2101      	movs	r1, #1
+  f7733e:	f046 fb97 	bl	fbda70 <_ZN20NovoSoundModeChecker19startSoundModeCheckEb@@Base>
+  f77342:	2100      	movs	r1, #0
+  f77344:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f77346:	f00d fe61 	bl	f8500c <_ZN15UserPreferences18setCicamPINEnteredEb@@Base>
+  f7734a:	4620      	mov	r0, r4
+  f7734c:	462a      	mov	r2, r5
+  f7734e:	2100      	movs	r1, #0
+  f77350:	f7fc faa0 	bl	f73894 <_ZN12TunerManager38broadcastServiceNavigationEventStartedE26NovoServiceNavigationEventi@@Base>
+  f77354:	f8d4 00a0 	ldr.w	r0, [r4, #160]	; 0xa0
+  f77358:	f7e9 f900 	bl	f6055c <_ZNK20ProfileConfiguration24isZiggoUPCSupportEnabledEv@@Base>
+  f7735c:	b340      	cbz	r0, f773b0 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x1d0>
+  f7735e:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f77360:	f004 fd32 	bl	f7bdc8 <_ZNK15UserPreferences10getCountryEv@@Base>
+  f77364:	281b      	cmp	r0, #27
+  f77366:	d123      	bne.n	f773b0 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x1d0>
+  f77368:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f7736a:	f009 f90f 	bl	f8058c <_ZNK15UserPreferences23getPreferredDvbcNetworkEv@@Base>
+  f7736e:	2804      	cmp	r0, #4
+  f77370:	d11e      	bne.n	f773b0 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x1d0>
+  f77372:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f77374:	f005 fe26 	bl	f7cfc4 <_ZNK15UserPreferences15getHbbTvEnabledEv@@Base>
+  f77378:	b1d0      	cbz	r0, f773b0 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x1d0>
+  f7737a:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f7737c:	2100      	movs	r1, #0
+  f7737e:	f00d ffb5 	bl	f852ec <_ZN15UserPreferences23setHbbtvEnabledForZiggoEb@@Base>
+  f77382:	f8d4 0100 	ldr.w	r0, [r4, #256]	; 0x100
+  f77386:	f7ac f837 	bl	f233f8 <_ZNK21NovoSystemInitialiser10webBrowserEv@@Base>
+  f7738a:	b188      	cbz	r0, f773b0 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x1d0>
+  f7738c:	f8d4 0100 	ldr.w	r0, [r4, #256]	; 0x100
+  f77390:	f7ac f832 	bl	f233f8 <_ZNK21NovoSystemInitialiser10webBrowserEv@@Base>
+  f77394:	6803      	ldr	r3, [r0, #0]
+  f77396:	2101      	movs	r1, #1
+  f77398:	f8d3 20a4 	ldr.w	r2, [r3, #164]	; 0xa4
+  f7739c:	4790      	blx	r2
+  f7739e:	f8d4 0100 	ldr.w	r0, [r4, #256]	; 0x100
+  f773a2:	f7ac f829 	bl	f233f8 <_ZNK21NovoSystemInitialiser10webBrowserEv@@Base>
+  f773a6:	6801      	ldr	r1, [r0, #0]
+  f773a8:	f8d1 30ac 	ldr.w	r3, [r1, #172]	; 0xac
+  f773ac:	2100      	movs	r1, #0
+  f773ae:	4798      	blx	r3
+  f773b0:	2100      	movs	r1, #0
+  f773b2:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f773b6:	f607 f719 	bl	97f1ec <_ZN20EASIControlInterface17setMHEGAppRunningEb@@Base>
+  f773ba:	f04f 0900 	mov.w	r9, #0
+  f773be:	4886      	ldr	r0, [pc, #536]	; (f775d8 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x3f8>)
+  f773c0:	f503 f9ae 	bl	c7a720 <trace_string@@Base>
+  f773c4:	464b      	mov	r3, r9
+  f773c6:	9001      	str	r0, [sp, #4]
+  f773c8:	2201      	movs	r2, #1
+  f773ca:	4649      	mov	r1, r9
+  f773cc:	4883      	ldr	r0, [pc, #524]	; (f775dc <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x3fc>)
+  f773ce:	f8cd 9000 	str.w	r9, [sp]
+  f773d2:	f503 fa25 	bl	c7a820 <trace_output@@Base>
+  f773d6:	6878      	ldr	r0, [r7, #4]
+  f773d8:	4629      	mov	r1, r5
+  f773da:	68ba      	ldr	r2, [r7, #8]
+  f773dc:	68fb      	ldr	r3, [r7, #12]
+  f773de:	9003      	str	r0, [sp, #12]
+  f773e0:	4620      	mov	r0, r4
+  f773e2:	9200      	str	r2, [sp, #0]
+  f773e4:	f086 0201 	eor.w	r2, r6, #1
+  f773e8:	f8cd b008 	str.w	fp, [sp, #8]
+  f773ec:	f8cd a004 	str.w	sl, [sp, #4]
+  f773f0:	f7fe f94c 	bl	f7568c <_ZN12TunerManager28requestServiceSelectInternalEi10DecoderSetbP19AuthorisationMethodbbb@@Base>
+  f773f4:	69e0      	ldr	r0, [r4, #28]
+  f773f6:	4633      	mov	r3, r6
+  f773f8:	697a      	ldr	r2, [r7, #20]
+  f773fa:	6801      	ldr	r1, [r0, #0]
+  f773fc:	f8d1 c0d4 	ldr.w	ip, [r1, #212]	; 0xd4
+  f77400:	4629      	mov	r1, r5
+  f77402:	47e0      	blx	ip
+  f77404:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f77406:	f00d f8eb 	bl	f845e0 <_ZN15UserPreferences20getDualViewAvailableEv@@Base>
+  f7740a:	b128      	cbz	r0, f77418 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x238>
+  f7740c:	f8d4 0098 	ldr.w	r0, [r4, #152]	; 0x98
+  f77410:	4649      	mov	r1, r9
+  f77412:	6805      	ldr	r5, [r0, #0]
+  f77414:	6beb      	ldr	r3, [r5, #60]	; 0x3c
+  f77416:	4798      	blx	r3
+  f77418:	f1ba 0f00 	cmp.w	sl, #0
+  f7741c:	f000 80e4 	beq.w	f775e8 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x408>
+  f77420:	496f      	ldr	r1, [pc, #444]	; (f775e0 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x400>)
+  f77422:	2200      	movs	r2, #0
+  f77424:	700a      	strb	r2, [r1, #0]
+  f77426:	2e00      	cmp	r6, #0
+  f77428:	f000 80e9 	beq.w	f775fe <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x41e>
+  f7742c:	f1b8 0f00 	cmp.w	r8, #0
+  f77430:	d102      	bne.n	f77438 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x258>
+  f77432:	2014      	movs	r0, #20
+  f77434:	f7cc dfe0 	bl	7443f8 <FROST_Sleep@@Base>
+  f77438:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f7743a:	f004 fcdf 	bl	f7bdfc <_ZN15UserPreferences17getCurrentServiceEv@@Base>
+  f7743e:	4680      	mov	r8, r0
+  f77440:	6fe0      	ldr	r0, [r4, #124]	; 0x7c
+  f77442:	f1b2 ff9b 	bl	112a37c <_ZNK15EASIServiceList4sizeEv@@Base>
+  f77446:	4580      	cmp	r8, r0
+  f77448:	f280 80d7 	bge.w	f775fa <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x41a>
+  f7744c:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f7744e:	f004 fcd5 	bl	f7bdfc <_ZN15UserPreferences17getCurrentServiceEv@@Base>
+  f77452:	2201      	movs	r2, #1
+  f77454:	4601      	mov	r1, r0
+  f77456:	4620      	mov	r0, r4
+  f77458:	f7fc fda0 	bl	f73f9c <_ZN12TunerManager36isServiceAlreadyAuthorisedForDisplayEib@@Base>
+  f7745c:	4605      	mov	r5, r0
+  f7745e:	4620      	mov	r0, r4
+  f77460:	f7fb fe38 	bl	f730d4 <_ZNK12TunerManager17isDeviceInStandbyEv@@Base>
+  f77464:	b940      	cbnz	r0, f77478 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x298>
+  f77466:	6ae0      	ldr	r0, [r4, #44]	; 0x2c
+  f77468:	6806      	ldr	r6, [r0, #0]
+  f7746a:	6ab2      	ldr	r2, [r6, #40]	; 0x28
+  f7746c:	4790      	blx	r2
+  f7746e:	4606      	mov	r6, r0
+  f77470:	b910      	cbnz	r0, f77478 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x298>
+  f77472:	2d00      	cmp	r5, #0
+  f77474:	f040 8101 	bne.w	f7767a <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x49a>
+  f77478:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f7747a:	f00a f9dd 	bl	f81838 <_ZNK15UserPreferences14getSubtitlesOnEv@@Base>
+  f7747e:	b148      	cbz	r0, f77494 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x2b4>
+  f77480:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f77484:	f606 f686 	bl	97e194 <_ZNK20EASIControlInterface17isSubtitleEnabledEv@@Base>
+  f77488:	b920      	cbnz	r0, f77494 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x2b4>
+  f7748a:	f8d4 00fc 	ldr.w	r0, [r4, #252]	; 0xfc
+  f7748e:	6801      	ldr	r1, [r0, #0]
+  f77490:	6e8b      	ldr	r3, [r1, #104]	; 0x68
+  f77492:	4798      	blx	r3
+  f77494:	f8d4 0098 	ldr.w	r0, [r4, #152]	; 0x98
+  f77498:	2800      	cmp	r0, #0
+  f7749a:	f000 80fc 	beq.w	f77696 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x4b6>
+  f7749e:	6802      	ldr	r2, [r0, #0]
+  f774a0:	6a16      	ldr	r6, [r2, #32]
+  f774a2:	47b0      	blx	r6
+  f774a4:	2800      	cmp	r0, #0
+  f774a6:	f000 80f6 	beq.w	f77696 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x4b6>
+  f774aa:	f8d4 027c 	ldr.w	r0, [r4, #636]	; 0x27c
+  f774ae:	6805      	ldr	r5, [r0, #0]
+  f774b0:	6929      	ldr	r1, [r5, #16]
+  f774b2:	4788      	blx	r1
+  f774b4:	4680      	mov	r8, r0
+  f774b6:	2800      	cmp	r0, #0
+  f774b8:	f43f aebd 	beq.w	f77236 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x56>
+  f774bc:	f8d4 00a0 	ldr.w	r0, [r4, #160]	; 0xa0
+  f774c0:	f7eb f844 	bl	f6254c <_ZNK20ProfileConfiguration34isFollowTvProtectedContentsEnabledEv@@Base>
+  f774c4:	2800      	cmp	r0, #0
+  f774c6:	f47f aeb6 	bne.w	f77236 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x56>
+  f774ca:	f107 0a20 	add.w	sl, r7, #32
+  f774ce:	f80a 0d05 	strb.w	r0, [sl, #-5]!
+  f774d2:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f774d6:	f601 f5af 	bl	979038 <_ZN20EASIControlInterface11controlTaskEv@@Base>
+  f774da:	6939      	ldr	r1, [r7, #16]
+  f774dc:	4683      	mov	fp, r0
+  f774de:	6fe0      	ldr	r0, [r4, #124]	; 0x7c
+  f774e0:	f1b2 ff6c 	bl	112a3bc <_ZNK15EASIServiceList6handleEi@@Base>
+  f774e4:	4652      	mov	r2, sl
+  f774e6:	4601      	mov	r1, r0
+  f774e8:	4658      	mov	r0, fp
+  f774ea:	f612 f12b 	bl	989744 <_ZNK15EASIControlTask22queryServiceEncryptionEiRb@@Base>
+  f774ee:	7ef8      	ldrb	r0, [r7, #27]
+  f774f0:	2800      	cmp	r0, #0
+  f774f2:	f43f aea2 	beq.w	f7723a <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x5a>
+  f774f6:	f8d4 027c 	ldr.w	r0, [r4, #636]	; 0x27c
+  f774fa:	6804      	ldr	r4, [r0, #0]
+  f774fc:	6963      	ldr	r3, [r4, #20]
+  f774fe:	4798      	blx	r3
+  f77500:	e69b      	b.n	f7723a <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x5a>
+  f77502:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f77504:	f004 fc60 	bl	f7bdc8 <_ZNK15UserPreferences10getCountryEv@@Base>
+  f77508:	2814      	cmp	r0, #20
+  f7750a:	f43f aef9 	beq.w	f77300 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x120>
+  f7750e:	7a21      	ldrb	r1, [r4, #8]
+  f77510:	2900      	cmp	r1, #0
+  f77512:	f47f aef5 	bne.w	f77300 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x120>
+  f77516:	b96e      	cbnz	r6, f77534 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x354>
+  f77518:	2101      	movs	r1, #1
+  f7751a:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f7751e:	f5fe f501 	bl	975f24 <_ZN20EASIControlInterface18selectVideoDecoderE10DecoderSet@@Base>
+  f77522:	2101      	movs	r1, #1
+  f77524:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f77528:	f5ff f682 	bl	977230 <_ZN20EASIControlInterface9hideVideoE10DecoderSet@@Base>
+  f7752c:	492d      	ldr	r1, [pc, #180]	; (f775e4 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x404>)
+  f7752e:	2201      	movs	r2, #1
+  f77530:	700a      	strb	r2, [r1, #0]
+  f77532:	e6f7      	b.n	f77324 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x144>
+  f77534:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f77538:	f5fe f40e 	bl	975d58 <_ZN20EASIControlInterface6muteOnEv@@Base>
+  f7753c:	f8d4 0088 	ldr.w	r0, [r4, #136]	; 0x88
+  f77540:	f6ab f670 	bl	a23224 <_ZN22EASITVControlInterface15headphoneMuteOnEv@@Base>
+  f77544:	2101      	movs	r1, #1
+  f77546:	f8d4 0088 	ldr.w	r0, [r4, #136]	; 0x88
+  f7754a:	f6ac f755 	bl	a243f8 <_ZN22EASITVControlInterface12muteScartOutEb@@Base>
+  f7754e:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f77552:	f601 f3df 	bl	978d14 <_ZN20EASIControlInterface11tvInterfaceEv@@Base>
+  f77556:	2200      	movs	r2, #0
+  f77558:	4611      	mov	r1, r2
+  f7755a:	f6ac f2f7 	bl	a23b4c <_ZN22EASITVControlInterface14enableSPDIFOutE10DecoderSetb@@Base>
+  f7755e:	2100      	movs	r1, #0
+  f77560:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f77564:	f5fe f4de 	bl	975f24 <_ZN20EASIControlInterface18selectVideoDecoderE10DecoderSet@@Base>
+  f77568:	2100      	movs	r1, #0
+  f7756a:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f7756e:	f5ff f65f 	bl	977230 <_ZN20EASIControlInterface9hideVideoE10DecoderSet@@Base>
+  f77572:	2101      	movs	r1, #1
+  f77574:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f77578:	f5fd f54a 	bl	975010 <_ZN20EASIControlInterface12subtitlesOffEb@@Base>
+  f7757c:	f04f 31ff 	mov.w	r1, #4294967295	; 0xffffffff
+  f77580:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f77582:	f003 fa3d 	bl	f7aa00 <_ZN15UserPreferences15setTeletextFontEi@@Base>
+  f77586:	4916      	ldr	r1, [pc, #88]	; (f775e0 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x400>)
+  f77588:	2201      	movs	r2, #1
+  f7758a:	700a      	strb	r2, [r1, #0]
+  f7758c:	f1b8 0f00 	cmp.w	r8, #0
+  f77590:	f43f aec8 	beq.w	f77324 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x144>
+  f77594:	4b0f      	ldr	r3, [pc, #60]	; (f775d4 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x3f4>)
+  f77596:	6818      	ldr	r0, [r3, #0]
+  f77598:	2804      	cmp	r0, #4
+  f7759a:	f47f aec3 	bne.w	f77324 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x144>
+  f7759e:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f775a0:	f004 fc12 	bl	f7bdc8 <_ZNK15UserPreferences10getCountryEv@@Base>
+  f775a4:	2805      	cmp	r0, #5
+  f775a6:	d00f      	beq.n	f775c8 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x3e8>
+  f775a8:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f775aa:	f004 fc0d 	bl	f7bdc8 <_ZNK15UserPreferences10getCountryEv@@Base>
+  f775ae:	280c      	cmp	r0, #12
+  f775b0:	d00a      	beq.n	f775c8 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x3e8>
+  f775b2:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f775b4:	f004 fc08 	bl	f7bdc8 <_ZNK15UserPreferences10getCountryEv@@Base>
+  f775b8:	2814      	cmp	r0, #20
+  f775ba:	d005      	beq.n	f775c8 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x3e8>
+  f775bc:	6f60      	ldr	r0, [r4, #116]	; 0x74
+  f775be:	f004 fc03 	bl	f7bdc8 <_ZNK15UserPreferences10getCountryEv@@Base>
+  f775c2:	281b      	cmp	r0, #27
+  f775c4:	f47f aeae 	bne.w	f77324 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x144>
+  f775c8:	2200      	movs	r2, #0
+  f775ca:	4901      	ldr	r1, [pc, #4]	; (f775d0 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x3f0>)
+  f775cc:	e7b0      	b.n	f77530 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x350>
+  f775ce:	bf00      	nop
+  f775d0:	da3c      	bge.n	f7764c <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x46c>
+  f775d2:	0178      	lsls	r0, r7, #5
+  f775d4:	da40      	bge.n	f77658 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x478>
+  f775d6:	0178      	lsls	r0, r7, #5
+  f775d8:	4c13      	ldr	r4, [pc, #76]	; (f77628 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x448>)
+  f775da:	0151      	lsls	r1, r2, #5
+  f775dc:	cb50      	ldmia	r3!, {r4, r6}
+  f775de:	01a1      	lsls	r1, r4, #6
+  f775e0:	cb9c      	ldmia	r3, {r2, r3, r4, r7}
+  f775e2:	01a1      	lsls	r1, r4, #6
+  f775e4:	cb9d      	ldmia	r3, {r0, r2, r3, r4, r7}
+  f775e6:	01a1      	lsls	r1, r4, #6
+  f775e8:	b14e      	cbz	r6, f775fe <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x41e>
+  f775ea:	4e31      	ldr	r6, [pc, #196]	; (f776b0 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x4d0>)
+  f775ec:	7830      	ldrb	r0, [r6, #0]
+  f775ee:	2800      	cmp	r0, #0
+  f775f0:	f43f af1c 	beq.w	f7742c <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x24c>
+  f775f4:	f886 a000 	strb.w	sl, [r6]
+  f775f8:	e757      	b.n	f774aa <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x2ca>
+  f775fa:	2501      	movs	r5, #1
+  f775fc:	e72f      	b.n	f7745e <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x27e>
+  f775fe:	4d2d      	ldr	r5, [pc, #180]	; (f776b4 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x4d4>)
+  f77600:	782b      	ldrb	r3, [r5, #0]
+  f77602:	b9eb      	cbnz	r3, f77640 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x460>
+  f77604:	6ae0      	ldr	r0, [r4, #44]	; 0x2c
+  f77606:	6802      	ldr	r2, [r0, #0]
+  f77608:	6a91      	ldr	r1, [r2, #40]	; 0x28
+  f7760a:	4788      	blx	r1
+  f7760c:	b918      	cbnz	r0, f77616 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x436>
+  f7760e:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f77612:	f5fe f3bb 	bl	975d8c <_ZN20EASIControlInterface7muteOffEv@@Base>
+  f77616:	f8d4 0098 	ldr.w	r0, [r4, #152]	; 0x98
+  f7761a:	b950      	cbnz	r0, f77632 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x452>
+  f7761c:	f1b8 0f00 	cmp.w	r8, #0
+  f77620:	f43f af43 	beq.w	f774aa <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x2ca>
+  f77624:	2101      	movs	r1, #1
+  f77626:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f7762a:	f5fe f47b 	bl	975f24 <_ZN20EASIControlInterface18selectVideoDecoderE10DecoderSet@@Base>
+  f7762e:	2101      	movs	r1, #1
+  f77630:	e035      	b.n	f7769e <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x4be>
+  f77632:	6805      	ldr	r5, [r0, #0]
+  f77634:	6a2b      	ldr	r3, [r5, #32]
+  f77636:	4798      	blx	r3
+  f77638:	2800      	cmp	r0, #0
+  f7763a:	f47f af36 	bne.w	f774aa <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x2ca>
+  f7763e:	e7ed      	b.n	f7761c <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x43c>
+  f77640:	2600      	movs	r6, #0
+  f77642:	702e      	strb	r6, [r5, #0]
+  f77644:	e731      	b.n	f774aa <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x2ca>
+  f77646:	f8d4 0100 	ldr.w	r0, [r4, #256]	; 0x100
+  f7764a:	f7ab fed5 	bl	f233f8 <_ZNK21NovoSystemInitialiser10webBrowserEv@@Base>
+  f7764e:	2800      	cmp	r0, #0
+  f77650:	f43f ae31 	beq.w	f772b6 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0xd6>
+  f77654:	f8d4 0100 	ldr.w	r0, [r4, #256]	; 0x100
+  f77658:	f7ab fece 	bl	f233f8 <_ZNK21NovoSystemInitialiser10webBrowserEv@@Base>
+  f7765c:	6802      	ldr	r2, [r0, #0]
+  f7765e:	6c91      	ldr	r1, [r2, #72]	; 0x48
+  f77660:	4788      	blx	r1
+  f77662:	2800      	cmp	r0, #0
+  f77664:	f43f ae27 	beq.w	f772b6 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0xd6>
+  f77668:	f8d4 0100 	ldr.w	r0, [r4, #256]	; 0x100
+  f7766c:	f7ab fec4 	bl	f233f8 <_ZNK21NovoSystemInitialiser10webBrowserEv@@Base>
+  f77670:	6803      	ldr	r3, [r0, #0]
+  f77672:	4641      	mov	r1, r8
+  f77674:	6a1a      	ldr	r2, [r3, #32]
+  f77676:	4790      	blx	r2
+  f77678:	e61d      	b.n	f772b6 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0xd6>
+  f7767a:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f7767e:	f5fe f385 	bl	975d8c <_ZN20EASIControlInterface7muteOffEv@@Base>
+  f77682:	f8d4 0088 	ldr.w	r0, [r4, #136]	; 0x88
+  f77686:	f6ab f5a9 	bl	a231dc <_ZN22EASITVControlInterface16headphoneMuteOffEv@@Base>
+  f7768a:	4631      	mov	r1, r6
+  f7768c:	f8d4 0088 	ldr.w	r0, [r4, #136]	; 0x88
+  f77690:	f6ac f6b2 	bl	a243f8 <_ZN22EASITVControlInterface12muteScartOutEb@@Base>
+  f77694:	e6f0      	b.n	f77478 <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x298>
+  f77696:	2d00      	cmp	r5, #0
+  f77698:	f43f af07 	beq.w	f774aa <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x2ca>
+  f7769c:	2100      	movs	r1, #0
+  f7769e:	f8d4 009c 	ldr.w	r0, [r4, #156]	; 0x9c
+  f776a2:	f5ff f5ab 	bl	9771fc <_ZN20EASIControlInterface9showVideoE10DecoderSet@@Base>
+  f776a6:	e700      	b.n	f774aa <_ZN12TunerManager38requestServiceSelectForDisplayInternalEibbP18AnyServiceListViewP19AuthorisationMethodbbb@@Base+0x2ca>
+  f776a8:	3724      	adds	r7, #36	; 0x24
+  f776aa:	46bd      	mov	sp, r7
+  f776ac:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+  f776b0:	cb9c      	ldmia	r3, {r2, r3, r4, r7}
+  f776b2:	01a1      	lsls	r1, r4, #6
+  f776b4:	cb9d      	ldmia	r3, {r0, r2, r3, r4, r7}
+  f776b6:	01a1      	lsls	r1, r4, #6

@@ -117,14 +117,17 @@ view position→handle via `(TunerManager+0x1c)->vtable+0x54` then selects via
 mapping. The source service exposes gated `inactive_source(position)` v3
 (`source.inactive_fallback`): it resolves `OA_SVC_CHANNELS`, connects DTV and
 calls `OA_SVC_TUNER.select(handle)`; `source_path` fake-service tests cover the
-order/gates. The full select/mute/decoder/UI contract, the `mod_cec` 0x9D route
-and any `SetConnectInfo` caller outside the analyzed paths remain open. The status-4/HPD path is the
+order/gates. `mod_cec` routes broadcast 0x9D behind `cec.inactive_fallback`;
+it requires a displayed external source, maps the selected tuner handle back to
+its active-list position and calls the worker; `cec_inactive.cjs` covers the
+route and disabled/TV gates. The full select/mute/decoder/UI contract and any
+`SetConnectInfo` caller outside the analyzed paths remain open. The status-4/HPD path is the
 cable-unplug policy; `source.video_status` is a no-signal detector, not the
 sleep trigger. `source.video_status()` v2 is now
 host-tested behind `source.vin_status` (`check-source-vin` and the fake-module
 `source_path` test); it exposes ready/lost and does not select a tuner.
-`mod_cec` routing/power policy is
-not implemented. `DEV_AMP_ID`
+`mod_cec` 0x82/0x36 routing/power
+policy is not implemented. `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced (entry `0x84e110`, IsAlive `0x875458`:

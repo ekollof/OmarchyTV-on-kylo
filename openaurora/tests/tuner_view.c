@@ -58,7 +58,27 @@ int main(void)
     rows[2].handle = 0;
     assert(oa_tuner_handle_at(&stored, 0, &handle) == -EINVAL);
 
+    /* Inverse mapping used by the CEC 0x9D route: selected handle -> view
+     * position. Duplicate handles keep the first row. */
+    int position = -1;
+    assert(oa_tuner_position_of_handle(&channels, 100, &position) == 0 &&
+           position == 0);
+    assert(oa_tuner_position_of_handle(&channels, 300, &position) == 0 &&
+           position == 2);
+    assert(oa_tuner_position_of_handle(&channels, 999, &position) == -ENOENT);
+    assert(oa_tuner_position_of_handle(&channels, 0, &position) == -EINVAL);
+    assert(oa_tuner_position_of_handle(NULL, 100, &position) == -EINVAL);
+    assert(oa_tuner_position_of_handle(&channels, 100, NULL) == -EINVAL);
+    entries[1].handle = 100;
+    assert(oa_tuner_position_of_handle(&channels, 100, &position) == 0 &&
+           position == 0);
+    entries[1].handle = 200;
+    struct oa_channel_snapshot empty = {
+        .entries = entries, .count = 0, .source = 1
+    };
+    assert(oa_tuner_position_of_handle(&empty, 100, &position) == -ENOENT);
+
     puts("ok tuner-view: runtime list, stored order, identity order, "
-         "position/size/handle rejection");
+         "position/size/handle rejection, selected-handle inverse");
     return 0;
 }

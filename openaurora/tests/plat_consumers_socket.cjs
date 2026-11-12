@@ -89,7 +89,7 @@ async function main() {
     }
     const consumers = [
         ['audio', 'audio:v1'],
-        ['source', 'source:v1'],
+        ['source', 'source:v3'],
         ['ir', 'input:v1'],
         ['panel', 'panel:v1']
     ];
