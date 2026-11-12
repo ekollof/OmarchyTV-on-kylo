@@ -91,7 +91,7 @@ struct ctx {
     oa_omarchy_state *state;
     int active;
     int suspended;
-    uint32_t removed, changed;
+    uint32_t removed, changed, src_key;
     uint64_t rebind;
     uint32_t clock_timer;
     uint64_t volume_timer;
@@ -1289,6 +1289,13 @@ static void rebind(void *ud)
     if (!c->lua)
         c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
 }
+static void source_changed(const void *ev, void *ud)
+{
+    (void)ev;
+    struct ctx *c = ud;
+    if (c && c->active && c->d) paint(c);
+}
+
 static void changed(const void *ev, void *ud)
 {
     (void)ev;
@@ -1378,7 +1385,8 @@ static int m_start(void *v)
     }
     c->removed = c->api->subscribe(c->api->priv, OA_TOPIC_SERVICE_REMOVED, removed, c);
     c->changed = c->api->subscribe(c->api->priv, OA_TOPIC_MODULE_CHANGED, changed, c);
-    if (!c->removed || !c->changed) return -1;
+    c->src_key = c->api->subscribe(c->api->priv, OA_TOPIC_SOURCE, source_changed, c);
+    if (!c->removed || !c->changed || !c->src_key) return -1;
     c->lua = c->api->lookup(c->api->priv, OA_SVC_UI_LUA, OA_LUA_API_VERSION);
     if (atoi(c->api->config_get(c->api->priv, "ui.omarchy.lua", "0")) == 1) {
         oa_lua_status st;
@@ -1440,6 +1448,10 @@ static int m_quiesce(void *v)
         c->api->unsubscribe(c->api->priv, c->changed);
         c->changed = 0;
     }
+    if (c->src_key) {
+        c->api->unsubscribe(c->api->priv, c->src_key);
+        c->src_key = 0;
+    }
     if (c->d) {
         c->d->unregister_skin(&g_skin);
         c->api->release(c->api->priv, OA_SVC_UI_ENGINE);
@@ -1495,7 +1507,8 @@ static void m_stop(void *v)
     c->active = 0;
     if (c->removed) c->api->unsubscribe(c->api->priv, c->removed);
     if (c->changed) c->api->unsubscribe(c->api->priv, c->changed);
-    c->removed = c->changed = 0;
+    if (c->src_key) c->api->unsubscribe(c->api->priv, c->src_key);
+    c->removed = c->changed = c->src_key = 0;
     if (c->rebind) c->api->timer_del(c->api->priv, c->rebind);
     c->rebind = 0;
     if (c->d) {

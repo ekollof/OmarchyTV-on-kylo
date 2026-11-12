@@ -99,6 +99,10 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   `OA_SVC_TUNER.select(handle)`; `source_path` fake-service tests cover the
   runtime/stored order/gates. `mod_cec` routes broadcast 0x9D behind
   `cec.inactive_fallback`; `cec_inactive.cjs` covers both paths and gates.
+  The source service now emits `source/state` after a switch; the vendor UI
+  updates the Bronlijst row, `m_current_source` and picture cards, and both
+  UIs repaint. The full stock CEC UI transition (dialog close/DTV screen)
+  remains open.
 
 Reports: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),

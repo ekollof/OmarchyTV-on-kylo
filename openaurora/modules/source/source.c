@@ -435,6 +435,10 @@ static int change_input(struct ctx *c, int type)
             c->h->video_ext_open(0, (unsigned)type);
     }
     c->current = type;
+    if (c->api->emit) {
+        oa_source_event ev = { .type = (uint8_t)type };
+        c->api->emit(c->api->priv, OA_TOPIC_SOURCE, &ev);
+    }
     c->api->log(c->api->priv, OA_LOG_INFO,
                 "source -> type %d (vin id %d, %d fd)", type,
                 g_input_id[type], c->nfds);

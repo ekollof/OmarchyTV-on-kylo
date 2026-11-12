@@ -574,6 +574,12 @@ unvalidated.
       disabled/TV gates). Remaining:
       the full select/mute/decoder/UI body, any `SetConnectInfo` caller outside
       the analyzed paths and the UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
+- [x] Source switches emit `source/state`; `ui_vendor` updates the Bronlijst
+      row, `m_current_source`, picture cards and repaints; `ui_omarchy`
+      repaints. `common/source_map.c` + `check-source-map` cover the nine-row
+      map; `source_path` asserts the DTV event. UI lifecycle tests cover the
+      subscription teardown. This makes CEC-driven input switches follow the
+      persisted picture index instead of leaving the old source's settings.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
       `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts
       them to the loop; the TV link also needed `-ldl`. `check-ir-blast-worker`

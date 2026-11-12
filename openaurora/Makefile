@@ -2930,6 +2930,15 @@ check-tuner-view: $(BUILD)/tests/tuner_view
 	@$(BUILD)/tests/tuner_view
 check: check-tuner-view
 
+$(BUILD)/tests/source_map: tests/source_map.c common/source_map.c include/openaurora/source_map.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-source-map
+check-source-map: $(BUILD)/tests/source_map
+	@$(BUILD)/tests/source_map
+check: check-source-map
+
 $(BUILD)/tests/audio_source_path: tests/audio_source_path.c modules/audio_source/audio_source.c tests/audio_source_fake.c common/audio_curve.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread

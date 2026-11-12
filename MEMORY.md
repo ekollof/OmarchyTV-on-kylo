@@ -140,7 +140,10 @@ is the tracked active PA, then selects the new PA's HDMI input behind
 `cec.identity`: 0x46 -> directed 0x47 with `cec.osd_name` (default "TV"),
 incoming 0x47 logged (`cec_osd_name.cjs`). One-touch 0x04/0x0D selects the
 0x84 device PA's HDMI input behind `cec.active_source`
-(`cec_image_view.cjs`). `DEV_AMP_ID`
+(`cec_image_view.cjs`). Source switches emit `source/state`; `ui_vendor` maps
+the type to the Bronlijst row, writes `m_current_source`, syncs picture cards
+and repaints, and `ui_omarchy` repaints (`source_map`/`check-source-map`;
+`source_path` event assertion). `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced (entry `0x84e110`, IsAlive `0x875458`:

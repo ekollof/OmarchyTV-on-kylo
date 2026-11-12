@@ -250,6 +250,10 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   `cec.inactive_fallback` (`cec_inactive.cjs` covers both paths). The full
   select/mute/decoder/UI body remains open. Do not substitute an
   always-switch-to-TV or HPD shortcut.
+- A successful `change_input` emits `source/state` with the source type.
+  `ui_vendor` maps it to the Bronlijst row, persists `m_current_source`, syncs
+  the picture cards and repaints; `ui_omarchy` repaints. `common/source_map.c`
+  + `check-source-map` cover the nine-row map; `source_path` asserts the event.
 
 Evidence: [SOURCE-PATH](../../artifacts/reports/SOURCE-PATH-2026-11-09.md),
 [SOURCE-LOSS-FALLBACK](../../artifacts/reports/SOURCE-LOSS-FALLBACK-2026-11-12.md),

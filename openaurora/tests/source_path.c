@@ -9,6 +9,7 @@
 
 #include "openaurora/broadcast.h"
 #include "openaurora/channels.h"
+#include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/source_vin.h"
@@ -16,6 +17,8 @@
 
 extern const oa_module *oa_module_entry(void);
 static const oa_source_iface *iface;
+static int source_events;
+static uint8_t source_event_type;
 static int enabled = 1;
 static int color_gate;
 static int vin_gate;
@@ -140,6 +143,15 @@ static int unpublish(void *p, const char *name)
     return 0;
 }
 static void release(void *p, const char *name) { (void)p; (void)name; }
+static void emit(void *p, const char *topic, const void *ev)
+{
+    (void)p;
+    if (!strcmp(topic, OA_TOPIC_SOURCE) && ev) {
+        const oa_source_event *e = ev;
+        source_events++;
+        source_event_type = e->type;
+    }
+}
 static const void *lookup(void *p, const char *name, uint32_t min_version)
 {
     (void)p;
@@ -152,7 +164,8 @@ static const void *lookup(void *p, const char *name, uint32_t min_version)
 static const oa_host_api api = {
     .size = sizeof(oa_host_api), .abi = OA_ABI_VERSION,
     .log = log_message, .config_get = config, .publish = publish,
-    .unpublish = unpublish, .lookup = lookup, .release = release
+    .unpublish = unpublish, .lookup = lookup, .release = release,
+    .emit = emit
 };
 
 static void *start(int on)
@@ -383,12 +396,15 @@ int main(void)
     tuner_selected = 0;
     tuner_select_calls = 0;
     reset();
+    source_events = 0;
+    source_event_type = 0xff;
     inactive_gate = 1;
     ctx = start(1);
     assert(iface->inactive_source(-1) == -EINVAL);
     assert(iface->inactive_source(1) == 0);
     assert(tuner_selected == 200 && tuner_select_calls == 1);
     assert(iface->current_type() == 0);
+    assert(source_events == 1 && source_event_type == 0);
     done(ctx);
 
     /* No runtime channel list: the stored service.list rows are the fallback. */

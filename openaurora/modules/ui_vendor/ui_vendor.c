@@ -42,6 +42,7 @@
 
 #include "openaurora/events.h"
 #include "openaurora/lua_skin.h"
+#include "openaurora/source_map.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/channels.h"
@@ -271,6 +272,7 @@ struct ctx {
     uint64_t rebind_tick;            /* deferred service rebind (timer owner = this module) */
     uint32_t mod_key;                /* module/changed subscription */
     uint32_t svc_key;                /* service/removed subscription */
+    uint32_t src_key;                /* source/state subscription */
     int suspended;
     int rebind_pending;              /* a relevant event arrived while suspended */
     /* Main-launcher focus highlight: vendor mainlauncher_item_highlight_animated, 11 frames at
@@ -2492,6 +2494,31 @@ static void schedule_rebind(struct ctx *c)
         c->api->log(c->api->priv, OA_LOG_WARN, "ui_vendor: rebind timer allocation failed");
 }
 
+/* A CEC or other module switched the input. Follow it in the Bronlijst focus,
+ * the persisted picture index and the picture cards, then repaint the current
+ * screen. This is the same transition the user-driven source selection makes. */
+static void on_source_event(const void *evp, void *ud)
+{
+    struct ctx *c = ud;
+    const oa_source_event *ev = evp;
+    if (!c || !ev) return;
+    int row = oa_source_row_for_type(ev->type);
+    if (row < 0) return;
+    c->src = row;
+    int index = oa_source_picture_index(row);
+    if (index >= 0) {
+        if (c->settings) {
+            int rc = c->settings->set_int("m_current_source", index);
+            if (rc != 0)
+                c->api->log(c->api->priv, OA_LOG_WARN,
+                            "source event: m_current_source write failed (%d)",
+                            rc);
+        }
+        if (c->picture) picture_sync_index(c, index, NULL);
+    }
+    if (c->d) paint(c);
+}
+
 static void on_module_changed(const void *evp, void *ud)
 {
     struct ctx *c = ud;
@@ -3175,7 +3202,8 @@ static int m_start(void *v)
     /* React to providers that appear later, and drop cached pointers when one is removed. */
     c->mod_key = c->api->subscribe(c->api->priv, OA_TOPIC_MODULE_CHANGED, on_module_changed, c);
     c->svc_key = c->api->subscribe(c->api->priv, OA_TOPIC_SERVICE_REMOVED, on_service_removed, c);
-    if (!c->mod_key || !c->svc_key) {
+    c->src_key = c->api->subscribe(c->api->priv, OA_TOPIC_SOURCE, on_source_event, c);
+    if (!c->mod_key || !c->svc_key || !c->src_key) {
         c->api->log(c->api->priv, OA_LOG_ERROR,
                     "ui_vendor: lifecycle subscription failed; refusing start");
         return -1;
@@ -3375,6 +3403,10 @@ static void ui_vendor_teardown(struct ctx *c)
     if (c->svc_key) {
         c->api->unsubscribe(c->api->priv, c->svc_key);
         c->svc_key = 0;
+    }
+    if (c->src_key) {
+        c->api->unsubscribe(c->api->priv, c->src_key);
+        c->src_key = 0;
     }
     if (c->rebind_tick) {
         c->api->timer_del(c->api->priv, c->rebind_tick);

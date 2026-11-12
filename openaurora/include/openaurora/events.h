@@ -20,6 +20,14 @@ typedef struct {
     uint64_t ts_ms;
 } oa_key_event;
 
+/* source/state — the displayed input type changed. type is the source service
+ * type (0 = TV, 15 = BACK AV, 17..19 = HDMI1..3, 20 = YPbPr, 16 = VGA, ...).
+ * Consumers copy the payload; it is valid only during emit(). */
+#define OA_TOPIC_SOURCE "source/state"
+typedef struct {
+    uint8_t type;
+} oa_source_event;
+
 /* clock/tick — one per second from the clock service; cheap heartbeat for UIs. */
 #define OA_TOPIC_TICK "clock/tick"
 typedef struct {
