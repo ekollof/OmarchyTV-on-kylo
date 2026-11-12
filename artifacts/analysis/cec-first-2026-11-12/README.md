@@ -34,6 +34,9 @@
   (`timeout -t 420`).
 - `run-cec-monitor.sh` — armed monitor, sha256
   `d4c72b90b191c3bf217a68f2449c4681ba18de4c649b691c46a97d564e1c9aa4`.
+- `rea-2026-11-12.txt` — sandboxed REA 6.9.0 pilot: kernel-module metadata
+  vs `readelf`, `handleCECMessage` 0x9D/0x82 instruction excerpt, and the
+  ARM-cross-objdump `_CEC_TX_Data` comparison.
 - `dmesg.boot4.txt`, `dmesg.boot5.txt` — driver logs for those boots.
 - `nondovi-cec-isr.txt` — read-only Ghidra dump of
   `KER_CEC_InterrutHandler` @ `0xd9064`: TX status 0 on INT bit 3, status 2 on
@@ -71,3 +74,11 @@ tail were copied here and the staging was removed. Stock after recovery:
 original hook `c3943712…`, no branch, `aurora.elf` 1752, `DRV_CEC_CALLBAC` 2863,
 no `openaurora`/`oa-wdtfeed`, and `/tmp/ntkcec` absent. The monitor did not send
 a frame; the failure was the long SSH-dependent pre-stock wait, not CEC.
+
+REA pilot 2026-11-12: `rea-agents@6.9.0` was installed under
+`/tmp/opencode/rea-eval` with no setup or repo change. Its kernel-module
+inspector matched `readelf`; its Ghidra provider recovered
+`NovoCECController::handleCECMessage` @ `0x0102fce0`; the exact 0x9D
+instructions show it does not clear the active source. The ARM-cross-objdump
+provider matched the Ghidra `_CEC_TX_Data` sequence. See
+`rea-2026-11-12.txt`.

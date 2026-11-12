@@ -1,0 +1,113 @@
+# REA pilot evidence — 2026-11-12
+
+Sandboxed evaluation of `rea-agents@6.9.0` (MIT), Node 26.13.0,
+Ghidra 12.2 at `/opt/ghidra`. Installed with
+`npm install --ignore-scripts` under `/tmp/opencode/rea-eval`; no
+`rea setup`, no repo dependency, no canonical Ghidra project opened.
+Targets were copies; the TV was not contacted.
+
+## Targets
+
+- `aurora.elf` — source `artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf`,
+  MD5 `64c252340d3af6c5d66072611b7bad7a`, SHA-256
+  `7d6e4ca589f72135ae5e13c977a5bfae7f999abac7de701f8ac5c178f09a5993`.
+- `ntkdriver_nondovi.ko` — source
+  `artifacts/workbench/rootfs/vendor2/modules/ntkdriver_nondovi.ko`, MD5
+  `fded7005651e37b8a1b5e8e89f73f4ff`, SHA-256
+  `55036a613b92ba89519f9909323807b7dcc35e06a6ef141ed377953f4c4ca28c`.
+
+## Kernel-module inspector vs readelf
+
+`rea inspect-kernel-module ... --format json` reported `applicable`,
+ELF32 little-endian relocatable, coverage `complete` (79 examined entries),
+`__versions` absent and signature trailer absent.
+
+| item | REA offset/bytes | readelf |
+|---|---|---|
+| `.init.text` | 6774944 / 13248 | 0x6760a0 / 0x33c0 |
+| `.exit.text` | 6788192 / 2648 | 0x679460 / 0xa58 |
+| `.gnu.linkonce.this_module` | 11031936 / 512 | 0xa85580 / 0x200 |
+| `__ksymtab` | 6813744 / 11128 | 0x67f830 / 0x2b78 |
+| `__ksymtab_gpl` | 6824872 / 8 | 0x6823a8 / 8 |
+| `__ksymtab_strings` | 8937088 / 32789 | 0x885e80 / 0x8015 |
+
+`readelf -SW` likewise has no `__versions` section. The `.modinfo` entries
+(n=76) include `license=GPL`, `KCEC_major`, and `magic_val`; REA preserves
+duplicate `parm`/`parmtype` keys.
+
+## Ghidra provider: handleCECMessage
+
+`rea function aurora.elf 0x0102fce0 --provider ghidra --format json`
+
+- procedure: `NovoCECController::handleCECMessage`
+- address: `0x102fce0`
+- body ranges: `0x102fce0..0x102ffd7`, `0x102ffe0..0x10302ed`,
+  `0x1030300..0x1030693`, `0x103069c..0x1030841`, `0x1030864..0x1030981`
+- 0x9D assembly:
+
+```text
+0x102ff3e: cmp r0, #0x9d
+0x102ff40: bne.w 0x0102fdb8
+0x102ff44: ldrb r1, [r6,#0x1c]
+0x102ff46: cmp r1, #0x2
+0x102ff48: bne.w 0x0102fd0a
+0x102ff4c: ldr r3, [r4,#0x0]
+0x102ff4e: mov r0, r4
+0x102ff50: ldr r2, [r3,#0x18]
+0x102ff52: blx r2
+0x102ff54: cmp r5, r0
+0x102ff56: bne.w 0x0102fd0a
+0x102ff5a: mov.w r0, #0x128
+0x102ff5e: mla r11, r0, r5, r4
+0x102ff62: ldr.w r5, [r11,#0x148]
+0x102ff66: cmp r5, #0x3
+0x102ff68: bne.w 0x0103016a
+0x102ff6c: b 0x0102fd0a
+```
+
+```text
+0x103016a: ldr r1, [r4,#0x4c]
+0x103016c: cmp r1, #0x3
+0x103016e: bne 0x01030138
+0x1030170: b 0x0102fd0a
+```
+
+The 0x9D path requires 2 operands, the sender to be the current external
+source, and the device power status not to be 3. It then checks the TV's own
+`+0x4c` state: when that is not 3 it exits to `0x01030138`; when it is 3 it
+takes `0x0102fd0a`. It does **not** clear the active source or select a tuner.
+
+The 0x82 pseudocode path calls `selectSource(this,param_1)` after its OLED /
+quick-standby checks. That is consistent with the owner's resume-to-HDMI1
+observation; the sleep tuner fallback is more likely the HDMI hotplug /
+source-loss path. This corrects the 0x9D row in
+`CEC-SPEC-VS-AURORA-2026-10-30.md`.
+
+## ARM objdump provider
+
+The host `objdump` reports `can't disassemble for architecture UNKNOWN` for
+the ELF32/ARM module. Setting `REA_OBJDUMP_COMMAND` to
+`artifacts/workbench/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-objdump`
+works:
+
+```sh
+REA_OBJDUMP_COMMAND=.../arm-none-linux-gnueabihf-objdump \
+  rea inspect-with-objdump ntkdriver_nondovi.ko \
+  disassemble --symbol _CEC_TX_Data --format json
+```
+
+The output begins at `000ca188 <_CEC_TX_Data>` with the same instruction
+sequence as the Ghidra dump (`0xda3b0` runtime / `0xca188` section-relative):
+`mov ip,sp`, `push {fp,ip,lr,pc}`, `sub fp,ip,#4`, ... and the final
+`str r3,[ip,#0]` write to register `+0`.
+
+## Limits
+
+- REA imports its own private Ghidra copy; it does not reuse the canonical
+  `ghidra_*` projects or our saved names/annotations.
+- Pseudocode control flow needed an exact instruction check; do not treat the
+  decompiler's `goto` structure as proof.
+- Only static providers were used. No debugger, process capture, runtime
+  provider, firmware extraction or TV access was performed.
+- REA is not a repo dependency. Pin `6.9.0`, use a temp prefix, and keep
+  outputs as leads until verified in our Ghidra/objdump workflow.

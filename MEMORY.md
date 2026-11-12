@@ -75,8 +75,10 @@ hook, `aurora.elf` 1752, `DRV_CEC_CALLBAC` 2863). No frame was sent. Do not
 leave a long pre-stock wait that depends on SSH; use a short fixed window.
 CEC-FIRST-OPENER-2026-11-12. Owner suspend/resume
 test 2026-11-12: Deck sleep left the TV on and switched it to a tuner input;
-Deck resume switched to HDMI1. Consistent with Inactive Source (0x9D) +
-Active Source (0x82), not Standby (0x36); exact frames and tuner fallback
+Deck resume switched to HDMI1. Instruction check of `handleCECMessage` @
+`0x0102fce0`: 0x82 calls `selectSource`; 0x9D returns unless the TV is in the
+standby transition and does not clear the active source, so the sleep tuner
+fallback is more likely HDMI hotplug/source loss. Exact frames and fallback
 policy are not captured. `mod_cec` routing/power policy is not implemented. `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor

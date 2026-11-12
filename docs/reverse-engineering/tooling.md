@@ -133,6 +133,41 @@ Keep focused sanitizer runs and the full suite distinct. A qemu run proves ARM
 execution against a guest rootfs, not device effects. A CPU-only on-TV run is
 not display/HAL acceptance.
 
+## Optional REA pilot (2026-11-12)
+
+A sandboxed pilot evaluated `rea-agents@6.9.0` (MIT) as a supplementary
+static-analysis/query layer. It is not a repo dependency and was not installed
+with `rea setup`; use a temp npm prefix and copies of the binaries.
+
+Prerequisites on this host: Node 26.13.0, Ghidra 12.2 at `/opt/ghidra`
+(REA reports the 12.x >=12.1 compatible line), and the ARM cross toolchain.
+Set `REA_OBJDUMP_COMMAND` to the ARM objdump for ELF32/ARM; the host objdump
+cannot disassemble this architecture.
+
+```sh
+mkdir -p /tmp/opencode/rea-eval && cd /tmp/opencode/rea-eval
+npm_config_cache=$PWD/npm-cache npm install --ignore-scripts --no-audit --no-fund rea-agents@6.9.0
+./node_modules/.bin/rea inspect-kernel-module /path/to/module.ko --format json
+./node_modules/.bin/rea function /path/to/aurora.elf 0x0102fce0 --provider ghidra --format json
+REA_OBJDUMP_COMMAND=/path/to/arm-none-linux-gnueabihf-objdump \
+  ./node_modules/.bin/rea inspect-with-objdump /path/to/module.ko \
+  disassemble --symbol _CEC_TX_Data --format json
+```
+
+Pilot result: the kernel-module inspector matched `readelf` offsets/sizes for
+`.init.text`, `.exit.text`, `.gnu.linkonce.this_module` and `__ksymtab*`, and
+reported the absent `__versions` section/signature trailer. The Ghidra provider
+recovered `NovoCECController::handleCECMessage` at `0x0102fce0`; its pseudocode
+led to the 0x82/0x9D branches, but the 0x9D control flow needed the exact
+instruction check (0x9D does not clear the active source). The ARM objdump
+provider matched the Ghidra instruction sequence for `_CEC_TX_Data`.
+
+Use REA for quick dossiers and second opinions, not as the source of truth: it
+imports its own Ghidra copy and does not reuse the canonical `ghidra_*` projects
+or saved names. Keep all analysis on copies, do not use its runtime/debugger
+providers on the TV or vendor binaries, and verify any lead in our
+Ghidra/objdump workflow before recording it.
+
 ## ABI and address traps
 
 - **Instructions win.** Saved Ghidra signatures are metadata; verify argument

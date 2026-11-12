@@ -491,10 +491,12 @@ unvalidated.
       Next: wake/verify the peer CEC stack or use a known-good CEC device, then
       capture a reply before claiming RX/logical-address acceptance. See
       CEC-FIRST-OPENER-2026-11-12. Also implement the stock routing/power
-      policy: 0x82 Active Source selects the PA input, 0x9D Inactive Source
-      clears the active source and falls back, and 0x36 Standby is accepted only
+      policy: 0x82 Active Source selects the PA input; 0x9D Inactive Source
+      does **not** clear the active source in the recovered path (it returns
+      unless the TV is in the standby transition); 0x36 Standby is accepted only
       from the active device. Owner test 2026-11-12: Deck sleep left the TV on
-      and switched it to a tuner input; resume switched to HDMI1. Exact frames
+      and switched it to a tuner input; resume switched to HDMI1. The sleep
+      fallback is more likely HDMI hotplug/source loss than 0x9D. Exact frames
       and the tuner fallback policy are not captured; CEC-LIVE. Boot 6 armed a
       raw-RX monitor, but the pre-stock eth0/DHCP failed (`Network is down`), so
       SSH was unavailable and no trigger was created; USB recovery restored
