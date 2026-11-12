@@ -36,6 +36,8 @@ struct ctx {
     int power_status_enabled; /* cec.power_status */
     int active_logical;  /* last valid 0x82 initiator, -1 unknown */
     uint16_t active_pa;  /* last valid 0x82 physical address, 0 unknown */
+    uint16_t device_pa[16];   /* 0x84 PA per logical address */
+    uint8_t device_type[16];  /* 0x84 device type per logical address */
     char osd_name[15];   /* cec.osd_name, 1..14 printable ASCII */
 
     /* Optional hardware transport (cec.enable=1). */
@@ -414,6 +416,52 @@ static void handle_routing_change(struct ctx *c, const oa_cec_message *m)
     drop_lookup(c, OA_SVC_SOURCE, source);
 }
 
+/* CEC one-touch play: Image View On / Text View On should switch to the
+ * requesting device's HDMI input when its PA was reported by 0x84. The module
+ * only runs while the TV is on, so this is the source-selection half; waking
+ * from standby remains a power-path task. */
+static void handle_image_view(struct ctx *c, const oa_cec_message *m)
+{
+    if (!c || !c->active_source_enabled || !m) return;
+    if (m->opcode != 0x04 && m->opcode != 0x0d) return;
+    if (m->destination != 0 && m->destination != 15) return;
+    if (m->initiator == 0 || m->initiator == 15 || m->count != 0) return;
+
+    uint16_t pa = c->device_pa[m->initiator];
+    if (pa == 0) return;
+    int type = active_source_type(pa);
+    if (type < 0) {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x%02x view ignored: pa 0x%04x has no mapped "
+                    "HDMI input", m->opcode, pa);
+        return;
+    }
+    const oa_source_iface *source =
+        c->api->lookup(c->api->priv, OA_SVC_SOURCE, 1);
+    if (!source || !source->select_type) {
+        drop_lookup(c, OA_SVC_SOURCE, source);
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "cec 0x%02x view ignored: source service unavailable",
+                    m->opcode);
+        return;
+    }
+    int rc = source->select_type(type);
+    if (rc == 0) {
+        c->active_pa = pa;
+        c->active_logical = m->initiator;
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x%02x %s view: la %u pa 0x%04x type %d selected",
+                    m->opcode, m->opcode == 0x04 ? "image" : "text",
+                    m->initiator, pa, type);
+    } else {
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x%02x %s view: la %u pa 0x%04x type %d failed (%d)",
+                    m->opcode, m->opcode == 0x04 ? "image" : "text",
+                    m->initiator, pa, type, rc);
+    }
+    drop_lookup(c, OA_SVC_SOURCE, source);
+}
+
 /* CEC 1.3a <Standby> is broadcast and is accepted only from the device that
  * announced itself as the active source. The vendor controller checks
  * getActiveLogicalDevice/CEC-enabled and notifies listeners; the replacement
@@ -463,8 +511,22 @@ static void queue_replies(struct ctx *c, const oa_cec_message *replies, int n)
  * tuner is displayed. 0x84 reports are logged for the device table. */
 static void handle_identity(struct ctx *c, const oa_cec_message *m)
 {
-    if (!c || !c->identity_enabled || !m) return;
+    if (!c || !m) return;
     if (m->initiator == 0 || m->initiator == 15) return;
+
+    if (m->opcode == 0x84) {
+        if (m->count != 3) return;
+        uint16_t pa = (uint16_t)((m->operands[0] << 8) | m->operands[1]);
+        if (!oa_cec_physical_address_valid(pa)) return;
+        c->device_pa[m->initiator] = pa;
+        c->device_type[m->initiator] = m->operands[2];
+        if (!c->identity_enabled) return;
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "cec 0x84 la %u pa 0x%04x type %u",
+                    m->initiator, pa, (unsigned)m->operands[2]);
+        return;
+    }
+    if (!c->identity_enabled) return;
 
     if (m->opcode == 0x83) {
         if (m->count != 0) return;
@@ -494,14 +556,6 @@ static void handle_identity(struct ctx *c, const oa_cec_message *m)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "cec 0x85 -> 0x82 pa 0x0000");
         return;
-    }
-    if (m->opcode == 0x84) {
-        if (m->count != 3) return;
-        uint16_t pa = (uint16_t)((m->operands[0] << 8) | m->operands[1]);
-        if (!oa_cec_physical_address_valid(pa)) return;
-        c->api->log(c->api->priv, OA_LOG_INFO,
-                    "cec 0x84 la %u pa 0x%04x type %u",
-                    m->initiator, pa, (unsigned)m->operands[2]);
     }
 }
 
@@ -610,6 +664,7 @@ static void handle_completion(struct ctx *c, const oa_cec_completion *comp)
             handle_inactive_source(c, &comp->message);
             handle_active_source(c, &comp->message);
             handle_routing_change(c, &comp->message);
+            handle_image_view(c, &comp->message);
             handle_standby(c, &comp->message);
             handle_identity(c, &comp->message);
             handle_power_status(c, &comp->message);
@@ -839,6 +894,8 @@ static int start(void *ud)
     c->quiescing = 0;
     c->active_logical = -1;
     c->active_pa = 0;
+    memset(c->device_pa, 0, sizeof c->device_pa);
+    memset(c->device_type, 0, sizeof c->device_type);
     c->cleanup_result = 0;
     c->cleanup_authority = 0;
     c->transport = NULL;
@@ -1008,6 +1065,8 @@ static int quiesce(void *ud)
     c->power_status_enabled = 0;
     c->active_logical = -1;
     c->active_pa = 0;
+    memset(c->device_pa, 0, sizeof c->device_pa);
+    memset(c->device_type, 0, sizeof c->device_type);
     c->quiescing = 1;
     clear_session_state(c);
     c->cleanup_authority = c->authority_open ? 1 : 0;
@@ -1053,6 +1112,8 @@ static int suspend(void *ud)
     clear_session_state(c);
     c->active_logical = -1;
     c->active_pa = 0;
+    memset(c->device_pa, 0, sizeof c->device_pa);
+    memset(c->device_type, 0, sizeof c->device_type);
     if (c->owner) {
         c->quiescing = 1;
         c->cleanup_owner = c->owner;
@@ -1167,6 +1228,8 @@ static void stop(void *ud)
     c->power_status_enabled = 0;
     c->active_logical = -1;
     c->active_pa = 0;
+    memset(c->device_pa, 0, sizeof c->device_pa);
+    memset(c->device_type, 0, sizeof c->device_type);
     c->cleanup_authority = 0;
 }
 

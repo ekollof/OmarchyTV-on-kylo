@@ -74,8 +74,8 @@ plus its own workarounds. The policy layer does the TV behaviour. Both were insp
 | opcode | message | spec | aurora handling | verdict |
 |---|---|---|---|---|
 | 0x00 | `<Feature Abort>` | clear the pending action | clears the device's init/abort state | ok |
-| 0x04 | `<Image View On>` | wake TV, switch to the source | wakes, selects source, buffers `Active Source` | ok |
-| 0x0D | `<Text View On>` | as above, also clear menus | same plus menu clear; aborts with reason 1 when not allowed | ok |
+| 0x04 | `<Image View On>` | wake TV, switch to the source | wakes, selects source, buffers `Active Source` | replacement selects the 0x84 device PA's HDMI input behind `cec.active_source` (`cec_image_view.cjs`); wake-from-standby remains a power-path task |
+| 0x0D | `<Text View On>` | as above, also clear menus | same plus menu clear; aborts with reason 1 when not allowed | replacement selects the 0x84 device PA's HDMI input behind `cec.active_source` (`cec_image_view.cjs`); menu clear not reproduced |
 | 0x36 | `<Standby>` | TV may enter standby | only from the active device, and only if own power state ≠ 3 (in transition to standby) | replacement implements gated `cec.standby` via `OA_SVC_POWER`, only from the tracked active source (`cec_standby.cjs`) |
 | 0x44 | `<User Control Pressed>` | RCP | length must be 1 and sender must be the active device; 0x41–0x43 (vol up/down/mute) mapped via a table; others forwarded | ok |
 | 0x45 | `<User Control Released>` | RCP | stops the key-press timer, forces 0x2f2 | ok |

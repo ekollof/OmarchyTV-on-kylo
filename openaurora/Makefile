@@ -1513,6 +1513,11 @@ check-cec-routing: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD)/t
 	node tests/cec_routing.cjs $(abspath $(BUILD))
 check: check-cec-routing
 
+.PHONY: check-cec-image-view
+check-cec-image-view: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD)/tests/mod_cec_services_fake.so
+	node tests/cec_image_view.cjs $(abspath $(BUILD))
+check: check-cec-image-view
+
 .PHONY: check-cec-standby
 check-cec-standby: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD)/tests/mod_cec_services_fake.so
 	node tests/cec_standby.cjs $(abspath $(BUILD))

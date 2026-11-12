@@ -679,6 +679,8 @@ source; the sleep trigger is CEC `0x9D`/key 597.
   comparison.
 - `cec-osd-name-source.txt` — 0x47 length/truncation and setHDMIName
   instructions; the vendor does not answer 0x46.
+- `cec-image-view-source.txt` — 0x04/0x0D dispatch and the 0x0D prohibited-mode
+  path; the replacement adds the source-selection half.
 
 Related: [CEC-LIVE-2026-11-01](CEC-LIVE-2026-11-01.md),
 [CEC-SPEC-VS-AURORA-2026-10-30](CEC-SPEC-VS-AURORA-2026-10-30.md),

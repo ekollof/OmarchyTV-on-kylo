@@ -1,0 +1,67 @@
+CEC 0x04 Image View On / 0x0D Text View On evidence
+aurora.elf MR: 0x0102fce1 handleCECMessage
+
+=== 0x04/0x0D dispatch
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0102fda0 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xc0>:
+ 102fda0:	81eb      	strh	r3, [r5, #14]
+ 102fda2:	d858      	bhi.n	102fe56 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x176>
+ 102fda4:	280d      	cmp	r0, #13
+ 102fda6:	f000 82ab 	beq.w	1030300 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x620>
+ 102fdaa:	d819      	bhi.n	102fde0 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x100>
+ 102fdac:	2800      	cmp	r0, #0
+ 102fdae:	f000 84f4 	beq.w	103079a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xaba>
+ 102fdb2:	2804      	cmp	r0, #4
+ 102fdb4:	f000 81c0 	beq.w	1030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>
+
+=== 0x0D handler 0x01030300
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+01030300 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x620>:
+ 1030300:	4620      	mov	r0, r4
+ 1030302:	f7ff fc75 	bl	102fbf0 <_ZN17NovoCECController20isTVInProhibitedModeEv@@Base>
+ 1030306:	b948      	cbnz	r0, 103031c <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x63c>
+ 1030308:	f241 32ac 	movw	r2, #5036	; 0x13ac
+ 103030c:	58a0      	ldr	r0, [r4, r2]
+ 103030e:	b128      	cbz	r0, 103031c <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x63c>
+ 1030310:	6803      	ldr	r3, [r0, #0]
+ 1030312:	6999      	ldr	r1, [r3, #24]
+ 1030314:	4788      	blx	r1
+ 1030316:	2800      	cmp	r0, #0
+ 1030318:	f040 82e7 	bne.w	10308ea <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xc0a>
+ 103031c:	7b35      	ldrb	r5, [r6, #12]
+ 103031e:	f107 0228 	add.w	r2, r7, #40	; 0x28
+ 1030322:	2001      	movs	r0, #1
+ 1030324:	9200      	str	r2, [sp, #0]
+ 1030326:	f887 0029 	strb.w	r0, [r7, #41]	; 0x29
+ 103032a:	2302      	movs	r3, #2
+ 103032c:	f887 5028 	strb.w	r5, [r7, #40]	; 0x28
+ 1030330:	2200      	movs	r2, #0
+ 1030332:	6871      	ldr	r1, [r6, #4]
+ 1030334:	e019      	b.n	103036a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x68a>
+
+=== common notify tail 0x01030138
+
+artifacts/workbench/rootfs/vendor/com.nvt.idtv/aurora.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+01030138 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x458>:
+ 1030138:	6831      	ldr	r1, [r6, #0]
+ 103013a:	2900      	cmp	r1, #0
+ 103013c:	f47f ade5 	bne.w	102fd0a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2a>
+ 1030140:	f241 35ac 	movw	r5, #5036	; 0x13ac
+ 1030144:	5960      	ldr	r0, [r4, r5]
+ 1030146:	2800      	cmp	r0, #0
+ 1030148:	f040 83c4 	bne.w	10308d4 <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0xbf4>
+ 103014c:	e5dd      	b.n	102fd0a <_ZN17NovoCECController16handleCECMessageER10CECMessage@@Base+0x2a>

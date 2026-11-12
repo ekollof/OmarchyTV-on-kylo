@@ -73,7 +73,9 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   matching old active PA and selects the new PA's HDMI input behind
   `cec.active_source` (`cec_routing.cjs`). OSD names are behind
   `cec.identity` (0x46 -> 0x47 configured name, 0x47 logged;
-  `cec_osd_name.cjs`). Stock observation 2026-11-12: Deck
+  `cec_osd_name.cjs`). One-touch 0x04/0x0D selects the 0x84 device PA's HDMI
+  input behind `cec.active_source` (`cec_image_view.cjs`). Stock observation
+  2026-11-12: Deck
   sleep left the TV on at a tuner input; this is CEC `0x9D Inactive Source`:
   `SvgAppCECEventsListener` posts `UIKeyPressMessage(597)`, and the UI selects
   DTV/tuner (`ICE_VideoSelectSource` source 8 →
