@@ -68,7 +68,12 @@ The repeated `No data in SW RX Buffer`/`please fix nvt_err error` is the
 driver's normal empty-RX logging, not a separate fault. A SIGKILLed raw owner
 leaves the kernel CEC context; reboot restores stock. Stock restored after boot
 5: original hook `c3943712…`, no staging, stock `aurora.elf` 1773 and
-`DRV_CEC_CALLBAC` 2855. CEC-FIRST-OPENER-2026-11-12. Owner suspend/resume
+`DRV_CEC_CALLBAC` 2855. Boot 6 armed a raw-RX monitor, but the pre-stock
+eth0/DHCP failed (`Network is down`), so SSH was unavailable and the
+`/tmp/cec-go` trigger was never created; USB recovery restored stock (original
+hook, `aurora.elf` 1752, `DRV_CEC_CALLBAC` 2863). No frame was sent. Do not
+leave a long pre-stock wait that depends on SSH; use a short fixed window.
+CEC-FIRST-OPENER-2026-11-12. Owner suspend/resume
 test 2026-11-12: Deck sleep left the TV on and switched it to a tuner input;
 Deck resume switched to HDMI1. Consistent with Inactive Source (0x9D) +
 Active Source (0x82), not Standby (0x36); exact frames and tuner fallback

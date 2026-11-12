@@ -1,0 +1,12 @@
+== cec-monitor Thu Jan  1 01:00:07 CET 1970 boot=1 ==
+[  5467] INFO host         openaurora starting, modules=/buffer/oa-cec-monitor/modules
+[  5486] INFO host         control socket /buffer/oa-cec-monitor/control
+[  5493] INFO host         loaded cec v1 (/buffer/oa-cec-monitor/modules/mod_cec.so)
+[  5494] DBG  cec          service up: cec.owner v1
+[  5494] DBG  cec          service up: cec.audio v1
+[  5494] INFO cec          cec: hardware enabled (/tmp/ntkcec)
+[  5494] INFO host         started cec
+openaurora: 1 module(s) loaded, control on /buffer/oa-cec-monitor/control
+[  5495] INFO cec          cec raw transport open (/tmp/ntkcec)
+cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 0 open 1 rx 0 tx 0 error 0 last 0
+monitor armed; waiting for /tmp/cec-go

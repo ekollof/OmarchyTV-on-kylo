@@ -1,0 +1,20 @@
+== tvhack boot Thu Jan  1 01:00:05 CET 1970
+id: uid=0(root) gid=0(root)
+uname: Linux (none) 4.9.118+ #2 SMP PREEMPT Mon Jul 26 10:59:37 CST 2021 armv7l GNU/Linux
+devpts: 0
+passwd bind: 0
+hosts bind: 0
+dropbear rc: 0
+telnetd rc: 0
+dialserver: 1833
+services done, id=uid=0(root) gid=0(root)
+db internet flag forced: 1
+keepalive: started pid=2472
+keepalive: eth0 brought up
+keepalive: requesting DHCP lease
+udhcpc: started, v1.29.3
+udhcpc: sending discover
+udhcpc: sending discover
+udhcpc: sending discover
+udhcpc: read error: Network is down, reopening socket
+Killed

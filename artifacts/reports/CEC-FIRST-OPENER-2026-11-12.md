@@ -165,6 +165,39 @@ announced LA0/PA 0.0.0.0. A `84` reply was not captured. This is consistent
 with an ACK-only/limited peer stack (asleep, CEC disabled, or an adapter
 without full message handling); it is not a TV TX failure.
 
+### Boot 6: armed monitor attempt and recovery
+
+A raw-RX monitor was staged as `openaurora` `b1ee4832…`, `mod_cec.so`
+`f3337e29…`, monitor script `d4c72b90…` and hook `fe9205fd…`
+(`timeout -t 420`). It opened `/tmp/ntkcec` (`open 1`) and logged
+`monitor armed; waiting for /tmp/cec-go`; the MCU feeder logged 66 beats
+(132 s) before the recovery.
+
+The pre-stock hook's Ethernet/DHCP did not come up:
+
+```text
+keepalive: eth0 brought up
+keepalive: requesting DHCP lease
+udhcpc: sending discover
+udhcpc: read error: Network is down, reopening socket
+Killed
+```
+
+SSH was therefore unreachable, the `/tmp/cec-go` trigger could not be created,
+and the user restored the tested `/conf` image with the USB stick. The monitor
+did not send a frame and did not hang the CEC path; the failure was the long
+pre-stock armed wait that depended on an unreliable early network.
+
+Recovery restored the original hook `c3943712…`, no branch, stock
+`aurora.elf` 1752 (zombie 2184) and `DRV_CEC_CALLBAC` 2863.
+`/buffer/oa-cec-monitor` survived because it is not part of `/conf`; its
+`cec.log`, `wdt.log` and `tvhack.log` tail were preserved and the staging was
+removed.
+
+Rule: do not leave a long pre-stock block that depends on SSH. A retry must use
+a short fixed capture window that starts immediately and unconditionally falls
+through to stock, with the feeder/reaper bounding it.
+
 ## What this establishes
 
 - A first-opener boot really is sufficient to acquire the raw CEC device;
@@ -178,9 +211,8 @@ without full message handling); it is not a TV TX failure.
   `0483`/`0446`/`048f`. The old cache-slot reading was not a wire address.
 - The LA4 peer does not answer `83`/`46`/`8f`; a peer reply is not yet proven.
 - The boot harness needs a hard-kill timeout, no blocking `wait` in its trap,
-  a one-shot guard, feeder stop on every exit, and an unconditional fallback
-  to stock. A SIGKILLed raw owner leaves the kernel CEC context; reboot is the
-  clean restore.
+  a one-shot guard, feeder stop on every exit, an unconditional fallback to
+  stock, and no long pre-stock wait that depends on SSH.
 
 ## Limits
 
@@ -189,19 +221,26 @@ without full message handling); it is not a TV TX failure.
   adapter, or a device whose CEC stack is asleep is not established.
 - The exact LA4 device identity and reply behavior need a peer-side check or a
   known-good CEC device.
-- Raw RX during the test window was empty. Later dmesg showed RX-buffer
+- Raw RX during the boot 3–5 test window was empty. Later dmesg showed RX-buffer
   activity in the leaked context after stock started, but no userspace frame
   was captured and loopback of our own frames is not excluded.
+- Boot 6 captured no RX: the pre-stock network failed, no trigger was created,
+  and recovery was required. It is not evidence about the CEC bus.
 - The exact boot-2 hang cause is unproven.
-- USB recovery was required for boot 2; the stick was rebuilt. The recovery
-  image is the tested `/conf` image, not a pristine no-root revert.
+- USB recovery was required for boots 2 and 6; the stick was rebuilt. The
+  recovery image is the tested `/conf` image, not a pristine no-root revert.
 - `cec.enable` remains 0 in every shipped profile.
 
 ## Next
 
-1. Wake or verify the Deck's CEC stack and retry `0483`/`0446`/`048f` with a
-   longer post-ACK listen; capture the initiator of any peer-originated frame.
-2. If the peer stays silent, test against another known CEC device and record
-   whether it answers `83`; do not treat ACK as reply acceptance.
+1. Capture the Deck suspend/resume frames with a fixed-window raw-RX monitor:
+   start immediately after acquire, run at most 60 s, create no SSH-dependent
+   trigger, and unconditionally exec stock at the end. The owner sleeps the
+   Deck, waits, then resumes it inside the window. This also provides the raw
+   RX evidence and the exact opcode (0x9D/0x36 versus 0x82).
+2. If the peer stays silent, verify the Deck's CEC stack or use a known-good
+   CEC device and record whether it answers `83`; do not treat ACK as reply
+   acceptance.
 3. Keep the queue regression (`check-cec-module-fake`) and the hardened
-   harness in the next first-opener run; no persistent hook stays installed.
+   fixed-window harness in the next first-opener run; no persistent hook stays
+   installed.

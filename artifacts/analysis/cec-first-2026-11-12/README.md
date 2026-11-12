@@ -24,6 +24,16 @@
 - `cec.log.boot4-la4-ack` — LA8 NACK; LA4 and broadcast ACK.
 - `cec.log.boot5-la4-queries` — TV announcement, LA4 poll and 83/46/8f;
   all five ACKed, zero RX frames.
+- `cec.log.boot6-monitor-armed` — raw-RX monitor acquired CEC and armed; no
+  trigger was created.
+- `wdt.log.boot6-monitor` — 66 MCU feeder beats before recovery.
+- `tvhack.log.boot6-tail` — pre-stock Ethernet/DHCP failure
+  (`Network is down, reopening socket`).
+- `aurora.elf.cec-monitor` — armed-monitor hook, sha256
+  `fe9205fd95a5128033dcc787489bd1eca8ac86e17d3ad0c629702e4a324077bf`
+  (`timeout -t 420`).
+- `run-cec-monitor.sh` — armed monitor, sha256
+  `d4c72b90b191c3bf217a68f2449c4681ba18de4c649b691c46a97d564e1c9aa4`.
 - `dmesg.boot4.txt`, `dmesg.boot5.txt` — driver logs for those boots.
 - `nondovi-cec-isr.txt` — read-only Ghidra dump of
   `KER_CEC_InterrutHandler` @ `0xd9064`: TX status 0 on INT bit 3, status 2 on
@@ -31,6 +41,7 @@
 - `nondovi-cec-tx.txt` — `_CEC_TX_Data` @ `0xda3b0` and `_CEC_CheckSFT`.
 - `nondovi-refs-aea324.txt` — `DAT_00aea324` write/data references used to
   locate the interrupt handler.
+
 The driver project is `artifacts/workbench/ghidra_nondovi` /
 `ntkdriver_nondovi.ko`, MD5 `fded7005651e37b8a1b5e8e89f73f4ff`.
 
@@ -51,3 +62,12 @@ branch, `/conf/oa_boot` absent, `/conf/oa_safe` present, stock
 `appmgr` 1569 / `run_aurora.sh` 1726 / `aurora.elf` 1773 / `dialserver` 1864,
 kernel thread `DRV_CEC_CALLBAC` 2855, no `openaurora`/`oa-wdtfeed`, and
 `/tmp/ntkcec` absent.
+
+Boot 6 (armed monitor) armed the raw owner, but the pre-stock hook's
+Ethernet/DHCP failed, so SSH was unreachable and no trigger was created. The
+user restored the tested `/conf` image with the USB stick. `/buffer/oa-cec-monitor`
+is outside `/conf`, so it survived; its `cec.log`, `wdt.log` and `tvhack.log`
+tail were copied here and the staging was removed. Stock after recovery:
+original hook `c3943712…`, no branch, `aurora.elf` 1752, `DRV_CEC_CALLBAC` 2863,
+no `openaurora`/`oa-wdtfeed`, and `/tmp/ntkcec` absent. The monitor did not send
+a frame; the failure was the long SSH-dependent pre-stock wait, not CEC.

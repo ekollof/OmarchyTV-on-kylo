@@ -495,7 +495,11 @@ unvalidated.
       clears the active source and falls back, and 0x36 Standby is accepted only
       from the active device. Owner test 2026-11-12: Deck sleep left the TV on
       and switched it to a tuner input; resume switched to HDMI1. Exact frames
-      and the tuner fallback policy are not captured; CEC-LIVE.
+      and the tuner fallback policy are not captured; CEC-LIVE. Boot 6 armed a
+      raw-RX monitor, but the pre-stock eth0/DHCP failed (`Network is down`), so
+      SSH was unavailable and no trigger was created; USB recovery restored
+      stock. Do not leave a long pre-stock SSH-dependent wait; the next retry
+      must use a <=60 s fixed window that unconditionally execs stock.
 
 ### Input / source / PVR
 
