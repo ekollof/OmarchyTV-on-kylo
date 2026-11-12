@@ -6,6 +6,11 @@ Evidence class: on-TV controlled ownership; no CEC frame sent.
 Supersedes: the "raw ownership needs an authorized TV session" limit in
 CEC-MODULE-TRANSPORT-2026-11-09 for the acquire step only.
 
+> **2026-11-12 correction:** the CEC-LIVE “LA8” was a cache array slot, not a
+> proved wire logical address. Raw first-opener TX now shows LA8 NACK and LA4
+> ACK; the LA4 peer accepts queries but sends no reply. See
+> CEC-FIRST-OPENER-2026-11-12. The raw-acquire/lock result below is unchanged.
+
 ## Setup
 
 The Steam Deck is connected on HDMI1 and speaks CEC; CEC-LIVE-2026-11-01
@@ -92,7 +97,8 @@ change.
 - No CEC TX or RX occurred; the Deck's live response was not exercised in
   this attempt.
 - The shared-owner `cec-probe` path remains the only currently usable live
-  identity query while stock Aurora runs; CEC-LIVE already recorded LA8/PA1000.
+  identity query while stock Aurora runs. CEC-LIVE's cache slot 8 was not a
+  proved wire LA; the 2026-11-12 first-opener test shows LA8 NACK / LA4 ACK.
 - A first-opener boot requires a boot-time entry / controlled boot gate, which
   is a separate deployment decision. `cec.enable=0` remains in every profile.
 - No audio/ARC, routing or CEC policy acceptance is claimed.

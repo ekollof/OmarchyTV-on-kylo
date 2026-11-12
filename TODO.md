@@ -474,15 +474,23 @@ unvalidated.
       driver. CEC-RAW-BACKEND. 2026-11-11 retest: same `CEC Try lock fail`
       with no `/proc/*/fd` CEC holder after stock stop; authority map and
       module start pass, `cec-state open 0 error 1`, no TX/RX; see
-      CEC-RAW-ACQUIRE-2026-11-11. The Deck is at LA8/PA1000 (CEC-LIVE).
-      2026-11-12 first-opener boot: a temporary hook branch acquired raw CEC
-      before stock (`cec raw transport open (/tmp/ntkcec)`, `open 1`), but
-      `cec-send` returned `EBUSY` because the single owner job slot was busy
-      with the 100 ms receive poll; no TX/RX. A retry boot hung and required
-      USB recovery (stick rebuilt clean with the tested pair). Fix the send
-      queue/wait and harden the harness (`timeout -s KILL`, no blocking trap
-      wait, unconditional stock fallback) before retrying; capture the Deck's
-      `84` reply. See CEC-FIRST-OPENER-2026-11-12.
+      CEC-RAW-ACQUIRE-2026-11-11. The 2026-11-01 cache "LA8" was the array
+      slot index, not a proved wire logical address.
+      2026-11-12 first-opener boots: a temporary hook branch acquired raw CEC
+      before stock (`cec raw transport open (/tmp/ntkcec)`, `open 1`). Boot 1
+      sends returned `EBUSY`; the queue fix (`b9269fc`) now accepts a send while
+      the receive poll owns the slot. Boot 3 queued `0883` but the driver
+      returned -512 (`0xfffffe00`), its five-retry TX failure/NACK path. Boot 4:
+      LA8 NACK, LA4 and broadcast ACK. Boot 5: TV announcement `0f84000000`,
+      poll `04`, and `0483`/`0446`/`048f` to LA4 all ACKed (`tx 1..5`) but zero
+      RX frames; no `84` reply, so LA4's identity and reply support remain
+      unproven. The repeated `No data in SW RX Buffer`/`please fix nvt_err
+      error` is normal empty-RX logging, not a separate fault. A SIGKILLed raw
+      owner leaves the CEC context; reboot restored stock after boot 5 (original
+      hook `c3943712…`, no staging, `aurora.elf` 1773, `DRV_CEC_CALLBAC` 2855).
+      Next: wake/verify the peer CEC stack or use a known-good CEC device, then
+      capture a reply before claiming RX/logical-address acceptance. See
+      CEC-FIRST-OPENER-2026-11-12.
 
 ### Input / source / PVR
 
@@ -1912,6 +1920,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       vendor cache; standard 83/46/8f queries received driver TX acceptance with
       stock owner active. No response payload capture or independent native
       ownership acceptance. Temporary staging removed; stock boot unchanged.
+      2026-11-12 correction: the cache script printed the array slot index, not
+      a proved wire LA. Raw first-opener TX shows LA8 NACK and LA4 ACK; LA4
+      accepts queries but sends no reply. Identity/reply support unproven.
+      CEC-FIRST-OPENER-2026-11-12.
 - [x] Spec-based CEC framing/System Audio status and ARC-direction helpers,
       with explicit unsupported scope, tested offline on host/sanitizer/ARM-qemu.
       Later mod_cec routes injected frames; these helpers do not establish

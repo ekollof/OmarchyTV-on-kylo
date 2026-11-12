@@ -1,0 +1,15 @@
+== cec-first Thu Jan  1 01:00:08 CET 1970 boot=1 ==
+[  5883] INFO host         openaurora starting, modules=/buffer/oa-cec-first/modules
+[  5892] INFO host         control socket /buffer/oa-cec-first/control
+[  5899] INFO host         loaded cec v1 (/buffer/oa-cec-first/modules/mod_cec.so)
+[  5900] DBG  cec          service up: cec.owner v1
+[  5900] DBG  cec          service up: cec.audio v1
+[  5900] INFO cec          cec: hardware enabled (/tmp/ntkcec)
+[  5900] INFO host         started cec
+openaurora: 1 module(s) loaded, control on /buffer/oa-cec-first/control
+[  5901] INFO cec          cec raw transport open (/tmp/ntkcec)
+cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 0 open 1 rx 0 tx 0 error 0 last 0
+send 0883: failed errno 22
+unknown command: 0883 (try 'help')
+final state: cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 0 open 1 rx 0 tx 0 error 0 last 0
+cec-first: no op 84 reply in log

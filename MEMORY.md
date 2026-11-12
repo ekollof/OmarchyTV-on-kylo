@@ -53,15 +53,22 @@ retest 2026-11-11:
 the authority mirror map and `mod_cec` start pass, but `CEC_OPEN` still
 returns EPERM (`kcec: CEC Try lock fail`) with no `/proc/*/fd` holder after
 stock Aurora stop; the same orphaned `DRV_CEC_CALLBAC` lock as 2026-11-07
-survives stock exit. A first-opener boot/handoff is required; the Deck is at
-LA8/PA1000 (CEC-LIVE). `cec.enable` remains 0. First-opener boot 2026-11-12: a
-temporary hook branch ran `mod_cec` before stock and acquired the raw device
-(`cec raw transport open (/tmp/ntkcec)`, `open 1`, no lock failure). The
-identity sends returned `EBUSY` because the single owner job slot was busy
-with the 100 ms receive poll; no TX/RX. A retry boot hung and required USB
-recovery; stock is restored (appmgr 1549/aurora 1758, original hook
-`c3943712…`, no CEC-first branch/staging). Next: queue/wait the send and harden
-the boot harness. CEC-FIRST-OPENER-2026-11-12. `DEV_AMP_ID`
+survives stock exit. A first-opener boot/handoff is required. `cec.enable` remains 0.
+First-opener boots 2026-11-12: the raw module opened `/tmp/ntkcec`
+(`cec raw transport open (/tmp/ntkcec)`, `open 1`, no lock failure). Boot 1
+sends returned `EBUSY` because the single owner slot was busy with the 100 ms
+receive poll; the queue fix (`b9269fc`) now queues. Boot 3 queued `0883` but the
+driver returned -512 (`0xfffffe00`): its TX branch retries five completion
+waits and `KER_CEC_InterrutHandler` reports INT bit 2 failure, so this is a
+NACK, not an errno. Boot 4: LA8 NACK, LA4 and broadcast ACK. Boot 5: TV
+announcement `0f84000000`, poll `04`, and `0483`/`0446`/`048f` to LA4 all ACKed
+(`tx 1..5`) but zero RX frames; no `84` reply. The old "Deck at LA8" was a cache
+slot index, not a proved wire LA; LA4 is the active peer, identity unconfirmed.
+The repeated `No data in SW RX Buffer`/`please fix nvt_err error` is the
+driver's normal empty-RX logging, not a separate fault. A SIGKILLed raw owner
+leaves the kernel CEC context; reboot restores stock. Stock restored after boot
+5: original hook `c3943712…`, no staging, stock `aurora.elf` 1773 and
+`DRV_CEC_CALLBAC` 2855. CEC-FIRST-OPENER-2026-11-12. `DEV_AMP_ID`
 profile/reset114/mute208
 effects are covered by `audio_amp_profile`/`amp_board`; the vendor
 factory/monitor task is not reproduced (entry `0x84e110`, IsAlive `0x875458`:
@@ -3931,6 +3938,10 @@ Vendor cache identifies Steam Deck at LA8 / PA1000, power On. Three standard
 queries 83/46/8f to LA8 returned ioctl success AND driver acceptance. Cache
 mirrored name/address/power into an unseen LA4 slot; this is not proof of a second
 client or fresh replies to each query. No response payloads were captured.
+2026-11-12 correction: the cache loop printed the array slot index, not a proved
+wire logical address. Raw first-opener TX now shows LA8 NACK and LA4 ACK; LA4
+accepted 83/46/8f but sent no reply, so its identity is still unconfirmed.
+See CEC-FIRST-OPENER-2026-11-12.
 Temporary files/node and probe processes are gone. Same boot/UI, Ethernet/MAC,
 SSH/telnet, hosts/Samba blocks and hook/keeper hashes verified afterward.
 No persistent deployment, reboot, audio write or recovery change occurred.

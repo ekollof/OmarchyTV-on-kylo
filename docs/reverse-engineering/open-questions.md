@@ -51,11 +51,14 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
 ## CEC
 
 - The raw/VPL transport, authority mirror, owner worker, reply queue, policy
-  and module-level fake are implemented/tested, but **hardware/bus/TX
-  acceptance** and the authority write path are not. `cec.enable=0`.
+  and module-level fake are implemented/tested. Raw first-opener TX is now
+  hardware-ACKed (LA4 and broadcast), but the authority write path, RX replies
+  and stock integration are not; hardware NACK/error behavior is only partly
+  mapped. `cec.enable=0`.
 - ARC/System Audio and the CEC 1.3a/1.4 clauses still need a live acceptance
-  run; the earlier Steam Deck was LA8/PA1000. A raw receive consumes messages
-  and is not a view-only query.
+  run. The 2026-11-01 cache “LA8” was an array slot, not a wire LA; on
+  2026-11-12 LA8 NACKed while LA4 and broadcast ACKed, but LA4 answered no
+  83/46/8f query. A raw receive consumes messages and is not a view-only query.
 
 Reports: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),

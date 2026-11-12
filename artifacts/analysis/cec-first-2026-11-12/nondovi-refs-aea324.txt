@@ -1,0 +1,63 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.2_DEV/preferences (Preferences)  
+INFO  Loading previous preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (532 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @4229bb3f (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Loaded 118 trusted CA certificate(s) from /etc/ssl/certs/ca-certificates.crt (UnixSystemTrustKeyStoreUtil)  
+INFO  Loaded 118 trusted CA certificates from the OS trust store. (DefaultTrustManagerFactory)  
+INFO  Loaded 118 trusted CA certificates from the Java default trust store. (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1125 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 60 extension points (19 false positives) (ClassSearcher)  
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Swift/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_nondovi/nondovi (HeadlessAnalyzer)  
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_nondovi/nondovi (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /ntkdriver_nondovi.ko (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: FindCallers.java '@0xaea324'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/FindCallers.java (HeadlessAnalyzer)  
+INFO  FindCallers.java> PROGRAM ntkdriver_nondovi.ko MD5 fded7005651e37b8a1b5e8e89f73f4ff (GhidraScript)  
+INFO  FindCallers.java>  (GhidraScript)  
+INFO  FindCallers.java> ===== @0xaea324 (GhidraScript)  
+INFO  FindCallers.java>   target 00aea324  (not a function entry) (GhidraScript)  
+INFO  FindCallers.java>     7 reference(s) (GhidraScript)  
+INFO  FindCallers.java>     000d912c  WRITE           KER_CEC_InterrutHandler                   str r3,[r4,#0x68] (GhidraScript)  
+INFO  FindCallers.java>     000d914c  WRITE           KER_CEC_InterrutHandler                   str r6,[r4,#0x68] (GhidraScript)  
+INFO  FindCallers.java>     000d964c  DATA            KER_CEC_IOCtl                             ldr r3,[r9,#0x68] (GhidraScript)  
+INFO  FindCallers.java>     000d96e8  DATA            KER_CEC_IOCtl                             ldr r3,[r9,#0x68] (GhidraScript)  
+INFO  FindCallers.java>     000d9918  DATA            KER_CEC_IOCtl                             str r7,[r3,#0x68] (GhidraScript)  
+INFO  FindCallers.java>     000d9d20  DATA            KER_CEC_IOCtl                             str r2,[r3,#0x68] (GhidraScript)  
+INFO  FindCallers.java>     000da0cc  WRITE           _ker_cec_resume_p                         str r5,[r4,#0x68] (GhidraScript)  
+INFO  REPORT: Discarding changes to the following read-only file: /ntkdriver_nondovi.ko (HeadlessAnalyzer)  

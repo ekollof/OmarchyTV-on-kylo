@@ -107,7 +107,7 @@ Ghidra project map (details and hashes in [binaries.md](binaries.md)):
 | [AUDIO-SOURCE-SERVICE-2026-11-09](../../artifacts/reports/AUDIO-SOURCE-SERVICE-2026-11-09.md) | ICE_AudioStart external branch, AIN/VAUD/AQ/AQuality, HP |
 | [CEC-TRANSPORT-CONTRACT-2026-10-31](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md) | raw/VPL packet ABI, receive/filter/close hazards |
 | [CEC-OWNERSHIP-2026-11-01](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md) | PreInit cdev, raw backend, owner lifetime |
-| [CEC-LIVE-2026-11-01](../../artifacts/reports/CEC-LIVE-2026-11-01.md) | live shared-owner queries, Steam Deck at LA8/PA1000 |
+| [CEC-LIVE-2026-11-01](../../artifacts/reports/CEC-LIVE-2026-11-01.md) | live shared-owner queries; cache slot misread as LA8, wire test LA4 ACK |
 | [SOURCE-PATH-2026-11-09](../../artifacts/reports/SOURCE-PATH-2026-11-09.md) | VIN/source connect path and HAL seam |
 | [TUNER-BRINGUP-2026-11-06](../../artifacts/reports/TUNER-BRINGUP-2026-11-06.md) | NIM/DTV bring-up and gates |
 | [APP-MANAGER-KEYBOARD-2026-11-07](../../artifacts/reports/APP-MANAGER-KEYBOARD-2026-11-07.md) | libappmgr symbols, keyboard layout |

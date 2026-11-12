@@ -6,6 +6,9 @@ Evidence class: on-TV controlled boot plus physical USB recovery.
 Supersedes: the "first-opener boot not tested" limit in
 [CEC-RAW-ACQUIRE-2026-11-11](CEC-RAW-ACQUIRE-2026-11-11.md) for the acquire
 step only. The lock finding in that report still stands.
+Corrects: the 2026-11-01 cache “LA8” reading in
+[CEC-LIVE-2026-11-01](CEC-LIVE-2026-11-01.md) as a wire logical address; the
+boot 4/5 wire test shows LA8 NACK and LA4 ACK.
 
 ## Purpose
 
@@ -33,6 +36,13 @@ through a temporary, reversible hook branch.
   feeder and removed `/tmp/ntkcec`.
 - A manual rehearsal on the running stock owner (lock held) failed with
   `open 0 error 1`, sent ENODEV and exited cleanly with no leftovers.
+- Retry staging for boots 3–5: `mod_cec.so` `f3337e29…` (TX queue),
+  script `7d498a3f…` and hook `afbf1656…`. The hook used
+  `timeout -t 40 -s KILL`; the script moved itself aside on first run, truncated
+  `cec.log`, never called `quit`/`wait`, and SIGKILLed the module. After boot 5
+  the original hook `c3943712…` was restored, `/buffer/oa-cec-first` removed,
+  and a clean reboot verified stock `aurora.elf` 1773 and kernel thread
+  `DRV_CEC_CALLBAC` 2855.
 
 ## Boot 1 result
 
@@ -88,29 +98,110 @@ hook 8753 bytes c3943712…, no CEC-first branch
 /buffer/oa-cec-first removed; no openaurora/oa-wdtfeed; /tmp/ntkcec absent
 ```
 
+## Boots 3–5: queued TX, LA discovery and the -512 return
+
+The send queue (commit `b9269fc`) removed the boot-1 `EBUSY` path. The retry
+staging used module `f3337e29…`, hardened script `7d498a3f…` and hook
+`afbf1656…`; the script has a one-shot guard, truncates its log, uses
+`timeout -t 2 -s KILL` around each client call, never calls `quit`/`wait`,
+SIGKILLs the module and leaves a self-terminating MCU feeder plus an independent
+reaper.
+
+### Boot 3: queue works, first transmit fails
+
+`send 0883` returned `ok` (queued) and the module then logged
+`cec tx failed (512)` with `tx 0`, `error 512`.
+
+`0xfffffe00` is the driver's generic TX failure return from `KER_CEC_IocTl`
+(Ghidra `0xd94e0`): the TX branch retries up to five completion waits.
+`KER_CEC_InterrutHandler` (`0xd9064`) sets TX status 0 on INT bit 3 (success)
+and 2 on INT bit 2 (failure), then completes. After five status-2 results the
+ioctl returns -512. This is a bus NACK/failure, not an errno from `mod_cec` or
+a packet/open error. Raw dumps: `../analysis/cec-first-2026-11-12/
+nondovi-cec-isr.txt`, `nondovi-cec-tx.txt`, `nondovi-refs-aea324.txt`
+(`ntkdriver_nondovi.ko` MD5 `fded7005651e37b8a1b5e8e89f73f4ff`).
+
+The repeated dmesg pair `No data in SW RX Buffer` / `please fix nvt_err error`
+is the driver's error-level logging of the normal empty raw receive branch
+(`KER_CEC_IocTl` sets length 0 and returns success). The `please fix` line is
+the `nvt_err` macro's generic trailer, not a second fault; the 100 ms receive
+poll makes it frequent. The later `CEC H/W re-open` / `Can't open CEC` is the
+known process-death leftover after the harness SIGKILLs the raw owner; a reboot
+restores stock.
+
+### Boot 4: LA8 NACK, LA4 ACK
+
+Sequence: `0883`, `0483`, then `0f83` (broadcast).
+
+```text
+send 0883: ok -> cec tx failed (512), tx 0, error 512
+send 0483: ok -> cec tx 1
+send 0f83: ok -> cec tx 2
+final: rx 0 tx 2 error 0
+```
+
+The directed LA8 frame was not ACKed; LA4 and broadcast were. This corrects
+the earlier “Deck at LA8” reading: the CEC-LIVE cache loop printed the array
+slot index, not a proved wire logical address; slots 4 (`seen=0`) and 8
+(`seen=1`) both carried the Deck's copied PA/name. On this boot LA4 is the
+active peer on the wire.
+
+### Boot 5: TV announcement and LA4 queries
+
+After the acquire, the script announced the TV and queried LA4:
+
+```text
+0f84000000  broadcast Report Physical Address, TV at PA 0.0.0.0
+04          poll LA4
+0483        Give Physical Address
+0446        Give OSD Name
+048f        Give Device Power Status
+```
+
+All five were ACKed (`cec tx 1..5`), with no receive frames (`rx 0`,
+`cec-first: rx frame lines=0`). The LA4 peer acknowledges directed and
+broadcast frames but did not answer any identity query, including after the TV
+announced LA0/PA 0.0.0.0. A `84` reply was not captured. This is consistent
+with an ACK-only/limited peer stack (asleep, CEC disabled, or an adapter
+without full message handling); it is not a TV TX failure.
+
 ## What this establishes
 
 - A first-opener boot really is sufficient to acquire the raw CEC device;
   the lock is free before stock Aurora opens it.
 - The raw module opens `/tmp/ntkcec` with the authority mirror in that boot
   position.
-- The single-job owner returns `EBUSY` for a send while receive polling is in
-  flight; the control path needs a queue/wait, not a one-shot retry loop.
+- The module-level TX queue accepts a send while the receive poll owns the
+  single owner slot; boot 3 proved the queued path reaches the driver.
+- Raw CEC transmit is hardware-accepted: boot 4 ACKed LA4 and broadcast while
+  LA8 NACKed, and boot 5 ACKed the TV announcement plus the LA4 poll and
+  `0483`/`0446`/`048f`. The old cache-slot reading was not a wire address.
+- The LA4 peer does not answer `83`/`46`/`8f`; a peer reply is not yet proven.
 - The boot harness needs a hard-kill timeout, no blocking `wait` in its trap,
-  feeder stop on every exit, and an unconditional fallback to stock.
+  a one-shot guard, feeder stop on every exit, and an unconditional fallback
+  to stock. A SIGKILLed raw owner leaves the kernel CEC context; reboot is the
+  clean restore.
 
 ## Limits
 
-- No CEC frame was sent or received; the Deck's `84` reply was not captured.
+- No `84` (Report Physical Address) or any other reply was received; the LA4
+  peer ACKs but stayed silent. Whether it is the Deck itself, a limited
+  adapter, or a device whose CEC stack is asleep is not established.
+- The exact LA4 device identity and reply behavior need a peer-side check or a
+  known-good CEC device.
+- Raw RX during the test window was empty. Later dmesg showed RX-buffer
+  activity in the leaked context after stock started, but no userspace frame
+  was captured and loopback of our own frames is not excluded.
 - The exact boot-2 hang cause is unproven.
-- USB recovery was required; the stick was rebuilt. The recovery image is the
-  tested `/conf` image, not a pristine no-root revert.
+- USB recovery was required for boot 2; the stick was rebuilt. The recovery
+  image is the tested `/conf` image, not a pristine no-root revert.
 - `cec.enable` remains 0 in every shipped profile.
 
 ## Next
 
-1. Fix the CEC owner send path to queue or wait for its single job slot;
-   add a regression that sends while receive polling is in flight.
-2. Harden the first-opener harness (`timeout -s KILL`, no `wait` in the trap,
-   unconditional feeder stop and stock fallback, persistent log).
-3. Re-run `0883` and capture the Deck's `Report Physical Address` reply.
+1. Wake or verify the Deck's CEC stack and retry `0483`/`0446`/`048f` with a
+   longer post-ACK listen; capture the initiator of any peer-originated frame.
+2. If the peer stays silent, test against another known CEC device and record
+   whether it answers `83`; do not treat ACK as reply acceptance.
+3. Keep the queue regression (`check-cec-module-fake`) and the hardened
+   harness in the next first-opener run; no persistent hook stays installed.

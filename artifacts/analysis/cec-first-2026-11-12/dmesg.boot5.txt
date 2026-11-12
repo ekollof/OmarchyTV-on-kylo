@@ -1,0 +1,209 @@
+[2-4.936335] kcec kcec: nvt_device registered
+[2-4.936396] CHRDEV "ntkcec" major number 229 goes below the dynamic allocation range
+[2-4.936633] kcec: EXIT KER_CEC_DrvInit Successfull
+[1-5.840005] kcec: No data in SW RX Buffer
+[1-5.850202] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-6.040327] kcec: No data in SW RX Buffer
+[2-6.049005] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-6.240554] kcec: No data in SW RX Buffer
+[2-6.249568] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-6.440885] kcec: No data in SW RX Buffer
+[2-6.449838] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-6.641746] kcec: No data in SW RX Buffer
+[2-6.650092] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-6.842748] kcec: No data in SW RX Buffer
+[2-6.851462] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-7.043159] kcec: No data in SW RX Buffer
+[2-7.051483] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-7.243118] kcec: No data in SW RX Buffer
+[2-7.252126] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-7.443155] kcec: No data in SW RX Buffer
+[2-7.452094] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-7.642801] kcec: No data in SW RX Buffer
+[2-7.651102] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-7.843522] kcec: No data in SW RX Buffer
+[2-7.851866] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-8.044488] kcec: No data in SW RX Buffer
+[2-8.052771] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-8.243738] kcec: No data in SW RX Buffer
+[2-8.252671] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-8.444396] kcec: No data in SW RX Buffer
+[2-8.452720] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-8.645050] kcec: No data in SW RX Buffer
+[2-8.653359] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-8.844625] kcec: No data in SW RX Buffer
+[2-8.852983] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[2-9.345775] kcec: No data in SW RX Buffer
+[2-9.354103] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-9.545673] kcec: No data in SW RX Buffer
+[1-9.553977] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-9.745976] kcec: No data in SW RX Buffer
+[1-9.754295] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-9.946315] kcec: No data in SW RX Buffer
+[1-9.954650] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-10.346487] kcec: No data in SW RX Buffer
+[1-10.354971] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-10.545775] kcec: No data in SW RX Buffer
+[1-10.554210] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-10.746077] kcec: No data in SW RX Buffer
+[1-10.754516] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-10.946421] kcec: No data in SW RX Buffer
+[1-10.954897] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-11.346611] kcec: No data in SW RX Buffer
+[1-11.355078] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-11.546916] kcec: No data in SW RX Buffer
+[1-11.555371] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-11.747216] kcec: No data in SW RX Buffer
+[1-11.755660] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-11.947567] kcec: No data in SW RX Buffer
+[1-11.956055] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-12.147884] kcec: No data in SW RX Buffer
+[1-12.156336] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-12.348185] kcec: No data in SW RX Buffer
+[1-12.356611] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-12.548523] kcec: No data in SW RX Buffer
+[1-12.557259] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-12.747820] kcec: No data in SW RX Buffer
+[1-12.756254] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-12.948173] kcec: No data in SW RX Buffer
+[1-12.957090] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-13.148485] kcec: No data in SW RX Buffer
+[1-13.156895] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-13.348848] kcec: No data in SW RX Buffer
+[1-13.357280] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-13.549174] kcec: No data in SW RX Buffer
+[1-13.557967] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-13.749470] kcec: No data in SW RX Buffer
+[1-13.757918] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-13.949800] kcec: No data in SW RX Buffer
+[1-13.958287] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-14.150104] kcec: No data in SW RX Buffer
+[1-14.158540] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-14.350408] kcec: No data in SW RX Buffer
+[1-14.358841] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-14.550702] kcec: No data in SW RX Buffer
+[1-14.559107] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-14.751002] kcec: No data in SW RX Buffer
+[1-14.759388] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-14.951296] kcec: No data in SW RX Buffer
+[1-14.960582] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-15.151598] kcec: No data in SW RX Buffer
+[1-15.159992] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-15.351907] kcec: No data in SW RX Buffer
+[1-15.360315] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-15.552202] kcec: No data in SW RX Buffer
+[1-15.560623] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-15.752523] kcec: No data in SW RX Buffer
+[1-15.760905] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-15.952867] kcec: No data in SW RX Buffer
+[1-15.961318] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-16.352668] kcec: No data in SW RX Buffer
+[1-16.361090] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-16.552963] kcec: No data in SW RX Buffer
+[1-16.561677] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-16.753268] kcec: No data in SW RX Buffer
+[1-16.761652] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-16.953603] kcec: No data in SW RX Buffer
+[1-16.962045] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-17.153914] kcec: No data in SW RX Buffer
+[1-17.162315] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-17.354204] kcec: No data in SW RX Buffer
+[1-17.362596] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-17.554504] kcec: No data in SW RX Buffer
+[1-17.562900] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-17.754814] kcec: No data in SW RX Buffer
+[1-17.763207] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-17.955127] kcec: No data in SW RX Buffer
+[1-17.963509] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-18.155436] kcec: No data in SW RX Buffer
+[1-18.163848] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-18.355729] kcec: No data in SW RX Buffer
+[1-18.364126] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-18.556021] kcec: No data in SW RX Buffer
+[1-18.564436] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-18.756325] kcec: No data in SW RX Buffer
+[1-18.764707] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-18.955642] kcec: No data in SW RX Buffer
+[1-18.964068] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-19.155956] kcec: No data in SW RX Buffer
+[1-19.164370] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-19.356253] kcec: No data in SW RX Buffer
+[1-19.364668] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-19.556546] kcec: No data in SW RX Buffer
+[1-19.564956] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-19.756851] kcec: No data in SW RX Buffer
+[1-19.765282] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-19.957147] kcec: No data in SW RX Buffer
+[1-19.965578] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-20.157463] kcec: No data in SW RX Buffer
+[1-20.165886] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-20.357768] kcec: No data in SW RX Buffer
+[1-20.366224] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-20.558053] kcec: No data in SW RX Buffer
+[1-20.566465] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-20.758358] kcec: No data in SW RX Buffer
+[1-20.766798] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-20.958703] kcec: No data in SW RX Buffer
+[1-20.967126] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-21.359525] kcec: No data in SW RX Buffer
+[1-21.367970] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-21.559821] kcec: No data in SW RX Buffer
+[1-21.568228] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-21.760122] kcec: No data in SW RX Buffer
+[1-21.768542] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-21.960421] kcec: No data in SW RX Buffer
+[1-21.968826] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-22.160737] kcec: No data in SW RX Buffer
+[1-22.169154] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-22.361038] kcec: No data in SW RX Buffer
+[1-22.369449] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-22.561340] kcec: No data in SW RX Buffer
+[1-22.569749] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-22.761647] kcec: No data in SW RX Buffer
+[1-22.770044] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-22.961957] kcec: No data in SW RX Buffer
+[1-22.970355] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-23.162270] kcec: No data in SW RX Buffer
+[1-23.170695] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-23.362566] kcec: No data in SW RX Buffer
+[1-23.370989] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-23.562909] kcec: No data in SW RX Buffer
+[1-23.571340] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-23.763202] kcec: No data in SW RX Buffer
+[1-23.771616] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-23.963506] kcec: No data in SW RX Buffer
+[1-23.971908] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-24.163830] kcec: No data in SW RX Buffer
+[1-24.172243] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-24.364135] kcec: No data in SW RX Buffer
+[1-24.372655] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-24.564443] kcec: No data in SW RX Buffer
+[1-24.572822] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-24.764699] kcec: No data in SW RX Buffer
+[1-24.773120] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-24.965014] kcec: No data in SW RX Buffer
+[1-24.973409] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-25.165329] kcec: No data in SW RX Buffer
+[1-25.173727] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-25.364660] kcec: No data in SW RX Buffer
+[1-25.373054] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-25.564965] kcec: No data in SW RX Buffer
+[1-25.573369] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-25.765283] kcec: No data in SW RX Buffer
+[1-25.773683] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-25.965633] kcec: No data in SW RX Buffer
+[1-25.974063] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-36.510610] No such file /dev/nvt/ntkcec 
+[1-36.510623] No such file /dev/ntkcec 
+[1-36.510650] kcec: KER_CEC_IOCTL_OPEN: CEC H/W re-open
+[1-36.520332] kcec: error: KER_CEC_IOCtl [ntkdriver]: please fix nvt_err error
+[1-36.529803] kcec: ioctl: Can't open CEC
+[1-36.539368] kcec: error: DRV_CEC_Open [ntkdriver]: please fix nvt_err error
+[1-36.548757] kcec: open cec driver fail
+[1-36.558300] kcec: error: DRV_CEC_Open [ntkdriver]: please fix nvt_err error
+[1-36.567598] kcec: @@@@@@@ CEC_TaskWaitForExit pstTask == NULL 
+[1-36.580508] kcec: error: DRV_CEC_TaskWaitForExit [ntkdriver]: please fix nvt_err error
+[1-36.588823] kcec: Can't close CEC
+[1-36.596456] kcec: error: DRV_CEC_Close.part.3 [ntkdriver]: please fix nvt_err error
+[0-49.407877] kcec: SW RX data full in level
+[0-49.416467] kcec: error: _CEC_Tasklet [ntkdriver]: please fix nvt_err error

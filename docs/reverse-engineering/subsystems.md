@@ -163,10 +163,13 @@ Evidence: [AUDIO-ROUTING](../../artifacts/reports/AUDIO-ROUTING-2026-11-01.md),
   replacement must fail closed. PreInit registers the cdev; the authority write
   path is not implemented (fail-closed).
 - Owner model: blocking open/send/receive/close on a worker; 100 ms poll;
-  policy/reply queue; CEC 1.3a base + 1.4 ARC/System Audio. The live Steam
-  Deck was LA8/PA1000. CEC-ASYNC/REPLY-QUEUE/QUIESCE cover the ownership and
+  policy/reply queue with a user TX ring (commit `b9269fc`); CEC 1.3a base +
+  1.4 ARC/System Audio. The 2026-11-01 cache “LA8” was an array slot, not a
+  proved wire LA: first-opener TX on 2026-11-12 NACKed LA8 and ACKed LA4 plus
+  broadcast. LA4 accepted an LA0/PA 0.0.0.0 announcement, a poll and 83/46/8f
+  but sent no reply. CEC-ASYNC/REPLY-QUEUE/QUIESCE cover the ownership and
   reload gates; CEC-MODULE-TRANSPORT adds the injectable raw-device/authority
-  seam and a host fake.
+  seam and a host fake; CEC-FIRST-OPENER records the boot-order/TX path.
 
 Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),
@@ -174,7 +177,8 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
 [CEC-SPEC](../../artifacts/reports/CEC-SPEC-2026-10-30.md),
 [CEC-SPEC-VS-AURORA](../../artifacts/reports/CEC-SPEC-VS-AURORA-2026-10-30.md),
 [CEC-AUDIO-CONTRACT](../../artifacts/reports/CEC-AUDIO-CONTRACT-2026-10-31.md),
-[CEC-MODULE-TRANSPORT](../../artifacts/reports/CEC-MODULE-TRANSPORT-2026-11-09.md).
+[CEC-MODULE-TRANSPORT](../../artifacts/reports/CEC-MODULE-TRANSPORT-2026-11-09.md),
+[CEC-FIRST-OPENER](../../artifacts/reports/CEC-FIRST-OPENER-2026-11-12.md).
 
 ## Source VIN V4L2
 

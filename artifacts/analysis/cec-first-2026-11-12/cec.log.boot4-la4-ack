@@ -1,0 +1,24 @@
+== cec-first Thu Jan  1 01:00:08 CET 1970 boot=1 ==
+[  5449] INFO host         openaurora starting, modules=/buffer/oa-cec-first/modules
+[  5460] INFO host         control socket /buffer/oa-cec-first/control
+[  5505] INFO host         loaded cec v1 (/buffer/oa-cec-first/modules/mod_cec.so)
+[  5505] DBG  cec          service up: cec.owner v1
+[  5505] DBG  cec          service up: cec.audio v1
+[  5505] INFO cec          cec: hardware enabled (/tmp/ntkcec)
+[  5505] INFO host         started cec
+openaurora: 1 module(s) loaded, control on /buffer/oa-cec-first/control
+[  5509] INFO cec          cec raw transport open (/tmp/ntkcec)
+cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 0 open 1 rx 0 tx 0 error 0 last 0
+observe start
+observe state: cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 0 open 1 rx 0 tx 0 error 0 last 0
+send 0883: ok
+[ 12318] WARN cec          cec tx failed (512)
+state after 0883: cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 0 open 1 rx 0 tx 0 error 512 last 0
+send 0483: ok
+[ 14722] INFO cec          cec tx 1
+state after 0483: cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 0 open 1 rx 0 tx 1 error 0 last 0
+send 0f83: ok
+[ 17125] INFO cec          cec tx 2
+state after 0f83: cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 0 open 1 rx 0 tx 2 error 0 last 0
+final state: cec owner 1 audio 1 supported 1 local 1 enabled 1 opening 0 open 1 rx 0 tx 2 error 0 last 0
+cec-first: no op 84 reply in log
