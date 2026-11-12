@@ -198,11 +198,17 @@ Address convention: the `ntkndphdmi.ko` addresses are `.text` section offsets
 Pure decoder: `include/openaurora/source_hdmi_event.h` /
 `common/source_hdmi_event.c`. `make check-source-hdmi-event` covers the
 28-byte bound, little-endian source type, status byte, raw preservation and
-short/null rejection; the full host suite passes. The live
-`/dev/video21` subscribe/dequeue adapter is intentionally not wired: stock
-owns the node and consuming its events would interfere. The status byte's role
-(video ready/lost vs connect/disconnect) is not proven; do not map it to the
-NEBULA/`ExternalSourceStatus` values without a captured event.
+short/null rejection. The injectable adapter
+`include/openaurora/source_hdmi_event_io.h` / `common/source_hdmi_event_io.c`
+uses the target ABI (`sizeof(v4l2_event)=128`, data at offset 8,
+`VIDIOC_SUBSCRIBE_EVENT=0x4020565a`, `VIDIOC_DQEVENT=0x80805659`) and
+`make check-source-hdmi-event-io` covers open/subscribe, dequeue decode,
+EAGAIN/wrong-type/error and cleanup. The full host suite passes. The adapter is
+not wired to a worker, and the live `/dev/video21` capture requires stock
+stopped and was not run; stock owns the node and consuming its events would
+interfere. The status byte's role (video ready/lost vs connect/disconnect) is
+not proven; do not map it to the NEBULA/`ExternalSourceStatus` values without a
+captured event.
 
 ## What this establishes
 
@@ -245,11 +251,12 @@ wire a guessed V4L2 event.
 ## Limits and next work
 
 - The HDMI userspace notification is identified as V4L2 event `0xc000001` on
-  `/dev/video21`; the pure payload decoder is tested. The live adapter is not
-  wired. The status byte's role and any `NDP_ExtSrc_SetConnectInfo` caller
-  outside the analyzed RX/switch paths remain open. In `ntkndphdmi.ko`,
-  `SetConnectInfo` is called from `tztv_hdmi_int_switch_connect_port` @
-  `0x1070`, `_ndp_hdmi_core_release_func` @ `0x42b4` and
+  `/dev/video21`; the payload decoder and injectable adapter are tested. The
+  live adapter/worker and live capture are not wired or run. The status byte's
+  role and any `NDP_ExtSrc_SetConnectInfo` caller outside the analyzed RX/switch
+  paths remain open. In `ntkndphdmi.ko`, `SetConnectInfo` is called from
+  `tztv_hdmi_int_switch_connect_port` @ `0x1070`,
+  `_ndp_hdmi_core_release_func` @ `0x42b4` and
   `_ndp_hdmi_core_vidioc_s_input` @ `0x46e0`; `ntkndphdmiswitch.ko` calls it
   from `_ndp_hdmi_switch_vidioc_s_input` @ `0x7ac`. The 0x74-byte
   `ndp_SRC_ConnectInfo` per-port flags are at `0x0`, `0xc`, `0x14`, `0x1c`,
@@ -269,11 +276,12 @@ wire a guessed V4L2 event.
   (`HDMINoSignalTimeout`, `NoSignalCapability`, `NovoSignalController`) are
   separate; they were not exercised in this trace.
 - `mod_source` currently implements the connect/disconnect HAL path only. The
-  pure policy helper (`common/source_loss.c`, `check-source-loss`) and the
+  pure policy helper (`common/source_loss.c`, `check-source-loss`), the
   `0xc000001` payload decoder (`common/source_hdmi_event.c`,
-  `check-source-hdmi-event`) are tested. Not wired: the live `/dev/video21`
-  subscribe/dequeue adapter (stock owns the node) and the tuner service/view
-  re-tune. Do not add a guessed fallback.
+  `check-source-hdmi-event`) and the injectable V4L2 adapter
+  (`common/source_hdmi_event_io.c`, `check-source-hdmi-event-io`) are tested.
+  Not wired: a worker/live capture (stock owns `/dev/video21`) and the tuner
+  service/view re-tune. Do not add a guessed fallback.
 - No TV access. The owner's suspend/resume observation is behavioral
   confirmation, not an independently captured hotplug trace.
 
@@ -315,6 +323,9 @@ wire a guessed V4L2 event.
   registration/event references.
 - `ntkndphdmi.dis` — HDMI RX driver disassembly with the event/subscribe
   functions.
+- `v4l2_event_abi.c` — target-toolchain ABI check: event size 128, `u` offset
+  8, subscription size 32, `VIDIOC_SUBSCRIBE_EVENT=0x4020565a`,
+  `VIDIOC_DQEVENT=0x80805659`.
 
 Related: [CEC-LIVE-2026-11-01](CEC-LIVE-2026-11-01.md),
 [CEC-SPEC-VS-AURORA-2026-10-30](CEC-SPEC-VS-AURORA-2026-10-30.md),

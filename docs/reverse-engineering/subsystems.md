@@ -209,9 +209,10 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   Nebula navigator; kernel status carrier `ndp_SRC_ConnectInfo` /
   `NDP_ExtSrc_Get/SetConnectInfo`. HDMI userspace notification is V4L2 event
   `0xc000001` on `/dev/video21` with a 28-byte payload (source type `[0..3]`,
-  status `[7]`); `common/source_hdmi_event.c` + `check-source-hdmi-event`. The
-  live adapter, status-role mapping and tuner service/view re-tune remain open.
-  Do not substitute an always-switch-to-TV shortcut.
+  status `[7]`); `common/source_hdmi_event.c` + `check-source-hdmi-event` and
+  the injectable `source_hdmi_event_io.c` + `check-source-hdmi-event-io`. The
+  worker/live capture, status-role mapping and tuner service/view re-tune remain
+  open. Do not substitute an always-switch-to-TV shortcut.
 
 Evidence: [SOURCE-PATH](../../artifacts/reports/SOURCE-PATH-2026-11-09.md),
 [SOURCE-LOSS-FALLBACK](../../artifacts/reports/SOURCE-LOSS-FALLBACK-2026-11-12.md),

@@ -2833,6 +2833,15 @@ check-source-hdmi-event: $(BUILD)/tests/source_hdmi_event
 	@$(BUILD)/tests/source_hdmi_event
 check: check-source-hdmi-event
 
+$(BUILD)/tests/source_hdmi_event_io: tests/source_hdmi_event_io.c common/source_hdmi_event_io.c common/source_hdmi_event.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-source-hdmi-event-io
+check-source-hdmi-event-io: $(BUILD)/tests/source_hdmi_event_io
+	@$(BUILD)/tests/source_hdmi_event_io
+check: check-source-hdmi-event-io
+
 $(BUILD)/tests/audio_source_path: tests/audio_source_path.c modules/audio_source/audio_source.c tests/audio_source_fake.c common/audio_curve.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread

@@ -92,8 +92,10 @@ Kernel carrier `ndp_SRC_ConnectInfo` (0x74 bytes) in `ntkdriver_nondovi`;
 `NDP_ExtSrc_Get/SetConnectInfo` @ `0x61bb6c`/`0x61bb8c`;
 `_VIU_CheckReconnect` @ `0x61d868`. HDMI userspace notification: V4L2 event
 `0xc000001` on `/dev/video21`; 28-byte payload (source type `[0..3]`, status
-`[7]`); `common/source_hdmi_event.c` + `check-source-hdmi-event` pass; the live
-adapter is not wired. Status role and any `SetConnectInfo` caller outside the
+`[7]`); `common/source_hdmi_event.c` + `check-source-hdmi-event` pass; the
+injectable `source_hdmi_event_io.c` adapter + `check-source-hdmi-event-io` pass;
+no worker/live capture is wired. Status role and any `SetConnectInfo` caller
+outside the
 analyzed paths remain unidentified. `mod_cec` routing/power policy is
 not implemented. `DEV_AMP_ID`
 profile/reset114/mute208
