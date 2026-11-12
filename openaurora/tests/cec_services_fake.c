@@ -9,6 +9,7 @@
 
 #include "openaurora/broadcast.h"
 #include "openaurora/channels.h"
+#include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 
@@ -25,6 +26,7 @@ struct ctx {
     int audio_available;
     int audio_volume;
     int audio_muted;
+    uint32_t key_sub;
     int external_type;
     uint32_t selected_handle;
     struct oa_channel_entry entries[3];
@@ -172,6 +174,15 @@ static const oa_audio_iface audio_iface = {
     fake_set_volume, fake_get_volume, fake_set_mute, fake_audio_available, NULL
 };
 
+static void fake_key(const void *evp, void *ud)
+{
+    (void)ud;
+    const oa_key_event *ev = evp;
+    if (!g_ctx || !ev) return;
+    g_ctx->api->log(g_ctx->api->priv, OA_LOG_INFO,
+                    "fake key %u kind %u", ev->id, ev->kind);
+}
+
 static int m_init(const oa_host_api *api, void **out)
 {
     if (!api || api->size < sizeof *api || api->abi != OA_ABI_VERSION)
@@ -259,12 +270,29 @@ static int m_start(void *v)
         return -1;
     }
     c->audio_published = 1;
+    c->key_sub = c->api->subscribe(c->api->priv, OA_TOPIC_KEY, fake_key, c);
+    if (!c->key_sub) {
+        c->api->unpublish(c->api->priv, OA_SVC_AUDIO);
+        c->api->unpublish(c->api->priv, OA_SVC_POWER);
+        c->api->unpublish(c->api->priv, OA_SVC_SERVICE_LIST);
+        c->api->unpublish(c->api->priv, OA_SVC_TUNER);
+        c->api->unpublish(c->api->priv, OA_SVC_CHANNELS);
+        c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
+        c->audio_published = c->power_published = 0;
+        c->service_published = c->tuner_published = 0;
+        c->channels_published = c->source_published = 0;
+        return -1;
+    }
     return 0;
 }
 
 static void m_stop(void *v)
 {
     struct ctx *c = v;
+    if (c->key_sub) {
+        c->api->unsubscribe(c->api->priv, c->key_sub);
+        c->key_sub = 0;
+    }
     if (c->audio_published)
         c->api->unpublish(c->api->priv, OA_SVC_AUDIO);
     if (c->power_published)

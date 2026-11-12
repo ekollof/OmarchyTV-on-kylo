@@ -196,9 +196,10 @@ Evidence: [AUDIO-ROUTING](../../artifacts/reports/AUDIO-ROUTING-2026-11-01.md),
   `cec.identity` (0x46 -> 0x47 configured name, 0x47 logged;
   `cec_osd_name.cjs`). One-touch 0x04/0x0D selects the 0x84 device PA's HDMI
   input behind `cec.active_source` (`cec_image_view.cjs`). Active-source 0x44
-  0x41..0x43 volume/mute is behind `cec.rcp` and uses `OA_SVC_AUDIO`; 0x45
+  0x41..0x43 volume/mute is behind `cec.rcp` and uses `OA_SVC_AUDIO`;
+  0x00..0x04/0x0D map to RC ids 53/20/19/21/22/10 as key events, and 0x45
   releases are logged. Other user-control codes are not forwarded
-  (`cec_rcp.cjs`).
+  (`cec_rcp.cjs`, `cec_rcp_keys.cjs`).
 
 Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT-2026-10-31.md),
 [CEC-OWNERSHIP](../../artifacts/reports/CEC-OWNERSHIP-2026-11-01.md),

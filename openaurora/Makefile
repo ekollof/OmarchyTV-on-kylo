@@ -1523,6 +1523,11 @@ check-cec-rcp: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD)/tests
 	node tests/cec_rcp.cjs $(abspath $(BUILD))
 check: check-cec-rcp
 
+.PHONY: check-cec-rcp-keys
+check-cec-rcp-keys: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD)/tests/mod_cec_services_fake.so
+	node tests/cec_rcp_keys.cjs $(abspath $(BUILD))
+check: check-cec-rcp-keys
+
 .PHONY: check-cec-standby
 check-cec-standby: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_cec_fake.so $(BUILD)/tests/mod_cec_services_fake.so
 	node tests/cec_standby.cjs $(abspath $(BUILD))

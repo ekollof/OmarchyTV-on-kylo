@@ -18,6 +18,7 @@
 #include "openaurora/cec_owner.h"
 #include "openaurora/cec_policy.h"
 #include "openaurora/channels.h"
+#include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
 #include "openaurora/tuner_view.h"
@@ -620,9 +621,25 @@ static void handle_osd_name(struct ctx *c, const oa_cec_message *m)
     }
 }
 
-/* CEC 0x44/0x45 user control: the active source's volume/mute keys. The
- * vendor maps 0x41..0x43 through its key table and forwards others; this
- * module implements the TV-volume subset through OA_SVC_AUDIO. */
+/* CEC user-control codes -> the RC ids the UI/IR path already consumes:
+ * Select 53, Up 20, Down 19, Left 21, Right 22, Exit 10. */
+static int cec_key_id(unsigned code)
+{
+    switch (code) {
+    case 0x00: return 53; /* Select */
+    case 0x01: return 20; /* Up */
+    case 0x02: return 19; /* Down */
+    case 0x03: return 21; /* Left */
+    case 0x04: return 22; /* Right */
+    case 0x0d: return 10; /* Exit */
+    default: return -1;
+    }
+}
+
+/* CEC 0x44/0x45 user control: the active source's volume/mute and navigation
+ * keys. The vendor maps 0x41..0x43 through its key table; this module sends
+ * volume/mute to OA_SVC_AUDIO and the standard navigation codes to the UI as
+ * the same RC key events mod_ir emits. */
 static void handle_rcp(struct ctx *c, const oa_cec_message *m)
 {
     if (!c || !c->rcp_enabled || !m) return;
@@ -633,17 +650,38 @@ static void handle_rcp(struct ctx *c, const oa_cec_message *m)
     if (m->count != 1) return;
 
     if (m->opcode == 0x45) {
-        c->api->log(c->api->priv, OA_LOG_INFO,
-                    "cec 0x45 release code 0x%02x la %u",
-                    m->operands[0], m->initiator);
+        int key = cec_key_id(m->operands[0]);
+        if (key >= 0 && c->api->emit) {
+            oa_key_event ev = {
+                .id = (uint8_t)key, .kind = OA_KEY_RELEASE, .ts_ms = 0
+            };
+            c->api->emit(c->api->priv, OA_TOPIC_KEY, &ev);
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "cec 0x45 release key %d la %u",
+                        key, m->initiator);
+        } else {
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "cec 0x45 release code 0x%02x la %u",
+                        m->operands[0], m->initiator);
+        }
         return;
     }
 
     unsigned code = m->operands[0];
     if (code != 0x41 && code != 0x42 && code != 0x43) {
-        c->api->log(c->api->priv, OA_LOG_INFO,
-                    "cec 0x44 code 0x%02x la %u ignored",
-                    code, m->initiator);
+        int key = cec_key_id(code);
+        if (key >= 0 && c->api->emit) {
+            oa_key_event ev = {
+                .id = (uint8_t)key, .kind = OA_KEY_PRESS, .ts_ms = 0
+            };
+            c->api->emit(c->api->priv, OA_TOPIC_KEY, &ev);
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "cec 0x44 key %d la %u", key, m->initiator);
+        } else {
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "cec 0x44 code 0x%02x la %u ignored",
+                        code, m->initiator);
+        }
         return;
     }
 

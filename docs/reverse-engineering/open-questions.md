@@ -75,8 +75,9 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   `cec.identity` (0x46 -> 0x47 configured name, 0x47 logged;
   `cec_osd_name.cjs`). One-touch 0x04/0x0D selects the 0x84 device PA's HDMI
   input behind `cec.active_source` (`cec_image_view.cjs`). Active-source 0x44
-  volume/mute is behind `cec.rcp` through `OA_SVC_AUDIO`; 0x45 releases are
-  logged, other key forwarding is open (`cec_rcp.cjs`). Stock observation
+  volume/mute is behind `cec.rcp` through `OA_SVC_AUDIO`; navigation
+  0x00..0x04/0x0D maps to RC ids 53/20/19/21/22/10, and 0x45 releases are
+  logged. Other key forwarding is open (`cec_rcp.cjs`, `cec_rcp_keys.cjs`). Stock observation
   2026-11-12: Deck
   sleep left the TV on at a tuner input; this is CEC `0x9D Inactive Source`:
   `SvgAppCECEventsListener` posts `UIKeyPressMessage(597)`, and the UI selects

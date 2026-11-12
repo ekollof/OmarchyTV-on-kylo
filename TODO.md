@@ -580,10 +580,11 @@ unvalidated.
       map; `source_path` asserts the DTV event. UI lifecycle tests cover the
       subscription teardown. This makes CEC-driven input switches follow the
       persisted picture index instead of leaving the old source's settings.
-- [x] CEC active-source volume/mute: 0x44 0x41..0x43 through `OA_SVC_AUDIO`
-      behind `cec.rcp`; 0x45 releases logged; wrong LA, disabled gate and
-      unknown volume rejected. `cec_rcp.cjs`. Other user-control codes are
-      logged, not forwarded.
+- [x] CEC active-source control: 0x44 0x41..0x43 volume/mute through
+      `OA_SVC_AUDIO` and 0x00..0x04/0x0D navigation as RC ids
+      53/20/19/21/22/10 behind `cec.rcp`; 0x45 releases logged; wrong LA,
+      disabled gate and unknown volume rejected (`cec_rcp.cjs`,
+      `cec_rcp_keys.cjs`). Other user-control codes are logged, not forwarded.
 - [ ] IR via `/dev/video28` BLAST RX: key map, repeat and release. 2026-11-07:
       `mod_ir` now runs BLAST_RX on a dedicated worker, queues keys and posts
       them to the loop; the TV link also needed `-ldl`. `check-ir-blast-worker`
