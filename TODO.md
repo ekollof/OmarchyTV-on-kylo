@@ -454,8 +454,14 @@ unvalidated.
       (`check-panel-curve`, PANEL-HAL-ERRORS), the CEC reply queue
       (`check-cec-reply-queue`, CEC-REPLY-QUEUE) and amp Init
       retry/suspend (`check-audio-amp-jobs`, AMP-RETRY-SUSPEND) are fixed.
-- [ ] Panel `panel <0-100>` still runs `Hal_Pwm_*` on the host loop; submit it
-      to a worker and report completion (AGENT-REVIEW-2-2026-11-07).
+- [x] Panel `panel <0-100>` off-loop PWM writes (AGENT-REVIEW-2-2026-11-07).
+      2026-11-16: `common/pwm_worker.c` runs `Hal_Pwm_Open/Set` on a bounded
+      FIFO worker behind default-off `panel.async_set`; `panel.async` reports
+      pending/completed/failed, `panel-async-state` exposes it, and the worker
+      is joined on quiesce/stop (`check-pwm-worker`, `check-panel-async-ipc`,
+      full suite rc=0, TV `mod_panel.so` builds). Host has no vendor HAL, so
+      completions are -ENOTSUP there; visible dimming and TV reload remain
+      unaccepted.
 - [ ] CEC ownership/arbitration, logical address, one-touch play, standby,
       ARC/audio and TX/RX; shared-owner queries only where read-only.
       2026-11-07: `mod_cec` starts and publishes owner/audio policy, but

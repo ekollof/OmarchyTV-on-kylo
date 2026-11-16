@@ -1,5 +1,10 @@
 # Adversarial review 2 and fixes — 2026-11-07
 
+Status: current (panel MEDIUM fixed 2026-11-16; see the open-items section)
+Last verified: 2026-11-16
+Evidence class: host tests, firmware instruction checks and ARM builds; no TV
+operation for the 2026-11-16 panel-worker fix.
+
 Source: Grok CLI in Herdr tab `wA:t3` (`grok-review`), read-only against
 `/home/ekollof/Work/tvhack` after the first hardware run. Full transcript:
 `artifacts/analysis/agent-review-2026-11-07/grok-adversarial-review-2.md`.
@@ -81,10 +86,14 @@ earlier CEC-RAW-BACKEND evidence; this run did not recapture it.
 - Balance still writes reg4 then reg5 and can leave a partial write on reg5
   failure. That is the recovered vendor order; the cache is not updated. A
   transactional write would deviate from the vendor.
-- `panel <0-100>` still runs the vendor PWM ioctl on the host loop. This is a
+- `panel <0-100>` still runs the vendor PWM ioctl on the host loop. This was a
   documented MEDIUM; the direct path is already negative on hardware and the
-  command is a diagnostic, not a production UI path. Moving it to a worker is
-  a follow-up.
+  command is a diagnostic, not a production UI path. **Fixed 2026-11-16:**
+  `common/pwm_worker.c` runs `Hal_Pwm_Open/Set` on a bounded FIFO worker behind
+  default-off `panel.async_set`, with `panel.async` status and
+  `panel-async-state`; `check-pwm-worker` and `check-panel-async-ipc` pass and
+  the TV `mod_panel.so` builds. Host completions are -ENOTSUP (no vendor HAL);
+  visible dimming and TV reload acceptance remain open.
 - GLIBC audit: all `build-tv-v3` artifacts (core, helper, client, modules) have
   a maximum required `GLIBC_` of 2.23 or older. `mod_ir` is 2.4/2.9.
 

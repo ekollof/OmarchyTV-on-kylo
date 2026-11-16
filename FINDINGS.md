@@ -72,7 +72,11 @@ not tested. The IR helper also needed `ioctl(FIOCLEX)` instead of `fcntl` to
 avoid a `GLIBC_2.28` binding on the TV's glibc 2.23. Stock was restored by
 `wdtctl set 10` (appmgr 1565/aurora 1767 after the first run; 1566/1770 after
 the amp A/B), staging/ntkcec absent, profile and fb1 unchanged. Report:
-HW-ACCEPT-2026-11-07; follow-up review: AGENT-REVIEW-2-2026-11-07.
+HW-ACCEPT-2026-11-07; follow-up review: AGENT-REVIEW-2-2026-11-07 (2026-11-16:
+its last documented MEDIUM, the `panel <0-100>` PWM call on the host loop, is
+fixed by `common/pwm_worker.c` behind default-off `panel.async_set`; host
+completions are -ENOTSUP without a vendor HAL and visible dimming is still
+unaccepted).
 
 AGENT-REVIEW-2026-11-05: the original vendor-decoder harness compared shipped
 classes with Pillow/host TurboJPEG, not directly with our DSO on generated

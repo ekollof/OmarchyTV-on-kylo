@@ -1062,10 +1062,10 @@ $(BUILD)/modules/mod_lua.so: $(call pic_objs,modules__mod_lua,modules/lua/lua.c)
 	$(CC) -shared -o $@ $^ $(LDFLAGS) $(LIBM)
 $(eval $(call emit_pics,modules__mod_lua,modules/lua/lua.c,-Ithird_party/lua,include/openaurora/lua_skin.h include/openaurora/module.h))
 
-$(BUILD)/modules/mod_panel.so: $(call pic_objs,modules__mod_panel,modules/panel/panel.c common/panel_curve.c)
+$(BUILD)/modules/mod_panel.so: $(call pic_objs,modules__mod_panel,modules/panel/panel.c common/panel_curve.c common/pwm_worker.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),panel),$(VENDOR_LDFLAGS),)
-$(eval $(call emit_pics,modules__mod_panel,modules/panel/panel.c common/panel_curve.c,-pthread,include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h include/openaurora/vendor_pwm.h include/openaurora/panel_curve.h))
+$(eval $(call emit_pics,modules__mod_panel,modules/panel/panel.c common/panel_curve.c common/pwm_worker.c,-pthread,include/openaurora/events.h include/openaurora/module.h include/openaurora/services.h include/openaurora/vendor_pwm.h include/openaurora/panel_curve.h include/openaurora/pwm_worker.h))
 
 $(BUILD)/modules/mod_plat.so: $(call pic_objs,modules__mod_plat,modules/plat/plat.c)
 	@mkdir -p $(dir $@)
@@ -1224,13 +1224,27 @@ $(BUILD)/tests/panel_curve: tests/panel_curve.c common/panel_curve.c include/ope
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
-$(BUILD)/tests/panel_hal: tests/panel_hal.c modules/panel/panel.c common/panel_curve.c include/openaurora/module.h include/openaurora/services.h include/openaurora/vendor_pwm.h include/openaurora/panel_curve.h
+$(BUILD)/tests/panel_hal: tests/panel_hal.c modules/panel/panel.c common/panel_curve.c common/pwm_worker.c include/openaurora/module.h include/openaurora/services.h include/openaurora/vendor_pwm.h include/openaurora/panel_curve.h include/openaurora/pwm_worker.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
 
-$(BUILD)/tests/panel_standby: tests/panel_standby.c modules/panel/panel.c common/panel_curve.c include/openaurora/module.h include/openaurora/services.h include/openaurora/vendor_pwm.h include/openaurora/panel_curve.h
+$(BUILD)/tests/panel_standby: tests/panel_standby.c modules/panel/panel.c common/panel_curve.c common/pwm_worker.c include/openaurora/module.h include/openaurora/services.h include/openaurora/vendor_pwm.h include/openaurora/panel_curve.h include/openaurora/pwm_worker.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -UOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
+
+$(BUILD)/tests/pwm_worker: tests/pwm_worker.c common/pwm_worker.c include/openaurora/pwm_worker.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
+
+.PHONY: check-pwm-worker
+check-pwm-worker: $(BUILD)/tests/pwm_worker
+	@$(BUILD)/tests/pwm_worker
+check: check-pwm-worker
+
+.PHONY: check-panel-async-ipc
+check-panel-async-ipc: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_panel.so $(BUILD)/modules/mod_plat.so
+	node tests/panel_async_ipc.cjs $(abspath $(BUILD))
+check: check-panel-async-ipc
 
 .PHONY: check-panel-curve
 check-panel-curve: $(BUILD)/tests/panel_curve $(BUILD)/tests/panel_hal $(BUILD)/tests/panel_standby

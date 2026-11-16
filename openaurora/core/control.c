@@ -595,6 +595,28 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
         snprintf(outbuf, outlen, "panel percent %d\n", percent);
         return 0;
     }
+    if (!strcmp(cmd, "panel-async-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_panel_async_iface *p =
+            h->api.lookup(h, OA_SVC_PANEL_ASYNC, 1);
+        if (!p) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        int pending = 0, completed = 0, failed = 0;
+        int rc = p->state(&pending, &completed, &failed);
+        h->api.release(h, OA_SVC_PANEL_ASYNC);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", -rc);
+            return -1;
+        }
+        snprintf(outbuf, outlen, "panel async pending %d completed %d failed %d\n",
+                 pending, completed, failed);
+        return 0;
+    }
     if (!strcmp(cmd, "profile-state")) {
         if (force || a1 || a2) {
             snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);

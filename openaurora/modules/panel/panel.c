@@ -39,6 +39,7 @@
 #include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/panel_curve.h"
+#include "openaurora/pwm_worker.h"
 #include "openaurora/services.h"
 #include "openaurora/vendor_pwm.h"
 
@@ -111,6 +112,11 @@ struct ctx {
     pthread_t cleanup_thread;
     int cleanup_running;
     unsigned cleanup_delay_ms;
+    /* panel.async_set: blocking PWM writes run on a worker instead of the
+     * control loop. Host panel.async state reports completions. */
+    int async_enabled;
+    oa_pwm_worker *pwm_worker;
+    int async_pending, async_completed, async_failed;
 };
 
 static struct ctx *g_ctx;
@@ -167,23 +173,54 @@ static int write_hal(struct ctx *c, uint32_t hal)
     return Hal_Pwm_Set_ByChannel((unsigned)c->channel, &r) == 0 ? -EIO : 0;
 }
 
-static int apply(struct ctx *c, int pct)
+/* HAL-only portion: safe to call from the PWM worker. It touches only
+ * c->opened and the immutable config; loop-side percent state is updated when
+ * the completion is collected. */
+static int apply_pwm_only(struct ctx *c, int pct)
 {
     if (!hal_ready())
         return -ENOTSUP;
+    int duty12 = c->raw >= 0 ? c->raw :
+                 c->curve_on ? oa_panel_percent_to_duty(&c->curve, pct, c->duty_max) :
+                 pct * c->duty_max / 100;
+    return write_hal(c, hal_duty(duty12));
+}
+
+static int apply(struct ctx *c, int pct)
+{
     if (pct < 0)
         pct = 0;
     if (pct > 100)
         pct = 100;
-    int duty12 = c->raw >= 0 ? c->raw :
-                 c->curve_on ? oa_panel_percent_to_duty(&c->curve, pct, c->duty_max) :
-                 pct * c->duty_max / 100;
-    int rc = write_hal(c, hal_duty(duty12));
+    int rc = apply_pwm_only(c, pct);
     if (rc != 0)
         return rc;
     c->percent = pct;
     c->have_percent = 1;
     return 0;
+}
+
+/* Worker adapter: clamps and performs the blocking PWM write only. */
+static int worker_apply(void *ud, int pct)
+{
+    return apply_pwm_only((struct ctx *)ud, pct);
+}
+
+static void collect_pwm_results(struct ctx *c)
+{
+    oa_pwm_completion done;
+    while (c->pwm_worker && oa_pwm_worker_take(c->pwm_worker, &done) == 1) {
+        c->async_pending--;
+        c->async_completed++;
+        if (done.rc == 0) {
+            c->percent = done.pct;
+            c->have_percent = 1;
+        } else {
+            c->async_failed++;
+        }
+        c->api->log(c->api->priv, OA_LOG_DEBUG,
+                    "panel: async pwm %d rc=%d", done.pct, done.rc);
+    }
 }
 
 static void delay_ms(unsigned ms)
@@ -252,17 +289,43 @@ static void panel_power_off(struct ctx *c)
 
 static int iface_set(int pct)
 {
-    if (!g_ctx)
+    struct ctx *c = g_ctx;
+    if (!c)
         return -ENODEV;
-    return apply(g_ctx, pct);
+    if (!c->async_enabled || !c->pwm_worker)
+        return apply(c, pct);
+    collect_pwm_results(c);
+    uint64_t ticket = 0;
+    int rc = oa_pwm_worker_submit(c->pwm_worker, pct, &ticket);
+    if (rc == 0)
+        c->async_pending++;
+    return rc;
 }
 
 static int iface_get(void)
 {
-    return g_ctx && g_ctx->have_percent ? g_ctx->percent : -1;
+    struct ctx *c = g_ctx;
+    if (!c)
+        return -1;
+    if (c->async_enabled)
+        collect_pwm_results(c);
+    return c->have_percent ? c->percent : -1;
+}
+
+static int iface_async_state(int *pending, int *completed, int *failed)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->async_enabled || !pending || !completed || !failed)
+        return -EINVAL;
+    collect_pwm_results(c);
+    *pending = c->async_pending;
+    *completed = c->async_completed;
+    *failed = c->async_failed;
+    return 0;
 }
 
 static const oa_panel_iface g_iface = { iface_set, iface_get };
+static const oa_panel_async_iface g_async_iface = { iface_async_state };
 
 static int m_init(const oa_host_api *api, void **out)
 {
@@ -373,6 +436,27 @@ static int m_start(void *v)
     }
     c->restored = 0;
 
+    const char *async = c->api->config_get(c->api->priv, "panel.async_set", "0");
+    c->async_enabled = async && atoi(async) != 0;
+    if (c->async_enabled) {
+        const oa_pwm_worker_io wio = { c, worker_apply };
+        int wrc = oa_pwm_worker_create(&c->pwm_worker, &wio);
+        if (wrc) {
+            c->async_enabled = 0;
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "panel: PWM worker failed (%d)", wrc);
+        } else if (c->api->publish(c->api->priv, OA_SVC_PANEL_ASYNC, 1,
+                                   &g_async_iface) != 0) {
+            c->async_enabled = 0;
+            (void)oa_pwm_worker_quiesce(c->pwm_worker);
+            (void)oa_pwm_worker_join(c->pwm_worker);
+            (void)oa_pwm_worker_destroy(c->pwm_worker);
+            c->pwm_worker = NULL;
+        } else {
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "panel: PWM writes on worker (panel.async_set)");
+        }
+    }
     if (c->api->publish(c->api->priv, OA_SVC_PANEL, 1, &g_iface) != 0) {
         c->api->log(c->api->priv, OA_LOG_WARN, "panel service already published");
     } else {
@@ -400,6 +484,18 @@ static int m_quiesce(void *v)
     }
     int published = c->published;
     c->published = 0;
+    if (c->async_enabled) {
+        collect_pwm_results(c);
+        if (oa_pwm_worker_quiesce(c->pwm_worker) == -EAGAIN)
+            return -EAGAIN;
+        if (oa_pwm_worker_join(c->pwm_worker))
+            return -EIO;
+        (void)oa_pwm_worker_destroy(c->pwm_worker);
+        c->pwm_worker = NULL;
+        c->api->release(c->api->priv, OA_SVC_PANEL_ASYNC);
+        c->api->unpublish(c->api->priv, OA_SVC_PANEL_ASYNC);
+        c->async_enabled = 0;
+    }
     if (published) c->api->unpublish(c->api->priv, OA_SVC_PANEL);
     if (!c->needs_cleanup) return 0;
     c->needs_cleanup = 0;
@@ -416,12 +512,28 @@ static int m_quiesce(void *v)
     return -EAGAIN;
 }
 
+static void stop_pwm_worker(struct ctx *c)
+{
+    if (!c->pwm_worker)
+        return;
+    (void)oa_pwm_worker_quiesce(c->pwm_worker);
+    (void)oa_pwm_worker_join(c->pwm_worker);
+    (void)oa_pwm_worker_destroy(c->pwm_worker);
+    c->pwm_worker = NULL;
+    if (c->async_enabled) {
+        c->api->release(c->api->priv, OA_SVC_PANEL_ASYNC);
+        c->api->unpublish(c->api->priv, OA_SVC_PANEL_ASYNC);
+        c->async_enabled = 0;
+    }
+}
+
 static void m_stop(void *v)
 {
     struct ctx *c = v;
     int published = c->published;
     c->published = 0;
     c->needs_cleanup = 0;
+    stop_pwm_worker(c);
     if (published) c->api->unpublish(c->api->priv, OA_SVC_PANEL);
     if (c->cleanup_running) {
         (void)pthread_join(c->cleanup_thread, NULL);
@@ -438,6 +550,7 @@ static void m_stop(void *v)
 static void m_destroy(void *v)
 {
     struct ctx *c = v;
+    stop_pwm_worker(c);
     if (c->cleanup_running) {
         (void)pthread_join(c->cleanup_thread, NULL);
         c->cleanup_running = 0;

@@ -258,6 +258,15 @@ typedef struct {
 
 /* panel — backlight. Published by mod_panel, backed by the vendor PWM HAL. */
 #define OA_SVC_PANEL "panel"
+
+/* panel.async — opt-in completion status for the off-loop PWM worker.
+ * Published by mod_panel only when panel.async_set=1. state() collects done
+ * jobs on the loop and reports pending/accepted and completed/failed counts.
+ * A successful HAL write is not visible-brightness proof. */
+#define OA_SVC_PANEL_ASYNC "panel.async"
+typedef struct {
+    int (*state)(int *pending, int *completed, int *failed);
+} oa_panel_async_iface;
 typedef struct {
     int (*set_backlight_percent)(int pct); /* 0..100, 0 = off      */
     int (*get_backlight_percent)(void);    /* -1 when unavailable  */

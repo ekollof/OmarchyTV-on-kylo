@@ -4440,3 +4440,14 @@ fake display. The "stuck make" was config truncation plus a test that did not
 kill its child on assertion failure; both fixed and stale test hosts killed.
 Full suite passes. MODULE-CONSOLIDATION, SKIN-SWITCH. Hardware/display
 acceptance remains pending.
+
+PANEL-PWM-WORKER-2026-11-16: the last documented AGENT-REVIEW-2 MEDIUM is
+fixed. `common/pwm_worker.c` runs the blocking `Hal_Pwm_Open/Set` path on a
+bounded FIFO worker behind default-off `panel.async_set`; `mod_panel` publishes
+`panel.async` v1 and `panel-async-state` reports pending/completed/failed, with
+the worker joined on quiesce/stop. `check-pwm-worker` and
+`check-panel-async-ipc` pass, the full host suite is green and the TV
+`mod_panel.so` builds. The host build has no vendor HAL, so host completions
+are -ENOTSUP and no percent change is claimed; visible dimming and TV reload
+acceptance remain open. On-TV work is still blocked while the TV is in use
+(HANDOFF) and needs an explicit owner-authorized window.
