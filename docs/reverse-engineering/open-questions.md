@@ -15,8 +15,10 @@ not close it.
   hardware ladder. The hw ladder and ready receipt are host-tested only.
 - The vendor cold-start HAL order is now instruction-exact; the device-gap
   disposition is in [COLD-START-SEQUENCE](../../artifacts/reports/COLD-START-SEQUENCE-2026-11-10.md).
-  Remaining real device effects: `dev_src_init` hotplug, `DEV_AMP_ID`, the GPIO
-  earphone handler and non-layout-14 panel/TCON branches. PCB layout, DEV
+  Remaining real device effects: `dev_src_init` hotplug, `DEV_AMP_ID` (the
+  periodic check is gated in `mod_audio_amp` behind `audio_amp.monitor`, but a
+  live amp read/ownership is untested), the GPIO earphone handler and
+  non-layout-14 panel/TCON branches. PCB layout, DEV
   GPIO/IIC description state, NIM factories, SPI semaphore and MTD are not
   required for the HAL-only path.
 - A **true power-on/persistent boot hook** remains a separate owner gate.

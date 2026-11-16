@@ -9,6 +9,14 @@ timing/GPIO descriptions, NIM factories, `DEV_AMP_ID` and the SPI semaphore
 remain missing or gated. HAL half exact; full cold-start parity not claimed.
 Report: COLD-START-SEQUENCE-2026-11-10.
 
+AMP-MONITOR-2026-11-11 (updated 2026-11-16) wires the recovered DEV_AMP_ID
+check into `mod_audio_amp` behind default-off `audio_amp.monitor`. The
+15 s/2.5 s host timer submits an owner-worker job that reads regs 03..05,
+compares with the retained configured image and runs Init then Mute(0) on
+mismatch; read failures never reinit from stale data. Both `audio_amp.enable`
+and `audio_amp.monitor` must be 1; no amp register was read or written on the
+TV, and the vendor's inverted double-read/live return remain unverified.
+
 COLD-START-SEQUENCE-2026-11-10 also corrects the panel off-path claim: the
 stock Init block mode byte `0x019354b4` is 1, and `DEV_PANEL_PowerSequence`
 sets PWM to the PTF level (1000) before LVDS off, not PWM 0 after it.

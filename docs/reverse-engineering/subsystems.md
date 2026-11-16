@@ -58,7 +58,11 @@ ICE_HardwareInit @7551a0
 `mod_plat` implements the HAL half exactly (including the non-aborting
 prelude). The `DEV_*` device half is not called: GPIO/IIC use the HAL,
 `mod_panel` owns PWM/power, `mod_tuner` owns NIM/NIM-DTV, `mod_spi` owns the
-SPI open, and source hotplug/`DEV_AMP_ID` remain gated or missing. Full vendor
+SPI open, and source hotplug remain gated or missing. `DEV_AMP_ID`'s periodic
+check is implemented in `common/amp_monitor.c` and wired into `mod_audio_amp`
+behind default-off `audio_amp.monitor` (15 s/2.5 s timer, owner-worker I2C read
+and retained-image compare with Init/Mute(0) recovery); AMP-MONITOR records the
+evidence and the live-read limit. Full vendor
 cold-start parity is not claimed; no UI is cold-start evidence.
 
 `openaurora-cold-hw.conf` + `stage-hw-profile.sh` provide the no-UI ladder

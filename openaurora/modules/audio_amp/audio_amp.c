@@ -6,6 +6,7 @@
  * disabled by default:
  *
  *   audio_amp.enable = 0|1        explicit hardware gate
+ *   audio_amp.monitor = 0|1       DEV_AMP_ID periodic check (default 0)
  *   audio_amp.hwprofile = PATH    EFSL profile (default /conf/mb230_hwprofile.bin)
  *   audio_amp.cleanup_delay_ms    diagnostic async-quiesce delay
  *
@@ -30,6 +31,7 @@
 #include "openaurora/amp_board.h"
 #include "openaurora/amp_i2c.h"
 #include "openaurora/amp_init.h"
+#include "openaurora/amp_monitor.h"
 #include "openaurora/amp_owner.h"
 #include "openaurora/amp_vendor.h"
 #include "openaurora/audio_amp.h"
@@ -40,6 +42,10 @@ struct ctx {
     const oa_host_api *api;
     int published;
     int enabled;
+    int monitor_enabled;
+    uint64_t monitor_timer;
+    unsigned monitor_initial_ms;
+    unsigned monitor_period_ms;
     const oa_plat_iface *plat;
     oa_amp_i2c *i2c;
     oa_amp_owner *owner;
@@ -107,6 +113,38 @@ static int load_profile(const char *path, oa_ad82587_profile *profile,
     return rc ? -rc : 0;
 }
 
+/* Worker-side monitor read. The owner invokes this on its worker, never on the
+ * loop; the I2C session is module-owned and kept alive until quiesce. */
+static int monitor_read(void *ud, uint8_t first, uint8_t count, uint8_t *out)
+{
+    struct ctx *c = ud;
+    if (!c || !c->i2c || first != 3 || count != 3 || !out)
+        return -EINVAL;
+    return oa_amp_i2c_read_volume(c->i2c, out);
+}
+
+static void poll_result(struct ctx *c);
+
+/* Loop timer: collect any owner completion first (otherwise one untaken
+ * monitor result would block every later check), then submit one bounded
+ * check. A pending/untaken job is skipped, not queued. */
+static void monitor_tick(void *ud)
+{
+    struct ctx *c = ud;
+    if (!c || !c->published || !c->enabled || !c->monitor_enabled || !c->owner ||
+        !c->i2c)
+        return;
+    poll_result(c);
+    uint64_t ticket = 0;
+    int rc = oa_amp_owner_submit_monitor(c->owner, monitor_read, c, &ticket);
+    if (rc == 0) {
+        c->submitted = 1;
+    } else if (rc != -EBUSY) {
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "audio_amp: monitor submit failed (%d)", rc);
+    }
+}
+
 static void poll_result(struct ctx *c)
 {
     if (!c->owner || !c->submitted)
@@ -153,6 +191,17 @@ static void poll_result(struct ctx *c)
                             completion.native_result,
                             (unsigned long long)completion.ticket);
             }
+        } else if (completion.kind == OA_AMP_JOB_MONITOR) {
+            /* The worker already ran Init->Mute(0) on mismatch. Do not touch
+             * the user Init result/caches; log the bounded worker message. */
+            c->api->log(c->api->priv,
+                        completion.native_result < 0 ? OA_LOG_WARN : OA_LOG_INFO,
+                        "audio_amp: monitor result %d fail %u mismatch %u "
+                        "(ticket %llu): %s", completion.native_result,
+                        completion.monitor_read_failures,
+                        completion.monitor_mismatches,
+                        (unsigned long long)completion.ticket,
+                        completion.monitor_log);
         } else {
             c->api->log(c->api->priv, OA_LOG_ERROR,
                         "audio_amp: unknown completion kind %d",
@@ -320,8 +369,18 @@ static void *cleanup_worker(void *v)
     return NULL;
 }
 
+static void stop_monitor(struct ctx *c)
+{
+    if (c->monitor_timer) {
+        c->api->timer_del(c->api->priv, c->monitor_timer);
+        c->monitor_timer = 0;
+    }
+    c->monitor_enabled = 0;
+}
+
 static void teardown_now(struct ctx *c)
 {
+    stop_monitor(c);
     if (c->published) {
         c->api->unpublish(c->api->priv, OA_SVC_AUDIO_AMP);
         c->published = 0;
@@ -372,6 +431,8 @@ static int m_start(void *v)
     c->mute_state = 0;
     c->balance_known = 0;
     c->balance_state = 0;
+    c->monitor_enabled = 0;
+    c->monitor_timer = 0;
     memset(&c->result, 0, sizeof c->result);
     long delay = atol(c->api->config_get(c->api->priv,
                                          "audio_amp.cleanup_delay_ms", "0"));
@@ -426,6 +487,16 @@ static int m_start(void *v)
             release_plat(c);
             return rc;
         }
+        /* The monitor's on-mismatch reinit uses the same configured image as
+         * an explicit Init; carry it into the owner before any job runs. */
+        rc = oa_amp_owner_set_profile(c->owner, &c->profile);
+        if (rc) {
+            c->api->log(c->api->priv, OA_LOG_ERROR,
+                        "audio_amp: owner profile rejected (%d)", rc);
+            (void)oa_amp_i2c_close(&c->i2c);
+            release_plat(c);
+            return rc;
+        }
     }
 
     if (c->api->publish(c->api->priv, OA_SVC_AUDIO_AMP, 1, &g_iface) != 0) {
@@ -438,6 +509,31 @@ static int m_start(void *v)
                 c->enabled ? "hardware enabled" : "disabled",
                 c->enabled ? c->profile.speaker_power : "-",
                 OA_AD82587_REGISTERS);
+
+    const char *monitor = c->api->config_get(c->api->priv,
+                                             "audio_amp.monitor", "0");
+    c->monitor_enabled = c->enabled && monitor &&
+        (!strcmp(monitor, "1") || !strcmp(monitor, "true"));
+    if (c->monitor_enabled) {
+        const char *initial = c->api->config_get(c->api->priv,
+            "audio_amp.monitor_initial_ms", "15000");
+        const char *period = c->api->config_get(c->api->priv,
+            "audio_amp.monitor_period_ms", "2500");
+        long first = atol(initial), every = atol(period);
+        c->monitor_initial_ms = first > 0 ? (unsigned)first : 15000;
+        c->monitor_period_ms = every > 0 ? (unsigned)every : 2500;
+        c->monitor_timer = c->api->timer_add(c->api->priv,
+            c->monitor_initial_ms, c->monitor_period_ms, monitor_tick, c);
+        if (!c->monitor_timer) {
+            c->monitor_enabled = 0;
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "audio_amp: monitor timer unavailable");
+        } else {
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "audio_amp: monitor enabled (%u/%u ms)",
+                        c->monitor_initial_ms, c->monitor_period_ms);
+        }
+    }
     return 0;
 }
 
@@ -475,6 +571,7 @@ static int m_quiesce(void *v)
         return -EAGAIN;
     }
 
+    stop_monitor(c);
     if (c->published) {
         c->api->unpublish(c->api->priv, OA_SVC_AUDIO_AMP);
         c->published = 0;

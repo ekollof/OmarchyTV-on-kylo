@@ -1,11 +1,12 @@
 # DEV_AMP_ID monitor check — 2026-11-11
 
 Status: current
-Last verified: 2026-11-11
+Last verified: 2026-11-16
 Evidence class: firmware instructions and host tests. No amp I2C/Gpio write or
 TV hardware operation.
-Supersedes: the "monitor task not reproduced" note for the check state machine
-only; the live owner wiring remains open.
+Supersedes: the "monitor task not reproduced" note for the check state machine;
+the owner/module wiring is now present behind a default-off gate. The vendor's
+inverted double-read and live return still need a controlled amp read.
 
 ## Firmware contract
 
@@ -57,13 +58,33 @@ ok amp monitor: regs03..05 compare, Init->Mute(0) recovery,
    read-failure isolation and invalid inputs
 ```
 
+## Owner/module wiring (2026-11-16)
+
+`oa_amp_owner_submit_monitor()` runs the check on the existing amp owner
+worker: the injected `read_regs` does the blocking I2C read there, and the
+owner supplies reinit from its retained configured image/profile and
+`Mute(0)` from the board mute record. Completion carries the result, counters
+and a bounded worker message; the loop logs it without touching the user Init
+result. `mod_audio_amp` schedules a host timer at the recovered 15 s initial /
+2.5 s period behind default-off `audio_amp.monitor=1` (testable
+`audio_amp.monitor_initial_ms`/`monitor_period_ms`), and cancels it on stop,
+quiesce and suspend. The owner is given the configured profile at start
+(`oa_amp_owner_set_profile`) so the on-mismatch reinit uses the same image as
+an explicit Init. `check-amp-owner-monitor` and
+`check-audio-amp-monitor-wiring` cover the worker read, match/mismatch/logging,
+read-failure isolation, timer cadence, default-off gate and cancellation; both
+pass and the TV `mod_audio_amp.so` builds.
+
 ## Limits
 
-- The helper is **not wired** into `audio_amp`: there is no 15 s/2.5 s owner
-  timer and no amp-owner register-read submission. `audio_amp.enable=0`.
+- Both `audio_amp.enable` and `audio_amp.monitor` default to 0; nothing is
+  scheduled or written without explicit opt-in and a ready platform service.
 - The helper uses the corrected 0-success contract. The vendor's inverted
   double-read behaviour and the live `DEV_IIC_Read` return need a controlled
   amp read if strict bug-for-bug parity is required.
-- No amp register was read or written on the TV for this work.
+- No amp register was read or written on the TV for this work; host tests use
+  an injected I2C session. There is no audible or hardware-ownership
+  acceptance.
 - The `DEV_AMP_ID` factory/profile path remains covered by
-  `audio_amp_profile`/`amp_board`; this report adds the monitor check only.
+  `audio_amp_profile`/`amp_board`; this report adds the monitor check and its
+  gated owner wiring only.

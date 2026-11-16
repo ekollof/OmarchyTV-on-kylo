@@ -68,10 +68,12 @@ maps the cold-start stages and the current stock-UI coverage.
       AUTO-COLOR-SYSTEM-2026-11-11), `DEV_AMP_ID` (profile
       and reset114/mute208 effects covered by audio_amp_profile/amp_board;
       monitor task 0x84e110/IsAlive 0x875458 recovered; check state machine
-      implemented/tested in common/amp_monitor.c (check-amp-monitor), not
-      wired: regs03..05 vs retained image, then Init/Mute; subwoofer IsAlive
-      is literal return1; vendor double-read/0-1 quirk and live owner timer
-      open), the GPIO earphone detector
+      in common/amp_monitor.c now wired into mod_audio_amp behind default-off
+      audio_amp.monitor (15 s/2.5 s host timer, owner-worker regs03..05 read,
+      retained-image compare, Init/Mute(0); check-amp-owner-monitor and
+      check-audio-amp-monitor-wiring pass); subwoofer IsAlive is literal
+      return1; vendor double-read/0-1 quirk and live owner read open), the
+      GPIO earphone detector
       (implemented/tested in `common/earphone.c`; GPIO117/100ms/board17/event
       17; event-17 audio routing open)
       and non-layout-14 panel/TCON branches. Next: decide HAL-only acceptance vs

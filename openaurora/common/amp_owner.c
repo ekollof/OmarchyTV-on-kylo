@@ -1,8 +1,11 @@
 #include <errno.h>
 #include <pthread.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "openaurora/amp_monitor.h"
 #include "openaurora/amp_owner.h"
 struct oa_amp_owner {
     pthread_t thread;
@@ -17,15 +20,65 @@ struct oa_amp_owner {
     oa_ad82587_profile profile;
     char power[32];
     oa_amp_completion completion;
+    /* MONITOR job inputs/counters, owned by the worker while pending. */
+    int (*monitor_read)(void *,uint8_t,uint8_t,uint8_t *);
+    void *monitor_ctx;
+    unsigned monitor_failures, monitor_mismatches;
+    char monitor_log[160];
 };
 static int valid(oa_amp_owner *o)
 { return !o?-EINVAL:o->pid!=getpid()?-ECHILD:0; }
 /* Executes one copied job on the worker. Init keeps the vendor 1/0 result;
  * mute/balance return 0 or a negative errno. */
+static int mon_read(void *ud,uint8_t first,uint8_t count,uint8_t *out)
+{
+    oa_amp_owner *o=ud;
+    return o->monitor_read ? o->monitor_read(o->monitor_ctx,first,count,out)
+                           : -ENOTSUP;
+}
+static int mon_reinit(void *ud)
+{
+    oa_amp_owner *o=ud;
+    /* Vendor calls Init then Mute(0) even when Init fails; carry its 1/0
+     * result as a nonzero reinit error only for logging. */
+    return oa_amp_init(&o->state,&o->profile,&o->io)==1 ? 0 : -EIO;
+}
+static int mon_mute(void *ud,int on)
+{
+    oa_amp_owner *o=ud;
+    if(on!=0)return -EINVAL;
+    const oa_amp_gpio *m=o->io.gpio(o->io.context,1);
+    if(!m)return -ENOTSUP;
+    return o->io.level(o->io.context,m->pin,m->level_off)?0:-EIO;
+}
+static void mon_log(void *ud,const char *fmt,...)
+{
+    oa_amp_owner *o=ud;
+    size_t at=strlen(o->monitor_log);
+    if(at+1>=sizeof o->monitor_log)return;
+    o->monitor_log[at++]=' ';
+    o->monitor_log[at]=0;
+    va_list ap;va_start(ap,fmt);
+    vsnprintf(o->monitor_log+at,sizeof o->monitor_log-at,fmt,ap);
+    va_end(ap);
+}
+static int run_monitor(oa_amp_owner *o)
+{
+    oa_amp_monitor m;
+    oa_amp_monitor_ops ops={o,mon_read,mon_reinit,mon_mute,mon_log};
+    o->monitor_failures=0;o->monitor_mismatches=0;o->monitor_log[0]=0;
+    if(oa_amp_monitor_init(&m,&ops,o->state.image)!=0)return -EINVAL;
+    int rc=oa_amp_monitor_check(&m,&ops);
+    o->monitor_failures=m.read_failures;
+    o->monitor_mismatches=m.mismatches;
+    return rc; /* 0 match, 1 mismatch recovered, -EIO read failure */
+}
 static int run_job(oa_amp_owner *o)
 {
     if(o->pending_kind==OA_AMP_JOB_INIT)
         return oa_amp_init(&o->state,&o->profile,&o->io);
+    if(o->pending_kind==OA_AMP_JOB_MONITOR)
+        return run_monitor(o);
     if(o->pending_kind==OA_AMP_JOB_MUTE) {
         const oa_amp_gpio *m=o->io.gpio(o->io.context,1);
         if(!m)return -ENOTSUP;
@@ -55,6 +108,12 @@ static void *worker(void *v)
         int result=run_job(o);
         pthread_mutex_lock(&o->mu);
         o->completion.native_result=result;o->completion.state=o->state;
+        if(o->pending_kind==OA_AMP_JOB_MONITOR) {
+            o->completion.monitor_read_failures=o->monitor_failures;
+            o->completion.monitor_mismatches=o->monitor_mismatches;
+            memcpy(o->completion.monitor_log,o->monitor_log,
+                   sizeof o->completion.monitor_log);
+        }
         o->pending=0;o->ready=1;
         pthread_mutex_unlock(&o->mu);
     }
@@ -91,6 +150,18 @@ int oa_amp_owner_create(oa_amp_owner **out,const oa_amp_init_state *initial,cons
     if(rc){pthread_cond_destroy(&o->cv);pthread_mutex_destroy(&o->mu);free(o);return -rc;}
     o->started=1;*out=o;return 0;
 }
+int oa_amp_owner_set_profile(oa_amp_owner *o,const oa_ad82587_profile *p)
+{
+    int rc=valid(o);if(rc)return rc;
+    if(!p || !p->speaker_power)return -EINVAL;
+    size_t length=strnlen(p->speaker_power,sizeof o->power);
+    if(length>=sizeof o->power)return -ENAMETOOLONG;
+    pthread_mutex_lock(&o->mu);
+    o->profile=*p;memcpy(o->power,p->speaker_power,length+1);
+    o->profile.speaker_power=o->power;
+    pthread_mutex_unlock(&o->mu);
+    return 0;
+}
 int oa_amp_owner_submit(oa_amp_owner *o,const oa_ad82587_profile *p,uint64_t *ticket)
 {
     int rc=valid(o);if(rc)return rc;
@@ -120,6 +191,20 @@ int oa_amp_owner_submit_balance(oa_amp_owner *o,int balance,uint64_t *ticket)
     if(!ticket || balance<0 || balance>100)return -EINVAL;
     pthread_mutex_lock(&o->mu);
     rc=queue_locked(o,OA_AMP_JOB_BALANCE,balance,ticket);
+    pthread_mutex_unlock(&o->mu);return rc;
+}
+int oa_amp_owner_submit_monitor(oa_amp_owner *o,
+    int (*read_regs)(void *,uint8_t,uint8_t,uint8_t *),void *read_ctx,
+    uint64_t *ticket)
+{
+    int rc=valid(o);if(rc)return rc;
+    if(!read_regs || !ticket)return -EINVAL;
+    pthread_mutex_lock(&o->mu);
+    /* Copy inputs only when the slot is free, as with submit(). */
+    if(!o->stopping && !o->pending && !o->ready && o->next_ticket!=UINT64_MAX) {
+        o->monitor_read=read_regs;o->monitor_ctx=read_ctx;
+    }
+    rc=queue_locked(o,OA_AMP_JOB_MONITOR,0,ticket);
     pthread_mutex_unlock(&o->mu);return rc;
 }
 int oa_amp_owner_take(oa_amp_owner *o,oa_amp_completion *out)
