@@ -617,6 +617,30 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  pending, completed, failed);
         return 0;
     }
+    if (!strcmp(cmd, "video-mute-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_video_mute_iface *v =
+            h->api.lookup(h, OA_SVC_VIDEO_MUTE, 1);
+        if (!v) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        oa_video_mute_state st;
+        memset(&st, 0, sizeof st);
+        int rc = v->state(&st);
+        h->api.release(h, OA_SVC_VIDEO_MUTE);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", -rc);
+            return -1;
+        }
+        snprintf(outbuf, outlen,
+                 "video mute hidden %d calls %d fd %d plane %u on %d\n",
+                 st.hidden, st.calls, st.last_fd, st.last_plane, st.last_on);
+        return 0;
+    }
     if (!strcmp(cmd, "profile-state")) {
         if (force || a1 || a2) {
             snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);

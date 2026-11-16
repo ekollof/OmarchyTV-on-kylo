@@ -1,9 +1,11 @@
 # HDMI source-loss fallback — 2026-11-12
 
-Status: current
-Last verified: 2026-11-16
+Status: current (on-TV effect acceptance attempted 2026-11-16 and REGRESSED;
+see the executed-acceptance section)
+Last verified: 2026-11-16 (on-TV crash and stock restoration)
 Evidence class: firmware instructions, REA cross-check, read-only on-TV
-HPD/V4L2 captures, probe rejection logs and owner-reported stock behavior.
+HPD/V4L2 captures, host/qemu tests, one controlled on-TV run that crashed the
+core, probe rejection logs and owner-reported stock behavior.
 Corrects: the earlier 2026-11-12 conclusion that `0x9D Inactive Source` was
 not the trigger. `SvgAppCECEventsListener::notifyCECDataMessageReceived`
 handles opcode `0x9D` by constructing `UIKeyPressMessage(597)` and posting it
@@ -564,49 +566,73 @@ worker and complete (first attempt may fail fast with the diagnostic delay),
 then unload is clean and the host exits 0. This is host/control-plane evidence
 for the worker lifecycle, not reload/stop on the TV. Full suite passes (rc=0).
 
-### Controlled on-TV acceptance plan (blocked — not executed)
+### Controlled on-TV acceptance — executed 2026-11-16, CRASHED (regression)
 
-The model, its effect backend and the mute consumer are host-tested only.
-**This step is currently blocked by owner/TV state, not by missing code:**
-`HANDOFF.md` records "Continue safe offline implementation while TV is in use"
-and MEMORY's LIVE-MODULE-ACCEPTANCE entry requires a new explicit
-watchdog-safe, recovery-ready instruction before reopening fb1/display or
-testtool work. The standing 2026-11-01 idle window also returns to view-only
-when the owner reports use again. No on-TV display ownership, staging, effect
-emission or stock-Aurora stop was performed for this milestone. With an
-explicit owner-authorized window and the remaining effect consumers present,
-use this plan with full stock restoration:
+Owner authorization for a bounded, watchdog-safe window with full stock
+restoration was received on 2026-11-16 (all four confirmations: TV free,
+staging/feeder/appmgr-pause/Aurora-stop allowed, execute the recorded plan,
+gate choices delegated). This is the first on-TV execution of the display
+select, mute consumer and DRM video mute.
 
-1. Baseline (view-only): with `tools/tvssh.sh`, record the stock Aurora PID
-   (never the first `pidof aurora.elf` result), active source, current service,
-   mute/volume and picture state, and CEC/fb ownership. Do not draw, send keys,
-   pause or reboot while the TV is in use.
-2. Build and verify the affected ARM artifacts under `TARGET=tv
-   BUILD=build-tv-v3`; confirm hashes/symbol versions against the host model.
-   Stage anything needed under `/tmp` only, verifying size/hash in a separate
-   successful connection; remove all staging afterwards.
-3. With explicit authorization, use a bounded display-owned window: stop stock
-   Aurora only if permitted, enable `source.tuner_select_effects=1` and
-   `source.tuner_select_sink=1` and `source.video_mute=1`, and drive one
-   `OA_SVC_TUNER_SELECT.display()`; capture the emitted effect trace, the
-   sink's applied/unsupported counters and the state snapshot. Observe the
-   real speaker-mute change via the audio service and the DRM plane mute via
-   `video.mute state`, and compare the full trace with the stock
-   mute/decoder/hide/show and `DAT_*` flag effects. Decoder/scart/SPDIF/
-   headphone/teletext/subtitles remain unsupported until real backends exist,
-   so they can only be compared as traced requests. Confirm `plat.drm_init`
-   succeeded; the HAL calls now run on the effect worker, so confirm bounded
-   queue depth and completion collection under real timing. Also verify no CEC
-   System Audio Mode conflict before enabling the sink gate.
-   Then restore stock operation and access. Keep watchdog handling and a
-   recovery reboot available per AGENTS.md; never leave a watchdog disabled
-   or a helper running.
-4. Verify restoration: stock PID/state matches the baseline, no staging
-   remains, no helper runs and the display/CEC ownership is back to stock.
-   Record any deviation as a regression, not as parity evidence.
+**Baseline (view-only):** uptime 3d17h59m; appmgr 1570, `run_aurora.sh` 1726,
+stock `aurora.elf` **1775** (the first `pidof` result 2203 was the zombie,
+not the live process); `/conf/oa_boot` absent, `/conf/coredumpnoreset` and
+`/conf/oa_safe` present; fb0..fb4; aurora owned `/dev/i2c-0..5`, `/dev/ntgpio`,
+`/dev/ntkdvif`, `/dev/ntkiic0`, `/dev/ntkspi`, video20/21/24/28 and ALSA
+controlC0/C2/C3; appmgr owned `/dev/dri/card0` and fb0/fb1/fb2. No old
+`/tmp/oa-*` staging from this work.
 
-No TV operation, staging or display ownership was performed for this
-milestone; the plan is recorded only.
+**Staging:** ARM artifacts rebuilt with `TARGET=tv BUILD=build-tv-v3`;
+`openaurora` `a4ce0033…`, `mod_plat.so` `bc56d9c0…`, `mod_source.so`
+`23c61908…`, `mod_audio.so` `f4b3088b…`, `oa-client` `f3d20a61…`,
+`oa-wdtfeed` `206c1ab5…`, config `2eb27fc1…`. Uploaded to `/tmp/oa-tv-accept`
+by tar (no combined stdin/asynchronous work), then `sha256sum -c` passed in a
+**separate** connection. Config: `autoload=plat,source,audio`,
+`plat.drm_init=1`, `plat.driver_wait=0`, `plat.wdt_probe=0`, `source.enable=0`,
+`source.tuner_select_effects=1`, `source.tuner_select_sink=1`,
+`source.video_mute=1`, `audio.enable=1`. No CEC module or `cec.audio` service
+was published, so there was no System Audio Mode conflict.
+
+**Run:** `oa-wdtfeed --node /proc/nvtstbcipc --interval 3 --timeout 10 --stop
+/tmp/oa-tv-accept/oa-wdt-stop` logged beats 1..3 before stock was touched;
+appmgr 1570 was `SIGSTOP`ped, `run_aurora.sh` 1726 and Aurora 1775 received
+SIGTERM, and the feeder kept beating (through beat 23). The staged core
+started (PID 15137) with all three modules started and a ready receipt.
+`plat` completed DRM init: `drmModeGetEncoder=PASS`, `fb_id 133`, `crtc_id 26`,
+planes 40/54/55/56/59/60/61/62. `video.mute v1` and `tuner.select v2` were
+published; pre-state was `effects 0 … dispatched 0` and `video mute hidden -1
+calls 0`.
+
+`tuner-select-display 1` returned `ran 1 pre_mute 1 unmute 1 show 1 reject 0`.
+The effect trace showed all 17 effects with the four real ones queued to the
+worker (`mute_on sink=4`, `hide_video sink=4`, `mute_off sink=4`,
+`show_video sink=4`); 12 were unsupported. Post state immediately after was
+`effects 16 … queued 4 completed 0 … unsupported 12`, i.e. **no completions
+were collected**. The control socket then stopped replying, and the core
+crashed with `[COREDUMP] SIGNR:11` (SIGSEGV); `core_helper.sh` began handling
+PID 15137. The last application log line was `mute -> 1`, so the worker had
+entered the audio mute path; there is no evidence that the DRM mute completed,
+and no fault address or core is available for analysis (no `enable_coredump`
+node; the USB core write was accompanied by FAT read failures).
+
+**Result: REGRESSION, not acceptance.** The real on-TV effect worker path
+crashes the core; the host and qemu tests did not predict it. Do not claim
+mute, DRM plane mute, hide/show or display-select parity. The remaining
+effects were only traced. This also invalidates the assumption that copied
+service pointers and vendor HAL calls are safe on a worker thread; the exact
+fault and the correct threading/ownership model are open.
+
+**Restore:** logs (`run.log`, `wdt.log`, `dmesg.txt`, `ps.txt`, effect trace,
+manifest, config) were copied to `/buffer/oa-tv-accept-20261116` before the
+reboot. The feeder stop file was written and the feeder exited; `/tmp/oa-tv-accept`
+and `/tmp/openaurora.ready` were removed; the appmgr was resumed. A `reboot`
+invocation did not take effect, so on owner instruction `reboot -f` was used
+and succeeded. Verified after boot: uptime 1 min, appmgr 1573, `run_aurora.sh`
+1740, Aurora **1790** (zombie 1955), no `openaurora`/`oa-wdtfeed`/`core_helper`,
+no staging, `/conf/oa_boot` absent, `/conf/coredumpnoreset` retained, fb0..fb4
+and stock device ownership (aurora/i2c/gpio/video/ALSA, appmgr DRM/fb)
+restored. Stock operation and access are back; no boot-hook, firmware or
+`/conf` change was installed.
 
 The source service exposes `inactive_source(position)` v3 behind
 `source.inactive_fallback`. It resolves the active `OA_SVC_CHANNELS` position

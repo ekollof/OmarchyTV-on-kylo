@@ -3657,3 +3657,14 @@ a skin callback is deferred via skin_pending and executed by oa_skin_pump after
 the stack unwinds; ui_omarchy/ui_diag demo key240, tests/skin_switch_ipc.cjs
 covers omarchy->diag->omarchy. Full suite passes. MODULE-CONSOLIDATION,
 SKIN-SWITCH.
+
+ON-TV-EFFECT-ACCEPT-2026-11-16: owner-authorized bounded window executed the
+recorded display-select plan. Staged `a4ce0033…` core + plat/source/audio with
+`plat.drm_init=1`, `source.tuner_select_effects/sink/video_mute=1`; DRM init
+passed and `tuner-select-display 1` queued all four real effects, but the core
+SIGSEGVed (`SIGNR:11`) before completions. No core/fault address. Stock was
+restored with `reboot -f` and verified (appmgr 1573, run_aurora 1740, aurora
+1790, no staging/helper, /conf unchanged). Evidence:
+`/buffer/oa-tv-accept-20261116`, `SOURCE-LOSS-FALLBACK` executed-acceptance
+section. Next entry point: diagnose the worker/vendor-HAL crash before any
+further on-TV effect run.

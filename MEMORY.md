@@ -149,8 +149,14 @@ status, collected completions; `check-effect-worker`, fake-service
 pointer still needs TV acceptance; `check-tuner-select-ipc` proves host
 reload/stop/unload and queued/completed effects over the control socket.
 Decoder-select is a state setter (`EASIControlTask::selectVideoDecoder` @
-`0x98d37c`), not a HAL effect. Decoder/scart/SPDIF/headphone/teletext/subtitles backends and on-TV acceptance remain
-open (TV in use per HANDOFF; explicit owner window required). Any
+`0x98d37c`), not a HAL effect. 2026-11-16 on-TV: owner-authorized window
+executed; staged core started with DRM init, first gated display-select queued
+four real effects, then SIGSEGV (`SIGNR:11`) before any completion (last log
+`mute -> 1`; no core/fault address). REGRESSION, no parity. Stock restored by
+`reboot -f` and verified (appmgr 1573/run_aurora 1740/aurora 1790, no
+staging/helper, /conf unchanged, fb and device ownership stock); logs in
+`/buffer/oa-tv-accept-20261116`. Decoder/scart/SPDIF/headphone/teletext/
+subtitles backends and on-TV acceptance remain open. Any
 `SetConnectInfo` caller outside the analyzed paths remains open. The status-4/HPD path is the
 cable-unplug policy; `source.video_status` is a no-signal detector, not the
 sleep trigger. `source.video_status()` v2 is now

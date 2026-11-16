@@ -623,8 +623,14 @@ unvalidated.
       prove the gated chain, queued/completed effects and clean host
       reload/stop/unload (not TV). Decoder-select is a state setter
       (`EASIControlTask::selectVideoDecoder` @ `0x98d37c`), not a HAL effect.
-      On-TV validation blocked while TV is in use (HANDOFF); needs an explicit
-      owner-authorized window with stock restoration. Remaining: real decoder/scart/SPDIF/headphone/teletext/
+      2026-11-16: owner-authorized on-TV window executed; staged core started
+      with DRM init and all gates, first gated display-select queued four real
+      effects, then the core SIGSEGVed (`SIGNR:11`) before any completion
+      (`mute -> 1` was the last log line; no core/fault address). REGRESSION:
+      the off-loop worker/vendor HAL calls are not safe on hardware as built.
+      Stock restored by `reboot -f` and verified; logs in
+      `/buffer/oa-tv-accept-20261116`. On-TV acceptance and the fault analysis
+      remain open. Remaining: real decoder/scart/SPDIF/headphone/teletext/
       subtitles backends, any `SetConnectInfo` caller outside the analyzed paths and
       UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [x] Source switches emit `source/state`; `ui_vendor` updates the Bronlijst
