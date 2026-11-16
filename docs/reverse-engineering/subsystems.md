@@ -261,9 +261,14 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   pure injected-effects helper `common/tuner_select.c`
   (`check-tuner-select`: gates, result-0-or-4 pre-mute gate with the
   cached-result/country split, ordered effects, post-select unmute/show,
-  non-display path and deferral). It is not wired to a replacement backend;
-  EASI effects and UI/timing remain open. Do not substitute an
-  always-switch-to-TV or HPD shortcut.
+  non-display path and deferral). 2026-11-16: a pure replacement EASI
+  effect-state backend `common/easi_effects.c` consumes the model, emits the
+  17 effects in firmware order and tracks mute/decoder/hide/show state; it is
+  wired into `mod_source` as `OA_SVC_TUNER_SELECT` behind default-off
+  `source.tuner_select_effects` (`check-easi-effects`, fake-service
+  `source_path`). The emitter only logs, so a real effect consumer and
+  UI/timing remain open. Do not substitute an always-switch-to-TV or HPD
+  shortcut.
 - A successful `change_input` emits `source/state` with the source type.
   `ui_vendor` maps it to the Bronlijst row, persists `m_current_source`, syncs
   the picture cards and repaints; `ui_omarchy` repaints. `common/source_map.c`

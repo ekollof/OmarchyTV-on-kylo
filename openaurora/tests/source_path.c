@@ -2,6 +2,7 @@
  * no TV, /dev, vendor library or display. */
 #include <assert.h>
 #include <errno.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,12 +18,16 @@
 
 extern const oa_module *oa_module_entry(void);
 static const oa_source_iface *iface;
+static const oa_tuner_select_iface *select_iface;
+static char select_log[4096];
+static size_t select_log_n;
 static int source_events;
 static uint8_t source_event_type;
 static int enabled = 1;
 static int color_gate;
 static int vin_gate;
 static int inactive_gate;
+static int effects_gate;
 static int pos;
 
 static struct oa_channel_entry channel_entries[3];
@@ -116,7 +121,22 @@ static void reset(void)
 }
 static void log_message(void *p, int level, const char *fmt, ...)
 {
-    (void)p; (void)level; (void)fmt;
+    (void)p; (void)level;
+    char msg[256];
+    va_list ap;
+    va_start(ap, fmt);
+    int n = vsnprintf(msg, sizeof msg, fmt, ap);
+    va_end(ap);
+    if (n <= 0 || strncmp(msg, "tuner.select:", 13))
+        return; /* only capture effect traces, not ordinary module logs */
+    if (select_log_n >= sizeof select_log)
+        return;
+    size_t len = (size_t)n < sizeof msg ? (size_t)n : sizeof msg - 1;
+    if (len > sizeof select_log - select_log_n - 1)
+        len = sizeof select_log - select_log_n - 1;
+    memcpy(select_log + select_log_n, msg, len);
+    select_log_n += len;
+    select_log[select_log_n] = '\0';
 }
 static const char *config(void *p, const char *key, const char *def)
 {
@@ -125,12 +145,18 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "source.auto_color_system")) return color_gate ? "1" : "0";
     if (!strcmp(key, "source.vin_status")) return vin_gate ? "1" : "0";
     if (!strcmp(key, "source.inactive_fallback")) return inactive_gate ? "1" : "0";
+    if (!strcmp(key, "source.tuner_select_effects")) return effects_gate ? "1" : "0";
     if (!strcmp(key, "source.cleanup_delay_ms")) return "0";
     return def;
 }
 static int publish(void *p, const char *name, uint32_t version, const void *ifc)
 {
     (void)p;
+    if (!strcmp(name, OA_SVC_TUNER_SELECT)) {
+        assert(version == 1);
+        select_iface = ifc;
+        return 0;
+    }
     assert(!strcmp(name, OA_SVC_SOURCE) && version == 3);
     iface = ifc;
     return 0;
@@ -138,6 +164,10 @@ static int publish(void *p, const char *name, uint32_t version, const void *ifc)
 static int unpublish(void *p, const char *name)
 {
     (void)p;
+    if (!strcmp(name, OA_SVC_TUNER_SELECT)) {
+        select_iface = NULL;
+        return 0;
+    }
     assert(!strcmp(name, OA_SVC_SOURCE));
     iface = NULL;
     return 0;
@@ -432,7 +462,60 @@ int main(void)
     assert(iface->inactive_source(1) == -2);
     done(ctx);
 
+    /* Gated pure EASI effect backend: the fake-service host exercises the
+     * wired tuner.select service, its ordered effect log and the state
+     * snapshot, with no device/HAL/UI I/O. */
+    inactive_gate = 1;
+    effects_gate = 1;
+    select_log_n = 0;
+    select_log[0] = '\0';
+    ctx = start(1);
+    assert(select_iface != NULL);
+
+    oa_tuner_select_inputs sin;
+    memset(&sin, 0, sizeof sin);
+    sin.service_count = 10;
+    sin.handle_valid = 1;
+    sin.handle = 100;
+    sin.select_result = 0;
+    sin.display = 1;
+    sin.post_select = 1;
+    sin.decoder_available = 0;
+    sin.authorized = 1;
+    sin.current_service = 3;
+    oa_tuner_select_result sout;
+    assert(select_iface->display(&sin, &sout) == 0);
+    assert(sout.ran && sout.pre_mute_applied && sout.unmute_applied &&
+           sout.show_applied && sout.show_mode == 0);
+    oa_easi_effects_state st;
+    assert(select_iface->state(&st) == 0);
+    assert(st.muted == 0 && st.scart_muted == 0 && st.decoder == 0 &&
+           st.video_hidden == 0 && st.effects > 0);
+    assert(strstr(select_log, "mute_on(1)") != NULL);
+    assert(strstr(select_log, "decoder(0)") != NULL);
+    assert(strstr(select_log, "show_video(0)") != NULL);
+
+    /* Rejected select emits nothing and leaves the backend unchanged. */
+    select_log_n = 0;
+    select_log[0] = '\0';
+    sin.service_count = 0;
+    assert(select_iface->display(&sin, &sout) == 0);
+    assert(!sout.ran && select_log_n == 0);
+    oa_easi_effects_state st2;
+    assert(select_iface->state(&st2) == 0 && st2.effects == st.effects);
+    done(ctx);
+    assert(select_iface == NULL);
+
+    /* Disabled gate publishes no service and no effect log. */
+    effects_gate = 0;
+    select_log_n = 0;
+    select_log[0] = '\0';
+    ctx = start(1);
+    assert(select_iface == NULL && select_log_n == 0);
+    done(ctx);
+
     puts("ok source path: type gates, VIN opens/VPLT, V4L2Info/FdCommon, "
-         "DRM/NDAL, audio, gated HDMI RX status and inactive-source order");
+         "DRM/NDAL, audio, gated HDMI RX status, inactive-source order and "
+         "gated tuner.select effects");
     return 0;
 }

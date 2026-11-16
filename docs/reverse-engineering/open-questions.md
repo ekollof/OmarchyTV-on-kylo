@@ -96,8 +96,12 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   `w0=1` active and `w0=0/5` during suspend. 2026-11-16: the full
   `requestServiceSelectForDisplayInternal` @ `0xf771e0` contract is recovered
   and modeled as a pure injected-effects helper `common/tuner_select.c`
-  (`check-tuner-select`); it is not wired to any replacement backend, so EASI
-  effects and UI/timing remain open. The source service
+  (`check-tuner-select`). A pure replacement EASI effect backend
+  `common/easi_effects.c` consumes it and is wired into `mod_source` as
+  `OA_SVC_TUNER_SELECT` behind default-off `source.tuner_select_effects`
+  (`check-easi-effects`, fake-service `source_path`); its emitter only logs,
+  so a real hardware/UI effect consumer and UI/timing remain open. The vendor
+  EASI methods need live C++ objects and cannot be called directly. The source service
   now exposes the read-only `video_status()` v2 behind `source.vin_status`; it
   is host-tested but not wired to a tuner and is a no-signal detector, not the
   sleep trigger. `common/tuner_view.c` + `check-tuner-view` cover the recovered

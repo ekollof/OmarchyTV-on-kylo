@@ -124,9 +124,14 @@ selected tuner handle back to its active-list or stored-list position and calls
 the worker; `cec_inactive.cjs` covers both paths and the disabled/TV gates.
 2026-11-16: the full `requestServiceSelectForDisplayInternal` @ `0xf771e0`
 mute/decoder/hide/show/authorization contract is recovered and modeled as a
-pure injected-effects helper `common/tuner_select.c` (`check-tuner-select`
-passes); it is not wired to any replacement backend, so EASI effect backends
-and any `SetConnectInfo` caller outside the analyzed paths remain open. The status-4/HPD path is the
+pure injected-effects helper `common/tuner_select.c` (`check-tuner-select`).
+A pure replacement EASI effect backend `common/easi_effects.c` consumes it
+(17 firmware-ordered effects, tracked mute/decoder/hide/show state) and is
+wired into `mod_source` as `OA_SVC_TUNER_SELECT` behind default-off
+`source.tuner_select_effects` (`check-easi-effects` and fake-service
+`source_path` pass, TV `mod_source.so` builds). The emitter only logs; no
+hardware/UI consumer or parity. Any `SetConnectInfo` caller outside the
+analyzed paths remains open. The status-4/HPD path is the
 cable-unplug policy; `source.video_status` is a no-signal detector, not the
 sleep trigger. `source.video_status()` v2 is now
 host-tested behind `source.vin_status` (`check-source-vin` and the fake-module

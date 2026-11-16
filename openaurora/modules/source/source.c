@@ -31,6 +31,8 @@
 #include "openaurora/broadcast.h"
 #include "openaurora/channels.h"
 #include "openaurora/dev_gpio.h"
+#include "openaurora/easi_effects.h"
+
 #include "openaurora/events.h"
 #include "openaurora/module.h"
 #include "openaurora/services.h"
@@ -100,6 +102,11 @@ struct ctx {
     int vin_ready; /* -1 unknown, 0 lost, 1 ready */
     int vin_error_logged;
     int inactive_enabled; /* source.inactive_fallback */
+    /* source.tuner_select_effects: pure EASI effect backend bound to the
+     * recovered TunerManager display-select model. No device/HAL/UI I/O. */
+    int effects_enabled;
+    oa_easi_effects effects;
+    oa_tuner_select_ops effects_ops;
 };
 
 static struct ctx *g_ctx;
@@ -613,6 +620,46 @@ static const oa_source_iface g_iface = { select_type, iface_current,
                                          iface_video_status,
                                          iface_inactive_source };
 
+/* --- gated replacement for the TunerManager display-select effects --- */
+
+static const char *const easi_names[] = {
+    "notify", "mute_on", "mute_off", "hp_mute_on", "hp_mute_off",
+    "scart_mute", "spdif_out", "decoder", "hide_video", "show_video",
+    "subtitles_off", "teletext_font", "subtitles_restore",
+    "select_internal", "select_second", "dual_view_reset", "delay"
+};
+
+static void effects_emit(void *ud, enum oa_easi_effect effect, int arg)
+{
+    struct ctx *c = ud;
+    const char *name = (unsigned)effect < sizeof easi_names / sizeof easi_names[0]
+                           ? easi_names[effect] : "unknown";
+    c->api->log(c->api->priv, OA_LOG_DEBUG,
+                "tuner.select: %s(%d)", name, arg);
+}
+
+static int iface_tuner_select_display(const oa_tuner_select_inputs *in,
+                                      oa_tuner_select_result *out)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->effects_enabled)
+        return -2;
+    oa_easi_effects_bind(&c->effects, &c->effects_ops);
+    return oa_tuner_select_display(&c->effects_ops, in, out);
+}
+
+static int iface_tuner_select_state(oa_easi_effects_state *out)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->effects_enabled)
+        return -2;
+    return oa_easi_effects_snapshot(&c->effects, out);
+}
+
+static const oa_tuner_select_iface g_tuner_select_iface = {
+    iface_tuner_select_display, iface_tuner_select_state
+};
+
 static int m_init(const oa_host_api *api, void **out)
 {
     if (!api || api->size < sizeof(oa_host_api) || api->abi != OA_ABI_VERSION)
@@ -778,6 +825,20 @@ static int m_start(void *v)
     if (c->inactive_enabled)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "source: CEC 0x9D inactive-source fallback enabled");
+    const char *effects = c->api->config_get(c->api->priv,
+                                             "source.tuner_select_effects", "0");
+    c->effects_enabled = effects && atoi(effects) != 0;
+    if (c->effects_enabled) {
+        const oa_easi_effects_io io = { c, effects_emit };
+        oa_easi_effects_init(&c->effects, &io);
+        if (c->api->publish(c->api->priv, OA_SVC_TUNER_SELECT, 1,
+                            &g_tuner_select_iface) != 0)
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "tuner.select service already published");
+        else
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "tuner.select: pure display-select effects enabled");
+    }
     if (c->api->publish(c->api->priv, OA_SVC_SOURCE, 3, &g_iface) != 0)
         c->api->log(c->api->priv, OA_LOG_WARN, "source service already published");
 
@@ -842,6 +903,11 @@ static int m_quiesce(void *v)
     c->vin_ready = -1;
     c->inactive_enabled = 0;
     c->enabled = 0;
+    if (c->effects_enabled) {
+        c->api->release(c->api->priv, OA_SVC_TUNER_SELECT);
+        c->api->unpublish(c->api->priv, OA_SVC_TUNER_SELECT);
+        c->effects_enabled = 0;
+    }
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
     if (c->nfds == 0) return 0;
@@ -889,6 +955,11 @@ static void m_stop(void *v)
     c->vin_ready = -1;
     c->inactive_enabled = 0;
     c->enabled = 0;
+    if (c->effects_enabled) {
+        c->api->release(c->api->priv, OA_SVC_TUNER_SELECT);
+        c->api->unpublish(c->api->priv, OA_SVC_TUNER_SELECT);
+        c->effects_enabled = 0;
+    }
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
     if (c->cleanup_running) {

@@ -413,18 +413,44 @@ callback. The recovered gates and order are:
 `check-tuner-select` covers the rejection gates, the pre-mute predicate
 (including the country split), the exact effect order, authorization and
 standby/dual-view/subtitle decisions, the non-display path, deferral and
-rejection without I/O. The vendor `EASIControlInterface` /
-`EASITVControlInterface` effects still have no replacement backends; this is
-the contract those backends must meet, not hardware or stock-UI parity. There
-is deliberately no runtime config gate: enabling a model with no backends
-would emit no real effect, so the helper is inert until those backends exist.
+rejection without I/O.
+
+### Replacement EASI effects backend and gating (2026-11-16)
+
+The vendor effect methods are C++ methods on live `EASIControlTask` /
+`UIAppClient` object instances (`EASIControlInterface::muteOn` @ `0x975d58`
+delegates to `EASIControlTask::muteOn` @ `0x98bb00`, which calls a nested
+vtable; `showVideo` @ `0x9771fc` delegates to `UIAppClient::showVideo`). A
+replacement process cannot call them without recreating the whole object
+graph, so no direct vendor adapter is claimed. Instead,
+`include/openaurora/easi_effects.h` / `common/easi_effects.c` implement a pure
+replacement effect-state backend: it holds the observable mute, headphone,
+scart, SPDIF, decoder, video-hidden, subtitles and teletext state, and emits
+each effect **in firmware order** through an injected callback. The 17 effect
+events include `notify`, mute/hide/decoder/scart/SPDIF/teletext, the two
+selects, dual-view reset, the 20 ms delay, unmute and show. `oa_easi_effects_bind`
+fills an `oa_tuner_select_ops` so the recovered model drives the backend.
+
+This is wired into `mod_source` behind default-off
+`source.tuner_select_effects`, which publishes `OA_SVC_TUNER_SELECT` v1 with
+`display(in,out)` and `state(out)` methods. The emitter only logs a bounded
+`OA_LOG_DEBUG` trace; there is no device, HAL, decode or UI I/O. `state()`
+reports the backend's last accepted effects, not a hardware readback.
+`check-easi-effects` covers init/snapshot, the full display effect order and
+final state, rejection with no effects, the non-display show-alternate path
+and deferral. The fake-service `source_path` test drives the gated service
+through the real module with captured effect traces, the state snapshot,
+rejection and the disabled gate (no service published). The full host suite
+passes (rc=0) and the TV `mod_source.so` builds with the new sources. This is
+a replacement *contract and state model*, not audible/display or stock-UI
+parity; no real effect backend consumes the emitter yet.
 
 ### Controlled on-TV acceptance plan (not executed)
 
-The pure model is host-tested only. On-TV acceptance of the *effects* cannot be
-performed until the replacement EASI mute/decoder/hide/show backends exist;
-until then the only tractable on-TV work is read-only contract confirmation and
-ARM/ABI verification. If a future session has both backends and an
+The model and its effect backend are host-tested only. On-TV acceptance of
+*real* effects requires a consumer that drives hardware/UI from the emitted
+events; none exists, so until then the only tractable on-TV work is read-only
+contract confirmation and ARM/ABI verification. With a consumer and an
 owner-authorized idle window, use this plan with full stock restoration:
 
 1. Baseline (view-only): with `tools/tvssh.sh`, record the stock Aurora PID
@@ -436,11 +462,14 @@ owner-authorized idle window, use this plan with full stock restoration:
    Stage anything needed under `/tmp` only, verifying size/hash in a separate
    successful connection; remove all staging afterwards.
 3. With explicit authorization, use a bounded display-owned window: stop stock
-   Aurora only if permitted, emit one gated display-select through the real
-   backends, observe mute/decoder/hide/show and the `DAT_*` flag effects, then
-   restore stock operation and access. Keep watchdog handling and a recovery
-   reboot available per AGENTS.md; never leave a watchdog disabled or a helper
-   running.
+   Aurora only if permitted, enable `source.tuner_select_effects=1` and drive
+   one `OA_SVC_TUNER_SELECT.display()`; capture the emitted effect trace and
+   state snapshot, and compare them with the stock mute/decoder/hide/show and
+   `DAT_*` flag effects. The emitter currently only logs — step 3 becomes real
+   hardware/UI acceptance only when a consumer of the emit events exists.
+   Then restore stock operation and access. Keep watchdog handling and a
+   recovery reboot available per AGENTS.md; never leave a watchdog disabled
+   or a helper running.
 4. Verify restoration: stock PID/state matches the baseline, no staging
    remains, no helper runs and the display/CEC ownership is back to stock.
    Record any deviation as a regression, not as parity evidence.

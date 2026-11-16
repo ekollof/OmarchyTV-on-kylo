@@ -17,6 +17,8 @@
 #include "openaurora/tab_policy.h"
 #include "openaurora/service_db.h"
 #include "openaurora/broadcast.h"
+#include "openaurora/tuner_select.h"
+#include "openaurora/easi_effects.h"
 
 #include <stdint.h>
 
@@ -513,6 +515,18 @@ typedef struct {
 #define OA_SVC_EPG_INGEST "epg.ingest"
 #define OA_SVC_PVR "pvr"
 #define OA_SVC_CHANNELS "channels"
+
+/* tuner.select — gated replacement for TunerManager's display-select effects.
+ * Published by mod_source only when source.tuner_select_effects=1. display()
+ * runs the pure injected-effects model and returns 0 (ran or cleanly
+ * rejected), -2 when disabled or -EINVAL for null arguments. state() copies
+ * the replacement EASI effect state. No device, HAL, decode or UI I/O. */
+#define OA_SVC_TUNER_SELECT "tuner.select"
+typedef struct {
+    int (*display)(const oa_tuner_select_inputs *in,
+                   oa_tuner_select_result *out);
+    int (*state)(oa_easi_effects_state *out);
+} oa_tuner_select_iface;
 
 /* ui.anim — recovered list/dialog animation. Published by mod_ui_anim.
  * set_enabled only writes the flag. start() reads ui.clock and rejects a

@@ -580,8 +580,15 @@ unvalidated.
       (`check-tuner-select` passes: gates, result-0-or-4 pre-mute gate with
       cached-result/country split, ordered effects, post-select unmute/show,
       non-display path and deferral). It is not wired to any replacement
-      backend. Remaining: EASI effect backends and their wiring, any
-      `SetConnectInfo` caller outside the analyzed paths and UI/timing.
+      backend. 2026-11-16: a pure replacement EASI effect backend
+      `common/easi_effects.c` consumes that model, emits the 17 effects in
+      firmware order and tracks mute/headphone/scart/SPDIF/decoder/hide/
+      subtitles/teletext state; it is wired into `mod_source` as
+      `OA_SVC_TUNER_SELECT` behind default-off `source.tuner_select_effects`
+      (`check-easi-effects` and the fake-service `source_path` test pass, TV
+      `mod_source.so` builds). The emitter only logs; no real effect consumer
+      or hardware/UI acceptance. Remaining: a consumer of the emitted effects,
+      any `SetConnectInfo` caller outside the analyzed paths and UI/timing.
       SOURCE-LOSS-FALLBACK-2026-11-12.
 - [x] Source switches emit `source/state`; `ui_vendor` updates the Bronlijst
       row, `m_current_source`, picture cards and repaints; `ui_omarchy`
