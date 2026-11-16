@@ -3670,6 +3670,11 @@ section. 2026-11-16 offline follow-up (delegate-assisted): root cause was the
 48-byte `Hal_Video_Get_DrmPlaneInfo` write into a 16-byte buffer; fixed with a
 16-word buffer/static assert, index guard, int-returning wrapper, and a raw
 `audio.effect` setter so the worker makes no host API calls. Host suites pass
-and ARM modules build; TV is in standby. Next entry point: re-stage the fixed
-ARM artifacts in a new owner-authorized window and repeat the display-select
-before closing the regression.
+and ARM modules build; TV is in standby. Second authorized on-TV run the same day with the fixed artifacts PASSED: four
+effects queued and completed (rc=0), two real DRM plane-mute ioctls accepted
+(fd 13, plane 55), no coredump and the core stayed alive — SIGSEGV regression
+CLOSED. Audible/visible parity and the other 12 effects remain unproven. Stock
+restored by `reboot -f` and verified (appmgr 1571, Aurora 1777); logs in
+`/buffer/oa-tv-accept2-20261116`. Next entry point: independent audio/visual
+confirmation and the remaining open platform/UI gates; no TV window is
+currently authorized.

@@ -156,10 +156,13 @@ four real effects, then SIGSEGV (`SIGNR:11`) before any completion (last log
 the documented 48-byte `Hal_Video_Get_DrmPlaneInfo` write overflowed a 16-byte
 buffer; fixed with a 16-word buffer/static assert, plane-index guard,
 int-returning wrapper and raw `audio.effect` setter (no host API off-loop). Host
-suites pass, ARM modules build; on-TV retest pending. Stock restored by
-`reboot -f` and verified (appmgr 1573/run_aurora 1740/aurora 1790, no
-staging/helper, /conf unchanged, fb and device ownership stock); logs in
-`/buffer/oa-tv-accept-20261116`. Decoder/scart/SPDIF/headphone/teletext/
+suites pass, ARM modules build. Second authorized on-TV run with the fixed
+artifacts passed: 4 effects queued and completed rc=0, `video.mute state` showed
+two real DRM plane-mute ioctls (fd 13, plane 55), no coredump and the core alive
+— SIGSEGV regression CLOSED. Audible/visible parity and the other 12 effects
+remain unclaimed. Stock restored by `reboot -f` and verified (final appmgr
+1571/run_aurora 1704/aurora 1777, no staging/helper, /conf unchanged, fb and
+device ownership stock); logs in `/buffer/oa-tv-accept2-20261116`. Decoder/scart/SPDIF/headphone/teletext/
 subtitles backends and on-TV acceptance remain open. Any
 `SetConnectInfo` caller outside the analyzed paths remains open. The status-4/HPD path is the
 cable-unplug policy; `source.video_status` is a no-signal detector, not the

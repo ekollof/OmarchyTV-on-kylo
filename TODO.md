@@ -632,9 +632,12 @@ unvalidated.
       (DRM-PLANE-CONTRACT-2026-10-31, initially missed) into a 16-byte buffer;
       fixed with a 16-word buffer/static assert, index guard, int-returning
       wrapper and a raw `audio.effect` setter (no host API off-loop). Host suites
-      pass and ARM modules build. Stock restored by `reboot -f` and verified;
-      logs in `/buffer/oa-tv-accept-20261116`. On-TV retest and acceptance remain
-      open. Remaining: real decoder/scart/SPDIF/headphone/teletext/
+      pass and ARM modules build. A second authorized on-TV run with the fixed
+      artifacts passed (4 effects completed rc=0, two DRM plane-mute ioctls
+      accepted, no coredump, core alive): the SIGSEGV regression is CLOSED.
+      Audible/visible parity and the other 12 effects remain unproven. Stock
+      restored by `reboot -f` and verified; logs in
+      `/buffer/oa-tv-accept2-20261116`. Remaining: real decoder/scart/SPDIF/headphone/teletext/
       subtitles backends, any `SetConnectInfo` caller outside the analyzed paths and
       UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [x] Source switches emit `source/state`; `ui_vendor` updates the Bronlijst

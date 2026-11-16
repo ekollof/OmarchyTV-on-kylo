@@ -1,12 +1,12 @@
 # HDMI source-loss fallback — 2026-11-12
 
-Status: current (on-TV effect acceptance attempted 2026-11-16 and REGRESSED;
-root cause found and fixed offline the same day, on-TV retest pending — see the
-executed-acceptance and root-cause sections)
-Last verified: 2026-11-16 (on-TV crash and stock restoration)
+Status: current (on-TV effect acceptance crashed 2026-11-16, root cause fixed,
+and a second authorized on-TV run the same day completed all effects with no
+crash; the SIGSEGV regression is closed. Audible/visible parity is NOT claimed.)
+Last verified: 2026-11-16 (second on-TV retest and full stock restoration)
 Evidence class: firmware instructions, REA cross-check, read-only on-TV
-HPD/V4L2 captures, host/qemu tests, one controlled on-TV run that crashed the
-core, probe rejection logs and owner-reported stock behavior.
+HPD/V4L2 captures, host/qemu tests, two controlled on-TV runs (one crash, one
+clean retest), probe rejection logs and owner-reported stock behavior.
 Corrects: the earlier 2026-11-12 conclusion that `0x9D Inactive Source` was
 not the trigger. `SvgAppCECEventsListener::notifyCECDataMessageReceived`
 handles opcode `0x9D` by constructing `UIKeyPressMessage(597)` and posting it
@@ -573,11 +573,42 @@ and reuse failure, not a new hardware quirk.
 
 `check-video-mute`, `check-effect-worker`, `check-source-path` (with a new
 CEC-block case), `check-tuner-select-ipc` and the full host suite pass (rc=0);
-ARM `mod_source.so` (`f29c56fb…`) and `mod_audio.so` (`a5d6e2a1…`) build. The TV
-is in standby and **no on-TV retest has been performed**: the regression is not
-closed until a new authorized window repeats the run. Delegate-assisted
+ARM `mod_source.so` (`f29c56fb…`) and `mod_audio.so` (`a5d6e2a1…`) build. Delegate-assisted
 firmware analysis (two research agents) supplied the 48-byte contract and the
 host-API-from-worker finding; no agent modified files.
+
+### On-TV retest — 2026-11-16, PASS (crash regression closed)
+
+Owner authorization for a second bounded window was received. View-only
+baseline: stock Aurora **1790** (zombie 1955), appmgr 1573, `/conf/oa_boot`
+absent, `/conf/coredumpnoreset` retained, fb0..fb4. The fixed artifacts were
+staged to `/tmp/oa-tv-accept2` and `sha256sum -c` passed in a separate
+connection (`openaurora` `8e5e7554…`, `mod_source.so` `f29c56fb…`,
+`mod_audio.so` `a5d6e2a1…`, config `2eb27fc1…`). `oa-wdtfeed` beat 3 times
+before stock was touched; appmgr 1573 was SIGSTOPped and Aurora 1790 stopped
+while the feeder kept beating. The staged core (PID 6584) started all three
+modules, published `audio.effect v1`, `tuner.select v2` and `video.mute v1`, and
+DRM init passed (`fb_id 103`, `crtc_id 26`, planes 40/54/55/56/59/60/61/62).
+
+`tuner-select-display 1` returned `ran 1 pre_mute 1 unmute 1 show 1 reject 0`.
+The full effect trace again queued the four real effects, but this time
+`sink_status` immediately reported `queued 4 completed 4 sink_failed 0
+completion_failed 0 unsupported 12`, and `video-mute-state` reported
+`hidden 0 calls 2 fd 13 plane 55 on 0` — two real DRM plane-mute ioctls
+(hide then show) accepted, plane ID 55 from the live record. The loop log shows
+`off-loop mute 1 accepted`, `effect done … rc=0 status=0` for all four effects
+and no `[COREDUMP]` in dmesg. The core stayed alive and answered further
+status commands.
+
+Limits: this closes the SIGSEGV regression and proves the recovered mute and
+DRM mute effects execute on hardware with HAL/DRM acceptance. It does **not**
+prove audible muting or visible video blanking (no independent audio/visual
+observation), and the other 12 effects were only traced. Stock was restored by
+the authorized `reboot -f` after `quit`, feeder stop, staging removal and
+appmgr resume: uptime 1 min, appmgr 1571, `run_aurora.sh` 1704, Aurora **1777**
+(zombie 2213), no `openaurora`/`oa-wdtfeed`/`core_helper`, no staging,
+`/conf` unchanged, fb0..fb4 and stock device ownership restored. Evidence is in
+`/buffer/oa-tv-accept2-20261116`.
 
 ### Decoder-select is a state setter, not a HAL effect (2026-11-16)
 

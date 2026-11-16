@@ -1818,10 +1818,13 @@ DRM-PLANE-CONTRACT-2026-10-31, missed by the initial docs-first search), while
 overwrite on `hide_video` explains the crash. Fixed by a 16-word buffer with a
 static assert, plane-index validation, int-returning HAL wrapper, and a raw
 `audio.effect` setter so the worker makes no host API calls. Host/qemu suites
-pass and ARM modules build; on-TV retest is pending, so this is not yet a closed
-regression or a parity claim. Stock was restored by `reboot -f` and verified
-(new PIDs, no staging/helper, unchanged /conf); logs are in
-`/buffer/oa-tv-accept-20261116`.
+pass and ARM modules build. A second authorized on-TV run with the fixed
+artifacts completed all four queued effects (4 completed, 0 failed; two real
+DRM plane-mute ioctls accepted; no coredump) and the core stayed alive, so the
+SIGSEGV regression is CLOSED. Audible/visible parity is still not claimed; the
+other 12 effects were only traced. Stock was restored by `reboot -f` and
+verified both times (final appmgr 1571, Aurora 1777, no staging/helper,
+unchanged /conf); logs in `/buffer/oa-tv-accept2-20261116`.
 SOURCE-LOSS-FALLBACK. |
 | A permissive qemu ioctl log proves IIC/SPI bus transactions | QEMU-TV-SIM 2026-11-16: with opt-in `OA_TV_IO_STATE`, `fake_tv_io.c` decodes the recovered `0x707` `i2c_rdwr` payload (addr/flags/len/buf) and the SPI `0x8018531e` `{offset,size,buf}` request. `qemu-iic-spi-state-check.sh` runs the real libNDAL3 `Hal_Iic_*` and the project SPI transport under qemu and asserts addr 0x34 read data `0xa5..`, offset 16 size 4 data `0x10,0x11`, and matching probe output. This is an ioctl-field model, not an I2C/SPI controller, chip register or electrical bus proof. QEMU-TV-SIM. |
 | A permissive qemu ioctl log proves PWM/GPIO register effects | QEMU-TV-SIM 2026-11-16: `tests/fake_tv_io.c` gained an opt-in `OA_TV_IO_STATE` state file (default remains permissive logging). `tools/qemu-panel-state-check.sh` runs the real ARM platform/panel under qemu and asserts pin levels 110=1/111=0, PWM channel 0, 30000 Hz and duty 1000 → 499 (50% via the recovered curve) → 1000 plus power/PWM/backlight order. It decodes ioctl fields only; no kernel register, panel timing or brightness claim. QEMU-TV-SIM. |
