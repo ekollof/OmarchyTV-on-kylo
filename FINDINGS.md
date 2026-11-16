@@ -149,9 +149,13 @@ signed/truncating. `oa_ad82587_balance_regs` and `audio.amp` `set_balance`
 implement the 0..100 path; `amp-balance` exposes it. SetVolume is the reg3
 prescale write plus 3-byte readback, not UI volume; SoftMute is reg2 bits
 0x0e; HP_Mute is GPIO0xc3. Those need a general amp read/GPIO descriptor and
-remain unwired. Mute/balance now run as typed owner worker jobs (AMP-JOBS);
-a pending job or untaken result rejects with `-EBUSY`. Host tests pass; no
-hardware balance run. Report: AMP-BALANCE, AMP-JOBS.
+remain unwired. 2026-11-16: SetVolume/GetVolume (reg3 write+readback) and
+SoftMute (reg2 OR 0x0e / AND 0xf1) are wired via `common/amp_controls.c`, a
+general `oa_amp_i2c_read_regs`, typed owner jobs and `audio.amp` v2 behind
+default-off `audio_amp.extended_controls`; host tests pass, ARM module builds,
+no hardware/audible run. HP_Mute (GPIO0xc3) still needs the live descriptor.
+Mute/balance run as typed owner worker jobs (AMP-JOBS); a pending job or
+untaken result rejects with `-EBUSY`. Report: AMP-BALANCE, AMP-JOBS.
 
 AGENT-REVIEW-2026-11-07 (Grok): the adversarial review found a CRITICAL CEC
 authority bug. `mmap64` failure returns `MAP_FAILED` ((void*)-1), not NULL;

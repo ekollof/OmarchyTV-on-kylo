@@ -418,12 +418,21 @@ typedef struct {
     int mute;       /* last accepted mute request, 0/1 */
     int balance_known; /* set_balance supplied a balance state */
     int balance;       /* last accepted balance request, 0..100 */
+    int volume_known;  /* v2: GetVolume/SetVolume reg3 value, 0..255 */
+    int volume;
+    int soft_mute_known; /* v2: last accepted SoftMute reg2 request */
+    int soft_mute;       /* 0/1 */
 } oa_audio_amp_status;
 typedef struct {
     int (*init)(void);
     int (*state)(oa_audio_amp_status *out);
     int (*set_mute)(int on); /* 0 accepted, negative errno */
     int (*set_balance)(int balance); /* 0..100, regs 4/5; 0 accepted */
+    /* v2, published only with audio_amp.extended_controls=1. All three submit
+     * owner-worker jobs; 0 accepted, -EBUSY/-EINVAL/-ENODEV on rejection. */
+    int (*set_volume)(int volume);   /* 0..255, reg3 with readback */
+    int (*get_volume)(void);         /* submit reg3 read; see amp-state */
+    int (*soft_mute)(int on);        /* reg2 bits 0x0e */
 } oa_audio_amp_iface;
 
 /* audio — volume/mute. Published by mod_audio.

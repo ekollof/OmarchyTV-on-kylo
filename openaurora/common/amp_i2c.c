@@ -61,6 +61,13 @@ int oa_amp_i2c_read_volume(oa_amp_i2c *s,uint8_t out[3])
     if(!rc)memcpy(out,bytes,sizeof bytes);
     return rc;
 }
+int oa_amp_i2c_read_regs(oa_amp_i2c *s,uint8_t first,uint8_t count,uint8_t *out)
+{
+    int rc=valid(s);if(rc)return rc;
+    if(!out || count==0 || first>=OA_AD82587_REGISTERS ||
+       count>OA_AD82587_REGISTERS-first)return s->error=-EINVAL;
+    return transfer(s,first,out,count,1);
+}
 int oa_amp_i2c_write(oa_amp_i2c *s,unsigned reg,const uint8_t *value)
 {
     int rc=valid(s);if(rc)return rc;

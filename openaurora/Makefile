@@ -991,10 +991,10 @@ $(BUILD)/modules/mod_audio.so: $(call pic_objs,modules__mod_audio,modules/audio/
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),audio),$(VENDOR_LDFLAGS),)
 $(eval $(call emit_pics,modules__mod_audio,modules/audio/audio.c common/audio_owner.c common/audio_client.c common/audio_netlink.c,-pthread,))
 
-$(BUILD)/modules/mod_audio_amp.so: $(call pic_objs,modules__mod_audio_amp,modules/audio_amp/audio_amp.c common/amp_owner.c common/amp_monitor.c common/amp_init.c common/amp_vendor.c common/amp_board.c common/audio_amp.c common/amp_i2c.c common/audio_amp_profile.c common/profile.c)
+$(BUILD)/modules/mod_audio_amp.so: $(call pic_objs,modules__mod_audio_amp,modules/audio_amp/audio_amp.c common/amp_owner.c common/amp_controls.c common/amp_monitor.c common/amp_init.c common/amp_vendor.c common/amp_board.c common/audio_amp.c common/amp_i2c.c common/audio_amp_profile.c common/profile.c)
 	@mkdir -p $(dir $@)
 	$(CC) -shared -o $@ $^ -pthread $(LDFLAGS) $(if $(filter $(VENDOR_MODULES),audio_amp),$(VENDOR_LDFLAGS),)
-$(eval $(call emit_pics,modules__mod_audio_amp,modules/audio_amp/audio_amp.c common/amp_owner.c common/amp_monitor.c common/amp_init.c common/amp_vendor.c common/amp_board.c common/audio_amp.c common/amp_i2c.c common/audio_amp_profile.c common/profile.c,-pthread,include/openaurora/amp_board.h include/openaurora/amp_i2c.h include/openaurora/amp_init.h include/openaurora/amp_monitor.h include/openaurora/amp_owner.h include/openaurora/amp_vendor.h include/openaurora/audio_amp.h include/openaurora/module.h include/openaurora/services.h))
+$(eval $(call emit_pics,modules__mod_audio_amp,modules/audio_amp/audio_amp.c common/amp_owner.c common/amp_controls.c common/amp_monitor.c common/amp_init.c common/amp_vendor.c common/amp_board.c common/audio_amp.c common/amp_i2c.c common/audio_amp_profile.c common/profile.c,-pthread,include/openaurora/amp_board.h include/openaurora/amp_i2c.h include/openaurora/amp_init.h include/openaurora/amp_monitor.h include/openaurora/amp_owner.h include/openaurora/amp_controls.h include/openaurora/amp_vendor.h include/openaurora/audio_amp.h include/openaurora/module.h include/openaurora/services.h))
 
 $(BUILD)/modules/mod_display.so: $(call pic_objs,modules__mod_display,modules/display/display.c common/ui_anim.c common/canvas.c common/fb_snapshot.c)
 	@mkdir -p $(dir $@)
@@ -3136,6 +3136,15 @@ check-audio-amp: $(BUILD)/tests/audio_amp
 	@$(BUILD)/tests/audio_amp
 check: check-audio-amp
 
+$(BUILD)/tests/amp_controls: tests/amp_controls.c common/amp_controls.c include/openaurora/amp_controls.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-amp-controls
+check-amp-controls: $(BUILD)/tests/amp_controls
+	@$(BUILD)/tests/amp_controls
+check: check-amp-controls
+
 $(BUILD)/tests/audio_amp_profile: tests/audio_amp_profile.c common/audio_amp_profile.c common/audio_amp.c common/profile.c include/openaurora/audio_amp.h include/openaurora/profile.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
@@ -3175,7 +3184,7 @@ check-amp-init: $(BUILD)/tests/amp_init
 	@$(BUILD)/tests/amp_init
 check: check-amp-init
 
-$(BUILD)/tests/amp_owner: tests/amp_owner.c common/amp_owner.c common/amp_monitor.c common/amp_init.c common/audio_amp.c include/openaurora/amp_owner.h include/openaurora/amp_monitor.h include/openaurora/amp_init.h include/openaurora/audio_amp.h
+$(BUILD)/tests/amp_owner: tests/amp_owner.c common/amp_owner.c common/amp_controls.c common/amp_monitor.c common/amp_init.c common/audio_amp.c include/openaurora/amp_owner.h include/openaurora/amp_controls.h include/openaurora/amp_monitor.h include/openaurora/amp_init.h include/openaurora/audio_amp.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread -Wl,--wrap=pthread_cond_wait -Wl,--wrap=pthread_tryjoin_np
 .PHONY: check-amp-owner
@@ -3183,7 +3192,7 @@ check-amp-owner: $(BUILD)/tests/amp_owner
 	@$(BUILD)/tests/amp_owner
 check: check-amp-owner
 
-$(BUILD)/tests/amp_owner_jobs: tests/amp_owner_jobs.c common/amp_owner.c common/amp_monitor.c common/amp_init.c common/audio_amp.c include/openaurora/amp_owner.h include/openaurora/amp_monitor.h include/openaurora/amp_init.h include/openaurora/audio_amp.h
+$(BUILD)/tests/amp_owner_jobs: tests/amp_owner_jobs.c common/amp_owner.c common/amp_controls.c common/amp_monitor.c common/amp_init.c common/audio_amp.c include/openaurora/amp_owner.h include/openaurora/amp_controls.h include/openaurora/amp_monitor.h include/openaurora/amp_init.h include/openaurora/audio_amp.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
 .PHONY: check-amp-owner-jobs
@@ -3244,10 +3253,10 @@ check-audio-amp-module: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_audio_amp.so $(
 	node tests/audio_amp_ipc.cjs $(abspath $(BUILD))
 check: check-audio-amp-module
 
-$(BUILD)/tests/audio_amp_jobs: tests/audio_amp_jobs.c modules/audio_amp/audio_amp.c common/amp_owner.c common/amp_monitor.c common/amp_init.c common/amp_vendor.c common/amp_board.c common/audio_amp.c common/amp_i2c.c common/audio_amp_profile.c common/profile.c include/openaurora/amp_owner.h include/openaurora/amp_monitor.h include/openaurora/amp_init.h include/openaurora/audio_amp.h include/openaurora/module.h
+$(BUILD)/tests/audio_amp_jobs: tests/audio_amp_jobs.c modules/audio_amp/audio_amp.c common/amp_owner.c common/amp_controls.c common/amp_monitor.c common/amp_init.c common/amp_vendor.c common/amp_board.c common/audio_amp.c common/amp_i2c.c common/audio_amp_profile.c common/profile.c include/openaurora/amp_owner.h include/openaurora/amp_controls.h include/openaurora/amp_monitor.h include/openaurora/amp_init.h include/openaurora/audio_amp.h include/openaurora/module.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ \
-	  tests/audio_amp_jobs.c common/amp_owner.c common/amp_monitor.c common/amp_init.c \
+	  tests/audio_amp_jobs.c common/amp_owner.c common/amp_controls.c common/amp_monitor.c common/amp_init.c \
 	  common/amp_vendor.c common/amp_board.c common/audio_amp.c \
 	  common/amp_i2c.c common/audio_amp_profile.c common/profile.c -pthread
 .PHONY: check-audio-amp-jobs
@@ -3291,7 +3300,7 @@ $(BUILD)/tests/amp_monitor: tests/amp_monitor.c common/amp_monitor.c include/ope
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
 
-$(BUILD)/tests/amp_owner_monitor: tests/amp_owner_monitor.c common/amp_owner.c common/amp_monitor.c common/amp_init.c common/audio_amp.c include/openaurora/amp_owner.h include/openaurora/amp_monitor.h include/openaurora/amp_init.h include/openaurora/audio_amp.h
+$(BUILD)/tests/amp_owner_monitor: tests/amp_owner_monitor.c common/amp_owner.c common/amp_controls.c common/amp_monitor.c common/amp_init.c common/audio_amp.c include/openaurora/amp_owner.h include/openaurora/amp_controls.h include/openaurora/amp_monitor.h include/openaurora/amp_init.h include/openaurora/audio_amp.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
 
@@ -3300,7 +3309,7 @@ check-amp-owner-monitor: $(BUILD)/tests/amp_owner_monitor
 	@$(BUILD)/tests/amp_owner_monitor
 check: check-amp-owner-monitor
 
-$(BUILD)/tests/audio_amp_monitor_wiring: tests/audio_amp_monitor_wiring.c common/amp_owner.c common/amp_monitor.c common/amp_init.c common/amp_vendor.c common/amp_board.c common/audio_amp.c common/amp_i2c.c common/audio_amp_profile.c common/profile.c include/openaurora/amp_owner.h include/openaurora/amp_monitor.h include/openaurora/module.h
+$(BUILD)/tests/audio_amp_monitor_wiring: tests/audio_amp_monitor_wiring.c common/amp_owner.c common/amp_controls.c common/amp_monitor.c common/amp_init.c common/amp_vendor.c common/amp_board.c common/audio_amp.c common/amp_i2c.c common/audio_amp_profile.c common/profile.c include/openaurora/amp_owner.h include/openaurora/amp_controls.h include/openaurora/amp_monitor.h include/openaurora/module.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread
 

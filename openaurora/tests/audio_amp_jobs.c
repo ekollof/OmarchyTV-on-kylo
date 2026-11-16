@@ -94,6 +94,16 @@ static int write_reg(void *v, unsigned reg, const uint8_t *value)
 static uint32_t sub_enabled(void *v) { assert(v == &hw); on_worker(); return 0; }
 static void sub_enable(void *v, int on) { (void)on; assert(v == &hw); on_worker(); }
 static void sub_init(void *v) { assert(v == &hw); on_worker(); }
+static uint8_t ext_reg_value;
+static int ext_read(void *v, uint8_t first, uint8_t count, uint8_t *out)
+{
+    (void)first;
+    assert(v == &hw && out && count);
+    on_worker();
+    for (uint8_t i = 0; i < count; i++)
+        out[i] = (uint8_t)(ext_reg_value + i);
+    return 1;
+}
 
 static void fake_log(void *priv, int level_, const char *fmt, ...)
 {
@@ -266,6 +276,39 @@ static void test_suspend_busy(void)
     puts("ok audio_amp lifecycle: suspend rejects a busy Init without blocking");
 }
 
+static void test_extended_controls(void)
+{
+    struct ctx *c = make_ctx();
+    oa_audio_amp_status st;
+    c->extended_enabled = 1;
+    assert(!oa_amp_owner_set_register_read(c->owner, ext_read, &hw));
+
+    /* Default-off gate is explicit in the module; here it is enabled. */
+    ext_reg_value = 0x1b;
+    assert(iface_set_volume(0x1b) == 0);
+    st = wait_idle();
+    assert(st.volume_known == 1 && st.volume == 0x1b);
+    assert(iface_set_volume(256) == -EINVAL);
+    assert(iface_set_volume(-1) == -EINVAL);
+
+    assert(iface_soft_mute(1) == 0);
+    st = wait_idle();
+    assert(st.soft_mute_known == 1 && st.soft_mute == 1);
+    assert(iface_soft_mute(2) == -EINVAL);
+
+    assert(iface_get_volume() == 0);
+    st = wait_idle();
+    assert(st.volume_known == 1 && st.volume == 0x1b);
+
+    int result = 0;
+    finish_owner(c->owner, &result);
+    assert(result == 0);
+    c->owner = NULL;
+    m_destroy(c);
+    puts("ok audio_amp extended: reg3 volume readback, reg2 soft mute and "
+         "GetVolume on the owner worker");
+}
+
 int main(void)
 {
     hw.main_thread = pthread_self();
@@ -327,6 +370,7 @@ int main(void)
     test_failed_init_retry();
     test_suspend_resume();
     test_suspend_busy();
+    test_extended_controls();
     puts("all audio_amp job tests passed");
     return 0;
 }

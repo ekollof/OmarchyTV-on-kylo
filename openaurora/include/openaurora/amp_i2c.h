@@ -1,6 +1,7 @@
 #ifndef OPENAURORA_AMP_I2C_H
 #define OPENAURORA_AMP_I2C_H
 #include <stdint.h>
+#include "openaurora/audio_amp.h"
 #include <linux/i2c-dev.h>
 #include <sys/stat.h>
 typedef struct oa_amp_i2c oa_amp_i2c;
@@ -24,6 +25,10 @@ typedef struct {
 int oa_amp_i2c_open(oa_amp_i2c **out,int allow_write,const oa_amp_i2c_io *io);
 /* Fixed firmware-understood03..05 read; output untouched on short/error reply. */
 int oa_amp_i2c_read_volume(oa_amp_i2c *session,uint8_t out[3]);
+/* General firmware-style register read: first register0..37, count1..(38-first),
+ * contiguous bytes. Requires no write permission. Output untouched on error. */
+int oa_amp_i2c_read_regs(oa_amp_i2c *session,uint8_t first,uint8_t count,
+                         uint8_t *out);
 /* Registers0..37 only, exactly one byte,10ms delay after complete transfer.
  * Requires allow_write. Open/read/close perform no register-value writes. */
 int oa_amp_i2c_write(oa_amp_i2c *session,unsigned reg,const uint8_t *value);

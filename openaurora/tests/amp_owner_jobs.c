@@ -18,10 +18,11 @@ static struct {
     pthread_mutex_t mu;
     pthread_cond_t cv;
     pthread_t main_thread, worker;
-    unsigned preludes, levels, writes;
+    unsigned preludes, levels, writes, reads;
     uint32_t level_pin, level_value;
     unsigned char regs[64], values[64];
-    int block, released, provide_mute, level_fail, fail_write_reg;
+    int block, released, provide_mute, level_fail, fail_write_reg, read_fail;
+    uint8_t read_value;
 } hw = {
     .mu = PTHREAD_MUTEX_INITIALIZER,
     .cv = PTHREAD_COND_INITIALIZER,
@@ -92,6 +93,22 @@ static int write_reg(void *v, unsigned reg, const uint8_t *value)
     return reg != (unsigned)hw.fail_write_reg;
 }
 
+static int read_regs(void *v, uint8_t first, uint8_t count, uint8_t *out)
+{
+    assert(v == &hw && out && count);
+    on_worker();
+    pthread_mutex_lock(&hw.mu);
+    hw.reads++;
+    pthread_cond_broadcast(&hw.cv);
+    pthread_mutex_unlock(&hw.mu);
+    if (hw.read_fail)
+        return 0;
+    for (uint8_t i = 0; i < count; i++)
+        out[i] = (uint8_t)(hw.read_value + i);
+    (void)first;
+    return 1;
+}
+
 static uint32_t sub_enabled(void *v) { assert(v == &hw); on_worker(); return 0; }
 static void sub_enable(void *v, int on) { (void)on; assert(v == &hw); on_worker(); }
 static void sub_init(void *v) { assert(v == &hw); on_worker(); }
@@ -148,6 +165,7 @@ int main(void)
                           write_reg, sub_enabled, sub_enable, sub_init };
     oa_amp_owner *o = NULL;
     assert(!oa_amp_owner_create(&o, &initial, &io));
+    assert(!oa_amp_owner_set_register_read(o, read_regs, &hw));
 
     uint64_t ticket = 0, rejected = 777;
     assert(oa_amp_owner_submit_mute(o, 2, &ticket) == -EINVAL && ticket == 0);
@@ -238,6 +256,47 @@ int main(void)
     take_wait(o, &result);
     assert(result.ticket == 7 && result.kind == OA_AMP_JOB_MUTE);
     puts("ok amp owner jobs: untaken result keeps the single-slot backpressure");
+
+    /* Recovered reg3 volume job: write low byte, read back, verify match. */
+    hw.writes = 0; hw.reads = 0; hw.read_value = 0x1b; hw.read_fail = 0;
+    assert(!oa_amp_owner_submit_volume(o, 0x1b, &ticket));
+    wait_until(&hw.reads, 1);
+    take_wait(o, &result);
+    assert(result.kind == OA_AMP_JOB_VOLUME && result.native_result == 0);
+    assert(result.value == 0x1b && hw.writes == 1 && hw.regs[0] == 3 &&
+           hw.values[0] == 0x1b);
+    puts("ok amp owner jobs: SetVolume writes reg3 and verifies the readback");
+
+    hw.writes = 0; hw.reads = 0; hw.read_value = 0x1c;
+    assert(!oa_amp_owner_submit_volume(o, 0x1b, &ticket));
+    wait_until(&hw.reads, 1);
+    take_wait(o, &result);
+    assert(result.native_result == -EIO && result.value == 0x1b);
+    puts("ok amp owner jobs: SetVolume mismatch reports -EIO");
+
+    /* Recovered reg2 soft mute masks run only on the worker. */
+    hw.writes = 0; hw.reads = 0; hw.read_value = 0x20;
+    assert(!oa_amp_owner_submit_soft_mute(o, 1, &ticket));
+    wait_until(&hw.reads, 1);
+    take_wait(o, &result);
+    assert(result.kind == OA_AMP_JOB_SOFTMUTE && result.native_result == 0);
+    assert(hw.writes == 1 && hw.regs[0] == 2 && hw.values[0] == 0x2e);
+
+    hw.writes = 0; hw.reads = 0; hw.read_value = 0x2e;
+    assert(!oa_amp_owner_submit_soft_mute(o, 0, &ticket));
+    wait_until(&hw.reads, 1);
+    take_wait(o, &result);
+    assert(result.native_result == 0 && hw.values[0] == 0x20);
+    puts("ok amp owner jobs: SoftMute OR 0x0e / AND 0xf1 on reg2");
+
+    /* GET_VOLUME returns the byte read by the worker. */
+    hw.reads = 0; hw.read_value = 0x42;
+    assert(!oa_amp_owner_submit_get_volume(o, &ticket));
+    wait_until(&hw.reads, 1);
+    take_wait(o, &result);
+    assert(result.kind == OA_AMP_JOB_GET_VOLUME && result.native_result == 0);
+    assert(result.value == 0x42);
+    puts("ok amp owner jobs: GetVolume returns the worker-read reg3 byte");
 
     for (unsigned i = 0; i < 5000; i++) {
         int rc = oa_amp_owner_quiesce(o);

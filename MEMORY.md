@@ -1322,7 +1322,13 @@ formula/CLI tests. AMP-JOBS moved mute/balance to typed owner worker jobs
 never overwrite the Init result and failures leave caches unchanged.
 check-amp-owner-jobs and check-audio-amp-jobs pass; ARM mod_audio_amp
 67d34652.... SetVolume is reg3 prescale+readback, SoftMute reg2 0x0e, HP_Mute
-GPIO0xc3; unwired. No hardware/audible balance run. AMP-BALANCE, AMP-JOBS.
+GPIO0xc3; unwired. 2026-11-16: SetVolume/GetVolume (reg3 write+readback) and
+SoftMute (reg2 OR 0x0e / AND 0xf1) are wired via `common/amp_controls.c`,
+general `oa_amp_i2c_read_regs`, typed owner jobs and `audio.amp` v2 behind
+default-off `audio_amp.extended_controls` (`check-amp-controls`,
+`check-audio-amp-jobs`, full suite rc=0, ARM `mod_audio_amp.so` `5cfe5825…`);
+no hardware/audible run. HP_Mute still needs its live GPIO descriptor.
+AMP-BALANCE, AMP-JOBS.
 Agent review 2026-11-07 (Grok): fixed CRITICAL MAP_FAILED authority mapping
 (commit f323673, regression test), the HIGH authority lifetime across a
 timed-out quiesce (keep the mapping until join succeeds; check-cec-authority-

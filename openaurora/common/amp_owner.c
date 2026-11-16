@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "openaurora/amp_controls.h"
 #include "openaurora/amp_monitor.h"
 #include "openaurora/amp_owner.h"
 struct oa_amp_owner {
@@ -23,6 +24,8 @@ struct oa_amp_owner {
     /* MONITOR job inputs/counters, owned by the worker while pending. */
     int (*monitor_read)(void *,uint8_t,uint8_t,uint8_t *);
     void *monitor_ctx;
+    int (*register_read)(void *,uint8_t,uint8_t,uint8_t *);
+    void *register_ctx;
     unsigned monitor_failures, monitor_mismatches;
     char monitor_log[160];
 };
@@ -35,6 +38,31 @@ static int mon_read(void *ud,uint8_t first,uint8_t count,uint8_t *out)
     oa_amp_owner *o=ud;
     return o->monitor_read ? o->monitor_read(o->monitor_ctx,first,count,out)
                            : -ENOTSUP;
+}
+static int reg_read(void *ud,uint8_t reg,uint8_t count,uint8_t *out)
+{
+    oa_amp_owner *o=ud;
+    return o->register_read ? o->register_read(o->register_ctx,reg,count,out) : 0;
+}
+static int reg_write(void *ud,uint8_t reg,uint8_t byte)
+{
+    oa_amp_owner *o=ud;
+    return o->io.write ? o->io.write(o->io.context,reg,&byte) : 0;
+}
+static int run_register_job(oa_amp_owner *o)
+{
+    oa_amp_register_io io={o,reg_write,reg_read};
+    int value=0;
+    if(o->pending_kind==OA_AMP_JOB_VOLUME)
+        return oa_ad82587_set_volume(&io,o->pending_value)?0:-EIO;
+    if(o->pending_kind==OA_AMP_JOB_SOFTMUTE)
+        return oa_ad82587_soft_mute(&io,o->pending_value)?0:-EIO;
+    if(o->pending_kind==OA_AMP_JOB_GET_VOLUME) {
+        if(!oa_ad82587_get_volume(&io,&value))return -EIO;
+        o->completion.value=value;
+        return 0;
+    }
+    return -EINVAL;
 }
 static int mon_reinit(void *ud)
 {
@@ -79,6 +107,10 @@ static int run_job(oa_amp_owner *o)
         return oa_amp_init(&o->state,&o->profile,&o->io);
     if(o->pending_kind==OA_AMP_JOB_MONITOR)
         return run_monitor(o);
+    if(o->pending_kind==OA_AMP_JOB_VOLUME ||
+       o->pending_kind==OA_AMP_JOB_SOFTMUTE ||
+       o->pending_kind==OA_AMP_JOB_GET_VOLUME)
+        return run_register_job(o);
     if(o->pending_kind==OA_AMP_JOB_MUTE) {
         const oa_amp_gpio *m=o->io.gpio(o->io.context,1);
         if(!m)return -ENOTSUP;
@@ -191,6 +223,39 @@ int oa_amp_owner_submit_balance(oa_amp_owner *o,int balance,uint64_t *ticket)
     if(!ticket || balance<0 || balance>100)return -EINVAL;
     pthread_mutex_lock(&o->mu);
     rc=queue_locked(o,OA_AMP_JOB_BALANCE,balance,ticket);
+    pthread_mutex_unlock(&o->mu);return rc;
+}
+int oa_amp_owner_set_register_read(oa_amp_owner *o,
+    int (*read_regs)(void *,uint8_t,uint8_t,uint8_t *),void *read_ctx)
+{
+    int rc=valid(o);if(rc)return rc;
+    if(!read_regs)return -EINVAL;
+    pthread_mutex_lock(&o->mu);
+    o->register_read=read_regs;o->register_ctx=read_ctx;
+    pthread_mutex_unlock(&o->mu);return 0;
+}
+int oa_amp_owner_submit_volume(oa_amp_owner *o,int volume,uint64_t *ticket)
+{
+    int rc=valid(o);if(rc)return rc;
+    if(!ticket || volume<0 || volume>255)return -EINVAL;
+    pthread_mutex_lock(&o->mu);
+    rc=queue_locked(o,OA_AMP_JOB_VOLUME,volume,ticket);
+    pthread_mutex_unlock(&o->mu);return rc;
+}
+int oa_amp_owner_submit_soft_mute(oa_amp_owner *o,int on,uint64_t *ticket)
+{
+    int rc=valid(o);if(rc)return rc;
+    if(!ticket || (on!=0 && on!=1))return -EINVAL;
+    pthread_mutex_lock(&o->mu);
+    rc=queue_locked(o,OA_AMP_JOB_SOFTMUTE,on,ticket);
+    pthread_mutex_unlock(&o->mu);return rc;
+}
+int oa_amp_owner_submit_get_volume(oa_amp_owner *o,uint64_t *ticket)
+{
+    int rc=valid(o);if(rc)return rc;
+    if(!ticket)return -EINVAL;
+    pthread_mutex_lock(&o->mu);
+    rc=queue_locked(o,OA_AMP_JOB_GET_VOLUME,0,ticket);
     pthread_mutex_unlock(&o->mu);return rc;
 }
 int oa_amp_owner_submit_monitor(oa_amp_owner *o,

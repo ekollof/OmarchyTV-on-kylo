@@ -449,9 +449,14 @@ unvalidated.
       <0..100>`/`set_balance` with host tests. Follow-up AMP-JOBS moved both
       mute and balance to typed owner worker jobs; `amp-state` reports the
       applied value, and a pending job still rejects with `-EBUSY`. SetVolume
-      (reg3 prescale + readback), SoftMute (reg2 bits 0x0e) and HP_Mute
-      (GPIO0xc3) remain unwired; no hardware/audible balance run.
-      AMP-BALANCE.
+      2026-11-16: SetVolume/GetVolume (reg3 write+readback) and SoftMute
+      (reg2 OR 0x0e / AND 0xf1) are wired via `common/amp_controls.c`, general
+      `oa_amp_i2c_read_regs`, typed owner jobs and `audio.amp` v2 behind
+      default-off `audio_amp.extended_controls` (`amp-volume`, `amp-volume-get`,
+      `amp-softmute`, `amp-ext-state`); host tests pass, full suite rc=0, ARM
+      `mod_audio_amp.so` `5cfe5825…` builds. HP_Mute (GPIO0xc3) remains
+      unwired because its live descriptor is not recovered offline. No
+      hardware/audible amp run. AMP-BALANCE.
 - [ ] Agent-review follow-ups (AGENT-REVIEW-2026-11-07): UART repeat
       semantics. The CEC authority mapping lifetime
       (`check-cec-authority-lifetime`), CEC suspend/resume

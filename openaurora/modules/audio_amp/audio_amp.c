@@ -43,6 +43,9 @@ struct ctx {
     int published;
     int enabled;
     int monitor_enabled;
+    int extended_enabled;
+    int volume_known, volume;
+    int soft_mute_known, soft_mute;
     uint64_t monitor_timer;
     unsigned monitor_initial_ms;
     unsigned monitor_period_ms;
@@ -191,6 +194,45 @@ static void poll_result(struct ctx *c)
                             completion.native_result,
                             (unsigned long long)completion.ticket);
             }
+        } else if (completion.kind == OA_AMP_JOB_VOLUME) {
+            if (completion.native_result == 0) {
+                c->volume_known = 1;
+                c->volume = completion.value;
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "audio_amp: reg3 volume -> %d (ticket %llu)",
+                            c->volume, (unsigned long long)completion.ticket);
+            } else {
+                c->api->log(c->api->priv, OA_LOG_ERROR,
+                            "audio_amp: SetVolume failed (%d, ticket %llu)",
+                            completion.native_result,
+                            (unsigned long long)completion.ticket);
+            }
+        } else if (completion.kind == OA_AMP_JOB_SOFTMUTE) {
+            if (completion.native_result == 0) {
+                c->soft_mute_known = 1;
+                c->soft_mute = completion.value ? 1 : 0;
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "audio_amp: soft mute -> %d (ticket %llu)",
+                            c->soft_mute, (unsigned long long)completion.ticket);
+            } else {
+                c->api->log(c->api->priv, OA_LOG_ERROR,
+                            "audio_amp: SoftMute failed (%d, ticket %llu)",
+                            completion.native_result,
+                            (unsigned long long)completion.ticket);
+            }
+        } else if (completion.kind == OA_AMP_JOB_GET_VOLUME) {
+            if (completion.native_result == 0) {
+                c->volume_known = 1;
+                c->volume = completion.value;
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "audio_amp: reg3 read -> %d (ticket %llu)",
+                            c->volume, (unsigned long long)completion.ticket);
+            } else {
+                c->api->log(c->api->priv, OA_LOG_ERROR,
+                            "audio_amp: GetVolume failed (%d, ticket %llu)",
+                            completion.native_result,
+                            (unsigned long long)completion.ticket);
+            }
         } else if (completion.kind == OA_AMP_JOB_MONITOR) {
             /* The worker already ran Init->Mute(0) on mismatch. Do not touch
              * the user Init result/caches; log the bounded worker message. */
@@ -269,6 +311,10 @@ static int iface_state(oa_audio_amp_status *out)
     out->mute = c->mute_known ? c->mute_state : 0;
     out->balance_known = c->balance_known;
     out->balance = c->balance_known ? c->balance_state : 0;
+    out->volume_known = c->volume_known;
+    out->volume = c->volume_known ? c->volume : 0;
+    out->soft_mute_known = c->soft_mute_known;
+    out->soft_mute = c->soft_mute_known ? c->soft_mute : 0;
     return 0;
 }
 
@@ -317,9 +363,69 @@ static int iface_set_balance(int balance)
     return 0;
 }
 
-static const oa_audio_amp_iface g_iface = { iface_init, iface_state,
-                                            iface_set_mute,
-                                            iface_set_balance };
+/* Vendor-boolean register read for the extended jobs. Never called on the
+ * control loop: the owner copies this pointer and calls it on its worker. */
+static int amp_register_read(void *ud, uint8_t first, uint8_t count,
+                             uint8_t *out)
+{
+    struct ctx *c = ud;
+    return oa_amp_i2c_read_regs(c->i2c, first, count, out) == 0 ? 1 : 0;
+}
+
+static int submit_extended(struct ctx *c, int kind)
+{
+    uint64_t ticket = 0;
+    int rc;
+    if (!c || !c->published || !c->enabled || !c->owner || !c->extended_enabled)
+        return -ENODEV;
+    poll_result(c);
+    if (c->submitted)
+        return -EBUSY;
+    if (kind == OA_AMP_JOB_VOLUME)
+        rc = oa_amp_owner_submit_volume(c->owner, c->volume, &ticket);
+    else if (kind == OA_AMP_JOB_GET_VOLUME)
+        rc = oa_amp_owner_submit_get_volume(c->owner, &ticket);
+    else
+        rc = oa_amp_owner_submit_soft_mute(c->owner, c->soft_mute, &ticket);
+    if (rc)
+        return rc;
+    c->submitted = 1;
+    return 0;
+}
+
+static int iface_set_volume(int volume)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->extended_enabled || volume < 0 || volume > 255)
+        return -EINVAL;
+    c->volume = volume;
+    return submit_extended(c, OA_AMP_JOB_VOLUME);
+}
+
+static int iface_get_volume(void)
+{
+    struct ctx *c = g_ctx;
+    return submit_extended(c, OA_AMP_JOB_GET_VOLUME);
+}
+
+static int iface_soft_mute(int on)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->extended_enabled || (on != 0 && on != 1))
+        return -EINVAL;
+    c->soft_mute = on;
+    return submit_extended(c, OA_AMP_JOB_SOFTMUTE);
+}
+
+static const oa_audio_amp_iface g_iface = {
+    .init = iface_init, .state = iface_state, .set_mute = iface_set_mute,
+    .set_balance = iface_set_balance
+};
+static const oa_audio_amp_iface g_iface_ext = {
+    .init = iface_init, .state = iface_state, .set_mute = iface_set_mute,
+    .set_balance = iface_set_balance, .set_volume = iface_set_volume,
+    .get_volume = iface_get_volume, .soft_mute = iface_soft_mute
+};
 
 static void release_plat(struct ctx *c)
 {
@@ -499,7 +605,23 @@ static int m_start(void *v)
         }
     }
 
-    if (c->api->publish(c->api->priv, OA_SVC_AUDIO_AMP, 1, &g_iface) != 0) {
+    const char *extended = c->api->config_get(c->api->priv,
+        "audio_amp.extended_controls", "0");
+    c->extended_enabled = c->enabled && extended &&
+        (!strcmp(extended, "1") || !strcmp(extended, "true"));
+    if (c->extended_enabled && c->owner && c->i2c) {
+        int rc = oa_amp_owner_set_register_read(c->owner, amp_register_read, c);
+        if (rc) {
+            c->extended_enabled = 0;
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "audio_amp: register read setup failed (%d)", rc);
+        }
+    } else if (c->extended_enabled) {
+        c->extended_enabled = 0;
+    }
+    uint32_t iface_version = c->extended_enabled ? 2u : 1u;
+    const oa_audio_amp_iface *iface = c->extended_enabled ? &g_iface_ext : &g_iface;
+    if (c->api->publish(c->api->priv, OA_SVC_AUDIO_AMP, iface_version, iface) != 0) {
         teardown_now(c);
         return -1;
     }

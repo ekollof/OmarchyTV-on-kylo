@@ -1,8 +1,14 @@
 # AD82587 balance and control registers — 2026-11-07
 
+Status: current (SetVolume/GetVolume/SoftMute wired 2026-11-16)
+Last verified: 2026-11-16 (offline instruction check, host tests and ARM build)
+Evidence class: firmware instructions and host fake-service tests; no TV or
+audible/electrical amp acceptance.
+
 Scope: recover the vendor AD82587 balance/volume/soft-mute/HP-mute register
-contracts, implement the write-only balance path with tests, and record which
-controls remain unwired. Offline Ghidra/instruction work; no TV access.
+contracts and implement them with tests; HP_Mute remains unwired because its
+live descriptor is not recovered offline. Offline Ghidra/instruction work; no
+TV access.
 
 ## Sources
 
@@ -46,18 +52,30 @@ invalid 101/non-numeric EINVAL, enable=1 fail-closed. ARM
 `mod_audio_amp.so` sha256
 `7334a2366bcd5a7e10d3df9d97cebb5f2d03f3c17bc663c8bd6b505d08ba1242`.
 
-## Other recovered controls (not wired)
+## Other recovered controls (SetVolume/SoftMute/GetVolume wired 2026-11-16)
 
 - `SetVolume` writes **register 3** (the prescale register, live stock `0x1b`)
-  with the argument's low byte, then reads registers 3..5 and verifies reg3.
+  with the argument's low byte, then reads reg3 back and returns vendor `1`
+  only when the byte matches (`AMP_AD82587_SetVolume` @ `0x8752a8`,
+  instruction-checked: `_DEV_AMP_WriteByte`/`_DEV_AMP_ReadIIC` use 1=success).
   It is not the UI volume: UI volume goes through speaker gain/AQ tables.
-  Wiring it needs a general amp register read; `oa_amp_i2c` currently exposes
-  the fixed 03..05 read only.
-- `SoftMute` reads register 2, sets/clears bits `0x0e`, and writes it back;
-  state byte `+6` records the accepted request. Needs the same general read.
+- `GetVolume` reads reg3 (`AMP_AD82587_GetVolume` @ `0x87551c`).
+- `SoftMute` reads register 2, ORs `0x0e` for on / ANDs `0xf1` for off, writes
+  it back and returns the vendor boolean (`AMP_AD82587_SoftMute` @ `0x875148`,
+  instruction-checked). The vendor state byte `+6` is not reproduced offline.
+- 2026-11-16: `common/amp_controls.c` models these three registers with the
+  injected vendor-boolean transport; `oa_amp_i2c_read_regs()` adds the general
+  read; the amp owner has typed VOLUME/SOFTMUTE/GET_VOLUME jobs (blocking I2C
+  only on the worker), and `mod_audio_amp` publishes `audio.amp` v2 with
+  `set_volume`/`get_volume`/`soft_mute` behind default-off
+  `audio_amp.extended_controls=1`. Control: `amp-volume <0..255>`,
+  `amp-volume-get`, `amp-softmute <0|1>`, `amp-ext-state`. Host tests pass
+  (`check-amp-controls`, owner jobs, `check-audio-amp-jobs`), full suite rc=0
+  and ARM `mod_audio_amp.so` `5cfe5825…` builds. No hardware/audible run.
 - `HP_Mute` uses GPIO function id `0xc3` and `DEV_GPIO_SetLevel(pin,
   level_on/off)`; the descriptor's pin/levels come from the live profile and
-  are not recovered offline. This is a normal GPIO, not the amp I2C path.
+  are not recovered offline. This is a normal GPIO, not the amp I2C path; it
+  remains unwired.
 - `AMP_AD82587_Term`/`PowerDown` are NULL for this object; see AMP-SHUTDOWN.
 
 ## Limits

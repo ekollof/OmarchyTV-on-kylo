@@ -11,7 +11,10 @@ enum {
     OA_AMP_JOB_INIT = 0,
     OA_AMP_JOB_MUTE = 1,
     OA_AMP_JOB_BALANCE = 2,
-    OA_AMP_JOB_MONITOR = 3
+    OA_AMP_JOB_MONITOR = 3,
+    OA_AMP_JOB_VOLUME = 4,
+    OA_AMP_JOB_SOFTMUTE = 5,
+    OA_AMP_JOB_GET_VOLUME = 6
 };
 typedef struct {
     uint64_t ticket;
@@ -58,6 +61,18 @@ int oa_amp_owner_submit_balance(oa_amp_owner *owner,int balance,uint64_t *ticket
 int oa_amp_owner_submit_monitor(oa_amp_owner *owner,
     int (*read_regs)(void *ctx,uint8_t first,uint8_t count,uint8_t *out),
     void *read_ctx,uint64_t *ticket);
+/* Register read callback for the VOLUME/SOFTMUTE/GET_VOLUME jobs. Vendor
+ * boolean: 1 success, 0 failure. Copied with its context; called only on the
+ * worker. Without it those jobs fail with -ENOTSUP. */
+int oa_amp_owner_set_register_read(oa_amp_owner *owner,
+    int (*read_regs)(void *ctx,uint8_t first,uint8_t count,uint8_t *out),
+    void *read_ctx);
+/* Submit recovered AD82587 reg3 volume (0..255), reg2 soft mute (0/1) and
+ * reg3 read jobs. Completion value is the requested volume/mute or the byte
+ * read by GET_VOLUME; native_result is 0 or a negative errno. */
+int oa_amp_owner_submit_volume(oa_amp_owner *owner,int volume,uint64_t *ticket);
+int oa_amp_owner_submit_soft_mute(oa_amp_owner *owner,int on,uint64_t *ticket);
+int oa_amp_owner_submit_get_volume(oa_amp_owner *owner,uint64_t *ticket);
 int oa_amp_owner_take(oa_amp_owner *owner,oa_amp_completion *out);
 /* Quiesce rejects new jobs, drains accepted work without cancellation/replay,
  * then attempts a nonblocking join. Returns-EBUSY until fully terminated/joined,
