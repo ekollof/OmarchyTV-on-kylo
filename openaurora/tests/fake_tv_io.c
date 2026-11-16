@@ -27,6 +27,31 @@
 
 #define FAKE_FD 200
 
+/* Opt-in stateful model. By default this boundary is permissive and logs
+ * calls only. With OA_TV_IO_STATE=/path, recognized GPIO/PWM ioctls also
+ * update an in-memory state and rewrite that file, so qemu checks can assert
+ * pin levels and PWM channel/frequency/duty instead of just call order. */
+#define OA_GPIO_PINS 512
+static int gpio_level[OA_GPIO_PINS];
+static int pwm_opened;
+static uint32_t pwm_channel, pwm_freq, pwm_duty;
+
+static void write_state(void)
+{
+    const char *path = getenv("OA_TV_IO_STATE");
+    if (!path || !*path)
+        return;
+    FILE *f = fopen(path, "w");
+    if (!f)
+        return;
+    for (int pin = 0; pin < OA_GPIO_PINS; pin++)
+        if (gpio_level[pin] >= 0)
+            fprintf(f, "gpio pin=%d level=%d\n", pin, gpio_level[pin]);
+    fprintf(f, "pwm channel=%u freq=%u duty=%u opened=%d\n",
+            pwm_channel, pwm_freq, pwm_duty, pwm_opened);
+    fclose(f);
+}
+
 static int (*real_open)(const char *, int, ...);
 static int (*real_open64)(const char *, int, ...);
 static int (*real_close)(int);
@@ -102,7 +127,12 @@ static int fake_open(const char *path)
     return FAKE_FD;
 }
 
-__attribute__((constructor)) static void tvio_init(void) { load_real(); }
+__attribute__((constructor)) static void tvio_init(void)
+{
+    load_real();
+    for (int i = 0; i < OA_GPIO_PINS; i++)
+        gpio_level[i] = -1; /* unknown until a write is observed */
+}
 
 int open(const char *path, int flags, ...)
 {
@@ -217,15 +247,32 @@ static int fake_ioctl(unsigned long cmd, void *arg)
         const uint32_t *p = arg;
         /* Hal_Gpio_Write: word0=pin, byte4=value (0x670a/0x670e preset 0). */
         io_log_words("gpio", cmd, p, 2);
+        unsigned value = ((const unsigned char *)arg)[4];
         if (getenv("OA_TV_IO_LOG")) {
             FILE *f = fopen(getenv("OA_TV_IO_LOG"), "a");
             if (f) { fprintf(f, "gpio_value cmd=%#lx pin=%u value=%u\n",
-                             cmd, p[0], ((const unsigned char *)arg)[4]); fclose(f); }
+                             cmd, p[0], value); fclose(f); }
+        }
+        if (p[0] < OA_GPIO_PINS) {
+            gpio_level[p[0]] = value ? 1 : 0;
+            write_state();
         }
     } else if (cmd == 0x403c4c4cu && arg) {
+        const uint32_t *p = arg;
         io_log_words("pwm_open", cmd, arg, 6);
+        pwm_opened = 1;
+        pwm_channel = p[0];
+        pwm_freq = p[2];
+        pwm_duty = p[3];
+        write_state();
     } else if (cmd == 0xc03c4c53u && arg) {
+        const uint32_t *p = arg;
         io_log_words("pwm_set", cmd, arg, 6);
+        pwm_opened = 1;
+        pwm_channel = p[0];
+        pwm_freq = p[2];
+        pwm_duty = p[3];
+        write_state();
     } else {
         io_log("ioctl", NULL, cmd);
     }

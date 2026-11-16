@@ -103,8 +103,12 @@ maps the cold-start stages and the current stock-UI coverage.
       `mod_plat`/`mod_panel` over a permissive logged NDAL boundary and asserts
       PWM/GPIO values; `qemu-vin-real-check` now passes type 17/19 VIN and
       DP-source boundaries. All pass on the host, and the full `make check` is
-      green (rc=0); none is hardware acceptance. Next: make GPIO/PWM stateful,
-      then IIC/SPI and VIN/V4L2 formats only from recovered ioctl contracts.
+      green (rc=0); none is hardware acceptance. 2026-11-16: GPIO/PWM is now
+      stateful behind opt-in `OA_TV_IO_STATE` (default permissive);
+      `qemu-panel-state-check.sh` / `make check-qemu-panel-state` asserts pin
+      levels, PWM channel/frequency/duty 1000→499→1000 and power/PWM/backlight
+      order under the real ARM platform/panel. Next: IIC/SPI read/write models,
+      then VIN/V4L2 formats only from recovered ioctl contracts.
       See QEMU-TV-SIM-2026-11-10.
 - [x] HAL-only device-layer decision + cold-start profile candidate:
       no ARM module has an undefined vendor `DEV_*` symbol; the new

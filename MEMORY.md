@@ -4451,3 +4451,12 @@ the worker joined on quiesce/stop. `check-pwm-worker` and
 are -ENOTSUP and no percent change is claimed; visible dimming and TV reload
 acceptance remain open. On-TV work is still blocked while the TV is in use
 (HANDOFF) and needs an explicit owner-authorized window.
+
+QEMU-STATEFUL-IO-2026-11-16: `tests/fake_tv_io.c` has an opt-in `OA_TV_IO_STATE`
+model (default permissive logging) that tracks GPIO pin levels and PWM
+channel/frequency/duty from the recovered ioctl fields. `tools/qemu-panel-state-check.sh`
+/ `make check-qemu-panel-state` runs the real ARM platform/panel under qemu and
+asserts GPIO 110=1/111=0, PWM channel0/30000 Hz/duty 1000→499 (50% via the
+recovered curve)→1000 and power/PWM/backlight order. This is a decoded-ioctl
+simulation, not register/panel/brightness proof; IIC/SPI stateful models and
+on-TV acceptance remain open (TV in use per HANDOFF).

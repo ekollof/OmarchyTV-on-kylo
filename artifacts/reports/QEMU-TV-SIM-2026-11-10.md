@@ -5,7 +5,7 @@ the real ARM platform/panel modules now run under `qemu-arm-static` against
 model device boundaries. No TV, kernel driver, framebuffer, GPIO, PWM, I2C or
 panel was touched.
 
-Last verified: 2026-11-10 (host build + qemu-arm-static; no hardware effect).
+Last verified: 2026-11-16 (stateful GPIO/PWM slice added; qemu/host only).
 Evidence class: qemu/host simulation; not on-TV acceptance.
 
 ## What already existed
@@ -108,8 +108,27 @@ HDMI PHY, DP-source register effects or picture.
 - Every result here is qemu/host simulation. It is not a TV cold boot, panel
   acceptance, scanout proof or device-ownership claim.
 
-Next useful slices, in firmware order: stateful GPIO/PWM assertions (pin,
-level, channel, duty), then IIC/SPI read/write models, then VIN/V4L2 and DRM
+### Stateful GPIO/PWM slice (2026-11-16)
+
+`tests/fake_tv_io.c` now supports an **opt-in** stateful mode via
+`OA_TV_IO_STATE=/path` (default: the permissive logging model is unchanged).
+Recognized `Hal_Gpio_Write` ioctls (`0x670a/0x670e/0x670c`, word0 pin and byte4
+level) and PWM ioctls (`0x403c4c4c` open, `0xc03c4c53` set; word0 channel, word2
+frequency, word3 duty) update an in-memory model and rewrite the state file:
+`gpio pin=N level=0|1` and `pwm channel=N freq=N duty=N opened=0|1`.
+
+`tools/qemu-panel-state-check.sh` runs the real ARM `mod_plat`/`mod_panel`
+under qemu with that model. It asserts GPIO 110=1 / 111=0, PWM channel 0,
+30000 Hz and duty 1000 at 100%, the recovered power-on → PWM → backlight order,
+then `panel 50` → duty 499 and `panel 100` → duty 1000 with the GPIO levels
+unchanged. The 499 value is the recovered curve mapping (40/60/80/100
+breakpoints, `panel.duty_max=4095`, vendor 12-bit to HAL 0..1000 conversion),
+not a guessed tolerance. `make check-qemu-panel-state` passes; the qemu
+checks are not part of the default host `make check`.
+
+This is still a simulation: the model echoes decoded ioctl fields and does not
+emulate the kernel register, panel timing or visible brightness. Next useful
+slices, in firmware order: IIC/SPI read/write models, then VIN/V4L2 and DRM
 only where the recovered ioctl contract is known. Keep the permissive model
 separate from a claimed device contract.
 

@@ -1809,6 +1809,7 @@ value at `this+0x364`; do not invent a decoder backend from it. Decoder/scart/SP
 headphone/teletext/subtitles still have no real backend;
 on-TV validation is blocked while the TV is in use. No parity claim.
 SOURCE-LOSS-FALLBACK. |
+| A permissive qemu ioctl log proves PWM/GPIO register effects | QEMU-TV-SIM 2026-11-16: `tests/fake_tv_io.c` gained an opt-in `OA_TV_IO_STATE` state file (default remains permissive logging). `tools/qemu-panel-state-check.sh` runs the real ARM platform/panel under qemu and asserts pin levels 110=1/111=0, PWM channel 0, 30000 Hz and duty 1000 → 499 (50% via the recovered curve) → 1000 plus power/PWM/backlight order. It decodes ioctl fields only; no kernel register, panel timing or brightness claim. QEMU-TV-SIM. |
 | Pre-stock hook SSH is reliable enough to coordinate a long CEC test | Boot 6's pre-stock eth0/DHCP failed (`Network is down`), the armed raw-RX monitor waited with no `/tmp/cec-go` trigger, and the TV required USB recovery. The monitor sent nothing. Use a short fixed capture window with unconditional stock fallthrough; never gate a pre-stock test on SSH. CEC-FIRST-OPENER. |
 | Normal CEC frames use MCU UART / ttyS2 | Private V4L2 controls feed ntkdriver_nondovi CEC. MCU enable/wake/authority is separate; UART reads would steal input. CEC-TRANSPORT-CONTRACT. |
 | NDAL Process_Command success proves a message was accepted | It returns ioctl success but drops a separate driver-result byte. Driver filtering also rejects some spec-valid frames while upper layers process them anyway. CEC-TRANSPORT-CONTRACT. |
