@@ -112,9 +112,12 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   not scanout proof. `common/effect_worker.c` now moves mute and DRM mute calls
   off the loop (bounded FIFO, loop-side service resolution, queued-not-applied
   status, collected completions; `check-effect-worker`, fake-service
-  `source_path`); the copied set_mute pointer and worker lifecycle still need
-  reload/stop acceptance. Decoder/scart/SPDIF/headphone/teletext/subtitles
-  backends, on-TV acceptance (TV in use) and UI/timing remain open. The vendor EASI methods need live
+  `source_path`); the copied set_mute pointer still needs TV acceptance, while
+  `check-tuner-select-ipc` proves host reload/stop/unload and queued/completed
+  effects over the control socket. Decoder-select is a state setter
+  (`EASIControlTask::selectVideoDecoder` @ `0x98d37c`), not a HAL effect.
+  Decoder/scart/SPDIF/headphone/teletext/subtitles backends, on-TV acceptance
+  (TV in use) and UI/timing remain open. The vendor EASI methods need live
   C++ objects and cannot be called directly. The source service
   now exposes the read-only `video_status()` v2 behind `source.vin_status`; it
   is host-tested but not wired to a tuner and is a no-signal detector, not the

@@ -1797,7 +1797,11 @@ it (`check-video-mute`, fake-service `source_path`, full suite rc=0, TV
 loop (bounded FIFO, loop-side service resolution, queued-not-applied status,
 collected completions; `check-effect-worker` and fake-service `source_path`
 pass, TV `mod_source.so` builds). The copied set_mute pointer and worker
-lifecycle still need real reload/stop acceptance. Decoder/scart/SPDIF/
+lifecycle: 2026-11-16 `check-tuner-select-ipc` drives the real host with the
+fake module and proves queued/completed effects, the DRM mute trace and clean
+reload/stop/unload (host evidence, not TV). Decoder-select is not a HAL effect:
+`EASIControlTask::selectVideoDecoder` @ `0x98d37c` only validates and stores a
+value at `this+0x364`; do not invent a decoder backend from it. Decoder/scart/SPDIF/
 headphone/teletext/subtitles still have no real backend;
 on-TV validation is blocked while the TV is in use. No parity claim.
 SOURCE-LOSS-FALLBACK. |

@@ -537,6 +537,33 @@ Limits unchanged: an accepted ioctl is not scanout proof, and no TV operation
 was performed. The copied set_mute pointer and the worker's lifecycle need
 real reload/stop acceptance before hardware use.
 
+### Decoder-select is a state setter, not a HAL effect (2026-11-16)
+
+Docs-first search found no decoder-select hardware contract. Firmware check:
+`EASIControlInterface::selectVideoDecoder` @ `0x975f24` delegates to
+`EASIControlTask::selectVideoDecoder` @ `0x98d37c`, which only calls
+`videoDecoderIsValid` (`0x98d2f8`: 0 always valid; 1/2 valid only when
+`this[0x808] != 0`) and stores the value at `this+0x364`. There is no device or
+HAL call in that path, so a "real decoder-select backend" cannot be recovered
+from it. The actual video effect in the display-select body is the paired
+`hideVideo`/`showVideo`, already implemented by `common/video_mute.c`. Do not
+invent a decoder HAL from the cached field.
+
+### Control-plane diagnostic and IPC lifecycle acceptance (2026-11-16)
+
+`control.c` gained `tuner-select-display [0|1]` (fixed safe inputs: one
+selectable service, clear select result, no standby) and `tuner-select-state`
+(emitted effect count, sink status, applied/queued/completed/failed counters).
+`check-tuner-select-ipc` drives the real host with the fake `mod_source.so`:
+a gated display-select emits 16 effects, hide/show are queued (not applied
+inline), the DRM chain trace shows `vm dev idx=0` / `vm path=0` and both mute
+directions, completions are collected via `tuner-select-state`, unsupported
+effects are counted, and mute effects are correctly rejected when no audio
+service is loaded. `reload source` and `stop source` drain/join the effect
+worker and complete (first attempt may fail fast with the diagnostic delay),
+then unload is clean and the host exits 0. This is host/control-plane evidence
+for the worker lifecycle, not reload/stop on the TV. Full suite passes (rc=0).
+
 ### Controlled on-TV acceptance plan (blocked — not executed)
 
 The model, its effect backend and the mute consumer are host-tested only.

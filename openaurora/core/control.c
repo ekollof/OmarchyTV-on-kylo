@@ -842,6 +842,84 @@ int oa_control_command(oa_host *h, char *line, char *outbuf, size_t outlen)
                  available);
         return 0;
     }
+    if (!strcmp(cmd, "tuner-select-display")) {
+        if (force || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        int display = 1;
+        if (a1) {
+            display = atoi(a1);
+            if ((display != 0 && display != 1) || !strcmp(a1, "")) {
+                snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+                return -1;
+            }
+        }
+        const oa_tuner_select_iface *ts =
+            h->api.lookup(h, OA_SVC_TUNER_SELECT, 1);
+        if (!ts) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        oa_tuner_select_inputs in;
+        oa_tuner_select_result out;
+        memset(&in, 0, sizeof in);
+        memset(&out, 0, sizeof out);
+        /* Safe fixed diagnostic: a selectable service, a clear select result
+         * and no standby. No real service/tuner/UI I/O is performed. */
+        in.service_count = 10;
+        in.handle_valid = 1;
+        in.handle = 1;
+        in.select_result = 0;
+        in.display = display;
+        in.post_select = 1;
+        in.decoder_available = 0;
+        in.authorized = 1;
+        in.current_service = 1;
+        in.member_8_zero = 1;
+        int rc = ts->display(&in, &out);
+        h->api.release(h, OA_SVC_TUNER_SELECT);
+        if (rc) {
+            snprintf(outbuf, outlen, "failed disabled\n");
+            return -1;
+        }
+        snprintf(outbuf, outlen,
+                 "ran %d pre_mute %d unmute %d show %d reject %d\n",
+                 out.ran, out.pre_mute_applied, out.unmute_applied,
+                 out.show_applied, out.reject_reason);
+        return 0;
+    }
+    if (!strcmp(cmd, "tuner-select-state")) {
+        if (force || a1 || a2) {
+            snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);
+            return -1;
+        }
+        const oa_tuner_select_iface *ts =
+            h->api.lookup(h, OA_SVC_TUNER_SELECT, 2);
+        if (!ts) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        oa_easi_sink_state ss;
+        oa_easi_effects_state es;
+        memset(&ss, 0, sizeof ss);
+        memset(&es, 0, sizeof es);
+        int sink_rc = ts->sink_status(&ss);
+        int eff_rc = ts->state(&es);
+        h->api.release(h, OA_SVC_TUNER_SELECT);
+        if (eff_rc) {
+            snprintf(outbuf, outlen, "failed errno %d\n", ENODEV);
+            return -1;
+        }
+        snprintf(outbuf, outlen,
+                 "effects %u sink %d applied %u queued %u completed %u "
+                 "sink_failed %u completion_failed %u unsupported %u "
+                 "no_backend %u dispatched %u\n",
+                 es.effects, sink_rc, ss.applied, ss.queued, ss.completed,
+                 ss.failed, ss.completion_failed, ss.unsupported,
+                 ss.no_backend, ss.dispatched);
+        return 0;
+    }
     if (!strcmp(cmd, "source-probe")) {
         if (force || a1 || a2) {
             snprintf(outbuf, outlen, "failed errno %d\n", EINVAL);

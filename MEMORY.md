@@ -146,8 +146,10 @@ not scanout proof. `common/effect_worker.c` now moves mute and DRM mute calls
 off the loop (bounded FIFO, loop-side service resolution, queued-not-applied
 status, collected completions; `check-effect-worker`, fake-service
 `source_path`, TV `mod_source.so` builds); copied set_mute pointer and worker
-lifecycle still need reload/stop acceptance. Decoder/scart/SPDIF/headphone/
-teletext/subtitles backends and on-TV acceptance remain
+pointer still needs TV acceptance; `check-tuner-select-ipc` proves host
+reload/stop/unload and queued/completed effects over the control socket.
+Decoder-select is a state setter (`EASIControlTask::selectVideoDecoder` @
+`0x98d37c`), not a HAL effect. Decoder/scart/SPDIF/headphone/teletext/subtitles backends and on-TV acceptance remain
 open (TV in use per HANDOFF; explicit owner window required). Any
 `SetConnectInfo` caller outside the analyzed paths remains open. The status-4/HPD path is the
 cable-unplug policy; `source.video_status` is a no-signal detector, not the

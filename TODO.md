@@ -604,9 +604,13 @@ unvalidated.
       (bounded FIFO, loop-side service resolution, queued-not-applied status,
       collected completions; `check-effect-worker`, fake-service `source_path`,
       TV `mod_source.so` builds); copied set_mute pointer and worker lifecycle
-      still need reload/stop acceptance. On-TV validation blocked while TV is
-      in use (HANDOFF); needs an explicit owner-authorized window with stock
-      restoration. Remaining: real decoder/scart/SPDIF/headphone/teletext/
+      pointer still needs TV acceptance. 2026-11-16: `tuner-select-display`
+      and `tuner-select-state` control commands plus `check-tuner-select-ipc`
+      prove the gated chain, queued/completed effects and clean host
+      reload/stop/unload (not TV). Decoder-select is a state setter
+      (`EASIControlTask::selectVideoDecoder` @ `0x98d37c`), not a HAL effect.
+      On-TV validation blocked while TV is in use (HANDOFF); needs an explicit
+      owner-authorized window with stock restoration. Remaining: real decoder/scart/SPDIF/headphone/teletext/
       subtitles backends, any `SetConnectInfo` caller outside the analyzed paths and
       UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [x] Source switches emit `source/state`; `ui_vendor` updates the Bronlijst

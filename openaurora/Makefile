@@ -3023,6 +3023,11 @@ check-source-fake-ipc: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_source_fake.so $(B
 	node tests/source_fake_ipc.cjs $(abspath $(BUILD))
 check: check-source-fake-ipc
 
+.PHONY: check-tuner-select-ipc
+check-tuner-select-ipc: $(BUILD)/$(PROJECT) $(BUILD)/tests/mod_source_fake.so $(BUILD)/modules/mod_plat.so
+	node tests/tuner_select_ipc.cjs $(abspath $(BUILD))
+check: check-tuner-select-ipc
+
 .PHONY: check-ui-engine-quiesce
 check-ui-engine-quiesce: $(BUILD)/$(PROJECT) $(BUILD)/modules/mod_ui_engine.so $(BUILD)/tests/ui_nav_display.so
 	node tests/ui_engine_quiesce.cjs $(abspath $(BUILD)) $(abspath $(CURDIR)/..)
