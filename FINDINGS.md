@@ -1963,6 +1963,15 @@ source/power/settings/services parity; remaining broadcast/CEC/apps/PQ/network
 features; complete interactive UI and native OmarchyTV. See TODO for individual
 acceptance tasks, not the “next experiment” paragraphs in historical reports.
 
+SUBLAUNCHER-MENU-TREE 2026-11-16: the previously open horizontal row-origin
+fields are consumed by `SVGListBoxBase::getRowPosition` @0x010bbaa8, not by an
+unknown transform. Its three branches and the exact arithmetic using
++0x204/+0x208/+0x210, +0x20c and +0x1f4..+0x200 were re-decompiled and checked
+against ARM instructions; evidence is in
+`artifacts/analysis/ui-row-origin-2026-11-16/`. Field assignment from
+rowPos/mRowM and the EASIRect point packing are still unresolved, so no
+replacement formula was implemented and no stock-UI parity is claimed.
+
 ## Useful provenance
 
 - Raw OSD evidence: artifacts/analysis/osd-2026-10-31; supplied function names,

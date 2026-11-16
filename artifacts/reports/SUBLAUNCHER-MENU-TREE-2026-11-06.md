@@ -1,5 +1,9 @@
 # Firmware menu tree, JSON model and ui.menu service — 2026-11-06
 
+Status: current (row-position arithmetic added 2026-11-16)
+Last verified: 2026-11-16 (firmware instruction check; host/qemu only for the
+existing service)
+
 This closes the “one menu leads to another” decoding gap for the portal
 sub-launcher. The tree, geometry and 300 ms item animation come from the
 shipped firmware and BinSVG resources; the runtime form is JSON and the
@@ -108,6 +112,35 @@ has `rowPos 243,90 240x140`. `calculateHeight` sets the horizontal step
 derives `+0x204/+0x208/+0x210` from the `rowPos` rect and the `mRowM` mask
 rectangle. The exact reduced screen coordinate still needs the
 mask-transform check.
+
+## Row-position arithmetic (2026-11-16)
+
+`SVGListBoxBase::getRowPosition` @ `0x010bbaa8` (aurora MD5
+`64c252340d3af6c5d66072611b7bad7a`) was re-decompiled read-only and checked
+against its ARM instructions (`--asm`). It reads the horizontal origin fields
+directly and has three branches selected by the bytes at `this+0xe8` and
+`this+0xe9`:
+
+- `+0xe8 == 0`: x is `this+0x204`; the row step is
+  `this+0x1f4 * index + this+0x1fc`; the second coordinate adds `this+0x1f8`;
+  a virtual `vtable+0x28` rect query adjusts the other coordinate by
+  `(rect_x1 - rect_x0) - this+0x204 - this+0x208`.
+- `+0xe8 != 0`, `+0xe9 == 0`: x is `this+0x20c * index + this+0x204`, with
+  `this+0x210` added later; y starts at `this+0x1fc` and is adjusted by the
+  virtual rect query minus `this+0x200`.
+- `+0xe8 != 0`, `+0xe9 != 0`: x is
+  `(rect_x1 - this+0x204) - (index * this+0x20c + this+0x20c)`.
+
+The decompile and instruction dump are preserved in
+`artifacts/analysis/ui-row-origin-2026-11-16/getrowpos.decompile.txt` and
+`getrowpos.dump.txt`; the evidence class is firmware instructions only. This narrows the
+previously open `+0x204/+0x208/+0x210` item: the fields are consumed by
+`getRowPosition` exactly as above, not by a new transform. Still unresolved:
+where those fields are assigned from `rowPos`/`mRowM`, and the precise
+`EASIRect` point packing used by the constructor at `0x009a8004`. Do not
+implement a replacement row-origin formula until those two points are checked;
+the existing `common/widget_layout.c` continues to take an explicit absolute
+row window.
 
 ## JSON runtime model
 

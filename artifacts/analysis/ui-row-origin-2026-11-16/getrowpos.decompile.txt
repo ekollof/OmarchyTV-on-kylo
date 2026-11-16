@@ -1,0 +1,175 @@
+openjdk version "27.0.1.0.3" 2026-10-24
+OpenJDK Runtime Environment (build 27.0.1.0.3)
+OpenJDK 64-Bit Server VM (build 27.0.1.0.3, mixed mode)
+INFO  Using log config file: jar:file:/opt/ghidra/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /home/ekollof/.config/ghidra/ghidra_12.2_DEV/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /home/ekollof/.config/ghidra/ghidra_12.2_DEV/preferences (Preferences)  
+INFO  Loading previous preferences: /home/ekollof/.config/ghidra/ghidra_12.1.2_DEV/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (534 ms) (ClassSearcher)  
+WARNING: Final field name in class ghidra.util.charset.CharsetInfo has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$2 in unnamed module @4229bb3f (file:/opt/ghidra/Ghidra/Framework/Generic/lib/gson-2.13.2.jar)
+WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Loaded 118 trusted CA certificate(s) from /etc/ssl/certs/ca-certificates.crt (UnixSystemTrustKeyStoreUtil)  
+INFO  Loaded 118 trusted CA certificates from the OS trust store. (DefaultTrustManagerFactory)  
+INFO  Loaded 118 trusted CA certificates from the Java default trust store. (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (1078 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 60 extension points (19 false positives) (ClassSearcher)  
+INFO  HEADLESS Script Paths:
+    /opt/ghidra/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Swift/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Base/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/Decompiler/ghidra_scripts
+    /home/ekollof/Work/tvhack/openaurora/tools/re
+    /opt/ghidra/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Opening existing project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessAnalyzer)  
+INFO  Opening project: /home/ekollof/Work/tvhack/artifacts/workbench/ghidra_proj/Aurora (HeadlessProject)  
+INFO  REPORT: Processing read-only project file: /aurora.elf (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: DumpFirmware.java '@010bbaa8' '@010bbc3c'  (HeadlessAnalyzer)  
+INFO  SCRIPT: /home/ekollof/Work/tvhack/openaurora/tools/re/DumpFirmware.java (HeadlessAnalyzer)  
+INFO  DumpFirmware.java> PROGRAM aurora.elf MD5 64c252340d3af6c5d66072611b7bad7a (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== @010bbaa8 -> SVGListBoxBase::getRowPosition @ 010bbaa8 (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined getRowPosition(int param_1, EASIRect * param_2) (GhidraScript)  
+INFO  DumpFirmware.java> 
+/* SVGListBoxBase::getRowPosition(int, EASIRect&) */
+
+void __thiscall SVGListBoxBase::getRowPosition(SVGListBoxBase *this,int param_1,EASIRect *param_2)
+
+{
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  int local_4c;
+  int local_48;
+  int local_44;
+  int local_40;
+  int local_3c;
+  int local_38;
+  int local_34;
+  int local_30;
+  int local_2c;
+  
+  piVar1 = DAT_010bbba8;
+  local_2c = *DAT_010bbba8;
+  iVar2 = *(int *)(this + 0x204);
+  if (this[0xe8] == (SVGListBoxBase)0x0) {
+    iVar3 = *(int *)(this + 0x208);
+    local_48 = *(int *)(this + 500) * param_1 + *(int *)(this + 0x1fc);
+    local_4c = iVar2;
+    local_44 = iVar2;
+    local_40 = local_48;
+    (**(code **)(*(int *)this + 0x28))((EASIRect *)&local_3c,this);
+    local_44 = (((local_34 - local_3c) - iVar2) - iVar3) + local_44;
+    local_40 = local_40 + *(int *)(this + 0x1f8);
+  }
+  else {
+    if (this[0xe9] == (SVGListBoxBase)0x0) {
+      local_4c = *(int *)(this + 0x20c) * param_1 + iVar2;
+    }
+    else {
+      (**(code **)(*(int *)this + 0x28))((EASIRect *)&local_3c,this);
+      local_4c = (local_34 - iVar2) - (param_1 * *(int *)(this + 0x20c) + *(int *)(this + 0x20c));
+    }
+    local_48 = *(int *)(this + 0x1fc);
+    iVar2 = *(int *)(this + 0x210);
+    local_44 = local_4c;
+    local_40 = local_48;
+    (**(code **)(*(int *)this + 0x28))((EASIRect *)&local_3c,this);
+    local_44 = local_44 + iVar2;
+    local_40 = (((local_30 - local_38) - *(int *)(this + 0x1fc)) - *(int *)(this + 0x200)) +
+               local_40;
+  }
+  EASIRect::EASIRect((EASIRect *)&local_3c,(EASIPoint *)&local_4c,(EASIPoint *)&local_44);
+  *(int *)param_2 = local_3c;
+  *(int *)(param_2 + 4) = local_38;
+  *(int *)(param_2 + 8) = local_34;
+  *(int *)(param_2 + 0xc) = local_30;
+  if (local_2c != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  DumpFirmware.java> 
+===== @010bbc3c -> SVGListBoxBase::createListItems @ 010bbc3c (GhidraScript)  
+INFO  DumpFirmware.java> Signature (analysis metadata, verify against instructions): undefined createListItems(void) (GhidraScript)  
+INFO  DumpFirmware.java> 
+/* SVGListBoxBase::createListItems() */
+
+void __thiscall SVGListBoxBase::createListItems(SVGListBoxBase *this)
+
+{
+  int *piVar1;
+  int iVar2;
+  undefined4 uVar3;
+  SVGListBoxRow *pSVar4;
+  int *piVar5;
+  uint uVar6;
+  SVGListBoxRowManager *this_00;
+  int local_3c;
+  int local_38;
+  int local_2c;
+  int local_28;
+  int local_1c;
+  
+  piVar1 = DAT_010bbd34;
+  local_1c = *DAT_010bbd34;
+  this_00 = (SVGListBoxRowManager *)(this + 0xf8);
+  (**(code **)(*(int *)this + 0x28))(&local_3c,this);
+  SVGListBoxRowManager::reduceNumberOfRowsTo(this_00,*(uint *)(this + 0x1f0));
+  for (uVar6 = 0; iVar2 = SVGListBoxRowManager::getTotalNumberOfRows(this_00), (int)uVar6 < iVar2;
+      uVar6 = uVar6 + 1) {
+    EASIRect::EASIRect((EASIRect *)&local_2c);
+    getRowPosition(this,uVar6,(EASIRect *)&local_2c);
+    if ((local_2c != local_3c) || (local_28 != local_38)) {
+      EASIRect::offset((EASIRect *)&local_2c,(EASIPoint *)&local_3c);
+      piVar5 = (int *)SVGListBoxRowManager::getRowInternal(this_00,uVar6);
+      (**(code **)(*piVar5 + 0x30))(piVar5,&local_2c);
+    }
+  }
+  if (this[0x23c] != (SVGListBoxBase)0x0) {
+    EASIRect::EASIRect((EASIRect *)&local_2c);
+    getTitleRowPosition(this,(EASIRect *)&local_2c);
+    uVar3 = (**(code **)(*(int *)this + 0x74))(this,&local_2c);
+    *(undefined4 *)(this + 0x238) = uVar3;
+  }
+  for (; (int)uVar6 < *(int *)(this + 0x1f0); uVar6 = uVar6 + 1) {
+    EASIRect::EASIRect((EASIRect *)&local_2c);
+    getRowPosition(this,uVar6,(EASIRect *)&local_2c);
+    pSVar4 = (SVGListBoxRow *)(**(code **)(*(int *)this + 0x70))(this,&local_2c);
+    if (pSVar4 == (SVGListBoxRow *)0x0) break;
+    SVGListBoxRowManager::addRowItem(this_00,pSVar4);
+  }
+  if (local_1c != *piVar1) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return;
+}
+
+ (GhidraScript)  
+INFO  REPORT: Discarding changes to the following read-only file: /aurora.elf (HeadlessAnalyzer)  
