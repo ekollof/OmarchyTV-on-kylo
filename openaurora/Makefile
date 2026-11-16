@@ -2681,6 +2681,15 @@ $(BUILD)/tests/svg_names: tests/svg_names.c tools/re/svg-names.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $<
 
+$(BUILD)/tests/row_position: tests/row_position.c common/row_position.c include/openaurora/row_position.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-row-position
+check-row-position: $(BUILD)/tests/row_position
+	@$(BUILD)/tests/row_position
+check: check-row-position
+
 check-svg: $(BUILD)/svg-animations $(BUILD)/svg-names $(BUILD)/tests/svg_animations $(BUILD)/tests/svg_names
 	@$(BUILD)/tests/svg_animations
 	@$(BUILD)/tests/svg_names

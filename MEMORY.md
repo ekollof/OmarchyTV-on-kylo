@@ -4505,3 +4505,11 @@ QEMU-COLD-DISPLAY-2026-11-16: `fake_fb_preload.c` has opt-in
 `display.cold_init=1` and asserts the shipped 1920x1080/2-frame template repair,
 region and pan; `qemu-fb-real-check.sh` (valid initial var, full snapshot) still
 passes. Ioctl-boundary simulation only; no cold boot, scanout or TV acceptance.
+
+ROW-POSITION-2026-11-16: `EASIRect::EASIRect` @0x009a8004 packs two EASIPoints
+as {p1.x,p1.y,p2.x,p2.y}. `common/row_position.c` models the three
+instruction-recovered branches of `SVGListBoxBase::getRowPosition` @0x010bbaa8
+with an injected base-rect query; `check-row-position` and the full host suite
+pass (rc=0). It is pure and unwired because rowPos/mRowM field assignment is
+still unresolved; no stock-UI parity claim. Evidence in
+artifacts/analysis/ui-row-origin-2026-11-16/.

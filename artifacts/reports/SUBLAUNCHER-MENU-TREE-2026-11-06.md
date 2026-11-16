@@ -135,12 +135,16 @@ The decompile and instruction dump are preserved in
 `artifacts/analysis/ui-row-origin-2026-11-16/getrowpos.decompile.txt` and
 `getrowpos.dump.txt`; the evidence class is firmware instructions only. This narrows the
 previously open `+0x204/+0x208/+0x210` item: the fields are consumed by
-`getRowPosition` exactly as above, not by a new transform. Still unresolved:
-where those fields are assigned from `rowPos`/`mRowM`, and the precise
-`EASIRect` point packing used by the constructor at `0x009a8004`. Do not
-implement a replacement row-origin formula until those two points are checked;
-the existing `common/widget_layout.c` continues to take an explicit absolute
-row window.
+`getRowPosition` exactly as above, not by a new transform. `EASIRect::EASIRect` @ `0x009a8004` was also instruction-checked: it packs two
+`EASIPoint`s as `{p1.x,p1.y,p2.x,p2.y}` (evidence in
+`artifacts/analysis/ui-row-origin-2026-11-16/easirect_ctor.dump.txt`). With that
+and the three branches, `common/row_position.c` is a pure injected-query model
+of `getRowPosition`; `check-row-position` covers all three branches, the point
+packing and query failure, and the full host suite passes (rc=0). This is a
+geometry primitive only: where `+0x204/+0x208/+0x210` are assigned from
+`rowPos`/`mRowM` is still unresolved, so the helper takes explicit fields and
+is not wired into the UI. No stock-UI parity is claimed; the existing
+`common/widget_layout.c` continues to take an explicit absolute row window.
 
 ## JSON runtime model
 

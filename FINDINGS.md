@@ -1968,9 +1968,11 @@ fields are consumed by `SVGListBoxBase::getRowPosition` @0x010bbaa8, not by an
 unknown transform. Its three branches and the exact arithmetic using
 +0x204/+0x208/+0x210, +0x20c and +0x1f4..+0x200 were re-decompiled and checked
 against ARM instructions; evidence is in
-`artifacts/analysis/ui-row-origin-2026-11-16/`. Field assignment from
-rowPos/mRowM and the EASIRect point packing are still unresolved, so no
-replacement formula was implemented and no stock-UI parity is claimed.
+`artifacts/analysis/ui-row-origin-2026-11-16/`. EASIRect::EASIRect @0x009a8004 packs `{p1.x,p1.y,p2.x,p2.y}`
+(instruction-checked). `common/row_position.c` now models the three branches
+with an injected query; `check-row-position` passes. It stays unwired because
+field assignment from rowPos/mRowM is still unresolved, and no stock-UI parity
+is claimed.
 
 ## Useful provenance
 
