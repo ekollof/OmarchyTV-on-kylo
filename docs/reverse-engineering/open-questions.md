@@ -93,8 +93,11 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   The V4L2 event `0xc000001` on `/dev/video21` is a scaler update, not source
   loss; its decoder/adapter and the HPD plug/unplug model are tested. HPD stayed
   high through Deck suspend. The HDMI RX status getter on `video21` captured
-  `w0=1` active and `w0=0/5` during suspend; the full DTV/tuner select/mute/
-  decoder/UI body remains open. The source service
+  `w0=1` active and `w0=0/5` during suspend. 2026-11-16: the full
+  `requestServiceSelectForDisplayInternal` @ `0xf771e0` contract is recovered
+  and modeled as a pure injected-effects helper `common/tuner_select.c`
+  (`check-tuner-select`); it is not wired to any replacement backend, so EASI
+  effects and UI/timing remain open. The source service
   now exposes the read-only `video_status()` v2 behind `source.vin_status`; it
   is host-tested but not wired to a tuner and is a no-signal detector, not the
   sleep trigger. `common/tuner_view.c` + `check-tuner-view` cover the recovered

@@ -255,8 +255,14 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   `OA_SVC_CHANNELS` or the stored `OA_SVC_SERVICE_LIST` fallback, connects DTV
   and calls `OA_SVC_TUNER.select(handle)`; `source_path` fake-service tests
   cover the runtime/stored order/gates. `mod_cec` routes broadcast 0x9D behind
-  `cec.inactive_fallback` (`cec_inactive.cjs` covers both paths). The full
-  select/mute/decoder/UI body remains open. Do not substitute an
+  `cec.inactive_fallback` (`cec_inactive.cjs` covers both paths). 2026-11-16:
+  the full `requestServiceSelectForDisplayInternal` @ `0xf771e0`
+  mute/decoder/hide/show/authorization contract is recovered and modeled as a
+  pure injected-effects helper `common/tuner_select.c`
+  (`check-tuner-select`: gates, result-0-or-4 pre-mute gate with the
+  cached-result/country split, ordered effects, post-select unmute/show,
+  non-display path and deferral). It is not wired to a replacement backend;
+  EASI effects and UI/timing remain open. Do not substitute an
   always-switch-to-TV or HPD shortcut.
 - A successful `change_input` emits `source/state` with the source type.
   `ui_vendor` maps it to the Bronlijst row, persists `m_current_source`, syncs

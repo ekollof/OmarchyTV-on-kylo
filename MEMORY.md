@@ -121,8 +121,12 @@ stored `OA_SVC_SERVICE_LIST` rows, connects DTV and calls
 runtime/stored order/gates. `mod_cec` routes broadcast 0x9D behind
 `cec.inactive_fallback`; it requires a displayed external source, maps the
 selected tuner handle back to its active-list or stored-list position and calls
-the worker; `cec_inactive.cjs` covers both paths and the disabled/TV gates. The full select/mute/decoder/UI contract and any
-`SetConnectInfo` caller outside the analyzed paths remain open. The status-4/HPD path is the
+the worker; `cec_inactive.cjs` covers both paths and the disabled/TV gates.
+2026-11-16: the full `requestServiceSelectForDisplayInternal` @ `0xf771e0`
+mute/decoder/hide/show/authorization contract is recovered and modeled as a
+pure injected-effects helper `common/tuner_select.c` (`check-tuner-select`
+passes); it is not wired to any replacement backend, so EASI effect backends
+and any `SetConnectInfo` caller outside the analyzed paths remain open. The status-4/HPD path is the
 cable-unplug policy; `source.video_status` is a no-signal detector, not the
 sleep trigger. `source.video_status()` v2 is now
 host-tested behind `source.vin_status` (`check-source-vin` and the fake-module

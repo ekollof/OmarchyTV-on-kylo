@@ -573,9 +573,16 @@ unvalidated.
       runtime/stored order/gates. `mod_cec` routes broadcast 0x9D behind
       `cec.inactive_fallback` (selected handle→active-list or stored-list
       position; `cec_inactive.cjs` covers position 1/2, the stored fallback and
-      disabled/TV gates). Remaining:
-      the full select/mute/decoder/UI body, any `SetConnectInfo` caller outside
-      the analyzed paths and the UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
+      disabled/TV gates). 2026-11-16: the full
+      `requestServiceSelectForDisplayInternal` @ `0xf771e0`
+      mute/decoder/hide/show/authorization contract is recovered and modeled
+      as a pure injected-effects helper `common/tuner_select.c`
+      (`check-tuner-select` passes: gates, result-0-or-4 pre-mute gate with
+      cached-result/country split, ordered effects, post-select unmute/show,
+      non-display path and deferral). It is not wired to any replacement
+      backend. Remaining: EASI effect backends and their wiring, any
+      `SetConnectInfo` caller outside the analyzed paths and UI/timing.
+      SOURCE-LOSS-FALLBACK-2026-11-12.
 - [x] Source switches emit `source/state`; `ui_vendor` updates the Bronlijst
       row, `m_current_source`, picture cards and repaints; `ui_omarchy`
       repaints. `common/source_map.c` + `check-source-map` cover the nine-row

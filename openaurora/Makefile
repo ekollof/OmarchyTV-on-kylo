@@ -2940,6 +2940,15 @@ check-tuner-view: $(BUILD)/tests/tuner_view
 	@$(BUILD)/tests/tuner_view
 check: check-tuner-view
 
+$(BUILD)/tests/tuner_select: tests/tuner_select.c common/tuner_select.c include/openaurora/tuner_select.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-tuner-select
+check-tuner-select: $(BUILD)/tests/tuner_select
+	@$(BUILD)/tests/tuner_select
+check: check-tuner-select
+
 $(BUILD)/tests/source_map: tests/source_map.c common/source_map.c include/openaurora/source_map.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)

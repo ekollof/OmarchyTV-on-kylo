@@ -1,7 +1,7 @@
 # HDMI source-loss fallback — 2026-11-12
 
 Status: current
-Last verified: 2026-11-12
+Last verified: 2026-11-16
 Evidence class: firmware instructions, REA cross-check, read-only on-TV
 HPD/V4L2 captures, probe rejection logs and owner-reported stock behavior.
 Corrects: the earlier 2026-11-12 conclusion that `0x9D Inactive Source` was
@@ -357,8 +357,9 @@ sequence. The position→handle mapping over ACTIVECHANNELLIST and the stored
 service list is implemented in `common/tuner_view.c` /
 `include/openaurora/tuner_view.h`; `check-tuner-view` covers the runtime list,
 stored order, identity order and rejection cases. The display-select sequence
-is recovered but not yet implemented. `tunermanager-select.dis` records the
-instructions:
+is now recovered in full and implemented as a pure injected-effects model in
+`common/tuner_select.c` (`check-tuner-select`); see the subsection below.
+`tunermanager-select.dis` records the instructions:
 
 - `0xf77516` branches on the display/mute bool. When set, `0xf77538`
   `muteOn`, `0xf77540` `headphoneMuteOn`, `0xf7754a` `muteScartOut(true)`,
@@ -373,9 +374,79 @@ instructions:
   (`0xf776a2`), or clears the pending flags. The mute/show decisions also
   depend on standby, service authorization, dual-view and subtitle state.
 
-The full select/mute/decoder/UI contract remains open; the exact vendor
-`EASIControlInterface`/`EASITVControlInterface` effects do not yet have
-replacement backends.
+### TunerManager display-select body (2026-11-16)
+
+The full `requestServiceSelectForDisplayInternal` branch/effect contract has
+been recovered from the saved decompile and instruction dump and implemented
+as a pure model (`include/openaurora/tuner_select.h`, `common/tuner_select.c`,
+`check-tuner-select`). It performs no I/O; every vendor effect is an injected
+callback. The recovered gates and order are:
+
+- Rejection gates in vendor order: non-empty `EASIServiceList` (+0x7c), no
+  pending standby request (`getStandbyRequested`), and a resolved handle
+  (`+0x54`, result `!= -1`). The service-select `+0xd4` call supplies `uVar5`.
+- `notifyServiceSelected` runs before the mute block when display is set and
+  `param_7` is clear.
+- Pre-mute/hide gate at `0xf77588`: enter when `(uVar5 & ~4) == 0` (result 0
+  or 4), or when the cached result `DAT_00f775d4 == 4` and `this[8] == 0`
+  (country `!= 0x14`, or `== 0x14` with handle `!=` current service).
+- Display branch: `muteOn`, `headphoneMuteOn`, `muteScartOut(true)`,
+  `enableSPDIFOut(0)`, `selectVideoDecoder(0)`, `hideVideo(0)`,
+  `subtitlesOff(true)`, `setTeletextFont(-1)`, set `DAT_00f775e0=1`; then
+  `DAT_00f775d0` is cleared only when `uVar5 != 0`, cached result `== 4` and
+  country is one of `{5, 0xc, 0x14, 0x1b}` (otherwise the pending-mute flag
+  stays set). Non-display branch: `selectVideoDecoder(1)`, `hideVideo(1)`,
+  set `DAT_00f775e4=1`. `DAT_00f775d4` caches `uVar5` afterwards.
+- `+0x98` dual-view reset, `requestServiceSelectInternal` and a second `+0xd4`
+  select follow, then the `param_6` phase clears `DAT_00f775e0`.
+- Display unmute/show: `FROST_Sleep(20)` when `uVar5 == 0`; unmute
+  (`muteOff`, `headphoneMuteOff`, `muteScartOut(false)`) requires no standby,
+  decoder available (`+0x2c vtable+0x28 == 0`) and an authorized service
+  (forced allowed when current service is outside the list); subtitles are
+  restored when `getSubtitlesOn && !isSubtitleEnabled`; `showVideo(0)` is
+  skipped when dual view is active or unauthorized.
+- Non-display phase: gated by `DAT_00f776b4`, with `muteOff` when the decoder
+  is available and `selectVideoDecoder(1)` + `showVideo(1)` when not dual
+  view and `uVar5 != 0`. A pending `DAT_00f776b0`/`DAT_00f776b4` can defer
+  the phase.
+
+`check-tuner-select` covers the rejection gates, the pre-mute predicate
+(including the country split), the exact effect order, authorization and
+standby/dual-view/subtitle decisions, the non-display path, deferral and
+rejection without I/O. The vendor `EASIControlInterface` /
+`EASITVControlInterface` effects still have no replacement backends; this is
+the contract those backends must meet, not hardware or stock-UI parity. There
+is deliberately no runtime config gate: enabling a model with no backends
+would emit no real effect, so the helper is inert until those backends exist.
+
+### Controlled on-TV acceptance plan (not executed)
+
+The pure model is host-tested only. On-TV acceptance of the *effects* cannot be
+performed until the replacement EASI mute/decoder/hide/show backends exist;
+until then the only tractable on-TV work is read-only contract confirmation and
+ARM/ABI verification. If a future session has both backends and an
+owner-authorized idle window, use this plan with full stock restoration:
+
+1. Baseline (view-only): with `tools/tvssh.sh`, record the stock Aurora PID
+   (never the first `pidof aurora.elf` result), active source, current service,
+   mute/volume and picture state, and CEC/fb ownership. Do not draw, send keys,
+   pause or reboot while the TV is in use.
+2. Build and verify the affected ARM artifacts under `TARGET=tv
+   BUILD=build-tv-v3`; confirm hashes/symbol versions against the host model.
+   Stage anything needed under `/tmp` only, verifying size/hash in a separate
+   successful connection; remove all staging afterwards.
+3. With explicit authorization, use a bounded display-owned window: stop stock
+   Aurora only if permitted, emit one gated display-select through the real
+   backends, observe mute/decoder/hide/show and the `DAT_*` flag effects, then
+   restore stock operation and access. Keep watchdog handling and a recovery
+   reboot available per AGENTS.md; never leave a watchdog disabled or a helper
+   running.
+4. Verify restoration: stock PID/state matches the baseline, no staging
+   remains, no helper runs and the display/CEC ownership is back to stock.
+   Record any deviation as a regression, not as parity evidence.
+
+No TV operation, staging or display ownership was performed for this
+milestone; the plan is recorded only.
 
 The source service exposes `inactive_source(position)` v3 behind
 `source.inactive_fallback`. It resolves the active `OA_SVC_CHANNELS` position
@@ -393,7 +464,8 @@ at v3, resolves the selected tuner handle back to its active-list position with
 selected/known service means no guessed fallback. `tests/cec_inactive.cjs`
 drives the real receive path with fake source/channel/tuner services and
 covers position 1/2, the disabled gate and the TV/no-external gate. The full
-select/mute/decoder/UI body remains open.
+select/mute/decoder/UI body is modeled in `common/tuner_select.c` but is not
+wired to a replacement backend.
 
 The companion `0x82 Active Source` route is implemented behind
 `cec.active_source`. CEC 1.3a carries the source physical address; the
