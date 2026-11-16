@@ -1,7 +1,8 @@
 # HDMI source-loss fallback — 2026-11-12
 
 Status: current (on-TV effect acceptance attempted 2026-11-16 and REGRESSED;
-see the executed-acceptance section)
+root cause found and fixed offline the same day, on-TV retest pending — see the
+executed-acceptance and root-cause sections)
 Last verified: 2026-11-16 (on-TV crash and stock restoration)
 Evidence class: firmware instructions, REA cross-check, read-only on-TV
 HPD/V4L2 captures, host/qemu tests, one controlled on-TV run that crashed the
@@ -535,9 +536,48 @@ fake-service `source_path` test verifies a display-select queues four effects
 them complete with no failures and that disabling the gate is inert. Full
 suite passes (rc=0) and the TV `mod_source.so` builds with the worker.
 
-Limits unchanged: an accepted ioctl is not scanout proof, and no TV operation
-was performed. The copied set_mute pointer and the worker's lifecycle need
-real reload/stop acceptance before hardware use.
+Limits: an accepted ioctl is not scanout proof, and no TV operation was
+performed. The raw provider pointer is now held until stop and no host API is
+called off-loop, but provider reload during a pending job and real reload/stop
+acceptance remain unproven.
+
+### Root cause and offline fix (2026-11-16)
+
+**Docs-first miss corrected:** the exact contract already existed in
+[DRM-PLANE-CONTRACT-2026-10-31](DRM-PLANE-CONTRACT-2026-10-31.md). `Hal_Video_Get_DrmPlaneInfo`
+at `0x4e7c3464` copies exactly **48 bytes / 12 words** from
+`g_pstHalVideoDrmInfo + 8 + index*0x30`; it validates neither the index nor the
+buffer, and is int-returning (0, or -1 when the shared pointer is NULL) despite
+Ghidra's void prototype. The vendor caller reserves 64 bytes. An archived note
+had explicitly warned against reintroducing a `uint32_t info[4]` buffer; the
+2026-11-16 video-mute implementation did exactly that
+(`openaurora/common/video_mute.c:21`), so `hide_video` — the second queued
+effect after `mute -> 1` — overwrote 32 bytes of the worker stack (saved
+registers/LR), explaining the SIGSEGV and the absent completions. Host/qemu
+fakes wrote only `info[0]`, so they could not reproduce it. This was a search
+and reuse failure, not a new hardware quirk.
+
+**Fix, offline only:**
+- `OA_VIDEO_MUTE_INFO_WORDS` is now 16 (matching the vendor's 64-byte stack
+  reservation) with a `_Static_assert` that it is at least the 12 words the HAL
+  writes; the fake HAL now writes all 12 words.
+- `oa_video_mute_set()` rejects plane indices outside the 9-record table before
+  calling the getter; the vendor adapter declares the getter `int` and
+  propagates its return.
+- A second, independent defect was fixed: the worker called
+  `OA_SVC_AUDIO.set_mute`, which performs CEC-policy lookup, host hold
+  bookkeeping and logging off-loop. `mod_audio` now publishes `audio.effect`
+  v1 with `set_mute_raw` (HAL call only); `mod_source` decides CEC System Audio
+  policy on the loop, holds the raw provider until stop and logs completions on
+  the loop. The worker makes no host API call.
+
+`check-video-mute`, `check-effect-worker`, `check-source-path` (with a new
+CEC-block case), `check-tuner-select-ipc` and the full host suite pass (rc=0);
+ARM `mod_source.so` (`f29c56fb…`) and `mod_audio.so` (`a5d6e2a1…`) build. The TV
+is in standby and **no on-TV retest has been performed**: the regression is not
+closed until a new authorized window repeats the run. Delegate-assisted
+firmware analysis (two research agents) supplied the 48-byte contract and the
+host-API-from-worker finding; no agent modified files.
 
 ### Decoder-select is a state setter, not a HAL effect (2026-11-16)
 

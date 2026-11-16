@@ -432,6 +432,16 @@ typedef struct {
  * injected synchronous RPCs and bounded ticketed async requests; the service
  * adapter and its consumer/provider lifetime handling are still pending. */
 #define OA_SVC_AUDIO "audio"
+
+/* audio.effect — raw off-loop mute setter for the effect worker. Published by
+ * mod_audio alongside audio v1. set_mute_raw calls only the vendor HAL: no
+ * host service lookup, no CEC policy, no log and no cached-state write. The
+ * caller must decide CEC System Audio policy on the control loop. */
+#define OA_SVC_AUDIO_EFFECT "audio.effect"
+typedef struct {
+    int (*set_mute_raw)(int on); /* 0 HAL accepted, negative errno */
+} oa_audio_effect_iface;
+
 typedef struct {
     int (*set_volume)(int v);   /* 0..100 */
     int (*get_volume)(void);    /* last accepted request; -1 unknown, not a hardware readback */

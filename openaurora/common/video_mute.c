@@ -5,6 +5,11 @@
 #include <stddef.h>
 #include <string.h>
 
+/* The vendor HAL writes 48 bytes unconditionally; a smaller buffer corrupts
+ * the caller's stack (this was the 2026-11-16 on-TV SIGSEGV). */
+_Static_assert(OA_VIDEO_MUTE_INFO_WORDS >= OA_VIDEO_MUTE_INFO_WRITTEN_WORDS,
+               "video mute info buffer too small for Hal_Video_Get_DrmPlaneInfo");
+
 void oa_video_mute_init(oa_video_mute *m, const oa_video_mute_io *io, int path)
 {
     if (!m)
@@ -37,6 +42,11 @@ int oa_video_mute_set(oa_video_mute *m, int on)
     if (plane_type < 0) {
         m->state.last_rc = plane_type;
         return plane_type;
+    }
+    /* The getter does not validate the index; the record table has 9 slots. */
+    if (plane_type >= OA_VIDEO_MUTE_PLANE_SLOTS) {
+        m->state.last_rc = -ERANGE;
+        return -ERANGE;
     }
     rc = m->io.get_plane_info(m->io.ud, plane_type, info);
     if (rc < 0) {

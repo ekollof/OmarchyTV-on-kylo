@@ -30,7 +30,15 @@ extern "C" {
  */
 #define OA_VIDEO_MUTE_IOCTL 0xc00c6455u
 #define OA_VIDEO_MUTE_PATH_MAIN 0
-#define OA_VIDEO_MUTE_INFO_WORDS 4
+/* DRM-PLANE-CONTRACT-2026-10-31: Hal_Video_Get_DrmPlaneInfo copies exactly
+ * 48 bytes (12 words) into its output, without validating the index. The
+ * vendor caller plat_drm_set_mute @0x92cec8 reserves 64 bytes. Use 16 to
+ * match that reservation and leave margin; only info[0] (plane ID) is read.
+ * A 4-word buffer overflowed the worker stack and caused the 2026-11-16 TV
+ * SIGSEGV — do not shrink this. */
+#define OA_VIDEO_MUTE_INFO_WORDS 16
+#define OA_VIDEO_MUTE_INFO_WRITTEN_WORDS 12
+#define OA_VIDEO_MUTE_PLANE_SLOTS 9
 
 typedef struct {
     void *ud;
@@ -38,8 +46,9 @@ typedef struct {
     int (*drm_device_id)(void *ud, int index);
     /* Maps a video path to a plane type. */
     int (*video_path_to_plane)(void *ud, int path);
-    /* Fills up to OA_VIDEO_MUTE_INFO_WORDS words; info[0] is the plane id.
-     * Returns 0 on success, negative errno on failure. */
+    /* Writes OA_VIDEO_MUTE_INFO_WRITTEN_WORDS words (48 bytes); info[0] is
+     * the plane id. Returns 0 on success, negative errno on failure. The
+     * buffer must hold at least OA_VIDEO_MUTE_INFO_WORDS words. */
     int (*get_plane_info)(void *ud, int plane_type,
                           uint32_t info[OA_VIDEO_MUTE_INFO_WORDS]);
     /* Issues the DRM mute ioctl. Returns 0 on success, negative errno. */

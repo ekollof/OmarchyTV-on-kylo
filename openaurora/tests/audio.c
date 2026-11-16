@@ -44,11 +44,20 @@ static void release(void *p, const char *name)
 }
 static int publish(void *p, const char *name, uint32_t version, const void *iface)
 {
-    (void)p; assert(!strcmp(name, OA_SVC_AUDIO) && version == 1);
+    (void)p;
+    assert(version == 1);
+    if (!strcmp(name, OA_SVC_AUDIO_EFFECT)) return 0;
+    assert(!strcmp(name, OA_SVC_AUDIO));
     if (published) return -1;
     published = iface; return 0;
 }
-static int unpublish(void *p, const char *name) { (void)p; assert(!strcmp(name, OA_SVC_AUDIO)); published = NULL; return 0; }
+static int unpublish(void *p, const char *name)
+{
+    (void)p;
+    if (!strcmp(name, OA_SVC_AUDIO_EFFECT)) return 0;
+    assert(!strcmp(name, OA_SVC_AUDIO));
+    published = NULL; return 0;
+}
 static const char *config(void *p, const char *key, const char *def)
 {
     (void)p;

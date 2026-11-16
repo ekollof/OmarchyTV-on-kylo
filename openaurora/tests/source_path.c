@@ -89,6 +89,18 @@ static int fake_audio_set_mute(int on)
 static const oa_audio_iface fake_audio = {
     NULL, NULL, fake_audio_set_mute, NULL, NULL
 };
+static int fake_audio_set_mute_raw(int on)
+{
+    audio_mute_calls++;
+    audio_last_mute = on ? 1 : 0;
+    return 0;
+}
+static const oa_audio_effect_iface fake_audio_effect = { fake_audio_set_mute_raw };
+static int cec_block;
+static int fake_cec_local_permitted(void) { return cec_block ? 0 : 1; }
+static const oa_cec_audio_iface fake_cec_audio = {
+    NULL, NULL, fake_cec_local_permitted, NULL, NULL, NULL, NULL, NULL
+};
 
 #define SKIP INT64_MIN
 static void expect(int kind, int64_t a, int64_t b, int64_t c, int64_t d,
@@ -217,6 +229,8 @@ static const void *lookup(void *p, const char *name, uint32_t min_version)
     if (!strcmp(name, OA_SVC_TUNER)) return &fake_tuner;
     if (!strcmp(name, OA_SVC_SERVICE_LIST)) return &fake_services;
     if (!strcmp(name, OA_SVC_AUDIO)) return &fake_audio;
+    if (!strcmp(name, OA_SVC_AUDIO_EFFECT)) return &fake_audio_effect;
+    if (!strcmp(name, OA_SVC_CEC_AUDIO)) return &fake_cec_audio;
     return NULL;
 }
 static const oa_host_api api = {
@@ -643,6 +657,19 @@ int main(void)
     assert(select_iface->sink_status(&ss2) == 0);
     assert(ss2.unsupported >= 2); /* hide/show now unsupported */
     done(ctx);
+
+    /* CEC System Audio Mode is decided on the loop: mute effects are refused
+     * without any off-loop HAL call. */
+    effects_gate = 1; sink_gate = 1; vm_gate = 1; cec_block = 1;
+    audio_mute_calls = 0;
+    ctx = start(1);
+    assert(select_iface != NULL);
+    assert(select_iface->display(&cin, &cout) == 0);
+    assert(select_iface->sink_status(&ss2) == 0);
+    assert(audio_mute_calls == 0);
+    assert(ss2.unsupported >= 2); /* mute_on/mute_off refused by CEC policy */
+    done(ctx);
+    cec_block = 0;
 
     puts("ok source path: type gates, VIN opens/VPLT, V4L2Info/FdCommon, "
          "DRM/NDAL, audio, gated HDMI RX status, inactive-source order, "

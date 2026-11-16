@@ -628,9 +628,13 @@ unvalidated.
       effects, then the core SIGSEGVed (`SIGNR:11`) before any completion
       (`mute -> 1` was the last log line; no core/fault address). REGRESSION:
       the off-loop worker/vendor HAL calls are not safe on hardware as built.
-      Stock restored by `reboot -f` and verified; logs in
-      `/buffer/oa-tv-accept-20261116`. On-TV acceptance and the fault analysis
-      remain open. Remaining: real decoder/scart/SPDIF/headphone/teletext/
+      Root cause found offline: `Hal_Video_Get_DrmPlaneInfo` writes 48 bytes
+      (DRM-PLANE-CONTRACT-2026-10-31, initially missed) into a 16-byte buffer;
+      fixed with a 16-word buffer/static assert, index guard, int-returning
+      wrapper and a raw `audio.effect` setter (no host API off-loop). Host suites
+      pass and ARM modules build. Stock restored by `reboot -f` and verified;
+      logs in `/buffer/oa-tv-accept-20261116`. On-TV retest and acceptance remain
+      open. Remaining: real decoder/scart/SPDIF/headphone/teletext/
       subtitles backends, any `SetConnectInfo` caller outside the analyzed paths and
       UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [x] Source switches emit `source/state`; `ui_vendor` updates the Bronlijst

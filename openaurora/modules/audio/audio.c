@@ -137,6 +137,19 @@ static int iface_set_mute(int on)
 {
     return g_ctx ? apply_mute(g_ctx, on) : -1;
 }
+/* Raw entry point for the off-loop effect worker. It must not touch the host
+ * API, caches or policy: those belong to the control loop. */
+static int iface_set_mute_raw(int on)
+{
+    uint32_t params[AUDIO_PARAM_WORDS];
+    memset(params, 0, sizeof params);
+    params[0] = 0; /* speaker 0; physical amp/routing ownership stays open */
+    params[1] = on ? 1u : 0u;
+    return Hal_Audio_Ctrl(0x35, params);
+}
+
+static const oa_audio_effect_iface g_effect_iface = { iface_set_mute_raw };
+
 static int iface_available(void)
 {
     return g_ctx ? g_ctx->enabled : 0;
@@ -226,6 +239,10 @@ static int m_start(void *v)
      * must preserve the peer's publication. */
     if (c->api->publish(c->api->priv, OA_SVC_AUDIO, 1, &g_iface)) return -1;
     c->published = 1;
+    if (c->api->publish(c->api->priv, OA_SVC_AUDIO_EFFECT, 1,
+                        &g_effect_iface))
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "audio.effect service already published");
     if (oa_audio_owner_create(&c->owner, settled, c) != 0) return -1;
     const char *force = c->api->config_get(c->api->priv, "audio.enable", NULL);
     if (force)
@@ -269,7 +286,10 @@ static void m_stop(void *v)
     int published = c->published;
     c->published = 0;
     c->enabled = 0;
-    if (published) c->api->unpublish(c->api->priv, OA_SVC_AUDIO);
+    if (published) {
+        c->api->unpublish(c->api->priv, OA_SVC_AUDIO_EFFECT);
+        c->api->unpublish(c->api->priv, OA_SVC_AUDIO);
+    }
     if (c->plat) {
         c->api->release(c->api->priv, OA_SVC_PLAT);
         c->plat = NULL;
@@ -324,7 +344,10 @@ static int m_quiesce(void *v)
     int published = c->published;
     c->published = 0;
     c->enabled = 0;
-    if (published) c->api->unpublish(c->api->priv, OA_SVC_AUDIO);
+    if (published) {
+        c->api->unpublish(c->api->priv, OA_SVC_AUDIO_EFFECT);
+        c->api->unpublish(c->api->priv, OA_SVC_AUDIO);
+    }
     if (c->plat) {
         c->api->release(c->api->priv, OA_SVC_PLAT);
         c->plat = NULL;

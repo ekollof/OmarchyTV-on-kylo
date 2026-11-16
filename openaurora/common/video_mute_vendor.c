@@ -12,12 +12,13 @@
  *   Hal_Video_VideoPath_to_PlaneType 0x4e7c468d
  *   Hal_Video_Get_DrmPlaneInfo       0x4e7c3465
  *   Hal_Video_Drm_Set_Mute           0x4e7c4a89
- * Hal_Video_Get_DrmPlaneInfo returns void in the shipped library, so the
- * wrapper reports success unconditionally, matching plat_drm_set_mute's
- * (ignored) return handling. */
+ * Hal_Video_Get_DrmPlaneInfo is int-returning (0 success, -1 if the shared
+ * record pointer is NULL) despite Ghidra's void prototype; see
+ * DRM-PLANE-CONTRACT-2026-10-31. It writes 48 bytes and does not validate
+ * the index, so callers must pass >=12 words and a slot < 9. */
 extern int Hal_Video_Get_DrmDeviceId(int index);
 extern int Hal_Video_VideoPath_to_PlaneType(int path);
-extern void Hal_Video_Get_DrmPlaneInfo(int plane_type, uint32_t *info);
+extern int Hal_Video_Get_DrmPlaneInfo(int plane_type, uint32_t *info);
 extern int Hal_Video_Drm_Set_Mute(int fd, unsigned plane, int enable, int on);
 
 static int vendor_drm_device_id(void *ud, int index)
@@ -36,8 +37,7 @@ static int vendor_get_plane_info(void *ud, int plane_type,
                                  uint32_t info[OA_VIDEO_MUTE_INFO_WORDS])
 {
     (void)ud;
-    Hal_Video_Get_DrmPlaneInfo(plane_type, info);
-    return 0;
+    return Hal_Video_Get_DrmPlaneInfo(plane_type, info);
 }
 
 static int vendor_drm_set_mute(void *ud, int fd, unsigned plane, int enable,

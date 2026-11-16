@@ -3666,5 +3666,10 @@ SIGSEGVed (`SIGNR:11`) before completions. No core/fault address. Stock was
 restored with `reboot -f` and verified (appmgr 1573, run_aurora 1740, aurora
 1790, no staging/helper, /conf unchanged). Evidence:
 `/buffer/oa-tv-accept-20261116`, `SOURCE-LOSS-FALLBACK` executed-acceptance
-section. Next entry point: diagnose the worker/vendor-HAL crash before any
-further on-TV effect run.
+section. 2026-11-16 offline follow-up (delegate-assisted): root cause was the
+48-byte `Hal_Video_Get_DrmPlaneInfo` write into a 16-byte buffer; fixed with a
+16-word buffer/static assert, index guard, int-returning wrapper, and a raw
+`audio.effect` setter so the worker makes no host API calls. Host suites pass
+and ARM modules build; TV is in standby. Next entry point: re-stage the fixed
+ARM artifacts in a new owner-authorized window and repeat the display-select
+before closing the regression.

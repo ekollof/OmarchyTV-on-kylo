@@ -51,7 +51,9 @@ static int f_info(void *ud, int plane_type,
     rec(f, "info(%d)|", plane_type);
     if (f->fail_step == 3)
         return f->rc;
-    memset(info, 0, OA_VIDEO_MUTE_INFO_WORDS * sizeof *info);
+    /* The real HAL writes exactly 12 words (48 bytes), not just info[0]. */
+    for (int i = 0; i < OA_VIDEO_MUTE_INFO_WRITTEN_WORDS; i++)
+        info[i] = (uint32_t)(0xa500u + i);
     info[0] = f->plane;
     return 0;
 }
@@ -147,6 +149,12 @@ static void test_custom_path(void)
     oa_video_mute_init(&m, &io, 2);
     assert(oa_video_mute_set(&m, 1) == 0);
     assert(strstr(f.log, "path(2)|") != NULL);
+
+    /* The record table has 9 slots; the getter does not validate the index. */
+    f.plane_type = OA_VIDEO_MUTE_PLANE_SLOTS;
+    f.n = 0; f.log[0] = '\0';
+    assert(oa_video_mute_set(&m, 1) == -ERANGE);
+    assert(strstr(f.log, "info(") == NULL);
 }
 
 int main(void)

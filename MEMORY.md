@@ -152,7 +152,11 @@ Decoder-select is a state setter (`EASIControlTask::selectVideoDecoder` @
 `0x98d37c`), not a HAL effect. 2026-11-16 on-TV: owner-authorized window
 executed; staged core started with DRM init, first gated display-select queued
 four real effects, then SIGSEGV (`SIGNR:11`) before any completion (last log
-`mute -> 1`; no core/fault address). REGRESSION, no parity. Stock restored by
+`mute -> 1`; no core/fault address). REGRESSION, no parity. Offline root cause:
+the documented 48-byte `Hal_Video_Get_DrmPlaneInfo` write overflowed a 16-byte
+buffer; fixed with a 16-word buffer/static assert, plane-index guard,
+int-returning wrapper and raw `audio.effect` setter (no host API off-loop). Host
+suites pass, ARM modules build; on-TV retest pending. Stock restored by
 `reboot -f` and verified (appmgr 1573/run_aurora 1740/aurora 1790, no
 staging/helper, /conf unchanged, fb and device ownership stock); logs in
 `/buffer/oa-tv-accept-20261116`. Decoder/scart/SPDIF/headphone/teletext/
