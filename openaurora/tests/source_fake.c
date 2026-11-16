@@ -11,6 +11,7 @@
 #include "openaurora/source_hal.h"
 #include "openaurora/dev_gpio.h"
 #include "openaurora/source_vin.h"
+#include "openaurora/video_mute.h"
 #include "source_fake.h"
 
 static struct source_fake_event g_ev[256];
@@ -278,4 +279,40 @@ const struct oa_source_vin_io *oa_source_vin_io(void)
 const struct oa_dev_gpio_io *oa_dev_gpio_vendor_io(void)
 {
     return NULL;
+}
+
+/* Fake libNDAL3 video-mute chain. Mirrors plat_drm_set_mute's call order and
+ * arguments into the shared log for the source_path fake-service test. */
+static int f_vm_dev(void *ud, int index)
+{
+    (void)ud;
+    append_log("vm dev idx=%d", index);
+    return 17;
+}
+static int f_vm_path(void *ud, int path)
+{
+    (void)ud;
+    append_log("vm path=%d", path);
+    return 3;
+}
+static int f_vm_info(void *ud, int plane_type,
+                     uint32_t info[OA_VIDEO_MUTE_INFO_WORDS])
+{
+    (void)ud;
+    append_log("vm info pt=%d", plane_type);
+    info[0] = 42;
+    return 0;
+}
+static int f_vm_mute(void *ud, int fd, unsigned plane, int enable, int on)
+{
+    (void)ud;
+    append_log("vm mute fd=%d plane=%u en=%d on=%d", fd, plane, enable, on);
+    return 0;
+}
+static const oa_video_mute_io g_fake_vm = {
+    NULL, f_vm_dev, f_vm_path, f_vm_info, f_vm_mute
+};
+const oa_video_mute_io *oa_video_mute_vendor_io(void)
+{
+    return &g_fake_vm;
 }

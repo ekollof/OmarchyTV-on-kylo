@@ -135,9 +135,17 @@ wired into `mod_source` as `OA_SVC_TUNER_SELECT` behind default-off
 TV `mod_source.so` builds): mute drives the HAL-backed speaker mute service;
 other effects are counted unsupported, not faked. Mute mapping is a
 replacement policy (not proved firmware equivalence) and conflicts with
-mod_audio's CEC-SAM policy if both are enabled. Decoder/hide/show backends and
-on-TV acceptance remain open (TV in use per HANDOFF; explicit owner window
-required). Any `SetConnectInfo` caller outside the analyzed paths remains open. The status-4/HPD path is the
+mod_audio's CEC-SAM policy if both are enabled. 2026-11-16: a real video
+hide/show backend `common/video_mute.c` models the recovered
+`plat_drm_set_mute` @ `0x92cec8` chain (libNDAL3 Hal_Video_* calls, DRM ioctl
+`0xc00c6455`, main path 0); the vendor adapter binds libNDAL3 on ARM,
+`mod_source` publishes `OA_SVC_VIDEO_MUTE` behind default-off
+`source.video_mute` and the sink applies HIDE/SHOW (`check-video-mute`,
+fake-service `source_path`, TV `mod_source.so` builds). It is a real DRM ioctl,
+not scanout proof, and the synchronous loop call needs a worker. Decoder/
+scart/SPDIF/headphone/teletext/subtitles backends and on-TV acceptance remain
+open (TV in use per HANDOFF; explicit owner window required). Any
+`SetConnectInfo` caller outside the analyzed paths remains open. The status-4/HPD path is the
 cable-unplug policy; `source.video_status` is a no-signal detector, not the
 sleep trigger. `source.video_status()` v2 is now
 host-tested behind `source.vin_status` (`check-source-vin` and the fake-module

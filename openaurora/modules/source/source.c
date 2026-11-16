@@ -33,6 +33,7 @@
 #include "openaurora/dev_gpio.h"
 #include "openaurora/easi_effects.h"
 #include "openaurora/easi_sink.h"
+#include "openaurora/video_mute.h"
 
 #include "openaurora/events.h"
 #include "openaurora/module.h"
@@ -111,6 +112,9 @@ struct ctx {
     /* source.tuner_select_sink: real consumer of the emitted effects. */
     int sink_enabled;
     oa_easi_sink sink;
+    /* source.video_mute: real DRM video mute (plat_drm_set_mute chain). */
+    int vm_enabled;
+    oa_video_mute vm;
 };
 
 static struct ctx *g_ctx;
@@ -643,6 +647,15 @@ static int sink_apply(void *ud, enum oa_easi_effect effect, int arg)
 {
     struct ctx *c = ud;
     (void)arg;
+    if (effect == OA_EASI_HIDE_VIDEO || effect == OA_EASI_SHOW_VIDEO) {
+        if (!c->vm_enabled)
+            return OA_EASI_UNSUPPORTED;
+        /* Synchronous HAL call — acceptable for the gated host test path,
+         * but this must move to a worker before hardware acceptance. */
+        return oa_video_mute_set(&c->vm,
+                                 effect == OA_EASI_HIDE_VIDEO ? 1 : 0) == 0
+                   ? OA_EASI_APPLIED : OA_EASI_FAILED;
+    }
     if (effect != OA_EASI_MUTE_ON && effect != OA_EASI_MUTE_OFF)
         return OA_EASI_UNSUPPORTED;
     const oa_audio_iface *a = c->api->lookup(c->api->priv, OA_SVC_AUDIO, 1);
@@ -694,6 +707,26 @@ static int iface_tuner_select_sink_status(oa_easi_sink_state *out)
 static const oa_tuner_select_iface g_tuner_select_iface = {
     iface_tuner_select_display, iface_tuner_select_state,
     iface_tuner_select_sink_status
+};
+
+static int iface_video_mute_set_hidden(int on)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->vm_enabled)
+        return -2;
+    return oa_video_mute_set(&c->vm, on);
+}
+
+static int iface_video_mute_state(oa_video_mute_state *out)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->vm_enabled)
+        return -2;
+    return oa_video_mute_snapshot(&c->vm, out);
+}
+
+static const oa_video_mute_iface g_video_mute_iface = {
+    iface_video_mute_set_hidden, iface_video_mute_state
 };
 
 static int m_init(const oa_host_api *api, void **out)
@@ -873,6 +906,27 @@ static int m_start(void *v)
         c->api->log(c->api->priv, OA_LOG_INFO,
                     "tuner.select: real effect sink enabled (mute via audio)");
     }
+    const char *vm = c->api->config_get(c->api->priv, "source.video_mute", "0");
+    c->vm_enabled = vm && atoi(vm) != 0;
+    if (c->vm_enabled) {
+        const oa_video_mute_io *vio = oa_video_mute_vendor_io();
+        if (!vio) {
+            c->vm_enabled = 0;
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "video.mute: no vendor backend in this build");
+        }
+        oa_video_mute_init(&c->vm, vio, OA_VIDEO_MUTE_PATH_MAIN);
+        if (c->vm_enabled &&
+            c->api->publish(c->api->priv, OA_SVC_VIDEO_MUTE, 1,
+                            &g_video_mute_iface) != 0) {
+            c->vm_enabled = 0;
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "video.mute service already published");
+        } else if (c->vm_enabled) {
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "video.mute: DRM main-video mute enabled");
+        }
+    }
     if (c->effects_enabled) {
         const oa_easi_effects_io io = { c, effects_emit };
         oa_easi_effects_init(&c->effects, &io);
@@ -954,6 +1008,11 @@ static int m_quiesce(void *v)
         c->effects_enabled = 0;
     }
     c->sink_enabled = 0;
+    if (c->vm_enabled) {
+        c->api->release(c->api->priv, OA_SVC_VIDEO_MUTE);
+        c->api->unpublish(c->api->priv, OA_SVC_VIDEO_MUTE);
+        c->vm_enabled = 0;
+    }
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
     if (c->nfds == 0) return 0;
@@ -1007,6 +1066,11 @@ static void m_stop(void *v)
         c->effects_enabled = 0;
     }
     c->sink_enabled = 0;
+    if (c->vm_enabled) {
+        c->api->release(c->api->priv, OA_SVC_VIDEO_MUTE);
+        c->api->unpublish(c->api->priv, OA_SVC_VIDEO_MUTE);
+        c->vm_enabled = 0;
+    }
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
     if (c->cleanup_running) {

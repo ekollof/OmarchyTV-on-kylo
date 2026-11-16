@@ -473,6 +473,41 @@ verifies that a gated display-select reaches the fake audio service twice
 the gate produces no audio call and a `-2` status. Full host suite passes
 (rc=0) and the TV `mod_source.so` builds. No hardware effect was executed.
 
+### Real video hide/show backend (2026-11-16)
+
+`include/openaurora/video_mute.h` / `common/video_mute.c` implement the
+callable HAL-level effect beneath EASI `hideVideo`/`showVideo`, recovered from
+the shipped binaries (aurora.elf MD5 `64c252340d3af6c5d66072611b7bad7a`,
+libNDAL3.so):
+
+- `plat_drm_set_mute(u8Path, b8isMuteOn)` @ `0x0092cec8` calls, in order,
+  `Hal_Video_Get_DrmDeviceId(0)`, `Hal_Video_VideoPath_to_PlaneType(path)`,
+  `Hal_Video_Get_DrmPlaneInfo(plane_type, info)` and
+  `Hal_Video_Drm_Set_Mute(fd, info[0], 1, on)` (libNDAL3 @ `0x4e7c3201`,
+  `0x4e7c468d`, `0x4e7c3465`, `0x4e7c4a89`).
+- `Hal_Video_Drm_Set_Mute` builds `{plane, enable=1, on}` and issues
+  `Hal_Video_Libdrm_drmIoctl(fd, 0xc00c6455, ...)` — a real DRM plane mute.
+- Main video uses path 0: `_ice_ApplyVideoPatterns` @ `0x77a2ee` calls
+  `PLAT_VOUT_EnableBlueScreen(0, on)`, and `ICE_VideoHide` @ `0x007d8cb0`
+  routes through that blue-screen path. The EASI methods themselves need live
+  C++ objects, so this HAL chain is the replacement seam.
+
+`common/video_mute_vendor.c` binds the four libNDAL3 symbols for ARM builds
+(no-op under `OA_NO_VENDOR`; host tests inject fakes). `mod_source` publishes
+`OA_SVC_VIDEO_MUTE` behind default-off `source.video_mute` and the EASI sink
+now applies `HIDE_VIDEO`/`SHOW_VIDEO` through this backend; without the gate
+they stay unsupported. `check-video-mute` asserts the exact chain order,
+path/plane/fd arguments, hide/show state and per-step failure isolation; the
+fake-service `source_path` test drives the gated service and the sink wiring
+(the fake log shows `vm dev idx=0`, `vm path=0`,
+`vm mute fd=17 plane=42 en=1 on=0/1`). Full suite passes (rc=0) and the TV
+`mod_source.so` builds against libNDAL3.
+
+Limits: a successful ioctl is not visual/scanout proof; the call is currently
+synchronous on the control loop and must move to a worker before hardware
+acceptance; `PLAT_VOUT_EnableBlueScreen(0)` is inferred as main video from its
+call sites rather than a vendor constant; no TV operation was performed.
+
 ### Controlled on-TV acceptance plan (blocked — not executed)
 
 The model, its effect backend and the mute consumer are host-tested only.
@@ -496,12 +531,16 @@ use this plan with full stock restoration:
    successful connection; remove all staging afterwards.
 3. With explicit authorization, use a bounded display-owned window: stop stock
    Aurora only if permitted, enable `source.tuner_select_effects=1` and
-   `source.tuner_select_sink=1`, and drive one `OA_SVC_TUNER_SELECT.display()`;
-   capture the emitted effect trace, the sink's applied/unsupported counters
-   and the state snapshot. Observe the real speaker-mute change via the audio
-   service and compare the full trace with the stock mute/decoder/hide/show
-   and `DAT_*` flag effects. Decoder/hide/show remain unsupported until real
-   backends exist, so they can only be compared as traced requests. Also
+   `source.tuner_select_sink=1` and `source.video_mute=1`, and drive one
+   `OA_SVC_TUNER_SELECT.display()`; capture the emitted effect trace, the
+   sink's applied/unsupported counters and the state snapshot. Observe the
+   real speaker-mute change via the audio service and the DRM plane mute via
+   `video.mute state`, and compare the full trace with the stock
+   mute/decoder/hide/show and `DAT_*` flag effects. Decoder/scart/SPDIF/
+   headphone/teletext/subtitles remain unsupported until real backends exist,
+   so they can only be compared as traced requests. Confirm `plat.drm_init`
+   succeeded and resolve the synchronous-loop limitation before this step.
+   Also
    verify no CEC System Audio Mode conflict before enabling the sink gate.
    Then restore stock operation and access. Keep watchdog handling and a
    recovery reboot available per AGENTS.md; never leave a watchdog disabled

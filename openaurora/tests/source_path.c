@@ -29,6 +29,8 @@ static int vin_gate;
 static int inactive_gate;
 static int effects_gate;
 static int sink_gate;
+static int vm_gate;
+static const oa_video_mute_iface *vm_iface;
 static int audio_mute_calls;
 static int audio_last_mute;
 static int pos;
@@ -160,6 +162,7 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "source.inactive_fallback")) return inactive_gate ? "1" : "0";
     if (!strcmp(key, "source.tuner_select_effects")) return effects_gate ? "1" : "0";
     if (!strcmp(key, "source.tuner_select_sink")) return sink_gate ? "1" : "0";
+    if (!strcmp(key, "source.video_mute")) return vm_gate ? "1" : "0";
     if (!strcmp(key, "source.cleanup_delay_ms")) return "0";
     return def;
 }
@@ -171,6 +174,11 @@ static int publish(void *p, const char *name, uint32_t version, const void *ifc)
         select_iface = ifc;
         return 0;
     }
+    if (!strcmp(name, OA_SVC_VIDEO_MUTE)) {
+        assert(version == 1);
+        vm_iface = ifc;
+        return 0;
+    }
     assert(!strcmp(name, OA_SVC_SOURCE) && version == 3);
     iface = ifc;
     return 0;
@@ -180,6 +188,10 @@ static int unpublish(void *p, const char *name)
     (void)p;
     if (!strcmp(name, OA_SVC_TUNER_SELECT)) {
         select_iface = NULL;
+        return 0;
+    }
+    if (!strcmp(name, OA_SVC_VIDEO_MUTE)) {
+        vm_iface = NULL;
         return 0;
     }
     assert(!strcmp(name, OA_SVC_SOURCE));
@@ -572,8 +584,51 @@ int main(void)
     assert(audio_mute_calls == 0);
     done(ctx);
 
+    /* Real video hide/show backend: the EASI HIDE/SHOW effects drive the
+     * recovered plat_drm_set_mute chain through the fake libNDAL3 io, and the
+     * video.mute service reports the last accepted transaction. */
+    effects_gate = 1;
+    sink_gate = 1;
+    vm_gate = 1;
+    ctx = start(1);
+    assert(vm_iface != NULL);
+    oa_video_mute_state vmst;
+    assert(vm_iface->state(&vmst) == 0 && vmst.hidden == -1);
+    assert(vm_iface->set_hidden(1) == 0);
+    assert(vm_iface->state(&vmst) == 0 && vmst.hidden == 1 &&
+           vmst.last_on == 1 && vmst.last_fd == 17 && vmst.last_plane == 42);
+    assert(strstr(source_fake_log_text(), "vm mute fd=17 plane=42 en=1 on=1") != NULL);
+    assert(vm_iface->set_hidden(0) == 0);
+    assert(vm_iface->state(&vmst) == 0 && vmst.hidden == 0 && vmst.calls == 2);
+
+    /* With the sink enabled, a display-select now applies hide and show too. */
+    reset();
+    audio_mute_calls = 0;
+    assert(select_iface != NULL);
+    assert(select_iface->display(&cin, &cout) == 0);
+    assert(cout.pre_mute_applied && cout.show_applied);
+    oa_easi_sink_state ss2;
+    assert(select_iface->sink_status(&ss2) == 0);
+    assert(ss2.applied >= 4); /* mute_on/off + hide/show */
+    assert(ss2.unsupported > 0); /* scart/SPDIF/decoder/teletext/subtitles */
+    assert(strstr(source_fake_log_text(), "vm dev idx=0") != NULL);
+    assert(strstr(source_fake_log_text(), "vm path=0") != NULL);
+    done(ctx);
+    assert(vm_iface == NULL);
+
+    /* Video-mute gate off: no service, hide/show fall back to unsupported. */
+    vm_gate = 0;
+    ctx = start(1);
+    assert(vm_iface == NULL);
+    assert(select_iface != NULL);
+    assert(select_iface->sink_status(&ss2) == 0);
+    assert(select_iface->display(&cin, &cout) == 0);
+    assert(select_iface->sink_status(&ss2) == 0);
+    assert(ss2.unsupported >= 2); /* hide/show now unsupported */
+    done(ctx);
+
     puts("ok source path: type gates, VIN opens/VPLT, V4L2Info/FdCommon, "
          "DRM/NDAL, audio, gated HDMI RX status, inactive-source order, "
-         "gated tuner.select effects and real EASI consumer");
+         "gated tuner.select effects, real EASI consumer and DRM video mute");
     return 0;
 }

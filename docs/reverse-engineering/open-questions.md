@@ -104,9 +104,15 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   `source.tuner_select_sink` (`check-easi-sink`, fake-service `source_path`):
   mute drives the HAL-backed speaker mute, other effects are counted
   unsupported. The mute mapping is a replacement policy (not proved firmware
-  equivalence) and conflicts with mod_audio's CEC-SAM policy; decoder/hide/
-  show backends, on-TV acceptance (TV in use) and UI/timing remain open. The
-  vendor EASI methods need live C++ objects and cannot be called directly. The source service
+  equivalence) and conflicts with mod_audio's CEC-SAM policy. A real video
+  hide/show backend `common/video_mute.c` models the recovered
+  `plat_drm_set_mute` @ `0x92cec8` chain (libNDAL3 Hal_Video_* calls, DRM ioctl
+  `0xc00c6455`, main path 0) behind default-off `source.video_mute`
+  (`check-video-mute`, fake-service `source_path`); it is a real DRM ioctl but
+  synchronous on the loop and not scanout proof. Decoder/scart/SPDIF/
+  headphone/teletext/subtitles backends, a sink worker, on-TV acceptance
+  (TV in use) and UI/timing remain open. The vendor EASI methods need live
+  C++ objects and cannot be called directly. The source service
   now exposes the read-only `video_status()` v2 behind `source.vin_status`; it
   is host-tested but not wired to a tuner and is a no-signal detector, not the
   sleep trigger. `common/tuner_view.c` + `check-tuner-view` cover the recovered

@@ -1785,8 +1785,17 @@ every other effect as unsupported instead of faking success (`check-easi-sink`
 and the fake-service `source_path` test pass, TV `mod_source.so` builds). The
 vendor EASI methods still need live C++ objects; the mute mapping is a
 replacement policy, not a proved firmware path, and mod_audio's CEC System
-Audio policy conflicts if both are enabled. Decoder/hide/show have no real
-backend; on-TV validation is blocked while the TV is in use. No parity claim.
+Audio policy conflicts if both are enabled. 2026-11-16: `common/video_mute.c` adds a real video hide/show backend from the
+firmware `plat_drm_set_mute` @ `0x92cec8` chain: `Hal_Video_Get_DrmDeviceId`,
+`VideoPath_to_PlaneType`, `Get_DrmPlaneInfo` and `Hal_Video_Drm_Set_Mute` ( DRM
+ioctl `0xc00c6455`, path 0 for main video). `common/video_mute_vendor.c` binds
+the four libNDAL3 symbols on ARM; `mod_source` publishes `OA_SVC_VIDEO_MUTE`
+behind default-off `source.video_mute` and the sink applies HIDE/SHOW through
+it (`check-video-mute`, fake-service `source_path`, full suite rc=0, TV
+`mod_source.so` builds). This is a real DRM ioctl, not visual/scanout proof;
+the call is synchronous on the loop and needs a worker before acceptance.
+Decoder/scart/SPDIF/headphone/teletext/subtitles still have no real backend;
+on-TV validation is blocked while the TV is in use. No parity claim.
 SOURCE-LOSS-FALLBACK. |
 | Pre-stock hook SSH is reliable enough to coordinate a long CEC test | Boot 6's pre-stock eth0/DHCP failed (`Network is down`), the armed raw-RX monitor waited with no `/tmp/cec-go` trigger, and the TV required USB recovery. The monitor sent nothing. Use a short fixed capture window with unconditional stock fallthrough; never gate a pre-stock test on SSH. CEC-FIRST-OPENER. |
 | Normal CEC frames use MCU UART / ttyS2 | Private V4L2 controls feed ntkdriver_nondovi CEC. MCU enable/wake/authority is separate; UART reads would steal input. CEC-TRANSPORT-CONTRACT. |

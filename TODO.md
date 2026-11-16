@@ -592,11 +592,19 @@ unvalidated.
       `OA_SVC_AUDIO.set_mute`, other effects are counted unsupported
       (`check-easi-sink`, fake-service `source_path`, TV `mod_source.so`
       builds). Mute mapping is a replacement policy, not proved firmware
-      equivalence; CEC-SAM policy conflict and decoder/hide/show backends are
-      open. On-TV validation blocked while TV is in use (HANDOFF); needs an
-      explicit owner-authorized window with stock restoration. Remaining: real
-      decoder/hide/show/scart/SPDIF backends, any `SetConnectInfo` caller
-      outside the analyzed paths and UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
+      equivalence; CEC-SAM policy conflict remains open. 2026-11-16: a real
+      video hide/show backend `common/video_mute.c` models the recovered
+      `plat_drm_set_mute` @ `0x92cec8` chain (libNDAL3 Hal_Video_* calls, DRM
+      ioctl `0xc00c6455`, main path 0); `common/video_mute_vendor.c` binds
+      libNDAL3 on ARM, `mod_source` publishes `OA_SVC_VIDEO_MUTE` behind
+      default-off `source.video_mute` and the sink applies HIDE/SHOW
+      (`check-video-mute`, fake-service `source_path`, TV `mod_source.so`
+      builds). Real DRM ioctl, not scanout proof; synchronous loop call needs
+      a worker. On-TV validation blocked while TV is in use (HANDOFF); needs
+      an explicit owner-authorized window with stock restoration. Remaining:
+      real decoder/scart/SPDIF/headphone/teletext/subtitles backends, the sink
+      worker, any `SetConnectInfo` caller outside the analyzed paths and
+      UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [x] Source switches emit `source/state`; `ui_vendor` updates the Bronlijst
       row, `m_current_source`, picture cards and repaints; `ui_omarchy`
       repaints. `common/source_map.c` + `check-source-map` cover the nine-row

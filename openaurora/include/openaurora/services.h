@@ -20,6 +20,7 @@
 #include "openaurora/tuner_select.h"
 #include "openaurora/easi_effects.h"
 #include "openaurora/easi_sink.h"
+#include "openaurora/video_mute.h"
 
 #include <stdint.h>
 
@@ -531,6 +532,16 @@ typedef struct {
     int (*state)(oa_easi_effects_state *out);
     int (*sink_status)(oa_easi_sink_state *out); /* v2 */
 } oa_tuner_select_iface;
+
+/* video.mute — real main-video mute from the recovered plat_drm_set_mute
+ * chain (DRM ioctl 0xc00c6455). Published by mod_source when
+ * source.video_mute=1. set_hidden(1) hides/mutes the video, 0 restores it;
+ * state() reports the last accepted transaction. No scanout proof. */
+#define OA_SVC_VIDEO_MUTE "video.mute"
+typedef struct {
+    int (*set_hidden)(int on);
+    int (*state)(oa_video_mute_state *out);
+} oa_video_mute_iface;
 
 /* ui.anim — recovered list/dialog animation. Published by mod_ui_anim.
  * set_enabled only writes the flag. start() reads ui.clock and rejects a
