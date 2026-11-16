@@ -4489,3 +4489,12 @@ and the project SPI transport under qemu, asserting address 0x34 read data
 model data only; no controller, chip register or electrical bus effect.
 I2C/SPI hardware, VIN/V4L2 formats, on-TV acceptance and stock parity remain
 open (TV in use per HANDOFF).
+
+EARPHONE-WIRING-2026-11-16: the recovered GPIO117 detector is wired into
+`mod_source` behind default-off `source.earphone=1` (optional
+`source.earphone_board_type`). A worker polls every 100 ms using the DEV GPIO
+provider and records events under a mutex; a 100 ms loop timer emits
+`OA_TOPIC_EARPHONE` with plugin 1/0. No host API is called off-loop and no
+event-17 audio routing is invented. `check-earphone` and the fake-service
+`source_path` test pass, full suite rc=0, ARM `mod_source.so` 190e09fe... builds.
+Live GPIO ownership and a physical jack test remain open (TV in standby).

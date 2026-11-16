@@ -73,9 +73,12 @@ maps the cold-start stages and the current stock-UI coverage.
       retained-image compare, Init/Mute(0); check-amp-owner-monitor and
       check-audio-amp-monitor-wiring pass); subwoofer IsAlive is literal
       return1; vendor double-read/0-1 quirk and live owner read open), the
-      GPIO earphone detector
-      (implemented/tested in `common/earphone.c`; GPIO117/100ms/board17/event
-      17; event-17 audio routing open)
+      GPIO earphone detector (implemented in `common/earphone.c` and wired in
+      2026-11-16 into `mod_source` behind default-off `source.earphone=1`:
+      worker polls GPIO117/100ms/board17 and a loop timer emits
+      `OA_TOPIC_EARPHONE`; `check-earphone` plus fake-service `source_path`
+      pass, ARM `mod_source.so` `190e09fe…` builds); event-17 audio routing
+      and live GPIO ownership open
       and non-layout-14 panel/TCON branches. Next: decide HAL-only acceptance vs
       those device-layer equivalents, then run the no-UI hardware ladder.
       Report: COLD-START-SEQUENCE-2026-11-10. Do not use UI paint as cold-start

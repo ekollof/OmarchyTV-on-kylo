@@ -33,6 +33,7 @@
 #include "openaurora/dev_gpio.h"
 #include "openaurora/easi_effects.h"
 #include "openaurora/easi_sink.h"
+#include "openaurora/earphone.h"
 #include "openaurora/video_mute.h"
 #include "openaurora/effect_worker.h"
 
@@ -120,6 +121,18 @@ struct ctx {
     /* source.video_mute: real DRM video mute (plat_drm_set_mute chain). */
     int vm_enabled;
     oa_video_mute vm;
+    /* source.earphone: GPIO 117 detector on a 100 ms worker. Detection only;
+     * no audio routing is invented for the vendor event-17 consumer. */
+    int earphone_enabled;
+    pthread_t earphone_thread;
+    int earphone_running;
+    int earphone_stop;
+    struct oa_dev_gpio earphone_gpio;
+    oa_earphone earphone;
+    pthread_mutex_t earphone_mu;
+    uint8_t earphone_events[16];
+    unsigned earphone_head, earphone_tail, earphone_fails;
+    uint32_t earphone_timer;
 };
 
 static struct ctx *g_ctx;
@@ -781,6 +794,23 @@ static const oa_video_mute_iface g_video_mute_iface = {
     iface_video_mute_set_hidden, iface_video_mute_state
 };
 
+static void stop_earphone(struct ctx *c)
+{
+    if (!c->earphone_enabled && !c->earphone_running)
+        return;
+    c->earphone_stop = 1;
+    if (c->earphone_running) {
+        (void)pthread_join(c->earphone_thread, NULL);
+        c->earphone_running = 0;
+    }
+    if (c->earphone_timer) {
+        c->api->timer_del(c->api->priv, c->earphone_timer);
+        c->earphone_timer = 0;
+    }
+    oa_dev_gpio_close(&c->earphone_gpio);
+    c->earphone_enabled = 0;
+}
+
 static void stop_effect_worker(struct ctx *c)
 {
     if (!c->effect_worker)
@@ -793,6 +823,89 @@ static void stop_effect_worker(struct ctx *c)
         c->api->release(c->api->priv, OA_SVC_AUDIO_EFFECT);
         c->audio_effect = NULL;
     }
+}
+
+/* Earphone detector: all host API calls stay on the loop. The worker only
+ * reads the GPIO and records pending events under a mutex; a loop timer emits
+ * them. No vendor event-17 audio routing is invented. */
+static int earphone_desc(void *ud, int gpio_id, int *pin, int *normal,
+                         int *active)
+{
+    struct ctx *c = ud;
+    struct oa_gpio_desc d;
+    int rc = oa_dev_gpio_describe(&c->earphone_gpio, gpio_id, &d);
+    if (rc != 1)
+        return rc;
+    *pin = d.pin;
+    *normal = d.normal;
+    *active = d.active;
+    return 1;
+}
+
+static int earphone_level(void *ud, int pin, int *level)
+{
+    struct ctx *c = ud;
+    return oa_dev_gpio_get_level(&c->earphone_gpio, pin, level);
+}
+
+static void earphone_event(void *ud, int plugin)
+{
+    struct ctx *c = ud;
+    pthread_mutex_lock(&c->earphone_mu);
+    unsigned next = (c->earphone_tail + 1) % 16;
+    if (next != c->earphone_head) {
+        c->earphone_events[c->earphone_tail] = plugin ? 1u : 0u;
+        c->earphone_tail = next;
+    }
+    pthread_mutex_unlock(&c->earphone_mu);
+}
+
+static void earphone_delay(void *ud, unsigned ms)
+{
+    (void)ud;
+    const struct timespec pause = {
+        .tv_sec = ms / 1000u,
+        .tv_nsec = (long)(ms % 1000u) * 1000000L
+    };
+    (void)nanosleep(&pause, NULL);
+}
+
+static void earphone_log(void *ud, const char *fmt, ...)
+{
+    (void)ud; (void)fmt; /* worker must not call the host API */
+}
+
+static void *earphone_worker(void *v)
+{
+    struct ctx *c = v;
+    const oa_earphone_ops ops = { c, earphone_desc, earphone_level,
+                                  earphone_event, earphone_delay, earphone_log };
+    while (!c->earphone_stop) {
+        if (oa_earphone_poll(&c->earphone, &ops) < 0) {
+            pthread_mutex_lock(&c->earphone_mu);
+            c->earphone_fails++;
+            pthread_mutex_unlock(&c->earphone_mu);
+        }
+    }
+    return NULL;
+}
+
+static void earphone_tick(void *ud)
+{
+    struct ctx *c = ud;
+    if (!c || !c->api)
+        return;
+    pthread_mutex_lock(&c->earphone_mu);
+    while (c->earphone_head != c->earphone_tail) {
+        oa_earphone_event ev = { c->earphone_events[c->earphone_head] };
+        c->earphone_head = (c->earphone_head + 1) % 16;
+        pthread_mutex_unlock(&c->earphone_mu);
+        c->api->emit(c->api->priv, OA_TOPIC_EARPHONE, &ev);
+        c->api->log(c->api->priv, OA_LOG_INFO, "source: earphone %s",
+                    ev.plugin ? "plugin" : "plugout");
+        pthread_mutex_lock(&c->earphone_mu);
+    }
+    pthread_mutex_unlock(&c->earphone_mu);
 }
 
 static int m_init(const oa_host_api *api, void **out)
@@ -810,6 +923,7 @@ static int m_init(const oa_host_api *api, void **out)
     c->vin_io = oa_source_vin_io();
     c->vin_fd = -1;
     c->vin_ready = -1;
+    (void)pthread_mutex_init(&c->earphone_mu, NULL);
     *out = c;
     g_ctx = c;
     return 0;
@@ -1011,6 +1125,34 @@ static int m_start(void *v)
             c->api->log(c->api->priv, OA_LOG_INFO,
                         "tuner.select: pure display-select effects enabled");
     }
+    const char *earphone = c->api->config_get(c->api->priv,
+                                              "source.earphone", "0");
+    c->earphone_enabled = earphone && atoi(earphone) != 0;
+    if (c->earphone_enabled) {
+        const struct oa_dev_gpio_io *gpio = oa_dev_gpio_vendor_io();
+        int rc = gpio ? oa_dev_gpio_open(&c->earphone_gpio, gpio) : -ENOTSUP;
+        long board = atol(c->api->config_get(c->api->priv,
+                                             "source.earphone_board_type", "0"));
+        const oa_earphone_ops eops = { c, earphone_desc, earphone_level,
+                                       earphone_event, earphone_delay,
+                                       earphone_log };
+        if (rc == 0)
+            rc = oa_earphone_init(&c->earphone, &eops, (int)board, -1);
+        if (rc || pthread_create(&c->earphone_thread, NULL,
+                                 earphone_worker, c) != 0) {
+            if (rc == 0)
+                oa_dev_gpio_close(&c->earphone_gpio);
+            c->earphone_enabled = 0;
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "source: earphone detector unavailable (%d)", rc);
+        } else {
+            c->earphone_running = 1;
+            c->earphone_timer = c->api->timer_add(c->api->priv, 0, 100,
+                                                  earphone_tick, c);
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "source: earphone GPIO 117 detector enabled");
+        }
+    }
     if (c->api->publish(c->api->priv, OA_SVC_SOURCE, 3, &g_iface) != 0)
         c->api->log(c->api->priv, OA_LOG_WARN, "source service already published");
 
@@ -1059,6 +1201,21 @@ static int m_quiesce(void *v)
         if (rc == EBUSY)
             return -EAGAIN;
         c->pulse_running = 0;
+    }
+    if (c->earphone_enabled || c->earphone_running) {
+        c->earphone_stop = 1;
+        if (c->earphone_running) {
+            int rc = pthread_tryjoin_np(c->earphone_thread, NULL);
+            if (rc == EBUSY)
+                return -EAGAIN;
+            c->earphone_running = 0;
+        }
+        if (c->earphone_timer) {
+            c->api->timer_del(c->api->priv, c->earphone_timer);
+            c->earphone_timer = 0;
+        }
+        oa_dev_gpio_close(&c->earphone_gpio);
+        c->earphone_enabled = 0;
     }
     if (c->cleanup_running) {
         for (int i = 0; i < 10; i++) {
@@ -1136,6 +1293,7 @@ static int m_quiesce(void *v)
 static void m_stop(void *v)
 {
     struct ctx *c = v;
+    stop_earphone(c);
     if (c->pulse_running) {
         (void)pthread_join(c->pulse_thread, NULL);
         c->pulse_running = 0;
@@ -1170,6 +1328,7 @@ static void m_stop(void *v)
 static void m_destroy(void *v)
 {
     struct ctx *c = v;
+    stop_earphone(c);
     stop_effect_worker(c);
     if (c->pulse_running) {
         (void)pthread_join(c->pulse_thread, NULL);
@@ -1183,6 +1342,7 @@ static void m_destroy(void *v)
     close_fds(c);
     if (g_ctx == v)
         g_ctx = NULL;
+    pthread_mutex_destroy(&c->earphone_mu);
     free(v);
 }
 

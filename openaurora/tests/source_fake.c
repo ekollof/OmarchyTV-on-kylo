@@ -3,7 +3,9 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+#include <errno.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -274,11 +276,66 @@ const struct oa_source_vin_io *oa_source_vin_io(void)
     return &g_fake_vin;
 }
 
-/* The fake source build has no vendor GPIO transport; the hotplug pulse is
- * only started behind source.hotplug_pulse and source.enable. */
+/* Fake DEV GPIO transport for the gated hotplug pulse and earphone detector.
+ * The descriptor buffer is the recovered 0x88-byte record with the DTS name
+ * pointer at +0x80; only EARPHONE and HDMI_HOTPLUG_* names are described. */
+static int fake_earphone_level;
+static int fake_gpio_open(void *ud) { (void)ud; return 200; }
+static int fake_gpio_close(void *ud, int fd)
+{ (void)ud; (void)fd; return 0; }
+static int fake_gpio_ioctl_desc(void *ud, int fd, unsigned long cmd, void *buf)
+{
+    (void)ud; (void)fd; (void)cmd;
+    unsigned char *b = buf;
+    uintptr_t np = 0;
+    if (!b) return -1;
+    memcpy(&np, b + 0x80, sizeof np);
+    const char *name = (const char *)(uintptr_t)np;
+    if (!name) return -1;
+    uint32_t pin;
+    if (!strcmp(name, "EARPHONE")) pin = 117;
+    else if (!strcmp(name, "HDMI_HOTPLUG_1")) pin = 274;
+    else if (!strcmp(name, "HDMI_HOTPLUG_2")) pin = 275;
+    else if (!strcmp(name, "HDMI_HOTPLUG_3")) pin = 276;
+    else if (!strcmp(name, "HDMI_HOTPLUG_4")) pin = 277;
+    else { append_log("gpio_desc_missing name=%s", name); return -1; }
+    memset(b, 0, 0x88);
+    memcpy(b, &pin, sizeof pin);
+    memcpy(b + 0x08, "input", 5);
+    memcpy(b + 0x20, "low", 3);
+    memcpy(b + 0x38, "high", 4);
+    memcpy(b + 0x50, "default", 7);
+    memcpy(b + 0x68, "no_int", 6);
+    append_log("gpio_desc name=%s pin=%u", name, pin);
+    return 0;
+}
+static int fake_gpio_read_level(void *ud, int pin, int *level)
+{
+    (void)ud;
+    if (!level) return -EINVAL;
+    if (pin != 117) return -EINVAL;
+    *level = fake_earphone_level;
+    append_log("earphone level=%d", fake_earphone_level);
+    return 0;
+}
+static int fake_gpio_write_level(void *ud, int pin, int level)
+{
+    (void)ud;
+    if (pin != 117) return -EINVAL;
+    fake_earphone_level = level;
+    return 0;
+}
+static const struct oa_dev_gpio_io g_fake_dev_gpio = {
+    NULL, fake_gpio_open, fake_gpio_close, fake_gpio_ioctl_desc,
+    fake_gpio_read_level, fake_gpio_write_level
+};
 const struct oa_dev_gpio_io *oa_dev_gpio_vendor_io(void)
 {
-    return NULL;
+    return &g_fake_dev_gpio;
+}
+void source_fake_set_earphone_level(int level)
+{
+    fake_earphone_level = level ? 1 : 0;
 }
 
 /* Fake libNDAL3 video-mute chain. Mirrors plat_drm_set_mute's call order and

@@ -1,7 +1,7 @@
 # Earphone detector recovery — 2026-11-11
 
-Status: current
-Last verified: 2026-11-11
+Status: current (detector wired into mod_source 2026-11-16)
+Last verified: 2026-11-16 (default-off wiring, host fake-service tests, ARM build)
 Evidence class: firmware instructions, live read-only descriptor query, host
 tests. No audio effect and no GPIO read/write on hardware.
 Supersedes: the "GPIO earphone handler still open" wording for the detector
@@ -78,9 +78,18 @@ stock operation.
 - **Detector only.** Event 17 is delivered to a callback; no speaker mute,
   headphone routing, lineout switch, volume/balance or UI indication is
   implemented.
-- The production detector is not wired to a module or timer yet. GPIO 117 is
-  below 200, so `Hal_Gpio_Read` would export/claim the pin; a future owner
-  must serialize it under the GPIO/audio owner, not the host loop.
+- 2026-11-16: the detector is wired into `mod_source` behind default-off
+  `source.earphone=1` (optional `source.earphone_board_type`, default 0).
+  A dedicated worker owns the 100 ms poll and the `DEV_GPIO` descriptor/level
+  provider; it records plugin/plugout into a bounded mutex-protected ring, and
+  a 100 ms loop timer emits `OA_TOPIC_EARPHONE` (`plugin` 1/0) using the host
+  API. No host API call is made from the worker and no speaker/headphone
+  routing is invented. `tests/source_path.c` drives the real module with a
+  fake GPIO provider, verifies that events are queued off-loop and emitted by
+  the timer, and that the gate is inert when off. Full host suite rc=0; ARM
+  `mod_source.so` `190e09fe…` builds. GPIO 117 is still below 200, so a live
+  `Hal_Gpio_Read` may export/claim the pin; on-TV ownership and a physical jack
+  test remain open.
 - The vendor HP IPC shared-memory semantics and the exact event-17 handler
   remain open. Do not infer the audio effect from `SetLineoutFromHeadphone`
   alone; recover the handler first.

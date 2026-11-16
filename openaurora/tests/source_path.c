@@ -32,6 +32,23 @@ static int effects_gate;
 static int sink_gate;
 static int vm_gate;
 static const oa_video_mute_iface *vm_iface;
+static int earphone_events, earphone_last_plugin;
+static void (*fake_timer_cb)(void *);
+static void *fake_timer_ud;
+static uint64_t fake_timer_add(void *p, uint32_t delay_ms, uint32_t repeat_ms,
+                               void (*cb)(void *), void *ud)
+{
+    (void)p; (void)delay_ms; (void)repeat_ms;
+    fake_timer_cb = cb;
+    fake_timer_ud = ud;
+    return 99;
+}
+static void fake_timer_del(void *p, uint64_t id)
+{
+    (void)p; (void)id;
+    fake_timer_cb = NULL;
+    fake_timer_ud = NULL;
+}
 static int audio_mute_calls;
 static int audio_last_mute;
 static int pos;
@@ -96,6 +113,7 @@ static int fake_audio_set_mute_raw(int on)
     return 0;
 }
 static const oa_audio_effect_iface fake_audio_effect = { fake_audio_set_mute_raw };
+static int earphone_gate;
 static int cec_block;
 static int fake_cec_local_permitted(void) { return cec_block ? 0 : 1; }
 static const oa_cec_audio_iface fake_cec_audio = {
@@ -176,6 +194,7 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "source.tuner_select_effects")) return effects_gate ? "1" : "0";
     if (!strcmp(key, "source.tuner_select_sink")) return sink_gate ? "1" : "0";
     if (!strcmp(key, "source.video_mute")) return vm_gate ? "1" : "0";
+    if (!strcmp(key, "source.earphone")) return earphone_gate ? "1" : "0";
     if (!strcmp(key, "source.cleanup_delay_ms")) return "0";
     return def;
 }
@@ -220,6 +239,11 @@ static void emit(void *p, const char *topic, const void *ev)
         source_events++;
         source_event_type = e->type;
     }
+    if (!strcmp(topic, OA_TOPIC_EARPHONE) && ev) {
+        const oa_earphone_event *e = ev;
+        earphone_events++;
+        earphone_last_plugin = e->plugin ? 1 : 0;
+    }
 }
 static const void *lookup(void *p, const char *name, uint32_t min_version)
 {
@@ -237,7 +261,7 @@ static const oa_host_api api = {
     .size = sizeof(oa_host_api), .abi = OA_ABI_VERSION,
     .log = log_message, .config_get = config, .publish = publish,
     .unpublish = unpublish, .lookup = lookup, .release = release,
-    .emit = emit
+    .emit = emit, .timer_add = fake_timer_add, .timer_del = fake_timer_del
 };
 
 static void *start(int on)
@@ -253,6 +277,8 @@ static void done(void *ctx)
     oa_module_entry()->stop(ctx);
     oa_module_entry()->destroy(ctx);
     assert(!iface);
+    fake_timer_cb = NULL;
+    fake_timer_ud = NULL;
 }
 
 int main(void)
@@ -671,8 +697,37 @@ int main(void)
     done(ctx);
     cec_block = 0;
 
+    /* Gated GPIO 117 earphone detector: the worker records events, the loop
+     * timer emits them. No event-17 audio routing is invented. */
+    effects_gate = 0; sink_gate = 0; vm_gate = 0; earphone_gate = 1;
+    earphone_events = 0; earphone_last_plugin = -1;
+    source_fake_set_earphone_level(1); /* active level = plugin */
+    ctx = start(1);
+    assert(fake_timer_cb != NULL);
+    for (int i = 0; i < 4; i++) {
+        const struct timespec pause = { .tv_nsec = 100000000L };
+        (void)nanosleep(&pause, NULL);
+    }
+    assert(earphone_events == 0); /* queued on the worker, not emitted there */
+    fake_timer_cb(fake_timer_ud);
+    assert(earphone_events == 1 && earphone_last_plugin == 1);
+    source_fake_set_earphone_level(0); /* normal level = plugout */
+    for (int i = 0; i < 4; i++) {
+        const struct timespec pause = { .tv_nsec = 100000000L };
+        (void)nanosleep(&pause, NULL);
+    }
+    fake_timer_cb(fake_timer_ud);
+    assert(earphone_events == 2 && earphone_last_plugin == 0);
+    done(ctx);
+
+    earphone_gate = 0;
+    ctx = start(1);
+    assert(fake_timer_cb == NULL);
+    done(ctx);
+
     puts("ok source path: type gates, VIN opens/VPLT, V4L2Info/FdCommon, "
          "DRM/NDAL, audio, gated HDMI RX status, inactive-source order, "
-         "gated tuner.select effects, real EASI consumer and DRM video mute");
+         "gated tuner.select effects, real EASI consumer, DRM video mute and "
+         "gated earphone detector");
     return 0;
 }

@@ -26,7 +26,10 @@ write-only; the GPIO 110/111 description copies are consumed only by the DEV
 panel-power helpers, replaced by direct HAL pins for layout 14. PCB layout,
 DEV GPIO/IIC description state, NIM factories, SPI semaphore and MTD are not
 required for the HAL-only path; `dev_src_init` hotplug, `DEV_AMP_ID`, the GPIO
-earphone handler and non-layout-14 panel/TCON branches remain open.
+earphone handler is wired into `mod_source` behind default-off
+`source.earphone=1` (worker polls GPIO 117, loop timer emits
+`OA_TOPIC_EARPHONE`); event-17 audio routing and live GPIO ownership remain
+open. Non-layout-14 panel/TCON branches remain open.
 
 REPLACEMENT-SYSTEM-2026-11-07 assembles the reproducible takeover UI:
 `make replacement-bundle` emits `plat_stub` + display/panel/ir/settings/

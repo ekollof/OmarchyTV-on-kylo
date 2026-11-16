@@ -51,6 +51,14 @@ typedef struct {
     const char *name; /* may be NULL */
 } oa_action_event;
 
+/* audio/earphone — GPIO 117 earphone detector (PLAT_OS event 17). plugin is
+ * 1 for insert and 0 for removal. This is a detection event only: the vendor
+ * event-17 audio routing consumer is not reproduced. */
+#define OA_TOPIC_EARPHONE "audio/earphone"
+typedef struct {
+    uint8_t plugin; /* 1 inserted, 0 removed */
+} oa_earphone_event;
+
 /* service/removed — a module unloaded; drop cached pointers for `name`. */
 #define OA_TOPIC_SERVICE_REMOVED "service/removed"
 typedef struct {
