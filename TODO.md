@@ -107,9 +107,13 @@ maps the cold-start stages and the current stock-UI coverage.
       stateful behind opt-in `OA_TV_IO_STATE` (default permissive);
       `qemu-panel-state-check.sh` / `make check-qemu-panel-state` asserts pin
       levels, PWM channel/frequency/duty 1000→499→1000 and power/PWM/backlight
-      order under the real ARM platform/panel. Next: IIC/SPI read/write models,
-      then VIN/V4L2 formats only from recovered ioctl contracts.
-      See QEMU-TV-SIM-2026-11-10.
+      order under the real ARM platform/panel. 2026-11-16: IIC/SPI are also
+      stateful behind the same opt-in `OA_TV_IO_STATE` gate: `0x707` i2c_rdwr
+      (recovered i2c_msg layout) and SPI `0x8018531e` requests are decoded,
+      and `qemu-iic-spi-state-check.sh` drives the real libNDAL3 Hal_Iic_* plus
+      the recovered SPI transport and asserts address/flags/len/data and
+      offset/size/data. Next: VIN/V4L2 formats and DRM only from recovered
+      ioctl contracts. See QEMU-TV-SIM-2026-11-10.
 - [x] HAL-only device-layer decision + cold-start profile candidate:
       no ARM module has an undefined vendor `DEV_*` symbol; the new
       `openaurora-cold.conf` sets real DRM init, no snapshot restore,

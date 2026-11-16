@@ -35,6 +35,11 @@
 static int gpio_level[OA_GPIO_PINS];
 static int pwm_opened;
 static uint32_t pwm_channel, pwm_freq, pwm_duty;
+/* Last observed IIC/SPI transaction. Deterministic read data lets a qemu
+ * probe distinguish a modeled read from an uninitialized buffer. */
+static char iic_state[320];
+static char spi_state[120];
+static char last_tv_path[128];
 
 static void write_state(void)
 {
@@ -49,6 +54,10 @@ static void write_state(void)
             fprintf(f, "gpio pin=%d level=%d\n", pin, gpio_level[pin]);
     fprintf(f, "pwm channel=%u freq=%u duty=%u opened=%d\n",
             pwm_channel, pwm_freq, pwm_duty, pwm_opened);
+    if (*iic_state)
+        fprintf(f, "%s\n", iic_state);
+    if (*spi_state)
+        fprintf(f, "%s\n", spi_state);
     fclose(f);
 }
 
@@ -124,6 +133,10 @@ static int is_tv_path(const char *p)
 static int fake_open(const char *path)
 {
     io_log("open", path, 0);
+    if (getenv("OA_TV_IO_STATE") && path) {
+        strncpy(last_tv_path, path, sizeof last_tv_path - 1);
+        last_tv_path[sizeof last_tv_path - 1] = '\0';
+    }
     return FAKE_FD;
 }
 
@@ -171,6 +184,73 @@ int access(const char *path, int mode)
 
 #define GPIO_DESC_IOCTL 0xc088671fUL
 #define STBC_V4L2_CMD 0xc0185648UL
+#define I2C_RDWR_IOCTL 0x707UL
+#define SPI_READ_IOCTL 0x8018531eUL
+
+/* Recovered ARM32 layouts. i2c_rdwr_ioctl_data is {msgs,nmsgs}; i2c_msg is
+ * {addr,flags,len,pad,buf}. The SPI read request is 24 bytes
+ * {offset,size,buf,reserved[3]}. These are model structures, not kernel
+ * headers, so the qemu DSO stays independent of the host architecture. */
+struct fake_i2c_msg {
+    uint16_t addr, flags, len, pad;
+    uint32_t buf;
+};
+struct fake_i2c_rdwr { uint32_t msgs, nmsgs; };
+struct fake_spi_read { uint32_t offset, size, buf, reserved[3]; };
+
+static void fake_iic_rdwr(const void *arg)
+{
+    struct fake_i2c_rdwr rd;
+    struct fake_i2c_msg msgs[8];
+    memcpy(&rd, arg, sizeof rd);
+    if (!rd.msgs || !rd.nmsgs || rd.nmsgs > 8)
+        return;
+    memcpy(msgs, (const void *)(uintptr_t)rd.msgs,
+           sizeof(struct fake_i2c_msg) * rd.nmsgs);
+    uint32_t n = rd.nmsgs < 8 ? rd.nmsgs : 8;
+    for (uint32_t i = 0; i < n; i++) {
+        uint8_t *buf = (uint8_t *)(uintptr_t)msgs[i].buf;
+        int read = (msgs[i].flags & 1u) != 0;
+        unsigned byte0 = 0;
+        if (buf) {
+            if (read) {
+                for (uint16_t j = 0; j < msgs[i].len && j < 64; j++)
+                    buf[j] = (uint8_t)(0xa5u + j);
+                byte0 = buf[0];
+            } else {
+                byte0 = buf[0];
+            }
+        }
+        io_log_text("iic bus=%s addr=%#x len=%u flags=%s byte0=%#x",
+                    last_tv_path, msgs[i].addr, msgs[i].len,
+                    read ? "R" : "W", byte0);
+        snprintf(iic_state, sizeof iic_state,
+                 "iic bus=%s addr=0x%02x len=%u flags=%s byte0=0x%02x",
+                 last_tv_path, msgs[i].addr, msgs[i].len,
+                 read ? "R" : "W", byte0);
+    }
+    write_state();
+}
+
+static void fake_spi_read(const void *arg)
+{
+    struct fake_spi_read r;
+    memcpy(&r, arg, sizeof r);
+    uint8_t *buf = (uint8_t *)(uintptr_t)r.buf;
+    unsigned byte0 = 0, byte1 = 0;
+    if (buf) {
+        uint32_t n = r.size < 64 ? r.size : 64;
+        for (uint32_t i = 0; i < n; i++)
+            buf[i] = (uint8_t)(r.offset + i);
+        byte0 = buf[0];
+        byte1 = n > 1 ? buf[1] : 0;
+    }
+    io_log_text("spi offset=%u size=%u byte0=%#x", r.offset, r.size, byte0);
+    snprintf(spi_state, sizeof spi_state,
+             "spi offset=%u size=%u byte0=0x%02x byte1=0x%02x",
+             r.offset, r.size, byte0, byte1);
+    write_state();
+}
 
 struct fake_ext_control {
     uint32_t id, size, reserved2;
@@ -242,6 +322,16 @@ static int fake_ioctl(unsigned long cmd, void *arg)
     if (cmd == STBC_V4L2_CMD && arg) {
         log_ext_controls(cmd, arg);
         return 0;
+    }
+    if (getenv("OA_TV_IO_STATE")) {
+        if (cmd == I2C_RDWR_IOCTL && arg) {
+            fake_iic_rdwr(arg);
+            return 0;
+        }
+        if (cmd == SPI_READ_IOCTL && arg) {
+            fake_spi_read(arg);
+            return 0; /* ioctl success; DEV_SPI_Read's 1/0 is the wrapper result */
+        }
     }
     if ((cmd == 0x670au || cmd == 0x670eu || cmd == 0x670cu) && arg) {
         const uint32_t *p = arg;

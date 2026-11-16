@@ -5,7 +5,7 @@ the real ARM platform/panel modules now run under `qemu-arm-static` against
 model device boundaries. No TV, kernel driver, framebuffer, GPIO, PWM, I2C or
 panel was touched.
 
-Last verified: 2026-11-16 (stateful GPIO/PWM slice added; qemu/host only).
+Last verified: 2026-11-16 (stateful GPIO/PWM and IIC/SPI slices added; qemu/host only).
 Evidence class: qemu/host simulation; not on-TV acceptance.
 
 ## What already existed
@@ -126,11 +126,36 @@ breakpoints, `panel.duty_max=4095`, vendor 12-bit to HAL 0..1000 conversion),
 not a guessed tolerance. `make check-qemu-panel-state` passes; the qemu
 checks are not part of the default host `make check`.
 
+### Stateful IIC/SPI slice (2026-11-16)
+
+Firmware recovery (docs-first, then Ghidra): `Hal_Iic_Read/Write` in libNDAL3
+delegate to `_i2c_RdWr_Transfer` @ `0x4e7bf0c4`, which calls
+`ioctl(fd, 0x707, &{msgs,nmsgs})`. The recovered ARM32 payload is
+`struct i2c_msg { addr:u16, flags:u16, len:u16, pad:u16, buf:ptr }` (one message
+for a one-byte subaddress, two for a longer one). The 24-byte Hal IIC context
+is `{bus, addr<<1, subaddr_len, 0, timeout, 0}`. SPI read uses the already
+recovered `DEV_SPI_Read` request `0x8018531e` with
+`{offset,size,buf,0,0,0}` (`SPI-MTD-NIM-STAGE`).
+
+`tests/fake_tv_io.c` now decodes those two ioctls **only** when
+`OA_TV_IO_STATE` is set (the default permissive model is untouched) and records
+`iic bus=... addr=0x34 len=4 flags=R byte0=...` and
+`spi offset=16 size=4 byte0=0x10 byte1=0x11` in the same state file. Read data
+is deterministic (`0xa5+j` for IIC, `offset+j` for SPI), so a qemu probe can
+distinguish a modeled transfer from an uninitialized buffer.
+
+`tools/qemu-iic-spi-state-check.sh` (`make check-qemu-iic-spi-state`) builds a
+small ARM probe that calls the **real** `Hal_Iic_Init/Read/Write` from
+libNDAL3 and the project's `oa_spi_open/read` transport under qemu. It asserts
+the real HAL's decoded addr/flags/len/data, the SPI request offset/size/data,
+and matching probe output. Both stateful checks and the permissive
+`qemu-panel-real-check.sh` pass; the full host suite remains green.
+
 This is still a simulation: the model echoes decoded ioctl fields and does not
-emulate the kernel register, panel timing or visible brightness. Next useful
-slices, in firmware order: IIC/SPI read/write models, then VIN/V4L2 and DRM
-only where the recovered ioctl contract is known. Keep the permissive model
-separate from a claimed device contract.
+emulate the kernel I2C/SPI controller, electrical bus, chip registers or
+visible brightness. Next useful slices: VIN/V4L2 formats and DRM only where the
+recovered ioctl contract is known. Keep the permissive model separate from a
+claimed device contract.
 
 ## Reproduce
 

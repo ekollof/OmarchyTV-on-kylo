@@ -4460,3 +4460,13 @@ asserts GPIO 110=1/111=0, PWM channel0/30000 Hz/duty 1000→499 (50% via the
 recovered curve)→1000 and power/PWM/backlight order. This is a decoded-ioctl
 simulation, not register/panel/brightness proof; IIC/SPI stateful models and
 on-TV acceptance remain open (TV in use per HANDOFF).
+
+QEMU-IIC-SPI-STATE-2026-11-16: the opt-in `OA_TV_IO_STATE` model (default
+permissive) now also decodes the recovered IIC `0x707` i2c_rdwr payload and SPI
+`0x8018531e` request. `tools/qemu-iic-spi-state-check.sh` /
+`make check-qemu-iic-spi-state` runs the real libNDAL3 Hal_Iic_Init/Read/Write
+and the project SPI transport under qemu, asserting address 0x34 read data
+0xa5.. and SPI offset16/size4 data 0x10/0x11. Real ioctls and deterministic
+model data only; no controller, chip register or electrical bus effect.
+I2C/SPI hardware, VIN/V4L2 formats, on-TV acceptance and stock parity remain
+open (TV in use per HANDOFF).
