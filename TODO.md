@@ -115,8 +115,12 @@ maps the cold-start stages and the current stock-UI coverage.
       (recovered i2c_msg layout) and SPI `0x8018531e` requests are decoded,
       and `qemu-iic-spi-state-check.sh` drives the real libNDAL3 Hal_Iic_* plus
       the recovered SPI transport and asserts address/flags/len/data and
-      offset/size/data. Next: VIN/V4L2 formats and DRM only from recovered
-      ioctl contracts. See QEMU-TV-SIM-2026-11-10.
+      offset/size/data. 2026-11-16: `qemu-cold-display-check.sh` /
+      `make check-qemu-cold-display` runs real ARM `mod_display` against an
+      opt-in zero-var fb1 model and asserts the `display.cold_init` template
+      repair (1920x1080/2 frames), region and pan; the valid-var fb check still
+      passes. Next: VIN/V4L2 formats and DRM only from recovered ioctl
+      contracts. See QEMU-TV-SIM-2026-11-10.
 - [x] HAL-only device-layer decision + cold-start profile candidate:
       no ARM module has an undefined vendor `DEV_*` symbol; the new
       `openaurora-cold.conf` sets real DRM init, no snapshot restore,

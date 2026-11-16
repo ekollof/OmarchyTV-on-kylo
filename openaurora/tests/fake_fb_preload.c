@@ -105,13 +105,15 @@ __attribute__((constructor)) static void fake_init(void)
     load_real();
     memset(&var, 0, sizeof var);
     memset(&fix, 0, sizeof fix);
-    var.xres = var.xres_virtual = WIDTH;
-    var.yres = HEIGHT;
-    var.yres_virtual = VHEIGHT;
-    var.bits_per_pixel = 32;
-    var.yoffset = 0;
-    fix.line_length = WIDTH * 4;
-    fix.smem_len = fix.line_length * VHEIGHT;
+    if (!getenv("OA_FAKE_FB_ZERO_VAR")) {
+        var.xres = var.xres_virtual = WIDTH;
+        var.yres = HEIGHT;
+        var.yres_virtual = VHEIGHT;
+        var.bits_per_pixel = 32;
+        var.yoffset = 0;
+        fix.line_length = WIDTH * 4;
+        fix.smem_len = fix.line_length * VHEIGHT;
+    }
     memset(fix.id, 0, sizeof fix.id);
     memcpy(fix.id, "fakefb", 6);
     for (int i = 0; i < 8; i++) initial_region[i] = region[i] = 0x100u + (uint32_t)i;
@@ -161,6 +163,34 @@ int ioctl(int fd, unsigned long cmd, ...)
     switch (cmd) {
     case FBIOGET_VSCREENINFO: memcpy(arg, &var, sizeof var); return 0;
     case FBIOGET_FSCREENINFO: memcpy(arg, &fix, sizeof fix); return 0;
+    case FBIOPUT_VSCREENINFO: {
+        struct fb_var_screeninfo *v = arg;
+        memcpy(&var, v, sizeof var);
+        if (v->xres && v->bits_per_pixel) {
+            size_t need = (size_t)v->xres * (v->bits_per_pixel / 8u) *
+                          (v->yres_virtual ? v->yres_virtual : v->yres);
+            if (need && (!pixels || fix.smem_len < need)) {
+                unsigned char *next = realloc(pixels, need);
+                if (next) {
+                    pixels = next;
+                    memset(pixels, 0xaa, need);
+                }
+            }
+            fix.line_length = v->xres * (v->bits_per_pixel / 8u);
+            fix.smem_len = fix.line_length *
+                           (v->yres_virtual ? v->yres_virtual : v->yres);
+        }
+        const char *log = getenv("FAKE_FB_LOG");
+        if (log) {
+            FILE *f = fopen(log, "a");
+            if (f) {
+                fprintf(f, "setpar xres=%u yres=%u bpp=%u yres_virtual=%u\n",
+                        v->xres, v->yres, v->bits_per_pixel, v->yres_virtual);
+                fclose(f);
+            }
+        }
+        return 0;
+    }
     case FBIOPAN_DISPLAY: {
         struct fb_var_screeninfo *v = arg;
         var.yoffset = v->yoffset;

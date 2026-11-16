@@ -4498,3 +4498,10 @@ provider and records events under a mutex; a 100 ms loop timer emits
 event-17 audio routing is invented. `check-earphone` and the fake-service
 `source_path` test pass, full suite rc=0, ARM `mod_source.so` 190e09fe... builds.
 Live GPIO ownership and a physical jack test remain open (TV in standby).
+
+QEMU-COLD-DISPLAY-2026-11-16: `fake_fb_preload.c` has opt-in
+`OA_FAKE_FB_ZERO_VAR=1` and `FBIOPUT_VSCREENINFO` handling. `tools/qemu-cold-display-check.sh`
+/ `make check-qemu-cold-display` runs real ARM `mod_display` with
+`display.cold_init=1` and asserts the shipped 1920x1080/2-frame template repair,
+region and pan; `qemu-fb-real-check.sh` (valid initial var, full snapshot) still
+passes. Ioctl-boundary simulation only; no cold boot, scanout or TV acceptance.

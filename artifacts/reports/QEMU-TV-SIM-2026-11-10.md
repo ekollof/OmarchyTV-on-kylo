@@ -5,7 +5,7 @@ the real ARM platform/panel modules now run under `qemu-arm-static` against
 model device boundaries. No TV, kernel driver, framebuffer, GPIO, PWM, I2C or
 panel was touched.
 
-Last verified: 2026-11-16 (stateful GPIO/PWM and IIC/SPI slices added; qemu/host only).
+Last verified: 2026-11-16 (stateful GPIO/PWM, IIC/SPI and cold-display repair slices; qemu/host only).
 Evidence class: qemu/host simulation; not on-TV acceptance.
 
 ## What already existed
@@ -150,6 +150,23 @@ libNDAL3 and the project's `oa_spi_open/read` transport under qemu. It asserts
 the real HAL's decoded addr/flags/len/data, the SPI request offset/size/data,
 and matching probe output. Both stateful checks and the permissive
 `qemu-panel-real-check.sh` pass; the full host suite remains green.
+
+### Cold display repair slice (2026-11-16)
+
+`tests/fake_fb_preload.c` gained an opt-in `OA_FAKE_FB_ZERO_VAR=1` mode that
+starts the modeled fb1 with a zero (unconfigured) var/fix and handles
+`FBIOPUT_VSCREENINFO` by applying the template, sizing the framebuffer and
+logging `setpar xres/yres/bpp/yres_virtual`. The default model is unchanged.
+
+`tools/qemu-cold-display-check.sh`
+(`make check-qemu-cold-display`) runs the real ARM `mod_display` with
+`display.cold_init=1`, `restore_snapshot=0` and `display.test=2` against that
+zero-var model. It asserts `display-info` is `1920x1080 32bpp 2 frames`, the
+fb log contains the shipped template write
+(`setpar xres=1920 yres=1080 bpp=32 yres_virtual=2160`), and region/pan/mmap
+follow it. The existing `qemu-fb-real-check.sh` (valid initial var, full
+snapshot restore) still passes unchanged. Both are ioctl-boundary simulations,
+not cold-boot or scanout acceptance; no TV was contacted.
 
 This is still a simulation: the model echoes decoded ioctl fields and does not
 emulate the kernel I2C/SPI controller, electrical bus, chip registers or
