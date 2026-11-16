@@ -274,10 +274,13 @@ Evidence: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRAC
   CEC-SAM policy. A real video hide/show backend `common/video_mute.c` models
   the recovered `plat_drm_set_mute` @ `0x92cec8` chain (libNDAL3 Hal_Video_*
   calls, DRM ioctl `0xc00c6455`, main path 0) behind default-off
-  `source.video_mute` (`check-video-mute`, fake-service `source_path`); the
-  synchronous loop call needs a worker and it is not scanout proof. Decoder/
-  scart/SPDIF/headphone/teletext/subtitles backends and on-TV acceptance (TV
-  in use) remain open. Do not substitute an always-switch-to-TV or HPD shortcut.
+  `source.video_mute` (`check-video-mute`, fake-service `source_path`); it is
+  not scanout proof. `common/effect_worker.c` now moves mute and DRM mute calls
+  off the loop (bounded FIFO, loop-side service resolution, queued-not-applied
+  status, collected completions; `check-effect-worker`, fake-service
+  `source_path`); the copied set_mute pointer and worker lifecycle still need
+  reload/stop acceptance. Decoder/scart/SPDIF/headphone/teletext/subtitles
+  backends and on-TV acceptance (TV in use) remain open. Do not substitute an always-switch-to-TV or HPD shortcut.
 - A successful `change_input` emits `source/state` with the source type.
   `ui_vendor` maps it to the Bronlijst row, persists `m_current_source`, syncs
   the picture cards and repaints; `ui_omarchy` repaints. `common/source_map.c`

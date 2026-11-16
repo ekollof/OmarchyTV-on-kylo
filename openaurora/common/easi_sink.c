@@ -26,12 +26,13 @@ int oa_easi_sink_dispatch(oa_easi_sink *s, enum oa_easi_effect effect, int arg)
         status = s->io.apply(s->io.ud, effect, arg);
         /* Collapse any unexpected value into a failure; never count a bogus
          * backend return as an applied effect. */
-        if (status < OA_EASI_APPLIED || status > OA_EASI_NO_BACKEND)
+        if (status < OA_EASI_APPLIED || status > OA_EASI_QUEUED)
             status = OA_EASI_FAILED;
         switch (status) {
         case OA_EASI_APPLIED: s->state.applied++; break;
         case OA_EASI_UNSUPPORTED: s->state.unsupported++; break;
         case OA_EASI_FAILED: s->state.failed++; break;
+        case OA_EASI_QUEUED: s->state.queued++; break;
         default: s->state.no_backend++; break;
         }
     }
@@ -42,6 +43,15 @@ int oa_easi_sink_dispatch(oa_easi_sink *s, enum oa_easi_effect effect, int arg)
     }
     (void)arg;
     return status;
+}
+
+void oa_easi_sink_note_completion(oa_easi_sink *s, int status)
+{
+    if (!s)
+        return;
+    s->state.completed++;
+    if (status == OA_EASI_FAILED)
+        s->state.completion_failed++;
 }
 
 int oa_easi_sink_snapshot(const oa_easi_sink *s, oa_easi_sink_state *out)

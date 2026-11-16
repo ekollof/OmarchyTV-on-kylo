@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "openaurora/broadcast.h"
 #include "openaurora/channels.h"
@@ -567,11 +568,17 @@ int main(void)
     assert(cout.ran && cout.unmute_applied && cout.show_applied);
     oa_easi_sink_state ss;
     assert(select_iface->sink_status(&ss) == 0);
-    assert(ss.applied >= 2);      /* mute_on + mute_off reached the audio HAL */
+    assert(ss.queued >= 2);       /* mute_on + mute_off enqueued off-loop */
     assert(ss.unsupported > 0);   /* decoder/hide/scart/SPDIF/teletext etc. */
     assert(ss.failed == 0 && ss.no_backend == 0);
+    for (int i = 0; i < 5000 && ss.completed < 2; i++) {
+        const struct timespec pause = { .tv_nsec = 1000000 };
+        (void)nanosleep(&pause, NULL);
+        assert(select_iface->sink_status(&ss) == 0);
+    }
+    assert(ss.completed >= 2 && ss.completion_failed == 0);
     assert(audio_mute_calls == 2 && audio_last_mute == 0);
-    assert(strstr(select_log, "sink=0") != NULL);
+    assert(strstr(select_log, "sink=4") != NULL); /* OA_EASI_QUEUED */
     done(ctx);
 
     /* With the sink gate off, status is -2 and no audio call is made. */
@@ -601,7 +608,8 @@ int main(void)
     assert(vm_iface->set_hidden(0) == 0);
     assert(vm_iface->state(&vmst) == 0 && vmst.hidden == 0 && vmst.calls == 2);
 
-    /* With the sink enabled, a display-select now applies hide and show too. */
+    /* With the sink enabled, a display-select queues hide/show and mute on the
+     * worker: nothing is applied inline, and sink_status() collects results. */
     reset();
     audio_mute_calls = 0;
     assert(select_iface != NULL);
@@ -609,8 +617,17 @@ int main(void)
     assert(cout.pre_mute_applied && cout.show_applied);
     oa_easi_sink_state ss2;
     assert(select_iface->sink_status(&ss2) == 0);
-    assert(ss2.applied >= 4); /* mute_on/off + hide/show */
+    assert(ss2.queued >= 4); /* mute_on/off + hide/show enqueued */
     assert(ss2.unsupported > 0); /* scart/SPDIF/decoder/teletext/subtitles */
+    /* Wait for the worker to complete the queued HAL calls; sink_status() is
+     * the loop-side collection point. */
+    for (int i = 0; i < 5000 && ss2.completed < 4; i++) {
+        const struct timespec pause = { .tv_nsec = 1000000 };
+        (void)nanosleep(&pause, NULL);
+        assert(select_iface->sink_status(&ss2) == 0);
+    }
+    assert(ss2.completed >= 4 && ss2.completion_failed == 0);
+    assert(audio_mute_calls == 2);
     assert(strstr(source_fake_log_text(), "vm dev idx=0") != NULL);
     assert(strstr(source_fake_log_text(), "vm path=0") != NULL);
     done(ctx);

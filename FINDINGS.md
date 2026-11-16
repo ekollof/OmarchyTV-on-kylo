@@ -1792,9 +1792,13 @@ ioctl `0xc00c6455`, path 0 for main video). `common/video_mute_vendor.c` binds
 the four libNDAL3 symbols on ARM; `mod_source` publishes `OA_SVC_VIDEO_MUTE`
 behind default-off `source.video_mute` and the sink applies HIDE/SHOW through
 it (`check-video-mute`, fake-service `source_path`, full suite rc=0, TV
-`mod_source.so` builds). This is a real DRM ioctl, not visual/scanout proof;
-the call is synchronous on the loop and needs a worker before acceptance.
-Decoder/scart/SPDIF/headphone/teletext/subtitles still have no real backend;
+`mod_source.so` builds). This is a real DRM ioctl, not visual/scanout proof.
+2026-11-16: `common/effect_worker.c` moves the mute and DRM mute calls off the
+loop (bounded FIFO, loop-side service resolution, queued-not-applied status,
+collected completions; `check-effect-worker` and fake-service `source_path`
+pass, TV `mod_source.so` builds). The copied set_mute pointer and worker
+lifecycle still need real reload/stop acceptance. Decoder/scart/SPDIF/
+headphone/teletext/subtitles still have no real backend;
 on-TV validation is blocked while the TV is in use. No parity claim.
 SOURCE-LOSS-FALLBACK. |
 | Pre-stock hook SSH is reliable enough to coordinate a long CEC test | Boot 6's pre-stock eth0/DHCP failed (`Network is down`), the armed raw-RX monitor waited with no `/tmp/cec-go` trigger, and the TV required USB recovery. The monitor sent nothing. Use a short fixed capture window with unconditional stock fallthrough; never gate a pre-stock test on SSH. CEC-FIRST-OPENER. |

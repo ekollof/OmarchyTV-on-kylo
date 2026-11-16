@@ -22,7 +22,8 @@ enum oa_easi_sink_status {
     OA_EASI_APPLIED = 0,     /* the injected backend accepted the effect */
     OA_EASI_UNSUPPORTED,     /* no replacement backend for this effect */
     OA_EASI_FAILED,          /* a backend was called and reported failure */
-    OA_EASI_NO_BACKEND       /* no apply callback was configured */
+    OA_EASI_NO_BACKEND,      /* no apply callback was configured */
+    OA_EASI_QUEUED           /* accepted by a worker; result reported later */
 };
 
 typedef struct {
@@ -38,6 +39,9 @@ typedef struct {
     unsigned unsupported;
     unsigned failed;
     unsigned no_backend;
+    unsigned queued;
+    unsigned completed;        /* worker results collected on the loop */
+    unsigned completion_failed;
     unsigned dispatched;
     int last_status;
     enum oa_easi_effect last_effect;
@@ -53,6 +57,8 @@ void oa_easi_sink_init(oa_easi_sink *s, const oa_easi_sink_io *io);
  * counters. A null sink is OA_EASI_NO_BACKEND. */
 int oa_easi_sink_dispatch(oa_easi_sink *s, enum oa_easi_effect effect, int arg);
 int oa_easi_sink_snapshot(const oa_easi_sink *s, oa_easi_sink_state *out);
+/* Record one collected worker result on the loop. Does not touch a backend. */
+void oa_easi_sink_note_completion(oa_easi_sink *s, int status);
 
 #ifdef __cplusplus
 }

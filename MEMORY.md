@@ -142,8 +142,12 @@ hide/show backend `common/video_mute.c` models the recovered
 `mod_source` publishes `OA_SVC_VIDEO_MUTE` behind default-off
 `source.video_mute` and the sink applies HIDE/SHOW (`check-video-mute`,
 fake-service `source_path`, TV `mod_source.so` builds). It is a real DRM ioctl,
-not scanout proof, and the synchronous loop call needs a worker. Decoder/
-scart/SPDIF/headphone/teletext/subtitles backends and on-TV acceptance remain
+not scanout proof. `common/effect_worker.c` now moves mute and DRM mute calls
+off the loop (bounded FIFO, loop-side service resolution, queued-not-applied
+status, collected completions; `check-effect-worker`, fake-service
+`source_path`, TV `mod_source.so` builds); copied set_mute pointer and worker
+lifecycle still need reload/stop acceptance. Decoder/scart/SPDIF/headphone/
+teletext/subtitles backends and on-TV acceptance remain
 open (TV in use per HANDOFF; explicit owner window required). Any
 `SetConnectInfo` caller outside the analyzed paths remains open. The status-4/HPD path is the
 cable-unplug policy; `source.video_status` is a no-signal detector, not the

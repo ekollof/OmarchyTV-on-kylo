@@ -599,11 +599,15 @@ unvalidated.
       libNDAL3 on ARM, `mod_source` publishes `OA_SVC_VIDEO_MUTE` behind
       default-off `source.video_mute` and the sink applies HIDE/SHOW
       (`check-video-mute`, fake-service `source_path`, TV `mod_source.so`
-      builds). Real DRM ioctl, not scanout proof; synchronous loop call needs
-      a worker. On-TV validation blocked while TV is in use (HANDOFF); needs
-      an explicit owner-authorized window with stock restoration. Remaining:
-      real decoder/scart/SPDIF/headphone/teletext/subtitles backends, the sink
-      worker, any `SetConnectInfo` caller outside the analyzed paths and
+      builds). Real DRM ioctl, not scanout proof. 2026-11-16:
+      `common/effect_worker.c` moves mute and DRM mute calls off the loop
+      (bounded FIFO, loop-side service resolution, queued-not-applied status,
+      collected completions; `check-effect-worker`, fake-service `source_path`,
+      TV `mod_source.so` builds); copied set_mute pointer and worker lifecycle
+      still need reload/stop acceptance. On-TV validation blocked while TV is
+      in use (HANDOFF); needs an explicit owner-authorized window with stock
+      restoration. Remaining: real decoder/scart/SPDIF/headphone/teletext/
+      subtitles backends, any `SetConnectInfo` caller outside the analyzed paths and
       UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [x] Source switches emit `source/state`; `ui_vendor` updates the Bronlijst
       row, `m_current_source`, picture cards and repaints; `ui_omarchy`

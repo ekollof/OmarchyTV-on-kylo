@@ -508,6 +508,35 @@ synchronous on the control loop and must move to a worker before hardware
 acceptance; `PLAT_VOUT_EnableBlueScreen(0)` is inferred as main video from its
 call sites rather than a vendor constant; no TV operation was performed.
 
+### Effect worker: HAL calls off the control loop (2026-11-16)
+
+`include/openaurora/effect_worker.h` / `common/effect_worker.c` move the
+blocking mute and DRM video-mute calls off the host loop. `api->lookup`
+mutates host hold/bookkeeping state and is not thread-safe, so the loop still
+resolves `OA_SVC_AUDIO` and copies its raw `set_mute` pointer into each job;
+the worker thread calls only that pointer or the injected `oa_video_mute`
+backend and never touches the host API. Jobs use a bounded 16-entry FIFO with
+one worker, preserving effect order; a full queue rejects with `-EBUSY`, and a
+separate 32-entry completion FIFO is collected on the loop by `sink_status()`
+and `display()`. A provider reload between submit and execution can invalidate
+the copied pointer, so jobs stay short-lived — this is a bridge, not an
+ownership/claim proof.
+
+`oa_easi_sink` gained `OA_EASI_QUEUED` and `queued`/`completed`/
+`completion_failed` counters: an effect accepted by the worker is reported as
+queued, never as applied, and the real result is counted when collected. Jobs
+that cannot be queued are `FAILED`. `check-effect-worker` covers off-loop
+execution, FIFO order, deterministic 16-slot backpressure via a gated
+callback, completion, backend failures and quiesce/join/destroy; the
+fake-service `source_path` test verifies a display-select queues four effects
+(`sink=4` trace), that no HAL call happens inline, that collection reports
+them complete with no failures and that disabling the gate is inert. Full
+suite passes (rc=0) and the TV `mod_source.so` builds with the worker.
+
+Limits unchanged: an accepted ioctl is not scanout proof, and no TV operation
+was performed. The copied set_mute pointer and the worker's lifecycle need
+real reload/stop acceptance before hardware use.
+
 ### Controlled on-TV acceptance plan (blocked — not executed)
 
 The model, its effect backend and the mute consumer are host-tested only.
@@ -539,9 +568,9 @@ use this plan with full stock restoration:
    mute/decoder/hide/show and `DAT_*` flag effects. Decoder/scart/SPDIF/
    headphone/teletext/subtitles remain unsupported until real backends exist,
    so they can only be compared as traced requests. Confirm `plat.drm_init`
-   succeeded and resolve the synchronous-loop limitation before this step.
-   Also
-   verify no CEC System Audio Mode conflict before enabling the sink gate.
+   succeeded; the HAL calls now run on the effect worker, so confirm bounded
+   queue depth and completion collection under real timing. Also verify no CEC
+   System Audio Mode conflict before enabling the sink gate.
    Then restore stock operation and access. Keep watchdog handling and a
    recovery reboot available per AGENTS.md; never leave a watchdog disabled
    or a helper running.

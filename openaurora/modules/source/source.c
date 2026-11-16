@@ -34,6 +34,7 @@
 #include "openaurora/easi_effects.h"
 #include "openaurora/easi_sink.h"
 #include "openaurora/video_mute.h"
+#include "openaurora/effect_worker.h"
 
 #include "openaurora/events.h"
 #include "openaurora/module.h"
@@ -112,6 +113,7 @@ struct ctx {
     /* source.tuner_select_sink: real consumer of the emitted effects. */
     int sink_enabled;
     oa_easi_sink sink;
+    oa_effect_worker *effect_worker; /* blocking HAL calls off the loop */
     /* source.video_mute: real DRM video mute (plat_drm_set_mute chain). */
     int vm_enabled;
     oa_video_mute vm;
@@ -637,33 +639,58 @@ static const char *const easi_names[] = {
     "select_internal", "select_second", "dual_view_reset", "delay"
 };
 
-/* Real consumer: MUTE_ON/OFF drive the HAL-backed speaker mute service. No
- * other effect has a verified replacement backend, so it is reported as
- * unsupported rather than silently claimed as applied. The vendor routes EASI
- * mute through an AudioIF object; this is a replacement policy mapping, not a
- * proved firmware-equivalent path. mod_audio also enforces CEC System Audio
- * policy on this service, so this gate must not be enabled for CEC-SAM use. */
+/* Real consumer: MUTE_ON/OFF drive the HAL-backed speaker mute service and
+ * HIDE/SHOW drive the DRM video mute, both on the effect worker. Other effects
+ * have no verified replacement backend and are reported unsupported. The EASI
+ * mute mapping is a replacement policy (not a proved firmware path), and
+ * mod_audio enforces CEC System Audio policy, so avoid CEC-SAM use. */
+/* Collect any completed HAL job on the control loop and log it. No backend is
+ * touched here; the worker already ran the ioctl/service call off-loop. */
+static void collect_effect_results(struct ctx *c)
+{
+    oa_effect_completion done;
+    while (c->effect_worker &&
+           oa_effect_worker_take(c->effect_worker, &done) == 1) {
+        oa_easi_sink_note_completion(&c->sink, done.status);
+        c->api->log(c->api->priv, OA_LOG_DEBUG,
+                    "tuner.select: effect done effect=%d rc=%d status=%d",
+                    (int)done.effect, done.rc, done.status);
+    }
+}
+
+/* Loop-side enqueue: resolve the host service here (api->lookup mutates host
+ * hold state and is not thread-safe), copy raw pointers into the job, and let
+ * the worker perform the blocking call. Unsupported effects never reach it. */
 static int sink_apply(void *ud, enum oa_easi_effect effect, int arg)
 {
     struct ctx *c = ud;
     (void)arg;
+    oa_effect_job job;
+    memset(&job, 0, sizeof job);
+    job.effect = effect;
+
     if (effect == OA_EASI_HIDE_VIDEO || effect == OA_EASI_SHOW_VIDEO) {
         if (!c->vm_enabled)
             return OA_EASI_UNSUPPORTED;
-        /* Synchronous HAL call — acceptable for the gated host test path,
-         * but this must move to a worker before hardware acceptance. */
-        return oa_video_mute_set(&c->vm,
-                                 effect == OA_EASI_HIDE_VIDEO ? 1 : 0) == 0
-                   ? OA_EASI_APPLIED : OA_EASI_FAILED;
-    }
-    if (effect != OA_EASI_MUTE_ON && effect != OA_EASI_MUTE_OFF)
+        job.vm = &c->vm;
+    } else if (effect == OA_EASI_MUTE_ON || effect == OA_EASI_MUTE_OFF) {
+        const oa_audio_iface *a = c->api->lookup(c->api->priv, OA_SVC_AUDIO, 1);
+        if (!a || !a->set_mute) {
+            if (a)
+                c->api->release(c->api->priv, OA_SVC_AUDIO);
+            return OA_EASI_FAILED;
+        }
+        job.set_mute = a->set_mute;
+        c->api->release(c->api->priv, OA_SVC_AUDIO);
+    } else {
         return OA_EASI_UNSUPPORTED;
-    const oa_audio_iface *a = c->api->lookup(c->api->priv, OA_SVC_AUDIO, 1);
-    if (!a || !a->set_mute)
+    }
+    if (!c->effect_worker)
         return OA_EASI_FAILED;
-    int rc = a->set_mute(effect == OA_EASI_MUTE_ON ? 1 : 0);
-    c->api->release(c->api->priv, OA_SVC_AUDIO);
-    return rc == 0 ? OA_EASI_APPLIED : OA_EASI_FAILED;
+    collect_effect_results(c);
+    uint64_t ticket = 0;
+    int rc = oa_effect_worker_submit(c->effect_worker, &job, &ticket);
+    return rc == 0 ? OA_EASI_QUEUED : OA_EASI_FAILED;
 }
 
 static void effects_emit(void *ud, enum oa_easi_effect effect, int arg)
@@ -684,6 +711,7 @@ static int iface_tuner_select_display(const oa_tuner_select_inputs *in,
     struct ctx *c = g_ctx;
     if (!c || !c->effects_enabled)
         return -2;
+    collect_effect_results(c);
     oa_easi_effects_bind(&c->effects, &c->effects_ops);
     return oa_tuner_select_display(&c->effects_ops, in, out);
 }
@@ -701,6 +729,7 @@ static int iface_tuner_select_sink_status(oa_easi_sink_state *out)
     struct ctx *c = g_ctx;
     if (!c || !c->sink_enabled)
         return -2;
+    collect_effect_results(c);
     return oa_easi_sink_snapshot(&c->sink, out);
 }
 
@@ -728,6 +757,16 @@ static int iface_video_mute_state(oa_video_mute_state *out)
 static const oa_video_mute_iface g_video_mute_iface = {
     iface_video_mute_set_hidden, iface_video_mute_state
 };
+
+static void stop_effect_worker(struct ctx *c)
+{
+    if (!c->effect_worker)
+        return;
+    (void)oa_effect_worker_quiesce(c->effect_worker);
+    (void)oa_effect_worker_join(c->effect_worker);
+    (void)oa_effect_worker_destroy(c->effect_worker);
+    c->effect_worker = NULL;
+}
 
 static int m_init(const oa_host_api *api, void **out)
 {
@@ -903,8 +942,15 @@ static int m_start(void *v)
     if (c->sink_enabled) {
         const oa_easi_sink_io sio = { c, sink_apply };
         oa_easi_sink_init(&c->sink, &sio);
-        c->api->log(c->api->priv, OA_LOG_INFO,
-                    "tuner.select: real effect sink enabled (mute via audio)");
+        int wrc = oa_effect_worker_create(&c->effect_worker);
+        if (wrc) {
+            c->sink_enabled = 0;
+            c->api->log(c->api->priv, OA_LOG_WARN,
+                        "tuner.select: effect worker failed (%d)", wrc);
+        } else {
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "tuner.select: effect sink enabled on worker");
+        }
     }
     const char *vm = c->api->config_get(c->api->priv, "source.video_mute", "0");
     c->vm_enabled = vm && atoi(vm) != 0;
@@ -1008,6 +1054,14 @@ static int m_quiesce(void *v)
         c->effects_enabled = 0;
     }
     c->sink_enabled = 0;
+    if (c->effect_worker && oa_effect_worker_quiesce(c->effect_worker) == -EAGAIN)
+        return -EAGAIN;
+    if (c->effect_worker) {
+        if (oa_effect_worker_join(c->effect_worker))
+            return -EIO;
+        (void)oa_effect_worker_destroy(c->effect_worker);
+        c->effect_worker = NULL;
+    }
     if (c->vm_enabled) {
         c->api->release(c->api->priv, OA_SVC_VIDEO_MUTE);
         c->api->unpublish(c->api->priv, OA_SVC_VIDEO_MUTE);
@@ -1066,6 +1120,7 @@ static void m_stop(void *v)
         c->effects_enabled = 0;
     }
     c->sink_enabled = 0;
+    stop_effect_worker(c);
     if (c->vm_enabled) {
         c->api->release(c->api->priv, OA_SVC_VIDEO_MUTE);
         c->api->unpublish(c->api->priv, OA_SVC_VIDEO_MUTE);
@@ -1084,6 +1139,7 @@ static void m_stop(void *v)
 static void m_destroy(void *v)
 {
     struct ctx *c = v;
+    stop_effect_worker(c);
     if (c->pulse_running) {
         (void)pthread_join(c->pulse_thread, NULL);
         c->pulse_running = 0;

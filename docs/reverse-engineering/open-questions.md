@@ -109,9 +109,12 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   `plat_drm_set_mute` @ `0x92cec8` chain (libNDAL3 Hal_Video_* calls, DRM ioctl
   `0xc00c6455`, main path 0) behind default-off `source.video_mute`
   (`check-video-mute`, fake-service `source_path`); it is a real DRM ioctl but
-  synchronous on the loop and not scanout proof. Decoder/scart/SPDIF/
-  headphone/teletext/subtitles backends, a sink worker, on-TV acceptance
-  (TV in use) and UI/timing remain open. The vendor EASI methods need live
+  not scanout proof. `common/effect_worker.c` now moves mute and DRM mute calls
+  off the loop (bounded FIFO, loop-side service resolution, queued-not-applied
+  status, collected completions; `check-effect-worker`, fake-service
+  `source_path`); the copied set_mute pointer and worker lifecycle still need
+  reload/stop acceptance. Decoder/scart/SPDIF/headphone/teletext/subtitles
+  backends, on-TV acceptance (TV in use) and UI/timing remain open. The vendor EASI methods need live
   C++ objects and cannot be called directly. The source service
   now exposes the read-only `video_status()` v2 behind `source.vin_status`; it
   is host-tested but not wired to a tuner and is a no-signal detector, not the
