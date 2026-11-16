@@ -36,7 +36,9 @@ extern "C" {
  * match that reservation and leave margin; only info[0] (plane ID) is read.
  * A 4-word buffer overflowed the worker stack and caused the 2026-11-16 TV
  * SIGSEGV — do not shrink this. */
+#ifndef OA_VIDEO_MUTE_INFO_WORDS
 #define OA_VIDEO_MUTE_INFO_WORDS 16
+#endif
 #define OA_VIDEO_MUTE_INFO_WRITTEN_WORDS 12
 #define OA_VIDEO_MUTE_PLANE_SLOTS 9
 

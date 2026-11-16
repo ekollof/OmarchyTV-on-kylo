@@ -2990,6 +2990,28 @@ check-video-mute: $(BUILD)/tests/video_mute
 	@$(BUILD)/tests/video_mute
 check: check-video-mute
 
+# Regression guards for the 2026-11-16 on-TV SIGSEGV: the fake HAL writes all
+# 12 words (48 bytes) that Hal_Video_Get_DrmPlaneInfo writes, and a forced
+# 4-word buffer must fail the static assertion.
+.PHONY: check-video-mute-asan check-video-mute-buffer-guard
+check-video-mute-asan:
+	@mkdir -p $(BUILD)/tests
+	$(CC) -Iinclude -D_GNU_SOURCE -std=c11 -O1 -g -Wall -Wextra -Werror \
+	  -pedantic -fsanitize=address,undefined -fno-omit-frame-pointer \
+	  -o $(BUILD)/tests/video_mute_asan tests/video_mute.c common/video_mute.c
+	ASAN_OPTIONS=detect_leaks=1 $(BUILD)/tests/video_mute_asan
+check-video-mute-buffer-guard:
+	@mkdir -p $(BUILD)
+	@if $(CC) -Iinclude -D_GNU_SOURCE -DOA_VIDEO_MUTE_INFO_WORDS=4 \
+	  -std=c11 -O1 -g -Wall -Wextra -Werror -pedantic \
+	  -c common/video_mute.c -o $(BUILD)/video_mute_4words.o \
+	  2>$(BUILD)/video_mute_4words.err; then \
+	  echo "FAIL: 4-word plane-info buffer compiled (would overflow)"; exit 1; \
+	fi
+	@grep -q "static assertion failed" $(BUILD)/video_mute_4words.err
+	@echo "ok video mute buffer guard: 4-word plane-info buffer rejected"
+check: check-video-mute-asan check-video-mute-buffer-guard
+
 $(BUILD)/tests/effect_worker: tests/effect_worker.c common/effect_worker.c common/easi_sink.c common/video_mute.c include/openaurora/effect_worker.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) -DOA_NO_VENDOR $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^) -pthread

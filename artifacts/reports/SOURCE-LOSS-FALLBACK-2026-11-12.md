@@ -571,8 +571,11 @@ and reuse failure, not a new hardware quirk.
   policy on the loop, holds the raw provider until stop and logs completions on
   the loop. The worker makes no host API call.
 
-`check-video-mute`, `check-effect-worker`, `check-source-path` (with a new
-CEC-block case), `check-tuner-select-ipc` and the full host suite pass (rc=0);
+To prevent recurrence, `make check-video-mute-asan` runs the same test with the
+real 12-word fake write under ASan/UBSan, and `make check-video-mute-buffer-guard`
+proves that forcing `OA_VIDEO_MUTE_INFO_WORDS=4` fails the static assertion. Both
+pass, as do `check-video-mute`, `check-effect-worker`, `check-source-path` (with
+a new CEC-block case), `check-tuner-select-ipc` and the full host suite (rc=0);
 ARM `mod_source.so` (`f29c56fb…`) and `mod_audio.so` (`a5d6e2a1…`) build. Delegate-assisted
 firmware analysis (two research agents) supplied the 48-byte contract and the
 host-API-from-worker finding; no agent modified files.
