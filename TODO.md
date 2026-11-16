@@ -586,10 +586,17 @@ unvalidated.
       subtitles/teletext state; it is wired into `mod_source` as
       `OA_SVC_TUNER_SELECT` behind default-off `source.tuner_select_effects`
       (`check-easi-effects` and the fake-service `source_path` test pass, TV
-      `mod_source.so` builds). The emitter only logs; no real effect consumer
-      or hardware/UI acceptance. Remaining: a consumer of the emitted effects,
-      any `SetConnectInfo` caller outside the analyzed paths and UI/timing.
-      SOURCE-LOSS-FALLBACK-2026-11-12.
+      `mod_source.so` builds). 2026-11-16: a real consumer
+      `common/easi_sink.c` dispatches the emitted effects behind default-off
+      `source.tuner_select_sink`; mute drives the HAL-backed
+      `OA_SVC_AUDIO.set_mute`, other effects are counted unsupported
+      (`check-easi-sink`, fake-service `source_path`, TV `mod_source.so`
+      builds). Mute mapping is a replacement policy, not proved firmware
+      equivalence; CEC-SAM policy conflict and decoder/hide/show backends are
+      open. On-TV validation blocked while TV is in use (HANDOFF); needs an
+      explicit owner-authorized window with stock restoration. Remaining: real
+      decoder/hide/show/scart/SPDIF backends, any `SetConnectInfo` caller
+      outside the analyzed paths and UI/timing. SOURCE-LOSS-FALLBACK-2026-11-12.
 - [x] Source switches emit `source/state`; `ui_vendor` updates the Bronlijst
       row, `m_current_source`, picture cards and repaints; `ui_omarchy`
       repaints. `common/source_map.c` + `check-source-map` cover the nine-row

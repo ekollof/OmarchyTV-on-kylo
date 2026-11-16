@@ -129,9 +129,15 @@ A pure replacement EASI effect backend `common/easi_effects.c` consumes it
 (17 firmware-ordered effects, tracked mute/decoder/hide/show state) and is
 wired into `mod_source` as `OA_SVC_TUNER_SELECT` behind default-off
 `source.tuner_select_effects` (`check-easi-effects` and fake-service
-`source_path` pass, TV `mod_source.so` builds). The emitter only logs; no
-hardware/UI consumer or parity. Any `SetConnectInfo` caller outside the
-analyzed paths remains open. The status-4/HPD path is the
+`source_path` pass, TV `mod_source.so` builds). A real consumer
+`common/easi_sink.c` now dispatches the emitted effects behind default-off
+`source.tuner_select_sink` (`check-easi-sink`, fake-service `source_path`,
+TV `mod_source.so` builds): mute drives the HAL-backed speaker mute service;
+other effects are counted unsupported, not faked. Mute mapping is a
+replacement policy (not proved firmware equivalence) and conflicts with
+mod_audio's CEC-SAM policy if both are enabled. Decoder/hide/show backends and
+on-TV acceptance remain open (TV in use per HANDOFF; explicit owner window
+required). Any `SetConnectInfo` caller outside the analyzed paths remains open. The status-4/HPD path is the
 cable-unplug policy; `source.video_status` is a no-signal detector, not the
 sleep trigger. `source.video_status()` v2 is now
 host-tested behind `source.vin_status` (`check-source-vin` and the fake-module

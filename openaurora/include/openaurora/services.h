@@ -19,6 +19,7 @@
 #include "openaurora/broadcast.h"
 #include "openaurora/tuner_select.h"
 #include "openaurora/easi_effects.h"
+#include "openaurora/easi_sink.h"
 
 #include <stdint.h>
 
@@ -520,12 +521,15 @@ typedef struct {
  * Published by mod_source only when source.tuner_select_effects=1. display()
  * runs the pure injected-effects model and returns 0 (ran or cleanly
  * rejected), -2 when disabled or -EINVAL for null arguments. state() copies
- * the replacement EASI effect state. No device, HAL, decode or UI I/O. */
+ * the replacement EASI effect state. The model itself performs no device,
+ * HAL, decode or UI I/O. v2 adds sink_status(): the optional real consumer's
+ * applied/unsupported counters (-2 when source.tuner_select_sink is off). */
 #define OA_SVC_TUNER_SELECT "tuner.select"
 typedef struct {
     int (*display)(const oa_tuner_select_inputs *in,
                    oa_tuner_select_result *out);
     int (*state)(oa_easi_effects_state *out);
+    int (*sink_status)(oa_easi_sink_state *out); /* v2 */
 } oa_tuner_select_iface;
 
 /* ui.anim — recovered list/dialog animation. Published by mod_ui_anim.

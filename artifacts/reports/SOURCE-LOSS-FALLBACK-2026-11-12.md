@@ -445,13 +445,46 @@ passes (rc=0) and the TV `mod_source.so` builds with the new sources. This is
 a replacement *contract and state model*, not audible/display or stock-UI
 parity; no real effect backend consumes the emitter yet.
 
-### Controlled on-TV acceptance plan (not executed)
+### Real effect consumer (2026-11-16)
 
-The model and its effect backend are host-tested only. On-TV acceptance of
-*real* effects requires a consumer that drives hardware/UI from the emitted
-events; none exists, so until then the only tractable on-TV work is read-only
-contract confirmation and ARM/ABI verification. With a consumer and an
-owner-authorized idle window, use this plan with full stock restoration:
+`include/openaurora/easi_sink.h` / `common/easi_effects.c`'s emitter now has a
+real consumer: `common/easi_sink.c` dispatches each emitted effect through an
+injected `apply` callback and accounts it as applied, unsupported, failed or
+no-backend. `mod_source` binds it behind default-off
+`source.tuner_select_sink` and exposes `sink_status()` on `OA_SVC_TUNER_SELECT`
+v2. The concrete backend maps `MUTE_ON`/`MUTE_OFF` to `OA_SVC_AUDIO.set_mute`,
+which drives the HAL-backed `PLAT_AOUT_SetSpeakerHWMute` (audio opcode 0x35) —
+a real hardware effect through an existing service, not a log line. Every
+other effect (decoder, hide/show, scart, SPDIF, headphone, teletext, subtitles,
+the two selects and dual-view reset) is reported `unsupported`: no verified
+replacement backend exists, and the sink never fakes success.
+
+Firmware note: EASI `muteOn` routes through an `AudioIF` C++ object
+(`EASIControlTask::muteOn` @ `0x98bb00` calls vtable+8 on `this+0xc4` with
+`this+0x384`); the mapping to the audio service's speaker mute is a deliberate
+replacement policy, not a proved firmware-equivalent path. `mod_audio` also
+enforces CEC System Audio Mode policy on that service, so this gate must not
+be enabled for CEC-SAM use without resolving that conflict.
+
+`check-easi-sink` covers dispatch accounting (applied/unsupported/failed/
+no-backend, bogus returns, null sink); the fake-service `source_path` test
+verifies that a gated display-select reaches the fake audio service twice
+(mute then unmute), that unsupported effects are counted, and that disabling
+the gate produces no audio call and a `-2` status. Full host suite passes
+(rc=0) and the TV `mod_source.so` builds. No hardware effect was executed.
+
+### Controlled on-TV acceptance plan (blocked — not executed)
+
+The model, its effect backend and the mute consumer are host-tested only.
+**This step is currently blocked by owner/TV state, not by missing code:**
+`HANDOFF.md` records "Continue safe offline implementation while TV is in use"
+and MEMORY's LIVE-MODULE-ACCEPTANCE entry requires a new explicit
+watchdog-safe, recovery-ready instruction before reopening fb1/display or
+testtool work. The standing 2026-11-01 idle window also returns to view-only
+when the owner reports use again. No on-TV display ownership, staging, effect
+emission or stock-Aurora stop was performed for this milestone. With an
+explicit owner-authorized window and the remaining effect consumers present,
+use this plan with full stock restoration:
 
 1. Baseline (view-only): with `tools/tvssh.sh`, record the stock Aurora PID
    (never the first `pidof aurora.elf` result), active source, current service,
@@ -462,11 +495,14 @@ owner-authorized idle window, use this plan with full stock restoration:
    Stage anything needed under `/tmp` only, verifying size/hash in a separate
    successful connection; remove all staging afterwards.
 3. With explicit authorization, use a bounded display-owned window: stop stock
-   Aurora only if permitted, enable `source.tuner_select_effects=1` and drive
-   one `OA_SVC_TUNER_SELECT.display()`; capture the emitted effect trace and
-   state snapshot, and compare them with the stock mute/decoder/hide/show and
-   `DAT_*` flag effects. The emitter currently only logs — step 3 becomes real
-   hardware/UI acceptance only when a consumer of the emit events exists.
+   Aurora only if permitted, enable `source.tuner_select_effects=1` and
+   `source.tuner_select_sink=1`, and drive one `OA_SVC_TUNER_SELECT.display()`;
+   capture the emitted effect trace, the sink's applied/unsupported counters
+   and the state snapshot. Observe the real speaker-mute change via the audio
+   service and compare the full trace with the stock mute/decoder/hide/show
+   and `DAT_*` flag effects. Decoder/hide/show remain unsupported until real
+   backends exist, so they can only be compared as traced requests. Also
+   verify no CEC System Audio Mode conflict before enabling the sink gate.
    Then restore stock operation and access. Keep watchdog handling and a
    recovery reboot available per AGENTS.md; never leave a watchdog disabled
    or a helper running.

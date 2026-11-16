@@ -28,6 +28,9 @@ static int color_gate;
 static int vin_gate;
 static int inactive_gate;
 static int effects_gate;
+static int sink_gate;
+static int audio_mute_calls;
+static int audio_last_mute;
 static int pos;
 
 static struct oa_channel_entry channel_entries[3];
@@ -72,6 +75,16 @@ static int fake_service_format(const struct oa_service_list *list, size_t index,
 }
 static const oa_service_list_iface fake_services = {
     fake_service_snapshot, fake_service_format
+};
+
+static int fake_audio_set_mute(int on)
+{
+    audio_mute_calls++;
+    audio_last_mute = on ? 1 : 0;
+    return 0;
+}
+static const oa_audio_iface fake_audio = {
+    NULL, NULL, fake_audio_set_mute, NULL, NULL
 };
 
 #define SKIP INT64_MIN
@@ -146,6 +159,7 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "source.vin_status")) return vin_gate ? "1" : "0";
     if (!strcmp(key, "source.inactive_fallback")) return inactive_gate ? "1" : "0";
     if (!strcmp(key, "source.tuner_select_effects")) return effects_gate ? "1" : "0";
+    if (!strcmp(key, "source.tuner_select_sink")) return sink_gate ? "1" : "0";
     if (!strcmp(key, "source.cleanup_delay_ms")) return "0";
     return def;
 }
@@ -153,7 +167,7 @@ static int publish(void *p, const char *name, uint32_t version, const void *ifc)
 {
     (void)p;
     if (!strcmp(name, OA_SVC_TUNER_SELECT)) {
-        assert(version == 1);
+        assert(version == 2);
         select_iface = ifc;
         return 0;
     }
@@ -189,6 +203,7 @@ static const void *lookup(void *p, const char *name, uint32_t min_version)
     if (!strcmp(name, OA_SVC_CHANNELS)) return &fake_channels;
     if (!strcmp(name, OA_SVC_TUNER)) return &fake_tuner;
     if (!strcmp(name, OA_SVC_SERVICE_LIST)) return &fake_services;
+    if (!strcmp(name, OA_SVC_AUDIO)) return &fake_audio;
     return NULL;
 }
 static const oa_host_api api = {
@@ -514,8 +529,51 @@ int main(void)
     assert(select_iface == NULL && select_log_n == 0);
     done(ctx);
 
+    /* Real consumer: EASI mute effects drive the HAL-backed audio service;
+     * effects without a replacement backend are counted unsupported, not
+     * silently claimed as applied. */
+    effects_gate = 1;
+    sink_gate = 1;
+    audio_mute_calls = 0;
+    select_log_n = 0;
+    select_log[0] = '\0';
+    ctx = start(1);
+    assert(select_iface != NULL);
+    oa_tuner_select_inputs cin;
+    memset(&cin, 0, sizeof cin);
+    cin.service_count = 10;
+    cin.handle_valid = 1;
+    cin.handle = 100;
+    cin.select_result = 0;
+    cin.display = 1;
+    cin.post_select = 1;
+    cin.decoder_available = 0;
+    cin.authorized = 1;
+    cin.current_service = 3;
+    oa_tuner_select_result cout;
+    assert(select_iface->display(&cin, &cout) == 0);
+    assert(cout.ran && cout.unmute_applied && cout.show_applied);
+    oa_easi_sink_state ss;
+    assert(select_iface->sink_status(&ss) == 0);
+    assert(ss.applied >= 2);      /* mute_on + mute_off reached the audio HAL */
+    assert(ss.unsupported > 0);   /* decoder/hide/scart/SPDIF/teletext etc. */
+    assert(ss.failed == 0 && ss.no_backend == 0);
+    assert(audio_mute_calls == 2 && audio_last_mute == 0);
+    assert(strstr(select_log, "sink=0") != NULL);
+    done(ctx);
+
+    /* With the sink gate off, status is -2 and no audio call is made. */
+    sink_gate = 0;
+    audio_mute_calls = 0;
+    ctx = start(1);
+    assert(select_iface != NULL);
+    assert(select_iface->sink_status(&ss) == -2);
+    assert(select_iface->display(&cin, &cout) == 0);
+    assert(audio_mute_calls == 0);
+    done(ctx);
+
     puts("ok source path: type gates, VIN opens/VPLT, V4L2Info/FdCommon, "
-         "DRM/NDAL, audio, gated HDMI RX status, inactive-source order and "
-         "gated tuner.select effects");
+         "DRM/NDAL, audio, gated HDMI RX status, inactive-source order, "
+         "gated tuner.select effects and real EASI consumer");
     return 0;
 }

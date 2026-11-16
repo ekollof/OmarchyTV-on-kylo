@@ -99,9 +99,14 @@ Reports: [AUDIO-SOURCE-SERVICE](../../artifacts/reports/AUDIO-SOURCE-SERVICE-202
   (`check-tuner-select`). A pure replacement EASI effect backend
   `common/easi_effects.c` consumes it and is wired into `mod_source` as
   `OA_SVC_TUNER_SELECT` behind default-off `source.tuner_select_effects`
-  (`check-easi-effects`, fake-service `source_path`); its emitter only logs,
-  so a real hardware/UI effect consumer and UI/timing remain open. The vendor
-  EASI methods need live C++ objects and cannot be called directly. The source service
+  (`check-easi-effects`, fake-service `source_path`). A real consumer
+  `common/easi_sink.c` dispatches the emitted effects behind default-off
+  `source.tuner_select_sink` (`check-easi-sink`, fake-service `source_path`):
+  mute drives the HAL-backed speaker mute, other effects are counted
+  unsupported. The mute mapping is a replacement policy (not proved firmware
+  equivalence) and conflicts with mod_audio's CEC-SAM policy; decoder/hide/
+  show backends, on-TV acceptance (TV in use) and UI/timing remain open. The
+  vendor EASI methods need live C++ objects and cannot be called directly. The source service
   now exposes the read-only `video_status()` v2 behind `source.vin_status`; it
   is host-tested but not wired to a tuner and is a no-signal detector, not the
   sleep trigger. `common/tuner_view.c` + `check-tuner-view` cover the recovered

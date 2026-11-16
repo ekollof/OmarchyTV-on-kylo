@@ -32,6 +32,7 @@
 #include "openaurora/channels.h"
 #include "openaurora/dev_gpio.h"
 #include "openaurora/easi_effects.h"
+#include "openaurora/easi_sink.h"
 
 #include "openaurora/events.h"
 #include "openaurora/module.h"
@@ -107,6 +108,9 @@ struct ctx {
     int effects_enabled;
     oa_easi_effects effects;
     oa_tuner_select_ops effects_ops;
+    /* source.tuner_select_sink: real consumer of the emitted effects. */
+    int sink_enabled;
+    oa_easi_sink sink;
 };
 
 static struct ctx *g_ctx;
@@ -629,13 +633,36 @@ static const char *const easi_names[] = {
     "select_internal", "select_second", "dual_view_reset", "delay"
 };
 
+/* Real consumer: MUTE_ON/OFF drive the HAL-backed speaker mute service. No
+ * other effect has a verified replacement backend, so it is reported as
+ * unsupported rather than silently claimed as applied. The vendor routes EASI
+ * mute through an AudioIF object; this is a replacement policy mapping, not a
+ * proved firmware-equivalent path. mod_audio also enforces CEC System Audio
+ * policy on this service, so this gate must not be enabled for CEC-SAM use. */
+static int sink_apply(void *ud, enum oa_easi_effect effect, int arg)
+{
+    struct ctx *c = ud;
+    (void)arg;
+    if (effect != OA_EASI_MUTE_ON && effect != OA_EASI_MUTE_OFF)
+        return OA_EASI_UNSUPPORTED;
+    const oa_audio_iface *a = c->api->lookup(c->api->priv, OA_SVC_AUDIO, 1);
+    if (!a || !a->set_mute)
+        return OA_EASI_FAILED;
+    int rc = a->set_mute(effect == OA_EASI_MUTE_ON ? 1 : 0);
+    c->api->release(c->api->priv, OA_SVC_AUDIO);
+    return rc == 0 ? OA_EASI_APPLIED : OA_EASI_FAILED;
+}
+
 static void effects_emit(void *ud, enum oa_easi_effect effect, int arg)
 {
     struct ctx *c = ud;
     const char *name = (unsigned)effect < sizeof easi_names / sizeof easi_names[0]
                            ? easi_names[effect] : "unknown";
+    int status = OA_EASI_NO_BACKEND;
+    if (c->sink_enabled)
+        status = oa_easi_sink_dispatch(&c->sink, effect, arg);
     c->api->log(c->api->priv, OA_LOG_DEBUG,
-                "tuner.select: %s(%d)", name, arg);
+                "tuner.select: %s(%d) sink=%d", name, arg, status);
 }
 
 static int iface_tuner_select_display(const oa_tuner_select_inputs *in,
@@ -656,8 +683,17 @@ static int iface_tuner_select_state(oa_easi_effects_state *out)
     return oa_easi_effects_snapshot(&c->effects, out);
 }
 
+static int iface_tuner_select_sink_status(oa_easi_sink_state *out)
+{
+    struct ctx *c = g_ctx;
+    if (!c || !c->sink_enabled)
+        return -2;
+    return oa_easi_sink_snapshot(&c->sink, out);
+}
+
 static const oa_tuner_select_iface g_tuner_select_iface = {
-    iface_tuner_select_display, iface_tuner_select_state
+    iface_tuner_select_display, iface_tuner_select_state,
+    iface_tuner_select_sink_status
 };
 
 static int m_init(const oa_host_api *api, void **out)
@@ -828,10 +864,19 @@ static int m_start(void *v)
     const char *effects = c->api->config_get(c->api->priv,
                                              "source.tuner_select_effects", "0");
     c->effects_enabled = effects && atoi(effects) != 0;
+    const char *sink = c->api->config_get(c->api->priv,
+                                          "source.tuner_select_sink", "0");
+    c->sink_enabled = sink && atoi(sink) != 0;
+    if (c->sink_enabled) {
+        const oa_easi_sink_io sio = { c, sink_apply };
+        oa_easi_sink_init(&c->sink, &sio);
+        c->api->log(c->api->priv, OA_LOG_INFO,
+                    "tuner.select: real effect sink enabled (mute via audio)");
+    }
     if (c->effects_enabled) {
         const oa_easi_effects_io io = { c, effects_emit };
         oa_easi_effects_init(&c->effects, &io);
-        if (c->api->publish(c->api->priv, OA_SVC_TUNER_SELECT, 1,
+        if (c->api->publish(c->api->priv, OA_SVC_TUNER_SELECT, 2,
                             &g_tuner_select_iface) != 0)
             c->api->log(c->api->priv, OA_LOG_WARN,
                         "tuner.select service already published");
@@ -908,6 +953,7 @@ static int m_quiesce(void *v)
         c->api->unpublish(c->api->priv, OA_SVC_TUNER_SELECT);
         c->effects_enabled = 0;
     }
+    c->sink_enabled = 0;
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
     if (c->nfds == 0) return 0;
@@ -960,6 +1006,7 @@ static void m_stop(void *v)
         c->api->unpublish(c->api->priv, OA_SVC_TUNER_SELECT);
         c->effects_enabled = 0;
     }
+    c->sink_enabled = 0;
     c->api->release(c->api->priv, OA_SVC_SOURCE);
     c->api->unpublish(c->api->priv, OA_SVC_SOURCE);
     if (c->cleanup_running) {
