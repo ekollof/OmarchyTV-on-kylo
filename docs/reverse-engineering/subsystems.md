@@ -400,7 +400,8 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   (monitor/Zenders) opens the screen, renderer/input prefer the ingested
   runtime active list, and the scrollbar is wired from createScrollBars
   (768..771 x 195..1011, 11 visible, min 36; 67-row fixture bar 133 px vs the
-  capture's 134, 1 px edge). Live EASI and exact tab anchors remain open.
+  capture's 134, 1 px edge). Tabs use captured ink anchors and the 1 px border
+  (MAE8 0.132), subtitle font 5. Live EASI, paging and scanout remain open.
   Evidence: CHANNEL-LIST-GEOMETRY.
 - Apps-grid focused labels use the firmware single-line centre rule
   (`physicalWidth` + first bearing, not the ink bbox):

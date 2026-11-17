@@ -229,7 +229,8 @@ struct ctx {
     struct oa_bitmap_font font_title; /* font18: tab title/focused channel row */
     unsigned char *font_title_data;
     struct oa_bitmap_font stock_tab_font, stock_marker_font; /* channel 12/1 */
-    unsigned char *stock_tab_data, *stock_marker_data;
+    struct oa_bitmap_font stock_subtitle_font;              /* channel 5 */
+    unsigned char *stock_tab_data, *stock_marker_data, *stock_subtitle_data;
     int stock_fonts_on;              /* channel stock mode fonts loaded */
     struct text_canvas text[SETTINGS_TEXT_MAX];
     struct text_canvas title; /* live tab title blob (no focus variant) */
@@ -1141,6 +1142,8 @@ static void settings_text_free(struct ctx *c)
     c->stock_tab_data = NULL;
     free(c->stock_marker_data);
     c->stock_marker_data = NULL;
+    free(c->stock_subtitle_data);
+    c->stock_subtitle_data = NULL;
     c->stock_fonts_on = 0;
     oa_font_pack_free(&c->font_pack);
     c->text_on = 0;
@@ -1211,7 +1214,9 @@ static int stock_channel_fonts(struct ctx *c)
                                           "ui.channel_tab_font_id", "12"));
         int marker = atoi(c->api->config_get(c->api->priv,
                                              "ui.channel_marker_font_id", "1"));
-        if (tab < 0 || marker < 0 ||
+        int subtitle = atoi(c->api->config_get(c->api->priv,
+                                               "ui.channel_subtitle_font_id", "5"));
+        if (tab < 0 || marker < 0 || subtitle < 0 ||
             settings_font_open(&c->font_pack, tab, &c->stock_tab_font,
                                &c->stock_tab_data) != 0)
             return -ENOTSUP;
@@ -1219,6 +1224,14 @@ static int stock_channel_fonts(struct ctx *c)
                                &c->stock_marker_data) != 0) {
             free(c->stock_tab_data);
             c->stock_tab_data = NULL;
+            return -ENOTSUP;
+        }
+        if (settings_font_open(&c->font_pack, subtitle,
+                               &c->stock_subtitle_font,
+                               &c->stock_subtitle_data) != 0) {
+            free(c->stock_tab_data);
+            free(c->stock_marker_data);
+            c->stock_tab_data = c->stock_marker_data = NULL;
             return -ENOTSUP;
         }
         c->stock_fonts_on = 1;
@@ -2054,22 +2067,6 @@ static void channel_text_at(struct ctx *c, const struct oa_bitmap_font *font,
     free(rgba);
 }
 
-static void channel_text_centered(struct ctx *c,
-                                  const struct oa_bitmap_font *font,
-                                  const char *text, const oa_channel_rect *tab,
-                                  int y, uint8_t r, uint8_t g, uint8_t b)
-{
-    if (!c || !c->d || !tab)
-        return;
-    const uint8_t ink[4] = { r, g, b, 255 };
-    unsigned char *rgba = NULL;
-    int w = 0, h = 0;
-    if (channel_text_crop(font, text, ink, &rgba, &w, &h) != 0)
-        return;
-    c->d->blit(tab->x + (tab->x1 - tab->x - w) / 2, y, w, h, rgba);
-    free(rgba);
-}
-
 /* Stock channel screen, gated by ui.channels_stock=1. Rectangles and colours
  * come from common/channel_layout.c; the text ink anchors are measured from
  * the p0/04 capture (fonts: see stock_channel_fonts). The header icon and
@@ -2100,18 +2097,26 @@ static void paint_channels_stock(struct ctx *c)
             l.tabs[0].y1 - l.tabs[0].y,
             l.tab_selected_rgb[0], l.tab_selected_rgb[1],
             l.tab_selected_rgb[2]);
-    for (int i = 1; i < 3; i++)
+    /* The selected tab has a 1 px off-white right edge in the capture. */
+    d->fill(l.tabs[0].x1 - 1, l.tabs[0].y, 1, l.tabs[0].y1 - l.tabs[0].y,
+            253, 250, 250);
+    for (int i = 1; i < 3; i++) {
+        /* 1 px #CC6B74 border over the #C14753 interior. */
         d->fill(l.tabs[i].x, l.tabs[i].y, l.tabs[i].x1 - l.tabs[i].x,
-                l.tabs[i].y1 - l.tabs[i].y,
+                l.tabs[i].y1 - l.tabs[i].y, 204, 107, 116);
+        d->fill(l.tabs[i].x + 1, l.tabs[i].y + 1,
+                l.tabs[i].x1 - l.tabs[i].x - 2,
+                l.tabs[i].y1 - l.tabs[i].y - 2,
                 l.tab_rgb[0], l.tab_rgb[1], l.tab_rgb[2]);
+    }
 
     channel_text_at(c, &c->font, "Zenders", 122, 21, 255, 255, 255);
-    channel_text_at(c, &c->stock_tab_font, "Alleen TV", 123, 63,
+    channel_text_at(c, &c->stock_subtitle_font, "Alleen TV", 123, 63,
                     l.muted_rgb[0], l.muted_rgb[1], l.muted_rgb[2]);
-    channel_text_centered(c, &c->stock_tab_font, "Bekijken", &l.tabs[0], 116,
-                          129, 25, 36); /* #811924 ink on the white tab */
-    channel_text_centered(c, small, "Bewerken", &l.tabs[1], 118, 255, 255, 255);
-    channel_text_centered(c, small, "Filter", &l.tabs[2], 118, 255, 255, 255);
+    channel_text_at(c, &c->stock_tab_font, "Bekijken", 80, 116,
+                    129, 25, 36); /* #811924 ink on the white tab */
+    channel_text_at(c, small, "Bewerken", 333, 118, 255, 255, 255);
+    channel_text_at(c, small, "Filter", 615, 118, 255, 255, 255);
 
     const oa_channel_iface *channels =
         c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1);

@@ -2356,9 +2356,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       the ingested runtime active list (3-entry test -> Runtime A). The
       scrollbar is wired from createScrollBars (768..771 x 195..1011, 11
       visible, min36); the 67-row fixture gives a 133 px bar (capture 134, 1 px
-      edge) and panel MAE8 2.671. The provisional screen remains default. Open:
-      live EASI LCN/visibility, exact tab anchors, paging, tuner/EPG/PVR and
-      scanout.
+      edge) and panel MAE8 2.314 (tabs 0.132, banner 1.393 via captured ink
+      anchors and the 1 px tab border; subtitle font 5). The provisional screen
+      remains default. Open: live EASI LCN/visibility, paging, tuner/EPG/PVR
+      and scanout.
 - [ ] Apps/browser/media integration, picture quality/FRC, network and Bluetooth.
 - [ ] Tuner/DVB-T/DVB-S, EPG/service lists, teletext/MHEG/interactive TV, PVR/
       timeshift/playback, CI+/conditional access and associated persistence.

@@ -76,14 +76,17 @@ The font record and exact text anchors are not yet recovered.
   - `make check-ui-channels-stock-capture` renders the same rows with the real
     vendor fonts and the p0/04 names (C12, C07, BBC2, …), writes
     `stock-mode.png` and compares it with the corrected capture: panel MAE8
-    **2.671**, list **2.510**, focus row **1.510**, row 2 **2.581**. The
-    header icon is the theme `channel_small.png` (60x60, ink 2,9..58,57) drawn
-    at 30,14 and staged by `mk-ui.py`/the check. The scrollbar is wired from
+    **2.314**, banner **1.393**, tabs **0.132**, list **2.510**, focus row
+    **1.510**, row 2 **2.581**. The header icon is the theme `channel_small.png`
+    (60x60, ink 2,9..58,57) drawn at 30,14 and staged by `mk-ui.py`/the check.
+    The tab labels use the captured ink anchors (Bekijken 80,116; Bewerken
+    333,118; Filter 615,118), the subtitle uses font record 5 at 123,63, and
+    the unselected tabs carry the captured 1 px `#CC6B74` border (interior
+    `#C14753`, selected right edge `#FDFAFA`). The scrollbar is wired from
     `createScrollBars` (0x010bbd38) and the 20+16 px skin caps: 11 visible rows,
     3x816 window at 768,195, min bar 36; the 67-row fixture gives a 133 px bar
     by the shipped integer formula (capture white grip 134 px at y196, a 1 px
-    edge/antialias difference). The remaining banner/tab error (MAE8 3.78/5.75)
-    is the tab/subtitle raster edges; rows, colours and text anchors match. The stock screen's Up/Down/Select/Exit handling is
+    edge/antialias difference). The stock screen's Up/Down/Select/Exit handling is
     tested (Select emits index 1 name `C07`). The stock portal sidebar capture
     (`shot-launcher.png`) orders the rail three-circle/source-arrow/home/
     monitor-Zenders/wrench; Select on rail 3 now opens `SCREEN_CHANNELS` only with `ui.channels_stock=1`; the default rail path is unchanged and is
@@ -112,9 +115,9 @@ y196 (1 px edge/antialias), and the capture check scrollbar region is MAE8
 
 The provisional `SCREEN_CHANNELS` remains the default; the portal entry path
 (rail 3), runtime-order ingest/selection and scrollbar are wired and tested.
-The live EASI/LCN visibility feed, exact tab/subtitle anchors (MAE8 5.75) and
-scanout remain open; the scrollbar grip's 1 px white edge is capture
-antialias/threshold, not a fitted offset. The capture comparison is
+The live EASI/LCN visibility feed and scanout remain open; the remaining
+capture error is row text antialias and the scrollbar's 1 px white edge, not
+fitted offsets. The capture comparison is
 recorder/CPU, not fb1/scanout proof.
 
 Report: CHANNEL-LIST-GEOMETRY-2026-11-17. Related: CHANNEL-LIST-UI,

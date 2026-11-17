@@ -297,8 +297,10 @@ panel/banner/tabs/rows with the matching vendor font records (7 title,
 12 subtitle/selected tab, 4 unselected tabs, 16 normal rows, 18 focused row,
 1 ATV marker). `check-ui-channels-stock` covers the fills/rows and
 `check-ui-channels-stock-capture` compares the real-font render to the
-corrected capture: panel MAE8 2.671, list 2.510, focus row 1.510, row 2
-2.581, scrollbar 8.319 (banner/tabs 3.78/5.75 from tab/subtitle rasters). The
+corrected capture: panel MAE8 2.314, banner 1.393, tabs 0.132, list 2.510,
+focus row 1.510, row 2 2.581, scrollbar 8.319. The tab labels use captured ink
+anchors and the unselected 1 px #CC6B74 border; the subtitle uses font 5 at
+123,63. The
 provisional screen remains the default; the `channel_small` header icon is
 wired/staged, Up/Down/Select/Exit is tested (Select emits index 1 `C07`), and
 portal rail 3 (monitor/Zenders, shot-launcher sidebar) opens the screen only with `ui.channels_stock=1`. The
@@ -306,8 +308,7 @@ stock renderer/input also prefer the ingested runtime active list; a 3-entry
 ingest test reports `Runtime A`. The scrollbar is wired from createScrollBars
 (768..771 x 195..1011, 11 visible, min bar 36); the 67-row fixture yields a
 133 px bar by the shipped formula (capture white grip 134 px at y196, a 1 px
-edge/antialias). Live EASI/LCN/visibility, exact tab/subtitle anchors and
-scanout remain open.
+edge/antialias). Live EASI/LCN/visibility, paging and scanout remain open.
 
 PVR-MODULE-2026-11-05: the PVR service is now a real mod_pvr with a
 vendor-shaped backend boundary (integer recording id, start/stop, index query)

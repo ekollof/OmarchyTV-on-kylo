@@ -269,8 +269,11 @@ int main(int argc, char **argv)
     assert(find_fill(trace, 0, 0, 780, 1080, 190, 30, 45));
     assert(find_fill(trace, 0, 0, 780, 162, 178, 29, 43));
     assert(find_fill(trace, 12, 100, 250, 59, 255, 255, 255));
-    assert(find_fill(trace, 264, 100, 250, 59, 193, 71, 83));
-    assert(find_fill(trace, 516, 100, 250, 59, 193, 71, 83));
+    assert(find_fill(trace, 261, 100, 1, 59, 253, 250, 250));
+    assert(find_fill(trace, 264, 100, 250, 59, 204, 107, 116));
+    assert(find_fill(trace, 265, 101, 248, 57, 193, 71, 83));
+    assert(find_fill(trace, 516, 100, 250, 59, 204, 107, 116));
+    assert(find_fill(trace, 517, 101, 248, 57, 193, 71, 83));
     assert(find_fill(trace, 19, 195, 748, 66, 254, 148, 25));
     assert(find_blit(trace, 30, 14, 60, 60));
     oa_channel_layout layout;

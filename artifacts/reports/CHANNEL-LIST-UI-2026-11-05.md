@@ -71,9 +71,10 @@ This is an explicit provisional UI, not vendor parity:
   `ui.channels_stock=1` (sidebar order from `shot-launcher.png`); the default
   rail path is unchanged, and the stock screen/input prefer the ingested runtime
   active list (3-entry ingest test reports `Runtime A`). The provisional screen
-  remains the default; the live EASI feed, exact tab/subtitle anchors (capture
-  MAE8 5.75), paging and scanout remain open. The scrollbar is wired from the
-  listbox window and skin caps (11 visible rows, 3x816, min 36);
+  remains the default; the live EASI feed, paging and scanout remain open. The
+  tab/subtitle anchors and 1 px tab borders are implemented (tabs capture MAE8
+  0.132, banner 1.393); the scrollbar is wired from the listbox window and skin
+  caps (11 visible rows, 3x816, min 36);
 - tuner acquisition/scan, EPG, PVR, media/network and hardware ownership remain
   open;
 - recorder evidence is not physical fb1/scanout evidence.

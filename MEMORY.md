@@ -1612,15 +1612,15 @@ tabs 12..262/264..514/516..766 y100..159, filterInfo 123,50,766,95, list
 + `check-channel-layout` pass. 2026-11-17: default-off `ui.channels_stock=1`
 paints the stock screen with vendor font records 7/12/4/16/18/1;
 `check-ui-channels-stock` and `check-ui-channels-stock-capture` pass, the
-latter at panel MAE8 2.671/list 2.510/focus 1.510/row2 2.581/scrollbar 8.319
-against the corrected p0/04
+latter at panel MAE8 2.314/banner 1.393/tabs 0.132/list 2.510/focus 1.510/
+row2 2.581/scrollbar 8.319 against the corrected p0/04
 capture. The `channel_small` header icon is drawn/staged, Up/Down/Select/Exit
 is tested, portal rail 3 (monitor/Zenders) opens the screen only with `ui.channels_stock=1`; the default rail path is unchanged, and the renderer/
 input prefer the ingested runtime active list (3-entry test -> Runtime A). The
 scrollbar is wired from createScrollBars (768..771 x 195..1011, 11 visible,
-min 36); the 67-row fixture yields 133 px (capture 134, 1 px edge). The
-provisional screen remains default; exact tab/subtitle anchors, live EASI and
-scanout remain open.
+min 36); the 67-row fixture yields 133 px (capture 134, 1 px edge). Tabs use
+captured ink anchors and the 1 px border (MAE8 0.132), subtitle font 5. The
+provisional screen remains default; live EASI, paging and scanout remain open.
 
 PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary
 (integer recording id, start/stop, index query) with a persistent offline stub.

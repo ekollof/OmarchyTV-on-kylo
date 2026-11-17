@@ -83,7 +83,9 @@ and compares against `p0-04-channel-list-corrected.png`:
 
 | region | MAE8 |
 |---|---:|
-| panel | 2.671 |
+| panel | 2.314 |
+| banner | 1.393 |
+| tabs | 0.132 |
 | list | 2.510 |
 | focus row | 1.510 |
 | row 2 | 2.581 |
@@ -96,9 +98,11 @@ script. The listbox `createScrollBars` (0x010bbd38) and the 20+16 px skin caps g
 11-visible-row window at x768..771, y195..1011 (816 px) with min bar 36. The
 67-row capture list yields a 133 px bar by the shipped integer formula; the
 white-threshold capture grip is 134 px at y196, a 1 px edge/antialias
-difference. The bar is drawn at x768..770 and improved panel MAE8 from 2.750 to
-2.671 (list 2.543 -> 2.510). The remaining banner/tab error is the tab/subtitle
-raster edges (3.78/5.75); rows, colours and text anchors match. This is a recorder
+difference. The bar is drawn at x768..770. The tab labels use the captured ink anchors
+(80,116 / 333,118 / 615,118), the subtitle uses font record 5 at 123,63, and
+unselected tabs have the captured 1 px #CC6B74 border; tabs MAE8 is now 0.132
+and the banner 1.393. Panel MAE8 is 2.314 (rows 2.510, scrollbar 8.319 from the
+1 px bar edge). This is a recorder
 comparison, not fb1/scanout proof.
 
 ## Scrollbar skin and capture grip (2026-11-17)
