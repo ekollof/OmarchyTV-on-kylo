@@ -82,6 +82,22 @@ int main(void)
     assert(oa_epg_instant_x(&timeline, 0, 7200, -1, &x) == -ERANGE);
     assert(oa_epg_instant_x(&timeline, 0, 0, 0, &x) == -EINVAL);
 
+    /* Focused event: first event whose end is after focus_ms, else the last
+     * (ServiceTimelineBox::setFocusedEvent). */
+    struct oa_epg_event ev[3];
+    memset(ev, 0, sizeof ev);
+    ev[0].start_ms = 0;      ev[0].end_ms = 1000;
+    ev[1].start_ms = 2000;   ev[1].end_ms = 3000;
+    ev[2].start_ms = 5000;   ev[2].end_ms = 6000;
+    assert(oa_epg_focus_event(ev, 3, 0) == 0);
+    assert(oa_epg_focus_event(ev, 3, 999) == 0);
+    assert(oa_epg_focus_event(ev, 3, 1000) == 1);   /* first end > focus */
+    assert(oa_epg_focus_event(ev, 3, 2500) == 1);
+    assert(oa_epg_focus_event(ev, 3, 3000) == 2);
+    assert(oa_epg_focus_event(ev, 3, 9000) == 2);   /* none left: last */
+    assert(oa_epg_focus_event(ev, 0, 0) == -1);
+    assert(oa_epg_focus_event(NULL, 3, 0) == -1);
+
     /* Visible rows always take an explicit pitch; none is implied. */
     assert(oa_epg_visible_rows(&l, 76) == 9);
     assert(oa_epg_visible_rows(&l, 85) == 8);
@@ -127,6 +143,6 @@ int main(void)
     assert(oa_epg_synopsis_default(NULL) == -EINVAL);
 
     puts("ok epg layout: record-101/102 rects, list split, 7200 s event ratio, "
-         "instant x, pitch, tabs and event styles");
+         "instant x, pitch, tabs, event styles and focus");
     return 0;
 }

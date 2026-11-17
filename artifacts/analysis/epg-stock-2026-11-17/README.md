@@ -84,6 +84,35 @@ rows only when `ui.epg_row_pitch` is set (default 0 = chrome only). The
 candidate uses 76 px, the height of `EPGlistboxRowFA.svg`'s `mRowM` at its own
 artboard, as an explicit test input — not a recovered runtime step.
 
+## Selection and focus
+
+`MultiServiceTimelineScheduleDialog` gives the key model:
+`onUpDownPress` @0x00dcd6a1 forwards Up/Down to the service list and
+`ListTimelineBox::scrollUp/Down`; `onScrollTimeline` @0x00dcd531 maps
+Left/Right to `ListTimelineBox::scrollLeft/Right` -> the focused
+`ServiceTimelineBox::scrollLeft/Right` @0x00dd500d/0x00dd5165;
+`onSelectPress` @0x00dce625 opens `showGuideEvent` @0x00dce401
+(`GuideEventOptionsDialog`, option list not recovered); `onInfoKey`
+@0x00dcd234 toggles `showSynopsis`/`hideSynopsis`.
+
+`ServiceTimelineBox::setFocusedEvent` @0x00dd4c5c picks the first event whose
+end is after the focus time, else the last event. `ListTimelineBox::
+setFocusTime` @0x00dc7098 uses the current time inside the window and the
+window middle otherwise; `oa_epg_focus_event` encodes it. The focused event
+takes FA (running) or FI (not running); unfocused bars take UFA/UFI.
+
+The shell has no INFO RC id, so the synopsis toggle is `ui.epg_info_key`
+(0 = disabled). Select logs that `GuideEventOptionsDialog` is not implemented.
+
+## Event image
+
+`displayEvent` calls `ImageHelper::displayEventImage` @0x00de660c, which uses
+`EnhancedServiceEvent::getImage` and falls back to the service image. The
+project boundary is the optional `epg.image` v1 service; it returns borrowed
+RGBA, and the screen scales it into record 102's `eventImage`
+62,299..382,479 (320x180). With no provider the box stays blank. The fixture
+image is a 16x9 solid block; it is recorder evidence, not vendor art.
+
 ## Event-button styles and synopsis (record 102)
 
 `SVGServiceEventButton::resetSVGNames` @0x00dd5404 selects `serviceBFA/UFA/FI/

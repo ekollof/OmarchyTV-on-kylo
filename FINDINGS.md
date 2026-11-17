@@ -367,6 +367,26 @@ inference (#481730) pending a capture; exact tab font/icons, selection, synopsis
 event image/bottom rows/wrapping, day navigation, live EIT and scanout remain
 open. Recorder evidence only.
 
+EPG-SELECTION-2026-11-18: `MultiServiceTimelineScheduleDialog` gives the EPG
+keys: `onUpDownPress` 0x00dcd6a1 selects the service row, `onScrollTimeline`
+0x00dcd531 maps Left/Right to `ListTimelineBox::scrollLeft/Right`
+0x00dc7175/0x00dc7265 and the focused `ServiceTimelineBox::scrollLeft/Right`
+0x00dd500d/0x00dd5165, `onSelectPress` 0x00dce625 opens
+`GuideEventOptionsDialog` (showGuideEvent 0x00dce401; options unrecovered) and
+`onInfoKey` 0x00dcd234 toggles `showSynopsis`/`hideSynopsis` (102/101). The
+focused event rule is `ServiceTimelineBox::setFocusedEvent` 0x00dd4c5c: first
+event whose end is after the focus time, else the last; `setFocusTime`
+0x00dc7098 uses now inside the window and the window middle otherwise. Focused
+bars take FA when running and FI when not; unfocused UFA/UFI. `oa_epg_focus_event`
+encodes the rule; `ui.epg_stock=1` tracks epg_sel/epg_event with Up/Down and
+Left/Right. Our shell has no INFO RC id, so the synopsis toggle is
+`ui.epg_info_key` (0=disabled); Select logs the unrecovered options dialog.
+The record-102 event image (62,299..382,479, 320x180) comes from
+`ImageHelper::displayEventImage` 0x00de660c (`EnhancedServiceEvent::getImage`,
+service-image fallback) and is drawn from the optional `epg.image` v1 provider
+(borrowed RGBA, scaled); absent provider = blank. `check-ui-epg-stock` covers
+selection, FI style, the scaled image and the INFO toggle. Recorder only.
+
 PVR-SCROLLBAR-2026-11-18: the PVR list track is record-692 1910,217,1920,974
 (10x757) and the synopsis track record-693 1910,404,1920,984 (10x580). The
 screen uses the shipped SVGScrollBar::calculateBarSizeAndPosition with the

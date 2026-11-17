@@ -1,7 +1,8 @@
 # Stock EPG timeline layout and gated screen — 2026-11-17
 
-Status: current (layout/timeline and chrome screen; no stock EPG capture)
-Last verified: 2026-11-17 (firmware resource/instructions and host recorder
+Status: current (layout, selection and chrome/synopsis screens; no stock EPG
+capture)
+Last verified: 2026-11-18 (firmware resource/instructions and host recorder
 tests)
 Evidence class: firmware resource/instructions and host/recorder tests. No TV
 run, stock EPG capture, live EIT feed or scanout.
@@ -35,6 +36,40 @@ of inventing a grid. Raw rectangles and the recorder candidate are in
   `%02u:%02u`; weekday keys are `*_SHORT` (dut Za/Zo/Ma/Di/Woe/Do/Vr).
 - `setStartOfSchedule` @0x00dc8390 is local midnight minus `86400*n` seconds
   for day navigation, not the initial window start.
+
+## Selection, focus and synopsis
+
+- `MultiServiceTimelineScheduleDialog::onUpDownPress` @0x00dcd6a1 forwards
+  Up/Down to the `ChannelNameListBox` and `ListTimelineBox::scrollUp/Down`, so
+  it selects the service row; a changed row runs
+  `ListTimelineBox::setFocusedEvent` with the current/last focus time.
+- `onScrollTimeline` @0x00dcd531 maps Left/Right (ICE 0x20c/0x20d) to
+  `scrollTimelineLeft/Right` -> `ListTimelineBox::scrollLeft/Right`
+  @0x00dc7175/0x00dc7265 -> the focused
+  `ServiceTimelineBox::scrollLeft/Right` @0x00dd500d/0x00dd5165. The service
+  box moves the focused event index; when the index leaves the list or the row
+  is not user-focused, the shipped body instead scrolls the time window and
+  re-picks an event. This slice has no zoom/paging, so it implements the
+  focused-index move within the fixed window and leaves the window-scroll
+  branch open.
+- `ServiceTimelineBox::setFocusedEvent` @0x00dd4c5c walks the list and takes
+  the first event whose end is after the focus time; if none, the last event.
+  `ListTimelineBox::setFocusTime` @0x00dc7098 uses the current time when it is
+  inside the window and the window middle otherwise. `oa_epg_focus_event`
+  encodes that rule.
+- `onSelectPress` @0x00dce625 calls `showGuideEvent` @0x00dce401, which opens
+  `GuideEventOptionsDialog` for the focused event (view channel/record/
+  reminder/...); the option list and actions are not recovered.
+- `onInfoKey` @0x00dcd234 toggles the synopsis flag and calls
+  `showSynopsis`/`hideSynopsis` (resource 102/101). The shell's RC map has no
+  INFO id, so the toggle is exposed as `ui.epg_info_key` (0 = disabled) rather
+  than guessed.
+- The record-102 event image comes from
+  `ImageHelper::displayEventImage` @0x00de660c: `EnhancedServiceEvent::getImage`
+  when available, else `displayServiceImage`. The project boundary is the
+  optional `epg.image` v1 service (`oa_epg_image_iface.get`, borrowed RGBA);
+  absent means the 62,299..382,479 box stays blank. A supplied image is scaled
+  into the 320x180 rect.
 
 ## Screen rectangles (record 101)
 
@@ -88,9 +123,12 @@ TabButton state colours.
 - `ui.epg_stock=1` (default off), `ui.screen=epg` or `open:epg`: a
   `SCREEN_EPG` chrome with `PROGRAM_GUIDE`/date/times through `i18n`, service
   names from the runtime channel list or stored DB, event bars from
-  `OA_SVC_EPG`, the now indicator and Up/Down/Exit. Rows paint only when
-  `ui.epg_row_pitch` is explicitly set; the default is chrome only because the
-  runtime row step is art-derived and not pinned offline.
+  `OA_SVC_EPG`, the focused service/event (Up/Down, Left/Right; focused style
+  FA/FI when the event is running, UFA/UFI otherwise), the now indicator and
+  Exit. Rows paint only when `ui.epg_row_pitch` is explicitly set; the default
+  is chrome only because the runtime row step is art-derived and not pinned
+  offline. `ui.epg_info_key` toggles the record-102 synopsis; the optional
+  `epg.image` provider supplies the event image.
 - `tests/ui_epg_stock.c` publishes a fixture schedule (three 30-minute events
   on service 1, one 2-hour event clipped at the window end on service 2), sets
   `ui.epg_row_pitch=76` and `ui.epg_window_start`, and asserts the chrome
@@ -107,12 +145,14 @@ TabButton state colours.
 No stock EPG screen capture exists, so the candidate is recorder evidence, not
 pixel parity or scanout. The header fill is a family inference; the exact
 vendor tab font record is not pinned (`ui.tab_font_id` defaults to 4 because
-font7 overflows the 300 px tabs), channel logo/HD/encrypted icons,
-selection/focus, the synopsis event image, text wrapping, day navigation,
-filters,
-reminders/record actions, the stock entry path, the runtime row pitch and
-scanout remain open. Event-bar colours are the recovered serviceB styles. Live EIT/EPG data still requires the
-owner-authorized TV/tuner window; only the ingest/query path is offline-tested.
+font7 overflows the 300 px tabs), channel logo/HD/encrypted icons, the
+`GuideEventOptionsDialog` options/actions, the real event-image backend (the
+optional provider has no producer), the service-image fallback, text wrapping,
+day navigation, filters, reminders/record actions, the stock entry path, the
+runtime row pitch and scanout remain open. Event-bar colours, selection/focus
+styles and the INFO synopsis toggle are recovered. Live EIT/EPG data still
+requires the owner-authorized TV/tuner window; only the ingest/query path is
+offline-tested.
 
 Report: EPG-STOCK-LAYOUT-2026-11-17. Related: EPG-EIT-MODULE, EPG-NOWNEXT,
 EPG-PERSISTENCE, BROADCAST-IPC, PVR-STOCK-LAYOUT, CHANNEL-LIST-GEOMETRY.

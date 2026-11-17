@@ -1686,8 +1686,17 @@ SVGServiceEventButton styles come from serviceBFA/UFA/FI/UFI (BinSVG
 selects record 102; `ui.epg_synopsis=1` renders event title, HH:MM-HH:MM,
 plus the bottom timeline split at 641 with service names/bars,
 vendor duration and one clipped description line (epg-stock-synopsis.png).
-Header fill is a family inference; exact tab font/icons/selection/synopsis
-image/wrapping/live EIT/scanout open. Recorder only.
+Header fill is a family inference; exact tab font/icons/GuideEventOptionsDialog/
+real image backend/wrapping/live EIT/scanout open. Recorder only. 2026-11-18:
+selection/focus recovered (onUpDownPress 0x00dcd6a1 service, onScrollTimeline
+0x00dcd531 Left/Right event, setFocusedEvent 0x00dd4c5c first end>focus else
+last, setFocusTime 0x00dc7098 now-inside-window else middle; focused FA/FI,
+unfocused UFA/UFI) and `oa_epg_focus_event` + epg_sel/epg_event are wired.
+The INFO key toggles the synopsis (onInfoKey 0x00dcd234); no INFO RC id, so
+`ui.epg_info_key` (0=off). Select opens the unrecovered GuideEventOptionsDialog
+(logs). The record-102 event image 62,299..382,479 is drawn from the optional
+`epg.image` v1 provider via blit_scaled 320x180; absent provider = blank.
+check-ui-epg-stock covers selection, FI, image and toggle.
 
 PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary
 (integer recording id, start/stop, index query) with a persistent offline stub.

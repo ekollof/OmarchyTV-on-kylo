@@ -1838,8 +1838,8 @@ check: check-apps-label
 ui-channels-modules = $(BUILD)/tests/ui-channels/modules
 $(ui-channels-modules): $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_channels.so $(BUILD)/modules/mod_i18n.so
 	@mkdir -p $@
-	@cp $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_channels.so $(BUILD)/modules/mod_i18n.so $@/
-	@cp $(BUILD)/tests/ui_nav_display.so $@/mod_nav_display.so
+	@for f in mod_service_db.so mod_ui_engine.so mod_ui_vendor.so mod_channels.so mod_i18n.so; do cp $(BUILD)/modules/$$f $@/$$f.tmp && mv $@/$$f.tmp $@/$$f; done
+	@cp $(BUILD)/tests/ui_nav_display.so $@/mod_nav_display.so.tmp && mv $@/mod_nav_display.so.tmp $@/mod_nav_display.so
 .PHONY: check-ui-channels
 check-ui-channels: $(BUILD)/tests/ui_channels $(ui-channels-modules)
 	@$(BUILD)/tests/ui_channels $(ui-channels-modules)
@@ -1863,8 +1863,8 @@ check: check-ui-channels-stock-capture
 ui-pvr-stock-modules = $(BUILD)/tests/ui-pvr-stock/modules
 $(BUILD)/tests/ui-pvr-stock/modules: $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_pvr.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so
 	@mkdir -p $@
-	@cp $(BUILD)/modules/mod_pvr.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $@/
-	@cp $(BUILD)/tests/ui_nav_display.so $@/mod_nav_display.so
+	@for f in mod_pvr.so mod_ui_engine.so mod_ui_vendor.so; do cp $(BUILD)/modules/$$f $@/$$f.tmp && mv $@/$$f.tmp $@/$$f; done
+	@cp $(BUILD)/tests/ui_nav_display.so $@/mod_nav_display.so.tmp && mv $@/mod_nav_display.so.tmp $@/mod_nav_display.so
 
 $(BUILD)/tests/ui_pvr_stock: tests/ui_pvr_stock.c tests/ui_nav_trace.h core/host.h include/openaurora/services.h include/openaurora/ui_engine.h include/openaurora/pvr_layout.h include/openaurora/broadcast.h common/pvr_layout.c $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
@@ -1879,8 +1879,8 @@ check: check-ui-pvr-stock
 ui-epg-stock-modules = $(BUILD)/tests/ui-epg-stock/modules
 $(BUILD)/tests/ui-epg-stock/modules: $(BUILD)/tests/ui_nav_display.so $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_i18n.so
 	@mkdir -p $@
-	@cp $(BUILD)/modules/mod_service_db.so $(BUILD)/modules/mod_ui_engine.so $(BUILD)/modules/mod_ui_vendor.so $(BUILD)/modules/mod_i18n.so $@/
-	@cp $(BUILD)/tests/ui_nav_display.so $@/mod_nav_display.so
+	@for f in mod_service_db.so mod_ui_engine.so mod_ui_vendor.so mod_i18n.so; do cp $(BUILD)/modules/$$f $@/$$f.tmp && mv $@/$$f.tmp $@/$$f; done
+	@cp $(BUILD)/tests/ui_nav_display.so $@/mod_nav_display.so.tmp && mv $@/mod_nav_display.so.tmp $@/mod_nav_display.so
 
 $(BUILD)/tests/ui_epg_stock: tests/ui_epg_stock.c tests/ui_nav_trace.h core/host.h include/openaurora/services.h include/openaurora/ui_engine.h include/openaurora/epg_layout.h include/openaurora/broadcast.h common/epg_layout.c $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)

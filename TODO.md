@@ -218,10 +218,17 @@ maps the cold-start stages and the current stock-UI coverage.
       default-off `ui.epg_synopsis=1` renders record 102 (event title,
       HH:MM-HH:MM, vendor duration, one clipped description line;
       `epg-stock-synopsis.png`; the bottom timeline split at 641 paints the
-      service names and event bars too). Open: EPG stock capture, header fill
-      (family inference), tab glyphs/icons, selection, synopsis event image/
-      wrapping, day navigation/filters, runtime row pitch, live EIT, the stock
-      channel key path/runtime feed and scanout.
+      service names and event bars too). 2026-11-18: EPG selection/focus is
+      recovered (Up/Down service, Left/Right event, first-event-ending-after-
+      focus rule, FA/FI focused vs UFA/UFI unfocused) and wired; the INFO key
+      toggles record 102 via `ui.epg_info_key` (our RC map has no INFO id), and
+      the optional `epg.image` v1 provider supplies the 62,299 320x180 event
+      image (ImageHelper::displayEventImage; getImage/service-image fallback).
+      `check-ui-epg-stock` covers selection, the FI style, the scaled image and
+      the toggle. Open: EPG stock capture, header fill (family inference), tab
+      glyphs/icons, GuideEventOptionsDialog, the real image backend, wrapping,
+      day navigation/filters, runtime row pitch, live EIT, the stock channel key
+      path/runtime feed and scanout.
 
 ## Scheduled takeover test queue (single session)
 

@@ -218,7 +218,9 @@ struct ctx {
     int sel;                         /* picture-settings row, -1 = none */
     int sub_sel;                     /* JSON sub-launcher card, -1 = none */
     int pvr_sel;                     /* stock PVR list focus */
-    int epg_first;                   /* stock EPG first service row */
+    int epg_sel;                     /* stock EPG selected service row */
+    int epg_event;                   /* focused event index in that row */
+    int epg_synopsis;                /* record-102 synopsis view is shown */
     int64_t epg_window;              /* stock EPG window start ms, 0 = now */
     float sub_progress;              /* lab capture progress 0..1 */
     int sub_anim_live;               /* runtime key animation is running */
@@ -2888,6 +2890,132 @@ static void epg_text(struct ctx *c, const char *text, int x, int y,
     channel_text_at(c, &c->font, text, x, y, r, g, b);
 }
 
+/* Service enumeration shared by both EPG views: the runtime active list when
+ * ingested (EASI order), else the stored DB sorted by channel number. */
+struct epg_service_view {
+    const oa_channel_iface *channels;
+    const struct oa_channel_snapshot *runtime;
+    const oa_service_list_iface *svc;
+    const struct oa_service_list *list;
+    size_t *order;
+    size_t total;
+    int have_runtime;
+};
+
+static void epg_view_open(struct ctx *c, struct epg_service_view *v)
+{
+    memset(v, 0, sizeof *v);
+    v->channels = c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1);
+    v->runtime = v->channels ? v->channels->snapshot() : NULL;
+    v->have_runtime = v->runtime && v->runtime->count > 0;
+    if (v->have_runtime) {
+        v->total = v->runtime->count;
+        return;
+    }
+    v->svc = c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
+    v->list = v->svc ? v->svc->snapshot() : NULL;
+    if (!v->list)
+        return;
+    struct oa_service_query q;
+    memset(&q, 0, sizeof q);
+    q.source_mask = 0x7;
+    q.sort = OA_SERVICE_SORT_CHANNEL_NO;
+    v->order = malloc(v->list->count * sizeof *v->order);
+    if (!v->order || oa_service_list_query(v->list, &q, v->order,
+                                           v->list->count, &v->total)) {
+        free(v->order);
+        v->order = NULL;
+        v->total = 0;
+    }
+}
+
+static void epg_view_close(struct ctx *c, struct epg_service_view *v)
+{
+    if (v->svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
+    if (v->channels) c->api->release(c->api->priv, OA_SVC_CHANNELS);
+    free(v->order);
+    memset(v, 0, sizeof *v);
+}
+
+static int epg_view_at(const struct epg_service_view *v, int index,
+                       uint32_t *handle, const char **name)
+{
+    if (!v || index < 0 || (size_t)index >= v->total)
+        return EINVAL;
+    if (v->have_runtime) {
+        *handle = v->runtime->entries[index].handle;
+        *name = v->runtime->entries[index].name;
+        return 0;
+    }
+    if (!v->list || !v->order || (size_t)index >= v->list->count)
+        return EINVAL;
+    const struct oa_service_row *r = &v->list->rows[v->order[index]];
+    *handle = (uint32_t)r->handle;
+    *name = r->name;
+    return 0;
+}
+
+/* Window start: the explicit runtime value, then ui.epg_window_start, then
+ * now. The vendor's window comes from the current time/day selection; both
+ * project inputs are explicit so a fixture is reproducible. */
+static int64_t epg_window_start(struct ctx *c)
+{
+    int64_t window = c->epg_window;
+    if (window <= 0) {
+        const char *override =
+            c->api->config_get(c->api->priv, "ui.epg_window_start", "0");
+        if (override && *override)
+            window = (int64_t)strtoll(override, NULL, 10);
+    }
+    return window > 0 ? window : (int64_t)now_ms();
+}
+
+/* Selection focus time: the current time when it is inside the window, else
+ * the window middle (ListTimelineBox::setFocusTime 0x00dc7098). */
+static int64_t epg_focus_time(const oa_epg_layout *l, int64_t window)
+{
+    int64_t end = window + (int64_t)l->interval_s * 1000;
+    int64_t now = (int64_t)now_ms();
+    if (now >= window && now < end)
+        return now;
+    return window + (int64_t)l->interval_s * 1000 / 2;
+}
+
+static int epg_service_count(struct ctx *c)
+{
+    struct epg_service_view v;
+    epg_view_open(c, &v);
+    int total = (int)v.total;
+    epg_view_close(c, &v);
+    return total;
+}
+
+/* Number of events in the selected service inside the current window. */
+static int epg_selected_event_count(struct ctx *c, int64_t window,
+                                    int interval_s)
+{
+    struct epg_service_view v;
+    epg_view_open(c, &v);
+    int count = 0;
+    uint32_t handle = 0;
+    const char *name = NULL;
+    if (v.total > 0 && c->epg_sel >= 0 &&
+        (size_t)c->epg_sel < v.total &&
+        epg_view_at(&v, c->epg_sel, &handle, &name) == 0) {
+        const oa_epg_iface *epg = c->api->lookup(c->api->priv, OA_SVC_EPG, 1);
+        if (epg) {
+            struct oa_epg_event events[32];
+            size_t n = 0;
+            if (epg->query(handle, window, window + (int64_t)interval_s * 1000,
+                           events, sizeof events / sizeof events[0], &n) == 0)
+                count = (int)n;
+            c->api->release(c->api->priv, OA_SVC_EPG);
+        }
+    }
+    epg_view_close(c, &v);
+    return count;
+}
+
 static void paint_epg(struct ctx *c)
 {
     const oa_ui_engine_iface *d = c->d;
@@ -2936,15 +3064,7 @@ static void paint_epg(struct ctx *c)
         epg_text(c, title, l.dialog_title.x, l.dialog_title.y,
                  l.text_rgb[0], l.text_rgb[1], l.text_rgb[2]);
 
-    int64_t window = c->epg_window;
-    if (window <= 0) {
-        const char *override =
-            c->api->config_get(c->api->priv, "ui.epg_window_start", "0");
-        if (override && *override)
-            window = (int64_t)strtoll(override, NULL, 10);
-    }
-    if (window <= 0)
-        window = (int64_t)now_ms();
+    int64_t window = epg_window_start(c);
     time_t secs = (time_t)(window / 1000);
     struct tm tm;
     memset(&tm, 0, sizeof tm);
@@ -3000,52 +3120,26 @@ static void paint_epg(struct ctx *c)
         return;
     }
 
-    /* Service rows: runtime active list when ingested, else the stored DB. */
-    const oa_channel_iface *channels =
-        c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1);
-    const struct oa_channel_snapshot *runtime =
-        channels ? channels->snapshot() : NULL;
-    int have_runtime = runtime && runtime->count > 0;
-    const oa_service_list_iface *svc = NULL;
-    const struct oa_service_list *list = NULL;
-    size_t *order = NULL, total = 0;
-    if (have_runtime) {
-        total = runtime->count;
-    } else {
-        svc = c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
-        list = svc ? svc->snapshot() : NULL;
-        if (list) {
-            struct oa_service_query q;
-            memset(&q, 0, sizeof q);
-            q.source_mask = 0x7;
-            q.sort = OA_SERVICE_SORT_CHANNEL_NO;
-            order = malloc(list->count * sizeof *order);
-            if (!order || oa_service_list_query(list, &q, order, list->count,
-                    &total))
-                total = 0;
-        }
-    }
-    if (total == 0)
-        c->epg_first = 0;
-    else if (c->epg_first >= (int)total)
-        c->epg_first = (int)total - 1;
-    if (c->epg_first < 0)
-        c->epg_first = 0;
-
+    struct epg_service_view v;
+    epg_view_open(c, &v);
+    if (v.total == 0)
+        c->epg_sel = 0;
+    else if (c->epg_sel >= (int)v.total)
+        c->epg_sel = (int)v.total - 1;
+    if (c->epg_sel < 0)
+        c->epg_sel = 0;
+    /* Keep the selected service visible (the vendor scrolls the service list
+     * and the timeline together). */
+    int first = c->epg_sel >= rows ? c->epg_sel - rows + 1 : 0;
+    int64_t focus = epg_focus_time(&l, window);
     const oa_epg_iface *epg = c->api->lookup(c->api->priv, OA_SVC_EPG, 1);
-    for (int row = 0; row < rows && c->epg_first + row < (int)total; row++) {
-        int index = c->epg_first + row;
+    for (int row = 0; row < rows && first + row < (int)v.total; row++) {
+        int index = first + row;
         int y = l.list.y + row * pitch;
         uint32_t handle = 0;
         const char *name = "";
-        if (have_runtime) {
-            handle = runtime->entries[index].handle;
-            name = runtime->entries[index].name;
-        } else {
-            const struct oa_service_row *r = &list->rows[order[index]];
-            handle = (uint32_t)r->handle;
-            name = r->name;
-        }
+        if (epg_view_at(&v, index, &handle, &name) != 0)
+            continue;
         int name_y = y + (pitch - 24) / 2;
         if (name_y < y)
             name_y = y;
@@ -3057,6 +3151,11 @@ static void paint_epg(struct ctx *c)
         if (epg->query(handle, window, window + (int64_t)l.interval_s * 1000,
                        events, sizeof events / sizeof events[0], &count) != 0)
             continue;
+        /* First paint or a changed service: focus the event at the focus
+         * time (ServiceTimelineBox::setFocusedEvent 0x00dd4c5c). */
+        if (index == c->epg_sel && count > 0 &&
+            (c->epg_event < 0 || (size_t)c->epg_event >= count))
+            c->epg_event = oa_epg_focus_event(events, count, focus);
         for (size_t i = 0; i < count; i++) {
             int bx = 0, bw = 0;
             if (oa_epg_event_span(&timeline, window, l.interval_s,
@@ -3065,8 +3164,9 @@ static void paint_epg(struct ctx *c)
                 continue;
             int64_t now = (int64_t)now_ms();
             int active = events[i].start_ms <= now && now < events[i].end_ms;
+            int focused = index == c->epg_sel && (int)i == c->epg_event;
             struct oa_epg_event_style style;
-            oa_epg_event_style(0, active, &style);
+            oa_epg_event_style(focused, active, &style);
             int bar_h = pitch - 8;
             if (bar_h < 8) bar_h = 8;
             if (y + bar_h > l.list.y1) bar_h = l.list.y1 - y;
@@ -3090,10 +3190,9 @@ static void paint_epg(struct ctx *c)
         d->fill(now_x, timeline.y, 2, timeline.y1 - timeline.y,
                 255, 255, 255);
 
-    if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
-    if (channels) c->api->release(c->api->priv, OA_SVC_CHANNELS);
+    size_t total = v.total;
     if (epg) c->api->release(c->api->priv, OA_SVC_EPG);
-    free(order);
+    epg_view_close(c, &v);
     c->scene_painted = 1;
     if (d->present() != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "EPG present failed");
@@ -3102,10 +3201,13 @@ static void paint_epg(struct ctx *c)
     c->api->log(c->api->priv, OA_LOG_INFO, "painted EPG: %zu services", total);
 }
 
-/* Synopsis view (BinSVG 102), selected by the vendor showSynopsis path. Paints
- * the recovered chrome plus the selected event's title/time/duration/
- * description. The event image, the bottom event list rows and wrapping are
- * not implemented yet. */
+/* Synopsis view (BinSVG 102), the vendor INFO toggle
+ * (MultiServiceTimelineScheduleDialog::onInfoKey 0x00dcd234 ->
+ * showSynopsis 0x00dca1b0). Paints the recovered chrome plus the focused
+ * service/event title, time, duration, description and the shorter bottom
+ * timeline. The event image is drawn only when the optional epg.image provider
+ * supplies one (ImageHelper::displayEventImage 0x00de660c falls back to the
+ * service image when the enhanced event has none). */
 static void paint_epg_synopsis(struct ctx *c)
 {
     const oa_ui_engine_iface *d = c->d;
@@ -3147,15 +3249,7 @@ static void paint_epg_synopsis(struct ctx *c)
         epg_text(c, title, y.dialog_title.x, y.dialog_title.y,
                  y.text_rgb[0], y.text_rgb[1], y.text_rgb[2]);
 
-    int64_t window = c->epg_window;
-    if (window <= 0) {
-        const char *override =
-            c->api->config_get(c->api->priv, "ui.epg_window_start", "0");
-        if (override && *override)
-            window = (int64_t)strtoll(override, NULL, 10);
-    }
-    if (window <= 0)
-        window = (int64_t)now_ms();
+    int64_t window = epg_window_start(c);
     time_t secs = (time_t)(window / 1000);
     struct tm tm;
     memset(&tm, 0, sizeof tm);
@@ -3173,73 +3267,6 @@ static void paint_epg_synopsis(struct ctx *c)
         epg_text(c, t_m, y.time_m.x, y.time_m.y + 5, y.text_rgb[0],
                  y.text_rgb[1], y.text_rgb[2]);
     }
-
-    /* Selected service (default the first row) and its first event. */
-    const oa_service_list_iface *svc =
-        c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
-    const struct oa_service_list *list = svc ? svc->snapshot() : NULL;
-    int index = atoi(c->api->config_get(c->api->priv, "ui.epg_service_index",
-                                        "0"));
-    if (index < 0) index = 0;
-    if (list && index >= (int)list->count) index = (int)list->count - 1;
-    int pitch = atoi(c->api->config_get(c->api->priv, "ui.epg_row_pitch", "0"));
-    if (list && pitch > 0) {
-        int rows = (y.list.y1 - y.list.y) / pitch;
-        for (int row = 0; row < rows && row < (int)list->count; row++) {
-            const char *name = list->rows[row].name;
-            if (!name || !*name)
-                continue;
-            epg_text(c, name, y.service_list.x + 8,
-                     y.list.y + row * pitch + (pitch - 24) / 2,
-                     35, 31, 32);
-        }
-    }
-    const oa_epg_iface *epg = c->api->lookup(c->api->priv, OA_SVC_EPG, 1);
-    if (list && epg && (size_t)index < list->count) {
-        uint32_t handle = (uint32_t)list->rows[index].handle;
-        struct oa_epg_event events[32];
-        size_t count = 0;
-        if (epg->query(handle, window, window + (int64_t)y.interval_s * 1000,
-                       events, sizeof events / sizeof events[0], &count) == 0 &&
-            count > 0) {
-            int pick = atoi(c->api->config_get(c->api->priv,
-                                               "ui.epg_event_index", "0"));
-            if (pick < 0) pick = 0;
-            if ((size_t)pick >= count) pick = (int)count - 1;
-            const struct oa_epg_event *e = &events[pick];
-            epg_text(c, e->name, y.event_title.x, y.event_title.y,
-                     y.event_title_rgb[0], y.event_title_rgb[1],
-                     y.event_title_rgb[2]);
-            time_t es = (time_t)(e->start_ms / 1000), ee =
-                (time_t)(e->end_ms / 1000);
-            struct tm etm, xm;
-            memset(&etm, 0, sizeof etm);
-            memset(&xm, 0, sizeof xm);
-            char span[16];
-            if (localtime_r(&es, &etm) && localtime_r(&ee, &xm))
-                snprintf(span, sizeof span, "%02d:%02d-%02d:%02d",
-                         etm.tm_hour, etm.tm_min, xm.tm_hour, xm.tm_min);
-            else
-                span[0] = '\0';
-            epg_text(c, span, y.event_time.x, y.event_time.y + 5,
-                     y.text_rgb[0], y.text_rgb[1], y.text_rgb[2]);
-            long long seconds = (e->end_ms - e->start_ms) / 1000;
-            char duration[24];
-            if (seconds < 3600)
-                snprintf(duration, sizeof duration, "%lldm %llds",
-                         seconds / 60, seconds % 60);
-            else
-                snprintf(duration, sizeof duration, "%lldh %lldm",
-                         seconds / 3600, (seconds / 60) % 60);
-            epg_text(c, duration, y.event_duration.x, y.event_duration.y + 5,
-                     y.text_rgb[0], y.text_rgb[1], y.text_rgb[2]);
-            /* One clipped line: no vendor wrapping/ellipsis is recovered. */
-            char text[160];
-            snprintf(text, sizeof text, "%s", e->description);
-            epg_text(c, text, y.event_text.x, y.event_text.y + 5,
-                     y.text_rgb[0], y.text_rgb[1], y.text_rgb[2]);
-        }
-    }
     static const char *const SYN_TABS[5] = {
         "NOW_NEXT_SCHEDULE", "HLP_FILTER", "PREVIOUS_DAY", "NEXT_DAY", "EXTRAS"
     };
@@ -3252,41 +3279,131 @@ static void paint_epg_synopsis(struct ctx *c)
         paint_tab(c, t->x, t->y, t->x1 - t->x, t->y1 - t->y,
                   tab_label(i18n, SYN_TABS[i], SYN_TABS_EN[i]), i == 0);
     }
+    int pitch = atoi(c->api->config_get(c->api->priv, "ui.epg_row_pitch", "0"));
+
+    struct epg_service_view v;
+    epg_view_open(c, &v);
+    if (v.total == 0)
+        c->epg_sel = 0;
+    else if (c->epg_sel >= (int)v.total)
+        c->epg_sel = (int)v.total - 1;
+    if (c->epg_sel < 0)
+        c->epg_sel = 0;
+
+    const oa_epg_iface *epg = c->api->lookup(c->api->priv, OA_SVC_EPG, 1);
+    const oa_epg_image_iface *image =
+        c->api->lookup(c->api->priv, OA_SVC_EPG_IMAGE, 1);
+    uint32_t handle = 0;
+    const char *service_name = NULL;
+    int have_service =
+        v.total > 0 && epg_view_at(&v, c->epg_sel, &handle, &service_name) == 0;
+    struct oa_epg_event events[32];
+    size_t count = 0;
+    int have_events = 0;
+    if (have_service && epg &&
+        epg->query(handle, window, window + (int64_t)y.interval_s * 1000,
+                   events, sizeof events / sizeof events[0], &count) == 0 &&
+        count > 0) {
+        have_events = 1;
+        if (c->epg_event < 0 || (size_t)c->epg_event >= count) {
+            int64_t focus = window + (int64_t)y.interval_s * 1000 / 2;
+            int64_t now = (int64_t)now_ms();
+            if (now >= window && now < window + (int64_t)y.interval_s * 1000)
+                focus = now;
+            c->epg_event = oa_epg_focus_event(events, count, focus);
+        }
+    }
+    if (have_events) {
+        const struct oa_epg_event *e = &events[c->epg_event];
+        epg_text(c, e->name, y.event_title.x, y.event_title.y,
+                 y.event_title_rgb[0], y.event_title_rgb[1],
+                 y.event_title_rgb[2]);
+        time_t es = (time_t)(e->start_ms / 1000), ee =
+            (time_t)(e->end_ms / 1000);
+        struct tm etm, xm;
+        memset(&etm, 0, sizeof etm);
+        memset(&xm, 0, sizeof xm);
+        char span[16];
+        if (localtime_r(&es, &etm) && localtime_r(&ee, &xm))
+            snprintf(span, sizeof span, "%02d:%02d-%02d:%02d",
+                     etm.tm_hour, etm.tm_min, xm.tm_hour, xm.tm_min);
+        else
+            span[0] = '\0';
+        epg_text(c, span, y.event_time.x, y.event_time.y + 5,
+                 y.text_rgb[0], y.text_rgb[1], y.text_rgb[2]);
+        long long seconds = (e->end_ms - e->start_ms) / 1000;
+        char duration[24];
+        if (seconds < 3600)
+            snprintf(duration, sizeof duration, "%lldm %llds",
+                     seconds / 60, seconds % 60);
+        else
+            snprintf(duration, sizeof duration, "%lldh %lldm",
+                     seconds / 3600, (seconds / 60) % 60);
+        epg_text(c, duration, y.event_duration.x, y.event_duration.y + 5,
+                 y.text_rgb[0], y.text_rgb[1], y.text_rgb[2]);
+        /* One clipped line: no vendor wrapping/ellipsis is recovered. */
+        char text[160];
+        snprintf(text, sizeof text, "%s", e->description);
+        epg_text(c, text, y.event_text.x, y.event_text.y + 5,
+                 y.text_rgb[0], y.text_rgb[1], y.text_rgb[2]);
+
+        /* Record-102 eventImage 62,299..382,479. The provider carries RGBA;
+         * both dimensions are explicit so a mismatched source is scaled to the
+         * recovered rectangle. */
+        struct oa_epg_image img;
+        memset(&img, 0, sizeof img);
+        if (image && image->get(handle, e->event_id, &img) == 0 && img.rgba &&
+            img.w > 0 && img.h > 0)
+            (void)d->blit_scaled(y.event_image.x, y.event_image.y,
+                                 y.event_image.x1 - y.event_image.x,
+                                 y.event_image.y1 - y.event_image.y,
+                                 img.w, img.h, img.rgba);
+    }
+    if (image) c->api->release(c->api->priv, OA_SVC_EPG_IMAGE);
+
     /* The finished synopsis keeps the timeline as a shorter bottom box:
      * createServiceList splits EPGListBox (0,570..1920,1077) at
      * list.x + EPGServiceListBox.width + 1 = 641. Rows still need the explicit
      * pitch because the runtime step is art-derived. */
     oa_epg_rect services, timeline;
     if (oa_epg_list_split(&y.list, y.service_list.x1 - y.service_list.x,
-                          &services, &timeline) == 0 && pitch > 0 &&
-        list && epg) {
+                          &services, &timeline) == 0 && pitch > 0) {
         d->fill(services.x1 - 1, services.y, 2, services.y1 - services.y,
                 y.service_border_rgb[0], y.service_border_rgb[1],
                 y.service_border_rgb[2]);
         int rows = (y.list.y1 - y.list.y) / pitch;
+        int first = c->epg_sel >= rows ? c->epg_sel - rows + 1 : 0;
         int64_t now = (int64_t)now_ms();
-        for (int row = 0; row < rows && row < (int)list->count; row++) {
+        for (int row = 0; row < rows && first + row < (int)v.total; row++) {
+            int index = first + row;
             int ry = y.list.y + row * pitch;
-            const char *name = list->rows[row].name;
+            uint32_t row_handle = 0;
+            const char *name = "";
+            if (epg_view_at(&v, index, &row_handle, &name) != 0)
+                continue;
             if (name && *name)
                 epg_text(c, name, y.service_list.x + 8,
                          ry + (pitch - 24) / 2, 35, 31, 32);
-            struct oa_epg_event events[32];
-            size_t count = 0;
-            if (epg->query((uint32_t)list->rows[row].handle, window,
-                           window + (int64_t)y.interval_s * 1000, events,
-                           sizeof events / sizeof events[0], &count) != 0)
+            if (!epg)
                 continue;
-            for (size_t i = 0; i < count; i++) {
+            struct oa_epg_event row_events[32];
+            size_t row_count = 0;
+            if (epg->query(row_handle, window,
+                           window + (int64_t)y.interval_s * 1000, row_events,
+                           sizeof row_events / sizeof row_events[0],
+                           &row_count) != 0)
+                continue;
+            for (size_t i = 0; i < row_count; i++) {
                 int bx = 0, bw = 0;
                 if (oa_epg_event_span(&timeline, window, y.interval_s,
-                                      events[i].start_ms, events[i].end_ms,
-                                      &bx, &bw) != 0)
+                                      row_events[i].start_ms,
+                                      row_events[i].end_ms, &bx, &bw) != 0)
                     continue;
                 int active =
-                    events[i].start_ms <= now && now < events[i].end_ms;
+                    row_events[i].start_ms <= now && now < row_events[i].end_ms;
+                int focused = index == c->epg_sel && (int)i == c->epg_event;
                 struct oa_epg_event_style style;
-                oa_epg_event_style(0, active, &style);
+                oa_epg_event_style(focused, active, &style);
                 int bar_h = pitch - 8;
                 if (bar_h < 8) bar_h = 8;
                 if (ry + bar_h > y.list.y1) bar_h = y.list.y1 - ry;
@@ -3295,9 +3412,9 @@ static void paint_epg_synopsis(struct ctx *c)
                         style.fill[2]);
                 if (bw >= 60) {
                     char clipped[24];
-                    size_t n = strlen(events[i].name);
+                    size_t n = strlen(row_events[i].name);
                     if (n > sizeof clipped - 1) n = sizeof clipped - 1;
-                    memcpy(clipped, events[i].name, n);
+                    memcpy(clipped, row_events[i].name, n);
                     clipped[n] = '\0';
                     epg_text(c, clipped, bx + 4, ry + 8, style.text[0],
                              style.text[1], style.text[2]);
@@ -3310,8 +3427,8 @@ static void paint_epg_synopsis(struct ctx *c)
                     255, 255, 255);
     }
     if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
-    if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
     if (epg) c->api->release(c->api->priv, OA_SVC_EPG);
+    epg_view_close(c, &v);
     c->scene_painted = 1;
     if (d->present() != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "EPG synopsis present failed");
@@ -3395,7 +3512,7 @@ static void paint(struct ctx *c)
     }
     if (c->screen == SCREEN_EPG) {
         if (atoi(c->api->config_get(c->api->priv, "ui.epg_stock", "0")) == 1) {
-            if (atoi(c->api->config_get(c->api->priv, "ui.epg_synopsis", "0")) == 1)
+            if (c->epg_synopsis)
                 paint_epg_synopsis(c);
             else
                 paint_epg(c);
@@ -3583,6 +3700,13 @@ static int portal_menu_action(const char *action)
         else if (!strcmp(name, "pvr")) screen = SCREEN_PVR;
         else if (!strcmp(name, "epg")) screen = SCREEN_EPG;
         else return ENOENT;
+        if (screen == SCREEN_EPG) {
+            g_ctx->epg_synopsis =
+                atoi(g_ctx->api->config_get(g_ctx->api->priv,
+                                            "ui.epg_synopsis", "0")) == 1;
+            g_ctx->epg_sel = 0;
+            g_ctx->epg_event = -1;
+        }
         g_ctx->screen = screen;
         if (g_ctx->d) paint(g_ctx);
         return 0;
@@ -4115,9 +4239,51 @@ static void move_key(struct ctx *c, uint8_t id)
             if (c->d) paint(c);
             return;
         }
+        /* Up/Down select the service row (ChannelNameListBox + ListTimelineBox
+         * scrollUp/scrollDown); Left/Right move the focused event in that row
+         * (ServiceTimelineBox::scrollLeft/scrollRight 0x00dd500c/0x00dd5165).
+         * A changed service re-focuses the event at the focus time
+         * (setFocusedEvent 0x00dd4c5c). */
         if (id == 19 || id == 20) {
-            if (id == 19) c->epg_first++;
-            else if (c->epg_first > 0) c->epg_first--;
+            int total = epg_service_count(c);
+            if (total > 0) {
+                int old = c->epg_sel;
+                c->epg_sel += id == 19 ? 1 : -1;
+                if (c->epg_sel < 0) c->epg_sel = 0;
+                if (c->epg_sel >= total) c->epg_sel = total - 1;
+                if (c->epg_sel != old) c->epg_event = -1;
+            }
+            if (c->d) paint(c);
+            return;
+        }
+        if (id == 21 || id == 22) {
+            oa_epg_layout l;
+            if (oa_epg_layout_default(&l) == 0) {
+                int count = epg_selected_event_count(c, epg_window_start(c),
+                                                     l.interval_s);
+                if (count > 0) {
+                    c->epg_event += id == 22 ? 1 : -1;
+                    if (c->epg_event < 0) c->epg_event = 0;
+                    if (c->epg_event >= count) c->epg_event = count - 1;
+                }
+            }
+            if (c->d) paint(c);
+            return;
+        }
+        if (id == 53 || id == 0x8a) {
+            /* showGuideEvent 0x00dce401 opens GuideEventOptionsDialog for the
+             * focused event; the option list/actions are not recovered. */
+            c->api->log(c->api->priv, OA_LOG_INFO,
+                        "EPG event options are not implemented");
+            return;
+        }
+        /* The vendor toggles the synopsis on the INFO key (onInfoKey
+         * 0x00dcd234). Our shell's RC map has no INFO id, so it must be named
+         * explicitly (0 = disabled). */
+        int info_key =
+            atoi(c->api->config_get(c->api->priv, "ui.epg_info_key", "0"));
+        if (info_key != 0 && id == info_key) {
+            c->epg_synopsis = !c->epg_synopsis;
             if (c->d) paint(c);
             return;
         }
@@ -4678,6 +4844,10 @@ static int m_start(void *v)
     } else if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "epg") &&
                atoi(c->api->config_get(c->api->priv, "ui.epg_stock", "0")) == 1) {
         c->screen = SCREEN_EPG;
+        c->epg_synopsis =
+            atoi(c->api->config_get(c->api->priv, "ui.epg_synopsis", "0")) == 1;
+        c->epg_sel = 0;
+        c->epg_event = -1;
     } else if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "sub_launcher")) {
         c->screen = SCREEN_SUBLAUNCHER;
         c->sub_sel = atoi(c->api->config_get(c->api->priv, "ui.sub_sel", "-1"));

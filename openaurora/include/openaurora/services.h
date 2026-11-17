@@ -548,6 +548,11 @@ typedef struct {
 #define OA_SVC_TUNER "tuner"
 #define OA_SVC_EPG "epg"
 #define OA_SVC_EPG_INGEST "epg.ingest"
+/* Optional event image for the EPG synopsis (record 102 eventImage
+ * 62,299..382,479). The vendor ImageHelper::displayEventImage tries
+ * EnhancedServiceEvent::getImage and falls back to the service image; this
+ * project boundary carries straight RGBA, borrowed for the call. */
+#define OA_SVC_EPG_IMAGE "epg.image"
 #define OA_SVC_PVR "pvr"
 /* Optional recording metadata for the stock PVR row indicators. Published by a
  * backend that can supply it; absent means the row icons stay hidden. */

@@ -1,7 +1,10 @@
 #ifndef OPENAURORA_EPG_LAYOUT_H
 #define OPENAURORA_EPG_LAYOUT_H
 
+#include <stddef.h>
 #include <stdint.h>
+
+#include "openaurora/broadcast.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -102,6 +105,18 @@ int oa_epg_visible_rows(const oa_epg_layout *layout, int row_pitch);
 
 /* 0..4 tab index, -1 outside (exclusive edges). */
 int oa_epg_tab_at(const oa_epg_layout *layout, int x, int y);
+
+/*
+ * Focused event index, from ServiceTimelineBox::setFocusedEvent 0x00dd4c5c:
+ * walk the event list in order and take the first event whose end is after
+ * focus_ms; if none ends after it, take the last event. Returns -1 for an empty
+ * list or a NULL array. `events` must be in start order (the vendor list order).
+ * The caller chooses focus_ms: the vendor passes the last focused event time,
+ * or the current time; setFocusTime falls back to the window middle when the
+ * current time is outside the window.
+ */
+int oa_epg_focus_event(const struct oa_epg_event *events, size_t count,
+                       int64_t focus_ms);
 
 /*
  * Event-button state colours from serviceB{FA,UFA,FI,UFI}.svg (BinSVG

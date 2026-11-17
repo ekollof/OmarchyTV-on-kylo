@@ -126,6 +126,18 @@ int oa_epg_instant_x(const oa_epg_rect *timeline, int64_t window_start_ms,
     return 0;
 }
 
+int oa_epg_focus_event(const struct oa_epg_event *events, size_t count,
+                       int64_t focus_ms)
+{
+    if (!events || count == 0)
+        return -1;
+    for (size_t i = 0; i < count; i++) {
+        if (events[i].end_ms > focus_ms)
+            return (int)i;
+    }
+    return (int)count - 1;
+}
+
 int oa_epg_visible_rows(const oa_epg_layout *layout, int row_pitch)
 {
     if (!layout || row_pitch <= 0)

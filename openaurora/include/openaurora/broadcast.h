@@ -101,6 +101,20 @@ typedef struct {
         struct oa_epg_event *events, size_t cap, size_t *count);
 } oa_epg_iface;
 
+/* Borrowed RGBA for one event. The pointer stays valid until the next call on
+ * the same provider (or its unload). Absent provider = no synopsis image. */
+struct oa_epg_image {
+    const unsigned char *rgba;
+    int w, h;
+};
+
+typedef struct {
+    /* 0 with a non-NULL rgba/w/h on success, -ENOENT when the event has no
+     * image and -ENOTSUP when this backend cannot supply images. */
+    int (*get)(uint32_t service_handle, uint32_t event_id,
+               struct oa_epg_image *out);
+} oa_epg_image_iface;
+
 /* Ingest side of the EIT-backed EPG module. feed_section accepts one complete
  * DVB EIT section (header + CRC) and returns the number of stored/replaced
  * events or a negative errno; clear drops all cached events. This is a project

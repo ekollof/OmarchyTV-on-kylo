@@ -35,6 +35,7 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "ui.epg_stock")) return "1";
     if (!strcmp(key, "ui.epg_row_pitch")) return "76";
     if (!strcmp(key, "ui.epg_synopsis")) return g_synopsis ? "1" : "0";
+    if (!strcmp(key, "ui.epg_info_key")) return "60";
     if (!strcmp(key, "ui.epg_window_start")) return "1700000000000";
     if (!strcmp(key, "ui.text")) return "1";
     if (!strcmp(key, "ui.font_index")) return g_font_index;
@@ -134,6 +135,44 @@ static int epg_query(uint32_t service_handle, int64_t from_ms, int64_t to_ms,
 }
 
 static const oa_epg_iface g_epg = { epg_query };
+
+/* Fixture synopsis image: 16x9 RGBA, scaled into the record-102 eventImage
+ * 62,299..382,479 (320x180). */
+static unsigned char g_image_rgba[16 * 9 * 4];
+
+static int image_get(uint32_t service_handle, uint32_t event_id,
+                     struct oa_epg_image *out)
+{
+    if (!out)
+        return -EINVAL;
+    if (!service_handle || !event_id)
+        return -ENOENT;
+    for (int i = 0; i < 16 * 9; i++) {
+        g_image_rgba[i * 4] = 40;
+        g_image_rgba[i * 4 + 1] = 120;
+        g_image_rgba[i * 4 + 2] = 200;
+        g_image_rgba[i * 4 + 3] = 255;
+    }
+    out->rgba = g_image_rgba;
+    out->w = 16;
+    out->h = 9;
+    return 0;
+}
+
+static const oa_epg_image_iface g_image = { image_get };
+
+static int find_scaled(const oa_nav_trace *trace, int x, int y, int w, int h,
+                       int sw, int sh)
+{
+    int n = trace->scaled_count();
+    for (int i = 0; i < n; ++i) {
+        int bx, by, bw, bh, bsw, bsh;
+        if (trace->scaled_at(i, &bx, &by, &bw, &bh, &bsw, &bsh) == 0 &&
+            bx == x && by == y && bw == w && bh == h && bsw == sw && bsh == sh)
+            return 1;
+    }
+    return 0;
+}
 
 static size_t build_record(unsigned char *b)
 {
@@ -249,6 +288,7 @@ int main(int argc, char **argv)
         assert(!command(&host, "start i18n", out, sizeof out));
     }
     assert(host.api.publish(&host, OA_SVC_EPG, 1, &g_epg) == 0);
+    assert(host.api.publish(&host, OA_SVC_EPG_IMAGE, 1, &g_image) == 0);
     assert(!command(&host, "load ui_engine", out, sizeof out));
     assert(!command(&host, "start ui_engine", out, sizeof out));
     assert(!command(&host, "load ui_vendor", out, sizeof out));
@@ -290,7 +330,10 @@ int main(int argc, char **argv)
     assert(oa_epg_event_span(&timeline, WINDOW_MS, 7200,
                              WINDOW_MS + 3600000, WINDOW_MS + 5400000,
                              &x, &w) == 0);
-    assert(find_fill(trace, x, y0, w, bar_h, 126, 0, 10));
+    /* Focus time is the window middle (now is outside the fixture window), so
+     * setFocusedEvent picks the 60..90 min event. It is focused but not
+     * currently running, so the style is FI (#EDEDED). */
+    assert(find_fill(trace, x, y0, w, bar_h, 237, 237, 237));
     /* Second service row (pitch 76) has the clipped 2-hour event. */
     int y1 = l.list.y + 76 + 4;
     assert(oa_epg_event_span(&timeline, WINDOW_MS, 7200,
@@ -308,11 +351,30 @@ int main(int argc, char **argv)
     /* Capture the initial window before scrolling. */
     assert(!trace->capture(g_capture));
 
-    /* Up/Down scroll the service window; service 2 moves to the top. */
+    /* Left/Right move the focused event inside the selected service. It
+     * starts on the third event; Left focuses the second, Right the third. */
+    oa_key_event left = { .id = 21, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &left);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 644 + 319, y0, 319, bar_h, 237, 237, 237));
+    assert(find_fill(trace, 644 + 638, y0, 319, bar_h, 126, 0, 10));
+    oa_key_event right = { .id = 22, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &right);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 644 + 638, y0, 319, bar_h, 237, 237, 237));
+
+    /* Up/Down select the service row; the new row focuses the event at the
+     * focus time (its only clipped event), and the previous row goes UFA. */
     oa_key_event down = { .id = 19, .kind = OA_KEY_PRESS };
     host.api.emit(&host, OA_TOPIC_KEY, &down);
     oa_host_dispatch_posts(&host);
-    assert(find_fill(trace, 750, l.list.y + 4, 1170, bar_h, 126, 0, 10));
+    assert(find_fill(trace, 750, y1, 1170, bar_h, 237, 237, 237));
+    assert(find_fill(trace, 644 + 638, y0, 319, bar_h, 126, 0, 10));
+    oa_key_event up = { .id = 20, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &up);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 644 + 638, y0, 319, bar_h, 237, 237, 237));
+    assert(find_fill(trace, 750, y1, 1170, bar_h, 126, 0, 10));
 
     oa_key_event exit = { .id = 10, .kind = OA_KEY_PRESS };
     host.api.emit(&host, OA_TOPIC_KEY, &exit);
@@ -335,16 +397,38 @@ int main(int argc, char **argv)
      * 640+1, so 641..1920 (width 1279) with the same 7200 s ratio. */
     assert(find_fill(trace, 640, 570, 2, 507, 35, 31, 32));
     assert(find_fill(trace, 641, 574, 319, 68, 126, 0, 10));
+    /* The focused event (window middle -> 60..90 min) is FI; the synopsis
+     * timeline is the same 7200 s ratio over its own 1279 px width. */
+    int sx = 0, sw = 0;
+    oa_epg_rect syn_timeline;
+    assert(oa_epg_list_split(&y.list, y.service_list.x1 - y.service_list.x,
+                             &services, &syn_timeline) == 0);
+    assert(oa_epg_event_span(&syn_timeline, WINDOW_MS, 7200,
+                             WINDOW_MS + 3600000, WINDOW_MS + 5400000,
+                             &sx, &sw) == 0);
+    assert(find_fill(trace, sx, 574, sw, 68, 237, 237, 237));
+    /* Record-102 eventImage 62,299 320x180 from the 16x9 provider image. */
+    assert(find_scaled(trace, 62, 299, 320, 180, 16, 9));
     assert(trace->blit_count() >= 12);
     const char *scap = getenv("OA_EPG_SYNOPSIS_CAPTURE");
     if (scap && *scap)
         assert(!trace->capture(scap));
+    /* The vendor INFO key toggles the synopsis (onInfoKey 0x00dcd234). Our
+     * shell has no INFO id, so the fixture names one explicitly. */
+    oa_key_event info = { .id = 60, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &info);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 0, 319, 1920, 761, 190, 30, 45));
+    host.api.emit(&host, OA_TOPIC_KEY, &info);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 0, 570, 1920, 507, 197, 201, 205));
     host.api.emit(&host, OA_TOPIC_KEY, &exit);
     oa_host_dispatch_posts(&host);
     assert(portal->screen() == 0);
 
     host.api.release(&host, OA_SVC_PORTAL);
     host.api.release(&host, OA_SVC_NAV_TRACE);
+    assert(host.api.unpublish(&host, OA_SVC_EPG_IMAGE) == 0);
     assert(host.api.unpublish(&host, OA_SVC_EPG) == 0);
     assert(!command(&host, "stop ui_vendor", out, sizeof out));
     assert(!command(&host, "stop service_db", out, sizeof out));
@@ -352,7 +436,7 @@ int main(int argc, char **argv)
         assert(!command(&host, "stop i18n", out, sizeof out));
     assert(!command(&host, "stop ui_engine", out, sizeof out));
     assert(!command(&host, "stop nav_display", out, sizeof out));
-    puts("ok epg stock: record-101 chrome, list split, event bars and scroll");
+    puts("ok epg stock: record-101/102 chrome, split, selection, image and scroll");
     cleanup();
     return 0;
 }

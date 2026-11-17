@@ -148,7 +148,11 @@ Reports: [CEC-TRANSPORT-CONTRACT](../../artifacts/reports/CEC-TRANSPORT-CONTRACT
   the TV remain open. `source.enable=0`.
 - Broadcast/EPG/PVR: persistence, now/next, conflict state and vendor fields
   are partly implemented/tested; recording/playback and full broadcast UI
-  remain.
+  remain. The stock EPG selection/focus (Up/Down service, Left/Right event,
+  first-end-after-focus rule, FA/FI vs UFA/UFI), the INFO synopsis toggle and
+  the record-102 event-image draw path are recovered and gated; the
+  `GuideEventOptionsDialog` options/actions and a real event-image backend
+  remain open.
 
 Reports: [TUNER-BRINGUP](../../artifacts/reports/TUNER-BRINGUP-2026-11-06.md),
 [SOURCE-PATH](../../artifacts/reports/SOURCE-PATH-2026-11-09.md),
