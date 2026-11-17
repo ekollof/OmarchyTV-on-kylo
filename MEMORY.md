@@ -1624,7 +1624,7 @@ provisional screen remains default; live EASI, paging and scanout remain open.
 
 PVR-STOCK-LAYOUT-2026-11-17: `DialogPlayList.svg` (BinSVG 692) gives the stock
 PVR list (panel #DCDBDA, header #481730 9/10, rows 26,222 1860x66 pitch75,
-name/time/duration 181/815/1307, five action-glyph tabs). LIBRARY ->
+name/time/duration 181/815/1307, five text tabs). LIBRARY ->
 "Opnamebibliotheek"; columns NAME_TITLE/START_TITLE/DURATION_TITLE ->
 Naam/Start/Lengte. createComponents ids: recording 0x36=54
 icon_record_small (rect 55,237), new 0x116=278 icon_right_arrow, locked
@@ -1654,7 +1654,7 @@ SVGServiceEventButton styles come from serviceBFA/UFA/FI/UFI (BinSVG
 #EDEDED/#D8D8D8/#7E000A, UFI=UFA fill) and the bars use them. showSynopsis
 selects record 102; `ui.epg_synopsis=1` renders event title, HH:MM-HH:MM,
 vendor duration and one clipped description line (epg-stock-synopsis.png).
-Header fill is a family inference; tab glyphs/icons/selection/synopsis
+Header fill is a family inference; exact tab font/icons/selection/synopsis
 image/bottom rows/wrapping/live EIT/scanout open. Recorder only.
 
 PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary

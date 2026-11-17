@@ -238,6 +238,9 @@ struct ctx {
     struct oa_bitmap_font stock_subtitle_font;              /* channel 5 */
     unsigned char *stock_tab_data, *stock_marker_data, *stock_subtitle_data;
     int stock_fonts_on;              /* channel stock mode fonts loaded */
+    struct oa_bitmap_font tab_font;  /* EPG/PVR tab labels (font12) */
+    unsigned char *tab_font_data;
+    int tab_font_on;
     struct text_canvas text[SETTINGS_TEXT_MAX];
     struct text_canvas title; /* live tab title blob (no focus variant) */
     /* Sub-launcher live text: font3 labels + font12 values, localized through
@@ -1152,6 +1155,9 @@ static void settings_text_free(struct ctx *c)
     free(c->stock_subtitle_data);
     c->stock_subtitle_data = NULL;
     c->stock_fonts_on = 0;
+    free(c->tab_font_data);
+    c->tab_font_data = NULL;
+    c->tab_font_on = 0;
     oa_font_pack_free(&c->font_pack);
     c->text_on = 0;
     c->font_num_on = 0;
@@ -2248,6 +2254,64 @@ static void pvr_text(struct ctx *c, const char *text, int x, int y,
     channel_text_at(c, &c->font, text, x, y, r, g, b);
 }
 
+/* TabButtonFA/UFA/FI/UFI (BinSVG 522..525): the selected tab is a white pill
+ * with #811924 text; unselected tabs are transparent with white text. The
+ * vendor SVGButton::create 0x010aea28 looks the label up through
+ * UIResourceManager::lookupString, so these are text buttons, not glyph art. */
+static const char *tab_label(const oa_i18n_iface *i18n, const char *key,
+                             const char *fallback)
+{
+    const char *text = i18n ? i18n->translate(key, NULL) : fallback;
+    return text && *text ? text : fallback;
+}
+
+/* Tab labels use the smaller button font (record 12 by default); font7 is
+ * 61 px and overflows a 300x59 tab for "Nu/Volgende schema". */
+static int tab_font_open(struct ctx *c)
+{
+    if (!c)
+        return -EINVAL;
+    if (c->tab_font_on)
+        return 0;
+    if (!c->font_pack.count)
+        return -ENOTSUP;
+    int id = atoi(c->api->config_get(c->api->priv, "ui.tab_font_id", "4"));
+    if (id < 0)
+        return -EINVAL;
+    int rc = settings_font_open(&c->font_pack, id, &c->tab_font,
+                                &c->tab_font_data);
+    if (rc)
+        return rc;
+    c->tab_font_on = 1;
+    return 0;
+}
+
+static void paint_tab(struct ctx *c, int x, int y, int w, int h,
+                      const char *label, int selected)
+{
+    if (!c || !c->d || !label || !*label)
+        return;
+    if (selected)
+        c->d->fill(x, y, w, h, 255, 255, 255);
+    (void)tab_font_open(c);
+    const struct oa_bitmap_font *font = c->tab_font_on ? &c->tab_font
+                                                       : &c->font;
+    int advance = 0, font_height = 0;
+    /* Tolerate a font slightly taller than the button; the vendor textPos is
+     * a 50 px inner box. */
+    if (oa_font_text_measure(font, label, 0, &advance) != 0 ||
+        advance <= 0 || advance > w - 8 ||
+        oa_bitmap_font_height(font, &font_height) != 0 ||
+        font_height <= 0 || font_height > h + 8)
+        return;
+    int tx = x + (w - advance) / 2;
+    int ty = y + (h - font_height) / 2;
+    if (selected)
+        channel_text_at(c, font, label, tx, ty, 129, 25, 36);
+    else
+        channel_text_at(c, font, label, tx, ty, 255, 255, 255);
+}
+
 /* Stock PVR/recording list, gated by ui.pvr_stock=1. Layout is BinSVG 692
  * (DialogPlayList.svg); rows come from OA_SVC_PVR. Action glyph buttons,
  * disk stats and the scrollbar art are not painted yet. */
@@ -2285,7 +2349,6 @@ static void paint_pvr(struct ctx *c)
     const char *start_title = i18n ? i18n->translate("START_TITLE", NULL) : "Start";
     const char *duration_title =
         i18n ? i18n->translate("DURATION_TITLE", NULL) : "Lengte";
-    if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
     if (!name_title || !*name_title) name_title = "Naam";
     if (!start_title || !*start_title) start_title = "Start";
     if (!duration_title || !*duration_title) duration_title = "Lengte";
@@ -2295,6 +2358,19 @@ static void paint_pvr(struct ctx *c)
              255, 255, 255);
     pvr_text(c, duration_title, l.title_length.x, l.title_length.y + 5,
              255, 255, 255);
+    static const char *const PVR_TABS[5] = {
+        "HLP_PLAY_OPTIONS", "HLP_EDIT", "HLP_DELETE", "HLP_SORT", "SETTINGS"
+    };
+    /* Vendor Dutch values, used only when i18n is not published. */
+    static const char *const PVR_TABS_EN[5] = {
+        "PLAY_OPTIONS", "Wijzigen/wissen", "Wissen", "SORT", "Instellingen"
+    };
+    for (int i = 0; i < 5; i++) {
+        const oa_pvr_rect *t = &l.tabs[i];
+        paint_tab(c, t->x, t->y, t->x1 - t->x, t->y1 - t->y,
+                  tab_label(i18n, PVR_TABS[i], PVR_TABS_EN[i]), i == 0);
+    }
+    if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
 
     struct oa_pvr_job jobs[64];
     size_t total = 0;
@@ -2460,6 +2536,19 @@ static void paint_epg(struct ctx *c)
                  l.text_rgb[1], l.text_rgb[2]);
         epg_text(c, t_r, l.time_r.x, l.time_r.y + 5, l.text_rgb[0],
                  l.text_rgb[1], l.text_rgb[2]);
+    }
+    static const char *const EPG_TABS[5] = {
+        "NOW_NEXT_SCHEDULE", "HLP_FILTER", "PREVIOUS_DAY", "NEXT_DAY", "EXTRAS"
+    };
+    /* Vendor Dutch values, used only when i18n is not published. */
+    static const char *const EPG_TABS_EN[5] = {
+        "Nu/Volgende schema", "Filter", "Vorige dag", "Volgende dag",
+        "Extra's"
+    };
+    for (int i = 0; i < 5; i++) {
+        const oa_epg_rect *t = &l.tabs[i];
+        paint_tab(c, t->x, t->y, t->x1 - t->x, t->y1 - t->y,
+                  tab_label(i18n, EPG_TABS[i], EPG_TABS_EN[i]), i == 0);
     }
     if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
 
@@ -2715,6 +2804,18 @@ static void paint_epg_synopsis(struct ctx *c)
             epg_text(c, text, y.event_text.x, y.event_text.y + 5,
                      y.text_rgb[0], y.text_rgb[1], y.text_rgb[2]);
         }
+    }
+    static const char *const SYN_TABS[5] = {
+        "NOW_NEXT_SCHEDULE", "HLP_FILTER", "PREVIOUS_DAY", "NEXT_DAY", "EXTRAS"
+    };
+    static const char *const SYN_TABS_EN[5] = {
+        "Nu/Volgende schema", "Filter", "Vorige dag", "Volgende dag",
+        "Extra's"
+    };
+    for (int i = 0; i < 5; i++) {
+        const oa_epg_rect *t = &y.tabs[i];
+        paint_tab(c, t->x, t->y, t->x1 - t->x, t->y1 - t->y,
+                  tab_label(i18n, SYN_TABS[i], SYN_TABS_EN[i]), i == 0);
     }
     if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
     if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);

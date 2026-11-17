@@ -313,7 +313,7 @@ edge/antialias). Live EASI/LCN/visibility, paging and scanout remain open.
 PVR-STOCK-LAYOUT-2026-11-17: the stock PVR list is BinSVG 692
 (`DialogPlayList.svg`) with panel #DCDBDA, header #481730 at 9/10 (87,43,65),
 subheader #010101 at 3/10, rows 26,222 1860x66 pitch75, name/time/duration
-columns 181/815/1307 and five action-glyph tabs
+columns 181/815/1307 and five text tabs
 (HLP_PLAY_OPTIONS/EDIT/DELETE/SORT/SETTINGS). LIBRARY resolves to
 "Opnamebibliotheek" (dut, checked with common/langprofile.c) and the columns
 come from SVGFullScreenListDialog keys NAME_TITLE/START_TITLE/DURATION_TITLE
@@ -328,7 +328,7 @@ refreshSpaceUsage uses USED/RESERVED/FREE_SPACE_INFO_TITLE + " MB" (dut
 disk stats. `common/pvr_layout.c` + `check-pvr-layout` encode/test the layout;
 a default-off `ui.pvr_stock=1` SCREEN_PVR lists OA_SVC_PVR rows
 (name/start/length/recording icon/focus) and `check-ui-pvr-stock` passes with
-a real-font/real-icon recorder candidate. No stock PVR capture, action glyphs,
+a real-font/real-icon recorder candidate. No stock PVR capture, exact tab font,
 other indicators, space values, scrollbar art, recording engine or scanout;
 recorder evidence only.
 
@@ -341,7 +341,7 @@ list.x + EPGServiceListBox.width + 1 -> service column 3..644, timeline
 644..1920,319..1043 (width 1276). ServiceTimelineBox::createButton computes
 x = width*(eventStart-windowStart)/interval and x1 clamped to width, in
 seconds; ListTimelineBox zoom steps 3600..14400 s with an initialized 7200 s
-default. The five tabs are glyph actions (NOW_NEXT_SCHEDULE, HLP_FILTER,
+default. The five tabs are text buttons (NOW_NEXT_SCHEDULE, HLP_FILTER,
 PREVIOUS_DAY, NEXT_DAY, EXTRAS). `common/epg_layout.c` + `check-epg-layout`
 encode/test the rects, split, spans, instant x, explicit-pitch rows and tabs.
 A default-off `ui.epg_stock=1` SCREEN_EPG paints the chrome, i18n
@@ -356,7 +356,7 @@ showSynopsis 0x00dca1b0 selects record 102 (hideSynopsis returns to 101);
 `ui.epg_synopsis=1` renders event title, HH:MM-HH:MM, vendor duration
 (%dh %dm / %dm %s) and one clipped description line, with the real-font
 candidate epg-stock-synopsis.png. The top-band header fill is a family
-inference (#481730) pending a capture; tab glyphs/icons, selection, synopsis
+inference (#481730) pending a capture; exact tab font/icons, selection, synopsis
 event image/bottom rows/wrapping, day navigation, live EIT and scanout remain
 open. Recorder evidence only.
 

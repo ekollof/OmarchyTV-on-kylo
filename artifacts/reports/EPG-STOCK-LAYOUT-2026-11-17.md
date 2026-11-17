@@ -15,9 +15,13 @@ of inventing a grid. Raw rectangles and the recorder candidate are in
 
 - Class: `MultiServiceTimelineScheduleDialog`, internal name `EPGTimeline`.
   `getEPGTitle` returns the `PROGRAM_GUIDE` key (dut "Programmagids").
-- Five tab buttons are glyph actions, not text tabs: `NOW_NEXT_SCHEDULE`,
-  `HLP_FILTER`, `PREVIOUS_DAY`, `NEXT_DAY`, `EXTRAS` (dut "Nu/Volgende
-  schema", "Filter", "Vorige dag", "Volgende dag", "Extra's").
+- Five tab buttons are **text** buttons: `SVGButton::create` @0x010aea28
+  looks the name up through `UIResourceManager::lookupString`, so these are
+  localized labels, not glyph art. Labels `NOW_NEXT_SCHEDULE`, `HLP_FILTER`,
+  `PREVIOUS_DAY`, `NEXT_DAY`, `EXTRAS` (dut "Nu/Volgende schema", "Filter",
+  "Vorige dag", "Volgende dag", "Extra's"). The button states are
+  TabButtonFA/UFA/FI/UFI (BinSVG 522..525): selected = solid white pill with
+  `#811924` text, unselected = transparent with white text.
 - `createServiceList` @0x00dc9ce4 splits the list at
   `list.x + EPGServiceListBox.width + 1` -> service column 3..644, timeline
   644..1920, y 319..1043 (width 1276).
@@ -65,7 +69,8 @@ inference), event bar 0,264,1920,571 (`#010101` 5/10), event image
 44,518,368,562, timeM 1196,519,1446,563, list 0,570,1920,1077 and service
 column 0,572,640,994 `#C5C9CD`. `ui.epg_synopsis=1` renders the selected
 event title, `HH:MM-HH:MM` time, vendor duration `%dh %dm`/`%dm %s` and one
-clipped description line.
+clipped description line. Both views paint the five tab labels from the i18n
+keys with the TabButton state colours.
 
 ## Implementation
 
@@ -97,8 +102,10 @@ clipped description line.
 ## Limits and next step
 
 No stock EPG screen capture exists, so the candidate is recorder evidence, not
-pixel parity or scanout. The header fill is a family inference; tab glyph art,
-channel logo/HD/encrypted icons, selection/focus, the synopsis event image
+pixel parity or scanout. The header fill is a family inference; the exact
+vendor tab font record is not pinned (`ui.tab_font_id` defaults to 4 because
+font7 overflows the 300 px tabs), channel logo/HD/encrypted icons,
+selection/focus, the synopsis event image
 and bottom event rows, text wrapping, day navigation, filters,
 reminders/record actions, the stock entry path, the runtime row pitch and
 scanout remain open. Event-bar colours are the recovered serviceB styles. Live EIT/EPG data still requires the

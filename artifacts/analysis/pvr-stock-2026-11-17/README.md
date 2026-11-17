@@ -67,6 +67,12 @@ concatenated PNG payloads in index order; `icon_record_small` is record 54).
 `partialIcon`'s `SVGDialog::getDescription` lookup returns no rect in record
 692, so the shipped body falls through with the row rect; do not invent one.
 
+The five tab buttons are **text** buttons resolved through
+`UIResourceManager::lookupString` (dut "PLAY_OPTIONS", "Wijzigen/wissen",
+"Wissen", "SORT", "Instellingen"); the TabButton states 522..525 give a white
+selected pill with `#811924` text and transparent unselected tabs with white
+text. `ui.tab_font_id` defaults to 4 because font7 overflows a 300 px tab.
+
 Only `recordingIcon` is painted today, for `OA_PVR_RECORDING`. The other
 indicators need metadata (`new`, `locked`, `partial`, play-disallowed,
 service type TV/radio) that `OA_SVC_PVR` does not expose, so they remain

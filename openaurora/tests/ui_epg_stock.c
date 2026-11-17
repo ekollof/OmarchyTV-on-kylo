@@ -270,6 +270,10 @@ int main(int argc, char **argv)
     assert(find_fill(trace, 3, 319, 1917, 724, 197, 201, 205));
     assert(find_fill(trace, 0, 319, 640, 724, 255, 255, 255));
     assert(find_fill(trace, 643, 319, 2, 724, 35, 31, 32));
+    /* TabButtonFA 522: selected tab is a white pill; the other four are
+     * transparent. The labels are text from the HLP_* i18n keys. */
+    assert(find_fill(trace, 206, 198, 300, 59, 255, 255, 255));
+    assert(!find_fill(trace, 508, 198, 300, 59, 255, 255, 255));
 
     /* Event bars use the recovered ratio (interval 7200 s, width 1276). */
     int x = 0, w = 0;

@@ -35,9 +35,13 @@ inference, not a record-692 fill.
 the vendor Dutch translation is **"Opnamebibliotheek"** (verified through
 `common/langprofile.c`, not assumed). `SVGFullScreenListDialog::createComponents`
 sets the column titles from `NAME_TITLE`, `START_TITLE` and `DURATION_TITLE`
-(dut "Naam", "Start", **"Lengte"**). `createTabButtons` makes five **action
-glyph** buttons (`HLP_PLAY_OPTIONS`, `HLP_EDIT`, `HLP_DELETE`, `HLP_SORT`,
-`SETTINGS`), not text tabs.
+(dut "Naam", "Start", **"Lengte"**). `createTabButtons` makes five **text** buttons: `SVGButton::create`
+@0x010aea28 resolves each name through `UIResourceManager::lookupString`, so
+`HLP_PLAY_OPTIONS`, `HLP_EDIT`, `HLP_DELETE`, `HLP_SORT`, `SETTINGS` are
+localized labels (dut "PLAY_OPTIONS", "Wijzigen/wissen", "Wissen", "SORT",
+"Instellingen"), not glyph art. The TabButtonFA/UFA/FI/UFI states (BinSVG
+522..525) give a solid white selected pill with `#811924` text and transparent
+unselected tabs with white text.
 
 Row indicators map to image ids and record-692 rects:
 
@@ -69,8 +73,9 @@ and `FREE_SPACE_INFO_TITLE` plus `" MB"`/`" MB "` (dut "Gebruikte ruimte: ",
   `portal.menu_action("open:pvr")`: a `SCREEN_PVR` list with the header,
   `LIBRARY` title and `NAME_TITLE/START_TITLE/DURATION_TITLE` columns through
   `i18n` (fallbacks "Opnamebibliotheek" and "Naam/Start/Lengte"), rows from
-  `OA_SVC_PVR` (name, local start time, minutes), the red
-  `icon_record_small` indicator on recording rows, focus and
+  `OA_SVC_PVR` (name, local start time, minutes), the five text tab labels
+  with the TabButton state colours, the red `icon_record_small` indicator on
+  recording rows, focus and
   Up/Down/Select/Exit.
 - `tests/ui_pvr_stock.c` adds two PVR reservations, sets the first to
   recording, and checks the panel/header/subheader/focus fills, columns, the
@@ -81,8 +86,9 @@ and `FREE_SPACE_INFO_TITLE` plus `" MB"`/`" MB "` (dut "Gebruikte ruimte: ",
 ## Limits and next step
 
 No stock PVR screen capture exists: the candidate is recorder evidence, not
-pixel parity or scanout. The five action glyphs, new/tagged/locked/partial/
-playback/service-type indicators, disk space values, scrollbar art, exact
+pixel parity or scanout. The exact vendor tab font record is not pinned
+(`ui.tab_font_id` defaults to 4), new/tagged/locked/partial/playback/
+service-type indicators, disk space values, scrollbar art, exact
 focus style, sort/tab functions, synopsis (record 693) and stock entry path
 are not painted. The rows come from the
 project PVR reservation stub, not a recording engine or storage hardware. A

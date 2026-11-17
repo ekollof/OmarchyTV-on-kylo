@@ -60,6 +60,6 @@ int main(void)
     assert(oa_pvr_visible_rows(&bad) == -EINVAL);
     assert(oa_pvr_layout_default(NULL) == -EINVAL);
 
-    puts("ok pvr layout: record-692 rects, 75/66 rows, 5 action tabs and colours");
+    puts("ok pvr layout: record-692 rects, 75/66 rows, 5 text tabs and colours");
     return 0;
 }

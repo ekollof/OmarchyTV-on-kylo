@@ -15,9 +15,10 @@ extern "C" {
  *   row 26,222,1886,288 (66 px); name/time/duration columns 181/815/1307;
  *   scrollbar 1910,217,1920,974; five action tabs 206..1714 at y101..160;
  *   title/clock and space-info rects.
- * PlayListDialog::init sets the title from the LIBRARY string key; the five
- * tab buttons are glyph actions (HLP_PLAY_OPTIONS/EDIT/DELETE/SORT/SETTINGS),
- * not text tabs. The row pitch is not in record 692; 75 px is the shared
+ * PlayListDialog::init sets the title from the LIBRARY string key. The five
+ * tab buttons are text buttons: SVGButton::create resolves each name through
+ * UIResourceManager::lookupString (HLP_PLAY_OPTIONS/EDIT/DELETE/SORT/SETTINGS),
+ * with the TabButtonFA/UFA/FI/UFI states (BinSVG 522..525). The row pitch is not in record 692; 75 px is the shared
  * full-screen-list step and is marked capture/class-derived, not resource.
  * Rectangles are EASIRect-style exclusive x1/y1. No UI/host I/O.
  */

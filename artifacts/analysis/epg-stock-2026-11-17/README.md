@@ -49,9 +49,12 @@ EPG screen capture exists.
 
 Colours: list `#C5C9CD`, service column white with `#231F20`, red band
 `#BE1E2D` at 9/10, date bar `#010101` at 5/10, event title `#F7941E`, arrows
-`#009F93`. The tab rects use a red placeholder stroke and are **not** painted:
-the five buttons are glyph actions (`NOW_NEXT_SCHEDULE`, `HLP_FILTER`,
-`PREVIOUS_DAY`, `NEXT_DAY`, `EXTRAS`), whose glyph assets are not identified.
+`#009F93`. The tab rects use a red placeholder stroke in the resource; the
+real button states are TabButtonFA/UFA/FI/UFI (BinSVG 522..525): selected =
+solid white pill with `#811924` text, unselected = transparent with white
+text. The five labels are **text**, not glyphs: `SVGButton::create`
+@0x010aea28 resolves each name through `UIResourceManager::lookupString`
+(`NOW_NEXT_SCHEDULE`, `HLP_FILTER`, `PREVIOUS_DAY`, `NEXT_DAY`, `EXTRAS`).
 
 The top band 0..319 is left on the resource's white canvas with white text
 strokes; the runtime theme must supply a header. This slice uses the
