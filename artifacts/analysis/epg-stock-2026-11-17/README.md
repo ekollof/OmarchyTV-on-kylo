@@ -109,8 +109,10 @@ duration 76,472,396,517, date 44,518,368,562, timeM 1196,519,1446,563,
 iconRight 1866,516,1920,570, list 0,570,1920,1077, service column
 0,572,640,994 `#C5C9CD` (not 101's white). `ui.epg_synopsis=1` renders it with
 the selected service/event title, `HH:MM-HH:MM` time, duration
-`%dh %dm`/`%dm %s` and a single clipped description line; the event image and
-bottom event rows are not implemented. `epg-stock-synopsis.png` is the real-
+`%dh %dm`/`%dm %s` and a single clipped description line. The bottom area
+keeps the timeline: EPGListBox 0,570..1920,1077 is split at 641 (the
+EPGServiceListBox width), so service names and event bars are painted with the
+same 7200 s ratio. The event image is still a blank box. `epg-stock-synopsis.png` is the real-
 font Dutch candidate.
 
 ## Screen wiring and evidence

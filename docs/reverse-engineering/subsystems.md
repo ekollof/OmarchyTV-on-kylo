@@ -412,7 +412,8 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   default-off `ui.epg_stock=1` renders chrome/i18n/rows/bars, rows only under
   an explicit `ui.epg_row_pitch` (`check-ui-epg-stock`). Event bars use the
   recovered serviceBFA/UFA/FI/UFI fills (BinSVG 456..459); `ui.epg_synopsis=1`
-  renders record 102 (title/time/duration/description). Header fill is a
+  renders record 102 (title/time/duration/description) and keeps the bottom
+  timeline split at 641. Header fill is a
   family inference; no stock capture, exact tab font/icons/selection/synopsis image/
   wrapping/live EIT/scanout. Evidence: EPG-STOCK-LAYOUT.
 - Stock PVR list: `DialogPlayList.svg` (BinSVG 692) panel 0,0,1920,1080

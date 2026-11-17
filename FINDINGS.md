@@ -354,8 +354,9 @@ row/time/text fills (FA #F7941E/#D37B1C/#7E000A; UFA #7E000A/#6D010F/white;
 FI #EDEDED/#D8D8D8/#7E000A; UFI=UFA fill) and the bars now use them.
 showSynopsis 0x00dca1b0 selects record 102 (hideSynopsis returns to 101);
 `ui.epg_synopsis=1` renders event title, HH:MM-HH:MM, vendor duration
-(%dh %dm / %dm %s) and one clipped description line, with the real-font
-candidate epg-stock-synopsis.png. The top-band header fill is a family
+(%dh %dm / %dm %s) and one clipped description line; the bottom area keeps
+the timeline (EPGListBox 0,570..1920,1077 split at 641) with service names and
+event bars, with the real-font candidate epg-stock-synopsis.png. The top-band header fill is a family
 inference (#481730) pending a capture; exact tab font/icons, selection, synopsis
 event image/bottom rows/wrapping, day navigation, live EIT and scanout remain
 open. Recorder evidence only.

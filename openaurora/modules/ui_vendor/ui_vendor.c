@@ -2817,6 +2817,63 @@ static void paint_epg_synopsis(struct ctx *c)
         paint_tab(c, t->x, t->y, t->x1 - t->x, t->y1 - t->y,
                   tab_label(i18n, SYN_TABS[i], SYN_TABS_EN[i]), i == 0);
     }
+    /* The finished synopsis keeps the timeline as a shorter bottom box:
+     * createServiceList splits EPGListBox (0,570..1920,1077) at
+     * list.x + EPGServiceListBox.width + 1 = 641. Rows still need the explicit
+     * pitch because the runtime step is art-derived. */
+    oa_epg_rect services, timeline;
+    if (oa_epg_list_split(&y.list, y.service_list.x1 - y.service_list.x,
+                          &services, &timeline) == 0 && pitch > 0 &&
+        list && epg) {
+        d->fill(services.x1 - 1, services.y, 2, services.y1 - services.y,
+                y.service_border_rgb[0], y.service_border_rgb[1],
+                y.service_border_rgb[2]);
+        int rows = (y.list.y1 - y.list.y) / pitch;
+        int64_t now = (int64_t)now_ms();
+        for (int row = 0; row < rows && row < (int)list->count; row++) {
+            int ry = y.list.y + row * pitch;
+            const char *name = list->rows[row].name;
+            if (name && *name)
+                epg_text(c, name, y.service_list.x + 8,
+                         ry + (pitch - 24) / 2, 35, 31, 32);
+            struct oa_epg_event events[32];
+            size_t count = 0;
+            if (epg->query((uint32_t)list->rows[row].handle, window,
+                           window + (int64_t)y.interval_s * 1000, events,
+                           sizeof events / sizeof events[0], &count) != 0)
+                continue;
+            for (size_t i = 0; i < count; i++) {
+                int bx = 0, bw = 0;
+                if (oa_epg_event_span(&timeline, window, y.interval_s,
+                                      events[i].start_ms, events[i].end_ms,
+                                      &bx, &bw) != 0)
+                    continue;
+                int active =
+                    events[i].start_ms <= now && now < events[i].end_ms;
+                struct oa_epg_event_style style;
+                oa_epg_event_style(0, active, &style);
+                int bar_h = pitch - 8;
+                if (bar_h < 8) bar_h = 8;
+                if (ry + bar_h > y.list.y1) bar_h = y.list.y1 - ry;
+                if (bar_h <= 0) break;
+                d->fill(bx, ry + 4, bw, bar_h, style.fill[0], style.fill[1],
+                        style.fill[2]);
+                if (bw >= 60) {
+                    char clipped[24];
+                    size_t n = strlen(events[i].name);
+                    if (n > sizeof clipped - 1) n = sizeof clipped - 1;
+                    memcpy(clipped, events[i].name, n);
+                    clipped[n] = '\0';
+                    epg_text(c, clipped, bx + 4, ry + 8, style.text[0],
+                             style.text[1], style.text[2]);
+                }
+            }
+        }
+        int now_x = 0;
+        if (oa_epg_instant_x(&timeline, window, y.interval_s, now, &now_x) == 0)
+            d->fill(now_x, timeline.y, 2, timeline.y1 - timeline.y,
+                    255, 255, 255);
+    }
     if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
     if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
     if (epg) c->api->release(c->api->priv, OA_SVC_EPG);

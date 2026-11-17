@@ -1653,9 +1653,10 @@ SVGServiceEventButton styles come from serviceBFA/UFA/FI/UFI (BinSVG
 456..459; FA #F7941E/#D37B1C/#7E000A, UFA #7E000A/#6D010F/white, FI
 #EDEDED/#D8D8D8/#7E000A, UFI=UFA fill) and the bars use them. showSynopsis
 selects record 102; `ui.epg_synopsis=1` renders event title, HH:MM-HH:MM,
+plus the bottom timeline split at 641 with service names/bars,
 vendor duration and one clipped description line (epg-stock-synopsis.png).
 Header fill is a family inference; exact tab font/icons/selection/synopsis
-image/bottom rows/wrapping/live EIT/scanout open. Recorder only.
+image/wrapping/live EIT/scanout open. Recorder only.
 
 PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary
 (integer recording id, start/stop, index query) with a persistent offline stub.

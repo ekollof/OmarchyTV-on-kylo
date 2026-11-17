@@ -204,10 +204,11 @@ maps the cold-start stages and the current stock-UI coverage.
       event-bar styles come from serviceBFA/UFA/FI/UFI (BinSVG 456..459) and a
       default-off `ui.epg_synopsis=1` renders record 102 (event title,
       HH:MM-HH:MM, vendor duration, one clipped description line;
-      `epg-stock-synopsis.png`). Open: EPG stock capture, header fill (family
-      inference), tab glyphs/icons, selection, synopsis event image/bottom
-      rows/wrapping, day navigation/filters, runtime row pitch, live EIT, the
-      stock channel key path/runtime feed and scanout.
+      `epg-stock-synopsis.png`; the bottom timeline split at 641 paints the
+      service names and event bars too). Open: EPG stock capture, header fill
+      (family inference), tab glyphs/icons, selection, synopsis event image/
+      wrapping, day navigation/filters, runtime row pitch, live EIT, the stock
+      channel key path/runtime feed and scanout.
 
 ## Scheduled takeover test queue (single session)
 

@@ -331,7 +331,11 @@ int main(int argc, char **argv)
     assert(find_fill(trace, 0, 570, 1920, 507, 197, 201, 205));
     assert(find_fill(trace, 0, 572, 640, 422, 197, 201, 205));
     assert(find_fill(trace, 639, 572, 2, 422, 35, 31, 32));
-    assert(trace->blit_count() >= 8);
+    /* The synopsis keeps the timeline as a shorter bottom box: split at
+     * 640+1, so 641..1920 (width 1279) with the same 7200 s ratio. */
+    assert(find_fill(trace, 640, 570, 2, 507, 35, 31, 32));
+    assert(find_fill(trace, 641, 574, 319, 68, 126, 0, 10));
+    assert(trace->blit_count() >= 12);
     const char *scap = getenv("OA_EPG_SYNOPSIS_CAPTURE");
     if (scap && *scap)
         assert(!trace->capture(scap));

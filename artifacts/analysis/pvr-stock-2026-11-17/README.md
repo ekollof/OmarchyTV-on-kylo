@@ -73,7 +73,12 @@ The five tab buttons are **text** buttons resolved through
 selected pill with `#811924` text and transparent unselected tabs with white
 text. `ui.tab_font_id` defaults to 4 because font7 overflows a 300 px tab.
 
-Only `recordingIcon` is painted today, for `OA_PVR_RECORDING`. The other
+`rebuildRecordingsList` @0x00df3768 fills a 0x38-byte `PlayListItemData`
+(id, names, start, duration, DVR vtable +0x58/+0x6c values, synopsis, and a
+`+0x34` bool from `local_ebc > 0`); the flag→indicator mapping is not
+reduced. `updateCachedDiskStatistics` @0x00df20e4 reads two DVR values into
+`this+0x9a4/+0x9a8` (zeroed on failure) for `refreshSpaceUsage`. Only
+`recordingIcon` is painted today, for `OA_PVR_RECORDING`. The other
 indicators need metadata (`new`, `locked`, `partial`, play-disallowed,
 service type TV/radio) that `OA_SVC_PVR` does not expose, so they remain
 unpainted rather than guessed.

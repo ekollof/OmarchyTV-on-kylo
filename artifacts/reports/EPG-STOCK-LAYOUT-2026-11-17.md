@@ -69,8 +69,11 @@ inference), event bar 0,264,1920,571 (`#010101` 5/10), event image
 44,518,368,562, timeM 1196,519,1446,563, list 0,570,1920,1077 and service
 column 0,572,640,994 `#C5C9CD`. `ui.epg_synopsis=1` renders the selected
 event title, `HH:MM-HH:MM` time, vendor duration `%dh %dm`/`%dm %s` and one
-clipped description line. Both views paint the five tab labels from the i18n
-keys with the TabButton state colours.
+clipped description line, and the bottom area keeps the timeline: the
+synopsis reuses `createServiceList` on EPGListBox 0,570..1920,1077, split at
+641, so the service names and event bars are painted there with the same
+7200 s ratio. Both views paint the five tab labels from the i18n keys with the
+TabButton state colours.
 
 ## Implementation
 
@@ -105,8 +108,8 @@ No stock EPG screen capture exists, so the candidate is recorder evidence, not
 pixel parity or scanout. The header fill is a family inference; the exact
 vendor tab font record is not pinned (`ui.tab_font_id` defaults to 4 because
 font7 overflows the 300 px tabs), channel logo/HD/encrypted icons,
-selection/focus, the synopsis event image
-and bottom event rows, text wrapping, day navigation, filters,
+selection/focus, the synopsis event image, text wrapping, day navigation,
+filters,
 reminders/record actions, the stock entry path, the runtime row pitch and
 scanout remain open. Event-bar colours are the recovered serviceB styles. Live EIT/EPG data still requires the
 owner-authorized TV/tuner window; only the ingest/query path is offline-tested.

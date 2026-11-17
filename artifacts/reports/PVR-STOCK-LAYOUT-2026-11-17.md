@@ -59,6 +59,17 @@ payload in index order). Only `recordingIcon` is painted, for
 `OA_PVR_RECORDING`; the other indicators need metadata (`new`, `locked`,
 `partial`, play-disallowed, TV/radio) that `OA_SVC_PVR` does not expose.
 
+`PlayListDialog::rebuildRecordingsList` @0x00df3768 allocates a 0x38-byte
+`PlayListItemData` per `EASIDvrInterface::queryFirstRecording` result:
+`+0x00` recording id, `+0x04` program name (UString), `+0x0c` channel name,
+`+0x14` start DateTime, `+0x18` duration/stats value, `+0x1c..+0x20` values
+from DVR vtable slots `+0x58`/`+0x6c`, `+0x24`/`+0x28` scratch values,
+`+0x2c` synopsis UString and `+0x34` a bool set from `local_ebc > 0`. The
+exact flag→indicator mapping is not reduced, so those icons stay unpainted.
+`updateCachedDiskStatistics` @0x00df20e4 asks the DVR object vtable `+0x34`
+for two out values (`this+0x9a4`/`this+0x9a8`) and zeroes both on failure;
+that is the data `refreshSpaceUsage` formats.
+
 `refreshSpaceUsage` uses `USED_SPACE_INFO_TITLE`, `RESERVED_SPACE_INFO_TITLE`
 and `FREE_SPACE_INFO_TITLE` plus `" MB"`/`" MB "` (dut "Gebruikte ruimte: ",
 "Gereserveerd: ", "Vrije ruimte: "). There is no disk-stat call in
