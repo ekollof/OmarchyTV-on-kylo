@@ -61,3 +61,55 @@ record 36: rc=0
   tag=1 id='mBotR' eoff=485 rect=(55,46,56,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'
   tag=9 id='(null)' eoff=522
   tag=1 id='fontBold' eoff=523 rect=(62,12,78,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+record 61: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='gBotM' eoff=38
+  tag=1 id='mBotM' eoff=45 rect=(74,93,86,107) stroke_w=2 opacity=10 stroke='#000000' fill='#FFFFFF'
+  tag=1 id='' eoff=85 rect=(76,93,80,106) stroke_w=0 opacity=10 stroke='' fill='#811924'
+  tag=9 id='(null)' eoff=113
+  tag=8 id='gRowM' eoff=114
+  tag=1 id='mRowM' eoff=121 rect=(74,60,86,90) stroke_w=2 opacity=10 stroke='#000000' fill='#FFFFFF'
+  tag=1 id='' eoff=161 rect=(76,60,80,90) stroke_w=0 opacity=10 stroke='' fill='#811924'
+  tag=9 id='(null)' eoff=189
+  tag=8 id='gTopM' eoff=190
+  tag=1 id='mTopM' eoff=197 rect=(74,32,86,56) stroke_w=2 opacity=10 stroke='#000000' fill='#FFFFFF'
+  tag=1 id='' eoff=237 rect=(76,33,80,57) stroke_w=0 opacity=10 stroke='' fill='#811924'
+  tag=9 id='(null)' eoff=265
+  tag=8 id='bar_gBotM' eoff=266
+  tag=1 id='bar_mBotM' eoff=277 rect=(91,93,103,109) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=318 rect=(93,92,97,109) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=9 id='(null)' eoff=346
+  tag=8 id='bar_gRowM' eoff=347
+  tag=1 id='bar_mRowM' eoff=358 rect=(91,60,103,91) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=399 rect=(93,59,97,92) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=9 id='(null)' eoff=427
+  tag=8 id='bar_gTopM' eoff=428
+  tag=1 id='bar_mTopM' eoff=439 rect=(91,37,103,57) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=480 rect=(93,36,97,59) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=9 id='(null)' eoff=508
+record 62: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='gBotM' eoff=38
+  tag=1 id='mBotM' eoff=45 rect=(74,93,86,107) stroke_w=2 opacity=10 stroke='#000000' fill='#FFFFFF'
+  tag=1 id='' eoff=85 rect=(76,93,80,106) stroke_w=0 opacity=10 stroke='' fill='#811924'
+  tag=9 id='(null)' eoff=113
+  tag=8 id='gRowM' eoff=114
+  tag=1 id='mRowM' eoff=121 rect=(74,60,86,90) stroke_w=2 opacity=10 stroke='#000000' fill='#FFFFFF'
+  tag=1 id='' eoff=161 rect=(76,60,80,90) stroke_w=0 opacity=10 stroke='' fill='#811924'
+  tag=9 id='(null)' eoff=189
+  tag=8 id='gTopM' eoff=190
+  tag=1 id='mTopM' eoff=197 rect=(74,32,86,56) stroke_w=2 opacity=10 stroke='#000000' fill='#FFFFFF'
+  tag=1 id='' eoff=237 rect=(76,33,80,57) stroke_w=0 opacity=10 stroke='' fill='#811924'
+  tag=9 id='(null)' eoff=265
+  tag=8 id='bar_gBotM' eoff=266
+  tag=1 id='bar_mBotM' eoff=277 rect=(91,93,103,109) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=318 rect=(93,92,97,109) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=9 id='(null)' eoff=346
+  tag=8 id='bar_gRowM' eoff=347
+  tag=1 id='bar_mRowM' eoff=358 rect=(91,60,103,91) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=399 rect=(93,59,97,92) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=9 id='(null)' eoff=427
+  tag=8 id='bar_gTopM' eoff=428
+  tag=1 id='bar_mTopM' eoff=439 rect=(91,37,103,57) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=480 rect=(93,36,97,59) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=9 id='(null)' eoff=508

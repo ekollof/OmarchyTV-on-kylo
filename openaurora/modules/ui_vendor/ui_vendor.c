@@ -2981,19 +2981,32 @@ static void move_key(struct ctx *c, uint8_t id)
             if (c->d) paint(c);
             return;
         }
-        const oa_service_list_iface *svc =
-            c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
-        const struct oa_service_list *list = svc ? svc->snapshot() : NULL;
+        /* Prefer the ingested runtime active list (EASI order) over the stored
+         * service DB. The live EASI feed is still owner-gated; the ingest path
+         * and the stock renderer are testable offline. */
+        const oa_channel_iface *channels =
+            c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1);
+        const struct oa_channel_snapshot *runtime =
+            channels ? channels->snapshot() : NULL;
+        int have_runtime = runtime && runtime->count > 0;
+        const oa_service_list_iface *svc = NULL;
+        const struct oa_service_list *list = NULL;
         size_t *order = NULL, matched = 0;
-        if (list) {
-            struct oa_service_query q;
-            memset(&q, 0, sizeof q);
-            q.source_mask = 0x7;
-            q.sort = OA_SERVICE_SORT_CHANNEL_NO;
-            order = malloc(list->count * sizeof *order);
-            if (!order || oa_service_list_query(list, &q, order,
-                    list->count, &matched))
-                matched = 0;
+        if (have_runtime) {
+            matched = runtime->count;
+        } else {
+            svc = c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
+            list = svc ? svc->snapshot() : NULL;
+            if (list) {
+                struct oa_service_query q;
+                memset(&q, 0, sizeof q);
+                q.source_mask = 0x7;
+                q.sort = OA_SERVICE_SORT_CHANNEL_NO;
+                order = malloc(list->count * sizeof *order);
+                if (!order || oa_service_list_query(list, &q, order,
+                        list->count, &matched))
+                    matched = 0;
+            }
         }
         if (id == 20 || id == 19) {
             if (matched) {
@@ -3007,11 +3020,13 @@ static void move_key(struct ctx *c, uint8_t id)
             memset(&act, 0, sizeof act);
             act.kind = OA_ACTION_SELECT;
             act.index = (uint8_t)c->chan_sel;
-            act.name = list->rows[order[c->chan_sel]].name;
+            act.name = have_runtime ? runtime->entries[c->chan_sel].name
+                                    : list->rows[order[c->chan_sel]].name;
             c->api->emit(c->api->priv, OA_TOPIC_ACTION, &act);
         }
         free(order);
         if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
+        if (channels) c->api->release(c->api->priv, OA_SVC_CHANNELS);
         return;
     }
     if (c->screen == SCREEN_APPS) {
@@ -3186,6 +3201,16 @@ static void move_key(struct ctx *c, uint8_t id)
         if (c->band == BAND_RAIL && c->rail == 1) {
             c->screen = SCREEN_SOURCES;
             c->src = 0;
+            if (c->d) paint(c);
+            return;
+        }
+        /* Rail 3 is the monitor/Zenders sidebar icon in the stock portal
+         * capture (shot-launcher.png); the p0/04 channel list is opened from
+         * it. Rails: 0 three-circle, 1 source arrow, 2 home, 3 Zenders,
+         * 4 wrench. */
+        if (c->band == BAND_RAIL && c->rail == 3 &&
+            atoi(c->api->config_get(c->api->priv, "ui.channels_stock", "0")) == 1) {
+            c->screen = SCREEN_CHANNELS;
             if (c->d) paint(c);
             return;
         }

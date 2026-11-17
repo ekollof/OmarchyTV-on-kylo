@@ -67,9 +67,12 @@ This is an explicit provisional UI, not vendor parity:
   (`ui.channels_stock=1`) with matching vendor fonts and a recorder/capture
   check (`check-ui-channels-stock`, `check-ui-channels-stock-capture`; panel
   MAE8 2.750). The channel_small header icon is drawn/staged; Up/Down/Select/
-  Exit are tested (Select index 1 `C07`). The provisional screen remains the
-  default; the portal entry path, runtime EASI, scrollbar, exact tab anchors,
-  scrolling/paging and scanout remain open;
+  Exit are tested (Select index 1 `C07`), Select on the portal rail-3 monitor/Zenders icon opens the screen only with
+  `ui.channels_stock=1` (sidebar order from `shot-launcher.png`); the default
+  rail path is unchanged, and the stock screen/input prefer the ingested runtime
+  active list (3-entry ingest test reports `Runtime A`). The provisional screen
+  remains the default; the live EASI feed, scrollbar track/total, exact tab
+  anchors, scrolling/paging and scanout remain open;
 - tuner acquisition/scan, EPG, PVR, media/network and hardware ownership remain
   open;
 - recorder evidence is not physical fb1/scanout evidence.

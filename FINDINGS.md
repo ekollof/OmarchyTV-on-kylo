@@ -299,9 +299,13 @@ panel/banner/tabs/rows with the matching vendor font records (7 title,
 corrected capture: panel MAE8 2.755, focus row 1.510, row 2 2.581 (banner/tabs
 3.81/5.75 from the missing icon/scrollbar and tab/subtitle rasters). The
 provisional screen remains the default; the `channel_small` header icon is
-wired/staged and the screen Up/Down/Select/Exit keys are tested (Select emits
-index 1 `C07`). Runtime EASI/LCN/visibility, scrollbar, the portal entry path,
-exact tab anchors and scanout remain open.
+wired/staged, Up/Down/Select/Exit is tested (Select emits index 1 `C07`), and
+portal rail 3 (monitor/Zenders, shot-launcher sidebar) opens the screen only with `ui.channels_stock=1`. The
+stock renderer/input also prefer the ingested runtime active list; a 3-entry
+ingest test reports `Runtime A`. The scrollbar skin caps (20+16 px, min 36) and
+calculateBarSizeAndPosition are recovered; the channel track/total is not
+pinned. Live EASI/LCN/visibility, scrollbar wiring, exact tab anchors and
+scanout remain open.
 
 PVR-MODULE-2026-11-05: the PVR service is now a real mod_pvr with a
 vendor-shaped backend boundary (integer recording id, start/stop, index query)

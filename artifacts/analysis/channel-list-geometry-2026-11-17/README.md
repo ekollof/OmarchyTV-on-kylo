@@ -94,3 +94,18 @@ script. The remaining panel difference is the missing scrollbar and
 tab/subtitle raster edges (banner MAE8 3.78, tabs 5.75); the row geometry/colour
 and text anchors match the capture. This is a recorder
 comparison, not fb1/scanout proof.
+
+## Scrollbar skin and capture grip (2026-11-17)
+
+`scrollbarFA.svg` (record 61) and `scrollbarUFA.svg` (62) define the moving bar
+caps `bar_mTopM` (91,37..103,57, 20 px) and `bar_mBotM` (91,93..103,109, 16 px);
+`SVGScrollBar::calculateMinBarSize` adds them, so `min_bar=36`.
+`SVGScrollBar::calculateBarSizeAndPosition` (0x10c3af0) is already implemented
+in `common/svg_scrollbar.c`: `bar=height*visible/total` clamped to `min_bar`,
+then `pos=(height-bar)*first/(total-visible)`.
+
+The stock channel capture shows a white 3 px grip at x=768..770, y=196..329
+(134 px) and no visible track. The channel list's track height and total are
+not pinned: the dump DB's raw `m_type`/`m_flags` values are packed and the
+stock list's runtime/EASI visibility filter is not available offline. Do not
+fit a track/total to the 134 px grip; that remains open.

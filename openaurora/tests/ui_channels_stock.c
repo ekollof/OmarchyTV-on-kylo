@@ -20,6 +20,7 @@
 
 static char g_modules[256], g_db[512], g_ui_dir[512], g_tmp[256];
 static char g_font_index[512], g_font_pack[512], g_capture[512];
+static int g_portal;
 static int g_actions;
 static char g_action_name[64];
 
@@ -29,7 +30,8 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "ui.dir")) return g_ui_dir;
     if (!strcmp(key, "ui.paint")) return "1";
     if (!strcmp(key, "ui.fps")) return "0";
-    if (!strcmp(key, "ui.screen")) return "channels";
+    if (!strcmp(key, "ui.screen")) return g_portal ? "portal" : "channels";
+    if (!strcmp(key, "ui.focus")) return g_portal ? "3" : "2";
     if (!strcmp(key, "ui.text")) return "1";
     if (!strcmp(key, "ui.channels_stock")) return "1";
     if (!strcmp(key, "ui.font_index")) return g_font_index;
@@ -287,6 +289,58 @@ int main(int argc, char **argv)
     host.api.emit(&host, OA_TOPIC_KEY, &exit);
     oa_host_dispatch_posts(&host);
     assert(portal->screen() == 0);
+
+    /* Stock portal entry: the rail-3 monitor/Zenders icon opens the channel
+     * list (shot-launcher.png sidebar order). */
+    assert(!command(&host, "stop ui_vendor", out, sizeof out));
+    g_portal = 1;
+    assert(!command(&host, "start ui_vendor", out, sizeof out));
+    assert(portal->screen() == 0);
+    oa_key_event open = { .id = 53, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &open);
+    oa_host_dispatch_posts(&host);
+    assert(portal->screen() == 6);
+    assert(find_fill(trace, 0, 0, 780, 1080, 190, 30, 45));
+    /* chan_sel persists across the stop/start; move back to row 1. */
+    oa_key_event up = { .id = 20, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &up);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 19, 195, 748, 66, 254, 148, 25));
+    host.api.emit(&host, OA_TOPIC_KEY, &exit);
+    oa_host_dispatch_posts(&host);
+    assert(portal->screen() == 0);
+
+    /* Runtime EASI order: the ingested active list replaces the stored rows
+     * and the Select action reports the runtime name. The live feed itself is
+     * still owner-gated; this exercises the ingest/render path offline. */
+    assert(!command(&host, "stop ui_vendor", out, sizeof out));
+    assert(!command(&host, "load channels", out, sizeof out));
+    assert(!command(&host, "start channels", out, sizeof out));
+    const oa_channel_iface *channels =
+        host.api.lookup(&host, OA_SVC_CHANNELS, 1);
+    assert(channels);
+    const char *runtime_xml =
+        "<active_list network='Cable' count='3' total_size='3'>"
+        "<service rsn='7' name='Runtime A' handle='7' onid='1' tsid='2' sid='3' type='1'/>"
+        "<service rsn='9' name='Runtime B' handle='9' onid='1' tsid='2' sid='4' type='1'/>"
+        "<service rsn='5' name='Runtime C' handle='5' onid='1' tsid='2' sid='5' type='1'/>"
+        "</active_list>";
+    assert(channels->ingest_xml(runtime_xml, strlen(runtime_xml)) == 3);
+    host.api.release(&host, OA_SVC_CHANNELS);
+    g_portal = 0;
+    assert(!command(&host, "start ui_vendor", out, sizeof out));
+    assert(portal->screen() == 6);
+    assert(find_fill(trace, 19, 195, 748, 66, 254, 148, 25));
+    g_actions = 0;
+    oa_key_event runtime_select = { .id = 53, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &runtime_select);
+    oa_host_dispatch_posts(&host);
+    assert(g_actions == 1 && !strcmp(g_action_name, "Runtime A"));
+    host.api.emit(&host, OA_TOPIC_KEY, &exit);
+    oa_host_dispatch_posts(&host);
+    assert(portal->screen() == 0);
+    assert(!command(&host, "stop ui_vendor", out, sizeof out));
+    assert(!command(&host, "stop channels", out, sizeof out));
 
     host.api.unsubscribe(&host, action_sub);
     host.api.release(&host, OA_SVC_PORTAL);

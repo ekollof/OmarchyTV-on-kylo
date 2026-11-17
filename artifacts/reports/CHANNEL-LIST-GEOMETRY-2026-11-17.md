@@ -81,11 +81,33 @@ The font record and exact text anchors are not yet recovered.
     by `mk-ui.py`/the check. The remaining banner/tab error (MAE8 3.78/5.75)
     is the missing scrollbar and tab/subtitle raster edges; rows, colours and
     text anchors match. The stock screen's Up/Down/Select/Exit handling is
-    tested (Select emits index 1 name `C07`); the portal entry path is still
-    unrecovered.
+    tested (Select emits index 1 name `C07`). The stock portal sidebar capture
+    (`shot-launcher.png`) orders the rail three-circle/source-arrow/home/
+    monitor-Zenders/wrench; Select on rail 3 now opens `SCREEN_CHANNELS` only with `ui.channels_stock=1`; the default rail path is unchanged and is
+    covered by the stock test. The header icon is `channel_small.png` (60x60)
+    at 30,14.
+  - Runtime order: both `paint_channels_stock` and the key handler prefer the
+    ingested `OA_SVC_CHANNELS` active list. The stock test loads `channels`,
+    ingests three runtime entries and asserts the rows render in that order and
+    Select reports `Runtime A`. The live EASI/testtool feed remains owner-gated;
+    only the ingest/render/selection path is tested offline.
 
-The provisional `SCREEN_CHANNELS` remains the default; the stock key path,
-runtime EASI order/LCN and visibility, the header icon, scrollbar, exact tab
+## Scrollbar skin — track still open
+
+`scrollbarFA.svg` record 61 and `scrollbarUFA.svg` 62 define the moving-bar
+caps `bar_mTopM` 20 px and `bar_mBotM` 16 px, so `calculateMinBarSize` gives
+`min_bar=36`. `SVGScrollBar::calculateBarSizeAndPosition` (0x10c3af0) is
+already implemented in `common/svg_scrollbar.c` (`bar=height*visible/total`,
+clamped to `min_bar`, then the position formula). The p0/04 capture shows a
+white 3 px grip at x=768..770, y=196..329 (134 px) with no visible track. The
+channel list's track height and total are not pinned offline: the dump DB's
+raw `m_type`/`m_flags` are packed and the stock runtime/EASI visibility filter
+is unavailable. Do not fit a track/total to the 134 px grip; the scrollbar
+remains unwired.
+
+The provisional `SCREEN_CHANNELS` remains the default; the portal entry path
+(rail 3) and the runtime-order ingest/selection path are wired and tested. The
+scrollbar track/total, runtime EASI LCN/visibility and live feed, exact tab
 anchors and scanout remain open. The capture comparison is recorder/CPU, not
 fb1/scanout proof.
 
