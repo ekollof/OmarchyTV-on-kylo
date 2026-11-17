@@ -223,6 +223,7 @@ struct ctx {
     uint32_t sub_anim_start;         /* ui.clock timestamp */
     uint64_t sub_tick;               /* 10 ms repaint timer */
     int chan_sel;                    /* provisional channel-list selection */
+    int chan_tab;                    /* stock channel tab: 0 watch, 1 edit, 2 filter */
     int text_on;                     /* live labels/values loaded (ui.text=1) */
     struct oa_font_pack font_pack;
     unsigned char *font_data, *font_num_data;
@@ -2107,30 +2108,44 @@ static void paint_channels_stock(struct ctx *c)
 
     const struct oa_bitmap_font *small =
         c->app_font_on ? &c->app_font : &c->stock_tab_font;
-    d->fill(l.tabs[0].x, l.tabs[0].y, l.tabs[0].x1 - l.tabs[0].x,
-            l.tabs[0].y1 - l.tabs[0].y,
-            l.tab_selected_rgb[0], l.tab_selected_rgb[1],
-            l.tab_selected_rgb[2]);
-    /* The selected tab has a 1 px off-white right edge in the capture. */
-    d->fill(l.tabs[0].x1 - 1, l.tabs[0].y, 1, l.tabs[0].y1 - l.tabs[0].y,
-            253, 250, 250);
-    for (int i = 1; i < 3; i++) {
-        /* 1 px #CC6B74 border over the #C14753 interior. */
-        d->fill(l.tabs[i].x, l.tabs[i].y, l.tabs[i].x1 - l.tabs[i].x,
-                l.tabs[i].y1 - l.tabs[i].y, 204, 107, 116);
-        d->fill(l.tabs[i].x + 1, l.tabs[i].y + 1,
-                l.tabs[i].x1 - l.tabs[i].x - 2,
-                l.tabs[i].y1 - l.tabs[i].y - 2,
-                l.tab_rgb[0], l.tab_rgb[1], l.tab_rgb[2]);
+    /* One selected tab: white fill with the captured 1 px off-white right
+     * edge; the others get the 1 px #CC6B74 border over the #C14753 interior.
+     * AdvancedChannelListDialog::onLeftRightPress forwards Left/Right to the
+     * tab bar, so chan_tab selects the pane. */
+    if (c->chan_tab < 0) c->chan_tab = 0;
+    if (c->chan_tab > 2) c->chan_tab = 2;
+    for (int i = 0; i < 3; i++) {
+        const oa_channel_rect *t = &l.tabs[i];
+        if (i == c->chan_tab) {
+            d->fill(t->x, t->y, t->x1 - t->x, t->y1 - t->y,
+                    l.tab_selected_rgb[0], l.tab_selected_rgb[1],
+                    l.tab_selected_rgb[2]);
+            d->fill(t->x1 - 1, t->y, 1, t->y1 - t->y, 253, 250, 250);
+        } else {
+            d->fill(t->x, t->y, t->x1 - t->x, t->y1 - t->y, 204, 107, 116);
+            d->fill(t->x + 1, t->y + 1, t->x1 - t->x - 2,
+                    t->y1 - t->y - 2, l.tab_rgb[0], l.tab_rgb[1],
+                    l.tab_rgb[2]);
+        }
     }
 
     channel_text_at(c, &c->font, "Zenders", 122, 21, 255, 255, 255);
     channel_text_at(c, &c->stock_subtitle_font, "Alleen TV", 123, 63,
                     l.muted_rgb[0], l.muted_rgb[1], l.muted_rgb[2]);
-    channel_text_at(c, &c->stock_tab_font, "Bekijken", 80, 116,
-                    129, 25, 36); /* #811924 ink on the white tab */
-    channel_text_at(c, small, "Bewerken", 333, 118, 255, 255, 255);
-    channel_text_at(c, small, "Filter", 615, 118, 255, 255, 255);
+    if (c->chan_tab == 0)
+        channel_text_at(c, &c->stock_tab_font, "Bekijken", 80, 116,
+                        129, 25, 36);
+    else
+        channel_text_at(c, &c->stock_tab_font, "Bekijken", 80, 116,
+                        255, 255, 255);
+    channel_text_at(c, small, "Bewerken", 333, 118,
+                    c->chan_tab == 1 ? 129 : 255,
+                    c->chan_tab == 1 ? 25 : 255,
+                    c->chan_tab == 1 ? 36 : 255);
+    channel_text_at(c, small, "Filter", 615, 118,
+                    c->chan_tab == 2 ? 129 : 255,
+                    c->chan_tab == 2 ? 25 : 255,
+                    c->chan_tab == 2 ? 36 : 255);
 
     const oa_channel_iface *channels =
         c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1);
@@ -3855,21 +3870,37 @@ static void move_key(struct ctx *c, uint8_t id)
                     matched = 0;
             }
         }
-        if (id == 20 || id == 19) {
+        /* AdvancedChannelListDialog key path: onLeftRightPress forwards
+         * Left/Right to the tab bar, onUpDownPress to the list, and
+         * onSelectPress dispatches displayService/displayEdit/displayFilter
+         * for the focused watch/edit/filter pane. Only the watch pane has a
+         * replacement action; the edit and filter dialogs are not recovered. */
+        if (id == 21 || id == 22) {
+            c->chan_tab += id == 22 ? 1 : -1;
+            if (c->chan_tab < 0) c->chan_tab = 0;
+            if (c->chan_tab > 2) c->chan_tab = 2;
+            if (c->d) paint(c);
+        } else if (id == 20 || id == 19) {
             if (matched) {
                 c->chan_sel += id == 19 ? 1 : -1;
                 if (c->chan_sel < 0) c->chan_sel = 0;
                 if (c->chan_sel >= (int)matched) c->chan_sel = (int)matched - 1;
             }
             if (c->d) paint(c);
-        } else if ((id == 53 || id == 0x8a) && matched) {
-            oa_action_event act;
-            memset(&act, 0, sizeof act);
-            act.kind = OA_ACTION_SELECT;
-            act.index = (uint8_t)c->chan_sel;
-            act.name = have_runtime ? runtime->entries[c->chan_sel].name
-                                    : list->rows[order[c->chan_sel]].name;
-            c->api->emit(c->api->priv, OA_TOPIC_ACTION, &act);
+        } else if (id == 53 || id == 0x8a) {
+            if (c->chan_tab == 0 && matched) {
+                oa_action_event act;
+                memset(&act, 0, sizeof act);
+                act.kind = OA_ACTION_SELECT;
+                act.index = (uint8_t)c->chan_sel;
+                act.name = have_runtime ? runtime->entries[c->chan_sel].name
+                                        : list->rows[order[c->chan_sel]].name;
+                c->api->emit(c->api->priv, OA_TOPIC_ACTION, &act);
+            } else if (c->chan_tab != 0) {
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "channel tab %d action is not implemented",
+                            c->chan_tab);
+            }
         }
         free(order);
         if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);

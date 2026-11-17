@@ -367,6 +367,18 @@ inference (#481730) pending a capture; exact tab font/icons, selection, synopsis
 event image/bottom rows/wrapping, day navigation, live EIT and scanout remain
 open. Recorder evidence only.
 
+CHANNEL-KEY-PATH-2026-11-18: `AdvancedChannelListDialog` recovers the stock
+keys. `onLeftRightPress` 0x00e7e23c forwards Left/Right to the tab bar
+(mirror-swapped), so they move the watch/edit/filter focus; `onUpDownPress`
+0x00e7ad28 forwards to the list; `onSelectPress` 0x00e7e2e4 dispatches
+displayFilter/displayService/displayEdit for the filter/watch/edit pane;
+`onDigitPress` 0x00e7cb18 opens the modal GotoServiceDialog and sets the
+selection; MENU 0x210 ends to 0x29a (portal) and GUIDE sends navigation 0x0b
+(EPG). The stock ui.channels_stock mode implements tab focus and watch-pane
+Select (action emitted), with edit/filter panes and GotoServiceDialog open;
+`check-ui-channels-stock` covers Right/Left/Select and the capture check is
+unchanged (panel MAE8 2.314).
+
 PVR-MODULE-2026-11-05: the PVR service is now a real mod_pvr with a
 vendor-shaped backend boundary (integer recording id, start/stop, index query)
 and a persistent offline stub. pvr.path stores up to 256 jobs atomically with

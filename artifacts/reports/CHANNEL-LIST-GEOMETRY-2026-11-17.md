@@ -113,8 +113,23 @@ the shipped integer formula; the capture's white-threshold grip is 134 px at
 y196 (1 px edge/antialias), and the capture check scrollbar region is MAE8
 8.319. No fitted track/total.
 
+## Stock key path
+
+`AdvancedChannelListDialog` recovers the key handling: `onLeftRightPress`
+@0x00e7e23c forwards Left/Right to the tab bar (with mirror swap), so
+Left/Right move the watch/edit/filter focus; `onUpDownPress` @0x00e7ad28
+forwards Up/Down to the list; `onSelectPress` @0x00e7e2e4 dispatches
+`displayFilter` for the filter pane, `displayService` for the watch pane and
+`displayEdit` for the edit pane; `onDigitPress` @0x00e7cb18 opens the modal
+`GotoServiceDialog` and sets the list selection from its result; MENU key
+0x210 ends the dialog to 0x29a (portal) and GUIDE sends dialog navigation
+0x0b (EPG). The stock mode implements the tab focus and the watch-pane select
+action; the edit/filter panes and the GotoService dialog are recorded but not
+implemented, so Select on those panes logs and emits nothing.
+
 The provisional `SCREEN_CHANNELS` remains the default; the portal entry path
-(rail 3), runtime-order ingest/selection and scrollbar are wired and tested.
+(rail 3), runtime-order ingest/selection, scrollbar and the tab focus/Select
+dispatch are wired and tested.
 The live EASI/LCN visibility feed and scanout remain open; the remaining
 capture error is row text antialias and the scrollbar's 1 px white edge, not
 fitted offsets. The capture comparison is

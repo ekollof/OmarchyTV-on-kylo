@@ -291,6 +291,22 @@ int main(int argc, char **argv)
                      255, 255, 255));
     assert(trace->blit_count() >= 20);
 
+    /* AdvancedChannelListDialog: Left/Right move the tab focus, and Select on
+     * a non-watch tab does not emit the tune action. */
+    oa_key_event right = { .id = 22, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &right);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 264, 100, 250, 59, 255, 255, 255));
+    assert(find_fill(trace, 13, 101, 248, 57, 193, 71, 83));
+    oa_key_event sel = { .id = 53, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &sel);
+    oa_host_dispatch_posts(&host);
+    assert(g_actions == 0);
+    oa_key_event left = { .id = 21, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &left);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 12, 100, 250, 59, 255, 255, 255));
+
     const char *capture = getenv("OA_CHANNELS_STOCK_CAPTURE");
     if (capture && *capture)
         snprintf(g_capture, sizeof g_capture, "%s", capture);
