@@ -20,6 +20,7 @@
 
 static char g_modules[256], g_ui_dir[512], g_tmp[256], g_pvr_path[512];
 static char g_font_index[512], g_font_pack[512], g_capture[512];
+static int g_synopsis;
 
 static const char *config(void *p, const char *key, const char *def)
 {
@@ -29,6 +30,7 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "ui.fps")) return "0";
     if (!strcmp(key, "ui.screen")) return "pvr";
     if (!strcmp(key, "ui.pvr_stock")) return "1";
+    if (!strcmp(key, "ui.pvr_synopsis")) return g_synopsis ? "1" : "0";
     if (!strcmp(key, "ui.text")) return "1";
     if (!strcmp(key, "ui.font_index")) return g_font_index;
     if (!strcmp(key, "ui.font_pack")) return g_font_pack;
@@ -152,6 +154,8 @@ static int meta_read(uint32_t id, struct oa_pvr_meta *out)
         out->playback_protection = 1;
         out->new_flag = 1;
         out->service_type = 1;
+        snprintf(out->synopsis, sizeof out->synopsis,
+                 "Fixture synopsis text for Movie A.");
         return 0;
     }
     if (id == 2) {
@@ -161,6 +165,8 @@ static int meta_read(uint32_t id, struct oa_pvr_meta *out)
         out->playback_protection = 0;
         out->new_flag = 0;
         out->service_type = 2;
+        snprintf(out->synopsis, sizeof out->synopsis,
+                 "Fixture synopsis text for Movie B.");
         return 0;
     }
     return -ENOENT;
@@ -314,6 +320,27 @@ int main(int argc, char **argv)
     assert(!trace->capture(g_capture));
 
     oa_key_event exit = { .id = 10, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &exit);
+    oa_host_dispatch_posts(&host);
+    assert(portal->screen() == 0);
+
+    /* Synopsis view (BinSVG 693). */
+    assert(!command(&host, "stop ui_vendor", out, sizeof out));
+    g_synopsis = 1;
+    assert(!command(&host, "start ui_vendor", out, sizeof out));
+    assert(portal->screen() == 8);
+    oa_pvr_synopsis y;
+    assert(oa_pvr_synopsis_default(&y) == 0);
+    assert(find_fill(trace, 0, 0, 1921, 162, 87, 43, 65));
+    assert(find_fill(trace, 0, 162, 1920, 191, 72, 23, 48));
+    assert(find_fill(trace, 0, 353, 1920, 54, 154, 153, 153));
+    assert(find_fill(trace, 0, 982, 1920, 98, 72, 23, 48));
+    assert(find_blit_at(trace, 82, 173));
+    assert(find_blit_at(trace, 143, 204));
+    assert(find_fill(trace, 206, 101, 300, 59, 255, 255, 255));
+    const char *scap = getenv("OA_PVR_SYNOPSIS_CAPTURE");
+    if (scap && *scap)
+        assert(!trace->capture(scap));
     host.api.emit(&host, OA_TOPIC_KEY, &exit);
     oa_host_dispatch_posts(&host);
     assert(portal->screen() == 0);

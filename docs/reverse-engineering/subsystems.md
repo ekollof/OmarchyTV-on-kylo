@@ -432,7 +432,9 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   read through optional `pvr.meta` v1 and tinted #111111; the stub publishes
   no meta. Space labels follow refreshSpaceUsage 0x00df14e8 (KiB-as-MB
   used/reserved/free) via `common/pvr_space.c` + optional `pvr.stats` v1,
-  painted on a #481730 band (inference). LIBRARY resolves to
+  painted on a #481730 band (inference). `ui.pvr_synopsis=1` renders record
+  693 (setSynopsisSVGName) with the selected name/`pvr.meta` synopsis,
+  headers, tabs and space labels. LIBRARY resolves to
   "Opnamebibliotheek"; columns use NAME_TITLE/START_TITLE/DURATION_TITLE
   (Naam/Start/Lengte). Row icons: recording 0x36 `icon_record_small` (painted
   for OA_PVR_RECORDING), new 0x116, locked 0x1e, playback 0x115, partial

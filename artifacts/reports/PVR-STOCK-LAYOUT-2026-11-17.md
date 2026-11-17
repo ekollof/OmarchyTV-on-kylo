@@ -122,6 +122,25 @@ pending a stock capture. `check-pvr-space` covers the math/clamps and
   focus and Exit; `check-ui-pvr-stock` passes. `tools/pvr-stock-check.sh`
   renders the real-font/real-icon candidate `pvr-stock.png`.
 
+## Synopsis view (record 693)
+
+The PlayListDialog constructor calls
+`SVGFullScreenListDialog::setSynopsisSVGName(693)` / `setNormalSVGName(692)`,
+so the synopsis is `DialogPlayList_synopsis.svg`. Record 693: header
+0,0,1921,162 `#481730`; subheader 0,353,1920,407 `#010101` 3/10; synopsisTitle
+82,173,1372,223; synopsisText 143,204,1855,326; column titles at y354; list
+1,404,1911,982; scrollbar 1910,404,1920,984; space info y1001; tabs y101..160;
+rows 26,412 1860x66. `common/pvr_layout.c` adds `oa_pvr_synopsis_default` +
+`check-pvr-layout` coverage.
+
+`ui.pvr_synopsis=1` (with `ui.pvr_stock=1`) paints the 693 chrome, the
+`LIBRARY` title, the selected recording name and `PlayListItemData+0x2c`
+synopsis from `pvr.meta`, the Naam/Start/Lengte headers, tabs and space labels.
+The 162..353 top band and 982..1080 space band use the family header `#481730`
+(inference; the resource leaves white text on the light panel). The recording
+list rows inside the synopsis are not painted in this slice.
+`pvr-stock-synopsis.png` is the real-font candidate.
+
 ## Limits and next step
 
 No stock PVR screen capture exists: the candidate is recorder evidence, not
@@ -129,7 +148,8 @@ pixel parity or scanout. The exact vendor tab font record is not pinned
 (`ui.tab_font_id` defaults to 4), taggedIcon, the unreachable partial icon,
 the real disk-stat backend (the optional service carries explicit values;
 the mod_pvr stub publishes none), scrollbar art, exact focus style, sort/tab
-functions, synopsis (record 693) and stock entry path are not painted. The rows come from the
+functions and stock entry path are not painted; the synopsis list rows are
+not painted either. The rows come from the
 project PVR reservation stub, not a recording engine or storage hardware. A
 stock PVR capture and the on-TV PVR backend remain open.
 

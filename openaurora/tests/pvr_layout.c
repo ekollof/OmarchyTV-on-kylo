@@ -60,6 +60,31 @@ int main(void)
     assert(oa_pvr_visible_rows(&bad) == -EINVAL);
     assert(oa_pvr_layout_default(NULL) == -EINVAL);
 
-    puts("ok pvr layout: record-692 rects, 75/66 rows, 5 text tabs and colours");
+    /* DialogPlayList_synopsis.svg (record 693). */
+    oa_pvr_synopsis y;
+    assert(oa_pvr_synopsis_default(&y) == 0);
+    rect_eq(&y.panel, 0, 0, 1920, 1080);
+    rect_eq(&y.header, 0, 0, 1921, 162);
+    rect_eq(&y.top_band, 0, 162, 1920, 353);
+    rect_eq(&y.subheader, 0, 353, 1920, 407);
+    rect_eq(&y.synopsis_title, 82, 173, 1372, 223);
+    rect_eq(&y.synopsis_text, 143, 204, 1855, 326);
+    rect_eq(&y.title_name, 131, 354, 731, 399);
+    rect_eq(&y.title_start, 811, 354, 1299, 399);
+    rect_eq(&y.title_length, 1307, 354, 1636, 399);
+    rect_eq(&y.list, 1, 404, 1911, 982);
+    rect_eq(&y.row, 26, 412, 1886, 478);
+    rect_eq(&y.scrollbar, 1910, 404, 1920, 984);
+    rect_eq(&y.used_space, 315, 1001, 775, 1041);
+    rect_eq(&y.reserved_space, 779, 1001, 1287, 1041);
+    rect_eq(&y.free_space, 1295, 1001, 1697, 1041);
+    rect_eq(&y.space_band, 0, 982, 1920, 1080);
+    rect_eq(&y.tabs[0], 206, 101, 506, 160);
+    assert(y.row_pitch == 75 && y.row_height == 66);
+    assert(y.header_rgb[0] == 87 && y.band_rgb[0] == 72 &&
+           y.text_rgb[0] == 17 && y.panel_rgb[0] == 220);
+    assert(oa_pvr_synopsis_default(NULL) == -EINVAL);
+
+    puts("ok pvr layout: record-692/693 rects, 75/66 rows, 5 text tabs and colours");
     return 0;
 }

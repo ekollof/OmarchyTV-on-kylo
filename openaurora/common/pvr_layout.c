@@ -50,6 +50,51 @@ int oa_pvr_layout_default(oa_pvr_layout *out)
     return 0;
 }
 
+int oa_pvr_synopsis_default(oa_pvr_synopsis *out)
+{
+    if (!out)
+        return -EINVAL;
+    memset(out, 0, sizeof *out);
+    out->panel = (oa_pvr_rect){ 0, 0, 1920, 1080 };
+    out->header = (oa_pvr_rect){ 0, 0, 1921, 162 };
+    out->subheader = (oa_pvr_rect){ 0, 353, 1920, 407 };
+    out->synopsis_title = (oa_pvr_rect){ 82, 173, 1372, 223 };
+    out->synopsis_text = (oa_pvr_rect){ 143, 204, 1855, 326 };
+    out->title_name = (oa_pvr_rect){ 131, 354, 731, 399 };
+    out->title_start = (oa_pvr_rect){ 811, 354, 1299, 399 };
+    out->title_length = (oa_pvr_rect){ 1307, 354, 1636, 399 };
+    out->list = (oa_pvr_rect){ 1, 404, 1911, 982 };
+    out->row = (oa_pvr_rect){ 26, 412, 1886, 478 };
+    out->scrollbar = (oa_pvr_rect){ 1910, 404, 1920, 984 };
+    out->used_space = (oa_pvr_rect){ 315, 1001, 775, 1041 };
+    out->reserved_space = (oa_pvr_rect){ 779, 1001, 1287, 1041 };
+    out->free_space = (oa_pvr_rect){ 1295, 1001, 1697, 1041 };
+    out->top_band = (oa_pvr_rect){ 0, 162, 1920, 353 };
+    out->space_band = (oa_pvr_rect){ 0, 982, 1920, 1080 };
+    for (int i = 0; i < 5; i++)
+        out->tabs[i] = (oa_pvr_rect){ 206 + i * 302, 101,
+                                     506 + i * 302, 160 };
+    out->dialog_title = (oa_pvr_rect){ -34, 8, 1449, 98 };
+    out->clock = (oa_pvr_rect){ 1372, 26, 1910, 71 };
+    out->row_pitch = 75;
+    out->row_height = 66;
+    const uint8_t panel[3] = { 220, 219, 218 };
+    const uint8_t header[3] = { 87, 43, 65 };
+    const uint8_t subheader[3] = { 154, 153, 153 };
+    const uint8_t text[3] = { 17, 17, 17 };
+    const uint8_t title[3] = { 255, 255, 255 };
+    const uint8_t focus[3] = { 254, 148, 25 };
+    const uint8_t band[3] = { 72, 23, 48 };
+    memcpy(out->panel_rgb, panel, sizeof panel);
+    memcpy(out->header_rgb, header, sizeof header);
+    memcpy(out->subheader_rgb, subheader, sizeof subheader);
+    memcpy(out->text_rgb, text, sizeof text);
+    memcpy(out->title_rgb, title, sizeof title);
+    memcpy(out->focus_rgb, focus, sizeof focus);
+    memcpy(out->band_rgb, band, sizeof band);
+    return 0;
+}
+
 int oa_pvr_tab_at(const oa_pvr_layout *layout, int x, int y)
 {
     if (!layout)

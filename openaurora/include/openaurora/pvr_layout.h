@@ -46,6 +46,34 @@ typedef struct {
     uint8_t text_rgb[3], title_rgb[3], focus_rgb[3], space_band_rgb[3];
 } oa_pvr_layout;
 
+/*
+ * Synopsis view (DialogPlayList_synopsis.svg, BinSVG 693), selected by the
+ * shipped SVGFullScreenListDialog::setSynopsisSVGName(693) call in the
+ * PlayListDialog constructor. Header 0,0,1921,162 #481730; subheader
+ * 0,353,1920,407 #010101 3/10; synopsisTitle 82,173,1372,223; synopsisText
+ * 143,204,1855,326; column titles at y354; list 1,404,1911,982; scrollbar
+ * 1910,404,1920,984; space info y1001; tabs y101..160; rows 26,412 1860x66.
+ * The top 162..353 band and the 982..1080 space band are family inferences
+ * (#481730): record 693 leaves white text on the light panel with no fill.
+ */
+typedef struct {
+    oa_pvr_rect panel, header, subheader;
+    oa_pvr_rect synopsis_title, synopsis_text;
+    oa_pvr_rect title_name, title_start, title_length;
+    oa_pvr_rect list, row, scrollbar;
+    oa_pvr_rect used_space, reserved_space, free_space;
+    oa_pvr_rect top_band, space_band;
+    oa_pvr_rect tabs[5];
+    oa_pvr_rect dialog_title, clock;
+    int row_pitch;
+    int row_height;
+    uint8_t panel_rgb[3], header_rgb[3], subheader_rgb[3];
+    uint8_t text_rgb[3], title_rgb[3], focus_rgb[3], band_rgb[3];
+} oa_pvr_synopsis;
+
+/* Fill the recovered 693 defaults. Returns -EINVAL for NULL. */
+int oa_pvr_synopsis_default(oa_pvr_synopsis *out);
+
 /* Fill the recovered defaults. Returns -EINVAL for NULL. */
 int oa_pvr_layout_default(oa_pvr_layout *out);
 

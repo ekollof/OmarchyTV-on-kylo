@@ -124,6 +124,19 @@ with the family header #481730 (inference). `check-pvr-space` and
   fonts and the real recording icon (`tools/pvr-stock-check.sh`); no stock
   reference exists.
 
+## Synopsis (record 693)
+
+The constructor selects `DialogPlayList_synopsis.svg` via
+`SVGFullScreenListDialog::setSynopsisSVGName(693)`; record 693 gives header
+0,0,1921,162 #481730, subheader 0,353,1920,54, synopsisTitle 82,173,1372,50,
+synopsisText 143,204,1855,122, column titles y354, list 1,404,1911,982,
+scrollbar 1910,404, space y1001, tabs y101..160 and rows 26,412 1860x66.
+`ui.pvr_synopsis=1` paints the chrome, the selected recording name,
+`pvr.meta` synopsis (+0x2c), the Naam/Start/Lengte headers, tabs and space
+labels. The 162..353 and 982..1080 bands use the family header #481730
+(inference). `pvr-stock-synopsis.png` is the candidate; the synopsis list rows
+are not painted yet.
+
 ## Limits
 
 - No stock PVR screen capture, so this is not pixel/parity evidence. The tab

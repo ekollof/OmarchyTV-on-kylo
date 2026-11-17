@@ -204,7 +204,11 @@ maps the cold-start stages and the current stock-UI coverage.
       (`common/pvr_space.c`, `check-pvr-space`) with an optional `pvr.stats`
       v1 provider; the mod_pvr stub publishes none and the band is a family
       inference. Open: real disk stats, exact tab font, scrollbar art,
-      synopsis (693), stock entry path, recording engine and scanout. 2026-11-17: the stock EPG
+      synopsis list rows, stock entry path, recording engine and scanout.
+      2026-11-18: the PVR synopsis layout (record 693) is encoded and
+      `ui.pvr_synopsis=1` paints its chrome, selected name, `pvr.meta`
+      synopsis, headers, tabs and space labels (candidate
+      `pvr-stock-synopsis.png`); the synopsis list rows remain open. 2026-11-17: the stock EPG
       timeline is recovered (`common/epg_layout.c`, `check-epg-layout`) and a
       default-off `ui.epg_stock=1` SCREEN_EPG paints chrome/i18n
       title/date/times/service rows/OA_SVC_EPG bars, with rows only under an

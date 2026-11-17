@@ -153,6 +153,8 @@ struct oa_pvr_meta {
     uint8_t playback_protection;
     uint8_t new_flag;
     int32_t service_type;
+    /* PlayListItemData+0x2c synopsis text; empty when unavailable. */
+    char synopsis[160];
 };
 
 typedef struct {

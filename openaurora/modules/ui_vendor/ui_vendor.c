@@ -2261,6 +2261,7 @@ static void paint_channels_stock(struct ctx *c)
 }
 
 static void paint_pvr(struct ctx *c);
+static void paint_pvr_synopsis(struct ctx *c);
 static void paint_epg(struct ctx *c);
 static void paint_epg_synopsis(struct ctx *c);
 
@@ -2554,6 +2555,127 @@ static void paint_pvr(struct ctx *c)
         return;
     }
     c->api->log(c->api->priv, OA_LOG_INFO, "painted PVR list: %zu rows", total);
+}
+
+/* PVR synopsis view (BinSVG 693), selected by the shipped
+ * SVGFullScreenListDialog::setSynopsisSVGName(693) call. Paints the chrome,
+ * the selected recording title/synopsis and the headers/tabs/space labels.
+ * The list rows are the same recording rows as the normal view; they are not
+ * painted in this slice. */
+static void paint_pvr_synopsis(struct ctx *c)
+{
+    const oa_ui_engine_iface *d = c->d;
+    oa_pvr_synopsis y;
+    if (!c || !d || oa_pvr_synopsis_default(&y) != 0)
+        return;
+    if (d->clear(0, 0, 0))
+        return;
+    d->fill(y.panel.x, y.panel.y, y.panel.x1 - y.panel.x,
+            y.panel.y1 - y.panel.y,
+            y.panel_rgb[0], y.panel_rgb[1], y.panel_rgb[2]);
+    d->fill(y.header.x, y.header.y, y.header.x1 - y.header.x,
+            y.header.y1 - y.header.y,
+            y.header_rgb[0], y.header_rgb[1], y.header_rgb[2]);
+    d->fill(y.top_band.x, y.top_band.y, y.top_band.x1 - y.top_band.x,
+            y.top_band.y1 - y.top_band.y,
+            y.band_rgb[0], y.band_rgb[1], y.band_rgb[2]);
+    d->fill(y.subheader.x, y.subheader.y, y.subheader.x1 - y.subheader.x,
+            y.subheader.y1 - y.subheader.y,
+            y.subheader_rgb[0], y.subheader_rgb[1], y.subheader_rgb[2]);
+    d->fill(y.list.x, y.list.y, y.list.x1 - y.list.x, y.list.y1 - y.list.y,
+            y.panel_rgb[0], y.panel_rgb[1], y.panel_rgb[2]);
+    d->fill(y.space_band.x, y.space_band.y,
+            y.space_band.x1 - y.space_band.x,
+            y.space_band.y1 - y.space_band.y,
+            y.band_rgb[0], y.band_rgb[1], y.band_rgb[2]);
+
+    const oa_i18n_iface *i18n = c->api->lookup(c->api->priv, OA_SVC_I18N, 1);
+    const char *title = tab_label(i18n, "LIBRARY", "Opnamebibliotheek");
+    if (c->font_title_data)
+        channel_text_at(c, &c->font_title, title, 176, 12,
+                        y.title_rgb[0], y.title_rgb[1], y.title_rgb[2]);
+    else
+        pvr_text(c, title, 176, 21, y.title_rgb[0], y.title_rgb[1],
+                 y.title_rgb[2]);
+    const char *name_title = tab_label(i18n, "NAME_TITLE", "Naam");
+    const char *start_title = tab_label(i18n, "START_TITLE", "Start");
+    const char *duration_title = tab_label(i18n, "DURATION_TITLE", "Lengte");
+    pvr_text(c, name_title, y.title_name.x, y.title_name.y + 5,
+             y.title_rgb[0], y.title_rgb[1], y.title_rgb[2]);
+    pvr_text(c, start_title, y.title_start.x, y.title_start.y + 5,
+             y.title_rgb[0], y.title_rgb[1], y.title_rgb[2]);
+    pvr_text(c, duration_title, y.title_length.x, y.title_length.y + 5,
+             y.title_rgb[0], y.title_rgb[1], y.title_rgb[2]);
+
+    const oa_pvr_iface *pvr = c->api->lookup(c->api->priv, OA_SVC_PVR, 1);
+    const oa_pvr_meta_iface *meta_svc =
+        c->api->lookup(c->api->priv, OA_SVC_PVR_META, 1);
+    struct oa_pvr_job jobs[64];
+    size_t total = 0;
+    if (pvr && pvr->list(jobs, sizeof jobs / sizeof jobs[0], &total) != 0)
+        total = 0;
+    if (total && c->pvr_sel >= (int)total)
+        c->pvr_sel = (int)total - 1;
+    if (total && c->pvr_sel >= 0 && (size_t)c->pvr_sel < total) {
+        const struct oa_pvr_job *job = &jobs[c->pvr_sel];
+        if (c->font_title_data)
+            channel_text_at(c, &c->font_title, job->name, y.synopsis_title.x,
+                            y.synopsis_title.y, y.title_rgb[0],
+                            y.title_rgb[1], y.title_rgb[2]);
+        else
+            pvr_text(c, job->name, y.synopsis_title.x, y.synopsis_title.y,
+                     y.title_rgb[0], y.title_rgb[1], y.title_rgb[2]);
+        struct oa_pvr_meta meta;
+        memset(&meta, 0, sizeof meta);
+        if (meta_svc && meta_svc->read(job->id, &meta) == 0 &&
+            meta.synopsis[0])
+            pvr_text(c, meta.synopsis, y.synopsis_text.x,
+                     y.synopsis_text.y, y.title_rgb[0], y.title_rgb[1],
+                     y.title_rgb[2]);
+    }
+    static const char *const PVR_TABS[5] = {
+        "HLP_PLAY_OPTIONS", "HLP_EDIT", "HLP_DELETE", "HLP_SORT", "SETTINGS"
+    };
+    static const char *const PVR_TABS_NL[5] = {
+        "PLAY_OPTIONS", "Wijzigen/wissen", "Wissen", "SORT", "Instellingen"
+    };
+    for (int i = 0; i < 5; i++) {
+        const oa_pvr_rect *t = &y.tabs[i];
+        paint_tab(c, t->x, t->y, t->x1 - t->x, t->y1 - t->y,
+                  tab_label(i18n, PVR_TABS[i], PVR_TABS_NL[i]), i == 0);
+    }
+    const oa_pvr_stats_iface *stats_svc =
+        c->api->lookup(c->api->priv, OA_SVC_PVR_STATS, 1);
+    struct oa_pvr_stats stats;
+    oa_pvr_space_values space;
+    if (stats_svc && stats_svc->read(&stats) == 0 &&
+        oa_pvr_space_calc(&stats, &space) == 0) {
+        char buf[64];
+        if (oa_pvr_space_label(tab_label(i18n, "USED_SPACE_INFO_TITLE",
+                                         "Gebruikte ruimte: "),
+                               space.used, buf, sizeof buf) == 0)
+            pvr_small_text(c, buf, y.used_space.x, y.used_space.y + 5);
+        if (oa_pvr_space_label(tab_label(i18n, "RESERVED_SPACE_INFO_TITLE",
+                                         "Gereserveerd: "),
+                               space.reserved, buf, sizeof buf) == 0)
+            pvr_small_text(c, buf, y.reserved_space.x,
+                           y.reserved_space.y + 5);
+        if (oa_pvr_space_label(tab_label(i18n, "FREE_SPACE_INFO_TITLE",
+                                         "Vrije ruimte: "),
+                               space.free, buf, sizeof buf) == 0)
+            pvr_small_text(c, buf, y.free_space.x, y.free_space.y + 5);
+    }
+    if (stats_svc) c->api->release(c->api->priv, OA_SVC_PVR_STATS);
+    if (meta_svc) c->api->release(c->api->priv, OA_SVC_PVR_META);
+    if (pvr) c->api->release(c->api->priv, OA_SVC_PVR);
+    if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
+    c->scene_painted = 1;
+    if (d->present() != 0) {
+        c->api->log(c->api->priv, OA_LOG_ERROR,
+                    "PVR synopsis present failed");
+        return;
+    }
+    c->api->log(c->api->priv, OA_LOG_INFO, "painted PVR synopsis");
 }
 
 /* Stock EPG timeline chrome, gated by ui.epg_stock=1. Rectangles, colours,
@@ -3072,7 +3194,11 @@ static void paint(struct ctx *c)
     }
     if (c->screen == SCREEN_PVR) {
         if (atoi(c->api->config_get(c->api->priv, "ui.pvr_stock", "0")) == 1) {
-            paint_pvr(c);
+            if (atoi(c->api->config_get(c->api->priv, "ui.pvr_synopsis", "0"))
+                == 1)
+                paint_pvr_synopsis(c);
+            else
+                paint_pvr(c);
             return;
         }
         c->screen = SCREEN_PORTAL;
