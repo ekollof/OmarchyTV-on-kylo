@@ -20,6 +20,8 @@
 
 static char g_modules[256], g_db[512], g_ui_dir[512], g_tmp[256];
 static char g_font_index[512], g_font_pack[512], g_capture[512];
+static int g_actions;
+static char g_action_name[64];
 
 static const char *config(void *p, const char *key, const char *def)
 {
@@ -39,6 +41,16 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "ui.channel_marker_font_id")) return "1";
     if (!strcmp(key, "service_db.path")) return g_db;
     return def;
+}
+
+static void on_action(const void *ev, void *ud)
+{
+    (void)ud;
+    const oa_action_event *a = ev;
+    if (!a)
+        return;
+    g_actions++;
+    snprintf(g_action_name, sizeof g_action_name, "%s", a->name ? a->name : "");
 }
 
 static int command(oa_host *h, const char *text, char *out, size_t cap)
@@ -120,6 +132,22 @@ static void write_bytes(const char *path, const void *data, size_t size)
     assert(f && fwrite(data, 1, size, f) == size && !fclose(f));
 }
 
+static void make_icon(const char *dir)
+{
+    char path[600];
+    snprintf(path, sizeof path, "%s/channel_small.rgba", dir);
+    unsigned char px[60 * 60 * 4];
+    for (size_t i = 0; i < sizeof px; i += 4) {
+        px[i] = 255; px[i + 1] = 255; px[i + 2] = 255; px[i + 3] = 255;
+    }
+    FILE *f = fopen(path, "wb");
+    assert(f);
+    const unsigned char hdr[12] = { 'O', 'A', 'I', '1', 60, 0, 0, 0, 60, 0, 0, 0 };
+    assert(fwrite(hdr, 1, sizeof hdr, f) == sizeof hdr);
+    assert(fwrite(px, 1, sizeof px, f) == sizeof px);
+    assert(!fclose(f));
+}
+
 static void make_font(void)
 {
     unsigned char rec[4096];
@@ -138,6 +166,18 @@ static void make_font(void)
         at += (size_t)snprintf(index + at, 16, "%zu\n", rec_size);
     write_bytes(g_font_index, index, at);
     free(index);
+}
+
+static int find_blit(const oa_nav_trace *trace, int x, int y, int w, int h)
+{
+    int n = trace->blit_count();
+    for (int i = 0; i < n; ++i) {
+        int bx, by, bw, bh;
+        if (trace->blit_at(i, &bx, &by, &bw, &bh) == 0 &&
+            bx == x && by == y && bw == w && bh == h)
+            return 1;
+    }
+    return 0;
 }
 
 static int find_fill(const oa_nav_trace *trace, int x, int y, int w, int h,
@@ -175,8 +215,14 @@ int main(int argc, char **argv)
     snprintf(g_tmp, sizeof g_tmp, "/tmp/oa-ui-channels-stock-XXXXXX");
     assert(mkdtemp(g_tmp));
     snprintf(g_db, sizeof g_db, "%s/settings.db", g_tmp);
-    snprintf(g_ui_dir, sizeof g_ui_dir, "%s/ui", g_tmp);
-    assert(!mkdir(g_ui_dir, 0700));
+    const char *ui_env = getenv("OA_CHANNELS_UI_DIR");
+    if (ui_env && *ui_env) {
+        snprintf(g_ui_dir, sizeof g_ui_dir, "%s", ui_env);
+    } else {
+        snprintf(g_ui_dir, sizeof g_ui_dir, "%s/ui", g_tmp);
+        assert(!mkdir(g_ui_dir, 0700));
+        make_icon(g_ui_dir);
+    }
     const char *font_index = getenv("OA_CHANNELS_FONT_INDEX");
     const char *font_pack = getenv("OA_CHANNELS_FONT_PACK");
     if (font_index && *font_index && font_pack && *font_pack) {
@@ -206,6 +252,8 @@ int main(int argc, char **argv)
     const oa_nav_trace *trace = host.api.lookup(&host, OA_SVC_NAV_TRACE, 1);
     const oa_portal_iface *portal = host.api.lookup(&host, OA_SVC_PORTAL, 1);
     assert(trace && portal && portal->screen() == 6);
+    uint32_t action_sub = host.api.subscribe(&host, OA_TOPIC_ACTION, on_action, NULL);
+    assert(action_sub);
 
     /* DialogAdvancedChannelList record-80 rects and the p0/04 colours. */
     assert(find_fill(trace, 0, 0, 780, 1080, 190, 30, 45));
@@ -214,6 +262,7 @@ int main(int argc, char **argv)
     assert(find_fill(trace, 264, 100, 250, 59, 193, 71, 83));
     assert(find_fill(trace, 516, 100, 250, 59, 193, 71, 83));
     assert(find_fill(trace, 19, 195, 748, 66, 254, 148, 25));
+    assert(find_blit(trace, 30, 14, 60, 60));
     assert(trace->blit_count() >= 20);
 
     const char *capture = getenv("OA_CHANNELS_STOCK_CAPTURE");
@@ -229,11 +278,17 @@ int main(int argc, char **argv)
     oa_host_dispatch_posts(&host);
     assert(find_fill(trace, 19, 270, 748, 66, 254, 148, 25));
 
+    oa_key_event select = { .id = 53, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &select);
+    oa_host_dispatch_posts(&host);
+    assert(g_actions == 1 && !strcmp(g_action_name, "C07"));
+
     oa_key_event exit = { .id = 10, .kind = OA_KEY_PRESS };
     host.api.emit(&host, OA_TOPIC_KEY, &exit);
     oa_host_dispatch_posts(&host);
     assert(portal->screen() == 0);
 
+    host.api.unsubscribe(&host, action_sub);
     host.api.release(&host, OA_SVC_PORTAL);
     host.api.release(&host, OA_SVC_NAV_TRACE);
     assert(!command(&host, "stop ui_vendor", out, sizeof out));

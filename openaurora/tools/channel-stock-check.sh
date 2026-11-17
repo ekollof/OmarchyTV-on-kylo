@@ -19,8 +19,20 @@ done
 make -C "$ROOT/openaurora" -j"${JOBS:-4}" "$BUILD/tests/ui_channels_stock" \
     "$BUILD/tests/ui-channels/modules" >/dev/null
 
+rm -rf "$OUT.ui"
+mkdir -p "$OUT.ui"
+python3 - "$ROOT/artifacts/ui-assets/channel_small.png" "$OUT.ui/channel_small.rgba" <<'PY'
+import struct, sys
+from PIL import Image
+im = Image.open(sys.argv[1]).convert('RGBA')
+with open(sys.argv[2], 'wb') as f:
+    f.write(b'OAI1')
+    f.write(struct.pack('<II', im.width, im.height))
+    f.write(im.tobytes())
+PY
+
 OA_CHANNELS_FONT_INDEX="$FONT_INDEX" OA_CHANNELS_FONT_PACK="$FONT_PACK" \
-OA_CHANNELS_STOCK_CAPTURE="$OUT.raw" \
+OA_CHANNELS_UI_DIR="$OUT.ui" OA_CHANNELS_STOCK_CAPTURE="$OUT.raw" \
     "$BUILD/tests/ui_channels_stock" "$MODULES"
 
 python3 "$ROOT/openaurora/tools/rawrgba-to-png.py" "$OUT.raw" 1920 1080 "$OUT.png"

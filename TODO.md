@@ -2350,9 +2350,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       `check-channel-layout`), and a default-off `ui.channels_stock=1` mode
       paints the stock panel/banner/tabs/rows with vendor fonts 7/12/4/16/18/1
       (`check-ui-channels-stock`; `check-ui-channels-stock-capture` panel MAE8
-      2.755, focus 1.510, row2 2.581). The provisional screen remains default.
-      Open: runtime EASI LCN/visibility, stock key path, icon/scrollbar, exact
-      tab anchors, scrolling/paging, tuner/EPG/PVR and scanout.
+      2.750, focus 1.510, row2 2.581). The `channel_small` header icon is
+      drawn/staged and Up/Down/Select/Exit is tested. The provisional screen
+      remains default. Open: runtime EASI LCN/visibility, portal entry path,
+      scrollbar, exact tab anchors, scrolling/paging, tuner/EPG/PVR and scanout.
 - [ ] Apps/browser/media integration, picture quality/FRC, network and Bluetooth.
 - [ ] Tuner/DVB-T/DVB-S, EPG/service lists, teletext/MHEG/interactive TV, PVR/
       timeshift/playback, CI+/conditional access and associated persistence.

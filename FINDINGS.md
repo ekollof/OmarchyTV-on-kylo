@@ -298,8 +298,10 @@ panel/banner/tabs/rows with the matching vendor font records (7 title,
 `check-ui-channels-stock-capture` compares the real-font render to the
 corrected capture: panel MAE8 2.755, focus row 1.510, row 2 2.581 (banner/tabs
 3.81/5.75 from the missing icon/scrollbar and tab/subtitle rasters). The
-provisional screen remains the default; runtime EASI/LCN/visibility, icon,
-scrollbar, exact tab anchors, key path and scanout remain open.
+provisional screen remains the default; the `channel_small` header icon is
+wired/staged and the screen Up/Down/Select/Exit keys are tested (Select emits
+index 1 `C07`). Runtime EASI/LCN/visibility, scrollbar, the portal entry path,
+exact tab anchors and scanout remain open.
 
 PVR-MODULE-2026-11-05: the PVR service is now a real mod_pvr with a
 vendor-shaped backend boundary (integer recording id, start/stop, index query)

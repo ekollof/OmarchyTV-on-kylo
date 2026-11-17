@@ -76,9 +76,13 @@ The font record and exact text anchors are not yet recovered.
   - `make check-ui-channels-stock-capture` renders the same rows with the real
     vendor fonts and the p0/04 names (C12, C07, BBC2, …), writes
     `stock-mode.png` and compares it with the corrected capture: panel MAE8
-    **2.755**, focus row **1.510**, row 2 **2.581**. The remaining banner/tab
-    error (MAE8 3.81/5.75) is the missing header icon/scrollbar and tab/subtitle
-    raster placement; rows, colours and text anchors match.
+    **2.750**, focus row **1.510**, row 2 **2.581**. The header icon is the
+    theme `channel_small.png` (60x60, ink 2,9..58,57) drawn at 30,14 and staged
+    by `mk-ui.py`/the check. The remaining banner/tab error (MAE8 3.78/5.75)
+    is the missing scrollbar and tab/subtitle raster edges; rows, colours and
+    text anchors match. The stock screen's Up/Down/Select/Exit handling is
+    tested (Select emits index 1 name `C07`); the portal entry path is still
+    unrecovered.
 
 The provisional `SCREEN_CHANNELS` remains the default; the stock key path,
 runtime EASI order/LCN and visibility, the header icon, scrollbar, exact tab

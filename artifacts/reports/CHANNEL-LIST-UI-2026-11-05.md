@@ -66,9 +66,10 @@ This is an explicit provisional UI, not vendor parity:
   `check-channel-layout`. 2026-11-17 adds a default-off stock mode
   (`ui.channels_stock=1`) with matching vendor fonts and a recorder/capture
   check (`check-ui-channels-stock`, `check-ui-channels-stock-capture`; panel
-  MAE8 2.755). The provisional screen remains the default; the stock key path,
-  runtime EASI, icon/scrollbar, exact tab anchors, scrolling/paging and scanout
-  remain open;
+  MAE8 2.750). The channel_small header icon is drawn/staged; Up/Down/Select/
+  Exit are tested (Select index 1 `C07`). The provisional screen remains the
+  default; the portal entry path, runtime EASI, scrollbar, exact tab anchors,
+  scrolling/paging and scanout remain open;
 - tuner acquisition/scan, EPG, PVR, media/network and hardware ownership remain
   open;
 - recorder evidence is not physical fb1/scanout evidence.

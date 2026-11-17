@@ -129,6 +129,8 @@ def main() -> int:
     ap.add_argument("--font", default=str(workbench / "rootfs/vendor/fonts/DefaultProportional.ttf"))
     ap.add_argument("--size", type=int, default=54)
     ap.add_argument("--label", action="append", default=[])
+    ap.add_argument("--ui-assets",
+                    default=str(Path(__file__).resolve().parents[2] / "artifacts" / "ui-assets"))
     args = ap.parse_args()
 
     out = Path(args.out)
@@ -144,6 +146,13 @@ def main() -> int:
         build_cards(out, Path(args.thumbs))
     else:
         print(f"no thumbnails at {args.thumbs}", file=sys.stderr)
+    channel_icon = Path(args.ui_assets) / "channel_small.png"
+    if channel_icon.exists():
+        icon = Image.open(channel_icon)
+        save_image(out / "channel_small.rgba", icon)
+        print(f"  channel_small.rgba  {icon.width}x{icon.height}")
+    else:
+        print(f"no channel icon at {channel_icon}", file=sys.stderr)
 
     total = sum(p.stat().st_size for p in out.glob("*.rgba"))
     print(f"{len(list(out.glob('*.rgba')))} blobs, {total} bytes -> {out}")

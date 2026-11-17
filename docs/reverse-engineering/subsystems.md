@@ -395,9 +395,10 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   748x66 pitch75, focus #FE9419, 40 px #7E000A focused text and 34 px white
   normal text. `common/channel_layout.c` + `check-channel-layout`; a
   default-off `ui.channels_stock=1` mode renders it with vendor font records
-  7/12/4/16/18/1 and a capture check (panel MAE8 2.755). The provisional
-  screen remains default; icon/scrollbar/key path/runtime EASI are open.
-  Evidence: CHANNEL-LIST-GEOMETRY.
+  7/12/4/16/18/1, the `channel_small` header icon and a capture check (panel
+  MAE8 2.750); Up/Down/Select/Exit are tested. The provisional screen remains
+  default; scrollbar/portal entry path/runtime EASI are open. Evidence:
+  CHANNEL-LIST-GEOMETRY.
 - Apps-grid focused labels use the firmware single-line centre rule
   (`physicalWidth` + first bearing, not the ink bbox):
   `common/apps_label.c` + `check-apps-label`. Stock Twitter ink is 919..999;

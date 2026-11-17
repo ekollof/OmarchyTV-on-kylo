@@ -2088,6 +2088,11 @@ static void paint_channels_stock(struct ctx *c)
     d->fill(l.banner.x, l.banner.y, l.banner.x1 - l.banner.x,
             l.banner.y1 - l.banner.y,
             l.banner_rgb[0], l.banner_rgb[1], l.banner_rgb[2]);
+    /* Theme asset channel_small.png (record 60x60, ink bbox 2,9..58,57) is
+     * drawn at 30,14; its white-threshold ink lands at the captured 32,23..85,68. */
+    const oa_ui_icon *icon = find_icon(c, "channel_small");
+    if (icon)
+        d->blit(30, 14, icon->w, icon->h, icon->rgba);
 
     const struct oa_bitmap_font *small =
         c->app_font_on ? &c->app_font : &c->stock_tab_font;

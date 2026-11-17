@@ -83,12 +83,14 @@ and compares against `p0-04-channel-list-corrected.png`:
 
 | region | MAE8 |
 |---|---:|
-| panel | 2.755 |
+| panel | 2.750 |
 | focus row | 1.510 |
 | row 2 | 2.581 |
 
 `stock-mode.png` is the candidate and `stock-mode-compare.txt` the full
-metrics. The remaining panel difference is mostly the missing header icon,
-scrollbar and tab/subtitle raster placement (banner MAE8 3.81, tabs 5.75); the
-row geometry/colour and text anchors match the capture. This is a recorder
+metrics. The header icon is the theme `channel_small.png` (60x60, ink 2,9..58,57)
+drawn at 30,14; it is staged into `ui.dir` by `mk-ui.py` and by the check
+script. The remaining panel difference is the missing scrollbar and
+tab/subtitle raster edges (banner MAE8 3.78, tabs 5.75); the row geometry/colour
+and text anchors match the capture. This is a recorder
 comparison, not fb1/scanout proof.
