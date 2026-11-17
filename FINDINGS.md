@@ -415,6 +415,22 @@ synopsis); 2 jobs draw no bar, 12 jobs draw a 630 px white bar at the track
 top (pvr-stock-scroll.png). The record names no scrollbar skin resource, so
 exact PVR scrollbar art remains open.
 
+CHANNEL-GOTO-2026-11-18: AdvancedChannelListDialog::onDigitPress 0x00e7cb18
+opens the modal GotoServiceDialog (GotoService) from DialogGoToService.svg
+(BinSVG 116): main_rectangle 0,0,540,239 white, serviceNumber -133,98,377,298
+authored, animation 0,308,100,408. init 0x00d2296c uses dash/bigFont/
+serviceNumber, text entry mode 11, font 15, states 395..398; onDigit
+0x00d2262c forwards and restarts a 1500 ms/3000 ms timer; Select 0x20e or the
+timer calls findServiceAndEndDialog 0x00d223f8, which reads getNumericContents
+(decimal, leading zeros) and looks the number up in the service list; the
+result selects the list item. `common/goto_service.c` + check-goto-service
+implement the layout/entry/value/lookup. `ui.channels_goto=1` opens the
+overlay on `ui.goto_digit_base` digits (0=off; our Select id 53 collides with
+ASCII '5'), Select resolves against runtime RSN else lcn/channel_no and moves
+the focus, Exit cancels. The authored number x and entry ink are unpinned, so
+the screen centres the digits at 122,198 in #231F20; the timer, animation and
+dialog position remain open. Candidate stock-goto.png.
+
 CHANNEL-EDIT-2026-11-18: `ChannelEditOptionsDialog` (internal
 `ChannelEditOptions`) uses `DialogEditOptionsList.svg` (BinSVG 100): panel
 0,35,780,1080 white, left strip 0,160,142,1080 #010101 at 6/10 (composed 103),

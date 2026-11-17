@@ -1639,7 +1639,16 @@ Dutch stock-filter.png. 2026-11-18 CHANNEL-EDIT: ChannelEditOptionsDialog
 152,211,768,1059) with ADD_TO_HOME/MOVE_TO_POSITION/DELETE|REMOVE/EDIT_NAME/
 LOCK/FAVOURITE+TAG/TAG_ALL and the recovered visibility conditions
 (`common/channel_edit.c` + check-channel-edit); `ui.channels_edit=1` opens it
-on Select over the edit tab, actions not implemented, Dutch stock-edit.png. 2026-11-18 PVR-SCROLLBAR: tracks 692
+on Select over the edit tab, actions not implemented, Dutch stock-edit.png. 2026-11-18 CHANNEL-GOTO: onDigitPress 0x00e7cb18 opens
+GotoServiceDialog (GotoService; DialogGoToService.svg 116: main_rectangle
+0,0,540,239, authored serviceNumber -133,98,377,298; entry mode 11/font 15,
+states 395..398, 1500/3000 ms timeout, getNumericContents/service lookup,
+result -> setSelectedItem). `common/goto_service.c` + check-goto-service;
+`ui.channels_goto=1` opens on `ui.goto_digit_base` digits (0=off; Select id 53
+collides with ASCII '5'), Select resolves runtime RSN else lcn/channel_no and
+moves the focus, Exit cancels; digits are centred at 122,198 in #231F20
+because the authored x/ink are unpinned; timer/animation/position open.
+Candidate stock-goto.png. 2026-11-18 PVR-SCROLLBAR: tracks 692
 1910,217,1920,974 and 693 1910,404,1920,984; shipped
 calculateBarSizeAndPosition + 20+16 caps (min 36), page 10/7; 2 jobs hide,
 12 jobs draw a 630 px bar (pvr-stock-scroll.png); exact skin art open.

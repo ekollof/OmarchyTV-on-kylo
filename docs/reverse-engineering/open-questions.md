@@ -169,6 +169,10 @@ Reports: [TUNER-BRINGUP](../../artifacts/reports/TUNER-BRINGUP-2026-11-06.md),
 - The native Omarchy shell (`ui_omarchy`) paints screens and handles logical
   actions; actual process launch, hardware input and physical scanout are not
   accepted. Do not use the native skin as evidence of platform/stock-UI parity.
+- Channel `GotoServiceDialog` is modelled from record 116 (numeric entry,
+  lookup, result -> `setSelectedItem`) and gated; its 1500 ms timer, animation,
+  dialog position and entry-state ink remain open. The edit/filter option
+  actions and the keys-shortcut branch also remain open.
 
 Reports: [UI-PARITY](../../artifacts/reports/UI-PARITY-2026-10-31.md),
 [UI-ANIMATIONS](../../artifacts/reports/UI-ANIMATIONS-2026-10-31.md),

@@ -35,6 +35,7 @@ OA_CHANNELS_FONT_INDEX="$FONT_INDEX" OA_CHANNELS_FONT_PACK="$FONT_PACK" \
 OA_CHANNELS_UI_DIR="$OUT.ui" OA_CHANNELS_STOCK_CAPTURE="$OUT.raw" \
 OA_CHANNELS_FILTER_CAPTURE="$OUT-filter.raw" \
 OA_CHANNELS_EDIT_CAPTURE="$OUT-edit.raw" \
+OA_CHANNELS_GOTO_CAPTURE="$OUT-goto.raw" \
 OA_CHANNELS_I18N_PROFILE="$ROOT/artifacts/workbench/rootfs/vendor2/mb230_langprofile.bin" \
 OA_CHANNELS_I18N_LANG=dut \
     "$BUILD/tests/ui_channels_stock" "$MODULES"
@@ -44,7 +45,9 @@ python3 "$ROOT/openaurora/tools/rawrgba-to-png.py" \
     "$OUT-filter.raw" 1920 1080 "$OUT-filter.png"
 python3 "$ROOT/openaurora/tools/rawrgba-to-png.py" \
     "$OUT-edit.raw" 1920 1080 "$OUT-edit.png"
-rm -f "$OUT-filter.raw" "$OUT-edit.raw"
+python3 "$ROOT/openaurora/tools/rawrgba-to-png.py" \
+    "$OUT-goto.raw" 1920 1080 "$OUT-goto.png"
+rm -f "$OUT-filter.raw" "$OUT-edit.raw" "$OUT-goto.raw"
 python3 "$ROOT/openaurora/tools/capture_compare.py" --reference "$REF" \
     --candidate "$OUT.png" --manifest "$REGIONS" | tee "$OUT.compare.txt"
 

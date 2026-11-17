@@ -155,6 +155,38 @@ actions (move/delete/lock/rename/favourite/tag) are not implemented.
 visibility and DELETE/REMOVE label; `check-ui-channels-stock` drives the pane
 and `stock-edit.png` is the Dutch real-font candidate.
 
+## Goto-service dialog (record 116)
+
+`AdvancedChannelListDialog::onDigitPress` @0x00e7cb18 opens a modal
+`GotoServiceDialog` (dialog name `GotoService`) and, when the result is not -1,
+calls `SVGListBoxBase::setSelectedItem(result)`. Layout from
+`DialogGoToService.svg` (BinSVG 116): background 0,0,1918,1080 white;
+main_rectangle 0,0,540,239 white; serviceNumber -133,98,377,298 (the authored
+pre-transform text box); animation_slide_down_fade_in 0,308,100,408.
+
+`init` @0x00d2296c looks up `dash`, `bigFont` and `serviceNumber`, sets the
+text entry mode to 0xb (11), font 0xf (15), maps the entry states to resources
+0x18b..0x18e (BinSVG 395..398, gotoServiceTextEntryBoxFA/FI/UFA/UFI) and
+creates the box from the serviceNumber rect. `onDigit` @0x00d2262c forwards the
+key and restarts a 1500 ms timer (3000 ms with the keys-shortcut dialog open);
+`handleMessage` @0x00d226c8 maps digits 0x200..0x209 to onDigit, Select 0x20e
+and timer 0x1006/1 to `findServiceAndEndDialog` @0x00d223f8, and 0x21f/0x28b to
+onStandby. `findServiceAndEndDialog` reads `getNumericContents` (decimal walk,
+leading zeros accepted) and looks the number up in the service list.
+
+`common/goto_service.c` + `check-goto-service` encode the record rects, the
+numeric entry (max digits explicit, 4 in the screen), value/lookup and the
+timeout constants. `ui.channels_goto=1` opens the overlay on a digit; our shell
+has no digit key map and Select is id 53 (ASCII '5'), so the digit range is
+explicit (`ui.goto_digit_base`, 0 = disabled; the fixture uses 100..109).
+Up/Down are not part of the vendor handler; Select resolves the number against
+the rendered order (runtime RSN, else lcn/channel_no) and moves the list focus,
+Exit cancels. The authored serviceNumber x=-133 is a pre-transform coordinate
+and the entry-state ink is not pinned, so the digits are centred in the authored
+box (122,198) in #231F20 on the white panel; the timer and the exact dialog
+animation/position remain open. `check-ui-channels-stock` drives 109 -> Runtime B
+and `stock-goto.png` is the candidate.
+
 ## Filter/sort popup (record 636)
 
 `ChannelListFilterSortDialog` (internal name `ChannelListFilter`) is opened by

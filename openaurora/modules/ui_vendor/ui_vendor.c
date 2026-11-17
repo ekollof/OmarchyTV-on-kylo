@@ -63,6 +63,7 @@
 #include "openaurora/pvr_layout.h"
 #include "openaurora/epg_layout.h"
 #include "openaurora/guide_options.h"
+#include "openaurora/goto_service.h"
 #include "openaurora/pvr_space.h"
 #include "openaurora/broadcast.h"
 #include "openaurora/font_box.h"
@@ -236,6 +237,11 @@ struct ctx {
     int chan_edit_open;              /* record-100 edit-options pane is open */
     int chan_edit_sel;
     oa_channel_edit_inputs chan_edit_in;
+    int chan_goto_open;              /* record-116 goto-service overlay is open */
+    oa_goto_entry chan_goto;
+    struct oa_bitmap_font goto_font; /* record-116 number font (15) */
+    unsigned char *goto_font_data;
+    int goto_font_on;
     int text_on;                     /* live labels/values loaded (ui.text=1) */
     struct oa_font_pack font_pack;
     unsigned char *font_data, *font_num_data;
@@ -1172,6 +1178,9 @@ static void settings_text_free(struct ctx *c)
     free(c->tab_font_data);
     c->tab_font_data = NULL;
     c->tab_font_on = 0;
+    free(c->goto_font_data);
+    c->goto_font_data = NULL;
+    c->goto_font_on = 0;
     oa_font_pack_free(&c->font_pack);
     c->text_on = 0;
     c->font_num_on = 0;
@@ -1926,6 +1935,7 @@ static void channel_text_blit(struct ctx *c, const char *text, int x, int y,
 
 static void paint_channels_stock(struct ctx *c);
 static void paint_channel_filter_popup(struct ctx *c);
+static void paint_channel_goto(struct ctx *c);
 static void paint_channel_edit_panel(struct ctx *c);
 static int stock_channel_fonts(struct ctx *c);
 
@@ -2266,6 +2276,7 @@ static void paint_channels_stock(struct ctx *c)
     free(order);
     paint_channel_filter_popup(c);
     paint_channel_edit_panel(c);
+    paint_channel_goto(c);
     c->scene_painted = 1;
     if (d->present() != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR,
@@ -2384,6 +2395,111 @@ static void paint_tab(struct ctx *c, int x, int y, int w, int h,
 /* Stock PVR/recording list, gated by ui.pvr_stock=1. Layout is BinSVG 692
  * (DialogPlayList.svg); rows come from OA_SVC_PVR. Action glyph buttons,
  * disk stats and the scrollbar art are not painted yet. */
+static int goto_font_open(struct ctx *c)
+{
+    if (!c)
+        return -EINVAL;
+    if (c->goto_font_on)
+        return 0;
+    if (!c->font_pack.count)
+        return -ENOTSUP;
+    int id = atoi(c->api->config_get(c->api->priv, "ui.goto_font_id", "15"));
+    if (id < 0)
+        return -EINVAL;
+    int rc = settings_font_open(&c->font_pack, id, &c->goto_font,
+                                &c->goto_font_data);
+    if (rc)
+        return rc;
+    c->goto_font_on = 1;
+    return 0;
+}
+
+/* Channel numbers in the same order the stock list renders: runtime RSN when
+ * the EASI active list is ingested, else the stored DB sorted by channel
+ * number with lcn when known and channel_no otherwise. */
+static int channel_goto_numbers(struct ctx *c, uint32_t *numbers, int cap)
+{
+    int n = 0;
+    const oa_channel_iface *channels =
+        c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1);
+    const struct oa_channel_snapshot *runtime =
+        channels ? channels->snapshot() : NULL;
+    if (runtime && runtime->count > 0) {
+        for (size_t i = 0; i < runtime->count && n < cap; i++)
+            numbers[n++] = runtime->entries[i].rsn;
+        if (channels) c->api->release(c->api->priv, OA_SVC_CHANNELS);
+        return n;
+    }
+    if (channels) c->api->release(c->api->priv, OA_SVC_CHANNELS);
+    const oa_service_list_iface *svc =
+        c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
+    const struct oa_service_list *list = svc ? svc->snapshot() : NULL;
+    if (!list) {
+        if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
+        return 0;
+    }
+    size_t *order = malloc(list->count * sizeof *order);
+    size_t total = 0;
+    if (order) {
+        struct oa_service_query q;
+        memset(&q, 0, sizeof q);
+        q.source_mask = 0x7;
+        q.sort = OA_SERVICE_SORT_CHANNEL_NO;
+        if (oa_service_list_query(list, &q, order, list->count, &total) != 0)
+            total = 0;
+        for (size_t i = 0; i < total && n < cap; i++) {
+            const struct oa_service_row *r = &list->rows[order[i]];
+            numbers[n++] = r->lcn != 0 ? (uint32_t)r->lcn
+                                       : (uint32_t)r->channel_no;
+        }
+        free(order);
+    }
+    if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
+    return n;
+}
+
+static int channel_goto_resolve(struct ctx *c, uint32_t value)
+{
+    uint32_t numbers[256];
+    int n = channel_goto_numbers(c, numbers, (int)(sizeof numbers / sizeof numbers[0]));
+    return oa_goto_find(numbers, (size_t)n, value);
+}
+
+/* Record-116 GotoServiceDialog overlay, opened by a digit on the stock channel
+ * screen when ui.channels_goto=1. The number is centred in the authored
+ * serviceNumber box (122,198); the authored x and the entry-state art colors
+ * are pre-transform/unpinned, so this is a documented project placement. */
+static void paint_channel_goto(struct ctx *c)
+{
+    if (!c || !c->d || !c->chan_goto_open)
+        return;
+    if (atoi(c->api->config_get(c->api->priv, "ui.channels_goto", "0")) != 1) {
+        c->chan_goto_open = 0;
+        return;
+    }
+    oa_goto_layout l;
+    if (oa_goto_layout_default(&l) != 0)
+        return;
+    const oa_ui_engine_iface *d = c->d;
+    d->fill(l.panel.x, l.panel.y, l.panel.x1 - l.panel.x,
+            l.panel.y1 - l.panel.y,
+            l.panel_rgb[0], l.panel_rgb[1], l.panel_rgb[2]);
+    if (c->chan_goto.len == 0)
+        return;
+    (void)goto_font_open(c);
+    const struct oa_bitmap_font *font = c->goto_font_on ? &c->goto_font
+                                                        : &c->font;
+    int advance = 0, font_height = 0;
+    if (oa_font_text_measure(font, c->chan_goto.digits, 0, &advance) != 0 ||
+        oa_bitmap_font_height(font, &font_height) != 0)
+        return;
+    int cx = (l.number_box.x + l.number_box.x1) / 2;
+    int cy = (l.number_box.y + l.number_box.y1) / 2;
+    channel_text_at(c, font, c->chan_goto.digits, cx - advance / 2,
+                    cy - font_height / 2,
+                    l.number_rgb[0], l.number_rgb[1], l.number_rgb[2]);
+}
+
 /* Record-636 filter/sort popup (ChannelListFilterSortDialog). Drawn over the
  * channel screen before its present. Rows use the captured 70 px settings
  * step; the selected row is the theme orange with #7E000A text. */
@@ -4486,6 +4602,31 @@ static void move_key(struct ctx *c, uint8_t id)
             if (c->d) paint(c);
             return;
         }
+        /* Our shell has no digit key map and Select is id 53 (which collides
+         * with ASCII '5'), so the recovered digit path is enabled only through
+         * an explicit project base (ui.goto_digit_base, 0 = disabled): ids
+         * base+0..base+9 are digits. */
+        int goto_base =
+            atoi(c->api->config_get(c->api->priv, "ui.goto_digit_base", "0"));
+        int is_goto_digit = goto_base > 0 && id >= goto_base &&
+                            id <= goto_base + 9;
+        if (c->chan_goto_open) {
+            if (is_goto_digit) {
+                (void)oa_goto_digit(&c->chan_goto, id - goto_base);
+            } else if (id == 8 || id == 127) {
+                (void)oa_goto_backspace(&c->chan_goto);
+            } else if (id == 53 || id == 0x8a) {
+                int index = channel_goto_resolve(c,
+                                                 oa_goto_value(&c->chan_goto));
+                if (index >= 0)
+                    c->chan_sel = index;
+                c->chan_goto_open = 0;
+            } else if (id == 10 || id == 48) {
+                c->chan_goto_open = 0;
+            }
+            if (c->d) paint(c);
+            return;
+        }
         if (c->chan_edit_open) {
             unsigned visible[OA_CHANNEL_EDIT_OPTIONS];
             unsigned count = 0;
@@ -4537,6 +4678,19 @@ static void move_key(struct ctx *c, uint8_t id)
                         list->count, &matched))
                     matched = 0;
             }
+        }
+        /* onDigitPress 0x00e7cb18 opens the GotoServiceDialog modal; the
+         * digit that opens it is processed by the dialog init. */
+        if (atoi(c->api->config_get(c->api->priv, "ui.channels_goto", "0"))
+                == 1 &&
+            is_goto_digit) {
+            unsigned max_digits = (unsigned)atoi(
+                c->api->config_get(c->api->priv, "ui.goto_max_digits", "4"));
+            oa_goto_reset(&c->chan_goto, max_digits);
+            (void)oa_goto_digit(&c->chan_goto, id - goto_base);
+            c->chan_goto_open = 1;
+            if (c->d) paint(c);
+            return;
         }
         /* AdvancedChannelListDialog key path: onLeftRightPress forwards
          * Left/Right to the tab bar, onUpDownPress to the list, and

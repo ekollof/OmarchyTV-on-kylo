@@ -409,7 +409,12 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   ChannelListFilter popup (60,117,666,467 #494949, 70 px rows, 5 visible;
   CHANNEL_TYPE/TV-RADIO/FREE-PAY/A-Z/SORT items) behind `ui.channels_filter=1`,
   with `common/channel_filter.c` + `check-channel-filter` and the Dutch
-  `stock-filter.png`; applying it is open. The edit tab opens the record-100
+  `stock-filter.png`; applying it is open. A digit opens the record-116
+  GotoServiceDialog (540x239 panel, entry mode 11/font 15, 1500 ms timeout,
+  numeric lookup, result selects the list item) behind `ui.channels_goto=1`
+  with an explicit `ui.goto_digit_base` (Select id 53 collides with ASCII '5');
+  `common/goto_service.c` + `check-goto-service`, candidate `stock-goto.png`;
+  timer/animation/position open. The edit tab opens the record-100
   ChannelEditOptions pane (ADD_TO_HOME/MOVE/DELETE|REMOVE/EDIT_NAME/LOCK/
   FAVOURITE/TAG/TAG_ALL with the recovered conditions) behind
   `ui.channels_edit=1` (`common/channel_edit.c` + `check-channel-edit`, Dutch

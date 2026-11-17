@@ -2413,7 +2413,14 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       ChannelEditOptions pane (`common/channel_edit.c`,
       `check-channel-edit`; ADD_TO_HOME/MOVE/DELETE|REMOVE/EDIT_NAME/LOCK/
       FAVOURITE/TAG/TAG_ALL with the recovered conditions, Dutch
-      `stock-edit.png`, `ui.channels_edit=1`). Open: live EASI
+      `stock-edit.png`, `ui.channels_edit=1`). 2026-11-18: a digit opens the
+      record-116 GotoServiceDialog (`common/goto_service.c`,
+      `check-goto-service`; 540x239 panel, entry mode 11/font 15, 1500 ms
+      timeout, numeric lookup) behind `ui.channels_goto=1` with
+      `ui.goto_digit_base` (0=off; Select id 53 is ASCII '5'); Select resolves
+      the number and moves the focus, Exit cancels, candidate
+      `stock-goto.png`; the timer/animation/position and entry ink open. Open:
+      live EASI
       LCN/visibility, applying the filter, the edit actions,
       GotoServiceDialog, paging, tuner/EPG/PVR and scanout. 2026-11-18: the
       PVR scrollbar is wired from the record tracks (1910,217..974 / 404..984)

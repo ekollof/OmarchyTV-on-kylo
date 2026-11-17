@@ -38,6 +38,9 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "ui.channels_stock")) return "1";
     if (!strcmp(key, "ui.channels_filter")) return "1";
     if (!strcmp(key, "ui.channels_edit")) return "1";
+    if (!strcmp(key, "ui.channels_goto")) return "1";
+    if (!strcmp(key, "ui.goto_max_digits")) return "4";
+    if (!strcmp(key, "ui.goto_digit_base")) return "100";
     if (!strcmp(key, "i18n.profile")) return getenv("OA_CHANNELS_I18N_PROFILE");
     if (!strcmp(key, "i18n.language"))
         return getenv("OA_CHANNELS_I18N_LANG") ? getenv("OA_CHANNELS_I18N_LANG")
@@ -424,6 +427,23 @@ int main(int argc, char **argv)
     assert(portal->screen() == 6);
     assert(find_fill(trace, 19, 195, 748, 66, 254, 148, 25));
     g_actions = 0;
+    /* A digit opens the record-116 GotoServiceDialog; Select resolves the
+     * number against the runtime RSNs (9 -> Runtime B, index 1). Our shell has
+     * no digit map, so ui.goto_digit_base=100 names ids 100..109 as digits. */
+    oa_key_event digit9 = { .id = 109, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &digit9);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 0, 0, 540, 239, 255, 255, 255));
+    const char *gcap = getenv("OA_CHANNELS_GOTO_CAPTURE");
+    if (gcap && *gcap)
+        assert(!trace->capture(gcap));
+    oa_key_event goto_select = { .id = 53, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &goto_select);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 19, 270, 748, 66, 254, 148, 25));
+    oa_key_event up_from_b = { .id = 20, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &up_from_b);
+    oa_host_dispatch_posts(&host);
     oa_key_event runtime_select = { .id = 53, .kind = OA_KEY_PRESS };
     host.api.emit(&host, OA_TOPIC_KEY, &runtime_select);
     oa_host_dispatch_posts(&host);
