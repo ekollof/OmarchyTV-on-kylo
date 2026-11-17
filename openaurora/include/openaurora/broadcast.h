@@ -161,6 +161,20 @@ typedef struct {
     int (*read)(uint32_t id, struct oa_pvr_meta *out);
 } oa_pvr_meta_iface;
 
+/* Disk space in bytes, as returned by the vendor DVR statistic calls behind
+ * PlayListDialog::updateCachedDiskStatistics 0x00df20e4 (+0x9a4 total,
+ * +0x9a8 free). `reserved_bytes` is the already-computed recording reservation
+ * (the vendor derives it from a DVR percentage plus reminder sizes). */
+struct oa_pvr_stats {
+    uint64_t total_bytes;
+    uint64_t free_bytes;
+    uint64_t reserved_bytes;
+};
+
+typedef struct {
+    int (*read)(struct oa_pvr_stats *out);
+} oa_pvr_stats_iface;
+
 typedef struct {
     int (*list)(struct oa_pvr_job *jobs, size_t cap, size_t *count);
     int (*add)(const struct oa_pvr_request *request, uint32_t *id);

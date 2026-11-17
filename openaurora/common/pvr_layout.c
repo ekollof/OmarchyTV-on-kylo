@@ -24,6 +24,7 @@ int oa_pvr_layout_default(oa_pvr_layout *out)
     out->used_space = (oa_pvr_rect){ 315, 1005, 775, 1045 };
     out->reserved_space = (oa_pvr_rect){ 779, 1005, 1287, 1045 };
     out->free_space = (oa_pvr_rect){ 1295, 1005, 1697, 1045 };
+    out->space_band = (oa_pvr_rect){ 0, 971, 1920, 1080 };
     for (int i = 0; i < 5; i++)
         out->tabs[i] = (oa_pvr_rect){ 206 + i * 302, 101,
                                      506 + i * 302, 160 };
@@ -38,12 +39,14 @@ int oa_pvr_layout_default(oa_pvr_layout *out)
     const uint8_t text[3] = { 17, 17, 17 };        /* #111111 */
     const uint8_t title[3] = { 255, 255, 255 };
     const uint8_t focus[3] = { 254, 148, 25 };     /* theme focus */
+    const uint8_t band[3] = { 72, 23, 48 };        /* #481730 inference */
     memcpy(out->panel_rgb, panel, sizeof panel);
     memcpy(out->header_rgb, header, sizeof header);
     memcpy(out->subheader_rgb, subheader, sizeof subheader);
     memcpy(out->text_rgb, text, sizeof text);
     memcpy(out->title_rgb, title, sizeof title);
     memcpy(out->focus_rgb, focus, sizeof focus);
+    memcpy(out->space_band_rgb, band, sizeof band);
     return 0;
 }
 

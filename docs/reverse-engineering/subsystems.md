@@ -426,7 +426,9 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   updateRecordingIndicators 0x00df7788 (recording +0x1c, new +0x1c==0 &&
   +0x1f==0, lock +0x1d==0, play-disallowed +0x1e==0, radio/TV +0x24==2),
   read through optional `pvr.meta` v1 and tinted #111111; the stub publishes
-  no meta. LIBRARY resolves to
+  no meta. Space labels follow refreshSpaceUsage 0x00df14e8 (KiB-as-MB
+  used/reserved/free) via `common/pvr_space.c` + optional `pvr.stats` v1,
+  painted on a #481730 band (inference). LIBRARY resolves to
   "Opnamebibliotheek"; columns use NAME_TITLE/START_TITLE/DURATION_TITLE
   (Naam/Start/Lengte). Row icons: recording 0x36 `icon_record_small` (painted
   for OA_PVR_RECORDING), new 0x116, locked 0x1e, playback 0x115, partial

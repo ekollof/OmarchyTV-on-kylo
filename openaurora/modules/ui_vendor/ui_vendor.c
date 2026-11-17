@@ -60,6 +60,7 @@
 #include "openaurora/channel_layout.h"
 #include "openaurora/pvr_layout.h"
 #include "openaurora/epg_layout.h"
+#include "openaurora/pvr_space.h"
 #include "openaurora/broadcast.h"
 #include "openaurora/font_box.h"
 
@@ -2309,6 +2310,18 @@ static void blit_tinted(struct ctx *c, const oa_ui_icon *icon, int x, int y,
     free(buf);
 }
 
+/* Small text for the space-info line: the same button font as the tabs,
+ * because the three 460/508/402 px boxes do not fit font7. */
+static void pvr_small_text(struct ctx *c, const char *text, int x, int y)
+{
+    if (!c || !c->d || !text || !*text)
+        return;
+    (void)tab_font_open(c);
+    const struct oa_bitmap_font *font = c->tab_font_on ? &c->tab_font
+                                                       : &c->font;
+    channel_text_at(c, font, text, x, y, 255, 255, 255);
+}
+
 static void paint_tab(struct ctx *c, int x, int y, int w, int h,
                       const char *label, int selected)
 {
@@ -2392,6 +2405,33 @@ static void paint_pvr(struct ctx *c)
         const oa_pvr_rect *t = &l.tabs[i];
         paint_tab(c, t->x, t->y, t->x1 - t->x, t->y1 - t->y,
                   tab_label(i18n, PVR_TABS[i], PVR_TABS_EN[i]), i == 0);
+    }
+    /* Space labels: refreshSpaceUsage 0x00df14e8, gated on a nonzero total.
+     * The band is a family inference (record 692 has no fill behind them). */
+    d->fill(l.space_band.x, l.space_band.y,
+            l.space_band.x1 - l.space_band.x,
+            l.space_band.y1 - l.space_band.y,
+            l.space_band_rgb[0], l.space_band_rgb[1], l.space_band_rgb[2]);
+    const oa_pvr_stats_iface *stats_svc =
+        c->api->lookup(c->api->priv, OA_SVC_PVR_STATS, 1);
+    struct oa_pvr_stats stats;
+    oa_pvr_space_values space;
+    if (stats_svc && stats_svc->read(&stats) == 0 &&
+        oa_pvr_space_calc(&stats, &space) == 0) {
+        const char *used_title = tab_label(i18n, "USED_SPACE_INFO_TITLE",
+                                           "Gebruikte ruimte: ");
+        const char *res_title = tab_label(i18n, "RESERVED_SPACE_INFO_TITLE",
+                                          "Gereserveerd: ");
+        const char *free_title = tab_label(i18n, "FREE_SPACE_INFO_TITLE",
+                                           "Vrije ruimte: ");
+        char buf[64];
+        if (oa_pvr_space_label(used_title, space.used, buf, sizeof buf) == 0)
+            pvr_small_text(c, buf, l.used_space.x, l.used_space.y + 5);
+        if (oa_pvr_space_label(res_title, space.reserved, buf, sizeof buf) == 0)
+            pvr_small_text(c, buf, l.reserved_space.x,
+                           l.reserved_space.y + 5);
+        if (oa_pvr_space_label(free_title, space.free, buf, sizeof buf) == 0)
+            pvr_small_text(c, buf, l.free_space.x, l.free_space.y + 5);
     }
     if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
 
@@ -2492,6 +2532,7 @@ static void paint_pvr(struct ctx *c)
     }
     if (pvr) c->api->release(c->api->priv, OA_SVC_PVR);
     if (meta_svc) c->api->release(c->api->priv, OA_SVC_PVR_META);
+    if (stats_svc) c->api->release(c->api->priv, OA_SVC_PVR_STATS);
     c->scene_painted = 1;
     if (d->present() != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "pvr list present failed");

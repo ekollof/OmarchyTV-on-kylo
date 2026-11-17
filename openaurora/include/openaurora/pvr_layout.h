@@ -33,12 +33,17 @@ typedef struct {
     oa_pvr_rect name, time, duration;
     oa_pvr_rect scrollbar;
     oa_pvr_rect used_space, reserved_space, free_space;
+    /* 0,971,1920,1080 dark band behind the white space labels. Record 692
+     * leaves the labels on the light panel with white text, so the runtime
+     * theme must supply a band; this uses the full-screen dialog family
+     * header #481730 as an inference pending a stock PVR capture. */
+    oa_pvr_rect space_band;
     oa_pvr_rect tabs[5];
     oa_pvr_rect dialog_title, clock;
     int row_pitch;
     int row_height;
     uint8_t panel_rgb[3], header_rgb[3], subheader_rgb[3];
-    uint8_t text_rgb[3], title_rgb[3], focus_rgb[3];
+    uint8_t text_rgb[3], title_rgb[3], focus_rgb[3], space_band_rgb[3];
 } oa_pvr_layout;
 
 /* Fill the recovered defaults. Returns -EINVAL for NULL. */

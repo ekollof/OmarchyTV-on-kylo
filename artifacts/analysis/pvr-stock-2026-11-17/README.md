@@ -93,11 +93,17 @@ new+lock+play-disallowed+radio.
 
 ## Space info
 
-`refreshSpaceUsage` composes the three labels from `USED_SPACE_INFO_TITLE`,
-`RESERVED_SPACE_INFO_TITLE` and `FREE_SPACE_INFO_TITLE` with a `" MB"` /
-`" MB "` suffix. Vendor Dutch: "Gebruikte ruimte: ", "Gereserveerd: ",
-"Vrije ruimte: ". `OA_SVC_PVR` has no disk-stat call, so the values cannot be
-rendered yet; they stay unpainted.
+`refreshSpaceUsage` @0x00df14e8 gates on `this+0x9a4 != 0` and computes in
+1024-byte blocks labelled "MB" (vendor convention): `used = (total-free)>>10`;
+`reserved` = DVR percentage (`*0x10624dd3 >> 38` = /100) + reminder sizes,
+clamped to `free>>10`; `free = (total>>10) - used - reserved` (floored at 0).
+Labels are the three `*_SPACE_INFO_TITLE` keys + value + `" MB"`. Vendor
+Dutch: "Gebruikte ruimte: ", "Gereserveerd: ", "Vrije ruimte: ".
+`common/pvr_space.c` reproduces the arithmetic/labels and the optional
+`pvr.stats` v1 service supplies total/free/reserved bytes. Record 692 has no
+fill behind the white labels, so the screen paints a 0,971,1920,1080 band
+with the family header #481730 (inference). `check-pvr-space` and
+`check-ui-pvr-stock` cover it; the mod_pvr stub publishes no stats.
 
 ## Implementation and evidence
 

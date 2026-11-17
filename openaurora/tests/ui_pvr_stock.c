@@ -168,6 +168,30 @@ static int meta_read(uint32_t id, struct oa_pvr_meta *out)
 
 static const oa_pvr_meta_iface g_meta = { meta_read };
 
+static int stats_read(struct oa_pvr_stats *out)
+{
+    if (!out)
+        return -EINVAL;
+    out->total_bytes = 10ull * 1024 * 1024 * 1024;
+    out->free_bytes = 4ull * 1024 * 1024 * 1024;
+    out->reserved_bytes = 1ull * 1024 * 1024 * 1024;
+    return 0;
+}
+
+static const oa_pvr_stats_iface g_stats = { stats_read };
+
+/* Any blit whose top-left is (x,y), regardless of size. */
+static int find_blit_at(const oa_nav_trace *trace, int x, int y)
+{
+    int n = trace->blit_count();
+    for (int i = 0; i < n; ++i) {
+        int bx, by, bw, bh;
+        if (trace->blit_at(i, &bx, &by, &bw, &bh) == 0 && bx == x && by == y)
+            return 1;
+    }
+    return 0;
+}
+
 static int remove_entry(const char *path, const struct stat *st, int flag,
     struct FTW *ftw)
 {
@@ -239,6 +263,7 @@ int main(int argc, char **argv)
     assert(pvr->record(1) == 0);
     host.api.release(&host, OA_SVC_PVR);
     assert(host.api.publish(&host, OA_SVC_PVR_META, 1, &g_meta) == 0);
+    assert(host.api.publish(&host, OA_SVC_PVR_STATS, 1, &g_stats) == 0);
 
     assert(!command(&host, "load ui_engine", out, sizeof out));
     assert(!command(&host, "start ui_engine", out, sizeof out));
@@ -257,6 +282,12 @@ int main(int argc, char **argv)
     assert(find_fill(trace, l.row.x, l.row.y, l.row.x1 - l.row.x,
                      l.row_height, 254, 148, 25));
     assert(trace->blit_count() >= 10);
+    /* Space labels: 10 GiB total, 4 GiB free, 1 GiB reserved -> used 6 GiB,
+     * reserved 1 GiB, free 3 GiB in the vendor's KiB-as-MB convention. */
+    assert(find_fill(trace, 0, 971, 1920, 109, 72, 23, 48));
+    assert(find_blit_at(trace, 315, 1010));
+    assert(find_blit_at(trace, 779, 1010));
+    assert(find_blit_at(trace, 1295, 1010));
     /* recordingIcon rect 55,237..91,273 (id 54 icon_record_small.png) is
      * painted for the recording row only. */
     assert(find_blit(trace, 55, 237, 36, 36));          /* recording */

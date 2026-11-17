@@ -86,10 +86,22 @@ exact flag→indicator mapping is not reduced, so those icons stay unpainted.
 for two out values (`this+0x9a4`/`this+0x9a8`) and zeroes both on failure;
 that is the data `refreshSpaceUsage` formats.
 
-`refreshSpaceUsage` uses `USED_SPACE_INFO_TITLE`, `RESERVED_SPACE_INFO_TITLE`
-and `FREE_SPACE_INFO_TITLE` plus `" MB"`/`" MB "` (dut "Gebruikte ruimte: ",
-"Gereserveerd: ", "Vrije ruimte: "). There is no disk-stat call in
-`OA_SVC_PVR`, so the values stay unpainted.
+`refreshSpaceUsage` @0x00df14e8 gates on `this+0x9a4 != 0` and computes in
+1024-byte blocks, labelled "MB" (the vendor unit convention, reproduced as
+such): `used = (total-free) >> 10`; `reserved` from a DVR percentage
+(`*0x10624dd3 >> 38` = /100) plus the reminder sizes, clamped to `free >> 10`;
+`free = (total >> 10) - used - reserved` floored at 0. Labels are
+`USED_SPACE_INFO_TITLE`, `RESERVED_SPACE_INFO_TITLE` and
+`FREE_SPACE_INFO_TITLE` + value + `" MB"` (dut "Gebruikte ruimte: ",
+"Gereserveerd: ", "Vrije ruimte: ").
+
+`common/pvr_space.c` reproduces that arithmetic and label composition; the
+optional `pvr.stats` v1 service supplies total/free/reserved bytes
+(`oa_pvr_stats_iface.read`). Record 692 leaves the three labels on the light
+panel with white text and no fill, so the screen paints a `0,971,1920,1080`
+band using the full-screen family header `#481730` — a family inference
+pending a stock capture. `check-pvr-space` covers the math/clamps and
+`check-ui-pvr-stock` publishes stats and asserts the three labels.
 
 ## Implementation
 
@@ -114,10 +126,10 @@ and `FREE_SPACE_INFO_TITLE` plus `" MB"`/`" MB "` (dut "Gebruikte ruimte: ",
 
 No stock PVR screen capture exists: the candidate is recorder evidence, not
 pixel parity or scanout. The exact vendor tab font record is not pinned
-(`ui.tab_font_id` defaults to 4), new/tagged/locked/partial/playback/
-service-type indicators, disk space values, scrollbar art, exact
-focus style, sort/tab functions, synopsis (record 693) and stock entry path
-are not painted. The rows come from the
+(`ui.tab_font_id` defaults to 4), taggedIcon, the unreachable partial icon,
+the real disk-stat backend (the optional service carries explicit values;
+the mod_pvr stub publishes none), scrollbar art, exact focus style, sort/tab
+functions, synopsis (record 693) and stock entry path are not painted. The rows come from the
 project PVR reservation stub, not a recording engine or storage hardware. A
 stock PVR capture and the on-TV PVR backend remain open.
 

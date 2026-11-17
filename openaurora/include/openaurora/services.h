@@ -552,6 +552,9 @@ typedef struct {
 /* Optional recording metadata for the stock PVR row indicators. Published by a
  * backend that can supply it; absent means the row icons stay hidden. */
 #define OA_SVC_PVR_META "pvr.meta"
+/* Optional disk statistics for the PVR space labels. Absent means the labels
+ * are not painted (the vendor gates them on a nonzero total). */
+#define OA_SVC_PVR_STATS "pvr.stats"
 #define OA_SVC_CHANNELS "channels"
 
 /* tuner.select — gated replacement for TunerManager's display-select effects.
