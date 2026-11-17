@@ -113,6 +113,33 @@ RGBA, and the screen scales it into record 102's `eventImage`
 62,299..382,479 (320x180). With no provider the box stays blank. The fixture
 image is a 16x9 solid block; it is recorder evidence, not vendor art.
 
+## Event options (record 151)
+
+EPG Select opens `GuideEventOptionsDialog` (dialog name `GuideEventOptions`)
+through `showGuideEvent` 0x00dce401. The base `OptionsListDialog` uses
+`DialogOptionsList.svg` (151): bgTextbox 610,806..1310,909 (white at 7/10),
+itemPos 610,844..1310,920 (#010101), title 634,750..1320,825.
+`calculateItemPosition` 0x00ea963c uses pitch 65/item 76;
+`calculateHeight` 0x00ea9700 is `65*count + 16`. `reposition` 0x00ea9894
+shifts by `base.y1 - (height + title.y1)`, but the base rect is a
+runtime-initialized screen rect (BSS pointer 0x1a1a464), so the screen takes
+`ui.epg_options_offset_y` (0 = resource coordinates).
+
+`GuideEventOptionsDialog::init` 0x00ea5919 builds VIEW_CHANNEL; with an
+enhanced event RESTART (restart URL) or HLP_WATCH (on-demand available == 2),
+MORE_INFO (no-information == 0); without one MORE_INFO; then
+`addServicePlayerButton` 0x00ea572c adds LAUNCH_SERVICE_PLAYER when the
+metadata provider reports a player. The OnDemandProgram branch is HLP_WATCH,
+MORE_INFO, player. Labels: "Zender kijken"/"Restart"/"Bekijken"/
+"Meer informatie"/"Player lanceren"; selected #FE9419 with #7E000A text,
+unselected #010101 with white.
+
+`ui.epg_options=1` opens the overlay on Select; Up/Down move, Select logs and
+closes, Exit closes. Runtime inputs are explicit (enhanced = event present,
+no_information = empty description, restart/on-demand/player = 0 with no
+backend). The full-screen background and anchor are open; candidate
+`epg-stock-options.png`.
+
 ## Event-button styles and synopsis (record 102)
 
 `SVGServiceEventButton::resetSVGNames` @0x00dd5404 selects `serviceBFA/UFA/FI/

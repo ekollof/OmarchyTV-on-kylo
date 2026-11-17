@@ -225,10 +225,16 @@ maps the cold-start stages and the current stock-UI coverage.
       the optional `epg.image` v1 provider supplies the 62,299 320x180 event
       image (ImageHelper::displayEventImage; getImage/service-image fallback).
       `check-ui-epg-stock` covers selection, the FI style, the scaled image and
-      the toggle. Open: EPG stock capture, header fill (family inference), tab
-      glyphs/icons, GuideEventOptionsDialog, the real image backend, wrapping,
-      day navigation/filters, runtime row pitch, live EIT, the stock channel key
-      path/runtime feed and scanout.
+      the toggle. 2026-11-18: the GuideEventOptionsDialog option list is
+      recovered (record 151: bgTextbox 610,806..909, itemPos 610,844, pitch 65,
+      height 65n+16; VIEW_CHANNEL, RESTART/HLP_WATCH, MORE_INFO,
+      LAUNCH_SERVICE_PLAYER rules; `common/guide_options.c` +
+      `check-guide-options`) and `ui.epg_options=1` opens the overlay on Select
+      with `epg-stock-options.png`; actions, the runtime anchor/background and
+      the real option inputs remain open. Open: EPG stock capture, header fill
+      (family inference), tab glyphs/icons, the real image/option backends,
+      wrapping, day navigation/filters, runtime row pitch, live EIT, the stock
+      channel key path/runtime feed and scanout.
 
 ## Scheduled takeover test queue (single session)
 

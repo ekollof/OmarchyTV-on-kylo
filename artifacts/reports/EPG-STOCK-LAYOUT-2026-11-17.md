@@ -3,7 +3,7 @@
 Status: current (layout, selection and chrome/synopsis screens; no stock EPG
 capture)
 Last verified: 2026-11-18 (firmware resource/instructions and host recorder
-tests)
+tests; selection, synopsis image, event options)
 Evidence class: firmware resource/instructions and host/recorder tests. No TV
 run, stock EPG capture, live EIT feed or scanout.
 
@@ -70,6 +70,52 @@ of inventing a grid. Raw rectangles and the recorder candidate are in
   optional `epg.image` v1 service (`oa_epg_image_iface.get`, borrowed RGBA);
   absent means the 62,299..382,479 box stays blank. A supplied image is scaled
   into the 320x180 rect.
+
+## Event options dialog (record 151)
+
+Select opens `GuideEventOptionsDialog` via `showGuideEvent` @0x00dce401. Its
+`getDialogName` is `GuideEventOptions`; the base `OptionsListDialog` resolves
+the theme resource `DialogOptionsList.svg` (BinSVG 151):
+
+| element | rect |
+|---|---|
+| panel | 0,0,1920,1080 |
+| bgTextbox | 610,806,1310,909 (white at 7/10) |
+| itemPos (first row) | 610,844,1310,920 (#010101) |
+| dialogTitle | 634,750,1320,825 |
+
+`calculateItemPosition` @0x00ea963c puts item i at
+`itemPos.y + i*(bgTextbox.y1 - itemPos.y)` (pitch 65, height 76);
+`calculateHeight` @0x00ea9700 is
+`(bgTextbox.y1-itemPos.y)*count + (itemPos.y-bgTextbox.y) +
+(bgTextbox.y1-itemPos.y1)*2` = 65*count + 16 for this record.
+`reposition` @0x00ea9894 shifts the dialog by
+`base.y1 - (height + dialogTitle.y1)`, but the base rect is a
+runtime-initialized screen rect (BSS pointer 0x1a1a464), so the absolute anchor
+is not pinned offline; the screen takes an explicit
+`ui.epg_options_offset_y` (0 = resource coordinates).
+
+`GuideEventOptionsDialog::init` @0x00ea5919 builds the buttons in order:
+`VIEW_CHANNEL` always; with an enhanced event `RESTART` when
+`getRestartURL() != 0` else `HLP_WATCH` when `onDemandAvailable() == 2`, and
+`MORE_INFO` when `getNoInformationAvailable() == 0`; without one it adds
+`MORE_INFO` from the first vtable call; `addServicePlayerButton` @0x00ea572c
+then adds `LAUNCH_SERVICE_PLAYER` when not in OnDemandProgram mode and the
+metadata provider reports a player. The OnDemandProgram branch is
+`HLP_WATCH` (if available), `MORE_INFO`, then the player.
+Labels resolve through `UIResourceManager::lookupString` (dut "Zender kijken",
+"Restart", "Bekijken", "Meer informatie", "Player lanceren"); the selected row
+is `#FE9419` with `#7E000A` text, unselected rows `#010101` with white text.
+
+`ui.epg_options=1` (default off) opens the overlay on Select and paints the
+recovered title/bgTextbox/rows; Up/Down move the focus, Select logs the
+unrecovered action and closes, Exit closes. The available runtime inputs are
+explicit: an event is enhanced when present, `no_information` when its
+description is empty, and restart/on-demand/player checks have no backend here
+(0). The full-screen white `background`/`main_rectangle` are not repainted over
+the EPG, and the anchor is 0 by default, both flagged open pending a capture.
+`check-guide-options` covers the geometry/height/option rules and
+`check-ui-epg-stock` drives the overlay (`epg-stock-options.png`).
 
 ## Screen rectangles (record 101)
 
@@ -146,8 +192,9 @@ No stock EPG screen capture exists, so the candidate is recorder evidence, not
 pixel parity or scanout. The header fill is a family inference; the exact
 vendor tab font record is not pinned (`ui.tab_font_id` defaults to 4 because
 font7 overflows the 300 px tabs), channel logo/HD/encrypted icons, the
-`GuideEventOptionsDialog` options/actions, the real event-image backend (the
-optional provider has no producer), the service-image fallback, text wrapping,
+`GuideEventOptionsDialog` actions, the real event-image backend (the optional
+provider has no producer), the service-image fallback, the options anchor and
+background treatment, text wrapping,
 day navigation, filters, reminders/record actions, the stock entry path, the
 runtime row pitch and scanout remain open. Event-bar colours, selection/focus
 styles and the INFO synopsis toggle are recovered. Live EIT/EPG data still

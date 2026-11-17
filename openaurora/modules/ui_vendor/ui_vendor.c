@@ -62,6 +62,7 @@
 #include "openaurora/channel_edit.h"
 #include "openaurora/pvr_layout.h"
 #include "openaurora/epg_layout.h"
+#include "openaurora/guide_options.h"
 #include "openaurora/pvr_space.h"
 #include "openaurora/broadcast.h"
 #include "openaurora/font_box.h"
@@ -221,6 +222,8 @@ struct ctx {
     int epg_sel;                     /* stock EPG selected service row */
     int epg_event;                   /* focused event index in that row */
     int epg_synopsis;                /* record-102 synopsis view is shown */
+    int epg_opt_open;                /* record-151 event options overlay */
+    int epg_opt_sel;
     int64_t epg_window;              /* stock EPG window start ms, 0 = now */
     float sub_progress;              /* lab capture progress 0..1 */
     int sub_anim_live;               /* runtime key animation is running */
@@ -2276,6 +2279,7 @@ static void paint_channels_stock(struct ctx *c)
 static void paint_pvr(struct ctx *c);
 static void paint_pvr_synopsis(struct ctx *c);
 static void paint_epg(struct ctx *c);
+static void paint_epg_options(struct ctx *c);
 static void paint_epg_synopsis(struct ctx *c);
 
 static void pvr_text(struct ctx *c, const char *text, int x, int y,
@@ -3016,6 +3020,116 @@ static int epg_selected_event_count(struct ctx *c, int64_t window,
     return count;
 }
 
+/* Build the visible guide-event options for the current EPG selection. The
+ * available runtime inputs are explicit: an event is "enhanced" when present,
+ * "no information" when its description is empty, and restart/on-demand/
+ * player checks have no backend here, so they stay 0. The title is the event
+ * name. */
+static int epg_options_build(struct ctx *c, const char **keys, unsigned *count,
+                             char *title, size_t title_cap)
+{
+    memset(title, 0, title_cap);
+    struct epg_service_view v;
+    epg_view_open(c, &v);
+    int ret = -1;
+    uint32_t handle = 0;
+    const char *name = NULL;
+    if (v.total > 0 && c->epg_sel >= 0 && (size_t)c->epg_sel < v.total &&
+        epg_view_at(&v, c->epg_sel, &handle, &name) == 0) {
+        const oa_epg_iface *epg = c->api->lookup(c->api->priv, OA_SVC_EPG, 1);
+        if (epg) {
+            oa_epg_layout l;
+            int64_t window = epg_window_start(c);
+            struct oa_epg_event events[32];
+            size_t n = 0;
+            if (oa_epg_layout_default(&l) == 0 &&
+                epg->query(handle, window,
+                           window + (int64_t)l.interval_s * 1000, events,
+                           sizeof events / sizeof events[0], &n) == 0 &&
+                n > 0) {
+                if (c->epg_event < 0 || (size_t)c->epg_event >= n) {
+                    int64_t focus = window + (int64_t)l.interval_s * 1000 / 2;
+                    int64_t now = (int64_t)now_ms();
+                    if (now >= window &&
+                        now < window + (int64_t)l.interval_s * 1000)
+                        focus = now;
+                    c->epg_event = oa_epg_focus_event(events, n, focus);
+                }
+                const struct oa_epg_event *e = &events[c->epg_event];
+                snprintf(title, title_cap, "%s", e->name);
+                struct oa_guide_options_inputs in;
+                memset(&in, 0, sizeof in);
+                in.has_enhanced = 1;
+                in.no_information = e->description[0] == 0;
+                ret = oa_guide_options_build(&in, keys, OA_GUIDE_OPTIONS_MAX,
+                                             count);
+            }
+            c->api->release(c->api->priv, OA_SVC_EPG);
+        }
+    }
+    epg_view_close(c, &v);
+    return ret;
+}
+
+/* record-151 event options overlay, opened by EPG Select when
+ * ui.epg_options=1. The OptionsListDialog::reposition base rect is a
+ * runtime-initialized screen rect that is not pinned offline, so the offset is
+ * explicit (ui.epg_options_offset_y, 0 = resource coordinates). The full-screen
+ * white background is not repainted over the EPG; only the recovered bgTextbox
+ * and item rows are drawn, and the anchor/background treatment remains open. */
+static void paint_epg_options(struct ctx *c)
+{
+    if (!c || !c->d || !c->epg_opt_open)
+        return;
+    if (atoi(c->api->config_get(c->api->priv, "ui.epg_options", "0")) != 1) {
+        c->epg_opt_open = 0;
+        return;
+    }
+    oa_guide_options_layout l;
+    if (oa_guide_options_layout_default(&l) != 0)
+        return;
+    const char *keys[OA_GUIDE_OPTIONS_MAX];
+    unsigned count = 0;
+    char title[96];
+    if (epg_options_build(c, keys, &count, title, sizeof title) != 0 ||
+        count == 0)
+        return;
+    if (c->epg_opt_sel < 0) c->epg_opt_sel = 0;
+    if (c->epg_opt_sel >= (int)count) c->epg_opt_sel = (int)count - 1;
+    int offset = atoi(c->api->config_get(c->api->priv,
+                                         "ui.epg_options_offset_y", "0"));
+    const oa_ui_engine_iface *d = c->d;
+
+    /* bgTextbox white at 7/10 over the EPG list #C5C9CD. */
+    int bx = l.bg_textbox.x, by = l.bg_textbox.y + offset;
+    int bw = l.bg_textbox.x1 - l.bg_textbox.x;
+    int bh = l.bg_textbox.y1 - l.bg_textbox.y;
+    d->fill(bx, by, bw, bh, 237, 238, 239);
+
+    const oa_i18n_iface *i18n = c->api->lookup(c->api->priv, OA_SVC_I18N, 1);
+    (void)tab_font_open(c);
+    const struct oa_bitmap_font *font = c->tab_font_on ? &c->tab_font
+                                                       : &c->font;
+    int font_height = 0;
+    (void)oa_bitmap_font_height(font, &font_height);
+    if (title[0])
+        channel_text_at(c, font, title, l.title.x, l.title.y + offset,
+                        255, 255, 255);
+    for (unsigned i = 0; i < count; i++) {
+        oa_guide_rect r;
+        if (oa_guide_options_item_rect(&l, (int)i, offset, &r) != 0)
+            continue;
+        int focused = (int)i == c->epg_opt_sel;
+        const unsigned char *fill = focused ? l.focus_rgb : l.item_rgb;
+        d->fill(r.x, r.y, r.x1 - r.x, r.y1 - r.y, fill[0], fill[1], fill[2]);
+        const char *label = tab_label(i18n, keys[i], keys[i]);
+        int ty = r.y + (l.item_height - font_height) / 2;
+        const unsigned char *ink = focused ? l.focus_text_rgb : l.text_rgb;
+        channel_text_at(c, font, label, r.x + 16, ty, ink[0], ink[1], ink[2]);
+    }
+    if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
+}
+
 static void paint_epg(struct ctx *c)
 {
     const oa_ui_engine_iface *d = c->d;
@@ -3193,6 +3307,7 @@ static void paint_epg(struct ctx *c)
     size_t total = v.total;
     if (epg) c->api->release(c->api->priv, OA_SVC_EPG);
     epg_view_close(c, &v);
+    paint_epg_options(c);
     c->scene_painted = 1;
     if (d->present() != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "EPG present failed");
@@ -3429,6 +3544,7 @@ static void paint_epg_synopsis(struct ctx *c)
     if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
     if (epg) c->api->release(c->api->priv, OA_SVC_EPG);
     epg_view_close(c, &v);
+    paint_epg_options(c);
     c->scene_painted = 1;
     if (d->present() != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "EPG synopsis present failed");
@@ -3706,6 +3822,7 @@ static int portal_menu_action(const char *action)
                                             "ui.epg_synopsis", "0")) == 1;
             g_ctx->epg_sel = 0;
             g_ctx->epg_event = -1;
+            g_ctx->epg_opt_open = 0;
         }
         g_ctx->screen = screen;
         if (g_ctx->d) paint(g_ctx);
@@ -4234,8 +4351,31 @@ static void move_key(struct ctx *c, uint8_t id)
         return;
     }
     if (c->screen == SCREEN_EPG) {
+        if (c->epg_opt_open) {
+            const char *keys[OA_GUIDE_OPTIONS_MAX];
+            unsigned count = 0;
+            char title[96];
+            (void)epg_options_build(c, keys, &count, title, sizeof title);
+            if (id == 19 || id == 20) {
+                c->epg_opt_sel += id == 19 ? 1 : -1;
+                if (c->epg_opt_sel < 0) c->epg_opt_sel = 0;
+                if (count && c->epg_opt_sel >= (int)count)
+                    c->epg_opt_sel = (int)count - 1;
+            } else if (id == 53 || id == 0x8a) {
+                if (count && (unsigned)c->epg_opt_sel < count)
+                    c->api->log(c->api->priv, OA_LOG_INFO,
+                                "EPG option %s is not implemented",
+                                keys[c->epg_opt_sel]);
+                c->epg_opt_open = 0;
+            } else if (id == 10 || id == 48) {
+                c->epg_opt_open = 0;
+            }
+            if (c->d) paint(c);
+            return;
+        }
         if (id == 10 || id == 48) {
             c->screen = SCREEN_PORTAL;
+            c->epg_opt_open = 0;
             if (c->d) paint(c);
             return;
         }
@@ -4272,9 +4412,17 @@ static void move_key(struct ctx *c, uint8_t id)
         }
         if (id == 53 || id == 0x8a) {
             /* showGuideEvent 0x00dce401 opens GuideEventOptionsDialog for the
-             * focused event; the option list/actions are not recovered. */
-            c->api->log(c->api->priv, OA_LOG_INFO,
-                        "EPG event options are not implemented");
+             * focused event. The option actions are not recovered; the list
+             * itself is record 151, gated by ui.epg_options. */
+            if (atoi(c->api->config_get(c->api->priv, "ui.epg_options", "0"))
+                == 1) {
+                c->epg_opt_open = 1;
+                c->epg_opt_sel = 0;
+                if (c->d) paint(c);
+            } else {
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "EPG event options are not implemented");
+            }
             return;
         }
         /* The vendor toggles the synopsis on the INFO key (onInfoKey
@@ -4848,6 +4996,7 @@ static int m_start(void *v)
             atoi(c->api->config_get(c->api->priv, "ui.epg_synopsis", "0")) == 1;
         c->epg_sel = 0;
         c->epg_event = -1;
+        c->epg_opt_open = 0;
     } else if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "sub_launcher")) {
         c->screen = SCREEN_SUBLAUNCHER;
         c->sub_sel = atoi(c->api->config_get(c->api->priv, "ui.sub_sel", "-1"));

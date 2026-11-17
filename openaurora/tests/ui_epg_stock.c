@@ -36,6 +36,8 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "ui.epg_row_pitch")) return "76";
     if (!strcmp(key, "ui.epg_synopsis")) return g_synopsis ? "1" : "0";
     if (!strcmp(key, "ui.epg_info_key")) return "60";
+    if (!strcmp(key, "ui.epg_options")) return "1";
+    if (!strcmp(key, "ui.epg_options_offset_y")) return "0";
     if (!strcmp(key, "ui.epg_window_start")) return "1700000000000";
     if (!strcmp(key, "ui.text")) return "1";
     if (!strcmp(key, "ui.font_index")) return g_font_index;
@@ -351,6 +353,26 @@ int main(int argc, char **argv)
     /* Capture the initial window before scrolling. */
     assert(!trace->capture(g_capture));
 
+    /* Select opens the record-151 event options overlay. The fixture event has
+     * a description, so the visible list is VIEW_CHANNEL + MORE_INFO. */
+    oa_key_event select_ev = { .id = 53, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &select_ev);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 610, 806, 700, 103, 237, 238, 239));
+    assert(find_fill(trace, 610, 844, 700, 76, 254, 148, 25));
+    assert(find_fill(trace, 610, 909, 700, 76, 1, 1, 1));
+    const char *ocap = getenv("OA_EPG_OPTIONS_CAPTURE");
+    if (ocap && *ocap)
+        assert(!trace->capture(ocap));
+    oa_key_event down_opt = { .id = 19, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &down_opt);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 610, 909, 700, 76, 254, 148, 25));
+    assert(find_fill(trace, 610, 844, 700, 76, 1, 1, 1));
+    host.api.emit(&host, OA_TOPIC_KEY, &select_ev);
+    oa_host_dispatch_posts(&host);
+    assert(!find_fill(trace, 610, 806, 700, 103, 237, 238, 239));
+
     /* Left/Right move the focused event inside the selected service. It
      * starts on the third event; Left focuses the second, Right the third. */
     oa_key_event left = { .id = 21, .kind = OA_KEY_PRESS };
@@ -436,7 +458,7 @@ int main(int argc, char **argv)
         assert(!command(&host, "stop i18n", out, sizeof out));
     assert(!command(&host, "stop ui_engine", out, sizeof out));
     assert(!command(&host, "stop nav_display", out, sizeof out));
-    puts("ok epg stock: record-101/102 chrome, split, selection, image and scroll");
+    puts("ok epg stock: 101/102 chrome, split, selection, options, image and scroll");
     cleanup();
     return 0;
 }

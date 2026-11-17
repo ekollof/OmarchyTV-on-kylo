@@ -367,6 +367,26 @@ inference (#481730) pending a capture; exact tab font/icons, selection, synopsis
 event image/bottom rows/wrapping, day navigation, live EIT and scanout remain
 open. Recorder evidence only.
 
+GUIDE-OPTIONS-2026-11-18: EPG Select opens GuideEventOptionsDialog
+(showGuideEvent 0x00dce401; dialog name GuideEventOptions) whose base
+OptionsListDialog uses DialogOptionsList.svg (BinSVG 151): bgTextbox
+610,806,1310,909 white 7/10, itemPos 610,844,1310,920 #010101, title
+634,750,1320,825. calculateItemPosition 0x00ea963c uses pitch 65/height 76;
+calculateHeight 0x00ea9700 is 65*count+16; reposition 0x00ea9894 shifts by
+base.y1-(height+title.y1) but the base rect is runtime BSS (0x1a1a464), so the
+absolute anchor is unpinned and the screen takes ui.epg_options_offset_y
+(0 = resource). init 0x00ea5919 adds VIEW_CHANNEL; enhanced: RESTART (restart
+URL) else HLP_WATCH (on-demand==2), MORE_INFO (no-information==0); no enhanced:
+MORE_INFO; addServicePlayerButton 0x00ea572c adds LAUNCH_SERVICE_PLAYER when a
+player is available. OnDemandProgram: HLP_WATCH, MORE_INFO, player. Labels dut
+"Zender kijken"/"Restart"/"Bekijken"/"Meer informatie"/"Player lanceren";
+selected #FE9419/#7E000A, unselected #010101/white. `common/guide_options.c` +
+check-guide-options encode the geometry/height/rules; `ui.epg_options=1` opens
+the overlay (Up/Down, Select logs+closes, Exit), with enhanced/description as
+the available inputs and restart/on-demand/player 0 (no backend). The
+full-screen background/anchor and actions remain open; candidate
+epg-stock-options.png.
+
 EPG-SELECTION-2026-11-18: `MultiServiceTimelineScheduleDialog` gives the EPG
 keys: `onUpDownPress` 0x00dcd6a1 selects the service row, `onScrollTimeline`
 0x00dcd531 maps Left/Right to `ListTimelineBox::scrollLeft/Right`

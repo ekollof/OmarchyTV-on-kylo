@@ -1696,7 +1696,18 @@ The INFO key toggles the synopsis (onInfoKey 0x00dcd234); no INFO RC id, so
 `ui.epg_info_key` (0=off). Select opens the unrecovered GuideEventOptionsDialog
 (logs). The record-102 event image 62,299..382,479 is drawn from the optional
 `epg.image` v1 provider via blit_scaled 320x180; absent provider = blank.
-check-ui-epg-stock covers selection, FI, image and toggle.
+check-ui-epg-stock covers selection, FI, image and toggle. 2026-11-18
+GUIDE-OPTIONS: EPG Select opens GuideEventOptionsDialog (GuideEventOptions;
+OptionsListDialog resource DialogOptionsList.svg 151: bgTextbox
+610,806,1310,909 white@7/10, itemPos 610,844,1310,920 #010101, title
+634,750,1320,825; pitch 65/height 76; height 65n+16; reposition base BSS
+0x1a1a464 unpinned -> ui.epg_options_offset_y). Options: VIEW_CHANNEL;
+enhanced -> RESTART (restart URL) else HLP_WATCH (on-demand==2), MORE_INFO
+(no-info==0); no enhanced -> MORE_INFO; LAUNCH_SERVICE_PLAYER when a player is
+available. `common/guide_options.c` + check-guide-options; `ui.epg_options=1`
+opens the overlay (Up/Down, Select logs+closes, Exit), enhanced/description are
+the available inputs, restart/on-demand/player 0; candidate
+epg-stock-options.png. Background/anchor/actions open.
 
 PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary
 (integer recording id, start/stop, index query) with a persistent offline stub.
