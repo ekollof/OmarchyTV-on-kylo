@@ -142,7 +142,11 @@ previously open `+0x204/+0x208/+0x210` item: the fields are consumed by
 (`artifacts/analysis/ui-row-origin-2026-11-16/svglb_ctor.dump.txt`) clears
 `+0x204/+0x208/+0x20c/+0x210`
 and `+0x1ec..+0x200` to zero; it does not derive them from a resource. A later
-setter/configurator path assigns them and is still unrecovered. With that
+setter/configurator path assigns them and is still unrecovered. A scan of the
+list-box code range for direct `str` immediates 516/520/524/528 found none, so
+the assignment is likely a block copy or a derived-class path rather than a
+simple field setter. The exact producer remains open; no replacement geometry
+is wired. With that
 and the three branches, `common/row_position.c` is a pure injected-query model
 of `getRowPosition`; `check-row-position` covers all three branches, the point
 packing and query failure, and the full host suite passes (rc=0). This is a
