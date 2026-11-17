@@ -37,11 +37,48 @@ The focus fill uses the theme orange `#FE9419`; record 692 does not define a
 focus fill, so this is a theme/class inference. Row pitch 75 is the shared
 full-screen-list step, not present in record 692; row height is 66.
 
-## Title and tabs
+## Title, columns and tabs
 
-`init`/`redrawDialog` set the title from the `LIBRARY` language key
-(Dutch "Bibliotheek"; English "Library"). The five tab buttons are **action
-glyphs**, not text tabs: Play Options, Edit, Delete, Sort, Settings.
+`init`/`redrawDialog` set the title from the `LIBRARY` key. The vendor Dutch
+translation is **"Opnamebibliotheek"** (English "Recordings"), confirmed with
+`common/langprofile.c` against `mb230_langprofile.bin`. The three column
+titles come from `SVGFullScreenListDialog::createComponents` keys
+`NAME_TITLE`, `START_TITLE`, `DURATION_TITLE` (dut "Naam", "Start",
+**"Lengte"**; not "Duur"). The five tab buttons are **action glyphs**, not text
+tabs: Play Options, Edit, Delete, Sort, Settings.
+
+## Row indicators (createComponents)
+
+`PlayListDialog::createComponents` maps each indicator name to an image id and
+a record-692 rect:
+
+| indicator | rect (record 692) | image id | shipped asset |
+|---|---|---:|---|
+| recordingIcon | 55,237 .. 91,273 | 0x36 (54) | `icon_record_small.png` |
+| newIcon | 93,237 .. 138,273 | 0x116 (278) | `icon_right_arrow.png` |
+| lockedIcon | 1793,237 .. 1829,273 | 0x1e (30) | `icon_lock.png` |
+| playbackIcon | 1833,237 .. 1869,273 | 0x115 (277) | `icon_play_disallowed.png` |
+| partialIcon | no rect in 692 | 0x114 (276) | `icon_exclamation_mark.png` |
+| serviceTypeIcon | 1735,236 .. 1791,283 | 99 / 6 / 8 | `icon_lost_signal.png`, `icon_tv_small.png`, `icon_radio_small.png` |
+| taggedIcon | 137,237 .. 181,273 | — | not created by PlayListDialog |
+
+Image ids resolve by index in `telefunken18_img.{txt,bin}` (the `.bin` is the
+concatenated PNG payloads in index order; `icon_record_small` is record 54).
+`partialIcon`'s `SVGDialog::getDescription` lookup returns no rect in record
+692, so the shipped body falls through with the row rect; do not invent one.
+
+Only `recordingIcon` is painted today, for `OA_PVR_RECORDING`. The other
+indicators need metadata (`new`, `locked`, `partial`, play-disallowed,
+service type TV/radio) that `OA_SVC_PVR` does not expose, so they remain
+unpainted rather than guessed.
+
+## Space info
+
+`refreshSpaceUsage` composes the three labels from `USED_SPACE_INFO_TITLE`,
+`RESERVED_SPACE_INFO_TITLE` and `FREE_SPACE_INFO_TITLE` with a `" MB"` /
+`" MB "` suffix. Vendor Dutch: "Gebruikte ruimte: ", "Gereserveerd: ",
+"Vrije ruimte: ". `OA_SVC_PVR` has no disk-stat call, so the values cannot be
+rendered yet; they stay unpainted.
 
 ## Implementation and evidence
 
@@ -49,12 +86,18 @@ glyphs**, not text tabs: Play Options, Edit, Delete, Sort, Settings.
   colours, tab hit-testing, rows and visible count; `check-pvr-layout` covers
   them (10 rows, row 9 at 897..963, row 10 rejected).
 - `ui.pvr_stock=1` (default off) + `ui.screen=pvr` add a `SCREEN_PVR` list:
-  header/subheader, `LIBRARY` title via `i18n`, `Naam/Start/Duur` columns,
-  rows from `OA_SVC_PVR` with local start time and duration, focus/selection.
-- `tests/ui_pvr_stock.c` adds two PVR reservations and checks the fills,
-  columns, rows, Down focus and Exit; `check-ui-pvr-stock` passes.
+  header/subheader, `LIBRARY` title and `NAME_TITLE/START_TITLE/
+  DURATION_TITLE` columns via `i18n` (fallbacks "Opnamebibliotheek",
+  "Naam/Start/Lengte"), rows from `OA_SVC_PVR` with local start time and
+  duration, the red `icon_record_small` indicator for recording rows, focus
+  and selection.
+- `tests/ui_pvr_stock.c` adds two PVR reservations, sets the first to
+  recording, and checks the fills, columns, rows, the recording icon blit at
+  55,237x36x36 (and its absence on the scheduled row), Down focus and Exit;
+  `check-ui-pvr-stock` passes.
 - `pvr-stock.png` is the recorder candidate rendered with the real vendor
-  fonts (title font7, row/column font7; no stock reference exists).
+  fonts and the real recording icon (`tools/pvr-stock-check.sh`); no stock
+  reference exists.
 
 ## Limits
 

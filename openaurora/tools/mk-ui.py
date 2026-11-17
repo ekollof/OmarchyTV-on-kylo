@@ -146,13 +146,24 @@ def main() -> int:
         build_cards(out, Path(args.thumbs))
     else:
         print(f"no thumbnails at {args.thumbs}", file=sys.stderr)
-    channel_icon = Path(args.ui_assets) / "channel_small.png"
-    if channel_icon.exists():
-        icon = Image.open(channel_icon)
-        save_image(out / "channel_small.rgba", icon)
-        print(f"  channel_small.rgba  {icon.width}x{icon.height}")
-    else:
-        print(f"no channel icon at {channel_icon}", file=sys.stderr)
+    icons = [
+        "channel_small",
+        # PVR row indicators recovered from PlayListDialog::createComponents:
+        # 0x36 record_small, 0x116 right_arrow (new), 0x1e lock,
+        # 0x115 play_disallowed (playback), 0x114 exclamation (partial),
+        # 99 lost_signal plus 6/8 TV/radio for the service-type slot.
+        "icon_record_small", "icon_right_arrow", "icon_lock",
+        "icon_play_disallowed", "icon_exclamation_mark",
+        "icon_lost_signal", "icon_tv_small", "icon_radio_small",
+    ]
+    for name in icons:
+        path = Path(args.ui_assets) / f"{name}.png"
+        if path.exists():
+            icon = Image.open(path)
+            save_image(out / f"{name}.rgba", icon)
+            print(f"  {name}.rgba  {icon.width}x{icon.height}")
+        else:
+            print(f"no icon at {path}", file=sys.stderr)
 
     total = sum(p.stat().st_size for p in out.glob("*.rgba"))
     print(f"{len(list(out.glob('*.rgba')))} blobs, {total} bytes -> {out}")

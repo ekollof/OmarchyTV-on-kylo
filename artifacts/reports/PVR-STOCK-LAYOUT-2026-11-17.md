@@ -31,10 +31,34 @@ Panel `#DCDBDA`, header `#481730` at 9/10 (87,43,65), subheader `#010101` at
 step), row height 66; focus uses the theme orange `#FE9419` as a class/theme
 inference, not a record-692 fill.
 
-`PlayListDialog::init`/`redrawDialog` set the title from the `LIBRARY` key
-(Dutch "Bibliotheek"). `createTabButtons` makes five **action glyph** buttons
-(`HLP_PLAY_OPTIONS`, `HLP_EDIT`, `HLP_DELETE`, `HLP_SORT`, `SETTINGS`), not
-text tabs. `createComponents` names the row/column rectangles above.
+`PlayListDialog::init`/`redrawDialog` set the title from the `LIBRARY` key;
+the vendor Dutch translation is **"Opnamebibliotheek"** (verified through
+`common/langprofile.c`, not assumed). `SVGFullScreenListDialog::createComponents`
+sets the column titles from `NAME_TITLE`, `START_TITLE` and `DURATION_TITLE`
+(dut "Naam", "Start", **"Lengte"**). `createTabButtons` makes five **action
+glyph** buttons (`HLP_PLAY_OPTIONS`, `HLP_EDIT`, `HLP_DELETE`, `HLP_SORT`,
+`SETTINGS`), not text tabs.
+
+Row indicators map to image ids and record-692 rects:
+
+| indicator | rect | image id | shipped asset |
+|---|---|---:|---|
+| recordingIcon | 55,237 .. 91,273 | 0x36 (54) | `icon_record_small.png` |
+| newIcon | 93,237 .. 138,273 | 0x116 (278) | `icon_right_arrow.png` |
+| lockedIcon | 1793,237 .. 1829,273 | 0x1e (30) | `icon_lock.png` |
+| playbackIcon | 1833,237 .. 1869,273 | 0x115 (277) | `icon_play_disallowed.png` |
+| partialIcon | no rect in 692 | 0x114 (276) | `icon_exclamation_mark.png` |
+| serviceTypeIcon | 1735,236 .. 1791,283 | 99 / 6 / 8 | `icon_lost_signal`, `icon_tv_small`, `icon_radio_small` |
+
+Image ids are pack indices (`telefunken18_img.bin` is the concatenated PNG
+payload in index order). Only `recordingIcon` is painted, for
+`OA_PVR_RECORDING`; the other indicators need metadata (`new`, `locked`,
+`partial`, play-disallowed, TV/radio) that `OA_SVC_PVR` does not expose.
+
+`refreshSpaceUsage` uses `USED_SPACE_INFO_TITLE`, `RESERVED_SPACE_INFO_TITLE`
+and `FREE_SPACE_INFO_TITLE` plus `" MB"`/`" MB "` (dut "Gebruikte ruimte: ",
+"Gereserveerd: ", "Vrije ruimte: "). There is no disk-stat call in
+`OA_SVC_PVR`, so the values stay unpainted.
 
 ## Implementation
 
@@ -43,20 +67,24 @@ text tabs. `createComponents` names the row/column rectangles above.
   and invalid inputs.
 - `ui.pvr_stock=1` (default off), `ui.screen=pvr` or
   `portal.menu_action("open:pvr")`: a `SCREEN_PVR` list with the header,
-  `LIBRARY` title through `i18n` (fallback "Bibliotheek"), `Naam/Start/Duur`
-  columns, rows from `OA_SVC_PVR` (name, local start time, minutes), focus and
+  `LIBRARY` title and `NAME_TITLE/START_TITLE/DURATION_TITLE` columns through
+  `i18n` (fallbacks "Opnamebibliotheek" and "Naam/Start/Lengte"), rows from
+  `OA_SVC_PVR` (name, local start time, minutes), the red
+  `icon_record_small` indicator on recording rows, focus and
   Up/Down/Select/Exit.
-- `tests/ui_pvr_stock.c` adds two PVR reservations and checks the
-  panel/header/subheader/focus fills, text blits, Down focus and Exit;
-  `check-ui-pvr-stock` passes. The recorder candidate with the real vendor
-  fonts is `pvr-stock.png`.
+- `tests/ui_pvr_stock.c` adds two PVR reservations, sets the first to
+  recording, and checks the panel/header/subheader/focus fills, columns, the
+  recording icon blit at 55,237 36x36 (absent on the scheduled row), Down
+  focus and Exit; `check-ui-pvr-stock` passes. `tools/pvr-stock-check.sh`
+  renders the real-font/real-icon candidate `pvr-stock.png`.
 
 ## Limits and next step
 
 No stock PVR screen capture exists: the candidate is recorder evidence, not
-pixel parity or scanout. The action glyphs, new/recording/locked icons, disk
-space info, scrollbar art, exact focus style, sort/tab functions, synopsis
-(record 693) and stock entry path are not painted. The rows come from the
+pixel parity or scanout. The five action glyphs, new/tagged/locked/partial/
+playback/service-type indicators, disk space values, scrollbar art, exact
+focus style, sort/tab functions, synopsis (record 693) and stock entry path
+are not painted. The rows come from the
 project PVR reservation stub, not a recording engine or storage hardware. A
 stock PVR capture and the on-TV PVR backend remain open.
 

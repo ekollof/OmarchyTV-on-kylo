@@ -191,9 +191,12 @@ maps the cold-start stages and the current stock-UI coverage.
 - [ ] Stock vendor-UI screens: live launcher DB/icons, settings tabs, channel/
       EPG/PVR, app launch profile. `ui_omarchy` is not stock-UI parity. The
       live launcher DB path, gated stock channel screen and a first gated PVR
-      list (`ui.pvr_stock=1`, `common/pvr_layout.c`, `check-ui-pvr-stock`) exist.
-      The stock PVR capture/glyphs/icons/space/scrollbar, EPG and settings-tab
-      screens, stock channel key path/runtime feed remain open.
+      list (`ui.pvr_stock=1`, `common/pvr_layout.c`, `check-ui-pvr-stock`;
+      2026-11-17: i18n title/columns, recording-row icon from the recovered
+      id 0x36 and the icon id/rect map for the other indicators). The stock PVR
+      capture, action glyphs, other indicators, space values, scrollbar art,
+      EPG and settings-tab screens, stock channel key path/runtime feed remain
+      open.
 
 ## Scheduled takeover test queue (single session)
 

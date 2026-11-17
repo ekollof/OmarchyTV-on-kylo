@@ -314,12 +314,23 @@ PVR-STOCK-LAYOUT-2026-11-17: the stock PVR list is BinSVG 692
 (`DialogPlayList.svg`) with panel #DCDBDA, header #481730 at 9/10 (87,43,65),
 subheader #010101 at 3/10, rows 26,222 1860x66 pitch75, name/time/duration
 columns 181/815/1307 and five action-glyph tabs
-(HLP_PLAY_OPTIONS/EDIT/DELETE/SORT/SETTINGS). The title comes from the LIBRARY
-key (Bibliotheek). `common/pvr_layout.c` + `check-pvr-layout` encode/test the
-layout; a default-off `ui.pvr_stock=1` SCREEN_PVR lists OA_SVC_PVR rows
-(name/start/duration/focus) and `check-ui-pvr-stock` passes with a real-font
-recorder candidate. No stock PVR capture, glyph/icon/space/scrollbar art,
-recording engine or scanout; recorder evidence only.
+(HLP_PLAY_OPTIONS/EDIT/DELETE/SORT/SETTINGS). LIBRARY resolves to
+"Opnamebibliotheek" (dut, checked with common/langprofile.c) and the columns
+come from SVGFullScreenListDialog keys NAME_TITLE/START_TITLE/DURATION_TITLE
+(dut Naam/Start/Lengte). createComponents maps recordingIcon 55,237 to image
+0x36 (icon_record_small.png), newIcon 93,237 to 0x116 (icon_right_arrow),
+lockedIcon 1793,237 to 0x1e (icon_lock), playbackIcon 1833,237 to 0x115
+(icon_play_disallowed), partialIcon to 0x114 (icon_exclamation_mark, no rect
+in 692) and serviceTypeIcon 1735,236 to 99/6/8 (lost_signal/tv_small/
+radio_small). Only recordingIcon is painted, for OA_PVR_RECORDING.
+refreshSpaceUsage uses USED/RESERVED/FREE_SPACE_INFO_TITLE + " MB" (dut
+"Gebruikte ruimte: "/"Gereserveerd: "/"Vrije ruimte: ") but OA_SVC_PVR has no
+disk stats. `common/pvr_layout.c` + `check-pvr-layout` encode/test the layout;
+a default-off `ui.pvr_stock=1` SCREEN_PVR lists OA_SVC_PVR rows
+(name/start/length/recording icon/focus) and `check-ui-pvr-stock` passes with
+a real-font/real-icon recorder candidate. No stock PVR capture, action glyphs,
+other indicators, space values, scrollbar art, recording engine or scanout;
+recorder evidence only.
 
 PVR-MODULE-2026-11-05: the PVR service is now a real mod_pvr with a
 vendor-shaped backend boundary (integer recording id, start/stop, index query)

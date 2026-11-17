@@ -1624,11 +1624,18 @@ provisional screen remains default; live EASI, paging and scanout remain open.
 
 PVR-STOCK-LAYOUT-2026-11-17: `DialogPlayList.svg` (BinSVG 692) gives the stock
 PVR list (panel #DCDBDA, header #481730 9/10, rows 26,222 1860x66 pitch75,
-name/time/duration 181/815/1307, five action-glyph tabs, title LIBRARY).
-`common/pvr_layout.c` + `check-pvr-layout` pass; default-off `ui.pvr_stock=1`
-SCREEN_PVR lists OA_SVC_PVR rows and `check-ui-pvr-stock` passes (real-font
-candidate `pvr-stock.png`). No stock PVR capture, glyph/icon/space/scrollbar
-art, recording engine or scanout.
+name/time/duration 181/815/1307, five action-glyph tabs). LIBRARY ->
+"Opnamebibliotheek"; columns NAME_TITLE/START_TITLE/DURATION_TITLE ->
+Naam/Start/Lengte. createComponents ids: recording 0x36=54
+icon_record_small (rect 55,237), new 0x116=278 icon_right_arrow, locked
+0x1e=30 icon_lock, playback 0x115=277 icon_play_disallowed, partial 0x114=276
+icon_exclamation_mark (no rect in 692), serviceType 99/6/8. Only the recording
+icon is painted (OA_PVR_RECORDING). USED/RESERVED/FREE_SPACE_INFO_TITLE + " MB"
+recovered; no disk stats. `common/pvr_layout.c` + `check-pvr-layout` pass;
+default-off `ui.pvr_stock=1` SCREEN_PVR lists OA_SVC_PVR rows and
+`check-ui-pvr-stock` passes (real-font/real-icon candidate `pvr-stock.png`,
+`tools/pvr-stock-check.sh`). No stock PVR capture, action glyphs, other
+indicators, space values, scrollbar art, recording engine or scanout.
 
 PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary
 (integer recording id, start/stop, index query) with a persistent offline stub.

@@ -76,6 +76,34 @@ static void write_bytes(const char *path, const void *data, size_t size)
     assert(f && fwrite(data, 1, size, f) == size && !fclose(f));
 }
 
+static void make_icon(const char *dir, const char *name)
+{
+    char path[600];
+    snprintf(path, sizeof path, "%s/%s.rgba", dir, name);
+    unsigned char px[36 * 36 * 4];
+    for (size_t i = 0; i < sizeof px; i += 4) {
+        px[i] = 237; px[i + 1] = 28; px[i + 2] = 36; px[i + 3] = 255;
+    }
+    FILE *f = fopen(path, "wb");
+    assert(f);
+    const unsigned char hdr[12] = { 'O', 'A', 'I', '1', 36, 0, 0, 0, 36, 0, 0, 0 };
+    assert(fwrite(hdr, 1, sizeof hdr, f) == sizeof hdr);
+    assert(fwrite(px, 1, sizeof px, f) == sizeof px);
+    assert(!fclose(f));
+}
+
+static int find_blit(const oa_nav_trace *trace, int x, int y, int w, int h)
+{
+    int n = trace->blit_count();
+    for (int i = 0; i < n; ++i) {
+        int bx, by, bw, bh;
+        if (trace->blit_at(i, &bx, &by, &bw, &bh) == 0 &&
+            bx == x && by == y && bw == w && bh == h)
+            return 1;
+    }
+    return 0;
+}
+
 static void make_font(void)
 {
     unsigned char rec[4096];
@@ -130,8 +158,14 @@ int main(int argc, char **argv)
     snprintf(g_modules, sizeof g_modules, "%s", argv[1]);
     snprintf(g_tmp, sizeof g_tmp, "/tmp/oa-ui-pvr-stock-XXXXXX");
     assert(mkdtemp(g_tmp));
-    snprintf(g_ui_dir, sizeof g_ui_dir, "%s/ui", g_tmp);
-    assert(!mkdir(g_ui_dir, 0700));
+    const char *ui_env = getenv("OA_PVR_UI_DIR");
+    if (ui_env && *ui_env) {
+        snprintf(g_ui_dir, sizeof g_ui_dir, "%s", ui_env);
+    } else {
+        snprintf(g_ui_dir, sizeof g_ui_dir, "%s/ui", g_tmp);
+        assert(!mkdir(g_ui_dir, 0700));
+        make_icon(g_ui_dir, "icon_record_small");
+    }
     snprintf(g_pvr_path, sizeof g_pvr_path, "%s/pvr.db", g_tmp);
     const char *fi = getenv("OA_PVR_FONT_INDEX");
     const char *fp = getenv("OA_PVR_FONT_PACK");
@@ -168,6 +202,7 @@ int main(int argc, char **argv)
     req.end_ms += 7200000;
     snprintf(req.name, sizeof req.name, "Movie B");
     assert(pvr->add(&req, &id) == 0 && id);
+    assert(pvr->record(1) == 0);
     host.api.release(&host, OA_SVC_PVR);
 
     assert(!command(&host, "load ui_engine", out, sizeof out));
@@ -187,6 +222,10 @@ int main(int argc, char **argv)
     assert(find_fill(trace, l.row.x, l.row.y, l.row.x1 - l.row.x,
                      l.row_height, 254, 148, 25));
     assert(trace->blit_count() >= 10);
+    /* recordingIcon rect 55,237..91,273 (id 54 icon_record_small.png) is
+     * painted for the recording row only. */
+    assert(find_blit(trace, 55, 237, 36, 36));
+    assert(!find_blit(trace, 55, 312, 36, 36));
 
     oa_key_event down = { .id = 19, .kind = OA_KEY_PRESS };
     host.api.emit(&host, OA_TOPIC_KEY, &down);

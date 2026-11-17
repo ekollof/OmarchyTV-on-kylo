@@ -2263,19 +2263,32 @@ static void paint_pvr(struct ctx *c)
             l.subheader.y1 - l.subheader.y,
             l.subheader_rgb[0], l.subheader_rgb[1], l.subheader_rgb[2]);
 
+    /* Recovered language keys: PlayListDialog sets LIBRARY (dut
+     * "Opnamebibliotheek"); SVGFullScreenListDialog sets NAME_TITLE,
+     * START_TITLE and DURATION_TITLE (dut "Naam"/"Start"/"Lengte"). */
     const oa_i18n_iface *i18n = c->api->lookup(c->api->priv, OA_SVC_I18N, 1);
-    const char *title = i18n ? i18n->translate("LIBRARY", NULL) : "Bibliotheek";
+    const char *title = i18n ? i18n->translate("LIBRARY", NULL)
+                             : "Opnamebibliotheek";
     if (!title || !*title)
-        title = "Bibliotheek";
+        title = "Opnamebibliotheek";
     if (c->font_title_data)
         channel_text_at(c, &c->font_title, title, 176, 12, 255, 255, 255);
     else
         channel_text_at(c, &c->font, title, 176, 21, 255, 255, 255);
+    const char *name_title = i18n ? i18n->translate("NAME_TITLE", NULL) : "Naam";
+    const char *start_title = i18n ? i18n->translate("START_TITLE", NULL) : "Start";
+    const char *duration_title =
+        i18n ? i18n->translate("DURATION_TITLE", NULL) : "Lengte";
     if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
+    if (!name_title || !*name_title) name_title = "Naam";
+    if (!start_title || !*start_title) start_title = "Start";
+    if (!duration_title || !*duration_title) duration_title = "Lengte";
 
-    pvr_text(c, "Naam", l.title_name.x, l.title_name.y + 5, 255, 255, 255);
-    pvr_text(c, "Start", l.title_start.x, l.title_start.y + 5, 255, 255, 255);
-    pvr_text(c, "Duur", l.title_length.x, l.title_length.y + 5, 255, 255, 255);
+    pvr_text(c, name_title, l.title_name.x, l.title_name.y + 5, 255, 255, 255);
+    pvr_text(c, start_title, l.title_start.x, l.title_start.y + 5,
+             255, 255, 255);
+    pvr_text(c, duration_title, l.title_length.x, l.title_length.y + 5,
+             255, 255, 255);
 
     struct oa_pvr_job jobs[64];
     size_t total = 0;
@@ -2300,6 +2313,16 @@ static void paint_pvr(struct ctx *c)
         if (focused)
             d->fill(rr.x, rr.y, rr.x1 - rr.x, rr.y1 - rr.y,
                     l.focus_rgb[0], l.focus_rgb[1], l.focus_rgb[2]);
+        /* Row icon evidence: createComponents creates 0x36
+         * (icon_record_small.png, id 54) for the recordingIcon rect
+         * 55,237..91,273. Only the recording state is painted: the other
+         * indicators (new/tagged/locked/partial/playback) need recording
+         * metadata that OA_SVC_PVR does not expose yet. */
+        if (jobs[index].state == OA_PVR_RECORDING) {
+            const oa_ui_icon *rec = find_icon(c, "icon_record_small");
+            if (rec)
+                d->blit(l.row.x + 29, rr.y + 15, rec->w, rec->h, rec->rgba);
+        }
         char start[16] = "", duration[32] = "";
         time_t secs = (time_t)(jobs[index].start_ms / 1000);
         struct tm tm;

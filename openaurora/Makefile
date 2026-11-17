@@ -1875,6 +1875,10 @@ check-ui-pvr-stock: $(BUILD)/tests/ui_pvr_stock $(ui-pvr-stock-modules)
 	@$(BUILD)/tests/ui_pvr_stock $(ui-pvr-stock-modules)
 check: check-ui-pvr-stock
 
+.PHONY: check-ui-pvr-stock-capture
+check-ui-pvr-stock-capture: $(BUILD)/tests/ui_pvr_stock $(ui-pvr-stock-modules)
+	BUILD=$(abspath $(BUILD)) tools/pvr-stock-check.sh
+
 $(BUILD)/tests/channel_layout: tests/channel_layout.c common/channel_layout.c include/openaurora/channel_layout.h
 	@mkdir -p $(dir $@)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)

@@ -408,8 +408,14 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   name/time/duration 181/815/1307 and five action-glyph tabs
   (`HLP_PLAY_OPTIONS/EDIT/DELETE/SORT/SETTINGS`); title from `LIBRARY`.
   `common/pvr_layout.c` + `check-pvr-layout`; default-off `ui.pvr_stock=1`
-  lists `OA_SVC_PVR` rows (`check-ui-pvr-stock`). No stock capture or
-  glyph/space/scrollbar art; recorder only. Evidence: PVR-STOCK-LAYOUT.
+  lists `OA_SVC_PVR` rows (`check-ui-pvr-stock`). LIBRARY resolves to
+  "Opnamebibliotheek"; columns use NAME_TITLE/START_TITLE/DURATION_TITLE
+  (Naam/Start/Lengte). Row icons: recording 0x36 `icon_record_small` (painted
+  for OA_PVR_RECORDING), new 0x116, locked 0x1e, playback 0x115, partial
+  0x114 (no rect in 692), serviceType 99/6/8. USED/RESERVED/FREE_SPACE_INFO_TITLE
+  + " MB" recovered; no disk stats. No stock capture, action glyphs, other
+  indicators, space values or scrollbar art; recorder only.
+  Evidence: PVR-STOCK-LAYOUT.
 - Apps-grid focused labels use the firmware single-line centre rule
   (`physicalWidth` + first bearing, not the ink bbox):
   `common/apps_label.c` + `check-apps-label`. Stock Twitter ink is 919..999;
