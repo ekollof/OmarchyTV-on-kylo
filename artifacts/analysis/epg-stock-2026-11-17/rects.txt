@@ -1,0 +1,146 @@
+record 101: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1920,1080) stroke_w=1 opacity=10 stroke='#000000' fill='#FFFFFF'
+  tag=1 id='main_rectangle' eoff=45 rect=(0,0,1920,1080) stroke_w=0 opacity=10 stroke='' fill='none'
+  tag=2 id='' eoff=84
+  tag=1 id='' eoff=124 rect=(0,319,1920,1080) stroke_w=0 opacity=9 stroke='' fill='#BE1E2D'
+  tag=1 id='' eoff=152 rect=(560,43,562,163) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=1 id='' eoff=180 rect=(1438,43,1440,163) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=1 id='dialogTitle' eoff=208 rect=(164,21,560,75) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='serviceLogo' eoff=251 rect=(204,43,354,193) stroke_w=1 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='channelNumber' eoff=294 rect=(358,65,538,137) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='iconhd' eoff=339 rect=(522,98,558,134) stroke_w=1 opacity=10 stroke='#C5C9CD' fill='none'
+  tag=1 id='encryptedIcon' eoff=377 rect=(522,62,558,98) stroke_w=1 opacity=10 stroke='#C5C9CD' fill='none'
+  tag=1 id='eventTime' eoff=422 rect=(290,149,551,194) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='clockTextBox' eoff=463 rect=(1175,149,1434,194) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='channelName' eoff=507 rect=(590,9,1434,81) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='eventTitle' eoff=550 rect=(593,84,1437,144) stroke_w=2 opacity=10 stroke='#F7941E' fill='none'
+  tag=1 id='' eoff=592 rect=(0,264,1920,318) stroke_w=0 opacity=5 stroke='' fill='#010101'
+  tag=1 id='date' eoff=620 rect=(44,266,368,311) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='timeL' eoff=656 rect=(677,266,927,311) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='timeR' eoff=693 rect=(1713,266,1868,311) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='timeM' eoff=730 rect=(1196,266,1446,311) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='iconLeft' eoff=767 rect=(620,265,674,319) stroke_w=2 opacity=10 stroke='#009F93' fill='none'
+  tag=1 id='iconRight' eoff=807 rect=(1868,265,1922,319) stroke_w=2 opacity=10 stroke='#009F93' fill='none'
+  tag=1 id='EPGListBox' eoff=848 rect=(3,319,1920,1043) stroke_w=0 opacity=10 stroke='' fill='#C5C9CD'
+  tag=1 id='EPGServiceListBox' eoff=886 rect=(0,319,640,1043) stroke_w=2 opacity=10 stroke='#231F20' fill='#FFFFFF'
+  tag=1 id='noChannelsMatchFilterText' eoff=938 rect=(62,330,808,384) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='tabButton1' eoff=995 rect=(206,198,506,257) stroke_w=2 opacity=10 stroke='#FF0000' fill='none'
+  tag=1 id='tabButton2' eoff=1037 rect=(508,198,808,257) stroke_w=2 opacity=10 stroke='#FF0000' fill='none'
+  tag=1 id='tabButton3' eoff=1079 rect=(810,198,1110,257) stroke_w=2 opacity=10 stroke='#FF0000' fill='none'
+  tag=1 id='tabButton4' eoff=1121 rect=(1112,198,1412,257) stroke_w=2 opacity=10 stroke='#FF0000' fill='none'
+  tag=1 id='tabButton5' eoff=1163 rect=(1414,198,1714,257) stroke_w=2 opacity=10 stroke='#FF0000' fill='none'
+  tag=1 id='logo' eoff=1205 rect=(1489,44,1873,152) stroke_w=1 opacity=10 stroke='#A0A0A0' fill='none'
+  tag=1 id='eventSecondaryTitle' eoff=1241 rect=(592,150,1168,195) stroke_w=1 opacity=10 stroke='#A0A0A0' fill='none'
+record 102: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1920,1080) stroke_w=1 opacity=10 stroke='#000000' fill='#FFFFFF'
+  tag=1 id='main_rectangle' eoff=45 rect=(0,0,1920,1080) stroke_w=0 opacity=10 stroke='' fill='none'
+  tag=2 id='' eoff=84
+  tag=1 id='' eoff=124 rect=(0,264,1920,571) stroke_w=0 opacity=5 stroke='' fill='#010101'
+  tag=1 id='' eoff=152 rect=(0,570,1920,1080) stroke_w=0 opacity=9 stroke='' fill='#BE1E2D'
+  tag=1 id='date' eoff=180 rect=(44,518,368,562) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='timeM' eoff=216 rect=(1196,519,1446,563) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='iconRight' eoff=253 rect=(1866,516,1920,570) stroke_w=2 opacity=10 stroke='#009F93' fill='none'
+  tag=1 id='EPGListBox' eoff=294 rect=(0,570,1920,1077) stroke_w=0 opacity=10 stroke='' fill='#C5C9CD'
+  tag=1 id='EPGServiceListBox' eoff=332 rect=(0,572,640,994) stroke_w=2 opacity=10 stroke='#231F20' fill='#C5C9CD'
+  tag=1 id='noChannelsMatchFilterText' eoff=384 rect=(63,576,809,630) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='eventImage' eoff=441 rect=(62,299,382,479) stroke_w=1 opacity=10 stroke='#FFFFFF' fill=''
+  tag=1 id='eventText' eoff=479 rect=(429,273,1882,512) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='timeR' eoff=520 rect=(1713,519,1868,563) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='timeL' eoff=557 rect=(677,519,927,563) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='iconLeft' eoff=594 rect=(620,517,674,571) stroke_w=2 opacity=10 stroke='#009F93' fill='none'
+  tag=1 id='' eoff=634 rect=(1438,43,1440,163) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=1 id='' eoff=662 rect=(560,43,562,163) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=1 id='dialogTitle' eoff=690 rect=(164,21,560,75) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='tabButton1' eoff=733 rect=(206,198,506,257) stroke_w=2 opacity=10 stroke='#FF0000' fill='none'
+  tag=1 id='tabButton2' eoff=775 rect=(508,198,808,257) stroke_w=2 opacity=10 stroke='#FF0000' fill='none'
+  tag=1 id='tabButton3' eoff=817 rect=(810,198,1110,257) stroke_w=2 opacity=10 stroke='#FF0000' fill='none'
+  tag=1 id='tabButton4' eoff=859 rect=(1112,198,1412,257) stroke_w=2 opacity=10 stroke='#FF0000' fill='none'
+  tag=1 id='tabButton5' eoff=901 rect=(1414,198,1714,257) stroke_w=2 opacity=10 stroke='#FF0000' fill='none'
+  tag=1 id='serviceLogo' eoff=943 rect=(204,43,354,193) stroke_w=1 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='channelNumber' eoff=986 rect=(358,65,538,137) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='iconhd' eoff=1031 rect=(522,98,558,134) stroke_w=1 opacity=10 stroke='#C5C9CD' fill='none'
+  tag=1 id='encryptedIcon' eoff=1069 rect=(522,62,558,98) stroke_w=1 opacity=10 stroke='#C5C9CD' fill='none'
+  tag=1 id='eventTime' eoff=1114 rect=(290,149,551,194) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='logo' eoff=1155 rect=(1489,44,1873,152) stroke_w=1 opacity=10 stroke='#A0A0A0' fill='none'
+  tag=1 id='clockTextBox' eoff=1191 rect=(1175,149,1434,194) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='channelName' eoff=1235 rect=(590,9,1434,81) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='eventTitle' eoff=1278 rect=(593,84,1437,144) stroke_w=2 opacity=10 stroke='#F7941E' fill='none'
+  tag=1 id='eventDuration' eoff=1320 rect=(76,472,396,517) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='eventSecondaryTitle' eoff=1365 rect=(592,150,1168,195) stroke_w=1 opacity=10 stroke='#A0A0A0' fill='none'
+record 346: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='gTopL' eoff=38
+  tag=6 id='mTopL' eoff=45
+  tag=9 id='(null)' eoff=74
+  tag=8 id='gTopR' eoff=75
+  tag=6 id='mTopR' eoff=82
+  tag=9 id='(null)' eoff=111
+  tag=8 id='gTopM' eoff=112
+  tag=6 id='mTopM' eoff=119
+  tag=9 id='(null)' eoff=160
+  tag=8 id='gRowL' eoff=161
+  tag=1 id='mRowL' eoff=168 rect=(236,178,236,254) stroke_w=0 opacity=10 stroke='' fill='none'
+  tag=9 id='(null)' eoff=198
+  tag=8 id='gRowR' eoff=199
+  tag=1 id='mRowR' eoff=206 rect=(330,178,330,254) stroke_w=0 opacity=10 stroke='' fill='none'
+  tag=9 id='(null)' eoff=236
+  tag=8 id='gRowM' eoff=237
+  tag=1 id='mRowM' eoff=244 rect=(242,178,323,254) stroke_w=0 opacity=10 stroke='' fill='none'
+  tag=1 id='rowPos' eoff=274 rect=(242,178,323,254) stroke_w=0 opacity=10 stroke='' fill='none'
+  tag=9 id='(null)' eoff=305
+  tag=8 id='gBotL' eoff=306
+  tag=6 id='mBotL' eoff=313
+  tag=9 id='(null)' eoff=342
+  tag=8 id='gBotR' eoff=343
+  tag=6 id='mBotR' eoff=350
+  tag=9 id='(null)' eoff=379
+  tag=8 id='gBotM' eoff=380
+  tag=6 id='mBotM' eoff=387
+  tag=9 id='(null)' eoff=416
+record 348: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='' eoff=38
+  tag=8 id='gRowL' eoff=40
+  tag=1 id='mRowL' eoff=47 rect=(33,69,63,145) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=84 rect=(33,69,63,145) stroke_w=0 opacity=2 stroke='' fill='#010101'
+  tag=9 id='(null)' eoff=112
+  tag=8 id='gRowR' eoff=113
+  tag=1 id='mRowR' eoff=120 rect=(165,69,195,145) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=157 rect=(165,69,195,145) stroke_w=0 opacity=2 stroke='' fill='#010101'
+  tag=9 id='(null)' eoff=185
+  tag=8 id='gRowM' eoff=186
+  tag=1 id='mRowM' eoff=193 rect=(66,69,162,145) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=230 rect=(66,69,162,145) stroke_w=0 opacity=2 stroke='' fill='#010101'
+  tag=9 id='(null)' eoff=258
+  tag=9 id='(null)' eoff=259
+record 352: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='gTopL' eoff=38
+  tag=1 id='mTopL' eoff=45 rect=(1,1,3,3) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=82
+  tag=8 id='gTopR' eoff=83
+  tag=1 id='mTopR' eoff=90 rect=(55,1,57,3) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=127
+  tag=8 id='gRowL' eoff=128
+  tag=1 id='mRowL' eoff=135 rect=(1,8,3,43) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='alignment' eoff=172 rect=(1,8,3,43) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=213
+  tag=8 id='gRowM' eoff=214
+  tag=1 id='mRowM' eoff=221 rect=(9,8,49,43) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='textPos' eoff=258 rect=(7,-2,47,43) stroke_w=1 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=9 id='(null)' eoff=297
+  tag=8 id='gRowR' eoff=298
+  tag=1 id='mRowR' eoff=305 rect=(55,8,57,43) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=342
+  tag=8 id='gBotL' eoff=343
+  tag=1 id='mBotL' eoff=350 rect=(1,46,3,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=387
+  tag=8 id='gBotM' eoff=388
+  tag=1 id='mBotM' eoff=395 rect=(9,46,49,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=432
+  tag=8 id='gBotR' eoff=433
+  tag=1 id='mBotR' eoff=440 rect=(55,46,57,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=477
+  tag=8 id='gTopM' eoff=478
+  tag=1 id='mTopM' eoff=485 rect=(10,1,50,3) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=522

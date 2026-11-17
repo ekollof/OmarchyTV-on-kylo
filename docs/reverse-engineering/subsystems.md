@@ -403,6 +403,16 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   capture's 134, 1 px edge). Tabs use captured ink anchors and the 1 px border
   (MAE8 0.132), subtitle font 5. Live EASI, paging and scanout remain open.
   Evidence: CHANNEL-LIST-GEOMETRY.
+- Stock EPG timeline: `DialogEPG.svg` (BinSVG 101) with
+  `MultiServiceTimelineScheduleDialog`: title key `PROGRAM_GUIDE`, date
+  `<weekday-short> %02u/%02u/%u`, start/middle/end `%02u:%02u`; list
+  3,319..1920,1043 split at 644 into the service column and timeline (width
+  1276); event `x = width*(start-windowStart)/interval` with a 7200 s default
+  window (zoom 3600..14400). `common/epg_layout.c` + `check-epg-layout`; a
+  default-off `ui.epg_stock=1` renders chrome/i18n/rows/bars, rows only under
+  an explicit `ui.epg_row_pitch` (`check-ui-epg-stock`). Header fill is a
+  family inference; no stock capture, glyphs/icons/live EIT/scanout.
+  Evidence: EPG-STOCK-LAYOUT.
 - Stock PVR list: `DialogPlayList.svg` (BinSVG 692) panel 0,0,1920,1080
   `#DCDBDA`, header 0,0,1921,162 `#481730` 9/10, rows 26,222 1860x66 pitch75,
   name/time/duration 181/815/1307 and five action-glyph tabs

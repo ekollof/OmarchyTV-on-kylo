@@ -194,9 +194,16 @@ maps the cold-start stages and the current stock-UI coverage.
       list (`ui.pvr_stock=1`, `common/pvr_layout.c`, `check-ui-pvr-stock`;
       2026-11-17: i18n title/columns, recording-row icon from the recovered
       id 0x36 and the icon id/rect map for the other indicators). The stock PVR
-      capture, action glyphs, other indicators, space values, scrollbar art,
-      EPG and settings-tab screens, stock channel key path/runtime feed remain
-      open.
+      capture, action glyphs, other indicators, space values, scrollbar art
+      and the settings-tab screen remain open. 2026-11-17: the stock EPG
+      timeline is recovered (`common/epg_layout.c`, `check-epg-layout`) and a
+      default-off `ui.epg_stock=1` SCREEN_EPG paints chrome/i18n
+      title/date/times/service rows/OA_SVC_EPG bars, with rows only under an
+      explicit `ui.epg_row_pitch`; `check-ui-epg-stock` passes and a Dutch
+      real-font candidate `epg-stock.png` exists. Open: EPG stock capture,
+      header fill (family inference), tab glyphs/icons, event-button art,
+      selection/synopsis/day navigation/filters, runtime row pitch, live EIT,
+      the stock channel key path/runtime feed and scanout.
 
 ## Scheduled takeover test queue (single session)
 

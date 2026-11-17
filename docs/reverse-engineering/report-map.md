@@ -320,6 +320,7 @@ superseded claims and descriptions.
 - [EPG-NOWNEXT](../../artifacts/reports/EPG-NOWNEXT-2026-11-05.md)
 - [EPG-PERSISTENCE](../../artifacts/reports/EPG-PERSISTENCE-2026-11-05.md)
 - [EPG-QUIESCE](../../artifacts/reports/EPG-QUIESCE-2026-11-06.md)
+- [EPG-STOCK-LAYOUT](../../artifacts/reports/EPG-STOCK-LAYOUT-2026-11-17.md)
 - [PVR-CONFLICT-STATE](../../artifacts/reports/PVR-CONFLICT-STATE-2026-11-05.md)
 - [PVR-MODULE](../../artifacts/reports/PVR-MODULE-2026-11-05.md)
 - [PVR-QUIESCE](../../artifacts/reports/PVR-QUIESCE-2026-11-06.md)

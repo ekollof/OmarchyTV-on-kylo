@@ -1637,6 +1637,21 @@ default-off `ui.pvr_stock=1` SCREEN_PVR lists OA_SVC_PVR rows and
 `tools/pvr-stock-check.sh`). No stock PVR capture, action glyphs, other
 indicators, space values, scrollbar art, recording engine or scanout.
 
+EPG-STOCK-LAYOUT-2026-11-17: DialogEPG.svg (BinSVG 101) and
+MultiServiceTimelineScheduleDialog give the EPG timeline: title PROGRAM_GUIDE
+("Programmagids"), date "<weekday-short> %02u/%02u/%u", start/middle/end
+"%02u:%02u"; list 3,319..1920,1043 split at service.x1 = list.x + 640 + 1 ->
+service column 3..644 and timeline 644..1920 (width 1276). Event bars:
+x = width*(start-windowStart)/interval, x1 clamped, interval default 7200 s
+(zoom 3600..14400). Five glyph tabs (NOW_NEXT_SCHEDULE/HLP_FILTER/
+PREVIOUS_DAY/NEXT_DAY/EXTRAS). `common/epg_layout.c` + `check-epg-layout`
+pass; default-off `ui.epg_stock=1` SCREEN_EPG paints chrome, i18n
+title/date/times, service rows and OA_SVC_EPG bars, with rows only under an
+explicit ui.epg_row_pitch (runtime step not pinned). `check-ui-epg-stock`
+passes; real-font Dutch candidate epg-stock.png. Header fill is a family
+inference; tab glyphs/icons/event art/selection/synopsis/live EIT/scanout
+open. Recorder only.
+
 PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary
 (integer recording id, start/stop, index query) with a persistent offline stub.
 mod_pvr reads pvr.path, atomically stores up to 256 jobs, assigns monotonic ids,

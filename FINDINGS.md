@@ -332,6 +332,27 @@ a real-font/real-icon recorder candidate. No stock PVR capture, action glyphs,
 other indicators, space values, scrollbar art, recording engine or scanout;
 recorder evidence only.
 
+EPG-STOCK-LAYOUT-2026-11-17: the multi-service EPG is
+MultiServiceTimelineScheduleDialog (internal EPGTimeline) over DialogEPG.svg
+(BinSVG 101). PROGRAM_GUIDE -> "Programmagids"; date
+"<weekday-short> %02u/%02u/%u" and start/middle/end "%02u:%02u" from
+TimeDateServices. createServiceList splits the list at service.x1 =
+list.x + EPGServiceListBox.width + 1 -> service column 3..644, timeline
+644..1920,319..1043 (width 1276). ServiceTimelineBox::createButton computes
+x = width*(eventStart-windowStart)/interval and x1 clamped to width, in
+seconds; ListTimelineBox zoom steps 3600..14400 s with an initialized 7200 s
+default. The five tabs are glyph actions (NOW_NEXT_SCHEDULE, HLP_FILTER,
+PREVIOUS_DAY, NEXT_DAY, EXTRAS). `common/epg_layout.c` + `check-epg-layout`
+encode/test the rects, split, spans, instant x, explicit-pitch rows and tabs.
+A default-off `ui.epg_stock=1` SCREEN_EPG paints the chrome, i18n
+title/date/times, service rows and OA_SVC_EPG bars; rows paint only with an
+explicit ui.epg_row_pitch because SVGListBoxBase::rowHeight is art-derived and
+not pinned. `check-ui-epg-stock` passes and the real-font Dutch candidate is
+epg-stock.png. The top-band header fill is a full-screen-family inference
+(#481730) pending a capture; tab glyphs/icons, event-button art, selection,
+synopsis, day navigation, live EIT and scanout remain open. Recorder evidence
+only.
+
 PVR-MODULE-2026-11-05: the PVR service is now a real mod_pvr with a
 vendor-shaped backend boundary (integer recording id, start/stop, index query)
 and a persistent offline stub. pvr.path stores up to 256 jobs atomically with
