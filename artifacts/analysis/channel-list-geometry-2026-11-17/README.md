@@ -83,16 +83,22 @@ and compares against `p0-04-channel-list-corrected.png`:
 
 | region | MAE8 |
 |---|---:|
-| panel | 2.750 |
+| panel | 2.671 |
+| list | 2.510 |
 | focus row | 1.510 |
 | row 2 | 2.581 |
+| scrollbar | 8.319 (1 px edge/antialias) |
 
 `stock-mode.png` is the candidate and `stock-mode-compare.txt` the full
 metrics. The header icon is the theme `channel_small.png` (60x60, ink 2,9..58,57)
 drawn at 30,14; it is staged into `ui.dir` by `mk-ui.py` and by the check
-script. The remaining panel difference is the missing scrollbar and
-tab/subtitle raster edges (banner MAE8 3.78, tabs 5.75); the row geometry/colour
-and text anchors match the capture. This is a recorder
+script. The listbox `createScrollBars` (0x010bbd38) and the 20+16 px skin caps give an
+11-visible-row window at x768..771, y195..1011 (816 px) with min bar 36. The
+67-row capture list yields a 133 px bar by the shipped integer formula; the
+white-threshold capture grip is 134 px at y196, a 1 px edge/antialias
+difference. The bar is drawn at x768..770 and improved panel MAE8 from 2.750 to
+2.671 (list 2.543 -> 2.510). The remaining banner/tab error is the tab/subtitle
+raster edges (3.78/5.75); rows, colours and text anchors match. This is a recorder
 comparison, not fb1/scanout proof.
 
 ## Scrollbar skin and capture grip (2026-11-17)

@@ -3,6 +3,8 @@
  * scanout evidence. */
 #include "host.h"
 #include "openaurora/channels.h"
+#include "openaurora/channel_layout.h"
+#include "openaurora/svg_scrollbar.h"
 #include "openaurora/events.h"
 #include "openaurora/services.h"
 #include "openaurora/ui_engine.h"
@@ -93,11 +95,17 @@ static void make_db(const char *path)
         "C12", "C07", "BBC2", "C21", "CHANNEL 4", "C04", "C39", "C43",
         "BBC1", "S15", "ZDF"
     };
-    for (int i = 0; i < 11; i++) {
-        char sql[512];
+    /* The p0/04 list has 67 services with 11 visible rows; the extra rows are
+     * below the window and only size the scrollbar. */
+    for (int i = 0; i < 67; i++) {
+        char name[32], sql[512];
+        if (i < 11)
+            snprintf(name, sizeof name, "%s", names[i]);
+        else
+            snprintf(name, sizeof name, "CH%02d", i + 1);
         snprintf(sql, sizeof sql,
             "INSERT INTO AnalogSerTable VALUES(%d,%d,0,0,0,0,0,0,'%s','P');",
-            i + 1, i + 1, names[i]);
+            i + 1, i + 1, name);
         exec(db, sql);
     }
     assert(sqlite3_close(db) == SQLITE_OK);
@@ -265,6 +273,19 @@ int main(int argc, char **argv)
     assert(find_fill(trace, 516, 100, 250, 59, 193, 71, 83));
     assert(find_fill(trace, 19, 195, 748, 66, 254, 148, 25));
     assert(find_blit(trace, 30, 14, 60, 60));
+    oa_channel_layout layout;
+    assert(oa_channel_layout_default(&layout) == 0);
+    struct oa_svg_scrollbar_state sb;
+    memset(&sb, 0, sizeof sb);
+    sb.total = 67;
+    sb.visible = 11;
+    sb.first = 0;
+    sb.min_bar = layout.scroll_min_bar;
+    oa_svg_scrollbar_calculate(&sb, layout.scroll.y1 - layout.scroll.y);
+    assert(sb.bar_size > 0);
+    assert(find_fill(trace, layout.scroll.x, layout.scroll.y + sb.bar_pos,
+                     layout.scroll.x1 - layout.scroll.x, sb.bar_size,
+                     255, 255, 255));
     assert(trace->blit_count() >= 20);
 
     const char *capture = getenv("OA_CHANNELS_STOCK_CAPTURE");

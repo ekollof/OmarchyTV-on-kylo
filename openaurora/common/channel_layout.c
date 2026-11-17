@@ -24,6 +24,14 @@ int oa_channel_layout_default(oa_channel_layout *out)
     out->row_height = 66;
     out->row_text_height = 34;
     out->focus_text_height = 40;
+    out->list_top_inset = 16;
+    out->list_bottom_inset = 10;
+    out->scroll_min_bar = 36;
+    /* SVGListBoxBase::createScrollBars 0x010bbd38:
+     * top=+0x1fc, height=(visible-1)*step+rowHeight; x/width are the listbox
+     * scroll column (capture 768..771). visible is 11 below. */
+    out->scroll = (oa_channel_rect){ 768, 195, 771,
+        out->row.y + (11 - 1) * out->row_pitch + out->row_height };
 
     const uint8_t panel[3] = { 190, 30, 45 };      /* #BE1E2D */
     const uint8_t banner[3] = { 178, 29, 43 };     /* #811924 @ 2/10 */
@@ -74,8 +82,9 @@ int oa_channel_visible_rows(const oa_channel_layout *layout)
 {
     if (!layout || layout->row_pitch <= 0)
         return -EINVAL;
-    if (layout->row.y >= layout->panel.y1)
+    int usable = (layout->list.y1 - layout->list.y) -
+                 layout->list_top_inset - layout->list_bottom_inset;
+    if (usable <= 0)
         return 0;
-    return (layout->panel.y1 - layout->row.y + layout->row_pitch - 1) /
-           layout->row_pitch;
+    return usable / layout->row_pitch;
 }

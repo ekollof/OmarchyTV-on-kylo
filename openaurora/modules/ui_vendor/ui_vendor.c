@@ -2142,8 +2142,10 @@ static void paint_channels_stock(struct ctx *c)
         c->chan_sel = 0;
     else if (c->chan_sel >= (int)total)
         c->chan_sel = (int)total - 1;
-    int first = c->chan_sel >= 12 ? c->chan_sel - 11 : 0;
-    for (int row = 0; row < 12 && first + row < (int)total; row++) {
+    int visible = oa_channel_visible_rows(&l);
+    if (visible < 1) visible = 1;
+    int first = c->chan_sel >= visible ? c->chan_sel - (visible - 1) : 0;
+    for (int row = 0; row < visible && first + row < (int)total; row++) {
         oa_channel_rect rr;
         if (oa_channel_row_rect(&l, row, &rr) != 0)
             break;
@@ -2195,6 +2197,21 @@ static void paint_channels_stock(struct ctx *c)
             d->blit(754 - w, rr.y + (rr.y1 - rr.y - h) / 2, w, h, crop);
             free(crop);
         }
+    }
+    /* SVGListBoxBase::createScrollBars 0x010bbd38 + SVGScrollBar
+     * calculateBarSizeAndPosition 0x010c3af0: the window is 768..771 x
+     * 195..1011 (11 visible rows, min bar 36 from the 20+16 px caps). */
+    if (total > (size_t)visible) {
+        struct oa_svg_scrollbar_state st;
+        memset(&st, 0, sizeof st);
+        st.total = (int32_t)total;
+        st.visible = visible;
+        st.first = first;
+        st.min_bar = l.scroll_min_bar;
+        oa_svg_scrollbar_calculate(&st, l.scroll.y1 - l.scroll.y);
+        if (st.bar_size > 0)
+            d->fill(l.scroll.x, l.scroll.y + st.bar_pos,
+                    l.scroll.x1 - l.scroll.x, st.bar_size, 255, 255, 255);
     }
     if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
     if (channels) c->api->release(c->api->priv, OA_SVC_CHANNELS);

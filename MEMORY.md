@@ -1607,19 +1607,20 @@ supersede the old "capture absent" note; see STOCK-APPS-GRID-PARITY.)
 2026-11-17 CHANNEL-LIST-GEOMETRY: the p0/04 capture plus BinSVG 80
 (`DialogAdvancedChannelList.svg`) give panel 0,0,780,1080, banner 0,0,780,162,
 tabs 12..262/264..514/516..766 y100..159, filterInfo 123,50,766,95, list
-19,179,769,1090, rows 19,195 748x66 pitch75 (12 starts), focus #FE9419 with
+19,179,769,1090, rows 19,195 748x66 pitch75 (11 visible), focus #FE9419 with
 40 px #7E000A number/name and 34 px white normal text. `common/channel_layout.c`
 + `check-channel-layout` pass. 2026-11-17: default-off `ui.channels_stock=1`
 paints the stock screen with vendor font records 7/12/4/16/18/1;
 `check-ui-channels-stock` and `check-ui-channels-stock-capture` pass, the
-latter at panel MAE8 2.750/focus 1.510/row2 2.581 against the corrected p0/04
+latter at panel MAE8 2.671/list 2.510/focus 1.510/row2 2.581/scrollbar 8.319
+against the corrected p0/04
 capture. The `channel_small` header icon is drawn/staged, Up/Down/Select/Exit
 is tested, portal rail 3 (monitor/Zenders) opens the screen only with `ui.channels_stock=1`; the default rail path is unchanged, and the renderer/
 input prefer the ingested runtime active list (3-entry test -> Runtime A). The
-scrollbar skin caps (20+16, min 36) and calculateBarSizeAndPosition are
-recovered; the channel track/total is not pinned. The provisional screen
-remains default; scrollbar wiring, exact tab anchors, live EASI and scanout
-remain open.
+scrollbar is wired from createScrollBars (768..771 x 195..1011, 11 visible,
+min 36); the 67-row fixture yields 133 px (capture 134, 1 px edge). The
+provisional screen remains default; exact tab/subtitle anchors, live EASI and
+scanout remain open.
 
 PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary
 (integer recording id, start/stop, index query) with a persistent offline stub.

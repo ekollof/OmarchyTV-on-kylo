@@ -34,10 +34,14 @@ typedef struct {
     oa_channel_rect tabs[3]; /* watch, edit, filter */
     oa_channel_rect list, logo;
     oa_channel_rect row;     /* capture-derived first row surface */
+    oa_channel_rect scroll;  /* listbox scrollbar window x768..771, y195..1011 */
     int row_pitch;           /* capture-derived */
     int row_height;
     int row_text_height;     /* capture: unfocused ink is 34 px high */
     int focus_text_height;   /* capture: focused ink is 40 px high */
+    int list_top_inset;      /* listbox mTopM height */
+    int list_bottom_inset;   /* listbox mBotM height */
+    int scroll_min_bar;      /* scrollbarFA bar caps 20+16 */
     uint8_t panel_rgb[3], banner_rgb[3];
     uint8_t tab_rgb[3], tab_selected_rgb[3];
     uint8_t focus_rgb[3], text_rgb[3], focus_text_rgb[3], muted_rgb[3];
@@ -56,9 +60,10 @@ int oa_channel_tab_at(const oa_channel_layout *layout, int x, int y);
 int oa_channel_row_rect(const oa_channel_layout *layout, int index,
                         oa_channel_rect *out);
 
-/* Rows whose top starts inside the panel. For the recovered geometry this is
- * 12 (row 11 is partially clipped by the 1080 px panel). Returns -EINVAL for
- * NULL. */
+/* Visible rows from the listbox insets and row step:
+ *   ((list.y1-list.y) - top_inset - bottom_inset) / row_pitch
+ * For the recovered geometry this is 11. The 12th row starts below the
+ * listbox visible window and is not painted. Returns -EINVAL for NULL. */
 int oa_channel_visible_rows(const oa_channel_layout *layout);
 
 #ifdef __cplusplus

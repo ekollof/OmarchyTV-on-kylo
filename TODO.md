@@ -2354,10 +2354,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       drawn/staged, Up/Down/Select/Exit is tested, portal rail 3
       (monitor/Zenders) opens the screen, and the stock renderer/input prefer
       the ingested runtime active list (3-entry test -> Runtime A). The
-      scrollbar skin caps (20+16, min36) and calculateBarSizeAndPosition are
-      recovered but the channel track/total is not pinned. The provisional
-      screen remains default. Open: live EASI LCN/visibility, scrollbar wiring,
-      exact tab anchors, scrolling/paging, tuner/EPG/PVR and scanout.
+      scrollbar is wired from createScrollBars (768..771 x 195..1011, 11
+      visible, min36); the 67-row fixture gives a 133 px bar (capture 134, 1 px
+      edge) and panel MAE8 2.671. The provisional screen remains default. Open:
+      live EASI LCN/visibility, exact tab anchors, paging, tuner/EPG/PVR and
+      scanout.
 - [ ] Apps/browser/media integration, picture quality/FRC, network and Bluetooth.
 - [ ] Tuner/DVB-T/DVB-S, EPG/service lists, teletext/MHEG/interactive TV, PVR/
       timeshift/playback, CI+/conditional access and associated persistence.

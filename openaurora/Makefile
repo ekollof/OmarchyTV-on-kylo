@@ -1844,9 +1844,9 @@ check-ui-channels: $(BUILD)/tests/ui_channels $(BUILD)/tests/ui_nav_display.so $
 	@$(BUILD)/tests/ui_channels $(ui-channels-modules)
 check: check-ui-channels
 
-$(BUILD)/tests/ui_channels_stock: tests/ui_channels_stock.c tests/ui_nav_trace.h core/host.h include/openaurora/services.h include/openaurora/ui_engine.h $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
+$(BUILD)/tests/ui_channels_stock: tests/ui_channels_stock.c tests/ui_nav_trace.h core/host.h include/openaurora/services.h include/openaurora/ui_engine.h include/openaurora/channel_layout.h include/openaurora/svg_scrollbar.h common/channel_layout.c common/svg_scrollbar.c $(filter-out $(BUILD)/core/main.o,$(CORE_OBJ))
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests -Ithird_party $(LDFLAGS) -o $@ tests/ui_channels_stock.c $(filter %.o,$^) $(LDLIBS) \
+	$(CC) $(CPPFLAGS) $(CFLAGS) -Icore -Itests -Ithird_party $(LDFLAGS) -o $@ tests/ui_channels_stock.c common/channel_layout.c common/svg_scrollbar.c $(filter %.o,$^) $(LDLIBS) \
 	  $(if $(filter tv,$(TARGET)),-L$(VENDOR_LIB)) $(SQLITE_LIBS)
 
 .PHONY: check-ui-channels-stock

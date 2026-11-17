@@ -32,6 +32,9 @@ int main(void)
     rect_eq(&l.row, 19, 195, 767, 261);
     assert(l.row_pitch == 75 && l.row_height == 66);
     assert(l.row_text_height == 34 && l.focus_text_height == 40);
+    assert(l.list_top_inset == 16 && l.list_bottom_inset == 10);
+    assert(l.scroll_min_bar == 36);
+    rect_eq(&l.scroll, 768, 195, 771, 1011);
     assert(l.panel_rgb[0] == 190 && l.panel_rgb[1] == 30 && l.panel_rgb[2] == 45);
     assert(l.banner_rgb[0] == 178 && l.banner_rgb[1] == 29 &&
            l.banner_rgb[2] == 43);
@@ -54,20 +57,22 @@ int main(void)
     assert(oa_channel_tab_at(&l, 137, 159) == -1);
     assert(oa_channel_tab_at(NULL, 0, 0) == -1);
 
-    /* Row arithmetic: 75 px pitch, 66 px row, 12 starts inside the panel.
-     * Row 11 extends past 1080 and is the caller's clip responsibility. */
+    /* Row arithmetic: 75 px pitch, 66 px row. The listbox insets give 11
+     * visible rows; row 11 starts below the visible window (createScrollBars). */
     oa_channel_rect r;
     assert(oa_channel_row_rect(&l, 0, &r) == 0);
     rect_eq(&r, 19, 195, 767, 261);
     assert(oa_channel_row_rect(&l, 1, &r) == 0);
     rect_eq(&r, 19, 270, 767, 336);
+    assert(oa_channel_row_rect(&l, 10, &r) == 0);
+    rect_eq(&r, 19, 945, 767, 1011);
     assert(oa_channel_row_rect(&l, 11, &r) == 0);
-    rect_eq(&r, 19, 1020, 767, 1086);
+    rect_eq(&r, 19, 1020, 767, 1086); /* arithmetic row, not visible */
     assert(oa_channel_row_rect(&l, 12, &r) == -ERANGE);
     assert(oa_channel_row_rect(&l, -1, &r) == -EINVAL);
     assert(oa_channel_row_rect(NULL, 0, &r) == -EINVAL);
     assert(oa_channel_row_rect(&l, 0, NULL) == -EINVAL);
-    assert(oa_channel_visible_rows(&l) == 12);
+    assert(oa_channel_visible_rows(&l) == 11);
 
     oa_channel_layout bad = l;
     bad.row_pitch = 0;
@@ -75,6 +80,6 @@ int main(void)
     assert(oa_channel_layout_default(NULL) == -EINVAL);
 
     puts("ok channel layout: record-80 rects, 75/66 row metrics, tab gaps and "
-         "capture colours");
+         "capture colours and 11-row scrollbar window");
     return 0;
 }

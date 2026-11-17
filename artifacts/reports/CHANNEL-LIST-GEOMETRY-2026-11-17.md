@@ -76,11 +76,14 @@ The font record and exact text anchors are not yet recovered.
   - `make check-ui-channels-stock-capture` renders the same rows with the real
     vendor fonts and the p0/04 names (C12, C07, BBC2, …), writes
     `stock-mode.png` and compares it with the corrected capture: panel MAE8
-    **2.750**, focus row **1.510**, row 2 **2.581**. The header icon is the
-    theme `channel_small.png` (60x60, ink 2,9..58,57) drawn at 30,14 and staged
-    by `mk-ui.py`/the check. The remaining banner/tab error (MAE8 3.78/5.75)
-    is the missing scrollbar and tab/subtitle raster edges; rows, colours and
-    text anchors match. The stock screen's Up/Down/Select/Exit handling is
+    **2.671**, list **2.510**, focus row **1.510**, row 2 **2.581**. The
+    header icon is the theme `channel_small.png` (60x60, ink 2,9..58,57) drawn
+    at 30,14 and staged by `mk-ui.py`/the check. The scrollbar is wired from
+    `createScrollBars` (0x010bbd38) and the 20+16 px skin caps: 11 visible rows,
+    3x816 window at 768,195, min bar 36; the 67-row fixture gives a 133 px bar
+    by the shipped integer formula (capture white grip 134 px at y196, a 1 px
+    edge/antialias difference). The remaining banner/tab error (MAE8 3.78/5.75)
+    is the tab/subtitle raster edges; rows, colours and text anchors match. The stock screen's Up/Down/Select/Exit handling is
     tested (Select emits index 1 name `C07`). The stock portal sidebar capture
     (`shot-launcher.png`) orders the rail three-circle/source-arrow/home/
     monitor-Zenders/wrench; Select on rail 3 now opens `SCREEN_CHANNELS` only with `ui.channels_stock=1`; the default rail path is unchanged and is
@@ -92,24 +95,27 @@ The font record and exact text anchors are not yet recovered.
     Select reports `Runtime A`. The live EASI/testtool feed remains owner-gated;
     only the ingest/render/selection path is tested offline.
 
-## Scrollbar skin — track still open
+## Scrollbar contract (wired 2026-11-17)
 
-`scrollbarFA.svg` record 61 and `scrollbarUFA.svg` 62 define the moving-bar
-caps `bar_mTopM` 20 px and `bar_mBotM` 16 px, so `calculateMinBarSize` gives
-`min_bar=36`. `SVGScrollBar::calculateBarSizeAndPosition` (0x10c3af0) is
-already implemented in `common/svg_scrollbar.c` (`bar=height*visible/total`,
-clamped to `min_bar`, then the position formula). The p0/04 capture shows a
-white 3 px grip at x=768..770, y=196..329 (134 px) with no visible track. The
-channel list's track height and total are not pinned offline: the dump DB's
-raw `m_type`/`m_flags` are packed and the stock runtime/EASI visibility filter
-is unavailable. Do not fit a track/total to the 134 px grip; the scrollbar
-remains unwired.
+`SVGListBoxBase::createScrollBars` (0x010bbd38) builds the scrollbar window
+from the listbox fields: left `+0x214`, right `+0x21c`, top `+0x1fc`,
+`bottom=(visible-1)*step+top+rowHeight`, and only when `visible<total`. For the
+channel list that is x768..771, y195..1011 (3x816) with 11 visible rows.
+`scrollbarFA.svg` record 61/62 give `bar_mTopM` 20 px and `bar_mBotM` 16 px, so
+`calculateMinBarSize` gives `min_bar=36`. `SVGScrollBar::calculateBarSizeAndPosition`
+(0x10c3af0) is implemented in `common/svg_scrollbar.c` (`bar=height*visible/
+total`, clamped to `min_bar`, then the position formula). `paint_channels_stock`
+now draws the white bar from those inputs. The 67-row fixture gives 133 px by
+the shipped integer formula; the capture's white-threshold grip is 134 px at
+y196 (1 px edge/antialias), and the capture check scrollbar region is MAE8
+8.319. No fitted track/total.
 
 The provisional `SCREEN_CHANNELS` remains the default; the portal entry path
-(rail 3) and the runtime-order ingest/selection path are wired and tested. The
-scrollbar track/total, runtime EASI LCN/visibility and live feed, exact tab
-anchors and scanout remain open. The capture comparison is recorder/CPU, not
-fb1/scanout proof.
+(rail 3), runtime-order ingest/selection and scrollbar are wired and tested.
+The live EASI/LCN visibility feed, exact tab/subtitle anchors (MAE8 5.75) and
+scanout remain open; the scrollbar grip's 1 px white edge is capture
+antialias/threshold, not a fitted offset. The capture comparison is
+recorder/CPU, not fb1/scanout proof.
 
 Report: CHANNEL-LIST-GEOMETRY-2026-11-17. Related: CHANNEL-LIST-UI,
 CHANNEL-RUNTIME-ORDER, P0-BROWSER-PROBE, UI-THEME-PROVIDER.

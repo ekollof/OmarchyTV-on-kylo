@@ -288,7 +288,8 @@ CHANNEL-LIST-GEOMETRY-2026-11-17 corrects the missing-capture/geometry part:
 capture, and BinSVG record 80 (`DialogAdvancedChannelList.svg`) supplies the
 panel 0,0,780,1080, banner 0,0,780,162, tabs 12..262/264..514/516..766 at
 y100..159, filterInfo 123,50,766,95 and list 19,179,769,1090. The capture
-(BGRA-corrected) gives rows 19,195 748x66 pitch75, 12 starts, focus #FE9419
+(BGRA-corrected) gives rows 19,195 748x66 pitch75, 11 visible (listbox
+insets 16/10), focus #FE9419
 with 40 px #7E000A number/name text and 34 px white normal text, and a white
 ATV marker. `common/channel_layout.c` + `check-channel-layout` encode and test
 these. 2026-11-17: a default-off `ui.channels_stock=1` mode paints the stock
@@ -296,15 +297,16 @@ panel/banner/tabs/rows with the matching vendor font records (7 title,
 12 subtitle/selected tab, 4 unselected tabs, 16 normal rows, 18 focused row,
 1 ATV marker). `check-ui-channels-stock` covers the fills/rows and
 `check-ui-channels-stock-capture` compares the real-font render to the
-corrected capture: panel MAE8 2.755, focus row 1.510, row 2 2.581 (banner/tabs
-3.81/5.75 from the missing icon/scrollbar and tab/subtitle rasters). The
+corrected capture: panel MAE8 2.671, list 2.510, focus row 1.510, row 2
+2.581, scrollbar 8.319 (banner/tabs 3.78/5.75 from tab/subtitle rasters). The
 provisional screen remains the default; the `channel_small` header icon is
 wired/staged, Up/Down/Select/Exit is tested (Select emits index 1 `C07`), and
 portal rail 3 (monitor/Zenders, shot-launcher sidebar) opens the screen only with `ui.channels_stock=1`. The
 stock renderer/input also prefer the ingested runtime active list; a 3-entry
-ingest test reports `Runtime A`. The scrollbar skin caps (20+16 px, min 36) and
-calculateBarSizeAndPosition are recovered; the channel track/total is not
-pinned. Live EASI/LCN/visibility, scrollbar wiring, exact tab anchors and
+ingest test reports `Runtime A`. The scrollbar is wired from createScrollBars
+(768..771 x 195..1011, 11 visible, min bar 36); the 67-row fixture yields a
+133 px bar by the shipped formula (capture white grip 134 px at y196, a 1 px
+edge/antialias). Live EASI/LCN/visibility, exact tab/subtitle anchors and
 scanout remain open.
 
 PVR-MODULE-2026-11-05: the PVR service is now a real mod_pvr with a

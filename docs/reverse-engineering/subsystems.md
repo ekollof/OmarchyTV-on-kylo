@@ -397,10 +397,11 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   default-off `ui.channels_stock=1` mode renders it with vendor font records
   7/12/4/16/18/1, the `channel_small` header icon and a capture check (panel
   MAE8 2.750); Up/Down/Select/Exit is tested, portal rail 3
-  (monitor/Zenders) opens the screen, and renderer/input prefer the ingested
-  runtime active list. Scrollbar skin caps 20+16 px (min 36) and
-  calculateBarSizeAndPosition are recovered; the channel track/total and live
-  EASI remain open. Evidence: CHANNEL-LIST-GEOMETRY.
+  (monitor/Zenders) opens the screen, renderer/input prefer the ingested
+  runtime active list, and the scrollbar is wired from createScrollBars
+  (768..771 x 195..1011, 11 visible, min 36; 67-row fixture bar 133 px vs the
+  capture's 134, 1 px edge). Live EASI and exact tab anchors remain open.
+  Evidence: CHANNEL-LIST-GEOMETRY.
 - Apps-grid focused labels use the firmware single-line centre rule
   (`physicalWidth` + first bearing, not the ink bbox):
   `common/apps_label.c` + `check-apps-label`. Stock Twitter ink is 919..999;
