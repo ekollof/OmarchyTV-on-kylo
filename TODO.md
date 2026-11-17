@@ -2402,7 +2402,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       FAVOURITE/TAG/TAG_ALL with the recovered conditions, Dutch
       `stock-edit.png`, `ui.channels_edit=1`). Open: live EASI
       LCN/visibility, applying the filter, the edit actions,
-      GotoServiceDialog, paging, tuner/EPG/PVR and scanout.
+      GotoServiceDialog, paging, tuner/EPG/PVR and scanout. 2026-11-18: the
+      PVR scrollbar is wired from the record tracks (1910,217..974 / 404..984)
+      with the shipped formula and 20+16 caps (12-job fixture 630 px,
+      `pvr-stock-scroll.png`); exact skin art open.
 - [ ] Apps/browser/media integration, picture quality/FRC, network and Bluetooth.
 - [ ] Tuner/DVB-T/DVB-S, EPG/service lists, teletext/MHEG/interactive TV, PVR/
       timeshift/playback, CI+/conditional access and associated persistence.

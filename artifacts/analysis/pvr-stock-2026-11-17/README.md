@@ -124,6 +124,15 @@ with the family header #481730 (inference). `check-pvr-space` and
   fonts and the real recording icon (`tools/pvr-stock-check.sh`); no stock
   reference exists.
 
+## Scrollbar
+
+Record 692 track 1910,217,1920,974 (10x757); record 693 track
+1910,404,1920,984 (10x580). The bar uses the shipped
+`oa_svg_scrollbar_calculate` with the 20+16 skin caps (min 36) and the page
+size from the row pitch (10 normal / 7 synopsis). Two jobs hide the bar; a
+12-job fixture gives 630 px at the track top (`pvr-stock-scroll.png`). The
+record names no skin resource; exact PVR scrollbar art is open.
+
 ## Synopsis (record 693)
 
 The constructor selects `DialogPlayList_synopsis.svg` via

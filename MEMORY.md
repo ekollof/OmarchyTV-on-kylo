@@ -1639,7 +1639,10 @@ Dutch stock-filter.png. 2026-11-18 CHANNEL-EDIT: ChannelEditOptionsDialog
 152,211,768,1059) with ADD_TO_HOME/MOVE_TO_POSITION/DELETE|REMOVE/EDIT_NAME/
 LOCK/FAVOURITE+TAG/TAG_ALL and the recovered visibility conditions
 (`common/channel_edit.c` + check-channel-edit); `ui.channels_edit=1` opens it
-on Select over the edit tab, actions not implemented, Dutch stock-edit.png.
+on Select over the edit tab, actions not implemented, Dutch stock-edit.png. 2026-11-18 PVR-SCROLLBAR: tracks 692
+1910,217,1920,974 and 693 1910,404,1920,984; shipped
+calculateBarSizeAndPosition + 20+16 caps (min 36), page 10/7; 2 jobs hide,
+12 jobs draw a 630 px bar (pvr-stock-scroll.png); exact skin art open.
 
 PVR-STOCK-LAYOUT-2026-11-17: `DialogPlayList.svg` (BinSVG 692) gives the stock
 PVR list (panel #DCDBDA, header #481730 9/10, rows 26,222 1860x66 pitch75,

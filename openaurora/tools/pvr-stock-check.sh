@@ -43,11 +43,14 @@ PY
 OA_PVR_FONT_INDEX="$FONT_INDEX" OA_PVR_FONT_PACK="$FONT_PACK" \
 OA_PVR_UI_DIR="$OUT.ui" OA_PVR_STOCK_CAPTURE="$OUT.raw" \
 OA_PVR_SYNOPSIS_CAPTURE="$OUT-synopsis.raw" \
+OA_PVR_SCROLL_CAPTURE="$OUT-scroll.raw" \
     "$BUILD/tests/ui_pvr_stock" "$MODULES"
 
 python3 "$ROOT/openaurora/tools/rawrgba-to-png.py" "$OUT.raw" 1920 1080 "$OUT.png"
 python3 "$ROOT/openaurora/tools/rawrgba-to-png.py" \
     "$OUT-synopsis.raw" 1920 1080 "$OUT-synopsis.png"
-rm -f "$OUT.raw" "$OUT-synopsis.raw"
+python3 "$ROOT/openaurora/tools/rawrgba-to-png.py" \
+    "$OUT-scroll.raw" 1920 1080 "$OUT-scroll.png"
+rm -f "$OUT.raw" "$OUT-synopsis.raw" "$OUT-scroll.raw"
 rm -rf "$OUT.ui"
-echo "wrote $OUT.png and $OUT-synopsis.png (recorder candidates; no stock PVR reference)"
+echo "wrote $OUT.png, $OUT-synopsis.png and $OUT-scroll.png (recorder candidates; no stock PVR reference)"

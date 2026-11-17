@@ -345,6 +345,33 @@ int main(int argc, char **argv)
     oa_host_dispatch_posts(&host);
     assert(portal->screen() == 0);
 
+    /* Scrollbar phase: 12 jobs, 10 visible -> 630 px white bar over the
+     * record-692 track 1910,217..1920,974. */
+    assert(!command(&host, "stop ui_vendor", out, sizeof out));
+    g_synopsis = 0;
+    const oa_pvr_iface *pvr2 = host.api.lookup(&host, OA_SVC_PVR, 1);
+    assert(pvr2);
+    for (int i = 0; i < 10; i++) {
+        struct oa_pvr_request r;
+        memset(&r, 0, sizeof r);
+        r.service_handle = 9;    /* separate service: no overlap with 1/2 */
+        r.start_ms = 1700000000000LL + i * 3600000;
+        r.end_ms = r.start_ms + 1800000;
+        snprintf(r.name, sizeof r.name, "Extra %d", i + 1);
+        uint32_t nid = 0;
+        assert(pvr2->add(&r, &nid) == 0 && nid);
+    }
+    host.api.release(&host, OA_SVC_PVR);
+    assert(!command(&host, "start ui_vendor", out, sizeof out));
+    assert(portal->screen() == 8);
+    assert(find_fill(trace, 1910, 217, 10, 630, 255, 255, 255));
+    const char *scr = getenv("OA_PVR_SCROLL_CAPTURE");
+    if (scr && *scr)
+        assert(!trace->capture(scr));
+    host.api.emit(&host, OA_TOPIC_KEY, &exit);
+    oa_host_dispatch_posts(&host);
+    assert(portal->screen() == 0);
+
     host.api.release(&host, OA_SVC_PORTAL);
     host.api.release(&host, OA_SVC_NAV_TRACE);
     assert(!command(&host, "stop ui_vendor", out, sizeof out));

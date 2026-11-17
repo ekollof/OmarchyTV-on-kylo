@@ -367,6 +367,14 @@ inference (#481730) pending a capture; exact tab font/icons, selection, synopsis
 event image/bottom rows/wrapping, day navigation, live EIT and scanout remain
 open. Recorder evidence only.
 
+PVR-SCROLLBAR-2026-11-18: the PVR list track is record-692 1910,217,1920,974
+(10x757) and the synopsis track record-693 1910,404,1920,984 (10x580). The
+screen uses the shipped SVGScrollBar::calculateBarSizeAndPosition with the
+20+16 px skin caps (min 36) and the row-pitch page size (10 normal / 7
+synopsis); 2 jobs draw no bar, 12 jobs draw a 630 px white bar at the track
+top (pvr-stock-scroll.png). The record names no scrollbar skin resource, so
+exact PVR scrollbar art remains open.
+
 CHANNEL-EDIT-2026-11-18: `ChannelEditOptionsDialog` (internal
 `ChannelEditOptions`) uses `DialogEditOptionsList.svg` (BinSVG 100): panel
 0,35,780,1080 white, left strip 0,160,142,1080 #010101 at 6/10 (composed 103),

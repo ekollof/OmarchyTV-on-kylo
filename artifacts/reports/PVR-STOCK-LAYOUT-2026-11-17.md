@@ -122,6 +122,19 @@ pending a stock capture. `check-pvr-space` covers the math/clamps and
   focus and Exit; `check-ui-pvr-stock` passes. `tools/pvr-stock-check.sh`
   renders the real-font/real-icon candidate `pvr-stock.png`.
 
+## Scrollbar
+
+Record 692 gives the track `1910,217,1920,974` (10x757); record 693 gives
+`1910,404,1920,984` (10x580). The screen uses the shipped
+`SVGScrollBar::calculateBarSizeAndPosition` (`common/svg_scrollbar.c`) with the
+20+16 px skin caps (`min_bar=36`), the page size from the row pitch (10 rows in
+the normal view, 7 in the synopsis) and the first visible row from the
+selection. With 2 jobs no bar is drawn (total <= visible); a 12-job fixture
+gives a **630 px** white bar at the top of the track for the normal view
+(`pvr-stock-scroll.png`). The PVR record does not name a scrollbar skin
+resource; the track width/colour follow the record, and the generic skin caps
+are the channel-list ones. Exact PVR scrollbar art remains open.
+
 ## Synopsis view (record 693)
 
 The PlayListDialog constructor calls

@@ -2707,6 +2707,21 @@ static void paint_pvr(struct ctx *c)
         pvr_text(c, start, l.time.x, y, tr, tg, tb);
         pvr_text(c, duration, l.duration.x, y, tr, tg, tb);
     }
+    /* SVGScrollBar over the record-692 track 1910,217..1920,974 (10x757):
+     * the same integer formula and 20+16 px skin caps as the channel list. */
+    if (total > (size_t)visible) {
+        struct oa_svg_scrollbar_state sb;
+        memset(&sb, 0, sizeof sb);
+        sb.total = (int32_t)total;
+        sb.visible = visible;
+        sb.first = c->pvr_sel >= visible ? c->pvr_sel - visible + 1 : 0;
+        sb.min_bar = 36;
+        oa_svg_scrollbar_calculate(&sb, l.scrollbar.y1 - l.scrollbar.y);
+        if (sb.bar_size > 0)
+            d->fill(l.scrollbar.x, l.scrollbar.y + sb.bar_pos,
+                    l.scrollbar.x1 - l.scrollbar.x, sb.bar_size,
+                    255, 255, 255);
+    }
     if (pvr) c->api->release(c->api->priv, OA_SVC_PVR);
     if (meta_svc) c->api->release(c->api->priv, OA_SVC_PVR_META);
     if (stats_svc) c->api->release(c->api->priv, OA_SVC_PVR_STATS);
@@ -2825,6 +2840,20 @@ static void paint_pvr_synopsis(struct ctx *c)
                                          "Vrije ruimte: "),
                                space.free, buf, sizeof buf) == 0)
             pvr_small_text(c, buf, y.free_space.x, y.free_space.y + 5);
+    }
+    int syn_visible = (y.list.y1 - y.list.y) / y.row_pitch;
+    if (total > (size_t)syn_visible) {
+        struct oa_svg_scrollbar_state sb;
+        memset(&sb, 0, sizeof sb);
+        sb.total = (int32_t)total;
+        sb.visible = syn_visible;
+        sb.first = c->pvr_sel >= syn_visible ? c->pvr_sel - syn_visible + 1 : 0;
+        sb.min_bar = 36;
+        oa_svg_scrollbar_calculate(&sb, y.scrollbar.y1 - y.scrollbar.y);
+        if (sb.bar_size > 0)
+            d->fill(y.scrollbar.x, y.scrollbar.y + sb.bar_pos,
+                    y.scrollbar.x1 - y.scrollbar.x, sb.bar_size,
+                    255, 255, 255);
     }
     if (stats_svc) c->api->release(c->api->priv, OA_SVC_PVR_STATS);
     if (meta_svc) c->api->release(c->api->priv, OA_SVC_PVR_META);

@@ -442,7 +442,10 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   used/reserved/free) via `common/pvr_space.c` + optional `pvr.stats` v1,
   painted on a #481730 band (inference). `ui.pvr_synopsis=1` renders record
   693 (setSynopsisSVGName) with the selected name/`pvr.meta` synopsis,
-  headers, tabs and space labels. LIBRARY resolves to
+  headers, tabs and space labels. The scrollbar uses the record tracks
+  (1910,217..974 / 404..984) with the shipped calculateBarSizeAndPosition and
+  20+16 px caps (12-job fixture 630 px); exact skin art is open. LIBRARY
+  resolves to
   "Opnamebibliotheek"; columns use NAME_TITLE/START_TITLE/DURATION_TITLE
   (Naam/Start/Lengte). Row icons: recording 0x36 `icon_record_small` (painted
   for OA_PVR_RECORDING), new 0x116, locked 0x1e, playback 0x115, partial
