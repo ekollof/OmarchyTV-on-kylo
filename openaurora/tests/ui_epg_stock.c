@@ -23,6 +23,7 @@
 
 static char g_modules[256], g_db[512], g_ui_dir[512], g_tmp[256];
 static char g_font_index[512], g_font_pack[512], g_capture[512];
+static int g_synopsis;
 
 static const char *config(void *p, const char *key, const char *def)
 {
@@ -33,6 +34,7 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "ui.screen")) return "epg";
     if (!strcmp(key, "ui.epg_stock")) return "1";
     if (!strcmp(key, "ui.epg_row_pitch")) return "76";
+    if (!strcmp(key, "ui.epg_synopsis")) return g_synopsis ? "1" : "0";
     if (!strcmp(key, "ui.epg_window_start")) return "1700000000000";
     if (!strcmp(key, "ui.text")) return "1";
     if (!strcmp(key, "ui.font_index")) return g_font_index;
@@ -122,6 +124,8 @@ static int epg_query(uint32_t service_handle, int64_t from_ms, int64_t to_ms,
             e->start_ms = rows[i].start;
             e->end_ms = rows[i].end;
             snprintf(e->name, sizeof e->name, "%s", rows[i].name);
+            snprintf(e->description, sizeof e->description,
+                     "%s: fixture synopsis text.", rows[i].name);
         }
         n++;
     }
@@ -274,22 +278,22 @@ int main(int argc, char **argv)
     assert(oa_epg_event_span(&timeline, WINDOW_MS, 7200,
                              WINDOW_MS, WINDOW_MS + 1800000, &x, &w) == 0);
     assert(x == 644 && w == 319);
-    assert(find_fill(trace, x, y0, w, bar_h, 129, 25, 36));
+    assert(find_fill(trace, x, y0, w, bar_h, 126, 0, 10));
     assert(oa_epg_event_span(&timeline, WINDOW_MS, 7200,
                              WINDOW_MS + 1800000, WINDOW_MS + 3600000,
                              &x, &w) == 0);
-    assert(find_fill(trace, x, y0, w, bar_h, 190, 30, 45));
+    assert(find_fill(trace, x, y0, w, bar_h, 126, 0, 10));
     assert(oa_epg_event_span(&timeline, WINDOW_MS, 7200,
                              WINDOW_MS + 3600000, WINDOW_MS + 5400000,
                              &x, &w) == 0);
-    assert(find_fill(trace, x, y0, w, bar_h, 241, 90, 41));
+    assert(find_fill(trace, x, y0, w, bar_h, 126, 0, 10));
     /* Second service row (pitch 76) has the clipped 2-hour event. */
     int y1 = l.list.y + 76 + 4;
     assert(oa_epg_event_span(&timeline, WINDOW_MS, 7200,
                              WINDOW_MS + 600000, WINDOW_MS + 7800000,
                              &x, &w) == 0);
     assert(x == 750 && w == 1170);
-    assert(find_fill(trace, x, y1, w, bar_h, 129, 25, 36));
+    assert(find_fill(trace, x, y1, w, bar_h, 126, 0, 10));
     assert(trace->blit_count() >= 10);
 
     const char *capture = getenv("OA_EPG_STOCK_CAPTURE");
@@ -304,9 +308,29 @@ int main(int argc, char **argv)
     oa_key_event down = { .id = 19, .kind = OA_KEY_PRESS };
     host.api.emit(&host, OA_TOPIC_KEY, &down);
     oa_host_dispatch_posts(&host);
-    assert(find_fill(trace, 750, l.list.y + 4, 1170, bar_h, 129, 25, 36));
+    assert(find_fill(trace, 750, l.list.y + 4, 1170, bar_h, 126, 0, 10));
 
     oa_key_event exit = { .id = 10, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &exit);
+    oa_host_dispatch_posts(&host);
+    assert(portal->screen() == 0);
+
+    /* Synopsis view (BinSVG 102): the vendor showSynopsis resource. */
+    assert(!command(&host, "stop ui_vendor", out, sizeof out));
+    g_synopsis = 1;
+    assert(!command(&host, "start ui_vendor", out, sizeof out));
+    assert(portal->screen() == 9);
+    oa_epg_synopsis y;
+    assert(oa_epg_synopsis_default(&y) == 0);
+    assert(find_fill(trace, 0, 0, 1920, 264, 72, 23, 48));
+    assert(find_fill(trace, 0, 264, 1920, 307, 36, 11, 24));
+    assert(find_fill(trace, 0, 570, 1920, 507, 197, 201, 205));
+    assert(find_fill(trace, 0, 572, 640, 422, 197, 201, 205));
+    assert(find_fill(trace, 639, 572, 2, 422, 35, 31, 32));
+    assert(trace->blit_count() >= 8);
+    const char *scap = getenv("OA_EPG_SYNOPSIS_CAPTURE");
+    if (scap && *scap)
+        assert(!trace->capture(scap));
     host.api.emit(&host, OA_TOPIC_KEY, &exit);
     oa_host_dispatch_posts(&host);
     assert(portal->screen() == 0);

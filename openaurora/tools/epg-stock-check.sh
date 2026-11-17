@@ -21,8 +21,11 @@ OA_EPG_FONT_INDEX="$FONT_INDEX" OA_EPG_FONT_PACK="$FONT_PACK" \
 OA_EPG_I18N_PROFILE="$ROOT/artifacts/workbench/rootfs/vendor2/mb230_langprofile.bin" \
 OA_EPG_I18N_LANG=dut \
 OA_EPG_STOCK_CAPTURE="$OUT.raw" \
+OA_EPG_SYNOPSIS_CAPTURE="$OUT-synopsis.raw" \
     "$BUILD/tests/ui_epg_stock" "$MODULES"
 
 python3 "$ROOT/openaurora/tools/rawrgba-to-png.py" "$OUT.raw" 1920 1080 "$OUT.png"
-rm -f "$OUT.raw"
-echo "wrote $OUT.png (recorder candidate; no stock EPG reference)"
+python3 "$ROOT/openaurora/tools/rawrgba-to-png.py" \
+    "$OUT-synopsis.raw" 1920 1080 "$OUT-synopsis.png"
+rm -f "$OUT.raw" "$OUT-synopsis.raw"
+echo "wrote $OUT.png and $OUT-synopsis.png (recorder candidates; no stock EPG reference)"

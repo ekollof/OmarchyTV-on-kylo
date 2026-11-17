@@ -200,10 +200,14 @@ maps the cold-start stages and the current stock-UI coverage.
       default-off `ui.epg_stock=1` SCREEN_EPG paints chrome/i18n
       title/date/times/service rows/OA_SVC_EPG bars, with rows only under an
       explicit `ui.epg_row_pitch`; `check-ui-epg-stock` passes and a Dutch
-      real-font candidate `epg-stock.png` exists. Open: EPG stock capture,
-      header fill (family inference), tab glyphs/icons, event-button art,
-      selection/synopsis/day navigation/filters, runtime row pitch, live EIT,
-      the stock channel key path/runtime feed and scanout.
+      real-font candidate `epg-stock.png` exists. 2026-11-17 follow-up: the
+      event-bar styles come from serviceBFA/UFA/FI/UFI (BinSVG 456..459) and a
+      default-off `ui.epg_synopsis=1` renders record 102 (event title,
+      HH:MM-HH:MM, vendor duration, one clipped description line;
+      `epg-stock-synopsis.png`). Open: EPG stock capture, header fill (family
+      inference), tab glyphs/icons, selection, synopsis event image/bottom
+      rows/wrapping, day navigation/filters, runtime row pitch, live EIT, the
+      stock channel key path/runtime feed and scanout.
 
 ## Scheduled takeover test queue (single session)
 

@@ -2240,6 +2240,7 @@ static void paint_channels_stock(struct ctx *c)
 
 static void paint_pvr(struct ctx *c);
 static void paint_epg(struct ctx *c);
+static void paint_epg_synopsis(struct ctx *c);
 
 static void pvr_text(struct ctx *c, const char *text, int x, int y,
                      uint8_t r, uint8_t g, uint8_t b)
@@ -2538,23 +2539,24 @@ static void paint_epg(struct ctx *c)
                                   events[i].start_ms, events[i].end_ms,
                                   &bx, &bw) != 0)
                 continue;
-            static const uint8_t bars[4][3] = {
-                { 129, 25, 36 }, { 190, 30, 45 }, { 241, 90, 41 },
-                { 247, 148, 30 }
-            };
-            const uint8_t *fill = bars[i % 4];
+            int64_t now = (int64_t)now_ms();
+            int active = events[i].start_ms <= now && now < events[i].end_ms;
+            struct oa_epg_event_style style;
+            oa_epg_event_style(0, active, &style);
             int bar_h = pitch - 8;
             if (bar_h < 8) bar_h = 8;
             if (y + bar_h > l.list.y1) bar_h = l.list.y1 - y;
             if (bar_h <= 0) break;
-            d->fill(bx, y + 4, bw, bar_h, fill[0], fill[1], fill[2]);
+            d->fill(bx, y + 4, bw, bar_h, style.fill[0], style.fill[1],
+                    style.fill[2]);
             if (bw >= 60) {
                 char clipped[24];
                 size_t n = strlen(events[i].name);
                 if (n > sizeof clipped - 1) n = sizeof clipped - 1;
                 memcpy(clipped, events[i].name, n);
                 clipped[n] = '\0';
-                epg_text(c, clipped, bx + 4, y + 8, 255, 255, 255);
+                epg_text(c, clipped, bx + 4, y + 8, style.text[0],
+                         style.text[1], style.text[2]);
             }
         }
     }
@@ -2574,6 +2576,155 @@ static void paint_epg(struct ctx *c)
         return;
     }
     c->api->log(c->api->priv, OA_LOG_INFO, "painted EPG: %zu services", total);
+}
+
+/* Synopsis view (BinSVG 102), selected by the vendor showSynopsis path. Paints
+ * the recovered chrome plus the selected event's title/time/duration/
+ * description. The event image, the bottom event list rows and wrapping are
+ * not implemented yet. */
+static void paint_epg_synopsis(struct ctx *c)
+{
+    const oa_ui_engine_iface *d = c->d;
+    oa_epg_synopsis y;
+    if (!c || !d || oa_epg_synopsis_default(&y) != 0)
+        return;
+    if (d->clear(0, 0, 0))
+        return;
+    d->fill(y.panel.x, y.panel.y, y.panel.x1 - y.panel.x,
+            y.panel.y1 - y.panel.y,
+            y.panel_rgb[0], y.panel_rgb[1], y.panel_rgb[2]);
+    d->fill(y.header.x, y.header.y, y.header.x1 - y.header.x,
+            y.header.y1 - y.header.y,
+            y.header_rgb[0], y.header_rgb[1], y.header_rgb[2]);
+    d->fill(y.event_bar.x, y.event_bar.y, y.event_bar.x1 - y.event_bar.x,
+            y.event_bar.y1 - y.event_bar.y,
+            y.event_bar_rgb[0], y.event_bar_rgb[1], y.event_bar_rgb[2]);
+    d->fill(y.list.x, y.list.y, y.list.x1 - y.list.x, y.list.y1 - y.list.y,
+            y.list_rgb[0], y.list_rgb[1], y.list_rgb[2]);
+    d->fill(y.service_list.x, y.service_list.y,
+            y.service_list.x1 - y.service_list.x,
+            y.service_list.y1 - y.service_list.y,
+            y.service_rgb[0], y.service_rgb[1], y.service_rgb[2]);
+    d->fill(y.service_list.x1 - 1, y.service_list.y, 2,
+            y.service_list.y1 - y.service_list.y,
+            y.service_border_rgb[0], y.service_border_rgb[1],
+            y.service_border_rgb[2]);
+
+    const oa_i18n_iface *i18n = c->api->lookup(c->api->priv, OA_SVC_I18N, 1);
+    const char *title = i18n ? i18n->translate("PROGRAM_GUIDE", NULL)
+                             : "Programmagids";
+    if (!title || !*title)
+        title = "Programmagids";
+    if (c->font_title_data)
+        channel_text_at(c, &c->font_title, title, y.dialog_title.x,
+                        y.dialog_title.y, y.text_rgb[0], y.text_rgb[1],
+                        y.text_rgb[2]);
+    else
+        epg_text(c, title, y.dialog_title.x, y.dialog_title.y,
+                 y.text_rgb[0], y.text_rgb[1], y.text_rgb[2]);
+
+    int64_t window = c->epg_window;
+    if (window <= 0) {
+        const char *override =
+            c->api->config_get(c->api->priv, "ui.epg_window_start", "0");
+        if (override && *override)
+            window = (int64_t)strtoll(override, NULL, 10);
+    }
+    if (window <= 0)
+        window = (int64_t)now_ms();
+    time_t secs = (time_t)(window / 1000);
+    struct tm tm;
+    memset(&tm, 0, sizeof tm);
+    if (localtime_r(&secs, &tm)) {
+        char date[64], t_m[8];
+        const char *wd = i18n ? i18n->translate(EPG_WEEKDAY_KEYS[tm.tm_wday], NULL)
+                              : EPG_WEEKDAY_EN[tm.tm_wday];
+        if (!wd || !*wd)
+            wd = EPG_WEEKDAY_EN[tm.tm_wday];
+        snprintf(date, sizeof date, "%s %02d/%02d/%d", wd, tm.tm_mday,
+                 tm.tm_mon + 1, tm.tm_year + 1900);
+        snprintf(t_m, sizeof t_m, "%02d:%02d", tm.tm_hour, tm.tm_min);
+        epg_text(c, date, y.date.x, y.date.y + 5, y.text_rgb[0],
+                 y.text_rgb[1], y.text_rgb[2]);
+        epg_text(c, t_m, y.time_m.x, y.time_m.y + 5, y.text_rgb[0],
+                 y.text_rgb[1], y.text_rgb[2]);
+    }
+
+    /* Selected service (default the first row) and its first event. */
+    const oa_service_list_iface *svc =
+        c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
+    const struct oa_service_list *list = svc ? svc->snapshot() : NULL;
+    int index = atoi(c->api->config_get(c->api->priv, "ui.epg_service_index",
+                                        "0"));
+    if (index < 0) index = 0;
+    if (list && index >= (int)list->count) index = (int)list->count - 1;
+    int pitch = atoi(c->api->config_get(c->api->priv, "ui.epg_row_pitch", "0"));
+    if (list && pitch > 0) {
+        int rows = (y.list.y1 - y.list.y) / pitch;
+        for (int row = 0; row < rows && row < (int)list->count; row++) {
+            const char *name = list->rows[row].name;
+            if (!name || !*name)
+                continue;
+            epg_text(c, name, y.service_list.x + 8,
+                     y.list.y + row * pitch + (pitch - 24) / 2,
+                     35, 31, 32);
+        }
+    }
+    const oa_epg_iface *epg = c->api->lookup(c->api->priv, OA_SVC_EPG, 1);
+    if (list && epg && (size_t)index < list->count) {
+        uint32_t handle = (uint32_t)list->rows[index].handle;
+        struct oa_epg_event events[32];
+        size_t count = 0;
+        if (epg->query(handle, window, window + (int64_t)y.interval_s * 1000,
+                       events, sizeof events / sizeof events[0], &count) == 0 &&
+            count > 0) {
+            int pick = atoi(c->api->config_get(c->api->priv,
+                                               "ui.epg_event_index", "0"));
+            if (pick < 0) pick = 0;
+            if ((size_t)pick >= count) pick = (int)count - 1;
+            const struct oa_epg_event *e = &events[pick];
+            epg_text(c, e->name, y.event_title.x, y.event_title.y,
+                     y.event_title_rgb[0], y.event_title_rgb[1],
+                     y.event_title_rgb[2]);
+            time_t es = (time_t)(e->start_ms / 1000), ee =
+                (time_t)(e->end_ms / 1000);
+            struct tm etm, xm;
+            memset(&etm, 0, sizeof etm);
+            memset(&xm, 0, sizeof xm);
+            char span[16];
+            if (localtime_r(&es, &etm) && localtime_r(&ee, &xm))
+                snprintf(span, sizeof span, "%02d:%02d-%02d:%02d",
+                         etm.tm_hour, etm.tm_min, xm.tm_hour, xm.tm_min);
+            else
+                span[0] = '\0';
+            epg_text(c, span, y.event_time.x, y.event_time.y + 5,
+                     y.text_rgb[0], y.text_rgb[1], y.text_rgb[2]);
+            long long seconds = (e->end_ms - e->start_ms) / 1000;
+            char duration[24];
+            if (seconds < 3600)
+                snprintf(duration, sizeof duration, "%lldm %llds",
+                         seconds / 60, seconds % 60);
+            else
+                snprintf(duration, sizeof duration, "%lldh %lldm",
+                         seconds / 3600, (seconds / 60) % 60);
+            epg_text(c, duration, y.event_duration.x, y.event_duration.y + 5,
+                     y.text_rgb[0], y.text_rgb[1], y.text_rgb[2]);
+            /* One clipped line: no vendor wrapping/ellipsis is recovered. */
+            char text[160];
+            snprintf(text, sizeof text, "%s", e->description);
+            epg_text(c, text, y.event_text.x, y.event_text.y + 5,
+                     y.text_rgb[0], y.text_rgb[1], y.text_rgb[2]);
+        }
+    }
+    if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
+    if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
+    if (epg) c->api->release(c->api->priv, OA_SVC_EPG);
+    c->scene_painted = 1;
+    if (d->present() != 0) {
+        c->api->log(c->api->priv, OA_LOG_ERROR, "EPG synopsis present failed");
+        return;
+    }
+    c->api->log(c->api->priv, OA_LOG_INFO, "painted EPG synopsis");
 }
 
 /* The five rail slots are a separate surface: the portal background behind
@@ -2647,7 +2798,10 @@ static void paint(struct ctx *c)
     }
     if (c->screen == SCREEN_EPG) {
         if (atoi(c->api->config_get(c->api->priv, "ui.epg_stock", "0")) == 1) {
-            paint_epg(c);
+            if (atoi(c->api->config_get(c->api->priv, "ui.epg_synopsis", "0")) == 1)
+                paint_epg_synopsis(c);
+            else
+                paint_epg(c);
             return;
         }
         c->screen = SCREEN_PORTAL;

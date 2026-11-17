@@ -103,6 +103,64 @@ int oa_epg_visible_rows(const oa_epg_layout *layout, int row_pitch);
 /* 0..4 tab index, -1 outside (exclusive edges). */
 int oa_epg_tab_at(const oa_epg_layout *layout, int x, int y);
 
+/*
+ * Event-button state colours from serviceB{FA,UFA,FI,UFI}.svg (BinSVG
+ * 456/457/458/459; SVGServiceEventButton::resetSVGNames 0x00dd5404 selects
+ * 456/457/458/459 for the default path and 217..224 for OnDemand). The row
+ * fill, the lower time strip fill and the text ink are distinct:
+ *   FA  row #F7941E time #D37B1C text #7E000A
+ *   UFA row #7E000A time #6D010F text #FFFFFF
+ *   FI  row #EDEDED time #D8D8D8 text #7E000A
+ *   UFI row #7E000A time #6D010F text #FFFFFF
+ * `focused` selects FA/FI and `active` (start <= now < end) selects A/I.
+ * Unfocused rows share one fill, so A/I only changes the focused colour.
+ */
+struct oa_epg_event_style {
+    uint8_t fill[3];
+    uint8_t time_fill[3];
+    uint8_t text[3];
+};
+void oa_epg_event_style(int focused, int active,
+                        struct oa_epg_event_style *out);
+
+/*
+ * Synopsis view (DialogEPG_synopsis.svg, BinSVG 102), selected by
+ * MultiServiceTimelineScheduleDialog::showSynopsis 0x00dca1b0
+ * (SVGDialog::setSVGName 0x66) and hidden by hideSynopsis (0x65). The top
+ * 0..264 is the family header again; 0,264,1920,571 is #010101 at 5/10;
+ * event image 62,299,382,479; event text 429,273,1882,512; duration
+ * 76,472,396,517; list 0,570,1920,1077 with the service column
+ * 0,572,640,994. Tab rectangles are unchanged.
+ */
+typedef struct {
+    oa_epg_rect panel;          /* 0,0,1920,1080 */
+    oa_epg_rect header;         /* 0,0,1920,264 family inference */
+    oa_epg_rect event_bar;      /* 0,264,1920,571 */
+    oa_epg_rect dialog_title;   /* 164,21,560,75 */
+    oa_epg_rect channel_name;   /* 590,9,1434,81 */
+    oa_epg_rect event_title;    /* 593,84,1437,144 */
+    oa_epg_rect service_logo;   /* 204,43,354,193 */
+    oa_epg_rect channel_number; /* 358,65,538,137 */
+    oa_epg_rect event_time;     /* 290,149,551,194 */
+    oa_epg_rect clock;          /* 1175,149,1434,194 */
+    oa_epg_rect event_image;    /* 62,299,382,479 */
+    oa_epg_rect event_text;     /* 429,273,1882,512 */
+    oa_epg_rect event_duration; /* 76,472,396,517 */
+    oa_epg_rect date;           /* 44,518,368,562 */
+    oa_epg_rect time_m;         /* 1196,519,1446,563 */
+    oa_epg_rect icon_right;     /* 1866,516,1920,570 */
+    oa_epg_rect list;           /* 0,570,1920,1077 */
+    oa_epg_rect service_list;   /* 0,572,640,994 */
+    oa_epg_rect tabs[5];
+    int interval_s;
+    uint8_t panel_rgb[3], header_rgb[3], event_bar_rgb[3];
+    uint8_t list_rgb[3], service_rgb[3], service_border_rgb[3];
+    uint8_t text_rgb[3], event_title_rgb[3], arrow_rgb[3];
+} oa_epg_synopsis;
+
+/* Fill the record-102 defaults. -EINVAL for NULL. */
+int oa_epg_synopsis_default(oa_epg_synopsis *out);
+
 #ifdef __cplusplus
 }
 #endif

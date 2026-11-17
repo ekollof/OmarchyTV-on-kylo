@@ -1648,9 +1648,14 @@ PREVIOUS_DAY/NEXT_DAY/EXTRAS). `common/epg_layout.c` + `check-epg-layout`
 pass; default-off `ui.epg_stock=1` SCREEN_EPG paints chrome, i18n
 title/date/times, service rows and OA_SVC_EPG bars, with rows only under an
 explicit ui.epg_row_pitch (runtime step not pinned). `check-ui-epg-stock`
-passes; real-font Dutch candidate epg-stock.png. Header fill is a family
-inference; tab glyphs/icons/event art/selection/synopsis/live EIT/scanout
-open. Recorder only.
+passes; real-font Dutch candidate epg-stock.png. 2026-11-17 follow-up:
+SVGServiceEventButton styles come from serviceBFA/UFA/FI/UFI (BinSVG
+456..459; FA #F7941E/#D37B1C/#7E000A, UFA #7E000A/#6D010F/white, FI
+#EDEDED/#D8D8D8/#7E000A, UFI=UFA fill) and the bars use them. showSynopsis
+selects record 102; `ui.epg_synopsis=1` renders event title, HH:MM-HH:MM,
+vendor duration and one clipped description line (epg-stock-synopsis.png).
+Header fill is a family inference; tab glyphs/icons/selection/synopsis
+image/bottom rows/wrapping/live EIT/scanout open. Recorder only.
 
 PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary
 (integer recording id, start/stop, index query) with a persistent offline stub.

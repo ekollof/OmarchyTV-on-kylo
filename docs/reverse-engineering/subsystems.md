@@ -410,9 +410,11 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   1276); event `x = width*(start-windowStart)/interval` with a 7200 s default
   window (zoom 3600..14400). `common/epg_layout.c` + `check-epg-layout`; a
   default-off `ui.epg_stock=1` renders chrome/i18n/rows/bars, rows only under
-  an explicit `ui.epg_row_pitch` (`check-ui-epg-stock`). Header fill is a
-  family inference; no stock capture, glyphs/icons/live EIT/scanout.
-  Evidence: EPG-STOCK-LAYOUT.
+  an explicit `ui.epg_row_pitch` (`check-ui-epg-stock`). Event bars use the
+  recovered serviceBFA/UFA/FI/UFI fills (BinSVG 456..459); `ui.epg_synopsis=1`
+  renders record 102 (title/time/duration/description). Header fill is a
+  family inference; no stock capture, glyphs/icons/selection/synopsis image/
+  wrapping/live EIT/scanout. Evidence: EPG-STOCK-LAYOUT.
 - Stock PVR list: `DialogPlayList.svg` (BinSVG 692) panel 0,0,1920,1080
   `#DCDBDA`, header 0,0,1921,162 `#481730` 9/10, rows 26,222 1860x66 pitch75,
   name/time/duration 181/815/1307 and five action-glyph tabs

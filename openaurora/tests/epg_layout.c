@@ -94,7 +94,39 @@ int main(void)
     assert(oa_epg_tab_at(&l, 206, 257) == -1);
     assert(oa_epg_tab_at(NULL, 0, 0) == -1);
 
-    puts("ok epg layout: record-101 rects, list split, 7200 s event ratio, "
-         "instant x, explicit pitch and tab edges");
+    /* serviceB{FA,UFA,FI,UFI}.svg (records 456..459) event styles. */
+    struct oa_epg_event_style st;
+    oa_epg_event_style(1, 1, &st);
+    assert(st.fill[0] == 247 && st.time_fill[0] == 211 && st.text[0] == 126);
+    oa_epg_event_style(1, 0, &st);
+    assert(st.fill[0] == 237 && st.time_fill[0] == 216 && st.text[0] == 126);
+    oa_epg_event_style(0, 0, &st);
+    assert(st.fill[0] == 126 && st.time_fill[0] == 109 && st.text[0] == 255);
+    oa_epg_event_style(0, 1, &st);
+    assert(st.fill[0] == 126 && st.text[0] == 255);
+    oa_epg_event_style(1, 1, NULL);      /* explicit no-op, not a crash */
+
+    /* DialogEPG_synopsis.svg (record 102). */
+    oa_epg_synopsis y;
+    assert(oa_epg_synopsis_default(&y) == 0);
+    rect_eq(&y.panel, 0, 0, 1920, 1080);
+    rect_eq(&y.header, 0, 0, 1920, 264);
+    rect_eq(&y.event_bar, 0, 264, 1920, 571);
+    rect_eq(&y.event_image, 62, 299, 382, 479);
+    rect_eq(&y.event_text, 429, 273, 1882, 512);
+    rect_eq(&y.event_duration, 76, 472, 396, 517);
+    rect_eq(&y.date, 44, 518, 368, 562);
+    rect_eq(&y.time_m, 1196, 519, 1446, 563);
+    rect_eq(&y.icon_right, 1866, 516, 1920, 570);
+    rect_eq(&y.list, 0, 570, 1920, 1077);
+    rect_eq(&y.service_list, 0, 572, 640, 994);
+    rect_eq(&y.tabs[0], 206, 198, 506, 257);
+    assert(y.interval_s == 7200);
+    assert(y.service_rgb[0] == 197 && y.service_rgb[1] == 201);
+    assert(y.event_bar_rgb[0] == 36 && y.header_rgb[0] == 72);
+    assert(oa_epg_synopsis_default(NULL) == -EINVAL);
+
+    puts("ok epg layout: record-101/102 rects, list split, 7200 s event ratio, "
+         "instant x, pitch, tabs and event styles");
     return 0;
 }

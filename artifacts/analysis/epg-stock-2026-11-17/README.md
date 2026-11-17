@@ -81,6 +81,35 @@ rows only when `ui.epg_row_pitch` is set (default 0 = chrome only). The
 candidate uses 76 px, the height of `EPGlistboxRowFA.svg`'s `mRowM` at its own
 artboard, as an explicit test input — not a recovered runtime step.
 
+## Event-button styles and synopsis (record 102)
+
+`SVGServiceEventButton::resetSVGNames` @0x00dd5404 selects `serviceBFA/UFA/FI/
+UFI` (BinSVG 456/457/458/459; globals 0x178d63c/640/644/648) for the default
+path and `odserviceB*`/`csserviceB*` for OnDemand. Fills:
+
+| state | row | time strip | text |
+|---|---|---|---|
+| FA | `#F7941E` | `#D37B1C` | `#7E000A` |
+| UFA | `#7E000A` | `#6D010F` | white |
+| FI | `#EDEDED` | `#D8D8D8` | `#7E000A` |
+| UFI | `#7E000A` | `#6D010F` | white |
+
+Unfocused rows share one fill, so A/I only changes the focused colour. The
+timeline bars now use these recovered styles (active = now inside the event,
+focused false until a selection model exists).
+
+`showSynopsis` @0x00dca1b0 sets `SVGDialog::setSVGName 0x66` (record 102,
+`DialogEPG_synopsis.svg`) and `hideSynopsis` returns to 0x65. Record 102:
+header 0,0,1920,264 (family inference), event bar 0,264,1920,571
+(`#010101` 5/10), event image 62,299,382,479, event text 429,273,1882,512,
+duration 76,472,396,517, date 44,518,368,562, timeM 1196,519,1446,563,
+iconRight 1866,516,1920,570, list 0,570,1920,1077, service column
+0,572,640,994 `#C5C9CD` (not 101's white). `ui.epg_synopsis=1` renders it with
+the selected service/event title, `HH:MM-HH:MM` time, duration
+`%dh %dm`/`%dm %s` and a single clipped description line; the event image and
+bottom event rows are not implemented. `epg-stock-synopsis.png` is the real-
+font Dutch candidate.
+
 ## Screen wiring and evidence
 
 - `common/epg_layout.c` + `include/openaurora/epg_layout.h`: rectangle/colour
@@ -97,7 +126,8 @@ artboard, as an explicit test input — not a recovered runtime step.
   `ui.epg_row_pitch=76` and a fixed `ui.epg_window_start`, and asserts the
   chrome fills, the split border, the bars at their computed x/width and the
   scroll; `check-ui-epg-stock` passes.
-- `tools/epg-stock-check.sh` renders `epg-stock.png` with the real vendor fonts
+- `tools/epg-stock-check.sh` renders `epg-stock.png` and
+  `epg-stock-synopsis.png` with the real vendor fonts
   and the Dutch langprofile (title "Programmagids", date "Di 14/11/2023",
   23:13/00:13/01:13, NPO 1/NPO 2/RTL 4, Journaal/NOS Sport/Film and the
   clipped "Lang programma"). No stock EPG capture exists, so this is recorder
@@ -106,8 +136,8 @@ artboard, as an explicit test input — not a recovered runtime step.
 ## Limits
 
 The header fill is a family inference; the tab glyph art, channel logo/HD/
-encrypted icons, event button art and colours, selection/focus, synopsis
-(record 102), day navigation, filters, reminders/record actions, the stock
-entry path, the runtime row pitch and scanout remain open. Bars use a
-provisional four-colour palette because the vendor event-button resource is
-not recovered.
+encrypted icons, selection/focus, the synopsis event image and bottom event
+rows, text wrapping, day navigation, filters, reminders/record actions, the
+stock entry path, the runtime row pitch and scanout remain open. Event-bar
+colours are now the recovered serviceB state styles; the OnDemand
+`odserviceB`/`csserviceB` variants are not used by this screen.

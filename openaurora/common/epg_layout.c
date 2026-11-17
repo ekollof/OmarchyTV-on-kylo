@@ -136,6 +136,76 @@ int oa_epg_visible_rows(const oa_epg_layout *layout, int row_pitch)
     return height / row_pitch;
 }
 
+void oa_epg_event_style(int focused, int active,
+                        struct oa_epg_event_style *out)
+{
+    if (!out)
+        return;
+    /* serviceBFA/UFA/FI/UFI record 456/457/458/459. */
+    static const struct oa_epg_event_style fa = {
+        { 247, 148, 30 }, { 211, 123, 28 }, { 126, 0, 10 }
+    };
+    static const struct oa_epg_event_style ufa = {
+        { 126, 0, 10 }, { 109, 1, 15 }, { 255, 255, 255 }
+    };
+    static const struct oa_epg_event_style fi = {
+        { 237, 237, 237 }, { 216, 216, 216 }, { 126, 0, 10 }
+    };
+    if (focused)
+        *out = active ? fa : fi;
+    else
+        *out = ufa;
+}
+
+int oa_epg_synopsis_default(oa_epg_synopsis *out)
+{
+    if (!out)
+        return -EINVAL;
+    memset(out, 0, sizeof *out);
+    out->panel = (oa_epg_rect){ 0, 0, 1920, 1080 };
+    out->header = (oa_epg_rect){ 0, 0, 1920, 264 };
+    out->event_bar = (oa_epg_rect){ 0, 264, 1920, 571 };
+    out->dialog_title = (oa_epg_rect){ 164, 21, 560, 75 };
+    out->channel_name = (oa_epg_rect){ 590, 9, 1434, 81 };
+    out->event_title = (oa_epg_rect){ 593, 84, 1437, 144 };
+    out->service_logo = (oa_epg_rect){ 204, 43, 354, 193 };
+    out->channel_number = (oa_epg_rect){ 358, 65, 538, 137 };
+    out->event_time = (oa_epg_rect){ 290, 149, 551, 194 };
+    out->clock = (oa_epg_rect){ 1175, 149, 1434, 194 };
+    out->event_image = (oa_epg_rect){ 62, 299, 382, 479 };
+    out->event_text = (oa_epg_rect){ 429, 273, 1882, 512 };
+    out->event_duration = (oa_epg_rect){ 76, 472, 396, 517 };
+    out->date = (oa_epg_rect){ 44, 518, 368, 562 };
+    out->time_m = (oa_epg_rect){ 1196, 519, 1446, 563 };
+    out->icon_right = (oa_epg_rect){ 1866, 516, 1920, 570 };
+    out->list = (oa_epg_rect){ 0, 570, 1920, 1077 };
+    out->service_list = (oa_epg_rect){ 0, 572, 640, 994 };
+    for (int i = 0; i < 5; i++)
+        out->tabs[i] = (oa_epg_rect){ 206 + i * 302, 198,
+                                     506 + i * 302, 257 };
+    out->interval_s = 7200;
+    const uint8_t panel[3] = { 255, 255, 255 };
+    const uint8_t header[3] = { 72, 23, 48 };
+    const uint8_t bar[3] = { 36, 11, 24 };          /* 5/10 over the header */
+    const uint8_t list[3] = { 197, 201, 205 };
+    /* Record 102's service column is #C5C9CD (not the 101 white). */
+    const uint8_t service[3] = { 197, 201, 205 };
+    const uint8_t border[3] = { 35, 31, 32 };
+    const uint8_t text[3] = { 255, 255, 255 };
+    const uint8_t event[3] = { 247, 148, 30 };
+    const uint8_t arrow[3] = { 0, 159, 147 };
+    memcpy(out->panel_rgb, panel, sizeof panel);
+    memcpy(out->header_rgb, header, sizeof header);
+    memcpy(out->event_bar_rgb, bar, sizeof bar);
+    memcpy(out->list_rgb, list, sizeof list);
+    memcpy(out->service_rgb, service, sizeof service);
+    memcpy(out->service_border_rgb, border, sizeof border);
+    memcpy(out->text_rgb, text, sizeof text);
+    memcpy(out->event_title_rgb, event, sizeof event);
+    memcpy(out->arrow_rgb, arrow, sizeof arrow);
+    return 0;
+}
+
 int oa_epg_tab_at(const oa_epg_layout *layout, int x, int y)
 {
     if (!layout)

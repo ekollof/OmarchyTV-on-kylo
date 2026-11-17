@@ -48,6 +48,25 @@ white text; this slice uses the full-screen dialog family header `#481730`
 and composes the date bar over it, flagged as a family inference pending a
 stock capture.
 
+## Event-button styles and synopsis
+
+`SVGServiceEventButton::resetSVGNames` @0x00dd5404 selects
+`serviceBFA/UFA/FI/UFI` (BinSVG 456/457/458/459) for the default path. Fills:
+FA row `#F7941E` / time `#D37B1C` / text `#7E000A`; UFA row `#7E000A` / time
+`#6D010F` / white text; FI row `#EDEDED` / time `#D8D8D8` / `#7E000A`; UFI is
+UFA's fill. Unfocused A/I share one fill, so A/I only changes the focused
+colour. The bars now use these recovered styles (`active` = now inside the
+event; focused false until a selection model exists).
+
+`showSynopsis` @0x00dca1b0 selects `SVGDialog::setSVGName 0x66` (record 102);
+`hideSynopsis` returns to 0x65. Record 102: header 0,0,1920,264 (family
+inference), event bar 0,264,1920,571 (`#010101` 5/10), event image
+62,299,382,479, event text 429,273,1882,512, duration 76,472,396,517, date
+44,518,368,562, timeM 1196,519,1446,563, list 0,570,1920,1077 and service
+column 0,572,640,994 `#C5C9CD`. `ui.epg_synopsis=1` renders the selected
+event title, `HH:MM-HH:MM` time, vendor duration `%dh %dm`/`%dm %s` and one
+clipped description line.
+
 ## Implementation
 
 - `common/epg_layout.c` + `include/openaurora/epg_layout.h`: pure model for the
@@ -69,19 +88,20 @@ stock capture.
   `ui.epg_row_pitch=76` and `ui.epg_window_start`, and asserts the chrome
   fills, split border, bar x/width, scroll and Exit; `check-ui-epg-stock`
   passes.
-- `tools/epg-stock-check.sh` renders the real-font candidate `epg-stock.png`
-  with the Dutch langprofile: "Programmagids", "Di 14/11/2023",
-  23:13/00:13/01:13, NPO 1/NPO 2/RTL 4, Journaal/NOS Sport/Film and the clipped
-  "Lang programma".
+- `tools/epg-stock-check.sh` renders the real-font candidates `epg-stock.png`
+  and `epg-stock-synopsis.png` with the Dutch langprofile: "Programmagids",
+  "Di 14/11/2023", 23:13/00:13/01:13, NPO 1/NPO 2/RTL 4,
+  Journaal/NOS Sport/Film, the clipped "Lang programma" and the synopsis
+  "Journaal / 23:13-23:43 / 30m 0s".
 
 ## Limits and next step
 
 No stock EPG screen capture exists, so the candidate is recorder evidence, not
 pixel parity or scanout. The header fill is a family inference; tab glyph art,
-channel logo/HD/encrypted icons, event-button art/colours (bars use a
-provisional four-colour palette), selection/focus, synopsis (record 102), day
-navigation, filters, reminders/record actions, the stock entry path, the
-runtime row pitch and scanout remain open. Live EIT/EPG data still requires the
+channel logo/HD/encrypted icons, selection/focus, the synopsis event image
+and bottom event rows, text wrapping, day navigation, filters,
+reminders/record actions, the stock entry path, the runtime row pitch and
+scanout remain open. Event-bar colours are the recovered serviceB styles. Live EIT/EPG data still requires the
 owner-authorized TV/tuner window; only the ingest/query path is offline-tested.
 
 Report: EPG-STOCK-LAYOUT-2026-11-17. Related: EPG-EIT-MODULE, EPG-NOWNEXT,
