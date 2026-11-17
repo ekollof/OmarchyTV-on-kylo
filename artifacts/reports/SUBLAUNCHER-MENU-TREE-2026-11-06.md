@@ -137,7 +137,12 @@ The decompile and instruction dump are preserved in
 previously open `+0x204/+0x208/+0x210` item: the fields are consumed by
 `getRowPosition` exactly as above, not by a new transform. `EASIRect::EASIRect` @ `0x009a8004` was also instruction-checked: it packs two
 `EASIPoint`s as `{p1.x,p1.y,p2.x,p2.y}` (evidence in
-`artifacts/analysis/ui-row-origin-2026-11-16/easirect_ctor.dump.txt`). With that
+`artifacts/analysis/ui-row-origin-2026-11-16/easirect_ctor.dump.txt`). The
+`SVGListBoxBase` constructor @ `0x010bd120`
+(`artifacts/analysis/ui-row-origin-2026-11-16/svglb_ctor.dump.txt`) clears
+`+0x204/+0x208/+0x20c/+0x210`
+and `+0x1ec..+0x200` to zero; it does not derive them from a resource. A later
+setter/configurator path assigns them and is still unrecovered. With that
 and the three branches, `common/row_position.c` is a pure injected-query model
 of `getRowPosition`; `check-row-position` covers all three branches, the point
 packing and query failure, and the full host suite passes (rc=0). This is a
