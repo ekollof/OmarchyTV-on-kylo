@@ -190,8 +190,10 @@ maps the cold-start stages and the current stock-UI coverage.
       acceptance, the authority write path and enabling `cec.enable` remain.
 - [ ] Stock vendor-UI screens: live launcher DB/icons, settings tabs, channel/
       EPG/PVR, app launch profile. `ui_omarchy` is not stock-UI parity. The
-      live launcher DB path and the gated stock channel screen exist; EPG/PVR/
-      tab screens and the stock channel key path/runtime feed remain open.
+      live launcher DB path, gated stock channel screen and a first gated PVR
+      list (`ui.pvr_stock=1`, `common/pvr_layout.c`, `check-ui-pvr-stock`) exist.
+      The stock PVR capture/glyphs/icons/space/scrollbar, EPG and settings-tab
+      screens, stock channel key path/runtime feed remain open.
 
 ## Scheduled takeover test queue (single session)
 

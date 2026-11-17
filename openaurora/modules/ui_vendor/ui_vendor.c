@@ -58,6 +58,8 @@
 #include "openaurora/font_text.h"
 #include "openaurora/apps_label.h"
 #include "openaurora/channel_layout.h"
+#include "openaurora/pvr_layout.h"
+#include "openaurora/broadcast.h"
 #include "openaurora/font_box.h"
 
 #define MAX_CARDS 12
@@ -211,6 +213,7 @@ struct ctx {
     int src;                         /* source-selection row, 0..MAX_SOURCES-1 */
     int sel;                         /* picture-settings row, -1 = none */
     int sub_sel;                     /* JSON sub-launcher card, -1 = none */
+    int pvr_sel;                     /* stock PVR list focus */
     float sub_progress;              /* lab capture progress 0..1 */
     int sub_anim_live;               /* runtime key animation is running */
     uint32_t sub_anim_start;         /* ui.clock timestamp */
@@ -415,7 +418,7 @@ static const oa_ui_icon *find_icon(struct ctx *c, const char *name)
 
 enum { SCREEN_PORTAL = 0, SCREEN_OPEN = 1, SCREEN_SOURCES = 2, SCREEN_SETTINGS = 3,
        SCREEN_SETTINGS_LIST = 4, SCREEN_APPS = 5, SCREEN_CHANNELS = 6,
-       SCREEN_SUBLAUNCHER = 7, ANIM_DIALOG = 1 };
+       SCREEN_SUBLAUNCHER = 7, SCREEN_PVR = 8, ANIM_DIALOG = 1 };
 
 /* Picture-settings rows: 66 px FA bar content on the 70 px pitch, text
  * centered (row 4 centre 496). Row 6 ("Beeld zoomen") is disabled in the
@@ -2231,6 +2234,100 @@ static void paint_channels_stock(struct ctx *c)
                 "painted stock channel list: %zu rows", total);
 }
 
+static void paint_pvr(struct ctx *c);
+
+static void pvr_text(struct ctx *c, const char *text, int x, int y,
+                     uint8_t r, uint8_t g, uint8_t b)
+{
+    channel_text_at(c, &c->font, text, x, y, r, g, b);
+}
+
+/* Stock PVR/recording list, gated by ui.pvr_stock=1. Layout is BinSVG 692
+ * (DialogPlayList.svg); rows come from OA_SVC_PVR. Action glyph buttons,
+ * disk stats and the scrollbar art are not painted yet. */
+static void paint_pvr(struct ctx *c)
+{
+    const oa_ui_engine_iface *d = c->d;
+    oa_pvr_layout l;
+    if (!c || !d || oa_pvr_layout_default(&l) != 0)
+        return;
+    if (d->clear(0, 0, 0))
+        return;
+    d->fill(l.panel.x, l.panel.y, l.panel.x1 - l.panel.x,
+            l.panel.y1 - l.panel.y,
+            l.panel_rgb[0], l.panel_rgb[1], l.panel_rgb[2]);
+    d->fill(l.header.x, l.header.y, l.header.x1 - l.header.x,
+            l.header.y1 - l.header.y,
+            l.header_rgb[0], l.header_rgb[1], l.header_rgb[2]);
+    d->fill(l.subheader.x, l.subheader.y, l.subheader.x1 - l.subheader.x,
+            l.subheader.y1 - l.subheader.y,
+            l.subheader_rgb[0], l.subheader_rgb[1], l.subheader_rgb[2]);
+
+    const oa_i18n_iface *i18n = c->api->lookup(c->api->priv, OA_SVC_I18N, 1);
+    const char *title = i18n ? i18n->translate("LIBRARY", NULL) : "Bibliotheek";
+    if (!title || !*title)
+        title = "Bibliotheek";
+    if (c->font_title_data)
+        channel_text_at(c, &c->font_title, title, 176, 12, 255, 255, 255);
+    else
+        channel_text_at(c, &c->font, title, 176, 21, 255, 255, 255);
+    if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
+
+    pvr_text(c, "Naam", l.title_name.x, l.title_name.y + 5, 255, 255, 255);
+    pvr_text(c, "Start", l.title_start.x, l.title_start.y + 5, 255, 255, 255);
+    pvr_text(c, "Duur", l.title_length.x, l.title_length.y + 5, 255, 255, 255);
+
+    struct oa_pvr_job jobs[64];
+    size_t total = 0;
+    const oa_pvr_iface *pvr = c->api->lookup(c->api->priv, OA_SVC_PVR, 1);
+    if (pvr) {
+        if (pvr->list(jobs, sizeof jobs / sizeof jobs[0], &total) != 0)
+            total = 0;
+    }
+    if (total == 0)
+        c->pvr_sel = 0;
+    else if (c->pvr_sel >= (int)total)
+        c->pvr_sel = (int)total - 1;
+    int visible = oa_pvr_visible_rows(&l);
+    if (visible < 1) visible = 1;
+    int first = c->pvr_sel >= visible ? c->pvr_sel - (visible - 1) : 0;
+    for (int row = 0; row < visible && first + row < (int)total; row++) {
+        oa_pvr_rect rr;
+        if (oa_pvr_row_rect(&l, row, &rr) != 0)
+            break;
+        int index = first + row;
+        int focused = index == c->pvr_sel;
+        if (focused)
+            d->fill(rr.x, rr.y, rr.x1 - rr.x, rr.y1 - rr.y,
+                    l.focus_rgb[0], l.focus_rgb[1], l.focus_rgb[2]);
+        char start[16] = "", duration[32] = "";
+        time_t secs = (time_t)(jobs[index].start_ms / 1000);
+        struct tm tm;
+        memset(&tm, 0, sizeof tm);
+        if (localtime_r(&secs, &tm))
+            strftime(start, sizeof start, "%H:%M", &tm);
+        long mins = (long)((jobs[index].end_ms - jobs[index].start_ms) / 60000);
+        if (mins < 0) mins = 0;
+        snprintf(duration, sizeof duration, "%ld min", mins);
+        int y = rr.y + 8;
+        const uint8_t *ink = focused ? l.focus_rgb : l.text_rgb;
+        uint8_t tr = focused ? 126 : l.text_rgb[0];
+        uint8_t tg = focused ? 0 : l.text_rgb[1];
+        uint8_t tb = focused ? 10 : l.text_rgb[2];
+        (void)ink;
+        pvr_text(c, jobs[index].name, l.name.x, y, tr, tg, tb);
+        pvr_text(c, start, l.time.x, y, tr, tg, tb);
+        pvr_text(c, duration, l.duration.x, y, tr, tg, tb);
+    }
+    if (pvr) c->api->release(c->api->priv, OA_SVC_PVR);
+    c->scene_painted = 1;
+    if (d->present() != 0) {
+        c->api->log(c->api->priv, OA_LOG_ERROR, "pvr list present failed");
+        return;
+    }
+    c->api->log(c->api->priv, OA_LOG_INFO, "painted PVR list: %zu rows", total);
+}
+
 /* The five rail slots are a separate surface: the portal background behind
  * them is uniform, so the 30 ms highlight only needs this strip repainted. */
 #define PORTAL_BG_R 36
@@ -2292,6 +2389,13 @@ static void paint(struct ctx *c)
     if (c->screen == SCREEN_SUBLAUNCHER) {
         paint_sub_launcher(c);
         return;
+    }
+    if (c->screen == SCREEN_PVR) {
+        if (atoi(c->api->config_get(c->api->priv, "ui.pvr_stock", "0")) == 1) {
+            paint_pvr(c);
+            return;
+        }
+        c->screen = SCREEN_PORTAL;
     }
     if (c->screen == SCREEN_SETTINGS) {
         paint_settings(c);
@@ -2470,6 +2574,7 @@ static int portal_menu_action(const char *action)
         else if (!strcmp(name, "sub_launcher")) screen = SCREEN_SUBLAUNCHER;
         else if (!strcmp(name, "apps")) screen = SCREEN_APPS;
         else if (!strcmp(name, "channels")) screen = SCREEN_CHANNELS;
+        else if (!strcmp(name, "pvr")) screen = SCREEN_PVR;
         else return ENOENT;
         g_ctx->screen = screen;
         if (g_ctx->d) paint(g_ctx);
@@ -2997,6 +3102,36 @@ static void move_key(struct ctx *c, uint8_t id)
         }
         return;
     }
+    if (c->screen == SCREEN_PVR) {
+        if (id == 10 || id == 48) {
+            c->screen = SCREEN_PORTAL;
+            if (c->d) paint(c);
+            return;
+        }
+        struct oa_pvr_job jobs[64];
+        size_t total = 0;
+        const oa_pvr_iface *pvr = c->api->lookup(c->api->priv, OA_SVC_PVR, 1);
+        if (pvr && pvr->list(jobs, sizeof jobs / sizeof jobs[0], &total) != 0)
+            total = 0;
+        if (id == 20 || id == 19) {
+            if (total) {
+                c->pvr_sel += id == 19 ? 1 : -1;
+                if (c->pvr_sel < 0) c->pvr_sel = 0;
+                if (c->pvr_sel >= (int)total) c->pvr_sel = (int)total - 1;
+            }
+            if (c->d) paint(c);
+        } else if ((id == 53 || id == 0x8a) && total &&
+                   (unsigned)c->pvr_sel < total) {
+            oa_action_event act;
+            memset(&act, 0, sizeof act);
+            act.kind = OA_ACTION_SELECT;
+            act.index = (uint8_t)c->pvr_sel;
+            act.name = jobs[c->pvr_sel].name;
+            c->api->emit(c->api->priv, OA_TOPIC_ACTION, &act);
+        }
+        if (pvr) c->api->release(c->api->priv, OA_SVC_PVR);
+        return;
+    }
     if (c->screen == SCREEN_CHANNELS) {
         if (id == 10 || id == 48) {
             c->screen = SCREEN_PORTAL;
@@ -3444,7 +3579,10 @@ static int m_start(void *v)
         c->screen = SCREEN_SETTINGS;
     if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "settings_list"))
         c->screen = SCREEN_SETTINGS_LIST;
-    if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "sub_launcher")) {
+    if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "pvr") &&
+        atoi(c->api->config_get(c->api->priv, "ui.pvr_stock", "0")) == 1) {
+        c->screen = SCREEN_PVR;
+    } else if (!strcmp(c->api->config_get(c->api->priv, "ui.screen", ""), "sub_launcher")) {
         c->screen = SCREEN_SUBLAUNCHER;
         c->sub_sel = atoi(c->api->config_get(c->api->priv, "ui.sub_sel", "-1"));
         if (c->sub_sel < -1 || c->sub_sel > 2) c->sub_sel = -1;
@@ -3925,7 +4063,7 @@ static int m_restore(void *v, const void *buf, size_t len)
         return -1;
     const unsigned char *bytes = buf;
     if (bytes[0] > BAND_CARDS || bytes[1] > 4 || bytes[2] >= MAX_CARDS ||
-        bytes[3] > SCREEN_SUBLAUNCHER || (len == 5 && bytes[4] >= MAX_GRID))
+        bytes[3] > SCREEN_PVR || (len == 5 && bytes[4] >= MAX_GRID))
         return -1;
     c->band = bytes[0];
     c->rail = bytes[1];

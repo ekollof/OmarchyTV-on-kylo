@@ -403,6 +403,13 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   capture's 134, 1 px edge). Tabs use captured ink anchors and the 1 px border
   (MAE8 0.132), subtitle font 5. Live EASI, paging and scanout remain open.
   Evidence: CHANNEL-LIST-GEOMETRY.
+- Stock PVR list: `DialogPlayList.svg` (BinSVG 692) panel 0,0,1920,1080
+  `#DCDBDA`, header 0,0,1921,162 `#481730` 9/10, rows 26,222 1860x66 pitch75,
+  name/time/duration 181/815/1307 and five action-glyph tabs
+  (`HLP_PLAY_OPTIONS/EDIT/DELETE/SORT/SETTINGS`); title from `LIBRARY`.
+  `common/pvr_layout.c` + `check-pvr-layout`; default-off `ui.pvr_stock=1`
+  lists `OA_SVC_PVR` rows (`check-ui-pvr-stock`). No stock capture or
+  glyph/space/scrollbar art; recorder only. Evidence: PVR-STOCK-LAYOUT.
 - Apps-grid focused labels use the firmware single-line centre rule
   (`physicalWidth` + first bearing, not the ink bbox):
   `common/apps_label.c` + `check-apps-label`. Stock Twitter ink is 919..999;
