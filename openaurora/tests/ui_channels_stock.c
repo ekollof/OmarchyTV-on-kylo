@@ -36,6 +36,11 @@ static const char *config(void *p, const char *key, const char *def)
     if (!strcmp(key, "ui.focus")) return g_portal ? "3" : "2";
     if (!strcmp(key, "ui.text")) return "1";
     if (!strcmp(key, "ui.channels_stock")) return "1";
+    if (!strcmp(key, "ui.channels_filter")) return "1";
+    if (!strcmp(key, "i18n.profile")) return getenv("OA_CHANNELS_I18N_PROFILE");
+    if (!strcmp(key, "i18n.language"))
+        return getenv("OA_CHANNELS_I18N_LANG") ? getenv("OA_CHANNELS_I18N_LANG")
+                                               : "dut";
     if (!strcmp(key, "ui.font_index")) return g_font_index;
     if (!strcmp(key, "ui.font_pack")) return g_font_pack;
     if (!strcmp(key, "ui.font_id")) return "7";
@@ -254,6 +259,10 @@ int main(int argc, char **argv)
     assert(!command(&host, "start nav_display", out, sizeof out));
     assert(!command(&host, "load service_db", out, sizeof out));
     assert(!command(&host, "start service_db", out, sizeof out));
+    if (getenv("OA_CHANNELS_I18N_PROFILE")) {
+        assert(!command(&host, "load i18n", out, sizeof out));
+        assert(!command(&host, "start i18n", out, sizeof out));
+    }
     assert(!command(&host, "load ui_engine", out, sizeof out));
     assert(!command(&host, "start ui_engine", out, sizeof out));
     assert(!command(&host, "load ui_vendor", out, sizeof out));
@@ -303,6 +312,34 @@ int main(int argc, char **argv)
     oa_host_dispatch_posts(&host);
     assert(g_actions == 0);
     oa_key_event left = { .id = 21, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &left);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 12, 100, 250, 59, 255, 255, 255));
+
+    /* Filter tab opens the record-636 popup; Up/Down/Left/Right drive it and
+     * Exit closes only the popup. */
+    host.api.emit(&host, OA_TOPIC_KEY, &right);
+    host.api.emit(&host, OA_TOPIC_KEY, &right);
+    oa_host_dispatch_posts(&host);
+    host.api.emit(&host, OA_TOPIC_KEY, &sel);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 60, 117, 606, 350, 73, 73, 73));
+    assert(find_fill(trace, 60, 117, 606, 1, 220, 220, 220));
+    assert(find_fill(trace, 61, 117, 604, 66, 254, 148, 25));
+    oa_key_event down2 = { .id = 19, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &down2);
+    oa_host_dispatch_posts(&host);
+    assert(find_fill(trace, 61, 187, 604, 66, 254, 148, 25));
+    host.api.emit(&host, OA_TOPIC_KEY, &right);
+    oa_host_dispatch_posts(&host);
+    const char *fcap = getenv("OA_CHANNELS_FILTER_CAPTURE");
+    if (fcap && *fcap)
+        assert(!trace->capture(fcap));
+    oa_key_event exit_popup = { .id = 10, .kind = OA_KEY_PRESS };
+    host.api.emit(&host, OA_TOPIC_KEY, &exit_popup);
+    oa_host_dispatch_posts(&host);
+    assert(portal->screen() == 6);
+    host.api.emit(&host, OA_TOPIC_KEY, &left);
     host.api.emit(&host, OA_TOPIC_KEY, &left);
     oa_host_dispatch_posts(&host);
     assert(find_fill(trace, 12, 100, 250, 59, 255, 255, 255));
@@ -387,6 +424,8 @@ int main(int argc, char **argv)
     host.api.release(&host, OA_SVC_NAV_TRACE);
     assert(!command(&host, "stop ui_vendor", out, sizeof out));
     assert(!command(&host, "stop service_db", out, sizeof out));
+    if (getenv("OA_CHANNELS_I18N_PROFILE"))
+        assert(!command(&host, "stop i18n", out, sizeof out));
     assert(!command(&host, "stop ui_engine", out, sizeof out));
     assert(!command(&host, "stop nav_display", out, sizeof out));
     puts("ok channel list stock: record-80 fills/tabs, 75 px focus rows and text");

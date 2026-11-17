@@ -2392,8 +2392,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       (Left/Right tab focus, Up/Down list, Select per pane, digits ->
       GotoServiceDialog, MENU -> portal 0x29a, GUIDE -> EPG 0x0b) and tab
       focus + watch-pane Select are wired (`check-ui-channels-stock` asserts
-      Right/Select/Left). Open: live EASI LCN/visibility, edit/filter panes,
-      GotoServiceDialog, paging, tuner/EPG/PVR and scanout.
+      Right/Select/Left). 2026-11-18: the filter tab opens the record-636
+      ChannelListFilter popup (`common/channel_filter.c`,
+      `check-channel-filter`; CHANNEL_TYPE/TV-RADIO/FREE-PAY/A-Z/SORT items,
+      5 rows at the 70 px settings step; `ui.channels_filter=1`, Dutch
+      `stock-filter.png`). Open: live EASI LCN/visibility, applying the
+      filter, edit pane, GotoServiceDialog, paging, tuner/EPG/PVR and scanout.
 - [ ] Apps/browser/media integration, picture quality/FRC, network and Bluetooth.
 - [ ] Tuner/DVB-T/DVB-S, EPG/service lists, teletext/MHEG/interactive TV, PVR/
       timeshift/playback, CI+/conditional access and associated persistence.

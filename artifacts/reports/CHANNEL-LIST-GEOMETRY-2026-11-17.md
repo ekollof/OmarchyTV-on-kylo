@@ -127,6 +127,29 @@ forwards Up/Down to the list; `onSelectPress` @0x00e7e2e4 dispatches
 action; the edit/filter panes and the GotoService dialog are recorded but not
 implemented, so Select on those panes logs and emits nothing.
 
+## Filter/sort popup (record 636)
+
+`ChannelListFilterSortDialog` (internal name `ChannelListFilter`) is opened by
+`displayFilter` and uses `DialogFilterSortSelector.svg` (BinSVG 636): panel
+60,117,666,467 fill `#494949` with a `#DCDCDC` border, `filterSortTypeList`
+covering the same rect. `initialiseFields` @0x00e8f1a4 supplies the recovered
+language keys: `CHANNEL_TYPE` (ALL/DVB_AERIAL_ONLY/DVB_CABLE_ONLY/
+DVB_SATELLITE_ONLY/IPTV_ONLY/ANALOG_ONLY), `FILTER_TV_RADIO_LABEL`
+(TV_ONLY/RADIO_ONLY/TEXT_ONLY), `FREE_PAY_LABEL`
+(FILTER_FREE/FILTER_ENCRYPTED), `FILTER_LETTER_LABEL` (A-Z) and `SORT_LABEL`
+(SORT_NUMERIC/SORT_ALPHABETIC). The HD values UHD/HD/SD, HD/SD, SD, HD, UHD are
+literal but their item label is not in the langprofile, so that item stays
+out. Rows use the captured 70 px settings step (66 px `SettingListBoxRowFA`
+art); the 350 px list shows 5 rows.
+
+`ui.channels_filter=1` (with `ui.channels_stock=1`) opens the popup on Select
+over the filter tab. Up/Down move the item, Left/Right change its value
+(wrapping), the selected row is `#FE9419` with `#7E000A` text, and Select/Exit
+close it; applying the CA/filter view to the list is not recovered, so Select
+currently only logs. `common/channel_filter.c` + `check-channel-filter` cover
+the catalogue, navigation and layout; `check-ui-channels-stock` drives the
+popup and `stock-filter.png` is the Dutch real-font candidate.
+
 The provisional `SCREEN_CHANNELS` remains the default; the portal entry path
 (rail 3), runtime-order ingest/selection, scrollbar and the tab focus/Select
 dispatch are wired and tested.

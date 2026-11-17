@@ -58,6 +58,7 @@
 #include "openaurora/font_text.h"
 #include "openaurora/apps_label.h"
 #include "openaurora/channel_layout.h"
+#include "openaurora/channel_filter.h"
 #include "openaurora/pvr_layout.h"
 #include "openaurora/epg_layout.h"
 #include "openaurora/pvr_space.h"
@@ -224,6 +225,8 @@ struct ctx {
     uint64_t sub_tick;               /* 10 ms repaint timer */
     int chan_sel;                    /* provisional channel-list selection */
     int chan_tab;                    /* stock channel tab: 0 watch, 1 edit, 2 filter */
+    int chan_filter_open;            /* record-636 filter/sort popup is open */
+    oa_channel_filter chan_filter;
     int text_on;                     /* live labels/values loaded (ui.text=1) */
     struct oa_font_pack font_pack;
     unsigned char *font_data, *font_num_data;
@@ -1913,6 +1916,7 @@ static void channel_text_blit(struct ctx *c, const char *text, int x, int y,
 }
 
 static void paint_channels_stock(struct ctx *c);
+static void paint_channel_filter_popup(struct ctx *c);
 static int stock_channel_fonts(struct ctx *c);
 
 static void paint_channels(struct ctx *c)
@@ -2250,6 +2254,7 @@ static void paint_channels_stock(struct ctx *c)
     if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
     if (channels) c->api->release(c->api->priv, OA_SVC_CHANNELS);
     free(order);
+    paint_channel_filter_popup(c);
     c->scene_painted = 1;
     if (d->present() != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR,
@@ -2367,6 +2372,78 @@ static void paint_tab(struct ctx *c, int x, int y, int w, int h,
 /* Stock PVR/recording list, gated by ui.pvr_stock=1. Layout is BinSVG 692
  * (DialogPlayList.svg); rows come from OA_SVC_PVR. Action glyph buttons,
  * disk stats and the scrollbar art are not painted yet. */
+/* Record-636 filter/sort popup (ChannelListFilterSortDialog). Drawn over the
+ * channel screen before its present. Rows use the captured 70 px settings
+ * step; the selected row is the theme orange with #7E000A text. */
+static void paint_channel_filter_popup(struct ctx *c)
+{
+    if (!c || !c->d || !c->chan_filter_open)
+        return;
+    if (atoi(c->api->config_get(c->api->priv, "ui.channels_filter", "0")) != 1)
+        return;
+    oa_channel_filter_layout l;
+    if (oa_channel_filter_layout_default(&l) != 0)
+        return;
+    const oa_ui_engine_iface *d = c->d;
+    int w = l.panel.x1 - l.panel.x, h = l.panel.y1 - l.panel.y;
+    d->fill(l.panel.x, l.panel.y, w, h, l.panel_rgb[0], l.panel_rgb[1],
+            l.panel_rgb[2]);
+    d->fill(l.panel.x, l.panel.y, w, 1, l.border_rgb[0], l.border_rgb[1],
+            l.border_rgb[2]);
+    d->fill(l.panel.x, l.panel.y1 - 1, w, 1, l.border_rgb[0],
+            l.border_rgb[1], l.border_rgb[2]);
+    d->fill(l.panel.x, l.panel.y, 1, h, l.border_rgb[0], l.border_rgb[1],
+            l.border_rgb[2]);
+    d->fill(l.panel.x1 - 1, l.panel.y, 1, h, l.border_rgb[0],
+            l.border_rgb[1], l.border_rgb[2]);
+
+    const oa_channel_filter_item *items = oa_channel_filter_catalogue();
+    const oa_i18n_iface *i18n = c->api->lookup(c->api->priv, OA_SVC_I18N, 1);
+    (void)tab_font_open(c);
+    const struct oa_bitmap_font *font = c->tab_font_on ? &c->tab_font
+                                                       : &c->font;
+    int font_height = 0;
+    (void)oa_bitmap_font_height(font, &font_height);
+    int first = c->chan_filter.selected >= l.visible_rows
+                    ? c->chan_filter.selected - l.visible_rows + 1 : 0;
+    for (int row = 0; row < l.visible_rows; row++) {
+        int index = first + row;
+        if (index >= OA_CHANNEL_FILTER_ITEMS)
+            break;
+        int y = l.panel.y + row * l.row_pitch;
+        int focused = index == c->chan_filter.selected;
+        if (focused)
+            d->fill(l.panel.x + 1, y, w - 2, l.row_height, l.focus_rgb[0],
+                    l.focus_rgb[1], l.focus_rgb[2]);
+        int ty = y + (l.row_height - font_height) / 2;
+        if (ty < l.panel.y) ty = l.panel.y;
+        const char *label = tab_label(i18n, items[index].key, items[index].key);
+        const char *value =
+            tab_label(i18n, items[index].values[c->chan_filter.value[index]],
+                      items[index].values[c->chan_filter.value[index]]);
+        if (focused) {
+            channel_text_at(c, font, label, l.panel.x + 20, ty,
+                            l.focus_text_rgb[0], l.focus_text_rgb[1],
+                            l.focus_text_rgb[2]);
+            int advance = 0;
+            if (oa_font_text_measure(font, value, 0, &advance) == 0 &&
+                advance > 0 && advance < w - 40)
+                channel_text_at(c, font, value, l.panel.x1 - 20 - advance, ty,
+                                l.focus_text_rgb[0], l.focus_text_rgb[1],
+                                l.focus_text_rgb[2]);
+        } else {
+            channel_text_at(c, font, label, l.panel.x + 20, ty,
+                            l.text_rgb[0], l.text_rgb[1], l.text_rgb[2]);
+            int advance = 0;
+            if (oa_font_text_measure(font, value, 0, &advance) == 0 &&
+                advance > 0 && advance < w - 40)
+                channel_text_at(c, font, value, l.panel.x1 - 20 - advance, ty,
+                                l.text_rgb[0], l.text_rgb[1], l.text_rgb[2]);
+        }
+    }
+    if (i18n) c->api->release(c->api->priv, OA_SVC_I18N);
+}
+
 static void paint_pvr(struct ctx *c)
 {
     const oa_ui_engine_iface *d = c->d;
@@ -3964,6 +4041,24 @@ static void move_key(struct ctx *c, uint8_t id)
         return;
     }
     if (c->screen == SCREEN_CHANNELS) {
+        if (c->chan_filter_open) {
+            if (id == 19 || id == 20)
+                (void)oa_channel_filter_move(&c->chan_filter,
+                                             id == 19 ? 1 : -1);
+            else if (id == 21 || id == 22)
+                (void)oa_channel_filter_change(&c->chan_filter,
+                                               id == 22 ? 1 : -1);
+            else if (id == 53 || id == 0x8a) {
+                /* Applying the CA/filter view is not recovered; close only. */
+                c->chan_filter_open = 0;
+                c->api->log(c->api->priv, OA_LOG_INFO,
+                            "channel filter apply is not implemented");
+            } else if (id == 10 || id == 48) {
+                c->chan_filter_open = 0;
+            }
+            if (c->d) paint(c);
+            return;
+        }
         if (id == 10 || id == 48) {
             c->screen = SCREEN_PORTAL;
             if (c->d) paint(c);
@@ -4023,9 +4118,17 @@ static void move_key(struct ctx *c, uint8_t id)
                                         : list->rows[order[c->chan_sel]].name;
                 c->api->emit(c->api->priv, OA_TOPIC_ACTION, &act);
             } else if (c->chan_tab != 0) {
-                c->api->log(c->api->priv, OA_LOG_INFO,
-                            "channel tab %d action is not implemented",
-                            c->chan_tab);
+                if (c->chan_tab == 2 &&
+                    atoi(c->api->config_get(c->api->priv,
+                                            "ui.channels_filter", "0")) == 1) {
+                    oa_channel_filter_default(&c->chan_filter);
+                    c->chan_filter_open = 1;
+                    if (c->d) paint(c);
+                } else {
+                    c->api->log(c->api->priv, OA_LOG_INFO,
+                                "channel tab %d action is not implemented",
+                                c->chan_tab);
+                }
             }
         }
         free(order);

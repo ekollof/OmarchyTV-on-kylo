@@ -1626,7 +1626,14 @@ bar focus (onLeftRightPress 0x00e7e23c), Up/Down list (0x00e7ad28), Select per
 pane (0x00e7e2e4 displayFilter/displayService/displayEdit), digits ->
 GotoServiceDialog (0x00e7cb18), MENU -> portal 0x29a and GUIDE -> nav 0x0b
 (EPG). The stock mode tracks chan_tab and moves the white pill; Select emits
-only on the watch pane. Edit/filter panes and GotoServiceDialog remain open.
+only on the watch pane. Edit pane and GotoServiceDialog remain open. 2026-11-18
+CHANNEL-FILTER: ChannelListFilterSortDialog (ChannelListFilter) uses BinSVG 636
+(panel 60,117,666,467 #494949, 70 px settings rows, 5 visible) with
+CHANNEL_TYPE/FILTER_TV_RADIO_LABEL/FREE_PAY_LABEL/FILTER_LETTER_LABEL/
+SORT_LABEL items; `common/channel_filter.c` + check-channel-filter and the
+`ui.channels_filter=1` popup (Select on the filter tab; Up/Down item,
+Left/Right value wrap; Select/Exit close; apply not implemented) with the
+Dutch stock-filter.png.
 
 PVR-STOCK-LAYOUT-2026-11-17: `DialogPlayList.svg` (BinSVG 692) gives the stock
 PVR list (panel #DCDBDA, header #481730 9/10, rows 26,222 1860x66 pitch75,

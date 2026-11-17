@@ -405,8 +405,12 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   filter tab focus (onLeftRightPress 0x00e7e23c), Up/Down the list, Select
   dispatches per pane (0x00e7e2e4), digits open GotoServiceDialog
   (0x00e7cb18), MENU exits to portal 0x29a and GUIDE to the EPG 0x0b; the
-  edit/filter panes and GotoServiceDialog are open. Live EASI, paging and
-  scanout remain open. Evidence: CHANNEL-LIST-GEOMETRY.
+  edit pane and GotoServiceDialog are open; the filter tab opens the record-636
+  ChannelListFilter popup (60,117,666,467 #494949, 70 px rows, 5 visible;
+  CHANNEL_TYPE/TV-RADIO/FREE-PAY/A-Z/SORT items) behind `ui.channels_filter=1`,
+  with `common/channel_filter.c` + `check-channel-filter` and the Dutch
+  `stock-filter.png`; applying it is open. Live EASI, paging and scanout
+  remain open. Evidence: CHANNEL-LIST-GEOMETRY.
 - Stock EPG timeline: `DialogEPG.svg` (BinSVG 101) with
   `MultiServiceTimelineScheduleDialog`: title key `PROGRAM_GUIDE`, date
   `<weekday-short> %02u/%02u/%u`, start/middle/end `%02u:%02u`; list

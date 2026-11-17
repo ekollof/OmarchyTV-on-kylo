@@ -367,6 +367,19 @@ inference (#481730) pending a capture; exact tab font/icons, selection, synopsis
 event image/bottom rows/wrapping, day navigation, live EIT and scanout remain
 open. Recorder evidence only.
 
+CHANNEL-FILTER-2026-11-18: `ChannelListFilterSortDialog` (internal
+`ChannelListFilter`) uses `DialogFilterSortSelector.svg` (BinSVG 636): panel
+60,117,666,467 fill #494949 with #DCDCDC border. initialiseFields 0x00e8f1a4
+gives CHANNEL_TYPE (ALL/DVB_AERIAL_ONLY/DVB_CABLE_ONLY/DVB_SATELLITE_ONLY/
+IPTV_ONLY/ANALOG_ONLY), FILTER_TV_RADIO_LABEL (TV_ONLY/RADIO_ONLY/TEXT_ONLY),
+FREE_PAY_LABEL (FILTER_FREE/FILTER_ENCRYPTED), FILTER_LETTER_LABEL (A-Z) and
+SORT_LABEL (SORT_NUMERIC/SORT_ALPHABETIC); the HD values are literal but the
+item label is not in the profile. Rows use the captured 70 px settings step
+and 66 px row art (5 visible). `common/channel_filter.c` + check-channel-filter
+cover the catalogue/layout/navigation; `ui.channels_filter=1` opens the popup
+on Select over the filter tab (Up/Down item, Left/Right value wrap, #FE9419/
+#7E000A focus, Select/Exit close). Applying the filter view is not recovered.
+
 CHANNEL-KEY-PATH-2026-11-18: `AdvancedChannelListDialog` recovers the stock
 keys. `onLeftRightPress` 0x00e7e23c forwards Left/Right to the tab bar
 (mirror-swapped), so they move the watch/edit/filter focus; `onUpDownPress`
