@@ -422,7 +422,11 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   (`HLP_PLAY_OPTIONS/EDIT/DELETE/SORT/SETTINGS`, text buttons through
   UIResourceManager::lookupString; TabButton 522..525); title from `LIBRARY`.
   `common/pvr_layout.c` + `check-pvr-layout`; default-off `ui.pvr_stock=1`
-  lists `OA_SVC_PVR` rows (`check-ui-pvr-stock`). LIBRARY resolves to
+  lists `OA_SVC_PVR` rows (`check-ui-pvr-stock`). Row indicators follow
+  updateRecordingIndicators 0x00df7788 (recording +0x1c, new +0x1c==0 &&
+  +0x1f==0, lock +0x1d==0, play-disallowed +0x1e==0, radio/TV +0x24==2),
+  read through optional `pvr.meta` v1 and tinted #111111; the stub publishes
+  no meta. LIBRARY resolves to
   "Opnamebibliotheek"; columns use NAME_TITLE/START_TITLE/DURATION_TITLE
   (Naam/Start/Lengte). Row icons: recording 0x36 `icon_record_small` (painted
   for OA_PVR_RECORDING), new 0x116, locked 0x1e, playback 0x115, partial

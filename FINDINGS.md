@@ -328,9 +328,15 @@ refreshSpaceUsage uses USED/RESERVED/FREE_SPACE_INFO_TITLE + " MB" (dut
 disk stats. `common/pvr_layout.c` + `check-pvr-layout` encode/test the layout;
 a default-off `ui.pvr_stock=1` SCREEN_PVR lists OA_SVC_PVR rows
 (name/start/length/recording icon/focus) and `check-ui-pvr-stock` passes with
-a real-font/real-icon recorder candidate. No stock PVR capture, exact tab font,
-other indicators, space values, scrollbar art, recording engine or scanout;
-recorder evidence only.
+a real-font/real-icon recorder candidate. 2026-11-18: the indicator rules are
+recovered from SVGFullScreenListDialog::updateRecordingIndicators 0x00df7788
+(recording +0x1c; new +0x1c==0 && +0x1f==0; lock +0x1d==0; play-disallowed
++0x1e==0; radio/TV +0x24==2; the partial >=1 branch is unreachable), read
+through an optional `pvr.meta` v1 service and tinted with the rects' #111111
+stroke; the mod_pvr stub publishes no meta, so the state recording icon is the
+fallback. check-ui-pvr-stock renders row 1 recording+TV and row 2
+new+lock+play-disallowed+radio. No stock PVR capture, exact tab font, space
+values, scrollbar art, recording engine or scanout; recorder evidence only.
 
 EPG-STOCK-LAYOUT-2026-11-17: the multi-service EPG is
 MultiServiceTimelineScheduleDialog (internal EPGTimeline) over DialogEPG.svg

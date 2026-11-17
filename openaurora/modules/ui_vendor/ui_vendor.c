@@ -2286,6 +2286,29 @@ static int tab_font_open(struct ctx *c)
     return 0;
 }
 
+/* The row-indicator assets right_arrow/lock/play_disallowed/tv/radio are
+ * white masks; record 692 gives every indicator rect stroke #111111, which the
+ * vendor uses as the tint. Paint a tinted copy, leaving the recording dot
+ * (a coloured asset) untouched. */
+static void blit_tinted(struct ctx *c, const oa_ui_icon *icon, int x, int y,
+                        uint8_t r, uint8_t g, uint8_t b)
+{
+    if (!c || !c->d || !icon || icon->w <= 0 || icon->h <= 0)
+        return;
+    size_t n = (size_t)icon->w * (size_t)icon->h;
+    unsigned char *buf = malloc(n * 4u);
+    if (!buf)
+        return;
+    for (size_t i = 0; i < n; i++) {
+        buf[i * 4u] = r;
+        buf[i * 4u + 1] = g;
+        buf[i * 4u + 2] = b;
+        buf[i * 4u + 3] = icon->rgba[i * 4u + 3u];
+    }
+    c->d->blit(x, y, icon->w, icon->h, buf);
+    free(buf);
+}
+
 static void paint_tab(struct ctx *c, int x, int y, int w, int h,
                       const char *label, int selected)
 {
@@ -2375,6 +2398,8 @@ static void paint_pvr(struct ctx *c)
     struct oa_pvr_job jobs[64];
     size_t total = 0;
     const oa_pvr_iface *pvr = c->api->lookup(c->api->priv, OA_SVC_PVR, 1);
+    const oa_pvr_meta_iface *meta_svc =
+        c->api->lookup(c->api->priv, OA_SVC_PVR_META, 1);
     if (pvr) {
         if (pvr->list(jobs, sizeof jobs / sizeof jobs[0], &total) != 0)
             total = 0;
@@ -2395,15 +2420,56 @@ static void paint_pvr(struct ctx *c)
         if (focused)
             d->fill(rr.x, rr.y, rr.x1 - rr.x, rr.y1 - rr.y,
                     l.focus_rgb[0], l.focus_rgb[1], l.focus_rgb[2]);
-        /* Row icon evidence: createComponents creates 0x36
-         * (icon_record_small.png, id 54) for the recordingIcon rect
-         * 55,237..91,273. Only the recording state is painted: the other
-         * indicators (new/tagged/locked/partial/playback) need recording
-         * metadata that OA_SVC_PVR does not expose yet. */
-        if (jobs[index].state == OA_PVR_RECORDING) {
-            const oa_ui_icon *rec = find_icon(c, "icon_record_small");
-            if (rec)
-                d->blit(l.row.x + 29, rr.y + 15, rec->w, rec->h, rec->rgba);
+        /* Row indicators. PlayListDialog::createComponents maps recordingIcon
+         * 55,237..91,273 to 0x36 icon_record_small, newIcon 93,237..138,273 to
+         * 0x116 icon_right_arrow, lockedIcon 1793,237 to 0x1e icon_lock,
+         * playbackIcon 1833,237 to 0x115 icon_play_disallowed and
+         * serviceTypeIcon 1735,236..1791,283 to 6/8 tv/radio.
+         * SVGFullScreenListDialog::updateRecordingIndicators 0x00df7788
+         * applies: recording when being_recorded; new when not recording and
+         * new_flag == 0; lock when protection == 0; playback when
+         * playback_protection == 0; radio when service_type == 2, else TV.
+         * Without pvr.meta, the project state fallback paints only the
+         * recording icon for OA_PVR_RECORDING. */
+        struct oa_pvr_meta meta;
+        int have_meta = 0;
+        if (meta_svc) {
+            memset(&meta, 0, sizeof meta);
+            have_meta = meta_svc->read(jobs[index].id, &meta) == 0;
+        }
+        int recording = have_meta ? meta.being_recorded != 0
+                                  : jobs[index].state == OA_PVR_RECORDING;
+        if (recording) {
+            const oa_ui_icon *icon = find_icon(c, "icon_record_small");
+            if (icon)
+                d->blit(rr.x + 29, rr.y + 15, icon->w, icon->h, icon->rgba);
+        }
+        if (have_meta) {
+            if (!meta.being_recorded && meta.new_flag == 0) {
+                const oa_ui_icon *icon = find_icon(c, "icon_right_arrow");
+                if (icon)
+                    blit_tinted(c, icon, rr.x + 67 + (45 - icon->w) / 2,
+                                rr.y + 15 + (36 - icon->h) / 2,
+                                35, 31, 32);
+            }
+            if (meta.protection == 0) {
+                const oa_ui_icon *icon = find_icon(c, "icon_lock");
+                if (icon)
+                    blit_tinted(c, icon, rr.x + 1767, rr.y + 15,
+                                35, 31, 32);
+            }
+            if (meta.playback_protection == 0) {
+                const oa_ui_icon *icon = find_icon(c, "icon_play_disallowed");
+                if (icon)
+                    blit_tinted(c, icon, rr.x + 1807, rr.y + 15,
+                                35, 31, 32);
+            }
+            const char *type_asset = meta.service_type == 2 ? "icon_radio_small"
+                                                            : "icon_tv_small";
+            const oa_ui_icon *icon = find_icon(c, type_asset);
+            if (icon)
+                blit_tinted(c, icon, rr.x + 1709 + (56 - icon->w) / 2,
+                            rr.y + 14 + (47 - icon->h) / 2, 35, 31, 32);
         }
         char start[16] = "", duration[32] = "";
         time_t secs = (time_t)(jobs[index].start_ms / 1000);
@@ -2425,6 +2491,7 @@ static void paint_pvr(struct ctx *c)
         pvr_text(c, duration, l.duration.x, y, tr, tg, tb);
     }
     if (pvr) c->api->release(c->api->priv, OA_SVC_PVR);
+    if (meta_svc) c->api->release(c->api->priv, OA_SVC_PVR_META);
     c->scene_painted = 1;
     if (d->present() != 0) {
         c->api->log(c->api->priv, OA_LOG_ERROR, "pvr list present failed");

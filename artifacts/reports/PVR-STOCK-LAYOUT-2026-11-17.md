@@ -55,9 +55,25 @@ Row indicators map to image ids and record-692 rects:
 | serviceTypeIcon | 1735,236 .. 1791,283 | 99 / 6 / 8 | `icon_lost_signal`, `icon_tv_small`, `icon_radio_small` |
 
 Image ids are pack indices (`telefunken18_img.bin` is the concatenated PNG
-payload in index order). Only `recordingIcon` is painted, for
-`OA_PVR_RECORDING`; the other indicators need metadata (`new`, `locked`,
-`partial`, play-disallowed, TV/radio) that `OA_SVC_PVR` does not expose.
+payload in index order). `SVGFullScreenListDialog::updateRecordingIndicators`
+@0x00df7788 applies the recovered rules (the image vtable `+0x34` is `setId`,
+where 0 hides the icon):
+
+| indicator | rule |
+|---|---|
+| recordingIcon | `entryIsBeingRecorded` = `PlayListItemData+0x1c` |
+| newIcon | `newFlagShown` = `+0x1c == 0 && +0x1f == 0` |
+| lockedIcon | `entryIsProtected` = `+0x1d ^ 1` (shown when 0) |
+| playbackIcon | `entryIsPlaybackProtected` = `-(+0x1e ^ 1)` (shown when 0) |
+| partialIcon | the same function's `>= 1` branch, unreachable from the recovered body (it returns 0/-1) |
+| serviceTypeIcon | `entryGetServiceType` = `+0x24`, 2 = radio else TV |
+
+`ui.pvr_stock=1` reads these bytes from the optional `pvr.meta` v1 service
+(`oa_pvr_meta_iface.read`); `mod_pvr`'s stub does not publish it, so the
+project falls back to the state-based recording icon for `OA_PVR_RECORDING`.
+The indicator assets are white masks and the record-692 rects have stroke
+`#111111`, so the screen tints them (the recording dot is a coloured asset and
+is not tinted).
 
 `PlayListDialog::rebuildRecordingsList` @0x00df3768 allocates a 0x38-byte
 `PlayListItemData` per `EASIDvrInterface::queryFirstRecording` result:

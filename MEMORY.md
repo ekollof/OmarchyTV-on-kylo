@@ -1634,8 +1634,13 @@ icon is painted (OA_PVR_RECORDING). USED/RESERVED/FREE_SPACE_INFO_TITLE + " MB"
 recovered; no disk stats. `common/pvr_layout.c` + `check-pvr-layout` pass;
 default-off `ui.pvr_stock=1` SCREEN_PVR lists OA_SVC_PVR rows and
 `check-ui-pvr-stock` passes (real-font/real-icon candidate `pvr-stock.png`,
-`tools/pvr-stock-check.sh`). No stock PVR capture, action glyphs, other
-indicators, space values, scrollbar art, recording engine or scanout.
+`tools/pvr-stock-check.sh`). 2026-11-18: the indicator rules are recovered
+from SVGFullScreenListDialog::updateRecordingIndicators 0x00df7788 (recording
++0x1c; new +0x1c==0 && +0x1f==0; lock +0x1d==0; play-disallowed +0x1e==0;
+radio/TV +0x24==2; partial branch unreachable) and read via optional
+`pvr.meta` v1; white masks are tinted #111111. The mod_pvr stub publishes no
+meta, so the state recording icon is the fallback. No stock PVR capture, exact
+tab font record, space values, scrollbar art, recording engine or scanout.
 
 EPG-STOCK-LAYOUT-2026-11-17: DialogEPG.svg (BinSVG 101) and
 MultiServiceTimelineScheduleDialog give the EPG timeline: title PROGRAM_GUIDE

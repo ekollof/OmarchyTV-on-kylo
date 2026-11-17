@@ -77,11 +77,19 @@ text. `ui.tab_font_id` defaults to 4 because font7 overflows a 300 px tab.
 (id, names, start, duration, DVR vtable +0x58/+0x6c values, synopsis, and a
 `+0x34` bool from `local_ebc > 0`); the flag→indicator mapping is not
 reduced. `updateCachedDiskStatistics` @0x00df20e4 reads two DVR values into
-`this+0x9a4/+0x9a8` (zeroed on failure) for `refreshSpaceUsage`. Only
-`recordingIcon` is painted today, for `OA_PVR_RECORDING`. The other
-indicators need metadata (`new`, `locked`, `partial`, play-disallowed,
-service type TV/radio) that `OA_SVC_PVR` does not expose, so they remain
-unpainted rather than guessed.
+`this+0x9a4/+0x9a8` (zeroed on failure) for `refreshSpaceUsage`.
+
+`SVGFullScreenListDialog::updateRecordingIndicators` @0x00df7788 applies the
+indicator rules (the image vtable `+0x34` is `setId`, 0 hides): recording when
+`+0x1c`; new when `+0x1c == 0 && +0x1f == 0`; lock when `+0x1d == 0`;
+play-disallowed when `+0x1e == 0`; radio when `+0x24 == 2`, else TV. The
+`partialIcon` `>= 1` branch is unreachable from the recovered body (it returns
+0/-1). `ui.pvr_stock=1` reads the bytes through the optional `pvr.meta` v1
+service and tints the white mask assets with the rects' `#111111` stroke
+(recording dot is coloured and not tinted). The mod_pvr stub does not publish
+meta, so the state-based `OA_PVR_RECORDING` recording icon is the fallback.
+`pvr-stock.png` shows row 1 recording+TV and row 2
+new+lock+play-disallowed+radio.
 
 ## Space info
 

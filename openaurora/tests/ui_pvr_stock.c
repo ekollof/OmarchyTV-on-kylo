@@ -8,6 +8,7 @@
 #include "openaurora/ui_engine.h"
 #include "ui_nav_trace.h"
 #include <assert.h>
+#include <errno.h>
 #include <ftw.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -139,6 +140,34 @@ static int find_fill(const oa_nav_trace *trace, int x, int y, int w, int h,
     return 0;
 }
 
+static int meta_read(uint32_t id, struct oa_pvr_meta *out)
+{
+    if (!out)
+        return -EINVAL;
+    memset(out, 0, sizeof *out);
+    if (id == 1) {
+        /* Recording row: recording + TV only. */
+        out->being_recorded = 1;
+        out->protection = 1;
+        out->playback_protection = 1;
+        out->new_flag = 1;
+        out->service_type = 1;
+        return 0;
+    }
+    if (id == 2) {
+        /* Scheduled row: new + lock + play-disallowed + radio. */
+        out->being_recorded = 0;
+        out->protection = 0;
+        out->playback_protection = 0;
+        out->new_flag = 0;
+        out->service_type = 2;
+        return 0;
+    }
+    return -ENOENT;
+}
+
+static const oa_pvr_meta_iface g_meta = { meta_read };
+
 static int remove_entry(const char *path, const struct stat *st, int flag,
     struct FTW *ftw)
 {
@@ -164,7 +193,12 @@ int main(int argc, char **argv)
     } else {
         snprintf(g_ui_dir, sizeof g_ui_dir, "%s/ui", g_tmp);
         assert(!mkdir(g_ui_dir, 0700));
-        make_icon(g_ui_dir, "icon_record_small");
+        static const char *const ICONS[] = {
+            "icon_record_small", "icon_right_arrow", "icon_lock",
+            "icon_play_disallowed", "icon_tv_small", "icon_radio_small"
+        };
+        for (size_t i = 0; i < sizeof ICONS / sizeof ICONS[0]; i++)
+            make_icon(g_ui_dir, ICONS[i]);
     }
     snprintf(g_pvr_path, sizeof g_pvr_path, "%s/pvr.db", g_tmp);
     const char *fi = getenv("OA_PVR_FONT_INDEX");
@@ -204,6 +238,7 @@ int main(int argc, char **argv)
     assert(pvr->add(&req, &id) == 0 && id);
     assert(pvr->record(1) == 0);
     host.api.release(&host, OA_SVC_PVR);
+    assert(host.api.publish(&host, OA_SVC_PVR_META, 1, &g_meta) == 0);
 
     assert(!command(&host, "load ui_engine", out, sizeof out));
     assert(!command(&host, "start ui_engine", out, sizeof out));
@@ -224,8 +259,15 @@ int main(int argc, char **argv)
     assert(trace->blit_count() >= 10);
     /* recordingIcon rect 55,237..91,273 (id 54 icon_record_small.png) is
      * painted for the recording row only. */
-    assert(find_blit(trace, 55, 237, 36, 36));
-    assert(!find_blit(trace, 55, 312, 36, 36));
+    assert(find_blit(trace, 55, 237, 36, 36));          /* recording */
+    assert(find_blit(trace, 1745, 241, 36, 36));        /* service type TV */
+    assert(!find_blit(trace, 97, 237, 36, 36));         /* no new while rec */
+    assert(!find_blit(trace, 55, 312, 36, 36));         /* row 2 not recording */
+    /* Row 2 meta: new + lock + play-disallowed + radio. */
+    assert(find_blit(trace, 97, 312, 36, 36));
+    assert(find_blit(trace, 1793, 312, 36, 36));
+    assert(find_blit(trace, 1833, 312, 36, 36));
+    assert(find_blit(trace, 1745, 316, 36, 36));
 
     oa_key_event down = { .id = 19, .kind = OA_KEY_PRESS };
     host.api.emit(&host, OA_TOPIC_KEY, &down);

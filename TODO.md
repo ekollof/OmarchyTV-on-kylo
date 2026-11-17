@@ -194,8 +194,13 @@ maps the cold-start stages and the current stock-UI coverage.
       list (`ui.pvr_stock=1`, `common/pvr_layout.c`, `check-ui-pvr-stock`;
       2026-11-17: i18n title/columns, recording-row icon from the recovered
       id 0x36 and the icon id/rect map for the other indicators). The stock PVR
-      capture, exact tab font, other indicators, space values, scrollbar art
-      and the settings-tab screen remain open. 2026-11-17: the stock EPG
+      capture, exact tab font, space values, scrollbar art and the
+      settings-tab screen remain open. 2026-11-18: the indicator rules are
+      recovered (recording/new/lock/play-disallowed/radio-TVT from
+      PlayListItemData +0x1c..0x1f/+0x24 via updateRecordingIndicators
+      0x00df7788) and wired through optional `pvr.meta` v1 with #111111
+      tinting; `check-ui-pvr-stock` renders recording+TV and
+      new+lock+play-disallowed+radio. 2026-11-17: the stock EPG
       timeline is recovered (`common/epg_layout.c`, `check-epg-layout`) and a
       default-off `ui.epg_stock=1` SCREEN_EPG paints chrome/i18n
       title/date/times/service rows/OA_SVC_EPG bars, with rows only under an

@@ -142,6 +142,25 @@ struct oa_pvr_job {
     char name[64];
 };
 
+/* Raw PlayListItemData state bytes (aurora PlayListDialog::rebuildRecordingsList
+ * 0x00df3768): +0x1c being recorded, +0x1d protection (icon when 0), +0x1e
+ * playback protection (icon when 0), +0x1f new flag (icon when 0 and not
+ * recording), +0x24 service type (2 = radio, otherwise TV). These are the raw
+ * bytes; the vendor's indicator rules are applied by the consumer. */
+struct oa_pvr_meta {
+    uint8_t being_recorded;
+    uint8_t protection;
+    uint8_t playback_protection;
+    uint8_t new_flag;
+    int32_t service_type;
+};
+
+typedef struct {
+    /* Fill *out for a recording id (the oa_pvr_job.id). 0 on success,
+     * -ENOENT for unknown ids, -ENOTSUP when the backend cannot supply it. */
+    int (*read)(uint32_t id, struct oa_pvr_meta *out);
+} oa_pvr_meta_iface;
+
 typedef struct {
     int (*list)(struct oa_pvr_job *jobs, size_t cap, size_t *count);
     int (*add)(const struct oa_pvr_request *request, uint32_t *id);
