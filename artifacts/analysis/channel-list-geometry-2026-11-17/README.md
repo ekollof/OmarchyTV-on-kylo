@@ -119,3 +119,16 @@ The stock channel capture shows a white 3 px grip at x=768..770, y=196..329
 not pinned: the dump DB's raw `m_type`/`m_flags` values are packed and the
 stock list's runtime/EASI visibility filter is not available offline. Do not
 fit a track/total to the 134 px grip; that remains open.
+
+## Key path (2026-11-18)
+
+`AdvancedChannelListDialog` recovers the keys: `onLeftRightPress` @0x00e7e23c
+forwards Left/Right to the tab bar (mirror-swapped), so the watch/edit/filter
+focus moves; `onUpDownPress` @0x00e7ad28 forwards to the list;
+`onSelectPress` @0x00e7e2e4 dispatches displayFilter/displayService/displayEdit
+for the focused pane; `onDigitPress` @0x00e7cb18 opens the modal
+GotoServiceDialog and sets the list selection from its result; MENU key 0x210
+ends to 0x29a (portal) and GUIDE sends dialog navigation 0x0b (EPG). The stock
+mode tracks `chan_tab`, moves the white pill on Left/Right, and emits the tune
+action only on the watch pane; the edit/filter panes and GotoServiceDialog are
+not implemented.

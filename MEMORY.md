@@ -1621,6 +1621,12 @@ scrollbar is wired from createScrollBars (768..771 x 195..1011, 11 visible,
 min 36); the 67-row fixture yields 133 px (capture 134, 1 px edge). Tabs use
 captured ink anchors and the 1 px border (MAE8 0.132), subtitle font 5. The
 provisional screen remains default; live EASI, paging and scanout remain open.
+2026-11-18 CHANNEL-KEY-PATH: AdvancedChannelListDialog gives Left/Right tab
+bar focus (onLeftRightPress 0x00e7e23c), Up/Down list (0x00e7ad28), Select per
+pane (0x00e7e2e4 displayFilter/displayService/displayEdit), digits ->
+GotoServiceDialog (0x00e7cb18), MENU -> portal 0x29a and GUIDE -> nav 0x0b
+(EPG). The stock mode tracks chan_tab and moves the white pill; Select emits
+only on the watch pane. Edit/filter panes and GotoServiceDialog remain open.
 
 PVR-STOCK-LAYOUT-2026-11-17: `DialogPlayList.svg` (BinSVG 692) gives the stock
 PVR list (panel #DCDBDA, header #481730 9/10, rows 26,222 1860x66 pitch75,

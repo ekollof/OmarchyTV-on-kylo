@@ -2384,8 +2384,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       visible, min36); the 67-row fixture gives a 133 px bar (capture 134, 1 px
       edge) and panel MAE8 2.314 (tabs 0.132, banner 1.393 via captured ink
       anchors and the 1 px tab border; subtitle font 5). The provisional screen
-      remains default. Open: live EASI LCN/visibility, paging, tuner/EPG/PVR
-      and scanout.
+      remains default. 2026-11-18: the stock key path is recovered
+      (Left/Right tab focus, Up/Down list, Select per pane, digits ->
+      GotoServiceDialog, MENU -> portal 0x29a, GUIDE -> EPG 0x0b) and tab
+      focus + watch-pane Select are wired (`check-ui-channels-stock` asserts
+      Right/Select/Left). Open: live EASI LCN/visibility, edit/filter panes,
+      GotoServiceDialog, paging, tuner/EPG/PVR and scanout.
 - [ ] Apps/browser/media integration, picture quality/FRC, network and Bluetooth.
 - [ ] Tuner/DVB-T/DVB-S, EPG/service lists, teletext/MHEG/interactive TV, PVR/
       timeshift/playback, CI+/conditional access and associated persistence.

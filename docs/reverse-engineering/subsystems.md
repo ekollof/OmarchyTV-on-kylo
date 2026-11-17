@@ -401,8 +401,12 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
   runtime active list, and the scrollbar is wired from createScrollBars
   (768..771 x 195..1011, 11 visible, min 36; 67-row fixture bar 133 px vs the
   capture's 134, 1 px edge). Tabs use captured ink anchors and the 1 px border
-  (MAE8 0.132), subtitle font 5. Live EASI, paging and scanout remain open.
-  Evidence: CHANNEL-LIST-GEOMETRY.
+  (MAE8 0.132), subtitle font 5. Key path: Left/Right move the watch/edit/
+  filter tab focus (onLeftRightPress 0x00e7e23c), Up/Down the list, Select
+  dispatches per pane (0x00e7e2e4), digits open GotoServiceDialog
+  (0x00e7cb18), MENU exits to portal 0x29a and GUIDE to the EPG 0x0b; the
+  edit/filter panes and GotoServiceDialog are open. Live EASI, paging and
+  scanout remain open. Evidence: CHANNEL-LIST-GEOMETRY.
 - Stock EPG timeline: `DialogEPG.svg` (BinSVG 101) with
   `MultiServiceTimelineScheduleDialog`: title key `PROGRAM_GUIDE`, date
   `<weekday-short> %02u/%02u/%u`, start/middle/end `%02u:%02u`; list
