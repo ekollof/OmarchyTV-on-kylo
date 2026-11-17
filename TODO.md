@@ -190,8 +190,8 @@ maps the cold-start stages and the current stock-UI coverage.
       acceptance, the authority write path and enabling `cec.enable` remain.
 - [ ] Stock vendor-UI screens: live launcher DB/icons, settings tabs, channel/
       EPG/PVR, app launch profile. `ui_omarchy` is not stock-UI parity. The
-      live launcher DB path and the channel-list geometry model exist; the
-      provisional channel screen is not rewired and EPG/PVR/tab screens are open.
+      live launcher DB path and the gated stock channel screen exist; EPG/PVR/
+      tab screens and the stock channel key path/runtime feed remain open.
 
 ## Scheduled takeover test queue (single session)
 
@@ -2161,9 +2161,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       Unit, socket and recorder-UI tests pass. Host423 ok, verify45; ARM/qemu
       passes. CHANNEL-RUNTIME-ORDER. Limits: no live EASI feed (testtool still
       disabled by owner), no LCN/visibility fields in ACTIVECHANNELLIST.
-      2026-11-17: the stock channel-list capture exists (p0/04) and its
-      geometry/colours/rows are recovered in CHANNEL-LIST-GEOMETRY
-      (`check-channel-layout`); the runtime UI is still not wired to it.
+      2026-11-17: the stock channel-list capture exists (p0/04), its
+      geometry/colours/rows are recovered in CHANNEL-LIST-GEOMETRY, and the
+      default-off `ui.channels_stock=1` mode is wired and capture-checked; the
+      runtime EASI/LCN feed is still missing.
 
 - [x] Vendor-grounded PVR module: added an `oa_pvr_backend` boundary shaped
       after `DvrController::startRecording/recordingQuery/stopRecording` and
@@ -2346,9 +2347,12 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       synthetic and real font packs. Host410 ok, verify45. CHANNEL-LIST-UI.
       2026-11-17: stock geometry is recovered in CHANNEL-LIST-GEOMETRY from
       the p0/04 capture and BinSVG 80 (`common/channel_layout.c`,
-      `check-channel-layout`), but the provisional screen is not rewired.
-      Open: runtime EASI LCN/visibility, stock key path, model wiring,
-      typography/anchors/icon/scrollbar/scrolling, tuner/EPG/PVR and scanout.
+      `check-channel-layout`), and a default-off `ui.channels_stock=1` mode
+      paints the stock panel/banner/tabs/rows with vendor fonts 7/12/4/16/18/1
+      (`check-ui-channels-stock`; `check-ui-channels-stock-capture` panel MAE8
+      2.755, focus 1.510, row2 2.581). The provisional screen remains default.
+      Open: runtime EASI LCN/visibility, stock key path, icon/scrollbar, exact
+      tab anchors, scrolling/paging, tuner/EPG/PVR and scanout.
 - [ ] Apps/browser/media integration, picture quality/FRC, network and Bluetooth.
 - [ ] Tuner/DVB-T/DVB-S, EPG/service lists, teletext/MHEG/interactive TV, PVR/
       timeshift/playback, CI+/conditional access and associated persistence.

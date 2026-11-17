@@ -1,10 +1,10 @@
 # Stock channel-list geometry — 2026-11-17
 
-Status: current
-Last verified: 2026-11-17 (firmware SVG resource and a read-only stock capture;
-host model/tests only)
-Evidence class: firmware resource, stock capture and host tests. No TV run, UI
-wiring or scanout.
+Status: current (stock mode wired behind `ui.channels_stock=1`)
+Last verified: 2026-11-17 (firmware SVG resource, read-only stock capture,
+host/recorder tests and a capture comparison)
+Evidence class: firmware resource, stock capture, recorder/host tests. No TV
+run or scanout.
 
 This recovers the stock channel-list screen geometry that the provisional
 `SCREEN_CHANNELS` UI lacked. Sources are the shipped
@@ -62,10 +62,28 @@ The font record and exact text anchors are not yet recovered.
   partial row for the caller to clip; `oa_channel_visible_rows` returns 12.
 - `tests/channel_layout.c` / `make check-channel-layout` assert every
   rectangle, colour, tab boundary, row and rejection above.
+- **Stock mode (2026-11-17):** `ui.channels_stock=1` (default off) makes
+  `ui_vendor` paint the stock panel/banner/tabs/rows with the model, the
+  matching vendor font records and ink-cropped text. The provisional screen
+  remains the default.
+  - Fonts were identified by captured ink boxes: title "Zenders" 138x32 →
+    record 7; subtitle 132x26 and selected tab 116x33 → 12; unselected tabs
+    114x22 → 4; normal row 73x35 → 16; focused row 72x41 → 18; `ATV` 27x12 →
+    1. `ui_vendor` loads 18/12/1 in stock mode and reuses the text-load fonts.
+  - `tests/ui_channels_stock.c` / `make check-ui-channels-stock` uses 11
+    synthetic analog rows and asserts the record-80 fills, tab gaps, 75 px
+    focus rows and text blits.
+  - `make check-ui-channels-stock-capture` renders the same rows with the real
+    vendor fonts and the p0/04 names (C12, C07, BBC2, …), writes
+    `stock-mode.png` and compares it with the corrected capture: panel MAE8
+    **2.755**, focus row **1.510**, row 2 **2.581**. The remaining banner/tab
+    error (MAE8 3.81/5.75) is the missing header icon/scrollbar and tab/subtitle
+    raster placement; rows, colours and text anchors match.
 
-The model is not wired into `ui_vendor`; the provisional `SCREEN_CHANNELS`
-still paints its own rows. Runtime EASI order/LCN and visibility, the stock key
-path, fonts/anchors, the header icon, scrollbar and scanout remain open.
+The provisional `SCREEN_CHANNELS` remains the default; the stock key path,
+runtime EASI order/LCN and visibility, the header icon, scrollbar, exact tab
+anchors and scanout remain open. The capture comparison is recorder/CPU, not
+fb1/scanout proof.
 
 Report: CHANNEL-LIST-GEOMETRY-2026-11-17. Related: CHANNEL-LIST-UI,
 CHANNEL-RUNTIME-ORDER, P0-BROWSER-PROBE, UI-THEME-PROVIDER.

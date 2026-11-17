@@ -1609,8 +1609,12 @@ supersede the old "capture absent" note; see STOCK-APPS-GRID-PARITY.)
 tabs 12..262/264..514/516..766 y100..159, filterInfo 123,50,766,95, list
 19,179,769,1090, rows 19,195 748x66 pitch75 (12 starts), focus #FE9419 with
 40 px #7E000A number/name and 34 px white normal text. `common/channel_layout.c`
-+ `check-channel-layout` pass; the provisional SCREEN_CHANNELS is not rewired.
-Fonts/anchors, icon, scrollbar, key path, runtime EASI and scanout remain open.
++ `check-channel-layout` pass. 2026-11-17: default-off `ui.channels_stock=1`
+paints the stock screen with vendor font records 7/12/4/16/18/1;
+`check-ui-channels-stock` and `check-ui-channels-stock-capture` pass, the
+latter at panel MAE8 2.755/focus 1.510/row2 2.581 against the corrected p0/04
+capture. The provisional screen remains default; icon, scrollbar, exact tab
+anchors, key path, runtime EASI and scanout remain open.
 
 PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary
 (integer recording id, start/stop, index query) with a persistent offline stub.

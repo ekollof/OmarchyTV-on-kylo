@@ -1,0 +1,11 @@
+{
+  "description": "Stock channel-list panel regions (p0/04 corrected reference)",
+  "regions": [
+    {"name": "panel", "x": 0, "y": 0, "w": 780, "h": 1080},
+    {"name": "banner", "x": 0, "y": 0, "w": 780, "h": 162},
+    {"name": "tabs", "x": 12, "y": 100, "w": 754, "h": 59},
+    {"name": "list", "x": 19, "y": 179, "w": 750, "h": 901},
+    {"name": "focus_row", "x": 19, "y": 195, "w": 748, "h": 66},
+    {"name": "row2", "x": 19, "y": 270, "w": 748, "h": 66}
+  ]
+}

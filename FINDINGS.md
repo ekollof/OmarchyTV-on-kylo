@@ -291,8 +291,15 @@ y100..159, filterInfo 123,50,766,95 and list 19,179,769,1090. The capture
 (BGRA-corrected) gives rows 19,195 748x66 pitch75, 12 starts, focus #FE9419
 with 40 px #7E000A number/name text and 34 px white normal text, and a white
 ATV marker. `common/channel_layout.c` + `check-channel-layout` encode and test
-these; the provisional SCREEN_CHANNELS is not rewired. Runtime EASI/LCN/
-visibility, fonts/anchors, icon, scrollbar, key path and scanout remain open.
+these. 2026-11-17: a default-off `ui.channels_stock=1` mode paints the stock
+panel/banner/tabs/rows with the matching vendor font records (7 title,
+12 subtitle/selected tab, 4 unselected tabs, 16 normal rows, 18 focused row,
+1 ATV marker). `check-ui-channels-stock` covers the fills/rows and
+`check-ui-channels-stock-capture` compares the real-font render to the
+corrected capture: panel MAE8 2.755, focus row 1.510, row 2 2.581 (banner/tabs
+3.81/5.75 from the missing icon/scrollbar and tab/subtitle rasters). The
+provisional screen remains the default; runtime EASI/LCN/visibility, icon,
+scrollbar, exact tab anchors, key path and scanout remain open.
 
 PVR-MODULE-2026-11-05: the PVR service is now a real mod_pvr with a
 vendor-shaped backend boundary (integer recording id, start/stop, index query)

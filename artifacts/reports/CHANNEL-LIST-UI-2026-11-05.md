@@ -1,8 +1,9 @@
 # Provisional channel-list UI — 2026-11-05
 
-Status: current (stock geometry recovered 2026-11-17; this UI is still
-provisional and not rewired)
-Last verified: 2026-11-17 (geometry recovery only; the UI code is unchanged)
+Status: current (stock geometry and a gated stock mode 2026-11-17; the
+provisional screen remains the default)
+Last verified: 2026-11-17 (geometry, recorder test and capture comparison; no
+TV run)
 
 Host/recorder only. No TV scanout or runtime EASI access.
 
@@ -62,9 +63,12 @@ This is an explicit provisional UI, not vendor parity:
   is a stock channel-list capture. CHANNEL-LIST-GEOMETRY-2026-11-17 recovers
   the `DialogAdvancedChannelList.svg` (record 80) rectangles, theme colours
   and capture row metrics into `common/channel_layout.c` +
-  `check-channel-layout`. The provisional screen is deliberately not rewired
-  to that model yet, so typography/anchors, scrolling, paging, runtime EASI
-  and the key path remain open;
+  `check-channel-layout`. 2026-11-17 adds a default-off stock mode
+  (`ui.channels_stock=1`) with matching vendor fonts and a recorder/capture
+  check (`check-ui-channels-stock`, `check-ui-channels-stock-capture`; panel
+  MAE8 2.755). The provisional screen remains the default; the stock key path,
+  runtime EASI, icon/scrollbar, exact tab anchors, scrolling/paging and scanout
+  remain open;
 - tuner acquisition/scan, EPG, PVR, media/network and hardware ownership remain
   open;
 - recorder evidence is not physical fb1/scanout evidence.

@@ -65,3 +65,30 @@ returns 12. `check-channel-layout` covers every value above and invalid inputs.
 This is layout data only. The provisional `SCREEN_CHANNELS` UI still paints its
 own rows and marker; wiring this model (header icon, fonts/anchors, scrollbar,
 runtime EASI order/LCN, key path) and scanout acceptance remain open.
+
+## Stock-mode render and capture check (2026-11-17)
+
+`ui.channels_stock=1` wires the model into `ui_vendor` (default off). The
+repeatable check is:
+
+```sh
+cd openaurora
+sh tools/channel-stock-check.sh     # make check-ui-channels-stock-capture
+```
+
+It renders the 11 analog rows from the p0/04 capture with the vendor font
+records 7 (title), 12 (selected tab/subtitle), 4 (unselected tabs), 16 (normal
+rows), 18 (focused row) and 1 (ATV marker), converts the recorder RGBA to PNG
+and compares against `p0-04-channel-list-corrected.png`:
+
+| region | MAE8 |
+|---|---:|
+| panel | 2.755 |
+| focus row | 1.510 |
+| row 2 | 2.581 |
+
+`stock-mode.png` is the candidate and `stock-mode-compare.txt` the full
+metrics. The remaining panel difference is mostly the missing header icon,
+scrollbar and tab/subtitle raster placement (banner MAE8 3.81, tabs 5.75); the
+row geometry/colour and text anchors match the capture. This is a recorder
+comparison, not fb1/scanout proof.

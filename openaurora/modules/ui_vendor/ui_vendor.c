@@ -57,6 +57,7 @@
 #include "openaurora/font_pack.h"
 #include "openaurora/font_text.h"
 #include "openaurora/apps_label.h"
+#include "openaurora/channel_layout.h"
 #include "openaurora/font_box.h"
 
 #define MAX_CARDS 12
@@ -225,8 +226,11 @@ struct ctx {
     unsigned char *app_font_data;
     int app_font_on;
     char grid_labels[MAX_GRID][64];
-    struct oa_bitmap_font font_title; /* font18: tab title */
+    struct oa_bitmap_font font_title; /* font18: tab title/focused channel row */
     unsigned char *font_title_data;
+    struct oa_bitmap_font stock_tab_font, stock_marker_font; /* channel 12/1 */
+    unsigned char *stock_tab_data, *stock_marker_data;
+    int stock_fonts_on;              /* channel stock mode fonts loaded */
     struct text_canvas text[SETTINGS_TEXT_MAX];
     struct text_canvas title; /* live tab title blob (no focus variant) */
     /* Sub-launcher live text: font3 labels + font12 values, localized through
@@ -1133,6 +1137,11 @@ static void settings_text_free(struct ctx *c)
     free(c->font_title_data);
     c->title.rgba = NULL;
     c->font_title_data = NULL;
+    free(c->stock_tab_data);
+    c->stock_tab_data = NULL;
+    free(c->stock_marker_data);
+    c->stock_marker_data = NULL;
+    c->stock_fonts_on = 0;
     oa_font_pack_free(&c->font_pack);
     c->text_on = 0;
     c->font_num_on = 0;
@@ -1177,6 +1186,45 @@ static int app_label_open(struct ctx *c)
         &c->app_font_data);
     if (rc) return rc;
     c->app_font_on = 1;
+    return 0;
+}
+
+/* Stock channel-list fonts: font18 (focused row/title), font12 (selected tab,
+ * subtitle), font4 (unselected tabs, via app_font_open) and font1 (type
+ * marker). Records were identified by matching the p0/04 captured ink boxes:
+ * Zenders 138x32 -> 7, Alleen TV 132x26 -> 12, Bewerken 114x22 -> 4,
+ * C07 73x35 -> 16, C12 72x41 -> 18, ATV 27x12 -> 1. Requires the pack and
+ * font7/16 already open from ui.text=1; otherwise stock mode falls back. */
+static int stock_channel_fonts(struct ctx *c)
+{
+    if (!c || !c->text_on || !c->font_num_on || !c->font_pack.count)
+        return -ENOTSUP;
+    if (!c->font_title_data) {
+        int id = atoi(c->api->config_get(c->api->priv, "ui.font_title_id", "18"));
+        if (id < 0 ||
+            settings_font_open(&c->font_pack, id, &c->font_title,
+                               &c->font_title_data) != 0)
+            return -ENOTSUP;
+    }
+    if (!c->stock_fonts_on) {
+        int tab = atoi(c->api->config_get(c->api->priv,
+                                          "ui.channel_tab_font_id", "12"));
+        int marker = atoi(c->api->config_get(c->api->priv,
+                                             "ui.channel_marker_font_id", "1"));
+        if (tab < 0 || marker < 0 ||
+            settings_font_open(&c->font_pack, tab, &c->stock_tab_font,
+                               &c->stock_tab_data) != 0)
+            return -ENOTSUP;
+        if (settings_font_open(&c->font_pack, marker, &c->stock_marker_font,
+                               &c->stock_marker_data) != 0) {
+            free(c->stock_tab_data);
+            c->stock_tab_data = NULL;
+            return -ENOTSUP;
+        }
+        c->stock_fonts_on = 1;
+    }
+    /* Optional font4: a missing small font leaves the tab labels on font12. */
+    (void)app_label_open(c);
     return 0;
 }
 
@@ -1836,12 +1884,24 @@ static void channel_text_blit(struct ctx *c, const char *text, int x, int y,
     free(rgba);
 }
 
+static void paint_channels_stock(struct ctx *c);
+static int stock_channel_fonts(struct ctx *c);
+
 static void paint_channels(struct ctx *c)
 {
     const oa_ui_engine_iface *d = c->d;
     int W = 0, H = 0;
     if (!c || !d || d->info(&W, &H, NULL, NULL) || W <= 0 || H <= 0)
         return;
+    if (atoi(c->api->config_get(c->api->priv, "ui.channels_stock", "0")) == 1) {
+        int stock_rc = stock_channel_fonts(c);
+        if (stock_rc == 0) {
+            paint_channels_stock(c);
+            return;
+        }
+        c->api->log(c->api->priv, OA_LOG_WARN,
+                    "stock channel fonts unavailable (%d); provisional", stock_rc);
+    }
     if (d->clear_rgba(36, 38, 40, 153)) return;
 
     const oa_channel_iface *channels =
@@ -1925,6 +1985,223 @@ static void paint_channels(struct ctx *c)
     c->api->log(c->api->priv, OA_LOG_INFO,
         "painted %s channel list: %zu rows",
         have_runtime ? "runtime" : "stored", total);
+}
+
+/* Render one ink-cropped text blob. `x,y` are the captured ink top-left, not
+ * the pen origin, so the vendor font bearings do not shift the layout. */
+static int channel_text_crop(const struct oa_bitmap_font *font, const char *text,
+                             const uint8_t ink[4], unsigned char **rgba,
+                             int *w, int *h)
+{
+    if (!font || !font->pixels || !text || !*text || !rgba || !w || !h)
+        return -EINVAL;
+    int advance = 0;
+    if (oa_font_text_measure(font, text, 0, &advance) != 0 ||
+        advance < 1 || advance > 2048)
+        return -EINVAL;
+    int cw = advance + 64, ch = 192;
+    unsigned char *scratch = calloc((size_t)cw * (size_t)ch * 4u, 1);
+    if (!scratch)
+        return -ENOMEM;
+    oa_canvas cv = { scratch, cw, ch };
+    int rc = oa_font_text_draw(&cv, font, text, 32, 32, ink, 0, NULL);
+    if (rc) {
+        free(scratch);
+        return rc;
+    }
+    int minx = cw, miny = ch, maxx = -1, maxy = -1;
+    for (int y = 0; y < ch; y++)
+        for (int x = 0; x < cw; x++)
+            if (scratch[((size_t)y * (size_t)cw + (size_t)x) * 4u + 3u]) {
+                if (x < minx) minx = x;
+                if (x > maxx) maxx = x;
+                if (y < miny) miny = y;
+                if (y > maxy) maxy = y;
+            }
+    if (maxx < minx || maxy < miny) {
+        free(scratch);
+        return -ENOENT;
+    }
+    int cwi = maxx - minx + 1, chi = maxy - miny + 1;
+    unsigned char *crop = calloc((size_t)cwi * (size_t)chi * 4u, 1);
+    if (!crop) {
+        free(scratch);
+        return -ENOMEM;
+    }
+    for (int y = 0; y < chi; y++)
+        memcpy(crop + (size_t)y * (size_t)cwi * 4u,
+               scratch + ((size_t)(miny + y) * (size_t)cw + (size_t)minx) * 4u,
+               (size_t)cwi * 4u);
+    free(scratch);
+    *rgba = crop;
+    *w = cwi;
+    *h = chi;
+    return 0;
+}
+
+static void channel_text_at(struct ctx *c, const struct oa_bitmap_font *font,
+                            const char *text, int x, int y,
+                            uint8_t r, uint8_t g, uint8_t b)
+{
+    if (!c || !c->d)
+        return;
+    const uint8_t ink[4] = { r, g, b, 255 };
+    unsigned char *rgba = NULL;
+    int w = 0, h = 0;
+    if (channel_text_crop(font, text, ink, &rgba, &w, &h) != 0)
+        return;
+    c->d->blit(x, y, w, h, rgba);
+    free(rgba);
+}
+
+static void channel_text_centered(struct ctx *c,
+                                  const struct oa_bitmap_font *font,
+                                  const char *text, const oa_channel_rect *tab,
+                                  int y, uint8_t r, uint8_t g, uint8_t b)
+{
+    if (!c || !c->d || !tab)
+        return;
+    const uint8_t ink[4] = { r, g, b, 255 };
+    unsigned char *rgba = NULL;
+    int w = 0, h = 0;
+    if (channel_text_crop(font, text, ink, &rgba, &w, &h) != 0)
+        return;
+    c->d->blit(tab->x + (tab->x1 - tab->x - w) / 2, y, w, h, rgba);
+    free(rgba);
+}
+
+/* Stock channel screen, gated by ui.channels_stock=1. Rectangles and colours
+ * come from common/channel_layout.c; the text ink anchors are measured from
+ * the p0/04 capture (fonts: see stock_channel_fonts). The header icon and
+ * scrollbar are not painted yet. */
+static void paint_channels_stock(struct ctx *c)
+{
+    const oa_ui_engine_iface *d = c->d;
+    oa_channel_layout l;
+    if (!d || oa_channel_layout_default(&l) != 0)
+        return;
+    if (d->clear(0, 0, 0))
+        return;
+    d->fill(l.panel.x, l.panel.y, l.panel.x1 - l.panel.x,
+            l.panel.y1 - l.panel.y,
+            l.panel_rgb[0], l.panel_rgb[1], l.panel_rgb[2]);
+    d->fill(l.banner.x, l.banner.y, l.banner.x1 - l.banner.x,
+            l.banner.y1 - l.banner.y,
+            l.banner_rgb[0], l.banner_rgb[1], l.banner_rgb[2]);
+
+    const struct oa_bitmap_font *small =
+        c->app_font_on ? &c->app_font : &c->stock_tab_font;
+    d->fill(l.tabs[0].x, l.tabs[0].y, l.tabs[0].x1 - l.tabs[0].x,
+            l.tabs[0].y1 - l.tabs[0].y,
+            l.tab_selected_rgb[0], l.tab_selected_rgb[1],
+            l.tab_selected_rgb[2]);
+    for (int i = 1; i < 3; i++)
+        d->fill(l.tabs[i].x, l.tabs[i].y, l.tabs[i].x1 - l.tabs[i].x,
+                l.tabs[i].y1 - l.tabs[i].y,
+                l.tab_rgb[0], l.tab_rgb[1], l.tab_rgb[2]);
+
+    channel_text_at(c, &c->font, "Zenders", 122, 21, 255, 255, 255);
+    channel_text_at(c, &c->stock_tab_font, "Alleen TV", 123, 63,
+                    l.muted_rgb[0], l.muted_rgb[1], l.muted_rgb[2]);
+    channel_text_centered(c, &c->stock_tab_font, "Bekijken", &l.tabs[0], 116,
+                          129, 25, 36); /* #811924 ink on the white tab */
+    channel_text_centered(c, small, "Bewerken", &l.tabs[1], 118, 255, 255, 255);
+    channel_text_centered(c, small, "Filter", &l.tabs[2], 118, 255, 255, 255);
+
+    const oa_channel_iface *channels =
+        c->api->lookup(c->api->priv, OA_SVC_CHANNELS, 1);
+    const struct oa_channel_snapshot *runtime =
+        channels ? channels->snapshot() : NULL;
+    int have_runtime = runtime && runtime->count > 0;
+    const oa_service_list_iface *svc = NULL;
+    const struct oa_service_list *list = NULL;
+    size_t *order = NULL;
+    size_t total = 0;
+    if (have_runtime) {
+        total = runtime->count;
+    } else {
+        svc = c->api->lookup(c->api->priv, OA_SVC_SERVICE_LIST, 1);
+        list = svc ? svc->snapshot() : NULL;
+        if (list) {
+            struct oa_service_query q;
+            memset(&q, 0, sizeof q);
+            q.source_mask = 0x7;
+            q.sort = OA_SERVICE_SORT_CHANNEL_NO;
+            order = malloc(list->count * sizeof *order);
+            if (!order || oa_service_list_query(list, &q, order, list->count,
+                    &total))
+                total = 0;
+        }
+    }
+    if (total == 0)
+        c->chan_sel = 0;
+    else if (c->chan_sel >= (int)total)
+        c->chan_sel = (int)total - 1;
+    int first = c->chan_sel >= 12 ? c->chan_sel - 11 : 0;
+    for (int row = 0; row < 12 && first + row < (int)total; row++) {
+        oa_channel_rect rr;
+        if (oa_channel_row_rect(&l, row, &rr) != 0)
+            break;
+        int index = first + row;
+        int focused = index == c->chan_sel;
+        if (focused)
+            d->fill(rr.x, rr.y, rr.x1 - rr.x, rr.y1 - rr.y,
+                    l.focus_rgb[0], l.focus_rgb[1], l.focus_rgb[2]);
+        const char *source = "";
+        int source_kind = OA_SERVICE_SOURCE_DVB;
+        if (have_runtime) {
+            source = runtime->entries[index].name;
+        } else {
+            const struct oa_service_row *service = &list->rows[order[index]];
+            source = service->name;
+            source_kind = service->source;
+        }
+        char name[OA_SERVICE_NAME_MAX + 1];
+        size_t n = 0;
+        for (; source[n] && n < OA_SERVICE_NAME_MAX; n++)
+            name[n] = (unsigned char)source[n] < 32 ? '?' : source[n];
+        name[n] = '\0';
+        const struct oa_bitmap_font *rowf =
+            focused && c->font_title_data ? &c->font_title : &c->font_num;
+        int ytop = rr.y + (focused ? 15 : 22);
+        const uint8_t *ink = focused ? l.focus_text_rgb : l.text_rgb;
+        const uint8_t type_ink[3] = { 255, 255, 255 };
+        char number[16];
+        snprintf(number, sizeof number, "%d.", index + 1);
+        unsigned char *crop = NULL;
+        int w = 0, h = 0;
+        const uint8_t number_ink[4] = { ink[0], ink[1], ink[2], 255 };
+        if (channel_text_crop(rowf, number, number_ink, &crop, &w, &h) == 0) {
+            d->blit(263 - w, ytop, w, h, crop);
+            free(crop);
+        }
+        crop = NULL;
+        if (channel_text_crop(rowf, name, number_ink, &crop, &w, &h) == 0) {
+            d->blit(focused ? 313 : 310, ytop, w, h, crop);
+            free(crop);
+        }
+        const char *type = source_kind == OA_SERVICE_SOURCE_ANALOG ?
+                           "ATV" : "DTV";
+        crop = NULL;
+        const uint8_t marker_ink[4] = { type_ink[0], type_ink[1],
+                                        type_ink[2], 255 };
+        if (channel_text_crop(&c->stock_marker_font, type, marker_ink,
+                              &crop, &w, &h) == 0) {
+            d->blit(754 - w, rr.y + (rr.y1 - rr.y - h) / 2, w, h, crop);
+            free(crop);
+        }
+    }
+    if (svc) c->api->release(c->api->priv, OA_SVC_SERVICE_LIST);
+    if (channels) c->api->release(c->api->priv, OA_SVC_CHANNELS);
+    free(order);
+    c->scene_painted = 1;
+    if (d->present() != 0) {
+        c->api->log(c->api->priv, OA_LOG_ERROR,
+                    "stock channel list present failed");
+        return;
+    }
+    c->api->log(c->api->priv, OA_LOG_INFO,
+                "painted stock channel list: %zu rows", total);
 }
 
 /* The five rail slots are a separate surface: the portal background behind
