@@ -1602,9 +1602,15 @@ channel-ingest/clear/state/list. ui_vendor prefers a runtime snapshot with an
 amber "RUNTIME ACTIVE LIST - LCN/VISIBILITY UNAVAILABLE" marker and keeps the
 stored red fallback. Unit/socket/recorder tests pass; host423 ok, verify45;
 ARM/qemu passes. ACTIVECHANNELLIST still has no LCN/visibility and no live feed
-exists (testtool disabled). Stock apps-grid capture remains absent: the TV was
-on the no-signal frame, no HDMI capture device is attached and no keys were
-sent; owner must leave the TV on the apps grid or authorize navigation.
+exists (testtool disabled). (The later live apps-grid/Twitter captures (2026-11-05)
+supersede the old "capture absent" note; see STOCK-APPS-GRID-PARITY.)
+2026-11-17 CHANNEL-LIST-GEOMETRY: the p0/04 capture plus BinSVG 80
+(`DialogAdvancedChannelList.svg`) give panel 0,0,780,1080, banner 0,0,780,162,
+tabs 12..262/264..514/516..766 y100..159, filterInfo 123,50,766,95, list
+19,179,769,1090, rows 19,195 748x66 pitch75 (12 starts), focus #FE9419 with
+40 px #7E000A number/name and 34 px white normal text. `common/channel_layout.c`
++ `check-channel-layout` pass; the provisional SCREEN_CHANNELS is not rewired.
+Fonts/anchors, icon, scrollbar, key path, runtime EASI and scanout remain open.
 
 PVR-MODULE-2026-11-05 (host/qemu): added a vendor-shaped PVR boundary
 (integer recording id, start/stop, index query) with a persistent offline stub.

@@ -189,7 +189,9 @@ maps the cold-start stages and the current stock-UI coverage.
       close); the real ARM module and cold bundle verify. Hardware/bus
       acceptance, the authority write path and enabling `cec.enable` remain.
 - [ ] Stock vendor-UI screens: live launcher DB/icons, settings tabs, channel/
-      EPG/PVR, app launch profile. `ui_omarchy` is not stock-UI parity.
+      EPG/PVR, app launch profile. `ui_omarchy` is not stock-UI parity. The
+      live launcher DB path and the channel-list geometry model exist; the
+      provisional channel screen is not rewired and EPG/PVR/tab screens are open.
 
 ## Scheduled takeover test queue (single session)
 
@@ -2158,8 +2160,10 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       UNAVAILABLE" marker and keeps the stored red provisional fallback.
       Unit, socket and recorder-UI tests pass. Host423 ok, verify45; ARM/qemu
       passes. CHANNEL-RUNTIME-ORDER. Limits: no live EASI feed (testtool still
-      disabled by owner), no LCN/visibility fields in ACTIVECHANNELLIST and no
-      stock channel-list geometry capture.
+      disabled by owner), no LCN/visibility fields in ACTIVECHANNELLIST.
+      2026-11-17: the stock channel-list capture exists (p0/04) and its
+      geometry/colours/rows are recovered in CHANNEL-LIST-GEOMETRY
+      (`check-channel-layout`); the runtime UI is still not wired to it.
 
 - [x] Vendor-grounded PVR module: added an `oa_pvr_backend` boundary shaped
       after `DvrController::startRecording/recordingQuery/stopRecording` and
@@ -2340,8 +2344,11 @@ DRM-PLANE-CONTRACT reports, indexed in artifacts/reports/README.md.
       query, shows a visible "PROVISIONAL STORED ORDER - NOT RUNTIME EASI"
       marker, supports Up/Down/Select/Exit and is recorder-tested with
       synthetic and real font packs. Host410 ok, verify45. CHANNEL-LIST-UI.
-      Limits: no runtime EASI LCN/visibility, stock channel-list key path,
-      measured stock geometry/typography/scrolling, tuner/EPG/PVR or scanout.
+      2026-11-17: stock geometry is recovered in CHANNEL-LIST-GEOMETRY from
+      the p0/04 capture and BinSVG 80 (`common/channel_layout.c`,
+      `check-channel-layout`), but the provisional screen is not rewired.
+      Open: runtime EASI LCN/visibility, stock key path, model wiring,
+      typography/anchors/icon/scrollbar/scrolling, tuner/EPG/PVR and scanout.
 - [ ] Apps/browser/media integration, picture quality/FRC, network and Bluetooth.
 - [ ] Tuner/DVB-T/DVB-S, EPG/service lists, teletext/MHEG/interactive TV, PVR/
       timeshift/playback, CI+/conditional access and associated persistence.

@@ -1,5 +1,9 @@
 # Provisional channel-list UI — 2026-11-05
 
+Status: current (stock geometry recovered 2026-11-17; this UI is still
+provisional and not rewired)
+Last verified: 2026-11-17 (geometry recovery only; the UI code is unchanged)
+
 Host/recorder only. No TV scanout or runtime EASI access.
 
 ## What was added
@@ -54,8 +58,13 @@ This is an explicit provisional UI, not vendor parity:
   adds an ACTIVECHANNELLIST ingest/order path and a runtime UI mode, but no
   live feed, LCN or visibility fields;
 - the normal stock remote entry path is not recovered;
-- channel-list geometry, typography, scrolling, paging and labels are not
-  measured from a stock channel-list capture;
+- **partly superseded 2026-11-17:** `artifacts/protocol/p0/04-channel-list.png`
+  is a stock channel-list capture. CHANNEL-LIST-GEOMETRY-2026-11-17 recovers
+  the `DialogAdvancedChannelList.svg` (record 80) rectangles, theme colours
+  and capture row metrics into `common/channel_layout.c` +
+  `check-channel-layout`. The provisional screen is deliberately not rewired
+  to that model yet, so typography/anchors, scrolling, paging, runtime EASI
+  and the key path remain open;
 - tuner acquisition/scan, EPG, PVR, media/network and hardware ownership remain
   open;
 - recorder evidence is not physical fb1/scanout evidence.

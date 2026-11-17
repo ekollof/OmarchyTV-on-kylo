@@ -283,6 +283,17 @@ channel-list geometry capture exists. The read-only fb1 check showed the stock
 no-signal frame; stock apps-grid pixel parity still needs an owner-provided
 apps-grid screen or HDMI capture.
 
+CHANNEL-LIST-GEOMETRY-2026-11-17 corrects the missing-capture/geometry part:
+`artifacts/protocol/p0/04-channel-list.png` is a real stock channel-list
+capture, and BinSVG record 80 (`DialogAdvancedChannelList.svg`) supplies the
+panel 0,0,780,1080, banner 0,0,780,162, tabs 12..262/264..514/516..766 at
+y100..159, filterInfo 123,50,766,95 and list 19,179,769,1090. The capture
+(BGRA-corrected) gives rows 19,195 748x66 pitch75, 12 starts, focus #FE9419
+with 40 px #7E000A number/name text and 34 px white normal text, and a white
+ATV marker. `common/channel_layout.c` + `check-channel-layout` encode and test
+these; the provisional SCREEN_CHANNELS is not rewired. Runtime EASI/LCN/
+visibility, fonts/anchors, icon, scrollbar, key path and scanout remain open.
+
 PVR-MODULE-2026-11-05: the PVR service is now a real mod_pvr with a
 vendor-shaped backend boundary (integer recording id, start/stop, index query)
 and a persistent offline stub. pvr.path stores up to 256 jobs atomically with

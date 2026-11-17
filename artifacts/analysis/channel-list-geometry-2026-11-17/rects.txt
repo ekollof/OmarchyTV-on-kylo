@@ -1,0 +1,63 @@
+record 80: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1920,1080) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=1 id='main_rectangle' eoff=38 rect=(0,0,780,1080) stroke_w=1 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='' eoff=84 rect=(0,0,780,1080) stroke_w=0 opacity=10 stroke='' fill='#BE1E2D'
+  tag=1 id='' eoff=112 rect=(0,0,780,162) stroke_w=0 opacity=2 stroke='' fill='#811924'
+  tag=1 id='dialogTitle' eoff=140 rect=(51,2,698,67) stroke_w=2 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='filterInfo' eoff=183 rect=(123,50,766,95) stroke_w=2 opacity=10 stroke='#C6C6C6' fill='none'
+  tag=1 id='watchButton' eoff=225 rect=(12,100,262,159) stroke_w=0 opacity=7 stroke='' fill='#FFFFFF'
+  tag=1 id='editButton' eoff=264 rect=(264,100,514,159) stroke_w=0 opacity=7 stroke='' fill='#FFFFFF'
+  tag=1 id='filterButton' eoff=302 rect=(516,100,766,159) stroke_w=0 opacity=7 stroke='' fill='#FFFFFF'
+  tag=1 id='channelListBox' eoff=342 rect=(19,179,769,1090) stroke_w=0 opacity=10 stroke='#FFFFFF' fill='none'
+  tag=1 id='glyph' eoff=388 rect=(1028,-133,1109,-52) stroke_w=1 opacity=10 stroke='#010101' fill='none'
+  tag=1 id='animation_slide_right_fade_in' eoff=425 rect=(-198,106,-98,206) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=2 id='' eoff=482
+  tag=1 id='logo' eoff=535 rect=(610,21,766,66) stroke_w=1 opacity=10 stroke='#010101' fill='none'
+record 32: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='' eoff=38
+  tag=8 id='gRowL' eoff=40
+  tag=1 id='mRowL' eoff=47 rect=(18,61,51,127) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=84 rect=(18,61,51,127) stroke_w=0 opacity=10 stroke='' fill='#FE9419'
+  tag=9 id='(null)' eoff=112
+  tag=8 id='gRowR' eoff=113
+  tag=1 id='mRowR' eoff=120 rect=(178,61,211,127) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=157 rect=(178,61,211,127) stroke_w=0 opacity=10 stroke='' fill='#FE9419'
+  tag=9 id='(null)' eoff=185
+  tag=8 id='gRowM' eoff=186
+  tag=1 id='mRowM' eoff=193 rect=(54,61,174,127) stroke_w=2 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='' eoff=230 rect=(54,61,174,127) stroke_w=0 opacity=10 stroke='' fill='#FE9419'
+  tag=9 id='(null)' eoff=258
+  tag=9 id='(null)' eoff=259
+record 36: rc=0
+  tag=1 id='background' eoff=0 rect=(0,0,1280,720) stroke_w=0 opacity=10 stroke='' fill='#FFFFFF'
+  tag=8 id='gTopL' eoff=38
+  tag=1 id='mTopL' eoff=45 rect=(1,1,2,3) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=82
+  tag=8 id='gTopM' eoff=83
+  tag=1 id='mTopM' eoff=90 rect=(10,1,50,3) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=127
+  tag=8 id='gTopR' eoff=128
+  tag=1 id='mTopR' eoff=135 rect=(55,1,56,3) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=172
+  tag=8 id='gRowL' eoff=173
+  tag=1 id='mRowL' eoff=180 rect=(1,9,2,39) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='alignment' eoff=217 rect=(1,9,2,39) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=258
+  tag=8 id='gRowM' eoff=259
+  tag=1 id='mRowM' eoff=266 rect=(9,8,49,38) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=1 id='textPos' eoff=303 rect=(9,-7,49,38) stroke_w=1 opacity=10 stroke='#7E000A' fill='none'
+  tag=9 id='(null)' eoff=342
+  tag=8 id='gRowR' eoff=343
+  tag=1 id='mRowR' eoff=350 rect=(55,10,56,40) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=387
+  tag=8 id='gBotL' eoff=388
+  tag=1 id='mBotL' eoff=395 rect=(1,46,2,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=432
+  tag=8 id='gBotM' eoff=433
+  tag=1 id='mBotM' eoff=440 rect=(9,46,49,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=477
+  tag=8 id='gBotR' eoff=478
+  tag=1 id='mBotR' eoff=485 rect=(55,46,56,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'
+  tag=9 id='(null)' eoff=522
+  tag=1 id='fontBold' eoff=523 rect=(62,12,78,48) stroke_w=1 opacity=10 stroke='#000000' fill='none'

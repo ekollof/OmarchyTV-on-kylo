@@ -310,6 +310,7 @@ superseded claims and descriptions.
 - [BROADCAST-FOUNDATION](../../artifacts/reports/BROADCAST-FOUNDATION-2026-11-05.md)
 - [BROADCAST-IPC](../../artifacts/reports/BROADCAST-IPC-2026-11-05.md)
 - [BROADCAST-VENDOR-FIELDS](../../artifacts/reports/BROADCAST-VENDOR-FIELDS-2026-11-05.md)
+- [CHANNEL-LIST-GEOMETRY](../../artifacts/reports/CHANNEL-LIST-GEOMETRY-2026-11-17.md)
 - [CHANNEL-LIST-UI](../../artifacts/reports/CHANNEL-LIST-UI-2026-11-05.md)
 - [CHANNEL-RUNTIME-ORDER](../../artifacts/reports/CHANNEL-RUNTIME-ORDER-2026-11-05.md)
 - [CHANNELS-QUIESCE](../../artifacts/reports/CHANNELS-QUIESCE-2026-11-06.md)

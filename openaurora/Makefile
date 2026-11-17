@@ -1843,6 +1843,15 @@ check-ui-channels: $(BUILD)/tests/ui_channels $(BUILD)/tests/ui_nav_display.so $
 	@cp $(BUILD)/tests/ui_nav_display.so $(ui-channels-modules)/mod_nav_display.so
 	@$(BUILD)/tests/ui_channels $(ui-channels-modules)
 check: check-ui-channels
+
+$(BUILD)/tests/channel_layout: tests/channel_layout.c common/channel_layout.c include/openaurora/channel_layout.h
+	@mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $@ $(filter %.c,$^)
+
+.PHONY: check-channel-layout
+check-channel-layout: $(BUILD)/tests/channel_layout
+	@$(BUILD)/tests/channel_layout
+check: check-channel-layout
 .PHONY: check-ui-png-cards
 check-ui-png-cards: $(BUILD)/tests/ui_live_cards ui-live-stage
 	@$(BUILD)/tests/ui_live_cards $(ui-live-modules) synthetic "$(CURDIR)/../artifacts/workbench/thumbs" png || test $$? -eq 77

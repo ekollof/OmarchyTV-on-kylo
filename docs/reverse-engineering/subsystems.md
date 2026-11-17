@@ -389,6 +389,12 @@ Evidence: [APP-MANAGER-KEYBOARD](../../artifacts/reports/APP-MANAGER-KEYBOARD-20
 - Native shell: `ui_omarchy` over `ui.engine` (home grid, sources, apps,
   settings, clock); `ui_vendor` reproduces the stock portal. The production UI
   is native `ui_engine` drawing; do not embed or launch the browser app.
+- Stock channel list: `DialogAdvancedChannelList.svg` (BinSVG 80) panel
+  0,0,780,1080, banner 0,0,780,162, tabs 12..262/264..514/516..766 at
+  y100..159 and list 19,179,769,1090; the p0/04 capture gives rows 19,195
+  748x66 pitch75, focus #FE9419, 40 px #7E000A focused text and 34 px white
+  normal text. `common/channel_layout.c` + `check-channel-layout`; the
+  provisional screen is not wired. Evidence: CHANNEL-LIST-GEOMETRY.
 - Apps-grid focused labels use the firmware single-line centre rule
   (`physicalWidth` + first bearing, not the ink bbox):
   `common/apps_label.c` + `check-apps-label`. Stock Twitter ink is 919..999;

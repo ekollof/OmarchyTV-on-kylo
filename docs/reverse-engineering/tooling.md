@@ -79,6 +79,24 @@ artifacts/scripts/extract_from_dump.sh root:/lib/modules/ntkndpdrm.ko -o /tmp/ou
   `--dump`, `--offset`). This recovered EARPHONE/HP_MUTE/AMP_MUTE pins and
   levels for AMP-BALANCE.
 
+## BinSVG resources
+
+The shipped theme pack is
+`artifacts/workbench/rootfs/vendor2/dynamic_ui/telefunken18_svg.{txt,bin}`.
+Resolve names and dump named rectangles before inventing geometry:
+
+```sh
+cc -Iopenaurora/include -D_GNU_SOURCE -std=c11 -O2 \
+  -o /tmp/svg-rects openaurora/tools/re/svg-rects.c \
+  openaurora/common/svg_pack.c openaurora/common/binsvg.c
+/tmp/svg-rects .../telefunken18_svg.txt .../telefunken18_svg.bin 80 32 36
+```
+
+Record 80 is the stock channel-list dialog; its `main_rectangle`, tabs and
+listbox are used by CHANNEL-LIST-GEOMETRY. `svg-names.c` maps IDs to names and
+`svg-animations.c --rectangles/--elements` walks the pack. A capture alone is
+not resource evidence; keep both.
+
 ## Fast instruction and symbol search
 
 `artifacts/workbench/aurora.dis` is the objdump cache for `aurora.elf`
